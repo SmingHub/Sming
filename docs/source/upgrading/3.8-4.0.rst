@@ -1,6 +1,6 @@
-***************************
+*****************
 From v3.8 to v4.0
-***************************
+*****************
 
 Summary
 =======
@@ -9,8 +9,11 @@ With Sming version 4.0 there are some backwards
 incompatible changes. This page is provided to help with migrating your
 applications.
 
-You can find more detailed information in the
-:doc:`/_inc/Sming/building` readme.
+In particular, the build system has changed so the process is now driven from the
+project directory.
+
+See :doc:`/_inc/Sming/building` for detailed information and a list of known issues.
+
 
 Header files
 ============
