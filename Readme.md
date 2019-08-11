@@ -15,6 +15,8 @@ If you like **Sming**, give it a star, or fork it and [contribute](#contribute)!
 [![GitHub stars](https://img.shields.io/github/stars/SmingHub/Sming.svg?style=social&label=Star)](https://github.com/SmingHub/Sming/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/SmingHub/Sming.svg?style=social&label=Fork)](https://github.com/SmingHub/Sming/network)
 
+Please note **develop** branch documentation is at [sming.readthedocs.io](https://sming.readthedocs.io/).
+
 ## Summary
 * Highly effective in performance and memory usage (this is native firmware!)
 * Simple and powerful hardware API wrappers
