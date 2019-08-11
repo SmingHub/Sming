@@ -49,6 +49,9 @@ TAB_SIZE               = 4
 
 ALIASES                = "license=@par License:\n"
 
+
+EXTRACT_ALL = YES
+
 # If the EXTRACT_STATIC tag is set to YES, all static members of a file will be
 # included in the documentation.
 # The default value is: NO.
