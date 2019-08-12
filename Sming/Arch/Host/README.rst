@@ -100,8 +100,8 @@ In the application window, press Enter. This behaviour is enabled by the
 telnet can connect to it. Without ``pause`` you’ll lose any serial
 output at startup.)
 
-Note: For Windows users, ``putty`` is a good alternative to telnet. It
-has options to for things like carriage-return/linefeed translation
+Note: For Windows users, ``putty`` is a good alternative to telnet. It also
+has options for things like carriage-return/linefeed translation
 (“\\n” -> “\\r\\n`”). Run using::
 
    putty telnet://localhost:10000
