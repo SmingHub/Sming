@@ -1,4 +1,4 @@
 Basic Interrupts
 ================
 
-To be completed.
+Simple example of how interrupts can be used within Sming.

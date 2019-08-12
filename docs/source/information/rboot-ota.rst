@@ -64,7 +64,7 @@ the third 1MB block of flash. This leaves a whole 1MB spare after each
 ROM in which you can put your SPIFFS.
 
 If you have to a smaller flash the SPIFFS will have to share the 1MB block with the ROM.
- For example, the first part of each 1MB block may contain the ROM, and the second part
+For example, the first part of each 1MB block may contain the ROM, and the second part
 the SPIFFS (but does *not* have to be split equally in half). So for the 4MB example
 you could put the SPIFFS for your first ROM at flash address at 0x100000
 and the SPIFFS for your second ROM at 0x300000; in each case that is the

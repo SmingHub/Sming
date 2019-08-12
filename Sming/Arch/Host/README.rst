@@ -37,9 +37,7 @@ or later. If it’s older, execute these commands:
 Building
 --------
 
-Build the framework and application as usual, specifying :envvar:`SMING_ARCH` =Host. For example:
-
-::
+Build the framework and application as usual, specifying :envvar:`SMING_ARCH` =Host. For example::
 
    cd $SMING_HOME
    make SMING_ARCH=Host
@@ -92,9 +90,7 @@ Alternatively, you can run the application manually like this:
 
 ``out/firmware/app --pause --uart=0 --uart=1``
 
-Now start a telnet session for each serial port, in separate command windows:
-
-::
+Now start a telnet session for each serial port, in separate command windows::
 
    telnet localhost 10000
    telnet localhost 10001
@@ -104,11 +100,9 @@ In the application window, press Enter. This behaviour is enabled by the
 telnet can connect to it. Without ``pause`` you’ll lose any serial
 output at startup.)
 
-Note: For Windows users, ``putty`` is a good alternative to telnet. It
-has options to for things like carriage-return/linefeed translation
-(“\\n” -> “\\r\\n`”). Run using:
-
-::
+Note: For Windows users, ``putty`` is a good alternative to telnet. It also
+has options for things like carriage-return/linefeed translation
+(“\\n” -> “\\r\\n`”). Run using::
 
    putty telnet://localhost:10000
 
@@ -118,7 +112,42 @@ different port numbers, use ``--uartport`` option.
 Digital I/O
 ~~~~~~~~~~~
 
-At present the emulator just writes output to the console. Inputs all return 0.
+By default, the emulator just writes output to the console so you can see when outputs are changed.
+
+Reading from an input returns 0.
+
+All digital functions can be customised by overriding the *DigitalHooks* class, like this:
+
+.. code-block:: c++
+
+   // You'd probably put this in a separate module and conditionally include it
+   #ifdef ARCH_HOST
+   class MyDigitalHooks: public DigitalHooks
+   {
+   public:
+      // Override class methods as required
+      uint8_t digitalRead(uint16_t pin, uint8_t mode) override
+      {
+         if(pin == 0) {
+            return 255;
+         } else {
+            return DigitalHooks::digitalRead(pin, mode);
+         }
+      }
+   };
+   
+   MyDigitalHooks myDigitalHooks;
+   #endif
+
+   void init()
+   {
+      #ifdef ARCH_HOST
+      setDigitalHooks(&myDigitalHooks);
+      #endif
+   }
+
+See :source:`Sming/Arch/Host/Core/DigitalHooks.h` for further details.
+
 
 Network
 ~~~~~~~
@@ -128,9 +157,7 @@ Linux
 
 Support is provided via TAP network interface (a virtual network layer
 operating at the ethernet frame level). A TAP interface must be created
-first, and requires root priviledge:
-
-::
+first, and requires root priviledge::
 
    sudo ip tuntap add dev tap0 mode tap user `whoami`
    sudo ip a a dev tap0 192.168.13.1/24
@@ -142,9 +169,7 @@ select the first ``tap`` interface found. To override this, use the
 using the ``--ipaddr`` option.
 
 If your application needs to access the internet, additional setup is
-required:
-
-::
+required::
 
    sudo sysctl net.ipv4.ip_forward=1
    sudo sysctl net.ipv6.conf.default.forwarding=1
@@ -231,4 +256,3 @@ todo
 * Consider how this mechanism might be used to support emulation of other devices (SPI, I2C, etc).
 * Development platforms with SPI or I2C (e.g. Raspberry Pi) could be supported.
 * Are there any generic device emulators available? For example, to simulate specific types of SPI slave.
-* All code is intended to run on either Windows (MinGW) or Linux as simply as possible, without requiring any additional dependencies.

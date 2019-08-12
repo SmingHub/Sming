@@ -6,7 +6,7 @@ Basic rBoot
 Introduction
 ------------
 
-This sample integrates :component-esp8266:`rboot` and Sming, for the many people who have
+This sample integrates :component:`rboot` and Sming, for the many people who have
 been asking for it. It demonstrates dual rom booting, big flash support,
 OTA updates and dual spiffs filesystems. You must enable big flash
 support in rBoot and use on an ESP12 (or similar device with 4MB flash).

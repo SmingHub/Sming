@@ -110,7 +110,7 @@ protected:
 	}
 
 	/** @brief Callback function to perform transformation
-	 *  @deprecated Create inherited class and verride transform() method instead
+	 *  @deprecated Create inherited class and override transform() method instead
 	 */
 	StreamTransformerCallback transformCallback = nullptr;
 

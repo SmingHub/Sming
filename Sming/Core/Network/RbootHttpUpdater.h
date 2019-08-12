@@ -65,7 +65,7 @@ public:
 	 * - default SSL fingeprints
 	 * - default SSL client certificates
 	 *
-	 * @param HttpRequest *
+	 * @param request
 	 */
 	void setBaseRequest(HttpRequest* request)
 	{
