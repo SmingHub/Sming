@@ -153,15 +153,17 @@ int HttpServerConnection::onBody(const char* at, size_t length)
 	return 0;
 }
 
-void HttpServerConnection::onHttpError(http_errno error)
+bool HttpServerConnection::onHttpError(http_errno error)
 {
 	response.code = HTTP_STATUS_BAD_REQUEST;
 	int hasError = onMessageComplete(nullptr);
 	if(hasError) {
-		sendError(httpGetErrorName(error));
+		sendError();
 	}
 
 	HttpConnection::onHttpError(error);
+
+	return true;
 }
 
 void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
@@ -310,7 +312,7 @@ void HttpServerConnection::sendError(const String& message, enum http_status cod
 	response.setContentType(MIME_HTML);
 
 	String html = F("<H2 color='#444'>");
-	html += message ? message : httpGetStatusText(response.code);
+	html += message ? message : httpGetStatusText((enum http_status)response.code);
 	html += F("</H2>");
 	response.headers[HTTP_HEADER_CONTENT_LENGTH] = html.length();
 	response.headers[HTTP_HEADER_CONNECTION] = _F("close");
