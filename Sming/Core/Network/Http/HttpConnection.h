@@ -200,7 +200,12 @@ protected:
 		return true;
 	}
 
-	virtual void onHttpError(http_errno error);
+	/**
+	 * @brief Called when there was an error.
+	 * @param error - the error code
+	 * @retval bool - false if the problem is not recoverable, true otherwise
+	 */
+	virtual bool onHttpError(http_errno error);
 
 	// TCP methods
 	virtual bool onTcpReceive(TcpClient& client, char* data, int size);

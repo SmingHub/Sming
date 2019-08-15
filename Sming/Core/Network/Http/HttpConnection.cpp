@@ -167,9 +167,10 @@ int HttpConnection::staticOnMessageComplete(http_parser* parser)
 	return error;
 }
 
-void HttpConnection::onHttpError(http_errno error)
+bool HttpConnection::onHttpError(http_errno error)
 {
 	debug_e("HTTP parser error: %s", httpGetErrorName(error).c_str());
+	return false;
 }
 
 bool HttpConnection::onTcpReceive(TcpClient& client, char* data, int size)
@@ -182,9 +183,12 @@ bool HttpConnection::onTcpReceive(TcpClient& client, char* data, int size)
 
 	int parsedBytes = http_parser_execute(&parser, &parserSettings, data, size);
 	if(HTTP_PARSER_ERRNO(&parser) != HPE_OK) {
-		// we ran into trouble - abort the connection
-		onHttpError(HTTP_PARSER_ERRNO(&parser));
-		return false;
+		bool isRecoverable = onHttpError(HTTP_PARSER_ERRNO(&parser));
+		if(!isRecoverable) {
+			// we ran into trouble - abort the connection
+			setTimeOut(1);
+			return false;
+		}
 	}
 
 	if(parser.upgrade) {
