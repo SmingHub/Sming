@@ -9,7 +9,8 @@
  ****/
 #pragma once
 
-#include "HardwareTimer.h"
+#include <driver/hw_timer.h>
+#include <muldiv.h>
 
 /**
  * @brief Microsecond elapse timer to efficiently measure intervals
@@ -38,7 +39,7 @@ public:
 	 */
 	void __forceinline setInterval(uint32_t interval)
 	{
-		this->interval = (interval == 0) ? 0 : usToTimerTicks(interval);
+		this->interval = (interval == 0) ? 0 : muldiv<HW_TIMER2_CLK, 1000000>(interval);
 	}
 
 	/**
@@ -62,7 +63,7 @@ public:
 	 */
 	uint32_t __forceinline elapsed()
 	{
-		return timerTicksToUs(ticks() - startTicks);
+		return muldiv<1000000, HW_TIMER2_CLK>(ticks() - startTicks);
 	}
 
 	/**

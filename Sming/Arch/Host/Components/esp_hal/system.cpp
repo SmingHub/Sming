@@ -2,27 +2,29 @@
 #include <hostlib/hostapi.h>
 #include <hostlib/threads.h>
 #include <sys/time.h>
+#include <Rational.h>
 
 /* System time */
 
-// From pthreads library
-extern "C" int sched_yield(void);
-
-#ifdef __WIN32
-
 static struct {
-	LARGE_INTEGER cps;
+#ifdef __WIN32
+	Ratio64 countsPerNanosecond;
 	LARGE_INTEGER startCount;
-} timeref;
-
+#else
+	uint64_t startTicks;
 #endif
+} timeref;
 
 // Return base time in us
 static uint64_t initTime()
 {
 #ifdef __WIN32
-	QueryPerformanceFrequency(&timeref.cps);
+	LARGE_INTEGER cps;
+	QueryPerformanceFrequency(&cps);
+	timeref.countsPerNanosecond.set(1000000000ULL, cps.QuadPart);
 	QueryPerformanceCounter(&timeref.startCount);
+#else
+	timeref.startTicks = os_get_nanoseconds();
 #endif
 
 	timeval tv;
@@ -32,34 +34,22 @@ static uint64_t initTime()
 
 static uint64_t system_start_time = initTime();
 
-uint32_t usToTimerTicks(uint32_t us)
+uint64_t os_get_nanoseconds()
 {
-	return us;
-}
-
-uint32_t timerTicksToUs(uint32_t ticks)
-{
-	return ticks;
-}
-
-uint32_t os_get_ticks()
-{
-	uint32_t us;
 #ifdef __WIN32
 	LARGE_INTEGER count;
 	QueryPerformanceCounter(&count);
-	us = 1000000ULL * (count.QuadPart - timeref.startCount.QuadPart) / timeref.cps.QuadPart;
+	return timeref.countsPerNanosecond * uint64_t(count.QuadPart - timeref.startCount.QuadPart);
 #else
-	timeval tv;
-	gettimeofday(&tv, nullptr);
-	us = ((1000000ULL * tv.tv_sec) + tv.tv_usec) - system_start_time;
+	timespec ts;
+	clock_gettime(CLOCK_MONOTONIC, &ts);
+	return (1000000000ULL * ts.tv_sec) + ts.tv_nsec - timeref.startTicks;
 #endif
-	return us;
 }
 
 uint32_t system_get_time()
 {
-	return os_get_ticks();
+	return os_get_nanoseconds() / 1000U;
 }
 
 void os_delay_us(uint32_t us)

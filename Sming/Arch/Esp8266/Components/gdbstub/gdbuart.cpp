@@ -16,7 +16,7 @@
 #include "driver/SerialBuffer.h"
 #include "Platform/System.h"
 #include "HardwareSerial.h"
-#include "HardwareTimer.h"
+#include <driver/hw_timer.h>
 #include "gdbsyscall.h"
 
 #define GDB_UART UART0 // Only UART0 supports for debugging as RX/TX required
@@ -110,7 +110,7 @@ static size_t ATTR_GDBEXTERNFN gdb_uart_write_char(char c)
 int ATTR_GDBEXTERNFN gdbReceiveChar()
 {
 #if GDBSTUB_UART_READ_TIMEOUT
-	auto timeout = usToTimerTicks(GDBSTUB_UART_READ_TIMEOUT * 1000U);
+	constexpr uint32_t timeout = round(double(HW_TIMER2_CLK) * GDBSTUB_UART_READ_TIMEOUT / 1000);
 	auto startTicks = NOW();
 #define checkTimeout() (NOW() - startTicks >= timeout)
 #else

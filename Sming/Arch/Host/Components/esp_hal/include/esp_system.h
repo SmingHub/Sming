@@ -45,10 +45,10 @@ struct rst_info* system_get_rst_info(void);
 /* System/include/debug_progmem.h */
 uint32_t system_get_time(void);
 
-/* Implementing NOW() macro, fixed at 1us */
-#define TIMER_CLK_FREQ 1000000UL
-uint32_t os_get_ticks();
-#define NOW() os_get_ticks()
+/* Use nanosecond count as base for hardware and CPU cycle counting */
+uint64_t os_get_nanoseconds(void);
+
+#define APB_CLK_FREQ 80000000U
 
 void os_delay_us(uint32_t us);
 

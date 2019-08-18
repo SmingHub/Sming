@@ -18,7 +18,6 @@ extern "C" {
 
 // ESP SDK config
 #define LWIP_OPEN_SRC
-#define USE_US_TIMER
 
 // Default types
 #define __CORRECT_ISO_CPP_STDLIB_H_PROTO

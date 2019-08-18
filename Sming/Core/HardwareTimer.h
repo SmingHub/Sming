@@ -18,9 +18,8 @@
 #pragma once
 
 #include "Interrupts.h"
-
-#define MAX_HW_TIMER_INTERVAL_US 0x7fffff ///< Maximum timer interval in microseconds
-#define MIN_HW_TIMER_INTERVAL_US 0x32	 ///< Minimum hardware interval in microseconds
+#include <driver/hw_timer.h>
+#include <muldiv.h>
 
 // Hardware Timer operating mode
 enum HardwareTimerMode {
@@ -28,20 +27,26 @@ enum HardwareTimerMode {
 	eHWT_NonMaskable,
 };
 
-/** @brief Convert microseconds into timer ticks.
- *  @note Replaces the previous US_TO_RTC_TIMER_TICKS macro to guarantee we use the correct timer prescale value.
+/**
+ * @brief Hardware timer class
  */
-uint32_t IRAM_ATTR usToTimerTicks(uint32_t us);
-
-/** @brief Convert timer ticks into microseconds
- *  @note accounts for current timer prescale setting
- */
-uint32_t IRAM_ATTR timerTicksToUs(uint32_t ticks);
-
-/// Hardware timer class
 class HardwareTimer
 {
 public:
+	/** @brief Convert microseconds into timer ticks.
+	 */
+	static uint32_t IRAM_ATTR usToTicks(uint32_t us)
+	{
+		return muldiv<frequency, 1000000>(us);
+	}
+
+	/** @brief Convert timer ticks into microseconds
+	 */
+	static uint32_t IRAM_ATTR ticksToUs(uint32_t ticks)
+	{
+		return muldiv<1000000, frequency>(ticks);
+	}
+
 	/** @brief  Hardware timer
 	 *  @param mode
 	 *  @note NMI has highest interrupt priority on system and can therefore occur within
@@ -49,8 +54,17 @@ public:
 	 *  itself be interrupted. This provides the most stable and reliable timing possible,
 	 *  and is therefore the default behaviour.
     */
-	HardwareTimer(HardwareTimerMode mode = eHWT_NonMaskable);
-	~HardwareTimer();
+	HardwareTimer(HardwareTimerMode mode = eHWT_NonMaskable) : mode(mode)
+	{
+		assert(state == eTS_CallbackNotSet);
+	}
+
+	~HardwareTimer()
+	{
+		stop();
+		hw_timer1_detach_interrupt();
+		state = eTS_CallbackNotSet;
+	}
 
 	/** @brief  Initialise hardware timer
      *  @param  microseconds Timer interval in microseconds
@@ -80,7 +94,18 @@ public:
      *  @param  repeating True to restart timer when it triggers, false for one-shot (Default: true)
      *  @retval bool True if timer started
      */
-	bool IRAM_ATTR start(bool repeating = true);
+	bool IRAM_ATTR start(bool repeating = true)
+	{
+		if(interval == 0 || state == eTS_CallbackNotSet) {
+			stop();
+			return false;
+		}
+
+		hw_timer1_enable(clkdiv, TIMER_EDGE_INT, repeating);
+		this->repeating = repeating;
+		hw_timer1_write(interval);
+		return true;
+	}
 
 	/** @brief  Start one-shot timer
 	 *  @retval bool True if timer started
@@ -95,10 +120,9 @@ public:
 	 */
 	void IRAM_ATTR stop()
 	{
-		if(started) {
-			TM1_EDGE_INT_DISABLE();
-			ETS_FRC1_INTR_DISABLE();
-			started = false;
+		if(state == eTS_Armed) {
+			hw_timer1_disable();
+			state = eTS_Disarmed;
 		}
 	}
 
@@ -109,24 +133,23 @@ public:
 	bool IRAM_ATTR restart()
 	{
 		stop();
-		start(repeating);
-		return started;
+		return start(repeating);
 	}
 
 	/** @brief  Check if timer is started
 	 *  @retval bool True if started
 	 */
-	bool isStarted()
+	__forceinline bool isStarted()
 	{
-		return started;
+		return state == eTS_Armed;
 	}
 
 	/** @brief  Get timer interval
      *  @retval uint32_t Timer interval in microseconds
      */
-	uint32_t getIntervalUs()
+	__forceinline uint32_t getIntervalUs()
 	{
-		return interval;
+		return ticksToUs(interval);
 	}
 
 	/** @brief  Get timer interval
@@ -137,10 +160,30 @@ public:
 		return getIntervalUs() / 1000;
 	}
 
+	/** @brief  Set timer interval in timer ticks
+     *  @param  ticks Interval in ticks
+     */
+	bool IRAM_ATTR setInterval(uint32_t ticks)
+	{
+		constexpr uint32_t minTicks = MIN_HW_TIMER1_INTERVAL_US * frequency / 1000000;
+		if(ticks < MAX_HW_TIMER1_INTERVAL && ticks > minTicks) {
+			interval = ticks;
+			if(state == eTS_Armed) {
+				return restart();
+			}
+		} else {
+			stop();
+		}
+		return false;
+	}
+
 	/** @brief  Set timer interval
      *  @param  microseconds Interval time in microseconds (Default: 1ms)
      */
-	bool IRAM_ATTR setIntervalUs(uint32_t microseconds);
+	__forceinline bool IRAM_ATTR setIntervalUs(uint32_t microseconds)
+	{
+		return setInterval(usToTicks(microseconds));
+	}
 
 	/** @brief  Set timer interval
      *  @param  milliseconds Interval time in milliseconds
@@ -155,28 +198,34 @@ public:
      */
 	void IRAM_ATTR setCallback(InterruptCallback callback)
 	{
-		this->callback = callback;
-
 		if(callback == nullptr) {
 			stop();
-		}
-	}
-
-	/** @brief  Call timer callback
-     *  @note   Calls the timer callback function
-     */
-	__forceinline void IRAM_ATTR call()
-	{
-		if(callback != nullptr) {
-			callback();
+			hw_timer1_detach_interrupt();
+			state = eTS_CallbackNotSet;
+		} else {
+			hw_timer1_attach_interrupt(mode == eHWT_NonMaskable ? TIMER_NMI_SOURCE : TIMER_FRC1_SOURCE,
+									   reinterpret_cast<hw_timer_callback_t>(callback), nullptr);
+			state = eTS_Disarmed;
 		}
 	}
 
 private:
-	uint32_t interval = 0;
-	InterruptCallback callback = nullptr;
+	HardwareTimerMode mode = eHWT_NonMaskable;
+
+	/// Fixed prescale value
+	static constexpr unsigned prescale = 16;
+	static constexpr hw_timer_clkdiv_t clkdiv = TIMER_CLKDIV_16;
+	static constexpr uint32_t frequency = HW_TIMER_BASE_CLK / prescale;
+
+	uint32_t interval = 0; ///< Actual timer tick interval
 	bool repeating = false;
-	bool started = false;
+
+	enum State {
+		eTS_CallbackNotSet,
+		eTS_Disarmed,
+		eTS_Armed,
+	};
+	static uint8_t state;
 };
 
 /**

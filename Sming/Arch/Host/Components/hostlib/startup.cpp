@@ -26,6 +26,7 @@
 #include "options.h"
 #include <spi_flash/flashmem.h>
 #include <driver/uart_server.h>
+#include <driver/hw_timer.h>
 #include <BitManipulations.h>
 #include <esp_timer_legacy.h>
 #include <esp_tasks.h>
@@ -209,6 +210,8 @@ int main(int argc, char* argv[])
 		hostmsg("Initialise-only requested");
 	} else {
 		CThread::startup();
+
+		hw_timer_init();
 
 		host_init_tasks();
 
