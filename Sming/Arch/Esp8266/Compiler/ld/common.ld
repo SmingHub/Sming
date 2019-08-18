@@ -2,6 +2,8 @@
     common.ld
 */
 
+INCLUDE "peripherals.ld"
+
 PHDRS
 {
   dport0_0_phdr PT_LOAD;

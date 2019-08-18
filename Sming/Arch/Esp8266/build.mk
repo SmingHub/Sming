@@ -7,6 +7,11 @@
 CFLAGS				+= -DARCH_ESP8266
 CXXFLAGS			+= -fno-rtti -fno-exceptions -fno-threadsafe-statics
 
+# Required to access peripheral registers using structs
+# e.g. `uint32_t value: 8` sitting at a byte or word boundary will be 'optimised' to
+# an 8-bit fetch/store instruction which will not work; it must be a full 32-bit access.
+CXXFLAGS += -fstrict-volatile-bitfields
+
 ## ESP_HOME sets the path where ESP tools and SDK are located.
 DEBUG_VARS			+= ESP_HOME
 

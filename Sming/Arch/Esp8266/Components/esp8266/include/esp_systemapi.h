@@ -38,6 +38,7 @@ typedef enum {
 
 #include <sming_attr.h>
 #include "esp_attr.h"
+#include <espinc/pin_mux_register.h>
 #include <ets_sys.h>
 #include <osapi.h>
 #include <gpio.h>
@@ -57,6 +58,23 @@ typedef enum {
 
 #define REG_SET_BIT(_r, _b)  (*(volatile uint32_t*)(_r) |= (_b))
 #define REG_CLR_BIT(_r, _b)  (*(volatile uint32_t*)(_r) &= ~(_b))
+
+// Missing from earlier SDKs
+#ifndef ETS_SLC_INUM
+
+#define ETS_SLC_INUM        1
+
+#define ETS_SLC_INTR_ATTACH(func, arg) \
+    ets_isr_attach(ETS_SLC_INUM, (func), (void*)(arg))
+
+#define ETS_SLC_INTR_ENABLE() \
+    ETS_INTR_ENABLE(ETS_SLC_INUM)
+
+#define ETS_SLC_INTR_DISABLE() \
+    ETS_INTR_DISABLE(ETS_SLC_INUM)
+
+#endif // ETS_SLC_INUM
+
 
 #undef assert
 #define assert(condition) \

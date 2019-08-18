@@ -7,6 +7,10 @@ Provides low-level peripheral drivers.
 * PWM: Common header for PWM support
 * hw_timer: Driver for hardware timers
 
+.. toctree::
+
+   i2s
+
 hw_timer
 --------
 
