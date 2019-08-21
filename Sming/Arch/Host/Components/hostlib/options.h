@@ -47,7 +47,8 @@
 	   nullptr)                                                                                                        \
 	XX(flashsize, required_argument, "Change default flash size if file doesn't exist", "SIZE",                        \
 	   "Size of flash in bytes (e.g. 512K, 524288, 0x80000)", nullptr)                                                 \
-	XX(initonly, no_argument, "Initialise only, do not start Sming", nullptr, nullptr, nullptr)
+	XX(initonly, no_argument, "Initialise only, do not start Sming", nullptr, nullptr, nullptr)                        \
+	XX(nonet, no_argument, "Skip network initialisation", nullptr, nullptr, nullptr)
 
 enum option_tag_t {
 #define XX(tag, has_arg, desc, argname, arghelp, examples) opt_##tag,
