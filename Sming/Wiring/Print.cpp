@@ -57,27 +57,19 @@ size_t Print::print(unsigned long n, int base)
 }
 
 // Base method (signed)
-size_t Print::print(long n, int base)
+size_t Print::print(long num, int base)
 {
   if (base == 0)
   {
-    return write(n);
+    return write(num);
   }
-  else if (base == 10)
+
+  if (base == 10 && num < 0)
   {
-    // why must this only be in base 10?
-    if (n < 0)
-    {
-      int t = print('-');
-      n = -n;
-      return printNumber(n, 10) + t;
-    }
-    return printNumber(n, 10);
+    return print('-') + printNumber((unsigned long)-num, base);
   }
-  else
-  {
-    return printNumber(n, base);
-  }
+
+  return printNumber((unsigned long)num, base);
 }
 
 
@@ -228,46 +220,11 @@ size_t Print::printf(const char *fmt, ...)
 
 // private methods
 
-size_t Print::printNumber(unsigned long n, uint8_t base)
+size_t Print::printNumber(unsigned long num, uint8_t base)
 {
-  /* BH: new version to be implemented
-    uint8_t buf[sizeof(char) * sizeof(int32_t)];
-    uint32_t i = 0;
-
-    if (n == 0)
-    {
-      write('0');
-      return;
-    }
-
-    while (n > 0)
-    {
-      buf[i++] = n % base;
-      n /= base;
-    }
-
-    for (; i > 0; i--)
-      write((buf[i - 1] < 10 ?
-            '0' + buf[i - 1] :
-            'A' + buf[i - 1] - 10));
-  */
-
-  char buf[8 * sizeof(long) + 1]; // Assumes 8-bit chars plus zero byte.
-  char *str = &buf[sizeof(buf) - 1];
-  
-  *str = '\0';
-  
-  // prevent crash if called with base == 1
-  if (base < 2) base = 10;
-  
-  do {
-    unsigned long m = n;
-    n /= base;
-    char c = m - base * n;
-    *--str = c < 10 ? c + '0' : c + 'A' - 10;
-  } while(n);
-  
-  return write(str);
+  char buf[8 * sizeof(num) + 1]; // Assumes 8-bit chars plus zero byte.
+  ultoa(num, buf, base);
+  return write(buf);
 }
 
 size_t Print::printFloat(double number, uint8_t digits)
@@ -288,8 +245,9 @@ size_t Print::printFloat(double number, uint8_t digits)
   
   // Round correctly so that print(1.999, 2) prints as "2.00"
   double rounding = 0.5;
-  for (uint8_t i=0; i<digits; ++i)
-  rounding /= 10.0;
+  for (uint8_t i=0; i<digits; ++i) {
+	rounding /= 10.0;
+  }
   
   number += rounding;
   
