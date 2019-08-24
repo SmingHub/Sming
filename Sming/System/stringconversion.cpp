@@ -14,19 +14,6 @@
 #include "stringconversion.h"
 #include "stringutil.h"
 
-//Since C does not support default func parameters, keep this function as used by framework
-//and create extended _w funct to handle width
-char* ltoa(long val, char* buffer, int base)
-{
-	return ltoa_w(val, buffer, base, 0);
-}
-
-char* itoa (int, char*, int) __attribute__((alias("ltoa")));
-
-char* ltoa_w(long val, char* buffer, int base, int width)
-{
-	return ltoa_wp(val, buffer, base, width, ' ');
-}
 
 char* ltoa_wp(long val, char* buffer, int base, int width, char pad)
 {
@@ -56,17 +43,6 @@ char* ltoa_wp(long val, char* buffer, int base, int width, char pad)
 	return buffer;
 }
 
-//Since C does not support default func parameters, keep this function as used by framework
-//and create extended _w funct to handle width
-char* ultoa(unsigned long val, char* buffer, unsigned int base)
-{
-	return ultoa_w(val, buffer, base, 0);
-}
-
-char* ultoa_w(unsigned long val, char* buffer, unsigned int base, int width)
-{
-	return ultoa_wp(val, buffer, base, width, ' ');
-}
 char* ultoa_wp(unsigned long val, char* buffer, unsigned int base, int width, char pad)
 {
 	int i = 38, p = 0;
@@ -90,10 +66,6 @@ char* ultoa_wp(unsigned long val, char* buffer, unsigned int base, int width, ch
 	return buffer;
 }
 
-char *dtostrf(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char *outputBuffer)
-{
-	return dtostrf_p(floatVar, minStringWidthIncDecimalPoint, numDigitsAfterDecimal, outputBuffer, ' ');
-}
 // Author zitron: http://forum.arduino.cc/index.php?topic=37391#msg276209
 // modified by ADiea: remove dependencies strcat, floor, round; reorganize+speedup code
 char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char *outputBuffer, char pad)
