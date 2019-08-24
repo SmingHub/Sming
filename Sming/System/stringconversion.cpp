@@ -65,7 +65,7 @@ char* ultoa(unsigned long val, char* buffer, unsigned int base)
 
 char* ultoa_w(unsigned long val, char* buffer, unsigned int base, int width)
 {
-	return ultoa_wp(val, buffer, base, 0, ' ');
+	return ultoa_wp(val, buffer, base, width, ' ');
 }
 char* ultoa_wp(unsigned long val, char* buffer, unsigned int base, int width, char pad)
 {
