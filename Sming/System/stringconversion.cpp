@@ -60,6 +60,51 @@ char* ultoa_wp(unsigned long val, char* buffer, unsigned int base, int width, ch
 	return buffer;
 }
 
+char* lltoa_wp(long long val, char* buffer, int base, int width, char pad)
+{
+	if(val < 0) {
+		*buffer++ = '-';
+		val = -val;
+	}
+	return ulltoa_wp((unsigned long long)val, buffer, base, width, pad);
+}
+
+char* ulltoa_wp(unsigned long long val, char* buffer, unsigned int base, int width, char pad)
+{
+	char buf[80];
+	constexpr int nulpos = sizeof(buf) - 1;
+	buf[nulpos] = '\0';
+
+	// prevent crash if called with base == 1
+	if(base < 2) {
+		base = 10;
+	}
+
+	int i = nulpos - 1;
+	int p = 0;
+	for(; val != 0 && i != 0; --i, p++, val /= base) {
+		buf[i] = hexchar(val % base);
+	}
+	if (p == 0) {
+		buf[i--] = '0'; // case for zero
+	}
+
+	if(width != 0)
+	{
+		width -= (nulpos - i - 1);
+		if(width > 0)
+		{
+			memset(buffer, pad, width);
+		}
+		else {
+			width = 0;
+		}
+	}
+	memcpy(buffer + width, &buf[i+1], nulpos - i);
+
+	return buffer;
+}
+
 // Author zitron: http://forum.arduino.cc/index.php?topic=37391#msg276209
 // modified by ADiea: remove dependencies strcat, floor, round; reorganize+speedup code
 char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char *outputBuffer, char pad)

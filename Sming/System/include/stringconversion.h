@@ -51,6 +51,31 @@ static inline char* ultoa(unsigned long val, char* buffer, unsigned int base)
 	return ultoa_wp(val, buffer, base, 0, ' ');
 }
 
+extern char* lltoa_wp(long long val, char* buffer, int base, int width, char pad);
+
+static inline char* lltoa_w(long long val, char* buffer, int base, int width)
+{
+	return lltoa_wp(val, buffer, base, width, ' ');
+}
+
+static inline char* lltoa(long long val, char* buffer, int base)
+{
+	return lltoa_wp(val, buffer, base, 0, ' ');
+}
+
+
+extern char* ulltoa_wp(unsigned long long val, char* buffer, unsigned int base, int width, char pad);
+
+static inline char* ulltoa_w(unsigned long long val, char* buffer, unsigned int base, int width)
+{
+	return ulltoa_wp(val, buffer, base, width, ' ');
+}
+
+static inline char* ulltoa(unsigned long long val, char* buffer, unsigned int base)
+{
+	return ulltoa_wp(val, buffer, base, 0, ' ');
+}
+
 
 extern char* itoa(int, char*, int);
 
