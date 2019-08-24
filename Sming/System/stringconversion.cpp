@@ -26,23 +26,36 @@ char* ltoa_wp(long val, char* buffer, int base, int width, char pad)
 
 char* ultoa_wp(unsigned long val, char* buffer, unsigned int base, int width, char pad)
 {
-	int i = 38, p = 0;
-	char buf[40] = {0};
+	char buf[40];
+	constexpr int nulpos = sizeof(buf) - 1;
+	buf[nulpos] = '\0';
 
-	for(; val && i ; --i, p++, val /= base)
+	// prevent crash if called with base == 1
+	if(base < 2 || base > 16) {
+		base = 10;
+	}
+
+	int i = nulpos - 1;
+	int p = 0;
+	for(; val != 0 && i != 0; --i, p++, val /= base) {
 		buf[i] = hexchar(val % base);
-	if (p == 0) buf[i--] = '0'; // case for zero
+	}
+	if (p == 0) {
+		buf[i--] = '0'; // case for zero
+	}
 
 	if(width != 0)
 	{
-		width -= strlen(&buf[i+1]);
+		width -= (nulpos - i - 1);
 		if(width > 0)
 		{
 			memset(buffer, pad, width);
 		}
-		else width = 0;
+		else {
+			width = 0;
+		}
 	}
-	strcpy(buffer + width, &buf[i+1]);
+	memcpy(buffer + width, &buf[i+1], nulpos - i);
 
 	return buffer;
 }
