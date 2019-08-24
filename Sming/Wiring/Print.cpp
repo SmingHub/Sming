@@ -55,7 +55,6 @@ size_t Print::print(long num, int base)
 // Overload (signed long long)
 size_t Print::print(const long long& num, int base)
 {
-  size_t count = 0;
   if (base == 10 && num < 0)
   {
     return print('-') + printNumber((unsigned long long)-num, base);
