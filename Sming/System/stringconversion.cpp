@@ -17,30 +17,11 @@
 
 char* ltoa_wp(long val, char* buffer, int base, int width, char pad)
 {
-	int i = 38, p = 0;
-	char buf[40] = {0};
-	bool ngt = val < 0;
-	if (ngt) val = -val;
-
-	for(; val && i ; --i, p++, val /= base)
-		buf[i] = hexchar(val % base);
-	if (p == 0) buf[i--] = '0'; // case for zero
-
-	if (ngt)
-		buf[i--] = '-';
-
-	if(width != 0)
-	{
-		width -= strlen(&buf[i+1]);
-		if(width > 0)
-		{
-			memset(buffer, pad, width);
-		}
-		else width = 0;
+	if(val < 0) {
+		*buffer++ = '-';
+		val = -val;
 	}
-
-	strcpy(buffer + width, &buf[i+1]);
-	return buffer;
+	return ultoa_wp((unsigned long)val, buffer, base, width, pad);
 }
 
 char* ultoa_wp(unsigned long val, char* buffer, unsigned int base, int width, char pad)
