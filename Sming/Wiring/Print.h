@@ -117,12 +117,30 @@ class Print
       }
     }
 
+
+    /** @brief  Prints a number to output stream
+	  * @param  "unsigned long long" Number to print
+	  * @param  base The base for output (Default: Decimal (base 10))
+	  * @retval size_t Quantity of characters written to stream
+	  */
+    size_t print(const unsigned long long& num, int base = DEC)
+    {
+    	return printNumber(num, base);
+    }
+
     /** @brief  Prints a number to output stream
 	  * @param  "long" Number to print
 	  * @param  base The base for output (Default: Decimal (base 10))
 	  * @retval size_t Quantity of characters written to stream
 	  */
     size_t print(long, int base = DEC);
+
+    /** @brief  Prints a number to output stream
+	  * @param  "long long" Number to print
+	  * @param  base The base for output (Default: Decimal (base 10))
+	  * @retval size_t Quantity of characters written to stream
+	  */
+    size_t print(const long long&, int base = DEC);
 
     /** @brief  Prints a number to output stream
 	  * @param  "unsigned int" Number to print
@@ -239,6 +257,16 @@ class Print
     }
 
     /** @brief  Prints a number to output stream, appending newline
+	  * @param  "unsigned long long" Number to print
+	  * @param  base The base for output (Default: Decimal (base 10))
+	  * @retval size_t Quantity of characters written to stream
+	  */
+    size_t println(const unsigned long long& num, int base = DEC)
+    {
+      return print(num, base) + println();
+    }
+
+    /** @brief  Prints a number to output stream, appending newline
 	  * @param  "int" Number to print
 	  * @param  base The base for output (Default: Decimal (base 10))
 	  * @retval size_t Quantity of characters written to stream
@@ -254,6 +282,16 @@ class Print
 	  * @retval size_t Quantity of characters written to stream
 	  */
 	size_t println(long num, int base = DEC)
+	{
+	  return print(num, base) + println();
+	}
+
+    /** @brief  Prints a number to output stream, appending newline
+	  * @param  "long long" Number to print
+	  * @param  base The base for output (Default: Decimal (base 10))
+	  * @retval size_t Quantity of characters written to stream
+	  */
+	size_t println(const long long& num, int base = DEC)
 	{
 	  return print(num, base) + println();
 	}
@@ -297,6 +335,7 @@ class Print
   private:
     int write_error = 0;
     size_t printNumber(unsigned long num, uint8_t base);
+    size_t printNumber(const unsigned long long& num, uint8_t base);
     size_t printFloat(double num, uint8_t digits);
   protected:
     void setWriteError(int err = 1) { write_error = err; }

@@ -52,6 +52,18 @@ size_t Print::print(long num, int base)
   return printNumber((unsigned long)num, base);
 }
 
+// Overload (signed long long)
+size_t Print::print(const long long& num, int base)
+{
+  size_t count = 0;
+  if (base == 10 && num < 0)
+  {
+    return print('-') + printNumber((unsigned long long)-num, base);
+  }
+
+  return printNumber((unsigned long long)num, base);
+}
+
 size_t Print::printf(const char *fmt, ...)
 {
 	size_t sz = 0;
@@ -86,6 +98,13 @@ size_t Print::printNumber(unsigned long num, uint8_t base)
 {
   char buf[8 * sizeof(num) + 1]; // Assumes 8-bit chars plus zero byte.
   ultoa(num, buf, base);
+  return write(buf);
+}
+
+size_t Print::printNumber(const unsigned long long& num, uint8_t base)
+{
+  char buf[8 * sizeof(num) + 1]; // Assumes 8-bit chars plus zero byte.
+  ulltoa(num, buf, base);
   return write(buf);
 }
 
