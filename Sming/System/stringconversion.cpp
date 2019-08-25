@@ -14,86 +14,97 @@
 #include "stringconversion.h"
 #include "stringutil.h"
 
-//Since C does not support default func parameters, keep this function as used by framework
-//and create extended _w funct to handle width
-char* ltoa(long val, char* buffer, int base)
-{
-	return ltoa_w(val, buffer, base, 0);
-}
-
-char* itoa (int, char*, int) __attribute__((alias("ltoa")));
-
-char* ltoa_w(long val, char* buffer, int base, int width)
-{
-	return ltoa_wp(val, buffer, base, width, ' ');
-}
 
 char* ltoa_wp(long val, char* buffer, int base, int width, char pad)
 {
-	int i = 38, p = 0;
-	char buf[40] = {0};
-	bool ngt = val < 0;
-	if (ngt) val = -val;
-
-	for(; val && i ; --i, p++, val /= base)
-		buf[i] = hexchar(val % base);
-	if (p == 0) buf[i--] = '0'; // case for zero
-
-	if (ngt)
-		buf[i--] = '-';
-
-	if(width != 0)
-	{
-		width -= strlen(&buf[i+1]);
-		if(width > 0)
-		{
-			memset(buffer, pad, width);
-		}
-		else width = 0;
+	if(val < 0) {
+		*buffer++ = '-';
+		val = -val;
 	}
-
-	strcpy(buffer + width, &buf[i+1]);
-	return buffer;
+	return ultoa_wp((unsigned long)val, buffer, base, width, pad);
 }
 
-//Since C does not support default func parameters, keep this function as used by framework
-//and create extended _w funct to handle width
-char* ultoa(unsigned long val, char* buffer, unsigned int base)
-{
-	return ultoa_w(val, buffer, base, 0);
-}
-
-char* ultoa_w(unsigned long val, char* buffer, unsigned int base, int width)
-{
-	return ultoa_wp(val, buffer, base, 0, ' ');
-}
 char* ultoa_wp(unsigned long val, char* buffer, unsigned int base, int width, char pad)
 {
-	int i = 38, p = 0;
-	char buf[40] = {0};
+	char buf[40];
+	constexpr int nulpos = sizeof(buf) - 1;
+	buf[nulpos] = '\0';
 
-	for(; val && i ; --i, p++, val /= base)
+	// prevent crash if called with base == 1
+	if(base < 2 || base > 16) {
+		base = 10;
+	}
+
+	int i = nulpos - 1;
+	int p = 0;
+	for(; val != 0 && i != 0; --i, p++, val /= base) {
 		buf[i] = hexchar(val % base);
-	if (p == 0) buf[i--] = '0'; // case for zero
+	}
+	if (p == 0) {
+		buf[i--] = '0'; // case for zero
+	}
 
 	if(width != 0)
 	{
-		width -= strlen(&buf[i+1]);
+		width -= (nulpos - i - 1);
 		if(width > 0)
 		{
 			memset(buffer, pad, width);
 		}
-		else width = 0;
+		else {
+			width = 0;
+		}
 	}
-	strcpy(buffer + width, &buf[i+1]);
+	memcpy(buffer + width, &buf[i+1], nulpos - i);
 
 	return buffer;
 }
 
-char *dtostrf(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char *outputBuffer)
+char* lltoa_wp(long long val, char* buffer, int base, int width, char pad)
 {
-	return dtostrf_p(floatVar, minStringWidthIncDecimalPoint, numDigitsAfterDecimal, outputBuffer, ' ');
+	if(val < 0) {
+		*buffer++ = '-';
+		val = -val;
+	}
+	return ulltoa_wp((unsigned long long)val, buffer, base, width, pad);
 }
+
+char* ulltoa_wp(unsigned long long val, char* buffer, unsigned int base, int width, char pad)
+{
+	char buf[80];
+	constexpr int nulpos = sizeof(buf) - 1;
+	buf[nulpos] = '\0';
+
+	// prevent crash if called with base == 1
+	if(base < 2) {
+		base = 10;
+	}
+
+	int i = nulpos - 1;
+	int p = 0;
+	for(; val != 0 && i != 0; --i, p++, val /= base) {
+		buf[i] = hexchar(val % base);
+	}
+	if (p == 0) {
+		buf[i--] = '0'; // case for zero
+	}
+
+	if(width != 0)
+	{
+		width -= (nulpos - i - 1);
+		if(width > 0)
+		{
+			memset(buffer, pad, width);
+		}
+		else {
+			width = 0;
+		}
+	}
+	memcpy(buffer + width, &buf[i+1], nulpos - i);
+
+	return buffer;
+}
+
 // Author zitron: http://forum.arduino.cc/index.php?topic=37391#msg276209
 // modified by ADiea: remove dependencies strcat, floor, round; reorganize+speedup code
 char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigitsAfterDecimal, char *outputBuffer, char pad)

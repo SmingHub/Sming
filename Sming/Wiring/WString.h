@@ -134,7 +134,9 @@ class String
     explicit String(int, unsigned char base = 10);
     explicit String(unsigned int, unsigned char base = 10);
     explicit String(long, unsigned char base = 10);
+    explicit String(long long, unsigned char base = 10);
     explicit String(unsigned long, unsigned char base = 10);
+    explicit String(unsigned long long, unsigned char base = 10);
     explicit String(float, unsigned char decimalPlaces=2);
     explicit String(double, unsigned char decimalPlaces=2);
     ~String(void);
@@ -183,7 +185,9 @@ class String
     bool concat(int num);
     bool concat(unsigned int num);
     bool concat(long num);
+    bool concat(long long num);
     bool concat(unsigned long num);
+    bool concat(unsigned long long num);
     bool concat(float num);
     bool concat(double num);
   
@@ -224,7 +228,17 @@ class String
       concat(num);
       return (*this);
     }
+    String & operator += (long long num)
+    {
+      concat(num);
+      return (*this);
+    }
     String & operator += (unsigned long num)
+    {
+      concat(num);
+      return (*this);
+    }
+    String & operator += (unsigned long long num)
     {
       concat(num);
       return (*this);
@@ -248,6 +262,7 @@ class String
     friend StringSumHelper & operator + (const StringSumHelper &lhs, unsigned int num);
     friend StringSumHelper & operator + (const StringSumHelper &lhs, long num);
     friend StringSumHelper & operator + (const StringSumHelper &lhs, unsigned long num);
+    friend StringSumHelper & operator + (const StringSumHelper &lhs, unsigned long long num);
     friend StringSumHelper & operator + (const StringSumHelper &lhs, float num);
     friend StringSumHelper & operator + (const StringSumHelper &lhs, double num);
 
@@ -375,7 +390,9 @@ class StringSumHelper : public String
     StringSumHelper(int num) : String(num) {}
     StringSumHelper(unsigned int num) : String(num) {}
     StringSumHelper(long num) : String(num) {}
+    StringSumHelper(long long num) : String(num) {}
     StringSumHelper(unsigned long num) : String(num) {}
+    StringSumHelper(unsigned long long num) : String(num) {}
     StringSumHelper(float num) : String(num) {}
     StringSumHelper(double num) : String(num) {}
 };
