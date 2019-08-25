@@ -108,6 +108,10 @@ typedef Delegate<bool(WpsStatus status)> WPSConfigDelegate;
 class StationClass
 {
 public:
+	virtual ~StationClass()
+	{
+	}
+
 	/**	@brief	Enable / disable WiFi station
 	 *	@note	Disabling WiFi station will also disable and clear the handler set with <i>waitConnection</i>.
 	 *	@param	enabled True to enable station. False to disable.
