@@ -82,11 +82,11 @@ void CommandHandler::procesHelpCommand(String commandLine, CommandOutput* comman
 	debugf("HelpCommand entered");
 	commandOutput->println(_F("Commands available are :"));
 	for(unsigned idx = 0; idx < registeredCommands->count(); idx++) {
-		commandOutput->print(registeredCommands->valueAt(idx).commandName.c_str());
+		commandOutput->print(registeredCommands->valueAt(idx).commandName);
 		commandOutput->print(" | ");
-		commandOutput->print(registeredCommands->valueAt(idx).commandGroup.c_str());
+		commandOutput->print(registeredCommands->valueAt(idx).commandGroup);
 		commandOutput->print(" | ");
-		commandOutput->print(registeredCommands->valueAt(idx).commandHelp.c_str());
+		commandOutput->print(registeredCommands->valueAt(idx).commandHelp);
 		commandOutput->print("\r\n");
 	}
 }
