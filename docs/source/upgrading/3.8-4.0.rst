@@ -145,6 +145,26 @@ New class to handle MAC addresses: :source:`Sming/Wiring/MacAddress.h`.
 
 - Callback handler parameter lists have changed
 
+Hardware Timers
+===============
+
+The following functions have been removed from `HardwareTimer.h`:
+
+- usToTimerTicks
+- timerTicksToUs
+
+Their presence is confusing. The ESP8266 has two hardware timers:
+
+Timer1:
+   A 23-bit count-down timer accessed via the `HardwareTimer` class.
+   Use the `usToTicks` and `ticksToUs` methods.
+   
+Timer2
+   A 32-bit counter accessed bia the `ElapseTimer` class.
+   The current tick value is obtained using the `NOW()` macro.
+   The clock frequency is defined by HW_TIMER2_CLK (in `driver/hw_timer.h`) and depends on the
+   `USE_US_TIMER` compiler flag.
+
 Deprecated / Changed types
 ==========================
 
