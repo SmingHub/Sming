@@ -109,27 +109,22 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 			contentType = contentType.substring(0, endPos);
 		}
 
-		String majorType = contentType.substring(0, contentType.indexOf('/'));
-		majorType += "/*";
-
 		// Content-Type for exact type: application/json
-		// Wildcard type for application: application/*
-		// Wildcard type for the rest*
-
-		Vector<String> types;
-		types.add(contentType);
-		types.add(majorType);
-		types.add(String('*'));
-
-		for(unsigned i = 0; i < types.count(); i++) {
-			const String& type = types[i];
-			if(bodyParsers->contains(type)) {
-				bodyParser = (*bodyParsers)[type];
-				break;
+		int i = bodyParsers->indexOf(contentType);
+		if(i < 0) {
+			// Wildcard type for application: application/*
+			contentType.setLength(contentType.indexOf('/') + 1);
+			contentType += '*';
+			i = bodyParsers->indexOf(contentType);
+			if(i < 0) {
+				// Wildcard type for the rest*
+				i = bodyParsers->indexOf(String('*'));
 			}
 		}
 
-		if(bodyParser) {
+		if(i >= 0) {
+			bodyParser = bodyParsers->valueAt(i);
+			assert(bodyParser != nullptr);
 			bodyParser(request, nullptr, PARSE_DATASTART);
 		}
 	}
