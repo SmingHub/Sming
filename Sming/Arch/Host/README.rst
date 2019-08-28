@@ -152,6 +152,10 @@ See :source:`Sming/Arch/Host/Core/DigitalHooks.h` for further details.
 Network
 ~~~~~~~
 
+.. note::
+
+   Network support is enabled by default. If you don't need it, use the ``--nonet`` option.
+
 Linux
 ^^^^^
 

@@ -110,6 +110,7 @@ int main(int argc, char* argv[])
 		int pause;
 		int exitpause;
 		bool initonly;
+		bool enable_network;
 		UartServerConfig uart;
 		FlashmemConfig flash;
 		struct lwip_param lwip;
@@ -117,6 +118,7 @@ int main(int argc, char* argv[])
 		.pause = -1,
 		.exitpause = -1,
 		.initonly = false,
+		.enable_network = true,
 		.uart =
 			{
 				.enableMask = 0,
@@ -187,6 +189,10 @@ int main(int argc, char* argv[])
 			config.initonly = true;
 			break;
 
+		case opt_nonet:
+			config.enable_network = false;
+			break;
+
 		default:;
 		}
 	}
@@ -209,9 +215,14 @@ int main(int argc, char* argv[])
 		sockets_initialise();
 		CUartServer::startup(config.uart);
 
-		bool lwip_initialised = host_lwip_init(&config.lwip);
-		if(lwip_initialised) {
-			host_wifi_lwip_init_complete();
+		bool lwip_initialised = false;
+		if(config.enable_network) {
+			lwip_initialised = host_lwip_init(&config.lwip);
+			if(lwip_initialised) {
+				host_wifi_lwip_init_complete();
+			}
+		} else {
+			hostmsg("Network initialisation skipped as requested");
 		}
 
 		hostmsg("If required, you may start terminal application(s) now");
