@@ -107,7 +107,7 @@ SECTIONS
     *libm.a:(.literal .text .literal.* .text.*)
 
     *(.rodata._ZTV*) /* C++ vtables */
-    *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom.text .irom.debug.*)
+    *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom0.text.* .irom.text .irom.debug.*)
 
     /* Generated libraries */
     *liblwip2.a:(.literal .text .literal.* .text.*)
@@ -160,7 +160,7 @@ SECTIONS
     *(.init.literal)
     *(.init)
     *(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.*)
-	  *(.iram.literal .iram.text.literal .iram.text)
+	  *(.iram.literal .iram.text.literal .iram.text .iram.text.*)
     *(.fini.literal)
     *(.fini)
     *(.gnu.version)
