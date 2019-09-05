@@ -103,11 +103,6 @@ void SystemClass::restart(unsigned deferMillis)
 	}
 }
 
-void SystemClass::setCpuFrequency(CpuFrequency freq)
-{
-	system_update_cpu_freq(freq);
-}
-
 bool SystemClass::deepSleep(uint32_t timeMilliseconds, DeepSleepOptions options)
 {
 	if(!system_deep_sleep_set_option(options)) {

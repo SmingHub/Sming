@@ -119,7 +119,10 @@ public:
 	/** @brief  Set the CPU frequency
      *  @param  freq Frequency to set CPU
      */
-	void setCpuFrequency(CpuFrequency freq);
+	void setCpuFrequency(CpuFrequency freq)
+	{
+		system_update_cpu_freq(freq);
+	}
 
 	/** @brief  Get the CPU frequency
      *  @retval CpuFrequency The frequency of the CPU
