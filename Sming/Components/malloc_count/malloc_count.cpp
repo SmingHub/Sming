@@ -299,3 +299,27 @@ static __attribute__((destructor)) void finish()
 }
 
 }; // namespace MallocCount
+
+#ifdef ARCH_HOST
+
+void* operator new(size_t size)
+{
+	return MallocCount::WRAP(F_MALLOC)(size);
+}
+
+void* operator new[](size_t size)
+{
+	return MallocCount::WRAP(F_MALLOC)(size);
+}
+
+void operator delete(void* ptr)
+{
+	MallocCount::WRAP(F_FREE)(ptr);
+}
+
+void operator delete[](void* ptr)
+{
+	MallocCount::WRAP(F_FREE)(ptr);
+}
+
+#endif

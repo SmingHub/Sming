@@ -33,6 +33,10 @@
 class AccessPointClass
 {
 public:
+	virtual ~AccessPointClass()
+	{
+	}
+
 	/** @brief  Enable or disable WiFi AP
      *  @param  enabled True to enable AP. False to disable.
      *  @param	save True to save operational mode to flash, False to set current operational mode only

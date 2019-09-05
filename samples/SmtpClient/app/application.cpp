@@ -34,7 +34,7 @@ int onMailSent(SmtpClient& client, int code, char* status)
 	debugf("Mail sent. Status: %s", status);
 
 	// And if there are no more pending emails then you can disconnect from the server
-	if(!client.countPending()) {
+	if(client.countPending() == 0) {
 		debugf("No more mails to send. Quitting...");
 		client.quit();
 	}

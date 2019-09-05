@@ -25,9 +25,9 @@
 ## Additional libraries to be linked into the project
 # EXTRA_LIBS :=
 
-## Update any additional compiler flags
-# CFLAGS +=
-# CXXFLAGS +=
+## Provide any additional compiler flags
+# COMPONENT_CFLAGS :=
+# COMPONENT_CXXFLAGS :=
 
 ## Configure flash parameters (for ESP12-E and other new boards):
 # SPI_MODE := dio

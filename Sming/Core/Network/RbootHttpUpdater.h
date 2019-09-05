@@ -105,5 +105,5 @@ private:
 	}
 };
 
-/** @deprecated Use `RbootOutputStream` */
+/** @deprecated Use `RbootHttpUpdater` */
 typedef RbootHttpUpdater rBootHttpUpdate SMING_DEPRECATED;

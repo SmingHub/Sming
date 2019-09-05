@@ -37,10 +37,10 @@ nputs_callback_t m_setPuts(nputs_callback_t callback);
 extern "C" {
 #endif
 
-int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args);
-int m_snprintf(char* buf, int length, const char *fmt, ...);
+int m_vsnprintf(char* buf, size_t maxLen, const char* fmt, va_list args);
+int m_snprintf(char* buf, int length, const char* fmt, ...);
 int m_printf(char const*, ...);
-int m_vprintf ( const char * format, va_list arg );
+int m_vprintf(const char* format, va_list arg);
 
 /** @brief output a single character
  *  @param c
@@ -62,6 +62,19 @@ static inline size_t m_puts(const char* str)
 }
 
 #ifdef __cplusplus
+}
+
+extern "C++" {
+
+template <typename... Args> int snprintf(char* buf, int length, const char* fmt, Args... args)
+{
+	return m_snprintf(buf, length, fmt, args...);
+}
+
+template <typename... Args> int printf(const char* fmt, Args... args)
+{
+	return m_printf(fmt, args...);
+}
 
 /** @brief output a block of data in hex format
  *  @param tag brief name to display with the data block. Specify nullptr if not required.
@@ -72,6 +85,5 @@ static inline size_t m_puts(const char* str)
  *  @note intended for debugging
  */
 void m_printHex(const char* tag, const void* data, size_t len, int addr = -1, size_t bytesPerLine = 16);
-
 }
 #endif

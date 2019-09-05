@@ -15,10 +15,9 @@
 
 #pragma once
 
-#include "spiffs_sming.h"
-#include "WVector.h"
-
-class String;
+#include <spiffs_sming.h>
+#include <WVector.h>
+#include <WString.h>
 
 typedef signed short file_t; ///< File handle
 
