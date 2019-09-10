@@ -57,16 +57,24 @@ public:
      *  @param  callback Callback function to call when timer triggers (Default: none)
      *  @retval HardwareTimer& Reference to timer
      */
-	HardwareTimer& IRAM_ATTR initializeUs(uint32_t microseconds,
-										  InterruptCallback callback = nullptr); // Init in Microseconds.
+	HardwareTimer& IRAM_ATTR initializeUs(uint32_t microseconds, InterruptCallback callback = nullptr)
+	{
+		setCallback(callback);
+		setIntervalUs(microseconds);
+		return *this;
+	}
 
 	/** @brief  Initialise hardware timer
      *  @param  milliseconds Timer interval in milliseconds
      *  @param  callback Callback function to call when timer triggers (Default: none)
      *  @retval HardwareTimer& Reference to timer
      */
-	HardwareTimer& IRAM_ATTR initializeMs(uint32_t milliseconds,
-										  InterruptCallback callback = nullptr); // Init in Milliseconds.
+	HardwareTimer& IRAM_ATTR initializeMs(uint32_t milliseconds, InterruptCallback callback = nullptr)
+	{
+		setCallback(callback);
+		setIntervalMs(milliseconds);
+		return *this;
+	}
 
 	/** @brief  Start timer running
      *  @param  repeating True to restart timer when it triggers, false for one-shot (Default: true)
@@ -85,13 +93,25 @@ public:
 
 	/** @brief  Stops timer
 	 */
-	void IRAM_ATTR stop();
+	void IRAM_ATTR stop()
+	{
+		if(started) {
+			TM1_EDGE_INT_DISABLE();
+			ETS_FRC1_INTR_DISABLE();
+			started = false;
+		}
+	}
 
 	/** @brief  Restart timer
 	 *  @retval bool True if timer started
 	 *  @note   Timer is stopped then started with current configuration
 	 */
-	bool IRAM_ATTR restart();
+	bool IRAM_ATTR restart()
+	{
+		stop();
+		start(repeating);
+		return started;
+	}
 
 	/** @brief  Check if timer is started
 	 *  @retval bool True if started
@@ -133,7 +153,14 @@ public:
 	/** @brief  Set timer trigger callback
      *  @param  callback Function to call when timer triggers
      */
-	void IRAM_ATTR setCallback(InterruptCallback callback);
+	void IRAM_ATTR setCallback(InterruptCallback callback)
+	{
+		this->callback = callback;
+
+		if(callback == nullptr) {
+			stop();
+		}
+	}
 
 	/** @brief  Call timer callback
      *  @note   Calls the timer callback function

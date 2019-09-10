@@ -91,20 +91,6 @@ HardwareTimer::~HardwareTimer()
 	isrTimer = nullptr;
 }
 
-HardwareTimer& HardwareTimer::initializeMs(uint32_t milliseconds, InterruptCallback callback)
-{
-	setCallback(callback);
-	setIntervalMs(milliseconds);
-	return *this;
-}
-
-HardwareTimer& HardwareTimer::initializeUs(uint32_t microseconds, InterruptCallback callback)
-{
-	setCallback(callback);
-	setIntervalUs(microseconds);
-	return *this;
-}
-
 bool HardwareTimer::start(bool repeating)
 {
 	this->repeating = repeating;
@@ -123,22 +109,6 @@ bool HardwareTimer::start(bool repeating)
 	return started;
 }
 
-void HardwareTimer::stop()
-{
-	if(started) {
-		TM1_EDGE_INT_DISABLE();
-		ETS_FRC1_INTR_DISABLE();
-		started = false;
-	}
-}
-
-bool HardwareTimer::restart()
-{
-	stop();
-	start(repeating);
-	return started;
-}
-
 bool HardwareTimer::setIntervalUs(uint32_t microseconds)
 {
 	if(microseconds < MAX_HW_TIMER_INTERVAL_US && microseconds > MIN_HW_TIMER_INTERVAL_US) {
@@ -150,13 +120,4 @@ bool HardwareTimer::setIntervalUs(uint32_t microseconds)
 		stop();
 	}
 	return started;
-}
-
-void HardwareTimer::setCallback(InterruptCallback interrupt)
-{
-	callback = interrupt;
-
-	if(!interrupt) {
-		stop();
-	}
 }
