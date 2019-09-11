@@ -29,7 +29,7 @@ class CTimerThread;
 class CTimerThread : public CThread
 {
 public:
-	CTimerThread(const char* name) : CThread(name, 3)
+	explicit CTimerThread(const char* name) : CThread(name, 3)
 	{
 		execute();
 	}
@@ -117,25 +117,24 @@ protected:
 
 private:
 	typedef std::ratio<HW_TIMER_BASE_CLK, 1000000> base_ticks_per_us;
-	uint32_t divisor;
-	uint32_t frequency;
-	uint64_t start_time;
-	uint64_t interval; // In microseconds
-	CSemaphore sem;	// Signals state change
+	uint32_t divisor = 1;
+	uint32_t frequency = HW_TIMER_BASE_CLK;
+	uint64_t start_time = 0;
+	uint64_t interval = 0; // In microseconds
+	CSemaphore sem;		   // Signals state change
 	CMutex mutex;
 	enum State { stopped, running, terminating };
 	State thread_state = stopped;
 	State state = stopped;
 
-	hw_timer_source_type_t source_type;
-	unsigned irq_level;
+	hw_timer_source_type_t source_type = TIMER_FRC1_SOURCE;
+	unsigned irq_level = 1;
 	struct {
-		hw_timer_callback_t func;
-		void* arg;
+		hw_timer_callback_t func = nullptr;
+		void* arg = nullptr;
 	} callback;
-	unsigned prescale;
-	bool auto_load;
-	CTimerThread* thread;
+	unsigned prescale = 1;
+	bool auto_load = false;
 };
 
 static CTimerThread timer1("Timer1");
