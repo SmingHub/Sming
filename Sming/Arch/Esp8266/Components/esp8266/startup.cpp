@@ -11,6 +11,7 @@
 #include <user_config.h>
 #include "Platform/System.h"
 #include <driver/uart.h>
+#include <driver/hw_timer.h>
 #include <gdb/gdb_hooks.h>
 #include <esp_cplusplus.h>
 
@@ -18,8 +19,8 @@ extern void init();
 
 extern "C" void  WEAK_ATTR user_init(void)
 {
-	// We want high resolution timing - see HardwareTimer class
-	system_timer_reinit();
+	// Initialise hardware timers
+	hw_timer_init();
 
 	// Initialise UARTs to a known state
 	uart_detach_all();

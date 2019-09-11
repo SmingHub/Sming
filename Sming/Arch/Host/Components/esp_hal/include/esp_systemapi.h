@@ -13,7 +13,6 @@ extern "C" {
 
 // ESP SDK config
 #define LWIP_OPEN_SRC
-#define USE_US_TIMER
 
 // Default types
 #include <limits.h>
