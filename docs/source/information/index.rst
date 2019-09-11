@@ -5,6 +5,7 @@ Information
    :maxdepth: 1
 
    /_inc/Sming/building
+   events
    interrupts
    timers
    debugging
