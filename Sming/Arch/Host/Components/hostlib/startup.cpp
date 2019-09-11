@@ -26,7 +26,6 @@
 #include "options.h"
 #include <spi_flash/flashmem.h>
 #include <driver/uart_server.h>
-#include <driver/hw_timer.h>
 #include <BitManipulations.h>
 #include <esp_timer_legacy.h>
 #include <esp_tasks.h>
@@ -34,6 +33,7 @@
 #include <stdlib.h>
 
 #include <Platform/System.h>
+#include <Platform/Timers.h>
 
 static int exitCode = 0;
 static bool done = false;
@@ -237,15 +237,13 @@ int main(int argc, char* argv[])
 
 		init();
 
-		const uint32_t lwipServiceInterval = 50000;
-		uint32_t lwipNextService = 0;
+		OneShotElapseTimer<NanoTime::Milliseconds> lwipServiceTimer(50);
 		while(!done) {
-			auto now = system_get_time();
 			host_service_tasks();
 			host_service_timers();
-			if(lwip_initialised && (now >= lwipNextService)) {
+			if(lwip_initialised && lwipServiceTimer.expired()) {
 				host_lwip_service();
-				lwipNextService = now + lwipServiceInterval;
+				lwipServiceTimer.start();
 			}
 			system_soft_wdt_feed();
 		}

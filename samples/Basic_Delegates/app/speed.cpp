@@ -3,7 +3,7 @@
  */
 
 #include <SmingCore.h>
-#include <Services/Profiling/CycleCounter.h>
+#include <Platform/Timers.h>
 #include "callbacks.h"
 
 #ifdef ARCH_HOST
@@ -15,29 +15,32 @@ const unsigned ITERATIONS = 100000;
 typedef Delegate<void(int)> TestDelegate;
 typedef void (*TestCallback)(int);
 
-static void printTime(const char* name, unsigned elapsed)
+// Use for high resolution loop timing
+static CpuCycleTimer timer;
+
+static void printTime(const char* name, unsigned ticks)
 {
-	Serial.printf("%s: %u\r\n", name, elapsed / ITERATIONS);
+	Serial.printf("%s: %u cycles, %s\r\n", name, ticks, timer.ticksToTime(ticks).toString().c_str());
 }
 
 static void __attribute__((noinline)) evaluateCallback(const char* name, TestCallback callback, int testParam)
 {
-	CycleCounter counter;
+	timer.start();
 	for(unsigned i = 0; i < ITERATIONS; ++i) {
 		callback(testParam);
 	}
-	unsigned elapsed = counter.elapsed();
-	printTime(name, elapsed);
+	unsigned ticks = timer.elapsedTicks();
+	printTime(name, ticks / ITERATIONS);
 }
 
 static void __attribute__((noinline)) evaluateDelegate(const char* name, TestDelegate delegate, int testParam)
 {
-	CycleCounter counter;
+	timer.start();
 	for(unsigned i = 0; i < ITERATIONS; ++i) {
 		delegate(testParam);
 	}
-	unsigned elapsed = counter.elapsed();
-	printTime(name, elapsed);
+	unsigned ticks = timer.elapsedTicks();
+	printTime(name, ticks / ITERATIONS);
 }
 
 void evaluateSpeed()
