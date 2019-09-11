@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Services/Profiling/CycleCounter.h>
+#include <Platform/Timers.h>
 #include <Services/Profiling/MinMax.h>
 
 using MinMax32 = Profiling::MinMax<uint32_t>;
@@ -19,9 +19,9 @@ public:
 
 	__forceinline void IRAM_ATTR update()
 	{
-		MinMax32::update(timer.elapsed());
+		MinMax32::update(timer.elapsedTicks());
 	}
 
 private:
-	CycleCounter timer;
+	CpuCycleTimer timer;
 };
