@@ -433,7 +433,7 @@ template <typename Clock_, typename T> struct Ticks {
 
 	template <Unit unit> Time<T> as()
 	{
-		return Time<T>(unit, Clock::ticksToTime<unit>(ticks));
+		return Time<T>(unit, Clock::template ticksToTime<unit>(ticks));
 	}
 
 	T ticks;
@@ -542,7 +542,6 @@ template <class Clock_, uint64_t ticks_> struct TicksConst {
 	using Clock = Clock_;
 	using TickType = uint64_t;
 	using TimeType = uint64_t;
-	template <Unit unit> using TimeConst = TimeConst<Clock, unit, ticks_>;
 
 	static constexpr TickType ticks()
 	{
@@ -562,6 +561,11 @@ template <class Clock_, uint64_t ticks_> struct TicksConst {
 	{
 		static_assert(ticks_ <= Clock::maxTicks(), "Ticks exceeds clock range");
 	}
+
+	template <Unit unit>
+	using TimeConst = TimeConst<Clock, unit,
+								TimeType(round(double(ticks_) * Clock::template TicksPerUnit<unit>::den /
+											   Clock::template TicksPerUnit<unit>::num))>;
 
 	/**
 	 * @brief Get the time for the tick count in a specific time unit
