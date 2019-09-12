@@ -88,35 +88,45 @@ public:
 		Serial.println(calcCycles);
 	}
 
-	template <NanoTime::Unit unit> void printMaxTicks(bool isTimeTicks)
+	template <NanoTime::Unit unit> void printMaxTicks()
 	{
 		NanoTime::TimeSource<Clock, unit, TimeType> src;
-		timeunit = unit;
-		TimeType maxTicks;
-		maxTicks = isTimeTicks ? src.maxCalcTicks() : src.maxTicks();
-		TimeType maxTime = isTimeTicks ? src.ticksToTime(maxTicks) : src.maxClockTime().time();
+		auto time = src.maxClockTime();
 
 		Serial.print("    ");
-		Serial.print(maxTicks);
+		Serial.print(src.maxTicks());
 		Serial.print(" ticks = ");
-		Serial.print(NanoTime::time(timeunit, maxTime));
+		Serial.print(time.toString());
 		Serial.print(" = ");
-		Serial.println(NanoTime::TimeValue(timeunit, maxTime).toString());
+		Serial.println(time.value());
+	};
+
+	template <NanoTime::Unit unit> void printMaxCalcTicks()
+	{
+		NanoTime::TimeSource<Clock, unit, TimeType> src;
+		auto time = src.maxCalcTicks().template as<unit>();
+
+		Serial.print("    ");
+		Serial.print(src.maxCalcTicks());
+		Serial.print(" ticks = ");
+		Serial.print(time.toString());
+		Serial.print(" = ");
+		Serial.println(time.value());
 	};
 
 	template <NanoTime::Unit unit> void printMaxTime()
 	{
 		NanoTime::TimeSource<Clock, unit, TimeType> source;
-		timeunit = unit;
-		auto maxTime = source.maxCalcTime();
-		auto maxTicks = source.timeToTicks(maxTime);
+		auto time = source.maxCalcTime();
+		auto ticks = source.timeToTicks(time);
 
 		Serial.print("    ");
-		Serial.print(maxTime.toString());
+		Serial.print(time.toString());
 		Serial.print(" = ");
-		Serial.print(maxTicks);
-		Serial.print(" ticks = ");
-		Serial.println(maxTicks);
+		Serial.print(time.value());
+		Serial.print(" = ");
+		Serial.print(ticks);
+		Serial.println(" ticks");
 	};
 
 	void printLimits()
@@ -124,28 +134,16 @@ public:
 		m_puts("Limits:\r\n");
 
 		m_puts("  clock ticks:\r\n");
-		valueIsTime = true;
-		auto pmt = [this](bool isTimeTicks) {
-			//			printMaxTicks<NanoTime::Days>(isTimeTicks);
-			//			printMaxTicks<NanoTime::Hours>(isTimeTicks);
-			//			printMaxTicks<NanoTime::Minutes>(isTimeTicks);
-			//			printMaxTicks<NanoTime::Seconds>(isTimeTicks);
-			printMaxTicks<NanoTime::Milliseconds>(isTimeTicks);
-			printMaxTicks<NanoTime::Microseconds>(isTimeTicks);
-			printMaxTicks<NanoTime::Nanoseconds>(isTimeTicks);
-		};
-		pmt(false);
+		printMaxTicks<NanoTime::Milliseconds>();
+		printMaxTicks<NanoTime::Microseconds>();
+		printMaxTicks<NanoTime::Nanoseconds>();
 
 		m_puts("  ticks -> time:\r\n");
-		pmt(true);
+		printMaxCalcTicks<NanoTime::Milliseconds>();
+		printMaxCalcTicks<NanoTime::Microseconds>();
+		printMaxCalcTicks<NanoTime::Nanoseconds>();
 
 		m_puts("  time -> ticks:\r\n");
-		valueIsTime = true;
-
-		//		printMaxTime<NanoTime::Days>();
-		//		printMaxTime<NanoTime::Hours>();
-		//		printMaxTime<NanoTime::Minutes>();
-		//		printMaxTime<NanoTime::Seconds>();
 		printMaxTime<NanoTime::Milliseconds>();
 		printMaxTime<NanoTime::Microseconds>();
 		printMaxTime<NanoTime::Nanoseconds>();
