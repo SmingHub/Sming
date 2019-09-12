@@ -115,31 +115,49 @@ public:
 	 */
 	template <uint64_t timeInterval> __forceinline void IRAM_ATTR reset()
 	{
+		auto ticks = checkTime<timeInterval>();
+		resetTicks(ticks);
+	}
+
+	/**
+	 * @brief Check the given time interval is valid and return the corresponding tick count
+	 * @tparam timeInterval
+	 * @retval uint32_t
+	 * @note If time interval is invalid fails compilation
+	 */
+	template <uint64_t timeInterval> constexpr uint32_t checkTime()
+	{
 		auto time = this->template timeConst<timeInterval>();
 		time.check();
 		constexpr auto ticks = time.ticks();
 		static_assert(ticks < maxInterval(), "Polled time interval too long");
-		resetTicks(ticks);
+		return ticks;
 	}
 
 	/**
 	 * @brief Start the timer with a new expiry interval
 	 * @param interval Time to expire after last call to start()
+	 * @retval bool true on success, false on failure
+	 * @see See `resetTicks()`
 	 */
-	__forceinline void IRAM_ATTR reset(const TimeType& timeInterval)
+	__forceinline bool IRAM_ATTR reset(const TimeType& timeInterval)
 	{
-		resetTicks(this->template timeToTicks(timeInterval));
+		return resetTicks(this->template timeToTicks(timeInterval));
 	}
 
 	/**
 	 * @brief Start the timer with a new expiry interval
 	 * @param interval Clock ticks to expire after last call to start()
+	 * @retval bool true on success, false if interval is out of range
+	 * @note If time interval is 0, timer will expire immediately, and if it
+	 * exceeds the maximum interval the timer will never expire.
 	 */
-	__forceinline void IRAM_ATTR resetTicks(const TimeType& interval)
+	__forceinline bool IRAM_ATTR resetTicks(const TimeType& interval)
 	{
 		start();
 		this->interval = interval;
-		neverExpires = (interval >= Clock::maxTicks());
+		neverExpires = (interval > maxInterval());
+		return !neverExpires;
 	}
 
 	/**
