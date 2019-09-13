@@ -32,10 +32,9 @@ static void interruptDelegateCallback(uint32_t interruptNumber)
 static void IRAM_ATTR interruptHandler(uint32 intr_mask, void* arg)
 {
 	bool processed;
-	uint32 gpioStatus;
 
 	do {
-		gpioStatus = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
+		uint32 gpioStatus = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
 		processed = false;
 		for(uint8 i = 0; i < ESP_MAX_INTERRUPTS; i++) {
 			if(!bitRead(gpioStatus, i)) {
@@ -56,39 +55,27 @@ static void IRAM_ATTR interruptHandler(uint32 intr_mask, void* arg)
 	} while(processed);
 }
 
-void attachInterrupt(uint8_t pin, InterruptCallback callback, uint8_t mode)
-{
-	GPIO_INT_TYPE type = ConvertArduinoInterruptMode(mode);
-	attachInterrupt(pin, callback, type);
-}
-
-void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, uint8_t mode)
-{
-	GPIO_INT_TYPE type = ConvertArduinoInterruptMode(mode);
-	attachInterrupt(pin, delegateFunction, type);
-}
-
-void attachInterrupt(uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE mode)
+void attachInterrupt(uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE type)
 {
 	if(pin >= ESP_MAX_INTERRUPTS) {
 		return; // WTF o_O
 	}
 	gpioInterruptsList[pin] = callback;
 	delegateFunctionList[pin] = nullptr;
-	attachInterruptHandler(pin, mode);
+	attachInterruptHandler(pin, type);
 }
 
-void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, GPIO_INT_TYPE mode)
+void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, GPIO_INT_TYPE type)
 {
 	if(pin >= ESP_MAX_INTERRUPTS) {
 		return; // WTF o_O
 	}
 	gpioInterruptsList[pin] = nullptr;
 	delegateFunctionList[pin] = delegateFunction;
-	attachInterruptHandler(pin, mode);
+	attachInterruptHandler(pin, type);
 }
 
-void attachInterruptHandler(uint8_t pin, GPIO_INT_TYPE mode)
+void attachInterruptHandler(uint8_t pin, GPIO_INT_TYPE type)
 {
 	ETS_GPIO_INTR_DISABLE();
 
@@ -99,7 +86,7 @@ void attachInterruptHandler(uint8_t pin, GPIO_INT_TYPE mode)
 
 	pinMode(pin, INPUT);
 
-	gpio_pin_intr_state_set(GPIO_ID_PIN(pin), mode); // Enable GPIO pin interrupt
+	gpio_pin_intr_state_set(GPIO_ID_PIN(pin), type); // Enable GPIO pin interrupt
 
 	ETS_GPIO_INTR_ENABLE();
 }
@@ -111,12 +98,6 @@ void detachInterrupt(uint8_t pin)
 	attachInterruptHandler(pin, GPIO_PIN_INTR_DISABLE);
 }
 
-void interruptMode(uint8_t pin, uint8_t mode)
-{
-	GPIO_INT_TYPE type = ConvertArduinoInterruptMode(mode);
-	interruptMode(pin, type);
-}
-
 void interruptMode(uint8_t pin, GPIO_INT_TYPE type)
 {
 	ETS_GPIO_INTR_DISABLE();
@@ -126,22 +107,4 @@ void interruptMode(uint8_t pin, GPIO_INT_TYPE type)
 	gpio_pin_intr_state_set(GPIO_ID_PIN(pin), type);
 
 	ETS_GPIO_INTR_ENABLE();
-}
-
-GPIO_INT_TYPE ConvertArduinoInterruptMode(uint8_t mode)
-{
-	switch(mode) {
-	case LOW: // to trigger the interrupt whenever the pin is low,
-		return GPIO_PIN_INTR_LOLEVEL;
-	case CHANGE:				 // to trigger the interrupt whenever the pin changes value
-		return (GPIO_INT_TYPE)3; // GPIO_PIN_INTR_ANYEDGE
-	case RISING:				 // to trigger when the pin goes from low to high,
-		return GPIO_PIN_INTR_POSEDGE;
-	case FALLING: // for when the pin goes from high to low.
-		return GPIO_PIN_INTR_NEGEDGE;
-	case HIGH: // to trigger the interrupt whenever the pin is high.
-		return GPIO_PIN_INTR_HILEVEL;
-	default:
-		return GPIO_PIN_INTR_DISABLE;
-	}
 }
