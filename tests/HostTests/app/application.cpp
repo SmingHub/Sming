@@ -14,7 +14,7 @@
 #include <malloc_count.h>
 
 Vector<TestGroupFactory> groupFactories;
-static Timer taskTimer;
+static SimpleTimer taskTimer;
 static unsigned taskIndex;
 
 #define XX(t) extern void REGISTER_TEST(t);
@@ -36,7 +36,7 @@ static void runNextGroup()
 		System.restart();
 #else
 		taskIndex = 0;
-		taskTimer.setIntervalMs(RESTART_DELAY);
+		taskTimer.setIntervalMs<RESTART_DELAY>();
 		taskTimer.startOnce();
 #endif
 	} else {
@@ -68,7 +68,7 @@ void TestGroup::complete()
 		m_printf(_F("\r\n** Test Group '%s' OK **\r\n"), name.c_str());
 	}
 	delete this;
-	taskTimer.setIntervalMs(TEST_GROUP_INTERVAL);
+	taskTimer.setIntervalMs<TEST_GROUP_INTERVAL>();
 	taskTimer.startOnce();
 }
 

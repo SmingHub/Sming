@@ -5,4 +5,5 @@
 	XX(json6)                                                                                                          \
 	XX(files)                                                                                                          \
 	XX(rational)                                                                                                       \
-	XX(clocks)
+	XX(clocks)                                                                                                         \
+	XX(timers)

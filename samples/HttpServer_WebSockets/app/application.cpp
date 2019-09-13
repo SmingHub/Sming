@@ -55,13 +55,13 @@ void wsMessageReceived(WebsocketConnection& socket, const String& message)
 
 		// Don't shutdown immediately, wait a bit to allow messages to propagate
 		auto timer = new SimpleTimer;
-		timer->setCallback(
+		timer->initializeMs<1000>(
 			[](void* timer) {
 				delete static_cast<SimpleTimer*>(timer);
 				server.shutdown();
 			},
 			timer);
-		timer->startMs(1000);
+		timer->startOnce();
 		return;
 	}
 

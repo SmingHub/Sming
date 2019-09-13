@@ -11,11 +11,6 @@ const unsigned scanTimeoutMs = 2000; ///< End scan on channel if no new devices 
 WifiSniffer sniffer;
 SimpleTimer timer;
 
-static void restartTimer()
-{
-	timer.startMs(scanTimeoutMs, false);
-}
-
 static void printBeacon(const BeaconInfo& beacon)
 {
 	if(beacon.err != 0) {
@@ -68,7 +63,7 @@ static void onBeacon(const BeaconInfo& beacon)
 	if(knownAPs.indexOf(beacon.bssid) < 0) {
 		knownAPs.add(beacon);
 		printBeacon(beacon);
-		restartTimer();
+		timer.restart();
 	}
 }
 
@@ -77,7 +72,7 @@ static void onClient(const ClientInfo& client)
 	if(knownClients.indexOf(client.station) < 0) {
 		knownClients.add(client);
 		printClient(client);
-		restartTimer();
+		timer.restart();
 	}
 }
 
@@ -88,8 +83,8 @@ static void scanChannel(void* param)
 		// Scan the next channel
 		debugf("Set channel: %u", channel);
 		sniffer.setChannel(channel);
-		timer.setCallback(scanChannel, reinterpret_cast<void*>(channel + 1));
-		restartTimer();
+		timer.initializeMs<scanTimeoutMs>(scanChannel, reinterpret_cast<void*>(channel + 1));
+		timer.startOnce();
 	} else {
 		// Stop sniffing and display final scan results
 		sniffer.end();
