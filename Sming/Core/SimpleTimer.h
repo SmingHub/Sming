@@ -10,89 +10,103 @@
  *
  * This class wraps the OS timer functions, in a class called SimpleTimer.
  *
- * For many timing operations the basic SimpleTimer capabilities are sufficient.
- * The additional RAM required by the main Timer class soon adds up, so all
- * short timer requirements are handled by an SimpleTimer. Still require Timer for
- * longer periods and the additional callback flexibility.
- *
-*/
-
-/** @ingroup   	timer
- *  @brief      Provides basic OS timer functions
 */
 
 #pragma once
 
 #include "esp_systemapi.h"
+#include "CallbackTimer.h"
+#include <Platform/Clocks.h>
+#include <driver/os_timer.h>
 
-/*
- * According to documentation maximum value of interval for ms
- * timer after doing system_timer_reinit is 268435ms.
- * If we do some testing we find that higher values works,
- * the actual limit seems to be about twice as high
- * but we use the documented value anyway to be on the safe side.
-*/
-#define MAX_OS_TIMER_INTERVAL_US 268435000
+/**	@ingroup callback_timer
+ *  @{
+ */
 
-typedef os_timer_func_t* SimpleTimerCallback;
-
-class SimpleTimer
+/**
+ * @brief Implements common system callback timer API
+ */
+class OsTimerApi : public CallbackTimerApi<OsTimerApi>
 {
 public:
-	/** @brief  OSTimer class
-     *  @ingroup timer
-     *  @{
-     */
-	SimpleTimer()
+	using Clock = Timer2Clock;
+	using TickType = uint32_t;
+	using TimeType = uint32_t;
+
+	static constexpr const char* typeName()
 	{
+		return "OsTimerApi";
 	}
 
-	~SimpleTimer()
+	static constexpr TickType minTicks()
 	{
-		stop();
+		// Note: The minimum specified by the SDK is 100us
+		return 1;
 	}
 
-	/** @brief  Initialise millisecond timer
-     *  @param  milliseconds Duration of timer in milliseconds
-     *  @param  repeating true if timer automatically restarts when it expires
-     */
-	__forceinline void startMs(uint32_t milliseconds, bool repeating = false)
+	static constexpr TickType maxTicks()
 	{
-		stop();
-		if(osTimer.timer_func)
-			os_timer_arm(&osTimer, milliseconds, repeating);
+		return 0x7FFFFFFF;
 	}
 
-	/** @brief  Initialise microsecond timer
-     *  @param  microseconds Duration of timer in milliseconds
-     *  @param  repeating true if timer automatically restarts when it expires
-     */
-	__forceinline void startUs(uint32_t microseconds, bool repeating = false)
+	__forceinline bool isArmed() const
 	{
-		stop();
-		if(osTimer.timer_func)
-			os_timer_arm_us(&osTimer, microseconds, repeating);
+		return int(osTimer.timer_next) != -1;
 	}
 
-	/** @brief  Stop timer
-     *  @note   Stops a running timer. Has no effect on stopped timer.
-     */
-	__forceinline void stop()
+	TickType ticks() const
 	{
-		os_timer_disarm(&osTimer);
+		if(!isArmed()) {
+			return 0;
+		}
+
+		auto remain = int(osTimer.timer_expire - Clock::ticks());
+		return (remain > 0) ? remain : 0;
 	}
 
-	/** @brief  Set timer trigger function
-     *  @param  callback Function to be called on timer trigger
-     *  @param	arg Passed to callback
-     *  @note   Classic c-type callback method
-     */
-	void setCallback(SimpleTimerCallback callback, void* arg = nullptr)
+	~OsTimerApi()
 	{
-		stop();
+		disarm();
+	}
+
+	__forceinline void IRAM_ATTR setCallback(TimerCallback callback, void* arg)
+	{
 		os_timer_setfn(&osTimer, callback, arg);
 	}
 
+	__forceinline void IRAM_ATTR setInterval(TickType interval)
+	{
+		this->interval = interval;
+	}
+
+	__forceinline TickType IRAM_ATTR getInterval() const
+	{
+		return interval;
+	}
+
+	__forceinline void IRAM_ATTR arm(bool repeating)
+	{
+		os_timer_arm_ticks(&osTimer, interval, repeating);
+	}
+
+	__forceinline void IRAM_ATTR disarm()
+	{
+		if(isArmed()) {
+			os_timer_disarm(&osTimer);
+		}
+	}
+
 private:
-	os_timer_t osTimer;
+	os_timer_t osTimer = {
+		reinterpret_cast<os_timer_t*>(-1), // Disarmed
+	};
+	TickType interval = 0;
 };
+
+/**
+ * @brief Basic callback timer
+ * @note For delegate callback support and other features see `Timer` class.
+ */
+using SimpleTimer = CallbackTimer<OsTimerApi>;
+
+/** @} */
