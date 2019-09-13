@@ -11,7 +11,11 @@ extern "C" {
 #define SYS_CPU_160MHZ 160
 
 bool system_update_cpu_freq(uint8 freq);
-uint8 system_get_cpu_freq(void);
+uint8_t ets_get_cpu_frequency(void);
+uint8_t system_get_cpu_freq(void);
+
+/* Emulation of CPU cycle count */
+uint32_t esp_get_ccount();
 
 #ifdef __cplusplus
 }

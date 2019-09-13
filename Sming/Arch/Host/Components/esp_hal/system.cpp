@@ -2,7 +2,7 @@
 #include <hostlib/hostapi.h>
 #include <hostlib/threads.h>
 #include <sys/time.h>
-#include <Rational.h>
+#include <Platform/Timers.h>
 
 /* System time */
 
@@ -54,8 +54,8 @@ uint32_t system_get_time()
 
 void os_delay_us(uint32_t us)
 {
-	auto start = system_get_time();
-	while(system_get_time() - start < us) {
+	ElapseTimer timer(us);
+	while(!timer.expired()) {
 		//
 	}
 }

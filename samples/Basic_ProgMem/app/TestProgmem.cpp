@@ -7,7 +7,7 @@
 #include "TestProgmem.h"
 #include "FlashData.h"
 #include "Print.h"
-#include "Services/Profiling/ElapseTimer.h"
+#include <Platform/Timers.h>
 
 // Note: contains nulls which won't display, but will be stored
 #define DEMO_TEST_TEXT "This is a flash string -\0Second -\0Third -\0Fourth."
@@ -166,11 +166,11 @@ void testSpeed(Print& out)
 	timer.start();
 	for(unsigned i = 0; i < iterations; ++i)
 		tmp += sumBuffer(demoText, sizeof(demoText));
-	baseline = timer.elapsed();
+	baseline = timer.elapsedTime();
 	out.printf("Elapsed: %u\n", baseline);
 
 #define END()                                                                                                          \
-	elapsed = timer.elapsed();                                                                                         \
+	elapsed = timer.elapsedTime();                                                                                     \
 	out.printf("Elapsed: %u (baseline + %u)\n", elapsed, elapsed - baseline);
 
 	_FPUTS("Load PSTR into stack buffer...");

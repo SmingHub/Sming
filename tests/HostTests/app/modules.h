@@ -4,4 +4,5 @@
 	XX(json5)                                                                                                          \
 	XX(json6)                                                                                                          \
 	XX(files)                                                                                                          \
-	XX(rational)
+	XX(rational)                                                                                                       \
+	XX(clocks)

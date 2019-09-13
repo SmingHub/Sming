@@ -12,11 +12,11 @@
 
 #include "gdbuart.h"
 #include "GdbPacket.h"
-#include "driver/uart.h"
-#include "driver/SerialBuffer.h"
-#include "Platform/System.h"
-#include "HardwareSerial.h"
-#include <driver/hw_timer.h>
+#include <driver/uart.h>
+#include <driver/SerialBuffer.h>
+#include <Platform/System.h>
+#include <HardwareSerial.h>
+#include <Platform/Timers.h>
 #include "gdbsyscall.h"
 
 #define GDB_UART UART0 // Only UART0 supports for debugging as RX/TX required
@@ -109,14 +109,7 @@ static size_t ATTR_GDBEXTERNFN gdb_uart_write_char(char c)
 
 int ATTR_GDBEXTERNFN gdbReceiveChar()
 {
-#if GDBSTUB_UART_READ_TIMEOUT
-	constexpr uint32_t timeout = round(double(HW_TIMER2_CLK) * GDBSTUB_UART_READ_TIMEOUT / 1000);
-	auto startTicks = NOW();
-#define checkTimeout() (NOW() - startTicks >= timeout)
-#else
-#define checkTimeout() (false)
-#endif
-
+	OneShotElapseTimer<NanoTime::Milliseconds> timer(GDBSTUB_UART_READ_TIMEOUT);
 	do {
 		wdt_feed();
 		system_soft_wdt_feed();
@@ -127,7 +120,7 @@ int ATTR_GDBEXTERNFN gdbReceiveChar()
 #endif
 			return c;
 		}
-	} while(!checkTimeout());
+	} while(GDBSTUB_UART_READ_TIMEOUT == 0 || !timer.expired());
 
 	return -1;
 }
