@@ -14,6 +14,7 @@
 #include <cstdarg>
 #include "Platform/System.h"
 #include "m_printf.h"
+#include <espinc/uart_register.h>
 
 #if ENABLE_CMD_EXECUTOR
 #include <Services/CommandProcessing/CommandExecutor.h>
@@ -111,12 +112,12 @@ void HardwareSerial::invokeCallbacks()
 	uart_restore_interrupts();
 
 	// Transmit complete ?
-	if(bitRead(status, UIFE) && transmitComplete) {
+	if((status & UART_TXFIFO_EMPTY_INT_ST) != 0 && transmitComplete) {
 		transmitComplete(*this);
 	}
 
 	// RX FIFO Full or RX FIFO Timeout or RX Overflow ?
-	if(status & (_BV(UIFF) | _BV(UITO) | _BV(UIOF))) {
+	if(status & (UART_RXFIFO_FULL_INT_ST | UART_RXFIFO_TOUT_INT_ST | UART_RXFIFO_OVF_INT_ST)) {
 		auto receivedChar = uart_peek_last_char(uart);
 		if(HWSDelegate) {
 			HWSDelegate(*this, receivedChar, uart_rx_available(uart));
@@ -130,6 +131,29 @@ void HardwareSerial::invokeCallbacks()
 		}
 #endif
 	}
+}
+
+unsigned HardwareSerial::getStatus()
+{
+	unsigned status = 0;
+	unsigned ustat = uart_get_status(uart);
+	if(ustat & UART_BRK_DET_INT_ST) {
+		bitSet(status, eSERS_BreakDetected);
+	}
+
+	if(ustat & UART_RXFIFO_OVF_INT_ST) {
+		bitSet(status, eSERS_Overflow);
+	}
+
+	if(ustat & UART_FRM_ERR_INT_ST) {
+		bitSet(status, eSERS_FramingError);
+	}
+
+	if(ustat & UART_PARITY_ERR_INT_ST) {
+		bitSet(status, eSERS_ParityError);
+	}
+
+	return status;
 }
 
 /*
@@ -170,11 +194,11 @@ bool HardwareSerial::updateUartCallback()
 #else
 	if(HWSDelegate) {
 #endif
-		mask |= _BV(UIFF) | _BV(UITO) | _BV(UIOF);
+		mask |= UART_RXFIFO_FULL_INT_ST | UART_RXFIFO_TOUT_INT_ST | UART_RXFIFO_OVF_INT_ST;
 	}
 
 	if(transmitComplete) {
-		mask |= _BV(UIFE);
+		mask |= UART_TXFIFO_EMPTY_INT_ST;
 	}
 
 	statusMask = mask;
