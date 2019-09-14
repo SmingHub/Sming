@@ -16,8 +16,6 @@
 
 #pragma once
 
-#include "WiringFrameworkDependencies.h"
-
 template<typename T>
 class Countable
 {

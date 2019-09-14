@@ -10,9 +10,8 @@
  *
  ****/
 
-#ifdef ENABLE_SSL
-
 #include "SslValidator.h"
+#include <debug_progmem.h>
 
 static bool sslValidateCertificateSha1(SSL* ssl, void* data)
 {
@@ -112,5 +111,3 @@ bool SslValidatorList::add(SslFingerprints& fingerprints)
 
 	return success;
 }
-
-#endif /* ENABLE_SSL */

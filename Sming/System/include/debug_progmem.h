@@ -130,6 +130,12 @@ extern uint32_t system_get_time();
 
 #endif /*DEBUG_BUILD*/
 
+#ifdef SMING_RELEASE
+#define debugf(fmt, ...)
+#else
+#define debugf debug_i
+#endif
+
 #ifdef __cplusplus
 }
 #endif

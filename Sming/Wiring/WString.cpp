@@ -16,7 +16,10 @@
 ||
 */
 
-#include "WiringFrameworkIncludes.h"
+#include "WString.h"
+#include <string.h>
+#include <stringutil.h>
+#include <stringconversion.h>
 
 const String String::nullstr = nullptr;
 const String String::empty = "";

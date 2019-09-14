@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "WString.h"
+#include <WString.h>
 
 /** @brief Basic MIME types and file extensions
  *  @note Each MIME type can have only one associated file extension. Where other extensions

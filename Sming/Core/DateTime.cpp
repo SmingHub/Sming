@@ -9,6 +9,7 @@
 
 #include "DateTime.h"
 #include "Data/CStringArray.h"
+#include <stringconversion.h>
 
 #define LEAP_YEAR(year) ((year % 4) == 0)
 

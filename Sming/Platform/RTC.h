@@ -15,7 +15,7 @@
 */
 #pragma once
 
-#include "WiringFrameworkDependencies.h"
+#include <stdint.h>
 
 /** @brief  Real time clock class
  *  @addtogroup rtc

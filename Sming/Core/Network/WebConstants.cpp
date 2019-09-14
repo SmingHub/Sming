@@ -9,8 +9,9 @@
  ****/
 
 #include "WebConstants.h"
-#include "FakePgmSpace.h"
+#include <FakePgmSpace.h>
 #include <Data/CStringArray.h>
+#include <stringutil.h>
 
 namespace ContentType
 {

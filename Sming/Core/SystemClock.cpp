@@ -9,7 +9,8 @@
  ****/
 
 #include "SystemClock.h"
-#include "Platform/RTC.h"
+#include <Platform/RTC.h>
+#include <debug_progmem.h>
 
 SystemClockClass SystemClock;
 

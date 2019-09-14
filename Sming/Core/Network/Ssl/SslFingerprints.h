@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "ssl/ssl.h"
+#include <ssl/ssl.h>
 
 /**
  * @brief SSL Certificate fingerprint type

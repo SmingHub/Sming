@@ -19,7 +19,7 @@ extern "C" {
 #include "c_types.h"
 
 struct ip_addr {
-  uint32_t addr;
+	uint32_t addr;
 };
 
 #include <sming_attr.h>
@@ -44,16 +44,13 @@ struct ip_addr {
 #include <assert.h>
 
 #include "debug_progmem.h"
-#define debugf debug_i
 
 #define SYSTEM_ERROR(fmt, ...) hostmsg("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 
 #define noInterrupts()
 #define interrupts()
 
-
-//#include <string.h>
-//#include <assert.h>
+#define BIT(nr)         (1UL << (nr))
 
 #ifdef __cplusplus
 }

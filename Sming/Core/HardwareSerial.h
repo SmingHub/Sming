@@ -15,9 +15,12 @@
 
 #pragma once
 
-#include "WiringFrameworkDependencies.h"
-#include "Data/Stream/ReadWriteStream.h"
-#include "driver/uart.h"
+#include <stdint.h>
+#include <Delegate.h>
+#include <Data/Stream/ReadWriteStream.h>
+#include <BitManipulations.h>
+#include <driver/uart.h>
+#include <espinc/peri.h>
 
 #define UART_ID_0 0 ///< ID of UART 0
 #define UART_ID_1 1 ///< ID of UART 1

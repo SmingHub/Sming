@@ -24,12 +24,10 @@
 
 #pragma once
 
-#include "WiringFrameworkIncludes.h"
 #include "CommandDelegate.h"
-#include "WHashMap.h"
-#include "SystemClock.h"
-#include <stdio.h>
-#include "HardwareSerial.h"
+#include <WHashMap.h>
+#include <SystemClock.h>
+#include <HardwareSerial.h>
 
 /** @brief  Verbose mode
 */

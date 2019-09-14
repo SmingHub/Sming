@@ -11,6 +11,7 @@
  ****/
 
 #include "CStringArray.h"
+#include <stringutil.h>
 
 bool CStringArray::add(const char* str, unsigned length)
 {

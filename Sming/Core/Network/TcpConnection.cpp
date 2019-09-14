@@ -10,11 +10,10 @@
 
 #include "TcpConnection.h"
 
-#include "Data/Stream/DataSourceStream.h"
-#include "Platform/WDT.h"
+#include <Data/Stream/DataSourceStream.h>
+#include <Platform/WDT.h>
 #include "NetUtils.h"
-#include "WString.h"
-#include "IpAddress.h"
+#include <WString.h>
 
 #ifdef DEBUG_TCP_EXTENDED
 #define debug_tcp(fmt, ...) debug_d(fmt, ##__VA_ARGS__)

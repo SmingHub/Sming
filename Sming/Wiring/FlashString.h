@@ -83,6 +83,7 @@
 #pragma once
 
 #include "WString.h"
+#include "FakePgmSpace.h"
 
 /** @brief Define a FlashString
  *  @param _name variable to identify the string

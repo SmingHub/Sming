@@ -11,6 +11,7 @@
 #include "NtpClient.h"
 #include "Platform/Station.h"
 #include "SystemClock.h"
+#include <algorithm>
 
 NtpClient::NtpClient(const String& reqServer, unsigned reqIntervalSeconds, NtpTimeResultDelegate delegateFunction)
 {
@@ -110,7 +111,7 @@ void NtpClient::setAutoQuery(bool autoQuery)
 
 void NtpClient::setAutoQueryInterval(unsigned seconds)
 {
-	autoQuerySeconds = max(seconds, NTP_MIN_AUTOQUERY_SECONDS);
+	autoQuerySeconds = std::max(seconds, NTP_MIN_AUTOQUERY_SECONDS);
 	if(autoQueryEnabled) {
 		setAutoQuery(true);
 	}

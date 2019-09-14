@@ -20,7 +20,6 @@
 ||
 */
 
-#include "WiringFrameworkIncludes.h"
 #include "Stream.h"
 
 #include "Clock.h"

@@ -17,10 +17,11 @@
 
 #pragma once
 
-#include "ssl/ssl.h"
-#include "ssl/tls1.h"
+#include <ssl/ssl.h>
+#include <ssl/tls1.h>
 
-#include "WVector.h"
+#include <Delegate.h>
+#include <WVector.h>
 
 #include "SslFingerprints.h"
 

@@ -12,7 +12,6 @@
 
 #include "WString.h"
 #include "Network/TcpClient.h"
-#include "WiringFrameworkIncludes.h"
 #include "CommandOutput.h"
 
 /** @brief  Command delegate function

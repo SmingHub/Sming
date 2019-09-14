@@ -17,8 +17,9 @@
 #pragma once
 
 #include <time.h>
-#include "WString.h"
+#include <WString.h>
 #include "SmingLocale.h"
+#include <sming_attr.h>
 
 /*==============================================================================*/
 /* Useful Constants */

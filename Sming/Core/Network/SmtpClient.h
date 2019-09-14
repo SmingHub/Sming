@@ -27,13 +27,14 @@
  */
 
 #include "TcpClient.h"
-#include "Data/MailMessage.h"
+#include <Data/MailMessage.h>
 #include "Url.h"
-#include "WString.h"
-#include "WVector.h"
-#include "Data/Stream/DataSourceStream.h"
-#include "WebConstants.h"
-#include "Data/ObjectQueue.h"
+#include <BitManipulations.h>
+#include <WString.h>
+#include <WVector.h>
+#include <Data/Stream/DataSourceStream.h>
+#include <WConstants.h>
+#include <Data/ObjectQueue.h>
 
 /* Maximum waiting emails in the mail queue */
 #define SMTP_QUEUE_SIZE 5
