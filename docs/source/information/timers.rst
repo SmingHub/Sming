@@ -146,6 +146,10 @@ range 10 - 10000 microseconds (or whichever time unit you've selected). It doesn
 code to the application. If the code compiles, then you can be confident that the timer
 will function as expected and you don't need to check return values.
 
+You can see these checks in action in the :sample:`LiveDebug` sample, which uses the HardwareTimer
+with a /16 prescaler. If you change *BLINK_INTERVAL_MS* to 2000 then the code will not compile.
+
+
 Clocks
 ------
 

@@ -9,7 +9,7 @@
  ****/
 
 #include "Platform/System.h"
-#include "SimpleTimer.h"
+#include "Timer.h"
 
 SystemClass System;
 
@@ -92,14 +92,8 @@ void SystemClass::restart(unsigned deferMillis)
 	if(deferMillis == 0) {
 		queueCallback([](uint32_t) { system_restart(); });
 	} else {
-		auto timer = new SimpleTimer;
-		timer->setCallback(
-			[](void* timer) {
-				delete static_cast<SimpleTimer*>(timer);
-				system_restart();
-			},
-			timer);
-		timer->startMs(deferMillis);
+		auto timer = new AutoDeleteTimer;
+		timer->initializeMs(deferMillis, system_restart).startOnce();
 	}
 }
 

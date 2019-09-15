@@ -692,6 +692,26 @@ template <class Clock_, Unit unit_, typename TimeType_> struct TimeSource : publ
 	}
 
 	/**
+	 * @brief Get the number of ticks for a given time
+	 * @tparam time
+	 * @retval uint64_t Tick count, rounded to the nearest tick
+	 */
+	template <uint64_t time> static constexpr uint64_t timeToTicks()
+	{
+		return TimeConst<time>::ticks();
+	}
+
+	/**
+	 * @brief Get the time for a given number of clock ticks
+	 * @tparam ticks
+	 * @retval TimeType Time count, rounded to the nearest unit
+	 */
+	template <uint64_t ticks> static constexpr uint64_t ticksToTime()
+	{
+		return TicksConst<ticks>::template as<unit>();
+	}
+
+	/**
 	 * @brief Get the time for a given number of clock ticks
 	 * @param ticks
 	 * @retval TimeType Time count, rounded to the nearest unit

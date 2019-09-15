@@ -64,7 +64,7 @@ APP_CFLAGS				+= -DRBOOT_SPIFFS_1=$(RBOOT_SPIFFS_1)
 ROM_0_ADDR				:= 0x002000
 
 # filenames and options for generating rBoot rom images with esptool2
-RBOOT_E2_SECTS			?= .text .data .rodata
+RBOOT_E2_SECTS			?= .text .text1 .data .rodata
 RBOOT_E2_USER_ARGS		?= -quiet -bin -boot2
 
 RBOOT_ROM_0_BIN			:= $(FW_BASE)/$(RBOOT_ROM_0).bin

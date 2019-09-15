@@ -82,6 +82,55 @@ SECTIONS
     _data_end = ABSOLUTE(.);
   } >dram0_0_seg :dram0_0_phdr
 
+
+  /*
+  	IRAM is split into .text and .text1 to allow for moving specific
+  	functions into IRAM that would be matched by the irom0.text matcher
+  */
+  .text : ALIGN(4)
+  {
+    _stext = .;
+    _text_start = ABSOLUTE(.);
+     *(.UserEnter.text)
+    . = ALIGN(16);
+    *(.DebugExceptionVector.text)
+    . = ALIGN(16);
+    *(.NMIExceptionVector.text)
+    . = ALIGN(16);
+    *(.KernelExceptionVector.text)
+    LONG(0)
+    LONG(0)
+    LONG(0)
+    LONG(0)
+    . = ALIGN(16);
+    *(.UserExceptionVector.text)
+    LONG(0)
+    LONG(0)
+    LONG(0)
+    LONG(0)
+    . = ALIGN(16);
+    *(.DoubleExceptionVector.text)
+    LONG(0)
+    LONG(0)
+    LONG(0)
+    LONG(0)
+    . = ALIGN (16);
+    *(.entry.text)
+    *(.init.literal)
+    *(.init)
+
+    *(.iram.literal .iram.text.literal .iram.text .iram.text.*)
+
+	/*
+		GCC silently ignores section attributes on templated code.
+		The only practical workaround is enforcing sections in the linker script.
+	*/
+	*(.literal._ZN13CallbackTimer*)
+	*(.text._ZN13CallbackTimer*)
+    *(.text._ZNKSt8functionIF*EE*)  /* std::function<any(...)>::operator()() const */
+
+  } >iram1_0_seg :iram1_0_phdr
+
   .irom0.text : ALIGN(4)
   {
     _irom0_text_start = ABSOLUTE(.);
@@ -128,39 +177,12 @@ SECTIONS
     _flash_code_end = ABSOLUTE(.);
   } >irom0_0_seg :irom0_0_phdr
 
-  .text : ALIGN(4)
+
+  /* Pick up any remaining IRAM objects and close the text segment */
+  .text1 : ALIGN(4)
   {
-    _stext = .;
-    _text_start = ABSOLUTE(.);
-     *(.UserEnter.text)
-    . = ALIGN(16);
-    *(.DebugExceptionVector.text)
-    . = ALIGN(16);
-    *(.NMIExceptionVector.text)
-    . = ALIGN(16);
-    *(.KernelExceptionVector.text)
-    LONG(0)
-    LONG(0)
-    LONG(0)
-    LONG(0)
-    . = ALIGN(16);
-    *(.UserExceptionVector.text)
-    LONG(0)
-    LONG(0)
-    LONG(0)
-    LONG(0)
-    . = ALIGN(16);
-    *(.DoubleExceptionVector.text)
-    LONG(0)
-    LONG(0)
-    LONG(0)
-    LONG(0)
-    . = ALIGN (16);
-    *(.entry.text)
-    *(.init.literal)
-    *(.init)
     *(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.*)
-	  *(.iram.literal .iram.text.literal .iram.text .iram.text.*)
+
     *(.fini.literal)
     *(.fini)
     *(.gnu.version)
