@@ -135,7 +135,7 @@ class HashMap
     {
       // Don't create non-existent values
       auto i = indexOf(key);
-      return (i >= 0) ? valueAt(i) : nil;
+      return (i >= 0) ? *values[i] : nil;
     }
 
     /*
