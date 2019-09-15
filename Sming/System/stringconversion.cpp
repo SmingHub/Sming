@@ -17,11 +17,13 @@
 
 char* ltoa_wp(long val, char* buffer, int base, int width, char pad)
 {
+	char* buf_ptr = buffer;
 	if(val < 0) {
-		*buffer++ = '-';
+		*buf_ptr++ = '-';
 		val = -val;
 	}
-	return ultoa_wp((unsigned long)val, buffer, base, width, pad);
+	ultoa_wp((unsigned long)val, buf_ptr, base, width, pad);
+	return buffer;
 }
 
 char* ultoa_wp(unsigned long val, char* buffer, unsigned int base, int width, char pad)
@@ -62,11 +64,13 @@ char* ultoa_wp(unsigned long val, char* buffer, unsigned int base, int width, ch
 
 char* lltoa_wp(long long val, char* buffer, int base, int width, char pad)
 {
+	char* buf_ptr = buffer;
 	if(val < 0) {
-		*buffer++ = '-';
+		*buf_ptr++ = '-';
 		val = -val;
 	}
-	return ulltoa_wp((unsigned long long)val, buffer, base, width, pad);
+	ulltoa_wp((unsigned long long)val, buf_ptr, base, width, pad);
+	return buffer;
 }
 
 char* ulltoa_wp(unsigned long long val, char* buffer, unsigned int base, int width, char pad)
