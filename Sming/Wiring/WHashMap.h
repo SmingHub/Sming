@@ -30,50 +30,49 @@
 
 #include <stdint.h>
 
-template<typename K, typename V>
-class HashMap
+template <typename K, typename V> class HashMap
 {
-  public:
-    typedef bool (*comparator)(const K&, const K&);
+public:
+	typedef bool (*comparator)(const K&, const K&);
 
-    /*
+	/*
     || @constructor
     || | Default constructor
     || #
     */
-    HashMap()
-    {
-    }
+	HashMap()
+	{
+	}
 
-    /*
+	/*
     || @constructor
     || | Initialize this HashMap
     || #
     ||
     || @parameter compare optional function for comparing a key against another (for complex types)
     */
-    HashMap(comparator compare) : cb_comparator(compare)
-    {
-    }
+	HashMap(comparator compare) : cb_comparator(compare)
+	{
+	}
 
-    ~HashMap()
-    {
-    	clear();
-    }
+	~HashMap()
+	{
+		clear();
+	}
 
-    /*
+	/*
     || @description
     || | Get the size of this HashMap
     || #
     ||
     || @return The size of this HashMap
     */
-    unsigned int count() const
-    {
-      return currentIndex;
-    }
+	unsigned int count() const
+	{
+		return currentIndex;
+	}
 
-    /*
+	/*
     || @description
     || | Get a key at a specified index
     || #
@@ -82,19 +81,23 @@ class HashMap
     ||
     || @return The key at index idx
     */
-    const K& keyAt(unsigned int idx) const
-    {
-      assert(idx < count());
-      return *keys[idx];
-    }
+	const K& keyAt(unsigned int idx) const
+	{
+		if(idx >= count()) {
+			abort();
+		}
+		return *keys[idx];
+	}
 
-    K& keyAt(unsigned int idx)
-    {
-      assert(idx < count());
-      return *keys[idx];
-    }
+	K& keyAt(unsigned int idx)
+	{
+		if(idx >= count()) {
+			abort();
+		}
+		return *keys[idx];
+	}
 
-    /*
+	/*
     || @description
     || | Get a value at a specified index
     || #
@@ -103,19 +106,23 @@ class HashMap
     ||
     || @return The value at index idx
     */
-    const V& valueAt(unsigned int idx) const
-    {
-    	assert(idx < count());
-    	return *values[idx];
-    }
+	const V& valueAt(unsigned int idx) const
+	{
+		if(idx >= count()) {
+			abort();
+		}
+		return *values[idx];
+	}
 
-    V& valueAt(unsigned int idx)
-    {
-        assert(idx < count());
-        return *values[idx];
-    }
+	V& valueAt(unsigned int idx)
+	{
+		if(idx >= count()) {
+			abort();
+		}
+		return *values[idx];
+	}
 
-    /*
+	/*
     || @description
     || | An indexer for accessing and assigning a value to a key
     || | If a key is used that exists, it returns the value for that key
@@ -131,14 +138,14 @@ class HashMap
     ||
     || @return The const value for key
     */
-    const V& operator[](const K& key) const
-    {
-      // Don't create non-existent values
-      auto i = indexOf(key);
-      return (i >= 0) ? *values[i] : nil;
-    }
+	const V& operator[](const K& key) const
+	{
+		// Don't create non-existent values
+		auto i = indexOf(key);
+		return (i >= 0) ? *values[i] : nil;
+	}
 
-    /*
+	/*
     || @description
     || | An indexer for accessing and assigning a value to a key
     || | If a key is used that exists, it returns the value for that key
@@ -149,11 +156,11 @@ class HashMap
     ||
     || @return The value for key
     */
-    V& operator[](const K& key);
+	V& operator[](const K& key);
 
-    void allocate(unsigned int newSize);
+	void allocate(unsigned int newSize);
 
-    /*
+	/*
     || @description
     || | Get the index of a key
     || #
@@ -162,9 +169,9 @@ class HashMap
     ||
     || @return The index of the key, or -1 if key does not exist
     */
-    int indexOf(const K& key) const;
+	int indexOf(const K& key) const;
 
-    /*
+	/*
     || @description
     || | Check if a key is contained within this HashMap
     || #
@@ -173,88 +180,81 @@ class HashMap
     ||
     || @return true if it is contained in this HashMap
     */
-    bool contains(const K& key) const
-    {
-      return indexOf(key) >= 0;
-    }
+	bool contains(const K& key) const
+	{
+		return indexOf(key) >= 0;
+	}
 
-    /*
+	/*
      || @description
      || | Remove entry at given index
      || #
      ||
      || @parameter index location to remove from this HashMap
      */
-    void removeAt(unsigned index);
+	void removeAt(unsigned index);
 
-    /*
+	/*
     || @description
     || | Remove a key from this HashMap
     || #
     ||
     || @parameter key the key to remove from this HashMap
     */
-    void remove(const K& key)
-    {
-      int index = indexOf(key);
-      if (index >= 0)
-      {
-        removeAt(index);
-      }
-    }
+	void remove(const K& key)
+	{
+		int index = indexOf(key);
+		if(index >= 0) {
+			removeAt(index);
+		}
+	}
 
-    void clear();
+	void clear();
 
-    void setMultiple(const HashMap<K, V>& map);
+	void setMultiple(const HashMap<K, V>& map);
 
-    void setNullValue(const V& nullv)
-    {
-      nil = nullv;
-    }
+	void setNullValue(const V& nullv)
+	{
+		nil = nullv;
+	}
 
-  protected:
-    K **keys = nullptr;
-    V **values = nullptr;
-    V nil;
-    uint16_t currentIndex = 0;
-    uint16_t size = 0;
-    comparator cb_comparator = nullptr;
+protected:
+	K** keys = nullptr;
+	V** values = nullptr;
+	V nil;
+	uint16_t currentIndex = 0;
+	uint16_t size = 0;
+	comparator cb_comparator = nullptr;
 
-  private:
-    HashMap(const HashMap<K, V>& that);
+private:
+	HashMap(const HashMap<K, V>& that);
 };
 
-
-template<typename K, typename V>
-V& HashMap<K, V>::operator[](const K& key)
+template <typename K, typename V> V& HashMap<K, V>::operator[](const K& key)
 {
-  int i = indexOf(key);
-  if (i >= 0)
-  {
-    return *values[i];
-  }
-  if (currentIndex >= size)
-  {
-	  allocate(currentIndex + 1);
-  }
-  *keys[currentIndex] = key;
-  *values[currentIndex] = nil;
-  currentIndex++;
-  return *values[currentIndex - 1];
+	int i = indexOf(key);
+	if(i >= 0) {
+		return *values[i];
+	}
+	if(currentIndex >= size) {
+		allocate(currentIndex + 1);
+	}
+	*keys[currentIndex] = key;
+	*values[currentIndex] = nil;
+	currentIndex++;
+	return *values[currentIndex - 1];
 }
 
-template<typename K, typename V>
-void HashMap<K, V>::allocate(unsigned int newSize)
+template <typename K, typename V> void HashMap<K, V>::allocate(unsigned int newSize)
 {
-	if (newSize <= size) return;
+	if(newSize <= size)
+		return;
 
 	K** nkeys = new K*[newSize];
 	V** nvalues = new V*[newSize];
 
-	if (keys != nullptr)
-	{
-		for (unsigned i = 0; i < size; i++)
-		{
+	if(keys != nullptr) {
+		for(unsigned i = 0; i < size; i++) {
 			nkeys[i] = keys[i];
 			nvalues[i] = values[i];
 		}
@@ -262,8 +262,7 @@ void HashMap<K, V>::allocate(unsigned int newSize)
 		delete[] keys;
 		delete[] values;
 	}
-	for (unsigned i = size; i < newSize; i++)
-	{
+	for(unsigned i = size; i < newSize; i++) {
 		nkeys[i] = new K();
 		nvalues[i] = new V();
 	}
@@ -273,53 +272,39 @@ void HashMap<K, V>::allocate(unsigned int newSize)
 	size = newSize;
 }
 
-template<typename K, typename V>
-int HashMap<K, V>::indexOf(const K& key) const
+template <typename K, typename V> int HashMap<K, V>::indexOf(const K& key) const
 {
-  for (unsigned i = 0; i < currentIndex; i++)
-  {
-    if (cb_comparator)
-    {
-      if (cb_comparator(key, *keys[i]))
-      {
-        return i;
-      }
-    }
-    else
-    {
-      if (key == *keys[i])
-      {
-        return i;
-      }
-    }
-  }
-  return -1;
+	for(unsigned i = 0; i < currentIndex; i++) {
+		if(cb_comparator) {
+			if(cb_comparator(key, *keys[i])) {
+				return i;
+			}
+		} else {
+			if(key == *keys[i]) {
+				return i;
+			}
+		}
+	}
+	return -1;
 }
 
-
-
-template<typename K, typename V>
-void HashMap<K, V>::removeAt(unsigned index)
+template <typename K, typename V> void HashMap<K, V>::removeAt(unsigned index)
 {
-  if (index >= currentIndex)
-    return;
+	if(index >= currentIndex)
+		return;
 
-  for (unsigned i = index + 1; i < size; i++)
-  {
-    *keys[i - 1] = *keys[i];
-    *values[i - 1] = *values[i];
-  }
+	for(unsigned i = index + 1; i < size; i++) {
+		*keys[i - 1] = *keys[i];
+		*values[i - 1] = *values[i];
+	}
 
-  currentIndex--;
+	currentIndex--;
 }
 
-template<typename K, typename V>
-void HashMap<K, V>::clear()
+template <typename K, typename V> void HashMap<K, V>::clear()
 {
-	if (keys != nullptr)
-	{
-		for (unsigned i = 0; i < size; i++)
-		{
+	if(keys != nullptr) {
+		for(unsigned i = 0; i < size; i++) {
 			delete keys[i];
 			delete values[i];
 		}
@@ -332,12 +317,9 @@ void HashMap<K, V>::clear()
 	size = 0;
 }
 
-template<typename K, typename V>
-void HashMap<K, V>::setMultiple(const HashMap<K, V>& map)
+template <typename K, typename V> void HashMap<K, V>::setMultiple(const HashMap<K, V>& map)
 {
-	for (unsigned i = 0; i < map.count(); i++)
-	{
+	for(unsigned i = 0; i < map.count(); i++) {
 		(*this)[map.keyAt(i)] = *(map.values)[i];
 	}
 }
-
