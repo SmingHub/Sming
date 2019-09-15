@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "WiringFrameworkDependencies.h"
+#include <stdint.h>
 
 template<typename K, typename V>
 class HashMap
