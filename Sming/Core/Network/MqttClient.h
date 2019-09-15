@@ -100,7 +100,7 @@ public:
 
 	void setEventHandler(mqtt_type_t type, MqttDelegate handler)
 	{
-		eventHandler[type] = handler;
+		eventHandlers[type] = handler;
 	}
 
 	/**
@@ -123,7 +123,7 @@ public:
 	 */
 	void setConnectedHandler(MqttDelegate handler)
 	{
-		eventHandler[MQTT_TYPE_CONNACK] = handler;
+		eventHandlers[MQTT_TYPE_CONNACK] = handler;
 	}
 
 	/**
@@ -134,8 +134,8 @@ public:
 	 */
 	void setPublishedHandler(MqttDelegate handler)
 	{
-		eventHandler[MQTT_TYPE_PUBACK] = handler;
-		eventHandler[MQTT_TYPE_PUBREC] = handler;
+		eventHandlers[MQTT_TYPE_PUBACK] = handler;
+		eventHandlers[MQTT_TYPE_PUBREC] = handler;
 	}
 
 	/**
@@ -145,7 +145,7 @@ public:
 	 */
 	void setMessageHandler(MqttDelegate handler)
 	{
-		eventHandler[MQTT_TYPE_PUBLISH] = handler;
+		eventHandlers[MQTT_TYPE_PUBLISH] = handler;
 	}
 
 	/**
@@ -233,6 +233,7 @@ private:
 	static int staticOnDataPayload(void* user_data, mqtt_message_t* message, const char* data, size_t length);
 	static int staticOnDataEnd(void* user_data, mqtt_message_t* message);
 	static int staticOnMessageEnd(void* user_data, mqtt_message_t* message);
+	int onMessageEnd(mqtt_message_t* message);
 
 #ifndef MQTT_NO_COMPAT
 	/** @deprecated This method is only for compatibility with the previous release and will be removed soon. */
@@ -286,7 +287,8 @@ private:
 	Url url;
 
 	// callbacks
-	HashMap<mqtt_type_t, MqttDelegate> eventHandler;
+	using HandlerMap = HashMap<mqtt_type_t, MqttDelegate>;
+	HandlerMap eventHandlers;
 	MqttPayloadParser payloadParser = nullptr;
 
 	// states
@@ -306,8 +308,8 @@ private:
 	mqtt_message_t incomingMessage;
 
 	// parsers and serializers
-	static mqtt_serialiser_t serialiser;
-	static mqtt_parser_callbacks_t callbacks;
+	mqtt_serialiser_t serialiser;
+	static const mqtt_parser_callbacks_t callbacks;
 	mqtt_parser_t parser;
 
 	// client flags
