@@ -22,7 +22,7 @@
 
 #include "Stream.h"
 
-#include "Clock.h"
+#include <Platform/Timers.h>
 
 #define PARSE_TIMEOUT 1000  // default number of milli-seconds to wait
 #define NO_SKIP_CHAR  1  // a magic char not found in a valid ASCII numeric field
@@ -30,11 +30,11 @@
 // private method to read stream with timeout
 int Stream::timedRead()
 {
-  startMillis = millis();
+  OneShotFastMs timer(receiveTimeout);
   do {
     int c = read();
     if (c >= 0) return c;
-  } while(millis() - startMillis < receiveTimeout);
+  } while(!timer.expired());
   return -1;     // -1 indicates timeout
 }
 
@@ -42,11 +42,11 @@ int Stream::timedRead()
 int Stream::timedPeek()
 {
   int c;
-  startMillis = millis();
+  OneShotFastMs timer(receiveTimeout);
   do {
     c = peek();
     if (c >= 0) return c;
-  } while(millis() - startMillis < receiveTimeout);
+  } while(!timer.expired());
   return -1;     // -1 indicates timeout
 }
 
