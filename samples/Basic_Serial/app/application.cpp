@@ -175,10 +175,10 @@ void testPrintf()
 	Serial.printf("Display -99:%d, \t\t-3.0104:%f, \t'abc'=%s, \t\t0.75:%f, \t\t0.888888889:%f\r\n", -99, -3.01040,
 				  "abc", 3.0 / 4, 8.0 / 9);
 
-	Serial.printf("Display '   -99':%6d, \t-3.010:%.3f, \t\t'abc'=%5s, \t\t0.75000:%-+.5f, \t0.888888889:%#*f\r\n", -99,
+	Serial.printf("Display '   -99':%6d, \t-3.010:%.3f, \t\t'abc'=%5s, \t\t0.75000:%-+.5f, \t0.888888889:%f\r\n", -99,
 				  -3.01040, "abc", 3.0 / 4, 8.0 / 9);
 
-	Serial.printf("Display -99:%3d, \t\t-3.010:%.3f, \t\t'abc'=%#s, \t\t' 0.75':%5f, \t\t0.889:%.3f\r\n", -99, -3.01040,
+	Serial.printf("Display -99:%3d, \t\t-3.010:%.3f, \t\t'abc'=%s, \t\t' 0.75':%5f, \t\t0.889:%.3f\r\n", -99, -3.01040,
 				  "abc", 3.0 / 4, 8.0 / 9);
 
 	Serial.printf("Display -99:%.3d, \t\t-3.0104000:%.7f, \t'abc'=%s, \t\t0.750:%.3f, \t\t' 0.889':%6.3f\r\n", -99,
