@@ -236,7 +236,7 @@ void init()
 	 * to refill the buffer when it becomes empty. This demo shows how that can be done for outputting a file.
 	 */
 	Serial.setTxBufferSize(2048);
-	// Serial.setTxWait(false);
+	Serial.setTxWait(false);
 
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 
@@ -285,6 +285,8 @@ void init()
 
 	// Initialise and prepare the second (debug) serial port
 	Serial1.begin(SERIAL_BAUD_RATE);
+	Serial1.setTxBufferSize(1024);
+	Serial1.setTxWait(false);
 
 	/*
 	 * The line below redirect debug output to UART1
