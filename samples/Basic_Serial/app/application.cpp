@@ -175,10 +175,10 @@ void testPrintf()
 	Serial.printf("Display -99:%d, \t\t-3.0104:%f, \t'abc'=%s, \t\t0.75:%f, \t\t0.888888889:%f\r\n", -99, -3.01040,
 				  "abc", 3.0 / 4, 8.0 / 9);
 
-	Serial.printf("Display '   -99':%6d, \t-3.010:%.3f, \t\t'abc'=%5s, \t\t0.75000:%-+.5f, \t0.888888889:%#*f\r\n", -99,
+	Serial.printf("Display '   -99':%6d, \t-3.010:%.3f, \t\t'abc'=%5s, \t\t0.75000:%-+.5f, \t0.888888889:%f\r\n", -99,
 				  -3.01040, "abc", 3.0 / 4, 8.0 / 9);
 
-	Serial.printf("Display -99:%3d, \t\t-3.010:%.3f, \t\t'abc'=%#s, \t\t' 0.75':%5f, \t\t0.889:%.3f\r\n", -99, -3.01040,
+	Serial.printf("Display -99:%3d, \t\t-3.010:%.3f, \t\t'abc'=%s, \t\t' 0.75':%5f, \t\t0.889:%.3f\r\n", -99, -3.01040,
 				  "abc", 3.0 / 4, 8.0 / 9);
 
 	Serial.printf("Display -99:%.3d, \t\t-3.0104000:%.7f, \t'abc'=%s, \t\t0.750:%.3f, \t\t' 0.889':%6.3f\r\n", -99,
@@ -236,7 +236,7 @@ void init()
 	 * to refill the buffer when it becomes empty. This demo shows how that can be done for outputting a file.
 	 */
 	Serial.setTxBufferSize(2048);
-	// Serial.setTxWait(false);
+	Serial.setTxWait(false);
 
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 
@@ -285,6 +285,8 @@ void init()
 
 	// Initialise and prepare the second (debug) serial port
 	Serial1.begin(SERIAL_BAUD_RATE);
+	Serial1.setTxBufferSize(1024);
+	Serial1.setTxWait(false);
 
 	/*
 	 * The line below redirect debug output to UART1

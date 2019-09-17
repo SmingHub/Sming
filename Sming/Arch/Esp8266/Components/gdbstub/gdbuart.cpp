@@ -13,6 +13,7 @@
 #include "gdbuart.h"
 #include "GdbPacket.h"
 #include <driver/uart.h>
+#include <espinc/uart_register.h>
 #include <driver/SerialBuffer.h>
 #include <Platform/System.h>
 #include <HardwareSerial.h>
@@ -34,13 +35,13 @@ static uint8_t break_requests;		  ///< How many times Ctrl+C was received before
 // Get number of characters in receive FIFO
 __forceinline static uint8_t uart_rxfifo_count(uint8_t nr)
 {
-	return (USS(nr) >> USRXC) & 0xff;
+	return (READ_PERI_REG(UART_STATUS(nr)) >> UART_RXFIFO_CNT_S) & UART_RXFIFO_CNT;
 }
 
 // Get number of characters in transmit FIFO
 __forceinline static uint8_t uart_txfifo_count(uint8_t nr)
 {
-	return (USS(nr) >> USTXC) & 0xff;
+	return (READ_PERI_REG(UART_STATUS(nr)) >> UART_TXFIFO_CNT_S) & UART_TXFIFO_CNT;
 }
 
 // Get available free characters in transmit FIFO
@@ -64,7 +65,7 @@ static int ATTR_GDBEXTERNFN gdb_uart_read_char()
 	if(uart_rxfifo_count(GDB_UART) == 0) {
 		c = -1;
 	} else {
-		c = USF(GDB_UART) & 0xff;
+		c = READ_PERI_REG(UART_FIFO(GDB_UART)) & 0xff;
 	}
 	return c;
 }
@@ -82,11 +83,11 @@ static size_t ATTR_GDBEXTERNFN gdb_uart_write(const void* data, size_t length)
 		while(uart_txfifo_full(GDB_UART)) {
 			//
 		}
-		USF(GDB_UART) = static_cast<const uint8_t*>(data)[i];
+		WRITE_PERI_REG(UART_FIFO(GDB_UART), static_cast<const uint8_t*>(data)[i]);
 	}
 
 	// Enable TX FIFO EMPTY interrupt
-	bitSet(USIE(GDB_UART), UIFE);
+	SET_PERI_REG_MASK(UART_INT_ENA(GDB_UART), UART_TXFIFO_EMPTY_INT_ENA);
 
 	return length;
 }
@@ -99,10 +100,10 @@ static size_t ATTR_GDBEXTERNFN gdb_uart_write_char(char c)
 	while(uart_txfifo_full(GDB_UART)) {
 		//
 	}
-	USF(GDB_UART) = c;
+	WRITE_PERI_REG(UART_FIFO(GDB_UART), c);
 
 	// Enable TX FIFO EMPTY interrupt
-	bitSet(USIE(GDB_UART), UIFE);
+	SET_PERI_REG_MASK(UART_INT_ENA(GDB_UART), UART_TXFIFO_EMPTY_INT_ENA);
 
 	return 1;
 }
@@ -276,10 +277,10 @@ static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
 	user_uart_status = status;
 
 	// TX FIFO empty ?
-	if(bitRead(status, UIFE)) {
+	if(status & UART_TXFIFO_EMPTY_INT_ST) {
 		// Disable TX FIFO EMPTY interrupt to stop it recurring - re-enabled by uart_write()
 		if(uart_txfifo_count(GDB_UART) == 0) {
-			bitClear(USIE(GDB_UART), UIFE);
+			CLEAR_PERI_REG_MASK(UART_INT_ENA(GDB_UART), UART_TXFIFO_EMPTY_INT_ENA);
 		}
 
 		auto txbuf = user_uart == nullptr ? nullptr : user_uart->tx_buffer;
@@ -288,28 +289,28 @@ static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
 			if(!txbuf->isEmpty()) {
 				// Yes - send it via task callback (because packetising code may not be in IRAM)
 				queueSendUserData();
-				bitClear(user_uart_status, UIFE);
+				user_uart_status &= ~UART_TXFIFO_EMPTY_INT_ST;
 			} else if(userDataSending) {
 				// User data has now all been sent - UIFE will remain set
 				userDataSending = false;
 			} else {
 				// No user data was in transit, so this event doesn't apply to user uart
-				bitClear(user_uart_status, UIFE);
+				user_uart_status &= ~UART_TXFIFO_EMPTY_INT_ST;
 			}
 		}
 	}
 #else
-	bitClear(USIE(GDB_UART), UIFE);
+	CLEAR_PERI_REG_MASK(UART_INT_ENA(GDB_UART), UART_TXFIFO_EMPTY_INT_ENA);
 #endif
 
 	// RX FIFO Full or RX FIFO Timeout ?
-	if(status & (_BV(UIFF) | _BV(UITO))) {
+	if(status & (UART_RXFIFO_FULL_INT_ST | UART_RXFIFO_TOUT_INT_ST)) {
 #if GDBSTUB_ENABLE_UART2
 		auto rxbuf = user_uart == nullptr ? nullptr : user_uart->rx_buffer;
 #endif
 
 		while(uart_rxfifo_count(GDB_UART) != 0) {
-			char c = USF(GDB_UART);
+			char c = READ_PERI_REG(UART_FIFO(GDB_UART));
 #if GDBSTUB_CTRLC_BREAK
 			bool breakCheck = gdb_state.enabled;
 #if GDBSTUB_CTRLC_BREAK == 1
@@ -341,7 +342,7 @@ static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
 			// When attached, nothing gets routed to UART2
 			if(!gdb_state.attached && rxbuf != nullptr) {
 				if(rxbuf->writeChar(c) == 0) {
-					bitSet(user_uart_status, UIOF); // Overflow
+					user_uart_status |= UART_RXFIFO_OVF_INT_ST; // Overflow
 				}
 			}
 #endif
@@ -351,10 +352,9 @@ static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
 		if(rxbuf != nullptr) {
 			if(rxbuf->isEmpty()) {
 				// This event doesn't apply to user uart
-				bitClear(user_uart_status, UIFF);
-				bitClear(user_uart_status, UITO);
+				user_uart_status &= ~(UART_RXFIFO_FULL_INT_ST | UART_RXFIFO_TOUT_INT_ST);
 			} else if(rxbuf->getFreeSpace() > size_t(UART_RX_FIFO_SIZE) + user_uart->rx_headroom) {
-				bitClear(user_uart_status, UIFF);
+				user_uart_status &= ~UART_RXFIFO_FULL_INT_ST;
 			}
 		}
 #endif

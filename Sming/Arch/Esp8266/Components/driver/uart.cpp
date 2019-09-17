@@ -48,6 +48,8 @@
 #include <WConstants.h>
 
 #include "driver/uart.h"
+#include <espinc/uart_register.h>
+
 #include "SerialBuffer.h"
 
 /*
@@ -73,13 +75,13 @@ static int s_uart_debug_nr = UART_NO;
 // Get number of characters in receive FIFO
 __forceinline static uint8_t uart_rxfifo_count(uint8_t nr)
 {
-	return (USS(nr) >> USRXC) & 0xff;
+	return (READ_PERI_REG(UART_STATUS(nr)) >> UART_RXFIFO_CNT_S) & UART_RXFIFO_CNT;
 }
 
 // Get number of characters in transmit FIFO
 __forceinline static uint8_t uart_txfifo_count(uint8_t nr)
 {
-	return (USS(nr) >> USTXC) & 0xff;
+	return (READ_PERI_REG(UART_STATUS(nr)) >> UART_TXFIFO_CNT_S) & UART_TXFIFO_CNT;
 }
 
 // Get available free characters in transmit FIFO
@@ -272,12 +274,14 @@ size_t uart_read(uart_t* uart, void* buffer, size_t size)
 	// Top up from hardware FIFO
 	if(is_physical(uart)) {
 		while(read < size && uart_rxfifo_count(uart->uart_nr) != 0) {
-			buf[read++] = USF(uart->uart_nr);
+			buf[read++] = READ_PERI_REG(UART_FIFO(uart->uart_nr));
 		}
 
 		// FIFO full may have been disabled if buffer overflowed, re-enabled it now
-		USIC(uart->uart_nr) = _BV(UIFF) | _BV(UITO) | _BV(UIOF);
-		USIE(uart->uart_nr) |= _BV(UIFF) | _BV(UITO) | _BV(UIOF);
+		WRITE_PERI_REG(UART_INT_CLR(uart->uart_nr),
+					   UART_RXFIFO_FULL_INT_CLR | UART_RXFIFO_TOUT_INT_CLR | UART_RXFIFO_OVF_INT_CLR);
+		SET_PERI_REG_MASK(UART_INT_ENA(uart->uart_nr),
+						  UART_RXFIFO_FULL_INT_ENA | UART_RXFIFO_TOUT_INT_ENA | UART_RXFIFO_OVF_INT_ENA);
 	}
 
 	return read;
@@ -309,7 +313,7 @@ size_t uart_rx_available(uart_t* uart)
  */
 static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, uart_t* uart)
 {
-	uint32_t usis = USIS(uart_nr);
+	uint32_t usis = READ_PERI_REG(UART_INT_ST(uart_nr));
 
 	// If status is clear there's no interrupt to service on this UART
 	if(usis == 0) {
@@ -326,7 +330,7 @@ static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, uart_t* uart)
 	 * (Calling uart_detach_all() at startup pre-empts all this.)
 	 */
 	if(uart == nullptr || !uart_isr_enabled(uart_nr)) {
-		USIE(uart_nr) = 0;
+		WRITE_PERI_REG(UART_INT_ENA(uart_nr), 0);
 		return;
 	}
 
@@ -336,7 +340,7 @@ static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, uart_t* uart)
 	// Deal with the event, unless we're in raw mode
 	if(!bitRead(uart->options, UART_OPT_CALLBACK_RAW)) {
 		// Rx FIFO full or timeout
-		if(usis & (_BV(UIFF) | _BV(UITO) | _BV(UIOF))) {
+		if(usis & (UART_RXFIFO_FULL_INT_ST | UART_RXFIFO_TOUT_INT_ST | UART_RXFIFO_OVF_INT_ST)) {
 			size_t read = 0;
 
 			// Read as much data as possible from the RX FIFO into buffer
@@ -346,7 +350,8 @@ static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, uart_t* uart)
 				read = (avail <= space) ? avail : space;
 				space -= read;
 				while(read-- != 0) {
-					uart->rx_buffer->writeChar(USF(uart_nr));
+					uint8_t c = READ_PERI_REG(UART_FIFO(uart_nr));
+					uart->rx_buffer->writeChar(c);
 				}
 
 				// Don't call back until buffer is (almost) full
@@ -360,31 +365,31 @@ static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, uart_t* uart)
 			 * The interrupt gets re-enabled by a call to uart_read() or uart_flush()
 			 */
 			if(bitRead(usis, UIOF)) {
-				bitClear(USIE(uart_nr), UIOF);
+				CLEAR_PERI_REG_MASK(UART_INT_ENA(uart_nr), UART_RXFIFO_OVF_INT_ENA);
 			} else if(read == 0) {
-				USIE(uart_nr) &= ~(_BV(UIFF) | _BV(UITO));
+				CLEAR_PERI_REG_MASK(UART_INT_ENA(uart_nr), UART_RXFIFO_FULL_INT_ENA | UART_RXFIFO_TOUT_INT_ENA);
 			}
 		}
 
 		// Unless we replenish TX FIFO, disable after handling interrupt
-		if(bitRead(usis, UIFE)) {
+		if(usis & UART_TXFIFO_EMPTY_INT_ST) {
 			// Dump as much data as we can from buffer into the TX FIFO
 			if(uart->tx_buffer != nullptr) {
 				size_t space = uart_txfifo_free(uart_nr);
 				size_t avail = uart->tx_buffer->available();
 				size_t count = (avail <= space) ? avail : space;
 				while(count-- != 0) {
-					USF(uart_nr) = uart->tx_buffer->readChar();
+					WRITE_PERI_REG(UART_FIFO(uart_nr), uart->tx_buffer->readChar());
 				}
 			}
 
 			// If TX FIFO remains empty then we must disable TX FIFO EMPTY interrupt to stop it recurring.
 			if(uart_txfifo_count(uart_nr) == 0) {
 				// The interrupt gets re-enabled by uart_write()
-				bitClear(USIE(uart_nr), UIFE);
+				CLEAR_PERI_REG_MASK(UART_INT_ENA(uart_nr), UART_TXFIFO_EMPTY_INT_ENA);
 			} else {
 				// We've topped up TX FIFO so defer callback until next time
-				bitClear(status, UIFE);
+				status &= ~UART_TXFIFO_EMPTY_INT_ST;
 			}
 		}
 	}
@@ -397,7 +402,7 @@ static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, uart_t* uart)
 	}
 
 	// Final step is to clear status flags
-	USIC(uart_nr) = usis;
+	WRITE_PERI_REG(UART_INT_CLR(uart_nr), usis);
 }
 
 /** @brief UART interrupt service routine
@@ -415,28 +420,18 @@ void uart_start_isr(uart_t* uart)
 		return;
 	}
 
-	uint32_t usc1 = 0;
-	uint32_t usie = 0;
+	uint32_t conf1 = 0;
+	uint32_t intena = 0;
 
 	if(uart_rx_enabled(uart)) {
-		/* UCFFT: RX FIFO Full Threshold
-		 * UCTOT: RX TimeOut Treshold
-		 * UCTOE: RX TimeOut Enable
-		 */
-		usc1 = (120 << UCFFT) | (0x02 << UCTOT) | _BV(UCTOE);
+		conf1 = (120 << UART_RXFIFO_FULL_THRHD_S) | (0x02 << UART_RX_TOUT_THRHD_S) | UART_RX_TOUT_EN;
+
 		/*
-		 * UIBD: Break Detected
-		 * UIOF: RX FIFO OverFlow
-		 * UIFF: RX FIFO Full
-		 * UIFR: Frame Error
-		 * UIPE: Parity Error
-		 * UITO: RX FIFO Timeout
-		 *
 		 * There is little benefit in generating interrupts on errors, instead these
 		 * should be cleared at the start of a transaction and checked at the end.
 		 * See uart_get_status().
 		 */
-		usie = _BV(UIFF) | _BV(UITO) | _BV(UIBD) | _BV(UIOF);
+		intena = UART_RXFIFO_FULL_INT_ENA | UART_RXFIFO_TOUT_INT_ENA | UART_BRK_DET_INT_ENA | UART_RXFIFO_OVF_INT_ENA;
 	}
 
 	if(uart_tx_enabled(uart)) {
@@ -449,13 +444,13 @@ void uart_start_isr(uart_t* uart)
 		 */
 
 		// TX FIFO empty threshold
-		// usc1 |= (0 << UCFET);
+		// conf1 |= (0 << UART_TXFIFO_EMPTY_THRHD_S);
 		// TX FIFO empty interrupt only gets enabled via uart_write function()
 	}
 
-	USC1(uart->uart_nr) = usc1;
-	USIC(uart->uart_nr) = 0xffff;
-	USIE(uart->uart_nr) = usie;
+	WRITE_PERI_REG(UART_CONF1(uart->uart_nr), conf1);
+	WRITE_PERI_REG(UART_INT_CLR(uart->uart_nr), 0xffff);
+	WRITE_PERI_REG(UART_INT_ENA(uart->uart_nr), intena);
 
 	uint8_t oldmask = isrMask;
 
@@ -485,11 +480,11 @@ size_t uart_write(uart_t* uart, const void* buffer, size_t size)
 			// If TX buffer not in use or it's empty then write directly to hardware FIFO
 			if(uart->tx_buffer == nullptr || uart->tx_buffer->isEmpty()) {
 				while(written < size && !uart_txfifo_full(uart->uart_nr)) {
-					USF(uart->uart_nr) = buf[written++];
+					WRITE_PERI_REG(UART_FIFO(uart->uart_nr), buf[written++]);
 				}
 				// Enable TX FIFO EMPTY interrupt
-				USIC(uart->uart_nr) = _BV(UIFE);
-				bitSet(USIE(uart->uart_nr), UIFE);
+				WRITE_PERI_REG(UART_INT_CLR(uart->uart_nr), UART_TXFIFO_EMPTY_INT_CLR);
+				SET_PERI_REG_MASK(UART_INT_ENA(uart->uart_nr), UART_TXFIFO_EMPTY_INT_ENA);
 			}
 		}
 
@@ -562,14 +557,16 @@ uint8_t uart_get_status(uart_t* uart)
 	if(uart != nullptr) {
 		uart_disable_interrupts();
 		// Get break/overflow flags from actual uart (physical or otherwise)
-		status = uart->status & (_BV(UIBD) | _BV(UIOF));
+		status = uart->status & (UART_BRK_DET_INT_ST | UART_RXFIFO_OVF_INT_ST);
 		uart->status = 0;
 		// Read raw status register directly from real uart, masking out non-error bits
 		uart = get_physical(uart);
 		if(uart != nullptr) {
-			status |= USIR(uart->uart_nr) & (_BV(UIBD) | _BV(UIOF) | _BV(UIFR) | _BV(UIPE));
+			uint32_t intraw = READ_PERI_REG(UART_INT_RAW(uart->uart_nr));
+			intraw &= UART_BRK_DET_INT_ST | UART_RXFIFO_OVF_INT_ST | UART_FRM_ERR_INT_ST | UART_PARITY_ERR_INT_ST;
+			status |= intraw;
 			// Clear errors
-			USIC(uart->uart_nr) = status;
+			WRITE_PERI_REG(UART_INT_CLR(uart->uart_nr), status);
 		}
 		uart_restore_interrupts();
 	}
@@ -598,23 +595,24 @@ void uart_flush(uart_t* uart, uart_mode_t mode)
 		// Clear the hardware FIFOs
 		uint32_t flushBits = 0;
 		if(flushTx) {
-			bitSet(flushBits, UCTXRST);
+			flushBits |= UART_TXFIFO_RST;
 		}
 		if(flushRx) {
-			bitSet(flushBits, UCRXRST);
+			flushBits |= UART_RXFIFO_RST;
 		}
-		USC0(uart->uart_nr) |= flushBits;
-		USC0(uart->uart_nr) &= ~flushBits;
+		SET_PERI_REG_MASK(UART_CONF0(uart->uart_nr), flushBits);
+		CLEAR_PERI_REG_MASK(UART_CONF0(uart->uart_nr), flushBits);
 
 		if(flushTx) {
 			// Prevent TX FIFO EMPTY interrupts - don't need them until uart_write is called again
-			bitClear(USIE(uart->uart_nr), UIFE);
+			CLEAR_PERI_REG_MASK(UART_INT_ENA(uart->uart_nr), UART_TXFIFO_EMPTY_INT_ENA);
 		}
 
 		// If receive overflow occurred then these interrupts will be masked
 		if(flushRx) {
-			USIC(uart->uart_nr) = 0xffff & ~_BV(UIFE);
-			USIE(uart->uart_nr) |= _BV(UIFF) | _BV(UITO) | _BV(UIOF);
+			WRITE_PERI_REG(UART_INT_CLR(uart->uart_nr), ~UART_TXFIFO_EMPTY_INT_CLR);
+			SET_PERI_REG_MASK(UART_INT_ENA(uart->uart_nr),
+							  UART_RXFIFO_FULL_INT_ENA | UART_RXFIFO_TOUT_INT_ENA | UART_RXFIFO_OVF_INT_ENA);
 		}
 	}
 
@@ -628,7 +626,7 @@ uint32_t uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate)
 	}
 
 	uint32_t clkdiv = ESP8266_CLOCK / baud_rate;
-	USD(uart_nr) = clkdiv;
+	WRITE_PERI_REG(UART_CLKDIV(uart_nr), clkdiv);
 	// Return the actual baud rate in use
 	baud_rate = clkdiv ? ESP8266_CLOCK / clkdiv : 0;
 	return baud_rate;
@@ -718,8 +716,8 @@ uart_t* uart_init_ex(const uart_config& cfg)
 			}
 		}
 
-		bitClear(IOSWAP, IOSWAPU0);
-		USC0(UART0) = cfg.config;
+		CLEAR_PERI_REG_MASK(UART_SWAP_REG, UART_SWAP0);
+		WRITE_PERI_REG(UART_CONF0(UART0), cfg.config);
 		break;
 
 	case UART1:
@@ -741,7 +739,7 @@ uart_t* uart_init_ex(const uart_config& cfg)
 		// GPIO7 as TX not possible! See GPIO pins used by UART
 		uart->tx_pin = 2;
 		pinMode(uart->tx_pin, SPECIAL);
-		USC0(UART1) = cfg.config;
+		WRITE_PERI_REG(UART_CONF0(UART1), cfg.config);
 		break;
 
 	default:
@@ -837,13 +835,15 @@ void uart_swap(uart_t* uart, int tx_pin)
 				uart->rx_pin = 13;
 			}
 
-			if(uart_tx_enabled(uart))
+			if(uart_tx_enabled(uart)) {
 				pinMode(uart->tx_pin, FUNCTION_4);
+			}
 
-			if(uart_rx_enabled(uart))
+			if(uart_rx_enabled(uart)) {
 				pinMode(uart->rx_pin, FUNCTION_4);
+			}
 
-			bitSet(IOSWAP, IOSWAPU0);
+			SET_PERI_REG_MASK(UART_SWAP_REG, UART_SWAP0);
 		} else {
 			if(uart_tx_enabled(uart)) {
 				pinMode(uart->tx_pin, INPUT);
@@ -855,13 +855,15 @@ void uart_swap(uart_t* uart, int tx_pin)
 				uart->rx_pin = 3;
 			}
 
-			if(uart_tx_enabled(uart))
+			if(uart_tx_enabled(uart)) {
 				pinMode(uart->tx_pin, (tx_pin == 2) ? FUNCTION_4 : SPECIAL);
+			}
 
-			if(uart_rx_enabled(uart))
+			if(uart_rx_enabled(uart)) {
 				pinMode(3, SPECIAL);
+			}
 
-			bitClear(IOSWAP, IOSWAPU0);
+			CLEAR_PERI_REG_MASK(UART_SWAP_REG, UART_SWAP0);
 		}
 
 		break;
@@ -959,9 +961,9 @@ void uart_detach(int uart_nr)
 
 	uart_disable_interrupts();
 	bitClear(isrMask, uart_nr);
-	USC1(uart_nr) = 0;
-	USIC(uart_nr) = 0xffff;
-	USIE(uart_nr) = 0;
+	WRITE_PERI_REG(UART_CONF1(uart_nr), 0);
+	WRITE_PERI_REG(UART_INT_CLR(uart_nr), 0xffff);
+	WRITE_PERI_REG(UART_INT_ENA(uart_nr), 0);
 	uart_restore_interrupts();
 }
 
@@ -969,9 +971,9 @@ void uart_detach_all()
 {
 	uart_disable_interrupts();
 	for(unsigned uart_nr = 0; uart_nr < UART_PHYSICAL_COUNT; ++uart_nr) {
-		USC1(uart_nr) = 0;
-		USIC(uart_nr) = 0xffff;
-		USIE(uart_nr) = 0;
+		WRITE_PERI_REG(UART_CONF1(uart_nr), 0);
+		WRITE_PERI_REG(UART_INT_CLR(uart_nr), 0xffff);
+		WRITE_PERI_REG(UART_INT_ENA(uart_nr), 0);
 	}
 	isrMask = 0;
 }

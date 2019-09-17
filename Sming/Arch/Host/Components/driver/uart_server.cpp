@@ -18,8 +18,7 @@
  ****/
 
 #include "uart_server.h"
-
-#include <espinc/peri.h>
+#include <espinc/uart_register.h>
 #include <SerialBuffer.h>
 #include <BitManipulations.h>
 
@@ -145,9 +144,9 @@ int CUartServer::serviceRead()
 			}
 			space -= read;
 			if(space == 0) {
-				bitSet(uart->status, UIFF);
+				uart->status |= UART_RXFIFO_FULL_INT_ST;
 			} else {
-				bitSet(uart->status, UITO);
+				uart->status |= UART_RXFIFO_TOUT_INT_ST;
 			}
 		}
 	}
@@ -185,7 +184,7 @@ int CUartServer::serviceWrite()
 	} while((avail = txbuf->getReadData(data)) != 0);
 
 	if(txbuf->isEmpty()) {
-		bitSet(uart->status, UIFE);
+		uart->status |= UART_TXFIFO_EMPTY_INT_ST;
 	} else {
 		txsem.post();
 	}
