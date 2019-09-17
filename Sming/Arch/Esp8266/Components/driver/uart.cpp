@@ -43,12 +43,11 @@
  * NC = Not Connected to Module Pads --> No Access
  *
  */
-#include "Clock.h"
-#include "Digital.h"
+#include <Digital.h>
+#include <BitManipulations.h>
+#include <WConstants.h>
 
 #include "driver/uart.h"
-#include "espinc/peri.h"
-
 #include "SerialBuffer.h"
 
 /*
@@ -60,7 +59,7 @@
  * For the hardware FIFO, data is processed via interrupt so the headroom can be fairly small.
  * The greater the headroom, the more interrupts will be generated thus reducing efficiency.
  */
-#define RX_FIFO_FULL_THRESHOLD 120 ///< UIFF interrupt when FIFO bytes > threshold
+#define RX_FIFO_FULL_THRESHOLD 120									  ///< UIFF interrupt when FIFO bytes > threshold
 #define RX_FIFO_HEADROOM (UART_RX_FIFO_SIZE - RX_FIFO_FULL_THRESHOLD) ///< Chars between UIFF and UIOF
 /*
  * Using a buffer, data is typically processed via task callback so requires additional time.
@@ -539,13 +538,13 @@ void uart_wait_tx_empty(uart_t* uart)
 
 	if(uart->tx_buffer != nullptr) {
 		while(!uart->tx_buffer->isEmpty()) {
-			delay(0);
+			system_soft_wdt_feed();
 		}
 	}
 
 	if(is_physical(uart)) {
 		while(uart_txfifo_count(uart->uart_nr) != 0)
-			delay(0);
+			system_soft_wdt_feed();
 	}
 }
 

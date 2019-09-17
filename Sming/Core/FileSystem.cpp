@@ -9,7 +9,8 @@
  ****/
 
 #include "FileSystem.h"
-#include "WString.h"
+#include <WString.h>
+#include <debug_progmem.h>
 
 file_t fileOpen(const String& name, FileOpenFlags flags)
 {

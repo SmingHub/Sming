@@ -8,10 +8,10 @@
  *
  ****/
 
-#include "Interrupts.h"
-#include "Digital.h"
-#include "WiringFrameworkIncludes.h"
-#include "Platform/System.h"
+#include <Interrupts.h>
+#include <Digital.h>
+#include <Platform/System.h>
+#include <BitManipulations.h>
 
 static InterruptCallback gpioInterruptsList[16] = {0};
 static InterruptDelegate delegateFunctionList[16];

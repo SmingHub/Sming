@@ -4,8 +4,20 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * uart.h
+ * gpio.h
  *
  ****/
 
-#include_next <driver/uart.h>
+#pragma once
+
+#include <c_types.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <gpio.h>
+
+#ifdef __cplusplus
+}
+#endif

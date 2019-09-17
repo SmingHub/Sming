@@ -59,11 +59,6 @@ typedef enum {
 #define REG_CLR_BIT(_r, _b)  (*(volatile uint32_t*)(_r) &= ~(_b))
 
 #undef assert
-#ifdef SMING_RELEASE
-#define debugf(fmt, ...)
-#else
-#define debugf debug_i
-#endif
 #define assert(condition) \
 	do {\
 		if (!(condition)) SYSTEM_ERROR("ASSERT: %s %d", __FUNCTION__, __LINE__); \

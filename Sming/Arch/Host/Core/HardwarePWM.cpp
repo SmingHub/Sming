@@ -23,9 +23,9 @@
  *
  */
 
-#include "HardwarePWM.h"
+#include <HardwarePWM.h>
 
-HardwarePWM::HardwarePWM(uint8* pins, uint8 no_of_pins) : channel_count(no_of_pins)
+HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_of_pins)
 {
 }
 
@@ -33,27 +33,27 @@ HardwarePWM::~HardwarePWM()
 {
 }
 
-uint8 HardwarePWM::getChannel(uint8 pin)
+uint8_t HardwarePWM::getChannel(uint8_t pin)
 {
 	return PWM_BAD_CHANNEL;
 }
 
-uint32 HardwarePWM::getDutyChan(uint8 chan)
+uint32_t HardwarePWM::getDutyChan(uint8_t chan)
 {
 	return 0;
 }
 
-bool HardwarePWM::setDutyChan(uint8 chan, uint32 duty, bool update)
+bool HardwarePWM::setDutyChan(uint8_t chan, uint32_t duty, bool update)
 {
 	return false;
 }
 
-uint32 HardwarePWM::getPeriod()
+uint32_t HardwarePWM::getPeriod()
 {
 	return 0;
 }
 
-void HardwarePWM::setPeriod(uint32 period)
+void HardwarePWM::setPeriod(uint32_t period)
 {
 }
 

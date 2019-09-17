@@ -7,11 +7,10 @@
 
 #pragma once
 
-#include "Network/TcpClient.h"
-#include "Stream.h"
-#include "Print.h"
-#include "WiringFrameworkDependencies.h"
-#include "Network/Http/Websocket/WebsocketConnection.h"
+#include <Network/TcpClient.h>
+#include <Stream.h>
+#include <Print.h>
+#include <Network/Http/Websocket/WebsocketConnection.h>
 
 class CommandOutput : public Print
 {

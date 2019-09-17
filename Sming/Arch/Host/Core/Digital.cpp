@@ -9,7 +9,6 @@
  ****/
 
 #include <Digital.h>
-#include <WiringFrameworkIncludes.h>
 #include "DigitalHooks.h"
 
 // Wemos D1 mini has pin 16

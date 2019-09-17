@@ -16,7 +16,7 @@
 #include "m_printf.h"
 
 #if ENABLE_CMD_EXECUTOR
-#include "../Services/CommandProcessing/CommandExecutor.h"
+#include <Services/CommandProcessing/CommandExecutor.h>
 #endif
 
 HardwareSerial Serial(UART_ID_0);

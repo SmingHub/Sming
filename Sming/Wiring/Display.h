@@ -17,7 +17,6 @@
 #pragma once
 
 #include "Print.h"
-#include "WiringFrameworkIncludes.h"
 
 class Display : public Print
 {

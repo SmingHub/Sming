@@ -20,6 +20,7 @@
 #include "Countable.h"
 #include <stdlib.h>
 #include <string.h>
+#include <algorithm>
 
 template <typename Element> class Vector : public Countable<Element>
 {

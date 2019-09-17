@@ -9,6 +9,7 @@
  */
 
 #include "HexString.h"
+#include <stringutil.h>
 
 String makeHexString(const uint8_t* data, unsigned length, char separator)
 {

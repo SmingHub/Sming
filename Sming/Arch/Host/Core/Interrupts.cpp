@@ -8,10 +8,9 @@
  *
  ****/
 
-#include "Interrupts.h"
-#include "Digital.h"
-#include "WiringFrameworkIncludes.h"
-#include "Platform/System.h"
+#include <Interrupts.h>
+#include <Digital.h>
+#include <Platform/System.h>
 
 void attachInterrupt(uint8_t pin, InterruptCallback callback, uint8_t mode)
 {

@@ -7,8 +7,7 @@
 
 #pragma once
 
-#include "WiringFrameworkIncludes.h"
-#include "Network/TcpClient.h"
+#include <Network/TcpClient.h>
 #include "CommandHandler.h"
 #include "CommandOutput.h"
 #include <Data/Buffer/LineBuffer.h>

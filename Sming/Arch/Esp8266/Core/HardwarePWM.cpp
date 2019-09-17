@@ -23,11 +23,10 @@
  *
  */
 
-#include "Clock.h"
-#include "WiringFrameworkIncludes.h"
+#include <Clock.h>
 #include "ESP8266EX.h"
 
-#include "HardwarePWM.h"
+#include <HardwarePWM.h>
 
 #define PERIOD_TO_MAX_DUTY(x) (x * 25)
 

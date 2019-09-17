@@ -8,9 +8,8 @@
  *
  ****/
 
-#include "Digital.h"
-#include "WiringFrameworkIncludes.h"
-#include "espinc/peri.h"
+#include <Digital.h>
+#include <espinc/peri.h>
 #include "ESP8266EX.h"
 
 const unsigned int A0 = 17; // Single ESP8266EX analog input pin (TOUT) 10 bit, 0..1v

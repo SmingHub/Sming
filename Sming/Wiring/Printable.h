@@ -35,11 +35,13 @@
 
 #pragma once
 
+#include <stddef.h>
+
 class Print;
 
 class Printable
 {
-  public:
+public:
     virtual ~Printable() { }
-    virtual size_t printTo(Print &p) const = 0;
+	virtual size_t printTo(Print& p) const = 0;
 };

@@ -8,10 +8,11 @@
  *
  ****/
 
+#include <user_config.h>
 #include "NetUtils.h"
-#include "Data/CStringArray.h"
+#include <Data/CStringArray.h>
+#include <WString.h>
 
-#include "WString.h"
 #ifdef __ets__
 #include "lwip/tcp_impl.h"
 #else

@@ -16,7 +16,8 @@
 
 #pragma once
 
-#include "WiringFrameworkDependencies.h"
+#include <stdint.h>
+#include <sming_attr.h>
 
 #ifdef __cplusplus
 extern "C" {

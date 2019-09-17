@@ -24,6 +24,7 @@ enum WifiAuthMode {
 	AUTH_MAX,
 };
 #else
+#include <esp_systemapi.h>
 typedef AUTH_MODE WifiAuthMode;
 #endif
 

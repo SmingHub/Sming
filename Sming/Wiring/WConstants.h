@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <user_config.h>
+#include <stdint.h>
 
 // Wiring API version for libraries
 // this is passed in at compile-time
@@ -28,7 +28,6 @@
 // passed in at compile-time
 #ifndef F_CPU
 #define F_CPU 80000000L
-#warning "F_CPU was not defined.  Default to 80 MHz."
 #endif
 
 /*************************************************************
@@ -61,11 +60,6 @@
 #define LSBFIRST 0x0
 #define MSBFIRST 0x1
 
-// Defined in ctypes
-//#define true     0x1
-//#define false    0x0
-//#define TRUE     0x1
-//#define FALSE    0x0
 #define null     NULL
 
 #define DEC      10
@@ -101,25 +95,9 @@
  * Useful macros
  *************************************************************/
 
-/*#define int(x)                         ((int)(x))
-#define char(x)                        ((char)(x))
-#define long(x)                        ((long)(x))
-#define byte(x)                        ((uint8_t)(x))
-#define float(x)                       ((float)(x))
-#define boolean(x)                     ((uint8_t)((x)==0?false:true))
-*/
-
 #define word(...) makeWord(__VA_ARGS__)
 
 #define sq(x)                          ((x)*(x))
-//#define abs(x)                         ((x)>0?(x):-(x))
-//#ifndef min
-//#define min(a,b)                       ((a)<(b)?(a):(b))
-//#endif
-//#ifndef max
-//#define max(a,b)                       ((a)>(b)?(a):(b))
-//#endif
-//#define round(x)                       ((x)>=0?(long)((x)+0.5):(long)((x)-0.5))
 #define radians(deg)                   ((deg)*DEG_TO_RAD)
 #define degrees(rad)                   ((rad)*RAD_TO_DEG)
 #define constrain(amt,low,high)        ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))

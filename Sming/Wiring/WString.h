@@ -50,8 +50,7 @@
 
 #ifdef __cplusplus
 
-#include "WiringFrameworkDependencies.h"
-#include "WVector.h"
+#include "WConstants.h"
 
 // @deprecated Should not be using String in interrupt context
 #define STRING_IRAM_ATTR // IRAM_ATTR

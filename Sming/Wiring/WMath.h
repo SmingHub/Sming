@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "WiringFrameworkIncludes.h"
+#include <stdint.h>
 
 long random(long);
 long random(long, long);

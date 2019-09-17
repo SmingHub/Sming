@@ -16,8 +16,7 @@
 
 #pragma once
 
-#include "WiringFrameworkDependencies.h"
-#include "IpAddress.h"
+#include <IpAddress.h>
 
 class UdpConnection;
 

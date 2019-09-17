@@ -19,8 +19,7 @@
 ||
 */
 
-#include "WiringFrameworkIncludes.h"
-
+#include "WMath.h"
 
 unsigned int static seed;
 

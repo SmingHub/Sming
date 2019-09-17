@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include "WiringFrameworkIncludes.h"
-
 // WCharacter.h prototypes
 inline bool isAlphaNumeric(int c) __attribute__((always_inline));
 inline bool isAlpha(int c) __attribute__((always_inline));

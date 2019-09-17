@@ -16,13 +16,11 @@
 #pragma once
 
 #ifdef ENABLE_SSL
-#include "axtls-8266/compat/lwipr_compat.h"
-#include "Clock.h"
+#include <axtls-8266/compat/lwipr_compat.h>
 #include "Ssl/SslStructs.h"
 #endif
 
-#include "WiringFrameworkDependencies.h"
-#include "IpAddress.h"
+#include <IpAddress.h>
 
 #define NETWORK_DEBUG
 
@@ -42,7 +40,6 @@ enum TcpConnectionEvent {
 struct pbuf;
 class String;
 class IDataSourceStream;
-class IpAddress;
 class TcpConnection;
 
 typedef Delegate<void(TcpConnection&)> TcpConnectionDestroyedDelegate;

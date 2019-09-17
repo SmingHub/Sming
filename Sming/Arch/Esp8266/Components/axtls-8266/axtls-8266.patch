@@ -31,14 +31,15 @@ diff -Nuar a/replacements/libc.c b/replacements/libc.c
 +    return ets_vprintf(ets_putc, format, arg);
 +}
 diff --git a/replacements/time.c b/replacements/time.c
-index 4972119..1a79aac 100644
+index 4972119..da75839 100644
 --- a/replacements/time.c
 +++ b/replacements/time.c
-@@ -24,20 +24,16 @@ extern uint64_t system_mktime(uint32_t year, uint32_t mon, uint32_t day, uint32_
+@@ -24,21 +24,14 @@ extern uint64_t system_mktime(uint32_t year, uint32_t mon, uint32_t day, uint32_
  
  static int errno_var = 0;
  
 -int* __errno(void) {
++// These functions are implemented in Espressif SDK versions 2 and later (libmain.a) so we weaken them to avoid linker problems
 +#define WEAK_ATTR __attribute__((weak))
 +
 +int* WEAK_ATTR __errno(void) {
@@ -50,17 +51,32 @@ index 4972119..1a79aac 100644
 -{
 -	return system_get_time() / 1000UL;
 -}
-+extern unsigned long millis(void);
- 
+-
 -unsigned long micros(void)
 -{
 -	return system_get_time();
 -}
-+extern unsigned long micros(void);
- 
+-
  #ifndef _TIMEVAL_DEFINED
  #define _TIMEVAL_DEFINED
-@@ -79,7 +75,7 @@ static void setServer(int id, const char* name_or_ip)
+ struct timeval {
+@@ -60,12 +53,12 @@ static time_t s_bootTime = 0;
+ // calculate offset used in gettimeofday
+ static void ensureBootTimeIsSet()
+ {
+-    if (!s_bootTime)
++    if (s_bootTime == 0)
+     {
+         time_t now = sntp_get_current_timestamp();
+-        if (now)
++        if (now != 0)
+         {
+-            s_bootTime =  now - millis() / 1000;
++            s_bootTime =  now - (system_get_time() / 1000000);
+         }
+     }
+ }
+@@ -79,7 +72,7 @@ static void setServer(int id, const char* name_or_ip)
      }
  }
  
@@ -69,16 +85,20 @@ index 4972119..1a79aac 100644
  {
      sntp_stop();
  
-@@ -93,7 +89,7 @@ void configTime(int timezone, int daylightOffset_sec, const char* server1, const
+@@ -93,22 +86,24 @@ void configTime(int timezone, int daylightOffset_sec, const char* server1, const
      sntp_init();
  }
  
 -int clock_gettime(clockid_t unused, struct timespec *tp)
 +int WEAK_ATTR clock_gettime(clockid_t unused, struct timespec *tp)
  {
-     tp->tv_sec  = millis() / 1000;
-     tp->tv_nsec = micros() * 1000;
-@@ -101,14 +97,14 @@ int clock_gettime(clockid_t unused, struct timespec *tp)
+-    tp->tv_sec  = millis() / 1000;
+-    tp->tv_nsec = micros() * 1000;
++    unsigned long us = system_get_time();
++    tp->tv_sec  = us / 1000000UL;
++    us %= 1000000UL;
++    tp->tv_nsec = us * 1000;
+     return 0;
  }
  
  // seconds since 1970
@@ -95,7 +115,7 @@ index 4972119..1a79aac 100644
  {
      time_t seconds = sntp_get_current_timestamp();
      if (t)
-@@ -118,24 +114,24 @@ time_t time(time_t * t)
+@@ -118,30 +113,32 @@ time_t time(time_t * t)
      return seconds;
  }
  
@@ -124,6 +144,16 @@ index 4972119..1a79aac 100644
  {
      if (tp)
      {
+         ensureBootTimeIsSet();
+-        tp->tv_sec  = (s_bootTime + millis()) / 1000;
+-        tp->tv_usec = micros() * 1000;
++        unsigned long us = system_get_time();
++        tp->tv_sec  = s_bootTime + (us / 1000000UL);
++        us %= 1000000UL;
++        tp->tv_usec = us * 1000UL;
+     }
+     return 0;
+ }
 diff --git a/ssl/os_port.h b/ssl/os_port.h
 index e0b9e46..7d85ff1 100644
 --- a/ssl/os_port.h

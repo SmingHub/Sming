@@ -15,7 +15,6 @@ String BssInfo::getAuthorizationMethodName() const
 	case AUTH_WPA_WPA2_PSK:
 		return F("WPA_WPA2_PSK");
 	default:
-		SYSTEM_ERROR("Unknown auth: %d", authorization);
-		return nullptr;
+		return F("UNKNOWN_") + authorization;
 	}
 }

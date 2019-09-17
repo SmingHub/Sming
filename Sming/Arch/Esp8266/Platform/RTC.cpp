@@ -8,7 +8,8 @@
  *
  ****/
 
-#include "Platform/RTC.h"
+#include <Platform/RTC.h>
+#include <esp_systemapi.h>
 
 RtcClass RTC;
 

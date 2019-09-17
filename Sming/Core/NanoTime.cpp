@@ -13,6 +13,7 @@
 #include "NanoTime.h"
 
 #include <WString.h>
+#include <stringconversion.h>
 
 namespace NanoTime
 {
