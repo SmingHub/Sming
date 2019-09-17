@@ -35,8 +35,9 @@
 
 #pragma once
 
+#include <Services/Profiling/MinMaxTimes.h>
 #include <SmingCore.h>
-#include "timing.h"
+using namespace Profiling;
 
 /**
  * @brief Class to simplify generation of begin/end messages for a test group

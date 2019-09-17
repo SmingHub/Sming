@@ -219,8 +219,8 @@ private:
 	uint64_t ref = 0;  // Reference result
 	TimeType calc = 0; // Calculated result
 	bool verbose = false;
-	CycleTimes refCycles;
-	CycleTimes calcCycles;
+	CpuCycleTimes refCycles;
+	CpuCycleTimes calcCycles;
 };
 
 /*
@@ -362,9 +362,7 @@ template <hw_timer_clkdiv_t clkdiv, typename TimeType> void testTimer1()
 	using TimeSource = NanoTime::TimeSource<Clock, NanoTime::Microseconds, TimeType>;
 	Clock timer1;
 
-	//	Timer1TestSource<NanoTime::Microseconds, uint32_t, TIMER_CLKDIV_16> timer1;
-
-	CycleTimes m1("ticks"), m2("ticks1"), m3("ticks2");
+	CpuCycleTimes m1("ticks"), m2("ticks1"), m3("ticks2");
 
 	for(unsigned i = 0; i < 5000; ++i) {
 		TimeType time = os_random(); //0x7fffffff;

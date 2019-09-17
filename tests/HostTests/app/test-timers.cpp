@@ -257,7 +257,7 @@ template <typename TimerApi> class CallbackTimerApiTest : public TestGroup
 public:
 	static constexpr unsigned iterations = 50;
 	TimerApi api;
-	CycleTimes times1, times2, times3, times4;
+	CpuCycleTimes times1, times2, times3, times4;
 
 	CallbackTimerApiTest()
 		: TestGroup(F("Callback timer API: ") + api.typeName()), times1("setCallback"), times2("setInterval"),
@@ -320,7 +320,7 @@ template <typename TimerType> class CallbackTimerSpeedTest : public TestGroup
 public:
 	static constexpr unsigned iterations = 50;
 	TimerType timer;
-	CycleTimes times1, times2a, times2b, times3a, times3b, times4, times5;
+	CpuCycleTimes times1, times2a, times2b, times3a, times3b, times4, times5;
 
 	CallbackTimerSpeedTest()
 		: TestGroup(F("Callback timer speed: ") + TimerType::typeName()), times1("setCallback"),
