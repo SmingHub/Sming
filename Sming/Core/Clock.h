@@ -29,7 +29,7 @@ extern "C" {
  *  @note   This function uses ESP8266 _system time_ clock which pauses during sleep. Function is provided for compatibility with Arduino. For date and time functionality, use SystemClock
  *  @see    SystemClockClass
  */
-unsigned long millis(void) WEAK_ATTR;
+unsigned long millis(void);
 
 /** @brief  Get the time from clock in microseconds
  *  @retval "unsigned long" Quantity of microseconds elapsed since clock epoch
@@ -37,7 +37,7 @@ unsigned long millis(void) WEAK_ATTR;
  *  @note   This function uses ESP8266 _system time_ clock which pauses during sleep. Function is provided for compatibility with Arduino. For date and time functionality, use SystemClock
  *  @see    SystemClockClass
  */
-unsigned long micros(void) WEAK_ATTR;
+unsigned long micros(void);
 
 /** @brief  Pause execution
  *  @param  milliseconds Duration of delay
