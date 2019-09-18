@@ -119,6 +119,7 @@ COMPONENT_LDFLAGS		:= -u Cache_Read_Enable_New
 $(LIBMAIN_RBOOT_DST): $(LIBMAIN_SRC)
 	@echo "OC $@"
 	$(Q) $(OBJCOPY) -W Cache_Read_Enable_New $^ $@
+	$(Q) $(AR) d $@ time.o
 
 ifeq ($(RBOOT_BIG_FLASH),1)
 LIBMAIN					:= $(LIBMAIN_RBOOT)
