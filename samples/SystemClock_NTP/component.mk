@@ -1,2 +1,5 @@
 DISABLE_SPIFFS = 1
-ARDUINO_LIBRARIES = SolarCalculator
+
+ARDUINO_LIBRARIES = \
+	Timezone \
+	SolarCalculator
