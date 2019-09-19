@@ -44,7 +44,7 @@ public:
      *  @param  timeType Time zone to use (UTC / local)
      *  @retval DateTime Current date and time
      */
-	time_t now(TimeZone timeType = eTZ_Local);
+	time_t now(TimeZone timeType = eTZ_Local) const;
 
 	/** @brief  Set the system clock's time
      *  @param  time Unix time to set clock to (quantity of seconds since 00:00:00 1970-01-01)
@@ -58,7 +58,7 @@ public:
      *  @retval String Current time in format: `dd.mm.yy hh:mm:ss`
      *  @note   Date separator may be changed by adding `#define DT_DATE_SEPARATOR "/"` to source code
      */
-	String getSystemTimeString(TimeZone timeType = eTZ_Local);
+	String getSystemTimeString(TimeZone timeType = eTZ_Local) const;
 
 	/** @brief  Sets the local time zone offset
      *  @param  seconds Offset from UTC of local time zone in hours (-12..+12)
@@ -73,7 +73,7 @@ public:
 		return setTimeZoneOffset(localTimezoneOffset * SECS_PER_HOUR);
 	}
 
-	int getTimeZoneOffset()
+	int getTimeZoneOffset() const
 	{
 		return timeZoneOffsetSecs;
 	}

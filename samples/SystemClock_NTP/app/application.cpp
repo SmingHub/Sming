@@ -1,6 +1,5 @@
 #include <SmingCore.h>
-
-#include "NtpClientDelegateDemo.h"
+#include <NtpClientDemo.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -37,7 +36,7 @@ Timer printTimer;
 // NtpClient *ntpClient;
 
 // Callback example using defined class ntpClientDemo
-ntpClientDemo* demo;
+NtpClientDemo* demo;
 
 // CallBack example 1
 // ntpClientDemo dm1 = ntpClientDemo();
@@ -46,9 +45,10 @@ ntpClientDemo* demo;
 
 void onPrintSystemTime()
 {
-	Serial.print("Local Time    : ");
-	Serial.println(SystemClock.getSystemTimeString());
-	Serial.print("UTC Time: ");
+	Serial.print("Local Time: ");
+	Serial.print(SystemClock.getSystemTimeString(eTZ_Local));
+	Serial.print(" ");
+	Serial.print("UTC Time:   ");
 	Serial.println(SystemClock.getSystemTimeString(eTZ_UTC));
 }
 
@@ -87,7 +87,7 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	//  ntpClient = new NtpClient("my_ntp_server", myrefreshinterval);
 
 	//	When using Delegate Callback Option 2
-	demo = new ntpClientDemo();
+	demo = new NtpClientDemo();
 }
 
 // Will be called when WiFi hardware and software initialization was finished
@@ -103,10 +103,7 @@ void init()
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
 
-	// set timezone hourly difference to UTC
-	SystemClock.setTimeZone(2);
-
-	printTimer.initializeMs(1000, onPrintSystemTime).start();
+	printTimer.initializeMs<1000>(onPrintSystemTime).start();
 
 	WifiEvents.onStationDisconnect(connectFail);
 	WifiEvents.onStationGotIP(gotIP);
