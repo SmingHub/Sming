@@ -16,7 +16,7 @@
  *
  ****/
 
-#include "SolarCalculator.h"
+#include "include/SolarCalculator.h"
 #include <algorithm>
 #include <math.h>
 #include <WConstants.h>
