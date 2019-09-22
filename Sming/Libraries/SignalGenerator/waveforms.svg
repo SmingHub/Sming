@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- <svg version="1.1" width="650.0px" height="560.0px" viewBox="0 0 650 560"  -->
+<svg version="1.1" width="780.0px" height="672.0px" viewBox="0 0 650 560" xmlns="http://www.w3.org/2000/svg" xmlns:xl="http://www.w3.org/1999/xlink">
+    <!-- vim:ai:sw=2:so=2:et:nowrap: -->
+  <title>
+    Waveform examples
+  </title>
+  <desc>
+      Examples of some waveforms.
+  </desc>
+  <g stroke="#440060">
+    <g transform="translate(25,25)">
+          <rect width="600" height="110" fill="none" stroke-width="2"/>
+          <path stroke-dasharray="1 3" fill="none" stroke-width="1" d="M100,0 v110 M200,0 v110 M300,0 v110 M400,0 v110 M500,0 v110"/>
+          <path stroke-dasharray="1 3" fill="none" stroke-width="1" d="M0,15 h600 M0,55 h600 M0,95 h600"/>
+    </g>
+    <g transform="translate(25,160)">
+          <rect width="600" height="110" fill="none" stroke-width="2"/>
+          <path stroke-dasharray="1 3" fill="none" stroke-width="1" d="M100,0 v110 M200,0 v110 M300,0 v110 M400,0 v110 M500,0 v110"/>
+          <path stroke-dasharray="1 3" fill="none" stroke-width="1" d="M0,15 h600 M0,55 h600 M0,95 h600"/>
+    </g>
+    <g transform="translate(25,295)">
+          <rect width="600" height="110" fill="none" stroke-width="2"/>
+          <path stroke-dasharray="1 3" fill="none" stroke-width="1" d="M100,0 v110 M200,0 v110 M300,0 v110 M400,0 v110 M500,0 v110"/>
+          <path stroke-dasharray="1 3" fill="none" stroke-width="1" d="M0,15 h600 M0,55 h600 M0,95 h600"/>
+    </g>
+    <g transform="translate(25,430)">
+          <rect width="600" height="110" fill="none" stroke-width="2"/>
+          <path stroke-dasharray="1 3" fill="none" stroke-width="1" d="M100,0 v110 M200,0 v110 M300,0 v110 M400,0 v110 M500,0 v110"/>
+          <path stroke-dasharray="1 3" fill="none" stroke-width="1" d="M0,15 h600 M0,55 h600 M0,95 h600"/>
+    </g>
+  </g>
+  <g fill="none">
+  <g transform="translate(25,25)">
+    <clipPath id="cp2">
+      <rect width="600" height="110" clip-rule="nonzero"/>
+    </clipPath>
+    <path stroke="#E04040" stroke-width="2.0" clip-path="url(#cp2)" d="M-50,95 C-15,95 15,15 50,15 C85,15 115,95 150,95 C185,95 215,15 250,15     C285,15 315,95 350,95 C385,95 415,15 450,15 C485,15 515,95 550,95 C585,95 615,15 650,15"/>
+  </g>
+  <g transform="translate(25,160)">
+  <path stroke="#00A040" stroke-width="2.0" d="M0,15 h100 v80 h100 v-80 h100 v80 h100 v-80 h100 v80 h100"/>
+  </g>
+  <g transform="translate(25,295)">
+  <path stroke="#4040F0" stroke-width="2.0" d="M0,55 l50,-40 l100,80 l100,-80 l100,80 l100,-80 l100,80 l50,-40"/>
+  </g>
+  <g transform="translate(25,430)">
+  <path stroke="#E000E0" stroke-width="2.0" d="M0,55 l100,-40 v80 l200,-80 v80 l200,-80 v80 l100,-40"/>
+  </g>
+</g>
+<g stroke="none" fill="black" font-family="Times" font-size="14pt" text-anchor="middle">
+  <text x="575" y="65">Sine</text>
+  <text x="575" y="200">Square</text>
+  <text x="575" y="335">Triangle</text>
+  <text x="575" y="470">Sawtooth</text>
+  </g>
+</svg>
