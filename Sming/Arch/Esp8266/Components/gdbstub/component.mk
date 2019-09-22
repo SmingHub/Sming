@@ -29,3 +29,9 @@ GDBSTUB_DIR := $(COMPONENT_PATH)
 
 CACHE_VARS			+= GDB_CMDLINE
 GDB_CMDLINE = trap '' INT; $(GDB) -x $(GDBSTUB_DIR)/gdbcmds -b $(COM_SPEED_GDB) -ex "target remote $(COM_PORT_GDB)"
+
+# Swap to alternate serial port pinout
+CONFIG_VARS			+= GDB_UART_SWAP
+ifeq ($(GDB_UART_SWAP),1)
+APP_CFLAGS			+= -DGDB_UART_SWAP=1
+endif

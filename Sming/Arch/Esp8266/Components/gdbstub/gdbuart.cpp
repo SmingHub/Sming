@@ -389,6 +389,10 @@ bool ATTR_GDBINIT gdb_uart_init()
 	}
 	uart_set_callback(gdb_uart, gdb_uart_callback, nullptr);
 
+#ifdef GDB_UART_SWAP
+	uart_swap(gdb_uart, 1);
+#endif
+
 #if GDBSTUB_ENABLE_UART2
 	// Virtualise user serial access via UART2
 	uart_set_notify(UART2, userUartNotify);
