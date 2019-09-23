@@ -65,7 +65,6 @@ public:
 	 */
 	void close();
 
-	//Use base class documentation
 	StreamType getStreamType() const override
 	{
 		return eSST_File;
@@ -73,23 +72,10 @@ public:
 
 	size_t write(const uint8_t* buffer, size_t size) override;
 
-	//Use base class documentation
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
-	/** @brief Change position in file stream
-	 *  @param offset
-	 *  @param origin
-	 *  @retval New position, < 0 on error
-	 */
-	int seekFrom(int offset, SeekOriginFlags origin);
+	int seekFrom(int offset, unsigned origin) override;
 
-	//Use base class documentation
-	bool seek(int offset) override
-	{
-		return seekFrom(offset, eSO_CurrentPos) >= 0;
-	}
-
-	//Use base class documentation
 	bool isFinished() override
 	{
 		return fileIsEOF(handle);

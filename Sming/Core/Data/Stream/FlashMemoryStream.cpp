@@ -20,13 +20,27 @@ uint16_t FlashMemoryStream::readMemoryBlock(char* data, int bufSize)
 	return count;
 }
 
-bool FlashMemoryStream::seek(int len)
+int FlashMemoryStream::seekFrom(int offset, unsigned origin)
 {
-	size_t newPos = static_cast<size_t>(readPos + len);
-	if(newPos <= flashString.length()) {
-		readPos = newPos;
-		return true;
-	} else {
-		return false;
+	size_t newPos;
+	switch(origin) {
+	case SEEK_SET:
+		newPos = offset;
+		break;
+	case SEEK_CUR:
+		newPos = readPos + offset;
+		break;
+	case SEEK_END:
+		newPos = flashString.length() + offset;
+		break;
+	default:
+		return -1;
 	}
+
+	if(newPos > flashString.length()) {
+		return -1;
+	}
+
+	readPos = newPos;
+	return readPos;
 }

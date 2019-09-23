@@ -52,13 +52,10 @@ public:
 
 	size_t write(const uint8_t* buffer, size_t size) override;
 
-	//Use base class documentation
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
-	//Use base class documentation
-	bool seek(int len) override;
+	int seekFrom(int offset, unsigned origin) override;
 
-	//Use base class documentation
 	bool isFinished() override
 	{
 		return pos == size;

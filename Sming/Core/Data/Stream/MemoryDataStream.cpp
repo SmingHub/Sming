@@ -60,12 +60,27 @@ uint16_t MemoryDataStream::readMemoryBlock(char* data, int bufSize)
 	return available;
 }
 
-bool MemoryDataStream::seek(int len)
+int MemoryDataStream::seekFrom(int offset, unsigned origin)
 {
-	int newpos = readPos + len;
-	if(newpos < 0 || newpos > (int)size) {
-		return false;
+	size_t newPos;
+	switch(origin) {
+	case SEEK_SET:
+		newPos = offset;
+		break;
+	case SEEK_CUR:
+		newPos = readPos + offset;
+		break;
+	case SEEK_END:
+		newPos = size + offset;
+		break;
+	default:
+		return -1;
 	}
-	readPos = size_t(newpos);
-	return true;
+
+	if(newPos > size) {
+		return -1;
+	}
+
+	readPos = newPos;
+	return readPos;
 }
