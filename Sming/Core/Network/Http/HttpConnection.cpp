@@ -183,7 +183,9 @@ bool HttpConnection::onTcpReceive(TcpClient& client, char* data, int size)
 	int parsedBytes = http_parser_execute(&parser, &parserSettings, data, size);
 	if(HTTP_PARSER_ERRNO(&parser) != HPE_OK) {
 		bool isRecoverable = onHttpError(HTTP_PARSER_ERRNO(&parser));
-		setTimeOut(1);
+		if(isRecoverable) {
+			setCloseAfterSent(true);
+		}
 		return isRecoverable;
 	}
 

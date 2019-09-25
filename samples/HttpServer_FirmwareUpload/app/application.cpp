@@ -37,37 +37,34 @@ void onFile(HttpRequest& request, HttpResponse& response)
 
 int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
-	if(!response.isSuccess()) {
-		debug_e("Request failed.");
-		return -1;
-	}
-
 	ReadWriteStream* file = request.files["firmware"];
-	if(file == nullptr) {
+	SignedRbootOutputStream* uploadStream = static_cast<SignedRbootOutputStream*>(file);
+	if(uploadStream == nullptr) {
 		debug_e("Something went wrong with the file upload");
 		return 1;
 	}
 
-	SignedRbootOutputStream* uploadStream = static_cast<SignedRbootOutputStream*>(file);
-
-	if(uploadStream->verifySignature(firmwareVerificationKey)) {
+	if(response.isSuccess() && uploadStream->verifySignature(firmwareVerificationKey)) {
 		rboot_config bootConfig = rboot_get_config();
 		uint8_t slot = bootConfig.current_rom;
 		slot = (slot == 0 ? 1 : 0);
 		Serial.printf("Firmware updated, rebooting to rom %d...\r\n", slot);
 		rboot_set_current_rom(slot);
-		System.restart(
-			1000); // defer the reboot with 1000 milliseconds to give time to the web server to return the response
+		// defer the reboot with 1000 milliseconds to give time to the web server to return the response
+		System.restart(1000);
 
 		response.sendFile("restart.html");
 		response.headers[HTTP_HEADER_CONNECTION] = "close";
-	} else {
-		response.code = HTTP_STATUS_BAD_REQUEST;
-		response.setContentType(MIME_HTML);
-		String html = "<H2 color='#444'>" + uploadStream->errorMessage + "</H2>";
-		response.headers[HTTP_HEADER_CONTENT_LENGTH] = html.length();
-		response.sendString(html);
+
+		return 0;
 	}
+
+	response.code = HTTP_STATUS_BAD_REQUEST;
+	response.setContentType(MIME_HTML);
+	String html = "<H2 color='#444'>" + uploadStream->errorMessage + "</H2>";
+	response.headers[HTTP_HEADER_CONTENT_LENGTH] = html.length();
+	response.sendString(html);
+
 	return 0;
 }
 

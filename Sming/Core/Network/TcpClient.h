@@ -31,6 +31,7 @@ typedef Delegate<void(TcpClient& client, bool successful)> TcpClientCompleteDele
 typedef Delegate<bool(TcpClient& client, char* data, int size)> TcpClientDataDelegate;
 
 enum TcpClientState { eTCS_Ready, eTCS_Connecting, eTCS_Connected, eTCS_Successful, eTCS_Failed };
+enum TcpClientCloseAfterSentState { eTCCASS_None, eTCCASS_AfterSent, eTCCASS_AfterSent_Ignore_Received };
 
 // By default a TCP client connection has 70 seconds timeout
 #define TCP_CLIENT_TIMEOUT 70
@@ -110,6 +111,15 @@ public:
 		return state;
 	}
 
+	/**
+	 * Schedules the connection to get closed after the data is sent
+	 * @param ignoreIncomingData when that flag is set the connection will start ignoring incoming data.
+	 */
+	void setCloseAfterSent(bool ignoreIncomingData = false)
+	{
+		closeAfterSent = ignoreIncomingData ? eTCCASS_AfterSent_Ignore_Received : eTCCASS_AfterSent;
+	}
+
 #ifdef ENABLE_SSL
 	/**
 	 * @brief Allows setting of multiple SSL validators after a successful handshake
@@ -185,9 +195,9 @@ private:
 	TcpClientEventDelegate ready = nullptr;
 	TcpClientDataDelegate receive = nullptr;
 
-	bool asyncCloseAfterSent = false;
-	uint16_t asyncTotalSent = 0;
-	uint16_t asyncTotalLen = 0;
+	TcpClientCloseAfterSentState closeAfterSent = eTCCASS_None;
+	uint16_t totalSentConfirmedBytes = 0;
+	uint16_t totalSentBytes = 0;
 #ifdef ENABLE_SSL
 	SslValidatorList sslValidators;
 #endif
