@@ -40,11 +40,13 @@ size_t formUrlParser(HttpRequest& request, const char* at, int length)
 		return 0;
 	}
 
-	assert(state != nullptr);
-
 	auto& params = request.postParams;
 
 	if(length == PARSE_DATAEND) {
+		if(state == nullptr) {
+			return 0;
+		}
+
 		// Store last parameter, if there is one
 		if(state->postName.length() != 0) {
 			uri_unescape_inplace(state->postValue);

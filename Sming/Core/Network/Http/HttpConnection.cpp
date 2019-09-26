@@ -176,19 +176,17 @@ bool HttpConnection::onHttpError(http_errno error)
 bool HttpConnection::onTcpReceive(TcpClient& client, char* data, int size)
 {
 	if(HTTP_PARSER_ERRNO(&parser) != HPE_OK) {
-		setTimeOut(1);
 		// if the parser is in error state then just ignore the incoming data.
-		return false;
+		return true;
 	}
 
 	int parsedBytes = http_parser_execute(&parser, &parserSettings, data, size);
 	if(HTTP_PARSER_ERRNO(&parser) != HPE_OK) {
 		bool isRecoverable = onHttpError(HTTP_PARSER_ERRNO(&parser));
-		if(!isRecoverable) {
-			// we ran into trouble - abort the connection
-			setTimeOut(1);
-			return false;
+		if(isRecoverable) {
+			setCloseAfterSent(true);
 		}
+		return isRecoverable;
 	}
 
 	if(parser.upgrade) {

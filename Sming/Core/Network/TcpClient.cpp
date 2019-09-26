@@ -72,8 +72,8 @@ bool TcpClient::send(const char* data, uint16_t len, bool forceCloseAfterSent)
 
 	debug_d("Storing %d bytes in stream", len);
 
-	asyncTotalLen += len;
-	asyncCloseAfterSent = forceCloseAfterSent;
+	totalSentBytes += len;
+	closeAfterSent = forceCloseAfterSent ? eTCCASS_AfterSent : eTCCASS_None;
 
 	return true;
 }
@@ -99,7 +99,12 @@ err_t TcpClient::onReceive(pbuf* buf)
 		return TcpConnection::onReceive(buf);
 	}
 
-	if(receive) {
+	bool success = true;
+	if(closeAfterSent == eTCCASS_AfterSent_Ignore_Received) {
+		success = false;
+	}
+
+	if(success && receive) {
 		pbuf* cur = buf;
 		while(cur != nullptr && cur->len > 0) {
 			bool success = receive(*this, (char*)cur->payload, cur->len);
@@ -133,14 +138,14 @@ void TcpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 void TcpClient::close()
 {
 	if(state != eTCS_Successful && state != eTCS_Failed) {
-		state = (asyncTotalSent == asyncTotalLen) ? eTCS_Successful : eTCS_Failed;
+		state = (totalSentConfirmedBytes == totalSentBytes) ? eTCS_Successful : eTCS_Failed;
 #ifdef ENABLE_SSL
 		if(ssl && sslConnected) {
-			state = (asyncTotalLen == 0 || (asyncTotalSent > asyncTotalLen)) ? eTCS_Successful : eTCS_Failed;
+			state = (totalSentBytes == 0 || (totalSentConfirmedBytes > totalSentBytes)) ? eTCS_Successful : eTCS_Failed;
 		}
 #endif
-		asyncTotalLen = 0;
-		asyncTotalSent = 0;
+		totalSentBytes = 0;
+		totalSentConfirmedBytes = 0;
 		onFinished(state);
 	}
 
@@ -172,9 +177,9 @@ void TcpClient::pushAsyncPart()
 
 err_t TcpClient::onSent(uint16_t len)
 {
-	asyncTotalSent += len;
+	totalSentConfirmedBytes += len;
 
-	if(stream == nullptr && asyncCloseAfterSent) {
+	if(stream == nullptr && closeAfterSent != eTCCASS_None) {
 		TcpConnection::onSent(len);
 		close();
 	} else {
@@ -198,8 +203,8 @@ void TcpClient::onFinished(TcpClientState finishState)
 	freeStreams();
 
 	// Initialize async variables for next connection
-	asyncTotalSent = 0;
-	asyncTotalLen = 0;
+	totalSentConfirmedBytes = 0;
+	totalSentBytes = 0;
 
 	if(completed) {
 		completed(*this, state == eTCS_Successful);
