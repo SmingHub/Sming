@@ -11,26 +11,36 @@
 #include "Platform/System.h"
 #include "Timer.h"
 
+#ifndef TASK_QUEUE_LENGTH
+/** @brief default number of tasks in global queue
+ *  @note tasks are usually short-lived and executed very promptly, so a large queue is
+ *  normally un-necessry. If queue overrun is suspected, check `SystemClass::getMaxTaskCount()`.
+ */
+#define TASK_QUEUE_LENGTH 10
+#endif
+
 SystemClass System;
 
 SystemState SystemClass::state = eSS_None;
 os_event_t SystemClass::taskQueue[TASK_QUEUE_LENGTH];
+
+#ifdef ENABLE_TASK_COUNT
 volatile uint8_t SystemClass::taskCount;
 volatile uint8_t SystemClass::maxTaskCount;
+#endif
 
 /** @brief OS calls this function which invokes user-defined callback
- *  @note callback function pointer is placed in event->sig, with parameter
- *  in event->par.
+ *  @note callback function pointer is placed in event->sig, with parameter in event->par.
  */
 void SystemClass::taskHandler(os_event_t* event)
 {
+#ifdef ENABLE_TASK_COUNT
+	auto level = noInterrupts();
+	--taskCount;
+	restoreInterrupts(level);
+#endif
 	auto callback = reinterpret_cast<TaskCallback>(event->sig);
-	if(callback) {
-		// If we get interrupt during adjustment of the counter, do it again
-		uint8_t oldCount = taskCount;
-		--taskCount;
-		if(taskCount != oldCount - 1)
-			--taskCount;
+	if(callback != nullptr) {
 		callback(event->par);
 	}
 }
@@ -52,9 +62,14 @@ bool SystemClass::queueCallback(TaskCallback callback, uint32_t param)
 		return false;
 	}
 
-	if(++taskCount > maxTaskCount) {
+#ifdef ENABLE_TASK_COUNT
+	auto level = noInterrupts();
+	++taskCount;
+	if(taskCount > maxTaskCount) {
 		maxTaskCount = taskCount;
 	}
+	restoreInterrupts(level);
+#endif
 
 	return system_os_post(USER_TASK_PRIO_1, reinterpret_cast<os_signal_t>(callback), param);
 }

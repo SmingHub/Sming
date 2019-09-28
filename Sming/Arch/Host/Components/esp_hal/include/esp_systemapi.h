@@ -44,13 +44,28 @@ struct ip_addr {
 #include <assert.h>
 
 #include "debug_progmem.h"
+#define debugf debug_i
 
 #define SYSTEM_ERROR(fmt, ...) hostmsg("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 
-#define noInterrupts()
-#define interrupts()
+__forceinline unsigned noInterrupts()
+{
+	ets_intr_lock();
+	return 1;
+}
 
-#define BIT(nr)         (1UL << (nr))
+__forceinline void interrupts()
+{
+	ets_intr_unlock();
+}
+
+__forceinline void restoreInterrupts(unsigned level)
+{
+	(void)level;
+	interrupts();
+}
+
+#define BIT(nr) (1UL << (nr))
 
 #ifdef __cplusplus
 }

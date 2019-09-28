@@ -116,6 +116,7 @@ extern void ets_isr_unmask(unsigned intr);
 #include "xtensa/xtruntime.h"
 
 /** @brief  Disable interrupts
+ *  @retval Current interrupt level
  *  @note Hardware timer is unaffected if operating in non-maskable mode
  */
 #define noInterrupts() XTOS_SET_INTLEVEL(15)
@@ -123,6 +124,10 @@ extern void ets_isr_unmask(unsigned intr);
 /** @brief  Enable interrupts
 */
 #define interrupts() XTOS_SET_INTLEVEL(0)
+
+/** @brief Restore interrupts to level saved from previous noInterrupts() call
+ */
+#define restoreInterrupts(level) XTOS_RESTORE_INTLEVEL(level)
 
 #ifdef __cplusplus
 }

@@ -58,6 +58,30 @@ Change it like this:
       make DEBUG_VERBOSE_LEVEL=3
 
 
+Task Queue
+-----------
+
+The task queue is used for *System.queueCallback()* calls.
+
+.. envvar:: TASK_QUEUE_LENGTH
+
+   Maximum number of entries in the task queue (default 16). Must be a power of 2.
+
+
+.. envvar:: ENABLE_TASK_COUNT
+
+   If problems are suspected with task queuing, it may be getting flooded.
+   For this reason you should check the return value from `queueCallback()`.
+   
+   You can enable this option to keep track of the number of active tasks,
+   *System::getTaskCount()*, and the maximum, *System::getMaxTaskCount()*.
+
+   By default this is disabled and both methods will return 255.
+   This is because interrupts must be disabled to ensure an accurate count,
+   which may not be desirable.
+
+
+
 Release builds
 --------------
 

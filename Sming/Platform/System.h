@@ -25,14 +25,6 @@
 
 #include <esp_systemapi.h>
 
-/** @brief default number of tasks in global queue
- *  @note tasks are usually short-lived and executed very promptly. If necessary this
- *  value can be overridden in makefile or user_config.h.
- */
-#ifndef TASK_QUEUE_LENGTH
-#define TASK_QUEUE_LENGTH 10
-#endif
-
 /** @brief Task callback function type
  * 	@ingroup event_handlers
  * 	@note Callback code does not need to be in IRAM
@@ -167,7 +159,11 @@ public:
 	 */
 	static unsigned getTaskCount()
 	{
+#ifdef ENABLE_TASK_COUNT
 		return taskCount;
+#else
+		return 255;
+#endif
 	}
 
 	/** @brief Get maximum number of tasks seen on queue at any one time
@@ -177,7 +173,11 @@ public:
 	 */
 	static unsigned getMaxTaskCount()
 	{
+#ifdef ENABLE_TASK_COUNT
 		return maxTaskCount;
+#else
+		return 255;
+#endif
 	}
 
 private:
@@ -185,9 +185,11 @@ private:
 
 private:
 	static SystemState state;
-	static os_event_t taskQueue[];		  ///< OS task queue
+	static os_event_t taskQueue[]; ///< OS task queue
+#ifdef ENABLE_TASK_COUNT
 	static volatile uint8_t taskCount;	///< Number of tasks on queue
 	static volatile uint8_t maxTaskCount; ///< Profiling to establish appropriate queue size
+#endif
 };
 
 /**	@brief	Global instance of system object
