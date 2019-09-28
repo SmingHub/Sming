@@ -47,13 +47,24 @@ void SystemClass::taskHandler(os_event_t* event)
 
 bool SystemClass::initialize()
 {
-	if(state != eSS_None)
+	if(state != eSS_None) {
 		return false;
+	}
 
 	state = eSS_Intializing;
 
 	// Initialise the global task queue
-	return system_os_task(taskHandler, USER_TASK_PRIO_1, taskQueue, TASK_QUEUE_LENGTH);
+	if(!system_os_task(taskHandler, USER_TASK_PRIO_1, taskQueue, TASK_QUEUE_LENGTH)) {
+		return false;
+	}
+
+#ifdef ARCH_ESP8266
+	system_init_done_cb([]() { state = eSS_Ready; });
+#else
+	state = eSS_Ready;
+#endif
+
+	return true;
 }
 
 bool SystemClass::queueCallback(TaskCallback callback, uint32_t param)
