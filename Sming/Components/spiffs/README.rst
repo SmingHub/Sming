@@ -29,3 +29,10 @@ This Component provides additional functionality to support SPIFFS running on bo
 .. envvar:: SPIFF_BIN
 
    Path to the generated SPIFFS filesystem image.
+
+
+.. envvar:: SPIFF_FILEDESC_COUNT
+
+   Default: 7
+
+   Number of file descriptors allocated. This sets the maximum number of files which may be opened at once. 

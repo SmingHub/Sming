@@ -10,12 +10,17 @@
 
 #include "spiffs_sming.h"
 #include <esp_spi_flash.h>
+#include "spiffs/src/spiffs_nucleus.h"
 
 spiffs _filesystemStorageHandle;
 
+#ifndef SPIFF_FILEDESC_COUNT
+#define SPIFF_FILEDESC_COUNT 7
+#endif
+
 static u8_t spiffs_work_buf[LOG_PAGE_SIZE*2];
-static u8_t spiffs_fds[32*7]; // sizeof(spiffs_fd) * K
-static u8_t spiffs_cache[(LOG_PAGE_SIZE+32)*4];
+static u8_t spiffs_fds[sizeof(spiffs_fd) * SPIFF_FILEDESC_COUNT];
+static u8_t spiffs_cache_buf[(LOG_PAGE_SIZE+32)*4];
 
 static s32_t api_spiffs_read(u32_t addr, u32_t size, u8_t *dst)
 {
@@ -124,8 +129,8 @@ static void spiffs_mount_internal(spiffs_config *cfg)
     spiffs_work_buf,
     spiffs_fds,
     sizeof(spiffs_fds),
-    spiffs_cache,
-    sizeof(spiffs_cache),
+    spiffs_cache_buf,
+    sizeof(spiffs_cache_buf),
     NULL);
   debugf("mount res: %d\n", res);
 
