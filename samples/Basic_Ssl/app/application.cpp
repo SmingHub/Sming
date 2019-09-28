@@ -110,7 +110,6 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	request->pinCertificate(fingerprints);
 	request->onRequestComplete(onDownload);
 
-	request->setResponseStream(&Serial);
 	downloadClient.send(request);
 }
 
