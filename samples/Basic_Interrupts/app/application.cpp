@@ -71,28 +71,7 @@ void interruptDelegate()
 
 	/* OK, so you probably got a number which hit 255 pretty quickly! It stays there to indicate the task queue
 	 * overflowed, which happens because we're getting way more interrupts than we can process in a timely manner, so
-	 * lots of them get dropped.
-	 *
-	 * So what's happening?
-	 *
-	 * In our example, if you use a jumper wire to ground the input pin then it will bounce around as contact is made
-	 * and then broken; this is known as 'contact bounce'. This means you'll get multiple outputs instead of a clean
-	 * signal. If your circuit uses a push switch, reed switch, etc. then you'll need a 'debounce circuit'.
-	 *
-	 * If you want to try a very simple debounce circuit to see what happens, try this:
-	 *
-	 *                3v3
-	 *                _|_
-	 *                ___ 100nF
-	 *                 |
-	 *                 |
-	 * INPUT   >--------------> GPIO PIN
-	 *
-	 * You'll need to hit the reset button to get the task counter back to 0. Now try toggling the input again...
-	 * I'll leave it to you to work out why this helps. Hint: We've enabled pullups on the input pins, so there
-	 * will be another resistor in the circuit.
-	 *
-	 * There is plenty of information available on this subject. Just search the internet for 'debounce circuit'.
+	 * lots of them get dropped. This is because of 'contact bounce'.
 	 */
 }
 

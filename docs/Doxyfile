@@ -101,6 +101,7 @@ STRIP_FROM_PATH        = $(SMING_HOME)
 
 INPUT = api.dox sdk.dox \
 	../Sming/Core \
+	../Sming/Arch/Host/Core \
 	../Sming/Platform \
 	../Sming/Services \
 	../Sming/Wiring \
@@ -383,5 +384,6 @@ PREDEFINED = \
 	ENABLE_SSL=1 \
 	ENABLE_CMD_EXECUTOR=1 \
 	ENABLE_CUSTOM_PWM=1 \
-	SMING_DEPRECATED=
-
+	SMING_DEPRECATED= \
+	SMING_ARCH=Host \
+	ARCH_HOST=1
