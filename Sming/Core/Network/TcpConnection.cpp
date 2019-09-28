@@ -453,6 +453,7 @@ err_t TcpConnection::internalOnConnected(err_t err)
 				}
 			}
 
+			assert(sslSessionId != nullptr);
 			debug_d("SSL: Session Id Length: %u", sslSessionId->getLength());
 			if(sslSessionId->isValid()) {
 				debug_d("-----BEGIN SSL SESSION PARAMETERS-----");

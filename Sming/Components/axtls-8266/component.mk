@@ -3,8 +3,6 @@ SSL_DEBUG				?= 0
 
 COMPONENT_SUBMODULES	:= axtls-8266
 
-COMPONENT_DEPENDS		:= esp8266
-
 COMPONENT_SRCDIRS := \
 	axtls-8266/compat \
 	axtls-8266/crypto \
