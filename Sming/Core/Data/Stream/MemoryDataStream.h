@@ -30,10 +30,9 @@ class MemoryDataStream : public ReadWriteStream
 public:
 	~MemoryDataStream()
 	{
-		free(buf);
+		free(buffer);
 	}
 
-	//Use base class documentation
 	StreamType getStreamType() const override
 	{
 		return eSST_Memory;
@@ -44,7 +43,7 @@ public:
 	 */
 	const char* getStreamPointer() const
 	{
-		return pos;
+		return buffer ? buffer + readPos : nullptr;
 	}
 
 	/**
@@ -53,7 +52,7 @@ public:
 	*/
 	int available() override
 	{
-		return size - (pos - buf);
+		return size - readPos;
 	}
 
 	using ReadWriteStream::write;
@@ -65,23 +64,33 @@ public:
      */
 	size_t write(const uint8_t* buffer, size_t size) override;
 
-	//Use base class documentation
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
-	//Use base class documentation
 	bool seek(int len) override;
 
-	//Use base class documentation
 	bool isFinished() override
 	{
-		return size == (pos - buf);
+		return readPos >= size;
 	}
 
+	/*
+	 * @brief Pre-allocate stream to given size
+	 * @param minCapacity Total minimum number of bytes required in stream
+	 * @retval bool true on success
+	 * @note Memory is only reallocated if smaller than requested size.
+	 * If reallocation fails the existing stream content is preserved.
+	 * Intended use is to reduce or eliminate buffer reallocations if the
+	 * size is known in advance. Provided subsequent write operations do
+	 * not exceed the total capacity they are guaranteed to succeed, so return
+	 * value checking may be skipped.
+	 */
+	bool ensureCapacity(size_t minCapacity);
+
 private:
-	char* buf = nullptr;
-	char* pos = nullptr;
-	int size = 0;
-	int capacity = 0;
+	char* buffer = nullptr; ///< Stream content stored here
+	size_t readPos = 0;		///< Offset to current read position
+	size_t size = 0;		///< Number of bytes stored in stream (i.e. the write position)
+	size_t capacity = 0;	///< Number of bytes allocated in buffer
 };
 
 /** @} */

@@ -10,50 +10,62 @@
 
 #include "MemoryDataStream.h"
 
+/* MemoryDataStream */
+
+bool MemoryDataStream::ensureCapacity(size_t minCapacity)
+{
+	if(capacity < minCapacity) {
+		size_t newCapacity = minCapacity;
+		if(capacity != 0) {
+			// If expanding stream, increase buffer capacity in anticipation of further writes
+			newCapacity += (minCapacity < 256) ? 128 : 64;
+		}
+		debug_d("MemoryDataStream::realloc %u -> %u", capacity, newCapacity);
+		// realloc can fail, store the result in temporary pointer
+		auto newBuffer = (char*)realloc(buffer, newCapacity);
+		if(newBuffer == nullptr) {
+			return false;
+		}
+
+		buffer = newBuffer;
+		capacity = newCapacity;
+	}
+
+	return true;
+}
+
 size_t MemoryDataStream::write(const uint8_t* data, size_t len)
 {
-	//TODO: add queued buffers without full copy
-	if(buf == nullptr) {
-		buf = (char*)malloc(len + 1);
-		if(buf == nullptr)
-			return 0;
-		buf[len] = '\0';
-		memcpy(buf, data, len);
-	} else {
-		int cur = size;
-		int required = cur + len + 1;
-		if(required > capacity) {
-			capacity = required < 256 ? required + 128 : required + 64;
-			debug_d("realloc %d -> %d", size, capacity);
-			char* new_buf;
-			//realloc can fail, store the result in temporary pointer
-			new_buf = (char*)realloc(buf, capacity);
-
-			if(new_buf == nullptr) {
-				return 0;
-			}
-			buf = new_buf;
-		}
-		buf[cur + len] = '\0';
-		memcpy(buf + cur, data, len);
+	if(data == nullptr || len == 0) {
+		return 0;
 	}
-	pos = buf;
+
+	// TODO: add queued buffers without full copy
+
+	// If reallocation fails, write as much as possible in any remaining space
+	if(!ensureCapacity(size + len)) {
+		len = capacity - size;
+	}
+
+	memcpy(buffer + size, data, len);
 	size += len;
+
 	return len;
 }
 
 uint16_t MemoryDataStream::readMemoryBlock(char* data, int bufSize)
 {
-	int available = std::min((int)(size - (pos - buf)), bufSize);
-	memcpy(data, pos, available);
+	size_t available = std::min(size - readPos, size_t(bufSize));
+	memcpy(data, buffer + readPos, available);
 	return available;
 }
 
 bool MemoryDataStream::seek(int len)
 {
-	if(len < 0)
+	int newpos = readPos + len;
+	if(newpos < 0 || newpos > (int)size) {
 		return false;
-
-	pos += len;
+	}
+	readPos = size_t(newpos);
 	return true;
 }
