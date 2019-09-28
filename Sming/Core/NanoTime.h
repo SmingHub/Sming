@@ -267,7 +267,8 @@ template <typename TimeType> __forceinline TimeType convert(const TimeType& time
 	}
 
 	using R = Ratio<TimeType>;
-	return time * R(unitsTo) / R(unitsFrom);
+	auto ratio = R(unitTicks[unitsTo]) / R(unitTicks[unitsFrom]);
+	return time * ratio;
 }
 
 /**
@@ -368,8 +369,16 @@ template <typename TimeType> void TimeValue::set(Unit unit, TimeType time)
  * @brief Class to handle a simple time value with associated unit
  */
 template <typename T> struct Time {
+	Time() = default;
+
 	Time(Unit unit, T time) : unit(unit), time(time)
 	{
+	}
+
+	void set(Unit unit, T time)
+	{
+		this->unit = unit;
+		this->time = time;
 	}
 
 	operator T() const
@@ -384,6 +393,18 @@ template <typename T> struct Time {
 		return s;
 	}
 
+	friend Time& operator+(Time lhs, const Time& rhs)
+	{
+		lhs.time += rhs.as(lhs.unit);
+		return lhs;
+	}
+
+	Time& operator+=(Time<T> rhs)
+	{
+		time += rhs.as(unit);
+		return *this;
+	}
+
 	TimeValue value() const
 	{
 		return TimeValue(unit, time);
@@ -394,8 +415,13 @@ template <typename T> struct Time {
 		return Time(unitTo, convert(time, unit, unitTo));
 	}
 
-	Unit unit;
-	T time;
+	Time as(Unit unitTo) const
+	{
+		return Time(unitTo, convert(time, unit, unitTo));
+	}
+
+	Unit unit = Seconds;
+	T time = 0;
 };
 
 /**
