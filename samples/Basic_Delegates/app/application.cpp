@@ -1,21 +1,24 @@
 #include <SmingCore.h>
 
-void evaluateSpeed();
+extern void evaluateSpeed();
 
-void plainOldOrdinaryFunction()
+static void plainOldOrdinaryFunction()
 {
 	debugf("plainOldOrdinaryFunction");
 }
 
-void functionWithMoreComplicatedSignature(int a, String b)
+static void functionWithMoreComplicatedSignature(int a, const String& b)
 {
-	debugf("functionWithMoreComlicatedSignature %d %s", a, b.c_str());
+	debugf("functionWithMoreComplicatedSignature %d %s", a, b.c_str());
 }
 
 class Task
 {
 public:
-	Task(){};
+	Task()
+	{
+	}
+
 	bool setTimer(int reqInterval)
 	{
 		if(reqInterval <= 0) {
@@ -29,8 +32,6 @@ public:
 	void callPlainOldOrdinaryFunction()
 	{
 		taskTimer.initializeMs(taskInterval, plainOldOrdinaryFunction).start();
-		// or just
-		// taskTimer.initializeMs(taskInterval, plainOldOrdinaryFunction).start();
 	}
 
 	// This example shows how to use std::bind to make us of a function that has more parameters than our signature has
@@ -74,22 +75,37 @@ public:
 		debugf("callMemberFunction");
 	}
 
+	void delegateCallback()
+	{
+		debugf("Delegate callback invoked, taskInterval = %u", taskInterval);
+	}
+
+	// Shows how to use a capturing lambda with the task queue
+	void queueDelegateCallback()
+	{
+		System.queueCallback([this]() { delegateCallback(); });
+	}
+
 private:
 	Timer taskTimer;
-	int taskInterval = 1000;
+	unsigned taskInterval = 1000;
 };
 
-Task task1;
-Task task2;
-Task task3;
-Task task4;
-Task task5;
+static Task task1;
+static Task task2;
+static Task task3;
+static Task task4;
+static Task task5;
+static Task task6;
 
 void init()
 {
 	Serial.begin(COM_SPEED_SERIAL);
+	Serial.systemDebugOutput(true);
 
 	evaluateSpeed();
+
+	task1.queueDelegateCallback();
 
 	task2.setTimer(1600);
 	task2.callPlainOldOrdinaryFunction();

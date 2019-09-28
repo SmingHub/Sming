@@ -24,12 +24,12 @@
 #pragma once
 
 #include <esp_systemapi.h>
+#include <Delegate.h>
 #include <Interrupts.h>
 
 /** @brief Task callback function type, uint32_t parameter
  * 	@ingroup event_handlers
  * 	@note Callback code does not need to be in IRAM
- *  @todo Integrate delegation into callbacks
  */
 typedef void (*TaskCallback32)(uint32_t param);
 
@@ -39,8 +39,13 @@ typedef void (*TaskCallback32)(uint32_t param);
  */
 typedef void (*TaskCallback)(void* param);
 
+/** @brief Task Delegate callback type
+ *  @ingroup event_handlers
+ */
+typedef Delegate<void()> TaskDelegate;
+
 /// @ingroup event_handlers
-typedef Delegate<void()> SystemReadyDelegate; ///< Handler function for system ready
+typedef TaskDelegate SystemReadyDelegate; ///< Handler function for system ready
 
 class ISystemReadyHandler
 {
@@ -176,6 +181,16 @@ public:
 	{
 		return queueCallback(reinterpret_cast<TaskCallback>(callback));
 	}
+
+	/**
+	 * @brief Queue a deferred Delegate callback
+	 * @param callback The Delegate to be called
+	 * @retval bool false if callback could not be queued
+	 * @note Provides flexibility and ease of use for using capturing lambdas, etc.
+	 * but requires heap allocation and not as fast as a function callback.
+	 * DO NOT use from interrupt context, use a Task/Interrupt callback.
+	 */
+	static bool queueCallback(TaskDelegate callback);
 
 	/** @brief Get number of tasks currently on queue
 	 *  @retval unsigned

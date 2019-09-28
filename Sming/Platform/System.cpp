@@ -87,16 +87,7 @@ bool SystemClass::queueCallback(TaskCallback32 callback, uint32_t param)
 
 void SystemClass::onReady(SystemReadyDelegate readyHandler)
 {
-	if(readyHandler) {
-		auto handler = new SystemReadyDelegate(readyHandler);
-		queueCallback(
-			[](void* param) {
-				auto handler = static_cast<SystemReadyDelegate*>(param);
-				(*handler)();
-				delete handler;
-			},
-			handler);
-	}
+	queueCallback(readyHandler);
 }
 
 void SystemClass::onReady(ISystemReadyHandler* readyHandler)
@@ -104,6 +95,33 @@ void SystemClass::onReady(ISystemReadyHandler* readyHandler)
 	if(readyHandler != nullptr) {
 		queueCallback([](void* param) { static_cast<ISystemReadyHandler*>(param)->onSystemReady(); }, readyHandler);
 	}
+}
+
+bool SystemClass::queueCallback(TaskDelegate callback)
+{
+	if(!callback) {
+		return false;
+	}
+
+	// @todo consider failing immediately if called from interrupt context
+
+	auto delegate = new TaskDelegate(callback);
+	if(delegate == nullptr) {
+		return false;
+	}
+
+	auto delegateHandler = [](void* param) {
+		auto delegate = static_cast<TaskDelegate*>(param);
+		(*delegate)();
+		delete delegate;
+	};
+
+	if(!queueCallback(delegateHandler, delegate)) {
+		delete delegate;
+		return false;
+	}
+
+	return true;
 }
 
 void SystemClass::restart(unsigned deferMillis)
