@@ -24,13 +24,20 @@
 #pragma once
 
 #include <esp_systemapi.h>
+#include <Interrupts.h>
 
-/** @brief Task callback function type
+/** @brief Task callback function type, uint32_t parameter
  * 	@ingroup event_handlers
  * 	@note Callback code does not need to be in IRAM
  *  @todo Integrate delegation into callbacks
  */
-typedef void (*TaskCallback)(uint32_t param);
+typedef void (*TaskCallback32)(uint32_t param);
+
+/** @brief Task callback function type, void* parameter
+ * 	@ingroup event_handlers
+ * 	@note Callback code does not need to be in IRAM
+ */
+typedef void (*TaskCallback)(void* param);
 
 /// @ingroup event_handlers
 typedef Delegate<void()> SystemReadyDelegate; ///< Handler function for system ready
@@ -145,14 +152,30 @@ public:
 	/**
 	 * @brief Queue a deferred callback.
 	 * @param callback The function to be called
-	 * @param param Parameter passed to the callback
+	 * @param param Parameter passed to the callback (optional)
 	 * @retval bool false if callback could not be queued
 	 * @note It is important to check the return value to avoid memory leaks and other issues,
 	 * for example if memory is allocated and relies on the callback to free it again.
 	 * Note also that this method is typically called from interrupt context so must avoid things
 	 * like heap allocation, etc.
 	 */
-	static bool IRAM_ATTR queueCallback(TaskCallback callback, uint32_t param = 0);
+	static bool IRAM_ATTR queueCallback(TaskCallback32 callback, uint32_t param = 0);
+
+	/**
+	 * @brief Queue a deferred callback, with optional void* parameter
+	 */
+	__forceinline static bool IRAM_ATTR queueCallback(TaskCallback callback, void* param = nullptr)
+	{
+		return queueCallback(reinterpret_cast<TaskCallback32>(callback), reinterpret_cast<uint32_t>(param));
+	}
+
+	/**
+	 * @brief Queue a deferred callback with no callback parameter
+	 */
+	__forceinline static bool IRAM_ATTR queueCallback(InterruptCallback callback)
+	{
+		return queueCallback(reinterpret_cast<TaskCallback>(callback));
+	}
 
 	/** @brief Get number of tasks currently on queue
 	 *  @retval unsigned

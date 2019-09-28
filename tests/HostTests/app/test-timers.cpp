@@ -28,14 +28,14 @@ public:
 	static void IRAM_ATTR timer1Callback(void* arg)
 	{
 		System.queueCallback(
-			[](uint32_t param) {
+			[](void* param) {
 				debugf("timer1 expired");
-				auto tmr = reinterpret_cast<HardwareTimerTest*>(param);
+				auto tmr = static_cast<HardwareTimerTest*>(param);
 				if(++tmr->count == 5) {
 					tmr->stop();
 				}
 			},
-			uint32_t(arg));
+			arg);
 	}
 
 	void execute() override

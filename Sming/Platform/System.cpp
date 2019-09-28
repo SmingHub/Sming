@@ -39,7 +39,7 @@ void SystemClass::taskHandler(os_event_t* event)
 	--taskCount;
 	restoreInterrupts(level);
 #endif
-	auto callback = reinterpret_cast<TaskCallback>(event->sig);
+	auto callback = reinterpret_cast<TaskCallback32>(event->sig);
 	if(callback != nullptr) {
 		callback(event->par);
 	}
@@ -67,7 +67,7 @@ bool SystemClass::initialize()
 	return true;
 }
 
-bool SystemClass::queueCallback(TaskCallback callback, uint32_t param)
+bool SystemClass::queueCallback(TaskCallback32 callback, uint32_t param)
 {
 	if(callback == nullptr) {
 		return false;
@@ -90,33 +90,26 @@ void SystemClass::onReady(SystemReadyDelegate readyHandler)
 	if(readyHandler) {
 		auto handler = new SystemReadyDelegate(readyHandler);
 		queueCallback(
-			[](uint32_t param) {
-				SystemClass::state = eSS_Ready;
-				auto handler = reinterpret_cast<SystemReadyDelegate*>(param);
+			[](void* param) {
+				auto handler = static_cast<SystemReadyDelegate*>(param);
 				(*handler)();
 				delete handler;
 			},
-			reinterpret_cast<uint32_t>(handler));
+			handler);
 	}
 }
 
 void SystemClass::onReady(ISystemReadyHandler* readyHandler)
 {
-	if(readyHandler) {
-		queueCallback(
-			[](uint32_t param) {
-				SystemClass::state = eSS_Ready;
-				auto handler = reinterpret_cast<ISystemReadyHandler*>(param);
-				handler->onSystemReady();
-			},
-			reinterpret_cast<uint32_t>(readyHandler));
+	if(readyHandler != nullptr) {
+		queueCallback([](void* param) { static_cast<ISystemReadyHandler*>(param)->onSystemReady(); }, readyHandler);
 	}
 }
 
 void SystemClass::restart(unsigned deferMillis)
 {
 	if(deferMillis == 0) {
-		queueCallback([](uint32_t) { system_restart(); });
+		queueCallback(system_restart);
 	} else {
 		auto timer = new AutoDeleteTimer;
 		timer->initializeMs(deferMillis, system_restart).startOnce();
