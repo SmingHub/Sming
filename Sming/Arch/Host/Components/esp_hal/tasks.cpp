@@ -23,7 +23,7 @@ public:
 			++count;
 		}
 		mutex.unlock();
-		return full;
+		return !full;
 	}
 
 	void process()

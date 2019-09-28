@@ -21,6 +21,7 @@
 #include <espinc/uart_register.h>
 #include <SerialBuffer.h>
 #include <BitManipulations.h>
+#include <hostlib/keyb.h>
 
 const unsigned IDLE_SLEEP_MS = 100;
 
@@ -28,20 +29,80 @@ unsigned CUartServer::portBase = 10000;
 
 static CUartServer* uartServers[UART_COUNT];
 
-// Redirect the main serial port to console output
-static void redirectToConsole()
+class KeyboardThread : public CThread
 {
-	auto onNotify = [](uart_t* uart, uart_notify_code_t code) {
-		if(code == UART_NOTIFY_AFTER_WRITE){
-			size_t avail;
-			void* data;
-			while((avail = uart->tx_buffer->getReadData(data)) != 0) {
-				host_nputs(static_cast<const char*>(data), avail);
-				uart->tx_buffer->skipRead(avail);
-			}
+public:
+	KeyboardThread() : CThread("keyboard", 0)
+	{
+	}
+
+protected:
+	void* thread_routine() override;
+};
+
+void* KeyboardThread::thread_routine()
+{
+	keyb_raw();
+	for(;;) {
+		int c = getkey();
+		if(c == KEY_NONE) {
+			sched_yield();
+			continue;
 		}
-	};
-	uart_set_notify(UART0, onNotify);
+
+		auto uart = uart_get_uart(UART0);
+		assert(uart != nullptr);
+		auto buf = uart->rx_buffer;
+		assert(buf != nullptr);
+		do {
+			buf->writeChar(c);
+		} while((c = getkey()) != KEY_NONE);
+
+		uart->status |= UART_RXFIFO_TOUT_INT_ST;
+
+		interrupt_begin();
+
+		auto status = uart->status;
+		uart->status = 0;
+		if(status != 0 && uart->callback != nullptr) {
+			uart->callback(uart, status);
+		}
+
+		interrupt_end();
+	}
+	return nullptr;
+}
+
+static KeyboardThread* keyboardThread;
+
+static void onUart0Notify(uart_t* uart, uart_notify_code_t code)
+{
+	switch(code) {
+	case UART_NOTIFY_AFTER_WRITE: {
+		size_t avail;
+		void* data;
+		while((avail = uart->tx_buffer->getReadData(data)) != 0) {
+			host_nputs(static_cast<const char*>(data), avail);
+			uart->tx_buffer->skipRead(avail);
+		}
+		break;
+	}
+
+	case UART_NOTIFY_AFTER_OPEN:
+		if(uart_rx_enabled(uart)) {
+			assert(keyboardThread == nullptr);
+			keyboardThread = new KeyboardThread;
+			keyboardThread->execute();
+		}
+		break;
+
+	case UART_NOTIFY_BEFORE_CLOSE:
+		delete keyboardThread;
+		keyboardThread = nullptr;
+		break;
+
+	default:; // ignore
+	}
 }
 
 void CUartServer::startup(const UartServerConfig& config)
@@ -71,7 +132,8 @@ void CUartServer::startup(const UartServerConfig& config)
 
 	// If no ports have been enabled then redirect port 0 output to host console
 	if(config.enableMask == 0) {
-		redirectToConsole();
+		// Redirect the main serial port to console output
+		uart_set_notify(UART0, onUart0Notify);
 	}
 }
 
