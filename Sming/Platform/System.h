@@ -146,13 +146,21 @@ public:
      *  @param  readyHandler Function to handle event
      *  @note if system is ready, callback is executed immediately without deferral
      */
-	void onReady(SystemReadyDelegate readyHandler);
+	void onReady(SystemReadyDelegate readyHandler)
+	{
+		queueCallback(readyHandler);
+	}
 
 	/** @brief  Set handler for <i>system ready</i> event
      *  @param  readyHandler Function to handle event
      *  @note if system is ready, callback is executed immediately without deferral
      */
-	void onReady(ISystemReadyHandler* readyHandler);
+	void onReady(ISystemReadyHandler* readyHandler)
+	{
+		if(readyHandler != nullptr) {
+			queueCallback([](void* param) { static_cast<ISystemReadyHandler*>(param)->onSystemReady(); }, readyHandler);
+		}
+	}
 
 	/**
 	 * @brief Queue a deferred callback.

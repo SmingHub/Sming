@@ -85,18 +85,6 @@ bool SystemClass::queueCallback(TaskCallback32 callback, uint32_t param)
 	return system_os_post(USER_TASK_PRIO_1, reinterpret_cast<os_signal_t>(callback), param);
 }
 
-void SystemClass::onReady(SystemReadyDelegate readyHandler)
-{
-	queueCallback(readyHandler);
-}
-
-void SystemClass::onReady(ISystemReadyHandler* readyHandler)
-{
-	if(readyHandler != nullptr) {
-		queueCallback([](void* param) { static_cast<ISystemReadyHandler*>(param)->onSystemReady(); }, readyHandler);
-	}
-}
-
 bool SystemClass::queueCallback(TaskDelegate callback)
 {
 	if(!callback) {
