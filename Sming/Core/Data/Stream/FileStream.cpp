@@ -95,10 +95,10 @@ size_t FileStream::write(const uint8_t* buffer, size_t size)
 	return written > 0 ? written : 0;
 }
 
-int FileStream::seekFrom(int offset, SeekOriginFlags origin)
+int FileStream::seekFrom(int offset, unsigned origin)
 {
 	// Cannot rely on return value from fileSeek - failure does not mean position hasn't changed
-	fileSeek(handle, offset, origin);
+	fileSeek(handle, offset, SeekOriginFlags(origin));
 	int newpos = fileTell(handle);
 	if(check(newpos)) {
 		pos = size_t(newpos);

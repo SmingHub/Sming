@@ -106,19 +106,17 @@ size_t GdbFileStream::write(const uint8_t* buffer, size_t size)
 	return written;
 }
 
-bool GdbFileStream::seek(int len)
+int GdbFileStream::seekFrom(int offset, unsigned origin)
 {
-	int newpos = gdb_syscall_lseek(handle, len, SEEK_CUR);
-	if(!check(newpos)) {
-		return false;
+	int newpos = gdb_syscall_lseek(handle, offset, origin);
+	if(check(newpos)) {
+		pos = size_t(newpos);
+		if(pos > size) {
+			size = pos;
+		}
 	}
 
-	pos = size_t(newpos);
-	if(pos > size) {
-		size = pos;
-	}
-
-	return true;
+	return newpos;
 }
 
 String GdbFileStream::id() const
