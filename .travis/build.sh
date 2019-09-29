@@ -54,7 +54,7 @@ $MAKE_PARALLEL
 cd $SMING_HOME
 
 if [ "$TRAVIS_BUILD_STAGE_NAME" == "Test" ]; then
-	$MAKE_PARALLEL Basic_DateTime Basic_Delegates Basic_Interrupts Basic_ProgMem Basic_Serial Basic_Servo LiveDebug DEBUG_VERBOSE_LEVEL=3
+	$MAKE_PARALLEL Basic_DateTime Basic_Delegates Basic_Interrupts Basic_ProgMem Basic_Serial Basic_Servo Basic_Ssl LiveDebug DEBUG_VERBOSE_LEVEL=3
 	# Build and run tests
 	export SMING_TARGET_OPTIONS='--flashfile=$(FLASH_BIN) --flashsize=$(SPI_SIZE)'
 	$MAKE_PARALLEL tests
