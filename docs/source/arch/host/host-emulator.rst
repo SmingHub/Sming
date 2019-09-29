@@ -10,7 +10,7 @@ If you want to try it we have an
 that can be run directly from your browser.
 
 Requirements (Linux)
--------------------------
+--------------------
 
 Modern Linux distribution
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -48,8 +48,8 @@ execute the commands below:
 Requirements (Windows)
 ----------------------
 
-For Windows, make sure your `MinGW` distro is up to date. If you run
-`gcc --version` you should get `gcc (MinGW.org GCC-6.3.0-1) 6.3.0` or
+For Windows, make sure your ``MinGW`` distro is up to date. If you run
+``gcc --version`` you should get ``gcc (MinGW.org GCC-6.3.0-1) 6.3.0`` or
 later. If it's older, execute these commands:
 
 ::
