@@ -433,7 +433,7 @@ err_t TcpConnection::internalOnConnected(err_t err)
 			debug_d("SSL: Switching to 160 MHz");
 			System.setCpuFrequency(eCF_160MHz); // For shorter waiting time, more power consumption.
 #endif
-			debug_d("SSL: handshake start (%d ms)", millis());
+			debug_d("SSL: handshake start");
 
 			ssl_ctx_free(sslContext);
 			sslContext = ssl_ctx_new(SSL_CONNECT_IN_PARTS | localSslOptions, 1);
@@ -537,7 +537,7 @@ err_t TcpConnection::internalOnReceive(pbuf* p, err_t err)
 		if(read_bytes == 0) {
 			if(!sslConnected && ssl_handshake_status(ssl) == SSL_OK) {
 				sslConnected = true;
-				debug_d("SSL: Handshake done (%d ms).", millis());
+				debug_d("SSL: Handshake done");
 #ifndef SSL_SLOW_CONNECT
 				debug_d("SSL: Switching back to 80 MHz");
 				System.setCpuFrequency(eCF_80MHz); // Preserve some CPU cycles

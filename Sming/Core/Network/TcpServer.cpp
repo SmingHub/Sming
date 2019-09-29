@@ -122,7 +122,7 @@ err_t TcpServer::onAccept(tcp_pcb* clientTcp, err_t err)
 			return ERR_ABRT;
 		}
 
-		debug_d("SSL: handshake start (%d ms)", millis());
+		debug_d("SSL: handshake start.");
 		client->setSsl(ssl_server_new(sslContext, clientfd));
 	}
 #endif
