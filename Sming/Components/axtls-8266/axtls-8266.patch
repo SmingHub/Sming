@@ -1,35 +1,34 @@
-diff -Nuar a/replacements/libc.c b/replacements/libc.c
---- a/replacements/libc.c   1970-01-01 01:00:00.000000000 +0100
-+++ b/replacements/libc.c   2016-11-21 11:03:47.152184514 +0100
-@@ -0,0 +1,28 @@
-+/*
-+ libc_replacements.c - replaces libc functions with functions
-+ from Espressif SDK
-+ Copyright (c) 2015 Ivan Grokhotkov. All rights reserved.
-+ This file is part of the esp8266 core for Arduino environment.
-+ This library is free software; you can redistribute it and/or
-+ modify it under the terms of the GNU Lesser General Public
-+ License as published by the Free Software Foundation; either
-+ version 2.1 of the License, or (at your option) any later version.
-+ This library is distributed in the hope that it will be useful,
-+ but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-+ Lesser General Public License for more details.
-+ You should have received a copy of the GNU Lesser General Public
-+ License along with this library; if not, write to the Free Software
-+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-+ Modified 03 April 2015 by Markus Sattler
-+ */
-+
-+#include <c_types.h>
-+#include <stdarg.h>
-+
-+extern int ets_putc(int);
-+extern int ets_vprintf(int (*print_function)(int), const char * format, va_list arg);
-+
-+int vprintf(const char * format, va_list arg) {
-+    return ets_vprintf(ets_putc, format, arg);
-+}
+diff --git a/crypto/crypto_misc.c b/crypto/crypto_misc.c
+index dca7e5f..20a6741 100644
+--- a/crypto/crypto_misc.c
++++ b/crypto/crypto_misc.c
+@@ -44,7 +44,7 @@
+ 
+ #ifdef ESP8266
+ #define CONFIG_SSL_SKELETON_MODE 1
+-uint32_t phy_get_rand();
++uint32_t os_random();
+ #endif
+ 
+ #if defined(CONFIG_USE_DEV_URANDOM)
+@@ -171,7 +171,7 @@ EXP_FUNC int STDCALL get_random(int num_rand_bytes, uint8_t *rand_data)
+     CryptGenRandom(gCryptProv, num_rand_bytes, rand_data);
+ #elif defined(ESP8266)
+     for (size_t cb = 0; cb < num_rand_bytes; cb += 4) {
+-        uint32_t r = phy_get_rand();
++        uint32_t r = os_random();
+         size_t left = num_rand_bytes - cb;
+         left = (left < 4) ? left : 4;
+         memcpy(rand_data + cb, &r, left);
+@@ -289,7 +289,7 @@ EXP_FUNC void STDCALL print_blob(const char *format,
+ 
+     va_start(ap, size);
+     snprintf(tmp, sizeof(tmp), "SSL: %s\n", format);
+-    vprintf(tmp, ap);
++    m_vprintf(tmp, ap);
+     print_hex_init(size);
+     for (i = 0; i < size; i++)
+     {
 diff --git a/replacements/time.c b/replacements/time.c
 index 4972119..da75839 100644
 --- a/replacements/time.c
@@ -155,23 +154,40 @@ index 4972119..da75839 100644
      return 0;
  }
 diff --git a/ssl/os_port.h b/ssl/os_port.h
-index e0b9e46..7d85ff1 100644
+index e0b9e46..8c226ea 100644
 --- a/ssl/os_port.h
 +++ b/ssl/os_port.h
-@@ -45,4 +45,5 @@ extern "C" {
+@@ -43,7 +43,12 @@ extern "C" {
+ 
+ #include "os_int.h"
  #include "config.h"
- #include <stdio.h>
+-#include <stdio.h>
 +#include <FakePgmSpace.h>
++
++#undef WIN32
++#ifndef ESP8266
++#define ESP8266
++#endif
  
  #ifdef WIN32
-@@ -68,5 +69,5 @@ extern "C" {
+ #define STDCALL                 __stdcall
+@@ -62,12 +67,11 @@ extern "C" {
+ 
+ #include "util/time.h"
+ #include <errno.h>
++#ifndef alloca
+ #define alloca(size) __builtin_alloca(size)
++#endif
+ #define TTY_FLUSH()
+-#ifdef putc
  #undef putc
- #endif
+-#endif
 -#define putc(x, f)   ets_putc(x)
-+#define putc(x, f)   m_putc(x)
  
  #define SOCKET_READ(A,B,C)      ax_port_read(A,B,C)
-@@ -93,76 +94,30 @@ extern "C" {
+ #define SOCKET_WRITE(A,B,C)     ax_port_write(A,B,C)
+@@ -92,78 +96,23 @@ extern "C" {
+ #define be64toh(x) __bswap_constant_64(x)
  #endif
  
 -void ax_wdt_feed();
@@ -238,26 +254,17 @@ index e0b9e46..7d85ff1 100644
 -    return 0;
 -}
 +#ifdef AXTLS_BUILD
-+
-+#define printf(fmt, ...) \
-+	do { \
-+		static const char fstr[] PROGMEM = fmt; \
-+		char rstr[sizeof(fmt)]; \
-+		memcpy_P(rstr, fstr, sizeof(rstr)); \
-+		m_printf(rstr, ##__VA_ARGS__); \
-+	} while (0)
  
 -#define printf(fmt, ...) do { static const char fstr[] PROGMEM = fmt; char rstr[sizeof(fmt)]; memcpy_P(rstr, fstr, sizeof(rstr)); ets_printf(rstr, ##__VA_ARGS__); } while (0)
 -#define strcpy_P(dst, src) do { static const char fstr[] PROGMEM = src; memcpy_P(dst, fstr, sizeof(src)); } while (0)
-+#define strcpy_P(dst, src) \
-+	do { \
-+		static const char fstr[] PROGMEM = src; \
-+		memcpy_P(dst, fstr, sizeof(src)); \
-+	} while (0)
++#define printf(fmt, ...) m_printf(_F(fmt), ##__VA_ARGS__)
  
 -// Copied from ets_sys.h to avoid compile warnings
 -extern int ets_printf(const char *format, ...)  __attribute__ ((format (printf, 1, 2)));
 -extern int ets_putc(int);
++#undef strcpy_P
++#define strcpy_P(a, str) strcpy(a, _F(str))
++
 +#endif /* AXTLS_BUILD */
  
  // The network interface in WiFiClientSecure
@@ -267,18 +274,24 @@ index e0b9e46..7d85ff1 100644
 +extern int ax_port_write(int fd, uint8_t* buffer, uint16_t count);
  
  // TODO: Why is this not being imported from <string.h>?
-@@ -261,4 +216,5 @@ EXP_FUNC int STDCALL getdomainname(char *buf, int buf_size);
+ extern char *strdup(const char *orig);
+@@ -260,6 +209,7 @@ EXP_FUNC int STDCALL getdomainname(char *buf, int buf_size);
+ #endif  /* Not Win32 */
  
  /* some functions to mutate the way these work */
 +#ifndef ntohl
  inline uint32_t htonl(uint32_t n){
    return ((n & 0xff) << 24) |
-@@ -269,4 +225,5 @@ inline uint32_t htonl(uint32_t n){
+     ((n & 0xff00) << 8) |
+@@ -268,6 +218,8 @@ inline uint32_t htonl(uint32_t n){
+ }
  
  #define ntohl htonl
++#define LWIP_DONT_PROVIDE_BYTEORDER_FUNCTIONS
 +#endif
  
  EXP_FUNC int STDCALL ax_open(const char *pathname, int flags); 
+ 
 diff --git a/ssl/tls1.c b/ssl/tls1.c
 index 10b592c..10fe9d5 100644
 --- a/ssl/tls1.c
@@ -615,3 +628,16 @@ index 0916412..4bb7d07 100644
  /**
   * Define watchdog function to be called during CPU intensive operations.
   */
+diff --git a/crypto/bigint.c b/crypto/bigint.c
+index d90b093..f18fbd5 100644
+--- a/crypto/bigint.c
++++ b/crypto/bigint.c
+@@ -688,7 +688,7 @@ void bi_print(const char *label, bigint *x)
+         {
+             comp mask = 0x0f << (j*4);
+             comp num = (x->comps[i] & mask) >> (j*4);
+-            putc((num <= 9) ? (num + '0') : (num + 'A' - 10), stdout);
++            m_putc((num <= 9) ? (num + '0') : (num + 'A' - 10));
+         }
+     }  
+ 

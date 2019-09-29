@@ -154,6 +154,7 @@ char *strstr_P(char *haystack, const char *needle_P);
 #define pgm_read_float(addr) (*(const float *)(addr))
 
 #define memcpy_P(dest, src, num) memcpy((dest), (src), (num))
+#define memcmp_P(a1, b1, len) memcmp(a1, b1, len)
 #define strlen_P(a) strlen((a))
 #define strcpy_P(dest, src) strcpy((dest), (src))
 #define strncpy_P(dest, src, size) strncpy((dest), (src), (size))

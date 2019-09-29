@@ -18,16 +18,14 @@
 class SslSessionId
 {
 public:
-	/** @brief May be called even when object is null */
 	const uint8_t* getValue()
 	{
-		return this ? reinterpret_cast<const uint8_t*>(value.c_str()) : nullptr;
+		return reinterpret_cast<const uint8_t*>(value.c_str());
 	}
 
-	/** @brief May be called even when object is null */
 	unsigned getLength()
 	{
-		return this ? value.length() : 0;
+		return value.length();
 	}
 
 	bool isValid()
