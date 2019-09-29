@@ -11,86 +11,111 @@
 #include "Platform/System.h"
 #include "Timer.h"
 
+#ifndef TASK_QUEUE_LENGTH
+/** @brief default number of tasks in global queue
+ *  @note tasks are usually short-lived and executed very promptly, so a large queue is
+ *  normally un-necessry. If queue overrun is suspected, check `SystemClass::getMaxTaskCount()`.
+ */
+#define TASK_QUEUE_LENGTH 10
+#endif
+
 SystemClass System;
 
 SystemState SystemClass::state = eSS_None;
 os_event_t SystemClass::taskQueue[TASK_QUEUE_LENGTH];
+
+#ifdef ENABLE_TASK_COUNT
 volatile uint8_t SystemClass::taskCount;
 volatile uint8_t SystemClass::maxTaskCount;
+#endif
 
 /** @brief OS calls this function which invokes user-defined callback
- *  @note callback function pointer is placed in event->sig, with parameter
- *  in event->par.
+ *  @note callback function pointer is placed in event->sig, with parameter in event->par.
  */
 void SystemClass::taskHandler(os_event_t* event)
 {
-	auto callback = reinterpret_cast<TaskCallback>(event->sig);
-	if(callback) {
-		// If we get interrupt during adjustment of the counter, do it again
-		uint8_t oldCount = taskCount;
-		--taskCount;
-		if(taskCount != oldCount - 1)
-			--taskCount;
+#ifdef ENABLE_TASK_COUNT
+	auto level = noInterrupts();
+	--taskCount;
+	restoreInterrupts(level);
+#endif
+	auto callback = reinterpret_cast<TaskCallback32>(event->sig);
+	if(callback != nullptr) {
 		callback(event->par);
 	}
 }
 
 bool SystemClass::initialize()
 {
-	if(state != eSS_None)
+	if(state != eSS_None) {
 		return false;
+	}
 
 	state = eSS_Intializing;
 
 	// Initialise the global task queue
-	return system_os_task(taskHandler, USER_TASK_PRIO_1, taskQueue, TASK_QUEUE_LENGTH);
+	if(!system_os_task(taskHandler, USER_TASK_PRIO_1, taskQueue, TASK_QUEUE_LENGTH)) {
+		return false;
+	}
+
+#ifdef ARCH_ESP8266
+	system_init_done_cb([]() { state = eSS_Ready; });
+#else
+	state = eSS_Ready;
+#endif
+
+	return true;
 }
 
-bool SystemClass::queueCallback(TaskCallback callback, uint32_t param)
+bool SystemClass::queueCallback(TaskCallback32 callback, uint32_t param)
 {
 	if(callback == nullptr) {
 		return false;
 	}
 
-	if(++taskCount > maxTaskCount) {
+#ifdef ENABLE_TASK_COUNT
+	auto level = noInterrupts();
+	++taskCount;
+	if(taskCount > maxTaskCount) {
 		maxTaskCount = taskCount;
 	}
+	restoreInterrupts(level);
+#endif
 
 	return system_os_post(USER_TASK_PRIO_1, reinterpret_cast<os_signal_t>(callback), param);
 }
 
-void SystemClass::onReady(SystemReadyDelegate readyHandler)
+bool SystemClass::queueCallback(TaskDelegate callback)
 {
-	if(readyHandler) {
-		auto handler = new SystemReadyDelegate(readyHandler);
-		queueCallback(
-			[](uint32_t param) {
-				SystemClass::state = eSS_Ready;
-				auto handler = reinterpret_cast<SystemReadyDelegate*>(param);
-				(*handler)();
-				delete handler;
-			},
-			reinterpret_cast<uint32_t>(handler));
+	if(!callback) {
+		return false;
 	}
-}
 
-void SystemClass::onReady(ISystemReadyHandler* readyHandler)
-{
-	if(readyHandler) {
-		queueCallback(
-			[](uint32_t param) {
-				SystemClass::state = eSS_Ready;
-				auto handler = reinterpret_cast<ISystemReadyHandler*>(param);
-				handler->onSystemReady();
-			},
-			reinterpret_cast<uint32_t>(readyHandler));
+	// @todo consider failing immediately if called from interrupt context
+
+	auto delegate = new TaskDelegate(callback);
+	if(delegate == nullptr) {
+		return false;
 	}
+
+	auto delegateHandler = [](void* param) {
+		auto delegate = static_cast<TaskDelegate*>(param);
+		(*delegate)();
+		delete delegate;
+	};
+
+	if(!queueCallback(delegateHandler, delegate)) {
+		delete delegate;
+		return false;
+	}
+
+	return true;
 }
 
 void SystemClass::restart(unsigned deferMillis)
 {
 	if(deferMillis == 0) {
-		queueCallback([](uint32_t) { system_restart(); });
+		queueCallback(system_restart);
 	} else {
 		auto timer = new AutoDeleteTimer;
 		timer->initializeMs(deferMillis, system_restart).startOnce();

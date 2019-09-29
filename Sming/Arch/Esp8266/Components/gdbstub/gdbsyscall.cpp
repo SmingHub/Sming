@@ -253,7 +253,7 @@ bool ATTR_GDBEXTERNFN gdb_syscall_complete(const char* data)
 	}
 
 	if(syscall_info.callback != nullptr) {
-		System.queueCallback(TaskCallback(syscall_info.callback), uint32_t(&syscall_info));
+		System.queueCallback(TaskCallback(syscall_info.callback), &syscall_info);
 	}
 	gdb_state.syscall = syscall_ready;
 

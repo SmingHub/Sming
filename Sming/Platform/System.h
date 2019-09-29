@@ -24,24 +24,28 @@
 #pragma once
 
 #include <esp_systemapi.h>
+#include <Delegate.h>
+#include <Interrupts.h>
 
-/** @brief default number of tasks in global queue
- *  @note tasks are usually short-lived and executed very promptly. If necessary this
- *  value can be overridden in makefile or user_config.h.
- */
-#ifndef TASK_QUEUE_LENGTH
-#define TASK_QUEUE_LENGTH 10
-#endif
-
-/** @brief Task callback function type
+/** @brief Task callback function type, uint32_t parameter
  * 	@ingroup event_handlers
  * 	@note Callback code does not need to be in IRAM
- *  @todo Integrate delegation into callbacks
  */
-typedef void (*TaskCallback)(uint32_t param);
+typedef void (*TaskCallback32)(uint32_t param);
+
+/** @brief Task callback function type, void* parameter
+ * 	@ingroup event_handlers
+ * 	@note Callback code does not need to be in IRAM
+ */
+typedef void (*TaskCallback)(void* param);
+
+/** @brief Task Delegate callback type
+ *  @ingroup event_handlers
+ */
+typedef Delegate<void()> TaskDelegate;
 
 /// @ingroup event_handlers
-typedef Delegate<void()> SystemReadyDelegate; ///< Handler function for system ready
+typedef TaskDelegate SystemReadyDelegate; ///< Handler function for system ready
 
 class ISystemReadyHandler
 {
@@ -142,32 +146,70 @@ public:
      *  @param  readyHandler Function to handle event
      *  @note if system is ready, callback is executed immediately without deferral
      */
-	void onReady(SystemReadyDelegate readyHandler);
+	void onReady(SystemReadyDelegate readyHandler)
+	{
+		queueCallback(readyHandler);
+	}
 
 	/** @brief  Set handler for <i>system ready</i> event
      *  @param  readyHandler Function to handle event
      *  @note if system is ready, callback is executed immediately without deferral
      */
-	void onReady(ISystemReadyHandler* readyHandler);
+	void onReady(ISystemReadyHandler* readyHandler)
+	{
+		if(readyHandler != nullptr) {
+			queueCallback([](void* param) { static_cast<ISystemReadyHandler*>(param)->onSystemReady(); }, readyHandler);
+		}
+	}
 
 	/**
 	 * @brief Queue a deferred callback.
 	 * @param callback The function to be called
-	 * @param param Parameter passed to the callback
+	 * @param param Parameter passed to the callback (optional)
 	 * @retval bool false if callback could not be queued
 	 * @note It is important to check the return value to avoid memory leaks and other issues,
 	 * for example if memory is allocated and relies on the callback to free it again.
 	 * Note also that this method is typically called from interrupt context so must avoid things
 	 * like heap allocation, etc.
 	 */
-	static bool IRAM_ATTR queueCallback(TaskCallback callback, uint32_t param = 0);
+	static bool IRAM_ATTR queueCallback(TaskCallback32 callback, uint32_t param = 0);
+
+	/**
+	 * @brief Queue a deferred callback, with optional void* parameter
+	 */
+	__forceinline static bool IRAM_ATTR queueCallback(TaskCallback callback, void* param = nullptr)
+	{
+		return queueCallback(reinterpret_cast<TaskCallback32>(callback), reinterpret_cast<uint32_t>(param));
+	}
+
+	/**
+	 * @brief Queue a deferred callback with no callback parameter
+	 */
+	__forceinline static bool IRAM_ATTR queueCallback(InterruptCallback callback)
+	{
+		return queueCallback(reinterpret_cast<TaskCallback>(callback));
+	}
+
+	/**
+	 * @brief Queue a deferred Delegate callback
+	 * @param callback The Delegate to be called
+	 * @retval bool false if callback could not be queued
+	 * @note Provides flexibility and ease of use for using capturing lambdas, etc.
+	 * but requires heap allocation and not as fast as a function callback.
+	 * DO NOT use from interrupt context, use a Task/Interrupt callback.
+	 */
+	static bool queueCallback(TaskDelegate callback);
 
 	/** @brief Get number of tasks currently on queue
 	 *  @retval unsigned
 	 */
 	static unsigned getTaskCount()
 	{
+#ifdef ENABLE_TASK_COUNT
 		return taskCount;
+#else
+		return 255;
+#endif
 	}
 
 	/** @brief Get maximum number of tasks seen on queue at any one time
@@ -177,7 +219,11 @@ public:
 	 */
 	static unsigned getMaxTaskCount()
 	{
+#ifdef ENABLE_TASK_COUNT
 		return maxTaskCount;
+#else
+		return 255;
+#endif
 	}
 
 private:
@@ -185,9 +231,11 @@ private:
 
 private:
 	static SystemState state;
-	static os_event_t taskQueue[];		  ///< OS task queue
+	static os_event_t taskQueue[]; ///< OS task queue
+#ifdef ENABLE_TASK_COUNT
 	static volatile uint8_t taskCount;	///< Number of tasks on queue
 	static volatile uint8_t maxTaskCount; ///< Profiling to establish appropriate queue size
+#endif
 };
 
 /**	@brief	Global instance of system object

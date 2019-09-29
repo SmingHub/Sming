@@ -382,7 +382,7 @@ COMMAND_HANDLER(queueBreak)
 {
 	Serial.println(_F("Queuing a call to gdb_do_break()\r\n"
 					  "This differs from `break` in that a console read will be in progress when the break is called"));
-	System.queueCallback(TaskCallback(handleCommand_break));
+	System.queueCallback(handleCommand_break);
 	return true;
 }
 
@@ -619,7 +619,7 @@ void onConsoleReadCompleted(const GdbSyscallInfo& info)
 void readConsole()
 {
 	consoleOffRequested = false;
-	System.queueCallback([](uint32_t) {
+	System.queueCallback(InterruptCallback([]() {
 		showPrompt();
 		if(gdb_present() == eGDB_Attached) {
 			// Issue the syscall
@@ -641,7 +641,7 @@ void readConsole()
 			 * GDB is either detached or not present, serial callback will process input
 			 */
 		}
-	});
+	}));
 }
 
 extern "C" void gdb_on_attach(bool attached)

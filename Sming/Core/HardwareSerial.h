@@ -461,7 +461,7 @@ private:
 	 * @param status UART status flags indicating cause(s) of interrupt
 	 */
 	static void IRAM_ATTR staticCallbackHandler(uart_t* uart, uint32_t status);
-	static void staticOnStatusChange(uint32_t param);
+	static void staticOnStatusChange(void* param);
 	void invokeCallbacks();
 
 	/**

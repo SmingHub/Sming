@@ -159,9 +159,9 @@ unsigned HardwareSerial::getStatus()
 /*
  * Called via task queue
  */
-void HardwareSerial::staticOnStatusChange(uint32_t param)
+void HardwareSerial::staticOnStatusChange(void* param)
 {
-	auto serial = reinterpret_cast<HardwareSerial*>(param);
+	auto serial = static_cast<HardwareSerial*>(param);
 	if(serial != nullptr) {
 		serial->invokeCallbacks();
 	}
@@ -181,7 +181,7 @@ void HardwareSerial::staticCallbackHandler(uart_t* uart, uint32_t status)
 
 	// If required, queue a callback
 	if((status & serial->statusMask) != 0 && !serial->callbackQueued) {
-		System.queueCallback(staticOnStatusChange, uint32_t(serial));
+		System.queueCallback(staticOnStatusChange, serial);
 		serial->callbackQueued = true;
 	}
 }

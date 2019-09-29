@@ -203,7 +203,7 @@ void ATTR_GDBEXTERNFN gdbFlushUserData()
 
 #if GDBSTUB_ENABLE_UART2
 
-static void sendUserDataTask(uint32_t)
+static void sendUserDataTask()
 {
 	sendUserDataQueued = false;
 
@@ -321,7 +321,7 @@ static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
 			if(breakCheck && c == '\x03') {
 				if(break_requests++ == 0) {
 					// First attempt, break within a task callback
-					System.queueCallback(TaskCallback(doCtrlBreak));
+					System.queueCallback(doCtrlBreak);
 				} else if(break_requests == 3) {
 					// Application failed to stop, break immediately
 					doCtrlBreak();

@@ -753,7 +753,7 @@ void ATTR_GDBEXTERNFN commandLoop(bool waitForStart, bool allowDetach)
 	}
 
 	if(gdb_state.attached != initiallyAttached) {
-		System.queueCallback(TaskCallback(gdb_on_attach), gdb_state.attached);
+		System.queueCallback(TaskCallback32(gdb_on_attach), gdb_state.attached);
 	}
 
 	debug_i("<< LEAVE CMDLOOP");
