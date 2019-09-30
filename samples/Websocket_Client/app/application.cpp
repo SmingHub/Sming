@@ -33,7 +33,7 @@ const unsigned MESSAGE_INTERVAL = 1;
 // Time (in seconds) to wait before restarting client and sending another group of messages
 const unsigned RESTART_PERIOD = 20;
 
-int msg_cnt = 0;
+unsigned msg_cnt = 0;
 
 #ifdef ENABLE_SSL
 DEFINE_FSTR_LOCAL(ws_Url, "wss://echo.websocket.org");
