@@ -59,7 +59,7 @@ Change it like this:
 
 
 Task Queue
------------
+----------
 
 The task queue is used for *System.queueCallback()* calls.
 
@@ -148,6 +148,17 @@ or :sample:`MeteoControl` for a more flexible solution using configuration files
 
    Password for the :envvar:`WIFI_SSID` Access Point, if required. If the AP is open then
    leave this undefined.
+
+
+SSL support
+-----------
+
+.. envvar:: ENABLE_SSL
+
+   SSL requires lots of RAM and some intensive processing, so to conserve resources it is disabled by default.
+   If you want to enable it then take a look at the :sample:`Basic_Ssl` sample.
+
+   Set to 1 to enable SSL support using the :component:`axtls-8266` Component.
 
 
 Localisation
