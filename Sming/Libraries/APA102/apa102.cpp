@@ -10,7 +10,6 @@
 #include <SPI.h>
 
 static constexpr uint8_t LED_PREAMBLE = 0xE0; // LED frame preamble
-static constexpr uint8_t LED_BR_MAX = 31;	 // Maximum LED brightness value
 
 /* APA102 class for hardware & software SPI */
 
@@ -26,22 +25,6 @@ APA102::APA102(uint16_t n, SPIBase& spiRef)
 	} else {
 		clear();
 	}
-}
-
-void APA102::begin(void)
-{
-	pSPI.begin();
-}
-
-void APA102::begin(SPISettings& mySettings)
-{
-	pSPI.begin();
-	SPI_APA_Settings = mySettings;
-}
-
-void APA102::end()
-{
-	pSPI.end();
 }
 
 void APA102::show(void)
@@ -76,18 +59,6 @@ void APA102::clear(void)
 	}
 }
 
-void APA102::setPixel(uint16_t n, uint8_t r, uint8_t g, uint8_t b)
-{
-	col_t col = {brightness, r, g, b};
-	setPixel(n, &col);
-}
-
-void APA102::setPixel(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t br)
-{
-	col_t col = {br, r, g, b};
-	setPixel(n, &col);
-}
-
 void APA102::setPixel(uint16_t n, const col_t& col)
 {
 	if(n < numLEDs) {
@@ -97,12 +68,6 @@ void APA102::setPixel(uint16_t n, const col_t& col)
 	}
 }
 
-void APA102::setAllPixel(uint8_t r, uint8_t g, uint8_t b)
-{
-	col_t col = {brightness, r, g, b};
-	setAllPixel(col);
-}
-
 void APA102::setAllPixel(const col_t& col)
 {
 	auto c = col;
@@ -110,11 +75,6 @@ void APA102::setAllPixel(const col_t& col)
 	for(unsigned i = 0; i < numLEDs; i++) {
 		LEDbuffer[i] = c;
 	}
-}
-
-void APA102::setBrightness(uint8_t br)
-{
-	brightness = std::min(br, LED_BR_MAX);
 }
 
 /* direct write functions */
