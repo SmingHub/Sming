@@ -37,18 +37,18 @@ APA102 LED(NUM_LED); // APA102 constructor, call with number of LEDs
 					 //APA102 LED(NUM_LED, SPI);
 #endif
 
-SPISettings SPI_1MHZ = SPISettings(1000000, MSBFIRST, SPI_MODE3);
-SPISettings SPI_2MHZ = SPISettings(2000000, MSBFIRST, SPI_MODE3);
-int cnt = 0;
-col_t pixel;
+static SPISettings SPI_1MHZ = SPISettings(1000000, MSBFIRST, SPI_MODE3);
+static SPISettings SPI_2MHZ = SPISettings(2000000, MSBFIRST, SPI_MODE3);
 
 // Prototypes
-void updateLED(void);
-void colorWheel(uint16_t step, uint16_t numStep, col_t* c);
-void init(void);
+void updateLED();
+col_t colorWheel(uint16_t step, uint16_t numStep);
+void init();
 
 void updateLED()
 {
+	static unsigned cnt = 0;
+
 	if(cnt < NUM_LED) {
 		cnt++;
 	} else {
@@ -77,10 +77,7 @@ void init()
 	LED.setBrightness(10); // brightness [0..31]
 	LED.clear();
 
-	pixel.r = 255;
-	pixel.g = 0;
-	pixel.b = 0;
-	LED.setAllPixel(&pixel); // set all pixel to red
+	LED.setAllPixel(255, 0, 0); // set all pixel to red
 	LED.show();
 	delay(500);
 
@@ -88,38 +85,40 @@ void init()
 	LED.show();
 	delay(500);
 
-	LED.setPixel(10, &pixel); // set single pixel
+	LED.setPixel(10, pixel); // set single pixel
 	LED.show();
 	delay(500);
 
 	for(int i = 0; i < NUM_LED; i++) { // some rainbow ..
-		colorWheel(i, NUM_LED, &pixel);
-		LED.setPixel(i, &pixel);
+		auto pixel = colorWheel(i, NUM_LED);
+		LED.setPixel(i, pixel);
 	}
 	LED.show();
 
-	procTimer.initializeMs(100, updateLED).start();
+	procTimer.initializeMs<100>(updateLED).start();
 }
 
 /* color wheel function:
  * (simple) three 120° shifted colors -> color transitions r-g-b-r */
-void colorWheel(uint16_t step, uint16_t numStep, col_t* c)
+col_t colorWheel(uint16_t step, uint16_t numStep)
 {
+	col_t col = {0};
 	uint8_t index = ((uint32_t)(step * 256) / numStep) & 255;
 	uint8_t phase = 255 - index;
 	if(phase < 85) { // 256/3 -> 2pi/3 -> 120°
-		c->r = 255 - phase * 3;
-		c->g = 0;
-		c->b = phase * 3;
+		col.r = 255 - phase * 3;
+		col.g = 0;
+		col.b = phase * 3;
 	} else if(phase < 170) {
 		phase -= 85;
-		c->r = 0;
-		c->g = phase * 3;
-		c->b = 255 - phase * 3;
+		col.r = 0;
+		col.g = phase * 3;
+		col.b = 255 - phase * 3;
 	} else {
 		phase -= 170;
-		c->r = phase * 3;
-		c->g = 255 - phase * 3;
-		c->b = 0;
+		col.r = phase * 3;
+		col.g = 255 - phase * 3;
+		col.b = 0;
 	}
+	return col;
 }
