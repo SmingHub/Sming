@@ -43,27 +43,60 @@ static SPISettings SPI_2MHZ = SPISettings(2000000, MSBFIRST, SPI_MODE3);
 // Prototypes
 void updateLED();
 col_t colorWheel(uint16_t step, uint16_t numStep);
-void init();
 
 void updateLED()
 {
+	static unsigned state = 0;
 	static unsigned cnt = 0;
 
-	if(cnt < NUM_LED) {
-		cnt++;
-	} else {
-		cnt = 0;
+	switch(state++) {
+	case 0:
+		LED.setBrightness(10); // Default brightness [0..31]
+		LED.clear();
+
+		Serial.println(_F("Start: set all pixels to red"));
+		LED.setAllPixel(255, 0, 0);
+		LED.show();
+		break;
+
+	case 1:
+		Serial.println(_F("Set all pixels to green"));
+		LED.setAllPixel(0, 255, 0);
+		LED.show();
+		break;
+
+	case 2:
+		Serial.println(_F("Set pixel #10 to red"));
+		LED.setPixel(10, 255, 0, 0);
+		LED.show();
+		break;
+
+	case 3:
+		Serial.println(_F("Start cycling through rainbow patterns"));
+		for(unsigned i = 0; i < NUM_LED; i++) { // some rainbow ..
+			auto pixel = colorWheel(i, NUM_LED);
+			LED.setPixel(i, pixel);
+		}
+		LED.show();
+		procTimer.setIntervalMs<100>();
+		break;
+
+	default:
+		if(cnt < NUM_LED) {
+			cnt++;
+		} else {
+			cnt = 0;
+		}
+
+		Serial.print("ping ");
+		Serial.println(cnt);
+		LED.show(cnt); // show shifted LED buffer
+		break;
 	}
-
-	Serial.printf("ping %u\n", cnt);
-	LED.show(cnt); // show shifted LED buffer
-
-	WDT.alive();
 }
 
 void init()
 {
-	WDT.enable(false);
 	WifiAccessPoint.enable(false);
 	WifiStation.enable(false);
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
@@ -73,29 +106,7 @@ void init()
 	//LED.begin(SPI_1MHZ);
 	//LED.begin(SPI_2MHZ);
 
-	Serial.printf("start\n");
-	LED.setBrightness(10); // brightness [0..31]
-	LED.clear();
-
-	LED.setAllPixel(255, 0, 0); // set all pixel to red
-	LED.show();
-	delay(500);
-
-	LED.setAllPixel(0, 255, 0); // set all pixel to green
-	LED.show();
-	delay(500);
-
-	LED.setPixel(10, pixel); // set single pixel
-	LED.show();
-	delay(500);
-
-	for(int i = 0; i < NUM_LED; i++) { // some rainbow ..
-		auto pixel = colorWheel(i, NUM_LED);
-		LED.setPixel(i, pixel);
-	}
-	LED.show();
-
-	procTimer.initializeMs<100>(updateLED).start();
+	procTimer.initializeMs<500>(updateLED).start();
 }
 
 /* color wheel function:
@@ -103,7 +114,8 @@ void init()
 col_t colorWheel(uint16_t step, uint16_t numStep)
 {
 	col_t col = {0};
-	uint8_t index = ((uint32_t)(step * 256) / numStep) & 255;
+	col.br = 10;
+	uint8_t index = (step * 256) / numStep;
 	uint8_t phase = 255 - index;
 	if(phase < 85) { // 256/3 -> 2pi/3 -> 120°
 		col.r = 255 - phase * 3;
