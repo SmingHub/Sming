@@ -26,3 +26,4 @@ using std::isinf;
 using std::isnan;
 using std::max;
 using std::min;
+using std::swap;
