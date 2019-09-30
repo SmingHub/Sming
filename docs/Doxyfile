@@ -381,6 +381,8 @@ MACRO_EXPANSION        = YES
 EXPAND_ONLY_PREDEF     = YES
 PREDEFINED = \
 	__cplusplus \
+	IRAM_ATTR= \
+	__forceinline= \
 	ENABLE_SSL=1 \
 	ENABLE_CMD_EXECUTOR=1 \
 	ENABLE_CUSTOM_PWM=1 \
