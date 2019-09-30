@@ -7,7 +7,7 @@ Descr: SDCard/FAT file usage and write benchmark.
 */
 #include <SmingCore.h>
 #include <Libraries/SDCard/SDCard.h>
-#include <string.h>
+#include <Platform/Timers.h>
 
 /*(!) Warning on some hardware versions (ESP07, maybe ESP12)
  * 		pins GPIO4 and GPIO5 are swapped !*/
@@ -18,85 +18,83 @@ Descr: SDCard/FAT file usage and write benchmark.
 
 void writeToFile(const char* filename, uint32_t totalBytes, uint32_t bytesPerRound)
 {
-	FIL file;
-	FRESULT fRes;
-	uint32_t t1, t2, td, byteswritten, i;
 	char* buf = new char[totalBytes];
-
-	if(!buf) {
+	if(buf == nullptr) {
 		Serial.print("Failed to allocate heap\n");
 		return;
 	}
 
 	Serial.printf("Write %d kBytes in %d Bytes increment: ", totalBytes / 1024, bytesPerRound);
-	for(i = 0; i < totalBytes; i++)
+	for(unsigned i = 0; i < totalBytes; i++) {
 		buf[i] = (i % 10) + '0';
+	}
 
-	t1 = system_get_time();
+	OneShotFastUs timer;
 
-	fRes = f_open(&file, filename, FA_WRITE | FA_CREATE_ALWAYS);
+	FIL file;
+	FRESULT fRes = f_open(&file, filename, FA_WRITE | FA_CREATE_ALWAYS);
 
 	if(fRes == FR_OK) {
-		i = 0;
+		unsigned i = 0;
 		do {
 			uint32_t remainingBytes = totalBytes - i > bytesPerRound ? bytesPerRound : totalBytes - i;
-			f_write(&file, buf + i, remainingBytes, &byteswritten);
-			if(byteswritten != remainingBytes) {
-				Serial.printf("Only written %d bytes\n", i + byteswritten);
+			uint32_t bytesWritten = 0;
+			f_write(&file, buf + i, remainingBytes, &bytesWritten);
+			if(bytesWritten != remainingBytes) {
+				Serial.printf("Only written %d bytes\n", i + bytesWritten);
 				break;
 			}
 			i += remainingBytes;
 		} while(i < totalBytes);
 
 		f_close(&file);
+
+		//get the time at test end
+		unsigned elapsed = timer.elapsedTime();
+
+		Serial.print((i / 1024.0f) * 1000000.0f / elapsed);
+		Serial.print(" kB/s\n");
 	} else {
 		Serial.printf("fopen FAIL: %d \n", (unsigned int)fRes);
 	}
-	//get the time at test end
-	t2 = system_get_time();
 
 	delete[] buf;
-
-	Serial.print((i / 1024.0f) * 1000000.0f / (t2 - t1));
-	Serial.print(" kB/s\n");
 }
 
 void stat_file(char* fname)
 {
-	FRESULT fr;
 	FILINFO fno;
-	uint8_t size = 0;
-	fr = f_stat(fname, &fno);
+	FRESULT fr = f_stat(fname, &fno);
 	switch(fr) {
-	case FR_OK:
-		Serial.printf("%u\t", fno.fsize);
+	case FR_OK: {
+		Serial.printf("%lu\t", fno.fsize);
 
+		uint8_t size = 0;
 		if(fno.fattrib & AM_DIR) {
-			Serial.print("[ ");
-			size += 2;
+			size += Serial.print("[ ");
 		}
 
-		Serial.print(fname);
-		size += strlen(fname);
+		size += Serial.print(fname);
 
 		if(fno.fattrib & AM_DIR) {
-			Serial.print(" ]");
-			size += 2;
+			size += Serial.print(" ]");
 		}
 
-		Serial.print("\t");
-		if(size < 8)
-			Serial.print("\t");
+		Serial.print('\t');
+		if(size < 8) {
+			Serial.print('\t');
+		}
 
-		Serial.printf("%u/%02u/%02u, %02u:%02u\t", (fno.fdate >> 9) + 1980, fno.fdate >> 5 & 15, fno.fdate & 31,
-					  fno.ftime >> 11, fno.ftime >> 5 & 63);
+		Serial.printf("%u/%02u/%02u, %02u:%02u\t", (fno.fdate >> 9) + 1980, (fno.fdate >> 5) & 15, fno.fdate & 31,
+					  fno.ftime >> 11, (fno.ftime >> 5) & 63);
 		Serial.printf("%c%c%c%c%c\n", (fno.fattrib & AM_DIR) ? 'D' : '-', (fno.fattrib & AM_RDO) ? 'R' : '-',
 					  (fno.fattrib & AM_HID) ? 'H' : '-', (fno.fattrib & AM_SYS) ? 'S' : '-',
 					  (fno.fattrib & AM_ARC) ? 'A' : '-');
 		break;
+	}
 
 	case FR_NO_FILE:
-		Serial.printf("n/a\n");
+		Serial.println("n/a");
 		break;
 
 	default:
@@ -104,23 +102,23 @@ void stat_file(char* fname)
 	}
 }
 
-FRESULT ls(const char* path /* Start node to be scanned (also used as work area) */
-)
+/*
+ * @param path Start node to be scanned (also used as work area)
+ */
+FRESULT ls(const char* path)
 {
-	FRESULT res;
-	FILINFO fno;
 	DIR dir;
-	char* fn; /* This function assumes non-Unicode configuration */
-
-	res = f_opendir(&dir, path); /* Open the directory */
+	FRESULT res = f_opendir(&dir, path); /* Open the directory */
 	if(res == FR_OK) {
-		int i = strlen(path);
 		for(;;) {
+			FILINFO fno;
 			res = f_readdir(&dir, &fno); /* Read a directory item */
-			if(res != FR_OK || fno.fname[0] == 0)
+			if(res != FR_OK || fno.fname[0] == 0) {
 				break; /* Break on error or end of dir */
-			if(fno.fname[0] == '.')
+			}
+			if(fno.fname[0] == '.') {
 				continue; /* Ignore dot entry */
+			}
 
 			stat_file(fno.fname);
 		}
@@ -132,10 +130,6 @@ FRESULT ls(const char* path /* Start node to be scanned (also used as work area)
 
 void init()
 {
-	FIL file;
-	FRESULT fRes;
-	uint32_t actual;
-
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
@@ -156,10 +150,12 @@ void init()
 
 	//2. Open file, write a few bytes, close reopen and read
 	Serial.print("\n2. Open file \"test\" and write some data...\n");
-	fRes = f_open(&file, "test", FA_WRITE | FA_CREATE_ALWAYS);
+	FIL file;
+	FRESULT fRes = f_open(&file, "test", FA_WRITE | FA_CREATE_ALWAYS);
 
 	if(fRes == FR_OK) {
 		//you can write directly
+		uint32_t actual = 0;
 		f_write(&file, "hello ", 5, &actual);
 
 		//or using printf for convenience
@@ -180,6 +176,7 @@ void init()
 		//read back file contents
 		char buffer[64];
 
+		uint32_t actual = 0;
 		f_read(&file, buffer, sizeof(buffer), &actual);
 		buffer[actual] = 0;
 
@@ -187,7 +184,7 @@ void init()
 
 		f_close(&file);
 	} else {
-		Serial.printf("fopen FAIL: %d \n", (unsigned int)fRes);
+		Serial.printf("fopen FAIL: %d \n", fRes);
 	}
 
 	Serial.print("\n4. Write speed benchamark:\n");
