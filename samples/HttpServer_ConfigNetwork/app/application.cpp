@@ -17,9 +17,7 @@ IMPORT_FSTR(flashSettings, PROJECT_DIR "/web/build/settings.html")
 
 void onIndex(HttpRequest& request, HttpResponse& response)
 {
-	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
-	auto& vars = tmpl->variables();
-	response.sendNamedStream(tmpl); // will be automatically deleted
+	response.sendFile("index.html");
 }
 
 int onIpConfig(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
