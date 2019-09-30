@@ -32,7 +32,7 @@ static uint64_t initTime()
 	return (1000000ULL * tv.tv_sec) + tv.tv_usec;
 }
 
-static uint64_t system_start_time = initTime();
+uint64_t host_system_start_time = initTime();
 
 uint64_t os_get_nanoseconds()
 {

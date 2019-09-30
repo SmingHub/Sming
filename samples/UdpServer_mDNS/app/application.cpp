@@ -22,10 +22,7 @@ void startmDNS()
 
 void onIndex(HttpRequest& request, HttpResponse& response)
 {
-	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
-	auto& vars = tmpl->variables();
-	//vars["counter"] = String(counter);
-	response.sendNamedStream(tmpl); // this template object will be deleted automatically
+	response.sendFile("index.html");
 }
 
 void onFile(HttpRequest& request, HttpResponse& response)

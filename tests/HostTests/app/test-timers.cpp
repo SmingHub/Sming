@@ -271,7 +271,7 @@ public:
 
 		Serial.println(api);
 
-		for(auto i = 0; i < iterations; ++i) {
+		for(unsigned i = 0; i < iterations; ++i) {
 			profile_setCallback();
 			profile_setInterval();
 			profile_arm();
@@ -333,7 +333,7 @@ public:
 	{
 		Serial.println(timer);
 
-		for(auto i = 0; i < iterations; ++i) {
+		for(unsigned i = 0; i < iterations; ++i) {
 			profile_setCallback();
 			profile_setIntervalUs();
 			profile_setIntervalUsT();
