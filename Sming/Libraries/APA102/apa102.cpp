@@ -9,9 +9,8 @@
 #include "apa102.h"
 #include <SPI.h>
 
-static constexpr uint8_t LED_PREAMBLE = 0xE0;	// LED frame preamble
-static constexpr uint8_t LED_BR_MAX = 31; // Maximum LED brightness value
-
+static constexpr uint8_t LED_PREAMBLE = 0xE0; // LED frame preamble
+static constexpr uint8_t LED_BR_MAX = 31;	 // Maximum LED brightness value
 
 /* APA102 class for hardware & software SPI */
 
@@ -29,102 +28,114 @@ APA102::APA102(uint16_t n, SPIBase& spiRef)
 	}
 }
 
-void APA102::begin(void) {
-    pSPI.begin();
+void APA102::begin(void)
+{
+	pSPI.begin();
 }
 
-void APA102::begin(SPISettings & mySettings) {
-    pSPI.begin();
-    SPI_APA_Settings = mySettings;
+void APA102::begin(SPISettings& mySettings)
+{
+	pSPI.begin();
+	SPI_APA_Settings = mySettings;
 }
 
-void APA102::end() {
-    pSPI.end();
+void APA102::end()
+{
+	pSPI.end();
 }
 
-
-
-void APA102::show(void) {
-    pSPI.beginTransaction(SPI_APA_Settings);
-    sendStart();
-    for (unsigned i = 0; i < numLEDs; i++) {
-        auto col = LEDbuffer[i];
-        pSPI.transfer(reinterpret_cast<uint8_t*>(&col), sizeof(col));
-    }
-    sendStop();
-    pSPI.endTransaction();
+void APA102::show(void)
+{
+	pSPI.beginTransaction(SPI_APA_Settings);
+	sendStart();
+	for(unsigned i = 0; i < numLEDs; i++) {
+		auto col = LEDbuffer[i];
+		pSPI.transfer(reinterpret_cast<uint8_t*>(&col), sizeof(col));
+	}
+	sendStop();
+	pSPI.endTransaction();
 }
 
-void APA102::show(uint16_t startPos) {
-    pSPI.beginTransaction(SPI_APA_Settings);
-    unsigned sp = numLEDs - (startPos % numLEDs);
-    sendStart();
-    for (unsigned i = 0; i < numLEDs; i++) {
-        auto col = LEDbuffer[(i + sp) % numLEDs];
-        pSPI.transfer(reinterpret_cast<uint8_t*>(&col), sizeof(col));
-    }
-    sendStop();
-    pSPI.endTransaction();
+void APA102::show(uint16_t startPos)
+{
+	pSPI.beginTransaction(SPI_APA_Settings);
+	unsigned sp = numLEDs - (startPos % numLEDs);
+	sendStart();
+	for(unsigned i = 0; i < numLEDs; i++) {
+		auto col = LEDbuffer[(i + sp) % numLEDs];
+		pSPI.transfer(reinterpret_cast<uint8_t*>(&col), sizeof(col));
+	}
+	sendStop();
+	pSPI.endTransaction();
 }
 
-void APA102::clear(void) {
-    for (unsigned i = 0; i < numLEDs; i++) {
-        LEDbuffer[i] = {LED_PREAMBLE, 0, 0, 0};
-    }
+void APA102::clear(void)
+{
+	for(unsigned i = 0; i < numLEDs; i++) {
+		LEDbuffer[i] = {LED_PREAMBLE, 0, 0, 0};
+	}
 }
 
-void APA102::setPixel(uint16_t n, uint8_t r, uint8_t g, uint8_t b) {
+void APA102::setPixel(uint16_t n, uint8_t r, uint8_t g, uint8_t b)
+{
 	col_t col = {brightness, r, g, b};
 	setPixel(n, &col);
 }
 
-void APA102::setPixel(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t br) {
+void APA102::setPixel(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t br)
+{
 	col_t col = {br, r, g, b};
 	setPixel(n, &col);
 }
 
-void APA102::setPixel(uint16_t n, const col_t& col) {
-    if (n < numLEDs) {
-    	auto c = col;
-    	c.br = std::min(c.br, LED_BR_MAX) | LED_PREAMBLE;
-        LEDbuffer[n] = c;
-    }
+void APA102::setPixel(uint16_t n, const col_t& col)
+{
+	if(n < numLEDs) {
+		auto c = col;
+		c.br = std::min(c.br, LED_BR_MAX) | LED_PREAMBLE;
+		LEDbuffer[n] = c;
+	}
 }
 
-void APA102::setAllPixel(uint8_t r, uint8_t g, uint8_t b) {
+void APA102::setAllPixel(uint8_t r, uint8_t g, uint8_t b)
+{
 	col_t col = {brightness, r, g, b};
 	setAllPixel(col);
 }
 
-void APA102::setAllPixel(const col_t& col) {
+void APA102::setAllPixel(const col_t& col)
+{
 	auto c = col;
 	c.br = std::min(c.br, LED_BR_MAX) | LED_PREAMBLE;
-    for (unsigned i = 0; i < numLEDs; i++) {
-        LEDbuffer[i] = c;
-    }
+	for(unsigned i = 0; i < numLEDs; i++) {
+		LEDbuffer[i] = c;
+	}
 }
 
-void APA102::setBrightness(uint8_t br) {
-    brightness = std::min(br, LED_BR_MAX);
+void APA102::setBrightness(uint8_t br)
+{
+	brightness = std::min(br, LED_BR_MAX);
 }
-
 
 /* direct write functions */
 
-inline void APA102::sendStart(void) {
-    uint8_t startFrame[] = {0x00, 0x00, 0x00, 0x00};
-    pSPI.transfer(startFrame, sizeof(startFrame));
+inline void APA102::sendStart(void)
+{
+	uint8_t startFrame[] = {0x00, 0x00, 0x00, 0x00};
+	pSPI.transfer(startFrame, sizeof(startFrame));
 }
 
-inline void APA102::sendStop(void) {
-    uint8_t stopFrame[] = {0xff, 0xff, 0xff, 0xff};
-    pSPI.transfer(stopFrame, sizeof(stopFrame));
+inline void APA102::sendStop(void)
+{
+	uint8_t stopFrame[] = {0xff, 0xff, 0xff, 0xff};
+	pSPI.transfer(stopFrame, sizeof(stopFrame));
 }
 
-void APA102::directWrite(uint8_t r, uint8_t g, uint8_t b, uint8_t br) {
-    br = std::min(br, LED_BR_MAX);
-	col_t col = {uint8_t(LED_PREAMBLE | br), r, g, b };
+void APA102::directWrite(uint8_t r, uint8_t g, uint8_t b, uint8_t br)
+{
+	br = std::min(br, LED_BR_MAX);
+	col_t col = {uint8_t(LED_PREAMBLE | br), r, g, b};
 
 	pSPI.beginTransaction(SPI_APA_Settings);
-    pSPI.transfer(reinterpret_cast<uint8_t*>(&col), sizeof(col));
+	pSPI.transfer(reinterpret_cast<uint8_t*>(&col), sizeof(col));
 }
