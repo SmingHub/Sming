@@ -114,6 +114,8 @@ static struct {
 	size_t count;   // Number of allocations called
 } stats;
 
+static size_t allocationLimit = 0;
+
 static MallocCountCallback userCallback = nullptr;
 
 /* add allocation to statistics */
@@ -153,19 +155,25 @@ size_t getPeak()
 }
 
 /* user function to reset the peak allocation to current */
-extern void resetPeak()
+void resetPeak()
 {
 	stats.peak = stats.current;
 }
 
 /* user function to return total number of allocations */
-extern size_t getAllocCount()
+size_t getAllocCount()
 {
 	return stats.count;
 }
 
+/* sets the maximum available memory */
+void setAllocLimit(size_t maxBytes)
+{
+	allocationLimit = maxBytes;
+}
+
 /* user function to supply a memory profile callback */
-extern void setCallback(MallocCountCallback callback)
+void setCallback(MallocCountCallback callback)
 {
 	userCallback = callback;
 }
@@ -178,6 +186,11 @@ extern void setCallback(MallocCountCallback callback)
 extern "C" void* WRAP(F_MALLOC)(size_t size)
 {
 	if(size == 0) {
+		return nullptr;
+	}
+
+	if(allocationLimit != 0 && stats.current + size > allocationLimit) {
+		log("malloc(%u) -> exceeds maximum (current is %u bytes)", size, stats.current);
 		return nullptr;
 	}
 
@@ -246,8 +259,10 @@ extern "C" void* WRAP(F_CALLOC)(size_t nmemb, size_t size)
 		return nullptr;
 	}
 
-	void* ret = malloc(size);
-	memset(ret, 0, size);
+	void* ret = WRAP(F_MALLOC)(size);
+	if(ret != nullptr) {
+		memset(ret, 0, size);
+	}
 	return ret;
 }
 
@@ -269,6 +284,12 @@ extern "C" void* WRAP(F_REALLOC)(void* ptr, size_t size)
 		log("free(%p) has no sentinel !!! memory corruption?", ptr);
 		// ... or memory not allocated by our malloc()
 		return REAL(F_REALLOC)(ptr, size);
+	}
+
+	// For testing purposes we'll assume the reallocation won't be in-place
+	if(allocationLimit != 0 && stats.current + size > allocationLimit) {
+		log("remalloc(%u) -> exceeds maximum (current is %u bytes)", size, stats.current);
+		return nullptr;
 	}
 
 	ptr = (char*)ptr - alignment;
