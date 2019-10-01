@@ -260,7 +260,9 @@ extern "C" void* WRAP(F_CALLOC)(size_t nmemb, size_t size)
 	}
 
 	void* ret = WRAP(F_MALLOC)(size);
-	memset(ret, 0, size);
+	if(ret != nullptr) {
+		memset(ret, 0, size);
+	}
 	return ret;
 }
 
