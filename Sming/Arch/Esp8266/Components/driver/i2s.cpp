@@ -301,7 +301,6 @@ bool i2s_state_t::rx_done(dma_descriptor_t* desc)
 {
 	// Set owner back to 1 (SW) or else RX stops.  TX has no such restriction.
 	desc->owner = 1;
-	unsigned idx = desc - slc_items;
 	if(buffers_used < (buffer_count - 1)) {
 		++buffers_used;
 	}
@@ -606,14 +605,16 @@ bool i2s_object_t::enable_loopback(bool enable)
 static i2s_state_t* alloc_state(const i2s_module_config_t& config)
 {
 	auto state = new i2s_state_t;
-	if(state != nullptr) {
-		if(!state->initialise(config)) {
-			delete state;
-			state = nullptr;
-		}
-		state->callback_threshold = config.callback_threshold;
+	if(state == nullptr) {
+		return nullptr;
 	}
 
+	if(!state->initialise(config)) {
+		delete state;
+		return nullptr;
+	}
+
+	state->callback_threshold = config.callback_threshold;
 	return state;
 }
 
