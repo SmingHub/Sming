@@ -34,30 +34,53 @@
 
 namespace MallocCount
 {
-/* returns the currently allocated amount of memory */
+/**
+ *  @brief Get the currently allocated amount of memory
+ */
 size_t getCurrent(void);
 
-/* returns the current peak memory allocation */
+/**
+ *  @brief Get the peak memory allocation
+ */
 size_t getPeak(void);
 
-/* resets the peak memory allocation to current */
+/**
+ * @brief Reset the peak memory allocation to current
+ */
 void resetPeak(void);
 
-/* returns the total number of allocations */
+/**
+ * @brief Get the total number of allocations
+ */
 size_t getAllocCount(void);
 
-/* typedef of callback function */
+/**
+ * @brief Set an allocation limit
+ * @param maxBytes Specify 0 for no limit
+ */
+void setAllocLimit(size_t maxBytes);
+
+/**
+ * @brief Callback function type
+ * @param current Current allocated bytes
+ */
 typedef std::function<void(size_t current)> MallocCountCallback;
 
-/* supply malloc_count with a callback function that is invoked on each change
- * of the current allocation. The callback function must not use malloc()/realloc()/free()
- * or it will go into an endless recursive loop! */
+/**
+ * @brief Set a callback function that is invoked on each change of the current allocation
+ * @note The callback function must not use malloc()/realloc()/free()
+ * or it will go into an endless recursive loop!
+ */
 void setCallback(MallocCountCallback callback);
 
-/* dynamically enable/disable logging */
+/**
+ * @brief Enable/disable logging
+ */
 void enableLogging(bool enable);
 
-/* allocations less than this threshold are never logged */
+/**
+ * @brief Set minimum allocation size for log output (when enabled)
+ */
 void setLogThreshold(size_t threshold);
 
 }; // namespace MallocCount
