@@ -11,5 +11,8 @@ SPI_SIZE = 4M
 # Tell Sming about any Components we need
 COMPONENT_DEPENDS := shared-test
 
+# Don't need network
+HOST_NETWORK_OPTIONS := --nonet
+
 .PHONY: execute
 execute: run
