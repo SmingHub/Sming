@@ -293,7 +293,7 @@ index e0b9e46..8c226ea 100644
  EXP_FUNC int STDCALL ax_open(const char *pathname, int flags); 
  
 diff --git a/ssl/tls1.c b/ssl/tls1.c
-index 10b592c..10fe9d5 100644
+index 10b592c..be0fc29 100644
 --- a/ssl/tls1.c
 +++ b/ssl/tls1.c
 @@ -1368,6 +1368,10 @@ int basic_read(SSL *ssl, uint8_t **in_data)
@@ -306,6 +306,25 @@ index 10b592c..10fe9d5 100644
 +
      if (IS_SET_SSL_FLAG(SSL_SENT_CLOSE_NOTIFY))
          return SSL_CLOSE_NOTIFY;
+ 
+@@ -1426,6 +1430,9 @@ int basic_read(SSL *ssl, uint8_t **in_data)
+             goto error;
+         }
+ 
++        memcpy(ssl->hmac_header, buf, 3);       /* store for hmac */
++        ssl->record_type = buf[0];
++
+         /* is the allocated buffer large enough to handle all the data? if not, increase its size*/
+         if (ssl->need_bytes > ssl->max_plain_length+RT_EXTRA-BM_RECORD_OFFSET)
+         {
+@@ -1439,8 +1446,6 @@ int basic_read(SSL *ssl, uint8_t **in_data)
+         }
+ 
+         CLR_SSL_FLAG(SSL_NEED_RECORD);
+-        memcpy(ssl->hmac_header, buf, 3);       /* store for hmac */
+-        ssl->record_type = buf[0];
+         goto error;                         /* no error, we're done */
+     }
  
 diff --git a/tools/make_certs.sh b/tools/make_certs.sh
 index fc6cc90..3113355 100644
