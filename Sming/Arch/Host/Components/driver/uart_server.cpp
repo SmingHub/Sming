@@ -36,14 +36,22 @@ public:
 	{
 	}
 
+	~KeyboardThread()
+	{
+		done = true;
+	}
+
 protected:
 	void* thread_routine() override;
+
+private:
+	bool done = false;
 };
 
 void* KeyboardThread::thread_routine()
 {
 	keyb_raw();
-	for(;;) {
+	while(!done) {
 		int c = getkey();
 		if(c == KEY_NONE) {
 			sched_yield();
@@ -70,6 +78,7 @@ void* KeyboardThread::thread_routine()
 
 		interrupt_end();
 	}
+	keyb_restore();
 	return nullptr;
 }
 
@@ -96,10 +105,12 @@ static void onUart0Notify(uart_t* uart, uart_notify_code_t code)
 		}
 		break;
 
-	case UART_NOTIFY_BEFORE_CLOSE:
-		delete keyboardThread;
+	case UART_NOTIFY_BEFORE_CLOSE: {
+		auto thread = keyboardThread;
 		keyboardThread = nullptr;
+		delete thread;
 		break;
+	}
 
 	default:; // ignore
 	}

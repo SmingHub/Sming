@@ -52,7 +52,7 @@ static void signal_handler(int sig)
 	}
 
 	host_puts("\r\n");
-	_Exit(1);
+	exit(1);
 }
 
 void trap_exceptions()
