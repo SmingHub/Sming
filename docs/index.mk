@@ -4,6 +4,8 @@
 # $2 -> Path
 # $3 -> Source path relative to working root directory (SMINGDIR)
 define GenIndex
+:custom_pagename: $(patsubst ../%,%,$(CMP_$2_README))
+
 $(if $(filter %.rst,$(CMP_$2_README)),
 .. include:: $(call GetIncludePath,$(CMP_$2_README)),
 .. mdinclude:: $(call GetMdIncludePath,$(CMP_$2_README))

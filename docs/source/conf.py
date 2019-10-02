@@ -103,6 +103,15 @@ html_extra_path = [
 ]
 
 
+# Provide default stylesheet context for Github links
+html_context = {
+    "display_github": True,
+    "github_user": "SmingHub",
+    "github_repo": "Sming",
+    "github_version": "develop",
+    "conf_py_path": "/docs/source/", # Path in the checkout to the docs root
+}
+
 ##
 # -- Use sphinx_rtd_theme for local builds --------------------------------
 # ref. https://github.com/snide/sphinx_rtd_theme#using-this-theme-locally-then-building-on-read-the-docs
