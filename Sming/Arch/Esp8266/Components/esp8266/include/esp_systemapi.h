@@ -23,6 +23,7 @@ extern "C" {
 #define __CORRECT_ISO_CPP_STDLIB_H_PROTO
 #include <limits.h>
 #include "c_types.h"
+#include <assert.h>
 
 // Remove buggy espconn
 #define _NO_ESPCON_
@@ -75,12 +76,6 @@ typedef enum {
 
 #endif // ETS_SLC_INUM
 
-
-#undef assert
-#define assert(condition) \
-	do {\
-		if (!(condition)) SYSTEM_ERROR("ASSERT: %s %d", __FUNCTION__, __LINE__); \
-	} while(0)
 #define SYSTEM_ERROR(fmt, ...) debug_e("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 
 extern void ets_wdt_enable(void);
