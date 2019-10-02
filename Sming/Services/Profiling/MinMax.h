@@ -11,7 +11,8 @@
 #pragma once
 
 #include <WString.h>
-#include <Printable.h>
+#include <Print.h>
+#include <algorithm>
 
 namespace Profiling
 {
@@ -25,7 +26,12 @@ public:
 	{
 	}
 
-	void reset();
+	const String& getTitle() const
+	{
+		return title;
+	}
+
+	void clear();
 
 	void update(T value);
 
@@ -61,7 +67,7 @@ private:
 	T maxVal = 0;
 };
 
-template <typename T> void MinMax<T>::reset()
+template <typename T> void MinMax<T>::clear()
 {
 	count = 0;
 	total = minVal = maxVal = 0;
@@ -73,8 +79,8 @@ template <typename T> void MinMax<T>::update(T value)
 		minVal = value;
 		maxVal = value;
 	} else {
-		minVal = min(minVal, value);
-		maxVal = max(maxVal, value);
+		minVal = std::min(minVal, value);
+		maxVal = std::max(maxVal, value);
 	}
 	total += value;
 	++count;
@@ -100,5 +106,7 @@ template <typename T> size_t MinMax<T>::printTo(Print& p) const
 	res += p.print(getAverage());
 	return res;
 }
+
+using MinMax32 = MinMax<uint32_t>;
 
 } // namespace Profiling

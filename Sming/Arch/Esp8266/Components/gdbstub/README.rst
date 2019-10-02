@@ -83,6 +83,11 @@ To run manually, see the following variables which you can inspect using ``make 
    Same as :envvar:`COM_SPEED_SERIAL`, which is the value compiled into the gdbstub code.
 
 
+.. envvar:: GDB_UART_SWAP
+
+   If you need to use alternate serial pins, enable this option ``GDB_UART_SWAP=1``
+
+
 .. envvar:: GDB
 
    Path to the GDB executable being used.

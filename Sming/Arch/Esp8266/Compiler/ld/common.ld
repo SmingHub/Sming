@@ -2,6 +2,8 @@
     common.ld
 */
 
+INCLUDE "peripherals.ld"
+
 PHDRS
 {
   dport0_0_phdr PT_LOAD;
@@ -128,6 +130,7 @@ SECTIONS
 	*(.literal._ZN13CallbackTimer*)
 	*(.text._ZN13CallbackTimer*)
     *(.text._ZNKSt8functionIF*EE*)  /* std::function<any(...)>::operator()() const */
+	*(.text._ZN9Profiling6MinMaxIjE6updateEj)
 
   } >iram1_0_seg :iram1_0_phdr
 
