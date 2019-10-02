@@ -293,7 +293,7 @@ index e0b9e46..8c226ea 100644
  EXP_FUNC int STDCALL ax_open(const char *pathname, int flags); 
  
 diff --git a/ssl/tls1.c b/ssl/tls1.c
-index 10b592c..10fe9d5 100644
+index 10b592c..be0fc29 100644
 --- a/ssl/tls1.c
 +++ b/ssl/tls1.c
 @@ -1368,6 +1368,10 @@ int basic_read(SSL *ssl, uint8_t **in_data)
@@ -306,6 +306,25 @@ index 10b592c..10fe9d5 100644
 +
      if (IS_SET_SSL_FLAG(SSL_SENT_CLOSE_NOTIFY))
          return SSL_CLOSE_NOTIFY;
+ 
+@@ -1426,6 +1430,9 @@ int basic_read(SSL *ssl, uint8_t **in_data)
+             goto error;
+         }
+ 
++        memcpy(ssl->hmac_header, buf, 3);       /* store for hmac */
++        ssl->record_type = buf[0];
++
+         /* is the allocated buffer large enough to handle all the data? if not, increase its size*/
+         if (ssl->need_bytes > ssl->max_plain_length+RT_EXTRA-BM_RECORD_OFFSET)
+         {
+@@ -1439,8 +1446,6 @@ int basic_read(SSL *ssl, uint8_t **in_data)
+         }
+ 
+         CLR_SSL_FLAG(SSL_NEED_RECORD);
+-        memcpy(ssl->hmac_header, buf, 3);       /* store for hmac */
+-        ssl->record_type = buf[0];
+         goto error;                         /* no error, we're done */
+     }
  
 diff --git a/tools/make_certs.sh b/tools/make_certs.sh
 index fc6cc90..3113355 100644
@@ -588,7 +607,7 @@ index fc6cc90..3113355 100644
 -        "s/axTLS_key_1024/default_private_key/" > $AXDIR/../ssl/private_key.h
 +        "s/axTLS_key_1024/default_private_key/" > $AXDIR/private_key.h
 diff --git a/compat/lwipr_compat.c b/compat/lwipr_compat.c
-index c6de55b..6834f5f 100644
+index c6de55b..781e131 100644
 --- a/compat/lwipr_compat.c
 +++ b/compat/lwipr_compat.c
 @@ -154,12 +154,20 @@ int axl_ssl_read(SSL *ssl, struct tcp_pcb *tcp, struct pbuf *pin, struct pbuf **
@@ -614,6 +633,21 @@ index c6de55b..6834f5f 100644
  			}
  
  			memcpy(total_read_buffer + total_bytes, read_buffer, read_bytes);
+@@ -170,7 +178,13 @@ int axl_ssl_read(SSL *ssl, struct tcp_pcb *tcp, struct pbuf *pin, struct pbuf **
+ 	if(total_bytes > 0) {
+ 		// put the decrypted data in a brand new pbuf
+ 		*pout = pbuf_alloc(PBUF_TRANSPORT, total_bytes, PBUF_RAM);
+-		memcpy((*pout)->payload, total_read_buffer, total_bytes);
++		if(*pout != NULL) {
++			memcpy((*pout)->payload, total_read_buffer, total_bytes);
++		}
++		else {
++			AXL_DEBUG_PRINT("Unable to allocate pbuf memory. Required %d. Check MEM_SIZE in your lwipopts.h file and increase if needed.", total_bytes);
++			total_bytes = -1;
++		}
+ 		free(total_read_buffer);
+ 	}
+ 
 diff --git a/compat/lwipr_compat.h b/compat/lwipr_compat.h
 index 0916412..4bb7d07 100644
 --- a/compat/lwipr_compat.h
