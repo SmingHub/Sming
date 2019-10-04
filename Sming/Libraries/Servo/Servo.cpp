@@ -24,7 +24,6 @@ bool Servo::started = false;
 
 void IRAM_ATTR Servo::timerInt()
 {
-	assert(started);
 	hardwareTimer.setIntervalUs(timing[actIndex]);
 	hardwareTimer.startOnce();
 
@@ -75,8 +74,8 @@ bool Servo::removeChannel(ServoChannel* channel)
 		calcTiming();
 		ETS_INTR_UNLOCK();
 		if(channels.size() == 0) {
-			started = false;
 			hardwareTimer.stop();
+			started = false;
 		}
 		return true;
 	}
