@@ -156,6 +156,12 @@ public:
 	{
 		return nullptr;
 	}
+
+	/**
+	 * @brief Overrides Stream method for more efficient reading
+	 * @note Content is read using `readMemoryBlock()` so read position (for seekable streams) is not changed
+	 */
+	String readString(size_t maxLen = UINT16_MAX);
 };
 
 /** @} */
