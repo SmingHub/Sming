@@ -73,7 +73,7 @@ public:
 		return readPos >= size;
 	}
 
-	/*
+	/**
 	 * @brief Pre-allocate stream to given size
 	 * @param minCapacity Total minimum number of bytes required in stream
 	 * @retval bool true on success
@@ -85,6 +85,15 @@ public:
 	 * value checking may be skipped.
 	 */
 	bool ensureCapacity(size_t minCapacity);
+
+	/**
+	 * @brief Clear data from stream and reset to start, but keep buffer allocated
+	 */
+	void clear()
+	{
+		size = 0;
+		readPos = 0;
+	}
 
 private:
 	char* buffer = nullptr; ///< Stream content stored here
