@@ -16,7 +16,7 @@
 #include "AudioPlayer.h"
 #include <Network/Http/Websocket/WebsocketResource.h>
 #include <ArduinoJson.h>
-#include <Data/Stream/MemoryDataStream.h>
+#include <RtttlJsonListStream.h>
 #include <Services/Profiling/CpuUsage.h>
 #include <malloc_count.h>
 
@@ -55,41 +55,6 @@ static void showHelp()
 					  "  L     : List tunes\r\n"
 					  "  M     : Select play mode\r\n"
 					  "  V     : Select voice"));
-}
-
-static unsigned getTuneTitles(Print* json)
-{
-	unsigned jsonSize = 9;
-	if(json != nullptr) {
-		json->print(_F("{\"list\":["));
-	}
-
-	RingTone::RtttlParser parser;
-	if(parser.begin(new FileStream(tunes_txt))) {
-		do {
-			auto index = parser.getIndex();
-			if(index > 0) {
-				++jsonSize;
-				if(json != nullptr) {
-					json->print(',');
-				}
-			}
-			auto title = parser.getTitle();
-			jsonSize += title.length() + 2;
-			if(json != nullptr) {
-				json->print('"');
-				json->print(title);
-				json->print('"');
-			}
-		} while(parser.nextTune());
-	}
-
-	jsonSize += 2;
-	if(json != nullptr) {
-		json->print("]}");
-	}
-
-	return jsonSize;
 }
 
 static void listTunes()
@@ -430,12 +395,12 @@ static void wsMessageReceived(WebsocketConnection& socket, const String& message
 
 static void onAjaxList(HttpRequest& request, HttpResponse& response)
 {
-	unsigned size = getTuneTitles(nullptr);
-	auto stream = new MemoryDataStream();
-	stream->ensureCapacity(size);
-	getTuneTitles(stream);
-	response.sendDataStream(stream, MIME_JSON);
-	debug_i("onAjaxList returned %u bytes (%d)", size, stream->available());
+	debug_i("onAjaxList()");
+
+	auto parser = new RingTone::RtttlParser;
+	parser->begin(new FileStream(tunes_txt));
+	auto stream = new RtttlJsonListStream(_F("tunes"), parser);
+	response.sendNamedStream(stream);
 }
 
 static void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
