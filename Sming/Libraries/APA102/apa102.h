@@ -21,6 +21,8 @@ struct col_t {
 class APA102
 {
 public:
+	APA102(const APA102&) = delete;
+
 	/**
 	 * @brief Initialise for given number of LEDs on standard SPI
 	 */
