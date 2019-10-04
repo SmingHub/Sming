@@ -396,7 +396,7 @@ private:
 		TimerApi::setInterval(ticks);
 		intervalSet = true;
 		if(started) {
-			restart();
+			TimerApi::arm(repeating);
 		}
 	}
 
@@ -416,6 +416,7 @@ template <typename TimerApi> IRAM_ATTR bool CallbackTimer<TimerApi>::start(bool 
 
 	TimerApi::arm(repeating);
 	started = true;
+	this->repeating = repeating;
 	return true;
 }
 
