@@ -7,8 +7,6 @@
 
 #include "Servo.h"
 
-#include <HardwareTimer.h>
-
 // DEBUG for visual check of impulses with a LED instead of the servo
 //#define DEBUG
 #ifdef DEBUG
@@ -17,15 +15,14 @@
 
 #define SERVO_PERIOD 20000
 
-HardwareTimer hardwareTimer;
+HardwareTimer Servo::hardwareTimer;
+uint8 Servo::pins[SERVO_CHANNEL_NUM_MAX];
+uint32 Servo::timing[SERVO_CHANNEL_NUM_MAX * 2 + 1];
+uint8 Servo::maxTimingIdx = 0;
+uint8 Servo::actIndex = 0;
+bool Servo::started = false;
 
-uint8 pins[SERVO_CHANNEL_NUM_MAX];
-uint32 timing[SERVO_CHANNEL_NUM_MAX * 2 + 1];
-uint8 maxTimingIdx;
-uint8 actIndex;
-bool started = false;
-
-void IRAM_ATTR ServoTimerInt()
+void IRAM_ATTR Servo::timerInt()
 {
 	assert(started);
 	hardwareTimer.setIntervalUs(timing[actIndex]);
@@ -36,27 +33,25 @@ void IRAM_ATTR ServoTimerInt()
 		digitalWrite(pins[actIndex / 2], out);
 	}
 
-	if(++actIndex > maxTimingIdx)
+	++actIndex;
+	if(actIndex > maxTimingIdx) {
 		actIndex = 0;
+	}
 }
 
-Servo::Servo()
+Servo::Servo() : channels(SERVO_CHANNEL_NUM_MAX, 0)
 {
-	for(uint8 i = 0; i < SERVO_CHANNEL_NUM_MAX * 2 + 1; i++)
+	for(unsigned i = 0; i < ARRAY_SIZE(timing); i++) {
 		timing[i] = 1000;
-	maxTimingIdx = 0;
-}
-
-Servo::~Servo()
-{
-	channels.removeAllElements();
+	}
 }
 
 bool Servo::addChannel(ServoChannel* channel)
 {
 	uint8 channel_count = channels.size();
-	if(channel_count > SERVO_CHANNEL_NUM_MAX)
+	if(channel_count >= SERVO_CHANNEL_NUM_MAX) {
 		return false;
+	}
 	channels.add(channel);
 
 	ETS_INTR_LOCK();
@@ -91,8 +86,8 @@ bool Servo::removeChannel(ServoChannel* channel)
 void Servo::calcTiming()
 {
 	uint32 sumTime = 0;
-	uint8 channel_count = channels.size();
-	for(uint8 i = 0; i < channel_count; i++) {
+	unsigned channel_count = channels.size();
+	for(unsigned i = 0; i < channel_count; i++) {
 		uint32 onTime = channels[i]->getValue() + channels[i]->getMinValue();
 		timing[i * 2 + 0] = onTime;
 		sumTime += onTime;
@@ -119,9 +114,9 @@ void Servo::calcTiming()
 
 void Servo::getPins()
 {
-	for(uint8 i = 0; i < channels.size(); i++) {
+	for(unsigned i = 0; i < channels.size(); i++) {
 		ServoChannel* ch = channels.get(i);
-		if(ch != null) {
+		if(ch != nullptr) {
 			pins[i] = ch->getPin();
 		}
 	}

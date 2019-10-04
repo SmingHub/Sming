@@ -9,8 +9,7 @@
  *  @{
 */
 
-#ifndef LIB_SERVOCHANNEL_H_
-#define LIB_SERVOCHANNEL_H_
+#pragma once
 
 #include <SmingCore.h>
 
@@ -103,5 +102,3 @@ private:
 	uint32 maxValue;
 };
 /** @} */
-
-#endif /* LIB_SERVOCHANNEL_H_ */

@@ -6,7 +6,6 @@
  */
 
 #include "ServoChannel.h"
-
 #include "Servo.h"
 
 ServoChannel::ServoChannel()
@@ -33,8 +32,9 @@ void ServoChannel::plausValue()
 
 bool ServoChannel::setMaxValue(uint32 maxValue)
 {
-	if(maxValue < minValue)
+	if(maxValue < minValue) {
 		return false;
+	}
 	this->maxValue = maxValue;
 	plausValue();
 	return true;
@@ -42,8 +42,9 @@ bool ServoChannel::setMaxValue(uint32 maxValue)
 
 bool ServoChannel::setMinValue(uint32 minValue)
 {
-	if(minValue > maxValue)
+	if(minValue > maxValue) {
 		return false;
+	}
 	this->minValue = minValue;
 	plausValue();
 	return true;
@@ -56,8 +57,9 @@ uint32 ServoChannel::getValue() const
 
 bool ServoChannel::setValue(uint32 value)
 {
-	if(value > maxValue - minValue)
+	if(value > maxValue - minValue) {
 		return false;
+	}
 	this->value = value;
 	servo.calcTiming();
 	return true;
@@ -91,8 +93,9 @@ long map(long x, long in_min, long in_max, long out_min, long out_max)
 
 bool ServoChannel::setDegree(int8 value)
 {
-	if((value < -90) || (value > 90))
+	if((value < -90) || (value > 90)) {
 		return false;
+	}
 	setValue(map(value, -90, 90, 0, maxValue - minValue));
 	return true;
 }
