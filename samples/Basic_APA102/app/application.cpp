@@ -40,11 +40,33 @@ APA102 LED(NUM_LED); // APA102 constructor, call with number of LEDs
 static SPISettings SPI_1MHZ = SPISettings(1000000, MSBFIRST, SPI_MODE3);
 static SPISettings SPI_2MHZ = SPISettings(2000000, MSBFIRST, SPI_MODE3);
 
-// Prototypes
-void updateLED();
-col_t colorWheel(uint16_t step, uint16_t numStep);
+/* color wheel function:
+ * (simple) three 120° shifted colors -> color transitions r-g-b-r */
+static col_t colorWheel(uint16_t step, uint16_t numStep)
+{
+	col_t col = {0};
+	col.br = 10;
+	uint8_t index = (step * 256) / numStep;
+	uint8_t phase = 255 - index;
+	if(phase < 85) { // 256/3 -> 2pi/3 -> 120°
+		col.r = 255 - phase * 3;
+		col.g = 0;
+		col.b = phase * 3;
+	} else if(phase < 170) {
+		phase -= 85;
+		col.r = 0;
+		col.g = phase * 3;
+		col.b = 255 - phase * 3;
+	} else {
+		phase -= 170;
+		col.r = phase * 3;
+		col.g = 255 - phase * 3;
+		col.b = 0;
+	}
+	return col;
+}
 
-void updateLED()
+static void updateLED()
 {
 	static unsigned state = 0;
 	static unsigned cnt = 0;
@@ -97,9 +119,11 @@ void updateLED()
 
 void init()
 {
+	Serial.begin(SERIAL_BAUD_RATE);
+	Serial.systemDebugOutput(true);
+
 	WifiAccessPoint.enable(false);
 	WifiStation.enable(false);
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 
 	/* configure SPI */
 	LED.begin(); // default 4MHz clk, CS on PIN_2
@@ -107,30 +131,4 @@ void init()
 	//LED.begin(SPI_2MHZ);
 
 	procTimer.initializeMs<500>(updateLED).start();
-}
-
-/* color wheel function:
- * (simple) three 120° shifted colors -> color transitions r-g-b-r */
-col_t colorWheel(uint16_t step, uint16_t numStep)
-{
-	col_t col = {0};
-	col.br = 10;
-	uint8_t index = (step * 256) / numStep;
-	uint8_t phase = 255 - index;
-	if(phase < 85) { // 256/3 -> 2pi/3 -> 120°
-		col.r = 255 - phase * 3;
-		col.g = 0;
-		col.b = phase * 3;
-	} else if(phase < 170) {
-		phase -= 85;
-		col.r = 0;
-		col.g = phase * 3;
-		col.b = 255 - phase * 3;
-	} else {
-		phase -= 170;
-		col.r = phase * 3;
-		col.g = 255 - phase * 3;
-		col.b = 0;
-	}
-	return col;
 }
