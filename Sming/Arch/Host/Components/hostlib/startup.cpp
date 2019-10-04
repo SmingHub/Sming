@@ -237,7 +237,8 @@ int main(int argc, char* argv[])
 
 		init();
 
-		OneShotElapseTimer<NanoTime::Milliseconds> lwipServiceTimer(50);
+		OneShotElapseTimer<NanoTime::Milliseconds> lwipServiceTimer;
+		lwipServiceTimer.reset<LWIP_SERVICE_INTERVAL>();
 		while(!done) {
 			host_service_tasks();
 			host_service_timers();

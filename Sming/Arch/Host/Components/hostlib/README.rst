@@ -39,3 +39,10 @@ only interrupts of a higher priority will pre-empt it.
 The ``set_interrupt_level`` function is used to ensure that threads running at different interrupt
 levels do not pre-empty each other, as this would introduce problems that do not exist on real hardware.
 The main thread is also suspended during interrupt execution.
+
+
+.. envvar:: LWIP_SERVICE_INTERVAL
+
+   Default: 2ms
+
+   LWIP stack is serviced via polling, this determines the interval.
