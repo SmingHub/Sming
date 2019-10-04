@@ -20,12 +20,20 @@
 
 namespace RingTone
 {
+struct RtttlHeader {
+	String title;
+	uint8_t defaultNoteDuration = 0; // quarter-note
+	uint8_t defaultOctave = 0;
+	uint16_t bpm = 0;
+};
+
 /*
  * Define core state variables so state can be easily saved/restored
  */
 struct RtttlParserState {
-	String title;
-	unsigned count = 0; // Cached number of tunes in the file
+	RtttlHeader header;			  // Header for current tune
+	uint16_t wholeNoteMillis = 0; // Calculated from bpm
+	unsigned count = 0;			  // Cached number of tunes in the file
 	unsigned index = 0;
 	unsigned tuneStartPos = 0; // First character after header
 
@@ -36,9 +44,8 @@ struct RtttlParserState {
 		rtps_EndOfFile,
 	} state = rtps_StartOfFile;
 
-	uint8_t defaultNoteDuration = 0; // quarter-note
-	uint8_t defaultOctave = 0;
-	uint16_t wholeNoteMillis = 0;
+	// Only used when saving/restoring state
+	unsigned bufferPos = 0;
 };
 
 /**
@@ -87,7 +94,7 @@ public:
 	 */
 	const String& getTitle()
 	{
-		return title;
+		return header.title;
 	}
 
 	/**
@@ -98,7 +105,7 @@ public:
 		String s('#');
 		s += index;
 		s += ": ";
-		s += title;
+		s += header.title;
 		return s;
 	}
 
@@ -121,6 +128,23 @@ public:
 	 * @retval bool true on success, false if no more notes available
 	 */
 	bool readNextNote(RingTone::NoteDef& note);
+
+	const RtttlHeader& getHeader()
+	{
+		return header;
+	}
+
+	RtttlParserState getState()
+	{
+		bufferPos = buffer.getPos();
+		return *this;
+	}
+
+	void setState(const RtttlParserState& state)
+	{
+		*static_cast<RtttlParserState*>(this) = state;
+		buffer.setPos(bufferPos);
+	}
 
 private:
 	bool readHeader();

@@ -38,7 +38,7 @@ static constexpr uint16_t frequencyTable[] PROGMEM = {
 	SCALE(493.88), // B4
 };
 
-unsigned charToNoteNumber(char c)
+unsigned charToNoteValue(char c)
 {
 	switch(tolower(c)) {
 	case 'c':
@@ -61,21 +61,21 @@ unsigned charToNoteNumber(char c)
 	}
 }
 
-unsigned getNoteFrequency(unsigned octave, unsigned note)
+unsigned getNoteFrequency(unsigned octave, unsigned noteValue)
 {
-	if(note == 0) {
+	if(noteValue == 0) {
 		return 0;
 	}
 
-	--note;
+	--noteValue;
 
-	if(note >= 12) {
-		note += octave * 12;
-		octave = note / 12;
-		note %= 12;
+	if(noteValue >= 12) {
+		noteValue += octave * 12;
+		octave = noteValue / 12;
+		noteValue %= 12;
 	}
 
-	unsigned freq = pgm_read_word(&frequencyTable[note]);
+	unsigned freq = pgm_read_word(&frequencyTable[noteValue]);
 
 	if(octave < 4) {
 		freq >>= 4 - octave;
@@ -84,6 +84,37 @@ unsigned getNoteFrequency(unsigned octave, unsigned note)
 	}
 
 	return (freq + SCALE_FACTOR / 2) / SCALE_FACTOR;
+}
+
+unsigned getClosestNote(unsigned frequency, unsigned& octave)
+{
+	octave = 0;
+	if(frequency == 0) {
+		return 0;
+	}
+
+	// https://newt.phys.unsw.edu.au/jw/notes.html
+	constexpr double C4Freq = 261.63;
+	int semitones = (4 * 12) + round(12 * log2(frequency / C4Freq));
+	if(semitones <= 0) {
+		return 0;
+	}
+
+	octave = semitones / 12;
+	return 1 + (semitones % 12);
+}
+
+const char* getNoteName(unsigned noteValue)
+{
+	const char* noteNames[12] = {"c", "c#", "d", "d#", "e", "f", "f#", "g", "g#", "a", "a#", "b"};
+	if(noteValue == 0) {
+		return "p";
+	}
+	--noteValue;
+	if(noteValue >= 12) {
+		noteValue %= 12;
+	}
+	return noteNames[noteValue];
 }
 
 }; // namespace RingTone

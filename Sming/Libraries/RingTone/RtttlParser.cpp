@@ -148,8 +148,7 @@ bool RtttlParser::nextTune()
 unsigned RtttlParser::getCount()
 {
 	if(count == 0) {
-		RtttlParserState curState = *this;
-		unsigned curPos = buffer.getPos();
+		auto curState = getState();
 
 		if(seekTune(0)) {
 			unsigned count = 0;
@@ -157,8 +156,7 @@ unsigned RtttlParser::getCount()
 				++count;
 			} while(nextTune());
 
-			buffer.setPos(curPos);
-			*static_cast<RtttlParserState*>(this) = curState;
+			setState(curState);
 
 			this->count = count;
 		}
@@ -191,16 +189,17 @@ bool RtttlParser::readHeader()
 		return false;
 	}
 
-	defaultNoteDuration = 4;
-	defaultOctave = 5;
+	header.defaultNoteDuration = 4;
+	header.defaultOctave = 5;
 
 	// Title
-	title.setLength(0);
-	title.reserve(64);
+	header.title.setLength(0);
+	header.title.reserve(64);
 	char c;
 	while((c = buffer.readChar()) != ':') {
-		title += c;
+		header.title += c;
 	}
+	header.title.trim();
 	skipWhitespace();
 
 	// format: d=N,o=N,b=NNN:
@@ -212,7 +211,7 @@ bool RtttlParser::readHeader()
 		buffer.readChar(); // =
 		unsigned num = readNum();
 		if(num != 0) {
-			defaultNoteDuration = num;
+			header.defaultNoteDuration = num;
 		}
 
 		buffer.readChar(); // skip ,
@@ -220,7 +219,7 @@ bool RtttlParser::readHeader()
 		c = buffer.peekChar();
 	}
 
-	debug_i("default duration: %u", defaultNoteDuration);
+	debug_i("default duration: %u", header.defaultNoteDuration);
 
 	// Default octave
 	if(c == 'o') {
@@ -228,7 +227,7 @@ bool RtttlParser::readHeader()
 		buffer.readChar(); // =
 		unsigned num = readNum();
 		if(num >= 3 && num <= 7) {
-			defaultOctave = num;
+			header.defaultOctave = num;
 		}
 
 		buffer.readChar(); // skip ,
@@ -236,25 +235,24 @@ bool RtttlParser::readHeader()
 		c = buffer.peekChar();
 	}
 
-	debug_i("default octave: %u", defaultOctave);
+	debug_i("default octave: %u", header.defaultOctave);
 
 	// Beats Per Minute
-	unsigned bpm;
 	if(c == 'b') {
 		buffer.readChar(); // b
 		buffer.readChar(); // =
-		bpm = readNum();
+		header.bpm = readNum();
 
 		buffer.readChar(); // skip :
 		skipWhitespace();
 	} else {
-		bpm = 63;
+		header.bpm = 63;
 	}
 
-	debug_i("bpm: %u", bpm);
+	debug_i("bpm: %u", header.bpm);
 
 	// BPM expresses the number of quarter notes per minute
-	wholeNoteMillis = 4UL * 60UL * 1000UL / bpm;
+	wholeNoteMillis = 4U * 60U * 1000U / header.bpm;
 	debug_i("wholenote: %u ms", wholeNoteMillis);
 
 	tuneStartPos = buffer.getPos();
@@ -270,16 +268,17 @@ bool RtttlParser::readNextNote(RingTone::NoteDef& note)
 	}
 
 	// Get note duration, use default if not provided
-	unsigned duration = wholeNoteMillis / (readNum() ?: defaultNoteDuration);
+	unsigned duration = readNum() ?: header.defaultNoteDuration;
+	duration = muldiv(uint32_t(wholeNoteMillis), uint32_t(1), duration);
 
 	// Note
-	unsigned noteNumber = RingTone::charToNoteNumber(buffer.readChar());
+	unsigned noteValue = RingTone::charToNoteValue(buffer.readChar());
 
 	// Optional '#' sharp
 	char c = buffer.peekChar();
 	if(c == '#') {
-		if(noteNumber != 0) {
-			noteNumber += 1;
+		if(noteValue != 0) {
+			noteValue += 1;
 		}
 		buffer.readChar();
 		c = buffer.peekChar();
@@ -299,7 +298,7 @@ bool RtttlParser::readNextNote(RingTone::NoteDef& note)
 		buffer.readChar();
 		c = buffer.peekChar();
 	} else {
-		scale = defaultOctave;
+		scale = header.defaultOctave;
 	}
 
 	// Skip to next note (or end of tune)
@@ -307,7 +306,7 @@ bool RtttlParser::readNextNote(RingTone::NoteDef& note)
 		buffer.readChar();
 	}
 
-	note.frequency = RingTone::getNoteFrequency(scale, noteNumber);
+	note.frequency = RingTone::getNoteFrequency(scale, noteValue);
 	note.duration = duration;
 
 	return true;
