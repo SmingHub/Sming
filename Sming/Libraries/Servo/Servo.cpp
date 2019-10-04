@@ -11,6 +11,8 @@
 //#define DEBUG
 #ifdef DEBUG
 #define FACTOR 500
+#else
+#define FACTOR 1
 #endif
 
 #define SERVO_PERIOD 20000
@@ -24,7 +26,7 @@ bool Servo::started = false;
 
 void IRAM_ATTR Servo::timerInt()
 {
-	hardwareTimer.setIntervalUs(timing[actIndex]);
+	hardwareTimer.setInterval(timing[actIndex]);
 	hardwareTimer.startOnce();
 
 	if(actIndex < maxTimingIdx) {
@@ -41,7 +43,7 @@ void IRAM_ATTR Servo::timerInt()
 Servo::Servo() : channels(SERVO_CHANNEL_NUM_MAX, 0)
 {
 	for(unsigned i = 0; i < ARRAY_SIZE(timing); i++) {
-		timing[i] = 1000;
+		timing[i] = hardwareTimer.usToTicks<1000>();
 	}
 }
 
@@ -60,7 +62,7 @@ bool Servo::addChannel(ServoChannel* channel)
 
 	if(!started) {
 		started = true;
-		hardwareTimer.initializeUs(100000, ServoTimerInt);
+		hardwareTimer.initializeUs<100000>(timerInt);
 		hardwareTimer.startOnce();
 	}
 	return true;
@@ -84,29 +86,22 @@ bool Servo::removeChannel(ServoChannel* channel)
 
 void Servo::calcTiming()
 {
+	auto usToTicks = [this](uint32_t us) { return hardwareTimer.usToTicks(us * FACTOR); };
+
 	uint32 sumTime = 0;
 	unsigned channel_count = channels.size();
 	for(unsigned i = 0; i < channel_count; i++) {
 		uint32 onTime = channels[i]->getValue() + channels[i]->getMinValue();
-		timing[i * 2 + 0] = onTime;
+		timing[i * 2 + 0] = usToTicks(onTime);
 		sumTime += onTime;
 
 		uint32 offTime = channels[i]->getMaxValue() - onTime;
-		timing[i * 2 + 1] = offTime;
+		timing[i * 2 + 1] = usToTicks(offTime);
 		sumTime += offTime;
-
-#ifdef DEBUG
-		timing[i * 2 + 0] *= FACTOR;
-		timing[i * 2 + 1] *= FACTOR;
-#endif
 	}
 
 	uint32 frameTime = SERVO_PERIOD - sumTime;
-	timing[channel_count * 2] = frameTime;
-
-#ifdef DEBUG
-	timing[channel_count * 2] *= FACTOR;
-#endif
+	timing[channel_count * 2] = usToTicks(frameTime);
 
 	maxTimingIdx = channel_count * 2;
 }
