@@ -29,3 +29,18 @@ int IDataSourceStream::peek()
 
 	return -1;
 }
+
+String IDataSourceStream::readString(size_t maxLen)
+{
+	int avail = available();
+	if(avail < 0) {
+		return nullptr;
+	}
+
+	String s;
+	size_t len = std::min(size_t(avail), maxLen);
+	if(s.setLength(len)) {
+		readMemoryBlock(s.begin(), len);
+	}
+	return s;
+}

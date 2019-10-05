@@ -686,9 +686,9 @@ String String::substring(unsigned int left, unsigned int right) const
 void String::replace(char find, char replace)
 {
   if (!buffer) return;
-  for (char *p = buffer; *p; p++)
+  for (unsigned i = 0; i < len; ++i)
   {
-    if (*p == find) *p = replace;
+    if (buffer[i] == find) buffer[i] = replace;
   }
 }
 
