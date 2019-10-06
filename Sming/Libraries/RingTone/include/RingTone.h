@@ -61,8 +61,9 @@ template <unsigned octave, unsigned note> static constexpr unsigned calculateFre
  * @brief Get the corresponding note number for a letter
  * @param c
  * @retval unsigned Notes start at 1, 0 indicates error or pause/mute
+ * @note To sharpen a note, add 1
  */
-unsigned charToNoteNumber(char c);
+unsigned charToNoteValue(char c);
 
 /**
  * @brief Convert a scale/note combination into frequency
@@ -73,11 +74,28 @@ unsigned charToNoteNumber(char c);
 unsigned getNoteFrequency(unsigned octave, unsigned note);
 
 /**
+ * @brief Convert a frequency into a scale/note combination into frequency
+ * @param frequency
+ * @param octave Octave for the note
+ * @retval unsigned The note number, 0 if out of range
+ */
+unsigned getClosestNote(unsigned frequency, unsigned& octave);
+
+/**
+ * @brief Get text for a given note number
+ */
+const char* getNoteName(unsigned noteValue);
+
+/**
  * @brief Base parser class
  */
 class Parser
 {
 public:
+	virtual ~Parser()
+	{
+	}
+
 	/**
 	 * @brief Fetch the next note for this tune
 	 * @retval bool true on success, false if no more notes available
