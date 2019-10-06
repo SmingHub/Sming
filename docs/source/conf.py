@@ -44,6 +44,7 @@ extensions = [
     'm2r',
     'breathe',
     'link-roles',
+    'sphinxcontrib.wavedrom',
 ]
 
 source_suffix = {
@@ -54,6 +55,11 @@ source_suffix = {
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
+
+#
+offline_skin_js_path = '_static/WaveSkin.js'
+offline_wavedrom_js_path = '_static/WaveDrom.js'
+
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

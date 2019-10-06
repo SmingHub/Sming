@@ -1,4 +1,4 @@
 Basic Servo
 ===========
 
-To be completed.
+Demonstrates use of the Servo library for controlling multiple servo actuators.
