@@ -67,6 +67,7 @@ public:
 			break;
 		case TIMER_CLKDIV_256:
 			prescale = 256;
+			break;
 		default:
 			assert(false);
 		}
