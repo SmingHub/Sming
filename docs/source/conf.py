@@ -40,6 +40,10 @@ version = release
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+#
+# REMEMBER to update the 'Sphinx Extensions' section in contribute/documentation.rst
+# so developers can more easily locate the appropriate reference documentation.
+#
 extensions = [
     'm2r',
     'breathe',
