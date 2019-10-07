@@ -3,6 +3,20 @@ Servo RC PWM Control
  
 Library to control `RC servos <https://en.wikipedia.org/wiki/Servo_(radio_control)>`__ with PWM signals.
 
+Change History
+--------------
+
+This library was revised for Sming version 4.0. These are the main changes:
+
+-  Interrupts remain enabled during updates
+-  ServoChannel *value* now specifies actual pulse duration in microseconds,
+   such that ``minValue <= value <= maxValue``.
+   Previously it was ``0 <= value <= (maxValue - minValue)``.
+-  Max channels increased to 5.
+
+See :pull-request:`1870` for further details.
+
+
 Brief introduction
 ------------------
 
