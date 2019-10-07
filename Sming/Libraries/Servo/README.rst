@@ -1,3 +1,9 @@
+.. figure:: servo.jpg
+   :height: 192
+   :align: right
+
+   Source: `SERV-03-MI (Micro Servo) <https://www.flickr.com/photos/snazzyguy/3632893840/>`__
+
 Servo RC PWM Control
 ====================
  
@@ -74,9 +80,9 @@ The first channel is set ON, then after the required time it is set OFF and the 
 The final interrupt turns the active channel OFF. This requires (NumChannels + 1) interrupts per frame,
 and the process repeats continuously whilst there is at least one active channel.
 
-Channel updates (via calls to *ServoChannel::setValue()*) are not handled immeidately, but defered
-using a 10ms software timer (half the frame period). This allows more efficient updating especially
-where multiple channels are changed together.
+Channel updates (via calls to *ServoChannel::setValue()*) are not handled immediately, but deferred
+using a 10ms software timer (half the frame period). This allows more efficient updating and ensures
+the positions of all affected servos are changed at the same time.
 
 A double-buffering technique is used for updates to avoid disabling interrupts, which allows use of
 the non-maskable timer interrupts for best timing accuracy and eliminates glitches in the output.
