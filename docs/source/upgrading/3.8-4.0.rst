@@ -106,6 +106,10 @@ this by setting ``ARDUINO_LIBRARIES`` in your project's
 This change means only the libraries you require for a project need to
 be built.
 
+The following libraries have changes in their API:
+
+- :library:`Servo`
+
 
 JSON
 ====
