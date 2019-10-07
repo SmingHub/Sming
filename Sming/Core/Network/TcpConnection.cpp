@@ -192,7 +192,7 @@ int TcpConnection::write(const char* data, int len, uint8_t apiflags)
 
 #ifdef ENABLE_SSL
 	if(ssl) {
-		u16_t expected = ssl_calculate_write_length(ssl, len);
+		int expected = ssl_calculate_write_length(ssl, len);
 		u16_t available = tcp ? tcp_sndbuf(tcp) : 0;
 		debug_tcp("SSL: Expected: %d, Available: %d", expected, available);
 		if(expected < 0 || available < expected) {
@@ -472,9 +472,7 @@ err_t TcpConnection::internalOnConnected(err_t err)
 			debug_d("SSL: Switching back 80 MHz");
 			System.setCpuFrequency(eCF_80MHz);
 #endif
-			if(sslSessionId != nullptr) {
-				sslSessionId->assign(ssl->session_id, ssl->sess_id_size);
-			}
+			sslSessionId->assign(ssl->session_id, ssl->sess_id_size);
 		}
 	}
 #endif

@@ -74,10 +74,10 @@ MultipartParser::MultipartParser(HttpRequest* request)
 		startPost += 9;
 		String boundary = "--" + request->headers[HTTP_HEADER_CONTENT_TYPE].substring(startPost);
 		parser = multipart_parser_init(boundary.c_str(), &settings);
+		parser->data = this;
 	}
 
 	this->request = request;
-	parser->data = this;
 }
 
 MultipartParser::~MultipartParser()
