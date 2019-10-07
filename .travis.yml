@@ -3,6 +3,8 @@ env:
   global:
   - SDK_BUILD=258
   - secure: D/cPk+sL2MNHLtfuU/rMiVN63+CTFpo9Chqa39LEH5VloGqC5f7RyIi2Maa3C/U2JQfM01HlsNR7E5bB0W8DQYbtzBDTqbZ4C7ppZRU5jCQ+L51ERKJ0EAV3KkaravQCRbWt3tlgOp6Xk6xaRMBaHEGrdbFjHYgEMPVteUQNr0A=
+#  - secure: "pc8Yqwmn6AM+iBjLNNnknmOoi+AxoyvcVy128b2WXSdj6Q4bOIXgj4WUg8I52i1fgyh0Rxg19WUB6qSVyykCXVdSRajIU1MsKZI+0q44Q83wnwVeYm7nPWxDqS3FKMajucZCg4p0BTE4T6tpnm7zZNHduHnggua/NpP2h7B/Sqs="
+  - secure: "bM/N7D4uq1NmIQOia9H9DNeTVhZxDDcegYW3pSLm+J9tqPKCCEDZfID9Ia2niy5gCJ9O1OwqPWDKXhM1/KnU13L8EW4Y5dZsScUALmk5VZuDE1IxGoAWhEQKeHlpeOirSMyad7YPygg+LjcEFDLQMTxTazzhvVpE+zcxLatVdH/GYBDzlLRKVIrE47DPIxl8VV/SNQGDuTvXDh5qxgJbOWE/LOEfYNZhJftwfXVPL7mVSgCyyMC9pFFb0Ro64+nnb5cRKLq5oRLpdoVFGMEnnkJO3/XPwrDKDTZXYL4iPGOQ0IAFhnHwctfPAkYsJV1dAmGHO5SbEtPS/gQ0L+IVwrExh+i9sTrE+1WDsUMh41YmtEg+dyqdVl0KgAn/KeUx/jgXriHveqkHYUz0/YRUKdNOs8orqJLXhLW5YDCuW+PVNkXkHXcqyxYezwtnfyPuZsIVa6xjjHiZ+sKSoZHMjYUItrkihd11vsdhWKljhgz+RB01DcOcVfPo3iPTBXfSw/JP6+M5wHcLBlVoRGwIewzQ6oIgVlFgUxIrzeKUGljiBan5ciUxS3bekhBamL+GfgbfixXJvN6yMn0TGi8xPaweLyIRce4GUWyWqvbrNk6iVrRtYEymf6I88X3hbP4eIClGumaMRvjFenuXdaHrSsbQ4T06knrQFvTNyqiLKiY="
 jobs:
   include:
   - stage: test
@@ -31,7 +33,7 @@ jobs:
 
   - stage: build
     os: linux
-    env: SMING_ARCH=Esp8266 SDK_VERSION=3.0.0
+    env: SMING_ARCH=Esp8266 SDK_VERSION=3.0.1
 
 git:
   submodules: false
@@ -50,6 +52,14 @@ addons:
     - doxygen-gui
     - graphviz
     - xmlstarlet
+  coverity_scan:
+    project:
+      name: "SmingHub/Sming"
+      description: "Sming Framework"
+    notification_email: slaff@attachix.com
+    build_command_prepend: "export SMING_HOME=$TRAVIS_BUILD_DIR/Sming; cd $SMING_HOME"
+    build_command: "make Basic_DateTime Basic_Delegates Basic_Interrupts Basic_ProgMem Basic_Serial Basic_Servo Basic_Ssl HttpServer_FirmwareUpload SMING_ARCH=Host DEBUG_VERBOSE_LEVEL=3"
+    branch_pattern: ci/coverity-scan
 
 install: .travis/install.sh
 

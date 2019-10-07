@@ -27,7 +27,7 @@ fi
 # Setup ARCH SDK paths
 if [ "$SMING_ARCH" == "Esp8266" ]; then
 	export ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk
-	if [ "$SDK_VERSION" == "3.0.0" ]; then
+	if [ "$SDK_VERSION" == "3.0.1" ]; then
 		export SDK_BASE=$SMING_HOME/third-party/ESP8266_NONOS_SDK
 	fi
 
@@ -54,6 +54,11 @@ $MAKE_PARALLEL
 cd $SMING_HOME
 
 if [ "$TRAVIS_BUILD_STAGE_NAME" == "Test" ]; then
+	if [[ $TRAVIS_COMMIT_MESSAGE == *"[scan:coverity]"*  && $TRAVIS_PULL_REQUEST != "true" ]]; then
+		$TRAVIS_BUILD_DIR/.travis/coverity-scan.sh
+		exit 0;
+	fi
+
 	$MAKE_PARALLEL Basic_DateTime Basic_Delegates Basic_Interrupts Basic_ProgMem Basic_Serial Basic_Servo Basic_Ssl LiveDebug DEBUG_VERBOSE_LEVEL=3
 	# Build and run tests
 	export SMING_TARGET_OPTIONS='--flashfile=$(FLASH_BIN) --flashsize=$(SPI_SIZE)'
