@@ -1,4 +1,4 @@
 MMA7455 Accelerometer
 =====================
 
-To be completed.
+Simple demonstration which reads and displays output from an I2C accelerometer.

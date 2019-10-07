@@ -1,5 +1,4 @@
 CANBUS
 ======
 
-To be completed.
-
+Demonstrates communication with MCP2515-compatible devices via SPI interface.

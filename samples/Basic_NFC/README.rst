@@ -1,4 +1,4 @@
 Basic NFC
 =========
 
-To be completed.
+Sample application to read an RFID tag using a suitable reader connected via SPI interface.
