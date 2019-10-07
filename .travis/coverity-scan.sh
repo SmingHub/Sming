@@ -90,7 +90,7 @@ response=$(curl \
   --form description="Travis CI build" \
   $UPLOAD_URL)
 status_code=$(echo "$response" | sed -n '$p')
-if [ "$status_code" -lt "400" ]; then
+if [ "$status_code" -ge "400" ]; then
   TEXT=$(echo "$response" | sed '$d')
   echo -e "\033[33;1mCoverity Scan upload failed: $TEXT. Status code: $status_code.\033[0m"
   exit 1
