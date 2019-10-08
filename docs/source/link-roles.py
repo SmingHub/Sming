@@ -13,6 +13,8 @@ from docutils import nodes, utils
 from sphinx import roles, addnodes
 from sphinx.util.nodes import set_role_source_info, split_explicit_title
 
+github_url = 'https://github.com/SmingHub/Sming'
+
 def run_cmd_get_output(cmd):
     return os.popen(cmd).read().strip()
 
@@ -38,8 +40,8 @@ def setup(app):
         basepath = baseurl + '/blob/' + get_github_rev()
 
     app.add_role('source', autolink(basepath + '/{}'))
-    app.add_role('issue', autolink('Issue #{0} <' + baseurl + '/issue/{0}>'))
-    app.add_role('pull-request', autolink('Pull Request #{0} <' + baseurl + '/pull/{0}>'))
+    app.add_role('issue', autolink('Issue #{0} <' + github_url + '/issue/{0}>'))
+    app.add_role('pull-request', autolink('Pull Request #{0} <' + github_url + '/pull/{0}>'))
 
     app.add_role('sample', doclink('/_inc/samples/{}/index'))
     app.add_role('component', doclink('/_inc/Sming/Components/{}/index'))

@@ -1,4 +1,4 @@
 DNS Captive Portal
 ==================
 
-To be completed.
+Demonstrates how to use Sming to create a default landing page when configured as an Access Point.

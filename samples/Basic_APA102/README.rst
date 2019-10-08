@@ -1,4 +1,4 @@
 Basic APA102
 ============
 
-To be completed.
+Demonstrates use of APA102 library for controlling smart LEDs via SPI.

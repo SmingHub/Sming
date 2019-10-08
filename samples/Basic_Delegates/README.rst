@@ -1,4 +1,4 @@
 Basic Delegates
 ===============
 
-To be completed.
+Demonstrates the various ways you can use callbacks within Sming.

@@ -1,4 +1,5 @@
 TM1637 Display
 ==============
 
-To be completed.
+Demonstrates use of 7-segment LED displays using TM1637 controller.
+This only requires 2 GPIO connections.

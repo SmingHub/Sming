@@ -291,3 +291,25 @@ Then when you save the file it gets formatted like this:
 
 Tables, unfortunately, do take a bit of manual formatting to get right.
 
+
+Sphinx Extensions
+=================
+
+The documentation system is easily extended to support new features.
+This section summarises the extensions included.
+
+`m2r <https://github.com/miyakogi/m2r>`__
+      Provides support for markdown content.
+
+
+`breathe <https://github.com/michaeljones/breathe>`__
+   To support Doxygen integration. See `API Documentation <#api-documentation>`_.
+
+
+`link-roles <link-roles.py>`_
+   A custom extension implemented in *link-roles.py*. See `Link Roles <#link-roles>`_.
+
+
+`sphinxcontrib.wavedrom <https://github.com/bavovanachte/sphinx-wavedrom>`__
+   For implementing timing and other waveform diagrams within documents.
+   See :library:`Servo` for an example.

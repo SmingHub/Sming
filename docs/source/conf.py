@@ -40,6 +40,10 @@ version = release
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+#
+# REMEMBER to update the 'Sphinx Extensions' section in contribute/documentation.rst
+# so developers can more easily locate the appropriate reference documentation.
+#
 extensions = [
     'm2r',
     'breathe',
@@ -98,6 +102,15 @@ html_extra_path = [
     '../api/html'
 ]
 
+
+# Provide default stylesheet context for Github links
+html_context = {
+    "display_github": True,
+    "github_user": "SmingHub",
+    "github_repo": "Sming",
+    "github_version": "develop",
+    "conf_py_path": "/docs/source/", # Path in the checkout to the docs root
+}
 
 ##
 # -- Use sphinx_rtd_theme for local builds --------------------------------

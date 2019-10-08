@@ -1,4 +1,4 @@
 Basic ProgMem
 =============
 
-To be completed.
+This sample application demonstrates the various ways to access data stored in Flash memory.

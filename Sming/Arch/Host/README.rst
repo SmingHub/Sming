@@ -88,7 +88,7 @@ used to communicate with the emulator.
 
 Alternatively, you can run the application manually like this:
 
-``out/firmware/app --pause --uart=0 --uart=1``
+``out/Host/debug/firmware/app --pause --uart=0 --uart=1``
 
 Now start a telnet session for each serial port, in separate command windows::
 

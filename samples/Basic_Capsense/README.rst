@@ -1,4 +1,4 @@
 Basic Capsense
 ==============
 
-To be completed.
+Simple demonstration showing Displays raw output from a capacitive sensor.
