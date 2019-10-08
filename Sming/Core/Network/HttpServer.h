@@ -68,6 +68,16 @@ public:
 		bodyParsers[contentType] = parser;
 	}
 
+	/**
+	 * @brief Allows content-type specific parsing of the body based on content-type.
+	 * @param mimeType
+	 * @param  parser
+	 */
+	void setBodyParser(MimeType mimeType, HttpBodyParserDelegate parser)
+	{
+		bodyParsers[ContentType::toString(mimeType)] = parser;
+	}
+
 	/** @deprecated Use `paths.set()` instead */
 	void addPath(String path, const HttpPathDelegate& callback) SMING_DEPRECATED
 	{
