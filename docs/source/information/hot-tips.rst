@@ -94,7 +94,7 @@ instead. In the example below, the CSS file is sent compressed to save
 time and space. The browser asks for core.js and gets a compressed
 version::
 
-   IMPORT_FSTR(flash_corejsgz, "web/build/core.js.gz")
+   IMPORT_FSTR(flash_corejsgz, PROJECT_DIR "/web/build/core.js.gz")
 
    void onSendCore_js(HttpRequest &request, HttpResponse &response)
    {
