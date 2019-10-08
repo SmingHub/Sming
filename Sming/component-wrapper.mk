@@ -19,7 +19,7 @@ include $(SMING_HOME)/build.mk
 # Makefile runs in the build directory
 COMPONENT_BUILD_DIR := $(CURDIR)
 
-CFLAGS				:= $(CFLAGS) $(GLOBAL_CFLAGS)
+CFLAGS				:= $(CFLAGS) $(GLOBAL_CFLAGS) -DCOMPONENT_PATH=\"$(COMPONENT_PATH)\"
 
 #
 CUSTOM_BUILD		:=

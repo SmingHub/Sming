@@ -1,5 +1,5 @@
 Sming build system
-===========================
+==================
 
 Introduction
 ------------
@@ -44,6 +44,9 @@ trailing path separator. This variable is available within makefiles,
 but is also provided as a #defined C string to allow references to
 source files within application code, such as with the ``IMPORT_FSTR``
 macro.
+
+``COMPONENT_PATH`` As for PROJECT_DIR, but provides the path to the
+current component's root source directory.
 
 Converting existing projects
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

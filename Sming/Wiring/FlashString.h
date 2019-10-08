@@ -54,6 +54,7 @@
  *  	IMPORT_FSTR(myFlashData, PROJECT_DIR "/files/myFlashData.bin")
  *
  *  Note the use of PROJECT_DIR to locate the file using an absolute path.
+ *  If using this within a component, use COMPONENT_PATH instead.
  *
  *	Both DEFINE_PSTR and PSTR_ARRAY load a PSTR into a stack buffer, but using sizeof() on that buffer will return
  *	a larger value than the string itself because it's aligned. Calling sizeof() on the original flash data will
