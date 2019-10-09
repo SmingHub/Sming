@@ -1,11 +1,11 @@
 # base directory of the ESP8266 SDK package, absolute
 COMPONENT_VARS			:= SDK_BASE
 
+SDK_BASE ?= $(COMPONENT_PATH)/ESP8266_NONOS_SDK
+
 ifeq ($(UNAME),Windows)
-SDK_BASE				?= $(ESP_HOME)/ESP8266_SDK
 SDK_TOOLS				?= $(ESP_HOME)/utils
 else
-SDK_BASE				?= $(ESP_HOME)/sdk
 SDK_TOOLS				?= $(SDK_BASE)/tools
 endif
 
