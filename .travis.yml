@@ -24,14 +24,6 @@ jobs:
 
   - stage: build
     os: linux
-    env: SMING_ARCH=Esp8266 SDK_VERSION=1.5.0
-
-  - stage: build
-    os: linux
-    env: SMING_ARCH=Esp8266 SDK_VERSION=2.0.0
-
-  - stage: build
-    os: linux
     env: SMING_ARCH=Esp8266 SDK_VERSION=3.0.1
 
 git:
@@ -70,7 +62,7 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-    condition: "$SDK_VERSION==2.0.0"
+    condition: "$SDK_VERSION==3.0.1"
 
 notifications:
   webhooks:

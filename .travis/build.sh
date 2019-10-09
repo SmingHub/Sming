@@ -4,9 +4,10 @@ set -ex # exit with nonzero exit code if anything fails
 # Build times benefit from parallel building
 export MAKE_PARALLEL="make -j3"
 
-env
 unset SPIFFY
 unset ESPTOOL2
+unset SDK_BASE
+env
 
 export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
 
@@ -27,10 +28,6 @@ fi
 # Setup ARCH SDK paths
 if [ "$SMING_ARCH" == "Esp8266" ]; then
 	export ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk
-	if [ "$SDK_VERSION" == "3.0.1" ]; then
-		export SDK_BASE=$SMING_HOME/third-party/ESP8266_NONOS_SDK
-	fi
-
 	export PATH=$PATH:$ESP_HOME/xtensa-lx106-elf/bin:$ESP_HOME/utils/
 fi
 
