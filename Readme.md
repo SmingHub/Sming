@@ -18,6 +18,34 @@ If you like **Sming**, give it a star, or fork it and [contribute](#contribute)!
 [![GitHub stars](https://img.shields.io/github/stars/SmingHub/Sming.svg?style=social&label=Star)](https://github.com/SmingHub/Sming/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/SmingHub/Sming.svg?style=social&label=Fork)](https://github.com/SmingHub/Sming/network)
 
+
+Table of Contents
+=================
+
+* [Summary](#summary)
+* [Compatibility](#compatibility)
+   * [Architecture: ESP8266](#architecture-esp8266)
+   * [Architecture: Host](#architecture-host)
+* [Releases](#releases)
+   * [Stable](#stable)
+   * [Development](#development)
+* [Getting Started](#getting-started)
+* [Documentation](#documentation)
+* [Examples](#examples)
+   * [Basic Blink](#basic-blink)
+   * [Simple GPIO Input/Output](#simple-gpio-inputoutput)
+   * [Start Serial Communication](#start-serial-communication)
+   * [Connect to WiFi](#connect-to-wifi)
+   * [Read DHT22 sensor](#read-dht22-sensor)
+   * [HTTP Client](#http-client)
+   * [OTA Application Update Based on rBoot](#ota-application-update-based-on-rboot)
+   * [HTTP Server](#http-server)
+   * [Email Client](#email-client)
+* [Live Debugging](#live-debugging)
+* [Contribute](#contribute)
+   * [Financial contributions](#financial-contributions)
+      * [Backers and sponsors](#backers-and-sponsors)
+
 Please note **develop** branch documentation is at [sming.readthedocs.io](https://sming.readthedocs.io/).
 
 ## Summary
