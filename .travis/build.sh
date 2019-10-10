@@ -45,13 +45,22 @@ cd $SMING_PROJECTS_DIR/samples/Basic_Blink
 make help
 make list-config
 
+# Check if we could run static code analysis
+CHECK_SCA=0
+if [[ $TRAVIS_COMMIT_MESSAGE == *"[scan:coverity]"*  && $TRAVIS_PULL_REQUEST != "true" ]]; then
+  CHECK_SCA=1
+fi
+
+
 # This will build the Basic_Blink application and most of the framework Components
-$MAKE_PARALLEL
+if [[ $CHECK_SCA -eq 0 ]]; then
+  $MAKE_PARALLEL
+fi
 
 cd $SMING_HOME
 
 if [ "$TRAVIS_BUILD_STAGE_NAME" == "Test" ]; then
-	if [[ $TRAVIS_COMMIT_MESSAGE == *"[scan:coverity]"*  && $TRAVIS_PULL_REQUEST != "true" ]]; then
+	if [[ $CHECK_SCA -eq 1 ]]; then
 		$TRAVIS_BUILD_DIR/.travis/coverity-scan.sh
 	else
 	  $MAKE_PARALLEL Basic_DateTime Basic_Delegates Basic_Interrupts Basic_ProgMem Basic_Serial Basic_Servo Basic_Ssl LiveDebug DEBUG_VERBOSE_LEVEL=3
