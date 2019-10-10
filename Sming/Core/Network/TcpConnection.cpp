@@ -574,12 +574,11 @@ err_t TcpConnection::internalOnReceive(pbuf* p, err_t err)
 
 	if(p != nullptr) {
 		pbuf_free(p);
+		checkSelfFree();
 	} else {
 		close();
-		closeTcpConnection(tcp);
 	}
 
-	checkSelfFree();
 	debug_tcp("<TCP receive");
 	return res;
 }
