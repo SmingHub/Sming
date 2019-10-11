@@ -6,7 +6,7 @@
 # By default, a Component builds a single library.
 # The working directory (CURDIR) is set to the Component build directory.
 # All required submodules are pulled in and patched before this makefile is invoked.
-# See `building.md` for further details.
+# See `building.rst` for further details.
 #
 #######################
 

@@ -123,8 +123,9 @@ Rename ESP8266_SDK_130 to ESP8266_SDK
 Build Basic_Blink
 =================
 
-1. Open Eclipse via “Sming Examples” Desktop link 2. Find *Basic_Blink*
-project 3. Build
+1. Open Eclipse via “Sming Examples” Desktop link
+2. Find *Basic_Blink* project
+3. Build
 
 --------------
 

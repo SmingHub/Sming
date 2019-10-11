@@ -500,18 +500,14 @@ During initial parsing, many of these variables (specifically, the
 is usually best to use simple variable assignment using ``:=``.
 
 For example, in ``Esp8266/Components/gdbstub`` we define
-``GDB_CMDLINE``. It may be tempting to do this:
-
-::
+``GDB_CMDLINE``. It may be tempting to do this::
 
    GDB_CMDLINE = trap '' INT; $(GDB) -x $(COMPONENT_PATH)/gdbcmds -b $(COM_SPEED_GDB) -ex "target remote $(COM_PORT_GDB)"
 
 That won’t work! By the time ``GDB_CMDLINE`` gets expanded,
 ``COMPONENT_PATH`` could contain anything. We need ``GDB_CMDLINE`` to be
 expanded only when used, so the solution is to take a simple copy of
-``COMPONENT_PATH`` and use it instead, like this:
-
-::
+``COMPONENT_PATH`` and use it instead, like this::
 
    GDBSTUB_DIR := $(COMPONENT_PATH)
    GDB_CMDLINE = trap '' INT; $(GDB) -x $(GDBSTUB_DIR)/gdbcmds -b $(COM_SPEED_GDB) -ex "target remote $(COM_PORT_GDB)"

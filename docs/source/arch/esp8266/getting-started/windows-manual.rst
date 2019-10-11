@@ -2,76 +2,185 @@
 Manual Windows Installation
 ===========================
 
-This is a **DEPRECATED** way of installing Sming. It will not be
-supported in the next versions.
+.. highlight:: batch
 
 .. attention::
-   Please consider using a simple way of installing Sming
-   via :doc:`Chocolatey <windows>`. Package sources are available as well.
+   Please consider installing Sming via :doc:`Chocolatey <windows>` package manager.
 
-If you still want to install it manually, please make sure the
-following steps are taken:
+Install MinGW
+-------------
 
-1. Install Unofficial Development Kit
--------------------------------------
+Whilst code built for the ESP8266 uses a separate Espressif compiler (via UDK), components such as SPIFFS
+require additional tools which are built as Windows executable applications.
 
-1. Install `Universial Development Kit <http://programs74.ru/get.php?file=EspressifESP8266DevKit>`__.
-2. Install `Java Runtime Environment <http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html>`__.
-3. Install `Eclipse Luna <http://eclipse.org/downloads/packages/eclipse-ide-cc-developers/lunasr2>`__.
-   Unpack the archive to ``c:\Eclipse``.
-4. Install `MingGW <http://sourceforge.net/projects/mingw/files/Installer/>`__.
-   Run mingw-get-setup.exe. Add install support for the graphical
-   user interface. Install to ``c:\MinGW``.
-5. Install `additional modules for MinGW <http://programs74.ru/get.php?file=EspressifESP8266DevKitAddon>`__.
-   Run ``install-mingw-package.bat``
-6. Start the Eclipse Luna from ``c:\Eclipse\eclipse.exe``
-7. In Eclipse, select File -> Import -> General -> Existing Project into
-   Workspace. In the line `Select root directory`, select the directory
-   ``C:\Espressif\examples`` and import work projects. Further, the right
-   to select the Make Target project, such as hello-world and run the
-   target All the assembly, while in the console window should display the
-   progress of the build. To select the target firmware flash.
+MinGW provides a (mostly) POSIX-compliant development environment for Windows, including GNU Make and
+various other command-line tools.
 
-Install additional mingw packages
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. note::
 
-::
+   There are two versions of MinGW.
 
-   C:\MinGW\bin\mingw-get install "msys-make"
+   `MinGW <http://mingw.org/>`__ is the original, and the version recommended for use with Sming.
 
-Create directory link for compatibility building (with admin permissions)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-``mklink /d c:\Espressif\sdk c:\Espressif\ESP8266_SDK``
-
-2. Set Environment Variables (requires Eclipse/cmd restart)
------------------------------------------------------------
-
-Windows System **PATH** variable should contain a path to ``c:\mingw\bin`` and ``c:\mingw\msys\1.0\bin``:
-
-::
-
-   SETX PATH /M C:\mingw\bin;C:\mingw\msys\1.0\bin;%PATH%
-
-*Make sure it is in this exact order. This step is also required for some old sming installations.*
-
-Also make sure, mingw64/bin is path before cygwin bin in %PATH% environmental variable in windows.
+   `MinGW-w64 <http://mingw-w64.org/>`__ was forked from MinGW in 2007 *in order to provide support
+   for 64 bits and new APIs*. (Which we don't need!)
 
 
-3. Make sure to set SMING_HOME and ESP_HOME environment variables
------------------------------------------------------------------
+To find out if you already have GCC on your system, type::
 
-::
+   where gcc
 
-   SETX SMING_HOME c:\tools\Sming\Sming
-   SETX ESP_HOME c:\Espressif
+If it shows ``C:\MinGW\bin\gcc.exe`` then you have a standard MinGW installation. Check the gcc version::
 
-*Please make sure there are no trailing slashes at the end of either path!*
+   gcc --version
+
+The current version is 8.2.0. You can upgrade by renaming or removing your existing installation then
+following these instructions.
+
+1. Get the `MingGW Setup <https://osdn.net/projects/mingw/downloads/68260/mingw-get-setup.exe>`__ and run it.
+   This will create the ``C:\MinGW`` directory with minimal content.
+
+2. Set Environment Variables
+
+   The Windows System :envvar:`PATH` variable should contain ``C:\MinGW\bin`` and ``C:\MinGW\msys\1.0\bin``::
+
+      SETX PATH "C:\mingw\bin;C:\mingw\msys\1.0\bin;%PATH%"
+
+   Make sure it is in this exact order. If you have Cygwin installed make sure the above entries appear first.
+
+   You will need to restart your command prompt (and Eclipse, if already running) for these changes to take effect.
+   
+
+3. Install required MinGW packages::
+
+      mingw-get install mingw32-base-bin mingw-developer-toolkit-bin mingw32-gcc-g++-bin mingw32-pthreads-w32-dev mingw32-libmingwex
+
+   Note that you can upgrade packages using::
+   
+      mingw-get update
+      mingw-get upgrade
+
+   However this will not upgrade a 6.3.0 installation to 8.2.0.
+
+
+Install Unofficial Development Kit (UDK)
+----------------------------------------
+
+This provides pre-built tools for ESP8266 targets.
+
+1. Download and run `Unofficial Development Kit <http://programs74.ru/get.php?file=EspressifESP8266DevKit>`__.
+
+2. From an *administrative* command prompt, create a directory link to point to the default Espressif SDK::
+
+      mklink /d C:\Espressif\sdk C:\Espressif\ESP8266_SDK
+
+   Note that the UDK includes SDK version 2.2.0, however the current recommended version is 3.0.1 which Sming
+   version 4 uses by default. See :component-esp8266:`esp8266` for further details.
+
+3. Set :envvar:`ESP_HOME` environment variable::
+
+      SETX ESP_HOME C:\Espressif
+
+.. note::
+   There is NO trailing slash on the path!
+   
+   If you want to set environment variables system-wide, append /M to the command.
+   You'll need to do this from an administrative command prompt.
+
+
+Install GIT
+-----------
+
+This is required to fetch and update Sming code from its repository.
+
+1. Install command-line `GIT <https://git-scm.com/downloads>`__ client.
+
+These steps are optional, but highly recommended:
+
+2. Install Graphical client `Git Extensions <https://gitextensions.github.io/>`__.
+3. Create an account at https://github.com. This will allow you to participate in discussions, raise issues
+   and, if you like, :doc:`/contribute/index` to the framework!
+
+
+Download Sming
+--------------
+
+1. You can put Sming anywhere convenient, provided there are **no spaces** in the path!
+   For example, *C:\\tools\\sming*::
+
+      mkdir C:\tools\sming
+      cd /d C:\tools\sming
+
+2. To obtain the latest develop code with all the latest features and fixes::
+
+      git clone https://github.com/SmingHub/Sming
+
+   To obtain the latest release::
+
+      git clone https://github.com/SmingHub/Sming --branch master
+
+3. Set :envvar:`SMING_HOME` environment variable::
+
+      SETX SMING_HOME C:\tools\sming\Sming
+
+   Note: there is NO trailing slash on the path!
+   
+.. note::
+   Whilst Windows filenames are not (by default) case-sensitive, the compiler tools are.
+   
+   Please take care to type paths exactly as shown.
+
+At this stage you should be able to build a sample::
+
+   cd samples\Basic_Blink
+   make -j
+
+If you want to try out the Host emulator, do this::
+
+   make -j SMING_ARCH=Host
+
+For build options::
+
+   make help
+
+
+Install Eclipse IDE
+-------------------
+
+Whilst building and configuring your application is generally easier and faster using the command prompt,
+developing and debugging code is greatly simplified using an Integrated Development Environment (IDE).
+
+1. Install `Java Runtime Environment <https://www.oracle.com/technetwork/java/javase/downloads/>`__.
+2. Install `Eclipse <http://eclipse.org/downloads/packages/>`__ IDE for C++ Developers.
+3. Start Eclipse IDE. When prompted, enter ``C:\tools\sming`` as the workspace path.
+4. Select *File -> Import -> General -> Existing Project* into Workspace.
+   In the line *Select root directory*, select the directory ``C:\tools\sming\Sming`` and import everything.
+5. Go have a cup of coffee while Eclipse scans all the source code. It can take a while!
+6. To build a project, right-click and select *Build project*. Alternatively, select the project and press F9.
 
 
 Eclipse IDE variables
 ---------------------
 
-You can manually add variables into Eclipse IDE: Window > Preferences -> C/C++ > Build > Environment.
+The only variable you should need to set within Eclipse is :envvar:`SMING_HOME`.
+You can set this within the Eclipse IDE via *Window > Preferences -> C/C++ > Build > Environment*.
 
-*It won’t be accessible outside Eclipse IDE*
+If you set this via global environment variable *before* starting Eclipse then this step is not necessary.
+
+.. note::
+   Variables set within the IDE won't be accessible in other Eclipse sessions or the command prompt.
+
+All other configuration should be done either in your project's *component.mk* file or via command line.
+
+For example, to switch to a Host emulator build, do this::
+
+   make SMING_ARCH=Host list-config
+
+This also displays the current configuration settings. Whether you build from command line or Eclipse,
+the same settings will be used.
+
+
+What next?
+----------
+
+See :doc:`/arch/esp8266/getting-started/index`.
