@@ -7,7 +7,7 @@
 
 #include "CommandHandler.h"
 #include "CommandDelegate.h"
-#include "SmingCore.h" // SMING_VERSION
+#include <SmingVersion.h>
 
 #ifndef LWIP_HASH_STR
 #define LWIP_HASH_STR ""
