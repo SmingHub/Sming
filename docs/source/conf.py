@@ -49,6 +49,7 @@ extensions = [
     'breathe',
     'link-roles',
     'sphinxcontrib.wavedrom',
+    'sphinx_copybutton',
 ]
 
 source_suffix = {
