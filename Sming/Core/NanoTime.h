@@ -605,7 +605,7 @@ template <class Clock_, uint64_t ticks_> struct TicksConst {
 
 	static String toString()
 	{
-		return ticks_;
+		return String(ticks_);
 	}
 };
 
