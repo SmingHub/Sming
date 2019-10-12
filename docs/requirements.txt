@@ -5,3 +5,4 @@ sphinx-rtd-theme
 m2r
 breathe==4.11.1
 sphinxcontrib-wavedrom
+sphinx-copybutton

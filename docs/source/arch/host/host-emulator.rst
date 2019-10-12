@@ -48,14 +48,7 @@ execute the commands below:
 Requirements (Windows)
 ----------------------
 
-For Windows, make sure your ``MinGW`` distro is up to date. If you run
-``gcc --version`` you should get ``gcc (MinGW.org GCC-6.3.0-1) 6.3.0`` or
-later. If it's older, execute these commands:
-
-::
-
-   mingw-get update
-   mingw-get upgrade
+For Windows, make sure your ``MinGW`` distro is up to date.
 
 .. note::
    If you don't already have MinGW installed, see :doc:`/arch/esp8266/getting-started/windows` for the Esp8266.

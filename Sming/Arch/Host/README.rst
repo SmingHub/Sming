@@ -25,14 +25,8 @@ Ensure you are using relatively recent compilers, with 32-bit libraries availabl
 For Linux, you may require the ``gcc-multilib`` and ``g++-multilib``
 packages to build 32-bit executables on a 64-bit OS.
 
-For Windows, make sure your ``MinGW`` distro is up to date. If you run
-``gcc --version`` you should get ``gcc (MinGW.org GCC-6.3.0-1) 6.3.0``
-or later. If it’s older, execute these commands:
-
-.. code-block:: powershell
-
-   mingw-get update
-   mingw-get upgrade
+For Windows, make sure your ``MinGW`` distro is up to date.
+See :doc:`/arch/esp8266/getting-started/windows-manual` for further details.
 
 Building
 --------
