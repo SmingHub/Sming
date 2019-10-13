@@ -1,2 +1,2 @@
 COMPONENT_SUBMODULES := ArduinoJson
-COMPONENT_INCDIRS += ArduinoJson/src
+COMPONENT_INCDIRS := include ArduinoJson/src

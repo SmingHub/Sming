@@ -460,6 +460,7 @@ COMPONENT_PATH (defaults to “. src”)
 
 ``COMPONENT_INCDIRS`` Include directories available when building ALL
 Components (not just this one). Paths may be relative or absolute.
+Defaults to “include”.
 
 ``INCDIR`` The resultant set of include directories used to build this
 Component. Will contain include directories specified by all other
