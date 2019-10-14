@@ -1,6 +1,8 @@
 ArduinoJson Version 6
 =====================
 
+Current version is `6.12.0 <https://arduinojson.org/2019/09/05/version-6-12-0/>`__.
+
 If you're upgrading from :library:`version 5 <ArduinoJson5>`, some changes will be required to your code.
 See the `Version 6 Migration Guide <https://arduinojson.org/v6/doc/upgrade>`__ for details.
 

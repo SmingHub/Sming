@@ -1,7 +1,8 @@
 COMPONENT_SRCFILES := \
 	$(ESP8266_COMPONENTS)/driver/SerialBuffer.cpp
 
-COMPONENT_INCDIRS += \
+COMPONENT_INCDIRS := \
+	include \
 	$(ESP8266_COMPONENTS)/driver \
 	$(ESP8266_COMPONENTS)/driver/include
 
