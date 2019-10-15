@@ -10,7 +10,7 @@
 
 #pragma once
 
-#define SMING_VERSION "3.8.0" // Major Minor Sub
+#include "SmingVersion.h"
 
 #include "gdb/gdb_hooks.h"
 #include "WiringFrameworkIncludes.h"

@@ -4,9 +4,10 @@ set -ex # exit with nonzero exit code if anything fails
 # Build times benefit from parallel building
 export MAKE_PARALLEL="make -j3"
 
-env
 unset SPIFFY
 unset ESPTOOL2
+unset SDK_BASE
+env
 
 export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
 
@@ -27,10 +28,6 @@ fi
 # Setup ARCH SDK paths
 if [ "$SMING_ARCH" == "Esp8266" ]; then
 	export ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk
-	if [ "$SDK_VERSION" == "3.0.1" ]; then
-		export SDK_BASE=$SMING_HOME/third-party/ESP8266_NONOS_SDK
-	fi
-
 	export PATH=$PATH:$ESP_HOME/xtensa-lx106-elf/bin:$ESP_HOME/utils/
 fi
 
@@ -48,13 +45,22 @@ cd $SMING_PROJECTS_DIR/samples/Basic_Blink
 make help
 make list-config
 
+# Check if we could run static code analysis
+CHECK_SCA=0
+if [[ $TRAVIS_COMMIT_MESSAGE == *"[scan:coverity]"*  && $TRAVIS_PULL_REQUEST != "true" ]]; then
+  CHECK_SCA=1
+fi
+
+
 # This will build the Basic_Blink application and most of the framework Components
-$MAKE_PARALLEL
+if [[ $CHECK_SCA -eq 0 ]]; then
+  $MAKE_PARALLEL
+fi
 
 cd $SMING_HOME
 
 if [ "$TRAVIS_BUILD_STAGE_NAME" == "Test" ]; then
-	if [[ $TRAVIS_COMMIT_MESSAGE == *"[scan:coverity]"*  && $TRAVIS_PULL_REQUEST != "true" ]]; then
+	if [[ $CHECK_SCA -eq 1 ]]; then
 		$TRAVIS_BUILD_DIR/.travis/coverity-scan.sh
 	else
 	  $MAKE_PARALLEL Basic_DateTime Basic_Delegates Basic_Interrupts Basic_ProgMem Basic_Serial Basic_Servo Basic_Ssl LiveDebug DEBUG_VERBOSE_LEVEL=3

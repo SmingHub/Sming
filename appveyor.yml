@@ -11,12 +11,7 @@ environment:
     - build_platform: "x86"
       build_compiler: "mingw"
       SMING_ARCH: Esp8266
-      SDK_VERSION: 2.0.0
-
-    - build_platform: "x86"
-      build_compiler: "mingw"
-      SMING_ARCH: Esp8266
-      SDK_VERSION: 1.5.0
+      SDK_VERSION: 3.0.1
 
 # cache:
 #   - src/  # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
