@@ -23,14 +23,6 @@
  *  @{
  */
 
-#ifndef HTTP_SERVER_EXPOSE_NAME
-#define HTTP_SERVER_EXPOSE_NAME 1
-#endif
-
-#ifndef HTTP_SERVER_EXPOSE_DATE
-#define HTTP_SERVER_EXPOSE_DATE 0
-#endif
-
 class HttpResourceTree;
 class HttpServerConnection;
 

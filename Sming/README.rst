@@ -155,10 +155,40 @@ SSL support
 
 .. envvar:: ENABLE_SSL
 
+   Default: undefined (disabled)
+
    SSL requires lots of RAM and some intensive processing, so to conserve resources it is disabled by default.
    If you want to enable it then take a look at the :sample:`Basic_Ssl` sample.
 
    Set to 1 to enable SSL support using the :component:`axtls-8266` Component.
+
+
+HTTP support
+------------
+
+.. envvar:: HTTP_SERVER_EXPOSE_NAME
+
+   Default: 1 (enabled)
+
+   Adds "HttpServer/Sming" to the SERVER field in response headers.
+   If disabled, the SERVER field is omitted from all responses.
+
+
+.. envvar:: HTTP_SERVER_EXPOSE_VERSION
+
+   Default: 0 (disabled)
+
+   Adds the current Sming build version to the SERVER field in response headers.
+   For example, "Sming/4.0.0-rc2".
+
+   Requires HTTP_SERVER_EXPOSE_NAME to be enabled.
+
+
+.. envvar:: HTTP_SERVER_EXPOSE_DATE
+
+   Default: 0 (disabled)
+
+   Sets the DATE field in response headers.
 
 
 Localisation
