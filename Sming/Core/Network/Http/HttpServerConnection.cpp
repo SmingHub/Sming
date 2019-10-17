@@ -17,6 +17,14 @@
 #include "Network/WebConstants.h"
 #include "Data/Stream/ChunkedStream.h"
 
+#if HTTP_SERVER_EXPOSE_VERSION == 1
+#include <SmingVersion.h>
+#endif
+
+#if HTTP_SERVER_EXPOSE_DATE == 1
+#include <SystemClock.h>
+#endif
+
 int HttpServerConnection::onMessageBegin(http_parser* parser)
 {
 	// Reset Response ...
@@ -228,6 +236,7 @@ void HttpServerConnection::sendResponseHeaders(HttpResponse* response)
 		}
 	}
 #endif /* DISABLE_HTTPSRV_ETAG */
+
 	String statusLine =
 		F("HTTP/1.1 ") + String(response->code) + ' ' + httpGetStatusText((enum http_status)response->code) + "\r\n";
 	sendString(statusLine);
@@ -248,12 +257,19 @@ void HttpServerConnection::sendResponseHeaders(HttpResponse* response)
 	}
 
 #if HTTP_SERVER_EXPOSE_NAME == 1
-	response->headers[F("Server")] = _F("HttpServer/Sming");
+	{
+		String s = _F("HttpServer/Sming");
+#if HTTP_SERVER_EXPOSE_VERSION == 1
+		s += _F(" Sming/" SMING_VERSION);
+#endif
+		response->headers[HTTP_HEADER_SERVER] = s;
+	}
 #endif
 
 #if HTTP_SERVER_EXPOSE_DATE == 1
 	response->headers[HTTP_HEADER_DATE] = SystemClock.getSystemTimeString();
 #endif
+
 	for(unsigned i = 0; i < response->headers.count(); i++) {
 		sendString(response->headers[i]);
 	}
