@@ -15,16 +15,31 @@
 
 bool MultipartStream::onCompleted()
 {
+	if(this->stream != nullptr && !this->stream->isFinished()) {
+		debug_e("Overwriting unfinished stream!");
+	}
+	delete this->stream;
+	this->stream = nullptr;
+
 	auto stream = new MemoryDataStream();
 	stream->ensureCapacity(4 + 16 + 4);
 	stream->print(_F("\r\n--"));
 	stream->print(getBoundary());
 	stream->print(_F("--\r\n"));
+
+	this->stream = stream;
+
 	return true;
 }
 
 void MultipartStream::onNextStream()
 {
+	if(this->stream != nullptr && !this->stream->isFinished()) {
+		debug_e("Overwriting unfinished stream!");
+	}
+	delete this->stream;
+	this->stream = nullptr;
+
 	auto stream = new MemoryDataStream();
 	stream->ensureCapacity(4 + 16 + 4);
 	stream->print(_F("\r\n--"));
@@ -46,6 +61,8 @@ void MultipartStream::onNextStream()
 		result.headers = nullptr;
 	}
 	stream->print("\r\n");
+
+	this->stream = stream;
 
 	nextStream = result.stream;
 }
