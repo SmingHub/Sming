@@ -1,0 +1,5 @@
+#ARDUINO_LIBRARIES := ArduCAM
+
+COMPONENT_DEPENDS := WebCam
+
+SPIFF_FILES = web/build
