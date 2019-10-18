@@ -257,7 +257,7 @@ void HttpServerConnection::sendResponseHeaders(HttpResponse* response)
 	}
 
 #if HTTP_SERVER_EXPOSE_NAME == 1
-	{
+	if(!response->headers.contains(HTTP_HEADER_SERVER)) {
 		String s = _F("HttpServer/Sming");
 #if HTTP_SERVER_EXPOSE_VERSION == 1
 		s += _F(" Sming/" SMING_VERSION);
