@@ -42,7 +42,7 @@ uint16_t MultiStream::readMemoryBlock(char* data, int bufSize)
 
 bool MultiStream::seek(int len)
 {
-	if(!stream) {
+	if(stream == nullptr) {
 		return false;
 	}
 
