@@ -7,6 +7,16 @@ if [ -z $TAG ]; then
 	exit 1;
 fi
 
+export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
+
+# [Get all submodules used in this release, pack them and add the archive to the release artifacts]
+cd $SMING_HOME
+make submodules
+ALL_SUBMODULE_DIRS=$(find $SMING_HOME -name '.submodule' | xargs dirname)
+FILE=/tmp/sming-submodules.tgz
+tar cvzf $FILE $ALL_SUBMODULE_DIRS
+curl -H "Authorization: token $SMING_TOKEN" -H "Content-Type: $(file -b --mime-type $FILE)" --data-binary @$FILE "https://uploads.github.com/repos/SmingHub/Sming/releases/$TAG/assets?name=$(basename $FILE)"
+
 # [Update the documentation]
 # On push and release readthedocs webhook should update the documentation
 # See: https://buildmedia.readthedocs.org/media/pdf/docs/stable/docs.pdf Webhooks
