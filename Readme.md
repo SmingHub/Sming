@@ -67,7 +67,7 @@ Please note **develop** branch documentation is at [sming.readthedocs.io](https:
     * [Crash handlers](https://sming.readthedocs.io/en/latest/information/debugging.html) for analyzing/handling system restarts due to fatal errors or WDT resets.
     * [PWM support](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/pwm_open/index.html) based on [Stefan Bruens PWM](https://github.com/StefanBruens/ESP8266_new_pwm.git).
     * Optional [custom heap allocation](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/custom_heap/index.html) based on [Umm Malloc](https://github.com/rhempel/umm_malloc.git).
-    * Based on Espressif NONOS SDK. Officially suppored NON SDK version is >= 3.0.0.
+    * Based on Espressif NONOS SDK. Officially suppored NON SDK version is >= 3.0.1.
 * Linux/Windows features
     * Sming has a [host emulator](https://sming.readthedocs.io/en/latest/arch/host/host-emulator.html) that allows libraries and sample applications to be compiled on a Linux/Windows host system and be tested before uploading them to an actual microcontroller.
 
@@ -83,7 +83,7 @@ esp-open-sdk (v1.5.x **, v2.0.0 **, v3.0.x) | :sunny:  | :sunny: | n/a | :sunny
 - OS = Operating System.
 - SDK = Software Development Kit.
 - n/a = The selected SDK is not available on that OS.
-- ** = non supported officially. Samples and library should compile and run but we recommend using version >= 3.0.0.
+- ** = not supported officially. Samples and library should compile and run but we recommend using version >= 3.0.1.
 
 ### Architecture: Host
 
