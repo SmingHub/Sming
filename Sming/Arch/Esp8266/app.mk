@@ -10,6 +10,7 @@ LIBS += \
 	microgcc \
 	stdc++ \
 	hal \
+	setjmp \
 	$(LIBMAIN)
 
 # linker flags used to generate the main object file
