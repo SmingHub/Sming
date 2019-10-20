@@ -12,6 +12,7 @@
 
 #include "m_printf.h"
 #include "c_types.h"
+#include <esp_attr.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -57,7 +58,7 @@ typedef uint32_t prog_uint32_t;
 #ifdef ICACHE_FLASH
 
 #ifndef PROGMEM
-#define PROGMEM __attribute__((aligned(4))) __attribute__((section(".irom.text")))
+#define PROGMEM __attribute__((aligned(4))) ICACHE_FLASH_ATTR
 #endif
 
 // flash memory must be read using 32 bit aligned addresses else a processor exception will be triggered
