@@ -16,13 +16,10 @@
 #include "Network/TcpServer.h"
 #include "Network/WebConstants.h"
 #include "Data/Stream/ChunkedStream.h"
+#include <SystemClock.h>
 
 #if HTTP_SERVER_EXPOSE_VERSION == 1
 #include <SmingVersion.h>
-#endif
-
-#if HTTP_SERVER_EXPOSE_DATE == 1
-#include <SystemClock.h>
 #endif
 
 int HttpServerConnection::onMessageBegin(http_parser* parser)
@@ -266,9 +263,9 @@ void HttpServerConnection::sendResponseHeaders(HttpResponse* response)
 	}
 #endif
 
-#if HTTP_SERVER_EXPOSE_DATE == 1
-	response->headers[HTTP_HEADER_DATE] = SystemClock.getSystemTimeString();
-#endif
+	if(SystemClock.isSet()) {
+		response->headers[HTTP_HEADER_DATE] = SystemClock.getSystemTimeString();
+	}
 
 	for(unsigned i = 0; i < response->headers.count(); i++) {
 		sendString(response->headers[i]);
