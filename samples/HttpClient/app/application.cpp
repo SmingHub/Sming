@@ -4,8 +4,8 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-#define WIFI_SSID "PleaseEnterSSID" // Put your SSID and Password here
-#define WIFI_PWD "PleaseEnterPass"
+static_assert(false, "Please define WIFI_SSID and, if required, WIFI_PWD.");
+#define WIFI_SSID "PleaseEnterSSID"
 #endif
 
 HttpClient httpClient;

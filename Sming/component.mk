@@ -64,9 +64,7 @@ CONFIG_VARS				+= WIFI_SSID WIFI_PWD
 ifdef WIFI_SSID
 	APP_CFLAGS			+= -DWIFI_SSID=\"$(WIFI_SSID)\"
 endif
-ifneq ($(origin WIFI_PWD),undefined)
-	APP_CFLAGS			+= -DWIFI_PWD=\"$(WIFI_PWD)\"
-endif
+APP_CFLAGS				+= -DWIFI_PWD=\"$(WIFI_PWD)\"
 
 # => WPS
 COMPONENT_VARS			+= ENABLE_WPS
