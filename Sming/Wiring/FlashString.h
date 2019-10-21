@@ -234,20 +234,24 @@ struct FlashString {
 
 	/** @brief Check for equality with a C-string
 	 *  @param cstr
+	 *  @param len Length of cstr (optional)
 	 *  @retval bool true if strings are identical
 	 *  @note loads string into a stack buffer for the comparison, no heap required
 	 */
-	bool isEqual(const char* cstr) const
+	bool isEqual(const char* cstr, size_t len = 0) const
 	{
 		// Unlikely we'd want an empty flash string, but check anyway
 		if(cstr == nullptr)
 			return flashLength == 0;
 		// Don't use strcmp as our data may contain nuls
-		size_t cstrlen = strlen(cstr);
-		if(cstrlen != flashLength)
+		if(len == 0) {
+			len = strlen(cstr);
+		}
+		if(len != flashLength) {
 			return false;
+		}
 		LOAD_FSTR(buf, *this);
-		return memcmp(buf, cstr, cstrlen) == 0;
+		return memcmp(buf, cstr, len) == 0;
 	}
 
 	/** @brief Check for equality with another FlashString
@@ -256,10 +260,12 @@ struct FlashString {
 	 */
 	bool isEqual(const FlashString& str) const
 	{
-		if(flashLength != str.flashLength)
+		if(flashLength != str.flashLength) {
 			return false;
-		if(flashData == str.flashData)
+		}
+		if(flashData == str.flashData) {
 			return true;
+		}
 		return memcmp_aligned(flashData, str.flashData, flashLength) == 0;
 	}
 
