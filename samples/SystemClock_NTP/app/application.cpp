@@ -57,7 +57,7 @@ void onPrintSystemTime()
 // and automatic request has been made.
 void onNtpReceive(NtpClient& client, time_t timestamp)
 {
-	SystemClock.setTime(timestamp);
+	SystemClock.setTime(timestamp, eTZ_UTC);
 
 	Serial.print("Time synchronized: ");
 	Serial.println(SystemClock.getSystemTimeString());

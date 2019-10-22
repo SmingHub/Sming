@@ -31,10 +31,7 @@ bool SystemClockClass::setTime(time_t time, TimeZone timeType)
 		time -= timeZoneOffsetSecs;
 	}
 
-	bool timeSet = RTC.setRtcSeconds(time);
-	if(timeSet) {
-		status = eSCS_Set;
-	}
+	timeSet = RTC.setRtcSeconds(time);
 
 	debugf("time updated? %d", timeSet);
 
