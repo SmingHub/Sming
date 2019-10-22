@@ -95,7 +95,7 @@
  */
 #define DEFINE_FSTR(_name, _str)                                                                                       \
 	DEFINE_FSTR_STRUCT(_##_name, _str);                                                                                \
-	const FlashString& _name PROGMEM = _##_name.fstr;
+	DEFINE_FSTR_REF(_name, _##_name);
 
 /** @brief Define a FlashString for local (static) use
  *  @param _name variable to identify the string
@@ -103,19 +103,38 @@
  */
 #define DEFINE_FSTR_LOCAL(_name, _str)                                                                                 \
 	static DEFINE_FSTR_STRUCT(_##_name, _str);                                                                         \
-	static const FlashString& _name PROGMEM = _##_name.fstr;
+	static DEFINE_FSTR_REF(_name, _##_name);
 
+/** @brief Define a string in a FlashString-compatible structure
+ *  @param _name Name of structure
+ *  @param _str String to store
+ *  @note Structure contains prog
+ */
 #define DEFINE_FSTR_STRUCT(_name, _str)                                                                                \
 	constexpr struct {                                                                                                 \
-		FlashString fstr;                                                                                              \
+		uint32_t flashLength;                                                                                          \
 		char data[ALIGNUP(sizeof(_str))];                                                                              \
-	} _name PROGMEM = {{sizeof(_str) - 1}, _str};
+	} _name PROGMEM = {sizeof(_str) - 1, _str};
 
 // Declare a global reference to a FlashString instance
 #define DECLARE_FSTR(_name) extern const FlashString& _name;
 
-// Get a pointer to the actual FlashString, used when creating tables
-#define FSTR_PTR(_struct) &_##_struct.fstr
+/** @brief Get a pointer to the actual FlashString, used when creating tables
+ *  @param _fstr_ref A FlashString& reference, such as that created with DEFINE_FSTR
+ */
+#define FSTR_PTR(_fstr_ref) FSTR_STRUCT_PTR(_##_fstr_ref)
+
+/** @brief Get a FlashString* for a structure
+ *  @param _struct The structure to cast (not a pointer to it!)
+ */
+#define FSTR_STRUCT_PTR(_struct) reinterpret_cast<const FlashString*>(&_struct)
+
+/** @brief Define a FlashString reference cast to a structure
+ *  @param _name Name of the reference variable
+ *  @param _struct Structure to be referenced, in PROGMEM and word-aligned. First element MUST be the length.
+ *  @note Use to cast custom data structures into FlashString format.
+ */
+#define DEFINE_FSTR_REF(_name, _struct) const FlashString& _name PROGMEM = *FSTR_STRUCT_PTR(_struct);
 
 /** @brief declare a table of FlashStrings
  *  @param _name name of the table
@@ -214,8 +233,8 @@
  */
 struct FlashString {
 	// Do NOT access these directly - use member functions
-	uint32_t flashLength; ///< Only needs to be uint16_t but ensures data is aligned
-	char flashData[];
+	uint32_t flashLength;	 ///< Number of bytes/characters in data
+	char flashData[0x400000]; ///< Arbitrary large size to stop compiler complaining about array bounds
 
 	uint32_t length() const
 	{
@@ -302,5 +321,11 @@ struct FlashString {
 	bool operator!=(const String& str) const
 	{
 		return !isEqual(str);
+	}
+
+private:
+	// Prevent instantiation
+	FlashString()
+	{
 	}
 };

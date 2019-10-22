@@ -112,14 +112,19 @@ void testFSTR(Print& out)
 
 	// Example of array or custom data usage
 	out.print("> demoArray1 : {");
-	static struct {
-		FlashString fstr;
+	static const struct {
+		size_t length;
 		char data[5];
-	} demoArray1 = {{5}, {1, 2, 3, 4, 5}};
-	String arr(demoArray1.fstr);
+	} demoArray1 PROGMEM = {5, {1, 2, 3, 4, 5}};
+	// This defines fstrArray as a `const FlashString&`
+	static DEFINE_FSTR_REF(fstrArray, demoArray1);
+	// fstrArray can be now be used in calls to functions, etc.
+	String arr(fstrArray);
 	for(unsigned i = 0; i < arr.length(); ++i) {
+		if(i > 0) {
+			out.print(", ");
+		}
 		out.print(arr[i], DEC);
-		out.print(", ");
 	}
 	out.println("}");
 
