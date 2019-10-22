@@ -15,8 +15,6 @@
 
 NtpClient::NtpClient(const String& reqServer, unsigned reqIntervalSeconds, NtpTimeResultDelegate delegateFunction)
 {
-	debug_d("NtpClient(\"%s\", %u)", reqServer.c_str(), reqIntervalSeconds);
-
 	// Setup timer, but don't start it
 	timer.setCallback(TimerDelegate(&NtpClient::requestTime, this));
 
@@ -25,6 +23,8 @@ NtpClient::NtpClient(const String& reqServer, unsigned reqIntervalSeconds, NtpTi
 	if(!delegateFunction) {
 		autoUpdateSystemClock = true;
 	}
+
+	debug_d("NtpClient(\"%s\", %u)", reqServer.c_str(), reqIntervalSeconds);
 
 	if(reqIntervalSeconds) {
 		setAutoQueryInterval(reqIntervalSeconds);
