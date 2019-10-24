@@ -20,6 +20,7 @@ jobs:
         - python3-pip
         - python3-setuptools
         - graphviz-dev
+        - xmlstarlet
     env: SMING_ARCH=Host
 
   - stage: build
