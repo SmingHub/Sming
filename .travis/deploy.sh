@@ -16,7 +16,7 @@ RESPONSE=$(curl -H "Content-Type:application/json" -H "$AUTH_HEADER" \
   https://api.github.com/repos/SmingHub/Sming/releases)
 
 # Get release id
-ID=$(echo $RESPONSE | jq -r .id)
+RELEASE_ID=$(echo "$RESPONSE" | jq -r .id)
 
 # [Get all submodules used in this release, pack them and add the archive to the release artifacts]
 cd $SMING_HOME
@@ -25,7 +25,7 @@ ALL_SUBMODULE_DIRS=$(find $SMING_HOME -name '.submodule' | xargs dirname)
 FILE=/tmp/sming-submodules.tgz
 tar cvzf $FILE $ALL_SUBMODULE_DIRS
 
-curl -H "$AUTH_HEADER" -H "Content-Type: $(file -b --mime-type $FILE)" --data-binary @$FILE "https://uploads.github.com/repos/SmingHub/Sming/releases/$ID/assets?name=$(basename $FILE)"
+curl -H "$AUTH_HEADER" -H "Content-Type: $(file -b --mime-type $FILE)" --data-binary @$FILE "https://uploads.github.com/repos/SmingHub/Sming/releases/$RELEASE_ID/assets?name=$(basename $FILE)"
 
 # [Update the documentation]
 # On push and release readthedocs webhook should update the documentation automatically.
