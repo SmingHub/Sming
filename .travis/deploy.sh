@@ -16,7 +16,7 @@ RESPONSE=$(curl -H "Content-Type:application/json" -H "$AUTH_HEADER" \
   https://api.github.com/repos/SmingHub/Sming/releases)
 
 # Get release id
-$ID=$(echo $RESPONSE | jq -r .id)
+ID=$(echo $RESPONSE | jq -r .id)
 
 # [Get all submodules used in this release, pack them and add the archive to the release artifacts]
 cd $SMING_HOME
