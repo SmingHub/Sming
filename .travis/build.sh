@@ -47,7 +47,7 @@ make list-config
 
 # Check if we could run static code analysis
 CHECK_SCA=0
-if [[ $TRAVIS_COMMIT_MESSAGE == *"[scan:coverity]"*  && $TRAVIS_PULL_REQUEST != "true" ]]; then
+if [[ $TRAVIS_TAG != "" || ( $TRAVIS_COMMIT_MESSAGE == *"[scan:coverity]"*  && $TRAVIS_PULL_REQUEST != "true" ) ]]; then
   CHECK_SCA=1
 fi
 
