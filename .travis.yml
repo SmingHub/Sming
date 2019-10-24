@@ -21,6 +21,7 @@ jobs:
         - python3-setuptools
         - graphviz-dev
         - xmlstarlet
+        - jq
     env: SMING_ARCH=Host
 
   - stage: build
