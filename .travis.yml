@@ -61,7 +61,7 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-    condition: "$SDK_VERSION==3.0.1"
+    condition: $TRAVIS_BUILD_STAGE_NAME = Test
 notifications:
   webhooks:
     urls:
