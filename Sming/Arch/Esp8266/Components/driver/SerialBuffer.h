@@ -23,7 +23,7 @@ struct SerialBuffer {
 public:
 	~SerialBuffer()
 	{
-		delete buffer;
+		delete[] buffer;
 	}
 
 	size_t getSize()

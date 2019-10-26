@@ -111,7 +111,7 @@ static bool realloc_buffer(SerialBuffer*& buffer, size_t new_size)
 {
 	if(buffer != nullptr) {
 		if(new_size == 0) {
-			uart_disable_interrupts();
+			(void)uart_disable_interrupts();
 			delete buffer;
 			buffer = nullptr;
 			uart_restore_interrupts();
@@ -207,7 +207,7 @@ size_t uart_rx_available(uart_t* uart)
 		return 0;
 	}
 
-	uart_disable_interrupts();
+	(void)uart_disable_interrupts();
 
 	size_t avail = 0;
 
@@ -260,7 +260,7 @@ size_t uart_tx_free(uart_t* uart)
 		return 0;
 	}
 
-	uart_disable_interrupts();
+	(void)uart_disable_interrupts();
 
 	size_t space = 0;
 	if(uart->tx_buffer != nullptr) {
@@ -324,7 +324,7 @@ void uart_flush(uart_t* uart, uart_mode_t mode)
 	bool flushRx = mode != UART_TX_ONLY && uart->mode != UART_TX_ONLY;
 	bool flushTx = mode != UART_RX_ONLY && uart->mode != UART_RX_ONLY;
 
-	uart_disable_interrupts();
+	(void)uart_disable_interrupts();
 	if(flushRx && uart->rx_buffer != nullptr) {
 		uart->rx_buffer->clear();
 	}

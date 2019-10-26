@@ -105,7 +105,7 @@ void HardwareSerial::systemDebugOutput(bool enabled)
 
 void HardwareSerial::invokeCallbacks()
 {
-	uart_disable_interrupts();
+	(void)uart_disable_interrupts();
 	auto status = callbackStatus;
 	callbackStatus = 0;
 	callbackQueued = false;

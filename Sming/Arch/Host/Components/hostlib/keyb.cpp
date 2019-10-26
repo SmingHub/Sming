@@ -233,7 +233,7 @@ void keyb_restore()
 		attr.c_lflag |= ICANON | ECHO;
 		tcsetattr(STDIN_FILENO, TCSANOW, &attr);
 
-		fcntl(0, F_SETFL, g_orig_flags);
+		(void)fcntl(0, F_SETFL, g_orig_flags);
 		g_values_changed = false;
 	}
 #endif
@@ -250,7 +250,7 @@ void keyb_raw()
 	}
 
 	// make stdin non-blocking
-	fcntl(0, F_SETFL, g_orig_flags | O_NONBLOCK);
+	(void)fcntl(0, F_SETFL, g_orig_flags | O_NONBLOCK);
 	//
 	struct termios attr = g_orig_attr;
 	attr.c_lflag &= ~(ICANON | ECHO);

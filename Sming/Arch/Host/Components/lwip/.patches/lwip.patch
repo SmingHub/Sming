@@ -1,8 +1,22 @@
 diff --git a/contrib/ports/unix/port/sys_arch.c b/contrib/ports/unix/port/sys_arch.c
-index a56d7de1..dd3f16e1 100644
+index a56d7de1..6fc9f434 100644
 --- a/contrib/ports/unix/port/sys_arch.c
 +++ b/contrib/ports/unix/port/sys_arch.c
-@@ -730,13 +730,3 @@ sys_arch_unprotect(sys_prot_t pval)
+@@ -68,10 +68,12 @@
+ #include "lwip/stats.h"
+ #include "lwip/tcpip.h"
+ 
++extern u32_t os_random(void);
++
+ u32_t
+ lwip_port_rand(void)
+ {
+-  return (u32_t)rand();
++  return os_random();
+ }
+ 
+ static void
+@@ -730,13 +732,3 @@ sys_arch_unprotect(sys_prot_t pval)
  }
  #endif /* SYS_LIGHTWEIGHT_PROT */
  
