@@ -124,7 +124,8 @@ endif
 ifeq ($(SMING_RELEASE),1)
 	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	#      for full list of optimization options
-	CFLAGS		+= -Os -DSMING_RELEASE=1
+	# Note: ANSI requires NDEBUG to be defined for correct assert behaviour
+	CFLAGS		+= -Os -DSMING_RELEASE=1 -DNDEBUG
 else ifeq ($(ENABLE_GDB), 1)
 	CFLAGS		+= -Og
 else
