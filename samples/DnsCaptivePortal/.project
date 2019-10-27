@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>DNSCaptivePortal</name>
+	<name>DnsCaptivePortal</name>
 	<comment></comment>
 	<projects>
 		<project>SmingFramework</project>

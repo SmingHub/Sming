@@ -1,6 +1,6 @@
 #include <SmingCore.h>
 
-DNSServer dnsServer;
+DnsServer dnsServer;
 HttpServer server;
 
 #define DNS_PORT 53
