@@ -45,8 +45,8 @@ public:
 	void restoreState() override;
 
 private:
-	base64_encodestate state;
-	base64_encodestate lastState;
+	base64_encodestate state = {};
+	base64_encodestate lastState = {};
 };
 
 /** @} */

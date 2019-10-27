@@ -64,13 +64,13 @@ public:
 	HttpResponse* setCookie(const String& name, const String& value);
 	HttpResponse* setHeader(const String& name, const String& value);
 	HttpResponse* setCache(int maxAgeSeconds = 3600, bool isPublic = false);
-	HttpResponse* setAllowCrossDomainOrigin(
-		const String& controlAllowOrigin); // Access-Control-Allow-Origin for AJAX from a different domain
+	// Access-Control-Allow-Origin for AJAX from a different domain
+	HttpResponse* setAllowCrossDomainOrigin(const String& controlAllowOrigin);
 
 	/**
 	 * @brief Send file by name
 	 * @param fileName
-	 * @param allowGzipFileCheck If true, check file extension to see if content commpressed
+	 * @param allowGzipFileCheck If true, check file extension to see if content compressed
 	 * @retval bool
 	 */
 	bool sendFile(const String& fileName, bool allowGzipFileCheck = true);
