@@ -15,11 +15,11 @@
  *
  ****/
 
-#include "DNSServer.h"
+#include "DnsServer.h"
 #include "UdpConnection.h"
 #include "WString.h"
 
-bool DNSServer::start(uint16_t port, const String& domainName, const IpAddress& resolvedIP)
+bool DnsServer::start(uint16_t port, const String& domainName, const IpAddress& resolvedIP)
 {
 	this->port = port;
 	buffer = nullptr;
@@ -29,26 +29,26 @@ bool DNSServer::start(uint16_t port, const String& domainName, const IpAddress& 
 	return listen(this->port) == 1;
 }
 
-void DNSServer::stop()
+void DnsServer::stop()
 {
 	close();
 	delete[] buffer;
 	buffer = nullptr;
 }
 
-void DNSServer::downcaseAndRemoveWwwPrefix(String& domainName)
+void DnsServer::downcaseAndRemoveWwwPrefix(String& domainName)
 {
 	domainName.toLowerCase();
 	domainName.replace(F("www."), String::empty);
 }
 
-bool DNSServer::requestIncludesOnlyOneQuestion()
+bool DnsServer::requestIncludesOnlyOneQuestion()
 {
 	return ntohs(dnsHeader->QDCount) == 1 && dnsHeader->ANCount == 0 && dnsHeader->NSCount == 0 &&
 		   dnsHeader->ARCount == 0;
 }
 
-void DNSServer::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
+void DnsServer::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 {
 	delete[] buffer;
 	buffer = new char[buf->tot_len];
@@ -59,7 +59,7 @@ void DNSServer::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 	pbuf_copy_partial(buf, buffer, buf->tot_len, 0);
 	debug_d("DNS REQ for %s from %s:%d", getDomainNameWithoutWwwPrefix().c_str(), remoteIP.toString().c_str(),
 			remotePort);
-	dnsHeader = reinterpret_cast<DNSHeader*>(buffer);
+	dnsHeader = reinterpret_cast<DnsHeader*>(buffer);
 	if(dnsHeader->QR == DNS_QR_QUERY && dnsHeader->OPCode == DNS_OPCODE_QUERY && requestIncludesOnlyOneQuestion() &&
 	   (domainName == "*" || getDomainNameWithoutWwwPrefix() == domainName)) {
 		char response[buf->tot_len + 16];
@@ -101,7 +101,7 @@ void DNSServer::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 		dnsHeader->QR = DNS_QR_RESPONSE;
 		dnsHeader->RCode = char(errorReplyCode);
 		dnsHeader->QDCount = 0;
-		sendTo(remoteIP, remotePort, buffer, sizeof(DNSHeader));
+		sendTo(remoteIP, remotePort, buffer, sizeof(DnsHeader));
 	}
 
 	delete[] buffer;
@@ -110,7 +110,7 @@ void DNSServer::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 	UdpConnection::onReceive(buf, remoteIP, remotePort);
 }
 
-String DNSServer::getDomainNameWithoutWwwPrefix()
+String DnsServer::getDomainNameWithoutWwwPrefix()
 {
 	String parsedDomainName;
 	if(buffer == nullptr) {

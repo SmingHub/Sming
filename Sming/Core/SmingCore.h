@@ -35,7 +35,7 @@
 #include "Platform/AccessPoint.h"
 #include "Platform/WDT.h"
 
-#include "Network/DNSServer.h"
+#include "Network/DnsServer.h"
 #include "Network/HttpClient.h"
 #include "Network/MqttClient.h"
 #include "Network/NtpClient.h"
