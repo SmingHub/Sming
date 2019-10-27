@@ -40,6 +40,6 @@ void DigitalHooks::pullup(uint16_t pin, bool enable)
 
 unsigned long DigitalHooks::pulseIn(uint16_t pin, uint8_t state, unsigned long timeout)
 {
-	host_printfp("pin: %u, state: %u, timeout: %u\n", __FUNCTION__, pin, state, timeout);
+	host_printfp("pin: %u, state: %u, timeout: %lu\n", __FUNCTION__, pin, state, timeout);
 	return 0;
 }

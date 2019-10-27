@@ -63,10 +63,10 @@ uint16_t FileStream::readMemoryBlock(char* data, int bufSize)
 	}
 
 	int available = fileRead(handle, data, std::min(size - pos, size_t(bufSize)));
-	check(available);
+	(void)check(available);
 
 	// Don't move cursor now (waiting seek)
-	fileSeek(handle, pos, eSO_FileStart);
+	(void)fileSeek(handle, pos, eSO_FileStart);
 
 	return available > 0 ? available : 0;
 }

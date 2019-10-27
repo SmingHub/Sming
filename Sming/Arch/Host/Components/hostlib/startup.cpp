@@ -94,7 +94,7 @@ static void pause(int secs)
 {
 	if(secs == 0) {
 		hostmsg("Hit ENTER to continue.");
-		getchar();
+		(void)getchar();
 	} else if(secs > 0) {
 		hostmsg("Waiting for %u seconds...", secs);
 		msleep(secs * 1000);

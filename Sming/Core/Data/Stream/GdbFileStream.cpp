@@ -74,10 +74,10 @@ uint16_t GdbFileStream::readMemoryBlock(char* data, int bufSize)
 	}
 
 	int available = gdb_syscall_read(handle, data, std::min(size - pos, size_t(bufSize)));
-	check(available);
+	(void)check(available);
 
 	// Don't move cursor now (waiting seek)
-	gdb_syscall_lseek(handle, pos, SEEK_SET);
+	(void)gdb_syscall_lseek(handle, pos, SEEK_SET);
 
 	return available > 0 ? available : 0;
 }

@@ -441,7 +441,7 @@ CSocket* CServerSocket::try_connect()
 	struct sockaddr sa;
 	socklen_t len = sizeof(sa);
 	int fd = ::accept(m_fd, &sa, &len);
-	if(fd <= 0) {
+	if(fd < 0) {
 		return nullptr;
 	}
 

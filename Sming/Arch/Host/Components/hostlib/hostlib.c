@@ -31,7 +31,7 @@ int msleep(unsigned ms)
 
 void getHostAppDir(char* path, size_t bufSize)
 {
-	size_t len __attribute__((unused));
+	size_t len;
 	char sep;
 #ifdef __WIN32
 	len = GetModuleFileName(NULL, path, bufSize);
@@ -40,6 +40,7 @@ void getHostAppDir(char* path, size_t bufSize)
 	len = readlink("/proc/self/exe", path, bufSize);
 	sep = '/';
 #endif
+	path[len] = '\0';
 	char* p = strrchr(path, sep);
 	if(p) {
 		p[1] = '\0';

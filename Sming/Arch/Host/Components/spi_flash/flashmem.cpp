@@ -39,10 +39,10 @@ static const char* defaultFlashFileName = "flash.bin";
 bool host_flashmem_init(FlashmemConfig& config)
 {
 	if(config.filename != nullptr) {
-		strcpy(flashFileName, config.filename);
+		strncpy(flashFileName, config.filename, sizeof(flashFileName));
 	} else {
 		getHostAppDir(flashFileName, sizeof(flashFileName));
-		strcat(flashFileName, defaultFlashFileName);
+		strcpy(flashFileName, defaultFlashFileName);
 		config.filename = flashFileName;
 	}
 

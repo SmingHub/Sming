@@ -49,13 +49,17 @@ static void getMacAddress(const char* ifname, uint8_t hwaddr[6])
 {
 	struct ifreq ifr = {0};
 	ifr.ifr_addr.sa_family = AF_INET;
-	strcpy(ifr.ifr_name, ifname);
+	strncpy(ifr.ifr_name, ifname, IFNAMSIZ);
 
 	int fd = socket(AF_INET, SOCK_DGRAM, 0);
-	ioctl(fd, SIOCGIFHWADDR, &ifr);
+	int res = ioctl(fd, SIOCGIFHWADDR, &ifr);
 	close(fd);
 
-	memcpy(hwaddr, ifr.ifr_hwaddr.sa_data, 6);
+	if(res == 0) {
+		memcpy(hwaddr, ifr.ifr_hwaddr.sa_data, 6);
+	} else {
+		memset(hwaddr, 0, 6);
+	}
 }
 
 /**
@@ -127,7 +131,7 @@ bool host_lwip_init(const struct lwip_param* param)
 
 	if(param->ipaddr == NULL) {
 		// Choose a default IP address
-		IP4_ADDR(&netcfg.ipaddr, ip4_addr1(&netcfg.gw), ip4_addr2(&netcfg.gw), ip4_addr3(&netcfg.gw), 10);
+		IP4_ADDR(&netcfg.ipaddr, (uint32_t)ip4_addr1(&netcfg.gw), (uint32_t)ip4_addr2(&netcfg.gw), (uint32_t)ip4_addr3(&netcfg.gw), 10U);
 	} else if(ip4addr_aton(param->ipaddr, &netcfg.ipaddr) != 1) {
 		hostmsg("Failed to parse provided IP address '%s'", param->ipaddr);
 		return false;
