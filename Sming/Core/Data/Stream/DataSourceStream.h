@@ -57,6 +57,8 @@ public:
 		return getStreamType() != eSST_Invalid;
 	}
 
+	size_t readBytes(char* buffer, size_t length) override;
+
 	/** @brief  Read a block of memory
      *  @param  data Pointer to the data to be read
      *  @param  bufSize Quantity of chars to read
@@ -161,7 +163,7 @@ public:
 
 	/**
 	 * @brief Overrides Stream method for more efficient reading
-	 * @note Content is read using `readMemoryBlock()` so read position (for seekable streams) is not changed
+	 * @note Stream position is updated by this call
 	 */
-	String readString(size_t maxLen = UINT16_MAX);
+	String readString(size_t maxLen) override;
 };

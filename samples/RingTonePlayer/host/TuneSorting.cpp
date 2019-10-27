@@ -52,7 +52,7 @@ void sortTunes()
 		const auto& header = parser.getHeader();
 		writer.beginTune(header);
 
-		String headerString = mem.readString();
+		String headerString = mem.readString(SIZE_MAX);
 		mem.clear();
 
 		RingTone::NoteDef note;
@@ -60,7 +60,7 @@ void sortTunes()
 			writer.addNote(note);
 		}
 
-		String content = mem.readString();
+		String content = mem.readString(SIZE_MAX);
 		mem.clear();
 
 		auto findContent = [&]() -> int {

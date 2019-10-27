@@ -54,7 +54,7 @@ private:
 	{
 		MemoryDataStream mem;
 		mem.copyFrom(&stream, 1024);
-		String tmpl = mem.readString();
+		String tmpl = mem.readString(1024);
 		debug_i("tmpl: %s", tmpl.c_str());
 		debug_i(" ref: %s", String(ref).c_str());
 		REQUIRE(ref == tmpl);
