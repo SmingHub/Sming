@@ -75,7 +75,7 @@ public:
 
 protected:
 	bool initialized = false;
-	rboot_write_status rBootWriteStatus;
+	rboot_write_status rBootWriteStatus = {};
 	size_t written = 0;		   // << the number of written bytes
 	uint32_t startAddress = 0; // << the start address on the storage
 	size_t maxLength = 0;	  // << maximum allowed length

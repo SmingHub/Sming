@@ -296,7 +296,7 @@ private:
 
 	// states
 	MqttClientState state = eMCS_Ready;
-	MqttPayloadParserState payloadState;
+	MqttPayloadParserState payloadState = {};
 
 	// keep-alives and pings
 	uint16_t keepAlive = 60;
