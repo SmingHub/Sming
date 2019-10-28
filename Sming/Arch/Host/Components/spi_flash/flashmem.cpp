@@ -40,6 +40,7 @@ bool host_flashmem_init(FlashmemConfig& config)
 {
 	if(config.filename != nullptr) {
 		strncpy(flashFileName, config.filename, sizeof(flashFileName));
+		flashFileName[sizeof(flashFileName) - 1] = '\0';
 	} else {
 		getHostAppDir(flashFileName, sizeof(flashFileName));
 		strcpy(flashFileName, defaultFlashFileName);
