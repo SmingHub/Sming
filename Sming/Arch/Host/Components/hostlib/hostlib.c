@@ -31,13 +31,17 @@ int msleep(unsigned ms)
 
 void getHostAppDir(char* path, size_t bufSize)
 {
+	if(path == NULL ||bufSize == 0) {
+		return;
+	}
+
 	size_t len;
 	char sep;
 #ifdef __WIN32
-	len = GetModuleFileName(NULL, path, bufSize);
+	len = GetModuleFileName(NULL, path, bufSize - 1);
 	sep = '\\';
 #else
-	len = readlink("/proc/self/exe", path, bufSize);
+	len = readlink("/proc/self/exe", path, bufSize - 1);
 	sep = '/';
 #endif
 	path[len] = '\0';
