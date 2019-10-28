@@ -1,5 +1,9 @@
 REM Windows install script
 
+rmdir /s /q c:\MinGW
+curl -LO https://github.com/mikee47/SmingTools/releases/download/1.0/MinGW.7z
+7z -oC:\ x MinGW.7z
+
 goto :%SMING_ARCH%
 
 :Esp8266
@@ -10,10 +14,6 @@ goto :%SMING_ARCH%
 
 
 :Host
-
-	REM Ensure MinGW installation is up to date
-	mingw-get update
-	mingw-get upgrade
 
 	goto :EOF
 
