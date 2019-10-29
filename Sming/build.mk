@@ -134,7 +134,11 @@ ifeq ($(SMING_RELEASE),1)
 	# Note: ANSI requires NDEBUG to be defined for correct assert behaviour
 	CFLAGS		+= -Os -DSMING_RELEASE=1 -DNDEBUG
 else ifeq ($(ENABLE_GDB), 1)
-	CFLAGS		+= -Og
+	ifeq ($(SMING_ARCH),Host)
+		CFLAGS		+= -O0
+	else
+		CFLAGS		+= -Og
+	endif
 else
 	CFLAGS		+= -Os -g
 endif
