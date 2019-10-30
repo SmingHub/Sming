@@ -43,6 +43,7 @@ TcpConnection* HttpServer::createClient(tcp_pcb* clientTcp)
 	HttpServerConnection* con = new HttpServerConnection(clientTcp);
 	con->setResourceTree(&paths);
 	con->setBodyParsers(&bodyParsers);
+	con->setCloseOnContentError(settings.closeOnContentError);
 
 	return con;
 }
