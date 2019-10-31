@@ -180,8 +180,10 @@ bool flashmem_erase_sector(uint32_t sector_id)
 
 SPIFlashInfo flashmem_get_info()
 {
-    volatile SPIFlashInfo spi_flash_info STORE_ATTR;
-    spi_flash_info = *((SPIFlashInfo *)(INTERNAL_FLASH_START_ADDRESS));
+    SPIFlashInfo spi_flash_info STORE_ATTR;
+    if(flashmem_read_internal(&spi_flash_info, 0x00000000, sizeof(spi_flash_info)) == 0) {
+    	memset(&spi_flash_info, 0, sizeof(spi_flash_info));
+    }
     return spi_flash_info;
 }
 
