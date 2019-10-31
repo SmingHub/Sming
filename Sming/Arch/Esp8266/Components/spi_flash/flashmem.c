@@ -17,6 +17,7 @@
 
 #include "include/esp_spi_flash.h"
 #include "espinc/peri.h"
+#include <rboot-api.h>
 
 extern char _flash_code_end[];
 
@@ -38,6 +39,19 @@ extern char _flash_code_end[];
 static inline uint32_t min(uint32_t a, uint32_t b)
 {
 	return (a < b) ? a : b;
+}
+
+uint32_t flashmem_get_address(const void* memptr)
+{
+	// See rboot-bigflash.c for further details
+	rboot_config config = rboot_get_config();
+
+	// Mask off the bank select (each bank is 1MB)
+	uint32_t addr = config.roms[config.current_rom] & 0xFFE00000;
+	// Add to calculated offset
+	addr |= (uint32_t)memptr - INTERNAL_FLASH_START_ADDRESS;
+
+	return addr;
 }
 
 uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
