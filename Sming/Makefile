@@ -125,7 +125,7 @@ CS_FILES	= $(call rwildcard,$(CS_DIRS:=/*),%.cpp %.h %.c)
 cs: ##Apply coding style to all core files
 	$(if $(V),$(info Applying coding style to $(words $(CS_FILES)) files ...))
 	@for FILE in $(CS_FILES); do \
-		clang-format -i -style=file $$FILE; \
+		$(CLANG_FORMAT) -i -style=file $$FILE; \
 	done
 
 

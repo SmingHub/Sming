@@ -79,10 +79,17 @@ TOOLS_BASE		= $(SMING_HOME)/$(OUT_BASE)/tools
 USER_LIBDIR		= $(SMING_HOME)/$(OUT_BASE)/lib
 
 # Git command
+DEBUG_VARS	+= GIT
 GIT ?= git
 
 # CMake command
+DEBUG_VARS	+= CMAKE
 CMAKE ?= cmake
+
+# clang-format command
+DEBUG_VARS	+= CLANG_FORMAT
+CLANG_FORMAT ?= clang-format
+
 
 
 V ?= $(VERBOSE)
