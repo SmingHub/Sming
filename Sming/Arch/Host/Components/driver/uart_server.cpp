@@ -51,6 +51,12 @@ private:
 
 void* KeyboardThread::thread_routine()
 {
+	// Small applications can complete before we even get here!
+	msleep(50);
+	if(done) {
+		return nullptr;
+	}
+
 	keyb_raw();
 	while(!done) {
 		int c = getkey();
