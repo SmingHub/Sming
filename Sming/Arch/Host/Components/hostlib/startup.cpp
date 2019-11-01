@@ -44,6 +44,7 @@ extern void host_init_bootloader();
 
 static void cleanup()
 {
+	hw_timer_cleanup();
 	host_flashmem_cleanup();
 	CUartServer::shutdown();
 	sockets_finalise();

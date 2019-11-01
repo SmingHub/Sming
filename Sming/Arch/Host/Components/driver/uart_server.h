@@ -56,7 +56,7 @@ public:
 	{
 	}
 
-	~CUartServer();
+	void terminate();
 
 protected:
 	void onNotify(uart_t* uart, uart_notify_code_t code);

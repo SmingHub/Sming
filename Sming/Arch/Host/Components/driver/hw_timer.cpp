@@ -34,10 +34,11 @@ public:
 		execute();
 	}
 
-	~CTimerThread()
+	void terminate()
 	{
 		state = terminating;
 		sem.post();
+		join();
 	}
 
 	void attach_interrupt(hw_timer_source_type_t source_type, hw_timer_callback_t callback, void* arg)
@@ -138,8 +139,6 @@ private:
 	bool auto_load = false;
 };
 
-static CTimerThread timer1("Timer1");
-
 void* CTimerThread::thread_routine()
 {
 #ifdef __WIN32
@@ -206,6 +205,13 @@ void* CTimerThread::thread_routine()
 	thread_state = terminating;
 
 	return nullptr;
+}
+
+static CTimerThread timer1("Timer1");
+
+void hw_timer_cleanup()
+{
+	timer1.terminate();
 }
 
 void hw_timer1_attach_interrupt(hw_timer_source_type_t source_type, hw_timer_callback_t callback, void* arg)
