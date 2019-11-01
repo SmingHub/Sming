@@ -20,8 +20,15 @@
 #pragma once
 
 #include "hostlib.h"
+#include "hostmsg.h"
 #include <pthread.h>
 #include <semaphore.h>
+
+#if defined(DEBUG_VERBOSE_LEVEL) && (DEBUG_VERBOSE_LEVEL == 3)
+#define HOST_THREAD_DEBUG(fmt, ...) host_printf(fmt "\n", ##__VA_ARGS__)
+#else
+#define HOST_THREAD_DEBUG(fmt, ...)
+#endif
 
 class CMutex;
 
@@ -39,7 +46,7 @@ public:
 
 	virtual ~CThread()
 	{
-		join();
+		HOST_THREAD_DEBUG("Thread '%s' destroyed", name);
 	}
 
 	bool execute()
@@ -60,6 +67,7 @@ public:
 	void join()
 	{
 		pthread_join(m_thread, nullptr);
+		HOST_THREAD_DEBUG("Thread '%s' complete", name);
 	}
 
 	/*
@@ -92,6 +100,7 @@ private:
 	static void* thread_start(void* param)
 	{
 		auto thread = static_cast<CThread*>(param);
+		HOST_THREAD_DEBUG("Thread '%s' running", thread->name);
 		return thread->thread_routine();
 	}
 

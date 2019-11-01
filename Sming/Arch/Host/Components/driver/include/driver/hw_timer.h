@@ -83,6 +83,8 @@ inline void hw_timer_init(void)
 {
 }
 
+void hw_timer_cleanup();
+
 #ifdef __cplusplus
 }
 #endif

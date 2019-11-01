@@ -36,9 +36,10 @@ public:
 	{
 	}
 
-	~KeyboardThread()
+	void terminate()
 	{
 		done = true;
+		join();
 	}
 
 protected:
@@ -50,6 +51,12 @@ private:
 
 void* KeyboardThread::thread_routine()
 {
+	// Small applications can complete before we even get here!
+	msleep(50);
+	if(done) {
+		return nullptr;
+	}
+
 	keyb_raw();
 	while(!done) {
 		int c = getkey();
@@ -84,6 +91,17 @@ void* KeyboardThread::thread_routine()
 
 static KeyboardThread* keyboardThread;
 
+static void destroyKeyboardThread()
+{
+	if(keyboardThread == nullptr) {
+		return;
+	}
+
+	keyboardThread->terminate();
+	delete keyboardThread;
+	keyboardThread = nullptr;
+}
+
 static void onUart0Notify(uart_t* uart, uart_notify_code_t code)
 {
 	switch(code) {
@@ -105,12 +123,9 @@ static void onUart0Notify(uart_t* uart, uart_notify_code_t code)
 		}
 		break;
 
-	case UART_NOTIFY_BEFORE_CLOSE: {
-		auto thread = keyboardThread;
-		keyboardThread = nullptr;
-		delete thread;
+	case UART_NOTIFY_BEFORE_CLOSE:
+		destroyKeyboardThread();
 		break;
-	}
 
 	default:; // ignore
 	}
@@ -150,16 +165,24 @@ void CUartServer::startup(const UartServerConfig& config)
 
 void CUartServer::shutdown()
 {
+	destroyKeyboardThread();
+
 	for(unsigned i = 0; i < UART_COUNT; ++i) {
 		auto& server = uartServers[i];
+		if(server == nullptr) {
+			continue;
+		}
+
+		server->terminate();
 		delete server;
 		server = nullptr;
 	}
 }
 
-CUartServer::~CUartServer()
+void CUartServer::terminate()
 {
 	close();
+	join();
 	hostmsg("UART%u server destroyed", uart_nr);
 }
 

@@ -68,7 +68,7 @@ if [ "$TRAVIS_BUILD_STAGE_NAME" == "Test" ]; then
 
 	# Build and run tests
 	export SMING_TARGET_OPTIONS='--flashfile=$(FLASH_BIN) --flashsize=$(SPI_SIZE)'
-	$MAKE_PARALLEL tests || true
+	$MAKE_PARALLEL tests
 
 	# Build the documentation
 	mv $SMING_PROJECTS_DIR/samples ..

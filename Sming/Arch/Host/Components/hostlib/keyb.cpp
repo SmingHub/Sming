@@ -246,7 +246,6 @@ void keyb_raw()
 		// make stdin non-blocking
 		g_orig_flags = fcntl(0, F_GETFL);
 		tcgetattr(STDIN_FILENO, &g_orig_attr);
-		atexit(keyb_restore);
 	}
 
 	// make stdin non-blocking
