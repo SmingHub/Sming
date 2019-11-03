@@ -70,3 +70,23 @@ index 235aaaa..4df4b4e 100644
    (void)fh;
    spiffs_page_object_ix_header objix_hdr;
 
+diff --git a/src/spiffs_nucleus.c b/src/spiffs_nucleus.c
+index f811d93..ff9db29 100644
+--- a/src/spiffs_nucleus.c
++++ b/src/spiffs_nucleus.c
+@@ -945,6 +945,7 @@ s32_t spiffs_object_create(
+   oix_hdr.type = type;
+   oix_hdr.size = SPIFFS_UNDEFINED_LEN; // keep ones so we can update later without wasting this page
+   strncpy((char*)oix_hdr.name, (const char*)name, SPIFFS_OBJ_NAME_LEN);
++  oix_hdr.name[SPIFFS_OBJ_NAME_LEN - 1] = '\0';
+ #if SPIFFS_OBJ_META_LEN
+   if (meta) {
+     _SPIFFS_MEMCPY(oix_hdr.meta, meta, SPIFFS_OBJ_META_LEN);
+@@ -1008,6 +1009,7 @@ s32_t spiffs_object_update_index_hdr(
+   // change name
+   if (name) {
+     strncpy((char*)objix_hdr->name, (const char*)name, SPIFFS_OBJ_NAME_LEN);
++    objix_hdr->name[SPIFFS_OBJ_NAME_LEN - 1] = '\0';
+   }
+ #if SPIFFS_OBJ_META_LEN
+   if (meta) {
