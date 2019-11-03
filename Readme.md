@@ -94,8 +94,8 @@ Linux and Windows OSes with gcc compilers are supported. Clang is NOT supported.
 
 ### Stable
 
-- **Coming soon**  - [Sming V4.0.0](https://github.com/SmingHub/Sming/releases/tag/4.0.0) - great new features, performance and stability improvements.
-- [Sming V3.8.0](https://github.com/SmingHub/Sming/releases/tag/3.8.0) - suitable for older applications that are not yet migrated to Sming v4.x.x.
+- [Sming V4.0.0](https://github.com/SmingHub/Sming/releases/tag/4.0.0) - great new features, performance and stability improvements.
+- [Sming V3.8.1 LTS](https://github.com/SmingHub/Sming/releases/tag/3.8.1) - suitable for older applications that are not yet migrated to Sming v4.x.x.
 Long Term Support (LTS) is available till 1st of April, 2020.
 
 
