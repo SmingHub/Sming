@@ -11,7 +11,7 @@
 #ifndef _SMING_CORE_H_
 #define _SMING_CORE_H_
 
-#define SMING_VERSION "3.8.0" // Major Minor Sub
+#define SMING_VERSION "3.8.1" // Major Minor Sub
 
 #include <functional>
 
