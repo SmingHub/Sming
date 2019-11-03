@@ -18,9 +18,7 @@ public:
 			JsonObject& root = jsonBuffer.createObject();
 			const uint64_t testnum = 0x12345678ABCDEF99ULL;
 			root["longtest"] = testnum;
-			auto num = root.get<int64_t>("longtest");
-			debug_i("int64 test: %s, 0x%08x%08x", num == testnum ? "OK" : "FAIL", uint32_t(num >> 32), uint32_t(num));
-			TEST_ASSERT(num == testnum);
+			REQUIRE(root.get<int64_t>("longtest") == testnum);
 		}
 	}
 };

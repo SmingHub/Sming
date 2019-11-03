@@ -144,7 +144,7 @@ public:
 			auto timer = new AutoDeleteTimer;
 			auto intervalMs = 100 * (i + 1);
 			timer->initializeMs(intervalMs, [this]() { --activeTimerCount; }).startOnce();
-			TEST_ASSERT(timer->getIntervalMs() == intervalMs);
+			REQUIRE(timer->getIntervalMs() == intervalMs);
 			Serial.println(*timer);
 			++activeTimerCount;
 		}
