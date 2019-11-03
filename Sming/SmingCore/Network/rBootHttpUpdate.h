@@ -38,6 +38,8 @@ public:
 	virtual ~rBootItemOutputStream()
 	{
 		close();
+		delete item;
+		item = nullptr;
 	}
 
 	void setItem(rBootHttpUpdateItem* item)

@@ -10,29 +10,36 @@
 
 #define IRAM_ATTR __attribute__((section(".iram.text")))
 
+#ifdef UMM_POISON_CHECK
+#define UMM_FUNC(f) umm_poison_##f
+#else
+#define UMM_FUNC(f) umm_##f
+#endif
+
+
 void* IRAM_ATTR pvPortMalloc(size_t size, const char* file, int line)
 {
-    return malloc(size);
+    return UMM_FUNC(malloc)(size);
 }
 
 void IRAM_ATTR vPortFree(void *ptr, const char* file, int line)
 {
-    free(ptr);
+	UMM_FUNC(free)(ptr);
 }
 
 void* IRAM_ATTR pvPortCalloc(size_t count, size_t size, const char* file, int line)
 {
-    return calloc(count, size);
+    return UMM_FUNC(calloc)(count, size);
 }
 
 void* IRAM_ATTR pvPortRealloc(void *ptr, size_t size, const char* file, int line)
 {
-    return realloc(ptr, size);
+    return UMM_FUNC(realloc)(ptr, size);
 }
 
 void* IRAM_ATTR pvPortZalloc(size_t size, const char* file, int line)
 {
-    return calloc(1, size);
+    return UMM_FUNC(calloc)(1, size);
 }
 
 void* IRAM_ATTR pvPortZallocIram(size_t size, const char* file, int line) __attribute__ ((weak, alias("pvPortZalloc")));

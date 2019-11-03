@@ -69,9 +69,9 @@ void testPSTR(Print& out)
 	out.print("> PSTR_ARRAY: ");
 	PSTR_ARRAY(psarr, DEMO_TEST_TEXT);
 	out.print('"');
-	out.write(psarr, sizeof(psarr) - 1);
+	out.write(psarr, sizeof(PSTR_psarr) - 1);
 	out.println('"');
-	m_printHex("hex", psarr, sizeof(psarr));
+	m_printHex("hex", psarr, sizeof(PSTR_psarr));
 
 	//
 	out.println("< testPSTR() end\n");

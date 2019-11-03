@@ -13,19 +13,7 @@
  *
  * -D UMM_TEST_MAIN
  *
- * Set this if you want to compile in the test suite at the end of this file.
- *
- * If you leave this define unset, then you might want to set another one:
- *
- * -D UMM_REDEFINE_MEM_FUNCTIONS
- *
- * If you leave this define unset, then the function names are left alone as
- * umm_malloc() umm_free() and umm_realloc() so that they cannot be confused
- * with the C runtime functions malloc() free() and realloc()
- *
- * If you do set this define, then the function names become malloc()
- * free() and realloc() so that they can be used as the C runtime functions
- * in an embedded environment.
+ * Set this if you want to compile in the test suite
  *
  * -D UMM_BEST_FIT (defualt)
  *

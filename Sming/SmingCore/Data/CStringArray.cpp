@@ -45,7 +45,7 @@ int CStringArray::indexOf(const char* str) const
 const char* CStringArray::getValue(unsigned index) const
 {
 	if(index < count()) {
-		for(unsigned offset = 0; offset < length(); --index) {
+		for(unsigned offset = 0; offset <= length(); --index) {
 			const char* s = buffer + offset;
 			if(index == 0)
 				return s;

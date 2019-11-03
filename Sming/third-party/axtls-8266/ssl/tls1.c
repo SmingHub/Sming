@@ -1430,6 +1430,9 @@ int basic_read(SSL *ssl, uint8_t **in_data)
             goto error;
         }
 
+	memcpy(ssl->hmac_header, buf, 3);       /* store for hmac */
+        ssl->record_type = buf[0];
+
         /* is the allocated buffer large enough to handle all the data? if not, increase its size*/
         if (ssl->need_bytes > ssl->max_plain_length+RT_EXTRA-BM_RECORD_OFFSET)
         {
@@ -1443,8 +1446,6 @@ int basic_read(SSL *ssl, uint8_t **in_data)
         }
 
         CLR_SSL_FLAG(SSL_NEED_RECORD);
-        memcpy(ssl->hmac_header, buf, 3);       /* store for hmac */
-        ssl->record_type = buf[0];
         goto error;                         /* no error, we're done */
     }
 

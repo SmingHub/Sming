@@ -5,24 +5,23 @@
 #ifndef _UMM_MALLOC_CFG_H
 #define _UMM_MALLOC_CFG_H
 
+#include <c_types.h>
+#include <m_printf.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include <c_types.h>
-#ifdef __cplusplus
-}
-#endif
 
-#ifdef __ets__
 // ESP specific code
 extern void ets_intr_lock();
 extern void ets_intr_unlock();
-extern void ets_printf(const char*, ...);
 
-#define printf ets_printf
-#define puts(...) ets_printf("%s",...)
-#define ICACHE_FLASH_ATTR __attribute__((section(".irom0.text")))
+#ifdef UMM_MALLOC_H
+#define printf m_printf
+#define puts m_puts
 #endif
+
+#define ICACHE_FLASH_ATTR __attribute__((section(".irom0.text")))
 
 /*
  * There are a number of defines you can set at compile time that affect how
@@ -32,19 +31,7 @@ extern void ets_printf(const char*, ...);
  *
  * -D UMM_TEST_MAIN
  *
- * Set this if you want to compile in the test suite at the end of this file.
- *
- * If you leave this define unset, then you might want to set another one:
- *
- * -D UMM_REDEFINE_MEM_FUNCTIONS
- *
- * If you leave this define unset, then the function names are left alone as
- * umm_malloc() umm_free() and umm_realloc() so that they cannot be confused
- * with the C runtime functions malloc() free() and realloc()
- *
- * If you do set this define, then the function names become malloc()
- * free() and realloc() so that they can be used as the C runtime functions
- * in an embedded environment.
+ * Set this if you want to compile in the test suite
  *
  * -D UMM_BEST_FIT (defualt)
  *
@@ -200,5 +187,9 @@ extern char _heap_start;
 #endif
 
 // #define UMM_HEAP_CORRUPTION_CB() panic()
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _UMM_MALLOC_CFG_H */

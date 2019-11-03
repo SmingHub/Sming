@@ -178,8 +178,14 @@ int axl_ssl_read(SSL *ssl, struct tcp_pcb *tcp, struct pbuf *pin, struct pbuf **
 	if(total_bytes > 0) {
 		// put the decrypted data in a brand new pbuf
 		*pout = pbuf_alloc(PBUF_TRANSPORT, total_bytes, PBUF_RAM);
-		memcpy((*pout)->payload, total_read_buffer, total_bytes);
-		free(total_read_buffer);
+		if(*pout != NULL) {
+			memcpy((*pout)->payload, total_read_buffer, total_bytes);
+		}
+		else {
+			AXL_DEBUG_PRINT("Unable to allocate pbuf memory. Required %d. Check MEM_SIZE in your lwipopts.h file and increase if needed.", total_bytes);
+			total_bytes = -1;
+		}
+ 		free(total_read_buffer);
 	}
 
 	return total_bytes;
