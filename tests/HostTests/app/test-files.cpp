@@ -14,7 +14,6 @@ public:
 		debug_i("testContent.length = 0x%08x", testContent.length());
 
 		DEFINE_FSTR_LOCAL(testFileName, "test.txt");
-		spiffs_mount();
 
 		int res, pos, size;
 

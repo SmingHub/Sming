@@ -17,8 +17,6 @@ public:
 		DEFINE_FSTR_LOCAL(test_json, "test.json");
 		DEFINE_FSTR_LOCAL(test_msgpack, "test.msgpack");
 
-		spiffs_mount();
-
 		StaticJsonDocument<512> doc;
 		doc["string1"] = "string value 1";
 		doc["number2"] = 12345;
