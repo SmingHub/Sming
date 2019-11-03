@@ -28,9 +28,6 @@ RELINK_VARS				+= ENABLE_CUSTOM_HEAP
 ENABLE_CUSTOM_HEAP		?= 0
 ifeq ($(ENABLE_CUSTOM_HEAP), 1)
 	COMPONENT_DEPENDS	+= custom_heap
-else
-	LIBMAIN				= main
-	LIBMAIN_SRC 		= $(SDK_LIBDIR)/libmain.a
 endif
 
 # Must follow custom_heap
