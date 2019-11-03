@@ -50,12 +50,10 @@ public:
 		REQUIRE(objectCount == 5);
 
 		startTest("Non-existent values");
-		auto value = map["non existent key"];
+		TestMap::Value value = map["non existent key"];
 		debug_i("map[\"%s\"] = %p", value.getKey().c_str(), (void*)value);
-		debug_i("map.count() = %u", map.count());
 		REQUIRE(map.count() == 5);
 		value = new TestClass;
-		debug_i("map.count() = %u", map.count());
 		REQUIRE(map.count() == 6);
 
 		startTest("extract");
