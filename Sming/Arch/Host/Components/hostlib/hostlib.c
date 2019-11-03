@@ -38,7 +38,7 @@ void getHostAppDir(char* path, size_t bufSize)
 	size_t len;
 	char sep;
 #ifdef __WIN32
-	len = GetModuleFileName(NULL, path, bufSize - 1);
+	len = GetModuleFileName(NULL, path, bufSize);
 	sep = '\\';
 #else
 	len = readlink("/proc/self/exe", path, bufSize - 1);
