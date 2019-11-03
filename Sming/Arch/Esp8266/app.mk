@@ -4,6 +4,24 @@
 #
 ###
 
+# Remove object providing millis(), micros() - These functions are defined by the Sming component
+define LIBMAIN_COMMANDS +=
+$(Q) $(AR) d $@ time.o
+
+endef
+
+# build customized libmain
+LIBMAIN_HASH	:= $(firstword $(shell echo -n $(LIBMAIN_COMMANDS) | md5sum -t))
+LIBMAIN := main-$(LIBMAIN_HASH)
+
+LIBMAIN_SRC = $(SDK_LIBDIR)/libmain.a
+LIBMAIN_DST = $(APP_LIBDIR)/lib$(LIBMAIN).a
+
+$(LIBMAIN_DST): $(LIBMAIN_SRC)
+	$(info Prepare libmain)
+	$(Q) cp $^ $@
+	$(LIBMAIN_COMMANDS)
+
 #
 LIBS += \
 	microc \
@@ -31,7 +49,7 @@ define LinkTarget
 	$(Q) $(LD) $(addprefix -L,$(LIBDIRS)) -T$1 $(LDFLAGS) -Wl,--start-group $(COMPONENTS_AR) $(addprefix -l,$(LIBS)) -Wl,--end-group -o $@
 endef
 
-$(TARGET_OUT_0): $(COMPONENTS_AR)
+$(TARGET_OUT_0): $(COMPONENTS_AR) $(LIBMAIN_DST)
 	$(call LinkTarget,$(RBOOT_LD_0))
 
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
@@ -53,7 +71,7 @@ $(TARGET_OUT_0): $(COMPONENTS_AR)
 			fi
 
 
-$(TARGET_OUT_1): $(COMPONENTS_AR)
+$(TARGET_OUT_1): $(COMPONENTS_AR) $(LIBMAIN_DST)
 	$(call LinkTarget,$(RBOOT_LD_1))
 
 
