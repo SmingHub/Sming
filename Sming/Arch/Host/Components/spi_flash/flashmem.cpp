@@ -24,7 +24,7 @@
 static int flashFile = -1;
 static size_t flashFileSize = 0x400000U;
 static char flashFileName[256];
-static const char* defaultFlashFileName = "flash.bin";
+static const char defaultFlashFileName[] = "flash.bin";
 
 #define SPI_FLASH_SEC_SIZE 4096
 
@@ -42,8 +42,11 @@ bool host_flashmem_init(FlashmemConfig& config)
 		strncpy(flashFileName, config.filename, sizeof(flashFileName));
 		flashFileName[sizeof(flashFileName) - 1] = '\0';
 	} else {
-		getHostAppDir(flashFileName, sizeof(flashFileName));
-		strcpy(flashFileName, defaultFlashFileName);
+		size_t len = getHostAppDir(flashFileName, sizeof(flashFileName));
+		if(len + sizeof(defaultFlashFileName) > sizeof(flashFileName)) {
+			return false;
+		}
+		memcpy(&flashFileName[len], defaultFlashFileName, sizeof(defaultFlashFileName));
 		config.filename = flashFileName;
 	}
 

@@ -29,10 +29,10 @@ int msleep(unsigned ms)
 	return nanosleep(&req, &rem);
 }
 
-void getHostAppDir(char* path, size_t bufSize)
+size_t getHostAppDir(char* path, size_t bufSize)
 {
 	if(path == NULL ||bufSize == 0) {
-		return;
+		return 0;
 	}
 
 	size_t len;
@@ -46,7 +46,9 @@ void getHostAppDir(char* path, size_t bufSize)
 #endif
 	path[len] = '\0';
 	char* p = strrchr(path, sep);
-	if(p) {
+	if(p != NULL) {
 		p[1] = '\0';
+		len = 1 + p - path;
 	}
+	return len;
 }

@@ -55,8 +55,13 @@ extern "C" {
 
 int msleep(unsigned ms);
 
-// Include trailing path separator
-void getHostAppDir(char* path, size_t bufSize);
+/**
+ * @brief Get directory where application is executing from
+ * @param path Receives directory path, including trailing path separator
+ * @param bufSize
+ * @retval size_t Number of characters written, excluding NUL
+ */
+size_t getHostAppDir(char* path, size_t bufSize);
 
 #ifdef __cplusplus
 }
