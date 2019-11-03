@@ -1,6 +1,6 @@
 var classVector =
 [
-    [ "Comparer", "classVector.html#a9717afc4fbb57916a878f9503f8ffb40", null ],
+    [ "Comparer", "classVector.html#a034e75e4b64d98173281a4945cbbfc56", null ],
     [ "Vector", "classVector.html#ae5c978a3b9b3e82a043634c89876e102", null ],
     [ "Vector", "classVector.html#ab04097bf909acc96be66758633e489fe", null ],
     [ "~Vector", "classVector.html#a1d51af37bc4b743531d157e0453b19a3", null ],

@@ -6,6 +6,7 @@ var searchData=
   ['addchannel',['addChannel',['../classServo.html#a1fd844a747951e3f90f711351b9e1167',1,'Servo']]],
   ['addchar',['addChar',['../classLineBuffer.html#aa753171144c41aef54ed118e9122b7c8',1,'LineBuffer']]],
   ['addmilliseconds',['addMilliseconds',['../classDateTime.html#a60d049362b1d16cbe9ceae334ecd56d5',1,'DateTime']]],
+  ['addpath',['addPath',['../classHttpServer.html#ac5b2c70e9ae2239a81529f598fff5d17',1,'HttpServer::addPath(String path, const HttpPathDelegate &amp;callback) SMING_DEPRECATED'],['../classHttpServer.html#ac143f8253705c1ac3e3aedffb61bc8ea',1,'HttpServer::addPath(const String &amp;path, const HttpResourceDelegate &amp;onRequestComplete) SMING_DEPRECATED'],['../classHttpServer.html#ac3b7ef91b8ae0771baf2597cc04ded04',1,'HttpServer::addPath(const String &amp;path, HttpResource *resource) SMING_DEPRECATED']]],
   ['addsslvalidator',['addSslValidator',['../classTcpClient.html#a19862c1664a25f4910435d77528f44dc',1,'TcpClient']]],
   ['addvalue',['addValue',['../classNexWaveform.html#a5b04ea7397b784947b845e2a03fc77e4',1,'NexWaveform']]],
   ['alive',['alive',['../group__wdt.html#gac142c43f548a7cfe7c0d739c7abee1c8',1,'WDTClass']]],

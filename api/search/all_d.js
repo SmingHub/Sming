@@ -29,7 +29,7 @@ var searchData=
   ['nextimer',['NexTimer',['../classNexTimer.html',1,'NexTimer'],['../classNexTimer.html#a5cb6cdcf0d7e46723364d486d4dcd650',1,'NexTimer::NexTimer()']]],
   ['nextmidnight',['nextMidnight',['../group__datetime.html#ga78fd408d137a42cd0d9a1e5f64e4a1dc',1,'DateTime.h']]],
   ['nextouch',['NexTouch',['../classNexTouch.html',1,'NexTouch'],['../classNexTouch.html#a9e028e45e0d2d2cc39c8bf8d03dbb887',1,'NexTouch::NexTouch()']]],
-  ['nextoucheventcb',['NexTouchEventCb',['../group__TouchEvent.html#ga162dea47b078e8878d10d6981a9dd0c6',1,'NexTouch.h']]],
+  ['nextoucheventcb',['NexTouchEventCb',['../group__TouchEvent.html#ga95f5c2ce3d34b0b7e7d2cac3076a768e',1,'NexTouch.h']]],
   ['nexvariable',['NexVariable',['../classNexVariable.html',1,'NexVariable'],['../classNexVariable.html#a7d36d19e14c991872fb1547f3ced09b2',1,'NexVariable::NexVariable()']]],
   ['nexwaveform',['NexWaveform',['../classNexWaveform.html',1,'NexWaveform'],['../classNexWaveform.html#a4f18ca5050823e874d526141c8595514',1,'NexWaveform::NexWaveform()']]],
   ['noautoscroll',['noAutoscroll',['../classLCD.html#a96035dde40efbf73390e00b5beb00231',1,'LCD']]],

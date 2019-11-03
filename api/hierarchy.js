@@ -5,6 +5,7 @@ var hierarchy =
     [ "Adafruit_Sensor", "classAdafruit__Sensor.html", null ],
     [ "AM2321", "classAM2321.html", null ],
     [ "APA102", "classAPA102.html", null ],
+    [ "ArduCAM", "classArduCAM.html", null ],
     [ "AtClient", "classAtClient.html", null ],
     [ "AtCommand", "structAtCommand.html", null ],
     [ "AuthAdapter", "classAuthAdapter.html", [
@@ -161,6 +162,7 @@ var hierarchy =
     ] ],
     [ "HashMap< mqtt_type_t, MqttDelegate >", "classHashMap.html", null ],
     [ "HashMap< String, CommandDelegate >", "classHashMap.html", null ],
+    [ "HashMap< String, HttpBodyParserDelegate >", "classHashMap.html", null ],
     [ "HashMap< String, String >", "classHashMap.html", [
       [ "HttpParams", "classHttpParams.html", null ],
       [ "TemplateVariables", "classTemplateVariables.html", null ]
@@ -184,7 +186,7 @@ var hierarchy =
     [ "I2Cdev", "classI2Cdev.html", null ],
     [ "I2CIO", "classI2CIO.html", null ],
     [ "IDelegateCaller< ReturnType, ParamsList >", "classIDelegateCaller.html", null ],
-    [ "IDelegateCaller< ReturnType, ParamsList...>", "classIDelegateCaller.html", [
+    [ "IDelegateCaller< ReturnType, ParamsList... >", "classIDelegateCaller.html", [
       [ "FunctionCaller< MethodDeclaration, ReturnType, ParamsList >", "classFunctionCaller.html", null ],
       [ "MethodCaller< ReturnType(ClassType::*)(ParamsList...)>", "classMethodCaller_3_01ReturnType_07ClassType_1_1_5_08_07ParamsList_8_8_8_08_4.html", null ]
     ] ],
@@ -327,6 +329,7 @@ var hierarchy =
     [ "RtcClass", "classRtcClass.html", null ],
     [ "RtcData", "structRtcData.html", null ],
     [ "section_header", "structsection__header.html", null ],
+    [ "sensor_reg", "structsensor__reg.html", null ],
     [ "sensor_t", "structsensor__t.html", null ],
     [ "sensors_color_t", "structsensors__color__t.html", null ],
     [ "sensors_event_t", "structsensors__event__t.html", null ],
@@ -372,6 +375,7 @@ var hierarchy =
       ] ],
       [ "TcpServer", "classTcpServer.html", [
         [ "FtpServer", "classFtpServer.html", null ],
+        [ "HttpServer", "classHttpServer.html", null ],
         [ "TelnetServer", "classTelnetServer.html", null ]
       ] ]
     ] ],

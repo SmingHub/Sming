@@ -9,7 +9,7 @@ var searchData=
   ['spi',['spi',['../classNrf24l.html#a7cb95618faa779543259c2f083dc3d35',1,'Nrf24l::spi()'],['../group__hw__spi.html#ga56953eb3affc2a9f56e1680bbc537bf7',1,'SPI():&#160;SPI.h']]],
   ['spidefaultsettings',['SPIDefaultSettings',['../group__base__spi.html#gab60522af0ac50ba40d9047c99743141d',1,'SPIBase']]],
   ['ssid',['ssid',['../group__wifi__sta.html#ga60490812f38152aa29babd9d97d4d9cd',1,'BssInfo']]],
-  ['sslsessioncachesize',['sslSessionCacheSize',['../group__httpserver.html#ga2bb3d1f8dbb4033eddb907167da39267',1,'HttpServerSettings']]],
+  ['sslsessioncachesize',['sslSessionCacheSize',['../structHttpServerSettings.html#a2bb3d1f8dbb4033eddb907167da39267',1,'HttpServerSettings']]],
   ['steps_5fper_5fline',['steps_per_line',['../structbase64__encodestate.html#ab050dc23ba7e5c30aadef446d6bce449',1,'base64_encodestate']]],
   ['stream',['stream',['../classHttpResponse.html#a83b296871a8bfaf24f966451b98e3630',1,'HttpResponse::stream()'],['../classTcpClient.html#afdbf91ea5c9410eecc5c25316bd395b8',1,'TcpClient::stream()']]],
   ['syscall',['syscall',['../structgdb__state__t.html#ad8b287aa8d72ad6f3d3d78d18c76103a',1,'gdb_state_t']]],

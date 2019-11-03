@@ -1,6 +1,7 @@
 var searchData=
 [
   ['section_5fheader',['section_header',['../structsection__header.html',1,'']]],
+  ['sensor_5freg',['sensor_reg',['../structsensor__reg.html',1,'']]],
   ['sensor_5ft',['sensor_t',['../structsensor__t.html',1,'']]],
   ['sensors_5fcolor_5ft',['sensors_color_t',['../structsensors__color__t.html',1,'']]],
   ['sensors_5fevent_5ft',['sensors_event_t',['../structsensors__event__t.html',1,'']]],

@@ -5,6 +5,7 @@ var searchData=
   ['parsequery',['parseQuery',['../classHttpParams.html#ac062a4c06204025dddc598011d2fb9bb',1,'HttpParams']]],
   ['parsersettings',['parserSettings',['../classHttpConnection.html#a3ef84653dcbf747c7e3f38c93df6de93',1,'HttpConnection']]],
   ['path',['Path',['../classUrl.html#ad718c017987376122a2601f323351025',1,'Url']]],
+  ['paths',['paths',['../classHttpServer.html#ae96a394333a124e99a034c4963a4201a',1,'HttpServer']]],
   ['payload',['payload',['../classNrf24l.html#a9d3639ab2bc390cf388bba3652685e24',1,'Nrf24l']]],
   ['peek',['peek',['../classIDataSourceStream.html#a05d27e36345d8ef4b3fc9a63eb21fbdc',1,'IDataSourceStream::peek()'],['../classHardwareSerial.html#a0bf562734b738ed06de5fb34c357b230',1,'HardwareSerial::peek()'],['../classRingBufCPP.html#a8b63c470f35b9b935de5b48b0aff1473',1,'RingBufCPP::peek()']]],
   ['peekchar',['peekChar',['../structSerialBuffer.html#a1632a876d1e807b00bf63a7be5fbcd7e',1,'SerialBuffer']]],

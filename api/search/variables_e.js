@@ -2,6 +2,7 @@ var searchData=
 [
   ['parsersettings',['parserSettings',['../classHttpConnection.html#a3ef84653dcbf747c7e3f38c93df6de93',1,'HttpConnection']]],
   ['path',['Path',['../classUrl.html#ad718c017987376122a2601f323351025',1,'Url']]],
+  ['paths',['paths',['../classHttpServer.html#ae96a394333a124e99a034c4963a4201a',1,'HttpServer']]],
   ['payload',['payload',['../classNrf24l.html#a9d3639ab2bc390cf388bba3652685e24',1,'Nrf24l']]],
   ['pitch',['pitch',['../structsensors__vec__t.html#aa298c3cbbd0016698c64d9451fbf3aff',1,'sensors_vec_t']]],
   ['pksha256',['pkSha256',['../structSslFingerprints.html#aecacec6c33179e71f0e65e4078a58554',1,'SslFingerprints']]],

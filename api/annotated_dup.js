@@ -1,4 +1,4 @@
-var annotated =
+var annotated_dup =
 [
     [ "AccessPointClass", "classAccessPointClass.html", "classAccessPointClass" ],
     [ "Adafruit_BME280", "classAdafruit__BME280.html", "classAdafruit__BME280" ],
@@ -11,6 +11,7 @@ var annotated =
     [ "Adafruit_ST7735", "classAdafruit__ST7735.html", "classAdafruit__ST7735" ],
     [ "AM2321", "classAM2321.html", "classAM2321" ],
     [ "APA102", "classAPA102.html", "classAPA102" ],
+    [ "ArduCAM", "classArduCAM.html", "classArduCAM" ],
     [ "ArduCAMStream", "classArduCAMStream.html", "classArduCAMStream" ],
     [ "AtClient", "classAtClient.html", "classAtClient" ],
     [ "AtCommand", "structAtCommand.html", "structAtCommand" ],
@@ -94,6 +95,7 @@ var annotated =
     [ "HttpResource", "classHttpResource.html", "classHttpResource" ],
     [ "HttpResourceTree", "classHttpResourceTree.html", "classHttpResourceTree" ],
     [ "HttpResponse", "classHttpResponse.html", "classHttpResponse" ],
+    [ "HttpServer", "classHttpServer.html", "classHttpServer" ],
     [ "HttpServerConnection", "classHttpServerConnection.html", "classHttpServerConnection" ],
     [ "HttpServerSettings", "structHttpServerSettings.html", "structHttpServerSettings" ],
     [ "I2Cdev", "classI2Cdev.html", "classI2Cdev" ],
@@ -188,6 +190,7 @@ var annotated =
     [ "RtcClass", "classRtcClass.html", "classRtcClass" ],
     [ "RtcData", "structRtcData.html", "structRtcData" ],
     [ "section_header", "structsection__header.html", "structsection__header" ],
+    [ "sensor_reg", "structsensor__reg.html", "structsensor__reg" ],
     [ "sensor_t", "structsensor__t.html", "structsensor__t" ],
     [ "sensors_color_t", "structsensors__color__t.html", "structsensors__color__t" ],
     [ "sensors_event_t", "structsensors__event__t.html", "structsensors__event__t" ],

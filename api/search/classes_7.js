@@ -8,6 +8,7 @@ var searchData=
   ['hashmap_3c_20httpheaderfieldname_2c_20string_20_3e',['HashMap&lt; HttpHeaderFieldName, String &gt;',['../classHashMap.html',1,'']]],
   ['hashmap_3c_20mqtt_5ftype_5ft_2c_20mqttdelegate_20_3e',['HashMap&lt; mqtt_type_t, MqttDelegate &gt;',['../classHashMap.html',1,'']]],
   ['hashmap_3c_20string_2c_20commanddelegate_20_3e',['HashMap&lt; String, CommandDelegate &gt;',['../classHashMap.html',1,'']]],
+  ['hashmap_3c_20string_2c_20httpbodyparserdelegate_20_3e',['HashMap&lt; String, HttpBodyParserDelegate &gt;',['../classHashMap.html',1,'']]],
   ['hashmap_3c_20string_2c_20string_20_3e',['HashMap&lt; String, String &gt;',['../classHashMap.html',1,'']]],
   ['hexdump',['HexDump',['../classHexDump.html',1,'']]],
   ['highlow',['HighLow',['../structRCSwitch_1_1HighLow.html',1,'RCSwitch']]],
@@ -25,6 +26,7 @@ var searchData=
   ['httpresource',['HttpResource',['../classHttpResource.html',1,'']]],
   ['httpresourcetree',['HttpResourceTree',['../classHttpResourceTree.html',1,'']]],
   ['httpresponse',['HttpResponse',['../classHttpResponse.html',1,'']]],
+  ['httpserver',['HttpServer',['../classHttpServer.html',1,'']]],
   ['httpserverconnection',['HttpServerConnection',['../classHttpServerConnection.html',1,'']]],
   ['httpserversettings',['HttpServerSettings',['../structHttpServerSettings.html',1,'']]]
 ];

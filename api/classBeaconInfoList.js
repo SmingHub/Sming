@@ -1,6 +1,6 @@
 var classBeaconInfoList =
 [
-    [ "Comparer", "classBeaconInfoList.html#a9717afc4fbb57916a878f9503f8ffb40", null ],
+    [ "Comparer", "classBeaconInfoList.html#a034e75e4b64d98173281a4945cbbfc56", null ],
     [ "add", "classBeaconInfoList.html#a50476f6407c6fe33fa2694df03a6992a", null ],
     [ "addElement", "classBeaconInfoList.html#a50fcfbcb8e5ef8fcf2f31555d19fcdc8", null ],
     [ "addElement", "classBeaconInfoList.html#a9cb67e11fa4b361648b7cd0f845168b2", null ],
