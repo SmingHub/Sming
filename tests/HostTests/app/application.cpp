@@ -72,10 +72,10 @@ void TestGroup::complete()
 	taskTimer.startOnce();
 }
 
-void TestGroup::fail(const char* func, const char* file, unsigned line)
+void TestGroup::fail(const char* func)
 {
 	state = State::failed;
-	m_printf(_F("FAIL, %s in %s line %u\r\n"), func, file, line);
+	m_printf(_F("FAIL in `%s`\r\n"), func);
 }
 
 void init()

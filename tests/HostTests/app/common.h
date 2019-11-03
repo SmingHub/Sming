@@ -70,7 +70,7 @@ public:
 	/**
 	 * @brief Called when test fails to identify location
 	 */
-	void fail(const char* func, const char* file, unsigned line);
+	void fail(const char* func);
 
 	const String& getName()
 	{
@@ -104,7 +104,7 @@ private:
  */
 #define TEST_ASSERT(result)                                                                                            \
 	if(!(result)) {                                                                                                    \
-		fail(__PRETTY_FUNCTION__, __FILE__, __LINE__);                                                                 \
+		fail(__PRETTY_FUNCTION__);                                                                                     \
 		assert(false);                                                                                                 \
 	}
 
