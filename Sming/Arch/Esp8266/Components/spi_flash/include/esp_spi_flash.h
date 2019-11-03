@@ -66,10 +66,14 @@ typedef struct
  *  @param memptr
  *  @retval uint32_t Offset from start of flash memory
  *  @note If memptr is not in valid flash memory it will return an offset which exceeds
- *  the internal flash memory size.
- *  @note The flash location is dependent on where rBoot has mapped the firmware.
+ *  the internal flash memory size. This is caught by constructors using getMaxSize()
+ *  to provide a zero-length extent.
+ *  @deprecated This function only works if rBoot is running from slot #0.
  */
-uint32_t flashmem_get_address(const void* memptr);
+SMING_DEPRECATED static inline uint32_t flashmem_get_address(const void* memptr)
+{
+	return (uint32_t)memptr - INTERNAL_FLASH_START_ADDRESS;
+}
 
 /** @brief Write a block of data to flash
  *  @param from Buffer to obtain data from

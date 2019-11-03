@@ -17,7 +17,6 @@
 
 #include "include/esp_spi_flash.h"
 #include "espinc/peri.h"
-#include <rboot-api.h>
 
 extern char _flash_code_end[];
 
@@ -39,15 +38,6 @@ extern char _flash_code_end[];
 static inline uint32_t min(uint32_t a, uint32_t b)
 {
 	return (a < b) ? a : b;
-}
-
-uint32_t flashmem_get_address(const void* memptr)
-{
-	rboot_config config = rboot_get_config();
-	uint32_t addr = config.roms[config.current_rom];
-	addr -= (BOOT_CONFIG_SECTOR + 1) * INTERNAL_FLASH_SECTOR_SIZE;
-	addr += (uint32_t)memptr - INTERNAL_FLASH_START_ADDRESS;
-	return addr;
 }
 
 uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
