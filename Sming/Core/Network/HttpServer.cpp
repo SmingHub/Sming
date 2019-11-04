@@ -30,6 +30,13 @@ void HttpServer::configure(const HttpServerSettings& settings)
 
 TcpConnection* HttpServer::createClient(tcp_pcb* clientTcp)
 {
+	if(connections.count() >= settings.maxActiveConnections) {
+		debug_w("HttpServer refusing connection, already have %u", connections.count());
+		return nullptr;
+	}
+
+	debug_i("HttpServer::createClient(), connections = %u", connections.count());
+
 	HttpServerConnection* con = new HttpServerConnection(clientTcp);
 	con->setResourceTree(&paths);
 	con->setBodyParsers(&bodyParsers);
