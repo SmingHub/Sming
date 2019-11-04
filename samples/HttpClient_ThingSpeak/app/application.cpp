@@ -41,6 +41,7 @@ void sendData()
 	     "http://api.thingspeak.com/update?key=7XXUJWCWYTMXKN3L&field1=" + String(sensorValue)
 	 */
 	Url url;
+	url.Scheme = URI_SCHEME_HTTP;
 	url.Host = "api.thingspeak.com";
 	url.Path = "/update";
 	url.Query["key"] = "7XXUJWCWYTMXKN3L";
