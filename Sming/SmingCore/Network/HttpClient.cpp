@@ -28,9 +28,8 @@ bool HttpClient::send(HttpRequest* request)
 		if(connection->getConnectionState() > eTCS_Connecting && !connection->isActive()) {
 			debug_d("Removing stale connection: State: %d, Active: %d", connection->getConnectionState(),
 					connection->isActive());
-			delete connection;
-			connection = nullptr;
 			httpConnectionPool.removeAt(i);
+			connection = nullptr;
 		}
 	}
 
