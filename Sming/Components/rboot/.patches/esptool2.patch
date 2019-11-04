@@ -12,7 +12,7 @@ index 2ede742..ce648fb 100644
  typedef uint32_t Elf32_Off;  // File offset
  typedef uint16_t Elf32_Half;
 diff --git a/esptool2.c b/esptool2.c
-index 2342b3b..16ccd61 100644
+index 2342b3b..ddf2b02 100644
 --- a/esptool2.c
 +++ b/esptool2.c
 @@ -33,16 +33,16 @@
@@ -39,7 +39,17 @@ index 2342b3b..16ccd61 100644
  } Image_Header;
  
  static const char PADDING[IMAGE_PADDING] = {0};
-@@ -444,6 +444,10 @@ int main(int argc, char *argv[]) {
+@@ -223,7 +223,8 @@ bool CreateHeaderFile(char *elffile, char *imagefile, char *sections[], int nums
+ 		}
+ 
+ 		// simple name fix name
+-		strncpy(name, sect->name, 31);
++		strncpy(name, sect->name, sizeof(name));
++		name[sizeof(name) - 1] = '\0';
+ 		len = strlen(name);
+ 		for (j = 0; j < len; j++) {
+ 			if (name[j] == '.') name[j] = '_';
+@@ -444,6 +445,10 @@ int main(int argc, char *argv[]) {
  			size = 5;
  		} else if (!strcmp(argv[i], "-4096")) {
  			size = 4;
@@ -50,7 +60,7 @@ index 2342b3b..16ccd61 100644
  		} else if (!strcmp(argv[i], "-20")) {
  			clock = 2;
  		} else if (!strcmp(argv[i], "-26.7")) {
-@@ -498,7 +502,7 @@ int main(int argc, char *argv[]) {
+@@ -498,7 +503,7 @@ int main(int argc, char *argv[]) {
  		print("          -boot1 = built for bootloader v1.1\r\n");
  		print("          -boot2 = built for bootloader v1.2+ (use for rBoot roms)\r\n");
  		print("          (elf file must have been linked appropriately for chosen option)\r\n");
