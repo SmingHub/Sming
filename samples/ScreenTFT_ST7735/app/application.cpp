@@ -1,8 +1,6 @@
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Libraries/Adafruit_ST7735/Adafruit_ST7735.h>
-
-#include "BPMDraw.h"
+#include <Libraries/Adafruit_GFX/BMPDraw.h>
 
 /*
  * Hardware SPI mode:

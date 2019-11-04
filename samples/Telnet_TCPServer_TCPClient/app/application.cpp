@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Network/TelnetServer.h>
 #include "Services/CommandProcessing/CommandProcessingIncludes.h"
@@ -101,12 +100,12 @@ void startServers()
 												   "testGroup", applicationCommand));
 }
 
-void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
+void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	debugf("I'm NOT CONNECTED!");
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	startServers();
 }

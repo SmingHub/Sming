@@ -7,7 +7,6 @@
 // program memory back into RAM, so we can do something useful with it.
 //
 
-#include <user_config.h>
 #include <SmingCore.h>
 #include <stdio.h>
 

@@ -1,7 +1,6 @@
 #ifndef C_USER_DATA_H_SAMPLE
 #define C_USER_DATA_H_SAMPLE
 
-#include <user_config.h>
 #include <SmingCore.h>
 
 //Simplified container modelling a user session

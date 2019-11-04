@@ -1,10 +1,6 @@
-#include <user_config.h>
 #include <SmingCore.h>
-//#include <Network/WebConstants.h>
 #include <Network/TelnetServer.h>
 #include <Debug.h>
-//#include <Libraries/ArduCAM/ArduCAM.h>
-//#include <Libraries/ArduCAM/ov2640_regs.h>
 
 //#include "CamSettings.h"
 #include <ArduCamCommand.h>
@@ -15,6 +11,7 @@
 #include <Libraries/ArduCAM/ArduCAMStream.h>
 #include <Services/HexDump/HexDump.h>
 #include <Data/Stream/MultipartStream.h>
+#include <Platform/Timers.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -40,8 +37,6 @@
 #define CAM_MISO 12
 
 #define CAM_CS 16 // this pins are free to change
-
-uint32_t startTime;
 
 TelnetServer telnet;
 HttpServer server;
@@ -123,9 +118,7 @@ void startCapture()
 
 void onIndex(HttpRequest& request, HttpResponse& response)
 {
-	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
-	auto& vars = tmpl->variables();
-	response.sendTemplate(tmpl); // will be automatically deleted
+	response.sendFile(_F("index.html"));
 }
 
 void onFile(HttpRequest& request, HttpResponse& response)
@@ -171,9 +164,9 @@ void onCapture(HttpRequest& request, HttpResponse& response)
 	myCAM.write_reg(ARDUCHIP_FRAMES, 0x00);
 
 	// get the picture
-	startTime = millis();
+	OneShotFastMs timer;
 	startCapture();
-	Serial.printf("onCapture() startCapture() %d ms\r\n", millis() - startTime);
+	Serial.printf("onCapture() startCapture() %s\r\n", timer.elapsedTime().toString().c_str());
 
 	ArduCAMStream* stream = new ArduCAMStream(&myCAM);
 
@@ -184,7 +177,7 @@ void onCapture(HttpRequest& request, HttpResponse& response)
 		response.sendDataStream(stream, contentType);
 	}
 
-	Serial.printf("onCapture() process Stream %d ms\r\n", millis() - startTime);
+	Serial.printf("onCapture() process Stream %s\r\n", timer.elapsedTime().toString().c_str());
 }
 
 HttpPartResult snapshotProducer()
@@ -246,7 +239,7 @@ void StartServers()
 }
 
 // Will be called when station is fully operational
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	StartServers();
 }

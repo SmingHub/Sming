@@ -1,8 +1,8 @@
 #ifndef INCLUDE_CONFIGURATION_H_
 #define INCLUDE_CONFIGURATION_H_
 
-#include <user_config.h>
 #include <SmingCore.h>
+#include <JsonObjectStream.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID

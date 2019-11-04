@@ -1,4 +1,0 @@
-"\x89\x7e\x01\x02#{"x" * 258}"
-
-control_begin: ping
-error: -4 WS_CONTROL_TOO_LONG

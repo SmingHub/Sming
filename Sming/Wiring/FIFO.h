@@ -20,7 +20,6 @@
 #define FIFO_H
 
 #include "Countable.h"
-#include "WiringFrameworkDependencies.h"
 
 template<typename T, int rawSize>
 class FIFO : public Countable<T>

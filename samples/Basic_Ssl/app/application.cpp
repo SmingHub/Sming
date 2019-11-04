@@ -1,13 +1,3 @@
-/**
- * Please, note, that in order to run this sample you should recompile Sming with ENABLE_SSL=1.
- * The following three commands should be enough:
- *
- * cd Sming/Sming
- * make clean
- * make ENABLE_SSL=1
- */
-
-#include <user_config.h>
 #include <SmingCore.h>
 #include "Data/HexString.h"
 
@@ -83,7 +73,7 @@ int onDownload(HttpConnection& connection, bool success)
 	return 0; // return 0 on success in your callbacks
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	// Use the Gibson Research fingerprints web page as an example. Unlike Google, the fingerprints don't change!
 	static const uint8_t grcSha1Fingerprint[] PROGMEM = {0x15, 0x9A, 0x76, 0xC5, 0xAE, 0xF4, 0x90, 0x15, 0x79, 0xE6,
@@ -120,11 +110,10 @@ void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 	request->pinCertificate(fingerprints);
 	request->onRequestComplete(onDownload);
 
-	request->setResponseStream(&Serial);
 	downloadClient.send(request);
 }
 
-void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
+void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	debugf("I'm NOT CONNECTED!");
 }

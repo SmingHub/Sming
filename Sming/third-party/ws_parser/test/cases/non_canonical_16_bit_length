@@ -1,4 +1,0 @@
-"\x81\x7e\x00\x05hello"
-
-data_begin: text
-error: -5 WS_NON_CANONICAL_LENGTH

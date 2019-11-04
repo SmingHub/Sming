@@ -1,0 +1,533 @@
+diff --git a/include/user_config.h b/include/user_config.h
+index e69de29..d608ddf 100644
+--- a/include/user_config.h
++++ b/include/user_config.h
+@@ -0,0 +1,21 @@
++#ifndef _USER_CONFIG_LWIP_
++#define _USER_CONFIG_LWIP_
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++#include "c_types.h"
++typedef signed short        sint16_t;
++
++void ets_bzero(void *block, size_t size);
++bool ets_post(uint32_t prio, ETSSignal sig, ETSParam par);
++void ets_task(ETSTask task, uint32_t prio, ETSEvent * queue, uint8 qlen);
++
++void system_pp_recycle_rx_pkt(void *eb);
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif /*_USER_CONFIG_LWIP_*/
+diff --git a/Makefile.open b/Makefile.open
+index 1bc584f..e4af916 100644
+--- a/Makefile.open
++++ b/Makefile.open
+@@ -1,8 +1,10 @@
+-CC = xtensa-lx106-elf-gcc
+-AR = xtensa-lx106-elf-ar
++CC = $(ESP_HOME)/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc
++AR = $(ESP_HOME)/xtensa-lx106-elf/bin/xtensa-lx106-elf-ar
+ DEFS = -DLWIP_OPEN_SRC -DPBUF_RSV_FOR_WLAN -DEBUF_LWIP -DICACHE_FLASH
+ COPT = -Os
+-CFLAGS = $(DEFS) $(COPT) -Iinclude -Wl,-EL -mlongcalls -mtext-section-literals $(CFLAGS_EXTRA)
++
++CFLAGS = $(DEFS) $(COPT) -Iinclude -I$(SDK_BASE)/include -Wl,-EL -mlongcalls -mtext-section-literals $(CFLAGS_EXTRA)
++
+ # Install prefix of esp-open-sdk toolchain
+ PREFIX = ~/toolchain/xtensa-lx106-elf
+ 
+@@ -36,14 +38,27 @@ lwip/core/ipv4/ip.o \
+ lwip/core/ipv4/ip_frag.o \
+ lwip/netif/etharp.o \
+ \
+-lwip/app/dhcpserver.o \
+-\
+-espconn_dummy.o \
++lwip/app/dhcpserver.o
+ 
+-LIB = liblwip_open.a
+ 
+-all: $(LIB)
++ifneq ($(ENABLE_ESPCONN),1)
++    OBJS += espconn_dummy.o
++else
++    OBJS += lwip/app/espconn.o \
++lwip/app/espconn_tcp.o \
++lwip/app/espconn_udp.o \
++lwip/app/espconn_mdns.o \
++lwip/api/err.o \
++lwip/core/mdns.o
+ 
++endif
++
++LIB = $(USER_LIBDIR)liblwip_open.a
++ifeq ($(ENABLE_ESPCONN),1)
++    LIB = $(USER_LIBDIR)liblwip_full.a
++endif
++
++all: $(LIB)
+ 
+ $(LIB): $(OBJS)
+ 	$(AR) rcs $@ $^
+diff --git a/include/arch/cc.h b/include/arch/cc.h
+index ff03b30..5efcf13 100644
+--- a/include/arch/cc.h
++++ b/include/arch/cc.h
+@@ -38,8 +38,27 @@
+ #include "c_types.h"
+ #include "ets_sys.h"
+ #include "osapi.h"
++#include "mem.h"
++#include <stdarg.h>
++#include "FakePgmSpace.h"
++
+ #define EFAULT 14
+ 
++//Extra symbols to avoid implicit declaration warnings
++extern void *ets_memset(void *s, int c, size_t n);
++extern void *ets_memcpy(void *dest, const void *src, size_t n);
++
++extern int ets_strlen(const char *s);
++extern int os_printf_plus(const char *format, ...)  __attribute__ ((format (printf, 1, 2)));
++extern int ets_sprintf(char *str, const char *format, ...)  __attribute__ ((format (printf, 2, 3)));
++//extern void ets_timer_arm_new(ETSTimer *ptimer, uint32_t milliseconds, bool repeat_flag, int isMstimer);
++extern void ets_timer_disarm(ETSTimer *a);
++extern void ets_timer_setfn(ETSTimer *t, ETSTimerFunc *pfunction, void *parg);
++extern uint32 r_rand(void);
++extern int ets_memcmp(const void *s1, const void *s2, size_t n);
++
++struct netif * eagle_lwip_getif(uint8 index);
++
+ //#define LWIP_PROVIDE_ERRNO
+ 
+ #if (1)
+@@ -56,6 +75,7 @@ typedef signed     short   s16_t;
+ typedef unsigned   long    u32_t;
+ typedef signed     long    s32_t;
+ typedef unsigned long   mem_ptr_t;
++typedef signed short        sint16_t;
+ 
+ #define S16_F "d"
+ #define U16_F "d"
+@@ -73,11 +93,12 @@ typedef unsigned long   mem_ptr_t;
+ #define PACK_STRUCT_BEGIN
+ #define PACK_STRUCT_END
+ 
+-//#define LWIP_DEBUG
+-
+ #ifdef LWIP_DEBUG
+-#define LWIP_PLATFORM_DIAG(x) os_printf x
+-#define LWIP_PLATFORM_ASSERT(x) ETS_ASSERT(x)
++#include "debug_progmem.h"
++
++#define LWIP_PLATFORM_DIAG(x) debug_i x
++#define LWIP_PLATFORM_ASSERT(x) m_printf("ASSERT: %s %s %d", (x), __FUNCTION__, __LINE__)
++
+ #else
+ #define LWIP_PLATFORM_DIAG(x)
+ #define LWIP_PLATFORM_ASSERT(x)
+diff --git a/include/lwipopts.h b/include/lwipopts.h
+index eaa8dd6..6568657 100644
+--- a/include/lwipopts.h
++++ b/include/lwipopts.h
+@@ -403,7 +403,7 @@
+  * PBUF_POOL_SIZE: the number of buffers in the pbuf pool. 
+  */
+ #ifndef PBUF_POOL_SIZE
+-#define PBUF_POOL_SIZE                  10
++#define PBUF_POOL_SIZE                  8
+ #endif
+ 
+ /*
+@@ -422,7 +422,7 @@
+  * ARP_TABLE_SIZE: Number of active MAC-IP address pairs cached.
+  */
+ #ifndef ARP_TABLE_SIZE
+-#define ARP_TABLE_SIZE                  10
++#define ARP_TABLE_SIZE                  8
+ #endif
+ 
+ /**
+@@ -447,7 +447,7 @@
+  * Also notice that this slows down input processing of every IP packet!
+  */
+ #ifndef ETHARP_TRUST_IP_MAC
+-#define ETHARP_TRUST_IP_MAC             1
++#define ETHARP_TRUST_IP_MAC             0
+ #endif
+ 
+ /**
+@@ -789,7 +789,7 @@
+ #ifndef LWIP_MDNS
+ #define LWIP_MDNS                      1
+ #endif
+-/*
++
+ /*
+    ----------------------------------
+    ---------- DNS options -----------
+@@ -944,7 +944,6 @@
+ #define TCP_QUEUE_OOSEQ                 1
+ #endif
+ 
+-#if 1
+ /**
+  * TCP_MSS: TCP Maximum segment size. (default is 536, a conservative default,
+  * you might want to increase this.)
+@@ -953,8 +952,7 @@
+  * an upper limit on the MSS advertised by the remote host.
+  */
+ #ifndef TCP_MSS
+-#define TCP_MSS                         1460
+-#endif
++#define TCP_MSS                        1390 
+ #endif
+ 
+ /**
+@@ -1823,7 +1821,7 @@
+  * debug messages of certain types.
+  */
+ #ifndef LWIP_DBG_TYPES_ON
+-#define LWIP_DBG_TYPES_ON               LWIP_DBG_OFF
++#define LWIP_DBG_TYPES_ON               LWIP_DBG_ON
+ #endif
+ 
+ /**
+@@ -1992,7 +1990,7 @@
+  * TCP_RST_DEBUG: Enable debugging for TCP with the RST message.
+  */
+ #ifndef TCP_RST_DEBUG
+-#define TCP_RST_DEBUG                   LWIP_DBG_OFF
++#define TCP_RST_DEBUG                   (LWIP_DBG_LEVEL_ALL | LWIP_DBG_ON)
+ #endif
+ 
+ /**
+diff --git a/include/lwip/ip_addr.h b/include/lwip/ip_addr.h
+index 1e46ee5..cfc10f8 100644
+--- a/include/lwip/ip_addr.h
++++ b/include/lwip/ip_addr.h
+@@ -210,7 +210,7 @@ u8_t ip4_addr_netmask_valid(u32_t netmask)ICACHE_FLASH_ATTR;
+ #define ip_addr_islinklocal(addr1) (((addr1)->addr & PP_HTONL(0xffff0000UL)) == PP_HTONL(0xa9fe0000UL))
+ 
+ #define ip_addr_debug_print(debug, ipaddr) \
+-  LWIP_DEBUGF(debug, ("%"U16_F".%"U16_F".%"U16_F".%"U16_F,             \
++  LWIP_DEBUGF(debug, ("%" U16_F ".%" U16_F ".%" U16_F ".%" U16_F,             \
+                       ipaddr != NULL ? ip4_addr1_16(ipaddr) : 0,       \
+                       ipaddr != NULL ? ip4_addr2_16(ipaddr) : 0,       \
+                       ipaddr != NULL ? ip4_addr3_16(ipaddr) : 0,       \
+diff --git a/lwip/app/dhcpserver.c b/lwip/app/dhcpserver.c
+index ddb5984..ed8f912 100644
+--- a/lwip/app/dhcpserver.c
++++ b/lwip/app/dhcpserver.c
+@@ -1,5 +1,5 @@
+ #include "lwip/inet.h"
+-#include "lwip/err.h"
++#include "lwip/err.h"
+ #include "lwip/pbuf.h"
+ #include "lwip/udp.h"
+ #include "lwip/mem.h"
+@@ -13,6 +13,8 @@
+ 
+ #include "user_interface.h"
+ 
++extern bool wifi_softap_set_station_info(uint8_t*,struct ip_addr*);
++
+ #ifdef MEMLEAK_DEBUG
+ static const char mem_debug_file[] ICACHE_RODATA_ATTR = __FILE__;
+ #endif
+@@ -131,23 +133,18 @@ static uint8_t* ICACHE_FLASH_ATTR add_offer_options(uint8_t *optptr)
+ {
+         struct ip_addr ipadd;
+ 
+-        ipadd.addr = *( (uint32_t *) &server_address);
++        ipadd.addr = server_address.addr;
++
++        struct ip_info if_ip;
++        os_bzero(&if_ip, sizeof(struct ip_info));
++        wifi_get_ip_info(SOFTAP_IF, &if_ip);
+ 
+-#ifdef USE_CLASS_B_NET
+-        *optptr++ = DHCP_OPTION_SUBNET_MASK;
+-        *optptr++ = 4;  //length
+-        *optptr++ = 255;
+-        *optptr++ = 240;	
+-        *optptr++ = 0;
+-        *optptr++ = 0;
+-#else
+         *optptr++ = DHCP_OPTION_SUBNET_MASK;
+-        *optptr++ = 4;  
+-        *optptr++ = 255;
+-        *optptr++ = 255;	
+-        *optptr++ = 255;
+-        *optptr++ = 0;
+-#endif
++        *optptr++ = 4;
++        *optptr++ = ip4_addr1( &if_ip.netmask);
++        *optptr++ = ip4_addr2( &if_ip.netmask);
++        *optptr++ = ip4_addr3( &if_ip.netmask);
++        *optptr++ = ip4_addr4( &if_ip.netmask);
+ 
+         *optptr++ = DHCP_OPTION_LEASE_TIME;
+         *optptr++ = 4;  
+@@ -164,10 +161,6 @@ static uint8_t* ICACHE_FLASH_ATTR add_offer_options(uint8_t *optptr)
+         *optptr++ = ip4_addr4( &ipadd);
+ 
+         if (dhcps_router_enabled(offer)){
+-        	struct ip_info if_ip;
+-			os_bzero(&if_ip, sizeof(struct ip_info));
+-			wifi_get_ip_info(SOFTAP_IF, &if_ip);
+-
+ 			*optptr++ = DHCP_OPTION_ROUTER;
+ 			*optptr++ = 4;
+ 			*optptr++ = ip4_addr1( &if_ip.gw);
+@@ -248,7 +241,7 @@ static void ICACHE_FLASH_ATTR create_msg(struct dhcps_msg *m)
+ {
+         struct ip_addr client;
+ 
+-        client.addr = *( (uint32_t *) &client_address);
++        client.addr = client_address.addr;
+ 
+         m->op = DHCP_REPLY;
+         m->htype = DHCP_HTYPE_ETHERNET;
+@@ -485,7 +478,7 @@ static uint8_t ICACHE_FLASH_ATTR parse_options(uint8_t *optptr, sint16_t len)
+     	bool is_dhcp_parse_end = false;
+     	struct dhcps_state s;
+ 
+-        client.addr = *( (uint32_t *) &client_address);// Ҫ�����DHCP�ͻ��˵�IP
++        client.addr = client_address.addr;// Ҫ�����DHCP�ͻ��˵�IP
+ 
+         u8_t *end = optptr + len;
+         u16_t type = 0;
+@@ -573,7 +566,7 @@ static uint8_t ICACHE_FLASH_ATTR parse_options(uint8_t *optptr, sint16_t len)
+ ///////////////////////////////////////////////////////////////////////////////////
+ ///////////////////////////////////////////////////////////////////////////////////
+ static sint16_t ICACHE_FLASH_ATTR parse_msg(struct dhcps_msg *m, u16_t len)
+-{
++{
+ 		if(os_memcmp((char *)m->options,
+               &magic_cookie,
+               sizeof(magic_cookie)) == 0){
+--- a/include/lwip/tcp_impl.h
++++ b/include/lwip/tcp_impl.h
+@@ -130,7 +130,7 @@ u32_t            tcp_update_rcv_ann_wnd(struct tcp_pcb *pcb)ICACHE_FLASH_ATTR;
+ #define TCP_OOSEQ_TIMEOUT        6U /* x RTO */
+ 
+ #ifndef TCP_MSL
+-#define TCP_MSL 60000UL /* The maximum segment lifetime in milliseconds */
++#define TCP_MSL 2000UL /* The maximum segment lifetime in milliseconds */
+ #endif
+ 
+ /* Keepalive values, compliant with RFC 1122. Don't change this unless you know what you're doing */
+diff --git a/include/lwip/igmp.h b/include/lwip/igmp.h
+index c90adcd..f0c9dea 100644
+--- a/include/lwip/igmp.h
++++ b/include/lwip/igmp.h
+@@ -96,7 +96,7 @@ void   igmp_input(struct pbuf *p, struct netif *inp, ip_addr_t *dest)ICACHE_FLAS
+ err_t  igmp_joingroup(ip_addr_t *ifaddr, ip_addr_t *groupaddr)ICACHE_FLASH_ATTR;
+ err_t  igmp_leavegroup(ip_addr_t *ifaddr, ip_addr_t *groupaddr)ICACHE_FLASH_ATTR;
+ void   igmp_tmr(void)ICACHE_FLASH_ATTR;
+-#define LWIP_RAND()  r_rand()
++#define LWIP_RAND()  os_random()
+ #ifdef __cplusplus
+ }
+ #endif
+diff --git a/include/lwip/mem.h b/include/lwip/mem.h
+index af6e360..71b2178 100644
+--- a/include/lwip/mem.h
++++ b/include/lwip/mem.h
+@@ -52,19 +52,19 @@ typedef size_t mem_size_t;
+  */
+ #ifndef MEMLEAK_DEBUG
+ #ifndef mem_free
+-#define mem_free vPortFree
++#define mem_free(s) vPortFree(s, "", __LINE__)
+ #endif
+ #ifndef mem_malloc
+-#define mem_malloc pvPortMalloc
++#define mem_malloc(s) pvPortMalloc(s, "", __LINE__, false)
+ #endif
+ #ifndef mem_calloc
+-#define mem_calloc pvPortCalloc
++#define mem_calloc(l, s) ({void* ptr = (void*)pvPortMalloc((l) * (s), "", __LINE__,true);if(ptr){os_memset(ptr,0x0,(l) * (s));} ptr;})
+ #endif
+ #ifndef mem_realloc
+-#define mem_realloc pvPortRealloc
++#define mem_realloc(p, s)  pvPortRealloc(p, s, "", __LINE__)
+ #endif
+ #ifndef mem_zalloc
+-#define mem_zalloc pvPortZalloc
++#define mem_zalloc(s)      pvPortZalloc(s, "", __LINE__)
+ #endif
+ #else
+ #ifndef mem_free
+@@ -75,7 +75,7 @@ do{\
+ }while(0)
+ #endif
+ #ifndef mem_malloc
+-#define mem_malloc(s) ({const char *file = mem_debug_file; pvPortMalloc(s, file, __LINE__);})
++#define mem_malloc(s) ({const char *file = mem_debug_file; pvPortMalloc(s, file, __LINE__, false);})
+ #endif
+ #ifndef mem_calloc
+ #define mem_calloc(s) ({const char *file = mem_debug_file; pvPortCalloc(s, file, __LINE__);})
+@@ -90,7 +90,11 @@ do{\
+ #endif
+ 
+ #ifndef os_malloc
+-#define os_malloc(s) mem_malloc((s))
++#ifndef MEMLEAK_DEBUG
++#define os_malloc(s) pvPortMalloc(s, "", __LINE__,true)
++#else
++#define os_malloc(s) ({const char *file = mem_debug_file; pvPortMalloc(s, file, __LINE__, true);})
++#endif
+ #endif
+ #ifndef os_realloc
+ #define os_realloc(p, s) mem_realloc((p), (s))
+diff --git a/include/lwip/app/espconn.h b/include/lwip/app/espconn.h
+index ae9ed50..46420df 100644
+--- a/include/lwip/app/espconn.h
++++ b/include/lwip/app/espconn.h
+@@ -660,5 +660,11 @@ extern void espconn_mdns_enable(void);
+  *  Returns     : none
+ *******************************************************************************/
+ extern void espconn_dns_setserver(u8_t numdns, ip_addr_t *dnsserver);
++
++// Missing functions
++extern err_t espconn_tcp_write(void *arg);
++extern sint8 espconn_tcp_delete(struct espconn *pdeletecon);
++extern void espconn_pbuf_delete(espconn_buf **phead, espconn_buf* pdelete);
++
+ #endif
+ 
+diff --git a/include/lwip/mdns.h b/include/lwip/mdns.h
+index 08db68a..b4763ec 100644
+--- a/include/lwip/mdns.h
++++ b/include/lwip/mdns.h
+@@ -96,16 +96,17 @@ struct mdns_info {
+ 	char *txt_data[10];
+ };
+ #endif
+-//void 		   mdns_enable(void);
+-//void           mdns_disable(void);
+-//void           mdns_init(struct mdns_info *info);
+-//void           mdns_close(void);
+-//char* 		   mdns_get_hostname(void);
+-//void           mdns_set_hostname(char *name);
+-//void           mdns_set_servername(const char *name);
+-//char*          mdns_get_servername(void);
+-//void           mdns_server_unregister(void);
+-//void           mdns_server_register(void) ;
++
++void 		   mdns_enable(void);
++void           mdns_disable(void);
++void           mdns_init(struct mdns_info *info);
++void           mdns_close(void);
++char* 		   mdns_get_hostname(void);
++void           mdns_set_hostname(char *name);
++void           mdns_set_servername(const char *name);
++char*          mdns_get_servername(void);
++void           mdns_server_unregister(void);
++void           mdns_server_register(void) ;
+ //void           mdns_tmr(void);
+ //void           Delay(unsigned long ulSeconds);
+ 
+diff --git a/lwip/app/espconn_udp.c b/lwip/app/espconn_udp.c
+index 77ef471..0e4936a 100644
+--- a/lwip/app/espconn_udp.c
++++ b/lwip/app/espconn_udp.c
+@@ -19,9 +19,12 @@
+ #include "lwip/mem.h"
+ #include "lwip/tcp_impl.h"
+ #include "lwip/udp.h"
++#include "lwip/igmp.h"
+ 
+ #include "lwip/app/espconn_udp.h"
+ 
++#include "user_interface.h"
++
+ #ifdef MEMLEAK_DEBUG
+ static const char mem_debug_file[] ICACHE_RODATA_ATTR = __FILE__;
+ #endif
+diff --git a/lwip/core/dhcp.c b/lwip/core/dhcp.c
+index 342543e..92ad15b 100644
+--- a/lwip/core/dhcp.c
++++ b/lwip/core/dhcp.c
+@@ -137,6 +137,9 @@ u8_t  dhcp_rx_options_given[DHCP_OPTION_IDX_MAX];
+ #define dhcp_get_option_value(dhcp, idx)      (dhcp_rx_options_val[idx])
+ #define dhcp_set_option_value(dhcp, idx, val) (dhcp_rx_options_val[idx] = (val))
+ 
++// Missing prototype
++extern void system_station_got_ip_set(ip_addr_t* ip_addr, ip_addr_t* sn_mask, ip_addr_t* gw_addr);
++
+ 
+ /* DHCP client state machine functions */
+ static err_t dhcp_discover(struct netif *netif);
+diff --git a/lwip/core/ipv4/ip_addr.c b/lwip/core/ipv4/ip_addr.c
+index 81db807..dd6964e 100644
+--- a/lwip/core/ipv4/ip_addr.c
++++ b/lwip/core/ipv4/ip_addr.c
+@@ -113,7 +113,7 @@ ip4_addr_netmask_valid(u32_t netmask)
+ #ifndef isprint
+ #define in_range(c, lo, up)  ((u8_t)c >= lo && (u8_t)c <= up)
+ #define isprint(c)           in_range(c, 0x20, 0x7f)
+-//#define isdigit(c)           in_range(c, '0', '9')
++#define isdigit(c)           in_range(c, '0', '9')
+ #define isxdigit(c)          (isdigit(c) || in_range(c, 'a', 'f') || in_range(c, 'A', 'F'))
+ #define islower(c)           in_range(c, 'a', 'z')
+ #define isspace(c)           (c == ' ' || c == '\f' || c == '\n' || c == '\r' || c == '\t' || c == '\v')
+diff --git a/lwip/core/tcp.c b/lwip/core/tcp.c
+index ee50ceb..75563e9 100644
+--- a/lwip/core/tcp.c
++++ b/lwip/core/tcp.c
+@@ -55,6 +55,9 @@
+ 
+ #include <string.h>
+ 
++// Missing prototype
++extern uint8_t system_get_data_of_array_8(const uint8_t* array /* ICACHE_RODATA_ATTR */, unsigned offset);
++
+ #ifdef MEMLEAK_DEBUG
+ static const char mem_debug_file[] ICACHE_RODATA_ATTR = __FILE__;
+ #endif
+diff --git a/lwip/app/espconn.c b/lwip/app/espconn.c
+index 9032648..69797e5 100644
+--- a/lwip/app/espconn.c
++++ b/lwip/app/espconn.c
+@@ -676,8 +676,7 @@ sint8 ICACHE_FLASH_ATTR espconn_tcp_set_buf_count(struct espconn *espconn, uint8
+ 		}
+ 	}
+ 
+-	if (plist == NULL)
+-		return ESPCONN_ARG;
++	return (plist == NULL) ? ESPCONN_ARG : ESPCONN_OK;
+ }
+ 
+ /******************************************************************************
+diff --git a/lwip/app/espconn_tcp.c b/lwip/app/espconn_tcp.c
+index 52cd0b0..0ea6ab0 100644
+--- a/lwip/app/espconn_tcp.c
++++ b/lwip/app/espconn_tcp.c
+@@ -187,7 +187,8 @@ struct tcp_pcb *ICACHE_FLASH_ATTR espconn_find_current_pcb(espconn_msg *pcurrent
+ 	uint16 local_port = pcurrent_msg->pcommon.local_port;
+ 	uint32 local_ip = pcurrent_msg->pcommon.local_ip;
+ 	uint16 remote_port = pcurrent_msg->pcommon.remote_port;
+-	uint32 remote_ip = *((uint32*)&pcurrent_msg->pcommon.remote_ip);
++	uint32 remote_ip;
++	memcpy(&remote_ip, pcurrent_msg->pcommon.remote_ip, sizeof(remote_ip));
+ 	struct tcp_pcb *find_pcb = NULL;
+ 	if (pcurrent_msg ->preverse == NULL){/*Find the server's TCP block*/
+ 		if (local_ip == 0|| local_port == 0) return pcurrent_msg->pcommon.pcb;
+@@ -1334,7 +1335,7 @@ espconn_tcp_server(struct espconn *espconn)
+ *******************************************************************************/
+ sint8 ICACHE_FLASH_ATTR espconn_tcp_delete(struct espconn *pdeletecon)
+ {
+-	err_t err;
++	err_t err = ERR_OK;
+ 	remot_info *pinfo = NULL;
+ 	espconn_msg *pdelete_msg = NULL;
+ 	struct tcp_pcb *pcb = NULL;

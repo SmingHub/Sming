@@ -21,11 +21,9 @@
 ||
 */
 
-#ifndef STREAM_H
-#define STREAM_H
+#pragma once
 
 #include "Print.h"
-#include "WiringFrameworkDependencies.h"
 
 class Stream : public Print
 {
@@ -93,6 +91,3 @@ class Stream : public Print
   
     float parseFloat(char skipChar);  // as above but the given skipChar is ignored
 };
-
-#endif
-// STREAM_H

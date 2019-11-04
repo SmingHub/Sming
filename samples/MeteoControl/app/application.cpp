@@ -1,11 +1,10 @@
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Libraries/LiquidCrystal/LiquidCrystal_I2C.h>
 #include <Libraries/DHTesp/DHTesp.h>
 
 ///////////////////////////////////////////////////////////////////
 // Set your SSID & Pass for initial configuration
-#include "../include/configuration.h" // application configuration
+#include "configuration.h" // application configuration
 ///////////////////////////////////////////////////////////////////
 
 #include "special_chars.h"
@@ -25,9 +24,9 @@ bool state = true;
 String StrT, StrRH, StrTime;
 
 void process();
-void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel);
-void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason);
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway);
+void connectOk(const String& SSID, MacAddress bssid, uint8_t channel);
+void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason);
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway);
 
 void init()
 {
@@ -107,17 +106,17 @@ void process()
 		displayTimer.initializeMs(1000, showValues).start();
 }
 
-void connectOk(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t channel)
+void connectOk(const String& SSID, MacAddress bssid, uint8_t channel)
 {
 	debugf("connected");
 	WifiAccessPoint.enable(false);
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	lcd.clear();
 	lcd.print("\7 ");
-	lcd.print(ip.toString());
+	lcd.print(ip);
 	// Restart main screen output
 	procTimer.restart();
 	displayTimer.stop();
@@ -131,9 +130,9 @@ void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 		startWebServer();
 }
 
-void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
+void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
-	debugf("connection FAILED");
+	debugf("connection FAILED: %s", WifiEvents.getDisconnectReasonDesc(reason).c_str());
 	WifiAccessPoint.config("MeteoConfig", "", AUTH_OPEN);
 	WifiAccessPoint.enable(true);
 	// Stop main screen output

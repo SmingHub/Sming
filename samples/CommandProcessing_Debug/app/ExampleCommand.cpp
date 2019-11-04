@@ -18,7 +18,7 @@ void ExampleCommand::initCommand()
 {
 	commandHandler.registerCommand(
 		CommandDelegate("example", "Example Command from Class", "Application",
-						commandFunctionDelegate(&ExampleCommand::processExampleCommands, this)));
+						CommandFunctionDelegate(&ExampleCommand::processExampleCommands, this)));
 }
 
 void ExampleCommand::processExampleCommands(String commandLine, CommandOutput* commandOutput)

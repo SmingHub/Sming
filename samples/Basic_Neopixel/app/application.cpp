@@ -1,7 +1,6 @@
-#include <user_config.h>
 #include <SmingCore.h>
 
-#include <Adafruit_NeoPixel/Adafruit_NeoPixel.h>
+#include <Libraries/Adafruit_NeoPixel/Adafruit_NeoPixel.h>
 
 #ifndef WIFI_SSID
 #define WIFI_SSID "XXX" // Put you SSID and Password here
@@ -141,14 +140,15 @@ void StartDemo()
 	}
 }
 
-void got_IP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void got_IP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	Serial.printf("IP: %s\n", ip.toString().c_str());
+	Serial.print("IP: ");
+	Serial.println(ip);
 	//You can put here other job like web,tcp etc.
 }
 
 // Will be called when WiFi station loses connection
-void connect_Fail(String SSID, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
+void connect_Fail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	Serial.println("I'm NOT CONNECTED!");
 }

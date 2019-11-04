@@ -1,0 +1,490 @@
+# 
+# Ringtones compiled from
+#
+# http://mines.lumpylumpy.com/Electronics/Computers/Software/Cpp/MFC/RingTones.RTTTL
+# http://www.picaxe.com/RTTTL-Ringtones-for-Tune-Command/
+#
+# De-duplicated, sorted and generally tidied up
+#
+
+20th Century Fox:d=16,o=5,b=140:b,8p,b,b,2b,p,c6,32p,b,32p,c6,32p,b,32p,c6,32p,b,8p,b,b,b,32p,b,32p,b,32p,b,32p,b,32p,b,32p,b,32p,g#,32p,a,32p,b,8p,b,b,2b,4p,8e,8g#,8b,1c#6,8f#,8a,8c#6,1e6,8a,8c#6,8e6,1e6,8b,8g#,8a,2b
+7 Days:d=16,o=6,b=140:g#,d#,8a#5,g#,d#,8a#5,g#,d#,8a#5,g#,d#,8a#5,f,1p,g#,d#,8a#5,g#,d#,8a#5,g#,d#,8a#5,g#,d#,8a#5,f,1p,g#,d#,8c,g#,d#,8c,g#,d#,8c,g#,d#,8c,f,1p,g#,d#,8c,g#,d#,8c,g#,d#,8c,g#,d#,8c,f,1p,d#,c,8g#5,d#,c,8g#5,d#,c,8g#5,d#,c,8g#5,f,1p,d#,c,8g#5,d#,c,8g#5,d#,c,8g#5,d#,c,8g#5,f,1p,d#,c#,8a#5,d#,c#,8a#5,d#,c#,8a#5,d#,c#,8a#5,f,1p,d#,c#,8a#5,d#,c#,8a#5,d#,c#,8a#5,d#,c#,8a#5,11f
+90210:d=2,o=6,b=140:8f5,8a#5,8b5,3d,d,4p,8f5,8a#5,8d,8d#,4f,3f,1a#5,8e5,8a#5,8c,8d,8d#,8f,8g,4f,8d#,4d#,4d,1c,8a#5,4a5,4a#5,4g,8f,8d#,8d,8d#,8d,8a#5,4f5
+90210:d=4,o=5,b=140:8f,8a#,8c6,3d6,2d6,p,8f,8a#,8c6,8d6,8d#6,f6,3f6,1a#,8f,8a#,8c6,8d6,8d#6,8f6,8g6,f6,8d#6,d#6,d6,1c6,8a#,a,3a#,g6,8f6,8d#6,8d6,8d#6,8d6,8a#,f
+9pm Till I Come:d=1,o=4,b=285:4a5,4a5,16a#5,5b5,4a5,4p,4c6,4p,4c6,4p,4c6,5d6,16c#6,4c6,4g5,p,4f5,4g5,16g#5,5a5,4g5,4p,4a5,4p,4c6,4p,4c6,5d6,16c#6,4c6,4g5
+The A-Team:d=8,o=5,b=125:4d#6,a#,2d#6,16p,g#,4a#,3d#,p,16g,16a#,d#6,a#,f6,2d#6,16p,5c#6,16c6,16a#,5g#,2a#
+Abdelazer:d=4,o=5,b=160:2d,2f,2a,d6,8e6,8f6,8g6,8f6,8e6,8d6,2c#6,a6,8d6,8f6,8a6,8f6,d6,2a6,g6,8c6,8e6,8g6,8e6,c6,2a6,f6,8b,8d6,8f6,8d6,b,2g6,e6,8a,8c#6,8e6,8c6,a,2f6,8e6,8f6,8e6,8d6,c#6,f6,8e6,8f6,8e6,8d6,a,d6,8c#6,8d6,8e6,8d6,2d6
+A Adams:d=4,o=5,b=160:8c,f,8a,f,8c,b4,2g,8f,e,8g,e,8e4,a4,2f,8c,f,8a,f,8c,b4,2g,8f,e,8c,d,8e,1f,8c,8d,8e,8f,1p,8d,8e,8f#,8g,1p,8d,8e,8f#,8g,p,8d,8e,8f#,8g,p,8c,8d,8e,8f
+Adams Family:d=8,o=5,b=160:c,4f,a,4f,c,4b4,2g,f,4e,g,4e,g4,4c,2f,c,4f,a,4f,c,4b4,2g,f,4e,c,4d,e,1f,c,d,e,f,1p,d,e,f#,g,1p,d,e,f#,g,4p,d,e,f#,g,4p,c,d,e,f
+Adams Family II:d=4,o=5,b=140:8a4,8b4,8c#,8d,2p,8p,8b4,8c#,8d#,8e,2p,8p,8b4,8c#,8d#,8e,8p,8b4,8c#,8d#,8e,8p,8a4,8b4,8c#,8d,2p,8p,8a4,8b4,8c#,8d,2p,8p,8b4,8c#,8d#,8e,2p,8p,8b4,8c#,8d#,8e,8p,8b4,8c#,8d#,8e,8p,8a4,8b4,8c#,8d,p,32p,8a,8a,8p,16a,16p,16a,16p,5d6,16f#6,5d6,16b,5g,16e6,5p,16c6,5c#6,16e6,5c#6,16a,5f#,16d6,5p,16a,5d6,16f#6,5d6,16b,5g,16e6,5p,16d6,5c#6,16a,5b,16c#6,d6,5p,16a,5d6,16f#6,5d6,16b,5g
+Agadoo:d=8,o=5,b=125:b,g#,4e,e,e,4e,e,e,e,e,d#,e,4f#,a,f#,4d#,d#,d#,4d#,d#,d#,d#,d#,c#,d#,4e
+Alice Deejay:d=4,o=5,b=63:16b,16p,16b,16g#,16p,16b,16p,16b,16p,16a#,16p,16f#,16f#6,32p,16f#6,32p,16d#6,16b,16p,16b,16g#,16p,16b,16p,16b,16p,16a#,16p,16f#,16e6,32p,16e6,32p,16d#6
+Alvin and the Chipmonks:d=4,o=5,b=285:g,p,c,c,a,c,c,c,p,b,b,c6,c6,p,c,c,p,a,g,d,2g,d,2p,a,g,d,2g,a,p,g,p,c,c,a,c,c,c,p,b,b,c6,c6,p,c,c,p,a,g,d,2g,d,2p,a,a,g,2a,g,p,2a,b,2a,g,p,c,c,c,c,c,e,e,e,e,2a,g,2a,2g,2a,a,2g,1g,p,2a,g,2a,g,p,c,c,c,c,c,e,e,e,e,2a,g,2a,2g,2c6,b,2b,1b,2c6
+Always Look:d=4,o=6,b=45:11a5,11a5,16a5,11a5,32f#5,5a5,16f#5,32e5,16f#5,5a5,32p,32e,5c#,32g#5,16f#5,32g#5,16a5,32c#,11b5
+Amazing Grace:d=16,o=5,b=80:8c,2f,a,g,f,2a,8a,8g,2f,4d,2c,8c,2f,a,g,f,2a,8g,8a,2c6,p
+American:d=4,o=5,b=100:5g,16e,c,e,g,2c6,5e6,16d6,c6,e,f#,2g,g,3e6,8d6,c6,2b,5a,16b,c6,c6,g,e,c
+Aquarius:d=4,o=5,b=200:e,f#,1g,a,g,8f#,e,d,1e,d,8e,f#,1f#,e,8e,d,8d,1e
+Are 'Friends' Electric:d=4,o=5,b=80:c,g,a#4,f,c,g,a#4,8a#,8e,c,g,a#4,f,c,g,a#4,8a#,8e
+Argentina:d=4,o=5,b=70:5e4,8e4,8e4,5e4,8f4,8g4,8a4,g4,8p,8g4,8a4,8a4,8g4,c,g4,8f4,3e4,8p,8e4,8f4,8g4,8d4,d4,8d4,8e4,8f4,c4,16p,8c4,8d4,8c4,8e4,g4,16p,8g4,8g4,8a4,c,16p
+Arkanoid:d=4,o=5,b=140:8g6,16p,11g6,2a#6,32p,8a6,8g6,8f6,8a6,2g6
+Auld Lang Syne:d=4,o=5,b=125:a4,3d,8d,d,f#,3e,8d,e,8f#,8e,3d,8d,f#,a,1b,b,3a,8f#,f#,d,3e,8d,e,8f#,8e,3d,8b4,b4,a4,2d,16p
+Auld Lang Syne:d=8,o=5,b=125:a4,3d,d,4d,4f#,3e,d,4e,f#,e,3d,d,4f#,4a,1b,4b,3a,f#,4f#,4d,3e,d,4e,f#,e,3d,b4,4b4,4a4,2d,16p
+Auld Lang Syne:d=4,o=5,b=100:g,3c6,8c6,c6,e6,3d6,8c6,d6,8e6,8d6,3c6,8c6,e6,g6,1a6,a6,3g6,8e6,e6,c6,3d6,8c6,d6,8e6,8d6,3c6,8a,a,g,1c6
+Axel F:d=4,o=5,b=125:g,5a#,16g,16p,16g,8c6,8g,8f,g,5d6,16g,16p,16g,8d#6,8d6,8a#,8g,8d6,8g6,16g,16f,16p,16f,8d,8a#,2g,p,16f6,8d6,8c6,8a#,g,5a#,16g,16p,16g,8c6,8g,8f,g,5d6,16g,16p,16g,8d#6,8d6,8a#,8g,8d6,8g6,16g,16f,16p,16f,8d,8a#,2g
+Ba Ba Black Sheep:d=4,o=5,b=100:c,c,g,g,8a,8b,8c6,8a,g,p,f,f,e,e,d,d,c
+Babylon 5 Main Theme:d=4,o=5,b=180:2b4,1e,1g,1f#,1a,1b,2g,g,8g,8a,1b,1f#,1b4,1d,1c#,1e,1f#,2d,d,8d,8e,1f#
+Back:d=4,o=6,b=200:g4,a#5,d#5,a#4,a#5,g4,a#5,d#5,a#5,d#,a#4,32g4,g,1a#,2d7,1g,1f,g,1a#,2d7,2g,c7,1a#,g,1a#,2d7,1g,1f,1g,1a#,2d7,1c7,1a#,g,1a#,2d7,1g,1f,g,1a#,2d7
+Back to the Future:d=16,o=5,b=200:3g,p,3c,p,1f#,p,11g,p,11a,p,8g,p,8e,p,8c,p,4f#,p,11g,p,11a,p,5g,p,5d,p,5g,p,5d6,p,3d6,p,4c#6,p,11b,p,11c#6,p,1d6
+Back To The Future:d=4,o=5,b=160:p,5c,16p,g,16p,11c6,16p,3a#,16p,16a,16p,16g,16p,8a,16p,8g,16p,8f,16p,1g,1p,3g,16p,3c,16p,1f#,16p,21g,32p,21a,32p,8g,32p,8e,32p,8c,32p,f#,16p,21g,32p,21a,32p,5g,32p,5d,32p,5g,32p,5d6,32p,d6,16p,c#6,16p,21b,32p,21c#6,32p,2d6
+Barbie Girl:d=8,o=5,b=125:g#,e,g#,c#6,4a,4p,f#,d#,f#,b,4g#,f#,e,4p,e,c#,4f#,4c#,4p,f#,e,4g#,4f#
+Barbie Girl:d=4,o=5,b=125:8g#,8e,8g#,8c#6,a,p,8f#,8d#,8f#,8b,g#,8f#,8e,p,8e,8c#,f#,c#,p,8f#,8e,g#,f#
+Barbie Girl:d=4,o=5,b=125:32e,32f#,8g#,8e,8g#,8c#6,a,8p,16p,16g#,8f#,8d#,8f#,8b,g#,8f#,8e,p,8e,8c#,f#,c#,p,8f#,8e,g#,f#,16e,16p,16e,16p,8c#4,8b4,16e,16p,16e,16p,8c#4,8b4,b,g#,e,c#4,16e,16p,16e,16p,8c#4,8b4,16e,16p,16e,16p,8c#4,8b4,8p,8c#6,8b,8c#6,8p,8c#6,8b,8c#6
+Batman:d=8,o=5,b=180:b,b,a#,a#,a,a,a#,a#,b,b,a#,a#,a,a,a#,a#,4b,p,4b
+Batman:d=8,o=5,b=180:d,d,c#,c#,c,c,c#,c#,d,d,c#,c#,c,c,c#,c#,d,d#,c,c#,c,c,c#,c#,f,p,4f
+Be-Bop-A-Lula:d=8,o=5,b=180:a,p,a,e,g,p,a,p,a,p,a,p,g,p,a,4p,a,a,e,g,p,a,p,a,p,a,p,g,p,a
+Beethoven:d=4,o=5,b=160:c,e,c,g,c,c6,8b,8a,8g,8a,8g,8f,8e,8f,8e,8d,c,e,g,e,c6,3g
+Bellini:d=4,o=6,b=50:11a#5,8c#,21a#5,11d#,21c#,21d#,8f,16c#,11a#5,11a#5,11c#,16f,8a#,21g#,21a#,8c7,16g#,11f,11f,11a#,16f,8d#,21c#,21d#,11f,11c#,11a#5,11a#,11c#7,11a#,11a#,21g#,21a#,11c7,11g#,3a#,11a#5,8c#,21a#5,11d#,21c#,21d#,8f,16c#,11a#5,11a#5,11c#,16f,8a#,21g#,21a#,8c7,16g#,11f,11f,11a#,16f,8d#,21c#,21d#,11f,11c#,11a#5,11a#,11c#7,11a#,11a#,21g#,21a#,11c7,11g#,a#
+Benny Hill:d=16,o=5,b=125:5d,e,8g,8g,e,d,a4,b4,d,b4,8e,d,b4,a4,b4,8a4,a4,a#4,b4,d,e,d,4g,4p,d,e,d,8g,8g,e,d,a4,b4,d,b4,8e,d,b4,a4,b4,8d,d,d,f#,a,8f,4d,4p,d,e,d,8g,g,g,8g,g,g,8g,8g,e,5e,8c,8c,8c,8c,e,g,a,g,a#,8g,a,b,a#,b,a,b,8d6,a,b,d6,8b,8g,8d,e6,b,b,d,8a,8g,4g
+Benny Hill:d=4,o=5,b=125:5f,16g,16a#,16p,16a#,16p,32g,16p,32f,16p,32a#4,16p,32d,16p,32f,16p,32d,16p,16g,16p,32f,16p,32d,16p,32c,16p,32d,16p,8a#4,16c,16c#,16d,16f,16g,16f,16a#,p,32f,16p,32g,16p,32f,16p,8a#,16p,8a#,16p,32g,16p,32f,16p,32a#4,16p,16d,32f,16p,32d,16p,16g,16p,32f,16p,32d,16p,32a#4,16p,32d,32p,16f,16p,32f,16p,32f,16p,32a,16p,32c6,16p,16a,16p,16f,p,32f,16p,32g,16p,32f,16p,8a#,16p,32a#,16p,32a#,16p,8a#,16p,32a#,16p,8a#
+Birdy Song:d=16,o=5,b=100:g,g,a,a,e,e,8g,g,g,a,a,e,e,8g,g,g,a,a,c6,c6,8b,8b,8a,8g,8f,f,f,g,g,d,d,8f,f,f,g,g,d,d,8f,f,f,g,g,a,b,8c6,8a,8g,8e,4c
+Bitter Sweet:d=4,o=5,b=100:8p,21d6,16p,32f6,16p,32d6,16p,21d#6,16p,32c6,16p,d#6,32p,32g#6,16p,32d#6,16p,g#6,32p,32g6,16p,21d#6,16p,g6,8p,21d6,16p,32f6,16p,32d6,16p,21d#6,16p,32c6,16p,d#6,32p,32g#6,16p,32d#6,16p,g#6,32p,32g6,16p,21d#6,16p,g6
+Black Bear:d=4,o=5,b=180:d#,d#,5g,16d#,5a#,16g,d#,d#,5g,16d#,5a#,16g,f,5c,16b4,c,5f,16d#,5d,16d#,5c,16d,5a#4,16c,5d,16a#4,d#,d#,5g,16d#,5a#,16g,d#,d#,5g,16d#,5a#,16g,f,f,f,5g,16f,d#,g,2d#
+Black or White:d=8,o=5,b=120:b,e6,g#6,a6,g#6,e6,b,a,g#,a,3b,4p,16b,16b,e6,g#6,a6,g#6,e6,b,a,g#,a,3b,p,16b,16b,c#6,16c#6,e6,16e6,5f#6,16e6,e6,p,16e6,16e6,c#6,c#6,e6,e6,f#6,e6,f#6,3g#6,1p,4b,4b,b,16f#6,16f#6,16f#6,5f#6,g#6,f#6,e6,e6,e6,c#6,e6,e6,c#6,f#6,4e6,3e6,1p,b,e6,g#6,a6,g#6,e6,b,a,g#,a,3b,4p,16b,16b,e6,g#6,a6,g#6,e6,b,a,g#,a,3b,p,16b,16b,c#6,16c#6,e6,16e6,5f#6,16e6,e6,p,16e6,16e6,c#6,c#6,e6,e6,f#6,e6,f#6,3g#6,1p,4b,4b,b,16f#6,16f#6,16f#6,5f#6,g#6,f#6,e6,e6,e6,c#6,e6,e6,c#6,f#6,4e6,3e6,p
+Blaze:d=4,o=6,b=160:32a#4,d#5,d#5,d#5,8d#5,3d#5,d#5,8d#5,3f5,d#5,c#5,c#5,8a#4,3d#5,1c#5,c5,c5,c5,8c5,3c5,c5,a#4,g#4,a#4,d#4,d#4,8d#4,1d#4,8c#5,f#5,f#5,f#5,8f#5,3f#5,2f#5,f#5,g#5,g#5,8g#5,g#5,3a#5,1g#5,8g#5,a#5,g#5,8g#5,8g#5,8g#5,8g#5,g#5,g#5,8a#5,g#5,8g#5,a#5,g#5,8f#5,3d#5,2d#5,8a#5,3a#5,1g#5,8g#5,8g#5,a#5,8g#5,3g#5,1g5
+Bleak Mid:d=4,o=5,b=125:g#,8a,5b,5g#,3f#,3e,f#,8g#,5f#,5c#,2f#,p,g#,8a,5b,5g#,3f#,3e,f#,8g#,5f#,5e,2e
+Blood:d=4,o=6,b=635:2g#5,2g#5,2g#5,2g#5,2g#5,2g#5,2c#,2c#,2d#,2d#,2d#,2d#,2d#,2d#,2c#,2c#,2e,2e,2e,2e,2e,2e,2d#,2d#,2c#,2c#,2c#,2c#,2c#,2c#,2d#,2d#,2g#5,2g#5,2g#5,2g#5,g#5,1g#5,2c#,2c#,2d#,2d#,2d#,2d#,2d#,2d#,2c#,2c#,2e,2e,2e,2e,2e,2e,2d#,2d#,2c#,2c#,2c#,2c#,2c#,2c#,2d#,2d#,1g#5
+Blue:d=4,o=6,b=450:2d#5,2e5,2g#4,2b4,2e5,2f#5,2b4,2d#5,1e5,2g#4,2b4,2g#5,1a5,2g#5,2f#5,2e5,2g#4,2b4,2e5,2f#5,2b4,2d#5,1e5,2g#4,2b4,2g#5,1a5,2g#5,2f#5,2e5,2g#4,2b4,2e5,2f#5,2b4,2d#5,1e5,2g#4,2b4,2g#5,1a5,2g#5,2f#5,2e5,2g#4,2b4,2e5,2d#5,2g#4,2b4,1c#5
+Bod:d=8,o=5,b=250:a,b,a,4c#6,a,4c#6,c#6,4b,16a,16b,16a,e,4p,e,f#,e,4g,4g,4g,4f#,e,2p,a,b,a,4c#6,a,4c#6,c#6,4b,16a,16b,16a,e,4p,e,f#,e,4g,4g,4g,4g,g#,a,b,4e,4p,a,c#6,a,p,f#,e,4p,a,c#6,a,p,f#,e,2p,4f#,4a,4a,4b,4c6,b,a,p,a,b,a,4c#6,a,4c#6,c#6,4b,16a,16b,16a,e,4p,e,f#,e,4g,4g,4g,4g#,a
+Bolero:d=16,o=5,b=80:c6,8c6,b,c6,d6,c6,b,a,8c6,c6,a,4c6,8c6,b,c6,a,g,e,f,2g,g,f,e,d,e,f,g,a,4g,4g,g,a,b,a,g,f,e,d,e,d,8c,8c,c,d,8e,8f,4d,2g
+Bolero:d=4,o=5,b=80:c6,8c6,16b,16c6,16d6,16c6,16b,16a,8c6,16c6,16a,c6,8c6,16b,16c6,16a,16g,16e,16f,2g,16g,16f,16e,16d,16e,16f,16g,16a,g,g,16g,16a,16b,16a,16g,16f,16e,16d,16e,16d,8c,8c,16c,16d,8e,8f,d,2g
+Bond:d=4,o=5,b=80:32p,16c#6,32d#6,32d#6,16d#6,8d#6,16c#6,16c#6,16c#6,16c#6,32e6,32e6,16e6,8e6,16d#6,16d#6,16d#6,16c#6,32d#6,32d#6,16d#6,8d#6,16c#6,16c#6,16c#6,16c#6,32e6,32e6,16e6,8e6,16d#6,16d6,16c#6,16c#7,3c7,16g#6,16f#6,3g#6
+Boom:d=4,o=5,b=100:c,5f,16f,3f,8g,5a,16a,3a,8a,8g,8a,a#,e,g,f,8p,8c6,8c6,8a,3d6,8c6,8c6,8a#,3a#,8a#,8a#,8g,3c6,8a#,8a#,8a,a,8p,8c,5f,8f,f,8g,5a,16a,3a,8a,8g,8a,a#,e,g,f,p
+Boretus:d=4,o=5,b=160:16b,16p,16c6,16p,16d6,16b,16g,16e,16b,16g,16e,16c,16g,16e,16c,16a4,p,16c6,16p,16d6,16p,16e6,16c6,16a,16f,16c6,16a,16f,16d,16a,16f,16d,16b4,2p,16g6,16e6,16c6,16a,16f,16d,16b4,16c6,16a,16f,16d,16b4,16f,16d,16b4,16f,e
+Borteus:d=16,o=5,b=160:b,p,c6,p,d6,b,g,e,b,g,e,c,g,e,c,a4,4p,c6,p,d6,p,e6,c6,a,f,c6,a,f,d,a,f,d,b4,2p,g6,e6,c6,a,f,d,b4,c6,a,f,d,b4,f,d,b4,f,3e
+Bouree:d=4,o=6,b=180:11g#5,5a#5,b5,11a#5,5g#5,g5,11g#5,5a#5,d#5,11f5,5g5,g#5,11f#5,5e5,d#5,11c#5,5b4,a#4,11b4,5c#5,d#5,11c#5,11b4,11a#4,g#4,11g#5,5a#5,b5,11a#5,5g#5,d#,11b5,5d#,d#5,11f5,5g5,g#5,11f#5,5e5,d#5,11c#5,5b4,8b4,32b4,32c#5,32b4,32c#5,16b4,5a#4,2b4
+Brahms:d=4,o=5,b=160:3e,8a,3c6,8a,3g#,16a,16b,2a,3f,16g,16a,3e,8p,16d,16c,16b4,16a4,5a4,16e,2a4,3e,16a,16c6,3e6,8c6,3b,16c6,16d6,2c6,16f6,16g6,16a6,16f6,16e6,16f6,16g6,16e6,16d6,16e6,16f6,16d6,16c6,16d6,16e6,16c6,16d6,16c6,16c6,16b,5b,16e6,a,p,e6,e6,3f6,8e6,8p,8d6,8p,16c#6,16d6,16e6,16d6,16c#6,16e6,16d6,p,d6,d6,3e6,8d6,8p,8c6,8p,8c6,16d6,16c6,16b,16d6,c6,p,3b,3b,d6,3c6,b,b,3a,8g#,8a,8b,8a,8g#,a,e6,8p,16e,f#
+BSP:d=8,o=5,b=170:d6,p,c6,p,a,a,c6,c6,d6,d6,c6,a,4p,d6,p,e6,e6,d6,p,b,b,d6,p,e6,p,d6,b,p,d6,d6,d6,d6,p,c6,p,a,a,c6,c6,d6,d6,c6,a,2p,g,g,a,a#,b,d,e,3g
+Btouch:d=4,o=6,b=40:21c#7,21g#7,21g#7,32g#7,21a7,32a7,21g#7,21a7,11g#7,21g#7,21g#7,32g#7,21a7,32a7,21g#7,21a7,21g#7,21b7,21g#7,21g#7,32g#7,21a7,32a7,21g#7,21a7,21g#7,16e7,16e7,11e7,21e7,21f#7
+Bullet me:d=4,o=5,b=112:3b6,3g6,16f#6,16g6,16f#6,5d6,8e6,p,16e6,16f#6,16g6,5f#6,8g6,8a6,3b6,3g6,16f#6,16g6,16f#6,5d6,8e6,p,16c6,16b,16a,16b
+Byssan Lullaby:d=4,o=5,b=90:e,b,b,8b,8b,8c6,8b,8a,8g,3f#,8g,a,8a,8a,8a,8a,8b,8a,2g,f#,8p,8f#,8g,8g,8g,8e,3f#,8f#,8g,8g,8g,8e,3f#,8a,8a,8a,8b,8c6,b,8a,8g,2f#,e
+Camberwick Green:d=16,o=5,b=63:8d,d,8a,a,g,a,g,5d,8d,g,8a,c6,b,a,g,a,b,c6,2d6,p,c6,b,a,4g,f#,e,3d,5e6,3b,5a,8d,d,8a,a,g,a,g,5d,8d,g,8a,c6,b,a,g,a,b,c6,2d6,p,c6,b,a,4g,f#,e,3d,5e6,3b,5a,8d,g,8e,a,8f#,b,8e,a,8d,g,8e,a,8f#,b,8e,a,8d,g,2e
+Canon:d=8,o=5,b=80:d,f#,a,d6,c#,e,a,c#6,d,f#,b,d6,a,c#,f#,a,b,d,g,b,a,d,f#,a,b,f#,g,b,c#,e,a,c#6,4f#6,f#,a,4e6,e,a,4d6,f#,a,4c#6,c#,e,4b,d,g,4a,f#,d,4b,d,g,3c#6
+Cantina:d=8,o=5,b=250:a,p,d6,p,a,p,d6,p,a,d6,p,a,p,g#,4a,a,g#,a,4g,f#,g,f#,3f,5d,16p,3p,a,p,d6,p,a,p,d6,p,a,d6,p,a,p,g#,a,p,g,p,3g,f#,g,p,c6,4a#,4a,4g
+Cantina:d=4,o=5,b=250:8a,8p,8d6,8p,8a,8p,8d6,8p,8a,8d6,8p,8a,8p,8g#,a,8a,8g#,8a,g,8f#,8g,8f#,3f,5d,16p,3p,8a,8p,8d6,8p,8a,8p,8d6,8p,8a,8d6,8p,8a,8p,8g#,8a,8p,8g,8p,3g,8f#,8g,8p,8c6,a#,a,g
+Captain Scarlet:d=4,o=6,b=50:16d,16a5,16a#5,8d#,16d5,21d5,21e5,32d5,16e5,8f5,8g5,21a5,21a#5,21g5,a5,16a5,21a5,21a#5,21g5,3a5
+Captain Pugwash:d=16,o=5,b=160:g,g,g,g,8p,g,g,g,8g,d6,8b,g,8b,d6,8g6,d6,8b,g,d,d,d,d,8p,d,d,d,8d,a,8f#,d,8f#,a,8d6,a,8f#,d,g,g,g,g,8p,g,g,g,8g,d6,8b,g,8b,d6,8g6,p,8g,p,8d,g6,8f#6,e6,8d6,c6,8b,a,g,8p,8b,p,8g,p,8b,c6,d6,d6,d6,d6,8p,d6,d6,d6,8d6,p,8e6,f#6,8g6,f#6,8e6,d6,8c6,b,8c6,d6,8e6,d6,8c6,b,8a,g,8f#,g,8a,g,8f#,d,8e,f#,g,g,g,g,8p,g,f,g,g,8p,g,e,g,g,8p,g,d#,g,g,8p,8d,g6,8f#6,e6,8d6,c6,8b,a,g,8p,8b,p,4g
+Castle on a Cloud:d=4,o=5,b=90:8a,16b,16c6,8b,8a,8a,8g#,a,p,8a,16b,16c6,8b,8a,8g,8f,e,p,8d,16e,16f,8e,8a,8b,8c6,a,p,8d,16e,16f,8e,8d,8c,8b,a
+Chariots of Fire:d=16,o=5,b=85:8c#,11f#,11g#,11a#,4g#,4f,8p,8c#,11f#,11g#,11a#,2g#,8p,8c#,11f#,11g#,11a#,4g#,4f,8p,8f,11f#,11f,11c#,2c#
+Children:d=4,o=6,b=80:2f,8g#,16g,2d#,8g#,16g,2c,8g#,16g,2g#5,32f5,32g5,32g#5,32c,2f,8g#,16g,2d#,32c#,32c,8c#,16c,3g#5,5g5,8g#5,16c,5f5
+Children:d=4,o=5,b=63:8p,3f6,1p,g#6,8g6,3d#6,1p,g#6,8g6,3c6,1p,g#6,8g6,3g#,1p,16f,16g,16g#,16c6,3f6,1p,g#6,8g6,3d#6,1p,16c#6,16c6,c#6,8c6,g#,2p,3g,g#,8c6,3f
+Coca Cola:d=16,o=5,b=125:f#6,p,f#6,p,f#6,p,f#6,p,4g6,f#6,p,4e6,p,e6,p,8a6,4f#6,4d6
+Coca-cola:d=4,o=5,b=125:8f#6,8f#6,8f#6,8f#6,g6,8f#6,e6,8e6,8a6,f#6,d6,2p
+Colonel Bogey:d=8,o=5,b=140:g,e,4p,p,e,f,g,e6,p,e6,p,2c6,g,e,4p,p,e,f,e,g,p,g,p,2f,f,d,4p,p,d,e,f,g,e,4p,p,e,f#,e,d,g,p,e,f#,d,p,a,5g,16f#,g,a,g,f,e,d
+Colonel Bogey:d=4,o=5,b=140:8g,8e,p,8p,8e,8f,8g,e6,e6,2c6,8g,8e,p,8p,8e,8f,8e,g,g,2f,8f,8d,p,8p,8d,8e,8f,8g,8e,p,8p,8e,8f#,8e,8d,8g,8p,8e,8f#,8d,8p,8a,5g,16f#,8g,8a,8g,8f,8e,8d,8c
+Colonel Bogey:d=4,o=5,b=140:8g,8e,p,8p,8e,8f,8g,e6,e6,2c6,8g,8e,p,8p,8e,8f,8e,g,g,2f,8f,8d,p,8p,8d,8e,8f,8g,8e,p,8p,8e,8f#,8e,8d,8g,8p,8e,8f#,8d,8p,8a,5g,16f#,8g,8a,8g,8f#,8e,8d,8g,8e
+Colonel Bogey:d=4,o=5,b=140:8g,8e,p,8p,8e,8f,8g,e6,e6,2c6,8g,8e,p,8p,8e,8f,8e,g,g,2f,8f,8d,p,8p,8d,8e,8f,8g,8e,p,8p,8e,8f#,8e,8d,8g,8p,8e,8f#,8d,8p,8a,5g,16f#,8g,8a,8g,8f#,8e,8d,8g,8e,p,8p,8e,8f,8g,e6,e6,2c6,8g,8e,p,8p,8e,8f,8e,g,g,2f,8f,8d,p,8p,8a,8b,8a,8c6,8g,p,8p,8g,8f,8e,8d,8a,8p,8c,8b4,8g,8p,8b4,1c,p
+Countdown:d=4,o=5,b=125:16c#6,2p,16c#6,2p,16c#6,2p,16c#6,2p,16c#6,2p,16c#6,2p,16c#6,2p,16c#6,2p,16c#6,2p,16c#6,2p,16c#6,2p,16c#6,2p,16c#6,2p,16c#6,2p,16c#6,2p,16c#6,16b,8p,16a#,16g#,8p,16e6,8b,16p,16c#6,16p,c#6
+Crazy:d=4,o=6,b=355:2c#,2e,2f#,1g#,1a,2e,2d#,2f#,1e,2g#,2g#,2g#,2f#,2e,2e,2e,2d#,2f#,1e,2c#,2e,2f#,1g#,1a,2e,2e,1b,2a,2a,1g#,2g#,2g#,2g#,2f#,2e,2e,2e,2d#,2c,2c#
+Crypt:d=4,o=5,b=225:d#,f#,a,8p,8b,a#,f#,d#,8p,8b4,a#4,d#,f#,a,2b4,8p,a#4,d,f,8p,8f#,g#,b,a#,8p,8g#,f#,f,d#,d,2d#,1p,1p,3p,f,g#,b,8p,8c#6,c6,g#,f,8p,8c#,c,f,g#,b,1c#,c,e,g,8p,8g#,a#,c#6,c6,8p,8a#,g#,g,f,e,2f,16p
+Dallas:d=8,o=5,b=125:e,3a,e,3e6,a,4c#6,b,c#6,4a,4e,4a,4f#6,4e6,c#6,d6,1e6,p,e,4a,4f#6,4e6,c#6,d6,4e6,b,c#6,4a,4e,4a,c#6,d6,3b,a,2a
+Dangerman:d=4,o=6,b=355:3a,8g,a,8a,p,8a5,8p,d,p,3a,8g,a,8a,p,8a5,8p,d,p,a,a,a#,a#,a#,a#,a#,a#,a#,c7,2a,p,8a5,8p,d,p,3a,8g,a,8a,p,8a5,8p,d,p,3a,8g,a,8a,p,8a5,8p,d,p,a,a,a#,a#,a#,a#,a#,a#,a#,c7,2d7,p,8a5,8p,d,p,3a,8a,1a#,8a#5,8p,d#,2p,a#,2a#,2f#,2d#,3a#,8a#,1b,8b5,8p,e,2p,b,2b,2g,2e,3b,8d7,1e7,e7,8e7,8e7,e7,f7,f7,f7,f7,f7,f7,f7,d7,3e7,8p,b,1e7
+Dark:d=4,o=5,b=140:8f#6,8e6,2f#6,16e6,16d#6,16d6,16b,a#,1b,8f#,8e,2f#,8c#,8d,8a#4,1b4,8f#,8e,2f#,16e,16d#,16d,16b4,a#4,1b4,8f#,8e,2f#,c#,2d,2e4,1b4
+Das Boot:d=4,o=5,b=100:3d#4,8d4,8c4,8d4,8d#4,8g4,3a#4,8a4,8g4,8a4,8a#4,8d,1f,p,3f4,8e4,8d4,8e4,8f4,8a4,3c,8b4,8a4,8b4,8c,8e,1g,2p
+Davy Crockett:d=4,o=5,b=160:f,5f,16g,5a,16g,5f,16c,d,f,2c,f,g,a,5g,16f,g,5g,16a,2g,c,5c,16c,f,5c,16c,d,5d,16d,2g,e,5e,16e,e,5e,16d,c,5d,16e,2f,a,1c6,3d6,8d6,8c6,3a,5c,16c,5c,16c,e,g,1f,p,a,1c6,3d6,8d6,8c6,3a,5c,16c,5c,16c,e,g,1f
+Death March:d=4,o=5,b=125:3c,c,8c,3c,d#,8d,d,8c,c,8c,1c
+Death March:d=4,o=5,b=100:c,16p,c,8c,32p,2c,d#,8d,32p,d,8c,32p,c,8b4,32p,1c
+Det gar likar no:d=4,o=5,b=180:3e,3g#,3b,b,8e6,3c#6,b,8b,3b,p,a,8a,a,8b,a,8g#,8g#,8g#,8g#,g#,8g#,g#,8g#,8g#,f#,p
+Deutschland Uber Alles:d=4,o=5,b=160:3g,8a,b,a,c6,b,8a,8f#,g,e6,d6,c6,b,a,8b,8g,2d6,3g,8a,b,a,c6,b,8a,8f#,g,e6,d6,c6,b,a,8b,8g,2d6,a,b,8a,8f#,d,c6,b,8a,8f#,d,d6,c6,3b,8b,c#6,8c#6,8d6,2d6,3g6,8f#6,8f#6,8e6,d6,3e6,8d6,8d6,8c6,b,2a,16b,16c6,8d6,8e6,8c6
+Digimon:d=8,o=5,b=112:c,g,f#,p,16c,16c,g,f#,g,16c,16c,g,f#,g,a#,a#,4p,c,g,f#,p,16c,16c,g,f#,g,16c,16c,g,f#,d#,4c
+Dire:d=4,o=5,b=160:3g#,3g#,p,8p,8f#,8g#,b,8g#,f#,3e,3e,p,2p,p,8f#,8g#,3b,3b,p,8p,8f#,8g#,b,8g#,8f#,3e,3e
+Diverse:d=4,o=5,b=63:p,d,p,p,p,b,p,p,p,8p,16f#6,16f#6,16f#6,16e6,16d6,16c#6,b,8f#6,e6,16e6,16e6,16e6,16d6,16c#6,16b,a,8f#6,d6,16f#6,16f#6,16f#6,16e6,16d6,16c#6,b,8f#6,e6,8d6,8c#6,2d6
+dj jurgen:d=4,o=6,b=355:2f7,2f7,2e7,2c7,2c7,1a,1c7,1c7,1b,2g,2g7,2g7,2e7,2c7,2c7,1a,1c7,1c7,1b,2g,2f7,2f7,2e7,2c7,2c7,1a,1c7,1c7,1b,2g,2g7,2g7,2e7,2c7,2c7,1a,1c7,1c7,1b,2g,2f7,2f7,2e7
+Do you hear the people sing:d=4,o=5,b=140:5e6,16d6,5c6,16d6,5e6,16f6,g6,8e6,8d6,8c6,5b,16a,5b,16c6,g,8a,8g,8f,5e,16g,5c6,16e6,5d6,16c#6,5d6,16a,5c6,16b,5b,16c6,d6
+Don't Care:d=16,o=5,b=125:f,e,f,e,f,e,8d,e,d,e,d,e,d,c,d,4d
+Don't wanna miss a thing:d=4,o=5,b=125:2p,16a,16p,16a,16p,5a,16p,a,16g,16p,2g,16p,p,8p,16g,16p,16g,16p,16g,5g,16p,c6,16a#,16p,a,8g,f,g,8d,5f,16p,16f,16p,16c,8c,16p,a,8g,16f,16p,8f,16p,16c,16p,g,f
+Dr No:d=4,o=5,b=112:2b4,2c,2c#,2c,2b4,2c,2c#,2c,2p,8e,16f#,16f#,8f#,f#,8e,8e,8e,8e,16g,16g,8g,g,8f#,8f#,8e,8e,16f#,16f#,8f#,f#,8e,8e,8e,8e,16g,16g,8g,g,8p,f#,8f#,8e,8d#6,8d6,2d6,8b,8a,2b,8e,8g,8p,8d#6,3d6,8g,8a#,1b,8g,16a,16g,3f#,16b4,8e,1c#,p,8e,8g,8p,8d#6,3d6,8g,8a#,1b,8g,16a,16g,3f#,16b4,8d#,1e
+Dr Who:d=4,o=6,b=80:3b5,8g5,11b5,5a5,21g5,32f#5,3g5,e,32d,32c,8d,8g5,5e,32d,32c,8d,8b5,2a5,32g5,32f#5,2g5
+Dragonballz:d=16,o=5,b=140:4f6,32f6,4g#6,4c7,32f7,4g#6,4c7,32f7,2p,2f6,2f,2f6,32f,32f,32f,32f,32f,32f,32p,32d#6,32d#,32d#6,32d#,32d#,32d#,32d#,32d#,32d#,32p,p,p,32f6,32f,32f6,32f,32f,32f,32f,32f,32f,9p.,8f,8f7,8f6,8f,8f7,32f6,32f6,32f6,32f6,32f6,32f6,32f6,p,a#,a#,p,c6,c,c6
+Dream:d=8,o=4,b=220:c3,3p,c,4p,d#3,p,d#,d#3,p,d#,p,d#3,p,f3,3p,f,4p,g3,p,g,g3,p,a#3,p,c,p,c3,p,f5,p,c,p,c5,d#3,f5,d#,d#3,p,d#,f5,d#3,g5,f3,p,f5,p,f,p,f5,g3,g5,g,g3,p,a#3,p,c,p,c3,g5,f5,p,c,g5,c5,d#3,f5,d#,d#3,p,d#,f5,d#3,g5,f3,g,f5,p,f,g5,f5,g3,g5,g,g3,p,a#3,d#5,c,p,c3,g5,f5,c5,c,g5,c5,d#3,f5,d#,d#3,g5,d#,f5,d#3,g5,f3,g,f5,d#5,f,g5,f5,g3,g5,g,g3,f5,a#3,d#5,c,c5,c3,g5,f5,p,c,g5,c5,d#3,f5,d#,d#3,p,d#,f5,d#3,g5,f3,g,f5,p,f,g5,f5,g3,g5,g,g3,p,a#3,d#5,c,p,c3,p,f5,p,c,p,c5,d#3,f5,d#,d#3,p,d#,f5,d#3,g5,f3,p,f5,p,f,p,f5,g3,g5,g,g3,p,a#3,p,c,p,c3,3p,c,4p,d#3,p,d#,d#3,p,d#,p,d#3,p,f3,3p,f,4p,g3,p,g,g3,p,a#3,p,c
+Duelling Banjos:d=8,o=5,b=200:c#,d,4e,4c#,4d,4b4,4c#,4a4,4b4,4p,16c#6,16p,16d6,16p,e6,p,c#6,p,d6,p,b,p,c#6,p,a,p,4b,4p,4a4,4a4,4b4,4c#,4a4,4c#,4b4,4p,a,p,a,p,b,p,c#6,p,a,p,c#6,p,b
+Dustman:d=16,o=5,b=140:5a,a,b,p,c6,p,8c#6,4p,8e6,c#6,p,c#6,p,c#6,p,c#6,p,c#6,p,4c#6,c#6,p,c#6,p,c#6,p,d6,p,c#6,p,4b,b,p,b,p,b,p,b,p,b,p,b,p,b,p,5b,p,e6,e6,e6,p,d6,p,c#6,p,b,p,4a
+East Enders:d=4,o=5,b=100:8b,8c#6,8d#6,8e6,f#6,g#6,1e6,p,8e6,8d#6,8c#6,8b,3b,8f#,5f#,5b,8f#6,b,c#6,8b,8c#6,8d#6,8e6,f#6,g#6,1e6,p,8e6,8d#6,8c#6,8b,3b,8f#,5d#6,5e6,8f#6,d#6,c#6,2b
+Easy (high):d=4,o=5,b=112:32c6,32g6,32e6,2p,32e6,32g6,32c6,2p,32c6,32g6,32e6,2p,32e6,32g6,32c6,2p
+Easy (low):d=4,o=5,b=63:8g4,32g,32d,32g,32g,32d,2p
+Ecuador:d=4,o=5,b=140:5g,5d,8a#,8a,8c6,8a,8f,5g,5d,8a#,8a,8c6,8a,8f,5a#,5f,8d6,8c6,8d6,8c6,8a,5a#,5g,8a#,8a,8a#,8a,8f
+Entertainer:d=8,o=5,b=140:d,d#,e,4c6,e,4c6,e,1c6,c6,d6,d#6,e6,c6,d6,4e6,b,4d6,2c6,4p,d,d#,e,4c6,e,4c6,e,1c6,p,a,g,f#,a,c6,4e6,d6,c6,a,2d6
+Ericcson:d=4,o=5,b=355:16b4,16d,16b4,16d,16b4,16d,16b4,16d,16d,16f,16d,16f,16d,16f,16d,16f,16f,16a,16f,16a,16f,16a,16f,16a
+Eternally:d=4,o=5,b=112:b,8b,8a,8b,8c6,a,8a,8g,8a,8b,g,8g,8f#,8e,8d#,2e,a
+Euro:d=4,o=5,b=63:8c,8f,16f,16g,8a,8f,c6,8a,8a,8a#,16c6,16a#,16a,16a#,8c6,16g,16f,16g,16a,8g,8c,8f,16f,16g,8a,8f,c6,8a,8a,16a#,16c6,16a,16a#,g,16f,2f
+Europe:d=4,o=5,b=140:16c#6,32b,32p,5c#6,16p,f#,3p,32d6,32p,32c#6,32p,32d6,11p,32c#6,11p,3b,p,32d6,32p,32c#6,32p,d6,f#,3p,32b,32p,32a,32p,32b,11p,32a,11p,32g#,11p,32b,11p,3a,32c#6,32p,32b,32p,c#6,2f#,p,16p,32d6,32p,32c#6,32p,32d6,11p,32c#6,11p,3b,p,32d6,32p,32c#6,32p,d6,f#,3p,32b,32p,32a,32p,32b,11p,32a,11p,32g#,11p,32b,11p,2a,16p,32g#,32p,32a,32p,3b,16a,16b,8c#6,8b,8a,8g#,f#,d6,1c#6,8p,16c#6,16d6,16c#6,16b,1c#6,16p
+Evenga:d=4,o=6,b=80:3d7,11f#7,11g7,11a7,11d7,2g7,3d7,11f#7,11g7,11a7,11d7,2g7,3d7,11f#7,11g7,11a7,11d7,2g7,3d7,11f#7,11g7,11a7,11d7,2g7,11f#7,21f#7,21f#7,21f#7,21e7,11e7,11e7,2d7,11e7,21d7,11d7,b,21b,21b,11f#7,11f#7,11f#7,21e7,5e7,11d7,3d7,11e7,21d7,5d7,2b,11e7,21e7,8e7,11e7,11f#7,11g7,5f#7,3c#7,11f#7,21e7,5d7,3b,11b,11g7,11f#7,e7
+Exodus:d=4,o=5,b=70:8c#,3f#,8c#6,3b,8f#,8a,8b,5g#,16e,3f#,8c#6,3e6,8d#6,8e6,8f#6,5d#6,16b,2c#6
+Fable:d=4,o=5,b=140:5g#,16p,16f#,16p,8g#,8p,e,8p,5f#,16p,16e,16p,8f#,8p,d#,8p,5e,16p,16d#,16p,8e,8p,c#,p,8c#,16d#,16p,8e,16g#,16p,c#,p,8c#,16d#,16p,8e,16g#,16p,b4,p,8c#,16d#,16p,8e,b
+Fairground:d=8,o=6,b=225:c,c,b5,c,16d,4p,2d,16p,16e,4p,2e,16p,16g,4p,1f,p,f,f,e,d,c,p,c#,d,p,c#,2c,c,c,c,c,c,p,c#,d,p,c#,2c,c,c,b5,c,16d,4p,2d,16p,16e,4p,2e,16p,16g,4p,1f,p,f,f,e,d,4e,e,e,f,f#,4g,g5,g5,a5,b5,16c,p,b5,16c,p,b5,2c,c5,4c5,c5,2c5,4e5,g5,3d,p,3d,p,3d,4p,c,c,a5,c,3d,4p,a#5,a#5,g5,a#5,3d
+Fawlty Towers:d=8,o=5,b=125:16b,16c6,d6,c#6,d6,c#6,d6,g6,4e6,p,d6,c6,b,c6,b,c6,b,c6,f#6,4d6,p,c6,b,a,g,f#,g,f#,g,d6,c6,b,c6,b,a,g,f#,g,e,f#,4d,c6,d6,b,c6,4a
+Figaro:d=8,o=5,b=250:d,c#,d,c#,d,4p,32p,d,c#,d,e,f#,e,f#,g,a,g#,a,g#,a,4p,32p,a,g#,a,a#,b,a,g,f#,e,d#,e,f#,g,f#,e,d,c#,d,e,d,c#,a4,b4,c#,d,d6,d,d6,d,d6,d,d6,d,d6,d,d6,d,d6,d,d6,1p,4p,d,d6,d,d6,d,d6,d,d6,d,d6,d,d6,d,d6,d,d6,1p,4p,d,d6,d,d6,d,d6,d,d6,d,d6,d,d6,d,d6,d,d6,p
+Final Countdown:d=16,o=5,b=125:b,a,4b,4e,4p,8p,c6,b,8c6,8b,4a,4p,8p,c6,b,4c6,4e,4p,8p,a,g,8a,8g,8f#,8a,3g,f#,g,3a,g,a,8b,8a,8g,8f#,4e,4c6,1b,b,c6,b,a,1b
+The Final Countdown:d=4,o=5,b=125:p,8p,16b,16a,b,e,p,8p,16c6,16b,8c6,8b,a,p,8p,16c6,16b,c6,e,p,8p,16a,16g,8a,8g,8f#,8a,3g,16f#,16g,3a,16g,16a,8b,8a,8g,8f#,e,c6,1b,16b,16c6,16b,16a,1b
+Final Countdown:d=4,o=5,b=125:16c#6,16b,c#6,f#,3p,16d6,16c#6,8d6,8c#6,b,3p,16d6,16c#6,d6,f#,3p,16b,16a,8b,8a,8g#,8b,3a,16c#6,16b,c#6,f#,3p,16d6,16c#6,8d6,8c#6,b,3p,16d6,16c#6,d6,f#,3p,16b,16a,8b,8a,8g#,8b,3a,16g#,16a,3b,16a,16b,8c#6,8b,8a,8g#,f#,d6,1c#6,16c#6,16d6,16c#6,16b,1c#6,2p
+Flintstones:d=4,o=5,b=200:g#,c#,8p,c#6,8a#,g#,c#,8p,g#,8f#,8f,8f,8f#,8g#,c#,d#,2f,2p,g#,c#,8p,c#6,8a#,g#,c#,8p,g#,8f#,8f,8f,8f#,8g#,c#,d#,2c#
+Flintstones:d=4,o=5,b=200:g#,c#,8p,c#6,8a#,g#,c#,8p,g#,8f#,8f,8f#,8g,8g#,c#,d#,2f,2p,g#,c#,8p,c#6,8a#,g#,c#,8p,g#,8f#,8f,8f#,8g,8g#,c#,d#,2c#,2p,c6,f,8p,8c#6,8p,8c#6,8c#6,8c6,8c6,8a#,a#,p,a#,d#,8p,8c6,8p,8a#,8a#,11g#,32p,8g,8a#,16p,g#,p,g#,c#,8p,c#6,8a#,g#,c#,8p
+Flintstones:d=4,o=5,b=40:32p,16f6,16a#,16a#6,32g6,16f6,11a#,16f6,32d#6,32d6,32d6,32d#6,32f6,16a#,16c6,d6,16f6,11a#,16a#6,32g6,16f6,11a#,32f6,32f6,32d#6,32d6,32d6,32d#6,32f6,16a#,16c6,a#,16a6,11d6,16a#6,32a6,32a6,32g6,32f#6,32a6,8g6,16g6,11c6,32a6,32a6,32g6,32g6,32f6,32e6,32g6,8f6,16f6,11a#,16a#6,32g6,16f6,11a#,16f6,32d#6,32d6,32d6,32d#6,32f6,16a#,11c6,32d6,32d#6,32f6,16a#,11c6,32d6,32d#6,32f6,16a#6,16c7,5a#6
+Flute:d=4,o=5,b=160:21a,16g,16a,16a#,8c6,8c6,8c6,8c6,8c6,8c6,8c6,8c6,3f,3p,21f,16e,16f,16g,8a,8a,8a,8a,8a,8a,8a,8a,3d,3p,21d,16c,16d,16e,8f,8f,8f,8c,8g,8g,8g,8c,8a,8f,8a,8c6,8f6,8c6,8d6,8a#,8c6,8f,8a,8c6,8f6,8c6,8d6,8a#,c6,p,3f,8f,a4,p,e,p,8f,8g,8f,8a,8a#,8a,8f,8g,8f,8d,8e,8d,8c#,8d,8c#,8a4,8b4,8a4,8c#,8d,8c#,8e,8f,8e,8f,8g,8f,8a,8a#,8a,8f,8g,8f,8d,8e
+Fraggle Rock:d=8,o=5,b=112:c6,16c6,c6,16c6,a,2p,b,b,a,g,16e6,d6,c6,16a,g,c6,16c6,c6,16d6,a,2p,b,16b,a,16b,c6
+Frank Mills:d=4,o=5,b=112:e,8e,8e,e,g,d,d,p,8e,8g,c6,c6,c6,e6,3a,8a,a,8b,8c6,8a,8g,g,p,c6,g,8f,8e,f,c6,p,8p,8a,b,8a,8b,1c6
+Fruit and Nut:d=16,o=5,b=70:d,c#,d,c#,d,p,c#,p,e,p,32d,32f#,32a,32d6,5f#6,p,g6,f#6,g6,f#6,e6,d6,a,f#,5d,32f#,32d6,5c#6,p,b,b4,b4,32b4,32c#,b4,p,a4,p,b,b4,b4,32b4,32c#,b4,p,a4,p,d6,d,d,d,d,c#,e,d,d,c#,b4,a4,8g6,32e6,32c#6,32g,32e,d,c#,d,c#,d,p,c#,p,e,p,32d,32f#,32a,32d6,5f#6,32p,g6,f#6,g6,f#6,e6,d6,a,f#,5d,32f#,32d6,5c#6,p,b,b4,b4,32b4,32c#,b4,p,a4,p,b,b4,b4,32b4,32c#,b4,p,a4,p,b,b4,8b4,8c#,32p,8c#,5d
+Fugees Killing me softly I:d=4,o=5,b=112:8e,f,g,3a,8g,d,3g,p,8p,8a,g,8f,e,8f,2c,p,8e,f,g,3a,8g,a,b,8b,8c6,8b,16a,8g,2a
+Fun2Remix:d=4,o=5,b=320:c6,8c6,g,8g,a,a#,a,g,a,c6,8c6,g,8g,a,a#,a,g,a,a#,8a#,f,8f,g,g#,g,f,g,c6,8c6,c6,8c6,8c6,8c6,c6,c6,c6,c6
+Funky Town:d=8,o=4,b=125:c6,c6,a#5,c6,p,g5,p,g5,c6,f6,e6,c6,2p,c6,c6,a#5,c6,p,g5,p,g5,c6,f6,e6,c6
+Futurama:d=8,o=5,b=112:e,4e,4e,a,4a,4d,4d,e,4e,4e,e,4a,4g#,4d,d,f#,f#,4e,4e,e,4a,4g#,4b,16b,16b,g,g,f#,f#,4e,4e,a,4a,4d,4d,e,g,f#,4e,e,4a,4g#,4d,d,f#,f#,4e,4e,e,4a,4g#,4b,16b,16b,g,g,f#,f#,p,16e,16e,e,d#,d,d,c#,c#
+GB National Anthem:d=4,o=5,b=90:g,g,a,3f#,8g,a,b,b,c6,3b,8a,g,a,g,f#,3g,8a,8b,8c6,d6,d6,d6,3d6,8c6,b,c6,c6,c6,3c6,8b,a,b,8c6,8b,8a,8g,3b,8c6,d6,8e6,8c6,b,a,3g
+Georgia on my mind:d=4,o=5,b=63:8e,1g,8p,8e,1d,8p,p,e,a,e,1d,8c,8d,e,g,b,a,f,f,8e,e,1c
+Get Down:d=4,o=6,b=63:16f,16f,16f,16c7,8g#,16g,8g#,16f,16f,16c7,8g#,16g,16g#,16f,16f,16f,16c7,8g#,16g,8g#,16f,16f,16g,16g#,16g,16g#,16f
+Get Red:d=4,o=5,b=125:5g,3g,8g,8c,8c,8d,8d,5g,5g,8g,8a#,8a#,8c6,8c6,5g,5g,8g,8c,16c,8d,8d,5g,5g,8a#,8a#,8c6,8d6
+Get Smart:d=4,o=6,b=250:3c#,5f#,1f,f#,16c,11b5,16a5,1g#5,3c#,5f#,1f,5c#,11c,16b5,11a5,1g#5,3c#,5f#,5f,5c#,5a5,3e,5e,5d#,5b5,5g#5,3d,5d,5c#,5a5,5f#5,3c,5c,5b5,5a5,5f#5,5c#5,5f5,5a5,1f#5,32c#,3c#5,32f#,5f#5,32f,1f5,32f#,f#5,32f5,21f
+Ghost Busters:d=8,o=5,b=145:16c6,32p,16c6,e6,c6,d6,a#,2p,32c6,32p,32c6,32p,c6,a#,c6
+Girl from Ipanema:d=4,o=5,b=160:3g,8e,8e,d,3g,8e,e,8e,8d,3g,e,e,8d,g,8g,8e,e,8e,8d,f,d,d,8d,8c,e,c,c,8c,a#4,2c
+God:d=4,o=5,b=225:a,a,f,d,d,g,g,g,b,b,c,c,d,c,c,c,a,f,a,a,a,g,g,a,g,a,a,f,d,d,g,g,g,b,b,c,c,d,c
+God Rest:d=4,o=5,b=100:8d,8d,8a,8a,8g,8f,8e,8d,8c,8d,8e,8f,8g,a,8p,8d,8d,8a,8a,8g,8f,8e,8d,8c,8d,8e,8f,8g,a
+Godfather:d=8,o=7,b=80:e5,a5,c6,b5,a5,c6,a5,b5,a5,f5,g5,2e5,e5,e5,a5,c6,b5,a5,c6,a5,b5,a5,e5,e5,2d5,d5,d5,f5,g#5,2b5,b5,d5,f5,g#5,2a5,a5,c5
+The Good and The Bad:d=4,o=5,b=56:32p,32a#,32d#6,32a#,32d#6,5a#,11f#,11g#,d#,32a#,32d#6,32a#,32d#6,5a#,11f#,11g#,c#6,32a#,32d#6,32a#,32d#6,5a#,11f#,21f,21d#,c#,32a#,32d#6,32a#,32d#6,5a#,11g#,d#
+Good Bad:d=16,o=5,b=125:a,d6,a,d6,2a,4f,4g,2d,4p,a,d6,a,d6,2a,4f,4g,2c6,4p,a,d6,a,d6,2a,4f,8e,8d,2c,4p,a,d6,a,d6,2a,4g,1d
+Good Bad:d=4,o=6,b=40:32b5,32e,32b5,32e,5b5,11g5,11a5,e5,32b5,32e,32b5,32e,5b5,11g5,11a5,d,32b5,32e,32b5,32e,5b5,11g5,21f#5,21e5,d5,32b5,32e,32b5,32e,5b5,11a5,e5
+Good King:d=4,o=5,b=100:8f,8f,8f,8g,8f,8f,c,8d,8c,8d,8e,f,f,8f,8f,8f,8g,8f,8f,c,8d,8c,8d,8e,f,f
+Green Day:d=4,o=6,b=50:32b5,32a,16g,16g,16g,32g,32g,16d,16d,16d,32d,32d,16e,8e,c,32b5,32a,8g,16g,32g,11g,16d,16d,16d,32d,32d,16e,8e,c,32b5,32a,16g,16g,16g,32g,32g,16d,16d,16d,32d,32d,16e,8e,5c
+Greensleeves:d=4,o=5,b=140:g,2a#,c6,3d6,8d#6,d6,2c6,a,3f,8g,a,2a#,g,3g,8f,g,2a,f,2d,g,2a#,c6,3d6,8e6,d6,2c6,a,3f,8g,a,3a#,8a,g,3f#,8e,f#,2g
+Halloween:d=8,o=5,b=180:d6,g,g,d6,g,g,d6,g,d#6,g,d6,g,g,d6,g,g,d6,g,d#6,g,c#6,f#,f#,c#6,f#,f#,c#6,f#,d6,f#,c#6,f#,f#,c#6,f#,f#,c#6,f#,d6,f#
+Happy Song:d=4,o=6,b=125:16a#5,16f5,16a#5,16c#,16a#5,16f5,16a#5,16c#,16a#5,16f5,16a#5,16c#,16a#5,16f5,16a#5,16c#,16c#,16g#5,16c#,16f,16c#,16g#5,16c#,16f,16c#,16g#5,16c#,16f,16c#,16g#5,16c#,16f,16f#5,16c#5,16f#5,16a#5,16f#5,16c#5,16f#5,16a#5,16f#5,16c#5,16f#5,16a#5,16f#5,16c#5,16f#5,16a#5,16d#5,16a#4,16d#5,16f#5,16d#5,16a#4,16d#5,16f#5,16f5,16c5,16f5,16a5,16f5,16c5,16f5,16a5,16a#5,5f5
+Har en drom:d=4,o=5,b=112:8p,8d,8d,d,8d,8d,3e,8f#,f#,8f#,8a,3d6,8a,3b,8f#,1e
+Hark:d=4,o=5,b=100:5a,16a,8a,8g,8f,8e,f,8d,16e,16f,8g,8c,2c,2d,2c
+Haunted House:d=4,o=5,b=108:2a4,2e,2d#,2b4,2a4,2c,2d,2a#4,1e,e,1f4,1a4,1d#,1e,d,1c,b4,1a4,1p,2a4,2e,2d#,2b4,2a4,2c,2d,2a#4,1e,e,1f4,1a4,1d#,1e,d,1c,b4,1a4
+Have I Got News for You:d=16,o=5,b=100:8a,g,e,8g,e,d,c,d,e,8a,c6,8a,g,e,8c6,a,g,8d6,c6,a,c6,d6,8e6,8d6,8c6,8b,c6,8e6,8d6,c6,b,8a,a,e,g,8a,2a,a,g,a,8a,g,e,g,a,g,a,8c6,a,g,e,a,g,a,8a,g,e,g,a,g,e,8g,8a,a,g,8a,8a,8g,8a,8c6,8a,8c6,8d#6,8c#6,8a#,8f#,3e
+Have I Got News for You:d=4,o=5,b=100:8a,16g,16e,8g,16e,16d,16c,16d,16e,8a,16c6,8a,16g,16e,8c6,16a,16g,8d6,16c6,16a,16c6,16d6,8e6,8d6,8c6,8b,16c6,8e6,8d6,16c6,16b,8a,16a,16e,16g,8a,2a,16a,16g,16a,8a,16g,16e,16g,16a,16g,16a,8c6,16a,16g,16e,16a,16g,16a,8a,16g,16e,16g,16a,16g,16e,8g,8a,16a,16g,8a,8a,8g,8a,8c6,8a,8c6,8d#6,8c#6,8a#,8f#,e
+Have I Got News for You:d=4,o=5,b=100:8a,d,f,f,f,f,f,8f,8f,8e,8f,8e,8b,16g,16g,16b,16g,16b,16f,16g,16f,16f,16g,16b,16b,16g,16g,16g,16g,16b,16b,16g,16g,16e,8g,16e,16d,16c,16d,16e,8a,16c6,8a,16g,16e,8c6,16a,16g,8d6,16c6,16a,16c6,16d6,8e6,8d6,8c6,8b,16c6,8e6,8d6,16c6,16b,8a,16a,16e,16g,8a,2a,16a,16g,16a,8a,16g,16e,16g,16a,16g,16a,8c6,16a,16g,16e,16a,16g,16a,8a,16g,16e,16g,16a,16g,16e,8g,8a,16a,16g,8a,8a,8g
+Hawaii 5 0:d=16,o=6,b=240:8g#5,p,8g#5,p,8b5,p,4d#,p,1c#,p,2g#5,p,p,8g#5,p,8g#5,p,8f#5,p,4b5,p,1g#5,3p,8g#5,p,8g#5,p,8b5,p,4d#,p,2c#,8p,1g#,8p,8f#,p,8f#,p,8d#,p,4b5,p,1g#,4p,2b,p,8a,8g#,8f#,8e,8d#,8c#,8d#,8b5,2c#,4p,8c#,p,8b,8a,8g,8f#,8d#,8c#,8b5,8c#,4d#,8c#,p,4b5,p,3c#,p,2g#,4p,8f#,p,8f#,p,8d#,p,4b5,p,1c#
+He-Man:d=8,o=6,b=160:g,g,g,4g,4e,g,a,g,f,4g,4c,g,a,g,f,4g,4e,c,1d,4p,3e,4a5,4c,e,f#,e,d,4e,4a5,e,f#,e,d,4e,4a5,g5,2a5
+Henry's Cat:d=8,o=6,b=355:g,p,d,p,d7,p,b5,p,16b5,16b,p,16c,16g,p,d,p,g,p,d,p,d7,p,b,p,16b5,16g,p,16c,16a,p,c,p,b,p,c,p,g,p,d,p,d7,p,b5,p,16b5,16b,p,16c,16g,p,d,p,g,p,d,p,d7,p,b,p,16b5,16g,p,16c,16a,p,c,p,b,p,c,p,16b5,b,16p,16b5,b,16p,16b5,b,16p,16b5,b,16p,16b5,b,16p,16b5,b,16p,16b5,b,16p,16b5,b,16p,16b5,b,16p,16c,c7,16p,16c#,d7,16p,16d,d#7,16p,16e7,e
+HeyBaby:d=4,o=5,b=900:8a4,16a#4,16b4,16c,16c#,16d,16d#,16e,16f,16f#,16g,16g#,16a,16a#,16b,16c6,8c#6,16d6,16d#6,16e6,16f6,p,p,16a4,16a#4,16b4,16c,16c#,16d,16d#,16e,16f,16f#,16g,16g#,16a,16a#,16b,16a#,16a,16g#,16g,16f#,16f,16e,16d#,16d,16c#,16c,16b4,16a#4,16a4
+Hitchcock:d=16,o=5,b=200:c,p,f4,8p,8f,32g,32p,f,32p,e,32p,d,32p,e,8p,f,32p,g,5p,c,p,f4,8p,8f,32g,32p,f,32p,e,32p,d,32p,e,8p,f,32p,g,5p,c,p,f4,8p,g#,32p,8c6,p,a#,32p,g#,8p,c6,32p,8d#6,p,c#6,32p,c6,8p,d#6,32p,8g6,p,f6,32p,e6,32p,c#6,32p,c6,32p,a#,32p,g#,32p,g,32p,8f4
+Hogans:d=4,o=6,b=40:11f5,11g#5,11c#,11f,16f#,32g#,21f#,21f,5d#,16f#,32g#,21f#,21f,11d#,11g#5,16c#,32c,21c#,21a#5,5g#5,11f5,11g#5,11c#,11f5,21f#5,11a#5,21f#5,11d#,11f#,21f,11g#,21f,11c#,11d#,5c#
+Hungaria:d=4,o=5,b=140:3e,8a,3c6,8a,3g#,16a,16b,2a,3f,16g,16a,2e,16d,16c,16b4,16b4,5b4,16e,2a4,3e,16a,16c6,3e6,8c6,3b,16c6,16d6,2c6,16f6,16g6,16a6,16f6,16e6,16f6,16g6,16e6,16d6,16e6,16f6,16d6,16c6,16d6,16e6,16c6,16d6,16c6,16c6,16b,5b,16e6,a,8a6,8p,3e,8a,3c6,8a,3g#,16a,16b,2a,3d6,16e6,16f6,2c6,16d6,16c6,16c6,16b,5b,16e6,2a,5e,16a,16c6,16e6,16a6,16c7,3e7,8c7,3b6,16c7,16d7,2c7,16f6,16g6,16a6,16f6,16e6,16f6,16g6,16e6,16d6,16e6,16f6,16d6,16c6,16d6,16e6
+Hunter:d=4,o=5,b=500:a#4,c#,f,a#,c#6,f6,a6,f6,d#6,c#6,c6,a#,d#,f#,a#,c#6,2f6,2d#6,p,f#,a,c6,d#6,2f#6,2f6,d#6,c#6,c6,a#4,c#,f,a#,2c#6,1a#
+Huntersolo:d=4,o=5,b=500:a#4,c#,f,a#,c#6,f6,a6,f6,d#6,c#6,c6,a#,d#,f#,a#,c#6,2f6,2d#6,p,f#,a,c6,d#6,2f#6,2f6,d#6,c#6,c6,a#4,c#,f,a#,2c#6,2a#
+I swear:d=4,o=5,b=125:2p,p,8b,5a,16f#,8e,p,8p,8f#,8g#,a,8a,8a,a,8c#,8d,2e,8p,8f#,8g#,2e
+Ickley:d=4,o=5,b=100:8d,5g,16g,8g,8d,g,8p,8a,5b,16b,8b,8a,b,8p,8b,a,g,g,f#,2g
+If I Were a Rich Man:d=8,o=5,b=160:g,f,g,f,e,p,4c,4p,e,f,g,f,g,f,e,f,g,a,a#,a,a#,a,1g,4p,4g#,4g,4f#,4f,d#,d,c,d,4d#,4p,d#,d,c,d,4d#,4c,4g,4p
+Inagad:d=4,o=6,b=28:16d#5,16d#5,32f#5,32f5,32c#5,16d#5,16a#5,16a5,16g#5,32f#5,16d#5,16d#5,32f#5,32f5,32c#5,16d#5,16a#5,16a5,16g#5,32f#5,16d#5,16d#5,32f#5,32f5,32c#5,16d#5,16a#5,16a5,16g#5,32f#5,16d#5,16d#5,32f#5,32f5,32c#5,16d#5,16a#5,16a5,16g#5,32f#5,16d#5,16d#5
+Indiana Jones:d=4,o=5,b=250:e,8p,8f,8g,8p,1c6,5p,d,8p,8e,1f,3p,g,8p,8a,8b,8p,1f6,p,a,8p,8b,2c6,2d6,2e6,e,8p,8f,8g,8p,1c6,p,d6,8p,8e6,1f6,g,8p,8g,3e6,8p,d6,8p,8g,3e6,8p,d6,8p,8g,3f6,8p,e6,8p,8d6,2c6
+Inspector Gadget:d=16,o=5,b=50:32d#,32f,32f#,32g#,a#,f#,a,f,g#,f#,32d#,32f,32f#,32g#,a#,d#6,4d6,32d#,32f,32f#,32g#,a#,f#,a,f,g#,f#,8d#
+IsontalonAntti:d=4,o=5,b=160:8d,8d,8g,8g,b,8g,8g,d,g,f#,8e,8e,c,8e,8e,e,g,2d,d,p,8d,8d,8c6,8c6,c6,8b,8a,8g,8g,8b,8b,b,8a,8g,8f#,8f#,8a,8a,8a,8a,b,2g,g,p
+It's Not Right:d=4,o=6,b=355:1g#,1f#,1f#,1g#,1f#,2f#,2g#,1a#,1a#,1a#,1a#,1f#,1f#,1f#,1f#,1g#,1f#,1f#,1g#,1f#,2f#,2g#,1a#,1a#,1a#,1a#,1f#,1f#,1g#,1f#
+Itchy:d=4,o=5,b=160:8c6,8a,p,8c6,8a6,p,8c6,8a,8c6,8a,8c6,8a6,p,8p,8c6,8d6,8e6,8p,8e6,8f6,8g6,p,8d6,8c6,d6,8f6,a#6,a6,2c7
+Itchy and Scratchy:d=8,o=5,b=160:c6,a,4p,c6,a6,4p,c6,a,c6,a,c6,a6,4p,p,c6,d6,e6,p,e6,f6,g6,4p,d6,c6,4d6,f6,4a#6,4a6,2c7
+iwillsour:d=4,o=6,b=225:3a#,3a#,a#,a#,1a#,c7,3c#7,3c7,3a#,a#,a#,1a#,a#,3a#,3g#,g#,g#,3a#,3g#,2g#,3f#,3f#,f,3f,f,1f,3f,2f#,f,3f,f,2f#,3f,f,f,3f,d#,3d#,d#,3f,2d#,d#,3f,3f,3f,1f,3f,a,a,a,3a#,1c7
+Jaateloauto:d=4,o=5,b=180:8e,8d6,8e,8d6,8a,8p,8e,8d6,8e,8d6,8a,8p,8e,8e6,8p,8e6,8b,8p,8b,8a
+James Bond:d=4,o=5,b=320:c,8d,8d,d,2d,c,c,c,c,8d#,8d#,2d#,d,d,d,c,8d,8d,d,2d,c,c,c,c,8d#,8d#,d#,2d#,d,c#,c,c6,1b,g,f,1g
+James Bond:d=4,o=6,b=56:16c#5,16e5,32c,8b5,32e5,21g5,g#5,21e5,32f#5,32e5,8d#5,32g#4,21c#5,a#4,16c#5,16e5,32c,8b5,32e5,21g5,g#5,21e5,32f#5,32e5,8d#5,32g#4,21c5,3c#5
+Jeopardy:d=4,o=6,b=125:c,f,c,f5,c,f,2c,c,f,c,f,3a,8g,8f,8e,8d,8c#,c,f,c,f5,c,f,2c,3f,8d,c,a#5,a5,g5,f5,p,d#,g#,d#,g#5,d#,g#,2d#,d#,g#,d#,g#,3c7,8a#,8g#,8g,8f,8e,d#,g#,d#,g#5,d#,g#,2d#,3g#,8f,d#,c#,c,p,a#5,p,3g#5,d#,g#
+Jesus:d=4,o=5,b=140:f,8d,2a#4,g,8d#,2a#4,g#,8f,8g#,g,8f,8d#,f,8d,2a#4
+Jesus Christ Superstar:d=8,o=5,b=100:f,d,2a#4,4g,d#,2a#4,4g#,f,g#,4g,f,d#,4f,d,4a#4,p
+Jingle Bells:d=4,o=5,b=170:b,b,b,p,b,b,b,p,b,d6,3g,8a,1b,8p,c6,c6,c6,p,8c6,c6,b,b,8b,8b,b,a,a,b,2a,2d6
+Jingle Bells:d=4,o=5,b=112:8a,8a,a,8a,8a,a,8a,8c6,5f,16g,2a,8a#,8a#,5a#,16a#,8a#,8a,5a,16a,8a,8g,8g,8a,g,c6
+Josetsasoita:d=4,o=5,b=160:5c6,b,5a,3c6,a,p,5a,b,5c6,3d6,8d6,3d6,8c6,2b,8p,5d6,c6,5b,2d6,b,8p,5b,c6,8d6,3e6,8d6,3e6,8d6,2c6
+joulupuuonrak:d=4,o=5,b=160:c,c,b4,a4,e,e,d,c,a,a,g,8f,8e,d,d,2e,a,a,g,f,e,e,f,d,c,c,b4,b4,a4,a4,2a4
+Killing me softly II:d=4,o=5,b=90:p,8e,f,g,8a,a,8g,d,3g,p,8p,8a,g,8f,8e,8e,8f,2c,p,8e,f,g,8a,a,8g,a,b,8b,8c6,8b,16a,8g,16a,2a,1a
+Kinder:d=4,o=5,b=160:3g,8a,b,c6,d6,e6,d6,a6,f#6,a6,d6,b,3g,8a,b,c6,d6,e6,1d6,p,3g,8a,b,c6,d6,e6,d6,g6,f#6,g6,d6,b,3g,8a,b,a,g,f#,1g
+King:d=4,o=6,b=50:32e,16e,16e,16e,16b5,16b5,16b5,8f#,16f#,16f#,5e,32e,16e,16e,16e,16b5,16b5,16b5,8b,16a,16f#,16e,f#,32e,16e,16e,16e,16b5,16b5,16b5,16f#,16f#,16f#,8e,32e,16e,16e,16e,16b5,16b5,16b5,16f#,16f#,16f#,8e,16d#,8e
+Kiss:d=4,o=5,b=140:8d4,8e4,3f4,8g4,f4,e4,d4,c4,2d4,8d4,8c4,2d4,8d4,8e4,3f4,8g4,f4,e4,c4,e4,1d4
+Knight Rider:d=32,o=5,b=63:16e,f,e,8b,16e6,f6,e6,8b,16e,f,e,16b,16e6,4d6,8p,4p,16e,f,e,8b,16e6,f6,e6,8b,16e,f,e,16b,16e6,4f6
+Knight Rider:d=4,o=6,b=90:11d5,33d#.5,33d.5,5a5,11d,33d#.,33d.,5a5,11d5,33d#.5,33d.5,11a5,11d,2c,11d5,33d#.5,33d.5,5a5,11d,33d#.,33d.,5a5,11d5,33d#.5,33d.5,11a5,11d,2d#,a4,33a#.4,33a.4,d5,33d#.5,33d.5,2a5,11c,11d
+Knight Rider:d=4,o=5,b=125:16e,16p,16f,16e,16e,16p,16e,16e,16f,16e,16e,16e,16d#,16e,16e,16e,16e,16p,16f,16e,16e,16p,16f,16e,16f,16e,16e,16e,16d#,16e,16e,16e,16d,16p,16e,16d,16d,16p,16e,16d,16e,16d,16d,16d,16c,16d,16d,16d,16d,16p,16e,16d,16d,16p,16e,16d,16e,16d,16d,16d,16c,16d,16d,16d
+Koskameillaon:d=4,o=5,b=200:5e,8f,g,e,e,e,d,5d,8e,f,d,8d,8a,2g,5e,8f,g,e,e,e,d,5d,8e,f,b4,8d,8d,2c
+La Grange:d=4,o=6,b=500:32f5,2a#4,32f5,1a#4,32f5,1a#4,32a#4,1f5,32f5,32f5,32f5,a#4,1c#5,2d#5,c#5,32f5,2a#4,32f5,1a#4,32f5,1a#4,32a#4,1f5,32f5,32f5,1a#4,32f5,a#4,1c#5,2d#5,c#5,32f5,2a#4,32f5,1a#4,32f5,1a#4,32a#4,1f5,32f5,32f5,32f5,a#4,1c#5,2d#5,c#5,32f5,2a#4,32f5,1a#4,32f5,1a#4,32a#4,1f5,32f5,32f5,1a#4,32f5,a#4,1c#5,2d#5,c#5
+Larry:d=16,o=6,b=56:11f5,11f#5,11g5,g#5,32a#5,f5,11g#5,11a#5,32f5,g#5,32a#5,g#5,5c#,a#5,32c#,a5,11a#5,11c#,32a5,a#5,32c#,d#,8e,11c#,11f,11f,11f,11f,f,32e,d#,8d,11a#5,e,32f,e,32f,c#,11d#,c#
+Larry:d=4,o=5,b=180:3c,5b4,3c,5d,3d#,5d,3d#,5f,3g,5f#,3g,5g#,g,5d#,3p,3f,5e,3f,5g,f,5d,3p,3d#,5d,3d#,5f,d#,5g,3p,3c,5b4,3c,5d,3d#,5d,3d#,5f,3g,5f#,3g,5g#,g,5d#,3p,16g,16p,5g,16p,11g,16p,g#,a,2a#,1a#4,11p,16g,8a#,16p,11c6,8g,16p,a#,c6,11g,8a#,16p,11c6,8a#,16p,3d#6,11p,16b,8c6,16p,11d#6,8b,16p,c6,d#6,11b,8c6,16p,11d#6,8f6,16p,f#6,11p,16d#6,5p,8g6,8p,8g6,8p,8g6,8p,8g6,8p,8g6,16p
+The Last Unicorn:d=8,o=5,b=80:d,e,3f,4e,d,2d,d,c,e,2d,4d,c,4e,2c,d,e,3f,4e,d,2d,d,c,e,2d,4d,c,4e,2c
+Lastenliikenne:d=4,o=5,b=250:2f,f,8p,8f,2f,2f,2a#,a,8p,8g,2f,3d,8p,2g,3f,8d#,2d,2a#4,1c,1p,2p,3f,8e,2d#,d#,p,2p,3g,8f#,2f,f,p,2p,3d6,8a#,2a,2a,2g,2a,1a#
+The Launch:d=4,o=5,b=70:16b,16p,16b,16p,16a#,16p,16a#,16p,16a,16p,16a,16p,16a,16p,16e4,16p,16a,16p,16a,16p,16a,16p,16e4,16p,16g,16p,16g,16p,16g,16p,16e4,8p,b,32p,16b,16b,16b,16b,16b,16b,16b,16b,32b,32b,32b,32b,32b,32b,32b,32b,32b,32b,32b,32b
+Lazingan:d=4,o=5,b=125:b4,8p,32g,16e,21p,16d#,8e,16p,16f#,16g,5p,32p,32a,16g,21p,16f#,8g,16p,16a,16b,5p,32p,32c6,16b,21p,16a#,16b,8p,32p,16b,16e6,8p,32p,16e6,2b,p,b,8p,32b,16a,21p,16g#,8a,16p,16c6,8b,16p,16a,8g,16p,16f#,16e,5p,32p,16e,5p,32p,32g,16f#,21p,16f,8f#,16p,16g,8f#,16p,16f,8f#,11p,16b4,16b,5p,32p,b4,8p,32g,16e,21p,16d#,8e,16p,16f#,16g,5p,32p,32a,16g,21p,16f#,8g,16p,16a,16b,5p,32p,32c6,16b,21p,16a#
+Lazy:d=4,o=5,b=160:5d4,8f4,16d4,8g4,16f4,5d4,8f4,16d4,8g4,16f4,8d4,8p,8p
+Lazy (Deep Purple):d=8,o=5,b=160:5d4,f4,16d4,g4,16f4,5d4,f4,16d4,g4,16f4,d4
+Led Zepelin-Stairway to Heaven:d=8,o=5,b=63:a4,c,e,a,b,e,c,b,c6,e,c,c6,f#,d,a4,f#,5e,16c,a4,4e,c,a4,e,g4,a4,4a4
+Lejonkungen:d=4,o=5,b=160:8f,b,8a,8b,8a,8g,p,8e,8g,a,8b,8a,g,p,8g,b,8a,8b,8a,8g,p,e,8g,a,8g,a
+Let It Be:d=8,o=5,b=100:16e6,d6,4c6,16e6,g6,a6,5g6,16g6,g6,e6,16d6,c6,16a,g,3e6,4p,e6,16e6,5f6,e6,e6,d6,16p,16e6,16d6,d6,1c6,p
+Let It Snow:d=8,o=5,b=120:c,c,c6,c6,4a#,4a,4g,4f,2c,c,16c,3g,f,3g,f,4e,2c,4d,d6,d6,4c6,4a#,4a,1g,5e6,16d6,4c6,5c6,16a#,4a,5a#,16a,1f,4c,c6,c6,4a#,4a,4g,4f,2c,5c,16c,3g,f,3g,f,4e,2c,4d,d6,d6,4c6,4a#,4a,1g,5e6,16d6,4c6,5c6,16a#,4a,5a,16g,1f
+Liberty:d=4,o=5,b=200:d#6,8d6,c6,8b,a#,8a,g#,8g,8f,8g,8g#,g,8f,8a#4,3p,32p,8a#,16g,8p,8g,8g,8f#,8g,16d#6,8p,8a#,16a#,8p,8g,16g#,8p,8g#,16g#,8p,8a#,c6,5p,8g#,16f,8p,8f,8f,8e,8f,16d6,8p,8c6,16c6,8p,8g#,16g,8p,8g,16g,8p,8g#,a#,5p,8a#,16g,8p,8g,8g,8f#,8g,16g6,8p,8d#6,16d#6,8p,8a#,16a,8p,8f6,16f6,8p,8f6,f6,5p,8d#6,d6,8f6,8f6,8e6,8f6,c6,8f6,8f6,8e6,8f6,16a#,8p,8a,16a#,8p,8a,8a#
+Light My Fire:d=8,o=5,b=140:b,16g,16a,b,d6,c6,b,a,g,a,16f,16a,c6,f6,16d6,16c6,16a#,16g,g#,g,g#,16g,16a,b,c#6,16b,16a,16g,16f,e,f,4a
+Lindenstrasse:d=4,o=5,b=180:g,e,g,1c6,1e6,3d6,8e6,f6,2a,p,a,c6,a6,2g6,p,d6,e6,f6,2e6,c6,d6,e6,1d6,1c6,2b,p,g,e,g,1c6,1e6,3d6,8e6,f6,2a,p,a,c6,a6,2g6,p,d6,e6,f6,1d6,p,c6,1c6
+Lion:d=4,o=5,b=140:1p,1p,1p,g,32p,8a,32p,5b,16p,a,32p,16b,32p,5c6,16p,11b,16p,5a,16p,5g,32p,16a,32p,11b,16p,11d,8p,11d,8p,11d,8p,1d,8p,g,32p,8a,32p,5b,16p,a,32p,16b,32p,5c6,16p,11b,16p,5a,16p,5g,32p,16a,32p,11b,16p,11d,8p,11d,8p,11d,8p,1d
+Lithium:d=4,o=6,b=40:11a5,11a5,21g5,8a5,21d,11e,8f,21c#,11c#,11d#,5c,11a#5,11c,5a5,11a5,11a5,21g5,8a5,21d,11e,8f,21c#,11c#,11d#,5c,21a#5,11c,11a5
+Little Wing:d=4,o=5,b=63:2p,p,8e,8g,8a,3a,p,8a,8g,8g,3e,p,8d,8c,8d,16e,5d,8p,8d,8d,8c,2a
+Live and Let Die:d=8,o=6,b=180:g,a,4a#,4p,d,e,4f,4p,c,4a#5,p,g,a,4a#,p,d,e,f,p,c,p,4a#5
+Looney:d=4,o=5,b=140:c6,8f6,8e6,8d6,8c6,3a,8c6,8f6,8e6,8d6,8d#6,3e6,8e6,8e6,8c6,8d6,8c6,8e6,8c6,8d6,8a,8c6,8g,8a#,8a,8f
+Looney:d=4,o=5,b=140:c6,8f6,8e6,8d6,8c6,3a,8c6,8f6,8e6,8d6,8d#6,3e6,8e6,8e6,8c6,8d6,8c6,8e6,8c6,8d6,8a,8c6,8c6,8d6,8e6,f6
+Looney Tunes:d=4,o=5,b=140:32p,c6,8f6,8e6,8d6,8c6,3a,8c6,8f6,8e6,8d6,8d#6,3e6,8e6,8e6,8c6,8d6,8c6,8e6,8c6,8d6,8a,8c6,8g,8a#,8a,8f
+LordDance:d=4,o=5,b=225:8p,2a6,3f#6,8e6,8f#6,8g6,8f#6,8e6,2d6,f#6,8f#6,8g6,a6,8g6,8f#6,e6,a,a,8p,8a,d6,d6,3d6,8e6,8f#6,8e6,8f#6,8g6,a6,8g6,8f#6,e6,e6,8e6,8g6,8f#6,8e6,2d6
+Losing My Religion:d=4,o=5,b=63:2p,8b,8c#6,8b,8f#,3a,8a,8a,a,a,3a,8b,8c#6,8b,8f#,3a,8a,8a,a,3a,8b,8c#6,8b,8f#,3a,8a,8a,a,3a,8b,8c#6,8b,8f#,a,a,8a,a,8g#,2g#
+Lost:d=4,o=5,b=90:f6,8p,16f6,16e6,16f6,8c6,8a,8f,16p,f6,8p,16f6,16e6,16f6,8c6,8a,8f,16p,d#6,8p,16d#6,16d6,16d#6,8a#,8g,8d#,c#,8c,16e,16g,16c6,32p
+Lulay Lula:d=4,o=4,b=100:d6,d6,c#6,2d6,f6,8e6,8e6,e6,d6,1c#6,d6,e6,f6,g6,2e6,2d6,a6,2g6,f6,2e6,f6,8e6,8e6,e6,d6,1c#6,d6,e6,f6,g6,2e6,2f#6
+M.A.S.H.:d=8,o=5,b=140:4a,4g,f#,g,p,f#,p,g,p,f#,p,1e,p,f#,e,4f#,e,f#,p,e,p,3d,p,f#,4e,d,e,p,d,p,e,p,d,p,1c#,p,d,c#,4d,c#,d,p,e,p,4f#,p,a,p,4b,a,b,p,a,p,b,p,1a,4p,a,b,a,4b,a,b,p,1a,a,4f#,a,b,p,d6,p,3e6,d6,b,p,a,p,2b
+Maamme:d=4,o=5,b=160:g,e,f,2g,p,c6,d6,8p,8g,1e6,p,2c6,3a,8d6,2c6,2b,2c6
+Macarena:d=8,o=5,b=180:f,f,f,4f,f,f,f,f,f,f,f,a,c,c,4f,f,f,4f,f,f,f,f,f,f,d,c,4p,4f,f,f,4f,f,f,f,f,f,f,f,a,4p,1c6,4a,c6,a,f,4p,2p
+MacGyver:d=4,o=5,b=160:8c6,8c6,8c6,8c6,8c6,8c6,2b,8f#,8a,8p,2g,8c6,8c6,8p,b,8a,8b,8a,8g,8p,e6,3a,16p,3b,16p,c6,8b,8a,c6
+Mae:d=4,o=5,b=70:32g6,32f6,16g6,32d6,32p,32d6,32p,32a#,32p,32a#,32p,32g,32p,32g,32p,32g6,32f6,16g6,32d#6,32p,32d#6,32p,32c6,32p,32c6,32p,32g,32p,32g,32p,32g6,32f6,16g6,32d6,32p,32d6,32p,32a#,32p,32a#,32p,32g,32p,32g,32p,32a#,32a,32g,32d,32g,32a,32a#,32g,32a#,32c6,8d6,16p
+Magic Roundabout:d=16,o=5,b=100:4c6,c6,p,8c6,4g,4g,4a,a,p,8a,2f,4a#,a,p,8a,4f,5f,3b,b,p,8b,2g
+Mahna Mahna:d=16,o=6,b=125:c#,11c,b5,5a#5,5f,4g#,a#,11g,4d#,8p,c#,11c,b5,5a#5,5f,11g#,5a#,4g,8p,c#,11c,b5,5a#5,5f,4g#,f,11g,5d#,f,11g,5d#,f,8g,5d#,f,8g,d#,8c,a#5,5d#,5d#,4d#,5d#
+Mambo:d=4,o=6,b=70:16a#,16a#5,16d,16f,16d,11d#,g,16a#,16g,16d#,16a#5,11d#,g,11f,32d#,16f,16g,d#,16a#,16a#5,16d,16f,16d,11d#,g,16a#,16g,16d#,16a#5,11d#,g,11f,32d#,16f,16g,d#
+Mario:d=4,o=5,b=100:16e6,16e6,32p,8e6,16c6,8e6,8g6,8p,8g,8p,8c6,16p,8g,16p,8e,16p,8a,8b,16a#,8a,11g,16e6,16g6,8a6,16f6,8g6,8e6,16c6,16d6,8b,16p,8c6,16p,8g,16p,8e,16p,8a,8b,16a#,8a,11g,16e6,16g6,8a6,16f6,8g6,8e6,16c6,16d6,8b,8p,16g6,16f#6,16f6,16d#6,16p,16e6,16p,16g#,16a,16c6,16p,16a,16c6,16d6,8p,16g6,16f#6,16f6,16d#6,16p,16e6,16p,16c7,16p,16c7,16c7,p,16g6,16f#6,16f6,16d#6,16p,16e6,16p,16g#,16a,16c6,16p,16a,16c6,16d6,8p,16d#6,8p,16d6,8p,16c6
+Master of the house:d=4,o=5,b=100:16a,16a,16a,16a,8e,8p,16a,16a,16a,16a,8e,8p,16a,16a,16a,16a,16a,16g#,16a,16b,8c#6,8a,8e,8p
+Match of the day:d=8,o=5,b=100:c,f,a,5c6,16a,a,a,a,4a,a#,5c6,16a,g,a,a#,c,e,g,5a#,16g,g,g,g,4g,a,5a#,16g,f,g,a,c,f,a,5c6,16a,a,a,a,4a,a#,5c6,16a,a#,c6,4d6,d6,e6,f6,16f6,e6,16e6,d6,f6,c6,c6,d6,c6,16a#,a,16a,g,4f
+Matrix:d=4,o=6,b=50:32c#5,32d#5,16g#5,16c#5,16c#5,16g#5,16g#5,16g5,32d#5,32f5,16g5,16d#5,16f5,16g5,16c#5,16g#5,16c#5,16c#5,16g#5,16g#5,16g5,16f5,d#5,32c#5,32d#5,16g#5,16c#5,16c#5,16g#5,16g#5,16g5,32d#5,32f5,16g5,16f5,16g5,16g#5,16c,16a#5,16g#5,16a#5,16g#5,16g5
+MC:d=4,o=5,b=200:2d,2f,g,2f,2p,2d,2f,g,2f
+McGyver:d=4,o=4,b=160:8c5,8c5,8c5,8c5,2b,8f#,a,2g,8c5,c5,b,8a,8b,8a,g,e5,2p,a,3b,8p,8c5,8b,8a,c5,8b,8a,d5,8c5,8b,d5,8c5,8b,e5,8d5,8e5,f#5,b,1g5,8p,8g5,p,e5,8c5,8f#5,8d5,8b,8e5,8c5,8a,8d5,8b,8g,c5,b,8c5,8b,8a,8g,a#,a,5g
+Memory:d=4,o=5,b=100:3d6,d6,8c#6,8d6,8e6,8d6,8b,3d6,d6,8c#6,8d6,8e6,8d6,8a,3b,b,8g,8a,8b,8a,8g,1f#
+Metsa:d=4,o=5,b=230:a4,d,e,f,e,d,1a,p,a4,d,e,f,e,d,1a#,g,a,a#,a#,a,g,1a,p,a4,c#,e,g,f,e,1d,p,3d6,8c6,1c6,8e,8p,3d6,8a#,1a,8c,8p,3a#,8a,1g,8e,8p,3a,8g,1f,8p,a,a,2a,g,f,2e,e,f,e,a4,a#4,a4,2f,e,1d,p,d6,c#6,d6,p,a,g#,a,p,f,e,f,p,d,c#,1d,2a#,a,g,a#,d6,1a,p,a4,c#,d,1e,a4,d,e,1f,a4,c#,e,2f,e,1d,p
+MicroMelody:d=4,o=4,b=250:b,b,b,b,2b,a,g,e,1g,2p,g,a,b,b,b,b,2b,a,g,e,1g,2p,2g,f#,a,a,f#,g,b,2b,c5,b,a,g,f#,g,2a
+Mission Impossible:d=4,o=5,b=180:8d#6,8c6,1g,8d#6,8c6,1f#,8d#6,8c6,1f,8d#,8f,1p,8g#,8g,1f#6,8g#,8g,1f6,8g#,8g,1e6,8d#6,8d6,2p
+Mission Impossible:d=16,o=5,b=100:32d,32d#,32d,32d#,32d,32d#,32d,32d#,32d,32d,32d#,32e,32f,32f#,32g,g,8p,g,8p,a#,p,c6,p,g,8p,g,8p,f,p,f#,p,g,8p,g,8p,a#,p,c6,p,g,8p,g,8p,f,p,f#,p,a#,g,2d,32p,a#,g,2c#,32p,a#,g,2c,p,a#4,c
+Mission Impossible:d=4,o=6,b=100:32d,32d#,32d,32d#,32d,32d#,32d,32d#,32d,32d,32d#,32e,32f,32f#,32g,16g,8p,16g,8p,16a#,16p,16c,16p,16g,8p,16g,8p,16f,16p,16f#,16p,16g,8p,16g,8p,16a#,16p,16c,16p,16g,8p,16g,8p,16f,16p,16f#,16p,16a#,16g,2d,32p,16a#,16g,2c#,32p,16a#,16g,2c,16p,16a#5,16c
+Monty Python:d=4,o=5,b=200:f6,8e6,d6,8c#6,c6,8b,a#,8a,8g,8a,8a#,a,8g,2c6,8p,8c6,8a,8p,8a,8a,8g#,8a,8f6,8p,8c6,8c6,8p,8a,8a#,8p,8a#,8a#,8p,8c6,2d6,8p,8a#,8g,8p,8g,8g,8f#,8g,8e6,8p,8d6,8d6,8p,8a#,8a,8p,8a,8a,8p,8a#,2c6,8p,8c6
+Monty Python:d=8,o=5,b=180:d#6,d6,4c6,b,4a#,a,4g#,g,f,g,g#,4g,f,2a#,p,a#,g,p,g,g,f#,g,d#6,p,a#,a#,p,g,g#,p,g#,g#,p,a#,2c6,p,g#,f,p,f,f,e,f,d6,p,c6,c6,p,g#,g,p,g,g,p,g#,2a#,p,a#,g,p,g,g,f#,g,g6,p,d#6,d#6,p,a#,a,p,f6,f6,p,f6,2f6,p,d#6,4d6,f6,f6,e6,f6,4c6,f6,f6,e6,f6,a#,p,a,a#,p,a,2a#
+More than words:d=4,o=5,b=90:2p,8e,8g,8g,8e,3a,8g,g,8p,8g,g,8a,g,g,g,8g,8a,8g,8f,f,8f,g
+Mozart:d=16,o=5,b=125:d#,c#,c,c#,8e,8p,f#,e,d#,e,8g#,8p,a,g#,g,g#,d#6,c#6,c6,c#6,d#6,c#6,c6,c#6,4e6,8c#6,8e6,32b,32c#6,d#6,8c#6,8b,8c#6,32b,32c#6,d#6,8c#6,8b,8c#6,32b,32c#6,d#6,8c#6,8b,8a#,4g#,d#,32c#,c,c#,8e,8p,f#,e,d#,e,8g#,8p,a,g#,g,g#,d#6,c#6,c6,c#6,d#6,c#6,c6,c#6,4e6,8c#6,8e6,32b,32c#6,d#6,8c#6,8b,8c#6,32b,32c#6,d#6,8c#6,8b,8c#6,32b,32c#6,d#6,8c#6,8b,8a#,4g#
+Mozart3:d=4,o=5,b=125:16d#,16c#,16c,16c#,8e,8p,16f#,16e,16d#,16e,8g#,8p,16a,16g#,16g,16g#,16d#6,16c#6,16c6,16c#6,16d#6,16c#6,16c6,16c#6,e6,8c#6,8e6,32b,32c#6,16d#6,8c#6,8b,8c#6,32b,32c#6,16d#6,8c#6,8b,8c#6,32b,32c#6,16d#6,8c#6,8b,8a#,g#,16d#,32c#,16c,16c#,8e,8p,16f#,16e,16d#,16e,8g#,8p,16a,16g#,16g,16g#,16d#6,16c#6,16c6,16c#6,16d#6,16c#6,16c6,16c#6,e6,8c#6,8e6,32b,32c#6,16d#6,8c#6,8b,8c#6,32b,32c#6,16d#6,8c#6,8b,8c#6,32b,32c#6,16d#6,8c#6,8b,8a#,g#,8g#,8a,8b,8b,16c#6,16b,16a
+Mr. Benn:d=8,o=6,b=200:a5,g#5,g5,p,c,e,p,g,2f#,g,a,g,p,e,c,p,g5,2f#5,g5,a5,g5,p,e,d#,p,f,e,d,c,e,g,a,1a#,p,c,d,e,f,g,a,p,g#,a,p,c,2d,e,f,3g,3e,3c,p,e,d,e,d,c,b5,c,3d,4p,a,g,a,g,f,g,f,e,f,e,d,b5,a5,g5,p,c,e,p,g,2f#,g,a,g,p,e,c,p,g5,2f#5,g5,a5,g5
+Mr. Men:d=4,o=5,b=112:a,5d6,16e6,5f#6,16g6,5f#6,16e6,f#6,a,b,d6,p,b,c#6,e6,1a,5g,16f#,5g,16f#,g,d6,1f#,5e,16d#,5e,16d#,e,b,2d#,g#,f#,f#,5b,16c#6,5d#6,16e6,5d#6,16c#6,d#6,f#,g#,b,p,g#,a#,c#6,1f#6,p,g#6,5f#6,16d#6,5b,16g#,2b,2c#6,1b
+Mull of Kintyre:d=4,o=5,b=140:3d,8e,g,2b,b,b,a,g,a,3g,8e,3d,8e,g,2b,3b,a,g,a,3g,8e,3d,8e,g,2g
+Munsters:d=8,o=5,b=160:d,f,d,g#,a,4d6,a#,a,2g,f,g,4a,a4,g#4,a4,b4,4c#,2d,4p,4c,4c6,4c6,2c6,a#,a,a#,g,a,4f,4p,4g,4g,2g,f,e,f,d,e,2c#,4p,4d,f,d,g#,a,4d6,a#,a,2g,f,g,4a,a4,g#4,a4,b4,4c#,2d
+Muppets:d=4,o=5,b=250:c6,c6,a,b,8a,b,g,p,c6,c6,a,8b,8a,8p,3g,p,e,e,g,f,8e,f,8c6,8c,8d,e,8e,8e,8p,8e,g,2p,c6,c6,a,b,8a,b,g,p,c6,c6,a,8b,a,3g,p,e,e,g,f,8e,f,8c6,8c,8d,e,8e,d,8d,c
+Nacht:d=4,o=5,b=125:2g,16p,16d,16p,2g,16p,16d,16p,8g,11d,32p,11g,32p,8b,d6,p,2c6,16p,16a,16p,2c6,16p,16a,16p,8c6,8a,8f#,8a,d,p,8g,8p,3g,8b,8a,8g,32a,32g,32a,32g,11f#,32p,2f#,16p,8a,8c6,8f#,8a,16g,16p,3g,8b,8a,11g,32p,32a,32g,32a,32g,16f#,16p,2f#,16p,8a,11c6,32p,8f#,16g,16p,8g,16g,16f#,16e,16f#,16g,16p,8g,16b,16a,16g,16a,11b,32p,8b,16d6,16c6,16b,16c6,d6
+Napoli:d=16,o=4,b=63:11f,11g,11g#,11a#,11c5,g#,8c5,5c5,8p,11a#,11c5,11c#5,11a#,11c#5,11a#,8f5,5f5,8p,11f5,11g5,11g#5,11g5,11f5,11g5,8c5,5c5,8p,11a#,11c5,11a#,11g#,11g,8g#,5f
+National Anthem:d=4,o=5,b=140:g6,g6,a6,3f#6,8g6,a6,b6,b6,c7,3b6,8a6,g6,a6,g6,f#6,g6
+Nut march:d=8,o=5,b=140:a#,p,a#,a#,a#,c6,p,c6,p,d6,p,a#,p,2c6,a#,p,a#,a#,11a#,c6,16p,c6,p,d6,p,a#,p,3c6,16p,16c,g#,16p,16a#,g#,16p,16g,f,16p,16d#,d,16p,16a#4,g,16p,16g#,g,16p,16f,d#,16p,16d,c,16p,16d#,d,16p,16c,b4,16p,16f,d#,16p,16d,c,16p,16g,g#,16p,16g,f,16p,16d#,16a#,p,32f,32g#,11a#
+Nutcracker:d=16,o=5,b=76:g6,e6,8g6,8p,f#6,p,d#6,p,e6,p,11p,d6,d6,d6,8p,c#6,c#6,c#6,8p,c6,c6,c6,8p,b,e6,c6,e6,b,4p,g,e,8g,p,f#,p,c6,p,8b,8p,g6,g6,g6,8p,f#6,f#6,f#6,8p,e6,e6,e6,8p,d#6,f#6,e6,f#6,d#6,3p,g6,e6,g6,p,32p,f#6,p,d#6,p,e6,p,d6,d6,d6,p,c#6,c#6,c#6,p,c6,c6,c6,p,b,e6,c6,e6,b,2p
+Nutcracker:d=4,o=5,b=140:8a#,8p,8a#,8a#,8a#,8c6,8p,8c6,8p,8d6,8p,8a#,8p,2c6,8a#,8p,8a#,8a#,11a#,8c6,16p,8c6,8p,8d6,8p,8a#,8p,3c6,16p,16c,8g#,16p,16a#,8g#,16p,16g,8f,16p,16d#,8d,16p,16a#4,8g,16p,16g#,8g,16p,16f,8d#,16p,16d,8c,16p,16d#,8d,16p,16c,8b4,16p,16f,8d#,16p,16d,8c,16p,16g,8g#,16p,16g,8f,16p,16d#,16a#,8p,32f,32g#,16a#
+Nutcracker:d=4,o=5,b=56:16g6,16e6,16g6,8p,16f#6,8p,16d#6,8p,16e6,8p,16d6,16d6,16d6,8p,16c#6,16c#6,16c#6,8p,16c6,16c6,16c6,8p,16b,16e6,16c6,16e6,16b,2p,16g,16e,16g,8p,16f#,8p,16c6,8p,16b,8p,16g6,16g6,16g6,8p,16f#6,16f#6,16f#6,8p,16e6,16e6,16e6,8p,16d#6,16f#6,16e6,16f#6,16d#6,2p,16g6,16e6,16g6,8p,16f#6,8p,16d#6,8p,16e6,8p,16d6,16d6,16d6,8p,16c#6,16c#6,16c#6,8p,16c6,16c6,16c6,8p,16b,16e6,16c6,16e6,32b
+O Come:d=4,o=5,b=160:g,2g,d,g,2a,2d,b,a,b,c6,2b,a,g,2g,f#,e,f#,g,a,b,2f#,3e,8d,1d
+O Little:d=4,o=5,b=160:c,f,f,f,g,8a,8g,8a,8a#,c6,a,a#,8a,8f,g,g,1f,c,f,f,f,g,8a,8g,8a,8a#,c6,a,a#,8a,8f,g,g,1f
+Oh Little Star of Bethlehem:d=8,o=5,b=120:11c,16p,f,p,f,p,4f,4g,a,g,a,a#,5c6,16p,4a,4a#,a,11f,5g,11p,g,p,1f,11c,16p,f,p,f,p,4f,4g,a,g,a,a#,5c6,16p,4a,4a#,a,11f,5g,16p,32p,g,p,1f
+On Ilckley Moor:d=8,o=5,b=100:d,5g,16g,g,d,4g,p,a,5b,16b,b,a,4b,p,b,4a,4g,4g,4f#,2g
+On the 12th Day of christmas:d=8,o=5,b=150:d,d,4g,g,g,4g,g,g,a,b,c6,a,3b,p,4d6,a,b,c6,a,d6,d6,a,b,c6,a,4d6,4e6,3d6,p,d6,c6,b,a,4g,a,b,4c6,4e,4e,4d,g,a,b,c6,4b,4a,1g
+Oxygen:d=8,o=5,b=140:c6,p,g,d#,5g,p,2c,4p,4c6,p,g,d#,5g,p,2c,4p,3a#,16p,a,g,5a,p,2d,4p,4c6,p,g,d#,5g,p,2c,4p,4c6,p,g,d#,5g,p,2c,4p,3a#,16p,a,g,5a,p,2d,4p,5a,11g,5f,2c,p,5a,11g,5f,2c
+Pager:d=8,o=5,b=160:d6,16p,2d6,16p,d6,16p,2d6,16p,d6,16p,2d6,p
+Peanuts:d=4,o=5,b=160:f,8g,a,8a,8g,f,2g,f,p,f,8g,a,1a,2p,f,8g,a,8a,8g,f,2g,2f,2f,8g,1g
+Peter Gunn:d=4,o=5,b=112:8e,8e,8f#,8e,8g,8e,8a,8g,8e,8e,8f#,8e,8g,8e,8a,8g,1e,c#,2p,p,1e,8c#6,8g,2p
+Phantom:d=8,o=5,b=120:4d6,d6,4a6,a6,4b6,g6,4a6,a6,4d6,d6,4a6,a6,a6,g6,f6,4e6,e6,4d6,d6,4a6,a6,4b6,g6,4a6,a6,4d6,d6,4a6,a6,f6,e6,c#6,4d6,d6,p
+Phil Collins:d=4,o=6,b=40:21g#,11g#,11c#7,11c#7,11g#,f#,21g#,11g#,11d#7,11d#7,11f#,f,21g#,21g#,11c#7,11c#7,11g#,11f#,11d#7,11d#7,11f,5d#
+Piccolo:d=8,o=5,b=320:d6,4g6,4g,4g6,d6,e6,d6,b,4g,4d,g,a,b,c6,4d6,4g6,1d6,4d6,4g6,4g,4g6,d6,e6,b,4g,4d,f,g,a,b,4c6,4f6,1c6
+Pienian:d=8,o=5,b=160:a4,a4,d,d,f#,f#,2d,f#,f#,e,d,4c#,e,a4,c#,c#,e,e,2c#,e,e,d,c#,4d,f#,d,4g,b,b,4g,b,g,4a,4f#,4f#,p,f#,e,e,e,e,p,e,f#,g#,a,4a4,4a4,b4,c#,d,d,f#,f#,2d,f#,f#,e,d,4c#,4e,4a,4p,4c#,4p,3d
+Pilipom:d=16,o=5,b=160:e,p,e,p,g,p,g,p,b4,c#,d,p,g,p,g,p,e,p,e,p,g,p,g,p,b,g,b,e6,8d#6,8p,d#6,d6,b,a#,d#6,d6,b,a#,d#6,d6,b,a#,b,c6,d6,d#6,b,a#,g,f#,e,d#,c,b4,e,f#,d#,b4,8e,p
+Pingu:d=4,o=6,b=285:g,p,e,p,f,e,d,p,g,p,e,p,f,a,g,p,a,c7,b,a,g,c7,g,f,e,f,e,d,g,g,p,f,e,p,g,p,c7,c
+PinkPanther:d=4,o=5,b=160:8d#,8e,2p,8f#,8g,2p,8d#,8e,8p,8f#,8g,16p,8c6,8b,16p,8d#,8e,16p,8b,2a#,2p,16a,16g,16e,16d,2e
+Pinky and the Brain:d=16,o=6,b=200:11b5,p,5e,p,11d#,p,5e,p,11g,p,3d#,4p,11b5,p,5e,p,11d#,p,5e,p,11g,p,3d#,4p,4e,8p,5e,p,11g,p,5a#,p,4a#,8p,11a#,p,5b,p,11a,p,4g,8p,4f#,4p,11e,p,5a,p,11g#,p,5a,p,11b,p,4g#,4p,11e,p,5a,p,11g#,p,5a,p,11b,p,4g#,4p,11c,p,5b5,p,5b5,8p,11b5,p
+Poison (Alice Cooper):d=8,o=5,b=112:d,d,a,d,e6,d,d6,d,f#,g,c6,f#,g,c6,e,d,d,d,a,d,e6,d,d6,d,f#,g,c6,f#,g,c6,e,d,c,d,a,d,e6,d,d6,d,f#,g,c6,f#,g,c6,e,d,c,d,a,d,e6,d,d6,d,a,d,e6,d,d6
+Polizei:d=4,o=5,b=160:2g,2c6,2g,2c6,2g,2c6,2g,2c6
+Polka:d=16,o=5,b=140:d,c#,d,e,f,e,f,f#,g,f#,g,a,a#,a,g,a#,a,a4,c#,e,a,g,f,e,f,e,d,c#,d,a4,b4,c#,d,c#,d,e,f,e,f,f#,g,f#,g,a,a#,a,g,a#,a,a4,c#,e,a,g,f,e,d,4p,2c#,8d,8a4,8d
+Popcorn:d=4,o=5,b=125:8c6,8a#,8c6,8g,8d#,8g,c,8c6,8a#,8c6,8g,8d#,8g,c,8c6,8d6,8d#6,16c6,8d#6,16c6,8d#6,8d6,16a#,8d6,16a#,8d6,8c6,8a#,8g,8a#,c6
+Popcorn:d=4,o=5,b=160:8a,8g,8a,8e,8c,8e,a4,8a,8g,8a,8e,8c,8e,a4,8a,8b,8c6,8b,8c6,8a,8b,8a,8b,8g,8a,8g,8a,8f,a,8a,8g,8a,8e,8c,8e,a4,8a,8g,8a,8e,8c,8e,a4,8a,8b,8c6,8b,8c6,8a,8b,8a,8b,8g,8a,8g,8a,8f,a
+Popcorn:d=16,o=5,b=160:a,p,g,p,a,p,e,p,c,p,e,p,8a4,8p,a,p,g,p,a,p,e,p,c,p,e,p,8a4,8p,a,p,b,p,c6,p,b,p,c6,p,a,p,b,p,a,p,b,p,g,p,a,p,g,p,a,p,f,8a,8p,a,p,g,p,a,p,e,p,c,p,e,p,8a4,8p,a,p,g,p,a,p,e,p,c,p,e,p,8a4,8p,a,p,b,p,c6,p,b,p,c6,p,a,p,b,p,a,p,b,p,g,p,a,p,g,p,a,p,b,4c6
+Popeye:d=8,o=5,b=180:4d,f,f,f,d#,d,4f,p,f,g,d#,g,a#,g,4f,p,f,g,d#,g,a#,4a,g,f,g,f,4d,p,f,f,f,g,a,4a#,p,b,p,b
+Popeye:d=8,o=6,b=160:a5,c,c,c,4a#5,a5,4c,2p,c,d,a#5,d,4f,d,2c,p,c,d,a#5,d,f,e,d,c,d,c,a5,f5,a5,c,d,c,4a#5,g5,2f5
+Porsaita:d=8,o=5,b=200:4g,g,a,g,f,e,f,4g,4e,d,e,4f,4d,c,d,4e,4c,4g,g,a,g,f,e,f,4g,4e,d,e,4f,4d,4g,2c,4c6,3g,f,e,d,2c,4c6,3g,f,e,d,1c
+Postman Pat:d=16,o=5,b=100:f#,p,a,p,8b,8p,f#,p,a,p,8b,8p,f#,p,a,p,b,p,d6,d6,c#6,c#6,a,p,3b,8p,32f#,g,p,a,p,b,p,g,p,5f#,8e,8p,32f#,g,p,a,p,21b,21b,g,p,5f#,8e,8p,32f#,g,p,a,p,b,p,g,p,f#,p,e,p,d,p,c#,p,2d
+Prima:d=16,o=5,b=200:4c6,8p,11g,p,1g,8p,11e,p,4f,p,11a,p,4g,p,11c,p,1c,4p,11e,p,4f,p,11a,p,4g,p,c,p,1c,p,11c,p,5c,5d,11e,p,1e,4p,4c6,8p,11g,p,1g,8p,11e,p,4f,p,11a,p,4g,p,11c,p,1c,p,11e,p,4f,p,11a,p,4g,p,c,p,1c,p,11c,p,5c,5d,11e,p,1c,p
+QuoFNigt:d=8,o=5,b=160:16a,16g,16a,16a#,c6,c6,c6,c6,c6,c6,c6,c6,3f,4p,32f,16e,16f,16g,a,a,a,a,a,a,a,a,3d,4p,16d,16c,16d,16e,f,f,f,c,g,g,g,c,a,f,a,c6,f6,c6,d6,a#,c6,f,a,c6,f6,c6,d6,a#,4c6,4p,3f,f,4a4,4p,4e,4p,f,g,f,a,a#,a,f,g,f,d,e,d,c#,d,c#,a4,b4,a4,c#,d,c#,e,f,e,f,g,f,a,a#,a,f,g,f,d,5e
+RABI:d=4,o=5,b=63:32d,32d,32d,32p,16d6,16c#6,32d,32d,32d#,16d6,16d#6,32d#6,32d6,32c#6,32a#,32a,32a,32a,32p,16d,16p,32g,32f#,32d#,32d
+Reedpipe:d=4,o=5,b=70:16d,16c#,16d,16c#,16d,16p,16c#,16p,16e,16p,32d,32f#,32a,32d6,5f#6,16p,16g6,16f#6,16g6,16f#6,16e6,16d6,16a,16f#,8d,32d6,c#6,8p,16b,16b4,16b4,32b4,32c#,16b4,16p,16a4,16p,16b,16b4,16b4,32b4,32c#,16b4,16p,16a4,16p,16d6,16d,16d,16d,32d,16c#,16e,16d,32d,16c#,16b4,16a4,8g6,32e6,32c#6,32g,32e,16d,16c#,16d,16c#,16d,16p,16c#,16p,16e,16p,32d,32f#,32a,32d6,8f#6,32p,16g6,16f#6,16g6,16f#6,16e6,16d6,16a,16f#,5d,32p,32d6,5c#6,16p,16b,16b4,16b4,32b4,32c#,16b4,16p
+Return:d=4,o=6,b=90:16c#5,16e5,16f#5,a5,33g#.5,16a5,5f#5,16c#5,33e.5,16f#5,a5,33g#.5,16a5,5f#5,16c#5,33e.5,33f#.5,a5,33g#.5,33a.5,f#5,16g#5,16a5,1c#
+Reveille:d=4,o=5,b=140:e6,8c6,g,8g,8c6,8g,8e6,8c6,8c6,8c6,e6,8c6,g,8g,8c6,8g,8e6,3c6,8g,8g,8g,8c6,8e6,8c6,8g,8g,8g,c6,8e6,8g,8g,8g,8c6,8e6,8c6,8g,8g,8g,3c6
+Rhubarb and Custard:d=8,o=5,b=180:e,f,g,3d#,e,f,g,3d#,e,f,g,4a#,a#,1g,e,f,g,3d#,e,f,g,3d#,4e,e,4d,d,1c
+Rich Man's World:d=8,o=6,b=112:e,e,e,e,e,e,16e5,16a5,16c,16e,d#,d#,d#,d#,d#,d#,16f5,16a5,16c,16d#,4d,c,a5,c,4c,2a5,32a5,32c,32e,a
+Rikasmiesjos:d=4,o=5,b=160:8g,8f,8g,8f,e,c,p,8e,8f,8g,8f,8g,8f,8e,8f,8g,8a,8a#,8a,8a#,8a,g,p,g#,g,f#,f,8d#,8d,8c,8d,d#,p,8d#,8d,8c,8d,d#,c,g,p
+Ring High:d=16,o=6,b=350:b5,d,b5,d,b5,d,b5,d,d,f,d,f,d,f,d,f,f,a,f,a,f,a,f,11a
+Ring Low:d=16,o=5,b=355:b4,d,b4,d,b4,d,b4,d,d,f,d,f,d,f,d,f,f,a,f,a,f,a,f,a
+rogirl:d=4,o=6,b=70:11c#7,16c#7,32c#7,16c#7,16c7,16c#7,16c7,16c#7,11c#7,16c#7,32c#7,16c#7,16c7,16c#7,16c7,16c#7,11d#7,16d#7,32d#7,16c#7,16c7,16c#7,16c7,16c#7,11c7,16c7,32c7,16c7,16a#,16c7,16a#,16c7,11c#7,16c#7,32c#7,16c#7,16c7,16c#7,16c7,16c#7,11c#7,16c#7,32c#7,16c#7,16c7,16c#7,8d#7,16d#7,16c#7,16a#,16c#7,8d#7,8c#7,16d#7,8d#7,8f7,16d#7,16c#7,16d#7,16c#7
+RosvoRoope:d=4,o=5,b=125:8b4,8b4,8c#,8d,8e,8f#,8f#,8g,8f#,8f#,8e,8d,8c#,2b4,8f#,8f#,8d,8f#,8a,8a,8a,8a,8d,8f#,8a,8g,f#,p,16f#,16f#,8d6,8d6,8c#6,8b,d,8f#,8a,8c#6,8b,8a,8g,f#,p,16f#,16f#,8b,8b,8f#,8e,d,8b4,8d,8f#,8f#,8a#4,8a#4,b4
+Roundabout:d=4,o=5,b=160:g,8g,8g,d,d,e,8e,8e,c,c,f,8f,8f,c,c,f#,8f#,8f#,d,d,1g
+Rudolf:d=4,o=5,b=160:8g,a,8g,e,c6,a,1g,5g,16a,5g,16a,g,c6,1b,8f,g,8f,d,b,a,1g,5g,16a,5g,16a,g,d6,1c6
+Rudolph the Red Nosed Reindeer:d=8,o=5,b=250:g,4a,g,4e,4c6,4a,1g,g,a,g,a,4g,4c6,1b,4p,f,4g,f,4d,4b,4a,1g,g,a,g,a,4g,4a,1e,4p,g,4a,a,4e,4c6,4a,1g,g,a,g,a,4g,4c6,1b,4p,f,4g,f,4d,4b,4a,1g,g,a,g,a,4g,4d6,1c6,4p,4a,4a,4c6,4a,4g,4e,2g,4d,4e,4g,4a,4b,4b,2b,4c6,4c6,4b,4a,4g,4f,2d,g,4a,g,4e,4c6,4a,1g,g,a,g,a,4g,4c6,1b,4p,f,4g,f,4d,4b,4a,1g,4g,4a,4g,4a,2g,2d6,1c6,p
+Rugrats:d=8,o=7,b=100:c,d,e,5f,5g,a,p,a,g,f,5e,5d,c,p,c,d,e,5d,5c,b6,p,b6,c,d,5c,5b6,a6,p,c,d,e,5f,5g,a,p,a,g,f,5e,5d,c,p,c,d,e,5d,5c,b6
+Rule B:d=4,o=5,b=100:3e,8e,8f,f,8e,5f,16e,5d,16c,2b4,g,f,16e,16c,16f,16d,8g,8f,e,5d,16c,c
+Rule Britannia:d=8,o=5,b=100:5e,e,f,4f,e,5f,16e,5d,16c,2b4,4g,4f,16e,16c,16f,16d,g,f,4e,5d,16c,4c
+The Saint:d=4,o=6,b=140:8g5,8c#,8d,8g5,c,3a#5,g5,8d5,8d5,8a#5,8a5,8f5,8g5,8c#,8d,8g5,c,3a#5,g5,8a#5,8a5,8a#5,8a5,8f5,8g5,8c#,8d,8g5,c,a#5,8c5,8f#5,8g5,8c5,f5,d#5,8g5,8c#,8d,8g5,c,3a#5,1g5
+Santa Clause is Coming Tonight:d=4,o=5,b=200:g,8e,8f,g,3g,8g,8a,8b,c6,2c6,8e,8f,g,g,g,8a,8g,f,2f,e,g,c,e,d,2f,b4,1c,p,g,8e,8f,g,3g,8g,8a,8b,c6,2c6,8e,8f,g,g,g,8a,8g,f,f,e,g,c,e,d,2f,b4,1c,p,c6,d6,c6,b,c6,a,2a,c6,d6,c6,b,c6,1a,d6,e6,d6,c#6,d6,b,b,b,8b,8c6,d6,c6,b,a,g,p,3g,8g,8e,8f,g,3g,8g,8a,8b,c6,2c6,8e,8f,g,g,g,8a,8g,8f,2f,e,g,c,e,d,2f,d6,1c6,p
+Sash:d=4,o=6,b=40:16g,16d,11f,5g,16g,16f,16d,16c,11a#5,5g5,16g,16f,16d,16c,11a#5,8g5,32g5,16a#5,16a#5,16c,16d,16f,32d,c,16g,16d,11f,5g,16g,16f,16d,16c,11a#5,5g5,16g,16f,16d,16c,11a#5,8g5,32g5,16a#5,16a#5,16c,16g5,32g5,16f5
+Scale:d=32,o=5,b=160:c,d,e,f,g,a,b,c6,b,a,g,f,e,d,c
+Scarlet:d=4,o=5,b=63:16d6,16a,16a#,16d#6,16d,32d,16e,32d,16e,8f,8g,21a,21a#,21g,5a,16a,21a,21a#,21g,a,p,p,e,p,p,p,75p.
+Scatman:d=16,o=5,b=200:8b,b,32p,8b,b,32p,8b,2d6,p,11c#6,11p,8d6,p,c#6,8b,p,8f#,1p,c#6,8p,11d6,11p,c#6,b,8p,8f#,2p,32p,2d6,p,c#6,8p,11d6,11p,c#6,11a,11p,8e,1p,c#6,8p,11d6,11p,c#6,b,8p,8b,b,32p,8b,b,32p,8b,2d6,p,11c#6,11p,8d6,p,c#6,8b,p,8f#,1p,c#6,8p,11d6,11p,c#6,b,8p,8f#,2p,32p,2d6,p,c#6,8p,11d6,11p,c#6,11a,11p,8e,1p,c#6,8p,11d6,11p,c#6,a,8p,8e,2p,32p,11f#6,11p,11b,11p
+Schweine:d=4,o=5,b=180:5g,16p,11g,8p,11a,8p,8a,16p,8b,8p,5b,16p,16d6,16p,d6,16p,e6,16p,16e6,8p,11b,8p,11b,8p,11a,8p,5a,16p,11g,16p,g,16p,5d6,16p,16d6,8p,8c6,16p,5c6,16p,8b,16p,11b,16p,5a,16p,a,16p,5d6,16p,16d6,8p,8c6,16p,5c6,16p,8b,16p,11e6,16p,5b,16p,3d6,8p
+Scooby Doo:d=8,o=6,b=160:e,e,d,d,2c,d,4e,2a5,a5,4b5,4g5,4e,d,4c,d,2e,4p,e,e,d,d,2c,d,4f,2a5,a5,4b5,4g5,4e,d,2c
+Scotland:d=4,o=5,b=250:c,32p,2f,3f,8g,a,f,a,c6,2f6,3f6,8f6,f6,c6,a,f,2a#,3d6,8a#,a,c6,a,f,2g,3c6,8d6,5c6,16p,8c6,8d6,8c6,8b,8a,8g,2f,3f,8g,a,f,a,c6,2f6,3f6,8f6,f6,c6,a,f,2a#,3d6,8a#,a,c6,a,f,2g,3f,32p,8g,32p,2f,32p,f,32p,c6,32p,2f6,3f6,8f6,f6,32p,a,32p,f,32p,5a,32p,2f6,3f6,8f6,f6,c6,a,f,2a#,3d6,8a#,a,c6,a,f,2g,3f,32p,8g,32p,1f
+Sesame Street:d=4,o=5,b=160:2c6,a,2f,8f,8g,a,p,2c6,a,1f,p,2c6,a,2f,8f,g,a,2b,c6,2d6,p,8c6,8d6,d#6,d6,c6,a,g,8g,8a,a#,a,8g,8c,8c,1c
+Shoop song:d=4,o=5,b=125:g,g,g,g,f,8f,8d#,8f,8d#,c,g,8g,8g,g,8g,8g,b,8g,3g,8e,8d,8f,e,3d
+silent:d=4,o=5,b=160:3g,8a,g,1e,3g,8a,g,1e,2d6,d6,1b,2c6,c6,1g
+simbaleo:d=4,o=6,b=25:21c#7,11a#,21c7,11g#,32a#,32a#,32d#7,5c#7,21c#7,11a#,32c7,32c#7,32c7,11a#,32g#,32a#,16c#7,16a#,21c#7,11a#,21c7,11g#,32a#,32a#,32d#7,5c#7,21c#7,11a#,32c7,32c#7,32c7,32a#
+Simpsons:d=8,o=5,b=160:5c6,4e6,4f#6,a6,3g6,4e6,4c6,a,f#,f#,f#,2g,p,p,f#,f#,f#,g,3a#,c6,c6,c6,4c6
+The Simpsons:d=4,o=5,b=160:3c6,e6,f#6,8a6,3g6,e6,c6,8a,8f#,8f#,8f#,2g,8p,8p,8f#,8f#,8f#,8g,3a#,8c6,8c6,8c6,c6
+Skala:d=4,o=5,b=160:32c,32d,32e,32f,32g,32a,32b,32c6,32b,32a,32g,32f,32e,32d,32c
+Smoke:d=4,o=5,b=112:c,d#,3f,c,d#,8f#,f,p,c,d#,3f,d#,c,2p,8p,c,d#,3f,c,d#,8f#,f,p,c,d#,3f,d#,c,p
+Smoke on the Water (Deep Purple):d=4,o=4,b=112:c,d#,3f,c,d#,8f#,f,p,c,d#,3f,d#,c,2p,8p,c,d#,3f,c,d#,8f#,f,p,c,d#,3f,d#,c
+Smsdidi:d=4,o=5,b=500:8b,16p,8b,2p,8g,16p,8g,2p,8d6,16p,8d6,2p,8d,16p,8d
+Smurfs:d=32,o=5,b=200:4c#6,16p,4f#6,p,16c#6,p,8d#6,p,8b,p,4g#,16p,4c#6,p,16a#,p,8f#,p,8a#,p,4g#,4p,g#,p,a#,p,b,p,c6,p,4c#6,16p,4f#6,p,16c#6,p,8d#6,p,8b,p,4g#,16p,4c#6,p,16a#,p,8b,p,8f,p,4f#
+Smurfs:d=4,o=5,b=200:2c6,3f6,8c6,d6,a#,2g,3c6,8a,f,a,2g,p,16g,16a,16a#,16b,2c6,3f6,8c6,d6,a#,2g,3c6,8a,a#,e,2f,p,16g,16a,16a#,16b,2c6,3f6,8c6,d6,a#,2g,3c6,8a,f,a,2g,p,16g,16a,16a#,16b,2c6,3f6,8c6,d6,a#,2g,3c6,8a,a#,e,1f,1p
+Snorosa:d=4,o=5,b=140:c6,8b,8a,b,8a,8g,8a#,8a#,8a,8g,a,8g,8f,8p,8f,8f,8e,d,8a,2g
+Soap:d=8,o=5,b=125:g,a,c6,p,a,4c6,4p,a,g,e,c,4p,4g,a,c6,4p,4b,4p,a,g,e,c#,2p,4p,a,c6,2p,4p,a,g,2p,a,g,e,4c
+Solskinnsdag:d=4,o=5,b=140:2p,d#6,e6,8f6,3a6,f6,e6,8d#6,3g6,d#6,a#,8p,8g6,8a,8d#6,8f6
+Sorcerers Apprentice:d=18,o=6,b=125:4c,4g,g.5,a.5,b.5,c.,p.,d#.,c.,p.,d#.,d.,c.,b.5,c.,p.,d#.,c.,p.,d#.,d.,c.,b.5,c.,p.,d#.,c.,d#.,d.,c.,d.,d#.,d.,f.,d#.,d.,p.,f#.,c.,p.,d#.,d.,f.,d#.,d.,p.,f#.,c.,p.,d#.,d.,d#.,f.,g.,g.,g.,g.,g.,g.,1g
+South Park:d=8,o=5,b=125:e,e,e,16e,e,16e,p,e,e,e,e,e,16p,16e,e,2p,g,g,4g,16b,16b,b,e,a#,16g,16g,g,16f#,16f#,f#,e
+Spiderman:d=4,o=6,b=200:c,8d#,3g,p,f#,8d#,3c,p,c,8d#,g,8g#,g,f#,8d#,3c,p,f,8g#,3c7,p,a#,8g#,3f,p,c,8d#,3g,p,f#,8d#,c,p,8g#,2g,p,8f#,f#,8d#,f,8d#,2c
+Stairway:d=4,o=5,b=63:8a6,8c6,8e6,8a6,8b6,8e6,8c6,8b6,8c7,8e6,8c6,8c7,8f#6,8d6,8a6,8f#6,8e6,8c6,8a6,c6,8e6,8c6,8a,8g,8g,8a,a
+Star Spangled Banner:d=4,o=5,b=250:g6,16p,2f#6,16p,8g6,e6,g6,16p,a,a#,b,c6,c#6,8d6,p,32p,d6,16p,8b,8p,32p,8b,b,b,8b,8p,32p,8b,c6,c6,8a,8g#,8a,8b,a,g,f#,e,f#,d,8d6,8p,32p,8d6,d6,d6,8d6,8p,32p,8d6,d#6,d#6,8e6,8d#6,8e6,8g6,f#6,e6,1d#6,8p,d#6,8d6,8p,32p,8d6,8g6,8p,32p,8e6,d6,c#6,d6,b,a,8d,8c#,8d,8c#,d,a,8d,8c#,8d,8c#,d,8d6,8p,32p,8d6,8g6,8p,32p,8e6,d6,c#6,d6,a#,a,8c#
+Star Trek:d=4,o=5,b=63:5f,16a#,3d#6,8d6,11a#,11g,11c6,f6
+Star Wars:d=8,o=6,b=180:f5,f5,f5,2a#5,p,1f,d#,d,c,1a#,3f,d#,d,c,1a#,3f,d#,d,d#,2c,4p,f5,f5,f5,2a#5,p,1f,d#,d,c,1a#,3f,d#,d,c,1a#,3f,d#,d,d#,2c
+Star Wars Imperial March:d=4,o=5,b=80:5d,5d,5d,8a#4,16f,5d,8a#4,16f,3d,32p,5a,5a,5a,8a#,16f,5c#,8a#4,16f,3d,32p,5d6,8d,16d,8d6,32p,8c#6,16c6,16b,16a#,8b,32p,16d#,8g#,32p,8g,16f#,16f,16e,8f,32p,16a#4,8c#,32p,8a#4,16c#,5f,8d,16f,3a,32p,5d6,8d,16d,8d6,32p,8c#6,16c6,16b,16a#,8b,32p,16d#,8g#
+Star Wars Imperial March:d=4,o=5,b=112:5d,16p,5d,16p,5d,16p,8a#4,16p,16f,5d,16p,8a#4,16p,16f,3d,8p,5a,16p,5a,16p,5a,16p,8a#,16p,16f,5c#,16p,8a#4,16p,16f,3d,8p,5d6,16p,8d,16p,16d,8d6,8p,8c#6,16p,16c6,16b,16a#,8b,8p,16d#,16p,8g#,8p,8g,16p,16f#,16f,16e,8f,8p,16a#4,16p,8c#,8p,8a#4,16p,16c#,5f,16p,8d,16p,16f,3a,8p,5d6,16p,8d,16p,16d,8d6,8p,8c#6,16p,16c6,16b,16a#,8b,8p,16d#,16p,8g#,8p,8g,16p,16f#,16f,16e,8f,8p,16a#4,16p,8c#
+Star Wars Imperial March:d=4,o=5,b=112:8g,16p,8g,16p,8g,16p,11d#,32p,21a#,8g,16p,11d#,32p,21a#,g,8p,32p,8d6,16p,8d6,16p,8d6,16p,11d#6,32p,21a#,8f#,16p,11d#,32p,21a#,g,8p,32p,8g6,16p,11g,32p,21g,8g6,16p,11f#6,32p,21f6,21e6,21d#6,16e6,8p,16g#,32p,8c#6,16p,11c6,32p,21b,21a#,21a,16a#,8p,16d#,32p,8f#,16p,11d#,32p,21g,8a#,16p,11g,32p,21a#,d6,8p,32p,8g6,16p,11g,32p,21g,8g6,16p,11f#6,32p,21f6,21e6,21d#6,16e6,8p,16g#,32p,8c#6,16p,11c6,32p,21b,21a#,21a,16a#,8p,16d#,32p,8f#,16p,11d#,32p,21g,8g,16p,11d#,32p,21a#,g
+Superman:d=8,o=6,b=180:g5,g5,g5,4c,c,2g,p,g,5a,16g,f,1g,p,g5,g5,g5,4c,c,2g,p,g,5a,16g,f,a,1g,4p,c,c,c,1b,3g,c,c,c,1b,3g,c,c,c,b,a,b,2c7,c,c,c,c,c,1c
+Superman:d=4,o=6,b=200:8d5,8d5,8d5,5g5,16p,8g5,2d,8p,8d,8e,8d,8c,1d,8p,8d5,8d5,8d5,5g5,16p,8g5,2d,8d,8d,8e,8c,8g5,8e,1d,p,8g5,8g5,8g5,1f#,3d,8g5,8g5,8g5,1f#,3d,8g5,8g5,8g5,8f#,8e,8f#,1g,8g5,8g5,8g5,1g5
+Superman:d=4,o=5,b=180:8g,8g,8g,c6,8c6,2g6,8p,8g6,5a6,16g6,8f6,1g6,8p,8g,8g,8g,c6,8c6,2g6,8p,8g6,5a6,16g6,8f6,8a6,1g6,p,8c6,8c6,8c6,1b6,3g6,8c6,8c6,8c6,1b6,3g6,8c6,8c6,8c6,8b6,8a6,8b6,2c7,8c6,8c6,8c6,8c6,8c6,1c6
+Surfing:d=4,o=6,b=160:8d,8d,8d,8d,8d,c#,3b5,1f#5,8b5,8c#,11b5,32c#,8d,c#,1b5,8d,8d,d,c#,3b5,1f#5,8b5,8c#,11b5,8d,c#,1b5,f#,e,8e,e,3e,1a5,8c#,8d,8d#,8e,e,1b5,e,8e,8g#,8a,b,3a,1f#,8a5,8a5,8g#5,f#5,1e5
+SW/Finale:d=4,o=5,b=225:2c,1f,1g,8g#,8a#,1g#,1c,c,1f,g,g#,c,5g#,5c,8c6,1a#,2c,1f,g,3g#,8f,3c6,8g#,1f6,2f,5g#,5g,8f,2c6,5c6,5g#,8f,2c,5c,5c,8c,2f,5f,5f,8f,2f
+Sweeney:d=8,o=6,b=125:16a5,c,4a5,p,3p,16a5,e,2d,3p,p,4c,c,16a5,p,c,3e,d,16a5,4c,d,16a5,c,4a5,p,3p,16a5,e,2d,3p,p,4e,e,11d#,e,3f,4c,4b5,4a5,1f,4c,g,1f
+The Sweeney:d=4,o=5,b=140:16a,8c6,3a,3p,16a,8e6,2d6,3p,8p,c6,8c6,11a,8c6,3e6,8d6,16a,c6,8d6,16a,8c6,3a,3p,16a,8e6,2d6,3p,8p,e6,8e6,11d#6,8e6,3f6,c6,b,a,1f6,c6,8g6,1f6
+Sweet Child:d=4,o=5,b=125:8c#,8c#6,8g#,8f#,8f#6,8g#,8f6,8g#,8c#,8c#6,8g#,8f#,8f#6,8g#,8f6,8g#,8d#,8c#6,8g#,8f#,8f#6,8g#,8f6,8g#,8d#,8c#6,8g#,8f#,8f#6,8g#,8f6,8g#,8f#,8c#6,8g#,8f#,8f#6,8g#,8f6,8g#,8f#,8c#6,8g#,8f#,8f#6,8g#,8f6,8g#,8c#,8c#6,8g#,8f#,8f#6,8g#,8f6,8g#,c#
+Take On Me:d=8,o=5,b=160:f#,f#,f#,d,p,b4,p,e,p,e,p,e,g#,g#,a,b,a,a,a,e,p,d,p,f#,p,f#,p,f#,e,e,f#,e,f#,f#,f#,d,p,b4,p,e,p,e,p,e,g#,g#,a,b,a,a,a,e,p,d,p,f#,p,f#,p,f#,e,e
+Take5:d=4,o=6,b=180:5d5,8g5,5a#5,11c,5c#,11d,5c#,11c,a#5,d5,f5,1g5,32a5,16a#5,16a5,11g5,f5,1g5,16f5,16g5,16f5,11d5,c5,1d5,5d5,8g5,5a#5,11c,5c#,11d,5c#,11c,a#5,d5,f5,1g5,11f5,32g5,32f5,8d5,c5,1d5,16a5,11a#5,32a5,16g5,5f5,1g5
+Tarzan:d=8,o=5,b=120:e,f,g,16c6,g,16c6,16g,16c6,g,4d6,g,5g,4c6,4p,f,g,a,16c6,a,16c6,16a,16c6,a,4d6,g,5g,4c6,4p,e,f,g,16c6,g,16c6,16g,16c6,g,4d6,g,5g,4c6,4p,f,g,a,16c6,a,16c6,16a,16c6,a,4d6,g,5g,4c6,p
+Tears in heaven:d=4,o=5,b=112:p,8b,8g,d6,8d6,8b,16a,3g,2p,p,8c6,8c6,8b,8a,8g,b,2a
+Teenage Dirt Bag:d=4,o=5,b=200:d#6,e6,g#6,g#6,2f#6,2e6,2g#6,2d#6,2d#6,2e6,d#6,e6,g#6,g#6,2f#6,2e6,2g#6,2d#6,2d#6,2e6,2e6,g#6,g#6,2f#6,2e6,2g#6,2d#6,2d#6,e6,2d#6,2e6
+Teenage Turtles:d=8,o=6,b=100:g5,a5,g5,a5,g5,16a5,5g5,a5,a#5,c,a#5,c,a#5,16c,5a#5,c,d#,f,d#,f,d#,16f,5d#,f,16c,16c,16c,16c,a#5,4c,16c7,16c7,16c7
+Tele Tubbies:d=4,o=5,b=125:11g,p,16g,e,3g,p,a,1f,11g,p,16g,e,3g,p,1d,11g,p,16g,e,3g,p,a,1f,2g,2b,1c6,p
+Teletubbies:d=4,o=5,b=125:11g,8p,16g,8e,3g,8p,a,1f,11g,8p,16g,8e,3g,8p,1d,11g,8p,16g,8e,3g,8p,a,1f,2g,2b,1c6
+Tetris:d=4,o=5,b=160:e6,8b,8c6,8d6,16e6,16d6,8c6,8b,a,8a,8c6,e6,8d6,8c6,b,8b,8c6,d6,e6,c6,a,2a,8p,d6,8f6,a6,8g6,8f6,e6,8e6,8c6,e6,8d6,8c6,b,8b,8c6,d6,e6,c6,a,a
+Thank You:d=4,o=5,b=180:e6,e6,e6,8f6,d6,c6,3d6,p,8p,8b,c6,e6,b,8e6,3a,p,e6,e6,e6,8f6,d6,c6,3d6,p,8p,g6,a6,e6,8d6,e6,p,g6,g6,g6,8e6,d6,c6,e6,d6,p,8c6,8d6,e6,8f6,e6,d6,e6
+They don't care about us:d=4,o=5,b=125:16f,16e,16f,16e,16f,16e,8d,16e,16d,16e,16d,16e,16d,16c,16d,d
+Think Pink:d=4,o=6,b=70:21f#5,g5,21a5,a#5,21f#5,11g5,21a5,11a#5,21d#,11d,21g5,11a#5,21d,2c#,21c,21a#5,21g5,21f5,3g5,32p,11g,21f,11d,21c,11a#5,21g5,32c#,8c,32c#,8c,32c#,8c,32c#,8c,21a#5,21g5,21f5,11g5,3g5
+Thomas The Tank:d=8,o=7,b=250:c,p,d,p,e,p,2f,4g,2a,2c#,4a5,4p,4a5,4p,4a5,4p,16c#,5d,4a#6,4d,4c,4p,4c6,4p,4c6,16c#,5d,4a#6,4a#6,d,4c,4c6,b6,c,b6,c,p,3c,p,4c,4c6,4c6,p,b6,c,b6,c,p,3c#,p,4c#,4c#6,4c#6,4g#6,4a#6,4b6,4c,4g#6,4d#,4d#6,4a#6,4c6,4c,4d#6,2c#,4c#6,4p,4c#6,4c#,4c,4b6,a#6,a#5,a#6,p,c#,a#5,c#,p,f#,a#5,f#,3a#,4a#6,g#6,c#6,g#6,p,c#,c#6,c#,p,f,c#6,f,3g#,4g#6,f#6,d#6,f#6,p,a#6,d#6,a#6,p,d#,d#6,d#,3f#,4p,16e,5f,p,4f,c#,d#,p,4c#,4p,4c#6
+Thosewerethe:d=4,o=5,b=200:2c6,2c6,2b,2b,a,2a,a,a,g,2g,f,2f,d,e,f,1g,a,3b,8a,8g,3f,1e,p,c,d,e,2g,f,2f,f,g,a,2d6,c6,2c6,a,b,c6,1e6,d6,c6,b,a,g#,1a
+Thunder Birds:d=8,o=4,b=125:g#5,16f5,16g#5,4a#5,p,16d#5,16f5,g#5,a#5,d#6,16f6,16c6,d#6,f6,2a#5,g#5,16f5,16g#5,4a#5,p,16d#5,16f5,g#5,a#5,d#6,16f6,16c6,d#6,f6,2g6,g6,16a6,16e6,4g6,p,16e6,16d6,c6,b5,5a5,16b5,c6,e6,2d6,d#6,16f6,16c6,4d#6,p,16c6,16a#5,g#5,g5,5f5,16g5,g#5,a#5,c6,a#5,g5,d#5
+Thunderbirds:d=4,o=4,b=125:8g#5,16f5,16g#5,a#5,8p,16d#5,16f5,8g#5,8a#5,8d#6,16f6,16c6,8d#6,8f6,2a#5,8g#5,16f5,16g#5,a#5,8p,16d#5,16f5,8g#5,8a#5,8d#6,16f6,16c6,8d#6,8f6,2g6,8g6,16a6,16e6,g6,8p,16e6,16d6,8c6,8b5,5a5,16b5,8c6,8e6,2d6,8d#6,16f6,16c6,d#6,8p,16c6,16a#5,8g#5,8g5,5f5,16g5,8g#5,8a#5,8c6,8a#5,8g5,8d#5
+Tigger:d=8,o=5,b=200:d#,d,d,d,d,c,d,d#,2d#,d#,d,d,d,d,c,d,3d#,4p,d#,4d,d,d,c,d,d#,2d#,d#,d,d,d,d,c,d,3d#,4p,d#,4g#,g#,4g,g,4g#,g#,4g,g,5f,5g,5a,5f,3a#,2p,d#,d#,d#,f,f,f,g,g,g,g#,g#,g#,4a#,g#,4g,f,4d#,2p
+Time To Say Goodbye:d=16,o=5,b=80:8c,d,e,d,e,f#,g,f#,g,a,g,e,a,b,4c6,4b
+Time to say goodbye:d=4,o=5,b=80:8c,16d,16e,16d,16e,16f#,16g,16f#,16g,16a,16g,16e,16a,16b,c6,b
+Titanic:d=8,o=6,b=120:c,d,1e,d,c,d,g,2g,f,e,4c,2a5,g5,f5,16d5,16e5,2d5,p,c,d,1e,d,c,d,g,2g,e,g,2a,2g,16d,16e,1d
+TLC:d=4,o=6,b=70:21d5,21a5,21c,f,21a4,21a5,21c,e,21e4,21g#5,21b5,d,21a4,21a5,21c,e,21d5,21a5,21c,f,21a4,21a5,21c,e,21e4,21g#5,21b5,5d,11g,21f,21e,21d,5e,21d5,21a5,21c,f,21a4,21a5,21c,e,21e4,21g#5,21b5,d,21a4,21a5,21c,e,21d5,21a5,21c,f,21a4,21a5,21c,e,21e4,21g#5,21b5,5d,11g,21f,21e,21d,5e
+To The Dump To The Dump To The Dump Dump Dump:d=8,o=5,b=270:c,c,4c,c,c,4c,c,c,f,p,g,p,4a,c,c,4c,c,c,4c,a,a,g,p,e,p,4c,c,c,4c,c,c,4c,c,c,f,p,g,p,4a,f,a,1c6,a,g,f,p,5a,p,f
+Toccata:d=16,o=5,b=160:a,g,1a,g,f,e,d,2c#,p,2d,2p,a4,g4,1a4,8e4,p,4f4,2c#4,2d4
+Tones:d=8,o=5,b=500:b,16p,b,2p,g,16p,g,2p,d6,16p,d6,2p,d,16p,5d
+Top Cat:d=16,o=5,b=125:8g,8c6,p,g,8c6,c6,8g,8c6,p,8c6,g,g,f#,g,g#,a,a#,b,8c6,8c6,p,g,4g,32g#,32a,32a#,32b,c6,p,c6,8c6,a,8b,a,8g,8c6,p,8c6,p,d#,8e,g,8a,c6,8p,c6,8c6,a,8b,a,8g
+Top Gun:d=4,o=4,b=31:32p,16c#,16g#,16g#,32f#,32f,32f#,32f,16d#,16d#,32c#,32d#,16f,32d#,32f,16f#,32f,32c#,16f,d#,16c#,16g#,16g#,32f#,32f,32f#,32f,16d#,16d#,32c#,32d#,16f,32d#,32f,16f#,32f,32c#,g#
+Transformers:d=16,o=6,b=285:e7,f7,e7,d#7,4d7,4p,d,d,d,d,d,d,d,d,e,e,e,e,f,f,f,f,f,f,f,f,8a7,8a#7,8a7,8p,4d7,2p,d,d7,d,d7,d,d7,d,d7,e,e7,e,e7,f,f7,f,f7,f,f7,f,f7,a5,a5,a5,a5,a#5,a#,a#5,a#,a#5,a#,a#5,a#,a#5,a#,a#5,a#,4p,8d,8p,4e,4f,4p,4f,4p,2g,4a,4a#,4p,g,g7,g,g7,g,g7,g,g7,4e,4g,4a,4p,f,f7,f,f7,f,f7,f,f7,4e,4f,4g,4p,e,e7,e,e7,e,e7,e,e7,e,e7,e,e7,4p,4d,4c#,8e,8p,4d,2d,d,d7,d,d7,d,d7,d,d7
+Trim Phone:d=16,o=5,b=350:a,b,a,b,a,b,a,4p,a,b,a,b,a,b,a,b,11a
+Tubbells:d=4,o=5,b=285:c6,f6,c6,g6,c6,d#6,f6,c6,g#6,c6,a#6,c6,g6,g#6,c6,g6,c6,f6,c6,g6,c6,d#6,f6,c6,g#6,c6,a#6,c6,g6,g#6,c6,g6,c6,f6,c6,g6,c6,d#6,f6,c6,g#6,c6,a#6,c6,g6,g#6,c6,g6,c6,f6,c6,g6,c6,d#6,f6,c6,g#6,c6,a#6,c6,g6,g#6,c6,g6
+Tubular:d=4,o=5,b=285:c,f,c,g,c,d#,f,c,g#,c,a#,c,g,g#,c,g,c,f,c,g,c,d#,f,c,g#,c,a#,c,g,g#,c,g,c,f,c,g,c,d#,f,c,g#,c,a#,c,g,g#,c,g,c,f,c,g,c,d#,f,c,g#,c,a#,c,g,g#,c,g
+Tubular Bells:d=4,o=5,b=280:c6,f6,c6,g6,c6,d#6,f6,c6,g#6,c6,a#6,c6,g6,g#6,c6,g6,c6,f6,c6,g6,c6,d#6,f6,c6,g#6,c6,a#6,c6,g6,g#6,c6,g6,c6,f6,c6,g6,c6,d#6,f6,c6,g#6,c6,a#6,c6,g6,g#6,c6,g6,c6,f6,c6,g6,c6,d#6,f6,c6,g#6,c6,a#6,c6,g6,g#6
+Twinkle Twinkle:d=4,o=5,b=60:16c#6,16c#6,16g#6,16g#6,16a#6,16a#6,16g#6,16p,16f#6,16f#6,16f6,16f6,16d#6,8c#6,16p,16g#6,16g#6,16f#6,16f#6,16f6,16f6,8d#6,16p,16g#6,16f#6,16f#6,16f6,16f6,8d#6,16p,16c#6,16c#6,16g#6,16g#6,16a#6,16g#6,16p,16f#6,16f#6,16f6,16f6,16d#6,16d#6,8c#6
+U.F.O.:d=4,o=6,b=70:21d5,21c5,21d#5,3d5,11a5,21g5,21g5,21f5,21f5,21d5,21c5,21d#5,3d5,11a5,21g5,21g5,21f5,21f5,21a5,21g5,21c,8a5,21g5,21f5,21a#5,8g5,21f5,21d#5,21f5,3g5,21a#5,21a#5,21a5,21g5,21f5,21a5,d5
+Under The Sea:d=4,o=5,b=200:8d,8f,8a#,d6,d6,8a#,c6,d#6,d6,a#,8a#4,8d,8f,a#,a#,8c,a,c6,a#,p,8d,8f,8a#,d6,d6,8a#,c6,d#6,d6,a#,8a#4,8d,8f,a#,a#,8c,a,c6,16a#,16d,16a#,16d,16a#,16d,16a#
+Under The Sea:d=32,o=7,b=100:16c5,16f5,16a5,16c6,16p,16c6,16p,16c6,8a#5,8d6,8c6,8a5,16f4,16a4,16c5,16f5,16p,16f5,16p,16f5,8e5,8g5,8f5,8c5,16c5,16f5,16a5,16c6,16p,16c6,16p,16c6,8a#5,8d6,8c6,8a5,16f4,16a4,16c5,16f5,16p,16f5,16p,16f5,8e5,8g5,5f5
+Unknown:d=8,o=7,b=80:16b5,16c6,p,16d6,e6,2p,16b5,c6,16e6,16e6,16b5,c6,2p
+Unknown:d=4,o=5,b=80:8d,8f#,8a,8d6,8c#,8e,8a,8c#6,8d,8f#,8b,8d6,8a,8c#,8f#,8a,8b,8d,8g,8b,8a,8d,8f#,8a,8b,8f#,8g,8b,8c#,8e,8a,8c#6,f#6,8f#,8a,e6,8e,8a,d6,8f#,8a,c#6,8c#,8e,b,8d,8g,a,8f#,8d,b,8d,8g,3c#6
+USA National Anthem:d=8,o=5,b=120:5e,d,4c,4e,4g,4c6,p,p,e6,p,d6,4c6,4e,4f#,3g,p,4g,4e6,p,d6,4c6,2b,a,4b,c6,p,16p,4c6,4g,4e,32p,4c
+Van Halen-Eruption:d=32,o=5,b=120:c#6,16c#,e,g#,16c#,e,g#,16c#,e,g#,16c#,e,c#6,16c#,e,g#,16c#,e,g#,16c#,e,g#,16c#,e,a,16c#,e,a,16c#,e,a,16c#,e,a,16c#,e,a,16c#,e,a,16c#,e,a,16c#,e,a,16c#,d#,a,16d#,f#,a,16d#,f#,a,16d#,f#,a,16d#,f#,a,16d#,f#,a,16d#,f#,b,16d#,f#,b,16d#,f#,b,16e,g#,b,16e,g#,b,16e,g#,b,16e,g#,b,16e,g#,b,16e,g#,b,16e,g#,b,16e,g#,c6,16e,g,b,16e,g,b,16e,g,b,16e,g,b,16e,g,b,16e,g,d6,16e,g,d6,16e,f#,d6,16f#,a,d6,16f#,a,d6,16f#,a,d6,16f#,a,d6,16f#,a,d6,16f#,a,e6,16f#,a,e6,16f#,a,e6,16b,g#,e6,16b,g#,e6,16b,g#,e6,16b,g#,e6,16b,g#,e6,b,16g#,e6,b,16g#,e6,b,16g#,e6,11g#,e6,g#,16b,e6,11b,e6,b,16d6,e6,a#,16c#6,e6,a#,16c#6,e6,a,16c6,e6,a,16c6,e6,g#,16b,e6,g#,b,d6,e6,b,16d6,e6,b,16d6,e6,a#,16c#6,e6,a#,16c#6,e6,a,16c6,e6,a,16c6,e6,g#,16b,e6,g#,16b,d6,a,16c6,d6,a,16c6,d6,g#,16b,d6,g#,16b,d6,g,16a#,d6,g,16a#,d6,f#,a,16d6,f#,a,16c6,g,16a#,c6,g,16a#,c6,f#,16a,c6,f#,16a,c6,f,16g#,c6,f,16g#,c6,e,16g,c6,e,16g,b,d#,16f#,b,d#,16f#,b,d#,16f#,b,d#,16f#,b,d#,16f#,b,d#,16f#,b,d#,16f#,b,d#,16f#,b,e,16g,b,e,16g,b,e,16g,b,e,16g,b,e,16g,b,e,16g,b,e,16g,b,e,16g,b,d#,16f#,b,d#,16f#,b,d#,16f#,b,d#,16f#,b,d#,16f#,b,d#,16f#,b,d#,16f#,b,d#,16f#,b,e,16g,b,d#,16f#,b,e,16g,b,d#,16f#,b,e,16g,b,d#,16f#,b,e,16g,b,d#,16f#,b,e,16g,b,d#,16f#,b,e,16g,b,d#,16f#,b,e,16g,b,d#,16f#,b,e,16g,b,d#,16f#,b,4e,4a#4,3e3
+Vanessa Mae:d=16,o=5,b=140:c6,b,8c6,g,p,g,p,d#,p,d#,p,c,p,c,p,c6,b,8c6,g#,p,g#,p,f,p,8f,c,p,c,p,c6,b,8c6,g,p,g,p,d#,p,d#,p,c,p,c,p,g,f,d#,d,c,d,d#,c,d#,f,8g,8p,8d6,c6,d6,a#,d6,a,d6,g,d6,d6,p,d6,p,d6,p,8d6,c6,d6,a#,d6,a,d6,g,d6,d6,p,d6,p,d6,p,g,f,d#,d,c,d,d#,c,d#,f,3c
+Varsog:d=4,o=5,b=100:p,e,3e,8d,1e,a,3c6,8b,a,g,e,2e,p,p,e,3e,8d,1e,a,3b,8a,g,a,1e
+Varsog:d=4,o=5,b=100:p,e,3e,8d,1e,a,3c6,8b,a,g,e,2e,p,p,e,3e,8d,1e,a,3b,8a,g,a,1p,p,e,p,p,e,p,d,p,p,p,b,p,25p,b4,8d,8b4,8c,8a4,8c,8p,8f,8c,8f,8p,8e,8c,8e,8p,8b4,8d,8b4,8c,8a4,8c,8p,8f,8c,8f,8p,8e,8c,8e,8p,8d,8b4,8d,8b4,8p,8c,8c,8p,8f,8c,8f,8g,8e,8c,8e,8p,8b4,8d,8b4,8c,8a4,8c,8p,8f,8c,8f,8p,8e,8c,8e
+Verve:d=8,o=5,b=80:b4,d,b4,c,a4,c,p,f,c,f,p,e,c,e,p,b4,d,b4,c,a4,c,p,f,c,f,p,e,c,e
+Vil du varra me' ma hjem:d=4,o=5,b=100:2p,8p,16f#6,16f#6,16f#6,16e6,16d6,16c#6,b,8f#6,e6,16e6,16e6,16e6,16d6,16c#6,16b,a,8f#6,d6,16f#6,16f#6,16f#6,16e6,16d6,16c#6,b,8f#6,e6,8d6,8c#6,2d6
+Vinsjan pa Kaia:d=4,o=5,b=90:g,d,g,d,g,b,a#,a,g,d,g,d,g
+Walk of Life:d=8,o=5,b=160:3g,32p,4g,3p,d,e,4g,e,4d,3c,4c,2p,d,e,3g,4g,3p,d,e,4g,e,4d,3c,4c
+Waltons:d=4,o=5,b=120:8d,8d,g,a,b,1b,2p,8d,8d,g,a,b,2b,1c#6,8a,8a,e6,d6,c#6,1d6,1a,p,8a,8a,a,3b,8c6,1b,2p,8d,8d,g,a,b,1b,2p,8d,8d,g,a,b,2b,1c#6,8a,8a,e6,d6,c#6,1d6,1a,p,8a,8a,a,3b,8a,1g,2p,a,2b,d6,1e6,1f6,2g6,8e6,8e6,g6,f6,e6,1d6,2p,8d6,8d6,f6,e6,d6,1a,2p,8a,8b,c6,d6,c6,1b,2p,a,2b,d6,1e6,1f6,1g6,g6,f#6,e6,1g6,1d6,p,8d6,8d6,g6,f6,e6,1c6,2p,8a,8a,d6,c6,b,1g,2p,8d,8d,g,a,b,1b,2p,8d,8d,g,a,b,2b,1c#6,8a,8a,e6,d6,c#6,1d6,1a,p,8a,8a,a,3b,8a,1g
+Wannabe:d=8,o=5,b=125:16g,16g,16g,16g,g,a,g,e,p,16c,16d,16c,d,d,c,4e,4p,g,g,g,a,g,e,p,4c6,c6,b,g,a,16b,16a,4g
+We like to party:d=4,o=6,b=25:16c#7,32a#,32g#,16c#7,32a#,21g#,32c#7,32a#,32g#,21c#7,32a#,32g#,21c7,21d#7,21c7,32g#,21c7,32c7,32d#7,32d#7,21c7,32a#,32g#,21c#7,32a#,32g#,21c#7,32a#,21g#,32c#7,32a#,32g#,21c#7,32a#,32g#,21c7,21d#7,21c7,32a#,16g#,32g#,32f#,32g#,32f#,32g#,32f,32f,32g#,32f#,32g#,32f#,32g#,32f,32f,32f,32f#,32f,32f#,32f,32g#,32g#,32f,32f#,32f#,32f#,32f,32g#,32g#,32g#,32f#,32g#,32f#,32g#,32f,32f,32g#,32f#,32g#,32f#,32g#,32f,32f,32f,32f#,32f,32f#,32f,32g#,32g#,32f,32f#,32f#,32f#,32f,32g#,32g#
+We Wish You a Merry Christmas:d=4,o=5,b=140:d,g,8g,8a,8g,8f#,e,c,e,a,8a,8b,8a,8g,f#,d,f#,b,8b,8c6,8b,8a,g,e,8d,8d,e,a,f#,1g
+We Wish You a Merry Christmas:d=8,o=5,b=140:4d,4g,g,a,g,f#,4e,4c,4e,4a,a,b,a,g,4f#,4d,4f#,4b,b,c6,b,a,4g,4e,4d,4e,4a,4f#,2g
+We Wish You a Merry Christmas:d=4,o=6,b=35:16a5,16d,32d,32e,32d,32c#,16b5,16g5,16b5,16e,32e,32f#,32e,32d,16c#,16a5,16c#,16f#,32f#,32g,32f#,32e,16d,16b5,16a5,16b5,16e,16c#,8d
+We-rock:d=4,o=6,b=35:11b4,16b4,16b4,11b4,16c5,16d5,16e5,5d5,16d5,16e5,16e5,16d5,8g5,8d5,16c5,5b4,16b4,16c5,16d5,16a4,8a4,16a4,16b4,16c5,g4,16g4,16a4,16g4,16b4,d5,16d5,16d5,16e5,8g5
+we-rock 1:d=4,o=6,b=112:21a#,21f,11c,21a#,21f,11c,21a#,21f,11c,21a#,21f,11c,1g,21a#,21f,11c,21a#,21f,11c,21a#,21f,11c,21a#,21f,11c,1g,21a#,21f,11d,21a#,21f,11d,21a#,21f,11d,21a#,21f,11d,1g,21a#,21f,11d,21a#,21f,11d,21a#,21f,11d,21a#,21f,11d,1g,21f,21d,11a#5,21f,21d,11a#5,21f,21d,11a#5,21f,21d,11a#5,1g,21f,21d,11a#5,21f,21d,11a#5,21f,21d,11a#5,21f,21d,11a#5,1g,21f,21d#,11c,21f,21d#,11c,21f,21d#,11c,21f,21d#,11c,1g,21f,21d#,11c,21f,21d#,11c,21f,21d#,11c,21f,21d#,11c,21g
+we-rock 10:d=4,o=6,b=160:32d5,32e5,32f#5,32g5,32a5,32b5,32c#,32d,32c#,32b5,32a5,32g5,32f#5,32e5,32d5
+we-rock 11:d=4,o=6,b=225:1b4,3e5,1a5,3g#5,3e5,3c#5,3f#5,1b5,3b5,1d#
+we-rock 12:d=4,o=6,b=225:1c#,1c#,5c#,3c#,2b5,5c#,8b5,5c#,8b5,5c#,8b5,3c#,5c#,8b5,5c#,3c#,2e,5c#,2b5,5c#,8b5,5c#,8b5,5c#,8b5,3e,5c#,8b5,3c#,5c#,8b5,5c#,8b5,5c#,8b5,3c#,5c#,8b5,5c#,8b5,3c#,3c#,1b5,3c#,3c#,5c#,8b5,5c#,3c#,1e,8b5,3c#,3c#,3c#,5c#,8b5,5c#,3c#,3b5,8c#,3c#,5c#,8c#,3b5,5c#,8c#,3b5,5c#,8c#,5b5,3e,3c#,8b5,5c#,8b5,5c#,8b5,3c#,5c#,8b5,5c#,8b5,3c#,3e,2e,8b5,5c#,8b5,5c#,8b5,5c#,8b5,5e,8b5,5c#,8b5,5c#,8b5,2c#,8b5,5c#,8b5,5c#,8b5,5c#,8b5,5c#,8b5,5c#,8b5,3e
+we-rock 13:d=4,o=6,b=225:3b5,3c#,5d#,e,2f#,1g#,1e,3e,3d#,c#,b5,1b5,f#5,3f#5,3b5,5f#,2b5,3c#,3b5,3c#,5d#,e,2f#,1g#,1e,3e,3d#,5c#,b5,1b5,f#5,3d#,3e,3f#,3d#,2c#,1f#5,a#5,1b5,1c#,f#,1b5,f#,1f#,e,1e,d#,d#,3e,3f#,3d#,3c#,3b5,3c#,5d#,e,2f#,1g#,1e,3e,3d#,c#,b5,1b5,f#5,3f#5,3b5,5f#,2b5,3c#,3b5,3c#,5d#,5e
+we-rock 14:d=4,o=6,b=225:8d,8d,8c#,8d,3e,2e,3f#,2f#,3a,1g,8g,8g,8f#,8e,5d,8d#,5e,8d#,d,8d,8d,8d,8d,5d,8d#,5e,8d#,d,8d,8d,8c#,8d,3e,2e,3f#,2f#,3a,1g,8g,8g,8f#,8e,f#,8f#,8f#,8g,8g#,a,8a5,8a5,8b5,8c#,5d,8c#,5d,8c#,d,8d5,d5,8d5,2d5,f#5,8a5,2e,2e,1e,8d,8d,8b5,8d,1e,8c,8c,8a5,8c,2e
+we-rock 15:d=4,o=6,b=25:16c#5,16f#5,16f#5,32g#5,32a#5,16f#5,16f#5,32a#5,32b5,16c#,16c#,16d#,8b5,32g#5,32a#5,16b5,16b5,16c#,16a#5,16a#5,32f#5,32a#5,16g#5,16d#5,16f#5,8f5,16c#5,16f#5,16f#5,32g#5,32a#5,16f#5,16f#5,16a#5,32b5,16c#,16c#,16d#,8b5,32g#5,32a#5,16b5,16b5,16c#,16a#5,16a#5,32f#5,32a#5,16g#5,16d#5,16f5,11f#5
+we-rock 16:d=4,o=6,b=25:16d5,16d5,16a5,16a5,32b5,32c#,32d,32b5,8a5,16g5,16g5,16f#5,16f#5,16e5,16e5,16d5
+we-rock 17:d=4,o=6,b=25:32g5,32g5,11b5,32b5,16a5,16g5,16c,16c,16b5,16a5,16b5,16d,16d,16c#,5d,16b5,11e,32d,16c,16b5,16a5,16g5,16f#5,16b5,16a5,16g5,16g5,16f#5,g5
+we-rock 18:d=4,o=6,b=28:16d5,16f5,11g5,16d5,16f5,32g#5,8g5,16d5,16f5,11g5,16f5,d5,16d5,16f5,11g5,16d5,16f5,32g#5,8g5,16d5,16f5,11g5,16f5,16d5
+we-rock 19:d=4,o=6,b=28:32c#,32a#5,32f#5,32c#,32a#5,32f#5,16c#,32g#5,32b5,32d#,32g#,32f#,32f,32d#,32c#,32c#,32a#5,32f#5,32c#,32a#5,32f#5,16c#,32g#5,32b5,32d#,32g#,32f#,32f,16d#
+we-rock 2:d=4,o=6,b=125:16a5,8a5,16a5,8a5,8g5,3e5,8e5,16a5,8a5,16a5,8a5,8g5,8c,3a5,16a5,8a5,16a5,8a5,8c,8d,8c,8a5,8g5,16a5,8a5,16a5,8a5,8c,a5
+we-rock 20:d=4,o=6,b=285:2c,2a#5,2c,2a#5,2c,2a#5,2c,a#5,2c#,2c,2c#,2c,2c#,2c,2c#,d#,2f,2d#,2f,2d#,2f,2d#,2f,d#,2c,2a#5,2c,2a#5,1c,1c#,2c,2a#5,2c,2a#5,2c,2a#5,2c,a#5,2c#,2c,2c#,2c,2c#,2c,2c#,d#,2f,2d#,2f,2d#,2f,2d#,2f,d#,2c,2a#5,2c,2a#5,1c,1c#,1c
+we-rock 21:d=4,o=6,b=31:11c#,32g#5,21e5,16g#5,5c#5,11c#,32g#5,21e5,16g#5,5c#5,11b5,32a#5,21g#5,16a#5,5d#5,11c#,32g#5,21e5,16g#5,5c#5,11c#,32g#5,21e5,16g#5,5c#5,11b5,32a#5,21g#5,16a#5,5d#5,21a#5,32g#5,21f#5,8c#5,21a#5,32g#5,21f#5,8c#5,11c#,32g#5,21e5,16g#5,5c#5,11c#,32g#5,21e5,16g#5,5c#5,11b5,32a#5,21g#5,16a#5,5d#5,21a#5,32g#5,21f#5,8c#5,21a#5,32g#5,21f#5,8c#5,11c#,32g#5,21e5,16g#5,5c#5,11c#,32g#5,21e5,16g#5,5c#5,11b5,32a#5,21g#5,16a#5,5d#5,21a#5,32g#5,21f#5,8c#5,21a#5,32g#5,21f#5,5c#5,11c#,32g#5,21e5,16g#5,5c#5,11c#,32g#5,21e5,16g#5,5c#5,11b5,32a#5,21g#5,16a#5,5d#5,21a#5,32g#5,21f#5,8c#5,21a#5,32g#5,21f#5,8c#5,11c#,32g#5,21e5,16g#5,5c#5,11c#,32g#5,21e5,16g#5,5c#5,11b5,32a#5,21g#5,16a#5,5d#5,21a#5,32g#5,21f#5,8c#5,21a#5,32g#5,21f#5,8c#5,11c#,32g#5,21e5,16g#5,5c#5,11c#,32g#5,21e5,16g#5,5c#5,11b5,32a#5,21g#5,16a#5,5d#5,21a#5,32g#5,21f#5,8c#5,21a#5,32g#5,21f#5,8c#5
+we-rock 22:d=4,o=6,b=35:11d,21d,21d,11d,11d,11b5,11d,21d,32c,32b5,8a5,11c,11e,11e,8d,11b5,11d,16d,32c,32b5,8a5,8c,8e,8e,8f#,5g,8f#,16e,16d,8e,16d,8e,8f#,g,8f#,16e,16d,8e,16d,8e,8f#
+we-rock 23:d=4,o=6,b=35:16g#,32f#,16g#,11e,16f#,32e,16f#,11d#,16e,32d#,16e,8c#,32c#,32d#,32e,32g#,8c#,32c#,32d#,32e,32g#,8b5,32c#,32d#,32e,16b
+we-rock 24:d=4,o=6,b=35:32b5,32b5,21c#,16e,21e,32e,32f#,32e,16e,32g#,32g#,32f#,32f#,32e,32e,32c#,32c#,32e,32e,16f#,16e,16g#,32g#,32b5,32b5,32e,32e,32g#,32g#,32f#,32f#,16e,16c#,32g#,32g#,32f#,32f#,32e,32e,32c#,32c#,5e,32b5,32b5,16c#,16e,16e,32e,32f#,32e,16e,32g#,32g#,32f#,32f#,32e,32e,32c#,32c#,32e,32e,16f#,16e,16g#,32g#,32b5,32b5,32e,32e,32g#,32g#,32f#,32f#,16e,16c#,32g#,32g#,32f#,32f#,32e,32e,32c#,32c#,e
+we-rock 25:d=4,o=6,b=355:16a#5,16c,16a#5,16c,16a#5,16c,2a#5,16a#5,16c,16a#5,16c,16a#5,16c,16a#5,16c,16a#5
+we-rock 26:d=4,o=6,b=355:16b5,16d,16b5,16d,16b5,16d,16b5,16d,16d,16f,16d,16f,16d,16f,16d,16f,16f,16a,16f,16a,16f,16a,16f,16a
+we-rock 27:d=4,o=6,b=355:2a#5,c,2d#,2d#,c,a#5,f5,g5,a#5,g5,2c,a#5,g5,f5,g5,2f5,f5,f#5,g5,a#5,c,a#5,1d#,a#5,c,a#5,2d#,2d#,c,a#5,f5,g5,a#5,g5,2c,a#5,g5,f5,g5,2a#5,a#5,a#5,d,f,2c#,1a#5,a#5,c,a#5,2d#,d#,d#,2d#,d#,d#,2d#,2d#,c,2c,2g#5,2g#5,2g#5,2g#5,c,d#,f,d#,f#,2d#,f,g,f#,g,f,g,2a#,f,g,a#,2g,2d#,2a#5,c7,g,g,a#5,2f,2d#,1d#
+we-rock 28:d=4,o=6,b=355:2a5,1d,2c#,1b5,2d,2e,2f#,2e,2d,1c#,a5,a5,2b5,2d,2a5,a5,a5,2b5,2d,2a5,2g,1f#,2e,1d
+we-rock 29:d=4,o=6,b=355:2a5,f#5,1d5,1f#5,1a5,1d,2f#,e,1d,1f#5,1g#5,1a5,1a5,1f#,2e,1d,1c#,2b5,c#,1d,1d,1a5,1f#5,1d5
+we-rock 3:d=4,o=6,b=125:16g#5,8a#5,16g#5,8f5,8c#,8a#5,3g#5,16g#5,16a#5,16g#5,16a#5,8g#5,8c#,2c,16f#5,8g#5,16f#5,8d#5,8c,8a#5,3g#5,16g#5,16a#5,16g#5,16a#5,8g#5,8a#5,2f5,16g#5,8a#5,16a#5,8f5,8c#,8a#5,3g#5,16g#5,16a#5,16g#5,16a#5,8g#5,8c#,2c,16f#5,8g#5,16f#5,8d#5,8c,8a#5,3g#5,16g#5,16a#5,16g#5,16a#5,8g#5,8d#,2c#,8a#5,8a#5,8c#,8a#5,8g#5,8f5,g#5,8d#5,8f5,8g#5,8a#5,8c,8c,c,8c#,8c#,8c,8a#5,8g#5,8f#5,d#5,16g#5,8a#5,16g#5,8f5,8c#,8a#5,3g#5,16g#5,16a#5,16g#5,16a#5,8g#5,8c#,2c,16f#5,8g#5,16f#5,8d#5,8c,8a#5,3g#5,8g#5,8a#5,8g#5,8a#5,g#5,d#,1c#
+we-rock 30:d=4,o=6,b=355:3f,3g,3a,3a#,3a,2g,5f,3a,3g,2f,5d#,3g,3f,5d#,3d,1f,5d,5c,3a#5,3c,3d,3d#,5c,3d,1d#,5f,3f,3g,5a,3g,2f,3f,3g,3a,a#,11a#5,3a,2g,5f,a,11a#5,3g,2f,5d#,g,11a#5,3f,5d#,3d,1f,5d,5c,a#5,11f5,3c,3d,3d#,5c,3d,1f,5f,3f,3g,5a,3g,3f
+we-rock 31:d=4,o=6,b=40:16f#,16f,16c#,32a#5,d#,16c#,32d#,16f,16c#,a#5,16f#,16f,16c#,32a#5,d#,16c#,32d#,16f,16c#,a#5,32d#,32d#,32f,16f#,11d#,32d#,32c#,32d#,16f#,32d#,16c#,32d#,32d#,32d#,16c#,11d#,32d#,32d#,16d#,32a#5,11a#5,32d#,32d#,32f,16f#,11d#,32d#,32c#,32d#,16f#,32d#,16c#,32d#,32d#,32d#,16c#,11d#,32d#,32d#,16d#,32a#5,16a#5
+we-rock 32:d=4,o=6,b=40:16g5,32a5,16b5,32b5,32a5,16g5,8a5,8g5,16g5,32a5,16b5,b5,16g5,32a5,16b5,32b5,32a5,16g5,8a5,8g5,8g5,32a5,a5
+we-rock 33:d=4,o=6,b=40:21c#,21d#,11f,11f,11f,21f,21f#,11d#,11d#,16d#,32d#,21d#,21f,11c#,11c#,11c#,21c#,21d#,5f,11d#,21c#,21d#,8f,8g#,21f,21f#,8d#,8f,21g#5,c#,8f,8d#,21c#,5c#
+we-rock 34:d=4,o=6,b=40:21c#,21d#,f,21d#,21c#,21d#,21g#,5g#,21f#,21f,11c#,5a#5,21g#5,21f#5,32d#5,32f5,5d#5,21c#,21d#,f,21d#,21c#,21d#,21g#,5g#,21f,21g#,5a#,5g#,32d#,32f,5d#
+we-rock 35:d=4,o=6,b=40:21c,21c,11c,21c,21c,11c,21c,21d#,21g#5,21a#5,5c,21c#,21c#,16c#,32c#,21c#,21c,21c,32c,32c,21c,21a#5,21a#5,21c,11a#5,11d#,21c,21c,11c,21c,21c,11c,21c,21d#,21g#5,21a#5,5c,21c#,21c#,16c#,32c#,21c#,21c,21c,32c,32c,21d#,21d#,21c#,21a#5,8g#5,21g#5,21g#5,21f,21d#,21c#,8g#5,21g#5,21g#5,21f,21d#,21c#,8a#5,21a#5,21a#5,21f#,21f,21d#,21g#,21g#,21g#,32g#,32g#,21a#,21g#,21f#,21d#,11c#
+we-rock 36:d=4,o=6,b=40:21c,21f,21a,21a#,21a,21f,21c,21a#5,21a5,21a#5,5c,32c,32c,21f,21a,21a#,21a,21f,21c,21a#5,21a5,21a#5,5c,32c,32c,21d,32d,21f,32f,16g,32f,11f,32f,32f,21d,21d,21f,21f,21g,21f,21g,a,11c,11c,21c,32g,32g,32g,16g,21a,21g,21f,21f,21f,21d,21f,21f,21d,21g,11f,f,21c,21f,21a,21a#,21a,21f,21c,21a#5,21a5,21a#5,5c,32c,32c,21f,21a,21a#,21a,21f,21c,21a#5,21a5,21a#5,5c,32c,32c,21d,32d,21f,32f,16g,32f,11f,32f,32f,21d,21d,21f,21f,21g,21f,21g,a,11c,11c,21c,32g,32g,32g,16g,21a,21g,21f,21f,21f,21d,21f,21f,21d,21g,11f,8f
+we-rock 37:d=4,o=6,b=40:32d#5,32e5,32f5,16c#,32f5,16c#,32f5,8c#,32c#,32d#,32e,32f,32c#,32d#,16f,32c,16d#,5c#,32d#5,32e5,32f5,16c#,32f5,16c#,32f5,8c#,32a#5,32g#5,32g5,32e5,32c#,16f,32d#,32c#,32a#5,d#
+we-rock 38:d=4,o=6,b=40:21d5,21d5,21d,21d,11c,11b5,11a5,11g5,5d5,21d5,32d5,8a5,21g5,8a5,21g5,11f#5,5d5,11e5,21e,21e,11d,11c,11b5,a5,16f#,32e,11d,16d,32c,11b5,16c,32b5,g5,11d5,21d,21d,11c,11b5,11a5,11g5,5d5,16d5,32d5,8a5,21g5,8a5,21g5,11f#5,5d5,11e5,21e,21e,11d,11c,11b5,a5,16f#,32e,11d,16d,32c,11b5,16b5,32a5,g5
+we-rock 39:d=4,o=6,b=40:32d5,32d5,32d5,32f#5,32e5,32e5,32e5,32g5,32f#5,32f#5,32e5,32e5,16d5,32f#5,32f#5,32f#5,32f#5,16a5,16g5,32e5,32e5,32e5,32e5,16g5,16f#5,32d5,32d5,32d5,32f#5,32e5,32e5,32e5,32g5,32f#5,32f#5,32e5,32e5,16d5
+we-rock 4:d=4,o=6,b=125:8c#,8c#,8b5,c#,g#5,8g#5,8c#,8f#,8f,1c#,8c#,8c#,8b5,c#,g#5,8g#5,8c#,8f#,8f,8c#
+we-rock 40:d=4,o=6,b=40:21f#5,21b5,21c#,8d,21f#5,11d,21f#5,5g5,21f#5,21g5,21e,21d,5c#,21e5,11c#,21b5,8a5,21c#5,21e5,21a5,21e,21d,21c#,8d,21f#5,11d,21f#5,5g5,21f#5,21g5,21e,21d,5c#,21e5,11c#,21b5,5a5
+we-rock 41:d=4,o=6,b=40:21f#5,21g5,21a5,32d,21a5,32d,32a5,32d,21a5,11e,21a5,16a5,5d,21g5,21a5,21b5,32d,21b5,32d,32b5,32d,21b5,11e,21a5,16a5,5d,21f#5,21g5,21a5,32d,21a5,32d,32a5,32d,21a5,11e,21a5,16a5,5d,21g5,21a5,21b5,32d,21b5,32d,32b5,32d,21b5,11e,21a5,16a5,11d
+we-rock 42:d=4,o=6,b=40:32g#5,32f#5,32g#5,32f#5,16f5,8c#5,32f5,32f#5,32g#5,32f#5,32g#5,32f#5,32f5,32f#5,32g#5,32a#5,32b5,32a#5,32b5,32a#5,8g#5,16a5,16g#5,16g5,16f#5,32e5,32d#5,32c#5,32d#5,8e5,32e5,32d#5,32c#5,32d#5,16e5,16c#5,16g#5
+we-rock 43:d=4,o=6,b=40:32g5,32g5,32g5,16d#5,16c5,16f5,16f5,32f5,32a5,32a5,32a#5,32c,32a#5,32a#5,32a#5,16f5,16d#5,16g5,16g5,32g5,32f5,32f5,32g5,32f5,32g5,32g5,32g5,16d#5,16c5,16f5,16f5,32f5,32a5,32a5,32a#5,32c,32a#5,32a#5,32a#5,16f5,16d#5,16g5,16g5,32g5,32f5,32f5
+we-rock 44:d=4,o=6,b=40:8d,16b5,8g5,32g5,32a5,8b5,8d,16b5,g5,8d,16b5,8g5,32g5,32a5,16b5,8c#,16d,5e,32d,32e,16f,16e,16d,16b5,16a5,32a5,32b5,16c,16b5,32a5,32d5,32d5,d5
+we-rock 45:d=4,o=6,b=45:11d#,21d#,11a#,21a#,11c7,21g#,11a#,21a#,11d#,21d#,11a#,21a#,21a#,21g#,21f#,11f,21f,11d#,21d#,11a#,21a#,11c7,21g#,11a#,21a#,11d#,21d#,11a#,21a#,21f#,21f,21d,11d#,21d#
+we-rock 46:d=4,o=6,b=45:16d#,16d#,32d#,32f,32g,32g#,32g#,32g,32f,11f,32d,32d,32d,32d,32d#,32f,32g,32g,32f,32d#,11d#,32d#,32d#,32d#,32d#,32f,32g,32g#,32g#,32g,32f,16f
+we-rock 47:d=4,o=6,b=45:16e5,16a5,a5,16c#,32b5,32a5,c#,8b5,a5,8f#5,e5,16e5,16f#5,a5,16c#,32b5,32a5,c#,16b5,16c#,e,16c#,16e,e,16c#,32b5,32a5,c#,8b5,a5,8f#5,e5,16e5,16f#5,a5,16c#,32b5,32a5,c#,8b5,a5,16e5,16a5,a5,16c#,32b5,32a5,c#,8b5,a5,8f#5,e5,16e5,16a5,a5,16c#,32b5,32a5,c#,16b5,16c#,e,16c#,16e,e,16c#,32b5,32a5,c#,8b5,a5,8f#5,e5,16e5,16a5,a5,16c#,32b5,32a5,c#,8b5,a5,16e5,16a5,a5,16c#,32b5,32a5,c#,8b5,a5,8f#5,e5,16e5,16a5,a5,16c#,32b5,32a5,c#,16b5,16c#,e,16c#,16e,e,16c#,32b5,32a5,c#,8b5,a5,8f#5,e5,16e5,16a5,a5,16c#,32b5,32a5,c#,8b5,a5,16e5,16a5,a5,16c#,32b5,32a5,c#,8b5,a5,8f#5,e5,16e5,16a5,a5,16c#,32b5,32a5,c#,16b5,16c#,e,16c#,16e,e,16c#,32b5,32a5,c#,8b5,a5,8f#5,e5,16e5,16a5,a5,11c#,21b5,21a5,c#,5b5,1a5
+we-rock 48:d=4,o=6,b=45:11g#5,16g#5,32a#5,21c,21g#5,21c,21d#,11g#,16g#,32g,21g#,21d#,21c,21g#5,11c#,16f,32c#,21c,21d#,21c,21g#5,11a#5,16d#,32d#,8d#,11g#5,16g#5,32a#5,21c,21g#5,21c,21d#,11g#,16g#,32g,21g#,21d#,21c,21g#5,11c#,16f,32c#,21c,21d#,21c,21g#5,11a#5,16g#5,32g5,8g#5,11g#5,16g#5,32a#5,21c,21g#5,21c,21d#,11g#,16g#,32g,21g#,21d#,21c,21g#5,16c#
+we-rock 49:d=4,o=6,b=45:32c#,32f#5,32f#5,16f#5,32c#5,8f#5,32f#5,32f#5,32c#,32f#5,32f#5,16f#5,32f#,8c#,32g#5,32f#5,16g#5,16c#5,16d#5,5c#5,11c#,16f#5,32g#5,11f#5,11f#,32f,32f,32f,16d#,32d#,8c#,32c#,32c#,16d#,16c#,16c#,8c#,32g#5,32f#5,16g#5,16c#5,16d#5,5c#5,11c#,16f#5,32g#5,11f#5,11f#,32f,32f,32f,16d#,32d#,8c#,32c#,32c#,16d#,16c#,16f#,8c#,32g#5,32f#5,16g#5,16c#5,16c#,11c#
+we-rock 5:d=4,o=6,b=125:8c,8a5,f5,8f5,8f5,f5,8f5,8f5,8f5,8f5,8e5,8f5,g5,8a#5,8g5,e5,8e5,8e5,e5,8e5,8e5,8e5,8e5,8d5,8e5,f5
+we-rock 50:d=4,o=6,b=45:32d5,32d5,21d5,32d5,32d5,16d5,32d5,32d5,32g5,16a5,16b5,32d5,32d5,21d5,32d5,32d5,21d5,32b5,32b5,32a5,21f#5,16d5,32d5,32d5,21d5,32d5,32d5,16d5,32d5,32d5,32g5,16a5,16b5,32g5,32b5,16d,32d,32d,32d,32c,32b5,32a5,32g5,16b5,32g5
+we-rock 51:d=4,o=6,b=45:32f#5,32g5,21a5,16a5,32a5,32b5,32c#,16d,8d,32f#5,32g5,21a5,21a5,21a5,32b5,32a5,21g5,8g5,21f#5,16a5,16d5,16f#5,16e5,11g5,16c#5,5d5,16a5,32f#5,32g5,16a5,16a5,32a5,32b5,32c#,16d,8d,32f#5,32g5,21a5,21a5,21a5,32b5,32a5,21g5,21g5,21f#5,21a5,21d5,21f#5,21e5,8g5,21c#5,5d5,21d,21e,21d,21c#,21d,21b5,8b5,21d,21e,21d,21c#,21d,8b5,21e,21f#,21e,21d#,21e,21c#,21c#,21c#,32c#,32d,21e,21d,21c#,21b5,11a5,16a5,32a5,32f#5,32g5,21a5,16a5,32a5,32b5,32c#,21d,11d,32f#5,32g5,21a5,21a5,21a5,32b5,32a5,32g5,11g5,21f#5,21a5,21d5,21f#5,21e5,11g5,21e,d
+we-rock 52:d=4,o=6,b=50:16b5,32a5,32f#5,16a5,32f#5,32e5,32d5,32e5,32f#5,16b5,32d,16b5,32a5,32f#5,16d,32b5,32a5,16e,32d,32b5,32d,32e,16f#,16e,16d,16c#,32d,16f#,16e,32d,32c#,16b5,32b5,32f#5,32a5,16b5,b5,32b5,32a5,32b5,16b5,32a5,32f#5,32a5,32b5,32a5,32b5,16d,32b5,32a5,32f#5,32b5,32a5,32b5,16b5,32a5,32f#5,32a5,32b5,32a5,32f#5,16a5,16b5,32b5,32a5,16b5,16b5,16a5,16b5,16d,16b5,16d,16f,16d#,16c,16g#5,8f#5
+we-rock 53:d=4,o=6,b=50:16d#,32d#,32c#,16c,8c#,8a#5,16a#5,16d#,16d#,32c#,11c,16d#,32d#,32c#,16c,8c#,8a#5,16c,16g#5,5a#5,16c,16c#,16d#,8f,11f,11f#,16d#,5f,16d#,32d#,32c#,16c,8c#,8a#5,16a#5,16d#,16d#,32c#,11c,16d#,32d#,32c#,16c,8c#,8a#5,16c,16g#5,11a#5
+we-rock 54:d=4,o=6,b=50:11e,32e,e,11e,32d,d,8f#,11e,32d,11c#,32d,8c#,8e,11d,16c#
+we-rock 55:d=4,o=6,b=50:21d5,8g5,8g5,8g5,8a5,16b5,16a5,16b5,16c,8d,8b5,8c,16b5,16g5,8a5,8a5,3g5,8d5,8g5,8g5,8g5,8a5,16b5,16a5,16b5,16c,8d,8b5,8c,16b5,16g5,8a5,8a5,g5
+we-rock 56:d=4,o=6,b=50:32f,16d#,8c#,32f,16g#,16a#,11g#,32g#,16g#,16f,32d#,16c#,32a#5,16g#5,3f,16f,32f,11f#,16f,16f,11d#,32f,32d#,16d#,3c#
+we-rock 57:d=4,o=6,b=50:32g#5,32g#5,32a#5,32a#5,32f5,32f5,16g#5,32g#5,32g#5,32a#5,32a#5,32f5,32f5,16g#5,32g#5,32g#5,32a#5,32a#5,32c#,32c#,16c,16c,16a#5,16g#5,16f#5,32f#5,32f#5,32g#5,32g#5,32d#5,32d#5,16f#5,32f#5,32f#5,32g#5,32g#5,32d#5,32d#5,16f#5,32f#5,32f#5,32g#5,32g#5,32a#5,32c,16c#,16a#5,16g#5,16f5,16c#5
+we-rock 58:d=4,o=6,b=50:32g5,32d,32f,8a#,32f5,32d,32f,8a,32a5,32c#,32e,8g,32f5,32d,32f,8a,32g5,32d,32f,8a#,32d,32d,32f,8a,32a5,32c#,32e,16g,16c7,32a#,32a,32g,8a
+we-rock 59:d=4,o=6,b=50:5a#5,8d,3d#,11g5,21a#5,11f,11d,d#,11g5,21a#5,8f,11d,8d#
+we-rock 6:d=4,o=6,b=125:8f5,8f5,3g#5,8f5,f5,2g#5,8f5,8g#5,c#,3c,8a#5,a#5,g#5,8d#5,8f5,f#5,d#5,8d#5,8f5,2f#5,8d#5,8f#5,8c,8a#5,g#5,c,2c#,8c#5,8c#5,2c#,8a#5,8f#5,2g#5,8f5,8c#5,f#5,g#5,a#5,2g#5,8c#5,8c#5,2c#,8a#5,8f#5,2g#5,8f5,8c#5,8f#5,16g#5,16f#5,f5,d#5,2c#5
+we-rock 60:d=4,o=6,b=56:8a5,8b5,11c#,8b5,21c#,11d,16c#,11b5,11a5,21b5,16c#,8e5,8e5,8e5,2e5,8a5,8b5,11c#,8b5,21c#,11d,16c#,11b5,11a5,21b5,16c#,8e5,8e5,8e5,3e5
+we-rock 61:d=4,o=6,b=70:11a#5,32a#5,16c,16c#,5d,16f,16d,16d,16d,16d,16d,8d,16d,16d,16d,16d#,16d,8c,16c,16c,16c,16c,16c,16c,16c,8c,32f,32f,16f,16d#,16d,16c,8a#5
+we-rock 62:d=4,o=6,b=70:16c#,32a5,32b5,16c#,16e,16d,16c#,16b5,16a5,16b5,32g5,32b5,16d,16g,32e,32d,32c,32a5,16a#5,16a5,16a#5,32a5,32b5,16c#,16d#,32c#,32b5,32a5,32g5,16f#5,16g5,3b5,8b5
+we-rock 63:d=4,o=6,b=70:16e5,16d#5,16e5,16d#5,8e5,8d#5,8f#5,32e5,32g#5,32b5,32e,g#,16a,16g#,16a,16g#,16f#,16e,16b5,16g#5,8e5,32e,3d#,16c#,16c#5,16c#5,32c#5,32d#5,8c#5,8b4,16c#,16c#5,16c#5,32c#5,32d#5,8c#5,8b4,16e,16e5,16e5,16e5,32e5,16d#5,16f#5,16e5,32e5,16d#5,16c#5,16b4,8a,32f#,32d#,32a5,32f#5,16e5,16d#5,16e5,16d#5,8e5,8d#5,8f#5,32e5,32g#5,32b5,32e,g#,16a,16g#,16a,16g#,16f#,16e,16b5,16g#5,5e5,32e,d#,16c#,16c#5,16c#5,32c#5,32d#5,16c#5
+we-rock 64:d=4,o=6,b=70:32e5,32d#5,32e5,32f#5,32g5,32f#5,32g5,32g#5,32a5,32g#5,32a5,32b5,32c,32b5,32a5,32c,32b5,32b4,32d#5,32f#5,32b5,32a5,32g5,32f#5,32g5,32f#5,32e5,32d#5,32e5,32b4,32c#5,32d#5,32e5,32d#5,32e5,32f#5,32g5,32f#5,32g5,32g#5,32a5,32g#5,32a5,32b5,32c,32b5,32a5,32c,32b5,32b4,32d#5,32f#5,32b5,32a5,32g5,32f#5,e5,d#5,16e5,16b4,16e5
+we-rock 65:d=4,o=6,b=80:16a5,16a5,16c,11e,5d,a5,16a5,16a5,16g5,11c,3a5,16a5,16a5,16c,11e,5d,a,16g,16g,16e,11c,2a,16c7,16a#,16a,16g,16f,16e,16d,16e,16c,d,16d,16c7,16a#,16g#,16g,16e,16d,16c,16d,11e,16d,11c,8d,a,16g,16g,16e,11c,2d,21f5,8f#5,21f5,21f#5,16g#5,16f#5,3f5,21f5,11f#5,21f5,21f#5,16f5,16d#5,3a#5,21f5,8f#5,21f5,21f#5,16g#5,16f#5,3f5,32a5,11a#5,21a5,21a#5,16c#,16a#5,11g#5,11f5,d5,8a#,16g#,16f#,16f,16d#,16f,16a#5,d#,8d#,16c#,16b,16a,16g#,16f#,16d#,11f,16d#,11c#,8d#,a#,16g#,16g#,16f,11c#,3d#,16g#,16g#,16f,16g#,16c#,3d#,21f5,5f#5,21a#5,2b5,11c#5,11c#5,11g#5,11d#5,11a#5
+we-rock 66:d=4,o=6,b=80:16d#,16g#,16g#5,16g#,32d#,32f,32d#,32c,16g#5,16d#5,32g#5,32a#5,32c,32c#,16d#,16g#,d#,16d#,16g#,16g#5,16g#,32d#,32f,32c,16g#5,16d#5,32f#5,32g#5,32a#5,32c,16c#,16f#,c#
+we-rock 67:d=4,o=6,b=80:32d,2d#,32d,2d#,32f,32d#,32d,2d#,32d,2d#,32c,2c#,32d#,32c#,32c,2c#,32b5,3c,32c#,32c,32a#5,32g#5,32c,2a#5,32a#5,32g#5,32g5,32a#5,2g#5,16d,16d#,16d#,16d#,16d#,16d#,16d#,16d#,16d,16d#,16d#,16d#,16d#,16d#,32f,32d#,32d,32f,16d,16d#,16d#,16d#,16d#,16d#,16d#,16d#,16d,16d#,16d#,16d#,16d#,16d#
+we-rock 68:d=4,o=6,b=80:32f#,32f#,16f#,16f#,16e,16e,11d,11a5,32a5,32a5,16a5,16a5,16e,16e,11d,11b5,32d,32d,16d,16d,16d,16e,11f#,11d,16g5,16g5,16g5,16g5,16g5,11f#5,11d,32f#,32f#,16f#,16f#,16e,16e,11d,11a5,16a5,16a5,16a5,16e,16e,11d,11b5,32d,32d,16d,16d,16d,16e,11f#,11d,16g5,16g5,16g5,16g5,16g5,11f#5,32d
+we-rock 69:d=4,o=6,b=80:5d,16a5,3a5,16f#5,8g5,16b5,8a5,16d5,3d5,16f#5,8g5,16b5,8a5,21d5,3d5,16d5,11d5,11e5,16f#5,2f#5,5d,16a5,3a5,16f#5,8g5,16b5,8a5,16d5,3d5,16f#5,8g5,16b5,8a5,21d5,3d5,16d5,11d5,11e5,16f#5,1d5
+we-rock 7:d=4,o=6,b=125:8g5,11g5,16b5,16b5,11c,1d,8g5,11g5,16b5,16b5,11c,2d,8g5,11g5,16b5,16b5,11c,d,b5,11g5,16a#5,8b5,16d,8b5,1a5,11a#5,11b5,16d,8b5,3g5,11g5,b5,8d,8d,11d,3c,8g5,16g5,11b5,11b5,8c,d,b5,8a5,11a#5,8b5,16d,8b5,1g5,8g5,11g5,16b5,16b5,11c,1d,8g5,11g5,16b5,16b5,11c,2d,8g5,11g5,16b5,16b5,11c,d,b5,11g5,16a#5,8b5,16d,8b5,1a5,11a#5,11b5,16d,8b5,3g5,11g5,b5,8d,8d,11d,3c,8g5,16g5,11b5,11b5,8c,d,b5,8a5,11a#5,8b5,16d,8b5,1g5,8g5,11g5,16b5,16b5,5c,11a#5,11b5,16e,11d,16g5,11a#5,16b5,1g5,2g,8e,5g,8g,16g,8e,3d,21a#5,11b5,16e,11d,16g5,11a#5,16b5,3g5,8d,16d,11e,11e,32d#,11d,11f,32g,11f#,11f#,11e,11d,21d,8c,b5,16a#5,11b5,16d,11e,11g,16g5,11f#,5f,3g,16d#,11e,16g,11a,11e,11c7,16e,11a,3g,8e,3d,16d,11b,11a#,5a,11d,8f,8e,8d,8a#5,11a5,16g5,11e5,16d5,1g5,8a5,11a5,16c#,16c#,11d,1e,8a5,11a5,16c#,16c#,11d,2e,8a5,11a5,16c#,16c#,11d,e,c#,11a5,16c,8c#,16e,8c#,1b5,11c,11c#,16e,8c#,3a5,11a5,c#,8e,8e,11e,3d,8a5,16a5,11c#,11c#,8d,e,c#,8b5,11c,8c#,16e,8c#,1a5,8a5,11a5,16c#,16c#,11d,5e,11a5,21a5,16c#,16c#,11d,e,21a5,11a5,16c#,16c#,11d,5e,5c#,11a5,16c,8c#,16e,8c#,5b5,11c,11c#,32e,11c#,5a5,11a5,8c#,11e,11e,11e,8d,11a5,16a5,11c#,11c#,8d,5e,5c#,8b5,11c,8c#,16e,8c#,1a5,8a5,11a5,16c#,16c#,16d
+we-rock 70:d=4,o=6,b=80:5d,3d,21c,21d,11f,21d,8c,5a#5,2a#5,21c,21d,5f,3f,21c,21d,11f,21d,8c,5a#5,3a#5,21c,21d,11f,21d,21c,21a#5,5f,3f,21c,21d,11f,21d,8c,5a#5,2a#5,21c,21d,5f,3f,21c,21d,11f,21d,8c,5a#5,3a#5,21c,21d,11f,21d,21c,21a#5,8f,8f
+we-rock 71:d=4,o=6,b=90:11f5,11g,11e,5c,11d,33g.,33a.,11b,11g,11a#,11f,5d,11f5,11g,11e,5c,11d,33g.,33a.,11b,11g,11a#,11f,d,2d5
+we-rock 8:d=4,o=6,b=140:21d#5,21d5,21d#5,5f#5,21g#5,21f#5,21f5,21f#5,5a#5,16b5,16a#5,16a5,16a#5,16f,16d#,16d,16d#,16f,16d#,16d,16d#,5f#,8d#,8f#,32c#,32d#,16f,8d#,8c#,8d#,32c#,32d#,16f,8d#,8c#,8d#,32c#,32d#,16f,8d#,8c#,8c,a#5,16f5,32d#5,16d5,16d#5,f#5,16g#5,16f#5,16f5,16f#5,a#5,16b5,16a#5,16a5,16a#5,16f,16d#,16d,16d#,16f,16d#,16d,16d#,f#,8d#,8f#,32c#,32d#,16f,8d#,8c#,8d#,32c#,32d#,16f,8d#,8c#,8d#,32c#,32d#,16f,8d#,8c#,8c,a#5,8a#5,8b5,8c#,8c#,16d#,16c#,16b5
+we-rock 9:d=4,o=6,b=140:3a5,1a5,3e5,3a5,1b5,1e5,2c#,3b5,3c#,3d,32c#,3b5,3a5,1a5,2g#5,3f#5,3g#5,3a5,3b5,2c#,1g#5,2f#5,5e5,1e5
+Where the wild roses grow:d=4,o=5,b=63:3c6,3e6,8f6,8g6,8f6,3e6,16e6,16f6,8e6,8d6,3c6,16g,16a,8g,8d,e
+While Shepherds Watch:d=16,o=5,b=120:4a,8p,32p,a,p,5g,32p,4f,5a#,p,5a#,p,5a,p,4g,32p,5a,32p,5c6,p,32p,5c6,p,8b,8p,1c6,4a,4d6,8p,11c6,32p,4a#,5a,32p,4g,32p,5f,32p,4e,4a,4g,32p,5f,p,5f,p,5e,p,1f
+Whilst:d=4,o=5,b=160:f,a,8p,8a,g,f,a#,a#,a,g,a,c6,c6,b,1c6,a,3d6,8c6,a#,a,g,f,e,a,g,f,f,e,1f
+Winnie The Pooh:d=4,o=5,b=125:8e,16d,e,d,p,8e,16d,e,d,p,8c,16c,8a#,16a#,8a,16a,g,f,e,d,d#,8e,16d,e,d,p,8e,16d,e,d,p,8c,16c,8a#,16a#,8a,16a,g,2f
+Winter:d=4,o=5,b=125:5c6,16c6,1c6,5c6,16c6,a,2c6,5c6,16c6,1c6,5c6,16c6,a#,2c6,8p,8c6,8e6,8e6,8e6,2d6,8d6,8c6,8c6,8c6,2a#,16p,5a,16a,5a,16a,5g,16g,5g,16g,1f
+Wolf Whistle:d=16,o=5,b=900:8a4,a#4,b4,c,c#,d,d#,e,f,f#,g,g#,a,a#,b,c6,8c#6,d6,d#6,e6,f6,4p,4p,a4,a#4,b4,c,c#,d,d#,e,f,f#,g,g#,a,a#,b,a#,a,g#,g,f#,f,e,d#,d,c#,c,b4,a#4,a4
+Wombles:d=8,o=5,b=100:c,16d,f,16p,f,16d,c,16p,c,16d,f,4a,p,16a,a#,16a,g,a,16g,f,g,16d,f,4e,p,c,16d,f,16p,f,16d,c,16p,c,16d,f,4a,p,a#,16a,g,a,16g,f,g,16d,f
+X files:d=4,o=5,b=125:e,b,a,b,d6,1b,1p,e,b,a,b,e6,1b,1p,g6,f#6,e6,d6,e6,1b,1p,g6,f#6,e6,d6,f#6,1b,1p,e,b,a,b,d6,1b,1p,e,b,a,b,e6,1b,1p,e6,1b
+The X Files:d=4,o=5,b=112:16c,16d#,16g,8g#,2p,8p,c,c,c,c,g,f,g,a#,16g,16d#,16g,8g#,2p,p,1d6,d#6,d6,c6,a#,d6,1g,d#6,d6,c6,a#,d6,1g,16c,16d#,16g,8g#,2p,p,c,c,c
+Yaketysax:d=4,o=5,b=125:5d,16e,8g,8g,16e,16d,16a4,16b4,16d,16b4,8e,16d,16b4,16a4,16b4,8a4,16a4,16a#4,16b4,16d,16e,16d,g,p,16d,16e,16d,8g,8g,16e,16d,16a4,16b4,16d,16b4,8e,16d,16b4,16a4,16b4,8d,16d,16d,16f#,16a,8f,d,p,16d,16e,16d,8g,16g,16g,8g,16g,16g,8g,8g,16e,5e,8c,8c,8c,8c,16e,16g,16a,16g,16a#,8g,16a,16b,16a#,16b,16a,16b,8d6,16a,16b,16d6,8b,8g,8d,16e6,16b,16b,16d,8a,8g,g
+YMCA:d=8,o=5,b=160:c#6,a#,2p,a#,g#,f#,g#,a#,4c#6,a#,4c#6,d#6,a#,2p,a#,g#,f#,g#,a#,4c#6,a#,4c#6,d#6,b,2p,b,a#,g#,a#,b,4d#6,f#6,4d#6,3f6,3d#6,3c#6,3b,4a#,4g#
+you the one:d=4,o=6,b=28:16g#,16a#,c7,16g#,16a#,c7,16f#,16a#,c7,16g#,16a#,32c7,32c#7,8c7,16c7,16f7,16d#7,16c7,8a#,g#,16f,16g#,16c7,8a#,c7,16c7,16g#,g#
+Zorba:d=16,o=5,b=125:c#6,2d6,2p,c#6,2d6,2p,32e6,32d6,32c#6,2d6,2p,c#6,2d6,2p,b,2c6,2p,32d6,32c6,32b,2c6,2p,a#,2b,4p,8p,32c6,32b,32a,32g,32b,2a,2p,32a,32g,32f#,32a,1g,1p,8c#6,8d6,8d6,8d6,8d6,8d6,8d6,8d6,8c#6,8d6,8d6,8d6,8d6,8d6,e6,d6,c#6,e6,8c#6,8d6,8d6,8d6,8d6,8d6,8d6,8d6,8c#6,8d6,8d6,8d6,8d6,8d6,e6,d6,c#6,e6,8b,8c6,8c6,8c6,8c6,8c6,8c6,8c6,8b,8c6,8c6,8c6,8c6,8c6,d6,c6,b,d6,8b,8c6,8c6,8c6,8c6,8c6,8c6,8c6,8b,8c6,8c6,8c6,8c6,8c6,8c6,8c6,c#6,p,d6,p,d6,p,d6,p,d6,p,d6,p,d6,p,d6,p,c#6,p,d6,p,d6,p,d6,p,d6,p,d6,p,32e6,p,32d6,p,32c#6,p,32e6,p,c#6,p,d6,p,d6,p,d6,p,d6,p,d6,p,d6,p,d6,p,c#6,p,d6,p,d6,p,d6,p,d6,p,d6,p,32e6,p,32d6,p,32c#6,p,32e6,p,11b,c6,p,c6,p,c6,p,c6,p,c6,p,c6,p,c6,p,11b,c6,p,c6,p,c6,p,c6,p,c6,p,32d6,p,32c6,p,32b,p,32d6,p,11b,c6,p,c6,p,c6,p,c6,p,c6,p,c6,p,c6,p,11b,c6,p,c6,p,c6,p,c6,p,c6,p,c6,p,c6,p

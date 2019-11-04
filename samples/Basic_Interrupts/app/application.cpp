@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 
 // Input pin for demonstrating a call to a low-level interrupt handler callback
@@ -10,6 +9,21 @@
 
 #define say(a) (Serial.print(a))
 #define newline() (Serial.println())
+
+static unsigned interruptToggleCount;
+
+void showInterruptToggleCount(uint32_t toggleCount)
+{
+	say("Toggle count hit ");
+	say(toggleCount);
+	say(", current value is ");
+	say(interruptToggleCount);
+	say("!");
+	newline();
+	say("Max tasks queued: ");
+	say(System.getMaxTaskCount());
+	newline();
+}
 
 /** @brief Low-level interrupt handler
  *  @note An interrupt handling callback must have the IRAM_ATTR attribute.
@@ -27,29 +41,29 @@ void IRAM_ATTR interruptHandler()
 
 	// Example of how you can queue a callback from inside a regular interrupt handler
 	const unsigned MAX_TOGGLE_COUNTS = 10;
-	static unsigned toggleCount;
-	++toggleCount;
-	if(toggleCount > MAX_TOGGLE_COUNTS) {
+	++interruptToggleCount;
+	if(interruptToggleCount > MAX_TOGGLE_COUNTS) {
+		System.queueCallback(showInterruptToggleCount, interruptToggleCount);
 		/*
-		 * Using a 'lambda function' we can easily include any code to be executed by the callback
-		 * without having to define a function elsewhere.
-		 * You could also pass a function pointer to queueCallback().
+		 * Note that `queueCallback` also supports std::function arguments, so we can use lambdas,
+		 * class methods, etc.
+		 *
+		 * For example, we could use a lambda to capture to capture the instantaneous value of 'toggleCount':
+		 *
+		 * 	```
+		 * 	System.queueCallback([toggleCount]() {
+		 * 		showInterruptToggleCount(toggleCount);
+		 * 	};
+		 * 	```
+		 *
+		 * IMPORTANT: the lambda inherits this function's context, so will be stored in IRAM which
+		 * is a very limited resource. The lambda is therefore best suited to simple 'glue' code.
+		 *
+		 * IMPORTANT: Avoid using std::bind from interrupt handlers because it may attempt to allocate
+		 * storage on the heap; this will likely crash the system.
+		 *
 		 */
-		System.queueCallback(
-			[&](uint32_t interruptToggleCount) {
-				say("Toggle count hit ");
-				say(interruptToggleCount);
-				say(", current value is ");
-				say(toggleCount);
-				say("!");
-				newline();
-				say("Max tasks queued: ");
-				say(System.getMaxTaskCount());
-				newline();
-			},
-			toggleCount);
-
-		toggleCount = 0;
+		interruptToggleCount = 0;
 	}
 }
 
@@ -72,28 +86,7 @@ void interruptDelegate()
 
 	/* OK, so you probably got a number which hit 255 pretty quickly! It stays there to indicate the task queue
 	 * overflowed, which happens because we're getting way more interrupts than we can process in a timely manner, so
-	 * lots of them get dropped.
-	 *
-	 * So what's happening?
-	 *
-	 * In our example, if you use a jumper wire to ground the input pin then it will bounce around as contact is made
-	 * and then broken; this is known as 'contact bounce'. This means you'll get multiple outputs instead of a clean
-	 * signal. If your circuit uses a push switch, reed switch, etc. then you'll need a 'debounce circuit'.
-	 *
-	 * If you want to try a very simple debounce circuit to see what happens, try this:
-	 *
-	 *                3v3
-	 *                _|_
-	 *                ___ 100nF
-	 *                 |
-	 *                 |
-	 * INPUT   >--------------> GPIO PIN
-	 *
-	 * You'll need to hit the reset button to get the task counter back to 0. Now try toggling the input again...
-	 * I'll leave it to you to work out why this helps. Hint: We've enabled pullups on the input pins, so there
-	 * will be another resistor in the circuit.
-	 *
-	 * There is plenty of information available on this subject. Just search the internet for 'debounce circuit'.
+	 * lots of them get dropped. This is because of 'contact bounce'.
 	 */
 }
 

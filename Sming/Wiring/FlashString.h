@@ -36,7 +36,7 @@
  *	memory so must be accessed using the appropriate xxx_P function.
  *
  *	LOAD_PSTR(_name, _flash_str) - loads pre-defined PSTR into buffer on stack
- *		static DEFINE_PSTR(testFlash, "This is a test string\n"); // Function scope requires static allocation
+ *		DEFINE_PSTR_LOCAL(testFlash, "This is a test string\n"); // Function scope requires static allocation
  *		LOAD_PSTR(test, testFlash)
  *		m_printf(test);
  *
@@ -51,7 +51,10 @@
  *
  *  IMPORT_FSTR(name, file) - binds a file into the firmware image as a FlashString object
  *  This needs to be used at file scope, example:
- *  	IMPORT_FSTR(myFlashData, "files/myFlashData.bin")
+ *  	IMPORT_FSTR(myFlashData, PROJECT_DIR "/files/myFlashData.bin")
+ *
+ *  Note the use of PROJECT_DIR to locate the file using an absolute path.
+ *  If using this within a component, use COMPONENT_PATH instead.
  *
  *	Both DEFINE_PSTR and PSTR_ARRAY load a PSTR into a stack buffer, but using sizeof() on that buffer will return
  *	a larger value than the string itself because it's aligned. Calling sizeof() on the original flash data will
@@ -78,12 +81,12 @@
  *
  */
 
-#ifndef __FLASH_STRING_H_
-#define __FLASH_STRING_H_
+#pragma once
 
 #include "WString.h"
+#include "FakePgmSpace.h"
 
-/** @Brief Define a FlashString
+/** @brief Define a FlashString
  *  @param _name variable to identify the string
  *  @param _str content of the string
  *  @note the whole thing is word-aligned
@@ -91,8 +94,16 @@
  *  The data includes the nul terminator but the length does not.
  */
 #define DEFINE_FSTR(_name, _str)                                                                                       \
-	DEFINE_FSTR_STRUCT(_##_name, _str)                                                                                 \
-	const FlashString& _name = _##_name.fstr;
+	DEFINE_FSTR_STRUCT(_##_name, _str);                                                                                \
+	const FlashString& _name PROGMEM = _##_name.fstr;
+
+/** @brief Define a FlashString for local (static) use
+ *  @param _name variable to identify the string
+ *  @param _str content of the string
+ */
+#define DEFINE_FSTR_LOCAL(_name, _str)                                                                                 \
+	static DEFINE_FSTR_STRUCT(_##_name, _str);                                                                         \
+	static const FlashString& _name PROGMEM = _##_name.fstr;
 
 #define DEFINE_FSTR_STRUCT(_name, _str)                                                                                \
 	constexpr struct {                                                                                                 \
@@ -137,7 +148,8 @@
  */
 #define LOAD_FSTR(_name, _fstr)                                                                                        \
 	char _name[(_fstr).size()] __attribute__((aligned(4)));                                                            \
-	memcpy_aligned(_name, (_fstr).data(), sizeof(_name));
+	memcpy_aligned(_name, (_fstr).data(), (_fstr).length());                                                           \
+	_name[(_fstr).length()] = '\0';
 
 /*
  * Define a flash string and load it into a named char[] buffer on the stack.
@@ -146,23 +158,55 @@
  * 	char _name[] = "text";
  */
 #define FSTR_ARRAY(_name, _str)                                                                                        \
-	static DEFINE_FSTR(_##_name, _str);                                                                                \
+	DEFINE_FSTR_LOCAL(_##_name, _str);                                                                                 \
 	LOAD_FSTR(_name, _##_name)
 
 /** @brief Define a FlashString containing data from an external file
+ *  @param name Name to use for referencing the FlashString object in code
+ *  @param file Path to the file to be included. This should be an absolute path.
  *  @note This provides a more efficient way to read constant (read-only) file data.
  *  The file content is bound into firmware image at link time.
  *  @note The FlashString object must be referenced or the linker won't emit it.
+ *  @note Use the PROJECT_DIR to locate files in your project's source tree. For example:
+ *  		IMPORT_FSTR(myFlashString, PROJECT_DIR "/files/my_flash_file.txt");
  */
 #define IMPORT_FSTR(name, file)                                                                                        \
-	__asm__(".section .irom.text\n"                                                                                    \
-			".global " #name "\n"                                                                                      \
-			".type " #name ", @object\n"                                                                               \
-			".align 4\n" #name ":\n"                                                                                   \
-			".word _" #name "_end - " #name " - 4\n"                                                                   \
-			".incbin \"" file "\"\n"                                                                                   \
-			"_" #name "_end:\n");                                                                                      \
+	IMPORT_FSTR_STRUCT(name, file)                                                                                     \
 	extern const __attribute__((aligned(4))) FlashString name;
+
+/*
+ * We need inline assembler's `.incbin` instruction to actually import the data.
+ * This links the contents of the file and defines a global symbol.
+ * We use a macro STR() so that if required the name can be resolved from a #defined value.
+ */
+#define STR(x) XSTR(x)
+#define XSTR(x) #x
+#ifdef __WIN32
+#define IMPORT_FSTR_STRUCT(name, file)                                                                                 \
+	__asm__(".section .rodata\n"                                                                                       \
+			".global _" STR(name) "\n"                                                                                 \
+			".def _" STR(name) "; .scl 2; .type 32; .endef\n"                                                          \
+			".align 4\n"                                                                                               \
+			"_" STR(name) ":\n"                                                                                        \
+			".long _" STR(name) "_end - _" STR(name) " - 4\n"                                                          \
+			".incbin \"" file "\"\n"                                                                                   \
+			"_" STR(name) "_end:\n");
+#else
+#ifdef ARCH_HOST
+#define IROM_SECTION ".rodata"
+#else
+#define IROM_SECTION ".irom0.text"
+#endif
+#define IMPORT_FSTR_STRUCT(name, file)                                                                                 \
+	__asm__(".section " IROM_SECTION "\n"                                                                              \
+			".global " STR(name) "\n"                                                                                  \
+			".type " STR(name) ", @object\n"                                                                           \
+			".align 4\n" STR(name) ":\n"                                                                               \
+			".long _" STR(name) "_end - " STR(name) " - 4\n"                                                           \
+			".incbin \"" file "\"\n"                                                                                   \
+			"_" STR(name) "_end:\n");
+#endif
+
 
 /** @brief describes a counted string stored in flash memory
  *  @note because the string length is stored there is no need to call strlen_P before reading the
@@ -189,21 +233,25 @@ struct FlashString {
 	}
 
 	/** @brief Check for equality with a C-string
-	 *  @param str
+	 *  @param cstr
+	 *  @param len Length of cstr (optional)
 	 *  @retval bool true if strings are identical
 	 *  @note loads string into a stack buffer for the comparison, no heap required
 	 */
-	bool isEqual(const char* cstr) const
+	bool isEqual(const char* cstr, size_t len = 0) const
 	{
 		// Unlikely we'd want an empty flash string, but check anyway
 		if(cstr == nullptr)
 			return flashLength == 0;
 		// Don't use strcmp as our data may contain nuls
-		size_t cstrlen = strlen(cstr);
-		if(cstrlen != flashLength)
+		if(len == 0) {
+			len = strlen(cstr);
+		}
+		if(len != flashLength) {
 			return false;
+		}
 		LOAD_FSTR(buf, *this);
-		return memcmp(buf, cstr, cstrlen) == 0;
+		return memcmp(buf, cstr, len) == 0;
 	}
 
 	/** @brief Check for equality with another FlashString
@@ -212,11 +260,13 @@ struct FlashString {
 	 */
 	bool isEqual(const FlashString& str) const
 	{
-		if(flashLength != str.flashLength)
+		if(flashLength != str.flashLength) {
 			return false;
-		if(flashData == str.flashData)
+		}
+		if(flashData == str.flashData) {
 			return true;
-		return memcmp_aligned(flashData, str.flashData, ALIGNUP(flashLength)) == 0;
+		}
+		return memcmp_aligned(flashData, str.flashData, flashLength) == 0;
 	}
 
 	bool isEqual(const String& str) const
@@ -254,5 +304,3 @@ struct FlashString {
 		return !isEqual(str);
 	}
 };
-
-#endif /* __FLASH_STRING_H_ */

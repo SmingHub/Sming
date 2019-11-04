@@ -6,90 +6,77 @@
  */
 
 #include "ServoChannel.h"
-
 #include "Servo.h"
+#include <muldiv.h>
 
-ServoChannel::ServoChannel()
+bool ServoChannel::setMaxValue(uint32_t maxValue)
 {
-	pin = 0;
-	value = 0;
-	maxValue=DEFAULTMAXVALUE;
-	minValue=DEFAULTMINVALUE;
-}
-
-ServoChannel::~ServoChannel()
-{
-	// TODO Auto-generated destructor stub
-}
-
-void ServoChannel::plausValue()
-{
-	uint32 range = maxValue-minValue;
-	if (value > range) {
-		value = range;
-		servo.calcTiming();
+	if(maxValue < minValue || maxValue > Servo::maxChannelTime) {
+		return false;
 	}
-}
 
-bool ServoChannel::setMaxValue(uint32 maxValue)
-{
-	if (maxValue < minValue) return false;
 	this->maxValue = maxValue;
-	plausValue();
+
+	if(value > maxValue) {
+		value = maxValue;
+		servo.updateChannel(this);
+	}
+
 	return true;
 }
 
-bool ServoChannel::setMinValue(uint32 minValue )
+bool ServoChannel::setMinValue(uint32_t minValue)
 {
-	if (minValue > maxValue) return false;
+	if(minValue > maxValue || minValue < Servo::minChannelTime) {
+		return false;
+	}
+
 	this->minValue = minValue;
-	plausValue();
+
+	if(value < minValue) {
+		value = minValue;
+		servo.updateChannel(this);
+	}
+
 	return true;
 }
 
-uint32 ServoChannel::getValue() const
+uint32_t ServoChannel::setValue(uint32_t value)
 {
+	if(value < minValue) {
+		value = minValue;
+	} else if(value > maxValue) {
+		value = maxValue;
+	}
+	if(value != this->value) {
+		this->value = value;
+		servo.updateChannel(this);
+	}
 	return value;
 }
 
-bool ServoChannel::setValue(uint32 value)
-{
-	if (value > maxValue-minValue) return false;
-	this->value = value;
-	servo.calcTiming();
-	return true;
-}
-
-bool ServoChannel::attach(uint8 pin)
+bool ServoChannel::attach(uint8_t pin)
 {
 	this->pin = pin;
-	if (servo.addChannel(this)) {
-		pinMode(pin, OUTPUT);
-		return true;
-	} else {
-		return false;
-	}
+	return servo.addChannel(this);
 }
 
 bool ServoChannel::detach()
 {
-	if (servo.removeChannel(this)) {
-		pinMode(pin, INPUT);
-		return true;
-	} else {
-		return false;
+	return servo.removeChannel(this);
+}
+
+static uint32_t map32(uint32_t x, uint32_t in_min, uint32_t in_max, uint32_t out_min, uint32_t out_max)
+{
+	return muldiv(x - in_min, out_max - out_min, in_max - in_min) + out_min;
+}
+
+uint32_t ServoChannel::setDegree(int8_t value)
+{
+	if(value < -90) {
+		value = -90;
+	} else if(value > 90) {
+		value = 90;
 	}
-}
-
-long map(long x, long in_min, long in_max, long out_min, long out_max)
-{
-  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-
-
-bool ServoChannel::setDegree(int8 value)
-{
-	if ((value < -90) || (value > 90)) return false;
-	setValue(map(value,-90,90,0,maxValue-minValue));
-	return true;
+	return setValue(map32(value, -90, 90, minValue, maxValue));
 }

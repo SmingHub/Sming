@@ -5,8 +5,7 @@
  *      Author: Anakonda
  */
 
-#ifndef WIRING_WIRINGFRAMEWORKINCLUDES_H_
-#define WIRING_WIRINGFRAMEWORKINCLUDES_H_
+#pragma once
 
 #include "WiringFrameworkDependencies.h"
 #include "WConstants.h"
@@ -25,6 +24,4 @@
 #include "Stream.h"
 #include "Display.h"
 #include "WHashMap.h"
-#include "IPAddress.h"
-
-#endif /* WIRING_WIRINGFRAMEWORKINCLUDES_H_ */
+#include "IpAddress.h"

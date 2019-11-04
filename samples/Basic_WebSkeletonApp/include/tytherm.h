@@ -2,6 +2,7 @@
 #define INCLUDE_TYTHERM_H_
 #include <configuration.h>
 #include <SmingCore.h>
+#include <JsonObjectStream.h>
 #include <Libraries/OneWire/OneWire.h>
 
 //OneWire stuff

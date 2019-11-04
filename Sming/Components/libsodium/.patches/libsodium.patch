@@ -1,0 +1,1624 @@
+diff --git a/src/libsodium/Makefile.in b/src/libsodium/Makefile.in
+index 0958ad3c..5025f7de 100644
+--- a/src/libsodium/Makefile.in
++++ b/src/libsodium/Makefile.in
+@@ -330,7 +330,6 @@ am__libsodium_la_SOURCES_DIST =  \
+ 	include/sodium/private/chacha20_ietf_ext.h \
+ 	include/sodium/private/common.h \
+ 	include/sodium/private/ed25519_ref10.h \
+-	include/sodium/private/implementations.h \
+ 	include/sodium/private/mutex.h \
+ 	include/sodium/private/sse2_64_32.h randombytes/randombytes.c \
+ 	sodium/codecs.c sodium/core.c sodium/runtime.c sodium/utils.c \
+@@ -989,7 +988,6 @@ libsodium_la_SOURCES =  \
+ 	include/sodium/private/chacha20_ietf_ext.h \
+ 	include/sodium/private/common.h \
+ 	include/sodium/private/ed25519_ref10.h \
+-	include/sodium/private/implementations.h \
+ 	include/sodium/private/mutex.h \
+ 	include/sodium/private/sse2_64_32.h randombytes/randombytes.c \
+ 	sodium/codecs.c sodium/core.c sodium/runtime.c sodium/utils.c \
+diff --git a/src/libsodium/crypto_generichash/blake2b/ref/blake2.h b/src/libsodium/crypto_generichash/blake2b/ref/blake2.h
+index 6ea2832e..7ce52840 100644
+--- a/src/libsodium/crypto_generichash/blake2b/ref/blake2.h
++++ b/src/libsodium/crypto_generichash/blake2b/ref/blake2.h
+@@ -34,8 +34,6 @@
+ #define blake2b_final crypto_generichash_blake2b__final
+ #define blake2b crypto_generichash_blake2b__blake2b
+ #define blake2b_salt_personal crypto_generichash_blake2b__blake2b_salt_personal
+-#define blake2b_pick_best_implementation \
+-    crypto_generichash_blake2b__pick_best_implementation
+ 
+ enum blake2b_constant {
+     BLAKE2B_BLOCKBYTES    = 128,
+@@ -101,9 +99,6 @@ int blake2b_salt_personal(uint8_t *out, const void *in, const void *key,
+                           uint8_t keylen, const void *salt,
+                           const void *personal);
+ 
+-typedef int (*blake2b_compress_fn)(blake2b_state *S,
+-                                   const uint8_t  block[BLAKE2B_BLOCKBYTES]);
+-int blake2b_pick_best_implementation(void);
+ int blake2b_compress_ref(blake2b_state *S,
+                          const uint8_t  block[BLAKE2B_BLOCKBYTES]);
+ int blake2b_compress_ssse3(blake2b_state *S,
+diff --git a/src/libsodium/crypto_generichash/blake2b/ref/blake2b-ref.c b/src/libsodium/crypto_generichash/blake2b/ref/blake2b-ref.c
+index a1beacf3..7bfda7ca 100644
+--- a/src/libsodium/crypto_generichash/blake2b/ref/blake2b-ref.c
++++ b/src/libsodium/crypto_generichash/blake2b/ref/blake2b-ref.c
+@@ -25,8 +25,6 @@
+ #include "runtime.h"
+ #include "utils.h"
+ 
+-static blake2b_compress_fn blake2b_compress = blake2b_compress_ref;
+-
+ static const uint64_t blake2b_IV[8] = {
+     0x6a09e667f3bcc908ULL, 0xbb67ae8584caa73bULL, 0x3c6ef372fe94f82bULL,
+     0xa54ff53a5f1d36f1ULL, 0x510e527fade682d1ULL, 0x9b05688c2b3e6c1fULL,
+@@ -270,7 +268,7 @@ blake2b_update(blake2b_state *S, const uint8_t *in, uint64_t inlen)
+             memcpy(S->buf + left, in, fill); /* Fill buffer */
+             S->buflen += fill;
+             blake2b_increment_counter(S, BLAKE2B_BLOCKBYTES);
+-            blake2b_compress(S, S->buf); /* Compress */
++            blake2b_compress_ref(S, S->buf); /* Compress */
+             memcpy(S->buf, S->buf + BLAKE2B_BLOCKBYTES,
+                    BLAKE2B_BLOCKBYTES); /* Shift buffer left */
+             S->buflen -= BLAKE2B_BLOCKBYTES;
+@@ -301,7 +299,7 @@ blake2b_final(blake2b_state *S, uint8_t *out, uint8_t outlen)
+     }
+     if (S->buflen > BLAKE2B_BLOCKBYTES) {
+         blake2b_increment_counter(S, BLAKE2B_BLOCKBYTES);
+-        blake2b_compress(S, S->buf);
++        blake2b_compress_ref(S, S->buf);
+         S->buflen -= BLAKE2B_BLOCKBYTES;
+         assert(S->buflen <= BLAKE2B_BLOCKBYTES);
+         memcpy(S->buf, S->buf + BLAKE2B_BLOCKBYTES, S->buflen);
+@@ -311,7 +309,7 @@ blake2b_final(blake2b_state *S, uint8_t *out, uint8_t outlen)
+     blake2b_set_lastblock(S);
+     memset(S->buf + S->buflen, 0,
+            2 * BLAKE2B_BLOCKBYTES - S->buflen); /* Padding */
+-    blake2b_compress(S, S->buf);
++    blake2b_compress_ref(S, S->buf);
+ 
+     COMPILER_ASSERT(sizeof buffer == 64U);
+     STORE64_LE(buffer + 8 * 0, S->h[0]);
+@@ -406,33 +404,3 @@ blake2b_salt_personal(uint8_t *out, const void *in, const void *key,
+     blake2b_final(S, out, outlen);
+     return 0;
+ }
+-
+-int
+-blake2b_pick_best_implementation(void)
+-{
+-/* LCOV_EXCL_START */
+-#if defined(HAVE_AVX2INTRIN_H) && defined(HAVE_TMMINTRIN_H) && \
+-    defined(HAVE_SMMINTRIN_H)
+-    if (sodium_runtime_has_avx2()) {
+-        blake2b_compress = blake2b_compress_avx2;
+-        return 0;
+-    }
+-#endif
+-#if defined(HAVE_EMMINTRIN_H) && defined(HAVE_TMMINTRIN_H) && \
+-    defined(HAVE_SMMINTRIN_H)
+-    if (sodium_runtime_has_sse41()) {
+-        blake2b_compress = blake2b_compress_sse41;
+-        return 0;
+-    }
+-#endif
+-#if defined(HAVE_EMMINTRIN_H) && defined(HAVE_TMMINTRIN_H)
+-    if (sodium_runtime_has_ssse3()) {
+-        blake2b_compress = blake2b_compress_ssse3;
+-        return 0;
+-    }
+-#endif
+-    blake2b_compress = blake2b_compress_ref;
+-
+-    return 0;
+-    /* LCOV_EXCL_STOP */
+-}
+diff --git a/src/libsodium/crypto_generichash/blake2b/ref/generichash_blake2b.c b/src/libsodium/crypto_generichash/blake2b/ref/generichash_blake2b.c
+index 7a8598c7..5ca78401 100644
+--- a/src/libsodium/crypto_generichash/blake2b/ref/generichash_blake2b.c
++++ b/src/libsodium/crypto_generichash/blake2b/ref/generichash_blake2b.c
+@@ -6,7 +6,6 @@
+ #include "blake2.h"
+ #include "crypto_generichash_blake2b.h"
+ #include "private/common.h"
+-#include "private/implementations.h"
+ 
+ int
+ crypto_generichash_blake2b(unsigned char *out, size_t outlen,
+@@ -108,9 +107,3 @@ crypto_generichash_blake2b_final(crypto_generichash_blake2b_state *state,
+     return blake2b_final((blake2b_state *) (void *) state,
+                          (uint8_t *) out, (uint8_t) outlen);
+ }
+-
+-int
+-_crypto_generichash_blake2b_pick_best_implementation(void)
+-{
+-    return blake2b_pick_best_implementation();
+-}
+diff --git a/src/libsodium/crypto_onetimeauth/poly1305/onetimeauth_poly1305.c b/src/libsodium/crypto_onetimeauth/poly1305/onetimeauth_poly1305.c
+index d5e2efa2..eea1d8e4 100644
+--- a/src/libsodium/crypto_onetimeauth/poly1305/onetimeauth_poly1305.c
++++ b/src/libsodium/crypto_onetimeauth/poly1305/onetimeauth_poly1305.c
+@@ -2,23 +2,16 @@
+ #include "onetimeauth_poly1305.h"
+ #include "crypto_onetimeauth_poly1305.h"
+ #include "private/common.h"
+-#include "private/implementations.h"
+ #include "randombytes.h"
+ #include "runtime.h"
+ 
+ #include "donna/poly1305_donna.h"
+-#if defined(HAVE_TI_MODE) && defined(HAVE_EMMINTRIN_H)
+-# include "sse2/poly1305_sse2.h"
+-#endif
+-
+-static const crypto_onetimeauth_poly1305_implementation *implementation =
+-    &crypto_onetimeauth_poly1305_donna_implementation;
+ 
+ int
+ crypto_onetimeauth_poly1305(unsigned char *out, const unsigned char *in,
+                             unsigned long long inlen, const unsigned char *k)
+ {
+-    return implementation->onetimeauth(out, in, inlen, k);
++    return crypto_onetimeauth_poly1305_donna_implementation.onetimeauth(out, in, inlen, k);
+ }
+ 
+ int
+@@ -27,14 +20,14 @@ crypto_onetimeauth_poly1305_verify(const unsigned char *h,
+                                    unsigned long long   inlen,
+                                    const unsigned char *k)
+ {
+-    return implementation->onetimeauth_verify(h, in, inlen, k);
++    return crypto_onetimeauth_poly1305_donna_implementation.onetimeauth_verify(h, in, inlen, k);
+ }
+ 
+ int
+ crypto_onetimeauth_poly1305_init(crypto_onetimeauth_poly1305_state *state,
+                                  const unsigned char *key)
+ {
+-    return implementation->onetimeauth_init(state, key);
++    return crypto_onetimeauth_poly1305_donna_implementation.onetimeauth_init(state, key);
+ }
+ 
+ int
+@@ -42,14 +35,14 @@ crypto_onetimeauth_poly1305_update(crypto_onetimeauth_poly1305_state *state,
+                                    const unsigned char *in,
+                                    unsigned long long inlen)
+ {
+-    return implementation->onetimeauth_update(state, in, inlen);
++    return crypto_onetimeauth_poly1305_donna_implementation.onetimeauth_update(state, in, inlen);
+ }
+ 
+ int
+ crypto_onetimeauth_poly1305_final(crypto_onetimeauth_poly1305_state *state,
+                                   unsigned char *out)
+ {
+-    return implementation->onetimeauth_final(state, out);
++    return crypto_onetimeauth_poly1305_donna_implementation.onetimeauth_final(state, out);
+ }
+ 
+ size_t
+@@ -76,15 +69,3 @@ crypto_onetimeauth_poly1305_keygen(
+ {
+     randombytes_buf(k, crypto_onetimeauth_poly1305_KEYBYTES);
+ }
+-
+-int
+-_crypto_onetimeauth_poly1305_pick_best_implementation(void)
+-{
+-    implementation = &crypto_onetimeauth_poly1305_donna_implementation;
+-#if defined(HAVE_TI_MODE) && defined(HAVE_EMMINTRIN_H)
+-    if (sodium_runtime_has_sse2()) {
+-        implementation = &crypto_onetimeauth_poly1305_sse2_implementation;
+-    }
+-#endif
+-    return 0;
+-}
+diff --git a/src/libsodium/crypto_pwhash/argon2/argon2-core.c b/src/libsodium/crypto_pwhash/argon2/argon2-core.c
+index c4e4d842..9a7af497 100644
+--- a/src/libsodium/crypto_pwhash/argon2/argon2-core.c
++++ b/src/libsodium/crypto_pwhash/argon2/argon2-core.c
+@@ -24,7 +24,6 @@
+ 
+ #include "crypto_generichash_blake2b.h"
+ #include "private/common.h"
+-#include "private/implementations.h"
+ #include "runtime.h"
+ #include "utils.h"
+ 
+@@ -41,8 +40,6 @@
+ # define MAP_POPULATE 0
+ #endif
+ 
+-static fill_segment_fn fill_segment = fill_segment_ref;
+-
+ static void
+ load_block(block *dst, const void *input)
+ {
+@@ -235,7 +232,7 @@ fill_memory_blocks(argon2_instance_t *instance, uint32_t pass)
+         for (l = 0; l < instance->lanes; ++l) {
+             position.lane  = l;
+             position.index = 0;
+-            fill_segment(instance, position);
++            fill_segment_ref(instance, position);
+         }
+     }
+ }
+@@ -512,39 +509,3 @@ initialize(argon2_instance_t *instance, argon2_context *context)
+ 
+     return ARGON2_OK;
+ }
+-
+-int
+-argon2_pick_best_implementation(void)
+-{
+-/* LCOV_EXCL_START */
+-#if defined(HAVE_AVX512FINTRIN_H) && defined(HAVE_AVX2INTRIN_H) && \
+-    defined(HAVE_TMMINTRIN_H) && defined(HAVE_SMMINTRIN_H)
+-    if (sodium_runtime_has_avx512f()) {
+-        fill_segment = fill_segment_avx512f;
+-        return 0;
+-    }
+-#endif
+-#if defined(HAVE_AVX2INTRIN_H) && defined(HAVE_TMMINTRIN_H) && \
+-    defined(HAVE_SMMINTRIN_H)
+-    if (sodium_runtime_has_avx2()) {
+-        fill_segment = fill_segment_avx2;
+-        return 0;
+-    }
+-#endif
+-#if defined(HAVE_EMMINTRIN_H) && defined(HAVE_TMMINTRIN_H)
+-    if (sodium_runtime_has_ssse3()) {
+-        fill_segment = fill_segment_ssse3;
+-        return 0;
+-    }
+-#endif
+-    fill_segment = fill_segment_ref;
+-
+-    return 0;
+-    /* LCOV_EXCL_STOP */
+-}
+-
+-int
+-_crypto_pwhash_argon2_pick_best_implementation(void)
+-{
+-    return argon2_pick_best_implementation();
+-}
+diff --git a/src/libsodium/crypto_scalarmult/curve25519/scalarmult_curve25519.c b/src/libsodium/crypto_scalarmult/curve25519/scalarmult_curve25519.c
+index 2d3ffc05..c8172bfd 100644
+--- a/src/libsodium/crypto_scalarmult/curve25519/scalarmult_curve25519.c
++++ b/src/libsodium/crypto_scalarmult/curve25519/scalarmult_curve25519.c
+@@ -1,15 +1,9 @@
+ 
+ #include "crypto_scalarmult_curve25519.h"
+-#include "private/implementations.h"
+ #include "scalarmult_curve25519.h"
+ #include "runtime.h"
+ 
+-#ifdef HAVE_AVX_ASM
+-# include "sandy2x/curve25519_sandy2x.h"
+-#endif
+ #include "ref10/x25519_ref10.h"
+-static const crypto_scalarmult_curve25519_implementation *implementation =
+-    &crypto_scalarmult_curve25519_ref10_implementation;
+ 
+ int
+ crypto_scalarmult_curve25519(unsigned char *q, const unsigned char *n,
+@@ -18,7 +12,7 @@ crypto_scalarmult_curve25519(unsigned char *q, const unsigned char *n,
+     size_t                 i;
+     volatile unsigned char d = 0;
+ 
+-    if (implementation->mult(q, n, p) != 0) {
++    if (crypto_scalarmult_curve25519_ref10_implementation.mult(q, n, p) != 0) {
+         return -1; /* LCOV_EXCL_LINE */
+     }
+     for (i = 0; i < crypto_scalarmult_curve25519_BYTES; i++) {
+@@ -30,7 +24,7 @@ crypto_scalarmult_curve25519(unsigned char *q, const unsigned char *n,
+ int
+ crypto_scalarmult_curve25519_base(unsigned char *q, const unsigned char *n)
+ {
+-    return implementation->mult_base(q, n);
++    return crypto_scalarmult_curve25519_ref10_implementation.mult_base(q, n);
+ }
+ 
+ size_t
+@@ -44,16 +38,3 @@ crypto_scalarmult_curve25519_scalarbytes(void)
+ {
+     return crypto_scalarmult_curve25519_SCALARBYTES;
+ }
+-
+-int
+-_crypto_scalarmult_curve25519_pick_best_implementation(void)
+-{
+-    implementation = &crypto_scalarmult_curve25519_ref10_implementation;
+-
+-#ifdef HAVE_AVX_ASM
+-    if (sodium_runtime_has_avx()) {
+-        implementation = &crypto_scalarmult_curve25519_sandy2x_implementation;
+-    }
+-#endif
+-    return 0;
+-}
+diff --git a/src/libsodium/crypto_stream/chacha20/stream_chacha20.c b/src/libsodium/crypto_stream/chacha20/stream_chacha20.c
+index 427c3fb0..2328b211 100644
+--- a/src/libsodium/crypto_stream/chacha20/stream_chacha20.c
++++ b/src/libsodium/crypto_stream/chacha20/stream_chacha20.c
+@@ -2,19 +2,11 @@
+ #include "core.h"
+ #include "private/chacha20_ietf_ext.h"
+ #include "private/common.h"
+-#include "private/implementations.h"
+ #include "randombytes.h"
+ #include "runtime.h"
+ #include "stream_chacha20.h"
+ 
+ #include "ref/chacha20_ref.h"
+-#if defined(HAVE_AVX2INTRIN_H) && defined(HAVE_EMMINTRIN_H) && \
+-    defined(HAVE_TMMINTRIN_H) && defined(HAVE_SMMINTRIN_H)
+-# include "dolbeau/chacha20_dolbeau-avx2.h"
+-#endif
+-#if defined(HAVE_EMMINTRIN_H) && defined(HAVE_TMMINTRIN_H)
+-# include "dolbeau/chacha20_dolbeau-ssse3.h"
+-#endif
+ 
+ static const crypto_stream_chacha20_implementation *implementation =
+     &crypto_stream_chacha20_ref_implementation;
+@@ -58,7 +50,7 @@ crypto_stream_chacha20(unsigned char *c, unsigned long long clen,
+     if (clen > crypto_stream_chacha20_MESSAGEBYTES_MAX) {
+         sodium_misuse();
+     }
+-    return implementation->stream(c, clen, n, k);
++    return crypto_stream_chacha20_ref_implementation.stream(c, clen, n, k);
+ }
+ 
+ int
+@@ -70,7 +62,7 @@ crypto_stream_chacha20_xor_ic(unsigned char *c, const unsigned char *m,
+     if (mlen > crypto_stream_chacha20_MESSAGEBYTES_MAX) {
+         sodium_misuse();
+     }
+-    return implementation->stream_xor_ic(c, m, mlen, n, ic, k);
++    return crypto_stream_chacha20_ref_implementation.stream_xor_ic(c, m, mlen, n, ic, k);
+ }
+ 
+ int
+@@ -81,7 +73,7 @@ crypto_stream_chacha20_xor(unsigned char *c, const unsigned char *m,
+     if (mlen > crypto_stream_chacha20_MESSAGEBYTES_MAX) {
+         sodium_misuse();
+     }
+-    return implementation->stream_xor_ic(c, m, mlen, n, 0U, k);
++    return crypto_stream_chacha20_ref_implementation.stream_xor_ic(c, m, mlen, n, 0U, k);
+ }
+ 
+ int
+@@ -91,7 +83,7 @@ crypto_stream_chacha20_ietf_ext(unsigned char *c, unsigned long long clen,
+     if (clen > crypto_stream_chacha20_MESSAGEBYTES_MAX) {
+         sodium_misuse();
+     }
+-    return implementation->stream_ietf_ext(c, clen, n, k);
++    return crypto_stream_chacha20_ref_implementation.stream_ietf_ext(c, clen, n, k);
+ }
+ 
+ int
+@@ -103,7 +95,7 @@ crypto_stream_chacha20_ietf_ext_xor_ic(unsigned char *c, const unsigned char *m,
+     if (mlen > crypto_stream_chacha20_MESSAGEBYTES_MAX) {
+         sodium_misuse();
+     }
+-    return implementation->stream_ietf_ext_xor_ic(c, m, mlen, n, ic, k);
++    return crypto_stream_chacha20_ref_implementation.stream_ietf_ext_xor_ic(c, m, mlen, n, ic, k);
+ }
+ 
+ static int
+@@ -114,7 +106,7 @@ crypto_stream_chacha20_ietf_ext_xor(unsigned char *c, const unsigned char *m,
+     if (mlen > crypto_stream_chacha20_MESSAGEBYTES_MAX) {
+         sodium_misuse();
+     }
+-    return implementation->stream_ietf_ext_xor_ic(c, m, mlen, n, 0U, k);
++    return crypto_stream_chacha20_ref_implementation.stream_ietf_ext_xor_ic(c, m, mlen, n, 0U, k);
+ }
+ 
+ int
+@@ -162,23 +154,3 @@ crypto_stream_chacha20_keygen(unsigned char k[crypto_stream_chacha20_KEYBYTES])
+ {
+     randombytes_buf(k, crypto_stream_chacha20_KEYBYTES);
+ }
+-
+-int
+-_crypto_stream_chacha20_pick_best_implementation(void)
+-{
+-    implementation = &crypto_stream_chacha20_ref_implementation;
+-#if defined(HAVE_AVX2INTRIN_H) && defined(HAVE_EMMINTRIN_H) && \
+-    defined(HAVE_TMMINTRIN_H) && defined(HAVE_SMMINTRIN_H)
+-    if (sodium_runtime_has_avx2()) {
+-        implementation = &crypto_stream_chacha20_dolbeau_avx2_implementation;
+-        return 0;
+-    }
+-#endif
+-#if defined(HAVE_EMMINTRIN_H) && defined(HAVE_TMMINTRIN_H)
+-    if (sodium_runtime_has_ssse3()) {
+-        implementation = &crypto_stream_chacha20_dolbeau_ssse3_implementation;
+-        return 0;
+-    }
+-#endif
+-    return 0;
+-}
+diff --git a/src/libsodium/crypto_stream/salsa20/ref/salsa20_ref.c b/src/libsodium/crypto_stream/salsa20/ref/salsa20_ref.c
+index f0854ebf..f1578490 100644
+--- a/src/libsodium/crypto_stream/salsa20/ref/salsa20_ref.c
++++ b/src/libsodium/crypto_stream/salsa20/ref/salsa20_ref.c
+@@ -13,8 +13,6 @@ Public domain.
+ #include "../stream_salsa20.h"
+ #include "salsa20_ref.h"
+ 
+-#ifndef HAVE_AMD64_ASM
+-
+ static int
+ stream_ref(unsigned char *c, unsigned long long clen, const unsigned char *n,
+            const unsigned char *k)
+@@ -117,4 +115,3 @@ struct crypto_stream_salsa20_implementation
+         SODIUM_C99(.stream_xor_ic =) stream_ref_xor_ic,
+     };
+ 
+-#endif
+diff --git a/src/libsodium/crypto_stream/salsa20/stream_salsa20.c b/src/libsodium/crypto_stream/salsa20/stream_salsa20.c
+index 45298501..8ec32597 100644
+--- a/src/libsodium/crypto_stream/salsa20/stream_salsa20.c
++++ b/src/libsodium/crypto_stream/salsa20/stream_salsa20.c
+@@ -1,30 +1,10 @@
+ #include "crypto_stream_salsa20.h"
+ #include "private/common.h"
+-#include "private/implementations.h"
+ #include "randombytes.h"
+ #include "runtime.h"
+ #include "stream_salsa20.h"
+ 
+-#ifdef HAVE_AMD64_ASM
+-# include "xmm6/salsa20_xmm6.h"
+-#else
+ # include "ref/salsa20_ref.h"
+-#endif
+-#if !defined(HAVE_AMD64_ASM) && defined(HAVE_EMMINTRIN_H)
+-# include "xmm6int/salsa20_xmm6int-sse2.h"
+-#endif
+-#if defined(HAVE_AVX2INTRIN_H) && defined(HAVE_EMMINTRIN_H) && \
+-    defined(HAVE_TMMINTRIN_H) && defined(HAVE_SMMINTRIN_H)
+-# include "xmm6int/salsa20_xmm6int-avx2.h"
+-#endif
+-
+-#if HAVE_AMD64_ASM
+-static const crypto_stream_salsa20_implementation *implementation =
+-    &crypto_stream_salsa20_xmm6_implementation;
+-#else
+-static const crypto_stream_salsa20_implementation *implementation =
+-    &crypto_stream_salsa20_ref_implementation;
+-#endif
+ 
+ size_t
+ crypto_stream_salsa20_keybytes(void)
+@@ -48,7 +28,7 @@ int
+ crypto_stream_salsa20(unsigned char *c, unsigned long long clen,
+                       const unsigned char *n, const unsigned char *k)
+ {
+-    return implementation->stream(c, clen, n, k);
++    return crypto_stream_salsa20_ref_implementation.stream(c, clen, n, k);
+ }
+ 
+ int
+@@ -57,7 +37,7 @@ crypto_stream_salsa20_xor_ic(unsigned char *c, const unsigned char *m,
+                              const unsigned char *n, uint64_t ic,
+                              const unsigned char *k)
+ {
+-    return implementation->stream_xor_ic(c, m, mlen, n, ic, k);
++    return crypto_stream_salsa20_ref_implementation.stream_xor_ic(c, m, mlen, n, ic, k);
+ }
+ 
+ int
+@@ -65,7 +45,7 @@ crypto_stream_salsa20_xor(unsigned char *c, const unsigned char *m,
+                           unsigned long long mlen, const unsigned char *n,
+                           const unsigned char *k)
+ {
+-    return implementation->stream_xor_ic(c, m, mlen, n, 0U, k);
++    return crypto_stream_salsa20_ref_implementation.stream_xor_ic(c, m, mlen, n, 0U, k);
+ }
+ 
+ void
+@@ -73,28 +53,3 @@ crypto_stream_salsa20_keygen(unsigned char k[crypto_stream_salsa20_KEYBYTES])
+ {
+     randombytes_buf(k, crypto_stream_salsa20_KEYBYTES);
+ }
+-
+-int
+-_crypto_stream_salsa20_pick_best_implementation(void)
+-{
+-#ifdef HAVE_AMD64_ASM
+-    implementation = &crypto_stream_salsa20_xmm6_implementation;
+-#else
+-    implementation = &crypto_stream_salsa20_ref_implementation;
+-#endif
+-
+-#if defined(HAVE_AVX2INTRIN_H) && defined(HAVE_EMMINTRIN_H) && \
+-    defined(HAVE_TMMINTRIN_H) && defined(HAVE_SMMINTRIN_H)
+-    if (sodium_runtime_has_avx2()) {
+-        implementation = &crypto_stream_salsa20_xmm6int_avx2_implementation;
+-        return 0;
+-    }
+-#endif
+-#if !defined(HAVE_AMD64_ASM) && defined(HAVE_EMMINTRIN_H)
+-    if (sodium_runtime_has_sse2()) {
+-        implementation = &crypto_stream_salsa20_xmm6int_sse2_implementation;
+-        return 0;
+-    }
+-#endif
+-    return 0; /* LCOV_EXCL_LINE */
+-}
+diff --git a/src/libsodium/include/sodium/private/implementations.h b/src/libsodium/include/sodium/private/implementations.h
+deleted file mode 100644
+index c7237f85..00000000
+--- a/src/libsodium/include/sodium/private/implementations.h
++++ /dev/null
+@@ -1,11 +0,0 @@
+-#ifndef implementations_H
+-#define implementations_H
+-
+-int _crypto_generichash_blake2b_pick_best_implementation(void);
+-int _crypto_onetimeauth_poly1305_pick_best_implementation(void);
+-int _crypto_pwhash_argon2_pick_best_implementation(void);
+-int _crypto_scalarmult_curve25519_pick_best_implementation(void);
+-int _crypto_stream_chacha20_pick_best_implementation(void);
+-int _crypto_stream_salsa20_pick_best_implementation(void);
+-
+-#endif
+diff --git a/src/libsodium/include/sodium/runtime.h b/src/libsodium/include/sodium/runtime.h
+index 7f15d58e..863369f1 100644
+--- a/src/libsodium/include/sodium/runtime.h
++++ b/src/libsodium/include/sodium/runtime.h
+@@ -41,10 +41,6 @@ int sodium_runtime_has_aesni(void);
+ SODIUM_EXPORT_WEAK
+ int sodium_runtime_has_rdrand(void);
+ 
+-/* ------------------------------------------------------------------------- */
+-
+-int _sodium_runtime_get_cpu_features(void);
+-
+ #ifdef __cplusplus
+ }
+ #endif
+diff --git a/src/libsodium/include/sodium/utils.h b/src/libsodium/include/sodium/utils.h
+index ac801512..ba1f1a65 100644
+--- a/src/libsodium/include/sodium/utils.h
++++ b/src/libsodium/include/sodium/utils.h
+@@ -170,8 +170,6 @@ int sodium_unpad(size_t *unpadded_buflen_p, const unsigned char *buf,
+ 
+ /* -------- */
+ 
+-int _sodium_alloc_init(void);
+-
+ #ifdef __cplusplus
+ }
+ #endif
+diff --git a/src/libsodium/include/sodium/version.h b/src/libsodium/include/sodium/version.h
+new file mode 100644
+index 00000000..d0ee3f83
+--- /dev/null
++++ b/src/libsodium/include/sodium/version.h
+@@ -0,0 +1,32 @@
++#ifndef sodium_version_H
++#define sodium_version_H
++
++#include "export.h"
++
++#define SODIUM_VERSION_STRING "1.0.18"
++
++#define SODIUM_LIBRARY_VERSION_MAJOR 10
++#define SODIUM_LIBRARY_VERSION_MINOR 3
++
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++SODIUM_EXPORT
++const char *sodium_version_string(void);
++
++SODIUM_EXPORT
++int         sodium_library_version_major(void);
++
++SODIUM_EXPORT
++int         sodium_library_version_minor(void);
++
++SODIUM_EXPORT
++int         sodium_library_minimal(void);
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif
+diff --git a/src/libsodium/randombytes/sysrandom/randombytes_sysrandom.c b/src/libsodium/randombytes/sysrandom/randombytes_sysrandom.c
+index 6657e8e6..5e6af2ad 100644
+--- a/src/libsodium/randombytes/sysrandom/randombytes_sysrandom.c
++++ b/src/libsodium/randombytes/sysrandom/randombytes_sysrandom.c
+@@ -1,384 +1,21 @@
++#include <esp_systemapi.h>
+ 
+-#include <assert.h>
+-#include <errno.h>
+-#include <fcntl.h>
+-#include <limits.h>
+-#include <stdint.h>
+-#include <string.h>
+-#ifndef _WIN32
+-# include <unistd.h>
+-#endif
+-#include <stdlib.h>
+-
+-#include <sys/types.h>
+-#ifndef _WIN32
+-# include <sys/stat.h>
+-# include <sys/time.h>
+-#endif
+-#ifdef __linux__
+-# define _LINUX_SOURCE
+-#endif
+-#ifdef HAVE_SYS_RANDOM_H
+-# include <sys/random.h>
+-#endif
+-#ifdef __linux__
+-# ifdef HAVE_GETRANDOM
+-#  define HAVE_LINUX_COMPATIBLE_GETRANDOM
+-# else
+-#  include <sys/syscall.h>
+-#  if defined(SYS_getrandom) && defined(__NR_getrandom)
+-#   define getrandom(B, S, F) syscall(SYS_getrandom, (B), (int) (S), (F))
+-#   define HAVE_LINUX_COMPATIBLE_GETRANDOM
+-#  endif
+-# endif
+-#elif defined(__FreeBSD__)
+-# include <sys/param.h>
+-# if defined(__FreeBSD_version) && __FreeBSD_version >= 1200000
+-#  define HAVE_LINUX_COMPATIBLE_GETRANDOM
+-# endif
+-#endif
+-#if !defined(NO_BLOCKING_RANDOM_POLL) && defined(__linux__)
+-# define BLOCK_ON_DEV_RANDOM
+-#endif
+-#ifdef BLOCK_ON_DEV_RANDOM
+-# include <poll.h>
+-#endif
+-
+-#include "core.h"
+-#include "private/common.h"
+ #include "randombytes.h"
+ #include "randombytes_sysrandom.h"
+ #include "utils.h"
+ 
+-#ifdef _WIN32
+-/* `RtlGenRandom` is used over `CryptGenRandom` on Microsoft Windows based systems:
+- *  - `CryptGenRandom` requires pulling in `CryptoAPI` which causes unnecessary
+- *     memory overhead if this API is not being used for other purposes
+- *  - `RtlGenRandom` is thus called directly instead. A detailed explanation
+- *     can be found here: https://blogs.msdn.microsoft.com/michael_howard/2005/01/14/cryptographically-secure-random-number-on-windows-without-using-cryptoapi/
+- *
+- * In spite of the disclaimer on the `RtlGenRandom` documentation page that was
+- * written back in the Windows XP days, this function is here to stay. The CRT
+- * function `rand_s()` directly depends on it, so touching it would break many
+- * applications released since Windows XP.
+- *
+- * Also note that Rust, Firefox and BoringSSL (thus, Google Chrome and everything
+- * based on Chromium) also depend on it, and that libsodium allows the RNG to be
+- * replaced without patching nor recompiling the library.
+- */
+-# include <windows.h>
+-# define RtlGenRandom SystemFunction036
+-# if defined(__cplusplus)
+-extern "C"
+-# endif
+-BOOLEAN NTAPI RtlGenRandom(PVOID RandomBuffer, ULONG RandomBufferLength);
+-# pragma comment(lib, "advapi32.lib")
+-#endif
+-
+-#if defined(__OpenBSD__) || defined(__CloudABI__) || defined(__wasi__)
+-# define HAVE_SAFE_ARC4RANDOM 1
+-#endif
+-
+-#ifndef SSIZE_MAX
+-# define SSIZE_MAX (SIZE_MAX / 2 - 1)
+-#endif
+-
+-#ifdef HAVE_SAFE_ARC4RANDOM
+-
+ static uint32_t
+ randombytes_sysrandom(void)
+ {
+-    return arc4random();
+-}
+-
+-static void
+-randombytes_sysrandom_stir(void)
+-{
++    return os_random();
+ }
+ 
+ static void
+ randombytes_sysrandom_buf(void * const buf, const size_t size)
+ {
+-    arc4random_buf(buf, size);
+-}
+-
+-static int
+-randombytes_sysrandom_close(void)
+-{
+-    return 0;
+-}
+-
+-#else /* HAVE_SAFE_ARC4RANDOM */
+-
+-typedef struct SysRandom_ {
+-    int random_data_source_fd;
+-    int initialized;
+-    int getrandom_available;
+-} SysRandom;
+-
+-static SysRandom stream = {
+-    SODIUM_C99(.random_data_source_fd =) -1,
+-    SODIUM_C99(.initialized =) 0,
+-    SODIUM_C99(.getrandom_available =) 0
+-};
+-
+-# ifndef _WIN32
+-static ssize_t
+-safe_read(const int fd, void * const buf_, size_t size)
+-{
+-    unsigned char *buf = (unsigned char *) buf_;
+-    ssize_t        readnb;
+-
+-    assert(size > (size_t) 0U);
+-    assert(size <= SSIZE_MAX);
+-    do {
+-        while ((readnb = read(fd, buf, size)) < (ssize_t) 0 &&
+-               (errno == EINTR || errno == EAGAIN)); /* LCOV_EXCL_LINE */
+-        if (readnb < (ssize_t) 0) {
+-            return readnb; /* LCOV_EXCL_LINE */
+-        }
+-        if (readnb == (ssize_t) 0) {
+-            break; /* LCOV_EXCL_LINE */
+-        }
+-        size -= (size_t) readnb;
+-        buf += readnb;
+-    } while (size > (ssize_t) 0);
+-
+-    return (ssize_t) (buf - (unsigned char *) buf_);
+-}
+-
+-#  ifdef BLOCK_ON_DEV_RANDOM
+-static int
+-randombytes_block_on_dev_random(void)
+-{
+-    struct pollfd pfd;
+-    int           fd;
+-    int           pret;
+-
+-    fd = open("/dev/random", O_RDONLY);
+-    if (fd == -1) {
+-        return 0;
+-    }
+-    pfd.fd = fd;
+-    pfd.events = POLLIN;
+-    pfd.revents = 0;
+-    do {
+-        pret = poll(&pfd, 1, -1);
+-    } while (pret < 0 && (errno == EINTR || errno == EAGAIN));
+-    if (pret != 1) {
+-        (void) close(fd);
+-        errno = EIO;
+-        return -1;
+-    }
+-    return close(fd);
+-}
+-#  endif /* BLOCK_ON_DEV_RANDOM */
+-
+-static int
+-randombytes_sysrandom_random_dev_open(void)
+-{
+-/* LCOV_EXCL_START */
+-    struct stat        st;
+-    static const char *devices[] = {
+-#  ifndef USE_BLOCKING_RANDOM
+-        "/dev/urandom",
+-#  endif
+-        "/dev/random", NULL
+-    };
+-    const char       **device = devices;
+-    int                fd;
+-
+-#  ifdef BLOCK_ON_DEV_RANDOM
+-    if (randombytes_block_on_dev_random() != 0) {
+-        return -1;
+-    }
+-#  endif
+-    do {
+-        fd = open(*device, O_RDONLY);
+-        if (fd != -1) {
+-            if (fstat(fd, &st) == 0 &&
+-#  ifdef __COMPCERT__
+-                1
+-#  elif defined(S_ISNAM)
+-                (S_ISNAM(st.st_mode) || S_ISCHR(st.st_mode))
+-#  else
+-                S_ISCHR(st.st_mode)
+-#  endif
+-               ) {
+-#  if defined(F_SETFD) && defined(FD_CLOEXEC)
+-                (void) fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
+-#  endif
+-                return fd;
+-            }
+-            (void) close(fd);
+-        } else if (errno == EINTR) {
+-            continue;
+-        }
+-        device++;
+-    } while (*device != NULL);
+-
+-    errno = EIO;
+-    return -1;
+-/* LCOV_EXCL_STOP */
+-}
+-
+-#  ifdef HAVE_LINUX_COMPATIBLE_GETRANDOM
+-static int
+-_randombytes_linux_getrandom(void * const buf, const size_t size)
+-{
+-    int readnb;
+-
+-    assert(size <= 256U);
+-    do {
+-        readnb = getrandom(buf, size, 0);
+-    } while (readnb < 0 && (errno == EINTR || errno == EAGAIN));
+-
+-    return (readnb == (int) size) - 1;
+-}
+-
+-static int
+-randombytes_linux_getrandom(void * const buf_, size_t size)
+-{
+-    unsigned char *buf = (unsigned char *) buf_;
+-    size_t         chunk_size = 256U;
+-
+-    do {
+-        if (size < chunk_size) {
+-            chunk_size = size;
+-            assert(chunk_size > (size_t) 0U);
+-        }
+-        if (_randombytes_linux_getrandom(buf, chunk_size) != 0) {
+-            return -1;
+-        }
+-        size -= chunk_size;
+-        buf += chunk_size;
+-    } while (size > (size_t) 0U);
+-
+-    return 0;
+-}
+-#  endif /* HAVE_LINUX_COMPATIBLE_GETRANDOM */
+-
+-static void
+-randombytes_sysrandom_init(void)
+-{
+-    const int     errno_save = errno;
+-
+-#  ifdef HAVE_LINUX_COMPATIBLE_GETRANDOM
+-    {
+-        unsigned char fodder[16];
+-
+-        if (randombytes_linux_getrandom(fodder, sizeof fodder) == 0) {
+-            stream.getrandom_available = 1;
+-            errno = errno_save;
+-            return;
+-        }
+-        stream.getrandom_available = 0;
+-    }
+-#  endif
+-
+-    if ((stream.random_data_source_fd =
+-         randombytes_sysrandom_random_dev_open()) == -1) {
+-        sodium_misuse(); /* LCOV_EXCL_LINE */
+-    }
+-    errno = errno_save;
+-}
+-
+-# else /* _WIN32 */
+-
+-static void
+-randombytes_sysrandom_init(void)
+-{
+-}
+-# endif /* _WIN32 */
+-
+-static void
+-randombytes_sysrandom_stir(void)
+-{
+-    if (stream.initialized == 0) {
+-        randombytes_sysrandom_init();
+-        stream.initialized = 1;
+-    }
+-}
+-
+-static void
+-randombytes_sysrandom_stir_if_needed(void)
+-{
+-    if (stream.initialized == 0) {
+-        randombytes_sysrandom_stir();
+-    }
+-}
+-
+-static int
+-randombytes_sysrandom_close(void)
+-{
+-    int ret = -1;
+-
+-# ifndef _WIN32
+-    if (stream.random_data_source_fd != -1 &&
+-        close(stream.random_data_source_fd) == 0) {
+-        stream.random_data_source_fd = -1;
+-        stream.initialized = 0;
+-        ret = 0;
+-    }
+-#  ifdef HAVE_LINUX_COMPATIBLE_GETRANDOM
+-    if (stream.getrandom_available != 0) {
+-        ret = 0;
+-    }
+-#  endif
+-# else /* _WIN32 */
+-    if (stream.initialized != 0) {
+-        stream.initialized = 0;
+-        ret = 0;
+-    }
+-# endif /* _WIN32 */
+-    return ret;
+-}
+-
+-static void
+-randombytes_sysrandom_buf(void * const buf, const size_t size)
+-{
+-    randombytes_sysrandom_stir_if_needed();
+-# if defined(ULLONG_MAX) && defined(SIZE_MAX)
+-#  if SIZE_MAX > ULLONG_MAX
+-    /* coverity[result_independent_of_operands] */
+-    assert(size <= ULLONG_MAX);
+-#  endif
+-# endif
+-# ifndef _WIN32
+-#  ifdef HAVE_LINUX_COMPATIBLE_GETRANDOM
+-    if (stream.getrandom_available != 0) {
+-        if (randombytes_linux_getrandom(buf, size) != 0) {
+-            sodium_misuse(); /* LCOV_EXCL_LINE */
+-        }
+-        return;
+-    }
+-#  endif
+-    if (stream.random_data_source_fd == -1 ||
+-        safe_read(stream.random_data_source_fd, buf, size) != (ssize_t) size) {
+-        sodium_misuse(); /* LCOV_EXCL_LINE */
+-    }
+-# else /* _WIN32 */
+-    COMPILER_ASSERT(randombytes_BYTES_MAX <= 0xffffffffUL);
+-    if (size > (size_t) 0xffffffffUL) {
+-        sodium_misuse(); /* LCOV_EXCL_LINE */
+-    }
+-    if (! RtlGenRandom((PVOID) buf, (ULONG) size)) {
+-        sodium_misuse(); /* LCOV_EXCL_LINE */
+-    }
+-# endif /* _WIN32 */
+-}
+-
+-static uint32_t
+-randombytes_sysrandom(void)
+-{
+-    uint32_t r;
+-
+-    randombytes_sysrandom_buf(&r, sizeof r);
+-
+-    return r;
++    (void)os_get_random(buf, size);
+ }
+ 
+-#endif /* HAVE_SAFE_ARC4RANDOM */
+ 
+ static const char *
+ randombytes_sysrandom_implementation_name(void)
+@@ -389,8 +26,8 @@ randombytes_sysrandom_implementation_name(void)
+ struct randombytes_implementation randombytes_sysrandom_implementation = {
+     SODIUM_C99(.implementation_name =) randombytes_sysrandom_implementation_name,
+     SODIUM_C99(.random =) randombytes_sysrandom,
+-    SODIUM_C99(.stir =) randombytes_sysrandom_stir,
++    SODIUM_C99(.stir =) NULL,
+     SODIUM_C99(.uniform =) NULL,
+     SODIUM_C99(.buf =) randombytes_sysrandom_buf,
+-    SODIUM_C99(.close =) randombytes_sysrandom_close
++    SODIUM_C99(.close =) NULL
+ };
+diff --git a/src/libsodium/sodium/core.c b/src/libsodium/sodium/core.c
+index 7a6943d1..f891bcd9 100644
+--- a/src/libsodium/sodium/core.c
++++ b/src/libsodium/sodium/core.c
+@@ -3,170 +3,17 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <time.h>
+-#ifdef _WIN32
+-# include <windows.h>
+-#elif defined(HAVE_PTHREAD)
+-# include <pthread.h>
+-#endif
+ 
+ #include "core.h"
+-#include "crypto_generichash.h"
+-#include "crypto_onetimeauth.h"
+-#include "crypto_scalarmult.h"
+-#include "crypto_stream_chacha20.h"
+-#include "crypto_stream_salsa20.h"
+-#include "randombytes.h"
+ #include "runtime.h"
+ #include "utils.h"
+-#include "private/implementations.h"
+-#include "private/mutex.h"
+-
+-static volatile int initialized;
+-static volatile int locked;
+ 
+ int
+ sodium_init(void)
+ {
+-    if (sodium_crit_enter() != 0) {
+-        return -1; /* LCOV_EXCL_LINE */
+-    }
+-    if (initialized != 0) {
+-        if (sodium_crit_leave() != 0) {
+-            return -1; /* LCOV_EXCL_LINE */
+-        }
+-        return 1;
+-    }
+-    _sodium_runtime_get_cpu_features();
+-    randombytes_stir();
+-    _sodium_alloc_init();
+-    _crypto_pwhash_argon2_pick_best_implementation();
+-    _crypto_generichash_blake2b_pick_best_implementation();
+-    _crypto_onetimeauth_poly1305_pick_best_implementation();
+-    _crypto_scalarmult_curve25519_pick_best_implementation();
+-    _crypto_stream_chacha20_pick_best_implementation();
+-    _crypto_stream_salsa20_pick_best_implementation();
+-    initialized = 1;
+-    if (sodium_crit_leave() != 0) {
+-        return -1; /* LCOV_EXCL_LINE */
+-    }
+-    return 0;
+-}
+-
+-#ifdef _WIN32
+-
+-static CRITICAL_SECTION _sodium_lock;
+-static volatile LONG    _sodium_lock_initialized;
+-
+-int
+-_sodium_crit_init(void)
+-{
+-    LONG status = 0L;
+-
+-    while ((status = InterlockedCompareExchange(&_sodium_lock_initialized,
+-                                                1L, 0L)) == 1L) {
+-        Sleep(0);
+-    }
+-
+-    switch (status) {
+-    case 0L:
+-        InitializeCriticalSection(&_sodium_lock);
+-        return InterlockedExchange(&_sodium_lock_initialized, 2L) == 1L ? 0 : -1;
+-    case 2L:
+-        return 0;
+-    default: /* should never be reached */
+-        return -1;
+-    }
+-}
+-
+-int
+-sodium_crit_enter(void)
+-{
+-    if (_sodium_crit_init() != 0) {
+-        return -1; /* LCOV_EXCL_LINE */
+-    }
+-    EnterCriticalSection(&_sodium_lock);
+-    assert(locked == 0);
+-    locked = 1;
+-
+-    return 0;
+-}
+-
+-int
+-sodium_crit_leave(void)
+-{
+-    if (locked == 0) {
+-# ifdef EPERM
+-        errno = EPERM;
+-# endif
+-        return -1;
+-    }
+-    locked = 0;
+-    LeaveCriticalSection(&_sodium_lock);
+-
+-    return 0;
+-}
+-
+-#elif defined(HAVE_PTHREAD) && !defined(__EMSCRIPTEN__)
+-
+-static pthread_mutex_t _sodium_lock = PTHREAD_MUTEX_INITIALIZER;
+-
+-int
+-sodium_crit_enter(void)
+-{
+-    int ret;
+-
+-    if ((ret = pthread_mutex_lock(&_sodium_lock)) == 0) {
+-        assert(locked == 0);
+-        locked = 1;
+-    }
+-    return ret;
+-}
+-
+-int
+-sodium_crit_leave(void)
+-{
+-    if (locked == 0) {
+-# ifdef EPERM
+-        errno = EPERM;
+-# endif
+-        return -1;
+-    }
+-    locked = 0;
+-
+-    return pthread_mutex_unlock(&_sodium_lock);
++    return 1;
+ }
+ 
+-#elif defined(HAVE_ATOMIC_OPS) && !defined(__EMSCRIPTEN__)
+-
+-static volatile int _sodium_lock;
+-
+-int
+-sodium_crit_enter(void)
+-{
+-# ifdef HAVE_NANOSLEEP
+-    struct timespec q;
+-    memset(&q, 0, sizeof q);
+-# endif
+-    while (__sync_lock_test_and_set(&_sodium_lock, 1) != 0) {
+-# ifdef HAVE_NANOSLEEP
+-        (void) nanosleep(&q, NULL);
+-# elif defined(__x86_64__) || defined(__i386__)
+-        __asm__ __volatile__ ("pause");
+-# endif
+-    }
+-    return 0;
+-}
+-
+-int
+-sodium_crit_leave(void)
+-{
+-    __sync_lock_release(&_sodium_lock);
+-
+-    return 0;
+-}
+-
+-#else
+-
+ int
+ sodium_crit_enter(void)
+ {
+@@ -179,7 +26,6 @@ sodium_crit_leave(void)
+     return 0;
+ }
+ 
+-#endif
+ 
+ static void (*_misuse_handler)(void);
+ 
+diff --git a/src/libsodium/sodium/runtime.c b/src/libsodium/sodium/runtime.c
+index 9dfe54f8..32faeee5 100644
+--- a/src/libsodium/sodium/runtime.c
++++ b/src/libsodium/sodium/runtime.c
+@@ -1,309 +1,71 @@
+ #include <stddef.h>
+ #include <stdint.h>
+-#ifdef HAVE_ANDROID_GETCPUFEATURES
+-# include <cpu-features.h>
+-#endif
+ 
+ #include "private/common.h"
+ #include "runtime.h"
+ 
+-typedef struct CPUFeatures_ {
+-    int initialized;
+-    int has_neon;
+-    int has_sse2;
+-    int has_sse3;
+-    int has_ssse3;
+-    int has_sse41;
+-    int has_avx;
+-    int has_avx2;
+-    int has_avx512f;
+-    int has_pclmul;
+-    int has_aesni;
+-    int has_rdrand;
+-} CPUFeatures;
+-
+-static CPUFeatures _cpu_features;
+-
+-#define CPUID_EBX_AVX2    0x00000020
+-#define CPUID_EBX_AVX512F 0x00010000
+-
+-#define CPUID_ECX_SSE3    0x00000001
+-#define CPUID_ECX_PCLMUL  0x00000002
+-#define CPUID_ECX_SSSE3   0x00000200
+-#define CPUID_ECX_SSE41   0x00080000
+-#define CPUID_ECX_AESNI   0x02000000
+-#define CPUID_ECX_XSAVE   0x04000000
+-#define CPUID_ECX_OSXSAVE 0x08000000
+-#define CPUID_ECX_AVX     0x10000000
+-#define CPUID_ECX_RDRAND  0x40000000
+-
+-#define CPUID_EDX_SSE2    0x04000000
+-
+-#define XCR0_SSE       0x00000002
+-#define XCR0_AVX       0x00000004
+-#define XCR0_OPMASK    0x00000020
+-#define XCR0_ZMM_HI256 0x00000040
+-#define XCR0_HI16_ZMM  0x00000080
+-
+-static int
+-_sodium_runtime_arm_cpu_features(CPUFeatures * const cpu_features)
+-{
+-#ifndef __arm__
+-    cpu_features->has_neon = 0;
+-    return -1;
+-#else
+-# ifdef __APPLE__
+-#  ifdef __ARM_NEON__
+-    cpu_features->has_neon = 1;
+-#  else
+-    cpu_features->has_neon = 0;
+-#  endif
+-# elif defined(HAVE_ANDROID_GETCPUFEATURES) && \
+-    defined(ANDROID_CPU_ARM_FEATURE_NEON)
+-    cpu_features->has_neon =
+-        (android_getCpuFeatures() & ANDROID_CPU_ARM_FEATURE_NEON) != 0x0;
+-# else
+-    cpu_features->has_neon = 0;
+-# endif
+-    return 0;
+-#endif
+-}
+-
+-static void
+-_cpuid(unsigned int cpu_info[4U], const unsigned int cpu_info_type)
+-{
+-#if defined(_MSC_VER) && \
+-    (defined(_M_X64) || defined(_M_AMD64) || defined(_M_IX86))
+-    __cpuid((int *) cpu_info, cpu_info_type);
+-#elif defined(HAVE_CPUID)
+-    cpu_info[0] = cpu_info[1] = cpu_info[2] = cpu_info[3] = 0;
+-# ifdef __i386__
+-    __asm__ __volatile__(
+-        "pushfl; pushfl; "
+-        "popl %0; "
+-        "movl %0, %1; xorl %2, %0; "
+-        "pushl %0; "
+-        "popfl; pushfl; popl %0; popfl"
+-        : "=&r"(cpu_info[0]), "=&r"(cpu_info[1])
+-        : "i"(0x200000));
+-    if (((cpu_info[0] ^ cpu_info[1]) & 0x200000) == 0x0) {
+-        return; /* LCOV_EXCL_LINE */
+-    }
+-# endif
+-# ifdef __i386__
+-    __asm__ __volatile__("xchgl %%ebx, %k1; cpuid; xchgl %%ebx, %k1"
+-                         : "=a"(cpu_info[0]), "=&r"(cpu_info[1]),
+-                           "=c"(cpu_info[2]), "=d"(cpu_info[3])
+-                         : "0"(cpu_info_type), "2"(0U));
+-# elif defined(__x86_64__)
+-    __asm__ __volatile__("xchgq %%rbx, %q1; cpuid; xchgq %%rbx, %q1"
+-                         : "=a"(cpu_info[0]), "=&r"(cpu_info[1]),
+-                           "=c"(cpu_info[2]), "=d"(cpu_info[3])
+-                         : "0"(cpu_info_type), "2"(0U));
+-# else
+-    __asm__ __volatile__("cpuid"
+-                         : "=a"(cpu_info[0]), "=b"(cpu_info[1]),
+-                           "=c"(cpu_info[2]), "=d"(cpu_info[3])
+-                         : "0"(cpu_info_type), "2"(0U));
+-# endif
+-#else
+-    (void) cpu_info_type;
+-    cpu_info[0] = cpu_info[1] = cpu_info[2] = cpu_info[3] = 0;
+-#endif
+-}
+-
+-static int
+-_sodium_runtime_intel_cpu_features(CPUFeatures * const cpu_features)
+-{
+-    unsigned int cpu_info[4];
+-    unsigned int id;
+-    uint32_t     xcr0 = 0U;
+-
+-    _cpuid(cpu_info, 0x0);
+-    if ((id = cpu_info[0]) == 0U) {
+-        return -1; /* LCOV_EXCL_LINE */
+-    }
+-    _cpuid(cpu_info, 0x00000001);
+-#ifdef HAVE_EMMINTRIN_H
+-    cpu_features->has_sse2 = ((cpu_info[3] & CPUID_EDX_SSE2) != 0x0);
+-#else
+-    cpu_features->has_sse2   = 0;
+-#endif
+-
+-#ifdef HAVE_PMMINTRIN_H
+-    cpu_features->has_sse3 = ((cpu_info[2] & CPUID_ECX_SSE3) != 0x0);
+-#else
+-    cpu_features->has_sse3   = 0;
+-#endif
+-
+-#ifdef HAVE_TMMINTRIN_H
+-    cpu_features->has_ssse3 = ((cpu_info[2] & CPUID_ECX_SSSE3) != 0x0);
+-#else
+-    cpu_features->has_ssse3  = 0;
+-#endif
+-
+-#ifdef HAVE_SMMINTRIN_H
+-    cpu_features->has_sse41 = ((cpu_info[2] & CPUID_ECX_SSE41) != 0x0);
+-#else
+-    cpu_features->has_sse41  = 0;
+-#endif
+-
+-    cpu_features->has_avx = 0;
+-
+-    (void) xcr0;
+-#ifdef HAVE_AVXINTRIN_H
+-    if ((cpu_info[2] & (CPUID_ECX_AVX | CPUID_ECX_XSAVE | CPUID_ECX_OSXSAVE)) ==
+-        (CPUID_ECX_AVX | CPUID_ECX_XSAVE | CPUID_ECX_OSXSAVE)) {
+-        xcr0 = 0U;
+-# if defined(HAVE__XGETBV) || \
+-        (defined(_MSC_VER) && defined(_XCR_XFEATURE_ENABLED_MASK) && _MSC_FULL_VER >= 160040219)
+-        xcr0 = (uint32_t) _xgetbv(0);
+-# elif defined(_MSC_VER) && defined(_M_IX86)
+-        /*
+-         * Visual Studio documentation states that eax/ecx/edx don't need to
+-         * be preserved in inline assembly code. But that doesn't seem to
+-         * always hold true on Visual Studio 2010.
+-         */
+-        __asm {
+-            push eax
+-            push ecx
+-            push edx
+-            xor ecx, ecx
+-            _asm _emit 0x0f _asm _emit 0x01 _asm _emit 0xd0
+-            mov xcr0, eax
+-            pop edx
+-            pop ecx
+-            pop eax
+-        }
+-# elif defined(HAVE_AVX_ASM)
+-        __asm__ __volatile__(".byte 0x0f, 0x01, 0xd0" /* XGETBV */
+-                             : "=a"(xcr0)
+-                             : "c"((uint32_t) 0U)
+-                             : "%edx");
+-# endif
+-        if ((xcr0 & (XCR0_SSE | XCR0_AVX)) == (XCR0_SSE | XCR0_AVX)) {
+-            cpu_features->has_avx = 1;
+-        }
+-    }
+-#endif
+-
+-    cpu_features->has_avx2 = 0;
+-#ifdef HAVE_AVX2INTRIN_H
+-    if (cpu_features->has_avx) {
+-        unsigned int cpu_info7[4];
+-
+-        _cpuid(cpu_info7, 0x00000007);
+-        cpu_features->has_avx2 = ((cpu_info7[1] & CPUID_EBX_AVX2) != 0x0);
+-    }
+-#endif
+-
+-    cpu_features->has_avx512f = 0;
+-#ifdef HAVE_AVX512FINTRIN_H
+-    if (cpu_features->has_avx2) {
+-        unsigned int cpu_info7[4];
+-
+-        _cpuid(cpu_info7, 0x00000007);
+-        /* LCOV_EXCL_START */
+-        if ((cpu_info7[1] & CPUID_EBX_AVX512F) == CPUID_EBX_AVX512F &&
+-            (xcr0 & (XCR0_OPMASK | XCR0_ZMM_HI256 | XCR0_HI16_ZMM))
+-            == (XCR0_OPMASK | XCR0_ZMM_HI256 | XCR0_HI16_ZMM)) {
+-            cpu_features->has_avx512f = 1;
+-        }
+-        /* LCOV_EXCL_STOP */
+-    }
+-#endif
+-
+-#ifdef HAVE_WMMINTRIN_H
+-    cpu_features->has_pclmul = ((cpu_info[2] & CPUID_ECX_PCLMUL) != 0x0);
+-    cpu_features->has_aesni  = ((cpu_info[2] & CPUID_ECX_AESNI) != 0x0);
+-#else
+-    cpu_features->has_pclmul = 0;
+-    cpu_features->has_aesni  = 0;
+-#endif
+-
+-#ifdef HAVE_RDRAND
+-    cpu_features->has_rdrand = ((cpu_info[2] & CPUID_ECX_RDRAND) != 0x0);
+-#else
+-    cpu_features->has_rdrand = 0;
+-#endif
+-
+-    return 0;
+-}
+-
+-int
+-_sodium_runtime_get_cpu_features(void)
+-{
+-    int ret = -1;
+-
+-    ret &= _sodium_runtime_arm_cpu_features(&_cpu_features);
+-    ret &= _sodium_runtime_intel_cpu_features(&_cpu_features);
+-    _cpu_features.initialized = 1;
+-
+-    return ret;
+-}
+-
+ int
+ sodium_runtime_has_neon(void)
+ {
+-    return _cpu_features.has_neon;
++    return 0;
+ }
+ 
+ int
+ sodium_runtime_has_sse2(void)
+ {
+-    return _cpu_features.has_sse2;
++    return 0;
+ }
+ 
+ int
+ sodium_runtime_has_sse3(void)
+ {
+-    return _cpu_features.has_sse3;
++    return 0;
+ }
+ 
+ int
+ sodium_runtime_has_ssse3(void)
+ {
+-    return _cpu_features.has_ssse3;
++    return 0;
+ }
+ 
+ int
+ sodium_runtime_has_sse41(void)
+ {
+-    return _cpu_features.has_sse41;
++    return 0;
+ }
+ 
+ int
+ sodium_runtime_has_avx(void)
+ {
+-    return _cpu_features.has_avx;
++    return 0;
+ }
+ 
+ int
+ sodium_runtime_has_avx2(void)
+ {
+-    return _cpu_features.has_avx2;
++    return 0;
+ }
+ 
+ int
+ sodium_runtime_has_avx512f(void)
+ {
+-    return _cpu_features.has_avx512f;
++    return 0;
+ }
+ 
+ int
+ sodium_runtime_has_pclmul(void)
+ {
+-    return _cpu_features.has_pclmul;
++    return 0;
+ }
+ 
+ int
+ sodium_runtime_has_aesni(void)
+ {
+-    return _cpu_features.has_aesni;
++    return 0;
+ }
+ 
+ int
+ sodium_runtime_has_rdrand(void)
+ {
+-    return _cpu_features.has_rdrand;
++    return 0;
+ }
+diff --git a/src/libsodium/sodium/utils.c b/src/libsodium/sodium/utils.c
+index 1fbd3a37..2e28e9d6 100644
+--- a/src/libsodium/sodium/utils.c
++++ b/src/libsodium/sodium/utils.c
+@@ -14,12 +14,7 @@
+ # include <sys/mman.h>
+ #endif
+ 
+-#ifdef _WIN32
+-# include <windows.h>
+-# include <wincrypt.h>
+-#else
+ # include <unistd.h>
+-#endif
+ 
+ #ifndef HAVE_C_VARARRAYS
+ # ifdef HAVE_ALLOCA_H
+@@ -50,11 +45,6 @@ void *alloca (size_t);
+ # define ENOSYS ENXIO
+ #endif
+ 
+-#if defined(_WIN32) && \
+-    (!defined(WINAPI_FAMILY) || WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+-# define WINAPI_DESKTOP
+-#endif
+-
+ #define CANARY_SIZE 16U
+ #define GARBAGE_VALUE 0xdb
+ 
+@@ -102,9 +92,7 @@ _sodium_dummy_symbol_to_prevent_memzero_lto(void *const  pnt,
+ void
+ sodium_memzero(void * const pnt, const size_t len)
+ {
+-#ifdef _WIN32
+-    SecureZeroMemory(pnt, len);
+-#elif defined(HAVE_MEMSET_S)
++#if defined(HAVE_MEMSET_S)
+     if (len > 0U && memset_s(pnt, (rsize_t) len, 0, (rsize_t) len) != 0) {
+         sodium_misuse(); /* LCOV_EXCL_LINE */
+     }
+@@ -380,29 +368,6 @@ sodium_sub(unsigned char *a, const unsigned char *b, const size_t len)
+     }
+ }
+ 
+-int
+-_sodium_alloc_init(void)
+-{
+-#ifdef HAVE_ALIGNED_MALLOC
+-# if defined(_SC_PAGESIZE)
+-    long page_size_ = sysconf(_SC_PAGESIZE);
+-    if (page_size_ > 0L) {
+-        page_size = (size_t) page_size_;
+-    }
+-# elif defined(WINAPI_DESKTOP)
+-    SYSTEM_INFO si;
+-    GetSystemInfo(&si);
+-    page_size = (size_t) si.dwPageSize;
+-# endif
+-    if (page_size < CANARY_SIZE || page_size < sizeof(size_t)) {
+-        sodium_misuse(); /* LCOV_EXCL_LINE */
+-    }
+-#endif
+-    randombytes_buf(canary, sizeof canary);
+-
+-    return 0;
+-}
+-
+ int
+ sodium_mlock(void *const addr, const size_t len)
+ {
+
+diff --git a/README.markdown b/README.md
+similarity index 100%
+rename from README.markdown
+rename to README.md

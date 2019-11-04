@@ -36,10 +36,10 @@
  * alonewolf07@gmail.com
  */
 #include "Adafruit_NeoPixel.h"
-#include "../../SmingCore/Wire.h"
+#include <Wire.h>
 
-Adafruit_NeoPixel::Adafruit_NeoPixel(uint16_t n, uint8_t p, uint8_t t) : numLEDs(n), numBytes(n * 3), pin(p), pixels(NULL)
-  ,type(t), brightness(0), endTime(0)
+Adafruit_NeoPixel::Adafruit_NeoPixel(uint16_t n, uint8_t p, uint8_t t) : numLEDs(n), numBytes(n * 3), pin(p),
+  brightness(0), pixels(NULL), type(t), endTime(0)
 {
   if((pixels = (uint8_t *)malloc(numBytes))) {
     memset(pixels, 0, numBytes);
@@ -101,7 +101,6 @@ void IRAM_ATTR Adafruit_NeoPixel::show(void) {
   // to the PORT register as needed.
 
   noInterrupts(); // Need 100% focus on instruction timing
-  //ets_intr_lock();
 
   boolean is800KHz=true;
 
@@ -150,7 +149,6 @@ void IRAM_ATTR Adafruit_NeoPixel::show(void) {
      }
    }
    while((_getCycleCount() - startTime) < period); // Wait for last bit
-   //ets_intr_unlock();
    interrupts();
 
   endTime = micros(); // Save EOD time for latch on next call

@@ -19,7 +19,7 @@ void echoCallback(Stream& stream, char arrivedChar, unsigned short availableChar
 void SerialReadingDelegateDemo::begin(HardwareSerial& serial)
 {
 	this->serial = &serial;
-	serial.setCallback(StreamDataReceivedDelegate(&SerialReadingDelegateDemo::onData, this));
+	serial.onDataReceived(StreamDataReceivedDelegate(&SerialReadingDelegateDemo::onData, this));
 	debugf("hwsDelegateDemo instantiated, waiting for data");
 }
 

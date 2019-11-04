@@ -4,11 +4,12 @@
 	Provides serial interface, accepting Unix timestamp
 	Prints each type of DateTime::format option
 */
-#include <user_config.h>
 #include <SmingCore.h>
 
-time_t timestamp = 0;
-size_t tsLength = 0;
+static time_t timestamp = 0;
+static size_t tsLength = 0;
+
+DEFINE_FSTR_LOCAL(commandPrompt, "Enter Unix timestamp: ");
 
 void showTime(time_t timestamp)
 {
@@ -78,10 +79,10 @@ void onRx(Stream& source, char arrivedChar, unsigned short availableCharsCount)
 	case '\n':
 		Serial.println();
 		Serial.println();
-		Serial.print("****Showing DateTime formating options for Unix timestamp: ");
+		Serial.print(_F("****Showing DateTime formating options for Unix timestamp: "));
 		Serial.println(timestamp);
 		showTime(timestamp);
-		Serial.print("Enter Unix timestamp: ");
+		Serial.print(commandPrompt);
 		timestamp = 0;
 		tsLength = 0;
 		break;
@@ -104,16 +105,18 @@ void onRx(Stream& source, char arrivedChar, unsigned short availableCharsCount)
 		timestamp = 0;
 		tsLength = 0;
 		Serial.print('\r');
-		Serial.print("                                                     ");
+		Serial.print(_F("                                                     "));
 		Serial.print('\r');
-		Serial.print("Enter Unix timestamp: ");
+		Serial.print(commandPrompt);
+		break;
 	}
+	m_puts("\r\n");
 }
 
 void init()
 {
-	Serial.begin(115200);
+	Serial.begin(COM_SPEED_SERIAL);
 	delay(2000);
-	Serial.print("Enter Unix timestamp: ");
-	Serial.setCallback(onRx);
+	Serial.print(commandPrompt);
+	Serial.onDataReceived(onRx);
 }

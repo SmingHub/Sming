@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
@@ -23,8 +22,8 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 	vars["counter"] = String(counter);
 	//vars["ledstate"] = (*portOutputRegister(digitalPinToPort(LED_PIN)) & digitalPinToBitMask(LED_PIN)) ? "checked" : "";
 	vars["IP"] = WifiStation.getIP().toString();
-	vars["MAC"] = WifiStation.getMAC();
-	response.sendTemplate(tmpl); // this template object will be deleted automatically
+	vars["MAC"] = WifiStation.getMacAddress().toString();
+	response.sendNamedStream(tmpl); // this template object will be deleted automatically
 }
 
 void onHello(HttpRequest& request, HttpResponse& response)
@@ -70,10 +69,11 @@ void downloadContentFiles()
 									if(success) {
 										startWebServer();
 									}
+									return 0;
 								}));
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	if(!fileExist("index.html") || !fileExist("bootstrap.css.gz") || !fileExist("jquery.js.gz")) {
 		// Download server content at first

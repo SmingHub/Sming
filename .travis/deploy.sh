@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e # exit with nonzero exit code if anything fails
+set -ex # exit with nonzero exit code if anything fails
 
 TAG=$1
 if [ -z $TAG ]; then
@@ -7,28 +7,31 @@ if [ -z $TAG ]; then
 	exit 1;
 fi
 
+export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
 
-# Get information about the release
-# TODO: ...
+# [ Create new draft release for this tag]
+AUTH_HEADER="Authorization: token ${RELEASE_TOKEN}"
+RESPONSE=$(curl -H "Content-Type:application/json" -H "$AUTH_HEADER" \
+  -d "{\"tag_name\":\"$TAG\",\"target_commitish\": \"develop\",\"name\": \"$TAG\",\"body\":\"Coming soon\",\"draft\": true,\"prerelease\": true}" \
+  https://api.github.com/repos/SmingHub/Sming/releases)
 
-# Update documentation
+# Get release id
+RELEASE_ID=$(echo "$RESPONSE" | jq -r .id)
+
+# [Get all submodules used in this release, pack them and add the archive to the release artifacts]
 cd $SMING_HOME
-make docs
-cd ..
+make submodules
+ALL_SUBMODULE_DIRS=$(find $SMING_HOME -name '.submodule' | xargs dirname)
+FILE=/tmp/sming-submodules.tgz
+tar cvzf $FILE $ALL_SUBMODULE_DIRS
 
-git fetch origin gh-pages:gh-pages
-git checkout gh-pages
+curl -H "$AUTH_HEADER" -H "Content-Type: $(file -b --mime-type $FILE)" --data-binary @$FILE "https://uploads.github.com/repos/SmingHub/Sming/releases/$RELEASE_ID/assets?name=$(basename $FILE)"
 
-DOCS_DIR=$SMING_HOME/../api
+# [Update the documentation]
+# On push and release readthedocs webhook should update the documentation automatically.
+# See: https://buildmedia.readthedocs.org/media/pdf/docs/stable/docs.pdf Webhooks
 
-rm -rf $DOCS_DIR
-cp -r $SMING_HOME/../docs/api/sming/ $DOCS_DIR
-git add -A $DOCS_DIR
-git commit -m "Updated the API docs to version $TAG." || true
-
-git push https://${SMING_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages
-
-# Update the Choco packages
+# [ Update the choco packages ]
 cd /tmp
 git clone https://github.com/slaff/chocolatey-packages.git
 cd chocolatey-packages

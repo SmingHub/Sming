@@ -1,12 +1,11 @@
-#include <user_config.h>
 #include <tytherm.h>
 
 Timer counterTimer;
-void counter_loop();
+void counterLoop();
 unsigned long counter = 0;
 
-void STADisconnect(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason);
-void STAGotIP(IPAddress ip, IPAddress mask, IPAddress gateway);
+void STADisconnect(const String& ssid, MacAddress bssid, WifiDisconnectReason reason);
+void STAGotIP(IpAddress ip, IpAddress mask, IpAddress gateway);
 
 void init()
 {
@@ -27,17 +26,17 @@ void init()
 
 	startWebServer();
 
-	counterTimer.initializeMs(1000, counter_loop).start();
+	counterTimer.initializeMs(1000, counterLoop).start();
 }
 
-void counter_loop()
+void counterLoop()
 {
 	counter++;
 }
 
-void STADisconnect(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
+void STADisconnect(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
-	debugf("DISCONNECT - SSID: %s, REASON: %d\n", ssid.c_str(), reason);
+	debugf("DISCONNECT - SSID: %s, REASON: %s\n", ssid.c_str(), WifiEvents.getDisconnectReasonDesc(reason).c_str());
 
 	if(!WifiAccessPoint.isEnabled()) {
 		debugf("Starting OWN AP");
@@ -47,7 +46,7 @@ void STADisconnect(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reas
 	}
 }
 
-void STAGotIP(IPAddress ip, IPAddress mask, IPAddress gateway)
+void STAGotIP(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
 	debugf("GOTIP - IP: %s, MASK: %s, GW: %s\n", ip.toString().c_str(), mask.toString().c_str(),
 		   gateway.toString().c_str());

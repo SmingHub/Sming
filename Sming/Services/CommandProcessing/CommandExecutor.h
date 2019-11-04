@@ -5,13 +5,12 @@
  *      Author: Herman
  */
 
-#ifndef SERVICES_COMMANDPROCESSING_COMMANDEXECUTOR_H_
-#define SERVICES_COMMANDPROCESSING_COMMANDEXECUTOR_H_
+#pragma once
 
-#include "WiringFrameworkIncludes.h"
-#include "Network/TcpClient.h"
+#include <Network/TcpClient.h>
 #include "CommandHandler.h"
 #include "CommandOutput.h"
+#include <Data/Buffer/LineBuffer.h>
 
 #define MAX_COMMANDSIZE 64
 
@@ -23,18 +22,14 @@ public:
 	CommandExecutor(WebsocketConnection* reqSocket);
 	~CommandExecutor();
 
-	int executorReceive(char *recvData, int recvSize);
+	int executorReceive(char* recvData, int recvSize);
 	int executorReceive(char recvChar);
-	int executorReceive(String recvString);
-	void setCommandPrompt(String reqPrompt);
+	int executorReceive(const String& recvString);
 	void setCommandEOL(char reqEOL);
 
-private :
+private:
 	CommandExecutor();
-	void processCommandLine(String cmdString);
-	char commandBuf [MAX_COMMANDSIZE+1];
-	uint16_t commandIndex = 0;
+	void processCommandLine(const String& cmdString);
+	LineBuffer<MAX_COMMANDSIZE + 1> commandBuf;
 	CommandOutput* commandOutput = nullptr;
 };
-
-#endif /* SERVICES_COMMANDPROCESSING_COMMANDEXECUTOR_H_ */

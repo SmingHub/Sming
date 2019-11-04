@@ -1,0 +1,42 @@
+{%- extends "sphinx_rtd_theme/breadcrumbs.html" %}
+
+{% block breadcrumbs_aside %}
+
+{% if page_source_suffix %}
+{%   set suffix = page_source_suffix %}
+{% elif source_suffix %}
+{%   set suffix = source_suffix %}
+{% else %}
+{%   set suffix = '' %}
+{% endif %}
+
+{% if meta is defined and meta.custom_pagename is defined %}
+{%   set pagename = meta.custom_pagename %}
+{% elif '_inc/' in pagename %}
+{%   set pagename = pagename|replace('_inc/','') + suffix %}
+{% else %}
+{%   set pagename = conf_py_path + pagename + suffix %} 
+{% endif %}
+
+{% if meta is defined and meta is not none %}
+{%   if 'github_url' in meta %}
+{%     set github_url = meta.github_url %}
+{%     set display_github = True %}
+{%   endif %}
+{% endif %}
+
+{% if github_url is not defined %}
+{% set github_url = 'https://' + github_host|default('github.com') + '/' + github_user + '/' + github_repo + '/' + theme_vcs_pageview_mode|default('blob') + '/' + github_version + '/' + pagename %}
+{% endif %}
+
+<li class="wy-breadcrumbs-aside">
+  {% if github_url is not none %}
+    <a href="{{ github_url }}" class="fa fa-github"> {{ _('Edit on GitHub') }}</a>
+  {% elif show_source and source_url_prefix %}
+    <a href="{{ source_url_prefix }}{{ pagename }}{{ suffix }}">{{ _('View page source') }}</a>
+  {% elif show_source and has_source and sourcename %}
+    <a href="{{ pathto('_sources/' + sourcename, true)|e }}" rel="nofollow"> {{ _('View page source') }}</a>
+  {% endif %}
+</li>
+
+{% endblock %}

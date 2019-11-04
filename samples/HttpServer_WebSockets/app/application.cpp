@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Network/Http/Websocket/WebsocketResource.h>
 #include "CUserData.h"
@@ -19,7 +18,7 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 	auto tmpl = new TemplateFileStream(F("index.html"));
 	auto& vars = tmpl->variables();
 	//vars["counter"] = String(counter);
-	response.sendTemplate(tmpl); // this template object will be deleted automatically
+	response.sendNamedStream(tmpl); // this template object will be deleted automatically
 }
 
 void onFile(HttpRequest& request, HttpResponse& response)
@@ -56,13 +55,13 @@ void wsMessageReceived(WebsocketConnection& socket, const String& message)
 
 		// Don't shutdown immediately, wait a bit to allow messages to propagate
 		auto timer = new SimpleTimer;
-		timer->setCallback(
+		timer->initializeMs<1000>(
 			[](void* timer) {
 				delete static_cast<SimpleTimer*>(timer);
 				server.shutdown();
 			},
 			timer);
-		timer->startMs(1000);
+		timer->startOnce();
 		return;
 	}
 
@@ -117,7 +116,7 @@ void startWebServer()
 }
 
 // Will be called when WiFi station becomes fully operational
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	startWebServer();
 }

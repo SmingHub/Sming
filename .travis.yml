@@ -3,14 +3,30 @@ env:
   global:
   - SDK_BUILD=258
   - secure: D/cPk+sL2MNHLtfuU/rMiVN63+CTFpo9Chqa39LEH5VloGqC5f7RyIi2Maa3C/U2JQfM01HlsNR7E5bB0W8DQYbtzBDTqbZ4C7ppZRU5jCQ+L51ERKJ0EAV3KkaravQCRbWt3tlgOp6Xk6xaRMBaHEGrdbFjHYgEMPVteUQNr0A=
-matrix:
+  - secure: pc8Yqwmn6AM+iBjLNNnknmOoi+AxoyvcVy128b2WXSdj6Q4bOIXgj4WUg8I52i1fgyh0Rxg19WUB6qSVyykCXVdSRajIU1MsKZI+0q44Q83wnwVeYm7nPWxDqS3FKMajucZCg4p0BTE4T6tpnm7zZNHduHnggua/NpP2h7B/Sqs=
+  - secure: TX0IxYV3tTocCaJcgIA2xzJyHIzbxo7sAkLLYL+OITgWPD1VDUrEqEe7konQA5NIDJJ0VjoHxpdfti2LHG1fw45vrEMfBIOmZG6nW2gxD8ZS2G8KlYIxFB93oNNB6qJRHps1uIANk2hM+Ju6Pnqfc+lLh8oabs974ziAxoYuAJQ=
+jobs:
   include:
-  - os: linux
-    env: SDK_VERSION=1.5.0
-  - os: linux
-    env: SDK_VERSION=2.0.0
-  - os: linux
-    env: SDK_VERSION=3.0.0
+  - stage: test
+    os: linux
+    dist: xenial
+    addons:
+      apt:
+        packages:
+        - clang-format-6.0
+        - gcc-multilib
+        - g++-multilib
+        - doxygen
+        - python3-sphinx
+        - python3-pip
+        - python3-setuptools
+        - graphviz-dev
+        - xmlstarlet
+        - jq
+    env: SMING_ARCH=Host
+  - stage: build
+    os: linux
+    env: SMING_ARCH=Esp8266 SDK_VERSION=3.0.1
 git:
   submodules: false
 addons:
@@ -27,51 +43,25 @@ addons:
     - doxygen-gui
     - graphviz
     - xmlstarlet
-    - clang-format-6.0
-install:
-- sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-6.0 100
-- if [ "$SDK_VERSION" == "1.5.0" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then export
-  SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-macos-x86_64.zip"; fi
-- if [ "$SDK_VERSION" == "1.5.0" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then export
-  SDK_FILE_NAME="esp-alt-sdk-v${SDK_VERSION}.${SDK_BUILD}-linux-x86_64.tar.gz"; fi
-- mkdir -p $TRAVIS_BUILD_DIR/opt/esp-alt-sdk
-- if [ "$SDK_VERSION" == "1.5.0" ]; then wget https://bintray.com/artifact/download/kireevco/generic/${SDK_FILE_NAME};
-  fi
-- if [ "$SDK_VERSION" == "1.5.0" ]; then bsdtar -xf ${SDK_FILE_NAME} -C $TRAVIS_BUILD_DIR/opt/esp-alt-sdk;
-  fi
-- if [[ "$SDK_VERSION" != "1.5.0" && "$TRAVIS_OS_NAME" == "linux" ]]; then wget https://github.com/nodemcu/nodemcu-firmware/raw/2d958750b56fc60297f564b4ec303e47928b5927/tools/esp-open-sdk.tar.xz;
-  tar -Jxvf esp-open-sdk.tar.xz; ln -s `pwd`/esp-open-sdk/xtensa-lx106-elf $TRAVIS_BUILD_DIR/opt/esp-alt-sdk/.
-  ; fi
-- if [ "$SDK_VERSION" == "2.0.0" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then wget
-  https://www.espressif.com/sites/default/files/sdks/esp8266_nonos_sdk_v2.0.0_16_08_10.zip
-  -O sdk.zip; unzip sdk.zip; ln -s `pwd`/ESP8266_NONOS_SDK/ $TRAVIS_BUILD_DIR/opt/esp-alt-sdk/sdk;
-  export  DEPLOY='true'; fi
-script:
-- env
-- unset SPIFFY
-- unset ESPTOOL2
-
-- export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
-- export ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk
-- if [ "$SDK_VERSION" == "3.0.0" ]; then export SDK_BASE=$SMING_HOME/third-party/ESP8266_NONOS_SDK;
-  fi
-- export PATH=$PATH:$ESP_HOME/xtensa-lx106-elf/bin:$ESP_HOME/utils/:$SMING_HOME/../.travis/tools
-- cd $SMING_HOME
-- if [ "$SDK_VERSION" == "2.0.0" ]; then ../.travis/tools/clang/format-pr.sh; fi
-- cd $SMING_HOME
-- make STRICT=1
-- make samples
-- make clean samples-clean
-- make ENABLE_CUSTOM_HEAP=1 STRICT=1
-- make Basic_Blink ENABLE_CUSTOM_HEAP=1 DEBUG_VERBOSE_LEVEL=3
-- make dist-clean; make HttpServer_ConfigNetwork ENABLE_CUSTOM_LWIP=2 STRICT=1
+  coverity_scan:
+    project:
+      name: SmingHub/Sming
+      description: Sming Framework
+    notification_email: slaff@attachix.com
+    build_command_prepend: export SMING_HOME=$TRAVIS_BUILD_DIR/Sming; cd $SMING_HOME
+    build_command: make Basic_DateTime Basic_Delegates Basic_Interrupts Basic_ProgMem
+      Basic_Serial Basic_Servo Basic_Ssl HttpServer_FirmwareUpload SMING_ARCH=Host
+      DEBUG_VERBOSE_LEVEL=3
+    branch_pattern: ci/coverity-scan
+install: ".travis/install.sh"
+script: ".travis/build.sh"
 deploy:
   provider: script
-  script: sh $TRAVIS_BUILD_DIR/.travis/deploy.sh $TRAVIS_TAG
+  script: ".travis/deploy.sh $TRAVIS_TAG"
   skip_cleanup: true
   on:
     tags: true
-    condition: "$DEPLOY == true"
+    condition: $TRAVIS_BUILD_STAGE_NAME = Test
 notifications:
   webhooks:
     urls:

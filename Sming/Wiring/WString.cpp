@@ -16,7 +16,10 @@
 ||
 */
 
-#include "WiringFrameworkIncludes.h"
+#include "WString.h"
+#include <string.h>
+#include <stringutil.h>
+#include <stringconversion.h>
 
 const String String::nullstr = nullptr;
 const String String::empty = "";
@@ -95,10 +98,24 @@ String::String(long value, unsigned char base)
   *this = buf;
 }
 
+String::String(long long value, unsigned char base)
+{
+  char buf[8 + 8 * sizeof(value)];
+  lltoa(value, buf, base);
+  *this = buf;
+}
+
 String::String(unsigned long value, unsigned char base)
 {
   char buf[8 + 8 * sizeof(value)];
   ultoa(value, buf, base);
+  *this = buf;
+}
+
+String::String(unsigned long long value, unsigned char base)
+{
+  char buf[8 + 8 * sizeof(value)];
+  ulltoa(value, buf, base);
   *this = buf;
 }
 
@@ -211,7 +228,7 @@ String &String::copy(flash_string_t pstr, unsigned int length)
 	}
 	else
 	{
-		memcpy_aligned(buffer, (PGM_P)pstr, length_aligned);
+		memcpy_aligned(buffer, (PGM_P)pstr, length);
 		buffer[length] = '\0';
 		len = length;
 	}
@@ -327,10 +344,24 @@ bool String::concat(long num)
   return concat(buf, strlen(buf));
 }
 
+bool String::concat(long long num)
+{
+  char buf[8 + 3 * sizeof(num)];
+  lltoa(num, buf, 10);
+  return concat(buf, strlen(buf));
+}
+
 bool String::concat(unsigned long num)
 {
   char buf[8 + 3 * sizeof(num)];
   ultoa(num, buf, 10);
+  return concat(buf, strlen(buf));
+}
+
+bool String::concat(unsigned long long num)
+{
+  char buf[8 + 3 * sizeof(num)];
+  ulltoa(num, buf, 10);
   return concat(buf, strlen(buf));
 }
 
@@ -655,9 +686,9 @@ String String::substring(unsigned int left, unsigned int right) const
 void String::replace(char find, char replace)
 {
   if (!buffer) return;
-  for (char *p = buffer; *p; p++)
+  for (unsigned i = 0; i < len; ++i)
   {
-    if (*p == find) *p = replace;
+    if (buffer[i] == find) buffer[i] = replace;
   }
 }
 

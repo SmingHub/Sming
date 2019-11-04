@@ -1,5 +1,0 @@
-"\x81\x00\x00x05hello"
-
-data_begin: text
-data_end
-error: -3 WS_INVALID_CONTINUATION

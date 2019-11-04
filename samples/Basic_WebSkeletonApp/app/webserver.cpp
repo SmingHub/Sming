@@ -18,11 +18,16 @@ void onConfiguration(HttpRequest& request, HttpResponse& response)
 			debugf("NULL bodyBuf");
 			return;
 		} else {
-			StaticJsonBuffer<ConfigJsonBufferSize> jsonBuffer;
-			JsonObject& root = jsonBuffer.parseObject(request.getBody());
-			root.prettyPrintTo(Serial); //Uncomment it for debuging
+			StaticJsonDocument<ConfigJsonBufferSize> root;
 
-			if(root["StaSSID"].success()) // Settings
+			if(!Json::deserialize(root, request.getBodyStream())) {
+				debug_w("Invalid JSON to un-serialize");
+				return;
+			}
+
+			Json::serialize(root, Serial, Json::Pretty); // For debugging
+
+			if(root.containsKey("StaSSID")) // Settings
 			{
 				uint8_t PrevStaEnable = ActiveConfig.StaEnable;
 
@@ -52,10 +57,10 @@ void onConfiguration(HttpRequest& request, HttpResponse& response)
 	}
 }
 
-void onConfiguration_json(HttpRequest& request, HttpResponse& response)
+void onConfigurationJson(HttpRequest& request, HttpResponse& response)
 {
 	JsonObjectStream* stream = new JsonObjectStream();
-	JsonObject& json = stream->getRoot();
+	JsonObject json = stream->getRoot();
 
 	json["StaSSID"] = ActiveConfig.StaSSID;
 	json["StaPassword"] = ActiveConfig.StaPassword;
@@ -75,10 +80,10 @@ void onFile(HttpRequest& request, HttpResponse& response)
 	}
 }
 
-void onAJAXGetState(HttpRequest& request, HttpResponse& response)
+void onAjaxGetState(HttpRequest& request, HttpResponse& response)
 {
 	JsonObjectStream* stream = new JsonObjectStream();
-	JsonObject& json = stream->getRoot();
+	JsonObject json = stream->getRoot();
 
 	json["counter"] = counter;
 
@@ -93,10 +98,10 @@ void startWebServer()
 	server.listen(80);
 	server.paths.set("/", onIndex);
 	server.paths.set("/config", onConfiguration);
-	server.paths.set("/config.json", onConfiguration_json);
-	server.paths.set("/state", onAJAXGetState);
+	server.paths.set("/config.json", onConfigurationJson);
+	server.paths.set("/state", onAjaxGetState);
 	server.paths.setDefault(onFile);
-	server.setBodyParser("application/json", bodyToStringParser);
+	server.setBodyParser(MIME_JSON, bodyToStringParser);
 	serverStarted = true;
 
 	if(WifiStation.isEnabled())

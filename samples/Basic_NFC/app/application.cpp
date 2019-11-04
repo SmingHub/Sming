@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Libraries/MFRC522/MFRC522.h>
 
@@ -34,7 +33,6 @@ static void ICACHE_FLASH_ATTR dump_byte_array(byte* buffer, byte bufferSize)
 //---------------------------------
 void ICACHE_FLASH_ATTR scanNfc(byte scanner)
 {
-	static int cnt;
 	if(!mfrc522.PICC_IsNewCardPresent()) {
 		debugf("Scanning nfc Scanner:%d \r\n", scanner);
 		return;

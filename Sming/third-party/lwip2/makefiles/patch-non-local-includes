@@ -1,9 +1,0 @@
-#!/bin/sh
-
-{
-for i in "$@"; do
-	echo "--- ${0##*/}: patching ${i##*/} (include \"lwip/xxx\" -> <lwip/xxx>)"
-	sed 's,^\(#include\)[ \t]*"\(lwip[^"]*\)".*,\1 <\2>,g' < $i > $i.new
-	mv $i.new $i
-done
-} 1>&2

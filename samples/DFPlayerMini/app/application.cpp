@@ -1,5 +1,5 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 #include <Libraries/DFRobotDFPlayerMini/DFRobotDFPlayerMini.h>
 
 #define GPIO_LED 2

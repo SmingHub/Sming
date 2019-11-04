@@ -14,11 +14,9 @@
 ||
 */
 
-#ifndef DISPLAY_H
-#define DISPLAY_H
+#pragma once
 
 #include "Print.h"
-#include "WiringFrameworkIncludes.h"
 
 class Display : public Print
 {
@@ -33,6 +31,3 @@ class Display : public Print
     virtual void scrollRight(void) = 0;
     */
 };
-
-#endif
-// DISPLAY_H

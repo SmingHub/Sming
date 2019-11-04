@@ -1,0 +1,3 @@
+ARDUINO_LIBRARIES := OneWire ArduinoJson6
+
+SPIFF_SIZE ?= 196608

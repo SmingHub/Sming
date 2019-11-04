@@ -1,7 +1,6 @@
-#include <user_config.h>
 #include <SmingCore.h>
 
-#include "../include/configuration.h"
+#include "configuration.h"
 
 bool serverStarted = false;
 HttpServer server;
@@ -13,7 +12,7 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 	auto& vars = tmpl->variables();
 	vars["T"] = StrT;
 	vars["RH"] = StrRH;
-	response.sendTemplate(tmpl);
+	response.sendNamedStream(tmpl);
 }
 
 void onConfiguration(HttpRequest& request, HttpResponse& response)
@@ -54,7 +53,7 @@ void onConfiguration(HttpRequest& request, HttpResponse& response)
 	vars["Trigger"] = String((int)cfg.Trigger);
 	vars["RMin"] = String(cfg.RangeMin, 2);
 	vars["RMax"] = String(cfg.RangeMax, 2);
-	response.sendTemplate(tmpl);
+	response.sendNamedStream(tmpl);
 }
 
 void onFile(HttpRequest& request, HttpResponse& response)
@@ -76,15 +75,15 @@ void onApiDoc(HttpRequest& request, HttpResponse& response)
 	TemplateFileStream* tmpl = new TemplateFileStream("api.html");
 	auto& vars = tmpl->variables();
 	vars["IP"] = (WifiStation.isConnected() ? WifiStation.getIP() : WifiAccessPoint.getIP()).toString();
-	response.sendTemplate(tmpl);
+	response.sendNamedStream(tmpl);
 }
 
 void onApiSensors(HttpRequest& request, HttpResponse& response)
 {
 	JsonObjectStream* stream = new JsonObjectStream();
-	JsonObject& json = stream->getRoot();
+	JsonObject json = stream->getRoot();
 	json["status"] = (bool)true;
-	JsonObject& sensors = json.createNestedObject("sensors");
+	JsonObject sensors = json.createNestedObject("sensors");
 	sensors["temperature"] = StrT.c_str();
 	sensors["humidity"] = StrRH.c_str();
 	response.sendDataStream(stream, MIME_JSON);
@@ -99,7 +98,7 @@ void onApiOutput(HttpRequest& request, HttpResponse& response)
 		val = -1;
 
 	JsonObjectStream* stream = new JsonObjectStream();
-	JsonObject& json = stream->getRoot();
+	JsonObject json = stream->getRoot();
 	json["status"] = val != -1;
 	if(val == -1)
 		json["error"] = "Wrong control parameter value, please use: ?control=0|1";
@@ -143,5 +142,6 @@ void downloadContentFiles()
 									if(success) {
 										startWebServer();
 									}
+									return 0;
 								}));
 }

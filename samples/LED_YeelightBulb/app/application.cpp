@@ -1,5 +1,5 @@
-#include <user_config.h>
 #include <SmingCore.h>
+#include <YeelightBulb.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -8,7 +8,7 @@
 #endif
 
 // Enter your bulb IP here:
-YeelightBulb bulb(IPAddress("192.168.1.100"));
+YeelightBulb bulb(IpAddress("192.168.1.100"));
 
 Timer procTimer;
 bool state = false;
@@ -25,7 +25,7 @@ void blink()
 }
 
 // Will be called when WiFi station was connected to AP
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	debugf("I'm CONNECTED");
 

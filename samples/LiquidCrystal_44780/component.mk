@@ -1,0 +1,3 @@
+ARDUINO_LIBRARIES := LiquidCrystal
+
+DISABLE_SPIFFS = 1

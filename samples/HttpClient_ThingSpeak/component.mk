@@ -1,0 +1,1 @@
+DISABLE_SPIFFS = 1

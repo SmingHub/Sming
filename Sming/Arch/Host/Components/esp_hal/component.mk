@@ -1,0 +1,3 @@
+COMPONENT_INCDIRS := include $(ESP8266_COMPONENTS)/esp8266/include
+
+COMPONENT_DEPENDS	:= hostlib

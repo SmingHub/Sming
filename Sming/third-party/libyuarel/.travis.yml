@@ -1,4 +1,0 @@
-language: c
-install: make
-script:
-  - make check

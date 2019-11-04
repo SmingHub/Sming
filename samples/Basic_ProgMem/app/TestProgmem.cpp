@@ -7,14 +7,14 @@
 #include "TestProgmem.h"
 #include "FlashData.h"
 #include "Print.h"
-#include "Services/Profiling/ElapseTimer.h"
+#include <Platform/Timers.h>
 
 // Note: contains nulls which won't display, but will be stored
 #define DEMO_TEST_TEXT "This is a flash string -\0Second -\0Third -\0Fourth."
 
-static DEFINE_FSTR(demoFSTR1, DEMO_TEST_TEXT);
-static DEFINE_FSTR(demoFSTR2, DEMO_TEST_TEXT);
-static DEFINE_PSTR(demoPSTR1, DEMO_TEST_TEXT);
+DEFINE_FSTR_LOCAL(demoFSTR1, DEMO_TEST_TEXT);
+DEFINE_FSTR_LOCAL(demoFSTR2, DEMO_TEST_TEXT);
+DEFINE_PSTR_LOCAL(demoPSTR1, DEMO_TEST_TEXT);
 
 static const char demoText[] = DEMO_TEST_TEXT;
 
@@ -69,9 +69,9 @@ void testPSTR(Print& out)
 	out.print("> PSTR_ARRAY: ");
 	PSTR_ARRAY(psarr, DEMO_TEST_TEXT);
 	out.print('"');
-	out.write(psarr, sizeof(psarr) - 1);
+	out.write(psarr, sizeof(PSTR_psarr) - 1);
 	out.println('"');
-	m_printHex("hex", psarr, sizeof(psarr));
+	m_printHex("hex", psarr, sizeof(PSTR_psarr));
 
 	//
 	out.println("< testPSTR() end\n");
@@ -133,8 +133,8 @@ void testFSTR(Print& out)
 
 	// FSTR table
 
-	static DEFINE_FSTR(fstr1, "Test string #1");
-	static DEFINE_FSTR(fstr2, "Test string #2");
+	DEFINE_FSTR_LOCAL(fstr1, "Test string #1");
+	DEFINE_FSTR_LOCAL(fstr2, "Test string #2");
 
 	static FSTR_TABLE(table) = {
 		FSTR_PTR(fstr1),
@@ -166,11 +166,11 @@ void testSpeed(Print& out)
 	timer.start();
 	for(unsigned i = 0; i < iterations; ++i)
 		tmp += sumBuffer(demoText, sizeof(demoText));
-	baseline = timer.elapsed();
+	baseline = timer.elapsedTime();
 	out.printf("Elapsed: %u\n", baseline);
 
 #define END()                                                                                                          \
-	elapsed = timer.elapsed();                                                                                         \
+	elapsed = timer.elapsedTime();                                                                                     \
 	out.printf("Elapsed: %u (baseline + %u)\n", elapsed, elapsed - baseline);
 
 	_FPUTS("Load PSTR into stack buffer...");

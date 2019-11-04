@@ -1,14 +1,13 @@
 /*
  * BitManipulations.h
  *
- *  Created on: 03 февр. 2015 г.
+ *  Created on: 03 пїЅпїЅпїЅпїЅ. 2015 пїЅ.
  *      Author: Anakonda
  */
 
-#ifndef WIRING_BITMANIPULATIONS_H_
-#define WIRING_BITMANIPULATIONS_H_
+#pragma once
 
-#define 	_BV(bit)   (1 << (bit))
+#define 	_BV(bit)   (1 << (unsigned)(bit))
 
 #define bit(x) _BV(x)
 #define setBits(x, y) ((x) |= (y))
@@ -40,7 +39,3 @@
 #define 	bit_is_clear(sfr, bit)   (!(_SFR_BYTE(sfr) & _BV(bit)))
 #define 	loop_until_bit_is_set(sfr, bit)   do { } while (bit_is_clear(sfr, bit))
 #define 	loop_until_bit_is_clear(sfr, bit)   do { } while (bit_is_set(sfr, bit))
-
-
-
-#endif /* WIRING_BITMANIPULATIONS_H_ */

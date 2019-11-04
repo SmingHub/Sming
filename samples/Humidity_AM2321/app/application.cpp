@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 #include "Libraries/AM2321/AM2321.h"
 

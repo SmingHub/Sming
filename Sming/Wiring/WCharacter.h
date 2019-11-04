@@ -15,10 +15,7 @@
 ||
 */
 
-#ifndef WCHARACTER_H
-#define WCHARACTER_H
-
-#include "WiringFrameworkIncludes.h"
+#pragma once
 
 // WCharacter.h prototypes
 inline bool isAlphaNumeric(int c) __attribute__((always_inline));
@@ -162,6 +159,3 @@ inline int toUpperCase(int c)
 {
   return toupper(c);
 }
-
-#endif
-// WCHARACTER_H

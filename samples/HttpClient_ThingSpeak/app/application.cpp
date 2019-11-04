@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
@@ -50,7 +49,7 @@ void sendData()
 }
 
 // Will be called when WiFi station timeout was reached
-void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
+void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	Serial.println("I'm NOT CONNECTED. Need help :(");
 
@@ -61,7 +60,7 @@ void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason
 	// .. some you code for configuration ..
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	// Start send data loop
 	procTimer.initializeMs(25 * 1000, sendData).start(); // every 25 seconds

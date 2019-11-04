@@ -1,5 +1,5 @@
-#include <user_config.h>
 #include <SmingCore.h>
+#include <esp_spi_flash.h>
 
 // download urls, set appropriately
 #define ROM_0_URL "http://192.168.7.5:80/rom0.bin"
@@ -12,9 +12,9 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-rBootHttpUpdate* otaUpdater = 0;
+RbootHttpUpdater* otaUpdater = 0;
 
-void OtaUpdate_CallBack(rBootHttpUpdate& client, bool result)
+void OtaUpdate_CallBack(RbootHttpUpdater& client, bool result)
 {
 	Serial.println("In callback...");
 	if(result == true) {
@@ -45,7 +45,7 @@ void OtaUpdate()
 	// need a clean object, otherwise if run before and failed will not run again
 	if(otaUpdater)
 		delete otaUpdater;
-	otaUpdater = new rBootHttpUpdate();
+	otaUpdater = new RbootHttpUpdater();
 
 	// select rom slot to flash
 	bootconf = rboot_get_config();
@@ -136,7 +136,10 @@ void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCh
 			WifiStation.enable(true);
 			WifiStation.connect();
 		} else if(!strcmp(str, "ip")) {
-			Serial.printf("ip: %s mac: %s\r\n", WifiStation.getIP().toString().c_str(), WifiStation.getMAC().c_str());
+			Serial.print("ip: ");
+			Serial.print(WifiStation.getIP());
+			Serial.print("mac: ");
+			Serial.println(WifiStation.getMacAddress());
 		} else if(!strcmp(str, "ota")) {
 			OtaUpdate();
 		} else if(!strcmp(str, "switch")) {
@@ -214,5 +217,5 @@ void init()
 	Serial.println("Type 'help' and press enter for instructions.");
 	Serial.println();
 
-	Serial.setCallback(serialCallBack);
+	Serial.onDataReceived(serialCallBack);
 }

@@ -1,14 +1,13 @@
-#include <user_config.h>
 #include <SmingCore.h>
 
-#include "../include/configuration.h" // application configuration
+#include "configuration.h" // application configuration
 
-#include "../app/bmp180.cpp" // bmp180 configuration
-#include "../app/si7021.cpp" // htu21d configuration
+#include "bmp180.cpp" // bmp180 configuration
+#include "si7021.cpp" // htu21d configuration
 
 Timer publishTimer;
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway);
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway);
 
 void init()
 {
@@ -57,10 +56,10 @@ void startMqttClient()
 	mqtt.subscribe(SUB_TOPIC);
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	Serial.print("Connected: ");
-	Serial.println(ip.toString());
+	Serial.println(ip);
 	startMqttClient();
 	publishMessage(); // run once publishMessage
 }

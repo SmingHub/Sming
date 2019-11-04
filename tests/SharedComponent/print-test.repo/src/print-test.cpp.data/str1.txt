@@ -1,0 +1,4 @@
+This is a test load of a shared Component, using code
+from a submodule separate from the Sming repository.
+
+This text has been loaded from a file using IMPORT_FSTR.

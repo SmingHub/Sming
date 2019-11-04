@@ -10,22 +10,15 @@ ThermConfig ActiveConfig;
 
 ThermConfig loadConfig()
 {
-	StaticJsonBuffer<ConfigJsonBufferSize> jsonBuffer;
+	StaticJsonDocument<ConfigJsonBufferSize> doc;
 	ThermConfig cfg;
-	if(fileExist(THERM_CONFIG_FILE)) {
-		int size = fileGetSize(THERM_CONFIG_FILE);
-		char* jsonString = new char[size + 1];
-		fileGetContent(THERM_CONFIG_FILE, jsonString, size + 1);
-		JsonObject& root = jsonBuffer.parseObject(jsonString);
-
-		JsonObject& network = root["network"];
-		cfg.StaSSID = String((const char*)network["StaSSID"]);
-		cfg.StaPassword = String((const char*)network["StaPassword"]);
+	if(Json::loadFromFile(doc, THERM_CONFIG_FILE)) {
+		JsonObject network = doc["network"];
+		cfg.StaSSID = network["StaSSID"].as<const char*>();
+		cfg.StaPassword = network["StaPassword"].as<const char*>();
 		cfg.StaEnable = network["StaEnable"];
-
-		delete[] jsonString;
 	} else {
-		//Factory defaults if no config file present
+		//Factory defaults if no config file present, or could not access it
 		cfg.StaSSID = WIFI_SSID;
 		cfg.StaPassword = WIFI_PWD;
 	}
@@ -34,16 +27,12 @@ ThermConfig loadConfig()
 
 void saveConfig(ThermConfig& cfg)
 {
-	StaticJsonBuffer<ConfigJsonBufferSize> jsonBuffer;
-	JsonObject& root = jsonBuffer.createObject();
+	StaticJsonDocument<ConfigJsonBufferSize> doc;
 
-	JsonObject& network = jsonBuffer.createObject();
-	root["network"] = network;
-	network["StaSSID"] = cfg.StaSSID.c_str();
-	network["StaPassword"] = cfg.StaPassword.c_str();
+	JsonObject network = doc.createNestedObject("network");
+	network["StaSSID"] = cfg.StaSSID;
+	network["StaPassword"] = cfg.StaPassword;
 	network["StaEnable"] = cfg.StaEnable;
 
-	char buf[ConfigFileBufferSize];
-	root.prettyPrintTo(buf, sizeof(buf));
-	fileSetContent(THERM_CONFIG_FILE, buf);
+	Json::saveToFile(doc, THERM_CONFIG_FILE, Json::Pretty);
 }

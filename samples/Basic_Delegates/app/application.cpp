@@ -1,20 +1,24 @@
-#include <user_config.h>
 #include <SmingCore.h>
 
-void plainOldOrdinaryFunction()
+extern void evaluateSpeed();
+
+static void plainOldOrdinaryFunction()
 {
 	debugf("plainOldOrdinaryFunction");
 }
 
-void functionWithMoreComlicatedSignature(int a, String b)
+static void functionWithMoreComplicatedSignature(int a, const String& b)
 {
-	debugf("functionWithMoreComlicatedSignature %d %s", a, b.c_str());
+	debugf("functionWithMoreComplicatedSignature %d %s", a, b.c_str());
 }
 
 class Task
 {
 public:
-	Task(){};
+	Task()
+	{
+	}
+
 	bool setTimer(int reqInterval)
 	{
 		if(reqInterval <= 0) {
@@ -27,19 +31,16 @@ public:
 	// This example shows how to use a plain old ordinary function as a callback
 	void callPlainOldOrdinaryFunction()
 	{
-		taskTimer.initializeMs(taskInterval, TimerDelegateStdFunction(plainOldOrdinaryFunction)).start();
-		// or just
-		// taskTimer.initializeMs(taskInterval, plainOldOrdinaryFunction).start();
+		taskTimer.initializeMs(taskInterval, plainOldOrdinaryFunction).start();
 	}
 
 	// This example shows how to use std::bind to make us of a function that has more parameters than our signature has
 	void showHowToUseBind()
 	{
-		auto b = std::bind(functionWithMoreComlicatedSignature, 2, "parameters");
+		auto b = std::bind(functionWithMoreComplicatedSignature, 2, "parameters");
 		taskTimer.initializeMs(taskInterval, b).start();
 	}
 
-	// Sming now allows the use of std::function
 	// This example shows how to use a lamda expression as a callback
 	void callLamda()
 	{
@@ -65,10 +66,7 @@ public:
 	{
 		// A non-static member function must be called with an object.
 		// That is, it always implicitly passes "this" pointer as its argument.
-		// But because our callback specifies that we don't take any arguments (<void(void)>),
-		// you must use std::bind to bind the first (and the only) argument.
-
-		TimerDelegateStdFunction b = std::bind(&Task::callbackMemberFunction, this);
+		auto b = TimerDelegate(&Task::callbackMemberFunction, this);
 		taskTimer.initializeMs(taskInterval, b).start();
 	}
 
@@ -77,20 +75,37 @@ public:
 		debugf("callMemberFunction");
 	}
 
+	void delegateCallback()
+	{
+		debugf("Delegate callback invoked, taskInterval = %u", taskInterval);
+	}
+
+	// Shows how to use a capturing lambda with the task queue
+	void queueDelegateCallback()
+	{
+		System.queueCallback([this]() { delegateCallback(); });
+	}
+
 private:
 	Timer taskTimer;
-	int taskInterval = 1000;
+	unsigned taskInterval = 1000;
 };
 
-Task task1;
-Task task2;
-Task task3;
-Task task4;
-Task task5;
+static Task task1;
+static Task task2;
+static Task task3;
+static Task task4;
+static Task task5;
+static Task task6;
 
 void init()
 {
-	Serial.begin(115200);
+	Serial.begin(COM_SPEED_SERIAL);
+	Serial.systemDebugOutput(true);
+
+	evaluateSpeed();
+
+	task1.queueDelegateCallback();
 
 	task2.setTimer(1600);
 	task2.callPlainOldOrdinaryFunction();

@@ -19,8 +19,7 @@
 ||
 */
 
-#include "WiringFrameworkIncludes.h"
-
+#include "WMath.h"
 
 unsigned int static seed;
 
@@ -29,7 +28,7 @@ void srandom(unsigned int s)
 	seed = s;
 }
 
-int random()
+static int getRandom()
 {
   unsigned int next = seed;
   int result;
@@ -65,7 +64,7 @@ long random(long howbig)
   if (howbig == 0)
     return 0;
 
-  return random() % howbig;
+  return getRandom() % howbig;
 }
 
 

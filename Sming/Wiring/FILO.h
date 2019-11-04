@@ -16,10 +16,9 @@
 ||
 */
 
-#ifndef FILO_H
-#define FILO_H
+#pragma once
 
-#include "WiringFrameworkIncludes.h"
+#include "Countable.h"
 
 template<typename T, int rawSize>
 class FILO : public Countable<T>
@@ -89,6 +88,3 @@ void FILO<T, rawSize>::flush()
 {
   nextIn = nextOut = numberOfElements = 0;
 }
-
-#endif
-// FILO_H

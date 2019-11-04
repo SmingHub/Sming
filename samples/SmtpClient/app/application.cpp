@@ -1,6 +1,5 @@
-#include <user_config.h>
-#include "SmingCore/SmingCore.h"
-#include "SmingCore/Network/SmtpClient.h"
+#include <SmingCore.h>
+#include <Network/SmtpClient.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -32,10 +31,10 @@ int onMailSent(SmtpClient& client, int code, char* status)
 	MailMessage* mail = client.getCurrentMessage();
 
 	// TODO: The status line contains the unique ID that was given to this email
-	debugf("Mail sent. Status: %s", status);
+	debugf("Mail sent to '%s'. Status: %s", mail->to.c_str(), status);
 
 	// And if there are no more pending emails then you can disconnect from the server
-	if(!client.countPending()) {
+	if(client.countPending() == 0) {
 		debugf("No more mails to send. Quitting...");
 		client.quit();
 	}
@@ -43,7 +42,7 @@ int onMailSent(SmtpClient& client, int code, char* status)
 	return 0;
 }
 
-void onConnected(IPAddress ip, IPAddress mask, IPAddress gateway)
+void onConnected(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
 #ifdef ENABLE_SSL
 	client.addSslOptions(SSL_SERVER_VERIFY_LATER);

@@ -1,6 +1,6 @@
-#include <user_config.h>
 #include <SmingCore.h>
 #include <AppSettings.h>
+#include <JsonObjectStream.h>
 #include "Data/Stream/TemplateFlashMemoryStream.h"
 
 HttpServer server;
@@ -13,21 +13,19 @@ Timer connectionTimer;
 String lastModified;
 
 // Instead of using a SPIFFS file, here we demonstrate usage of imported Flash Strings
-IMPORT_FSTR(flashSettings, "web/build/settings.html")
+IMPORT_FSTR(flashSettings, PROJECT_DIR "/web/build/settings.html")
 
 void onIndex(HttpRequest& request, HttpResponse& response)
 {
-	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
-	auto& vars = tmpl->variables();
-	response.sendTemplate(tmpl); // will be automatically deleted
+	response.sendFile("index.html");
 }
 
 int onIpConfig(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
 	if(request.method == HTTP_POST) {
-		debugf("Request coming from IP: %s", (char*)connection.getRemoteIp());
+		debugf("Request coming from IP: %s", connection.getRemoteIp().toString().c_str());
 		// If desired you can also limit the access based on remote IP. Example below:
-		//		if(!(IPAddress("192.168.4.23") == connection.getRemoteIp())) {
+		//		if(IpAddress("192.168.4.23") != connection.getRemoteIp()) {
 		//			return 1; // error
 		//		}
 
@@ -61,7 +59,7 @@ int onIpConfig(HttpServerConnection& connection, HttpRequest& request, HttpRespo
 		vars["gateway"] = "192.168.1.1";
 	}
 
-	response.sendTemplate(tmpl); // will be automatically deleted
+	response.sendNamedStream(tmpl); // will be automatically deleted
 
 	return 0;
 }
@@ -90,7 +88,7 @@ void onFile(HttpRequest& request, HttpResponse& response)
 void onAjaxNetworkList(HttpRequest& request, HttpResponse& response)
 {
 	JsonObjectStream* stream = new JsonObjectStream();
-	JsonObject& json = stream->getRoot();
+	JsonObject json = stream->getRoot();
 
 	json["status"] = (bool)true;
 
@@ -101,11 +99,11 @@ void onAjaxNetworkList(HttpRequest& request, HttpResponse& response)
 		json["network"] = WifiStation.getSSID();
 	}
 
-	JsonArray& netlist = json.createNestedArray("available");
-	for(int i = 0; i < networks.count(); i++) {
+	JsonArray netlist = json.createNestedArray("available");
+	for(unsigned i = 0; i < networks.count(); i++) {
 		if(networks[i].hidden)
 			continue;
-		JsonObject& item = netlist.createNestedObject();
+		JsonObject item = netlist.createNestedObject();
 		item["id"] = (int)networks[i].getHashId();
 		// Copy full string to JSON buffer memory
 		item["title"] = networks[i].ssid;
@@ -132,7 +130,7 @@ void makeConnection()
 void onAjaxConnect(HttpRequest& request, HttpResponse& response)
 {
 	JsonObjectStream* stream = new JsonObjectStream();
-	JsonObject& json = stream->getRoot();
+	JsonObject json = stream->getRoot();
 
 	String curNet = request.getPostParameter("network");
 	String curPass = request.getPostParameter("password");
@@ -155,7 +153,7 @@ void onAjaxConnect(HttpRequest& request, HttpResponse& response)
 			connectionTimer.initializeMs(1200, makeConnection).startOnce();
 		} else {
 			json["connected"] = WifiStation.isConnected();
-			debugf("Network already selected. Current status: %s", WifiStation.getConnectionStatusName());
+			debugf("Network already selected. Current status: %s", WifiStation.getConnectionStatusName().c_str());
 		}
 	}
 
@@ -194,10 +192,10 @@ void startServers()
 	startWebServer();
 }
 
-void networkScanCompleted(bool succeeded, BssList list)
+void networkScanCompleted(bool succeeded, BssList& list)
 {
 	if(succeeded) {
-		for(int i = 0; i < list.count(); i++)
+		for(unsigned i = 0; i < list.count(); i++)
 			if(!list[i].hidden && list[i].ssid.length() > 0)
 				networks.add(list[i]);
 	}

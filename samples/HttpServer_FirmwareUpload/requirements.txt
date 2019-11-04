@@ -1,0 +1,3 @@
+# Requirements file for pip
+# list of Python packages used in documentation build
+PyNaCl

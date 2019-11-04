@@ -1,13 +1,3 @@
-/**
- * Please, note, that in order to run this sample you should recompile Sming with ENABLE_SSL=1.
- * The following three commands should be enough:
- *
- * cd Sming/Sming
- * make clean
- * make ENABLE_SSL=1
- */
-
-#include <user_config.h>
 #include <SmingCore.h>
 
 #include "Network/HttpClient.h"
@@ -71,7 +61,7 @@ void displayCipher(SSL* ssl)
 int onDownload(HttpConnection& connection, bool success)
 {
 	debugf("\n=========[ URL: %s ]============", connection.getRequest()->uri.toString().c_str());
-	debugf("RemoteIP: %s", (char*)connection.getRemoteIp());
+	debugf("RemoteIP: %s", connection.getRemoteIp().toString().c_str());
 	debugf("Got response code: %d", connection.getResponse()->code);
 	debugf("Success: %d", success);
 	if(connection.getRequest()->method != HTTP_HEAD) {
@@ -121,7 +111,7 @@ void setSslFingerprints(HttpRequest* request)
 	request->pinCertificate(fingerprints);
 }
 
-void connectOk(IPAddress ip, IPAddress mask, IPAddress gateway)
+void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
 	// [ GET request: The example below shows how to make HTTP requests ]
 

@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
@@ -7,15 +6,15 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-void onReceive(UdpConnection& connection, char* data, int size, IPAddress remoteIP, uint16_t remotePort); // Declaration
+void onReceive(UdpConnection& connection, char* data, int size, IpAddress remoteIP, uint16_t remotePort); // Declaration
 
 // UDP server
 const uint16_t EchoPort = 1234;
 UdpConnection udp(onReceive);
 
-void onReceive(UdpConnection& connection, char* data, int size, IPAddress remoteIP, uint16_t remotePort)
+void onReceive(UdpConnection& connection, char* data, int size, IpAddress remoteIP, uint16_t remotePort)
 {
-	debugf("UDP Sever callback from %s:%d, %d bytes", remoteIP.toString().c_str(), remotePort, size);
+	debugf("UDP Server callback from %s:%d, %d bytes", remoteIP.toString().c_str(), remotePort, size);
 
 	// We implement string mode server for example
 	Serial.print(">\t");
@@ -23,21 +22,18 @@ void onReceive(UdpConnection& connection, char* data, int size, IPAddress remote
 
 	// Send echo to remote sender
 	String text = String("echo: ") + data;
-	udp.sendStringTo(remoteIP, EchoPort, text);
+	udp.sendStringTo(remoteIP, remotePort, text);
 }
 
-void gotIP(IPAddress ip, IPAddress gateway, IPAddress netmask)
+void gotIP(IpAddress ip, IpAddress gateway, IpAddress netmask)
 {
 	udp.listen(EchoPort);
 
 	Serial.println("\r\n=== UDP SERVER STARTED ===");
-	Serial.print(WifiStation.getIP().toString());
+	Serial.print(WifiStation.getIP());
 	Serial.print(":");
 	Serial.println(EchoPort);
 	Serial.println("=============================\r\n");
-
-	//udp.connect(IPAddress(192, 168, 1, 180), 1234);
-	//udp.sendString("Hello!");
 }
 
 void init()

@@ -1,9 +1,11 @@
 # generated binaries
 out
-Sming/compiler/lib/lib*.a
 
 # generated documentation
 docs/api
+docs/build
+docs/source/_inc
+*.pyc
 
 # dev tools, editors, etc.
 language.settings.xml
@@ -19,3 +21,4 @@ GPATH
 vssver2.scc
 
 .metadata
+.submodule

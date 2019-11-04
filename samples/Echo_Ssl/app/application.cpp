@@ -1,11 +1,4 @@
 /**
- * Please, note, that in order to run this sample you should recompile Sming with ENABLE_SSL=1.
- * The following three commands should be enough:
- *
- * cd Sming/Sming
- * make clean
- * make ENABLE_SSL=1
- *
  *
  * This example talks to SSL enabled TCP server. If you do not have such you can use ncat (from the nmap package) and run something like this
  *
@@ -13,7 +6,6 @@
  *
  */
 
-#include <user_config.h>
 #include <SmingCore.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
@@ -107,17 +99,17 @@ bool onReceive(TcpClient& tcpClient, char* data, int size)
 	return tcpClient.send(data, size);
 }
 
-void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
+void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	debugf("I'm NOT CONNECTED!");
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	debugf("IP: %s", ip.toString().c_str());
 	client = new TcpClient(TcpClientDataDelegate(onReceive));
 	client->addSslOptions(SSL_SERVER_VERIFY_LATER);
-	client->connect(IPAddress(SERVER_IP), 4444, true);
+	client->connect(IpAddress(SERVER_IP), 4444, true);
 }
 
 void init()

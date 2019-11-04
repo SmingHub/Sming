@@ -1,0 +1,13 @@
+diff --git a/Adafruit_ST7735.h b/Adafruit_ST7735.h
+index b1e85fd..b10d01c 100755
+--- a/Adafruit_ST7735.h
++++ b/Adafruit_ST7735.h
+@@ -26,7 +26,7 @@ as well as Adafruit raw 1.8" TFT display
+ 
+ #include "Arduino.h"
+ #include "Print.h"
+-#include <Adafruit_GFX.h>
++#include <Libraries/Adafruit_GFX/Adafruit_GFX.h>
+ 
+ #if defined(__AVR__) || defined(CORE_TEENSY)
+   #include <avr/pgmspace.h>

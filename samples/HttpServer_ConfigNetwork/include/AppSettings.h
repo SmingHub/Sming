@@ -1,11 +1,12 @@
 /*
  * AppSettings.h
  *
- *  Created on: 13 ��� 2015 �.
+ *  Created on: 13 ??? 2015 ?.
  *      Author: Anakod
  */
 
 #include <SmingCore.h>
+#include <ArduinoJson.h>
 
 #ifndef INCLUDE_APPSETTINGS_H_
 #define INCLUDE_APPSETTINGS_H_
@@ -18,54 +19,41 @@ struct ApplicationSettingsStorage {
 
 	bool dhcp = true;
 
-	IPAddress ip;
-	IPAddress netmask;
-	IPAddress gateway;
+	IpAddress ip;
+	IpAddress netmask;
+	IpAddress gateway;
 
 	void load()
 	{
-		DynamicJsonBuffer jsonBuffer;
-		if(exist()) {
-			int size = fileGetSize(APP_SETTINGS_FILE);
-			char* jsonString = new char[size + 1];
-			fileGetContent(APP_SETTINGS_FILE, jsonString, size + 1);
-			JsonObject& root = jsonBuffer.parseObject(jsonString);
+		DynamicJsonDocument doc(1024);
+		if(Json::loadFromFile(doc, APP_SETTINGS_FILE)) {
+			JsonObject network = doc["network"];
+			ssid = network["ssid"].as<const char*>();
+			password = network["password"].as<const char*>();
 
-			JsonObject& network = root["network"];
-			ssid = network["ssid"].asString();
-			password = network["password"].asString();
+			dhcp = network["dhcp"] | false;
 
-			dhcp = network["dhcp"];
-
-			ip = network["ip"].asString();
-			netmask = network["netmask"].asString();
-			gateway = network["gateway"].asString();
-
-			delete[] jsonString;
+			ip = network["ip"].as<const char*>();
+			netmask = network["netmask"].as<const char*>();
+			gateway = network["gateway"].as<const char*>();
 		}
 	}
 
 	void save()
 	{
-		DynamicJsonBuffer jsonBuffer;
-		JsonObject& root = jsonBuffer.createObject();
+		DynamicJsonDocument doc(1024);
 
-		JsonObject& network = jsonBuffer.createObject();
-		root["network"] = network;
+		auto network = doc.createNestedObject("network");
 		network["ssid"] = ssid.c_str();
 		network["password"] = password.c_str();
 
 		network["dhcp"] = dhcp;
 
-		// Make copy by value for temporary string objects
 		network["ip"] = ip.toString();
 		network["netmask"] = netmask.toString();
 		network["gateway"] = gateway.toString();
 
-		//TODO: add direct file stream writing
-		String rootString;
-		root.printTo(rootString);
-		fileSetContent(APP_SETTINGS_FILE, rootString);
+		Json::saveToFile(doc, APP_SETTINGS_FILE);
 	}
 
 	bool exist()

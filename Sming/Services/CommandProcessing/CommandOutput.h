@@ -5,16 +5,14 @@
  *      Author: Herman
  */
 
-#ifndef SERVICES_COMMANDPROCESSING_COMMANDOUTPUT_H_
-#define SERVICES_COMMANDPROCESSING_COMMANDOUTPUT_H_
+#pragma once
 
-#include "Network/TcpClient.h"
-#include "Stream.h"
-#include "Print.h"
-#include "WiringFrameworkDependencies.h"
-#include "Network/Http/Websocket/WebsocketConnection.h"
+#include <Network/TcpClient.h>
+#include <Stream.h>
+#include <Print.h>
+#include <Network/Http/Websocket/WebsocketConnection.h>
 
-class CommandOutput: public Print
+class CommandOutput : public Print
 {
 public:
 	CommandOutput(TcpClient* reqClient);
@@ -25,9 +23,7 @@ public:
 	size_t write(uint8_t outChar);
 
 	TcpClient* outputTcpClient = nullptr;
-	Stream*    outputStream = nullptr;
+	Stream* outputStream = nullptr;
 	WebsocketConnection* outputSocket = nullptr;
 	String tempSocket = "";
 };
-
-#endif /* SERVICES_COMMANDPROCESSING_COMMANDOUTPUT_H_ */

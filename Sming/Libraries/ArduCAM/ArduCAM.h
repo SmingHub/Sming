@@ -101,8 +101,6 @@
 #define cport(port, data) port &= data
 #define sport(port, data) port |= data
 
-#define swap(type, i, j) {type t = i; i = j; j = t;}
-
 #define fontbyte(x) pgm_read_byte(&cfont.font[x])  
 
 #define regtype volatile uint8_t
@@ -119,8 +117,6 @@
 
 #define cport(port, data) port &= data
 #define sport(port, data) port |= data
-
-#define swap(type, i, j) {type t = i; i = j; j = t;}
 
 #define fontbyte(x) cfont.font[x]  
 
@@ -156,8 +152,6 @@
 
 #define cport(port, data) port &= data
 #define sport(port, data) port |= data
-
-#define swap(type, i, j) {type t = i; i = j; j = t;}
 
 #define fontbyte(x) cfont.font[x]
 
@@ -334,7 +328,7 @@ class ArduCAM
 		void set_format(byte fmt);
 		byte get_format();
 		
-		int bus_write(int address, int value);
+		void bus_write(int address, int value);
 		uint8_t bus_read(int address);
 	protected:
 		regtype *P_CS;

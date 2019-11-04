@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="icon" href="favicon.ico">
+
+<title>RingTone Player</title>
+
+<link href="bootstrap.css" rel="stylesheet">
+<script src="jquery.js"></script>
+<script src="bootstrap.js"></script>
+<script src="graph.js"></script>
+<script src="player.js"></script>
+</head>
+
+<script>
+	$(document).ready(function() {
+		initPlayer();
+
+		$(".command").click(function() {
+			sendCommand($(this).attr('id'), '');
+		});
+
+		$("#list").on("click", "a", function(evt) {
+			var num = evt.originalEvent.target.attributes['index'].value;
+			$("#tune-num").val(num);
+			sendCommand('goto', num);
+		});
+	});
+</script>
+
+<body>
+	<div id="spinner" class="fixed-top" style="width: 100vw; height: 100vh; background-color: rgba(150, 150, 150, 0.6)">
+		<div class="alert-primary text-center fixed-bottom">Connecting...</div>
+		<div class="spinner-border" id="spinner"
+			style="position: absolute; top: calc(50vh - 2rem); left: calc(50vw - 2rem); width: 4rem; height: 4rem"></div>
+	</div>
+
+	<div id="content" class="container-fluid">
+		<div class="header">
+			<h3 class="text-muted">Sming Framework</h3>
+			<p class="lead">Sming: Let's do smart things!</p>
+			<h2>&#9835; RingTone Player</h2>
+		</div>
+
+		<div class="row mb-1 btn-toolbar">
+			<!-- Danger zone! Reboot the system -->
+			<button type="button" id="reboot" data-toggle="tooltip"
+				title="Reboot" class="col-auto command btn btn-danger text-info">&#9850;</button>
+
+			<!-- Main playback controls -->
+			<div class="col-auto btn-group">
+				<button type="button" id="stop" data-toggle="tooltip"
+					title="Stop both playback and I2S" class="command btn btn-primary">&#9634;</button>
+				<button type="button" id="pause" data-toggle="tooltip"
+					title="Pause playback" class="command btn btn-primary">||</button>
+				<button type="button" id="start" data-toggle="tooltip"
+					title="(re-)start playback" class="command btn btn-primary">&#9655;</button>
+			</div>
+
+			<!-- Voice and playback mode -->
+			<div class="col-auto btn-group">
+				<button type="button" id="voice" data-toggle="tooltip"
+					title="Voice" class="command btn btn-secondary">
+					<canvas id="canvas-voice" width="38" height="18"></canvas>
+				</button>
+				<button type="button" id="mode" data-toggle="tooltip"
+					title="Play mode" class="command btn btn-secondary">...</button>
+			</div>
+ 		</div>
+
+		<!-- Playback speed -->
+		<div class="row mb-1 btn-toolbar">
+			<form class="form col-auto" action="javascript:void(0);" onsubmit="setSpeed()">
+				<div class="input-group align-items-center">
+					<input type="number" step="0.01" class="form-control text-center"
+						style="width:5em" id="speed" value="1.00" onsubmit="setSpeed()">
+					<input type="submit" class="form-control" value="&times;">
+					<input id="speed-range" type="range" class="custom-range" style="width:8rem" min="0.01" max="2.00" step="0.01"
+						oninput="$('#speed').val(this.value)" onchange="setSpeed()">
+				</div>
+			</form>
+		</div>
+
+		<!-- Direct tune selection -->
+		<div class="row mb-1 justify-content-between">
+			<form class="form col-auto" action="javascript:void(0);" onsubmit="goto()">
+				<div class="input-group">
+					<button type="button" id="prev" data-toggle="tooltip"
+						title="Play previous tune" class="command btn btn-primary">&#8612;</button>
+					<button type="button" id="rewind" data-toggle="tooltip"
+						title="Rewind to start of current tune" class="command btn btn-primary">&#8626;</button>
+					<div class="input-group-prepend">
+						<span class="input-group-text">&#9839;</span>
+					</div>
+					<input type="number" class="form-control" style="width:5em" id="tune-num" onsubmit="goto()">
+					<input type="submit" class="form-control" value="&#9655;">
+					<button type="button" id="next" data-toggle="tooltip"
+						title="Play next tune" class="command btn btn-primary">&#8614;</button>
+					<button type="button" id="skip" data-toggle="tooltip"
+						title="Skip to random tune" class="command btn btn-primary">&rArr;</button>
+				</div>
+			</form>
+		</div>
+
+		<!-- Tune name (with drop-down list) and play time -->
+		<div class="row mb-1 align-items-center justify-content-between">
+			<div class="col-auto dropdown">
+				<button class="btn btn-default dropdown-toggle" type="button"
+					id="listButton" data-toggle="dropdown">
+					&#9835;<span class="caret"></span>
+				</button>
+				<div class="dropdown-menu pre-scrollable" id="list"></div>
+			</div>
+
+			<div id="time" class="col-auto p-2 bg-info text-white badge">00:00</div>
+		</div>
+
+		<!-- Graphs -->
+
+		<canvas class="row mb-1 p-1 w-100 border" id="graph-cpu-usage"></canvas>
+		<div class="row pb-2">
+			<div class="col">
+				<div class="progress" style="height: 1.25rem">
+					CPU Usage:&nbsp;
+					<div id="cpu-usage" class="progress-bar"></div>
+				</div>
+			</div>
+		</div>
+
+		<canvas class="row mb-1 p-1 w-100 border" id="graph-fill-time"></canvas>
+		<div class="row pb-2">
+			<div class="col">
+				<div class="progress" style="height: 1.25rem">
+					Fill Time:&nbsp;
+					<div id="fill-time" class="progress-bar""></div>
+				</div>
+			</div>
+		</div>
+
+		<canvas class="row mb-1 p-1 w-100 border" id="graph-mem"></canvas>
+		<div class="row pb-2">
+			<div class="col">
+				<div class="progress" style="height: 1.25rem">
+					Free Memory:&nbsp;
+					<div id="mem" class="progress-bar"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="fixed-bottom" id="alert-placeholder"></div>
+</body>
+
+</html>

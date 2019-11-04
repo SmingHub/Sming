@@ -1,8 +1,0 @@
-"\x81\x85\xde\xad\xbe\xef\xb6\xc8\xd2\x83\xb1\x89\x85\xde\xad\xbe\xef\xb6\xc8\xd2\x83\xb1"
-
-data_begin: text
-data_payload: 'hello'
-data_end
-control_begin: ping
-control_payload: 'hello'
-control_end

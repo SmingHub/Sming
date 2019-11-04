@@ -15,10 +15,8 @@
 ||
 */
 
-#include "../SmingCore/Clock.h"
-#include "../SmingCore/Digital.h"
-#include "WiringFrameworkIncludes.h"
-
+#include <Clock.h>
+#include <Digital.h>
 
 uint16_t shiftIn(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t count, uint8_t delayTime)
 {

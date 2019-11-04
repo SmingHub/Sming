@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Network/TelnetServer.h>
 #include <Network/Http/Websocket/WebsocketResource.h>
@@ -24,7 +23,7 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
 	auto& vars = tmpl->variables();
 	//vars["counter"] = String(counter);
-	response.sendTemplate(tmpl); // this template object will be deleted automatically
+	response.sendNamedStream(tmpl); // this template object will be deleted automatically
 }
 
 void onFile(HttpRequest& request, HttpResponse& response)
@@ -108,7 +107,7 @@ void startExampleApplicationCommand()
 		CommandDelegate("example", "Example Command from Class", "Application", processApplicationCommands));
 }
 
-void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	StartServers();
 

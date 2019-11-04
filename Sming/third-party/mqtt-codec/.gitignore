@@ -1,6 +1,0 @@
-bin/*
-src/*.o
-# Eclipse project files
-.cproject
-.project
-.settings

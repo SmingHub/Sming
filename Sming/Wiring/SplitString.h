@@ -9,12 +9,10 @@
 ||
 */
 
-#ifndef _SPLIT_STRING_H_
-#define _SPLIT_STRING_H_
+#pragma once
 
 #include "WVector.h"
 #include "WString.h"
-#include "WiringFrameworkDependencies.h"
 
 /** @brief split a delimited string list of integers into an array
  *  @param what
@@ -24,7 +22,7 @@
  *  @note leading/trailing whitespace is removed from 'what' before parsing
  *  example: "   1,2,3,4,5" returns [1, 2, 3, 4, 5]
  */
-int splitString(String &what, char delim,  Vector<int> &splits);
+int splitString(String& what, char delim, Vector<int>& splits);
 
 /** @brief split a delimited string list into an array
  *  @param what
@@ -34,6 +32,4 @@ int splitString(String &what, char delim,  Vector<int> &splits);
  *  @note leading/trailing whitespace is removed from 'what' before parsing
  *  example: "   a,b,c,d,e" returns ["a", "b", "c", "d", "e"]
  */
-int splitString(String &what, char delim,  Vector<String> &splits);
-
-#endif
+int splitString(String& what, char delim, Vector<String>& splits);
