@@ -17,8 +17,6 @@ public:
 		DEFINE_FSTR_LOCAL(test_json, "test.json");
 		DEFINE_FSTR_LOCAL(test_msgpack, "test.msgpack");
 
-		spiffs_mount();
-
 		StaticJsonDocument<512> doc;
 		doc["string1"] = "string value 1";
 		doc["number2"] = 12345;
@@ -33,8 +31,8 @@ public:
 							  "1\",\"number2\":12345,\"arr\":[\"FlashString-1\"],\"FlashString-2\":\"FlashString-1\"}");
 
 			String s = Json::serialize(doc);
-			debug_i("Test doc: %s", s.c_str());
-			TEST_ASSERT(s == serialized1);
+			debug_d("Test doc: %s", s.c_str());
+			REQUIRE(s == serialized1);
 		}
 
 		//
@@ -44,8 +42,8 @@ public:
 			const uint8_t sizes[] = {100, 132, 82};
 			for(auto fmt = Json::Compact; fmt <= Json::MessagePack; ++fmt) {
 				auto len = Json::measure(doc, fmt);
-				debug_i("Measure(doc, %s) = %u", formats[fmt], len);
-				TEST_ASSERT(len == sizes[fmt]);
+				debug_d("Measure(doc, %s) = %u", formats[fmt], len);
+				REQUIRE(len == sizes[fmt]);
 			}
 		}
 
@@ -54,8 +52,8 @@ public:
 		{
 			int value;
 			if(Json::getValue(doc["number2"], value)) {
-				debug_i("number2 = %d", value);
-				TEST_ASSERT(value == 12345);
+				debug_d("number2 = %d", value);
+				REQUIRE(value == 12345);
 			} else {
 				debug_e("number2 not found");
 			}
@@ -65,25 +63,16 @@ public:
 		startTest("Json::getValue(doc[\"string\"], value))");
 		{
 			String value;
-			if(Json::getValue(doc["string"], value)) {
-				debug_i("string = %d", value.c_str());
-				TEST_ASSERT(false);
-			} else {
-				debug_e("string not found");
-			}
+			REQUIRE(Json::getValue(doc["string"], value) == false);
 		}
 
 		//
 		startTest("Json::getValue(doc[\"arr\"][1], value");
 		{
 			String value;
-			if(Json::getValue(doc["arr"][0], value)) {
-				debug_i("arr = %s", value.c_str());
-				TEST_ASSERT(value == flashString1);
-			} else {
-				debug_e("arr not found");
-				TEST_ASSERT(false);
-			}
+			REQUIRE(Json::getValue(doc["arr"][0], value) == true);
+			debug_d("arr = %s", value.c_str());
+			REQUIRE(value == flashString1);
 		}
 
 		// Keep a reference copy for when doc gets messed up
@@ -93,24 +82,21 @@ public:
 		startTest("Json::serialize(doc, String), then save to file");
 		{
 			String s;
-			Json::serialize(doc, s);
-			fileSetContent(test_json, s);
+			REQUIRE(Json::serialize(doc, s) == 95);
+			REQUIRE(fileSetContent(test_json, s) == int(s.length()));
 		}
 
 		//
 		startTest("Json::saveToFile(doc, test_json, Json::Pretty)");
-		bool res = Json::saveToFile(doc, test_json, Json::Pretty);
-		debug_i("writeToFile %s", res ? "OK" : "FAILED");
-		TEST_ASSERT(res);
+		REQUIRE(Json::saveToFile(doc, test_json, Json::Pretty) == true);
 
 		//
 		startTest("Json::loadFromFile(doc, test_json)");
 		{
-			res = Json::loadFromFile(doc, test_json);
-			debug_i("loadFromFile %s", res ? "OK" : "FAILED");
-			TEST_ASSERT(res);
+			REQUIRE(Json::loadFromFile(doc, test_json) == true);
 			String s = fileGetContent(test_json);
-			Serial.println(s);
+			REQUIRE(s.length() == 132);
+			debug_d("%s", s.c_str(), s.length());
 		}
 
 		//
@@ -118,14 +104,14 @@ public:
 		{
 			doc = sourceDoc;
 			auto stream = new MemoryDataStream;
-			Json::serialize(doc, stream, Json::Compact);
+			REQUIRE(Json::serialize(doc, stream, Json::Compact) == 100);
 			auto avail = stream->available();
-			debug_i("serialize -> %d bytes", avail);
-			TEST_ASSERT(avail == 100);
-			Json::deserialize(doc, stream, Json::Compact);
+			debug_d("serialize -> %d bytes", avail);
+			REQUIRE(avail == 100);
+			REQUIRE(Json::deserialize(doc, stream, Json::Compact) == true);
 			auto measured = Json::measure(doc);
-			debug_i("deserialize -> %u bytes", measured);
-			TEST_ASSERT(measured == size_t(avail));
+			debug_d("deserialize -> %u bytes", measured);
+			REQUIRE(measured == size_t(avail));
 			Serial.println(Json::serialize(doc));
 			delete stream;
 		}
@@ -135,10 +121,10 @@ public:
 		{
 			MemoryDataStream* stream = nullptr;
 			auto count = Json::serialize(doc, stream);
-			debug_i("Json::serialize(stream = nullptr) = %u", count);
-			auto err = Json::deserialize(doc, stream);
-			debug_i("Json::deserialize(stream = nullptr) = %u", err);
-			debug_i("doc.memoryUsage = %u", doc.memoryUsage());
+			debug_d("Json::serialize(stream = nullptr) = %u", count);
+			REQUIRE(count == 0);
+			REQUIRE(Json::deserialize(doc, stream) == false);
+			debug_d("doc.memoryUsage = %u", doc.memoryUsage());
 		}
 
 		//
@@ -147,11 +133,10 @@ public:
 		{
 			doc = sourceDoc;
 			serialised = Json::serialize(doc);
-			m_printHex("serialized", serialised.c_str(), serialised.length());
-			String s;
-			Json::deserialize(doc, s);
-			m_printHex("de-serialized", s.c_str(), s.length());
-			debug_i("doc.memoryUsage = %u", doc.memoryUsage());
+			debug_hex(DBG, "serialized", serialised.c_str(), serialised.length());
+			REQUIRE(serialised.length() == 100);
+			REQUIRE(Json::deserialize(doc, serialised) == true);
+			debug_d("doc.memoryUsage = %u", doc.memoryUsage());
 		}
 
 		//
@@ -160,9 +145,9 @@ public:
 		{
 			doc = sourceDoc;
 			size_t len = Json::serialize(doc, buffer);
-			m_printHex("Serialised", buffer, len);
-			TEST_ASSERT(len == serialised.length());
-			TEST_ASSERT(memcmp(buffer, serialised.c_str(), len) == 0);
+			debug_hex(DBG, "Serialised", buffer, len);
+			REQUIRE(len == serialised.length());
+			REQUIRE(memcmp(buffer, serialised.c_str(), len) == 0);
 		}
 
 		//
@@ -170,30 +155,27 @@ public:
 		{
 			doc = sourceDoc;
 			auto len = Json::serialize(doc, buffer, sizeof(buffer));
-			m_printHex("Serialised", buffer, len);
-			TEST_ASSERT(len == serialised.length());
-			TEST_ASSERT(memcmp(buffer, serialised.c_str(), len) == 0);
-			Json::deserialize(doc, buffer, len);
-			m_printHex("De-serialized", buffer, len);
-			debug_i("doc.memoryUsage = %u", doc.memoryUsage());
+			debug_hex(DBG, "Serialised", buffer, len);
+			REQUIRE(len == serialised.length());
+			REQUIRE(memcmp(buffer, serialised.c_str(), len) == 0);
+			REQUIRE(Json::deserialize(doc, buffer, len) == true);
+			debug_hex(DBG, "De-serialized", buffer, len);
+			debug_d("doc.memoryUsage = %u", doc.memoryUsage());
 		}
 
 		//
 		startTest("Json::saveToFile(doc, test_msgpack, Json::MessagePack)");
 		{
-			res = Json::saveToFile(doc, test_msgpack, Json::MessagePack);
-			debug_i("writeToFile(%s, MessagePack)", res ? "OK" : "FAILED");
+			REQUIRE(Json::saveToFile(doc, test_msgpack, Json::MessagePack) == true);
 		}
 
 		//
 		startTest("Json::loadFromFile(doc, test_msgpack, Json::MessagePack)");
 		{
-			res = Json::loadFromFile(doc, test_msgpack, Json::MessagePack);
-			debug_i("MsgPack::loadFromFile %s", res ? "OK" : "FAILED");
-			TEST_ASSERT(res);
+			REQUIRE(Json::loadFromFile(doc, test_msgpack, Json::MessagePack) == true);
 			String s = fileGetContent(test_msgpack);
-			m_printHex("MSG", s.c_str(), s.length());
-			TEST_ASSERT(s.length() == 82);
+			debug_hex(DBG, "MSG", s.c_str(), s.length());
+			REQUIRE(s.length() == 82);
 		}
 
 		//
@@ -210,28 +192,28 @@ public:
 		{
 			StaticJsonDocument<10> doc2;
 			auto measured = Json::measure(doc2);
-			debug_i("measure(doc2) = %u", measured);
-			TEST_ASSERT(measured == 4);
+			debug_d("measure(doc2) = %u", measured);
+			REQUIRE(measured == 4);
 			String s;
 			Json::serialize(doc2, s);
-			m_printHex("doc2", s.c_str(), s.length());
-			TEST_ASSERT(s == "null");
+			debug_hex(DBG, "doc2", s.c_str(), s.length());
+			REQUIRE(s == "null");
 		}
 
 		// Serialization
 		startTest("Serialise to MemoryDataStream");
-		const char jsonTest[] = "{\"key1\":\"value1\",\"key2\":\"value2\"}";
+		DEFINE_FSTR_LOCAL(jsonTest, "{\"key1\":\"value1\",\"key2\":\"value2\"}");
 		Json::deserialize(doc, jsonTest);
 		{
 			auto stream = new MemoryDataStream;
 			stream->setTimeout(0);
 			size_t serializedLength = Json::serialize(doc, stream);
-			debug_i("serialized length = %u", serializedLength);
-			TEST_ASSERT(serializedLength == 33);
+			debug_d("serialized length = %u", serializedLength);
+			REQUIRE(serializedLength == jsonTest.length());
 			String content = stream->readString();
-			debug_i("stream->read returned %u", content.length());
-			Serial.println(content);
-			TEST_ASSERT(content == jsonTest);
+			debug_d("stream->read returned %u", content.length());
+			debug_d("%s", content.c_str(), content.length());
+			REQUIRE(content == jsonTest);
 			delete stream;
 		}
 
@@ -239,14 +221,11 @@ public:
 		{
 			startTest("De-serialise from MemoryDataStream");
 			auto stream = new MemoryDataStream;
-			stream->write(reinterpret_cast<const uint8_t*>(jsonTest), sizeof(jsonTest));
-			bool res = Json::deserialize(doc, stream);
-			debug_i("Json::deserialize() returned %u", res);
-			TEST_ASSERT(res == true);
+			stream->print(jsonTest);
+			REQUIRE(Json::deserialize(doc, stream) == true);
 			String s;
 			serializeJson(doc, s);
-			Serial.println(s);
-			TEST_ASSERT(s == jsonTest);
+			REQUIRE(s == jsonTest);
 			delete stream;
 		}
 
@@ -257,9 +236,7 @@ public:
 			JsonObject root = doc.to<JsonObject>();
 			const uint64_t testnum = 0x12345678ABCDEF99ULL;
 			root["longtest"] = testnum;
-			uint64_t num = root["longtest"];
-			debug_i("int64 test: %s, 0x%08x%08x", num == testnum ? "OK" : "FAIL", uint32_t(num >> 32), uint32_t(num));
-			TEST_ASSERT(num == testnum);
+			REQUIRE(root["longtest"] == testnum);
 		}
 	}
 };

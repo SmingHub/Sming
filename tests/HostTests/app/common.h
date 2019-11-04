@@ -70,7 +70,7 @@ public:
 	/**
 	 * @brief Called when test fails to identify location
 	 */
-	void fail(const char* func, const char* file, unsigned line);
+	void fail(const char* func);
 
 	const String& getName()
 	{
@@ -98,13 +98,27 @@ private:
 #define startTest(s) startItem(_F(s))
 
 /**
+ * @brief Check an expression, on failure print it before assertion
+ */
+#define REQUIRE(expr)                                                                                                  \
+	do {                                                                                                               \
+		PSTR_ARRAY(tmpExprStr, #expr);                                                                                 \
+		if(expr) {                                                                                                     \
+			debug_i("OK: %s", tmpExprStr);                                                                             \
+		} else {                                                                                                       \
+			debug_e("FAIL: %s", tmpExprStr);                                                                           \
+			TEST_ASSERT(false);                                                                                        \
+		}                                                                                                              \
+	} while(0)
+
+/**
  * @brief Check a test result
  * @param result true if test was successful, false on failure
  * @note Failure generates an assertion so when run in the host emulator the process fails.
  */
 #define TEST_ASSERT(result)                                                                                            \
 	if(!(result)) {                                                                                                    \
-		fail(__PRETTY_FUNCTION__, __FILE__, __LINE__);                                                                 \
+		fail(__PRETTY_FUNCTION__);                                                                                     \
 		assert(false);                                                                                                 \
 	}
 
