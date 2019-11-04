@@ -10,8 +10,6 @@
 
 #include "TcpServer.h"
 
-uint16_t TcpServer::totalConnections = 0;
-
 TcpConnection* TcpServer::createClient(tcp_pcb* clientTcp)
 {
 	debug_d("TCP Server createClient %sNULL\r\n", clientTcp ? "not" : "");
@@ -30,7 +28,7 @@ TcpConnection* TcpServer::createClient(tcp_pcb* clientTcp)
 //Timer stateTimer;
 void list_mem()
 {
-	debug_d("Free heap size=%u, K=%u", system_get_free_heap_size(), TcpServer::totalConnections);
+	debug_d("Free heap size=%u", system_get_free_heap_size());
 }
 
 void TcpServer::setKeepAlive(uint16_t seconds)
