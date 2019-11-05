@@ -154,7 +154,7 @@ index 4972119..da75839 100644
      return 0;
  }
 diff --git a/ssl/os_port.h b/ssl/os_port.h
-index e0b9e46..8c226ea 100644
+index e0b9e46..268512e 100644
 --- a/ssl/os_port.h
 +++ b/ssl/os_port.h
 @@ -43,7 +43,12 @@ extern "C" {
@@ -275,14 +275,16 @@ index e0b9e46..8c226ea 100644
  
  // TODO: Why is this not being imported from <string.h>?
  extern char *strdup(const char *orig);
-@@ -260,6 +209,7 @@ EXP_FUNC int STDCALL getdomainname(char *buf, int buf_size);
+@@ -260,7 +209,8 @@ EXP_FUNC int STDCALL getdomainname(char *buf, int buf_size);
  #endif  /* Not Win32 */
  
  /* some functions to mutate the way these work */
+-inline uint32_t htonl(uint32_t n){
 +#ifndef ntohl
- inline uint32_t htonl(uint32_t n){
++static inline uint32_t htonl(uint32_t n){
    return ((n & 0xff) << 24) |
      ((n & 0xff00) << 8) |
+     ((n & 0xff0000UL) >> 8) |
 @@ -268,6 +218,8 @@ inline uint32_t htonl(uint32_t n){
  }
  
