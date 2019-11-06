@@ -34,31 +34,12 @@ String::String(const char *cstr)
   if (cstr) copy(cstr, strlen(cstr));
 }
 
-String::String(const char *cstr, size_t length)
-{
-  if (cstr) copy(cstr, length);
-}
-
-String::String(const String &value)
-{
-  *this = value;
-}
-
-String::String(flash_string_t pstr, int length)
-{
-  setString(pstr, length);
-}
-
 String::String(const FlashString& fstr)
 {
   setString(fstr.data(), fstr.length());
 }
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-String::String(String &&rval)
-{
-  move(rval);
-}
 String::String(StringSumHelper &&rval)
 {
   move(rval);
@@ -130,11 +111,6 @@ String::String(double value, unsigned char decimalPlaces)
 {
 	char buf[33];
 	*this = dtostrf(value, 0, decimalPlaces, buf);
-}
-
-String::~String()
-{
-	invalidate();
 }
 
 void String::setString(const char *cstr, int length /* = -1 */)
@@ -314,12 +290,6 @@ String & String::operator = (const String &rhs)
 }
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-String & String::operator = (String && rval)
-{
-  if (this != &rval) move(rval);
-  return *this;
-}
-
 String & String::operator = (StringSumHelper && rval)
 {
   if (this != &rval) move(rval);
@@ -338,11 +308,6 @@ String & String::operator = (const char *cstr)
 /*********************************************/
 /*  concat                                   */
 /*********************************************/
-
-bool String::concat(const String &s)
-{
-  return concat(s.cbuffer(), s.length());
-}
 
 bool String::concat(const char *cstr, size_t length)
 {
@@ -559,26 +524,6 @@ bool String::equals(const FlashString& fstr) const
 	return memcmp(buf, cbuffer(), len) == 0;
 }
 
-bool String::operator<(const String &rhs) const
-{
-  return compareTo(rhs) < 0;
-}
-
-bool String::operator>(const String &rhs) const
-{
-  return compareTo(rhs) > 0;
-}
-
-bool String::operator<=(const String &rhs) const
-{
-  return compareTo(rhs) <= 0;
-}
-
-bool String::operator>=(const String &rhs) const
-{
-  return compareTo(rhs) >= 0;
-}
-
 bool String::equalsIgnoreCase(const char* cstr) const
 {
   auto buf = cbuffer();
@@ -629,11 +574,6 @@ bool String::endsWith(const String &suffix) const
 /*  Character Access                         */
 /*********************************************/
 
-char String::charAt(size_t index) const
-{
-  return operator[](index);
-}
-
 void String::setCharAt(size_t index, char c)
 {
   if (index < length()) buffer()[index] = c;
@@ -676,11 +616,6 @@ size_t String::getBytes(unsigned char *buf, size_t bufsize, size_t index) const
 /*  Search                                   */
 /*********************************************/
 
-int String::indexOf(char c) const
-{
-  return indexOf(c, 0);
-}
-
 int String::indexOf(char ch, size_t fromIndex) const
 {
   auto len = length();
@@ -689,11 +624,6 @@ int String::indexOf(char ch, size_t fromIndex) const
   auto temp = memchr(buf + fromIndex, ch, len - fromIndex);
   if (temp == nullptr) return -1;
   return static_cast<const char*>(temp) - buf;
-}
-
-int String::indexOf(const String &s2) const
-{
-  return indexOf(s2, 0);
 }
 
 int String::indexOf(const String &s2, size_t fromIndex) const

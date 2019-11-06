@@ -124,13 +124,25 @@ class String
        fails, the string will be marked as invalid (i.e. "if (s)" will be false).
     */
     String(const char *cstr = nullptr);
-    String(const char *cstr, size_t length);
-    String(const String &str);
-    explicit String(flash_string_t pstr, int length = -1);
+    String(const char *cstr, size_t length)
+    {
+      if (cstr) copy(cstr, length);
+    }
+    String(const String &str)
+    {
+      *this = str;
+    }
+    explicit String(flash_string_t pstr, int length = -1)
+    {
+      setString(pstr, length);
+    }
     String(const FlashString& fstr);
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-    String(String && rval);
+    String(String && rval)
+    {
+   	  move(rval);
+    }
     String(StringSumHelper && rval);
 #endif
     explicit String(char c);
@@ -143,7 +155,10 @@ class String
     explicit String(unsigned long long, unsigned char base = 10);
     explicit String(float, unsigned char decimalPlaces=2);
     explicit String(double, unsigned char decimalPlaces=2);
-    ~String(void);
+    ~String(void)
+    {
+    	invalidate();
+    }
 
     void setString(const char *cstr, int length = -1);
     void setString(flash_string_t pstr, int length = -1);
@@ -172,7 +187,11 @@ class String
     String & operator = (const String &rhs);
     String & operator = (const char *cstr);
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-    String & operator = (String && rval);
+    String & operator = (String && rval)
+    {
+      if (this != &rval) move(rval);
+      return *this;
+    }
     String & operator = (StringSumHelper && rval);
 #endif
 
@@ -181,7 +200,10 @@ class String
     // returns true on success, false on failure (in which case, the string
     // is left unchanged).  if the argument is null or invalid, the
     // concatenation is considered unsucessful.
-    bool concat(const String &str);
+    bool concat(const String &str)
+    {
+      return concat(str.cbuffer(), str.length());
+    }
     bool concat(const char *cstr);
     bool concat(const char *cstr, size_t length);
     bool concat(char c)
@@ -311,10 +333,22 @@ class String
     {
       return !equals(cstr);
     }
-    bool operator < (const String &rhs) const;
-    bool operator > (const String &rhs) const;
-    bool operator <= (const String &rhs) const;
-    bool operator >= (const String &rhs) const;
+    bool operator < (const String &rhs) const
+    {
+      return compareTo(rhs) < 0;
+    }
+    bool operator > (const String &rhs) const
+    {
+      return compareTo(rhs) > 0;
+    }
+    bool operator <= (const String &rhs) const
+	{
+	  return compareTo(rhs) <= 0;
+	}
+    bool operator >= (const String &rhs) const
+    {
+      return compareTo(rhs) >= 0;
+    }
     bool equalsIgnoreCase(const char* cstr) const;
     bool equalsIgnoreCase(const char* cstr, size_t length) const;
     bool equalsIgnoreCase(const String &s2) const
@@ -327,7 +361,10 @@ class String
     bool endsWith(const String &suffix) const;
 
     // character acccess
-    char charAt(size_t index) const;
+    char charAt(size_t index) const
+    {
+      return operator[](index);
+    }
     void setCharAt(size_t index, char c);
     char operator [](size_t index) const;
     char& operator [](size_t index);
@@ -353,9 +390,15 @@ class String
     const char* end() const { return c_str() + length(); }
   
     // search
-    int indexOf(char ch) const;
+    int indexOf(char ch) const
+    {
+      return indexOf(ch, 0);
+    }
     int indexOf(char ch, size_t fromIndex) const;
-    int indexOf(const String &str) const;
+    int indexOf(const String &str) const
+    {
+      return indexOf(str, 0);
+    }
     int indexOf(const String &s2, size_t fromIndex) const;
     int lastIndexOf(char ch) const;
     int lastIndexOf(char ch, size_t fromIndex) const;
