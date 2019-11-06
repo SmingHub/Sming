@@ -390,16 +390,12 @@ class String
     const char* end() const { return c_str() + length(); }
   
     // search
-    int indexOf(char ch) const
+    int indexOf(char ch, size_t fromIndex = 0) const;
+    int indexOf(const char* s2_buf, size_t fromIndex = 0, size_t s2_len = 0) const;
+    int indexOf(const String &s2, size_t fromIndex = 0) const
     {
-      return indexOf(ch, 0);
+    	return indexOf(s2.cbuffer(), fromIndex, s2.length());
     }
-    int indexOf(char ch, size_t fromIndex) const;
-    int indexOf(const String &str) const
-    {
-      return indexOf(str, 0);
-    }
-    int indexOf(const String &s2, size_t fromIndex) const;
     int lastIndexOf(char ch) const;
     int lastIndexOf(char ch, size_t fromIndex) const;
     int lastIndexOf(const String &s2) const;

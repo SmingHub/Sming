@@ -626,12 +626,12 @@ int String::indexOf(char ch, size_t fromIndex) const
   return static_cast<const char*>(temp) - buf;
 }
 
-int String::indexOf(const String &s2, size_t fromIndex) const
+int String::indexOf(const char* s2_buf, size_t fromIndex, size_t s2_len) const
 {
   auto len = length();
   if (fromIndex >= len) return -1;
   auto buf = cbuffer();
-  auto found = memmem(buf + fromIndex, len - fromIndex, s2.cbuffer(), s2.length());
+  auto found = memmem(buf + fromIndex, len - fromIndex, s2_buf, s2_len);
   if (found == nullptr) return -1;
   return static_cast<const char*>(found) - buf;
 }
