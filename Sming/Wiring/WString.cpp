@@ -752,16 +752,10 @@ String String::substring(size_t left, size_t right) const
     right = left;
     left = temp;
   }
-  String out;
   auto len = length();
-  if (left > len) return out;
+  if (left >= len) return nullptr;
   if (right > len) right = len;
-  auto buf = buffer();
-  char temp = buf[right];  // save the replaced character
-  buf[right] = '\0';
-  out = buf + left;  // pointer arithmetic
-  buf[right] = temp;  //restore character
-  return out;
+  return String(cbuffer() + left, right - left);
 }
 
 /*********************************************/
