@@ -15,7 +15,7 @@
  *  @ingroup    libraries
  *  @{
 */
-#include <Libraries/OneWire/OneWire.h>
+#include <Wire.h>
 
 #define MAX_SENSORS 4         ///< Maximum quantity of sensors to read
 
@@ -35,6 +35,8 @@
     @note   Example: void onMeasurment() { ... };
 */
 typedef Delegate<void()> DS18S20CompletedDelegate;
+
+class OneWire;
 
 /** @brief  This class implements access to the DS18x20 range of temperature sensors
 */
