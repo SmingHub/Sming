@@ -15,7 +15,7 @@
  *  @ingroup    libraries
  *  @{
 */
-#include <Wire.h>
+#include <Libraries/OneWire/OneWire.h>
 
 #define MAX_SENSORS 4         ///< Maximum quantity of sensors to read
 
