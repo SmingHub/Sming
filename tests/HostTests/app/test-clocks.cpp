@@ -293,6 +293,8 @@ public:
 	}
 };
 
+constexpr unsigned BenchmarkPolledTimer::TIMEOUT_MS;
+
 template <hw_timer_clkdiv_t clkdiv, NanoTime::Unit unit, typename TimeType>
 struct Timer1TestSource : public Timer1Clock<clkdiv> {
 	static TimeType timeToTicks_test1(const TimeType& time)
