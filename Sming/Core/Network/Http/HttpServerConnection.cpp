@@ -33,6 +33,7 @@ int HttpServerConnection::onMessageBegin(http_parser* parser)
 	// and temp data...
 	reset();
 	bodyParser = nullptr;
+	hasContentError = false;
 
 	return 0;
 }
@@ -62,6 +63,10 @@ int HttpServerConnection::onMessageComplete(http_parser* parser)
 
 	if(bodyParser) {
 		bodyParser(request, nullptr, PARSE_DATAEND);
+	}
+
+	if(hasContentError) {
+		response.code = HTTP_STATUS_BAD_REQUEST;
 	}
 
 	if(resource != nullptr && resource->onRequestComplete) {
@@ -139,15 +144,28 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 
 int HttpServerConnection::onBody(const char* at, size_t length)
 {
+	if(hasContentError) {
+		return 0;
+	}
+
 	if(bodyParser) {
-		size_t consumed = bodyParser(request, at, length);
+		const size_t consumed = bodyParser(request, at, length);
 		if(consumed != length) {
-			return -1;
+			hasContentError = true;
+			if(closeOnContentError) {
+				return -1;
+			}
 		}
 	}
 
 	if(resource != nullptr && resource->onBody) {
-		return resource->onBody(*this, request, at, length);
+		const int result = resource->onBody(*this, request, at, length);
+		if(result != 0) {
+			hasContentError = true;
+			if(closeOnContentError) {
+				return result;
+			}
+		}
 	}
 
 	return 0;
