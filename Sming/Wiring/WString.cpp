@@ -267,6 +267,11 @@ String &String::copy(flash_string_t pstr, size_t length)
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
 void String::move(String &rhs)
 {
+	if(rhs.isNull()) {
+		invalidate();
+		return;
+	}
+
 	auto rhs_len = rhs.length();
 	if(rhs.sso.set) {
 		// Switch to SSO if required
