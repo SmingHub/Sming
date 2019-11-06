@@ -60,9 +60,6 @@
 #include <stddef.h>
 #include <sming_attr.h>
 
-// @deprecated Should not be using String in interrupt context
-#define STRING_IRAM_ATTR // IRAM_ATTR
-
 #ifndef __GXX_EXPERIMENTAL_CXX0X__
 #define __GXX_EXPERIMENTAL_CXX0X__
 #endif
@@ -113,7 +110,7 @@ class String
     // complications of an operator bool(). for more information, see:
     // http://www.artima.com/cppsource/safebool.html
     typedef void (String::*StringIfHelperType)() const;
-    void STRING_IRAM_ATTR StringIfHelper() const {}
+    void StringIfHelper() const {}
 
   public:
     // Use these for const references, e.g. in function return values
@@ -126,15 +123,15 @@ class String
        if the initial value is null or invalid, or if memory allocation
        fails, the string will be marked as invalid (i.e. "if (s)" will be false).
     */
-    STRING_IRAM_ATTR String(const char *cstr = nullptr);
-    STRING_IRAM_ATTR String(const char *cstr, size_t length);
-    STRING_IRAM_ATTR String(const String &str);
+    String(const char *cstr = nullptr);
+    String(const char *cstr, size_t length);
+    String(const String &str);
     explicit String(flash_string_t pstr, int length = -1);
     String(const FlashString& fstr);
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-    STRING_IRAM_ATTR String(String && rval);
-    STRING_IRAM_ATTR String(StringSumHelper && rval);
+    String(String && rval);
+    String(StringSumHelper && rval);
 #endif
     explicit String(char c);
     explicit String(unsigned char, unsigned char base = 10);
@@ -172,8 +169,8 @@ class String
     // creates a copy of the assigned value.  if the value is null or
     // invalid, or if the memory allocation fails, the string will be
     // marked as invalid ("if (s)" will be false).
-    String & STRING_IRAM_ATTR operator = (const String &rhs);
-    String & STRING_IRAM_ATTR operator = (const char *cstr);
+    String & operator = (const String &rhs);
+    String & operator = (const char *cstr);
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
     String & operator = (String && rval);
     String & operator = (StringSumHelper && rval);
@@ -186,7 +183,7 @@ class String
     // concatenation is considered unsucessful.
     bool concat(const String &str);
     bool concat(const char *cstr);
-    bool STRING_IRAM_ATTR concat(const char *cstr, size_t length);
+    bool concat(const char *cstr, size_t length);
     bool concat(char c)
     {
       return concat(&c, 1);
@@ -286,31 +283,31 @@ class String
     {
    	  return compareTo(s.cbuffer(), s.length());
     }
-    bool STRING_IRAM_ATTR equals(const String &s) const
+    bool equals(const String &s) const
     {
     	return equals(s.cbuffer(), s.length());
     }
-    bool STRING_IRAM_ATTR equals(const char *cstr) const;
+    bool equals(const char *cstr) const;
     bool equals(const char *cstr, size_t length) const;
     bool equals(const FlashString& fstr) const;
 
-    bool STRING_IRAM_ATTR operator == (const String &rhs) const
+    bool operator == (const String &rhs) const
     {
       return equals(rhs);
     }
-    bool STRING_IRAM_ATTR operator == (const char *cstr) const
+    bool operator == (const char *cstr) const
     {
       return equals(cstr);
     }
-    bool STRING_IRAM_ATTR operator==(const FlashString& fstr) const
+    bool operator==(const FlashString& fstr) const
     {
       return equals(fstr);
     }
-    bool STRING_IRAM_ATTR operator != (const String &rhs) const
+    bool operator != (const String &rhs) const
     {
       return !equals(rhs);
     }
-    bool STRING_IRAM_ATTR operator != (const char *cstr) const
+    bool operator != (const char *cstr) const
     {
       return !equals(cstr);
     }
@@ -330,10 +327,10 @@ class String
     bool endsWith(const String &suffix) const;
 
     // character acccess
-    char STRING_IRAM_ATTR charAt(size_t index) const;
-    void STRING_IRAM_ATTR setCharAt(size_t index, char c);
-    char STRING_IRAM_ATTR operator [](size_t index) const;
-    char& STRING_IRAM_ATTR operator [](size_t index);
+    char charAt(size_t index) const;
+    void setCharAt(size_t index, char c);
+    char operator [](size_t index) const;
+    char& operator [](size_t index);
 
     /** @brief read contents of string into a buffer
      *  @param buf buffer to write data
@@ -356,9 +353,9 @@ class String
     const char* end() const { return c_str() + length(); }
   
     // search
-    int STRING_IRAM_ATTR indexOf(char ch) const;
+    int indexOf(char ch) const;
     int indexOf(char ch, size_t fromIndex) const;
-    int STRING_IRAM_ATTR indexOf(const String &str) const;
+    int indexOf(const String &str) const;
     int indexOf(const String &s2, size_t fromIndex) const;
     int lastIndexOf(char ch) const;
     int lastIndexOf(char ch, size_t fromIndex) const;
@@ -411,7 +408,7 @@ protected:
 
 protected:
 	// Free any heap memory and set to non-SSO mode; isNull() will return true
-	void STRING_IRAM_ATTR invalidate(void);
+	void invalidate(void);
 
     // String is Null (invalid) by default, i.e. non-SSO and null buffer
     __forceinline bool isNull() const
