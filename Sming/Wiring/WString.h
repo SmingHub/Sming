@@ -119,7 +119,7 @@ class String
        fails, the string will be marked as invalid (i.e. "if (s)" will be false).
     */
     STRING_IRAM_ATTR String(const char *cstr = nullptr);
-    STRING_IRAM_ATTR String(const char *cstr, unsigned int length);
+    STRING_IRAM_ATTR String(const char *cstr, size_t length);
     STRING_IRAM_ATTR String(const String &str);
     explicit String(flash_string_t pstr, int length = -1);
     String(const FlashString& fstr);
@@ -147,16 +147,16 @@ class String
     // return true on success, false on failure (in which case, the string
     // is left unchanged).  reserve(0), if successful, will validate an
     // invalid string (i.e., "if (s)" will be true afterwards)
-    bool reserve(unsigned int size);
+    bool reserve(size_t size);
 
     /** @brief set the string length accordingly, expanding if necessary
      *  @param length required for string (nul terminator additional)
      *  @retval true on success, false on failure
      *  @note extra characters are undefined
      */
-    bool setLength(unsigned int length);
+    bool setLength(size_t length);
 
-    inline unsigned int length(void) const
+    inline size_t length(void) const
     {
       return len;
     }
@@ -178,9 +178,9 @@ class String
     // concatenation is considered unsucessful.
     bool concat(const String &str);
     bool concat(const char *cstr);
-    bool STRING_IRAM_ATTR concat(const char *cstr, unsigned int length);
+    bool STRING_IRAM_ATTR concat(const char *cstr, size_t length);
     bool concat(char c);
-    bool concat(unsigned char c);
+    bool concat(unsigned char num);
     bool concat(int num);
     bool concat(unsigned int num);
     bool concat(long num);
@@ -315,14 +315,14 @@ class String
     }
     bool equalsIgnoreCase(const FlashString& fstr) const;
     bool startsWith(const String &prefix) const;
-    bool startsWith(const String &prefix, unsigned int offset) const;
+    bool startsWith(const String &prefix, size_t offset) const;
     bool endsWith(const String &suffix) const;
 
     // character acccess
-    char STRING_IRAM_ATTR charAt(unsigned int index) const;
-    void STRING_IRAM_ATTR setCharAt(unsigned int index, char c);
-    char STRING_IRAM_ATTR operator [](unsigned int index) const;
-    char& STRING_IRAM_ATTR operator [](unsigned int index);
+    char STRING_IRAM_ATTR charAt(size_t index) const;
+    void STRING_IRAM_ATTR setCharAt(size_t index, char c);
+    char STRING_IRAM_ATTR operator [](size_t index) const;
+    char& STRING_IRAM_ATTR operator [](size_t index);
 
     /** @brief read contents of string into a buffer
      *  @param buf buffer to write data
@@ -332,9 +332,9 @@ class String
      *  @note Returned data always nul terminated so buffer size needs to take this
      *  into account
      */
-    unsigned int getBytes(unsigned char *buf, unsigned int bufsize, unsigned int index = 0) const;
+    size_t getBytes(unsigned char *buf, size_t bufsize, size_t index = 0) const;
 
-    void toCharArray(char *buf, unsigned int bufsize, unsigned int index = 0) const
+    void toCharArray(char *buf, size_t bufsize, size_t index = 0) const
     {
       getBytes((unsigned char *)buf, bufsize, index);
     }
@@ -346,21 +346,21 @@ class String
   
     // search
     int STRING_IRAM_ATTR indexOf(char ch) const;
-    int indexOf(char ch, unsigned int fromIndex) const;
+    int indexOf(char ch, size_t fromIndex) const;
     int STRING_IRAM_ATTR indexOf(const String &str) const;
-    int indexOf(const String &s2, unsigned int fromIndex) const;
+    int indexOf(const String &s2, size_t fromIndex) const;
     int lastIndexOf(char ch) const;
-    int lastIndexOf(char ch, unsigned int fromIndex) const;
+    int lastIndexOf(char ch, size_t fromIndex) const;
     int lastIndexOf(const String &s2) const;
-    int lastIndexOf(const String &s2, unsigned int fromIndex) const;
-    String substring(unsigned int beginIndex) const { return substring(beginIndex, len); }
-    String substring(unsigned int beginIndex, unsigned int endIndex) const;
+    int lastIndexOf(const String &s2, size_t fromIndex) const;
+    String substring(size_t beginIndex) const { return substring(beginIndex, len); }
+    String substring(size_t beginIndex, size_t endIndex) const;
 
     // modification
     void replace(char find, char replace);
     void replace(const String& find, const String& replace);
-    void remove(unsigned int index);
-    void remove(unsigned int index, unsigned int count);
+    void remove(size_t index);
+    void remove(size_t index, size_t count);
     void toLowerCase(void);
     void toUpperCase(void);
     void trim(void);
@@ -381,11 +381,11 @@ class String
 
   protected:
     void STRING_IRAM_ATTR invalidate(void);
-    bool STRING_IRAM_ATTR changeBuffer(unsigned int maxStrLen);
+    bool STRING_IRAM_ATTR changeBuffer(size_t maxStrLen);
 
     // copy and move
-    String & copy(const char *cstr, unsigned int length);
-    String& copy(flash_string_t pstr, unsigned int length);
+    String & copy(const char *cstr, size_t length);
+    String& copy(flash_string_t pstr, size_t length);
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
     void move(String &rhs);
 #endif
