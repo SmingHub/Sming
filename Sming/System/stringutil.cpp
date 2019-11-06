@@ -52,3 +52,19 @@ const char* strstri(const char* pString, const char* pToken)
 	}
 	return NULL;
 }
+
+int memicmp(const void* buf1, const void* buf2, size_t len)
+{
+	auto p1 = static_cast<const unsigned char*>(buf1);
+	auto p2 = static_cast<const unsigned char*>(buf2);
+
+	if(p1 == p2) {
+		return 0;
+	}
+
+	int result = 0;
+	while(len-- && (result = tolower(*p1++) - tolower(*p2++)) == 0) {
+	}
+
+	return result;
+}
