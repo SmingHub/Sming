@@ -364,6 +364,7 @@ class String
     int lastIndexOf(char ch, size_t fromIndex) const;
     int lastIndexOf(const String &s2) const;
     int lastIndexOf(const String &s2, size_t fromIndex) const;
+    int lastIndexOf(const char* s2_buf, size_t fromIndex, size_t s2_len) const;
     String substring(size_t beginIndex) const { return substring(beginIndex, length()); }
     String substring(size_t beginIndex, size_t endIndex) const;
 

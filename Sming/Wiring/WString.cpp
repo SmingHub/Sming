@@ -703,34 +703,44 @@ int String::indexOf(const String &s2, size_t fromIndex) const
 
 int String::lastIndexOf(char theChar) const
 {
-  return lastIndexOf(theChar, len - 1);
+	auto len = length();
+	if(len == 0) {
+		return -1;
+	}
+	auto buf = cbuffer();
+	auto found = memrchr(buf, theChar, len);
+	return found ? (static_cast<const char*>(found) - buf) : -1;
 }
 
 int String::lastIndexOf(char ch, size_t fromIndex) const
 {
-  auto len = length();
-  if (fromIndex >= len) return -1;
-  auto buf = buffer();
-  char tempchar = buf[fromIndex + 1];
-  buf[fromIndex + 1] = '\0';
-  char* temp = strrchr(buf, ch);
-  buf[fromIndex + 1] = tempchar;
-  if (temp == nullptr) return -1;
-  return temp - buf;
+	auto len = length();
+	if(len == 0) {
+		return -1;
+	}
+	if(fromIndex < len) {
+		len = fromIndex + 1;
+	}
+	auto buf = cbuffer();
+	auto found = memrchr(buf, ch, len);
+	return found ? (static_cast<const char*>(found) - buf) : -1;
 }
 
 int String::lastIndexOf(const String &s2) const
 {
-  return lastIndexOf(s2, length() - s2.length());
+  return lastIndexOf(s2.cbuffer(), length() - s2.length(), s2.length());
 }
 
 int String::lastIndexOf(const String &s2, size_t fromIndex) const
 {
+	return lastIndexOf(s2.cbuffer(), fromIndex, s2.length());
+}
+
+int String::lastIndexOf(const char* s2_buf, size_t fromIndex, size_t s2_len) const
+{
   auto len = length();
-  auto s2_len = s2.length();
   if (s2_len == 0 || len == 0 || s2_len > len) return -1;
   auto buf = cbuffer();
-  auto s2_buf = s2.cbuffer();
   if (fromIndex >= len) fromIndex = len - 1;
   int found = -1;
   for (auto p = buf; p <= buf + fromIndex; p++)
