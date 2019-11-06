@@ -93,6 +93,7 @@ private:
 		failed,
 	};
 	State state = State::idle;
+	OneShotFastUs groupTimer;
 };
 
 #define startTest(s) startItem(_F(s))

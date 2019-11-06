@@ -160,6 +160,16 @@ void resetPeak()
 	stats.peak = stats.current;
 }
 
+size_t getTotal()
+{
+	return stats.total;
+}
+
+void resetTotal()
+{
+	stats.total = 0;
+}
+
 /* user function to return total number of allocations */
 size_t getAllocCount()
 {
