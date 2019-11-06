@@ -44,6 +44,12 @@
  * These changes have a knock-on effect in that if any of the allocations in an expression fail, then the result, tmp,
  * will be unpredictable.
  *
+ * @author Nov 2019 mikee47 <mike@sillyhouse.net>
+ *
+ * Small String Optimisation (SSO). Based on the Arduino ESP8266 core implentation.
+ * An empty String object now consumes 12 bytes (from 8) but provides an SSO capacity of 11 characters.
+ * Capacity and length types changed to size_t, thus String is no longer restricted to 64K.
+ *
  */
 
 #pragma once
@@ -51,6 +57,8 @@
 #ifdef __cplusplus
 
 #include "WConstants.h"
+#include <stddef.h>
+#include <sming_attr.h>
 
 // @deprecated Should not be using String in interrupt context
 #define STRING_IRAM_ATTR // IRAM_ATTR
@@ -158,7 +166,7 @@ class String
 
     inline size_t length(void) const
     {
-      return len;
+      return sso.set ? sso.len : ptr.len;
     }
 
     // creates a copy of the assigned value.  if the value is null or
@@ -268,19 +276,19 @@ class String
     // comparison (only works w/ Strings and "strings")
     operator StringIfHelperType() const
     {
-      return buffer ? &String::StringIfHelper : 0;
+      return isNull() ? 0 : &String::StringIfHelper;
     }
-    int compareTo(const char* cstr, unsigned int length) const;
+    int compareTo(const char* cstr, size_t length) const;
     int compareTo(const String &s) const
     {
-   	  return compareTo(s.c_str(), s.length());
+   	  return compareTo(s.cbuffer(), s.length());
     }
     bool STRING_IRAM_ATTR equals(const String &s) const
     {
-    	return equals(s.c_str(), s.length());
+    	return equals(s.cbuffer(), s.length());
     }
     bool STRING_IRAM_ATTR equals(const char *cstr) const;
-    bool equals(const char *cstr, unsigned int length) const;
+    bool equals(const char *cstr, size_t length) const;
     bool equals(const FlashString& fstr) const;
 
     bool STRING_IRAM_ATTR operator == (const String &rhs) const
@@ -308,10 +316,10 @@ class String
     bool operator <= (const String &rhs) const;
     bool operator >= (const String &rhs) const;
     bool equalsIgnoreCase(const char* cstr) const;
-    bool equalsIgnoreCase(const char* cstr, unsigned int length) const;
+    bool equalsIgnoreCase(const char* cstr, size_t length) const;
     bool equalsIgnoreCase(const String &s2) const
     {
-    	return equalsIgnoreCase(s2.c_str(), s2.length());
+    	return equalsIgnoreCase(s2.cbuffer(), s2.length());
     }
     bool equalsIgnoreCase(const FlashString& fstr) const;
     bool startsWith(const String &prefix) const;
@@ -338,9 +346,9 @@ class String
     {
       getBytes((unsigned char *)buf, bufsize, index);
     }
-    const char* c_str() const { return buffer ?: empty.buffer; }
-    char* begin() { return buffer; }
-    char* end() { return buffer + length(); }
+    const char* c_str() const { return cbuffer() ?: empty.cbuffer(); }
+    char* begin() { return buffer(); }
+    char* end() { return buffer() + length(); }
     const char* begin() const { return c_str(); }
     const char* end() const { return c_str() + length(); }
   
@@ -353,7 +361,7 @@ class String
     int lastIndexOf(char ch, size_t fromIndex) const;
     int lastIndexOf(const String &s2) const;
     int lastIndexOf(const String &s2, size_t fromIndex) const;
-    String substring(size_t beginIndex) const { return substring(beginIndex, len); }
+    String substring(size_t beginIndex) const { return substring(beginIndex, length()); }
     String substring(size_t beginIndex, size_t endIndex) const;
 
     // modification
@@ -368,20 +376,71 @@ class String
     // parsing/conversion
     long toInt(void) const;
     float toFloat(void) const;
-  
 
-    //void printTo(Print &p) const;
+protected:
+    /// Used when contents allocated on heap
+	struct PtrBuf {
+		char* buffer;		  // the actual char array
+		size_t len;			  // the String length (not counting the '\0')
+		size_t capacity : 31; // the array length minus one (for the '\0')
+		size_t isSSO : 1;
+	};
+	// For small strings we can store data directly without requiring the heap
+	static constexpr size_t SSO_CAPACITY = sizeof(PtrBuf) - 2; ///< Less one char for '\0'
+	struct SsoBuf {
+		char buffer[SSO_CAPACITY + 1];
+		unsigned char len : 7;
+		unsigned char set : 1; ///< true for SSO mode
+	};
+	union {
+		struct {
+			size_t u32[3] = {0};
+		};
+		PtrBuf ptr;
+		SsoBuf sso;
+	};
 
+	static_assert(sizeof(PtrBuf) == sizeof(SsoBuf), "String size incorrect - check alignment");
 
-  protected:
-    char *buffer = nullptr;	        // the actual char array
-    uint16_t capacity = 0;  // the array length minus one (for the '\0')
-    uint16_t len = 0;       // the String length (not counting the '\0')
-    //unsigned char flags;    // unused, for future features
+protected:
+	// Free any heap memory and set to non-SSO mode; isNull() will return true
+	void STRING_IRAM_ATTR invalidate(void);
 
-  protected:
-    void STRING_IRAM_ATTR invalidate(void);
-    bool STRING_IRAM_ATTR changeBuffer(size_t maxStrLen);
+    // String is Null (invalid) by default, i.e. non-SSO and null buffer
+    __forceinline bool isNull() const
+    {
+    	return !sso.set && (ptr.buffer == nullptr);
+    }
+
+    // Get writeable buffer pointer
+    __forceinline char* buffer()
+    {
+    	return sso.set ? sso.buffer : ptr.buffer;
+    }
+
+    // Get read-only buffer pointer
+    __forceinline const char* cbuffer() const
+    {
+    	return sso.set ? sso.buffer : ptr.buffer;
+    }
+
+    // Get currently assigned capacity for current mode
+    __forceinline size_t capacity() const
+    {
+    	return sso.set ? SSO_CAPACITY : ptr.capacity;
+    }
+
+    // Called whenever string length changes to ensure NUL terminator is set
+    __forceinline void setlen(size_t len)
+    {
+    	if(sso.set) {
+    		sso.len = len;
+    		sso.buffer[len] = '\0';
+    	} else {
+    		ptr.len = len;
+    		ptr.buffer[len] = '\0';
+    	}
+    }
 
     // copy and move
     String & copy(const char *cstr, size_t length);
