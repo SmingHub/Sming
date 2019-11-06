@@ -187,7 +187,10 @@ class String
     bool concat(const String &str);
     bool concat(const char *cstr);
     bool STRING_IRAM_ATTR concat(const char *cstr, size_t length);
-    bool concat(char c);
+    bool concat(char c)
+    {
+      return concat(&c, 1);
+    }
     bool concat(unsigned char num);
     bool concat(int num);
     bool concat(unsigned int num);

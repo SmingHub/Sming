@@ -341,12 +341,25 @@ bool String::concat(const String &s)
 
 bool String::concat(const char *cstr, size_t length)
 {
-  auto len = this->length();
-  size_t newlen = len + length;
   if (length == 0) return true; // Nothing to add
   if (!cstr) return false; // Bad argument (length is non-zero)
+
+  auto len = this->length();
+  size_t newlen = len + length;
+
+  // Appending all or part of self requires special handling
+  auto buf = buffer();
+  if(cstr >= buf && cstr < (buf + len)) {
+	  auto offset = cstr - buf;
+	  if (!reserve(newlen)) return false;
+	  buf = buffer();
+	  memcpy(buf + len, buf + offset, length);
+	  setlen(newlen);
+	  return true;
+  }
+
   if (!reserve(newlen)) return false;
-  memmove(buffer() + len, cstr, length);
+  memcpy(buffer() + len, cstr, length);
   setlen(newlen);
   return true;
 }
@@ -355,14 +368,6 @@ bool String::concat(const char *cstr)
 {
   if (!cstr) return true; // Consider this an empty string, not a failure
   return concat(cstr, strlen(cstr));
-}
-
-bool String::concat(char c)
-{
-  char buf[2];
-  buf[0] = c;
-  buf[1] = 0;
-  return concat(buf, 1);
 }
 
 bool String::concat(unsigned char num)
