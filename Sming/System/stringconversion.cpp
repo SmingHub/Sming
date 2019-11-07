@@ -18,7 +18,7 @@
 char* ltoa_wp(long val, char* buffer, int base, int width, char pad)
 {
 	char* buf_ptr = buffer;
-	if(val < 0) {
+	if(val < 0 && base == 10) {
 		*buf_ptr++ = '-';
 		val = -val;
 	}
@@ -65,7 +65,7 @@ char* ultoa_wp(unsigned long val, char* buffer, unsigned int base, int width, ch
 char* lltoa_wp(long long val, char* buffer, int base, int width, char pad)
 {
 	char* buf_ptr = buffer;
-	if(val < 0) {
+	if(val < 0 && base == 10) {
 		*buf_ptr++ = '-';
 		val = -val;
 	}
