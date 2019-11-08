@@ -356,7 +356,10 @@ class String
     	return equalsIgnoreCase(s2.cbuffer(), s2.length());
     }
     bool equalsIgnoreCase(const FlashString& fstr) const;
-    bool startsWith(const String &prefix) const;
+    bool startsWith(const String &prefix) const
+    {
+    	return startsWith(prefix, 0);
+    }
     bool startsWith(const String &prefix, size_t offset) const;
     bool endsWith(const String &suffix) const;
 

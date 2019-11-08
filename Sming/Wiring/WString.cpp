@@ -547,17 +547,14 @@ bool String::equalsIgnoreCase(const FlashString& fstr) const
   return memicmp(buf, cbuffer(), len) == 0;
 }
 
-bool String::startsWith(const String &prefix) const
-{
-  if (length() < prefix.length()) return false;
-  return startsWith(prefix, 0);
-}
-
 bool String::startsWith(const String &prefix, size_t offset) const
 {
-  auto prefix_buffer = prefix.cbuffer();
   auto prefix_len = prefix.length();
-  if (offset + prefix_len > length() || !prefix_buffer) return false;
+  auto len = length();
+  if(prefix_len == 0 || prefix_len > len || offset > len - prefix_len) {
+	  return false;
+  }
+  auto prefix_buffer = prefix.cbuffer();
   return memcmp(&cbuffer()[offset], prefix_buffer, prefix_len) == 0;
 }
 
@@ -566,7 +563,7 @@ bool String::endsWith(const String &suffix) const
   auto len = length();
   auto suffix_buffer = suffix.cbuffer();
   auto suffix_len = suffix.length();
-  if (len < suffix_len || !suffix_buffer) return false;
+  if (len < suffix_len || suffix_len == 0) return false;
   return memcmp(&cbuffer()[len - suffix_len], suffix_buffer, suffix_len) == 0;
 }
 
