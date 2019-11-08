@@ -144,6 +144,10 @@ void String::setString(const char *cstr, int length /* = -1 */)
 			length = strlen(cstr);
 		copy(cstr, length);
 	}
+	else
+	{
+		invalidate();
+	}
 }
 
 void String::setString(flash_string_t pstr, int length /* = -1 */)
@@ -153,6 +157,10 @@ void String::setString(flash_string_t pstr, int length /* = -1 */)
 		if(length < 0)
 			length = strlen_P((PGM_P)pstr);
 		copy(pstr, length);
+	}
+	else
+	{
+		invalidate();
 	}
 }
 /*********************************************/
