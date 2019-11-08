@@ -34,14 +34,7 @@ Prepare directory
 Build esp-open-sdk
 ==================
 
-(Alternatively, get precompiled esp-open-sdk 1.5.4:
-`x86_64-bit <https://www.dropbox.com/s/dx9tcqnx0yj61i3/esp-open-sdk-1.5.4-linux-x86_64.tar.gz?dl=1>`__,
-`x86_32-bit <https://www.dropbox.com/s/mzo7kp8nsnsfzc2/esp-open-sdk-1.5.4-linux-x86.tar.gz?dl=1>`__,
-`Raspbian <https://www.dropbox.com/s/b8omfjk9bzeo3dc/esp-open-sdk-1.5.4-linux-rpi.tar.gz?dl=1>`__
-or 1.4.0:
-`x86_64-bit <https://www.dropbox.com/s/ge2km06rre1n6e0/esp-open-sdk-1.4.0-linux-x86_64.tar.gz?dl=1>`__,
-`x86_32-bit <https://www.dropbox.com/s/gblv9t13d4ybt42/esp-open-sdk-1.4.0-linux-x86.tar.gz?dl=1>`__,
-`Raspbian <https://www.dropbox.com/s/5yzdxa7hxzu41qz/esp-open-sdk-1.4.0-linux-rpi.tar.gz?dl=1>`__.)
+This contains the toolchain required to build for the ESP8266.
 
 ::
 
@@ -53,12 +46,21 @@ or 1.4.0:
    sudo chown -R [username] ./
 
    # This will take a while...
-   make VENDOR_SDK=1.5.4 STANDALONE=y
+   make STANDALONE=y
 
-The parameter ``VENDOR_SDK=1.5.4`` specifies that you will be using SDK
-version 1.5.4. Before changing this value to a newer version make sure
-to check that the SDK version that you have chosen is
-`supported <https://github.com/SmingHub/Sming#compatibility>`__.
+Here are the links for pre-compiled versions:
+
+-  `x86 64-bit <https://www.dropbox.com/s/dx9tcqnx0yj61i3/esp-open-sdk-1.5.4-linux-x86_64.tar.gz?dl=1>`__
+-  `x86 32-bit <https://www.dropbox.com/s/mzo7kp8nsnsfzc2/esp-open-sdk-1.5.4-linux-x86.tar.gz?dl=1>`__
+-  `Raspbian <https://www.dropbox.com/s/b8omfjk9bzeo3dc/esp-open-sdk-1.5.4-linux-rpi.tar.gz?dl=1>`__
+
+.. note::
+
+   The above includes an older version of the Espressif SDK, but this is not used by Sming.
+   
+   Sming uses the Espressif 3.0.1 SDK which is pulled in automatically during the build.
+
+   Previous versions are no longer officially supported.
 
 Set ENV Variables
 =================
