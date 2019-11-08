@@ -851,18 +851,12 @@ void String::replace(const String& find, const String& replace)
   }
 }
 
-void String::remove(size_t index)
-{
-	auto len = length();
-	if(index < len) remove(index, len - index);
-}
-
 void String::remove(size_t index, size_t count)
 {
 	if (count == 0) { return; }
 	auto len = length();
 	if (index >= len) { return; }
-	if (index + count > len) { count = len - index; }
+	if (count > len - index) { count = len - index; }
 	char *writeTo = buffer() + index;
 	len -= count;
 	memcpy(writeTo, writeTo + count, len - index);

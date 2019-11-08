@@ -371,7 +371,10 @@ class String
     // modification
     void replace(char find, char replace);
     void replace(const String& find, const String& replace);
-    void remove(size_t index);
+    void remove(size_t index)
+    {
+    	remove(index, SIZE_MAX);
+    }
     void remove(size_t index, size_t count);
     void toLowerCase(void);
     void toUpperCase(void);
