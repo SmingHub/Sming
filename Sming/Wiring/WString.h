@@ -270,9 +270,17 @@ class String
     {
       return buffer ? &String::StringIfHelper : 0;
     }
-    int STRING_IRAM_ATTR compareTo(const String &s) const;
-    bool STRING_IRAM_ATTR equals(const String &s) const;
+    int compareTo(const char* cstr, unsigned int length) const;
+    int compareTo(const String &s) const
+    {
+   	  return compareTo(s.c_str(), s.length());
+    }
+    bool STRING_IRAM_ATTR equals(const String &s) const
+    {
+    	return equals(s.c_str(), s.length());
+    }
     bool STRING_IRAM_ATTR equals(const char *cstr) const;
+    bool equals(const char *cstr, unsigned int length) const;
     bool equals(const FlashString& fstr) const;
 
     bool STRING_IRAM_ATTR operator == (const String &rhs) const
@@ -300,7 +308,11 @@ class String
     bool operator <= (const String &rhs) const;
     bool operator >= (const String &rhs) const;
     bool equalsIgnoreCase(const char* cstr) const;
-    bool equalsIgnoreCase(const String &s2) const;
+    bool equalsIgnoreCase(const char* cstr, unsigned int length) const;
+    bool equalsIgnoreCase(const String &s2) const
+    {
+    	return equalsIgnoreCase(s2.c_str(), s2.length());
+    }
     bool equalsIgnoreCase(const FlashString& fstr) const;
     bool startsWith(const String &prefix) const;
     bool startsWith(const String &prefix, unsigned int offset) const;

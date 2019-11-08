@@ -20,6 +20,7 @@
 #include <string.h>
 #include <stringutil.h>
 #include <stringconversion.h>
+#include <assert.h>
 
 const String String::nullstr = nullptr;
 const String String::empty = "";
@@ -144,6 +145,10 @@ void String::setString(const char *cstr, int length /* = -1 */)
 			length = strlen(cstr);
 		copy(cstr, length);
 	}
+	else
+	{
+		invalidate();
+	}
 }
 
 void String::setString(flash_string_t pstr, int length /* = -1 */)
@@ -153,6 +158,10 @@ void String::setString(flash_string_t pstr, int length /* = -1 */)
 		if(length < 0)
 			length = strlen_P((PGM_P)pstr);
 		copy(pstr, length);
+	}
+	else
+	{
+		invalidate();
 	}
 }
 /*********************************************/
@@ -457,30 +466,38 @@ StringSumHelper & operator + (const StringSumHelper &lhs, double num)
 /*  Comparison                               */
 /*********************************************/
 
-int String::compareTo(const String &s) const
+int String::compareTo(const char* cstr, unsigned int length) const
 {
-  if (!buffer || !s.buffer)
-  {
-    if (s.buffer && s.len > 0) return 0 - *(unsigned char *)s.buffer;
-    if (buffer && len > 0) return *(unsigned char *)buffer;
-    return 0;
+  auto len = this->length();
+  if (len == 0 || length == 0) {
+	return len - length;
   }
-  return strcmp(buffer, s.buffer);
-}
-
-bool String::equals(const String &s2) const
-{
-  return (len == s2.len && memcmp(buffer, s2.buffer, len) == 0);
+  auto buf = c_str();
+  assert(buf != nullptr && cstr != nullptr);
+  if(len == length) {
+  	return memcmp(buf, cstr, len);
+  }
+  if(len < length) {
+	return memcmp(buf, cstr, len) ?: -1;
+  }
+  return memcmp(buf, cstr, length) ?: 1;
 }
 
 bool String::equals(const char *cstr) const
 {
   if (len == 0) return (cstr == nullptr || *cstr == '\0');
-  if (cstr == nullptr) return buffer[0] == '\0';
-  // Don't use strcmp as data may contain nuls
-  size_t cstrlen = strlen(cstr);
+  if (cstr == nullptr) return false;
+  auto cstrlen = strlen(cstr);
   if (len != cstrlen) return false;
   return memcmp(buffer, cstr, len) == 0;
+}
+
+bool String::equals(const char *cstr, unsigned int length) const
+{
+  auto len = this->length();
+  if (len != length) return false;
+  if (len == 0) return true;
+  return memcmp(c_str(), cstr, len) == 0;
 }
 
 bool String::equals(const FlashString& fstr) const
@@ -516,18 +533,19 @@ bool String::equalsIgnoreCase(const char* cstr) const
   return strcasecmp(cstr, buffer) == 0;
 }
 
-bool String::equalsIgnoreCase(const String &s2) const
+bool String::equalsIgnoreCase(const char* cstr, unsigned int length) const
 {
-  if (len != s2.len) return false;
+  auto len = this->length();
+  if (len != length) return false;
   if (len == 0) return true;
-  return equalsIgnoreCase(s2.buffer);
+  return memicmp(c_str(), cstr, len) == 0;
 }
 
 bool String::equalsIgnoreCase(const FlashString& fstr) const
 {
   if (len != fstr.length()) return false;
   LOAD_FSTR(buf, fstr);
-  return strcasecmp(buf, buffer) == 0;
+  return memicmp(buf, c_str(), len) == 0;
 }
 
 bool String::startsWith(const String &prefix) const
@@ -764,20 +782,18 @@ void String::remove(unsigned int index, unsigned int count)
 
 void String::toLowerCase(void)
 {
-  if (!buffer) return;
-  for (char *p = buffer; *p; p++)
-  {
-    *p = tolower(*p);
-  }
+	auto buf = begin();
+	for(unsigned len = length(); len > 0; --len, ++buf) {
+		*buf = tolower(*buf);
+	}
 }
 
 void String::toUpperCase(void)
 {
-  if (!buffer) return;
-  for (char *p = buffer; *p; p++)
-  {
-    *p = toupper(*p);
-  }
+	auto buf = begin();
+	for(unsigned len = length(); len > 0; --len, ++buf) {
+		*buf = toupper(*buf);
+	}
 }
 
 void String::trim(void)

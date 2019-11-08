@@ -45,6 +45,8 @@ int strcasecmp(const char* s1, const char* s2);
 void* memmem(const void* haystack, size_t haystacklen, const void* needle, size_t needlelen);
 #endif
 
+int memicmp(const void* buf1, const void* buf2, size_t len);
+
 static inline char hexchar(unsigned char c)
 {
 	if(c < 10)
