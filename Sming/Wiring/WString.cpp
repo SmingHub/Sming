@@ -709,24 +709,24 @@ String String::substring(size_t left, size_t right) const
 
 void String::replace(char find, char replace)
 {
-  if (isNull()) return;
-  auto len = length();
-  auto buf = buffer();
-  for (unsigned i = 0; i < len; ++i)
-  {
-    if (buf[i] == find) buf[i] = replace;
-  }
+	auto buf = buffer();
+	for(unsigned len = length(); len > 0; --len, ++buf) {
+		if(*buf == find) {
+			*buf = replace;
+		}
+	}
 }
 
-void String::replace(const String& find, const String& replace)
+bool String::replace(const String& find, const String& replace)
+{
+	return this->replace(find.cbuffer(), find.length(), replace.cbuffer(), replace.length());
+}
+
+bool String::replace(const char* find_buf, size_t find_len, const char* replace_buf, size_t replace_len)
 {
   auto len = length();
-  auto find_len = find.length();
-  auto replace_len = replace.length();
   auto buf = buffer();
-  auto find_buf = find.cbuffer();
-  auto replace_buf = replace.cbuffer();
-  if (len == 0 || find_len == 0) return;
+  if (len == 0 || find_len == 0) return true;
   int diff = replace_len - find_len;
   char *readFrom = buf;
   const char* end = buf + len;
@@ -763,13 +763,13 @@ void String::replace(const String& find, const String& replace)
       readFrom = foundAt + find_len;
       size += diff;
     }
-    if (size == len) return;
+    if (size == len) return true;
     if(!reserve(size)) {
-    	return;
+    	return false;
     }
     buf = buffer();
     int index = len - 1;
-    while ((index = lastIndexOf(find, index)) >= 0)
+    while ((index = lastIndexOf(find_buf, index, find_len)) >= 0)
     {
       readFrom = buf + index + find_len;
       memmove(readFrom + diff, readFrom, len - (readFrom - buf));
@@ -779,6 +779,7 @@ void String::replace(const String& find, const String& replace)
     }
     setlen(len);
   }
+  return true;
 }
 
 void String::remove(size_t index, size_t count)

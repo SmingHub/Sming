@@ -406,7 +406,8 @@ class String
 
     // modification
     void replace(char find, char replace);
-    void replace(const String& find, const String& replace);
+    bool replace(const String& find, const String& replace);
+    bool replace(const char* find_buf, size_t find_len, const char* replace_buf, size_t replace_len);
     void remove(size_t index)
     {
     	remove(index, SIZE_MAX);
