@@ -93,9 +93,13 @@ private:
 		failed,
 	};
 	State state = State::idle;
+	OneShotFastUs groupTimer;
 };
 
 #define startTest(s) startItem(_F(s))
+
+// Catch support
+#define TEST_CASE(name, ...) startItem(_F(name));
 
 /**
  * @brief Check an expression, on failure print it before assertion

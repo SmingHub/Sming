@@ -16,6 +16,7 @@
 Vector<TestGroupFactory> groupFactories;
 static SimpleTimer taskTimer;
 static unsigned taskIndex;
+static NanoTime::Time<uint32_t> totalTestTime(NanoTime::Milliseconds, 0);
 
 #define XX(t) extern void REGISTER_TEST(t);
 TEST_MAP(XX)
@@ -32,6 +33,10 @@ static void runNextGroup()
 {
 	if(taskIndex >= groupFactories.count()) {
 		m_printf("\r\n\nTESTS COMPLETE\r\n\n");
+		m_printf("Heap allocations: %u, total: %u bytes, peak: %u, current: %u\r\n", MallocCount::getAllocCount(),
+				 MallocCount::getTotal(), MallocCount::getPeak(), MallocCount::getCurrent());
+		m_printf("Total test time: %s\r\n\n", totalTestTime.value().toString().c_str());
+		totalTestTime.time = 0;
 #if RESTART_DELAY == 0
 		System.restart();
 #else
@@ -48,6 +53,7 @@ static void runNextGroup()
 void TestGroup::commenceTest()
 {
 	m_printf(_F("\r\n\r\n** Test Group: %s (%u of %u)**\r\n\r\n"), name.c_str(), taskIndex, groupFactories.count());
+	groupTimer.start();
 	state = State::running;
 	execute();
 	if(state != State::pending) {
@@ -62,10 +68,12 @@ void TestGroup::startItem(const String& tag)
 
 void TestGroup::complete()
 {
+	auto elapsed = groupTimer.elapsedTime();
+	totalTestTime += elapsed;
 	if(state == State::failed) {
 		m_printf(_F("\r\n!!!! Test Group '%s' FAILED !!!!\r\n\r\n"), name.c_str());
 	} else {
-		m_printf(_F("\r\n** Test Group '%s' OK **\r\n"), name.c_str());
+		m_printf(_F("\r\n** Test Group '%s' OK ** Elapsed: %s\r\n"), name.c_str(), elapsed.toString().c_str());
 	}
 	delete this;
 	taskTimer.setIntervalMs<TEST_GROUP_INTERVAL>();
