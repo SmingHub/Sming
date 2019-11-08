@@ -772,20 +772,18 @@ void String::remove(unsigned int index, unsigned int count)
 
 void String::toLowerCase(void)
 {
-  if (!buffer) return;
-  for (char *p = buffer; *p; p++)
-  {
-    *p = tolower(*p);
-  }
+	auto buf = begin();
+	for(unsigned len = length(); len > 0; --len, ++buf) {
+		*buf = tolower(*buf);
+	}
 }
 
 void String::toUpperCase(void)
 {
-  if (!buffer) return;
-  for (char *p = buffer; *p; p++)
-  {
-    *p = toupper(*p);
-  }
+	auto buf = begin();
+	for(unsigned len = length(); len > 0; --len, ++buf) {
+		*buf = toupper(*buf);
+	}
 }
 
 void String::trim(void)
