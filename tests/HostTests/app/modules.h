@@ -3,6 +3,7 @@
 #define TEST_MAP(XX)                                                                                                   \
 	XX(string)                                                                                                         \
 	XX(arduino_string)                                                                                                 \
+	XX(cstringarray)                                                                                                   \
 	XX(serial)                                                                                                         \
 	XX(objectmap)                                                                                                      \
 	XX(base64)                                                                                                         \
