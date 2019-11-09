@@ -494,6 +494,11 @@ Application) and custom targets.
 
 ``APP_CFLAGS`` Used when building application and custom targets.
 
+``COMPONENT_CFLAGS`` Will be visible **ONLY** to C code within the component.
+
+``COMPONENT_CXXFLAGS`` Will be visible **ONLY** to C++ code within the component.
+
+
 **IMPORTANT NOTE**
 
 During initial parsing, many of these variables (specifically, the
