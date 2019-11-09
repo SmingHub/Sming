@@ -24,6 +24,8 @@ SystemClass System;
 SystemState SystemClass::state = eSS_None;
 os_event_t SystemClass::taskQueue[TASK_QUEUE_LENGTH];
 
+static_assert(TASK_QUEUE_LENGTH >= 8, "Task queue too small");
+
 #ifdef ENABLE_TASK_COUNT
 volatile uint8_t SystemClass::taskCount;
 volatile uint8_t SystemClass::maxTaskCount;
