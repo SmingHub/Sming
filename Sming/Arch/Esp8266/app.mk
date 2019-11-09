@@ -7,10 +7,12 @@
 # Remove object providing millis(), micros() - These functions are defined by the Sming component
 DEBUG_VARS += LIBMAIN_COMMANDS
 
-define LIBMAIN_COMMANDS +=
-$(Q) $(AR) d $@ time.o
+
+define APP_LIBMAIN_COMMANDS
+	$(Q) $(AR) d $@ time.o
 
 endef
+LIBMAIN_COMMANDS += $(APP_LIBMAIN_COMMANDS)
 
 # build customized libmain
 LIBMAIN_HASH	:= $(firstword $(shell echo -n $(LIBMAIN_COMMANDS) | md5sum -t))
