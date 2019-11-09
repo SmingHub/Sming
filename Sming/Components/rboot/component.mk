@@ -114,10 +114,11 @@ EXTRA_LDFLAGS			:= -u Cache_Read_Enable_New
 ifeq ($(RBOOT_BIG_FLASH),1)
 APP_CFLAGS				+= -DBOOT_BIG_FLASH
 # rBoot big flash support requires a slightly modified version of libmain (just one symbol gets weakened)
-define LIBMAIN_COMMANDS +=
+define RBOOT_LIBMAIN_COMMANDS
 $(Q) $(OBJCOPY) -W Cache_Read_Enable_New $^ $@
 
 endef
+LIBMAIN_COMMANDS += $(RBOOT_LIBMAIN_COMMANDS)
 endif
 
 endif # RBOOT_EMULATION
