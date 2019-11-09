@@ -58,9 +58,10 @@ int CStringArray::indexOf(const char* str, bool ignoreCase) const
 		return -1;
 	}
 
+	auto buf = begin();
 	unsigned index = 0;
-	for(unsigned offset = 0; offset < len; ++index) {
-		const char* s = buffer + offset;
+	for(unsigned offset = 0; offset < buflen; ++index) {
+		const char* s = buf + offset;
 		if(ignoreCase) {
 			if(strcasecmp(str, s) == 0) {
 				return index;

@@ -283,7 +283,6 @@ public:
 			REQUIRE(!strcmp(s17.c_str(), "1234567890123456_"));
 		}
 
-		/*
 		TEST_CASE("String SSO works", "[core][String]")
 		{
 			// This test assumes that SSO_SIZE==8, if that changes the test must as well
@@ -384,7 +383,6 @@ public:
 			REQUIRE(s == "abcde");
 			REQUIRE(s.length() == 5);
 		}
-		*/
 
 		auto repl = [](const String& key, const String& val, String& s, boolean useURLencode) { s.replace(key, val); };
 
