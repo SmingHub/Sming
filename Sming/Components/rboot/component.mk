@@ -109,21 +109,16 @@ RBOOT_DIR := $(COMPONENT_PATH)/rboot
 $(RBOOT_BIN):
 	$(Q) $(MAKE) -C $(RBOOT_DIR)
 
-# rBoot big flash support requires a slightly modified version of libmain (just one symbol gets weakened)
-# Note that LIBMAIN/LIBMAIN_SRC changes depends on whether we're using a custom heap allocator
-LIBMAIN_RBOOT			:= $(LIBMAIN)-rboot
-LIBMAIN_RBOOT_DST		:= $(APP_LIBDIR)/lib$(LIBMAIN_RBOOT).a
-CUSTOM_TARGETS			+= $(LIBMAIN_RBOOT_DST)
 EXTRA_LDFLAGS			:= -u Cache_Read_Enable_New
 
-$(LIBMAIN_RBOOT_DST): $(LIBMAIN_SRC)
-	@echo "OC $@"
-	$(Q) $(OBJCOPY) -W Cache_Read_Enable_New $^ $@
-	$(Q) $(AR) d $@ time.o
-
 ifeq ($(RBOOT_BIG_FLASH),1)
-LIBMAIN					:= $(LIBMAIN_RBOOT)
 APP_CFLAGS				+= -DBOOT_BIG_FLASH
+# rBoot big flash support requires a slightly modified version of libmain (just one symbol gets weakened)
+define RBOOT_LIBMAIN_COMMANDS
+$(Q) $(OBJCOPY) -W Cache_Read_Enable_New $@
+
+endef
+LIBMAIN_COMMANDS += $(RBOOT_LIBMAIN_COMMANDS)
 endif
 
 endif # RBOOT_EMULATION
