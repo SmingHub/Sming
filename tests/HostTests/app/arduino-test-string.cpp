@@ -285,103 +285,23 @@ public:
 
 		TEST_CASE("String SSO works", "[core][String]")
 		{
-			// This test assumes that SSO_SIZE==8, if that changes the test must as well
-			String s;
-			s += "0";
-			REQUIRE(s == "0");
-			REQUIRE(s.length() == 1);
+			PSTR_ARRAY(whole, "0123456789abcdefghijklmnopqrstuvwxyz"
+							  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+							  "0123456789abcdefghijklmnopqrstuvwxyz"
+							  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+
+			// Keep a pointer to the static buffer which must not change
+			String s = "";
 			const char* savesso = s.c_str();
-			s += 1;
-			REQUIRE(s.c_str() == savesso);
-			REQUIRE(s == "01");
-			REQUIRE(s.length() == 2);
-			s += "2";
-			REQUIRE(s.c_str() == savesso);
-			REQUIRE(s == "012");
-			REQUIRE(s.length() == 3);
-			s += 3;
-			REQUIRE(s.c_str() == savesso);
-			REQUIRE(s == "0123");
-			REQUIRE(s.length() == 4);
-			s += "4";
-			REQUIRE(s.c_str() == savesso);
-			REQUIRE(s == "01234");
-			REQUIRE(s.length() == 5);
-			s += "5";
-			REQUIRE(s.c_str() == savesso);
-			REQUIRE(s == "012345");
-			REQUIRE(s.length() == 6);
-			s += "6";
-			REQUIRE(s.c_str() == savesso);
-			REQUIRE(s == "0123456");
-			REQUIRE(s.length() == 7);
-			s += "7";
-			REQUIRE(s.c_str() == savesso);
-			REQUIRE(s == "01234567");
-			REQUIRE(s.length() == 8);
-			s += "8";
-			REQUIRE(s.c_str() == savesso);
-			REQUIRE(s == "012345678");
-			REQUIRE(s.length() == 9);
-			s += "9";
-			REQUIRE(s.c_str() == savesso);
-			REQUIRE(s == "0123456789");
-			REQUIRE(s.length() == 10);
-			if(sizeof(savesso) == 4) {
-				s += "a";
-				REQUIRE(s.c_str() != savesso);
-				REQUIRE(s == "0123456789a");
-				REQUIRE(s.length() == 11);
-				s += "b";
-				REQUIRE(s.c_str() != savesso);
-				REQUIRE(s == "0123456789ab");
-				REQUIRE(s.length() == 12);
-				s += "c";
-				REQUIRE(s.c_str() != savesso);
-				REQUIRE(s == "0123456789abc");
-				REQUIRE(s.length() == 13);
-			} else {
-				s += "a";
-				REQUIRE(s.c_str() == savesso);
-				REQUIRE(s == "0123456789a");
-				REQUIRE(s.length() == 11);
-				s += "bcde";
-				REQUIRE(s.c_str() == savesso);
-				REQUIRE(s == "0123456789abcde");
-				REQUIRE(s.length() == 15);
-				s += "fghi";
-				REQUIRE(s.c_str() != savesso);
-				REQUIRE(s == "0123456789abcdefghi");
-				REQUIRE(s.length() == 19);
-				s += "j";
-				REQUIRE(s.c_str() != savesso);
-				REQUIRE(s == "0123456789abcdefghij");
-				REQUIRE(s.length() == 20);
-				s += "k";
-				REQUIRE(s.c_str() != savesso);
-				REQUIRE(s == "0123456789abcdefghijk");
-				REQUIRE(s.length() == 21);
-				s += "l";
-				REQUIRE(s.c_str() != savesso);
-				REQUIRE(s == "0123456789abcdefghijkl");
-				REQUIRE(s.length() == 22);
-				s += "m";
-				REQUIRE(s.c_str() != savesso);
-				REQUIRE(s == "0123456789abcdefghijklm");
-				REQUIRE(s.length() == 23);
-				s += "nopq";
-				REQUIRE(s.c_str() != savesso);
-				REQUIRE(s == "0123456789abcdefghijklmnopq");
-				REQUIRE(s.length() == 27);
-				s += "rstu";
-				REQUIRE(s.c_str() != savesso);
-				REQUIRE(s == "0123456789abcdefghijklmnopqrstu");
-				REQUIRE(s.length() == 31);
+			for(unsigned i = 0; i < String::SSO_CAPACITY + 5; ++i) {
+				s += whole[i];
+				REQUIRE(s.equals(whole, i + 1));
+				if(i < String::SSO_CAPACITY) {
+					REQUIRE(s.c_str() == savesso);
+				} else {
+					REQUIRE(s.c_str() != savesso);
+				}
 			}
-			s = "0123456789abcde";
-			s = s.substring(s.indexOf('a'));
-			REQUIRE(s == "abcde");
-			REQUIRE(s.length() == 5);
 		}
 
 		auto repl = [](const String& key, const String& val, String& s, boolean useURLencode) { s.replace(key, val); };
@@ -501,17 +421,17 @@ public:
 		{
 			String s, l;
 			// Make these large enough to span SSO and non SSO
-			String whole = "#123456789012345678901234567890";
-			const char* res = "abcde123456789012345678901234567890";
+#define C10 "1234567890"
+#define C60 C10 C10 C10 C10 C10 C10
+#define C140 C60 C60 C10 C10
+			String whole = F("#" C140);
+			String res = F("abcde" C140);
 			for(size_t i = 1; i < whole.length(); i++) {
 				s = whole.substring(0, i);
 				l = s;
 				l.replace("#", "abcde");
-				char buff[64];
-				strcpy(buff, res);
-				buff[5 + i - 1] = 0;
-				REQUIRE(!strcmp(l.c_str(), buff));
-				REQUIRE(l.length() == strlen(buff));
+				auto reslen = 5 + i - 1;
+				REQUIRE(l.equals(res.c_str(), reslen));
 			}
 		}
 	}

@@ -430,16 +430,17 @@ class String
     long toInt(void) const;
     float toFloat(void) const;
 
+	/// Max chars. (excluding NUL terminator) we can store in SSO mode
+	static constexpr size_t SSO_CAPACITY = STRING_OBJECT_SIZE - 2;
+
 protected:
     /// Used when contents allocated on heap
 	struct PtrBuf {
 		char* buffer;		  // the actual char array
 		size_t len;			  // the String length (not counting the '\0')
 		size_t capacity : 31; // the array length minus one (for the '\0')
-		size_t isSSO : 1;
 	};
 	// For small strings we can store data directly without requiring the heap
-	static constexpr size_t SSO_CAPACITY = sizeof(PtrBuf) - 2; ///< Less one char for '\0'
 	struct SsoBuf {
 		char buffer[SSO_CAPACITY + 1];
 		unsigned char len : 7;
@@ -447,13 +448,16 @@ protected:
 	};
 	union {
 		struct {
-			size_t u32[3] = {0};
+			size_t u32[STRING_OBJECT_SIZE / 4] = {0};
 		};
 		PtrBuf ptr;
 		SsoBuf sso;
 	};
 
-	static_assert(sizeof(PtrBuf) == sizeof(SsoBuf), "String size incorrect - check alignment");
+	static_assert(STRING_OBJECT_SIZE == sizeof(SsoBuf), "SSO Buffer alignment problem");
+	static_assert(STRING_OBJECT_SIZE >= sizeof(PtrBuf), "STRING_OBJECT_SIZE too small");
+	static_assert(STRING_OBJECT_SIZE <= 128, "STRING_OBJECT_SIZE too large (max. 128)");
+	static_assert(STRING_OBJECT_SIZE % 4 == 0, "STRING_OBJECT_SIZE must be a multiple of 4");
 
 protected:
 	// Free any heap memory and set to non-SSO mode; isNull() will return true

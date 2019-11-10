@@ -268,6 +268,7 @@ void String::move(String &rhs)
 	if(!sso.set) {
 		free(ptr.buffer);
 	}
+	sso.set = false;
 	ptr = rhs.ptr;
 	// Can't use rhs.invalidate here as it would free the buffer
 	rhs.ptr.buffer = nullptr;
