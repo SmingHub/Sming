@@ -686,16 +686,11 @@ int String::lastIndexOf(const char* s2_buf, size_t fromIndex, size_t s2_len) con
 
 String String::substring(size_t left, size_t right) const
 {
-  if (isNull()) return nullptr;
-
-  if (left > right)
-  {
-    size_t temp = right;
-    right = left;
-    left = temp;
-  }
   auto len = length();
-  if (left >= len) return nullptr;
+  if (left > right || left >= len) {
+	  return nullptr;
+  }
+
   if (right > len) right = len;
   return String(cbuffer() + left, right - left);
 }

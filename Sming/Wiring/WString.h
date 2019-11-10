@@ -405,7 +405,13 @@ class String
     int lastIndexOf(const String &s2, size_t fromIndex) const;
     int lastIndexOf(const char* s2_buf, size_t fromIndex, size_t s2_len) const;
     String substring(size_t beginIndex) const { return substring(beginIndex, length()); }
-    String substring(size_t beginIndex, size_t endIndex) const;
+
+    /**
+     * @brief Get a substring of a String
+     * @param from Index of first character to retrieve
+     * @param to (optional) One-past the ending character to retrieve
+     */
+    String substring(size_t from, size_t to) const;
 
     // modification
     void replace(char find, char replace);
