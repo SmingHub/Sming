@@ -140,7 +140,6 @@ class String
     {
       setString(pstr, length);
     }
-    String(const FlashString& fstr);
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
     String(String && rval) : String()
@@ -208,6 +207,7 @@ class String
     {
       return concat(str.cbuffer(), str.length());
     }
+    bool concat(const FlashString& fstr);
     bool concat(const char *cstr);
     bool concat(const char *cstr, size_t length);
     bool concat(char c)
@@ -227,6 +227,11 @@ class String
     // if there's not enough memory for the concatenated value, the string
     // will be left unchanged (but this isn't signalled in any way)
     String & operator += (const String &rhs)
+    {
+      concat(rhs);
+      return (*this);
+    }
+    String & operator += (const FlashString &rhs)
     {
       concat(rhs);
       return (*this);
@@ -315,7 +320,10 @@ class String
     }
     bool equals(const char *cstr) const;
     bool equals(const char *cstr, size_t length) const;
-    bool equals(const FlashString& fstr) const;
+    bool equals(const FlashString& fstr) const
+    {
+    	return fstr.equals(*this);
+    }
 
     bool operator == (const String &rhs) const
     {
@@ -359,7 +367,10 @@ class String
     {
     	return equalsIgnoreCase(s2.cbuffer(), s2.length());
     }
-    bool equalsIgnoreCase(const FlashString& fstr) const;
+    bool equalsIgnoreCase(const FlashString& fstr) const
+    {
+    	return fstr.equalsIgnoreCase(*this);
+    }
     bool startsWith(const String &prefix) const
     {
     	return startsWith(prefix, 0);

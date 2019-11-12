@@ -119,23 +119,9 @@ public:
 	}
 #endif
 
-	CStringArray& operator=(const String& rhs)
-	{
-		String::operator=(rhs);
-		init();
-		return *this;
-	}
-
 	CStringArray& operator=(const char* cstr)
 	{
 		String::operator=(cstr);
-		init();
-		return *this;
-	}
-
-	CStringArray& operator=(const FlashString& rhs)
-	{
-		String::operator=(rhs);
 		init();
 		return *this;
 	}
