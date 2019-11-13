@@ -28,15 +28,18 @@
  *  otherwise preloads flash at the given address.
  *  All preloads are word aligned.
  */
-void precache(void *f, uint32_t bytes) {
-  // Size of a cache page in bytes. We only need to read one word per
-  // page (ie 1 word in 8) for this to work.
-  #define CACHE_PAGE_SIZE 32
+void precache(void* f, uint32_t bytes)
+{
+	// Size of a cache page in bytes. We only need to read one word per
+	// page (ie 1 word in 8) for this to work.
+#define CACHE_PAGE_SIZE 32
 
-  register uint32_t a0 asm("a0");
-  register uint32_t lines = (bytes/CACHE_PAGE_SIZE)+2;
-  volatile uint32_t *p = (uint32_t*)((f ? (uint32_t)f : a0) & ~0x03);
-  uint32_t x;
-  for (uint32_t i=0; i<lines; i++, p+=CACHE_PAGE_SIZE/sizeof(uint32_t)) x=*p;
-  (void)x;
+	register uint32_t a0 asm("a0");
+	register uint32_t lines = (bytes / CACHE_PAGE_SIZE) + 2;
+	volatile uint32_t* p = (uint32_t*)((f ? (uint32_t)f : a0) & ~0x03);
+	uint32_t x;
+	for(uint32_t i = 0; i < lines; i++, p += CACHE_PAGE_SIZE / sizeof(uint32_t)) {
+		x = *p;
+	}
+	(void)x;
 }
