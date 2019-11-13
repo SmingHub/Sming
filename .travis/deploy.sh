@@ -21,8 +21,9 @@ RELEASE_ID=$(echo "$RESPONSE" | jq -r .id)
 # [Get all submodules used in this release, pack them and add the archive to the release artifacts]
 cd $SMING_HOME
 make submodules
-ALL_SUBMODULE_DIRS=$(find $SMING_HOME -name '.submodule' | xargs dirname)
+ALL_SUBMODULE_DIRS=$(find $SMING_HOME -name '.submodule' | xargs dirname | sed 's/^\(.*\)\/\(Sming\/.*\)$/\2/')
 FILE=/tmp/sming-submodules.tgz
+cd ../
 tar cvzf $FILE $ALL_SUBMODULE_DIRS
 
 curl -H "$AUTH_HEADER" -H "Content-Type: $(file -b --mime-type $FILE)" --data-binary @$FILE "https://uploads.github.com/repos/SmingHub/Sming/releases/$RELEASE_ID/assets?name=$(basename $FILE)"
