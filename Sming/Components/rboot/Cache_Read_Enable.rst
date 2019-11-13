@@ -39,3 +39,26 @@ Function of no_idea
 
 
 **Source: https://richard.burtons.org/2015/06/12/esp8266-cache_read_enable/**
+
+
+13/11/2019 @author mikee47 UPDATE
+---------------------------------
+
+.. highlight:: c++
+
+Ref. RTOS SDK source ``bootloader_support/bootloader_utility.c``,
+function ``bootloader_utility_load_image()``::
+
+   extern void Cache_Read_Enable(uint8_t map, uint8_t p, uint8_t v);
+   ...
+   Cache_Read_Enable(map, 0, SOC_CACHE_SIZE);
+   
+Where SOC_CACHE_SIZE is defined as::
+
+   #ifdef CONFIG_SOC_FULL_ICACHE
+   #define SOC_CACHE_SIZE 1 // 32KB
+   #else
+   #define SOC_CACHE_SIZE 0 // 16KB
+   #endif
+
+
