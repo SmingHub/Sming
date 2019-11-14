@@ -40,6 +40,18 @@ static inline uint32_t min(uint32_t a, uint32_t b)
 	return (a < b) ? a : b;
 }
 
+uint32_t flashmem_get_address(const void* memptr)
+{
+#define CACHE_FLASH_CTRL_REG 0x3ff0000C
+
+	uint32_t addr = (uint32_t)memptr - INTERNAL_FLASH_START_ADDRESS;
+	// Determine which 1MB memory bank is mapped
+	uint32_t ctrl = READ_PERI_REG(CACHE_FLASH_CTRL_REG);
+	uint8_t bank = (((ctrl >> 16) & 0x07) << 1) | ((ctrl >>25) & 0x01);
+	addr += 0x100000U * bank;
+	return addr;
+}
+
 uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 {
 	if(IS_ALIGNED(from) && IS_ALIGNED(toaddr) && IS_ALIGNED(size))
