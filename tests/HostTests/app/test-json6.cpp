@@ -1,4 +1,4 @@
-#include "common.h"
+#include <SmingTest.h>
 #define ARDUINOJSON_USE_LONG_LONG 1
 #include <JsonObjectStream6.h>
 
@@ -24,7 +24,7 @@ public:
 		arr.add(flashString1);
 		doc[flashString2] = flashString1;
 
-		startTest("serialize");
+		TEST_CASE("serialize")
 		{
 			DEFINE_FSTR_LOCAL(serialized1,
 							  "{\"string1\":\"string value "
@@ -35,8 +35,7 @@ public:
 			REQUIRE(s == serialized1);
 		}
 
-		//
-		startTest("Json::measure()");
+		TEST_CASE("Json::measure()")
 		{
 			CStringArray formats(formatStrings);
 			const uint8_t sizes[] = {100, 132, 82};
@@ -47,8 +46,7 @@ public:
 			}
 		}
 
-		//
-		startTest("Json::getValue(doc[\"number2\"], value))");
+		TEST_CASE("Json::getValue(doc[\"number2\"], value))")
 		{
 			int value;
 			if(Json::getValue(doc["number2"], value)) {
@@ -59,15 +57,13 @@ public:
 			}
 		}
 
-		//
-		startTest("Json::getValue(doc[\"string\"], value))");
+		TEST_CASE("Json::getValue(doc[\"string\"], value))")
 		{
 			String value;
 			REQUIRE(Json::getValue(doc["string"], value) == false);
 		}
 
-		//
-		startTest("Json::getValue(doc[\"arr\"][1], value");
+		TEST_CASE("Json::getValue(doc[\"arr\"][1], value")
 		{
 			String value;
 			REQUIRE(Json::getValue(doc["arr"][0], value) == true);
@@ -78,20 +74,19 @@ public:
 		// Keep a reference copy for when doc gets messed up
 		StaticJsonDocument<512> sourceDoc = doc;
 
-		//
-		startTest("Json::serialize(doc, String), then save to file");
+		TEST_CASE("Json::serialize(doc, String), then save to file")
 		{
 			String s;
 			REQUIRE(Json::serialize(doc, s) == 95);
 			REQUIRE(fileSetContent(test_json, s) == int(s.length()));
 		}
 
-		//
-		startTest("Json::saveToFile(doc, test_json, Json::Pretty)");
-		REQUIRE(Json::saveToFile(doc, test_json, Json::Pretty) == true);
+		TEST_CASE("Json::saveToFile(doc, test_json, Json::Pretty)")
+		{
+			REQUIRE(Json::saveToFile(doc, test_json, Json::Pretty) == true);
+		}
 
-		//
-		startTest("Json::loadFromFile(doc, test_json)");
+		TEST_CASE("Json::loadFromFile(doc, test_json)")
 		{
 			REQUIRE(Json::loadFromFile(doc, test_json) == true);
 			String s = fileGetContent(test_json);
@@ -99,8 +94,7 @@ public:
 			debug_d("%s", s.c_str(), s.length());
 		}
 
-		//
-		startTest("Json::serialize(doc, MemoryDataStream*)");
+		TEST_CASE("Json::serialize(doc, MemoryDataStream*)")
 		{
 			doc = sourceDoc;
 			auto stream = new MemoryDataStream;
@@ -116,8 +110,7 @@ public:
 			delete stream;
 		}
 
-		//
-		startTest("nullptr checks");
+		TEST_CASE("nullptr checks")
 		{
 			MemoryDataStream* stream = nullptr;
 			auto count = Json::serialize(doc, stream);
@@ -127,9 +120,8 @@ public:
 			debug_d("doc.memoryUsage = %u", doc.memoryUsage());
 		}
 
-		//
 		String serialised;
-		startTest("String serialisation");
+		TEST_CASE("String serialisation")
 		{
 			doc = sourceDoc;
 			serialised = Json::serialize(doc);
@@ -139,9 +131,8 @@ public:
 			debug_d("doc.memoryUsage = %u", doc.memoryUsage());
 		}
 
-		//
-		startTest("Buffer serialisation");
 		char buffer[256];
+		TEST_CASE("Buffer serialisation")
 		{
 			doc = sourceDoc;
 			size_t len = Json::serialize(doc, buffer);
@@ -150,8 +141,7 @@ public:
 			REQUIRE(memcmp(buffer, serialised.c_str(), len) == 0);
 		}
 
-		//
-		startTest("Buffer/Size serialisation");
+		TEST_CASE("Buffer/Size serialisation")
 		{
 			doc = sourceDoc;
 			auto len = Json::serialize(doc, buffer, sizeof(buffer));
@@ -163,14 +153,12 @@ public:
 			debug_d("doc.memoryUsage = %u", doc.memoryUsage());
 		}
 
-		//
-		startTest("Json::saveToFile(doc, test_msgpack, Json::MessagePack)");
+		TEST_CASE("Json::saveToFile(doc, test_msgpack, Json::MessagePack)")
 		{
 			REQUIRE(Json::saveToFile(doc, test_msgpack, Json::MessagePack) == true);
 		}
 
-		//
-		startTest("Json::loadFromFile(doc, test_msgpack, Json::MessagePack)");
+		TEST_CASE("Json::loadFromFile(doc, test_msgpack, Json::MessagePack)")
 		{
 			REQUIRE(Json::loadFromFile(doc, test_msgpack, Json::MessagePack) == true);
 			String s = fileGetContent(test_msgpack);
@@ -178,8 +166,7 @@ public:
 			REQUIRE(s.length() == 82);
 		}
 
-		//
-		startTest("Json::serialize(doc, Serial)");
+		TEST_CASE("Json::serialize(doc, Serial)")
 		{
 			Json::serialize(doc, Serial);
 			Serial.println();
@@ -187,8 +174,7 @@ public:
 			Serial.println();
 		}
 
-		//
-		startTest("Json::measure(doc2)");
+		TEST_CASE("Json::measure(doc2)")
 		{
 			StaticJsonDocument<10> doc2;
 			auto measured = Json::measure(doc2);
@@ -200,11 +186,11 @@ public:
 			REQUIRE(s == "null");
 		}
 
-		// Serialization
-		startTest("Serialise to MemoryDataStream");
 		DEFINE_FSTR_LOCAL(jsonTest, "{\"key1\":\"value1\",\"key2\":\"value2\"}");
-		Json::deserialize(doc, jsonTest);
+
+		TEST_CASE("Serialise to MemoryDataStream")
 		{
+			Json::deserialize(doc, jsonTest);
 			auto stream = new MemoryDataStream;
 			stream->setTimeout(0);
 			size_t serializedLength = Json::serialize(doc, stream);
@@ -217,9 +203,8 @@ public:
 			delete stream;
 		}
 
-		// De-serialisation
+		TEST_CASE("De-serialise from MemoryDataStream")
 		{
-			startTest("De-serialise from MemoryDataStream");
 			auto stream = new MemoryDataStream;
 			stream->print(jsonTest);
 			REQUIRE(Json::deserialize(doc, stream) == true);
@@ -229,8 +214,7 @@ public:
 			delete stream;
 		}
 
-		// LONGLONG support
-		startTest("LONGLONG support");
+		TEST_CASE("LONGLONG support")
 		{
 			StaticJsonDocument<256> doc;
 			JsonObject root = doc.to<JsonObject>();

@@ -1,4 +1,4 @@
-#include "common.h"
+#include <SmingTest.h>
 
 #include <Network/Url.h>
 #include <Network/Http/HttpRequest.h>
@@ -15,41 +15,46 @@ public:
 
 	void execute() override
 	{
-		startTest("formUrlParser test");
-		auto testUrl = [this](const FlashString& urlText, const char* param) {
-			debugf("URL '%s'", String(urlText).c_str());
-			Url url(urlText);
-			String query = url.Query;
-			const char* p = query.c_str();
-			++p; // Skip the '?'
-			HttpRequest request;
-			formUrlParser(request, nullptr, PARSE_DATASTART);
-			while(*p != '\0') {
-				formUrlParser(request, p, 1);
-				++p;
-			}
-			formUrlParser(request, nullptr, PARSE_DATAEND);
-			printParams(request.postParams);
-			String cid = request.getPostParameter("cid");
-			debugf("cid = %s", cid.c_str());
-			REQUIRE(cid == param);
-		};
-
 		DEFINE_FSTR_LOCAL(FS_URL1, "http://smingtest.local?param1=1&param2=2#whacky%20races");
 		DEFINE_FSTR_LOCAL(FS_URL2, "http://smingtest.local/iocontrol.js?cid=fa373784");
 		DEFINE_FSTR_LOCAL(FS_URL3, "/iocontrol.js?cid=81e66a3a");
 
-		testUrl(FS_URL1, "");
-		testUrl(FS_URL2, "fa373784");
-		testUrl(FS_URL3, "81e66a3a");
+		TEST_CASE("formUrlParser test")
+		{
+			auto testUrl = [this](const FlashString& urlText, const char* param) {
+				debugf("URL '%s'", String(urlText).c_str());
+				Url url(urlText);
+				String query = url.Query;
+				const char* p = query.c_str();
+				++p; // Skip the '?'
+				HttpRequest request;
+				formUrlParser(request, nullptr, PARSE_DATASTART);
+				while(*p != '\0') {
+					formUrlParser(request, p, 1);
+					++p;
+				}
+				formUrlParser(request, nullptr, PARSE_DATAEND);
+				printParams(request.postParams);
+				String cid = request.getPostParameter("cid");
+				debugf("cid = %s", cid.c_str());
+				REQUIRE(cid == param);
+			};
 
-		debugf("HttpRequest getQueryParameter() test");
+			testUrl(FS_URL1, "");
+			testUrl(FS_URL2, "fa373784");
+			testUrl(FS_URL3, "81e66a3a");
+		}
+
 		HttpRequest request;
-		request.uri = FS_URL2;
-		debugf("URL = \"%s\"", request.uri.toString().c_str());
-		debugf("cid = %s", request.getQueryParameter("cid").c_str());
 
-		debugf("HttpRequest postParams test");
+		TEST_CASE("HttpRequest getQueryParameter()")
+		{
+			request.uri = FS_URL2;
+			debugf("URL = \"%s\"", request.uri.toString().c_str());
+			debugf("cid = %s", request.getQueryParameter("cid").c_str());
+		}
+
+		TEST_CASE("HttpRequest postParams test");
 		{
 			DEFINE_FSTR_LOCAL(FS_serializedParams,
 							  "param+1=Mary+had+a+little+lamb%2c&param+2=It%27s+fleece+was+very+red.&param+3=The+"
@@ -82,7 +87,7 @@ public:
 			REQUIRE(uri.toString() == FS_serialized);
 		}
 
-		debugf("Alternative construction");
+		TEST_CASE("Alternative construction")
 		{
 #define MQTT_SERVER "192.168.2.138"
 #define MQTT_PORT 1883
@@ -93,6 +98,7 @@ public:
 			REQUIRE(url.toString() == FS_url);
 		}
 
+		TEST_CASE("Print")
 		{
 			DEFINE_FSTR_LOCAL(FS_url, "http://simple.anakod.ru/templates/jquery.js.gz");
 			DEFINE_FSTR_LOCAL(FS_url_out, "http://simple.anakod.ru:80/templates/jquery.js.gz");
@@ -104,6 +110,7 @@ public:
 			REQUIRE(s == FS_url_out);
 		}
 
+		TEST_CASE("toString")
 		{
 			DEFINE_FSTR_LOCAL(FS_url, "http://api.thingspeak.com/update?key=7XXUJWCWYTMXKN3L&field1=347");
 			Url uri;

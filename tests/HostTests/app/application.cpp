@@ -1,15 +1,11 @@
 /*
  * Test framework
  *
- * Related tests should be grouped into a single module.
- * The test code should be in a separate file called `test-XXX.cpp`
- * Each group must have a single entry function `void test_XXX()` - define using REGISTER_TEST macro
- * The name of the test must be added to the TEST_MAP definition below.
+ * See SmingTest library for details
  *
- * See common.h for further details.
  */
 
-#include "common.h"
+#include <SmingTest.h>
 #include "modules.h"
 
 #define XX(t) extern void REGISTER_TEST(t);

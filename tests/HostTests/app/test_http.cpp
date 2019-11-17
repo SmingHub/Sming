@@ -1,4 +1,4 @@
-#include "common.h"
+#include <SmingTest.h>
 
 #include "Network/Http/HttpCommon.h"
 #include "Network/Http/HttpHeaders.h"
@@ -138,7 +138,7 @@ public:
 		headers.clear();
 		REQUIRE(headers.count() == 0);
 
-		startTest("Non-existent (const)");
+		TEST_CASE("Non-existent (const)")
 		{
 			const HttpHeaders& constHeaders = headers;
 			String hdr = constHeaders["Non-Existent"];
@@ -148,7 +148,7 @@ public:
 			printHeaders(headers);
 		}
 
-		startTest("Non-existent (non-const)");
+		TEST_CASE("Non-existent (non-const)")
 		{
 			String hdr = headers["Non-Existent"];
 			REQUIRE(headers.count() == 1);
@@ -170,7 +170,7 @@ public:
 			return s;
 		};
 
-		startTest("Serialisation");
+		TEST_CASE("Serialisation")
 		{
 			headers["Mary"] = "Had a little lamb";
 			headers[HTTP_HEADER_CONTENT_LENGTH] = "12345";
@@ -179,7 +179,7 @@ public:
 			printHeaders(headers);
 		}
 
-		startTest("setMultiple()");
+		TEST_CASE("setMultiple()")
 		{
 			HttpHeaders headers2;
 			headers2.setMultiple(headers);
