@@ -8,8 +8,8 @@ Minimising Memory Usage
 =======================
 
 Literals use up memory, so its a good idea to move them to flash. Be
-aware though that it can be slower! Further reading, see the header
-FlashString.h in the sming source code
+aware though that it can be slower! Further reading, see :doc:`flash`
+and :component:`FlashString`.
 
 F() macro
 ---------
@@ -81,7 +81,7 @@ underscore instead.
 Webpages and Spiffs
 ===================
 
-FlashString turns out to be very useful for sending web pages,
+:component:`FlashString <FlashString>` turns out to be very useful for sending web pages,
 javascript, CSS and so on. Many examples for the ESP8266 exist where a
 Spiffs file system is used for this purpose, but in fact Spiffs is not
 ideal. If you want to release a new version of your software, and your
@@ -89,7 +89,7 @@ web pages are in spiffs, you now have two things to release, so there is
 double the chance of something going wrong. Plus you have the challenge
 of preserving any user files while refreshing just a few.
 
-One solution is to use a FlashString hooked up to a FlashMemoryStream
+One solution is to use a FlashString hooked up to a *FlashMemoryStream*
 instead. In the example below, the CSS file is sent compressed to save
 time and space. The browser asks for core.js and gets a compressed
 version::
@@ -103,7 +103,7 @@ version::
        response.sendDataStream(stream, MimeType::MIME_JS);
    }
 
-See :source:`Sming/Wiring/FlashString.h` for further details. 
+See :component:`FlashString` for further details.
 
 Webpages Performance
 ====================
