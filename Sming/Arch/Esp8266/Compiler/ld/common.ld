@@ -176,6 +176,8 @@ SECTIONS
     /* const references, mainly in templated code */
     *(.rodata._ZN*)
 
+	*(.rodata._ZZN*)
+
     _irom0_text_end = ABSOLUTE(.);
     _flash_code_end = ABSOLUTE(.);
   } >irom0_0_seg :irom0_0_phdr
