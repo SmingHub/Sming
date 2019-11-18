@@ -11,25 +11,26 @@
  ****/
 
 #include "HttpHeaders.h"
+#include <FlashString/Vector.hpp>
 
 // Define field name strings and a lookup table
 #define XX(_tag, _str, _comment) DEFINE_FSTR_LOCAL(hhfnStr_##_tag, _str);
 HTTP_HEADER_FIELDNAME_MAP(XX)
 #undef XX
 
-static FSTR_TABLE(FieldNameStrings) = {
-#define XX(_tag, _str, _comment) FSTR_PTR(hhfnStr_##_tag),
-	HTTP_HEADER_FIELDNAME_MAP(XX)
+#define XX(_tag, _str, _comment) &hhfnStr_##_tag,
+DEFINE_FSTR_VECTOR_LOCAL(fieldNameStrings, FlashString, HTTP_HEADER_FIELDNAME_MAP(XX));
 #undef XX
-};
 
 String HttpHeaders::toString(HttpHeaderFieldName name) const
 {
-	if(name == HTTP_HEADER_UNKNOWN)
+	if(name == HTTP_HEADER_UNKNOWN) {
 		return nullptr;
+	}
 
-	if(name < HTTP_HEADER_CUSTOM)
-		return *FieldNameStrings[name - 1];
+	if(name < HTTP_HEADER_CUSTOM) {
+		return fieldNameStrings[name - 1];
+	}
 
 	return customFieldNames[name - HTTP_HEADER_CUSTOM];
 }
@@ -47,10 +48,9 @@ String HttpHeaders::toString(const String& name, const String& value)
 
 HttpHeaderFieldName HttpHeaders::fromString(const String& name) const
 {
-	// 0 is reserved for UNKNOWN
-	for(unsigned i = 1; i < HTTP_HEADER_CUSTOM; ++i) {
-		if(name.equalsIgnoreCase(*FieldNameStrings[i - 1]))
-			return static_cast<HttpHeaderFieldName>(i);
+	auto index = fieldNameStrings.indexOf(name);
+	if(index >= 0) {
+		return static_cast<HttpHeaderFieldName>(index + 1);
 	}
 
 	return findCustomFieldName(name);
@@ -59,8 +59,9 @@ HttpHeaderFieldName HttpHeaders::fromString(const String& name) const
 HttpHeaderFieldName HttpHeaders::findCustomFieldName(const String& name) const
 {
 	auto index = customFieldNames.indexOf(name);
-	if(index >= 0)
+	if(index >= 0) {
 		return static_cast<HttpHeaderFieldName>(HTTP_HEADER_CUSTOM + index);
+	}
 
 	return HTTP_HEADER_UNKNOWN;
 }
