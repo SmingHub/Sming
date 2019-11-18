@@ -13,7 +13,7 @@
  all copies or substantial portions of the Software.
  */
 
-#include "common.h"
+#include <SmingTest.h>
 
 #include <WString.h>
 

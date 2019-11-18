@@ -1,4 +1,4 @@
-#include "common.h"
+#include <SmingTest.h>
 
 #include <Data/CStringArray.h>
 
