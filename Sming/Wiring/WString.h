@@ -61,6 +61,9 @@
 #include <string.h>
 #include <sming_attr.h>
 
+#include <FlashString/String.hpp>
+using FlashString = FSTR::String;
+
 #ifndef __GXX_EXPERIMENTAL_CXX0X__
 #define __GXX_EXPERIMENTAL_CXX0X__
 #endif
@@ -92,9 +95,6 @@ typedef const __FlashStringHelper* flash_string_t;
  * For example: Serial.print(F("This is a test string\n"));
  */
 #define F(string_literal) String(FPSTR(PSTR(string_literal)), sizeof(string_literal) - 1)
-
-// Forward declaration for counted flash string - see FlashString.h
-struct FlashString;
 
 /**
  * @brief The string class
@@ -529,7 +529,6 @@ class StringSumHelper : public String
     StringSumHelper(double num) : String(num) {}
 };
 
-#include "FlashString.h"
 #include "SplitString.h"
 
 #endif  // __cplusplus

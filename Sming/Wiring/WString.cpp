@@ -34,11 +34,6 @@ String::String(const char *cstr) : String()
   if (cstr) copy(cstr, strlen(cstr));
 }
 
-String::String(const FlashString& fstr) : String()
-{
-  setString(fstr.data(), fstr.length());
-}
-
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
 String::String(StringSumHelper &&rval) : String()
 {

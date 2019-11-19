@@ -14,6 +14,7 @@ COMPONENT_INCDIRS := \
 
 COMPONENT_DEPENDS := \
 	sming-arch \
+	FlashString \
 	spiffs \
 	http-parser \
 	libb64 \
