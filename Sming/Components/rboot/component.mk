@@ -34,6 +34,8 @@ endif
 ### ROM Addresses ###
 # Make sure that your ROM slots and SPIFFS slot(s) do not overlap!
 
+CONFIG_VARS				+= RBOOT_ROM0_ADDR RBOOT_ROM1_ADDR RBOOT_ROM2_ADDR
+
 # Loation of first ROM (default is sector 2 after rboot and rboot config sector)
 RBOOT_ROM0_ADDR			?= 0x002000
 
@@ -62,9 +64,13 @@ else
 RBOOT_TWO_ROMS := 0
 endif
 
+DEBUG_VARS 				+= RBOOT_TWO_ROMS
+
 # BIGFLASH mode is needed if at least one ROM address exceeds the first 1MB of flash
 BIGFLASH_TEST := awk 'BEGIN { big=0; for(i = 1; i < ARGC; ++i) if(strtonum(ARGV[i]) > 0x100000) big=1; print big }'
 RBOOT_BIG_FLASH := $(shell $(BIGFLASH_TEST) $(RBOOT_ROM0_ADDR) $(RBOOT_ROM1_ADDR) $(RBOOT_ROM2_ADDR))
+
+DEBUG_VARS 				+= RBOOT_BIG_FLASH
 
 
 CONFIG_VARS				+= RBOOT_SILENT
@@ -96,7 +102,6 @@ COMPONENT_APPCODE		:= appcode rboot/appcode $(if $(RBOOT_EMULATION),host)
 APP_CFLAGS				+= -DRBOOT_INTEGRATION
 
 # these are exported for use by the rBoot Makefile
-CONFIG_VARS				+= RBOOT_ROM0_ADDR RBOOT_ROM1_ADDR RBOOT_ROM2_ADDR
 export RBOOT_BUILD_BASE	:= $(abspath $(COMPONENT_BUILD_DIR))
 export RBOOT_FW_BASE	:= $(abspath $(FW_BASE))
 export ESPTOOL2
