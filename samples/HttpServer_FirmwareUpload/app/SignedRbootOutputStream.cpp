@@ -17,16 +17,15 @@ void SignedRbootOutputStream::setError(const char* message)
 
 size_t SignedRbootOutputStream::write(const uint8_t* data, size_t size)
 {
-	size_t consumed = 0;
+	size_t available = size;
 	if(!errorFlag) {
 		if(missingHeaderBytes > 0) {
-			const size_t chunkSize = std::min(size, missingHeaderBytes);
+			const size_t chunkSize = std::min(available, missingHeaderBytes);
 			memcpy(headerPtr, data, chunkSize);
 			headerPtr += chunkSize;
 			missingHeaderBytes -= chunkSize;
 			data += chunkSize;
-			size -= chunkSize;
-			consumed += chunkSize;
+			available -= chunkSize;
 			if(missingHeaderBytes == 0) {
 				debug_i("Receive image for load address 0x%08X, slot starts at 0x%08X\n", header.loadAddress,
 						startAddress);
@@ -35,23 +34,21 @@ size_t SignedRbootOutputStream::write(const uint8_t* data, size_t size)
 				if(unexpectedMagic || unexpectedLoadAddress) {
 					setError(unexpectedLoadAddress ? "Unexpected load address. Try image for other slot."
 												   : "Invalid image received.");
-					return 0;
+				} else {
+					init();
 				}
-
-				init();
 			}
 		}
 
-		if(size > 0) {
-			crypto_sign_update(&verifierState, static_cast<const unsigned char*>(data), size);
-			const size_t written = RbootOutputStream::write(data, size);
-			consumed += written;
-			if(written != size) {
+		if(!errorFlag && (available > 0)) {
+			crypto_sign_update(&verifierState, static_cast<const unsigned char*>(data), available);
+			const size_t written = RbootOutputStream::write(data, available);
+			if(written != available) {
 				setError("Flash write failure");
 			}
 		}
 	}
-	return consumed;
+	return size; // Always pretend to consume everything. Otherwise the connection is closed before we get a chance to report our error message.
 }
 
 bool SignedRbootOutputStream::verifySignature(const uint8_t* verificationKey)
