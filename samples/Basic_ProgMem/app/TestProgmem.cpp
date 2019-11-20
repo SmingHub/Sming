@@ -121,10 +121,10 @@ void testFSTR(Print& out)
 
 	// Example of array or custom data usage
 	out.print("> demoArray1 : ");
-	static struct {
+	static constexpr const struct {
 		FSTR::ObjectBase object;
 		char data[5];
-	} demoArray1 = {{5}, {1, 2, 3, 4, 5}};
+	} demoArray1 PROGMEM = {{5}, {1, 2, 3, 4, 5}};
 	auto& arr = demoArray1.object.as<FSTR::Array<uint8_t>>();
 	arr.printTo(out);
 	out.println();
