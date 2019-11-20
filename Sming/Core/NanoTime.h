@@ -244,12 +244,11 @@ template <typename ClockDef, uint32_t frequency_, typename TickType_, TickType_ 
  *
  * 	uint32_t micros = convert<50, Milliseconds, Microseconds>();
  */
-template <uint64_t time, Unit unitsFrom, Unit unitsTo> constexpr uint64_t convert()
+template <uint64_t time, Unit unitsFrom, Unit unitsTo,
+		  typename R = std::ratio_divide<UnitTickRatio<unitsTo>, UnitTickRatio<unitsFrom>>>
+constexpr uint64_t convert()
 {
-	return ({
-		using R = std::ratio_divide<UnitTickRatio<unitsTo>, UnitTickRatio<unitsFrom>>;
-		round(double(time) * R::num / R::den);
-	});
+	return ({ round(double(time) * R::num / R::den); });
 }
 
 /**
