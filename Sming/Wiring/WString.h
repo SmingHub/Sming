@@ -58,6 +58,7 @@
 
 #include "WConstants.h"
 #include <stddef.h>
+#include <string.h>
 #include <sming_attr.h>
 
 #ifndef __GXX_EXPERIMENTAL_CXX0X__
@@ -397,7 +398,11 @@ class String
   
     // search
     int indexOf(char ch, size_t fromIndex = 0) const;
-    int indexOf(const char* s2_buf, size_t fromIndex = 0, size_t s2_len = 0) const;
+    int indexOf(const char* s2_buf, size_t fromIndex, size_t s2_len) const;
+    int indexOf(const char* s2_buf, size_t fromIndex = 0) const
+    {
+    	return indexOf(s2_buf, fromIndex, strlen(s2_buf));
+    }
     int indexOf(const String &s2, size_t fromIndex = 0) const
     {
     	return indexOf(s2.cbuffer(), fromIndex, s2.length());
