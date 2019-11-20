@@ -29,85 +29,85 @@ const String String::empty = "";
 /*  Constructors                             */
 /*********************************************/
 
-String::String(const char *cstr)
+String::String(const char *cstr) : String()
 {
   if (cstr) copy(cstr, strlen(cstr));
 }
 
-String::String(const FlashString& fstr)
+String::String(const FlashString& fstr) : String()
 {
   setString(fstr.data(), fstr.length());
 }
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-String::String(StringSumHelper &&rval)
+String::String(StringSumHelper &&rval) : String()
 {
   move(rval);
 }
 #endif
 
-String::String(char c)
+String::String(char c) : String()
 {
   if (setLength(1))
 	  buffer()[0] = c;
 }
 
-String::String(unsigned char value, unsigned char base)
+String::String(unsigned char value, unsigned char base) : String()
 {
   char buf[8 + 8 * sizeof(value)];
   ultoa(value, buf, base);
   *this = buf;
 }
 
-String::String(int value, unsigned char base)
+String::String(int value, unsigned char base) : String()
 {
   char buf[8 + 8 * sizeof(value)];
   itoa(value, buf, base);
   *this = buf;
 }
 
-String::String(unsigned int value, unsigned char base)
+String::String(unsigned int value, unsigned char base) : String()
 {
   char buf[8 + 8 * sizeof(value)];
   ultoa(value, buf, base);
   *this = buf;
 }
 
-String::String(long value, unsigned char base)
+String::String(long value, unsigned char base) : String()
 {
   char buf[8 + 8 * sizeof(value)];
   ltoa(value, buf, base);
   *this = buf;
 }
 
-String::String(long long value, unsigned char base)
+String::String(long long value, unsigned char base) : String()
 {
   char buf[8 + 8 * sizeof(value)];
   lltoa(value, buf, base);
   *this = buf;
 }
 
-String::String(unsigned long value, unsigned char base)
+String::String(unsigned long value, unsigned char base) : String()
 {
   char buf[8 + 8 * sizeof(value)];
   ultoa(value, buf, base);
   *this = buf;
 }
 
-String::String(unsigned long long value, unsigned char base)
+String::String(unsigned long long value, unsigned char base) : String()
 {
   char buf[8 + 8 * sizeof(value)];
   ulltoa(value, buf, base);
   *this = buf;
 }
 
-String::String(float value, unsigned char decimalPlaces)
+String::String(float value, unsigned char decimalPlaces) : String()
 {
 	char buf[33];
 	*this = dtostrf(value, 0, decimalPlaces, buf);
 }
 
-String::String(double value, unsigned char decimalPlaces)
+String::String(double value, unsigned char decimalPlaces) : String()
 {
 	char buf[33];
 	*this = dtostrf(value, 0, decimalPlaces, buf);
