@@ -11,7 +11,7 @@ namespace ARDUINOJSON_NAMESPACE
 class FlashStringRefAdapter
 {
 public:
-	FlashStringRefAdapter(const FlashString& str) : str(str)
+	explicit FlashStringRefAdapter(const FlashString& str) : str(str)
 	{
 	}
 
