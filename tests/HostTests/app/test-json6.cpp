@@ -3,6 +3,9 @@
 #include <JsonObjectStream6.h>
 #include <Data/CStringArray.h>
 #include <Data/CString.h>
+#include <FlashString/Stream.hpp>
+
+IMPORT_FSTR(testJsonFile, PROJECT_DIR "/files/test.json");
 
 class JsonTest6 : public TestGroup
 {
@@ -19,7 +22,6 @@ public:
 		DEFINE_FSTR_LOCAL(test_json, "test.json");
 		DEFINE_FSTR_LOCAL(test_msgpack, "test.msgpack");
 
-		StaticJsonDocument<512> doc;
 		doc["string1"] = "string value 1";
 		auto json = doc.as<JsonObject>();
 		DEFINE_FSTR_LOCAL(FS_number2, "number2");
@@ -37,7 +39,6 @@ public:
 			String s = Json::serialize(doc);
 			debug_d("Test doc: %s", s.c_str());
 			REQUIRE(s == serialized1);
-
 			CString cs;
 			Json::serialize(doc, cs);
 			debug_d("Test doc: %s", cs.c_str());
@@ -259,7 +260,87 @@ public:
 			REQUIRE(value.isNull() == false);
 			REQUIRE(value[_F("module")] == FS("Analog"));
 		}
+		TEST_CASE("Speed checks")
+		{
+			speedChecks();
+		}
 	}
+
+	void __attribute__((noinline)) loadBuffer(const char* buffer, size_t length)
+	{
+		assert(Json::deserialize(doc, buffer, length));
+	}
+
+	void __attribute__((noinline)) loadFlashString()
+	{
+		assert(Json::deserialize(doc, testJsonFile));
+	}
+
+	void __attribute__((noinline)) loadFlashStringViaStream(bool useFlashRead)
+	{
+		FSTR::Stream stream(testJsonFile, useFlashRead);
+		assert(Json::deserialize(doc, stream));
+	}
+
+	void __attribute__((noinline)) loadStream(IDataSourceStream& stream)
+	{
+		stream.seekFrom(0, SEEK_SET);
+		assert(Json::deserialize(doc, stream));
+	}
+
+	void __attribute__((noinline)) loadFile(const char* filename)
+	{
+		FileStream fs(filename);
+		loadStream(fs);
+	}
+
+	void speedChecks()
+	{
+#define CHECK(func)                                                                                                    \
+	for(unsigned i = 0; i < 4; ++i) {                                                                                  \
+		ElapseTimer timer;                                                                                             \
+		func;                                                                                                          \
+		debug_i("Time: %s", timer.elapsedTime().toString().c_str());                                                   \
+	}
+
+		PSTR_ARRAY(filename, "test.json");
+		if(!fileExist(filename)) {
+			FileStream fs(filename, eFO_CreateNewAlways | eFO_WriteOnly);
+			REQUIRE(fs.isValid());
+			FSTR::Stream os(testJsonFile);
+			REQUIRE(fs.copyFrom(&os, os.available()) == testJsonFile.length());
+		}
+
+		TEST_CASE("loadBuffer")
+		{
+			LOAD_FSTR(buffer, testJsonFile);
+			CHECK(loadBuffer(buffer, testJsonFile.length()));
+		}
+		TEST_CASE("loadFlashString")
+		{
+			CHECK(loadFlashString());
+		}
+		TEST_CASE("loadFlashString via Stream (cached)")
+		{
+			CHECK(loadFlashStringViaStream(false));
+		}
+		TEST_CASE("loadFlashString via Stream (un-cached)")
+		{
+			CHECK(loadFlashStringViaStream(true));
+		}
+		TEST_CASE("loadFile")
+		{
+			CHECK(loadFile(filename));
+		}
+		TEST_CASE("loadStream")
+		{
+			FileStream fs(filename);
+			CHECK(loadStream(fs));
+		}
+	}
+
+private:
+	StaticJsonDocument<2048> doc;
 };
 
 void REGISTER_TEST(json6)
