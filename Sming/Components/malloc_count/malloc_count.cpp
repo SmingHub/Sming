@@ -346,10 +346,10 @@ void operator delete[](void* ptr)
 #else
 
 extern "C" void* WRAP(pvPortMalloc)(size_t) __attribute__((alias("mc_malloc")));
-extern "C" void* WRAP(pvPortCalloc)(size_t) __attribute__((alias("mc_calloc")));
+extern "C" void* WRAP(pvPortCalloc)(size_t, size_t) __attribute__((alias("mc_calloc")));
 extern "C" void* WRAP(pvPortRealloc)(void*, size_t) __attribute__((alias("mc_realloc")));
 extern "C" void* WRAP(pvPortZalloc)(size_t) __attribute__((alias("mc_zalloc")));
-extern "C" void* WRAP(pvPortZallocIram)(size_t, const char*, int) __attribute__((alias("mc_zalloc")));
-extern "C" void* WRAP(vPortFree)(void*) __attribute__((alias("mc_free")));
+extern "C" void* WRAP(pvPortZallocIram)(size_t) __attribute__((alias("mc_zalloc")));
+extern "C" void WRAP(vPortFree)(void*) __attribute__((alias("mc_free")));
 
 #endif
