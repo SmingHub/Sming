@@ -1,4 +1,4 @@
-#include "common.h"
+#include <SmingTest.h>
 
 #include <iram_precache.h>
 
