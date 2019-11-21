@@ -19,7 +19,9 @@ public:
 
 		StaticJsonDocument<512> doc;
 		doc["string1"] = "string value 1";
-		doc["number2"] = 12345;
+		auto json = doc.as<JsonObject>();
+		DEFINE_FSTR_LOCAL(FS_number2, "number2");
+		json[FS_number2] = 12345;
 		auto arr = doc.createNestedArray("arr");
 		arr.add(flashString1);
 		doc[flashString2] = flashString1;
@@ -221,6 +223,22 @@ public:
 			const uint64_t testnum = 0x12345678ABCDEF99ULL;
 			root["longtest"] = testnum;
 			REQUIRE(root["longtest"] == testnum);
+		}
+
+		/*
+		 * Dangling reference https://github.com/bblanchon/ArduinoJson/issues/1120
+		 * Fixed in ArduinoJson 6.13.0
+		 */
+		TEST_CASE("ArduinoJson #1120")
+		{
+			StaticJsonDocument<500> doc;
+			constexpr char str[] = "{\"contents\":[{\"module\":\"Packet\"},{\"module\":\"Analog\"}]}";
+			deserializeJson(doc, str);
+
+			auto value = doc[F("contents")][1];
+			debug_i("value.isNull() = %u", value.isNull());
+			REQUIRE(value.isNull() == false);
+			REQUIRE(value[_F("module")] == FS("Analog"));
 		}
 	}
 };

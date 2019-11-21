@@ -37,6 +37,7 @@
 
 #include "../ArduinoJson/src/ArduinoJson.h"
 #include "FlashStringRefAdapter.hpp"
+#include "FlashStringReader.hpp"
 #include <Data/Stream/FileStream.h>
 
 #ifndef JSON_ENABLE_COMPACT

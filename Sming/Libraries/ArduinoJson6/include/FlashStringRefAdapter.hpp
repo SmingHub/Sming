@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <ArduinoJson/Strings/IsWriteableString.hpp>
+
 namespace ARDUINOJSON_NAMESPACE
 {
 class FlashStringRefAdapter
@@ -62,6 +64,9 @@ inline FlashStringRefAdapter adaptString(const FlashString& str)
 }
 
 template <> struct IsString<FlashString> : true_type {
+};
+
+template <> struct IsWriteableString<FlashString> : false_type {
 };
 
 } // namespace ARDUINOJSON_NAMESPACE
