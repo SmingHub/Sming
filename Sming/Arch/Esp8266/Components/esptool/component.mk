@@ -38,7 +38,7 @@ FLASH_SIZE			:= $(subst K,*1024,$(FLASH_SIZE))
 FlashOffset			= $$(($(FLASH_SIZE)-$1))
 FLASH_INIT_CHUNKS += \
 	$(call FlashOffset,0x5000)=$(SDK_BASE)/bin/blank.bin \
-	$(call FlashOffset,0x4000)=$(SDK_BASE)/bin/esp_init_data_default.bin \
+	$(call FlashOffset,0x4000)=$(FLASH_INIT_DATA) \
 	$(call FlashOffset,0x2000)=$(SDK_BASE)/bin/blank.bin
 
 # Default COM port and speed used for flashing
@@ -49,6 +49,9 @@ COM_SPEED_ESPTOOL		?= $(COM_SPEED)
 COMPONENT_SUBMODULES	+= esptool
 DEBUG_VARS				+= ESPTOOL
 ESPTOOL					:= $(COMPONENT_PATH)/esptool/esptool.py
+ESPTOOL_SUBMODULE		:= $(COMPONENT_PATH)/esptool
+
+$(ESPTOOL): $(ESPTOOL_SUBMODULE)/.submodule
 
 ESPTOOL_CMDLINE			:= $(ESPTOOL) -p $(COM_PORT_ESPTOOL) -b $(COM_SPEED_ESPTOOL)
 

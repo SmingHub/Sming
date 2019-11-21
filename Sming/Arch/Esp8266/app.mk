@@ -118,7 +118,7 @@ else
 endif
 
 .PHONY: flashinit
-flashinit: ##Erase your device's flash memory and reset system configuration area to defaults
+flashinit: $(ESPTOOL) $(FLASH_INIT_DATA) ##Erase your device's flash memory and reset system configuration area to defaults
 	$(info Flash init data default and blank data)
 	$(info DISABLE_SPIFFS = $(DISABLE_SPIFFS))
 	$(EraseFlash)
