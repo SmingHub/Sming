@@ -1,9 +1,11 @@
-#ifndef INCLUDE_CONFIGURATION_H_
-#define INCLUDE_CONFIGURATION_H_
+#pragma once
 
 #include <SmingCore.h>
 
 const char THERM_CONFIG_FILE[] = ".therm.conf"; // leading point for security reasons :)
+
+// Application configuration JsonBuffer size, increase it if you have large config
+const uint8_t ConfigJsonBufferSize = 200;
 
 struct ThermConfig {
 	ThermConfig()
@@ -21,6 +23,4 @@ struct ThermConfig {
 ThermConfig loadConfig();
 void saveConfig(ThermConfig& cfg);
 
-extern ThermConfig ActiveConfig;
-
-#endif /* INCLUDE_CONFIGURATION_H_ */
+extern ThermConfig activeConfig;

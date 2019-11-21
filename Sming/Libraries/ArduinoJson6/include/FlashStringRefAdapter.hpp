@@ -11,46 +11,49 @@ namespace ARDUINOJSON_NAMESPACE
 class FlashStringRefAdapter
 {
 public:
-	FlashStringRefAdapter(const FlashString& str) : _str(str)
+	explicit FlashStringRefAdapter(const FlashString& str) : str(str)
 	{
 	}
 
 	bool equals(const char* expected) const
 	{
-		return _str.isEqual(expected);
+		return str.equals(expected);
 	}
 
 	bool isNull() const
 	{
-		return false;
+		return str.isNull();
 	}
 
 	char* save(MemoryPool* pool) const
 	{
-		size_t n = _str.size();
+		size_t n = str.size();
 		char* dup = pool->allocFrozenString(n);
-		if(dup)
-			memcpy_P(dup, _str.data(), n);
+		if(dup) {
+			str.read(0, dup, n);
+		}
 		return dup;
 	}
 
 	const char* data() const
 	{
+		// Cannot access directly using a char*
 		return nullptr;
 	}
 
 	size_t size() const
 	{
-		return _str.length();
+		return str.length();
 	}
 
 	bool isStatic() const
 	{
+		// Whilst  our value won't change, it cannot be accessed using a regular char*
 		return false;
 	}
 
 private:
-	const FlashString& _str;
+	const FlashString& str;
 };
 
 inline FlashStringRefAdapter adaptString(const FlashString& str)

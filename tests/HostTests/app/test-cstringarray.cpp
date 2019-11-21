@@ -33,6 +33,10 @@ public:
 			// Contains one empty string
 			CStringArray csa3("\0", 1);
 			REQUIRE(csa3.count() == 1);
+			// Construct using assignment from String
+			String s(FS_Basic);
+			CStringArray csa4 = s;
+			REQUIRE(csa4.count() == 4);
 		}
 
 		TEST_CASE("Destruction")

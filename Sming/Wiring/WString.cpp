@@ -34,11 +34,6 @@ String::String(const char *cstr) : String()
   if (cstr) copy(cstr, strlen(cstr));
 }
 
-String::String(const FlashString& fstr) : String()
-{
-  setString(fstr.data(), fstr.length());
-}
-
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
 String::String(StringSumHelper &&rval) : String()
 {
@@ -335,6 +330,18 @@ bool String::concat(const char *cstr, size_t length)
   return true;
 }
 
+bool String::concat(const FlashString& fstr)
+{
+	auto len = length();
+	unsigned int newcap = len + fstr.size();
+	if(!reserve(newcap)) {
+		return false;
+	}
+	fstr.read(0, buffer() + len, fstr.size());
+	setlen(len + fstr.length());
+	return true;
+}
+
 bool String::concat(const char *cstr)
 {
   if (!cstr) return true; // Consider this an empty string, not a failure
@@ -517,14 +524,6 @@ bool String::equals(const char *cstr, size_t length) const
   return memcmp(cbuffer(), cstr, len) == 0;
 }
 
-bool String::equals(const FlashString& fstr) const
-{
-	auto len = length();
-	if (len != fstr.length()) return false;
-	LOAD_FSTR(buf, fstr);
-	return memcmp(buf, cbuffer(), len) == 0;
-}
-
 bool String::equalsIgnoreCase(const char* cstr) const
 {
   auto buf = cbuffer();
@@ -538,14 +537,6 @@ bool String::equalsIgnoreCase(const char* cstr, size_t length) const
   if (len != length) return false;
   if (len == 0) return true;
   return memicmp(cbuffer(), cstr, len) == 0;
-}
-
-bool String::equalsIgnoreCase(const FlashString& fstr) const
-{
-  auto len = length();
-  if (len != fstr.length()) return false;
-  LOAD_FSTR(buf, fstr);
-  return memicmp(buf, cbuffer(), len) == 0;
 }
 
 bool String::startsWith(const String &prefix, size_t offset) const

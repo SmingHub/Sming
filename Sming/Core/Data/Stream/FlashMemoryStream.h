@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "DataSourceStream.h"
+#include <FlashString/Stream.hpp>
 
 /** @addtogroup stream
  *  @{
@@ -24,39 +24,7 @@
  * Provides a stream buffer on flash storage, so it's read-only
  *
  */
-class FlashMemoryStream : public IDataSourceStream
-{
-public:
-	FlashMemoryStream(const FlashString& flashString) : flashString(flashString)
-	{
-	}
 
-	StreamType getStreamType() const override
-	{
-		return eSST_Memory;
-	}
-
-	/**
-	 * @brief Return the total length of the stream
-	 * @retval int -1 is returned when the size cannot be determined
-	*/
-	int available() override
-	{
-		return flashString.length() - readPos;
-	}
-
-	uint16_t readMemoryBlock(char* data, int bufSize) override;
-
-	int seekFrom(int offset, unsigned origin) override;
-
-	bool isFinished() override
-	{
-		return readPos >= flashString.length();
-	}
-
-private:
-	const FlashString& flashString;
-	size_t readPos = 0;
-};
+using FlashMemoryStream = FSTR::Stream;
 
 /** @} */

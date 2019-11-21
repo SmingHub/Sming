@@ -9,6 +9,7 @@ Information
    events
    memory
    flash
+   cstringarray
    interrupts
    timers
    tasks

@@ -8,6 +8,8 @@
 #include "FlashData.h"
 #include "Print.h"
 #include <Platform/Timers.h>
+#include <FlashString/Array.hpp>
+#include <FlashString/Vector.hpp>
 
 // Note: contains nulls which won't display, but will be stored
 #define DEMO_TEST_TEXT "This is a flash string -\0Second -\0Third -\0Fourth."
@@ -79,6 +81,13 @@ void testPSTR(Print& out)
 
 void testFSTR(Print& out)
 {
+	// Demonstrate direct reading of a flashstring
+	char buffer[1024];
+	auto len = demoFSTR1.readFlash(0, buffer, sizeof(buffer));
+	out.print("demoFSTR1.read(): ");
+	out.write(buffer, len);
+	out.println();
+
 	// Implicit conversion of FlashString to String; entire content (including nuls) loaded
 	out.print("> demoFSTR1 (print String): ");
 	out.print('"');
@@ -111,17 +120,14 @@ void testFSTR(Print& out)
 	out.println('"');
 
 	// Example of array or custom data usage
-	out.print("> demoArray1 : {");
-	static struct {
-		FlashString fstr;
+	out.print("> demoArray1 : ");
+	static constexpr const struct {
+		FSTR::ObjectBase object;
 		char data[5];
-	} demoArray1 = {{5}, {1, 2, 3, 4, 5}};
-	String arr(demoArray1.fstr);
-	for(unsigned i = 0; i < arr.length(); ++i) {
-		out.print(arr[i], DEC);
-		out.print(", ");
-	}
-	out.println("}");
+	} demoArray1 PROGMEM = {{5}, {1, 2, 3, 4, 5}};
+	auto& arr = demoArray1.object.as<FSTR::Array<uint8_t>>();
+	arr.printTo(out);
+	out.println();
 
 	// Test equality operators
 #define TEST(_test) out.printf(_F("%s: %s\n"), (_test) ? _F("PASS") : _F("FAIL"), _F(#_test));
@@ -136,16 +142,13 @@ void testFSTR(Print& out)
 	DEFINE_FSTR_LOCAL(fstr1, "Test string #1");
 	DEFINE_FSTR_LOCAL(fstr2, "Test string #2");
 
-	static FSTR_TABLE(table) = {
-		FSTR_PTR(fstr1),
-		FSTR_PTR(fstr2),
-	};
+	DEFINE_FSTR_VECTOR_LOCAL(table, FlashString, &fstr1, &fstr2);
 
 	// Table entries may be accessed directly as they are word-aligned
 	out.println(_F("FSTR tables -"));
-	out.printf(_F(" fstr1 = '%s'\n"), String(*table[0]).c_str());
-	out.printf(_F(" fstr1.length() = %u\n"), table[0]->length());
-	out.printf(_F(" entries = %u\n"), ARRAY_SIZE(table));
+	out.printf(_F(" fstr1 = '%s'\n"), String(table[0]).c_str());
+	out.printf(_F(" fstr1.length() = %u\n"), table[0].length());
+	out.printf(_F(" entries = %u\n"), table.length());
 
 	out.println("< testFSTR() end\n");
 }

@@ -12,8 +12,7 @@
 
 #pragma once
 
-#include "FlashMemoryStream.h"
-#include "TemplateStream.h"
+#include <FlashString/TemplateStream.hpp>
 
 /**
   * @brief      Template Flash memory stream class
@@ -22,15 +21,6 @@
   *  @{
  */
 
-class TemplateFlashMemoryStream : public TemplateStream
-{
-public:
-	/** @brief Create a template stream on top of a flash memory stream
-     *  @param  flashString Source data for the stream
-     */
-	TemplateFlashMemoryStream(const FlashString& flashString) : TemplateStream(new FlashMemoryStream(flashString))
-	{
-	}
-};
+using TemplateFlashMemoryStream = FSTR::TemplateStream;
 
 /** @} */

@@ -22,6 +22,9 @@
 	path = Sming/Components/MultipartParser/multipart-parser
 	url = https://github.com/iafonov/multipart-parser-c.git
 	ignore = dirty
+[submodule "FlashString"]
+	path = Sming/Components/FlashString
+	url = https://github.com/mikee47/FlashString
 
 [submodule "esptool"]
 	path = Sming/Arch/Esp8266/Components/esptool/esptool
