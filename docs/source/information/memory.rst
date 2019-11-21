@@ -30,6 +30,8 @@ IRAM
    means that commonly-used code does not necessarily run faster if explicitly
    stored in IRAM.
 
+   If the code is timing critical it may benefit from pre-caching.
+   See :component-esp8266:`spi_flash`.
 
 Flash
    Main storage for your application, libraries, the Espressif SDK code, etc.

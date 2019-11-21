@@ -20,34 +20,22 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include <stdint.h>
-
-#pragma once
+#include "iram_precache.h"
 
 /*
- * Tools for pre-loading code into the flash cache
- *
- * - It can be useful for code that accesses/uses SPI0 which is connected to the flash chip.
- * - Non interrupt handler code that is infrequently called but might otherwise
- *	 require being in valuable IRAM - such as bit-banging I/O code or some code
- *	 run at bootup can avoid being permanently in IRAM.
- *
+ * Size of a cache page in bytes.
+ * We only need to read one word per page (ie 1 word in 8) for this to work.
  */
+#define CACHE_PAGE_SIZE 32
 
-#define PRECACHE_ATTR __attribute__((optimize("no-reorder-blocks"))) __attribute__((noinline))
-
-#define PRECACHE_START(tag)                                                                                            \
-	precache(NULL, (uint8_t*)&&_precache_end_##tag - (uint8_t*)&&_precache_start_##tag);                               \
-	_precache_start_##tag:
-
-#define PRECACHE_END(tag) _precache_end_##tag:
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void precache(void* f, uint32_t bytes);
-
-#ifdef __cplusplus
+void iram_precache(void* addr, uint32_t bytes)
+{
+	register void* a0 asm("a0");
+	register uint32_t lines = (bytes / CACHE_PAGE_SIZE) + 2;
+	volatile auto p = reinterpret_cast<uint32_t*>(uint32_t(addr ?: a0) & ~0x03);
+	uint32_t x;
+	for(uint32_t i = 0; i < lines; i++, p += CACHE_PAGE_SIZE / sizeof(uint32_t)) {
+		x = *p;
+	}
+	(void)x;
 }
-#endif
