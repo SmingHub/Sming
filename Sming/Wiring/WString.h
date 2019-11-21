@@ -58,6 +58,7 @@
 
 #include "WConstants.h"
 #include <stddef.h>
+#include <string.h>
 #include <sming_attr.h>
 
 #ifndef __GXX_EXPERIMENTAL_CXX0X__
@@ -123,23 +124,26 @@ class String
        if the initial value is null or invalid, or if memory allocation
        fails, the string will be marked as invalid (i.e. "if (s)" will be false).
     */
-    String(const char *cstr = nullptr);
-    String(const char *cstr, size_t length)
+    String() : ptr{nullptr, 0, 0}
+	{
+	}
+    String(const char *cstr);
+    String(const char *cstr, size_t length) : String()
     {
       if (cstr) copy(cstr, length);
     }
-    String(const String &str)
+    String(const String &str) : String()
     {
       *this = str;
     }
-    explicit String(flash_string_t pstr, int length = -1)
+    explicit String(flash_string_t pstr, int length = -1) : String()
     {
       setString(pstr, length);
     }
     String(const FlashString& fstr);
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-    String(String && rval)
+    String(String && rval) : String()
     {
    	  move(rval);
     }
@@ -394,7 +398,11 @@ class String
   
     // search
     int indexOf(char ch, size_t fromIndex = 0) const;
-    int indexOf(const char* s2_buf, size_t fromIndex = 0, size_t s2_len = 0) const;
+    int indexOf(const char* s2_buf, size_t fromIndex, size_t s2_len) const;
+    int indexOf(const char* s2_buf, size_t fromIndex = 0) const
+    {
+    	return indexOf(s2_buf, fromIndex, strlen(s2_buf));
+    }
     int indexOf(const String &s2, size_t fromIndex = 0) const
     {
     	return indexOf(s2.cbuffer(), fromIndex, s2.length());
@@ -438,7 +446,7 @@ protected:
 	struct PtrBuf {
 		char* buffer;		  // the actual char array
 		size_t len;			  // the String length (not counting the '\0')
-		size_t capacity : 31; // the array length minus one (for the '\0')
+		size_t capacity;	  // the array length minus one (for the '\0')
 	};
 	// For small strings we can store data directly without requiring the heap
 	struct SsoBuf {
@@ -447,9 +455,6 @@ protected:
 		unsigned char set : 1; ///< true for SSO mode
 	};
 	union {
-		struct {
-			size_t u32[STRING_OBJECT_SIZE / 4] = {0};
-		};
 		PtrBuf ptr;
 		SsoBuf sso;
 	};
