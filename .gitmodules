@@ -25,6 +25,7 @@
 [submodule "FlashString"]
 	path = Sming/Components/FlashString
 	url = https://github.com/mikee47/FlashString
+    ignore = dirty
 
 [submodule "esptool"]
 	path = Sming/Arch/Esp8266/Components/esptool/esptool
