@@ -10,6 +10,8 @@ COMPONENT_INCDIRS := \
 	$(ARCH_COMPONENTS)
 
 COMPONENT_DEPENDS := \
+	heap \
+	rboot \
 	esp8266 \
 	driver \
 	esp_wifi \
@@ -22,16 +24,6 @@ COMPONENT_DEPENDS := \
 COMPONENT_VARS := \
 	ENABLE_WPS \
 	ENABLE_SMART_CONFIG
-
-# => Custom heap
-RELINK_VARS				+= ENABLE_CUSTOM_HEAP
-ENABLE_CUSTOM_HEAP		?= 0
-ifeq ($(ENABLE_CUSTOM_HEAP), 1)
-	COMPONENT_DEPENDS	+= custom_heap
-endif
-
-# Must follow custom_heap
-COMPONENT_DEPENDS		+= rboot
 
 # => LWIP
 COMPONENT_VARS			+= ENABLE_CUSTOM_LWIP

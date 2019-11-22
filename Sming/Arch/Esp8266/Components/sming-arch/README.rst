@@ -34,20 +34,6 @@ controlled by the :envvar:`ENABLE_CUSTOM_LWIP` setting.
    Set this to 1 to enable printing of all debug information.
 
 
-Custom heap allocation
-----------------------
-
-.. envvar:: ENABLE_CUSTOM_HEAP
-
-   If your application is experiencing heap fragmentation then you can try the alternative heap.
-
-   undefined (default)
-      OFF, use standard heap
-
-   1
-      Use :component-esp8266:`custom_heap`
-
-
 Custom PWM
 ----------
 

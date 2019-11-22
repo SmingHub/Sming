@@ -1,5 +1,5 @@
 Welcome to Sming Framework
-================================
+==========================
 
 .. highlight:: c++
 
@@ -36,7 +36,7 @@ Summary
   -  Integrated boot loader :component:`rboot` with support for 1MB ROMs, OTA firmware updating and ROM switching
   -  :doc:`Crash handlers <information/debugging>` for analyzing/handling system restarts due to fatal errors or WDT resets.
   -  :component-esp8266:`PWM support <pwm_open>` based on `Stefan Bruens PWM <https://github.com/StefanBruens/ESP8266_new_pwm.git>`__
-  -  Optional :component-esp8266:`custom heap allocation <custom_heap>` based on `Umm Malloc <https://github.com/rhempel/umm_malloc.git>`__
+  -  Optional :component-esp8266:`custom heap allocation <heap>` based on `Umm Malloc <https://github.com/rhempel/umm_malloc.git>`__
   -  Based on :component-esp8266:`Espressif NONOS SDK <esp8266>`. Tested with versions 1.5, 2.0 and 3.0.
 
 -  Linux/Windows features

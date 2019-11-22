@@ -53,7 +53,7 @@
 	url = https://github.com/igrr/axtls-8266.git
 	ignore = dirty
 [submodule "ESP8266.umm_malloc"]
-	path = Sming/Arch/Esp8266/Components/custom_heap/umm_malloc
+	path = Sming/Arch/Esp8266/Components/heap/umm_malloc
 	url = https://github.com/rhempel/umm_malloc.git
 	ignore = dirty
 [submodule "ESP8266.esp-open-lwip"]
