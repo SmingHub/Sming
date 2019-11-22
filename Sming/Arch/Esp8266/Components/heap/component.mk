@@ -1,5 +1,6 @@
 COMPONENT_SRCDIRS		:=
 COMPONENT_INCDIRS		:=
+COMPONENT_SRCFILES		:= heap.c alloc.cpp
 
 # => Custom heap
 COMPONENT_VARS			:= ENABLE_CUSTOM_HEAP
@@ -8,8 +9,6 @@ ifeq ($(ENABLE_CUSTOM_HEAP), 1)
 COMPONENT_SUBMODULES	:= umm_malloc
 COMPONENT_SRCFILES		+= custom_heap.c umm_malloc/src/umm_malloc.c
 COMPONENT_INCDIRS		+= umm_malloc/src umm_malloc/includes/c-helper-macros
-
-COMPONENT_DEPENDS		:= esp8266
 
 COMPONENT_VARS			+= UMM_POISON_CHECK
 ifeq ($(UMM_POISON_CHECK),1)
