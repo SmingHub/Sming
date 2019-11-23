@@ -8,6 +8,8 @@ COMPONENT_INCDIRS	:= \
 	$(ARCH_COMPONENTS)/driver \
 	$(ESP_HOME)/xtensa-lx106-elf/include
 
+COMPONENT_DOXYGEN_INPUT := .
+
 ifeq ($(ENABLE_GDB), 1)
 COMPONENT_APPCODE	+= .
 CUSTOM_TARGETS		+= gdb_symbols
