@@ -28,12 +28,14 @@ before it starts execution.
 
 The steps required are:
 
-1. Mark the function containing code using IRAM_PRECACHE_ATTR
-2. Place a call to IRAM_PRECACHE_START(tag) *before* the first line of critical code
-3. Place a call to IRAM_PRECACHE_END(tag) *after* the last line of critical code
+1. Mark the function containing code using :c:func:`IRAM_PRECACHE_ATTR`
+2. Place a call to :c:func:`IRAM_PRECACHE_START` *before* the first line of critical code
+3. Place a call to :c:func:`IRAM_PRECACHE_END` *after* the last line of critical code
 
 You must always declare a tag to avoid the risk of section name conflicts.
 
 You can find an example of how precaching is used here:
 
 https://github.com/esp8266/Arduino/blob/master/cores/esp8266/core_esp8266_spi_utils.cpp
+
+.. doxygenfile:: iram_precache.h
