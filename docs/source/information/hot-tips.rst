@@ -58,26 +58,6 @@ This Ensures loaded string stays in scope, unlike _F() Example::
       return test; // Implicit conversion to String
    }
 
-JSON keys
----------
-
-.. note::
-
-   This issue applies only to :library:`ArduinoJson5`. However, Sming
-   supports :library:`ArduinoJson6` which is recommended for new projects.
-
-Example::
-
-   root[F("offset")] = something;
-
-Bad::
-
-   root[_F("offset")] = something;
-
-According to the ArduinoJson docs it should take an internal copy of
-char* strings, but it doesn’t! Tip - Use the F() macro without leading
-underscore instead.
-
 Webpages and Spiffs
 ===================
 
