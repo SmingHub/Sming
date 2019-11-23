@@ -99,22 +99,9 @@ WARN_LOGFILE           = api/error.log
 
 STRIP_FROM_PATH        = $(SMING_HOME)
 
-INPUT = api.dox sdk.dox \
-	../Sming/Core \
-	../Sming/Arch/Host/Core \
-	../Sming/Platform \
-	../Sming/Services \
-	../Sming/Wiring \
-	../Sming/Components/rboot \
-	../Sming/Components/spiffs \
-    ../Sming/Libraries/ArduinoJson6/include \
-	$(ESP_HOME)/sdk/include/gpio.h \
-	../Sming/System \
-	../Sming/Arch/Esp8266/Components/spi_flash \
-	../Sming/Arch/Esp8266/Components/gdbstub
+INPUT                  = $(DOXYGEN_INPUT)
 
-INCLUDE_PATH = \
-	../Sming/Core
+INCLUDE_PATH           = $(DOXYGEN_INCLUDE_PATH)
 
 INPUT_ENCODING         = ISO-8859-1
 
@@ -129,7 +116,7 @@ RECURSIVE              = YES
 # *.md, *.mm, *.dox, *.py, *.f90, *.f, *.for, *.tcl, *.vhd, *.vhdl, *.ucf,
 # *.qsf, *.as and *.js.
 
-FILE_PATTERNS          = *.h
+FILE_PATTERNS          = *.h *.hpp
 
 # The EXCLUDE tag can be used to specify files and/or directories that should be
 # excluded from the INPUT source files. This way you can easily exclude a
@@ -343,6 +330,7 @@ DOT_MULTI_TARGETS      = YES
 DOT_IMAGE_FORMAT       = svg
 INTERACTIVE_SVG        = NO
 DOT_CLEANUP            = YES
+DOT_GRAPH_MAX_NODES    = 100
 DISABLE_INDEX          = NO
 GENERATE_TREEVIEW      = NO
 
@@ -376,16 +364,8 @@ XML_PROGRAMLISTING     = NO
 # recursively expanded use the := operator instead of the = operator.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
+SEARCH_INCLUDES        = YES
 ENABLE_PREPROCESSING   = YES
 MACRO_EXPANSION        = YES
 EXPAND_ONLY_PREDEF     = YES
-PREDEFINED = \
-	__cplusplus \
-	IRAM_ATTR= \
-	__forceinline= \
-	ENABLE_SSL=1 \
-	ENABLE_CMD_EXECUTOR=1 \
-	ENABLE_CUSTOM_PWM=1 \
-	SMING_DEPRECATED= \
-	SMING_ARCH=Host \
-	ARCH_HOST=1
+PREDEFINED             = $(DOXYGEN_PREDEFINED)

@@ -95,6 +95,26 @@ SOURCE_FILES := \
 	$(SMINGDIR)/CONTRIBUTING.md \
 	$(call FindSourceFiles,$(SOURCE_DIRS))
 
+# Additional paths for doxygen
+DOXYGEN_INPUT := \
+	api.dox \
+	sdk.dox \
+	$(ESP_HOME)/sdk/include/gpio.h
+
+# Paths containing files to be pre-processed but not included in output
+DOXYGEN_INCLUDE_PATH :=
+
+DOXYGEN_PREDEFINED := \
+	__cplusplus \
+	IRAM_ATTR= \
+	ICACHE_FLASH_ATTR= \
+	__forceinline= \
+	ENABLE_CUSTOM_PWM=1 \
+	SMING_DEPRECATED= \
+	SMING_ARCH=Host \
+	ARCH_HOST=1
+
+
 # Each sample, library and Component MUST have a README.rst or README.md file
 # This is a list of directories where such files may exist
 # If a component.mk file exists, then it is parsed and any dependencies handled
@@ -147,6 +167,9 @@ define ParseComponent
 $(if $V,$(info -- Parsing $2))
 COMPONENT_SUBMODULES	:=
 COMPONENT_DOCFILES		:=
+COMPONENT_DOXYGEN_INPUT	:=
+COMPONENT_DOXYGEN_INCLUDE :=
+COMPONENT_DOXYGEN_PREDEFINED :=
 # Process any component.mk file (optional)
 COMPONENT_RULE			:= __no_build__
 COMPONENT_NAME			:= $1
@@ -163,16 +186,17 @@ include defines.mk
 CMP_$2_VARS				:= $$(sort $$(COMPONENT_VARS))
 CMP_$2_LIBRARIES		:= $$(ARDUINO_LIBRARIES)
 CMP_$2_SUBMODULES		:= $$(COMPONENT_SUBMODULES)
-CMP_$2_DIRS := \
-	$$(COMPONENT_PATH) \
-	$$(addprefix $$(COMPONENT_PATH)/,$$(COMPONENT_SUBMODULES))
+CMP_$2_DIRS				:= $2 $$(addprefix $2/,$$(COMPONENT_SUBMODULES))
 CMP_$2_FILES := \
 	$$(call FindSourceFiles,$$(CMP_$2_DIRS)) \
-	$$(wildcard $$(addprefix $$(COMPONENT_PATH)/,$$(COMPONENT_DOCFILES)))
+	$$(wildcard $$(addprefix $2/,$$(COMPONENT_DOCFILES)))
 CMP_$2_README			:= $$(filter $2/README.%,$$(CMP_$2_FILES))
 CMP_$2_FILES			:= $$(filter-out $$(CMP_$2_README),$$(CMP_$2_FILES))
 SOURCE_FILES			+= $$(CMP_$2_FILES)
-
+#
+DOXYGEN_INPUT			+= $$(addprefix $2/,$$(COMPONENT_DOXYGEN_INPUT))
+DOXYGEN_INCLUDE_PATH	+= $$(addprefix $2/,$$(COMPONENT_DOXYGEN_INCLUDE))
+DOXYGEN_PREDEFINED		+= $$(COMPONENT_DOXYGEN_PREDEFINED)
 #
 COMPONENT_ENVVARS		:= $$(sort $$(COMPONENT_VARS) $$(CONFIG_VARS) $$(RELINK_VARS) $$(CACHE_VARS) $$(DEBUG_VARS))
 CMP_$2_ENVVARS			:= $$(COMPONENT_ENVVARS)
@@ -207,6 +231,11 @@ $(foreach d,$(COMPONENT_DIRS),$(eval $(call ParseComponent,$(notdir $d),$d)))
 
 SOURCE_FILE_DIRS		:= $(sort $(dir $(SOURCE_FILES)))
 MISSING_README_DIRS		:= $(filter-out $(SOURCE_FILE_DIRS:/=),$(SOURCE_DIRS))
+
+#
+export DOXYGEN_INPUT
+export DOXYGEN_INCLUDE_PATH
+export DOXYGEN_PREDEFINED
 
 .PHONY: clean
 clean:
