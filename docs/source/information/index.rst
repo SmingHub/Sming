@@ -9,7 +9,7 @@ Information
    events
    memory
    flash
-   cstringarray
+   strings
    interrupts
    tasks
    debugging/index

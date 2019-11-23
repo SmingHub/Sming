@@ -14,50 +14,8 @@
 
 #include "WString.h"
 
-/** @brief Class to manage a double null-terminated list of strings, such as "one\0two\0three\0"
- * 	@note
- *
- *	Each value in the sequence is terminated by a NUL character (\0). It is recommended that
- *	strings are written like this for clarity:
- *
- * 		CStringArray csa = F(
- * 			"one\0"
- * 			"two\0"
- * 			"three\0");
- *
- * Assignments require a length, so this won't work as expected:
- *
- * 		CStringArray csa =
- * 			"one\0"
- * 			"two\0"
- * 			"three\0";
- *
- * When assigning sequences, the final NUL separator may be omitted (it will be added automatically):
- *
- * 			"one\0"
- * 			"two\0"
- * 			"three"
- *
- * Sequences may contain empty values, so this example contains four values:
- *
- * 			"one\0"
- * 			"two\0"
- * 			"three\0"
- * 			"\0"
- *
- *	Comparison with Vector<String>
- *	------------------------------
- *
- *	Advantages:
- *		More memory efficient. Uses only a single heap allocation
- *		Useful for simple lookups, e.g. mapping enumerated values to strings
- *
- * 	Disadvantages:
- *
- * 		Slower. Items must be iterated using multiple strlen() calls
- * 		Ordering not supported (yet)
- * 		Insertions / deletions not supported (yet)
- *
+/**
+ * @brief Class to manage a double null-terminated list of strings, such as "one\0two\0three\0"
  */
 class CStringArray : private String
 {
@@ -83,6 +41,10 @@ public:
 	using String::toLowerCase;
 	using String::toUpperCase;
 
+	/**
+	 * @name Constructors
+	 * @{
+	 */
 	CStringArray(const String& str) : String(str)
 	{
 		init();
@@ -118,6 +80,7 @@ public:
 		init();
 	}
 #endif
+	/** @} */
 
 	CStringArray& operator=(const char* cstr)
 	{
@@ -144,6 +107,10 @@ public:
 		return add(str.c_str(), str.length());
 	}
 
+	/**
+	 * @name Concatenation operators
+	 * @{
+	 */
 	CStringArray& operator+=(const String& str)
 	{
 		add(str);
@@ -165,6 +132,7 @@ public:
 		add(String(value));
 		return *this;
 	}
+	/** @} */
 
 	/** @brief Find the given string and return its index
 	 * 	@param str String to find
