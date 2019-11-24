@@ -31,5 +31,9 @@ export SDK_INTERNAL
 export SDK_LIBDIR
 export SDK_INCDIR
 
+DOXYGEN_INPUT += \
+	$(SDK_INCDIR)/gpio.h \
+	$(SDK_INCDIR)/pwm.h
+
 # Crash handler hooks this so debugger can be invoked
 EXTRA_LDFLAGS += -Wl,-wrap,system_restart_local 

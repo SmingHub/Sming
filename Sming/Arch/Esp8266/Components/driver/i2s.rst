@@ -56,3 +56,9 @@ Devices such as WS2812-based NeoPixels use a simple, single-wire protocol.
 I2S is ideal for this as it can be used to generate a precisely-timed bitstream
 with very low CPU loading.
 
+
+API Documentation
+-----------------
+
+.. doxygengroup:: i2s_driver
+   :content-only:

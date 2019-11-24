@@ -96,10 +96,7 @@ SOURCE_FILES := \
 	$(call FindSourceFiles,$(SOURCE_DIRS))
 
 # Additional paths for doxygen
-DOXYGEN_INPUT := \
-	api.dox \
-	sdk.dox \
-	$(ESP_HOME)/sdk/include/gpio.h
+DOXYGEN_INPUT := api.dox
 
 # Paths containing files to be pre-processed but not included in output
 DOXYGEN_INCLUDE_PATH :=
@@ -109,7 +106,6 @@ DOXYGEN_PREDEFINED := \
 	IRAM_ATTR= \
 	ICACHE_FLASH_ATTR= \
 	__forceinline= \
-	ENABLE_CUSTOM_PWM=1 \
 	SMING_DEPRECATED= \
 	SMING_ARCH=Host \
 	ARCH_HOST=1
