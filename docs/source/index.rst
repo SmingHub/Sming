@@ -34,7 +34,7 @@ Summary
 -  ESP8266 specific features
 
   -  Integrated boot loader :component:`rboot` with support for 1MB ROMs, OTA firmware updating and ROM switching
-  -  :doc:`Crash handlers <information/debugging>` for analyzing/handling system restarts due to fatal errors or WDT resets.
+  -  :doc:`Crash handlers <information/debugging/index>` for analyzing/handling system restarts due to fatal errors or WDT resets.
   -  :component-esp8266:`PWM support <driver>` based on `Stefan Bruens PWM <https://github.com/StefanBruens/ESP8266_new_pwm.git>`__
   -  Optional :component-esp8266:`custom heap allocation <heap>` based on `Umm Malloc <https://github.com/rhempel/umm_malloc.git>`__
   -  Based on :component-esp8266:`Espressif NONOS SDK <esp8266>`. Tested with versions 1.5, 2.0 and 3.0.

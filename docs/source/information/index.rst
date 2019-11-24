@@ -13,7 +13,7 @@ Information
    interrupts
    timers
    tasks
-   debugging
+   debugging/index
    rboot-ota
    command-handler
    hot-tips
