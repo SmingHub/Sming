@@ -1,4 +1,4 @@
-WebcamServer
-============
+WebcamServer sample
+===================
 
-A server providing access to webcams via HTTP server.
+A sample providing access to webcams via HTTP server.

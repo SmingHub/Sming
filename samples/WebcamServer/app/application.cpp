@@ -61,13 +61,13 @@ void onFavicon(HttpRequest& request, HttpResponse& response)
 }
 
 // Will be called when station is fully operational
-void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
+void startWebServer()
 {
 	// Initialize the camera
 	Vector<String> images;
 	char buf[13] = {0};
-	for(unsigned int i = 1; i < 10; i++) {
-		sprintf(buf, "img00%02d.jpeg", i);
+	for(unsigned int i = 1; i < 6; i++) {
+		sprintf(buf, "img%02d.jpeg", i);
 		images.add(buf);
 	}
 	camera = new FakeCamera(images);
@@ -87,8 +87,6 @@ void init()
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
 	WifiStation.enable(true);
-	WifiStation.config(WIFI_SSID, WIFI_PWD);
-	WifiAccessPoint.enable(false);
 
-	WifiEvents.onStationGotIP(gotIP);
+	System.onReady(startWebServer);
 }

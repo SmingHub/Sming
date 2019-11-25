@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A layout example that shows off a responsive option table.">
+    <meta name="description" content="Webcam server sample.">
 
-    <title>ArduCAM &ndash; Sample App</title>
+    <title>Webcam server sample</title>
 
     <link rel="stylesheet" href="pure-min.css">
     <link rel="stylesheet" href="grids-responsive-min.css">
@@ -29,30 +29,14 @@
     </ul>
 </div>
 
-<div class="banner">
-    <div class="banner-head">
-        <img id="image" src="Sming.png"/>
-        <p id="result"></p>
-    </div>
-</div>
-
 <div class="l-content">
 
     <div class="information pure-g">
         <div class="pure-u-1 pure-u-md-1-2">
             <div class="l-box">
-                <h3 class="information-head">Smart Internet of Things</h3>
+                <h3 class="information-head">WebCam Lift@Shaft 5</h3>
                 <p>
-                    Sming - Open Source framework for high efficiency WiFi SoC ESP8266 native development with C++ language.
-                </p>
-            </div>
-        </div>
-
-        <div class="pure-u-1 pure-u-md-1-2">
-            <div class="l-box">
-                <h3 class="information-head">ArduCAM</h3>
-                <p>
-                    ArduCAM is a open source camera develop platform which is based on very popular Arduino boards. It will support most of the camera modules with sensors from Omnivision and Aptina which is range from 0.3MegaPixel to 13MegaPixel.
+                    24 hour surveillance at <a href="/stream"><img src="/stream" alt="shaft 5">shaft 5</a>.
                 </p>
             </div>
         </div>
@@ -66,47 +50,6 @@
         Visit us on <a href="https://github.com/SmingHub/Sming">Github</a> Sming - Open Source framework for high efficiency native ESP8266 development
     </p>
 </div>
-
-
-<script>
-    var nameList = [['320x240', 'BMP'],['160x120', 'JPEG'], ['176x144', 'JPEG'], ['320x240', 'JPEG'], ['352x288', 'JPEG'], ['640x480', 'JPEG'], ['800x600', 'JPEG'], ['1024x768', 'JPEG'], ['1280x1024', 'JPEG'], ['1600x1200', 'JPEG']];
-
-    var id;
-
-    $('.l-content').fill(HTML(
-         '<div class="option-tables pure-g">'
-        +   '{{each names}}'
-        +   '<div class="pure-u-1 pure-u-md-1-5">'                  
-        +   '  <div class="option-table option-table-{{this[1]}}">'
-        +       '<div class="option-table-header">'
-        +          '<h2>{{this[1]}}</h2>'
-        +            '<span class="option-table-size">'
-        +       '{{this[0]}}<span>Photo</span>'
-        +            '</span>'
-        +       '</div>'     
-        +       '<ul id="{{this[0]}}-{{this[1]}}"" class="option-table-list">'
-        +           '<li>File size</li>'
-        +            '<li>Process Time</li>'
-        +        '</ul>'
-        +        '<button id="{{this[0]}}-{{this[1]}}" class="button-choose pure-button">Choose</button>'
-        +   '  </div>'
-        +   '</div>{{/each}}'
-        +   '</div>'
-        +'</div>', {names: nameList}));
-
-    function buttonHandler(e, index) { 
-        $.request('post', './cam/set', {size: nameList[index][0], type: nameList[index][1]})
-            .then(function success(result) {
-                $('#image').set('src', "./cam/capture?" +  + Date.now());
-        })
-        .error(function(status, statusText, result) {
-            $('#result').fill(statusText);
-        });;
-    }
-
-    $('.button-choose').on('click', buttonHandler);
-</script>
-
 
 
 </body>
