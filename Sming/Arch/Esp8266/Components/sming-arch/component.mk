@@ -36,15 +36,6 @@ else ifeq ($(ENABLE_CUSTOM_LWIP), 2)
 	COMPONENT_DEPENDS	+= lwip2
 endif
 
-# => PWM
-RELINK_VARS				+= ENABLE_CUSTOM_PWM
-ENABLE_CUSTOM_PWM		?= 1
-ifeq ($(ENABLE_CUSTOM_PWM), 1)
-	COMPONENT_DEPENDS	+= pwm_open
-else
-	LIBS				+= pwm
-endif
-
 # rBoot creates ROM images from one or both of these targets
 TARGET_OUT_0 := $(BUILD_BASE)/$(APP_NAME)_0.out
 TARGET_OUT_1 := $(BUILD_BASE)/$(APP_NAME)_1.out
