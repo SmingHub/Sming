@@ -19,6 +19,7 @@ Development guides
 
    Contributing Guide </_inc/CONTRIBUTING>
    Building the documentation </_inc/docs/README>
+   /_inc/Sming/building
    *
 
 
@@ -39,6 +40,6 @@ the core contributors and the person who filed the expense will be
 reimbursed.
 
 Backers and sponsors
------------------------
+--------------------
 
 Thank you to all the people who have backed Sming or sponsored it.
