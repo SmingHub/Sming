@@ -34,17 +34,6 @@ controlled by the :envvar:`ENABLE_CUSTOM_LWIP` setting.
    Set this to 1 to enable printing of all debug information.
 
 
-Custom PWM
-----------
-
-.. envvar:: ENABLE_CUSTOM_PWM
-
-   undefined
-      use the Espressif PWM driver
-   1 (default)
-      use :component-esp8266:`pwm_open`.
-
-
 Interactive debugging on the device
 -----------------------------------
 

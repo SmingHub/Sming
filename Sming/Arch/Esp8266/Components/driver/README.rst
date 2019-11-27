@@ -4,12 +4,13 @@ Esp8266 Drivers
 Provides low-level peripheral drivers.
 
 * UART: Custom asynchronous driver
-* PWM: Common header for PWM support
 * hw_timer: Driver for hardware timers
 
 .. toctree::
+   :glob:
+   :maxdepth: 1
 
-   i2s
+   *
 
 hw_timer
 --------
