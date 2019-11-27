@@ -1,9 +1,13 @@
-# umm_malloc (custom heap allocation)
-
-COMPONENT_SUBMODULES	:= umm_malloc
 COMPONENT_SRCDIRS		:=
-COMPONENT_SRCFILES		:= heap.c umm_malloc/src/umm_malloc.c
-COMPONENT_INCDIRS		:= umm_malloc/src umm_malloc/includes/c-helper-macros
+COMPONENT_INCDIRS		:=
+
+# => Custom heap
+COMPONENT_VARS			:= ENABLE_CUSTOM_HEAP
+ENABLE_CUSTOM_HEAP		?= 0
+ifeq ($(ENABLE_CUSTOM_HEAP), 1)
+COMPONENT_SUBMODULES	:= umm_malloc
+COMPONENT_SRCFILES		+= custom_heap.c umm_malloc/src/umm_malloc.c
+COMPONENT_INCDIRS		+= umm_malloc/src umm_malloc/includes/c-helper-macros
 
 COMPONENT_DEPENDS		:= esp8266
 
@@ -19,3 +23,4 @@ $(Q) $(AR) -d $@ mem_manager.o
 
 endef
 LIBMAIN_COMMANDS += $(HEAP_LIBMAIN_COMMANDS)
+endif
