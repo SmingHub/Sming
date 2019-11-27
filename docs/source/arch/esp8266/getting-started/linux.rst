@@ -1,42 +1,35 @@
-******************
 Linux Installation
-******************
+==================
 
 .. highlight:: bash
 
 Pre-requisites
-==============
+--------------
 
-Ubuntu
-------
+Ubuntu::
 
-::
+   sudo apt-get install make unrar autoconf automake libtool libtool-bin gcc g++ gperf \
+      flex bison texinfo gawk ncurses-dev libexpat1-dev python sed python-serial \
+      python-dev srecord bc git help2man unzip bzip2
 
-   sudo apt-get install make unrar autoconf automake libtool libtool-bin gcc g++ gperf flex bison texinfo gawk ncurses-dev libexpat1-dev python sed python-serial python-dev srecord bc git help2man unzip bzip2
+Fedora::
 
-Fedora
-------
-
-::
-
-   sudo dnf install make autoconf automake libtool gcc gcc-c++ gperf flex bison texinfo gawk ncurses-devel expat-devel python sed pyserial srecord bc git patch unzip help2man python-devel
+   sudo dnf install make autoconf automake libtool gcc gcc-c++ gperf flex bison texinfo \
+      gawk ncurses-devel expat-devel python sed pyserial srecord bc git patch \
+      unzip help2man python-devel
 
 Prepare directory
-=================
+-----------------
 
-*We recommend /opt/ but you can use anything you want*
-
-::
+We recommend ``/opt/`` but you can use anything you want::
 
    mkdir -p /opt/
    cd /opt/
 
-Build esp-open-sdk
-==================
+Build/Install Toolchain
+-----------------------
 
-This contains the toolchain required to build for the ESP8266.
-
-::
+This builds the cross-compiler, linker, etc. required for the ESP8266::
 
    git clone --recursive https://github.com/pfalcon/esp-open-sdk.git
    cd esp-open-sdk
@@ -48,33 +41,28 @@ This contains the toolchain required to build for the ESP8266.
    # This will take a while...
    make STANDALONE=y
 
-Here are the links for pre-compiled versions:
+You can find pre-compiled toochains in the `SmingTools <https://github.com/SmingHub/SmingTools/releases>`__
+repository.
 
--  `x86 64-bit <https://www.dropbox.com/s/dx9tcqnx0yj61i3/esp-open-sdk-1.5.4-linux-x86_64.tar.gz?dl=1>`__
--  `x86 32-bit <https://www.dropbox.com/s/mzo7kp8nsnsfzc2/esp-open-sdk-1.5.4-linux-x86.tar.gz?dl=1>`__
--  `Raspbian <https://www.dropbox.com/s/b8omfjk9bzeo3dc/esp-open-sdk-1.5.4-linux-rpi.tar.gz?dl=1>`__
+Espressif SDK
+-------------
 
-.. note::
+Sming uses the `Espressif 3.0.1 SDK <https://github.com/espressif/ESP8266_NONOS_SDK>`__
+which is pulled in automatically during the build.
 
-   The above includes an older version of the Espressif SDK, but this is not used by Sming.
-   
-   Sming uses the Espressif 3.0.1 SDK which is pulled in automatically during the build.
-
-   Previous versions are no longer officially supported.
+Previous versions are no longer officially supported.
 
 Set ENV Variables
-=================
+-----------------
 
-::
+From the command line::
 
    export ESP_HOME=/opt/esp-open-sdk
    export SMING_HOME=/opt/Sming/Sming
 
 To set these permanently, add them to your home ``.profile`` file.
 
-You can alternatively add them to ``/etc/environment`` for all users, like this:
-
-::
+You can alternatively add them to ``/etc/environment`` for all users, like this::
 
    SMING_HOME="/opt/Sming/Sming"
 
@@ -84,9 +72,9 @@ See also
 (external page).
 
 Get Sming Core
-==============
+--------------
 
-::
+Clone the Sming ``develop`` branch to your working directory::
 
    cd $SMING_HOME/../..
    git clone https://github.com/SmingHub/Sming.git
@@ -100,21 +88,20 @@ Get Sming Core
 
    cd Sming
 
-   # If you want to use our stable branch type the command below
+If you want to use our stable branch::
+
    git checkout origin/master
 
-Build a ‘Basic Blink’ example:
-==============================
 
-::
+Build a ‘Basic Blink’ example
+-----------------------------
+
+Change to the application directory and build::
 
    cd $SMING_HOME/../samples/Basic_Blink
    make
 
-Build and flash a ‘Basic Blink’ example (using ttyUSB0):
-========================================================
-
-::
+Flash to your device (using ttyUSB0)::
 
    cd $SMING_HOME/../samples/Basic_Blink
    make flash
