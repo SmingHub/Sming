@@ -7,9 +7,9 @@ CONFIG_VARS				+= SPI_SPEED SPI_MODE SPI_SIZE
 # SPI_SPEED = 40, 26, 20, 80
 SPI_SPEED				?= 40
 # SPI_MODE: qio, qout, dio, dout
-SPI_MODE				?= qio
+SPI_MODE				?= dio
 # SPI_SIZE: 512K, 256K, 1M, 2M, 4M
-SPI_SIZE				?= 512K
+SPI_SIZE				?= 1M
 
 ifeq ($(SPI_SPEED), 26)
 	flashimageoptions	:= -ff 26m
