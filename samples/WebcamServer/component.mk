@@ -1,0 +1,3 @@
+ARDUINO_LIBRARIES := WebCam
+
+SPIFF_FILES = web/build
