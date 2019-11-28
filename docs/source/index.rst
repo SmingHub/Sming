@@ -11,7 +11,7 @@ It supports multiple architectures as ESP8266 for example.
 
 |samples|_
 
-.. |samples| image:: combine.png
+.. |samples| image:: combine.jpg
 .. _samples: samples.html
 
 
