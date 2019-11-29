@@ -2,7 +2,8 @@ REM Windows build script
 
 set SMING_HOME=%APPVEYOR_BUILD_FOLDER%\Sming
 
-if "%SMING_ARCH%" == "Esp8266" set ESP_HOME=c:\Espressif
+if "%build_compiler%" == "udk" set ESP_HOME=%UDK_ROOT%
+if "%build_compiler%" == "eqt" set ESP_HOME=%EQT_ROOT%
 
 cd %SMING_HOME%
 gcc -v

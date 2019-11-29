@@ -3,13 +3,20 @@ os: Windows Server 2012 R2
 environment:
   PATH: C:\MinGW\msys\1.0\bin;C:\MinGW\bin;C:\Python27\scripts;%PATH%
   SDK_BUILD: 258
+  UDK_ROOT: C:\Espressif
+  EQT_ROOT: C:\esp-quick-toolchain
   matrix:
     - build_platform: "x86"
       build_compiler: "mingw"
       SMING_ARCH: Host
 
     - build_platform: "x86"
-      build_compiler: "mingw"
+      build_compiler: "udk"
+      SMING_ARCH: Esp8266
+      SDK_VERSION: 3.0.1
+
+    - build_platform: "x86"
+      build_compiler: "eqt"
       SMING_ARCH: Esp8266
       SDK_VERSION: 3.0.1
 

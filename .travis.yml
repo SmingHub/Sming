@@ -23,10 +23,23 @@ jobs:
         - graphviz-dev
         - xmlstarlet
         - jq
-    env: SMING_ARCH=Host
+    env:
+    - SMING_ARCH=Host
+
   - stage: build
     os: linux
-    env: SMING_ARCH=Esp8266 SDK_VERSION=3.0.1
+    env:
+    - SMING_ARCH=Esp8266
+    - SDK_VERSION=3.0.1
+    - ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk
+
+  - stage: build c++17
+    os: linux
+    env:
+    - SMING_ARCH=Esp8266
+    - SDK_VERSION=3.0.1
+    - ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-quick-toolchain
+
 git:
   submodules: false
 addons:

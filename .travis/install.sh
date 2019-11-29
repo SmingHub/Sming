@@ -9,11 +9,17 @@ if [ "$TRAVIS_BUILD_STAGE_NAME" == "Test" ]; then
 fi
 
 if [ "$SMING_ARCH" == "Esp8266" ]; then
-	mkdir -p $TRAVIS_BUILD_DIR/opt/esp-alt-sdk
-	
 	if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-	  wget --no-verbose https://github.com/nodemcu/nodemcu-firmware/raw/2d958750b56fc60297f564b4ec303e47928b5927/tools/esp-open-sdk.tar.xz
-	  tar -Jxvf esp-open-sdk.tar.xz; ln -s $(pwd)/esp-open-sdk/xtensa-lx106-elf $TRAVIS_BUILD_DIR/opt/esp-alt-sdk/.
+		# Old toolchain
+		mkdir -p $TRAVIS_BUILD_DIR/opt/esp-alt-sdk
+		wget --no-verbose https://github.com/nodemcu/nodemcu-firmware/raw/2d958750b56fc60297f564b4ec303e47928b5927/tools/esp-open-sdk.tar.xz
+	  	tar -Jxvf esp-open-sdk.tar.xz; ln -s $(pwd)/esp-open-sdk/xtensa-lx106-elf $TRAVIS_BUILD_DIR/opt/esp-alt-sdk/.
+
+		# New toolchain
+		TOOLCHAIN=x86_64-linux-gnu.xtensa-lx106-elf-dd9f9a2.1569802152.tar.gz
+		wget --no-verbose https://github.com/earlephilhower/esp-quick-toolchain/releases/download/3.0.0-gnu2/$TOOLCHAIN
+		mkdir -p opt/esp-quick-toolchain
+	  	tar -zxf $TOOLCHAIN -C opt/esp-quick-toolchain --totals
 	fi
 	
 fi # Esp8266
