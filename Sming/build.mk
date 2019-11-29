@@ -90,6 +90,11 @@ CMAKE ?= cmake
 DEBUG_VARS	+= CLANG_FORMAT
 CLANG_FORMAT ?= clang-format
 
+# more tools
+DEBUG_VARS += AWK
+# In case 'awk' is an alias for 'gawk' on your system, having 'POSIXLY_CORRECT' in the environment
+# invokes an awk compatibility mode. It has no effect on other awk implementations.
+AWK ?= POSIXLY_CORRECT= awk
 
 
 V ?= $(VERBOSE)

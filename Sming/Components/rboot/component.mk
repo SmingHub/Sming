@@ -59,7 +59,7 @@ endif
 
 # determine number of roms to generate
 ifneq ($(RBOOT_ROM1_ADDR),)
-RBOOT_TWO_ROMS := $(shell awk 'BEGIN { print ($(RBOOT_ROM0_ADDR) % 0x100000) == ($(RBOOT_ROM1_ADDR) % 0x100000) ? 0 : 1 }')
+RBOOT_TWO_ROMS := $(shell $(AWK) 'BEGIN { print (ARGV[1] % (1024*1024)) != (ARGV[2] % (1024*1024))}' $(RBOOT_ROM0_ADDR) $(RBOOT_ROM1_ADDR))
 else
 RBOOT_TWO_ROMS := 0
 endif
@@ -67,7 +67,7 @@ endif
 DEBUG_VARS 				+= RBOOT_TWO_ROMS
 
 # BIGFLASH mode is needed if at least one ROM address exceeds the first 1MB of flash
-BIGFLASH_TEST := awk 'BEGIN { big=0; for(i = 1; i < ARGC; ++i) if(strtonum(ARGV[i]) > 0x100000) big=1; print big }'
+BIGFLASH_TEST := $(AWK) 'BEGIN { big=0; for(i = 1; i < ARGC; ++i) if(ARGV[i] > 1024*1024) big=1; print big; }'
 RBOOT_BIG_FLASH := $(shell $(BIGFLASH_TEST) $(RBOOT_ROM0_ADDR) $(RBOOT_ROM1_ADDR) $(RBOOT_ROM2_ADDR))
 
 DEBUG_VARS 				+= RBOOT_BIG_FLASH
@@ -169,8 +169,8 @@ endif
 # Generate linker script from template
 $2: $(RBOOT_LD_TEMPLATE)
 	$$(info LDGEN $$@)
-	$$(Q) awk 'match($$$$0, /(^.*irom0_0_seg\s*:\s*)\S+/, m) { \
-			printf "%sorg = 0x%08X, len = 1M - 0x%X\n", m[1], 0x40200010 + $$($3) % 0x100000, $$($3) % 0x100000; next \
+	$$(Q) $(AWK) 'match($$$$0, /^.*irom0_0_seg[ \t]*:[ \t]*/) { \
+			printf "%sorg = 0x40200010 + ($$($3) & 0xFFFFF), len = 1M - ($$($3) & 0xFFFFF) - 0x10\n", substr($$$$0, RSTART, RLENGTH); next \
 		} 1 { print $$$$0 }' $$< > $$@
 	$$(Q) echo GEN_$3 := $($3) > $2.config
 # Make application depend on linker script
