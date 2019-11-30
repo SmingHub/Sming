@@ -14,7 +14,7 @@ web-upload: web-pack spiffs-image-update
 
 .PHONY: python-requirements
 python-requirements:
-	python -m pip install --user -r $(COMPONENT_PATH)/requirements.txt
+	python -m pip install --user -r requirements.txt
 
 SIGNTOOL := python $(COMPONENT_PATH)/signtool.py
 SIGNING_KEY := $(COMPONENT_PATH)/signing.key
@@ -47,10 +47,3 @@ $(SIGNED_ROM0): $(RBOOT_ROM_0_BIN) $(SIGNING_KEY)
 
 .PHONY: signedrom
 signedrom: $(SIGNED_ROM0) ##Create signed ROM image
-
-
-
-
-
-
-
