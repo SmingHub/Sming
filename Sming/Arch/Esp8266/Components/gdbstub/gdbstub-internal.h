@@ -12,6 +12,22 @@
 
 #pragma once
 
+#define XCHAL_CP0_SA_SIZE               0
+#define XCHAL_CP0_SA_ALIGN              1
+#define XCHAL_CP1_SA_SIZE               0
+#define XCHAL_CP1_SA_ALIGN              1
+#define XCHAL_CP2_SA_SIZE               0
+#define XCHAL_CP2_SA_ALIGN              1
+#define XCHAL_CP3_SA_SIZE               0
+#define XCHAL_CP3_SA_ALIGN              1
+#define XCHAL_CP4_SA_SIZE               0
+#define XCHAL_CP4_SA_ALIGN              1
+#define XCHAL_CP5_SA_SIZE               0
+#define XCHAL_CP5_SA_ALIGN              1
+#define XCHAL_CP6_SA_SIZE               0
+#define XCHAL_CP6_SA_ALIGN              1
+#define XCHAL_CP7_SA_SIZE               0
+#define XCHAL_CP7_SA_ALIGN              1
 #include "xtensa/xtruntime-frames.h"
 #include "gdbstub-cfg.h"
 
