@@ -55,6 +55,9 @@ ifeq (,$(wildcard $(XTENSA_TOOLS_ROOT)))
 $(error ESP_HOME not set correctly: "$(ESP_HOME)")
 endif
 
+# Identifies which library we're building with
+USE_NEWLIB			= $(if $(filter 9%,$(GCC_VERSION)),1,0)
+
 # Both flash and peripheral memories must be accessed on 4-byte word boundaries,
 # otherwise behaviour can be unpredictable or cause a memory exception.
 # The -mforce-l32 compiler option generates code to deal with reads of

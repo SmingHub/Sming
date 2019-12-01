@@ -70,7 +70,6 @@ ARCH_SYS		= $(ARCH_BASE)/System
 ARCH_CORE		= $(ARCH_BASE)/Core
 ARCH_TOOLS		= $(ARCH_BASE)/Tools
 ARCH_COMPONENTS	= $(ARCH_BASE)/Components
-ARCH_LIBDIR		= $(ARCH_BASE)/Compiler/lib
 
 OUT_BASE		:= out/$(SMING_ARCH)/$(BUILD_TYPE)
 BUILD_BASE		= $(OUT_BASE)/build

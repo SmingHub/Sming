@@ -78,7 +78,7 @@ DEBUG_VARS			+= APP_LIBDIR
 APP_LIBDIR			:= $(OUT_BASE)/lib
 
 # Tells linker where to find libraries and scripts
-LIBDIRS				:= $(APP_LIBDIR) $(USER_LIBDIR) $(ARCH_BASE)/Compiler/lib $(ARCH_BASE)/Compiler/ld
+LIBDIRS				:= $(APP_LIBDIR) $(USER_LIBDIR)
 
 # Standard libraries that will be linked with application (Component libraries are defined separately)
 LIBS				:= $(EXTRA_LIBS)

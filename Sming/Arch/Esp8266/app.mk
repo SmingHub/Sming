@@ -28,11 +28,7 @@ $(LIBMAIN_DST): $(LIBMAIN_SRC)
 
 #
 LIBS += \
-	microc \
-	microgcc \
-	stdc++ \
 	hal \
-	setjmp \
 	$(LIBMAIN)
 
 # linker flags used to generate the main object file
@@ -45,7 +41,7 @@ LDFLAGS	+= \
 .PHONY: application
 application: $(CUSTOM_TARGETS) $(FW_FILE_1) $(FW_FILE_2)
 
-LIBDIRS += $(SDK_LIBDIR)
+LIBDIRS += $(ARCH_BASE)/Compiler/ld $(SDK_LIBDIR)
 
 # $1 -> Linker script
 define LinkTarget

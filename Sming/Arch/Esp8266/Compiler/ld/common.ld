@@ -138,8 +138,13 @@ SECTIONS
   {
     _irom0_text_start = ABSOLUTE(.);
 
-    *libsmartconfig.a:(.literal .text .literal.* .text.*)
+    *libc.a:(.literal .text .literal.* .text.*)
+    *libm.a:(.literal .text .literal.* .text.*)
+    *libgcc.a:_umoddi3.o(.literal .text)
+    *libgcc.a:_udivdi3.o(.literal .text)
     *libstdc++.a:(.literal .text .literal.* .text.*)
+
+    *libsmartconfig.a:(.literal .text .literal.* .text.*)
     *libat.a:(.literal.* .text.*)
     *libcrypto.a:(.literal.* .text.*)
     *libespnow.a:(.literal.* .text.*)
@@ -156,14 +161,16 @@ SECTIONS
 
     *libmbedtls.a:(.literal.* .text.*)
 
-    *libm.a:(.literal .text .literal.* .text.*)
 
     *(.rodata._ZTV*) /* C++ vtables */
-    *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom0.text.* .irom.text .irom.debug.*)
+    *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom0.text.* .irom.text .irom.text.* .irom.debug.*)
 
     /* Generated libraries */
     *liblwip2.a:(.literal .text .literal.* .text.*)
     */clib-*.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
+
+    /* Constant strings in flash (PSTRs) */
+    *(.irom0.pstr.*)
 
 	/* __FUNCTION__ locals */
     *(.rodata._ZZ*__FUNCTION__)
@@ -172,11 +179,6 @@ SECTIONS
 
     /* debug_e() string pointers */
     *(.rodata._ZZ*log_string)
-
-    /* const references, mainly in templated code */
-    *(.rodata._ZN*)
-
-	*(.rodata._ZZN*)
 
     _irom0_text_end = ABSOLUTE(.);
     _flash_code_end = ABSOLUTE(.);
