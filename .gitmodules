@@ -40,7 +40,7 @@
 	url = https://github.com/raburton/esptool2.git
 	ignore = dirty
 [submodule "libsodium"]
-	path = Sming/Components/libsodium/libsodium
+	path = Sming/Libraries/libsodium/libsodium
 	url = https://github.com/jedisct1/libsodium.git
 	ignore = dirty
 

@@ -85,7 +85,7 @@ void fileUploadMapper(HttpFiles& files)
 	const rboot_config bootConfig = rboot_get_config();
 	uint8_t currentSlot = bootConfig.current_rom;
 	uint8_t slot = (currentSlot == 0 ? 1 : 0);
-	int romStartAddress = bootConfig.roms[slot];
+	auto romStartAddress = bootConfig.roms[slot];
 
 	size_t maxLength = 0x100000 - (romStartAddress & 0xFFFFF);
 	if(bootConfig.roms[currentSlot] > romStartAddress) {
