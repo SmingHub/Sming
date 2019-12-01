@@ -148,13 +148,17 @@ else
 	CFLAGS		+= -Os -g
 endif
 
-CXXFLAGS = $(CFLAGS) -std=c++11 -felide-constructors
+CXXFLAGS = $(CFLAGS) -felide-constructors
 
 ifneq ($(STRICT),1)
 	CXXFLAGS += -Wno-reorder
 endif
 
 include $(ARCH_BASE)/build.mk
+
+# Detect compiler version
+DEBUG_VARS			+= GCC_VERSION
+GCC_VERSION			:= $(shell $(CC) -dumpversion)
 
 # Component (user) libraries have a special prefix so linker script can identify them
 CLIB_PREFIX := clib-
