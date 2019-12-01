@@ -76,5 +76,5 @@ INCDIR := \
 	$(SDK_BASE)/include \
 	$(SMING_HOME)/System/include \
 	$(ARCH_SYS)/include \
-	$(ARCH_COMPONENTS)/esp8266/include \
+	$(ARCH_COMPONENTS)/libc/include \
 	$(SMING_HOME)/Wiring 
