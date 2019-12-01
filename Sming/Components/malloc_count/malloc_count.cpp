@@ -343,6 +343,16 @@ void operator delete[](void* ptr)
 	mc_free(ptr);
 }
 
+void operator delete(void* ptr, size_t)
+{
+	mc_free(ptr);
+}
+
+void operator delete[](void* ptr, size_t)
+{
+	mc_free(ptr);
+}
+
 #else
 
 extern "C" void* WRAP(pvPortMalloc)(size_t) __attribute__((alias("mc_malloc")));

@@ -159,6 +159,15 @@ include $(ARCH_BASE)/build.mk
 DEBUG_VARS			+= GCC_VERSION
 GCC_VERSION			:= $(shell $(CC) -dumpversion)
 
+# Select C++17 if supported, defaulting to C++11 otherwise
+DEBUG_VARS			+= CPP_STD
+ifeq ($(GCC_VERSION),4.8.5)
+CPP_STD				:= c++11
+else
+CPP_STD				:= c++17
+endif
+CXXFLAGS			+= -std=$(CPP_STD)
+
 # Component (user) libraries have a special prefix so linker script can identify them
 CLIB_PREFIX := clib-
 

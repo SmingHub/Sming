@@ -31,7 +31,7 @@
 void iram_precache(void* addr, uint32_t bytes)
 {
 	register void* a0 asm("a0");
-	register uint32_t lines = (bytes / CACHE_PAGE_SIZE) + 2;
+	auto lines = (bytes / CACHE_PAGE_SIZE) + 2;
 	volatile auto p = reinterpret_cast<uint32_t*>(uint32_t(addr ?: a0) & ~0x03);
 	uint32_t x;
 	for(uint32_t i = 0; i < lines; i++, p += CACHE_PAGE_SIZE / sizeof(uint32_t)) {

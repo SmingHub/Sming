@@ -15,6 +15,8 @@ ifeq ($(UMM_POISON_CHECK),1)
 GLOBAL_CFLAGS			+= -DUMM_POISON_CHECK
 endif
 
+COMPONENT_CFLAGS		+= -Wno-array-bounds
+
 # remove mem_manager.o module from libmain of SDK
 define HEAP_LIBMAIN_COMMANDS
 @echo Enabling custom heap implementation

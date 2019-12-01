@@ -19,7 +19,7 @@ extern void hspi_send_data(const uint8_t * data, uint8_t datasize);
 extern void hspi_send_uint16_r(const uint16_t data, int32_t repeats);
 inline void hspi_wait_ready(void){while (READ_PERI_REG(SPI_CMD(HSPI))&SPI_USR);}
 
-inline void hspi_prepare_tx(uint32_t bytecount)
+__forceinline void hspi_prepare_tx(uint32_t bytecount)
 {
 	uint32_t bitcount = bytecount * 8 - 1;
 
@@ -27,26 +27,26 @@ inline void hspi_prepare_tx(uint32_t bytecount)
 }
 
 
-inline void hspi_start_tx()
+__forceinline void hspi_start_tx()
 {
 	SET_PERI_REG_MASK(SPI_CMD(HSPI), SPI_USR);   // send
 }
 
-inline void hspi_send_uint8(uint8_t data)
+__forceinline void hspi_send_uint8(uint8_t data)
 {
 	hspi_prepare_tx(1);
 	*spi_fifo = data;
 	hspi_start_tx();
 }
 
-inline void hspi_send_uint16(uint16_t data)
+__forceinline void hspi_send_uint16(uint16_t data)
 {
 	hspi_prepare_tx(2);
 	*spi_fifo = data;
 	hspi_start_tx();
 }
 
-inline void hspi_send_uint32(uint32_t data)
+__forceinline void hspi_send_uint32(uint32_t data)
 {
 	hspi_prepare_tx(4);
 	*spi_fifo = data;
