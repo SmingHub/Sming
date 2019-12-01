@@ -21,37 +21,67 @@ endif
 # => APP
 
 # rBoot options, overwrite them in the projects Makefile-user.mk
-CONFIG_VARS				+= RBOOT_BIG_FLASH RBOOT_TWO_ROMS RBOOT_RTC_ENABLED RBOOT_GPIO_ENABLED RBOOT_GPIO_SKIP_ENABLED
-RBOOT_BIG_FLASH			?= 1
-RBOOT_TWO_ROMS			?= 0
+CONFIG_VARS				+= RBOOT_RTC_ENABLED RBOOT_GPIO_ENABLED RBOOT_GPIO_SKIP_ENABLED
 RBOOT_RTC_ENABLED		?= 0
 RBOOT_GPIO_ENABLED		?= 0
 # RBOOT_GPIO_SKIP_ENABLED and RBOOT_GPIO_ENABLED cannot be used at the same time.
 RBOOT_GPIO_SKIP_ENABLED	?= 0
 
 ifeq ($(RBOOT_GPIO_ENABLED)$(RBOOT_GPIO_SKIP_ENABLED),11)
-$(error "Cannot enable RBOOT_GPIO_ENABLED and RBOOT_GPIO_SKIP_ENABLED at the same time)
+$(error Cannot enable RBOOT_GPIO_ENABLED and RBOOT_GPIO_SKIP_ENABLED at the same time)
 endif
 
 ### ROM Addresses ###
-# The parameter below specifies the location of the second rom.
-# This parameter is used only when RBOOT_BIG_FLASH = 1 
-# BOOT_ROM1_ADDR = 0x200000
+# Make sure that your ROM slots and SPIFFS slot(s) do not overlap!
+
+CONFIG_VARS				+= RBOOT_ROM0_ADDR RBOOT_ROM1_ADDR RBOOT_ROM2_ADDR
+
+# Loation of first ROM (default is sector 2 after rboot and rboot config sector)
+RBOOT_ROM0_ADDR			?= 0x002000
+
+# The parameter below specifies the location of the second ROM.
+# You need a second slot for any kind of firmware update mechanism.
+# Leave empty if you don't need a second ROM slot.
+RBOOT_ROM1_ADDR			?=
 
 # The parameter below specifies the location of the GPIO ROM.
-# This parameter is used only when RBOOT_GPIO_ENABLED = 1
-# If you use two SPIFFS make sure that this address is minimum
-# RBOOT_SPIFFS_1 + SPIFF_SIZE 
-# BOOT_ROM2_ADDR = 0x310000
+# It is only used when RBOOT_GPIO_ENABLED = 1
+# Note that setting this parameter will only configure rboot.
+# The Sming build system does not create a ROM for this slot.
+RBOOT_ROM2_ADDR			?=
+
+ifeq ($(RBOOT_GPIO_ENABLED),0)
+ifneq ($(RBOOT_ROM2_ADDR),)
+$(warning RBOOT_GPIO_ENABLED is 0, RBOOT_ROM2_ADDR will be ignored)
+RBOOT_ROM2_ADDR :=
+endif
+endif
+
+# determine number of roms to generate
+ifneq ($(RBOOT_ROM1_ADDR),)
+RBOOT_TWO_ROMS := $(shell $(AWK) 'BEGIN { print (ARGV[1] % (1024*1024)) != (ARGV[2] % (1024*1024))}' $(RBOOT_ROM0_ADDR) $(RBOOT_ROM1_ADDR))
+else
+RBOOT_TWO_ROMS := 0
+endif
+
+DEBUG_VARS 				+= RBOOT_TWO_ROMS
+
+# BIGFLASH mode is needed if at least one ROM address exceeds the first 1MB of flash
+BIGFLASH_TEST := $(AWK) 'BEGIN { big=0; for(i = 1; i < ARGC; ++i) if(ARGV[i] > 1024*1024) big=1; print big; }'
+RBOOT_BIG_FLASH := $(shell $(BIGFLASH_TEST) $(RBOOT_ROM0_ADDR) $(RBOOT_ROM1_ADDR) $(RBOOT_ROM2_ADDR))
+
+DEBUG_VARS 				+= RBOOT_BIG_FLASH
+
 
 CONFIG_VARS				+= RBOOT_SILENT
 RBOOT_SILENT			?= 0
 
-RELINK_VARS				+= RBOOT_ROM_0 RBOOT_ROM_1 RBOOT_LD_0 RBOOT_LD_1
+RELINK_VARS				+= RBOOT_ROM_0 RBOOT_ROM_1 RBOOT_LD_TEMPLATE
 RBOOT_ROM_0				?= rom0
 RBOOT_ROM_1				?= rom1
-RBOOT_LD_0				?= rboot.rom0.ld
-RBOOT_LD_1				?= rom1.ld
+RBOOT_LD_TEMPLATE		?= $(ARCH_BASE)/Compiler/ld/rboot.rom0.ld
+RBOOT_LD_0				:= $(BUILD_BASE)/$(RBOOT_ROM_0).ld
+RBOOT_LD_1				:= $(BUILD_BASE)/$(RBOOT_ROM_1).ld
 
 #
 CONFIG_VARS				+= RBOOT_SPIFFS_0 RBOOT_SPIFFS_1
@@ -59,9 +89,6 @@ RBOOT_SPIFFS_0			?= 0x100000
 RBOOT_SPIFFS_1			?= 0x300000
 APP_CFLAGS				+= -DRBOOT_SPIFFS_0=$(RBOOT_SPIFFS_0)
 APP_CFLAGS				+= -DRBOOT_SPIFFS_1=$(RBOOT_SPIFFS_1)
-
-# Fixed addresses
-ROM_0_ADDR				:= 0x002000
 
 # filenames and options for generating rBoot rom images with esptool2
 RBOOT_E2_SECTS			?= .text .text1 .data .rodata
@@ -75,7 +102,6 @@ COMPONENT_APPCODE		:= appcode rboot/appcode $(if $(RBOOT_EMULATION),host)
 APP_CFLAGS				+= -DRBOOT_INTEGRATION
 
 # these are exported for use by the rBoot Makefile
-CONFIG_VARS				+= RBOOT_ROM1_ADDR RBOOT_ROM2_ADDR
 export RBOOT_BUILD_BASE	:= $(abspath $(COMPONENT_BUILD_DIR))
 export RBOOT_FW_BASE	:= $(abspath $(FW_BASE))
 export ESPTOOL2
@@ -125,10 +151,34 @@ endif # RBOOT_EMULATION
 
 # Define our flash chunks
 FLASH_RBOOT_BOOT_CHUNKS				:= 0x00000=$(RBOOT_BIN)
-FLASH_RBOOT_APP_CHUNKS				:= $(ROM_0_ADDR)=$(RBOOT_ROM_0_BIN)
+FLASH_RBOOT_APP_CHUNKS				:= $(RBOOT_ROM0_ADDR)=$(RBOOT_ROM_0_BIN)
 FLASH_RBOOT_ERASE_CONFIG_CHUNKS		:= 0x01000=$(SDK_BASE)/bin/blank.bin
 
 ifndef RBOOT_EMULATION
+
+# => Automatic linker script generation from template
+# $1 -> application target
+# $2 -> linker script
+# $3 -> ROM address variable (not value!)
+define GenerateLinkerScriptTargets
+# Mark linker script out-of-date if ROM address differs from previous run
+-include $2.config
+ifneq ($$(GEN_$3),$$($3))
+.PHONY: $2
+endif
+# Generate linker script from template
+$2: $(RBOOT_LD_TEMPLATE)
+	$$(info LDGEN $$@)
+	$$(Q) $(AWK) 'match($$$$0, /^.*irom0_0_seg[ \t]*:[ \t]*/) { \
+			printf "%sorg = 0x40200010 + ($$($3) & 0xFFFFF), len = 1M - ($$($3) & 0xFFFFF) - 0x10\n", substr($$$$0, RSTART, RLENGTH); next \
+		} 1 { print $$$$0 }' $$< > $$@
+	$$(Q) echo GEN_$3 := $($3) > $2.config
+# Make application depend on linker script
+$1: $2
+endef
+
+$(eval $(call GenerateLinkerScriptTargets,$(TARGET_OUT_0),$(RBOOT_LD_0),RBOOT_ROM0_ADDR))
+
 # => Firmware images
 CUSTOM_TARGETS += $(RBOOT_ROM_0_BIN)
 $(RBOOT_ROM_0_BIN): $(TARGET_OUT_0)
@@ -136,9 +186,15 @@ $(RBOOT_ROM_0_BIN): $(TARGET_OUT_0)
 	$(Q) $(ESPTOOL2) $(RBOOT_E2_USER_ARGS) $< $@ $(RBOOT_E2_SECTS)
 	$(Q) $(call WriteFirmwareConfigFile,$@)
 
+ifneq ($(RBOOT_ROM_1_BIN),)
+$(eval $(call GenerateLinkerScriptTargets,$(TARGET_OUT_1),$(RBOOT_LD_1),RBOOT_ROM1_ADDR))
+
 CUSTOM_TARGETS += $(RBOOT_ROM_1_BIN)
 $(RBOOT_ROM_1_BIN): $(TARGET_OUT_1)
 	$(info ESPTOOL2 $@)
 	$(Q) $(ESPTOOL2) $(RBOOT_E2_USER_ARGS) $< $@ $(RBOOT_E2_SECTS)
 	$(Q) $(call WriteFirmwareConfigFile,$@)
+
 endif
+
+endif # RBOOT_EMULATION

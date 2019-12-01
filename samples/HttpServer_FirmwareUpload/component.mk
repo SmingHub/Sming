@@ -40,10 +40,14 @@ $(VERIFICATION_HEADER): $(SIGNING_KEY)
 # add dependency to trigger automatic generation of verification key header
 $(COMPONENT_PATH)/app/application.cpp: $(VERIFICATION_HEADER)
 
-SIGNED_ROM0 = $(RBOOT_ROM_0_BIN).signed
-$(SIGNED_ROM0): $(RBOOT_ROM_0_BIN) $(SIGNING_KEY)
-	@echo Generating signed firmware update file...
-	$(Q) $(SIGNTOOL) --keyfile=$(SIGNING_KEY) --out "$(SIGNED_ROM0)" --rom "$(ROM_0_ADDR)=$(RBOOT_ROM_0_BIN)"
 
+# make signed image generation a phony target, because the rboot component and its variables have not been loaded yet
 .PHONY: signedrom
-signedrom: $(SIGNED_ROM0) ##Create signed ROM image
+signedrom: $(RBOOT_ROM_0_BIN) $(RBOOT_ROM_1_BIN) ##Create signed ROM image (or images if your setup requires two separate ROM images)
+	$(info Generating signed firmware update file(s)...)
+	$(Q) $(SIGNTOOL) --keyfile=$(SIGNING_KEY) --out "$(RBOOT_ROM_0_BIN).signed" --rom "$(RBOOT_ROM0_ADDR)=$(RBOOT_ROM_0_BIN)"
+	$(Q) if [ -n "$(RBOOT_ROM_1_BIN)" ]; then \
+		$(SIGNTOOL) --keyfile=$(SIGNING_KEY) --out "$(RBOOT_ROM_1_BIN).signed" --rom "$(RBOOT_ROM1_ADDR)=$(RBOOT_ROM_1_BIN)"; \
+	fi
+
+

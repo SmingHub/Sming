@@ -51,23 +51,15 @@ Important compiler flags used:
 -  SPIFF_SIZE=value - passed through to code for mounting the filesystem.
    Also used in the Makefile to create the SPIFFS.
 
-Disabling big flash
--------------------
+Flash layout considerations
+---------------------------
 
 If you want to use, for example, two 512k roms in the first 1MB block of
-flash (old style) then follow these instructions to produce two
-separately linked roms. If you are flashing a single rom to multiple 1MB
-flash blocks (using big flash) you only need one linked rom that can be
-used on each.
+flash (old style) then Sming will automatically create two separately linked 
+roms. If you are flashing a single rom to multiple 1MB flash blocks, all using
+the same offset inside their 1MB blocks, only a single rom is created.
+See the rBoot readme for further details.
 
-This assumes you understand the concepts explained in the rBoot readme
-about memory mapping and setting linker script address. This is not
-covered here, just how to use this sample without bigflash support.
-
--  Copy rom0.ld to rom1.ld.
--  Adjust the rom offsets and length as appropriate in each ld file.
--  Set *RBOOT_TWO_ROMS = 1* in component.mk (or as an environment variable).
--  Set *RBOOT_BIG_FLASH = 0* in component.mk
 -  If using a very small flash (e.g. 512k) there may be no room for a
    spiffs fileystem, disable it with *DISABLE_SPIFFS = 1*
 -  If you are using spiffs set *RBOOT_SPIFFS_0* & *RBOOT_SPIFFS_1* to
