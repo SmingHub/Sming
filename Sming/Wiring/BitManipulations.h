@@ -27,7 +27,9 @@
 #define _MMIO_WORD(mem_addr) (*(volatile uint16_t *)(mem_addr))
 #define _MMIO_DWORD(mem_addr) (*(volatile uint32_t *)(mem_addr))
 
+#ifndef _SFR_BYTE
 #define _SFR_BYTE(sfr) _MMIO_BYTE(_SFR_ADDR(sfr))
+#endif
 #define _SFR_WORD(sfr) _MMIO_WORD(_SFR_ADDR(sfr))
 #define _SFR_DWORD(sfr) _MMIO_DWORD(_SFR_ADDR(sfr))
 
