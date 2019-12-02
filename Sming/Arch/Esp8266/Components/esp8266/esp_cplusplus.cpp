@@ -15,15 +15,16 @@
 extern void (*__init_array_start)();
 extern void (*__init_array_end)();
 
-////////////////////////////////////////////////////////////////////////
-
-// Just do it! :)
 void cpp_core_initialize()
 {
-    void (**p)(void);
-    for (p = &__init_array_start; p != &__init_array_end; ++p) {
-            (*p)();
-    }
+	/*
+	 * Must be initialised in reverse order
+	 * see https://github.com/esp8266/Arduino/pull/2074
+	 */
+	auto p = &__init_array_end;
+	while(p != &__init_array_start) {
+		(*--p)();
+	}
 }
 
 extern "C" void __cxa_pure_virtual(void)
