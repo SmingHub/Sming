@@ -15,7 +15,7 @@ projects and stored in a separate, shared location.
 Until recently Sming itself has always been built as one large library,
 but this is now broken into a number of discrete Component libraries.
 The concept is borrowed from Espressif’s ESP-IDF build system and whilst
-it there are similarities the two systems are completely independent.
+there are some similarities the two systems are completely independent.
 
 Building applications
 ---------------------
@@ -25,48 +25,59 @@ Setup
 
 These are the main variables you need to be aware of:
 
-``SMING_HOME`` must be set to the full path of the ``Sming`` directory.
+.. envvar:: SMING_HOME
 
-``SMING_ARCH`` Defines the target architecture:
+   must be set to the full path of the ``Sming`` directory.
 
--  **Esp8266** The default if not specified. ``ESP_HOME`` must also be
-   provided to locate SDK & tools.
 
--  **Esp32** {todo}
+.. envvar:: SMING_ARCH
 
--  **Host** builds a version of the library for native host debugging on
-   Linux or Windows
+   Defines the target architecture
+
+   -  **Esp8266** The default if not specified. :envvar:`ESP_HOME` must also be
+      provided to locate SDK & tools.
+   
+   -  **Esp32** {todo}
+   
+   -  **Host** builds a version of the library for native host debugging on
+      Linux or Windows
+   
+
+.. envvar:: SMING_CPP_STD
+
+   The build standard applied for the framework.
+
+   This defaults to C++17 if the toolchain supports it (GCC 5+), C++11 otherwise.
+   You can override to use other standards, such as ``c++2a`` for experimental C++20 support.
+
 
 These variables are available for application use:
 
-``PROJECT_DIR`` Path to the project’s root source directory, without
-trailing path separator. This variable is available within makefiles,
-but is also provided as a #defined C string to allow references to
-source files within application code, such as with the ``IMPORT_FSTR``
-macro.
+.. envvar:: PROJECT_DIR
 
-``COMPONENT_PATH`` As for PROJECT_DIR, but provides the path to the
+   Path to the project’s root source directory, without
+   trailing path separator. This variable is available within makefiles,
+   but is also provided as a #defined C string to allow references to
+   source files within application code, such as with the ``IMPORT_FSTR``
+   macro.
+
+:envvar:`COMPONENT_PATH` As for PROJECT_DIR, but provides the path to the
 current component's root source directory.
 
 Converting existing projects
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Instead of ``Makefile-user.mk`` a project should provide a
-``component.mk``. To convert to the new style:
+Instead of ``Makefile-user.mk`` a project should provide a ``component.mk``. To convert to the new style:
 
-1. Copy ``Makefile`` and ``component.mk`` from the ``Basic_Blink``
-   sample project
+1. Copy ``Makefile`` and ``component.mk`` from the ``Basic_Blink`` sample project
 2. Copy any customisations from ``Makefile-user.mk`` into
    ``component.mk`` file. (Or, rename ``Makefile-user.mk`` to
    ``component.mk`` then edit it.)
 3. Delete ``Makefile-user.mk``
-4. If the project uses any Arduino libraries, set the
-   ``ARDUINO_LIBRARIES`` variable
+4. If the project uses any Arduino libraries, set the :envvar:`ARDUINO_LIBRARIES` variable
 
 **Targets** You can add your own targets to component.mk as usual. It’s
-a good idea to add a comment for the target, like this:
-
-::
+a good idea to add a comment for the target, like this::
 
    ##@Building
 
@@ -76,19 +87,19 @@ a good idea to add a comment for the target, like this:
 When you type ``make help`` it will appear in the list.
 
 If you need a target to be added as a dependency to the main application
-build, add it to ``CUSTOM_TARGETS`` - the ``Basic_Serial`` sample
+build, add it to ``CUSTOM_TARGETS`` - the :sample:`Basic_Serial` sample
 contains a simple example of this.
 
-**Arduino Libraries** If your project uses any Arduino libraries, you
-must set ``ARDUINO_LIBRARIES`` appropriately.
+.. envvar:: ARDUINO_LIBRARIES
 
-**Source files** Use ``COMPONENT_SRCDIRS`` instead of ``MODULES``. Use
-``COMPONENT_SRCFILES`` to add individual files.
+   If your project uses any Arduino libraries, you must set this value appropriately.
 
-**Include paths** Use ``COMPONENT_INCDIRS`` instead of ``EXTRA_INCDIR``.
+**Source files** Use :envvar:`COMPONENT_SRCDIRS` instead of ``MODULES``. Use
+:envvar:`COMPONENT_SRCFILES` to add individual files.
 
-See `component.mk <#component-configuration>`__ for a full list of
-variables.
+**Include paths** Use :envvar:`COMPONENT_INCDIRS` instead of ``EXTRA_INCDIR``.
+
+See `component.mk <#component-configuration>`__ for a full list of variables.
 
 Building
 ~~~~~~~~
@@ -96,7 +107,7 @@ Building
 You should normally work from the project directory. Examples:
 
 -  Type ``make`` to build the project and any required Components. To
-   speed things up, use parallel building, e.g. \ ``make -j5`` will
+   speed things up, use parallel building, e.g. ``make -j5`` will
    build using a maximum of 5 concurrent jobs. The optimum value for
    this is usually (CPU CORES + 1). Using ``make -j`` will use unlimited
    jobs, but can cause problems in virtual environments.
@@ -106,8 +117,7 @@ You should normally work from the project directory. Examples:
 
 To switch to a different build architecture, for example:
 
--  Type ``make SMING_ARCH=Host`` to build the project for the host
-   emulator
+-  Type ``make SMING_ARCH=Host`` to build the project for the host emulator
 -  Type ``make flash`` to copy any SPIFFS image (if enabled) to the
    virtual flash, and run the application. (Note that you don’t need to
    set SMING_ARCH again, the value is cached.)
@@ -248,8 +258,11 @@ A typical Project looks like this:
           |_ Host
              |_ ...
 
-Components
-----------
+
+.. _component:
+
+Component
+---------
 
 The purpose of a Component is to encapsulate related elements for
 selective inclusion in a project, for easy sharing and re-use:
@@ -346,17 +359,18 @@ cached. Variables such as ``COM_SPEED_ESPTOOL`` fall into this category.
 Dependencies
 ~~~~~~~~~~~~
 
-``COMPONENT_DEPENDS`` identifies a list of Components upon which this
+:envvar:`COMPONENT_DEPENDS` identifies a list of Components upon which this
 one depends. These are established as pre-requisites so will trigger a
-rebuild. In addition, all dependent ``COMPONENT_VARS`` are (recursively)
+rebuild. In addition, all dependent :envvar:`COMPONENT_VARS` are (recursively)
 used in creation of the library hash.
 
-For example, the ``axtls-8266`` Component declares ``SSL_DEBUG`` as a
+For example, the ``axtls-8266`` Component declares :envvar:`SSL_DEBUG` as a
 ``COMPONENT_VAR``. Because ``Sming`` depends on ``sming-arch``, which in
 turn depends on ``axtls-8266``, all of these Components get rebuilt as
 different variants when ``SSL_DEBUG`` changes values. The project code
-(``App`` Component) also gets rebuilt as it implicitly depends on
-``Sming``.
+(``App`` Component) also gets rebuilt as it implicitly depends on ``Sming``.
+
+.. _git_submodules:
 
 GIT Submodules
 ~~~~~~~~~~~~~~
@@ -379,7 +393,7 @@ extension. It can be located in the submodule’s parent directory:
 ::
 
    |_ Components/
-      |_ custom_heap/
+      |_ heap/
          |_ .component.mk             Component definition
          |_ umm_malloc.patch          Diff patch file
          |_ umm_malloc/               Submodule directory
@@ -422,101 +436,155 @@ number of variables are used to define behaviour.
 
 These values are for reference only and should not be modified.
 
-``COMPONENT_NAME`` Name of the Component ``COMPONENT_PATH`` Base
-directory path for Component, no trailing path separator
-``COMPONENT_BUILD_DIR`` The current directory. This should be used if
-the Component provides any application code or targets to ensure it is
-built in the correct directory (but not by this makefile).
-``COMPONENT_LIBDIR`` Location to store created Component (shared)
-libraries ``COMPONENT_VARIANT`` Name of the library to build
-``COMPONENT_LIBPATH`` Full path to the library to be built
+.. envvar:: COMPONENT_NAME
+
+   Name of the Component
+   
+.. envvar:: COMPONENT_PATH
+
+   Base directory path for Component, no trailing path separator
+
+.. envvar:: COMPONENT_BUILD_DIR
+
+   The current directory.
+   
+   This should be used if the Component provides any application code or targets to ensure it is
+   built in the correct directory (but not by this makefile).
+
+.. envvar:: COMPONENT_LIBDIR
+
+   Location to store created Component (shared) libraries
+   
+.. envvar:: COMPONENT_VARIANT
+
+   Name of the library to build
+
+.. envvar:: COMPONENT_LIBPATH
+
+   Full path to the library to be built
 
 These values may be used to customise Component behaviour and may be
 changed as required.
 
-``COMPONENT_LIBNAME`` By default, the library has the same name as the
-Component but can be changed if required. Note that this will be used as
-the stem for any variants. Set ``COMPONENT_LIBNAME :=`` if the Component
-doesn’t create a library. If you don’t do this, a default library will
-be built but will be empty if no source files are found.
+.. envvar:: COMPONENT_LIBNAME
 
-``COMPONENT_TARGETS`` Set this to any additional targets to be built as
-part of the Component, prefixed with ``$(COMPONENT_RULE)``. If targets
-should be built for each application, use ``CUSTOM_TARGETS`` instead.
-See ``spiffs`` for an example.
+   By default, the library has the same name as the Component but can be
+   changed if required. Note that this will be used as the stem for any variants.
+   
+   Set ``COMPONENT_LIBNAME :=`` if the Component doesn’t create a library.
+   If you don’t do this, a default library will be built but will be empty if
+   no source files are found.
 
-``COMPONENT_RULE`` This is a special value used to prefix any custom
-targets which are to be built as part of the Component. The target must
-be prefixed by ``$(COMPONENT_RULE)`` without any space between it and
-the target. This ensures the rule only gets invoked during a component
-build, and is ignored by the top-level make.
+.. envvar:: COMPONENT_TARGETS
 
-``COMPONENT_SUBMODULES`` Relative paths to dependent submodule
-directories for this Component. These will be fetched/patched
-automatically before building.
+   Set this to any additional targets to be built as
+   part of the Component, prefixed with ``$(COMPONENT_RULE)``.
+   
+   If targets should be built for each application, use :envvar:`CUSTOM_TARGETS` instead.
+   See :component:`spiffs` for an example.
 
-``COMPONENT_SRCDIRS`` Locations for source code relative to
-COMPONENT_PATH (defaults to “. src”)
+.. envvar:: COMPONENT_RULE
 
-``COMPONENT_INCDIRS`` Include directories available when building ALL
-Components (not just this one). Paths may be relative or absolute.
-Defaults to “include”.
+   This is a special value used to prefix any custom targets which are to be built as
+   part of the Component. The target must be prefixed by ``$(COMPONENT_RULE)`` without
+   any space between it and the target. This ensures the rule only gets invoked during
+   a component build, and is ignored by the top-level make.
 
-``INCDIR`` The resultant set of include directories used to build this
-Component. Will contain include directories specified by all other
-Components in the build. May be overridden if required.
+.. envvar:: COMPONENT_SUBMODULES
 
-``COMPONENT_APPCODE`` List of directories containing source code to be
-compiled directly with the application. (Ignore in the project.mk file -
-use ``COMPONENT_SRCDIRS`` instead).
+   Relative paths to dependent submodule directories for this Component.
+   These will be fetched/patched automatically before building.
 
-``CUSTOM_BUILD`` Set to 1 if providing an alternative build method. See
-`Custom building <#custom-building>`__ section.
+.. envvar:: COMPONENT_SRCDIRS
 
-``EXTRA_OBJ`` Absolute paths to any additional binary object files to be
-added to the Component archive library.
+   Locations for source code relative to COMPONENT_PATH (defaults to “. src”)
 
-``COMPONENT_DEPENDS`` Set to the name(s) of any dependent Components.
+.. envvar:: COMPONENT_INCDIRS
 
-``EXTRA_LIBS`` Set to names of any additional libraries to be linked.
+   Default: "include".
 
-``EXTRA_LDFLAGS`` Set to any additional flags to be used when linking.
+   Include directories available when building ALL Components (not just this one).
+   Paths may be relative or absolute
+
+.. envvar:: INCDIR
+
+   The resultant set of include directories used to build this
+   Component. Will contain include directories specified by all other
+   Components in the build. May be overridden if required.
+
+.. envvar:: COMPONENT_APPCODE
+
+   List of directories containing source code to be
+   compiled directly with the application. (Ignore in the project.mk file -
+   use :envvar:`COMPONENT_SRCDIRS` instead).
+
+.. envvar:: CUSTOM_BUILD
+
+   Set to 1 if providing an alternative build method. See
+   `Custom building <#custom-building>`__ section.
+
+.. envvar:: EXTRA_OBJ
+
+   Absolute paths to any additional binary object files to be
+   added to the Component archive library.
+
+.. envvar:: COMPONENT_DEPENDS
+
+   Set to the name(s) of any dependent Components.
+
+.. envvar:: EXTRA_LIBS
+
+   Set to names of any additional libraries to be linked.
+
+.. envvar:: EXTRA_LDFLAGS
+
+   Set to any additional flags to be used when linking.
 
 These values are global so must only be appended to (with ``+=``) ,
 never overwritten.
 
-``CUSTOM_TARGETS`` Identifies targets to be built along with the
-application. These will be invoked directly by the top-level make.
+.. envvar:: CUSTOM_TARGETS
 
-``GLOBAL_CFLAGS`` Use only if you need to provide additional compiler
-flags to be included when building all Components (including
-Application) and custom targets.
+   Identifies targets to be built along with the
+   application. These will be invoked directly by the top-level make.
 
-``APP_CFLAGS`` Used when building application and custom targets.
+.. envvar:: GLOBAL_CFLAGS
 
-``COMPONENT_CFLAGS`` Will be visible **ONLY** to C code within the component.
+   Use only if you need to provide additional compiler
+   flags to be included when building all Components (including
+   Application) and custom targets.
 
-``COMPONENT_CXXFLAGS`` Will be visible **ONLY** to C++ code within the component.
+.. envvar:: APP_CFLAGS
+
+   Used when building application and custom targets.
+
+.. envvar:: COMPONENT_CFLAGS
+
+   Will be visible **ONLY** to C code within the component.
+
+.. envvar:: COMPONENT_CXXFLAGS
+
+   Will be visible **ONLY** to C++ code within the component.
 
 
-**IMPORTANT NOTE**
+.. important::
 
-During initial parsing, many of these variables (specifically, the
-``COMPONENT_xxx`` ones) *do not* keep their values. For this reason it
-is usually best to use simple variable assignment using ``:=``.
-
-For example, in ``Esp8266/Components/gdbstub`` we define
-``GDB_CMDLINE``. It may be tempting to do this::
-
-   GDB_CMDLINE = trap '' INT; $(GDB) -x $(COMPONENT_PATH)/gdbcmds -b $(COM_SPEED_GDB) -ex "target remote $(COM_PORT_GDB)"
-
-That won’t work! By the time ``GDB_CMDLINE`` gets expanded,
-``COMPONENT_PATH`` could contain anything. We need ``GDB_CMDLINE`` to be
-expanded only when used, so the solution is to take a simple copy of
-``COMPONENT_PATH`` and use it instead, like this::
-
-   GDBSTUB_DIR := $(COMPONENT_PATH)
-   GDB_CMDLINE = trap '' INT; $(GDB) -x $(GDBSTUB_DIR)/gdbcmds -b $(COM_SPEED_GDB) -ex "target remote $(COM_PORT_GDB)"
+   During initial parsing, many of these variables (specifically, the
+   ``COMPONENT_xxx`` ones) *do not* keep their values. For this reason it
+   is usually best to use simple variable assignment using ``:=``.
+   
+   For example, in ``Esp8266/Components/gdbstub`` we define
+   ``GDB_CMDLINE``. It may be tempting to do this::
+   
+      GDB_CMDLINE = trap '' INT; $(GDB) -x $(COMPONENT_PATH)/gdbcmds -b $(COM_SPEED_GDB) -ex "target remote $(COM_PORT_GDB)"
+   
+   That won’t work! By the time ``GDB_CMDLINE`` gets expanded,
+   ``COMPONENT_PATH`` could contain anything. We need ``GDB_CMDLINE`` to be
+   expanded only when used, so the solution is to take a simple copy of
+   ``COMPONENT_PATH`` and use it instead, like this::
+   
+      GDBSTUB_DIR := $(COMPONENT_PATH)
+      GDB_CMDLINE = trap '' INT; $(GDB) -x $(GDBSTUB_DIR)/gdbcmds -b $(COM_SPEED_GDB) -ex "target remote $(COM_PORT_GDB)"
 
 Building
 ~~~~~~~~
@@ -550,8 +618,7 @@ behaviour can be changed using the ``FULL_COMPONENT_BUILD`` variable
 
 -  ``make FULL_COMPONENT_BUILD=lwip`` will perform an incremental build
    on the ``lwip`` Component
--  ``make FULL_COMPONENT_BUILD=1`` will incrementally build all
-   Components
+-  ``make FULL_COMPONENT_BUILD=1`` will incrementally build all Components
 
 Custom Building
 ~~~~~~~~~~~~~~~
@@ -614,6 +681,4 @@ instead of the main one. These sorts of issues can be checked using
 selected.
 
 **Components as submodules** All component.mk files must be available
-for parsing. For submodules, it can be provided in a .patch/
-sub-directory. Placing the component.mk file within the submodule itself
-is not currently supported.
+for parsing. For submodules, it can be provided in a .patch/ sub-directory.

@@ -4,9 +4,12 @@ Getting Started: ESP8266
 Development Environment
 -----------------------
 
-.. attention::
+.. envvar:: ESP_HOME
+
+   This contains the base directory for the toolchain used to build the framework.
 
    See :doc:`eqt` for experimental support for the latest compilers.
+
 
 .. toctree::
    :glob:
