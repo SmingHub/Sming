@@ -42,10 +42,6 @@ extern "C"
 #define PROGMEM_L32
 #endif
 
-
-#undef PROGMEM
-#define PROGMEM __attribute__((aligned(4))) ICACHE_FLASH_ATTR
-
 #define printf_P_heap(f_P, ...)                                                                                        \
 	(__extension__({                                                                                                   \
 		char* __localF = (char*)malloc(strlen_P(f_P) + 1);                                                             \
@@ -65,26 +61,74 @@ extern "C"
 
 #define printf_P printf_P_stack
 
-/*
- * Declare and use a flash string inline.
- * Returns a pointer to a stack-allocated buffer of the precise size required.
+/**
+ * @brief Define and use a NUL-terminated 'C' flash string inline
+ * @param str
+ * @retval char[] In flash memory, access using flash functions
+ * @note Uses string section merging so must not contain embedded NULs
  */
-#define _F(str)                                                                                                       \
+#undef PSTR
+#define PSTR(str)                                                                                                      \
 	(__extension__({                                                                                                   \
-		DEFINE_PSTR_LOCAL(flash_str, str);                                                                           \
-		LOAD_PSTR(_buf, flash_str);                                                                                   \
-		_buf;                                                                                                          \
+		DEFINE_PSTR_LOCAL(__pstr__, str);                                                                              \
+		&__pstr__[0];                                                                                                  \
+	}))
+
+/**
+ * @brief Define and use a counted flash string inline
+ * @param str
+ * @retval char[] In flash memory, access using flash functions
+ * @note Strings are treated as binary data so may contain embedded NULs,
+ * but duplicate strings are not merged.
+ */
+#define PSTR_COUNTED(str)                                                                                              \
+	(__extension__({                                                                                                   \
+		static const char __pstr__[] PROGMEM = str;                                                                    \
+		&__pstr__[0];                                                                                                  \
+	}))
+
+/**
+ * @brief Declare and use a flash string inline.
+ * @param str
+ * @retval char[] Returns a pointer to a stack-allocated buffer of the precise size required.
+ */
+#define _F(str)                                                                                                        \
+	(__extension__({                                                                                                   \
+		DEFINE_PSTR_LOCAL(__pstr__, str);                                                                              \
+		LOAD_PSTR(buf, __pstr__);                                                                                      \
+		buf;                                                                                                           \
 	}))
 
 
+/**
+ * @brief copy memory aligned to word boundaries
+ * @param dst
+ * @param src
+ * @param len Size of the source data
+ *
+ * dst and src must be aligned to word (4-byte) boundaries
+ * `len` will be rounded up to the nearest word boundary, so the dst
+ * buffer MUST be large enough for this.
+ */
 void* memcpy_aligned(void* dst, const void* src, unsigned len);
+
+/**
+ * @brief compare memory aligned to word boundaries
+ * @param ptr1
+ * @param ptr2
+ * @param len
+ * @retval int 0 if all bytes match
+ *
+ * ptr1 and ptr2 must all be aligned to word (4-byte) boundaries.
+ * len is rounded up to the nearest word boundary
+ */
 int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len);
 
 /** @brief define a PSTR
  *  @param name name of string
  *  @param str the string data
  */
-#define DEFINE_PSTR(name, str) const char name[] PROGMEM = str;
+#define DEFINE_PSTR(name, str) const char name[] PROGMEM_PSTR = str;
 
 /** @brief define a PSTR for local (static) use
  *  @param name name of string
@@ -92,21 +136,26 @@ int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len);
  */
 #define DEFINE_PSTR_LOCAL(name, str) static DEFINE_PSTR(name, str)
 
-// Declare a global reference to a PSTR instance
+/**
+ * @brief Declare a global reference to a PSTR instance
+ * @param name
+ */
 #define DECLARE_PSTR(name) extern const char name[] PROGMEM;
 
-/*
- * Create a local (stack) buffer called `name` and load it with flash data.
- * `flash_str` is defined locally so the compiler knows its size (length + nul).
- * Size is rounded up to multiple of 4 bytes for fast copy.
+/**
+ * @brief Create a local (stack) buffer called `name` and load it with flash data.
+ * @param name
+ * @param flash_str Content stored in flash. The compiler knows its size (length + nul),
+ * which is rounded up to multiple of 4 bytes for fast copy.
  *
  * If defining a string within a function or other local context, must declare static.
  *
  * Example:
- * 	void testfunc() {
- * 		static DEFINE_PSTR(test, "This is a test string\n")
- * 		m_printf(LOAD_PSTR(test));
- * 	}
+ *
+ * 		void testfunc() {
+ * 			static DEFINE_PSTR(test, "This is a test string\n");
+ * 			m_printf(LOAD_PSTR(test));
+ * 		}
  *
  */
 #define LOAD_PSTR(name, flash_str)                                                                                   \
@@ -119,8 +168,10 @@ int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len);
 		_buf;                                                                                                          \
 	}))
 
-/*
- * Define a flash string and load it into a named array buffer on the stack.
+/**
+ * @brief Define a flash string and load it into a named array buffer on the stack.
+ * @note Must not contain embedded NUL characters
+ *
  * For example, this:
  *
  * 		PSTR_ARRAY(myText, "some text");
@@ -136,8 +187,8 @@ int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len);
  *
  */
 #define PSTR_ARRAY(name, str)                                                                                          \
-	static DEFINE_PSTR(PSTR_##name, str);                                                                              \
-	LOAD_PSTR(name, PSTR_##name)
+	DEFINE_PSTR_LOCAL(__pstr__##name, str);                                                                            \
+	LOAD_PSTR(name, __pstr__##name)
 
 #ifdef __cplusplus
 }

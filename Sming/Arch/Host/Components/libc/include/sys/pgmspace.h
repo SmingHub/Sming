@@ -14,15 +14,8 @@
 extern "C" {
 #endif
 
-#define PROGMEM
 #define PGM_P const char*
 #define PGM_VOID_P const void*
-
-#define PSTR(s)                                                                                                        \
-	(__extension__({                                                                                                   \
-		static const char __c[] PROGMEM = (s);                                                                         \
-		&__c[0];                                                                                                       \
-	}))
 
 #define pgm_read_byte(addr) (*(const unsigned char*)(addr))
 #define pgm_read_word(addr) (*(const unsigned short*)(addr))

@@ -11,6 +11,32 @@
 #pragma once
 
 #include <sys/features.h>
+#include <c_types.h>
+#include <esp_attr.h>
+
+/**
+ * @defgroup pgmspace Flash support functions
+ * @ingroup flash
+ * @{
+ */
+
+/**
+ * @brief Place entity into flash memory
+ */
+#define PROGMEM STORE_ATTR ICACHE_RODATA_ATTR
+
+/**
+ * @brief Place NUL-terminated string data into flash memory
+ *
+ * Duplicate string data will be merged according to the rules laid out in
+ * https://sourceware.org/binutils/docs/as/Section.html
+ */
+#define PROGMEM_PSTR                                                                                                   \
+	STORE_ATTR                                                                                                         \
+	__attribute__((section("\".irom0.pstr." __FILE__                                                                   \
+						   "." MACROQUOTE(__LINE__) "." MACROQUOTE(__COUNTER__) "\", \"aSM\", @progbits, 1 #")))
+
+/** @} */
 
 #ifdef __NEWLIB__
 
@@ -18,16 +44,12 @@
 
 #else
 
-#include <c_types.h>
-#include <esp_attr.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * @defgroup pgmspace Flash support functions
- * @ingroup flash
+ * @ingroup pgmspace
  * @{
  */
 
@@ -58,8 +80,6 @@ typedef int32_t prog_int32_t;
 typedef uint32_t prog_uint32_t;
 /** @} */
 
-#define PROGMEM __attribute__((aligned(4))) ICACHE_FLASH_ATTR
-
 // flash memory must be read using 32 bit aligned addresses else a processor exception will be triggered
 // order within the 32 bit values are
 // --------------
@@ -70,9 +90,8 @@ typedef uint32_t prog_uint32_t;
 	__asm__("extui    %0, %1, 0, 2\n" /* Extract offset within word (in bytes) */                                      \
 			"sub      %1, %1, %0\n"   /* Subtract offset from addr, yielding an aligned address */                     \
 			"l32i.n   %1, %1, 0x0\n"  /* Load word from aligned address */                                             \
-			"slli     %0, %0, 3\n"	/* Mulitiply offset by 8, yielding an offset in bits */                          \
-			"ssr      %0\n"			  /* Prepare to shift by offset (in bits) */                                       \
-			"srl      %0, %1\n"		  /* Shift right; now the requested byte is the first one */                       \
+			"ssa8l    %0\n"			  /* Prepare to shift by offset (in bits) */                                       \
+			"src      %0, %1, %1\n"   /* Shift right; now the requested byte is the first one */                       \
 			: "=r"(res), "=r"(addr)                                                                                    \
 			: "1"(addr)                                                                                                \
 			:);
@@ -140,17 +159,6 @@ char* strstr_P(char* haystack, const char* needle_P);
 /** @} */
 
 /**
- * @brief Define and use a flash string inline
- * @param str
- * @retval char[] In flash memory, access using flash functions
- */
-#define PSTR(str)                                                                                                      \
-	(__extension__({                                                                                                   \
-		DEFINE_PSTR_LOCAL(__c, str);                                                                                   \
-		&__c[0];                                                                                                       \
-	}))
-
-/**
  * @name AVR-compatibility macros
  * @{
  */
@@ -171,4 +179,3 @@ char* strstr_P(char* haystack, const char* needle_P);
 #endif
 
 #endif // __NEWLIB__
-

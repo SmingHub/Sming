@@ -179,14 +179,12 @@ SECTIONS
     *(.rodata._ZZ*__func__)
     *(.rodata.__func__*)
 
-    /* debug_e() string pointers */
-    *(.rodata._ZZ*log_string)
+	/* Inline flash strings, including those within templated code */
+	*(*__pstr__*)
+	*(*__fstr__*)
 
-	/* Inline flash strings _F() */
-	*(.rodata._ZZ*flash_str)
-
-	/* Inline flash strings PSTR() */
-	*(.rodata._ZZ*__c)
+	/* Templated code */
+	*(.rodata._ZN8NanoTimeL9unitTicksE)
 
     _irom0_text_end = ABSOLUTE(.);
     _flash_code_end = ABSOLUTE(.);

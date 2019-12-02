@@ -78,23 +78,28 @@ using FlashString = FSTR::String;
 // result objects are assumed to be writable by subsequent concatenations.
 class StringSumHelper;
 
-/* Arduino-style flash strings
- *
- * __FlashStringHelper* provides strongly-typed pointer to allow safe implicit
+// Arduino-style flash strings
+class __FlashStringHelper; // Never actually defined
+/**
+ * @brief Provides a strongly-typed pointer to allow safe implicit
  * operation using String class methods.
  */
-class __FlashStringHelper; // Never actually defined
 typedef const __FlashStringHelper* flash_string_t;
 
-// Cast a PGM_P (flash memory) pointer to a flash string pointer
+/**
+ * @brief Cast a PGM_P (flash memory) pointer to a flash string pointer
+ */
 #define FPSTR(pstr_pointer) reinterpret_cast<flash_string_t>(pstr_pointer)
 
-/*
- * Use this macro to wrap a string literal and access it using a String object.
+/**
+ * @brief Wrap a string literal stored in flash and access it using a String object
+ *
  * The string data is stored in flash and only read into RAM when executed.
  * For example: Serial.print(F("This is a test string\n"));
+ *
+ * Unlike string pointers, content is length counted so may include NUL characters.
  */
-#define F(string_literal) String(FPSTR(PSTR(string_literal)), sizeof(string_literal) - 1)
+#define F(string_literal) String(FPSTR(PSTR_COUNTED(string_literal)), sizeof(string_literal) - 1)
 
 /**
  * @brief The string class
