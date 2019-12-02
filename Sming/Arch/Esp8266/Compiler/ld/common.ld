@@ -161,8 +161,9 @@ SECTIONS
 
     *libmbedtls.a:(.literal.* .text.*)
 
+	/* C++ vtables */
+    *(.rodata._ZTV*)
 
-    *(.rodata._ZTV*) /* C++ vtables */
     *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom0.text.* .irom.text .irom.text.* .irom.debug.*)
 
     /* Generated libraries */
@@ -176,9 +177,16 @@ SECTIONS
     *(.rodata._ZZ*__FUNCTION__)
     *(.rodata._ZZ*__PRETTY_FUNCTION__)
     *(.rodata._ZZ*__func__)
+    *(.rodata.__func__*)
 
     /* debug_e() string pointers */
     *(.rodata._ZZ*log_string)
+
+	/* Inline flash strings _F() */
+	*(.rodata._ZZ*flash_str)
+
+	/* Inline flash strings PSTR() */
+	*(.rodata._ZZ*__c)
 
     _irom0_text_end = ABSOLUTE(.);
     _flash_code_end = ABSOLUTE(.);
