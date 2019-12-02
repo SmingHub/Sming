@@ -4,6 +4,10 @@ Getting Started: ESP8266
 Development Environment
 -----------------------
 
+.. attention::
+
+   See :doc:`eqt` for experimental support for the latest compilers.
+
 .. toctree::
    :glob:
    :maxdepth: 1
