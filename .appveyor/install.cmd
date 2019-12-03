@@ -1,7 +1,7 @@
 REM Windows install script
 
 rmdir /s /q c:\MinGW
-curl -LO https://github.com/SmingHub/SmingTools/releases/download/1.0/MinGW.7z
+curl -LO %SMINGTOOLS%/MinGW.7z
 7z -oC:\ x MinGW.7z
 
 goto :%SMING_ARCH%
@@ -9,7 +9,9 @@ goto :%SMING_ARCH%
 :Esp8266
 
 	REM Old toolchain
-	choco install esp8266-udk --source https://www.myget.org/F/sming/ -y --no-progress
+	set TOOLCHAIN=esp-udk-win32.7z
+	curl -LO %SMINGTOOLS%/%TOOLCHAIN%
+	7z -o%UDK_ROOT% x %TOOLCHAIN%
 
 	REM New toolchain
 	mkdir %EQT_ROOT%

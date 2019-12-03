@@ -11,9 +11,11 @@ fi
 if [ "$SMING_ARCH" == "Esp8266" ]; then
 	if [ "$TRAVIS_OS_NAME" == "linux" ]; then
 		# Old toolchain
+		TOOLCHAIN=esp-open-sdk-linux-x86_64.tar.gz
+		wget --no-verbose $SMINGTOOLS/$TOOLCHAIN
+	  	tar -zxf $TOOLCHAIN
 		mkdir -p $TRAVIS_BUILD_DIR/opt/esp-alt-sdk
-		wget --no-verbose https://github.com/nodemcu/nodemcu-firmware/raw/2d958750b56fc60297f564b4ec303e47928b5927/tools/esp-open-sdk.tar.xz
-	  	tar -Jxvf esp-open-sdk.tar.xz; ln -s $(pwd)/esp-open-sdk/xtensa-lx106-elf $TRAVIS_BUILD_DIR/opt/esp-alt-sdk/.
+		ln -s $(pwd)/esp-open-sdk/xtensa-lx106-elf $TRAVIS_BUILD_DIR/opt/esp-alt-sdk/.
 
 		# New toolchain
 		TOOLCHAIN=x86_64-linux-gnu.xtensa-lx106-elf-dd9f9a2.1569802152.tar.gz

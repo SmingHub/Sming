@@ -1,7 +1,7 @@
 language: cpp
 env:
   global:
-  - SDK_BUILD=258
+  - SMINGTOOLS=https://github.com/SmingHub/SmingTools/releases/download/1.0
   - secure: D/cPk+sL2MNHLtfuU/rMiVN63+CTFpo9Chqa39LEH5VloGqC5f7RyIi2Maa3C/U2JQfM01HlsNR7E5bB0W8DQYbtzBDTqbZ4C7ppZRU5jCQ+L51ERKJ0EAV3KkaravQCRbWt3tlgOp6Xk6xaRMBaHEGrdbFjHYgEMPVteUQNr0A=
   - secure: pc8Yqwmn6AM+iBjLNNnknmOoi+AxoyvcVy128b2WXSdj6Q4bOIXgj4WUg8I52i1fgyh0Rxg19WUB6qSVyykCXVdSRajIU1MsKZI+0q44Q83wnwVeYm7nPWxDqS3FKMajucZCg4p0BTE4T6tpnm7zZNHduHnggua/NpP2h7B/Sqs=
   - secure: TX0IxYV3tTocCaJcgIA2xzJyHIzbxo7sAkLLYL+OITgWPD1VDUrEqEe7konQA5NIDJJ0VjoHxpdfti2LHG1fw45vrEMfBIOmZG6nW2gxD8ZS2G8KlYIxFB93oNNB6qJRHps1uIANk2hM+Ju6Pnqfc+lLh8oabs974ziAxoYuAJQ=
