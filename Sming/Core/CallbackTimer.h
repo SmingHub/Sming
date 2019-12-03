@@ -304,7 +304,7 @@ public:
 	/** @brief  Set timer interval in timer ticks
      *  @param  ticks Interval in timer ticks
      */
-	bool IRAM_ATTR setInterval(TickType ticks)
+	__forceinline bool IRAM_ATTR setInterval(TickType ticks)
 	{
 		if(checkInterval(ticks)) {
 			internalSetInterval(ticks);
@@ -319,7 +319,7 @@ public:
      *  @tparam ticks Interval in ticks
      *  @note   On error, compilation fails with error message
      */
-	template <TimeType ticks> void IRAM_ATTR setInterval()
+	template <TimeType ticks> __forceinline void IRAM_ATTR setInterval()
 	{
 		checkInterval<ticks>();
 		internalSetInterval(ticks);
