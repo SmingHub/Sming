@@ -64,10 +64,6 @@
 #include <FlashString/String.hpp>
 
 /**
- * @defgroup wiring Wiring Framework
- */
-
-/**
  * @brief Read-only String class stored in flash memory
  */
 using FlashString = FSTR::String;
@@ -87,7 +83,7 @@ using FlashString = FSTR::String;
 class StringSumHelper;
 
 /**
- * @ingroup flash
+ * @ingroup pgmspace
  * @{
  */
 
@@ -101,11 +97,13 @@ typedef const __FlashStringHelper* flash_string_t;
 
 /**
  * @brief Cast a PGM_P (flash memory) pointer to a flash string pointer
+ * @param pstr_pointer
  */
 #define FPSTR(pstr_pointer) reinterpret_cast<flash_string_t>(pstr_pointer)
 
 /**
  * @brief Wrap a string literal stored in flash and access it using a String object
+ * @param string_literal The string literal value, e.g. "this is a string"
  *
  * The string data is stored in flash and only read into RAM when executed.
  * For example: Serial.print(F("This is a test string\n"));
@@ -117,8 +115,12 @@ typedef const __FlashStringHelper* flash_string_t;
 /** @} */
 
 /**
+ * @defgroup wiring Wiring Framework
+ * @{
+ */
+
+/**
  * @brief The String class
- * @ingroup wiring
  *
  * Note that a string object's default constructor creates an empty string.
  * This is not the same as a null string.
@@ -812,6 +814,8 @@ protected:
     void move(String &rhs);
 #endif
 };
+
+/** @} */
 
 class StringSumHelper : public String
 {

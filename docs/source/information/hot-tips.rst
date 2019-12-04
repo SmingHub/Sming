@@ -1,65 +1,16 @@
-*********
 Hot Tips!
-*********
+=========
 
 .. highlight:: c++
 
 Minimising Memory Usage
-=======================
+-----------------------
 
-Literals use up memory, so its a good idea to move them to flash. Be
-aware though that it can be slower! Further reading, see :doc:`flash`
-and :component:`FlashString`.
-
-F() macro
----------
-
-Instructs the compiler to store the literal in flash (of
-which there is plenty) rather than RAM (which is limited).
-
-Example::
-
-   String system = F("system");
-
-_F() macro
-----------
-
-This function uses the stack, and is generally preferable
-to the ``F()`` macro, but you need to be mindful of scope. The content is
-lost as soon as the containing block goes out of scope. Used as a
-function parameter, that means the end of the function call.
-
-Examples::
-
-   println(_F("Debug started"));
-
-   commandOutput->print(_F("Welcome to the Tcp Command executor\r\n"));
-
-
-Bad::
-
-   char* s = _F("string")
-
-An assignment such as this will not work because the temporary will be
-out of scope after the statement, hence s will point to garbage. In this
-instance PSTR_ARRAY(s, “string”) can be used.
-
-PSTR_ARRAY() macro
-------------------
-
-This macro creates and loads string into a named stack buffer.
-This Ensures loaded string stays in scope, unlike _F() Example::
-
-   String testfunc() {
-      //char * test = "This is a string"; <<- BAD
-      PSTR_ARRAY(test, "This is a string");
-      m_printf(test);
-      ...
-      return test; // Implicit conversion to String
-   }
+Literals use up memory, so its a good idea to move them to flash.
+See :doc:`/framework/core/pgmspace` and :component:`FlashString`.
 
 Webpages and Spiffs
-===================
+-------------------
 
 :component:`FlashString <FlashString>` turns out to be very useful for sending web pages,
 javascript, CSS and so on. Many examples for the ESP8266 exist where a
