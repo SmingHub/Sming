@@ -58,16 +58,5 @@ endif
 # Identifies which library we're building with
 USE_NEWLIB			= $(if $(filter 9%,$(GCC_VERSION)),1,0)
 
-# Both flash and peripheral memories must be accessed on 4-byte word boundaries,
-# otherwise behaviour can be unpredictable or cause a memory exception.
-# The -mforce-l32 compiler option generates code to deal with reads of
-# mis-aligned memory accesses. It is not a standard feature of GNU compilers,
-# however, and is not always available.
-DEBUG_VARS			+= MFORCE32
-MFORCE32 := $(firstword $(shell $(CC) --help=target | grep mforce-l32))
-ifneq ($(MFORCE32),)
-	CFLAGS			+= -DMFORCE32 -mforce-l32
-endif
-
 # => Tools
 MEMANALYZER = python $(ARCH_TOOLS)/memanalyzer.py $(OBJDUMP)$(TOOL_EXT)

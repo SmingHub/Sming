@@ -33,15 +33,6 @@ extern "C"
 // Align a size down to the nearest word boundary
 #define ALIGNDOWN(_n) ((_n) & ~3)
 
-#ifdef MFORCE32
-// Your compiler supports the -mforce-l32 flag which means that
-// constants can be stored in flash (program) memory instead of SRAM.
-// See: https://www.arduino.cc/en/Reference/PROGMEM
-#define PROGMEM_L32 PROGMEM
-#else
-#define PROGMEM_L32
-#endif
-
 #define printf_P_heap(f_P, ...)                                                                                        \
 	(__extension__({                                                                                                   \
 		char* __localF = (char*)malloc(strlen_P(f_P) + 1);                                                             \
