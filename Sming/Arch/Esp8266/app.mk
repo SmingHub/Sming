@@ -55,7 +55,7 @@ $(TARGET_OUT_0): $(COMPONENTS_AR) $(LIBMAIN_DST)
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
 
 	$(Q)	if [ -f "$(FW_MEMINFO_NEW)" -a -f "$(FW_MEMINFO_OLD)" ]; then \
-				awk -F "|" ' \
+				$(AWK) -F "|" ' \
 					FILENAME == "$(FW_MEMINFO_OLD)" { \
 						arr[$$1]=$$5 \
 					} \

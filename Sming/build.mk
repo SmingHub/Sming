@@ -221,7 +221,7 @@ endef
 define PrintHelp
 	@echo
 	@echo Welcome to the Sming build system!
-	@awk	'BEGIN { \
+	@$(AWK)	'BEGIN { \
 				FS = "(:.*##)|(##@)"; \
 				printf "Usage:\n  make \033[1;36m<target>\033[0m\n"; \
 			} /^##@/ { \
