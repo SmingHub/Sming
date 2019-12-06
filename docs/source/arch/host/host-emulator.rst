@@ -34,7 +34,11 @@ You may wish to install the latest compilers for testing alongside the recent
    sudo add-apt-repository ppa:ubuntu-toolchain-r/test
    sudo apt update
    sudo apt install gcc-9 g++-9
+   
+   # For 64-bit systems
+   sudo apt install gcc-9-multilib g++-9-multilib
 
+   # Set GCC 9 as default
    sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-9
 
 The current version is `GCC 9.2.1 <https://www.gnu.org/software/gcc/gcc-9>`__.
