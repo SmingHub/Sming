@@ -14,6 +14,10 @@
 extern "C" {
 #endif
 
+#define PROGMEM STORE_ATTR
+#define PROGMEM_PSTR PROGMEM
+#define PSTR(str) (str)
+
 #define PGM_P const char*
 #define PGM_VOID_P const void*
 

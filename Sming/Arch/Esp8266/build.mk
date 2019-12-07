@@ -4,7 +4,7 @@
 #
 ##############
 
-CFLAGS				+= -DARCH_ESP8266 -Dasm=__asm__
+CFLAGS				+= -DARCH_ESP8266
 CXXFLAGS			+= -fno-rtti -fno-exceptions -fno-threadsafe-statics
 
 # Required to access peripheral registers using structs

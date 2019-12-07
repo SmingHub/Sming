@@ -4,7 +4,6 @@ COMPONENT_SRCFILES		:= libc.c
 
 ifeq ($(USE_NEWLIB),1)
 COMPONENT_SRCFILES		+= libc_replacements.c
-LIBDIRS					+= $(COMPONENT_PATH)/newlib
 EXTRA_LIBS				+= m c gcc
 else
 COMPONENT_SRCFILES		+= pgmspace.c

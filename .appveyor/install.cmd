@@ -15,8 +15,8 @@ goto :%SMING_ARCH%
 
 	REM New toolchain
 	mkdir %EQT_ROOT%
-	set TOOLCHAIN=x86_64-w64-mingw32.xtensa-lx106-elf-dd9f9a2.1569802152.zip
-	curl -LO https://github.com/earlephilhower/esp-quick-toolchain/releases/download/3.0.0-gnu2/%TOOLCHAIN%
+	set TOOLCHAIN=i686-w64-mingw32.xtensa-lx106-elf-78222bb.1575759673.zip
+	curl -LO https://github.com/earlephilhower/esp-quick-toolchain/releases/download/3.0.0-gnu4/%TOOLCHAIN%
 	7z -o%EQT_ROOT% x %TOOLCHAIN%
 
 	goto :EOF

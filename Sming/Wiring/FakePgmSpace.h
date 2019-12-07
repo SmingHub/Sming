@@ -53,19 +53,6 @@ extern "C"
 #define printf_P printf_P_stack
 
 /**
- * @brief Define and use a NUL-terminated 'C' flash string inline
- * @param str
- * @retval char[] In flash memory, access using flash functions
- * @note Uses string section merging so must not contain embedded NULs
- */
-#undef PSTR
-#define PSTR(str)                                                                                                      \
-	(__extension__({                                                                                                   \
-		DEFINE_PSTR_LOCAL(__pstr__, str);                                                                              \
-		&__pstr__[0];                                                                                                  \
-	}))
-
-/**
  * @brief Define and use a counted flash string inline
  * @param str
  * @retval char[] In flash memory, access using flash functions

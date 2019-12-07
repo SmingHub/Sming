@@ -36,6 +36,18 @@
 	__attribute__((section("\".irom0.pstr." __FILE__                                                                   \
 						   "." MACROQUOTE(__LINE__) "." MACROQUOTE(__COUNTER__) "\", \"aSM\", @progbits, 1 #")))
 
+/**
+ * @brief Define and use a NUL-terminated 'C' flash string inline
+ * @param str
+ * @retval char[] In flash memory, access using flash functions
+ * @note Uses string section merging so must not contain embedded NULs
+ */
+#define PSTR(str)                                                                                                      \
+	(__extension__({                                                                                                   \
+		static const char __pstr__[] PROGMEM_PSTR = str;                                                               \
+		&__pstr__[0];                                                                                                  \
+	}))
+
 /** @} */
 
 #ifdef __NEWLIB__

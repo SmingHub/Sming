@@ -18,8 +18,8 @@ if [ "$SMING_ARCH" == "Esp8266" ]; then
 		ln -s $(pwd)/esp-open-sdk/xtensa-lx106-elf $TRAVIS_BUILD_DIR/opt/esp-alt-sdk/.
 
 		# New toolchain
-		TOOLCHAIN=x86_64-linux-gnu.xtensa-lx106-elf-dd9f9a2.1569802152.tar.gz
-		wget --no-verbose https://github.com/earlephilhower/esp-quick-toolchain/releases/download/3.0.0-gnu2/$TOOLCHAIN
+		TOOLCHAIN=x86_64-linux-gnu.xtensa-lx106-elf-78222bb.1575759673.tar.gz
+		wget --no-verbose https://github.com/earlephilhower/esp-quick-toolchain/releases/download/3.0.0-gnu4/$TOOLCHAIN
 		mkdir -p opt/esp-quick-toolchain
 	  	tar -zxf $TOOLCHAIN -C opt/esp-quick-toolchain --totals
 	fi

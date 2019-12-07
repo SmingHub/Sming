@@ -23,12 +23,13 @@ Installation
 ------------
 
 The toolchains are currently at pre-release, available `here <https://github.com/earlephilhower/esp-quick-toolchain/releases>`__.
-Download links as follows:
+Download links for the ``3.0.0-gnu4`` release (8 December 2019) as follows:
 
-- Linux 32-bit: `i686-linux-gnu.xtensa-lx106-elf-dd9f9a2.1569802152.tar.gz <https://github.com/earlephilhower/esp-quick-toolchain/releases/download/3.0.0-gnu2/i686-linux-gnu.xtensa-lx106-elf-dd9f9a2.1569802152.tar.gz>`__
-- Linux 64-bit: `x86_64-linux-gnu.xtensa-lx106-elf-dd9f9a2.1569802152.tar.gz <https://github.com/earlephilhower/esp-quick-toolchain/releases/download/3.0.0-gnu2/x86_64-linux-gnu.xtensa-lx106-elf-dd9f9a2.1569802152.tar.gz>`__
-- MacOS: `x86_64-apple-darwin14.xtensa-lx106-elf-dd9f9a2.1569802152.tar.gz <https://github.com/earlephilhower/esp-quick-toolchain/releases/download/3.0.0-gnu2/x86_64-apple-darwin14.xtensa-lx106-elf-dd9f9a2.1569802152.tar.gz>`__
-- Windows: `x86_64-w64-mingw32.xtensa-lx106-elf-dd9f9a2.1569802152.zip <https://github.com/earlephilhower/esp-quick-toolchain/releases/download/3.0.0-gnu2/x86_64-w64-mingw32.xtensa-lx106-elf-dd9f9a2.1569802152.zip>`__
+- Linux 32-bit: `i686-linux-gnu.xtensa-lx106-elf.tar.gz <https://github.com/earlephilhower/esp-quick-toolchain/releases/download/3.0.0-gnu4/i686-linux-gnu.xtensa-lx106-elf-78222bb.1575759673.tar.gz>`__
+- Linux 64-bit: `x86_64-linux-gnu.xtensa-lx106-elf.tar.gz <https://github.com/earlephilhower/esp-quick-toolchain/releases/download/3.0.0-gnu4/x86_64-linux-gnu.xtensa-lx106-elf-78222bb.1575759673.tar.gz>`__
+- MacOS: `x86_64-apple-darwin14.xtensa-lx106-elf.tar.gz <https://github.com/earlephilhower/esp-quick-toolchain/releases/download/3.0.0-gnu4/ x86_64-apple-darwin14.xtensa-lx106-elf-78222bb.1575759673.tar.gz>`__
+- Windows 32-bit: `i686-w64-mingw32.xtensa-lx106-elf.zip <https://github.com/earlephilhower/esp-quick-toolchain/releases/download/3.0.0-gnu4/i686-w64-mingw32.xtensa-lx106-elf-78222bb.1575759673.zip>`__ 
+- Windows 64-bit: `x86_64-w64-mingw32.xtensa-lx106-elf.zip <https://github.com/earlephilhower/esp-quick-toolchain/releases/download/3.0.0-gnu4/x86_64-w64-mingw32.xtensa-lx106-elf-78222bb.1575759673.zip>`__
 
 Extract the toolchain to a suitable location, such as:
 
