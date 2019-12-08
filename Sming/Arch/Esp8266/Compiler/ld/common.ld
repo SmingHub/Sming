@@ -140,8 +140,6 @@ SECTIONS
 
     *libc.a:(.literal .text .literal.* .text.*)
     *libm.a:(.literal .text .literal.* .text.*)
-    *libgcc.a:_umoddi3.o(.literal .text)
-    *libgcc.a:_udivdi3.o(.literal .text)
     *libgcc.a:_divsf3.o(.literal .text)
     *libgcc.a:_fixsfsi.o(.literal .text)
     *libgcc.a:_cmpdf2.o(.literal .text)
