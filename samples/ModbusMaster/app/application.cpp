@@ -1,7 +1,7 @@
 #include <SmingCore.h>
 #include <Debug.h>
 #include "application.h"
-#include "Libraries/ModbusMaster/src/ModbusMaster.h"
+#include "ModbusMaster.h"
 
 #define RS485_RE_PIN 15
 #define MB_SLAVE_ADDR 1
