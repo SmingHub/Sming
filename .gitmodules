@@ -133,3 +133,4 @@
 [submodule "Sming/Libraries/ModbusMaster"]
 	path = Sming/Libraries/ModbusMaster
 	url = https://github.com/kmihaylov/ModbusMaster.git
+	ignore = dirty
