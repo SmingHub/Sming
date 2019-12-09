@@ -14,7 +14,8 @@ HardwareSerial Serial1(UART1);
 
 uint16_t globalSeconds = 0;
 
-void mbLoop() {
+void mbLoop()
+{
 	globalSeconds++;
 
 	uint8_t numberOfRegistersToWrite = 1;
@@ -22,7 +23,6 @@ void mbLoop() {
 	mbMaster.begin(MB_SLAVE_ADDR, Serial);
 	mbMaster.setTransmitBuffer(bufferPosition, globalSeconds);
 	mbMaster.writeMultipleRegisters(SLAVE_REG_ADDR, numberOfRegistersToWrite);
-
 
 	uint8_t nrOfRegistersToRead = 1;
 	uint8_t mbResult = mbMaster.readHoldingRegisters(SLAVE_REG_ADDR, nrOfRegistersToRead); //see also readInputRegisters
@@ -45,10 +45,11 @@ void mbLoop() {
 
 void init()
 {
-	pinMode(RS485_RE_PIN , OUTPUT);
-	digitalWrite(RS485_RE_PIN,0);
+	pinMode(RS485_RE_PIN, OUTPUT);
+	digitalWrite(RS485_RE_PIN, 0);
 	Serial.begin(115200, SERIAL_8N1, SERIAL_FULL);
-	Serial1.begin(SERIAL_BAUD_RATE, SERIAL_8N1, SERIAL_TX_ONLY); // 115200 by default, GPIO1,GPIO3, see Serial.swap(), HardwareSerial
+	Serial1.begin(SERIAL_BAUD_RATE, SERIAL_8N1,
+				  SERIAL_TX_ONLY); // 115200 by default, GPIO1,GPIO3, see Serial.swap(), HardwareSerial
 	Serial1.systemDebugOutput(true);
 
 	Debug.setDebug(Serial1);
@@ -64,19 +65,22 @@ void init()
 	mbLoopTimer.initializeMs(1000, mbLoop).start();
 }
 
-void preTransmission() {
-	digitalWrite(RS485_RE_PIN,1);
+void preTransmission()
+{
+	digitalWrite(RS485_RE_PIN, 1);
 	delayMilliseconds(2);
 }
 
-void postTransmission() {
+void postTransmission()
+{
 	delayMicroseconds(500);
-	digitalWrite(RS485_RE_PIN,0);
+	digitalWrite(RS485_RE_PIN, 0);
 }
 
-void mbLogReceive(const uint8_t *adu, size_t aduSize, uint8_t status ){
-	if( status != mbMaster.ku8MBSuccess ) {
-		switch( status ) {
+void mbLogReceive(const uint8_t* adu, size_t aduSize, uint8_t status)
+{
+	if(status != mbMaster.ku8MBSuccess) {
+		switch(status) {
 		case mbMaster.ku8MBIllegalFunction:
 			debugf("MB Illegal Function");
 			break;
@@ -105,15 +109,16 @@ void mbLogReceive(const uint8_t *adu, size_t aduSize, uint8_t status ){
 			debugf("MB Response too large");
 			break;
 		}
-		debugf("ADU Size: %d, status: %d ", aduSize, status );
+		debugf("ADU Size: %d, status: %d ", aduSize, status);
 	}
 	debugf("\r\n");
 }
 
-void mbLogTransmit(const uint8_t *adu, size_t aduSize) {
+void mbLogTransmit(const uint8_t* adu, size_t aduSize)
+{
 	uint8_t i = 0;
-	while( i<aduSize){
-		debugf("ADU[%d]: %d, ",i,adu[i]);
+	while(i < aduSize) {
+		debugf("ADU[%d]: %d, ", i, adu[i]);
 		i++;
 	}
 	debugf(" ");
