@@ -130,7 +130,7 @@
 	path = Sming/Libraries/SmingTest
 	url = https://github.com/mikee47/SmingTest
 	ignore = dirty
-[submodule "Sming/Libraries/ModbusMaster"]
+[submodule "Libraries/ModbusMaster"]
 	path = Sming/Libraries/ModbusMaster
 	url = https://github.com/kmihaylov/ModbusMaster.git
 	ignore = dirty
