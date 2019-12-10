@@ -140,10 +140,10 @@ SECTIONS
 
     *libc.a:(.literal .text .literal.* .text.*)
     *libm.a:(.literal .text .literal.* .text.*)
-    *libgcc.a:_divsf3.o(.literal .text)
-    *libgcc.a:_fixsfsi.o(.literal .text)
-    *libgcc.a:_cmpdf2.o(.literal .text)
-    *libgcc.a:_cmpsf2.o(.literal .text)
+    *gcc.a:_divsf3.o(.literal .text)
+    *gcc.a:_fixsfsi.o(.literal .text)
+    *gcc.a:_cmpdf2.o(.literal .text)
+    *gcc.a:_cmpsf2.o(.literal .text)
     *libstdc++.a:(.literal .text .literal.* .text.*)
 
     *libsmartconfig.a:(.literal .text .literal.* .text.*)
