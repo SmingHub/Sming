@@ -1,3 +1,13 @@
+diff --git a/src/umm_info.c b/src/umm_info.c
+index 6868c00..6e25ae3 100644
+--- a/src/umm_info.c
++++ b/src/umm_info.c
+@@ -20,2 +20,5 @@ UMM_HEAP_INFO ummHeapInfo;
+ void *umm_info( void *ptr, int force ) {
++  if(umm_heap == NULL) {
++    umm_init();
++  }
+ 
 diff --git a/src/umm_malloc_cfg.h b/src/umm_malloc_cfg.h
 index 6a5a7fc..a74e0a3 100644
 --- a/src/umm_malloc_cfg.h
