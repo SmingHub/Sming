@@ -1,8 +1,8 @@
 diff --git a/src/umm_malloc_cfg.h b/src/umm_malloc_cfg.h
-index 6a5a7fc..a581100 100644
+index 6a5a7fc..a74e0a3 100644
 --- a/src/umm_malloc_cfg.h
 +++ b/src/umm_malloc_cfg.h
-@@ -5,6 +5,24 @@
+@@ -5,6 +5,18 @@
  #ifndef _UMM_MALLOC_CFG_H
  #define _UMM_MALLOC_CFG_H
  
@@ -13,21 +13,15 @@ index 6a5a7fc..a581100 100644
 +extern "C" {
 +#endif
 +
-+// ESP specific code
-+extern void ets_intr_lock();
-+extern void ets_intr_unlock();
-+
 +#ifdef UMM_MALLOC_H
 +#define printf m_printf
 +#define puts m_puts
 +#endif
 +
-+#define ICACHE_FLASH_ATTR __attribute__((section(".irom0.text")))
-+
  /*
   * There are a number of defines you can set at compile time that affect how
   * the memory allocator will operate.
-@@ -39,11 +57,11 @@
+@@ -39,11 +51,11 @@
   * ----------------------------------------------------------------------------
   */
  
@@ -42,18 +36,7 @@ index 6a5a7fc..a581100 100644
  
  /* A couple of macros to make packing structures less compiler dependent */
  
-@@ -95,8 +113,8 @@ extern char test_umm_heap[];
-  * called from within umm_malloc()
-  */
- 
--#define UMM_CRITICAL_ENTRY()
--#define UMM_CRITICAL_EXIT()
-+#define UMM_CRITICAL_ENTRY() ets_intr_lock()
-+#define UMM_CRITICAL_EXIT()  ets_intr_unlock()
- 
- /*
-  * -D UMM_INTEGRITY_CHECK :
-@@ -151,11 +169,11 @@ extern char test_umm_heap[];
+@@ -151,11 +163,11 @@ extern char test_umm_heap[];
   * callback is called: `UMM_HEAP_CORRUPTION_CB()`
   */
  
@@ -67,7 +50,7 @@ index 6a5a7fc..a581100 100644
  
  #ifdef UMM_POISON_CHECK
     void *umm_poison_malloc( size_t size );
-@@ -168,4 +186,10 @@ extern char test_umm_heap[];
+@@ -168,4 +180,10 @@ extern char test_umm_heap[];
  #  define POISON_CHECK() 0
  #endif
  
