@@ -34,6 +34,11 @@ void* IRAM_ATTR malloc(size_t size)
 	return UMM_FUNC(malloc)(size);
 }
 
+void* IRAM_ATTR calloc(size_t num, size_t size)
+{
+	return UMM_FUNC(calloc)(num, size);
+}
+
 void* IRAM_ATTR realloc(void* ptr, size_t size)
 {
 	return UMM_FUNC(realloc)(ptr, size);
