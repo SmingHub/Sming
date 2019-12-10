@@ -55,7 +55,6 @@ public:
 			REQUIRE(isRomPtr(strcmp));
 			REQUIRE(isRomPtr(strncmp));
 			REQUIRE(isRomPtr(strstr));
-			REQUIRE(isRomPtr(bzero));
 		}
 #endif
 	}
