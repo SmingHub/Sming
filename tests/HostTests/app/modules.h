@@ -1,6 +1,7 @@
 // List of test modules to register
 
 #define TEST_MAP(XX)                                                                                                   \
+	XX(libc)                                                                                                           \
 	XX(precache)                                                                                                       \
 	XX(string)                                                                                                         \
 	XX(arduino_string)                                                                                                 \

@@ -5,6 +5,7 @@
 .SUFFIXES:
 
 SHELL = /bin/bash
+AWK ?= POSIXLY_CORRECT= awk
 
 SMINGDIR := ..
 override SMING_HOME := $(SMINGDIR)/Sming
@@ -17,6 +18,9 @@ BUILDDIR		= build
 
 # Documentation is copied into this directory so it gets pulled into build
 SOURCE_INCDIR	:= $(SOURCEDIR)/_inc
+
+#
+FixPath			= $1
 
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")

@@ -226,18 +226,24 @@ void ATTR_GDBINIT gdb_init(void)
 #endif
 }
 
-static unsigned IRAM_ATTR __gdb_no_op(void)
+void WEAK_ATTR gdb_enable(bool state)
 {
-	return 0;
 }
 
-#define NOOP __attribute__((weak, alias("__gdb_no_op")))
+GdbState WEAK_ATTR gdb_present(void)
+{
+	return eGDB_NotPresent;
+}
 
-void gdb_enable(bool state) NOOP;
-GdbState gdb_present(void) NOOP;
-void gdb_on_attach(bool attached) NOOP;
-void gdb_detach(void) NOOP;
-};
+void WEAK_ATTR gdb_on_attach(bool attached)
+{
+}
+
+void WEAK_ATTR gdb_detach(void)
+{
+}
+
+} // extern "C"
 
 int WEAK_ATTR gdb_syscall(const GdbSyscallInfo& info)
 {

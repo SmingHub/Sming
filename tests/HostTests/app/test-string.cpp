@@ -11,8 +11,47 @@ public:
 
 	void execute() override
 	{
+		templateTest(12);
+		nonTemplateTest();
+
 		testString();
 		testMakeHexString();
+	}
+
+	template <typename T> void templateTest(T x)
+	{
+#ifdef ARCH_ESP8266
+		auto pstr = PSTR("This PSTR should get moved out of RAM, filtered by __pstr__ in symbol name.");
+		REQUIRE(isFlashPtr(pstr));
+
+		auto fstr1 = FS_PTR("This FSTR should get moved out of RAM, filtered by __fstr__ in symbol name.");
+		REQUIRE(isFlashPtr(fstr1));
+
+		DEFINE_FSTR_LOCAL(fstr2, "Regular FSTR");
+		REQUIRE(isFlashPtr(&fstr2));
+
+		auto func = __PRETTY_FUNCTION__;
+		REQUIRE(isFlashPtr(func));
+		debug_i("%s", func);
+#endif
+	}
+
+	void nonTemplateTest()
+	{
+#ifdef ARCH_ESP8266
+		auto pstr = PSTR("This PSTR should get moved out of RAM, filtered by section name.");
+		REQUIRE(isFlashPtr(pstr));
+
+		auto fstr1 = FS_PTR("This FSTR should get moved out of RAM, filtered by section name.");
+		REQUIRE(isFlashPtr(fstr1));
+
+		DEFINE_FSTR_LOCAL(fstr2, "Regular FSTR");
+		REQUIRE(isFlashPtr(&fstr2));
+
+		auto func = __PRETTY_FUNCTION__;
+		REQUIRE(isFlashPtr(func));
+		debug_i("%s", func);
+#endif
 	}
 
 	void testString()

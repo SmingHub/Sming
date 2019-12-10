@@ -70,7 +70,6 @@ ARCH_SYS		= $(ARCH_BASE)/System
 ARCH_CORE		= $(ARCH_BASE)/Core
 ARCH_TOOLS		= $(ARCH_BASE)/Tools
 ARCH_COMPONENTS	= $(ARCH_BASE)/Components
-ARCH_LIBDIR		= $(ARCH_BASE)/Compiler/lib
 
 OUT_BASE		:= out/$(SMING_ARCH)/$(BUILD_TYPE)
 BUILD_BASE		= $(OUT_BASE)/build
@@ -148,13 +147,26 @@ else
 	CFLAGS		+= -Os -g
 endif
 
-CXXFLAGS = $(CFLAGS) -std=c++11 -felide-constructors
+CXXFLAGS = $(CFLAGS) -felide-constructors
 
 ifneq ($(STRICT),1)
 	CXXFLAGS += -Wno-reorder
 endif
 
 include $(ARCH_BASE)/build.mk
+
+# Detect compiler version
+DEBUG_VARS			+= GCC_VERSION
+GCC_VERSION			:= $(shell $(CC) -dumpversion)
+
+# Select C++17 if supported, defaulting to C++11 otherwise
+DEBUG_VARS			+= SMING_CPP_STD
+ifeq ($(GCC_VERSION),4.8.5)
+SMING_CPP_STD		?= c++11
+else
+SMING_CPP_STD		?= c++17
+endif
+CXXFLAGS			+= -std=$(SMING_CPP_STD)
 
 # Component (user) libraries have a special prefix so linker script can identify them
 CLIB_PREFIX := clib-
@@ -209,7 +221,7 @@ endef
 define PrintHelp
 	@echo
 	@echo Welcome to the Sming build system!
-	@awk	'BEGIN { \
+	@$(AWK)	'BEGIN { \
 				FS = "(:.*##)|(##@)"; \
 				printf "Usage:\n  make \033[1;36m<target>\033[0m\n"; \
 			} /^##@/ { \
