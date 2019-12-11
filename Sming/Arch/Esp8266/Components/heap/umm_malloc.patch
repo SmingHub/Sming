@@ -8,6 +8,106 @@ index 6868c00..6e25ae3 100644
 +    umm_init();
 +  }
  
+diff --git a/src/umm_malloc.c b/src/umm_malloc.c
+index 9faec2a..1166260 100644
+--- a/src/umm_malloc.c
++++ b/src/umm_malloc.c
+@@ -29,6 +29,13 @@
+ 
+ #include <stdio.h>
+ #include <string.h>
++#include <esp_attr.h>
++
++#ifdef UMM_FUNC_IRAM
++#define UMM_FUNC_ATTR IRAM_ATTR
++#else
++#define UMM_FUNC_ATTR
++#endif
+ 
+ #include "umm_malloc.h"
+ 
+@@ -92,7 +99,7 @@ unsigned short int umm_numblocks = 0;
+ 
+ /* ------------------------------------------------------------------------ */
+ 
+-static unsigned short int umm_blocks( size_t size ) {
++static unsigned short int UMM_FUNC_ATTR umm_blocks( size_t size ) {
+ 
+   /*
+    * The calculation of the block size is not too difficult, but there are
+@@ -125,7 +132,7 @@ static unsigned short int umm_blocks( size_t size ) {
+  *
+  * Note that free pointers are NOT modified by this function.
+  */
+-static void umm_split_block( unsigned short int c,
++static void UMM_FUNC_ATTR umm_split_block( unsigned short int c,
+     unsigned short int blocks,
+     unsigned short int new_freemask ) {
+ 
+@@ -138,7 +145,7 @@ static void umm_split_block( unsigned short int c,
+ 
+ /* ------------------------------------------------------------------------ */
+ 
+-static void umm_disconnect_from_free_list( unsigned short int c ) {
++static void UMM_FUNC_ATTR umm_disconnect_from_free_list( unsigned short int c ) {
+   /* Disconnect this block from the FREE list */
+ 
+   UMM_NFREE(UMM_PFREE(c)) = UMM_NFREE(c);
+@@ -154,7 +161,7 @@ static void umm_disconnect_from_free_list( unsigned short int c ) {
+  * have the UMM_FREELIST_MASK bit set!
+  */
+ 
+-static void umm_assimilate_up( unsigned short int c ) {
++static void UMM_FUNC_ATTR umm_assimilate_up( unsigned short int c ) {
+ 
+   if( UMM_NBLOCK(UMM_NBLOCK(c)) & UMM_FREELIST_MASK ) {
+     /*
+@@ -180,7 +187,7 @@ static void umm_assimilate_up( unsigned short int c ) {
+  * have the UMM_FREELIST_MASK bit set!
+  */
+ 
+-static unsigned short int umm_assimilate_down( unsigned short int c, unsigned short int freemask ) {
++static unsigned short int UMM_FUNC_ATTR umm_assimilate_down( unsigned short int c, unsigned short int freemask ) {
+ 
+   UMM_NBLOCK(UMM_PBLOCK(c)) = UMM_NBLOCK(c) | freemask;
+   UMM_PBLOCK(UMM_NBLOCK(c)) = UMM_PBLOCK(c);
+@@ -248,7 +255,7 @@ void umm_init( void ) {
+ 
+ /* ------------------------------------------------------------------------ */
+ 
+-void umm_free( void *ptr ) {
++void UMM_FUNC_ATTR umm_free( void *ptr ) {
+ 
+   unsigned short int c;
+ 
+@@ -311,7 +318,7 @@ void umm_free( void *ptr ) {
+ 
+ /* ------------------------------------------------------------------------ */
+ 
+-void *umm_malloc( size_t size ) {
++void * UMM_FUNC_ATTR umm_malloc( size_t size ) {
+   unsigned short int blocks;
+   unsigned short int blockSize = 0;
+ 
+@@ -441,7 +448,7 @@ void *umm_malloc( size_t size ) {
+ 
+ /* ------------------------------------------------------------------------ */
+ 
+-void *umm_realloc( void *ptr, size_t size ) {
++void * UMM_FUNC_ATTR umm_realloc( void *ptr, size_t size ) {
+ 
+   unsigned short int blocks;
+   unsigned short int blockSize;
+@@ -606,7 +613,7 @@ void *umm_realloc( void *ptr, size_t size ) {
+ 
+ /* ------------------------------------------------------------------------ */
+ 
+-void *umm_calloc( size_t num, size_t item_size ) {
++void * UMM_FUNC_ATTR umm_calloc( size_t num, size_t item_size ) {
+   void *ret;
+ 
+   ret = umm_malloc((size_t)(item_size * num));
+
 diff --git a/src/umm_malloc_cfg.h b/src/umm_malloc_cfg.h
 index 6a5a7fc..a74e0a3 100644
 --- a/src/umm_malloc_cfg.h
