@@ -3,12 +3,6 @@ COMPONENT_VARS			:= SDK_BASE
 
 SDK_BASE ?= $(COMPONENT_PATH)/ESP8266_NONOS_SDK
 
-ifeq ($(UNAME),Windows)
-SDK_TOOLS				?= $(ESP_HOME)/utils
-else
-SDK_TOOLS				?= $(SDK_BASE)/tools
-endif
-
 SDK_BASE				:= $(call FixPath,$(SDK_BASE))
 FLASH_INIT_DATA			= $(SDK_BASE)/bin/esp_init_data_default.bin
 
