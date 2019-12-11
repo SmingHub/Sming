@@ -154,21 +154,6 @@ Release builds
       make SMING_RELEASE=
 
 
-Command Executor
-----------------
-
-.. envvar:: ENABLE_CMD_EXECUTOR
-
-   Default: ON. This feature enables
-   execution of certain commands by registering token handlers for text
-   received via serial, websocket or telnet connection. If this feature
-   is not used additional RAM/Flash can be obtained by setting
-   ``ENABLE_CMD_EXECUTOR=0``. This will save ~1KB RAM and ~3KB of flash
-   memory.
-
-.. doxygengroup:: commandhandler
- 
-
 WiFi Connection
 ---------------
 

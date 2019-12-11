@@ -5,21 +5,6 @@ namespace Profiling
 {
 /**
  * @brief Class to provide a CPU usage indication based on task callback availability.
- * @note To use, instantiate a single instance of this class and call the `begin()` method
- * from `init()`, passing a function to be invoked after calibration has completed.
- *
- * @note CPU usage is calculated over an update period which begins with a call to reset().
- * The actual update period must be managed elsewhere, using a callback timer, web request
- * or other mechanism. It doesn't need to be exact as the actual elapsed time in CPU
- * cycles is used for the calculation.
- * After the update period has elapsed, call `getUtilisation()` to obtain a CPU usage figure.
- *
- * This figure is obtained using the number of task callbacks made within the update period.
- *
- * 	loop cycles:	Set up repeating task callback and invocations between successive calls
- *	total cycles:	The total number of CPU cycles between calls to update()
- *	used:			total - loop
- *  utilisation:	used / total
  */
 class CpuUsage
 {
