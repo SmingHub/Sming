@@ -11,11 +11,15 @@
 #include <debug_progmem.h>
 #include <gdb/gdb_hooks.h>
 
+#ifndef __NEWLIB__
+
 int* __errno(void)
 {
 	static int errno_s = 0;
 	return &errno_s;
 }
+
+#endif
 
 void __assert_func(const char* file, int line, const char* func, const char* what)
 {

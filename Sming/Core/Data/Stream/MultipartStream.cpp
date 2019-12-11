@@ -77,7 +77,7 @@ const char* MultipartStream::getBoundary()
 		int len = sizeof(boundary);
 		memset(boundary, 0, len);
 		for(int i = 0; i < len - 1; ++i) {
-			boundary[i] = pool[os_random() % (sizeof(PSTR_pool) - 1)];
+			boundary[i] = pool[os_random() % (sizeof(__pstr__pool) - 1)];
 		}
 		boundary[len - 1] = 0;
 	}

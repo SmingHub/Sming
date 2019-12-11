@@ -41,8 +41,7 @@ This builds the cross-compiler, linker, etc. required for the ESP8266::
    # This will take a while...
    make STANDALONE=y
 
-You can find pre-compiled toochains in the `SmingTools <https://github.com/SmingHub/SmingTools/releases>`__
-repository.
+You can find pre-compiled toolchains in the `SmingTools <https://github.com/SmingHub/SmingTools/releases>`__ repository.
 
 Espressif SDK
 -------------
@@ -52,8 +51,8 @@ which is pulled in automatically during the build.
 
 Previous versions are no longer officially supported.
 
-Set ENV Variables
------------------
+Environment Variables
+---------------------
 
 From the command line::
 
@@ -106,3 +105,7 @@ Flash to your device (using ttyUSB0)::
    cd $SMING_HOME/../samples/Basic_Blink
    make flash
 
+Next steps
+----------
+
+Proceed to :doc:`config`.

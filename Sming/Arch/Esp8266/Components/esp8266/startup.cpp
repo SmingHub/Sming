@@ -17,7 +17,7 @@
 
 extern void init();
 
-extern "C" void  WEAK_ATTR user_init(void)
+extern "C" void user_init(void)
 {
 	// Initialise hardware timers
 	hw_timer_init();

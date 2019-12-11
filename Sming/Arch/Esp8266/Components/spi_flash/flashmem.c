@@ -32,7 +32,7 @@ extern char _flash_code_end[];
 #define IS_ALIGNED(x) (((uint32_t)(x)&0x00000003) == 0)
 
 // Buffers need to be word aligned for flash access
-#define __aligned __attribute__((aligned(4)))
+#define ATTR_ALIGNED __attribute__((aligned(4)))
 
 // If this module were in C++ we could use std::min
 static inline uint32_t min(uint32_t a, uint32_t b)
@@ -60,7 +60,7 @@ uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 	const uint32_t blksize = INTERNAL_FLASH_WRITE_UNIT_SIZE;
 	const uint32_t blkmask = INTERNAL_FLASH_WRITE_UNIT_SIZE - 1;
 
-	__aligned char tmpdata[FLASH_BUFFERS * INTERNAL_FLASH_WRITE_UNIT_SIZE];
+	ATTR_ALIGNED char tmpdata[FLASH_BUFFERS * INTERNAL_FLASH_WRITE_UNIT_SIZE];
 	const uint8_t* pfrom = (const uint8_t*)from;
 	uint32_t remain = size;
 
@@ -132,7 +132,7 @@ uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
 	const uint32_t blksize = INTERNAL_FLASH_READ_UNIT_SIZE;
 	const uint32_t blkmask = INTERNAL_FLASH_READ_UNIT_SIZE - 1;
 
-	__aligned char tmpdata[FLASH_BUFFERS * INTERNAL_FLASH_READ_UNIT_SIZE];
+	ATTR_ALIGNED char tmpdata[FLASH_BUFFERS * INTERNAL_FLASH_READ_UNIT_SIZE];
 	uint8_t* pto = (uint8_t*)to;
 	uint32_t remain = size;
 

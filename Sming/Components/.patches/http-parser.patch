@@ -1,13 +1,5 @@
-diff --git a/component.mk b/component.mk
-new file mode 100644
-index 0000000..12f0ff7
---- /dev/null
-+++ b/component.mk
-@@ -0,0 +1,2 @@
-+COMPONENT_SRCDIRS :=
-+COMPONENT_SRCFILES := http_parser.c
 diff --git a/http_parser.c b/http_parser.c
-index 5b5657b..b523e35 100644
+index 5b5657b..e676cda 100644
 --- a/http_parser.c
 +++ b/http_parser.c
 @@ -19,8 +19,7 @@
@@ -25,7 +17,7 @@ index 5b5657b..b523e35 100644
   *                    | "{" | "}" | SP | HT
   */
 -static const char tokens[256] = {
-+static const char __flash_tokens[256] PROGMEM = {
++static const char flash_tokens[256] PROGMEM = {
  /*   0 nul    1 soh    2 stx    3 etx    4 eot    5 enq    6 ack    7 bel  */
          0,       0,       0,       0,       0,       0,       0,       0,
  /*   8 bs     9 ht    10 nl    11 vt    12 np    13 cr    14 so    15 si   */
@@ -47,20 +39,11 @@ index 5b5657b..b523e35 100644
 -
 +static inline char get_token(char c)
 +{
-+	return (char)pgm_read_byte(&__flash_tokens[(uint8_t)c]);
++	return (char)pgm_read_byte(&flash_tokens[(uint8_t)c]);
 +}
  
  #if HTTP_PARSER_STRICT
  # define T(v) 0
-@@ -236,7 +227,7 @@ static const int8_t unhex[256] =
- #endif
- 
- 
--static const uint8_t normal_url_char[32] = {
-+static const uint8_t normal_url_char[32] PROGMEM_L32 = {
- /*   0 nul    1 soh    2 stx    3 etx    4 eot    5 enq    6 ack    7 bel  */
-         0    |   0    |   0    |   0    |   0    |   0    |   0    |   0,
- /*   8 bs     9 ht    10 nl    11 vt    12 np    13 cr    14 so    15 si   */
 @@ -417,14 +408,14 @@ enum http_host_state
    (c) == ';' || (c) == ':' || (c) == '&' || (c) == '=' || (c) == '+' || \
    (c) == '$' || (c) == ',')

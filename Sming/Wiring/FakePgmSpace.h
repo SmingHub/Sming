@@ -10,9 +10,11 @@
 
 #pragma once
 
+#include <esp_attr.h>
+#include <sys/pgmspace.h>
+
 #include "m_printf.h"
 #include "c_types.h"
-#include <esp_attr.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -22,20 +24,6 @@ extern "C"
 // Simple check to determine if a pointer refers to flash memory
 #define isFlashPtr(ptr) (uint32_t(ptr) >= 0x40200000)
 
-#define PGM_P  const char *
-
-#define PRIPSTR "%s"
-
-typedef void prog_void;
-typedef char prog_char;
-typedef unsigned char prog_uchar;
-typedef int8_t prog_int8_t;
-typedef uint8_t prog_uint8_t;
-typedef int16_t prog_int16_t;
-typedef uint16_t prog_uint16_t;
-typedef int32_t prog_int32_t;
-typedef uint32_t prog_uint32_t;
-
 /** @brief determines if the given value is aligned to a word (4-byte) boundary */
 #define IS_ALIGNED(_x) (((uint32_t)(_x)&3) == 0)
 
@@ -44,87 +32,6 @@ typedef uint32_t prog_uint32_t;
 
 // Align a size down to the nearest word boundary
 #define ALIGNDOWN(_n) ((_n) & ~3)
-
-#ifdef MFORCE32
-// Your compiler supports the -mforce-l32 flag which means that
-// constants can be stored in flash (program) memory instead of SRAM.
-// See: https://www.arduino.cc/en/Reference/PROGMEM
-#define PROGMEM_L32 PROGMEM
-#else
-#define PROGMEM_L32
-#endif
-
-
-#ifdef ICACHE_FLASH
-
-#ifndef PROGMEM
-#define PROGMEM __attribute__((aligned(4))) ICACHE_FLASH_ATTR
-#endif
-
-// flash memory must be read using 32 bit aligned addresses else a processor exception will be triggered
-// order within the 32 bit values are
-// --------------
-// b3, b2, b1, b0
-//     w1,     w0
-
-#define pgm_read_with_offset(addr, res)                                                                                \
-	__asm__("extui    %0, %1, 0, 2\n" /* Extract offset within word (in bytes) */                                      \
-			"sub      %1, %1, %0\n"   /* Subtract offset from addr, yielding an aligned address */                     \
-			"l32i.n   %1, %1, 0x0\n"  /* Load word from aligned address */                                             \
-			"slli     %0, %0, 3\n"	/* Mulitiply offset by 8, yielding an offset in bits */                          \
-			"ssr      %0\n"			  /* Prepare to shift by offset (in bits) */                                       \
-			"srl      %0, %1\n"		  /* Shift right; now the requested byte is the first one */                       \
-			: "=r"(res), "=r"(addr)                                                                                    \
-			: "1"(addr)                                                                                                \
-			:);
-
-static inline uint8_t pgm_read_byte_inlined(const void* addr)
-{
-	register uint32_t res;
-	pgm_read_with_offset(addr, res);
-	return (uint8_t)res; /* This masks the lower byte from the returned word */
-}
-
-/* Although this says "word", it's actually 16 bit, i.e. half word on Xtensa */
-static inline uint16_t pgm_read_word_inlined(const void* addr)
-{
-	register uint32_t res;
-	pgm_read_with_offset(addr, res);
-	return (uint16_t)res; /* This masks the lower half-word from the returned word */
-}
-
-// Make sure, that libraries checking existence of this macro are not failing
-#define pgm_read_byte(addr) pgm_read_byte_inlined(addr)
-#define pgm_read_word(addr) pgm_read_word_inlined(addr)
-
-// No translation necessary (provided address is aligned)
-#define pgm_read_dword(addr) (*(const unsigned long*)(addr))
-#define pgm_read_float(addr) (*(const float*)(addr))
-
-void *memcpy_P(void *dest, const void *src_P, size_t length);
-int memcmp_P(const void *a1, const void *b1, size_t len);
-size_t strlen_P(const char * src_P);
-char *strcpy_P(char * dest, const char * src_P);
-char *strncpy_P(char * dest, const char * src_P, size_t size);
-int strcmp_P(const char *str1, const char *str2_P);
-int strncmp_P(const char *str1, const char *str2_P, const size_t size);
-int strcasecmp_P(const char* str1, const char* str2_P);
-char* strcat_P(char* dest, const char* src_P);
-char *strstr_P(char *haystack, const char *needle_P);
-
-#define sprintf_P(s, f_P, ...)                                                                                         \
-	(__extension__({                                                                                                   \
-		int len_P = strlen_P(f_P);                                                                                     \
-		int __result = 0;                                                                                              \
-		char* __localF = (char*)malloc(len_P + 1);                                                                     \
-		if(__localF) {                                                                                                 \
-			strcpy_P(__localF, f_P);                                                                                   \
-			__localF[len_P] = '\0';                                                                                    \
-		}                                                                                                              \
-		__result = m_snprintf(s, len_P, __localF, ##__VA_ARGS__);                                                      \
-		free(__localF);                                                                                                \
-		__result;                                                                                                      \
-	}))
 
 #define printf_P_heap(f_P, ...)                                                                                        \
 	(__extension__({                                                                                                   \
@@ -145,68 +52,61 @@ char *strstr_P(char *haystack, const char *needle_P);
 
 #define printf_P printf_P_stack
 
-#else /* ICACHE_FLASH */
-
-#define PROGMEM __attribute__((aligned(4)))
-
-#define pgm_read_byte(addr) (*(const unsigned char *)(addr))
-#define pgm_read_word(addr) (*(const unsigned short *)(addr))
-#define pgm_read_dword(addr) (*(const unsigned long *)(addr))
-#define pgm_read_float(addr) (*(const float *)(addr))
-
-#define memcpy_P(dest, src, num) memcpy((dest), (src), (num))
-#define memcmp_P(a1, b1, len) memcmp(a1, b1, len)
-#define strlen_P(a) strlen((a))
-#define strcpy_P(dest, src) strcpy((dest), (src))
-#define strncpy_P(dest, src, size) strncpy((dest), (src), (size))
-#define strcmp_P(a, b) strcmp((a), (b))
-#define strncmp_P(str1, str2_P, size) strncmp(str1, str2_P, size)
-#define strcasecmp_P(a, b) strcasecmp((a), (b))
-#define strcat_P(dest, src) strcat((dest), (src))
-#define strstr_P(a, b) strstr((a), (b))
-#define sprintf_P(s, f, ...) m_snprintf(s, 1024, f, ##__VA_ARGS__)
-#define printf_P(f, ...) m_printf((f), ##__VA_ARGS__)
-
-#endif /* ICACHE_FLASH */
-
-/*
- * Define and use a flash string inline
+/**
+ * @brief Define and use a counted flash string inline
+ * @param str
+ * @retval char[] In flash memory, access using flash functions
+ * @note Strings are treated as binary data so may contain embedded NULs,
+ * but duplicate strings are not merged.
  */
-#define PSTR(str)                                                                                                     \
+#define PSTR_COUNTED(str)                                                                                              \
 	(__extension__({                                                                                                   \
-		DEFINE_PSTR_LOCAL(__c, str);                                                                                  \
-		&__c[0];                                                                                                       \
+		static const char __pstr__[] PROGMEM = str;                                                                    \
+		&__pstr__[0];                                                                                                  \
 	}))
 
-/*
- * Declare and use a flash string inline.
- * Returns a pointer to a stack-allocated buffer of the precise size required.
+/**
+ * @brief Declare and use a flash string inline.
+ * @param str
+ * @retval char[] Returns a pointer to a stack-allocated buffer of the precise size required.
  */
-#define _F(str)                                                                                                       \
+#define _F(str)                                                                                                        \
 	(__extension__({                                                                                                   \
-		DEFINE_PSTR_LOCAL(flash_str, str);                                                                           \
-		LOAD_PSTR(_buf, flash_str);                                                                                   \
-		_buf;                                                                                                          \
+		DEFINE_PSTR_LOCAL(__pstr__, str);                                                                              \
+		LOAD_PSTR(buf, __pstr__);                                                                                      \
+		buf;                                                                                                           \
 	}))
 
 
-#define pgm_read_byte_near(addr) pgm_read_byte(addr)
-#define pgm_read_word_near(addr) pgm_read_word(addr)
-#define pgm_read_dword_near(addr) pgm_read_dword(addr)
-#define pgm_read_float_near(addr) pgm_read_float(addr)
-#define pgm_read_byte_far(addr) pgm_read_byte(addr)
-#define pgm_read_word_far(addr) pgm_read_word(addr)
-#define pgm_read_dword_far(addr) pgm_read_dword(addr)
-#define pgm_read_float_far(addr) pgm_read_float(addr)
-
+/**
+ * @brief copy memory aligned to word boundaries
+ * @param dst
+ * @param src
+ * @param len Size of the source data
+ *
+ * dst and src must be aligned to word (4-byte) boundaries
+ * `len` will be rounded up to the nearest word boundary, so the dst
+ * buffer MUST be large enough for this.
+ */
 void* memcpy_aligned(void* dst, const void* src, unsigned len);
+
+/**
+ * @brief compare memory aligned to word boundaries
+ * @param ptr1
+ * @param ptr2
+ * @param len
+ * @retval int 0 if all bytes match
+ *
+ * ptr1 and ptr2 must all be aligned to word (4-byte) boundaries.
+ * len is rounded up to the nearest word boundary
+ */
 int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len);
 
 /** @brief define a PSTR
  *  @param name name of string
  *  @param str the string data
  */
-#define DEFINE_PSTR(name, str) const char name[] PROGMEM = str;
+#define DEFINE_PSTR(name, str) const char name[] PROGMEM_PSTR = str;
 
 /** @brief define a PSTR for local (static) use
  *  @param name name of string
@@ -214,21 +114,26 @@ int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len);
  */
 #define DEFINE_PSTR_LOCAL(name, str) static DEFINE_PSTR(name, str)
 
-// Declare a global reference to a PSTR instance
+/**
+ * @brief Declare a global reference to a PSTR instance
+ * @param name
+ */
 #define DECLARE_PSTR(name) extern const char name[] PROGMEM;
 
-/*
- * Create a local (stack) buffer called `name` and load it with flash data.
- * `flash_str` is defined locally so the compiler knows its size (length + nul).
- * Size is rounded up to multiple of 4 bytes for fast copy.
+/**
+ * @brief Create a local (stack) buffer called `name` and load it with flash data.
+ * @param name
+ * @param flash_str Content stored in flash. The compiler knows its size (length + nul),
+ * which is rounded up to multiple of 4 bytes for fast copy.
  *
  * If defining a string within a function or other local context, must declare static.
  *
  * Example:
- * 	void testfunc() {
- * 		static DEFINE_PSTR(test, "This is a test string\n")
- * 		m_printf(LOAD_PSTR(test));
- * 	}
+ *
+ * 		void testfunc() {
+ * 			static DEFINE_PSTR(test, "This is a test string\n");
+ * 			m_printf(LOAD_PSTR(test));
+ * 		}
  *
  */
 #define LOAD_PSTR(name, flash_str)                                                                                   \
@@ -241,8 +146,10 @@ int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len);
 		_buf;                                                                                                          \
 	}))
 
-/*
- * Define a flash string and load it into a named array buffer on the stack.
+/**
+ * @brief Define a flash string and load it into a named array buffer on the stack.
+ * @note Must not contain embedded NUL characters
+ *
  * For example, this:
  *
  * 		PSTR_ARRAY(myText, "some text");
@@ -258,8 +165,8 @@ int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len);
  *
  */
 #define PSTR_ARRAY(name, str)                                                                                          \
-	static DEFINE_PSTR(PSTR_##name, str);                                                                              \
-	LOAD_PSTR(name, PSTR_##name)
+	DEFINE_PSTR_LOCAL(__pstr__##name, str);                                                                            \
+	LOAD_PSTR(name, __pstr__##name)
 
 #ifdef __cplusplus
 }

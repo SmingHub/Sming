@@ -10,6 +10,7 @@ COMPONENT_INCDIRS := \
 	$(ARCH_COMPONENTS)
 
 COMPONENT_DEPENDS := \
+	libc \
 	heap \
 	rboot \
 	esp8266 \

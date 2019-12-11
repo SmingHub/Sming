@@ -10,7 +10,6 @@
 
 #pragma once
 
-#define __packed __attribute__((packed))
 #define __forceinline __attribute__((always_inline)) inline
 
 // Weak attributes don't work for PE

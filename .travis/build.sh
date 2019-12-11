@@ -27,7 +27,6 @@ fi
 
 # Setup ARCH SDK paths
 if [ "$SMING_ARCH" == "Esp8266" ]; then
-	export ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk
 	export PATH=$PATH:$ESP_HOME/xtensa-lx106-elf/bin:$ESP_HOME/utils/
 fi
 
