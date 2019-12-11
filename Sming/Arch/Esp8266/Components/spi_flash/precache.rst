@@ -1,12 +1,15 @@
 IRAM pre-caching
-----------------
+================
+
+Introduction
+------------
 
 This is taken from the esp8266 arduino core. For details see:
 
 - https://github.com/esp8266/Arduino/pull/6628
 - https://github.com/esp8266/Arduino/issues/6559
 
-See :doc:`/information/memory` and :doc:`/information/flash` for some background.
+See :doc:`/information/flash` for some background.
 
 Code is always executed from IRAM, however it must be read in from flash memory on
 first use which can cause issues within timing-critical code.
@@ -26,6 +29,9 @@ before it starts execution.
    By their nature, interrupts are essentially random events and therefore code
    must be available in IRAM at any time.
 
+Usage
+-----
+
 The steps required are:
 
 1. Mark the function containing code using :c:func:`IRAM_PRECACHE_ATTR`
@@ -38,4 +44,8 @@ You can find an example of how precaching is used here:
 
 https://github.com/esp8266/Arduino/blob/master/cores/esp8266/core_esp8266_spi_utils.cpp
 
-.. doxygenfile:: iram_precache.h
+API Documentation
+-----------------
+
+.. doxygengroup:: iram_precache
+   :content-only:

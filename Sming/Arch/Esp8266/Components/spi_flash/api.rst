@@ -1,4 +1,5 @@
 API Documentation
------------------
+=================
 
-.. doxygenfile:: esp_spi_flash.h
+.. doxygengroup:: spi_flash
+   :content-only:

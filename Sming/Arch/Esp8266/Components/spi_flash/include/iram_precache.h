@@ -25,6 +25,12 @@
 #pragma once
 
 /**
+ * @defgroup iram_precache IRAM Precache Support
+ * @ingroup flash
+ * @{
+ */
+
+/**
  * @brief Tools for pre-loading code into the flash cache
  *
  * - It can be useful for code that accesses/uses SPI0 which is connected to the flash chip.
@@ -65,6 +71,8 @@ extern "C" {
  *  @note All pages containing the requested region will be read to pull them into cache RAM.
  */
 void iram_precache(void* addr, uint32_t bytes);
+
+/** @} */
 
 #ifdef __cplusplus
 }
