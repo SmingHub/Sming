@@ -1,0 +1,13 @@
+diff --git a/src/ModbusMaster.h b/src/ModbusMaster.h
+index 8ab0d52..f3b1a50 100644
+--- a/src/ModbusMaster.h
++++ b/src/ModbusMaster.h
+@@ -255,7 +255,7 @@ class ModbusMaster
+     static const uint8_t ku8MBReadWriteMultipleRegisters = 0x17; ///< Modbus function 0x17 Read Write Multiple Registers
+     
+     // Modbus timeout [milliseconds]
+-    static const uint16_t ku16MBResponseTimeout          = 2000; ///< Modbus timeout [milliseconds]
++    static const uint16_t ku16MBResponseTimeout          = MB_RESPONSE_TIMEOUT; ///< Modbus timeout [milliseconds]
+     
+     // master function that conducts Modbus transactions
+     uint8_t ModbusMasterTransaction(uint8_t u8MBFunction);
