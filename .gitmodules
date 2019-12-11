@@ -126,11 +126,11 @@
 	path = Sming/Libraries/MCP_CAN_lib
 	url = https://github.com/coryjfowler/MCP_CAN_lib.git
 	ignore = dirty
-[submodule "Libraries/SmingTest"]
+[submodule "Libraries.SmingTest"]
 	path = Sming/Libraries/SmingTest
 	url = https://github.com/mikee47/SmingTest
 	ignore = dirty
-[submodule "Libraries/ModbusMaster"]
+[submodule "Libraries.ModbusMaster"]
 	path = Sming/Libraries/ModbusMaster/ModbusMaster
 	url = https://github.com/nomis/ModbusMaster.git
 	ignore = dirty
