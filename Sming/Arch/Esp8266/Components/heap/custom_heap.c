@@ -27,8 +27,6 @@ void IRAM_ATTR vPortFree(void *ptr, const char* file, int line)
 	UMM_FUNC(free)(ptr);
 }
 
-#ifdef __NEWLIB__
-
 void* IRAM_ATTR malloc(size_t size)
 {
 	return UMM_FUNC(malloc)(size);
@@ -48,8 +46,6 @@ void IRAM_ATTR free(void *ptr)
 {
 	UMM_FUNC(free)(ptr);
 }
-
-#endif
 
 void* IRAM_ATTR pvPortCalloc(size_t count, size_t size, const char* file, int line)
 {

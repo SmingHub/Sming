@@ -10,9 +10,16 @@ COMPONENT_SUBMODULES	:= umm_malloc
 COMPONENT_SRCFILES		+= custom_heap.c umm_malloc/src/umm_malloc.c
 COMPONENT_INCDIRS		+= umm_malloc/src umm_malloc/includes/c-helper-macros
 
+#
 COMPONENT_VARS			+= UMM_POISON_CHECK
 ifeq ($(UMM_POISON_CHECK),1)
 GLOBAL_CFLAGS			+= -DUMM_POISON_CHECK
+endif
+
+COMPONENT_VARS			+= UMM_FUNC_IRAM
+UMM_FUNC_IRAM			?= 1
+ifeq ($(UMM_FUNC_IRAM),1)
+COMPONENT_CFLAGS		+= -DUMM_FUNC_IRAM=1
 endif
 
 COMPONENT_CFLAGS		+= -Wno-array-bounds
