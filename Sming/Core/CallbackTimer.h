@@ -13,10 +13,11 @@
 #include "Interrupts.h"
 #include "NanoTime.h"
 
-/** @defgroup callback_timer Callback timers
- *  @brief    Callback interval timers
- *  @ingroup  timer
- *  @{
+/**
+ * @defgroup callback_timer Callback timer
+ * @brief Callback timer class template
+ * @ingroup  timers
+ * @{
 */
 
 typedef void (*TimerCallback)(void* arg); ///< Interrupt-compatible C callback function pointer
@@ -118,8 +119,8 @@ public:
 	}
 
 	/** @brief  Initialise timer with an interval (static check) and callback
-	 *  @param  unit Time unit for interval
-     *  @param  time Timer interval
+	 *  @tparam unit Time unit for interval
+     *  @tparam time Timer interval
      *  @param  callback Callback function to call when timer triggers
      *  @param  arg Optional argument passed to callback
      *  @retval CallbackTimer& Reference to timer
@@ -134,6 +135,7 @@ public:
 	}
 
 	/** @brief  Initialise timer with an interval and callback
+	 *  @tparam unit Time unit for interval
      *  @param  time Timer interval
      *  @param  callback Callback function to call when timer triggers
      *  @param  arg Optional argument passed to callback
@@ -336,7 +338,8 @@ public:
 	}
 
 	/** @brief  Set timer interval in timer ticks
-     *  @param  ticks Interval in timer ticks
+	 *  @tparam unit
+     *  @param  time Interval in given units
      */
 	template <NanoTime::Unit unit> __forceinline bool IRAM_ATTR setInterval(TimeType time)
 	{

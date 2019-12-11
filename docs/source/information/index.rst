@@ -11,7 +11,6 @@ Information
    flash
    cstringarray
    interrupts
-   timers
    tasks
    debugging/index
    rboot-ota
