@@ -14,6 +14,11 @@
 #include "SslKeyCertPair.h"
 #include "SslSessionId.h"
 
+/**
+ * @defgroup ssl SSL Support
+ * @ingroup tcp
+ */
+
 /*
  * These structures have been renamed, please use the revised convention SslXXX
  */
