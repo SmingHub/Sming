@@ -239,7 +239,7 @@ define PrintHelp
 							printf "  \033[1;36m%-20s\033[0m %s\n", sep[1], targets[t] \
 					} \
 				} \
-			} ' $(MAKEFILE_LIST)
+			} ' $(foreach f,$(MAKEFILE_LIST),"$(f)")
 	@echo
 endef
 
