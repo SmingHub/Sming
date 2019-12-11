@@ -11,16 +11,16 @@ functions can be called. Sming is a single-threaded framework, so all tasks exec
 
 However, there are some rules you need to follow when writing code which runs in an *interrupt context*:
 
--  Use ``IRAM_ATTR`` attribute on the interrupt handler
--  Don't call any code which isn't in IRAM, or marked with `__forceinline`.
-   Note: `inline` by itself is just a compiler 'hint' and there is no guarantee the code will actually be inlined.
+-  Use :c:macro:`IRAM_ATTR` attribute on the interrupt handler
+-  Don't call any code which isn't in IRAM, or marked with :c:macro:`__forceinline`.
+   Note: ``inline`` by itself is just a compiler 'hint' and there is no guarantee the code will actually be inlined.
 -  Keep the code as brief as possible
 -  Don't use the heap (malloc, free, new, etc.). Buffers, etc. must be pre-allocated in task context.
--  Put processing code into a separate function and add to the task queue ``System::queueCallback``,
-   or use a ``SimpleTimer`` or ``Timer``.
--  Be wary if using :doxygenclass:`Delegate` callbacks as the compiler may need to use the heap,
+-  Put processing code into a separate function and add to the task queue :cpp:func:`SystemClass::queueCallback`,
+   or use a :cpp:type:`SimpleTimer` or :cpp:class:`Timer`.
+-  Be wary if using :cpp:class:`Delegate` callbacks as the compiler may need to use the heap,
    if parameter lists do not match. For this reason, avoid capturing lambdas and method callbacks.
-   If in doubt, stick with regular 'C' function pointers as defined by the ``InterruptCallback`` type.
+   If in doubt, stick with regular 'C' function pointers as defined by the :cpp:type:`InterruptCallback` type.
 
 Contact bounce
 --------------
