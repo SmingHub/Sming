@@ -1,6 +1,5 @@
 #include <SmingCore.h>
 #include <Debug.h>
-#include "application.h"
 #include <ModbusMaster.h>
 
 #define RS485_RE_PIN 15
