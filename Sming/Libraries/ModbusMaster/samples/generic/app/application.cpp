@@ -2,6 +2,7 @@
 #include <Debug.h>
 #include <ModbusMaster.h>
 
+#define MODBUS_COM_SPEED 115200
 #define RS485_RE_PIN 15
 #define MB_SLAVE_ADDR 1
 #define SLAVE_REG_ADDR 1
@@ -9,7 +10,8 @@
 Timer mbLoopTimer;
 
 ModbusMaster mbMaster;
-HardwareSerial Serial1(UART1);
+HardwareSerial modbusComPort(UART0);
+HardwareSerial debugComPort(UART1);
 
 uint16_t globalSeconds = 0;
 
@@ -31,7 +33,7 @@ void mbLoop()
 		/*
 		for(i = 0; i < nrOfRegisters; i++) {
 			buffer[i] = mbMaster.getResponseBuffer(i);
-			Serial1.printf("Reg %d: %d\r\n", i, buffer[i]);
+			debugComPort.printf("Reg %d: %d\r\n", i, buffer[i]);
 		}
 		*/
 		debugf("Data from slave: %d", mbMaster.getResponseBuffer(0));
@@ -42,38 +44,16 @@ void mbLoop()
 	mbMaster.clearResponseBuffer();
 }
 
-void init()
-{
-	pinMode(RS485_RE_PIN, OUTPUT);
-	digitalWrite(RS485_RE_PIN, 0);
-	Serial.begin(115200, SERIAL_8N1, SERIAL_FULL);
-	Serial1.begin(SERIAL_BAUD_RATE, SERIAL_8N1,
-				  SERIAL_TX_ONLY); // 115200 by default, GPIO1,GPIO3, see Serial.swap(), HardwareSerial
-	Serial1.systemDebugOutput(true);
-
-	Debug.setDebug(Serial1);
-	Debug.initCommand();
-	Debug.start();
-	Debug.printf("This is the debug output\r\n");
-
-	mbMaster.preTransmission(preTransmission);
-	mbMaster.postTransmission(postTransmission);
-	mbMaster.logReceive(mbLogReceive);
-	mbMaster.logTransmit(mbLogTransmit);
-
-	mbLoopTimer.initializeMs(1000, mbLoop).start();
-}
-
 void preTransmission()
 {
-	digitalWrite(RS485_RE_PIN, 1);
+	digitalWrite(RS485_RE_PIN, HIGH);
 	delayMilliseconds(2);
 }
 
 void postTransmission()
 {
 	delayMicroseconds(500);
-	digitalWrite(RS485_RE_PIN, 0);
+	digitalWrite(RS485_RE_PIN, LOW);
 }
 
 void mbLogReceive(const uint8_t* adu, size_t aduSize, uint8_t status)
@@ -117,8 +97,30 @@ void mbLogTransmit(const uint8_t* adu, size_t aduSize)
 {
 	uint8_t i = 0;
 	while(i < aduSize) {
-		debugf("ADU[%d]: %d, ", i, adu[i]);
+		debug_hex(INFO, "ADU", adu, aduSize);
 		i++;
 	}
 	debugf(" ");
+}
+
+void init()
+{
+	pinMode(RS485_RE_PIN, OUTPUT);
+	digitalWrite(RS485_RE_PIN, LOW);
+	modbusComPort.begin(MODBUS_COM_SPEED, SERIAL_8N1, SERIAL_FULL);
+	debugComPort.begin(SERIAL_BAUD_RATE, SERIAL_8N1,
+				  SERIAL_TX_ONLY); // 115200 by default, GPIO1,GPIO3, see Serial.swap(), HardwareSerial
+	debugComPort.systemDebugOutput(true);
+
+	Debug.setDebug(debugComPort);
+	Debug.initCommand();
+	Debug.start();
+	Debug.printf("This is the debug output\r\n");
+
+	mbMaster.preTransmission(preTransmission);
+	mbMaster.postTransmission(postTransmission);
+	mbMaster.logReceive(mbLogReceive);
+	mbMaster.logTransmit(mbLogTransmit);
+
+	mbLoopTimer.initializeMs(1000, mbLoop).start();
 }
