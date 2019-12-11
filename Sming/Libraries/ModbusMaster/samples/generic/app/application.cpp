@@ -21,7 +21,7 @@ void mbLoop()
 
 	uint8_t numberOfRegistersToWrite = 1;
 	uint8_t bufferPosition = 0;
-	mbMaster.begin(MB_SLAVE_ADDR, Serial);
+	mbMaster.begin(MB_SLAVE_ADDR, modbusComPort);
 	mbMaster.setTransmitBuffer(bufferPosition, globalSeconds);
 	mbMaster.writeMultipleRegisters(SLAVE_REG_ADDR, numberOfRegistersToWrite);
 
@@ -95,12 +95,7 @@ void mbLogReceive(const uint8_t* adu, size_t aduSize, uint8_t status)
 
 void mbLogTransmit(const uint8_t* adu, size_t aduSize)
 {
-	uint8_t i = 0;
-	while(i < aduSize) {
-		debug_hex(INFO, "ADU", adu, aduSize);
-		i++;
-	}
-	debugf(" ");
+	debug_hex(INFO, "ADU", adu, aduSize);
 }
 
 void init()
