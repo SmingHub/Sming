@@ -50,7 +50,6 @@ bool TcpServer::listen(int port, bool useSsl)
 		return res;
 	}
 
-#ifdef ENABLE_SSL
 	this->useSsl = useSsl;
 
 	if(useSsl) {
@@ -58,21 +57,28 @@ bool TcpServer::listen(int port, bool useSsl)
 		sslOptions |= SSL_DISPLAY_STATES | SSL_DISPLAY_BYTES | SSL_DISPLAY_CERTS;
 #endif
 
-		sslContext = ssl_ctx_new(sslOptions, sslSessionCacheSize);
+		delete sslContext;
+		sslContext = new SslContextImpl(tcp, sslOptions, sslSessionCacheSize);
+		if(sslContext == nullptr) {
+			return false;
+		}
 
+		sslContext->init();
 		if(!sslKeyCert.isValid()) {
 			debug_e("SSL: server certificate and key are not provided!");
 			return false;
 		}
 
-		if(ssl_obj_memory_load(sslContext, SSL_OBJ_RSA_KEY, sslKeyCert.getKey(), sslKeyCert.getKeyLength(),
-							   sslKeyCert.getKeyPassword()) != SSL_OK) {
+		if(!sslContext->loadMemory(SSL_OBJ_RSA_KEY,
+								   sslKeyCert.getKey(),
+								   sslKeyCert.getKeyLength(),
+								   sslKeyCert.getKeyPassword())) {
 			debug_e("SSL: Unable to load server private key");
 			return false;
 		}
 
-		if(ssl_obj_memory_load(sslContext, SSL_OBJ_X509_CERT, sslKeyCert.getCertificate(),
-							   sslKeyCert.getCertificateLength(), nullptr) != SSL_OK) {
+		if(!sslContext->loadMemory(SSL_OBJ_X509_CERT, sslKeyCert.getCertificate(),
+							   sslKeyCert.getCertificateLength(), nullptr)) {
 			debug_e("SSL: Unable to load server certificate");
 			return false;
 		}
@@ -80,7 +86,6 @@ bool TcpServer::listen(int port, bool useSsl)
 		// TODO: test: free the certificate data on server destroy...
 		freeKeyCertAfterHandshake = true;
 	}
-#endif
 
 	tcp = tcp_listen(tcp);
 	tcp_accept(tcp, staticAccept);
@@ -113,19 +118,10 @@ err_t TcpServer::onAccept(tcp_pcb* clientTcp, err_t err)
 	}
 	client->setTimeOut(keepAlive);
 
-#ifdef ENABLE_SSL
 	if(useSsl) {
-		int clientfd = axl_append(clientTcp);
-		if(clientfd == -1) {
-			delete client;
-			debug_e("SSL: Unable to initiate tcp ");
-			return ERR_ABRT;
-		}
-
 		debug_d("SSL: handshake start.");
-		client->setSsl(ssl_server_new(sslContext, clientfd));
+		client->setSsl(sslContext->createServer());
 	}
-#endif
 
 	client->setDestroyedDelegate(TcpConnectionDestroyedDelegate(&TcpServer::onClientDestroy, this));
 

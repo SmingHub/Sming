@@ -8,7 +8,6 @@
  *
  ****/
 
-#ifdef ENABLE_SSL
 
 #include "SslFingerprints.h"
 #include <user_config.h>
@@ -79,5 +78,3 @@ SslFingerprints& SslFingerprints::operator=(const SslFingerprints& source)
 
 	return *this;
 }
-
-#endif // ENABLE_SSL

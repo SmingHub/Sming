@@ -17,10 +17,7 @@
 #pragma once
 
 #include "TcpConnection.h"
-
-#ifdef ENABLE_SSL
 #include "Ssl/SslValidator.h"
-#endif
 
 class TcpClient;
 class ReadWriteStream;
@@ -120,7 +117,6 @@ public:
 		closeAfterSent = ignoreIncomingData ? eTCCASS_AfterSent_Ignore_Received : eTCCASS_AfterSent;
 	}
 
-#ifdef ENABLE_SSL
 	/**
 	 * @brief Allows setting of multiple SSL validators after a successful handshake
 	 * @param callback The callback function to be invoked on validation
@@ -161,8 +157,6 @@ public:
 		return sslValidators.add(fingerprints);
 	}
 
-#endif
-
 protected:
 	err_t onConnected(err_t err) override;
 	err_t onReceive(pbuf* buf) override;
@@ -172,13 +166,14 @@ protected:
 
 	virtual void onFinished(TcpClientState finishState);
 
-#ifdef ENABLE_SSL
-	err_t onSslConnected(SSL* ssl) override
+	err_t onSslConnected(SslConnection* ssl) override
 	{
-		return sslValidators.validate(ssl) ? ERR_OK : ERR_ABRT;
-	}
+		if(ssl == nullptr) {
+			return ERR_ABRT;
+		}
 
-#endif
+		return sslValidators.validate(ssl->getCertificate()) ? ERR_OK : ERR_ABRT;
+	}
 
 	void pushAsyncPart();
 	void freeStreams();
@@ -198,9 +193,9 @@ private:
 	TcpClientCloseAfterSentState closeAfterSent = eTCCASS_None;
 	uint16_t totalSentConfirmedBytes = 0;
 	uint16_t totalSentBytes = 0;
-#ifdef ENABLE_SSL
+
 	SslValidatorList sslValidators;
-#endif
+
 };
 
 /** @} */

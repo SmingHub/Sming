@@ -42,16 +42,15 @@ bool TcpConnection::connect(const String& server, int port, bool useSsl, uint32_
 	ip_addr_t addr;
 
 	this->useSsl = useSsl;
-#ifdef ENABLE_SSL
+
 	this->sslOptions |= sslOptions;
 
 	if(useSsl) {
-		ssl_ext_free(sslExtension);
-		sslExtension = ssl_ext_new();
-		ssl_ext_set_host_name(sslExtension, server.c_str());
-		ssl_ext_set_max_fragment_size(sslExtension, 4); // 4K max size
+		delete sslExtension;
+		sslExtension = new SslExtensionImpl();
+		sslExtension->setHostName(server);
+		sslExtension->setMaxFragmentSize(4); // 4K max size
 	}
-#endif
 
 	debug_d("connect to: %s", server.c_str());
 	canSend = false; // Wait for connection
@@ -86,9 +85,7 @@ bool TcpConnection::connect(IpAddress addr, uint16_t port, bool useSsl, uint32_t
 	}
 
 	this->useSsl = useSsl;
-#ifdef ENABLE_SSL
 	this->sslOptions |= sslOptions;
-#endif
 
 	return internalConnect(addr, port);
 }
@@ -164,9 +161,7 @@ err_t TcpConnection::onConnected(err_t err)
 
 void TcpConnection::onError(err_t err)
 {
-#ifdef ENABLE_SSL
 	closeSsl();
-#endif
 	debug_d("TCP connection error: %d", err);
 }
 
@@ -177,12 +172,10 @@ void TcpConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	}
 }
 
-#ifdef ENABLE_SSL
-err_t TcpConnection::onSslConnected(SSL* ssl)
+err_t TcpConnection::onSslConnected(SslConnection* ssl)
 {
 	return ERR_OK;
 }
-#endif
 
 int TcpConnection::write(const char* data, int len, uint8_t apiflags)
 {
@@ -190,23 +183,22 @@ int TcpConnection::write(const char* data, int len, uint8_t apiflags)
 
 	err_t err = ERR_OK;
 
-#ifdef ENABLE_SSL
-	if(ssl) {
-		int expected = ssl_calculate_write_length(ssl, len);
+	if(ssl != nullptr) {
+		int expected = ssl->calcWriteSize(len);
 		u16_t available = tcp ? tcp_sndbuf(tcp) : 0;
 		debug_tcp("SSL: Expected: %d, Available: %d", expected, available);
 		if(expected < 0 || available < expected) {
 			return -1; // No memory
 		}
 
-		int written = axl_ssl_write(ssl, (const uint8_t*)data, len);
+		int written = ssl->write((const uint8_t*)data, len);
 		debug_tcp("SSL: Write len: %d, Written: %d", len, written);
 		if(written < ERR_OK) {
 			err = written;
 			debug_d("SSL: Write Error: %d", err);
 		}
 	} else {
-#endif
+
 		u16_t available = getAvailableWriteSize();
 		if(available < len) {
 			if(available == 0) {
@@ -216,10 +208,7 @@ int TcpConnection::write(const char* data, int len, uint8_t apiflags)
 			}
 		}
 		err = tcp_write(tcp, data, len, apiflags);
-
-#ifdef ENABLE_SSL
 	}
-#endif
 
 	if(err == ERR_OK) {
 		debug_tcp("TCP connection send: %d (%d)", len, original);
@@ -232,12 +221,10 @@ int TcpConnection::write(const char* data, int len, uint8_t apiflags)
 
 int TcpConnection::write(IDataSourceStream* stream)
 {
-#ifdef ENABLE_SSL
 	if(ssl != nullptr && !sslConnected) {
 		// wait until the SSL handshake is done.
 		return 0;
 	}
-#endif
 
 	// Send data from DataStream
 	bool repeat;
@@ -289,18 +276,12 @@ int TcpConnection::write(IDataSourceStream* stream)
 
 void TcpConnection::close()
 {
-#ifdef ENABLE_SSL
 	closeSsl();
-#endif
 
 	if(tcp == nullptr) {
 		return;
 	}
 	debug_d("TCP connection closing");
-
-#ifdef ENABLE_SSL
-	axl_free(tcp);
-#endif
 
 	tcp_poll(tcp, staticOnPoll, 1);
 	tcp_arg(tcp, nullptr); // reset pointer to close connection on next callback
@@ -314,9 +295,6 @@ void TcpConnection::initialize(tcp_pcb* pcb)
 	tcp = pcb;
 	sleep = 0;
 	canSend = true;
-#ifdef ENABLE_SSL
-	axl_init(10);
-#endif
 
 	tcp_nagle_disable(tcp);
 	tcp_arg(tcp, this);
@@ -408,75 +386,68 @@ bool TcpConnection::internalConnect(IpAddress addr, uint16_t port)
 
 err_t TcpConnection::internalOnConnected(err_t err)
 {
-	debug_d("TCP connected");
-
-#ifndef ENABLE_SSL
-	if(useSsl) {
-		debug_w("WARNING: SSL is not compiled. Make sure to compile Sming with 'make ENABLE_SSL=1' ");
-	}
-#else
 	debug_d("TCP connected: useSSL: %d, Error: %d", useSsl, err);
 
 	if(useSsl && err == ERR_OK) {
-		int clientfd = axl_append(tcp);
-		if(clientfd < 0) {
-			debug_d("SSL: Unable to add LWIP tcp -> clientfd mapping");
-			return ERR_OK;
-		} else {
-			uint32_t localSslOptions = sslOptions;
+		uint32_t localSslOptions = sslOptions;
 #ifdef SSL_DEBUG
-			localSslOptions |= SSL_DISPLAY_STATES | SSL_DISPLAY_BYTES | SSL_DISPLAY_CERTS;
-			debug_d("SSL: Show debug data ...");
+		localSslOptions |= SSL_DISPLAY_STATES | SSL_DISPLAY_BYTES | SSL_DISPLAY_CERTS;
+		debug_d("SSL: Show debug data ...");
 #endif
-			debug_d("SSL: Starting connection...");
+		debug_d("SSL: Starting connection...");
 #ifndef SSL_SLOW_CONNECT
-			debug_d("SSL: Switching to 160 MHz");
-			System.setCpuFrequency(eCF_160MHz); // For shorter waiting time, more power consumption.
+		debug_d("SSL: Switching to 160 MHz");
+		System.setCpuFrequency(eCF_160MHz); // For shorter waiting time, more power consumption.
 #endif
-			debug_d("SSL: handshake start");
+		debug_d("SSL: handshake start");
 
-			ssl_ctx_free(sslContext);
-			sslContext = ssl_ctx_new(SSL_CONNECT_IN_PARTS | localSslOptions, 1);
-
-			if(sslKeyCert.isValid()) {
-				// if we have client certificate -> try to use it.
-				if(ssl_obj_memory_load(sslContext, SSL_OBJ_RSA_KEY, sslKeyCert.getKey(), sslKeyCert.getKeyLength(),
-									   sslKeyCert.getKeyPassword()) != SSL_OK) {
-					debug_d("SSL: Unable to load client private key");
-				} else if(ssl_obj_memory_load(sslContext, SSL_OBJ_X509_CERT, sslKeyCert.getCertificate(),
-											  sslKeyCert.getCertificateLength(), nullptr) != SSL_OK) {
-					debug_d("SSL: Unable to load client certificate");
-				}
-
-				if(freeKeyCertAfterHandshake) {
-					sslKeyCert.free();
-				}
-			}
-
-			if(sslSessionId != nullptr && sslSessionId->isValid()) {
-				debug_d("-----BEGIN SSL SESSION PARAMETERS-----");
-				debug_hex(DBG, "Session", sslSessionId->getValue(), sslSessionId->getLength());
-				debug_d("\n-----END SSL SESSION PARAMETERS-----");
-			}
-
-			ssl = ssl_client_new(sslContext, clientfd, sslSessionId != nullptr ? sslSessionId->getValue() : nullptr,
-								 sslSessionId != nullptr ? sslSessionId->getLength() : 0, sslExtension);
-			if(ssl_handshake_status(ssl) != SSL_OK) {
-				debug_d("SSL: handshake is in progress...");
-				return SSL_OK;
-			}
-
-			if(sslSessionId != nullptr) {
-				sslSessionId->assign(ssl->session_id, ssl->sess_id_size);
-			}
-
-#ifndef SSL_SLOW_CONNECT
-			debug_d("SSL: Switching back 80 MHz");
-			System.setCpuFrequency(eCF_80MHz);
-#endif
+		delete sslContext;
+		sslContext = new SslContextImpl(tcp, localSslOptions, 1);
+		if(sslContext == nullptr) {
+			return ERR_ABRT;
 		}
-	}
+
+		sslContext->init();
+		if(sslKeyCert.isValid()) {
+			// if we have client certificate -> try to use it.
+			if(!sslContext->loadMemory(SSL_OBJ_RSA_KEY, sslKeyCert.getKey(), sslKeyCert.getKeyLength(),
+								   sslKeyCert.getKeyPassword())) {
+				debug_d("SSL: Unable to load client private key");
+			} else if(!sslContext->loadMemory(SSL_OBJ_X509_CERT, sslKeyCert.getCertificate(),
+										  sslKeyCert.getCertificateLength(), nullptr)) {
+				debug_d("SSL: Unable to load client certificate");
+			}
+
+			if(freeKeyCertAfterHandshake) {
+				sslKeyCert.free();
+			}
+		}
+
+		if(sslSessionId != nullptr && sslSessionId->isValid()) {
+			debug_d("-----BEGIN SSL SESSION PARAMETERS-----");
+			debug_hex(DBG, "Session", sslSessionId->getValue(), sslSessionId->getLength());
+			debug_d("\n-----END SSL SESSION PARAMETERS-----");
+		}
+
+		ssl = sslContext->createClient(sslSessionId, sslExtension);
+		if(ssl == nullptr) {
+			return ERR_ABRT;
+		}
+
+		if(!ssl->isHandshakeDone()) {
+			debug_d("SSL: handshake is in progress...");
+			return ERR_OK;
+		}
+
+		if(sslSessionId != nullptr) {
+			sslSessionId->assign(ssl->getSessionId()->getValue(), ssl->getSessionId()->getLength());
+		}
+
+#ifndef SSL_SLOW_CONNECT
+		debug_d("SSL: Switching back 80 MHz");
+		System.setCpuFrequency(eCF_80MHz);
 #endif
+	}
 
 	err_t res = onConnected(err);
 	checkSelfFree();
@@ -511,12 +482,11 @@ err_t TcpConnection::internalOnReceive(pbuf* p, err_t err)
 		debug_d("TCP receive: pbuf is NULL");
 	}
 
-#ifdef ENABLE_SSL
 	if(ssl != nullptr && p != nullptr) {
 		WDT.alive(); /* SSL handshake needs time. In theory we have max 8 seconds before the hardware watchdog resets the device */
 
 		struct pbuf* pout;
-		int read_bytes = axl_ssl_read(ssl, tcp, p, &pout);
+		int read_bytes = ssl->read(tcp, p, &pout);
 
 		// free the SSL pbuf and put the decrypted data in the brand new pout pbuf
 		if(p != nullptr) {
@@ -535,7 +505,7 @@ err_t TcpConnection::internalOnReceive(pbuf* p, err_t err)
 		}
 
 		if(read_bytes == 0) {
-			if(!sslConnected && ssl_handshake_status(ssl) == SSL_OK) {
+			if(!sslConnected && ssl->isHandshakeDone()) {
 				sslConnected = true;
 				debug_d("SSL: Handshake done");
 #ifndef SSL_SLOW_CONNECT
@@ -550,7 +520,7 @@ err_t TcpConnection::internalOnReceive(pbuf* p, err_t err)
 				}
 
 				if(sslSessionId != nullptr) {
-					sslSessionId->assign(ssl->session_id, ssl->sess_id_size);
+					sslSessionId->assign(ssl->getSessionId()->getValue(), ssl->getSessionId()->getLength());
 				}
 
 				err_t res = onConnected(err);
@@ -569,7 +539,6 @@ err_t TcpConnection::internalOnReceive(pbuf* p, err_t err)
 		// put the decrypted data in a brand new pbuf
 		p = pout;
 	}
-#endif
 
 	err_t res = onReceive(p);
 
@@ -643,8 +612,6 @@ void TcpConnection::internalOnDnsResponse(const char* name, LWIP_IP_ADDR_T* ipad
 	}
 }
 
-#ifdef ENABLE_SSL
-
 void TcpConnection::closeSsl()
 {
 	if(ssl == nullptr) {
@@ -652,10 +619,13 @@ void TcpConnection::closeSsl()
 	}
 
 	debug_d("SSL: closing ...");
-	ssl_ctx_free(sslContext);
+
+	delete sslContext;
+	delete ssl;
+	delete sslExtension;
 	sslContext = nullptr;
-	sslExtension = nullptr;
 	ssl = nullptr;
+	sslExtension = nullptr;
+
 	sslConnected = false;
 }
-#endif

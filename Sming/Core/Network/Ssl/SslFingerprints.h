@@ -10,7 +10,9 @@
 
 #pragma once
 
-#include <ssl/ssl.h>
+#include <stdint.h>
+#define SHA1_SIZE   20
+#define SHA256_SIZE   32
 
 /**
  * @brief SSL Certificate fingerprint type

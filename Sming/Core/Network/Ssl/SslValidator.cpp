@@ -13,13 +13,13 @@
 #include "SslValidator.h"
 #include <debug_progmem.h>
 
-static bool sslValidateCertificateSha1(SSL* ssl, void* data)
+static bool sslValidateCertificateSha1(SslCertificate* ssl, void* data)
 {
 	uint8_t* hash = static_cast<uint8_t*>(data);
 	bool success = false;
 	if(hash != nullptr) {
 		if(ssl != nullptr) {
-			success = (ssl_match_fingerprint(ssl, hash) == 0);
+			success = ssl->matchFingerprint(hash);
 		}
 		delete[] hash;
 	}
@@ -27,13 +27,13 @@ static bool sslValidateCertificateSha1(SSL* ssl, void* data)
 	return success;
 }
 
-static bool sslValidatePublicKeySha256(SSL* ssl, void* data)
+static bool sslValidatePublicKeySha256(SslCertificate* ssl, void* data)
 {
 	uint8_t* hash = static_cast<uint8_t*>(data);
 	bool success = false;
 	if(hash != nullptr) {
 		if(ssl != nullptr) {
-			success = (ssl_match_spki_sha256(ssl, hash) == 0);
+			success = ssl->matchFingerprint(hash);
 		}
 		delete[] hash;
 	}
@@ -43,7 +43,7 @@ static bool sslValidatePublicKeySha256(SSL* ssl, void* data)
 
 /* SslValidatorList */
 
-bool SslValidatorList::validate(SSL* ssl)
+bool SslValidatorList::validate(SslCertificate* ssl)
 {
 	if(ssl != nullptr && count() == 0) {
 		// No validators specified, always succeed

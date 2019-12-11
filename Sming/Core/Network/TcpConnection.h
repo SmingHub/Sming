@@ -15,11 +15,7 @@
 
 #pragma once
 
-#ifdef ENABLE_SSL
-#include <axtls-8266/compat/lwipr_compat.h>
-#include "Ssl/SslStructs.h"
-#endif
-
+#include <SslImplementation.h>
 #include <IpAddress.h>
 
 #define NETWORK_DEBUG
@@ -113,56 +109,9 @@ public:
 		this->destroyedDelegate = destroyedDelegate;
 	}
 
-#ifdef ENABLE_SSL
 	void addSslOptions(uint32_t sslOptions)
 	{
 		this->sslOptions |= sslOptions;
-	}
-
-	/**
-	 * @brief Sets client private key, certificate and password from memory
-	 * @deprecated Use `setSslKeyCert(const uint8_t*, int, const uint8_t*, int, const char*, bool)` instead
-	 *
-	 * @note  This method makes copy of the data.
-	 *
-	 * @param key
-	 * @param keyLength
-	 * @param certificate
-	 * @param certificateLength
-	 * @param keyPassword
-	 * @param freeAfterHandshake
-	 *
-	 * @return bool  true of success, false or failure
-	 */
-	bool setSslClientKeyCert(const uint8_t* key, int keyLength, const uint8_t* certificate, int certificateLength,
-							 const char* keyPassword = nullptr, bool freeAfterHandshake = false) SMING_DEPRECATED
-	{
-		return setSslKeyCert(key, keyLength, certificate, certificateLength, keyPassword, freeAfterHandshake);
-	}
-
-	/**
-	* @brief Sets client private key, certificate and password from memory
-	* @deprecated Use `setSslKeyCert(const SslKeyCertPair&, bool)` instead
-	*
-	* @note  This method passes the certificate key chain by reference
-	*
-	* @param clientKeyCert
-	* @param freeAfterHandshake
-	*
-	* @return bool  true of success, false or failure
-	*/
-	bool setSslClientKeyCert(const SslKeyCertPair& clientKeyCert, bool freeAfterHandshake = false) SMING_DEPRECATED
-	{
-		return setSslKeyCert(clientKeyCert, freeAfterHandshake);
-	}
-
-	/**
-	 * @brief Frees the memory used for the key and certificate pair
-	 * @deprecated Use `freeSslKeyCert()` instead
-	 */
-	void freeSslClientKeyCert() SMING_DEPRECATED
-	{
-		freeSslKeyCert();
 	}
 
 	/**
@@ -221,18 +170,16 @@ public:
 	}
 
 	// Called by TcpServer
-	void setSsl(SSL* ssl)
+	void setSsl(SslConnection* ssl)
 	{
 		this->ssl = ssl;
 		useSsl = true;
 	}
 
-	SSL* getSsl()
+	SslConnection* getSsl()
 	{
 		return ssl;
 	}
-
-#endif
 
 protected:
 	void initialize(tcp_pcb* pcb);
@@ -244,9 +191,7 @@ protected:
 	virtual err_t onPoll();
 	virtual void onError(err_t err);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
-#ifdef ENABLE_SSL
-	virtual err_t onSslConnected(SSL* ssl);
-#endif
+	virtual err_t onSslConnected(SslConnection* ssl);
 
 	// These methods are called via LWIP handlers
 	err_t internalOnConnected(err_t err);
@@ -273,24 +218,22 @@ protected:
 	uint16_t timeOut = USHRT_MAX; ///< By default a TCP connection does not have a time out
 	bool canSend = true;
 	bool autoSelfDestruct = true;
-#ifdef ENABLE_SSL
-	SSL* ssl = nullptr;
-	SSLCTX* sslContext = nullptr;
-	SSL_EXTENSIONS* sslExtension = nullptr;
+
+	SslContext* sslContext = nullptr;
+	SslConnection* ssl = nullptr;
+	SslExtension* sslExtension = nullptr;
 	bool sslConnected = false;
 	uint32_t sslOptions = 0;
 	SslKeyCertPair sslKeyCert;
 	bool freeKeyCertAfterHandshake = false;
 	SslSessionId* sslSessionId = nullptr;
-#endif
+
 	bool useSsl = false;
 
 private:
 	TcpConnectionDestroyedDelegate destroyedDelegate = nullptr;
 
-#ifdef ENABLE_SSL
 	void closeSsl();
-#endif
 };
 
 /** @} */

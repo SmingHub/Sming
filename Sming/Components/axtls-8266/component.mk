@@ -4,6 +4,7 @@ SSL_DEBUG				?= 0
 COMPONENT_SUBMODULES	:= axtls-8266
 
 COMPONENT_SRCDIRS := \
+  src \
 	axtls-8266/compat \
 	axtls-8266/crypto \
 	axtls-8266/ssl
@@ -14,7 +15,8 @@ COMPONENT_SRCDIRS += \
 endif
 
 COMPONENT_INCDIRS := \
-	. \
+  . \
+	src \
 	axtls-8266 \
 	axtls-8266/ssl \
 	axtls-8266/crypto

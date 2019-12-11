@@ -19,6 +19,7 @@
 #include <WVector.h>
 
 #include "SslFingerprints.h"
+#include "Interface/SslCertificate.h"
 
 /**
  * @ingroup ssl
@@ -32,7 +33,7 @@
  *  @note Callback must ALWAYS release any allocate memory before returning.
  *  If called with ssl = NULL then just release memory and return false.
  */
-typedef Delegate<bool(SSL* ssl, void* data)> SslValidatorCallback;
+typedef Delegate<bool(SslCertificate* ssl, void* data)> SslValidatorCallback;
 
 struct SslValidator {
 	SslValidatorCallback callback;
@@ -73,7 +74,7 @@ public:
 	 *  @param ssl When called with nullptr will simply de-allocate any validator memory
 	 * @retval bool  true on success, false on failure
 	 */
-	bool validate(SSL* ssl);
+	bool validate(SslCertificate* ssl);
 };
 
 /** @} */
