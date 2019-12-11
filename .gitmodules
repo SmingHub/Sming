@@ -131,6 +131,6 @@
 	url = https://github.com/mikee47/SmingTest
 	ignore = dirty
 [submodule "Libraries/ModbusMaster"]
-	path = Sming/Libraries/ModbusMaster
+	path = Sming/Libraries/ModbusMaster/ModbusMaster
 	url = https://github.com/kmihaylov/ModbusMaster.git
 	ignore = dirty
