@@ -3,6 +3,10 @@ ModbusMaster RTU Library
 
 This library handles Modbus master RTU communication. The library supports callbacks for pre- and post-transmission, receive and transmit logging. 
 
+.. envvar:: MB_RESPONSE_TIMEOUT
+
+   The patch provides changeable response timeout using :envvar:`MB_RESPONSE_TIMEOUT` (in milliseconds). It is compile-time macro that sets ku16MBResponseTimeout in ModbusMaster.h
+
 The original author of the library is 4-20ma:
 https://github.com/4-20ma/ModbusMaster/
 
