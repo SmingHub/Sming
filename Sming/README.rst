@@ -61,29 +61,6 @@ Change it like this:
       make DEBUG_VERBOSE_LEVEL=3
 
 
-Task Queue
-----------
-
-The task queue is used for *System.queueCallback()* calls.
-
-.. envvar:: TASK_QUEUE_LENGTH
-
-   Maximum number of entries in the task queue (default 16). Must be a power of 2.
-
-
-.. envvar:: ENABLE_TASK_COUNT
-
-   If problems are suspected with task queuing, it may be getting flooded.
-   For this reason you should check the return value from `queueCallback()`.
-   
-   You can enable this option to keep track of the number of active tasks,
-   *System::getTaskCount()*, and the maximum, *System::getMaxTaskCount()*.
-
-   By default this is disabled and both methods will return 255.
-   This is because interrupts must be disabled to ensure an accurate count,
-   which may not be desirable.
-
-
 Release builds
 ~~~~~~~~~~~~~~
 
@@ -101,40 +78,6 @@ Release builds
    ::
    
       make SMING_RELEASE=
-
-
-WiFi Connection
----------------
-
-.. envvar:: ENABLE_WPS
-
-   Set to 1 to enable WiFi Protected Setup (WPS)
-   WPS is not enabled by default to preserve resources, and because there may be security implications which you should consider carefully.
-
-.. envvar:: ENABLE_SMART_CONFIG
-
-   Set to 1 to enable WiFi Smart Configuration API
-   SmartConfig requires extra libraries and :envvar:`ENABLE_ESPCONN`.
-   See :sample:`Basic_SmartConfig` sample application.
-
-If you want to provide a default SSID and Password for connection to your default Access Point, you can do this:
-
-::
-
-   make WIFI_SSID=MyAccessPoint WIFI_PWD=secret
-
-These are provided as #defined symbols for your application to use. See :sample:`Basic_WiFi` for a simple example,
-or :sample:`MeteoControl` for a more flexible solution using configuration files.
-
-.. envvar:: WIFI_SSID
-
-   SSID identifying default Access Point to connect to. By default, this is undefined.
-
-
-.. envvar:: WIFI_PWD
-
-   Password for the :envvar:`WIFI_SSID` Access Point, if required. If the AP is open then
-   leave this undefined.
 
 
 Localisation
