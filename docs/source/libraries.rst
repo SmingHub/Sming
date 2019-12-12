@@ -1,6 +1,5 @@
-*****************
-Arduino Libraries
-*****************
+Libraries
+=========
 
 Sming comes with a number of ported libraries that cover many areas of
 embedded programming but for sure not all.
