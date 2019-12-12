@@ -15,11 +15,8 @@
 
 extern "C" {
 
-//extern void ssl_hmac_md5(const uint8_t *msg, int length, const uint8_t *key, int key_len, uint8_t *digest);
-//void hmac_md5(const uint8_t *msg, int length, const uint8_t *key, int key_len, uint8_t *digest) __attribute__((alias("ssl_hmac_md5")));
-
 void hmac_md5(const uint8_t *msg, int length, const uint8_t *key, int key_len, uint8_t *digest) {
-	// TODO: ...
+	debug_e("DummySSL is not a real SSL implementation");
 }
 
 
