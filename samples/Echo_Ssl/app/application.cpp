@@ -7,6 +7,7 @@
  */
 
 #include <SmingCore.h>
+#include "Data/HexString.h"
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -25,51 +26,13 @@ TcpClient* client;
 bool showMeta = true;
 
 /* Debug SSL functions */
-void displaySessionId(SSL* ssl)
+void displaySessionId(SslSessionId* sessionId)
 {
-	int i;
-	const uint8_t* session_id = ssl_get_session_id(ssl);
-	int sess_id_size = ssl_get_session_id_size(ssl);
-
-	if(sess_id_size > 0) {
-		debugf("-----BEGIN SSL SESSION PARAMETERS-----\n");
-		for(i = 0; i < sess_id_size; i++) {
-			debugf("%02x", session_id[i]);
-		}
-
-		debugf("\n-----END SSL SESSION PARAMETERS-----\n");
+	if(sessionId != nullptr && sessionId->isValid()) {
+		debugf("-----BEGIN SSL SESSION PARAMETERS-----");
+		debugf("%s", makeHexString(sessionId->getValue(), sessionId->getLength()).c_str());
+		debugf("-----END SSL SESSION PARAMETERS-----");
 	}
-}
-
-/**
- * Display what cipher we are using
- */
-void displayCipher(SSL* ssl)
-{
-	Serial.printf("CIPHER is ");
-	switch(ssl_get_cipher_id(ssl)) {
-	case SSL_AES128_SHA:
-		Serial.printf("AES128-SHA");
-		break;
-
-	case SSL_AES256_SHA:
-		Serial.printf("AES256-SHA");
-		break;
-
-	case SSL_AES128_SHA256:
-		Serial.printf("SSL_AES128_SHA256");
-		break;
-
-	case SSL_AES256_SHA256:
-		Serial.printf("SSL_AES256_SHA256");
-		break;
-
-	default:
-		Serial.printf("Unknown - %d", ssl_get_cipher_id(ssl));
-		break;
-	}
-
-	Serial.printf("\n");
 }
 
 bool onReceive(TcpClient& tcpClient, char* data, int size)
@@ -81,14 +44,12 @@ bool onReceive(TcpClient& tcpClient, char* data, int size)
 	}
 
 	if(showMeta) {
-		SSL* ssl = tcpClient.getSsl();
+		SslConnection* ssl = tcpClient.getSsl();
 		if(ssl) {
-			const char* common_name = ssl_get_cert_dn(ssl, SSL_X509_CERT_COMMON_NAME);
-			if(common_name) {
-				debugf("Common Name:\t\t\t%s\n", common_name);
-			}
-			displayCipher(ssl);
-			displaySessionId(ssl);
+			SslCertificate* cert = ssl->getCertificate();
+			debugf("Common Name:\t\t\t%s\n", cert->getName(SSL_X509_CERT_COMMON_NAME).c_str());
+			debugf("Cipher: %s", ssl->getCipher().c_str());
+			displaySessionId(ssl->getSessionId());
 		}
 		debugf("end of meta...");
 		showMeta = false;

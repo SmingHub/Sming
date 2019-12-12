@@ -1,5 +1,5 @@
 #include <SmingCore.h>
-
+#include "Data/HexString.h"
 #include "Network/HttpClient.h"
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
@@ -11,51 +11,13 @@
 HttpClient httpClient;
 
 /* Debug SSL functions */
-void displaySessionId(SSL* ssl)
+void displaySessionId(SslSessionId* sessionId)
 {
-	int i;
-	const uint8_t* session_id = ssl_get_session_id(ssl);
-	int sess_id_size = ssl_get_session_id_size(ssl);
-
-	if(sess_id_size > 0) {
+	if(sessionId != nullptr && sessionId->isValid()) {
 		debugf("-----BEGIN SSL SESSION PARAMETERS-----");
-		for(i = 0; i < sess_id_size; i++) {
-			m_printf("%02x", session_id[i]);
-		}
-
-		debugf("\n-----END SSL SESSION PARAMETERS-----");
+		debugf("%s", makeHexString(sessionId->getValue(), sessionId->getLength()).c_str());
+		debugf("-----END SSL SESSION PARAMETERS-----");
 	}
-}
-
-/**
- * Display what cipher we are using
- */
-void displayCipher(SSL* ssl)
-{
-	m_printf("CIPHER is ");
-	switch(ssl_get_cipher_id(ssl)) {
-	case SSL_AES128_SHA:
-		m_printf("AES128-SHA");
-		break;
-
-	case SSL_AES256_SHA:
-		m_printf("AES256-SHA");
-		break;
-
-	case SSL_AES128_SHA256:
-		m_printf("SSL_AES128_SHA256");
-		break;
-
-	case SSL_AES256_SHA256:
-		m_printf("SSL_AES256_SHA256");
-		break;
-
-	default:
-		m_printf("Unknown - %d", ssl_get_cipher_id(ssl));
-		break;
-	}
-
-	m_printf("\n");
 }
 
 int onDownload(HttpConnection& connection, bool success)
@@ -67,14 +29,13 @@ int onDownload(HttpConnection& connection, bool success)
 	if(connection.getRequest()->method != HTTP_HEAD) {
 		debugf("Got content starting with: %s", connection.getResponse()->getBody().substring(0, 1000).c_str());
 	}
-	SSL* ssl = connection.getSsl();
+
+	SslConnection* ssl = connection.getSsl();
 	if(ssl) {
-		const char* common_name = ssl_get_cert_dn(ssl, SSL_X509_CERT_COMMON_NAME);
-		if(common_name) {
-			debugf("Common Name:\t\t\t%s\n", common_name);
-		}
-		displayCipher(ssl);
-		displaySessionId(ssl);
+		SslCertificate* cert = ssl->getCertificate();
+		debugf("Common Name:\t\t\t%s\n", cert->getName(SSL_X509_CERT_COMMON_NAME).c_str());
+		debugf("Cipher: %s", ssl->getCipher().c_str());
+		displaySessionId(ssl->getSessionId());
 	}
 
 	return 0; // return 0 on success in your callbacks

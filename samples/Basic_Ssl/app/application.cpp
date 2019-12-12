@@ -15,8 +15,7 @@ void displaySessionId(SslSessionId* sessionId)
 {
 	if(sessionId != nullptr && sessionId->isValid()) {
 		debugf("-----BEGIN SSL SESSION PARAMETERS-----");
-		m_puts(makeHexString(sessionId->getValue(), sessionId->getLength()).c_str());
-		m_putc('\n');
+		debugf("%s", makeHexString(sessionId->getValue(), sessionId->getLength()).c_str());
 		debugf("-----END SSL SESSION PARAMETERS-----");
 	}
 }

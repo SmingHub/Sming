@@ -37,7 +37,6 @@
 #define SSL_ERROR_NO_CLIENT_RENOG -273
 #define SSL_ERROR_NOT_SUPPORTED -274
 #define SSL_X509_OFFSET -512
-#define SSL_X509_ERROR(A) (SSL_X509_OFFSET + A)
 
 /* alert types that are recognized */
 #define SSL_ALERT_TYPE_WARNING 1
