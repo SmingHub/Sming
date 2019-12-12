@@ -14,13 +14,15 @@
 #include <stdint.h>
 
 #define MD5_SIZE 16
+#define SHA1_SIZE 20
+#define SHA256_SIZE 32
 
 // The following cryptographic functions should be present in every SSL implementation
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void hmac_md5(const uint8_t *msg, int length, const uint8_t *key, int key_len, uint8_t *digest);
+void hmac_md5(const uint8_t* msg, int length, const uint8_t* key, int key_len, uint8_t* digest);
 
 #ifdef __cplusplus
 }

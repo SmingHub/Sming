@@ -14,7 +14,8 @@
 #include "../SslStructs.h"
 #include "SslCertificate.h"
 
-class SslConnection {
+class SslConnection
+{
 public:
 	virtual bool isHandshakeDone() = 0;
 	virtual int read(tcp_pcb* tcp, pbuf* encrypted, pbuf** decrypted) = 0;
@@ -24,6 +25,7 @@ public:
 	virtual SslSessionId* getSessionId() = 0;
 	virtual SslCertificate* getCertificate() = 0;
 
-	virtual ~SslConnection() {
+	virtual ~SslConnection()
+	{
 	}
 };

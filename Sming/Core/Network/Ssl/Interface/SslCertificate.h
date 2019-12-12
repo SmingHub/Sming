@@ -13,26 +13,27 @@
 
 #include <WString.h>
 
-class SslCertificate {
+class SslCertificate
+{
 public:
-
-   /**
+	/**
     *
     */
-   virtual bool matchFingerprint(const uint8_t* hash) const = 0;
+	virtual bool matchFingerprint(const uint8_t* hash) const = 0;
 
-   /**
+	/**
     * @param hash
     * @retval bool true on success, false otherwise
     */
-   virtual bool matchPki(const uint8_t* hash) const = 0;
+	virtual bool matchPki(const uint8_t* hash) const = 0;
 
-   /**
+	/**
    * @brief Retrieve an X.509 distinguished name component
    * @param name the desired distinguished name
    * @retval the value for the desired distinguished name
    */
-  virtual const String getName(const String& name) const = 0;
-  virtual ~SslCertificate()
-  {}
+	virtual const String getName(const String& name) const = 0;
+	virtual ~SslCertificate()
+	{
+	}
 };

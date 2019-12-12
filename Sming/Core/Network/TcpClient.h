@@ -195,7 +195,6 @@ private:
 	uint16_t totalSentBytes = 0;
 
 	SslValidatorList sslValidators;
-
 };
 
 /** @} */

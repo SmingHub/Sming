@@ -16,14 +16,14 @@
 class SslExtension
 {
 public:
-   virtual bool setHostName(const String& hostName) = 0;
+	virtual bool setHostName(const String& hostName) = 0;
 
-   // TODO: Fragment size should be constant ....
-   virtual bool setMaxFragmentSize(uint8_t fragmentSize) = 0;
+	// TODO: Fragment size should be constant ....
+	virtual bool setMaxFragmentSize(uint8_t fragmentSize) = 0;
 
-   virtual void * getInternalObject() = 0;
+	virtual void* getInternalObject() = 0;
 
-   virtual ~SslExtension()
-   {
-   }
+	virtual ~SslExtension()
+	{
+	}
 };

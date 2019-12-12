@@ -8,7 +8,6 @@
  *
  ****/
 
-
 #include "SslFingerprints.h"
 #include <user_config.h>
 

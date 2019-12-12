@@ -200,7 +200,6 @@ int TcpConnection::write(const char* data, int len, uint8_t apiflags)
 			debug_d("SSL: Write Error: %d", err);
 		}
 	} else {
-
 		u16_t available = getAvailableWriteSize();
 		if(available < len) {
 			if(available == 0) {
@@ -413,10 +412,10 @@ err_t TcpConnection::internalOnConnected(err_t err)
 		if(sslKeyCert.isValid()) {
 			// if we have client certificate -> try to use it.
 			if(!sslContext->loadMemory(SSL_OBJ_RSA_KEY, sslKeyCert.getKey(), sslKeyCert.getKeyLength(),
-								   sslKeyCert.getKeyPassword())) {
+									   sslKeyCert.getKeyPassword())) {
 				debug_d("SSL: Unable to load client private key");
 			} else if(!sslContext->loadMemory(SSL_OBJ_X509_CERT, sslKeyCert.getCertificate(),
-										  sslKeyCert.getCertificateLength(), nullptr)) {
+											  sslKeyCert.getCertificateLength(), nullptr)) {
 				debug_d("SSL: Unable to load client certificate");
 			}
 

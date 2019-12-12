@@ -31,26 +31,26 @@ public:
 
 	SslConnection* createClient(SslSessionId* sessionId, SslExtension* sslExtensions)
 	{
-		return doCreateClient(
-					sessionId != nullptr ? sessionId->getValue() : nullptr,
-					sessionId != nullptr ? sessionId->getLength() : 0,
-				    sslExtensions);
+		return doCreateClient(sessionId != nullptr ? sessionId->getValue() : nullptr,
+							  sessionId != nullptr ? sessionId->getLength() : 0, sslExtensions);
 	}
 
 	virtual SslConnection* createServer() = 0;
-	virtual bool loadMemory(int memType, const uint8_t *data, size_t length,
-			const char *password) = 0;
+	virtual bool loadMemory(int memType, const uint8_t* data, size_t length, const char* password) = 0;
 
-	bool isValid() {
+	bool isValid()
+	{
 		return valid;
 	}
 
-	tcp_pcb& getTcp() {
+	tcp_pcb& getTcp()
+	{
 		return *tcp;
 	}
 
 	virtual ~SslContext()
-	{}
+	{
+	}
 
 protected:
 	virtual SslConnection* doCreateClient(const uint8_t* sessionData, size_t length, SslExtension* sslExtensions) = 0;

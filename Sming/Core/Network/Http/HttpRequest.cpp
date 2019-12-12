@@ -16,9 +16,8 @@
 HttpRequest::HttpRequest(const HttpRequest& value)
 	: uri(value.uri), method(value.method), headers(value.headers), postParams(value.postParams),
 	  headersCompletedDelegate(value.headersCompletedDelegate), requestBodyDelegate(value.requestBodyDelegate),
-	  requestCompletedDelegate(value.requestCompletedDelegate)
-	  ,
-	  sslOptions(value.sslOptions), sslFingerprints(value.sslFingerprints), sslKeyCertPair(value.sslKeyCertPair)
+	  requestCompletedDelegate(value.requestCompletedDelegate), sslOptions(value.sslOptions),
+	  sslFingerprints(value.sslFingerprints), sslKeyCertPair(value.sslKeyCertPair)
 {
 }
 

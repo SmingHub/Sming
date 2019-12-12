@@ -418,8 +418,7 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 				state = eSMTP_Ready;
 				if(!useSsl && (options & SMTP_OPT_STARTTLS)) {
 					state = eSMTP_StartTLS;
-				} else
-					if(url.User && authMethods.count()) {
+				} else if(url.User && authMethods.count()) {
 					state = eSMTP_SendAuth;
 				}
 			}
