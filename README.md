@@ -46,7 +46,7 @@ Table of Contents
    * [Financial contributions](#financial-contributions)
       * [Backers and sponsors](#backers-and-sponsors)
 
-Please note **develop** branch documentation is at [sming.readthedocs.io](https://sming.readthedocs.io/).
+Please note Version 4 documentation is at [sming.readthedocs.io](https://sming.readthedocs.io/).
 
 ## Summary
 
