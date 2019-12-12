@@ -17,10 +17,8 @@ HttpRequest::HttpRequest(const HttpRequest& value)
 	: uri(value.uri), method(value.method), headers(value.headers), postParams(value.postParams),
 	  headersCompletedDelegate(value.headersCompletedDelegate), requestBodyDelegate(value.requestBodyDelegate),
 	  requestCompletedDelegate(value.requestCompletedDelegate)
-#ifdef ENABLE_SSL
 	  ,
 	  sslOptions(value.sslOptions), sslFingerprints(value.sslFingerprints), sslKeyCertPair(value.sslKeyCertPair)
-#endif
 {
 }
 
@@ -103,7 +101,6 @@ void HttpRequest::reset()
 String HttpRequest::toString()
 {
 	String content;
-#ifdef ENABLE_SSL
 	content += F("> SSL options: ") + String(sslOptions) + '\n';
 	content +=
 		F("> SSL Cert Fingerprint Length: ") + String((sslFingerprints.certSha1 == nullptr) ? 0 : SHA1_SIZE) + '\n';
@@ -112,7 +109,6 @@ String HttpRequest::toString()
 	content += F("> SSL ClientCert Length: ") + String(sslKeyCertPair.getCertificateLength()) + '\n';
 	content += F("> SSL ClientCert PK Length: ") + String(sslKeyCertPair.getKeyLength()) + '\n';
 	content += '\n';
-#endif
 
 	content += String(http_method_str(method)) + ' ' + uri.getPathWithQuery() + _F(" HTTP/1.1\n");
 	content += headers.toString(HTTP_HEADER_HOST, uri.getHostWithPort());

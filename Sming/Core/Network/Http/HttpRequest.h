@@ -225,7 +225,6 @@ public:
 	/** @brief Clear buffers and reset to default state in preparation for another request */
 	void reset();
 
-#ifdef ENABLE_SSL
 	HttpRequest* setSslOptions(uint32_t sslOptions)
 	{
 		this->sslOptions = sslOptions;
@@ -261,7 +260,6 @@ public:
 		sslKeyCertPair = keyCertPair;
 		return this;
 	}
-#endif
 
 #ifndef SMING_RELEASE
 	/**
@@ -294,11 +292,9 @@ protected:
 	AuthAdapter* auth = nullptr;
 #endif
 
-#ifdef ENABLE_SSL
 	uint32_t sslOptions = 0;
 	SslFingerprints sslFingerprints;
 	SslKeyCertPair sslKeyCertPair;
-#endif
 
 private:
 	HttpParams* queryParams = nullptr; // << @todo deprecate

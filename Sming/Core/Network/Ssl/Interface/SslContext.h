@@ -21,12 +21,13 @@ class SslConnection;
 class SslContext
 {
 public:
-	SslContext(tcp_pcb* tcp, uint32_t options = 0,
-			size_t sessionCacheSize = 1) :
-			tcp(tcp), options(options), sessionCacheSize(sessionCacheSize) {
+	virtual bool init(tcp_pcb* tcp, uint32_t options = 0, size_t sessionCacheSize = 1)
+	{
+		this->tcp = tcp;
+		this->options = options;
+		this->sessionCacheSize = sessionCacheSize;
+		return true;
 	}
-
-	virtual bool init() = 0;
 
 	SslConnection* createClient(SslSessionId* sessionId, SslExtension* sslExtensions)
 	{

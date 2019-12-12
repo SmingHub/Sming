@@ -56,7 +56,7 @@ Change it like this:
    need to recompile all components like this:
 
    ::
-   
+
       make components-clean
       make DEBUG_VERBOSE_LEVEL=3
 
@@ -70,13 +70,13 @@ Release builds
    To build for release, do this:
 
    ::
-   
+
       make SMING_RELEASE=1
 
    This remains in force until you change it back:
-   
+
    ::
-   
+
       make SMING_RELEASE=
 
 

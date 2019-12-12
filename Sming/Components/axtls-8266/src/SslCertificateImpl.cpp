@@ -10,9 +10,9 @@
  *
  ****/
 
-#include "AxtlsCertificate.h"
+#include "SslCertificateImpl.h"
 
-const String AxtlsCertificate::getName(const String& name) const
+const String SslCertificateImpl::getName(const String& name) const
 {
   if(ssl == nullptr) {
 	  return String();
@@ -21,12 +21,12 @@ const String AxtlsCertificate::getName(const String& name) const
   return String(ssl_get_cert_dn(ssl, SSL_X509_CERT_COMMON_NAME));
 }
 
-bool AxtlsCertificate::matchFingerprint(const uint8_t* hash) const
+bool SslCertificateImpl::matchFingerprint(const uint8_t* hash) const
 {
 	return (ssl_match_fingerprint(ssl, hash) == 0);
 }
 
-bool AxtlsCertificate::matchPki(const uint8_t* hash) const
+bool SslCertificateImpl::matchPki(const uint8_t* hash) const
 {
 	return (ssl_match_spki_sha256(ssl, hash) == 0);
 }

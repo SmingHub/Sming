@@ -15,18 +15,14 @@
 #include <Network/Ssl/SslInterface.h>
 #include <axtls-8266/compat/lwipr_compat.h>
 
-class AxtlsContext: public SslContext {
+class SslContextImpl: public SslContext {
 public:
-	AxtlsContext(tcp_pcb* tcp, uint32_t options = 0,
-			size_t sessionCacheSize = 1) : SslContext(tcp, options, sessionCacheSize)
-	{
-	}
-
-	bool init() override;
+	bool init(tcp_pcb* tcp, uint32_t options = 0,
+			size_t sessionCacheSize = 1) override;
 
 	SslConnection* createServer() override;
 	bool loadMemory(int memType, const uint8_t *data, size_t length, const char *password) override;
-	virtual ~AxtlsContext();
+	virtual ~SslContextImpl();
 
 protected:
    SslConnection* doCreateClient(const uint8_t* sessionData, size_t length, SslExtension* sslExtensions) override;

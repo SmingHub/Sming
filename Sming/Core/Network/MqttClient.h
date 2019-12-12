@@ -159,14 +159,12 @@ public:
 		TcpClient::setCompleteDelegate(handler);
 	}
 
-#ifdef ENABLE_SSL
 	using TcpClient::addSslOptions;
 	using TcpClient::addSslValidator;
 	using TcpClient::freeSslKeyCert;
 	using TcpClient::getSsl;
 	using TcpClient::pinCertificate;
 	using TcpClient::setSslKeyCert;
-#endif
 
 	// deprecated methods below
 	using TcpClient::setCompleteDelegate;

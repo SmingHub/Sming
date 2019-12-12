@@ -50,7 +50,6 @@ bool HttpClientConnection::send(HttpRequest* request)
 
 	bool useSsl = (request->uri.Scheme == URI_SCHEME_HTTP_SECURE);
 
-#ifdef ENABLE_SSL
 	// Based on the URL decide if we should reuse the SSL and TCP pool
 	if(useSsl) {
 		if(sslSessionId == nullptr) {
@@ -60,7 +59,6 @@ bool HttpClientConnection::send(HttpRequest* request)
 		pinCertificate(request->sslFingerprints);
 		setSslKeyCert(request->sslKeyCertPair);
 	}
-#endif
 
 	return connect(request->uri.Host, request->uri.getPort(), useSsl);
 }

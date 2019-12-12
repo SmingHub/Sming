@@ -12,9 +12,6 @@
 
 #pragma once
 
-#include <ssl/ssl.h>
-#include <ssl/tls1.h>
-
 #include <Delegate.h>
 #include <WVector.h>
 

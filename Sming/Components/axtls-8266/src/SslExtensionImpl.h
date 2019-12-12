@@ -17,10 +17,10 @@
 #include <Network/Ssl/SslInterface.h>
 #include <axtls-8266/compat/lwipr_compat.h>
 
-class AxtlsExtension: public SslExtension
+class SslExtensionImpl: public SslExtension
 {
 public:
-	AxtlsExtension();
+	SslExtensionImpl();
 
    bool setHostName(const String& hostName) override;
 
@@ -31,7 +31,7 @@ public:
 	   return sslExtension;
    }
 
-   virtual ~AxtlsExtension()
+   virtual ~SslExtensionImpl()
    {
 	   free(sslExtension);
 	   sslExtension = nullptr;

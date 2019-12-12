@@ -45,25 +45,29 @@ COMPONENT_DOXYGEN_INPUT := \
 	System
 
 # => SSL
-COMPONENT_VARS 			:= ENABLE_SSL
+CONFIG_VARS			+= ENABLE_SSL 
+# Set the default ssl implementation
 ifeq ($(ENABLE_SSL),1)
+	ENABLE_SSL := AXTLS
+endif
+
+ifeq ($(ENABLE_SSL),AXTLS)
 	SMING_FEATURES		:= SSL
-	GLOBAL_CFLAGS		+= -DENABLE_SSL=1
 	COMPONENT_DEPENDS	+= axtls-8266
 	COMPONENT_VARS += SSL_DEBUG
+else ifeq ($(ENABLE_SSL),MBEDTLS) 	
+	# TODO: ....
 else
-	SMING_FEATURES		:= none
-	COMPONENT_SRCDIRS	:= $(filter-out %/Ssl,$(COMPONENT_SRCDIRS))
+	COMPONENT_DEPENDS	+= DummySsl
+	ENABLE_SSL := 0
 endif
 
 # Prints SSL status when App gets built
 CUSTOM_TARGETS			+= check-ssl
 .PHONY:check-ssl
 check-ssl:
-ifeq ($(ENABLE_SSL),1)
-	$(info + SSL support is enabled)
-else
-	$(warning ! SSL support is not enabled. To enable it type: 'make clean; make ENABLE_SSL=1')
+ifeq ($(ENABLE_SSL),0)
+	$(info No SSL implementation is selected)
 endif
 
 # => Disable CommandExecutor functionality if not used and save some ROM and RAM

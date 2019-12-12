@@ -139,11 +139,9 @@ void TcpClient::close()
 {
 	if(state != eTCS_Successful && state != eTCS_Failed) {
 		state = (totalSentConfirmedBytes == totalSentBytes) ? eTCS_Successful : eTCS_Failed;
-#ifdef ENABLE_SSL
 		if(ssl && sslConnected) {
 			state = (totalSentBytes == 0 || (totalSentConfirmedBytes > totalSentBytes)) ? eTCS_Successful : eTCS_Failed;
 		}
-#endif
 		totalSentBytes = 0;
 		totalSentConfirmedBytes = 0;
 		onFinished(state);

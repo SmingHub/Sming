@@ -47,9 +47,11 @@ bool TcpConnection::connect(const String& server, int port, bool useSsl, uint32_
 
 	if(useSsl) {
 		delete sslExtension;
-		sslExtension = new SslExtensionImpl();
-		sslExtension->setHostName(server);
-		sslExtension->setMaxFragmentSize(4); // 4K max size
+		sslExtension = sslCreateExtension();
+		if(sslExtension != nullptr) {
+			sslExtension->setHostName(server);
+			sslExtension->setMaxFragmentSize(4); // 4K max size
+		}
 	}
 
 	debug_d("connect to: %s", server.c_str());
@@ -402,12 +404,12 @@ err_t TcpConnection::internalOnConnected(err_t err)
 		debug_d("SSL: handshake start");
 
 		delete sslContext;
-		sslContext = new SslContextImpl(tcp, localSslOptions, 1);
+		sslContext = sslCreateContext();
 		if(sslContext == nullptr) {
 			return ERR_ABRT;
 		}
 
-		sslContext->init();
+		sslContext->init(tcp, localSslOptions, 1);
 		if(sslKeyCert.isValid()) {
 			// if we have client certificate -> try to use it.
 			if(!sslContext->loadMemory(SSL_OBJ_RSA_KEY, sslKeyCert.getKey(), sslKeyCert.getKeyLength(),

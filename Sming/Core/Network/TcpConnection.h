@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <SslImplementation.h>
+#include <Network/Ssl/SslInterface.h>
 #include <IpAddress.h>
 
 #define NETWORK_DEBUG

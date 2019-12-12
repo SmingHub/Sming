@@ -31,10 +31,8 @@ typedef struct {
 	bool useDefaultBodyParsers = 1; ///< if the default body parsers,  as form-url-encoded, should be used
 	bool closeOnContentError =
 		true; ///< close the connection if a body parser or resource fails to parse the body content.
-#ifdef ENABLE_SSL
 	int sslSessionCacheSize =
 		10; ///< number of SSL session ids to cache. Setting this to 0 will disable SSL session resumption.
-#endif
 } HttpServerSettings;
 
 class HttpServer : public TcpServer

@@ -11,11 +11,17 @@
  ****/
 #pragma once
 
-#include "Interface/SslContext.h"
-#include "Interface/SslConnection.h"
-#include "Interface/SslExtension.h"
-#include "Interface/SslCertificate.h"
-#include "Interface/SslConstants.h"
+#include <stdint.h>
 
-SslContext* sslCreateContext();
-SslExtension* sslCreateExtension();
+#define MD5_SIZE 16
+
+// The following cryptographic functions should be present in every SSL implementation
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void hmac_md5(const uint8_t *msg, int length, const uint8_t *key, int key_len, uint8_t *digest);
+
+#ifdef __cplusplus
+}
+#endif

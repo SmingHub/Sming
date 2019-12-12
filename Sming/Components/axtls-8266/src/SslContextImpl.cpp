@@ -10,11 +10,15 @@
  *
  ****/
 
-#include "AxtlsContext.h"
-#include "AxtlsConnection.h"
+#include "SslContextImpl.h"
+#include "SslConnectionImpl.h"
 
-bool AxtlsContext::init()
+bool SslContextImpl::init(tcp_pcb* tcp, uint32_t options, size_t sessionCacheSize)
 {
+	if(!SslContext::init(tcp, options, sessionCacheSize)) {
+		return false;
+	}
+
 	axl_init(fdCount);
 	ssl_ctx_free(context);
 	context = ssl_ctx_new(SSL_CONNECT_IN_PARTS | options, sessionCacheSize);
@@ -22,7 +26,7 @@ bool AxtlsContext::init()
 	return (context!= nullptr);
 }
 
-SslConnection* AxtlsContext::doCreateClient(const uint8_t* sessionData, size_t sessionLength, SslExtension* sslExtension)
+SslConnection* SslContextImpl::doCreateClient(const uint8_t* sessionData, size_t sessionLength, SslExtension* sslExtension)
 {
 	int clientfd = axl_append(tcp);
 	if(clientfd < 0) {
@@ -36,10 +40,10 @@ SslConnection* AxtlsContext::doCreateClient(const uint8_t* sessionData, size_t s
 		return nullptr;
 	}
 
-	return new AxtlsConnection(ssl);
+	return new SslConnectionImpl(ssl);
 }
 
-SslConnection* AxtlsContext::createServer()
+SslConnection* SslContextImpl::createServer()
 {
 	int clientfd = axl_append(tcp);
 	if (clientfd < 0) {
@@ -52,16 +56,21 @@ SslConnection* AxtlsContext::createServer()
 		return nullptr;
 	}
 
-	return new AxtlsConnection(ssl);
+	return new SslConnectionImpl(ssl);
 }
 
-bool AxtlsContext::loadMemory(int memType, const uint8_t *data, size_t length, const char *password)
+bool SslContextImpl::loadMemory(int memType, const uint8_t *data, size_t length, const char *password)
 {
 	return (ssl_obj_memory_load(context, memType, data, length, password) != SSL_OK);
 }
 
-AxtlsContext::~AxtlsContext()
+SslContextImpl::~SslContextImpl()
 {
 	axl_free(tcp);
 	ssl_ctx_free(context);
+}
+
+SslContext* sslCreateContext()
+{
+	return new SslContextImpl();
 }

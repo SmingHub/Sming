@@ -58,12 +58,12 @@ bool TcpServer::listen(int port, bool useSsl)
 #endif
 
 		delete sslContext;
-		sslContext = new SslContextImpl(tcp, sslOptions, sslSessionCacheSize);
+		sslContext = sslCreateContext();
 		if(sslContext == nullptr) {
 			return false;
 		}
 
-		sslContext->init();
+		sslContext->init(tcp, sslOptions, sslSessionCacheSize);
 		if(!sslKeyCert.isValid()) {
 			debug_e("SSL: server certificate and key are not provided!");
 			return false;

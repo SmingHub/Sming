@@ -14,12 +14,12 @@
 
 #include <Network/Ssl/SslInterface.h>
 #include <axtls-8266/compat/lwipr_compat.h>
-#include "AxtlsCertificate.h"
+#include "SslCertificateImpl.h"
 
-class AxtlsConnection: public SslConnection
+class SslConnectionImpl: public SslConnection
 {
 public:
-   AxtlsConnection(SSL* ssl): ssl(ssl)
+   SslConnectionImpl(SSL* ssl): ssl(ssl)
    {
    }
 
@@ -46,7 +46,7 @@ public:
 
    SslCertificate* getCertificate() override;
 
-   virtual ~AxtlsConnection()
+   virtual ~SslConnectionImpl()
    {
 	   delete certificate;
 	   delete sessionId;
@@ -57,6 +57,6 @@ public:
 protected:
    SslContext* context = nullptr;
    SSL* ssl = nullptr;
-   AxtlsCertificate* certificate = nullptr; // << The certificate object is owned by this class
+   SslCertificateImpl* certificate = nullptr; // << The certificate object is owned by this class
    SslSessionId* sessionId = nullptr; // << The sslSessionId object is owned by this class
 };

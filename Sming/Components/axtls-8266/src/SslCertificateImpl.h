@@ -15,10 +15,10 @@
 #include <Network/Ssl/SslInterface.h>
 #include <axtls-8266/compat/lwipr_compat.h>
 
-class AxtlsCertificate: public SslCertificate
+class SslCertificateImpl: public SslCertificate
 {
 public:
-   AxtlsCertificate(SSL* ssl): ssl(ssl)
+   SslCertificateImpl(SSL* ssl): ssl(ssl)
    {
 
    }
@@ -30,7 +30,7 @@ public:
 
    const String getName(const String& name) const override;
 
-  virtual ~AxtlsCertificate()
+  virtual ~SslCertificateImpl()
   {}
 private:
   SSL* ssl = nullptr;

@@ -10,10 +10,10 @@
  *
  ****/
 
-#include "AxtlsConnection.h"
-#include "AxtlsCertificate.h"
+#include "SslConnectionImpl.h"
+#include "SslCertificateImpl.h"
 
-int AxtlsConnection::read(tcp_pcb* tcp, pbuf* encrypted, pbuf** decrypted) {
+int SslConnectionImpl::read(tcp_pcb* tcp, pbuf* encrypted, pbuf** decrypted) {
 
 	int read_bytes = axl_ssl_read(ssl, tcp, encrypted, decrypted);
 
@@ -22,7 +22,7 @@ int AxtlsConnection::read(tcp_pcb* tcp, pbuf* encrypted, pbuf** decrypted) {
 	return read_bytes;
 }
 
-const String AxtlsConnection::getCipher() const
+const String SslConnectionImpl::getCipher() const
 {
 	switch (ssl_get_cipher_id(ssl)) {
 	case SSL_AES128_SHA:
@@ -42,7 +42,7 @@ const String AxtlsConnection::getCipher() const
 	}
 }
 
-SslSessionId* AxtlsConnection::getSessionId()
+SslSessionId* SslConnectionImpl::getSessionId()
 {
 	if(sessionId == nullptr) {
 		sessionId = new SslSessionId();
@@ -55,10 +55,10 @@ SslSessionId* AxtlsConnection::getSessionId()
 	return sessionId;
 }
 
-SslCertificate* AxtlsConnection::getCertificate()
+SslCertificate* SslConnectionImpl::getCertificate()
 {
 	if(certificate == nullptr) {
-		certificate = new AxtlsCertificate(ssl);
+		certificate = new SslCertificateImpl(ssl);
 	}
 
 	return certificate;

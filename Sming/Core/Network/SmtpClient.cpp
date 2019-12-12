@@ -21,15 +21,7 @@
 #include "Data/Stream/QuotedPrintableOutputStream.h"
 #include "Data/Stream/Base64OutputStream.h"
 #include "Data/HexString.h"
-
-#if !defined(ENABLE_SSL) || ENABLE_SSL == 0
-// if our SSL is not used then we try to use the one coming from the SDK
-#define MD5_SIZE 16
-extern "C" {
-void ssl_hmac_md5(const uint8_t* msg, int length, const uint8_t* key, int key_len, uint8_t* digest);
-}
-#define hmac_md5(A, B, C, D, E) ssl_hmac_md5(A, B, C, D, E)
-#endif
+#include "Network/Ssl/SslCrypto.h"
 
 #define ADVANCE                                                                                                        \
 	{                                                                                                                  \
@@ -424,11 +416,9 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 
 			if(isLastLine) {
 				state = eSMTP_Ready;
-#ifdef ENABLE_SSL
 				if(!useSsl && (options & SMTP_OPT_STARTTLS)) {
 					state = eSMTP_StartTLS;
 				} else
-#endif
 					if(url.User && authMethods.count()) {
 					state = eSMTP_SendAuth;
 				}

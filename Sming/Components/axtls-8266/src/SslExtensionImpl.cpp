@@ -12,13 +12,13 @@
  *
  ****/
 
-#include "AxtlsExtension.h"
+#include "SslExtensionImpl.h"
 
-AxtlsExtension::AxtlsExtension() {
+SslExtensionImpl::SslExtensionImpl() {
 	sslExtension = ssl_ext_new();
 }
 
-bool AxtlsExtension::setHostName(const String& hostName) {
+bool SslExtensionImpl::setHostName(const String& hostName) {
 	if (sslExtension == nullptr) {
 		return false;
 	}
@@ -28,7 +28,7 @@ bool AxtlsExtension::setHostName(const String& hostName) {
 	return true;
 }
 
-bool AxtlsExtension::setMaxFragmentSize(uint8_t fragmentSize) {
+bool SslExtensionImpl::setMaxFragmentSize(uint8_t fragmentSize) {
 	if (sslExtension == nullptr) {
 		return false;
 	}
@@ -36,5 +36,10 @@ bool AxtlsExtension::setMaxFragmentSize(uint8_t fragmentSize) {
 	ssl_ext_set_max_fragment_size(sslExtension, fragmentSize);
 
 	return true;
+}
+
+SslExtension* sslCreateExtension()
+{
+	return new SslExtensionImpl();
 }
 
