@@ -1,6 +1,6 @@
 #include <SmingTest.h>
 
-IMPORT_FSTR(testContent, SMING_HOME "/../Readme.md");
+IMPORT_FSTR(testContent, SMING_HOME "/../README.md");
 
 class FilesTest : public TestGroup
 {

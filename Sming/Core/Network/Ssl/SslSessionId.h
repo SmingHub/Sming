@@ -13,7 +13,9 @@
 #include "ssl/ssl.h"
 #include "WString.h"
 
-/** @brief Manages buffer to store SSL Session ID
+/**
+ * @brief Manages buffer to store SSL Session ID
+ * @ingroup ssl
  */
 class SslSessionId
 {

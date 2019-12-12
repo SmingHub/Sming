@@ -15,13 +15,16 @@
 #include <esp_attr.h>
 
 /**
- * @defgroup pgmspace Flash support functions
- * @ingroup flash
+ * @ingroup pgmspace
  * @{
  */
 
 /**
  * @brief Place entity into flash memory
+ * @brief Attach to const variable declaration to have it stored in flash memory
+ *
+ * Such variables should not be accessed like regular pointers as aligned instructions
+ * are required. Use the provided library functions, such as `memcpy_P`, instead.
  */
 #define PROGMEM STORE_ATTR ICACHE_RODATA_ATTR
 

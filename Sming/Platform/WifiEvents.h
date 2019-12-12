@@ -6,17 +6,10 @@
  *
  * WifiEvents.h
  *
- *  Created on: 19 февр. 2016 г.
+ *  Created on: 19 ????. 2016 ?.
  *      Author: shurik
  *
  ****/
-
-/**	@defgroup wifi_ev WiFi Events Interface
- *  @ingroup wifi
- *	@brief	Event callback interface for WiFi events
- *  @see    \ref wifi_sta
- *  @see    \ref wifi_ap
-*/
 
 #pragma once
 
@@ -26,16 +19,19 @@
 #include <Delegate.h>
 #include "BssInfo.h"
 
-/** @ingroup constants
+/**	@defgroup wifi_ev WiFi Events Interface
+ *  @ingroup wifi
+ *	@brief	Event callback interface for WiFi events
+ *  @see    \ref wifi_sta
+ *  @see    \ref wifi_ap
  *  @{
- */
+*/
 
 /**
  * @brief Common set of reason codes to IEEE 802.11-2007
- *
  * @note Codes at 200+ are non-standard, defined by Espressif.
  *
- * @note Some acronymns used here - see the full standard for more precise definitions.
+ * Some acronymns used here - see the full standard for more precise definitions.
  *	- SSID: Service Set Identifier (the visible name given to an Access Point)
  *	- BSSID: Basic Service Set Identifier (a MAC address physically identifying the AP)
  *	- IE: Information Element (standard piece of information carried within WiFi packets)
@@ -85,12 +81,6 @@ enum WifiDisconnectReason {
 	WIFI_DISCONNECT_REASON_CODES_MAP(XX)
 #undef XX
 };
-
-/** @} */
-
-/** @ingroup event_handlers
- *  @{
- */
 
 /**
  * @brief Delegate type for 'station connected' event
@@ -164,11 +154,7 @@ typedef Delegate<void(MacAddress mac, uint16_t aid)> AccessPointDisconnectDelega
  */
 typedef Delegate<void(int rssi, MacAddress mac)> AccessPointProbeReqRecvedDelegate;
 
-/** @} */
-
 /** @brief  WiFi events class
- *  @addtogroup wifi_ev
- *  @{
  */
 class WifiEventsClass
 {
@@ -249,6 +235,9 @@ protected:
 	AccessPointProbeReqRecvedDelegate onSOFTAPProbeReqRecved = nullptr;
 };
 
+/**
+ * @brief Global reference to architecture-specific implementation
+ */
 extern WifiEventsClass& WifiEvents;
 
 /** @} */

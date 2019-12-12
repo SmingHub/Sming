@@ -25,6 +25,10 @@
 
 #include "Print.h"
 
+/**
+ * @brief Base Stream class
+ * @ingroup wiring
+ */
 class Stream : public Print
 {
   protected:

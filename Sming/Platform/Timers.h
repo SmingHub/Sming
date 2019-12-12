@@ -23,7 +23,7 @@
 #include <PolledTimer.h>
 #include "Clocks.h"
 
-/** @ingroup polled_timer
+/** @ingroup polled_timer platform
  *  @{
 */
 

@@ -1,11 +1,10 @@
-********************
 Documentation System
-********************
+====================
 
 .. highlight:: rst
 
 Read the Docs and Sphinx
-========================
+------------------------
 
 Online documention is managed via
 `Read the Docs <https://docs.readthedocs.io/en/stable/index.html>`_,
@@ -15,7 +14,7 @@ build system.
 This page describes specific details for the Sming documentation build system.
 
 reStructuredText
-================
+----------------
 
 These have a ``.rst`` file extension. Some references you should have a read through:
 
@@ -32,7 +31,7 @@ a look at `pandoc <https://pandoc.org/>`_. Note that their
 `online tool <https://pandoc.org/try/>`_ doesn't handle long files.
 
 Source file location
-====================
+--------------------
 
 Sphinx requires all document files (documents, images, etc.) to be
 located in one place, namely inside the ``docs/source`` directory.
@@ -59,11 +58,10 @@ this:
 
    COMPONENT_DOCFILES := submodule/docs/api-guide.md submodule/api.txt
 
-See :doc:`/_inc/Sming/building` for more information about component.mk
-files.
+See :doc:`/_inc/Sming/building` for more information about component.mk files.
 
 README files
-============
+------------
 
 All Components, Libraries and Samples must include a ``README.rst`` or ``README.md`` file as follows:
 
@@ -90,7 +88,7 @@ Please use ``.png``, ``.jpg`` or ``.svg`` files.
 You should use the available annotations to make browsing the documentation easier. Using the
 `Sphinx roles <https://www.sphinx-doc.org/en/master/usage/restructuredtext/roles.html>`
 will insert hyper links to the corresponding definitions.
-Additional roles are provided specifically for the Sming documentation - see `link-roles`_ below.
+Additional roles are provided specifically for the Sming documentation - see `link_roles`_ below.
 
 Code blocks
 -----------
@@ -100,9 +98,7 @@ Sphinx. See
 `Showing code examples <https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html?highlight=code-block#showing-code-examples>`__
 for full details.
 
-Use the ``code-block`` directive like so:
-
-::
+Use the ``code-block`` directive like so::
 
    .. code-block:: c++
    
@@ -123,21 +119,15 @@ consistency it is suggested that you use one of these:
    make     Makefile
    rst      reStructuredText
 
-You can set a default like this:
-
-::
+You can set a default like this::
 
    .. highlight:: c++
    
-which will apply to any subsequent use of
-
-::
+which will apply to any subsequent use of::
 
    .. code:block::
 
-or, the short-hand version
-
-::
+or, the short-hand version::
 
    ::
 
@@ -149,16 +139,12 @@ comments in the source code (see :doc:`documenting-the-api`). This is
 parsed using `Doxygen <http://www.doxygen.nl/index.html>`_ into XML,
 which is then made available using the
 `Breathe <https://breathe.readthedocs.io/en/latest/>`_ sphinx
-extension. You can then pull in definitions like this:
-
-::
+extension. You can then pull in definitions like this::
 
    .. doxygenclass::`String`
 
 If you wish to refer to a type within documentation, you can add a link
-to the definition like this:
-
-::
+to the definition like this::
 
    The :cpp:class:`String` class is really useful.
 
@@ -168,17 +154,58 @@ This is handled using
 
 See :component-esp8266:`gdbstub` for a more complex example.
 At the bottom of the file we pull in the documentation for all the
-#defined configuration using:
-
-::
+#defined configuration using::
 
    .. doxygenfile:: gdbstub-cfg.h
 
-We can then refer to a macro like this:
-
-::
+We can then refer to a macro like this::
 
    Don't wait on startup by setting :c:macro:`GDBSTUB_BREAK_ON_INIT` =0
+
+In many cases including a file like this is not the best approach,
+perhaps using a group::
+
+   .. dogygengroup:: wstring
+
+Or individual classes. Some experimentation may be necessary but there
+are plenty of examples within the main documentation to guide you.
+
+You can use the following build variables within your Component's
+component.mk file to direct doxygen parsing:
+
+
+.. envvar:: COMPONENT_DOXYGEN_INPUT
+
+   Specifies directories or files to be parsed by Doxygen.
+   All paths are relative to the Component directory.
+
+   If you need to specify an absolute path, append directly
+   to DOXYGEN_INPUT instead.
+
+
+.. envvar:: COMPONENT_DOXYGEN_INCLUDE
+
+   Add any directories or files which should be pre-processed but
+   not included in the output.
+
+   If you need to specify an absolute path, append directly
+   to DOXYGEN_INCLUDE_PATH instead.
+
+
+.. envvar:: COMPONENT_DOXYGEN_PREDEFINED
+
+   Specify any necessary pre-processor definitions.
+   An example where this is required is for function attributes #defines
+   which would otherwise be incorrectly interpreted as variable names
+   and cause parsing errors::
+
+      CUSTOM_ATTR void myFunc();
+      ^^^
+
+   So we can do this::
+
+      COMPONENT_DOXYGEN_PREDEFINED := \
+         CUSTOM_ATTR=
 
 
 Build (environment) variables
@@ -198,7 +225,7 @@ You can refer to them like this:
    Change baud rate using the :envvar:`COM_SPEED` variable.
 
 
-.. _link-roles:
+.. _link_roles:
 
 Link Roles
 ----------
@@ -266,11 +293,8 @@ If you want to refer to discussions on github, insert links like this:
    See :issue:`1764`
 
 
-GIT
-===
-
 Eclipse
-=======
+-------
 
 You can find a good plugin editor for Eclipse by searching the
 marketplace for ``rest editor``. For example,
@@ -293,7 +317,7 @@ Tables, unfortunately, do take a bit of manual formatting to get right.
 
 
 Sphinx Extensions
-=================
+-----------------
 
 The documentation system is easily extended to support new features.
 This section summarises the extensions included.

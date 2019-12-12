@@ -12,12 +12,12 @@
  *  @brief  Structure definitions used by Sming functions
  */
 
-/** @defgroup libraries Libraries
- *  @brief  Libraries provided by third parties, adapted to work with Sming
- */
-
 /** @defgroup wifi WiFi
  *  @brief  Sming WiFi support classes and definitions
+ */
+
+/** @defgroup drivers Hardware Drivers
+ *  @brief  Low-level APIs for accessing hardware
  */
 
 /** @mainpage

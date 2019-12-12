@@ -14,6 +14,7 @@
 
 /**
  * @brief SSL Certificate fingerprint type
+ * @ingroup ssl
  */
 enum SslFingerprintType {
 	/** @brief Fingerprint based on the SHA1 value of the certificate
@@ -34,6 +35,7 @@ enum SslFingerprintType {
 };
 
 /** @brief Contains SSL fingerprint data
+ *  @ingroup ssl
  *  @note Lifetime as follows:
  *  	- Constructed by application, using appropriate setXXX method;
  *  	- Passed into HttpRequest by application, using pinCertificate method - request is then queued;

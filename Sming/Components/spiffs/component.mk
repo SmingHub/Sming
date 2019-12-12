@@ -2,7 +2,7 @@
 COMPONENT_SUBMODULES	:= spiffs
 COMPONENT_SRCDIRS		:= . spiffs/src
 COMPONENT_INCDIRS		:= . spiffs/src
-
+COMPONENT_DOXYGEN_INPUT	:= spiffs/src
 
 ## Spiffy tool
 

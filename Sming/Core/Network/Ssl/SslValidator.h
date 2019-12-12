@@ -10,11 +10,6 @@
  *
  ****/
 
-/** @defgroup tcp TCP
- *  @ingroup networking
- *  @{
- */
-
 #pragma once
 
 #include <ssl/ssl.h>
@@ -24,6 +19,11 @@
 #include <WVector.h>
 
 #include "SslFingerprints.h"
+
+/**
+ * @ingroup ssl
+ * @{
+ */
 
 /** @brief Validator callback function
  *  @param ssl Contains certificate to validate (may be NULL)

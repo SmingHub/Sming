@@ -14,3 +14,8 @@ Build variables
    1 (default)
       Use the *New PWM* driver, a drop-in replacement for the version provided in the Espressif SDK.
 
+API Documentation
+-----------------
+
+.. doxygengroup:: pwm_driver
+   :content-only:

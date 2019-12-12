@@ -23,6 +23,27 @@ COMPONENT_DEPENDS := \
 	libyuarel \
 	terminal
 
+COMPONENT_DOCFILES := \
+	Core/Network/*.rst \
+	Wiring/*.rst \
+	Platform/*.rst \
+	Services/*.rst \
+	Services/CommandProcessing/*.rst \
+	Services/Profiling/*.rst \
+	Core/Data/*.rst
+
+COMPONENT_DOXYGEN_PREDEFINED := \
+	ENABLE_SSL=1 \
+	ENABLE_CMD_EXECUTOR=1
+
+COMPONENT_DOXYGEN_INPUT := \
+	Core \
+	$(wildcard Arch/*/Core) \
+	Platform \
+	Services \
+	Wiring \
+	System
+
 # => SSL
 COMPONENT_VARS 			:= ENABLE_SSL
 ifeq ($(ENABLE_SSL),1)

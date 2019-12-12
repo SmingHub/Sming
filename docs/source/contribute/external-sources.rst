@@ -97,8 +97,6 @@ If a submodule requires changes to work with Sming, this can be handled using pa
 This is generally done by pulling in the original submodule, making the required changes
 and then running a ``diff`` to create a patch file, like this::
 
-::
-
    cd <Sming-root-folder>/third-party/<module-name>
    git diff --no-ext-diff > <module-name>.patch
 
@@ -117,3 +115,18 @@ entries in component.mk as appropriate.
 Submodules contained within a Component must be declared by adding them to the
 COMPONENT_SUBMODULES entry in component.mk.
 
+
+Moving submodules
+-----------------
+
+If you need to change the location of a submodule, here's a suggested approach.
+In this example, we're going to move the `Adafruit_Sensor` submodule into a Component::
+
+   # Move the submodule temporarily
+   Sming/Libraries$ git mv Adafruit_Sensor tmp
+   # Create our new Component directory
+   Sming/Libraries$ mkdir Adafruit_Sensor
+   # Move the submodule back as a sub-directory
+   Sming/Libraries$ git mv tmp Adafruit_Sensor/Adafruit_Sensor
+
+Now we can add a `component.mk` file, `README.rst`, etc. as required for the component.

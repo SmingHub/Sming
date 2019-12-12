@@ -17,6 +17,13 @@ extern "C" {
 
 #include <user_config.h>
 
+/**
+ * @defgroup flash Flash Memory Support
+ * @defgroup spi_flash SPI Flash API
+ * @ingroup flash
+ * @{
+ */
+
 /// Flash memory access must be aligned and in multiples of 4-byte words
 #define INTERNAL_FLASH_WRITE_UNIT_SIZE 4
 #define INTERNAL_FLASH_READ_UNIT_SIZE 4
@@ -154,6 +161,7 @@ uint32_t flashmem_read_internal(void* to, uint32_t fromaddr, uint32_t size);
  */
 uint32_t flashmem_get_first_free_block_address();
 
+/** @} */
 
 #ifdef __cplusplus
 }

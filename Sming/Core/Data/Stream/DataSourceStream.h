@@ -112,11 +112,13 @@ public:
 		return -1;
 	}
 
-	/*
-	 * From Stream class: We don't write using this stream
+	/**
+	 * @brief From Stream class: We don't write using this stream
+	 * @param charToWrite
 	 */
 	size_t write(uint8_t charToWrite) override
 	{
+		(void)charToWrite;
 		return 0;
 	}
 

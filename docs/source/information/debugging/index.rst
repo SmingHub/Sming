@@ -1,21 +1,20 @@
-*********
 Debugging
-*********
+=========
 
 Debugging is a powerful technique allowing you to interactively run your
 code and be able to see much more information about the things that went
 wrong.
 
 Recompilation is required
-=========================
+-------------------------
 
 In order to debug applications based on Sming Framework make sure that
 you are using Sming version 3.8.0 or newer.
 
-Library
--------
+Framework
+~~~~~~~~~
 
-If you want to debug inside of the Sming Framework library make sure to
+If you want to debug inside of the Sming Framework make sure to
 (re)compile it with :envvar:`ENABLE_GDB` =1 directive::
 
    cd $SMING_HOME
@@ -26,7 +25,7 @@ The commands above will re-compile Sming with debug symbols and
 optimizations for debugging. These commands need to be executed once.
 
 Application
------------
+~~~~~~~~~~~
 
 To use, (re)compile your application with the ENABLE_GDB option and
 flash it to the board. For this example we will use the :sample:`LiveDebug`
@@ -37,29 +36,28 @@ sample application::
    make ENABLE_GDB=1 # -- recompiles your application with debugging support
    make flashapp # flashes ONLY the (re)compiled application
 
-The application will start running on your device and will wait for a
-debugger to pause its execution. To connect a debugger to the remote
-application use the provided command::
+The device will restart then wait for a debugger to be connected::
 
    make gdb
 
-This will start a new debugging session where you can run your code
-interactively. Once the debugger is connect it will pause the execution
-and you will be able to take control::
+This will start a new debugging session where you can run your code interactively::
 
    Remote debugging using /dev/ttyUSB0
    gdbstub_init () at /home/slavey/dev/esp8266.dev.box/dev/Sming/Sming//gdb/gdbstub.cpp:914
    914         gdb_do_break();
    (gdb) 
 
-GDB commands
-============
+If the debugger is exited, the application will continue execution as normal.
+Re-connecting the debugger will pause execution.
 
-There are multiple commands supported in GDB and we will mention only
-some of them.
+
+GDB commands
+------------
+
+There are multiple commands supported in GDB and we will mention only some of them.
 
 List current source code
-------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 One possibility is to see the source code of the current line where the
 execution has stopped. To achieve this you should type ``list`` in the gdb
@@ -78,7 +76,7 @@ console::
    918 
 
 Break the execution
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 This command will pause the debugger once it reaches a specific function
 or line in the code. This is called ``breakpoint`` and can be set like this::
@@ -98,7 +96,7 @@ This attribute is used to put the ``init`` function in IRAM when the
 code is compiled with the ``ENABLE_GDB=1`` directive.
 
 Continue the execution
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 To continue the execution of the application we can use the ``continue``
 command::
@@ -122,7 +120,7 @@ here you can go to the next line or see the current values of the
 variables.
 
 Go to the next line
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 This can be done using ``next``::
 
@@ -130,7 +128,7 @@ This can be done using ``next``::
    67      digitalWrite(LED_PIN, ledState);
 
 See variable value
-------------------
+~~~~~~~~~~~~~~~~~~
 
 The command to see a value is ``print`` followed by the name of the
 value. For example to see the value of the ``ledState`` variable inside
@@ -147,7 +145,7 @@ Or watch the following short video
    :target: https://www.youtube.com/watch?v=hVwSX_7Ey8c
 
 Debugging with visual debuggers like Eclipse CDT
-================================================
+------------------------------------------------
 
 A good visualization helps us understand things faster. What we can do
 is use `Eclipse CDT <https://eclipse.org/cdt/downloads.php>`__ and its
@@ -215,7 +213,7 @@ screenshot above the Debug button is in the bottom-right corner.) After
 some seconds your debugging session should be up and running and you can
 enjoy live debugging.
 
-.. figure:: eclipse-debug-session.png
+.. figure:: eclipse.png
    :alt: Live Debugging Session
 
    Live Debugging Session

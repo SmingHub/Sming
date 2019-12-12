@@ -14,6 +14,12 @@
 #include "IpAddress.h"
 #include "WString.h"
 
+/**
+ * @defgroup ftp FTP
+ * @ingroup  tcp
+ * @{
+ */
+
 #define MAX_FTP_CMD 255
 
 class FtpServer;
@@ -65,3 +71,5 @@ private:
 };
 
 typedef FtpServerConnection FTPServerConnection SMING_DEPRECATED; // @deprecated Use `FtpServerConnection` instead
+
+/** @} */

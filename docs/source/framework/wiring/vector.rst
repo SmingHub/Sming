@@ -1,0 +1,4 @@
+Vector
+======
+
+.. doxygenclass:: Vector

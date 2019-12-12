@@ -46,7 +46,7 @@ Table of Contents
    * [Financial contributions](#financial-contributions)
       * [Backers and sponsors](#backers-and-sponsors)
 
-Please note **develop** branch documentation is at [sming.readthedocs.io](https://sming.readthedocs.io/).
+Please note Version 4 documentation is at [sming.readthedocs.io](https://sming.readthedocs.io/).
 
 ## Summary
 
@@ -64,9 +64,9 @@ Please note **develop** branch documentation is at [sming.readthedocs.io](https:
     * Out of the box support for OTA over HTTPS.
 * ESP8266 specific features.
     * Integrated boot loader [rboot](https://sming.readthedocs.io/en/latest/_inc/Sming/Components/rboot/index.html) with support for 1MB ROMs, OTA firmware updating and ROM switching.
-    * [Crash handlers](https://sming.readthedocs.io/en/latest/information/debugging.html) for analyzing/handling system restarts due to fatal errors or WDT resets.
-    * [PWM support](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/pwm_open/index.html) based on [Stefan Bruens PWM](https://github.com/StefanBruens/ESP8266_new_pwm.git).
-    * Optional [custom heap allocation](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/custom_heap/index.html) based on [Umm Malloc](https://github.com/rhempel/umm_malloc.git).
+    * [Crash handlers](https://sming.readthedocs.io/en/latest/information/debugging/index.html) for analyzing/handling system restarts due to fatal errors or WDT resets.
+    * [PWM support](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/driver/index.html) based on [Stefan Bruens PWM](https://github.com/StefanBruens/ESP8266_new_pwm.git).
+    * Optional [custom heap allocation](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/heap/index.html) based on [Umm Malloc](https://github.com/rhempel/umm_malloc.git).
     * Based on Espressif NONOS SDK. Officially suppored NON SDK version is >= 3.0.1.
 * Linux/Windows features
     * Sming has a [host emulator](https://sming.readthedocs.io/en/latest/arch/host/host-emulator.html) that allows libraries and sample applications to be compiled on a Linux/Windows host system and be tested before uploading them to an actual microcontroller.
@@ -346,8 +346,7 @@ See [LiveDebug sample](samples/LiveDebug/) for details.
 ## Contribute
 
 You can contribute to Sming by
-- Providing Pull Requests with new features, bug fixes, new ideas, etc.
-Make sure to follow our [Coding-Style-Rules](https://github.com/SmingHub/Sming/wiki/Coding-Style-Rules). Read our [Contributing guide](https://github.com/SmingHub/Sming/blob/develop/CONTRIBUTING.md) for details.
+- Providing Pull Requests with new features, bug fixes, new ideas, etc. See [Contributing](https://smingdev.readthedocs.io/en/latest/contribute/index.html) for details.
 - Testing our latest source code and reporting issues.
 - Supporting us financially to acquire hardware for testing and implementing or out of gratitude
 

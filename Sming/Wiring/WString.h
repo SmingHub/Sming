@@ -62,6 +62,10 @@
 #include <sming_attr.h>
 
 #include <FlashString/String.hpp>
+
+/**
+ * @brief Read-only String class stored in flash memory
+ */
 using FlashString = FSTR::String;
 
 #ifndef __GXX_EXPERIMENTAL_CXX0X__
@@ -78,6 +82,11 @@ using FlashString = FSTR::String;
 // result objects are assumed to be writable by subsequent concatenations.
 class StringSumHelper;
 
+/**
+ * @ingroup pgmspace
+ * @{
+ */
+
 // Arduino-style flash strings
 class __FlashStringHelper; // Never actually defined
 /**
@@ -88,11 +97,13 @@ typedef const __FlashStringHelper* flash_string_t;
 
 /**
  * @brief Cast a PGM_P (flash memory) pointer to a flash string pointer
+ * @param pstr_pointer
  */
 #define FPSTR(pstr_pointer) reinterpret_cast<flash_string_t>(pstr_pointer)
 
 /**
  * @brief Wrap a string literal stored in flash and access it using a String object
+ * @param string_literal The string literal value, e.g. "this is a string"
  *
  * The string data is stored in flash and only read into RAM when executed.
  * For example: Serial.print(F("This is a test string\n"));
@@ -101,15 +112,27 @@ typedef const __FlashStringHelper* flash_string_t;
  */
 #define F(string_literal) String(FPSTR(PSTR_COUNTED(string_literal)), sizeof(string_literal) - 1)
 
+/** @} */
+
 /**
- * @brief The string class
+ * @defgroup wiring Wiring Framework
+ * @{
+ */
+
+/**
+ * @brief The String class
  *
  * Note that a string object's default constructor creates an empty string.
  * This is not the same as a null string.
- * A null string evaluates to false
- * An empty string evaluates to true
+ * A null string evaluates to false, but an empty string evaluates to true.
+ *
+ * Small String Optimisation means that heap is only used for strings longer than
+ * 10 characters, not including the NUL terminator. This is simply making use
+ * of existing storage within the String object.
+ *
+ * This length can be increased using STRING_OBJECT_SIZE, but note the additional
+ * space remains unused when switching to heap storage for longer Strings.
  */
-// The string class
 class String
 {
     // use a function pointer to allow for "if (s)" without the
@@ -123,15 +146,22 @@ class String
     static const String nullstr; ///< A null string evaluates to false
     static const String empty; ///< An empty string evaluates to true
 
-    /* constructors
-
-       creates a copy of the initial value.
-       if the initial value is null or invalid, or if memory allocation
-       fails, the string will be marked as invalid (i.e. "if (s)" will be false).
-    */
+    /**
+     * @brief Default constructor
+     * @note Creates a null String which evaluates to false.
+     */
     String() : ptr{nullptr, 0, 0}
 	{
 	}
+
+	/**
+     * @name Copy constructors
+     *
+     * If the initial value is null or invalid, or if memory allocation
+     * fails, the string will be marked as invalid (i.e. "if (s)" will be false).
+     *
+     * @{
+    */
     String(const char *cstr);
     String(const char *cstr, size_t length) : String()
     {
@@ -163,6 +193,8 @@ class String
     explicit String(unsigned long long, unsigned char base = 10);
     explicit String(float, unsigned char decimalPlaces=2);
     explicit String(double, unsigned char decimalPlaces=2);
+    /** @} */
+
     ~String(void)
     {
     	invalidate();
@@ -172,9 +204,15 @@ class String
     void setString(flash_string_t pstr, int length = -1);
 
     // memory management
-    // return true on success, false on failure (in which case, the string
-    // is left unchanged).  reserve(0), if successful, will validate an
-    // invalid string (i.e., "if (s)" will be true afterwards)
+
+    /**
+     * @brief Pre-allocate String memory
+     * @param size
+     * @retval bool true on success, false on failure
+     *
+     * On failure, the String is left unchanged.
+     * reserve(0), if successful, will validate an invalid string (i.e., "if (s)" will be true afterwards)
+     */
     bool reserve(size_t size);
 
     /** @brief set the string length accordingly, expanding if necessary
@@ -184,16 +222,44 @@ class String
      */
     bool setLength(size_t length);
 
+    /**
+     * @brief Obtain the String length in characters, excluding NUL terminator
+     */
     inline size_t length(void) const
     {
       return sso.set ? sso.len : ptr.len;
     }
 
-    // creates a copy of the assigned value.  if the value is null or
-    // invalid, or if the memory allocation fails, the string will be
-    // marked as invalid ("if (s)" will be false).
+    /**
+     * @name Copy operators
+     *
+     * If the value is null or invalid, or if the memory allocation fails,
+     * the String will be marked as invalid ("if (s)" will be false).
+     *
+     * @{
+     */
     String & operator = (const String &rhs);
     String & operator = (const char *cstr);
+    /** @} */
+
+    /**
+     * @name Move operators
+     *
+     * Move content from one String to another without any heap allocation.
+     *
+     * Move operators are automatically selected by the compiler when it is able,
+     * such as when returning temporary String objects from functions.
+     *
+     * In other situations, use `std::move`:
+     *
+     *		String original("A String");
+     *		String copy("This is the content for the copy");
+     *		copy = std::move(myString);
+     *
+     * `copy` will now contain "A String", whilst `original` will be invalidated.
+     *
+     * @{
+     */
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
     String & operator = (String && rval)
     {
@@ -202,12 +268,18 @@ class String
     }
     String & operator = (StringSumHelper && rval);
 #endif
+    /** @} */
 
-    // concatenate (works w/ built-in types)
-
-    // returns true on success, false on failure (in which case, the string
-    // is left unchanged).  if the argument is null or invalid, the
-    // concatenation is considered unsucessful.
+    /**
+     * @name Concatenation methods
+     * @retval bool true on success, false on failure
+     *
+     * Works with built-in types.
+     * On failure, the string is left unchanged.
+     * If the argument is null or invalid, the concatenation is considered unsucessful.
+     *
+     * @{
+     */
     bool concat(const String &str)
     {
       return concat(str.cbuffer(), str.length());
@@ -228,9 +300,16 @@ class String
     bool concat(unsigned long long num);
     bool concat(float num);
     bool concat(double num);
+    /** @} */
   
-    // if there's not enough memory for the concatenated value, the string
-    // will be left unchanged (but this isn't signalled in any way)
+    /**
+     * @name Concatenation operators
+     *
+     * If there's not enough memory for the concatenated value, the string
+     * will be left unchanged (but this isn't signalled in any way)
+     *
+     * @{
+     */
     String & operator += (const String &rhs)
     {
       concat(rhs);
@@ -296,6 +375,7 @@ class String
       concat(num);
       return (*this);
     }
+    /** @} */
 
     friend StringSumHelper & operator + (const StringSumHelper &lhs, const String &rhs);
     friend StringSumHelper & operator + (const StringSumHelper &lhs, const char *cstr);
@@ -309,16 +389,42 @@ class String
     friend StringSumHelper & operator + (const StringSumHelper &lhs, float num);
     friend StringSumHelper & operator + (const StringSumHelper &lhs, double num);
 
-    // comparison (only works w/ Strings and "strings")
+    /**
+     * @brief Provides safe bool() operator
+     *
+     * Evaluates as false if String is null, otherwise evaluates as true
+     */
     operator StringIfHelperType() const
     {
       return isNull() ? 0 : &String::StringIfHelper;
     }
+
+    /**
+     * @name Comparison methods
+     * Works with String and 'c' string
+     * @retval int Returns < 0 if String is lexically before the argument, > 0 if after or 0 if the same
+     *
+     * Comparisons are case-sensitive, binary comparison
+     * null strings (including cstr == nullptr) are treated as empty.
+     *
+     * @{
+     */
     int compareTo(const char* cstr, size_t length) const;
     int compareTo(const String &s) const
     {
    	  return compareTo(s.cbuffer(), s.length());
     }
+    /** @} */
+
+    /**
+     * @name Test for equality
+     * Compares content byte-for-byte using binary comparison
+     * @retval bool Returns true if strings are identical
+     *
+     * null strings (including cstr == nullptr) are treated as empty.
+     *
+     * @{
+     */
     bool equals(const String &s) const
     {
     	return equals(s.cbuffer(), s.length());
@@ -329,7 +435,13 @@ class String
     {
     	return fstr.equals(*this);
     }
+    /** @} */
 
+    /**
+     * @name Equality operator ==
+     * @retval bool true if Strings are identical
+     * @{
+     */
     bool operator == (const String &rhs) const
     {
       return equals(rhs);
@@ -342,6 +454,13 @@ class String
     {
       return equals(fstr);
     }
+    /** @} */
+
+    /**
+     * @name In-equality operator !=
+     * @retval bool Returns true if strings are not identical
+     * @{
+     */
     bool operator != (const String &rhs) const
     {
       return !equals(rhs);
@@ -350,6 +469,12 @@ class String
     {
       return !equals(cstr);
     }
+    /** @} */
+
+    /**
+     * @name Comparison operators
+     * @{
+     */
     bool operator < (const String &rhs) const
     {
       return compareTo(rhs) < 0;
@@ -366,6 +491,16 @@ class String
     {
       return compareTo(rhs) >= 0;
     }
+    /** @} */
+
+    /**
+     * @name Test for equality, without case-sensitivity
+     * @retval bool true if strings are considered the same
+     *
+     * null strings are treated as empty.
+     *
+     * @{
+     */
     bool equalsIgnoreCase(const char* cstr) const;
     bool equalsIgnoreCase(const char* cstr, size_t length) const;
     bool equalsIgnoreCase(const String &s2) const
@@ -376,23 +511,70 @@ class String
     {
     	return fstr.equalsIgnoreCase(*this);
     }
+    /** @} */
+
+    /**
+     * @brief Compare the start of a String
+     * Comparison is case-sensitive, must match exactly
+     * @param prefix
+     * @retval bool true on match
+     */
     bool startsWith(const String &prefix) const
     {
     	return startsWith(prefix, 0);
     }
+
+    /**
+     * @brief Compare a string portion
+     * @param prefix
+     * @param offset Index to start comparison at
+     * @retval bool true on match
+     * @note Comparison is case-sensitive, must match exactly
+     *
+     * mis-named as does not necessarily compare from start
+     */
     bool startsWith(const String &prefix, size_t offset) const;
+
+    /**
+     * @brief Compare the end of a String
+     * @param suffix
+     * @retval bool true on match
+     */
     bool endsWith(const String &suffix) const;
 
     // character acccess
+
+    /**
+     * @brief Obtain the character at the given index
+     * @param index
+     * @retval char
+     * @note If index is invalid, returns NUL \0
+     */
     char charAt(size_t index) const
     {
       return operator[](index);
     }
+
+    /**
+     * @brief Sets the character at a given index
+     * @param index
+     * @param c
+     * @note If index is invalid, does nothing
+     */
     void setCharAt(size_t index, char c);
+
+    /**
+     * @name Array operators
+     *
+     * If index is invalid, returns NUL \0
+     *
+     * @{
+     */
     char operator [](size_t index) const;
     char& operator [](size_t index);
+    /** @} */
 
-    /** @brief read contents of string into a buffer
+    /** @brief Read contents of a String into a buffer
      *  @param buf buffer to write data
      *  @param bufsize size of buffer in bytes
      *  @param index offset to start
@@ -402,17 +584,48 @@ class String
      */
     size_t getBytes(unsigned char *buf, size_t bufsize, size_t index = 0) const;
 
+    /**
+     * @brief Read contents of String into a buffer
+     * @see See `getBytes()`
+     */
     void toCharArray(char *buf, size_t bufsize, size_t index = 0) const
     {
       getBytes((unsigned char *)buf, bufsize, index);
     }
+
+    /**
+     * @brief Get a constant (un-modifiable) pointer to String content
+     * @retval const char* Always valid, even for a null string
+     */
     const char* c_str() const { return cbuffer() ?: empty.cbuffer(); }
+
+    /**
+     * @brief Get a modifiable pointer to String content
+     * @note If String is NUL, returns nullptr.
+     */
     char* begin() { return buffer(); }
+
+    /**
+     * @brief Get a modifiable pointer to one-past the end of the String
+     * @note Points to the terminating NUL character.
+     * If String is NUL, returns nullptr.
+     */
     char* end() { return buffer() + length(); }
     const char* begin() const { return c_str(); }
     const char* end() const { return c_str() + length(); }
   
     // search
+
+    /**
+     * @name int indexOf(...)
+     * Locate a character or String within another String.
+     * @retval int Index if found, -1 if not found
+     *
+     * By default, searches from the beginning of the String, but can also start from a given index,
+     * allowing for the locating of all instances of the character or String.
+     *
+     * @{
+     */
     int indexOf(char ch, size_t fromIndex = 0) const;
     int indexOf(const char* s2_buf, size_t fromIndex, size_t s2_len) const;
     int indexOf(const char* s2_buf, size_t fromIndex = 0) const
@@ -423,31 +636,105 @@ class String
     {
     	return indexOf(s2.cbuffer(), fromIndex, s2.length());
     }
+    /** @} */
+
+    /**
+     * @name int lastIndexOf(...)
+     * Locate a character or String within another String
+     * @retval int Index if found, -1 if not found
+     *
+     * By default, searches from the end of the String, but can also work backwards from a given index,
+     * allowing for the locating of all instances of the character or String.
+     *
+     * @{
+     */
     int lastIndexOf(char ch) const;
     int lastIndexOf(char ch, size_t fromIndex) const;
     int lastIndexOf(const String &s2) const;
     int lastIndexOf(const String &s2, size_t fromIndex) const;
     int lastIndexOf(const char* s2_buf, size_t fromIndex, size_t s2_len) const;
-    String substring(size_t beginIndex) const { return substring(beginIndex, length()); }
+    /** @} */
 
     /**
-     * @brief Get a substring of a String
+     * @name String substring(...)
+     * Get a substring of a String.
      * @param from Index of first character to retrieve
      * @param to (optional) One-past the ending character to retrieve
+     *
+     * The starting index is inclusive (the corresponding character is included in the substring),
+     * but the optional ending index is exclusive (the corresponding character is not included in the substring).
+     *
+     * If the ending index is omitted, the substring continues to the end of the String.
+     *
+     * If you don't need the original String, consider using remove() instead:
+     *
+     * 		String original("This is the original string.");
+     * 		String sub = original.substring(0, 13);
+     *
+     * This produces the same result:
+     *
+     * 		original.remove(13);
+     *
+     * @{
      */
     String substring(size_t from, size_t to) const;
+    String substring(size_t from) const
+    {
+    	return substring(from, length());
+    }
+    /** @} */
 
     // modification
+
+    /**
+     * @name replace(...)
+     * Replace all instances of a given character or substring with another character or substring.
+     * @retval bool true on success, false on allocation failure
+     *
+     * Replacing a single character always succeeds as this is handled in-place.
+     *
+     * Where `replace` is longer than `find` the String may need to be re-allocated, which could
+     * fail. If this happens the method returns false and the String is left unchanged.
+     *
+     * @{
+     */
     void replace(char find, char replace);
     bool replace(const String& find, const String& replace);
     bool replace(const char* find_buf, size_t find_len, const char* replace_buf, size_t replace_len);
+    /** @} */
+
+    /**
+     * @name remove()
+     * Remove characters from a String.
+     * @param index Index of the first character to remove
+     * @param count Number of characters to remove
+     * @note The String is modified in-situ without any reallocation
+     *
+     * If no count is provided then all characters from the given index to the end of the
+     * String are removed.
+     *
+     * @{
+     */
     void remove(size_t index)
     {
     	remove(index, SIZE_MAX);
     }
     void remove(size_t index, size_t count);
+    /** @} */
+
+    /**
+     * @brief Convert the entire String content to lower case
+     */
     void toLowerCase(void);
+
+    /**
+     * @brief Convert the entire String content to upper case
+     */
     void toUpperCase(void);
+
+    /**
+     * @brief Remove all leading and trailing whitespace characters from the String
+     */
     void trim(void);
 
     // parsing/conversion
@@ -527,6 +814,8 @@ protected:
     void move(String &rhs);
 #endif
 };
+
+/** @} */
 
 class StringSumHelper : public String
 {

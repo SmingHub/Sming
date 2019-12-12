@@ -19,8 +19,11 @@
 #include <Platform/Clocks.h>
 #include <driver/os_timer.h>
 
-/**	@ingroup callback_timer
- *  @{
+/**
+ * @defgroup simple_timer SimpleTimer
+ * @brief Basic timer queue class
+ * @ingroup timers
+ * @{
  */
 
 /**

@@ -26,13 +26,13 @@
 #include "Rational.h"
 #include <WString.h>
 
-/** @defgroup   timer Timers
+/** @defgroup   timers Timers
  *  @brief      System timer support classes
 */
 
 /** @defgroup   system_clocks System clocks
  *  @brief System clock definitions
- *  @ingroup    timer
+ *  @ingroup    timers
  *  @{
 */
 
@@ -236,7 +236,7 @@ template <typename ClockDef, uint32_t frequency_, typename TickType_, TickType_ 
 
 /**
  * @brief Function template to convert a constant time quantity from one unit to another
- * @param time The time to convert
+ * @tparam time The time to convert
  * @tparam unitsFrom Units for `time` parameter
  * @tparam unitsTo Units for return value
  * @retval TimeType Converted time

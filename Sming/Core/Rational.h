@@ -21,6 +21,11 @@
 #include <WString.h>
 
 /**
+ * @defgroup rational Rational number support
+ * @{
+ */
+
+/**
  * @brief A basic rational fraction, constexpr-compatible
  * @note Adding a constructor would prevent things like this:
  *
@@ -151,3 +156,5 @@ template <typename T> struct Ratio : public BasicRatio<T> {
 using Ratio16 = Ratio<uint16_t>;
 using Ratio32 = Ratio<uint32_t>;
 using Ratio64 = Ratio<uint64_t>;
+
+/** @} */

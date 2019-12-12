@@ -10,17 +10,16 @@
  *
  ****/
 
-/**	@ingroup callback_timer
- *  @{
- */
-
 #pragma once
 
 #include "CallbackTimer.h"
 #include <Platform/Clocks.h>
 
-/**	@ingroup callback_timer
- *  @{
+/**
+ * @defgroup hardware_timer Hardware Timer
+ * @brief Hardware callback timer
+ * @ingroup timers
+ * @{
  */
 
 /**

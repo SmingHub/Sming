@@ -18,6 +18,12 @@
 extern "C" {
 #endif
 
+/**
+ * @defgroup hw_timer Hardware Timer Driver
+ * @ingroup drivers
+ * @{
+ */
+
 /*************************************
  *
  * FRC1 timer
@@ -65,7 +71,8 @@ typedef enum {
 /**
  * @brief Attach an interrupt for the timer
  * @param source_type
- * @param callback
+ * @param callback Callback function invoked via timer interrupt
+ * @param arg Passed to callback function
  */
 void IRAM_ATTR hw_timer1_attach_interrupt(hw_timer_source_type_t source_type, hw_timer_callback_t callback, void* arg);
 
@@ -135,7 +142,9 @@ __forceinline uint32_t hw_timer1_read(void)
  *
  *************************************/
 
-/*
+/**
+ * @brief timer2_ms_flag
+ *
  * FRC2 used as reference for NOW() - a macro which reads FRC2_COUNT register
  *
  * eagle_soc.h defines TIMER_CLK_FREQ using a divisor of 256, but this is only the SDK default setting and
@@ -158,22 +167,37 @@ constexpr uint32_t HW_TIMER2_CLK = HW_TIMER_BASE_CLK / 256;
 // Timer2 interrupt fires when FRC2 count matches the value in this register
 #define FRC2_ALARM_ADDRESS 0x30
 
+/**
+ * @brief Read current timer2 value
+ * @retval uint32_t
+ */
 __forceinline uint32_t hw_timer2_read(void)
 {
 	return NOW();
 }
 
+/**
+ * @brief Set timer2 alarm count value
+ * @param ticks
+ * @note For internal use ONLY; used by software timers
+ */
 __forceinline void hw_timer2_set_alarm(uint32_t ticks)
 {
 	RTC_REG_WRITE(FRC2_ALARM_ADDRESS, ticks);
 }
 
+/**
+ * @brief Initialise hardware timers
+ * @note Called by startup code
+ */
 inline void hw_timer_init(void)
 {
 #ifdef USE_US_TIMER
 	system_timer_reinit();
 #endif
 }
+
+/** @} */
 
 #ifdef __cplusplus
 }

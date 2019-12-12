@@ -13,8 +13,11 @@
 #include "Interrupts.h"
 #include "SimpleTimer.h"
 
-/**	@ingroup callback_timer
- *  @{
+/**
+ * @defgroup timer Timer
+ * @brief Extended timer queue class
+ * @ingroup timers
+ * @{
  */
 
 /** @deprecated Use `TimerDelegate` */
@@ -186,7 +189,7 @@ public:
 	using CallbackTimer<TimerApi>::setCallback;
 
 	/** @brief  Initialise timer in microseconds, with static check
-     *  @param  microseconds Timer interval in microseconds
+     *  @tparam microseconds Timer interval in microseconds
      *  @param  delegateFunction Function to call when timer triggers
      *  @retval ExtendedCallbackTimer& Reference to timer
      */
@@ -198,7 +201,7 @@ public:
 	}
 
 	/** @brief  Initialise hardware timer in milliseconds, with static check
-     *  @param  microseconds Timer interval in microseconds
+     *  @tparam milliseconds Timer interval in milliseconds
      *  @param  delegateFunction Function to call when timer triggers
      *  @retval ExtendedCallbackTimer& Reference to timer
      */

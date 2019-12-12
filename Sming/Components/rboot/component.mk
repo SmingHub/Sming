@@ -1,4 +1,5 @@
 COMPONENT_LIBNAME		:=
+COMPONENT_DOXYGEN_INPUT	:= rboot
 
 ifeq ($(SMING_ARCH),Esp8266)
 COMPONENT_DEPENDS		:= esp8266
@@ -20,7 +21,7 @@ endif
 
 # => APP
 
-# rBoot options, overwrite them in the projects Makefile-user.mk
+# rBoot options
 CONFIG_VARS				+= RBOOT_RTC_ENABLED RBOOT_GPIO_ENABLED RBOOT_GPIO_SKIP_ENABLED
 RBOOT_RTC_ENABLED		?= 0
 RBOOT_GPIO_ENABLED		?= 0

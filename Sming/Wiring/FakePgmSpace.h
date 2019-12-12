@@ -21,16 +21,31 @@ extern "C"
 {
 #endif
 
-// Simple check to determine if a pointer refers to flash memory
+/**
+ * @defgroup pgmspace Program space
+ * @ingroup flash
+ * @brief Support for data stored in flash memory
+ * @{
+ */
+
+/**
+ * @brief Simple check to determine if a pointer refers to flash memory
+ */
 #define isFlashPtr(ptr) (uint32_t(ptr) >= 0x40200000)
 
-/** @brief determines if the given value is aligned to a word (4-byte) boundary */
+/**
+ * @brief determines if the given value is aligned to a word (4-byte) boundary
+ */
 #define IS_ALIGNED(_x) (((uint32_t)(_x)&3) == 0)
 
-// Align a size up to the nearest word boundary
+/**
+ * @brief Align a size up to the nearest word boundary
+ */
 #define ALIGNUP(_n) (((_n) + 3) & ~3)
 
-// Align a size down to the nearest word boundary
+/**
+ * @brief Align a size down to the nearest word boundary
+ */
 #define ALIGNDOWN(_n) ((_n) & ~3)
 
 #define printf_P_heap(f_P, ...)                                                                                        \
@@ -167,6 +182,8 @@ int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len);
 #define PSTR_ARRAY(name, str)                                                                                          \
 	DEFINE_PSTR_LOCAL(__pstr__##name, str);                                                                            \
 	LOAD_PSTR(name, __pstr__##name)
+
+/** @} */
 
 #ifdef __cplusplus
 }

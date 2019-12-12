@@ -51,8 +51,6 @@ public:
      *  @note   Updates RTC NVRAM
      */
 	bool setRtcSeconds(uint32_t seconds);
-
-	/** @} */
 };
 
 /**	@brief	Global instance of real time clock object

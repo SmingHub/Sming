@@ -13,7 +13,9 @@
 #include "ssl/ssl.h"
 #include "WString.h"
 
-/** @brief Class to manage an SSL key certificate with optional password
+/**
+ * @brief Class to manage an SSL key certificate with optional password
+ * @ingroup ssl
  */
 class SslKeyCertPair
 {

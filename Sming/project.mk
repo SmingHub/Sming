@@ -232,7 +232,7 @@ COMPONENT_SEARCH_DIRS	+= $(ARCH_COMPONENTS) $(SMING_HOME)/Components $(SMING_HOM
 $(foreach d,$(COMPONENT_SEARCH_DIRS),\
 	$(if $(wildcard $d/.patches/*/.),$(shell cd $d && cp -r .patches/*/ .)))
 
-# And add in any requested Arduino libraries
+# And add in any requested libraries
 COMPONENTS				+= $(sort $(ARDUINO_LIBRARIES))
 
 # Pull in all Component definitions

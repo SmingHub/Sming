@@ -42,6 +42,12 @@ extern "C" {
 
 #include <esp_systemapi.h>
 
+/**
+ * @defgroup uart_driver UART Driver
+ * @ingroup drivers
+ * @{
+ */
+
 #define UART0    0
 #define UART1    1
 #define UART2    2				///< Virtualised UART0
@@ -229,10 +235,9 @@ __forceinline void* uart_get_callback_param(uart_t* uart)
 	return uart ? uart->param : nullptr;
 }
 
-/** @brief set or clear option flags
+/** @brief Set option flags
  *  @param uart
- *  @param options the option(s) to set/clear
- *  @param set true to set the supplied options, false to clear them
+ *  @param options The option(s) to set
  */
 static inline void uart_set_options(uart_t* uart, uart_options_t options)
 {
@@ -422,6 +427,8 @@ uint8_t uart_disable_interrupts();
 /** @brief re-enable interrupts after calling uart_disable_interrupts()
  */
 void uart_restore_interrupts();
+
+/** @} */
 
 #if defined (__cplusplus)
 } // extern "C"
