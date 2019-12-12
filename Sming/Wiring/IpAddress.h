@@ -30,8 +30,10 @@ typedef struct ip_addr ip_addr_t;
 #define LWIP_IP_ADDR_T ip_addr_t
 #endif
 
-// A class to make it easier to handle and pass around IP addresses
-
+/**
+ * @brief A class to make it easier to handle and pass around IP addresses
+ * @ingroup wiring
+ */
 class IpAddress : public Printable
 {
 private:

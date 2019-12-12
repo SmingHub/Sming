@@ -64,6 +64,10 @@
 #include <FlashString/String.hpp>
 
 /**
+ * @defgroup wiring Wiring Framework
+ */
+
+/**
  * @brief Read-only String class stored in flash memory
  */
 using FlashString = FSTR::String;
@@ -81,6 +85,11 @@ using FlashString = FSTR::String;
 // An inherited class for holding the result of a concatenation.  These
 // result objects are assumed to be writable by subsequent concatenations.
 class StringSumHelper;
+
+/**
+ * @ingroup flash
+ * @{
+ */
 
 // Arduino-style flash strings
 class __FlashStringHelper; // Never actually defined
@@ -105,8 +114,11 @@ typedef const __FlashStringHelper* flash_string_t;
  */
 #define F(string_literal) String(FPSTR(PSTR_COUNTED(string_literal)), sizeof(string_literal) - 1)
 
+/** @} */
+
 /**
  * @brief The String class
+ * @ingroup wiring
  *
  * Note that a string object's default constructor creates an empty string.
  * This is not the same as a null string.

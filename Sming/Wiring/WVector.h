@@ -22,6 +22,10 @@
 #include <string.h>
 #include <algorithm>
 
+/**
+ * @brief Vector class template
+ * @ingroup wiring
+ */
 template <typename Element> class Vector : public Countable<Element>
 {
 public:
