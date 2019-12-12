@@ -16,7 +16,7 @@
 #include "DateTime.h"
 #include "Data/ObjectQueue.h"
 
-/** @defgroup   HTTP client connection
+/**
  *  @brief      Provides http client connection
  *  @ingroup    http
  *  @{

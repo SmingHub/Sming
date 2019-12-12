@@ -8,8 +8,8 @@
  *
  ****/
 
-/** @defgroup   httpconsts HTTP constants to be used with HTTP client or HTTP server
- *  @brief      Provides HTTP constants
+/** @defgroup   httpconsts HTTP constants
+ *  @brief      HTTP constants to be used with HTTP client or HTTP server
  *  @ingroup    httpserver
  *  @ingroup    httpclient
  *  @{
