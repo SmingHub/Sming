@@ -1,8 +1,6 @@
 Timers and Clocks
 =================
 
-Timers in Sming fall into three distinct categories...
-
 .. toctree::
 
    hardware-timer
