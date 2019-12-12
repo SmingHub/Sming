@@ -123,6 +123,8 @@ COMPONENT_ROOT_DIRS := \
 
 # All directories where a README file should/must exist, and where a component.mk file could exist
 COMPONENT_DIRS := $(SMING_HOME) $(foreach d,$(COMPONENT_ROOT_DIRS),$(call ListSubDirs,$d))
+COMPONENT_SAMPLES := $(wildcard $(addsuffix /samples/*/component.mk,$(COMPONENT_DIRS)))
+COMPONENT_DIRS += $(COMPONENT_SAMPLES:/component.mk=)
 
 # Fetch a list of URLs once rather than invoking shell each time we need a lookup
 SUBMODULE_URLS := $(shell awk '/path = .*/ { path = $$3 } /url = .*/ { printf "%s=%s ", path, $$3 } ' $(SMINGDIR)/.gitmodules)
@@ -146,7 +148,7 @@ endif
 
 # $1 -> Path to a Component, sample or Library
 define GetComponentType
-$(if $(findstring /Libraries/,$1),Library,$(if $(findstring /samples/,$1),Sample,Component))
+$(if $(findstring /samples/,$1),Sample,$(if $(findstring /Libraries/,$1),Library,,Component))
 endef
 
 include index.mk
