@@ -6,8 +6,11 @@ Sming (main)
 This is the main Sming Component containing all architecture-independent code.
 All architecture-specific stuff is in either :component-esp8266:`sming-arch` or :component-host:`sming-arch`.
 
-Serial baud rate
-----------------
+Configuration variables
+-----------------------
+
+Serial Communications
+~~~~~~~~~~~~~~~~~~~~~
 
 .. envvar:: COM_SPEED
 
@@ -25,7 +28,7 @@ The default rate for serial ports is 115200 baud. You can change it like this:
 
 
 Debug information log level and format
---------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. envvar:: DEBUG_VERBOSE_LEVEL
 
@@ -133,7 +136,7 @@ Drawbacks:
 
 
 Release builds
---------------
+~~~~~~~~~~~~~~
 
 .. envvar:: SMING_RELEASE
 
@@ -242,7 +245,7 @@ HTTP support
 
 
 Localisation
-------------
+~~~~~~~~~~~~
 
 .. envvar:: LOCALE
 
@@ -250,12 +253,11 @@ Localisation
    This is provided as a #define symbol for your application to use.
    See :source:`Sming/Core/SmingLocale.h` for further details.
 
-
 Components
 ----------
 
  .. toctree::
    :glob:
    :maxdepth: 1
- 
+
    Components/*/index

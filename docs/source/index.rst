@@ -50,6 +50,7 @@ Summary
 
    getting-started
    features
+   framework/index
    samples
    libraries
    api/index
