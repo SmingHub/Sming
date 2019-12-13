@@ -46,15 +46,9 @@ COMPONENT_DOXYGEN_INPUT := \
 
 # => SSL
 RELINK_VARS			+= ENABLE_SSL 
-# Set the default ssl implementation
-ifeq ($(ENABLE_SSL),1)
-	ENABLE_SSL := AXTLS
-endif
-
-ifeq ($(ENABLE_SSL),AXTLS)
+ifeq ($(ENABLE_SSL),$(filter $(ENABLE_SSL),1 AXTLS))
 	SMING_FEATURES		:= SSL
 	COMPONENT_DEPENDS	+= AxtlsSsl
-	COMPONENT_VARS += SSL_DEBUG
 else ifeq ($(ENABLE_SSL),MBEDTLS) 	
 	# TODO: ....
 else
