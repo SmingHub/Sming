@@ -50,7 +50,7 @@ bool TcpConnection::connect(const String& server, int port, bool useSsl, uint32_
 		sslExtension = sslCreateExtension();
 		if(sslExtension != nullptr) {
 			sslExtension->setHostName(server);
-			sslExtension->setMaxFragmentSize(4); // 4K max size
+			sslExtension->setMaxFragmentSize(eSEFS_4K); // 4K max size
 		}
 	}
 
@@ -411,10 +411,10 @@ err_t TcpConnection::internalOnConnected(err_t err)
 		sslContext->init(tcp, localSslOptions, 1);
 		if(sslKeyCert.isValid()) {
 			// if we have client certificate -> try to use it.
-			if(!sslContext->loadMemory(SSL_OBJ_RSA_KEY, sslKeyCert.getKey(), sslKeyCert.getKeyLength(),
+			if(!sslContext->loadMemory(eSCO_RSA_KEY, sslKeyCert.getKey(), sslKeyCert.getKeyLength(),
 									   sslKeyCert.getKeyPassword())) {
 				debug_d("SSL: Unable to load client private key");
-			} else if(!sslContext->loadMemory(SSL_OBJ_X509_CERT, sslKeyCert.getCertificate(),
+			} else if(!sslContext->loadMemory(eSCO_X509_CERT, sslKeyCert.getCertificate(),
 											  sslKeyCert.getCertificateLength(), nullptr)) {
 				debug_d("SSL: Unable to load client certificate");
 			}

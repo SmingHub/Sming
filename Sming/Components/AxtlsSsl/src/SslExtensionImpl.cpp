@@ -14,12 +14,14 @@
 
 #include "SslExtensionImpl.h"
 
-SslExtensionImpl::SslExtensionImpl() {
+SslExtensionImpl::SslExtensionImpl()
+{
 	sslExtension = ssl_ext_new();
 }
 
-bool SslExtensionImpl::setHostName(const String& hostName) {
-	if (sslExtension == nullptr) {
+bool SslExtensionImpl::setHostName(const String& hostName)
+{
+	if(sslExtension == nullptr) {
 		return false;
 	}
 
@@ -28,8 +30,9 @@ bool SslExtensionImpl::setHostName(const String& hostName) {
 	return true;
 }
 
-bool SslExtensionImpl::setMaxFragmentSize(uint8_t fragmentSize) {
-	if (sslExtension == nullptr) {
+bool SslExtensionImpl::setMaxFragmentSize(const SslExtensionFragmentSize& fragmentSize)
+{
+	if(sslExtension == nullptr) {
 		return false;
 	}
 
@@ -42,4 +45,3 @@ SslExtension* sslCreateExtension()
 {
 	return new SslExtensionImpl();
 }
-

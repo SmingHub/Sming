@@ -33,7 +33,7 @@ int onDownload(HttpConnection& connection, bool success)
 	SslConnection* ssl = connection.getSsl();
 	if(ssl) {
 		SslCertificate* cert = ssl->getCertificate();
-		debugf("Common Name:\t\t\t%s\n", cert->getName(SSL_X509_CERT_COMMON_NAME).c_str());
+		debugf("Common Name:\t\t\t%s\n", cert->getName(eSCN_CERT_COMMON_NAME).c_str());
 		debugf("Cipher: %s", ssl->getCipher().c_str());
 		displaySessionId(ssl->getSessionId());
 	}

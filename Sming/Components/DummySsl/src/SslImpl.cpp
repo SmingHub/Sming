@@ -15,10 +15,10 @@
 
 extern "C" {
 
-void hmac_md5(const uint8_t *msg, int length, const uint8_t *key, int key_len, uint8_t *digest) {
+void hmac_md5(const uint8_t* msg, int length, const uint8_t* key, int key_len, uint8_t* digest)
+{
 	debug_e("DummySSL is not a real SSL implementation");
 }
-
 
 } // extern "C"
 

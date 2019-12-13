@@ -12,13 +12,13 @@
 
 #include "SslCertificateImpl.h"
 
-const String SslCertificateImpl::getName(const String& name) const
+const String SslCertificateImpl::getName(const SslCertificateName& name) const
 {
-  if(ssl == nullptr) {
-	  return String();
-  }
+	if(ssl == nullptr) {
+		return String();
+	}
 
-  return String(ssl_get_cert_dn(ssl, SSL_X509_CERT_COMMON_NAME));
+	return String(ssl_get_cert_dn(ssl, name));
 }
 
 bool SslCertificateImpl::matchFingerprint(const uint8_t* hash) const

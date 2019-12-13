@@ -17,5 +17,24 @@
 #include "Interface/SslCertificate.h"
 #include "Interface/SslConstants.h"
 
+/**
+ * @ingroup ssl
+ * @brief Interface defining functions that need to be implemented
+ * 		  Each SSL adapter must implement at least these two functions
+ * @{
+ */
+
+/**
+ * @brief Create SSL context that can be used to create new client or server connections
+ * @retval SslContext* return null if the adapter cannot handle SSL. Useful only for dummy SSL adapters
+ */
 SslContext* sslCreateContext();
+
+/**
+ * @brief Create SSL extension that can be used to set hostname, max fragment size, etc.
+ * @see https://tools.ietf.org/html/rfc6066
+ * @retval SslExtension* return null if the adapter does not support SSL extensions.
+ */
 SslExtension* sslCreateExtension();
+
+/** @} */

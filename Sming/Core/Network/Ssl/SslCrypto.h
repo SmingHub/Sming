@@ -13,6 +13,11 @@
 
 #include <stdint.h>
 
+/**
+ * @ingroup ssl
+ * @{
+ */
+
 #define MD5_SIZE 16
 #define SHA1_SIZE 20
 #define SHA256_SIZE 32
@@ -27,3 +32,5 @@ void hmac_md5(const uint8_t* msg, int length, const uint8_t* key, int key_len, u
 #ifdef __cplusplus
 }
 #endif
+
+/** @} */

@@ -13,8 +13,8 @@
 #include "SslConnectionImpl.h"
 #include "SslCertificateImpl.h"
 
-int SslConnectionImpl::read(tcp_pcb* tcp, pbuf* encrypted, pbuf** decrypted) {
-
+int SslConnectionImpl::read(tcp_pcb* tcp, pbuf* encrypted, pbuf** decrypted)
+{
 	int read_bytes = axl_ssl_read(ssl, tcp, encrypted, decrypted);
 
 	// TODO: process the response and check if it connection abort or an error....
@@ -24,7 +24,7 @@ int SslConnectionImpl::read(tcp_pcb* tcp, pbuf* encrypted, pbuf** decrypted) {
 
 const String SslConnectionImpl::getCipher() const
 {
-	switch (ssl_get_cipher_id(ssl)) {
+	switch(ssl_get_cipher_id(ssl)) {
 	case SSL_AES128_SHA:
 		return String("AES128-SHA");
 

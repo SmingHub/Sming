@@ -17,26 +17,26 @@
 #include <Network/Ssl/SslInterface.h>
 #include <axtls-8266/compat/lwipr_compat.h>
 
-class SslExtensionImpl: public SslExtension
+class SslExtensionImpl : public SslExtension
 {
 public:
 	SslExtensionImpl();
 
-   bool setHostName(const String& hostName) override;
+	bool setHostName(const String& hostName) override;
 
-   bool setMaxFragmentSize(uint8_t fragmentSize) override;
+	bool setMaxFragmentSize(const SslExtensionFragmentSize& fragmentSize) override;
 
-   void * getInternalObject() override
-   {
-	   return sslExtension;
-   }
+	void* getInternalObject() override
+	{
+		return sslExtension;
+	}
 
-   virtual ~SslExtensionImpl()
-   {
-	   free(sslExtension);
-	   sslExtension = nullptr;
-   }
+	virtual ~SslExtensionImpl()
+	{
+		free(sslExtension);
+		sslExtension = nullptr;
+	}
 
 private:
-   SSL_EXTENSIONS* sslExtension = nullptr;
+	SSL_EXTENSIONS* sslExtension = nullptr;
 };

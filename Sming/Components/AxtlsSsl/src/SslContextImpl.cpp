@@ -23,10 +23,11 @@ bool SslContextImpl::init(tcp_pcb* tcp, uint32_t options, size_t sessionCacheSiz
 	ssl_ctx_free(context);
 	context = ssl_ctx_new(SSL_CONNECT_IN_PARTS | options, sessionCacheSize);
 
-	return (context!= nullptr);
+	return (context != nullptr);
 }
 
-SslConnection* SslContextImpl::doCreateClient(const uint8_t* sessionData, size_t sessionLength, SslExtension* sslExtension)
+SslConnection* SslContextImpl::doCreateClient(const uint8_t* sessionData, size_t sessionLength,
+											  SslExtension* sslExtension)
 {
 	int clientfd = axl_append(tcp);
 	if(clientfd < 0) {
@@ -46,7 +47,7 @@ SslConnection* SslContextImpl::doCreateClient(const uint8_t* sessionData, size_t
 SslConnection* SslContextImpl::createServer()
 {
 	int clientfd = axl_append(tcp);
-	if (clientfd < 0) {
+	if(clientfd < 0) {
 		debug_d("SSL: Unable to add LWIP tcp -> clientfd mapping");
 		return nullptr;
 	}
@@ -59,7 +60,8 @@ SslConnection* SslContextImpl::createServer()
 	return new SslConnectionImpl(ssl);
 }
 
-bool SslContextImpl::loadMemory(int memType, const uint8_t *data, size_t length, const char *password)
+bool SslContextImpl::loadMemory(const SslContextObject& memType, const uint8_t* data, size_t length,
+								const char* password)
 {
 	return (ssl_obj_memory_load(context, memType, data, length, password) != SSL_OK);
 }

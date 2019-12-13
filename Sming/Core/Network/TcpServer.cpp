@@ -69,13 +69,13 @@ bool TcpServer::listen(int port, bool useSsl)
 			return false;
 		}
 
-		if(!sslContext->loadMemory(SSL_OBJ_RSA_KEY, sslKeyCert.getKey(), sslKeyCert.getKeyLength(),
+		if(!sslContext->loadMemory(eSCO_RSA_KEY, sslKeyCert.getKey(), sslKeyCert.getKeyLength(),
 								   sslKeyCert.getKeyPassword())) {
 			debug_e("SSL: Unable to load server private key");
 			return false;
 		}
 
-		if(!sslContext->loadMemory(SSL_OBJ_X509_CERT, sslKeyCert.getCertificate(), sslKeyCert.getCertificateLength(),
+		if(!sslContext->loadMemory(eSCO_X509_CERT, sslKeyCert.getCertificate(), sslKeyCert.getCertificateLength(),
 								   nullptr)) {
 			debug_e("SSL: Unable to load server certificate");
 			return false;
