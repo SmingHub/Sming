@@ -1,0 +1,35 @@
+diff --git a/src/Adafruit_VL53L0X.cpp b/src/Adafruit_VL53L0X.cpp
+index 5a1e650..60c78f1 100644
+--- a/src/Adafruit_VL53L0X.cpp
++++ b/src/Adafruit_VL53L0X.cpp
+@@ -35,8 +35,8 @@
+ #define VERSION_REQUIRED_MINOR  0 ///< Required sensor minor version
+ #define VERSION_REQUIRED_BUILD  1 ///< Required sensor build
+
+-#define STR_HELPER( x ) #x ///< a string helper
+-#define STR( x )        STR_HELPER(x) ///< string helper wrapper
++//#define STR_HELPER( x ) #x ///< a string helper
++//#define STR( x )        STR_HELPER(x) ///< string helper wrapper
+
+ /**************************************************************************/
+ /*!
+diff --git a/src/vl53l0x_platform_log.h b/src/vl53l0x_platform_log.h
+index 26387d0..d203b3c 100644
+--- a/src/vl53l0x_platform_log.h
++++ b/src/vl53l0x_platform_log.h
+@@ -88,13 +88,13 @@ void trace_print_module_function(uint32_t module, uint32_t level, uint32_t funct
+ #define LOG_GET_TIME() (int)clock()
+
+ #define _LOG_FUNCTION_START(module, fmt, ... ) \
+-        trace_print_module_function(module, _trace_level, TRACE_FUNCTION_ALL, "%ld <START> %s "fmt"\n", LOG_GET_TIME(), __FUNCTION__, ##__VA_ARGS__);
++        trace_print_module_function(module, _trace_level, TRACE_FUNCTION_ALL, "%ld <START> %s " fmt "\n", LOG_GET_TIME(), __FUNCTION__, ##__VA_ARGS__);
+
+ #define _LOG_FUNCTION_END(module, status, ... )\
+         trace_print_module_function(module, _trace_level, TRACE_FUNCTION_ALL, "%ld <END> %s %d\n", LOG_GET_TIME(), __FUNCTION__, (int)status, ##__VA_ARGS__)
+
+ #define _LOG_FUNCTION_END_FMT(module, status, fmt, ... )\
+-        trace_print_module_function(module, _trace_level, TRACE_FUNCTION_ALL, "%ld <END> %s %d "fmt"\n", LOG_GET_TIME(),  __FUNCTION__, (int)status,##__VA_ARGS__)
++        trace_print_module_function(module, _trace_level, TRACE_FUNCTION_ALL, "%ld <END> %s %d " fmt "\n", LOG_GET_TIME(),  __FUNCTION__, (int)status,##__VA_ARGS__)
+
+ // __func__ is gcc only
+ //#define VL53L0X_ErrLog( fmt, ...)  fprintf(stderr, "VL53L0X_ErrLog %s" fmt "\n", __func__, ##__VA_ARGS__)
