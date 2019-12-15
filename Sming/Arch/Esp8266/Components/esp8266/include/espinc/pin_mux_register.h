@@ -73,12 +73,14 @@
 
 #define PERIPHS_IO_MUX_U0RXD_U          (PERIPHS_IO_MUX + 0x14)
 #define FUNC_U0RXD                          0
+#define FUNC_UART0_RXD                      0
 #define FUNC_I2SO_DATA                      1
 #define FUNC_GPIO3                          3
 #define FUNC_CLK_XTAL_BK                    4
 
 #define PERIPHS_IO_MUX_U0TXD_U          (PERIPHS_IO_MUX + 0x18)
 #define FUNC_U0TXD                          0
+#define FUNC_UART0_TXD                      0
 #define FUNC_SPICS1                         1
 #define FUNC_GPIO1                          3
 #define FUNC_CLK_RTC_BK                     4
@@ -146,10 +148,10 @@
 #define PIN_PULLUP_DIS(PIN_NAME)         CLEAR_PERI_REG_MASK(PIN_NAME, PERIPHS_IO_MUX_PULLUP)
 #define PIN_PULLUP_EN(PIN_NAME)          SET_PERI_REG_MASK(PIN_NAME, PERIPHS_IO_MUX_PULLUP)
 
-//#define PIN_FUNC_SELECT(PIN_NAME, FUNC)  do { \
-//        CLEAR_PERI_REG_MASK(PIN_NAME, (PERIPHS_IO_MUX_FUNC << PERIPHS_IO_MUX_FUNC_S)); \
-//        SET_PERI_REG_MASK(PIN_NAME, (((FUNC & BIT2) << 2) | (FUNC & 0x3)) << PERIPHS_IO_MUX_FUNC_S); \
-//    } while (0)
+#define PIN_FUNC_SELECT(PIN_NAME, FUNC)  do { \
+        CLEAR_PERI_REG_MASK(PIN_NAME, (PERIPHS_IO_MUX_FUNC << PERIPHS_IO_MUX_FUNC_S)); \
+        SET_PERI_REG_MASK(PIN_NAME, (((FUNC & BIT2) << 2) | (FUNC & 0x3)) << PERIPHS_IO_MUX_FUNC_S); \
+    } while (0)
 
 #define PERIPHS_GPIO_MUX_REG(i) \
     (i==0) ? PERIPHS_IO_MUX_GPIO0_U:  \

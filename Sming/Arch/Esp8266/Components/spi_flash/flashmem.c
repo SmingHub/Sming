@@ -42,8 +42,6 @@ static inline uint32_t min(uint32_t a, uint32_t b)
 
 uint32_t flashmem_get_address(const void* memptr)
 {
-#define CACHE_FLASH_CTRL_REG 0x3ff0000C
-
 	uint32_t addr = (uint32_t)memptr - INTERNAL_FLASH_START_ADDRESS;
 	// Determine which 1MB memory bank is mapped
 	uint32_t ctrl = READ_PERI_REG(CACHE_FLASH_CTRL_REG);

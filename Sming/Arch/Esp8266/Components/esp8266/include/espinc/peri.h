@@ -19,6 +19,11 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+/*
+ * Note: Use of this file is deprecated within Sming.
+ * Please use the standard SDK definitions.
+ */
+
 #pragma once
 
 #ifdef __cplusplus
@@ -30,11 +35,6 @@ extern "C" {
 #define ESP8266_REG(addr) *((volatile uint32_t *)(0x60000000+(addr)))
 #define ESP8266_DREG(addr) *((volatile uint32_t *)(0x3FF00000+(addr)))
 #define ESP8266_CLOCK 80000000UL
-
-#define i2c_readReg_Mask(block, host_id, reg_add, Msb, Lsb)  rom_i2c_readReg_Mask(block, host_id, reg_add, Msb, Lsb)
-#define i2c_readReg_Mask_def(block, reg_add) i2c_readReg_Mask(block, block##_hostid,  reg_add,  reg_add##_msb,  reg_add##_lsb)
-#define i2c_writeReg_Mask(block, host_id, reg_add, Msb, Lsb, indata)  rom_i2c_writeReg_Mask(block, host_id, reg_add, Msb, Lsb, indata)
-#define i2c_writeReg_Mask_def(block, reg_add, indata) i2c_writeReg_Mask(block, block##_hostid,  reg_add,  reg_add##_msb,  reg_add##_lsb,  indata)
 
 //CPU Register
 #define CPU2X     ESP8266_DREG(0x14) //when bit 0 is set, F_CPU = 160MHz
@@ -288,10 +288,6 @@ extern const uint8_t esp8266_gpioToFn[16];
 #define UCRXHFT 16 //RX Harware Flow Treshold (7bit)
 #define UCFET   8  //TX FIFO Empty Treshold (7bit)
 #define UCFFT   0  //RX FIFO Full Treshold (7bit)
-
-//WDT Feed (the dog) Register
-#define WDTFEED    ESP8266_REG(0x914)
-#define WDT_FEED() (WDTFEED = 0x73)
 
 //SPI_READY
 #define SPIRDY    ESP8266_DREG(0x0C)

@@ -15,7 +15,7 @@
 #ifndef _I2S_REGISTER_H_
 #define _I2S_REGISTER_H_
 
-#include <eagle_soc.h>
+#include "eagle_soc.h"
 
 #define REG_I2S_BASE (0x60000e00)
 

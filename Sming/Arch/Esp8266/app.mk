@@ -35,7 +35,7 @@ LIBS += \
 LDFLAGS	+= \
 	-nostdlib \
 	-u call_user_start \
-	-Wl,-static \
+	-Wl,-static
 
 
 .PHONY: application

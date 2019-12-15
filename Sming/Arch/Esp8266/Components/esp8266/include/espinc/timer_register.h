@@ -92,4 +92,6 @@
 #define FRC2_ALARM_DATA_LSB             0
 #define FRC2_ALARM_DATA_MASK            0xffffffff
 
+#define NOW()                       READ_PERI_REG(FRC2_COUNT_ADDRESS)
+
 #endif

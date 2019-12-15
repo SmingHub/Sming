@@ -1,5 +1,5 @@
 diff --git a/pwm.c b/pwm.c
-index 6df21ac..0fe9dd9 100644
+index 6df21ac..06dda6a 100644
 --- a/pwm.c
 +++ b/pwm.c
 @@ -16,6 +16,8 @@
@@ -26,7 +26,16 @@ index 6df21ac..0fe9dd9 100644
  #else
  #define PWM_PERIOD_TO_TICKS(x) (x)
  #define PWM_DUTY_TO_TICKS(x) (x)
-@@ -109,8 +111,8 @@ struct timer_regs {
+@@ -45,6 +47,8 @@
+ #include <c_types.h>
+ #include <pwm.h>
+ #include <eagle_soc.h>
++#include <espinc/pin_mux_register.h>
++#include <espinc/gpio_register.h>
+ #include <ets_sys.h>
+ 
+ // from SDK hw_timer.c
+@@ -109,8 +113,8 @@ struct timer_regs {
  };
  static struct timer_regs* timer = (struct timer_regs*)(0x60000600);
  
@@ -37,7 +46,7 @@ index 6df21ac..0fe9dd9 100644
  {
  	if ((pwm_state.current_set[pwm_state.current_phase].off_mask == 0) &&
  	    (pwm_state.current_set[pwm_state.current_phase].on_mask == 0)) {
-@@ -120,7 +122,7 @@ pwm_intr_handler(void)
+@@ -120,7 +124,7 @@ pwm_intr_handler(void)
  
  	do {
  		// force write to GPIO registers on each loop
@@ -46,7 +55,7 @@ index 6df21ac..0fe9dd9 100644
  
  		gpio->out_w1ts = (uint32_t)(pwm_state.current_set[pwm_state.current_phase].on_mask);
  		gpio->out_w1tc = (uint32_t)(pwm_state.current_set[pwm_state.current_phase].off_mask);
-@@ -142,7 +144,7 @@ pwm_intr_handler(void)
+@@ -142,7 +146,7 @@ pwm_intr_handler(void)
  			do {
  				ticks -= 1;
  				// stop compiler from optimizing delay loop to noop
@@ -55,7 +64,7 @@ index 6df21ac..0fe9dd9 100644
  			} while (ticks > 0);
  		}
  
-@@ -209,7 +211,6 @@ _pwm_phases_prep(struct pwm_phase* pwm)
+@@ -209,7 +213,6 @@ _pwm_phases_prep(struct pwm_phase* pwm)
  {
  	uint8_t n, phases;
  
@@ -63,4 +72,12 @@ index 6df21ac..0fe9dd9 100644
  	for (n = 0; n < pwm_channels + 2; n++) {
  		pwm[n].ticks = 0;
  		pwm[n].on_mask = 0;
-
+@@ -390,7 +393,7 @@ pwm_start(void)
+ 		pwm_state.current_set = pwm_state.next_set = *pwm;
+ 		pwm_state.current_phase = phases - 1;
+ 		ETS_FRC1_INTR_ENABLE();
+-		RTC_REG_WRITE(FRC1_LOAD_ADDRESS, 0);
++		WRITE_PERI_REG(FRC1_LOAD_ADDRESS, 0);
+ 		timer->frc1_ctrl = TIMER1_DIVIDE_BY_16 | TIMER1_ENABLE_TIMER;
+ 		return;
+ 	}
