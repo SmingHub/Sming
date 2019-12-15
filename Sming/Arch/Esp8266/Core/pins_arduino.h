@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "espinc/peri.h"
+#include "esp8266_peri.h"
 
 extern const unsigned int A0; // Single ESP8266EX analog input pin (TOUT) 10 bit, 0..1v
 

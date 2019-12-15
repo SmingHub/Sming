@@ -9,12 +9,11 @@
  ****/
 
 #include <Digital.h>
-#include <espinc/peri.h>
 #include "ESP8266EX.h"
 
 const unsigned int A0 = 17; // Single ESP8266EX analog input pin (TOUT) 10 bit, 0..1v
 
-// Prototype declared in system/include/espinc/peri.h
+// Prototype declared in esp8266-peri.h
 const uint8_t esp8266_gpioToFn[16] = {0x34, 0x18, 0x38, 0x14, 0x3C, 0x40, 0x1C, 0x20,
 									  0x24, 0x28, 0x2C, 0x30, 0x04, 0x08, 0x0C, 0x10};
 
