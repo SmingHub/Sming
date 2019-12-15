@@ -8,6 +8,15 @@ SDK 3.0+
 
 Default: OFF. In order to use SDK 3.0.0 or newer please follow the instructions here :component-esp8266:`esp8266`.
 
+No-WiFi build
+-------------
+
+.. envvar:: DISABLE_WIFI
+
+   If a project does not require WiFi (or networking) bulding with this option enabled reduces code size
+   and memory usage signficantly. It does this using an un-official :component-esp8266:`esp_no_wifi` Component.
+
+
 Custom LWIP
 -----------
 
