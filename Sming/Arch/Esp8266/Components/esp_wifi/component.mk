@@ -3,11 +3,9 @@ COMPONENT_LIBNAME :=
 COMPONENT_DEPENDS := esp8266
 
 EXTRA_LIBS := \
-	phy \
 	pp \
 	net80211 \
-	wpa \
-	crypto
+	wpa
 
 ifeq ($(ENABLE_WPS), 1)
 	ENABLE_ESPCONN		:= 1
