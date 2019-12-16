@@ -69,6 +69,10 @@
 class SslConnection
 {
 public:
+	virtual ~SslConnection()
+	{
+	}
+
 	/**
 	 * @brief Checks if the handshake has finished
 	 * @retval bool true on success
@@ -124,10 +128,6 @@ public:
 	 * @retval SslSessionId*
 	 */
 	virtual SslCertificate* getCertificate() = 0;
-
-	virtual ~SslConnection()
-	{
-	}
 };
 
 /** @} */

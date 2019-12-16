@@ -40,6 +40,10 @@ enum SslCertificateName {
 class SslCertificate
 {
 public:
+	virtual ~SslCertificate()
+	{
+	}
+
 	/**
     * @brief Check if certificate fingerprint (SHA1) matches the one given.
     * @param hash - SHA1 fingerprint to match against
@@ -60,10 +64,6 @@ public:
    * @retval the value for the desired distinguished name
    */
 	virtual const String getName(const SslCertificateName& name) const = 0;
-
-	virtual ~SslCertificate()
-	{
-	}
 };
 
 /** @} */

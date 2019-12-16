@@ -48,6 +48,10 @@ enum SslContextObject {
 class SslContext
 {
 public:
+	virtual ~SslContext()
+	{
+	}
+
 	/**
 	 * @brief Initializer method that must be called after object creation and before the creation
 	 * 		  of server or client connections
@@ -106,10 +110,6 @@ public:
 	tcp_pcb& getTcp()
 	{
 		return *tcp;
-	}
-
-	virtual ~SslContext()
-	{
 	}
 
 protected:

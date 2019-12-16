@@ -35,6 +35,10 @@ enum SslExtensionFragmentSize {
 class SslExtension
 {
 public:
+	virtual ~SslExtension()
+	{
+	}
+
 	/**
 	 * @brief Sets server name identification
 	 * @see https://tools.ietf.org/html/rfc6066#page-6
@@ -58,10 +62,6 @@ public:
 	 * @retval void *
 	 */
 	virtual void* getInternalObject() = 0;
-
-	virtual ~SslExtension()
-	{
-	}
 };
 
 /** @} */
