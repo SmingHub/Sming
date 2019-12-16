@@ -109,6 +109,17 @@ public:
 		this->destroyedDelegate = destroyedDelegate;
 	}
 
+	// [ SSL related methods]
+
+	/**
+	 * @brief Specifies the SSL implementation that can be used.
+	 * @param sslFactory
+	 */
+	void setSslFactory(SslFactory* sslFactory)
+	{
+		this->sslFactory = sslFactory;
+	}
+
 	void addSslOptions(uint32_t sslOptions)
 	{
 		this->sslOptions |= sslOptions;
@@ -219,6 +230,7 @@ protected:
 	bool canSend = true;
 	bool autoSelfDestruct = true;
 
+	SslFactory* sslFactory = nullptr; /// < The factory implementation to use. Must be set to enable SSL connections
 	SslContext* sslContext = nullptr;
 	SslConnection* ssl = nullptr;
 	SslExtension* sslExtension = nullptr;

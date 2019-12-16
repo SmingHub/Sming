@@ -71,8 +71,3 @@ SslContextImpl::~SslContextImpl()
 	axl_free(tcp);
 	ssl_ctx_free(context);
 }
-
-SslContext* sslCreateContext()
-{
-	return new SslContextImpl();
-}

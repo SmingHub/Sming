@@ -402,8 +402,13 @@ err_t TcpConnection::internalOnConnected(err_t err)
 #endif
 		debug_d("SSL: handshake start");
 
+		if(sslFactory == nullptr) {
+			debug_e("Unable to create SSL connection without SSL implementation.");
+			return ERR_ABRT;
+		}
+
 		delete sslContext;
-		sslContext = sslCreateContext();
+		sslContext = sslFactory->sslCreateContext();
 		if(sslContext == nullptr) {
 			return ERR_ABRT;
 		}

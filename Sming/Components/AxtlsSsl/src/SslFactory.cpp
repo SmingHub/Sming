@@ -9,13 +9,21 @@
  * @author: 2019 - Slavey Karadzhov <slav@attachix.com>
  *
  ****/
-#pragma once
 
-#include "Interface/SslContext.h"
-#include "Interface/SslConnection.h"
-#include "Interface/SslExtension.h"
-#include "Interface/SslCertificate.h"
-#include "Interface/SslConstants.h"
-#include "Interface/SslFactory.h"
+#include <Network/Ssl/SslInterface.h>
+#include "SslContextImpl.h"
+#include "SslExtensionImpl.h"
 
-/** @} */
+class SslFactoryImpl : public SslFactory
+{
+public:
+	SslContext* sslCreateContext() override
+	{
+		return new SslContextImpl();
+	}
+
+	SslExtension* sslCreateExtension()
+	{
+		return new SslExtensionImpl();
+	}
+};

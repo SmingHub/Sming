@@ -57,8 +57,13 @@ bool TcpServer::listen(int port, bool useSsl)
 		sslOptions |= SSL_DISPLAY_STATES | SSL_DISPLAY_BYTES | SSL_DISPLAY_CERTS;
 #endif
 
+		if(sslFactory == nullptr) {
+			debug_e("Unable to create SSL connection without SSL implementation.");
+			return false;
+		}
+
 		delete sslContext;
-		sslContext = sslCreateContext();
+		sslContext = sslFactory->sslCreateContext();
 		if(sslContext == nullptr) {
 			return false;
 		}

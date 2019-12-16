@@ -66,6 +66,8 @@ public:
 
 	void shutdown();
 
+	using TcpConnection::setSslFactory;
+
 	/**
 	 * @brief Adds SSL support and specifies the server certificate and private key.
 	 */

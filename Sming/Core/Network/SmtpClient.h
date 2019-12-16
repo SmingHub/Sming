@@ -172,6 +172,7 @@ public:
 	using TcpClient::freeSslKeyCert;
 	using TcpClient::getSsl;
 	using TcpClient::pinCertificate;
+	using TcpClient::setSslFactory;
 	using TcpClient::setSslKeyCert;
 
 protected:

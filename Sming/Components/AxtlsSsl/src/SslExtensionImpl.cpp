@@ -40,8 +40,3 @@ bool SslExtensionImpl::setMaxFragmentSize(const SslExtensionFragmentSize& fragme
 
 	return true;
 }
-
-SslExtension* sslCreateExtension()
-{
-	return new SslExtensionImpl();
-}
