@@ -8,120 +8,9 @@ uint32_t WdevTimOffSet;
 static bool os_print_enabled = true;
 
 void ets_update_cpu_frequency(uint8_t freq);
+void system_restart_core(void);
 
-uint8_t system_upgrade_userbin_check(void)
-{
-	return 0x00;
-}
-
-uint32 system_get_time(void)
-{
-#define WPS_TIME_REG 0x3ff20c00
-	return READ_PERI_REG(WPS_TIME_REG) + WdevTimOffSet;
-}
-
-bool system_rtc_mem_write(uint8 des_addr, const void* src_addr, uint16 save_size)
-{
-	return false;
-}
-
-/*
-Disassembly of section .text.system_rtc_mem_write:
-
-00000000 <system_rtc_mem_write-0x4>:
-   0:	00 0e 00 60
-
-00000004 <system_rtc_mem_write>:
-   4:	bfa052               	movi	a5, 191
-   7:	143527               	bltu	a5, a2, 1f <system_rtc_mem_write+0x1b>
-   a:	139c                	beqz.n	a3, 1f <system_rtc_mem_write+0x1b>
-   c:	370c                	movi.n	a7, 3
-   e:	146030               	extui	a6, a3, 0, 2
-  11:	a6cc                	bnez.n	a6, 1f <system_rtc_mem_write+0x1b>
-  13:	1192e0               	slli	a9, a2, 2
-  16:	00a382               	movi	a8, 0x300
-  19:	c08890               	sub	a8, a8, a9
-  1c:	03a847               	bge	a8, a4, 23 <system_rtc_mem_write+0x1f>
-  1f:	020c                	movi.n	a2, 0
-  21:	f00d                	ret.n
-  23:	0a0747               	bnone	a7, a4, 31 <system_rtc_mem_write+0x2d>
-  26:	450c                	movi.n	a5, 4
-  28:	414240               	srli	a4, a4, 2
-  2b:	a04450               	addx4	a4, a4, a5
-  2e:	f44040               	extui	a4, a4, 0, 16
-  31:	418240               	srli	a8, a4, 2
-  34:	e89c                	beqz.n	a8, 56 <system_rtc_mem_write+0x52>
-  36:	fff271               	l32r	a7, 0 <system_rtc_mem_write-0x4>
-  39:	040c                	movi.n	a4, 0
-  3b:	624a                	add.n	a6, a2, a4
-  3d:	a05430               	addx4	a5, a4, a3
-  40:	a06670               	addx4	a6, a6, a7
-  43:	0020c0               	memw
-  46:	0558                	l32i.n	a5, a5, 0
-  48:	0020c0               	memw
-  4b:	c06652               	s32i	a5, a6, 0x300
-  4e:	441b                	addi.n	a4, a4, 1
-  50:	744040               	extui	a4, a4, 0, 8
-  53:	e43487               	bltu	a4, a8, 3b <system_rtc_mem_write+0x37>
-  56:	120c                	movi.n	a2, 1
-  58:	f00d                	ret.n
-*/
-
-bool system_rtc_mem_read(uint8 src_addr, void* des_addr, uint16 load_size)
-{
-	return false;
-}
-/*
-Disassembly of section .text.system_rtc_mem_read:
-
-00000000 <system_rtc_mem_read-0x4>:
-   0:	00 0e 00 60 // rtc_sys_info
-
-00000004 <system_rtc_mem_read>:
-   4:	bfa052               	movi	a5, 191
-   7:	143527               	bltu	a5, a2, 1f <system_rtc_mem_read+0x1b>
-			7: R_XTENSA_SLOT0_OP	.text.system_rtc_mem_read+0x1f
-   a:	139c                	beqz.n	a3, 1f <system_rtc_mem_read+0x1b>
-			a: R_XTENSA_SLOT0_OP	.text.system_rtc_mem_read+0x1f
-   c:	370c                	movi.n	a7, 3
-   e:	146030               	extui	a6, a3, 0, 2
-  11:	a6cc                	bnez.n	a6, 1f <system_rtc_mem_read+0x1b>
-			11: R_XTENSA_SLOT0_OP	.text.system_rtc_mem_read+0x1f
-  13:	1192e0               	slli	a9, a2, 2
-  16:	00a382               	movi	a8, 0x300
-  19:	c08890               	sub	a8, a8, a9
-  1c:	03a847               	bge	a8, a4, 23 <system_rtc_mem_read+0x1f>
-			1c: R_XTENSA_SLOT0_OP	.text.system_rtc_mem_read+0x23
-  1f:	020c                	movi.n	a2, 0
-  21:	f00d                	ret.n
-  23:	0a0747               	bnone	a7, a4, 31 <system_rtc_mem_read+0x2d>
-			23: R_XTENSA_SLOT0_OP	.text.system_rtc_mem_read+0x31
-  26:	450c                	movi.n	a5, 4
-  28:	414240               	srli	a4, a4, 2
-  2b:	a04450               	addx4	a4, a4, a5
-  2e:	f44040               	extui	a4, a4, 0, 16
-  31:	418240               	srli	a8, a4, 2
-  34:	e89c                	beqz.n	a8, 56 <system_rtc_mem_read+0x52>
-			34: R_XTENSA_SLOT0_OP	.text.system_rtc_mem_read+0x56
-  36:	fff271               	l32r	a7, 0 <system_rtc_mem_read-0x4>
-			36: R_XTENSA_SLOT0_OP	.text.system_rtc_mem_read
-  39:	040c                	movi.n	a4, 0
-  3b:	524a                	add.n	a5, a2, a4
-  3d:	a06430               	addx4	a6, a4, a3
-  40:	a05570               	addx4	a5, a5, a7
-  43:	0020c0               	memw
-  46:	c02552               	l32i	a5, a5, 0x300
-  49:	0020c0               	memw
-  4c:	0659                	s32i.n	a5, a6, 0
-  4e:	441b                	addi.n	a4, a4, 1
-  50:	744040               	extui	a4, a4, 0, 8
-  53:	e43487               	bltu	a4, a8, 3b <system_rtc_mem_read+0x37>
-			53: R_XTENSA_SLOT0_OP	.text.system_rtc_mem_read+0x3b
-  56:	120c                	movi.n	a2, 1
-  58:	f00d                	ret.n
-*/
-
-uint16 system_adc_read(void)
+uint16_t system_adc_read(void)
 {
 	return 0;
 }
@@ -154,7 +43,7 @@ uint16 system_adc_read(void)
      294:	ff ff 00 00
 */
 
-void system_adc_read_fast(uint16* adc_addr, uint16 adc_num, uint8 adc_clk_div)
+void system_adc_read_fast(uint16_t* adc_addr, uint16_t adc_num, uint8_t adc_clk_div)
 {
 	//
 }
@@ -203,7 +92,7 @@ void system_adc_read_fast(uint16* adc_addr, uint16 adc_num, uint8 adc_clk_div)
      300:	ff ff 00 00
 */
 
-uint16 system_get_vdd33(void)
+uint16_t system_get_vdd33(void)
 {
 	return 0;
 }
@@ -227,44 +116,6 @@ uint16 system_get_vdd33(void)
      336:	f00d                	ret.n
 */
 
-/*
-00000504 <system_restore>:
-     504:	9ca422               	movi	a2, 0x49c
-     507:	d0a142               	movi	a4, 0x1d0
-     50a:	fff631               	l32r	a3, 4e4 <system_restart+0x58>
-     50d:	050c                	movi.n	a5, 0
-     50f:	f0c112               	addi	a1, a1, -16
-     512:	11c9                	s32i.n	a12, a1, 4
-     514:	0109                	s32i.n	a0, a1, 0
-     516:	fff701               	l32r	a0, 4f4 <system_restart+0x68>
-     519:	0000c0               	callx0	a0
-     51c:	02cd                	mov.n	a12, a2
-     51e:	32bc                	beqz.n	a2, 555 <system_restore+0x51>
-     520:	ffa032               	movi	a3, 255
-     523:	9ca442               	movi	a4, 0x49c
-     526:	fff401               	l32r	a0, 4f8 <system_restart+0x6c>
-     529:	0000c0               	callx0	a0
-     52c:	0c2d                	mov.n	a2, a12
-     52e:	ffee31               	l32r	a3, 4e8 <system_restart+0x5c>
-     531:	840c                	movi.n	a4, 8
-     533:	fff201               	l32r	a0, 4fc <system_restart+0x70>
-     536:	0000c0               	callx0	a0
-     539:	0c3d                	mov.n	a3, a12
-     53b:	ffec21               	l32r	a2, 4ec <system_restart+0x60>
-     53e:	9ca442               	movi	a4, 0x49c
-     541:	021222               	l16ui	a2, a2, 4
-     544:	000005               	call0	548 <system_restore+0x44>
-     547:	0c2d                	mov.n	a2, a12
-     549:	ffe931               	l32r	a3, 4f0 <system_restart+0x64>
-     54c:	dba142               	movi	a4, 0x1db
-     54f:	ffec01               	l32r	a0, 500 <system_restart+0x74>
-     552:	0000c0               	callx0	a0
-     555:	11c8                	l32i.n	a12, a1, 4
-     557:	0108                	l32i.n	a0, a1, 0
-     559:	10c112               	addi	a1, a1, 16
-     55c:	f00d                	ret.n
-*/
-
 // Fetch enum `flash_size_map` value
 unsigned system_get_flash_size_map(void)
 {
@@ -272,74 +123,6 @@ unsigned system_get_flash_size_map(void)
 	spi_flash_read(0, &hdr, sizeof(hdr));
 	return hdr >> 28;
 }
-/*
-     55e:	00                      	.byte 00
-     55f:	00                      	.byte 00
-     560:	00 00 00 00
-			560: R_XTENSA_32	spi_flash_read
-
-00000564 <system_get_flash_size_map>:
-     564:	020c                	movi.n	a2, 0
-     566:	840c                	movi.n	a4, 8
-     568:	f0c112               	addi	a1, a1, -16
-     56b:	013d                	mov.n	a3, a1
-     56d:	2109                	s32i.n	a0, a1, 8
-     56f:	fffc01               	l32r	a0, 560 <system_restore+0x5c>
-			56f: R_XTENSA_SLOT0_OP	.irom0.text+0x560
-			56f: R_XTENSA_ASM_EXPAND	spi_flash_read
-     572:	0000c0               	callx0	a0
-     575:	0128                	l32i.n	a2, a1, 0
-     577:	2108                	l32i.n	a0, a1, 8
-     579:	352c20               	extui	a2, a2, 28, 4
-     57c:	10c112               	addi	a1, a1, 16
-     57f:	f00d                	ret.n
-*/
-
-void system_restart_core(void)
-{
-	//
-}
-/*
-     Disassembly of section .text.system_restart_core:
-
-     00000000 <system_restart_core-0x14>:
-        0:	00 00 00 00
-     			0: R_XTENSA_32	flashchip
-        4:	00 fe ef 3f
-        8:	80 00 00 40
-     	...
-     			c: R_XTENSA_32	Wait_SPI_Idle
-     			10: R_XTENSA_32	Cache_Read_Disable
-
-     00000014 <system_restart_core>:
-       14:	fffb21               	l32r	a2, 0 <system_restart_core-0x14>
-     			14: R_XTENSA_SLOT0_OP	.text.system_restart_core
-       17:	f0c112               	addi	a1, a1, -16
-       1a:	0109                	s32i.n	a0, a1, 0
-       1c:	0228                	l32i.n	a2, a2, 0
-       1e:	fffb01               	l32r	a0, c <system_restart_core-0x8>
-     			1e: R_XTENSA_SLOT0_OP	.text.system_restart_core+0xc
-     			1e: R_XTENSA_ASM_EXPAND	Wait_SPI_Idle
-       21:	0000c0               	callx0	a0
-       24:	fffb01               	l32r	a0, 10 <system_restart_core-0x4>
-     			24: R_XTENSA_SLOT0_OP	.text.system_restart_core+0x10
-     			24: R_XTENSA_ASM_EXPAND	Cache_Read_Disable
-       27:	0000c0               	callx0	a0
-       2a:	746c                	movi.n	a4, -25
-       2c:	fff631               	l32r	a3, 4 <system_restart_core-0x10>
-     			2c: R_XTENSA_SLOT0_OP	.text.system_restart_core+0x4
-       2f:	0020c0               	memw
-       32:	892322               	l32i	a2, a3, 0x224
-       35:	102240               	and	a2, a2, a4
-       38:	0020c0               	memw
-       3b:	fff301               	l32r	a0, 8 <system_restart_core-0xc>
-     			3b: R_XTENSA_SLOT0_OP	.text.system_restart_core+0x8
-       3e:	896322               	s32i	a2, a3, 0x224
-       41:	0000c0               	callx0	a0
-       44:	0108                	l32i.n	a0, a1, 0
-       46:	10c112               	addi	a1, a1, 16
-       49:	f00d                	ret.n
-     */
 
 void system_restart_local(void)
 {
@@ -509,7 +292,7 @@ uint8_t system_get_os_print(void)
 }
 
 void ets_write_char(char ch);
-int ets_vprintf(void *routine, const char *format, va_list arg);
+int ets_vprintf(void* routine, const char* format, va_list arg);
 
 int os_printf_plus(const char* format, ...)
 {

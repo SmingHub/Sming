@@ -1,6 +1,5 @@
 #include <esp_attr.h>
 #include <stdint.h>
-//#include <xtensa/xtruntime.h>
 #include <espinc/i2c_bbpll.h>
 #include <esp_systemapi.h>
 
