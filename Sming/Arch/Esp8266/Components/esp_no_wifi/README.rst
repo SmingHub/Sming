@@ -1,6 +1,8 @@
 No WiFi
 =======
 
+.. highlight:: bash
+
 Background
 ----------
 
@@ -10,9 +12,8 @@ The problem we have is the ``user_interface.o`` module within ``libmain.a``, whi
 wifi stuff with system code so it cannot be easily separated.
 
 The SDKnoWiFi implements the startup code and some system functions but contains a lot of stuff
-which is provided by the SDK and in other parts of the Sming framework.
-
-We need to start fresh with this to provide a minimal, clean set of code changes.
+which is provided by the SDK and in other parts of the Sming framework. It is also not clear whether
+it is compatible with the current SDK.
 
 Process
 -------
@@ -46,6 +47,20 @@ separate Components which are themselves only included. However, some of the net
 could be useful in a non-networked application. There may even be an alternate physical
 network layer implemented (e.g. Ethernet over SPI) so it's simplest to just leave the
 framework intact.
+
+
+Library Disassembly
+-------------------
+
+You can create a disassembly of the relevant SDK libraries for inspection by running this
+command from a project directory::
+
+   make sdk-disassemble
+
+If you want to disassemble other SDK libraries, do this::
+
+   make sdk-disassemble SDK_LIBLIST="crypto net80211"
+
 
 Other info
 ----------
