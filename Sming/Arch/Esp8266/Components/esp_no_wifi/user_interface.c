@@ -7,45 +7,83 @@ uint32_t WdevTimOffSet;
 static bool os_print_enabled = true;
 struct rst_info rst_if;
 
+// libphy
+uint32_t phy_get_vdd33(void);
+uint16_t test_tout(bool debug);
+void phy_adc_read_fast(uint16_t* adc_addr, uint16_t adc_num, uint8_t adc_clk_div);
+
+uint8_t ets_post(uint8_t prio, os_signal_t sig, os_param_t par);
+void ets_task(os_task_t task, uint8_t prio, os_event_t* queue, uint8_t qlen);
 void ets_update_cpu_frequency(uint8_t freq);
 void system_restart_core(void);
 
+extern uint8_t _bss_start, _bss_end, _data_start, _data_end, _heap_start, _rodata_start, _rodata_end;
+
+void system_print_meminfo(void)
+{
+#define ADDR(n) ((uint32_t)&n)
+	//	const uint32_t data_start = 0x3FFE8000;
+	const uint32_t heap_end = 0x3FFFC000;
+	os_printf("data  : 0x%x ~ 0x%x, len: %u\n", ADDR(_data_start), ADDR(_data_end),
+			  ADDR(_data_end) - ADDR(_data_start));
+	os_printf("rodata: 0x%x ~ 0x%x, len: %u\n", ADDR(_rodata_start), ADDR(_bss_start),
+			  ADDR(_bss_start) - ADDR(_rodata_start));
+	os_printf("bss   : 0x%x ~ 0x%x, len: %u\n", ADDR(_bss_start), ADDR(_heap_start),
+			  ADDR(_heap_start) - ADDR(_bss_start));
+	os_printf("heap  : 0x%x ~ 0x%x, len: %u\n", ADDR(_heap_start), heap_end, heap_end - ADDR(_heap_start));
+#undef ADDR
+}
+
+bool system_os_post(uint8_t prio, os_signal_t sig, os_param_t par)
+{
+	if(prio >= USER_TASK_PRIO_MAX) {
+		os_printf("err: post prio >= %u\n", USER_TASK_PRIO_MAX);
+		return false;
+	}
+
+	return ets_post(prio + 2, sig, par) == 0; // in ets.h, + 2 SDK 1.5.2
+}
+
+bool system_os_task(os_task_t task, uint8_t prio, os_event_t* queue, uint8_t qlen)
+{
+	if(prio >= USER_TASK_PRIO_MAX) {
+		os_printf("err: task prio >= %u\n", USER_TASK_PRIO_MAX);
+		return false;
+	}
+
+	if(qlen == 0 || queue == NULL) {
+		os_printf("err: task queue error\n");
+		return false;
+	}
+
+	ets_task(task, prio + 2, queue, qlen); // + 2 SDK 1.5.2
+	return true;
+}
+
+uint32_t system_get_rtc_time()
+{
+	return READ_PERI_REG(RTC_SLP_CNT_VAL);
+}
+
 uint16_t system_adc_read(void)
 {
-	return 0;
+	// uint16 test_tout(bool debug) in libphy,  0 - debug sar summ data out off, 1 - debug sar summ data out on
+	return test_tout(false);
 }
-/*
-00000258 <system_adc_read>:
-     258:	020c                	movi.n	a2, 0
-     25a:	f0c112               	addi	a1, a1, -16
-     25d:	0109                	s32i.n	a0, a1, 0
-     25f:	fffc01               	l32r	a0, 250 <system_pp_recycle_rx_pkt+0x18>
-     262:	0000c0               	callx0	a0
-     265:	fff901               	l32r	a0, 24c <system_pp_recycle_rx_pkt+0x14>
-     268:	f42020               	extui	a2, a2, 0, 16
-     26b:	1b1207               	beq	a2, a0, 28a <system_adc_read+0x32>
-     26e:	b30c                	movi.n	a3, 11
-     270:	902220               	addx2	a2, a2, a2
-     273:	1122e0               	slli	a2, a2, 2
-     276:	fff701               	l32r	a0, 254 <system_pp_recycle_rx_pkt+0x1c>
-     279:	0000c0               	callx0	a0
-     27c:	f42020               	extui	a2, a2, 0, 16
-     27f:	00a402               	movi	a0, 0x400
-     282:	013027               	bltu	a0, a2, 287 <system_adc_read+0x2f>
-     285:	020d                	mov.n	a0, a2
-     287:	f42000               	extui	a2, a0, 0, 16
-     28a:	0108                	l32i.n	a0, a1, 0
-     28c:	10c112               	addi	a1, a1, 16
-     28f:	f00d                	ret.n
-     291:	00                      	.byte 00
-     292:	00                      	.byte 00
-     293:	00                      	.byte 00
-     294:	ff ff 00 00
-*/
 
 void system_adc_read_fast(uint16_t* adc_addr, uint16_t adc_num, uint8_t adc_clk_div)
 {
-	//
+	phy_adc_read_fast(adc_addr, adc_num, adc_clk_div);
+	if(adc_num) {
+		for(unsigned i = 0; i < adc_num; i++) {
+			if(adc_addr[i] != 0xffff) {
+				adc_addr[i] = adc_addr[i] * 12 / 11;
+				if(adc_addr[i] > 0x400) {
+					adc_addr[i] = 0x400;
+				}
+			}
+		}
+	}
 }
 /*
 000002a0 <system_adc_read_fast>:
@@ -94,28 +132,9 @@ void system_adc_read_fast(uint16_t* adc_addr, uint16_t adc_num, uint8_t adc_clk_
 
 uint16_t system_get_vdd33(void)
 {
-	return 0;
+	// uint32 phy_get_vdd33(void) in libphy
+	return phy_get_vdd33() & 0x3FF;
 }
-/*
-0000030c <system_get_vdd33>:
-     30c:	f0c112               	addi	a1, a1, -16
-     30f:	0109                	s32i.n	a0, a1, 0
-     311:	fffc01               	l32r	a0, 304 <system_adc_read_fast+0x64>
-     314:	0000c0               	callx0	a0
-     317:	fffa01               	l32r	a0, 300 <system_adc_read_fast+0x60>
-     31a:	f42020               	extui	a2, a2, 0, 16
-     31d:	101207               	beq	a2, a0, 331 <system_get_vdd33+0x25>
-     320:	b30c                	movi.n	a3, 11
-     322:	902220               	addx2	a2, a2, a2
-     325:	1122e0               	slli	a2, a2, 2
-     328:	fff801               	l32r	a0, 308 <system_adc_read_fast+0x68>
-     32b:	0000c0               	callx0	a0
-     32e:	f42020               	extui	a2, a2, 0, 16
-     331:	0108                	l32i.n	a0, a1, 0
-     333:	10c112               	addi	a1, a1, 16
-     336:	f00d                	ret.n
-*/
-
 // Fetch enum `flash_size_map` value
 unsigned system_get_flash_size_map(void)
 {

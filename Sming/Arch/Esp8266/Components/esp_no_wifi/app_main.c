@@ -17,20 +17,14 @@ void sleep_reset_analog_rtcreg_8266(void);
 void user_pre_init(void);
 void user_init(void);
 
-void user_fatal_exception_handler(void)
-{
-	//
-}
-
 typedef void (*init_done_cb_t)(void);
 
-static init_done_cb_t __system_init_done;
+static init_done_cb_t init_done_cb;
 
 void system_init_done_cb(init_done_cb_t cb)
 {
-	__system_init_done = cb;
+	init_done_cb = cb;
 }
-
 
 void set_pll(void)
 {
@@ -44,9 +38,7 @@ void set_pll(void)
 
 static void user_start(void)
 {
-	ets_isr_mask(0x3FE); // disable interrupts 1..9
-	//	ets_set_user_start (jump_boot); // set the address for a possible reboot on add. ROM-BIOS branches
-	// IO_RTC_4 = 0xfe000000;
+	ets_isr_mask(0x3FE);			  // disable interrupts 1..9
 	sleep_reset_analog_rtcreg_8266(); // spoils the PLL!
 	set_pll();
 
@@ -55,16 +47,15 @@ static void user_start(void)
 	ets_timer_init();
 
 	system_rtc_mem_read(0, &rst_if, sizeof(rst_if));
-	uint32 reset_reason = READ_PERI_REG(RTC_SCRATCH0);
+//	uint32 reset_reason = READ_PERI_REG(RTC_SCRATCH0);
+
 	// Initialise heap
 	free(malloc(8));
 
 	user_init();
 
-//	user_pre_init();
-
-	if(__system_init_done) {
-		__system_init_done();
+	if(init_done_cb) {
+		init_done_cb();
 	}
 }
 
@@ -78,5 +69,6 @@ void IRAM_ATTR call_user_start_local(void)
 	// Clear the stack and transfer control to the ROM-BIOS
 	__asm__ volatile("movi	a2, 1;"
 					 "slli   a1, a2, 30;");
+
 	ets_run();
 }
