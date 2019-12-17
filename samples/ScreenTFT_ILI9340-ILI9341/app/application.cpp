@@ -77,9 +77,12 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
+
+#ifndef DISABLE_WIFI
 	//WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiStation.enable(false);
 	WifiAccessPoint.enable(false);
+#endif
 
 	spiffs_mount();
 	Serial.println("FileSystem mounted.");

@@ -251,8 +251,10 @@ void init()
 	Serial.swap();
 
 	// Network not required for this sample
+#ifndef DISABLE_WIFI
 	WifiStation.enable(false, false);
 	WifiAccessPoint.enable(false, false);
+#endif
 
 	// We could initialise I2S directly here, but not in any rush
 	System.onReady(initialiseI2S);

@@ -122,8 +122,10 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true);
 
+#ifndef DISABLE_WIFI
 	WifiAccessPoint.enable(false);
 	WifiStation.enable(false);
+#endif
 
 	/* configure SPI */
 	LED.begin(); // default 4MHz clk, CS on PIN_2

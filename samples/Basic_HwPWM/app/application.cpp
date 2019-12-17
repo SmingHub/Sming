@@ -52,8 +52,10 @@ void init()
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 
 	// WIFI not needed for demo. So disabling WIFI.
+#ifndef DISABLE_WIFI
 	WifiStation.enable(false);
 	WifiAccessPoint.enable(false);
+#endif
 
 	// Setting PWM values on 8 different pins
 	HW_pwm.analogWrite(4, maxDuty);
