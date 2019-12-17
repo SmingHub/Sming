@@ -47,10 +47,10 @@ bool TcpConnection::connect(const String& server, int port, bool useSsl, uint32_
 
 	if(useSsl) {
 		delete sslExtension;
-		sslExtension = sslCreateExtension();
+		sslExtension = new SslExtension;
 		if(sslExtension != nullptr) {
-			sslExtension->setHostName(server);
-			sslExtension->setMaxFragmentSize(eSEFS_4K); // 4K max size
+			sslExtension->hostName = server;
+			sslExtension->fragmentSize = eSEFS_4K; // 4K max size
 		}
 	}
 

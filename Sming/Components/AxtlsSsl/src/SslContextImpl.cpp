@@ -19,14 +19,14 @@ bool SslContextImpl::init(tcp_pcb* tcp, uint32_t options, size_t sessionCacheSiz
 		return false;
 	}
 
-	axl_init(fdCount);
+	axl_init(capacity);
 	ssl_ctx_free(context);
 	context = ssl_ctx_new(SSL_CONNECT_IN_PARTS | options, sessionCacheSize);
 
 	return (context != nullptr);
 }
 
-SslConnection* SslContextImpl::doCreateClient(const uint8_t* sessionData, size_t sessionLength,
+SslConnection* SslContextImpl::internalCreateClient(const uint8_t* sessionData, size_t sessionLength,
 											  SslExtension* sslExtension)
 {
 	int clientfd = axl_append(tcp);
@@ -35,7 +35,13 @@ SslConnection* SslContextImpl::doCreateClient(const uint8_t* sessionData, size_t
 		return nullptr;
 	}
 
-	SSL_EXTENSIONS* extensions = reinterpret_cast<SSL_EXTENSIONS*>(sslExtension->getInternalObject());
+	SSL_EXTENSIONS* extensions = nullptr;
+	if(sslExtension != nullptr) {
+		extensions = ssl_ext_new();
+		ssl_ext_set_host_name(extensions, sslExtension->hostName.c_str());
+		ssl_ext_set_max_fragment_size(extensions, sslExtension->fragmentSize);
+	}
+
 	SSL* ssl = ssl_client_new(context, clientfd, sessionData, sessionLength, extensions);
 	if(ssl == nullptr) {
 		return nullptr;

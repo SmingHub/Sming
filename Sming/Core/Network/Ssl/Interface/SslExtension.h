@@ -32,36 +32,9 @@ enum SslExtensionFragmentSize {
 	eSEFS_16K,
 };
 
-class SslExtension
-{
-public:
-	virtual ~SslExtension()
-	{
-	}
-
-	/**
-	 * @brief Sets server name identification
-	 * @see https://tools.ietf.org/html/rfc6066#page-6
-	 * @param hostName
-	 * @retval true on success. Return false if that extension is not supported by the actual SSL adapter
-	 */
-	virtual bool setHostName(const String& hostName) = 0;
-
-	/**
-	 * @brief Negotiates the recommended SSL fragmentation size
-	 * @see https://tools.ietf.org/html/rfc6066#page-8
-	 * @param fragmentSize
-	 * @retval true on success. Return false if that extension is not supported by the actual SSL adapter
-	 */
-	virtual bool setMaxFragmentSize(const SslExtensionFragmentSize& fragmentSize) = 0;
-
-	/**
-	 * @brief Gets pointer to the internal object responsible for the SSL extensions.
-	 * 		  The SslExtension object is the one owning the internal object and it will be freed
-	 * 		  once the SslExtension object is freed.
-	 * @retval void *
-	 */
-	virtual void* getInternalObject() = 0;
+struct SslExtension {
+  String hostName;
+  SslExtensionFragmentSize fragmentSize = eSEFS_Off;
 };
 
 /** @} */

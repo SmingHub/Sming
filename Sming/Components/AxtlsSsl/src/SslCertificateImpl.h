@@ -22,15 +22,15 @@ public:
 	{
 	}
 
+	virtual ~SslCertificateImpl()
+	{
+	}
+
 	bool matchFingerprint(const uint8_t* hash) const override;
 
 	bool matchPki(const uint8_t* hash) const override;
 
 	const String getName(const SslCertificateName& name) const override;
-
-	virtual ~SslCertificateImpl()
-	{
-	}
 
 private:
 	SSL* ssl = nullptr;

@@ -24,20 +24,13 @@
 class SslFactory
 {
 public:
+	virtual ~SslFactory()
+	{
+	}
+
 	/**
 	 * @brief Create SSL context that can be used to create new client or server connections
 	 * @retval SslContext* return null if the adapter cannot handle SSL. Useful only for dummy SSL adapters
 	 */
 	virtual SslContext* sslCreateContext() = 0;
-
-	/**
-	 * @brief Create SSL extension that can be used to set hostname, max fragment size, etc.
-	 * @see https://tools.ietf.org/html/rfc6066
-	 * @retval SslExtension* return null if the adapter does not support SSL extensions.
-	 */
-	virtual SslExtension* sslCreateExtension() = 0;
-
-	virtual ~SslFactory()
-	{
-	}
 };

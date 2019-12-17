@@ -1,6 +1,6 @@
 #include <SmingCore.h>
-#include "Data/HexString.h"
-#include "Network/HttpClient.h"
+#include <Data/HexString.h>
+#include <Network/HttpClient.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID

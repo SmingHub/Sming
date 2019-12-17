@@ -23,6 +23,12 @@ public:
 	{
 	}
 
+	virtual ~SslConnectionImpl()
+	{
+		delete certificate;
+		delete sessionId;
+	}
+
 	bool isHandshakeDone() override
 	{
 		return (ssl_handshake_status(ssl) == SSL_OK);
@@ -45,14 +51,6 @@ public:
 	SslSessionId* getSessionId() override;
 
 	SslCertificate* getCertificate() override;
-
-	virtual ~SslConnectionImpl()
-	{
-		delete certificate;
-		delete sessionId;
-		certificate = nullptr;
-		sessionId = nullptr;
-	}
 
 protected:
 	SslContext* context = nullptr;

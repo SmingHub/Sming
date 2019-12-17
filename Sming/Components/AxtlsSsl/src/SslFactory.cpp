@@ -12,7 +12,6 @@
 
 #include <Network/Ssl/SslInterface.h>
 #include "SslContextImpl.h"
-#include "SslExtensionImpl.h"
 
 class SslFactoryImpl : public SslFactory
 {
@@ -20,10 +19,5 @@ public:
 	SslContext* sslCreateContext() override
 	{
 		return new SslContextImpl();
-	}
-
-	SslExtension* sslCreateExtension()
-	{
-		return new SslExtensionImpl();
 	}
 };

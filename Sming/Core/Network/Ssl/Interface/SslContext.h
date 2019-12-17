@@ -92,7 +92,7 @@ public:
 	 */
 	SslConnection* createClient(SslSessionId* sessionId, SslExtension* sslExtensions)
 	{
-		return doCreateClient(sessionId != nullptr ? sessionId->getValue() : nullptr,
+		return internalCreateClient(sessionId != nullptr ? sessionId->getValue() : nullptr,
 							  sessionId != nullptr ? sessionId->getLength() : 0, sslExtensions);
 	}
 
@@ -122,7 +122,7 @@ protected:
 	 *
 	 * @retval SslConnection*
 	 */
-	virtual SslConnection* doCreateClient(const uint8_t* sessionData, size_t length, SslExtension* sslExtensions) = 0;
+	virtual SslConnection* internalCreateClient(const uint8_t* sessionData, size_t length, SslExtension* sslExtensions) = 0;
 
 protected:
 	tcp_pcb* tcp = nullptr;  // << should contain active tcp connection
