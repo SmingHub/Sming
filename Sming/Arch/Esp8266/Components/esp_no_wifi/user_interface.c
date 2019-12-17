@@ -3,9 +3,9 @@
 
 bool protect_flag;
 bool timer2_ms_flag;
-uint32_t system_param_sector_start;
 uint32_t WdevTimOffSet;
 static bool os_print_enabled = true;
+struct rst_info rst_if;
 
 void ets_update_cpu_frequency(uint8_t freq);
 void system_restart_core(void);
@@ -261,8 +261,7 @@ void system_restart_local(void)
 
 struct rst_info* system_get_rst_info(void)
 {
-	static struct rst_info info = {REASON_DEFAULT_RST};
-	return &info;
+	return &rst_if;
 }
 
 bool spi_flash_erase_sector_check(void)

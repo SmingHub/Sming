@@ -25,11 +25,11 @@ $(COMPONENT_RULE)$(EXTRA_OBJ): sdk/user_interface.o
 		-j *UND* \
 		$(addprefix -j .text.,$(NOWIFI_SYMS)) \
 		$(foreach f,$(NOWIFI_SYMS),--rename-section .text.$f=.iram.text) \
-		sdk/user_interface.o $@
+		$< $@
 
-$(COMPONENT_RULE)sdk/user_interface.o:
+$(COMPONENT_RULE)sdk/%.o:
 	mkdir -p sdk
-	cd sdk && $(AR) x $(SDK_LIBDIR)/libmain.a user_interface.o
+	cd sdk && $(AR) x $(SDK_LIBDIR)/libmain.a $(<F)
 
 # Remove `user_interface.o` object and weaken our entry point
 define NOWIFI_LIBMAIN_COMMANDS

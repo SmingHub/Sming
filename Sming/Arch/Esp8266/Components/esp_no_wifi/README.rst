@@ -1,19 +1,28 @@
-No WiFi
-=======
+Esp8266 No WiFi
+===============
 
 .. highlight:: bash
 
 Background
 ----------
 
-Based on https://github.com/pvvx/SDKnoWiFi/.
+Based on SDK 3.0.1 disassemblies with reference and thanks to:
 
-The problem we have is the ``user_interface.o`` module within ``libmain.a``, which mixes up
+-  https://github.com/pvvx/esp8266web Further development of
+
+   -  https://github.com/pvvx/SDKnoWiFi
+   -  https://github.com/pvvx/MinEspSDKLib
+
+-  https://github.com/cnlohr/nosdk8266
+
+The problem we have is to disentangle the wifi functions from the SDK within the
+``app_main.o`` and ``user_interface.o`` modules from ``libmain.a``.
+In particular, the :c:func:`user_start` code which mixes up
 wifi stuff with system code so it cannot be easily separated.
 
 The SDKnoWiFi implements the startup code and some system functions but contains a lot of stuff
-which is provided by the SDK and in other parts of the Sming framework. It is also not clear whether
-it is compatible with the current SDK.
+which is provided by the SDK and in other parts of the Sming framework. We need to provide
+replacement functions to interoperate correctly with the remaining SDK code.
 
 Process
 -------
@@ -61,14 +70,3 @@ If you want to disassemble other SDK libraries, do this::
 
    make sdk-disassemble SDK_LIBLIST="crypto net80211"
 
-
-Other info
-----------
-
-I attempted to separate out the objects within the SDK libraries to minimise the ones
-actually needed, but ended up having to include WiFi stuff (clock initialisation, presumably)
-and things got out of hand.
-
-Weakening the offending functions in the ``user_interface.o`` code helps in some cases,
-but the main startup code is a large blob with loads of relocations and disentangling it
-is awkward.
