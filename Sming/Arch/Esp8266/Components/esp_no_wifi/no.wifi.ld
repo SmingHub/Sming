@@ -1,4 +1,6 @@
 PROVIDE ( system_soft_wdt_feed = pp_soft_wdt_feed );
+PROVIDE ( system_soft_wdt_restart = pp_soft_wdt_restart );
+PROVIDE ( system_soft_wdt_stop = pp_soft_wdt_stop );
 PROVIDE ( system_get_free_heap_size = xPortGetFreeHeapSize );
 PROVIDE ( system_os_task = ets_task );
 PROVIDE ( system_os_post = ets_post );
