@@ -44,6 +44,7 @@ SslConnection* SslContextImpl::internalCreateClient(const uint8_t* sessionData, 
 
 	SSL* ssl = ssl_client_new(context, clientfd, sessionData, sessionLength, extensions);
 	if(ssl == nullptr) {
+		delete extensions;
 		return nullptr;
 	}
 
@@ -69,7 +70,7 @@ SslConnection* SslContextImpl::createServer()
 bool SslContextImpl::loadMemory(const SslContextObject& memType, const uint8_t* data, size_t length,
 								const char* password)
 {
-	return (ssl_obj_memory_load(context, memType, data, length, password) != SSL_OK);
+	return (ssl_obj_memory_load(context, memType, data, length, password) == SSL_OK);
 }
 
 SslContextImpl::~SslContextImpl()
