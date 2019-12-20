@@ -38,6 +38,7 @@ include $(SMING_HOME)/build.mk
 # Components usually add their config variables to COMPONENT_VARS, which also controls variant creation for
 # the Component itself. If the variable only affects the application build, not the Component, then it should
 # be appended to CONFIG_VARS instead.
+# If a Component's external interface isn't affected, but a variant is required, use COMPONENT_RELINK_VARS.
 # The values of all CONFIG_VARS are cached after a successful build. A separate cache is maintained for
 # each build type (SMING_ARCH, SMING_RELEASE).
 CONFIG_VARS		:=
@@ -156,6 +157,7 @@ COMPONENT_LIBNAME		:= $1
 CMP_$1_BUILD_BASE		:= $3/$1
 COMPONENT_BUILD_DIR		:= $$(CMP_$1_BUILD_BASE)
 COMPONENT_VARS			:=
+COMPONENT_RELINK_VARS	:=
 COMPONENT_TARGETS		:=
 COMPONENT_DEPENDS		:=
 EXTRA_LIBS				:=
@@ -183,6 +185,8 @@ CMP_$1_INCDIRS			:= $$(COMPONENT_INCDIRS)
 # Variables including those inherited from dependencies (will be recursively expanded when required)
 CMP_$1_DEPENDS			:= $$(COMPONENT_DEPENDS)
 CMP_$1_DEPVARS			= $$(CMP_$1_VARS) $$(foreach c,$$(CMP_$1_DEPENDS),$$(CMP_$$c_DEPVARS))
+CMP_$1_RELINK_VARS		:= $$(COMPONENT_RELINK_VARS)
+CMP_$1_ALL_VARS			= $$(sort $$(CMP_$1_DEPVARS) $$(CMP_$1_RELINK_VARS))
 APPCODE					+= $$(call AbsoluteSourcePath,$2,$$(CMP_$1_APPCODE))
 COMPONENTS				+= $$(filter-out $$(COMPONENTS),$$(CMP_$1_DEPENDS))
 ifneq (App,$1)
@@ -243,11 +247,11 @@ $(eval $(call ParseComponentList,$(COMPONENTS)))
 define ParseComponentLibs
 CMP_$1_DEPVARS			:= $$(sort $$(CMP_$1_DEPVARS))
 ifneq (,$$(CMP_$1_LIBNAME))
-ifeq (,$$(CMP_$1_VARS))
+ifeq (,$$(CMP_$1_ALL_VARS))
 CMP_$1_LIBHASH			:=
 COMPONENT_VARIANT		:= $$(CMP_$1_LIBNAME)
 else
-COMPONENT_VARIABLES		:= $$(foreach $$v,$$(CMP_$1_DEPVARS),$$($$v)=$$($$($$v)))
+COMPONENT_VARIABLES		:= $$(foreach $$v,$$(CMP_$1_ALL_VARS),$$($$v)=$$($$($$v)))
 CMP_$1_LIBHASH			:= $$(call CalculateVariantHash,COMPONENT_VARIABLES)
 COMPONENT_VARIANT		:= $$(CMP_$1_LIBNAME)-$$(CMP_$1_LIBHASH)
 endif
@@ -265,7 +269,8 @@ endif
 endef
 
 # Order unimportant so sort for ease of reading and remove duplicates
-CONFIG_VARS := $(sort $(CONFIG_VARS))
+CONFIG_VARS				:= $(sort $(CONFIG_VARS))
+RELINK_VARS				+= $(foreach c,$(COMPONENTS),$(CMP_$c_RELINK_VARS))
 
 # Always build App last, using a variant based on all config variables
 # Note that a link step is always performed, so nothing needs to be done with RELINK_VARS
@@ -280,7 +285,8 @@ export GLOBAL_CFLAGS
 export CONFIG_VARS
 
 # Export all config variables
-$(foreach v,$(CONFIG_VARS) $(CACHE_VARS),$(eval export $v))
+EXPORT_VARS := $(sort $(CONFIG_VARS) $(CACHE_VARS) $(RELINK_VARS))
+$(foreach v,$(EXPORT_VARS),$(eval export $v))
 
 
 ##@Building
@@ -458,9 +464,11 @@ define PrintComponentInfo
 		$(if $(CMP_$1_DEPENDS),$(info $(nullstr)    Depends: $(CMP_$1_DEPENDS)))
 		$(if $(CMP_$1_APPCODE),$(info $(nullstr)    Appcode: $(CMP_$1_APPCODE)))
 		$(if $(CMP_$1_TARGETS),$(info $(nullstr)    Targets: $(notdir $(CMP_$1_TARGETS))))
-		$(if $(CMP_$1_DEPVARS),\
+		$(if $(CMP_$1_ALL_VARS),\
 			$(info $(nullstr)    Variables:)\
-			$(foreach v,$(CMP_$1_DEPVARS),$(info $(nullstr)    $(if $(filter $v,$(CMP_$1_VARS)), ,i) $v=$($v)) )) )
+			$(foreach v,$(CMP_$1_ALL_VARS),\
+				$(info $(nullstr)    $(if $(filter $v,$(CMP_$1_VARS) $(CMP_$1_RELINK_VARS)), ,i) $v=$($v)) ))
+			)
 endef
 
 .PHONY: list-components
