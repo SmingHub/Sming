@@ -15,7 +15,7 @@ endef
 LIBMAIN_COMMANDS += $(APP_LIBMAIN_COMMANDS)
 
 # build customized libmain
-LIBMAIN_HASH	:= $(firstword $(shell echo -n $(LIBMAIN_COMMANDS) | md5sum -t))
+LIBMAIN_HASH	:= $(call CalculateVariantHash,LIBMAIN_COMMANDS)
 LIBMAIN := main-$(LIBMAIN_HASH)
 
 LIBMAIN_SRC = $(SDK_LIBDIR)/libmain.a

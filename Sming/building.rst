@@ -1,6 +1,8 @@
 Sming build system
 ==================
 
+.. highlight:: text
+
 Introduction
 ------------
 
@@ -161,9 +163,7 @@ Placing Components in a common location allows them to be used by
 multiple projects. To set up your own Component repository, create a
 directory in a suitable location which will contain your Components and
 set ``COMPONENT_SEARCH_DIRS`` to the full path of that directory. For
-example:
-
-.. code-block:: text
+example::
 
    |_ opt/
       |_ shared/
@@ -179,9 +179,7 @@ be selected instead of the one provided with Sming.
 Directory layout
 ----------------
 
-The main Sming repo. is laid out like this:
-
-.. code-block:: text
+The main Sming repo. is laid out like this::
 
    |_ sming/
       |_ .appveyor.yml              CI testing (Windows)
@@ -237,9 +235,7 @@ The main Sming repo. is laid out like this:
       |_ tests/                     Integration test applications
          |_ ...
 
-A typical Project looks like this:
-
-.. code-block:: text
+A typical Project looks like this::
 
    |_ Basic_Blink/
       |_ Makefile                   Just includes project.mk
@@ -331,30 +327,55 @@ building, not just their own variables.
 The type of a configuration variable is defined by adding its *name* to
 one of the following lists:
 
-``CONFIG_VARS`` The Application library derives its variant from these
-variables. Use this type if the Component doesn’t require a rebuild, but
-the application does.
+.. envvar:: CONFIG_VARS
 
-``COMPONENT_VARS`` A Component library derives its variant from these
-variables. Any variable which requires a rebuild of the Component
-library itself must be listed. For example, the ``esp-open-lwip``
-Component defines this as ``ENABLE_LWIPDEBUG ENABLE_ESPCONN``. The
-default values for these produces
-``ENABLE_LWIPDEBUG=0 ENABLE_ESPCONN=0``, which is hashed (using MD5) to
-produce ``a46d8c208ee44b1ee06f8e69cfa06773``, which is appended to the
-library name.
+   The Application library derives its variant from these
+   variables. Use this type if the Component doesn’t require a rebuild, but
+   the application does.
 
-``RELINK_VARS`` Code isn’t re-compiled, but libraries are re-linked and
-firmware images re-generated if any of these variables are changed. For
-example, ``make RBOOT_ROM_0=new-rom-file`` rewrites the firmware image
-using the given filename. (Also, as the value is cached, if you then do
-``make flashapp`` that same iamge gets flashed.)
+.. envvar:: COMPONENT_VARS
 
-``CACHE_VARS`` These variables have no effect on building, but are
-cached. Variables such as ``COM_SPEED_ESPTOOL`` fall into this category.
+   A Component library derives its variant from these
+   variables. Any variable which requires a rebuild of the Component
+   library itself must be listed. For example, the ``esp-open-lwip``
+   Component defines this as ``ENABLE_LWIPDEBUG ENABLE_ESPCONN``. The
+   default values for these produces
+   ``ENABLE_LWIPDEBUG=0 ENABLE_ESPCONN=0``, which is hashed (using MD5) to
+   produce ``a46d8c208ee44b1ee06f8e69cfa06773``, which is appended to the
+   library name.
 
-``DEBUG_VARS`` are generally for information only, and are not cached
-(except for :envvar:`SMING_ARCH` and :envvar:`SMING_RELEASE`).
+   All dependent Components (which list this one in :envvar:`COMPONENT_DEPENDS`)
+   will also have a variant created.
+
+.. envvar:: COMPONENT_RELINK_VARS
+
+   Behaves just like ``COMPONENT_VARS`` except dependent Components are not rebuilt.
+   This is appropriate where the public interface (header files) are not affected
+   by the variable setting, but the library implementation still requires a variant.
+
+.. envvar:: RELINK_VARS
+
+   Code isn’t re-compiled, but libraries are re-linked and
+   firmware images re-generated if any of these variables are changed. For
+   example, ``make RBOOT_ROM_0=new-rom-file`` rewrites the firmware image
+   using the given filename. (Also, as the value is cached, if you then do
+   ``make flashapp`` that same iamge gets flashed.)
+
+.. envvar:: CACHE_VARS
+
+   These variables have no effect on building, but are
+   cached. Variables such as ``COM_SPEED_ESPTOOL`` fall into this category.
+  
+
+.. envvar:: DEBUG_VARS
+
+   These are generally for information only, and are not cached
+   (except for :envvar:`SMING_ARCH` and :envvar:`SMING_RELEASE`).
+
+
+Note that the lists not prefixed ``COMPONENT_xx`` are global and so should only
+be appended, never assigned.
+
 
 Dependencies
 ~~~~~~~~~~~~
@@ -388,9 +409,7 @@ are pulled in, as follows:
    that the submodule is present and correct.
 
 The patch file must have the same name as the submodule, with a .patch
-extension. It can be located in the submodule’s parent directory:
-
-::
+extension. It can be located in the submodule’s parent directory::
 
    |_ Components/
       |_ heap/
@@ -401,9 +420,7 @@ extension. It can be located in the submodule’s parent directory:
          ...
 
 However, if the Component is itself a submodule, then patch files must
-be placed in a ``../.patches`` directory:
-
-::
+be placed in a ``../.patches`` directory::
 
    |_ Libraries/
       |_ .patches/
@@ -420,8 +437,7 @@ advantages to this approach:
 1. Don’t need to modify or create .patch
 2. Changes to the file are easier to follow than in a .patch
 3. **IMPORTANT** Adding a component.mk file in this manner allows the
-   build system to resolve dependencies before any submodules are
-   fetched.
+   build system to resolve dependencies before any submodules are fetched.
 
 In the above example, the ``component.mk`` file defines a dependency on
 the ``Adafruit_GFX`` library, so that will automatically get pulled in
