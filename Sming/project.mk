@@ -248,7 +248,7 @@ CMP_$1_LIBHASH			:=
 COMPONENT_VARIANT		:= $$(CMP_$1_LIBNAME)
 else
 COMPONENT_VARIABLES		:= $$(foreach $$v,$$(CMP_$1_DEPVARS),$$($$v)=$$($$($$v)))
-CMP_$1_LIBHASH			:= $$(firstword $$(shell echo -n $$(COMPONENT_VARIABLES) | md5sum -t))
+CMP_$1_LIBHASH			:= $$(call CalculateVariantHash,COMPONENT_VARIABLES)
 COMPONENT_VARIANT		:= $$(CMP_$1_LIBNAME)-$$(CMP_$1_LIBHASH)
 endif
 ifneq ($$(COMPONENT_VARIANT),$1)

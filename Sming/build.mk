@@ -171,6 +171,12 @@ CXXFLAGS			+= -std=$(SMING_CPP_STD)
 # Component (user) libraries have a special prefix so linker script can identify them
 CLIB_PREFIX := clib-
 
+# Calculate a hash string for appending to library names, etc.
+# $1 -> Name of variable containing data to be hashed
+define CalculateVariantHash
+$(firstword $(shell echo -n $($1) | md5sum -t))
+endef
+
 # Fetch full path for submodules matching given pattern
 # Note that scanning .gitmodules is considerably quicker than using GIT
 # $1 -> Path to repo working directory
