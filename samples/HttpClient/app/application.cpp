@@ -1,5 +1,4 @@
 #include <SmingCore.h>
-#include <Data/HexString.h>
 #include <Network/HttpClient.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
