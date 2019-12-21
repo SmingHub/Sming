@@ -4,32 +4,35 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * SslSessionId.h
+ * SessionId.h
  *
  ****/
 
 #pragma once
 
 #include "WString.h"
+#include <Data/HexString.h>
 
+namespace Ssl
+{
 /**
  * @brief Manages buffer to store SSL Session ID
  * @ingroup ssl
  */
-class SslSessionId
+class SessionId
 {
 public:
-	const uint8_t* getValue()
+	const uint8_t* getValue() const
 	{
 		return reinterpret_cast<const uint8_t*>(value.c_str());
 	}
 
-	unsigned getLength()
+	unsigned getLength() const
 	{
 		return value.length();
 	}
 
-	bool isValid()
+	bool isValid() const
 	{
 		return getLength() != 0;
 	}
@@ -43,6 +46,25 @@ public:
 		return true;
 	}
 
+	/**
+	 * @brief Return a string representation of the session ID
+	 */
+	String toString() const
+	{
+		return makeHexString(getValue(), getLength());
+	}
+
+	operator String() const
+	{
+		return toString();
+	}
+
 private:
 	String value;
 };
+
+} // namespace Ssl
+
+typedef Ssl::SessionId SslSessionId;
+
+typedef Ssl::SessionId SSLSessionId SMING_DEPRECATED; ///< @deprecated Use Ssl::SessionId instead

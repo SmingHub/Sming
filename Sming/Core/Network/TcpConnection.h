@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <Network/Ssl/SslInterface.h>
+#include <Network/Ssl/Session.h>
 #include <IpAddress.h>
 
 #define NETWORK_DEBUG
@@ -111,18 +111,11 @@ public:
 
 	// [ SSL related methods]
 
-	/**
-	 * @brief Specifies the SSL implementation that can be used.
-	 * @param sslFactory
-	 */
-	void setSslFactory(SslFactory* sslFactory)
+	void addSslOptions(uint32_t options)
 	{
-		this->sslFactory = sslFactory;
-	}
-
-	void addSslOptions(uint32_t sslOptions)
-	{
-		this->sslOptions |= sslOptions;
+		if(sslCreateSession()) {
+			ssl->options |= options;
+		}
 	}
 
 	/**
@@ -147,8 +140,11 @@ public:
 	bool setSslKeyCert(const uint8_t* key, int keyLength, const uint8_t* certificate, int certificateLength,
 					   const char* keyPassword = nullptr, bool freeAfterHandshake = false)
 	{
-		freeKeyCertAfterHandshake = freeAfterHandshake;
-		return sslKeyCert.assign(key, keyLength, certificate, certificateLength, keyPassword);
+		if(!sslCreateSession()) {
+			return false;
+		}
+		ssl->freeKeyCertAfterHandshake = freeAfterHandshake;
+		return ssl->keyCert.assign(key, keyLength, certificate, certificateLength, keyPassword);
 	}
 
 	/**
@@ -166,35 +162,34 @@ public:
 	*
 	* @retval bool  true of success, false or failure
 	*/
-	bool setSslKeyCert(const SslKeyCertPair& keyCert, bool freeAfterHandshake = false)
+	bool setSslKeyCert(const Ssl::KeyCertPair& keyCert, bool freeAfterHandshake = false)
 	{
-		freeKeyCertAfterHandshake = freeAfterHandshake;
-		return sslKeyCert.assign(keyCert);
-	}
-
-	/**
-	 * @brief Frees the memory used for the key and certificate pair
-	 */
-	void freeSslKeyCert()
-	{
-		sslKeyCert.free();
+		if(!sslCreateSession()) {
+			return false;
+		}
+		ssl->freeKeyCertAfterHandshake = freeAfterHandshake;
+		return ssl->keyCert.assign(keyCert);
 	}
 
 	// Called by TcpServer
-	void setSsl(SslConnection* ssl)
+	void setSsl(Ssl::Connection* connection)
 	{
-		this->ssl = ssl;
+		assert(ssl != nullptr);
+		delete ssl->connection;
+		ssl->connection = connection;
 		useSsl = true;
 	}
 
-	SslConnection* getSsl()
+	Ssl::Connection* getSsl()
 	{
-		return ssl;
+		return ssl ? ssl->connection : nullptr;
 	}
 
 protected:
 	void initialize(tcp_pcb* pcb);
 	bool internalConnect(IpAddress addr, uint16_t port);
+
+	bool sslCreateSession();
 
 	virtual err_t onConnected(err_t err);
 	virtual err_t onReceive(pbuf* buf);
@@ -202,7 +197,7 @@ protected:
 	virtual err_t onPoll();
 	virtual void onError(err_t err);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
-	virtual err_t onSslConnected(SslConnection* ssl);
+	virtual err_t onSslConnected(Ssl::Connection* ssl);
 
 	// These methods are called via LWIP handlers
 	err_t internalOnConnected(err_t err);
@@ -229,17 +224,7 @@ protected:
 	uint16_t timeOut = USHRT_MAX; ///< By default a TCP connection does not have a time out
 	bool canSend = true;
 	bool autoSelfDestruct = true;
-
-	SslFactory* sslFactory = nullptr; /// < The factory implementation to use. Must be set to enable SSL connections
-	SslContext* sslContext = nullptr;
-	SslConnection* ssl = nullptr;
-	SslExtension* sslExtension = nullptr;
-	bool sslConnected = false;
-	uint32_t sslOptions = 0;
-	SslKeyCertPair sslKeyCert;
-	bool freeKeyCertAfterHandshake = false;
-	SslSessionId* sslSessionId = nullptr;
-
+	Ssl::Session* ssl = nullptr;
 	bool useSsl = false;
 
 private:

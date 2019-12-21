@@ -17,7 +17,7 @@
 #pragma once
 
 #include "TcpConnection.h"
-#include "Ssl/SslValidator.h"
+#include <Network/Ssl/Validator.h>
 
 class TcpClient;
 class ReadWriteStream;
@@ -122,11 +122,11 @@ public:
 	 * @param callback The callback function to be invoked on validation
 	 * @param data The data to pass to the callback
 	 * @note The callback is responsible for releasing the data if appropriate.
-	 * See SslValidatorCallback for further details.
+	 * See Ssl::Validator::Callback for further details.
 	 *
 	 * @retval bool true on success, false on failure
 	 */
-	bool addSslValidator(SslValidatorCallback callback, void* data = nullptr)
+	bool addSslValidator(Ssl::Validator::Callback callback, void* data = nullptr)
 	{
 		return sslValidators.add(callback, data);
 	}
@@ -136,11 +136,11 @@ public:
 	 * @param fingerprint	The fingerprint data against which the match should be performed.
 	 * 						Must be allocated on the heap and will be deleted after use.
 	 * 						Do not re-use outside of this method.
-	 * @param type			The fingerprint type - see SslFingerprintType for details.
+	 * @param type			The fingerprint type - see Ssl::FingerprintType for details.
 	 *
 	 * @retval bool true on success, false on failure
 	 */
-	bool pinCertificate(const uint8_t* fingerprint, SslFingerprintType type)
+	bool pinCertificate(const uint8_t* fingerprint, Ssl::FingerprintType type)
 	{
 		return sslValidators.add(fingerprint, type);
 	}
@@ -152,7 +152,7 @@ public:
 	 *
 	 * @retval bool  true on success, false on failure
 	 */
-	bool pinCertificate(SslFingerprints& fingerprints)
+	bool pinCertificate(Ssl::Fingerprints& fingerprints)
 	{
 		return sslValidators.add(fingerprints);
 	}
@@ -166,13 +166,13 @@ protected:
 
 	virtual void onFinished(TcpClientState finishState);
 
-	err_t onSslConnected(SslConnection* ssl) override
+	err_t onSslConnected(Ssl::Connection* connection) override
 	{
-		if(ssl == nullptr) {
+		if(connection == nullptr) {
 			return ERR_ABRT;
 		}
 
-		return sslValidators.validate(ssl->getCertificate()) ? ERR_OK : ERR_ABRT;
+		return sslValidators.validate(&connection->getCertificate()) ? ERR_OK : ERR_ABRT;
 	}
 
 	void pushAsyncPart();
@@ -194,7 +194,7 @@ private:
 	uint16_t totalSentConfirmedBytes = 0;
 	uint16_t totalSentBytes = 0;
 
-	SslValidatorList sslValidators;
+	Ssl::ValidatorList sslValidators;
 };
 
 /** @} */

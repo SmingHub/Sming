@@ -39,8 +39,6 @@ public:
 		while(waitingQueue.count() != 0) {
 			delete waitingQueue.dequeue();
 		}
-
-		delete sslSessionId;
 	}
 
 	bool connect(const String& host, int port, bool useSsl = false, uint32_t sslOptions = 0) override;

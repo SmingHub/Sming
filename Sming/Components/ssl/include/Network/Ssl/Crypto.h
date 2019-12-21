@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * SslInterface.h
+ * Crypto.h
  *
  * @author: 2019 - Slavey Karadzhov <slav@attachix.com>
  *
@@ -22,7 +22,7 @@
 #define SHA1_SIZE 20
 #define SHA256_SIZE 32
 
-// The following cryptographic functions should be present in every SSL implementation
+// Common cryptographic support functions
 #ifdef __cplusplus
 extern "C" {
 #endif

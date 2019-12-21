@@ -4,22 +4,24 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * SslValidator.cpp
+ * Validator.cpp
  *
  * @author: 2018 - Slavey Karadzhov <slav@attachix.com>
  *
  ****/
 
-#include "SslValidator.h"
+#include <Network/Ssl/Validator.h>
 #include <debug_progmem.h>
 
-static bool sslValidateCertificateSha1(SslCertificate* ssl, void* data)
+namespace Ssl
+{
+static bool validateCertificateSha1(const Certificate* certificate, void* data)
 {
 	uint8_t* hash = static_cast<uint8_t*>(data);
 	bool success = false;
 	if(hash != nullptr) {
-		if(ssl != nullptr) {
-			success = ssl->matchFingerprint(hash);
+		if(certificate != nullptr) {
+			success = certificate->matchFingerprint(hash);
 		}
 		delete[] hash;
 	}
@@ -27,13 +29,13 @@ static bool sslValidateCertificateSha1(SslCertificate* ssl, void* data)
 	return success;
 }
 
-static bool sslValidatePublicKeySha256(SslCertificate* ssl, void* data)
+static bool validatePublicKeySha256(const Certificate* certificate, void* data)
 {
 	uint8_t* hash = static_cast<uint8_t*>(data);
 	bool success = false;
 	if(hash != nullptr) {
-		if(ssl != nullptr) {
-			success = ssl->matchFingerprint(hash);
+		if(certificate != nullptr) {
+			success = certificate->matchFingerprint(hash);
 		}
 		delete[] hash;
 	}
@@ -41,11 +43,9 @@ static bool sslValidatePublicKeySha256(SslCertificate* ssl, void* data)
 	return success;
 }
 
-/* SslValidatorList */
-
-bool SslValidatorList::validate(SslCertificate* ssl)
+bool ValidatorList::validate(const Certificate* certificate)
 {
-	if(ssl != nullptr && count() == 0) {
+	if(certificate != nullptr && count() == 0) {
 		// No validators specified, always succeed
 		debug_d("SSL Validator: list empty, allow connection");
 		return true;
@@ -59,7 +59,7 @@ bool SslValidatorList::validate(SslCertificate* ssl)
 	for(unsigned i = 0; i < count(); i++) {
 		auto& validator = operator[](i);
 		// If we've already succeeded, then just release validator data without checking
-		if(validator.callback(success ? nullptr : ssl, validator.data)) {
+		if(validator.callback(success ? nullptr : certificate, validator.data)) {
 			debug_d("SSL validator: positive match");
 			success = true;
 		}
@@ -67,22 +67,22 @@ bool SslValidatorList::validate(SslCertificate* ssl)
 		validator.data = nullptr;
 	}
 
-	if(ssl != nullptr && !success) {
+	if(certificate != nullptr && !success) {
 		debug_d("SSL validator: NO match");
 	}
 
 	return success;
 }
 
-bool SslValidatorList::add(const uint8_t* fingerprint, SslFingerprintType type)
+bool ValidatorList::add(const uint8_t* fingerprint, FingerprintType type)
 {
-	SslValidatorCallback callback = nullptr;
+	Validator::Callback callback = nullptr;
 	switch(type) {
 	case eSFT_CertSha1:
-		callback = sslValidateCertificateSha1;
+		callback = validateCertificateSha1;
 		break;
 	case eSFT_PkSha256:
-		callback = sslValidatePublicKeySha256;
+		callback = validatePublicKeySha256;
 		break;
 	default:
 		debug_d("Unsupported SSL certificate fingerprint type");
@@ -96,7 +96,7 @@ bool SslValidatorList::add(const uint8_t* fingerprint, SslFingerprintType type)
 	return add(callback, const_cast<uint8_t*>(fingerprint));
 }
 
-bool SslValidatorList::add(SslFingerprints& fingerprints)
+bool ValidatorList::add(Fingerprints& fingerprints)
 {
 	bool success = false;
 	if(fingerprints.certSha1 != nullptr) {
@@ -111,3 +111,5 @@ bool SslValidatorList::add(SslFingerprints& fingerprints)
 
 	return success;
 }
+
+} // namespace Ssl

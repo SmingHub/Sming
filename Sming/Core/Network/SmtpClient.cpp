@@ -18,10 +18,10 @@
 
 #include "SmtpClient.h"
 #include "WebHelpers/base64.h"
-#include "Data/Stream/QuotedPrintableOutputStream.h"
-#include "Data/Stream/Base64OutputStream.h"
-#include "Data/HexString.h"
-#include "Network/Ssl/SslCrypto.h"
+#include <Data/Stream/QuotedPrintableOutputStream.h>
+#include <Data/Stream/Base64OutputStream.h>
+#include <Data/HexString.h>
+#include <Network/Ssl/Crypto.h>
 
 #define ADVANCE                                                                                                        \
 	{                                                                                                                  \

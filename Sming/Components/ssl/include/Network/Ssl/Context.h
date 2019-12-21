@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * SslInterface.h
+ * Context.h
  *
  * @author: 2019 - Slavey Karadzhov <slav@attachix.com>
  *
@@ -12,12 +12,14 @@
 
 #pragma once
 
-#include <user_config.h>
-#include "../SslStructs.h"
-#include "SslExtension.h"
+#include "Extension.h"
+#include "Connection.h"
+#include "SessionId.h"
 
-class SslConnection;
+struct tcp_pcb;
 
+namespace Ssl
+{
 /**
  * @ingroup ssl
  * @brief Encapsulates operations related to creating a SSL context.
@@ -34,21 +36,22 @@ class SslConnection;
 #define SSL_DISPLAY_CERTS 0x00200000
 #define SSL_DISPLAY_RSA 0x00400000
 
-/**
- * @brief Describes the different types of data that can be added to a context
- */
-enum SslContextObject {
-	eSCO_X509_CERT = 1, // << certificate - can be client or server one
-	eSCO_X509_CACERT,   // << Certificate Authority certificate
-	eSCO_RSA_KEY,		// << RSA key - can be public or private
-	eSCO_PKCS8,
-	eSCO_PKCS12
-};
-
-class SslContext
+class Context
 {
 public:
-	virtual ~SslContext()
+	/**
+	 * @brief Describes the different types of data that can be added to a context
+	 * @note These are defined by AXTLS. Other implementations will need to translate them.
+	 */
+	enum class ObjectType {
+		X509_CERT = 1, // << certificate - can be client or server one
+		X509_CACERT,   // << Certificate Authority certificate
+		RSA_KEY,	   // << RSA key - can be public or private
+		PKCS8,
+		PKCS12,
+	};
+
+	virtual ~Context()
 	{
 	}
 
@@ -78,30 +81,29 @@ public:
 	 *
 	 * @retval boo true on success
 	 */
-	virtual bool loadMemory(const SslContextObject& memType, const uint8_t* data, size_t length,
-							const char* password) = 0;
+	virtual bool loadMemory(ObjectType memType, const uint8_t* data, size_t length, const char* password) = 0;
 
 	/**
 	 * @brief Creates client SSL connection.
 	 *        Your SSL client use this call to make create a client connection to remote server.
-	 * @param sessionId* - if provided will try to use the sessionId for SSL resumption.
+	 * @param sessionId   If provided, will try to use the sessionId for SSL resumption.
 	 * 					  This will speed up consecutive SSL handshakes to the same server on the same port
-	 * @param sslExtensions*
+	 * @param extension
 	 *
-	 * @retval SslConnection*
+	 * @retval Connection*
 	 */
-	SslConnection* createClient(SslSessionId* sessionId, SslExtension* sslExtensions)
+	Connection* createClient(SessionId* sessionId, Extension* extension)
 	{
 		return internalCreateClient(sessionId != nullptr ? sessionId->getValue() : nullptr,
-							  sessionId != nullptr ? sessionId->getLength() : 0, sslExtensions);
+									sessionId != nullptr ? sessionId->getLength() : 0, extension);
 	}
 
 	/**
 	 * @brief Creates server SSL connection.
 	 *        Your SSL servers use this call to allow remote clients to connect to them and use SSL.
-	 * @retval SslConnection*
+	 * @retval Connection*
 	 */
-	virtual SslConnection* createServer() = 0;
+	virtual Connection* createServer() = 0;
 
 	/**
 	 * @brief Returns the current active tcp connection that is used
@@ -118,14 +120,14 @@ protected:
 	 *        Each SSL implementations should implement this method
 	 * @param sessionData
 	 * @param length session data length
-	 * @param SslExtension*
+	 * @param extension
 	 *
-	 * @retval SslConnection*
+	 * @retval Connection*
 	 */
-	virtual SslConnection* internalCreateClient(const uint8_t* sessionData, size_t length, SslExtension* sslExtensions) = 0;
+	virtual Connection* internalCreateClient(const uint8_t* sessionData, size_t length, Extension* extension) = 0;
 
 protected:
-	tcp_pcb* tcp = nullptr;  // << should contain active tcp connection
+	tcp_pcb* tcp = nullptr;  // << Active tcp connection
 	uint32_t options;		 // << SSL context options
 	size_t sessionCacheSize; // << Session Cache Size
 		//    Server: When the context is used to create a server connection this indicates how many
@@ -135,3 +137,5 @@ protected:
 };
 
 /** @} */
+
+} // namespace Ssl

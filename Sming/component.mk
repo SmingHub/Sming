@@ -21,6 +21,7 @@ COMPONENT_DEPENDS := \
 	ws_parser \
 	mqtt-codec \
 	libyuarel \
+	ssl \
 	terminal
 
 COMPONENT_DOCFILES := \
@@ -33,7 +34,6 @@ COMPONENT_DOCFILES := \
 	Core/Data/*.rst
 
 COMPONENT_DOXYGEN_PREDEFINED := \
-	ENABLE_SSL=1 \
 	ENABLE_CMD_EXECUTOR=1
 
 COMPONENT_DOXYGEN_INPUT := \
@@ -43,26 +43,6 @@ COMPONENT_DOXYGEN_INPUT := \
 	Services \
 	Wiring \
 	System
-
-# => SSL
-RELINK_VARS			+= ENABLE_SSL 
-ifeq ($(ENABLE_SSL),$(filter $(ENABLE_SSL),1 AXTLS))
-	SMING_FEATURES		:= SSL
-	COMPONENT_DEPENDS	+= AxtlsSsl
-else ifeq ($(ENABLE_SSL),MBEDTLS) 	
-	# TODO: ....
-else
-	COMPONENT_DEPENDS	+= DummySsl
-	ENABLE_SSL := 0
-endif
-
-# Prints SSL status when App gets built
-CUSTOM_TARGETS			+= check-ssl
-.PHONY:check-ssl
-check-ssl:
-ifeq ($(ENABLE_SSL),0)
-	$(info No SSL implementation is selected)
-endif
 
 # => Disable CommandExecutor functionality if not used and save some ROM and RAM
 COMPONENT_VARS			+= ENABLE_CMD_EXECUTOR

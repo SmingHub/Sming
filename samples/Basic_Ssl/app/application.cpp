@@ -10,27 +10,14 @@
 Timer procTimer;
 HttpClient downloadClient;
 
-/* Debug SSL functions */
-void displaySessionId(SslSessionId* sessionId)
-{
-	if(sessionId != nullptr && sessionId->isValid()) {
-		debugf("-----BEGIN SSL SESSION PARAMETERS-----");
-		debugf("%s", makeHexString(sessionId->getValue(), sessionId->getLength()).c_str());
-		debugf("-----END SSL SESSION PARAMETERS-----");
-	}
-}
-
 int onDownload(HttpConnection& connection, bool success)
 {
 	debugf("Got response code: %d", connection.getResponse()->code);
 	debugf("Success: %d", success);
 
-	SslConnection* ssl = connection.getSsl();
+	auto ssl = connection.getSsl();
 	if(ssl) {
-		SslCertificate* cert = ssl->getCertificate();
-		debugf("Common Name:\t\t\t%s\n", cert->getName(eSCN_CERT_COMMON_NAME).c_str());
-		debugf("Cipher: %s", ssl->getCipher().c_str());
-		displaySessionId(ssl->getSessionId());
+		ssl->printTo(Serial);
 	}
 
 	return 0; // return 0 on success in your callbacks

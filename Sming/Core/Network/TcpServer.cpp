@@ -53,41 +53,14 @@ bool TcpServer::listen(int port, bool useSsl)
 	this->useSsl = useSsl;
 
 	if(useSsl) {
-#ifdef SSL_DEBUG
-		sslOptions |= SSL_DISPLAY_STATES | SSL_DISPLAY_BYTES | SSL_DISPLAY_CERTS;
-#endif
-
-		if(sslFactory == nullptr) {
+		if(ssl == nullptr) {
 			debug_e("Unable to create SSL connection without SSL implementation.");
 			return false;
 		}
 
-		delete sslContext;
-		sslContext = sslFactory->sslCreateContext();
-		if(sslContext == nullptr) {
+		if(!ssl->listen(tcp)) {
 			return false;
 		}
-
-		sslContext->init(tcp, sslOptions, sslSessionCacheSize);
-		if(!sslKeyCert.isValid()) {
-			debug_e("SSL: server certificate and key are not provided!");
-			return false;
-		}
-
-		if(!sslContext->loadMemory(eSCO_RSA_KEY, sslKeyCert.getKey(), sslKeyCert.getKeyLength(),
-								   sslKeyCert.getKeyPassword())) {
-			debug_e("SSL: Unable to load server private key");
-			return false;
-		}
-
-		if(!sslContext->loadMemory(eSCO_X509_CERT, sslKeyCert.getCertificate(), sslKeyCert.getCertificateLength(),
-								   nullptr)) {
-			debug_e("SSL: Unable to load server certificate");
-			return false;
-		}
-
-		// TODO: test: free the certificate data on server destroy...
-		freeKeyCertAfterHandshake = true;
 	}
 
 	tcp = tcp_listen(tcp);
@@ -123,7 +96,8 @@ err_t TcpServer::onAccept(tcp_pcb* clientTcp, err_t err)
 
 	if(useSsl) {
 		debug_d("SSL: handshake start.");
-		client->setSsl(sslContext->createServer());
+		assert(ssl != nullptr && ssl->context != nullptr);
+		client->setSsl(ssl->context->createServer());
 	}
 
 	client->setDestroyedDelegate(TcpConnectionDestroyedDelegate(&TcpServer::onClientDestroy, this));

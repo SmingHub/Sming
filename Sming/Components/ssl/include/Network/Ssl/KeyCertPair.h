@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * SslKeyCertPair.h
+ * KeyCertPair.h
  *
  ****/
 
@@ -12,11 +12,13 @@
 
 #include "WString.h"
 
+namespace Ssl
+{
 /**
  * @brief Class to manage an SSL key certificate with optional password
  * @ingroup ssl
  */
-class SslKeyCertPair
+class KeyCertPair
 {
 public:
 	bool isValid()
@@ -68,7 +70,7 @@ public:
 	 *  @retval bool false on memory allocation failure
 	 *  @note We take a new copy of the certificate
 	 */
-	bool assign(const SslKeyCertPair& keyCert)
+	bool assign(const KeyCertPair& keyCert)
 	{
 		*this = keyCert;
 		return (key == keyCert.key) && (keyPassword == keyCert.keyPassword) && (certificate == keyCert.certificate);
@@ -111,3 +113,9 @@ private:
 	String keyPassword;
 	String certificate;
 };
+
+} // namespace Ssl
+
+typedef Ssl::KeyCertPair SslKeyCertPair SMING_DEPRECATED; ///< @deprecated Use SslKeyCertPair instead
+
+typedef Ssl::KeyCertPair SSLKeyCertPair SMING_DEPRECATED; ///< @deprecated Use SslKeyCertPair instead

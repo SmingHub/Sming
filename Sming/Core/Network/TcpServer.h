@@ -66,8 +66,6 @@ public:
 
 	void shutdown();
 
-	using TcpConnection::setSslFactory;
-
 	/**
 	 * @brief Adds SSL support and specifies the server certificate and private key.
 	 */
@@ -91,7 +89,6 @@ public:
 	uint16_t activeClients = 0;
 
 protected:
-	int sslSessionCacheSize = 50;
 	size_t minHeapSize = 16384;
 
 	bool active = true;
