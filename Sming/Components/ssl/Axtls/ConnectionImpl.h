@@ -14,15 +14,24 @@
 
 #include <Network/Ssl/Connection.h>
 #include "CertificateImpl.h"
-#include <axtls-8266/compat/lwipr_compat.h>
 
 namespace Ssl
 {
 class ConnectionImpl : public Connection
 {
 public:
-	ConnectionImpl(SSL* ssl) : ssl(ssl), certificate(ssl)
+	ConnectionImpl(tcp_pcb* tcp) : tcp(tcp)
 	{
+	}
+
+	~ConnectionImpl()
+	{
+		delete certificate;
+	}
+
+	void init(SSL* ssl)
+	{
+		this->ssl = ssl;
 	}
 
 	bool isHandshakeDone() override
@@ -30,19 +39,9 @@ public:
 		return (ssl_handshake_status(ssl) == SSL_OK);
 	}
 
-	int read(tcp_pcb* tcp, pbuf* encrypted, pbuf*& decrypted) override
-	{
-		int read_bytes = axl_ssl_read(ssl, tcp, encrypted, &decrypted);
+	int read(pbuf* encrypted, pbuf*& decrypted) override;
 
-		// TODO: process the response and check if it connection abort or an error....
-
-		return read_bytes;
-	}
-
-	int write(const uint8_t* data, size_t length) override
-	{
-		return axl_ssl_write(ssl, data, length);
-	}
+	int write(const uint8_t* data, size_t length) override;
 
 	int calcWriteSize(size_t plainTextLength) const override
 	{
@@ -64,15 +63,26 @@ public:
 		return id;
 	}
 
-	const Certificate& getCertificate() const override
+	const Certificate* getCertificate() const override
 	{
+		if(certificate == nullptr && ssl->x509_ctx != nullptr) {
+			certificate = new CertificateImpl(ssl);
+		}
+
 		return certificate;
 	}
 
+public:
+	// Called from axTLS
+	int port_write(uint8_t* buf, uint16_t bytes_needed);
+	int port_read(uint8_t* buf, int bytes_needed);
+
 private:
 	SSL* ssl;
-	CertificateImpl certificate;
-	SessionId sessionId;
+	mutable CertificateImpl* certificate = nullptr;
+	struct tcp_pcb* tcp = nullptr;
+	struct pbuf* tcp_pbuf = nullptr;
+	int pbuf_offset = 0;
 };
 
 } // namespace Ssl

@@ -130,7 +130,6 @@ public:
 
 	/**
 	 * @brief Reads encrypted information and decrypts it
-	 * @param tcp active tcp connection
 	 * @param encrypted Source encrypted data
 	 * @param decrypted Decrypted plaintext
 	 *
@@ -139,7 +138,7 @@ public:
 	 * 		 > 0 - when the is decrypted data
 	 * 		 < 0 - in case of an error
 	 */
-	virtual int read(tcp_pcb* tcp, pbuf* encrypted, pbuf*& decrypted) = 0;
+	virtual int read(pbuf* encrypted, pbuf*& decrypted) = 0;
 
 	/**
 	 * @brief Converts and sends plaintext data
@@ -174,9 +173,9 @@ public:
 	 *        That object MUST be owned by the Ssl::Connection implementation
 	 *        and should not be freed outside of it
 	 *
-	 * @retval Ssl::SessionId*
+	 * @retval Certificate* Returns NULL if there is no certificate available
 	 */
-	virtual const Certificate& getCertificate() const = 0;
+	virtual const Certificate* getCertificate() const = 0;
 
 	/**
 	 * @brief For debugging

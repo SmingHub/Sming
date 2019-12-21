@@ -44,6 +44,12 @@ struct Extension {
 		eSEFS_16K,
 	};
 	FragmentSize fragmentSize = eSEFS_Off;
+
+	void clear()
+	{
+		hostName = nullptr;
+		fragmentSize = eSEFS_Off;
+	}
 };
 
 /** @} */

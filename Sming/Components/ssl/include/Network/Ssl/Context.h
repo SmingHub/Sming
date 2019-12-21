@@ -59,24 +59,24 @@ public:
 	 * @brief Initializer method that must be called after object creation and before the creation
 	 * 		  of server or client connections
 	 * @param tcp active tcp connection
+	 *
 	 * @param options
+	 *
 	 * @param sessionCacheSize
+	 * 		Server: When the context is used to create a server connection this indicates how many
+	 * 			client sessions will be cached. Suggested value: 10
+	 * 		Client: When used to create a client connection this indicates how many ssl sessio ids
+	 * 			should be cached . Suggested value: 1
 	 *
 	 * @retval bool true on success
 	 */
-	virtual bool init(tcp_pcb* tcp, uint32_t options = 0, size_t sessionCacheSize = 1)
-	{
-		this->tcp = tcp;
-		this->options = options;
-		this->sessionCacheSize = sessionCacheSize;
-		return true;
-	}
+	virtual bool init(tcp_pcb* tcp, uint32_t options = 0, size_t sessionCacheSize = 1) = 0;
 
 	/**
 	 * @brief Use to load into memory certificates, public and private keys, etc.
 	 * @param memType the type of the data. Example: public key, client certificate, etc
-	 * @param data - the data should be in DER format ( https://wiki.openssl.org/index.php/DER )
-	 * @param length
+	 * @param data The data should be in DER format ( https://wiki.openssl.org/index.php/DER )
+	 * @param length Size of data in bytes
 	 * @param password - null terminated string
 	 *
 	 * @retval boo true on success
@@ -88,15 +88,11 @@ public:
 	 *        Your SSL client use this call to make create a client connection to remote server.
 	 * @param sessionId   If provided, will try to use the sessionId for SSL resumption.
 	 * 					  This will speed up consecutive SSL handshakes to the same server on the same port
-	 * @param extension
+	 * @param extension   Additional details required for connection
 	 *
 	 * @retval Connection*
 	 */
-	Connection* createClient(SessionId* sessionId, Extension* extension)
-	{
-		return internalCreateClient(sessionId != nullptr ? sessionId->getValue() : nullptr,
-									sessionId != nullptr ? sessionId->getLength() : 0, extension);
-	}
+	virtual Connection* createClient(SessionId* sessionId, const Extension& extension) = 0;
 
 	/**
 	 * @brief Creates server SSL connection.
@@ -104,36 +100,6 @@ public:
 	 * @retval Connection*
 	 */
 	virtual Connection* createServer() = 0;
-
-	/**
-	 * @brief Returns the current active tcp connection that is used
-	 * @retval tcp_pcb
-	 */
-	tcp_pcb& getTcp()
-	{
-		return *tcp;
-	}
-
-protected:
-	/**
-	 * @brief Creates client SSL connection.
-	 *        Each SSL implementations should implement this method
-	 * @param sessionData
-	 * @param length session data length
-	 * @param extension
-	 *
-	 * @retval Connection*
-	 */
-	virtual Connection* internalCreateClient(const uint8_t* sessionData, size_t length, Extension* extension) = 0;
-
-protected:
-	tcp_pcb* tcp = nullptr;  // << Active tcp connection
-	uint32_t options;		 // << SSL context options
-	size_t sessionCacheSize; // << Session Cache Size
-		//    Server: When the context is used to create a server connection this indicates how many
-		//    		client sessions will be cached. Suggested value: 10
-		//    Client: When used to create a client connection this indicates how many ssl sessio ids
-		//             should be cached . Suggested value: 1
 };
 
 /** @} */

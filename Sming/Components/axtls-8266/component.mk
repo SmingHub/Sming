@@ -1,11 +1,9 @@
-CACHE_VARS			:= SSL_DEBUG
-SSL_DEBUG			?= 0
+COMPONENT_RELINK_VARS	:= SSL_DEBUG
+SSL_DEBUG				?= 0
 
 COMPONENT_SUBMODULES	:= axtls-8266
 
 COMPONENT_SRCDIRS := \
-	src \
-	axtls-8266/compat \
 	axtls-8266/crypto \
 	axtls-8266/ssl
 
@@ -14,9 +12,9 @@ COMPONENT_SRCDIRS += \
 	axtls-8266/replacements
 endif
 
-COMPONENT_INCDIRS := \
-	. \
-	src \
+COMPONENT_INCDIRS := .
+
+EXTRA_INCDIR := \
 	axtls-8266 \
 	axtls-8266/ssl \
 	axtls-8266/crypto
@@ -25,7 +23,7 @@ GLOBAL_CFLAGS			+= -DLWIP_RAW=1
 COMPONENT_CFLAGS		:= -DWITH_PGM_READ_HELPER=1 -DAXTLS_BUILD
 ifeq ($(SSL_DEBUG),1)
 	COMPONENT_CFLAGS	+= -DAXL_DEBUG=1
-	GLOBAL_CFLAGS += -DSSL_DEBUG=1
+	GLOBAL_CFLAGS		+= -DSSL_DEBUG=1
 endif
 
 # Application

@@ -48,11 +48,6 @@ public:
 	}
 
 	/**
-	 * @brief Check we have a valid certificate
-	 */
-	virtual bool isValid() const = 0;
-
-	/**
     * @brief Check if certificate fingerprint (SHA1) matches the one given.
     * @param hash - SHA1 fingerprint to match against
     * @retval bool true on match, false otherwise

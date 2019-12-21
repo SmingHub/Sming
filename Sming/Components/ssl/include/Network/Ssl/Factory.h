@@ -31,7 +31,7 @@ public:
 
 	/**
 	 * @brief Create SSL context that can be used to create new client or server connections
-	 * @retval Context* return null if the adapter cannot handle SSL. Useful only for dummy SSL adapters
+	 * @retval Context* The constructed context, shouldn't fail (except on OOM)
 	 */
 	virtual Context* createContext() = 0;
 };

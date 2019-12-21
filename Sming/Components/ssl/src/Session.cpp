@@ -19,7 +19,9 @@ bool Session::listen(tcp_pcb* tcp)
 		return false;
 	}
 
-	context->init(tcp, options, cacheSize);
+	if(!context->init(tcp, options, cacheSize)) {
+		return false;
+	}
 
 	if(!keyCert.isValid()) {
 		debug_e("SSL: server certificate and key are not provided!");
@@ -61,7 +63,10 @@ err_t Session::onConnected(tcp_pcb* tcp)
 	debug_d("SSL: Show debug data ...");
 #endif
 
-	context->init(tcp, localOptions, 1);
+	if(!context->init(tcp, localOptions, 1)) {
+		return ERR_MEM;
+	}
+
 	if(keyCert.isValid()) {
 		// if we have client certificate -> try to use it.
 		if(!context->loadMemory(Ssl::Context::ObjectType::RSA_KEY, keyCert.getKey(), keyCert.getKeyLength(),
@@ -121,28 +126,27 @@ void Session::close()
 	delete connection;
 	connection = nullptr;
 
-	delete extension;
-	extension = nullptr;
+	extension.clear();
 
 	connected = false;
 }
 
-int Session::onReceive(tcp_pcb* tcp, pbuf*& p)
+int Session::read(pbuf* encrypted, pbuf*& decrypted)
 {
+	assert(encrypted != nullptr);
+
+	decrypted = nullptr;
+
 	if(connection == nullptr) {
+		pbuf_free(encrypted);
 		return ERR_CONN;
 	}
 
 	/* SSL handshake needs time. In theory we have max 8 seconds before the hardware watchdog resets the device */
 	WDT.alive();
 
-	struct pbuf* pout;
-	int read_bytes = connection->read(tcp, p, pout);
-
-	// free the SSL pbuf and put the decrypted data in the brand new pout pbuf
-	if(p != nullptr) {
-		pbuf_free(p);
-	}
+	int read_bytes = connection->read(encrypted, decrypted);
+	pbuf_free(encrypted);
 
 	if(read_bytes < 0) {
 		debug_d("SSL: Got error: %d", read_bytes);
@@ -164,35 +168,9 @@ int Session::onReceive(tcp_pcb* tcp, pbuf*& p)
 	} else {
 		// we got some decrypted bytes...
 		debug_d("SSL: Decrypted data len %d", read_bytes);
-
-		// put the decrypted data in a brand new pbuf
-		p = pout;
 	}
 
 	return read_bytes;
-}
-
-int Session::write(tcp_pcb* tcp, const uint8_t* data, size_t len)
-{
-	if(connection == nullptr) {
-		return ERR_CONN;
-	}
-
-	int expected = connection->calcWriteSize(len);
-	u16_t available = tcp ? tcp_sndbuf(tcp) : 0;
-	debug_d("SSL: Expected: %d, Available: %d", expected, available);
-	if(expected < 0 || available < expected) {
-		return ERR_MEM;
-	}
-
-	int written = connection->write(data, len);
-	debug_d("SSL: Write len: %d, Written: %d", len, written);
-	if(written < 0) {
-		debug_e("SSL: Write Error: %d", written);
-		return written;
-	}
-
-	return ERR_OK;
 }
 
 }; // namespace Ssl

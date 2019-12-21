@@ -19,67 +19,68 @@ ContextImpl::~ContextImpl()
 {
 	// Free context typically sends out closing message
 	ssl_ctx_free(context);
-	// Now we can free the connection
-	axl_free(tcp);
 }
 
 bool ContextImpl::init(tcp_pcb* tcp, uint32_t options, size_t sessionCacheSize)
 {
-	if(!Context::init(tcp, options, sessionCacheSize)) {
+	assert(context == nullptr);
+
+	context = ssl_ctx_new(SSL_CONNECT_IN_PARTS | options, sessionCacheSize);
+	if(context == nullptr) {
+		debug_e("SSL: Unable to allocate context");
 		return false;
 	}
 
-	axl_init(capacity);
-	ssl_ctx_free(context);
-	context = ssl_ctx_new(SSL_CONNECT_IN_PARTS | options, sessionCacheSize);
-
-	return (context != nullptr);
+	this->tcp = tcp;
+	return true;
 }
 
-Ssl::Connection* ContextImpl::internalCreateClient(const uint8_t* sessionData, size_t sessionLength,
-												   Extension* extension)
+Connection* ContextImpl::createClient(SessionId* sessionId, const Extension& extension)
 {
-	int clientfd = axl_append(tcp);
-	if(clientfd < 0) {
-		debug_d("SSL: Unable to add LWIP tcp -> clientfd mapping");
+	assert(context != nullptr);
+
+	auto ssl_ext = ssl_ext_new();
+	ssl_ext_set_host_name(ssl_ext, extension.hostName.c_str());
+	ssl_ext_set_max_fragment_size(ssl_ext, extension.fragmentSize);
+
+	auto connection = new ConnectionImpl(tcp);
+	auto client = ssl_client_new(context, int(connection), sessionId ? sessionId->getValue() : nullptr,
+								 sessionId ? sessionId->getLength() : 0, ssl_ext);
+	if(client == nullptr) {
+		ssl_ext_free(ssl_ext);
+		delete connection;
 		return nullptr;
 	}
 
-	SSL_EXTENSIONS* sslExtensions = nullptr;
-	if(extension != nullptr) {
-		sslExtensions = ssl_ext_new();
-		ssl_ext_set_host_name(sslExtensions, extension->hostName.c_str());
-		ssl_ext_set_max_fragment_size(sslExtensions, extension->fragmentSize);
-	}
-
-	SSL* ssl = ssl_client_new(context, clientfd, sessionData, sessionLength, sslExtensions);
-	if(ssl == nullptr) {
-		delete sslExtensions;
-		return nullptr;
-	}
-
-	return new ConnectionImpl(ssl);
+	connection->init(client);
+	return connection;
 }
 
-Ssl::Connection* ContextImpl::createServer()
+Connection* ContextImpl::createServer()
 {
-	int clientfd = axl_append(tcp);
-	if(clientfd < 0) {
-		debug_d("SSL: Unable to add LWIP tcp -> clientfd mapping");
+	assert(context != nullptr);
+
+	auto connection = new ConnectionImpl(tcp);
+	auto server = ssl_server_new(context, int(connection));
+	if(server == nullptr) {
+		delete connection;
 		return nullptr;
 	}
 
-	SSL* ssl = ssl_server_new(context, clientfd);
-	if(ssl == nullptr) {
-		return nullptr;
-	}
-
-	return new ConnectionImpl(ssl);
+	connection->init(server);
+	return connection;
 }
 
 bool ContextImpl::loadMemory(ObjectType memType, const uint8_t* data, size_t length, const char* password)
 {
 	return (ssl_obj_memory_load(context, int(memType), data, length, password) == SSL_OK);
+}
+
+// Required by axtls-8266
+extern "C" int ax_get_file(const char* filename, uint8_t** buf)
+{
+	*buf = 0;
+	return 0;
 }
 
 } // namespace Ssl

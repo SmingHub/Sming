@@ -65,11 +65,8 @@ bool TcpConnection::connect(const String& server, int port, bool useSsl, uint32_
 			return false;
 		}
 		ssl->options |= sslOptions;
-		delete ssl->extension;
-		ssl->extension = new Ssl::Extension;
-		assert(ssl->extension != nullptr);
-		ssl->extension->hostName = server;
-		ssl->extension->fragmentSize = Ssl::Extension::eSEFS_4K; // 4K max size
+		ssl->extension.hostName = server;
+		ssl->extension.fragmentSize = Ssl::Extension::eSEFS_4K; // 4K max size
 	}
 
 	debug_d("connect to: %s", server.c_str());
@@ -209,7 +206,7 @@ int TcpConnection::write(const char* data, int len, uint8_t apiflags)
 	err_t err = ERR_OK;
 
 	if(ssl != nullptr) {
-		err = ssl->write(tcp, reinterpret_cast<const uint8_t*>(data), len);
+		err = ssl->write(reinterpret_cast<const uint8_t*>(data), len);
 	} else {
 		u16_t available = getAvailableWriteSize();
 		if(available < len) {
@@ -452,17 +449,24 @@ err_t TcpConnection::internalOnReceive(pbuf* p, err_t err)
 
 	if(ssl != nullptr && p != nullptr) {
 		bool isConnecting = !ssl->connected;
-		int res = ssl->onReceive(tcp, p);
+		pbuf* out;
+		int res = ssl->read(p, out);
 		if(res < 0) {
 			close();
 			closeTcpConnection(tcp);
 			return res;
 		}
+		p = out;
 
 		if(isConnecting && ssl->connected) {
 			debug_tcp("SSL Just connected, err = %d", res);
 			if(onSslConnected(ssl->connection) != ERR_OK) {
 				debug_tcp("onSslConnected failed");
+
+				if(p != nullptr) {
+					pbuf_free(p);
+				}
+
 				close();
 				closeTcpConnection(tcp);
 

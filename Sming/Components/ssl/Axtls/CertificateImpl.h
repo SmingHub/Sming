@@ -13,7 +13,7 @@
 #pragma once
 
 #include <Network/Ssl/Certificate.h>
-#include <axtls-8266/compat/lwipr_compat.h>
+#include <axtls-8266/ssl/ssl.h>
 
 namespace Ssl
 {
@@ -28,11 +28,6 @@ public:
 	{
 	}
 
-	bool isValid() const override
-	{
-		return ssl != nullptr && ssl->x509_ctx != nullptr;
-	}
-
 	bool matchFingerprint(const uint8_t* hash) const override
 	{
 		return (ssl_match_fingerprint(ssl, hash) == 0);
@@ -45,15 +40,11 @@ public:
 
 	const String getName(Name name) const override
 	{
-		if(ssl == nullptr) {
-			return nullptr;
-		}
-
 		return String(ssl_get_cert_dn(ssl, int(name)));
 	}
 
 private:
-	SSL* ssl = nullptr;
+	SSL* ssl;
 };
 
 } // namespace Ssl

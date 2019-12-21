@@ -172,7 +172,7 @@ protected:
 			return ERR_ABRT;
 		}
 
-		return sslValidators.validate(&connection->getCertificate()) ? ERR_OK : ERR_ABRT;
+		return sslValidators.validate(connection->getCertificate()) ? ERR_OK : ERR_ABRT;
 	}
 
 	void pushAsyncPart();
