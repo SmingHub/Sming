@@ -99,7 +99,8 @@ contains a simple example of this.
 **Source files** Use :envvar:`COMPONENT_SRCDIRS` instead of ``MODULES``. Use
 :envvar:`COMPONENT_SRCFILES` to add individual files.
 
-**Include paths** Use :envvar:`COMPONENT_INCDIRS` instead of ``EXTRA_INCDIR``.
+**Include paths** Use :envvar:`COMPONENT_INCDIRS` instead of :envvar:`EXTRA_INCDIR`,
+unless the paths are only required to build this Component.
 
 See `component.mk <#component-configuration>`__ for a full list of variables.
 
@@ -520,6 +521,11 @@ changed as required.
    Default: "include".
 
    Include directories available when building ALL Components (not just this one).
+   Paths may be relative or absolute
+
+.. envvar:: EXTRA_INCDIR
+
+   Include directories for just this Component.
    Paths may be relative or absolute
 
 .. envvar:: INCDIR
