@@ -4,7 +4,7 @@
 From its documentation: *Sodium is a modern, easy-to-use software library for encryption, decryption, signatures, password hashing and more.*
 
 ## Usage
-This component integrates [libsodium](https://github.com/jedisct1/libsodium) v1.0.18 into Sming. To use it, simply add `COMPONENT_DEPENDS += libsodium` to your application's component.mk and `#include <sodium.h>` (or one of the more specific headers in sodium/*).
+This component integrates [libsodium](https://github.com/jedisct1/libsodium) v1.0.18 into Sming. To use it, simply add `ARDUINO_LIBRARIES += libsodium` to your application's component.mk and `#include <sodium.h>` (or one of the more specific headers in sodium/*).
 
 For further information, see libsodiums [documentation](https://libsodium.gitbook.io/doc/).
 
