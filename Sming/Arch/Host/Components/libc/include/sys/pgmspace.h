@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "../esp_attr.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
