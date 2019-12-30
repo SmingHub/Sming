@@ -100,7 +100,7 @@ int BrConnection::init()
 int BrConnection::read(InputBuffer& input, uint8_t*& output)
 {
 	int state = runUntil(input, BR_SSL_RECVAPP);
-	if(state < 0) {
+	if(state <= 0) {
 		return state;
 	}
 
@@ -121,7 +121,7 @@ int BrConnection::write(const uint8_t* data, size_t length)
 {
 	InputBuffer input(nullptr);
 	int state = runUntil(input, BR_SSL_SENDAPP);
-	if(state < 0) {
+	if(state <= 0) {
 		return state;
 	}
 
@@ -142,9 +142,16 @@ int BrConnection::write(const uint8_t* data, size_t length)
 	br_ssl_engine_sendapp_ack(engine, length);
 	br_ssl_engine_flush(engine, 0);
 
-	runUntil(input, BR_SSL_SENDAPP | BR_SSL_RECVAPP);
+	state = runUntil(input, BR_SSL_SENDAPP | BR_SSL_RECVAPP);
+	if(state > 0) {
+		return length;
+	}
 
-	return length;
+	if(state < 0) {
+		debug_w("Got error: %d", state);
+	}
+
+	return state;
 }
 
 int BrConnection::runUntil(InputBuffer& input, unsigned target)
@@ -158,7 +165,7 @@ int BrConnection::runUntil(InputBuffer& input, unsigned target)
 			int err = br_ssl_engine_last_error(engine);
 			debug_w("SSL CLOSED, last error = %d (%s), heap free = %u", err, getErrorString(err).c_str(),
 					system_get_free_heap_size());
-			return err ? -err : -BR_ERR_BAD_STATE;
+			return -err;
 		}
 
 		if(!handshakeDone && (state & BR_SSL_SENDAPP)) {
@@ -176,6 +183,9 @@ int BrConnection::runUntil(InputBuffer& input, unsigned target)
 			size_t len;
 			auto buf = br_ssl_engine_sendrec_buf(engine, &len);
 			int wlen = writeTcpData(buf, len);
+			if(wlen == 0) {
+				return 0;
+			}
 			if(wlen < 0) {
 				debug_w("SSL SHUTDOWN");
 				/*
@@ -190,10 +200,8 @@ int BrConnection::runUntil(InputBuffer& input, unsigned target)
 				}
 				return BR_ERR_IO;
 			}
-			if(wlen > 0) {
-				br_ssl_engine_sendrec_ack(engine, wlen);
-			}
 
+			br_ssl_engine_sendrec_ack(engine, wlen);
 			continue;
 		}
 
