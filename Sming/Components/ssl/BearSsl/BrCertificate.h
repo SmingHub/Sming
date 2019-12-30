@@ -4,9 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * X509Context.h
- *
- * @author: 2019 - Slavey Karadzhov <slav@attachix.com>
+ * BrCertificate.h
  *
  ****/
 
@@ -14,28 +12,31 @@
 
 #include <Network/Ssl/Certificate.h>
 #include <Network/Ssl/Crypto.h>
+#include "X509Context.h"
 
 namespace Ssl
 {
 class BrCertificate : public Ssl::Certificate
 {
 public:
-	uint8_t sha1Hash[SHA1_SIZE];
+	BrCertificate(X509Context* context) : context(context)
+	{
+	}
 
 	bool matchFingerprint(const uint8_t* hash) const override
 	{
-		return memcmp(hash, sha1Hash, SHA1_SIZE) == 0;
+		return context->matchFingerprint(hash);
 	}
 
 	bool matchPki(const uint8_t* hash) const override
 	{
-		return false;
+		return context->matchPki(hash);
 	}
 
-	const String getName(Name name) const override
-	{
-		return nullptr;
-	}
+	String getName(DN dn, RDN rdn) const override;
+
+private:
+	X509Context* context;
 };
 
 } // namespace Ssl

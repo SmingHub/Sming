@@ -37,11 +37,6 @@ ifeq ($(ENABLE_SSL),0)
 	$(info SSL support disabled)
 else
 	$(info Using $(ENABLE_SSL) SSL implementation)
-endif
-
-COMPONENT_DOXYGEN_PREDEFINED := \
-	ENABLE_SSL=1
-
 
 # Application
 CUSTOM_TARGETS			+= include/ssl/private_key.h
@@ -55,3 +50,10 @@ include/ssl/private_key.h:
 	$(Q) mkdir -p $(SSL_INCLUDE_DIR) $(SSL_CERT_DIR)
 	$(Q) chmod a+x $(SSL_TOOLS_PATH)/make_certs.sh
 	cd $(SSL_CERT_DIR); SSL_INCLUDE_DIR=$(SSL_INCLUDE_DIR) $(SSL_TOOLS_PATH)/make_certs.sh
+
+endif
+
+COMPONENT_DOXYGEN_PREDEFINED := \
+	ENABLE_SSL=1
+
+

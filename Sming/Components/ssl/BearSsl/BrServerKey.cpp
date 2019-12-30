@@ -8,7 +8,7 @@
  *
  ****/
 
-#include "debug.h"
+#include <SslDebug.h>
 #include "BrServerKey.h"
 
 namespace Ssl

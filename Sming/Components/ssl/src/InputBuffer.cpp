@@ -8,6 +8,7 @@
  *
  ****/
 
+#include <SslDebug.h>
 #include <Network/Ssl/InputBuffer.h>
 
 namespace Ssl
@@ -21,11 +22,9 @@ size_t InputBuffer::read(uint8_t* buffer, size_t bufSize)
 	unsigned len = pbuf_copy_partial(buf, buffer, bufSize, offset);
 	offset += len;
 
-#ifdef SSL_DEBUG
 	if(len < bufSize) {
 		debug_d("SSL read input: Bytes needed: %d, Bytes read: %u", bufSize, len);
 	}
-#endif
 
 	return len;
 }

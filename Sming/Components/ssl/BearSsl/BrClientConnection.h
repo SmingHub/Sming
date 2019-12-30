@@ -30,7 +30,14 @@ public:
 
 	int init();
 
-	const Certificate* getCertificate() const override;
+	const Certificate* getCertificate() const override
+	{
+		if(certificate == nullptr) {
+			certificate = new BrCertificate(x509Context);
+		}
+
+		return certificate;
+	}
 
 	void freeCertificate() override
 	{

@@ -8,6 +8,7 @@
  *
  ****/
 
+#include <SslDebug.h>
 #include <Network/Ssl/Session.h>
 #include <Network/Ssl/Factory.h>
 #include <Network/TcpConnection.h>
@@ -167,9 +168,7 @@ int Session::write(const uint8_t* data, size_t length)
 
 	int res = connection->write(data, length);
 	if(res < 0) {
-#ifdef SSL_DEBUG
 		debug_i("SSL: write returned %d (%s)", res, connection->getErrorString(res).c_str());
-#endif
 		return ERR_BUF;
 	}
 

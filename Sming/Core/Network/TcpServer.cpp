@@ -88,9 +88,6 @@ err_t TcpServer::onAccept(tcp_pcb* clientTcp, err_t err)
 			delete client;
 			return ERR_ABRT;
 		}
-
-		sslInitSession(*ssl);
-
 		if(!ssl->onAccept(client, clientTcp)) {
 			delete client;
 			return ERR_ABRT;

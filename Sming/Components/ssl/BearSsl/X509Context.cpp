@@ -1,3 +1,13 @@
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * X509Context.cpp
+ *
+ ****/
+
 #include "X509Context.h"
 #include "BrConnection.h"
 
@@ -9,21 +19,12 @@ const br_x509_class X509Context::vt PROGMEM = {
 
 void X509Context::startChain(const char* serverName)
 {
-	auto subject_dn_append = [](void* ctx, const void* buf, size_t len) {
-		GET_SELF();
-		br_sha256_update(&self->subjectSha256, buf, len);
-	};
-
-	auto issuer_dn_append = [](void* ctx, const void* buf, size_t len) {
-		GET_SELF();
-		br_sha256_update(&self->issuerSha256, buf, len);
-	};
-
-	br_x509_decoder_init(&x509Decoder, subject_dn_append, this, issuer_dn_append, this);
+	br_x509_decoder_init(&x509Decoder, subject.append, &subject, issuer.append, &issuer);
 	certificateCount = 0;
 	br_sha1_init(&certificateSha1);
-	br_sha256_init(&subjectSha256);
-	br_sha256_init(&issuerSha256);
+	issuer.clear();
+	subject.clear();
+	debug_i("X509Context: serverName = \"%s\"", serverName);
 	(void)serverName;
 }
 

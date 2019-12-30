@@ -14,6 +14,31 @@
 
 #include <WString.h>
 
+/**
+ * @brief X509 Relative Distinguished Name type
+ *
+ * From namespace 2.5.4.x
+ */
+#define SSL_X509_RDN_OID_MAP(XX)                                                                                       \
+	XX(COMMON_NAME, 2, 5, 4, 3)                                                                                        \
+	XX(SURNAME, 2, 5, 4, 4)                                                                                            \
+	XX(SERIAL_NUMBER, 2, 5, 4, 5)                                                                                      \
+	XX(COUNTRY_NAME, 2, 5, 4, 6)                                                                                       \
+	XX(LOCALITY_NAME, 2, 5, 4, 7)                                                                                      \
+	XX(STATE_OR_PROVINCE_NAME, 2, 5, 4, 8)                                                                             \
+	XX(STREET_ADDRESS, 2, 5, 4, 9)                                                                                     \
+	XX(ORGANIZATION_NAME, 2, 5, 4, 10)                                                                                 \
+	XX(ORGANIZATIONAL_UNIT_NAME, 2, 5, 4, 11)                                                                          \
+	XX(TITLE, 2, 5, 4, 12)                                                                                             \
+	XX(BUSINESS_CATEGORY, 2, 5, 4, 15)                                                                                 \
+	XX(POSTAL_ADDRESS, 2, 5, 4, 16)                                                                                    \
+	XX(POSTAL_CODE, 2, 5, 4, 17)                                                                                       \
+	XX(GIVEN_NAME, 2, 5, 4, 42)                                                                                        \
+	XX(GENERATION_QUALIFIER, 2, 5, 4, 44)                                                                              \
+	XX(X500_UNIQUE_IDENTIFIER, 2, 5, 4, 45)                                                                            \
+	XX(DN_QUALIFIER, 2, 5, 4, 46)                                                                                      \
+	XX(PSEUDONYM, 2, 5, 4, 65)
+
 namespace Ssl
 {
 /**
@@ -26,23 +51,24 @@ class Certificate
 {
 public:
 	/**
-	 * @brief List of distinguished names
-	 * @note Defined by AXTLS, other implementations will need to translate
+	 * @brief Distinguished Name type
 	 */
-	enum class Name {
-		CERT_COMMON_NAME,
-		CERT_ORGANIZATION,
-		CERT_ORGANIZATIONAL_NAME,
-		CERT_LOCATION,
-		CERT_COUNTRY,
-		CERT_STATE,
-		CA_CERT_COMMON_NAME,
-		CA_CERT_ORGANIZATION,
-		CA_CERT_ORGANIZATIONAL_NAME,
-		CA_CERT_LOCATION,
-		CA_CERT_COUNTRY,
-		CA_CERT_STATE,
+	enum class DN {
+		ISSUER,
+		SUBJECT,
 	};
+
+	/**
+	 * @brief Relative Distinguished Name type
+	 */
+	enum class RDN {
+#define XX(tag, a, b, c, d) tag,
+		SSL_X509_RDN_OID_MAP(XX)
+#undef XX
+			MAX
+	};
+
+	static String getRdnTypeString(Certificate::RDN rdn);
 
 	virtual ~Certificate()
 	{
@@ -67,7 +93,9 @@ public:
    * @param name the desired distinguished name
    * @retval the value for the desired distinguished name
    */
-	virtual const String getName(Name name) const = 0;
+	virtual String getName(DN dn, RDN rdn) const = 0;
+
+	size_t printTo(Print& p) const;
 };
 
 /** @} */

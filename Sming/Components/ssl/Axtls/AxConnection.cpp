@@ -18,6 +18,7 @@
  *
  ****/
 
+#include <SslDebug.h>
 #include "AxConnection.h"
 #include "AxContext.h"
 #include <Network/Ssl/Session.h>
@@ -33,16 +34,12 @@ int AxConnection::write(const uint8_t* data, size_t length)
 
 	int available = tcp_sndbuf(tcp);
 	if(available < required) {
-#ifdef SSL_DEBUG
 		debug_i("SSL: Required: %d, Available: %d", required, available);
-#endif
 		return SSL_NOT_OK;
 	}
 
 	int written = ssl_write(ssl, data, length);
-#ifdef SSL_DEBUG
 	debug_d("SSL: Write len: %d, Written: %d", length, written);
-#endif
 	if(written < 0) {
 		debug_e("SSL: Write Error: %d", written);
 	}

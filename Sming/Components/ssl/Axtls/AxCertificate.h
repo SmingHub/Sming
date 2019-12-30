@@ -40,10 +40,7 @@ public:
 		return (ssl_match_spki_sha256(ssl, hash) == 0);
 	}
 
-	const String getName(Name name) const override
-	{
-		return String(ssl_get_cert_dn(ssl, int(name)));
-	}
+	String getName(DN dn, RDN rdn) const override;
 
 private:
 	SSL* ssl;

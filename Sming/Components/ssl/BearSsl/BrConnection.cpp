@@ -12,7 +12,7 @@
 
 /*
  */
-#include "debug.h"
+#include <SslDebug.h>
 #include "BrConnection.h"
 #include <Network/Ssl/Session.h>
 #include <FlashString/Array.hpp>

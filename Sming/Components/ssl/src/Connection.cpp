@@ -8,6 +8,7 @@
  *
  ****/
 
+#include <SslDebug.h>
 #include <Network/Ssl/Context.h>
 #include <Print.h>
 
@@ -16,12 +17,11 @@ namespace Ssl
 size_t Connection::printTo(Print& p) const
 {
 	size_t n = 0;
-	n += p.println(_F("SSL Connection Information:"));
 	auto cert = getCertificate();
 	if(cert != nullptr) {
-		n += p.print(_F("  Certificate:  "));
-		n += p.println(cert->getName(Certificate::Name::CERT_COMMON_NAME));
+		n += cert->printTo(p);
 	}
+	n += p.println(_F("SSL Connection Information:"));
 	n += p.print(_F("  Cipher:       "));
 	n += p.println(getCipherSuiteName(getCipherSuite()));
 	n += p.print(_F("  Session ID:   "));
@@ -42,9 +42,7 @@ int Connection::writeTcpData(uint8_t* data, size_t length)
 	if(tcp_len < length) {
 		if(tcp_len == 0) {
 			tcp_output(tcp);
-#ifdef SSL_DEBUG
 			debug_e("writeTcpData: The send buffer is full! We have problem.");
-#endif
 			return 0;
 		}
 	} else {

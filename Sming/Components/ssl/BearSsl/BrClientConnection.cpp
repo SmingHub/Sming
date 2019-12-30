@@ -12,7 +12,7 @@
 
 /*
  */
-#include "debug.h"
+#include <SslDebug.h>
 #include "BrClientConnection.h"
 #include <Network/Ssl/Session.h>
 
@@ -36,16 +36,6 @@ int BrClientConnection::init()
 	br_ssl_client_reset(&clientContext, context.getSession().hostName.c_str(), 0);
 
 	return startHandshake();
-}
-
-const Certificate* BrClientConnection::getCertificate() const
-{
-	if(certificate == nullptr) {
-		certificate = new BrCertificate();
-		x509Context->getCertificateHash(certificate->sha1Hash);
-	}
-
-	return certificate;
 }
 
 } // namespace Ssl

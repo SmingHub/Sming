@@ -6,14 +6,12 @@
  *
  * X509Context.h
  *
- * @author: 2019 - Slavey Karadzhov <slav@attachix.com>
- *
  ****/
 
 #pragma once
 
-#include "debug.h"
-#include <bearssl.h>
+#include <SslDebug.h>
+#include "X509Name.h"
 
 namespace Ssl
 {
@@ -33,22 +31,27 @@ public:
 		return &vtable;
 	}
 
-	uint8_t* getIssuerHash(uint8_t hash[br_sha256_SIZE])
+	const X509Name& getIssuer() const
 	{
-		br_sha256_out(&issuerSha256, hash);
-		return hash;
+		return issuer;
 	}
 
-	uint8_t* getSubjectHash(uint8_t hash[br_sha256_SIZE])
+	const X509Name& getSubject() const
 	{
-		br_sha256_out(&subjectSha256, hash);
-		return hash;
+		return subject;
 	}
 
-	uint8_t* getCertificateHash(uint8_t hash[br_sha1_SIZE])
+	bool matchFingerprint(const uint8_t* sha1Hash) const
 	{
-		br_sha1_out(&certificateSha1, hash);
-		return hash;
+		uint8_t certHash[br_sha1_SIZE];
+		br_sha1_out(&certificateSha1, certHash);
+		return memcmp(certHash, sha1Hash, br_sha1_SIZE) == 0;
+	}
+
+	bool matchPki(const uint8_t* hash) const
+	{
+		// @todo
+		return false;
 	}
 
 private:
@@ -115,8 +118,8 @@ private:
 	static const br_x509_class vt;
 	OnValidate onValidate;
 	br_sha1_context certificateSha1 = {};
-	br_sha256_context subjectSha256 = {};
-	br_sha256_context issuerSha256 = {};
+	X509Name issuer;
+	X509Name subject;
 	br_x509_decoder_context x509Decoder = {};
 	bool allowSelfSigned = false;
 	uint8_t certificateCount = 0;
