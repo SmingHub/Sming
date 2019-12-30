@@ -27,7 +27,7 @@ int onDownload(HttpConnection& connection, bool success)
 	return 0; // return 0 on success in your callbacks
 }
 
-void setSslFingerprints(HttpRequest* request)
+void sslRequestInit(Ssl::Session& session, HttpRequest& request)
 {
 	/*
 	 * SSL validation: We check the remote server certificate against a fingerprint
@@ -36,7 +36,7 @@ void setSslFingerprints(HttpRequest* request)
 	 * Note: SSL is not compiled by default. In our example we set the ENABLE_SSL directive to 1
 	 * (See: ../Makefile-user.mk )
 	 */
-	request->setSslOptions(SSL_SERVER_VERIFY_LATER);
+	session.options.verifyLater = true;
 
 	// These are the fingerprints for httpbin.org
 	static const uint8_t sha1Fingerprint[] PROGMEM = {0x2B, 0xF0, 0x48, 0x9D, 0x78, 0xB4, 0xDE, 0xE9, 0x69, 0xE2,
@@ -54,12 +54,15 @@ void setSslFingerprints(HttpRequest* request)
 	// ... or a certificate that matches the SHA1 fingerprint.
 	fingerprints.setSha1_P(sha1Fingerprint, sizeof(sha1Fingerprint));
 
-	// Attached fingerprints to request for validation
-	request->pinCertificate(fingerprints);
+	// Set fingerprints for validation
+	session.validators.add(fingerprints);
 }
 
 void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
+	Serial.print(F("Connected. Got IP: "));
+	Serial.println(ip);
+
 	// [ GET request: The example below shows how to make HTTP requests ]
 
 	// First: The HttpRequest object contains all the data that needs to be sent
@@ -76,13 +79,11 @@ void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 	// ... or like
 	getRequest->setHeader(F("X-Powered-By"), F("Sming"));
 
-	// SSL validation and fingerprinting
-	setSslFingerprints(getRequest);
-
 	/*
 	 * Notice: If we use SSL we need to set the SSL settings only for the first request
 	 * 		   and all consecutive requests to the same host:port will try to reuse those settings
 	 */
+	getRequest->onSslInit(sslRequestInit);
 
 	// If we want to process the response we can do it by setting a onRequestCallback
 	getRequest->onRequestComplete(onDownload);

@@ -72,9 +72,6 @@ void restart()
 
 	msg_cnt = 0;
 	wsClient.connect(String(ws_Url));
-#ifdef ENABLE_SSL
-	wsClient.getHttpConnection()->addSslOptions(SSL_SERVER_VERIFY_LATER);
-#endif
 }
 
 void wsDisconnected(WebsocketConnection& wsConnection)
@@ -133,10 +130,8 @@ void STAGotIP(IpAddress ip, IpAddress mask, IpAddress gateway)
 	wsClient.setBinaryHandler(wsBinReceived);
 	wsClient.setDisconnectionHandler(wsDisconnected);
 	wsClient.setConnectionHandler(wsConnected);
+	wsClient.setSslInitHandler([](Ssl::Session& session) { session.options.verifyLater = true; });
 	wsClient.connect(String(ws_Url));
-#ifdef ENABLE_SSL
-	wsClient.getHttpConnection()->addSslOptions(SSL_SERVER_VERIFY_LATER);
-#endif
 }
 
 void STADisconnect(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
@@ -150,7 +145,7 @@ void STADisconnect(const String& ssid, MacAddress bssid, WifiDisconnectReason re
 void init()
 {
 	Serial.begin(COM_SPEED_SERIAL);
-	Serial.systemDebugOutput(false);
+	Serial.systemDebugOutput(true);
 	WifiAccessPoint.enable(false);
 
 	WifiStation.config(WIFI_SSID, WIFI_PWD);

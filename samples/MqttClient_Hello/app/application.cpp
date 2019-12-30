@@ -11,9 +11,13 @@
 #define MQTT_URL2 "mqtts://attachix.com:8883" // (Need ENABLE_SSL)
 #define MQTT_URL3 "mqtt://frank:fiddle@192.168.100.107:1883"
 
+#ifdef ENABLE_SSL
+#include <ssl/private_key.h>
+#include <ssl/cert.h>
+#define MQTT_URL MQTT_URL2
+#else
 #define MQTT_URL MQTT_URL1
-
-const Url url(MQTT_URL);
+#endif
 
 // Forward declarations
 void startMqttClient();
@@ -27,9 +31,9 @@ Timer procTimer;
 void checkMQTTDisconnect(TcpClient& client, bool flag)
 {
 	if(flag == true) {
-		Serial.println("MQTT Broker Disconnected!!");
+		Serial.println(_F("MQTT Broker Disconnected!!"));
 	} else {
-		Serial.println("MQTT Broker Unreachable!!");
+		Serial.println(_F("MQTT Broker Unreachable!!"));
 	}
 
 	// Restart connection attempt after few seconds
@@ -38,7 +42,7 @@ void checkMQTTDisconnect(TcpClient& client, bool flag)
 
 void onMessageDelivered(uint16_t msgId, int type)
 {
-	Serial.printf("Message with id %d and QoS %d was delivered successfully.", msgId,
+	Serial.printf(_F("Message with id %d and QoS %d was delivered successfully."), msgId,
 				  (type == MQTT_MSG_PUBREC ? 2 : 1));
 }
 
@@ -49,11 +53,11 @@ void publishMessage()
 		startMqttClient(); // Auto reconnect
 	}
 
-	Serial.print("Let's publish message now. Memory free=");
+	Serial.print(_F("Let's publish message now. Memory free="));
 	Serial.println(system_get_free_heap_size());
-	mqtt.publish("main/frameworks/sming", "Hello friends, from Internet of things :)");
+	mqtt.publish(F("main/frameworks/sming"), F("Hello friends, from Internet of things :)"));
 
-	mqtt.publishWithQoS("important/frameworks/sming", "Request Return Delivery", 1, false,
+	mqtt.publishWithQoS(F("important/frameworks/sming"), F("Request Return Delivery"), 1, false,
 						onMessageDelivered); // or publishWithQoS
 }
 
@@ -61,7 +65,7 @@ void publishMessage()
 void onMessageReceived(String topic, String message)
 {
 	Serial.print(topic);
-	Serial.print(":\r\n\t"); // Pretify alignment for printing
+	Serial.print(":\r\n\t"); // Prettify alignment for printing
 	Serial.println(message);
 }
 
@@ -71,31 +75,33 @@ void startMqttClient()
 	procTimer.stop();
 
 	// 1. [Setup]
-	if(!mqtt.setWill("last/will", "The connection from this device is lost:(", 1, true)) {
+	if(!mqtt.setWill(F("last/will"), F("The connection from this device is lost:("), 1, true)) {
 		debugf("Unable to set the last will and testament. Most probably there is not enough memory on the device.");
 	}
+
+	mqtt.setConnectedHandler([](MqttClient& client, mqtt_message_t* message) {
+		Serial.print(_F("Connected to "));
+		Serial.println(client.getRemoteIp());
+		return 0;
+	});
 
 	mqtt.setCompleteDelegate(checkMQTTDisconnect);
 	mqtt.setCallback(onMessageReceived);
 
 #ifdef ENABLE_SSL
-	mqtt.addSslOptions(SSL_SERVER_VERIFY_LATER);
-
-#include <ssl/private_key.h>
-#include <ssl/cert.h>
-
-	mqtt.setSslKeyCert(default_private_key, default_private_key_len, default_certificate, default_certificate_len,
-					   nullptr,
-					   /*freeAfterHandshake*/ false);
-
+	mqtt.setSslInitHandler([](Ssl::Session& session) {
+		session.options.verifyLater = true;
+		session.keyCert.assign(default_private_key, sizeof(default_private_key), default_certificate,
+							   sizeof(default_certificate), nullptr);
+	});
 #endif
 
 	// 2. [Connect]
 	Url url(MQTT_URL);
-	Serial.print("Connecting to \t");
+	Serial.print(_F("Connecting to "));
 	Serial.println(url);
-	mqtt.connect(url, "esp8266");
-	mqtt.subscribe("main/status/#");
+	mqtt.connect(url, F("esp8266"));
+	mqtt.subscribe(F("main/status/#"));
 }
 
 void onConnected(IpAddress ip, IpAddress netmask, IpAddress gateway)

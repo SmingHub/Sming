@@ -35,7 +35,7 @@ static bool validatePublicKeySha256(const Certificate* certificate, void* data)
 	bool success = false;
 	if(hash != nullptr) {
 		if(certificate != nullptr) {
-			success = certificate->matchFingerprint(hash);
+			success = certificate->matchPki(hash);
 		}
 		delete[] hash;
 	}

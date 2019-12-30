@@ -57,7 +57,7 @@ public:
 	 * @brief	Add a standard fingerprint validator
 	 * @param	fingerprint	The fingerprint data against which the match should be performed.
 	 * 						Must be allocated on the heap and will be deleted after use.
-	 * @param	type	The fingerprint type - see Ssl::FingerprintType for details.
+	 * @param	type	The fingerprint type - see FingerprintType for details.
 	 * @retval	bool	true on success, false on failure
 	 */
 	bool add(const uint8_t* fingerprint, FingerprintType type);
@@ -74,6 +74,8 @@ public:
 	 * @retval bool  true on success, false on failure
 	 */
 	bool validate(const Certificate* certificate);
+
+	using Vector::count;
 };
 
 /** @} */

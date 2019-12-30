@@ -17,7 +17,7 @@
 #include "Data/Stream/ChunkedStream.h"
 #include "Data/Stream/UrlencodedOutputStream.h"
 
-bool HttpClientConnection::connect(const String& host, int port, bool useSsl, uint32_t sslOptions)
+bool HttpClientConnection::connect(const String& host, int port, bool useSsl)
 {
 	debug_d("HttpClientConnection::connect: TCP state: %d, isStarted: %d, isActive: %d",
 			(tcp != nullptr ? tcp->state : -1), (int)(getConnectionState() != eTCS_Ready), (int)isActive());
@@ -36,7 +36,7 @@ bool HttpClientConnection::connect(const String& host, int port, bool useSsl, ui
 
 	debug_d("HttpClientConnection::connecting ...");
 
-	return TcpClient::connect(host, port, useSsl, sslOptions);
+	return TcpClient::connect(host, port, useSsl);
 }
 
 bool HttpClientConnection::send(HttpRequest* request)
@@ -49,20 +49,6 @@ bool HttpClientConnection::send(HttpRequest* request)
 	}
 
 	bool useSsl = (request->uri.Scheme == URI_SCHEME_HTTP_SECURE);
-
-	// Based on the URL decide if we should reuse the SSL and TCP pool
-	if(useSsl) {
-		if(!sslCreateSession()) {
-			return false;
-		}
-		if(ssl->sessionId == nullptr) {
-			ssl->sessionId = new Ssl::SessionId;
-		}
-		addSslOptions(request->getSslOptions());
-		pinCertificate(request->sslFingerprints);
-		setSslKeyCert(request->sslKeyCertPair);
-	}
-
 	return connect(request->uri.Host, request->uri.getPort(), useSsl);
 }
 

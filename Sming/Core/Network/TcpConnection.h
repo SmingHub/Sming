@@ -55,8 +55,8 @@ public:
 	virtual ~TcpConnection();
 
 public:
-	virtual bool connect(const String& server, int port, bool useSsl = false, uint32_t sslOptions = 0);
-	virtual bool connect(IpAddress addr, uint16_t port, bool useSsl = false, uint32_t sslOptions = 0);
+	virtual bool connect(const String& server, int port, bool useSsl = false);
+	virtual bool connect(IpAddress addr, uint16_t port, bool useSsl = false);
 	virtual void close();
 
 	// return -1 on error
@@ -109,80 +109,29 @@ public:
 		this->destroyedDelegate = destroyedDelegate;
 	}
 
-	// [ SSL related methods]
-
-	void addSslOptions(uint32_t options)
-	{
-		if(sslCreateSession()) {
-			ssl->options |= options;
-		}
-	}
-
 	/**
-	 * @brief Sets private key, certificate and password from memory for the SSL connection
-	 * 		  If this methods is called from a client then it sets the client key and certificate
-	 * 		  If it is called from a server then it sets the server certificate and key.
-	 * 		  Server and Client certificates differ. Client certificate is used for identification.
-	 * 		  Server certificate is used for encrypt/decrypt the data.
-	 * 		  Make sure to use the correct certificate for the desired goal.
-	 *
-	 * @note  This method makes copy of the data.
-	 *
-	 * @param key
-	 * @param keyLength
-	 * @param certificate
-	 * @param certificateLength
-	 * @param keyPassword
-	 * @param freeAfterHandshake
-	 *
-	 * @return bool  true of success, false or failure
+	 * @brief Set the SSL session initialisation callback
+	 * @param handler
 	 */
-	bool setSslKeyCert(const uint8_t* key, int keyLength, const uint8_t* certificate, int certificateLength,
-					   const char* keyPassword = nullptr, bool freeAfterHandshake = false)
+	void setSslInitHandler(Ssl::Session::InitDelegate handler)
 	{
-		if(!sslCreateSession()) {
-			return false;
-		}
-		ssl->freeKeyCertAfterHandshake = freeAfterHandshake;
-		return ssl->keyCert.assign(key, keyLength, certificate, certificateLength, keyPassword);
-	}
-
-	/**
-	* @brief Sets private key, certificate and password from memory for the SSL connection
-	* 	 	 If this methods is called from a client then it sets the client key and certificate
-	* 		 If it is called from a server then it sets the server certificate and key.
-	* 		 Server and Client certificates differ. Client certificate is used for identification.
-	* 		 Server certificate is used for encrypt/decrypt the data.
-	* 		 Make sure to use the correct certificate for the desired goal.
-	*
-	* @note  This method passes the certificate key chain by reference
-	*
-	* @param keyCert
-	* @param freeAfterHandshake
-	*
-	* @retval bool  true of success, false or failure
-	*/
-	bool setSslKeyCert(const Ssl::KeyCertPair& keyCert, bool freeAfterHandshake = false)
-	{
-		if(!sslCreateSession()) {
-			return false;
-		}
-		ssl->freeKeyCertAfterHandshake = freeAfterHandshake;
-		return ssl->keyCert.assign(keyCert);
+		sslInit = handler;
 	}
 
 	// Called by TcpServer
-	void setSsl(Ssl::Connection* connection)
+	bool setSslConnection(Ssl::Connection* connection)
 	{
-		assert(ssl != nullptr);
-		delete ssl->connection;
-		ssl->connection = connection;
+		if(!sslCreateSession()) {
+			return false;
+		}
+		ssl->setConnection(connection);
 		useSsl = true;
+		return true;
 	}
 
-	Ssl::Connection* getSsl()
+	Ssl::Session* getSsl()
 	{
-		return ssl ? ssl->connection : nullptr;
+		return ssl;
 	}
 
 protected:
@@ -191,13 +140,36 @@ protected:
 
 	bool sslCreateSession();
 
+	/**
+	 * @brief Override in inherited classes to perform custom session initialisation
+	 *
+	 * Called when TCP connectoin is established before initating handshake.
+	 */
+	virtual void sslInitSession(Ssl::Session& session)
+	{
+		if(sslInit) {
+			sslInit(session);
+		}
+	}
+
 	virtual err_t onConnected(err_t err);
 	virtual err_t onReceive(pbuf* buf);
 	virtual err_t onSent(uint16_t len);
 	virtual err_t onPoll();
 	virtual void onError(err_t err);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
-	virtual err_t onSslConnected(Ssl::Connection* ssl);
+
+	/*
+	 * If there is space in the TCP output buffer, then don't wait for TCP
+	 * sent confirmation but try to send more data now
+	 * (Invoked from within other TCP callbacks.)
+	 */
+	void trySend(TcpConnectionEvent event)
+	{
+		if(tcp != nullptr && getAvailableWriteSize() > 0) {
+			onReadyToSendData(event);
+		}
+	}
 
 	// These methods are called via LWIP handlers
 	err_t internalOnConnected(err_t err);
@@ -225,6 +197,7 @@ protected:
 	bool canSend = true;
 	bool autoSelfDestruct = true;
 	Ssl::Session* ssl = nullptr;
+	Ssl::Session::InitDelegate sslInit;
 	bool useSsl = false;
 
 private:

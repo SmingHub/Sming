@@ -59,17 +59,11 @@ public:
 		debug_i("TcpServer destroyed");
 	}
 
-public:
 	virtual bool listen(int port, bool useSsl = false);
 
 	void setKeepAlive(uint16_t seconds);
 
 	void shutdown();
-
-	/**
-	 * @brief Adds SSL support and specifies the server certificate and private key.
-	 */
-	using TcpConnection::setSslKeyCert;
 
 protected:
 	// Overload this method in your derived class!

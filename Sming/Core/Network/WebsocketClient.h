@@ -48,9 +48,8 @@ public:
 
 	/**  @brief  Connects websocket client to server
 	  *  @param  url Url address of websocket server
-	  *  @param  sslOptions Specify the SSL options to be used when calling websocket server over SSL
 	  */
-	bool connect(const Url& url, uint32_t sslOptions = 0);
+	bool connect(const Url& url);
 
 	using WebsocketConnection::send;
 	using WebsocketConnection::sendBinary;
@@ -82,6 +81,15 @@ public:
 	using WebsocketConnection::close;
 	using WebsocketConnection::getState;
 
+	/**
+	 * @brief Set the SSL session initialisation callback
+	 * @param handler
+	 */
+	void setSslInitHandler(Ssl::Session::InitDelegate handler)
+	{
+		sslInitHandler = handler;
+	}
+
 	/** @brief  Disconnects websocket client from server
 	  * @deprecated Use `close()` instead
 	  */
@@ -96,6 +104,7 @@ protected:
 private:
 	Url uri;
 	String key;
+	Ssl::Session::InitDelegate sslInitHandler;
 };
 
 /** @} */

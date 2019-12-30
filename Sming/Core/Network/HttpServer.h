@@ -114,6 +114,7 @@ public:
 
 protected:
 	TcpConnection* createClient(tcp_pcb* clientTcp) override;
+	void sslInitSession(Ssl::Session& session) override;
 
 private:
 	HttpServerSettings settings;

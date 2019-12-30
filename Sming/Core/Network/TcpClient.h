@@ -17,7 +17,6 @@
 #pragma once
 
 #include "TcpConnection.h"
-#include <Network/Ssl/Validator.h>
 
 class TcpClient;
 class ReadWriteStream;
@@ -71,8 +70,8 @@ public:
 	}
 
 public:
-	bool connect(const String& server, int port, bool useSsl = false, uint32_t sslOptions = 0) override;
-	bool connect(IpAddress addr, uint16_t port, bool useSsl = false, uint32_t sslOptions = 0) override;
+	bool connect(const String& server, int port, bool useSsl = false) override;
+	bool connect(IpAddress addr, uint16_t port, bool useSsl = false) override;
 	void close() override;
 
 	/**	@brief	Set or clear the callback for received data
@@ -117,45 +116,8 @@ public:
 		closeAfterSent = ignoreIncomingData ? eTCCASS_AfterSent_Ignore_Received : eTCCASS_AfterSent;
 	}
 
-	/**
-	 * @brief Allows setting of multiple SSL validators after a successful handshake
-	 * @param callback The callback function to be invoked on validation
-	 * @param data The data to pass to the callback
-	 * @note The callback is responsible for releasing the data if appropriate.
-	 * See Ssl::Validator::Callback for further details.
-	 *
-	 * @retval bool true on success, false on failure
-	 */
-	bool addSslValidator(Ssl::Validator::Callback callback, void* data = nullptr)
-	{
-		return sslValidators.add(callback, data);
-	}
-
-	/**
-	 * @brief Requires (pins) the remote SSL certificate to match certain fingerprints
-	 * @param fingerprint	The fingerprint data against which the match should be performed.
-	 * 						Must be allocated on the heap and will be deleted after use.
-	 * 						Do not re-use outside of this method.
-	 * @param type			The fingerprint type - see Ssl::FingerprintType for details.
-	 *
-	 * @retval bool true on success, false on failure
-	 */
-	bool pinCertificate(const uint8_t* fingerprint, Ssl::FingerprintType type)
-	{
-		return sslValidators.add(fingerprint, type);
-	}
-
-	/**
-	 * @brief	Requires (pins) the remote SSL certificate to match certain fingerprints
-	 * @note	The data inside the fingerprints parameter is passed by reference
-	 * @param	fingerprints - passes the certificate fingerprints by reference.
-	 *
-	 * @retval bool  true on success, false on failure
-	 */
-	bool pinCertificate(Ssl::Fingerprints& fingerprints)
-	{
-		return sslValidators.add(fingerprints);
-	}
+	using TcpConnection::getRemoteIp;
+	using TcpConnection::getRemotePort;
 
 protected:
 	err_t onConnected(err_t err) override;
@@ -165,15 +127,6 @@ protected:
 	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
 
 	virtual void onFinished(TcpClientState finishState);
-
-	err_t onSslConnected(Ssl::Connection* connection) override
-	{
-		if(connection == nullptr) {
-			return ERR_ABRT;
-		}
-
-		return sslValidators.validate(connection->getCertificate()) ? ERR_OK : ERR_ABRT;
-	}
 
 	void pushAsyncPart();
 	void freeStreams();
@@ -186,15 +139,13 @@ protected:
 
 private:
 	TcpClientState state = eTCS_Ready;
-	TcpClientCompleteDelegate completed = nullptr;
-	TcpClientEventDelegate ready = nullptr;
-	TcpClientDataDelegate receive = nullptr;
+	TcpClientCompleteDelegate completed;
+	TcpClientEventDelegate ready;
+	TcpClientDataDelegate receive;
 
 	TcpClientCloseAfterSentState closeAfterSent = eTCCASS_None;
 	uint16_t totalSentConfirmedBytes = 0;
 	uint16_t totalSentBytes = 0;
-
-	Ssl::ValidatorList sslValidators;
 };
 
 /** @} */

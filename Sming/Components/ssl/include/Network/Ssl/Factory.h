@@ -9,6 +9,7 @@
  * @author: 2019 - Slavey Karadzhov <slav@attachix.com>
  *
  ****/
+
 #pragma once
 
 #include "Context.h"
@@ -33,7 +34,7 @@ public:
 	 * @brief Create SSL context that can be used to create new client or server connections
 	 * @retval Context* The constructed context, shouldn't fail (except on OOM)
 	 */
-	virtual Context* createContext() = 0;
+	virtual Context* createContext(Session& session) = 0;
 };
 
 // Provided by ssl Component

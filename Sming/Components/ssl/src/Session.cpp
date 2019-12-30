@@ -1,85 +1,91 @@
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * Session.cpp
+ *
+ ****/
 
 #include <Network/Ssl/Session.h>
 #include <Network/Ssl/Factory.h>
-#include <Platform/WDT.h>
-#include <Platform/System.h>
+#include <Network/TcpConnection.h>
+#include <Print.h>
 
 namespace Ssl
 {
-bool Session::listen(tcp_pcb* tcp)
+String Options::toString() const
 {
-#ifdef SSL_DEBUG
-	options |= SSL_DISPLAY_STATES | SSL_DISPLAY_BYTES | SSL_DISPLAY_CERTS;
-#endif
+	String s;
 
-	delete context;
-	assert(factory != nullptr);
-	context = factory->createContext();
-	if(context == nullptr) {
-		return false;
+#define ADD(field)                                                                                                     \
+	if(field) {                                                                                                        \
+		if(s) {                                                                                                        \
+			s += ", ";                                                                                                 \
+			s += _F(#field);                                                                                           \
+		}                                                                                                              \
 	}
 
-	if(!context->init(tcp, options, cacheSize)) {
-		return false;
-	}
+	ADD(sessionResume);
+	ADD(clientAuthentication);
+	ADD(verifyLater);
+	ADD(freeKeyCertAfterHandshake);
+
+#undef ADD
+
+	return s;
+}
+
+bool Session::onAccept(TcpConnection* client, tcp_pcb* tcp)
+{
+	debug_i("SSL %p onAccept(%p, %p)", this, client, tcp);
 
 	if(!keyCert.isValid()) {
 		debug_e("SSL: server certificate and key are not provided!");
 		return false;
 	}
 
-	if(!context->loadMemory(Context::ObjectType::RSA_KEY, keyCert.getKey(), keyCert.getKeyLength(),
-							keyCert.getKeyPassword())) {
-		debug_e("SSL: Unable to load server private key");
-		return false;
+	if(context == nullptr) {
+		assert(factory != nullptr);
+		context = factory->createContext(*this);
+		if(context == nullptr) {
+			return false;
+		}
+
+		if(!context->init()) {
+			return false;
+		}
+
+		// TODO: test: free the certificate data on server destroy...
+		options.freeKeyCertAfterHandshake = true;
 	}
 
-	if(!context->loadMemory(Context::ObjectType::X509_CERT, keyCert.getCertificate(), keyCert.getCertificateLength(),
-							nullptr)) {
-		debug_e("SSL: Unable to load server certificate");
-		return false;
-	}
+	beginHandshake();
 
-	// TODO: test: free the certificate data on server destroy...
-	freeKeyCertAfterHandshake = true;
-
-	return true;
+	auto server = context->createServer(tcp);
+	return client->setSslConnection(server);
 }
 
-err_t Session::onConnected(tcp_pcb* tcp)
+bool Session::onConnect(tcp_pcb* tcp)
 {
-	debug_d("SSL: Starting connection...");
+	debug_d("SSL %p: Starting connection...", this);
 
+	assert(connection == nullptr);
+	assert(context == nullptr);
+
+	// Client Session
 	delete context;
 	assert(factory != nullptr);
-	context = factory->createContext();
+	context = factory->createContext(*this);
 	if(context == nullptr) {
-		return ERR_ABRT;
+		return false;
 	}
 
-	uint32_t localOptions = options;
-#ifdef SSL_DEBUG
-	localOptions |= SSL_DISPLAY_STATES | SSL_DISPLAY_BYTES | SSL_DISPLAY_CERTS;
-	debug_d("SSL: Show debug data ...");
-#endif
+	cacheSize = 1;
 
-	if(!context->init(tcp, localOptions, 1)) {
-		return ERR_MEM;
-	}
-
-	if(keyCert.isValid()) {
-		// if we have client certificate -> try to use it.
-		if(!context->loadMemory(Ssl::Context::ObjectType::RSA_KEY, keyCert.getKey(), keyCert.getKeyLength(),
-								keyCert.getKeyPassword())) {
-			debug_d("SSL: Unable to load client private key");
-		} else if(!context->loadMemory(Ssl::Context::ObjectType::X509_CERT, keyCert.getCertificate(),
-									   keyCert.getCertificateLength(), nullptr)) {
-			debug_d("SSL: Unable to load client certificate");
-		}
-
-		if(freeKeyCertAfterHandshake) {
-			keyCert.free();
-		}
+	if(!context->init()) {
+		return false;
 	}
 
 	if(sessionId != nullptr && sessionId->isValid()) {
@@ -88,89 +94,149 @@ err_t Session::onConnected(tcp_pcb* tcp)
 		debug_d("------END SSL SESSION PARAMETERS------");
 	}
 
-#ifndef SSL_SLOW_CONNECT
-	debug_d("SSL: Switching to 160 MHz");
-	System.setCpuFrequency(eCF_160MHz); // For shorter waiting time, more power consumption.
-#endif
-	debug_d("SSL: handshake start");
+	beginHandshake();
 
-	connection = context->createClient(sessionId, extension);
+	connection = context->createClient(tcp);
 	if(connection == nullptr) {
-		return ERR_ABRT;
+		endHandshake();
+		return false;
 	}
 
-	if(!connection->isHandshakeDone()) {
-		debug_d("SSL: handshake is in progress...");
-		return ERR_INPROGRESS;
-	}
+	return true;
+}
 
-	if(sessionId != nullptr) {
-		*sessionId = connection->getSessionId();
-	}
-
+void Session::beginHandshake()
+{
+	debug_d("SSL: handshake start");
 #ifndef SSL_SLOW_CONNECT
-	debug_d("SSL: Switching back 80 MHz");
-	System.setCpuFrequency(eCF_80MHz);
+	curFreq = System.getCpuFrequency();
+	if(curFreq != eCF_160MHz) {
+		debug_d("SSL: Switching to 160 MHz");
+		System.setCpuFrequency(eCF_160MHz); // For shorter waiting time, more power consumption.
+	}
 #endif
+}
 
-	return ERR_OK;
+void Session::endHandshake()
+{
+#ifndef SSL_SLOW_CONNECT
+	if(curFreq != System.getCpuFrequency()) {
+		debug_d("SSL: Switching back to %u MHz", curFreq);
+		System.setCpuFrequency(curFreq);
+	}
+#endif
+	debug_d("SSL: Handshake done");
 }
 
 void Session::close()
 {
-	debug_d("SSL: closing ...");
-
-	delete context;
-	context = nullptr;
+	debug_d("SSL %p: closing ...", this);
 
 	delete connection;
 	connection = nullptr;
 
-	extension.clear();
+	delete context;
+	context = nullptr;
 
-	connected = false;
+	hostName = nullptr;
+	fragmentSize = eSEFS_Off;
 }
 
-int Session::read(pbuf* encrypted, pbuf*& decrypted)
+int Session::read(InputBuffer& input, uint8_t*& output)
 {
-	assert(encrypted != nullptr);
+	assert(connection != nullptr);
+	int len = connection->read(input, output);
+	if(len < 0) {
+		debug_w("SSL: Got error: %d (%s)", len, connection->getErrorString(len).c_str());
+		auto alert = connection->getAlert(len);
+		if(alert == Alert::CERTIFICATE_UNKNOWN) {
+			debug_w("SSL: Client didn't like certificate, continue anyway");
+			len = ERR_OK;
+		}
+	}
 
-	decrypted = nullptr;
+	return len;
+}
 
+int Session::write(const uint8_t* data, size_t length)
+{
 	if(connection == nullptr) {
-		pbuf_free(encrypted);
+		debug_e("!! SSL Session connection is NULL");
 		return ERR_CONN;
 	}
 
-	/* SSL handshake needs time. In theory we have max 8 seconds before the hardware watchdog resets the device */
-	WDT.alive();
-
-	int read_bytes = connection->read(encrypted, decrypted);
-	pbuf_free(encrypted);
-
-	if(read_bytes < 0) {
-		debug_d("SSL: Got error: %d", read_bytes);
-		if(read_bytes == SSL_CLOSE_NOTIFY) {
-			read_bytes = 0;
-		}
-	} else if(read_bytes == 0) {
-		if(!connected && connection->isHandshakeDone()) {
-			connected = true;
-			debug_d("SSL: Handshake done");
-#ifndef SSL_SLOW_CONNECT
-			debug_d("SSL: Switching back to 80 MHz");
-			System.setCpuFrequency(eCF_80MHz); // Preserve some CPU cycles
+	int res = connection->write(data, length);
+	if(res < 0) {
+#ifdef SSL_DEBUG
+		debug_i("SSL: write returned %d (%s)", res, connection->getErrorString(res).c_str());
 #endif
-			if(sessionId != nullptr) {
-				*sessionId = connection->getSessionId();
-			}
-		}
-	} else {
-		// we got some decrypted bytes...
-		debug_d("SSL: Decrypted data len %d", read_bytes);
+		return ERR_BUF;
 	}
 
-	return read_bytes;
+	return res;
+}
+
+bool Session::validateCertificate()
+{
+	if(connection == nullptr) {
+		debug_w("SSL: connection not set, assuming cert. is OK");
+		return true;
+	}
+
+	if(validators.validate(connection->getCertificate())) {
+		debug_i("SSL validation passed, heap free = %u", system_get_free_heap_size());
+		return true;
+	}
+
+	debug_w("SSL Validation failed");
+	return false;
+}
+
+void Session::handshakeComplete(bool success)
+{
+	endHandshake();
+
+	if(success) {
+		// If requested, take a copy of the session ID for later re-use
+		if(options.sessionResume) {
+			if(sessionId == nullptr) {
+				sessionId = new SessionId;
+			}
+			*sessionId = connection->getSessionId();
+		}
+	} else {
+		debug_w("SSL Handshake failed");
+	}
+
+	if(options.freeKeyCertAfterHandshake && connection != nullptr) {
+		connection->freeCertificate();
+	}
+}
+
+size_t Session::printTo(Print& p) const
+{
+	size_t n = 0;
+
+	n += p.println(_F("SSL Session:"));
+	n += p.print(_F("  Options: "));
+	n += p.println(options.toString());
+	n += p.print(_F("  Host name: "));
+	n += p.println(hostName);
+	n += p.print(_F("  Cache Size: "));
+	n += p.println(cacheSize);
+	n += p.print(_F("  Fragment Size: "));
+	n += p.println(fragmentSize);
+	n += p.print(_F("  Validators: "));
+	n += p.println(validators.count());
+	n += p.print(_F("  Cert Length: "));
+	n += p.println(keyCert.getCertificateLength());
+	n += p.print(_F("  Cert PK Length: "));
+	n += p.println(keyCert.getKeyLength());
+	if(connection != nullptr) {
+		n += connection->printTo(p);
+	}
+
+	return n;
 }
 
 }; // namespace Ssl

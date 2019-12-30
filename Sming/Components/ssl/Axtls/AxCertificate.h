@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * CertificateImpl.h
+ * AxCertificate.h
  *
  * @author: 2019 - Slavey Karadzhov <slav@attachix.com>
  *
@@ -17,15 +17,17 @@
 
 namespace Ssl
 {
-class CertificateImpl : public Certificate
+class AxCertificate : public Certificate
 {
 public:
-	CertificateImpl(SSL* ssl) : ssl(ssl)
+	AxCertificate(SSL* ssl) : ssl(ssl)
 	{
+		ssl->can_free_certificates = false;
 	}
 
-	~CertificateImpl()
+	~AxCertificate()
 	{
+		ssl->can_free_certificates = true;
 	}
 
 	bool matchFingerprint(const uint8_t* hash) const override

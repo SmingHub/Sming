@@ -48,10 +48,13 @@
 	path = Sming/Arch/Esp8266/Components/driver/new-pwm
 	url = https://github.com/StefanBruens/ESP8266_new_pwm.git
 	ignore = dirty
-[submodule "ESP8266.axtls-8266"]
+[submodule "ESP8266.axtls"]
 	path = Sming/Components/axtls-8266/axtls-8266
 	url = https://github.com/igrr/axtls-8266.git
 	ignore = dirty
+[submodule "ESP8266.bearssl"]
+	path = Sming/Components/bearssl-esp8266/bearssl
+	url = https://github.com/earlephilhower/bearssl-esp8266
 [submodule "ESP8266.umm_malloc"]
 	path = Sming/Arch/Esp8266/Components/heap/umm_malloc
 	url = https://github.com/rhempel/umm_malloc.git

@@ -52,17 +52,6 @@ bool TcpServer::listen(int port, bool useSsl)
 
 	this->useSsl = useSsl;
 
-	if(useSsl) {
-		if(ssl == nullptr) {
-			debug_e("Unable to create SSL connection without SSL implementation.");
-			return false;
-		}
-
-		if(!ssl->listen(tcp)) {
-			return false;
-		}
-	}
-
 	tcp = tcp_listen(tcp);
 	tcp_accept(tcp, staticAccept);
 
@@ -74,12 +63,12 @@ err_t TcpServer::onAccept(tcp_pcb* clientTcp, err_t err)
 {
 	// Anti DDoS :-)
 	if(system_get_free_heap_size() < minHeapSize) {
-		debug_w("\r\n\r\nCONNECTION DROPPED\r\n\t(%d)\r\n\r\n", system_get_free_heap_size());
+		debug_w("\r\n\r\nCONNECTION DROPPED\r\n\t(free heap: %u)\r\n\r\n", system_get_free_heap_size());
 		return ERR_MEM;
 	}
 
 #ifdef NETWORK_DEBUG
-	debug_d("onAccept state: %d K=%d", err, connections.count());
+	debug_d("onAccept, tcp: %p, state: %d K=%d", clientTcp, err, connections.count());
 	list_mem();
 #endif
 
@@ -95,9 +84,17 @@ err_t TcpServer::onAccept(tcp_pcb* clientTcp, err_t err)
 	client->setTimeOut(keepAlive);
 
 	if(useSsl) {
-		debug_d("SSL: handshake start.");
-		assert(ssl != nullptr && ssl->context != nullptr);
-		client->setSsl(ssl->context->createServer());
+		if(!sslCreateSession()) {
+			delete client;
+			return ERR_ABRT;
+		}
+
+		sslInitSession(*ssl);
+
+		if(!ssl->onAccept(client, clientTcp)) {
+			delete client;
+			return ERR_ABRT;
+		}
 	}
 
 	client->setDestroyedDelegate(TcpConnectionDestroyedDelegate(&TcpServer::onClientDestroy, this));

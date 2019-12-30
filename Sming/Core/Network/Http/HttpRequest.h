@@ -226,39 +226,15 @@ public:
 	/** @brief Clear buffers and reset to default state in preparation for another request */
 	void reset();
 
-	HttpRequest* setSslOptions(uint32_t sslOptions)
-	{
-		this->sslOptions = sslOptions;
-		return this;
-	}
-
-	uint32_t getSslOptions()
-	{
-		return sslOptions;
-	}
+	using SslInitDelegate = Delegate<void(Ssl::Session& session, HttpRequest& request)>;
 
 	/**
-	 * @brief   Requires(pins) the remote SSL certificate to match certain fingerprints
-	 * 			Check if SHA256 hash of Subject Public Key Info matches the one given.
-	 * @param	fingerprints - passes the certificate fingerprints by reference.
-	 *
-	 * @retval bool  true of success, false or failure
+	 * @brief To customise SSL session options, provide a callback
+	 * @param callback Invoked before creating SSL connection
 	 */
-	HttpRequest* pinCertificate(Ssl::Fingerprints& fingerprints)
+	HttpRequest* onSslInit(SslInitDelegate delegate)
 	{
-		sslFingerprints = fingerprints;
-		return this;
-	}
-
-	/**
-	 * @brief Sets client private key, certificate and password from memory
-	 * @param keyCertPair
-	 *
-	 * @retval HttpRequest* Pointer to this request
-	 */
-	HttpRequest* setSslKeyCert(const Ssl::KeyCertPair& keyCertPair)
-	{
-		sslKeyCertPair = keyCertPair;
+		sslInitDelegate = delegate;
 		return this;
 	}
 
@@ -285,6 +261,7 @@ protected:
 	RequestHeadersCompletedDelegate headersCompletedDelegate;
 	RequestBodyDelegate requestBodyDelegate;
 	RequestCompletedDelegate requestCompletedDelegate;
+	SslInitDelegate sslInitDelegate;
 
 	IDataSourceStream* bodyStream = nullptr;
 	ReadWriteStream* responseStream = nullptr; ///< User-requested stream to store response
@@ -292,10 +269,6 @@ protected:
 #ifdef ENABLE_HTTP_REQUEST_AUTH
 	AuthAdapter* auth = nullptr;
 #endif
-
-	uint32_t sslOptions = 0;
-	Ssl::Fingerprints sslFingerprints;
-	Ssl::KeyCertPair sslKeyCertPair;
 
 private:
 	HttpParams* queryParams = nullptr; // << @todo deprecate

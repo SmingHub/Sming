@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * ConnectionImpl.h
+ * AxConnection.h
  *
  * @author: 2019 - Slavey Karadzhov <slav@attachix.com>
  *
@@ -13,20 +13,22 @@
 #pragma once
 
 #include <Network/Ssl/Connection.h>
-#include "CertificateImpl.h"
+#include <Network/Ssl/Validator.h>
+#include "AxCertificate.h"
+#include "AxError.h"
 
 namespace Ssl
 {
-class ConnectionImpl : public Connection
+class AxConnection : public Connection
 {
 public:
-	ConnectionImpl(tcp_pcb* tcp) : tcp(tcp)
-	{
-	}
+	using Connection::Connection;
 
-	~ConnectionImpl()
+	~AxConnection()
 	{
 		delete certificate;
+		// Typically sends out closing message
+		ssl_free(ssl);
 	}
 
 	void init(SSL* ssl)
@@ -34,19 +36,12 @@ public:
 		this->ssl = ssl;
 	}
 
-	bool isHandshakeDone() override
+	bool isHandshakeDone() const override
 	{
 		return (ssl_handshake_status(ssl) == SSL_OK);
 	}
 
-	int read(pbuf* encrypted, pbuf*& decrypted) override;
-
 	int write(const uint8_t* data, size_t length) override;
-
-	int calcWriteSize(size_t plainTextLength) const override
-	{
-		return ssl_calculate_write_length(ssl, plainTextLength);
-	}
 
 	CipherSuite getCipherSuite() const override
 	{
@@ -56,7 +51,7 @@ public:
 	SessionId getSessionId() const override
 	{
 		SessionId id;
-		if(ssl_handshake_status(ssl) == SSL_OK) {
+		if(isHandshakeDone()) {
 			id.assign(ssl->session_id, ssl->sess_id_size);
 		}
 
@@ -66,23 +61,40 @@ public:
 	const Certificate* getCertificate() const override
 	{
 		if(certificate == nullptr && ssl->x509_ctx != nullptr) {
-			certificate = new CertificateImpl(ssl);
+			certificate = new AxCertificate(ssl);
 		}
 
 		return certificate;
 	}
 
-public:
-	// Called from axTLS
-	int port_write(uint8_t* buf, uint16_t bytes_needed);
-	int port_read(uint8_t* buf, int bytes_needed);
+	void freeCertificate() override
+	{
+		delete certificate;
+		certificate = nullptr;
+	}
+
+	int read(InputBuffer& input, uint8_t*& output) override;
+
+	size_t readTcpData(uint8_t* buf, size_t count)
+	{
+		assert(input != nullptr);
+		return input->read(buf, count);
+	}
+
+	String getErrorString(int error) const override
+	{
+		return Ssl::getErrorString(error);
+	}
+
+	Alert getAlert(int error) const override
+	{
+		return Ssl::getAlert(error);
+	}
 
 private:
 	SSL* ssl;
-	mutable CertificateImpl* certificate = nullptr;
-	struct tcp_pcb* tcp = nullptr;
-	struct pbuf* tcp_pbuf = nullptr;
-	int pbuf_offset = 0;
+	mutable AxCertificate* certificate = nullptr;
+	InputBuffer* input = nullptr;
 };
 
 } // namespace Ssl

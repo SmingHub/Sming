@@ -9,6 +9,7 @@
  * @author: 2019 - Slavey Karadzhov <slav@attachix.com>
  *
  ****/
+
 #pragma once
 
 #include <stdint.h>
