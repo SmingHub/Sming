@@ -8,5 +8,8 @@
  *
  ****/
 
+#ifdef __cplusplus
 #include "SmingCore.h"
+#endif
+
 #include "FakePgmSpace.h"

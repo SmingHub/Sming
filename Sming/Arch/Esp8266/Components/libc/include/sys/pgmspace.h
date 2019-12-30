@@ -11,8 +11,8 @@
 #pragma once
 
 #include <sys/features.h>
-#include <c_types.h>
-#include <esp_attr.h>
+#include "../c_types.h"
+#include "../esp_attr.h"
 
 /**
  * @ingroup pgmspace
