@@ -4,7 +4,7 @@ Over-the-Air Firmware Upgrade
 
 .. highlight:: bash
 
-This component offers a writable stream that decodes and applies [Over-the-Air] firmware upgrade files,
+This library offers a writable stream that decodes and applies [Over-the-Air] firmware upgrade files,
 as well as a small python utility to generate those upgrade files as part of Sming's build process.
 It may be combined with any transport mechanism that is compatible with Sming's stream classes.
 Check out the :sample:`HttpServer_FirmwareUpload` example, which demonstrates how the integrated HTTP server can be
@@ -41,7 +41,7 @@ Usage
 The ``OtaUpgradeStream`` class
 ------------------------------
 
-The Component provides a single class :cpp:class:`OtaUpgradeStream`, which derives from :cpp:class:`ReadWriteStream`,
+The library provides a single class :cpp:class:`OtaUpgradeStream`, which derives from :cpp:class:`ReadWriteStream`,
 but, despite its base class, is only a writable stream.
 
 At construction time, the address and size of the slot to receive the new firmware is automatically determined from the
@@ -58,10 +58,10 @@ given chunk size, unless there is an error with the file or the upgrade process.
 Building
 --------
 
-The component is fully integrated into the Sming build process. Just run::
+The library is fully integrated into the Sming build process. Just run::
 
    make
-   
+
 and find the OTA upgrade file in ``out/<arch>/<config>/firmware/firmware.ota``.
 If security features are enabled but no secret key file does exist yet, a new one is generated during the first build.
 You may change it later by modifying :envvar:`OTA_KEY` or using the :ref:`ota-rollover-process`.
@@ -93,17 +93,17 @@ Configuration and Security features
    signature.
 
    .. note::
-   
+
       You may disable signing in order to save some program memory if your communication channel already establishes a
       comparable level of trust, e.g. TLS with a pinned certificate.
 
 .. envvar:: OTA_ENABLE_ENCRYPTION
-   
+
    Default: 0 (disable)
 
    Set to 1 to enable encryption of the upgrade file using libsodium's ``crypto_secretstream_...`` API, in order to
    protect confidential data embedded in your firmware (WiFi credentials, server certificates, etc.).
-   
+
    It is generally unnecessary to sign encrypted upgrade files, as encryption is also authenticating, i.e. only someone
    in possession of the secret encryption key can generate upgrade files that decrypt successfully.
    There is, however, one catch: Unlike signing, encryption *can* be broken if an attacker is able to extract the
@@ -151,7 +151,7 @@ Configuration and Security features
 
    Downgrade protection must be combined with encryption or signing to be effective. A warning is issued by the build
    system otherwise.
-   
+
 
 .. envvar:: OTA_UPLOAD_URL
 
