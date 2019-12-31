@@ -303,23 +303,3 @@ endef
 	$(Q) $(call TryApplyPatch,$*,$(*F).patch)
 	$(Q) touch $@
 
-##@Developer
-
-# Recursive wildcard search
-# $1 -> list of directories
-# $2 -> file extensions filters (using % as wildcard)
-define rwildcard
-	$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $2,$d))
-endef
-
-# Files that should follow our coding standards
-CS_DIRS		= $(shell find $(SMING_HOME)/../ -name '.cs' -type f  | xargs dirname)
-CS_FILES	= $(call rwildcard,$(CS_DIRS:=/*),%.cpp %.h %.c)
-
-.PHONY: cs
-cs: ##Apply coding style to all core files
-	$(if $(V),$(info Applying coding style to $(words $(CS_FILES)) files ...))
-	@for FILE in $(CS_FILES); do \
-		$(CLANG_FORMAT) -i -style=file $$FILE; \
-	done
-

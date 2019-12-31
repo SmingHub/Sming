@@ -404,6 +404,12 @@ clean: ##Remove all generated build files (but leave build config intact)
 	@echo Cleaning application...
 	-$(Q) rm -rf $(BUILD_BASE) $(FW_BASE) $(APP_LIBDIR)
 
+.PHONY: cs
+cs: .clang-format ##Apply coding style to selected project directories
+	$(SMING_MAKE) cs CS_ROOT_DIRS=$(PROJECT_DIR)
+
+.clang-format:
+	$(Q) cp $(SMING_HOME)/../.clang-format $@
 
 ##@Tools
 

@@ -108,6 +108,34 @@ $(CLEAN_TESTS):
 	$(Q) $(MAKE) -C $(@D) clean
 
 
+##@Developer
+
+# Recursive wildcard search
+# $1 -> list of directories
+# $2 -> file extensions filters (using % as wildcard)
+define rwildcard
+	$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $2,$d))
+endef
+
+# Files that should follow our coding standards
+
+# Root directories to search
+CS_ROOT_DIRS	?= $(abspath $(SMING_HOME)/..)
+# List of single directories to search
+CS_SEARCH_DIRS	?= $(call ListAllSubDirs,$(CS_ROOT_DIRS))
+# Resultant set of directories whose contents to apply coding style to
+CS_DIRS			?= $(patsubst %/.cs,%,$(wildcard $(foreach d,$(CS_SEARCH_DIRS),$d/.cs)))
+# Files to apply coding style to
+CS_FILES		= $(call rwildcard,$(CS_DIRS:=/*),%.cpp %.hpp %.h %.c)
+
+.PHONY: cs
+cs: ##Apply coding style to all core files
+	$(if $(V),$(info Applying coding style to $(words $(CS_FILES)) files ...))
+	@for FILE in $(CS_FILES); do \
+		$(CLANG_FORMAT) -i -style=file $$FILE; \
+	done
+
+
 ##@Help
 
 .PHONY: help
