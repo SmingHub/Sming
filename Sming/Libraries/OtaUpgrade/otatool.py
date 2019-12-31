@@ -55,25 +55,16 @@ def genkey(args):
     os.chmod(args.output, 0o600) # private key should only be readable by owner
     print("Private OTA security key written to '%s'." % args.output)
 
-def make_key_source(args):
+def make_bin_keys(args):
     import_nacl()
     pk, _, ek = load_keys(args.key)
-    bytestring = lambda key: ', '.join('0x%02X' % (b if isinstance(b, int) else ord(b)) for b in key)
-
-    with open(args.output, 'w') as source:
-        source.write('#include <sys/pgmspace.h>\n\n')
-        if args.signed or not args.encryted:
-            source.write('uint8_t OTAUpgrade_SignatureVerificationKey_P[] PROGMEM = {%s};\n' % bytestring(pk))
-        if args.encrypted:
-            source.write('uint8_t OTAUpgrade_EncryptionKey_P[] PROGMEM = {%s};\n' % bytestring(ek))
-
-def make_key_bin(args):
-    import_nacl()
-    pk, _, ek = load_keys(args.key)
-    with open(args.output + '/encrypt.key.bin', 'wb') as source:
-        source.write(ek)
-    with open(args.output + '/signing.key.bin', 'wb') as source:
-        source.write(pk)
+    # ek = encryption key = decryption key
+    dk_binfile_path = os.path.join(args.output, 'decrypt.key.bin')
+    with open(dk_binfile_path, 'wb') as keyfile:
+        keyfile.write(ek)
+    os.chmod(dk_binfile_path, 0o600)
+    with open(os.path.join(args.output, 'verify.key.bin'), 'wb') as keyfile:
+        keyfile.write(pk)
 
 def make_rom_image(address, filepath):
     try:
@@ -202,24 +193,20 @@ def make_parser():
     genkey_parser.add_argument('-o', '--output', required=True, help='Output location of generated key')
     genkey_parser.set_defaults(func=genkey)
 
-    mksource_parser = subparsers.add_parser('mksource', help='Generate cpp file from public signing key (for use with class OtaUpgradeStream)')
-    mksource_parser.add_argument('-o', '--output', required=True, help='Output location of generated header file')
-    mksource_parser.add_argument('-k', '--key', required=True, help='Input file containing cryptographic key')
-    mksource_parser.add_argument('-s', '--signed', action='store_true', default=False, help='Include public key for signature validation')
-    mksource_parser.add_argument('-e', '--encrypted', action='store_true', default=False, help='Include decryption key (shared key)')
-    mksource_parser.set_defaults(func=make_key_source)
-
-    mksource_parser = subparsers.add_parser('mkbin', help='Generate binary key files from public signing key (for use with class OtaUpgradeStream)')
-    mksource_parser.add_argument('-o', '--output', required=True, help='Output location of generated binary files')
-    mksource_parser.add_argument('-k', '--key', required=True, help='Input file containing cryptographic key')
-    mksource_parser.set_defaults(func=make_key_bin)
+    mksource_parser = subparsers.add_parser('mkbinkeys', help='Generate binary key files to be embedded in the firmware. \
+        The command always generates both the decryption key (decrypt.key.bin) and the signature verification key \
+        (verify.key.bin), regardless of which ones are actually used by the firmware.')
+    mksource_parser.add_argument('-o', '--output', required=True, help='Output directory of generated key binary files.')
+    mksource_parser.add_argument('-k', '--key', required=True, 
+        help='Input file containing private key material from which the firmware keys are derived.')
+    mksource_parser.set_defaults(func=make_bin_keys)
 
     mkota_parser = subparsers.add_parser('mkfile', help='Generate OTA upgrade file from ROM images')
     mkota_parser.add_argument('-o', '--output', required=True, help='Output location of OTA upgrade file')
     mkota_parser.add_argument('-k', '--key',
-        help='Input file containing private key for signing the generated OTA file. If omitted, the created OTA file will not be signed.')
+        help='Input file containing private key for signing and/or encryption of the generated OTA file.')
     mkota_parser.add_argument('-s', '--signed', action='store_true', default=False, help='Sign upgrade image')
-    mkota_parser.add_argument('-e', '--encrypted', action='store_true', default=False, help='Encrypt ROM images')
+    mkota_parser.add_argument('-e', '--encrypted', action='store_true', default=False, help='Encrypt upgrade file')
 
     def get_address(string):
         try:

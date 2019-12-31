@@ -2,13 +2,14 @@
 #include <MultipartParser.h>
 #include <HttpMultipartResource.h>
 #include <OtaUpgradeStream.h>
+#include <FlashString/Array.hpp>
 
 HttpServer server;
 
 void onFile(HttpRequest& request, HttpResponse& response)
 {
 	String file = request.uri.getRelativePath();
-	if(!file.length()) {
+	if(file.length() == 0) {
 		file = "index.html";
 	}
 
@@ -19,7 +20,7 @@ void onFile(HttpRequest& request, HttpResponse& response)
 int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
 	ReadWriteStream* file = request.files["firmware"];
-	OtaUpgradeStream* otaStream = static_cast<OtaUpgradeStream*>(file);
+	auto otaStream = static_cast<OtaUpgradeStream*>(file);
 	if(otaStream == nullptr) {
 		debug_e("Something went wrong with the file upload");
 		return 1;

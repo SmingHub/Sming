@@ -12,10 +12,15 @@
 
 #include <Data/Stream/ReadWriteStream.h>
 #include <rboot-api.h>
-#ifdef OTA_SIGNED
+#include "OTA_FileFormat.h"
+
+#ifdef ENABLE_OTA_SIGNING
 #include <sodium/crypto_sign.h>
+#else
+#include "romfunc_md5.h"
 #endif
-#ifdef OTA_ENCRYPTED
+
+#ifdef ENABLE_OTA_ENCRYPTION
 #include <sodium/crypto_secretstream_xchacha20poly1305.h>
 #endif
 
@@ -97,7 +102,7 @@ public:
 	{
 		return (state == StateError);
 	}
-	
+
 	// overrides from IDataSourceStream
 	uint16_t readMemoryBlock(char* data, int bufSize) override
 	{
@@ -113,8 +118,7 @@ public:
 	}
 
 private:
-	struct Slot
-	{
+	struct Slot {
 		uint8_t index;
 		uint32_t address;
 		uint32_t size;
@@ -136,44 +140,33 @@ private:
 		StateRomsComplete
 	} state = StateHeader;
 
-	struct {
-		uint32_t magic;
-		uint32_t buildTimestampLow;
-		uint32_t buildTimestampHigh;
-		struct {
-			uint8_t romCount;
-			uint8_t reserved[3];
-		};
-	} fileHeader;
+	OTA_FileHeader fileHeader;
+#ifdef ENABLE_OTA_SIGNING
+	static const uint32_t expectedHeaderMagic = OTA_HEADER_MAGIC_SIGNED;
+#else
+	static const uint32_t expectedHeaderMagic = OTA_HEADER_MAGIC_NOT_SIGNED;
+#endif
 
 	union {
-		struct {
-			uint32_t address;
-			uint32_t size;
-		} romHeader;
-#ifdef OTA_SIGNED
+		OTA_RomHeader romHeader;
+#ifdef ENABLE_OTA_SIGNING
 		uint8_t signature[crypto_sign_BYTES];
 #else
-		uint8_t signature[16]; // md5sum
+		uint8_t signature[MD5_SIZE];
 #endif
 	};
 
 	size_t remainingBytes = 0;
-	uint8_t *destinationPtr = nullptr;
+	uint8_t* destinationPtr = nullptr;
 	uint8_t romIndex = 0;
 
-#ifdef OTA_SIGNED
+#ifdef ENABLE_OTA_SIGNING
 	crypto_sign_state verifierState;
 #else
-	struct {
-		// see esptool/flasher_stub/rom_functions.h
-		uint32_t state[4];
-		uint32_t count[2];
-		uint8_t buffer[64];
-	} md5Context;
+	MD5Context md5Context;
 #endif
 
-#ifdef OTA_ENCRYPTED
+#ifdef ENABLE_OTA_ENCRYPTION
 	struct {
 		crypto_secretstream_xchacha20poly1305_state state;
 
@@ -182,16 +175,11 @@ private:
 			uint16_t chunkSizeMinusOne;
 		};
 
-		enum {
-			FragmentHeader,
-			FragmentChunkSize,
-			FragmentChunk,
-			FragmentNone
-		} fragment = FragmentHeader;
-		
+		enum {FragmentHeader, FragmentChunkSize, FragmentChunk, FragmentNone} fragment = FragmentHeader;
+
 		size_t remainingBytes;
-		uint8_t *fragmentPtr;
-		uint8_t *buffer = nullptr;
+		uint8_t* fragmentPtr;
+		uint8_t* buffer = nullptr;
 		size_t bufferSize = 0;
 	} encryption;
 #endif
@@ -200,18 +188,18 @@ private:
 
 	size_t process(const uint8_t* data, size_t size);
 
-	void setupChunk(State nextState, size_t size, void *destination = nullptr)
+	void setupChunk(State nextState, size_t size, void* destination = nullptr)
 	{
 		state = nextState;
 		remainingBytes = size;
-		destinationPtr = reinterpret_cast<uint8_t *>(destination);
+		destinationPtr = reinterpret_cast<uint8_t*>(destination);
 	}
-	template <typename T>
-	void setupChunk(State nextState, T& destination) {
+	template <typename T> void setupChunk(State nextState, T& destination)
+	{
 		setupChunk(nextState, sizeof(T), &destination);
 	}
 
-	bool consume(const uint8_t *&data, size_t &size);
+	bool consume(const uint8_t*& data, size_t& size);
 
 	void nextRom();
 	void processRomHeader();
