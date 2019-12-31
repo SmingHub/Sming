@@ -3,7 +3,7 @@ HttpServer Firmware Upload
 
 This example combines the :library:`MultipartParser` library for file uploads
 and the :component:`OtaUpgrade` component, to create a browser based firmware 
-upgrade mechanism akin to what's found in many consumer devices.
+upgrade solution akin to what's found in many consumer devices.
 The example is kept as minimal as possible to serve as a starting point for your
 own applications.
 

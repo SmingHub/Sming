@@ -225,8 +225,8 @@ The following layout is used for unencrypted upgrade files, as well as for the d
 +--------------------+-------------------------------------------------------------------------------+
 | variable           | ROM images, see below                                                         |
 +--------------------+-------------------------------------------------------------------------------+
-|                    | 64 (signed)                                                               |                                              | With signature: Digital signature over the whole file up to this point. |
-|                    | 16 (otherwise)                                                            |                                              | Otherwise: MD5 HASH over the whole file up to this point. This is       |
+| | 64 (signed)      | | With signature: Digital signature over the whole file up to this point.     |
+| | 16 (otherwise)   | | Otherwise: MD5 HASH over the whole file up to this point. This is           |
 |                    |   not a security measure but merely protects the integrity of the file. MD5   |
 |                    |   was selected, because it already available in the ESP8266's on-chip ROM.    |
 +--------------------+-------------------------------------------------------------------------------+
@@ -234,14 +234,14 @@ The following layout is used for unencrypted upgrade files, as well as for the d
 Each ROM image has the following format:
 
 +--------------------+-------------------------------------------------------------------------------+
-| Field size (bytes) | Field description                                                            |
+| Field size (bytes) | Field description                                                             |
 +====================+===============================================================================+
-| 4                  | Start address in flash memory (i.e. :envvar:`RBOOT_ROM0_ADDR` for first ROM) |
+| 4                  | Start address in flash memory (i.e. :envvar:`RBOOT_ROM0_ADDR` for first ROM)  |
 +--------------------+-------------------------------------------------------------------------------+
-| 4                  | Size of ROM in bytes                                                         |
+| 4                  | Size of ROM in bytes                                                          |
 +--------------------+-------------------------------------------------------------------------------+
-| variable (see      | ROM image content                                                            |
-| previous field)    |                                                                              |
+| variable (see      | ROM image content                                                             |
+| previous field)    |                                                                               |
 +--------------------+-------------------------------------------------------------------------------+
 
 More content may be added in a future version (e.g. SPIFFS images, bootloader image, RF calibration data blob).
