@@ -143,13 +143,15 @@ ota-rollover-done:
 endif
 
 
-# Build final OTA upgrade file 
-OTA_UPGRADE_FILE=$(FW_BASE)/firmware.ota
+# Build final OTA upgrade file
+OTA_UPGRADE_FILE = $(FW_BASE)/firmware.ota
 
 .PHONY: ota-file 
 ota-file: $(OTA_UPGRADE_FILE) ##Generate OTA upgrade file (done as part of the default target)
 
+ifneq ($(SMING_ARCH),Host)
 CUSTOM_TARGETS += ota-file
+endif
 
 $(OTA_UPGRADE_FILE): $(RBOOT_ROM_0_BIN) $(RBOOT_ROM_1_BIN) $(OTA_KEY_IMAGE)
 ifneq ($(OTA_ENABLE_DOWNGRADE),1)
