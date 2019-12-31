@@ -135,7 +135,7 @@ openssl x509 -req -in x509_aes256.req \
             -CA ca_x509.pem -CAkey ca_key.pem
 
 # note: must be root to do this
-DATE_NOW=`date`
+DATE_NOW=$(date)
 if date -s "Jan 1 2025"; then
 openssl x509 -req -in x509_512.req -out x509_bad_before.pem \
             -sha1 -CAcreateserial -days 365 \

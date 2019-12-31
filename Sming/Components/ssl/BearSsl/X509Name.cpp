@@ -14,17 +14,20 @@
 
 namespace Ssl
 {
-void X509Name::append(const void* buf, size_t len)
+uint8_t* X509Name::getHash(uint8_t hash[br_sha256_SIZE]) const
 {
-	br_sha256_update(&sha256, buf, len);
-	dn.concat(static_cast<const char*>(buf), len);
+	br_sha256_context sha256;
+	br_sha256_init(&sha256);
+	br_sha256_update(&sha256, dn.c_str(), dn.length());
+	br_sha256_out(&sha256, hash);
+	return hash;
 }
 
 String X509Name::getRDN(uint8_t type) const
 {
 	Asn1Parser parser(reinterpret_cast<const uint8_t*>(dn.c_str()), dn.length());
 
-	if(parser.getNextObject(ASN1_SEQUENCE) < 0) {
+	if(parser.getNextObject(ASN1_SEQUENCE) == 0) {
 		return nullptr;
 	}
 

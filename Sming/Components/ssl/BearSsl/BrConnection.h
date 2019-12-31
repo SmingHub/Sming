@@ -69,7 +69,7 @@ public:
 	}
 
 protected:
-	int init();
+	int init(size_t bufferSize, bool bidi);
 
 	int runUntil(InputBuffer& input, unsigned target);
 

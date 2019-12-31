@@ -22,7 +22,12 @@ int BrServerConnection::init()
 {
 	br_ssl_server_zero(&serverContext);
 
-	int err = BrConnection::init();
+	// Server requires bi-directional buffer, add on minimum size for output
+	auto fragSize = context.getSession().fragmentSize ?: eSEFS_4K;
+	size_t bufSize = (256U << fragSize) + (BR_SSL_BUFSIZE_MONO - 16384U);
+	bufSize += 512U + (BR_SSL_BUFSIZE_OUTPUT - 16384);
+
+	int err = BrConnection::init(bufSize, true);
 	if(err < 0) {
 		return err;
 	}

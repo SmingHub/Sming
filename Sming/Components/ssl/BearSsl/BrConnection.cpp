@@ -19,7 +19,7 @@
 
 namespace Ssl
 {
-int BrConnection::init()
+int BrConnection::init(size_t bufferSize, bool bidi)
 {
 	DEFINE_FSTR_ARRAY_LOCAL(FS_suitesBasic, CipherSuite, CipherSuite::RSA_WITH_AES_128_CBC_SHA256,
 							CipherSuite::RSA_WITH_AES_256_CBC_SHA256, CipherSuite::RSA_WITH_AES_128_CBC_SHA,
@@ -82,17 +82,14 @@ int BrConnection::init()
 	br_ssl_engine_set_default_des_cbc(engine);
 	br_ssl_engine_set_default_chapol(engine);
 
-	// Set Mono-directional buffer size according to requested max. fragment size
-	auto fragSize = context.getSession().fragmentSize ?: eSEFS_4K;
-	size_t bufSize = (256U << fragSize) + (BR_SSL_BUFSIZE_MONO - 16384U);
-	debug_i("Using buffer size of %u bytes", bufSize);
-	delete buffer;
-	buffer = new uint8_t[bufSize];
+	debug_i("Using buffer size of %u bytes", bufferSize);
+	delete[] buffer;
+	buffer = new uint8_t[bufferSize];
 	if(buffer == nullptr) {
 		debug_e("Buffer allocation failed");
 		return -BR_ERR_BAD_PARAM;
 	}
-	br_ssl_engine_set_buffer(engine, buffer, bufSize, 0);
+	br_ssl_engine_set_buffer(engine, buffer, bufferSize, bidi);
 
 	return BR_ERR_OK;
 }
@@ -121,7 +118,7 @@ int BrConnection::write(const uint8_t* data, size_t length)
 {
 	InputBuffer input(nullptr);
 	int state = runUntil(input, BR_SSL_SENDAPP);
-	if(state <= 0) {
+	if(state < 0) {
 		return state;
 	}
 
@@ -133,25 +130,28 @@ int BrConnection::write(const uint8_t* data, size_t length)
 
 	size_t available;
 	auto buf = br_ssl_engine_sendapp_buf(engine, &available);
-	debug_d("SSL: Required: %d, Available: %u", length, available);
+	if(available == 0) {
+		debug_w("SSL: Send buffer full");
+		return 0;
+	}
+
 	if(available < length) {
-		return -BR_ERR_IO;
+		debug_i("SSL: Required: %d, Available: %u", length, available);
+		length = available;
 	}
 
 	memcpy(buf, data, length);
 	br_ssl_engine_sendapp_ack(engine, length);
 	br_ssl_engine_flush(engine, 0);
 
-	state = runUntil(input, BR_SSL_SENDAPP | BR_SSL_RECVAPP);
-	if(state > 0) {
-		return length;
-	}
-
-	if(state < 0) {
-		debug_w("Got error: %d", state);
-	}
-
-	return state;
+	/*
+	 * Our data has been accepted so just let the SSL engine run so it can try to
+	 * send some data.
+	 * This can fail if the engine expects some receive data, so don't respond to
+	 * the return value as this will get resolved on the next read operation.
+	 */
+	runUntil(input, BR_SSL_SENDAPP | BR_SSL_RECVAPP);
+	return length;
 }
 
 int BrConnection::runUntil(InputBuffer& input, unsigned target)
@@ -215,7 +215,7 @@ int BrConnection::runUntil(InputBuffer& input, unsigned target)
 		// Conflict: Application data hasn't been read
 		if(state & BR_SSL_RECVAPP) {
 			debug_e("SSL: Protocol Error");
-			return -1;
+			return BR_ERR_BAD_STATE;
 		}
 
 		if(state & BR_SSL_RECVREC) {

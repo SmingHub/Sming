@@ -38,29 +38,21 @@ public:
 
 	void clear()
 	{
-		br_sha256_init(&sha256);
 		dn.setLength(0);
 	}
 
-	uint8_t* getHash(uint8_t hash[br_sha256_SIZE]) const
-	{
-		br_sha256_out(&sha256, hash);
-		return hash;
-	}
+	uint8_t* getHash(uint8_t hash[br_sha256_SIZE]) const;
 
 	static void append(void* ctx, const void* buf, size_t len)
 	{
-		reinterpret_cast<X509Name*>(ctx)->append(buf, len);
+		auto self = reinterpret_cast<X509Name*>(ctx);
+		self->dn.concat(static_cast<const char*>(buf), len);
 	}
 
 	// Obtain Relative Distinguished Name by type
 	String getRDN(uint8_t type) const;
 
 private:
-	void append(const void* buf, size_t len);
-
-private:
-	br_sha256_context sha256 = {};
 	String dn; ///< The ASN1-encoded Distinguished Name
 };
 
