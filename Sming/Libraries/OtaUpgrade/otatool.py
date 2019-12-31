@@ -89,7 +89,7 @@ def make_ota_file(args):
         import_nacl()
         _, sk, ek = load_keys(args.key)
 
-    assert(len(args.roms) < 256)
+    assert len(args.roms) < 256
 
     magic = MAGIC_SIGNED if args.signed else MAGIC_UNSIGNED
     timestamp = int((datetime.now() - datetime(1900, 1, 1)).total_seconds() * 1000)
@@ -115,7 +115,7 @@ def make_ota_file(args):
         #   - 2 Bytes (LE): chunk size - 1 => typical chunk size is 2K, last chunk shorter
         #   - encrypted chunk
         default_chunk_size = 2048 - nacl.bindings.crypto_secretstream_xchacha20poly1305_ABYTES
-        assert(default_chunk_size > 0)
+        assert default_chunk_size > 0
         enc_state = nacl.bindings.crypto_secretstream_xchacha20poly1305_state()
         enc_ota = nacl.bindings.crypto_secretstream_xchacha20poly1305_init_push(enc_state, ek)
 
@@ -129,7 +129,7 @@ def make_ota_file(args):
             cipher_text = nacl.bindings.crypto_secretstream_xchacha20poly1305_push(enc_state, ota_chunk, tag=tag)
 
             cipher_text_len = len(cipher_text)
-            assert(cipher_text_len > 0 and cipher_text_len <= 0x10000)
+            assert 0 < cipher_text_len <= 0x10000
             enc_ota += struct.pack('<H', cipher_text_len - 1)
             enc_ota += cipher_text
 
@@ -169,7 +169,7 @@ def upload_http_post(args):
         + ota_file_content \
         + ('\r\n--' + boundary + '--').encode('ascii')
 
-    headers =  {'content-type': 'multipart/form-data; boundary=' + boundary }
+    headers = {'content-type': 'multipart/form-data; boundary=' + boundary}
 
     if not args.url.startswith('http'):
         args.url = 'http://' + args.url
@@ -197,7 +197,7 @@ def make_parser():
         The command always generates both the decryption key (decrypt.key.bin) and the signature verification key \
         (verify.key.bin), regardless of which ones are actually used by the firmware.')
     mksource_parser.add_argument('-o', '--output', required=True, help='Output directory of generated key binary files.')
-    mksource_parser.add_argument('-k', '--key', required=True, 
+    mksource_parser.add_argument('-k', '--key', required=True,
         help='Input file containing private key material from which the firmware keys are derived.')
     mksource_parser.set_defaults(func=make_bin_keys)
 
