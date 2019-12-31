@@ -1,9 +1,9 @@
 HttpServer Firmware Upload
 ==========================
 
-This example combines the :library:`MultipartParser` library for file uploads
-and the :component:`OtaUpgrade` component, to create a browser based firmware 
-upgrade solution akin to what's found in many consumer devices.
+This example combines the libraries :library:`MultipartParser` for file uploads
+and :library:`OtaUpgrade`, to create a browser based firmware upgrade solution
+akin to what's found in many consumer devices.
 The example is kept as minimal as possible to serve as a starting point for your
 own applications.
 
@@ -30,7 +30,7 @@ If a field is not specified then its content will be discarded.
 About OtaUpgrade
 ----------------
 
-The OtaUpgrade component provides the :cpp:class:`OtaUpgradeStream` class which 
+The OtaUpgrade component provides the :cpp:type:`OtaUpgradeStream` class which 
 is hooked up to the web server to process a firmware upgrade file uploaded to
 the device.
 The component is also responsible for creating the upgrade files during the build 
@@ -39,7 +39,7 @@ relieving the user from having to know the slot that is updated and manually
 selecting the corresponding ROM image in a Two-ROM configuration.
 The file format also supports state-of-the-art security features like a digital
 signature, encryption and downgrade protection. You are invited to play with  
-them and observe their impact on code size. See also the :component:`OtaUpgrade` 
+them and observe their impact on code size. See also the :library:`OtaUpgrade` 
 documentation for further advice on how to use the security features properly.
 
 

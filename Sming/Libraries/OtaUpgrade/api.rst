@@ -1,5 +1,7 @@
-OTA Upgrade Stream
-==================
+OTA Upgrade Stream classes
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. doxygenclass:: OtaUpgradeStream
+.. doxygentypedef:: OtaUpgradeStream
 
+.. doxygenclass:: BasicOtaUpgradeStream
+.. doxygenclass:: EncryptedOtaUpgradeStream

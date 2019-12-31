@@ -13,12 +13,26 @@
 #include "BasicOtaUpgradeStream.h"
 #include <sodium/crypto_secretstream_xchacha20poly1305.h>
 
+/**
+ * @brief Encryption wrapper for #BasicOtaUpgradeStream.
+ *
+ * The class processes encrypted firmware upgrade files created by otatool.py.
+ * A buffer is allocated dynamically to fit the largest chunk of the encryption container
+ * (2kB unless otatool.py was modified). The actual processing of the decrypted data is 
+ * defered to #BasicOtaUpgradeStream.
+ */
 class EncryptedOtaUpgradeStream : public BasicOtaUpgradeStream
 {
 public:
 	EncryptedOtaUpgradeStream();
 	~EncryptedOtaUpgradeStream();
 
+	/** @brief Process an arbitrarily sized chunk of an encrypted OTA upgrade file.
+	 * @param data Pointer to chunk of data.
+	 * @param size Size of chunk pointed to by \a data in bytes.
+	 * @return If less than \a size, an error occured. Check \link BasicOtaUpgradeStream::errorCode \c errorCode \endlink for more details.
+	 * @note \a size does not have to match the chunk size used by otatool.py
+	 */
 	size_t write(const uint8_t* data, size_t size) override;
 
 private:

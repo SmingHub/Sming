@@ -15,18 +15,24 @@
 
 #include <stdint.h>
 
+/** File header of an unencrypted OTA upgrade file.
+ */
 typedef struct __attribute__((packed)) {
-	uint32_t magic;
-	uint32_t buildTimestampLow;
-	uint32_t buildTimestampHigh;
-	uint8_t romCount;
-	uint8_t reserved[3];
+	uint32_t magic; ///< File type identification, either #OTA_HEADER_MAGIC_SIGNED or #OTA_HEADER_MAGIC_NOT_SIGNED.
+	uint32_t buildTimestampLow;  ///< File creation timestamp, Milliseconds since 1900/01/01 (lower 32 bits)
+	uint32_t buildTimestampHigh; ///< File creation timestamp, Milliseconds since 1900/01/01 (lower 32 bits)
+	uint8_t romCount;			 ///< Number of ROM images in this filem, each preceeded with an #OTA_RomHeader.
+	uint8_t reserved[3];		 ///< Reserved bytes, must be zero for compatibility with future versions.
 } OTA_FileHeader;
 
+/** Header of ROM image inside an OTA upgrade file.
+ */
 typedef struct __attribute__((packed)) {
-	uint32_t address;
-	uint32_t size;
+	uint32_t address; ///< Flash memory destination offset for this ROM image.
+	uint32_t size;	///< Size of ROM image content following this header, in bytes.
 } OTA_RomHeader;
 
+/** Expected value for OTA_FileHeader::magic for digitally signed upgrad file. */
 #define OTA_HEADER_MAGIC_SIGNED 0xf01af02a
+/** Expected value for OTA_FileHeader::magic when signing is disabled. */
 #define OTA_HEADER_MAGIC_NOT_SIGNED 0xf01af020

@@ -89,8 +89,8 @@ ranging from raw TCP sockets to HTTP, FTP, MQTT, with or without SSL, etc.
 To conserve program memory, you might prefer a protocol already employed by your 
 application.
 
-On the backend side, there is :cpp:class:`OtaUpgradeStream` from the :component:`OtaUpgrade`
-component, which supports multiple ROM images in one upgrade file, as well as 
+On the backend side, there is :cpp:type:`OtaUpgradeStream` from the :library:`OtaUpgrade`
+library, which supports multiple ROM images in one upgrade file, as well as 
 state-of-the-art security features like a digital signatures and encryption. 
 Check out the :sample:`HttpServer_FirmwareUpload` example, which demonstrates a
 browser-based firmware upgrade mechanism similar to what is found in many consumer

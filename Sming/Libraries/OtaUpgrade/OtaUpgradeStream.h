@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * OtaUpgradeStream.h
+ * OtaUpgradeStream.h - Front-end header for OTA upgrade functionality, to be included by application code.
  *
  ****/
 
@@ -15,3 +15,11 @@ typedef EncryptedOtaUpgradeStream OtaUpgradeStream;
 #include <BasicOtaUpgradeStream.h>
 typedef BasicOtaUpgradeStream OtaUpgradeStream;
 #endif
+
+/**
+ * @typedef OtaUpgradeStream
+ * 
+ * Alias for either `BasicOtaUpgradeStream` or `EncryptedOtaUpgradeStream`, depending on encryption settings.
+ * 
+ * Application code should use this alias to avoid source code modifications when changing OTA upgrade security settings.
+ */

@@ -13,23 +13,33 @@
 #include "romfunc_md5.h"
 #include <string.h>
 
-// simple wrapper for MD5 C API
+/**
+ * @brief Checksum verifier used by `BasicOtaUpgradeStream` if signature verification is disabled.
+ *
+ * This is a simple C++ wrapper for the MD5 ROM functions.
+ */
 class OtaChecksumVerifier
 {
 	MD5Context context;
 
 public:
-	static const size_t NumBytes = MD5_SIZE;
+	static const size_t NumBytes = MD5_SIZE; ///< Size of checksum in bytes.
 
 	OtaChecksumVerifier()
 	{
 		MD5Init(&context);
 	}
+
+	/** Continue MD5 checksum calculation for the given chunk of data.
+	 */
 	void update(const void* data, size_t size)
 	{
 		MD5Update(&context, data, size);
 	}
 
+	/** Verify given \c checksum.
+	 * @return `true` if checksum and content matches, `false` otherwise.
+	 */
 	bool verify(const uint8_t (&checksum)[MD5_SIZE])
 	{
 		uint8_t expectedChecksum[MD5_SIZE];
