@@ -24,6 +24,6 @@ typedef struct {
 	uint8_t in[64];
 } MD5Context;
 
-void MD5Init(MD5Context* ctx);
-void MD5Update(MD5Context* ctx, void* buf, uint32_t len);
-void MD5Final(uint8_t digest[MD5_SIZE], MD5Context* ctx);
+extern "C" void MD5Init(MD5Context* ctx);
+extern "C" void MD5Update(MD5Context* ctx, const void* buf, uint32_t len);
+extern "C" void MD5Final(uint8_t digest[MD5_SIZE], MD5Context* ctx);

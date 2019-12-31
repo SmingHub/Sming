@@ -1,3 +1,7 @@
+COMPONENT_SRCDIRS :=
+COMPONENT_SRCFILES := BasicOtaUpgradeStream.cpp
+COMPONENT_APPCODE := appcode
+
 COMPONENT_INCDIRS := .
 
 COMPONENT_DOXYGEN_INPUT := .
@@ -13,7 +17,7 @@ clean: ota-gencode-clean
 ota-gencode-clean:
 	-$(Q) rm -rf $(OTA_GENCODE_DIR)
 # Tell build system about it so any known source files will be compiled and linked
-COMPONENT_APPCODE := $(abspath $(OTA_GENCODE_DIR))
+COMPONENT_APPCODE += $(abspath $(OTA_GENCODE_DIR))
 
 
 COMPONENT_VARS += ENABLE_OTA_SIGNING 
@@ -31,6 +35,7 @@ ENABLE_OTA_ENCRYPTION ?= 0
 ifeq ($(ENABLE_OTA_ENCRYPTION),1)
 OTA_CRYPTO_FEATURES += --encrypted
 GLOBAL_CFLAGS += -DENABLE_OTA_ENCRYPTION
+COMPONENT_SRCFILES += EncryptedOtaUpgradeStream.cpp
 endif
 
 ifneq ($(OTA_CRYPTO_FEATURES),)
@@ -57,7 +62,6 @@ $(OTA_KEY):
 # These are pulled as appcode using IMPORT_FSTR
 OTA_DECRYPT_KEY_BIN := $(OTA_GENCODE_DIR)/decrypt.key.bin
 OTA_VERIFY_KEY_BIN := $(OTA_GENCODE_DIR)/verify.key.bin
-COMPONENT_APPCODE += appcode
 
 App-build: $(OTA_DECRYPT_KEY_BIN) $(OTA_VERIFY_KEY_BIN)
 $(OTA_DECRYPT_KEY_BIN) $(OTA_VERIFY_KEY_BIN): $(OTA_KEY) | $(OTA_GENCODE_DIR)
