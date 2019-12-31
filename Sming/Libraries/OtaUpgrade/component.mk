@@ -88,6 +88,7 @@ OTA_DATE_REF := -2208988800000LL
 .PHONY: _ota-make-build-timestamp
 _ota-make-build-timestamp: | $(OTA_GENCODE_DIR)
 	$(Q) echo '#include <sys/pgmspace.h>' > $(OTA_BUILD_TIMESTAMP_SRC)
+	$(Q) echo '#include <stdint.h>' >> $(OTA_BUILD_TIMESTAMP_SRC)
 	$(Q) echo 'const uint64_t OTA_BuildTimestamp PROGMEM = $(shell date +%s%3NLL) - $(OTA_DATE_REF);' >> $(OTA_BUILD_TIMESTAMP_SRC)
 
 App-build: _ota-make-build-timestamp
