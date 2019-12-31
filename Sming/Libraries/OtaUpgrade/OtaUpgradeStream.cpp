@@ -351,16 +351,31 @@ size_t OtaUpgradeStream::process(const uint8_t* data, size_t size)
 
 String OtaUpgradeStream::errorToString(ErrorCode code)
 {
-	if(code == NoError) {
-		return nullptr;
-	}
-
 	switch(code) {
-#define XX(tag, text, desc)                                                                                            \
-	case tag##Error:                                                                                                   \
-		return F(text);
-		OTA_ERRORCODE_MAP(XX)
-#undef XX
+	case NoError:
+		return nullptr;
+	case InvalidFormatError:
+		return F("Invalid/Unrecognized upgrade image format");
+	case UnsupportedDataError:
+		return F("Upgrade image contains unsupported extended data.");
+	case DecryptionError:
+		return F("Upgrade image decryption failed.");
+	case NoRomFoundError:
+		return F("No suitable ROM image found");
+	case RomTooLargeError:
+		return F("ROM image too large");
+	case DowngradeError:
+		return F("Downgrade not allowed");
+	case VerificationError:
+		return F("Signature/Checksum verification failed");
+	case FlashWriteError:
+		return F("Error while writing Flash memory");
+	case RomActivationError:
+		return F("Could not activate updated ROM");
+	case OutOfMemoryError:
+		return F("Out of memory. Allocation failed.");
+	case InternalError:
+		return F("Internal error");
 	default:
 		return F("<unknown error>");
 	}
