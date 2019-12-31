@@ -67,6 +67,14 @@ def make_key_source(args):
         if args.encrypted:
             source.write('uint8_t OTAUpgrade_EncryptionKey_P[] PROGMEM = {%s};\n' % bytestring(ek))
 
+def make_key_bin(args):
+    import_nacl()
+    pk, _, ek = load_keys(args.key)
+    with open(args.output + '/encrypt.key.bin', 'wb') as source:
+        source.write(ek)
+    with open(args.output + '/signing.key.bin', 'wb') as source:
+        source.write(pk)
+
 def make_rom_image(address, filepath):
     try:
         with open(filepath, 'rb') as f:
@@ -200,6 +208,11 @@ def make_parser():
     mksource_parser.add_argument('-s', '--signed', action='store_true', default=False, help='Include public key for signature validation')
     mksource_parser.add_argument('-e', '--encrypted', action='store_true', default=False, help='Include decryption key (shared key)')
     mksource_parser.set_defaults(func=make_key_source)
+
+    mksource_parser = subparsers.add_parser('mkbin', help='Generate binary key files from public signing key (for use with class OtaUpgradeStream)')
+    mksource_parser.add_argument('-o', '--output', required=True, help='Output location of generated binary files')
+    mksource_parser.add_argument('-k', '--key', required=True, help='Input file containing cryptographic key')
+    mksource_parser.set_defaults(func=make_key_bin)
 
     mkota_parser = subparsers.add_parser('mkfile', help='Generate OTA upgrade file from ROM images')
     mkota_parser.add_argument('-o', '--output', required=True, help='Output location of OTA upgrade file')

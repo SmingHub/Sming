@@ -25,6 +25,19 @@ OTA_ENABLE_ENCRYPTION ?= 0
 COMPONENT_VARS += OTA_ENABLE_DOWNGRADE
 OTA_ENABLE_DOWNGRADE ?= 0
 
+# Create a directory for generated source code
+OTA_GENCODE_DIR := out/OtaUpgrade
+App-build: $(OTA_GENCODE_DIR)
+$(OTA_GENCODE_DIR):
+	$(Q) mkdir -p $(OTA_GENCODE_DIR)
+clean: ota-gencode-clean
+.PHONY: ota-gencode-clean
+ota-gencode-clean:
+	-$(Q) rm -rf $(OTA_GENCODE_DIR)
+# Tell build system about it so any known source files will be compiled and linked
+COMPONENT_APPCODE := $(abspath $(OTA_GENCODE_DIR))
+
+#
 COMPONENT_INCDIRS := .
 
 COMPONENT_DOXYGEN_INPUT := .
@@ -61,34 +74,15 @@ $(OTA_KEY):
 	@echo "################################################################"
 	$(Q) $(OTATOOL) genkey --output=$@
 
-# The public key has to be embedded in the application via a generated source file.
-# Since every project may use a different key, it cannot be built as part of this component,
-# but instead must be build as part of the 'App' component. 
-# However, because every component, including 'App', is built in an isolated
-# environment, the rules from this Makefile will not be available at 'App's build time.
-# To work around this limitation, the public key object file is build in the top level 
-# Makefile context (outside of any component) and added directly to COMPONENTS_AR, i.e. 
-# the list of archive/object files linked into the final firmware image.
-OTA_KEYS_SRC := $(abspath $(CMP_App_BUILD_BASE)/OTA_Keys.c)
-OTA_KEYS_OBJ := $(OTA_KEYS_SRC:.c=.o)
+# Generate public keys from the selected private key, output as binary files
+# These are pulled as appcode using IMPORT_FSTR
+OTA_ENCRYPT_KEY_BIN := $(OTA_GENCODE_DIR)/encrypt.key.bin
+OTA_SIGNING_KEY_BIN := $(OTA_GENCODE_DIR)/signing.key.bin
+COMPONENT_APPCODE += appcode
 
-# Trigger regeneration of OTA_KEYS_SRC on change of security settings.
-# Otherwise a secret key might leak into an unencrypted OTA file when switching from encrypted to unencrypted mode!
-OTA_CURRENT_SETTINGS_FILE := $(abspath $(CMP_App_BUILD_BASE)/ota-security.mk)
--include $(OTA_CURRENT_SETTINGS_FILE)
-ifneq ($(OTA_CRYPTO_FEATURES_CURRENT),$(OTA_CRYPTO_FEATURES))
-.PHONY: $(OTA_KEYS_SRC)
-endif
-
-$(OTA_KEYS_SRC): $(OTA_KEY)
-	$(Q) $(OTATOOL) mksource --key=$< --output=$@ $(OTA_CRYPTO_FEATURES)
-	$(Q) echo 'OTA_CRYPTO_FEATURES_CURRENT = $(OTA_CRYPTO_FEATURES)' > $(OTA_CURRENT_SETTINGS_FILE)
-
-$(OTA_KEYS_OBJ): $(OTA_KEYS_SRC)
-	$(vecho) "CC $<"
-	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CFLAGS) -std=c11 -c $< -o $@
-
-COMPONENTS_AR += $(OTA_KEYS_OBJ)
+App-build: $(OTA_ENCRYPT_KEY_BIN) $(OTA_SIGNING_KEY_BIN)
+$(OTA_ENCRYPT_KEY_BIN) $(OTA_SIGNING_KEY_BIN): $(OTA_KEY)
+	$(Q) $(OTATOOL) mkbin --key=$< --output=$(OTA_GENCODE_DIR)
 
 endif # OTA_CRYPTO_FEATURES
 
@@ -96,8 +90,7 @@ endif # OTA_CRYPTO_FEATURES
 ifneq ($(OTA_ENABLE_DOWNGRADE),1)
 COMPONENT_CFLAGS += -DOTA_DOWNGRADE_PROTECTION
 
-OTA_BUILD_TIMESTAMP_SRC := $(abspath $(CMP_App_BUILD_BASE)/OTA_BuildTimestamp.c)
-OTA_BUILD_TIMESTAMP_OBJ := $(OTA_BUILD_TIMESTAMP_SRC:.c=.o)
+OTA_BUILD_TIMESTAMP_SRC := $(OTA_GENCODE_DIR)/OTA_BuildTimestamp.c
 
 # Date reference for build timestamps, generated using this:
 # date --date 1900-01-01 +%s%3NLL
@@ -111,11 +104,8 @@ _ota-make-build-timestamp:
 	$(Q) echo '#include <sys/pgmspace.h>' > $(OTA_BUILD_TIMESTAMP_SRC)
 	$(Q) echo 'const uint64_t OTA_BuildTimestamp PROGMEM = $(shell date +%s%3NLL) - $(OTA_DATE_REF);' >> $(OTA_BUILD_TIMESTAMP_SRC)
 
-$(OTA_BUILD_TIMESTAMP_OBJ): _ota-make-build-timestamp
-	$(vecho) "CC $(OTA_BUILD_TIMESTAMP_SRC)"
-	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CFLAGS) -std=c11 -c $(OTA_BUILD_TIMESTAMP_SRC) -o $@
+App-build: _ota-make-build-timestamp
 
-COMPONENTS_AR += $(OTA_BUILD_TIMESTAMP_OBJ)
 endif
 
 
@@ -164,7 +154,8 @@ CUSTOM_TARGETS += ota-file
 $(OTA_UPGRADE_FILE): $(RBOOT_ROM_0_BIN) $(RBOOT_ROM_1_BIN) $(OTA_KEY_IMAGE)
 ifneq ($(OTA_ENABLE_DOWNGRADE),1)
 ifeq ($(OTA_CRYPTO_FEATURES),)
-	$(warning WARNING: Downgrade protection ineffective without encryption or digital signature. Consider setting OTA_ENABLE_SIGNING or OTA_ENABLE_ENCRYPTION to 1!)
+	$(warning WARNING: Downgrade protection ineffective without encryption or digital signature. \
+		Consider setting OTA_ENABLE_SIGNING or OTA_ENABLE_ENCRYPTION to 1!)
 endif
 endif
 	$(Q) $(OTATOOL) mkfile \

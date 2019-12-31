@@ -14,10 +14,11 @@
 #ifdef OTA_ENCRYPTED
 #include <sodium/utils.h>
 #endif
+#include <FlashString/Array.hpp>
 
-// symbol provided by appcode (generated source file)
+// Keys defined by `appcode/keys.cpp` which is compiled with application
 #ifdef OTA_SIGNED
-extern "C" uint8_t OTAUpgrade_SignatureVerificationKey_P[] PROGMEM;
+DECLARE_FSTR_ARRAY(OTAUpgrade_SignatureVerificationKey, uint8_t);
 #else
 extern "C" void MD5Init(void *ctx);
 extern "C" void MD5Update(void *ctx, const void *buf, uint32_t len);
@@ -25,7 +26,7 @@ extern "C" void MD5Final(uint8_t digest[16], void *ctx);
 #endif
 
 #ifdef OTA_ENCRYPTED
-extern "C" uint8_t OTAUpgrade_EncryptionKey_P[] PROGMEM;
+DECLARE_FSTR_ARRAY(OTAUpgrade_EncryptionKey, uint8_t);
 #endif
 
 #ifdef OTA_DOWNGRADE_PROTECTION
@@ -161,8 +162,8 @@ void OtaUpgradeStream::verifyRoms()
 	debug_d("\n");
 
 #ifdef OTA_SIGNED
-	uint8_t verificationKey[crypto_sign_PUBLICKEYBYTES];
-	memcpy_P(verificationKey, OTAUpgrade_SignatureVerificationKey_P, sizeof(verificationKey));
+	assert(OTAUpgrade_SignatureVerificationKey.length() == crypto_sign_PUBLICKEYBYTES);
+	LOAD_FSTR_ARRAY(verificationKey, OTAUpgrade_SignatureVerificationKey);
 	const bool signatureMismatch = (crypto_sign_final_verify(&verifierState, signature, verificationKey) != 0);
 #else
 	uint8_t expectedChecksum[sizeof(signature)];
@@ -216,8 +217,8 @@ size_t OtaUpgradeStream::write(const uint8_t* data, size_t size)
 			switch(encryption.fragment) {
 			case encryption.FragmentHeader:
 				{
-					uint8_t key[crypto_secretstream_xchacha20poly1305_KEYBYTES];
-					memcpy_P(key, OTAUpgrade_EncryptionKey_P, sizeof(key));
+					assert(OTAUpgrade_EncryptionKey.length() == crypto_secretstream_xchacha20poly1305_KEYBYTES);
+					LOAD_FSTR_ARRAY(key, OTAUpgrade_EncryptionKey);
 					bool ok = (crypto_secretstream_xchacha20poly1305_init_pull(&encryption.state, encryption.header, key) == 0);
 					sodium_memzero(key, sizeof(key));
 					if (!ok) {
