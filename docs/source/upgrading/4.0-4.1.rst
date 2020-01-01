@@ -1,0 +1,164 @@
+*****************
+From v4.0 to v4.1
+*****************
+
+Summary
+=======
+
+.. highlight:: c++
+
+
+With Sming version 4.1 there are some backwards incompatible changes.
+This page is provided to help with migrating your applications.
+
+SSL
+===
+
+In version 4.1 one can choose between different SSL implementations.
+At the moment Sming supports `axTLS <http://axtls.sourceforge.net/>`__ and `BearSSL <https://www.bearssl.org/>`__ for creating
+SSL enabled clients and servers.
+
+In order to allow multiple SSL adapters and seamless integration the library code had to be refactored and that introduced some breaking changes.
+
+Using specific SSL adapters
+---------------------------
+
+The default SSL adapter is still based on axTLS. And it can be enabled in your application by providing
+the ENABLE_SSL directive either in your component.mk file or during compilation.
+See :doc:`SSL documentation </framework/core/network/ssl>` for valid values.
+
+See the :doc:`comparison between the different SSL adapters </information/comparison/ssl>` to check which one fits your needs.
+
+Migration
+---------
+The access to the SSL connection from the TcpConnection is simplified and fetching information about SSL certificate and session id is easier
+than before.
+
+The old code was looking like this::
+
+  SSL* ssl = connection.getSsl();
+  if(ssl) {
+    const char* common_name = ssl_get_cert_dn(ssl, SSL_X509_CERT_COMMON_NAME);
+    if(common_name) {
+      debugf("Common Name:\t\t\t%s\n", common_name);
+    }
+    displayCipher(ssl);
+    displaySessionId(ssl);
+  }
+
+
+Now it should be migrated to the following shorter version::
+
+  auto ssl = connection.getSsl();
+  if(ssl) {
+    ssl->printTo(Serial);
+  }
+
+
+SSL initialisation in TCP clients or servers is done using `Ssl::Session::InitDelegate` callback.
+
+Old code looking like this::
+
+  MqttClient* getMqttClient()
+  {
+    if(mqtt == nullptr) {
+      mqtt = new MqttClient();
+      mqtt->addSslOptions(SSL_SERVER_VERIFY_LATER); // << this is where we were setting SSL options
+      Url url;
+
+Has to be migrated to the following code::
+
+  void sslInit(Ssl::Session& session)
+  {
+    session.options.verifyLater = true;
+  }
+
+  MqttClient* getMqttClient()
+  {
+    if(mqtt == nullptr) {
+      mqtt = new MqttClient();
+      mqtt->setSslInitHandler(sslInit); // << this is where the sslInit callback is set
+      Url url;
+
+It is possible create SSL enabled server. The excerpt below demonstrates this and it is part of the :sample:`HttpServer_ConfigNetwork` sample.
+Pay attention to the :doc:`security considerations </experimental/httpserver-ssl>` and limitations using this on a microcontroller with limited RAM memory::
+
+  void startWebServer()
+  {
+  #ifdef ENABLE_SSL
+    server.setSslInitHandler([](Ssl::Session& session) {
+      debug_i("SSL Init handler: setting server keyCert");
+      session.keyCert.assign(serverKey, serverCert);
+    });
+    server.listen(443, true);
+  #else
+    server.listen(80);
+  #endif
+    server.paths.set("/", onIndex);
+    server.paths.set("/ipconfig", onIpConfig);
+    server.paths.set("/ajax/get-networks", onAjaxNetworkList);
+    server.paths.set("/ajax/connect", onAjaxConnect);
+    server.paths.setDefault(onFile);
+  }
+
+
+Setting client certificates, ssl options and pinning for a HttpRequest is done using onSslInit callback.
+If you look at the :sample:`Basic_Ssl` sample you will see that the old way of setting them was as shown below::
+
+  HttpRequest* request = new HttpRequest(F("https://www.grc.com/fingerprints.htm"));
+  request->setSslOptions(SSL_SERVER_VERIFY_LATER);
+  request->pinCertificate(fingerprints);
+
+The new one is using the following sequence of commands::
+
+  auto request = new HttpRequest(F("https://www.grc.com/fingerprints.htm"));
+  request->onSslInit(grcSslInit);
+
+
+A sample `grcSslInit` callback is given below. In the callback the developer
+has access to the current SSL session and HTTP request and can modify them accordingly::
+
+  void grcSslInit(Ssl::Session& session, HttpRequest& request)
+  {
+    SslFingerprints fingerprints;
+
+    //...
+
+    session.validators.add(fingerprints);
+
+    // We're using fingerprints, so don't attempt to validate full certificate
+    session.options.verifyLater = true;
+
+    session.fragmentSize = Ssl::eSEFS_16K;
+  }
+
+
+Cryptographic functions
+~~~~~~~~~~~~~~~~~~~~~~~
+Cryptographic functions are now not included by default. This means that if you want to continue using them they should be included
+in your application source code. For example the following old code is using axTLS cryptographic functions::
+
+
+  char* loadPsk(int* keylen)
+  {
+    SHA1_CTX sha_ctx;
+    // ...
+    SHA1_Init(&sha_ctx);
+    SHA1_Update(&sha_ctx, (uint8_t*)buffer, strlen(buffer));
+    SHA1_Final(digest, &sha_ctx);
+
+For this code to work you should include the following header::
+
+  #include <axtls-8266/crypto/crypto.h>
+
+
+And also make sure that your application `component.mk` file has the following line::
+
+  COMPONENT_DEPENDS += axtls-8266
+
+You can use also one SSL adapter, for example Bearssl, with another cryptographic library, for example Axtls.
+
+SSL namespace
+~~~~~~~~~~~~~
+All SSL related classes and types are organized in a separate namespace called `Ssl`. For example you should use `Ssl::KeyCertPair`
+instead of `SslKeyCertPair` and `Ssl::Fingerprints` instead of `SslFingerprints`.

@@ -49,7 +49,7 @@ public:
 
 	/**
 	 * @brief Creates client SSL connection.
-	 *        Your SSL client use this call to make create a client connection to remote server.
+	 *        Your SSL client use this call to create a client connection to remote server.
 	 * @retval Connection*
 	 */
 	virtual Connection* createClient(tcp_pcb* tcp) = 0;

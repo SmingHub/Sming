@@ -5,22 +5,22 @@ COMPONENT_INCDIRS	:= include
 CONFIG_VARS				+= ENABLE_SSL
 COMPONENT_RELINK_VARS	:= ENABLE_SSL
 ENABLE_SSL				?= 0
-ifeq ($(ENABLE_SSL),$(filter $(ENABLE_SSL),1 AXTLS axTLS))
-	override ENABLE_SSL	:= AXTLS
+ifeq ($(ENABLE_SSL),$(filter $(ENABLE_SSL),1 Axtls))
+	override ENABLE_SSL	:= Axtls
 	COMPONENT_DEPENDS	:= axtls-8266
 	COMPONENT_SRCDIRS	+= Axtls
 	APP_CFLAGS			+= -DENABLE_SSL
-else ifeq ($(ENABLE_SSL),$(filter $(ENABLE_SSL),2 BRSSL BearSSL BEARSSL))
-	override ENABLE_SSL	:= BEARSSL
+else ifeq ($(ENABLE_SSL),Bearssl)
+	override ENABLE_SSL	:= Bearssl
 	COMPONENT_DEPENDS	:= bearssl-esp8266
 	COMPONENT_SRCDIRS	+= BearSsl
 	APP_CFLAGS			+= -DENABLE_SSL
-else ifeq ($(ENABLE_SSL),MBEDTLS)
+else ifeq ($(ENABLE_SSL),Mbedtls)
 $(error MBED TLS not yet implemented)
 else ifeq ($(ENABLE_SSL),0)
 	COMPONENT_SRCDIRS	+= NoSsl
 else
-$(error Unsupported ENABLE_SSL value "$(ENABLE_SSL)")
+$(error Unsupported ENABLE_SSL value "$(ENABLE_SSL)". Supported values are Axtls, Bearssl or 0 to disable SSL)
 endif
 
 COMPONENT_RELINK_VARS	+= SSL_DEBUG

@@ -143,7 +143,7 @@ protected:
 	/**
 	 * @brief Override in inherited classes to perform custom session initialisation
 	 *
-	 * Called when TCP connectoin is established before initating handshake.
+	 * Called when TCP connection is established before initiating handshake.
 	 */
 	virtual void sslInitSession(Ssl::Session& session)
 	{

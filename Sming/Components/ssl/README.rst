@@ -10,5 +10,6 @@ Provides Secure Socket Layer (SSL) support for Sming with selectable implementat
 
    Other values specify a supported SSL implementation:
 
-   - AXTLS
+   - Axtls
+   - Bearssl
 

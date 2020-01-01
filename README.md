@@ -60,7 +60,7 @@ Please note Version 4 documentation is at [sming.readthedocs.io](https://sming.r
     * Async TCP and UDP stack based on [LWIP](http://savannah.nongnu.org/projects/lwip/).
     * With clients supporting: HTTP, MQTT, WebSockets and SMTP.
     * And servers for: DNS, FTP, HTTP(+ WebSockets), Telnet.
-    * With SSL support for all network clients and servers based on [axTLS 2.1+](https://github.com/igrr/axtls-8266) with [Lwirax](https://github.com/attachix/lwirax/).
+    * With [SSL support](https://sming.readthedocs.io/en/latest/framework/core/network/ssl.html) for all network clients and servers. Based on [axTLS](http://axtls.sourceforge.net/) and [BearSSL](https://www.bearssl.org/).
     * Out of the box support for OTA over HTTPS.
 * ESP8266 specific features.
     * Integrated boot loader [rboot](https://sming.readthedocs.io/en/latest/_inc/Sming/Components/rboot/index.html) with support for 1MB ROMs, OTA firmware updating and ROM switching.
