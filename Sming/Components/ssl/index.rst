@@ -18,8 +18,8 @@ for SSL servers.
    - Axtls: to enable SSL support using the :component:`axtls-8266` component.
    - Bearssl: to enable SSL support using the :component:`bearssl-esp8266` component.
 
-API Documentation
------------------
+.. toctree::
+   :glob:
+   :maxdepth: 1
 
-.. doxygengroup:: ssl
-   :content-only:
+   *

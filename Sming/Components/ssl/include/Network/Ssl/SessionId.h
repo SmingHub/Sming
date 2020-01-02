@@ -17,7 +17,6 @@ namespace Ssl
 {
 /**
  * @brief Manages buffer to store SSL Session ID
- * @ingroup ssl
  */
 class SessionId
 {
@@ -65,6 +64,10 @@ private:
 
 } // namespace Ssl
 
-typedef Ssl::SessionId SslSessionId;
-
-typedef Ssl::SessionId SSLSessionId SMING_DEPRECATED; ///< @deprecated Use Ssl::SessionId instead
+/**
+ * @deprecated Use Ssl::SessionId instead
+ * @{
+ */
+typedef Ssl::SessionId SslSessionId SMING_DEPRECATED;
+typedef Ssl::SessionId SSLSessionId SMING_DEPRECATED;
+/** @} */

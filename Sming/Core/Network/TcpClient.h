@@ -26,8 +26,19 @@ typedef Delegate<void(TcpClient& client, TcpConnectionEvent sourceEvent)> TcpCli
 typedef Delegate<void(TcpClient& client, bool successful)> TcpClientCompleteDelegate;
 typedef Delegate<bool(TcpClient& client, char* data, int size)> TcpClientDataDelegate;
 
-enum TcpClientState { eTCS_Ready, eTCS_Connecting, eTCS_Connected, eTCS_Successful, eTCS_Failed };
-enum TcpClientCloseAfterSentState { eTCCASS_None, eTCCASS_AfterSent, eTCCASS_AfterSent_Ignore_Received };
+enum TcpClientState {
+	eTCS_Ready,
+	eTCS_Connecting,
+	eTCS_Connected,
+	eTCS_Successful,
+	eTCS_Failed,
+};
+
+enum TcpClientCloseAfterSentState {
+	eTCCASS_None,
+	eTCCASS_AfterSent,
+	eTCCASS_AfterSent_Ignore_Received,
+};
 
 // By default a TCP client connection has 70 seconds timeout
 #define TCP_CLIENT_TIMEOUT 70
@@ -69,7 +80,6 @@ public:
 		freeStreams();
 	}
 
-public:
 	bool connect(const String& server, int port, bool useSsl = false) override;
 	bool connect(IpAddress addr, uint16_t port, bool useSsl = false) override;
 	void close() override;
@@ -115,9 +125,6 @@ public:
 	{
 		closeAfterSent = ignoreIncomingData ? eTCCASS_AfterSent_Ignore_Received : eTCCASS_AfterSent;
 	}
-
-	using TcpConnection::getRemoteIp;
-	using TcpConnection::getRemotePort;
 
 protected:
 	err_t onConnected(err_t err) override;

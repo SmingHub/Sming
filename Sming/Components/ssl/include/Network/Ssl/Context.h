@@ -20,15 +20,11 @@ struct tcp_pcb;
 
 namespace Ssl
 {
-/**
- * @ingroup ssl
- * @brief Encapsulates operations related to creating a SSL context.
- * 		  The SSL context is the one that can later on be used to create client or server SSL connections
- * @{
- */
-
 class Session;
 
+/**
+ * @brief Implemented by SSL adapter to create and manage SSL connections
+ */
 class Context
 {
 public:
@@ -69,7 +65,5 @@ public:
 protected:
 	Session& session;
 };
-
-/** @} */
 
 } // namespace Ssl

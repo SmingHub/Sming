@@ -17,12 +17,9 @@
 namespace Ssl
 {
 /**
- * @ingroup ssl
- * @brief Ssl Factory class
- * 		  Each SSL adapter must implement at least that class
- * @{
+ * @brief Implemented by SSL adapter
+ * @see https://en.wikipedia.org/wiki/Factory_method_pattern
  */
-
 class Factory
 {
 public:
@@ -37,7 +34,9 @@ public:
 	virtual Context* createContext(Session& session) = 0;
 };
 
-// Provided by ssl Component
+/**
+ * @brief Provided by ssl adapter, NULL if SSL is disabled
+ */
 extern Factory* factory;
 
 } // namespace Ssl

@@ -180,7 +180,7 @@ void TcpServer::shutdown()
 
 void TcpServer::onClientDestroy(TcpConnection& connection)
 {
-	connections.removeElement((TcpConnection*)&connection);
+	connections.removeElement(&connection);
 	debug_d("Destroying connection. Total connections: %d", connections.count());
 
 	if(active) {

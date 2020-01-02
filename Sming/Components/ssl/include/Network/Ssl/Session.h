@@ -53,15 +53,21 @@ struct Options {
 	String toString() const;
 };
 
+/**
+ * @brief Handles all SSL activity for a TCP connection
+ *
+ * Each TCP connection creates a session at a suitable
+ * ManagerTop-level layer for SSL Contains configuration for each SSL connection
+ */
 class Session
 {
 public:
 	using InitDelegate = Delegate<void(Session& session)>;
 
-	String hostName;
+	String hostName; ///< Used for SNI https://en.wikipedia.org/wiki/Server_Name_Indication
 	KeyCertPair keyCert;
 	Options options;
-	FragmentSize fragmentSize = eSEFS_Off;
+	FragmentSize fragmentSize = eSEFS_Off; ///< Determines size of buffer required
 	/**
 	 * Server: Number of cached client sessions. Suggested value: 10
 	 * Client: Number of cached session ids. Suggested value: 1
@@ -82,14 +88,25 @@ public:
 		return sessionId;
 	}
 
+	/**
+	 * @brief Called when a client connection is made via server TCP socket
+	 * @brief client The client TCP socket
+	 * @brief tcp The low-level TCP connection to use for reading and writing
+	 */
 	bool onAccept(TcpConnection* client, tcp_pcb* tcp);
 
+	/**
+	 * @brief Called by TcpConnection to set the established SSL connection
+	 */
 	void setConnection(Connection* connection)
 	{
 		assert(this->connection == nullptr);
 		this->connection = connection;
 	}
 
+	/**
+	 * @brief Get the currently active SSL connection object
+	 */
 	Connection* getConnection()
 	{
 		return connection;
@@ -101,6 +118,9 @@ public:
 	 */
 	bool onConnect(tcp_pcb* tcp);
 
+	/**
+	 * @brief Determine if an SSL connection has been fully established
+	 */
 	bool isConnected() const
 	{
 		return connection ? connection->isHandshakeDone() : false;
@@ -111,6 +131,12 @@ public:
 	 */
 	void close();
 
+	/**
+	 * @brief Read data from SSL connection
+	 * @param input Source encrypted data
+	 * @param output Points to decrypted content
+	 * @retval int Size of decrypted data returned, or negative on error
+	 */
 	int read(InputBuffer& input, uint8_t*& output);
 
 	/**
@@ -121,7 +147,16 @@ public:
 	 */
 	int write(const uint8_t* data, size_t length);
 
+	/**
+	 * @brief Called by SSL adapter when certificate validation is required
+	 * @retval bool true if validation is success, false to abort connection
+	 */
 	bool validateCertificate();
+
+	/**
+	 * @brief Called by SSL adapter when handshake has been completed
+	 * @param success Indicates if handshake was successful
+	 */
 	void handshakeComplete(bool success);
 
 	/**

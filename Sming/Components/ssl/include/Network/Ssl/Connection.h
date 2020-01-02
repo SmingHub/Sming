@@ -20,14 +20,11 @@
 
 namespace Ssl
 {
-/**
- * @ingroup ssl
- * @brief Provides the functionality needed to create SSL communicate over TCP
- * @{
- */
-
 class Context;
 
+/**
+ * @brief Implemented by SSL adapter to handle a connection
+ */
 class Connection : public Printable
 {
 public:
@@ -114,7 +111,5 @@ protected:
 	Context& context;
 	tcp_pcb* tcp;
 };
-
-/** @} */
 
 } // namespace Ssl

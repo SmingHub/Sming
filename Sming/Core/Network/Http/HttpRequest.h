@@ -51,7 +51,12 @@ public:
 	 * @brief Copy constructor
 	 * @note Internal streams are not copied so these must be dealt with afterwards
 	 */
-	HttpRequest(const HttpRequest& value);
+	HttpRequest(const HttpRequest& value)
+		: uri(value.uri), method(value.method), headers(value.headers), postParams(value.postParams),
+		  headersCompletedDelegate(value.headersCompletedDelegate), requestBodyDelegate(value.requestBodyDelegate),
+		  requestCompletedDelegate(value.requestCompletedDelegate), sslInitDelegate(value.sslInitDelegate)
+	{
+	}
 
 	/**
 	 * @brief Clone this request into a new object using the copy constructor
@@ -176,7 +181,10 @@ public:
 	 * @retval IDataSourceStream*
 	 * @note may return null
 	 */
-	IDataSourceStream* getBodyStream();
+	IDataSourceStream* getBodyStream()
+	{
+		return bodyStream;
+	}
 
 	HttpRequest* setBody(const String& body)
 	{
@@ -226,11 +234,14 @@ public:
 	/** @brief Clear buffers and reset to default state in preparation for another request */
 	void reset();
 
+	/**
+	 * @brief Callback delegate type used to initialise an SSL session for a given request
+	 */
 	using SslInitDelegate = Delegate<void(Ssl::Session& session, HttpRequest& request)>;
 
 	/**
 	 * @brief To customise SSL session options, provide a callback
-	 * @param callback Invoked before creating SSL connection
+	 * @param delegate Invoked before creating SSL connection
 	 */
 	HttpRequest* onSslInit(SslInitDelegate delegate)
 	{

@@ -20,7 +20,7 @@ int onDownload(HttpConnection& connection, bool success)
 	}
 
 	auto ssl = connection.getSsl();
-	if(ssl) {
+	if(ssl != nullptr) {
 		ssl->printTo(Serial);
 	}
 
@@ -46,7 +46,7 @@ void sslRequestInit(Ssl::Session& session, HttpRequest& request)
 		0xE3, 0x88, 0xC4, 0x0A, 0x2A, 0x99, 0x8F, 0xA4, 0x8C, 0x38, 0x4E, 0xE7, 0xCB, 0x4F, 0x8B, 0x99,
 		0x19, 0x48, 0x63, 0x9A, 0x2E, 0xD6, 0x05, 0x7D, 0xB1, 0xD3, 0x56, 0x6C, 0xC0, 0x7E, 0x74, 0x1A};
 
-	SslFingerprints fingerprints;
+	Ssl::Fingerprints fingerprints;
 
 	// Trust only a certificate in which the public key matches the SHA256 fingerprint...
 	fingerprints.setSha256_P(publicKeyFingerprint, sizeof(publicKeyFingerprint));

@@ -13,13 +13,6 @@
 #include "HttpRequest.h"
 #include "Data/Stream/MemoryDataStream.h"
 
-HttpRequest::HttpRequest(const HttpRequest& value)
-	: uri(value.uri), method(value.method), headers(value.headers), postParams(value.postParams),
-	  headersCompletedDelegate(value.headersCompletedDelegate), requestBodyDelegate(value.requestBodyDelegate),
-	  requestCompletedDelegate(value.requestCompletedDelegate), sslInitDelegate(value.sslInitDelegate)
-{
-}
-
 String HttpRequest::getBody()
 {
 	if(bodyStream == nullptr || bodyStream->getStreamType() != eSST_Memory) {
@@ -40,11 +33,6 @@ String HttpRequest::getBody()
 	}
 
 	return ret;
-}
-
-IDataSourceStream* HttpRequest::getBodyStream()
-{
-	return bodyStream;
 }
 
 HttpRequest* HttpRequest::setResponseStream(ReadWriteStream* stream)

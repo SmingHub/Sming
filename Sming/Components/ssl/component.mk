@@ -53,7 +53,9 @@ include/ssl/private_key.h:
 
 endif
 
+COMPONENT_DOXYGEN_INPUT := \
+	include
+
 COMPONENT_DOXYGEN_PREDEFINED := \
 	ENABLE_SSL=1
-
 

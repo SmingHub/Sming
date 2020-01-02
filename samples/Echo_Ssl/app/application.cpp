@@ -34,7 +34,7 @@ bool onReceive(TcpClient& tcpClient, char* data, int size)
 
 	if(showMeta) {
 		auto ssl = tcpClient.getSsl();
-		if(ssl) {
+		if(ssl != nullptr) {
 			ssl->printTo(Serial);
 		}
 		debugf("end of meta...");

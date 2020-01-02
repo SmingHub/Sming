@@ -14,11 +14,6 @@
 
 namespace Ssl
 {
-/**
- * @ingroup ssl
- * @{
- */
-
 #define SSL_ALERT_CODE_MAP(XX)                                                                                         \
 	XX(CLOSE_NOTIFY, 0)                                                                                                \
 	XX(UNEXPECTED_MESSAGE, 10)                                                                                         \
@@ -55,7 +50,5 @@ enum class Alert {
 };
 
 String getAlertString(Alert alert);
-
-/** @} */
 
 } // namespace Ssl

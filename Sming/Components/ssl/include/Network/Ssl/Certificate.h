@@ -14,6 +14,8 @@
 
 #include <WString.h>
 
+namespace Ssl
+{
 /**
  * @brief X509 Relative Distinguished Name type
  *
@@ -39,14 +41,9 @@
 	XX(DN_QUALIFIER, 2, 5, 4, 46)                                                                                      \
 	XX(PSEUDONYM, 2, 5, 4, 65)
 
-namespace Ssl
-{
 /**
- * @ingroup ssl
- * @brief Encapsulates operations related to SSL certificates
- * @{
+ * @brief Implemented by SSL adapter to handle certificate operations
  */
-
 class Certificate
 {
 public:
@@ -59,7 +56,7 @@ public:
 	};
 
 	/**
-	 * @brief Relative Distinguished Name type
+	 * @brief Relative Distinguished Name type identifying a name component
 	 */
 	enum class RDN {
 #define XX(tag, a, b, c, d) tag,
@@ -68,6 +65,9 @@ public:
 			MAX
 	};
 
+	/**
+	 * @brief Obtain a string describing the given name component
+	 */
 	static String getRdnTypeString(Certificate::RDN rdn);
 
 	virtual ~Certificate()
@@ -75,31 +75,36 @@ public:
 	}
 
 	/**
-    * @brief Check if certificate fingerprint (SHA1) matches the one given.
-    * @param hash - SHA1 fingerprint to match against
-    * @retval bool true on match, false otherwise
-    */
+	 * @brief Check if certificate fingerprint (SHA1) matches the one given.
+	 * @param hash - SHA1 fingerprint to match against
+	 * @retval bool true on match, false otherwise
+	 */
 	virtual bool matchFingerprint(const uint8_t* hash) const = 0;
 
 	/**
-	* @brief Check if SHA256 hash of Subject Public Key Info matches the one given.
-    * @param hash SHA256 hash to match against
-    * @retval bool true on match, false otherwise
-    */
+	 * @brief Check if SHA256 hash of Subject Public Key Info matches the one given.
+	 * @param hash SHA256 hash to match against
+	 * @retval bool true on match, false otherwise
+	 */
 	virtual bool matchPki(const uint8_t* hash) const = 0;
 
 	/**
-   * @brief Retrieve an X.509 distinguished name component
-   * @param name the desired distinguished name
-   * @retval the value for the desired distinguished name
-   */
+	 * @brief Retrieve an X.509 distinguished name component
+	 * @param dn The desired Distinguished Name
+	 * @param rdn The component to return
+	 * @retval String The requested Distinguished Name component
+	 */
 	virtual String getName(DN dn, RDN rdn) const = 0;
 
+	/**
+	 * @brief Debugging print support
+	 */
 	size_t printTo(Print& p) const;
 };
 
-/** @} */
-
 } // namespace Ssl
 
-typedef Ssl::Certificate SslCertificate;
+/**
+ * @deprecated Use `Ssl::Certificate` instead
+ */
+typedef Ssl::Certificate SslCertificate SMING_DEPRECATED;

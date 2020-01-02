@@ -17,7 +17,6 @@ namespace Ssl
 {
 /**
  * @brief SSL Certificate fingerprint type
- * @ingroup ssl
  */
 enum FingerprintType {
 	/** @brief Fingerprint based on the SHA1 value of the certificate
@@ -39,11 +38,20 @@ enum FingerprintType {
 
 /** @brief Contains SSL fingerprint data
  *  @ingroup ssl
- *  @note Lifetime as follows:
- *  	- Constructed by application, using appropriate setXXX method;
- *  	- Passed into HttpRequest by application, using pinCertificate method - request is then queued;
- *  	- Passed into Ssl::Session by HttpClientConnection (TcpClient descendant)
- *  	- When certificate validated, memory is released
+ *
+ *  Use within application's SSL initialisation callback to simplify setting standard
+ *  fingerprints for validation. For example:
+ *
+ *		void mySslInitCallback(Ssl::Session& session, HttpRequest& request)
+ *		{
+ *			static const uint8_t sha1Fingerprint[] PROGMEM = {
+ *				0x15, 0x9A, 0x76, 0xC5, 0xAE, 0xF4, 0x90, 0x15, 0x79, 0xE6,
+ *				0xA4, 0x99, 0x96, 0xC1, 0xD6, 0xA1, 0xD9, 0x3B, 0x07, 0x43
+ *			};
+ *			Ssl::Fingerprints fingerprints;
+ *			fingerprints.setSha1_P(sha1Fingerprint, sizeof(sha1Fingerprint));
+ *			session.validators.add(fingerprints);
+ *		}
  *
  */
 struct Fingerprints {
@@ -108,8 +116,18 @@ private:
 
 } // namespace Ssl
 
-typedef Ssl::FingerprintType SslFingerprintType;
-typedef Ssl::Fingerprints SslFingerprints;
+/**
+ * @deprecated Use Ssl::FingerprintType instead
+ * @{
+ */
+typedef Ssl::FingerprintType SslFingerprintType SMING_DEPRECATED;
+typedef Ssl::FingerprintType SSLFingerprintType SMING_DEPRECATED;
+/** @} */
 
-typedef Ssl::FingerprintType SSLFingerprintType SMING_DEPRECATED; ///< @deprecated Use SslFingerprintType instead
-typedef Ssl::Fingerprints SSLFingerprints SMING_DEPRECATED;		  ///< @deprecated Use SslFingerprints instead
+/**
+ * @deprecated Use Ssl::Fingerprints instead
+ * @{
+ */
+typedef Ssl::Fingerprints SslFingerprints SMING_DEPRECATED;
+typedef Ssl::Fingerprints SSLFingerprints SMING_DEPRECATED;
+/** @} */

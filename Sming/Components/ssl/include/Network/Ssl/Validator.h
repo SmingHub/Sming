@@ -21,10 +21,8 @@
 namespace Ssl
 {
 /**
- * @ingroup ssl
- * @{
+ * @brief Defines a validator instance
  */
-
 struct Validator {
 	/** @brief Validator callback function
 	 *  @param ssl Contains certificate to validate (may be NULL)
@@ -33,12 +31,15 @@ struct Validator {
 	 *  @note Callback must ALWAYS release any allocate memory before returning.
 	 *  If called with certificate = NULL then just release memory and return false.
 	 */
-	typedef Delegate<bool(const Certificate* certificate, void* data)> Callback;
+	using Callback = Delegate<bool(const Certificate* certificate, void* data)>;
 
 	Callback callback;
 	void* data; ///< Callback-specific data, e.g. fingerprint to compare against
 };
 
+/**
+ * @brief List of validators to perform certificate checking
+ */
 class ValidatorList : private Vector<Validator>
 {
 public:
@@ -78,6 +79,9 @@ public:
 	using Vector::count;
 };
 
-/** @} */
-
 } // namespace Ssl
+
+/**
+ * @deprecated Use `Ssl::Validator::Callback` instead
+ */
+typedef Ssl::Validator::Callback SslValidatorCallback SMING_DEPRECATED;

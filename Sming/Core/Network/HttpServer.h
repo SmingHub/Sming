@@ -31,8 +31,6 @@ typedef struct {
 	bool useDefaultBodyParsers = 1; ///< if the default body parsers,  as form-url-encoded, should be used
 	bool closeOnContentError =
 		true; ///< close the connection if a body parser or resource fails to parse the body content.
-	int sslSessionCacheSize =
-		10; ///< number of SSL session ids to cache. Setting this to 0 will disable SSL session resumption.
 } HttpServerSettings;
 
 class HttpServer : public TcpServer
@@ -114,7 +112,6 @@ public:
 
 protected:
 	TcpConnection* createClient(tcp_pcb* clientTcp) override;
-	void sslInitSession(Ssl::Session& session) override;
 
 private:
 	HttpServerSettings settings;

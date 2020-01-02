@@ -23,14 +23,10 @@
 #define NETWORK_SEND_BUFFER_SIZE 1024
 
 enum TcpConnectionEvent {
-	// Occurs after connection establishment
-	eTCE_Connected = 0,
-	// Occurs on data receive
-	eTCE_Received,
-	// Occurs when previous sending was completed
-	eTCE_Sent,
-	// Occurs on waiting
-	eTCE_Poll
+	eTCE_Connected = 0, ///< Occurs after connection establishment
+	eTCE_Received,		///< Occurs on data receive
+	eTCE_Sent,			//< Occurs when previous sending was completed
+	eTCE_Poll,			//< Occurs on waiting
 };
 
 struct pbuf;
@@ -118,7 +114,7 @@ public:
 		sslInit = handler;
 	}
 
-	// Called by TcpServer
+	// Called by SSL Session when accepting a client connection
 	bool setSslConnection(Ssl::Connection* connection)
 	{
 		if(!sslCreateSession()) {
@@ -129,6 +125,13 @@ public:
 		return true;
 	}
 
+	/**
+	 * @brief Get a pointer to the current SSL session object
+	 *
+	 * Note that this is typically used so we can query properties of an
+	 * established session. If you need to change session parameters this
+	 * must be done via `setSslInitHandler`.
+	 */
 	Ssl::Session* getSsl()
 	{
 		return ssl;
@@ -202,8 +205,6 @@ protected:
 
 private:
 	TcpConnectionDestroyedDelegate destroyedDelegate = nullptr;
-
-	void closeSsl();
 };
 
 /** @} */

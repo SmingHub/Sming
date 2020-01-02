@@ -28,7 +28,8 @@ Summary
   -  Async TCP and UDP stack based on `LWIP <http://savannah.nongnu.org/projects/lwip/>`__.
   -  With clients supporting: HTTP, MQTT, WebSockets and SMTP.
   -  And servers for: DNS, FTP, HTTP(+ WebSockets), Telnet.
-  -  With :doc:`SSL support <framework/core/network/ssl>` for all network clients and servers. Based on `axTLS <http://axtls.sourceforge.net/>`__ and `BearSSL <https://www.bearssl.org/>`__.
+  -  With :doc:`SSL support <_inc/Sming/Components/ssl/index>` for all network clients and servers.
+     Based on `axTLS <http://axtls.sourceforge.net/>`__ and `BearSSL <https://www.bearssl.org/>`__.
   -  Out of the box support for OTA over HTTPS.
 
 -  ESP8266 specific features

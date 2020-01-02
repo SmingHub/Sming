@@ -138,10 +138,7 @@ void TcpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 void TcpClient::close()
 {
 	if(state != eTCS_Successful && state != eTCS_Failed) {
-		state = (totalSentConfirmedBytes == totalSentBytes) ? eTCS_Successful : eTCS_Failed;
-		if(ssl != nullptr && ssl->isConnected()) {
-			state = (totalSentBytes == 0 || (totalSentConfirmedBytes > totalSentBytes)) ? eTCS_Successful : eTCS_Failed;
-		}
+		state = (totalSentConfirmedBytes >= totalSentBytes) ? eTCS_Successful : eTCS_Failed;
 		totalSentBytes = 0;
 		totalSentConfirmedBytes = 0;
 		onFinished(state);

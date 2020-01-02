@@ -14,11 +14,6 @@
 
 namespace Ssl
 {
-/**
- * @ingroup ssl
- * @{
- */
-
 /*
  * Cipher suites
  *
@@ -161,11 +156,9 @@ enum class CipherSuite : uint16_t {
 
 /**
  * @brief Gets the name of the cipher suite
- * @param Cipher Suite identifier
+ * @param id Suite identifier
  * @retval String
  */
 String getCipherSuiteName(CipherSuite id);
-
-/** @} */
 
 } // namespace Ssl
