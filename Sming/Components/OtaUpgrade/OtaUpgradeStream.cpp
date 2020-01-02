@@ -147,7 +147,7 @@ void OtaUpgradeStream::verifyRoms()
 	state = StateRomsComplete;
 
 	debug_d("Signature/Checksum: ");
-	for (auto b: signature) debug_d("%02X", b);
+	for (auto b SMING_UNUSED: signature) debug_d("%02X", b);
 	debug_d("\n");
 
 #ifdef OTA_SIGNED
@@ -282,7 +282,7 @@ size_t OtaUpgradeStream::process(const uint8_t* data, size_t size)
 #ifdef OTA_DOWNGRADE_PROTECTION
 					uint64_t buildTimestampFirmware;
 					memcpy_P(&buildTimestampFirmware, &OTA_BuildTimestamp, sizeof(OTA_BuildTimestamp));
-					debug_i("Build timestamp of current firmware: %ull\n", buildTimestamp);
+					debug_i("Build timestamp of current firmware: %ull\n", buildTimestampFirmware);
 					uint64_t buildTimestampUpgrade = ((uint64_t)fileHeader.buildTimestampHigh << 32) | fileHeader.buildTimestampLow;
 					debug_i("Build timestamp of OTA upgrade file: %ull\n", buildTimestampUpgrade);
 					if (buildTimestampUpgrade < buildTimestampFirmware) {

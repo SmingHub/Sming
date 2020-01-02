@@ -1,6 +1,6 @@
 import argparse
 import sys, os, shutil
-from datetime import datetime, timedelta
+from datetime import datetime
 import struct
 import codecs
 import string
@@ -125,7 +125,8 @@ def make_ota_file(args):
             ota_chunk = ota[offset:(offset + default_chunk_size)]
             message_len = len(ota_chunk)
             offset += message_len
-            tag = nacl.bindings.crypto_secretstream_xchacha20poly1305_TAG_MESSAGE if (offset < len(ota)) else nacl.bindings.crypto_secretstream_xchacha20poly1305_TAG_FINAL
+            tag = nacl.bindings.crypto_secretstream_xchacha20poly1305_TAG_MESSAGE if (offset < len(ota)) \
+                else nacl.bindings.crypto_secretstream_xchacha20poly1305_TAG_FINAL
             cipher_text = nacl.bindings.crypto_secretstream_xchacha20poly1305_push(enc_state, ota_chunk, tag=tag)
             
             cipher_text_len = len(cipher_text)
@@ -202,7 +203,8 @@ def make_parser():
 
     mkota_parser = subparsers.add_parser('mkfile', help='Generate OTA upgrade file from ROM images')
     mkota_parser.add_argument('-o', '--output', required=True, help='Output location of OTA upgrade file')
-    mkota_parser.add_argument('-k', '--key', help='Input file containing private key for signing the generated OTA file. If omitted, the created OTA file will not be signed.')
+    mkota_parser.add_argument('-k', '--key',
+        help='Input file containing private key for signing the generated OTA file. If omitted, the created OTA file will not be signed.')
     mkota_parser.add_argument('-s', '--signed', action='store_true', default=False, help='Sign upgrade image')
     mkota_parser.add_argument('-e', '--encrypted', action='store_true', default=False, help='Encrypt ROM images')
 
@@ -226,8 +228,9 @@ def make_parser():
                 address = get_address(address)
                 return (address, file)
         raise argparse.ArgumentTypeError('Invalid romspec. Expected format: FILE@ADDRESS')
-        
-    mkota_parser.add_argument('--rom', action='append', dest='roms', required=True, type=romspec, metavar='FILE@ADDRESS', help="Image file and flash offset address of ROM to include in the OTA upgrade file, e.g. 'rom0.bin@0x2000'")
+
+    mkota_parser.add_argument('--rom', action='append', dest='roms', required=True, type=romspec, metavar='FILE@ADDRESS',
+        help="Image file and flash offset address of ROM to include in the OTA upgrade file, e.g. 'rom0.bin@0x2000'")
     mkota_parser.set_defaults(func=make_ota_file)
 
     upload_parser = subparsers.add_parser('upload', help='HTTP POST upload of OTA upgrade image (encoded as multipart/form-data)')
