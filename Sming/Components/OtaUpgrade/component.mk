@@ -21,7 +21,8 @@ OTA_ENABLE_SIGNING ?= 1
 # thus allowing to downgrade to an older firmware version.
 # You are strongly advised to keep this option disabled, because otherwise a security fix could 
 # simply be reverted by downgrading to an unpatched firmware version.
-#OTA_ENABLE_DOWNGRADE ?= 0
+COMPONENT_VARS += OTA_ENABLE_DOWNGRADE
+OTA_ENABLE_DOWNGRADE ?= 0
 
 COMPONENT_INCDIRS := .
 
@@ -76,6 +77,27 @@ $(OTA_PUBKEY_OBJ): $(OTA_PUBKEY_SRC)
 COMPONENTS_AR += $(OTA_PUBKEY_OBJ)
 
 endif # OTA_CRYPTO_FEATURES
+
+# Downgrade protection:
+ifneq ($(OTA_ENABLE_DOWNGRADE),1)
+COMPONENT_CFLAGS += -DOTA_DOWNGRADE_PROTECTION
+
+OTA_BUILD_TIMESTAMP_SRC := $(abspath $(CMP_App_BUILD_BASE)/OTA_BuildTimestamp.c)
+OTA_BUILD_TIMESTAMP_OBJ := $(OTA_BUILD_TIMESTAMP_SRC:.c=.o)
+
+# Using a phony target, the source file containing the build timestamp is regenerated with every build.
+# (This also enforces relinking the firmware with every make invocation, even if nothing has changed, but Sming does that anyway.)
+.PHONY: _ota-make-build-timestamp
+_ota-make-build-timestamp:
+	$(Q) echo '#include <FakePgmSpace.h>' > $(OTA_BUILD_TIMESTAMP_SRC)
+	$(Q) echo 'const unsigned long long OTA_BuildTimestamp PROGMEM = $(shell date +%s%3NLL) - $(shell date --date 1900-01-01 +%s%3NLL);' >> $(OTA_BUILD_TIMESTAMP_SRC)
+
+$(OTA_BUILD_TIMESTAMP_OBJ): _ota-make-build-timestamp
+	$(vecho) "CC $(OTA_BUILD_TIMESTAMP_SRC)"
+	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CFLAGS) -std=c11 -c $(OTA_BUILD_TIMESTAMP_SRC) -o $@
+
+COMPONENTS_AR += $(OTA_BUILD_TIMESTAMP_OBJ)
+endif
 
 
 OTA_CRYPTO_FEATURES_IMAGE := $(OTA_CRYPTO_FEATURES)

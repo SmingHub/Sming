@@ -34,6 +34,7 @@ public:
 		UnsupportedDataError,
 		NoRomFoundError,
 		RomTooLargeError,
+		DowngradeError,
 		VerificationError,
 		FlashWriteError,
 		RomActivationError,

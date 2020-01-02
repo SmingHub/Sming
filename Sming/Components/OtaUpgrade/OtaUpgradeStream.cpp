@@ -11,6 +11,10 @@ extern "C" void MD5Update(void *ctx, const void *buf, uint32_t len);
 extern "C" void MD5Final(uint8_t digest[16], void *ctx);
 #endif
 
+#ifdef OTA_DOWNGRADE_PROTECTION
+extern "C" const uint64_t OTA_BuildTimestamp PROGMEM;
+#endif
+
 OtaUpgradeStream::Slot::Slot()
 {
 	// Get parameters of the slot where the firmware image should be stored.
@@ -166,6 +170,17 @@ size_t OtaUpgradeStream::write(const uint8_t* data, size_t size)
 		case StateHeader:
 			if (consume(data, available)) {
 				if (fileHeader.magic == HEADER_MAGIC_EXPECTED) {
+#ifdef OTA_DOWNGRADE_PROTECTION
+					uint64_t buildTimestampFirmware;
+					memcpy_P(&buildTimestampFirmware, &OTA_BuildTimestamp, sizeof(OTA_BuildTimestamp));
+					debug_i("Build timestamp of current firmware: %ull\n", buildTimestamp);
+					uint64_t buildTimestampUpgrade = ((uint64_t)fileHeader.buildTimestampHigh << 32) | fileHeader.buildTimestampLow;
+					debug_i("Build timestamp of OTA upgrade file: %ull\n", buildTimestampUpgrade);
+					if (buildTimestampUpgrade < buildTimestampFirmware) {
+						setError(DowngradeError);
+						break;
+					}
+#endif
 					debug_i("Starting firmware upgrade, receive %u image(s)\n", fileHeader.romCount);
 					nextRom();
 				} else {
@@ -235,6 +250,8 @@ String OtaUpgradeStream::errorToString(ErrorCode code)
 		return F("No suitable ROM image found");
 	case RomTooLargeError:
 		return F("ROM image too large");
+	case DowngradeError:
+		return F("Downgrade not allowed");
 	case VerificationError:
 #ifdef OTA_SIGNED
 		return F("Signature verification failed");
@@ -249,5 +266,5 @@ String OtaUpgradeStream::errorToString(ErrorCode code)
 		return F("Internal error");
 	default:
 		return F("<unknown error>");
-	};
+	}
 }
