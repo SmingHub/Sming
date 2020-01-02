@@ -5,6 +5,10 @@
 // symbol provided by appcode (generated source file)
 #ifdef OTA_SIGNED
 extern "C" uint8_t OTAUpgrade_PublicKey_P[];
+#else
+extern "C" void MD5Init(void *ctx);
+extern "C" void MD5Update(void *ctx, const void *buf, uint32_t len);
+extern "C" void MD5Final(uint8_t digest[16], void *ctx);
 #endif
 
 OtaUpgradeStream::Slot::Slot()
@@ -40,6 +44,8 @@ OtaUpgradeStream::OtaUpgradeStream()
 {
 #ifdef OTA_SIGNED
 	crypto_sign_init(&verifierState);
+#else
+	MD5Init(&md5Context);
 #endif
 	setupChunk(StateHeader, fileHeader);
 }
@@ -47,11 +53,14 @@ OtaUpgradeStream::OtaUpgradeStream()
 bool OtaUpgradeStream::consume(const uint8_t *&data, size_t &size)
 {
 	size_t chunkSize = std::min(size, remainingBytes);
-#ifdef OTA_SIGNED
 	if (state != StateRomSignature) {
+#ifdef OTA_SIGNED
 		crypto_sign_update(&verifierState, static_cast<const unsigned char *>(data), chunkSize);
-	}
+#else
+		MD5Update(&md5Context, data, chunkSize);
 #endif
+	}
+
 	if (destinationPtr != nullptr) {
 		memcpy(destinationPtr, data, chunkSize);
 		destinationPtr += chunkSize;
@@ -106,25 +115,32 @@ void OtaUpgradeStream::verifyRoms()
 {
 	state = StateRomsComplete;
 
-#ifdef OTA_SIGNED
-	debug_d("Signature: ");
+	debug_d("Signature/Checksum: ");
 	for (auto b: signature) debug_d("%02X", b);
 	debug_d("\n");
 
+#ifdef OTA_SIGNED
 	uint8_t verificationKey[crypto_sign_PUBLICKEYBYTES];
 	memcpy_P(verificationKey, OTAUpgrade_PublicKey_P, sizeof(verificationKey));
-
 	const bool signatureMismatch = (crypto_sign_final_verify(&verifierState, signature, verificationKey) != 0);
+#else
+	uint8_t expectedChecksum[sizeof(signature)];
+	MD5Final(expectedChecksum, &md5Context);
+	const bool signatureMismatch = (memcmp(expectedChecksum, signature, sizeof(signature)) != 0);
+#endif
 	
 	if (signatureMismatch) {
 		if (slot.updated) {
 			// Destroy start sector of updated ROM to avoid accidentally booting an unsanctioned firmware
 			flashmem_erase_sector(slot.address / SECTOR_SIZE);
 		}
+#ifdef OTA_SIGNED
 		setError(_F("Signature verification failed"));
+#else
+		setError(_F("Checksum verification failed"));
+#endif
 		return;
 	}
-#endif
 
 	// In a future extension, there might be OTA files without ROM images (SPIFFS-only update, etc.)
 	if (fileHeader.romCount == 0) {

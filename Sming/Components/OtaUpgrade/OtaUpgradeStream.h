@@ -69,10 +69,10 @@ class OtaUpgradeStream : public ReadWriteStream
 			uint32_t address;
 			uint32_t size;
 		} romHeader;
-		
-		uint8_t signature[64];
 #ifdef OTA_SIGNED
-		static_assert(crypto_sign_BYTES == sizeof(signature), "unexpected signature length");
+		uint8_t signature[crypto_sign_BYTES];
+#else
+		uint8_t signature[16]; // md5sum
 #endif
 	};
 
@@ -82,6 +82,13 @@ class OtaUpgradeStream : public ReadWriteStream
 
 #ifdef OTA_SIGNED
 	crypto_sign_state verifierState;
+#else
+	struct {
+		// see esptool/flasher_stub/rom_functions.h
+		uint32_t state[4];
+  		uint32_t count[2];
+  		uint8_t buffer[64];
+	} md5Context;
 #endif
 
 	void setError(const char *message = nullptr); 

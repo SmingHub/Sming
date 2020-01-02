@@ -96,10 +96,11 @@ def make_ota_file(args):
         sig_state = nacl.bindings.crypto_sign_ed25519ph_state()
         nacl.bindings.crypto_sign_ed25519ph_update(sig_state, ota)
         signature = nacl.bindings.crypto_sign_ed25519ph_final_create(sig_state, sk)
-        assert(len(signature) == 64)
         ota += signature
     else:
-        ota += bytes(64)
+        # use MD5sum as a checksum only (not for security!)
+        import hashlib
+        ota += hashlib.md5(ota).digest()
 
     try:
         with open(args.output, 'wb') as f:
