@@ -99,12 +99,17 @@ COMPONENT_CFLAGS += -DOTA_DOWNGRADE_PROTECTION
 OTA_BUILD_TIMESTAMP_SRC := $(abspath $(CMP_App_BUILD_BASE)/OTA_BuildTimestamp.c)
 OTA_BUILD_TIMESTAMP_OBJ := $(OTA_BUILD_TIMESTAMP_SRC:.c=.o)
 
+# Date reference for build timestamps, generated using this:
+# date --date 1900-01-01 +%s%3NLL
+# Note: Out of range in bash 3.1.23 (MinGW) hence included here as a constant
+OTA_DATE_REF := -2208988800000LL
+
 # Using a phony target, the source file containing the build timestamp is regenerated with every build.
 # (This also enforces relinking the firmware with every make invocation, even if nothing has changed, but Sming does that anyway.)
 .PHONY: _ota-make-build-timestamp
 _ota-make-build-timestamp:
 	$(Q) echo '#include <sys/pgmspace.h>' > $(OTA_BUILD_TIMESTAMP_SRC)
-	$(Q) echo 'const unsigned long long OTA_BuildTimestamp PROGMEM = $(shell date +%s%3NLL) - $(shell date --date 1900-01-01 +%s%3NLL);' >> $(OTA_BUILD_TIMESTAMP_SRC)
+	$(Q) echo 'const uint64_t OTA_BuildTimestamp PROGMEM = $(shell date +%s%3NLL) - $(OTA_DATE_REF);' >> $(OTA_BUILD_TIMESTAMP_SRC)
 
 $(OTA_BUILD_TIMESTAMP_OBJ): _ota-make-build-timestamp
 	$(vecho) "CC $(OTA_BUILD_TIMESTAMP_SRC)"
