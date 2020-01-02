@@ -142,7 +142,7 @@ Configuration and Security features
 
 .. envvar:: OTA_ENABLE_DOWNGRADE
 
-   By default, ``OtaUpgradeStrem`` refuses to downgrade to an older firmware version, in order to prevent an attacker 
+   By default, ``OtaUpgradeStream`` refuses to downgrade to an older firmware version, in order to prevent an attacker 
    from restoring already patched security vulnerabilities. This is implemented by comparing timestamps embedded in the
    firmware and the upgrade file. To disable downgrade protection, set OTA_ENABLE_DOWNGRADE to 1.
    

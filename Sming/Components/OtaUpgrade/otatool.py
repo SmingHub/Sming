@@ -30,7 +30,7 @@ def load_keys(keyfilepath):
     except:
         sys.stderr.write('Could not read signing key from %s\n', keyfilepath)
         raise
-    
+
     min_bytes = nacl.bindings.crypto_sign_SEEDBYTES + nacl.bindings.crypto_secretstream_xchacha20poly1305_KEYBYTES
     assert len(seed) >= min_bytes, 'Invalid OTA key file %s' % keyfilepath
 
@@ -42,7 +42,7 @@ def load_keys(keyfilepath):
 def genkey(args):
     print('Generate OTA security key...')
     import_nacl()
-    
+
     if os.path.exists(args.output):
         backup = args.output + datetime.now().strftime('.%Y%m%d_%H%M%S.bak')
         shutil.copy(args.output, backup) # copy content and permissions
@@ -98,7 +98,7 @@ def make_ota_file(args):
 
     for (address, filepath) in args.roms:
         ota += make_rom_image(address, filepath)
-    
+
     if args.signed:
         # calculate and append signature over whole file, including header, such that even the build timestamp cannot be forged
         sig_state = nacl.bindings.crypto_sign_ed25519ph_state()
@@ -119,7 +119,7 @@ def make_ota_file(args):
         assert(default_chunk_size > 0)
         enc_state = nacl.bindings.crypto_secretstream_xchacha20poly1305_state()
         enc_ota = nacl.bindings.crypto_secretstream_xchacha20poly1305_init_push(enc_state, ek)
-        
+
         offset = 0
         while offset < len(ota):
             ota_chunk = ota[offset:(offset + default_chunk_size)]
@@ -128,7 +128,7 @@ def make_ota_file(args):
             tag = nacl.bindings.crypto_secretstream_xchacha20poly1305_TAG_MESSAGE if (offset < len(ota)) \
                 else nacl.bindings.crypto_secretstream_xchacha20poly1305_TAG_FINAL
             cipher_text = nacl.bindings.crypto_secretstream_xchacha20poly1305_push(enc_state, ota_chunk, tag=tag)
-            
+
             cipher_text_len = len(cipher_text)
             assert(cipher_text_len > 0 and cipher_text_len <= 0x10000)
             enc_ota += struct.pack('<H', cipher_text_len - 1)
@@ -155,13 +155,13 @@ def upload_http_post(args):
     except ImportError:
         # Python 2
         from urllib2 import Request, urlopen, HTTPError
-    
+
     try:
         with open(args.file, 'rb') as f:
             ota_file_content = f.read()
     except:
         sys.stderr.write('Failed to read OTA upgrade file %s\n', args.file)
-    
+
     boundary = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(50))
     body = ('--' + boundary + '\r\n' \
         + 'Content-Disposition: form-data; name="%s"; filename="%s"\r\n' % (args.field, os.path.basename(args.file)) \
@@ -169,7 +169,7 @@ def upload_http_post(args):
         + '\r\n').encode('ascii') \
         + ota_file_content \
         + ('\r\n--' + boundary + '--').encode('ascii')
-    
+
     headers =  {'content-type': 'multipart/form-data; boundary=' + boundary }
 
     if not args.url.startswith('http'):
@@ -189,7 +189,7 @@ def make_parser():
     parser = argparse.ArgumentParser(description='Utility for generating OTA upgrade images')
     parser.set_defaults(func=None)
     subparsers = parser.add_subparsers()
-    
+
     genkey_parser = subparsers.add_parser('genkey', help='Generate a new private signing key')
     genkey_parser.add_argument('-o', '--output', required=True, help='Output location of generated key')
     genkey_parser.set_defaults(func=genkey)
