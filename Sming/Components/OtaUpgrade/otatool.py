@@ -61,7 +61,7 @@ def make_key_source(args):
     bytestring = lambda key: ', '.join('0x%02X' % (b if isinstance(b, int) else ord(b)) for b in key)
 
     with open(args.output, 'w') as source:
-        source.write('#include <FakePgmSpace.h>\n\n')
+        source.write('#include <sys/pgmspace.h>\n\n')
         if args.signed or not args.encryted:
             source.write('uint8_t OTAUpgrade_SignatureVerificationKey_P[] PROGMEM = {%s};\n' % bytestring(pk))
         if args.encrypted:

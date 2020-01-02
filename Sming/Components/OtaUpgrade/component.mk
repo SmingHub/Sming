@@ -101,7 +101,7 @@ OTA_BUILD_TIMESTAMP_OBJ := $(OTA_BUILD_TIMESTAMP_SRC:.c=.o)
 # (This also enforces relinking the firmware with every make invocation, even if nothing has changed, but Sming does that anyway.)
 .PHONY: _ota-make-build-timestamp
 _ota-make-build-timestamp:
-	$(Q) echo '#include <FakePgmSpace.h>' > $(OTA_BUILD_TIMESTAMP_SRC)
+	$(Q) echo '#include <sys/pgmspace.h>' > $(OTA_BUILD_TIMESTAMP_SRC)
 	$(Q) echo 'const unsigned long long OTA_BuildTimestamp PROGMEM = $(shell date +%s%3NLL) - $(shell date --date 1900-01-01 +%s%3NLL);' >> $(OTA_BUILD_TIMESTAMP_SRC)
 
 $(OTA_BUILD_TIMESTAMP_OBJ): _ota-make-build-timestamp
