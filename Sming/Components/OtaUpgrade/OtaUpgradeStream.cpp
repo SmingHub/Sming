@@ -3,7 +3,9 @@
 #include <esp_spi_flash.h>
 
 // symbol provided by appcode (generated source file)
-extern "C" uint8_t OTAUpgrade_VerificationKey_P[];
+#ifdef OTA_SIGNED
+extern "C" uint8_t OTAUpgrade_PublicKey_P[];
+#endif
 
 OtaUpgradeStream::Slot::Slot()
 {
@@ -36,16 +38,20 @@ OtaUpgradeStream::Slot::Slot()
 
 OtaUpgradeStream::OtaUpgradeStream()
 {
+#ifdef OTA_SIGNED
 	crypto_sign_init(&verifierState);
+#endif
 	setupChunk(StateHeader, fileHeader);
 }
 
 bool OtaUpgradeStream::consume(const uint8_t *&data, size_t &size)
 {
 	size_t chunkSize = std::min(size, remainingBytes);
+#ifdef OTA_SIGNED
 	if (state != StateRomSignature) {
 		crypto_sign_update(&verifierState, static_cast<const unsigned char *>(data), chunkSize);
 	}
+#endif
 	if (destinationPtr != nullptr) {
 		memcpy(destinationPtr, data, chunkSize);
 		destinationPtr += chunkSize;
@@ -99,13 +105,14 @@ void OtaUpgradeStream::processRomHeader()
 void OtaUpgradeStream::verifyRoms()
 {
 	state = StateRomsComplete;
-	
+
+#ifdef OTA_SIGNED
 	debug_d("Signature: ");
 	for (auto b: signature) debug_d("%02X", b);
 	debug_d("\n");
 
 	uint8_t verificationKey[crypto_sign_PUBLICKEYBYTES];
-	memcpy_P(verificationKey, OTAUpgrade_VerificationKey_P, sizeof(verificationKey));
+	memcpy_P(verificationKey, OTAUpgrade_PublicKey_P, sizeof(verificationKey));
 
 	const bool signatureMismatch = (crypto_sign_final_verify(&verifierState, signature, verificationKey) != 0);
 	
@@ -117,6 +124,7 @@ void OtaUpgradeStream::verifyRoms()
 		setError(_F("Signature verification failed"));
 		return;
 	}
+#endif
 
 	// In a future extension, there might be OTA files without ROM images (SPIFFS-only update, etc.)
 	if (fileHeader.romCount == 0) {

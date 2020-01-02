@@ -58,7 +58,7 @@ def make_key_source(args):
         source.write('''\
 #include <FakePgmSpace.h>
 
-const uint8_t OTAUpgrade_VerificationKey_P[] PROGMEM = {%s};
+const uint8_t OTAUpgrade_PublicKey_P[] PROGMEM = {%s};
 ''' % pk_bytestring)
 
 
@@ -96,9 +96,10 @@ def make_ota_file(args):
         sig_state = nacl.bindings.crypto_sign_ed25519ph_state()
         nacl.bindings.crypto_sign_ed25519ph_update(sig_state, ota)
         signature = nacl.bindings.crypto_sign_ed25519ph_final_create(sig_state, sk)
+        assert(len(signature) == 64)
         ota += signature
     else:
-        ota += bytes(nacl.bindings.crypto_sign_BYTES)
+        ota += bytes(64)
 
     try:
         with open(args.output, 'wb') as f:

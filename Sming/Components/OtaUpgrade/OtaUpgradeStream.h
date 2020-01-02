@@ -3,7 +3,9 @@
 
 #include <Data/Stream/ReadWriteStream.h>
 #include <rboot-api.h>
+#ifdef OTA_SIGNED
 #include <sodium/crypto_sign.h>
+#endif
 
 /* OTA File format
  * 4 Byte Magic: TBD
@@ -14,7 +16,7 @@
  * 	- 4 Byte flash offset
  * 	- 4 Byte Length
  * 	- ROM Content (Length bytes)
- * 16 Byte cryptographic signature (over everything since beginning of file)
+ * 64 Byte cryptographic signature (over everything since beginning of file)
  * Optional extensions may follow in the future for
  * - updating rboot
  * - updating RF parameter blob
@@ -46,7 +48,11 @@ class OtaUpgradeStream : public ReadWriteStream
 		StateRomsComplete
 	} state = StateHeader;
 
+#ifdef OTA_SIGNED
 	static const uint32_t HEADER_MAGIC_EXPECTED = 0xf01af02a;
+#else
+	static const uint32_t HEADER_MAGIC_EXPECTED = 0xf01af020;
+#endif
 
 	struct {
 		uint32_t magic;
@@ -63,15 +69,20 @@ class OtaUpgradeStream : public ReadWriteStream
 			uint32_t address;
 			uint32_t size;
 		} romHeader;
-			
-		uint8_t signature[crypto_sign_BYTES];
+		
+		uint8_t signature[64];
+#ifdef OTA_SIGNED
+		static_assert(crypto_sign_BYTES == sizeof(signature), "unexpected signature length");
+#endif
 	};
 
 	size_t remainingBytes = 0;
 	uint8_t *destinationPtr = nullptr;
 	uint8_t romIndex = 0;
 
+#ifdef OTA_SIGNED
 	crypto_sign_state verifierState;
+#endif
 
 	void setError(const char *message = nullptr); 
 

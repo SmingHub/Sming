@@ -1,10 +1,11 @@
-# Future configurability (ATM, there is only signing, which is always enabled)
+# Future configurability (ATM, there is only signing)
 
 # If enabled, OTA firmware images are digitally signed and the upgrade mechanism will reject
 # images with an invalid signature.
 # You should not disable this feature unless there is absolutely no way your device is accessed
 # trhough a public network.
-#OTA_ENABLE_SIGNING ?= 1
+COMPONENT_VARS += OTA_ENABLE_SIGNING
+OTA_ENABLE_SIGNING ?= 1
 
 # If enabled, OTA firmware images are encrypted.
 # It is strongly encouraged to enable this feature if your firmware images contain secret information
@@ -22,13 +23,23 @@
 # simply be reverted by downgrading to an unpatched firmware version.
 #OTA_ENABLE_DOWNGRADE ?= 0
 
-COMPONENT_DEPENDS := libsodium
 COMPONENT_INCDIRS := .
 
-RELINK_VARS += OTA_PRIVKEY
-OTA_PRIVKEY ?= signing.key
-
 OTATOOL := python $(COMPONENT_PATH)/otatool.py
+
+OTA_CRYPTO_FEATURES =
+ifneq ($(OTA_ENABLE_SIGNING),0)
+OTA_CRYPTO_FEATURES += Signed
+# must be global, because it is used in a public header file
+GLOBAL_CFLAGS += -DOTA_SIGNED
+endif
+
+ifneq ($(OTA_CRYPTO_FEATURES),)
+
+COMPONENT_DEPENDS := libsodium
+
+RELINK_VARS += OTA_PRIVKEY
+OTA_PRIVKEY ?= ota.key
 
 .PHONY: ota-generate-privkey
 ota-generate-privkey: ##Generate a new firmware update signing key on explicit request.
@@ -52,7 +63,7 @@ $(OTA_PRIVKEY):
 # To work around this limitation, the public key object file is build in the top level 
 # Makefile context (outside of any component) and added directly to COMPONENTS_AR, i.e. 
 # the list of archive/object files linked into the final firmware image.
-OTA_PUBKEY_SRC := $(abspath $(CMP_App_BUILD_BASE)/OTA_VerificationKey.c)
+OTA_PUBKEY_SRC := $(abspath $(CMP_App_BUILD_BASE)/OTA_PublicKey.c)
 OTA_PUBKEY_OBJ := $(OTA_PUBKEY_SRC:.c=.o)
 
 $(OTA_PUBKEY_SRC): $(OTA_PRIVKEY)
@@ -63,6 +74,8 @@ $(OTA_PUBKEY_OBJ): $(OTA_PUBKEY_SRC)
 	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CFLAGS) -std=c11 -c $< -o $@
 
 COMPONENTS_AR += $(OTA_PUBKEY_OBJ)
+
+endif # OTA_CRYPTO_FEATURES
 
 
 # Build final OTA upgrade file 
@@ -75,7 +88,7 @@ CUSTOM_TARGETS += ota-file
 
 $(OTA_UPGRADE_FILE): $(RBOOT_ROM_0_BIN) $(RBOOT_ROM_1_BIN) $(OTA_PRIVKEY)
 	$(Q) $(OTATOOL) mkfile \
-		--key=$(OTA_PRIVKEY) \
+		$(if $(OTA_CRYPTO_FEATURES),--key=$(OTA_PRIVKEY)) \
 		--rom=$(RBOOT_ROM_0_BIN)@$(RBOOT_ROM0_ADDR) \
 		$(if $(RBOOT_ROM_1_BIN),--rom=$(RBOOT_ROM_1_BIN)@$(RBOOT_ROM1_ADDR)) \
 		--output=$@
