@@ -78,6 +78,40 @@ COMPONENTS_AR += $(OTA_PUBKEY_OBJ)
 endif # OTA_CRYPTO_FEATURES
 
 
+OTA_CRYPTO_FEATURES_IMAGE := $(OTA_CRYPTO_FEATURES)
+OTA_PRIVKEY_IMAGE := $(OTA_PRIVKEY)
+-include ota-rollover.mk
+
+.PHONY: ota-rollover, ota-rollover-done
+ifndef OTA_ROLLOVER_IN_PROGRESS
+ota-rollover:
+	$(if $(OTA_CRYPTO_FEATURES),$(Q) cp $(OTA_PRIVKEY) ota-rollover.key)
+	$(Q) echo '# Automatically generated file. Do not edit.' > ota-rollover.mk
+	$(Q) echo 'OTA_ROLLOVER_IN_PROGRESS := 1' >> ota-rollover.mk
+	$(Q) echo 'OTA_PRIVKEY_IMAGE := ota-rollover.key' >> ota-rollover.mk
+	$(Q) echo 'OTA_CRYPTO_FEATURES_IMAGE := $(OTA_CRYPTO_FEATURES)' >> ota-rollover.mk
+	@echo
+	@echo "===== OTA upgrade key/setting rollover now in progress ====="
+	@echo
+	@echo "You may now change the OTA security settings and/or generate"
+	@echo "a new key using 'make ota-generate-privkey'."
+	@echo "Afterwards, run 'make' to generate the rollover image."
+	@echo
+ota-rollover-done:
+	$(error No OTA rollover in progress!. Run 'make ota-rollover' to start the rollover process)
+else
+ota-rollover:
+	$(error OTA rollover already in progress! Run 'make ota-rollover-done' to complete the rollover process)
+
+ota-rollover-done:
+	$(if $(OTA_CRYPTO_FEATURES_IMAGE),$(Q) rm ota-rollover.key)
+	$(Q) rm ota-rollover.mk
+	@echo
+	@echo "===== OTA upgrade key/setting rollover completed ====="
+	@echo
+endif
+
+
 # Build final OTA upgrade file 
 OTA_UPGRADE_FILE=$(FW_BASE)/firmware.ota
 
@@ -88,10 +122,19 @@ CUSTOM_TARGETS += ota-file
 
 $(OTA_UPGRADE_FILE): $(RBOOT_ROM_0_BIN) $(RBOOT_ROM_1_BIN) $(OTA_PRIVKEY)
 	$(Q) $(OTATOOL) mkfile \
-		$(if $(OTA_CRYPTO_FEATURES),--key=$(OTA_PRIVKEY)) \
+		$(if $(OTA_CRYPTO_FEATURES_IMAGE),--key=$(OTA_PRIVKEY_IMAGE)) \
 		--rom=$(RBOOT_ROM_0_BIN)@$(RBOOT_ROM0_ADDR) \
 		$(if $(RBOOT_ROM_1_BIN),--rom=$(RBOOT_ROM_1_BIN)@$(RBOOT_ROM1_ADDR)) \
 		--output=$@
+ifdef OTA_ROLLOVER_IN_PROGRESS
+	@echo
+	@echo "===== OTA upgrade rollover image created ====="
+	@echo
+	@echo "After you have upgraded your device(s) using the rollover image"
+	@echo "run 'make ota-rollover-done' to complete the rollover process."
+	@echo
+endif
+
 
 # Convenience target for uploading file via HTTP POST
 CACHE_VARS += OTA_UPLOAD_URL OTA_UPLOAD_NAME
