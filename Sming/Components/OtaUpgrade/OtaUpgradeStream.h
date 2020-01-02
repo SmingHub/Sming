@@ -6,6 +6,9 @@
 #ifdef OTA_SIGNED
 #include <sodium/crypto_sign.h>
 #endif
+#ifdef OTA_ENCRYPTED
+#include <sodium/crypto_secretstream_xchacha20poly1305.h>
+#endif
 
 /* OTA File format
  * 4 Byte Magic: TBD
@@ -27,17 +30,20 @@ class OtaUpgradeStream : public ReadWriteStream
 {
 public:
 	OtaUpgradeStream();
+	~OtaUpgradeStream();
 
 	enum ErrorCode {
 		NoError,
 		InvalidFormatError,
 		UnsupportedDataError,
+		DecryptionError,
 		NoRomFoundError,
 		RomTooLargeError,
 		DowngradeError,
 		VerificationError,
 		FlashWriteError,
 		RomActivationError,
+		OutOfMemoryError,
 		InternalError
 	};
 
@@ -90,12 +96,6 @@ private:
 		StateRomsComplete
 	} state = StateHeader;
 
-#ifdef OTA_SIGNED
-	static const uint32_t HEADER_MAGIC_EXPECTED = 0xf01af02a;
-#else
-	static const uint32_t HEADER_MAGIC_EXPECTED = 0xf01af020;
-#endif
-
 	struct {
 		uint32_t magic;
 		uint32_t buildTimestampLow;
@@ -133,7 +133,32 @@ private:
 	} md5Context;
 #endif
 
+#ifdef OTA_ENCRYPTED
+	struct {
+		crypto_secretstream_xchacha20poly1305_state state;
+
+		union {
+			uint8_t header[crypto_secretstream_xchacha20poly1305_HEADERBYTES];
+			uint16_t chunkSizeMinusOne;
+		};
+
+		enum {
+			FragmentHeader,
+			FragmentChunkSize,
+			FragmentChunk,
+			FragmentNone
+		} fragment = FragmentHeader;
+		
+		size_t remainingBytes;
+		uint8_t *fragmentPtr;
+		uint8_t *buffer = nullptr;
+		size_t bufferSize = 0;
+	} encryption;
+#endif
+
 	void setError(ErrorCode ec);
+
+	size_t process(const uint8_t* data, size_t size);
 
 	void setupChunk(State nextState, size_t size, void *destination = nullptr)
 	{

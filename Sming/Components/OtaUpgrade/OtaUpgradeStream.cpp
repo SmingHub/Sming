@@ -1,18 +1,31 @@
 #include "OtaUpgradeStream.h"
 #include <algorithm>
 #include <esp_spi_flash.h>
+#ifdef OTA_ENCRYPTED
+#include <sodium/utils.h>
+#endif
 
 // symbol provided by appcode (generated source file)
 #ifdef OTA_SIGNED
-extern "C" uint8_t OTAUpgrade_PublicKey_P[];
+extern "C" uint8_t OTAUpgrade_SignatureVerificationKey_P[] PROGMEM;
 #else
 extern "C" void MD5Init(void *ctx);
 extern "C" void MD5Update(void *ctx, const void *buf, uint32_t len);
 extern "C" void MD5Final(uint8_t digest[16], void *ctx);
 #endif
 
+#ifdef OTA_ENCRYPTED
+extern "C" uint8_t OTAUpgrade_EncryptionKey_P[] PROGMEM;
+#endif
+
 #ifdef OTA_DOWNGRADE_PROTECTION
 extern "C" const uint64_t OTA_BuildTimestamp PROGMEM;
+#endif
+
+#ifdef OTA_SIGNED
+	static const uint32_t HEADER_MAGIC_EXPECTED = 0xf01af02a;
+#else
+	static const uint32_t HEADER_MAGIC_EXPECTED = 0xf01af020;
 #endif
 
 OtaUpgradeStream::Slot::Slot()
@@ -46,12 +59,25 @@ OtaUpgradeStream::Slot::Slot()
 
 OtaUpgradeStream::OtaUpgradeStream()
 {
+#ifdef OTA_ENCRYPTED
+	encryption.fragmentPtr = encryption.header;
+	encryption.remainingBytes = sizeof(encryption.header);
+#endif
+
 #ifdef OTA_SIGNED
 	crypto_sign_init(&verifierState);
 #else
 	MD5Init(&md5Context);
 #endif
+
 	setupChunk(StateHeader, fileHeader);
+}
+
+OtaUpgradeStream::~OtaUpgradeStream()
+{
+#ifdef OTA_ENCRYPTED
+	free(encryption.buffer);
+#endif
 }
 
 bool OtaUpgradeStream::consume(const uint8_t *&data, size_t &size)
@@ -126,7 +152,7 @@ void OtaUpgradeStream::verifyRoms()
 
 #ifdef OTA_SIGNED
 	uint8_t verificationKey[crypto_sign_PUBLICKEYBYTES];
-	memcpy_P(verificationKey, OTAUpgrade_PublicKey_P, sizeof(verificationKey));
+	memcpy_P(verificationKey, OTAUpgrade_SignatureVerificationKey_P, sizeof(verificationKey));
 	const bool signatureMismatch = (crypto_sign_final_verify(&verifierState, signature, verificationKey) != 0);
 #else
 	uint8_t expectedChecksum[sizeof(signature)];
@@ -163,8 +189,91 @@ void OtaUpgradeStream::verifyRoms()
 
 size_t OtaUpgradeStream::write(const uint8_t* data, size_t size) 
 {
+#ifndef OTA_ENCRYPTED
+	return process(data, size);
+#else
 	size_t available = size;
+	
+	while(!hasError() && (available > 0)) {
+		std::size_t toConsume = std::min(encryption.remainingBytes, available);
+		memcpy(encryption.fragmentPtr, data, toConsume);
+		available -= toConsume;
+		data += toConsume;
+		encryption.fragmentPtr += toConsume;
+		encryption.remainingBytes -= toConsume;
+		
+		if (encryption.remainingBytes == 0) {
+			switch(encryption.fragment) {
+			case encryption.FragmentHeader:
+				{
+					uint8_t key[crypto_secretstream_xchacha20poly1305_KEYBYTES];
+					memcpy_P(key, OTAUpgrade_EncryptionKey_P, sizeof(key));
+					bool ok = (crypto_secretstream_xchacha20poly1305_init_pull(&encryption.state, encryption.header, key) == 0);
+					sodium_memzero(key, sizeof(key));
+					if (!ok) {
+						setError(DecryptionError);
+						break;
+					}
+					encryption.fragment = encryption.FragmentChunkSize;
+					encryption.fragmentPtr = reinterpret_cast<uint8_t *>(&encryption.chunkSizeMinusOne);
+					encryption.remainingBytes = sizeof(encryption.chunkSizeMinusOne);
+				}
+				break;
 
+			case encryption.FragmentChunkSize:
+				encryption.remainingBytes = 1 + encryption.chunkSizeMinusOne;
+				if (encryption.buffer == nullptr || encryption.bufferSize < encryption.remainingBytes) {
+					free(encryption.buffer);
+					encryption.buffer = (uint8_t *)malloc(encryption.remainingBytes);
+					if (encryption.buffer == nullptr) {
+						setError(OutOfMemoryError);
+						break;
+					}
+					encryption.bufferSize = encryption.remainingBytes;
+				}
+				encryption.fragmentPtr = encryption.buffer;
+				encryption.fragment = encryption.FragmentChunk;
+				break;
+
+			case encryption.FragmentChunk:
+				{
+					unsigned char tag;
+					size_t chiperTextLength = 1 + encryption.chunkSizeMinusOne;
+					unsigned long long messageLength = 0;
+					bool ok = (crypto_secretstream_xchacha20poly1305_pull(&encryption.state, encryption.buffer, &messageLength, &tag, encryption.buffer, chiperTextLength, NULL, 0) == 0);
+					if (!ok || messageLength > encryption.bufferSize) {
+						setError(DecryptionError);
+						break;
+					}
+					if (tag != crypto_secretstream_xchacha20poly1305_TAG_FINAL) {
+						encryption.fragment = encryption.FragmentChunkSize;
+						encryption.fragmentPtr = reinterpret_cast<uint8_t *>(&encryption.chunkSizeMinusOne);
+						encryption.remainingBytes = sizeof(encryption.chunkSizeMinusOne);
+					} else {
+						encryption.fragment = encryption.FragmentNone;
+					}
+
+					process(encryption.buffer, static_cast<size_t>(messageLength));
+				}
+				break;
+
+			case encryption.FragmentNone:
+				setError(InvalidFormatError);
+				break;
+
+			default:
+				setError(InternalError);
+			}
+		}
+	}
+	return size - available;
+#endif
+}
+	
+size_t OtaUpgradeStream::process(const uint8_t* data, size_t size) 
+{
+	size_t available = size;
+	
 	while(!hasError() && (available > 0)) {
 		switch(state) {
 		case StateHeader:
@@ -245,7 +354,9 @@ String OtaUpgradeStream::errorToString(ErrorCode code)
 	case InvalidFormatError: 
 		return F("Invalid/Unrecognized upgrade image format");
 	case UnsupportedDataError: 
-		return F("OTA image contains unsupported extended data.");
+		return F("Upgrade image contains unsupported extended data.");
+	case DecryptionError:
+		return F("Upgrade image decryption failed.");
 	case NoRomFoundError:
 		return F("No suitable ROM image found");
 	case RomTooLargeError:
@@ -262,6 +373,8 @@ String OtaUpgradeStream::errorToString(ErrorCode code)
 		return F("Error while writing Flash memory");
 	case RomActivationError:
 		return F("Could not activate updated ROM");
+	case OutOfMemoryError:
+		return F("Out of memory. Allocation failed.");
 	case InternalError:
 		return F("Internal error");
 	default:
