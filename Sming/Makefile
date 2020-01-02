@@ -108,7 +108,7 @@ $(CLEAN_TESTS):
 	$(Q) $(MAKE) -C $(@D) clean
 
 
-##@Developer
+##@Tools
 
 # Recursive wildcard search
 # $1 -> list of directories
