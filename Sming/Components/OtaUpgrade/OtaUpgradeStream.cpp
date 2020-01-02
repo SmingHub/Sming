@@ -76,11 +76,12 @@ bool OtaUpgradeStream::consume(const uint8_t *&data, size_t &size)
 	}
 }
 
-void OtaUpgradeStream::setError(const char *message) 
+void OtaUpgradeStream::setError(ErrorCode code) 
 {
-	debug_e("Error: %s\n", message ? message : "<unknown>");
+	assert(code != NoError);
+	debug_e("Error: %s\n", errorToString(code).c_str());	
+	errorCode = code;
 	state = StateError;
-	errorMessage = message;
 }
 
 void OtaUpgradeStream::nextRom() 
@@ -102,7 +103,7 @@ void OtaUpgradeStream::processRomHeader()
 			rbootWriteStatus = rboot_write_init(slot.address);
 			setupChunk(StateWriteRom, romHeader.size);
 		} else {
-			setError(_F("ROM image too large"));
+			setError(RomTooLargeError);
 		}
 		return;
 	}
@@ -134,11 +135,7 @@ void OtaUpgradeStream::verifyRoms()
 			// Destroy start sector of updated ROM to avoid accidentally booting an unsanctioned firmware
 			flashmem_erase_sector(slot.address / SECTOR_SIZE);
 		}
-#ifdef OTA_SIGNED
-		setError(_F("Signature verification failed"));
-#else
-		setError(_F("Checksum verification failed"));
-#endif
+		setError(VerificationError);
 		return;
 	}
 
@@ -149,14 +146,14 @@ void OtaUpgradeStream::verifyRoms()
 
 	debug_i("ROM update complete\n");
 	if (!slot.updated) {
-		setError(_F("No suitable ROM image found"));
+		setError(NoRomFoundError);
 		return;
 	}
 
 	if (rboot_set_current_rom(slot.index)) {
 		debug_i("ROM %u activated\n", slot.index);
 	} else {
-		setError(_F("Could not activate updated ROM"));
+		setError(RomActivationError);
 	}
 }
 
@@ -172,7 +169,7 @@ size_t OtaUpgradeStream::write(const uint8_t* data, size_t size)
 					debug_i("Starting firmware upgrade, receive %u image(s)\n", fileHeader.romCount);
 					nextRom();
 				} else {
-					setError(_F("Invalid/Unrecognized upgrade image format"));
+					setError(InvalidFormatError);
 				}
 			}
 			break;
@@ -193,7 +190,7 @@ size_t OtaUpgradeStream::write(const uint8_t* data, size_t size)
 					}
 				}
 				if (!ok) {
-					setError(_F("Error while writing Flash memory"));
+					setError(FlashWriteError);
 				}
 			}
 			break;
@@ -211,16 +208,46 @@ size_t OtaUpgradeStream::write(const uint8_t* data, size_t size)
 			break;
 			
 		case StateRomsComplete:
-			setError(_F("OTA image contains unsupported extended data."));
+			setError(UnsupportedDataError);
 			break;
 			
 		case StateError:
 			break;
 		default:
-			setError(_F("Internal error"));
+			setError(InternalError);
 			break;
 		}
 	}
 	
 	return size - available;
+}
+
+String OtaUpgradeStream::errorToString(ErrorCode code)
+{
+	switch(code) {
+	case NoError: 
+		return nullptr;
+	case InvalidFormatError: 
+		return F("Invalid/Unrecognized upgrade image format");
+	case UnsupportedDataError: 
+		return F("OTA image contains unsupported extended data.");
+	case NoRomFoundError:
+		return F("No suitable ROM image found");
+	case RomTooLargeError:
+		return F("ROM image too large");
+	case VerificationError:
+#ifdef OTA_SIGNED
+		return F("Signature verification failed");
+#else
+		return F("Checksum mismatch");
+#endif
+	case FlashWriteError:
+		return F("Error while writing Flash memory");
+	case RomActivationError:
+		return F("Could not activate updated ROM");
+	case InternalError:
+		return F("Internal error");
+	default:
+		return F("<unknown error>");
+	};
 }

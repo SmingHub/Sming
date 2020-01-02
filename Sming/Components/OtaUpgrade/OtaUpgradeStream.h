@@ -25,6 +25,47 @@
  */
 class OtaUpgradeStream : public ReadWriteStream
 {
+public:
+	OtaUpgradeStream();
+
+	enum ErrorCode {
+		NoError,
+		InvalidFormatError,
+		UnsupportedDataError,
+		NoRomFoundError,
+		RomTooLargeError,
+		VerificationError,
+		FlashWriteError,
+		RomActivationError,
+		InternalError
+	};
+
+	ErrorCode errorCode = NoError;
+
+	static String errorToString(ErrorCode code);
+
+	size_t write(const uint8_t* data, size_t size) override;
+
+	bool hasError() const
+	{
+		return (state == StateError);
+	}
+	
+	// overrides from IDataSourceStream
+    uint16_t readMemoryBlock(char* data, int bufSize) override
+    {
+        return 0;
+    }
+	virtual int available() override
+	{
+		return 0;
+	}
+    bool isFinished() override
+    {
+        return true;
+    }
+
+private:
 	struct Slot
 	{
 		uint8_t index;
@@ -91,7 +132,7 @@ class OtaUpgradeStream : public ReadWriteStream
 	} md5Context;
 #endif
 
-	void setError(const char *message = nullptr); 
+	void setError(ErrorCode ec);
 
 	void setupChunk(State nextState, size_t size, void *destination = nullptr)
 	{
@@ -109,32 +150,6 @@ class OtaUpgradeStream : public ReadWriteStream
 	void nextRom();
 	void processRomHeader();
 	void verifyRoms();
-
-public:
-	OtaUpgradeStream();
-
-	size_t write(const uint8_t* data, size_t size) override;
-
-	bool hasError() const
-	{
-		return (state == StateError);
-	}
-
-	String errorMessage;
-	
-	// overrides from IDataSourceStream
-    uint16_t readMemoryBlock(char* data, int bufSize) override
-    {
-        return 0;
-    }
-	virtual int available() override
-	{
-		return 0;
-	}
-    bool isFinished() override
-    {
-        return true;
-    }
 };
 
 #endif // OTA_UPGRADE_STREAM_H
