@@ -49,29 +49,23 @@ Usage instructions
 
 1. Configure your flash memory layout:
 
-    * Set :envvar:`SPI_SIZE` to the flash memory size of your device.
-    * If necessary, modify :envvar:`RBOOT_ROM0_ADDR`, :envvar:`RBOOT_ROM1_ADDR`, 
+   -  Set :envvar:`SPI_SIZE` to the flash memory size of your device.
+   -  If necessary, modify :envvar:`RBOOT_ROM0_ADDR`, :envvar:`RBOOT_ROM1_ADDR`, 
       :envvar:`RBOOT_SPIFFS_0` and :envvar:`SPIFF_SIZE` to fit both ROM slots and
       the file system into the available flash memory. Make sure that the 
       flash areas do not overlap with each other or any the reserved regions.
       Refer to the :component:`rboot` documentation for further details.
 
-2. Build the example by running 
+2. Build the example by running::
 
-   ::
-   
       make
 
-3. Connect your device via USB/Serial cable and run 
+3. Connect your device via USB/Serial cable and run::
 
-   ::
-   
       make flashconfig
       
-   to clear any remains of the previous flash layout configuration, followed by
+   to clear any remains of the previous flash layout configuration, followed by::
 
-   ::
-      
       make flash
 
    to install the example firmware. You need to do this only once. Subsequent 

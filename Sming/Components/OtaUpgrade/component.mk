@@ -152,7 +152,7 @@ endif
 OTA_UPGRADE_FILE=$(FW_BASE)/firmware.ota
 
 .PHONY: ota-file 
-ota-file: $(OTA_UPGRADE_FILE) ## Generate OTA upgrade file (done as part of the default target)
+ota-file: $(OTA_UPGRADE_FILE) ##Generate OTA upgrade file (done as part of the default target)
 
 CUSTOM_TARGETS += ota-file
 
@@ -185,7 +185,7 @@ OTA_UPLOAD_NAME ?= firmware
 
 # otatool.py includes a HTTP POST upload feature, no need to use install additional tools like curl
 .PHONY: ota-upload
-ota-upload: $(OTA_UPGRADE_FILE) ## Perform OTA upgrade via HTTP POST file upload (set OTA_UPLOAD_URL first!)
+ota-upload: $(OTA_UPGRADE_FILE) ##Perform OTA upgrade via HTTP POST file upload (set OTA_UPLOAD_URL first!)
 	$(Q) if [ -n "$(OTA_UPLOAD_URL)" ]; then \
 		$(OTATOOL) upload --field=$(OTA_UPLOAD_NAME) --url=$(OTA_UPLOAD_URL) $(OTA_UPGRADE_FILE); \
 	else echo Please set OTA_UPLOAD_URL to use this target.; \
