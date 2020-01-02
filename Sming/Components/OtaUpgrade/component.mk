@@ -155,6 +155,11 @@ ota-file: $(OTA_UPGRADE_FILE) ## Generate OTA upgrade file (done as part of the 
 CUSTOM_TARGETS += ota-file
 
 $(OTA_UPGRADE_FILE): $(RBOOT_ROM_0_BIN) $(RBOOT_ROM_1_BIN) $(OTA_KEY_IMAGE)
+ifneq ($(OTA_ENABLE_DOWNGRADE),1)
+ifeq ($(OTA_CRYPTO_FEATURES),)
+	$(warning WARNING: Downgrade protection ineffective without encryption or digital signature. Consider setting OTA_ENABLE_SIGNING or OTA_ENABLE_ENCRYPTION to 1!)
+endif
+endif
 	$(Q) $(OTATOOL) mkfile \
 		$(OTA_CRYPTO_FEATURES_IMAGE) \
 		$(if $(OTA_CRYPTO_FEATURES_IMAGE),--key=$(OTA_KEY_IMAGE)) \
