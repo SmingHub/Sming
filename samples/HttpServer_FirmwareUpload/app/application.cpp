@@ -4,33 +4,16 @@
 #include <OtaUpgradeStream.h>
 
 HttpServer server;
-String lastModified;
-
-void onIndex(HttpRequest& request, HttpResponse& response)
-{
-	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
-	auto& vars = tmpl->variables();
-	response.sendNamedStream(tmpl);
-}
 
 void onFile(HttpRequest& request, HttpResponse& response)
 {
-	if(lastModified.length() > 0 && request.headers[HTTP_HEADER_IF_MODIFIED_SINCE].equals(lastModified)) {
-		response.code = HTTP_STATUS_NOT_MODIFIED;
-		return;
-	}
-
 	String file = request.uri.getRelativePath();
-	if(file[0] == '.')
-		response.code = HTTP_STATUS_FORBIDDEN;
-	else {
-		if(lastModified.length() > 0) {
-			response.headers[HTTP_HEADER_LAST_MODIFIED] = lastModified;
-		}
-
-		response.setCache(86400, true); // It's important to use cache for better performance.
-		response.sendFile(file);
+	if(!file.length()) {
+		file = "index.html";
 	}
+
+	response.setCache(86400, true); // It's important to use cache for better performance.
+	response.sendFile(file);
 }
 
 int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
@@ -43,7 +26,7 @@ int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpRespons
 	}
 
 	if(response.isSuccess() && !otaStream->hasError()) {
-		// defer the reboot with 1000 milliseconds to give time to the web server to return the response
+		// defer the reboot by 1000 milliseconds to give time to the web server to return the response
 		System.restart(1000);
 
 		response.sendFile("restart.html");
@@ -95,10 +78,7 @@ void startWebServer()
 	server.setBodyParser(MIME_FORM_MULTIPART, formMultipartParser);
 
 	server.listen(80);
-	server.paths.set("/", onIndex);
-
 	server.paths.set("/upgrade", new HttpMultipartResource(fileUploadMapper, onUpload));
-
 	server.paths.setDefault(onFile);
 }
 
@@ -108,12 +88,6 @@ void init()
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 
 	spiffs_mount(); // Mount file system, in order to work with files
-
-	if(fileExist(".lastModified")) {
-		// The last modification
-		lastModified = fileGetContent(".lastModified");
-		lastModified.trim();
-	}
 
 	WifiStation.enable(true);
 	//WifiStation.config(WIFI_SSID, WIFI_PWD);
