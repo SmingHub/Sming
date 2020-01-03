@@ -14,6 +14,7 @@
 
 #include <Network/Http/HttpCommon.h>
 #include <Network/Http/HttpRequest.h>
+#include <Data/Stream/ReadWriteStream.h>
 
 #include "multipart-parser/multipart_parser.h"
 
@@ -28,6 +29,7 @@ public:
 	static int readHeaderName(multipart_parser_t* p, const char* at, size_t length);
 	static int readHeaderValue(multipart_parser_t* p, const char* at, size_t length);
 	static int partBegin(multipart_parser_t* p);
+	static int partHeadersComplete(multipart_parser_t* p);
 	static int partData(multipart_parser_t* p, const char* at, size_t length);
 	static int partEnd(multipart_parser_t* p);
 	static int bodyEnd(multipart_parser_t* p);
@@ -36,11 +38,14 @@ private:
 	static multipart_parser_settings_t settings;
 
 	String headerName; ///< Current header field name
+	String headerValue; ///< Current header field name
 
 	HttpRequest* request = nullptr;
 
 	multipart_parser_t* parser = nullptr;
-	String name; // current parameter name
+	ReadWriteStream* stream = nullptr;
+
+	int processHeader();
 };
 
 

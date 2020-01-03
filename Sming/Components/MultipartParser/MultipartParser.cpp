@@ -18,7 +18,7 @@ multipart_parser_settings_t MultipartParser::settings = {
 	.on_header_value = readHeaderValue,
 	.on_part_data = partData,
 	.on_part_data_begin = partBegin,
-	.on_headers_complete = nullptr,
+	.on_headers_complete = partHeadersComplete,
 	.on_part_data_end = partEnd,
 	.on_body_end = bodyEnd,
 };
@@ -95,6 +95,10 @@ int MultipartParser::partBegin(multipart_parser_t* p)
 {
 	GET_PARSER();
 
+	parser->headerName = nullptr;
+	parser->headerValue = nullptr;
+	parser->stream = nullptr;
+
 	return 0;
 }
 
@@ -102,7 +106,44 @@ int MultipartParser::readHeaderName(multipart_parser_t* p, const char* at, size_
 {
 	GET_PARSER();
 
-	parser->headerName.setString(at, length);
+	if (parser->headerValue) {
+		// process previous header
+		int result = parser->processHeader();
+		if (result != 0) {
+			return result;
+		}
+	}
+
+	parser->headerName.concat(at, length);
+	
+	return 0;
+}
+
+int MultipartParser::processHeader()
+{
+	if(headerName == _F("Content-Disposition")) {
+		// Content-Disposition: form-data; name="image"; filename=".gitignore"
+		// Content-Disposition: form-data; name="data"
+		int startPos = headerValue.indexOf(_F("name="));
+		if(startPos < 0) {
+			debug_e("Invalid header content");
+			return -1; // Invalid header content
+		}
+		startPos += 6; // name="
+		int endPos = headerValue.indexOf(';', startPos);
+		
+		String name;
+		if(endPos < 0) {
+			name = headerValue.substring(startPos, headerValue.length() - 1);
+		} else {
+			name = headerValue.substring(startPos, endPos - 1);
+		}
+		// get stream corresponding to field name
+		stream = request->files[name];
+	}
+	
+	headerName = nullptr;
+	headerValue = nullptr;
 
 	return 0;
 }
@@ -111,34 +152,24 @@ int MultipartParser::readHeaderValue(multipart_parser_t* p, const char* at, size
 {
 	GET_PARSER();
 
-	if(parser->headerName == _F("Content-Disposition")) {
-		// Content-Disposition: form-data; name="image"; filename=".gitignore"
-		// Content-Disposition: form-data; name="data"
-		String value = String(at, length);
-		int startPos = value.indexOf(_F("name="));
-		if(startPos < 0) {
-			debug_e("Invalid header content");
-			return -1; // Invalid header content
-		}
-		startPos += 6; // name="
-		int endPos = value.indexOf(';', startPos);
-		if(endPos < 0) {
-			parser->name = value.substring(startPos, value.length() - 1);
-		} else {
-			parser->name = value.substring(startPos, endPos - 1);
-		}
-	}
+	parser->headerValue.concat(at, length);
 
 	return 0;
+}
+
+int MultipartParser::partHeadersComplete(multipart_parser_t *p) 
+{
+	GET_PARSER();
+
+	return parser->processHeader();
 }
 
 int MultipartParser::partData(multipart_parser_t* p, const char* at, size_t length)
 {
 	GET_PARSER();
 
-	ReadWriteStream* stream = parser->request->files[parser->name];
-	if(stream != nullptr) {
-		size_t written = stream->write((uint8_t*)at, length);
+	if(parser->stream != nullptr) {
+		size_t written = parser->stream->write((uint8_t*)at, length);
 		if(written != length) {
 			return 1;
 		}
