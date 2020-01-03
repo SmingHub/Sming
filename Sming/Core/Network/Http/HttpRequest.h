@@ -17,6 +17,7 @@
 #include "HttpRequestAuth.h"
 #endif
 #include "../TcpConnection.h"
+#include <Network/Ssl/Fingerprints.h>
 #include "Data/Stream/DataSourceStream.h"
 #include "Data/Stream/MultipartStream.h"
 #include "HttpHeaders.h"
@@ -50,7 +51,12 @@ public:
 	 * @brief Copy constructor
 	 * @note Internal streams are not copied so these must be dealt with afterwards
 	 */
-	HttpRequest(const HttpRequest& value);
+	HttpRequest(const HttpRequest& value)
+		: uri(value.uri), method(value.method), headers(value.headers), postParams(value.postParams),
+		  headersCompletedDelegate(value.headersCompletedDelegate), requestBodyDelegate(value.requestBodyDelegate),
+		  requestCompletedDelegate(value.requestCompletedDelegate), sslInitDelegate(value.sslInitDelegate)
+	{
+	}
 
 	/**
 	 * @brief Clone this request into a new object using the copy constructor
@@ -175,7 +181,10 @@ public:
 	 * @retval IDataSourceStream*
 	 * @note may return null
 	 */
-	IDataSourceStream* getBodyStream();
+	IDataSourceStream* getBodyStream()
+	{
+		return bodyStream;
+	}
 
 	HttpRequest* setBody(const String& body)
 	{
@@ -225,43 +234,20 @@ public:
 	/** @brief Clear buffers and reset to default state in preparation for another request */
 	void reset();
 
-#ifdef ENABLE_SSL
-	HttpRequest* setSslOptions(uint32_t sslOptions)
-	{
-		this->sslOptions = sslOptions;
-		return this;
-	}
-
-	uint32_t getSslOptions()
-	{
-		return sslOptions;
-	}
+	/**
+	 * @brief Callback delegate type used to initialise an SSL session for a given request
+	 */
+	using SslInitDelegate = Delegate<void(Ssl::Session& session, HttpRequest& request)>;
 
 	/**
-	 * @brief   Requires(pins) the remote SSL certificate to match certain fingerprints
-	 * 			Check if SHA256 hash of Subject Public Key Info matches the one given.
-	 * @param	fingerprints - passes the certificate fingerprints by reference.
-	 *
-	 * @retval bool  true of success, false or failure
+	 * @brief To customise SSL session options, provide a callback
+	 * @param delegate Invoked before creating SSL connection
 	 */
-	HttpRequest* pinCertificate(SslFingerprints& fingerprints)
+	HttpRequest* onSslInit(SslInitDelegate delegate)
 	{
-		sslFingerprints = fingerprints;
+		sslInitDelegate = delegate;
 		return this;
 	}
-
-	/**
-	 * @brief Sets client private key, certificate and password from memory
-	 * @param keyCertPair
-	 *
-	 * @retval HttpRequest* Pointer to this request
-	 */
-	HttpRequest* setSslKeyCert(const SslKeyCertPair& keyCertPair)
-	{
-		sslKeyCertPair = keyCertPair;
-		return this;
-	}
-#endif
 
 #ifndef SMING_RELEASE
 	/**
@@ -286,18 +272,13 @@ protected:
 	RequestHeadersCompletedDelegate headersCompletedDelegate;
 	RequestBodyDelegate requestBodyDelegate;
 	RequestCompletedDelegate requestCompletedDelegate;
+	SslInitDelegate sslInitDelegate;
 
 	IDataSourceStream* bodyStream = nullptr;
 	ReadWriteStream* responseStream = nullptr; ///< User-requested stream to store response
 
 #ifdef ENABLE_HTTP_REQUEST_AUTH
 	AuthAdapter* auth = nullptr;
-#endif
-
-#ifdef ENABLE_SSL
-	uint32_t sslOptions = 0;
-	SslFingerprints sslFingerprints;
-	SslKeyCertPair sslKeyCertPair;
 #endif
 
 private:

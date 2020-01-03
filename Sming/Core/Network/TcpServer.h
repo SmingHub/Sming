@@ -59,28 +59,11 @@ public:
 		debug_i("TcpServer destroyed");
 	}
 
-public:
 	virtual bool listen(int port, bool useSsl = false);
 
 	void setKeepAlive(uint16_t seconds);
 
 	void shutdown();
-
-#ifdef ENABLE_SSL
-	/**
-	 * @brief Adds SSL support and specifies the server certificate and private key.
-	 * @deprecated Use `setSslKeyCert()` instead
-	 */
-	void setServerKeyCert(const SslKeyCertPair& serverKeyCert) SMING_DEPRECATED
-	{
-		setSslKeyCert(serverKeyCert);
-	}
-
-	/**
-	 * @brief Adds SSL support and specifies the server certificate and private key.
-	 */
-	using TcpConnection::setSslKeyCert;
-#endif
 
 protected:
 	// Overload this method in your derived class!
@@ -100,12 +83,7 @@ public:
 	uint16_t activeClients = 0;
 
 protected:
-#ifdef ENABLE_SSL
-	int sslSessionCacheSize = 50;
 	size_t minHeapSize = 16384;
-#else
-	size_t minHeapSize = 3000;
-#endif
 
 	bool active = true;
 	Vector<TcpConnection*> connections;

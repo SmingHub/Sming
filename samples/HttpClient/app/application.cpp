@@ -1,6 +1,5 @@
 #include <SmingCore.h>
-
-#include "Network/HttpClient.h"
+#include <Network/HttpClient.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -9,54 +8,6 @@
 #endif
 
 HttpClient httpClient;
-
-/* Debug SSL functions */
-void displaySessionId(SSL* ssl)
-{
-	int i;
-	const uint8_t* session_id = ssl_get_session_id(ssl);
-	int sess_id_size = ssl_get_session_id_size(ssl);
-
-	if(sess_id_size > 0) {
-		debugf("-----BEGIN SSL SESSION PARAMETERS-----");
-		for(i = 0; i < sess_id_size; i++) {
-			m_printf("%02x", session_id[i]);
-		}
-
-		debugf("\n-----END SSL SESSION PARAMETERS-----");
-	}
-}
-
-/**
- * Display what cipher we are using
- */
-void displayCipher(SSL* ssl)
-{
-	m_printf("CIPHER is ");
-	switch(ssl_get_cipher_id(ssl)) {
-	case SSL_AES128_SHA:
-		m_printf("AES128-SHA");
-		break;
-
-	case SSL_AES256_SHA:
-		m_printf("AES256-SHA");
-		break;
-
-	case SSL_AES128_SHA256:
-		m_printf("SSL_AES128_SHA256");
-		break;
-
-	case SSL_AES256_SHA256:
-		m_printf("SSL_AES256_SHA256");
-		break;
-
-	default:
-		m_printf("Unknown - %d", ssl_get_cipher_id(ssl));
-		break;
-	}
-
-	m_printf("\n");
-}
 
 int onDownload(HttpConnection& connection, bool success)
 {
@@ -67,20 +18,16 @@ int onDownload(HttpConnection& connection, bool success)
 	if(connection.getRequest()->method != HTTP_HEAD) {
 		debugf("Got content starting with: %s", connection.getResponse()->getBody().substring(0, 1000).c_str());
 	}
-	SSL* ssl = connection.getSsl();
-	if(ssl) {
-		const char* common_name = ssl_get_cert_dn(ssl, SSL_X509_CERT_COMMON_NAME);
-		if(common_name) {
-			debugf("Common Name:\t\t\t%s\n", common_name);
-		}
-		displayCipher(ssl);
-		displaySessionId(ssl);
+
+	auto ssl = connection.getSsl();
+	if(ssl != nullptr) {
+		ssl->printTo(Serial);
 	}
 
 	return 0; // return 0 on success in your callbacks
 }
 
-void setSslFingerprints(HttpRequest* request)
+void sslRequestInit(Ssl::Session& session, HttpRequest& request)
 {
 	/*
 	 * SSL validation: We check the remote server certificate against a fingerprint
@@ -89,7 +36,7 @@ void setSslFingerprints(HttpRequest* request)
 	 * Note: SSL is not compiled by default. In our example we set the ENABLE_SSL directive to 1
 	 * (See: ../Makefile-user.mk )
 	 */
-	request->setSslOptions(SSL_SERVER_VERIFY_LATER);
+	session.options.verifyLater = true;
 
 	// These are the fingerprints for httpbin.org
 	static const uint8_t sha1Fingerprint[] PROGMEM = {0x2B, 0xF0, 0x48, 0x9D, 0x78, 0xB4, 0xDE, 0xE9, 0x69, 0xE2,
@@ -99,7 +46,7 @@ void setSslFingerprints(HttpRequest* request)
 		0xE3, 0x88, 0xC4, 0x0A, 0x2A, 0x99, 0x8F, 0xA4, 0x8C, 0x38, 0x4E, 0xE7, 0xCB, 0x4F, 0x8B, 0x99,
 		0x19, 0x48, 0x63, 0x9A, 0x2E, 0xD6, 0x05, 0x7D, 0xB1, 0xD3, 0x56, 0x6C, 0xC0, 0x7E, 0x74, 0x1A};
 
-	SslFingerprints fingerprints;
+	Ssl::Fingerprints fingerprints;
 
 	// Trust only a certificate in which the public key matches the SHA256 fingerprint...
 	fingerprints.setSha256_P(publicKeyFingerprint, sizeof(publicKeyFingerprint));
@@ -107,12 +54,15 @@ void setSslFingerprints(HttpRequest* request)
 	// ... or a certificate that matches the SHA1 fingerprint.
 	fingerprints.setSha1_P(sha1Fingerprint, sizeof(sha1Fingerprint));
 
-	// Attached fingerprints to request for validation
-	request->pinCertificate(fingerprints);
+	// Set fingerprints for validation
+	session.validators.add(fingerprints);
 }
 
 void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
+	Serial.print(F("Connected. Got IP: "));
+	Serial.println(ip);
+
 	// [ GET request: The example below shows how to make HTTP requests ]
 
 	// First: The HttpRequest object contains all the data that needs to be sent
@@ -129,13 +79,11 @@ void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 	// ... or like
 	getRequest->setHeader(F("X-Powered-By"), F("Sming"));
 
-	// SSL validation and fingerprinting
-	setSslFingerprints(getRequest);
-
 	/*
 	 * Notice: If we use SSL we need to set the SSL settings only for the first request
 	 * 		   and all consecutive requests to the same host:port will try to reuse those settings
 	 */
+	getRequest->onSslInit(sslRequestInit);
 
 	// If we want to process the response we can do it by setting a onRequestCallback
 	getRequest->onRequestComplete(onDownload);

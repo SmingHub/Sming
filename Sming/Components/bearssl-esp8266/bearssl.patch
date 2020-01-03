@@ -1,0 +1,27 @@
+diff --git a/src/inner.h b/src/inner.h
+index 0a62d9c..e94b7cd 100644
+--- a/src/inner.h
++++ b/src/inner.h
+@@ -2588,21 +2588,7 @@ br_cpuid(uint32_t mask_eax, uint32_t mask_ebx,
+ 
+ #endif
+ 
+-#ifdef ESP8266
+-
+-  #ifdef __cplusplus
+-  extern "C" {
+-  #endif
+-
+-  #define _debugBearSSL (0)
+-  extern void optimistic_yield(uint32_t);
+-  #ifdef __cplusplus
+-  }
+-  #endif
+-
+-#else
+-  #define optimistic_yield(ignored)
+-#endif
++#define optimistic_yield(ignored)
+ 
+ 
+ /* ==================================================================== */

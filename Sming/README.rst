@@ -20,9 +20,7 @@ Serial Communications
    Note that this will change the default speed used for both flashing and serial comms.
    See also :component-esp8266:`esptool` and :component:`terminal` for further details.
 
-The default rate for serial ports is 115200 baud. You can change it like this:
-
-::
+The default rate for serial ports is 115200 baud. You can change it like this::
 
    make COM_SPEED=921600
 
@@ -39,9 +37,7 @@ Debug information log level and format
    * 2: information (default)
    * 3: debug
 
-Change it like this:
-
-::
+Change it like this::
 
    make DEBUG_VERBOSE_LEVEL=3
 
@@ -56,7 +52,7 @@ Change it like this:
    need to recompile all components like this:
 
    ::
-   
+
       make components-clean
       make DEBUG_VERBOSE_LEVEL=3
 
@@ -67,16 +63,12 @@ Release builds
 .. envvar:: SMING_RELEASE
 
    By default, this value is undefined to produce a build with debug output.
-   To build for release, do this:
+   To build for release, do this::
 
-   ::
-   
       make SMING_RELEASE=1
 
-   This remains in force until you change it back:
-   
-   ::
-   
+   This remains in force until you change it back::
+
       make SMING_RELEASE=
 
 

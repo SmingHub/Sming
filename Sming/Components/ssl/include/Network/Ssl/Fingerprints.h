@@ -4,19 +4,21 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * SslFingerprints.h
+ * Fingerprints.h
  *
  ****/
 
 #pragma once
 
-#include <ssl/ssl.h>
+#include "Crypto.h"
+#include <sming_attr.h>
 
+namespace Ssl
+{
 /**
  * @brief SSL Certificate fingerprint type
- * @ingroup ssl
  */
-enum SslFingerprintType {
+enum FingerprintType {
 	/** @brief Fingerprint based on the SHA1 value of the certificate
 	 * 	@note The SHA1 hash of the entire certificate. This changes on each certificate renewal so needs
 	 * 	to be updated every time the remote server updates its certificate.
@@ -36,18 +38,27 @@ enum SslFingerprintType {
 
 /** @brief Contains SSL fingerprint data
  *  @ingroup ssl
- *  @note Lifetime as follows:
- *  	- Constructed by application, using appropriate setXXX method;
- *  	- Passed into HttpRequest by application, using pinCertificate method - request is then queued;
- *  	- Passed into HttpClientConnection (TcpClient descendant) by HttpClient, using pinCertificate method
- *  	- When certificate validated, memory is released
+ *
+ *  Use within application's SSL initialisation callback to simplify setting standard
+ *  fingerprints for validation. For example:
+ *
+ *		void mySslInitCallback(Ssl::Session& session, HttpRequest& request)
+ *		{
+ *			static const uint8_t sha1Fingerprint[] PROGMEM = {
+ *				0x15, 0x9A, 0x76, 0xC5, 0xAE, 0xF4, 0x90, 0x15, 0x79, 0xE6,
+ *				0xA4, 0x99, 0x96, 0xC1, 0xD6, 0xA1, 0xD9, 0x3B, 0x07, 0x43
+ *			};
+ *			Ssl::Fingerprints fingerprints;
+ *			fingerprints.setSha1_P(sha1Fingerprint, sizeof(sha1Fingerprint));
+ *			session.validators.add(fingerprints);
+ *		}
  *
  */
-struct SslFingerprints {
+struct Fingerprints {
 	const uint8_t* certSha1 = nullptr; ///< certificate SHA1 fingerprint
 	const uint8_t* pkSha256 = nullptr; ///< public key SHA256 fingerprint
 
-	~SslFingerprints()
+	~Fingerprints()
 	{
 		free();
 	}
@@ -87,10 +98,10 @@ struct SslFingerprints {
 	}
 
 	/** @brief Moves values out of source */
-	SslFingerprints& operator=(SslFingerprints& source);
+	Fingerprints& operator=(Fingerprints& source);
 
 	/** @brief Make copy of values from source */
-	SslFingerprints& operator=(const SslFingerprints& source);
+	Fingerprints& operator=(const Fingerprints& source);
 
 private:
 	/** @brief Internal method to set a fingerprint
@@ -102,3 +113,21 @@ private:
 	 */
 	bool setValue(const uint8_t*& value, unsigned requiredLength, const uint8_t* newValue, unsigned newLength);
 };
+
+} // namespace Ssl
+
+/**
+ * @deprecated Use Ssl::FingerprintType instead
+ * @{
+ */
+typedef Ssl::FingerprintType SslFingerprintType SMING_DEPRECATED;
+typedef Ssl::FingerprintType SSLFingerprintType SMING_DEPRECATED;
+/** @} */
+
+/**
+ * @deprecated Use Ssl::Fingerprints instead
+ * @{
+ */
+typedef Ssl::Fingerprints SslFingerprints SMING_DEPRECATED;
+typedef Ssl::Fingerprints SSLFingerprints SMING_DEPRECATED;
+/** @} */

@@ -15,11 +15,7 @@
 
 #pragma once
 
-#ifdef ENABLE_SSL
-#include <axtls-8266/compat/lwipr_compat.h>
-#include "Ssl/SslStructs.h"
-#endif
-
+#include <Network/Ssl/Session.h>
 #include <IpAddress.h>
 
 #define NETWORK_DEBUG
@@ -27,14 +23,10 @@
 #define NETWORK_SEND_BUFFER_SIZE 1024
 
 enum TcpConnectionEvent {
-	// Occurs after connection establishment
-	eTCE_Connected = 0,
-	// Occurs on data receive
-	eTCE_Received,
-	// Occurs when previous sending was completed
-	eTCE_Sent,
-	// Occurs on waiting
-	eTCE_Poll
+	eTCE_Connected = 0, ///< Occurs after connection establishment
+	eTCE_Received,		///< Occurs on data receive
+	eTCE_Sent,			//< Occurs when previous sending was completed
+	eTCE_Poll,			//< Occurs on waiting
 };
 
 struct pbuf;
@@ -59,8 +51,8 @@ public:
 	virtual ~TcpConnection();
 
 public:
-	virtual bool connect(const String& server, int port, bool useSsl = false, uint32_t sslOptions = 0);
-	virtual bool connect(IpAddress addr, uint16_t port, bool useSsl = false, uint32_t sslOptions = 0);
+	virtual bool connect(const String& server, int port, bool useSsl = false);
+	virtual bool connect(IpAddress addr, uint16_t port, bool useSsl = false);
 	virtual void close();
 
 	// return -1 on error
@@ -113,130 +105,55 @@ public:
 		this->destroyedDelegate = destroyedDelegate;
 	}
 
-#ifdef ENABLE_SSL
-	void addSslOptions(uint32_t sslOptions)
-	{
-		this->sslOptions |= sslOptions;
-	}
-
 	/**
-	 * @brief Sets client private key, certificate and password from memory
-	 * @deprecated Use `setSslKeyCert(const uint8_t*, int, const uint8_t*, int, const char*, bool)` instead
-	 *
-	 * @note  This method makes copy of the data.
-	 *
-	 * @param key
-	 * @param keyLength
-	 * @param certificate
-	 * @param certificateLength
-	 * @param keyPassword
-	 * @param freeAfterHandshake
-	 *
-	 * @return bool  true of success, false or failure
+	 * @brief Set the SSL session initialisation callback
+	 * @param handler
 	 */
-	bool setSslClientKeyCert(const uint8_t* key, int keyLength, const uint8_t* certificate, int certificateLength,
-							 const char* keyPassword = nullptr, bool freeAfterHandshake = false) SMING_DEPRECATED
+	void setSslInitHandler(Ssl::Session::InitDelegate handler)
 	{
-		return setSslKeyCert(key, keyLength, certificate, certificateLength, keyPassword, freeAfterHandshake);
+		sslInit = handler;
 	}
 
-	/**
-	* @brief Sets client private key, certificate and password from memory
-	* @deprecated Use `setSslKeyCert(const SslKeyCertPair&, bool)` instead
-	*
-	* @note  This method passes the certificate key chain by reference
-	*
-	* @param clientKeyCert
-	* @param freeAfterHandshake
-	*
-	* @return bool  true of success, false or failure
-	*/
-	bool setSslClientKeyCert(const SslKeyCertPair& clientKeyCert, bool freeAfterHandshake = false) SMING_DEPRECATED
+	// Called by SSL Session when accepting a client connection
+	bool setSslConnection(Ssl::Connection* connection)
 	{
-		return setSslKeyCert(clientKeyCert, freeAfterHandshake);
-	}
-
-	/**
-	 * @brief Frees the memory used for the key and certificate pair
-	 * @deprecated Use `freeSslKeyCert()` instead
-	 */
-	void freeSslClientKeyCert() SMING_DEPRECATED
-	{
-		freeSslKeyCert();
-	}
-
-	/**
-	 * @brief Sets private key, certificate and password from memory for the SSL connection
-	 * 		  If this methods is called from a client then it sets the client key and certificate
-	 * 		  If it is called from a server then it sets the server certificate and key.
-	 * 		  Server and Client certificates differ. Client certificate is used for identification.
-	 * 		  Server certificate is used for encrypt/decrypt the data.
-	 * 		  Make sure to use the correct certificate for the desired goal.
-	 *
-	 * @note  This method makes copy of the data.
-	 *
-	 * @param key
-	 * @param keyLength
-	 * @param certificate
-	 * @param certificateLength
-	 * @param keyPassword
-	 * @param freeAfterHandshake
-	 *
-	 * @return bool  true of success, false or failure
-	 */
-	bool setSslKeyCert(const uint8_t* key, int keyLength, const uint8_t* certificate, int certificateLength,
-					   const char* keyPassword = nullptr, bool freeAfterHandshake = false)
-	{
-		freeKeyCertAfterHandshake = freeAfterHandshake;
-		return sslKeyCert.assign(key, keyLength, certificate, certificateLength, keyPassword);
-	}
-
-	/**
-	* @brief Sets private key, certificate and password from memory for the SSL connection
-	* 	 	 If this methods is called from a client then it sets the client key and certificate
-	* 		 If it is called from a server then it sets the server certificate and key.
-	* 		 Server and Client certificates differ. Client certificate is used for identification.
-	* 		 Server certificate is used for encrypt/decrypt the data.
-	* 		 Make sure to use the correct certificate for the desired goal.
-	*
-	* @note  This method passes the certificate key chain by reference
-	*
-	* @param keyCert
-	* @param freeAfterHandshake
-	*
-	* @retval bool  true of success, false or failure
-	*/
-	bool setSslKeyCert(const SslKeyCertPair& keyCert, bool freeAfterHandshake = false)
-	{
-		freeKeyCertAfterHandshake = freeAfterHandshake;
-		return sslKeyCert.assign(keyCert);
-	}
-
-	/**
-	 * @brief Frees the memory used for the key and certificate pair
-	 */
-	void freeSslKeyCert()
-	{
-		sslKeyCert.free();
-	}
-
-	// Called by TcpServer
-	void setSsl(SSL* ssl)
-	{
-		this->ssl = ssl;
+		if(!sslCreateSession()) {
+			return false;
+		}
+		ssl->setConnection(connection);
 		useSsl = true;
+		return true;
 	}
 
-	SSL* getSsl()
+	/**
+	 * @brief Get a pointer to the current SSL session object
+	 *
+	 * Note that this is typically used so we can query properties of an
+	 * established session. If you need to change session parameters this
+	 * must be done via `setSslInitHandler`.
+	 */
+	Ssl::Session* getSsl()
 	{
 		return ssl;
 	}
 
-#endif
-
 protected:
 	void initialize(tcp_pcb* pcb);
 	bool internalConnect(IpAddress addr, uint16_t port);
+
+	bool sslCreateSession();
+
+	/**
+	 * @brief Override in inherited classes to perform custom session initialisation
+	 *
+	 * Called when TCP connection is established before initiating handshake.
+	 */
+	virtual void sslInitSession(Ssl::Session& session)
+	{
+		if(sslInit) {
+			sslInit(session);
+		}
+	}
 
 	virtual err_t onConnected(err_t err);
 	virtual err_t onReceive(pbuf* buf);
@@ -244,9 +161,18 @@ protected:
 	virtual err_t onPoll();
 	virtual void onError(err_t err);
 	virtual void onReadyToSendData(TcpConnectionEvent sourceEvent);
-#ifdef ENABLE_SSL
-	virtual err_t onSslConnected(SSL* ssl);
-#endif
+
+	/*
+	 * If there is space in the TCP output buffer, then don't wait for TCP
+	 * sent confirmation but try to send more data now
+	 * (Invoked from within other TCP callbacks.)
+	 */
+	void trySend(TcpConnectionEvent event)
+	{
+		if(tcp != nullptr && getAvailableWriteSize() > 0) {
+			onReadyToSendData(event);
+		}
+	}
 
 	// These methods are called via LWIP handlers
 	err_t internalOnConnected(err_t err);
@@ -273,24 +199,12 @@ protected:
 	uint16_t timeOut = USHRT_MAX; ///< By default a TCP connection does not have a time out
 	bool canSend = true;
 	bool autoSelfDestruct = true;
-#ifdef ENABLE_SSL
-	SSL* ssl = nullptr;
-	SSLCTX* sslContext = nullptr;
-	SSL_EXTENSIONS* sslExtension = nullptr;
-	bool sslConnected = false;
-	uint32_t sslOptions = 0;
-	SslKeyCertPair sslKeyCert;
-	bool freeKeyCertAfterHandshake = false;
-	SslSessionId* sslSessionId = nullptr;
-#endif
+	Ssl::Session* ssl = nullptr;
+	Ssl::Session::InitDelegate sslInit;
 	bool useSsl = false;
 
 private:
 	TcpConnectionDestroyedDelegate destroyedDelegate = nullptr;
-
-#ifdef ENABLE_SSL
-	void closeSsl();
-#endif
 };
 
 /** @} */

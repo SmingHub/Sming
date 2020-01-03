@@ -290,7 +290,7 @@ define TryApplyPatch
 		$(call ApplyPatch,../.patches/$2); \
 	fi && \
 	if [ -d ../.patches/$(basename $2)/ ]; then \
-		cp -f ../.patches/$(basename $2)/* . ; \
+		cp -rf ../.patches/$(basename $2)/* . ; \
 	fi
 endef
 
