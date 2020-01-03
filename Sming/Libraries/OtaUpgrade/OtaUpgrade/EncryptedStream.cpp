@@ -8,13 +8,15 @@
  *
  ****/
 
-#include "EncryptedOtaUpgradeStream.h"
+#include "EncryptedStream.h"
 #include <sodium/utils.h>
 #include <FlashString/Array.hpp>
 
-DECLARE_FSTR_ARRAY(OTAUpgrade_DecryptionKey, uint8_t)
+namespace OtaUpgrade
+{
+DECLARE_FSTR_ARRAY(DecryptionKey, uint8_t)
 
-size_t EncryptedOtaUpgradeStream::write(const uint8_t* data, size_t size)
+size_t EncryptedStream::write(const uint8_t* data, size_t size)
 {
 	const size_t origSize = size;
 
@@ -29,8 +31,8 @@ size_t EncryptedOtaUpgradeStream::write(const uint8_t* data, size_t size)
 		if(remainingBytes == 0) {
 			switch(fragment) {
 			case Fragment::Header: {
-				assert(OTAUpgrade_DecryptionKey.length() == crypto_secretstream_xchacha20poly1305_KEYBYTES);
-				LOAD_FSTR_ARRAY(key, OTAUpgrade_DecryptionKey);
+				assert(DecryptionKey.length() == crypto_secretstream_xchacha20poly1305_KEYBYTES);
+				LOAD_FSTR_ARRAY(key, DecryptionKey);
 				bool ok = (crypto_secretstream_xchacha20poly1305_init_pull(&state, header, key) == 0);
 				sodium_memzero(key, sizeof(key));
 				if(!ok) {
@@ -75,7 +77,7 @@ size_t EncryptedOtaUpgradeStream::write(const uint8_t* data, size_t size)
 					fragment = Fragment::None;
 				}
 
-				BasicOtaUpgradeStream::write(buffer, static_cast<size_t>(messageLength));
+				BasicStream::write(buffer, static_cast<size_t>(messageLength));
 			} break;
 
 			case Fragment::None:
@@ -89,3 +91,5 @@ size_t EncryptedOtaUpgradeStream::write(const uint8_t* data, size_t size)
 	}
 	return origSize - size;
 }
+
+} // namespace OtaUpgrade

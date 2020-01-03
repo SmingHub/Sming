@@ -1,5 +1,5 @@
 COMPONENT_SRCDIRS :=
-COMPONENT_SRCFILES := BasicOtaUpgradeStream.cpp
+COMPONENT_SRCFILES := OtaUpgrade/BasicStream.cpp
 COMPONENT_APPCODE := appcode
 
 COMPONENT_INCDIRS := .
@@ -35,7 +35,7 @@ ENABLE_OTA_ENCRYPTION ?= 0
 ifeq ($(ENABLE_OTA_ENCRYPTION),1)
 OTA_CRYPTO_FEATURES += --encrypted
 GLOBAL_CFLAGS += -DENABLE_OTA_ENCRYPTION
-COMPONENT_SRCFILES += EncryptedOtaUpgradeStream.cpp
+COMPONENT_SRCFILES += OtaUpgrade/EncryptedStream.cpp
 endif
 
 ifneq ($(OTA_CRYPTO_FEATURES),)
@@ -76,7 +76,7 @@ ENABLE_OTA_DOWNGRADE ?= 0
 ifeq ($(ENABLE_OTA_DOWNGRADE),1)
 COMPONENT_CXXFLAGS += -DENABLE_OTA_DOWNGRADE
 else
-OTA_BUILD_TIMESTAMP_SRC := $(OTA_GENCODE_DIR)/OTA_BuildTimestamp.cpp
+OTA_BUILD_TIMESTAMP_SRC := $(OTA_GENCODE_DIR)/BuildTimestamp.cpp
 
 # Date reference for build timestamps, generated using this:
 # date --date 1900-01-01 +%s%3NLL
@@ -88,7 +88,9 @@ OTA_DATE_REF := -2208988800000LL
 .PHONY: _ota-make-build-timestamp
 _ota-make-build-timestamp: | $(OTA_GENCODE_DIR)
 	$(Q) echo '#include <FakePgmSpace.h>' > $(OTA_BUILD_TIMESTAMP_SRC)
-	$(Q) echo 'extern const uint64_t OTA_BuildTimestamp PROGMEM = $(shell date +%s%3NLL) - $(OTA_DATE_REF);' >> $(OTA_BUILD_TIMESTAMP_SRC)
+	$(Q) echo 'namespace OtaUpgrade {' >> $(OTA_BUILD_TIMESTAMP_SRC)
+	$(Q) echo 'extern const uint64_t BuildTimestamp PROGMEM = $(shell date +%s%3NLL) - $(OTA_DATE_REF);' >> $(OTA_BUILD_TIMESTAMP_SRC)
+	$(Q) echo '} // namespace OtaUpgrade' >> $(OTA_BUILD_TIMESTAMP_SRC)
 
 App-build: _ota-make-build-timestamp
 

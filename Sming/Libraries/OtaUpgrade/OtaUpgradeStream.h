@@ -9,17 +9,17 @@
  ****/
 
 #ifdef ENABLE_OTA_ENCRYPTION
-#include <EncryptedOtaUpgradeStream.h>
-using OtaUpgradeStream = EncryptedOtaUpgradeStream;
+#include <OtaUpgrade/EncryptedStream.h>
+using OtaUpgradeStream = OtaUpgrade::EncryptedStream;
 #else
-#include <BasicOtaUpgradeStream.h>
-using OtaUpgradeStream = BasicOtaUpgradeStream;
+#include <OtaUpgrade/BasicStream.h>
+using OtaUpgradeStream = OtaUpgrade::BasicStream;
 #endif
 
 /**
  * @typedef OtaUpgradeStream
  * 
- * Alias for either `BasicOtaUpgradeStream` or `EncryptedOtaUpgradeStream`, depending on encryption settings.
+ * Alias for either `OtaUpgrade::BasicStream` or `OtaUpgrade::EncryptedStream`, depending on encryption settings.
  * 
  * Application code should use this alias to avoid source code modifications when changing OTA upgrade security settings.
  */

@@ -14,20 +14,22 @@
 #include <FlashString/Array.hpp>
 #include <array>
 
-DECLARE_FSTR_ARRAY(OTAUpgrade_SignatureVerificationKey, uint8_t)
+namespace OtaUpgrade
+{
+DECLARE_FSTR_ARRAY(SignatureVerificationKey, uint8_t)
 
 /**
- * @brief Signature verifier for `BasicOtaUpgradeStream`.
+ * @brief Signature verifier for `BasicStream`.
  *
  * This is a simple C++ wrapper for Libsodium's 
  * <a href="https://download.libsodium.org/doc/public-key_cryptography/public-key_signatures">`crypto_sign_...`</a> API.
  */
-class OtaSignatureVerifier
+class SignatureVerifier
 {
 public:
 	typedef std::array<uint8_t, crypto_sign_BYTES> VerificationData; ///< Signature type
 
-	OtaSignatureVerifier()
+	SignatureVerifier()
 	{
 		crypto_sign_init(&state);
 	}
@@ -44,11 +46,13 @@ public:
 	 */
 	bool verify(const VerificationData& signature)
 	{
-		assert(OTAUpgrade_SignatureVerificationKey.length() == crypto_sign_PUBLICKEYBYTES);
-		LOAD_FSTR_ARRAY(verificationKey, OTAUpgrade_SignatureVerificationKey);
+		assert(SignatureVerificationKey.length() == crypto_sign_PUBLICKEYBYTES);
+		LOAD_FSTR_ARRAY(verificationKey, SignatureVerificationKey);
 		return (crypto_sign_final_verify(&state, signature.data(), verificationKey) == 0);
 	}
 
 private:
 	crypto_sign_state state;
 };
+
+} // namespace OtaUpgrade

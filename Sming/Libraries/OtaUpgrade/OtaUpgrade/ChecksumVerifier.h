@@ -14,17 +14,19 @@
 #include <string.h>
 #include <array>
 
+namespace OtaUpgrade
+{
 /**
- * @brief Checksum verifier used by `BasicOtaUpgradeStream` if signature verification is disabled.
+ * @brief Checksum verifier used by `BasicStream` if signature verification is disabled.
  *
  * This is a simple C++ wrapper for the MD5 ROM functions.
  */
-class OtaChecksumVerifier
+class ChecksumVerifier
 {
 public:
 	typedef std::array<uint8_t, MD5_SIZE> VerificationData; ///< Checksum type
 
-	OtaChecksumVerifier()
+	ChecksumVerifier()
 	{
 		MD5Init(&context);
 	}
@@ -49,3 +51,5 @@ public:
 private:
 	MD5Context context;
 };
+
+} // namespace OtaUpgrade

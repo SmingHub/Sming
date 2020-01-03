@@ -4,23 +4,25 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * BasicOtaUpgradeStream.cpp
+ * BasicStream.cpp
  *
  ****/
 
-#include "OtaUpgradeStream.h"
+#include "BasicStream.h"
 #include <algorithm>
 #include <esp_spi_flash.h>
 #include <Data/HexString.h>
 #include <FlashString/Array.hpp>
 
+namespace OtaUpgrade
+{
 #ifndef ENABLE_OTA_DOWNGRADE
-extern const uint64_t OTA_BuildTimestamp;
+extern const uint64_t BuildTimestamp;
 #endif
 
-DECLARE_FSTR_ARRAY(OTAUpgrade_AppFlashRegionOffsets, uint32_t);
+DECLARE_FSTR_ARRAY(AppFlashRegionOffsets, uint32_t);
 
-BasicOtaUpgradeStream::Slot::Slot()
+BasicStream::Slot::Slot()
 {
 	// Get parameters of the slot where the firmware image should be stored.
 	const rboot_config bootConfig = rboot_get_config();
@@ -42,17 +44,17 @@ BasicOtaUpgradeStream::Slot::Slot()
 		}
 	}
 
-	for(auto offset : OTAUpgrade_AppFlashRegionOffsets) {
+	for(auto offset : AppFlashRegionOffsets) {
 		limitSize(offset);
 	}
 }
 
-BasicOtaUpgradeStream::BasicOtaUpgradeStream()
+BasicStream::BasicStream()
 {
 	setupChunk(State::Header, fileHeader);
 }
 
-bool BasicOtaUpgradeStream::consume(const uint8_t*& data, size_t& size)
+bool BasicStream::consume(const uint8_t*& data, size_t& size)
 {
 	size_t chunkSize = std::min(size, remainingBytes);
 	if(state != State::VerifyRoms) {
@@ -74,7 +76,7 @@ bool BasicOtaUpgradeStream::consume(const uint8_t*& data, size_t& size)
 	}
 }
 
-void BasicOtaUpgradeStream::setError(Error code)
+void BasicStream::setError(Error code)
 {
 	assert(code != Error::None);
 	debug_e("Error: %s", errorToString(code).c_str());
@@ -82,7 +84,7 @@ void BasicOtaUpgradeStream::setError(Error code)
 	state = State::Error;
 }
 
-void BasicOtaUpgradeStream::nextRom()
+void BasicStream::nextRom()
 {
 	if(romIndex < fileHeader.romCount) {
 		++romIndex;
@@ -92,7 +94,7 @@ void BasicOtaUpgradeStream::nextRom()
 	}
 }
 
-void BasicOtaUpgradeStream::processRomHeader()
+void BasicStream::processRomHeader()
 {
 	bool addressMatch = (slot.address & 0xFFFFF) == (romHeader.address & 0xFFFFF);
 	if(!slot.updated && addressMatch) {
@@ -110,7 +112,7 @@ void BasicOtaUpgradeStream::processRomHeader()
 	setupChunk(State::SkipRom, romHeader.size);
 }
 
-void BasicOtaUpgradeStream::verifyRoms()
+void BasicStream::verifyRoms()
 {
 	state = State::RomsComplete;
 
@@ -143,7 +145,7 @@ void BasicOtaUpgradeStream::verifyRoms()
 	}
 }
 
-size_t BasicOtaUpgradeStream::write(const uint8_t* data, size_t size)
+size_t BasicStream::write(const uint8_t* data, size_t size)
 {
 	const size_t origSize = size;
 
@@ -153,7 +155,7 @@ size_t BasicOtaUpgradeStream::write(const uint8_t* data, size_t size)
 			if(consume(data, size)) {
 				if(fileHeader.magic == expectedHeaderMagic) {
 #ifndef ENABLE_OTA_DOWNGRADE
-					const auto buildTimestampFirmware = FSTR::readValue(&OTA_BuildTimestamp);
+					const auto buildTimestampFirmware = FSTR::readValue(&BuildTimestamp);
 					debug_i("Build timestamp of current firmware: %ull", buildTimestampFirmware);
 					uint64_t buildTimestampUpgrade =
 						((uint64_t)fileHeader.buildTimestampHigh << 32) | fileHeader.buildTimestampLow;
@@ -217,7 +219,7 @@ size_t BasicOtaUpgradeStream::write(const uint8_t* data, size_t size)
 	return origSize - size;
 }
 
-String BasicOtaUpgradeStream::errorToString(Error code)
+String BasicStream::errorToString(Error code)
 {
 	switch(code) {
 	case Error::None:
@@ -248,3 +250,5 @@ String BasicOtaUpgradeStream::errorToString(Error code)
 		return F("<unknown error>");
 	}
 }
+
+} // namespace OtaUpgrade

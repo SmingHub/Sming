@@ -41,23 +41,23 @@ The ``OtaUpgradeStream`` class
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The library provides the class :cpp:type:`OtaUpgradeStream` (actually, an alias for either
-:cpp:class:`BasicOtaUpgradeStream` or :cpp:class:`EncryptedOtaUpgradeStream`, depending on
+:cpp:class:`OtaUpgrade::BasicStream` or :cpp:class:`OtaUpgrade::EncryptedStream`, depending on
 :envvar:`ENABLE_OTA_ENCRYPTION`.), which derives from :cpp:class:`ReadWriteStream`, but, despite its base class, is only
 a writable stream. 
 
 At construction time, the address and size of the slot to receive the new firmware is automatically determined from the
 rBoot configuration. No further setup is required. Just feed the OTA upgrade file into the
-:cpp:func:`OtaUpgradeStream::write <BasicOtaUpgradeStream::write>` method in arbitrarily sized chunks. The flash memory
-is updated on the fly as data arrives and upon successful validation, the updated slot is activated in the rRoot
+:cpp:func:`OtaUpgradeStream::write <OtaUpgrade::BasicStream::write>` method in arbitrarily sized chunks. The flash
+memory is updated on the fly as data arrives and upon successful validation, the updated slot is activated in the rRoot
 configuration.
 
-Once the file is complete, call :cpp:func:`OtaUpgradeStream::hasError <BasicOtaUpgradeStream::hasError>` to check for
+Once the file is complete, call :cpp:func:`OtaUpgradeStream::hasError <OtaUpgrade::BasicStream::hasError>` to check for
 any errors that might have occurred during the upgrade process. The actual error, if any, is stored in the public member
-:cpp:member:`OtaUpgradeStream::errorCode <BasicOtaUpgradeStream::errorCode>` and can be converted to an error message
-using :cpp:func:`OtaUpgradeStream::errorToString <BasicOtaUpgradeStream::errorToString>`.
+:cpp:member:`OtaUpgradeStream::errorCode <OtaUpgrade::BasicStream::errorCode>` and can be converted to an error message
+using :cpp:func:`OtaUpgradeStream::errorToString <OtaUpgrade::BasicStream::errorToString>`.
 In addition, you may also examine the return value of the
-:cpp:func:`OtaUpgradeStream::write <BasicOtaUpgradeStream::write>` method, which will be equal to the given chunk size,
-unless there is an error with the file or the upgrade process.
+:cpp:func:`OtaUpgradeStream::write <OtaUpgrade::BasicStream::write>` method, which will be equal to the given chunk
+size, unless there is an error with the file or the upgrade process.
 
 Building
 ~~~~~~~~
@@ -151,7 +151,7 @@ Configuration and Security features
 
    Default: 0 (disabled)
 
-   By default, :cpp:class:`OtaUpgradeStream <BasicOtaUpgradeStream>` refuses to downgrade to an older firmware version,
+   By default, :cpp:class:`OtaUpgradeStream <OtaUpgrade::BasicStream>` refuses to downgrade to an older firmware version,
    in order to prevent an attacker from restoring already patched security vulnerabilities. This is implemented by
    comparing timestamps embedded in the firmware and the upgrade file. To disable downgrade protection, set 
    ENABLE_OTA_DOWNGRADE to 1.
