@@ -16,13 +16,14 @@
 #include <Network/Http/HttpRequest.h>
 #include <Data/Stream/ReadWriteStream.h>
 
-#include "multipart-parser/multipart_parser.h"
+#include "../multipart-parser/multipart_parser.h"
 
 class MultipartParser
 {
 	MultipartParser(HttpRequest& request, const String& boundary);
+
 public:
-	static MultipartParser *create(HttpRequest& request);
+	static MultipartParser* create(HttpRequest& request);
 
 	size_t execute(const char* at, size_t length);
 
@@ -34,7 +35,7 @@ public:
 	static int partEnd(multipart_parser_t* p);
 	static int bodyEnd(multipart_parser_t* p);
 
-	bool valid() const 
+	bool valid() const
 	{
 		return (boundary);
 	}
@@ -42,7 +43,7 @@ public:
 private:
 	static multipart_parser_settings_t settings;
 
-	String headerName; ///< Current header field name
+	String headerName;  ///< Current header field name
 	String headerValue; ///< Current header field name
 
 	HttpRequest& request;
@@ -50,9 +51,8 @@ private:
 	String boundary;
 	multipart_parser_t parserEngine;
 	ReadWriteStream* stream = nullptr;
-	
+
 	int processHeader();
 };
-
 
 size_t formMultipartParser(HttpRequest& request, const char* at, int length);

@@ -1,7 +1,7 @@
 #include <SmingCore.h>
 
 #include <Data/Stream/LimitedMemoryStream.h>
-#include <MultipartParser/HttpMultipartResource.h>
+#include <HttpMultipartResource.h>
 #include "SignedRbootOutputStream.h"
 #include "FirmwareVerificationKey.h"
 

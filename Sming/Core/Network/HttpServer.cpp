@@ -15,7 +15,7 @@
 #include "WString.h"
 
 #ifdef ENABLE_HTTP_SERVER_MULTIPART
-#include <MultipartParser/MultipartParser.h>
+#include <MultipartParser.h>
 #endif
 
 void HttpServer::configure(const HttpServerSettings& settings)

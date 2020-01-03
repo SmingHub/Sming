@@ -23,7 +23,6 @@ multipart_parser_settings_t MultipartParser::settings = {
 	.on_body_end = bodyEnd,
 };
 
-
 size_t formMultipartParser(HttpRequest& request, const char* at, int length)
 {
 	auto parser = static_cast<MultipartParser*>(request.args);
@@ -52,7 +51,6 @@ size_t formMultipartParser(HttpRequest& request, const char* at, int length)
 	return parser->execute(at, length);
 }
 
-
 /** @brief Boilerplate code for multipart_parser callbacks
  *  @note Obtain parser object and check it
  */
@@ -62,16 +60,14 @@ size_t formMultipartParser(HttpRequest& request, const char* at, int length)
 		return -1;                                                                                                     \
 	}
 
-
-MultipartParser::MultipartParser(HttpRequest& request, const String& boundary) 
-	: request(request), boundary(boundary)
+MultipartParser::MultipartParser(HttpRequest& request, const String& boundary) : request(request), boundary(boundary)
 {
 	// Note: Storing the request by reference makes this object noncopyable and as a result the underlying memory of the boundary string does not change throughout the lifetime of this object.
 	multipart_parser_init(&parserEngine, boundary.c_str(), boundary.length(), &settings);
 	parserEngine.data = this;
 }
 
-MultipartParser *MultipartParser::create(HttpRequest& request)
+MultipartParser* MultipartParser::create(HttpRequest& request)
 {
 	if(request.headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
 		// Content-Type: multipart/form-data; boundary=------------------------a48863c0572edce6
@@ -105,16 +101,16 @@ int MultipartParser::readHeaderName(multipart_parser_t* p, const char* at, size_
 {
 	GET_PARSER();
 
-	if (parser->headerValue != String::empty) {
+	if(parser->headerValue != String::empty) {
 		// process previous header
 		int result = parser->processHeader();
-		if (result != 0) {
+		if(result != 0) {
 			return result;
 		}
 	}
 
 	parser->headerName.concat(at, length);
-	
+
 	return 0;
 }
 
@@ -130,7 +126,7 @@ int MultipartParser::processHeader()
 		}
 		startPos += 6; // name="
 		int endPos = headerValue.indexOf(';', startPos);
-		
+
 		String name;
 		if(endPos < 0) {
 			name = headerValue.substring(startPos, headerValue.length() - 1);
@@ -156,7 +152,7 @@ int MultipartParser::readHeaderValue(multipart_parser_t* p, const char* at, size
 	return 0;
 }
 
-int MultipartParser::partHeadersComplete(multipart_parser_t *p) 
+int MultipartParser::partHeadersComplete(multipart_parser_t* p)
 {
 	GET_PARSER();
 
