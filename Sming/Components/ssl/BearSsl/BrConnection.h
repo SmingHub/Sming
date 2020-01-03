@@ -69,6 +69,11 @@ public:
 	}
 
 protected:
+	/**
+	 * Perform initialisation common to both client and server connections
+	 * @param bufferSize Buffer to allocate excluding overheads
+	 * @param bidi Whether to use bi-directional buffering (true) or mono
+	 */
 	int init(size_t bufferSize, bool bidi);
 
 	int runUntil(InputBuffer& input, unsigned target);

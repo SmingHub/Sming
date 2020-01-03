@@ -17,6 +17,10 @@
 #include <Network/Ssl/Session.h>
 #include <FlashString/Array.hpp>
 
+// Defined in ssl_engine.c
+#define MAX_OUT_OVERHEAD 85
+#define MAX_IN_OVERHEAD 325
+
 namespace Ssl
 {
 int BrConnection::init(size_t bufferSize, bool bidi)
@@ -82,6 +86,10 @@ int BrConnection::init(size_t bufferSize, bool bidi)
 	br_ssl_engine_set_default_des_cbc(engine);
 	br_ssl_engine_set_default_chapol(engine);
 
+	bufferSize += MAX_IN_OVERHEAD;
+	if(bidi) {
+		bufferSize += MAX_OUT_OVERHEAD;
+	}
 	debug_i("Using buffer size of %u bytes", bufferSize);
 	delete[] buffer;
 	buffer = new uint8_t[bufferSize];

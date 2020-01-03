@@ -23,9 +23,10 @@ int BrClientConnection::init()
 	br_ssl_client_zero(&clientContext);
 
 	// Use Mono-directional buffer size according to requested max. fragment size
-	auto fragSize = context.getSession().fragmentSize ?: eSEFS_4K;
-	size_t bufSize = (256U << fragSize) + (BR_SSL_BUFSIZE_MONO - 16384U);
-
+	size_t bufSize = maxBufferSizeToBytes(context.getSession().maxBufferSize);
+	if(bufSize == 0) {
+		bufSize = 4096;
+	}
 	int err = BrConnection::init(bufSize, false);
 	if(err < 0) {
 		return err;

@@ -22,10 +22,13 @@ int BrServerConnection::init()
 {
 	br_ssl_server_zero(&serverContext);
 
-	// Server requires bi-directional buffer, add on minimum size for output
-	auto fragSize = context.getSession().fragmentSize ?: eSEFS_4K;
-	size_t bufSize = (256U << fragSize) + (BR_SSL_BUFSIZE_MONO - 16384U);
-	bufSize += 512U + (BR_SSL_BUFSIZE_OUTPUT - 16384);
+	// Server requires bi-directional buffer
+	size_t bufSize = maxBufferSizeToBytes(context.getSession().maxBufferSize);
+	if(bufSize == 0) {
+		bufSize = 4096;
+	}
+	// add on minimum size for output
+	bufSize += 512U;
 
 	int err = BrConnection::init(bufSize, true);
 	if(err < 0) {

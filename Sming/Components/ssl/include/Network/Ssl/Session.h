@@ -20,22 +20,31 @@ class TcpConnection;
 namespace Ssl
 {
 /**
- * @brief Maximum Fragment Length Negotiation https://tools.ietf.org/html/rfc6066
+ * @brief Indicate to SSL how much memory (approximately) to commit for buffers
  *
- * 0,1,2,3..6 corresponding to off,512,1024,2048..16384 bytes
+ * A remote SSL server may require data transfers in large (16K) fragments,
+ * so restricting buffer sizes may cause connections to such servers to fail.
  *
- * The allowed values for this field are: 2^9, 2^10, 2^11, and 2^12
+ * This must be balanced against other requirements for RAM by the application,
+ * therefore this setting can be used to restrict RAM usage.
  *
+ * @note The ordinal value of this enumeration corresponds to SSL fragment size as defined in
+ * Maximum Fragment Length Negotiation https://tools.ietf.org/html/rfc6066
  */
-enum FragmentSize {
-	eSEFS_Off, ///< Let SSL implementation decide
-	eSEFS_512, ///< 512 bytes
-	eSEFS_1K,  ///< 1024 bytes
-	eSEFS_2K,
-	eSEFS_4K,
-	eSEFS_8K,
-	eSEFS_16K,
+enum class MaxBufferSize {
+	Default = 0, ///< Let SSL implementation decide
+	B512,		 ///< 512 bytes
+	K1,			 ///< 1024 bytes
+	K2,
+	K4,
+	K8,
+	K16,
 };
+
+__forceinline size_t maxBufferSizeToBytes(MaxBufferSize value)
+{
+	return (value == MaxBufferSize::Default) ? 0 : 256U << size_t(value);
+}
 
 /**
  * @brief Configurable options
@@ -67,7 +76,7 @@ public:
 	String hostName; ///< Used for SNI https://en.wikipedia.org/wiki/Server_Name_Indication
 	KeyCertPair keyCert;
 	Options options;
-	FragmentSize fragmentSize = eSEFS_Off; ///< Determines size of buffer required
+	MaxBufferSize maxBufferSize = MaxBufferSize::Default;
 	/**
 	 * Server: Number of cached client sessions. Suggested value: 10
 	 * Client: Number of cached session ids. Suggested value: 1

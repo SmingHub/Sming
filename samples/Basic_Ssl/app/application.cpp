@@ -72,7 +72,8 @@ void grcSslInit(Ssl::Session& session, HttpRequest& request)
 	// We're using fingerprints, so don't attempt to validate full certificate
 	session.options.verifyLater = true;
 
-	session.fragmentSize = Ssl::eSEFS_16K;
+	// Go with maximum buffer sizes
+	session.maxBufferSize = Ssl::MaxBufferSize::K16;
 }
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)

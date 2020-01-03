@@ -140,7 +140,7 @@ void Session::close()
 	context = nullptr;
 
 	hostName = nullptr;
-	fragmentSize = eSEFS_Off;
+	maxBufferSize = MaxBufferSize::Default;
 }
 
 int Session::read(InputBuffer& input, uint8_t*& output)
@@ -223,8 +223,8 @@ size_t Session::printTo(Print& p) const
 	n += p.println(hostName);
 	n += p.print(_F("  Cache Size: "));
 	n += p.println(cacheSize);
-	n += p.print(_F("  Fragment Size: "));
-	n += p.println(fragmentSize);
+	n += p.print(_F("  Max Buffer Size: "));
+	n += p.println(maxBufferSizeToBytes(maxBufferSize));
 	n += p.print(_F("  Validators: "));
 	n += p.println(validators.count());
 	n += p.print(_F("  Cert Length: "));

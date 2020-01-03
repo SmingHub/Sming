@@ -78,7 +78,7 @@ Connection* AxContext::createClient(tcp_pcb* tcp)
 
 	auto ssl_ext = ssl_ext_new();
 	ssl_ext_set_host_name(ssl_ext, session.hostName.c_str());
-	ssl_ext_set_max_fragment_size(ssl_ext, session.fragmentSize);
+	ssl_ext_set_max_fragment_size(ssl_ext, unsigned(session.maxBufferSize));
 
 	auto id = session.getSessionId();
 	auto connection = new AxConnection(*this, tcp);
