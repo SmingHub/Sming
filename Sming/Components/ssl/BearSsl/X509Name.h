@@ -11,7 +11,7 @@
 #pragma once
 
 #include <bearssl.h>
-#include <WString.h>
+#include <Crypto/Sha256.h>
 
 namespace Ssl
 {
@@ -41,7 +41,10 @@ public:
 		dn.setLength(0);
 	}
 
-	uint8_t* getHash(uint8_t hash[br_sha256_SIZE]) const;
+	const String& getDN() const
+	{
+		return dn;
+	}
 
 	static void append(void* ctx, const void* buf, size_t len)
 	{

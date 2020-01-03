@@ -12,7 +12,7 @@
 
 #include "Context.h"
 #include "KeyCertPair.h"
-#include "Validator.h"
+#include "ValidatorList.h"
 #include <Platform/System.h>
 
 class TcpConnection;

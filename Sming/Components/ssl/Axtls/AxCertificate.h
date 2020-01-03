@@ -30,14 +30,14 @@ public:
 		ssl->can_free_certificates = true;
 	}
 
-	bool matchFingerprint(const uint8_t* hash) const override
+	bool getFingerprint(Fingerprint::Cert::Sha1& fingerprint) const override
 	{
-		return (ssl_match_fingerprint(ssl, hash) == 0);
+		return ssl->x509_ctx ? fingerprint.hash.copy(ssl->x509_ctx->fingerprint) : false;
 	}
 
-	bool matchPki(const uint8_t* hash) const override
+	bool getFingerprint(Fingerprint::Pki::Sha256& fingerprint) const override
 	{
-		return (ssl_match_spki_sha256(ssl, hash) == 0);
+		return ssl->x509_ctx ? fingerprint.hash.copy(ssl->x509_ctx->spki_sha256) : false;
 	}
 
 	String getName(DN dn, RDN rdn) const override;

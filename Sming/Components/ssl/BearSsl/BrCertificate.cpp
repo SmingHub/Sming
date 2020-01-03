@@ -26,9 +26,9 @@ String BrCertificate::getName(DN dn, RDN rdn) const
 
 	switch(dn) {
 	case DN::ISSUER:
-		return context->getIssuer().getRDN(type);
+		return getIssuer().getRDN(type);
 	case DN::SUBJECT:
-		return context->getSubject().getRDN(type);
+		return getSubject().getRDN(type);
 	default:
 		return nullptr;
 	}

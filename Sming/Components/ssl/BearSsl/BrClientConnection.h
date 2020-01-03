@@ -25,17 +25,12 @@ public:
 	~BrClientConnection()
 	{
 		delete certificate;
-		delete x509Context;
 	}
 
 	int init();
 
 	const Certificate* getCertificate() const override
 	{
-		if(certificate == nullptr) {
-			certificate = new BrCertificate(x509Context);
-		}
-
 		return certificate;
 	}
 
@@ -54,8 +49,7 @@ public:
 
 private:
 	br_ssl_client_context clientContext;
-	X509Context* x509Context = nullptr;
-	mutable BrCertificate* certificate = nullptr;
+	BrCertificate* certificate = nullptr;
 };
 
 } // namespace Ssl

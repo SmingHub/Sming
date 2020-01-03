@@ -12,6 +12,7 @@
 
 #include <SslDebug.h>
 #include "X509Name.h"
+#include <Network/Ssl/Fingerprints.h>
 
 namespace Ssl
 {
@@ -41,17 +42,16 @@ public:
 		return subject;
 	}
 
-	bool matchFingerprint(const uint8_t* sha1Hash) const
+	bool getFingerprint(Fingerprint::Cert::Sha1& fingerprint) const
 	{
-		uint8_t certHash[br_sha1_SIZE];
-		br_sha1_out(&certificateSha1, certHash);
-		return memcmp(certHash, sha1Hash, br_sha1_SIZE) == 0;
+		fingerprint.hash = certificateSha1.hash();
+		return true;
 	}
 
-	bool matchPki(const uint8_t* hash) const
+	bool getFingerprint(Fingerprint::Cert::Sha256& fingerprint) const
 	{
-		// @todo
-		return false;
+		fingerprint.hash = certificateSha256.hash();
+		return true;
 	}
 
 private:
@@ -77,11 +77,13 @@ private:
 	static void append(const br_x509_class** ctx, const unsigned char* buf, size_t len)
 	{
 		debug_d("append: %u", len);
+		m_printHex("APPEND", buf, len);
 		GET_SELF();
 		// Don't process anything but the first certificate in the chain
 		if(self->certificateCount == 0) {
-			br_sha1_update(&self->certificateSha1, buf, len);
-			br_x509_decoder_push(&self->x509Decoder, (const void*)buf, len);
+			self->certificateSha1.update(buf, len);
+			self->certificateSha256.update(buf, len);
+			br_x509_decoder_push(&self->x509Decoder, buf, len);
 			debug_hex(DBG, "CERT", buf, len);
 		}
 	}
@@ -117,11 +119,11 @@ private:
 	const br_x509_class* vtable = &vt;
 	static const br_x509_class vt;
 	OnValidate onValidate;
-	br_sha1_context certificateSha1 = {};
+	mutable Crypto::Sha1 certificateSha1;
+	mutable Crypto::Sha256 certificateSha256;
 	X509Name issuer;
 	X509Name subject;
 	br_x509_decoder_context x509Decoder = {};
-	bool allowSelfSigned = false;
 	uint8_t certificateCount = 0;
 };
 

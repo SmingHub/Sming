@@ -21,7 +21,8 @@ void X509Context::startChain(const char* serverName)
 {
 	br_x509_decoder_init(&x509Decoder, subject.append, &subject, issuer.append, &issuer);
 	certificateCount = 0;
-	br_sha1_init(&certificateSha1);
+	certificateSha1.init();
+	certificateSha256.init();
 	issuer.clear();
 	subject.clear();
 	debug_i("X509Context: serverName = \"%s\"", serverName);

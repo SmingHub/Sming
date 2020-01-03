@@ -21,7 +21,8 @@
 #include <Data/Stream/QuotedPrintableOutputStream.h>
 #include <Data/Stream/Base64OutputStream.h>
 #include <Data/HexString.h>
-#include <Network/Ssl/Crypto.h>
+#include <Crypto/Hmac.h>
+#include <Crypto/Md5.h>
 
 #define ADVANCE                                                                                                        \
 	{                                                                                                                  \
@@ -175,11 +176,9 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	case eSMTP_SendAuthResponse: {
 		// Calculate the CRAM-MD5 response
 		//     base64.b64encode("user " +hmac.new(password, base64.b64decode(challenge), hashlib.md5).hexdigest())
-		uint8_t digest[MD5_SIZE] = {0};
-		hmac_md5((const uint8_t*)authChallenge.c_str(), authChallenge.length(), (const uint8_t*)url.Password.c_str(),
-				 url.Password.length(), digest);
 
-		String token = url.User + ' ' + makeHexString(digest, MD5_SIZE);
+		auto digest = Crypto::Hmac<Crypto::Md5, 64>::calculate(authChallenge, url.Password);
+		String token = url.User + ' ' + digest.toString();
 		sendString(base64_encode(token) + "\r\n");
 		state = eSMTP_SendingAuth;
 

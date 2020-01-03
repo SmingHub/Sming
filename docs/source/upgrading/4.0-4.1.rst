@@ -121,24 +121,36 @@ has access to the current SSL session and HTTP request and can modify them accor
 
    void grcSslInit(Ssl::Session& session, HttpRequest& request)
    {
-    SslFingerprints fingerprints;
+     static const Crypto::Sha1::Hash fingerprint PROGMEM = {  ... };
 
-    //...
+     session.validators.pin(fingerprint);
 
-    session.validators.add(fingerprints);
-
-    // We're using fingerprints, so don't attempt to validate full certificate
+     // We're using validators, so don't attempt to validate full certificate
      session.options.verifyLater = true;
 
      session.fragmentSize = Ssl::eSEFS_16K;
    }
 
+Note also that the ``Fingerprints`` class has been removed.
+Instead, we use methods of :cpp:class:`session.validators <Ssl::ValidatorList>` to:
 
-Cryptographic functions
-~~~~~~~~~~~~~~~~~~~~~~~
-Cryptographic functions are now not included by default. This means that if you want to continue using them they should be included
-in your application source code. For example the following old code is using axTLS cryptographic functions::
+-  Pin fingerprints;
+-  Add one or more custom callback validators;
+-  Implement custom validators by inheriting from :cpp:class:`Ssl::Validator`.
 
+
+Cryptographic support
+~~~~~~~~~~~~~~~~~~~~~
+
+Some basic class-based cryptographic support is provided via the :component:`Crypto` library,
+organised within the ``Crypto`` namespace.
+
+This is primarily for use with the SSL interface but does not require SSL to be enabled.
+
+The cryptographic 'C' libraries themselves may be used directly by your application, regardless
+of which SSL adapter is in use, or even if SSL is disabled.
+
+For example the following old code is using axTLS cryptographic functions::
 
    char* loadPsk(int* keylen)
    {
@@ -157,7 +169,6 @@ And also make sure that your application `component.mk` file has the following l
 
    COMPONENT_DEPENDS += axtls-8266
 
-You can use also one SSL adapter, for example Bearssl, with another cryptographic library, for example Axtls.
 
 SSL namespace
 ~~~~~~~~~~~~~

@@ -35,8 +35,9 @@ int BrClientConnection::init()
 	br_ssl_client_set_default_rsapub(&clientContext);
 
 	// X509 verification
-	x509Context = new X509Context([this]() { return context.getSession().validateCertificate(); });
-	br_ssl_engine_set_x509(getEngine(), *x509Context);
+	delete certificate;
+	certificate = new BrCertificate([this]() { return context.getSession().validateCertificate(); });
+	br_ssl_engine_set_x509(getEngine(), *certificate);
 
 	br_ssl_client_reset(&clientContext, context.getSession().hostName.c_str(), 0);
 

@@ -5,6 +5,7 @@
 	XX(precache)                                                                                                       \
 	XX(string)                                                                                                         \
 	XX(arduino_string)                                                                                                 \
+	XX(crypto)                                                                                                         \
 	XX(cstringarray)                                                                                                   \
 	XX(serial)                                                                                                         \
 	XX(objectmap)                                                                                                      \

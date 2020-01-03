@@ -23,6 +23,9 @@ else
 $(error Unsupported ENABLE_SSL value "$(ENABLE_SSL)". Supported values are Axtls, Bearssl or 0 to disable SSL)
 endif
 
+#
+COMPONENT_DEPENDS		+= crypto
+
 COMPONENT_RELINK_VARS	+= SSL_DEBUG
 SSL_DEBUG				?= 0
 ifeq ($(SSL_DEBUG),1)
