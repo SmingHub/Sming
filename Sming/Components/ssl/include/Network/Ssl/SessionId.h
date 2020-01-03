@@ -66,8 +66,10 @@ private:
 
 /**
  * @deprecated Use Ssl::SessionId instead
- * @{
  */
 typedef Ssl::SessionId SslSessionId SMING_DEPRECATED;
+
+/**
+ * @deprecated Use Ssl::SessionId instead
+ */
 typedef Ssl::SessionId SSLSessionId SMING_DEPRECATED;
-/** @} */

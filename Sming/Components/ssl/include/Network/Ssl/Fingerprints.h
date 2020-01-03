@@ -118,16 +118,20 @@ private:
 
 /**
  * @deprecated Use Ssl::FingerprintType instead
- * @{
  */
 typedef Ssl::FingerprintType SslFingerprintType SMING_DEPRECATED;
+
+/**
+ * @deprecated Use Ssl::FingerprintType instead
+ */
 typedef Ssl::FingerprintType SSLFingerprintType SMING_DEPRECATED;
-/** @} */
 
 /**
  * @deprecated Use Ssl::Fingerprints instead
- * @{
  */
 typedef Ssl::Fingerprints SslFingerprints SMING_DEPRECATED;
+
+/**
+ * @deprecated Use Ssl::Fingerprints instead
+ */
 typedef Ssl::Fingerprints SSLFingerprints SMING_DEPRECATED;
-/** @} */
