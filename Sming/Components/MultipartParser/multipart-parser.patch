@@ -1,21 +1,21 @@
 diff --git a/multipart_parser.c b/multipart_parser.c
-index 981dabb..52e0200 100644
+index 981dabb..9c7f280 100644
 --- a/multipart_parser.c
 +++ b/multipart_parser.c
-@@ -5,9 +5,10 @@
+@@ -5,9 +5,9 @@
  
  #include "multipart_parser.h"
  
 -#include <stdio.h>
 -#include <stdarg.h>
- #include <string.h>
+-#include <string.h>
 +#ifndef tolower
 +	int tolower (int __c);
 +#endif
  
  static void multipart_log(const char * format, ...)
  {
-@@ -43,20 +44,6 @@ do {                                                                   \
+@@ -43,20 +43,6 @@ do {                                                                   \
  #define LF 10
  #define CR 13
  
@@ -36,37 +36,43 @@ index 981dabb..52e0200 100644
  enum state {
    s_uninitialized = 1,
    s_start,
-@@ -77,10 +64,10 @@ enum state {
+@@ -77,41 +63,21 @@ enum state {
    s_end
  };
  
 -multipart_parser* multipart_parser_init
 -    (const char *boundary, const multipart_parser_settings* settings) {
-+multipart_parser_t* multipart_parser_init
-+    (const char *boundary, const multipart_parser_settings_t * settings) {
- 
+-
 -  multipart_parser* p = malloc(sizeof(multipart_parser) +
-+  multipart_parser_t* p = malloc(sizeof(multipart_parser_t) +
-                                strlen(boundary) +
-                                strlen(boundary) + 9);
+-                               strlen(boundary) +
+-                               strlen(boundary) + 9);
++void multipart_parser_init
++    (multipart_parser_t* p, const char *boundary, size_t boundary_length, const multipart_parser_settings_t * settings) {
  
-@@ -96,22 +83,22 @@ multipart_parser* multipart_parser_init
-   return p;
- }
+-  strcpy(p->multipart_boundary, boundary);
+-  p->boundary_length = strlen(boundary);
+-  
+-  p->lookbehind = (p->multipart_boundary + p->boundary_length + 1);
++  p->multipart_boundary = boundary;
++  p->boundary_length = boundary_length;
  
+   p->index = 0;
+   p->state = s_start;
+   p->settings = settings;
+-
+-  return p;
+-}
+-
 -void multipart_parser_free(multipart_parser* p) {
-+void multipart_parser_free(multipart_parser_t* p) {
-   free(p);
- }
- 
+-  free(p);
+-}
+-
 -void multipart_parser_set_data(multipart_parser *p, void *data) {
-+void multipart_parser_set_data(multipart_parser_t *p, void *data) {
-     p->data = data;
- }
- 
+-    p->data = data;
+-}
+-
 -void *multipart_parser_get_data(multipart_parser *p) {
-+void *multipart_parser_get_data(multipart_parser_t *p) {
-     return p->data;
+-    return p->data;
  }
  
 -size_t multipart_parser_execute(multipart_parser* p, const char *buf, size_t len) {
@@ -78,8 +84,46 @@ index 981dabb..52e0200 100644
    int is_last = 0;
  
    while(i < len) {
+@@ -226,7 +192,6 @@ size_t multipart_parser_execute(multipart_parser* p, const char *buf, size_t len
+             EMIT_DATA_CB(part_data, buf + mark, i - mark);
+             mark = i;
+             p->state = s_part_data_almost_boundary;
+-            p->lookbehind[0] = CR;
+             break;
+         }
+         if (is_last)
+@@ -237,11 +202,10 @@ size_t multipart_parser_execute(multipart_parser* p, const char *buf, size_t len
+         multipart_log("s_part_data_almost_boundary");
+         if (c == LF) {
+             p->state = s_part_data_boundary;
+-            p->lookbehind[1] = LF;
+             p->index = 0;
+             break;
+         }
+-        EMIT_DATA_CB(part_data, p->lookbehind, 1);
++        EMIT_DATA_CB(part_data, "\r", 1);
+         p->state = s_part_data;
+         mark = i --;
+         break;
+@@ -249,12 +213,14 @@ size_t multipart_parser_execute(multipart_parser* p, const char *buf, size_t len
+       case s_part_data_boundary:
+         multipart_log("s_part_data_boundary");
+         if (p->multipart_boundary[p->index] != c) {
+-          EMIT_DATA_CB(part_data, p->lookbehind, 2 + p->index);
++          EMIT_DATA_CB(part_data, "\r\n", 2);
++          if (p->index > 0) {
++            EMIT_DATA_CB(part_data, p->multipart_boundary, p->index);
++          }
+           p->state = s_part_data;
+           mark = i --;
+           break;
+         }
+-        p->lookbehind[2 + p->index] = c;
+         if ((++ p->index) == p->boundary_length) {
+             NOTIFY_CB(part_data_end);
+             p->state = s_part_data_almost_end;
 diff --git a/multipart_parser.h b/multipart_parser.h
-index 05429d7..5fe695e 100644
+index 05429d7..8a7770d 100644
 --- a/multipart_parser.h
 +++ b/multipart_parser.h
 @@ -11,14 +11,13 @@ extern "C"
@@ -101,7 +145,7 @@ index 05429d7..5fe695e 100644
  
  struct multipart_parser_settings {
    multipart_data_cb on_header_field;
-@@ -31,15 +30,28 @@ struct multipart_parser_settings {
+@@ -31,15 +30,23 @@ struct multipart_parser_settings {
    multipart_notify_cb on_body_end;
  };
  
@@ -121,19 +165,13 @@ index 05429d7..5fe695e 100644
 -void * multipart_parser_get_data(multipart_parser* p);
 +  const multipart_parser_settings_t* settings;
 +
-+  char* lookbehind;
-+  char multipart_boundary[1];
++  const char *multipart_boundary;
 +};
 +
-+multipart_parser_t* multipart_parser_init(const char* boundary, const multipart_parser_settings_t* settings);
-+
-+void multipart_parser_free(multipart_parser_t* p);
++// The string pointed to by 'boundary' must stay constant and valid throughout the lifetime of the parser.
++void multipart_parser_init(multipart_parser_t* p, const char* boundary, size_t boundary_length, const multipart_parser_settings_t* settings);
 +
 +size_t multipart_parser_execute(multipart_parser_t* p, const char* buf, size_t len);
-+
-+void multipart_parser_set_data(multipart_parser_t* p, void* data);
-+void * multipart_parser_get_data(multipart_parser_t* p);
  
  #ifdef __cplusplus
  } /* extern "C" */
-   

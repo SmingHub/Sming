@@ -20,9 +20,9 @@
 
 class MultipartParser
 {
+	MultipartParser(HttpRequest& request, const String& boundary);
 public:
-	explicit MultipartParser(HttpRequest* request);
-	~MultipartParser();
+	static MultipartParser *create(HttpRequest& request);
 
 	size_t execute(const char* at, size_t length);
 
@@ -34,17 +34,23 @@ public:
 	static int partEnd(multipart_parser_t* p);
 	static int bodyEnd(multipart_parser_t* p);
 
+	bool valid() const 
+	{
+		return (boundary);
+	}
+
 private:
 	static multipart_parser_settings_t settings;
 
 	String headerName; ///< Current header field name
 	String headerValue; ///< Current header field name
 
-	HttpRequest* request = nullptr;
+	HttpRequest& request;
 
-	multipart_parser_t* parser = nullptr;
+	String boundary;
+	multipart_parser_t parserEngine;
 	ReadWriteStream* stream = nullptr;
-
+	
 	int processHeader();
 };
 

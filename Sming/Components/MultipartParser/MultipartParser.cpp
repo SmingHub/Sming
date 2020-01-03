@@ -31,7 +31,7 @@ size_t formMultipartParser(HttpRequest& request, const char* at, int length)
 	if(length == PARSE_DATASTART) {
 		delete parser;
 
-		parser = new MultipartParser(&request);
+		parser = MultipartParser::create(request);
 		request.args = parser;
 
 		return 0;
@@ -62,33 +62,32 @@ size_t formMultipartParser(HttpRequest& request, const char* at, int length)
 		return -1;                                                                                                     \
 	}
 
-MultipartParser::MultipartParser(HttpRequest* request)
+
+MultipartParser::MultipartParser(HttpRequest& request, const String& boundary) 
+	: request(request), boundary(boundary)
 {
-	if(request->headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
-		// Content-Type: multipart/form-data; boundary=------------------------a48863c0572edce6
-		int startPost = request->headers[HTTP_HEADER_CONTENT_TYPE].indexOf("boundary=");
-		if(startPost == -1) {
-			return;
-		}
-
-		startPost += 9;
-		String boundary = "--" + request->headers[HTTP_HEADER_CONTENT_TYPE].substring(startPost);
-		parser = multipart_parser_init(boundary.c_str(), &settings);
-		parser->data = this;
-	}
-
-	this->request = request;
+	// Note: Storing the request by reference makes this object noncopyable and as a result the underlying memory of the boundary string does not change throughout the lifetime of this object.
+	multipart_parser_init(&parserEngine, boundary.c_str(), boundary.length(), &settings);
+	parserEngine.data = this;
 }
 
-MultipartParser::~MultipartParser()
+MultipartParser *MultipartParser::create(HttpRequest& request)
 {
-	multipart_parser_free(parser);
-	parser = nullptr;
+	if(request.headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
+		// Content-Type: multipart/form-data; boundary=------------------------a48863c0572edce6
+		int startPost = request.headers[HTTP_HEADER_CONTENT_TYPE].indexOf(_F("boundary="));
+		if(startPost >= 0) {
+			startPost += 9;
+
+			return new MultipartParser(request, "--" + request.headers[HTTP_HEADER_CONTENT_TYPE].substring(startPost));
+		}
+	}
+	return nullptr;
 }
 
 size_t MultipartParser::execute(const char* at, size_t length)
 {
-	return multipart_parser_execute(parser, at, length);
+	return multipart_parser_execute(&parserEngine, at, length);
 }
 
 int MultipartParser::partBegin(multipart_parser_t* p)
@@ -139,7 +138,7 @@ int MultipartParser::processHeader()
 			name = headerValue.substring(startPos, endPos - 1);
 		}
 		// get stream corresponding to field name
-		stream = request->files[name];
+		stream = request.files[name];
 	}
 	
 	headerName = nullptr;
