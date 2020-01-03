@@ -1,5 +1,5 @@
 OTA Upgrade Stream classes
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+==========================
 
 .. doxygentypedef:: OtaUpgradeStream
 

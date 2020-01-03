@@ -12,6 +12,7 @@
 
 #include "romfunc_md5.h"
 #include <string.h>
+#include <array>
 
 /**
  * @brief Checksum verifier used by `BasicOtaUpgradeStream` if signature verification is disabled.
@@ -20,10 +21,8 @@
  */
 class OtaChecksumVerifier
 {
-	MD5Context context;
-
 public:
-	static const size_t NumBytes = MD5_SIZE; ///< Size of checksum in bytes.
+	typedef std::array<uint8_t, MD5_SIZE> VerificationData; ///< Checksum type
 
 	OtaChecksumVerifier()
 	{
@@ -40,10 +39,13 @@ public:
 	/** Verify given \c checksum.
 	 * @return `true` if checksum and content matches, `false` otherwise.
 	 */
-	bool verify(const uint8_t (&checksum)[MD5_SIZE])
+	bool verify(const VerificationData& checksum)
 	{
-		uint8_t expectedChecksum[MD5_SIZE];
-		MD5Final(expectedChecksum, &context);
-		return (memcmp(expectedChecksum, checksum, MD5_SIZE) == 0);
+		VerificationData expectedChecksum;
+		MD5Final(expectedChecksum.data(), &context);
+		return (checksum == expectedChecksum);
 	}
+
+private:
+	MD5Context context;
 };

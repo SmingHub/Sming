@@ -10,10 +10,10 @@
 
 #ifdef ENABLE_OTA_ENCRYPTION
 #include <EncryptedOtaUpgradeStream.h>
-typedef EncryptedOtaUpgradeStream OtaUpgradeStream;
+using OtaUpgradeStream = EncryptedOtaUpgradeStream;
 #else
 #include <BasicOtaUpgradeStream.h>
-typedef BasicOtaUpgradeStream OtaUpgradeStream;
+using OtaUpgradeStream = BasicOtaUpgradeStream;
 #endif
 
 /**

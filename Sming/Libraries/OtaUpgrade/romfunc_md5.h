@@ -10,6 +10,10 @@
 
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef MD5_SIZE
 #define MD5_SIZE 16
 #elif MD5_SIZE != 16
@@ -24,6 +28,10 @@ typedef struct {
 	uint8_t in[64];
 } MD5Context;
 
-extern "C" void MD5Init(MD5Context* ctx);
-extern "C" void MD5Update(MD5Context* ctx, const void* buf, uint32_t len);
-extern "C" void MD5Final(uint8_t digest[MD5_SIZE], MD5Context* ctx);
+void MD5Init(MD5Context* ctx);
+void MD5Update(MD5Context* ctx, const void* buf, uint32_t len);
+void MD5Final(uint8_t digest[MD5_SIZE], MD5Context* ctx);
+
+#ifdef __cplusplus
+}
+#endif

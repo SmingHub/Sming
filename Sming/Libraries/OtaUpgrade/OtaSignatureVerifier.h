@@ -12,6 +12,7 @@
 
 #include <sodium/crypto_sign.h>
 #include <FlashString/Array.hpp>
+#include <array>
 
 DECLARE_FSTR_ARRAY(OTAUpgrade_SignatureVerificationKey, uint8_t)
 
@@ -23,10 +24,8 @@ DECLARE_FSTR_ARRAY(OTAUpgrade_SignatureVerificationKey, uint8_t)
  */
 class OtaSignatureVerifier
 {
-	crypto_sign_state state;
-
 public:
-	static const size_t NumBytes = crypto_sign_BYTES; ///< Size of signature in bytes.
+	typedef std::array<uint8_t, crypto_sign_BYTES> VerificationData; ///< Signature type
 
 	OtaSignatureVerifier()
 	{
@@ -43,10 +42,13 @@ public:
 	/** Check if \a signature matches the data previously fed into #update() calls.
 	 * @return `true` if \a signature matches data, `false` otherwise.
 	 */
-	bool verify(const uint8_t (&signature)[crypto_sign_BYTES])
+	bool verify(const VerificationData& signature)
 	{
 		assert(OTAUpgrade_SignatureVerificationKey.length() == crypto_sign_PUBLICKEYBYTES);
 		LOAD_FSTR_ARRAY(verificationKey, OTAUpgrade_SignatureVerificationKey);
-		return (crypto_sign_final_verify(&state, signature, verificationKey) == 0);
+		return (crypto_sign_final_verify(&state, signature.data(), verificationKey) == 0);
 	}
+
+private:
+	crypto_sign_state state;
 };

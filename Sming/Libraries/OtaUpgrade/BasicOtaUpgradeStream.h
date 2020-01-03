@@ -46,27 +46,27 @@ public:
 	/**
 	 * @brief Error code values
 	 */
-	enum ErrorCode {
-		NoError, ///< No error occured thus far (default value of \c #errorCode if `hasError()` returns false)
-		InvalidFormatError,   ///< Invalid/unsupported upgrade file format
-		UnsupportedDataError, ///< Some content of the upgrade file is not supported by this version of OtaUpgradeStream.
-		DecryptionError,	  ///< Decryption failed. Probably wrong decryption key.
-		NoRomFoundError, ///< The file did not contain a ROM image suitable for the start address of the slot to upgrade.
-		RomTooLargeError,   ///< The contained ROM image does not fit into the application firmware slot.
-		DowngradeError,		///< Attempt to downgrade to older firmware version.
-		VerificationError,  ///< Signature/checksum verification failed - updated ROM not activated
-		FlashWriteError,	///< Error while writing to Flash memory.
-		RomActivationError, ///< Error while activating updated ROM slot.
-		OutOfMemoryError,   ///< Dynamic memory allocation failed
-		InternalError		///< An unexpected error occured.
+	enum Error {
+		None,			  ///< No error occured thus far (default value of \c #errorCode if `hasError()` returns false)
+		InvalidFormat,	///< Invalid/unsupported upgrade file format
+		UnsupportedData,  ///< Some content of the upgrade file is not supported by this version of OtaUpgradeStream.
+		DecryptionFailed, ///< Decryption failed. Probably wrong decryption key.
+		NoRomFound,  ///< The file did not contain a ROM image suitable for the start address of the slot to upgrade.
+		RomTooLarge, ///< The contained ROM image does not fit into the application firmware slot.
+		DowngradeNotAllowed, ///< Attempt to downgrade to older firmware version.
+		VerificationFailed,  ///< Signature/checksum verification failed - updated ROM not activated
+		FlashWriteFailed,	///< Error while writing to Flash memory.
+		RomActivationFailed, ///< Error while activating updated ROM slot.
+		OutOfMemory,		 ///< Dynamic memory allocation failed
+		Internal,			 ///< An unexpected error occured.
 	};
 
-	ErrorCode errorCode = NoError; ///< Error code. Only relevant if `hasError()` returns `true`.
+	Error errorCode = Error::None; ///< Error code. Only relevant if `hasError()` returns `true`.
 
 	/** @brief Convert error code to string.
 	 * @see #errorCode
 	 */
-	static String errorToString(ErrorCode code);
+	static String errorToString(Error code);
 
 	/** @brief Process chunk of upgrade file.
 	 * @param data Pointer to chunk of data.
@@ -82,7 +82,7 @@ public:
 	 */
 	bool hasError() const
 	{
-		return (state == StateError);
+		return (state == State::Error);
 	}
 
 	// overrides from IDataSourceStream
@@ -100,31 +100,33 @@ public:
 	}
 
 protected:
-	void setError(ErrorCode ec);
+	void setError(Error ec);
 
 private:
 	/** Representation of the ROM slot to receive the new firmware */
 	struct Slot {
-		uint8_t index;
-		uint32_t address;
-		uint32_t size;
-		bool updated = false;
 		/** Determine the parameters of the slot to receive the upgrade. */
 		Slot();
+
+		uint32_t address;
+		uint32_t size;
+		uint8_t index;
+		bool updated = false;
 	} slot;
 
 	// Instead of RbootOutputStream, the rboot write API is used directly because in a future extension the OTA file may contain data for multiple FLASH regions.
 	rboot_write_status rbootWriteStatus = {};
 
-	enum State {
-		StateError,
-		StateHeader,
-		StateRomHeader,
-		StateSkipRom,
-		StateWriteRom,
-		StateVerifyRoms,
-		StateRomsComplete
-	} state = StateHeader;
+	enum class State {
+		Error,
+		Header,
+		RomHeader,
+		SkipRom,
+		WriteRom,
+		VerifyRoms,
+		RomsComplete,
+	};
+	State state = State::Header;
 
 #ifdef ENABLE_OTA_SIGNING
 	typedef OtaSignatureVerifier Verifier;
@@ -136,11 +138,9 @@ private:
 	Verifier verifier;
 
 	OTA_FileHeader fileHeader;
+	OTA_RomHeader romHeader;
 
-	union {
-		OTA_RomHeader romHeader;
-		uint8_t verificationData[Verifier::NumBytes];
-	};
+	Verifier::VerificationData verificationData;
 
 	size_t remainingBytes = 0;
 	uint8_t* destinationPtr = nullptr;

@@ -15,9 +15,13 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** File header of an unencrypted OTA upgrade file.
  */
-typedef struct __attribute__((packed)) {
+typedef struct {
 	uint32_t magic; ///< File type identification, either #OTA_HEADER_MAGIC_SIGNED or #OTA_HEADER_MAGIC_NOT_SIGNED.
 	uint32_t buildTimestampLow;  ///< File creation timestamp, Milliseconds since 1900/01/01 (lower 32 bits)
 	uint32_t buildTimestampHigh; ///< File creation timestamp, Milliseconds since 1900/01/01 (lower 32 bits)
@@ -27,7 +31,7 @@ typedef struct __attribute__((packed)) {
 
 /** Header of ROM image inside an OTA upgrade file.
  */
-typedef struct __attribute__((packed)) {
+typedef struct {
 	uint32_t address; ///< Flash memory destination offset for this ROM image.
 	uint32_t size;	///< Size of ROM image content following this header, in bytes.
 } OTA_RomHeader;
@@ -36,3 +40,7 @@ typedef struct __attribute__((packed)) {
 #define OTA_HEADER_MAGIC_SIGNED 0xf01af02a
 /** Expected value for OTA_FileHeader::magic when signing is disabled. */
 #define OTA_HEADER_MAGIC_NOT_SIGNED 0xf01af020
+
+#ifdef __cplusplus
+}
+#endif

@@ -24,8 +24,12 @@
 class EncryptedOtaUpgradeStream : public BasicOtaUpgradeStream
 {
 public:
-	EncryptedOtaUpgradeStream();
-	~EncryptedOtaUpgradeStream();
+	EncryptedOtaUpgradeStream() = default;
+
+	~EncryptedOtaUpgradeStream()
+	{
+		free(buffer);
+	}
 
 	/** @brief Process an arbitrarily sized chunk of an encrypted OTA upgrade file.
 	 * @param data Pointer to chunk of data.
@@ -43,10 +47,16 @@ private:
 		uint16_t chunkSizeMinusOne;
 	};
 
-	enum { FragmentHeader, FragmentChunkSize, FragmentChunk, FragmentNone } fragment = FragmentHeader;
+	enum class Fragment {
+		Header,
+		ChunkSize,
+		Chunk,
+		None,
+	};
+	Fragment fragment = Fragment::Header;
 
-	size_t remainingBytes;
-	uint8_t* fragmentPtr;
+	size_t remainingBytes = sizeof(header);
+	uint8_t* fragmentPtr = header;
 	uint8_t* buffer = nullptr;
 	size_t bufferSize = 0;
 };

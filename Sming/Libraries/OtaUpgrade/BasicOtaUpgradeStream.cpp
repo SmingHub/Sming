@@ -15,7 +15,7 @@
 #include <FlashString/Array.hpp>
 
 #ifndef ENABLE_OTA_DOWNGRADE
-extern "C" const uint64_t OTA_BuildTimestamp PROGMEM;
+extern const uint64_t OTA_BuildTimestamp;
 #endif
 
 DECLARE_FSTR_ARRAY(OTAUpgrade_AppFlashRegionOffsets, uint32_t);
@@ -49,13 +49,13 @@ BasicOtaUpgradeStream::Slot::Slot()
 
 BasicOtaUpgradeStream::BasicOtaUpgradeStream()
 {
-	setupChunk(StateHeader, fileHeader);
+	setupChunk(State::Header, fileHeader);
 }
 
 bool BasicOtaUpgradeStream::consume(const uint8_t*& data, size_t& size)
 {
 	size_t chunkSize = std::min(size, remainingBytes);
-	if(state != StateVerifyRoms) {
+	if(state != State::VerifyRoms) {
 		verifier.update(data, chunkSize);
 	}
 
@@ -74,21 +74,21 @@ bool BasicOtaUpgradeStream::consume(const uint8_t*& data, size_t& size)
 	}
 }
 
-void BasicOtaUpgradeStream::setError(ErrorCode code)
+void BasicOtaUpgradeStream::setError(Error code)
 {
-	assert(code != NoError);
+	assert(code != Error::None);
 	debug_e("Error: %s", errorToString(code).c_str());
 	errorCode = code;
-	state = StateError;
+	state = State::Error;
 }
 
 void BasicOtaUpgradeStream::nextRom()
 {
 	if(romIndex < fileHeader.romCount) {
 		++romIndex;
-		setupChunk(StateRomHeader, romHeader);
+		setupChunk(State::RomHeader, romHeader);
 	} else {
-		setupChunk(StateVerifyRoms, verificationData);
+		setupChunk(State::VerifyRoms, verificationData);
 	}
 }
 
@@ -99,29 +99,29 @@ void BasicOtaUpgradeStream::processRomHeader()
 		if(romHeader.size <= slot.size) {
 			debug_i("Update slot %u [0x%08X..0x%08X)", slot.index, slot.address, slot.address + romHeader.size);
 			rbootWriteStatus = rboot_write_init(slot.address);
-			setupChunk(StateWriteRom, romHeader.size);
+			setupChunk(State::WriteRom, romHeader.size);
 		} else {
-			setError(RomTooLargeError);
+			setError(Error::RomTooLarge);
 		}
 		return;
 	}
 
 	debug_i("Skip ROM image for [0x%08X..0x%08X)", romHeader.address, romHeader.address + romHeader.size);
-	setupChunk(StateSkipRom, romHeader.size);
+	setupChunk(State::SkipRom, romHeader.size);
 }
 
 void BasicOtaUpgradeStream::verifyRoms()
 {
-	state = StateRomsComplete;
+	state = State::RomsComplete;
 
-	debug_d("Signature/Checksum: %s", makeHexString(verificationData, sizeof(verificationData), ' ').c_str());
+	debug_d("Signature/Checksum: %s", makeHexString(verificationData.data(), verificationData.size(), ' ').c_str());
 
 	if(!verifier.verify(verificationData)) {
 		if(slot.updated) {
 			// Destroy start sector of updated ROM to avoid accidentally booting an unsanctioned firmware
 			flashmem_erase_sector(slot.address / SECTOR_SIZE);
 		}
-		setError(VerificationError);
+		setError(Error::VerificationFailed);
 		return;
 	}
 
@@ -132,14 +132,14 @@ void BasicOtaUpgradeStream::verifyRoms()
 
 	debug_i("ROM update complete");
 	if(!slot.updated) {
-		setError(NoRomFoundError);
+		setError(Error::NoRomFound);
 		return;
 	}
 
 	if(rboot_set_current_rom(slot.index)) {
 		debug_i("ROM %u activated", slot.index);
 	} else {
-		setError(RomActivationError);
+		setError(Error::RomActivationFailed);
 	}
 }
 
@@ -149,36 +149,35 @@ size_t BasicOtaUpgradeStream::write(const uint8_t* data, size_t size)
 
 	while(!hasError() && (size > 0)) {
 		switch(state) {
-		case StateHeader:
+		case State::Header:
 			if(consume(data, size)) {
 				if(fileHeader.magic == expectedHeaderMagic) {
 #ifndef ENABLE_OTA_DOWNGRADE
-					uint64_t buildTimestampFirmware;
-					memcpy_P(&buildTimestampFirmware, &OTA_BuildTimestamp, sizeof(OTA_BuildTimestamp));
+					const auto buildTimestampFirmware = FSTR::readValue(&OTA_BuildTimestamp);
 					debug_i("Build timestamp of current firmware: %ull", buildTimestampFirmware);
 					uint64_t buildTimestampUpgrade =
 						((uint64_t)fileHeader.buildTimestampHigh << 32) | fileHeader.buildTimestampLow;
 					debug_i("Build timestamp of OTA upgrade file: %ull", buildTimestampUpgrade);
 					if(buildTimestampUpgrade < buildTimestampFirmware) {
-						setError(DowngradeError);
+						setError(Error::DowngradeNotAllowed);
 						break;
 					}
 #endif
 					debug_i("Starting firmware upgrade, receive %u image(s)", fileHeader.romCount);
 					nextRom();
 				} else {
-					setError(InvalidFormatError);
+					setError(Error::InvalidFormat);
 				}
 			}
 			break;
 
-		case StateRomHeader:
+		case State::RomHeader:
 			if(consume(data, size)) {
 				processRomHeader();
 			}
 			break;
 
-		case StateWriteRom: {
+		case State::WriteRom: {
 			bool ok = rboot_write_flash(&rbootWriteStatus, const_cast<uint8_t*>(data), std::min(remainingBytes, size));
 			if(ok) {
 				if(consume(data, size)) {
@@ -187,30 +186,30 @@ size_t BasicOtaUpgradeStream::write(const uint8_t* data, size_t size)
 				}
 			}
 			if(!ok) {
-				setError(FlashWriteError);
+				setError(Error::FlashWriteFailed);
 			}
 		} break;
 
-		case StateSkipRom:
+		case State::SkipRom:
 			if(consume(data, size)) {
 				nextRom();
 			}
 			break;
 
-		case StateVerifyRoms:
+		case State::VerifyRoms:
 			if(consume(data, size)) {
 				verifyRoms();
 			}
 			break;
 
-		case StateRomsComplete:
-			setError(UnsupportedDataError);
+		case State::RomsComplete:
+			setError(Error::UnsupportedData);
 			break;
 
-		case StateError:
+		case State::Error:
 			break;
 		default:
-			setError(InternalError);
+			setError(Error::Internal);
 			break;
 		}
 	}
@@ -218,32 +217,32 @@ size_t BasicOtaUpgradeStream::write(const uint8_t* data, size_t size)
 	return origSize - size;
 }
 
-String BasicOtaUpgradeStream::errorToString(ErrorCode code)
+String BasicOtaUpgradeStream::errorToString(Error code)
 {
 	switch(code) {
-	case NoError:
+	case Error::None:
 		return nullptr;
-	case InvalidFormatError:
+	case Error::InvalidFormat:
 		return F("Invalid/Unrecognized upgrade image format");
-	case UnsupportedDataError:
+	case Error::UnsupportedData:
 		return F("Upgrade image contains unsupported extended data.");
-	case DecryptionError:
+	case Error::DecryptionFailed:
 		return F("Upgrade image decryption failed.");
-	case NoRomFoundError:
+	case Error::NoRomFound:
 		return F("No suitable ROM image found");
-	case RomTooLargeError:
+	case Error::RomTooLarge:
 		return F("ROM image too large");
-	case DowngradeError:
+	case Error::DowngradeNotAllowed:
 		return F("Downgrade not allowed");
-	case VerificationError:
+	case Error::VerificationFailed:
 		return F("Signature/Checksum verification failed");
-	case FlashWriteError:
+	case Error::FlashWriteFailed:
 		return F("Error while writing Flash memory");
-	case RomActivationError:
+	case Error::RomActivationFailed:
 		return F("Could not activate updated ROM");
-	case OutOfMemoryError:
+	case Error::OutOfMemory:
 		return F("Out of memory. Allocation failed.");
-	case InternalError:
+	case Error::Internal:
 		return F("Internal error");
 	default:
 		return F("<unknown error>");

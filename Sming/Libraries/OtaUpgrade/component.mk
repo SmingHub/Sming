@@ -76,7 +76,7 @@ ENABLE_OTA_DOWNGRADE ?= 0
 ifeq ($(ENABLE_OTA_DOWNGRADE),1)
 COMPONENT_CXXFLAGS += -DENABLE_OTA_DOWNGRADE
 else
-OTA_BUILD_TIMESTAMP_SRC := $(OTA_GENCODE_DIR)/OTA_BuildTimestamp.c
+OTA_BUILD_TIMESTAMP_SRC := $(OTA_GENCODE_DIR)/OTA_BuildTimestamp.cpp
 
 # Date reference for build timestamps, generated using this:
 # date --date 1900-01-01 +%s%3NLL
@@ -87,9 +87,8 @@ OTA_DATE_REF := -2208988800000LL
 # (This also enforces relinking the firmware with every make invocation, even if nothing has changed, but Sming does that anyway.)
 .PHONY: _ota-make-build-timestamp
 _ota-make-build-timestamp: | $(OTA_GENCODE_DIR)
-	$(Q) echo '#include <sys/pgmspace.h>' > $(OTA_BUILD_TIMESTAMP_SRC)
-	$(Q) echo '#include <stdint.h>' >> $(OTA_BUILD_TIMESTAMP_SRC)
-	$(Q) echo 'const uint64_t OTA_BuildTimestamp PROGMEM = $(shell date +%s%3NLL) - $(OTA_DATE_REF);' >> $(OTA_BUILD_TIMESTAMP_SRC)
+	$(Q) echo '#include <FakePgmSpace.h>' > $(OTA_BUILD_TIMESTAMP_SRC)
+	$(Q) echo 'extern const uint64_t OTA_BuildTimestamp PROGMEM = $(shell date +%s%3NLL) - $(OTA_DATE_REF);' >> $(OTA_BUILD_TIMESTAMP_SRC)
 
 App-build: _ota-make-build-timestamp
 
