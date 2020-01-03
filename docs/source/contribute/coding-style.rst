@@ -2,6 +2,8 @@
 Coding Style Rules
 ******************
 
+.. highlight:: bash
+
 The benefits of coding standards are readability, maintainability and
 compatibility. Any member of the development team in Sming should be
 able to read the code of another developer. The developer who maintains
@@ -32,9 +34,7 @@ Clang-Format and Clang-Tidy
 In order to automatically check and apply our coding standards you need
 to install ``clang-format`` and optionally ``clang-tidy``.
 
-In Ubuntu you should be able to install them using the following command
-
-::
+In Ubuntu you should be able to install them using the following command::
 
    sudo apt-get install clang-format clang-tidy
 
@@ -87,30 +87,34 @@ Single File
 ^^^^^^^^^^^
 
 If you want to directly apply the coding standards from the command line
-you can run the following command
-
-::
+you can run the following command::
 
    cd $SMING_HOME
-   clang-format -style=file -i SmingCore/<modified-file>
+   clang-format -style=file -i Core/<modified-file>
 
-Where ``SmingCore/<modified-file>`` should be replaced with the path to
+Where ``Core/<modified-file>`` should be replaced with the path to
 the file that you have modified.
 
 All files
 ~~~~~~~~~
 
 The following command will run again the coding standards formatter over
-all C,C++ and header files inside the ``Sming/SmingCore`` and
-``samples`` directory.
-
-::
+all C, C++ and header files inside the ``Sming/Core``, ``samples`` and 
+other key directories::
 
    cd $SMING_HOME
    make cs
 
 The command needs time to finish. So be patient. It will go over all
 files and will try to fix any coding style issues.
+
+If you wish to apply coding style to your own project, add an empty ``.cs`` marker file
+to any directory containing source code or header files. All source/header files
+in that directory and any sub-directories will be formatted when you run::
+
+   make cs
+
+from your project directory.
 
 Eclipse
 ~~~~~~~
@@ -124,6 +128,8 @@ C,C++ or header file or a selection in it and run the ``Format`` command
 Style Guide
 ===========
 
+.. highlight:: c++
+
 You don’t have to know by heart the coding style but it is worth having
 an idea about our rules. Below are described some of them. Those rules
 will be can be automatically applied as mentioned in the previous
@@ -133,9 +139,7 @@ Indentation
 -----------
 
 We use tabs for indentation. Configure your editor to display a tab as
-long as 4 spaces. Below are the corresponding settings in clang-format.
-
-::
+long as 4 spaces. The corresponding settings in clang-format are::
 
    TabWidth:        4
    UseTab:          Always
@@ -186,14 +190,12 @@ Naming
 .. |constants| replace:: Constants must be written in uppercase characters separated by underscores.
    Constant names may contain digits if appropriate, but not as the first character.
 
+.. highlight:: text
 
 C++ Standard
 ------------
 
-For the moment we recommend the use of C++11. The corresponding settings
-in clang-format are:
-
-::
+For the moment we recommend the use of C++11. The corresponding settings in clang-format are::
 
    Standard:        Cpp11
    Cpp11BracedListStyle: true
@@ -203,9 +205,7 @@ Starting and ending spaces
 
 We don’t recommend the use of a starting or ending space in angles,
 container literals, c-style cast parentheses, parentheses and square
-brackets. Our settings are
-
-::
+brackets. Our settings are::
 
    SpaceAfterCStyleCast: false
    SpaceBeforeParens: Never
@@ -225,9 +225,7 @@ Line length
 
 We are living in the 21st century so most of the monitors should be
 capable of displaying 120 characters per line. If a line is longer than
-those characters it will be split whenever possible.
-
-::
+those characters it will be split whenever possible::
 
    ColumnLimit:     120
 
@@ -235,9 +233,7 @@ Empty Lines
 -----------
 
 Two or more empty lines will be compacted to one. Also we delete empty
-lines at the start of a block.
-
-::
+lines at the start of a block::
 
    KeepEmptyLinesAtTheStartOfBlocks: false
    MaxEmptyLinesToKeep: 1
@@ -245,7 +241,8 @@ lines at the start of a block.
 Braces
 ------
 
-::
+See the meaning of these keys and their selected values in the
+`ClangFormatStyleOptions document <http://releases.llvm.org/5.0.0/tools/clang/docs/ClangFormatStyleOptions.html>`__::
 
    BraceWrapping:
        AfterClass:      false
@@ -258,15 +255,11 @@ Braces
        IndentBraces:    false
    BreakBeforeBraces: Linux
 
-See the meaning of those keys and their selected values in the
-`ClangFormatStyleOptions document <http://releases.llvm.org/5.0.0/tools/clang/docs/ClangFormatStyleOptions.html>`__.
 
 Pointer Alignment
 -----------------
 
-Always on the left.
-
-::
+Always on the left::
 
    PointerAlignment: Left
 
@@ -274,9 +267,7 @@ Includes
 --------
 
 We don’t re-sort includes although it is highly recommended to order the
-headers alphabetically whenever possible.
-
-::
+headers alphabetically whenever possible::
 
    SortIncludes:    false
 
@@ -284,9 +275,7 @@ Comments
 --------
 
 We try not to split comment lines into smaller ones and also we add one
-space between code and trailing comment.
-
-::
+space between code and trailing comment::
 
    ReflowComments: false
    SpacesBeforeTrailingComments: 1
@@ -294,21 +283,19 @@ space between code and trailing comment.
 Spaces
 ------
 
-For readability put always spaces before assignment operators.
-
-::
+For readability put always spaces before assignment operators::
 
    SpaceBeforeAssignmentOperators: true
 
 Other Elements
 ==============
 
+.. highlight:: c++
+
 Standard file headers
 ---------------------
 
-Please use the standard Sming header with copyright notice:
-
-::
+Please use the standard Sming header with copyright notice::
 
    /****
     * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
@@ -332,21 +319,19 @@ Deprecating code
 ----------------
 
 Where a change in the Sming API may break existing users’ code, then the
-existing method/function/variable must be maintained for a time to allow
+existing type/method/function/variable must be maintained for a time to allow
 time for migration to the new technique. Such changes should only be
 made if there is a good reason, for example improved reliability,
 performance, ease of use.
 
 Deprecation requires two steps:
 
-Step 1: Add a @deprecated tag to the method header comment so the change
+Step 1: Add a ``@deprecated`` tag to the method header comment so the change
 is flagged in the auto-generated API documentation. Include a brief
 explanation of the new method or technique to be adopted. See also
 `Documenting the API <https://github.com/SmingHub/Sming/wiki/Documenting-the-API>`__.
 
-Example:
-
-::
+Example::
 
    /** @deprecated Use `anotherMethod()` instead */
 
@@ -363,15 +348,15 @@ Sming makes extensive use of virtual classes. If you are modifying or
 adding virtual methods then please follow these guidelines:
 
 **Rule**: The base class must have a virtual destructor, even if it
-doesn’t do anything.
+doesn’t do anything. Example::
 
-Example: ``virtual ~Stream() {}``
+   virtual ~Stream() {}
 
 
 **Rule**: Inherited classes must not prepend ``virtual`` or append
-``override`` to any destructor.
+``override`` to any destructor. Example::
 
-Example: ``~IDataSourceStream();``
+   ~IDataSourceStream();
 
 Rationale: virtual destructors do not behave like regular virtual
 methods - they are ‘chained’ rather than overridden - therefore
@@ -379,9 +364,9 @@ methods - they are ‘chained’ rather than overridden - therefore
 and unhelpful
 
 
-**Rule**: Use the ``override`` directive on inherited virtual methods
+**Rule**: Use the ``override`` directive on inherited virtual methods::
 
-Example: ``int read() override;``
+   int read() override;
 
 Rationale: The compiler will ensure there is actually a base method to
 inherit from and generate a warning if one is not found, or if
@@ -397,9 +382,7 @@ Rationale: They’re not necessary
 Common issues
 -------------
 
-Some notes on commonly occurring issues.
-
-::
+Some notes on commonly occurring issues::
 
 
    /**
