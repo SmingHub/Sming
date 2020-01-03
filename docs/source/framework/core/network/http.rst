@@ -32,6 +32,15 @@ Build Variables
    Sets the DATE field in response headers.
 
 
+.. envvar:: ENABLE_HTTP_SERVER_MULTIPART
+
+   Default: 0 (disabled)
+
+   Set to 1 to enable form upload support on the server.
+
+   See :sample:`HttpServer_FirmwareUpload` sample application.
+
+
 Support API
 -----------
 
