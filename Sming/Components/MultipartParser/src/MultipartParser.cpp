@@ -60,7 +60,8 @@ size_t formMultipartParser(HttpRequest& request, const char* at, int length)
 		return -1;                                                                                                     \
 	}
 
-MultipartParser::MultipartParser(HttpRequest& request, const String& boundary) : request(request), boundary(boundary)
+MultipartParser::MultipartParser(HttpRequest& request, const String& boundaryArg)
+	: request(request), boundary(boundaryArg)
 {
 	// Note: Storing the request by reference makes this object noncopyable and as a result the underlying memory of the boundary string does not change throughout the lifetime of this object.
 	multipart_parser_init(&parserEngine, boundary.c_str(), boundary.length(), &settings);

@@ -20,7 +20,7 @@
 
 class MultipartParser
 {
-	MultipartParser(HttpRequest& request, const String& boundary);
+	MultipartParser(HttpRequest& request, const String& boundaryArg);
 
 public:
 	static MultipartParser* create(HttpRequest& request);
