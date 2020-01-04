@@ -28,13 +28,6 @@ namespace Ssl
  * 		Fingerprint::Cert::Sha1 fingerprint = { ... };
  */
 union Fingerprint {
-	/**
-	 * @brief Class template for a fingerprint
-	 */
-	template <typename Hash> struct Template {
-		Hash hash;
-	};
-
 	union Cert {
 		/** @brief Fingerprint based on the SHA1 value of the certificate
 		 * 	@note The SHA1 hash of the entire certificate. This changes on each certificate renewal so needs
@@ -42,13 +35,15 @@ union Fingerprint {
 		 * 	Advantages: Takes less time to verify than SHA256
 		 * 	Disadvantages: Likely to change periodically
 		 */
-		struct Sha1 : public Template<Crypto::Sha1::Hash> {
+		struct Sha1 {
+			Crypto::Sha1::Hash hash;
 		};
 
 		/** @brief Fingerprint based on the SHA256 value of the certificate
 		 * 	@note Typically displayed in browser certificate information
 		 */
-		struct Sha256 : public Template<Crypto::Sha256::Hash> {
+		struct Sha256 {
+			Crypto::Sha256::Hash hash;
 		};
 
 	}; // namespace Cert
@@ -60,7 +55,8 @@ union Fingerprint {
 		 * 	Advantages: Doesn't change frequently
 		 * 	Disadvantages: Takes more time (in ms) to verify.
 		 */
-		struct Sha256 : public Template<Crypto::Sha256::Hash> {
+		struct Sha256 {
+			Crypto::Sha256::Hash hash;
 		};
 
 	}; // namespace Pki
