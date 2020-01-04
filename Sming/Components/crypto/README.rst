@@ -1,10 +1,10 @@
-Crypto Library
-==============
+Cryptographic Support
+=====================
 
 Introduction
 ------------
 
-Contains basic cryptographic support classes.
+Contains basic cryptographic support classes for Sming.
 
 This provides a strongly typed and flexible C++ library for commonly used routines,
 such as MD5, SHA hashes and HMAC.

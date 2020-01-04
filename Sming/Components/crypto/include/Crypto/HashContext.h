@@ -59,9 +59,11 @@ template <size_t size> struct HashValue {
 /**
  * @brief Class template for a Hash implementation 'Context'
  */
-template <class Context, class Hash> class HashContext
+template <class Engine> class HashContext
 {
 public:
+	using Hash = typename Engine::Hash;
+
 	/**
 	 * @name Calculate hash on a single block of data
 	 * @retval Hash
@@ -69,15 +71,15 @@ public:
 	 */
 	static Hash calculate(const void* data, size_t length)
 	{
-		Context ctx;
-		ctx.update(data, length);
+		HashContext<Engine> ctx;
+		ctx.template update(data, length);
 		return ctx.hash();
 	}
 
 	template <typename T> static Hash calculate(const T& blob)
 	{
-		Context ctx;
-		ctx.update(blob);
+		HashContext<Engine> ctx;
+		ctx.template update(blob);
 		return ctx.hash();
 	}
 	/** @} */
@@ -88,20 +90,22 @@ public:
 	 */
 	void update(const Blob& blob)
 	{
-		static_cast<Context*>(this)->update(blob.data, blob.length);
+		update(blob.data, blob.length);
 	}
 
-	void update(const String& str)
+	void update(const void* data, size_t length)
 	{
-		static_cast<Context*>(this)->update(str.c_str(), str.length());
+		engine.update(static_cast<const uint8_t*>(data), length);
 	}
 
 	/*
 	 * Update from a fixed array or struct, but not a pointer - base method handles that, with size
 	 */
-	template <typename T> typename std::enable_if<!std::is_pointer<T>::value, void>::type update(const T& data)
+	template <typename T>
+	typename std::enable_if<std::is_standard_layout<T>::value && !std::is_pointer<T>::value, void>::type
+	update(const T& data)
 	{
-		static_cast<Context*>(this)->update(&data, sizeof(data));
+		update(&data, sizeof(data));
 	}
 	/** @} */
 
@@ -112,9 +116,12 @@ public:
 	Hash hash()
 	{
 		Hash hash;
-		static_cast<Context*>(this)->final(hash);
+		engine.final(hash);
 		return hash;
 	}
+
+private:
+	Engine engine;
 };
 
 } // namespace Crypto

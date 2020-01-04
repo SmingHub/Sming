@@ -4,24 +4,15 @@
 
 namespace Crypto
 {
-using Sha256Hash = HashValue<SHA256_SIZE>;
-
-class Sha256 : public HashContext<Sha256, Sha256Hash>
+class Sha256Engine
 {
 public:
-	using Hash = Sha256Hash;
+	using Hash = HashValue<SHA256_SIZE>;
 
-	Sha256()
-	{
-		init();
-	}
-
-	void init()
+	Sha256Engine()
 	{
 		SHA256_Init(&context);
 	}
-
-	using HashContext::update;
 
 	void update(const void* data, size_t size)
 	{
@@ -36,5 +27,7 @@ public:
 private:
 	SHA256_CTX context;
 };
+
+using Sha256 = HashContext<Sha256Engine>;
 
 } // namespace Crypto

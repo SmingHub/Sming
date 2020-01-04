@@ -4,24 +4,15 @@
 
 namespace Crypto
 {
-using Md5Hash = HashValue<MD5_SIZE>;
-
-class Md5 : public HashContext<Md5, Md5Hash>
+class Md5Engine
 {
 public:
-	using Hash = Md5Hash;
+	using Hash = HashValue<MD5_SIZE>;
 
-	Md5()
-	{
-		init();
-	}
-
-	void init()
+	Md5Engine()
 	{
 		MD5_Init(&context);
 	}
-
-	using HashContext::update;
 
 	void update(const void* data, size_t size)
 	{
@@ -36,5 +27,7 @@ public:
 private:
 	MD5_CTX context;
 };
+
+using Md5 = HashContext<Md5Engine>;
 
 } // namespace Crypto

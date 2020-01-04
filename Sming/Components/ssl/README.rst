@@ -1,21 +1,19 @@
 SSL: Secure Sockets Layer
 =========================
 
-Provides Secure Socket Layer (SSL) support for Sming with selectable implementation.
-
 https://en.m.wikipedia.org/wiki/Transport_Layer_Security
 
+Sming supports multiple SSL implementations, currently with adapters for:
 
-Configuration Variables
------------------------
-
-Sming supports multiple SSL implementations.
-
-At the moment there are SSL adapters based on `axTLS <http://axtls.sourceforge.net/>`__ and `BearSSL <https://www.bearssl.org/>`__
+-  `axTLS <http://axtls.sourceforge.net/>`__
+-  `BearSSL <https://www.bearssl.org/>`__
 
 If you want to use SSL then take a look at the :sample:`Basic_Ssl` for creating SSL clients and :sample:`HttpServer_ConfigNetwork`
 for SSL servers.
 
+
+Configuration Variables
+-----------------------
 
 .. envvar:: ENABLE_SSL
 

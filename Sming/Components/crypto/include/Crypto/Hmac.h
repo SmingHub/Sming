@@ -51,7 +51,7 @@ public:
 
 		auto tmp = ctx.hash();
 
-		ctx.init();
+		ctx = Context();
 		ctx.update(k_opad);
 		ctx.update(tmp);
 		return ctx.hash();

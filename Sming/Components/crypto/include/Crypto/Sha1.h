@@ -4,19 +4,12 @@
 
 namespace Crypto
 {
-using Sha1Hash = HashValue<SHA1_SIZE>;
-
-class Sha1 : public HashContext<Sha1, Sha1Hash>
+class Sha1Engine
 {
 public:
-	using Hash = Sha1Hash;
+	using Hash = HashValue<SHA1_SIZE>;
 
-	Sha1()
-	{
-		init();
-	}
-
-	void init()
+	Sha1Engine()
 	{
 		SHA1_Init(&context);
 	}
@@ -26,8 +19,6 @@ public:
 		SHA1_Update(&context, static_cast<const uint8_t*>(data), size);
 	}
 
-	using HashContext::update;
-
 	void final(Hash& hash)
 	{
 		SHA1_Final(hash.data, &context);
@@ -36,5 +27,7 @@ public:
 private:
 	SHA1_CTX context;
 };
+
+using Sha1 = HashContext<Sha1Engine>;
 
 } // namespace Crypto
