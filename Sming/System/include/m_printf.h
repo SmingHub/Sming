@@ -84,6 +84,11 @@ template <typename... Args> int printf(const char* fmt, Args... args)
  *  @param bytesPerLine If non-zero, data will be output in block separated by carriage return
  *  @note intended for debugging
  */
-void m_printHex(const char* tag, const void* data, size_t len, int addr = -1, size_t bytesPerLine = 16);
+extern "C" void m_printHex(const char* tag, const void* data, size_t len, int addr = -1, size_t bytesPerLine = 16);
 }
+
+#else
+
+void m_printHex(const char* tag, const void* data, size_t len, int addr, size_t bytesPerLine);
+
 #endif
