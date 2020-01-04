@@ -77,7 +77,6 @@ private:
 	static void append(const br_x509_class** ctx, const unsigned char* buf, size_t len)
 	{
 		debug_d("append: %u", len);
-		m_printHex("APPEND", buf, len);
 		GET_SELF();
 		// Don't process anything but the first certificate in the chain
 		if(self->certificateCount == 0) {

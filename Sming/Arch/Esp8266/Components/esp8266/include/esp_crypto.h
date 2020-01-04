@@ -1,8 +1,13 @@
+/*
+ * There are a bunch of routines available in the ESP8266 ROM which could save space.
+ * This header file is intended to provide prototypes so they can be used.
+ *
+ * It's not just a question of saving space, but also potentially improving performance since
+ * the routines won't require cache space.
+ *
+ * Definitely a work-in-progress. Not currently used.
+ */
 #pragma once
-
-#include <../third_party/include/ssl/ssl_crypto_misc.h>
-
-#if 0
 
 // Prevent conflict with other definitions
 #define HEADER_CRYPTO_MISC_H
@@ -107,6 +112,4 @@ void SHA256_Final(uint8_t* digest, SHA256_CTX*);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

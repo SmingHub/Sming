@@ -11,7 +11,7 @@
 #pragma once
 
 #include <bearssl.h>
-#include <Crypto/Sha256.h>
+#include <WString.h>
 
 namespace Ssl
 {

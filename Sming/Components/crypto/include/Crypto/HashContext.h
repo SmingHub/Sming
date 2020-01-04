@@ -7,7 +7,7 @@
 namespace Crypto
 {
 /**
- * @brief
+ * @brief Wraps a pointer to some data with length
  */
 struct Blob {
 	const void* data;
@@ -30,6 +30,10 @@ template <size_t size> struct HashValue {
 
 	static constexpr size_t length = size;
 
+	/**
+	 * @brief Copy from a memory buffer
+	 * @note Avoid using this method if possible as there are no checks on the data size
+	 */
 	bool copy(const void* src)
 	{
 		if(src == nullptr) {
@@ -59,7 +63,7 @@ template <class Context, class Hash> class HashContext
 {
 public:
 	/**
-	 * @brief Calculate hash on a single block of data
+	 * @name Calculate hash on a single block of data
 	 * @retval Hash
 	 * @{
 	 */
@@ -79,7 +83,7 @@ public:
 	/** @} */
 
 	/**
-	 * @brief Update hash over a given block of data
+	 * @name Update hash over a given block of data
 	 * @{
 	 */
 	void update(const Blob& blob)

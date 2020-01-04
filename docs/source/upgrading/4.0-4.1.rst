@@ -142,7 +142,7 @@ Instead, we use methods of :cpp:class:`session.validators <Ssl::ValidatorList>` 
 Cryptographic support
 ~~~~~~~~~~~~~~~~~~~~~
 
-Some basic class-based cryptographic support is provided via the :component:`Crypto` library,
+Some basic class-based cryptographic support is provided via the :component:`crypto` library,
 organised within the ``Crypto`` namespace.
 
 This is primarily for use with the SSL interface but does not require SSL to be enabled.
