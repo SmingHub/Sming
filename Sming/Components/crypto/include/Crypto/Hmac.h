@@ -44,7 +44,7 @@ public:
 		}
 
 		Context ctx;
-		ctx.update(k_ipad);
+		ctx.update(k_ipad, sizeof(k_ipad));
 		for(unsigned i = 0; i < numMessages; ++i) {
 			ctx.update(messages[i]);
 		}
@@ -52,8 +52,8 @@ public:
 		auto tmp = ctx.hash();
 
 		ctx = Context();
-		ctx.update(k_opad);
-		ctx.update(tmp);
+		ctx.update(k_opad, sizeof(k_opad));
+		ctx.update(tmp.data, tmp.size);
 		return ctx.hash();
 	}
 };

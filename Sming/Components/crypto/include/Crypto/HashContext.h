@@ -93,14 +93,14 @@ public:
 	static Hash calculate(const void* data, size_t length)
 	{
 		HashContext<Engine> ctx;
-		ctx.template update(data, length);
+		ctx.update(data, length);
 		return ctx.hash();
 	}
 
 	template <typename T> static Hash calculate(const T& blob)
 	{
 		HashContext<Engine> ctx;
-		ctx.template update(blob);
+		ctx.update(blob);
 		return ctx.hash();
 	}
 	/** @} */
@@ -114,19 +114,20 @@ public:
 		update(blob.data, blob.size);
 	}
 
+	void update(const String& s)
+	{
+		update(s.c_str(), s.length());
+	}
+
+	void update(const FSTR::ObjectBase& obj)
+	{
+		LOAD_FSTR(arr, obj);
+		update(arr, obj.length());
+	}
+
 	void update(const void* data, size_t length)
 	{
 		engine.update(static_cast<const uint8_t*>(data), length);
-	}
-
-	/*
-	 * Update from a fixed array or struct, but not a pointer - base method handles that, with size
-	 */
-	template <typename T>
-	typename std::enable_if<std::is_standard_layout<T>::value && !std::is_pointer<T>::value, void>::type
-	update(const T& data)
-	{
-		update(&data, sizeof(data));
 	}
 	/** @} */
 
