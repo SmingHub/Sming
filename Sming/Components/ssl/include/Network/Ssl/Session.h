@@ -62,6 +62,11 @@ struct Options {
 	String toString() const;
 };
 
+__forceinline String toString(const Options& options)
+{
+	return options.toString();
+}
+
 /**
  * @brief Handles all SSL activity for a TCP connection
  *

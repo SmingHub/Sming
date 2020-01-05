@@ -27,7 +27,7 @@ SSL_CIPHER_SUITE_MAP(XX)
 DEFINE_FSTR_MAP_LOCAL(cipherSuiteNames, CipherSuite, FSTR::String, SSL_CIPHER_SUITE_MAP(XX));
 #undef XX
 
-String getCipherSuiteName(CipherSuite id)
+String toString(CipherSuite id)
 {
 	auto entry = cipherSuiteNames[id];
 	if(entry) {

@@ -91,7 +91,7 @@ bool Session::onConnect(tcp_pcb* tcp)
 
 	if(sessionId != nullptr && sessionId->isValid()) {
 		debug_d("-----BEGIN SSL SESSION PARAMETERS-----");
-		debug_d("SessionId: %s", sessionId->toString().c_str());
+		debug_d("SessionId: %s", toString(*sessionId).c_str());
 		debug_d("------END SSL SESSION PARAMETERS------");
 	}
 
@@ -218,7 +218,7 @@ size_t Session::printTo(Print& p) const
 
 	n += p.println(_F("SSL Session:"));
 	n += p.print(_F("  Options: "));
-	n += p.println(options.toString());
+	n += p.println(toString(options));
 	n += p.print(_F("  Host name: "));
 	n += p.println(hostName);
 	n += p.print(_F("  Cache Size: "));

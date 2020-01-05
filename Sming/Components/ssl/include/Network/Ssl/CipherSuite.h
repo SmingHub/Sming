@@ -162,7 +162,7 @@ enum class CipherSuite : uint16_t {
  * @param id Suite identifier
  * @retval String
  */
-String getCipherSuiteName(CipherSuite id);
+String toString(CipherSuite id);
 
 /**
  * @brief Standard cipher suite options

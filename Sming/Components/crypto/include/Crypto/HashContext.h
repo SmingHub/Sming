@@ -56,6 +56,11 @@ template <size_t size> struct HashValue {
 	}
 };
 
+template <size_t size> String toString(const HashValue<size>& hash, char separator = '\0')
+{
+	return hash.toString(separator);
+}
+
 /**
  * @brief Class template for a Hash implementation 'Context'
  * @tparam Engine The hash implementation with `init`, `update` and `final` methods

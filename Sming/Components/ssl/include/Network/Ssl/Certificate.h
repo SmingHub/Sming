@@ -66,11 +66,6 @@ public:
 			MAX
 	};
 
-	/**
-	 * @brief Obtain a string describing the given name component
-	 */
-	static String getRdnTypeString(Certificate::RDN rdn);
-
 	virtual ~Certificate()
 	{
 	}
@@ -115,6 +110,11 @@ public:
 	 */
 	size_t printTo(Print& p) const;
 };
+
+/**
+ * @brief Obtain a string describing the given name component
+ */
+String toString(Certificate::RDN rdn);
 
 } // namespace Ssl
 

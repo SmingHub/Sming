@@ -53,14 +53,14 @@ public:
 		return makeHexString(getValue(), getLength());
 	}
 
-	operator String() const
-	{
-		return toString();
-	}
-
 private:
 	String value;
 };
+
+__forceinline String toString(const SessionId& id)
+{
+	return id.toString();
+}
 
 } // namespace Ssl
 

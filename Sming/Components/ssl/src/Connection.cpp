@@ -23,9 +23,9 @@ size_t Connection::printTo(Print& p) const
 	}
 	n += p.println(_F("SSL Connection Information:"));
 	n += p.print(_F("  Cipher:       "));
-	n += p.println(getCipherSuiteName(getCipherSuite()));
+	n += p.println(toString(getCipherSuite()));
 	n += p.print(_F("  Session ID:   "));
-	n += p.println(getSessionId());
+	n += p.println(toString(getSessionId()));
 	return n;
 }
 
