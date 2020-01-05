@@ -1,5 +1,10 @@
 #include <SmingCore.h>
 #include <CounterStream.h>
+#include <Platform/Timers.h>
+
+#ifdef ENABLE_MALLOC_COUNT
+#include <malloc_count.h>
+#endif
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -9,9 +14,29 @@
 
 Timer procTimer;
 HttpClient downloadClient;
+OneShotFastMs connectTimer;
+
+void printHeap()
+{
+	Serial.println(_F("Heap statistics"));
+	Serial.print(_F("  Free bytes:  "));
+	Serial.println(system_get_free_heap_size());
+#ifdef ENABLE_MALLOC_COUNT
+	Serial.print(_F("  Used:        "));
+	Serial.println(MallocCount::getCurrent());
+	Serial.print(_F("  Peak used:   "));
+	Serial.println(MallocCount::getPeak());
+	Serial.print(_F("  Allocations: "));
+	Serial.println(MallocCount::getAllocCount());
+	Serial.print(_F("  Total used:  "));
+	Serial.println(MallocCount::getTotal());
+#endif
+}
 
 int onDownload(HttpConnection& connection, bool success)
 {
+	auto elapsed = connectTimer.elapsedTime();
+
 	Serial.print(_F("Got response code: "));
 	auto status = connection.getResponse()->code;
 	Serial.print(status);
@@ -36,6 +61,9 @@ int onDownload(HttpConnection& connection, bool success)
 	if(ssl != nullptr) {
 		ssl->printTo(Serial);
 	}
+
+	Serial.print(_F("Time to connect and download page: "));
+	Serial.println(elapsed.toString());
 
 	return 0; // return 0 on success in your callbacks
 }
@@ -80,6 +108,8 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	Serial.print(F("Connected. Got IP: "));
 	Serial.println(ip);
 
+	connectTimer.start();
+
 	auto request = new HttpRequest(F("https://www.grc.com/fingerprints.htm"));
 	request->onSslInit(grcSslInit);
 	request->onRequestComplete(onDownload);
@@ -97,6 +127,13 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true); // Allow debug print to serial
 	Serial.println(F("Ready for SSL tests"));
+
+#ifdef ENABLE_MALLOC_COUNT
+	MallocCount::enableLogging(true);
+#endif
+
+	auto heapTimer = new Timer;
+	heapTimer->initializeMs<5000>(printHeap).start();
 
 	// Setup the WIFI connection
 	WifiStation.enable(true);
