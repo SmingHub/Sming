@@ -1,9 +1,10 @@
 #include <SmingCore.h>
 
 #include <Data/Stream/LimitedMemoryStream.h>
-#include <MultipartParser/HttpMultipartResource.h>
+#include <HttpMultipartResource.h>
 #include "SignedRbootOutputStream.h"
 #include "FirmwareVerificationKey.h"
+#include <MultipartParser.h>
 
 HttpServer server;
 String lastModified;
@@ -114,6 +115,7 @@ void startWebServer()
 	settings.closeOnContentError = false;
 	settings.keepAliveSeconds = 2; // default from HttpServer::HttpServer()
 	server.configure(settings);
+	server.setBodyParser(MIME_FORM_MULTIPART, formMultipartParser);
 
 	server.listen(80);
 	server.paths.set("/", onIndex);

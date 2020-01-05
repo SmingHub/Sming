@@ -1,8 +1,5 @@
 SPIFF_FILES = web/
-ARDUINO_LIBRARIES := ArduinoJson6 libsodium
-
-# The line below enables the form upload support on the server
-ENABLE_HTTP_SERVER_MULTIPART = 1
+ARDUINO_LIBRARIES := libsodium MultipartParser
 
 ##@Building
 

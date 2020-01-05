@@ -162,3 +162,30 @@ SSL namespace
 ~~~~~~~~~~~~~
 All SSL related classes and types are organized in a separate namespace called `Ssl`. For example you should use `Ssl::KeyCertPair`
 instead of `SslKeyCertPair` and `Ssl::Fingerprints` instead of `SslFingerprints`.
+
+MultipartParser
+===============
+
+The MultipartParser component has been decoupled from the framework and converted into a :library:`Library <MultipartParser>`.
+In the process, the former config option `ENABLE_HTTP_SERVER_MULTIPART` has been removed. Therefore, in your components.mk, 
+replace::
+
+   ENABLE_HTTP_SERVER_MULTIPART := 1
+
+by::
+
+   ARDUINO_LIBRARIES += MultipartParser
+  
+Also, the body parser for handling HTTP requests of content-type `multipart/form-data` must now be registered explicitly 
+by the application code:
+
+.. code-block:: c++
+
+   #include <MultipartParser.h>
+
+   HttpServer server;
+   ...
+
+   server.setBodyParser(MIME_FORM_MULTIPART, formMultipartParser);
+  
+
