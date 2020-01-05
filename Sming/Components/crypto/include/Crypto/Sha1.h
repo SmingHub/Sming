@@ -9,7 +9,7 @@ class Sha1Engine
 public:
 	using Hash = HashValue<SHA1_SIZE>;
 
-	Sha1Engine()
+	void init()
 	{
 		SHA1_Init(&context);
 	}

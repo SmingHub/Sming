@@ -58,11 +58,25 @@ template <size_t size> struct HashValue {
 
 /**
  * @brief Class template for a Hash implementation 'Context'
+ * @tparam Engine The hash implementation with `init`, `update` and `final` methods
  */
 template <class Engine> class HashContext
 {
 public:
 	using Hash = typename Engine::Hash;
+
+	HashContext()
+	{
+		reset();
+	}
+
+	/**
+	 * @brief Reset the context for a new calculation
+	 */
+	void reset()
+	{
+		engine.init();
+	}
 
 	/**
 	 * @name Calculate hash on a single block of data

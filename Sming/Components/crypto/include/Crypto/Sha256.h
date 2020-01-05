@@ -9,7 +9,7 @@ class Sha256Engine
 public:
 	using Hash = HashValue<SHA256_SIZE>;
 
-	Sha256Engine()
+	void init()
 	{
 		SHA256_Init(&context);
 	}

@@ -9,7 +9,7 @@ class Md5Engine
 public:
 	using Hash = HashValue<MD5_SIZE>;
 
-	Md5Engine()
+	void init()
 	{
 		MD5_Init(&context);
 	}
