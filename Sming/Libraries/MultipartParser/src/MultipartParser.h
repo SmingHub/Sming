@@ -24,8 +24,6 @@
  */
 class MultipartParser
 {
-	MultipartParser(HttpRequest& request, const String& boundaryArg);
-
 public:
 	static MultipartParser* create(HttpRequest& request);
 
@@ -45,6 +43,8 @@ public:
 	}
 
 private:
+	MultipartParser(HttpRequest& request, const String& boundaryArg);
+
 	static multipart_parser_settings_t settings;
 
 	String headerName;  ///< Current header field name
