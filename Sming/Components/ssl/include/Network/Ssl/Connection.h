@@ -24,6 +24,13 @@ class Context;
 
 /**
  * @brief Implemented by SSL adapter to handle a connection
+ *
+ * Returned `int` error codes are 0 for success, or < 0 for error.
+ *
+ * The error codes themselves are implementation-specific.
+ * Use `getErrorString()` to obtain the message.
+ * SSL Alerts are also reported via error codes and can be obtained
+ * using a call to `getAlert()`.
  */
 class Connection : public Printable
 {

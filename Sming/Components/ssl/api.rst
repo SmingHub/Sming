@@ -1,4 +1,0 @@
-API Documentation
-=================
-
-.. doxygennamespace:: Ssl

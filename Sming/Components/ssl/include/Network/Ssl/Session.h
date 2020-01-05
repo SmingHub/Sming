@@ -65,24 +65,51 @@ struct Options {
 /**
  * @brief Handles all SSL activity for a TCP connection
  *
- * Each TCP connection creates a session at a suitable
- * ManagerTop-level layer for SSL Contains configuration for each SSL connection
+ * A session is created for every TCP connection where `useSsl` is specified.
+ * It is then passed to any registered session initialisation callbacks for customisation.
  */
 class Session
 {
 public:
 	using InitDelegate = Delegate<void(Session& session)>;
 
-	String hostName; ///< Used for SNI https://en.wikipedia.org/wiki/Server_Name_Indication
-	KeyCertPair keyCert;
-	Options options;
-	MaxBufferSize maxBufferSize = MaxBufferSize::Default;
 	/**
-	 * Server: Number of cached client sessions. Suggested value: 10
-	 * Client: Number of cached session ids. Suggested value: 1
+	 * @brief Used for SNI https://en.wikipedia.org/wiki/Server_Name_Indication
+	 */
+	String hostName;
+
+	/**
+	 * @brief Required for server, optional for client
+	 */
+	KeyCertPair keyCert;
+
+	/**
+	 * @brief Various connection options
+	 */
+	Options options;
+
+	/**
+	 * @brief Controls SSL RAM usage
+	 */
+	MaxBufferSize maxBufferSize = MaxBufferSize::Default;
+
+	/**
+	 * Configure supported cipher suites. Default is basic.
+	 */
+	const CipherSuites::Array* cipherSuites = &CipherSuites::basic;
+
+	/**
+	 * @brief Set session caching
+	 *
+	 * Server: Number of cached client sessions. Suggested value: 10.
+	 *
+	 * Client: Number of cached session ids. Suggested value: 1.
 	 */
 	int cacheSize = 10;
-	// client
+
+	/**
+	 * @brief List of certificate validators used by Client
+	 */
 	ValidatorList validators;
 
 public:
@@ -92,6 +119,10 @@ public:
 		delete sessionId;
 	}
 
+	/**
+	 * @brief If available, return the current SSL Session ID
+	 * @retval SessionId* If connection hasn't been established, may return Null
+	 */
 	const SessionId* getSessionId() const
 	{
 		return sessionId;
@@ -99,13 +130,15 @@ public:
 
 	/**
 	 * @brief Called when a client connection is made via server TCP socket
-	 * @brief client The client TCP socket
-	 * @brief tcp The low-level TCP connection to use for reading and writing
+	 * @param client The client TCP socket
+	 * @param tcp The low-level TCP connection to use for reading and writing
+	 * @retval bool true if the connection may proceed, false to abort
 	 */
 	bool onAccept(TcpConnection* client, tcp_pcb* tcp);
 
 	/**
 	 * @brief Called by TcpConnection to set the established SSL connection
+	 * @param connection The server connection
 	 */
 	void setConnection(Connection* connection)
 	{
@@ -115,6 +148,7 @@ public:
 
 	/**
 	 * @brief Get the currently active SSL connection object
+	 * @retval Connection*
 	 */
 	Connection* getConnection()
 	{
@@ -123,12 +157,14 @@ public:
 
 	/**
 	 * @brief Handle connection event
-	 * @retval err_t
+	 * @param tcp
+	 * @retval bool true on success, false to abort the connection
 	 */
 	bool onConnect(tcp_pcb* tcp);
 
 	/**
 	 * @brief Determine if an SSL connection has been fully established
+	 * @retval bool Connection state
 	 */
 	bool isConnected() const
 	{
@@ -137,6 +173,8 @@ public:
 
 	/**
 	 * @brief End the session
+	 *
+	 * SSL typically sends a closing handshake at this point
 	 */
 	void close();
 
@@ -159,12 +197,14 @@ public:
 	/**
 	 * @brief Called by SSL adapter when certificate validation is required
 	 * @retval bool true if validation is success, false to abort connection
+	 * @note SSL Internal method
 	 */
 	bool validateCertificate();
 
 	/**
 	 * @brief Called by SSL adapter when handshake has been completed
 	 * @param success Indicates if handshake was successful
+	 * @note SSL Internal method
 	 */
 	void handshakeComplete(bool success);
 

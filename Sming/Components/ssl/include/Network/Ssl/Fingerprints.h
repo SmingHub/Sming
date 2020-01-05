@@ -30,9 +30,12 @@ namespace Ssl
 union Fingerprint {
 	union Cert {
 		/** @brief Fingerprint based on the SHA1 value of the certificate
-		 * 	@note The SHA1 hash of the entire certificate. This changes on each certificate renewal so needs
+		 *
+		 * 	The SHA1 hash of the entire certificate. This changes on each certificate renewal so needs
 		 * 	to be updated every time the remote server updates its certificate.
+		 *
 		 * 	Advantages: Takes less time to verify than SHA256
+		 *
 		 * 	Disadvantages: Likely to change periodically
 		 */
 		struct Sha1 {
@@ -40,7 +43,8 @@ union Fingerprint {
 		};
 
 		/** @brief Fingerprint based on the SHA256 value of the certificate
-		 * 	@note Typically displayed in browser certificate information
+		 *
+		 * 	Typically displayed in browser certificate information
 		 */
 		struct Sha256 {
 			Crypto::Sha256::Hash hash;
@@ -50,9 +54,12 @@ union Fingerprint {
 
 	union Pki {
 		/**	@brief Fingerprint based on the SHA256 value of the Public Key Subject in the certificate
-		 * 	@note For HTTP public key pinning (RFC7469), the SHA-256 hash of the Subject Public Key Info
+		 *
+		 * 	For HTTP public key pinning (RFC7469), the SHA-256 hash of the Subject Public Key Info
 		 * 	(which usually only changes when the public key changes) is used.
+		 *
 		 * 	Advantages: Doesn't change frequently
+		 *
 		 * 	Disadvantages: Takes more time (in ms) to verify.
 		 */
 		struct Sha256 {

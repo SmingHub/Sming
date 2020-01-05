@@ -22,8 +22,15 @@ Configuration Variables
    - Axtls: to enable SSL support using the :component:`axtls-8266` component.
    - Bearssl: to enable SSL support using the :component:`bearssl-esp8266` component.
 
+API Documentation
+-----------------
+
 .. toctree::
-   :glob:
    :maxdepth: 1
 
-   *
+   upgrade
+   comparison
+   session
+   ciphersuites
+   certificates
+   adapter
