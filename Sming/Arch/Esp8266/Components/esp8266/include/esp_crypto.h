@@ -1,12 +1,18 @@
-/*
- * There are a bunch of routines available in the ESP8266 ROM which could save space.
- * This header file is intended to provide prototypes so they can be used.
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * It's not just a question of saving space, but also potentially improving performance since
- * the routines won't require cache space.
+ * esp_crypto.h - ROM / SDK crypto functions
  *
- * Definitely a work-in-progress. Not currently used.
- */
+ * There are a bunch of routines available in the ESP8266 ROM and SDK which could save space,
+ * and also potentially improving performance since ROM routines dont't require cache RAM.
+ *
+ * This header file provides prototypes so they can be used without conflicting with other libraries.
+ *
+ ****/
+
 #pragma once
 
 #include <stdint.h>

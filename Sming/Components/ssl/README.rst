@@ -8,8 +8,8 @@ Sming supports multiple SSL implementations, currently with adapters for:
 -  `axTLS <http://axtls.sourceforge.net/>`__
 -  `BearSSL <https://www.bearssl.org/>`__
 
-If you want to use SSL then take a look at the :sample:`Basic_Ssl` for creating SSL clients and :sample:`HttpServer_ConfigNetwork`
-for SSL servers.
+If you want to use SSL then take a look at the :sample:`Basic_Ssl` sample for creating SSL clients,
+and :sample:`HttpServer_ConfigNetwork` for SSL servers.
 
 
 Configuration Variables

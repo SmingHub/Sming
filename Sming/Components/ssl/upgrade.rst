@@ -102,7 +102,7 @@ has access to the current SSL session and HTTP request and can modify them accor
 
    void grcSslInit(Ssl::Session& session, HttpRequest& request)
    {
-     static const Crypto::Sha1::Hash fingerprint PROGMEM = {  ... };
+     static const Ssl::Fingerprint::Cert::Sha1 fingerprint PROGMEM = {  ... };
 
      session.validators.pin(fingerprint);
 

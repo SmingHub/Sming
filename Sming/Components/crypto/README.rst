@@ -9,8 +9,9 @@ Contains basic cryptographic support classes for Sming.
 This provides a strongly typed and flexible C++ library for commonly used routines,
 such as MD5, SHA hashes and HMAC.
 
-It makes use of third-party libraries - currently axTLS - to provide the core support
-routines.
+It makes use of third-party libraries, such as axTLS, to provide the core support routines.
+Architecture-specific ROM or SDK routines are used where appropriate to reduce code size
+and improve performance.
 
 The intention is that this library will provide the optimal implementations for any
 given architecture but maintain a consistent interface and allow it to be easily extended.

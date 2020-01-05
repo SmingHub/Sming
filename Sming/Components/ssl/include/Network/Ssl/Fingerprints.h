@@ -28,6 +28,9 @@ namespace Ssl
  * 		Fingerprint::Cert::Sha1 fingerprint = { ... };
  */
 union Fingerprint {
+	/**
+	 * @brief Fingerprints for the entire Certificate
+	 */
 	union Cert {
 		/** @brief Fingerprint based on the SHA1 value of the certificate
 		 *
@@ -52,6 +55,9 @@ union Fingerprint {
 
 	}; // namespace Cert
 
+	/**
+	 * @Fingerprints for the Public Key only
+	 */
 	union Pki {
 		/**	@brief Fingerprint based on the SHA256 value of the Public Key Subject in the certificate
 		 *

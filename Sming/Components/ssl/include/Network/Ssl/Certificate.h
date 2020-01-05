@@ -71,7 +71,7 @@ public:
 	}
 
 	/**
-	 * @brief Obtain certificate fingerprint
+	 * @name Obtain certificate fingerprint
 	 * @param fingerprint On success, returned fingerprint
 	 * @retval bool true on success, false if fingerprint /not available
 	 * @{
@@ -85,17 +85,12 @@ public:
 	{
 		return false;
 	}
-	/** @} */
 
-	/**
-	 * @brief Obtain SHA256 hash of Subject Public Key Info
-	 * @param hash Returned SHA256 hash
-	 * @retval bool true on success, false if hash not available
-	 */
 	virtual bool getFingerprint(Fingerprint::Pki::Sha256& fingerprint) const
 	{
 		return false;
 	}
+	/** @} */
 
 	/**
 	 * @brief Retrieve an X.509 distinguished name component
