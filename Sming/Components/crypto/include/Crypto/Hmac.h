@@ -29,13 +29,13 @@ public:
 		uint8_t k_opad[blockSize];
 		memset(k_ipad, 0, blockSize);
 		memset(k_opad, 0, blockSize);
-		if(key.length <= blockSize) {
-			memcpy(k_ipad, key.data, key.length);
-			memcpy(k_opad, key.data, key.length);
+		if(key.size <= blockSize) {
+			memcpy(k_ipad, key.data, key.size);
+			memcpy(k_opad, key.data, key.size);
 		} else {
 			auto hash = Context::calculate(key);
-			memcpy(k_ipad, hash.data, hash.length);
-			memcpy(k_opad, hash.data, hash.length);
+			memcpy(k_ipad, hash.data, hash.size);
+			memcpy(k_opad, hash.data, hash.size);
 		}
 
 		for(unsigned i = 0; i < blockSize; ++i) {

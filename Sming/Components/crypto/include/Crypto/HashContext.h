@@ -7,17 +7,17 @@
 namespace Crypto
 {
 /**
- * @brief Wraps a pointer to some data with length
+ * @brief Wraps a pointer to some data with size
  */
 struct Blob {
 	const void* data;
-	size_t length;
+	size_t size;
 
-	Blob(const void* data, size_t length) : data(data), length(length)
+	Blob(const void* data, size_t size) : data(data), size(size)
 	{
 	}
 
-	Blob(const String& str) : data(str.c_str()), length(str.length())
+	Blob(const String& str) : data(str.c_str()), size(str.length())
 	{
 	}
 };
@@ -25,10 +25,11 @@ struct Blob {
 /**
  * @brief Class template for a Hash value, essentially just an array of bytes
  */
-template <size_t size> struct HashValue {
-	uint8_t data[size];
+template <class Engine_> struct HashValue {
+	using Engine = Engine_;
+	uint8_t data[Engine::size];
 
-	static constexpr size_t length = size;
+	static constexpr size_t size = sizeof(data);
 
 	/**
 	 * @brief Copy from a memory buffer
@@ -47,7 +48,7 @@ template <size_t size> struct HashValue {
 
 	bool operator==(const HashValue& other) const
 	{
-		return memcmp(data, other.data, sizeof(data)) == 0;
+		return memcmp(data, other.data, size) == 0;
 	}
 
 	String toString(char separator = '\0') const
@@ -56,7 +57,7 @@ template <size_t size> struct HashValue {
 	}
 };
 
-template <size_t size> String toString(const HashValue<size>& hash, char separator = '\0')
+template <class Engine> String toString(const HashValue<Engine>& hash, char separator = '\0')
 {
 	return hash.toString(separator);
 }
@@ -65,9 +66,10 @@ template <size_t size> String toString(const HashValue<size>& hash, char separat
  * @brief Class template for a Hash implementation 'Context'
  * @tparam Engine The hash implementation with `init`, `update` and `final` methods
  */
-template <class Engine> class HashContext
+template <class Engine_> class HashContext
 {
 public:
+	using Engine = Engine_;
 	using Hash = typename Engine::Hash;
 
 	HashContext()
@@ -109,7 +111,7 @@ public:
 	 */
 	void update(const Blob& blob)
 	{
-		update(blob.data, blob.length);
+		update(blob.data, blob.size);
 	}
 
 	void update(const void* data, size_t length)

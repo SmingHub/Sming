@@ -7,7 +7,9 @@ namespace Crypto
 class Sha256Engine
 {
 public:
-	using Hash = HashValue<SHA256_SIZE>;
+	using Hash = HashValue<Sha256Engine>;
+	static constexpr const char* name = "SHA256";
+	static constexpr size_t size = SHA256_SIZE;
 
 	void init()
 	{

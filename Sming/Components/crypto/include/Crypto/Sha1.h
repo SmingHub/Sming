@@ -14,7 +14,9 @@ namespace Crypto
 class Sha1Engine
 {
 public:
-	using Hash = HashValue<SHA1_SIZE>;
+	using Hash = HashValue<Sha1Engine>;
+	static constexpr const char* name = "SHA1";
+	static constexpr size_t size = SHA1_SIZE;
 
 	void init()
 	{

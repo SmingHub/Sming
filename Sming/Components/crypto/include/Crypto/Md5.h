@@ -14,7 +14,9 @@ namespace Crypto
 class Md5Engine
 {
 public:
-	using Hash = HashValue<MD5_SIZE>;
+	using Hash = HashValue<Md5Engine>;
+	static constexpr const char* name = "MD5";
+	static constexpr size_t size = MD5_SIZE;
 
 	void init()
 	{
