@@ -23,44 +23,41 @@
 
 namespace Ssl
 {
-int BrConnection::init(size_t bufferSize, bool bidi)
+namespace CipherSuites
 {
-	DEFINE_FSTR_ARRAY_LOCAL(FS_suitesBasic, CipherSuite, CipherSuite::RSA_WITH_AES_128_CBC_SHA256,
-							CipherSuite::RSA_WITH_AES_256_CBC_SHA256, CipherSuite::RSA_WITH_AES_128_CBC_SHA,
-							CipherSuite::RSA_WITH_AES_256_CBC_SHA);
-
-	DEFINE_FSTR_ARRAY_LOCAL(
-		FS_suitesFull, CipherSuite, CipherSuite::ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,
-		CipherSuite::ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256, CipherSuite::ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
-		CipherSuite::ECDHE_RSA_WITH_AES_128_GCM_SHA256, CipherSuite::ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
-		CipherSuite::ECDHE_RSA_WITH_AES_256_GCM_SHA384, CipherSuite::ECDHE_ECDSA_WITH_AES_128_CCM,
-		CipherSuite::ECDHE_ECDSA_WITH_AES_256_CCM, CipherSuite::ECDHE_ECDSA_WITH_AES_128_CCM_8,
-		CipherSuite::ECDHE_ECDSA_WITH_AES_256_CCM_8, CipherSuite::ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
-		CipherSuite::ECDHE_RSA_WITH_AES_128_CBC_SHA256, CipherSuite::ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
-		CipherSuite::ECDHE_RSA_WITH_AES_256_CBC_SHA384, CipherSuite::ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
-		CipherSuite::ECDHE_RSA_WITH_AES_128_CBC_SHA, CipherSuite::ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
-		CipherSuite::ECDHE_RSA_WITH_AES_256_CBC_SHA, CipherSuite::ECDH_ECDSA_WITH_AES_128_GCM_SHA256,
-		CipherSuite::ECDH_RSA_WITH_AES_128_GCM_SHA256, CipherSuite::ECDH_ECDSA_WITH_AES_256_GCM_SHA384,
-		CipherSuite::ECDH_RSA_WITH_AES_256_GCM_SHA384, CipherSuite::ECDH_ECDSA_WITH_AES_128_CBC_SHA256,
-		CipherSuite::ECDH_RSA_WITH_AES_128_CBC_SHA256, CipherSuite::ECDH_ECDSA_WITH_AES_256_CBC_SHA384,
-		CipherSuite::ECDH_RSA_WITH_AES_256_CBC_SHA384, CipherSuite::ECDH_ECDSA_WITH_AES_128_CBC_SHA,
-		CipherSuite::ECDH_RSA_WITH_AES_128_CBC_SHA, CipherSuite::ECDH_ECDSA_WITH_AES_256_CBC_SHA,
-		CipherSuite::ECDH_RSA_WITH_AES_256_CBC_SHA, CipherSuite::RSA_WITH_AES_128_GCM_SHA256,
-		CipherSuite::RSA_WITH_AES_256_GCM_SHA384, CipherSuite::RSA_WITH_AES_128_CCM, CipherSuite::RSA_WITH_AES_256_CCM,
+DEFINE_CIPHER_SUITES(full, CipherSuite::ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,
+					 CipherSuite::ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
+					 CipherSuite::ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, CipherSuite::ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+					 CipherSuite::ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, CipherSuite::ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+					 CipherSuite::ECDHE_ECDSA_WITH_AES_128_CCM, CipherSuite::ECDHE_ECDSA_WITH_AES_256_CCM,
+					 CipherSuite::ECDHE_ECDSA_WITH_AES_128_CCM_8, CipherSuite::ECDHE_ECDSA_WITH_AES_256_CCM_8,
+					 CipherSuite::ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, CipherSuite::ECDHE_RSA_WITH_AES_128_CBC_SHA256,
+					 CipherSuite::ECDHE_ECDSA_WITH_AES_256_CBC_SHA384, CipherSuite::ECDHE_RSA_WITH_AES_256_CBC_SHA384,
+					 CipherSuite::ECDHE_ECDSA_WITH_AES_128_CBC_SHA, CipherSuite::ECDHE_RSA_WITH_AES_128_CBC_SHA,
+					 CipherSuite::ECDHE_ECDSA_WITH_AES_256_CBC_SHA, CipherSuite::ECDHE_RSA_WITH_AES_256_CBC_SHA,
+					 CipherSuite::ECDH_ECDSA_WITH_AES_128_GCM_SHA256, CipherSuite::ECDH_RSA_WITH_AES_128_GCM_SHA256,
+					 CipherSuite::ECDH_ECDSA_WITH_AES_256_GCM_SHA384, CipherSuite::ECDH_RSA_WITH_AES_256_GCM_SHA384,
+					 CipherSuite::ECDH_ECDSA_WITH_AES_128_CBC_SHA256, CipherSuite::ECDH_RSA_WITH_AES_128_CBC_SHA256,
+					 CipherSuite::ECDH_ECDSA_WITH_AES_256_CBC_SHA384, CipherSuite::ECDH_RSA_WITH_AES_256_CBC_SHA384,
+					 CipherSuite::ECDH_ECDSA_WITH_AES_128_CBC_SHA, CipherSuite::ECDH_RSA_WITH_AES_128_CBC_SHA,
+					 CipherSuite::ECDH_ECDSA_WITH_AES_256_CBC_SHA, CipherSuite::ECDH_RSA_WITH_AES_256_CBC_SHA,
+					 CipherSuite::RSA_WITH_AES_128_GCM_SHA256, CipherSuite::RSA_WITH_AES_256_GCM_SHA384,
+					 CipherSuite::RSA_WITH_AES_128_CCM, CipherSuite::RSA_WITH_AES_256_CCM,
 					 CipherSuite::RSA_WITH_AES_128_CCM_8, CipherSuite::RSA_WITH_AES_256_CCM_8,
 					 CipherSuite::RSA_WITH_AES_128_CBC_SHA256, CipherSuite::RSA_WITH_AES_256_CBC_SHA256,
 					 CipherSuite::RSA_WITH_AES_128_CBC_SHA, CipherSuite::RSA_WITH_AES_256_CBC_SHA,
 					 CipherSuite::ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA, CipherSuite::ECDHE_RSA_WITH_3DES_EDE_CBC_SHA,
 					 CipherSuite::ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA, CipherSuite::ECDH_RSA_WITH_3DES_EDE_CBC_SHA,
 					 CipherSuite::RSA_WITH_3DES_EDE_CBC_SHA);
+} // namespace CipherSuites
 
-	auto& FS_suites = FS_suitesFull;
-
+int BrConnection::init(size_t bufferSize, bool bidi)
+{
 	auto engine = getEngine();
 	br_ssl_engine_set_versions(engine, BR_TLS10, BR_TLS12);
 
-	LOAD_FSTR_ARRAY(suites, FS_suites);
-	br_ssl_engine_set_suites(engine, (uint16_t*)suites, FS_suites.length());
+	setCipherSuites(context.session.cipherSuites);
+
 	br_ssl_engine_set_default_rsavrfy(engine);
 	br_ssl_engine_set_default_ecdsa(engine);
 
@@ -100,6 +97,21 @@ int BrConnection::init(size_t bufferSize, bool bidi)
 	br_ssl_engine_set_buffer(engine, buffer, bufferSize, bidi);
 
 	return BR_ERR_OK;
+}
+
+void BrConnection::setCipherSuites(const CipherSuites::Array* cipherSuites)
+{
+	if(cipherSuites == nullptr) {
+		debug_w("Cipher suites not configured, defaulting to basic");
+		cipherSuites = &CipherSuites::basic;
+	}
+	auto count = cipherSuites->length();
+	if(count > BR_MAX_CIPHER_SUITES) {
+		debug_w("Too many cipher suites, truncating %u -> %u entries", count, BR_MAX_CIPHER_SUITES);
+		count = BR_MAX_CIPHER_SUITES;
+	}
+	LOAD_FSTR_ARRAY(suites, *cipherSuites);
+	br_ssl_engine_set_suites(getEngine(), (uint16_t*)suites, count);
 }
 
 int BrConnection::read(InputBuffer& input, uint8_t*& output)

@@ -101,6 +101,9 @@ void grcSslInit(Ssl::Session& session, HttpRequest& request)
 
 	// Go with maximum buffer sizes
 	session.maxBufferSize = Ssl::MaxBufferSize::K16;
+
+	// Use all supported cipher suites to make a connection
+	session.cipherSuites = &Ssl::CipherSuites::full;
 }
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)

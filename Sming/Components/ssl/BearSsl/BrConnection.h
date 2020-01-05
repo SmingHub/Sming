@@ -92,6 +92,9 @@ protected:
 	}
 
 private:
+	void setCipherSuites(const CipherSuites::Array* cipherSuites);
+
+private:
 	uint8_t* buffer = nullptr;
 	bool handshakeDone = false;
 };

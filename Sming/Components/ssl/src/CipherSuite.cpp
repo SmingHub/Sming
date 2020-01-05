@@ -13,6 +13,12 @@
 
 namespace Ssl
 {
+namespace CipherSuites
+{
+DEFINE_CIPHER_SUITES(basic, CipherSuite::RSA_WITH_AES_128_CBC_SHA256, CipherSuite::RSA_WITH_AES_256_CBC_SHA256,
+					 CipherSuite::RSA_WITH_AES_128_CBC_SHA, CipherSuite::RSA_WITH_AES_256_CBC_SHA);
+}
+
 #define XX(tag, code) DEFINE_FSTR_LOCAL(cipherSuite_##tag, #tag)
 SSL_CIPHER_SUITE_MAP(XX)
 #undef XX

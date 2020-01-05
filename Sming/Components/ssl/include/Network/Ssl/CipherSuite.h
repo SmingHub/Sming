@@ -11,11 +11,12 @@
 #pragma once
 
 #include <WString.h>
+#include <FlashString/Array.hpp>
 
 namespace Ssl
 {
-/*
- * Cipher suites
+/**
+ * @brief Cipher suites
  *
  *	TLS v1.2	https://tools.ietf.org/html/rfc5246#appendix-A.5
  * 	TLS v1.3	https://tools.ietf.org/html/rfc8446#appendix-B.4
@@ -147,6 +148,8 @@ namespace Ssl
  * For example:
  *
  * TLS_RSA_WITH_AES_128_CBC_SHA = { 0x00, 0x2F } = 0x002F
+ *
+ * @see Refer to `CipherSuite.h` for defined values.
  */
 enum class CipherSuite : uint16_t {
 #define XX(tag, code) tag = code,
@@ -160,5 +163,33 @@ enum class CipherSuite : uint16_t {
  * @retval String
  */
 String getCipherSuiteName(CipherSuite id);
+
+/**
+ * @brief Standard cipher suite options
+ * The actual suites are implementation-specific
+ * @{
+ */
+namespace CipherSuites
+{
+/**
+ * @name Declare/Define an array of supported cipher suites, in flash memory
+ * @{
+ */
+#define DECLARE_CIPHER_SUITES(name) DECLARE_FSTR_ARRAY(name, Ssl::CipherSuite)
+#define DEFINE_CIPHER_SUITES(name, ...) DEFINE_FSTR_ARRAY(name, Ssl::CipherSuite, __VA_ARGS__)
+/** @} */
+
+using Array = FSTR::Array<Ssl::CipherSuite>;
+
+/**
+ * @name Standard cipher suites lists
+ * @{
+ */
+DECLARE_CIPHER_SUITES(basic); ///< Supported by all adapters
+DECLARE_CIPHER_SUITES(full);  ///< Adapter-specific
+/** @} */
+
+} // namespace CipherSuites
+/** @} */
 
 } // namespace Ssl
