@@ -44,3 +44,7 @@ EXTRA_LIBS := \
 	phy \
 	crypto \
 	hal
+
+#
+LIBDIRS += $(COMPONENT_PATH)/ld
+EXTRA_LDFLAGS += -Tcrypto.ld
