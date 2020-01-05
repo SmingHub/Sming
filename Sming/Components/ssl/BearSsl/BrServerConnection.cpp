@@ -23,7 +23,7 @@ int BrServerConnection::init()
 	br_ssl_server_zero(&serverContext);
 
 	// Server requires bi-directional buffer
-	size_t bufSize = maxBufferSizeToBytes(context.getSession().maxBufferSize);
+	size_t bufSize = maxBufferSizeToBytes(context.session.maxBufferSize);
 	if(bufSize == 0) {
 		bufSize = 4096;
 	}
@@ -39,7 +39,7 @@ int BrServerConnection::init()
 
 	br_ssl_engine_add_flags(engine, BR_OPT_NO_RENEGOTIATION);
 
-	auto& keyCert = context.getSession().keyCert;
+	auto& keyCert = context.session.keyCert;
 	cert.data = const_cast<uint8_t*>(keyCert.getCertificate());
 	cert.data_len = keyCert.getCertificateLength();
 	err = key.decode(keyCert.getKey(), keyCert.getKeyLength());

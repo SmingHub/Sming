@@ -23,7 +23,7 @@ int BrClientConnection::init()
 	br_ssl_client_zero(&clientContext);
 
 	// Use Mono-directional buffer size according to requested max. fragment size
-	size_t bufSize = maxBufferSizeToBytes(context.getSession().maxBufferSize);
+	size_t bufSize = maxBufferSizeToBytes(context.session.maxBufferSize);
 	if(bufSize == 0) {
 		bufSize = 4096;
 	}
@@ -36,10 +36,10 @@ int BrClientConnection::init()
 
 	// X509 verification
 	delete certificate;
-	certificate = new BrCertificate([this]() { return context.getSession().validateCertificate(); });
+	certificate = new BrCertificate([this]() { return context.session.validateCertificate(); });
 	br_ssl_engine_set_x509(getEngine(), *certificate);
 
-	br_ssl_client_reset(&clientContext, context.getSession().hostName.c_str(), 0);
+	br_ssl_client_reset(&clientContext, context.session.hostName.c_str(), 0);
 
 	return startHandshake();
 }

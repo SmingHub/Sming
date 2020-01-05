@@ -54,7 +54,7 @@ int AxConnection::read(InputBuffer& input, uint8_t*& output)
 	int readBytes = ssl_read(ssl, &output);
 	this->input = nullptr;
 	if(!connected && isHandshakeDone()) {
-		auto& session = context.getSession();
+		auto& session = context.session;
 		if(session.getConnection() != nullptr) {
 			if(!session.validateCertificate()) {
 				session.handshakeComplete(false);
