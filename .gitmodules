@@ -19,7 +19,7 @@
 	url = https://github.com/jacketizer/libyuarel.git
 	ignore = dirty
 [submodule "multipart-parser"]
-	path = Sming/Components/MultipartParser/multipart-parser
+	path = Sming/Libraries/MultipartParser/multipart-parser
 	url = https://github.com/iafonov/multipart-parser-c.git
 	ignore = dirty
 [submodule "FlashString"]

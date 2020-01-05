@@ -18,6 +18,10 @@
 
 #include "../multipart-parser/multipart_parser.h"
 
+/** @brief Wrapper for multipart-parser engine (c code).
+ * 
+ * Not for use by application code. Used internally by #formMultipartParser.
+ */
 class MultipartParser
 {
 	MultipartParser(HttpRequest& request, const String& boundaryArg);
@@ -55,4 +59,15 @@ private:
 	int processHeader();
 };
 
+/** Body parser for content-type `form-data/multipart`
+ * 
+ * Must be added to the web server's list of body parsers explicitly:
+ * \code{.cpp}
+ * #include <MultipartParser.h>
+ * ...
+ * HttpServer server;
+ * ...
+ * server.setBodyParser(MIME_FORM_MULTIPART, formMultipartParser);
+ * \endcode
+ */
 size_t formMultipartParser(HttpRequest& request, const char* at, int length);
