@@ -255,5 +255,8 @@ int main(int argc, char* argv[])
 
 	pause(config.exitpause);
 
+	// Avoid issues with debug statements whilst running exit handlers
+	m_setPuts(nullptr);
+
 	return exitCode;
 }

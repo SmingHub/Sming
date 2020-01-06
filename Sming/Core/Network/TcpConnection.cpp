@@ -499,12 +499,11 @@ err_t TcpConnection::staticOnPoll(void* arg, tcp_pcb* tcp)
 
 err_t TcpConnection::internalOnPoll()
 {
-	//if (tcp->state != ESTABLISHED)
-	//	return ERR_OK;
-
 	sleep++;
 	err_t res = onPoll();
-	checkSelfFree();
+	if(res == ERR_OK) {
+		checkSelfFree();
+	}
 	debug_tcp_ext("<poll");
 	return res;
 }
