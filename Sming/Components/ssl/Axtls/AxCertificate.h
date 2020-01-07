@@ -30,14 +30,33 @@ public:
 		ssl->can_free_certificates = true;
 	}
 
-	bool getFingerprint(Fingerprint::Cert::Sha1& fingerprint) const override
+	template <class FP> static bool copy(FP& fp, const uint8_t* src)
 	{
-		return ssl->x509_ctx ? fingerprint.hash.copy(ssl->x509_ctx->fingerprint) : false;
-	}
+		if(src == nullptr) {
+			fp = {};
+			return false;
+		}
 
-	bool getFingerprint(Fingerprint::Pki::Sha256& fingerprint) const override
+		memcpy(fp.hash.data(), src, fp.hash.size());
+		return true;
+	};
+
+	bool getFingerprint(Fingerprint::Type type, Fingerprint& fingerprint) const override
 	{
-		return ssl->x509_ctx ? fingerprint.hash.copy(ssl->x509_ctx->spki_sha256) : false;
+		if(ssl->x509_ctx == nullptr) {
+			return false;
+		}
+
+		switch(type) {
+		case Fingerprint::Type::CertSha1:
+			return copy(fingerprint.cert.sha1, ssl->x509_ctx->fingerprint);
+
+		case Fingerprint::Type::PkiSha256:
+			return copy(fingerprint.pki.sha256, ssl->x509_ctx->spki_sha256);
+
+		default:
+			return false;
+		}
 	}
 
 	String getName(DN dn, RDN rdn) const override;

@@ -38,23 +38,28 @@ public:
 
 /**
  * @brief Class template to validate any kind of fingerprint
- * @tparam Fingerprint The Fingerprint type
+ * @tparam FP The Fingerprint object type
  */
-template <class Fingerprint> class FingerprintValidator : public Validator
+template <class FP> class FingerprintValidator : public Validator
 {
 public:
-	FingerprintValidator(const Fingerprint& fingerprint) : fp(fingerprint)
+	FingerprintValidator(const FP& fingerprint) : fp(fingerprint)
 	{
 	}
 
 	bool validate(const Certificate& certificate) override
 	{
-		Fingerprint certFp;
-		return certificate.getFingerprint(certFp) && certFp.hash == fp.hash;
+		FP certFp;
+		if(!certificate.getFingerprint(FP::type, reinterpret_cast<Fingerprint&>(certFp))) {
+			// Fingerprint not available
+			return false;
+		}
+
+		return certFp.hash == fp.hash;
 	}
 
 private:
-	Fingerprint fp;
+	FP fp;
 };
 
 /** @brief Validator callback function

@@ -72,25 +72,11 @@ public:
 
 	/**
 	 * @name Obtain certificate fingerprint
+	 * @param type Which type of fingerprint to return
 	 * @param fingerprint On success, returned fingerprint
-	 * @retval bool true on success, false if fingerprint /not available
-	 * @{
+	 * @retval bool true on success, false if fingerprint not available
 	 */
-	virtual bool getFingerprint(Fingerprint::Cert::Sha1& fingerprint) const
-	{
-		return false;
-	}
-
-	virtual bool getFingerprint(Fingerprint::Cert::Sha256& fingerprint) const
-	{
-		return false;
-	}
-
-	virtual bool getFingerprint(Fingerprint::Pki::Sha256& fingerprint) const
-	{
-		return false;
-	}
-	/** @} */
+	virtual bool getFingerprint(Fingerprint::Type type, Fingerprint& fingerprint) const = 0;
 
 	/**
 	 * @brief Retrieve an X.509 distinguished name component

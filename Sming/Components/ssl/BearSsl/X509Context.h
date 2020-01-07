@@ -16,8 +16,9 @@
 
 namespace Ssl
 {
-#define GET_SELF() auto self = reinterpret_cast<X509Context*>(ctx)
-
+/**
+ * @brief C++ wrapper around a br_x509_class
+ */
 class X509Context
 {
 public:
@@ -42,19 +43,29 @@ public:
 		return subject;
 	}
 
-	bool getFingerprint(Fingerprint::Cert::Sha1& fingerprint) const
+	bool getFingerprint(Fingerprint::Type type, Fingerprint& fingerprint) const
 	{
-		fingerprint.hash = certificateSha1.hash();
-		return true;
-	}
+		switch(type) {
+		case Fingerprint::Type::CertSha1:
+			fingerprint.cert.sha1.hash = certificateSha1.hash();
+			return true;
 
-	bool getFingerprint(Fingerprint::Cert::Sha256& fingerprint) const
-	{
-		fingerprint.hash = certificateSha256.hash();
-		return true;
+		case Fingerprint::Type::CertSha256:
+			fingerprint.cert.sha256.hash = certificateSha256.hash();
+			return true;
+
+		case Fingerprint::Type::PkiSha256:
+			// There is no easy easy way to obtain this.
+			return false;
+
+		default:
+			return false;
+		}
 	}
 
 private:
+#define GET_SELF() auto self = reinterpret_cast<X509Context*>(ctx)
+
 	// Callback on the first byte of any certificate
 	static void start_chain(const br_x509_class** ctx, const char* server_name)
 	{
@@ -102,6 +113,8 @@ private:
 		return self->endChain();
 	}
 
+#undef GET_SELF
+
 	unsigned endChain();
 
 	// Return the public key from the validator (set by x509_minimal)
@@ -115,6 +128,7 @@ private:
 	}
 
 private:
+	// Require `this == &vtable`
 	const br_x509_class* vtable = &vt;
 	static const br_x509_class vt;
 	OnValidate onValidate;
@@ -125,5 +139,7 @@ private:
 	br_x509_decoder_context x509Decoder = {};
 	uint8_t certificateCount = 0;
 };
+
+static_assert(!std::is_polymorphic<X509Context>::value, "X509Context must not contain virtual methods");
 
 } // namespace Ssl

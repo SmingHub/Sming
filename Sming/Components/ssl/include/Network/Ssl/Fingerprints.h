@@ -18,16 +18,21 @@ namespace Ssl
 /**
  * @brief Various types of fingerprint
  *
- * This structure provides a convenient way to define unique types for each fingerprint.
+ * Applications should use the appropriate type to define a fingerprint, for example:
  *
- * It's not intended to actually be used as a union, that just implies we're picking one of them,
- * not all of them.
+ * 		static const Fingerprint::Cert::Sha1 fingerprint PROGMEM = { ... };
  *
- * For example:
- *
- * 		Fingerprint::Cert::Sha1 fingerprint = { ... };
  */
 union Fingerprint {
+	/**
+	 * @brief SSL Certificate fingerprint type
+	 */
+	enum class Type {
+		CertSha1,   ///< SHA1 Fingerprint of entire certificate
+		CertSha256, ///< SHA256 Fingerprint of entire certificate
+		PkiSha256,  ///< SHA256 Fingerprint of Public Key Information
+	};
+
 	/**
 	 * @brief Fingerprints for the entire Certificate
 	 */
@@ -42,18 +47,22 @@ union Fingerprint {
 		 * 	Disadvantages: Likely to change periodically
 		 */
 		struct Sha1 {
+			static constexpr Type type = Type::CertSha1;
 			Crypto::Sha1::Hash hash;
 		};
+		Sha1 sha1;
 
 		/** @brief Fingerprint based on the SHA256 value of the certificate
 		 *
 		 * 	Typically displayed in browser certificate information
 		 */
 		struct Sha256 {
+			static constexpr Type type = Type::CertSha256;
 			Crypto::Sha256::Hash hash;
 		};
-
-	}; // namespace Cert
+		Sha256 sha256;
+	};
+	Cert cert;
 
 	/**
 	 * @Fingerprints for the Public Key only
@@ -69,11 +78,12 @@ union Fingerprint {
 		 * 	Disadvantages: Takes more time (in ms) to verify.
 		 */
 		struct Sha256 {
+			static constexpr Type type = Type::PkiSha256;
 			Crypto::Sha256::Hash hash;
 		};
-
-	}; // namespace Pki
-
-}; // namespace Fingerprint
+		Sha256 sha256;
+	};
+	Pki pki;
+};
 
 } // namespace Ssl
