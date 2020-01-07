@@ -442,8 +442,7 @@ err_t TcpConnection::internalOnReceive(pbuf* p, err_t err)
 			if(len < 0) {
 				close();
 				closeTcpConnection(tcp);
-				err = ERR_CONN;
-				break;
+				return ERR_ABRT;
 			}
 
 			if(isConnecting && ssl->isConnected()) {
