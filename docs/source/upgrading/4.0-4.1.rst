@@ -20,7 +20,10 @@ SSL enabled clients and servers.
 
 In order to allow multiple SSL adapters and seamless integration the library code had to be refactored and that introduced some breaking changes.
 
-See :component:`ssl` for further details.
+Detailed documentation can be found in :component:`ssl`.
+
+See :doc:`/_inc/Sming/Components/ssl/upgrade` for a migration guide.
+
 
 MultipartParser
 ===============

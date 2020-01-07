@@ -1,12 +1,14 @@
-Upgrading from Sming v4.0 to v4.1
-=================================
+SSL: Upgrading
+==============
 
 .. highlight:: c++
 
-Using specific SSL adapters
----------------------------
+Introduction
+------------
 
-The default SSL adapter is still based on axTLS. And it can be enabled in your application by providing
+Sming v4.1 introduced some major changes in the SSL architecture to support multiple adapters.
+
+The default adapter is still based on axTLS, and it can be enabled in your application by providing
 the :envvar:`ENABLE_SSL` directive either in your component.mk file or during compilation.
 
 Migration
