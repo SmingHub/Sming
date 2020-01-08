@@ -32,7 +32,10 @@ int BrClientConnection::init()
 
 	br_ssl_client_set_default_rsapub(&clientContext);
 	br_ssl_engine_set_x509(getEngine(), x509);
-	br_ssl_client_reset(&clientContext, context.session.hostName.c_str(), 0);
+	if(!br_ssl_client_reset(&clientContext, context.session.hostName.c_str(), 0)) {
+		debug_e("br_ssl_client_reset failed");
+		return getLastError();
+	}
 
 	return startHandshake();
 }

@@ -42,13 +42,16 @@ int BrServerConnection::init()
 	auto& keyCert = context.session.keyCert;
 	cert.data = const_cast<uint8_t*>(keyCert.getCertificate());
 	cert.data_len = keyCert.getCertificateLength();
-	err = key.decode(keyCert.getKey(), keyCert.getKeyLength());
-	if(err < 0) {
-		return err;
+	if(!key.decode(keyCert.getKey(), keyCert.getKeyLength())) {
+		debug_e("Failed to decode keyCert");
+		return -BR_ERR_BAD_PARAM;
 	}
 	br_ssl_server_set_single_rsa(&serverContext, &cert, 1, key, BR_KEYTYPE_RSA | BR_KEYTYPE_KEYX | BR_KEYTYPE_SIGN,
 								 br_rsa_private_get_default(), br_rsa_pkcs1_sign_get_default());
-	br_ssl_server_reset(&serverContext);
+	if(!br_ssl_server_reset(&serverContext)) {
+		debug_e("br_ssl_client_reset failed");
+		return getLastError();
+	}
 
 	return startHandshake();
 }

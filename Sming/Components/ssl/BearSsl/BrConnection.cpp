@@ -148,7 +148,7 @@ int BrConnection::read(InputBuffer& input, uint8_t*& output)
 
 	size_t len = 0;
 	output = br_ssl_engine_recvapp_buf(engine, &len);
-	debug_hex(DBG, "READ", output, len);
+	debug_hex(DBG, "READ", output, len, 0);
 	br_ssl_engine_recvapp_ack(engine, len);
 	return len;
 }
@@ -201,10 +201,10 @@ int BrConnection::runUntil(InputBuffer& input, unsigned target)
 		unsigned state = br_ssl_engine_current_state(engine);
 
 		if(state & BR_SSL_CLOSED) {
-			int err = br_ssl_engine_last_error(engine);
+			int err = getLastError();
 			debug_w("SSL CLOSED, last error = %d (%s), heap free = %u", err, getErrorString(err).c_str(),
 					system_get_free_heap_size());
-			return -err;
+			return err;
 		}
 
 		if(!handshakeDone && (state & BR_SSL_SENDAPP)) {
@@ -265,7 +265,7 @@ int BrConnection::runUntil(InputBuffer& input, unsigned target)
 				return state;
 			}
 
-			debug_hex(DBG, "READ", buf, len);
+			debug_hex(DBG, "READ", buf, len, 0);
 			br_ssl_engine_recvrec_ack(engine, len);
 
 			continue;

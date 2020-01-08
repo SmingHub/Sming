@@ -75,6 +75,11 @@ public:
 		return const_cast<BrConnection*>(this)->getEngine();
 	}
 
+	int getLastError() const
+	{
+		return -br_ssl_engine_last_error(getEngine());
+	}
+
 protected:
 	/**
 	 * Perform initialisation common to both client and server connections
