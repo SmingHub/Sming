@@ -15,6 +15,9 @@
 
 namespace Ssl
 {
+/**
+ * @brief Contains a DER-encoded Distinguished Name
+ */
 class X509Name
 {
 public:

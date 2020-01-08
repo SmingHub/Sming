@@ -18,32 +18,16 @@ namespace Ssl
 {
 /**
  * @brief Interface class to handle certificate processing
- *
- * The default behaviour does nothing and accepts all certificates.
  */
 class X509Handler
 {
 public:
-	virtual void startChain(const char* serverName)
-	{
-	}
-
-	virtual void startCert(uint32_t length)
-	{
-	}
-
-	virtual void appendCertData(const uint8_t* buf, size_t len)
-	{
-	}
-
-	virtual void endCert()
-	{
-	}
-
-	virtual bool endChain()
-	{
-		return true;
-	}
+	virtual void startChain(const char* serverName) = 0;
+	virtual void startCert(uint32_t length) = 0;
+	virtual void appendCertData(const uint8_t* buf, size_t len) = 0;
+	virtual void endCert() = 0;
+	virtual bool endChain() = 0;
+	virtual const br_x509_pkey* getPublicKey() = 0;
 };
 
 /**
@@ -69,9 +53,6 @@ public:
 		return certificateCount;
 	}
 
-	X509Name issuer;
-	X509Name subject;
-
 private:
 #define GET_SELF() auto self = reinterpret_cast<X509Context*>(ctx)
 
@@ -89,19 +70,12 @@ private:
 	{
 		debug_i("start_cert: %u", length);
 		GET_SELF();
-		if(self->certificateCount == 0) {
-			self->startCert(length);
-		}
+		self->startCert(length);
 	}
 
 	void startCert(uint32_t length)
 	{
-		if(certificateCount == 0) {
-			br_x509_decoder_init(&x509Decoder, subject.append, &subject, issuer.append, &issuer);
-			issuer.clear();
-			subject.clear();
-			handler.startCert(length);
-		}
+		handler.startCert(length);
 	}
 
 	// Callback for each byte stream in the chain
@@ -110,9 +84,6 @@ private:
 		debug_i("append: %u", len);
 		GET_SELF();
 		self->handler.appendCertData(buf, len);
-		if(self->certificateCount == 0) {
-			br_x509_decoder_push(&self->x509Decoder, buf, len);
-		}
 		debug_hex(DBG, "CERT", buf, len, 0);
 	}
 
@@ -148,20 +119,18 @@ private:
 
 #undef GET_SELF
 
-	// Return the public key from the validator (set by x509_minimal)
 	static const br_x509_pkey* get_pkey(const br_x509_class* const* ctx, unsigned* usages)
 	{
 		auto self = reinterpret_cast<const X509Context*>(ctx);
 		if(usages != nullptr) {
 			*usages = BR_KEYTYPE_KEYX | BR_KEYTYPE_SIGN;
 		}
-		return &self->x509Decoder.pkey;
+		return self->handler.getPublicKey();
 	}
 
 private:
 	static const br_x509_class x509_class;
 	X509Handler& handler;
-	br_x509_decoder_context x509Decoder = {};
 	uint8_t certificateCount = 0;
 };
 

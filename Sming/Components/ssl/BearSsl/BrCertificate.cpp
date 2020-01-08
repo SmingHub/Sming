@@ -6,6 +6,8 @@
  *
  * BrCertificate.cpp
  *
+ * @author: 2019 - mikee47 <mike@sillyhouse.net>
+ *
  ****/
 
 #include "BrCertificate.h"

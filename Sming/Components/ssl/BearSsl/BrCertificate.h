@@ -6,6 +6,8 @@
  *
  * BrCertificate.h
  *
+ * @author: 2019 - mikee47 <mike@sillyhouse.net>
+ *
  ****/
 
 #pragma once
