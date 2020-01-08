@@ -168,7 +168,7 @@ int Session::write(const uint8_t* data, size_t length)
 
 	int res = connection->write(data, length);
 	if(res < 0) {
-		debug_w("SSL: write returned %d (%s)", res, connection->getErrorString(res).c_str());
+		debug_d("SSL: write returned %d (%s)", res, connection->getErrorString(res).c_str());
 		return ERR_BUF;
 	}
 
