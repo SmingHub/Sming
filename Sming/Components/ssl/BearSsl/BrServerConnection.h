@@ -13,7 +13,7 @@
 #pragma once
 
 #include "BrConnection.h"
-#include "BrServerKey.h"
+#include "BrPrivateKey.h"
 
 namespace Ssl
 {
@@ -45,7 +45,7 @@ public:
 private:
 	br_ssl_server_context serverContext;
 	br_x509_certificate cert;
-	BrServerKey key;
+	BrPrivateKey key;
 };
 
 } // namespace Ssl
