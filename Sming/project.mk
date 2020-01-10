@@ -137,6 +137,9 @@ COMPONENTS_EXTRA_INCDIR	:=
 # Components may specify directories containing source code to be compiled with application
 APPCODE				:=
 
+# Python requirements.txt collected from components
+PYTHON_REQUIREMENTS := 
+
 #
 # This macro sets the default component variables before including the (optional) component.mk file.
 #
@@ -160,6 +163,7 @@ COMPONENT_VARS			:=
 COMPONENT_RELINK_VARS	:=
 COMPONENT_TARGETS		:=
 COMPONENT_DEPENDS		:=
+override undefine COMPONENT_PYTHON_REQUIREMENTS
 EXTRA_LIBS				:=
 EXTRA_LDFLAGS			:=
 # Process any component.mk file (optional)
@@ -184,6 +188,11 @@ CMP_$1_LIBNAME			:= $$(COMPONENT_LIBNAME)
 CMP_$1_INCDIRS			:= $$(COMPONENT_INCDIRS)
 CMP_$1_DEPENDS			:= $$(COMPONENT_DEPENDS)
 CMP_$1_RELINK_VARS		:= $$(COMPONENT_RELINK_VARS)
+ifeq ($$(origin COMPONENT_PYTHON_REQUIREMENTS),undefined)
+PYTHON_REQUIREMENTS		+= $$(wildcard $2/requirements.txt)
+else
+PYTHON_REQUIREMENTS		+= $$(call AbsoluteSourcePath,$2,$$(COMPONENT_PYTHON_REQUIREMENTS))
+endif
 APPCODE					+= $$(call AbsoluteSourcePath,$2,$$(CMP_$1_APPCODE))
 COMPONENTS				+= $$(filter-out $$(COMPONENTS),$$(CMP_$1_DEPENDS))
 ifneq (App,$1)
@@ -450,6 +459,17 @@ decode-stacktrace: ##Open the stack trace decoder ready to paste dump text. Alte
 	$(Q) $(PYTHON) $(ARCH_TOOLS)/decode-stacktrace.py $(TARGET_OUT_0) $(TRACE)
 
 
+CACHE_VARS += PIP_ARGS
+PIP_ARGS ?=
+.PHONY: python-requirements
+python-requirements: ##Install Python requirements of project via pip
+ifeq (,$(PYTHON_REQUIREMENTS))
+	@echo No Python requirements to install for this project.
+else
+	@echo Installing Python requirements...
+	$(Q) $(PYTHON) -m pip install $(PIP_ARGS) $(foreach reqfile,$(PYTHON_REQUIREMENTS),-r $(reqfile))
+endif
+
 ##@Testing
 
 # OTA Server
@@ -516,7 +536,7 @@ ifneq (,$V)
 	@echo '  cmp-rebuild'
 endif
 
-	
+
 # Update build type cache
 $(shell	mkdir -p $(dir $(BUILD_TYPE_FILE)); \
 		echo '# Automatically generated file. Do not edit.' > $(BUILD_TYPE_FILE); \
