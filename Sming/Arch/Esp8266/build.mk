@@ -59,4 +59,4 @@ endif
 USE_NEWLIB			= $(if $(filter 9%,$(GCC_VERSION)),1,0)
 
 # => Tools
-MEMANALYZER = python $(ARCH_TOOLS)/memanalyzer.py $(OBJDUMP)$(TOOL_EXT)
+MEMANALYZER = $(PYTHON) $(ARCH_TOOLS)/memanalyzer.py $(OBJDUMP)$(TOOL_EXT)
