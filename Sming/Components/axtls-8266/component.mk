@@ -4,6 +4,8 @@ COMPONENT_SRCDIRS := \
 	axtls-8266/crypto \
 	axtls-8266/ssl
 
+COMPONENT_DEPENDS += crypto
+
 ifneq ($(SMING_ARCH),Host)
 COMPONENT_SRCDIRS += \
 	axtls-8266/replacements
