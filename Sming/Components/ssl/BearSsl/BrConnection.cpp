@@ -10,12 +10,11 @@
  *
  ****/
 
-/*
- */
 #include <SslDebug.h>
 #include "BrConnection.h"
 #include <Network/Ssl/Session.h>
 #include <FlashString/Array.hpp>
+#include "CipherSuites.h"
 
 // Defined in ssl_engine.c
 #define MAX_OUT_OVERHEAD 85
@@ -23,34 +22,6 @@
 
 namespace Ssl
 {
-namespace CipherSuites
-{
-DEFINE_CIPHER_SUITES(full, CipherSuite::ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,
-					 CipherSuite::ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
-					 CipherSuite::ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, CipherSuite::ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-					 CipherSuite::ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, CipherSuite::ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-					 CipherSuite::ECDHE_ECDSA_WITH_AES_128_CCM, CipherSuite::ECDHE_ECDSA_WITH_AES_256_CCM,
-					 CipherSuite::ECDHE_ECDSA_WITH_AES_128_CCM_8, CipherSuite::ECDHE_ECDSA_WITH_AES_256_CCM_8,
-					 CipherSuite::ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, CipherSuite::ECDHE_RSA_WITH_AES_128_CBC_SHA256,
-					 CipherSuite::ECDHE_ECDSA_WITH_AES_256_CBC_SHA384, CipherSuite::ECDHE_RSA_WITH_AES_256_CBC_SHA384,
-					 CipherSuite::ECDHE_ECDSA_WITH_AES_128_CBC_SHA, CipherSuite::ECDHE_RSA_WITH_AES_128_CBC_SHA,
-					 CipherSuite::ECDHE_ECDSA_WITH_AES_256_CBC_SHA, CipherSuite::ECDHE_RSA_WITH_AES_256_CBC_SHA,
-					 CipherSuite::ECDH_ECDSA_WITH_AES_128_GCM_SHA256, CipherSuite::ECDH_RSA_WITH_AES_128_GCM_SHA256,
-					 CipherSuite::ECDH_ECDSA_WITH_AES_256_GCM_SHA384, CipherSuite::ECDH_RSA_WITH_AES_256_GCM_SHA384,
-					 CipherSuite::ECDH_ECDSA_WITH_AES_128_CBC_SHA256, CipherSuite::ECDH_RSA_WITH_AES_128_CBC_SHA256,
-					 CipherSuite::ECDH_ECDSA_WITH_AES_256_CBC_SHA384, CipherSuite::ECDH_RSA_WITH_AES_256_CBC_SHA384,
-					 CipherSuite::ECDH_ECDSA_WITH_AES_128_CBC_SHA, CipherSuite::ECDH_RSA_WITH_AES_128_CBC_SHA,
-					 CipherSuite::ECDH_ECDSA_WITH_AES_256_CBC_SHA, CipherSuite::ECDH_RSA_WITH_AES_256_CBC_SHA,
-					 CipherSuite::RSA_WITH_AES_128_GCM_SHA256, CipherSuite::RSA_WITH_AES_256_GCM_SHA384,
-					 CipherSuite::RSA_WITH_AES_128_CCM, CipherSuite::RSA_WITH_AES_256_CCM,
-					 CipherSuite::RSA_WITH_AES_128_CCM_8, CipherSuite::RSA_WITH_AES_256_CCM_8,
-					 CipherSuite::RSA_WITH_AES_128_CBC_SHA256, CipherSuite::RSA_WITH_AES_256_CBC_SHA256,
-					 CipherSuite::RSA_WITH_AES_128_CBC_SHA, CipherSuite::RSA_WITH_AES_256_CBC_SHA,
-					 CipherSuite::ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA, CipherSuite::ECDHE_RSA_WITH_3DES_EDE_CBC_SHA,
-					 CipherSuite::ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA, CipherSuite::ECDH_RSA_WITH_3DES_EDE_CBC_SHA,
-					 CipherSuite::RSA_WITH_3DES_EDE_CBC_SHA);
-} // namespace CipherSuites
-
 int BrConnection::init(size_t bufferSize, bool bidi)
 {
 	auto engine = getEngine();
