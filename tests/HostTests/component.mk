@@ -7,7 +7,9 @@ ARDUINO_LIBRARIES := \
 	ArduinoJson5 \
 	ArduinoJson6
 
-COMPONENT_DEPENDS := malloc_count
+COMPONENT_DEPENDS := \
+	malloc_count \
+	bearssl-esp8266
 
 # Don't need network
 HOST_NETWORK_OPTIONS := --nonet
