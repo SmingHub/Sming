@@ -26,6 +26,11 @@ public:
 	using Engine = Engine_;
 	using Hash = ByteArray<Engine::hashsize>;
 
+	struct State {
+		ByteArray<Engine::statesize> value;
+		uint64_t count;
+	};
+
 	HashContext()
 	{
 		reset();
@@ -91,6 +96,31 @@ public:
 		Hash hash;
 		engine.final(hash.data());
 		return hash;
+	}
+
+	/**
+	 * @brief Get intermediate hash state
+	 * @param state OUT: current state
+	 * @retval uint64_t Number of bytes processed so far
+	 */
+	State getState()
+	{
+		State state;
+		state.count = engine.get_state(state.value.data());
+		return state;
+	}
+
+	/**
+	 * @brief Restore intermediate hash state
+	 *
+	 * Parameter values obtained via previous getState() call
+	 *
+	 * @param state
+	 * @param count
+	 */
+	void setState(const State& state)
+	{
+		engine.set_state(state.value.data(), state.count);
 	}
 
 private:

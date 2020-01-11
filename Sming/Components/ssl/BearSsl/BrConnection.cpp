@@ -12,6 +12,7 @@
 
 #include <SslDebug.h>
 #include "BrConnection.h"
+#include "BrHash.h"
 #include <Network/Ssl/Session.h>
 #include <FlashString/Array.hpp>
 #include "CipherSuites.h"
@@ -20,8 +21,55 @@
 #define MAX_OUT_OVERHEAD 85
 #define MAX_IN_OVERHEAD 325
 
+// From inner.h
+extern "C" void br_tls_phash(void* dst, size_t len, const br_hash_class* dig, const void* secret, size_t secret_len,
+							 const char* label, size_t seed_num, const br_tls_prf_seed_chunk* seed);
+
 namespace Ssl
 {
+#define BRHASH_SIZE_CHECK(Context)                                                                                     \
+	static_assert(sizeof(Context) <= sizeof(br_hash_compat_context),                                                   \
+				  "BrHashContext too big, set BRSSL_MAX_HASH_CONTEXT_SIZE");
+
+#define HASH_REF(tag, vtable) constexpr const br_hash_class& tag##_vtable = vtable;
+#define HASH_REF_CRYPTO(tag, Context)                                                                                  \
+	HASH_REF(tag, Context::__fstr__vt)                                                                                 \
+	BRHASH_SIZE_CHECK(Context)
+
+/**
+ * Define the set of hash implementations to be used
+ */
+HASH_REF_CRYPTO(md5, Md5Context)
+HASH_REF(sha1, br_sha1_vtable)
+HASH_REF(sha224, br_sha224_vtable)
+HASH_REF_CRYPTO(sha256, Sha256Context)
+HASH_REF(sha384, br_sha384_vtable)
+HASH_REF(sha512, br_sha512_vtable)
+
+static void br_tls10_prf(void* dst, size_t len, const void* secret, size_t secret_len, const char* label,
+						 size_t seed_num, const br_tls_prf_seed_chunk* seed)
+{
+	auto s1 = static_cast<const uint8_t*>(secret);
+	auto slen = (secret_len + 1) / 2;
+	memset(dst, 0, len);
+	br_tls_phash(dst, len, &md5_vtable, s1, slen, label, seed_num, seed);
+	br_tls_phash(dst, len, &sha1_vtable, s1 + secret_len - slen, slen, label, seed_num, seed);
+}
+
+void br_tls12_sha256_prf(void* dst, size_t len, const void* secret, size_t secret_len, const char* label,
+						 size_t seed_num, const br_tls_prf_seed_chunk* seed)
+{
+	memset(dst, 0, len);
+	br_tls_phash(dst, len, &sha256_vtable, secret, secret_len, label, seed_num, seed);
+}
+
+void br_tls12_sha384_prf(void* dst, size_t len, const void* secret, size_t secret_len, const char* label,
+						 size_t seed_num, const br_tls_prf_seed_chunk* seed)
+{
+	memset(dst, 0, len);
+	br_tls_phash(dst, len, &sha384_vtable, secret, secret_len, label, seed_num, seed);
+}
+
 int BrConnection::init(size_t bufferSize, bool bidi)
 {
 	auto engine = getEngine();
@@ -33,7 +81,7 @@ int BrConnection::init(size_t bufferSize, bool bidi)
 	br_ssl_engine_set_default_ecdsa(engine);
 
 	// Set supported hash functions for the SSL engine
-#define INSTALL_HASH(hash) br_ssl_engine_set_hash(engine, br_##hash##_ID, &br_##hash##_vtable);
+#define INSTALL_HASH(hash) br_ssl_engine_set_hash(engine, br_##hash##_ID, &hash##_vtable);
 	INSTALL_HASH(md5)
 	INSTALL_HASH(sha1)
 	INSTALL_HASH(sha224)

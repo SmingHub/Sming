@@ -25,3 +25,33 @@ index 0a62d9c..e94b7cd 100644
  
  
  /* ==================================================================== */
+diff --git a/inc/bearssl_hash.h b/inc/bearssl_hash.h
+index ca4fa26..520b3e0 100644
+--- a/inc/bearssl_hash.h
++++ b/inc/bearssl_hash.h
+@@ -1083,6 +1083,9 @@ typedef union {
+ 	br_sha384_context sha384;
+ 	br_sha512_context sha512;
+ 	br_md5sha1_context md5sha1;
++#ifdef BRSSL_MAX_HASH_CONTEXT_SIZE
++	uint8_t other[BRSSL_MAX_HASH_CONTEXT_SIZE];
++#endif
+ } br_hash_compat_context;
+ 
+ /*
+
+diff --git a/src/hash/multihash.c b/src/hash/multihash.c
+index b6df2e0..629c43e 100644
+--- a/src/hash/multihash.c
++++ b/src/hash/multihash.c
+@@ -36,6 +36,9 @@ typedef union {
+ 	br_sha256_context sha256;
+ 	br_sha384_context sha384;
+ 	br_sha512_context sha512;
++#ifdef BRSSL_MAX_HASH_CONTEXT_SIZE
++	uint8_t other[BRSSL_MAX_HASH_CONTEXT_SIZE];
++#endif
+ } gen_hash_context;
+ 
+ /*
+

@@ -33,6 +33,9 @@ extern "C" {
 #define CRYPTO_FUNC_UPDATE(hash)                                                                                       \
 	void CRYPTO_NAME(hash, update)(CRYPTO_CTX(hash) * ctx, const void* input, uint32_t length)
 #define CRYPTO_FUNC_FINAL(hash) void CRYPTO_NAME(hash, final)(uint8_t * digest, CRYPTO_CTX(hash) * ctx)
+#define CRYPTO_FUNC_GET_STATE(hash) uint64_t CRYPTO_NAME(hash, get_state)(CRYPTO_CTX(hash) * ctx, void* state)
+#define CRYPTO_FUNC_SET_STATE(hash)                                                                                    \
+	void CRYPTO_NAME(hash, set_state)(CRYPTO_CTX(hash) * ctx, const void* state, uint64_t count)
 
 #define CRYPTO_FUNC_HMAC(hash)                                                                                         \
 	void CRYPTO_NAME(hash, hmac)(const uint8_t* msg, int msg_len, const uint8_t* key, int key_len, uint8_t* digest)
@@ -44,6 +47,7 @@ extern "C" {
  * MD5
  */
 
+#define MD5_STATESIZE 16
 #define MD5_BLOCKSIZE 64
 
 #ifdef ARCH_ESP8266
@@ -64,6 +68,9 @@ typedef MD5_CTX CRYPTO_CTX(md5);
 
 #endif
 
+CRYPTO_FUNC_GET_STATE(md5);
+CRYPTO_FUNC_SET_STATE(md5);
+
 static inline CRYPTO_FUNC_HMAC_V(md5)
 {
 #ifdef ARCH_ESP8266
@@ -82,6 +89,7 @@ static inline CRYPTO_FUNC_HMAC(md5)
  * SHA1
  */
 
+#define SHA1_STATESIZE 20
 #define SHA1_BLOCKSIZE 64
 
 #ifdef CRYPTO_USE_BEARSSL
@@ -91,6 +99,8 @@ typedef br_sha1_context CRYPTO_CTX(sha1);
 #define crypto_sha1_init br_sha1_init
 #define crypto_sha1_update br_sha1_update
 #define crypto_sha1_final(digest, ctx) br_sha1_out(ctx, digest)
+#define crypto_sha1_get_state br_sha1_state
+#define crypto_sha1_set_state br_sha1_set_state
 
 #else
 
@@ -105,6 +115,11 @@ typedef SHA1_CTX CRYPTO_CTX(sha1);
 #define crypto_sha1_update SHA1_Update
 #define crypto_sha1_final SHA1_Final
 #endif
+
+CRYPTO_FUNC_GET_STATE(sha1);
+CRYPTO_FUNC_SET_STATE(sha1);
+
+#endif // CRYPTO_USE_BEARSSL
 
 static inline CRYPTO_FUNC_HMAC_V(sha1)
 {
@@ -125,6 +140,7 @@ static inline CRYPTO_FUNC_HMAC(sha1)
  */
 
 #define SHA224_SIZE 28
+#define SHA224_STATESIZE 32
 #define SHA224_BLOCKSIZE 64
 
 #ifdef CRYPTO_USE_BEARSSL
@@ -134,6 +150,8 @@ typedef br_sha224_context CRYPTO_CTX(sha224);
 #define crypto_sha224_init br_sha224_init
 #define crypto_sha224_update br_sha224_update
 #define crypto_sha224_final(digest, ctx) br_sha224_out(ctx, digest)
+#define crypto_sha224_get_state br_sha224_state
+#define crypto_sha224_set_state br_sha224_set_state
 
 #endif
 
@@ -141,6 +159,7 @@ typedef br_sha224_context CRYPTO_CTX(sha224);
  * SHA256
  */
 
+#define SHA256_STATESIZE 32
 #define SHA256_BLOCKSIZE 64
 
 typedef SHA256_CTX CRYPTO_CTX(sha256);
@@ -149,6 +168,9 @@ typedef SHA256_CTX CRYPTO_CTX(sha256);
 #define crypto_sha256_update SHA256_Update
 #define crypto_sha256_final SHA256_Final
 
+CRYPTO_FUNC_GET_STATE(sha256);
+CRYPTO_FUNC_SET_STATE(sha256);
+
 #define crypto_sha256_hmac_v hmac_sha256_v
 #define crypto_sha256_hmac hmac_sha256
 
@@ -156,6 +178,7 @@ typedef SHA256_CTX CRYPTO_CTX(sha256);
  * SHA384
  */
 
+#define SHA384_STATESIZE 64
 #define SHA384_BLOCKSIZE 128
 
 #ifdef CRYPTO_USE_BEARSSL
@@ -165,6 +188,8 @@ typedef br_sha384_context CRYPTO_CTX(sha384);
 #define crypto_sha384_init br_sha384_init
 #define crypto_sha384_update br_sha384_update
 #define crypto_sha384_final(digest, ctx) br_sha384_out(ctx, digest)
+#define crypto_sha384_get_state br_sha384_state
+#define crypto_sha384_set_state br_sha384_set_state
 
 #else
 
@@ -174,12 +199,16 @@ typedef SHA384_CTX CRYPTO_CTX(sha384);
 #define crypto_sha384_update SHA384_Update
 #define crypto_sha384_final SHA384_Final
 
+CRYPTO_FUNC_GET_STATE(sha384);
+CRYPTO_FUNC_SET_STATE(sha384);
+
 #endif
 
 /*
  * SHA512
  */
 
+#define SHA512_STATESIZE 64
 #define SHA512_BLOCKSIZE 128
 
 #ifdef CRYPTO_USE_BEARSSL
@@ -189,6 +218,8 @@ typedef br_sha512_context CRYPTO_CTX(sha512);
 #define crypto_sha512_init br_sha512_init
 #define crypto_sha512_update br_sha512_update
 #define crypto_sha512_final(digest, ctx) br_sha512_out(ctx, digest)
+#define crypto_sha512_get_state br_sha512_state
+#define crypto_sha512_set_state br_sha512_set_state
 
 #else
 
@@ -197,6 +228,9 @@ typedef SHA512_CTX CRYPTO_CTX(sha512);
 #define crypto_sha512_init SHA512_Init
 #define crypto_sha512_update SHA512_Update
 #define crypto_sha512_final SHA512_Final
+
+CRYPTO_FUNC_GET_STATE(sha512);
+CRYPTO_FUNC_SET_STATE(sha512);
 
 #endif
 
