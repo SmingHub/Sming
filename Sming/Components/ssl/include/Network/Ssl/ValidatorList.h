@@ -48,7 +48,12 @@ public:
 	 */
 	template <class T> bool pin(const T& fingerprint)
 	{
-		return add(new FingerprintValidator<T>(fingerprint));
+		if(!add(new FingerprintValidator<T>(fingerprint))) {
+			return false;
+		}
+
+		fingerprintTypes.add(fingerprint.type);
+		return true;
 	}
 
 	/**
@@ -71,6 +76,14 @@ public:
 	 * This method must be called no more than ONCE.
 	 */
 	bool validate(const Certificate* certificate);
+
+	/**
+	 * @brief Contains a list of registered fingerprint types
+	 *
+	 * Allows implementations to avoid calculating fingerprint values
+	 * which are not required, as this is computationally expensive.
+	 */
+	Fingerprint::Types fingerprintTypes;
 };
 
 } // namespace Ssl

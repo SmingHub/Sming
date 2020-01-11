@@ -114,8 +114,9 @@ public:
 	 */
 	virtual Alert getAlert(int error) const = 0;
 
-protected:
 	Context& context;
+
+protected:
 	tcp_pcb* tcp;
 };
 

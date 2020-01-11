@@ -17,14 +17,45 @@
 namespace Ssl
 {
 /**
+ * @brief Interface class to handle certificate processing
+ *
+ * The default behaviour does nothing and accepts all certificates.
+ */
+class X509Handler
+{
+public:
+	virtual void startChain(const char* serverName)
+	{
+	}
+
+	virtual void startCert(uint32_t length)
+	{
+	}
+
+	virtual void appendCertData(const uint8_t* buf, size_t len)
+	{
+	}
+
+	virtual void endCert()
+	{
+	}
+
+	virtual bool endChain()
+	{
+		return true;
+	}
+};
+
+/**
  * @brief C++ wrapper around a br_x509_class
  */
 class X509Context
 {
-public:
-	using OnValidate = Delegate<bool()>;
+	// Require `this == &vtable`
+	const br_x509_class* vtable = &x509_class;
 
-	X509Context(OnValidate onValidate) : onValidate(onValidate)
+public:
+	X509Context(X509Handler& handler) : handler(handler)
 	{
 	}
 
@@ -33,35 +64,13 @@ public:
 		return &vtable;
 	}
 
-	const X509Name& getIssuer() const
+	unsigned count() const
 	{
-		return issuer;
+		return certificateCount;
 	}
 
-	const X509Name& getSubject() const
-	{
-		return subject;
-	}
-
-	bool getFingerprint(Fingerprint::Type type, Fingerprint& fingerprint) const
-	{
-		switch(type) {
-		case Fingerprint::Type::CertSha1:
-			fingerprint.cert.sha1.hash = certificateSha1.hash();
-			return true;
-
-		case Fingerprint::Type::CertSha256:
-			fingerprint.cert.sha256.hash = certificateSha256.hash();
-			return true;
-
-		case Fingerprint::Type::PkiSha256:
-			// There is no easy easy way to obtain this.
-			return false;
-
-		default:
-			return false;
-		}
-	}
+	X509Name issuer;
+	X509Name subject;
 
 private:
 #define GET_SELF() auto self = reinterpret_cast<X509Context*>(ctx)
@@ -69,53 +78,75 @@ private:
 	// Callback on the first byte of any certificate
 	static void start_chain(const br_x509_class** ctx, const char* server_name)
 	{
-		debug_d("start_chain: %s", server_name);
+		debug_i("start_chain: %s", server_name);
 		GET_SELF();
-		self->startChain(server_name);
+		self->certificateCount = 0;
+		self->handler.startChain(server_name);
 	}
-
-	void startChain(const char* serverName);
 
 	// Callback for each certificate present in the chain
 	static void start_cert(const br_x509_class** ctx, uint32_t length)
 	{
-		debug_d("start_cert: %u", length);
-		(void)ctx;
-		(void)length;
+		debug_i("start_cert: %u", length);
+		GET_SELF();
+		if(self->certificateCount == 0) {
+			self->startCert(length);
+		}
+	}
+
+	void startCert(uint32_t length)
+	{
+		if(certificateCount == 0) {
+			br_x509_decoder_init(&x509Decoder, subject.append, &subject, issuer.append, &issuer);
+			issuer.clear();
+			subject.clear();
+			handler.startCert(length);
+		}
 	}
 
 	// Callback for each byte stream in the chain
 	static void append(const br_x509_class** ctx, const unsigned char* buf, size_t len)
 	{
-		debug_d("append: %u", len);
+		debug_i("append: %u", len);
 		GET_SELF();
-		// Don't process anything but the first certificate in the chain
+		self->handler.appendCertData(buf, len);
 		if(self->certificateCount == 0) {
-			self->certificateSha1.update(buf, len);
-			self->certificateSha256.update(buf, len);
 			br_x509_decoder_push(&self->x509Decoder, buf, len);
-			debug_hex(DBG, "CERT", buf, len);
 		}
+		debug_hex(DBG, "CERT", buf, len, 0);
 	}
 
 	static void end_cert(const br_x509_class** ctx)
 	{
-		debug_d("end_cert");
+		debug_i("end_cert");
 		GET_SELF();
+		self->handler.endCert();
 		++self->certificateCount;
 	}
 
 	// Complete chain has been parsed, return 0 on validation success
 	static unsigned end_chain(const br_x509_class** ctx)
 	{
-		debug_d("end_chain");
+		debug_i("end_chain");
 		GET_SELF();
 		return self->endChain();
 	}
 
-#undef GET_SELF
+	unsigned endChain()
+	{
+		if(certificateCount == 0) {
+			debug_w("No certificate processed");
+			return BR_ERR_X509_EMPTY_CHAIN;
+		}
 
-	unsigned endChain();
+		if(!handler.endChain()) {
+			return BR_ERR_X509_NOT_TRUSTED;
+		}
+
+		return BR_ERR_OK;
+	}
+
+#undef GET_SELF
 
 	// Return the public key from the validator (set by x509_minimal)
 	static const br_x509_pkey* get_pkey(const br_x509_class* const* ctx, unsigned* usages)
@@ -128,14 +159,8 @@ private:
 	}
 
 private:
-	// Require `this == &vtable`
-	const br_x509_class* vtable = &vt;
-	static const br_x509_class vt;
-	OnValidate onValidate;
-	mutable Crypto::Sha1 certificateSha1;
-	mutable Crypto::Sha256 certificateSha256;
-	X509Name issuer;
-	X509Name subject;
+	static const br_x509_class x509_class;
+	X509Handler& handler;
 	br_x509_decoder_context x509Decoder = {};
 	uint8_t certificateCount = 0;
 };

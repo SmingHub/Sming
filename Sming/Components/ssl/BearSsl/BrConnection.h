@@ -68,6 +68,13 @@ public:
 		return Ssl::getAlert(error);
 	}
 
+	virtual br_ssl_engine_context* getEngine() = 0;
+
+	br_ssl_engine_context* getEngine() const
+	{
+		return const_cast<BrConnection*>(this)->getEngine();
+	}
+
 protected:
 	/**
 	 * Perform initialisation common to both client and server connections
@@ -82,13 +89,6 @@ protected:
 	{
 		InputBuffer input(nullptr);
 		return runUntil(input, BR_SSL_SENDAPP | BR_SSL_RECVAPP);
-	}
-
-	virtual br_ssl_engine_context* getEngine() = 0;
-
-	br_ssl_engine_context* getEngine() const
-	{
-		return const_cast<BrConnection*>(this)->getEngine();
 	}
 
 private:

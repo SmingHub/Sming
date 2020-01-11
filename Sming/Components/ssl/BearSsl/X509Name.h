@@ -48,7 +48,7 @@ public:
 
 	static void append(void* ctx, const void* buf, size_t len)
 	{
-		auto self = reinterpret_cast<X509Name*>(ctx);
+		auto self = static_cast<X509Name*>(ctx);
 		self->dn.concat(static_cast<const char*>(buf), len);
 	}
 

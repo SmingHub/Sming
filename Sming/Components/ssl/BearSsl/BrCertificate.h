@@ -11,21 +11,27 @@
 #pragma once
 
 #include <Network/Ssl/Certificate.h>
-#include "X509Context.h"
+#include "X509Name.h"
 
 namespace Ssl
 {
-class BrCertificate : public Ssl::Certificate, public X509Context
+class BrCertificate : public Ssl::Certificate
 {
 public:
-	using X509Context::X509Context;
-
-	bool getFingerprint(Fingerprint::Type type, Fingerprint& fingerprint) const override
+	~BrCertificate()
 	{
-		return X509Context::getFingerprint(type, fingerprint);
+		delete fpCertSha1;
+		delete fpCertSha256;
 	}
 
+	bool getFingerprint(Fingerprint::Type type, Fingerprint& fingerprint) const override;
+
 	String getName(DN dn, RDN rdn) const override;
+
+	Fingerprint::Cert::Sha1* fpCertSha1 = nullptr;
+	Fingerprint::Cert::Sha256* fpCertSha256 = nullptr;
+	X509Name issuer;
+	X509Name subject;
 };
 
 } // namespace Ssl

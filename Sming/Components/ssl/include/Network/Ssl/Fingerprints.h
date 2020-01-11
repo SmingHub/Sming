@@ -32,6 +32,30 @@ union Fingerprint {
 		CertSha256, ///< SHA256 Fingerprint of entire certificate
 		PkiSha256,  ///< SHA256 Fingerprint of Public Key Information
 	};
+	/**
+	 * @brief Maintains a set of fingerprint types
+	 */
+	class Types
+	{
+	public:
+		void add(Type type)
+		{
+			bitSet(mask, type);
+		}
+
+		void remove(Type type)
+		{
+			bitClear(mask, type);
+		}
+
+		bool contains(Type type) const
+		{
+			return bitRead(mask, type);
+		}
+
+	private:
+		uint32_t mask = 0;
+	};
 
 	/**
 	 * @brief Fingerprints for the entire Certificate
