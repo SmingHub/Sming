@@ -37,8 +37,6 @@ LDFLAGS	+= \
 .PHONY: application
 application: $(CUSTOM_TARGETS) $(FW_FILE_1) $(FW_FILE_2)
 
-LIBDIRS += $(ARCH_BASE)/Compiler/ld
-
 # $1 -> Linker script
 define LinkTarget
 	$(info $(notdir $(PROJECT_DIR)): Linking $@)

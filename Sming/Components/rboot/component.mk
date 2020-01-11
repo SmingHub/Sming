@@ -10,6 +10,8 @@ endif
 COMPONENT_SUBMODULES	:= rboot
 COMPONENT_INCDIRS		:= rboot appcode rboot/appcode
 
+RBOOT_DIR				:= $(COMPONENT_PATH)
+
 ifndef RBOOT_EMULATION
 COMPONENT_SUBMODULES	+= esptool2
 DEBUG_VARS				+= ESPTOOL2
@@ -80,7 +82,7 @@ RBOOT_SILENT			?= 0
 RELINK_VARS				+= RBOOT_ROM_0 RBOOT_ROM_1 RBOOT_LD_TEMPLATE
 RBOOT_ROM_0				?= rom0
 RBOOT_ROM_1				?= rom1
-RBOOT_LD_TEMPLATE		?= $(ARCH_BASE)/Compiler/ld/rboot.rom0.ld
+RBOOT_LD_TEMPLATE		?= $(RBOOT_DIR)/rboot.rom0.ld
 RBOOT_LD_0				:= $(BUILD_BASE)/$(RBOOT_ROM_0).ld
 RBOOT_LD_1				:= $(BUILD_BASE)/$(RBOOT_ROM_1).ld
 
@@ -132,9 +134,8 @@ endif
 ifndef RBOOT_EMULATION
 RBOOT_BIN				:= $(FW_BASE)/rboot.bin
 CUSTOM_TARGETS			+= $(RBOOT_BIN)
-RBOOT_DIR := $(COMPONENT_PATH)/rboot
 $(RBOOT_BIN):
-	$(Q) $(MAKE) -C $(RBOOT_DIR)
+	$(Q) $(MAKE) -C $(RBOOT_DIR)/rboot
 
 EXTRA_LDFLAGS			:= -u Cache_Read_Enable_New
 

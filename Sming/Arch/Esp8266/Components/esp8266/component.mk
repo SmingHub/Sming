@@ -45,6 +45,18 @@ EXTRA_LIBS := \
 	crypto \
 	hal
 
-#
-LIBDIRS += $(COMPONENT_PATH)/ld
-EXTRA_LDFLAGS += -Tcrypto.ld
+LIBDIRS += $(COMPONENT_PATH)/ld $(SDK_BASE)/ld $(SDK_LIBDIR)
+
+# SDK-provided crypto library
+# Some routines are available in ROM so strip them out
+LIBCRYPTO := $(SDK_LIBDIR)/libcrypto.a
+LIBCRYPTO_ORIG := $(LIBCRYPTO:.a=.orig.a)
+COMPONENT_TARGETS += $(LIBCRYPTO_ORIG)
+
+# Make backup then modify original
+$(COMPONENT_RULE)$(LIBCRYPTO_ORIG): $(LIBCRYPTO)
+	cp $^ $@
+	ar -d $^ aes-internal-dec.o
+
+# Define linker symbols
+EXTRA_LDFLAGS += -Wl,--just-symbols=$(COMPONENT_PATH)/ld/crypto.sym
