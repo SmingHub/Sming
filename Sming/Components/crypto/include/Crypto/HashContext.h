@@ -1,67 +1,11 @@
 #pragma once
 
 #include <axtls-8266/crypto/crypto.h>
-#include <WString.h>
-#include <Data/HexString.h>
+#include "Blob.h"
+#include "ByteArray.h"
 
 namespace Crypto
 {
-/**
- * @brief Wraps a pointer to some data with size
- */
-struct Blob {
-	const void* data;
-	size_t size;
-
-	Blob(const void* data, size_t size) : data(data), size(size)
-	{
-	}
-
-	Blob(const String& str) : data(str.c_str()), size(str.length())
-	{
-	}
-};
-
-/**
- * @brief Class template for a Hash value, essentially just an array of bytes
- */
-template <class Engine_> struct HashValue {
-	using Engine = Engine_;
-	uint8_t data[Engine::size];
-
-	static constexpr size_t size = sizeof(data);
-
-	/**
-	 * @brief Copy from a memory buffer
-	 * @note Avoid using this method if possible as there are no checks on the data size
-	 */
-	bool copy(const void* src)
-	{
-		if(src == nullptr) {
-			memset(data, 0, size);
-			return false;
-		}
-
-		memcpy(data, src, size);
-		return true;
-	}
-
-	bool operator==(const HashValue& other) const
-	{
-		return memcmp(data, other.data, size) == 0;
-	}
-
-	String toString(char separator = '\0') const
-	{
-		return makeHexString(data, size, separator);
-	}
-};
-
-template <class Engine> String toString(const HashValue<Engine>& hash, char separator = '\0')
-{
-	return hash.toString(separator);
-}
-
 /**
  * @brief Class template for a Hash implementation 'Context'
  * @tparam Engine The hash implementation with `init`, `update` and `final` methods
