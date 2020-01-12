@@ -1,61 +1,112 @@
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * HmacContext.h
+ *
+ ****/
+
 #pragma once
 
+#include "HashContext.h"
 #include <string.h>
 #include <assert.h>
 
 namespace Crypto
 {
-template <class Context, size_t blockSize> class Hmac
+template <class HashContext> class HmacContext
 {
 public:
-	using Hash = typename Context::Hash;
-	using Message = Blob;
-	using Key = Blob;
+	using Engine = typename HashContext::Engine;
+	using Hash = typename HashContext::Hash;
+	static constexpr size_t blocksize = Engine::blocksize;
 
-	static Hash calculate(const Message& message, const Key& key)
+	void init(const Blob& key)
 	{
-		return calculate(&message, 1, key);
+		ByteArray<blocksize> inputPad;
+		inputPad = {};
+		if(key.size() <= blocksize) {
+			memcpy(inputPad.data(), key.data(), key.size());
+		} else {
+			ctx.reset();
+			ctx.update(key);
+			auto hash = ctx.getHash();
+			memcpy(inputPad.data(), hash.data(), hash.size());
+		}
+
+		outputPad = inputPad;
+
+		for(auto& c : inputPad) {
+			c ^= 0x36;
+		}
+		for(auto& c : outputPad) {
+			c ^= 0x5c;
+		}
+
+		ctx.reset();
+		ctx.update(inputPad);
+	}
+
+	void init(const void* key, size_t keySize)
+	{
+		init(Blob(key, keySize));
+	}
+
+	void init(const FSTR::ObjectBase& key)
+	{
+		uint8_t buf[key.size()];
+		key.read(0, buf, sizeof(buf));
+		init(buf, key.length());
 	}
 
 	/**
-	 * @brief Calculate HMAC using fixed block size
-	 * @param messages
-	 * @param numMessages
-	 * @param key
+	 * @name Update HMAC with some message content
+	 * @param args See HashContext update() methods
 	 */
-	static Hash calculate(const Message* messages, unsigned numMessages, const Key& key)
+	template <typename... Ts> void update(Ts&&... args)
 	{
-		uint8_t k_ipad[blockSize];
-		uint8_t k_opad[blockSize];
-		memset(k_ipad, 0, blockSize);
-		memset(k_opad, 0, blockSize);
-		if(key.size <= blockSize) {
-			memcpy(k_ipad, key.data, key.size);
-			memcpy(k_opad, key.data, key.size);
-		} else {
-			auto hash = Context::calculate(key);
-			memcpy(k_ipad, hash.data, hash.size);
-			memcpy(k_opad, hash.data, hash.size);
-		}
-
-		for(unsigned i = 0; i < blockSize; ++i) {
-			k_ipad[i] ^= 0x36;
-			k_opad[i] ^= 0x5c;
-		}
-
-		Context ctx;
-		ctx.update(k_ipad, sizeof(k_ipad));
-		for(unsigned i = 0; i < numMessages; ++i) {
-			ctx.update(messages[i]);
-		}
-
-		auto tmp = ctx.hash();
-
-		ctx = Context();
-		ctx.update(k_opad, sizeof(k_opad));
-		ctx.update(tmp.data, tmp.size);
-		return ctx.hash();
+		ctx.update(std::forward<Ts>(args)...);
 	}
+
+	Hash getHash()
+	{
+		auto tmp = ctx.getHash();
+
+		ctx.reset();
+		ctx.update(outputPad);
+		ctx.update(tmp);
+		return ctx.getHash();
+	}
+
+	/**
+	 * @name Calculate hash on some messages
+	 * @param args See HashContext update() methods
+	 * @retval Hash
+	 */
+	template <class Key, typename... Ts> static Hash calculate(const Key& key, Ts&&... args)
+	{
+		HmacContext<HashContext> hmac;
+		hmac.init(key);
+		hmac.update(std::forward<Ts>(args)...);
+		return hmac.getHash();
+	}
+
+private:
+	ByteArray<blocksize> outputPad;
+	HashContext ctx;
 };
+
+/*
+ * HMAC definitions
+ */
+
+using HmacMd5 = HmacContext<Md5>;
+using HmacSha1 = HmacContext<Sha1>;
+using HmacSha224 = HmacContext<Sha224>;
+using HmacSha256 = HmacContext<Sha256>;
+using HmacSha384 = HmacContext<Sha384>;
+using HmacSha512 = HmacContext<Sha512>;
 
 } // namespace Crypto

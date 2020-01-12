@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <Crypto/Sha1.h>
-#include <Crypto/Sha256.h>
+#include <Crypto.h>
+#include <BitManipulations.h>
 
 namespace Ssl
 {

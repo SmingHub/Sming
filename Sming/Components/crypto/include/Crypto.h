@@ -1,6 +1,13 @@
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * Crypto.h
+ *
+ ****/
+
 #pragma once
 
-#include "Crypto/Md5.h"
-#include "Crypto/Sha1.h"
-#include "Crypto/Sha256.h"
-#include "Crypto/Hmac.h"
+#include "Crypto/HmacContext.h"

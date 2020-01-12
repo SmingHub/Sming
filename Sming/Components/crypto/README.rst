@@ -44,7 +44,7 @@ If your data has multiple chunks, use the longer form::
       ctx.update(s1);
       ctx.update(s2);
       Serial.print("SHA256: ");
-      Serial.println(ctx.hash().toString());
+      Serial.println(ctx.getHash().toString());
    }
 
    sha256Test(F("This is some text to be hashed"), F("Hello"));
@@ -62,7 +62,7 @@ may be done like this::
 
    void printHmacMd5(const String& data, const String& key)
    {
-      auto hash = Crypto::Hmac<Crypto::Md5, 64>::calculate(data, key);
+      auto hash = Crypto::Hmac<Crypto::Md5>::calculate(data, key);
       Serial.print("HMAC.MD5 = ");
       Serial.println(hash.toString());
    }

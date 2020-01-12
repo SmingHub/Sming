@@ -17,10 +17,11 @@ Configuration Variables
 
 .. envvar:: ENABLE_SSL
 
-   - 0 (default): SSL requires lots of RAM and some intensive processing, so to conserve resources it is disabled by default.
-   - 1: to enable the default SSL implementation. At the moment that is Axtls.
-   - Axtls: to enable SSL support using the :component:`axtls-8266` component.
-   - Bearssl: to enable SSL support using the :component:`bearssl-esp8266` component.
+   -  0 (default): SSL requires lots of RAM and some intensive processing, so to conserve resources it is disabled by default.
+   -  1: to enable the default SSL adapter. At the moment that is Axtls.
+   -  Axtls: to enable SSL support using the :component:`axtls-8266` component.
+   -  Bearssl: to enable SSL support using the :component:`bearssl-esp8266` component.
+
 
 API Documentation
 -----------------

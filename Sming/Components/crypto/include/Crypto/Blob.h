@@ -15,17 +15,30 @@ namespace Crypto
 /**
  * @brief Wraps a pointer to some data with size
  */
-struct Blob {
-	const void* data;
-	size_t size;
-
-	Blob(const void* data, size_t size) : data(data), size(size)
+class Blob
+{
+public:
+	Blob(const void* data, size_t size) : data_(data), size_(size)
 	{
 	}
 
-	Blob(const String& str) : data(str.c_str()), size(str.length())
+	Blob(const String& str) : data_(str.c_str()), size_(str.length())
 	{
 	}
+
+	const uint8_t* data() const
+	{
+		return static_cast<const uint8_t*>(data_);
+	}
+
+	size_t size() const
+	{
+		return size_;
+	}
+
+private:
+	const void* data_;
+	size_t size_;
 };
 
 } // namespace Crypto
