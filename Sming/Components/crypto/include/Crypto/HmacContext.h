@@ -11,8 +11,8 @@
 #pragma once
 
 #include "HashContext.h"
-#include <string.h>
-#include <assert.h>
+#include <cstring>
+#include <cassert>
 
 namespace Crypto
 {

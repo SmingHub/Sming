@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 /**
  * @brief Helper class to allocate a single block of memory then copy out in chunks

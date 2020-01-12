@@ -14,8 +14,8 @@
  * @todo Will already be implemented somewhere (e.g. LWIP) find and use those instead
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 static inline void encbe(uint8_t* buf, uint32_t x)
 {
