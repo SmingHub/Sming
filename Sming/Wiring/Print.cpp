@@ -19,7 +19,7 @@
 #include "Print.h"
 #include "WString.h"
 #include <stringconversion.h>
-#include <math.h>
+#include <cmath>
 #include <algorithm>
 
 /*

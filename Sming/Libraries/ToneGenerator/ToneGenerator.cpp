@@ -19,7 +19,7 @@
 /*
  * Lookup table for quarter sine wave
 
-	#include <math.h>
+	#include <cmath>
 	#include <WConstants.h>
 
 	Serial.println();

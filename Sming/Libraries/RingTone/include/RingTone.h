@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include <stdint.h>
-#include <math.h>
+#include <cstdint>
+#include <cmath>
 
 namespace RingTone
 {

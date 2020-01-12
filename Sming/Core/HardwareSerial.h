@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include <Delegate.h>
 #include <Data/Stream/ReadWriteStream.h>
 #include <BitManipulations.h>

@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include <ratio>
 #include <algorithm>
 #include <muldiv.h>

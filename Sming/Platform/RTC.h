@@ -15,7 +15,7 @@
 */
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 /** @brief  Real time clock class
  *  @addtogroup rtc

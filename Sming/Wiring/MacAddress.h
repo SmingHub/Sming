@@ -26,7 +26,7 @@
 
 #include "WString.h"
 #include "Print.h"
-#include <stdint.h>
+#include <cstdint>
 
 /**
  * @brief A network hardware (MAC) address.
