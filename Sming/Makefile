@@ -132,10 +132,14 @@ endif
 
 .PHONY: cs
 cs: ##Apply coding style to all core files
-	$(if $(V),$(info Applying coding style to $(words $(CS_FILES)) files ...))
-	@for FILE in $(CS_FILES); do \
-		$(CLANG_FORMAT) -i -style=file $$FILE; \
-	done
+	$(call ClangFormat,$(CS_FILES))
+
+
+CS_DEV_FILES	= $(filter $(abspath $(addprefix ../,$(shell git diff --name-only develop...HEAD))),$(CS_FILES))
+
+.PHONY: cs-dev
+cs-dev: ##Apply coding style to all files changed from current upstream develop branch
+	$(call ClangFormat,$(CS_DEV_FILES))
 
 
 ##@Help

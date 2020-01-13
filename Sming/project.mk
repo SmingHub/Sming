@@ -430,6 +430,10 @@ cs: .clang-format ##Apply coding style to selected project directories
 .clang-format:
 	$(Q) cp $(SMING_HOME)/../.clang-format $@
 
+.PHONY: cs-dev
+cs-dev: ##Apply coding style to all files changed from current upstream develop branch
+	$(SMING_MAKE) $@
+
 .PHONY: gdb
 gdb: kill_term ##Run the debugger console
 	$(GDB_CMDLINE)
