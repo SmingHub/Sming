@@ -40,7 +40,7 @@ namespace Ssl
  * Define the set of hash implementations to be used
  */
 HASH_REF_CRYPTO(md5, Md5Context)
-HASH_REF(sha1, br_sha1_vtable)
+HASH_REF_CRYPTO(sha1, Sha1Context)
 HASH_REF(sha224, br_sha224_vtable)
 HASH_REF_CRYPTO(sha256, Sha256Context)
 HASH_REF(sha384, br_sha384_vtable)

@@ -92,18 +92,6 @@ static inline CRYPTO_FUNC_HMAC(md5)
 #define SHA1_STATESIZE 20
 #define SHA1_BLOCKSIZE 64
 
-#ifdef CRYPTO_USE_BEARSSL
-
-typedef br_sha1_context CRYPTO_CTX(sha1);
-
-#define crypto_sha1_init br_sha1_init
-#define crypto_sha1_update br_sha1_update
-#define crypto_sha1_final(digest, ctx) br_sha1_out(ctx, digest)
-#define crypto_sha1_get_state br_sha1_state
-#define crypto_sha1_set_state br_sha1_set_state
-
-#else
-
 #ifdef ARCH_ESP8266
 typedef ESP_SHA1_CTX CRYPTO_CTX(sha1);
 #define crypto_sha1_init ESP_SHA1_Init
@@ -118,8 +106,6 @@ typedef SHA1_CTX CRYPTO_CTX(sha1);
 
 CRYPTO_FUNC_GET_STATE(sha1);
 CRYPTO_FUNC_SET_STATE(sha1);
-
-#endif // CRYPTO_USE_BEARSSL
 
 static inline CRYPTO_FUNC_HMAC_V(sha1)
 {

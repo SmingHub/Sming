@@ -27,7 +27,6 @@ CRYPTO_FUNC_SET_STATE(md5)
  * SHA1
  */
 
-#ifndef CRYPTO_USE_BEARSSL
 CRYPTO_FUNC_GET_STATE(sha1)
 {
 #ifdef ARCH_ESP8266
@@ -56,7 +55,6 @@ CRYPTO_FUNC_SET_STATE(sha1)
 	ctx->Length_High = count >> 32;
 #endif
 }
-#endif
 
 /*
  * SHA256
