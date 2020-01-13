@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <WString.h>
+
 namespace Crypto
 {
 /**
@@ -40,5 +42,10 @@ private:
 	const void* data_;
 	size_t size_;
 };
+
+/**
+ * @brief Identifies data which should be treated with care
+ */
+using Secret = Blob;
 
 } // namespace Crypto

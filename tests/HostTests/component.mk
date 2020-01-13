@@ -9,6 +9,7 @@ ARDUINO_LIBRARIES := \
 
 COMPONENT_DEPENDS := \
 	malloc_count \
+	axtls-8266 \
 	bearssl-esp8266
 
 # Don't need network

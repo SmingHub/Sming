@@ -39,33 +39,33 @@ public:
 	/**
 	 * @brief Reset the context for a new calculation
 	 */
-	void reset()
+	HashContext& reset()
 	{
 		engine.init();
+		return *this;
 	}
 
 	/**
-	 * @name Calculate hash on some data blocks
+	 * @name Calculate hash on some data
 	 * @param args See update() methods
 	 * @retval Hash
 	 */
-	template <typename... Ts> static Hash calculate(Ts&&... args)
+	template <typename... Ts> Hash calculate(Ts&&... args)
 	{
-		HashContext<Engine> ctx;
-		ctx.update(std::forward<Ts>(args)...);
-		return ctx.getHash();
+		update(std::forward<Ts>(args)...);
+		return getHash();
 	}
 
 	/**
 	 * @name Update hash over a given block of data
 	 * @{
 	 */
-	void update(const Blob& blob)
+	HashContext& update(const Blob& blob)
 	{
-		engine.update(blob.data(), blob.size());
+		return update(blob.data(), blob.size());
 	}
 
-	void update(const FSTR::ObjectBase& obj)
+	HashContext& update(const FSTR::ObjectBase& obj)
 	{
 		uint8_t buf[256];
 		size_t offset = 0;
@@ -74,16 +74,18 @@ public:
 			engine.update(buf, len);
 			offset += len;
 		}
+		return *this;
 	}
 
-	void update(const void* data, size_t size)
+	HashContext& update(const void* data, size_t size)
 	{
 		engine.update(data, size);
+		return *this;
 	}
 
-	template <size_t size_> void update(const ByteArray<size_>& array)
+	template <size_t size_> HashContext& update(const ByteArray<size_>& array)
 	{
-		engine.update(array.data(), array.size());
+		return update(array.data(), array.size());
 	}
 	/** @} */
 

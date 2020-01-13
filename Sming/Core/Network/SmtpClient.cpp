@@ -176,7 +176,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		// Calculate the CRAM-MD5 response
 		//     base64.b64encode("user " +hmac.new(password, base64.b64decode(challenge), hashlib.md5).hexdigest())
 
-		auto digest = Crypto::HmacMd5::calculate(authChallenge, url.Password);
+		auto digest = Crypto::HmacMd5(url.Password).calculate(authChallenge);
 		String token = url.User + ' ' + Crypto::toString(digest);
 		sendString(base64_encode(token) + "\r\n");
 		state = eSMTP_SendingAuth;

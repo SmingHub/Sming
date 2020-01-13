@@ -23,10 +23,28 @@ public:
 	using Hash = typename HashContext::Hash;
 	static constexpr size_t blocksize = Engine::blocksize;
 
-	void init(const Blob& key)
+	/**
+	 * @brief Default HMAC constructor
+	 *
+	 * Must call init() first.
+	 */
+	HmacContext() = default;
+
+	/**
+	 * @brief Initialise HMAC context with key
+	 */
+	HmacContext(const Secret& key)
 	{
-		ByteArray<blocksize> inputPad;
-		inputPad = {};
+		init(key);
+	}
+
+	/**
+	 * @brief Initialise HMAC with key
+	 * @retval Reference to enable method chaining
+	 */
+	HmacContext& init(const Secret& key)
+	{
+		ByteArray<blocksize> inputPad{};
 		if(key.size() <= blocksize) {
 			memcpy(inputPad.data(), key.data(), key.size());
 		} else {
@@ -47,27 +65,19 @@ public:
 
 		ctx.reset();
 		ctx.update(inputPad);
-	}
 
-	void init(const void* key, size_t keySize)
-	{
-		init(Blob(key, keySize));
-	}
-
-	void init(const FSTR::ObjectBase& key)
-	{
-		uint8_t buf[key.size()];
-		key.read(0, buf, sizeof(buf));
-		init(buf, key.length());
+		return *this;
 	}
 
 	/**
 	 * @name Update HMAC with some message content
 	 * @param args See HashContext update() methods
+	 * @retval Reference to enable method chaining
 	 */
-	template <typename... Ts> void update(Ts&&... args)
+	template <typename... Ts> HmacContext& update(Ts&&... args)
 	{
 		ctx.update(std::forward<Ts>(args)...);
+		return *this;
 	}
 
 	Hash getHash()
@@ -81,16 +91,19 @@ public:
 	}
 
 	/**
-	 * @name Calculate hash on some messages
+	 * @name Calculate hash for some data
+	 *
+	 * Use like this:
+	 *
+	 * 		Crypto::HmacMd5(mySecret).calculate(myData);
+	 *
 	 * @param args See HashContext update() methods
 	 * @retval Hash
 	 */
-	template <class Key, typename... Ts> static Hash calculate(const Key& key, Ts&&... args)
+	template <typename... Ts> Hash calculate(Ts&&... args)
 	{
-		HmacContext<HashContext> hmac;
-		hmac.init(key);
-		hmac.update(std::forward<Ts>(args)...);
-		return hmac.getHash();
+		ctx.update(std::forward<Ts>(args)...);
+		return getHash();
 	}
 
 private:

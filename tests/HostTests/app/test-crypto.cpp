@@ -91,7 +91,7 @@ public:
 
 	template <class Context> void checkHmac(const FlashString& expectedHash)
 	{
-		auto hash = Context::calculate(FS_hmacKey, FS_plainText);
+		auto hash = Context(String(FS_hmacKey)).calculate(FS_plainText);
 		auto hashText = Crypto::toString(hash);
 		Serial.print(Context::Engine::name);
 		Serial.print(": ");
@@ -104,7 +104,7 @@ public:
 		MicroTimes times(Context::Engine::name);
 		for(unsigned i = 0; i < iterations; ++i) {
 			times.start();
-			auto hash = Context::calculate(plainText);
+			auto hash = Context().calculate(plainText);
 			times.update();
 			assert(Crypto::toString(hash) == expected);
 		}
@@ -116,7 +116,7 @@ public:
 		MicroTimes times(Context::Engine::name);
 		for(unsigned i = 0; i < iterations; ++i) {
 			times.start();
-			auto hash = Context::calculate(hmacKey, plainText);
+			auto hash = Context(hmacKey).calculate(plainText);
 			times.update();
 			assert(Crypto::toString(hash) == expected);
 		}
@@ -230,7 +230,7 @@ public:
 			break;
 
 		case 8:
-			TEST_CASE("Benchmark HMAC")
+			TEST_CASE("Benchmark Crypto HMAC")
 			{
 				benchmarkHmac<Crypto::HmacMd5>(MD5_HMAC);
 				benchmarkHmac<Crypto::HmacSha1>(SHA1_HMAC);

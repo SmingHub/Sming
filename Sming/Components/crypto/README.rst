@@ -28,10 +28,10 @@ Here's a basic example showing how to calculate a SHA1 hash on a C string::
 
    #include <Crypto/Sha1.h>
 
-   void sha1Test()
+   void sha1Test(const char* buffer)
    {
       // Returns a Crypto::Sha1::Hash object
-      auto hash = Crypto::Sha1::calculate(buffer, strlen(buffer));
+      auto hash = Crypto::Sha1().calculate(buffer, strlen(buffer));
       Serial.print("SHA1: ");
       Serial.println(hash.toString());
    }
@@ -60,9 +60,9 @@ may be done like this::
    #include <Crypto/Hmac.h>
    #include <Crypto/Md5.h>
 
-   void printHmacMd5(const String& data, const String& key)
+   void printHmacMd5(const String& key, const String& data)
    {
-      auto hash = Crypto::Hmac<Crypto::Md5>::calculate(data, key);
+      auto hash = Crypto::HmacMd5(key).calculate(data);
       Serial.print("HMAC.MD5 = ");
       Serial.println(hash.toString());
    }
