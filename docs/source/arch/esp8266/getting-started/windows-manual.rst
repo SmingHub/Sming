@@ -97,6 +97,12 @@ Install ESP8266 Toolchain
    You'll need to do this from an administrative command prompt.
 
 
+Install Python
+--------------
+
+Get the current version from https://www.python.org/.
+
+
 Install GIT
 -----------
 
@@ -117,8 +123,8 @@ Download Sming
 1. You can put Sming anywhere convenient, provided there are **no spaces** in the path!
    For example, *C:\\tools\\sming*::
 
-      mkdir C:\tools\sming
-      cd /d C:\tools\sming
+      mkdir C:\tools
+      cd /d C:\tools
 
 2. To obtain the latest develop code with all the latest features and fixes::
 
@@ -130,7 +136,7 @@ Download Sming
 
 3. Set :envvar:`SMING_HOME` environment variable::
 
-      SETX SMING_HOME C:\tools\sming\Sming
+      SETX SMING_HOME C:\tools\Sming\Sming
 
    Note: there is NO trailing slash on the path!
    
