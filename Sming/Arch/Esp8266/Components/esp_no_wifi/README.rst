@@ -70,3 +70,12 @@ If you want to disassemble other SDK libraries, do this::
 
    make sdk-disassemble SDK_LIBLIST="crypto net80211"
 
+
+Known issues
+------------
+
+Further work is required to implement the following (list incomplete):
+
+-  Sleep/power saving modes
+-  Partition tables
+-  Analogue reading
