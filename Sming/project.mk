@@ -462,7 +462,7 @@ decode-stacktrace: ##Open the stack trace decoder ready to paste dump text. Alte
 CACHE_VARS += PIP_ARGS
 PIP_ARGS ?=
 .PHONY: python-requirements
-python-requirements: ##Install Python requirements of project via pip
+python-requirements: ##Install Python requirements of project via pip (use PIP_ARGS=... for additional options)
 ifeq (,$(PYTHON_REQUIREMENTS))
 	@echo No Python requirements to install for this project.
 else
@@ -524,6 +524,21 @@ list-components: ##Print details of all Components for this project
 	$(if $(V),$(call PrintVariable,ALL_COMPONENT_DIRS))
 	$(info Components:)
 	$(foreach c,$(sort $(COMPONENTS)),$(eval $(call PrintComponentInfo,$c)))
+
+# Dump content of requirements.txt file
+# $1 -> absolute path to file
+define DumpRequirementsTxt
+	@echo \# From $1:
+	@cat $1
+
+endef
+.PHONY: list-python-requirements
+list-python-requirements: ##List Python requirements for this project
+ifeq (,$(PYTHON_REQUIREMENTS))
+	@echo \# No Python requirements for this project.
+else
+	$(foreach reqfile,$(PYTHON_REQUIREMENTS),$(call DumpRequirementsTxt,$(reqfile)))
+endif
 
 # => Help
 .PHONY: help
