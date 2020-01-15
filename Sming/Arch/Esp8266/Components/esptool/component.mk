@@ -48,7 +48,7 @@ COM_SPEED_ESPTOOL		?= $(COM_SPEED)
 
 COMPONENT_SUBMODULES	+= esptool
 DEBUG_VARS				+= ESPTOOL
-ESPTOOL					:= $(COMPONENT_PATH)/esptool/esptool.py
+ESPTOOL					:= $(PYTHON) $(COMPONENT_PATH)/esptool/esptool.py
 ESPTOOL_SUBMODULE		:= $(COMPONENT_PATH)/esptool
 
 $(ESPTOOL): $(ESPTOOL_SUBMODULE)/.submodule

@@ -11,9 +11,9 @@ web-upload: web-pack spiffs-image-update
 
 .PHONY: python-requirements
 python-requirements:
-	python -m pip install --user -r requirements.txt
+	$(PYTHON) -m pip install --user -r requirements.txt
 
-SIGNTOOL := python $(COMPONENT_PATH)/signtool.py
+SIGNTOOL := $(PYTHON) $(COMPONENT_PATH)/signtool.py
 SIGNING_KEY := $(COMPONENT_PATH)/signing.key
 VERIFICATION_HEADER := $(COMPONENT_PATH)/app/FirmwareVerificationKey.h
 
