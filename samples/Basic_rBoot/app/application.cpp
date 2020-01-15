@@ -67,7 +67,7 @@ void OtaUpdate()
 	}
 #endif
 
-#ifndef DISABLE_SPIFFS
+#if !DISABLE_SPIFFS
 	// use user supplied values (defaults for 4mb flash in makefile)
 	if(slot == 0) {
 		otaUpdater->addItem(RBOOT_SPIFFS_0, SPIFFS_URL);
@@ -172,7 +172,7 @@ void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCh
 			Serial.println("  switch - switch to the other rom and reboot");
 			Serial.println("  ota - perform ota update, switch rom and reboot");
 			Serial.println("  info - show esp8266 info");
-#ifndef DISABLE_SPIFFS
+#if !DISABLE_SPIFFS
 			Serial.println("  ls - list files in spiffs");
 			Serial.println("  cat - show first file in spiffs");
 #endif
@@ -190,7 +190,7 @@ void init()
 
 	// mount spiffs
 	int slot = rboot_get_current_rom();
-#ifndef DISABLE_SPIFFS
+#if !DISABLE_SPIFFS
 	if(slot == 0) {
 #ifdef RBOOT_SPIFFS_0
 		debugf("trying to mount spiffs at 0x%08x, length %d", RBOOT_SPIFFS_0, SPIFF_SIZE);
