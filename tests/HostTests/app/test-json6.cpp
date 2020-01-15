@@ -1,6 +1,7 @@
 #include <SmingTest.h>
 #define ARDUINOJSON_USE_LONG_LONG 1
 #include <JsonObjectStream6.h>
+#include <Data/CStringArray.h>
 
 class JsonTest6 : public TestGroup
 {

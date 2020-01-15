@@ -50,8 +50,10 @@ void init()
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 
 	// WIFI not needed for demo. So disabling WIFI.
+#ifndef DISABLE_WIFI
 	WifiStation.enable(false);
 	WifiAccessPoint.enable(false);
+#endif
 
 	Serial.println();
 	Serial.println("--------------------------------");

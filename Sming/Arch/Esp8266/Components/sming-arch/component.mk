@@ -15,7 +15,6 @@ COMPONENT_DEPENDS := \
 	rboot \
 	esp8266 \
 	driver \
-	esp_wifi \
 	esptool \
 	fatfs \
 	gdbstub \
@@ -25,6 +24,16 @@ COMPONENT_DEPENDS := \
 COMPONENT_VARS := \
 	ENABLE_WPS \
 	ENABLE_SMART_CONFIG
+
+#
+RELINK_VARS += DISABLE_WIFI
+DISABLE_WIFI ?= 0
+ifeq ($(DISABLE_WIFI),1)
+COMPONENT_DEPENDS += esp_no_wifi
+GLOBAL_CFLAGS += -DDISABLE_WIFI=1
+else
+COMPONENT_DEPENDS += esp_wifi
+endif
 
 # => LWIP
 COMPONENT_VARS			+= ENABLE_CUSTOM_LWIP

@@ -22,8 +22,10 @@ void init()
 	outputchip.begin();
 
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+#ifndef DISABLE_WIFI
 	WifiStation.enable(false);
 	WifiAccessPoint.enable(false);
+#endif
 
 	Serial.systemDebugOutput(false); // Allow debug output to serial
 	Serial.println("<-= Sming start =->");

@@ -92,7 +92,7 @@ inline void IRAM_ATTR hw_timer1_enable(hw_timer_clkdiv_t div, hw_timer_intr_type
 		ctrl |= FRC1_AUTO_LOAD;
 	}
 
-	RTC_REG_WRITE(FRC1_CTRL_ADDRESS, ctrl);
+	WRITE_PERI_REG(FRC1_CTRL_ADDRESS, ctrl);
 	TM1_EDGE_INT_ENABLE();
 	ETS_FRC1_INTR_ENABLE();
 }
@@ -103,7 +103,7 @@ inline void IRAM_ATTR hw_timer1_enable(hw_timer_clkdiv_t div, hw_timer_intr_type
  */
 __forceinline void IRAM_ATTR hw_timer1_write(uint32_t ticks)
 {
-	RTC_REG_WRITE(FRC1_LOAD_ADDRESS, ticks);
+	WRITE_PERI_REG(FRC1_LOAD_ADDRESS, ticks);
 }
 
 /**
@@ -131,7 +131,7 @@ __forceinline void IRAM_ATTR hw_timer1_detach_interrupt(void)
  */
 __forceinline uint32_t hw_timer1_read(void)
 {
-	return RTC_REG_READ(FRC1_COUNT_ADDRESS);
+	return READ_PERI_REG(FRC1_COUNT_ADDRESS);
 }
 
 /*************************************
@@ -142,30 +142,13 @@ __forceinline uint32_t hw_timer1_read(void)
  *
  *************************************/
 
-/**
- * @brief timer2_ms_flag
- *
- * FRC2 used as reference for NOW() - a macro which reads FRC2_COUNT register
- *
- * eagle_soc.h defines TIMER_CLK_FREQ using a divisor of 256, but this is only the SDK default setting and
- * is changed to 16 when `system_timer_reinit()` is called.
- *
- * The `timer2_ms_flag` indicates the current prescaler setting, however all related timing constants are
- * pre-calculated to avoid un-necessary runtime calculations.
- *
- * Note: This setting is reflected in the FRC2_CTRL register
- * 		 FRC2_CTRL_ADDRESS = 0x28 (omitted from eagle_soc.h).
- */
-extern const bool timer2_ms_flag;
-
 #ifdef USE_US_TIMER
-constexpr uint32_t HW_TIMER2_CLK = HW_TIMER_BASE_CLK / 16;
+constexpr uint32_t HW_TIMER2_CLKDIV = TIMER_CLKDIV_16;
 #else
-constexpr uint32_t HW_TIMER2_CLK = HW_TIMER_BASE_CLK / 256;
+constexpr uint32_t HW_TIMER2_CLKDIV = TIMER_CLKDIV_256;
 #endif
 
-// Timer2 interrupt fires when FRC2 count matches the value in this register
-#define FRC2_ALARM_ADDRESS 0x30
+constexpr uint32_t HW_TIMER2_CLK = HW_TIMER_BASE_CLK >> HW_TIMER2_CLKDIV;
 
 /**
  * @brief Read current timer2 value
@@ -173,7 +156,7 @@ constexpr uint32_t HW_TIMER2_CLK = HW_TIMER_BASE_CLK / 256;
  */
 __forceinline uint32_t hw_timer2_read(void)
 {
-	return NOW();
+	return READ_PERI_REG(FRC2_COUNT_ADDRESS);
 }
 
 /**
@@ -183,19 +166,14 @@ __forceinline uint32_t hw_timer2_read(void)
  */
 __forceinline void hw_timer2_set_alarm(uint32_t ticks)
 {
-	RTC_REG_WRITE(FRC2_ALARM_ADDRESS, ticks);
+	WRITE_PERI_REG(FRC2_ALARM_ADDRESS, ticks);
 }
 
 /**
  * @brief Initialise hardware timers
  * @note Called by startup code
  */
-inline void hw_timer_init(void)
-{
-#ifdef USE_US_TIMER
-	system_timer_reinit();
-#endif
-}
+void hw_timer_init(void);
 
 /** @} */
 

@@ -7,7 +7,6 @@
 # Remove object providing millis(), micros() - These functions are defined by the Sming component
 DEBUG_VARS += LIBMAIN_COMMANDS
 
-
 define APP_LIBMAIN_COMMANDS
 	$(Q) $(AR) d $@ time.o
 
@@ -27,21 +26,18 @@ $(LIBMAIN_DST): $(LIBMAIN_SRC)
 	$(LIBMAIN_COMMANDS)
 
 #
-LIBS += \
-	hal \
-	$(LIBMAIN)
+LIBS += $(LIBMAIN)
 
 # linker flags used to generate the main object file
 LDFLAGS	+= \
 	-nostdlib \
-	-u call_user_start \
-	-Wl,-static \
+	-Wl,-static
 
 
 .PHONY: application
 application: $(CUSTOM_TARGETS) $(FW_FILE_1) $(FW_FILE_2)
 
-LIBDIRS += $(ARCH_BASE)/Compiler/ld $(SDK_LIBDIR)
+LIBDIRS += $(ARCH_BASE)/Compiler/ld
 
 # $1 -> Linker script
 define LinkTarget
