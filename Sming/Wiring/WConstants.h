@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 // Wiring API version for libraries
 // this is passed in at compile-time

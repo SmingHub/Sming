@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 enum ASN1 {
 	ASN1_BOOLEAN = 0x01,

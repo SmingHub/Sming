@@ -19,10 +19,10 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include <esp_attr.h>
 #include <sming_attr.h>
-#include <math.h>
+#include <cmath>
 #include "Rational.h"
 #include <WString.h>
 

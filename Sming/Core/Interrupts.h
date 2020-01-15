@@ -14,7 +14,7 @@
 */
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include <driver/gpio.h>
 #include <Delegate.h>
 #include <WConstants.h>

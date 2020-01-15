@@ -18,7 +18,7 @@
 
 #include "include/SolarCalculator.h"
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 #include <WConstants.h>
 
 #ifndef M_PI

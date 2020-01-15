@@ -1,5 +1,5 @@
 
-#include <math.h>
+#include <cmath>
 
 class StatisticFunction
 {

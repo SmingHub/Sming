@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 /**
  * @brief HashMap class template

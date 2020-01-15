@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 class ToneBufferQueue;
 

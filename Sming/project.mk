@@ -182,11 +182,8 @@ CMP_$1_TARGETS			:= $$(COMPONENT_TARGETS)
 CMP_$1_BUILD_DIR		:= $$(COMPONENT_BUILD_DIR)
 CMP_$1_LIBNAME			:= $$(COMPONENT_LIBNAME)
 CMP_$1_INCDIRS			:= $$(COMPONENT_INCDIRS)
-# Variables including those inherited from dependencies (will be recursively expanded when required)
 CMP_$1_DEPENDS			:= $$(COMPONENT_DEPENDS)
-CMP_$1_DEPVARS			= $$(CMP_$1_VARS) $$(foreach c,$$(CMP_$1_DEPENDS),$$(CMP_$$c_DEPVARS))
 CMP_$1_RELINK_VARS		:= $$(COMPONENT_RELINK_VARS)
-CMP_$1_ALL_VARS			= $$(sort $$(CMP_$1_DEPVARS) $$(CMP_$1_RELINK_VARS))
 APPCODE					+= $$(call AbsoluteSourcePath,$2,$$(CMP_$1_APPCODE))
 COMPONENTS				+= $$(filter-out $$(COMPONENTS),$$(CMP_$1_DEPENDS))
 ifneq (App,$1)
@@ -242,16 +239,35 @@ COMPONENTS				+= $(sort $(ARDUINO_LIBRARIES))
 # Pull in all Component definitions
 $(eval $(call ParseComponentList,$(COMPONENTS)))
 
+# Resolve dependencies to a depth of 1
+# $1 -> Component name
+define ResolveDependentComponents
+$(CMP_$1_DEPENDS) $(foreach c,$(CMP_$1_DEPENDS),$(CMP_$c_DEPENDS))
+endef
+
+# Resolve component and variable dependences but limit recursion as components may be mutually dependent
+# $1 -> Component name
+define ResolveDependencies
+CMP_$1_DEPENDS	:= $(call ResolveDependentComponents,$1)
+CMP_$1_DEPENDS	:= $(call ResolveDependentComponents,$1)
+CMP_$1_DEPENDS	:= $(call ResolveDependentComponents,$1)
+CMP_$1_DEPENDS	:= $(call ResolveDependentComponents,$1)
+CMP_$1_DEPENDS	:= $$(sort $$(filter-out $1,$$(CMP_$1_DEPENDS)))
+CMP_$1_ALL_VARS	:= $$(sort $(CMP_$1_VARS) $$(foreach c,$$(CMP_$1_DEPENDS),$$(CMP_$$c_VARS)) $(CMP_$1_RELINK_VARS))
+endef
+
+$(foreach c,$(COMPONENTS),$(eval $(call ResolveDependencies,$c)))
+
+
 # This macro assigns a library and build path based on a hash of the component variables
 # $1 -> Component name
 define ParseComponentLibs
-CMP_$1_DEPVARS			:= $$(sort $$(CMP_$1_DEPVARS))
 ifneq (,$$(CMP_$1_LIBNAME))
 ifeq (,$$(CMP_$1_ALL_VARS))
 CMP_$1_LIBHASH			:=
 COMPONENT_VARIANT		:= $$(CMP_$1_LIBNAME)
 else
-COMPONENT_VARIABLES		:= $$(foreach $$v,$$(CMP_$1_ALL_VARS),$$($$v)=$$($$($$v)))
+COMPONENT_VARIABLES		:= $$(foreach v,$$(CMP_$1_ALL_VARS),$$($$v)=$$($$($$v)))
 CMP_$1_LIBHASH			:= $$(call CalculateVariantHash,COMPONENT_VARIABLES)
 COMPONENT_VARIANT		:= $$(CMP_$1_LIBNAME)-$$(CMP_$1_LIBHASH)
 endif
@@ -276,6 +292,7 @@ RELINK_VARS				+= $(foreach c,$(COMPONENTS),$(CMP_$c_RELINK_VARS))
 # Note that a link step is always performed, so nothing needs to be done with RELINK_VARS
 COMPONENTS				+= App
 CMP_App_VARS			:= $(CONFIG_VARS)
+CMP_App_ALL_VARS		:= $(CONFIG_VARS)
 $(foreach c,$(COMPONENTS),$(eval $(call ParseComponentLibs,$c)))
 
 export COMPONENTS_EXTRA_INCDIR

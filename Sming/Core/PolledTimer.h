@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include <esp_attr.h>
 #include <sming_attr.h>
 #include <Platform/Clocks.h>

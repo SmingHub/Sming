@@ -57,7 +57,7 @@
 #ifdef __cplusplus
 
 #include "WConstants.h"
-#include <stddef.h>
+#include <cstddef>
 #include <string.h>
 #include <sming_attr.h>
 

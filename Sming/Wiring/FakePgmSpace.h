@@ -31,7 +31,7 @@ extern "C"
 /**
  * @brief Simple check to determine if a pointer refers to flash memory
  */
-#define isFlashPtr(ptr) (uint32_t(ptr) >= 0x40200000)
+#define isFlashPtr(ptr) ((uint32_t)ptr >= 0x40200000)
 
 /**
  * @brief determines if the given value is aligned to a word (4-byte) boundary

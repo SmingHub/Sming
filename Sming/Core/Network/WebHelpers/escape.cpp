@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <c_types.h>
 #include <ctype.h>
-#include <math.h>
 
 // Append str to dest with checks
 static unsigned safe_append(char* dest, size_t len, const char* str)

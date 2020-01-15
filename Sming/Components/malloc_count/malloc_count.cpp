@@ -203,6 +203,11 @@ extern "C" void* mc_malloc(size_t size)
 	/* call read malloc procedure in libc */
 	void* ret = REAL(F_MALLOC)(alignment + size);
 
+	if(ret == nullptr) {
+		log("malloc(%u) failed", size);
+		return ret;
+	}
+
 	/* prepend allocation size and check sentinel */
 	*(size_t*)ret = size;
 	ret = (char*)ret + alignment;
@@ -285,10 +290,15 @@ extern "C" void* mc_realloc(void* ptr, size_t size)
 
 	size_t oldsize = *(size_t*)ptr;
 
+	void* newptr = REAL(F_REALLOC)(ptr, alignment + size);
+
+	if(newptr == nullptr) {
+		log("realloc(%u -> %u) failed", oldsize, size);
+		return nullptr;
+	}
+
 	dec_count(oldsize);
 	inc_count(size);
-
-	void* newptr = REAL(F_REALLOC)(ptr, alignment + size);
 
 	if(size >= logThreshold) {
 		if(newptr == ptr) {

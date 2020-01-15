@@ -11,7 +11,6 @@
  ****/
 
 #include <FakePgmSpace.h>
-#include <math.h>
 #include "include/RingTone.h"
 
 namespace RingTone

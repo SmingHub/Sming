@@ -38,7 +38,7 @@ COMPONENT_DOXYGEN_PREDEFINED := \
 
 COMPONENT_DOXYGEN_INPUT := \
 	Core \
-	$(wildcard Arch/*/Core) \
+	$(patsubst $(SMING_HOME)/%,%,$(wildcard $(SMING_HOME)/Arch/*/Core)) \
 	Platform \
 	Services \
 	Wiring \
