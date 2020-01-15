@@ -5,11 +5,13 @@ This Component provides additional functionality to support SPIFFS running on bo
 
 .. envvar:: DISABLE_SPIFFS
 
-   0
-      Disable filesystem generation
-      
-   1 (default)
+   0 (default)
       Enable filesystem generation
+      
+   1
+      Disable filesystem generation
+
+   The value is also #defined for application use.
 
    Note this doesn't actually disable SPIFFS support in the application!
 

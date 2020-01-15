@@ -15,8 +15,9 @@ $(COMPONENT_RULE)$(SPIFFY):
 ## Application
 
 # This controls filesystem generation, it doesn't actually disable SPIFFS support in the application
-CACHE_VARS			+= DISABLE_SPIFFS
+CONFIG_VARS			+= DISABLE_SPIFFS
 DISABLE_SPIFFS		?= 0
+APP_CFLAGS			+= -DDISABLE_SPIFFS=$(DISABLE_SPIFFS)
 
 CACHE_VARS			+= SPIFF_FILES SPIFF_BIN
 SPIFF_FILES			?= files
