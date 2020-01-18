@@ -42,11 +42,14 @@ int BrClientConnection::init()
 
 template <class HashCtx> void resetHash(HashCtx*& ctx, bool create)
 {
-	delete ctx;
 	if(create) {
-		ctx = new HashCtx;
+		if(ctx == nullptr) {
+			ctx = new HashCtx;
+		} else {
+			ctx->reset();
+		}
 	} else {
-		ctx = nullptr;
+		freeAndNil(ctx);
 	}
 }
 
