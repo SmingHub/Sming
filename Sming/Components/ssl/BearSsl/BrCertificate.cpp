@@ -21,14 +21,14 @@ bool BrCertificate::getFingerprint(Fingerprint::Type type, Fingerprint& fingerpr
 {
 	switch(type) {
 	case Fingerprint::Type::CertSha1:
-		if(fpCertSha1 == nullptr) {
+		if(!fpCertSha1) {
 			return false;
 		}
 		fingerprint.cert.sha1 = *fpCertSha1;
 		return true;
 
 	case Fingerprint::Type::CertSha256:
-		if(fpCertSha256 == nullptr) {
+		if(!fpCertSha256) {
 			return false;
 		}
 		fingerprint.cert.sha256 = *fpCertSha256;

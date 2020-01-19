@@ -22,10 +22,6 @@ class BrServerConnection : public BrConnection
 public:
 	using BrConnection::BrConnection;
 
-	~BrServerConnection()
-	{
-	}
-
 	int init();
 
 	const Certificate* getCertificate() const override

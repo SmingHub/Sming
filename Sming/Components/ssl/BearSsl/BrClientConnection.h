@@ -26,24 +26,16 @@ public:
 	{
 	}
 
-	~BrClientConnection()
-	{
-		delete x509Decoder;
-		delete certSha1Context;
-		delete certSha256Context;
-		delete certificate;
-	}
-
 	int init();
 
 	const Certificate* getCertificate() const override
 	{
-		return certificate;
+		return certificate.get();
 	}
 
 	void freeCertificate() override
 	{
-		freeAndNil(certificate);
+		certificate = nullptr;
 	}
 
 	/* BrConnection */
@@ -73,10 +65,10 @@ private:
 	br_ssl_client_context clientContext;
 	X509Context x509;
 	BrPublicKey publicKey;
-	X509Decoder* x509Decoder = nullptr;
-	BrCertificate* certificate = nullptr;
-	Crypto::Sha1* certSha1Context = nullptr;
-	Crypto::Sha256* certSha256Context = nullptr;
+	std::unique_ptr<X509Decoder> x509Decoder;
+	std::unique_ptr<BrCertificate> certificate;
+	std::unique_ptr<Crypto::Sha1> certSha1Context;
+	std::unique_ptr<Crypto::Sha256> certSha256Context;
 };
 
 } // namespace Ssl

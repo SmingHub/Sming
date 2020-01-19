@@ -106,13 +106,12 @@ int BrConnection::init(size_t bufferSize, bool bidi)
 		bufferSize += MAX_OUT_OVERHEAD;
 	}
 	debug_i("Using buffer size of %u bytes", bufferSize);
-	delete[] buffer;
-	buffer = new uint8_t[bufferSize];
-	if(buffer == nullptr) {
+	buffer.reset(new uint8_t[bufferSize]);
+	if(!buffer) {
 		debug_e("Buffer allocation failed");
 		return -BR_ERR_BAD_PARAM;
 	}
-	br_ssl_engine_set_buffer(engine, buffer, bufferSize, bidi);
+	br_ssl_engine_set_buffer(engine, buffer.get(), bufferSize, bidi);
 
 	return BR_ERR_OK;
 }

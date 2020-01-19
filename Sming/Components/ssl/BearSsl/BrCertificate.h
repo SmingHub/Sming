@@ -14,24 +14,19 @@
 
 #include <Network/Ssl/Certificate.h>
 #include "X509Name.h"
+#include <memory>
 
 namespace Ssl
 {
 class BrCertificate : public Ssl::Certificate
 {
 public:
-	~BrCertificate()
-	{
-		delete fpCertSha1;
-		delete fpCertSha256;
-	}
-
 	bool getFingerprint(Fingerprint::Type type, Fingerprint& fingerprint) const override;
 
 	String getName(DN dn, RDN rdn) const override;
 
-	Fingerprint::Cert::Sha1* fpCertSha1 = nullptr;
-	Fingerprint::Cert::Sha256* fpCertSha256 = nullptr;
+	std::unique_ptr<Fingerprint::Cert::Sha1> fpCertSha1;
+	std::unique_ptr<Fingerprint::Cert::Sha256> fpCertSha256;
 	X509Name issuer;
 	X509Name subject;
 };

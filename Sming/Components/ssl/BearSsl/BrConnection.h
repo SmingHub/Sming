@@ -16,24 +16,14 @@
 #include "BrError.h"
 #include "BrCertificate.h"
 #include <bearssl.h>
+#include <memory>
 
 namespace Ssl
 {
-template <typename T> void freeAndNil(T*& objectPointer)
-{
-	delete objectPointer;
-	objectPointer = nullptr;
-}
-
 class BrConnection : public Connection
 {
 public:
 	using Connection::Connection;
-
-	~BrConnection()
-	{
-		delete[] buffer;
-	}
 
 	int read(InputBuffer& input, uint8_t*& output) override;
 
@@ -106,7 +96,7 @@ private:
 	void setCipherSuites(const CipherSuites::Array* cipherSuites);
 
 private:
-	uint8_t* buffer = nullptr;
+	std::unique_ptr<uint8_t> buffer;
 	bool handshakeDone = false;
 };
 

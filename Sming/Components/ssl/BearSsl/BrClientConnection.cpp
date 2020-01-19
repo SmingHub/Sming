@@ -40,16 +40,12 @@ int BrClientConnection::init()
 	return startHandshake();
 }
 
-template <class HashCtx> void resetHash(HashCtx*& ctx, bool create)
+template <class HashCtx> void resetHash(std::unique_ptr<HashCtx>& ctx, bool create)
 {
 	if(create) {
-		if(ctx == nullptr) {
-			ctx = new HashCtx;
-		} else {
-			ctx->reset();
-		}
+		ctx.reset(new HashCtx);
 	} else {
-		freeAndNil(ctx);
+		ctx = nullptr;
 	}
 }
 
@@ -59,19 +55,17 @@ void BrClientConnection::startCert(uint32_t length)
 		return;
 	}
 
-	delete certificate;
-	certificate = new BrCertificate;
-
-	x509Decoder = new X509Decoder(&certificate->subject, &certificate->issuer);
+	certificate.reset(new BrCertificate);
+	x509Decoder.reset(new X509Decoder(&certificate->subject, &certificate->issuer));
 
 	auto& types = context.session.validators.fingerprintTypes;
 	resetHash(certSha1Context, types.contains(Fingerprint::Type::CertSha1));
 	resetHash(certSha256Context, types.contains(Fingerprint::Type::CertSha256));
 }
 
-template <class HashCtx> void updateHash(HashCtx* ctx, const uint8_t* buf, size_t len)
+template <class HashCtx> void updateHash(HashCtx& ctx, const uint8_t* buf, size_t len)
 {
-	if(ctx != nullptr) {
+	if(ctx) {
 		ctx->update(buf, len);
 	}
 }
@@ -88,9 +82,9 @@ void BrClientConnection::appendCertData(const uint8_t* buf, size_t len)
 	updateHash(certSha256Context, buf, len);
 }
 
-template <class FP, class HashCtx> bool getFp(FP& fp, HashCtx* ctx)
+template <class FP, class HashCtx> bool getFp(FP& fp, HashCtx& ctx)
 {
-	if(ctx == nullptr) {
+	if(!ctx) {
 		return false;
 	}
 
@@ -108,17 +102,17 @@ void BrClientConnection::endCert()
 
 	publicKey = x509Decoder->getPublicKey();
 
-	if(certSha1Context != nullptr) {
-		certificate->fpCertSha1 = new Fingerprint::Cert::Sha1{certSha1Context->getHash()};
-		freeAndNil(certSha1Context);
+	if(certSha1Context) {
+		certificate->fpCertSha1.reset(new Fingerprint::Cert::Sha1{certSha1Context->getHash()});
+		certSha1Context = nullptr;
 	}
 
 	if(certSha256Context != nullptr) {
-		certificate->fpCertSha256 = new Fingerprint::Cert::Sha256{certSha256Context->getHash()};
-		freeAndNil(certSha256Context);
+		certificate->fpCertSha256.reset(new Fingerprint::Cert::Sha256{certSha256Context->getHash()});
+		certSha256Context = nullptr;
 	}
 
-	freeAndNil(x509Decoder);
+	x509Decoder = nullptr;
 }
 
 bool BrClientConnection::endChain()
