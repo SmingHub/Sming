@@ -53,21 +53,11 @@ typedef struct {
 	uint32_t count; ///< Number of bits pushed
 	uint32_t countHigh;
 	uint8_t buffer[64];
-	uint8_t extra[40];
 } ESP_SHA1_CTX;
 
 void ESP_SHA1_Init(ESP_SHA1_CTX* context);
 void ESP_SHA1_Update(ESP_SHA1_CTX* context, const uint8_t* input, size_t len);
 void ESP_SHA1_Final(uint8_t digest[SHA1_SIZE], ESP_SHA1_CTX* context);
-
-/*
- * AES
- */
-
-//PROVIDE(ESP_aes_decrypt = 0x400092d4);
-//PROVIDE(ESP_aes_decrypt_deinit = 0x400092e4);
-//PROVIDE(ESP_aes_decrypt_init = 0x40008ea4);
-//PROVIDE(ESP_aes_unwrap = 0x40009410);
 
 /*
  * HMAC
