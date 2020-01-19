@@ -13,4 +13,7 @@ EXTRA_LDFLAGS += \
 	-Wl,-wrap,pvPortZalloc \
 	-Wl,-wrap,pvPortZallocIram \
 	-Wl,-wrap,vPortFree
+else
+EXTRA_LDFLAGS += \
+	-Wl,-wrap,strdup
 endif

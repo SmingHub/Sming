@@ -363,6 +363,14 @@ void operator delete[](void* ptr, size_t)
 	mc_free(ptr);
 }
 
+extern "C" char* WRAP(strdup)(const char* s)
+{
+	auto len = strlen(s) + 1;
+	auto dup = (char*)malloc(len);
+	memcpy(dup, s, len);
+	return dup;
+}
+
 #else
 
 extern "C" void* WRAP(pvPortMalloc)(size_t) __attribute__((alias("mc_malloc")));
