@@ -26,9 +26,12 @@ extern "C" {
  * MD5
  */
 
+#define MD5_SIZE 16
+
 typedef struct {
 	uint32_t state[4];
-	uint32_t count[2];
+	uint32_t count; ///< Number of bits pushed
+	uint32_t countHigh;
 	uint8_t buffer[64];
 } ESP_MD5_CTX;
 
@@ -47,7 +50,8 @@ void ESP_MD5_Final(uint8_t hash[], ESP_MD5_CTX* context);
 
 typedef struct {
 	uint32_t state[5];
-	uint32_t count[2];
+	uint32_t count; ///< Number of bits pushed
+	uint32_t countHigh;
 	uint8_t buffer[64];
 	uint8_t extra[40];
 } ESP_SHA1_CTX;

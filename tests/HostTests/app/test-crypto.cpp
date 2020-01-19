@@ -242,30 +242,84 @@ public:
 			break;
 
 		case 9:
-			TEST_CASE("Benchmark HMAC functions")
+			TEST_CASE("Check HMAC functions")
 			{
 				Crypto::Blob key(hmacKey);
 				Crypto::Blob text(plainText);
 #ifdef ARCH_ESP8266
-				benchmarkFunction(_F("ESP_hmac_md5"), [&]() {
+				TEST_CASE("ESP_hmac_md5")
+				{
 					Crypto::Md5::Hash hash;
+					ESP_hmac_md5(key.data(), key.size(), text.data(), text.size(), hash.data());
+					REQUIRE(Crypto::toString(hash) == MD5_HMAC);
+				}
+				TEST_CASE("ESP_hmac_sha1")
+				{
+					Crypto::Sha1::Hash hash;
+					ESP_hmac_sha1(key.data(), key.size(), text.data(), text.size(), hash.data());
+					REQUIRE(Crypto::toString(hash) == SHA1_HMAC);
+				}
+#endif
+				TEST_CASE("ax_hmac_md5")
+				{
+					Crypto::Md5::Hash hash;
+					ax_hmac_md5(text.data(), text.size(), key.data(), key.size(), hash.data());
+					REQUIRE(Crypto::toString(hash) == MD5_HMAC);
+				}
+				TEST_CASE("ax_hmac_sha1")
+				{
+					Crypto::Sha1::Hash hash;
+					ax_hmac_sha1(text.data(), text.size(), key.data(), key.size(), hash.data());
+					REQUIRE(Crypto::toString(hash) == SHA1_HMAC);
+				}
+				TEST_CASE("ax_hmac_sha256")
+				{
+					Crypto::Sha256::Hash hash;
+					ax_hmac_sha256(text.data(), text.size(), key.data(), key.size(), hash.data());
+					REQUIRE(Crypto::toString(hash) == SHA256_HMAC);
+				}
+				TEST_CASE("crypto_hmac_md5")
+				{
+					Crypto::Md5::Hash hash;
+					crypto_md5_hmac(text.data(), text.size(), key.data(), key.size(), hash.data());
+					REQUIRE(Crypto::toString(hash) == MD5_HMAC);
+				}
+				TEST_CASE("crypto_hmac_sha1")
+				{
+					Crypto::Sha1::Hash hash;
+					crypto_sha1_hmac(text.data(), text.size(), key.data(), key.size(), hash.data());
+					REQUIRE(Crypto::toString(hash) == SHA1_HMAC);
+				}
+				TEST_CASE("crypto_hmac_sha256")
+				{
+					Crypto::Sha256::Hash hash;
+					crypto_sha256_hmac(text.data(), text.size(), key.data(), key.size(), hash.data());
+					REQUIRE(Crypto::toString(hash) == SHA256_HMAC);
+				}
+			}
+			break;
+
+		case 10:
+			TEST_CASE("Benchmark HMAC functions")
+			{
+				Crypto::Blob key(hmacKey);
+				Crypto::Blob text(plainText);
+				Crypto::Sha512::Hash hash;
+#ifdef ARCH_ESP8266
+				benchmarkFunction(_F("ESP_hmac_md5"), [&]() {
 					ESP_hmac_md5(key.data(), key.size(), text.data(), text.size(), hash.data());
 				});
 				benchmarkFunction(_F("ESP_hmac_sha1"), [&]() {
-					Crypto::Sha1::Hash hash;
 					ESP_hmac_sha1(key.data(), key.size(), text.data(), text.size(), hash.data());
 				});
 #endif
 				benchmarkFunction(_F("ax_hmac_md5"), [&]() {
-					Crypto::Md5::Hash hash;
 					ax_hmac_md5(text.data(), text.size(), key.data(), key.size(), hash.data());
 				});
 				benchmarkFunction(_F("ax_hmac_sha1"), [&]() {
-					Crypto::Sha1::Hash hash;
 					ax_hmac_sha1(text.data(), text.size(), key.data(), key.size(), hash.data());
 				});
 				benchmarkFunction(_F("ax_hmac_sha256"), [&]() {
-					Crypto::Sha256::Hash hash;
 					ax_hmac_sha256(text.data(), text.size(), key.data(), key.size(), hash.data());
 				});
 			}
