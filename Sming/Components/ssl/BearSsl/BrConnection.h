@@ -19,6 +19,12 @@
 
 namespace Ssl
 {
+template <typename T> void freeAndNil(T*& objectPointer)
+{
+	delete objectPointer;
+	objectPointer = nullptr;
+}
+
 class BrConnection : public Connection
 {
 public:

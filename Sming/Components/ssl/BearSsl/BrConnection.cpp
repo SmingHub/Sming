@@ -28,8 +28,7 @@ extern "C" void br_tls_phash(void* dst, size_t len, const br_hash_class* dig, co
 namespace Ssl
 {
 #define BRHASH_SIZE_CHECK(Context)                                                                                     \
-	static_assert(sizeof(Context) <= sizeof(br_hash_compat_context),                                                   \
-				  "BrHashContext too big, set BRSSL_MAX_HASH_CONTEXT_SIZE");
+	static_assert(sizeof(Context) <= sizeof(br_hash_compat_context), "BrHashContext too big");
 
 #define HASH_REF(tag, vtable) constexpr const br_hash_class& tag##_vtable = vtable;
 #define HASH_REF_CRYPTO(tag, Context)                                                                                  \
@@ -41,10 +40,10 @@ namespace Ssl
  */
 HASH_REF_CRYPTO(md5, Md5Context)
 HASH_REF_CRYPTO(sha1, Sha1Context)
-HASH_REF(sha224, br_sha224_vtable)
+HASH_REF_CRYPTO(sha224, Sha224Context)
 HASH_REF_CRYPTO(sha256, Sha256Context)
-HASH_REF(sha384, br_sha384_vtable)
-HASH_REF(sha512, br_sha512_vtable)
+HASH_REF_CRYPTO(sha384, Sha384Context)
+HASH_REF_CRYPTO(sha512, Sha512Context)
 
 static void br_tls10_prf(void* dst, size_t len, const void* secret, size_t secret_len, const char* label,
 						 size_t seed_num, const br_tls_prf_seed_chunk* seed)

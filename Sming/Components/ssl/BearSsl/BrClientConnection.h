@@ -41,12 +41,6 @@ public:
 		return certificate;
 	}
 
-	template <typename T> void freeAndNil(T*& objectPointer)
-	{
-		delete objectPointer;
-		objectPointer = nullptr;
-	}
-
 	void freeCertificate() override
 	{
 		freeAndNil(certificate);
