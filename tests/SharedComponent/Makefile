@@ -64,7 +64,7 @@ $(REPO_DIR)/.git:
 $(SHARED_COMPONENT_DIR)/.gitmodules: | $(SHARED_COMPONENT_DIR)/.git
 	$(Q) cd $(@D)/$(COMPONENT_NAME) && \
 	git submodule add $(CURDIR)/$(REPO_DIR) $(SUBMODULE_NAME) && \
-	git submodule deinit $(SUBMODULE_NAME) -f
+	git submodule deinit -f $(SUBMODULE_NAME)
 
 $(SHARED_COMPONENT_DIR)/.git:
 	$(Q) git init $(@D)
