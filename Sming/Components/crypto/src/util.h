@@ -21,7 +21,7 @@
  * @name Swap byte order of 32-bit value(s) and output to unaligned byte buffer
  * @{
  */
-static inline void encbe(uint8_t* output, uint32_t input)
+static __forceinline void encbe(uint8_t* output, uint32_t input)
 {
 	output[0] = uint8_t(input >> 24);
 	output[1] = uint8_t(input >> 16);
@@ -29,7 +29,7 @@ static inline void encbe(uint8_t* output, uint32_t input)
 	output[3] = uint8_t(input);
 }
 
-static inline void encbe(uint8_t* output, uint64_t input)
+static __forceinline void encbe(uint8_t* output, uint64_t input)
 {
 	encbe(output, uint32_t(input >> 32));
 	encbe(output + 4, uint32_t(input));
@@ -40,12 +40,12 @@ static inline void encbe(uint8_t* output, uint64_t input)
  * @name Decode byte array into 32-bit value(s), swapping the byte order
  * @{
  */
-static inline void decbe(uint32_t& output, const uint8_t* input)
+static __forceinline void decbe(uint32_t& output, const uint8_t* input)
 {
 	output = (uint32_t(input[0]) << 24) | (uint32_t(input[1]) << 16) | (uint32_t(input[2]) << 8) | input[3];
 }
 
-static inline void decbe(uint64_t& output, const uint8_t* input)
+static __forceinline void decbe(uint64_t& output, const uint8_t* input)
 {
 	uint32_t x0, x1;
 	decbe(x1, input);
