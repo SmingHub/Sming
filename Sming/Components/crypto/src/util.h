@@ -57,22 +57,30 @@ static __forceinline void decbe(uint64_t& output, const uint8_t* input)
 template <size_t elementCount> class Range
 {
 public:
-	template <typename T> static void encode(uint8_t* output, const T* input)
+	template <typename T> static __forceinline void encode(uint8_t* output, const T* input)
 	{
-		for(unsigned i = 0; i < elementCount; ++i) {
-			encbe(output, *input);
-			++input;
-			output += sizeof(T);
-		}
+		encbe(output, *input);
+		Range<elementCount - 1>::encode(output + sizeof(T), input + 1);
 	}
 
-	template <typename T> static void decode(T* output, const uint8_t* input)
+	template <typename T> static __forceinline void decode(T* output, const uint8_t* input)
 	{
-		for(unsigned i = 0; i < elementCount; ++i) {
-			decbe(*output, input);
-			++output;
-			input += sizeof(T);
-		}
+		decbe(*output, input);
+		Range<elementCount - 1>::decode(output + 1, input + sizeof(T));
+	}
+};
+
+template <> class Range<1>
+{
+public:
+	template <typename T> static __forceinline void encode(uint8_t* output, const T* input)
+	{
+		encbe(output, *input);
+	}
+
+	template <typename T> static __forceinline void decode(T* output, const uint8_t* input)
+	{
+		decbe(*output, input);
 	}
 };
 
