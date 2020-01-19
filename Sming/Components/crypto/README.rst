@@ -20,10 +20,6 @@ given architecture but maintain a consistent interface and allow it to be easily
 Usage
 -----
 
-Add the following line to your application's `component.mk` file::
-
-   COMPONENT_DEPENDS += crypto
-
 Here's a basic example showing how to calculate a SHA1 hash on a C string::
 
    #include <Crypto/Sha1.h>
@@ -33,7 +29,7 @@ Here's a basic example showing how to calculate a SHA1 hash on a C string::
       // Returns a Crypto::Sha1::Hash object
       auto hash = Crypto::Sha1().calculate(buffer, strlen(buffer));
       Serial.print("SHA1: ");
-      Serial.println(hash.toString());
+      Serial.println(Crypto::toString(hash));
    }
 
 If your data has multiple chunks, use the longer form::
@@ -44,7 +40,7 @@ If your data has multiple chunks, use the longer form::
       ctx.update(s1);
       ctx.update(s2);
       Serial.print("SHA256: ");
-      Serial.println(ctx.getHash().toString());
+      Serial.println(Crypto::toString(ctx.getHash()));
    }
 
    sha256Test(F("This is some text to be hashed"), F("Hello"));
@@ -64,7 +60,7 @@ may be done like this::
    {
       auto hash = Crypto::HmacMd5(key).calculate(data);
       Serial.print("HMAC.MD5 = ");
-      Serial.println(hash.toString());
+      Serial.println(Crypto::toString(hash));
    }
 
 

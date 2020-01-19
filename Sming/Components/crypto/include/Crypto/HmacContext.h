@@ -70,7 +70,7 @@ public:
 	}
 
 	/**
-	 * @name Update HMAC with some message content
+	 * @brief Update HMAC with some message content
 	 * @param args See HashContext update() methods
 	 * @retval Reference to enable method chaining
 	 */
@@ -91,11 +91,11 @@ public:
 	}
 
 	/**
-	 * @name Calculate hash for some data
+	 * @brief Calculate hash for some data
 	 *
 	 * Use like this:
 	 *
-	 * 		Crypto::HmacMd5(mySecret).calculate(myData);
+	 * 		auto hash = Crypto::HmacMd5(mySecret).calculate(myData);
 	 *
 	 * @param args See HashContext update() methods
 	 * @retval Hash

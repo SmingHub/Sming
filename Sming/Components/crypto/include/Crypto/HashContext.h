@@ -46,7 +46,7 @@ public:
 	}
 
 	/**
-	 * @name Calculate hash on some data
+	 * @brief Calculate hash on some data
 	 * @param args See update() methods
 	 * @retval Hash
 	 */
