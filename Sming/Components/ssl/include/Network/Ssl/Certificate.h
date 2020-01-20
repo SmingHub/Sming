@@ -71,7 +71,7 @@ public:
 	}
 
 	/**
-	 * @name Obtain certificate fingerprint
+	 * @brief Obtain certificate fingerprint
 	 * @param type Which type of fingerprint to return
 	 * @param fingerprint On success, returned fingerprint
 	 * @retval bool true on success, false if fingerprint not available

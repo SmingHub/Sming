@@ -96,7 +96,7 @@ private:
 	void setCipherSuites(const CipherSuites::Array* cipherSuites);
 
 private:
-	std::unique_ptr<uint8_t> buffer;
+	std::unique_ptr<uint8_t[]> buffer;
 	bool handshakeDone = false;
 };
 

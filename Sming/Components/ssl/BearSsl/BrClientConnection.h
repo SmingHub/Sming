@@ -35,7 +35,7 @@ public:
 
 	void freeCertificate() override
 	{
-		certificate = nullptr;
+		certificate.reset();
 	}
 
 	/* BrConnection */
