@@ -42,21 +42,6 @@ bool BrPublicKey::decode(const uint8_t* buf, size_t len)
 	}
 }
 
-bool BrPublicKey::copy(const br_x509_pkey& other)
-{
-	switch(other.key_type) {
-	case BR_KEYTYPE_RSA:
-		return copy(other.key.rsa);
-
-	case BR_KEYTYPE_EC:
-		return copy(other.key.ec);
-
-	default:
-		debug_e("Unknown key type: %d", other.key_type);
-		return false;
-	}
-}
-
 bool BrPublicKey::copy(const br_rsa_public_key& rsa)
 {
 	freeMem();

@@ -34,9 +34,14 @@ public:
  * @tparam RsaKey Structure type for an RSA key
  * @tparam EcKey Structure type for an EC key
  */
-template <class RsaKey, class EcKey> class BrKeyTemplate : public BrKey
+template <class KeyClass, class RsaKey, class EcKey> class BrKeyTemplate : public BrKey
 {
 public:
+	~BrKeyTemplate()
+	{
+		static_cast<KeyClass*>(this)->freeMem();
+	}
+
 	Type getKeyType() const
 	{
 		return Type(key.type);
@@ -49,20 +54,20 @@ public:
 	BrKeyTemplate& operator=(const BrKeyTemplate& rhs)
 	{
 		if(this != &rhs) {
-			this->copy(rhs);
+			copy(rhs.key);
 		}
 		return *this;
 	}
 
 	BrKeyTemplate& operator=(const RsaKey& rsa)
 	{
-		this->copy(rsa);
+		static_cast<KeyClass*>(this)->copy(rsa);
 		return *this;
 	}
 
 	BrKeyTemplate& operator=(const EcKey& ec)
 	{
-		this->copy(ec);
+		static_cast<KeyClass*>(this)->copy(ec);
 		return *this;
 	}
 	/** @} */
@@ -72,7 +77,7 @@ public:
 	 */
 	BrKeyTemplate& operator=(BrKeyTemplate&& rhs)
 	{
-		move(rhs);
+		move(rhs.key);
 		return *this;
 	}
 
@@ -96,34 +101,45 @@ public:
 		return (key.type == BR_KEYTYPE_EC) ? &key.ec : nullptr;
 	}
 
+	/**
+	 * @brief Test for validity
+	 */
+	operator bool() const
+	{
+		return key.type != 0;
+	}
+
 protected:
-	bool copy(const BrKeyTemplate& other)
-	{
-		switch(other.key.type) {
-		case BR_KEYTYPE_RSA:
-			return this->copy(other.key.rsa);
-		case BR_KEYTYPE_EC:
-			return this->copy(other.key.ec);
-		default:
-			return false;
-		}
-	}
-
-	void move(BrKeyTemplate& other)
-	{
-		this->freeMem();
-		key = other.key;
-		other.key = {};
-	}
-
 	// Compatible with br_x509_pkey
-	struct {
+	struct Key {
 		uint8_t type;
 		union {
 			RsaKey rsa;
 			EcKey ec;
 		};
-	} key = {};
+	};
+
+	bool copy(const Key& other)
+	{
+		switch(other.type) {
+		case BR_KEYTYPE_RSA:
+			return static_cast<KeyClass*>(this)->copy(other.rsa);
+		case BR_KEYTYPE_EC:
+			return static_cast<KeyClass*>(this)->copy(other.ec);
+		default:
+			static_cast<KeyClass*>(this)->freeMem();
+			return other.type == 0;
+		}
+	}
+
+	void move(Key& other)
+	{
+		static_cast<KeyClass*>(this)->freeMem();
+		key = other;
+		other = {};
+	}
+
+	Key key{};
 };
 
 } // namespace Ssl

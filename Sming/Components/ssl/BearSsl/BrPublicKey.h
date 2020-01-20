@@ -16,14 +16,9 @@
 
 namespace Ssl
 {
-class BrPublicKey : public BrKeyTemplate<br_rsa_public_key, br_ec_public_key>
+class BrPublicKey : public BrKeyTemplate<BrPublicKey, br_rsa_public_key, br_ec_public_key>
 {
 public:
-	~BrPublicKey()
-	{
-		freeMem();
-	}
-
 	operator const br_x509_pkey*() const
 	{
 		return reinterpret_cast<const br_x509_pkey*>(&key);
@@ -34,7 +29,7 @@ public:
 		if(rhs == nullptr) {
 			freeMem();
 		} else {
-			copy(*rhs);
+			BrKeyTemplate::copy(*reinterpret_cast<const Key*>(rhs));
 		}
 		return *this;
 	}
@@ -50,8 +45,7 @@ public:
 	bool decode(const uint8_t* buf, size_t len);
 
 private:
-	bool copy(const BrPublicKey& other);
-	bool copy(const br_x509_pkey& other);
+	friend BrKeyTemplate<BrPublicKey, br_rsa_public_key, br_ec_public_key>;
 	bool copy(const br_rsa_public_key& rsa);
 	bool copy(const br_ec_public_key& ec);
 	void freeMem();

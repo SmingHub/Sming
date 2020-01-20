@@ -48,6 +48,7 @@ int BrServerConnection::init()
 	}
 	br_ssl_server_set_single_rsa(&serverContext, &cert, 1, key, BR_KEYTYPE_RSA | BR_KEYTYPE_KEYX | BR_KEYTYPE_SIGN,
 								 br_rsa_private_get_default(), br_rsa_pkcs1_sign_get_default());
+	// Warning: Inconsistent return type: not an error code
 	if(!br_ssl_server_reset(&serverContext)) {
 		debug_e("br_ssl_client_reset failed");
 		return getLastError();

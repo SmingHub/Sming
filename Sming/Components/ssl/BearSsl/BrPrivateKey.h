@@ -16,14 +16,9 @@
 
 namespace Ssl
 {
-class BrPrivateKey : public BrKeyTemplate<br_rsa_private_key, br_ec_private_key>
+class BrPrivateKey : public BrKeyTemplate<BrPrivateKey, br_rsa_private_key, br_ec_private_key>
 {
 public:
-	~BrPrivateKey()
-	{
-		freeMem();
-	}
-
 	/**
 	 * @brief Decode a private key block
 	 *
@@ -35,7 +30,7 @@ public:
 	bool decode(const uint8_t* buf, size_t len);
 
 private:
-	bool copy(const BrPrivateKey& other);
+	friend BrKeyTemplate<BrPrivateKey, br_rsa_private_key, br_ec_private_key>;
 	bool copy(const br_rsa_private_key& rsa);
 	bool copy(const br_ec_private_key& ec);
 	void freeMem();
