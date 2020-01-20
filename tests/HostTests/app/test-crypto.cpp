@@ -185,64 +185,7 @@ public:
 			break;
 
 		case 4:
-			TEST_CASE("Benchmark Crypto Hashes")
-			{
-				benchmarkHash<Crypto::Md5>(MD5_HASH);
-				benchmarkHash<Crypto::Sha1>(SHA1_HASH);
-				benchmarkHash<Crypto::Sha224>(SHA224_HASH);
-				benchmarkHash<Crypto::Sha256>(SHA256_HASH);
-				benchmarkHash<Crypto::Sha384>(SHA384_HASH);
-				benchmarkHash<Crypto::Sha512>(SHA512_HASH);
-			}
-			break;
-
-		case 5:
-#ifdef ARCH_ESP8266
-			TEST_CASE("Benchmark ESP Hashes")
-			{
-				benchmarkHash<Crypto::Esp::Md5>(MD5_HASH);
-				benchmarkHash<Crypto::Esp::Sha1>(SHA1_HASH);
-			}
-#endif
-			break;
-
-		case 6:
-			TEST_CASE("Benchmark axTLS Hashes")
-			{
-				benchmarkHash<Crypto::Ax::Md5>(MD5_HASH);
-				benchmarkHash<Crypto::Ax::Sha1>(SHA1_HASH);
-				benchmarkHash<Crypto::Ax::Sha256>(SHA256_HASH);
-				benchmarkHash<Crypto::Ax::Sha384>(SHA384_HASH);
-				benchmarkHash<Crypto::Ax::Sha512>(SHA512_HASH);
-			}
-			break;
-
-		case 7:
-			TEST_CASE("Benchmark BearSSL Hashes")
-			{
-				benchmarkHash<Crypto::Br::Md5>(MD5_HASH);
-				benchmarkHash<Crypto::Br::Sha1>(SHA1_HASH);
-				benchmarkHash<Crypto::Br::Sha224>(SHA224_HASH);
-				benchmarkHash<Crypto::Br::Sha256>(SHA256_HASH);
-				benchmarkHash<Crypto::Br::Sha384>(SHA384_HASH);
-				benchmarkHash<Crypto::Br::Sha512>(SHA512_HASH);
-			}
-			break;
-
-		case 8:
-			TEST_CASE("Benchmark Crypto HMAC")
-			{
-				benchmarkHmac<Crypto::HmacMd5>(MD5_HMAC);
-				benchmarkHmac<Crypto::HmacSha1>(SHA1_HMAC);
-				benchmarkHmac<Crypto::HmacSha224>(SHA224_HMAC);
-				benchmarkHmac<Crypto::HmacSha256>(SHA256_HMAC);
-				benchmarkHmac<Crypto::HmacSha384>(SHA384_HMAC);
-				benchmarkHmac<Crypto::HmacSha512>(SHA512_HMAC);
-			}
-			break;
-
-		case 9:
-			TEST_CASE("Check HMAC functions")
+			TEST_CASE("HMAC functions")
 			{
 				Crypto::Blob key(hmacKey);
 				Crypto::Blob text(plainText);
@@ -296,6 +239,63 @@ public:
 					crypto_sha256_hmac(text.data(), text.size(), key.data(), key.size(), hash.data());
 					REQUIRE(Crypto::toString(hash) == SHA256_HMAC);
 				}
+			}
+			break;
+
+		case 5:
+			TEST_CASE("Benchmark Crypto Hashes")
+			{
+				benchmarkHash<Crypto::Md5>(MD5_HASH);
+				benchmarkHash<Crypto::Sha1>(SHA1_HASH);
+				benchmarkHash<Crypto::Sha224>(SHA224_HASH);
+				benchmarkHash<Crypto::Sha256>(SHA256_HASH);
+				benchmarkHash<Crypto::Sha384>(SHA384_HASH);
+				benchmarkHash<Crypto::Sha512>(SHA512_HASH);
+			}
+			break;
+
+		case 6:
+#ifdef ARCH_ESP8266
+			TEST_CASE("Benchmark ESP Hashes")
+			{
+				benchmarkHash<Crypto::Esp::Md5>(MD5_HASH);
+				benchmarkHash<Crypto::Esp::Sha1>(SHA1_HASH);
+			}
+#endif
+			break;
+
+		case 7:
+			TEST_CASE("Benchmark axTLS Hashes")
+			{
+				benchmarkHash<Crypto::Ax::Md5>(MD5_HASH);
+				benchmarkHash<Crypto::Ax::Sha1>(SHA1_HASH);
+				benchmarkHash<Crypto::Ax::Sha256>(SHA256_HASH);
+				benchmarkHash<Crypto::Ax::Sha384>(SHA384_HASH);
+				benchmarkHash<Crypto::Ax::Sha512>(SHA512_HASH);
+			}
+			break;
+
+		case 8:
+			TEST_CASE("Benchmark BearSSL Hashes")
+			{
+				benchmarkHash<Crypto::Br::Md5>(MD5_HASH);
+				benchmarkHash<Crypto::Br::Sha1>(SHA1_HASH);
+				benchmarkHash<Crypto::Br::Sha224>(SHA224_HASH);
+				benchmarkHash<Crypto::Br::Sha256>(SHA256_HASH);
+				benchmarkHash<Crypto::Br::Sha384>(SHA384_HASH);
+				benchmarkHash<Crypto::Br::Sha512>(SHA512_HASH);
+			}
+			break;
+
+		case 9:
+			TEST_CASE("Benchmark Crypto HMAC")
+			{
+				benchmarkHmac<Crypto::HmacMd5>(MD5_HMAC);
+				benchmarkHmac<Crypto::HmacSha1>(SHA1_HMAC);
+				benchmarkHmac<Crypto::HmacSha224>(SHA224_HMAC);
+				benchmarkHmac<Crypto::HmacSha256>(SHA256_HMAC);
+				benchmarkHmac<Crypto::HmacSha384>(SHA384_HMAC);
+				benchmarkHmac<Crypto::HmacSha512>(SHA512_HMAC);
 			}
 			break;
 
