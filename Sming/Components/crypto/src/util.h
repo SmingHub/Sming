@@ -8,14 +8,33 @@
  *
  ****/
 
-/*
- * Based on code from BearSSL
- */
-
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <stringutil.h>
+
+/*
+ * Common operations
+ */
+
+template <typename T> T SHR(T x, unsigned n)
+{
+	return x >> n;
+}
+
+template <typename T> T ROTL(T x, unsigned n)
+{
+	return (x << n) | (x >> ((sizeof(T) * 8) - n));
+}
+
+template <typename T> T ROTR(T x, unsigned n)
+{
+	return (x << ((sizeof(T) * 8) - (n))) | (x >> (n));
+}
+
+/*
+ * Byteswapping based on BearSSL code
+ */
 
 /**
  * @name Swap byte order of 32-bit value(s) and output to unaligned byte buffer

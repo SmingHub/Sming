@@ -34,6 +34,8 @@
 
 #include "hash.h"
 
+namespace
+{
 /* Constants for MD5Transform routine.
  */
 #define S11 7
@@ -55,45 +57,56 @@
 
 /* F, G, H and I are basic MD5 functions.
  */
-#define F(x, y, z) (((x) & (y)) | ((~x) & (z)))
-#define G(x, y, z) (((x) & (z)) | ((y) & (~z)))
-#define H(x, y, z) ((x) ^ (y) ^ (z))
-#define I(x, y, z) ((y) ^ ((x) | (~z)))
+template <typename T> T F(T x, T y, T z)
+{
+	return (x & y) | (~x & z);
+}
 
-/* ROTATE_LEFT rotates x left n bits.  */
-#define ROTATE_LEFT(x, n) (((x) << (n)) | ((x) >> (32 - (n))))
+template <typename T> T G(T x, T y, T z)
+{
+	return (x & z) | (y & ~z);
+}
 
-/* FF, GG, HH, and II transformations for rounds 1, 2, 3, and 4.
-   Rotation is separate from addition to prevent recomputation.  */
+template <typename T> T H(T x, T y, T z)
+{
+	return x ^ y ^ z;
+}
+
+template <typename T> T I(T x, T y, T z)
+{
+	return y ^ (x | ~z);
+}
+
+/* FF, GG, HH, and II transformations for rounds 1, 2, 3, and 4. */
 #define FF(a, b, c, d, x, s, ac)                                                                                       \
 	{                                                                                                                  \
-		(a) += F((b), (c), (d)) + (x) + (uint32_t)(ac);                                                                \
-		(a) = ROTATE_LEFT((a), (s));                                                                                   \
+		(a) += F(b, c, d) + (x) + uint32_t(ac);                                                                        \
+		(a) = ROTL(a, s);                                                                                              \
 		(a) += (b);                                                                                                    \
 	}
 #define GG(a, b, c, d, x, s, ac)                                                                                       \
 	{                                                                                                                  \
-		(a) += G((b), (c), (d)) + (x) + (uint32_t)(ac);                                                                \
-		(a) = ROTATE_LEFT((a), (s));                                                                                   \
+		(a) += G(b, c, d) + (x) + uint32_t(ac);                                                                        \
+		(a) = ROTL(a, s);                                                                                              \
 		(a) += (b);                                                                                                    \
 	}
 #define HH(a, b, c, d, x, s, ac)                                                                                       \
 	{                                                                                                                  \
-		(a) += H((b), (c), (d)) + (x) + (uint32_t)(ac);                                                                \
-		(a) = ROTATE_LEFT((a), (s));                                                                                   \
+		(a) += H(b, c, d) + (x) + uint32_t(ac);                                                                        \
+		(a) = ROTL(a, s);                                                                                              \
 		(a) += (b);                                                                                                    \
 	}
 #define II(a, b, c, d, x, s, ac)                                                                                       \
 	{                                                                                                                  \
-		(a) += I((b), (c), (d)) + (x) + (uint32_t)(ac);                                                                \
-		(a) = ROTATE_LEFT((a), (s));                                                                                   \
+		(a) += I(b, c, d) + (x) + uint32_t(ac);                                                                        \
+		(a) = ROTL(a, s);                                                                                              \
 		(a) += (b);                                                                                                    \
 	}
 
 /**
  * MD5 basic transformation. Transforms state based on block.
  */
-static void MD5Transform(uint32_t state[], const uint8_t block[])
+void MD5Transform(uint32_t state[], const uint8_t block[])
 {
 	uint32_t a = state[0];
 	uint32_t b = state[1];
@@ -180,6 +193,8 @@ static void MD5Transform(uint32_t state[], const uint8_t block[])
 	state[2] += c;
 	state[3] += d;
 }
+
+} // namespace
 
 CRYPTO_FUNC_INIT(md5)
 {

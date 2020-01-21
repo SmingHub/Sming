@@ -24,19 +24,34 @@
 
 #include "hash.h"
 
-#define F(B, C, D) ((((C) ^ (D)) & (B)) ^ (D))
-#define G(B, C, D) ((B) ^ (C) ^ (D))
-#define H(B, C, D) (((D) & (C)) | (((D) | (C)) & (B)))
-#define I(B, C, D) G(B, C, D)
+namespace
+{
+template <typename T> T F(T b, T c, T d)
+{
+	return ((c ^ d) & b) ^ d;
+}
 
-#define ROTL(x, n) (((x) << (n)) | ((x) >> (32 - (n))))
+template <typename T> T G(T b, T c, T d)
+{
+	return b ^ c ^ d;
+}
 
-#define K1 ((uint32_t)0x5A827999)
-#define K2 ((uint32_t)0x6ED9EBA1)
-#define K3 ((uint32_t)0x8F1BBCDC)
-#define K4 ((uint32_t)0xCA62C1D6)
+template <typename T> T H(T b, T c, T d)
+{
+	return (d & c) | ((d | c) & b);
+}
 
-static void br_sha1_round(uint32_t state[], const uint8_t block[])
+template <typename T> T I(T b, T c, T d)
+{
+	return G(b, c, d);
+}
+
+constexpr uint32_t K1 = 0x5A827999;
+constexpr uint32_t K2 = 0x6ED9EBA1;
+constexpr uint32_t K3 = 0x8F1BBCDC;
+constexpr uint32_t K4 = 0xCA62C1D6;
+
+void br_sha1_round(uint32_t state[], const uint8_t block[])
 {
 	uint32_t a = state[0];
 	uint32_t b = state[1];
@@ -106,6 +121,8 @@ static void br_sha1_round(uint32_t state[], const uint8_t block[])
 	state[3] += d;
 	state[4] += e;
 }
+
+} // namespace
 
 CRYPTO_FUNC_INIT(sha1)
 {
