@@ -1,6 +1,18 @@
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * hmac.cpp
+ *
+ ****/
+
 #include "../include/Crypto/HmacContext.h"
 #include "util.h"
 
+namespace
+{
 template <class Hash>
 void hmacVT(const uint8_t** msg, int* msg_len, int count, const uint8_t* key, int key_len, uint8_t* digest)
 {
@@ -11,6 +23,8 @@ void hmacVT(const uint8_t** msg, int* msg_len, int count, const uint8_t* key, in
 	auto hash = hmac.getHash();
 	memcpy(digest, hash.data(), hash.size());
 }
+
+} // namespace
 
 #ifndef USE_ESP_CRYPTO
 
