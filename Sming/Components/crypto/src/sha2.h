@@ -121,9 +121,25 @@ __forceinline void process(T state[], const uint8_t block[], const T k[])
 	T g = state[6];
 	T h = state[7];
 
+#ifdef CRYPTO_SHA2_STANDARD
+	for(unsigned i = 0; i < len; ++i) {
+		T temp1 = h + StateShift::s1(e) + CH(e, f, g) + k[i] + w[i];
+		T temp2 = StateShift::s0(a) + MAJ(a, b, c);
+
+		h = g;
+		g = f;
+		f = e;
+		e = d + temp1;
+		d = c;
+		c = b;
+		b = a;
+		a = temp1 + temp2;
+	}
+#else
 	for(unsigned i = 0; i < len; i += 8) {
 		blockStep<StateShift>(a, b, c, d, e, f, g, h, w, k, i);
 	}
+#endif
 
 	state[0] += a;
 	state[1] += b;
