@@ -12,10 +12,10 @@
 
 namespace
 {
-void sha2big_round(uint64_t state[], const uint8_t block[])
+void sha2big_process(uint64_t state[], const uint8_t block[])
 {
-	using BlockShift = sha2::BlockShift<uint64_t, 1, 8, 7, 19, 61, 6>;
-	using StateShift = sha2::StateShift<uint64_t, 28, 34, 39, 14, 18, 41>;
+	using Sigma = sha2::Sigma<uint64_t, 1, 8, 7, 19, 61, 6>;
+	using Sum = sha2::Sum<uint64_t, 28, 34, 39, 14, 18, 41>;
 
 	static const uint64_t K[80] PROGMEM = {
 		0x428A2F98D728AE22, 0x7137449123EF65CD, 0xB5C0FBCFEC4D3B2F, 0xE9B5DBA58189DBBC, 0x3956C25BF348B538,
@@ -36,13 +36,13 @@ void sha2big_round(uint64_t state[], const uint8_t block[])
 		0x431D67C49C100D4C, 0x4CC5D4BECB3E42B6, 0x597F299CFC657E2A, 0x5FCB6FAB3AD6FAEC, 0x6C44198C4A475817,
 	};
 
-	sha2::process<80, BlockShift, StateShift>(state, block, K);
+	sha2::process<80, Sigma, Sum>(state, block, K);
 }
 
-void sha2big_out(const crypto_sha512_context_t* ctx, uint8_t* digest, bool isSha384)
+void sha2big_final(const crypto_sha512_context_t* ctx, uint8_t* digest, bool isSha384)
 {
 	decltype(ctx->state) val;
-	hashFinal<true>(ctx, sha2big_round, val);
+	hashFinal<true>(ctx, sha2big_process, val);
 	if(isSha384) {
 		Range<SHA384_SIZE / sizeof(val[0])>::encode(digest, val);
 	} else {
@@ -68,12 +68,12 @@ CRYPTO_FUNC_INIT(sha384)
 
 CRYPTO_FUNC_UPDATE(sha384)
 {
-	hashUpdate(ctx, sha2big_round, input, length);
+	hashUpdate(ctx, sha2big_process, input, length);
 }
 
 CRYPTO_FUNC_FINAL(sha384)
 {
-	sha2big_out(ctx, digest, true);
+	sha2big_final(ctx, digest, true);
 }
 
 CRYPTO_FUNC_GET_STATE(sha384)
@@ -107,7 +107,7 @@ CRYPTO_FUNC_UPDATE(sha512) __attribute__((alias("crypto_sha384_update")));
 
 CRYPTO_FUNC_FINAL(sha512)
 {
-	sha2big_out(ctx, digest, false);
+	sha2big_final(ctx, digest, false);
 }
 
 CRYPTO_FUNC_GET_STATE(sha512) __attribute__((alias("crypto_sha384_get_state")));

@@ -13,6 +13,10 @@
 #include <cstring>
 #include <stringutil.h>
 
+namespace Crypto
+{
+namespace Internal
+{
 /*
  * Common operations
  */
@@ -119,3 +123,6 @@ template <class Context> void ESP_setCount(Context* ctx, uint64_t count)
 	ctx->countHigh = count >> 32;
 }
 /** @} */
+
+} // namespace Internal
+} // namespace Crypto

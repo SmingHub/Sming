@@ -12,10 +12,10 @@
 
 namespace
 {
-void SHA256_Process(uint32_t state[], const uint8_t block[])
+void sha2small_process(uint32_t state[], const uint8_t block[])
 {
-	using BlockShift = sha2::BlockShift<uint32_t, 7, 18, 3, 17, 19, 10>;
-	using StateShift = sha2::StateShift<uint32_t, 2, 13, 22, 6, 11, 25>;
+	using Sigma = sha2::Sigma<uint32_t, 7, 18, 3, 17, 19, 10>;
+	using Sum = sha2::Sum<uint32_t, 2, 13, 22, 6, 11, 25>;
 
 	static const uint32_t K[64] PROGMEM = {
 		0x428A2F98, 0x71374491, 0xB5C0FBCF, 0xE9B5DBA5, 0x3956C25B, 0x59F111F1, 0x923F82A4, 0xAB1C5ED5,
@@ -28,13 +28,13 @@ void SHA256_Process(uint32_t state[], const uint8_t block[])
 		0x748F82EE, 0x78A5636F, 0x84C87814, 0x8CC70208, 0x90BEFFFA, 0xA4506CEB, 0xBEF9A3F7, 0xC67178F2,
 	};
 
-	sha2::process<64, BlockShift, StateShift>(state, block, K);
+	sha2::process<64, Sigma, Sum>(state, block, K);
 }
 
-void crypto_sha2small_final(uint8_t* digest, crypto_sha256_context_t* ctx, bool isSha224)
+void sha2small_final(uint8_t* digest, crypto_sha256_context_t* ctx, bool isSha224)
 {
 	decltype(ctx->state) val;
-	hashFinal<true>(ctx, SHA256_Process, val);
+	hashFinal<true>(ctx, sha2small_process, val);
 	if(isSha224) {
 		Range<SHA224_SIZE / sizeof(val[0])>::encode(digest, val);
 	} else {
@@ -60,12 +60,12 @@ CRYPTO_FUNC_INIT(sha256)
 
 CRYPTO_FUNC_UPDATE(sha256)
 {
-	hashUpdate(ctx, SHA256_Process, input, length);
+	hashUpdate(ctx, sha2small_process, input, length);
 }
 
 CRYPTO_FUNC_FINAL(sha256)
 {
-	crypto_sha2small_final(digest, ctx, false);
+	sha2small_final(digest, ctx, false);
 }
 
 CRYPTO_FUNC_GET_STATE(sha256)
@@ -98,7 +98,7 @@ CRYPTO_FUNC_UPDATE(sha224) __attribute__((alias("crypto_sha256_update")));
 
 CRYPTO_FUNC_FINAL(sha224)
 {
-	crypto_sha2small_final(digest, ctx, true);
+	sha2small_final(digest, ctx, true);
 }
 
 CRYPTO_FUNC_GET_STATE(sha224) __attribute__((alias("crypto_sha256_get_state")));

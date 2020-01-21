@@ -15,6 +15,12 @@
 #include <cstring>
 #include <FakePgmSpace.h>
 
+using namespace Crypto::Internal;
+
+namespace Crypto
+{
+namespace Internal
+{
 /**
  * @brief Block hash operation transposes incoming block of data into state
  * @param state Intermediate digest state, an array of uint32_t or uint64_t
@@ -103,3 +109,6 @@ void hashFinal(const Context* ctx, HashProcess<T> process, decltype(Context::sta
 
 	process(digest, buf);
 }
+
+} // namespace Internal
+} // namespace Crypto
