@@ -1,5 +1,5 @@
 /******************************************************************************
- * malloc_count.c
+ * malloc_count.cpp
  *
  * malloc() allocation counter based on http://ozlabs.org/~jk/code/ and other
  * code preparing LD_PRELOAD shared objects.
@@ -353,6 +353,8 @@ void operator delete[](void* ptr)
 	mc_free(ptr);
 }
 
+#if __cplusplus >= 201402L
+
 void operator delete(void* ptr, size_t)
 {
 	mc_free(ptr);
@@ -362,6 +364,8 @@ void operator delete[](void* ptr, size_t)
 {
 	mc_free(ptr);
 }
+
+#endif
 
 extern "C" char* WRAP(strdup)(const char* s)
 {

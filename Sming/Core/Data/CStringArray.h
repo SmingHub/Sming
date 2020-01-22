@@ -13,6 +13,7 @@
 #pragma once
 
 #include "WString.h"
+#include "stringutil.h"
 
 /**
  * @brief Class to manage a double null-terminated list of strings, such as "one\0two\0three\0"
@@ -202,6 +203,131 @@ public:
 	*   @retval unsigned Quantity of strings
 	*/
 	unsigned count() const;
+
+	/**
+	 * @name Iterator support (forward only)
+	 * @{
+	 */
+	class Iterator
+	{
+	public:
+		Iterator() = default;
+		Iterator(const Iterator&) = default;
+
+		Iterator(const CStringArray* array, uint16_t offset, uint16_t index)
+			: array_(array), offset_(offset), index_(index)
+		{
+		}
+
+		operator bool() const
+		{
+			return array_ != nullptr && offset_ < array_->length();
+		}
+
+		bool equals(const char* rhs) const
+		{
+			auto s = str();
+			return s == rhs || strcmp(s, rhs) == 0;
+		}
+
+		bool equalsIgnoreCase(const char* rhs) const
+		{
+			auto s = str();
+			return s == rhs || strcasecmp(str(), rhs) == 0;
+		}
+
+		bool operator==(const char* rhs) const
+		{
+			return equals(rhs);
+		}
+
+		bool operator!=(const char* rhs) const
+		{
+			return !equals(rhs);
+		}
+
+		bool equals(const String& rhs) const
+		{
+			return rhs.equals(str());
+		}
+
+		bool equalsIgnoreCase(const String& rhs) const
+		{
+			return rhs.equalsIgnoreCase(str());
+		}
+
+		bool operator==(const String& rhs) const
+		{
+			return equals(rhs);
+		}
+
+		bool operator!=(const String& rhs) const
+		{
+			return !equals(rhs);
+		}
+
+		const char* str() const
+		{
+			if(array_ == nullptr) {
+				return "";
+			}
+
+			return array_->c_str() + offset_;
+		}
+
+		const char* operator*() const
+		{
+			return str();
+		}
+
+		uint16_t index() const
+		{
+			return index_;
+		}
+
+		uint16_t offset() const
+		{
+			return offset_;
+		}
+
+		Iterator& operator++()
+		{
+			next();
+			return *this;
+		}
+
+		Iterator operator++(int)
+		{
+			Iterator tmp(*this);
+			next();
+			return tmp;
+		}
+
+		void next()
+		{
+			if(*this) {
+				offset_ += strlen(str()) + 1;
+				++index_;
+			}
+		}
+
+	private:
+		const CStringArray* array_ = nullptr;
+		uint16_t offset_ = 0;
+		uint16_t index_ = 0;
+	};
+
+	Iterator begin() const
+	{
+		return Iterator(this, 0, 0);
+	}
+
+	Iterator end() const
+	{
+		return Iterator(this, length(), count());
+	}
+
+	/** @} */
 
 private:
 	void init();

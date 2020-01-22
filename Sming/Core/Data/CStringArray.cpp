@@ -33,7 +33,7 @@ bool CStringArray::add(const char* str, int length)
 	}
 
 	// Append the content
-	auto buf = begin() + len;
+	auto buf = String::begin() + len;
 	memcpy(buf, str, length);
 
 	// Append NUL if one wasn't provided
@@ -53,23 +53,14 @@ bool CStringArray::add(const char* str, int length)
 
 int CStringArray::indexOf(const char* str, bool ignoreCase) const
 {
-	auto buflen = this->length();
-	if(str == nullptr || buflen == 0) {
-		return -1;
-	}
-
-	auto buf = begin();
-	unsigned index = 0;
-	for(unsigned offset = 0; offset < buflen; ++index) {
-		const char* s = buf + offset;
+	for(auto it = begin(); it != end(); ++it) {
 		if(ignoreCase) {
-			if(strcasecmp(str, s) == 0) {
-				return index;
+			if(it.equalsIgnoreCase(str)) {
+				return it.index();
 			}
-		} else if(strcmp(str, s) == 0) {
-			return index;
+		} else if(it.equals(str)) {
+			return it.index();
 		}
-		offset += strlen(s) + 1;
 	}
 
 	return -1;
@@ -81,14 +72,10 @@ const char* CStringArray::getValue(unsigned index) const
 		return nullptr;
 	}
 
-	auto buf = c_str();
-	auto len = length();
-	for(unsigned offset = 0; offset < len; --index) {
-		auto s = buf + offset;
-		if(index == 0) {
-			return s;
+	for(auto it = begin(); it != end(); ++it) {
+		if(it.index() == index) {
+			return *it;
 		}
-		offset += strlen(s) + 1;
 	}
 
 	return nullptr;
@@ -99,7 +86,7 @@ void CStringArray::init()
 {
 	// Ensure data has a trailing NUL
 	auto len = length();
-	if(len > 0 && begin()[len - 1] != '\0') {
+	if(len > 0 && String::begin()[len - 1] != '\0') {
 		concat('\0');
 	}
 	// Reset string count so it's recalculated when requested

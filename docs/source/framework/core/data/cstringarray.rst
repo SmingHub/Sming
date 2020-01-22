@@ -11,6 +11,10 @@ This is a class to manage a double NUL-terminated list of strings, such as ``"on
 It's similar in operation to ``Vector<String>``, but more memory-efficient as all the data is
 stored in a single :cpp:class:`String` object. (CStringArray is a subclass of String.)
 
+You can see some examples in
+:source:`Sming/Core/DateTime.cpp` and
+:source:`Sming/Core/Network/WebConstants.cpp`.
+
 Background
 ----------
 
@@ -99,9 +103,33 @@ at the same time into a `CStringArray`::
    You may find :cpp:class:`FSTR::Array`, :cpp:class:`FSTR::Vector` or :cpp:class:`FSTR::Map` more appropriate.
    See :component:`FlashString` for details.
 
-You can see some examples in
-:source:`Sming/Core/DateTime.cpp` and
-:source:`Sming/Core/Network/WebConstants.cpp`.
+
+Iterator support
+----------------
+
+Looping by index is slow because the array must be scanned from the start for each access.
+Iterators are simpler to use and much more efficient::
+
+   for(auto s: list) {
+      debug_i("'%s'", s);
+   }
+
+For more complex operations::
+
+   CStringArray::Iterator pos;
+   for(auto it = list.begin(); it != list.end(); ++it) {
+      debug_i("list[%u] = '%s' @ %u", it.index(), *it, it.offset());
+      // Can use direct comparison with const char* or String
+      if(it == "c") {
+         pos = it; // Note position
+      }
+   }
+   
+   if(pos) {
+      debug_i("Item '%s' found at index %u, offset %u", pos.str(), pos.index(), pos.offset());
+   } else {
+      debug_i("Item not found");
+   }
 
 
 Comparison with Vector<String>
