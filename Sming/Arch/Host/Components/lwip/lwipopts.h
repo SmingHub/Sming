@@ -145,7 +145,7 @@
  * MEMP_NUM_SYS_TIMEOUT: the number of simulateously active timeouts.
  * (requires NO_SYS==0)
  */
-#define MEMP_NUM_SYS_TIMEOUT            8
+#define MEMP_NUM_SYS_TIMEOUT            (LWIP_NUM_SYS_TIMEOUT_INTERNAL + 8)
 
 /**
  * MEMP_NUM_NETBUF: the number of struct netbufs.
@@ -321,7 +321,9 @@
  * LWIP_DNS==1: Turn on DNS module. UDP must be available for DNS
  * transport.
  */
-#define LWIP_DNS                        1
+#define LWIP_DNS                        LWIP_UDP
+#define LWIP_MDNS_RESPONDER             LWIP_UDP
+#define LWIP_NUM_NETIF_CLIENT_DATA      LWIP_MDNS_RESPONDER
 
 /*
    ---------------------------------
