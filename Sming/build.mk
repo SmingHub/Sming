@@ -174,6 +174,15 @@ CXXFLAGS			+= -std=$(SMING_CPP_STD)
 # Component (user) libraries have a special prefix so linker script can identify them
 CLIB_PREFIX := clib-
 
+# Apply coding style to list of files using clang-format
+# $1 -> List of files
+define ClangFormat
+	$(if $(V),$(info Applying coding style to $(words $1) files ...))
+	@for FILE in $1; do \
+		$(CLANG_FORMAT) -i -style=file $$FILE; \
+	done
+endef
+
 # Calculate a hash string for appending to library names, etc.
 # $1 -> Name of variable containing data to be hashed
 define CalculateVariantHash

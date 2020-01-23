@@ -23,7 +23,7 @@ int BrServerConnection::init()
 	br_ssl_server_zero(&serverContext);
 
 	// Server requires bi-directional buffer
-	size_t bufSize = maxBufferSizeToBytes(context.getSession().maxBufferSize);
+	size_t bufSize = maxBufferSizeToBytes(context.session.maxBufferSize);
 	if(bufSize == 0) {
 		bufSize = 4096;
 	}
@@ -39,16 +39,20 @@ int BrServerConnection::init()
 
 	br_ssl_engine_add_flags(engine, BR_OPT_NO_RENEGOTIATION);
 
-	auto& keyCert = context.getSession().keyCert;
+	auto& keyCert = context.session.keyCert;
 	cert.data = const_cast<uint8_t*>(keyCert.getCertificate());
 	cert.data_len = keyCert.getCertificateLength();
-	err = key.decode(keyCert.getKey(), keyCert.getKeyLength());
-	if(err < 0) {
-		return err;
+	if(!key.decode(keyCert.getKey(), keyCert.getKeyLength())) {
+		debug_e("Failed to decode keyCert");
+		return -BR_ERR_BAD_PARAM;
 	}
 	br_ssl_server_set_single_rsa(&serverContext, &cert, 1, key, BR_KEYTYPE_RSA | BR_KEYTYPE_KEYX | BR_KEYTYPE_SIGN,
 								 br_rsa_private_get_default(), br_rsa_pkcs1_sign_get_default());
-	br_ssl_server_reset(&serverContext);
+	// Warning: Inconsistent return type: not an error code
+	if(!br_ssl_server_reset(&serverContext)) {
+		debug_e("br_ssl_client_reset failed");
+		return getLastError();
+	}
 
 	return startHandshake();
 }

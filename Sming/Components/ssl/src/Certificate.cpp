@@ -11,7 +11,7 @@ SSL_X509_RDN_OID_MAP(XX)
 DEFINE_FSTR_VECTOR_LOCAL(rdnStrings, FSTR::String, SSL_X509_RDN_OID_MAP(XX));
 #undef XX
 
-String Certificate::getRdnTypeString(Certificate::RDN rdn)
+String toString(Certificate::RDN rdn)
 {
 	return rdnStrings[unsigned(rdn)];
 }
@@ -28,7 +28,7 @@ size_t Certificate::printTo(Print& p) const
 				continue;
 			}
 			n += p.print("  ");
-			n += p.print(getRdnTypeString(rdn));
+			n += p.print(toString(rdn));
 			n += p.print(": ");
 			n += p.println(s);
 		}

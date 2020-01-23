@@ -16,6 +16,12 @@
 
 namespace Ssl
 {
+namespace CipherSuites
+{
+// axTLS doesn't support any fancy cipher suites, so same as basic
+const Array& full = basic;
+} // namespace CipherSuites
+
 AxContext::~AxContext()
 {
 	ssl_ctx_free(context);

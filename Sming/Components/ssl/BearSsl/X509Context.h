@@ -12,17 +12,34 @@
 
 #include <SslDebug.h>
 #include "X509Name.h"
+#include <Network/Ssl/Fingerprints.h>
 
 namespace Ssl
 {
-#define GET_SELF() auto self = reinterpret_cast<X509Context*>(ctx)
-
-class X509Context
+/**
+ * @brief Interface class to handle certificate processing
+ */
+class X509Handler
 {
 public:
-	using OnValidate = Delegate<bool()>;
+	virtual void startChain(const char* serverName) = 0;
+	virtual void startCert(uint32_t length) = 0;
+	virtual void appendCertData(const uint8_t* buf, size_t len) = 0;
+	virtual void endCert() = 0;
+	virtual bool endChain() = 0;
+	virtual const br_x509_pkey* getPublicKey() = 0;
+};
 
-	X509Context(OnValidate onValidate) : onValidate(onValidate)
+/**
+ * @brief C++ wrapper around a br_x509_class
+ */
+class X509Context
+{
+	// Require `this == &vtable`
+	const br_x509_class* vtable = &x509_class;
+
+public:
+	X509Context(X509Handler& handler) : handler(handler)
 	{
 	}
 
@@ -31,98 +48,92 @@ public:
 		return &vtable;
 	}
 
-	const X509Name& getIssuer() const
+	unsigned count() const
 	{
-		return issuer;
-	}
-
-	const X509Name& getSubject() const
-	{
-		return subject;
-	}
-
-	bool matchFingerprint(const uint8_t* sha1Hash) const
-	{
-		uint8_t certHash[br_sha1_SIZE];
-		br_sha1_out(&certificateSha1, certHash);
-		return memcmp(certHash, sha1Hash, br_sha1_SIZE) == 0;
-	}
-
-	bool matchPki(const uint8_t* hash) const
-	{
-		// @todo
-		return false;
+		return certificateCount;
 	}
 
 private:
+#define GET_SELF() auto self = reinterpret_cast<X509Context*>(ctx)
+
 	// Callback on the first byte of any certificate
 	static void start_chain(const br_x509_class** ctx, const char* server_name)
 	{
-		debug_d("start_chain: %s", server_name);
+		debug_i("start_chain: %s", server_name);
 		GET_SELF();
-		self->startChain(server_name);
+		self->certificateCount = 0;
+		self->handler.startChain(server_name);
 	}
-
-	void startChain(const char* serverName);
 
 	// Callback for each certificate present in the chain
 	static void start_cert(const br_x509_class** ctx, uint32_t length)
 	{
-		debug_d("start_cert: %u", length);
-		(void)ctx;
-		(void)length;
+		debug_i("start_cert: %u", length);
+		GET_SELF();
+		self->startCert(length);
+	}
+
+	void startCert(uint32_t length)
+	{
+		handler.startCert(length);
 	}
 
 	// Callback for each byte stream in the chain
 	static void append(const br_x509_class** ctx, const unsigned char* buf, size_t len)
 	{
-		debug_d("append: %u", len);
+		debug_i("append: %u", len);
 		GET_SELF();
-		// Don't process anything but the first certificate in the chain
-		if(self->certificateCount == 0) {
-			br_sha1_update(&self->certificateSha1, buf, len);
-			br_x509_decoder_push(&self->x509Decoder, (const void*)buf, len);
-			debug_hex(DBG, "CERT", buf, len);
-		}
+		self->handler.appendCertData(buf, len);
+		debug_hex(DBG, "CERT", buf, len, 0);
 	}
 
 	static void end_cert(const br_x509_class** ctx)
 	{
-		debug_d("end_cert");
+		debug_i("end_cert");
 		GET_SELF();
+		self->handler.endCert();
 		++self->certificateCount;
 	}
 
 	// Complete chain has been parsed, return 0 on validation success
 	static unsigned end_chain(const br_x509_class** ctx)
 	{
-		debug_d("end_chain");
+		debug_i("end_chain");
 		GET_SELF();
 		return self->endChain();
 	}
 
-	unsigned endChain();
+	unsigned endChain()
+	{
+		if(certificateCount == 0) {
+			debug_w("No certificate processed");
+			return BR_ERR_X509_EMPTY_CHAIN;
+		}
 
-	// Return the public key from the validator (set by x509_minimal)
+		if(!handler.endChain()) {
+			return BR_ERR_X509_NOT_TRUSTED;
+		}
+
+		return BR_ERR_OK;
+	}
+
+#undef GET_SELF
+
 	static const br_x509_pkey* get_pkey(const br_x509_class* const* ctx, unsigned* usages)
 	{
 		auto self = reinterpret_cast<const X509Context*>(ctx);
 		if(usages != nullptr) {
 			*usages = BR_KEYTYPE_KEYX | BR_KEYTYPE_SIGN;
 		}
-		return &self->x509Decoder.pkey;
+		return self->handler.getPublicKey();
 	}
 
 private:
-	const br_x509_class* vtable = &vt;
-	static const br_x509_class vt;
-	OnValidate onValidate;
-	br_sha1_context certificateSha1 = {};
-	X509Name issuer;
-	X509Name subject;
-	br_x509_decoder_context x509Decoder = {};
-	bool allowSelfSigned = false;
+	static const br_x509_class x509_class;
+	X509Handler& handler;
 	uint8_t certificateCount = 0;
 };
+
+static_assert(!std::is_polymorphic<X509Context>::value, "X509Context must not contain virtual methods");
 
 } // namespace Ssl

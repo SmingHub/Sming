@@ -6,8 +6,6 @@
  *
  * Asn1Parser.h
  *
- * A very simple helper class consisting of code based on asn1_name() in axTLS.
- *
  ****/
 
 #pragma once
@@ -36,6 +34,9 @@ enum ASN1 {
 	ASN1_V3_DATA = 0xa3,
 };
 
+/**
+ * @brief Class to assist with DER-encoded name extraction, based on asn1_name() in axTLS.
+ */
 class Asn1Parser
 {
 public:

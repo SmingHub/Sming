@@ -102,8 +102,10 @@ private:
 
 /**
  * @deprecated Use Ssl::KeyCertPair instead
- * @{
  */
 typedef Ssl::KeyCertPair SslKeyCertPair SMING_DEPRECATED;
+
+/**
+ * @deprecated Use Ssl::KeyCertPair instead
+ */
 typedef Ssl::KeyCertPair SSLKeyCertPair SMING_DEPRECATED;
-/** @} */

@@ -15,6 +15,9 @@
 
 namespace Ssl
 {
+/**
+ * @brief Contains a DER-encoded Distinguished Name
+ */
 class X509Name
 {
 public:
@@ -41,11 +44,14 @@ public:
 		dn.setLength(0);
 	}
 
-	uint8_t* getHash(uint8_t hash[br_sha256_SIZE]) const;
+	const String& getDN() const
+	{
+		return dn;
+	}
 
 	static void append(void* ctx, const void* buf, size_t len)
 	{
-		auto self = reinterpret_cast<X509Name*>(ctx);
+		auto self = static_cast<X509Name*>(ctx);
 		self->dn.concat(static_cast<const char*>(buf), len);
 	}
 

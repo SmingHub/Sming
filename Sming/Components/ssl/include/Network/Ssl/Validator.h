@@ -13,75 +13,98 @@
 #pragma once
 
 #include <Delegate.h>
-#include <WVector.h>
-
-#include "Fingerprints.h"
 #include "Certificate.h"
+#include "Fingerprints.h"
 
 namespace Ssl
 {
 /**
- * @brief Defines a validator instance
+ * @brief Base validator class
+ *
+ * Validation is performed by invoking each validator in turn until a successful
+ * result is obtained.
+ *
+ * Custom validators may either override this class, or use a callback.
  */
-struct Validator {
-	/** @brief Validator callback function
-	 *  @param ssl Contains certificate to validate (may be NULL)
-	 *  @param data Data for the callback to use
-	 *  @retval bool true if validation succeeded
-	 *  @note Callback must ALWAYS release any allocate memory before returning.
-	 *  If called with certificate = NULL then just release memory and return false.
-	 */
-	using Callback = Delegate<bool(const Certificate* certificate, void* data)>;
+class Validator
+{
+public:
+	virtual ~Validator()
+	{
+	}
 
-	Callback callback;
-	void* data; ///< Callback-specific data, e.g. fingerprint to compare against
+	virtual bool validate(const Certificate& certificate) = 0;
 };
 
 /**
- * @brief List of validators to perform certificate checking
+ * @brief Class template to validate any kind of fingerprint
+ * @tparam FP The Fingerprint object type
  */
-class ValidatorList : private Vector<Validator>
+template <class FP> class FingerprintValidator : public Validator
 {
 public:
-	~ValidatorList()
+	FingerprintValidator(const FP& fingerprint) : fp(fingerprint)
 	{
-		// Make sure memory gets released
-		validate(nullptr);
 	}
 
-	bool add(Validator::Callback callback, void* data)
+	bool validate(const Certificate& certificate) override
 	{
-		return Vector::add(Validator{callback, data});
+		FP certFp;
+		if(!certificate.getFingerprint(FP::type, reinterpret_cast<Fingerprint&>(certFp))) {
+			// Fingerprint not available
+			return false;
+		}
+
+		return certFp.hash == fp.hash;
 	}
 
-	/**
-	 * @brief	Add a standard fingerprint validator
-	 * @param	fingerprint	The fingerprint data against which the match should be performed.
-	 * 						Must be allocated on the heap and will be deleted after use.
-	 * @param	type	The fingerprint type - see FingerprintType for details.
-	 * @retval	bool	true on success, false on failure
-	 */
-	bool add(const uint8_t* fingerprint, FingerprintType type);
+private:
+	FP fp;
+};
 
-	/**
-	 * @brief	Add validators for standard fingerprints
-	 * @param	fingerprints Will be invalid after returning as data is moved rather than copied
-	 * @retval	bool true on success, false on failure
-	 */
-	bool add(Fingerprints& fingerprints);
+/** @brief Validator callback function
+ *  @param ssl Contains certificate to validate (may be NULL)
+ *  @param data Data for the callback to use
+ *  @retval bool true if validation succeeded
+ *  @note Callback must ALWAYS release any allocated memory before returning.
+ *  If called with certificate = NULL then just release memory and return false.
+ */
+using ValidatorCallback = Delegate<bool(const Certificate* certificate, void* data)>;
 
-	/** @brief Used to validate certificate by invoking each validator callback until successful
-	 *  @param certificate When called with nullptr will simply de-allocate any validator memory
-	 * @retval bool  true on success, false on failure
-	 */
-	bool validate(const Certificate* certificate);
+/**
+ * @brief Validator class wrapping a user-provided callback delegate, plus optional parameter
+ */
+class CallbackValidator : public Validator
+{
+public:
+	CallbackValidator(ValidatorCallback callback, void* param) : callback(callback), param(param)
+	{
+	}
 
-	using Vector::count;
+	~CallbackValidator()
+	{
+		// If callback hasn't been invoked yet, do it now to release any allocated memory
+		if(callback) {
+			callback(nullptr, param);
+		}
+	}
+
+	bool validate(const Certificate& certificate) override
+	{
+		bool res = callback ? callback(&certificate, param) : false;
+		// Only invoke the callback once
+		callback = nullptr;
+		return res;
+	}
+
+private:
+	ValidatorCallback callback;
+	void* param;
 };
 
 } // namespace Ssl
 
 /**
- * @deprecated Use `Ssl::Validator::Callback` instead
+ * @deprecated Use `Ssl::ValidatorCallback` instead
  */
-typedef Ssl::Validator::Callback SslValidatorCallback SMING_DEPRECATED;
+typedef Ssl::ValidatorCallback SslValidatorCallback SMING_DEPRECATED;

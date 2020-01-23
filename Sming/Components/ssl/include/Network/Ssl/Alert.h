@@ -14,6 +14,9 @@
 
 namespace Ssl
 {
+/**
+ * @brief Map of standard Alert codes
+ */
 #define SSL_ALERT_CODE_MAP(XX)                                                                                         \
 	XX(CLOSE_NOTIFY, 0)                                                                                                \
 	XX(UNEXPECTED_MESSAGE, 10)                                                                                         \

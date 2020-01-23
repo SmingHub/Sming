@@ -53,21 +53,23 @@ public:
 		return makeHexString(getValue(), getLength());
 	}
 
-	operator String() const
-	{
-		return toString();
-	}
-
 private:
 	String value;
 };
+
+__forceinline String toString(const SessionId& id)
+{
+	return id.toString();
+}
 
 } // namespace Ssl
 
 /**
  * @deprecated Use Ssl::SessionId instead
- * @{
  */
 typedef Ssl::SessionId SslSessionId SMING_DEPRECATED;
+
+/**
+ * @deprecated Use Ssl::SessionId instead
+ */
 typedef Ssl::SessionId SSLSessionId SMING_DEPRECATED;
-/** @} */

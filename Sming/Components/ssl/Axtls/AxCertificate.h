@@ -30,14 +30,33 @@ public:
 		ssl->can_free_certificates = true;
 	}
 
-	bool matchFingerprint(const uint8_t* hash) const override
+	template <class FP> static bool copy(FP& fp, const uint8_t* src)
 	{
-		return (ssl_match_fingerprint(ssl, hash) == 0);
-	}
+		if(src == nullptr) {
+			fp = {};
+			return false;
+		}
 
-	bool matchPki(const uint8_t* hash) const override
+		memcpy(fp.hash.data(), src, fp.hash.size());
+		return true;
+	};
+
+	bool getFingerprint(Fingerprint::Type type, Fingerprint& fingerprint) const override
 	{
-		return (ssl_match_spki_sha256(ssl, hash) == 0);
+		if(ssl->x509_ctx == nullptr) {
+			return false;
+		}
+
+		switch(type) {
+		case Fingerprint::Type::CertSha1:
+			return copy(fingerprint.cert.sha1, ssl->x509_ctx->fingerprint);
+
+		case Fingerprint::Type::PkiSha256:
+			return copy(fingerprint.pki.sha256, ssl->x509_ctx->spki_sha256);
+
+		default:
+			return false;
+		}
 	}
 
 	String getName(DN dn, RDN rdn) const override;

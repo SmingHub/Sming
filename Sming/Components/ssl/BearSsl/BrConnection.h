@@ -16,6 +16,7 @@
 #include "BrError.h"
 #include "BrCertificate.h"
 #include <bearssl.h>
+#include <memory>
 
 namespace Ssl
 {
@@ -23,11 +24,6 @@ class BrConnection : public Connection
 {
 public:
 	using Connection::Connection;
-
-	~BrConnection()
-	{
-		delete[] buffer;
-	}
 
 	int read(InputBuffer& input, uint8_t*& output) override;
 
@@ -68,6 +64,18 @@ public:
 		return Ssl::getAlert(error);
 	}
 
+	virtual br_ssl_engine_context* getEngine() = 0;
+
+	br_ssl_engine_context* getEngine() const
+	{
+		return const_cast<BrConnection*>(this)->getEngine();
+	}
+
+	int getLastError() const
+	{
+		return -br_ssl_engine_last_error(getEngine());
+	}
+
 protected:
 	/**
 	 * Perform initialisation common to both client and server connections
@@ -84,15 +92,11 @@ protected:
 		return runUntil(input, BR_SSL_SENDAPP | BR_SSL_RECVAPP);
 	}
 
-	virtual br_ssl_engine_context* getEngine() = 0;
-
-	br_ssl_engine_context* getEngine() const
-	{
-		return const_cast<BrConnection*>(this)->getEngine();
-	}
+private:
+	void setCipherSuites(const CipherSuites::Array* cipherSuites);
 
 private:
-	uint8_t* buffer = nullptr;
+	std::unique_ptr<uint8_t[]> buffer;
 	bool handshakeDone = false;
 };
 

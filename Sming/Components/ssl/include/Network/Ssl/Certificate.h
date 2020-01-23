@@ -13,6 +13,7 @@
 #pragma once
 
 #include <WString.h>
+#include "Fingerprints.h"
 
 namespace Ssl
 {
@@ -65,28 +66,17 @@ public:
 			MAX
 	};
 
-	/**
-	 * @brief Obtain a string describing the given name component
-	 */
-	static String getRdnTypeString(Certificate::RDN rdn);
-
 	virtual ~Certificate()
 	{
 	}
 
 	/**
-	 * @brief Check if certificate fingerprint (SHA1) matches the one given.
-	 * @param hash - SHA1 fingerprint to match against
-	 * @retval bool true on match, false otherwise
+	 * @brief Obtain certificate fingerprint
+	 * @param type Which type of fingerprint to return
+	 * @param fingerprint On success, returned fingerprint
+	 * @retval bool true on success, false if fingerprint not available
 	 */
-	virtual bool matchFingerprint(const uint8_t* hash) const = 0;
-
-	/**
-	 * @brief Check if SHA256 hash of Subject Public Key Info matches the one given.
-	 * @param hash SHA256 hash to match against
-	 * @retval bool true on match, false otherwise
-	 */
-	virtual bool matchPki(const uint8_t* hash) const = 0;
+	virtual bool getFingerprint(Fingerprint::Type type, Fingerprint& fingerprint) const = 0;
 
 	/**
 	 * @brief Retrieve an X.509 distinguished name component
@@ -101,6 +91,11 @@ public:
 	 */
 	size_t printTo(Print& p) const;
 };
+
+/**
+ * @brief Obtain a string describing the given name component
+ */
+String toString(Certificate::RDN rdn);
 
 } // namespace Ssl
 

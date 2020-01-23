@@ -1,4 +1,4 @@
 API Documentation
 =================
 
-.. doxygennamespace:: Ssl
+.. doxygennamespace:: Crypto

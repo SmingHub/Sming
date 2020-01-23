@@ -6,37 +6,29 @@
  *
  * BrCertificate.h
  *
+ * @author: 2019 - mikee47 <mike@sillyhouse.net>
+ *
  ****/
 
 #pragma once
 
 #include <Network/Ssl/Certificate.h>
-#include <Network/Ssl/Crypto.h>
-#include "X509Context.h"
+#include "X509Name.h"
+#include <memory>
 
 namespace Ssl
 {
 class BrCertificate : public Ssl::Certificate
 {
 public:
-	BrCertificate(X509Context* context) : context(context)
-	{
-	}
-
-	bool matchFingerprint(const uint8_t* hash) const override
-	{
-		return context->matchFingerprint(hash);
-	}
-
-	bool matchPki(const uint8_t* hash) const override
-	{
-		return context->matchPki(hash);
-	}
+	bool getFingerprint(Fingerprint::Type type, Fingerprint& fingerprint) const override;
 
 	String getName(DN dn, RDN rdn) const override;
 
-private:
-	X509Context* context;
+	std::unique_ptr<Fingerprint::Cert::Sha1> fpCertSha1;
+	std::unique_ptr<Fingerprint::Cert::Sha256> fpCertSha256;
+	X509Name issuer;
+	X509Name subject;
 };
 
 } // namespace Ssl

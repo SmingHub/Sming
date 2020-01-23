@@ -57,12 +57,7 @@ public:
 	 */
 	virtual Connection* createServer(tcp_pcb* tcp) = 0;
 
-	Session& getSession()
-	{
-		return session;
-	}
-
-protected:
+public:
 	Session& session;
 };
 

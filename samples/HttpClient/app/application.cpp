@@ -34,28 +34,26 @@ void sslRequestInit(Ssl::Session& session, HttpRequest& request)
 	 * Note that fingerprints _may_ change, in which case these need to be updated.
 	 *
 	 * Note: SSL is not compiled by default. In our example we set the ENABLE_SSL directive to 1
-	 * (See: ../Makefile-user.mk )
+	 * (See: ../component.mk)
 	 */
 	session.options.verifyLater = true;
 
 	// These are the fingerprints for httpbin.org
-	static const uint8_t sha1Fingerprint[] PROGMEM = {0x2B, 0xF0, 0x48, 0x9D, 0x78, 0xB4, 0xDE, 0xE9, 0x69, 0xE2,
-													  0x73, 0xE0, 0x14, 0xD0, 0xDC, 0xCC, 0xA8, 0xD8, 0x3B, 0x40};
+	static const Ssl::Fingerprint::Cert::Sha1 sha1Fingerprint PROGMEM = {
+		0x2B, 0xF0, 0x48, 0x9D, 0x78, 0xB4, 0xDE, 0xE9, 0x69, 0xE2,
+		0x73, 0xE0, 0x14, 0xD0, 0xDC, 0xCC, 0xA8, 0xD8, 0x3B, 0x40,
+	};
 
-	static const uint8_t publicKeyFingerprint[] PROGMEM = {
+	static const Ssl::Fingerprint::Pki::Sha256 publicKeyFingerprint PROGMEM = {
 		0xE3, 0x88, 0xC4, 0x0A, 0x2A, 0x99, 0x8F, 0xA4, 0x8C, 0x38, 0x4E, 0xE7, 0xCB, 0x4F, 0x8B, 0x99,
-		0x19, 0x48, 0x63, 0x9A, 0x2E, 0xD6, 0x05, 0x7D, 0xB1, 0xD3, 0x56, 0x6C, 0xC0, 0x7E, 0x74, 0x1A};
-
-	Ssl::Fingerprints fingerprints;
+		0x19, 0x48, 0x63, 0x9A, 0x2E, 0xD6, 0x05, 0x7D, 0xB1, 0xD3, 0x56, 0x6C, 0xC0, 0x7E, 0x74, 0x1A,
+	};
 
 	// Trust only a certificate in which the public key matches the SHA256 fingerprint...
-	fingerprints.setSha256_P(publicKeyFingerprint, sizeof(publicKeyFingerprint));
+	session.validators.pin(publicKeyFingerprint);
 
 	// ... or a certificate that matches the SHA1 fingerprint.
-	fingerprints.setSha1_P(sha1Fingerprint, sizeof(sha1Fingerprint));
-
-	// Set fingerprints for validation
-	session.validators.add(fingerprints);
+	session.validators.pin(sha1Fingerprint);
 }
 
 void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
