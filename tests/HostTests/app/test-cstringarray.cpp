@@ -142,6 +142,35 @@ public:
 
 			REQUIRE(csa.equals(FS_Test1) == false);
 			REQUIRE(csa.equalsIgnoreCase(FS_Test1) == true);
+
+			TEST_CASE("Iterators")
+			{
+				CStringArray::Iterator it1;
+				REQUIRE(!it1);
+
+				for(auto it = csa.begin(); it != csa.end(); it++) {
+					debug_i("csa[%u] = '%s' @ %u", it.index(), *it, it.offset());
+					if(it == "B") {
+						it1 = it;
+					}
+				}
+
+				REQUIRE(it1);
+				REQUIRE(it1 == "B");
+				REQUIRE(it1 != "b");
+				REQUIRE(it1.equalsIgnoreCase("b"));
+				REQUIRE(it1.index() == 4);
+
+				it1 = csa.begin();
+				REQUIRE(it1);
+
+				auto it2 = csa.end();
+				REQUIRE(!it2);
+				REQUIRE(it1 != it2);
+
+				it2 = it1;
+				REQUIRE(it1 == it2);
+			}
 		}
 	}
 };
