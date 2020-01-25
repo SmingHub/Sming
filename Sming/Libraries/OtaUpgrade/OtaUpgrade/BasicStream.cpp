@@ -14,6 +14,8 @@
 #include <Data/HexString.h>
 #include <FlashString/Array.hpp>
 
+extern "C" uint32 user_rf_cal_sector_set(void);
+
 namespace OtaUpgrade
 {
 #ifndef ENABLE_OTA_DOWNGRADE
@@ -38,6 +40,7 @@ BasicStream::Slot::Slot()
 	};
 
 	limitSize(flashmem_get_size_bytes());
+	limitSize(user_rf_cal_sector_set() * INTERNAL_FLASH_SECTOR_SIZE);
 	for(uint8_t i = 0; i < bootConfig.count; ++i) {
 		if(i != currentSlot) {
 			limitSize(bootConfig.roms[i]);
