@@ -11,9 +11,9 @@
 #pragma once
 
 #include "HashEngine.h"
+#include "Blake2s.h"
 #include "Blob.h"
 #include "ByteArray.h"
-
 namespace Crypto
 {
 /**
@@ -31,17 +31,17 @@ public:
 		uint64_t count;
 	};
 
-	HashContext()
+	template <typename... EngineArgs> HashContext(EngineArgs&&... engineArgs)
 	{
-		reset();
+		reset(std::forward<EngineArgs>(engineArgs)...);
 	}
 
 	/**
 	 * @brief Reset the context for a new calculation
 	 */
-	HashContext& reset()
+	template <typename... EngineArgs> HashContext& reset(EngineArgs&&... engineArgs)
 	{
-		engine.init();
+		engine.init(std::forward<EngineArgs>(engineArgs)...);
 		return *this;
 	}
 
@@ -139,5 +139,6 @@ using Sha224 = HashContext<Sha224Engine>;
 using Sha256 = HashContext<Sha256Engine>;
 using Sha384 = HashContext<Sha384Engine>;
 using Sha512 = HashContext<Sha512Engine>;
+using Blake2s = HashContext<Blake2sEngine>;
 
 } // namespace Crypto

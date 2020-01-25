@@ -22,7 +22,7 @@ Usage
 
 Here's a basic example showing how to calculate a SHA1 hash on a C string::
 
-   #include <Crypto/Sha1.h>
+   #include <Crypto/HashContext.h>
 
    void sha1Test(const char* buffer)
    {
@@ -53,8 +53,7 @@ hash class.
 For example, an MD5 HMAC (as used with `CRAM-MD5 <https://en.wikipedia.org/wiki/CRAM-MD5>`__)
 may be done like this::
 
-   #include <Crypto/Hmac.h>
-   #include <Crypto/Md5.h>
+   #include <Crypto/HmacContext.h>
 
    void printHmacMd5(const String& key, const String& data)
    {

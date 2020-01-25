@@ -124,5 +124,14 @@ template <class Context> void ESP_setCount(Context* ctx, uint64_t count)
 }
 /** @} */
 
+// A `memzero` equivalent that is never optimized away. Useful to clear secrets from memory after use.
+template <typename T> void clean(T& t)
+{
+	volatile uint8_t* volatile dst = reinterpret_cast<volatile uint8_t* volatile>(&t);
+	for(size_t len = sizeof(T); len > 0; --len) {
+		*dst++ = 0;
+	}
+}
+
 } // namespace Internal
 } // namespace Crypto
