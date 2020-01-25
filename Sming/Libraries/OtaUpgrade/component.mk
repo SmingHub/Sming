@@ -1,6 +1,7 @@
 COMPONENT_SRCDIRS :=
 COMPONENT_SRCFILES := OtaUpgrade/BasicStream.cpp
 COMPONENT_APPCODE := appcode
+COMPONENT_DEPENDS := 
 
 COMPONENT_INCDIRS := .
 
@@ -27,6 +28,9 @@ ifeq ($(ENABLE_OTA_SIGNING),1)
 OTA_CRYPTO_FEATURES += --signed
 # has to be global, because it is used in a public header file
 GLOBAL_CFLAGS += -DENABLE_OTA_SIGNING
+else
+# use MD5 as a checksum
+COMPONENT_DEPENDS += crypto
 endif
 
 COMPONENT_VARS += ENABLE_OTA_ENCRYPTION
@@ -39,8 +43,7 @@ COMPONENT_SRCFILES += OtaUpgrade/EncryptedStream.cpp
 endif
 
 ifneq ($(OTA_CRYPTO_FEATURES),)
-
-COMPONENT_DEPENDS := libsodium
+COMPONENT_DEPENDS += libsodium
 
 RELINK_VARS += OTA_KEY
 OTA_KEY ?= ota.key
