@@ -77,11 +77,11 @@ public:
 		auto state = ctx.getState();
 		auto hash = ctx.getHash();
 
-		auto stateText = Crypto::toString(state.value);
 		auto hashText = Crypto::toString(hash);
 
 		Serial.println(Context::Engine::name);
 		if(!expectedState.isNull()) {
+			auto stateText = Crypto::toString(state.value);
 			Serial.print(_F("  state: "));
 			Serial.println(stateText);
 			Serial.print(_F("  count: "));
