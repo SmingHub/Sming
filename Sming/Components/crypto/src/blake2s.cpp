@@ -19,25 +19,25 @@ namespace
 static const uint32_t initVectors[8] PROGMEM = {0x6A09E667U, 0xBB67AE85U, 0x3C6EF372U, 0xA54FF53AU,
 												0x510E527FU, 0x9B05688CU, 0x1F83D9ABU, 0x5BE0CD19U};
 
-template <typename State> class Compressor
+template <typename Context> class Compressor
 {
 public:
-	explicit Compressor(State& state) : state(state)
+	explicit Compressor(Context& ctx) : context(ctx)
 	{
 	}
 
-	void operator()(const uint8_t* block, const uint32_t increment, const uint32_t f = 0)
+	void operator()(const uint8_t* block, uint32_t increment, bool isFinal = false)
 	{
-		state.t64 += increment;
+		context.count += increment;
 		memcpy(m, block, sizeof(m));
-		memcpy(v, state.h, 32);
+		std::copy_n(context.state, 8, v);
 		v[8] = initVectors[0];
 		v[9] = initVectors[1];
 		v[10] = initVectors[2];
 		v[11] = initVectors[3];
-		v[12] = initVectors[4] ^ state.t[0];
-		v[13] = initVectors[5] ^ state.t[1];
-		v[14] = initVectors[6] ^ f;
+		v[12] = initVectors[4] ^ uint32_t(context.count);
+		v[13] = initVectors[5] ^ uint32_t(context.count >> 32);
+		v[14] = initVectors[6] ^ (isFinal ? 0xFFFFFFFFU : 0U);
 		v[15] = initVectors[7];
 
 		// Full loop unrolling would increase code size by approx. 3kB, but only reduce
@@ -53,8 +53,8 @@ public:
 		shuffleRound<6, 15, 14, 9, 11, 3, 0, 8, 12, 2, 13, 7, 1, 4, 10, 5>();
 		shuffleRound<10, 2, 8, 4, 7, 6, 1, 5, 15, 11, 9, 14, 3, 12, 13, 0>();
 
-		for(size_t i = 0; i < 8; ++i) {
-			state.h[i] ^= v[i] ^ v[i + 8];
+		for(auto i = 0; i < 8; ++i) {
+			context.state[i] ^= v[i] ^ v[i + 8];
 		}
 	}
 
@@ -96,20 +96,22 @@ private:
 
 	template <size_t I> void roundPart(uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d)
 	{
+		using namespace Crypto::Internal;
+
 		a += b + mPerm[2 * I];
-		d = Internal::ROTR(d ^ a, 16);
+		d = ROTR(d ^ a, 16);
 		c += d;
-		b = Internal::ROTR(b ^ c, 12);
+		b = ROTR(b ^ c, 12);
 		a += b + mPerm[2 * I + 1];
-		d = Internal::ROTR(d ^ a, 8);
+		d = ROTR(d ^ a, 8);
 		c += d;
-		b = Internal::ROTR(b ^ c, 7);
+		b = ROTR(b ^ c, 7);
 	}
 
 	uint32_t mPerm[16];
 	uint32_t v[16];
 	uint32_t m[16];
-	State& state;
+	Context& context;
 };
 
 } // namespace
@@ -119,11 +121,11 @@ void Blake2sEngine::initCommon(size_t hashSize, size_t keySize)
 	assert(hashSize > 0 && hashSize <= hashsize);
 	assert(keySize <= maxkeysize);
 
-	state = {};
-	state.hashSize = hashSize;
+	context = {};
+	userHashSize = hashSize;
 
-	std::copy_n(initVectors, 8, state.h);
-	state.h[0] ^= (0x01010000U | (keySize << 8) | hashSize);
+	std::copy_n(initVectors, 8, context.state);
+	context.state[0] ^= (0x01010000U | (keySize << 8) | hashSize);
 }
 
 void Blake2sEngine::init(const Secret& key, size_t hashSize)
@@ -143,15 +145,15 @@ void Blake2sEngine::update(const void* data, size_t size)
 	}
 
 	const uint8_t* pData = reinterpret_cast<const uint8_t*>(data);
-	Compressor<State> compressor(state);
+	Compressor<Context> compressor(context);
 
-	const size_t missing = blocksize - state.bufferLength;
-	if(size > missing) {
-		memcpy(state.buffer + state.bufferLength, pData, missing);
-		compressor(state.buffer, blocksize);
-		state.bufferLength = 0;
-		pData += missing;
-		size -= missing;
+	const size_t bufferSpace = blocksize - context.bufferLength;
+	if(size > bufferSpace) {
+		memcpy(context.buffer + context.bufferLength, pData, bufferSpace);
+		compressor(context.buffer, blocksize);
+		context.bufferLength = 0;
+		pData += bufferSpace;
+		size -= bufferSpace;
 	}
 
 	// exclude last block if size is a multiple of the block size
@@ -162,21 +164,21 @@ void Blake2sEngine::update(const void* data, size_t size)
 	}
 
 	if(size > 0) {
-		assert(state.bufferLength + size <= blocksize);
-		memcpy(state.buffer + state.bufferLength, pData, size);
-		state.bufferLength += size;
+		assert(context.bufferLength + size <= blocksize);
+		memcpy(context.buffer + context.bufferLength, pData, size);
+		context.bufferLength += size;
 	}
 }
 
 void Blake2sEngine::final(uint8_t* hash)
 {
 	// setup padding for last block
-	std::fill_n(state.buffer + state.bufferLength, blocksize - state.bufferLength, 0);
-	Compressor<State> compressor(state);
-	compressor(state.buffer, state.bufferLength, 0xFFFFFFFF);
+	std::fill_n(context.buffer + context.bufferLength, blocksize - context.bufferLength, 0);
+	Compressor<Context> compressor(context);
+	compressor(context.buffer, context.bufferLength, 0xFFFFFFFF);
 
-	memcpy(hash, state.h, state.hashSize);
-	Internal::clean(state);
+	memcpy(hash, context.state, userHashSize);
+	Internal::clean(context);
 }
 
 } // namespace Crypto

@@ -39,17 +39,14 @@ public:
 private:
 	void initCommon(size_t hashSize, size_t keySize);
 
-	struct State {
-		uint32_t h[8];
-		union {
-			uint32_t t[2];
-			uint64_t t64;
-		};
+	struct Context {
+		uint32_t state[8];
+		uint64_t count;
 		uint8_t buffer[blocksize];
 		size_t bufferLength;
-		size_t hashSize; // selected hash size
 	};
-	State state;
+	Context context;
+	size_t userHashSize;
 };
 
 } // namespace Crypto
