@@ -91,7 +91,9 @@ COMPONENT_SRCFILES := \
 	randombytes/sysrandom/randombytes_sysrandom.c
 
 COMPONENT_SRCFILES	:= $(addprefix libsodium/src/libsodium/,$(COMPONENT_SRCFILES))
-COMPONENT_INCDIRS	:= libsodium/src/libsodium/include
+COMPONENT_INCDIRS := \
+	include \
+	libsodium/src/libsodium/include
 EXTRA_INCDIR		:= libsodium/src/libsodium/include/sodium
 
 # results from configure script run for --host=xtensa-lx106-elf (unused defines removed)
@@ -110,3 +112,4 @@ COMPONENT_CFLAGS += \
 	-Wno-unused-function \
 	-Wno-unknown-pragmas
 
+COMPONENT_CXXFLAGS := $(COMPONENT_CFLAGS)

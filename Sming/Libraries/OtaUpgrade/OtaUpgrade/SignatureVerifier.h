@@ -10,9 +10,8 @@
 
 #pragma once
 
-#include <sodium/crypto_sign.h>
+#include <Sodium/SignEd25519.h>
 #include <FlashString/Array.hpp>
-#include <array>
 
 namespace OtaUpgrade
 {
@@ -24,35 +23,21 @@ DECLARE_FSTR_ARRAY(SignatureVerificationKey, uint8_t)
  * This is a simple C++ wrapper for Libsodium's 
  * <a href="https://download.libsodium.org/doc/public-key_cryptography/public-key_signatures">`crypto_sign_...`</a> API.
  */
-class SignatureVerifier
+class SignatureVerifier : public Sodium::SignEd25519
 {
 public:
-	typedef std::array<uint8_t, crypto_sign_BYTES> VerificationData; ///< Signature type
-
-	SignatureVerifier()
-	{
-		crypto_sign_init(&state);
-	}
-
-	/** Continue incremental calculation for given chunk of data.
-	 */
-	void update(const void* data, size_t size)
-	{
-		crypto_sign_update(&state, static_cast<const unsigned char*>(data), size);
-	}
+	using VerificationData = Signature;
 
 	/** Check if \a signature matches the data previously fed into #update() calls.
 	 * @return `true` if \a signature matches data, `false` otherwise.
 	 */
-	bool verify(const VerificationData& signature)
+	bool verify(const Signature& signature)
 	{
-		assert(SignatureVerificationKey.length() == crypto_sign_PUBLICKEYBYTES);
-		LOAD_FSTR_ARRAY(verificationKey, SignatureVerificationKey);
-		return (crypto_sign_final_verify(&state, signature.data(), verificationKey) == 0);
+		PrivateKey key;
+		assert(SignatureVerificationKey.length() == key.size());
+		SignatureVerificationKey.read(0, key.data(), key.size());
+		return Sodium::SignEd25519::verify(signature, key);
 	}
-
-private:
-	crypto_sign_state state;
 };
 
 } // namespace OtaUpgrade
