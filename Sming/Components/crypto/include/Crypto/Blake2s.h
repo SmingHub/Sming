@@ -24,6 +24,7 @@ public:
 	static constexpr const char* name = "blake2s";
 	static constexpr size_t hashsize = 32; // Maximum hash size of Blake2s. A shorter Hash can be selected at runtime.
 	static constexpr size_t blocksize = 64;
+	static constexpr size_t statesize = 0; // get_state/set_state API not supported.
 
 	static constexpr size_t maxkeysize = 32;
 
@@ -38,14 +39,11 @@ public:
 
 	uint64_t get_state(void* stateOut)
 	{
-		memcpy(stateOut, &state, sizeof(state));
-		return state.t64;
+		return 0;
 	}
 
 	void set_state(const void* stateIn, uint64_t count)
 	{
-		memcpy(&state, stateIn, sizeof(state));
-		assert(state.t64 == count);
 	}
 
 private:
@@ -57,15 +55,11 @@ private:
 			uint32_t t[2];
 			uint64_t t64;
 		};
-		uint32_t f[2];
 		uint8_t buffer[blocksize];
 		size_t bufferLength;
 		size_t hashSize; // selected hash size
 	};
 	State state;
-
-public:
-	static constexpr size_t statesize = sizeof(State);
 };
 
 } // namespace Crypto

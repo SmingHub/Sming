@@ -26,7 +26,7 @@ public:
 	{
 	}
 
-	void operator()(const uint8_t* block, const uint32_t increment)
+	void operator()(const uint8_t* block, const uint32_t increment, const uint32_t f = 0)
 	{
 		state.t64 += increment;
 		memcpy(m, block, sizeof(m));
@@ -37,8 +37,8 @@ public:
 		v[11] = initVectors[3];
 		v[12] = initVectors[4] ^ state.t[0];
 		v[13] = initVectors[5] ^ state.t[1];
-		v[14] = initVectors[6] ^ state.f[0];
-		v[15] = initVectors[7] ^ state.f[1];
+		v[14] = initVectors[6] ^ f;
+		v[15] = initVectors[7];
 
 		// Full loop unrolling would increase code size by approx. 3kB, but only reduce
 		// runtime by about 30%.
@@ -154,16 +154,11 @@ void Blake2sEngine::update(const void* data, size_t size)
 		size -= missing;
 	}
 
-	if(size > blocksize) {
-		size_t numBlocks = size / blocksize;
-		if(numBlocks * blocksize == size) {
-			--numBlocks; // exclude last block if size is a multiple of the block size
-		}
-		size -= blocksize * numBlocks;
-		for(; numBlocks > 0; --numBlocks) {
-			compressor(pData, blocksize);
-			pData += blocksize;
-		}
+	// exclude last block if size is a multiple of the block size
+	while(size > blocksize) {
+		compressor(pData, blocksize);
+		pData += blocksize;
+		size -= blocksize;
 	}
 
 	if(size > 0) {
@@ -175,11 +170,10 @@ void Blake2sEngine::update(const void* data, size_t size)
 
 void Blake2sEngine::final(uint8_t* hash)
 {
-	state.f[0] = 0xFFFFFFFFU;
 	// setup padding for last block
 	std::fill_n(state.buffer + state.bufferLength, blocksize - state.bufferLength, 0);
 	Compressor<State> compressor(state);
-	compressor(state.buffer, state.bufferLength);
+	compressor(state.buffer, state.bufferLength, 0xFFFFFFFF);
 
 	memcpy(hash, state.h, state.hashSize);
 	Internal::clean(state);
