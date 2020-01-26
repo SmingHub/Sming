@@ -70,31 +70,50 @@ public:
 		nextTest();
 	}
 
-	template <class Context> void checkHash(const FlashString& expectedHash, FlashString expectedState = {})
+	/*
+	 * Check standard hashes which have getState / setState implementations
+	 */
+	template <class Context> void checkHash(const FlashString& expectedHash, FlashString expectedState)
 	{
 		Context ctx;
 		ctx.update(FS_plainText);
 		auto state = ctx.getState();
 		auto hash = ctx.getHash();
 
+		auto stateText = Crypto::toString(state.value);
 		auto hashText = Crypto::toString(hash);
 
 		Serial.println(Context::Engine::name);
-		if(!expectedState.isNull()) {
-			auto stateText = Crypto::toString(state.value);
-			Serial.print(_F("  state: "));
-			Serial.println(stateText);
-			Serial.print(_F("  count: "));
-			Serial.println(state.count);
-		}
+		Serial.print(_F("  state: "));
+		Serial.println(stateText);
+		Serial.print(_F("  count: "));
+		Serial.println(state.count);
 		Serial.print(_F("  final: "));
 		Serial.println(hashText);
 		Serial.print(_F("  context size: "));
 		Serial.println(sizeof(Context));
-		if(!expectedState.isNull()) {
-			REQUIRE(state.count == FS_plainText.length());
-			REQUIRE(Crypto::toString(state.value) == expectedState);
-		}
+
+		REQUIRE(state.count == FS_plainText.length());
+		REQUIRE(Crypto::toString(state.value) == expectedState);
+		REQUIRE(hashText == expectedHash);
+	}
+
+	/*
+	 * Check supplementary hashes which do not implement getState / setState and may have optional engine arguments
+	 */
+	template <class Context, typename... Args> void checkHash(const FlashString& expectedHash, Args&&... args)
+	{
+		Context ctx(std::forward<Args>(args)...);
+		ctx.update(FS_plainText);
+		auto hash = ctx.getHash();
+
+		auto hashText = Crypto::toString(hash);
+
+		Serial.println(Context::Engine::name);
+		Serial.print(_F("  final: "));
+		Serial.println(hashText);
+		Serial.print(_F("  context size: "));
+		Serial.println(sizeof(Context));
 		REQUIRE(hashText == expectedHash);
 	}
 
@@ -155,7 +174,7 @@ public:
 				checkHash<Crypto::Sha256>(SHA256_HASH, SHA256_STATE);
 				checkHash<Crypto::Sha384>(SHA384_HASH, SHA384_STATE);
 				checkHash<Crypto::Sha512>(SHA512_HASH, SHA512_STATE);
-				checkHash<Crypto::Blake2s>(BLAKE2S_HASH);
+				checkHash<Crypto::Blake2s>(BLAKE2S_HASH); //, {}, hmacKey);
 			}
 			break;
 

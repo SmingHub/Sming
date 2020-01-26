@@ -104,6 +104,7 @@ public:
 	 * @brief Get intermediate hash state
 	 * @param state OUT: current state
 	 * @retval uint64_t Number of bytes processed so far
+	 * @note This method is only required for core hashes, used by Bear SSL
 	 */
 	State getState()
 	{
@@ -119,6 +120,7 @@ public:
 	 *
 	 * @param state
 	 * @param count
+	 * @note This method is only required for core hashes, used by Bear SSL
 	 */
 	void setState(const State& state)
 	{
