@@ -236,6 +236,16 @@ public:
 			return s == rhs || strcasecmp(str(), rhs) == 0;
 		}
 
+		bool operator==(const Iterator& rhs) const
+		{
+			return array_ == rhs.array_ && offset_ == rhs.offset_;
+		}
+
+		bool operator!=(const Iterator& rhs) const
+		{
+			return !operator==(rhs);
+		}
+
 		bool operator==(const char* rhs) const
 		{
 			return equals(rhs);
@@ -310,6 +320,8 @@ public:
 				++index_;
 			}
 		}
+
+		using const_iterator = Iterator;
 
 	private:
 		const CStringArray* array_ = nullptr;

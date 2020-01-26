@@ -170,6 +170,12 @@ public:
 
 				it2 = it1;
 				REQUIRE(it1 == it2);
+
+				it2++;
+				REQUIRE(it1 != it2);
+
+				// Just make sure this compiles OK
+				std::swap(it1, it2);
 			}
 		}
 	}
