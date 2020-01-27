@@ -67,30 +67,45 @@ bool spiffs_format_internal(spiffs_config *cfg)
 	return false;
   }
 
-  u32_t sect_first, sect_last;
-  sect_first = cfg->phys_addr;
-  sect_first = flashmem_get_sector_of_address(sect_first);
-  sect_last = cfg->phys_addr + cfg->phys_size - 1;
-  sect_last = flashmem_get_sector_of_address(sect_last);
-  debugf("sect_first: %x, sect_last: %x\n", sect_first, sect_last);
+  uint32_t log_block_count = cfg->phys_size / cfg->log_block_size;
+  uint32_t log_block_erased = 0;
+
+  debugf("sect_first: %x, sect_last: %x\n", 
+    flashmem_get_sector_of_address(cfg->phys_addr), 
+    flashmem_get_sector_of_address(cfg->phys_addr + cfg->phys_size - 1)
+  );
   ETS_INTR_LOCK();
-  int total = sect_last - sect_first + 1;
-  int cur = 0;
-  int last = -1;
-  while( sect_first <= sect_last )
+
+  while(log_block_erased < log_block_count)
   {
-	if(flashmem_erase_sector( sect_first++ ))
-	{
-		int percent = ++cur * 100 / total;
-		if (percent > last)
-			debugf("%d%%", percent);
-		last = percent;
-	}
-	else
-	{
-		ETS_INTR_UNLOCK();
-		return false;
-	}
+    uint32_t sector_per_block = cfg->log_block_size / INTERNAL_FLASH_SECTOR_SIZE;
+    uint32_t sector_erased = 0;
+    while(sector_erased < sector_per_block)
+    {
+      uint32_t target_sector = flashmem_get_sector_of_address(
+        cfg->phys_addr + (log_block_erased * cfg->log_block_size) +
+        (sector_erased * INTERNAL_FLASH_SECTOR_SIZE)
+      );
+
+
+      if(!flashmem_erase_sector(target_sector))
+      {
+        ETS_INTR_UNLOCK();
+        return false;
+      }
+      
+      sector_erased++;
+    }
+
+    //write erase count to first sector of every logical block
+    uint32_t erase_count_addr = cfg->phys_addr + (log_block_erased * cfg->log_block_size);
+    erase_count_addr += cfg->log_page_size;
+    erase_count_addr -= sizeof(spiffs_obj_id);
+
+    spiffs_obj_id block_erase_count = 0;
+    flashmem_write(&block_erase_count, erase_count_addr, sizeof(spiffs_obj_id));
+
+    log_block_erased++;
   }
   debugf("formatted");
   ETS_INTR_UNLOCK();
