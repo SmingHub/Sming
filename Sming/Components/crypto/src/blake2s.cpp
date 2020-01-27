@@ -114,9 +114,11 @@ private:
 
 void Blake2sImpl::initCommon(size_t hashSize, size_t keySize)
 {
+	assert(hashSize > 0 && hashSize <= maxhashsize);
 	assert(keySize <= maxkeysize);
 
 	context = {};
+	this->hashSize = hashSize;
 
 	std::copy_n(initVectors, 8, context.state);
 	context.state[0] ^= (0x01010000U | (keySize << 8) | hashSize);
@@ -163,7 +165,7 @@ void Blake2sImpl::update(const void* data, size_t size)
 	}
 }
 
-void Blake2sImpl::final(uint8_t* hash, size_t hashSize)
+void Blake2sImpl::final(uint8_t* hash)
 {
 	// setup padding for last block
 	std::fill_n(context.buffer + context.bufferLength, blocksize - context.bufferLength, 0);

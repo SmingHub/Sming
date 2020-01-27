@@ -22,6 +22,7 @@ class Blake2sImpl
 {
 public:
 	static constexpr const char* name = "blake2s";
+	static constexpr size_t maxhashsize = 32;
 	static constexpr size_t blocksize = 64;
 	static constexpr size_t maxkeysize = 32;
 
@@ -35,7 +36,7 @@ protected:
 		initCommon(hashSize, 0);
 	}
 
-	void final(uint8_t* hash, size_t hashSize);
+	void final(uint8_t* hash);
 
 private:
 	void initCommon(size_t hashSize, size_t keySize);
@@ -47,14 +48,15 @@ private:
 		size_t bufferLength;
 	};
 	Context context;
+	size_t hashSize;
 };
 
-template <size_t HashSize> class Blake2sEngine : public Blake2sImpl
+template <size_t hash_size> class Blake2sEngine : public Blake2sImpl
 {
 public:
-	static_assert(HashSize > 0 && HashSize <= 32, "Blake2s invalid hashsize");
+	static_assert(hash_size > 0 && hash_size <= maxhashsize, "Blake2s invalid hashsize");
 
-	static constexpr size_t hashsize = HashSize;
+	static constexpr size_t hashsize = hash_size;
 
 	void init(const Secret& key)
 	{
@@ -68,7 +70,7 @@ public:
 
 	void final(uint8_t* hash)
 	{
-		Blake2sImpl::final(hash, hashsize);
+		Blake2sImpl::final(hash);
 	}
 };
 

@@ -14,6 +14,7 @@
 #include "Blake2s.h"
 #include "Blob.h"
 #include "ByteArray.h"
+
 namespace Crypto
 {
 /**
@@ -142,7 +143,7 @@ using Sha256 = HashContext<Sha256Engine>;
 using Sha384 = HashContext<Sha384Engine>;
 using Sha512 = HashContext<Sha512Engine>;
 
-template <size_t HashSize> using Blake2s = HashContext<Blake2sEngine<HashSize>>;
+template <size_t hashsize> using Blake2s = HashContext<Blake2sEngine<hashsize>>;
 using Blake2s256 = Blake2s<32>;
 using Blake2s128 = Blake2s<16>;
 
