@@ -127,12 +127,13 @@ static void spiffs_mount_internal(spiffs_config *cfg)
   cfg->hal_write_f = api_spiffs_write;
   cfg->hal_erase_f = api_spiffs_erase;
   
-  uint32_t dat;
+  spiffs_obj_id dat;
   bool writeFirst = false;
-  flashmem_read(&dat, cfg->phys_addr, 4);
+  //get the erase count record
+  flashmem_read(&dat, cfg->phys_addr + cfg->log_page_size - sizeof(spiffs_obj_id), sizeof(spiffs_obj_id));
   //debugf("%X", dat);
 
-  if (dat == UINT32_MAX)
+  if (dat == (spiffs_obj_id) UINT32_MAX)  //not spiffs formatted most likely raw formatted
   {
 	  debugf("First init file system");
 	  spiffs_format_internal(cfg);
