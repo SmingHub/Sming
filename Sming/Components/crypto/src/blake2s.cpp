@@ -10,20 +10,20 @@
 
 #include "../include/Crypto/Blake2s.h"
 #include "util.h"
-#include <FakePgmSpace.h>
+#include <sys/pgmspace.h>
+#include <cassert>
 
-namespace Crypto
-{
 namespace
 {
 static const uint32_t initVectors[8] PROGMEM = {0x6A09E667U, 0xBB67AE85U, 0x3C6EF372U, 0xA54FF53AU,
 												0x510E527FU, 0x9B05688CU, 0x1F83D9ABU, 0x5BE0CD19U};
 
+constexpr size_t blocksize = BLAKE2S_BLOCKSIZE;
+
 class Compressor
 {
 public:
-	template <typename Context>
-	Compressor(Context& context, const uint8_t* block, uint32_t increment, bool isFinal = false)
+	Compressor(crypto_blake2s_context_t& context, const uint8_t* block, uint32_t increment, bool isFinal = false)
 	{
 		context.count += increment;
 		memcpy(m, block, sizeof(m));
@@ -110,69 +110,77 @@ private:
 	uint32_t m[16];
 };
 
+void init(crypto_blake2s_context_t* ctx, size_t hashSize, size_t keySize)
+{
+	assert(hashSize > 0 && hashSize <= BLAKE2S_MAXHASHSIZE);
+	assert(keySize <= BLAKE2S_MAXKEYSIZE);
+
+	memset(ctx, 0, sizeof(*ctx));
+	ctx->hashSize = hashSize;
+
+	std::copy_n(initVectors, 8, ctx->state);
+	ctx->state[0] ^= (0x01010000U | (keySize << 8) | hashSize);
+}
+
 } // namespace
 
-void Blake2sImpl::initCommon(size_t hashSize, size_t keySize)
+CRYPTO_FUNC_INIT(blake2s)
 {
-	assert(hashSize > 0 && hashSize <= maxhashsize);
-	assert(keySize <= maxkeysize);
-
-	context = {};
-	this->hashSize = hashSize;
-
-	std::copy_n(initVectors, 8, context.state);
-	context.state[0] ^= (0x01010000U | (keySize << 8) | hashSize);
+	init(ctx, BLAKE2S_MAXHASHSIZE, 0);
 }
 
-void Blake2sImpl::init(const Secret& key, size_t hashSize)
+void CRYPTO_NAME(blake2s, initkey)(crypto_blake2s_context_t* ctx, size_t hashSize, const void* key, size_t keySize)
 {
-	initCommon(hashSize, key.size());
+	init(ctx, hashSize, keySize);
 
-	uint8_t block[blocksize] = {0};
-	memcpy(block, key.data(), key.size());
-	update(block, blocksize);
-	Internal::clean(block);
+	if(keySize != 0) {
+		uint8_t block[blocksize] = {0};
+		if(key != nullptr) {
+			memcpy(block, key, keySize);
+		}
+		crypto_blake2s_update(ctx, block, blocksize);
+		Crypto::Internal::clean(block);
+	}
 }
 
-void Blake2sImpl::update(const void* data, size_t size)
+CRYPTO_FUNC_UPDATE(blake2s)
 {
-	if(size == 0) {
+	if(length == 0) {
 		return;
 	}
 
-	const uint8_t* pData = reinterpret_cast<const uint8_t*>(data);
+	const uint8_t* pData = reinterpret_cast<const uint8_t*>(input);
+	auto size = length;
 
-	const size_t bufferSpace = blocksize - context.bufferLength;
+	const size_t bufferSpace = blocksize - ctx->bufferLength;
 	if(size > bufferSpace) {
-		memcpy(context.buffer + context.bufferLength, pData, bufferSpace);
-		Compressor(context, context.buffer, blocksize);
-		context.bufferLength = 0;
+		memcpy(ctx->buffer + ctx->bufferLength, pData, bufferSpace);
+		Compressor(*ctx, ctx->buffer, blocksize);
+		ctx->bufferLength = 0;
 		pData += bufferSpace;
 		size -= bufferSpace;
 	}
 
 	// exclude last block if size is a multiple of the block size
 	while(size > blocksize) {
-		Compressor(context, pData, blocksize);
+		Compressor(*ctx, pData, blocksize);
 		pData += blocksize;
 		size -= blocksize;
 	}
 
 	if(size > 0) {
-		assert(context.bufferLength + size <= blocksize);
-		memcpy(context.buffer + context.bufferLength, pData, size);
-		context.bufferLength += size;
+		assert(ctx->bufferLength + size <= blocksize);
+		memcpy(ctx->buffer + ctx->bufferLength, pData, size);
+		ctx->bufferLength += size;
 	}
 }
 
-void Blake2sImpl::final(uint8_t* hash)
+CRYPTO_FUNC_FINAL(blake2s)
 {
 	// setup padding for last block
-	std::fill_n(context.buffer + context.bufferLength, blocksize - context.bufferLength, 0);
-	Compressor(context, context.buffer, context.bufferLength, /* isFinal = */ true);
+	std::fill_n(ctx->buffer + ctx->bufferLength, blocksize - ctx->bufferLength, 0);
+	Compressor(*ctx, ctx->buffer, ctx->bufferLength, /* isFinal = */ true);
 
-	memcpy(hash, context.state, hashSize);
-	Internal::clean(context);
+	memcpy(digest, ctx->state, ctx->hashSize);
+	Crypto::Internal::clean(ctx);
 }
-
-} // namespace Crypto
