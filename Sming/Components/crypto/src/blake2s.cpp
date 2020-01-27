@@ -19,14 +19,11 @@ namespace
 static const uint32_t initVectors[8] PROGMEM = {0x6A09E667U, 0xBB67AE85U, 0x3C6EF372U, 0xA54FF53AU,
 												0x510E527FU, 0x9B05688CU, 0x1F83D9ABU, 0x5BE0CD19U};
 
-template <typename Context> class Compressor
+class Compressor
 {
 public:
-	explicit Compressor(Context& ctx) : context(ctx)
-	{
-	}
-
-	void operator()(const uint8_t* block, uint32_t increment, bool isFinal = false)
+	template <typename Context>
+	Compressor(Context& context, const uint8_t* block, uint32_t increment, bool isFinal = false)
 	{
 		context.count += increment;
 		memcpy(m, block, sizeof(m));
@@ -35,8 +32,8 @@ public:
 		v[9] = initVectors[1];
 		v[10] = initVectors[2];
 		v[11] = initVectors[3];
-		v[12] = initVectors[4] ^ uint32_t(context.count);
-		v[13] = initVectors[5] ^ uint32_t(context.count >> 32);
+		v[12] = initVectors[4] ^ static_cast<uint32_t>(context.count);
+		v[13] = initVectors[5] ^ static_cast<uint32_t>(context.count >> 32);
 		v[14] = initVectors[6] ^ (isFinal ? 0xFFFFFFFFU : 0U);
 		v[15] = initVectors[7];
 
@@ -111,24 +108,21 @@ private:
 	uint32_t mPerm[16];
 	uint32_t v[16];
 	uint32_t m[16];
-	Context& context;
 };
 
 } // namespace
 
-void Blake2sEngine::initCommon(size_t hashSize, size_t keySize)
+void Blake2sImpl::initCommon(size_t hashSize, size_t keySize)
 {
-	assert(hashSize > 0 && hashSize <= hashsize);
 	assert(keySize <= maxkeysize);
 
 	context = {};
-	userHashSize = hashSize;
 
 	std::copy_n(initVectors, 8, context.state);
 	context.state[0] ^= (0x01010000U | (keySize << 8) | hashSize);
 }
 
-void Blake2sEngine::init(const Secret& key, size_t hashSize)
+void Blake2sImpl::init(const Secret& key, size_t hashSize)
 {
 	initCommon(hashSize, key.size());
 
@@ -138,19 +132,18 @@ void Blake2sEngine::init(const Secret& key, size_t hashSize)
 	Internal::clean(block);
 }
 
-void Blake2sEngine::update(const void* data, size_t size)
+void Blake2sImpl::update(const void* data, size_t size)
 {
 	if(size == 0) {
 		return;
 	}
 
 	const uint8_t* pData = reinterpret_cast<const uint8_t*>(data);
-	Compressor<Context> compressor(context);
 
 	const size_t bufferSpace = blocksize - context.bufferLength;
 	if(size > bufferSpace) {
 		memcpy(context.buffer + context.bufferLength, pData, bufferSpace);
-		compressor(context.buffer, blocksize);
+		Compressor(context, context.buffer, blocksize);
 		context.bufferLength = 0;
 		pData += bufferSpace;
 		size -= bufferSpace;
@@ -158,7 +151,7 @@ void Blake2sEngine::update(const void* data, size_t size)
 
 	// exclude last block if size is a multiple of the block size
 	while(size > blocksize) {
-		compressor(pData, blocksize);
+		Compressor(context, pData, blocksize);
 		pData += blocksize;
 		size -= blocksize;
 	}
@@ -170,14 +163,13 @@ void Blake2sEngine::update(const void* data, size_t size)
 	}
 }
 
-void Blake2sEngine::final(uint8_t* hash)
+void Blake2sImpl::final(uint8_t* hash, size_t hashSize)
 {
 	// setup padding for last block
 	std::fill_n(context.buffer + context.bufferLength, blocksize - context.bufferLength, 0);
-	Compressor<Context> compressor(context);
-	compressor(context.buffer, context.bufferLength, 0xFFFFFFFF);
+	Compressor(context, context.buffer, context.bufferLength, /* isFinal = */ true);
 
-	memcpy(hash, context.state, userHashSize);
+	memcpy(hash, context.state, hashSize);
 	Internal::clean(context);
 }
 

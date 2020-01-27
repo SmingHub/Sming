@@ -122,8 +122,8 @@ using HmacSha256 = HmacContext<Sha256>;
 using HmacSha384 = HmacContext<Sha384>;
 using HmacSha512 = HmacContext<Sha512>;
 
-template <size_t hashsize> using HmacBlake2s = HmacContext<Blake2s<hashsize>>;
-using HmacBlake2s_256 = HmacBlake2s<32>;
-using HmacBlake2s_128 = HmacBlake2s<16>;
+template <size_t HashSize> using HmacBlake2s = HmacContext<Blake2s<HashSize>>;
+using HmacBlake2s256 = HmacBlake2s<32>;
+using HmacBlake2s128 = HmacBlake2s<16>;
 
 } // namespace Crypto

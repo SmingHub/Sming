@@ -177,9 +177,9 @@ public:
 				checkHash<Crypto::Sha256>(SHA256_HASH, SHA256_STATE);
 				checkHash<Crypto::Sha384>(SHA384_HASH, SHA384_STATE);
 				checkHash<Crypto::Sha512>(SHA512_HASH, SHA512_STATE);
-				checkHash<Crypto::Blake2s_128>(BLAKE2S_128_HASH);
-				checkHash<Crypto::Blake2s_256>(BLAKE2S_256_HASH);
-				checkHash<Crypto::Blake2s_256>(BLAKE2S_256_HASH_KEYED, hmacKey);
+				checkHash<Crypto::Blake2s128>(BLAKE2S_128_HASH);
+				checkHash<Crypto::Blake2s256>(BLAKE2S_256_HASH);
+				checkHash<Crypto::Blake2s256>(BLAKE2S_256_HASH_KEYED, hmacKey);
 			}
 			break;
 
@@ -215,8 +215,8 @@ public:
 				checkHmac<Crypto::HmacSha256>(SHA256_HMAC);
 				checkHmac<Crypto::HmacSha384>(SHA384_HMAC);
 				checkHmac<Crypto::HmacSha512>(SHA512_HMAC);
-				checkHmac<Crypto::HmacBlake2s_128>(BLAKE2S_128_HMAC);
-				checkHmac<Crypto::HmacBlake2s_256>(BLAKE2S_256_HMAC);
+				checkHmac<Crypto::HmacBlake2s128>(BLAKE2S_128_HMAC);
+				checkHmac<Crypto::HmacBlake2s256>(BLAKE2S_256_HMAC);
 			}
 			break;
 
@@ -287,7 +287,7 @@ public:
 				benchmarkHash<Crypto::Sha256>(SHA256_HASH);
 				benchmarkHash<Crypto::Sha384>(SHA384_HASH);
 				benchmarkHash<Crypto::Sha512>(SHA512_HASH);
-				benchmarkHash<Crypto::Blake2s_256>(BLAKE2S_256_HASH);
+				benchmarkHash<Crypto::Blake2s256>(BLAKE2S_256_HASH);
 			}
 			break;
 
@@ -333,7 +333,7 @@ public:
 				benchmarkHmac<Crypto::HmacSha256>(SHA256_HMAC);
 				benchmarkHmac<Crypto::HmacSha384>(SHA384_HMAC);
 				benchmarkHmac<Crypto::HmacSha512>(SHA512_HMAC);
-				benchmarkHmac<Crypto::HmacBlake2s_256>(BLAKE2S_256_HMAC);
+				benchmarkHmac<Crypto::HmacBlake2s256>(BLAKE2S_256_HMAC);
 			}
 			break;
 

@@ -18,24 +18,24 @@
 
 namespace Crypto
 {
-class Blake2sEngine
+class Blake2sImpl
 {
 public:
 	static constexpr const char* name = "blake2s";
-	static constexpr size_t hashsize = 32; // Maximum hash size of Blake2s. A shorter Hash can be selected at runtime.
 	static constexpr size_t blocksize = 64;
 	static constexpr size_t maxkeysize = 32;
 
-	void init(const Secret& key, size_t hashSize = hashsize);
+	void update(const void* data, size_t size);
 
-	void init(size_t hashSize = hashsize)
+protected:
+	void init(const Secret& key, size_t hashSize);
+
+	void init(size_t hashSize)
 	{
 		initCommon(hashSize, 0);
 	}
 
-	void update(const void* data, size_t size);
-
-	void final(uint8_t* hash);
+	void final(uint8_t* hash, size_t hashSize);
 
 private:
 	void initCommon(size_t hashSize, size_t keySize);
@@ -47,23 +47,28 @@ private:
 		size_t bufferLength;
 	};
 	Context context;
-	size_t userHashSize;
 };
 
-template <size_t hashsize_> class Blake2sEngineTemplate : public Blake2sEngine
+template <size_t HashSize> class Blake2sEngine : public Blake2sImpl
 {
 public:
-	static constexpr size_t hashsize = hashsize_;
-	static_assert(hashsize >= 4 && (hashsize % 4) == 0, "Blake2s invalid hashsize");
+	static_assert(HashSize > 0 && HashSize <= 32, "Blake2s invalid hashsize");
+
+	static constexpr size_t hashsize = HashSize;
 
 	void init(const Secret& key)
 	{
-		Blake2sEngine::init(key, hashsize);
+		Blake2sImpl::init(key, hashsize);
 	}
 
 	void init()
 	{
-		Blake2sEngine::init(hashsize);
+		Blake2sImpl::init(hashsize);
+	}
+
+	void final(uint8_t* hash)
+	{
+		Blake2sImpl::final(hash, hashsize);
 	}
 };
 
