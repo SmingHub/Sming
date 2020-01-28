@@ -11,7 +11,9 @@
  ****/
 
 #include <bearssl.h>
-#include <Crypto/HashEngine.h>
+#include <Crypto/Md5.h>
+#include <Crypto/Sha1.h>
+#include <Crypto/Sha2.h>
 
 namespace Ssl
 {

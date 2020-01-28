@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <cstring>
 #include <stringutil.h>
+#include <sming_attr.h>
 
 namespace Crypto
 {

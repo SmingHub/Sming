@@ -10,12 +10,17 @@
 
 #pragma once
 
-#include "HashContext.h"
 #include <cstring>
-#include <cassert>
+#include "Blob.h"
+#include "ByteArray.h"
 
 namespace Crypto
 {
+/**
+ * @brief HMAC class template
+ *
+ * Implements the HMAC algorithm using any defined hash context
+ */
 template <class HashContext> class HmacContext
 {
 public:
@@ -110,20 +115,5 @@ private:
 	ByteArray<blocksize> outputPad;
 	HashContext ctx;
 };
-
-/*
- * HMAC definitions
- */
-
-using HmacMd5 = HmacContext<Md5>;
-using HmacSha1 = HmacContext<Sha1>;
-using HmacSha224 = HmacContext<Sha224>;
-using HmacSha256 = HmacContext<Sha256>;
-using HmacSha384 = HmacContext<Sha384>;
-using HmacSha512 = HmacContext<Sha512>;
-
-template <size_t hashsize> using HmacBlake2s = HmacContext<Blake2s<hashsize>>;
-using HmacBlake2s256 = HmacBlake2s<32>;
-using HmacBlake2s128 = HmacBlake2s<16>;
 
 } // namespace Crypto

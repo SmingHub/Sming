@@ -1,5 +1,8 @@
 #include <SmingTest.h>
-#include <Crypto.h>
+#include <Crypto/Md5.h>
+#include <Crypto/Sha1.h>
+#include <Crypto/Sha2.h>
+#include <Crypto/Blake2s.h>
 #include "crypto/AxHash.h"
 #include "crypto/BrHash.h"
 

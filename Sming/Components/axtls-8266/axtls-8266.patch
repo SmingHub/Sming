@@ -410,10 +410,10 @@ index d90b093..f18fbd5 100644
      }  
 
 diff --git a/ssl/crypto_misc.h b/ssl/crypto_misc.h
-index 02d9306..88c234f 100644
+index 02d9306..3590c1d 100644
 --- a/ssl/crypto_misc.h
 +++ b/ssl/crypto_misc.h
-@@ -39,8 +39,9 @@
+@@ -39,8 +39,11 @@
  extern "C" {
  #endif
  
@@ -421,7 +421,9 @@ index 02d9306..88c234f 100644
 -#include "bigint.h"
 +#include "../crypto/crypto.h"
 +#include "../crypto/bigint.h"
-+#include <Crypto/HashApi.h>
++#include <Crypto/HashApi/md5.h>
++#include <Crypto/HashApi/sha1.h>
++#include <Crypto/HashApi/sha2.h>
  
  /**************************************************************************
   * X509 declarations 

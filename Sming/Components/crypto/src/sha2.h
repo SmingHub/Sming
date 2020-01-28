@@ -19,7 +19,8 @@
 
 #pragma once
 
-#include "hash.h"
+#include "stdhash.h"
+#include "../include/Crypto/HashApi/sha2.h"
 
 namespace Crypto
 {

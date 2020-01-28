@@ -22,7 +22,8 @@
  * SOFTWARE.
  */
 
-#include "hash.h"
+#include "stdhash.h"
+#include "../include/Crypto/HashApi/sha1.h"
 
 namespace
 {

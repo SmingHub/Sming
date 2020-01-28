@@ -4,49 +4,48 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * blake2s.h
+ * Blake2s.h
  *
  ****/
 
 #pragma once
 
-#include "HashApi.h"
-#include "Blob.h"
+#include "HashApi/blake2s.h"
+#include "HashEngine.h"
+#include "HashContext.h"
+#include "HmacContext.h"
 
 namespace Crypto
 {
-template <size_t hash_size> class Blake2sEngine
-{
-public:
-	static_assert(hash_size > 0 && hash_size <= BLAKE2S_MAXHASHSIZE, "Blake2s invalid hashsize");
-
-	static constexpr const char* name = "blake2s";
-	static constexpr size_t hashsize = hash_size;
-	static constexpr size_t blocksize = BLAKE2S_BLOCKSIZE;
-	static constexpr size_t maxkeysize = BLAKE2S_MAXKEYSIZE;
-
-	void init()
-	{
-		crypto_blake2s_initkey(&context, hashsize, nullptr, 0);
+#define BLAKE2S_INIT(name_)                                                                                            \
+	static_assert(hash_size > 0 && hash_size <= BLAKE2S_MAXHASHSIZE, "Blake2s invalid hashsize");                      \
+                                                                                                                       \
+	void init()                                                                                                        \
+	{                                                                                                                  \
+		CRYPTO_NAME(name_, initkey)(&ctx, hash_size, nullptr, 0);                                                      \
+	}                                                                                                                  \
+                                                                                                                       \
+	void init(const Secret& key)                                                                                       \
+	{                                                                                                                  \
+		CRYPTO_NAME(name_, initkey)(&ctx, hash_size, key.data(), key.size());                                          \
 	}
 
-	void init(const Secret& key)
-	{
-		crypto_blake2s_initkey(&context, hashsize, key.data(), key.size());
-	}
+template <size_t hash_size>
+CRYPTO_HASH_ENGINE(Blake2s, blake2s, hash_size, BLAKE2S_STATESIZE, BLAKE2S_BLOCKSIZE, BLAKE2S_INIT)
 
-	void update(const void* data, size_t size)
-	{
-		crypto_blake2s_update(&context, data, size);
-	}
+/*
+ * Hash Contexts
+ */
+template <size_t hashsize>
+using Blake2s = HashContext<Blake2sEngine<hashsize>>;
+using Blake2s256 = Blake2s<32>;
+using Blake2s128 = Blake2s<16>;
 
-	void final(uint8_t* hash)
-	{
-		crypto_blake2s_final(hash, &context);
-	}
-
-private:
-	crypto_blake2s_context_t context;
-};
+/*
+ * HMAC Contexts
+ */
+template <size_t hashsize> using HmacBlake2s = HmacContext<Blake2s<hashsize>>;
+using HmacBlake2s256 = HmacBlake2s<32>;
+using HmacBlake2s128 = HmacBlake2s<16>;
 
 } // namespace Crypto

@@ -8,10 +8,11 @@
  *
  ****/
 
-#include "../include/Crypto/Blake2s.h"
+#include "../include/Crypto/HashApi/blake2s.h"
 #include "util.h"
 #include <sys/pgmspace.h>
 #include <cassert>
+#include <algorithm>
 
 namespace
 {
