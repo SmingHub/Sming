@@ -21,10 +21,8 @@ static const uint32_t initVectors[8] PROGMEM = {0x6A09E667U, 0xBB67AE85U, 0x3C6E
 
 constexpr size_t blocksize = BLAKE2S_BLOCKSIZE;
 
-class Compressor
-{
-public:
-	Compressor(crypto_blake2s_context_t& context, const uint8_t* block, uint32_t increment, bool isFinal = false)
+struct CompressionContext {
+	void compress(crypto_blake2s_context_t& context, const uint8_t* block, uint32_t increment, bool isFinal = false)
 	{
 		context.count += increment;
 		memcpy(m, block, sizeof(m));
@@ -56,27 +54,26 @@ public:
 		}
 	}
 
-private:
-	template <size_t M0, size_t M1, size_t M2, size_t M3, size_t M4, size_t M5, size_t M6, size_t M7, size_t M8,
-			  size_t M9, size_t M10, size_t M11, size_t M12, size_t M13, size_t M14, size_t M15>
+	template <size_t m0, size_t m1, size_t m2, size_t m3, size_t m4, size_t m5, size_t m6, size_t m7, size_t m8,
+			  size_t m9, size_t m10, size_t m11, size_t m12, size_t m13, size_t m14, size_t m15>
 	void shuffleRound()
 	{
-		mPerm[0] = m[M0];
-		mPerm[1] = m[M1];
-		mPerm[2] = m[M2];
-		mPerm[3] = m[M3];
-		mPerm[4] = m[M4];
-		mPerm[5] = m[M5];
-		mPerm[6] = m[M6];
-		mPerm[7] = m[M7];
-		mPerm[8] = m[M8];
-		mPerm[9] = m[M9];
-		mPerm[10] = m[M10];
-		mPerm[11] = m[M11];
-		mPerm[12] = m[M12];
-		mPerm[13] = m[M13];
-		mPerm[14] = m[M14];
-		mPerm[15] = m[M15];
+		mPerm[0] = m[m0];
+		mPerm[1] = m[m1];
+		mPerm[2] = m[m2];
+		mPerm[3] = m[m3];
+		mPerm[4] = m[m4];
+		mPerm[5] = m[m5];
+		mPerm[6] = m[m6];
+		mPerm[7] = m[m7];
+		mPerm[8] = m[m8];
+		mPerm[9] = m[m9];
+		mPerm[10] = m[m10];
+		mPerm[11] = m[m11];
+		mPerm[12] = m[m12];
+		mPerm[13] = m[m13];
+		mPerm[14] = m[m14];
+		mPerm[15] = m[m15];
 		round();
 	}
 
@@ -92,23 +89,23 @@ private:
 		roundPart<7>(v[3], v[4], v[9], v[14]);
 	}
 
-	template <size_t I> void roundPart(uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d)
+	template <size_t ix> void roundPart(uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d)
 	{
 		using namespace Crypto::Internal;
 
-		a += b + mPerm[2 * I];
+		a += b + mPerm[2 * ix];
 		d = ROTR(d ^ a, 16);
 		c += d;
 		b = ROTR(b ^ c, 12);
-		a += b + mPerm[2 * I + 1];
+		a += b + mPerm[2 * ix + 1];
 		d = ROTR(d ^ a, 8);
 		c += d;
 		b = ROTR(b ^ c, 7);
 	}
 
-	uint32_t mPerm[16];
-	uint32_t v[16];
-	uint32_t m[16];
+	uint32_t mPerm[16]; // Permutated (mixed) message
+	uint32_t v[16];		// State vector
+	uint32_t m[16];		// Input message
 };
 
 void init(crypto_blake2s_context_t* ctx, size_t hashSize, size_t keySize)
@@ -153,10 +150,12 @@ CRYPTO_FUNC_UPDATE(blake2s)
 	const uint8_t* pData = reinterpret_cast<const uint8_t*>(input);
 	auto size = length;
 
+	CompressionContext cc;
+
 	const size_t bufferSpace = blocksize - ctx->bufferLength;
 	if(size > bufferSpace) {
 		memcpy(ctx->buffer + ctx->bufferLength, pData, bufferSpace);
-		Compressor(*ctx, ctx->buffer, blocksize);
+		cc.compress(*ctx, ctx->buffer, blocksize);
 		ctx->bufferLength = 0;
 		pData += bufferSpace;
 		size -= bufferSpace;
@@ -164,7 +163,7 @@ CRYPTO_FUNC_UPDATE(blake2s)
 
 	// exclude last block if size is a multiple of the block size
 	while(size > blocksize) {
-		Compressor(*ctx, pData, blocksize);
+		cc.compress(*ctx, pData, blocksize);
 		pData += blocksize;
 		size -= blocksize;
 	}
@@ -180,7 +179,8 @@ CRYPTO_FUNC_FINAL(blake2s)
 {
 	// setup padding for last block
 	std::fill_n(ctx->buffer + ctx->bufferLength, blocksize - ctx->bufferLength, 0);
-	Compressor(*ctx, ctx->buffer, ctx->bufferLength, /* isFinal = */ true);
+	CompressionContext cc;
+	cc.compress(*ctx, ctx->buffer, ctx->bufferLength, /* isFinal = */ true);
 
 	memcpy(digest, ctx->state, ctx->hashSize);
 	Crypto::Internal::clean(ctx);
