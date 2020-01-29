@@ -28,9 +28,8 @@ void HttpDigestAuth::setResponse(HttpResponse* response)
 		return;
 	}
 
-	if(response->headers.contains(HTTP_HEADER_WWW_AUTHENTICATE) &&
-	   response->headers[HTTP_HEADER_WWW_AUTHENTICATE].indexOf(F("Digest")) >= 0) {
-		String authHeader = response->headers[HTTP_HEADER_WWW_AUTHENTICATE];
+	const String& authHeader = reinterpret_cast<const HttpHeaders&>(response->headers)[HTTP_HEADER_WWW_AUTHENTICATE];
+	if(authHeader.indexOf(F("Digest")) >= 0) {
 		/*
 		 * Example (see: https://tools.ietf.org/html/rfc2069#page-4):
 		 *
@@ -42,7 +41,9 @@ void HttpDigestAuth::setResponse(HttpResponse* response)
 
 		// TODO: process WWW-Authenticate header
 
-		String authResponse = F("Digest username=\"") + username + '"';
+		String authResponse = F("Digest username=\"");
+		authResponse += username;
+		authResponse += '"';
 		/*
 		 * Example (see: https://tools.ietf.org/html/rfc2069#page-4):
 		 *

@@ -45,6 +45,8 @@ public:
 	CommandHandler();
 	~CommandHandler();
 
+	CommandHandler(const CommandHandler&) = delete;
+
 	/** @brief  Add a new command to the command handler
 	 *  @param  reqDelegate Command delegate to register
 	 *  @retval bool True on success
