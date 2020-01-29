@@ -68,6 +68,7 @@ Please note Version 4 documentation is at [sming.readthedocs.io](https://sming.r
     * [PWM support](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/driver/index.html) based on [Stefan Bruens PWM](https://github.com/StefanBruens/ESP8266_new_pwm.git).
     * Optional [custom heap allocation](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/heap/index.html) based on [Umm Malloc](https://github.com/rhempel/umm_malloc.git).
     * Based on Espressif NONOS SDK. Officially suppored NON SDK version is >= 3.0.1.
+    * Support for a [thin No-Wifi-SDK](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/esp_no_wifi/index.html). Helpful when a project does not require WiFi (or networking) and reduces code size and memory usage signficantly.
 * Linux/Windows features
     * Sming has a [host emulator](https://sming.readthedocs.io/en/latest/arch/host/host-emulator.html) that allows libraries and sample applications to be compiled on a Linux/Windows host system and be tested before uploading them to an actual microcontroller.
 
@@ -94,7 +95,7 @@ Linux and Windows OSes with gcc compilers are supported. Clang is NOT supported.
 
 ### Stable
 
-- [Sming V4.0.0](https://github.com/SmingHub/Sming/releases/tag/4.0.0) - great new features, performance and stability improvements.
+- [Sming V4.1.0](https://github.com/SmingHub/Sming/releases/tag/4.1.0) - great new features, performance and stability improvements.
 - [Sming V3.8.1 LTS](https://github.com/SmingHub/Sming/releases/tag/3.8.1) - suitable for older applications that are not yet migrated to Sming v4.x.x.
 Long Term Support (LTS) is available till 1st of April, 2020.
 
