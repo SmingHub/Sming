@@ -28,7 +28,7 @@ TcpConnection* TcpServer::createClient(tcp_pcb* clientTcp)
 //Timer stateTimer;
 void list_mem()
 {
-	debug_d("Free heap size=%u", system_get_free_heap_size());
+	debug_d("Free heap size=%u, K=%u", system_get_free_heap_size(), TcpServer::totalConnections);
 }
 
 void TcpServer::setKeepAlive(uint16_t seconds)
@@ -63,6 +63,12 @@ err_t TcpServer::onAccept(tcp_pcb* clientTcp, err_t err)
 	if(system_get_free_heap_size() < minHeapSize) {
 		debug_w("\r\n\r\nCONNECTION DROPPED\r\n\t(free heap: %u)\r\n\r\n", system_get_free_heap_size());
 		return ERR_MEM;
+	}
+
+	// Obey any requested connection limit
+	if(maxConnections != 0 && connections.count() >= maxConnections) {
+		debug_w("\r\n\r\nCONNECTION DROPPED\r\n\t(Existing connections: %u)\r\n\r\n", connections.count());
+		return ERR_ABRT;
 	}
 
 #ifdef NETWORK_DEBUG

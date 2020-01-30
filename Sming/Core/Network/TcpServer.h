@@ -88,6 +88,7 @@ public:
 
 protected:
 	size_t minHeapSize = 16384;
+	uint16_t maxConnections = 0; ///< By default, don't limit connection count
 
 	bool active = true;
 	Vector<TcpConnection*> connections;
