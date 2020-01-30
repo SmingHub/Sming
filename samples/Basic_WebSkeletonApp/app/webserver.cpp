@@ -23,7 +23,7 @@ FILE_LIST(XX)
 #undef XX
 
 // Import content for each file
-#define XX(name, file) IMPORT_FSTR(CONTENT_##name, PROJECT_DIR "/files/" file);
+#define XX(name, file) IMPORT_FSTR_LOCAL(CONTENT_##name, PROJECT_DIR "/files/" file);
 FILE_LIST(XX)
 #undef XX
 
