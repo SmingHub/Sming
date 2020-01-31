@@ -18,8 +18,8 @@ extern "C" {
 
 #define LOG_PAGE_SIZE       256
 
-void spiffs_mount();
-void spiffs_mount_manual(u32_t phys_addr, u32_t phys_size);
+bool spiffs_mount();
+bool spiffs_mount_manual(u32_t phys_addr, u32_t phys_size);
 void spiffs_unmount();
 bool spiffs_format();
 bool spiffs_format_internal(spiffs_config *cfg);
