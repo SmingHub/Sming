@@ -50,62 +50,28 @@ static s32_t api_spiffs_erase(u32_t addr, u32_t size)
 	return SPIFFS_OK;
 }
 
-/*******************
-The W25Q32BV array is organized into 16,384 programmable pages of 256-bytes each. Up to 256 bytes can be programmed at a time.
-Pages can be erased in groups of 16 (4KB sector erase), groups of 128 (32KB block erase), groups of 256 (64KB block erase) or
-the entire chip (chip erase). The W25Q32BV has 1,024 erasable sectors and 64 erasable blocks respectively.
-The small 4KB sectors allow for greater flexibility in applications that require data and parameter storage.
-********************/
+static bool tryMount(spiffs_config* cfg)
+{
+	int res = SPIFFS_mount(&_filesystemStorageHandle, cfg, spiffs_work_buf, spiffs_fds, sizeof(spiffs_fds),
+						   spiffs_cache_buf, sizeof(spiffs_cache_buf), nullptr);
+	debugf("mount res: %d", res);
+
+	return res >= 0;
+}
 
 bool spiffs_format_internal(spiffs_config* cfg)
 {
-	if(cfg->phys_addr == 0) {
-		SYSTEM_ERROR("Can't format file system, wrong address given.");
-		return false;
-	}
-
 	if(cfg->phys_size == 0) {
 		SYSTEM_ERROR("Can't format file system, wrong size given.");
 		return false;
 	}
 
-	uint32_t log_block_count = cfg->phys_size / cfg->log_block_size;
-	uint32_t log_block_erased = 0;
+	spiffs_unmount();
+	tryMount(cfg);
+	spiffs_unmount();
 
-	debugf("sect_first: %x, sect_last: %x\n", flashmem_get_sector_of_address(cfg->phys_addr),
-		   flashmem_get_sector_of_address(cfg->phys_addr + cfg->phys_size - 1));
-	ETS_INTR_LOCK();
-
-	while(log_block_erased < log_block_count) {
-		uint32_t sector_per_block = cfg->log_block_size / INTERNAL_FLASH_SECTOR_SIZE;
-		uint32_t sector_erased = 0;
-		while(sector_erased < sector_per_block) {
-			uint32_t target_sector =
-				flashmem_get_sector_of_address(cfg->phys_addr + (log_block_erased * cfg->log_block_size) +
-											   (sector_erased * INTERNAL_FLASH_SECTOR_SIZE));
-
-			if(!flashmem_erase_sector(target_sector)) {
-				ETS_INTR_UNLOCK();
-				return false;
-			}
-
-			sector_erased++;
-		}
-
-		//write erase count to first sector of every logical block
-		uint32_t erase_count_addr = cfg->phys_addr + (log_block_erased * cfg->log_block_size);
-		erase_count_addr += cfg->log_page_size;
-		erase_count_addr -= sizeof(spiffs_obj_id);
-
-		spiffs_obj_id block_erase_count = 0;
-		flashmem_write(&block_erase_count, erase_count_addr, sizeof(spiffs_obj_id));
-
-		log_block_erased++;
-	}
-	debugf("formatted");
-	ETS_INTR_UNLOCK();
-
-	return true;
+	int res = SPIFFS_format(&_filesystemStorageHandle);
+	return res >= 0;
 }
 
 static bool spiffs_mount_internal(spiffs_config* cfg)
@@ -121,38 +87,28 @@ static bool spiffs_mount_internal(spiffs_config* cfg)
 	cfg->hal_write_f = api_spiffs_write;
 	cfg->hal_erase_f = api_spiffs_erase;
 
+	// Simple check of the erase count to see if flash looks like it's already been formatted
 	spiffs_obj_id dat;
-	bool writeFirst = false;
-	//get the erase count record
 	flashmem_read(&dat, cfg->phys_addr + cfg->log_page_size - sizeof(spiffs_obj_id), sizeof(spiffs_obj_id));
 	//debugf("%X", dat);
+	bool isFormatted = (dat != spiffs_obj_id(UINT32_MAX));
 
-	if(dat == (spiffs_obj_id)UINT32_MAX) //not spiffs formatted most likely raw formatted
-	{
+	if(!isFormatted) {
 		debugf("First init file system");
 		spiffs_format_internal(cfg);
-		writeFirst = true;
 	}
 
-	int res = SPIFFS_mount(&_filesystemStorageHandle, cfg, spiffs_work_buf, spiffs_fds, sizeof(spiffs_fds),
-						   spiffs_cache_buf, sizeof(spiffs_cache_buf), NULL);
-	debugf("mount res: %d\n", res);
-
-	if(res < 0) {
+	if(!tryMount(cfg)) {
 		return false;
 	}
 
-	if(writeFirst) {
+	if(!isFormatted) {
 		spiffs_file fd = SPIFFS_open(&_filesystemStorageHandle, "initialize_fs_header.dat",
 									 SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
 		SPIFFS_write(&_filesystemStorageHandle, fd, (u8_t*)"1", 1);
 		SPIFFS_fremove(&_filesystemStorageHandle, fd);
 		SPIFFS_close(&_filesystemStorageHandle, fd);
 	}
-
-	//dat=0;
-	//flashmem_read(&dat, cfg.phys_addr, 4);
-	//debugf("%X", dat);
 
 	return true;
 }
