@@ -10,7 +10,9 @@
 
 #include "spiffs_sming.h"
 #include <esp_spi_flash.h>
+extern "C" {
 #include "spiffs/src/spiffs_nucleus.h"
+}
 
 spiffs _filesystemStorageHandle;
 
