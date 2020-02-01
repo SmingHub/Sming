@@ -163,7 +163,7 @@ COMPONENT_VARS			:=
 COMPONENT_RELINK_VARS	:=
 COMPONENT_TARGETS		:=
 COMPONENT_DEPENDS		:=
-override undefine COMPONENT_PYTHON_REQUIREMENTS
+COMPONENT_PYTHON_REQUIREMENTS		:= $$(wildcard $2/requirements.txt)
 EXTRA_LIBS				:=
 EXTRA_LDFLAGS			:=
 # Process any component.mk file (optional)
@@ -188,11 +188,7 @@ CMP_$1_LIBNAME			:= $$(COMPONENT_LIBNAME)
 CMP_$1_INCDIRS			:= $$(COMPONENT_INCDIRS)
 CMP_$1_DEPENDS			:= $$(COMPONENT_DEPENDS)
 CMP_$1_RELINK_VARS		:= $$(COMPONENT_RELINK_VARS)
-ifeq ($$(origin COMPONENT_PYTHON_REQUIREMENTS),undefined)
-PYTHON_REQUIREMENTS		+= $$(wildcard $2/requirements.txt)
-else
 PYTHON_REQUIREMENTS		+= $$(call AbsoluteSourcePath,$2,$$(COMPONENT_PYTHON_REQUIREMENTS))
-endif
 APPCODE					+= $$(call AbsoluteSourcePath,$2,$$(CMP_$1_APPCODE))
 COMPONENTS				+= $$(filter-out $$(COMPONENTS),$$(CMP_$1_DEPENDS))
 ifneq (App,$1)
