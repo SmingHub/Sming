@@ -208,11 +208,20 @@ define ListSubDirs
 $(foreach d,$(dir $(wildcard $1/*/.)),$(d:/=))
 endef
 
+# Check that $2 is a valid sub-directory of $1. Return empty string if not.
+# $1 -> Parent directory
+# $2 -> Sub-directory
+# During wildcard searches, paths with spaces cause recursion.
+define IsSubDir
+$(if $(subst $(1:/=),,$(2:/=)),$(findstring $(1:/=),$2),)
+endef
+
 # List sub-directories recursively for a list of root directories
 # Results are sorted and without trailing path separator
+# Sub-directories with spaces are skipped
 # $1 -> Root paths
 define ListAllSubDirs
-$(foreach d,$(dir $(wildcard $1/*/.)),$(d:/=) $(call ListAllSubDirs,$(d:/=)))
+$(foreach d,$(dir $(wildcard $1/*/.)),$(if $(call IsSubDir,$1,$d),$(d:/=) $(call ListAllSubDirs,$(d:/=))))
 endef
 
 # Display variable and list values, e.g. $(call PrintVariable,LIBS)
