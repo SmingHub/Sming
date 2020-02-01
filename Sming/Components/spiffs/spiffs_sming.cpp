@@ -26,15 +26,13 @@ static u8_t spiffs_cache_buf[(LOG_PAGE_SIZE + 32) * 4];
 
 static s32_t api_spiffs_read(u32_t addr, u32_t size, u8_t* dst)
 {
-	flashmem_read(dst, addr, size);
-	return SPIFFS_OK;
+	return (flashmem_read(dst, addr, size) == size) ? SPIFFS_OK : SPIFFS_ERR_INTERNAL;
 }
 
 static s32_t api_spiffs_write(u32_t addr, u32_t size, u8_t* src)
 {
 	//debugf("api_spiffs_write");
-	flashmem_write(src, addr, size);
-	return SPIFFS_OK;
+	return (flashmem_write(src, addr, size) == size) ? SPIFFS_OK : SPIFFS_ERR_INTERNAL;
 }
 
 static s32_t api_spiffs_erase(u32_t addr, u32_t size)
@@ -67,8 +65,9 @@ bool spiffs_format_internal(spiffs_config* cfg)
 	}
 
 	spiffs_unmount();
-	tryMount(cfg);
-	spiffs_unmount();
+	if(tryMount(cfg)) {
+		spiffs_unmount();
+	}
 
 	int res = SPIFFS_format(&_filesystemStorageHandle);
 	return res >= 0;
