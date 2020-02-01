@@ -3,7 +3,8 @@ set -ex # exit with nonzero exit code if anything fails
 
 if [ "$TRAVIS_BUILD_STAGE_NAME" == "Test" ]; then
 	sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-6.0 100
-	pip3 install -r $TRAVIS_BUILD_DIR/docs/requirements.txt
+	python3 -m pip install --upgrade pip
+	python3 -m pip install -r $TRAVIS_BUILD_DIR/docs/requirements.txt
 fi
 
 if [ "$SMING_ARCH" == "Esp8266" ]; then
