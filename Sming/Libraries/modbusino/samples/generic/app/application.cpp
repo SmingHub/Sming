@@ -5,7 +5,7 @@
 Timer mbSlaveLoopTimer;
 Timer mbPrintTimer;
 ModbusinoSlave MbSlave(1);
-HardwareSerial Serial1(UART1);
+HardwareSerial debugComPort(UART1);
 
 uint16_t tab_reg[3] = {0,0,0};
 
@@ -20,7 +20,14 @@ void mbPrint() {
 
 void init()
 {
-	MbSlave.setup(115200);
+	pinMode(15, OUTPUT);
+	Serial.begin(SERIAL_BAUD_RATE, SERIAL_8N1, SERIAL_FULL);
+	debugComPort.begin(SERIAL_BAUD_RATE, SERIAL_8N1,
+					  SERIAL_TX_ONLY);
+	debugComPort.systemDebugOutput(true);
+	Debug.setDebug(debugComPort);
+	Debug.start();
+
 	mbSlaveLoopTimer.initializeMs(10,mbSlaveLoop).start();
 	mbPrintTimer.initializeMs(1000,mbPrint).start();
 }
