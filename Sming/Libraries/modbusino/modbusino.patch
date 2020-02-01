@@ -1,0 +1,56 @@
+diff --git a/Modbusino.cpp b/Modbusino.cpp
+index 3ba3c14..a6e03a0 100644
+--- a/Modbusino.cpp
++++ b/Modbusino.cpp
+@@ -100,7 +100,9 @@ static void send_msg(uint8_t *msg, uint8_t msg_length)
+     msg[msg_length++] = crc >> 8;
+     msg[msg_length++] = crc & 0x00FF;
+ 
++    digitalWrite(RS485_RE_PIN, RS485_TX_LEVEL);
+     Serial.write(msg, msg_length);
++    digitalWrite(RS485_RE_PIN, ! RS485_TX_LEVEL);
+ }
+ 
+ static uint8_t response_exception(uint8_t slave, uint8_t function,
+@@ -123,7 +125,7 @@ static void flush(void)
+     /* Wait a moment to receive the remaining garbage but avoid getting stuck
+      * because the line is saturated */
+     while (Serial.available() && i++ < 10) {
+-        Serial.flush();
++        Serial.clear();
+         delay(3);
+     }
+ }
+@@ -134,7 +136,7 @@ static int receive(uint8_t *req, uint8_t _slave)
+     uint8_t length_to_read;
+     uint8_t req_index;
+     uint8_t step;
+-    uint8_t function;
++    uint8_t function=0;
+ 
+     /* We need to analyse the message step by step.  At the first step, we want
+      * to reach the function code because all packets contain this
+@@ -187,11 +189,6 @@ static int receive(uint8_t *req, uint8_t _slave)
+                     flush();
+                     if (req[_MODBUS_RTU_SLAVE] == _slave
+                         || req[_MODBUS_RTU_SLAVE] == MODBUS_BROADCAST_ADDRESS) {
+-                        /* It's for me so send an exception (reuse req) */
+-                        uint8_t rsp_length = response_exception(
+-                            _slave, function, MODBUS_EXCEPTION_ILLEGAL_FUNCTION,
+-                            req);
+-                        send_msg(req, rsp_length);
+                         return -1 - MODBUS_EXCEPTION_ILLEGAL_FUNCTION;
+                     }
+ 
+@@ -210,11 +207,6 @@ static int receive(uint8_t *req, uint8_t _slave)
+                     flush();
+                     if (req[_MODBUS_RTU_SLAVE] == _slave
+                         || req[_MODBUS_RTU_SLAVE] == MODBUS_BROADCAST_ADDRESS) {
+-                        /* It's for me so send an exception (reuse req) */
+-                        uint8_t rsp_length = response_exception(
+-                            _slave, function,
+-                            MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE, req);
+-                        send_msg(req, rsp_length);
+                         return -1 - MODBUS_EXCEPTION_ILLEGAL_FUNCTION;
+                     }
+                     return -1;

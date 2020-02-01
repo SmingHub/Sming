@@ -1,0 +1,2 @@
+ARDUINO_LIBRARIES := modbusino
+DISABLE_SPIFFS = 1

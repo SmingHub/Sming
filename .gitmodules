@@ -138,3 +138,7 @@
 	path = Sming/Libraries/ModbusMaster/ModbusMaster
 	url = https://github.com/nomis/ModbusMaster.git
 	ignore = dirty
+[submodule "Libraries.modbusino"]
+	path = Sming/Libraries/modbusino/modbusino
+	url = https://github.com/stephane/modbusino.git
+	ignore = dirty
