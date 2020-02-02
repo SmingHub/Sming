@@ -10,8 +10,6 @@
 
 #include "TcpServer.h"
 
-uint16_t TcpServer::totalConnections = 0;
-
 TcpConnection* TcpServer::createClient(tcp_pcb* clientTcp)
 {
 	debug_d("TCP Server createClient %sNULL\r\n", clientTcp ? "not" : "");
@@ -65,6 +63,12 @@ err_t TcpServer::onAccept(tcp_pcb* clientTcp, err_t err)
 	if(system_get_free_heap_size() < minHeapSize) {
 		debug_w("\r\n\r\nCONNECTION DROPPED\r\n\t(free heap: %u)\r\n\r\n", system_get_free_heap_size());
 		return ERR_MEM;
+	}
+
+	// Obey any requested connection limit
+	if(maxConnections != 0 && connections.count() >= maxConnections) {
+		debug_w("\r\n\r\nCONNECTION DROPPED\r\n\t(Existing connections: %u)\r\n\r\n", connections.count());
+		return ERR_ABRT;
 	}
 
 #ifdef NETWORK_DEBUG

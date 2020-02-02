@@ -20,6 +20,7 @@ void HttpServer::configure(const HttpServerSettings& settings)
 	if(settings.minHeapSize > -1) {
 		minHeapSize = settings.minHeapSize;
 	}
+	maxConnections = settings.maxActiveConnections;
 
 	if(settings.useDefaultBodyParsers) {
 		setBodyParser(MIME_FORM_URL_ENCODED, formUrlParser);
