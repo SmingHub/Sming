@@ -149,6 +149,9 @@ bool spiffs_format_manual(u32_t phys_addr, u32_t phys_size)
 	spiffs_config cfg = {0};
 	cfg.phys_addr = phys_addr;
 	cfg.phys_size = phys_size;
+	cfg.phys_erase_block = INTERNAL_FLASH_SECTOR_SIZE;   // according to datasheet
+	cfg.log_block_size = INTERNAL_FLASH_SECTOR_SIZE * 2; // Important to make large
+	cfg.log_page_size = LOG_PAGE_SIZE;					 // as we said
 	spiffs_format_internal(&cfg);
 	return spiffs_mount_manual(phys_addr, phys_size);
 }
