@@ -21,7 +21,7 @@ namespace Sodium
 /*
  * See _crypto_sign_ed25519_verify_detached for original implementation
  */
-bool SignEd25519::verify(const Signature& sig, const PrivateKey& key)
+bool SignEd25519::verify(const Signature& sig, const PublicKey& key)
 {
 #ifdef ED25519_COMPAT
 	if(sig[63] & 224) {
@@ -47,7 +47,7 @@ bool SignEd25519::verify(const Signature& sig, const PrivateKey& key)
 								  "collisions"
 								  "\x01\x00");
 
-	auto m = getHash();
+	const auto m = getHash();
 
 	reset();
 	update(DOM2PREFIX);
@@ -62,7 +62,7 @@ bool SignEd25519::verify(const Signature& sig, const PrivateKey& key)
 	Crypto::ByteArray<32> rcheck;
 	ge25519_tobytes(rcheck.data(), &R);
 
-	return (crypto_verify_32(rcheck.data(), sig.data()) == 0) && (memcmp(rcheck.data(), sig.data(), 32) == 0);
+	return (crypto_verify_32(rcheck.data(), sig.data()) == 0);
 }
 
 } // namespace Sodium

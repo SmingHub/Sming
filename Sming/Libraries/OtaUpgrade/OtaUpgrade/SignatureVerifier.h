@@ -20,7 +20,7 @@ DECLARE_FSTR_ARRAY(SignatureVerificationKey, uint8_t)
 /**
  * @brief Signature verifier for `BasicStream`.
  *
- * This is a simple C++ wrapper for Libsodium's 
+ * This is a simple wrapper for `Sodium::SignEd25519`, which is a C++ wrapper for Libsodium's
  * <a href="https://download.libsodium.org/doc/public-key_cryptography/public-key_signatures">`crypto_sign_...`</a> API.
  */
 class SignatureVerifier : public Sodium::SignEd25519
@@ -33,7 +33,7 @@ public:
 	 */
 	bool verify(const Signature& signature)
 	{
-		PrivateKey key;
+		PublicKey key;
 		assert(SignatureVerificationKey.length() == key.size());
 		SignatureVerificationKey.read(0, key.data(), key.size());
 		return Sodium::SignEd25519::verify(signature, key);

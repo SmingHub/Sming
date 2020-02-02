@@ -18,9 +18,9 @@ class SignEd25519 : public Crypto::Sha512
 {
 public:
 	using Signature = Crypto::Sha512::Hash;
-	using PrivateKey = Crypto::ByteArray<32>;
+	using PublicKey = Crypto::ByteArray<32>;
 
-	bool verify(const Signature& sig, const PrivateKey& key);
+	bool verify(const Signature& sig, const PublicKey& key);
 };
 
 } // namespace Sodium
