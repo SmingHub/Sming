@@ -46,14 +46,20 @@ public:
 	/**
 	 * @brief Set maximum milliseconds to wait for stream data, default is 1 second
 	 */
-	void setTimeout(unsigned long timeout);
+	void setTimeout(unsigned long timeout)
+	{
+		receiveTimeout = timeout;
+	}
 
 	/**
 	 * @brief Read data from the stream until the target string is found
 	 * @param target String to watch for
 	 * @retval bool true if target string is found, false if timed out (see setTimeout)
 	 */
-	bool find(const char* target);
+	bool find(const char* target)
+	{
+		return findUntil(target, "");
+	}
 
 	/**
 	 * @brief Read data from the stream until the target string of given length is found
@@ -61,7 +67,10 @@ public:
 	 * @param length
 	 * @retval bool returns true if target string is found, false if timed out
 	 */
-	bool find(const char* target, size_t length);
+	bool find(const char* target, size_t length)
+	{
+		return findUntil(target, length, nullptr, 0);
+	}
 
 	/**
 	 * @brief As `find()` but search ends if the terminator string is found

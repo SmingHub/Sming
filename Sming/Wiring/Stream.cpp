@@ -66,25 +66,6 @@ int Stream::peekNextDigit()
 // Public Methods
 //////////////////////////////////////////////////////////////
 
-void Stream::setTimeout(unsigned long timeout)  // sets the maximum number of milliseconds to wait
-{
-  receiveTimeout = timeout;
-}
-
-// find returns true if the target string is found
-bool  Stream::find(const char *target)
-{
-  return findUntil(target, (char*)"");
-}
-
-// reads data from the stream until the target string of given length is found
-// returns true if target string is found, false if timed out
-bool Stream::find(const char *target, size_t length)
-{
-  return findUntil(target, length, nullptr, 0);
-}
-
-// as find but search ends if the terminator string is found
 bool  Stream::findUntil(const char *target, const char *terminator)
 {
   return findUntil(target, strlen(target), terminator, strlen(terminator));
