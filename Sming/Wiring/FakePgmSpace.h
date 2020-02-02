@@ -17,8 +17,7 @@
 #include "c_types.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /**
@@ -96,7 +95,6 @@ extern "C"
 		buf;                                                                                                           \
 	}))
 
-
 /**
  * @brief copy memory aligned to word boundaries
  * @param dst
@@ -155,13 +153,13 @@ int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len);
  * 		}
  *
  */
-#define LOAD_PSTR(name, flash_str)                                                                                   \
-	char name[ALIGNUP4(sizeof(flash_str))] __attribute__((aligned(4)));                                               \
+#define LOAD_PSTR(name, flash_str)                                                                                     \
+	char name[ALIGNUP4(sizeof(flash_str))] __attribute__((aligned(4)));                                                \
 	memcpy_aligned(name, flash_str, sizeof(flash_str));
 
-#define _FLOAD(pstr)                                                                                                  \
+#define _FLOAD(pstr)                                                                                                   \
 	(__extension__({                                                                                                   \
-		LOAD_PSTR(_buf, pstr);                                                                                        \
+		LOAD_PSTR(_buf, pstr);                                                                                         \
 		_buf;                                                                                                          \
 	}))
 
