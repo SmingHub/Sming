@@ -16,6 +16,7 @@
 	XX(json5)                                                                                                          \
 	XX(json6)                                                                                                          \
 	XX(files)                                                                                                          \
+	XX(spiffs)                                                                                                         \
 	XX(rational)                                                                                                       \
 	XX(clocks)                                                                                                         \
 	XX(timers)
