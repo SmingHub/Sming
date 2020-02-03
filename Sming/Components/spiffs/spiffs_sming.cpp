@@ -26,18 +26,18 @@ uint8_t spiffs_work_buf[LOG_PAGE_SIZE * 2];
 uint8_t spiffs_fds[sizeof(spiffs_fd) * SPIFF_FILEDESC_COUNT];
 uint8_t spiffs_cache_buf[(LOG_PAGE_SIZE + 32) * 4];
 
-int32_t api_spiffs_read(uint32_t addr, uint32_t size, uint8_t* dst)
+s32_t api_spiffs_read(u32_t addr, u32_t size, u8_t* dst)
 {
 	return (flashmem_read(dst, addr, size) == size) ? SPIFFS_OK : SPIFFS_ERR_INTERNAL;
 }
 
-int32_t api_spiffs_write(uint32_t addr, uint32_t size, uint8_t* src)
+s32_t api_spiffs_write(u32_t addr, u32_t size, u8_t* src)
 {
 	//debugf("api_spiffs_write");
 	return (flashmem_write(src, addr, size) == size) ? SPIFFS_OK : SPIFFS_ERR_INTERNAL;
 }
 
-int32_t api_spiffs_erase(uint32_t addr, uint32_t size)
+s32_t api_spiffs_erase(u32_t addr, u32_t size)
 {
 	debugf("api_spiffs_erase");
 	uint32_t sect_first = flashmem_get_sector_of_address(addr);
