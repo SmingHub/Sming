@@ -16,24 +16,34 @@
 #include "Network/Http/HttpHeaders.h"
 
 /**
- * @brief      Multipart stream class
- * @ingroup    stream data
- *
- *  @{
+ * @brief Read-only stream for creating HTTP multi-part content
+ * @see See https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
+ * @ingroup stream data
 */
-
-typedef struct {
-	HttpHeaders* headers = nullptr;
-	IDataSourceStream* stream = nullptr;
-} HttpPartResult;
-
-typedef Delegate<HttpPartResult()> HttpPartProducerDelegate;
-
 class MultipartStream : public MultiStream
 {
 public:
-	MultipartStream(HttpPartProducerDelegate delegate) : producer(delegate)
+	/**
+	 * @brief Each result item contains a set of headers plus content stream
+	 */
+	struct BodyPart {
+		HttpHeaders* headers = nullptr;
+		IDataSourceStream* stream = nullptr;
+	};
+
+	/**
+	 * @brief Callback used to produce each result
+	 */
+	using Producer = Delegate<BodyPart()>;
+
+	MultipartStream(Producer delegate) : producer(delegate)
 	{
+	}
+
+	~MultipartStream()
+	{
+		delete bodyPart.headers;
+		delete bodyPart.stream;
 	}
 
 	/**
@@ -44,20 +54,20 @@ public:
 	const char* getBoundary();
 
 protected:
-	IDataSourceStream* getNextStream() override
-	{
-		result = producer();
-		return result.stream;
-	}
-
-	void onNextStream() override;
-	bool onCompleted() override;
+	IDataSourceStream* getNextStream() override;
 
 private:
-	HttpPartProducerDelegate producer;
-	HttpPartResult result;
-
+	Producer producer;
+	BodyPart bodyPart;
 	char boundary[16] = {0};
 };
 
-/** @} */
+/**
+ * @deprecated Use `MultipartStream::BodyPart` instead
+ */
+typedef MultipartStream::BodyPart HttpPartResult SMING_DEPRECATED;
+
+/**
+ * @deprecated Use `MultipartStream::Producer` instead
+ */
+typedef MultipartStream::Producer HttpPartProducerDelegate SMING_DEPRECATED;

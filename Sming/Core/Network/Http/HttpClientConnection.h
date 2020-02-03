@@ -77,7 +77,7 @@ protected:
 private:
 	void sendRequestHeaders(HttpRequest* request);
 	bool sendRequestBody(HttpRequest* request);
-	HttpPartResult multipartProducer();
+	MultipartStream::BodyPart multipartProducer();
 
 private:
 	RequestQueue waitingQueue;   ///< Requests waiting to be started
