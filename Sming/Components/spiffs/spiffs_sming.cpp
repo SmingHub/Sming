@@ -20,26 +20,26 @@ spiffs _filesystemStorageHandle;
 #define SPIFF_FILEDESC_COUNT 7
 #endif
 
-static u8_t spiffs_work_buf[LOG_PAGE_SIZE * 2];
-static u8_t spiffs_fds[sizeof(spiffs_fd) * SPIFF_FILEDESC_COUNT];
-static u8_t spiffs_cache_buf[(LOG_PAGE_SIZE + 32) * 4];
+static uint8_t spiffs_work_buf[LOG_PAGE_SIZE * 2];
+static uint8_t spiffs_fds[sizeof(spiffs_fd) * SPIFF_FILEDESC_COUNT];
+static uint8_t spiffs_cache_buf[(LOG_PAGE_SIZE + 32) * 4];
 
-static s32_t api_spiffs_read(u32_t addr, u32_t size, u8_t* dst)
+static int32_t api_spiffs_read(uint32_t addr, uint32_t size, uint8_t* dst)
 {
 	return (flashmem_read(dst, addr, size) == size) ? SPIFFS_OK : SPIFFS_ERR_INTERNAL;
 }
 
-static s32_t api_spiffs_write(u32_t addr, u32_t size, u8_t* src)
+static int32_t api_spiffs_write(uint32_t addr, uint32_t size, uint8_t* src)
 {
 	//debugf("api_spiffs_write");
 	return (flashmem_write(src, addr, size) == size) ? SPIFFS_OK : SPIFFS_ERR_INTERNAL;
 }
 
-static s32_t api_spiffs_erase(u32_t addr, u32_t size)
+static int32_t api_spiffs_erase(uint32_t addr, uint32_t size)
 {
 	debugf("api_spiffs_erase");
-	u32_t sect_first = flashmem_get_sector_of_address(addr);
-	u32_t sect_last = sect_first;
+	uint32_t sect_first = flashmem_get_sector_of_address(addr);
+	uint32_t sect_last = sect_first;
 	while(sect_first <= sect_last) {
 		if(!flashmem_erase_sector(sect_first++)) {
 			return SPIFFS_ERR_INTERNAL;
@@ -104,7 +104,7 @@ static bool spiffs_mount_internal(spiffs_config* cfg)
 	if(!isFormatted) {
 		spiffs_file fd = SPIFFS_open(&_filesystemStorageHandle, "initialize_fs_header.dat",
 									 SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
-		SPIFFS_write(&_filesystemStorageHandle, fd, (u8_t*)"1", 1);
+		SPIFFS_write(&_filesystemStorageHandle, fd, (uint8_t*)"1", 1);
 		SPIFFS_fremove(&_filesystemStorageHandle, fd);
 		SPIFFS_close(&_filesystemStorageHandle, fd);
 	}
@@ -118,7 +118,7 @@ bool spiffs_mount()
 	return spiffs_mount_internal(&cfg);
 }
 
-bool spiffs_mount_manual(u32_t phys_addr, u32_t phys_size)
+bool spiffs_mount_manual(uint32_t phys_addr, uint32_t phys_size)
 {
 	spiffs_config cfg = {0};
 	cfg.phys_addr = phys_addr;
@@ -143,7 +143,7 @@ bool spiffs_format()
 	return spiffs_mount();
 }
 
-bool spiffs_format_manual(u32_t phys_addr, u32_t phys_size)
+bool spiffs_format_manual(uint32_t phys_addr, uint32_t phys_size)
 {
 	spiffs_unmount();
 	spiffs_config cfg = {0};
