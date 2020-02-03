@@ -14,11 +14,13 @@
 #include "WHashMap.h"
 #include "WString.h"
 
+#ifndef TEMPLATE_MAX_VAR_NAME_LEN
 /**
  * @brief Maximum length of a template variable name
  * @see See `TemplateStream`
  */
 #define TEMPLATE_MAX_VAR_NAME_LEN 16
+#endif
 
 /**
  * @brief Stream which performs variable-value substitution on-the-fly
