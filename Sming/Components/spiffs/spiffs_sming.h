@@ -22,7 +22,6 @@ bool spiffs_mount();
 bool spiffs_mount_manual(uint32_t phys_addr, uint32_t phys_size);
 void spiffs_unmount();
 bool spiffs_format();
-bool spiffs_format_internal(spiffs_config* cfg);
 bool spiffs_format_manual(uint32_t phys_addr, uint32_t phys_size);
 spiffs_config spiffs_get_storage_config();
 

@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * spiffs_sming.c
+ * spiffs_sming.cpp
  *
  ****/
 
@@ -20,22 +20,24 @@ spiffs _filesystemStorageHandle;
 #define SPIFF_FILEDESC_COUNT 7
 #endif
 
-static uint8_t spiffs_work_buf[LOG_PAGE_SIZE * 2];
-static uint8_t spiffs_fds[sizeof(spiffs_fd) * SPIFF_FILEDESC_COUNT];
-static uint8_t spiffs_cache_buf[(LOG_PAGE_SIZE + 32) * 4];
+namespace
+{
+uint8_t spiffs_work_buf[LOG_PAGE_SIZE * 2];
+uint8_t spiffs_fds[sizeof(spiffs_fd) * SPIFF_FILEDESC_COUNT];
+uint8_t spiffs_cache_buf[(LOG_PAGE_SIZE + 32) * 4];
 
-static int32_t api_spiffs_read(uint32_t addr, uint32_t size, uint8_t* dst)
+int32_t api_spiffs_read(uint32_t addr, uint32_t size, uint8_t* dst)
 {
 	return (flashmem_read(dst, addr, size) == size) ? SPIFFS_OK : SPIFFS_ERR_INTERNAL;
 }
 
-static int32_t api_spiffs_write(uint32_t addr, uint32_t size, uint8_t* src)
+int32_t api_spiffs_write(uint32_t addr, uint32_t size, uint8_t* src)
 {
 	//debugf("api_spiffs_write");
 	return (flashmem_write(src, addr, size) == size) ? SPIFFS_OK : SPIFFS_ERR_INTERNAL;
 }
 
-static int32_t api_spiffs_erase(uint32_t addr, uint32_t size)
+int32_t api_spiffs_erase(uint32_t addr, uint32_t size)
 {
 	debugf("api_spiffs_erase");
 	uint32_t sect_first = flashmem_get_sector_of_address(addr);
@@ -48,7 +50,7 @@ static int32_t api_spiffs_erase(uint32_t addr, uint32_t size)
 	return SPIFFS_OK;
 }
 
-static bool tryMount(spiffs_config* cfg)
+bool tryMount(spiffs_config* cfg)
 {
 	int res = SPIFFS_mount(&_filesystemStorageHandle, cfg, spiffs_work_buf, spiffs_fds, sizeof(spiffs_fds),
 						   spiffs_cache_buf, sizeof(spiffs_cache_buf), nullptr);
@@ -73,7 +75,7 @@ bool spiffs_format_internal(spiffs_config* cfg)
 	return res >= 0;
 }
 
-static bool spiffs_mount_internal(spiffs_config* cfg)
+bool spiffs_mount_internal(spiffs_config* cfg)
 {
 	if(cfg->phys_addr == 0) {
 		SYSTEM_ERROR("Can't start file system, wrong address");
@@ -111,6 +113,8 @@ static bool spiffs_mount_internal(spiffs_config* cfg)
 
 	return true;
 }
+
+} // namespace
 
 bool spiffs_mount()
 {
