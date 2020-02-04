@@ -27,3 +27,4 @@ API Documentation
 -----------------
 
 .. doxygenclass:: CString
+   :members:

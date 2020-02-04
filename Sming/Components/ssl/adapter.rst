@@ -12,5 +12,10 @@ These classes provide the interface between a :cpp:class:`Ssl::Session` and an a
 
 
 .. doxygenclass:: Ssl::Factory
+   :members:
+
 .. doxygenclass:: Ssl::Context
+   :members:
+
 .. doxygenclass:: Ssl::Connection
+   :members:

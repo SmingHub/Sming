@@ -151,3 +151,4 @@ API Documentation
 -----------------
 
 .. doxygenclass:: CStringArray
+   :members:

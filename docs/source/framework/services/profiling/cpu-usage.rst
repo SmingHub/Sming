@@ -33,3 +33,4 @@ utilisation
 
 
 .. doxygenclass:: Profiling::CpuUsage
+   :members:

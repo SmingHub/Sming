@@ -54,3 +54,4 @@ API Documentation
 -----------------
 
 .. doxygenclass:: String
+   :members:
