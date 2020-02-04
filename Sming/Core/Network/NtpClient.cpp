@@ -122,6 +122,7 @@ void NtpClient::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 	debug_d("NtpClient::onReceive(%s:%u)", remoteIP.toString().c_str(), remotePort);
 
 	stopTimer();
+	auto retry = [this]() { startTimer(NTP_RESPONSE_TIMEOUT_MS); };
 
 	// We do some basic check to see if it really is a ntp packet we receive.
 	// NTP version should be set to same as we used to send, NTP_VERSION
@@ -132,28 +133,36 @@ void NtpClient::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 	uint8_t ver = (versionMode & 0b00111000) >> 3;
 	uint8_t mode = (versionMode & 0x07);
 
-	if(mode == NTP_MODE_SERVER && (ver == NTP_VERSION || ver == (NTP_VERSION - 1))) {
-		//Most likely a correct NTP packet received.
-
-		uint32_t timestamp;
-		pbuf_copy_partial(buf, &timestamp, sizeof(timestamp), 40); // Copy only timestamp.
-		timestamp = ntohl(timestamp);
-
-		// Unix time starts on Jan 1 1970, subtract 70 years:
-		uint32_t epoch = timestamp - 0x83AA7E80;
-
-		if(autoUpdateSystemClock) {
-			SystemClock.setTime(epoch, eTZ_UTC); // update systemclock utc value
-		}
-
-		if(delegateCompleted) {
-			delegateCompleted(*this, epoch);
-		}
-
-		// If auto query is enabled, schedule the next check
-		setAutoQuery(autoQueryEnabled);
-	} else {
-		// Got a dodgy packet so treat it as we would a response failure
-		startTimer(NTP_RESPONSE_TIMEOUT_MS);
+	if(mode != NTP_MODE_SERVER) {
+		// Received response from another client - retry
+		return retry();
 	}
+
+	if(ver != NTP_VERSION && ver != (NTP_VERSION - 1)) {
+		// Received an unsupported version - retry
+		return retry();
+	}
+
+	uint32_t timestamp;
+	pbuf_copy_partial(buf, &timestamp, sizeof(timestamp), 40); // Copy only timestamp.
+	timestamp = ntohl(timestamp);
+
+	if(timestamp == 0) {
+		// Timestamp is not valid
+		return retry();
+	}
+
+	// Unix time starts on Jan 1 1970, subtract 70 years:
+	uint32_t epoch = timestamp - 0x83AA7E80;
+
+	if(autoUpdateSystemClock) {
+		SystemClock.setTime(epoch, eTZ_UTC); // update systemclock utc value
+	}
+
+	if(delegateCompleted) {
+		delegateCompleted(*this, epoch);
+	}
+
+	// If auto query is enabled, schedule the next check
+	setAutoQuery(autoQueryEnabled);
 }
