@@ -15,10 +15,8 @@ types so should be used with care.
 API Documentation
 -----------------
 
-.. doxygenclass:: IDataSourceStream
-   :members:
+.. toctree::
+   :glob:
+   :maxdepth: 1
 
-.. doxygenclass:: ReadWriteStream
-   :members:
-
-.. doxygengroup:: stream
+   *

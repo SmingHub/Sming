@@ -27,3 +27,4 @@ API Documentation
 
 .. doxygengroup:: hw_timer
    :content-only:
+   :members:

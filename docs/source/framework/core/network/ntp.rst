@@ -8,3 +8,4 @@ Client API
 
 .. doxygengroup:: ntp
    :content-only:
+   :members:

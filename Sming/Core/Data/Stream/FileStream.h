@@ -14,12 +14,9 @@
 #include "FileSystem.h"
 
 /**
-  * @brief      File stream class
-  * @ingroup    stream data
-  *
-  *  @{
+ * @brief    File stream class
+ * @ingroup  stream data
  */
-
 class FileStream : public ReadWriteStream
 {
 public:
@@ -175,5 +172,3 @@ private:
 	size_t size = 0;
 	int lastError = SPIFFS_OK;
 };
-
-/** @} */

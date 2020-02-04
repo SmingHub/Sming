@@ -15,17 +15,10 @@
 /**
   * @brief      Base class for read/write stream
   * @ingroup    stream data
-  *
-  *  @{
  */
-
 class ReadWriteStream : public IDataSourceStream
 {
 public:
-	/** @brief Write a single character to the stream
-	 *  @param charToWrite
-	 *  @retval size_t Number of chars written (1 on success, 0 on failure)
-	 */
 	size_t write(uint8_t charToWrite) override
 	{
 		return write(&charToWrite, 1);
@@ -48,5 +41,3 @@ public:
      */
 	virtual size_t copyFrom(IDataSourceStream* source, size_t size);
 };
-
-/** @} */

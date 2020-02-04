@@ -14,21 +14,13 @@
 #include "TemplateStream.h"
 
 /**
-  * @brief      Template File stream class
-  * @ingroup    stream data
-  *
-  *  @{
+  * @brief Template stream using content from the filesystem
+  * @ingroup stream data
  */
-
 class TemplateFileStream : public TemplateStream
 {
 public:
-	/** @brief Create a template file stream
-     *  @param  fileName Template filename
-     */
 	TemplateFileStream(const String& fileName) : TemplateStream(new FileStream(fileName))
 	{
 	}
 };
-
-/** @} */

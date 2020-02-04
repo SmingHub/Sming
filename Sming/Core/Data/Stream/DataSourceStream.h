@@ -15,9 +15,12 @@
 #include "WString.h"
 #include <unistd.h>
 
+/** @defgroup   stream Stream functions
+ *  @brief      Data stream classes
+*/
+
 /** @brief  Data stream type
  *  @ingroup constants
- *  @{
  */
 enum StreamType {
 	eSST_Invalid,	///< Stream content not valid
@@ -28,14 +31,11 @@ enum StreamType {
 	eSST_User,		 ///< User defined data stream
 	eSST_Unknown	 ///< Unknown data stream type
 };
-/** @} */
 
-/** @defgroup   stream Stream functions
- *  @brief      Data stream classes
- *  @{
-*/
-
-///Base class for data source stream
+/**
+ * @brief Base class for read-only stream
+ * @ingroup stream
+ */
 class IDataSourceStream : public Stream
 {
 public:
@@ -165,5 +165,3 @@ public:
 	 */
 	String readString(size_t maxLen = UINT16_MAX);
 };
-
-/** @} */

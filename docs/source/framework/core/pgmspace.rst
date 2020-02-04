@@ -128,3 +128,4 @@ API Documentation
 
 .. doxygengroup:: pgmspace
    :content-only:
+   :members:

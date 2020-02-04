@@ -8,12 +8,6 @@
  *
  ****/
 
-/** @defgroup   ftpserver FTP server
- *  @brief      Provides FTP server
- *  @ingroup    tcpserver
- *  @{
- */
-
 #pragma once
 
 #include "TcpServer.h"
@@ -22,6 +16,10 @@
 
 class FtpServerConnection;
 
+/** @defgroup   ftpserver FTP server
+ *  @ingroup    tcpserver
+ *  @brief      Provides FTP server
+ */
 class FtpServer : public TcpServer
 {
 	friend class FtpServerConnection;
@@ -44,6 +42,7 @@ private:
 	HashMap<String, String> users;
 };
 
-typedef FtpServer FTPServer SMING_DEPRECATED; ///< @deprecated Use `FtpServer` instead
-
-/** @} */
+/**
+ * @deprecated Use `FtpServer` instead
+ */
+typedef FtpServer FTPServer SMING_DEPRECATED;

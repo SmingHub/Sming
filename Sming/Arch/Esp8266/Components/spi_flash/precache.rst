@@ -49,3 +49,4 @@ API Documentation
 
 .. doxygengroup:: iram_precache
    :content-only:
+   :members:

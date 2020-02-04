@@ -10,8 +10,6 @@
 
 #include "MemoryDataStream.h"
 
-/* MemoryDataStream */
-
 bool MemoryDataStream::ensureCapacity(size_t minCapacity)
 {
 	if(capacity < minCapacity) {

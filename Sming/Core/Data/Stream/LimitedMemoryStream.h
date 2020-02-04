@@ -12,13 +12,12 @@
 
 #include "ReadWriteStream.h"
 
-/** @addtogroup stream
- *  @{
- */
-
 /**
  * @brief Memory stream that stores limited number of bytes
- * 		  Once the limit is reached the stream will discard incoming bytes on write
+ *
+ * Once the limit is reached the stream will discard incoming bytes on write
+ *
+ * @ingroup stream
  */
 class LimitedMemoryStream : public ReadWriteStream
 {
@@ -32,16 +31,11 @@ public:
 		delete[] buffer;
 	}
 
-	//Use base class documentation
 	StreamType getStreamType() const override
 	{
 		return eSST_Memory;
 	}
 
-	/**
-	 * @brief Return the total length of the stream
-	 * @retval int -1 is returned when the size cannot be determined
-	 */
 	int available() override
 	{
 		return writePos - readPos;
@@ -49,14 +43,8 @@ public:
 
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
-	//Use base class documentation
 	bool seek(int len) override;
 
-	/** @brief  Write chars to stream
-	 *  @param  buffer Pointer to buffer to write to the stream
-	 *  @param  size Quantity of chars to write
-	 *  @retval size_t Quantity of chars written to stream
-	 */
 	size_t write(const uint8_t* buffer, size_t size) override;
 
 	bool isFinished() override
@@ -70,5 +58,3 @@ private:
 	size_t readPos = 0;
 	size_t length = 0;
 };
-
-/** @} */

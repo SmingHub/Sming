@@ -12,18 +12,15 @@
 
 #include "ReadWriteStream.h"
 
-/** @addtogroup stream
- *  @{
- */
-
 /*
- * MemoryDataStream
+ * @brief Read/write stream using expandable memory buffer
  *
- * This is intended to allow data to be streamed into it, then streamed back out at a later
- * date.
+ * This is intended to allow data to be streamed into it, then streamed back out at a later date.
  *
  * It is _not_ intended to have data continuously written in and read out; memory is not reclaimed
  * as it is read.
+ *
+ * @ingroup stream
  */
 class MemoryDataStream : public ReadWriteStream
 {
@@ -101,5 +98,3 @@ private:
 	size_t size = 0;		///< Number of bytes stored in stream (i.e. the write position)
 	size_t capacity = 0;	///< Number of bytes allocated in buffer
 };
-
-/** @} */

@@ -8,3 +8,4 @@ Client API
 
 .. doxygengroup:: smtpclient
    :content-only:
+   :members:

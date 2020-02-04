@@ -15,12 +15,7 @@
 #include <FlashString/TemplateStream.hpp>
 
 /**
-  * @brief      Template Flash memory stream class
-  * @ingroup    stream data
-  *
-  *  @{
+ * @brief Template stream using content stored in flash
+ * @ingroup stream data
  */
-
 using TemplateFlashMemoryStream = FSTR::TemplateStream;
-
-/** @} */

@@ -5,3 +5,4 @@ SDK definitions for GPIO.
 
 .. doxygengroup:: gpio_driver
    :content-only:
+   :members:
