@@ -1,5 +1,7 @@
 modbusino RTU Library (modbus slave)
-========================
+====================================
+
+The author's project is at https://github.com/stephane/modbusino
 
 modbusino is lightweight RTU modbus slave library that supports 'read holding registers' and 'write multiple registers' functions.
 
