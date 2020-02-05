@@ -1,5 +1,5 @@
 diff --git a/Modbusino.cpp b/Modbusino.cpp
-index 3ba3c14..70f914c 100644
+index 3ba3c14..9e6474b 100644
 --- a/Modbusino.cpp
 +++ b/Modbusino.cpp
 @@ -100,7 +100,11 @@ static void send_msg(uint8_t *msg, uint8_t msg_length)
@@ -7,9 +7,9 @@ index 3ba3c14..70f914c 100644
      msg[msg_length++] = crc & 0x00FF;
  
 +    digitalWrite(RS485_RE_PIN, RS485_TX_LEVEL);
-+    delayMicroseconds(100);
++    delayMicroseconds(MB_PRE_TX_DELAY);
      Serial.write(msg, msg_length);
-+    delayMilliseconds(1);
++    delayMicroseconds(MB_POST_TX_DELAY);
 +    digitalWrite(RS485_RE_PIN, ! RS485_TX_LEVEL);
  }
  
