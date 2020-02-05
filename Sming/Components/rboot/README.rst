@@ -29,6 +29,13 @@ This is the default slot which is always used.
 
    Except for the use case described in `Slot2`_ below, you should not need to set this value.
 
+.. envvar:: RBOOT_ROM0_SIZE
+
+   default: (0x100000 - $(RBOOT_ROM0_ADDR)).
+
+   This is the maximum size of slot 0. The default value is the whole remaining of the 1M block.
+
+
 Slot 1
 ------
 
@@ -37,6 +44,13 @@ Slot 1
    default: disabled
 
    The start address of slot 1. If you don't need it, leave unconfigured (empty).
+
+.. envvar:: RBOOT_ROM1_ADDR
+
+   default: (0x100000 - $(RBOOT_ROM1_ADDR)).
+
+   This is the maximum size of slot 1. The default value is the whole remaining of the 1M block.
+
 
 If your application includes any kind of Over-the-Air (OTA) firmware
 update functionality, you will need a second memory slot to store the received

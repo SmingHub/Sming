@@ -39,19 +39,22 @@ endif
 
 CONFIG_VARS				+= RBOOT_ROM0_ADDR RBOOT_ROM1_ADDR RBOOT_ROM2_ADDR
 
-# Loation of first ROM (default is sector 2 after rboot and rboot config sector)
+# Location and size of first ROM (default is sector 2 after rboot and rboot config sector)
 RBOOT_ROM0_ADDR			?= 0x002000
+RBOOT_ROM0_SIZE			?= (0x100000 - $(RBOOT_ROM0_ADDR))
 
 # The parameter below specifies the location of the second ROM.
 # You need a second slot for any kind of firmware update mechanism.
 # Leave empty if you don't need a second ROM slot.
 RBOOT_ROM1_ADDR			?=
+RBOOT_ROM1_SIZE			?= (0x100000 - $(RBOOT_ROM1_ADDR))
 
 # The parameter below specifies the location of the GPIO ROM.
 # It is only used when RBOOT_GPIO_ENABLED = 1
 # Note that setting this parameter will only configure rboot.
 # The Sming build system does not create a ROM for this slot.
 RBOOT_ROM2_ADDR			?=
+RBOOT_ROM2_SIZE			?= (0x100000 - $(RBOOT_ROM2_ADDR))
 
 ifeq ($(RBOOT_GPIO_ENABLED),0)
 ifneq ($(RBOOT_ROM2_ADDR),)
@@ -162,24 +165,30 @@ ifndef RBOOT_EMULATION
 # $1 -> application target
 # $2 -> linker script
 # $3 -> ROM address variable (not value!)
+# $4 -> ROM size variable (not value!)
 define GenerateLinkerScriptTargets
 # Mark linker script out-of-date if ROM address differs from previous run
 -include $2.config
 ifneq ($$(GEN_$3),$$($3))
 .PHONY: $2
 endif
+ifneq ($$(GEN_$4),$$($4))
+.PHONY: $2
+endif
 # Generate linker script from template
 $2: $(RBOOT_LD_TEMPLATE)
 	$$(info LDGEN $$@)
 	$$(Q) $(AWK) 'match($$$$0, /^.*irom0_0_seg[ \t]*:[ \t]*/) { \
-			printf "%sorg = 0x40200010 + ($$($3) & 0xFFFFF), len = 1M - ($$($3) & 0xFFFFF) - 0x10\n", substr($$$$0, RSTART, RLENGTH); next \
+			printf "%sorg = 0x40200010 + ($$($3) & 0xFFFFF), len = ($$($4) & 0xFFFFF) - 0x10\n", substr($$$$0, RSTART, RLENGTH); next \
 		} 1 { print $$$$0 }' $$< > $$@
-	$$(Q) echo GEN_$3 := $($3) > $2.config
+	$$(Q) rm -f $2.config
+	$$(Q) echo 'GEN_$3 := $($3)' >> $2.config
+	$$(Q) echo 'GEN_$4 := $($4)' >> $2.config
 # Make application depend on linker script
 $1: $2
 endef
 
-$(eval $(call GenerateLinkerScriptTargets,$(TARGET_OUT_0),$(RBOOT_LD_0),RBOOT_ROM0_ADDR))
+$(eval $(call GenerateLinkerScriptTargets,$(TARGET_OUT_0),$(RBOOT_LD_0),RBOOT_ROM0_ADDR,RBOOT_ROM0_SIZE))
 
 # => Firmware images
 CUSTOM_TARGETS += $(RBOOT_ROM_0_BIN)
@@ -189,7 +198,7 @@ $(RBOOT_ROM_0_BIN): $(TARGET_OUT_0)
 	$(Q) $(call WriteFirmwareConfigFile,$@)
 
 ifneq ($(RBOOT_ROM_1_BIN),)
-$(eval $(call GenerateLinkerScriptTargets,$(TARGET_OUT_1),$(RBOOT_LD_1),RBOOT_ROM1_ADDR))
+$(eval $(call GenerateLinkerScriptTargets,$(TARGET_OUT_1),$(RBOOT_LD_1),RBOOT_ROM1_ADDR,RBOOT_ROM1_SIZE))
 
 CUSTOM_TARGETS += $(RBOOT_ROM_1_BIN)
 $(RBOOT_ROM_1_BIN): $(TARGET_OUT_1)
