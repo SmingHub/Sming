@@ -5,7 +5,7 @@ The author's project is at https://github.com/stephane/modbusino
 
 modbusino is lightweight RTU modbus slave library that supports 'read holding registers' and 'write multiple registers' functions.
 
-Four environment variables deifne the RS485 interface hardware pins and pre- and post-transmission delay.
+Four environment variables define the RS485 interface hardware pins and pre- and post-transmission delay.
 
 .. envvar:: RS485_RE_PIN
 
