@@ -4,14 +4,14 @@
 
 Timer mbSlaveLoopTimer;
 Timer mbPrintTimer;
-ModbusinoSlave MbSlave(1);
+ModbusinoSlave MbSlave(MB_SLAVE_ADDR);
 HardwareSerial debugComPort(UART1);
 
 uint16_t tab_reg[3] = {0,0,0};
 
 void mbSlaveLoop() {
 	uint8_t res = MbSlave.loop(tab_reg,3);
-	if( res < 0 ) debugf( "res: %d\r\n");
+	if( res < 0 ) debugf("error: %d\r\n");
 }
 
 void mbPrint() {
