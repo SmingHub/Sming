@@ -16,7 +16,7 @@
 class FtpDataStream : public TcpConnection
 {
 public:
-	explicit FtpDataStream(FtpServerConnection* connection) : TcpConnection(true), parent(connection)
+	explicit FtpDataStream(FtpServerConnection& connection) : TcpConnection(true), parent(connection)
 	{
 	}
 
@@ -40,12 +40,12 @@ public:
 	void finishTransfer()
 	{
 		close();
-		parent->dataTransferFinished(this);
+		parent.dataTransferFinished(this);
 	}
 
 	void response(int code, String text = nullptr)
 	{
-		parent->response(code, text);
+		parent.response(code, text);
 	}
 
 	int write(const char* data, int len, uint8_t apiflags = 0) override
@@ -56,7 +56,7 @@ public:
 
 	void onReadyToSendData(TcpConnectionEvent sourceEvent) override
 	{
-		if(!parent->isCanTransfer()) {
+		if(!parent.isCanTransfer()) {
 			return;
 		}
 		if(completed && written == 0) {
@@ -70,8 +70,8 @@ public:
 	}
 
 protected:
-	FtpServerConnection* parent = nullptr;
-	bool completed = false;
-	unsigned written = 0;
-	unsigned sent = 0;
+	FtpServerConnection& parent;
+	bool completed{false};
+	unsigned written{0};
+	unsigned sent{0};
 };

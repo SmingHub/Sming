@@ -20,11 +20,7 @@
  * @{
  */
 
-#define MAX_FTP_CMD 255
-
 class FtpServer;
-
-enum FtpConnectionState { eFCS_Ready, eFCS_Authorization, eFCS_Active };
 
 class FtpServerConnection : public TcpConnection
 {
@@ -32,7 +28,9 @@ class FtpServerConnection : public TcpConnection
 	friend class FtpServer;
 
 public:
-	FtpServerConnection(FtpServer* parentServer, tcp_pcb* clientTcp)
+	static constexpr size_t MAX_FTP_CMD{255};
+
+	FtpServerConnection(FtpServer& parentServer, tcp_pcb* clientTcp)
 		: TcpConnection(clientTcp, true), server(parentServer)
 	{
 	}
@@ -47,9 +45,6 @@ protected:
 	virtual void onCommand(String cmd, String data);
 	virtual void response(int code, String text = "");
 
-	int getSplitterPos(const String& data, char splitter, uint8_t number);
-	String makeFileName(String name, bool shortIt);
-
 	void cmdPort(const String& data);
 	void createDataConnection(TcpConnection* connection);
 
@@ -59,15 +54,21 @@ protected:
 	}
 
 private:
-	FtpServer* server = nullptr;
-	FtpConnectionState state = eFCS_Ready;
+	enum class State {
+		Ready,
+		Authorization,
+		Active,
+	};
+
+	FtpServer& server;
+	State state{State::Ready};
 	String userName;
 	String renameFrom;
 
 	IpAddress ip;
-	int port = 0;
-	TcpConnection* dataConnection = nullptr;
-	bool canTransfer = true;
+	int port{0};
+	TcpConnection* dataConnection{nullptr};
+	bool canTransfer{true};
 };
 
 typedef FtpServerConnection FTPServerConnection SMING_DEPRECATED; // @deprecated Use `FtpServerConnection` instead

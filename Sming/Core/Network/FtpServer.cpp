@@ -14,7 +14,7 @@
 
 TcpConnection* FtpServer::createClient(tcp_pcb* clientTcp)
 {
-	return new FtpServerConnection(this, clientTcp);
+	return new FtpServerConnection(*this, clientTcp);
 }
 
 void FtpServer::addUser(const String& login, const String& pass)

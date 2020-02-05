@@ -19,3 +19,4 @@ You should be able to connect using an FTP client:
 
    ftp ipaddress
 
+The default user is ``me``, password ``123``.
