@@ -140,5 +140,5 @@
 	ignore = dirty
 [submodule "Libraries.modbusino"]
 	path = Sming/Libraries/modbusino/modbusino
-	url = https://github.com/stephane/modbusino.git
+	url = https://github.com/kmihaylov/modbusino.git
 	ignore = dirty
