@@ -1,11 +1,14 @@
 diff --git a/Makefile b/Makefile
-index 0b43474..7cb71f4 100644
+index 0b43474..5176f8f 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -58,6 +58,16 @@ endif
+@@ -58,6 +58,19 @@ endif
  ifeq ($(RBOOT_IROM_CHKSUM),1)
  	CFLAGS += -DBOOT_IROM_CHKSUM
  endif
++ifneq ($(RBOOT_ROM0_ADDR),)
++	CFLAGS += -DBOOT_ROM0_ADDR=$(RBOOT_ROM0_ADDR)
++endif
 +ifneq ($(RBOOT_ROM1_ADDR),)
 +	CFLAGS += -DBOOT_ROM1_ADDR=$(RBOOT_ROM1_ADDR)
 +endif
@@ -19,7 +22,7 @@ index 0b43474..7cb71f4 100644
  ifneq ($(RBOOT_EXTRA_INCDIR),)
  	CFLAGS += $(addprefix -I,$(RBOOT_EXTRA_INCDIR))
  endif
-@@ -75,6 +85,10 @@ else ifeq ($(SPI_SIZE), 2Mb)
+@@ -75,6 +88,10 @@ else ifeq ($(SPI_SIZE), 2Mb)
  	E2_OPTS += -2048b
  else ifeq ($(SPI_SIZE), 4M)
  	E2_OPTS += -4096
@@ -30,9 +33,8 @@ index 0b43474..7cb71f4 100644
  endif
  ifeq ($(SPI_MODE), qio)
  	E2_OPTS += -qio
-
 diff --git a/rboot.c b/rboot.c
-index d622f97..00ccaeb 100644
+index d622f97..5e254fa 100644
 --- a/rboot.c
 +++ b/rboot.c
 @@ -13,6 +13,12 @@
@@ -48,10 +50,15 @@ index d622f97..00ccaeb 100644
  static uint32_t check_image(uint32_t readpos) {
  
  	uint8_t buffer[BUFFER_SIZE];
-@@ -258,7 +264,25 @@ static uint8_t calc_chksum(uint8_t *start, uint8_t *end) {
+@@ -257,8 +263,30 @@ static uint8_t calc_chksum(uint8_t *start, uint8_t *end) {
+ // created on first boot or in case of corruption
  static uint8_t default_config(rboot_config *romconf, uint32_t flashsize) {
  	romconf->count = 2;
++#ifdef BOOT_ROM0_ADDR
++    romconf->roms[0] = BOOT_ROM0_ADDR;
++#else
  	romconf->roms[0] = SECTOR_SIZE * (BOOT_CONFIG_SECTOR + 1);
++#endif
 +
 +#ifdef BOOT_ROM1_ADDR
 +	romconf->roms[1] = BOOT_ROM1_ADDR;
@@ -74,7 +81,7 @@ index d622f97..00ccaeb 100644
  #ifdef BOOT_GPIO_ENABLED
  	romconf->mode = MODE_GPIO_ROM;
  #endif
-@@ -306,100 +330,100 @@ uint32_t NOINLINE find_image(void) {
+@@ -306,100 +334,100 @@ uint32_t NOINLINE find_image(void) {
  	ets_delay_us(BOOT_DELAY_MICROS);
  #endif
  
@@ -204,7 +211,7 @@ index d622f97..00ccaeb 100644
  
  	// read boot config
  	SPIRead(BOOT_CONFIG_SECTOR * SECTOR_SIZE, buffer, SECTOR_SIZE);
-@@ -410,7 +434,7 @@ uint32_t NOINLINE find_image(void) {
+@@ -410,7 +438,7 @@ uint32_t NOINLINE find_image(void) {
  #endif
  		) {
  		// create a default config for a standard 2 rom setup
@@ -213,7 +220,7 @@ index d622f97..00ccaeb 100644
  		ets_memset(romconf, 0x00, sizeof(rboot_config));
  		romconf->magic = BOOT_CONFIG_MAGIC;
  		romconf->version = BOOT_CONFIG_VERSION;
-@@ -433,10 +457,10 @@ uint32_t NOINLINE find_image(void) {
+@@ -433,10 +461,10 @@ uint32_t NOINLINE find_image(void) {
  
  		if (rtc.next_mode & MODE_TEMP_ROM) {
  			if (rtc.temp_rom >= romconf->count) {
@@ -226,7 +233,7 @@ index d622f97..00ccaeb 100644
  			temp_boot = 1;
  			romToBoot = rtc.temp_rom;
  		}
-@@ -447,10 +471,10 @@ uint32_t NOINLINE find_image(void) {
+@@ -447,10 +475,10 @@ uint32_t NOINLINE find_image(void) {
  	if (perform_gpio_boot(romconf)) {
  #if defined(BOOT_GPIO_ENABLED)
  		if (romconf->gpio_rom >= romconf->count) {
@@ -239,7 +246,7 @@ index d622f97..00ccaeb 100644
  		romToBoot = romconf->gpio_rom;
  		gpio_boot = 1;
  #elif defined(BOOT_GPIO_SKIP_ENABLED)
-@@ -462,7 +486,7 @@ uint32_t NOINLINE find_image(void) {
+@@ -462,7 +490,7 @@ uint32_t NOINLINE find_image(void) {
  #endif
  		updateConfig = 1;
  		if (romconf->mode & MODE_GPIO_ERASES_SDKCONFIG) {
@@ -248,7 +255,7 @@ index d622f97..00ccaeb 100644
  			for (sec = 1; sec < 5; sec++) {
  				SPIEraseSector((flashsize / SECTOR_SIZE) - sec);
  			}
-@@ -474,7 +498,7 @@ uint32_t NOINLINE find_image(void) {
+@@ -474,7 +502,7 @@ uint32_t NOINLINE find_image(void) {
  	// gpio/temp boots will have already validated this
  	if (romconf->current_rom >= romconf->count) {
  		// if invalid rom selected try rom 0
@@ -257,7 +264,7 @@ index d622f97..00ccaeb 100644
  		romToBoot = 0;
  		romconf->current_rom = 0;
  		updateConfig = 1;
-@@ -486,14 +510,14 @@ uint32_t NOINLINE find_image(void) {
+@@ -486,14 +514,14 @@ uint32_t NOINLINE find_image(void) {
  #ifdef BOOT_GPIO_ENABLED
  	if (gpio_boot && loadAddr == 0) {
  		// don't switch to backup for gpio-selected rom
@@ -274,7 +281,7 @@ index d622f97..00ccaeb 100644
  		// make sure rtc temp boot mode doesn't persist
  		rtc.next_mode = MODE_STANDARD;
  		rtc.chksum = calc_chksum((uint8_t*)&rtc, (uint8_t*)&rtc.chksum);
-@@ -504,7 +528,7 @@ uint32_t NOINLINE find_image(void) {
+@@ -504,7 +532,7 @@ uint32_t NOINLINE find_image(void) {
  
  	// check we have a good rom
  	while (loadAddr == 0) {
@@ -283,7 +290,7 @@ index d622f97..00ccaeb 100644
  		// for normal mode try each previous rom
  		// until we find a good one or run out
  		updateConfig = 1;
-@@ -512,7 +536,7 @@ uint32_t NOINLINE find_image(void) {
+@@ -512,7 +540,7 @@ uint32_t NOINLINE find_image(void) {
  		if (romToBoot < 0) romToBoot = romconf->count - 1;
  		if (romToBoot == romconf->current_rom) {
  			// tried them all and all are bad!
@@ -292,7 +299,7 @@ index d622f97..00ccaeb 100644
  			return 0;
  		}
  		loadAddr = check_image(romconf->roms[romToBoot]);
-@@ -543,7 +567,7 @@ uint32_t NOINLINE find_image(void) {
+@@ -543,7 +571,7 @@ uint32_t NOINLINE find_image(void) {
  	system_rtc_mem(RBOOT_RTC_ADDR, &rtc, sizeof(rboot_rtc_data), RBOOT_RTC_WRITE);
  #endif
  

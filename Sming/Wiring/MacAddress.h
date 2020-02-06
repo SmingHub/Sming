@@ -26,10 +26,11 @@
 
 #include "WString.h"
 #include "Print.h"
-#include <stdint.h>
+#include <cstdint>
 
 /**
  * @brief A network hardware (MAC) address.
+ * @ingroup wiring
  * @author Mark Lindner
  * @author mikee47 <mike@sillyhouse.net>
  * 	Sming integration

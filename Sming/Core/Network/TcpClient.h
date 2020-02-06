@@ -18,10 +18,6 @@
 
 #include "TcpConnection.h"
 
-#ifdef ENABLE_SSL
-#include "Ssl/SslValidator.h"
-#endif
-
 class TcpClient;
 class ReadWriteStream;
 class IpAddress;
@@ -30,8 +26,19 @@ typedef Delegate<void(TcpClient& client, TcpConnectionEvent sourceEvent)> TcpCli
 typedef Delegate<void(TcpClient& client, bool successful)> TcpClientCompleteDelegate;
 typedef Delegate<bool(TcpClient& client, char* data, int size)> TcpClientDataDelegate;
 
-enum TcpClientState { eTCS_Ready, eTCS_Connecting, eTCS_Connected, eTCS_Successful, eTCS_Failed };
-enum TcpClientCloseAfterSentState { eTCCASS_None, eTCCASS_AfterSent, eTCCASS_AfterSent_Ignore_Received };
+enum TcpClientState {
+	eTCS_Ready,
+	eTCS_Connecting,
+	eTCS_Connected,
+	eTCS_Successful,
+	eTCS_Failed,
+};
+
+enum TcpClientCloseAfterSentState {
+	eTCCASS_None,
+	eTCCASS_AfterSent,
+	eTCCASS_AfterSent_Ignore_Received,
+};
 
 // By default a TCP client connection has 70 seconds timeout
 #define TCP_CLIENT_TIMEOUT 70
@@ -73,9 +80,8 @@ public:
 		freeStreams();
 	}
 
-public:
-	bool connect(const String& server, int port, bool useSsl = false, uint32_t sslOptions = 0) override;
-	bool connect(IpAddress addr, uint16_t port, bool useSsl = false, uint32_t sslOptions = 0) override;
+	bool connect(const String& server, int port, bool useSsl = false) override;
+	bool connect(IpAddress addr, uint16_t port, bool useSsl = false) override;
 	void close() override;
 
 	/**	@brief	Set or clear the callback for received data
@@ -120,49 +126,6 @@ public:
 		closeAfterSent = ignoreIncomingData ? eTCCASS_AfterSent_Ignore_Received : eTCCASS_AfterSent;
 	}
 
-#ifdef ENABLE_SSL
-	/**
-	 * @brief Allows setting of multiple SSL validators after a successful handshake
-	 * @param callback The callback function to be invoked on validation
-	 * @param data The data to pass to the callback
-	 * @note The callback is responsible for releasing the data if appropriate.
-	 * See SslValidatorCallback for further details.
-	 *
-	 * @retval bool true on success, false on failure
-	 */
-	bool addSslValidator(SslValidatorCallback callback, void* data = nullptr)
-	{
-		return sslValidators.add(callback, data);
-	}
-
-	/**
-	 * @brief Requires (pins) the remote SSL certificate to match certain fingerprints
-	 * @param fingerprint	The fingerprint data against which the match should be performed.
-	 * 						Must be allocated on the heap and will be deleted after use.
-	 * 						Do not re-use outside of this method.
-	 * @param type			The fingerprint type - see SslFingerprintType for details.
-	 *
-	 * @retval bool true on success, false on failure
-	 */
-	bool pinCertificate(const uint8_t* fingerprint, SslFingerprintType type)
-	{
-		return sslValidators.add(fingerprint, type);
-	}
-
-	/**
-	 * @brief	Requires (pins) the remote SSL certificate to match certain fingerprints
-	 * @note	The data inside the fingerprints parameter is passed by reference
-	 * @param	fingerprints - passes the certificate fingerprints by reference.
-	 *
-	 * @retval bool  true on success, false on failure
-	 */
-	bool pinCertificate(SslFingerprints& fingerprints)
-	{
-		return sslValidators.add(fingerprints);
-	}
-
-#endif
-
 protected:
 	err_t onConnected(err_t err) override;
 	err_t onReceive(pbuf* buf) override;
@@ -171,14 +134,6 @@ protected:
 	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
 
 	virtual void onFinished(TcpClientState finishState);
-
-#ifdef ENABLE_SSL
-	err_t onSslConnected(SSL* ssl) override
-	{
-		return sslValidators.validate(ssl) ? ERR_OK : ERR_ABRT;
-	}
-
-#endif
 
 	void pushAsyncPart();
 	void freeStreams();
@@ -191,16 +146,13 @@ protected:
 
 private:
 	TcpClientState state = eTCS_Ready;
-	TcpClientCompleteDelegate completed = nullptr;
-	TcpClientEventDelegate ready = nullptr;
-	TcpClientDataDelegate receive = nullptr;
+	TcpClientCompleteDelegate completed;
+	TcpClientEventDelegate ready;
+	TcpClientDataDelegate receive;
 
 	TcpClientCloseAfterSentState closeAfterSent = eTCCASS_None;
 	uint16_t totalSentConfirmedBytes = 0;
 	uint16_t totalSentBytes = 0;
-#ifdef ENABLE_SSL
-	SslValidatorList sslValidators;
-#endif
 };
 
 /** @} */

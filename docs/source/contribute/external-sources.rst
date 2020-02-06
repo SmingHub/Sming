@@ -1,20 +1,14 @@
-***********************
 Adding External Sources
-***********************
+=======================
 
-This document describes the recommended way to add source code from
-other ``git`` repositories.
+.. highlight:: bash
 
 Introduction
-============
+------------
 
-In Sming we have source code from other repositories:
-
-* `rboot <https://github.com/raburton/rboot>`__
-* `esp-gdbstub <https://github.com/espressif/esp-gdbstub>`__
-* `spiffs <https://github.com/pellepl/spiffs>`__
-
-etc..
+In Sming we have source code from other repositories such as
+`rboot <https://github.com/raburton/rboot>`__,
+`spiffs <https://github.com/pellepl/spiffs>`__, etc.
 
 Having local copies of those modules brings some disadvantages with it:
 
@@ -22,109 +16,117 @@ Having local copies of those modules brings some disadvantages with it:
 2. We cannot easily send improvements to those projects once we make
    local changes in our local copy.
 
-Therefore we started using ``git submodules``. For the sake of brevity
-``git submodules`` will be called ``submodules`` in this document.
-Submodules allow us to fetch the source code from the respective
-repositories and eliminate the disadvantages that local copies have. In
-addition, if we need local modifications than we can keep a .patch file
-and apply it after fetching the submodule code. This decreased our
-efforts and allowed us to use the latest versions of those third-party
-projects.
+Sming uses `GIT submodules <https://git-scm.com/book/en/v2/Git-Tools-Submodules>`__
+which allows the build system to fetch source code from an external repository on demand.
 
-Fetching Source Code
-====================
+If modifications are required then the submodule can be `patched <#applying-patches>`_.
 
-Without git repository
-----------------------
+This simplifies the process of integrating changes from those third-party projects.
 
-If the source code does not have a publicly accessible git repository
-then the source code needs to be copied locally. It should reside in a
-folder inside the ``Sming/third-party/`` folder. All local changes need
-to be applied directly to the local copy.
+Where to place external code
+----------------------------
 
-With git repository
+Submodules may be a :ref:`component` by itself (such as :component:`FlashString`),
+or contained within a Component (e.g. :component:`rboot`).
+
+The location must be chosen carefully:
+
+Code required within the core Sming framework
+
+   If the Component supports multiple architectures, place it in ``Sming/Components``.
+   Otherwise, use the appropriate ``Sming/Arch/*/Components`` directory.
+
+Code for general use
+
+   Create a new Library in ``Sming/Libraries``
+
+Please consult :doc:`/_inc/Sming/building` for further details about how Components are constructed.
+
+
+Copying Source Code
 -------------------
 
-In the cases where a library or dependent component has a public git
-repository we should add it in the following way. First we need to add
-the external repository as submodule. For example if we want to use the
-`pwm <https://github.com/StefanBruens/ESP8266_new_pwm%20we>`__ submodule
-we can do the following
+If the source code does not have a publicly accessible GIT repository
+then the source code needs to be copied locally.
 
-::
+In order to track changes more easily, the initial commit should be an exact
+copy of the original.
 
-   cd <Sming-root-folder>/
-   git submodule add  https://github.com/StefanBruens/ESP8266_new_pwm.git Sming/third-party/pwm
+Please either comment the code or add notes to the documentation to detail
+any required changes for compatibility.
 
-The command above instructs ``git`` to register the repository
-``https://github.com/StefanBruens/ESP8266_new_pwm.git`` as a submodule
-that will be present in our local source code in the folder
-``Sming/third-party/pwm``. All submodules should be pointing to a
-directory that is sub-directory of the ``Sming/third-party`` folder.
-This way every developer can use the existing mechanism to fetch and
-link these modules to the rest of the project.
+
+Add submodules
+--------------
+
+As an example, this is how the `new PWM` submodule was added to the :component-esp8266:`driver` Component:
+
+1. Add the submodule using GIT::
+
+      cd <Sming-root-folder>/
+      git submodule add \
+         https://github.com/StefanBruens/ESP8266_new_pwm.git \
+         Sming/Arch/Esp8266/Components/driver/new-pwm \
+         --name ESP8266.new-pwm
+
+This adds an entry to the end of the ``.gitmodules`` file::
+
+   [submodule "ESP8266.new-pwm"]
+      path = Sming/Arch/Esp8266/Components/driver/new-pwm
+      url = https://github.com/StefanBruens/ESP8266_new_pwm.git
+
+For naming submodules, please follow the convention used for the other entries in
+``.gitmodules``, which is determined by the local path::
+
+-  ``Sming/Components``: just use the name  of the submodule
+-  ``Sming/Arch/ARCH/Components``: Use ``ARCH.name``
+-  ``Sming/Libraries``: Use ``Libraries.name``
+
+2. Open ``.gitmodules`` in a text editor and:
+
+a. Move the entry to a more suitable location in the file, i.e. at the end of the
+   section listing all the ESP8266-specific submodules
+b. Add the line ``ignore = dirty``
+
 
 Applying Patches
-================
+----------------
 
-If the module needs local modifications to work with our project then we
-should add all needed changes in a patch file. For example for the
-``pwm`` module all changes should be saved in
-``Sming/third-party/.patches/pwm.patch``. If the module that we patch is
-called ``esp-gdbstub`` then the patch file should be
-``Sming/third-party/.patches/esp-gdbstub.patch``. Please, use this
-naming for consistency.
+If a submodule requires changes to work with Sming, this can be handled using patches.
 
-Link external sources in Sming
-==============================
-
-Once we are ready with the submodules we need to instruct Sming that a
-new source code is present and how to use it. Most of the changes should
-be done in the /Sming/Makefile. First we have to modify the
-``THIRD_PARTY_DATA`` variable in the Makefile. For example if the
-variable has the following data
-
-``THIRD_PARTY_DATA = third-party/rboot/Makefile``
-
-we should add an existing file from the new submodule. In the case of
-the ``pwm`` submodule an existing file in it is ``pwm.c``. After
-modification our Makefile should have a line like that one
-
-``THIRD_PARTY_DATA = third-party/rboot/Makefile third-party/pwm/pwm.c``
-
-Add external source to include path
-===================================
-
-If the new module has own header files that should be part of the
-project you can add them to the ``EXTRA_INCDIR``. Here is an example
-with the include paths that ``rboot`` brings
-
-``EXTRA_INCDIR += third-party/rboot third-party/rboot/appcode``
-
-Add external source to source code path
-=======================================
-
-If the new module brings also source code that needs to be compiled than
-you can add it by modifying the ``MODULES`` variable. Here is an example
-with ``esp-gdbstub``:
-
-``MODULES       += third-party/esp-gdbstub``
-
-Take a look at the Makefile to see examples of including the submodules
-only when a switch is enabled (search for ENABLE_GDB).
-
-Generating Patch Files
-======================
-
-It can happen that an external source code that is coming from another
-git repository and is present as a submodule needs some changes before
-it can start working for Sming. Those changes must be stored in a
-separate patch file. The recommended way to generate a patch file is to
-get the source code of the submodule, make changes to the file(s) in the
-submodule until it is ready for use and finally generate a patch file
-using the following commands:
-
-::
+This is generally done by pulling in the original submodule, making the required changes
+and then running a ``diff`` to create a patch file, like this::
 
    cd <Sming-root-folder>/third-party/<module-name>
-   git diff --no-ext-diff > <Sming-root-folder>/third-party/.patches/<module-name>.patch
+   git diff --no-ext-diff > <module-name>.patch
+
+If using a GUI such as GIT Extensions then this can be done using a right-click.
+
+See :ref:`git_submodules` for further details about how patches are used and where they should be placed.
+
+
+Using submodules
+----------------
+
+If the submodule is added as a Component in its own right, no further action is required.
+Applications can use it by adding the name to their COMPONENT_DEPENDS or ARDUINO_LIBARIES
+entries in component.mk as appropriate.
+
+Submodules contained within a Component must be declared by adding them to the
+COMPONENT_SUBMODULES entry in component.mk.
+
+
+Moving submodules
+-----------------
+
+If you need to change the location of a submodule, here's a suggested approach.
+In this example, we're going to move the `Adafruit_Sensor` submodule into a Component::
+
+   # Move the submodule temporarily
+   Sming/Libraries$ git mv Adafruit_Sensor tmp
+   # Create our new Component directory
+   Sming/Libraries$ mkdir Adafruit_Sensor
+   # Move the submodule back as a sub-directory
+   Sming/Libraries$ git mv tmp Adafruit_Sensor/Adafruit_Sensor
+
+Now we can add a `component.mk` file, `README.rst`, etc. as required for the component.

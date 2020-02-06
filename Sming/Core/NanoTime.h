@@ -19,20 +19,20 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include <esp_attr.h>
 #include <sming_attr.h>
-#include <math.h>
+#include <cmath>
 #include "Rational.h"
 #include <WString.h>
 
-/** @defgroup   timer Timers
+/** @defgroup   timers Timers
  *  @brief      System timer support classes
 */
 
 /** @defgroup   system_clocks System clocks
  *  @brief System clock definitions
- *  @ingroup    timer
+ *  @ingroup    timers
  *  @{
 */
 
@@ -236,7 +236,7 @@ template <typename ClockDef, uint32_t frequency_, typename TickType_, TickType_ 
 
 /**
  * @brief Function template to convert a constant time quantity from one unit to another
- * @param time The time to convert
+ * @tparam time The time to convert
  * @tparam unitsFrom Units for `time` parameter
  * @tparam unitsTo Units for return value
  * @retval TimeType Converted time
@@ -244,12 +244,11 @@ template <typename ClockDef, uint32_t frequency_, typename TickType_, TickType_ 
  *
  * 	uint32_t micros = convert<50, Milliseconds, Microseconds>();
  */
-template <uint64_t time, Unit unitsFrom, Unit unitsTo> constexpr uint64_t convert()
+template <uint64_t time, Unit unitsFrom, Unit unitsTo,
+		  typename R = std::ratio_divide<UnitTickRatio<unitsTo>, UnitTickRatio<unitsFrom>>>
+constexpr uint64_t convert()
 {
-	return ({
-		using R = std::ratio_divide<UnitTickRatio<unitsTo>, UnitTickRatio<unitsFrom>>;
-		round(double(time) * R::num / R::den);
-	});
+	return ({ round(double(time) * R::num / R::den); });
 }
 
 /**

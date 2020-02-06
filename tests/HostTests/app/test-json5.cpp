@@ -1,4 +1,4 @@
-#include "common.h"
+#include <SmingTest.h>
 #define ARDUINOJSON_USE_LONG_LONG 1
 #include <JsonObjectStream5.h>
 
@@ -11,8 +11,7 @@ public:
 
 	void execute() override
 	{
-		// LONGLONG support
-		startTest("LONGLONG support");
+		TEST_CASE("LONGLONG support");
 		{
 			StaticJsonBuffer<256> jsonBuffer;
 			JsonObject& root = jsonBuffer.createObject();

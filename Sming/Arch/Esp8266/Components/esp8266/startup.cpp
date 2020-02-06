@@ -17,7 +17,7 @@
 
 extern void init();
 
-extern "C" void  WEAK_ATTR user_init(void)
+extern "C" void user_init(void)
 {
 	// Initialise hardware timers
 	hw_timer_init();
@@ -132,6 +132,9 @@ extern "C" void ICACHE_FLASH_ATTR WEAK_ATTR user_pre_init(void)
 		for (unsigned i = 0; i < ARRAY_SIZE(partitions); ++i) {
 			auto& part = partitions[i];
 			os_printf("partition[%u]: %u, 0x%08x, 0x%08x\n", i, part.type, part.addr, part.size);
+		}
+		if(sizeMap < FLASH_SIZE_8M_MAP_512_512) {
+			os_printf("** Note: SDK 3.0.1 requires SPI_SIZE >= 1M\n");
 		}
 		while(1) {
 			// Cannot proceed

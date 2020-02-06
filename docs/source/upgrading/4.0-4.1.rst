@@ -1,0 +1,53 @@
+*****************
+From v4.0 to v4.1
+*****************
+
+Summary
+=======
+
+.. highlight:: c++
+
+
+With Sming version 4.1 there are some backwards incompatible changes.
+This page is provided to help with migrating your applications.
+
+SSL
+===
+
+In version 4.1 one can choose between different SSL implementations.
+At the moment Sming supports `axTLS <http://axtls.sourceforge.net/>`__ and `BearSSL <https://www.bearssl.org/>`__ for creating
+SSL enabled clients and servers.
+
+In order to allow multiple SSL adapters and seamless integration the library code had to be refactored and that introduced some breaking changes.
+
+Detailed documentation can be found in :component:`ssl`.
+
+See :doc:`/_inc/Sming/Components/ssl/upgrade` for a migration guide.
+
+
+MultipartParser
+===============
+
+The MultipartParser component has been decoupled from the framework and converted into a :library:`Library <MultipartParser>`.
+In the process, the former config option `ENABLE_HTTP_SERVER_MULTIPART` has been removed. Therefore, in your components.mk, 
+replace::
+
+   ENABLE_HTTP_SERVER_MULTIPART := 1
+
+by::
+
+   ARDUINO_LIBRARIES += MultipartParser
+  
+Also, the body parser for handling HTTP requests of content-type `multipart/form-data` must now be registered explicitly 
+by the application code:
+
+.. code-block:: c++
+
+   #include <MultipartParser.h>
+
+   HttpServer server;
+   ...
+
+   server.setBodyParser(MIME_FORM_MULTIPART, formMultipartParser);
+
+

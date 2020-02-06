@@ -35,7 +35,7 @@
 
 #pragma once
 
-#include <stddef.h>
+#include <cstddef>
 
 class Print;
 

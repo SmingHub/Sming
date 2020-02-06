@@ -49,8 +49,7 @@ in the same 1MB block of flash. Set the following options in your project's
 
 .. code-block:: make
 
-   RBOOT_BIG_FLASH = 0
-   RBOOT_TWO_ROMS  = 1
+   RBOOT_ROM1_ADDR = 0x80000
    SPI_SIZE        = 1M
 
 SPIFFS

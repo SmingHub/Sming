@@ -15,7 +15,7 @@
 */
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 /** @brief  Real time clock class
  *  @addtogroup rtc
@@ -51,8 +51,6 @@ public:
      *  @note   Updates RTC NVRAM
      */
 	bool setRtcSeconds(uint32_t seconds);
-
-	/** @} */
 };
 
 /**	@brief	Global instance of real time clock object

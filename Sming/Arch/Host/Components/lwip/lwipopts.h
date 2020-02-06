@@ -348,6 +348,7 @@
 #define LWIP_LISTEN_BACKLOG             0
 #define TCP_QUEUE_OOSEQ                 0
 #define LWIP_TCP_KEEPALIVE              1
+#define TCP_MSS                         1390
 
 /*
    ----------------------------------

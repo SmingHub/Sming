@@ -1,18 +1,17 @@
 ****************************
-How to use SSL in HttpServer
+Enabling SSL in HttpServer
 ****************************
 
 .. highlight:: c++
 
-I will try to split my answer into two main areas
-
-* At the moment the HttpServer (also with Websockets) supports setting TLS/SSL
-* but the question is how much sense is that making?
+* At the moment any TCP based server in Sming can use TLS/SSL.
+* That applies to HttpServer (also with Websockets).
+* But make sure to read the security considerations and limitations.
 
 Enabling SSL in HttpServer
 ==========================
 
-The ``listen`` method in the HttpServer class accepts a second optional
+The ``listen`` method in the TcpServer, and the child HttpServer class, accepts a second optional
 parameter. If you look at the original code:
 :source:`samples/HttpServer_WebSockets/app/application.cpp#L95-L99`.
 
@@ -27,38 +26,35 @@ And what is left is the actual setting of the server certificate::
 
    void startWebServer()
    {
-       SSLKeyCertPair clientCertKey;
-       // TODO: Make sure to set a server certificate and key
-       // ...
        // Assign the certificate
-       server.setSslKeyCert(clientCertKey);
+       server.setSslInitHandler([](Ssl::Session& session) {
+            session.keyCert.assign(serverKey, serverCert);
+       });
        server.listen(443, true);
 
-And the final code can be something like::
+The final code can be something like::
 
-   #ifdef ENABLE_SSL
-   #include "ssl/server_cert.h"
-   #include "ssl/server_private_key.h"
-   #endif
+  void startWebServer()
+  {
+  #ifdef ENABLE_SSL
+    server.setSslInitHandler([](Ssl::Session& session) {
+      session.keyCert.assign(serverKey, serverCert);
+    });
+    server.listen(443, true);
+  #else
+    server.listen(80);
+  #endif
+    server.paths.set("/", onIndex);
+    //...
 
-   void startWebServer()
-   {
-   #ifdef ENABLE_SSL
-       clientCertKey.assign(
-           default_private_key, default_private_key_len,
-           default_certificate, default_certificate_len,
-           nullptr /* key password */);
-       server.setSslKeyCert(clientCertKey);
-       server.listen(443, true);
-   #else
-       server.listen(80, false);
-   #endif
+
+Security Considerations
+=======================
 
 Does it really make sense to use SSL for an HttpServer on an ESP8266 device?
-============================================================================
 
 The certificate/private key pair should make it impossible for an
-external user do decrypt your traffic so that the things that you sent
+external user to decrypt your traffic so that the things that you sent
 are kept private, but there are some complications with this:
 
 -  The private key will not stay private for long. The private key should be
@@ -76,13 +72,12 @@ are kept private, but there are some complications with this:
    for example https://letsencrypt.org/. These will expire if not kept
    up to date so adds additional complexity to your application.
 
--  You can handle up to 2 max 3 connections. SSL needs 16K of memory to
+-  You can handle up to 2 or maximum 3 connections. SSL needs 16K of memory to
    make the initial handshake. The memory consumption after a successful
    handshake can decrease to 4K, just for the SSL, per request. But
    realistically this means that you will end up with a server that can
-   handle max 2 or 3 simultaneous connections before the heap memory is
+   handle maximum 2 or 3 simultaneous connections before the heap memory is
    consumed and has to be released.
 
-So IMHO it would be better to rely on the WIFI security that your Access
-Point (AP) provides and make this AP accessible only for your IoT
-devices.
+Therefore, in our humble opinion, it would be better to rely on the WIFI security that your Access
+Point (AP) provides and make this AP accessible only for your IoT devices.

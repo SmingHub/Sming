@@ -14,35 +14,35 @@ COMPONENT_INCDIRS := \
 
 COMPONENT_DEPENDS := \
 	sming-arch \
+	FlashString \
 	spiffs \
 	http-parser \
 	libb64 \
 	ws_parser \
 	mqtt-codec \
 	libyuarel \
+	ssl \
 	terminal
 
-# => SSL
-COMPONENT_VARS 			:= ENABLE_SSL
-ifeq ($(ENABLE_SSL),1)
-	SMING_FEATURES		:= SSL
-	GLOBAL_CFLAGS		+= -DENABLE_SSL=1
-	COMPONENT_DEPENDS	+= axtls-8266
-	COMPONENT_VARS += SSL_DEBUG
-else
-	SMING_FEATURES		:= none
-	COMPONENT_SRCDIRS	:= $(filter-out %/Ssl,$(COMPONENT_SRCDIRS))
-endif
+COMPONENT_DOCFILES := \
+	Core/Network/*.rst \
+	Wiring/*.rst \
+	Platform/*.rst \
+	Services/*.rst \
+	Services/CommandProcessing/*.rst \
+	Services/Profiling/*.rst \
+	Core/Data/*.rst
 
-# Prints SSL status when App gets built
-CUSTOM_TARGETS			+= check-ssl
-.PHONY:check-ssl
-check-ssl:
-ifeq ($(ENABLE_SSL),1)
-	$(info + SSL support is enabled)
-else
-	$(warning ! SSL support is not enabled. To enable it type: 'make clean; make ENABLE_SSL=1')
-endif
+COMPONENT_DOXYGEN_PREDEFINED := \
+	ENABLE_CMD_EXECUTOR=1
+
+COMPONENT_DOXYGEN_INPUT := \
+	Core \
+	$(patsubst $(SMING_HOME)/%,%,$(wildcard $(SMING_HOME)/Arch/*/Core)) \
+	Platform \
+	Services \
+	Wiring \
+	System
 
 # => Disable CommandExecutor functionality if not used and save some ROM and RAM
 COMPONENT_VARS			+= ENABLE_CMD_EXECUTOR
@@ -82,14 +82,6 @@ endif
 COMPONENT_VARS			+= LOCALE
 ifdef LOCALE
 	GLOBAL_CFLAGS		+= -DLOCALE=$(LOCALE)
-endif
-
-# => Multipart Parser
-COMPONENT_VARS 			+= ENABLE_HTTP_SERVER_MULTIPART
-ifeq ($(ENABLE_HTTP_SERVER_MULTIPART),1)
-	SMING_FEATURES		+= HTTP_SERVER_MULTIPART
-	GLOBAL_CFLAGS		+= -DENABLE_HTTP_SERVER_MULTIPART=1
-	COMPONENT_DEPENDS	+= MultipartParser
 endif
 
 # => HTTP server
@@ -139,4 +131,9 @@ endif
 # Task queue length
 COMPONENT_VARS		+= TASK_QUEUE_LENGTH
 TASK_QUEUE_LENGTH	?= 10
-COMPONENT_CFLAGS	+= -DTASK_QUEUE_LENGTH=$(TASK_QUEUE_LENGTH)
+COMPONENT_CXXFLAGS	+= -DTASK_QUEUE_LENGTH=$(TASK_QUEUE_LENGTH)
+
+# Size of a String object - change this to increase space for Small String Optimisation (SSO)
+COMPONENT_VARS		+= STRING_OBJECT_SIZE
+STRING_OBJECT_SIZE	?= 12
+GLOBAL_CFLAGS		+= -DSTRING_OBJECT_SIZE=$(STRING_OBJECT_SIZE) 

@@ -1,19 +1,28 @@
 REM Windows install script
 
+rmdir /s /q c:\MinGW
+curl -LO %SMINGTOOLS%/MinGW.7z
+7z -oC:\ x MinGW.7z
+
 goto :%SMING_ARCH%
 
 :Esp8266
 
-	choco install esp8266-udk --source https://www.myget.org/F/sming/ -y --no-progress
+	REM Old toolchain
+	set TOOLCHAIN=esp-udk-win32.7z
+	curl -LO %SMINGTOOLS%/%TOOLCHAIN%
+	7z -o%UDK_ROOT% x %TOOLCHAIN%
+
+	REM New toolchain
+	mkdir %EQT_ROOT%
+	set TOOLCHAIN=i686-w64-mingw32.xtensa-lx106-elf-a5c9861.1575819473.zip
+	curl -LO https://github.com/earlephilhower/esp-quick-toolchain/releases/download/3.0.0-gnu5/%TOOLCHAIN%
+	7z -o%EQT_ROOT% x %TOOLCHAIN%
 
 	goto :EOF
 
 
 :Host
-
-	REM Ensure MinGW installation is up to date
-	mingw-get update
-	mingw-get upgrade
 
 	goto :EOF
 

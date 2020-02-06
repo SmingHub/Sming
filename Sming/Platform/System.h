@@ -17,36 +17,41 @@
  *
  */
 
-/**	@defgroup system System
- *	@brief	Access to the ESP8266 system
- *	@note   Provides system control and monitoring of the ESP8266.
-*/
 #pragma once
 
 #include <esp_systemapi.h>
 #include <Delegate.h>
 #include <Interrupts.h>
 
+/**
+ * @defgroup system System
+ * @ingroup platform
+ * @brief	Access to the ESP8266 system
+ * Provides system control and monitoring of the ESP8266.
+ * @{
+*/
+
 /** @brief Task callback function type, uint32_t parameter
- * 	@ingroup event_handlers
  * 	@note Callback code does not need to be in IRAM
  */
 typedef void (*TaskCallback32)(uint32_t param);
 
 /** @brief Task callback function type, void* parameter
- * 	@ingroup event_handlers
  * 	@note Callback code does not need to be in IRAM
  */
 typedef void (*TaskCallback)(void* param);
 
 /** @brief Task Delegate callback type
- *  @ingroup event_handlers
  */
 typedef Delegate<void()> TaskDelegate;
 
-/// @ingroup event_handlers
-typedef TaskDelegate SystemReadyDelegate; ///< Handler function for system ready
+/** @brief Handler function for system ready
+ */
+typedef TaskDelegate SystemReadyDelegate;
 
+/**
+ * @brief Interface class implented by classes to support on-ready callback
+ */
 class ISystemReadyHandler
 {
 public:
@@ -59,17 +64,17 @@ public:
 	virtual void onSystemReady() = 0;
 };
 
-/** @ingroup constants
- *  @{
+/**
+ * @brief CPU Frequency
  */
-
-/// CPU Frequency
 enum CpuFrequency {
 	eCF_80MHz = 80,   ///< CPU 80MHz
 	eCF_160MHz = 160, ///< CPU 160MHz
 };
 
-/// Deep sleep options
+/**
+ * @brief Deep sleep options
+ */
 enum DeepSleepOptions {
 	eDSO_RF_CAL_BY_INIT_DATA = 0, ///<  RF_CAL  or  not  after  deep-sleep  wake  up, depends on init data byte 108.
 	eDSO_RF_CAL_ALWAYS = 1,		  ///< RF_CAL after deep-sleep wake up, there will be large current.
@@ -78,21 +83,20 @@ enum DeepSleepOptions {
 		4, ///< disable RF after deep-sleep wake up, just like modem sleep, there will be the smallest current.
 };
 
-/// @brief  System state
+/**
+ * @brief System state
+ */
 enum SystemState {
 	eSS_None,		 ///< System state unknown
 	eSS_Intializing, ///< System initialising
 	eSS_Ready		 ///< System ready
 };
-/** @} */
 
+/** @brief  System class
+ */
 class SystemClass
 {
 public:
-	/** @brief  System class
-     *  @addtogroup system
-     *  @{
-     */
 	SystemClass()
 	{
 	}

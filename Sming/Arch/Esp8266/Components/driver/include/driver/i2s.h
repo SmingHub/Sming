@@ -34,6 +34,14 @@ extern "C" {
 #endif
 
 /**
+ * @defgroup i2s_driver I2S Driver
+ * @ingroup drivers
+ * @{
+ */
+
+/**
+ * @brief I2S sample
+ *
  * An I2S frame can contain various types of data:
  *
  * 8-bit, 16-bit or 24-bit mono samples
@@ -266,8 +274,10 @@ typedef uint8_t i2s_pin_set_t;
  * @param pins Mask of i2s_pin_t values
  * @param enable true to enable for I2S use, false to revert to GPIO
  * @note Call this after initialising driver to specify which pins are required
- * You can alternatively use arduino functions
- * @example i2s_set_pins(_BV(I2S_BCK_OUT), true)
+ *
+ * You can alternatively use arduino functions.
+ *
+ * Example: i2s_set_pins(_BV(I2S_BCK_OUT), true)
  */
 void i2s_set_pins(i2s_pin_set_t pins, bool enable);
 
@@ -300,6 +310,9 @@ bool i2s_stat_rx(i2s_buffer_stat_t* stat);
  * @retval unsigned Number of frames available to read
  */
 //unsigned i2s_rx_available();
+
+
+/** @} */
 
 #ifdef __cplusplus
 }

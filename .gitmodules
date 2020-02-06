@@ -19,9 +19,13 @@
 	url = https://github.com/jacketizer/libyuarel.git
 	ignore = dirty
 [submodule "multipart-parser"]
-	path = Sming/Components/MultipartParser/multipart-parser
+	path = Sming/Libraries/MultipartParser/multipart-parser
 	url = https://github.com/iafonov/multipart-parser-c.git
 	ignore = dirty
+[submodule "FlashString"]
+	path = Sming/Components/FlashString
+	url = https://github.com/mikee47/FlashString
+    ignore = dirty
 
 [submodule "esptool"]
 	path = Sming/Arch/Esp8266/Components/esptool/esptool
@@ -36,20 +40,24 @@
 	url = https://github.com/raburton/esptool2.git
 	ignore = dirty
 [submodule "libsodium"]
-	path = Sming/Components/libsodium/libsodium
+	path = Sming/Libraries/libsodium/libsodium
 	url = https://github.com/jedisct1/libsodium.git
 	ignore = dirty
 
 [submodule "ESP8266.new-pwm"]
-	path = Sming/Arch/Esp8266/Components/pwm_open/new-pwm
+	path = Sming/Arch/Esp8266/Components/driver/new-pwm
 	url = https://github.com/StefanBruens/ESP8266_new_pwm.git
 	ignore = dirty
-[submodule "ESP8266.axtls-8266"]
+[submodule "ESP8266.axtls"]
 	path = Sming/Components/axtls-8266/axtls-8266
 	url = https://github.com/igrr/axtls-8266.git
 	ignore = dirty
+[submodule "ESP8266.bearssl"]
+	path = Sming/Components/bearssl-esp8266/bearssl
+	url = https://github.com/earlephilhower/bearssl-esp8266
+	ignore = dirty
 [submodule "ESP8266.umm_malloc"]
-	path = Sming/Arch/Esp8266/Components/custom_heap/umm_malloc
+	path = Sming/Arch/Esp8266/Components/heap/umm_malloc
 	url = https://github.com/rhempel/umm_malloc.git
 	ignore = dirty
 [submodule "ESP8266.esp-open-lwip"]
@@ -121,4 +129,12 @@
 [submodule "Libraries.MCP_CAN_lib"]
 	path = Sming/Libraries/MCP_CAN_lib
 	url = https://github.com/coryjfowler/MCP_CAN_lib.git
+	ignore = dirty
+[submodule "Libraries.SmingTest"]
+	path = Sming/Libraries/SmingTest
+	url = https://github.com/mikee47/SmingTest
+	ignore = dirty
+[submodule "Libraries.ModbusMaster"]
+	path = Sming/Libraries/ModbusMaster/ModbusMaster
+	url = https://github.com/nomis/ModbusMaster.git
 	ignore = dirty

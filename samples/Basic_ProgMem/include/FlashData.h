@@ -8,7 +8,7 @@
 #ifndef INCLUDE_FLASHDATA_H_
 #define INCLUDE_FLASHDATA_H_
 
-#include "FlashString.h"
+#include <WString.h>
 
 DECLARE_FSTR(externalFSTR1)
 DECLARE_PSTR(externalPSTR1)

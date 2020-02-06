@@ -1,9 +1,9 @@
 SPIFF_SIZE      ?= 65536
 
-CUSTOM_TARGETS	:= files/Readme.md
+CUSTOM_TARGETS	:= files/README.md
 
 # Large text file for demo purposes
-files/Readme.md: $(SMING_HOME)/../Readme.md
+files/README.md: $(SMING_HOME)/../README.md
 	$(Q) mkdir -p $(@D)
 	$(Q) cp $< $@
 

@@ -38,6 +38,7 @@ include $(SMING_HOME)/build.mk
 # Components usually add their config variables to COMPONENT_VARS, which also controls variant creation for
 # the Component itself. If the variable only affects the application build, not the Component, then it should
 # be appended to CONFIG_VARS instead.
+# If a Component's external interface isn't affected, but a variant is required, use COMPONENT_RELINK_VARS.
 # The values of all CONFIG_VARS are cached after a successful build. A separate cache is maintained for
 # each build type (SMING_ARCH, SMING_RELEASE).
 CONFIG_VARS		:=
@@ -78,7 +79,7 @@ DEBUG_VARS			+= APP_LIBDIR
 APP_LIBDIR			:= $(OUT_BASE)/lib
 
 # Tells linker where to find libraries and scripts
-LIBDIRS				:= $(APP_LIBDIR) $(USER_LIBDIR) $(ARCH_BASE)/Compiler/lib $(ARCH_BASE)/Compiler/ld
+LIBDIRS				:= $(APP_LIBDIR) $(USER_LIBDIR)
 
 # Standard libraries that will be linked with application (Component libraries are defined separately)
 LIBS				:= $(EXTRA_LIBS)
@@ -156,6 +157,7 @@ COMPONENT_LIBNAME		:= $1
 CMP_$1_BUILD_BASE		:= $3/$1
 COMPONENT_BUILD_DIR		:= $$(CMP_$1_BUILD_BASE)
 COMPONENT_VARS			:=
+COMPONENT_RELINK_VARS	:=
 COMPONENT_TARGETS		:=
 COMPONENT_DEPENDS		:=
 EXTRA_LIBS				:=
@@ -180,9 +182,8 @@ CMP_$1_TARGETS			:= $$(COMPONENT_TARGETS)
 CMP_$1_BUILD_DIR		:= $$(COMPONENT_BUILD_DIR)
 CMP_$1_LIBNAME			:= $$(COMPONENT_LIBNAME)
 CMP_$1_INCDIRS			:= $$(COMPONENT_INCDIRS)
-# Variables including those inherited from dependencies (will be recursively expanded when required)
 CMP_$1_DEPENDS			:= $$(COMPONENT_DEPENDS)
-CMP_$1_DEPVARS			= $$(CMP_$1_VARS) $$(foreach c,$$(CMP_$1_DEPENDS),$$(CMP_$$c_DEPVARS))
+CMP_$1_RELINK_VARS		:= $$(COMPONENT_RELINK_VARS)
 APPCODE					+= $$(call AbsoluteSourcePath,$2,$$(CMP_$1_APPCODE))
 COMPONENTS				+= $$(filter-out $$(COMPONENTS),$$(CMP_$1_DEPENDS))
 ifneq (App,$1)
@@ -232,23 +233,42 @@ COMPONENT_SEARCH_DIRS	+= $(ARCH_COMPONENTS) $(SMING_HOME)/Components $(SMING_HOM
 $(foreach d,$(COMPONENT_SEARCH_DIRS),\
 	$(if $(wildcard $d/.patches/*/.),$(shell cd $d && cp -r .patches/*/ .)))
 
-# And add in any requested Arduino libraries
+# And add in any requested libraries
 COMPONENTS				+= $(sort $(ARDUINO_LIBRARIES))
 
 # Pull in all Component definitions
 $(eval $(call ParseComponentList,$(COMPONENTS)))
 
+# Resolve dependencies to a depth of 1
+# $1 -> Component name
+define ResolveDependentComponents
+$(CMP_$1_DEPENDS) $(foreach c,$(CMP_$1_DEPENDS),$(CMP_$c_DEPENDS))
+endef
+
+# Resolve component and variable dependences but limit recursion as components may be mutually dependent
+# $1 -> Component name
+define ResolveDependencies
+CMP_$1_DEPENDS	:= $(call ResolveDependentComponents,$1)
+CMP_$1_DEPENDS	:= $(call ResolveDependentComponents,$1)
+CMP_$1_DEPENDS	:= $(call ResolveDependentComponents,$1)
+CMP_$1_DEPENDS	:= $(call ResolveDependentComponents,$1)
+CMP_$1_DEPENDS	:= $$(sort $$(filter-out $1,$$(CMP_$1_DEPENDS)))
+CMP_$1_ALL_VARS	:= $$(sort $(CMP_$1_VARS) $$(foreach c,$$(CMP_$1_DEPENDS),$$(CMP_$$c_VARS)) $(CMP_$1_RELINK_VARS))
+endef
+
+$(foreach c,$(COMPONENTS),$(eval $(call ResolveDependencies,$c)))
+
+
 # This macro assigns a library and build path based on a hash of the component variables
 # $1 -> Component name
 define ParseComponentLibs
-CMP_$1_DEPVARS			:= $$(sort $$(CMP_$1_DEPVARS))
 ifneq (,$$(CMP_$1_LIBNAME))
-ifeq (,$$(CMP_$1_VARS))
+ifeq (,$$(CMP_$1_ALL_VARS))
 CMP_$1_LIBHASH			:=
 COMPONENT_VARIANT		:= $$(CMP_$1_LIBNAME)
 else
-COMPONENT_VARIABLES		:= $$(foreach $$v,$$(CMP_$1_DEPVARS),$$($$v)=$$($$($$v)))
-CMP_$1_LIBHASH			:= $$(firstword $$(shell echo -n $$(COMPONENT_VARIABLES) | md5sum -t))
+COMPONENT_VARIABLES		:= $$(foreach v,$$(CMP_$1_ALL_VARS),$$($$v)=$$($$($$v)))
+CMP_$1_LIBHASH			:= $$(call CalculateVariantHash,COMPONENT_VARIABLES)
 COMPONENT_VARIANT		:= $$(CMP_$1_LIBNAME)-$$(CMP_$1_LIBHASH)
 endif
 ifneq ($$(COMPONENT_VARIANT),$1)
@@ -265,12 +285,14 @@ endif
 endef
 
 # Order unimportant so sort for ease of reading and remove duplicates
-CONFIG_VARS := $(sort $(CONFIG_VARS))
+CONFIG_VARS				:= $(sort $(CONFIG_VARS))
+RELINK_VARS				+= $(foreach c,$(COMPONENTS),$(CMP_$c_RELINK_VARS))
 
 # Always build App last, using a variant based on all config variables
 # Note that a link step is always performed, so nothing needs to be done with RELINK_VARS
 COMPONENTS				+= App
 CMP_App_VARS			:= $(CONFIG_VARS)
+CMP_App_ALL_VARS		:= $(CONFIG_VARS)
 $(foreach c,$(COMPONENTS),$(eval $(call ParseComponentLibs,$c)))
 
 export COMPONENTS_EXTRA_INCDIR
@@ -280,7 +302,8 @@ export GLOBAL_CFLAGS
 export CONFIG_VARS
 
 # Export all config variables
-$(foreach v,$(CONFIG_VARS) $(CACHE_VARS),$(eval export $v))
+EXPORT_VARS := $(sort $(CONFIG_VARS) $(CACHE_VARS) $(RELINK_VARS))
+$(foreach v,$(EXPORT_VARS),$(eval export $v))
 
 
 ##@Building
@@ -398,8 +421,18 @@ clean: ##Remove all generated build files (but leave build config intact)
 	@echo Cleaning application...
 	-$(Q) rm -rf $(BUILD_BASE) $(FW_BASE) $(APP_LIBDIR)
 
-
 ##@Tools
+
+.PHONY: cs
+cs: .clang-format ##Apply coding style to selected project directories
+	$(SMING_MAKE) cs CS_ROOT_DIRS=$(PROJECT_DIR)
+
+.clang-format:
+	$(Q) cp $(SMING_HOME)/../.clang-format $@
+
+.PHONY: cs-dev
+cs-dev: ##Apply coding style to all files changed from current upstream develop branch
+	$(SMING_MAKE) $@
 
 .PHONY: gdb
 gdb: kill_term ##Run the debugger console
@@ -414,7 +447,7 @@ decode-stacktrace: ##Open the stack trace decoder ready to paste dump text. Alte
 	$(Q) if [ -z "$(TRACE)" ]; then \
 		echo "Decode stack trace: Paste stack trace here"; \
 	fi
-	$(Q) python $(ARCH_TOOLS)/decode-stacktrace.py $(TARGET_OUT_0) $(TRACE)
+	$(Q) $(PYTHON) $(ARCH_TOOLS)/decode-stacktrace.py $(TARGET_OUT_0) $(TRACE)
 
 
 ##@Testing
@@ -425,7 +458,7 @@ SERVER_OTA_PORT		?= 9999
 .PHONY: otaserver
 otaserver: all ##Launch a simple python HTTP server for testing OTA updates
 	$(info Starting OTA server for TESTING)
-	$(Q) cd $(FW_BASE) && python -m SimpleHTTPServer $(SERVER_OTA_PORT)
+	$(Q) cd $(FW_BASE) && $(PYTHON) -m SimpleHTTPServer $(SERVER_OTA_PORT)
 
 ##@Help
 
@@ -458,9 +491,11 @@ define PrintComponentInfo
 		$(if $(CMP_$1_DEPENDS),$(info $(nullstr)    Depends: $(CMP_$1_DEPENDS)))
 		$(if $(CMP_$1_APPCODE),$(info $(nullstr)    Appcode: $(CMP_$1_APPCODE)))
 		$(if $(CMP_$1_TARGETS),$(info $(nullstr)    Targets: $(notdir $(CMP_$1_TARGETS))))
-		$(if $(CMP_$1_DEPVARS),\
+		$(if $(CMP_$1_ALL_VARS),\
 			$(info $(nullstr)    Variables:)\
-			$(foreach v,$(CMP_$1_DEPVARS),$(info $(nullstr)    $(if $(filter $v,$(CMP_$1_VARS)), ,i) $v=$($v)) )) )
+			$(foreach v,$(CMP_$1_ALL_VARS),\
+				$(info $(nullstr)    $(if $(filter $v,$(CMP_$1_VARS) $(CMP_$1_RELINK_VARS)), ,i) $v=$($v)) ))
+			)
 endef
 
 .PHONY: list-components

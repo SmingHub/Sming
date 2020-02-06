@@ -3,7 +3,7 @@
 #####################################################################
 
 ifndef SMING_HOME
-$(error SMING_HOME is not set. Please configure it as an environment variable, or in Makefile-user.mk)
+$(error SMING_HOME is not set. Please configure it as an environment variable)
 endif
 
 # Include application Makefile

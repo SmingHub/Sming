@@ -1,87 +1,18 @@
-*********
 Hot Tips!
-*********
+=========
 
 .. highlight:: c++
 
 Minimising Memory Usage
-=======================
+-----------------------
 
-Literals use up memory, so its a good idea to move them to flash. Be
-aware though that it can be slower! Further reading, see the header
-FlashString.h in the sming source code
-
-F() macro
----------
-
-Instructs the compiler to store the literal in flash (of
-which there is plenty) rather than RAM (which is limited).
-
-Example::
-
-   String system = F("system");
-
-_F() macro
-----------
-
-This function uses the stack, and is generally preferable
-to the ``F()`` macro, but you need to be mindful of scope. The content is
-lost as soon as the containing block goes out of scope. Used as a
-function parameter, that means the end of the function call.
-
-Examples::
-
-   println(_F("Debug started"));
-
-   commandOutput->print(_F("Welcome to the Tcp Command executor\r\n"));
-
-
-Bad::
-
-   char* s = _F("string")
-
-An assignment such as this will not work because the temporary will be
-out of scope after the statement, hence s will point to garbage. In this
-instance PSTR_ARRAY(s, “string”) can be used.
-
-PSTR_ARRAY() macro
-------------------
-
-This macro creates and loads string into a named stack buffer.
-This Ensures loaded string stays in scope, unlike _F() Example::
-
-   String testfunc() {
-      //char * test = "This is a string"; <<- BAD
-      PSTR_ARRAY(test, "This is a string");
-      m_printf(test);
-      ...
-      return test; // Implicit conversion to String
-   }
-
-JSON keys
----------
-
-.. note::
-
-   This issue applies only to :library:`ArduinoJson5`. However, Sming
-   supports :library:`ArduinoJson6` which is recommended for new projects.
-
-Example::
-
-   root[F("offset")] = something;
-
-Bad::
-
-   root[_F("offset")] = something;
-
-According to the ArduinoJson docs it should take an internal copy of
-char* strings, but it doesn’t! Tip - Use the F() macro without leading
-underscore instead.
+Literals use up memory, so its a good idea to move them to flash.
+See :doc:`/framework/core/pgmspace` and :component:`FlashString`.
 
 Webpages and Spiffs
-===================
+-------------------
 
-FlashString turns out to be very useful for sending web pages,
+:component:`FlashString <FlashString>` turns out to be very useful for sending web pages,
 javascript, CSS and so on. Many examples for the ESP8266 exist where a
 Spiffs file system is used for this purpose, but in fact Spiffs is not
 ideal. If you want to release a new version of your software, and your
@@ -89,7 +20,7 @@ web pages are in spiffs, you now have two things to release, so there is
 double the chance of something going wrong. Plus you have the challenge
 of preserving any user files while refreshing just a few.
 
-One solution is to use a FlashString hooked up to a FlashMemoryStream
+One solution is to use a FlashString hooked up to a *FlashMemoryStream*
 instead. In the example below, the CSS file is sent compressed to save
 time and space. The browser asks for core.js and gets a compressed
 version::
@@ -103,7 +34,7 @@ version::
        response.sendDataStream(stream, MimeType::MIME_JS);
    }
 
-See :source:`Sming/Wiring/FlashString.h` for further details. 
+See :component:`FlashString` for further details.
 
 Webpages Performance
 ====================

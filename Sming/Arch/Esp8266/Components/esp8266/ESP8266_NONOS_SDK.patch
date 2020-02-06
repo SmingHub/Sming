@@ -1,0 +1,6 @@
+diff --git a/lib/libc.a b/lib/libc.orig.a
+rename from lib/libc.a
+rename to lib/libc.orig.a
+diff --git a/lib/libgcc.a b/lib/libgcc.orig.a
+rename from lib/libgcc.a
+rename to lib/libgcc.orig.a

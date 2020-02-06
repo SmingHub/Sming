@@ -4,7 +4,7 @@
  * calculation.
  */
 
-#include "common.h"
+#include <SmingTest.h>
 #include <Platform/Timers.h>
 
 template <class Clock, typename TimeType> class ClockTestTemplate : public TestGroup
@@ -292,6 +292,8 @@ public:
 		print("PolledTimer", polledTimer_loop());
 	}
 };
+
+constexpr unsigned BenchmarkPolledTimer::TIMEOUT_MS;
 
 template <hw_timer_clkdiv_t clkdiv, NanoTime::Unit unit, typename TimeType>
 struct Timer1TestSource : public Timer1Clock<clkdiv> {

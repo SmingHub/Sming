@@ -16,7 +16,6 @@
  ****/
 
 #include "include/esp_spi_flash.h"
-#include "espinc/peri.h"
 
 extern char _flash_code_end[];
 
@@ -32,12 +31,22 @@ extern char _flash_code_end[];
 #define IS_ALIGNED(x) (((uint32_t)(x)&0x00000003) == 0)
 
 // Buffers need to be word aligned for flash access
-#define __aligned __attribute__((aligned(4)))
+#define ATTR_ALIGNED __attribute__((aligned(4)))
 
 // If this module were in C++ we could use std::min
 static inline uint32_t min(uint32_t a, uint32_t b)
 {
 	return (a < b) ? a : b;
+}
+
+uint32_t flashmem_get_address(const void* memptr)
+{
+	uint32_t addr = (uint32_t)memptr - INTERNAL_FLASH_START_ADDRESS;
+	// Determine which 1MB memory bank is mapped
+	uint32_t ctrl = READ_PERI_REG(CACHE_FLASH_CTRL_REG);
+	uint8_t bank = (((ctrl >> 16) & 0x07) << 1) | ((ctrl >>25) & 0x01);
+	addr += 0x100000U * bank;
+	return addr;
 }
 
 uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
@@ -48,7 +57,7 @@ uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 	const uint32_t blksize = INTERNAL_FLASH_WRITE_UNIT_SIZE;
 	const uint32_t blkmask = INTERNAL_FLASH_WRITE_UNIT_SIZE - 1;
 
-	__aligned char tmpdata[FLASH_BUFFERS * INTERNAL_FLASH_WRITE_UNIT_SIZE];
+	ATTR_ALIGNED char tmpdata[FLASH_BUFFERS * INTERNAL_FLASH_WRITE_UNIT_SIZE];
 	const uint8_t* pfrom = (const uint8_t*)from;
 	uint32_t remain = size;
 
@@ -120,7 +129,7 @@ uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
 	const uint32_t blksize = INTERNAL_FLASH_READ_UNIT_SIZE;
 	const uint32_t blkmask = INTERNAL_FLASH_READ_UNIT_SIZE - 1;
 
-	__aligned char tmpdata[FLASH_BUFFERS * INTERNAL_FLASH_READ_UNIT_SIZE];
+	ATTR_ALIGNED char tmpdata[FLASH_BUFFERS * INTERNAL_FLASH_READ_UNIT_SIZE];
 	uint8_t* pto = (uint8_t*)to;
 	uint32_t remain = size;
 

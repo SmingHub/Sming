@@ -19,6 +19,12 @@
 #include "System.h"
 #include "WVector.h"
 
+/**	@defgroup wifi_sniffer WiFi Sniffer
+ *  @ingroup wifi
+ *	@brief	WiFi promiscuous mode sniffer support
+ *	@{
+*/
+
 #define ETH_MAC_LEN 6
 
 /**
@@ -141,3 +147,5 @@ private:
 	static WifiBeaconCallback beaconCallback;
 	static WifiClientCallback clientCallback;
 };
+
+/** @} */

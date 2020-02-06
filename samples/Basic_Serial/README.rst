@@ -1,7 +1,7 @@
 Basic Serial
 ============
 
-.. higlight:: bash
+.. highlight:: bash
 
 Demonstrates Sming's asynchronous capabilities using the UART to send and receive simultaneously
 using two serial ports.

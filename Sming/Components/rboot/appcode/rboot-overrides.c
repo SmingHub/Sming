@@ -37,10 +37,7 @@ spiffs_config spiffs_get_storage_config()
       debug_w("The requested SPIFFS size is too big.");
       requested_sector = max_allowed_sector;
   }
-  cfg.phys_size = ((requested_sector + 1) * INTERNAL_FLASH_SECTOR_SIZE) -  ( ( u32_t )cfg.phys_addr); // get the max size until the sector end.
-
-  cfg.phys_erase_block = INTERNAL_FLASH_SECTOR_SIZE; // according to datasheet
-  cfg.log_block_size = INTERNAL_FLASH_SECTOR_SIZE * 2; // Important to make large
-  cfg.log_page_size = LOG_PAGE_SIZE; // as we said
+  // get the max size until the sector end
+  cfg.phys_size = ((requested_sector + 1) * INTERNAL_FLASH_SECTOR_SIZE) - cfg.phys_addr;
   return cfg;
 }

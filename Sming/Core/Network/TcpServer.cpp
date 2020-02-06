@@ -10,8 +10,6 @@
 
 #include "TcpServer.h"
 
-uint16_t TcpServer::totalConnections = 0;
-
 TcpConnection* TcpServer::createClient(tcp_pcb* clientTcp)
 {
 	debug_d("TCP Server createClient %sNULL\r\n", clientTcp ? "not" : "");
@@ -50,37 +48,7 @@ bool TcpServer::listen(int port, bool useSsl)
 		return res;
 	}
 
-#ifdef ENABLE_SSL
 	this->useSsl = useSsl;
-
-	if(useSsl) {
-#ifdef SSL_DEBUG
-		sslOptions |= SSL_DISPLAY_STATES | SSL_DISPLAY_BYTES | SSL_DISPLAY_CERTS;
-#endif
-
-		sslContext = ssl_ctx_new(sslOptions, sslSessionCacheSize);
-
-		if(!sslKeyCert.isValid()) {
-			debug_e("SSL: server certificate and key are not provided!");
-			return false;
-		}
-
-		if(ssl_obj_memory_load(sslContext, SSL_OBJ_RSA_KEY, sslKeyCert.getKey(), sslKeyCert.getKeyLength(),
-							   sslKeyCert.getKeyPassword()) != SSL_OK) {
-			debug_e("SSL: Unable to load server private key");
-			return false;
-		}
-
-		if(ssl_obj_memory_load(sslContext, SSL_OBJ_X509_CERT, sslKeyCert.getCertificate(),
-							   sslKeyCert.getCertificateLength(), nullptr) != SSL_OK) {
-			debug_e("SSL: Unable to load server certificate");
-			return false;
-		}
-
-		// TODO: test: free the certificate data on server destroy...
-		freeKeyCertAfterHandshake = true;
-	}
-#endif
 
 	tcp = tcp_listen(tcp);
 	tcp_accept(tcp, staticAccept);
@@ -93,12 +61,18 @@ err_t TcpServer::onAccept(tcp_pcb* clientTcp, err_t err)
 {
 	// Anti DDoS :-)
 	if(system_get_free_heap_size() < minHeapSize) {
-		debug_w("\r\n\r\nCONNECTION DROPPED\r\n\t(%d)\r\n\r\n", system_get_free_heap_size());
+		debug_w("\r\n\r\nCONNECTION DROPPED\r\n\t(free heap: %u)\r\n\r\n", system_get_free_heap_size());
 		return ERR_MEM;
 	}
 
+	// Obey any requested connection limit
+	if(maxConnections != 0 && connections.count() >= maxConnections) {
+		debug_w("\r\n\r\nCONNECTION DROPPED\r\n\t(Existing connections: %u)\r\n\r\n", connections.count());
+		return ERR_ABRT;
+	}
+
 #ifdef NETWORK_DEBUG
-	debug_d("onAccept state: %d K=%d", err, connections.count());
+	debug_d("onAccept, tcp: %p, state: %d K=%d", clientTcp, err, connections.count());
 	list_mem();
 #endif
 
@@ -113,19 +87,16 @@ err_t TcpServer::onAccept(tcp_pcb* clientTcp, err_t err)
 	}
 	client->setTimeOut(keepAlive);
 
-#ifdef ENABLE_SSL
 	if(useSsl) {
-		int clientfd = axl_append(clientTcp);
-		if(clientfd == -1) {
+		if(!sslCreateSession()) {
 			delete client;
-			debug_e("SSL: Unable to initiate tcp ");
 			return ERR_ABRT;
 		}
-
-		debug_d("SSL: handshake start.");
-		client->setSsl(ssl_server_new(sslContext, clientfd));
+		if(!ssl->onAccept(client, clientTcp)) {
+			delete client;
+			return ERR_ABRT;
+		}
 	}
-#endif
 
 	client->setDestroyedDelegate(TcpConnectionDestroyedDelegate(&TcpServer::onClientDestroy, this));
 
@@ -213,7 +184,7 @@ void TcpServer::shutdown()
 
 void TcpServer::onClientDestroy(TcpConnection& connection)
 {
-	connections.removeElement((TcpConnection*)&connection);
+	connections.removeElement(&connection);
 	debug_d("Destroying connection. Total connections: %d", connections.count());
 
 	if(active) {

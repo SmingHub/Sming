@@ -7,4 +7,5 @@ For newer versions we have dedicated pages.
 .. toctree::
    :maxdepth: 1
 
+   4.0-4.1
    3.8-4.0

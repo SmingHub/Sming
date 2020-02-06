@@ -165,16 +165,9 @@ public:
 		errorCallback = callback;
 	}
 
-	using TcpClient::setTimeOut;
-
-#ifdef ENABLE_SSL
-	using TcpClient::addSslOptions;
-	using TcpClient::addSslValidator;
-	using TcpClient::freeSslKeyCert;
 	using TcpClient::getSsl;
-	using TcpClient::pinCertificate;
-	using TcpClient::setSslKeyCert;
-#endif
+	using TcpClient::setSslInitHandler;
+	using TcpClient::setTimeOut;
 
 protected:
 	err_t onReceive(pbuf* buf) override;

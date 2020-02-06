@@ -33,6 +33,7 @@ int HttpServerConnection::onMessageBegin(http_parser* parser)
 	// and temp data...
 	reset();
 	bodyParser = nullptr;
+	hasContentError = false;
 
 	return 0;
 }
@@ -62,6 +63,10 @@ int HttpServerConnection::onMessageComplete(http_parser* parser)
 
 	if(bodyParser) {
 		bodyParser(request, nullptr, PARSE_DATAEND);
+	}
+
+	if(hasContentError) {
+		response.code = HTTP_STATUS_BAD_REQUEST;
 	}
 
 	if(resource != nullptr && resource->onRequestComplete) {
@@ -101,16 +106,19 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 
 	if(resource != nullptr && resource->onHeadersComplete) {
 		error = resource->onHeadersComplete(*this, request, response);
+		if(error != 0) {
+			return error;
+		}
 	}
 
-	if(!error && request.method == HTTP_HEAD) {
-		error = 1;
+	if(request.method == HTTP_HEAD) {
+		return 1;
 	}
 
 	if(bodyParsers != nullptr && request.headers.contains(HTTP_HEADER_CONTENT_TYPE)) {
 		String contentType = request.headers[HTTP_HEADER_CONTENT_TYPE];
 		int endPos = contentType.indexOf(';');
-		if(endPos != -1) {
+		if(endPos >= 0) {
 			contentType = contentType.substring(0, endPos);
 		}
 
@@ -134,20 +142,42 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 		}
 	}
 
+	// respond to 'Expect: 100-continue' according to RFC 7231 5.1.1
+	if(request.headers.contains(HTTP_HEADER_EXPECT)) {
+		if(request.headers[HTTP_HEADER_EXPECT] == F("100-continue")) {
+			sendString(F("HTTP/1.1 100 Continue\r\n\r\n"));
+		} else {
+			debug_i("HttpServerConnection: Ignoring unknown header '%s'", request.headers[HTTP_HEADER_EXPECT].c_str());
+		}
+	}
+
 	return error;
 }
 
 int HttpServerConnection::onBody(const char* at, size_t length)
 {
+	if(hasContentError) {
+		return 0;
+	}
+
 	if(bodyParser) {
-		size_t consumed = bodyParser(request, at, length);
+		const size_t consumed = bodyParser(request, at, length);
 		if(consumed != length) {
-			return -1;
+			hasContentError = true;
+			if(closeOnContentError) {
+				return -1;
+			}
 		}
 	}
 
 	if(resource != nullptr && resource->onBody) {
-		return resource->onBody(*this, request, at, length);
+		const int result = resource->onBody(*this, request, at, length);
+		if(result != 0) {
+			hasContentError = true;
+			if(closeOnContentError) {
+				return result;
+			}
+		}
 	}
 
 	return 0;

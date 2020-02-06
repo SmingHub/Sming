@@ -108,7 +108,7 @@ $(CLEAN_TESTS):
 	$(Q) $(MAKE) -C $(@D) clean
 
 
-##@Developer
+##@Tools
 
 # Recursive wildcard search
 # $1 -> list of directories
@@ -118,15 +118,26 @@ define rwildcard
 endef
 
 # Files that should follow our coding standards
-CS_DIRS		= Core Platform Services Arch/*/Core Arch/*/Platform $(SAMPLES_DIR) $(TESTS_DIR)
-CS_FILES	= $(call rwildcard,$(CS_DIRS:=/*),%.cpp %.h %.c)
+
+# Root directories to search
+CS_ROOT_DIRS	?= $(abspath $(SMING_HOME)/..)
+# List of single directories to search
+CS_SEARCH_DIRS	?= $(call ListAllSubDirs,$(CS_ROOT_DIRS))
+# Resultant set of directories whose contents to apply coding style to
+CS_DIRS			?= $(patsubst %/.cs,%,$(wildcard $(foreach d,$(CS_SEARCH_DIRS),$d/.cs)))
+# Files to apply coding style to
+CS_FILES		= $(if $(CS_DIRS),$(call rwildcard,$(CS_DIRS:=/*),%.cpp %.hpp %.h %.c),)
 
 .PHONY: cs
 cs: ##Apply coding style to all core files
-	$(if $(V),$(info Applying coding style to $(words $(CS_FILES)) files ...))
-	@for FILE in $(CS_FILES); do \
-		$(CLANG_FORMAT) -i -style=file $$FILE; \
-	done
+	$(call ClangFormat,$(CS_FILES))
+
+
+CS_DEV_FILES	= $(filter $(abspath $(addprefix ../,$(shell git diff --name-only develop...HEAD))),$(CS_FILES))
+
+.PHONY: cs-dev
+cs-dev: ##Apply coding style to all files changed from current upstream develop branch
+	$(call ClangFormat,$(CS_DEV_FILES))
 
 
 ##@Help

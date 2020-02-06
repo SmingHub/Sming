@@ -16,9 +16,9 @@ extern "C" {
 #include "ws_parser/ws_parser.h"
 }
 
-/** @defgroup   Websocket connection
+/** @defgroup   websocket Websocket connection
  *  @brief      Provides websocket connection (server and client)
- *  @ingroup    websocket http
+ *  @ingroup    http
  *  @{
  */
 

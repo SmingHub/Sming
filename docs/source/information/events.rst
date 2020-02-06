@@ -18,10 +18,9 @@ Let's look at the :sample:`Basic_Blink` sample. We define a couple of global var
    Timer procTimer;
    bool state = true;
 
-The one to note is *procTimer*, which is a *software timer*.
-See :doc:`timers` for how these compare with a *hardware timer*.
+The one to note is *procTimer*, which is a *software timer* (see :doc:`/framework/timers/index`).
 
-The startup entry point for a Sming application is the *init()* function::
+The startup entry point for a Sming application is the :cpp:func:`init` function::
 
    void init()
    {
@@ -46,8 +45,8 @@ The :sample:`Basic_Interrupts` sample can be summarised as follows:
 
 -  We have a button connected to GPIO0 as an input
 -  Button pressed
-   ->  Hardware interrupt on GPIO0
-      -> Change output state of LED via GPIO2
+   -  Hardware interrupt on GPIO0
+      -  Change output state of LED via GPIO2
 
 There are two ways we can determine when the state of our GPIO0 pin changes:
 
@@ -76,7 +75,7 @@ such as if a timer expires.
 
 This can be a regular 'C' callback function, which you should use for handling interrupts.
 
-For regular application code, a *Delegate* provides more flexbility and allows you to create
+For regular application code, a :cpp:class:`Delegate` provides more flexbility and allows you to create
 simpler, cleaner code. See `Delegation <https://en.wikipedia.org/wiki/Delegation_(object-oriented_programming)>`__
 for a bit of background.
 
@@ -87,7 +86,8 @@ One common requirement is to use a class method as a callback, which is easily d
 This flexibility comes at a cost, however:
 
 -  Speed. They are slower than their regular C-function counterparts
--  Memory. Some calls may use the heap in the background, the main reason why you should not use
-   Delegates in an interrupt context.
+-  Memory. Some calls may use the heap in the background.
+
+These are the main reasons why you should not use Delegates in an interrupt context.
 
 See :pull-request:`1734` for some further details about the relative speeds.

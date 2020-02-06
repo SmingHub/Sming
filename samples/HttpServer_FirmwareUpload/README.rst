@@ -8,9 +8,10 @@ The HTTP server coming with Sming is quite powerful but it is limited
 from the available resources of the underlining hardware (your favorite
 ESP8266 microcontroller).
 
-This sample demonstrates how to enable file upload of the HTTP server.
-On a normal computer the file uploads are usually using
-temporary space on the hard disk or in memory to store the incoming data.
+This sample demonstrates how to use the :library:`MultipartParser` library
+to enable file upload of the HTTP server. On a normal computer the file uploads
+are usually using temporary space on the hard disk or in memory to store the
+incoming data.
 
 On an embedded device that is a luxury that we can hardly afford.
 In this sample we demonstrate how to define which file upload fields
@@ -38,19 +39,15 @@ Usage instructions
 1. 'make flash' to build and flash the example via USB cable. You need to do 
    this only once. Subsequent updates can be performed using the web interface.
 
-2. 'make signedrom' to create the signed image in out/firmware/.../rom0.bin.signed
+2. 'make signedrom' to create the signed images in out/firmware/.../rom*.bin.signed
 
 3. Point your browser to your ESP's IP address to open the firmware upgrade page.
 
 4. Select the signed image created in step 2 and hit the "Update" button. 
+   If you have an ROM layout that requires two different images, select the image 
+   for the currently unused slot. 
    After a few seconds, you should see a confirmation that the upgrade was successful.
    The ESP now reboots into the new firmware. 
    
 If the upgrade is not successful, check the serial console for error messages.
 
-
-Limitations
------------
-
-For simplicity, this example assumes RBOOT_BIG_FLASH=1, i. e. the same ROM 
-image can be used for both slots.

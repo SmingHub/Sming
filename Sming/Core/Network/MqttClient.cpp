@@ -209,7 +209,7 @@ bool MqttClient::setWill(const String& topic, const String& message, uint8_t fla
 		   copyString(connectMessage.connect.will_message, message);
 }
 
-bool MqttClient::connect(const Url& url, const String& clientName, uint32_t sslOptions)
+bool MqttClient::connect(const Url& url, const String& clientName)
 {
 	this->url = url;
 	bool useSsl = (url.Scheme == URI_SCHEME_MQTT_SECURE);
@@ -251,7 +251,7 @@ bool MqttClient::connect(const Url& url, const String& clientName, uint32_t sslO
 	}
 	connectQueued = true;
 
-	return TcpClient::connect(url.Host, url.getPort(), useSsl, sslOptions);
+	return TcpClient::connect(url.Host, url.getPort(), useSsl);
 }
 
 bool MqttClient::publish(const String& topic, const String& content, uint8_t flags)

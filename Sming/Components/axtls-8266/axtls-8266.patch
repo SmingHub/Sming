@@ -1,26 +1,79 @@
 diff --git a/crypto/crypto_misc.c b/crypto/crypto_misc.c
-index dca7e5f..20a6741 100644
+index dca7e5f..5f4ec51 100644
 --- a/crypto/crypto_misc.c
 +++ b/crypto/crypto_misc.c
-@@ -44,7 +44,7 @@
+@@ -44,7 +44,6 @@
  
  #ifdef ESP8266
  #define CONFIG_SSL_SKELETON_MODE 1
 -uint32_t phy_get_rand();
-+uint32_t os_random();
  #endif
  
  #if defined(CONFIG_USE_DEV_URANDOM)
-@@ -171,7 +171,7 @@ EXP_FUNC int STDCALL get_random(int num_rand_bytes, uint8_t *rand_data)
-     CryptGenRandom(gCryptProv, num_rand_bytes, rand_data);
- #elif defined(ESP8266)
-     for (size_t cb = 0; cb < num_rand_bytes; cb += 4) {
+@@ -157,62 +156,6 @@ EXP_FUNC void STDCALL RNG_terminate(void)
+ #endif
+ }
+ 
+-/**
+- * Set a series of bytes with a random number. Individual bytes can be 0
+- */
+-EXP_FUNC int STDCALL get_random(int num_rand_bytes, uint8_t *rand_data)
+-{   
+-#if !defined(WIN32) && defined(CONFIG_USE_DEV_URANDOM)
+-    /* use the Linux default - read from /dev/urandom */
+-    if (read(rng_fd, rand_data, num_rand_bytes) < 0) 
+-        return -1;
+-#elif defined(WIN32) && defined(CONFIG_WIN32_USE_CRYPTO_LIB)
+-    /* use Microsoft Crypto Libraries */
+-    CryptGenRandom(gCryptProv, num_rand_bytes, rand_data);
+-#elif defined(ESP8266)
+-    for (size_t cb = 0; cb < num_rand_bytes; cb += 4) {
 -        uint32_t r = phy_get_rand();
-+        uint32_t r = os_random();
-         size_t left = num_rand_bytes - cb;
-         left = (left < 4) ? left : 4;
-         memcpy(rand_data + cb, &r, left);
-@@ -289,7 +289,7 @@ EXP_FUNC void STDCALL print_blob(const char *format,
+-        size_t left = num_rand_bytes - cb;
+-        left = (left < 4) ? left : 4;
+-        memcpy(rand_data + cb, &r, left);
+-    }
+-#else   /* nothing else to use, so use a custom RNG */
+-    /* The method we use when we've got nothing better. Use RC4, time
+-       and a couple of random seeds to generate a random sequence */
+-    AES_CTX rng_ctx;
+-    struct timeval tv;
+-    MD5_CTX rng_digest_ctx;
+-    uint8_t digest[MD5_SIZE];
+-    uint64_t *ep;
+-    int i;
+-
+-    /* A proper implementation would use counters etc for entropy */
+-    gettimeofday(&tv, NULL);
+-    ep = (uint64_t *)entropy_pool;
+-    ep[0] ^= ENTROPY_COUNTER1;
+-    ep[1] ^= ENTROPY_COUNTER2;
+-
+-    /* use a digested version of the entropy pool as a key */
+-    MD5_Init(&rng_digest_ctx);
+-    MD5_Update(&rng_digest_ctx, entropy_pool, ENTROPY_POOL_SIZE);
+-    MD5_Final(digest, &rng_digest_ctx);
+-
+-    /* come up with the random sequence */
+-    AES_set_key(&rng_ctx, digest, (const uint8_t *)ep, AES_MODE_128); /* use as a key */
+-    memcpy(rand_data, entropy_pool, num_rand_bytes < ENTROPY_POOL_SIZE ?
+-				num_rand_bytes : ENTROPY_POOL_SIZE);
+-    AES_cbc_encrypt(&rng_ctx, rand_data, rand_data, num_rand_bytes);
+-
+-    /* move things along */
+-    for (i = ENTROPY_POOL_SIZE-1; i >= MD5_SIZE ; i--)
+-        entropy_pool[i] = entropy_pool[i-MD5_SIZE];
+-
+-    /* insert the digest at the start of the entropy pool */
+-    memcpy(entropy_pool, digest, MD5_SIZE);
+-#endif
+-    return 0;
+-}
+-
+ /**
+  * Set a series of bytes with a random number. Individual bytes are not zero.
+  */
+@@ -289,7 +232,7 @@ EXP_FUNC void STDCALL print_blob(const char *format,
  
      va_start(ap, size);
      snprintf(tmp, sizeof(tmp), "SSL: %s\n", format);
@@ -29,6 +82,7 @@ index dca7e5f..20a6741 100644
      print_hex_init(size);
      for (i = 0; i < size; i++)
      {
+
 diff --git a/replacements/time.c b/replacements/time.c
 index 4972119..da75839 100644
 --- a/replacements/time.c
@@ -153,149 +207,170 @@ index 4972119..da75839 100644
      }
      return 0;
  }
-diff --git a/ssl/os_port.h b/ssl/os_port.h
-index e0b9e46..8c226ea 100644
---- a/ssl/os_port.h
-+++ b/ssl/os_port.h
-@@ -43,7 +43,12 @@ extern "C" {
- 
- #include "os_int.h"
- #include "config.h"
--#include <stdio.h>
-+#include <FakePgmSpace.h>
-+
-+#undef WIN32
-+#ifndef ESP8266
-+#define ESP8266
-+#endif
- 
- #ifdef WIN32
- #define STDCALL                 __stdcall
-@@ -62,12 +67,11 @@ extern "C" {
- 
- #include "util/time.h"
- #include <errno.h>
-+#ifndef alloca
- #define alloca(size) __builtin_alloca(size)
-+#endif
- #define TTY_FLUSH()
--#ifdef putc
- #undef putc
--#endif
--#define putc(x, f)   ets_putc(x)
- 
- #define SOCKET_READ(A,B,C)      ax_port_read(A,B,C)
- #define SOCKET_WRITE(A,B,C)     ax_port_write(A,B,C)
-@@ -92,78 +96,23 @@ extern "C" {
- #define be64toh(x) __bswap_constant_64(x)
- #endif
- 
--void ax_wdt_feed();
--
--#ifndef PROGMEM
--#define PROGMEM __attribute__((aligned(4))) __attribute__((section(".irom.text")))
--#endif
--
--#ifndef WITH_PGM_READ_HELPER
--#define ax_array_read_u8(x, y) x[y]
--#else
--
--static inline uint8_t pgm_read_byte(const void* addr) {
--  register uint32_t res;
--  __asm__("extui    %0, %1, 0, 2\n"     /* Extract offset within word (in bytes) */
--      "sub      %1, %1, %0\n"       /* Subtract offset from addr, yielding an aligned address */
--      "l32i.n   %1, %1, 0x0\n"      /* Load word from aligned address */
--      "slli     %0, %0, 3\n"        /* Multiply offset by 8, yielding an offset in bits */
--      "ssr      %0\n"               /* Prepare to shift by offset (in bits) */
--      "srl      %0, %1\n"           /* Shift right; now the requested byte is the first one */
--      :"=r"(res), "=r"(addr)
--      :"1"(addr)
--      :);
--  return (uint8_t) res;     /* This masks the lower byte from the returned word */
--}
-+extern void system_soft_wdt_feed(void);
-+#define ax_wdt_feed system_soft_wdt_feed
- 
- #define ax_array_read_u8(x, y) pgm_read_byte((x)+(y))
--#endif //WITH_PGM_READ_HELPER
- 
--#ifdef printf
--#undef printf
--#endif
--//#define printf(...)  ets_printf(__VA_ARGS__)
--#define PSTR(s) (__extension__({static const char __c[] PROGMEM = (s); &__c[0];}))
--#define PGM_VOID_P const void *
--static inline void* memcpy_P(void* dest, PGM_VOID_P src, size_t count) {
--    const uint8_t* read = (const uint8_t*)(src);
--    uint8_t* write = (uint8_t*)(dest);
--
--    while (count)
--    {
--        *write++ = pgm_read_byte(read++);
--        count--;
--    }
--
--    return dest;
--}
--static inline int strlen_P(const char *str) {
--    int cnt = 0;
--    while (pgm_read_byte(str++)) cnt++;
--    return cnt;
--}
--static inline int memcmp_P(const void *a1, const void *b1, size_t len) {
--    const uint8_t* a = (const uint8_t*)(a1);
--    uint8_t* b = (uint8_t*)(b1);
--    for (size_t i=0; i<len; i++) {
--        uint8_t d = pgm_read_byte(a) - pgm_read_byte(b);
--        if (d) return d;
--        a++;
--        b++;
--    }
--    return 0;
--}
-+#ifdef AXTLS_BUILD
- 
--#define printf(fmt, ...) do { static const char fstr[] PROGMEM = fmt; char rstr[sizeof(fmt)]; memcpy_P(rstr, fstr, sizeof(rstr)); ets_printf(rstr, ##__VA_ARGS__); } while (0)
--#define strcpy_P(dst, src) do { static const char fstr[] PROGMEM = src; memcpy_P(dst, fstr, sizeof(src)); } while (0)
-+#define printf(fmt, ...) m_printf(_F(fmt), ##__VA_ARGS__)
- 
--// Copied from ets_sys.h to avoid compile warnings
--extern int ets_printf(const char *format, ...)  __attribute__ ((format (printf, 1, 2)));
--extern int ets_putc(int);
-+#undef strcpy_P
-+#define strcpy_P(a, str) strcpy(a, _F(str))
-+
-+#endif /* AXTLS_BUILD */
- 
- // The network interface in WiFiClientSecure
--extern int ax_port_read(int fd, uint8_t* buffer, size_t count);
--extern int ax_port_write(int fd, uint8_t* buffer, size_t count);
-+extern int ax_port_read(int fd, uint8_t* buffer, int count);
-+extern int ax_port_write(int fd, uint8_t* buffer, uint16_t count);
- 
- // TODO: Why is this not being imported from <string.h>?
- extern char *strdup(const char *orig);
-@@ -260,6 +209,7 @@ EXP_FUNC int STDCALL getdomainname(char *buf, int buf_size);
- #endif  /* Not Win32 */
- 
- /* some functions to mutate the way these work */
-+#ifndef ntohl
- inline uint32_t htonl(uint32_t n){
-   return ((n & 0xff) << 24) |
-     ((n & 0xff00) << 8) |
-@@ -268,6 +218,8 @@ inline uint32_t htonl(uint32_t n){
- }
- 
- #define ntohl htonl
-+#define LWIP_DONT_PROVIDE_BYTEORDER_FUNCTIONS
-+#endif
- 
- EXP_FUNC int STDCALL ax_open(const char *pathname, int flags); 
- 
 diff --git a/ssl/tls1.c b/ssl/tls1.c
-index 10b592c..be0fc29 100644
+index 8f0fbfb..35ad4f3 100644
 --- a/ssl/tls1.c
 +++ b/ssl/tls1.c
+@@ -85,7 +85,7 @@ static const cipher_info_t cipher_info[NUM_PROTOCOLS] =
+         16,                             /* block padding size */
+         SHA1_SIZE,                      /* digest size */
+         2*(SHA1_SIZE+16+16),            /* key block size */
+-        hmac_sha1_v,                    /* hmac algorithm */
++        crypto_sha1_hmac_v,             /* hmac algorithm */
+         (crypt_func)AES_cbc_encrypt,    /* encrypt */
+         (crypt_func)AES_cbc_decrypt     /* decrypt */
+     },
+@@ -96,7 +96,7 @@ static const cipher_info_t cipher_info[NUM_PROTOCOLS] =
+         16,                             /* block padding size */
+         SHA1_SIZE,                      /* digest size */
+         2*(SHA1_SIZE+32+16),            /* key block size */
+-        hmac_sha1_v,                    /* hmac algorithm */
++        crypto_sha1_hmac_v,             /* hmac algorithm */
+         (crypt_func)AES_cbc_encrypt,    /* encrypt */
+         (crypt_func)AES_cbc_decrypt     /* decrypt */
+     },       
+@@ -107,7 +107,7 @@ static const cipher_info_t cipher_info[NUM_PROTOCOLS] =
+         16,                             /* block padding size */
+         SHA256_SIZE,                    /* digest size */
+         2*(SHA256_SIZE+32+16),          /* key block size */
+-        hmac_sha256_v,                  /* hmac algorithm */
++        crypto_sha256_hmac_v,           /* hmac algorithm */
+         (crypt_func)AES_cbc_encrypt,    /* encrypt */
+         (crypt_func)AES_cbc_decrypt     /* decrypt */
+     },       
+@@ -118,7 +118,7 @@ static const cipher_info_t cipher_info[NUM_PROTOCOLS] =
+         16,                             /* block padding size */
+         SHA256_SIZE,                    /* digest size */
+         2*(SHA256_SIZE+32+16),          /* key block size */
+-        hmac_sha256_v,                  /* hmac algorithm */
++        crypto_sha256_hmac_v,           /* hmac algorithm */
+         (crypt_func)AES_cbc_encrypt,    /* encrypt */
+         (crypt_func)AES_cbc_decrypt     /* decrypt */
+     }
+@@ -843,15 +843,15 @@ void add_packet(SSL *ssl, const uint8_t *pkt, int len)
+     // TLS1.2+
+     if (ssl->version >= SSL_PROTOCOL_VERSION_TLS1_2 || ssl->version == 0) 
+     {
+-        SHA256_Update(&ssl->dc->sha256_ctx, pkt, len);
++        crypto_sha256_update(&ssl->dc->sha256_ctx, pkt, len);
+     }
+ 
+     if (ssl->version < SSL_PROTOCOL_VERSION_TLS1_2 || 
+                 ssl->next_state == HS_SERVER_HELLO ||
+                 ssl->next_state == 0) 
+     {
+-        MD5_Update(&ssl->dc->md5_ctx, pkt, len);
+-        SHA1_Update(&ssl->dc->sha1_ctx, pkt, len);
++        crypto_md5_update(&ssl->dc->md5_ctx, pkt, len);
++        crypto_sha1_update(&ssl->dc->sha1_ctx, pkt, len);
+     }
+ }
+ 
+@@ -864,9 +864,9 @@ static void p_hash_md5(const uint8_t *sec, int sec_len,
+     uint8_t a1[MD5_SIZE+77];
+ 
+     /* A(1) */
+-    hmac_md5(seed, seed_len, sec, sec_len, a1);
++    crypto_md5_hmac(seed, seed_len, sec, sec_len, a1);
+     memcpy(&a1[MD5_SIZE], seed, seed_len);
+-    hmac_md5(a1, MD5_SIZE+seed_len, sec, sec_len, out);
++    crypto_md5_hmac(a1, MD5_SIZE+seed_len, sec, sec_len, out);
+ 
+     while (olen > MD5_SIZE)
+     {
+@@ -875,11 +875,11 @@ static void p_hash_md5(const uint8_t *sec, int sec_len,
+         olen -= MD5_SIZE;
+ 
+         /* A(N) */
+-        hmac_md5(a1, MD5_SIZE, sec, sec_len, a2);
++        crypto_md5_hmac(a1, MD5_SIZE, sec, sec_len, a2);
+         memcpy(a1, a2, MD5_SIZE);
+ 
+         /* work out the actual hash */
+-        hmac_md5(a1, MD5_SIZE+seed_len, sec, sec_len, out);
++        crypto_md5_hmac(a1, MD5_SIZE+seed_len, sec, sec_len, out);
+     }
+ }
+ 
+@@ -892,9 +892,9 @@ static void p_hash_sha1(const uint8_t *sec, int sec_len,
+     uint8_t a1[SHA1_SIZE+77];
+ 
+     /* A(1) */
+-    hmac_sha1(seed, seed_len, sec, sec_len, a1);
++    crypto_sha1_hmac(seed, seed_len, sec, sec_len, a1);
+     memcpy(&a1[SHA1_SIZE], seed, seed_len);
+-    hmac_sha1(a1, SHA1_SIZE+seed_len, sec, sec_len, out);
++    crypto_sha1_hmac(a1, SHA1_SIZE+seed_len, sec, sec_len, out);
+ 
+     while (olen > SHA1_SIZE)
+     {
+@@ -903,11 +903,11 @@ static void p_hash_sha1(const uint8_t *sec, int sec_len,
+         olen -= SHA1_SIZE;
+ 
+         /* A(N) */
+-        hmac_sha1(a1, SHA1_SIZE, sec, sec_len, a2);
++        crypto_sha1_hmac(a1, SHA1_SIZE, sec, sec_len, a2);
+         memcpy(a1, a2, SHA1_SIZE);
+ 
+         /* work out the actual hash */
+-        hmac_sha1(a1, SHA1_SIZE+seed_len, sec, sec_len, out);
++        crypto_sha1_hmac(a1, SHA1_SIZE+seed_len, sec, sec_len, out);
+     }
+ }
+ 
+@@ -920,9 +920,9 @@ static void p_hash_sha256(const uint8_t *sec, int sec_len,
+     uint8_t a1[SHA256_SIZE+77];
+ 
+     /* A(1) */
+-    hmac_sha256(seed, seed_len, sec, sec_len, a1);
++    crypto_sha256_hmac(seed, seed_len, sec, sec_len, a1);
+     memcpy(&a1[SHA256_SIZE], seed, seed_len);
+-    hmac_sha256(a1, SHA256_SIZE+seed_len, sec, sec_len, out);
++    crypto_sha256_hmac(a1, SHA256_SIZE+seed_len, sec, sec_len, out);
+ 
+     while (olen > SHA256_SIZE)
+     {
+@@ -931,11 +931,11 @@ static void p_hash_sha256(const uint8_t *sec, int sec_len,
+         olen -= SHA256_SIZE;
+ 
+         // A(N)
+-        hmac_sha256(a1, SHA256_SIZE, sec, sec_len, a2);
++        crypto_sha256_hmac(a1, SHA256_SIZE, sec, sec_len, a2);
+         memcpy(a1, a2, SHA256_SIZE);
+ 
+         // work out the actual hash 
+-        hmac_sha256(a1, SHA256_SIZE+seed_len, sec, sec_len, out);
++        crypto_sha256_hmac(a1, SHA256_SIZE+seed_len, sec, sec_len, out);
+     }
+ }
+ 
+@@ -1023,20 +1023,20 @@ int finished_digest(SSL *ssl, const char *label, uint8_t *digest)
+ 
+     if (ssl->version >= SSL_PROTOCOL_VERSION_TLS1_2) // TLS1.2+
+     {
+-        SHA256_CTX sha256_ctx = ssl->dc->sha256_ctx; // interim copy
+-        SHA256_Final(q, &sha256_ctx);
++        crypto_sha256_context_t sha256_ctx = ssl->dc->sha256_ctx; // interim copy
++        crypto_sha256_final(q, &sha256_ctx);
+         q += SHA256_SIZE;
+         dgst_len = (int)(q-mac_buf);
+     }
+     else // TLS1.0/1.1
+     {
+-        MD5_CTX md5_ctx = ssl->dc->md5_ctx; // interim copy
+-        SHA1_CTX sha1_ctx = ssl->dc->sha1_ctx;
++        crypto_md5_context_t md5_ctx = ssl->dc->md5_ctx; // interim copy
++        crypto_sha1_context_t sha1_ctx = ssl->dc->sha1_ctx;
+ 
+-        MD5_Final(q, &md5_ctx);
++        crypto_md5_final(q, &md5_ctx);
+         q += MD5_SIZE;
+         
+-        SHA1_Final(q, &sha1_ctx);
++        crypto_sha1_final(q, &sha1_ctx);
+         q += SHA1_SIZE;
+         dgst_len = (int)(q-mac_buf);
+     }
 @@ -1368,6 +1368,10 @@ int basic_read(SSL *ssl, uint8_t **in_data)
      int read_len, is_client = IS_SET_SSL_FLAG(SSL_IS_CLIENT);
      uint8_t *buf = ssl->bm_data;
@@ -307,361 +382,20 @@ index 10b592c..be0fc29 100644
      if (IS_SET_SSL_FLAG(SSL_SENT_CLOSE_NOTIFY))
          return SSL_CLOSE_NOTIFY;
  
-@@ -1426,6 +1430,9 @@ int basic_read(SSL *ssl, uint8_t **in_data)
-             goto error;
-         }
- 
-+        memcpy(ssl->hmac_header, buf, 3);       /* store for hmac */
-+        ssl->record_type = buf[0];
-+
-         /* is the allocated buffer large enough to handle all the data? if not, increase its size*/
-         if (ssl->need_bytes > ssl->max_plain_length+RT_EXTRA-BM_RECORD_OFFSET)
-         {
-@@ -1439,8 +1446,6 @@ int basic_read(SSL *ssl, uint8_t **in_data)
-         }
- 
-         CLR_SSL_FLAG(SSL_NEED_RECORD);
--        memcpy(ssl->hmac_header, buf, 3);       /* store for hmac */
--        ssl->record_type = buf[0];
-         goto error;                         /* no error, we're done */
+@@ -1845,9 +1849,9 @@ void disposable_new(SSL *ssl)
+     if (ssl->dc == NULL)
+     {
+         ssl->dc = (DISPOSABLE_CTX *)calloc(1, sizeof(DISPOSABLE_CTX));
+-        SHA256_Init(&ssl->dc->sha256_ctx);
+-        MD5_Init(&ssl->dc->md5_ctx);
+-        SHA1_Init(&ssl->dc->sha1_ctx);
++        crypto_sha256_init(&ssl->dc->sha256_ctx);
++        crypto_md5_init(&ssl->dc->md5_ctx);
++        crypto_sha1_init(&ssl->dc->sha1_ctx);
      }
+ }
  
-diff --git a/tools/make_certs.sh b/tools/make_certs.sh
-index fc6cc90..3113355 100644
---- a/tools/make_certs.sh
-+++ b/tools/make_certs.sh
-@@ -29,7 +29,12 @@
- # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- #
- 
--AXDIR=`pwd`/`dirname $0`
-+OLDCWD=`pwd`
-+
-+if [ -z $AXDIR ]; then
-+	AXDIR = $OLDCWD/`dirname $0`
-+fi
-+
- CWD=`mktemp -d` && cd $dir
- cd $CWD 
- 
-@@ -42,36 +47,21 @@ PROJECT_NAME="axTLS Project"
- # Generate the openssl configuration files.
- cat > ca_cert.conf << EOF  
- [ req ]
--distinguished_name      = req_distinguished_name
--prompt                  = no
--req_extensions          = v3_ca
-+distinguished_name     = req_distinguished_name
-+prompt                 = no
- 
- [ req_distinguished_name ]
-  O                      = $PROJECT_NAME Dodgy Certificate Authority
--
--[ v3_ca ]
--basicConstraints        = critical, CA:true
--keyUsage                = critical, cRLSign, keyCertSign, digitalSignature
- EOF
- 
- cat > certs.conf << EOF  
- [ req ]
--distinguished_name      = req_distinguished_name
--prompt                  = no
--req_extensions          = v3_usr_cert
-+distinguished_name     = req_distinguished_name
-+prompt                 = no
- 
- [ req_distinguished_name ]
-  O                      = $PROJECT_NAME
-- CN                     = localhost
--
--[ v3_usr_cert ]
--basicConstraints        = critical, CA:false
--keyUsage                = critical, nonRepudiation, digitalSignature, keyEncipherment
--subjectAltName          = @alt_names
-- 
--[alt_names]
--DNS.1 = www.example.net
--DNS.2 = www.example.org
-+ CN                     = 127.0.0.1
- EOF
- 
- cat > device_cert.conf << EOF  
-@@ -83,130 +73,72 @@ prompt                 = no
-  O                      = $PROJECT_NAME Device Certificate
- EOF
- 
--cat > intermediate_ca.conf << EOF  
--[ req ]
--distinguished_name     = req_distinguished_name
--prompt                 = no
--req_extensions         = v3_intermediate_ca
--
--[ req_distinguished_name ]
-- O                      = $PROJECT_NAME Intermediate CA
--
--[ v3_intermediate_ca ]
--basicConstraints        = critical, CA:true, pathlen:0
--keyUsage                = cRLSign, keyCertSign, digitalSignature
--EOF
--
--cat > intermediate_ca2.conf << EOF  
--[ req ]
--distinguished_name      = req_distinguished_name
--prompt                  = no
--req_extensions          = v3_intermediate_ca2
--
--[ req_distinguished_name ]
-- O                      = $PROJECT_NAME Intermediate 2 CA
--
--[ v3_intermediate_ca2 ]
--basicConstraints        = critical, CA:true, pathlen:10
--keyUsage                = encipherOnly, keyCertSign, decipherOnly
--EOF
--
- # private key generation
--openssl genrsa -out axTLS.ca_key.pem 2048
-+openssl genrsa -out axTLS.ca_key.pem 1024
-+openssl genrsa -out axTLS.key_512.pem 512
- openssl genrsa -out axTLS.key_1024.pem 1024
-+openssl genrsa -out axTLS.key_1042.pem 1042
- openssl genrsa -out axTLS.key_2048.pem 2048
- openssl genrsa -out axTLS.key_4096.pem 4096
--openssl genrsa -out axTLS.key_device.pem 2048
--openssl genrsa -out axTLS.key_intermediate_ca.pem 2048
--openssl genrsa -out axTLS.key_intermediate_ca2.pem 2048
--openssl genrsa -out axTLS.key_end_chain.pem 2048
--openssl genrsa -aes128 -passout pass:abcd -out axTLS.key_aes128.pem 1024
--openssl genrsa -aes256 -passout pass:abcd -out axTLS.key_aes256.pem 1024
-+openssl genrsa -out axTLS.device_key.pem 1024
-+openssl genrsa -aes128 -passout pass:abcd -out axTLS.key_aes128.pem 512
-+openssl genrsa -aes256 -passout pass:abcd -out axTLS.key_aes256.pem 512
-+
- 
- # convert private keys into DER format
-+openssl rsa -in axTLS.key_512.pem -out axTLS.key_512 -outform DER
- openssl rsa -in axTLS.key_1024.pem -out axTLS.key_1024 -outform DER
-+openssl rsa -in axTLS.key_1042.pem -out axTLS.key_1042 -outform DER
- openssl rsa -in axTLS.key_2048.pem -out axTLS.key_2048 -outform DER
- openssl rsa -in axTLS.key_4096.pem -out axTLS.key_4096 -outform DER
-+openssl rsa -in axTLS.device_key.pem -out axTLS.device_key -outform DER
- 
- # cert requests
--openssl req -out axTLS.ca_x509.csr -key axTLS.ca_key.pem -new \
-+openssl req -out axTLS.ca_x509.req -key axTLS.ca_key.pem -new \
-             -config ./ca_cert.conf 
--openssl req -out axTLS.x509_1024.csr -key axTLS.key_1024.pem -new \
-+openssl req -out axTLS.x509_512.req -key axTLS.key_512.pem -new \
-+            -config ./certs.conf 
-+openssl req -out axTLS.x509_1024.req -key axTLS.key_1024.pem -new \
-             -config ./certs.conf 
--openssl req -out axTLS.x509_2048.csr -key axTLS.key_2048.pem -new \
-+openssl req -out axTLS.x509_1042.req -key axTLS.key_1042.pem -new \
-             -config ./certs.conf 
--openssl req -out axTLS.x509_4096.csr -key axTLS.key_4096.pem -new \
-+openssl req -out axTLS.x509_2048.req -key axTLS.key_2048.pem -new \
-             -config ./certs.conf 
--openssl req -out axTLS.x509_device.csr -key axTLS.key_device.pem -new \
-+openssl req -out axTLS.x509_4096.req -key axTLS.key_4096.pem -new \
-+            -config ./certs.conf 
-+openssl req -out axTLS.x509_device.req -key axTLS.device_key.pem -new \
-             -config ./device_cert.conf
--openssl req -out axTLS.x509_intermediate_ca.csr \
--            -key axTLS.key_intermediate_ca.pem -new \
--            -config ./intermediate_ca.conf
--openssl req -out axTLS.x509_intermediate_ca2.csr \
--            -key axTLS.key_intermediate_ca2.pem -new \
--            -config ./intermediate_ca2.conf
--openssl req -out axTLS.x509_end_chain.csr -key axTLS.key_end_chain.pem -new \
--            -config ./certs.conf
--openssl req -out axTLS.x509_aes128.csr -key axTLS.key_aes128.pem \
-+openssl req -out axTLS.x509_aes128.req -key axTLS.key_aes128.pem \
-             -new -config ./certs.conf -passin pass:abcd
--openssl req -out axTLS.x509_aes256.csr -key axTLS.key_aes256.pem \
-+openssl req -out axTLS.x509_aes256.req -key axTLS.key_aes256.pem \
-             -new -config ./certs.conf -passin pass:abcd
- 
- # generate the actual certs.
--openssl x509 -req -in axTLS.ca_x509.csr -out axTLS.ca_x509.pem \
--            -sha1 -days 5000 -signkey axTLS.ca_key.pem \
--            -CAkey axTLS.ca_key.pem -extfile ./ca_cert.conf -extensions v3_ca
--openssl x509 -req -in axTLS.ca_x509.csr -out axTLS.ca_x509_sha256.pem \
--            -sha256 -days 5000 -signkey axTLS.ca_key.pem \
--            -CAkey axTLS.ca_key.pem -extfile ./ca_cert.conf -extensions v3_ca
--openssl x509 -req -in axTLS.x509_1024.csr -out axTLS.x509_1024.pem \
-+openssl x509 -req -in axTLS.ca_x509.req -out axTLS.ca_x509.pem \
-+            -sha1 -days 5000 -signkey axTLS.ca_key.pem
-+openssl x509 -req -in axTLS.x509_512.req -out axTLS.x509_512.pem \
-             -sha1 -CAcreateserial -days 5000 \
-             -CA axTLS.ca_x509.pem -CAkey axTLS.ca_key.pem
--openssl x509 -req -in axTLS.x509_1024.csr -out axTLS.x509_1024_sha256.pem \
--            -sha256 -CAcreateserial -days 5000 \
--            -CA axTLS.ca_x509_sha256.pem -CAkey axTLS.ca_key.pem
--openssl x509 -req -in axTLS.x509_1024.csr -out axTLS.x509_1024_sha384.pem \
--            -sha384 -CAcreateserial -days 5000 \
--            -CA axTLS.ca_x509_sha256.pem -CAkey axTLS.ca_key.pem
--openssl x509 -req -in axTLS.x509_1024.csr -out axTLS.x509_1024_sha512.pem \
--            -sha512 -CAcreateserial -days 5000 \
--            -CA axTLS.ca_x509_sha256.pem -CAkey axTLS.ca_key.pem
--openssl x509 -req -in axTLS.x509_2048.csr -out axTLS.x509_2048.pem \
-+openssl x509 -req -in axTLS.x509_1024.req -out axTLS.x509_1024.pem \
-             -sha1 -CAcreateserial -days 5000 \
-             -CA axTLS.ca_x509.pem -CAkey axTLS.ca_key.pem
--openssl x509 -req -in axTLS.x509_4096.csr -out axTLS.x509_4096.pem \
-+openssl x509 -req -in axTLS.x509_1042.req -out axTLS.x509_1042.pem \
-             -sha1 -CAcreateserial -days 5000 \
-             -CA axTLS.ca_x509.pem -CAkey axTLS.ca_key.pem
--openssl x509 -req -in axTLS.x509_device.csr -out axTLS.x509_device.pem \
-+openssl x509 -req -in axTLS.x509_2048.req -out axTLS.x509_2048.pem \
-+            -md5 -CAcreateserial -days 5000 \
-+            -CA axTLS.ca_x509.pem -CAkey axTLS.ca_key.pem
-+openssl x509 -req -in axTLS.x509_4096.req -out axTLS.x509_4096.pem \
-+            -md5 -CAcreateserial -days 5000 \
-+            -CA axTLS.ca_x509.pem -CAkey axTLS.ca_key.pem
-+openssl x509 -req -in axTLS.x509_device.req -out axTLS.x509_device.pem \
-             -sha1 -CAcreateserial -days 5000 \
--            -CA axTLS.x509_1024.pem -CAkey axTLS.key_1024.pem
--openssl x509 -req -in axTLS.x509_intermediate_ca.csr -out axTLS.x509_intermediate_ca.pem \
--            -sha256 -CAcreateserial -days 5000 \
--            -CA axTLS.ca_x509.pem -CAkey axTLS.ca_key.pem \
--            -extfile ./intermediate_ca.conf -extensions v3_intermediate_ca
--openssl x509 -req -in axTLS.x509_intermediate_ca2.csr -out axTLS.x509_intermediate_ca2.pem \
--            -sha256 -CAcreateserial -days 5000 \
--            -CA axTLS.x509_intermediate_ca.pem \
--            -CAkey axTLS.key_intermediate_ca.pem \
--            -extfile ./intermediate_ca2.conf -extensions v3_intermediate_ca2
--openssl x509 -req -in axTLS.x509_end_chain.csr -out axTLS.x509_end_chain.pem \
--            -sha256 -CAcreateserial -days 5000 \
--            -CA axTLS.x509_intermediate_ca.pem \
--            -CAkey axTLS.key_intermediate_ca.pem \
--            -extfile ./certs.conf -extensions v3_usr_cert 
--# basic constraint path len failure
--openssl x509 -req -in axTLS.x509_end_chain.csr \
--            -out axTLS.x509_end_chain_bad.pem \
--            -sha256 -CAcreateserial -days 5000 \
--            -CA axTLS.x509_intermediate_ca2.pem \
--            -CAkey axTLS.key_intermediate_ca2.pem \
--            -extfile ./certs.conf -extensions v3_usr_cert 
--cat axTLS.x509_intermediate_ca.pem >> axTLS.x509_intermediate_ca2.pem 
--openssl x509 -req -in axTLS.x509_aes128.csr \
-+            -CA axTLS.x509_512.pem -CAkey axTLS.key_512.pem
-+openssl x509 -req -in axTLS.x509_aes128.req \
-             -out axTLS.x509_aes128.pem \
-             -sha1 -CAcreateserial -days 5000 \
-             -CA axTLS.ca_x509.pem -CAkey axTLS.ca_key.pem
--openssl x509 -req -in axTLS.x509_aes256.csr \
-+openssl x509 -req -in axTLS.x509_aes256.req \
-             -out axTLS.x509_aes256.pem \
-             -sha1 -CAcreateserial -days 5000 \
-             -CA axTLS.ca_x509.pem -CAkey axTLS.ca_key.pem
-@@ -214,32 +146,35 @@ openssl x509 -req -in axTLS.x509_aes256.csr \
- # note: must be root to do this
- DATE_NOW=`date`
- if date -s "Jan 1 2025"; then
--openssl x509 -req -in axTLS.x509_1024.csr -out axTLS.x509_bad_before.pem \
-+openssl x509 -req -in axTLS.x509_512.req -out axTLS.x509_bad_before.pem \
-             -sha1 -CAcreateserial -days 365 \
-             -CA axTLS.ca_x509.pem -CAkey axTLS.ca_key.pem
- date -s "$DATE_NOW"
- touch axTLS.x509_bad_before.pem
- fi
--openssl x509 -req -in axTLS.x509_1024.csr -out axTLS.x509_bad_after.pem \
-+openssl x509 -req -in axTLS.x509_512.req -out axTLS.x509_bad_after.pem \
-             -sha1 -CAcreateserial -days -365 \
-             -CA axTLS.ca_x509.pem -CAkey axTLS.ca_key.pem
- 
- # some cleanup
--rm axTLS*.csr
--rm *.srl
-+rm axTLS*.req
-+rm axTLS.srl
- rm *.conf
- 
- # need this for the client tests
- openssl x509 -in axTLS.ca_x509.pem -outform DER -out axTLS.ca_x509.cer 
-+openssl x509 -in axTLS.x509_512.pem -outform DER -out axTLS.x509_512.cer
- openssl x509 -in axTLS.x509_1024.pem -outform DER -out axTLS.x509_1024.cer
-+openssl x509 -in axTLS.x509_1042.pem -outform DER -out axTLS.x509_1042.cer
- openssl x509 -in axTLS.x509_2048.pem -outform DER -out axTLS.x509_2048.cer
- openssl x509 -in axTLS.x509_4096.pem -outform DER -out axTLS.x509_4096.cer
-+openssl x509 -in axTLS.x509_device.pem -outform DER -out axTLS.x509_device.cer
- 
- # generate pkcs8 files (use RC4-128 for encryption)
--openssl pkcs8 -in axTLS.key_1024.pem -passout pass:abcd -topk8 -v1 PBE-SHA1-RC4-128 -out axTLS.encrypted_pem.p8
--openssl pkcs8 -in axTLS.key_1024.pem -passout pass:abcd -topk8 -outform DER -v1 PBE-SHA1-RC4-128 -out axTLS.encrypted.p8
--openssl pkcs8 -in axTLS.key_1024.pem -nocrypt -topk8 -out axTLS.unencrypted_pem.p8
--openssl pkcs8 -in axTLS.key_1024.pem -nocrypt -topk8 -outform DER -out axTLS.unencrypted.p8
-+openssl pkcs8 -in axTLS.key_512.pem -passout pass:abcd -topk8 -v1 PBE-SHA1-RC4-128 -out axTLS.encrypted_pem.p8
-+openssl pkcs8 -in axTLS.key_512.pem -passout pass:abcd -topk8 -outform DER -v1 PBE-SHA1-RC4-128 -out axTLS.encrypted.p8
-+openssl pkcs8 -in axTLS.key_512.pem -nocrypt -topk8 -out axTLS.unencrypted_pem.p8
-+openssl pkcs8 -in axTLS.key_512.pem -nocrypt -topk8 -outform DER -out axTLS.unencrypted.p8
- 
- # generate pkcs12 files (use RC4-128 for encryption)
- openssl pkcs12 -export -in axTLS.x509_1024.pem -inkey axTLS.key_1024.pem -certfile axTLS.ca_x509.pem -keypbe PBE-SHA1-RC4-128 -certpbe PBE-SHA1-RC4-128 -name "p12_with_CA" -out axTLS.withCA.p12 -password pass:abcd
-@@ -251,6 +186,6 @@ cat axTLS.ca_x509.pem >> axTLS.x509_device.pem
- 
- # set default key/cert for use in the server
- xxd -i axTLS.x509_1024.cer | sed -e \
--        "s/axTLS_x509_1024_cer/default_certificate/" > $AXDIR/../ssl/cert.h
-+        "s/axTLS_x509_1024_cer/default_certificate/" > $AXDIR/cert.h
- xxd -i axTLS.key_1024 | sed -e \
--        "s/axTLS_key_1024/default_private_key/" > $AXDIR/../ssl/private_key.h
-+        "s/axTLS_key_1024/default_private_key/" > $AXDIR/private_key.h
-diff --git a/compat/lwipr_compat.c b/compat/lwipr_compat.c
-index c6de55b..781e131 100644
---- a/compat/lwipr_compat.c
-+++ b/compat/lwipr_compat.c
-@@ -154,12 +154,20 @@ int axl_ssl_read(SSL *ssl, struct tcp_pcb *tcp, struct pbuf *pin, struct pbuf **
- 			}
- 			else {
- 				AXL_DEBUG_PRINT("axl_ssl_read: Got more than one SSL packet inside one TCP packet\n");
--				total_read_buffer = (uint8_t *)realloc(total_read_buffer, total_bytes + read_bytes);
-+				uint8_t* new_buffer = (uint8_t *)realloc(total_read_buffer, total_bytes + read_bytes);
-+				if(new_buffer == NULL) {
-+					free(total_read_buffer);
-+					total_read_buffer = NULL;
-+				} else {
-+					total_read_buffer = new_buffer;
-+				}
- 			}
- 
- 			if(total_read_buffer == NULL) {
- 				AXL_DEBUG_PRINT("axl_ssl_read: Unable to allocate additional %d bytes", read_bytes);
--				while(1) {}
-+				total_bytes = -1;
-+				break;
-+//				while(1) {}
- 			}
- 
- 			memcpy(total_read_buffer + total_bytes, read_buffer, read_bytes);
-@@ -170,7 +178,13 @@ int axl_ssl_read(SSL *ssl, struct tcp_pcb *tcp, struct pbuf *pin, struct pbuf **
- 	if(total_bytes > 0) {
- 		// put the decrypted data in a brand new pbuf
- 		*pout = pbuf_alloc(PBUF_TRANSPORT, total_bytes, PBUF_RAM);
--		memcpy((*pout)->payload, total_read_buffer, total_bytes);
-+		if(*pout != NULL) {
-+			memcpy((*pout)->payload, total_read_buffer, total_bytes);
-+		}
-+		else {
-+			AXL_DEBUG_PRINT("Unable to allocate pbuf memory. Required %d. Check MEM_SIZE in your lwipopts.h file and increase if needed.", total_bytes);
-+			total_bytes = -1;
-+		}
- 		free(total_read_buffer);
- 	}
- 
-diff --git a/compat/lwipr_compat.h b/compat/lwipr_compat.h
-index 0916412..4bb7d07 100644
---- a/compat/lwipr_compat.h
-+++ b/compat/lwipr_compat.h
-@@ -27,9 +27,6 @@ extern "C" {
- #define ERR_AXL_INVALID_CLIENTFD_DATA -104
- #define ERR_AXL_INVALID_PBUF -105
- 
--#define SOCKET_READ(A, B, C) 	ax_port_read(A, B, C)
--#define SOCKET_WRITE(A, B, C) 	ax_port_write(A, B, C)
--
- /**
-  * Define watchdog function to be called during CPU intensive operations.
-  */
+
 diff --git a/crypto/bigint.c b/crypto/bigint.c
 index d90b093..f18fbd5 100644
 --- a/crypto/bigint.c
@@ -674,4 +408,297 @@ index d90b093..f18fbd5 100644
 +            m_putc((num <= 9) ? (num + '0') : (num + 'A' - 10));
          }
      }  
+
+diff --git a/ssl/crypto_misc.h b/ssl/crypto_misc.h
+index 02d9306..88c234f 100644
+--- a/ssl/crypto_misc.h
++++ b/ssl/crypto_misc.h
+@@ -39,8 +39,9 @@
+ extern "C" {
+ #endif
  
+-#include "crypto.h"
+-#include "bigint.h"
++#include "../crypto/crypto.h"
++#include "../crypto/bigint.h"
++#include <Crypto/HashApi.h>
+ 
+ /**************************************************************************
+  * X509 declarations 
+
+diff --git a/ssl/tls1.h b/ssl/tls1.h
+index dac63b9..bf79c9e 100644
+--- a/ssl/tls1.h
++++ b/ssl/tls1.h
+@@ -44,7 +44,6 @@ extern "C" {
+ #include "config.h"
+ #include "os_int.h"
+ #include "os_port.h"
+-#include "crypto.h"
+ #include "crypto_misc.h"
+ 
+ #define SSL_PROTOCOL_MIN_VERSION    0x31   /* TLS v1.0 */
+@@ -161,9 +160,9 @@ typedef struct
+ 
+ typedef struct
+ {
+-    MD5_CTX md5_ctx;
+-    SHA1_CTX sha1_ctx;
+-    SHA256_CTX sha256_ctx;
++    crypto_md5_context_t md5_ctx;
++    crypto_sha1_context_t sha1_ctx;
++    crypto_sha256_context_t sha256_ctx;
+     uint8_t client_random[SSL_RANDOM_SIZE]; /* client's random sequence */
+     uint8_t server_random[SSL_RANDOM_SIZE]; /* server's random sequence */
+     uint8_t final_finish_mac[128];
+
+diff --git a/ssl/loader.c b/ssl/loader.c
+index 6e41f40..8e4055b 100644
+--- a/ssl/loader.c
++++ b/ssl/loader.c
+@@ -222,7 +222,7 @@ static int pem_decrypt(const char *where, const char *end,
+     char *start = NULL;
+     uint8_t iv[IV_SIZE];
+     int i, pem_size;
+-    MD5_CTX md5_ctx;
++    crypto_md5_context_t md5_ctx;
+     AES_CTX aes_ctx;
+     uint8_t key[32];        /* AES256 size */
+ 
+@@ -269,18 +269,18 @@ static int pem_decrypt(const char *where, const char *end,
+         goto error;
+ 
+     /* work out the key */
+-    MD5_Init(&md5_ctx);
+-    MD5_Update(&md5_ctx, (const uint8_t *)password, strlen(password));
+-    MD5_Update(&md5_ctx, iv, SALT_SIZE);
+-    MD5_Final(key, &md5_ctx);
++    crypto_md5_init(&md5_ctx);
++    crypto_md5_update(&md5_ctx, (const uint8_t*)password, strlen(password));
++    crypto_md5_update(&md5_ctx, iv, SALT_SIZE);
++    crypto_md5_final(key, &md5_ctx);
+ 
+     if (is_aes_256)
+     {
+-        MD5_Init(&md5_ctx);
+-        MD5_Update(&md5_ctx, key, MD5_SIZE);
+-        MD5_Update(&md5_ctx, (const uint8_t *)password, strlen(password));
+-        MD5_Update(&md5_ctx, iv, SALT_SIZE);
+-        MD5_Final(&key[MD5_SIZE], &md5_ctx);
++        crypto_md5_init(&md5_ctx);
++        crypto_md5_update(&md5_ctx, key, MD5_SIZE);
++        crypto_md5_update(&md5_ctx, (const uint8_t*)password, strlen(password));
++        crypto_md5_update(&md5_ctx, iv, SALT_SIZE);
++        crypto_md5_final(&key[MD5_SIZE], &md5_ctx);
+     }
+ 
+     /* decrypt using the key/iv */
+
+diff --git a/ssl/x509.c b/ssl/x509.c
+index a51b948..bd42b57 100644
+--- a/ssl/x509.c
++++ b/ssl/x509.c
+@@ -109,76 +109,52 @@ int x509_new(const uint8_t *cert, int *len, X509_CTX **ctx)
+     end_spki = offset;
+ 
+     x509_ctx->fingerprint = malloc(SHA1_SIZE);
+-    SHA1_CTX sha_fp_ctx;
+-    SHA1_Init(&sha_fp_ctx);
+-    SHA1_Update(&sha_fp_ctx, &cert[0], cert_size);
+-    SHA1_Final(x509_ctx->fingerprint, &sha_fp_ctx);
++    crypto_sha1_context_t sha_fp_ctx;
++    crypto_sha1_init(&sha_fp_ctx);
++    crypto_sha1_update(&sha_fp_ctx, &cert[0], cert_size);
++    crypto_sha1_final(x509_ctx->fingerprint, &sha_fp_ctx);
+ 
+     x509_ctx->spki_sha256 = malloc(SHA256_SIZE);
+-    SHA256_CTX spki_hash_ctx;
+-    SHA256_Init(&spki_hash_ctx);
+-    SHA256_Update(&spki_hash_ctx, &cert[begin_spki], end_spki-begin_spki);
+-    SHA256_Final(x509_ctx->spki_sha256, &spki_hash_ctx);
++    crypto_sha256_context_t spki_hash_ctx;
++    crypto_sha256_init(&spki_hash_ctx);
++    crypto_sha256_update(&spki_hash_ctx, &cert[begin_spki], end_spki-begin_spki);
++    crypto_sha256_final(x509_ctx->spki_sha256, &spki_hash_ctx);
+ 
+ #ifdef CONFIG_SSL_CERT_VERIFICATION /* only care if doing verification */
+     bi_ctx = x509_ctx->rsa_ctx->bi_ctx;
+ 
+     /* use the appropriate signature algorithm */
+-    switch (x509_ctx->sig_type)
++
++#define CALC_DIGEST(hash, size)                                                                                        \
++	{                                                                                                                  \
++		crypto_##hash##_context_t ctx;                                                                                 \
++		uint8_t dgst[size];                                                                                            \
++		crypto_##hash##_init(&ctx);                                                                                    \
++		crypto_##hash##_update(&ctx, &cert[begin_tbs], end_tbs - begin_tbs);                                           \
++		crypto_##hash##_final(dgst, &ctx);                                                                             \
++		x509_ctx->digest = bi_import(bi_ctx, dgst, size);                                                              \
++	}
++
++	switch (x509_ctx->sig_type)
+     {
+         case SIG_TYPE_MD5:
+-        {
+-            MD5_CTX md5_ctx;
+-            uint8_t md5_dgst[MD5_SIZE];
+-            MD5_Init(&md5_ctx);
+-            MD5_Update(&md5_ctx, &cert[begin_tbs], end_tbs-begin_tbs);
+-            MD5_Final(md5_dgst, &md5_ctx);
+-            x509_ctx->digest = bi_import(bi_ctx, md5_dgst, MD5_SIZE);
+-        }
++        	CALC_DIGEST(md5, MD5_SIZE);
+             break;
+ 
+         case SIG_TYPE_SHA1:
+-        {
+-            SHA1_CTX sha_ctx;
+-            uint8_t sha_dgst[SHA1_SIZE];
+-            SHA1_Init(&sha_ctx);
+-            SHA1_Update(&sha_ctx, &cert[begin_tbs], end_tbs-begin_tbs);
+-            SHA1_Final(sha_dgst, &sha_ctx);
+-            x509_ctx->digest = bi_import(bi_ctx, sha_dgst, SHA1_SIZE);
+-        }
++        	CALC_DIGEST(sha1, SHA1_SIZE);
+             break;
+ 
+         case SIG_TYPE_SHA256:
+-        {
+-            SHA256_CTX sha256_ctx;
+-            uint8_t sha256_dgst[SHA256_SIZE];
+-            SHA256_Init(&sha256_ctx);
+-            SHA256_Update(&sha256_ctx, &cert[begin_tbs], end_tbs-begin_tbs);
+-            SHA256_Final(sha256_dgst, &sha256_ctx);
+-            x509_ctx->digest = bi_import(bi_ctx, sha256_dgst, SHA256_SIZE);
+-        }
++        	CALC_DIGEST(sha256, SHA256_SIZE);
+             break;
+ 
+         case SIG_TYPE_SHA384:
+-        {
+-            SHA384_CTX sha384_ctx;
+-            uint8_t sha384_dgst[SHA384_SIZE];
+-            SHA384_Init(&sha384_ctx);
+-            SHA384_Update(&sha384_ctx, &cert[begin_tbs], end_tbs-begin_tbs);
+-            SHA384_Final(sha384_dgst, &sha384_ctx);
+-            x509_ctx->digest = bi_import(bi_ctx, sha384_dgst, SHA384_SIZE);
+-        }
++        	CALC_DIGEST(sha384, SHA384_SIZE);
+             break;
+ 
+         case SIG_TYPE_SHA512:
+-        {
+-            SHA512_CTX sha512_ctx;
+-            uint8_t sha512_dgst[SHA512_SIZE];
+-            SHA512_Init(&sha512_ctx);
+-            SHA512_Update(&sha512_ctx, &cert[begin_tbs], end_tbs-begin_tbs);
+-            SHA512_Final(sha512_dgst, &sha512_ctx);
+-            x509_ctx->digest = bi_import(bi_ctx, sha512_dgst, SHA512_SIZE);
+-        }
++        	CALC_DIGEST(sha512, SHA512_SIZE);
+             break;
+     }
+ 
+
+diff --git a/ssl/gen_cert.c b/ssl/gen_cert.c
+index 093ae9c..d611ab0 100644
+--- a/ssl/gen_cert.c
++++ b/ssl/gen_cert.c
+@@ -314,7 +314,7 @@ static int gen_tbs_cert(const char * dn[],
+                     uint8_t *sha_dgst)
+ {
+     int ret = X509_OK;
+-    SHA1_CTX sha_ctx;
++    crypto_sha1_context_t sha_ctx;
+     int seq_offset;
+     int begin_tbs = *offset;
+     int seq_size = pre_adjust_with_size(
+@@ -336,9 +336,9 @@ static int gen_tbs_cert(const char * dn[],
+     gen_pub_key(rsa_ctx, buf, offset);
+     adjust_with_size(seq_size, seq_offset, buf, offset);
+ 
+-    SHA1_Init(&sha_ctx);
+-    SHA1_Update(&sha_ctx, &buf[begin_tbs], *offset-begin_tbs);
+-    SHA1_Final(sha_dgst, &sha_ctx);
++    crypto_sha1_init(&sha_ctx);
++    crypto_sha1_update(&sha_ctx, &buf[begin_tbs], *offset-begin_tbs);
++    crypto_sha1_final(sha_dgst, &sha_ctx);
+ 
+ error:
+     return ret;
+
+diff --git a/ssl/p12.c b/ssl/p12.c
+index 5bd2394..5363d22 100644
+--- a/ssl/p12.c
++++ b/ssl/p12.c
+@@ -190,7 +190,7 @@ static int p8_decrypt(const char *uni_pass, int uni_pass_len,
+     uint8_t p[BLOCK_SIZE*2];
+     uint8_t d[BLOCK_SIZE];
+     uint8_t Ai[SHA1_SIZE];
+-    SHA1_CTX sha_ctx;
++    crypto_sha1_context_t sha_ctx;
+     RC4_CTX rc4_ctx;
+     int i;
+ 
+@@ -202,16 +202,16 @@ static int p8_decrypt(const char *uni_pass, int uni_pass_len,
+     }
+ 
+     /* get the key - no IV since we are using RC4 */
+-    SHA1_Init(&sha_ctx);
+-    SHA1_Update(&sha_ctx, d, sizeof(d));
+-    SHA1_Update(&sha_ctx, p, sizeof(p));
+-    SHA1_Final(Ai, &sha_ctx);
++    crypto_sha1_init(&sha_ctx);
++    crypto_sha1_update(&sha_ctx, d, sizeof(d));
++    crypto_sha1_update(&sha_ctx, p, sizeof(p));
++    crypto_sha1_final(Ai, &sha_ctx);
+ 
+     for (i = 1; i < iter; i++)
+     {
+-        SHA1_Init(&sha_ctx);
+-        SHA1_Update(&sha_ctx, Ai, SHA1_SIZE);
+-        SHA1_Final(Ai, &sha_ctx);
++    	crypto_sha1_init(&sha_ctx);
++    	crypto_sha1_update(&sha_ctx, Ai, SHA1_SIZE);
++    	crypto_sha1_final(Ai, &sha_ctx);
+     }
+ 
+     /* do the decryption */
+@@ -409,7 +409,7 @@ int pkcs12_decode(SSL_CTX *ssl_ctx, SSLObjLoader *ssl_obj, const char *password)
+                             key, SHA1_SIZE, PKCS12_MAC_ID)) < 0)
+         goto error;
+ 
+-    hmac_sha1(auth_safes, auth_safes_len, key, SHA1_SIZE, mac);
++    crypto_sha1_hmac(auth_safes, auth_safes_len, key, SHA1_SIZE, mac);
+ 
+     if (memcmp(mac, orig_mac, SHA1_SIZE))
+     {
+
+diff --git a/crypto/crypto.h b/crypto/crypto.h
+index da24d31..4de139b 100644
+--- a/crypto/crypto.h
++++ b/crypto/crypto.h
+@@ -196,6 +196,10 @@ EXP_FUNC void STDCALL MD5_Final(uint8_t *digest, MD5_CTX *);
+ /**************************************************************************
+  * HMAC declarations 
+  **************************************************************************/
++#define hmac_md5 ax_hmac_md5
++#define hmac_sha1 ax_hmac_sha1
++#define hmac_sha256 ax_hmac_sha256
++
+ void hmac_md5(const uint8_t *msg, int length, const uint8_t *key, 
+         int key_len, uint8_t *digest);
+ void hmac_sha1(const uint8_t *msg, int length, const uint8_t *key, 
+@@ -206,6 +210,10 @@ void hmac_sha256(const uint8_t *msg, int length, const uint8_t *key,
+ /**************************************************************************
+  * HMAC functions operating on vectors 
+  **************************************************************************/
++#define hmac_md5_v ax_hmac_md5_v
++#define hmac_sha1_v ax_hmac_sha1_v
++#define hmac_sha256_v ax_hmac_sha256_v
++
+ void hmac_md5_v(const uint8_t **msg, int* length, int count, const uint8_t *key, 
+         int key_len, uint8_t *digest);
+ void hmac_sha1_v(const uint8_t **msg, int* length, int count, const uint8_t *key, 
+

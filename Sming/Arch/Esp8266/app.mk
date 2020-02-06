@@ -4,26 +4,38 @@
 #
 ###
 
+# Remove object providing millis(), micros() - These functions are defined by the Sming component
+DEBUG_VARS += LIBMAIN_COMMANDS
+
+define APP_LIBMAIN_COMMANDS
+	$(Q) $(AR) d $@ time.o
+
+endef
+LIBMAIN_COMMANDS += $(APP_LIBMAIN_COMMANDS)
+
+# build customized libmain
+LIBMAIN_HASH	:= $(call CalculateVariantHash,LIBMAIN_COMMANDS)
+LIBMAIN := main-$(LIBMAIN_HASH)
+
+LIBMAIN_SRC = $(SDK_LIBDIR)/libmain.a
+LIBMAIN_DST = $(APP_LIBDIR)/lib$(LIBMAIN).a
+
+$(LIBMAIN_DST): $(LIBMAIN_SRC)
+	$(info Prepare libmain)
+	$(Q) cp $^ $@
+	$(LIBMAIN_COMMANDS)
+
 #
-LIBS += \
-	microc \
-	microgcc \
-	stdc++ \
-	hal \
-	setjmp \
-	$(LIBMAIN)
+LIBS += $(LIBMAIN)
 
 # linker flags used to generate the main object file
 LDFLAGS	+= \
 	-nostdlib \
-	-u call_user_start \
-	-Wl,-static \
+	-Wl,-static
 
 
 .PHONY: application
 application: $(CUSTOM_TARGETS) $(FW_FILE_1) $(FW_FILE_2)
-
-LIBDIRS += $(SDK_LIBDIR)
 
 # $1 -> Linker script
 define LinkTarget
@@ -31,13 +43,13 @@ define LinkTarget
 	$(Q) $(LD) $(addprefix -L,$(LIBDIRS)) -T$1 $(LDFLAGS) -Wl,--start-group $(COMPONENTS_AR) $(addprefix -l,$(LIBS)) -Wl,--end-group -o $@
 endef
 
-$(TARGET_OUT_0): $(COMPONENTS_AR)
+$(TARGET_OUT_0): $(COMPONENTS_AR) $(LIBMAIN_DST)
 	$(call LinkTarget,$(RBOOT_LD_0))
 
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
 
 	$(Q)	if [ -f "$(FW_MEMINFO_NEW)" -a -f "$(FW_MEMINFO_OLD)" ]; then \
-				awk -F "|" ' \
+				$(AWK) -F "|" ' \
 					FILENAME == "$(FW_MEMINFO_OLD)" { \
 						arr[$$1]=$$5 \
 					} \
@@ -53,7 +65,7 @@ $(TARGET_OUT_0): $(COMPONENTS_AR)
 			fi
 
 
-$(TARGET_OUT_1): $(COMPONENTS_AR)
+$(TARGET_OUT_1): $(COMPONENTS_AR) $(LIBMAIN_DST)
 	$(call LinkTarget,$(RBOOT_LD_1))
 
 
@@ -96,7 +108,7 @@ else
 endif
 
 .PHONY: flashinit
-flashinit: ##Erase your device's flash memory and reset system configuration area to defaults
+flashinit: $(ESPTOOL) $(FLASH_INIT_DATA) ##Erase your device's flash memory and reset system configuration area to defaults
 	$(info Flash init data default and blank data)
 	$(info DISABLE_SPIFFS = $(DISABLE_SPIFFS))
 	$(EraseFlash)

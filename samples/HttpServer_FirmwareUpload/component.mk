@@ -1,9 +1,5 @@
 SPIFF_FILES = web/
-ARDUINO_LIBRARIES := ArduinoJson6
-COMPONENT_DEPENDS := libsodium
-
-# The line below enables the form upload support on the server
-ENABLE_HTTP_SERVER_MULTIPART = 1
+ARDUINO_LIBRARIES := libsodium MultipartParser
 
 ##@Building
 
@@ -15,9 +11,9 @@ web-upload: web-pack spiffs-image-update
 
 .PHONY: python-requirements
 python-requirements:
-	python -m pip install --user -r $(COMPONENT_PATH)/requirements.txt
+	$(PYTHON) -m pip install --user -r requirements.txt
 
-SIGNTOOL := python $(COMPONENT_PATH)/signtool.py
+SIGNTOOL := $(PYTHON) $(COMPONENT_PATH)/signtool.py
 SIGNING_KEY := $(COMPONENT_PATH)/signing.key
 VERIFICATION_HEADER := $(COMPONENT_PATH)/app/FirmwareVerificationKey.h
 
@@ -41,17 +37,14 @@ $(VERIFICATION_HEADER): $(SIGNING_KEY)
 # add dependency to trigger automatic generation of verification key header
 $(COMPONENT_PATH)/app/application.cpp: $(VERIFICATION_HEADER)
 
-SIGNED_ROM0 = $(RBOOT_ROM_0_BIN).signed
-$(SIGNED_ROM0): $(RBOOT_ROM_0_BIN) $(SIGNING_KEY)
-	@echo Generating signed firmware update file...
-	$(Q) $(SIGNTOOL) --keyfile=$(SIGNING_KEY) --out "$(SIGNED_ROM0)" --rom "$(ROM_0_ADDR)=$(RBOOT_ROM_0_BIN)"
 
+# make signed image generation a phony target, because the rboot component and its variables have not been loaded yet
 .PHONY: signedrom
-signedrom: $(SIGNED_ROM0) ##Create signed ROM image
-
-
-
-
-
+signedrom: $(RBOOT_ROM_0_BIN) $(RBOOT_ROM_1_BIN) ##Create signed ROM image (or images if your setup requires two separate ROM images)
+	$(info Generating signed firmware update file(s)...)
+	$(Q) $(SIGNTOOL) --keyfile=$(SIGNING_KEY) --out "$(RBOOT_ROM_0_BIN).signed" --rom "$(RBOOT_ROM0_ADDR)=$(RBOOT_ROM_0_BIN)"
+	$(Q) if [ -n "$(RBOOT_ROM_1_BIN)" ]; then \
+		$(SIGNTOOL) --keyfile=$(SIGNING_KEY) --out "$(RBOOT_ROM_1_BIN).signed" --rom "$(RBOOT_ROM1_ADDR)=$(RBOOT_ROM_1_BIN)"; \
+	fi
 
 

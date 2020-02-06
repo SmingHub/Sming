@@ -1,16 +1,12 @@
-===========================
 Manual Windows Installation
 ===========================
 
 .. highlight:: batch
 
-.. attention::
-   Please consider installing Sming via :doc:`Chocolatey <windows>` package manager.
+MinGW
+-----
 
-Install MinGW
--------------
-
-Whilst code built for the ESP8266 uses a separate Espressif compiler (via UDK), components such as SPIFFS
+Code built for the ESP8266 uses a separate Espressif compiler, but Components such as SPIFFS
 require additional tools which are built as Windows executable applications.
 
 MinGW provides a (mostly) POSIX-compliant development environment for Windows, including GNU Make and
@@ -37,12 +33,20 @@ If it shows ``C:\MinGW\bin\gcc.exe`` then you have a standard MinGW installation
 The current version is 8.2.0. You can upgrade by renaming or removing your existing installation then
 following these instructions.
 
-1. Get the `MingGW Setup <https://osdn.net/projects/mingw/downloads/68260/mingw-get-setup.exe>`__ and run it.
-   This will create the ``C:\MinGW`` directory with minimal content.
+Fast install
+~~~~~~~~~~~~
 
-2. Set Environment Variables
+1. Download `MinGW.7z <https://github.com/SmingHub/SmingTools/releases/download/1.0/MinGW.7z>`__ from the SmingTools repository.
 
-   The Windows System :envvar:`PATH` variable should contain ``C:\MinGW\bin`` and ``C:\MinGW\msys\1.0\bin``::
+2. Unzip to default location::
+
+      7z -oC:\ x MinGW.7z
+
+   .. note::
+   
+      You can obtain 7-zip from https://www.7-zip.org/.
+
+3. Update :envvar:`PATH` environment variable::
 
       SETX PATH "C:\mingw\bin;C:\mingw\msys\1.0\bin;%PATH%"
 
@@ -50,6 +54,16 @@ following these instructions.
 
    You will need to restart your command prompt (and Eclipse, if already running) for these changes to take effect.
    
+
+Alternative install
+~~~~~~~~~~~~~~~~~~~
+
+To install from the original MinGW source repository:
+
+1. Get the `MingGW Setup <https://osdn.net/projects/mingw/downloads/68260/mingw-get-setup.exe>`__ and run it.
+   This will create the ``C:\MinGW`` directory with minimal content.
+
+2. Set PATH environment variable as above.
 
 3. Install required MinGW packages::
 
@@ -63,19 +77,14 @@ following these instructions.
    However this will not upgrade a 6.3.0 installation to 8.2.0.
 
 
-Install Unofficial Development Kit (UDK)
-----------------------------------------
+Install ESP8266 Toolchain
+-------------------------
 
-This provides pre-built tools for ESP8266 targets.
+1. Download toolchain `esp-udk-win32.7z <https://github.com/SmingHub/SmingTools/releases/download/1.0/esp-udk-win32.7z>`__.
 
-1. Download and run `Unofficial Development Kit <http://programs74.ru/get.php?file=EspressifESP8266DevKit>`__.
+2. Unzip to default location::
 
-2. From an *administrative* command prompt, create a directory link to point to the default Espressif SDK::
-
-      mklink /d C:\Espressif\sdk C:\Espressif\ESP8266_SDK
-
-   Note that the UDK includes SDK version 2.2.0, however the current recommended version is 3.0.1 which Sming
-   version 4 uses by default. See :component-esp8266:`esp8266` for further details.
+      7z -oC:\Espressif x esp-udk-win32.7z
 
 3. Set :envvar:`ESP_HOME` environment variable::
 
@@ -86,6 +95,12 @@ This provides pre-built tools for ESP8266 targets.
    
    If you want to set environment variables system-wide, append /M to the command.
    You'll need to do this from an administrative command prompt.
+
+
+Install Python
+--------------
+
+Get the current version from https://www.python.org/.
 
 
 Install GIT
@@ -108,8 +123,8 @@ Download Sming
 1. You can put Sming anywhere convenient, provided there are **no spaces** in the path!
    For example, *C:\\tools\\sming*::
 
-      mkdir C:\tools\sming
-      cd /d C:\tools\sming
+      mkdir C:\tools
+      cd /d C:\tools
 
 2. To obtain the latest develop code with all the latest features and fixes::
 
@@ -121,7 +136,7 @@ Download Sming
 
 3. Set :envvar:`SMING_HOME` environment variable::
 
-      SETX SMING_HOME C:\tools\sming\Sming
+      SETX SMING_HOME C:\tools\Sming\Sming
 
    Note: there is NO trailing slash on the path!
    
@@ -180,7 +195,7 @@ This also displays the current configuration settings. Whether you build from co
 the same settings will be used.
 
 
-What next?
+Next steps
 ----------
 
-See :doc:`/arch/esp8266/getting-started/index`.
+Proceed to :doc:`config`.

@@ -54,7 +54,11 @@ public:
 	}
 
 	//Use base class documentation
-	uint16_t readMemoryBlock(char* data, int bufSize) override;
+	uint16_t readMemoryBlock(char* data, int bufSize) override
+	{
+		getData();
+		return MemoryDataStream::readMemoryBlock(data, bufSize);
+	}
 
 	/**
 	 * @brief Return the total length of the stream
@@ -62,7 +66,23 @@ public:
 	 */
 	int available() override
 	{
+		getData();
 		return (doc.isNull() ? 0 : Json::measure(doc, format));
+	}
+
+	bool isFinished() override
+	{
+		getData();
+		return MemoryDataStream::isFinished();
+	}
+
+private:
+	void getData()
+	{
+		if(send && !doc.isNull()) {
+			Json::serialize(doc, this, format);
+			send = false;
+		}
 	}
 
 private:

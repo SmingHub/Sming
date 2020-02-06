@@ -36,7 +36,7 @@ Python 3 + Sphinx
 
 For Linux::
 
-	sudo apt install python3-sphinx python3-pip python3-setuptools
+	sudo apt install python3-sphinx python3-pip python3-setuptools python3-cairocffi
 
 For Windows, see `Sphinx Installation Guide <https://www.sphinx-doc.org/en/master/usage/installation.html>`__.
 
@@ -58,13 +58,14 @@ Build the documentation like this::
 This will:
 
 - Pull in and patch every submodule
-- Generate doxygen API information (in XML format)
-- Build sphinx documents in HTML format
+- Generate doxygen API information
+- Build documentation in HTML format
 
 If you make changes to any source documentation files these will be
-picked up automatically. However, if you make any changes to source
-file documentation then you'll need to re-build the doxygen information
-like this::
+picked up automatically when ``make html`` is next run.
 
-	make api -B
-	make html
+If you make any changes to source code comments, you'll need to re-build
+the doxygen information first::
+
+   make api -B
+   make html

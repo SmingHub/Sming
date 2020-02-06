@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include <driver/pwm.h>
 
 #define PWM_BAD_CHANNEL 0xff ///< Invalid PWM channel

@@ -43,9 +43,7 @@
  * NC = Not Connected to Module Pads --> No Access
  *
  */
-#include <Digital.h>
 #include <BitManipulations.h>
-#include <WConstants.h>
 
 #include "driver/uart.h"
 #include <espinc/uart_register.h>
@@ -356,7 +354,7 @@ static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, uart_t* uart)
 
 				// Don't call back until buffer is (almost) full
 				if(space > uart->rx_headroom) {
-					bitClear(status, UIFF);
+					status &= ~UART_RXFIFO_FULL_INT_ST;
 				}
 			}
 
@@ -364,7 +362,7 @@ static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, uart_t* uart)
 			 * If the FIFO is full and we didn't read any of the data then need to mask the interrupt out or it'll recur.
 			 * The interrupt gets re-enabled by a call to uart_read() or uart_flush()
 			 */
-			if(bitRead(usis, UIOF)) {
+			if(usis &  UART_RXFIFO_OVF_INT_ST) {
 				CLEAR_PERI_REG_MASK(UART_INT_ENA(uart_nr), UART_RXFIFO_OVF_INT_ENA);
 			} else if(read == 0) {
 				CLEAR_PERI_REG_MASK(UART_INT_ENA(uart_nr), UART_RXFIFO_FULL_INT_ENA | UART_RXFIFO_TOUT_INT_ENA);
@@ -547,7 +545,11 @@ void uart_set_break(uart_t* uart, bool state)
 {
 	uart = get_physical(uart);
 	if(uart != nullptr) {
-		bitWrite(USC0(uart->uart_nr), UCBRK, state);
+		if(state) {
+			SET_PERI_REG_MASK(UART_CONF0(uart->uart_nr), UART_TXD_BRK);
+		} else {
+			CLEAR_PERI_REG_MASK(UART_CONF0(uart->uart_nr), UART_TXD_BRK);
+		}
 	}
 }
 
@@ -625,10 +627,10 @@ uint32_t uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate)
 		return 0;
 	}
 
-	uint32_t clkdiv = ESP8266_CLOCK / baud_rate;
+	uint32_t clkdiv = UART_CLK_FREQ / baud_rate;
 	WRITE_PERI_REG(UART_CLKDIV(uart_nr), clkdiv);
 	// Return the actual baud rate in use
-	baud_rate = clkdiv ? ESP8266_CLOCK / clkdiv : 0;
+	baud_rate = clkdiv ? UART_CLK_FREQ / clkdiv : 0;
 	return baud_rate;
 }
 
@@ -649,6 +651,67 @@ uint32_t uart_get_baudrate(uart_t* uart)
 {
 	uart = get_physical(uart);
 	return (uart == nullptr) ? 0 : uart->baud_rate;
+}
+
+static void uart0_pin_select(unsigned pin)
+{
+	switch(pin) {
+	case 1:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_U0TXD_U, FUNC_UART0_TXD);
+		break;
+	case 2:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_UART0_TXD_BK);
+		break;
+	case 3:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_U0RXD_U, FUNC_UART0_RXD);
+		break;
+	case 13:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U, FUNC_UART0_CTS);
+		break;
+	case 15:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_UART0_RTS);
+		break;
+	}
+}
+
+static void uart0_pin_restore(unsigned pin)
+{
+	switch(pin) {
+	case 1:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_U0TXD_U, FUNC_GPIO1);
+		break;
+	case 2:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2);
+		break;
+	case 3:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_U0RXD_U, FUNC_GPIO3);
+		break;
+	case 13:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U, FUNC_GPIO13);
+		break;
+	case 15:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15);
+		break;
+	}
+}
+
+static void uart1_pin_select(unsigned pin)
+{
+	// GPIO7 as TX not possible! See GPIO pins used by UART
+	switch(pin) {
+	case 2:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_UART1_TXD_BK);
+		break;
+	}
+}
+
+static void uart1_pin_restore(const unsigned pin)
+{
+	switch(pin) {
+	case 2:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2);
+		break;
+	}
 }
 
 uart_t* uart_init_ex(const uart_config& cfg)
@@ -703,20 +766,16 @@ uart_t* uart_init_ex(const uart_config& cfg)
 
 		if(uart_rx_enabled(uart)) {
 			uart->rx_pin = 3;
-			pinMode(uart->rx_pin, SPECIAL);
+			uart0_pin_select(uart->rx_pin);
 		}
 
 		if(uart_tx_enabled(uart)) {
-			if(cfg.tx_pin == 2) {
-				uart->tx_pin = 2;
-				pinMode(uart->tx_pin, FUNCTION_4);
-			} else {
-				uart->tx_pin = 1;
-				pinMode(uart->tx_pin, FUNCTION_0);
-			}
+			uart->tx_pin = (cfg.tx_pin == 2) ? 2 : 1;
+			uart0_pin_select(uart->tx_pin);
 		}
 
 		CLEAR_PERI_REG_MASK(UART_SWAP_REG, UART_SWAP0);
+
 		WRITE_PERI_REG(UART_CONF0(UART0), cfg.config);
 		break;
 
@@ -736,9 +795,8 @@ uart_t* uart_init_ex(const uart_config& cfg)
 
 		// Setup hardware
 		uart_detach(cfg.uart_nr);
-		// GPIO7 as TX not possible! See GPIO pins used by UART
 		uart->tx_pin = 2;
-		pinMode(uart->tx_pin, SPECIAL);
+		uart1_pin_select(uart->tx_pin);
 		WRITE_PERI_REG(UART_CONF0(UART1), cfg.config);
 		break;
 
@@ -772,27 +830,13 @@ void uart_uninit(uart_t* uart)
 		uart_set_debug(UART_NO);
 	}
 
-	switch(uart->rx_pin) {
-	case 3:
-		pinMode(3, INPUT);
+	switch(uart->uart_nr) {
+	case UART0:
+		uart0_pin_restore(uart->rx_pin);
+		uart0_pin_restore(uart->tx_pin);
 		break;
-
-	case 13:
-		pinMode(13, INPUT);
-		break;
-	}
-
-	switch(uart->tx_pin) {
-	case 1:
-		pinMode(1, INPUT);
-		break;
-
-	case 2:
-		pinMode(2, INPUT);
-		break;
-
-	case 15:
-		pinMode(15, INPUT);
+	case UART1:
+		uart1_pin_restore(uart->tx_pin);
 		break;
 	}
 
@@ -823,49 +867,33 @@ void uart_swap(uart_t* uart, int tx_pin)
 
 	switch(uart->uart_nr) {
 	case UART0:
-		if(((uart->tx_pin == 1 || uart->tx_pin == 2) && uart_tx_enabled(uart)) ||
-		   (uart->rx_pin == 3 && uart_rx_enabled(uart))) {
+		uart0_pin_restore(uart->tx_pin);
+		uart0_pin_restore(uart->rx_pin);
+
+		if(uart->tx_pin == 1 || uart->tx_pin == 2 || uart->rx_pin == 3) {
 			if(uart_tx_enabled(uart)) {
-				pinMode(uart->tx_pin, INPUT);
 				uart->tx_pin = 15;
 			}
 
 			if(uart_rx_enabled(uart)) {
-				pinMode(uart->rx_pin, INPUT);
 				uart->rx_pin = 13;
-			}
-
-			if(uart_tx_enabled(uart)) {
-				pinMode(uart->tx_pin, FUNCTION_4);
-			}
-
-			if(uart_rx_enabled(uart)) {
-				pinMode(uart->rx_pin, FUNCTION_4);
 			}
 
 			SET_PERI_REG_MASK(UART_SWAP_REG, UART_SWAP0);
 		} else {
 			if(uart_tx_enabled(uart)) {
-				pinMode(uart->tx_pin, INPUT);
 				uart->tx_pin = (tx_pin == 2) ? 2 : 1;
 			}
 
 			if(uart_rx_enabled(uart)) {
-				pinMode(uart->rx_pin, INPUT);
 				uart->rx_pin = 3;
-			}
-
-			if(uart_tx_enabled(uart)) {
-				pinMode(uart->tx_pin, (tx_pin == 2) ? FUNCTION_4 : SPECIAL);
-			}
-
-			if(uart_rx_enabled(uart)) {
-				pinMode(3, SPECIAL);
 			}
 
 			CLEAR_PERI_REG_MASK(UART_SWAP_REG, UART_SWAP0);
 		}
 
+		uart0_pin_select(uart->tx_pin);
+		uart0_pin_select(uart->rx_pin);
 		break;
 
 	case UART1:
@@ -886,15 +914,9 @@ void uart_set_tx(uart_t* uart, int tx_pin)
 	switch(uart->uart_nr) {
 	case UART0:
 		if(uart_tx_enabled(uart)) {
-			if(uart->tx_pin == 1 && tx_pin == 2) {
-				pinMode(uart->tx_pin, INPUT);
-				uart->tx_pin = 2;
-				pinMode(uart->tx_pin, FUNCTION_4);
-			} else if(uart->tx_pin == 2 && tx_pin != 2) {
-				pinMode(uart->tx_pin, INPUT);
-				uart->tx_pin = 1;
-				pinMode(uart->tx_pin, SPECIAL);
-			}
+			uart1_pin_restore(uart->tx_pin);
+			uart->tx_pin = (tx_pin == 2) ? 2 : 1;
+			uart1_pin_select(uart->tx_pin);
 		}
 
 		break;

@@ -64,7 +64,7 @@ public:
 	bool setTimeZoneOffset(int seconds);
 
 	/** @brief Set the local time zone offset in hours
-     *  @param  seconds Offset from UTC of local time zone in hours (-12.0 < offset < +12.0)
+     *  @param localTimezoneOffset Offset from UTC of local time zone in hours (-12.0 < offset < +12.0)
      *  @retval bool true on success, false if value out of range
 	 */
 	bool setTimeZone(float localTimezoneOffset)

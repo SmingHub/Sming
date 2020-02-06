@@ -10,9 +10,9 @@
 #include <user_config.h>
 
 #include <c_types.h>
-#include <ctype.h>
-#include <math.h>
-#include <string.h>
+#include <cctype>
+#include <cmath>
+#include <cstring>
 
 #include "WConstants.h"
 #include "BitManipulations.h"

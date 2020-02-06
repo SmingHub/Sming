@@ -221,7 +221,7 @@ and :sample:`HttpServer_AJAX`
 samples.
 
 Email client
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~
 
 ::
 
@@ -284,7 +284,7 @@ execute the following command:
 Developers using Eclipse CDT can have debugging sessions like the one
 below:
 
-.. :image:: /information/eclipse-debug-session.png
+.. :image:: /information/debugging/eclipse.png
 
 See :sample:`LiveDebug` sample for details.
 

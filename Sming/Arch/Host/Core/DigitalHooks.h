@@ -10,12 +10,12 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 /** @brief Class to customise behaviour for digital functions
  *  @note By default, actions get output to console but this can get very busy.
  *  The easiest way to change the behaviour is by sub-classing DigitalHooks
- *  and passing the new class instance to `setDigitalHooks`.
+ *  and passing the new class instance to `setDigitalHooks()`.
  */
 class DigitalHooks
 {

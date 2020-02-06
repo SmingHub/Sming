@@ -16,7 +16,7 @@
 #include "DateTime.h"
 #include "Data/ObjectQueue.h"
 
-/** @defgroup   HTTP client connection
+/**
  *  @brief      Provides http client connection
  *  @ingroup    http
  *  @{
@@ -39,13 +39,9 @@ public:
 		while(waitingQueue.count() != 0) {
 			delete waitingQueue.dequeue();
 		}
-
-#ifdef ENABLE_SSL
-		delete sslSessionId;
-#endif
 	}
 
-	bool connect(const String& host, int port, bool useSsl = false, uint32_t sslOptions = 0) override;
+	bool connect(const String& host, int port, bool useSsl = false) override;
 
 	bool send(HttpRequest* request) override;
 
@@ -68,6 +64,15 @@ protected:
 	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
 
 	void cleanup() override;
+
+	void sslInitSession(Ssl::Session& session) override
+	{
+		TcpClient::sslInitSession(session);
+		auto request = waitingQueue.peek();
+		if(request != nullptr && request->sslInitDelegate) {
+			request->sslInitDelegate(session, *request);
+		}
+	}
 
 private:
 	void sendRequestHeaders(HttpRequest* request);

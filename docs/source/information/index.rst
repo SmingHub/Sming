@@ -9,10 +9,10 @@ Information
    events
    memory
    flash
+   strings
    interrupts
-   timers
    tasks
-   debugging
+   debugging/index
    rboot-ota
    command-handler
    hot-tips

@@ -10,9 +10,11 @@ COMPONENT_INCDIRS := \
 	$(ARCH_COMPONENTS)
 
 COMPONENT_DEPENDS := \
+	libc \
+	heap \
+	rboot \
 	esp8266 \
 	driver \
-	esp_wifi \
 	esptool \
 	fatfs \
 	gdbstub \
@@ -23,18 +25,15 @@ COMPONENT_VARS := \
 	ENABLE_WPS \
 	ENABLE_SMART_CONFIG
 
-# => Custom heap
-RELINK_VARS				+= ENABLE_CUSTOM_HEAP
-ENABLE_CUSTOM_HEAP		?= 0
-ifeq ($(ENABLE_CUSTOM_HEAP), 1)
-	COMPONENT_DEPENDS	+= custom_heap
+#
+RELINK_VARS += DISABLE_WIFI
+DISABLE_WIFI ?= 0
+ifeq ($(DISABLE_WIFI),1)
+COMPONENT_DEPENDS += esp_no_wifi
+GLOBAL_CFLAGS += -DDISABLE_WIFI=1
 else
-	LIBMAIN				= main
-	LIBMAIN_SRC 		= $(SDK_LIBDIR)/libmain.a
+COMPONENT_DEPENDS += esp_wifi
 endif
-
-# Must follow custom_heap
-COMPONENT_DEPENDS		+= rboot
 
 # => LWIP
 COMPONENT_VARS			+= ENABLE_CUSTOM_LWIP
@@ -45,15 +44,6 @@ else ifeq ($(ENABLE_CUSTOM_LWIP), 1)
 	COMPONENT_DEPENDS	+= esp-open-lwip
 else ifeq ($(ENABLE_CUSTOM_LWIP), 2)
 	COMPONENT_DEPENDS	+= lwip2
-endif
-
-# => PWM
-RELINK_VARS				+= ENABLE_CUSTOM_PWM
-ENABLE_CUSTOM_PWM		?= 1
-ifeq ($(ENABLE_CUSTOM_PWM), 1)
-	COMPONENT_DEPENDS	+= pwm_open
-else
-	LIBS				+= pwm
 endif
 
 # rBoot creates ROM images from one or both of these targets

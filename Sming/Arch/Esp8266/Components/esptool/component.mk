@@ -7,9 +7,9 @@ CONFIG_VARS				+= SPI_SPEED SPI_MODE SPI_SIZE
 # SPI_SPEED = 40, 26, 20, 80
 SPI_SPEED				?= 40
 # SPI_MODE: qio, qout, dio, dout
-SPI_MODE				?= qio
+SPI_MODE				?= dio
 # SPI_SIZE: 512K, 256K, 1M, 2M, 4M
-SPI_SIZE				?= 512K
+SPI_SIZE				?= 1M
 
 ifeq ($(SPI_SPEED), 26)
 	flashimageoptions	:= -ff 26m
@@ -38,7 +38,7 @@ FLASH_SIZE			:= $(subst K,*1024,$(FLASH_SIZE))
 FlashOffset			= $$(($(FLASH_SIZE)-$1))
 FLASH_INIT_CHUNKS += \
 	$(call FlashOffset,0x5000)=$(SDK_BASE)/bin/blank.bin \
-	$(call FlashOffset,0x4000)=$(SDK_BASE)/bin/esp_init_data_default.bin \
+	$(call FlashOffset,0x4000)=$(FLASH_INIT_DATA) \
 	$(call FlashOffset,0x2000)=$(SDK_BASE)/bin/blank.bin
 
 # Default COM port and speed used for flashing
@@ -48,7 +48,10 @@ COM_SPEED_ESPTOOL		?= $(COM_SPEED)
 
 COMPONENT_SUBMODULES	+= esptool
 DEBUG_VARS				+= ESPTOOL
-ESPTOOL					:= $(COMPONENT_PATH)/esptool/esptool.py
+ESPTOOL					:= $(PYTHON) $(COMPONENT_PATH)/esptool/esptool.py
+ESPTOOL_SUBMODULE		:= $(COMPONENT_PATH)/esptool
+
+$(ESPTOOL): $(ESPTOOL_SUBMODULE)/.submodule
 
 ESPTOOL_CMDLINE			:= $(ESPTOOL) -p $(COM_PORT_ESPTOOL) -b $(COM_SPEED_ESPTOOL)
 

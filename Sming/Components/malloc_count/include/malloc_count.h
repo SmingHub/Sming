@@ -50,6 +50,16 @@ size_t getPeak(void);
 void resetPeak(void);
 
 /**
+ *  @brief Get the total cumulative memory allocation
+ */
+size_t getTotal(void);
+
+/**
+ * @brief Reset the total cumulative memory allocation to zero
+ */
+void resetTotal(void);
+
+/**
  * @brief Get the total number of allocations
  */
 size_t getAllocCount(void);

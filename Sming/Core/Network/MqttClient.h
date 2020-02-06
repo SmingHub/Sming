@@ -88,10 +88,9 @@ public:
 	/** @brief  Connect to a MQTT server
 	*  @param  url URL in the form "mqtt://user:password@server:port" or "mqtts://user:password@server:port"
 	*  @param  uniqueClientName
-	*  @param sslOptions
 	*  @retval bool
 	*/
-	bool connect(const Url& url, const String& uniqueClientName, uint32_t sslOptions = 0);
+	bool connect(const Url& url, const String& uniqueClientName);
 
 	bool publish(const String& topic, const String& message, uint8_t flags = 0);
 	bool publish(const String& topic, IDataSourceStream* stream, uint8_t flags = 0);
@@ -159,20 +158,16 @@ public:
 		TcpClient::setCompleteDelegate(handler);
 	}
 
-#ifdef ENABLE_SSL
-	using TcpClient::addSslOptions;
-	using TcpClient::addSslValidator;
-	using TcpClient::freeSslKeyCert;
 	using TcpClient::getSsl;
-	using TcpClient::pinCertificate;
-	using TcpClient::setSslKeyCert;
-#endif
+	using TcpClient::setSslInitHandler;
 
-	// deprecated methods below
 	using TcpClient::setCompleteDelegate;
 
 	using TcpClient::getConnectionState;
 	using TcpClient::isProcessing;
+
+	using TcpClient::getRemoteIp;
+	using TcpClient::getRemotePort;
 
 #ifndef MQTT_NO_COMPAT
 	/**

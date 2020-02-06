@@ -29,11 +29,8 @@ uint16_t RtttlJsonListStream::readMemoryBlock(char* data, int bufSize)
 	}
 
 	switch(state) {
-	case 0: {
-		auto len = std::min(size_t(bufSize), jsonOpen.length() - readPos);
-		memcpy_P(data, &jsonOpen.flashData[readPos], len);
-		return len;
-	}
+	case 0:
+		return jsonOpen.read(readPos, data, bufSize);
 
 	case 1: {
 		auto len = std::min(size_t(bufSize), title.length() - readPos);
@@ -41,11 +38,8 @@ uint16_t RtttlJsonListStream::readMemoryBlock(char* data, int bufSize)
 		return len;
 	}
 
-	case 2: {
-		auto len = std::min(size_t(bufSize), jsonClose.length() - readPos);
-		memcpy_P(data, &jsonClose.flashData[readPos], len);
-		return len;
-	}
+	case 2:
+		return jsonClose.read(readPos, data, bufSize);
 
 	default:
 		return 0;

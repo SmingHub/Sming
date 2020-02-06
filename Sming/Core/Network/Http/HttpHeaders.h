@@ -48,6 +48,7 @@
 	XX(CONTENT_TRANSFER_ENCODING, "Content-Transfer-Encoding", "Coding method used in a MIME message body part")       \
 	XX(CACHE_CONTROL, "Cache-Control", "Directives for caches along the request/response chain")                       \
 	XX(DATE, "Date", "Message originating date/time")                                                                  \
+	XX(EXPECT, "Expect", "Behaviours to be supported by the server in order to properly handle this request.")         \
 	XX(ETAG, "ETag",                                                                                                   \
 	   "Validates resource, such as a file, so recipient can confirm whether it has changed - generally more "         \
 	   "reliable than Date")                                                                                           \

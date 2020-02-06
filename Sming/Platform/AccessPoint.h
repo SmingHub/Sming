@@ -8,17 +8,6 @@
  *
  ****/
 
-/**	@defgroup wifi_ap WiFi Access Point
- *  @ingroup wifi
- *	@brief	Control and monitoring of WiFi access point interface
- *	@note   The WiFi access point interface provides a WiFi network access point.
-            Control of WiFi AP including WiFi SSID and password and
-            IP address.
- *  @see    \ref wifi_sta
- *  @see    \ref wifi_ev
- *  @todo   How is wifi access point dhcp controlled?
-*/
-
 #pragma once
 
 #include <WString.h>
@@ -26,9 +15,19 @@
 #include <MacAddress.h>
 #include "BssInfo.h"
 
-/** @brief  Access point class
- *  @addtogroup wifi_ap
+/**	@defgroup wifi_ap WiFi Access Point
+ *  @ingroup wifi platform
+ *	@brief	Control and monitoring of WiFi access point interface
+ *	@note   The WiFi access point interface provides a WiFi network access point.
+            Control of WiFi AP including WiFi SSID and password and
+            IP address.
+ *  @see    \ref wifi_sta
+ *  @see    \ref wifi_ev
+ *  @todo   How is wifi access point dhcp controlled?
  *  @{
+*/
+
+/** @brief  Access point class
  */
 class AccessPointClass
 {
@@ -107,7 +106,6 @@ public:
 	 */
 	virtual String getPassword() const = 0;
 };
-/** @} */
 
 /**	@brief	Global instance of WiFi access point object
  *	@note	Use WifiAccessPoint.<i>function</i> to access WiFi access point functions
@@ -115,6 +113,7 @@ public:
  *	@code	if(WifiAccessPoint.config("ESP_AP", AUTH_OPEN))
  *              WifiAccessPoint.enable(true);
  *	@endcode
- *  @ingroup wifi_ap
  */
 extern AccessPointClass& WifiAccessPoint;
+
+/** @} */

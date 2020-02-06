@@ -15,18 +15,18 @@
  *
  ****/
 
+#pragma once
+
+#include <WString.h>
+#include "Http/HttpParams.h"
+#include <sming_attr.h>
+
 /** @defgroup   url Url
  *  @brief      Provides URL handling
  *  @ingroup    httpserver
  *  @ingroup    httpclient
  *  @{
  */
-
-#pragma once
-
-#include <WString.h>
-#include "Http/HttpParams.h"
-#include <sming_attr.h>
 
 /*
  * Common URL schemes (name, scheme, port)

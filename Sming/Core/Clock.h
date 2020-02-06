@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include <sming_attr.h>
 
 #ifdef __cplusplus

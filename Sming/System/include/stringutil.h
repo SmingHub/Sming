@@ -29,7 +29,7 @@ extern "C" {
 const char* strstri(const char* pString, const char* pToken);
 
 #ifndef _GNU_SOURCE
-/** @brief A case-insensitive @code{strcmp}.
+/** @brief A case-insensitive `strcmp()`.
 	@note non-ANSI GNU C library extension
 */
 int strcasecmp(const char* s1, const char* s2);
@@ -39,11 +39,16 @@ int strcasecmp(const char* s1, const char* s2);
  *  @param haystacklen
  *  @param needle
  *  @param needlelen
- *  @retval void* @code{NULL} if not found.
+ *  @retval void* `NULL` if not found.
  *  @note non-ANSI GNU C library extension
 */
 void* memmem(const void* haystack, size_t haystacklen, const void* needle, size_t needlelen);
+
+void *memrchr(const void *s, int c, size_t n);
+
 #endif
+
+int memicmp(const void* buf1, const void* buf2, size_t len);
 
 static inline char hexchar(unsigned char c)
 {

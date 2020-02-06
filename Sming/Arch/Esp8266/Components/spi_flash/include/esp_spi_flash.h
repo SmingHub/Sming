@@ -17,6 +17,13 @@ extern "C" {
 
 #include <user_config.h>
 
+/**
+ * @defgroup flash Flash Memory Support
+ * @defgroup spi_flash SPI Flash API
+ * @ingroup flash
+ * @{
+ */
+
 /// Flash memory access must be aligned and in multiples of 4-byte words
 #define INTERNAL_FLASH_WRITE_UNIT_SIZE 4
 #define INTERNAL_FLASH_READ_UNIT_SIZE 4
@@ -66,14 +73,10 @@ typedef struct
  *  @param memptr
  *  @retval uint32_t Offset from start of flash memory
  *  @note If memptr is not in valid flash memory it will return an offset which exceeds
- *  the internal flash memory size. This is caught by constructors using getMaxSize()
- *  to provide a zero-length extent.
- *  @deprecated This function only works if rBoot is running from slot #0.
+ *  the internal flash memory size.
+ *  @note The flash location is dependent on where rBoot has mapped the firmware.
  */
-SMING_DEPRECATED static inline uint32_t flashmem_get_address(const void* memptr)
-{
-	return (uint32_t)memptr - INTERNAL_FLASH_START_ADDRESS;
-}
+uint32_t flashmem_get_address(const void* memptr);
 
 /** @brief Write a block of data to flash
  *  @param from Buffer to obtain data from
@@ -158,6 +161,7 @@ uint32_t flashmem_read_internal(void* to, uint32_t fromaddr, uint32_t size);
  */
 uint32_t flashmem_get_first_free_block_address();
 
+/** @} */
 
 #ifdef __cplusplus
 }

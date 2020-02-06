@@ -1,0 +1,4 @@
+HashMap
+=======
+
+.. doxygenclass:: HashMap

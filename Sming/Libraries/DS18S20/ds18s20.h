@@ -36,6 +36,8 @@
 */
 typedef Delegate<void()> DS18S20CompletedDelegate;
 
+class OneWire;
+
 /** @brief  This class implements access to the DS18x20 range of temperature sensors
 */
 class DS18S20

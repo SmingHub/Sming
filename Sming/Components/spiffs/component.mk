@@ -2,7 +2,7 @@
 COMPONENT_SUBMODULES	:= spiffs
 COMPONENT_SRCDIRS		:= . spiffs/src
 COMPONENT_INCDIRS		:= . spiffs/src
-
+COMPONENT_DOXYGEN_INPUT	:= spiffs/src
 
 ## Spiffy tool
 
@@ -15,8 +15,9 @@ $(COMPONENT_RULE)$(SPIFFY):
 ## Application
 
 # This controls filesystem generation, it doesn't actually disable SPIFFS support in the application
-CACHE_VARS			+= DISABLE_SPIFFS
+CONFIG_VARS			+= DISABLE_SPIFFS
 DISABLE_SPIFFS		?= 0
+APP_CFLAGS			+= -DDISABLE_SPIFFS=$(DISABLE_SPIFFS)
 
 CACHE_VARS			+= SPIFF_FILES SPIFF_BIN
 SPIFF_FILES			?= files
@@ -39,9 +40,11 @@ endif
 APP_CFLAGS				+= -DSPIFF_SIZE=$(SPIFF_SIZE)
 
 
-COMPONENT_VARS			+= SPIFF_FILEDESC_COUNT
+COMPONENT_RELINK_VARS	+= SPIFF_FILEDESC_COUNT
 SPIFF_FILEDESC_COUNT	?= 7
 COMPONENT_CFLAGS		+= -DSPIFF_FILEDESC_COUNT=$(SPIFF_FILEDESC_COUNT)
+
+COMPONENT_CFLAGS		+= -Wno-tautological-compare
 
 ##@Building
 

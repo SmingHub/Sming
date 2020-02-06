@@ -70,7 +70,6 @@ ARCH_SYS		= $(ARCH_BASE)/System
 ARCH_CORE		= $(ARCH_BASE)/Core
 ARCH_TOOLS		= $(ARCH_BASE)/Tools
 ARCH_COMPONENTS	= $(ARCH_BASE)/Components
-ARCH_LIBDIR		= $(ARCH_BASE)/Compiler/lib
 
 OUT_BASE		:= out/$(SMING_ARCH)/$(BUILD_TYPE)
 BUILD_BASE		= $(OUT_BASE)/build
@@ -90,7 +89,15 @@ CMAKE ?= cmake
 DEBUG_VARS	+= CLANG_FORMAT
 CLANG_FORMAT ?= clang-format
 
+# more tools
+DEBUG_VARS += AWK
+# In case 'awk' is an alias for 'gawk' on your system, having 'POSIXLY_CORRECT' in the environment
+# invokes an awk compatibility mode. It has no effect on other awk implementations.
+AWK ?= POSIXLY_CORRECT= awk
 
+# Python command
+DEBUG_VARS += PYTHON
+PYTHON ?= python
 
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
@@ -134,12 +141,16 @@ ifeq ($(SMING_RELEASE),1)
 	# Note: ANSI requires NDEBUG to be defined for correct assert behaviour
 	CFLAGS		+= -Os -DSMING_RELEASE=1 -DNDEBUG
 else ifeq ($(ENABLE_GDB), 1)
-	CFLAGS		+= -Og
+	ifeq ($(SMING_ARCH),Host)
+		CFLAGS		+= -O0
+	else
+		CFLAGS		+= -Og
+	endif
 else
 	CFLAGS		+= -Os -g
 endif
 
-CXXFLAGS = $(CFLAGS) -std=c++11 -felide-constructors
+CXXFLAGS = $(CFLAGS) -felide-constructors
 
 ifneq ($(STRICT),1)
 	CXXFLAGS += -Wno-reorder
@@ -147,8 +158,36 @@ endif
 
 include $(ARCH_BASE)/build.mk
 
+# Detect compiler version
+DEBUG_VARS			+= GCC_VERSION
+GCC_VERSION			:= $(shell $(CC) -dumpversion)
+
+# Select C++17 if supported, defaulting to C++11 otherwise
+DEBUG_VARS			+= SMING_CPP_STD
+ifeq ($(GCC_VERSION),4.8.5)
+SMING_CPP_STD		?= c++11
+else
+SMING_CPP_STD		?= c++17
+endif
+CXXFLAGS			+= -std=$(SMING_CPP_STD)
+
 # Component (user) libraries have a special prefix so linker script can identify them
 CLIB_PREFIX := clib-
+
+# Apply coding style to list of files using clang-format
+# $1 -> List of files
+define ClangFormat
+	$(if $(V),$(info Applying coding style to $(words $1) files ...))
+	@for FILE in $1; do \
+		$(CLANG_FORMAT) -i -style=file $$FILE; \
+	done
+endef
+
+# Calculate a hash string for appending to library names, etc.
+# $1 -> Name of variable containing data to be hashed
+define CalculateVariantHash
+$(firstword $(shell echo -n $($1) | md5sum -t))
+endef
 
 # Fetch full path for submodules matching given pattern
 # Note that scanning .gitmodules is considerably quicker than using GIT
@@ -169,11 +208,20 @@ define ListSubDirs
 $(foreach d,$(dir $(wildcard $1/*/.)),$(d:/=))
 endef
 
+# Check that $2 is a valid sub-directory of $1. Return empty string if not.
+# $1 -> Parent directory
+# $2 -> Sub-directory
+# During wildcard searches, paths with spaces cause recursion.
+define IsSubDir
+$(if $(subst $(1:/=),,$(2:/=)),$(findstring $(1:/=),$2),)
+endef
+
 # List sub-directories recursively for a list of root directories
 # Results are sorted and without trailing path separator
+# Sub-directories with spaces are skipped
 # $1 -> Root paths
 define ListAllSubDirs
-$(foreach d,$(dir $(wildcard $1/*/.)),$(d:/=) $(call ListAllSubDirs,$(d:/=)))
+$(foreach d,$(dir $(wildcard $1/*/.)),$(if $(call IsSubDir,$1,$d),$(d:/=) $(call ListAllSubDirs,$(d:/=))))
 endef
 
 # Display variable and list values, e.g. $(call PrintVariable,LIBS)
@@ -200,7 +248,7 @@ endef
 define PrintHelp
 	@echo
 	@echo Welcome to the Sming build system!
-	@awk	'BEGIN { \
+	@$(AWK)	'BEGIN { \
 				FS = "(:.*##)|(##@)"; \
 				printf "Usage:\n  make \033[1;36m<target>\033[0m\n"; \
 			} /^##@/ { \
@@ -218,7 +266,7 @@ define PrintHelp
 							printf "  \033[1;36m%-20s\033[0m %s\n", sep[1], targets[t] \
 					} \
 				} \
-			} ' $(MAKEFILE_LIST)
+			} ' $(foreach f,$(MAKEFILE_LIST),"$(f)")
 	@echo
 endef
 
@@ -263,7 +311,7 @@ define TryApplyPatch
 		$(call ApplyPatch,../.patches/$2); \
 	fi && \
 	if [ -d ../.patches/$(basename $2)/ ]; then \
-		cp -f ../.patches/$(basename $2)/* . ; \
+		cp -rf ../.patches/$(basename $2)/* . ; \
 	fi
 endef
 

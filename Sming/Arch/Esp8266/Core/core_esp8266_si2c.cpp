@@ -21,8 +21,6 @@
 #include "twi.h"
 #include "Digital.h"
 
-#include <espinc/peri.h>
-
 unsigned char twi_dcount = 18;
 static unsigned char twi_sda, twi_scl;
 static uint32_t twi_clockStretchLimit;

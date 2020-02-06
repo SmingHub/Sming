@@ -1,7 +1,7 @@
 #include <SmingCore.h>
 #include <AppSettings.h>
 #include <JsonObjectStream.h>
-#include "Data/Stream/TemplateFlashMemoryStream.h"
+#include <Data/Stream/TemplateFlashMemoryStream.h>
 
 HttpServer server;
 FtpServer ftp;
@@ -13,7 +13,10 @@ Timer connectionTimer;
 String lastModified;
 
 // Instead of using a SPIFFS file, here we demonstrate usage of imported Flash Strings
-IMPORT_FSTR(flashSettings, PROJECT_DIR "/web/build/settings.html")
+IMPORT_FSTR_LOCAL(flashSettings, PROJECT_DIR "/web/build/settings.html")
+
+IMPORT_FSTR_LOCAL(serverKey, PROJECT_DIR "/cert/key_1024");
+IMPORT_FSTR_LOCAL(serverCert, PROJECT_DIR "/cert/x509_1024.cer");
 
 void onIndex(HttpRequest& request, HttpResponse& response)
 {
@@ -166,7 +169,15 @@ void onAjaxConnect(HttpRequest& request, HttpResponse& response)
 
 void startWebServer()
 {
+#ifdef ENABLE_SSL
+	server.setSslInitHandler([](Ssl::Session& session) {
+		debug_i("SSL Init handler: setting server keyCert");
+		session.keyCert.assign(serverKey, serverCert);
+	});
+	server.listen(443, true);
+#else
 	server.listen(80);
+#endif
 	server.paths.set("/", onIndex);
 	server.paths.set("/ipconfig", onIpConfig);
 	server.paths.set("/ajax/get-networks", onAjaxNetworkList);

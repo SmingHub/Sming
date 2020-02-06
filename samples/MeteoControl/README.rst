@@ -21,8 +21,6 @@ control any external load.
    :height: 192px
 .. image:: meteo-control-iot-device-2.jpg
    :height: 192px
-.. image:: meteo-control-iot-device-3.jpg
-   :height: 192px
 .. image:: meteo-control-iot-device-4.jpg
    :height: 192px
 

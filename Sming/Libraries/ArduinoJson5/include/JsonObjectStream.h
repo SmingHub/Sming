@@ -43,7 +43,11 @@ public:
 	}
 
 	//Use base class documentation
-	uint16_t readMemoryBlock(char* data, int bufSize) override;
+	uint16_t readMemoryBlock(char* data, int bufSize) override
+	{
+		getData();
+		return MemoryDataStream::readMemoryBlock(data, bufSize);
+	}
 
 	/**
 	 * @brief Return the total length of the stream
@@ -51,7 +55,23 @@ public:
 	 */
 	int available() override
 	{
+		getData();
 		return rootNode.success() ? rootNode.measureLength() : 0;
+	}
+
+	bool isFinished() override
+	{
+		getData();
+		return MemoryDataStream::isFinished();
+	}
+
+private:
+	void getData()
+	{
+		if(send && rootNode.success()) {
+			rootNode.printTo(*this);
+			send = false;
+		}
 	}
 
 private:

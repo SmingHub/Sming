@@ -28,8 +28,12 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
+/**
+ * @brief HashMap class template
+ * @ingroup wiring
+ */
 template <typename K, typename V> class HashMap
 {
 public:

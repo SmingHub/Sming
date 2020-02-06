@@ -1,8 +1,16 @@
 DISABLE_SPIFFS = 1
 DEBUG_VERBOSE_LEVEL = 2
 SPI_SIZE = 4M
-ARDUINO_LIBRARIES := ArduinoJson5 ArduinoJson6
-COMPONENT_DEPENDS := malloc_count
+
+ARDUINO_LIBRARIES := \
+	SmingTest \
+	ArduinoJson5 \
+	ArduinoJson6
+
+COMPONENT_DEPENDS := \
+	malloc_count \
+	axtls-8266 \
+	bearssl-esp8266
 
 # Don't need network
 HOST_NETWORK_OPTIONS := --nonet

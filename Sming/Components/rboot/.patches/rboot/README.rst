@@ -143,6 +143,8 @@ the ``rboot.h`` header file. See the comments and example code in
 GPIO boot mode
 ==============
 
+.. envvar:: RBOOT_GPIO_ENABLED
+
 If rBoot is compiled with ``BOOT_GPIO_ENABLED`` set in ``rboot.h`` (or
 ``RBOOT_GPIO_ENABLED`` set in the Makefile), then GPIO boot
 functionality will be included in the rBoot binary. The feature can then
@@ -167,6 +169,8 @@ config, so the GPIO booted rom should change this again if required.
 
 GPIO boot skip mode
 ===================
+
+.. envvar:: RBOOT_GPIO_SKIP_ENABLED
 
 If rBoot is compiled with ``BOOT_GPIO_SKIP_ENABLED`` set in ``rboot.h``
 (or ``RBOOT_GPIO_SKIP_ENABLED`` set in the Makefile), then a GPIO can be
@@ -252,6 +256,8 @@ allowing the ``.irom0.text`` section to be included in the checksum. To
 enable this uncomment ``#define BOOT_IROM_CHKSUM`` in ``rboot.h`` and
 build your roms with esptool2 using the ``-iromchksum`` option.
 
+.. _big_flash_support:
+
 Big flash support
 =================
 
@@ -317,6 +323,8 @@ the flash to map.
 
 Temporary boot option and rBoot<–>app communication
 ===================================================
+
+.. envvar:: RBOOT_RTC_ENABLED
 
 To enable communication between rBoot and your app you should enable the
 ``BOOT_RTC_ENABLED`` option in ``rboot.h``. rBoot will then use the RTC

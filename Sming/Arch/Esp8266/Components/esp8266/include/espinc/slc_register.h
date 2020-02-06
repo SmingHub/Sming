@@ -15,7 +15,7 @@
 #ifndef _SLC_REGISTER_H_
 #define _SLC_REGISTER_H_
 
-#include <eagle_soc.h>
+#include "eagle_soc.h"
 
 #define REG_SLC_BASE  0x60000B00
 //version value:32'h091700

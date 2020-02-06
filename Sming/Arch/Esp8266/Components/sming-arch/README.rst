@@ -8,6 +8,15 @@ SDK 3.0+
 
 Default: OFF. In order to use SDK 3.0.0 or newer please follow the instructions here :component-esp8266:`esp8266`.
 
+No-WiFi build
+-------------
+
+.. envvar:: DISABLE_WIFI
+
+   If a project does not require WiFi (or networking) bulding with this option enabled reduces code size
+   and memory usage signficantly. It does this using an un-official :component-esp8266:`esp_no_wifi` Component.
+
+
 Custom LWIP
 -----------
 
@@ -32,31 +41,6 @@ controlled by the :envvar:`ENABLE_CUSTOM_LWIP` setting.
 
    By default, some debug information will be printed for critical errors and situations.
    Set this to 1 to enable printing of all debug information.
-
-
-Custom heap allocation
-----------------------
-
-.. envvar:: ENABLE_CUSTOM_HEAP
-
-   If your application is experiencing heap fragmentation then you can try the alternative heap.
-
-   undefined (default)
-      OFF, use standard heap
-
-   1
-      Use :component-esp8266:`custom_heap`
-
-
-Custom PWM
-----------
-
-.. envvar:: ENABLE_CUSTOM_PWM
-
-   undefined
-      use the Espressif PWM driver
-   1 (default)
-      use :component-esp8266:`pwm_open`.
 
 
 Interactive debugging on the device

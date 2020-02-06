@@ -23,3 +23,17 @@ Features:
    flexible than Smings Templating - JavaScript
 
 App called TyTherm because it is base for TinY TermOmeter :)
+
+FlashString
+-----------
+
+This sample also demonstrates how to use FlashString maps as an alternative
+to using SPIFFS for serving files.
+
+To test this out, build the application without a filesystem image:
+
+.. code-block:: bash
+
+   make DISABLE_SPIFFS=1
+
+See *webserver.cpp* for the details.

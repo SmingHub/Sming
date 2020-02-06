@@ -8,16 +8,6 @@
  *
  ****/
 
-/**	@defgroup wifi_sta WiFi Station Interface
- *  @ingroup wifi
- *	@brief	Control and monitoring of WiFi station interface
- *	@note   The WiFi station interface provides client access to a WiFi network.
-            Control of WiFi connection including WiFi SSID and password and
-            IP address, DHCP, etc.
- *  @see    \ref wifi_ap
- *  @see    \ref wifi_ev
-*/
-
 #pragma once
 
 #include <WString.h>
@@ -26,9 +16,17 @@
 #include <MacAddress.h>
 #include "BssInfo.h"
 
-/** @ingroup constants
+/**	@defgroup wifi_sta WiFi Station Interface
+ *  @ingroup wifi platform
+ *	@brief	Control and monitoring of WiFi station interface
+ *	@note   The WiFi station interface provides client access to a WiFi network.
+            Control of WiFi connection including WiFi SSID and password and
+            IP address, DHCP, etc.
+ *  @see    \ref wifi_ap
+ *  @see    \ref wifi_ev
  *  @{
- */
+*/
+
 /// WiFi station connection states
 enum StationConnectionStatus {
 	eSCS_Idle,				  ///< Connection idle
@@ -73,12 +71,6 @@ enum WpsStatus {
 	eWPS_WEP,
 };
 
-/** @} */
-
-/** @ingroup event_handlers
- *  @{
- */
-
 /**
  * @brief Scan complete handler function
  */
@@ -99,11 +91,7 @@ typedef Delegate<bool(SmartConfigEvent event, const SmartConfigEventInfo& info)>
  */
 typedef Delegate<bool(WpsStatus status)> WPSConfigDelegate;
 
-/** @} */
-
 /** @brief  WiFi station class
- *  @addtogroup wifi_sta
- *  @{
  */
 class StationClass
 {

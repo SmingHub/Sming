@@ -30,3 +30,20 @@ index 291a1d0..8886c79 100644
  This is primarily for non-bug related issues: Please start a *new thread* in an appropriate area at Seeedstudio forums or Arduino.cc forums and then send me (coryjfowler) a link through the PM system, my user name is the same as it is here.  I will receive an email about the PM and generally get to it with-in a week or less.  Keep in mind, I do this in my spare time.
  
  
+diff --git a/mcp_can.cpp b/mcp_can.cpp
+index c160939..89eca5c 100644
+--- a/mcp_can.cpp
++++ b/mcp_can.cpp
+@@ -179,8 +179,10 @@ INT8U MCP_CAN::mcp2515_setCANCTRL_Mode(const INT8U newmode)
+ *********************************************************************************************************/
+ INT8U MCP_CAN::mcp2515_configRate(const INT8U canSpeed, const INT8U canClock)            
+ {
+-    INT8U set, cfg1, cfg2, cfg3;
+-    set = 1;
++    INT8U set = 1;
++    INT8U cfg1 = 0;
++    INT8U cfg2 = 0;
++    INT8U cfg3 = 0;
+     switch (canClock)
+     {
+         case (MCP_8MHZ):

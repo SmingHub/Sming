@@ -1,4 +1,4 @@
-#include "common.h"
+#include <SmingTest.h>
 
 #include <Data/HexString.h>
 
@@ -11,14 +11,51 @@ public:
 
 	void execute() override
 	{
+		templateTest(12);
+		nonTemplateTest();
+
 		testString();
 		testMakeHexString();
 	}
 
+	template <typename T> void templateTest(T x)
+	{
+#ifdef ARCH_ESP8266
+		auto pstr = PSTR("This PSTR should get moved out of RAM, filtered by __pstr__ in symbol name.");
+		REQUIRE(isFlashPtr(pstr));
+
+		auto fstr1 = FS_PTR("This FSTR should get moved out of RAM, filtered by __fstr__ in symbol name.");
+		REQUIRE(isFlashPtr(fstr1));
+
+		DEFINE_FSTR_LOCAL(fstr2, "Regular FSTR");
+		REQUIRE(isFlashPtr(&fstr2));
+
+		auto func = __PRETTY_FUNCTION__;
+		REQUIRE(isFlashPtr(func));
+		debug_i("%s", func);
+#endif
+	}
+
+	void nonTemplateTest()
+	{
+#ifdef ARCH_ESP8266
+		auto pstr = PSTR("This PSTR should get moved out of RAM, filtered by section name.");
+		REQUIRE(isFlashPtr(pstr));
+
+		auto fstr1 = FS_PTR("This FSTR should get moved out of RAM, filtered by section name.");
+		REQUIRE(isFlashPtr(fstr1));
+
+		DEFINE_FSTR_LOCAL(fstr2, "Regular FSTR");
+		REQUIRE(isFlashPtr(&fstr2));
+
+		auto func = __PRETTY_FUNCTION__;
+		REQUIRE(isFlashPtr(func));
+		debug_i("%s", func);
+#endif
+	}
+
 	void testString()
 	{
-		startTest("testString");
-
 		DEFINE_FSTR_LOCAL(FS_Text, "The quick brown fox jumps over a lazy dog.");
 		String text = FS_Text;
 
@@ -31,48 +68,83 @@ public:
 
 		debug_hex(DBG, "Text", text.c_str(), text.length() + 1);
 
-		DEFINE_FSTR_LOCAL(FS_Text1, "The\0!\0quick\0!\0brown\0!\0fox\0!\0jumps\0!\0over\0!\0a\0!\0lazy\0!\0dog.");
-		replace(" ", F("\0!\0"));
-		REQUIRE(FS_Text1 == text);
+		TEST_CASE("replace with NULs, increase length")
+		{
+			DEFINE_FSTR_LOCAL(FS_Text1, "The\0!\0quick\0!\0brown\0!\0fox\0!\0jumps\0!\0over\0!\0a\0!\0lazy\0!\0dog.");
+			replace(" ", F("\0!\0"));
+			REQUIRE(FS_Text1 == text);
+		}
 
-		DEFINE_FSTR_LOCAL(FS_Text2, "The!quick!brown!fox!jumps!over!a!lazy!dog.");
-		replace(F("\x00"), nullptr);
-		REQUIRE(FS_Text2 == text);
+		TEST_CASE("replace with NULs, reduce length")
+		{
+			DEFINE_FSTR_LOCAL(FS_Text2, "The!quick!brown!fox!jumps!over!a!lazy!dog.");
+			replace(F("\x00"), nullptr);
+			REQUIRE(FS_Text2 == text);
+		}
 
-		replace("!", " ");
-		REQUIRE(FS_Text == text);
+		TEST_CASE("replace, no length change")
+		{
+			replace("!", " ");
+			REQUIRE(FS_Text == text);
+		}
 
-		DEFINE_FSTR_LOCAL(FS_Text3, "The quick brown fox jumps over \x02 l\x02zy dog.");
-		replace("a", "\x02");
-		REQUIRE(FS_Text3 == text);
+		TEST_CASE("replace, non-NUL, non-printable value, no length change")
+		{
+			DEFINE_FSTR_LOCAL(FS_Text3, "The quick brown fox jumps over \x02 l\x02zy dog.");
+			replace("a", "\x02");
+			REQUIRE(FS_Text3 == text);
+		}
 
-		DEFINE_FSTR_LOCAL(FS_Text4, "The quick \x00\bad\x00rown fox jumps over \x02 l\x02zy dog.");
-		replace("b", F("\x00\bad\x00"));
-		REQUIRE(FS_Text4 == text);
+		TEST_CASE("replace, increase length")
+		{
+			DEFINE_FSTR_LOCAL(FS_Text4, "The quick \x00\bad\x00rown fox jumps over \x02 l\x02zy dog.");
+			replace("b", F("\x00\bad\x00"));
+			REQUIRE(FS_Text4 == text);
+		}
 
-		DEFINE_FSTR_LOCAL(test, "This is a some test data \1\2\3 Not all ASCII\0"
-								"\0"
-								"\0"
-								"Anything, really\0"
-								"Can I go home now?");
-		LOAD_FSTR(data, test);
-		m_printHex(_F("TEST1"), data, test.length());
-		m_printHex(_F("TEST2"), data, test.length(), 0);
-		m_printHex(_F("TEST3"), data, test.length(), 0xFFFFF9, 8);
-		m_printHex(nullptr, data, test.length(), 0x7FFFFFF9, 0);
+		TEST_CASE("content check (manual inspection)")
+		{
+			DEFINE_FSTR_LOCAL(test, "This is a some test data \1\2\3 Not all ASCII\0"
+									"\0"
+									"\0"
+									"Anything, really\0"
+									"Can I go home now?");
+			LOAD_FSTR(data, test);
+			m_printHex(_F("TEST1"), data, test.length());
+			m_printHex(_F("TEST2"), data, test.length(), 0);
+			m_printHex(_F("TEST3"), data, test.length(), 0xFFFFF9, 8);
+			m_printHex(nullptr, data, test.length(), 0x7FFFFFF9, 0);
+		}
 
-		debugf("\nTest String concat");
 		String path = "/path/to";
 		String query;
 
 		debugf("path = \"%s\"", path.c_str());
 		debugf("query = \"%s\"", query.c_str());
 
-		String tmpString = path + query;
-		debugf("path + query = \"%s\"", tmpString.c_str());
+		TEST_CASE("validity check")
+		{
+			REQUIRE(path);
+		}
 
-		String tmpString2 = query + path;
-		debugf("query + path = \"%s\"", tmpString2.c_str());
+		TEST_CASE("nullstr check")
+		{
+			REQUIRE(!query);
+		}
+
+		TEST_CASE("string + nullstr")
+		{
+			String s = path + query;
+			debugf("path + query = \"%s\"", s.c_str());
+			REQUIRE(s == path);
+		}
+
+		TEST_CASE("nullstr + string")
+		{
+			String s = query + path;
+			debugf("query + path = \"%s\"", s.c_str());
+			REQUIRE(s == path);
+		}
 	}
 
 	void testMakeHexString()

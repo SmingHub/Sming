@@ -76,6 +76,11 @@ public:
 		return &request;
 	}
 
+	void setCloseOnContentError(bool close = true)
+	{
+		closeOnContentError = close;
+	}
+
 protected:
 	// HTTP parser methods
 
@@ -120,6 +125,8 @@ private:
 
 	const BodyParsers* bodyParsers = nullptr;	///< const reference ensures we cannot modify map, only look stuff up
 	HttpBodyParserDelegate bodyParser = nullptr; ///< Active body parser for this message, if any
+	bool closeOnContentError = false;
+	bool hasContentError = false;
 };
 
 /** @} */

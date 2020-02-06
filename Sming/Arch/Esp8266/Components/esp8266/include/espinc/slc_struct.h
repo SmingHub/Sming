@@ -14,8 +14,7 @@
 
 #pragma once
 
-#include <stdint.h>
-#include <eagle_soc.h>
+#include "eagle_soc.h"
 
 #ifdef __cplusplus
 extern "C" {

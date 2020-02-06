@@ -44,9 +44,7 @@ int onMailSent(SmtpClient& client, int code, char* status)
 
 void onConnected(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
-#ifdef ENABLE_SSL
-	client.addSslOptions(SSL_SERVER_VERIFY_LATER);
-#endif
+	client.setSslInitHandler([](Ssl::Session& session) { session.options.verifyLater = true; });
 
 	client.onServerError(onServerError);
 

@@ -32,24 +32,24 @@ void TcpClient::setBuffer(ReadWriteStream* stream)
 	this->stream = buffer;
 }
 
-bool TcpClient::connect(const String& server, int port, bool useSsl, uint32_t sslOptions)
+bool TcpClient::connect(const String& server, int port, bool useSsl)
 {
 	if(isProcessing()) {
 		return false;
 	}
 
 	state = eTCS_Connecting;
-	return TcpConnection::connect(server.c_str(), port, useSsl, sslOptions);
+	return TcpConnection::connect(server.c_str(), port, useSsl);
 }
 
-bool TcpClient::connect(IpAddress addr, uint16_t port, bool useSsl, uint32_t sslOptions)
+bool TcpClient::connect(IpAddress addr, uint16_t port, bool useSsl)
 {
 	if(isProcessing()) {
 		return false;
 	}
 
 	state = eTCS_Connecting;
-	return TcpConnection::connect(addr, port, useSsl, sslOptions);
+	return TcpConnection::connect(addr, port, useSsl);
 }
 
 bool TcpClient::send(const char* data, uint16_t len, bool forceCloseAfterSent)
@@ -138,12 +138,7 @@ void TcpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 void TcpClient::close()
 {
 	if(state != eTCS_Successful && state != eTCS_Failed) {
-		state = (totalSentConfirmedBytes == totalSentBytes) ? eTCS_Successful : eTCS_Failed;
-#ifdef ENABLE_SSL
-		if(ssl && sslConnected) {
-			state = (totalSentBytes == 0 || (totalSentConfirmedBytes > totalSentBytes)) ? eTCS_Successful : eTCS_Failed;
-		}
-#endif
+		state = (totalSentConfirmedBytes >= totalSentBytes) ? eTCS_Successful : eTCS_Failed;
 		totalSentBytes = 0;
 		totalSentConfirmedBytes = 0;
 		onFinished(state);
@@ -164,13 +159,7 @@ void TcpClient::pushAsyncPart()
 	if(stream->isFinished()) {
 		debug_d("TcpClient stream finished");
 		freeStreams();
-
-		if(getAvailableWriteSize() > 0) {
-			// if there is space in the output buffer
-			// then don't wait for tcp sent confirmation and try sending more data now
-			onReadyToSendData(TcpConnectionEvent::eTCE_Poll);
-		}
-
+		trySend(eTCE_Poll);
 		flush();
 	}
 }

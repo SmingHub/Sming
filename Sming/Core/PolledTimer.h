@@ -22,14 +22,14 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include <esp_attr.h>
 #include <sming_attr.h>
 #include <Platform/Clocks.h>
 
 /** @defgroup polled_timer Polled timers
  *  @brief    Polled interval timers
- *  @ingroup  timer
+ *  @ingroup  timers
  *  @{
 */
 
@@ -90,7 +90,7 @@ public:
 
 	/**
 	 * @brief Create a Timer with optional expiry time
-	 * @param interval Relative time until expiry
+	 * @param timeInterval Relative time until expiry
 	 */
 	IRAM_ATTR Timer(const TimeType& timeInterval = 0)
 	{
@@ -111,7 +111,7 @@ public:
 
 	/**
 	 * @brief Start the timer with a new expiry interval
-	 * @param interval Time to expire after last call to start()
+	 * @tparam timeInterval Time to expire after last call to start()
 	 */
 	template <uint64_t timeInterval> __forceinline void IRAM_ATTR reset()
 	{
@@ -136,7 +136,7 @@ public:
 
 	/**
 	 * @brief Start the timer with a new expiry interval
-	 * @param interval Time to expire after last call to start()
+	 * @param timeInterval Time to expire after last call to start()
 	 * @retval bool true on success, false on failure
 	 * @see See `resetTicks()`
 	 */

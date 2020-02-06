@@ -1,9 +1,10 @@
 #include <SmingCore.h>
 
 #include <Data/Stream/LimitedMemoryStream.h>
-#include <MultipartParser/HttpMultipartResource.h>
+#include <HttpMultipartResource.h>
 #include "SignedRbootOutputStream.h"
 #include "FirmwareVerificationKey.h"
+#include <MultipartParser.h>
 
 HttpServer server;
 String lastModified;
@@ -85,7 +86,7 @@ void fileUploadMapper(HttpFiles& files)
 	const rboot_config bootConfig = rboot_get_config();
 	uint8_t currentSlot = bootConfig.current_rom;
 	uint8_t slot = (currentSlot == 0 ? 1 : 0);
-	int romStartAddress = bootConfig.roms[slot];
+	auto romStartAddress = bootConfig.roms[slot];
 
 	size_t maxLength = 0x100000 - (romStartAddress & 0xFFFFF);
 	if(bootConfig.roms[currentSlot] > romStartAddress) {
@@ -100,6 +101,22 @@ void fileUploadMapper(HttpFiles& files)
 
 void startWebServer()
 {
+	HttpServerSettings settings;
+	/* 
+	 * If an error is detected early in a request's message body (like an attempt to upload a firmware image for the 
+	 * wrong slot), the default behaviour of Sming's HTTP server is to send the error response as soon as possible and 
+	 * then close the connection.
+	 * However, some HTTP clients (most notably Firefox!) start listening for a response only after having transmitted 
+	 * the whole request. Such clients may miss the error response entirely and instead report to the user that the 
+	 * connection was closed unexpectedly. Disabling 'closeOnContentError' instructs the server to delay the error 
+	 * response until after the whole message body has been received. This allows all clients to receive the response 
+	 * and display the exact error message to the user, leading to an overall improved user experience.
+	 */
+	settings.closeOnContentError = false;
+	settings.keepAliveSeconds = 2; // default from HttpServer::HttpServer()
+	server.configure(settings);
+	server.setBodyParser(MIME_FORM_MULTIPART, formMultipartParser);
+
 	server.listen(80);
 	server.paths.set("/", onIndex);
 

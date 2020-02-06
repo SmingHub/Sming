@@ -58,7 +58,7 @@ void ATTR_GDBEXTERNFN gdbHandleHostIo(char* commandBuffer, unsigned cmdLen)
 		++data; // skip ,
 		unsigned flags = GdbPacket::readHexValue(data);
 		++data;						   // Skip ,
-		GdbPacket::readHexValue(data); // Skip mode (not used)
+		unsigned mode = GdbPacket::readHexValue(data); // Skip mode (not used)
 
 		FileOpenFlags openFlags;
 		if((flags & 0xff) == O_RDWR) {
