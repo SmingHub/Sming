@@ -109,27 +109,42 @@ String::String(double value, unsigned char decimalPlaces) : String()
 	*this = dtostrf(value, 0, decimalPlaces, buf);
 }
 
-void String::setString(const char* cstr, int length /* = -1 */)
+void String::setString(const char* cstr)
 {
 	if(cstr) {
-		if(length < 0)
-			length = strlen(cstr);
+		copy(cstr, strlen(cstr));
+	} else {
+		invalidate();
+	}
+}
+
+void String::setString(const char* cstr, size_t length)
+{
+	if(cstr) {
 		copy(cstr, length);
 	} else {
 		invalidate();
 	}
 }
 
-void String::setString(flash_string_t pstr, int length /* = -1 */)
+void String::setString(flash_string_t pstr)
 {
 	if(pstr) {
-		if(length < 0)
-			length = strlen_P((PGM_P)pstr);
+		copy(pstr, strlen_P((PGM_P)pstr));
+	} else {
+		invalidate();
+	}
+}
+
+void String::setString(flash_string_t pstr, size_t length)
+{
+	if(pstr) {
 		copy(pstr, length);
 	} else {
 		invalidate();
 	}
 }
+
 /*********************************************/
 /*  Memory Management                        */
 /*********************************************/

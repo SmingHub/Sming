@@ -174,9 +174,13 @@ public:
 	{
 		*this = str;
 	}
-	explicit String(flash_string_t pstr, int length = -1) : String()
+	explicit String(flash_string_t pstr, size_t length) : String()
 	{
 		setString(pstr, length);
+	}
+	explicit String(flash_string_t pstr) : String()
+	{
+		setString(pstr);
 	}
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
@@ -203,8 +207,10 @@ public:
 		invalidate();
 	}
 
-	void setString(const char* cstr, int length = -1);
-	void setString(flash_string_t pstr, int length = -1);
+	void setString(const char* cstr);
+	void setString(const char* cstr, size_t length);
+	void setString(flash_string_t pstr);
+	void setString(flash_string_t pstr, size_t length);
 
 	// memory management
 
