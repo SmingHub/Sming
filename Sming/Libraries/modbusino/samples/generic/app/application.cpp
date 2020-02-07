@@ -15,18 +15,18 @@ void mbSlaveLoop() {
 }
 
 void mbPrint() {
-	debugf("Register values, #1: %d, #2: %d, #3: %d", tab_reg[0], tab_reg[1], tab_reg[2]);
+	debugf("Register values, #0: %d, #1: %d, #2: %d", tab_reg[0], tab_reg[1], tab_reg[2]);
 }
 
 void init()
 {
 	pinMode(15, OUTPUT);
-	Serial.begin(SERIAL_BAUD_RATE, SERIAL_8N1, SERIAL_FULL);
 	debugComPort.begin(SERIAL_BAUD_RATE, SERIAL_8N1,
 					  SERIAL_TX_ONLY);
 	debugComPort.systemDebugOutput(true);
 	Debug.setDebug(debugComPort);
 	Debug.start();
+	MbSlave.setup();
 
 	mbSlaveLoopTimer.initializeMs(10,mbSlaveLoop).start();
 	mbPrintTimer.initializeMs(1000,mbPrint).start();
