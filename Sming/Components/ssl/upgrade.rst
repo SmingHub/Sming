@@ -111,7 +111,8 @@ has access to the current SSL session and HTTP request and can modify them accor
      // We're using validators, so don't attempt to validate full certificate
      session.options.verifyLater = true;
 
-     session.fragmentSize = Ssl::eSEFS_16K;
+     // Go with maximum buffer sizes
+     session.maxBufferSize = Ssl::MaxBufferSize::K16;
    }
 
 Note also that the ``Fingerprints`` class has been removed.
@@ -130,8 +131,8 @@ organised within the ``Crypto`` namespace.
 
 This is primarily for use with the SSL interface but does not require SSL to be enabled.
 
-The cryptographic 'C' libraries themselves may be used directly by your application, regardless
-of which SSL adapter is in use, or even if SSL is disabled.
+Alternatively, the cryptographic 'C' libraries themselves may be used directly by your application,
+regardless of which SSL adapter is in use, or even if SSL is disabled.
 
 For example the following old code is using axTLS cryptographic functions::
 
