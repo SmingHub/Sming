@@ -2,8 +2,6 @@
 #include <Debug.h>
 #include <Modbusino.h>
 
-Timer mbPrintTimer;
-
 #define ARRLEN 3
 uint16_t mbDataArray[ARRLEN] = {0,0,0};
 ModbusinoSlave MbSlave(MB_SLAVE_ADDR, mbDataArray, ARRLEN);
@@ -22,6 +20,5 @@ void init()
 	Debug.setDebug(debugComPort);
 	Debug.start();
 	MbSlave.setup(SERIAL_BAUD_RATE);
-
-	mbPrintTimer.initializeMs(2500,mbPrint).start();
+	MbSlave.setRxCallback(mbPrint);
 }
