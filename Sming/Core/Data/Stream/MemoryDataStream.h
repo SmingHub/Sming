@@ -78,6 +78,8 @@ public:
 		return readPos >= size;
 	}
 
+	bool moveString(String& s) override;
+
 	/**
 	 * @brief Pre-allocate stream to given size
 	 * @param minCapacity Total minimum number of bytes required in stream

@@ -166,4 +166,24 @@ public:
 	 * @note Stream position is updated by this call
 	 */
 	String readString(size_t maxLen) override;
+
+	/**
+	 * @brief Memory-based streams may be able to move content into a String
+	 * @param s String object to move data into
+	 * @retval bool true on success, false if there's a problem.
+	 *
+	 * If the operation is not supported by the stream, `s` will be invalidated and false returned.
+	 *
+	 * Because a String object must have a NUL terminator, this will be appended if there is
+	 * sufficient capacity. In this case, the method returns true.
+	 *
+	 * If there is no capacity to add a NUL terminator, then the final character of stream data
+	 * will be replaced with a NUL. The method returns false to indicate this.
+	 *
+	 */
+	virtual bool moveString(String& s)
+	{
+		s = nullptr;
+		return false;
+	};
 };

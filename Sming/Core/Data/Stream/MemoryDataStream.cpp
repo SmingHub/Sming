@@ -90,3 +90,18 @@ int MemoryDataStream::seekFrom(int offset, unsigned origin)
 	readPos = newPos;
 	return readPos;
 }
+
+bool MemoryDataStream::moveString(String& s)
+{
+	// Ensure size < capacity
+	bool sizeOk = ensureCapacity(size + 1);
+
+	// If we couldn't reallocate for the NUL terminator, drop the last character
+	assert(s.setBuffer({buffer, capacity, sizeOk ? size : size - 1}));
+
+	buffer = nullptr;
+	readPos = 0;
+	size = 0;
+	capacity = 0;
+	return sizeOk;
+}
