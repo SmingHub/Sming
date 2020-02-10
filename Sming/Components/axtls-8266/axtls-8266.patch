@@ -408,7 +408,7 @@ index d90b093..f18fbd5 100644
 +            m_putc((num <= 9) ? (num + '0') : (num + 'A' - 10));
          }
      }  
-
+ 
 diff --git a/ssl/crypto_misc.h b/ssl/crypto_misc.h
 index 02d9306..88c234f 100644
 --- a/ssl/crypto_misc.h
