@@ -19,6 +19,7 @@ jobs:
         - python3-sphinx
         - python3-pip
         - python3-setuptools
+        - python3-cairocffi
         - graphviz-dev
         - xmlstarlet
         - jq

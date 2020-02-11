@@ -9,10 +9,6 @@ web-pack:
 web-upload: web-pack spiffs-image-update
 	$(call WriteFlash,$(RBOOT_SPIFFS_0)=$(SPIFF_BIN_OUT))
 
-.PHONY: python-requirements
-python-requirements:
-	$(PYTHON) -m pip install --user -r requirements.txt
-
 SIGNTOOL := $(PYTHON) $(COMPONENT_PATH)/signtool.py
 SIGNING_KEY := $(COMPONENT_PATH)/signing.key
 VERIFICATION_HEADER := $(COMPONENT_PATH)/app/FirmwareVerificationKey.h
