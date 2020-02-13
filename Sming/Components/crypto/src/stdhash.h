@@ -4,16 +4,15 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * hash.h - Code templates for all hash functions
+ * hash.h - Code templates for standard hash functions
  *
  ****/
 
 #pragma once
 
-#include "../include/Crypto/HashApi.h"
 #include "util.h"
 #include <cstring>
-#include <FakePgmSpace.h>
+#include <sys/pgmspace.h>
 
 using namespace Crypto::Internal;
 

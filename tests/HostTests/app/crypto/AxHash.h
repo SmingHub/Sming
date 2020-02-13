@@ -42,15 +42,6 @@ namespace Ax
 			name_##_Final(hash, &context);                                                                             \
 		}                                                                                                              \
                                                                                                                        \
-		uint64_t get_state(void* state)                                                                                \
-		{                                                                                                              \
-			return 0;                                                                                                  \
-		}                                                                                                              \
-                                                                                                                       \
-		void set_state(const void* state, uint64_t count)                                                              \
-		{                                                                                                              \
-		}                                                                                                              \
-                                                                                                                       \
 	private:                                                                                                           \
 		name_##_CTX context;                                                                                           \
 	};
