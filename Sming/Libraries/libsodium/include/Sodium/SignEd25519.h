@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <Crypto/HashContext.h>
+#include <Crypto/Sha2.h>
 
 namespace Sodium
 {

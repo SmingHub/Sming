@@ -14,7 +14,7 @@ def import_nacl():
     except:
         sys.stderr.write("""\
     It seems you have not installed libsodium bindings for python.
-    Run 'make python-requirements' (!to be implemented!) to install the necessary files using pip (recommended for Windows users).
+    Run 'make python-requirements' to install the necessary files using pip (recommended for Windows users).
     Linux users are advised to use their distribution's package manager instead. Search for a package 
     named 'python-nacl' or similar.
     """)

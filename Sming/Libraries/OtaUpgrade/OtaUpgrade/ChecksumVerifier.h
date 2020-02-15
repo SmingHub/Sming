@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <Crypto/HashContext.h>
+#include <Crypto/Md5.h>
 
 namespace OtaUpgrade
 {

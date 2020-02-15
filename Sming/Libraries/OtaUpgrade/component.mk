@@ -7,7 +7,7 @@ COMPONENT_INCDIRS := .
 
 COMPONENT_DOXYGEN_INPUT := .
 
-OTATOOL := python $(COMPONENT_PATH)/otatool.py
+OTATOOL := $(PYTHON) $(COMPONENT_PATH)/otatool.py
 
 # Create a directory for generated source code (keys, build timestamp)
 OTA_GENCODE_DIR := out/OtaUpgrade
@@ -44,6 +44,8 @@ endif
 
 ifneq ($(OTA_CRYPTO_FEATURES),)
 COMPONENT_DEPENDS += libsodium
+# Crypto features require the PyNaCl - the Python equivalent of libsodium
+COMPONENT_PYTHON_REQUIREMENTS := requirements.txt
 
 RELINK_VARS += OTA_KEY
 OTA_KEY ?= ota.key
@@ -70,6 +72,8 @@ App-build: $(OTA_DECRYPT_KEY_BIN) $(OTA_VERIFY_KEY_BIN)
 $(OTA_DECRYPT_KEY_BIN) $(OTA_VERIFY_KEY_BIN): $(OTA_KEY) | $(OTA_GENCODE_DIR)
 	$(Q) $(OTATOOL) mkbinkeys --key=$< --output=$(OTA_GENCODE_DIR)
 
+else
+COMPONENT_PYTHON_REQUIREMENTS :=
 endif # OTA_CRYPTO_FEATURES
 
 # Downgrade protection:
