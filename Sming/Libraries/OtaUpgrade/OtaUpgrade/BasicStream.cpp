@@ -55,6 +55,7 @@ BasicStream::Slot::Slot()
 BasicStream::BasicStream()
 {
 	setupChunk(State::Header, fileHeader);
+	romHeader = {}; // make cppcheck happy (will be overwritten with content from received upgrade image)
 }
 
 bool BasicStream::consume(const uint8_t*& data, size_t& size)

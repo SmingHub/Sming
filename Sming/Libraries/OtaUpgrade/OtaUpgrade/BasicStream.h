@@ -139,8 +139,8 @@ private:
 #endif
 	Verifier verifier;
 
-	OTA_FileHeader fileHeader;
-	OTA_RomHeader romHeader;
+	OtaFileHeader fileHeader;
+	OtaRomHeader romHeader;
 
 	Verifier::VerificationData verificationData;
 
