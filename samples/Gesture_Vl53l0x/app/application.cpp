@@ -36,6 +36,8 @@ void init()
 	// Create components.
 	Wire.begin(SDA, SCL);
 
+	lox.setLongRangeMode(true);
+
 	if (!lox.begin()) {
 		Serial.println(F("Failed to boot VL53L0X"));
 		while (1) {}
