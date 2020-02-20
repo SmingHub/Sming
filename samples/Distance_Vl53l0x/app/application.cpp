@@ -11,17 +11,19 @@ Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 
 Timer loopTimer;
 
-void loop() {
-  VL53L0X_RangingMeasurementData_t measure;
+void loop()
+{
+	VL53L0X_RangingMeasurementData_t measure;
 
-  Serial.print("Reading a measurement... ");
-  lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
+	Serial.print("Reading a measurement... ");
+	lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
 
-  if (measure.RangeStatus != 4) {  // phase failures have incorrect data
-    Serial.print("Distance (mm): "); Serial.println(measure.RangeMilliMeter);
-  } else {
-    Serial.println(" out of range ");
-  }
+	if(measure.RangeStatus != 4) { // phase failures have incorrect data
+		Serial.print("Distance (mm): ");
+		Serial.println(measure.RangeMilliMeter);
+	} else {
+		Serial.println(" out of range ");
+	}
 }
 
 void init()
@@ -38,9 +40,10 @@ void init()
 
 	lox.setLongRangeMode(true);
 
-	if (!lox.begin()) {
+	if(!lox.begin()) {
 		Serial.println(F("Failed to boot VL53L0X"));
-		while (1) {}
+		while(1) {
+		}
 	}
 
 	Serial.println(F("VL53L0X API Simple Ranging example\n\n"));
