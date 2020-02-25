@@ -1,7 +1,7 @@
 #include <SmingCore.h>
 #include <Adafruit_VL53L0X.h>
 
-Adafruit_VL53L0X lox = Adafruit_VL53L0X();
+Adafruit_VL53L0X lox;
 
 // GPIO - NodeMCU pins
 #define SDA 4	// D2
@@ -47,5 +47,5 @@ void init()
 	}
 
 	Serial.println(F("VL53L0X API Simple Ranging example\n\n"));
-	loopTimer.initializeMs(100, loop).start();
+	loopTimer.initializeMs<100>(loop).start();
 }
