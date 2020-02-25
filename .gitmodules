@@ -138,3 +138,7 @@
 	path = Sming/Libraries/ModbusMaster/ModbusMaster
 	url = https://github.com/nomis/ModbusMaster.git
 	ignore = dirty
+[submodule "Libraries.Adafruit_VL53L0X"]
+	path = Sming/Libraries/Adafruit_VL53L0X
+	url = https://github.com/adafruit/Adafruit_VL53L0X.git
+	ignore = dirty
