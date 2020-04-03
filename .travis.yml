@@ -74,7 +74,7 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-    condition: $TRAVIS_BUILD_STAGE_NAME = Test
+    condition: $TRAVIS_BUILD_STAGE_NAME = test
 notifications:
   webhooks:
     urls:
