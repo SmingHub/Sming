@@ -14,7 +14,7 @@ export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
 cd $SMING_HOME
 
 # Check coding style
-if [ "$TRAVIS_BUILD_STAGE_NAME" == "Test" ]; then
+if [ "$TRAVIS_BUILD_STAGE_NAME" == "test" ]; then
  	make cs
  	DIFFS=$(git diff)
  	if [ "$DIFFS" != "" ]; then
@@ -58,7 +58,7 @@ fi
 
 cd $SMING_HOME
 
-if [ "$TRAVIS_BUILD_STAGE_NAME" == "Test" ]; then
+if [ "$TRAVIS_BUILD_STAGE_NAME" == "test" ]; then
 	if [[ $CHECK_SCA -eq 1 ]]; then
 		$TRAVIS_BUILD_DIR/.travis/coverity-scan.sh
 	else
