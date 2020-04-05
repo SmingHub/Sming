@@ -4,3 +4,20 @@ rename to lib/libc.orig.a
 diff --git a/lib/libgcc.a b/lib/libgcc.orig.a
 rename from lib/libgcc.a
 rename to lib/libgcc.orig.a
+diff --git a/include/version.h b/include/version.h
+index 9993f22..03edcf7 100755
+--- a/include/version.h
++++ b/include/version.h
+@@ -3,9 +3,9 @@
+ 
+ #define ESP_SDK_VERSION_MAJOR   3
+ #define ESP_SDK_VERSION_MINOR   0
+-#define ESP_SDK_VERSION_PATCH   1
++#define ESP_SDK_VERSION_PATCH   3
+ 
+-#define ESP_SDK_VERSION_NUMBER 0x030001
+-#define ESP_SDK_VERSION_STRING  "3.0.1"
++#define ESP_SDK_VERSION_NUMBER 0x030003
++#define ESP_SDK_VERSION_STRING  "3.0.3"
+ 
+ #endif
