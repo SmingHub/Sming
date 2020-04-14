@@ -27,7 +27,6 @@ void mbLoop()
 
 	uint8_t nrOfRegistersToRead = 1;
 	uint8_t mbResult = mbMaster.readHoldingRegisters(SLAVE_REG_ADDR, nrOfRegistersToRead); //see also readInputRegisters
-	uint16_t result = 0;
 
 	if(mbResult == mbMaster.ku8MBSuccess) {
 		/*
@@ -38,7 +37,7 @@ void mbLoop()
 		*/
 		debugf("Data from slave: %d", mbMaster.getResponseBuffer(0));
 	} else {
-		debugf("Res err: %d", result);
+		debugf("Res err: %d", mbResult);
 	}
 
 	mbMaster.clearResponseBuffer();
