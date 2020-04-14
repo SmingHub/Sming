@@ -46,12 +46,12 @@ void mbLoop()
 void preTransmission()
 {
 	digitalWrite(RS485_RE_PIN, HIGH);
-	delayMilliseconds(2);
+	//delayMilliseconds(1);
 }
 
 void postTransmission()
 {
-	delayMicroseconds(500);
+	//delayMicroseconds(500);
 	digitalWrite(RS485_RE_PIN, LOW);
 }
 
