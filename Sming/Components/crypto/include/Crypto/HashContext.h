@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include "HashEngine.h"
 #include "Blob.h"
 #include "ByteArray.h"
 
@@ -31,17 +30,17 @@ public:
 		uint64_t count;
 	};
 
-	HashContext()
+	template <typename... EngineArgs> HashContext(EngineArgs&&... engineArgs)
 	{
-		reset();
+		reset(std::forward<EngineArgs>(engineArgs)...);
 	}
 
 	/**
 	 * @brief Reset the context for a new calculation
 	 */
-	HashContext& reset()
+	template <typename... EngineArgs> HashContext& reset(EngineArgs&&... engineArgs)
 	{
-		engine.init();
+		engine.init(std::forward<EngineArgs>(engineArgs)...);
 		return *this;
 	}
 
@@ -104,6 +103,7 @@ public:
 	 * @brief Get intermediate hash state
 	 * @param state OUT: current state
 	 * @retval uint64_t Number of bytes processed so far
+	 * @note This method is only required for core hashes, used by Bear SSL
 	 */
 	State getState()
 	{
@@ -119,6 +119,7 @@ public:
 	 *
 	 * @param state
 	 * @param count
+	 * @note This method is only required for core hashes, used by Bear SSL
 	 */
 	void setState(const State& state)
 	{
@@ -128,16 +129,5 @@ public:
 private:
 	Engine engine;
 };
-
-/*
- * Context definitions
- */
-
-using Md5 = HashContext<Md5Engine>;
-using Sha1 = HashContext<Sha1Engine>;
-using Sha224 = HashContext<Sha224Engine>;
-using Sha256 = HashContext<Sha256Engine>;
-using Sha384 = HashContext<Sha384Engine>;
-using Sha512 = HashContext<Sha512Engine>;
 
 } // namespace Crypto

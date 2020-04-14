@@ -1,0 +1,100 @@
+diff --git a/src/Adafruit_VL53L0X.cpp b/src/Adafruit_VL53L0X.cpp
+index 5a1e650..6699d6e 100644
+--- a/src/Adafruit_VL53L0X.cpp
++++ b/src/Adafruit_VL53L0X.cpp
+@@ -35,8 +35,8 @@
+ #define VERSION_REQUIRED_MINOR  0 ///< Required sensor minor version
+ #define VERSION_REQUIRED_BUILD  1 ///< Required sensor build
+ 
+-#define STR_HELPER( x ) #x ///< a string helper
+-#define STR( x )        STR_HELPER(x) ///< string helper wrapper
++//#define STR_HELPER( x ) #x ///< a string helper
++//#define STR( x )        STR_HELPER(x) ///< string helper wrapper
+ 
+ /**************************************************************************/
+ /*! 
+@@ -162,8 +162,33 @@ boolean Adafruit_VL53L0X::begin(uint8_t i2c_addr, boolean debug, TwoWire *i2c) {
+       Status = VL53L0X_SetLimitCheckEnable( pMyDevice, VL53L0X_CHECKENABLE_RANGE_IGNORE_THRESHOLD, 1 );
+   }
+ 
+-  if( Status == VL53L0X_ERROR_NONE ) {
+-      Status = VL53L0X_SetLimitCheckValue( pMyDevice, VL53L0X_CHECKENABLE_RANGE_IGNORE_THRESHOLD, (FixPoint1616_t)( 1.5 * 0.023 * 65536 ) );
++  if(!longRange) { // 30mm to 1.2 meter
++	  if( Status == VL53L0X_ERROR_NONE ) {
++	        Status = VL53L0X_SetLimitCheckValue( pMyDevice, VL53L0X_CHECKENABLE_RANGE_IGNORE_THRESHOLD, (FixPoint1616_t)( 1.5 * 0.023 * 65536 ) );
++	    }
++  }
++  else { // can detect as far as 1.5 to 2 meters on a nice white reflective surface
++	  // @credits: https://github.com/satoshinm/Adafruit_VL53L0X/commit/72c71bd44091f95ef1211f9ff3928e675dda1348
++	  // Long range mode - based on https://github.com/johnbryanmoore/VL53L0X_rasp_python/blob/master/python_lib/vl53l0x_python.c#L292
++	  if (Status == VL53L0X_ERROR_NONE) {
++		  Status = VL53L0X_SetLimitCheckValue(pMyDevice, VL53L0X_CHECKENABLE_SIGNAL_RATE_FINAL_RANGE, (FixPoint1616_t)(0.1*65536));
++	  }
++
++	  if (Status == VL53L0X_ERROR_NONE) {
++		  Status = VL53L0X_SetLimitCheckValue(pMyDevice, VL53L0X_CHECKENABLE_SIGMA_FINAL_RANGE, (FixPoint1616_t)(60*65536));
++	  }
++
++	  if (Status == VL53L0X_ERROR_NONE) {
++		  Status = VL53L0X_SetMeasurementTimingBudgetMicroSeconds(pMyDevice, 33000);
++	  }
++
++	  if (Status == VL53L0X_ERROR_NONE) {
++		  Status = VL53L0X_SetVcselPulsePeriod(pMyDevice, VL53L0X_VCSEL_PERIOD_PRE_RANGE, 18);
++	  }
++
++	  if (Status == VL53L0X_ERROR_NONE) {
++		  Status = VL53L0X_SetVcselPulsePeriod(pMyDevice, VL53L0X_VCSEL_PERIOD_FINAL_RANGE, 14);
++	  }
+   }
+ 
+   if( Status == VL53L0X_ERROR_NONE ) {
+@@ -268,3 +293,8 @@ void Adafruit_VL53L0X::printRangeStatus( VL53L0X_RangingMeasurementData_t* pRang
+     Serial.println( buf );
+ 
+ }
++
++void Adafruit_VL53L0X::setLongRangeMode(bool flag)
++{
++	longRange = flag;
++}
+diff --git a/src/Adafruit_VL53L0X.h b/src/Adafruit_VL53L0X.h
+index 6f06604..47841c7 100644
+--- a/src/Adafruit_VL53L0X.h
++++ b/src/Adafruit_VL53L0X.h
+@@ -38,6 +38,7 @@
+ class Adafruit_VL53L0X
+ {
+   public:
++	void 		  setLongRangeMode(bool flag);
+     boolean       begin(uint8_t i2c_addr = VL53L0X_I2C_ADDR, boolean debug = false, TwoWire *i2c = &Wire);
+     boolean       setAddress(uint8_t newAddr);
+ 
+@@ -65,6 +66,7 @@ class Adafruit_VL53L0X
+   VL53L0X_Version_t                   Version;
+   VL53L0X_Version_t                   *pVersion   = &Version;
+   VL53L0X_DeviceInfo_t                DeviceInfo;
++  bool                                longRange   = false;
+ };
+ 
+ #endif
+diff --git a/src/vl53l0x_platform_log.h b/src/vl53l0x_platform_log.h
+index 26387d0..d203b3c 100644
+--- a/src/vl53l0x_platform_log.h
++++ b/src/vl53l0x_platform_log.h
+@@ -88,13 +88,13 @@ void trace_print_module_function(uint32_t module, uint32_t level, uint32_t funct
+ #define LOG_GET_TIME() (int)clock()
+ 
+ #define _LOG_FUNCTION_START(module, fmt, ... ) \
+-        trace_print_module_function(module, _trace_level, TRACE_FUNCTION_ALL, "%ld <START> %s "fmt"\n", LOG_GET_TIME(), __FUNCTION__, ##__VA_ARGS__);
++        trace_print_module_function(module, _trace_level, TRACE_FUNCTION_ALL, "%ld <START> %s " fmt "\n", LOG_GET_TIME(), __FUNCTION__, ##__VA_ARGS__);
+ 
+ #define _LOG_FUNCTION_END(module, status, ... )\
+         trace_print_module_function(module, _trace_level, TRACE_FUNCTION_ALL, "%ld <END> %s %d\n", LOG_GET_TIME(), __FUNCTION__, (int)status, ##__VA_ARGS__)
+ 
+ #define _LOG_FUNCTION_END_FMT(module, status, fmt, ... )\
+-        trace_print_module_function(module, _trace_level, TRACE_FUNCTION_ALL, "%ld <END> %s %d "fmt"\n", LOG_GET_TIME(),  __FUNCTION__, (int)status,##__VA_ARGS__)
++        trace_print_module_function(module, _trace_level, TRACE_FUNCTION_ALL, "%ld <END> %s %d " fmt "\n", LOG_GET_TIME(),  __FUNCTION__, (int)status,##__VA_ARGS__)
+ 
+ // __func__ is gcc only
+ //#define VL53L0X_ErrLog( fmt, ...)  fprintf(stderr, "VL53L0X_ErrLog %s" fmt "\n", __func__, ##__VA_ARGS__)

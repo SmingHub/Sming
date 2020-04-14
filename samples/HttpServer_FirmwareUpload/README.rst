@@ -1,11 +1,18 @@
 HttpServer Firmware Upload
 ==========================
 
-Introduction
-------------
+This example combines the libraries :library:`MultipartParser` for file uploads
+and :library:`OtaUpgrade`, to create a browser based firmware upgrade solution
+akin to what's found in many consumer devices.
+The example is kept as minimal as possible to serve as a starting point for your
+own applications.
+
+
+About HTTP server file upload
+-----------------------------
 
 The HTTP server coming with Sming is quite powerful but it is limited
-from the available resources of the underlining hardware (your favorite
+by the available resources of the underlining hardware (your favorite
 ESP8266 microcontroller).
 
 This sample demonstrates how to use the :library:`MultipartParser` library
@@ -15,39 +22,62 @@ incoming data.
 
 On an embedded device that is a luxury that we can hardly afford.
 In this sample we demonstrate how to define which file upload fields
-should be stored and what (file) streams are responsible for storing the data.
+should be recognized and what (file) streams are responsible for processing and
+storing the data.
 If a field is not specified then its content will be discarded.
 
 
-Firmware upgrade via web interface
-----------------------------------
+About OtaUpgrade
+----------------
 
-The file upload feature is used to implement a simple firmware upgrade 
-mechanism where the new firmware image is uploaded via the web browser.
-As a security measure, firmware images must be cryptographically signed 
-to prevent unauthorized parties from installing malicious firmware on 
-your device. A public-key based signature algorithm is used. On first run, 
-the build process will automatically generates a private 'signigning.key', 
-which must be kept secret for obvious reasons. The corresponding public 
-verification key is compiled into the firmware. A signed image is generated 
-from the original ROM image and the signing.key using a small Python utility.
+The OtaUpgrade component provides the :cpp:type:`OtaUpgradeStream` class which 
+is hooked up to the web server to process a firmware upgrade file uploaded to
+the device.
+The component is also responsible for creating the upgrade files during the build 
+process. A single upgrade file conveniently encapsulates all ROM images, thereby
+relieving the user from having to know the slot that is updated and manually
+selecting the corresponding ROM image in a Two-ROM configuration.
+The file format also supports state-of-the-art security features like a digital
+signature, encryption and downgrade protection. You are invited to play with  
+them and observe their impact on code size. See also the :library:`OtaUpgrade` 
+documentation for further advice on how to use the security features properly.
 
 
 Usage instructions
 ------------------
 
-1. 'make flash' to build and flash the example via USB cable. You need to do 
-   this only once. Subsequent updates can be performed using the web interface.
 
-2. 'make signedrom' to create the signed images in out/firmware/.../rom*.bin.signed
+1. Configure your flash memory layout:
 
-3. Point your browser to your ESP's IP address to open the firmware upgrade page.
+   -  Set :envvar:`SPI_SIZE` to the flash memory size of your device.
+   -  If necessary, modify :envvar:`RBOOT_ROM0_ADDR`, :envvar:`RBOOT_ROM1_ADDR`, 
+      :envvar:`RBOOT_SPIFFS_0` and :envvar:`SPIFF_SIZE` to fit both ROM slots and
+      the file system into the available flash memory. Make sure that the 
+      flash areas do not overlap with each other or any the reserved regions.
+      Refer to the :component:`rboot` documentation for further details.
 
-4. Select the signed image created in step 2 and hit the "Update" button. 
-   If you have an ROM layout that requires two different images, select the image 
-   for the currently unused slot. 
-   After a few seconds, you should see a confirmation that the upgrade was successful.
-   The ESP now reboots into the new firmware. 
+2. Build the example by running::
+
+      make
+
+3. Connect your device via USB/Serial cable and run::
+
+      make flashconfig
+      
+   to clear any remains of the previous flash layout configuration, followed by::
+
+      make flash
+
+   to install the example firmware. You need to do this only once. Subsequent 
+   updates can be performed wirelessly using the web interface.
+
+4. Point the browser to your ESP's IP address to open the firmware upgrade page.
+
+5. Select the upgrade file, which has been automatically created alongside step 2
+   from ``out/Esp8266/<build-type>/firmware/firmware.ota`` and hit the "Update" button.
    
-If the upgrade is not successful, check the serial console for error messages.
-
+   After a few seconds, you should see a confirmation the the upgrade was successful.
+   The device now reboots into the upgraded firmware.
+   
+   If the upgrade is not successful, rebuild with debug output enabled and check the 
+   serial console for error messages.

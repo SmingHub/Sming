@@ -1,5 +1,5 @@
 diff --git a/ws_parser.c b/ws_parser.c
-index 88e4810..e2d1147 100644
+index d43adbe..beeb611 100644
 --- a/ws_parser.c
 +++ b/ws_parser.c
 @@ -3,6 +3,7 @@
@@ -12,13 +12,13 @@ index 88e4810..e2d1147 100644
      S_OPCODE = 0,
 @@ -27,6 +28,7 @@ enum {
  void
- ws_parser_init(ws_parser_t* parser, const ws_parser_callbacks_t* callbacks)
+ ws_parser_init(ws_parser_t* parser)
  {
-+	memset(parser, 0, sizeof(ws_parser_t));
-     parser->user_data = NULL;
-     parser->callbacks = callbacks;
++    memset(parser, 0, sizeof(ws_parser_t));
      parser->state = S_OPCODE;
-@@ -244,7 +246,8 @@ ws_parser_execute(ws_parser_t* parser, /* mutates! */ char* buff, size_t len)
+     parser->fragment = 0;
+ }
+@@ -247,7 +249,8 @@ ws_parser_execute(
                  }
  
                  if(parser->mask_flag) {

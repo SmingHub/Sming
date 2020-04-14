@@ -42,15 +42,6 @@ namespace Esp
 			ESP_##name_##_Final(hash, &context);                                                                       \
 		}                                                                                                              \
                                                                                                                        \
-		uint64_t get_state(void* state)                                                                                \
-		{                                                                                                              \
-			return 0;                                                                                                  \
-		}                                                                                                              \
-                                                                                                                       \
-		void set_state(const void* state, uint64_t count)                                                              \
-		{                                                                                                              \
-		}                                                                                                              \
-                                                                                                                       \
 	private:                                                                                                           \
 		ESP_##name_##_CTX context;                                                                                     \
 	};

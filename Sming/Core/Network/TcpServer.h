@@ -65,6 +65,11 @@ public:
 
 	void shutdown();
 
+	const Vector<TcpConnection*>& getConnections() const
+	{
+		return connections;
+	}
+
 protected:
 	// Overload this method in your derived class!
 	virtual TcpConnection* createClient(tcp_pcb* clientTcp);
@@ -79,11 +84,11 @@ private:
 	static err_t staticAccept(void* arg, tcp_pcb* new_tcp, err_t err);
 
 public:
-	static uint16_t totalConnections; ///< @deprecated not updated by framework
 	uint16_t activeClients = 0;
 
 protected:
 	size_t minHeapSize = 16384;
+	uint16_t maxConnections = 0; ///< By default, don't limit connection count
 
 	bool active = true;
 	Vector<TcpConnection*> connections;

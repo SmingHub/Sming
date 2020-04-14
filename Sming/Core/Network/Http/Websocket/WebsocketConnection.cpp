@@ -48,8 +48,7 @@ WebsocketConnection::WebsocketConnection(HttpConnection* connection, bool isClie
 {
 	setConnection(connection, isClientConnection);
 
-	ws_parser_init(&parser, &parserSettings);
-	parser.user_data = this;
+	ws_parser_init(&parser);
 }
 
 bool WebsocketConnection::bind(HttpRequest& request, HttpResponse& response)
@@ -98,7 +97,7 @@ void WebsocketConnection::activate()
 
 bool WebsocketConnection::processFrame(TcpClient& client, char* at, int size)
 {
-	int rc = ws_parser_execute(&parser, at, size);
+	int rc = ws_parser_execute(&parser, &parserSettings, this, at, size);
 	if(rc != WS_OK) {
 		debug_e("WebsocketResource error: %d %s\n", rc, ws_parser_error(rc));
 		return false;
@@ -280,8 +279,7 @@ void WebsocketConnection::close()
 
 void WebsocketConnection::reset()
 {
-	ws_parser_init(&parser, &parserSettings);
-	parser.user_data = this;
+	ws_parser_init(&parser);
 
 	activated = false;
 }

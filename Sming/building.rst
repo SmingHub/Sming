@@ -562,6 +562,22 @@ changed as required.
 
    Set to any additional flags to be used when linking.
 
+.. envvar:: COMPONENT_PYTHON_REQUIREMENTS
+
+   If the component requires uncommon Python modules (e. g. as part of a custom
+   build step), set this variable to one or more `requirements.txt <https://pip.readthedocs.io/en/latest/reference/pip_install/#requirements-file-format>`_
+   files. This allows installation of all python requirements of the project by
+   invoking::
+
+      make python-requirements [PIP_ARGS=...]
+
+   .. note::
+
+      A `requirements.txt` file in the root directory of the Component is
+      detected automatically without setting this variable. To prevent
+      autodetection (e.g. if the python requirements depend on another
+      configuration variable) you must set this variable to an empty value.
+
 These values are global so must only be appended to (with ``+=``) ,
 never overwritten.
 

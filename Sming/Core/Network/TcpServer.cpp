@@ -10,8 +10,6 @@
 
 #include "TcpServer.h"
 
-uint16_t TcpServer::totalConnections = 0;
-
 TcpConnection* TcpServer::createClient(tcp_pcb* clientTcp)
 {
 	debug_d("TCP Server createClient %sNULL\r\n", clientTcp ? "not" : "");
@@ -25,12 +23,6 @@ TcpConnection* TcpServer::createClient(tcp_pcb* clientTcp)
 									   TcpClientCompleteDelegate(&TcpServer::onClientComplete, this));
 
 	return con;
-}
-
-//Timer stateTimer;
-void list_mem()
-{
-	debug_d("Free heap size=%u, K=%u", system_get_free_heap_size(), TcpServer::totalConnections);
 }
 
 void TcpServer::setKeepAlive(uint16_t seconds)
@@ -55,7 +47,6 @@ bool TcpServer::listen(int port, bool useSsl)
 	tcp = tcp_listen(tcp);
 	tcp_accept(tcp, staticAccept);
 
-	//stateTimer.initializeMs(3500, list_mem).start();
 	return true;
 }
 
@@ -67,9 +58,15 @@ err_t TcpServer::onAccept(tcp_pcb* clientTcp, err_t err)
 		return ERR_MEM;
 	}
 
+	// Obey any requested connection limit
+	if(maxConnections != 0 && connections.count() >= maxConnections) {
+		debug_w("\r\n\r\nCONNECTION DROPPED\r\n\t(Existing connections: %u)\r\n\r\n", connections.count());
+		return ERR_ABRT;
+	}
+
 #ifdef NETWORK_DEBUG
-	debug_d("onAccept, tcp: %p, state: %d K=%d", clientTcp, err, connections.count());
-	list_mem();
+	debug_d("onAccept, tcp: %p, state: %d K=%d, Free heap size=%u", clientTcp, err, connections.count(),
+			system_get_free_heap_size());
 #endif
 
 	if(err != ERR_OK) {
