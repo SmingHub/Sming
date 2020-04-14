@@ -88,13 +88,14 @@ void mbLogReceive(const uint8_t* adu, size_t aduSize, uint8_t status)
 			break;
 		}
 		debugf("ADU Size: %d, status: %d ", aduSize, status);
+		debug_hex(INFO, "RX ADU", adu, aduSize);
 	}
 	debugf("\r\n");
 }
 
 void mbLogTransmit(const uint8_t* adu, size_t aduSize)
 {
-	debug_hex(INFO, "ADU", adu, aduSize);
+	debug_hex(INFO, "TX ADU", adu, aduSize);
 }
 
 void init()
