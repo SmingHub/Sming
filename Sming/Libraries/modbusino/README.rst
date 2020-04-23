@@ -21,17 +21,3 @@ Configuration variables
    Default: HIGH.
 
    Active level for RE pin during transmission.
-
-
-.. envvar:: MB_PRE_TX_DELAY
-
-   Default: 100 (microseconds).
-
-   Time to wait after RE pin level change, before writing serial data. Used to ensure proper line detection by the master device.
-
-
-.. envvar:: MB_POST_TX_DELAY
-
-   Default: 1000 (microseconds).
-
-   Delay after data transmission, before RE pin level change.
