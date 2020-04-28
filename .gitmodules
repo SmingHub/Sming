@@ -142,3 +142,6 @@
 	path = Sming/Libraries/Adafruit_VL53L0X
 	url = https://github.com/adafruit/Adafruit_VL53L0X.git
 	ignore = dirty
+[submodule "Libraries.Arduino_TensorFlowLite"]
+	path = Sming/Libraries/Arduino_TensorFlowLite
+	url = https://github.com/slaff/Arduino_TensorFlowLite.git
