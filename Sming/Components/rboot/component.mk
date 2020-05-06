@@ -1,4 +1,3 @@
-COMPONENT_LIBNAME		:=
 COMPONENT_DOXYGEN_INPUT	:= rboot
 
 ifeq ($(SMING_ARCH),Esp8266)
@@ -8,7 +7,8 @@ RBOOT_EMULATION			:= 1
 endif
 
 COMPONENT_SUBMODULES	:= rboot
-COMPONENT_INCDIRS		:= rboot appcode rboot/appcode
+COMPONENT_INCDIRS	:= rboot appcode rboot/appcode include
+COMPONENT_SRCDIRS       := src
 
 RBOOT_DIR				:= $(COMPONENT_PATH)
 
