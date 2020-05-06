@@ -5,6 +5,7 @@
 ##############
 
 CPPFLAGS	+= -DARCH_HOST
+CFLAGS 		+= -std=c11
 
 TOOLSPEC 	:=
 
@@ -20,8 +21,6 @@ GDB		:= $(TOOLSPEC)gdb
 CPPFLAGS += \
 	-m32 \
 	-Wno-deprecated-declarations
-	
-CFLAGS += -std=c11
 
 # => Tools
 MEMANALYZER = size

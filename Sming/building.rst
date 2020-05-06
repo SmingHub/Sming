@@ -38,12 +38,12 @@ These are the main variables you need to be aware of:
 
    -  **Esp8266** The default if not specified. :envvar:`ESP_HOME` must also be
       provided to locate SDK & tools.
-   
+
    -  **Esp32** {todo}
-   
+
    -  **Host** builds a version of the library for native host debugging on
       Linux or Windows
-   
+
 
 .. envvar:: SMING_CPP_STD
 
@@ -172,7 +172,7 @@ example::
             |_ MyComponent/
             |_ AnotherComponent/
             |_ spiffs/              Will be used instead of Sming version
-   
+
 User repositories are searched first, which allows replacement of any
 Component for a project. In this example, our ``spiffs`` component will
 be selected instead of the one provided with Sming.
@@ -366,7 +366,7 @@ one of the following lists:
 
    These variables have no effect on building, but are
    cached. Variables such as ``COM_SPEED_ESPTOOL`` fall into this category.
-  
+
 
 .. envvar:: DEBUG_VARS
 
@@ -456,7 +456,7 @@ These values are for reference only and should not be modified.
 .. envvar:: COMPONENT_NAME
 
    Name of the Component
-   
+
 .. envvar:: COMPONENT_PATH
 
    Base directory path for Component, no trailing path separator
@@ -464,14 +464,14 @@ These values are for reference only and should not be modified.
 .. envvar:: COMPONENT_BUILD_DIR
 
    The current directory.
-   
+
    This should be used if the Component provides any application code or targets to ensure it is
    built in the correct directory (but not by this makefile).
 
 .. envvar:: COMPONENT_LIBDIR
 
    Location to store created Component (shared) libraries
-   
+
 .. envvar:: COMPONENT_VARIANT
 
    Name of the library to build
@@ -487,7 +487,7 @@ changed as required.
 
    By default, the library has the same name as the Component but can be
    changed if required. Note that this will be used as the stem for any variants.
-   
+
    Set ``COMPONENT_LIBNAME :=`` if the Component doesn’t create a library.
    If you don’t do this, a default library will be built but will be empty if
    no source files are found.
@@ -496,7 +496,7 @@ changed as required.
 
    Set this to any additional targets to be built as
    part of the Component, prefixed with ``$(COMPONENT_RULE)``.
-   
+
    If targets should be built for each application, use :envvar:`CUSTOM_TARGETS` instead.
    See :component:`spiffs` for an example.
 
@@ -610,19 +610,43 @@ never overwritten.
    During initial parsing, many of these variables (specifically, the
    ``COMPONENT_xxx`` ones) *do not* keep their values. For this reason it
    is usually best to use simple variable assignment using ``:=``.
-   
+
    For example, in ``Esp8266/Components/gdbstub`` we define
    ``GDB_CMDLINE``. It may be tempting to do this::
-   
+
       GDB_CMDLINE = trap '' INT; $(GDB) -x $(COMPONENT_PATH)/gdbcmds -b $(COM_SPEED_GDB) -ex "target remote $(COM_PORT_GDB)"
-   
+
    That won’t work! By the time ``GDB_CMDLINE`` gets expanded,
    ``COMPONENT_PATH`` could contain anything. We need ``GDB_CMDLINE`` to be
    expanded only when used, so the solution is to take a simple copy of
    ``COMPONENT_PATH`` and use it instead, like this::
-   
+
       GDBSTUB_DIR := $(COMPONENT_PATH)
       GDB_CMDLINE = trap '' INT; $(GDB) -x $(GDBSTUB_DIR)/gdbcmds -b $(COM_SPEED_GDB) -ex "target remote $(COM_PORT_GDB)"
+
+These values are global and should be used ONLY in the ``Sming/Arch/*/build.mk`` files to tune the architecture compilation flags.
+These values must only be appended to (with ``+=``), never overwritten.
+
+.. envvar:: CPPFLAGS
+
+   Used to provide both C and C++ flags that are applied globally.
+
+.. envvar:: CFLAGS
+
+   Used to provide **ONLY** C flags that are applied globally.
+
+.. envvar:: CXXFLAGS
+
+   Used when building application and custom targets.
+
+.. envvar:: COMPONENT_CFLAGS
+
+   Used to provide **ONLY** C++ flags that are applied globally.
+
+.. important::
+
+   Do **NOT** set ``CPPFLAGS``, ``CFLAGS`` and ``CXXFLAGS`` outside of the ``Sming/Arch/*/build.mk`` files.
+
 
 Building
 ~~~~~~~~
