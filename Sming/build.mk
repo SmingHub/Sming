@@ -116,7 +116,7 @@ CFLAGS_COMMON = \
 	-ffunction-sections
 
 # compiler flags using during compilation of source files. Add '-pg' for debugging
-CFLAGS = \
+CPPFLAGS = \
 	-Wall \
 	-Wundef \
 	-Wpointer-arith \
@@ -126,7 +126,7 @@ CFLAGS = \
 
 # If STRICT is enabled, show all warnings but don't treat as errors
 ifneq ($(STRICT),1)
-CFLAGS += \
+CPPFLAGS += \
 	-Werror \
 	-Wno-sign-compare \
 	-Wno-parentheses \
@@ -139,18 +139,18 @@ ifeq ($(SMING_RELEASE),1)
 	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	#      for full list of optimization options
 	# Note: ANSI requires NDEBUG to be defined for correct assert behaviour
-	CFLAGS		+= -Os -DSMING_RELEASE=1 -DNDEBUG
+	CPPFLAGS	+= -Os -DSMING_RELEASE=1 -DNDEBUG
 else ifeq ($(ENABLE_GDB), 1)
 	ifeq ($(SMING_ARCH),Host)
-		CFLAGS		+= -O0
+		CPPFLAGS	+= -O0
 	else
-		CFLAGS		+= -Og
+		CPPFLAGS	+= -Og
 	endif
 else
-	CFLAGS		+= -Os -g
+	CPPFLAGS	+= -Os -g
 endif
 
-CXXFLAGS = $(CFLAGS) -felide-constructors
+CXXFLAGS += -felide-constructors
 
 ifneq ($(STRICT),1)
 	CXXFLAGS += -Wno-reorder

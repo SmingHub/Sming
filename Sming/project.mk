@@ -61,18 +61,18 @@ $(info $(notdir $(PROJECT_DIR)): Invoking '$(MAKECMDGOALS)' for $(SMING_ARCH) ($
 # CFLAGS used for application and any custom targets
 DEBUG_VARS			+= APP_CFLAGS
 APP_CFLAGS			=
-CFLAGS				+= $(APP_CFLAGS)
+CPPFLAGS			+= $(APP_CFLAGS)
 
 # Changing USER_CFLAGS will cause an App rebuild automatically, but other Components must be rebuilt manually
 CONFIG_VARS			+= USER_CFLAGS
 
 # CFLAGS exported for every Component to use whilst building, including any CUSTOM_TARGETS
 DEBUG_VARS			+= GLOBAL_CFLAGS
-GLOBAL_CFLAGS		= $(USER_CFLAGS) -DPROJECT_DIR=\"$(PROJECT_DIR)\" -DSMING_HOME=\"$(SMING_HOME)\"
-CFLAGS				+= $(GLOBAL_CFLAGS)
+GLOBAL_CFLAGS			= $(USER_CFLAGS) -DPROJECT_DIR=\"$(PROJECT_DIR)\" -DSMING_HOME=\"$(SMING_HOME)\"
+CPPFLAGS			+= $(GLOBAL_CFLAGS)
 
 # Targets to be added as dependencies of the application, built directly in this make instance
-CUSTOM_TARGETS		:=
+CUSTOM_TARGETS			:=
 
 # Application libraries will be written here
 DEBUG_VARS			+= APP_LIBDIR
