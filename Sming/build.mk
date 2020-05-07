@@ -108,20 +108,18 @@ else
 	vecho		:= @echo
 endif
 
-# Common flags passed to user libraries
-CFLAGS_COMMON = \
+# Common C/C++ flags passed to user libraries
+CPPFLAGS = \
 	-Wl,-EL \
 	-finline-functions \
 	-fdata-sections \
 	-ffunction-sections
 
-# compiler flags using during compilation of source files. Add '-pg' for debugging
-CPPFLAGS = \
+CPPFLAGS += \
 	-Wall \
 	-Wundef \
 	-Wpointer-arith \
 	-Wno-comment \
-	$(CFLAGS_COMMON) \
 	-DARDUINO=106
 
 # If STRICT is enabled, show all warnings but don't treat as errors
