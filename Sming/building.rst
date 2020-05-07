@@ -637,11 +637,11 @@ These values must only be appended to (with ``+=``), never overwritten.
 
 .. envvar:: CXXFLAGS
 
-   Used when building application and custom targets.
-
-.. envvar:: COMPONENT_CFLAGS
-
    Used to provide **ONLY** C++ flags that are applied globally.
+
+.. envvar:: SMING_C_STD
+
+   Used to provide the C language standard. The default is ``c11``.
 
 .. important::
 

@@ -5,7 +5,6 @@
 ##############
 
 CPPFLAGS	+= -DARCH_HOST
-CFLAGS 		+= -std=c11
 
 TOOLSPEC 	:=
 

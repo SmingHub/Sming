@@ -162,14 +162,20 @@ include $(ARCH_BASE)/build.mk
 DEBUG_VARS			+= GCC_VERSION
 GCC_VERSION			:= $(shell $(CC) -dumpversion)
 
+# Use c11 by default. Every architecture can override it
+SMING_C_STD ?= c11
+CFLAGS	+= -std=$(SMING_C_STD)
+
 # Select C++17 if supported, defaulting to C++11 otherwise
-DEBUG_VARS			+= SMING_CPP_STD
+DEBUG_VARS			+= SMING_CXX_STD
 ifeq ($(GCC_VERSION),4.8.5)
-SMING_CPP_STD		?= c++11
+SMING_CXX_STD		?= c++11
 else
-SMING_CPP_STD		?= c++17
+SMING_CXX_STD		?= c++17
 endif
-CXXFLAGS			+= -std=$(SMING_CPP_STD)
+CXXFLAGS			+= -std=$(SMING_CXX_STD)
+
+
 
 # Component (user) libraries have a special prefix so linker script can identify them
 CLIB_PREFIX := clib-

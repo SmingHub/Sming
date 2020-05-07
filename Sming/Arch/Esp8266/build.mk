@@ -5,7 +5,6 @@
 ##############
 
 CPPFLAGS			+= -DARCH_ESP8266
-CFLAGS 				+= -std=c11
 CXXFLAGS			+= -fno-rtti -fno-exceptions -fno-threadsafe-statics
 
 # Required to access peripheral registers using structs
