@@ -1,8 +1,26 @@
 diff --git a/src/ModbusMaster.cpp b/src/ModbusMaster.cpp
-index cdcc534..f6f93d4 100644
+index cdcc534..b08a335 100644
 --- a/src/ModbusMaster.cpp
 +++ b/src/ModbusMaster.cpp
-@@ -860,7 +860,7 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
+@@ -756,15 +756,12 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
+   // flush receive buffer before transmitting request
+   while (_serial->read() != -1);
+ 
+-  // transmit request
+   if (_preTransmission)
+   {
+     _preTransmission();
+   }
+-  for (i = 0; i < u16ModbusADUSize; i++)
+-  {
+-    _serial->write(u8ModbusADU[i]);
+-  }
++  _serial->write(u8ModbusADU, u16ModbusADUSize);
++  _serial->write((uint8_t)0);
+   
+   u16ModbusADUSize = 0;
+   _serial->flush();    // flush transmit buffer
+@@ -860,7 +857,7 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
            break;
        }
      }
