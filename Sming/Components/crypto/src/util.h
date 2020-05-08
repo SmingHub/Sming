@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <cstring>
 #include <stringutil.h>
+#include <sming_attr.h>
 
 namespace Crypto
 {
@@ -123,6 +124,15 @@ template <class Context> void ESP_setCount(Context* ctx, uint64_t count)
 	ctx->countHigh = count >> 32;
 }
 /** @} */
+
+// A `memzero` equivalent that is never optimized away. Useful to clear secrets from memory after use.
+template <typename T> void clean(T& t)
+{
+	auto dst = reinterpret_cast<volatile uint8_t* volatile>(&t);
+	for(size_t len = sizeof(T); len > 0; --len) {
+		*dst++ = 0;
+	}
+}
 
 } // namespace Internal
 } // namespace Crypto

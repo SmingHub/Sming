@@ -81,7 +81,24 @@ To mount your SPIFFS at boot time add the following code to init:
 Over-the-air (OTA) updates
 ==========================
 
-Add the following code:
+Instead of insisting on a "one-solution-fits-all" approach, Sming provides you 
+with the ingredients to build an OTA upgrade mechanism tailored to your application.
+This involves selecting a transport protocol and a backend that interacts with the 
+flash memory. Any protocol from Sming's rich set of network classes can be used, 
+ranging from raw TCP sockets to HTTP, FTP, MQTT, with or without SSL, etc.
+To conserve program memory, you might prefer a protocol already employed by your 
+application.
+
+On the backend side, there is :cpp:type:`OtaUpgradeStream` from the :library:`OtaUpgrade`
+library, which supports multiple ROM images in one upgrade file, as well as 
+state-of-the-art security features like a digital signatures and encryption. 
+Check out the :sample:`HttpServer_FirmwareUpload` example, which demonstrates a
+browser-based firmware upgrade mechanism similar to what is found in many consumer
+products.
+ 
+A more lightweight solution is provided by :cpp:class:`RbootOutputStream`, which 
+is just a thin wrapper around rBoot's flash API, in combination with :cpp:class:`RbootHttpUpdater`,
+which pulls individual ROM image from an HTTP server. Add the following code:
 
 .. code-block:: c++
 

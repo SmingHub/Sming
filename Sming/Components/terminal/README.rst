@@ -9,9 +9,9 @@ Introduction
 This Component provides make targets to support a serial terminal for communicating with devices.
 
 The default serial terminal is `miniterm <https://pyserial.readthedocs.io/en/latest/tools.html#module-serial.tools.miniterm>`__.
-If you don't have it installed already, do this::
+If you don't have it installed already, you can install it via pip using the following command::
 
-   pip install pyserial
+   make python-requirements
 
 (You'll need `python <https://www.python.org/>`__, of course.)
 

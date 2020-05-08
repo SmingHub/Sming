@@ -108,25 +108,23 @@ else
 	vecho		:= @echo
 endif
 
-# Common flags passed to user libraries
-CFLAGS_COMMON = \
+# Common C/C++ flags passed to user libraries
+CPPFLAGS = \
 	-Wl,-EL \
 	-finline-functions \
 	-fdata-sections \
 	-ffunction-sections
 
-# compiler flags using during compilation of source files. Add '-pg' for debugging
-CFLAGS = \
+CPPFLAGS += \
 	-Wall \
 	-Wundef \
 	-Wpointer-arith \
 	-Wno-comment \
-	$(CFLAGS_COMMON) \
 	-DARDUINO=106
 
 # If STRICT is enabled, show all warnings but don't treat as errors
 ifneq ($(STRICT),1)
-CFLAGS += \
+CPPFLAGS += \
 	-Werror \
 	-Wno-sign-compare \
 	-Wno-parentheses \
@@ -139,18 +137,18 @@ ifeq ($(SMING_RELEASE),1)
 	# See: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 	#      for full list of optimization options
 	# Note: ANSI requires NDEBUG to be defined for correct assert behaviour
-	CFLAGS		+= -Os -DSMING_RELEASE=1 -DNDEBUG
+	CPPFLAGS	+= -Os -DSMING_RELEASE=1 -DNDEBUG
 else ifeq ($(ENABLE_GDB), 1)
 	ifeq ($(SMING_ARCH),Host)
-		CFLAGS		+= -O0
+		CPPFLAGS	+= -O0
 	else
-		CFLAGS		+= -Og
+		CPPFLAGS	+= -Og
 	endif
 else
-	CFLAGS		+= -Os -g
+	CPPFLAGS	+= -Os -g
 endif
 
-CXXFLAGS = $(CFLAGS) -felide-constructors
+CXXFLAGS += -felide-constructors
 
 ifneq ($(STRICT),1)
 	CXXFLAGS += -Wno-reorder
@@ -162,14 +160,20 @@ include $(ARCH_BASE)/build.mk
 DEBUG_VARS			+= GCC_VERSION
 GCC_VERSION			:= $(shell $(CC) -dumpversion)
 
+# Use c11 by default. Every architecture can override it
+SMING_C_STD ?= c11
+CFLAGS	+= -std=$(SMING_C_STD)
+
 # Select C++17 if supported, defaulting to C++11 otherwise
-DEBUG_VARS			+= SMING_CPP_STD
+DEBUG_VARS			+= SMING_CXX_STD
 ifeq ($(GCC_VERSION),4.8.5)
-SMING_CPP_STD		?= c++11
+SMING_CXX_STD		?= c++11
 else
-SMING_CPP_STD		?= c++17
+SMING_CXX_STD		?= c++17
 endif
-CXXFLAGS			+= -std=$(SMING_CPP_STD)
+CXXFLAGS			+= -std=$(SMING_CXX_STD)
+
+
 
 # Component (user) libraries have a special prefix so linker script can identify them
 CLIB_PREFIX := clib-

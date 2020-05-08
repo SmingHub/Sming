@@ -61,18 +61,18 @@ $(info $(notdir $(PROJECT_DIR)): Invoking '$(MAKECMDGOALS)' for $(SMING_ARCH) ($
 # CFLAGS used for application and any custom targets
 DEBUG_VARS			+= APP_CFLAGS
 APP_CFLAGS			=
-CFLAGS				+= $(APP_CFLAGS)
+CPPFLAGS			+= $(APP_CFLAGS)
 
 # Changing USER_CFLAGS will cause an App rebuild automatically, but other Components must be rebuilt manually
 CONFIG_VARS			+= USER_CFLAGS
 
 # CFLAGS exported for every Component to use whilst building, including any CUSTOM_TARGETS
 DEBUG_VARS			+= GLOBAL_CFLAGS
-GLOBAL_CFLAGS		= $(USER_CFLAGS) -DPROJECT_DIR=\"$(PROJECT_DIR)\" -DSMING_HOME=\"$(SMING_HOME)\"
-CFLAGS				+= $(GLOBAL_CFLAGS)
+GLOBAL_CFLAGS			= $(USER_CFLAGS) -DPROJECT_DIR=\"$(PROJECT_DIR)\" -DSMING_HOME=\"$(SMING_HOME)\"
+CPPFLAGS			+= $(GLOBAL_CFLAGS)
 
 # Targets to be added as dependencies of the application, built directly in this make instance
-CUSTOM_TARGETS		:=
+CUSTOM_TARGETS			:=
 
 # Application libraries will be written here
 DEBUG_VARS			+= APP_LIBDIR
@@ -137,6 +137,9 @@ COMPONENTS_EXTRA_INCDIR	:=
 # Components may specify directories containing source code to be compiled with application
 APPCODE				:=
 
+# Python requirements.txt collected from components
+PYTHON_REQUIREMENTS := 
+
 #
 # This macro sets the default component variables before including the (optional) component.mk file.
 #
@@ -160,6 +163,7 @@ COMPONENT_VARS			:=
 COMPONENT_RELINK_VARS	:=
 COMPONENT_TARGETS		:=
 COMPONENT_DEPENDS		:=
+COMPONENT_PYTHON_REQUIREMENTS		:= $$(wildcard $2/requirements.txt)
 EXTRA_LIBS				:=
 EXTRA_LDFLAGS			:=
 # Process any component.mk file (optional)
@@ -184,6 +188,7 @@ CMP_$1_LIBNAME			:= $$(COMPONENT_LIBNAME)
 CMP_$1_INCDIRS			:= $$(COMPONENT_INCDIRS)
 CMP_$1_DEPENDS			:= $$(COMPONENT_DEPENDS)
 CMP_$1_RELINK_VARS		:= $$(COMPONENT_RELINK_VARS)
+PYTHON_REQUIREMENTS		+= $$(call AbsoluteSourcePath,$2,$$(COMPONENT_PYTHON_REQUIREMENTS))
 APPCODE					+= $$(call AbsoluteSourcePath,$2,$$(CMP_$1_APPCODE))
 COMPONENTS				+= $$(filter-out $$(COMPONENTS),$$(CMP_$1_DEPENDS))
 ifneq (App,$1)
@@ -450,6 +455,17 @@ decode-stacktrace: ##Open the stack trace decoder ready to paste dump text. Alte
 	$(Q) $(PYTHON) $(ARCH_TOOLS)/decode-stacktrace.py $(TARGET_OUT_0) $(TRACE)
 
 
+CACHE_VARS += PIP_ARGS
+PIP_ARGS ?=
+.PHONY: python-requirements
+python-requirements: ##Install Python requirements of project via pip (use PIP_ARGS=... for additional options)
+ifeq (,$(PYTHON_REQUIREMENTS))
+	@echo No Python requirements to install for this project.
+else
+	@echo Installing Python requirements...
+	$(Q) $(PYTHON) -m pip install $(PIP_ARGS) $(foreach reqfile,$(PYTHON_REQUIREMENTS),-r $(reqfile))
+endif
+
 ##@Testing
 
 # OTA Server
@@ -505,6 +521,21 @@ list-components: ##Print details of all Components for this project
 	$(info Components:)
 	$(foreach c,$(sort $(COMPONENTS)),$(eval $(call PrintComponentInfo,$c)))
 
+# Dump content of requirements.txt file
+# $1 -> absolute path to file
+define DumpRequirementsTxt
+	@echo \# From $1:
+	@cat $1
+
+endef
+.PHONY: list-python-requirements
+list-python-requirements: ##List Python requirements for this project
+ifeq (,$(PYTHON_REQUIREMENTS))
+	@echo \# No Python requirements for this project.
+else
+	$(foreach reqfile,$(PYTHON_REQUIREMENTS),$(call DumpRequirementsTxt,$(reqfile)))
+endif
+
 # => Help
 .PHONY: help
 help: ##Show this help summary
@@ -516,7 +547,7 @@ ifneq (,$V)
 	@echo '  cmp-rebuild'
 endif
 
-	
+
 # Update build type cache
 $(shell	mkdir -p $(dir $(BUILD_TYPE_FILE)); \
 		echo '# Automatically generated file. Do not edit.' > $(BUILD_TYPE_FILE); \

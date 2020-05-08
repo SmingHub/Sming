@@ -13,7 +13,7 @@
  *
  */
 
-#include "RbootOutputStream.h"
+#include <Data/Stream/RbootOutputStream.h>
 
 bool RbootOutputStream::init()
 {

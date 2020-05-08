@@ -27,7 +27,6 @@ void mbLoop()
 
 	uint8_t nrOfRegistersToRead = 1;
 	uint8_t mbResult = mbMaster.readHoldingRegisters(SLAVE_REG_ADDR, nrOfRegistersToRead); //see also readInputRegisters
-	uint16_t result = 0;
 
 	if(mbResult == mbMaster.ku8MBSuccess) {
 		/*
@@ -38,7 +37,7 @@ void mbLoop()
 		*/
 		debugf("Data from slave: %d", mbMaster.getResponseBuffer(0));
 	} else {
-		debugf("Res err: %d", result);
+		debugf("Res err: %d", mbResult);
 	}
 
 	mbMaster.clearResponseBuffer();
@@ -47,12 +46,10 @@ void mbLoop()
 void preTransmission()
 {
 	digitalWrite(RS485_RE_PIN, HIGH);
-	delayMilliseconds(2);
 }
 
 void postTransmission()
 {
-	delayMicroseconds(500);
 	digitalWrite(RS485_RE_PIN, LOW);
 }
 
@@ -89,13 +86,14 @@ void mbLogReceive(const uint8_t* adu, size_t aduSize, uint8_t status)
 			break;
 		}
 		debugf("ADU Size: %d, status: %d ", aduSize, status);
+		debug_hex(INFO, "RX ADU", adu, aduSize);
 	}
 	debugf("\r\n");
 }
 
 void mbLogTransmit(const uint8_t* adu, size_t aduSize)
 {
-	debug_hex(INFO, "ADU", adu, aduSize);
+	debug_hex(INFO, "TX ADU", adu, aduSize);
 }
 
 void init()

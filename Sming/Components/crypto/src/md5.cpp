@@ -32,7 +32,8 @@
  * This file implements the MD5 algorithm as defined in RFC1321
  */
 
-#include "hash.h"
+#include "stdhash.h"
+#include "../include/Crypto/HashApi/md5.h"
 
 namespace
 {

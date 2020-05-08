@@ -4,7 +4,7 @@
 #
 ##############
 
-CFLAGS				+= -DARCH_ESP8266
+CPPFLAGS			+= -DARCH_ESP8266
 CXXFLAGS			+= -fno-rtti -fno-exceptions -fno-threadsafe-statics
 
 # Required to access peripheral registers using structs
@@ -31,21 +31,21 @@ TOOLSPEC			:= $(XTENSA_TOOLS_ROOT)/$(CONFIG_TOOLPREFIX)
 
 # select which tools to use as assembler, compiler, librarian and linker
 DEBUG_VARS			+= GDB
-AS					:= $(TOOLSPEC)gcc
-CC					:= $(TOOLSPEC)gcc
-CXX					:= $(TOOLSPEC)g++
-AR					:= $(TOOLSPEC)ar
-LD					:= $(TOOLSPEC)gcc
+AS				:= $(TOOLSPEC)gcc
+CC				:= $(TOOLSPEC)gcc
+CXX				:= $(TOOLSPEC)g++
+AR				:= $(TOOLSPEC)ar
+LD				:= $(TOOLSPEC)gcc
 OBJCOPY			 	:= $(TOOLSPEC)objcopy
 OBJDUMP			 	:= $(TOOLSPEC)objdump
-GDB					:= $(TOOLSPEC)gdb
+GDB				:= $(TOOLSPEC)gdb
 
-CFLAGS_COMMON += \
+CPPFLAGS += \
 	-nostdlib \
 	-mlongcalls \
 	-mtext-section-literals
 
-CFLAGS += \
+CPPFLAGS += \
 	-D__ets__ \
 	-DICACHE_FLASH \
 	-DUSE_OPTIMIZE_PRINTF \

@@ -1,5 +1,8 @@
 #include <SmingTest.h>
-#include <Crypto.h>
+#include <Crypto/Md5.h>
+#include <Crypto/Sha1.h>
+#include <Crypto/Sha2.h>
+#include <Crypto/Blake2s.h>
 #include "crypto/AxHash.h"
 #include "crypto/BrHash.h"
 
@@ -25,6 +28,7 @@ DEFINE_FSTR_LOCAL(SHA512_STATE, "1668f13d9047fc988e5eb5f796d2820e4352f6deb88e819
 /*
  * https://www.fileformat.info/tool/hash.htm
  * https://coding.tools/sha224
+ * https://toolkitbay.com/tkb/tool/BLAKE2s_256
  */
 DEFINE_FSTR_LOCAL(MD5_HASH, "4c9f6bb2c9891159487912899f1f2db1")
 DEFINE_FSTR_LOCAL(SHA1_HASH, "e4ba625521d569372fc25ca89acd7e9e5322ef27")
@@ -34,9 +38,18 @@ DEFINE_FSTR_LOCAL(SHA384_HASH,
 				  "85c84af8a4071fe37d5a23e1b5aae421203f633c684a081e8c5e9850848cf1d52f034b49cc4eef241631feb9a5d78d6b")
 DEFINE_FSTR_LOCAL(SHA512_HASH, "a57b701e185ce83b0acb6985bd865e720cf945f66df2e534eca342247d09c5a3f9c1a100bdf2166c560a3a2"
 							   "e22ecb822bcd8b91abda6dc7f609dad6a863e50c9")
+DEFINE_FSTR_LOCAL(BLAKE2S_128_HASH, "46fb02e28867c516d6934b4b313833cf")
+DEFINE_FSTR_LOCAL(BLAKE2S_256_HASH, "8a5eb5199ae42705361417db96d0667ca8a4e172a366c6cd5a24045a9cad7fd9")
+DEFINE_FSTR_LOCAL(BLAKE2S_256_HASH_KEYED, "ecc2cc3d738d3d082aeec0024a04ae03aece4f50869ac240ff7887980c2438ab")
 
 /*
- * https://hash.online-convert.com/md5-generator
+ * #!/usr/bin/env python3
+ * import hashlib, hmac
+ * 
+ * h = hmac.HMAC(key=b"very small key", digestmod=hashlib.<hash_function_name>)
+ * with open('/path/to/files/abstract.txt', 'rb') as file:
+ *     h.updatefile.read())
+ * print(h.hexdigest())
  */
 DEFINE_FSTR_LOCAL(MD5_HMAC, "da512014e8f20e3c139cce4d1770a36b")
 DEFINE_FSTR_LOCAL(SHA1_HMAC, "d191a9454a2345c4c4d4a07ad84d16b52815ae42")
@@ -46,6 +59,8 @@ DEFINE_FSTR_LOCAL(SHA384_HMAC,
 				  "8221e55eb5261aba1367830b8a9327177e5770b56585e49ba25cd195f129157621023d0d83f1d58b1bef11e7bcf2edc0")
 DEFINE_FSTR_LOCAL(SHA512_HMAC, "b5ca49d3db33f14ec7eb8f76795d8744463a8473c24b9f1a7e48d381d291f45cd131c690376952342801eda"
 							   "a327b132230479d304760e8bfe96fa615e623793a")
+DEFINE_FSTR_LOCAL(BLAKE2S_128_HMAC, "317f3a02ad37c7ba5126a69f8e07c6af")
+DEFINE_FSTR_LOCAL(BLAKE2S_256_HMAC, "ff998f2df08dc29360fa25a23be80a4ce6c942225f5202d7c1392a7b270b6ab5")
 
 class CryptoTest : public TestGroup
 {
@@ -61,7 +76,10 @@ public:
 		nextTest();
 	}
 
-	template <class Context> void checkHash(const FlashString& expectedHash, FlashString expectedState = {})
+	/*
+	 * Check standard hashes which have getState / setState implementations
+	 */
+	template <class Context> void checkHash(const FlashString& expectedHash, const FlashString& expectedState)
 	{
 		Context ctx;
 		ctx.update(FS_plainText);
@@ -72,20 +90,36 @@ public:
 		auto hashText = Crypto::toString(hash);
 
 		Serial.println(Context::Engine::name);
-		if(!expectedState.isNull()) {
-			Serial.print(_F("  state: "));
-			Serial.println(stateText);
-			Serial.print(_F("  count: "));
-			Serial.println(state.count);
-		}
+		Serial.print(_F("  state: "));
+		Serial.println(stateText);
+		Serial.print(_F("  count: "));
+		Serial.println(state.count);
 		Serial.print(_F("  final: "));
 		Serial.println(hashText);
 		Serial.print(_F("  context size: "));
 		Serial.println(sizeof(Context));
-		if(!expectedState.isNull()) {
-			REQUIRE(state.count == FS_plainText.length());
-			REQUIRE(Crypto::toString(state.value) == expectedState);
-		}
+
+		REQUIRE(state.count == FS_plainText.length());
+		REQUIRE(Crypto::toString(state.value) == expectedState);
+		REQUIRE(hashText == expectedHash);
+	}
+
+	/*
+	 * Check supplementary hashes which do not implement getState / setState and may have optional engine arguments
+	 */
+	template <class Context, typename... Args> void checkHash(const FlashString& expectedHash, Args&&... args)
+	{
+		Context ctx(std::forward<Args>(args)...);
+		ctx.update(FS_plainText);
+		auto hash = ctx.getHash();
+
+		auto hashText = Crypto::toString(hash);
+
+		Serial.println(Context::Engine::name);
+		Serial.print(_F("  final: "));
+		Serial.println(hashText);
+		Serial.print(_F("  context size: "));
+		Serial.println(sizeof(Context));
 		REQUIRE(hashText == expectedHash);
 	}
 
@@ -146,6 +180,9 @@ public:
 				checkHash<Crypto::Sha256>(SHA256_HASH, SHA256_STATE);
 				checkHash<Crypto::Sha384>(SHA384_HASH, SHA384_STATE);
 				checkHash<Crypto::Sha512>(SHA512_HASH, SHA512_STATE);
+				checkHash<Crypto::Blake2s128>(BLAKE2S_128_HASH);
+				checkHash<Crypto::Blake2s256>(BLAKE2S_256_HASH);
+				checkHash<Crypto::Blake2s256>(BLAKE2S_256_HASH_KEYED, hmacKey);
 			}
 			break;
 
@@ -181,6 +218,8 @@ public:
 				checkHmac<Crypto::HmacSha256>(SHA256_HMAC);
 				checkHmac<Crypto::HmacSha384>(SHA384_HMAC);
 				checkHmac<Crypto::HmacSha512>(SHA512_HMAC);
+				checkHmac<Crypto::HmacBlake2s128>(BLAKE2S_128_HMAC);
+				checkHmac<Crypto::HmacBlake2s256>(BLAKE2S_256_HMAC);
 			}
 			break;
 
@@ -251,6 +290,7 @@ public:
 				benchmarkHash<Crypto::Sha256>(SHA256_HASH);
 				benchmarkHash<Crypto::Sha384>(SHA384_HASH);
 				benchmarkHash<Crypto::Sha512>(SHA512_HASH);
+				benchmarkHash<Crypto::Blake2s256>(BLAKE2S_256_HASH);
 			}
 			break;
 
@@ -296,6 +336,7 @@ public:
 				benchmarkHmac<Crypto::HmacSha256>(SHA256_HMAC);
 				benchmarkHmac<Crypto::HmacSha384>(SHA384_HMAC);
 				benchmarkHmac<Crypto::HmacSha512>(SHA512_HMAC);
+				benchmarkHmac<Crypto::HmacBlake2s256>(BLAKE2S_256_HMAC);
 			}
 			break;
 

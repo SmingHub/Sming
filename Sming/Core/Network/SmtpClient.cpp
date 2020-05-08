@@ -21,7 +21,7 @@
 #include <Data/Stream/QuotedPrintableOutputStream.h>
 #include <Data/Stream/Base64OutputStream.h>
 #include <Data/HexString.h>
-#include <Crypto.h>
+#include <Crypto/Md5.h>
 
 #define ADVANCE                                                                                                        \
 	{                                                                                                                  \

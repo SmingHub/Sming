@@ -8,8 +8,9 @@
  *
  ****/
 
-#include "../include/Crypto/HmacContext.h"
-#include "util.h"
+#include "../include/Crypto/Md5.h"
+#include "../include/Crypto/Sha1.h"
+#include "../include/Crypto/Sha2.h"
 
 namespace
 {
