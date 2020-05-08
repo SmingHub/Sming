@@ -84,7 +84,7 @@ esp-open-sdk (v1.5.x **, v2.0.0 **, v3.0.x) | :sunny:  | :sunny: | n/a | :sunny
 - OS = Operating System.
 - SDK = Software Development Kit.
 - n/a = The selected SDK is not available on that OS.
-- ** = not supported officially. Samples and library should compile and run but we recommend using version >= 3.0.1.
+- ** = not supported officially. Samples and library should compile and run but we recommend using version >= 3.0.3.
 
 ### Architecture: Host
 
@@ -95,9 +95,7 @@ Linux and Windows OSes with gcc compilers are supported. Clang is NOT supported.
 
 ### Stable
 
-- [Sming V4.1.0](https://github.com/SmingHub/Sming/releases/tag/4.1.0) - great new features, performance and stability improvements.
-- [Sming V3.8.1 LTS](https://github.com/SmingHub/Sming/releases/tag/3.8.1) - suitable for older applications that are not yet migrated to Sming v4.x.x.
-Long Term Support (LTS) is available till 1st of April, 2020.
+- [Sming V4.1.1](https://github.com/SmingHub/Sming/releases/tag/4.1.1) - great new features, performance and stability improvements.
 
 
 ### Development
