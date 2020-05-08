@@ -4,20 +4,20 @@
 #
 ##############
 
-CFLAGS		+= -DARCH_HOST
+CPPFLAGS	+= -DARCH_HOST
 
 TOOLSPEC 	:=
 
-AS			:= $(TOOLSPEC)gcc
-CC			:= $(TOOLSPEC)gcc
-CXX			:= $(TOOLSPEC)g++
-AR			:= $(TOOLSPEC)ar
-LD			:= $(TOOLSPEC)g++
+AS		:= $(TOOLSPEC)gcc
+CC		:= $(TOOLSPEC)gcc
+CXX		:= $(TOOLSPEC)g++
+AR		:= $(TOOLSPEC)ar
+LD		:= $(TOOLSPEC)g++
 OBJCOPY		:= $(TOOLSPEC)objcopy
 OBJDUMP		:= $(TOOLSPEC)objdump
-GDB			:= $(TOOLSPEC)gdb
+GDB		:= $(TOOLSPEC)gdb
 
-CFLAGS += \
+CPPFLAGS += \
 	-m32 \
 	-Wno-deprecated-declarations
 

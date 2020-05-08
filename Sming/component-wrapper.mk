@@ -19,12 +19,12 @@ include $(SMING_HOME)/build.mk
 # Makefile runs in the build directory
 COMPONENT_BUILD_DIR := $(CURDIR)
 
-CFLAGS				:= $(CFLAGS) $(GLOBAL_CFLAGS) -DCOMPONENT_PATH=\"$(COMPONENT_PATH)\"
+CPPFLAGS		:= $(CPPFLAGS) $(GLOBAL_CFLAGS) -DCOMPONENT_PATH=\"$(COMPONENT_PATH)\"
 
 #
 CUSTOM_BUILD		:=
 COMPONENT_TARGETS	:=
-EXTRA_OBJ			:=
+EXTRA_OBJ		:=
 COMPONENT_CFLAGS	:=
 COMPONENT_CXXFLAGS	:=
 COMPONENT_VARS		:=
@@ -43,7 +43,7 @@ endif
 COMPONENT_SRCFILES	:=
 else
 # Legacy project
-MODULES				:= app
+MODULES			:= app
 EXTRA_INCDIR		:= include
 EXTRA_SRCFILES		:=
 include $(COMPONENT_PATH)/Makefile-user.mk
@@ -52,14 +52,14 @@ COMPONENT_SRCFILES	:= $(EXTRA_SRCFILES)
 endif
 
 ifeq (App,$(COMPONENT_NAME))
-CFLAGS				+= $(APP_CFLAGS)
+CPPFLAGS		+= $(APP_CFLAGS)
 else ifneq ($(STRICT),1)
 # Enforce strictest building for regular Components and treat as errors
-CFLAGS				:= $(filter-out -Wno-sign-compare -Wno-strict-aliasing,$(CFLAGS)) -Werror
-CXXFLAGS			:= $(filter-out -Wno-reorder,$(CXXFLAGS))
+CPPFLAGS		:= $(filter-out -Wno-sign-compare -Wno-strict-aliasing,$(CPPFLAGS)) -Werror
+CXXFLAGS		:= $(filter-out -Wno-reorder,$(CXXFLAGS))
 endif
 
-INCDIR				= $(EXTRA_INCDIR) $(COMPONENTS_EXTRA_INCDIR)
+INCDIR			= $(EXTRA_INCDIR) $(COMPONENTS_EXTRA_INCDIR)
 
 # Build a Component target using MAKE
 # The makefile should accept TARGET and BUILD_DIR variables
@@ -114,27 +114,27 @@ BUILD_DIRS += $2
 ifneq (,$(filter $1/%.s,$(SOURCE_FILES)))
 $2%.o: $1/%.s
 	$(vecho) "AS $$<"
-	$(Q) $(AS) $(addprefix -I,$(INCDIR)) $(CFLAGS) -c $$< -o $$@
+	$(Q) $(AS) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
 endif
 ifneq (,$(filter $1/%.S,$(SOURCE_FILES)))
 $2%.o: $1/%.S
 	$(vecho) "AS $$<"
-	$(Q) $(AS) $(addprefix -I,$(INCDIR)) $(CFLAGS) -c $$< -o $$@
+	$(Q) $(AS) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
 endif
 ifneq (,$(filter $1/%.c,$(SOURCE_FILES)))
 $2%.o: $1/%.c $2%.c.d
 	$(vecho) "CC $$<"
-	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CFLAGS) -std=c11 -c $$< -o $$@
+	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
 $2%.c.d: $1/%.c
-	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CFLAGS) -std=c11 -MM -MT $2$$*.o $$< -MF $$@
+	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -MM -MT $2$$*.o $$< -MF $$@
 .PRECIOUS: $2%.c.d
 endif
 ifneq (,$(filter $1/%.cpp,$(SOURCE_FILES)))
 $2%.o: $1/%.cpp $2%.cpp.d
 	$(vecho) "C+ $$<"
-	$(Q) $(CXX) $(addprefix -I,$(INCDIR)) $(CXXFLAGS) -c $$< -o $$@
+	$(Q) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -c $$< -o $$@
 $2%.cpp.d: $1/%.cpp
-	$(Q) $(CXX) $(addprefix -I,$(INCDIR)) $(CXXFLAGS) -MM -MT $2$$*.o $$< -MF $$@
+	$(Q) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -MM -MT $2$$*.o $$< -MF $$@
 .PRECIOUS: $2%.cpp.d
 endif
 endef
