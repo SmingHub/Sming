@@ -145,3 +145,7 @@
 [submodule "Libraries.Arduino_TensorFlowLite"]
 	path = Sming/Libraries/Arduino_TensorFlowLite
 	url = https://github.com/slaff/Arduino_TensorFlowLite.git
+[submodule "Libraries.modbusino"]
+	path = Sming/Libraries/modbusino/modbusino
+	url = https://github.com/kmihaylov/modbusino.git
+	ignore = dirty
