@@ -5,7 +5,7 @@ set -e
 COVERITY_SCAN_PROJECT_NAME=${TRAVIS_REPO_SLUG}
 COVERITY_SCAN_NOTIFICATION_EMAIL="slaff@attachix.com"
 COVERITY_SCAN_BRANCH_PATTERN="ci/coverity-scan"
-COVERITY_SCAN_BUILD_COMMAND="$MAKE_PARALLEL Basic_DateTime Basic_Delegates Basic_Interrupts Basic_ProgMem Basic_Serial Basic_Servo Basic_Ssl HttpServer_FirmwareUpload SMING_ARCH=Host DEBUG_VERBOSE_LEVEL=3"
+COVERITY_SCAN_BUILD_COMMAND="$MAKE_PARALLEL Basic_DateTime Basic_Delegates Basic_Interrupts Basic_ProgMem Basic_Serial Basic_Servo Basic_Ssl SMING_ARCH=Host DEBUG_VERBOSE_LEVEL=3"
 
 # Environment check
 [ -z "$COVERITY_SCAN_PROJECT_NAME" ] && echo "ERROR: COVERITY_SCAN_PROJECT_NAME must be set" && exit 1

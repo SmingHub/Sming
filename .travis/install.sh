@@ -5,6 +5,8 @@ if [ "$TRAVIS_BUILD_STAGE_NAME" == "test" ]; then
 	sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-6.0 100
 	python3 -m pip install --upgrade pip
 	python3 -m pip install -r $TRAVIS_BUILD_DIR/docs/requirements.txt
+	export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
+	make -C $TRAVIS_BUILD_DIR/samples/HttpServer_FirmwareUpload python-requirements PIP_ARGS=--user
 fi
 
 if [ "$SMING_ARCH" == "Esp8266" ]; then
@@ -22,5 +24,5 @@ if [ "$SMING_ARCH" == "Esp8266" ]; then
 		mkdir -p opt/esp-quick-toolchain
 	  	tar -zxf $TOOLCHAIN -C opt/esp-quick-toolchain --totals
 	fi
-	
+
 fi # Esp8266
