@@ -19,6 +19,8 @@
  * @{
  */
 
+#define FLASH_MEMORY_START_ADDR 0x40200000
+
 /**
  * @brief Place entity into flash memory
  * @brief Attach to const variable declaration to have it stored in flash memory
