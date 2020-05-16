@@ -91,10 +91,9 @@ void DnsServer::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 		response[idx + 11] = 0x04; //4 byte IP address
 
 		//The IP address
-		response[idx + 12] = ip4_addr1(&resolvedIP);
-		response[idx + 13] = ip4_addr2(&resolvedIP);
-		response[idx + 14] = ip4_addr3(&resolvedIP);
-		response[idx + 15] = ip4_addr4(&resolvedIP);
+		for(unsigned int i = 0; i < 4; i++) {
+			response[idx + 12 + i] = resolvedIP[i];
+		}
 
 		sendTo(remoteIP, remotePort, response, idx + 16);
 	} else if(dnsHeader->QR == DNS_QR_QUERY) {

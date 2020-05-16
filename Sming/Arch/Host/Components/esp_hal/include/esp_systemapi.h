@@ -18,10 +18,6 @@ extern "C" {
 #include <limits.h>
 #include "c_types.h"
 
-struct ip_addr {
-	uint32_t addr;
-};
-
 #include <sming_attr.h>
 #include "esp_attr.h"
 #include "esp_clk.h"

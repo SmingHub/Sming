@@ -22,7 +22,6 @@
 
 void IpAddress::fromString(const String& address)
 {
-	this->address.addr = 0;
 	const char* p = address.c_str();
 	for(unsigned i = 0; i < 4; ++i) {
 		operator[](i) = strtol(p, const_cast<char**>(&p), 10);
@@ -44,9 +43,8 @@ size_t IpAddress::printTo(Print& p) const
 
 String IpAddress::toString() const
 {
-	String res;
-    res.reserve(sizeof(address) * 4);
-    for (unsigned i = 0; i < sizeof(address); i++)
+    String res;
+    for (unsigned i = 0; i < 4; i++)
     {
     	if (i)
     	  res += '.';
