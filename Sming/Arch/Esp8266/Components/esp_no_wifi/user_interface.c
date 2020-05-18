@@ -328,7 +328,7 @@ int os_printf_plus(const char* format, ...)
 		if(len > sizeof(fmtbuf)) {
 			len = sizeof(fmtbuf);
 		}
-		memcpy_aligned(fmtbuf, format, ALIGNUP(len));
+		memcpy_aligned(fmtbuf, format, ALIGNUPW(len));
 		fmtbuf[len - 1] = '\0';
 		n = ets_vprintf(ets_write_char, fmtbuf, args);
 	} else {

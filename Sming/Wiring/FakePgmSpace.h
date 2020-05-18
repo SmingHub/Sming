@@ -41,12 +41,12 @@ extern "C"
 /**
  * @brief Align a size up to the nearest word boundary
  */
-#define ALIGNUP(_n) (((_n) + 3) & ~3)
+#define ALIGNUPW(n) (((n) + 3) & ~3)
 
 /**
  * @brief Align a size down to the nearest word boundary
  */
-#define ALIGNDOWN(_n) ((_n) & ~3)
+#define ALIGNDOWNW(n) ((n) & ~3)
 
 #define printf_P_heap(f_P, ...)                                                                                        \
 	(__extension__({                                                                                                   \
@@ -152,7 +152,7 @@ int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len);
  *
  */
 #define LOAD_PSTR(name, flash_str)                                                                                   \
-	char name[ALIGNUP(sizeof(flash_str))] __attribute__((aligned(4)));                                               \
+	char name[ALIGNUPW(sizeof(flash_str))] __attribute__((aligned(4)));                                               \
 	memcpy_aligned(name, flash_str, sizeof(flash_str));
 
 #define _FLOAD(pstr)                                                                                                  \
