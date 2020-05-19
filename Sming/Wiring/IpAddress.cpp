@@ -23,7 +23,7 @@
 void IpAddress::fromString(const String& address)
 {
 	const char* p = address.c_str();
-	for(unsigned i = 0; i < 4; ++i) {
+	for(unsigned i = 0; i < sizeof(ip4_addr_t); ++i) {
 		operator[](i) = strtol(p, const_cast<char**>(&p), 10);
 		if (*p++ != '.')
 			break;	// Missing '.' or end of input string
@@ -33,7 +33,7 @@ void IpAddress::fromString(const String& address)
 size_t IpAddress::printTo(Print& p) const
 {
     size_t n = 0;
-    for (unsigned i = 0; i < 3; i++) {
+    for (unsigned i = 0; i < sizeof(ip4_addr_t) - 1; i++) {
         n += p.print(operator[](i), DEC);
         n += p.print('.');
     }
@@ -43,12 +43,5 @@ size_t IpAddress::printTo(Print& p) const
 
 String IpAddress::toString() const
 {
-    String res;
-    for (unsigned i = 0; i < 4; i++)
-    {
-    	if (i)
-    	  res += '.';
-    	res += operator[](i);
-    }
-    return res;
+	return ip4addr_ntoa(&address);
 }

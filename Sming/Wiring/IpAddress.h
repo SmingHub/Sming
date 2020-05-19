@@ -31,6 +31,7 @@ typedef ip_addr_t ip4_addr_t;
 #define IP_ADDR4(IP, A, B, C, D) IP4_ADDR(IP, A, B, C, D)
 #define ip_addr_set_ip4_u32(IP, U32) ip4_addr_set_u32(IP, U32)
 #define ip_addr_get_ip4_u32(IP) ip4_addr_get_u32(IP)
+#define ip4addr_ntoa(IP) ipaddr_ntoa(IP)
 #define ip_2_ip4(IP) (IP)
 #define ip4_addr_netcmp(A, B, C) ip_addr_netcmp(A, B, C)
 #define LWIP_IP_ADDR_T ip_addr_t
@@ -53,6 +54,16 @@ public:
 	{
 	}
 
+	IpAddress(uint8_t first_octet, uint8_t second_octet, uint8_t third_octet, uint8_t fourth_octet)
+	{
+		IP_ADDR4(&address, first_octet, second_octet, third_octet, fourth_octet);
+	}
+
+	IpAddress(uint32_t address)
+	{
+		ip_addr_set_ip4_u32(&this->address, address);
+	}
+
 	IpAddress(ip_addr_t &addr)
 	{
 		address = addr;
@@ -69,16 +80,6 @@ public:
 		ip_addr_copy_from_ip4(address, addr);
 	}
 #endif
-
-	IpAddress(uint8_t first_octet, uint8_t second_octet, uint8_t third_octet, uint8_t fourth_octet)
-	{
-		IP_ADDR4(&address, first_octet, second_octet, third_octet, fourth_octet);
-	}
-
-	IpAddress(uint32_t address)
-	{
-		ip_addr_set_ip4_u32(&this->address, address);
-	}
 
 	IpAddress(const uint8_t* address)
 	{
@@ -119,7 +120,7 @@ public:
 
 	bool operator==(const IpAddress& otherAddress) const
 	{
-		return ip_addr_cmp((ip_addr_t *)&address, (ip_addr_t* )&otherAddress);
+		return ip_addr_cmp(&address, &otherAddress.address);
 	}
 
 	bool operator==(const uint8_t* addr) const
@@ -129,7 +130,7 @@ public:
 
 	bool operator!=(const IpAddress& otherAddress) const
 	{
-		return !ip_addr_cmp((ip_addr_t *)&address, (ip_addr_t* )&otherAddress);
+		return !ip_addr_cmp(&address, &otherAddress.address);
 	}
 
 	bool operator!=(const uint8_t* addr) const
@@ -152,7 +153,7 @@ public:
 	// Overloaded index operator to allow getting and setting individual octets of the address
 	uint8_t operator[](int index) const
 	{
-		if(unsigned(index) >= 4) {
+		if(unsigned(index) >= sizeof(ip4_addr_t)) {
 			abort();
 		}
 
@@ -161,7 +162,7 @@ public:
 
 	uint8_t& operator[](int index)
 	{
-		if(unsigned(index) >= 4) {
+		if(unsigned(index) >= sizeof(ip4_addr_t)) {
 			abort();
 		}
 
