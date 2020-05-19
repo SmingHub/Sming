@@ -19,7 +19,7 @@
 void* memcpy_aligned(void* dst, const void* src, unsigned len)
 {
 	assert(IS_ALIGNED(dst) && IS_ALIGNED(src));
-	memcpy(dst, src, ALIGNUPW(len));
+	memcpy(dst, src, ALIGNUP4(len));
 	return dst;
 }
 

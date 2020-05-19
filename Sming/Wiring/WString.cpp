@@ -222,7 +222,7 @@ String & String::copy(const char *cstr, size_t length)
 String &String::copy(flash_string_t pstr, size_t length)
 {
 	// If necessary, allocate additional space so copy can be aligned
-	size_t length_aligned = ALIGNUPW(length);
+	size_t length_aligned = ALIGNUP4(length);
 	if(!reserve(length_aligned))
 	{
 		invalidate();

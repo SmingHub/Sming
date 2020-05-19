@@ -317,7 +317,7 @@ bool i2s_state_t::initialise(const i2s_module_config_t& config)
 	uint8_t bytes_per_sample = config.bits_per_sample / 8;
 	uint8_t channel_num = (config.channel_format < I2S_CHANNEL_FMT_ONLY_RIGHT) ? 2 : 1;
 	uint8_t sample_size = bytes_per_sample * channel_num;
-	buffer_size = ALIGNUPW(config.dma_buf_len * sample_size);
+	buffer_size = ALIGNUP4(config.dma_buf_len * sample_size);
 	buffer_count = config.dma_buf_count;
 	buffers = new uint32_t[buffer_count * buffer_size / sizeof(uint32_t)];
 	slc_items = new dma_descriptor_t[buffer_count];

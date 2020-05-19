@@ -7,7 +7,7 @@ index 78a3323..b464964 100644
  	FSTR_INLINE size_t size() const
  	{
 -		return ALIGNUP(length());
-+		return ALIGNUPW(length());
++		return ALIGNUP4(length());
  	}
  
  	/**
@@ -20,7 +20,7 @@ index 4445a3c..6e8a1f9 100644
  	constexpr const struct {                                                                                           \
  		FSTR::ObjectBase object;                                                                                       \
 -		char data[ALIGNUP(sizeof(str))];                                                                               \
-+		char data[ALIGNUPW(sizeof(str))];                                                                               \
++		char data[ALIGNUP4(sizeof(str))];                                                                               \
  	} name PROGMEM = {{sizeof(str) - 1}, str};                                                                         \
  	FSTR_CHECK_STRUCT(name);
  
@@ -29,7 +29,7 @@ index 4445a3c..6e8a1f9 100644
  	size_t size() const
  	{
 -		return ALIGNUP(Object::length() + 1);
-+		return ALIGNUPW(Object::length() + 1);
++		return ALIGNUP4(Object::length() + 1);
  	}
  
  	/**
@@ -42,7 +42,7 @@ index 8cd4e81..8641128 100644
  			Serial.print(test);
  			Serial.println('"');
 -			REQUIRE(sizeof(test) == ALIGNUP(sizeof(DEMO_TEST_TEXT)));
-+			REQUIRE(sizeof(test) == ALIGNUPW(sizeof(DEMO_TEST_TEXT)));
++			REQUIRE(sizeof(test) == ALIGNUP4(sizeof(DEMO_TEST_TEXT)));
  
  			Serial.print("> demoFSTR1 (write): ");
  			Serial.print('"');
@@ -51,7 +51,7 @@ index 8cd4e81..8641128 100644
  			Serial.write(fsarr, sizeof(fsarr) - 1);
  			Serial.println('"');
 -			REQUIRE(sizeof(fsarr) == ALIGNUP(sizeof(DEMO_TEST_TEXT)));
-+			REQUIRE(sizeof(fsarr) == ALIGNUPW(sizeof(DEMO_TEST_TEXT)));
++			REQUIRE(sizeof(fsarr) == ALIGNUP4(sizeof(DEMO_TEST_TEXT)));
  			REQUIRE(memcmp_P(fsarr, DEMO_TEST_TEXT, sizeof(DEMO_TEST_TEXT)) == 0);
  		}
  
