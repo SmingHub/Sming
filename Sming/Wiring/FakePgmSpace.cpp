@@ -27,7 +27,7 @@ int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len)
 {
 	assert(IS_ALIGNED(ptr1) && IS_ALIGNED(ptr2));
 
-	unsigned len_aligned = ALIGNDOWNW(len);
+	unsigned len_aligned = ALIGNDOWN4(len);
 	int res = memcmp(ptr1, ptr2, len_aligned);
 	if(res != 0 || len == len_aligned) {
 		return res;

@@ -46,7 +46,7 @@ extern "C"
 /**
  * @brief Align a size down to the nearest word boundary
  */
-#define ALIGNDOWNW(n) ((n) & ~3)
+#define ALIGNDOWN4(n) ((n) & ~3)
 
 #define printf_P_heap(f_P, ...)                                                                                        \
 	(__extension__({                                                                                                   \
