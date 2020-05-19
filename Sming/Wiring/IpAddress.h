@@ -31,7 +31,6 @@ typedef ip_addr_t ip4_addr_t;
 #define IP_ADDR4(IP, A, B, C, D) IP4_ADDR(IP, A, B, C, D)
 #define ip_addr_set_ip4_u32(IP, U32) ip4_addr_set_u32(IP, U32)
 #define ip_addr_get_ip4_u32(IP) ip4_addr_get_u32(IP)
-#define ip4addr_ntoa(IP) ipaddr_ntoa(IP)
 #define ip_2_ip4(IP) (IP)
 #define ip4_addr_netcmp(A, B, C) ip_addr_netcmp(A, B, C)
 #define LWIP_IP_ADDR_T ip_addr_t
