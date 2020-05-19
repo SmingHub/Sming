@@ -22,35 +22,17 @@
 
 void IpAddress::fromString(const String& address)
 {
-	this->address.addr = 0;
-	const char* p = address.c_str();
-	for(unsigned i = 0; i < 4; ++i) {
-		operator[](i) = strtol(p, const_cast<char**>(&p), 10);
-		if (*p++ != '.')
-			break;	// Missing '.' or end of input string
-	}
+    ipaddr_aton(address.c_str(), &(this->address));
 }
 
 size_t IpAddress::printTo(Print& p) const
 {
-    size_t n = 0;
-    for (unsigned i = 0; i < 3; i++) {
-        n += p.print(operator[](i), DEC);
-        n += p.print('.');
-    }
-    n += p.print(operator[](3), DEC);
-    return n;
+    return p.print(toString());
 }
 
 String IpAddress::toString() const
 {
-	String res;
-    res.reserve(sizeof(address) * 4);
-    for (unsigned i = 0; i < sizeof(address); i++)
-    {
-    	if (i)
-    	  res += '.';
-    	res += operator[](i);
-    }
-    return res;
+    char text[16];
+    ipaddr_ntoa_r(&address, text, 16);
+    return text;
 }
