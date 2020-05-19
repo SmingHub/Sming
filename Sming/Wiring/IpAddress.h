@@ -80,7 +80,10 @@ public:
 	}
 #endif
 
-	IpAddress(const uint8_t* address)
+	/**
+	 * @param address IP4 address octets
+	 */
+	IpAddress(const uint8_t address[4])
 	{
 		IP_ADDR4(&this->address, address[0], address[1], address[2], address[3]);
 	}
@@ -106,7 +109,7 @@ public:
 	}
 
 #if LWIP_VERSION_MAJOR == 2 && LWIP_IPV6
-	operator ip4_addr_t const()
+	operator ip4_addr_t() const
 	{
 		return *ip_2_ip4(&address);
 	}
@@ -122,7 +125,7 @@ public:
 		return ip_addr_cmp(&address, &otherAddress.address);
 	}
 
-	bool operator==(const uint8_t* addr) const
+	bool operator==(const uint8_t addr[4]) const
 	{
 		return *this == IpAddress(addr);
 	}
@@ -132,7 +135,7 @@ public:
 		return !ip_addr_cmp(&address, &otherAddress.address);
 	}
 
-	bool operator!=(const uint8_t* addr) const
+	bool operator!=(const uint8_t addr[4]) const
 	{
 		return *this != IpAddress(addr);
 	}
@@ -146,7 +149,7 @@ public:
 
 	bool compare(const IpAddress& addr, const IpAddress& mask) const
 	{
-		return ip4_addr_netcmp((ip4_addr_t* )&address, (ip4_addr_t* )&addr, (ip4_addr_t* )&mask);
+		return ip4_addr_netcmp(&address, &addr.address, &mask.address);
 	}
 
 	// Overloaded index operator to allow getting and setting individual octets of the address
@@ -169,7 +172,7 @@ public:
 	}
 
 	// Overloaded copy operators to allow initialisation of IpAddress objects from other types
-	IpAddress& operator=(const uint8_t* address)
+	IpAddress& operator=(const uint8_t address[4])
 	{
 		IP_ADDR4(&this->address, address[0], address[1], address[2], address[3]);
 		return *this;
@@ -181,7 +184,7 @@ public:
 		return *this;
 	}
 
-	IpAddress& operator=(const String address)
+	IpAddress& operator=(const String& address)
 	{
 		fromString(address);
 		return *this;

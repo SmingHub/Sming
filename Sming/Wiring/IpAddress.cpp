@@ -32,5 +32,7 @@ size_t IpAddress::printTo(Print& p) const
 
 String IpAddress::toString() const
 {
-    return ipaddr_ntoa(&address);
+    char text[16];
+    ipaddr_ntoa_r(&address, text, 16);
+    return text;
 }
