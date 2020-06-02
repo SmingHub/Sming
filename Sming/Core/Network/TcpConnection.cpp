@@ -21,7 +21,7 @@
 #define debug_tcp_d(fmt, ...) debug_d("TCP %p " fmt, this, ##__VA_ARGS__)
 
 #ifdef DEBUG_TCP_EXTENDED
-#define debug_tcp_ext debug_tcp_d(fmt, ##__VA_ARGS__)
+#define debug_tcp_ext(fmt, ...) debug_tcp_d(fmt, ##__VA_ARGS__)
 #else
 #define debug_tcp_ext(fmt, ...) debug_none(fmt, ##__VA_ARGS__)
 #endif
