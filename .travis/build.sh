@@ -4,11 +4,6 @@ set -ex # exit with nonzero exit code if anything fails
 # Build times benefit from parallel building
 export MAKE_PARALLEL="make -j3"
 
-unset SPIFFY
-unset ESPTOOL2
-unset SDK_BASE
-env
-
 export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
 
 # Setup ARCH SDK
@@ -16,6 +11,8 @@ cd $SMING_HOME
 if [ -f "$SMING_HOME/Arch/$SMING_ARCH/Tools/travis/build.setup.sh" ]; then
    source "$SMING_HOME/Arch/$SMING_ARCH/Tools/travis/build.setup.sh"
 fi
+
+env
 
 # Full compile checks please
 export STRICT=1
