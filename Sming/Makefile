@@ -18,9 +18,6 @@ include build.mk
 all:
 	$(info Please run `make` from your project directory!)
 
-#
-DOXYGEN := $(shell command -v doxygen 2> /dev/null)
-
 
 ##@Cleaning
 

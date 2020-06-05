@@ -102,6 +102,23 @@ Install Python
 
 Get the current version from https://www.python.org/.
 
+By default, python gets installed here::
+
+   C:\Users\xxx\AppData\Local\Programs\Python\Python38\python.exe
+
+Wherever it ends up will either need to be in the path::
+
+   setx PATH "C:\Users\xxx\AppData\Local\Programs\Python\Python38;%PATH%"
+
+or located using the :envvar:`PYTHON` environment variable::
+
+   setx PYTHON "C:\Users\xxx\AppData\Local\Programs\Python\Python38"
+
+.. important::
+
+   The PYTHON variable may not contain spaces.
+   This is a MinGW restriction.
+
 
 Install GIT
 -----------

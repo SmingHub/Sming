@@ -97,7 +97,19 @@ AWK ?= POSIXLY_CORRECT= awk
 
 # Python command
 DEBUG_VARS += PYTHON
-PYTHON ?= python
+ifdef PYTHON
+export PYTHON := $(call FixPath,$(PYTHON))
+else
+PYTHON := python
+endif
+
+PYTHON_VERSION := $(shell $(PYTHON) --version 2>&1)
+$(if $V,$(info PYTHON_VERSION = $(PYTHON_VERSION)))
+PYTHON_VERSION_OK := $(findstring Python,$(PYTHON_VERSION))
+ifndef PYTHON_VERSION_OK
+$(error Cannot find Python installation - check PATH or PYTHON environment variables)
+endif
+
 
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
