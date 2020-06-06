@@ -1,0 +1,94 @@
+diff --git a/lib/googletest b/lib/googletest
+index dea0216..4fe0180 160000
+--- a/lib/googletest
++++ b/lib/googletest
+@@ -1 +1 @@
+-Subproject commit dea0216d0c6bc5e63cf5f6c8651cd268668032ec
++Subproject commit 4fe018038f87675c083d0cfb6a6b57c274fb1753
+diff --git a/src/IRrecv.cpp b/src/IRrecv.cpp
+index cdaa20a..780550e 100644
+--- a/src/IRrecv.cpp
++++ b/src/IRrecv.cpp
+@@ -66,7 +66,7 @@ irparams_t *irparams_save;  // A copy of the interrupt state while decoding.
+ /// It signals to the library that capturing of IR data has stopped.
+ /// @param[in] arg Unused. (ESP8266 Only)
+ static void USE_IRAM_ATTR read_timeout(void *arg __attribute__((unused))) {
+-  os_intr_lock();
++  ets_intr_lock();
+ #endif  // ESP8266
+ /// @cond IGNORE
+ #if defined(ESP32)
+@@ -79,7 +79,7 @@ static void USE_IRAM_ATTR read_timeout(void) {
+ #endif  // ESP32
+   if (irparams.rawlen) irparams.rcvstate = kStopState;
+ #if defined(ESP8266)
+-  os_intr_unlock();
++  ets_intr_unlock();
+ #endif  // ESP8266
+ #if defined(ESP32)
+   portEXIT_CRITICAL(&irremote_mux);
+@@ -183,7 +183,7 @@ IRrecv::IRrecv(const uint16_t recvpin, const uint16_t bufsize,
+         "Could not allocate memory for the primary IR buffer.\n"
+         "Try a smaller size for CAPTURE_BUFFER_SIZE.\nRebooting!");
+ #ifndef UNIT_TEST
+-    ESP.restart();  // Mem alloc failure. Reboot.
++    System.restart();  // Mem alloc failure. Reboot.
+ #endif
+   }
+   // If we have been asked to use a save buffer (for decoding), then create one.
+@@ -196,7 +196,7 @@ IRrecv::IRrecv(const uint16_t recvpin, const uint16_t bufsize,
+           "Could not allocate memory for the second IR buffer.\n"
+           "Try a smaller size for CAPTURE_BUFFER_SIZE.\nRebooting!");
+ #ifndef UNIT_TEST
+-      ESP.restart();  // Mem alloc failure. Reboot.
++      System.restart();  // Mem alloc failure. Reboot.
+ #endif
+     }
+   } else {
+diff --git a/src/IRsend.h b/src/IRsend.h
+index 0e92b6f..8729ac4 100644
+--- a/src/IRsend.h
++++ b/src/IRsend.h
+@@ -12,7 +12,7 @@
+ // Updated by markszabo (https://github.com/crankyoldgit/IRremoteESP8266) for
+ // sending IR code on ESP8266
+ 
+-#if TEST || UNIT_TEST
++#if defined(TEST) || defined(UNIT_TEST)
+ #define VIRTUAL virtual
+ #else
+ #define VIRTUAL
+@@ -24,7 +24,7 @@
+ #if defined(ESP32)
+ // Calculated on a generic ESP-WROOM-32 board with v3.2-18 SDK @ 240MHz
+ const int8_t kPeriodOffset = -2;
+-#elif (defined(ESP8266) && F_CPU == 160000000L)  // NOLINT(whitespace/parens)
++#elif (defined(ESP8266) && defined(F_CPU) == 160000000L)  // NOLINT(whitespace/parens)
+ // Calculated on an ESP8266 NodeMCU v2 board using:
+ // v2.6.0 with v2.5.2 ESP core @ 160MHz
+ const int8_t kPeriodOffset = -2;
+diff --git a/src/IRutils.cpp b/src/IRutils.cpp
+index dd1859d..cd3f056 100644
+--- a/src/IRutils.cpp
++++ b/src/IRutils.cpp
+@@ -618,7 +618,7 @@ namespace irutils {
+     String result = addIntToString(day_of_week, kDayStr, precomma);
+     result += kSpaceLBraceStr;
+     if ((uint8_t)(day_of_week + offset) < 7)
+-#if UNIT_TEST
++#ifdef UNIT_TEST
+       result += String(kThreeLetterDayOfWeekStr).substr(
+           (day_of_week + offset) * 3, 3);
+ #else  // UNIT_TEST
+diff --git a/src/IRutils.h b/src/IRutils.h
+index 1252fbe..8ef94ed 100644
+--- a/src/IRutils.h
++++ b/src/IRutils.h
+@@ -99,6 +99,7 @@ namespace irutils {
+               const bool on = true);
+   void setBit(uint64_t * const data, const uint8_t position,
+               const bool on = true);
++#undef setBits
+   void setBits(uint8_t * const dst, const uint8_t offset, const uint8_t nbits,
+                const uint8_t data);
+   void setBits(uint32_t * const dst, const uint8_t offset, const uint8_t nbits,
