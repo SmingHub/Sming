@@ -22,6 +22,7 @@ void receiveIR()
 	if(irrecv.decode(&dresults)) {
 		Serial.println(resultToHumanReadableBasic(&dresults)); // Output the results as source code
 		Serial.println(resultToTimingInfo(&dresults));
+		irrecv.resume();
 	}
 	if(dresults.decode_type > UNUSED) {
 		Serial.println("Send IR Code");
