@@ -52,16 +52,16 @@ static int s_uart_debug_nr = UART_NO;
 // Keep track of interrupt enable state for each UART
 static uint8_t isrMask;
 // Keep a reference to all created UARTS - required because they share an ISR
-static uart_t* uartInstances[UART_COUNT];
+static smg_uart_t* uartInstances[UART_COUNT];
 
 // Registered port callback functions
-static uart_notify_callback_t notifyCallbacks[UART_COUNT];
+static smg_uart_notify_callback_t notifyCallbacks[UART_COUNT];
 
 /** @brief Invoke a port callback, if one has been registered
  *  @param uart
  *  @param code
  */
-static void notify(uart_t* uart, uart_notify_code_t code)
+static void notify(smg_uart_t* uart, smg_uart_notify_code_t code)
 {
 	auto callback = notifyCallbacks[uart->uart_nr];
 	if(callback != nullptr) {
@@ -69,26 +69,26 @@ static void notify(uart_t* uart, uart_notify_code_t code)
 	}
 }
 
-__forceinline static bool uart_isr_enabled(uint8_t nr)
+__forceinline static bool smg_uart_isr_enabled(uint8_t nr)
 {
 	return bitRead(isrMask, nr);
 }
 
-uart_t* uart_get_uart(uint8_t uart_nr)
+smg_uart_t* smg_uart_get_uart(uint8_t uart_nr)
 {
 	return (uart_nr < UART_COUNT) ? uartInstances[uart_nr] : nullptr;
 }
 
-uint8_t uart_disable_interrupts()
+uint8_t smg_uart_disable_interrupts()
 {
 	return isrMask;
 }
 
-void uart_restore_interrupts()
+void smg_uart_restore_interrupts()
 {
 }
 
-bool uart_set_notify(unsigned uart_nr, uart_notify_callback_t callback)
+bool smg_uart_set_notify(unsigned uart_nr, smg_uart_notify_callback_t callback)
 {
 	if(uart_nr >= UART_COUNT) {
 		return false;
@@ -98,7 +98,7 @@ bool uart_set_notify(unsigned uart_nr, uart_notify_callback_t callback)
 	return true;
 }
 
-void uart_set_callback(uart_t* uart, uart_callback_t callback, void* param)
+void smg_uart_set_callback(smg_uart_t* uart, smg_uart_callback_t callback, void* param)
 {
 	if(uart != nullptr) {
 		uart->callback = nullptr; // In case interrupt fires between setting param and callback
@@ -111,10 +111,10 @@ static bool realloc_buffer(SerialBuffer*& buffer, size_t new_size)
 {
 	if(buffer != nullptr) {
 		if(new_size == 0) {
-			(void)uart_disable_interrupts();
+			(void)smg_uart_disable_interrupts();
 			delete buffer;
 			buffer = nullptr;
-			uart_restore_interrupts();
+			smg_uart_restore_interrupts();
 			return true;
 		}
 
@@ -135,38 +135,38 @@ static bool realloc_buffer(SerialBuffer*& buffer, size_t new_size)
 	return false;
 }
 
-size_t uart_resize_rx_buffer(uart_t* uart, size_t new_size)
+size_t smg_uart_resize_rx_buffer(smg_uart_t* uart, size_t new_size)
 {
-	if(uart_rx_enabled(uart)) {
+	if(smg_uart_rx_enabled(uart)) {
 		realloc_buffer(uart->rx_buffer, new_size);
 	}
-	return uart_rx_buffer_size(uart);
+	return smg_uart_rx_buffer_size(uart);
 }
 
-size_t uart_rx_buffer_size(uart_t* uart)
+size_t smg_uart_rx_buffer_size(smg_uart_t* uart)
 {
 	return uart != nullptr && uart->rx_buffer != nullptr ? uart->rx_buffer->getSize() : 0;
 }
 
-size_t uart_resize_tx_buffer(uart_t* uart, size_t new_size)
+size_t smg_uart_resize_tx_buffer(smg_uart_t* uart, size_t new_size)
 {
-	if(uart_tx_enabled(uart)) {
+	if(smg_uart_tx_enabled(uart)) {
 		realloc_buffer(uart->tx_buffer, new_size);
 	}
-	return uart_tx_buffer_size(uart);
+	return smg_uart_tx_buffer_size(uart);
 }
 
-size_t uart_tx_buffer_size(uart_t* uart)
+size_t smg_uart_tx_buffer_size(smg_uart_t* uart)
 {
 	return uart != nullptr && uart->tx_buffer != nullptr ? uart->tx_buffer->getSize() : 0;
 }
 
-int uart_peek_char(uart_t* uart)
+int smg_uart_peek_char(smg_uart_t* uart)
 {
 	return uart != nullptr && uart->rx_buffer ? uart->rx_buffer->peekChar() : -1;
 }
 
-int uart_rx_find(uart_t* uart, char c)
+int smg_uart_rx_find(smg_uart_t* uart, char c)
 {
 	if(uart == nullptr || uart->rx_buffer == nullptr) {
 		return -1;
@@ -175,14 +175,14 @@ int uart_rx_find(uart_t* uart, char c)
 	return uart->rx_buffer->find(c);
 }
 
-int uart_peek_last_char(uart_t* uart)
+int smg_uart_peek_last_char(smg_uart_t* uart)
 {
 	return uart != nullptr && uart->rx_buffer != nullptr ? uart->rx_buffer->peekLastChar() : -1;
 }
 
-size_t uart_read(uart_t* uart, void* buffer, size_t size)
+size_t smg_uart_read(smg_uart_t* uart, void* buffer, size_t size)
 {
-	if(!uart_rx_enabled(uart) || buffer == nullptr || size == 0) {
+	if(!smg_uart_rx_enabled(uart) || buffer == nullptr || size == 0) {
 		return 0;
 	}
 
@@ -201,13 +201,13 @@ size_t uart_read(uart_t* uart, void* buffer, size_t size)
 	return read;
 }
 
-size_t uart_rx_available(uart_t* uart)
+size_t smg_uart_rx_available(smg_uart_t* uart)
 {
-	if(!uart_rx_enabled(uart)) {
+	if(!smg_uart_rx_enabled(uart)) {
 		return 0;
 	}
 
-	(void)uart_disable_interrupts();
+	(void)smg_uart_disable_interrupts();
 
 	size_t avail = 0;
 
@@ -215,21 +215,21 @@ size_t uart_rx_available(uart_t* uart)
 		avail += uart->rx_buffer->available();
 	}
 
-	uart_restore_interrupts();
+	smg_uart_restore_interrupts();
 
 	return avail;
 }
 
-void uart_start_isr(uart_t* uart)
+void smg_uart_start_isr(smg_uart_t* uart)
 {
 	if(!bitRead(isrMask, uart->uart_nr)) {
 		bitSet(isrMask, uart->uart_nr);
 	}
 }
 
-size_t uart_write(uart_t* uart, const void* buffer, size_t size)
+size_t smg_uart_write(smg_uart_t* uart, const void* buffer, size_t size)
 {
-	if(!uart_tx_enabled(uart) || buffer == nullptr || size == 0) {
+	if(!smg_uart_tx_enabled(uart) || buffer == nullptr || size == 0) {
 		return 0;
 	}
 
@@ -254,27 +254,27 @@ size_t uart_write(uart_t* uart, const void* buffer, size_t size)
 	return written;
 }
 
-size_t uart_tx_free(uart_t* uart)
+size_t smg_uart_tx_free(smg_uart_t* uart)
 {
-	if(!uart_tx_enabled(uart)) {
+	if(!smg_uart_tx_enabled(uart)) {
 		return 0;
 	}
 
-	(void)uart_disable_interrupts();
+	(void)smg_uart_disable_interrupts();
 
 	size_t space = 0;
 	if(uart->tx_buffer != nullptr) {
 		space += uart->tx_buffer->getFreeSpace();
 	}
 
-	uart_restore_interrupts();
+	smg_uart_restore_interrupts();
 
 	return space;
 }
 
-void uart_wait_tx_empty(uart_t* uart)
+void smg_uart_wait_tx_empty(smg_uart_t* uart)
 {
-	if(!uart_tx_enabled(uart)) {
+	if(!smg_uart_tx_enabled(uart)) {
 		return;
 	}
 
@@ -287,7 +287,7 @@ void uart_wait_tx_empty(uart_t* uart)
 	}
 }
 
-void uart_set_break(uart_t* uart, bool state)
+void smg_uart_set_break(smg_uart_t* uart, bool state)
 {
 	//	uart = get_physical(uart);
 	//	if(uart != nullptr) {
@@ -295,7 +295,7 @@ void uart_set_break(uart_t* uart, bool state)
 	//	}
 }
 
-uint8_t uart_get_status(uart_t* uart)
+uint8_t smg_uart_get_status(smg_uart_t* uart)
 {
 	uint8_t status = 0;
 	//	if(uart != nullptr) {
@@ -315,7 +315,7 @@ uint8_t uart_get_status(uart_t* uart)
 	return status;
 }
 
-void uart_flush(uart_t* uart, uart_mode_t mode)
+void smg_uart_flush(smg_uart_t* uart, smg_uart_mode_t mode)
 {
 	if(uart == nullptr) {
 		return;
@@ -324,7 +324,7 @@ void uart_flush(uart_t* uart, uart_mode_t mode)
 	bool flushRx = mode != UART_TX_ONLY && uart->mode != UART_TX_ONLY;
 	bool flushTx = mode != UART_RX_ONLY && uart->mode != UART_RX_ONLY;
 
-	(void)uart_disable_interrupts();
+	(void)smg_uart_disable_interrupts();
 	if(flushRx && uart->rx_buffer != nullptr) {
 		uart->rx_buffer->clear();
 	}
@@ -333,10 +333,10 @@ void uart_flush(uart_t* uart, uart_mode_t mode)
 		uart->tx_buffer->clear();
 	}
 
-	uart_restore_interrupts();
+	smg_uart_restore_interrupts();
 }
 
-uint32_t uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate)
+uint32_t smg_uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate)
 {
 	//	if(!is_physical(uart_nr) || baud_rate == 0) {
 	//		return 0;
@@ -349,36 +349,36 @@ uint32_t uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate)
 	return baud_rate;
 }
 
-uint32_t uart_set_baudrate(uart_t* uart, uint32_t baud_rate)
+uint32_t smg_uart_set_baudrate(smg_uart_t* uart, uint32_t baud_rate)
 {
 	if(uart == nullptr) {
 		return 0;
 	}
 
-	baud_rate = uart_set_baudrate_reg(uart->uart_nr, baud_rate);
+	baud_rate = smg_uart_set_baudrate_reg(uart->uart_nr, baud_rate);
 	// Store the actual baud rate in use
 	uart->baud_rate = baud_rate;
 	return baud_rate;
 }
 
-uint32_t uart_get_baudrate(uart_t* uart)
+uint32_t smg_uart_get_baudrate(smg_uart_t* uart)
 {
 	return (uart == nullptr) ? 0 : uart->baud_rate;
 }
 
-uart_t* uart_init_ex(const uart_config& cfg)
+smg_uart_t* smg_uart_init_ex(const smg_uart_config& cfg)
 {
 	// Already initialised?
-	if(uart_get_uart(cfg.uart_nr) != nullptr) {
+	if(smg_uart_get_uart(cfg.uart_nr) != nullptr) {
 		return nullptr;
 	}
 
-	auto uart = new uart_t;
+	auto uart = new smg_uart_t;
 	if(uart == nullptr) {
 		return nullptr;
 	}
 
-	memset(uart, 0, sizeof(uart_t));
+	memset(uart, 0, sizeof(smg_uart_t));
 	uart->uart_nr = cfg.uart_nr;
 	uart->mode = cfg.mode;
 	uart->options = cfg.options;
@@ -396,12 +396,12 @@ uart_t* uart_init_ex(const uart_config& cfg)
 	switch(cfg.uart_nr) {
 	case UART0:
 	case UART2:
-		if(uart_rx_enabled(uart) && !realloc_buffer(uart->rx_buffer, rxBufferSize)) {
+		if(smg_uart_rx_enabled(uart) && !realloc_buffer(uart->rx_buffer, rxBufferSize)) {
 			delete uart;
 			return nullptr;
 		}
 
-		if(uart_tx_enabled(uart) && !realloc_buffer(uart->tx_buffer, txBufferSize)) {
+		if(smg_uart_tx_enabled(uart) && !realloc_buffer(uart->tx_buffer, txBufferSize)) {
 			delete uart->rx_buffer;
 			delete uart;
 			return nullptr;
@@ -412,7 +412,7 @@ uart_t* uart_init_ex(const uart_config& cfg)
 		}
 
 		// OK, buffers allocated so setup hardware
-		uart_detach(cfg.uart_nr);
+		smg_uart_detach(cfg.uart_nr);
 
 		break;
 
@@ -431,7 +431,7 @@ uart_t* uart_init_ex(const uart_config& cfg)
 		}
 
 		// Setup hardware
-		uart_detach(cfg.uart_nr);
+		smg_uart_detach(cfg.uart_nr);
 		break;
 
 	default:
@@ -440,17 +440,17 @@ uart_t* uart_init_ex(const uart_config& cfg)
 		return nullptr;
 	}
 
-	uart_set_baudrate(uart, cfg.baudrate);
-	uart_flush(uart);
+	smg_uart_set_baudrate(uart, cfg.baudrate);
+	smg_uart_flush(uart);
 	uartInstances[cfg.uart_nr] = uart;
-	uart_start_isr(uart);
+	smg_uart_start_isr(uart);
 
 	notify(uart, UART_NOTIFY_AFTER_OPEN);
 
 	return uart;
 }
 
-void uart_uninit(uart_t* uart)
+void smg_uart_uninit(smg_uart_t* uart)
 {
 	if(uart == nullptr) {
 		return;
@@ -458,10 +458,10 @@ void uart_uninit(uart_t* uart)
 
 	notify(uart, UART_NOTIFY_BEFORE_CLOSE);
 
-	uart_stop_isr(uart);
+	smg_uart_stop_isr(uart);
 	// If debug output being sent to this UART, disable it
 	if(uart->uart_nr == s_uart_debug_nr) {
-		uart_set_debug(UART_NO);
+		smg_uart_set_debug(UART_NO);
 	}
 
 	delete uart->rx_buffer;
@@ -469,10 +469,10 @@ void uart_uninit(uart_t* uart)
 	delete uart;
 }
 
-uart_t* uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, uart_mode_t mode, uint8_t tx_pin, size_t rx_size,
+smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin, size_t rx_size,
 				  size_t tx_size)
 {
-	uart_config cfg = {.uart_nr = uart_nr,
+	smg_uart_config cfg = {.uart_nr = uart_nr,
 					   .tx_pin = tx_pin,
 					   .mode = mode,
 					   .options = _BV(UART_OPT_TXWAIT),
@@ -480,47 +480,47 @@ uart_t* uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, uart_mode
 					   .config = config,
 					   .rx_size = rx_size,
 					   .tx_size = tx_size};
-	return uart_init_ex(cfg);
+	return smg_uart_init_ex(cfg);
 }
 
-void uart_swap(uart_t* uart, int tx_pin)
+void smg_uart_swap(smg_uart_t* uart, int tx_pin)
 {
 }
 
-void uart_set_tx(uart_t* uart, int tx_pin)
+void smg_uart_set_tx(smg_uart_t* uart, int tx_pin)
 {
 }
 
-void uart_set_pins(uart_t* uart, int tx, int rx)
+void smg_uart_set_pins(smg_uart_t* uart, int tx, int rx)
 {
 }
 
-void uart_debug_putc(char c)
+void smg_uart_debug_putc(char c)
 {
-	uart_t* uart = uart_get_uart(s_uart_debug_nr);
+	smg_uart_t* uart = smg_uart_get_uart(s_uart_debug_nr);
 	if(uart != nullptr) {
-		uart_write_char(uart, c);
+		smg_uart_write_char(uart, c);
 	}
 }
 
-void uart_set_debug(int uart_nr)
+void smg_uart_set_debug(int uart_nr)
 {
 	s_uart_debug_nr = uart_nr;
 	system_set_os_print(uart_nr >= 0);
-	ets_install_putc1(uart_debug_putc);
+	ets_install_putc1(smg_uart_debug_putc);
 }
 
-int uart_get_debug()
+int smg_uart_get_debug()
 {
 	return s_uart_debug_nr;
 }
 
-void uart_detach(int uart_nr)
+void smg_uart_detach(int uart_nr)
 {
 	bitClear(isrMask, uart_nr);
 }
 
-void uart_detach_all()
+void smg_uart_detach_all()
 {
 	//	uart_disable_interrupts();
 	//	for(unsigned uart_nr = 0; uart_nr < UART_PHYSICAL_COUNT; ++uart_nr) {

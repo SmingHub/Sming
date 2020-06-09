@@ -214,7 +214,7 @@ void ATTR_GDBINIT gdb_init(void)
 {
 	// Reset all serial ports to user-specified baud rate
 	for(unsigned i = 0; i < UART_PHYSICAL_COUNT; ++i) {
-		uart_set_baudrate_reg(i, SERIAL_BAUD_RATE);
+		smg_uart_set_baudrate_reg(i, SERIAL_BAUD_RATE);
 	}
 
 #ifdef HOOK_SYSTEM_EXCEPTIONS
