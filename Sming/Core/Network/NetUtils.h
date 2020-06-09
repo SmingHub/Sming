@@ -14,6 +14,12 @@
 
 #pragma once
 
+#ifdef ARCH_ESP8266
+#include "lwip/tcp_impl.h"
+#else
+#include "lwip/priv/tcp_priv.h"
+#endif
+
 struct pbuf;
 class String;
 

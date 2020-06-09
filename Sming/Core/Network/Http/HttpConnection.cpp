@@ -11,12 +11,7 @@
  ****/
 
 #include "HttpConnection.h"
-
-#ifdef __ets__
-#include "lwip/tcp_impl.h"
-#else
-#include "lwip/priv/tcp_priv.h"
-#endif
+#include <Network/NetUtils.h>
 
 /** @brief http_parser function table
  *  @note stored in flash memory; as it is word-aligned it can be accessed directly
