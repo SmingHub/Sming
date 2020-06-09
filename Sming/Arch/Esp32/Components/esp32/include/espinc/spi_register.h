@@ -11,8 +11,7 @@
 #pragma once
 
 #include <c_types.h>
-
-#define REG_SPI_BASE(i)  (0x60000200-i*0x100)
+#include <soc/spi_reg.h>
 
 #define SPI_CMD(i)                            (REG_SPI_BASE(i)  + 0x0)
 #define SPI_FLASH_READ (BIT(31)) //From previous SDK
@@ -213,9 +212,7 @@
 
 
 #define SPI_SLAVE2(i)  (REG_SPI_BASE(i)  + 0x38)
-#define SPI_SLV_WRBUF_DUMMY_CYCLELEN  0X000000FF
 #define SPI_SLV_WRBUF_DUMMY_CYCLELEN_S 24
-#define SPI_SLV_RDBUF_DUMMY_CYCLELEN  0X000000FF
 #define SPI_SLV_RDBUF_DUMMY_CYCLELEN_S 16
 #define SPI_SLV_WRSTR_DUMMY_CYCLELEN  0X000000FF
 #define SPI_SLV_WRSTR_DUMMY_CYCLELEN_S  8

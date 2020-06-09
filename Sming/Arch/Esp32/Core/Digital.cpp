@@ -11,7 +11,6 @@
 #include "driver/driver_api.h"
 #include <Digital.h>
 #include <esp_attr.h>
-#include "ESP8266EX.h"
 #include <esp32/rom/ets_sys.h>
 #include <esp_attr.h>
 #include <esp_intr_alloc.h>
