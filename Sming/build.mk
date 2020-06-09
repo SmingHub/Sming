@@ -129,7 +129,6 @@ CPPFLAGS = \
 
 CPPFLAGS += \
 	-Wall \
-	-Wundef \
 	-Wpointer-arith \
 	-Wno-comment \
 	-DARDUINO=106

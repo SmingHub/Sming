@@ -50,7 +50,7 @@ typedef Delegate<void()> TaskDelegate;
 typedef TaskDelegate SystemReadyDelegate;
 
 /**
- * @brief Interface class implented by classes to support on-ready callback
+ * @brief Interface class implemented by classes to support on-ready callback
  */
 class ISystemReadyHandler
 {

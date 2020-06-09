@@ -40,6 +40,12 @@ jobs:
     - SDK_VERSION=3.0.1
     - ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-quick-toolchain
 
+  - stage: build
+    name: ESP-IDF
+    env:
+    - SMING_ARCH=Esp32
+
+
 git:
   submodules: false
 addons:

@@ -14,7 +14,7 @@
 #include <WVector.h>
 #include <MacAddress.h>
 
-#ifdef ARCH_HOST
+#ifndef ARCH_ESP8266
 enum WifiAuthMode {
 	AUTH_OPEN = 0,
 	AUTH_WEP,
