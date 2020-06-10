@@ -36,15 +36,15 @@ void HardwareSerial::begin(uint32_t baud, SerialConfig config, SerialMode mode, 
 	if(uartNr < 0)
 		return;
 
-	uart_config cfg = {.uart_nr = (uint8_t)uartNr,
-					   .tx_pin = txPin,
-					   .mode = static_cast<uart_mode_t>(mode),
-					   .options = options,
-					   .baudrate = baud,
-					   .config = config,
-					   .rx_size = rxSize,
-					   .tx_size = txSize};
-	uart = uart_init_ex(cfg);
+	smg_uart_config cfg = {.uart_nr = (uint8_t)uartNr,
+						   .tx_pin = txPin,
+						   .mode = static_cast<smg_uart_mode_t>(mode),
+						   .options = options,
+						   .baudrate = baud,
+						   .config = config,
+						   .rx_size = rxSize,
+						   .tx_size = txSize};
+	uart = smg_uart_init_ex(cfg);
 	updateUartCallback();
 }
 
@@ -54,18 +54,18 @@ void HardwareSerial::end()
 		return;
 	}
 
-	if(uart_get_debug() == uartNr) {
-		uart_set_debug(UART_NO);
+	if(smg_uart_get_debug() == uartNr) {
+		smg_uart_set_debug(UART_NO);
 	}
 
-	uart_uninit(uart);
+	smg_uart_uninit(uart);
 	uart = nullptr;
 }
 
 size_t HardwareSerial::setRxBufferSize(size_t size)
 {
 	if(uart) {
-		rxSize = uart_resize_rx_buffer(uart, size);
+		rxSize = smg_uart_resize_rx_buffer(uart, size);
 	} else {
 		rxSize = size;
 	}
@@ -75,7 +75,7 @@ size_t HardwareSerial::setRxBufferSize(size_t size)
 size_t HardwareSerial::setTxBufferSize(size_t size)
 {
 	if(uart) {
-		txSize = uart_resize_tx_buffer(uart, size);
+		txSize = smg_uart_resize_tx_buffer(uart, size);
 	} else {
 		txSize = size;
 	}
@@ -89,15 +89,15 @@ void HardwareSerial::systemDebugOutput(bool enabled)
 	}
 
 	if(enabled) {
-		if(uart_tx_enabled(uart)) {
-			uart_set_debug(uartNr);
-			m_setPuts(std::bind(&uart_write, uart, _1, _2));
+		if(smg_uart_tx_enabled(uart)) {
+			smg_uart_set_debug(uartNr);
+			m_setPuts(std::bind(&smg_uart_write, uart, _1, _2));
 		} else {
-			uart_set_debug(UART_NO);
+			smg_uart_set_debug(UART_NO);
 		}
-	} else if(uart_get_debug() == uartNr) {
+	} else if(smg_uart_get_debug() == uartNr) {
 		// Disable system debug messages on this interface
-		uart_set_debug(UART_NO);
+		smg_uart_set_debug(UART_NO);
 		// and don't print debugf() data at all
 		m_setPuts(nullptr);
 	}
@@ -105,11 +105,11 @@ void HardwareSerial::systemDebugOutput(bool enabled)
 
 void HardwareSerial::invokeCallbacks()
 {
-	(void)uart_disable_interrupts();
+	(void)smg_uart_disable_interrupts();
 	auto status = callbackStatus;
 	callbackStatus = 0;
 	callbackQueued = false;
-	uart_restore_interrupts();
+	smg_uart_restore_interrupts();
 
 	// Transmit complete ?
 	if((status & UART_TXFIFO_EMPTY_INT_ST) != 0 && transmitComplete) {
@@ -118,14 +118,14 @@ void HardwareSerial::invokeCallbacks()
 
 	// RX FIFO Full or RX FIFO Timeout or RX Overflow ?
 	if(status & (UART_RXFIFO_FULL_INT_ST | UART_RXFIFO_TOUT_INT_ST | UART_RXFIFO_OVF_INT_ST)) {
-		auto receivedChar = uart_peek_last_char(uart);
+		auto receivedChar = smg_uart_peek_last_char(uart);
 		if(HWSDelegate) {
-			HWSDelegate(*this, receivedChar, uart_rx_available(uart));
+			HWSDelegate(*this, receivedChar, smg_uart_rx_available(uart));
 		}
 #if ENABLE_CMD_EXECUTOR
 		if(commandExecutor) {
 			int c;
-			while((c = uart_read_char(uart)) >= 0) {
+			while((c = smg_uart_read_char(uart)) >= 0) {
 				commandExecutor->executorReceive(c);
 			}
 		}
@@ -136,7 +136,7 @@ void HardwareSerial::invokeCallbacks()
 unsigned HardwareSerial::getStatus()
 {
 	unsigned status = 0;
-	unsigned ustat = uart_get_status(uart);
+	unsigned ustat = smg_uart_get_status(uart);
 	if(ustat & UART_BRK_DET_INT_ST) {
 		bitSet(status, eSERS_BreakDetected);
 	}
@@ -170,9 +170,9 @@ void HardwareSerial::staticOnStatusChange(void* param)
 /*
  * Called from uart interrupt handler
  */
-void HardwareSerial::staticCallbackHandler(uart_t* uart, uint32_t status)
+void HardwareSerial::staticCallbackHandler(smg_uart_t* uart, uint32_t status)
 {
-	auto serial = static_cast<HardwareSerial*>(uart_get_callback_param(uart));
+	auto serial = static_cast<HardwareSerial*>(smg_uart_get_callback_param(uart));
 	if(serial == nullptr) {
 		return;
 	}

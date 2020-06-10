@@ -61,7 +61,7 @@ void WifiEventsImpl::WifiEventHandler(System_Event_t* evt)
 		}
 		break;
 	case EVENT_SOFTAPMODE_STACONNECTED:
-		debugf("station: " MACSTR "join, AID = %d\n", MAC2STR(evt->event_info.sta_connected.mac),
+		debugf("station: " MACSTR " join, AID = %d\n", MAC2STR(evt->event_info.sta_connected.mac),
 			   evt->event_info.sta_connected.aid);
 		if(onSOFTAPConnect) {
 			onSOFTAPConnect(evt->event_info.sta_connected.mac, evt->event_info.sta_connected.aid);

@@ -84,10 +84,19 @@ index dca7e5f..5f4ec51 100644
      {
 
 diff --git a/replacements/time.c b/replacements/time.c
-index 4972119..da75839 100644
+index 4972119..19431b4 100644
 --- a/replacements/time.c
 +++ b/replacements/time.c
-@@ -24,21 +24,14 @@ extern uint64_t system_mktime(uint32_t year, uint32_t mon, uint32_t day, uint32_
+@@ -16,6 +16,8 @@
+  *
+  */
+ 
++#ifndef ARCH_ESP32
++
+ #include <time.h>
+ #include <sntp.h>
+ 
+@@ -24,21 +26,14 @@ extern uint64_t system_mktime(uint32_t year, uint32_t mon, uint32_t day, uint32_
  
  static int errno_var = 0;
  
@@ -113,7 +122,7 @@ index 4972119..da75839 100644
  #ifndef _TIMEVAL_DEFINED
  #define _TIMEVAL_DEFINED
  struct timeval {
-@@ -60,12 +53,12 @@ static time_t s_bootTime = 0;
+@@ -60,12 +55,12 @@ static time_t s_bootTime = 0;
  // calculate offset used in gettimeofday
  static void ensureBootTimeIsSet()
  {
@@ -129,7 +138,7 @@ index 4972119..da75839 100644
          }
      }
  }
-@@ -79,7 +72,7 @@ static void setServer(int id, const char* name_or_ip)
+@@ -79,7 +74,7 @@ static void setServer(int id, const char* name_or_ip)
      }
  }
  
@@ -138,7 +147,7 @@ index 4972119..da75839 100644
  {
      sntp_stop();
  
-@@ -93,22 +86,24 @@ void configTime(int timezone, int daylightOffset_sec, const char* server1, const
+@@ -93,22 +88,24 @@ void configTime(int timezone, int daylightOffset_sec, const char* server1, const
      sntp_init();
  }
  
@@ -168,7 +177,7 @@ index 4972119..da75839 100644
  {
      time_t seconds = sntp_get_current_timestamp();
      if (t)
-@@ -118,30 +113,32 @@ time_t time(time_t * t)
+@@ -118,30 +115,35 @@ time_t time(time_t * t)
      return seconds;
  }
  
@@ -207,6 +216,9 @@ index 4972119..da75839 100644
      }
      return 0;
  }
++
++
++#endif /* ARCH_ESP32 */
 diff --git a/ssl/tls1.c b/ssl/tls1.c
 index 8f0fbfb..35ad4f3 100644
 --- a/ssl/tls1.c

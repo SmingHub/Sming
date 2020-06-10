@@ -1,0 +1,47 @@
+/*
+ * Crypto functions contained in ROM
+ * 
+ * These have been renamed to avoid ambiguity, though the existing exports remain
+ * for compatibility with code which already uses them.
+ *
+ */
+
+/*
+ * MD5
+ */
+
+ESP_MD5_Init = MD5Init;
+ESP_MD5_Update = MD5Update;
+ESP_MD5_Final = MD5Final;
+
+/*
+ * SHA1
+ */
+
+ESP_SHA1_Init = SHA1Init;
+ESP_SHA1_Transform = SHA1Transform;
+ESP_SHA1_Update = SHA1Update;
+ESP_SHA1_Final = SHA1Final;
+
+/*
+ * HMAC
+ */
+
+ESP_hmac_md5 = hmac_md5;
+ESP_hmac_md5_v = hmac_md5_vector;
+
+ESP_hmac_sha1 = hmac_sha1;
+ESP_hmac_sha1_v = hmac_sha1_vector;
+
+/*
+ * AES (Rijndael) cipher
+ * 
+ * These replace the aes-internal-dec.o file in libcrypto.a
+ */
+
+ESP_aes_decrypt = aes_decrypt;
+ESP_aes_decrypt_deinit = aes_decrypt_deinit;
+ESP_aes_decrypt_init = aes_decrypt_init;
+ESP_aes_unwrap = aes_unwrap;
+ESP_rijndaelKeySetupDec = rijndaelKeySetupDec;
+ESP_rijndaelKeySetupEnc = rijndaelKeySetupEnc;

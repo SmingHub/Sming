@@ -19,7 +19,7 @@
 #include <Delegate.h>
 #include <Data/Stream/ReadWriteStream.h>
 #include <BitManipulations.h>
-#include <driver/uart.h>
+#include "driver/driver_api.h"
 
 #define UART_ID_0 0 ///< ID of UART 0
 #define UART_ID_1 1 ///< ID of UART 1
@@ -193,7 +193,7 @@ public:
 	void setTxWait(bool wait)
 	{
 		bitWrite(options, UART_OPT_TXWAIT, wait);
-		uart_set_options(uart, options);
+		smg_uart_set_options(uart, options);
 	}
 
 	/**
@@ -212,7 +212,7 @@ public:
 	 */
 	void swap(uint8_t tx_pin)
 	{
-		uart_swap(uart, tx_pin);
+		smg_uart_swap(uart, tx_pin);
 	}
 
 	/**
@@ -225,7 +225,7 @@ public:
 	 */
 	void setTx(uint8_t tx_pin)
 	{
-		uart_set_tx(uart, tx_pin);
+		smg_uart_set_tx(uart, tx_pin);
 	}
 
 	/**
@@ -237,7 +237,7 @@ public:
 	 */
 	void pins(uint8_t tx, uint8_t rx)
 	{
-		uart_set_pins(uart, tx, rx);
+		smg_uart_set_pins(uart, tx, rx);
 	}
 
 	/** @brief  Get quantity characters available from serial input
@@ -245,7 +245,7 @@ public:
      */
 	int available() override
 	{
-		return (int)uart_rx_available(uart);
+		return (int)smg_uart_rx_available(uart);
 	}
 
 	/** @brief  Read a character from serial port
@@ -254,7 +254,7 @@ public:
     */
 	int read() override
 	{
-		return uart_read_char(uart);
+		return smg_uart_read_char(uart);
 	}
 
 	/** @brief  Read a block of characters from serial port
@@ -266,7 +266,7 @@ public:
 	 */
 	uint16_t readMemoryBlock(char* buf, int max_len) override
 	{
-		return uart_read(uart, buf, max_len);
+		return smg_uart_read(uart, buf, max_len);
 	}
 
 	bool seek(int len) override
@@ -285,7 +285,7 @@ public:
      */
 	int peek() override
 	{
-		return uart_peek_char(uart);
+		return smg_uart_peek_char(uart);
 	}
 
 	/** @brief  Clear the serial port transmit/receive buffers
@@ -294,7 +294,7 @@ public:
 	 */
 	void clear(SerialMode mode = SERIAL_FULL)
 	{
-		uart_flush(uart, uart_mode_t(mode));
+		smg_uart_flush(uart, smg_uart_mode_t(mode));
 	}
 
 	/** @brief Flush all pending data to the serial port
@@ -302,7 +302,7 @@ public:
 	 */
 	void flush() override // Stream
 	{
-		uart_wait_tx_empty(uart);
+		smg_uart_wait_tx_empty(uart);
 	}
 
 	using Stream::write;
@@ -314,7 +314,7 @@ public:
 	 */
 	size_t write(const uint8_t* buffer, size_t size) override
 	{
-		return uart_write(uart, buffer, size);
+		return smg_uart_write(uart, buffer, size);
 	}
 
 	/** @brief  Configure serial port for system debug output and redirect output from debugf
@@ -366,9 +366,9 @@ public:
 	 * @param  param Set as return value for `uart_get_callback_param()`
 	 * @note callback is invoked directly from serial ISR and bypasses any registered delgates
 	 */
-	__forceinline void setUartCallback(uart_callback_t callback, void* param = nullptr)
+	__forceinline void setUartCallback(smg_uart_callback_t callback, void* param = nullptr)
 	{
-		uart_set_callback(uart, callback, param);
+		smg_uart_set_callback(uart, callback, param);
 	}
 
 	/**
@@ -377,7 +377,7 @@ public:
 	 */
 	bool isTxEnabled()
 	{
-		return uart_tx_enabled(uart);
+		return smg_uart_tx_enabled(uart);
 	}
 
 	/**
@@ -386,7 +386,7 @@ public:
 	 */
 	bool isRxEnabled()
 	{
-		return uart_rx_enabled(uart);
+		return smg_uart_rx_enabled(uart);
 	}
 
 	/**
@@ -395,7 +395,7 @@ public:
 	 */
 	uint32_t baudRate()
 	{
-		return uart_get_baudrate(uart);
+		return smg_uart_get_baudrate(uart);
 	}
 
 	/**
@@ -405,7 +405,7 @@ public:
 	 */
 	uint32_t setBaudRate(uint32_t baudrate)
 	{
-		return uart_set_baudrate(uart, baudrate);
+		return smg_uart_set_baudrate(uart, baudrate);
 	}
 
 	/**
@@ -423,14 +423,14 @@ public:
 	 */
 	int indexOf(char c) override
 	{
-		return uart_rx_find(uart, c);
+		return smg_uart_rx_find(uart, c);
 	}
 
 	/**
 	 * @brief Returns a pointer to the internal uart object. Use with care.
 	 * @retval pointer to uart_t
 	 */
-	uart_t* getUart()
+	smg_uart_t* getUart()
 	{
 		return uart;
 	}
@@ -447,7 +447,7 @@ private:
 	TransmitCompleteDelegate transmitComplete = nullptr; ///< Callback for transmit completion
 	StreamDataReceivedDelegate HWSDelegate = nullptr;	///< Callback for received data
 	CommandExecutor* commandExecutor = nullptr;			 ///< Callback for command execution (received data)
-	uart_t* uart = nullptr;
+	smg_uart_t* uart = nullptr;
 	uart_options_t options = _BV(UART_OPT_TXWAIT);
 	size_t txSize = DEFAULT_TX_BUFFER_SIZE;
 	size_t rxSize = DEFAULT_RX_BUFFER_SIZE;
@@ -460,7 +460,7 @@ private:
 	 * @param uart pointer to UART object
 	 * @param status UART status flags indicating cause(s) of interrupt
 	 */
-	static void IRAM_ATTR staticCallbackHandler(uart_t* uart, uint32_t status);
+	static void IRAM_ATTR staticCallbackHandler(smg_uart_t* uart, uint32_t status);
 	static void staticOnStatusChange(void* param);
 	void invokeCallbacks();
 

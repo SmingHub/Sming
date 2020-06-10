@@ -91,6 +91,11 @@ esp-open-sdk (v1.5.x **, v2.0.0 **, v3.0.x) | :sunny:  | :sunny: | n/a | :sunny
 Linux and Windows OSes with gcc compilers are supported. Clang is NOT supported.
 
 
+### Architecture: ESP32 (Experimental)
+
+Supported SDK: ESP-IDF v4.0
+
+
 ## Releases
 
 ### Stable

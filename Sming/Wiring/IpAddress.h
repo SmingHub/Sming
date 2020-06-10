@@ -149,7 +149,7 @@ public:
 
 	bool compare(const IpAddress& addr, const IpAddress& mask) const
 	{
-		return ip4_addr_netcmp(&address, &addr.address, &mask.address);
+		return ip_addr_netcmp(&address, &addr.address, ip_2_ip4(&mask.address));
 	}
 
 	// Overloaded index operator to allow getting and setting individual octets of the address

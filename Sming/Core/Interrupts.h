@@ -20,8 +20,6 @@
 #include <WConstants.h>
 #include <sming_attr.h>
 
-constexpr unsigned ESP_MAX_INTERRUPTS = 16;
-
 typedef void (*InterruptCallback)();
 typedef Delegate<void()> InterruptDelegate;
 
@@ -119,8 +117,6 @@ __forceinline void interruptMode(uint8_t pin, uint8_t mode)
 	GPIO_INT_TYPE type = ConvertArduinoInterruptMode(mode);
 	interruptMode(pin, type);
 }
-
-#define digitalPinToInterrupt(pin) ((pin) < ESP_MAX_INTERRUPTS ? (pin) : -1)
 
 // AVR-style interrupt management
 #define cli() noInterrupts()

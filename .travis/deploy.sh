@@ -3,7 +3,7 @@ set -ex # exit with nonzero exit code if anything fails
 
 TAG=$1
 if [ -z $TAG ]; then
-	echo "Usage:\n\t$0 <tag>\n";
+	printf "Usage:\n\t$0 <tag>\n";
 	exit 1;
 fi
 

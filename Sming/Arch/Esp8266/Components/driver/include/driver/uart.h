@@ -99,18 +99,18 @@ extern "C" {
 #define UART_8O2 ( UART_NB_BIT_8 | UART_PARITY_ODD  | UART_NB_STOP_BIT_2 )
 
 /** @brief values for `mode` argument of uart_init */
-enum uart_mode_ {
+enum smg_uart_mode_ {
 	UART_FULL,		///< Both receive and transmit - will revert to TX only if RX not supported
 	UART_RX_ONLY,	///< Receive only
 	UART_TX_ONLY	///< Transmit only
 };
-typedef enum uart_mode_ uart_mode_t;
+typedef enum smg_uart_mode_ smg_uart_mode_t;
 
 typedef uint8_t uart_options_t;
 /** @brief bit values for `options` argument of uart_init
  *  @note use _BV(opt) to specify values
  */
-enum uart_option_bits_t {
+enum smg_uart_option_bits_t {
 	UART_OPT_TXWAIT,	   ///< If buffers are full then uart_write() will wait for free space
 	UART_OPT_CALLBACK_RAW, ///< ISR invokes user callback function with no pre-processing
 };
@@ -118,8 +118,8 @@ enum uart_option_bits_t {
 #define UART_RX_FIFO_SIZE 0x80
 #define UART_TX_FIFO_SIZE 0x80
 
-struct uart_;
-typedef struct uart_ uart_t;
+struct smg_uart_;
+typedef struct smg_uart_ smg_uart_t;
 
 /** @brief callback invoked directly from ISR
  *  @param arg the UART object
@@ -132,7 +132,7 @@ typedef struct uart_ uart_t;
  *
  * Errors can be detected via uart_get_status().
  */
-typedef void (*uart_callback_t)(uart_t* uart, uint32_t status);
+typedef void (*smg_uart_callback_t)(smg_uart_t* uart, uint32_t status);
 
 
 /*
@@ -141,8 +141,8 @@ typedef void (*uart_callback_t)(uart_t* uart, uint32_t status);
 
 /** @brief Indicates notification, parameters refer to uart_notify_info_t structure
  */
-enum uart_notify_code_t {
-	/** @brief Called when uart has been iniitialised successfully */
+enum smg_uart_notify_code_t {
+	/** @brief Called when uart has been initialised successfully */
 	UART_NOTIFY_AFTER_OPEN,
 
 	/** @brief Called immediately before uart is closed and destroyed */
@@ -162,22 +162,22 @@ enum uart_notify_code_t {
  *  @param info
  *  @retval bool true if callback handled operation, false to default to normal operation
  */
-typedef void (*uart_notify_callback_t)(uart_t* uart, uart_notify_code_t code);
+typedef void (*smg_uart_notify_callback_t)(smg_uart_t* uart, smg_uart_notify_code_t code);
 
 /** @brief Set the notification callback function
  *  @param uart_nr Which uart to register notifications for
  *  @param callback
  *  @retval bool true on success
  */
-bool uart_set_notify(unsigned uart_nr, uart_notify_callback_t callback);
+bool smg_uart_set_notify(unsigned uart_nr, smg_uart_notify_callback_t callback);
 
 
 struct SerialBuffer;
 
-struct uart_ {
+struct smg_uart_ {
 	uint8_t uart_nr;
 	uint32_t baud_rate;
-	uart_mode_t mode;
+	smg_uart_mode_t mode;
 	uint8_t options;
 	uint8_t rx_pin;
 	uint8_t tx_pin;
@@ -185,15 +185,15 @@ struct uart_ {
 	uint16_t status; ///< All status flags reported to callback since last uart_get_status() call
 	struct SerialBuffer* rx_buffer;  ///< Optional receive buffer
 	struct SerialBuffer* tx_buffer;  ///< Optional transmit buffer
-	uart_callback_t callback; ///< Optional User callback routine
+	smg_uart_callback_t callback; ///< Optional User callback routine
 	void* param; ///< User-supplied callback parameter
 };
 
 
-struct uart_config {
+struct smg_uart_config {
 	uint8_t uart_nr;
 	uint8_t tx_pin;	///< Specify 2 for alternate pin, otherwise defaults to pin 1
-	uart_mode_t mode;  ///< Whether to enable receive, transmit or both
+	smg_uart_mode_t mode;  ///< Whether to enable receive, transmit or both
 	uart_options_t options;
 	uint32_t baudrate; ///< Requested baudrate; actual baudrate may differ
 	uint32_t config;   ///< UART CONF0 register bits
@@ -202,13 +202,13 @@ struct uart_config {
 };
 
 // @deprecated Use `uart_init_ex()` instead
-uart_t* uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, uart_mode_t mode, uint8_t tx_pin, size_t rx_size, size_t tx_size = 0);
+smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin, size_t rx_size, size_t tx_size = 0);
 
-uart_t* uart_init_ex(const uart_config& cfg);
+smg_uart_t* smg_uart_init_ex(const smg_uart_config& cfg);
 
-void uart_uninit(uart_t* uart);
+void smg_uart_uninit(smg_uart_t* uart);
 
-__forceinline int uart_get_nr(uart_t* uart)
+__forceinline int smg_uart_get_nr(smg_uart_t* uart)
 {
 	return uart ? uart->uart_nr : -1;
 }
@@ -217,20 +217,20 @@ __forceinline int uart_get_nr(uart_t* uart)
  *  @param uart_nr
  *  @retval uart_t* Returns nullptr if uart isn't initialised
  */
-uart_t* uart_get_uart(uint8_t uart_nr);
+smg_uart_t* smg_uart_get_uart(uint8_t uart_nr);
 
 /** @brief Set callback handler for serial port
  *  @param uart
  *  @param callback specify nullptr to disable callbacks
  *  @param param user parameter passed to callback
  */
-void uart_set_callback(uart_t* uart, uart_callback_t callback, void* param);
+void smg_uart_set_callback(smg_uart_t* uart, smg_uart_callback_t callback, void* param);
 
 /** @brief Get the callback parameter specified by uart_set_callback()
  *  @param uart
  *  @retval void* the callback parameter
  */
-__forceinline void* uart_get_callback_param(uart_t* uart)
+__forceinline void* smg_uart_get_callback_param(smg_uart_t* uart)
 {
 	return uart ? uart->param : nullptr;
 }
@@ -239,7 +239,7 @@ __forceinline void* uart_get_callback_param(uart_t* uart)
  *  @param uart
  *  @param options The option(s) to set
  */
-static inline void uart_set_options(uart_t* uart, uart_options_t options)
+static inline void smg_uart_set_options(smg_uart_t* uart, uart_options_t options)
 {
 	if (uart)
 		uart->options = options;
@@ -256,23 +256,23 @@ static inline void uart_set_options(uart_t* uart, uart_options_t options)
  *  	UIFR: Frame Error
  *  	UIPE: Parity Error
  */
-uint8_t IRAM_ATTR uart_get_status(uart_t* uart);
+uint8_t IRAM_ATTR smg_uart_get_status(smg_uart_t* uart);
 
-static inline uart_options_t uart_get_options(uart_t* uart)
+static inline uart_options_t smg_uart_get_options(smg_uart_t* uart)
 {
 	return uart ? uart->options : 0;
 }
 
-void uart_swap(uart_t* uart, int tx_pin);
-void uart_set_tx(uart_t* uart, int tx_pin);
-void uart_set_pins(uart_t* uart, int tx, int rx);
+void smg_uart_swap(smg_uart_t* uart, int tx_pin);
+void smg_uart_set_tx(smg_uart_t* uart, int tx_pin);
+void smg_uart_set_pins(smg_uart_t* uart, int tx, int rx);
 
-__forceinline bool uart_tx_enabled(uart_t* uart)
+__forceinline bool smg_uart_tx_enabled(smg_uart_t* uart)
 {
 	return uart && uart->mode != UART_RX_ONLY;
 }
 
-__forceinline bool uart_rx_enabled(uart_t* uart)
+__forceinline bool smg_uart_rx_enabled(smg_uart_t* uart)
 {
 	return uart && uart->mode != UART_TX_ONLY;
 }
@@ -282,25 +282,25 @@ __forceinline bool uart_rx_enabled(uart_t* uart)
  *  @param baud_rate requested baud rate
  *  @retval uint32_t actual baudrate used, 0 on failure
  */
-uint32_t uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate);
+uint32_t smg_uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate);
 
 /** @brief set UART baud rate
  *  @param uart
  *  @param baud_rate requested baud rate
  *  @retval uint32_t actual baudrate used, 0 on failure
  */
-uint32_t uart_set_baudrate(uart_t* uart, uint32_t baud_rate);
+uint32_t smg_uart_set_baudrate(smg_uart_t* uart, uint32_t baud_rate);
 
 /** @brief get the actual baud rate in use
  *  @param uart
  *  @retval uint32_t the baud rate, 0 on failure
  */
-uint32_t uart_get_baudrate(uart_t* uart);
+uint32_t smg_uart_get_baudrate(smg_uart_t* uart);
 
-size_t uart_resize_rx_buffer(uart_t* uart, size_t new_size);
-size_t uart_rx_buffer_size(uart_t* uart);
-size_t uart_resize_tx_buffer(uart_t* uart, size_t new_size);
-size_t uart_tx_buffer_size(uart_t* uart);
+size_t smg_uart_resize_rx_buffer(smg_uart_t* uart, size_t new_size);
+size_t smg_uart_rx_buffer_size(smg_uart_t* uart);
+size_t smg_uart_resize_tx_buffer(smg_uart_t* uart, size_t new_size);
+size_t smg_uart_tx_buffer_size(smg_uart_t* uart);
 
 
 /** @brief write a block of data
@@ -309,16 +309,16 @@ size_t uart_tx_buffer_size(uart_t* uart);
  *  @param size
  *  @retval size_t number of bytes buffered for transmission
  */
-size_t uart_write(uart_t* uart, const void* buffer, size_t size);
+size_t smg_uart_write(smg_uart_t* uart, const void* buffer, size_t size);
 
 /** @brief queue a single character for output
  *  @param uart
  *  @param c
  *  @retval size_t 1 if character was written, 0 on failure
  */
-static inline size_t uart_write_char(uart_t* uart, char c)
+static inline size_t smg_uart_write_char(smg_uart_t* uart, char c)
 {
-	return uart_write(uart, &c, 1);
+	return smg_uart_write(uart, &c, 1);
 }
 
 /** @brief read a block of data
@@ -327,16 +327,16 @@ static inline size_t uart_write_char(uart_t* uart, char c)
  *  @param size requested quantity of bytes to read
  *  @retval size_t number of bytes read
  */
-size_t uart_read(uart_t* uart, void* buffer, size_t size);
+size_t smg_uart_read(smg_uart_t* uart, void* buffer, size_t size);
 
 /** @brief read a received character
  *  @param uart
  *  @retval the character, -1 on failure
  */
-static inline int uart_read_char(uart_t* uart)
+static inline int smg_uart_read_char(smg_uart_t* uart)
 {
 	char c;
-	return uart_read(uart, &c, 1) ? c : -1;
+	return smg_uart_read(uart, &c, 1) ? c : -1;
 }
 
 /** @brief see what the next character in the rx buffer is
@@ -345,7 +345,7 @@ static inline int uart_read_char(uart_t* uart)
  *  @note if buffer isn't allocated data may be in the hardware FIFO, which
  *  must be read out using uart_read()
  */
-int uart_peek_char(uart_t* uart);
+int smg_uart_peek_char(smg_uart_t* uart);
 
 /** @brief fetch last character read out of FIFO
  *  @param uart
@@ -353,7 +353,7 @@ int uart_peek_char(uart_t* uart);
  *  @note this is only useful if an rx buffer has been allocated of sufficient size
  *  to contain a message. This function then indicates the terminating character.
  */
-int uart_peek_last_char(uart_t* uart);
+int smg_uart_peek_last_char(smg_uart_t* uart);
 
 /*
  * @brief Find a character in the receive buffer
@@ -361,72 +361,72 @@ int uart_peek_last_char(uart_t* uart);
  * @param char c character to search for
  * @retval size_t position relative to start of buffer, -1 if not found
  */
-int uart_rx_find(uart_t* uart, char c);
+int smg_uart_rx_find(smg_uart_t* uart, char c);
 
 /** @brief determine available data which can be read
  *  @param uart
  *  @retval size_t
  *  @note this obtains a count of data both in the memory buffer and hardware FIFO
  */
-size_t uart_rx_available(uart_t* uart);
+size_t smg_uart_rx_available(smg_uart_t* uart);
 
 /** @brief return free space in transmit buffer */
-size_t uart_tx_free(uart_t* uart);
+size_t smg_uart_tx_free(smg_uart_t* uart);
 
 /** @deprecated don't use this - causes extended delays - use callback notification */
-void uart_wait_tx_empty(uart_t* uart);
+void smg_uart_wait_tx_empty(smg_uart_t* uart);
 
 /** @brief Set or clear a break condition on the TX line
  *  @param uart
  *  @param state
  */
-void uart_set_break(uart_t* uart, bool state);
+void smg_uart_set_break(smg_uart_t* uart, bool state);
 
 /** @brief discard any buffered data and reset hardware FIFOs
  *  @param uart
  *  @param mode Whether to flush TX, RX or both (the default)
  *  @note this function does not wait for any transmissions to complete
  */
-void uart_flush(uart_t* uart, uart_mode_t mode = UART_FULL);
+void smg_uart_flush(smg_uart_t* uart, smg_uart_mode_t mode = UART_FULL);
 
-void uart_set_debug(int uart_nr);
-int uart_get_debug();
+void smg_uart_set_debug(int uart_nr);
+int smg_uart_get_debug();
 
 /** @brief enable interrupts for a UART
  *  @param uart
  */
-void uart_start_isr(uart_t* uart);
+void smg_uart_start_isr(smg_uart_t* uart);
 
 /** @brief disable interrupts for a UART
  *  @param uart
  */
-void __forceinline uart_stop_isr(uart_t* uart)
+void __forceinline smg_uart_stop_isr(smg_uart_t* uart)
 {
-	extern void uart_detach(int);
+	extern void smg_uart_detach(int);
 	if (uart != nullptr) {
-		uart_detach(uart->uart_nr);
+		smg_uart_detach(uart->uart_nr);
 	}
 }
 
 /** @brief detach a UART interrupt service routine
  *  @param uart_nr
  */
-void uart_detach(int uart_nr);
+void smg_uart_detach(int uart_nr);
 
 /** @brief detach all UART interrupt service routines
  *  @note call at startup to put all UARTs into a known state
  */
-void uart_detach_all();
+void smg_uart_detach_all();
 
 
 /** @brief disable interrupts and return current interrupt state
  *  @retval state non-zero if any UART interrupts were active
  */
-uint8_t uart_disable_interrupts();
+uint8_t smg_uart_disable_interrupts();
 
 /** @brief re-enable interrupts after calling uart_disable_interrupts()
  */
-void uart_restore_interrupts();
+void smg_uart_restore_interrupts();
 
 /** @} */
 

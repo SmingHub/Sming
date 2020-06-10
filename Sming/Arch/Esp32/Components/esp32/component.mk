@@ -1,0 +1,8 @@
+COMPONENT_INCDIRS		:= include
+COMPONENT_DEPENDS		:= esp_idf 
+
+#DOXYGEN_INPUT += \
+#	$(SDK_INCDIR)/gpio.h \
+#	$(SDK_INCDIR)/pwm.h
+
+LIBDIRS += $(COMPONENT_PATH)/ld

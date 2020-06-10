@@ -65,7 +65,7 @@ void* KeyboardThread::thread_routine()
 			continue;
 		}
 
-		auto uart = uart_get_uart(UART0);
+		auto uart = smg_uart_get_uart(UART0);
 		assert(uart != nullptr);
 		auto buf = uart->rx_buffer;
 		assert(buf != nullptr);
@@ -102,7 +102,7 @@ static void destroyKeyboardThread()
 	keyboardThread = nullptr;
 }
 
-static void onUart0Notify(uart_t* uart, uart_notify_code_t code)
+static void onUart0Notify(smg_uart_t* uart, smg_uart_notify_code_t code)
 {
 	switch(code) {
 	case UART_NOTIFY_AFTER_WRITE: {
@@ -116,7 +116,7 @@ static void onUart0Notify(uart_t* uart, uart_notify_code_t code)
 	}
 
 	case UART_NOTIFY_AFTER_OPEN:
-		if(uart_rx_enabled(uart)) {
+		if(smg_uart_rx_enabled(uart)) {
 			assert(keyboardThread == nullptr);
 			keyboardThread = new KeyboardThread;
 			keyboardThread->execute();
@@ -137,7 +137,7 @@ void CUartServer::startup(const UartServerConfig& config)
 		portBase = config.portBase;
 	}
 
-	auto notify = [](uart_t* uart, uart_notify_code_t code) {
+	auto notify = [](smg_uart_t* uart, smg_uart_notify_code_t code) {
 		auto server = uartServers[uart->uart_nr];
 		if(server) {
 			server->onNotify(uart, code);
@@ -147,7 +147,7 @@ void CUartServer::startup(const UartServerConfig& config)
 	};
 
 	for(unsigned i = 0; i < UART_COUNT; ++i) {
-		uart_set_notify(i, notify);
+		smg_uart_set_notify(i, notify);
 		if(!bitRead(config.enableMask, i)) {
 			continue;
 		}
@@ -159,7 +159,7 @@ void CUartServer::startup(const UartServerConfig& config)
 	// If no ports have been enabled then redirect port 0 output to host console
 	if(config.enableMask == 0) {
 		// Redirect the main serial port to console output
-		uart_set_notify(UART0, onUart0Notify);
+		smg_uart_set_notify(UART0, onUart0Notify);
 	}
 }
 
@@ -186,7 +186,7 @@ void CUartServer::terminate()
 	hostmsg("UART%u server destroyed", uart_nr);
 }
 
-void CUartServer::onNotify(uart_t* uart, uart_notify_code_t code)
+void CUartServer::onNotify(smg_uart_t* uart, smg_uart_notify_code_t code)
 {
 	switch(code) {
 	case UART_NOTIFY_AFTER_OPEN:
@@ -218,7 +218,7 @@ void CUartServer::onNotify(uart_t* uart, uart_notify_code_t code)
 
 int CUartServer::serviceRead()
 {
-	if(!uart_rx_enabled(uart)) {
+	if(!smg_uart_rx_enabled(uart)) {
 		return 0;
 	}
 
@@ -254,7 +254,7 @@ int CUartServer::serviceRead()
 
 int CUartServer::serviceWrite()
 {
-	if(!uart_tx_enabled(uart)) {
+	if(!smg_uart_tx_enabled(uart)) {
 		return 0;
 	}
 

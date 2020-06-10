@@ -22,10 +22,10 @@
 
 #define GDB_UART UART0 // Only UART0 supports for debugging as RX/TX required
 
-static uart_t* gdb_uart; // Port debugger is attached to
+static smg_uart_t* gdb_uart; // Port debugger is attached to
 
 #if GDBSTUB_ENABLE_UART2
-static uart_t* user_uart;			  // If open, virtual port being used for user passthrough
+static smg_uart_t* user_uart;			  // If open, virtual port being used for user passthrough
 static uint32_t user_uart_status;	 // See gdb_uart_callback (ISR handler)
 static volatile bool userDataSending; // Transmit completion callback invoked on user uart
 static bool sendUserDataQueued;		  // Ensures only one call to gdbSendUserData() is queued at a time
@@ -226,7 +226,7 @@ __forceinline void queueSendUserData()
 /**
  * @brief Notify callback for user uart, called from uart driver
  */
-static void userUartNotify(uart_t* uart, uart_notify_code_t code)
+static void userUartNotify(smg_uart_t* uart, smg_uart_notify_code_t code)
 {
 	switch(code) {
 	case UART_NOTIFY_AFTER_OPEN:
@@ -271,7 +271,7 @@ static void IRAM_ATTR doCtrlBreak()
 	}
 }
 
-static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
+static void IRAM_ATTR gdb_uart_callback(smg_uart_t* uart, uint32_t status)
 {
 #if GDBSTUB_ENABLE_UART2
 	user_uart_status = status;
@@ -372,10 +372,10 @@ static void IRAM_ATTR gdb_uart_callback(uart_t* uart, uint32_t status)
 
 bool ATTR_GDBINIT gdb_uart_init()
 {
-	uart_set_debug(UART_NO);
+	smg_uart_set_debug(UART_NO);
 
 	// Additional buffering not supported because interrupts are disabled when debugger halted
-	uart_config cfg = {.uart_nr = GDB_UART,
+	smg_uart_config cfg = {.uart_nr = GDB_UART,
 					   .tx_pin = 1,
 					   .mode = UART_FULL,
 					   .options = _BV(UART_OPT_TXWAIT) | _BV(UART_OPT_CALLBACK_RAW),
@@ -383,26 +383,26 @@ bool ATTR_GDBINIT gdb_uart_init()
 					   .config = UART_8N1,
 					   .rx_size = 0,
 					   .tx_size = 0};
-	gdb_uart = uart_init_ex(cfg);
+	gdb_uart = smg_uart_init_ex(cfg);
 	if(gdb_uart == nullptr) {
 		return false;
 	}
-	uart_set_callback(gdb_uart, gdb_uart_callback, nullptr);
+	smg_uart_set_callback(gdb_uart, gdb_uart_callback, nullptr);
 
 #ifdef GDB_UART_SWAP
-	uart_swap(gdb_uart, 1);
+	smg_uart_swap(gdb_uart, 1);
 #endif
 
 #if GDBSTUB_ENABLE_UART2
 	// Virtualise user serial access via UART2
-	uart_set_notify(UART2, userUartNotify);
+	smg_uart_set_notify(UART2, userUartNotify);
 	Serial.setPort(UART2);
 #endif
 
 #if GDBSTUB_ENABLE_DEBUG
 	auto uart1 = uart_init(UART1, SERIAL_BAUD_RATE, UART_8N1, UART_TX_ONLY, 1, 0, 0);
 	if(uart1 != nullptr) {
-		uart_set_debug(UART1);
+		smg_uart_set_debug(UART1);
 		m_setPuts(std::bind(&uart_write, uart1, _1, _2));
 	}
 
