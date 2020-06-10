@@ -12,7 +12,7 @@
 
 #include "esp_systemapi.h"
 #include <soc/rtc.h>
-#include <esp32/clk.h>
+#include <esp32/rom/rtc.h>
 
 RtcClass RTC;
 
@@ -67,14 +67,8 @@ bool RtcClass::setRtcSeconds(uint32_t seconds)
 
 void updateTime()
 {
-	uint32 rtc_cycles;
-	uint32 cal, cal1, cal2;
-
-	cal1 = esp_clk_slowclk_cal_get();
-	__asm__ __volatile__("memw" : : : "memory"); // Just for fun
-	cal2 = esp_clk_slowclk_cal_get();
-	cal = (cal1 + cal2) / 2; // get average cal in case one is out
-	rtc_cycles = rtc_time_get();
+	uint32 rtc_cycles = rtc_time_get();
+	uint32 cal = REG_READ(RTC_SLOW_CLK_CAL_REG);
 
 	// hardware reset causes rtc cycles to start at 0 so we need to check and act accordingly
 	uint32_t delta = hardwareReset ? rtc_cycles : rtc_cycles - rtcTime.cycles;
