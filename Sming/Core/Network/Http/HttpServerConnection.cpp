@@ -200,6 +200,10 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
 	switch(state) {
 	case eHCS_StartSending: {
+		// Stream may be set but not yet contain any data, in which case hold off sending headers
+		if(response.stream != nullptr && response.stream->available() == 0 && !response.stream->isFinished()) {
+			break;
+		}
 		sendResponseHeaders(&response);
 		state = eHCS_SendingHeaders;
 	}
@@ -331,7 +335,7 @@ bool HttpServerConnection::sendResponseBody(HttpResponse* response)
 	}
 
 	if(stream == nullptr) {
-		// we are done for now
+		// No body to send, we're done
 		return true;
 	}
 

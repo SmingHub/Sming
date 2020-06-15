@@ -2,7 +2,10 @@
 #include <JsonObjectStream.h>
 #include <FlashString/Map.hpp>
 #include <FlashString/Stream.hpp>
+#include "DelayStream.h"
 
+namespace
+{
 bool serverStarted = false;
 HttpServer server;
 
@@ -32,67 +35,80 @@ FILE_LIST(XX)
 DEFINE_FSTR_MAP_LOCAL(fileMap, FlashString, FlashString, FILE_LIST(XX));
 #undef XX
 
-static bool sendFile(const String& fileName, HttpResponse& response)
+void sendFile(const String& fileName, HttpServerConnection& connection)
 {
+	auto response = connection.getResponse();
+
 	String compressed = fileName + ".gz";
 	auto v = fileMap[compressed];
 	if(v) {
-		response.headers[HTTP_HEADER_CONTENT_ENCODING] = _F("gzip");
+		response->headers[HTTP_HEADER_CONTENT_ENCODING] = _F("gzip");
 	} else {
 		v = fileMap[fileName];
 		if(!v) {
 			debug_w("File '%s' not found", fileName.c_str());
-			return false;
+			response->code = HTTP_STATUS_NOT_FOUND;
+			return;
 		}
 	}
 
 	debug_i("found %s in fileMap", String(v.key()).c_str());
 	auto stream = new FSTR::Stream(v.content());
-	return response.sendDataStream(stream, ContentType::fromFullFileName(fileName));
+	response->sendDataStream(stream, ContentType::fromFullFileName(fileName));
+
+	// Use client caching for better performance.
+	//	response->setCache(86400, true);
 }
 
 #else
 
-static bool sendFile(const String& fileName, HttpResponse& response)
+void sendFile(const String& fileName, HttpServerConnection& connection)
 {
-	debug_i("File '%s' requested", fileName.c_str());
+	// Send file directly
+	//	response.sendFile(fileName);
 
-	return response.sendFile(fileName);
+	// Use custom stream to defer response
+	debug_i("File '%s' requested", fileName.c_str());
+	auto stream = new DelayStream(fileName, connection);
+	connection.getResponse()->sendDataStream(stream);
+
+	// Use client caching for better performance.
+	//	connection.getResponse()->setCache(86400, true);
 }
 
 #endif
 
-void onIndex(HttpRequest& request, HttpResponse& response)
+int onIndex(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
-	response.setCache(86400, true); // It's important to use cache for better performance.
-	sendFile("index.html", response);
+	sendFile("index.html", connection);
+
+	return 0;
 }
 
-void onConfiguration(HttpRequest& request, HttpResponse& response)
+int onConfiguration(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
 	if(request.method == HTTP_GET) {
-		response.setCache(86400, true); // It's important to use cache for better performance.
-		sendFile("config.html", response);
-		return;
+		sendFile("config.html", connection);
+		return 0;
 	}
 
 	if(request.method != HTTP_POST) {
 		response.code = HTTP_STATUS_BAD_REQUEST;
-		return;
+		return 0;
 	}
 
 	debugf("Update config");
 	// Update config
 	if(request.getBody() == nullptr) {
 		debugf("NULL bodyBuf");
-		return;
+		return 0;
 	}
 
 	StaticJsonDocument<ConfigJsonBufferSize> root;
 
 	if(!Json::deserialize(root, request.getBodyStream())) {
 		debug_w("Invalid JSON to un-serialize");
-		return;
+		return 0;
 	}
 
 	Json::serialize(root, Serial, Json::Pretty); // For debugging
@@ -121,6 +137,7 @@ void onConfiguration(HttpRequest& request, HttpResponse& response)
 	}
 
 	saveConfig(activeConfig);
+	return 0;
 }
 
 void onConfigurationJson(HttpRequest& request, HttpResponse& response)
@@ -134,16 +151,19 @@ void onConfigurationJson(HttpRequest& request, HttpResponse& response)
 
 	response.sendDataStream(stream, MIME_JSON);
 }
-void onFile(HttpRequest& request, HttpResponse& response)
+
+int onFile(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
 	String file = request.uri.getRelativePath();
 
-	if(file[0] == '.')
+	if(file[0] == '.') {
 		response.code = HTTP_STATUS_FORBIDDEN;
-	else {
-		response.setCache(86400, true); // It's important to use cache for better performance.
-		sendFile(file, response);
+	} else {
+		//		response.setCache(86400, true); // It's important to use cache for better performance.
+		sendFile(file, connection);
 	}
+
+	return 0;
 }
 
 void onAjaxGetState(HttpRequest& request, HttpResponse& response)
@@ -156,10 +176,13 @@ void onAjaxGetState(HttpRequest& request, HttpResponse& response)
 	response.sendDataStream(stream, MIME_JSON);
 }
 
+} // namespace
+
 void startWebServer()
 {
-	if(serverStarted)
+	if(serverStarted) {
 		return;
+	}
 
 	server.listen(80);
 	server.paths.set("/", onIndex);
@@ -170,8 +193,10 @@ void startWebServer()
 	server.setBodyParser(MIME_JSON, bodyToStringParser);
 	serverStarted = true;
 
-	if(WifiStation.isEnabled())
+	if(WifiStation.isEnabled()) {
 		debugf("STA: %s", WifiStation.getIP().toString().c_str());
-	if(WifiAccessPoint.isEnabled())
+	}
+	if(WifiAccessPoint.isEnabled()) {
 		debugf("AP: %s", WifiAccessPoint.getIP().toString().c_str());
+	}
 }
