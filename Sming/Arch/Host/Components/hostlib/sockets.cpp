@@ -104,14 +104,14 @@ bool CSockAddr::assign(const char* addr, unsigned port)
 bool CSockAddr::get_host(int fd)
 {
 	clear();
-	socklen_t len = sizeof(m_addr.sa);
+	host_socklen_t len = sizeof(m_addr.sa);
 	return (getsockname(fd, &m_addr.sa, &len) == 0);
 }
 
 bool CSockAddr::get_peer(int fd)
 {
 	clear();
-	socklen_t len = sizeof(m_addr.sa);
+	host_socklen_t len = sizeof(m_addr.sa);
 	return (getpeername(fd, &m_addr.sa, &len) == 0);
 }
 
@@ -439,7 +439,7 @@ CSocket* CServerSocket::try_connect()
 	}
 
 	struct sockaddr sa;
-	socklen_t len = sizeof(sa);
+	host_socklen_t len = sizeof(sa);
 	int fd = ::accept(m_fd, &sa, &len);
 	if(fd < 0) {
 		return nullptr;
