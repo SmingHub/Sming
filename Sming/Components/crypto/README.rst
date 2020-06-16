@@ -88,7 +88,7 @@ may be done like this::
 -------
 
 The library also defines a standard 'C' api so it can be used from within existing code,
-such as :component-esp8266:`axtls-28266` and :component-esp8266:`bearssl-esp8266`.
+such as :component:`axtls-8266` and :component:`bearssl-esp8266`.
 These definitions may be found in ``Crypto/HashApi``.
 
 

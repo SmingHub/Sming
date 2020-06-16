@@ -10,11 +10,11 @@ Make sure that you have the following executable in your PATH::
 
     xtensa-esp32-elf-gdb
 
-Debugging with JTAG is explained in details in the `ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.0.1/api-guides/jtag-debugging/index.html>`__ .
+Debugging with JTAG is explained in details in the `ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.0.1/api-guides/jtag-debugging/index.html>`__.
 Make sure to read it carefully.
 
-For the purposes of this documentation we will be using `Esp Prog Jtag adapter <https://github.com/espressif/esp-iot-solution/blob/master/documents/evaluation_boards/ESP-Prog_guide_en.md >`__ .
-And ESP32-Cam microcontroller from AI-Thinker.
+For the purposes of this documentation we will be using `ESP-Prog JTAG adapter <https://github.com/espressif/esp-iot-solution/blob/master/documents/evaluation_boards/ESP-Prog_guide_en.md>`__
+and ESP32-Cam microcontroller from AI-Thinker.
 
 Configure Hardware
 ------------------
@@ -101,7 +101,7 @@ sample application::
    make flashapp # flashes ONLY the (re)compiled application
 
 The device will restart then wait for a debugger to be connected. Before starting the debugger you
-must be sure that the OpenOCD server is running and listening for incoming connections on localhost post 3333.
+must be sure that the OpenOCD server is running and listening for incoming connections on localhost port 3333.
 Now start the debugger with the command below
 ::
 
@@ -135,7 +135,7 @@ And in the GDB console you will see a message similar to this one::
     Target halted. PRO_CPU: PC=0x5000004B (active)    APP_CPU: PC=0x00000000
     esp32: Core 0 was reset (pwrstat=0x1F, after clear 0x0F).
     Target halted. PRO_CPU: PC=0x40000400 (active)    APP_CPU: PC=0x40000400
-    Hardware assisted breakpoint 1 at 0x400e1cd3: file /home/slavey/dev/esp8266.dev.box/dev/Sming/Sming/Arch/Esp32/Components/esp32/startup.cpp, line 21.
+    Hardware assisted breakpoint 1 at 0x400e1cd3: file /x/Sming/Sming/Arch/Esp32/Components/esp32/startup.cpp, line 21.
     (gdb)
 
 If the debugger is exited, the application will continue execution as normal.
@@ -274,10 +274,9 @@ Xtensa-gdb binary. (Type ``make list-config`` and look for :envvar:`GDB`.)
 
    Remote Debugging Session
 
-Make sure to load also *GDB command file*. To find out its location, run ``make list-config``
-and look for :envvar:`GDBSTUB_DIR`. The file is called ``gdbcmds``, and you may wish to place
+Make sure to load also *GDB command file*. The file is called ``gdbinit``, and you may wish to place
 a copy of the file somewhere else, especially if you intend to modify it.
-You can see the file here :source:`Sming/Arch/Esp8266/Components/gdbstub/gdbcmds`.
+You can see the file here :source:`Sming/Arch/Esp32/Tools/gdbinit`.
 
 Finally we should configure the remote connection. Go to the
 *Debugger* -> *Connection* tab and set:

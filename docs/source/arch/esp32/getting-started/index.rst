@@ -1,15 +1,5 @@
-Sming Esp32 Architecture
-==========================
-
-Support building Sming for the Esp32 architecture.
-
-
-Build variables
----------------
-
-.. envvar:: IDF_PATH
-
-   This contains the base directory for the ESP-IDF toolchain used to build the framework. This variable is required and must be set accordingly.
+Getting Started: ESP32
+========================
 
 Requirements
 ------------
@@ -50,15 +40,3 @@ A re-compilation is required after the change of the configuration. This can be 
 If you want to revert to using the default pre-compiled SDK then issue the following command::
 
   make SMING_ARCH=Esp32 sdk-default
-
-
-Components
-----------
-
-.. toctree::
-   :glob:
-   :maxdepth: 1
-   :titlesonly:
-
-   Components/sming-arch/index
-   Components/*/index

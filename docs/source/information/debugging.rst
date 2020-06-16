@@ -15,4 +15,7 @@ The links below will give you more information and step-by-step instructions.
    :titlesonly:
    :maxdepth: 1
 
-   /arch/*/debugging/index
+   /arch/host/debugging/index
+   /arch/esp8266/debugging/index
+   /arch/esp32/debugging/index
+

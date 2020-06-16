@@ -206,5 +206,4 @@ enjoy live debugging.
 
 You will be able to see the current variables and their values. You
 should be able to go step by step, go inside of functions, add
-breakpoints to code in RAM or add breakpoints to code that was in FLASH,
-after it was executed executed at least once.
+add breakpoints and watchpoints.
