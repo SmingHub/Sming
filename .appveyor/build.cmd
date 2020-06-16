@@ -29,7 +29,7 @@ if "%SMING_ARCH%" == "Host" (
 	%MAKE_PARALLEL% Basic_Serial Basic_ProgMem STRICT=1 V=1 || goto :error
 
 	REM Run basic tests
-	%MAKE_PARALLEL% tests || goto :error
+	make tests || goto :error
 
 ) else (
 
