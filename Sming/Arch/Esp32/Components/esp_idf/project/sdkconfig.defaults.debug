@@ -32,3 +32,6 @@ CONFIG_LOG_DEFAULT_LEVEL_INFO=y
 CONFIG_LOG_DEFAULT_LEVEL_DEBUG=
 CONFIG_LOG_DEFAULT_LEVEL_VERBOSE=
 CONFIG_LOG_DEFAULT_LEVEL=3
+
+# Sets watchpoint index 1 (the second of two) at the end of any task stack. This is the most accurate way to debug task stack overflows.
+CONFIG_FREERTOS_WATCHPOINT_END_OF_STACK=y
