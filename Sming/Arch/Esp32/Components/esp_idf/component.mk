@@ -200,6 +200,11 @@ define WriteFlash
 endef
 
 SDK_DEFAULT_PATH := $(COMPONENT_PATH)/sdk
+
+
+##@Debugging
+
+GDB_CMDLINE = trap '' INT; $(GDB) -x $(ARCH_TOOLS)/gdbinit $(TARGET_OUT)
      
 ##@Partitions
 

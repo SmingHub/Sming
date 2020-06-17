@@ -12,7 +12,7 @@ Information
    strings
    interrupts
    tasks
-   debugging/index
+   debugging
    rboot-ota
    command-handler
    hot-tips
