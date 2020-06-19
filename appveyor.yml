@@ -1,4 +1,7 @@
-os: Windows Server 2012 R2
+# os: Windows Server 2019 
+
+image:
+  - Visual Studio 2019
 
 environment:
   SMINGTOOLS: https://github.com/SmingHub/SmingTools/releases/download/1.0
@@ -18,5 +21,5 @@ install:
 build_script:
   - cmd: .appveyor/build.cmd
 
-on_finish:
-  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+#on_finish:
+#  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
