@@ -8,12 +8,13 @@ set (CMAKE_C_STANDARD_REQUIRED ON)
 
 include (ExternalProject)
 
-set (PCAP_SRC npcap-sdk-1.03.zip)
+set (PCAP_SRC npcap-sdk-1.05.zip)
 set (PCAP_DIR src/npcap)
 ExternalProject_Add(npcap
 	PREFIX ${CMAKE_CURRENT_SOURCE_DIR}
 	URL https://nmap.org/npcap/dist/${PCAP_SRC}
-	URL_HASH MD5=b9bfe28d9c9dc1110d6d635d7e7f9e23
+	URL_HASH MD5=9af87ce508bee6a347be72b3e9adf777
+	PATCH_COMMAND patch -p1 -i ../../npcap.patch
 	CONFIGURE_COMMAND ""
 	BUILD_COMMAND ""
 	INSTALL_COMMAND ""
