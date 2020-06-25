@@ -2,6 +2,7 @@
 #define ARDUINOJSON_USE_LONG_LONG 1
 #include <JsonObjectStream6.h>
 #include <Data/CStringArray.h>
+#include <Data/CString.h>
 
 class JsonTest6 : public TestGroup
 {
@@ -36,6 +37,11 @@ public:
 			String s = Json::serialize(doc);
 			debug_d("Test doc: %s", s.c_str());
 			REQUIRE(s == serialized1);
+
+			CString cs;
+			Json::serialize(doc, cs);
+			debug_d("Test doc: %s", cs.c_str());
+			REQUIRE(cs == serialized1);
 		}
 
 		TEST_CASE("Json::measure()")
@@ -120,6 +126,17 @@ public:
 			debug_d("Json::serialize(stream = nullptr) = %u", count);
 			REQUIRE(count == 0);
 			REQUIRE(Json::deserialize(doc, stream) == false);
+			debug_d("doc.memoryUsage = %u", doc.memoryUsage());
+		}
+
+		TEST_CASE("CString serialisation")
+		{
+			doc = sourceDoc;
+			CString cs;
+			Json::serialize(doc, cs);
+			debug_hex(DBG, "serialized", cs.c_str(), cs.length());
+			REQUIRE(cs.length() == 100);
+			REQUIRE(Json::deserialize(doc, cs) == true);
 			debug_d("doc.memoryUsage = %u", doc.memoryUsage());
 		}
 

@@ -39,6 +39,7 @@
 #include "FlashStringRefAdapter.hpp"
 #include "FlashStringReader.hpp"
 #include <Data/Stream/FileStream.h>
+#include <Data/CString.h>
 
 #ifndef JSON_ENABLE_COMPACT
 #define JSON_ENABLE_COMPACT 1
@@ -221,6 +222,17 @@ size_t serialize(const TSource& source, char* buffer, size_t bufferSize,
 	}
 }
 
+template <typename TSource>
+size_t serialize(const TSource& source, CString& output, SerializationFormat format = JSON_FORMAT_DEFAULT)
+{
+	auto measuredSize = Json::measure(source, format);
+	output.reset(new char[measuredSize + 1]);
+	size_t actualSize = Json::serialize(source, output.get(), measuredSize + 1, format);
+	assert(actualSize <= measuredSize);
+	output.get()[actualSize] = '\0';
+	return actualSize;
+}
+
 /**
  * @brief Serialize a Json object in a specified format, returning it in a String object
  * @param source JsonDocument, JsonArray, JsonObject or JsonVariant
@@ -370,6 +382,11 @@ bool deserialize(JsonDocument& doc, TInput* input, size_t inputSize, Serializati
 	default:
 		return false;
 	}
+}
+
+template <> inline bool deserialize(JsonDocument& doc, CString& input, SerializationFormat format)
+{
+	return Json::deserialize(doc, input.c_str(), input.length(), format);
 }
 
 /**
