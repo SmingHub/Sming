@@ -38,12 +38,15 @@ Descr: Low-level SDCard functions
 FATFS *pFatFs = NULL;		/* FatFs work area needed for each volume */
 SPIBase *SDCardSPI = NULL;
 uint8 SPI_CS;				/* SPI client selector */
+uint8 SPI_byte_order;		/* The order the SPI bytes are sent */
+uint32 SPI_freq_limit;		/* The max frequency the SPI should run */
+uint32 SPI_init_freq;		/* SPI frequency usined for init */
 
 
 #define SCK_SLOW_INIT 10
 #define SCK_NORMAL 0
 
-void SDCard_begin(uint8 PIN_CARD_SS)
+void SDCard_begin(uint8 PIN_CARD_SS, uint8 byte_order, uint32 freq_limit)
 {
 	FIL file;
 
@@ -51,6 +54,13 @@ void SDCard_begin(uint8 PIN_CARD_SS)
 	pinMode(SPI_CS, OUTPUT);
 	digitalWrite(SPI_CS, HIGH);
 
+	SPI_byte_order = byte_order;
+
+	if (freq_limit < 4000000) SPI_init_freq = freq_limit; /* Test if the limit frequency is higher that the init frequency */
+	else SPI_init_freq = 4000000;						  /* It is useful to debug at a lower speed so the logic analyser can catch everything */
+
+	if (freq_limit <= 40000000) SPI_freq_limit = freq_limit; /* Test to see if frequency is too high */
+	else SPI_freq_limit = 40000000;							 /* Some SD cards struggle at 40MHz */
 
 	if(!SDCardSPI)
 	{
@@ -343,7 +353,7 @@ DSTATUS disk_initialize (
 	if (drv) return RES_NOTRDY;
 
 //	SDCardSPI->setDelay(SCK_SLOW_INIT);
-	SDCardSPI->beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE0));
+	SDCardSPI->beginTransaction(SPISettings(SPI_init_freq, SPI_byte_order, SPI_MODE0));
 
 	dly_us(10000);			/* 10ms */
 
@@ -427,7 +437,7 @@ DSTATUS disk_initialize (
 	deselect();
 
 //	SDCardSPI->setDelay(SCK_NORMAL);
-	SDCardSPI->beginTransaction(SPISettings(20000000, MSBFIRST, SPI_MODE0));
+	SDCardSPI->beginTransaction(SPISettings(SPI_freq_limit, SPI_byte_order, SPI_MODE0));
 
 
 	return Stat;
