@@ -12,6 +12,11 @@ LDFLAGS += \
 # Executable
 TARGET_OUT_0			:= $(FW_BASE)/$(APP_NAME)$(TOOL_EXT)
 
+# Hosted Settings
+ifneq ($(ENABLE_HOSTED),)
+	COMPONENTS_AR := $(USER_LIBDIR)/$(CLIB_PREFIX)Hosted.a $(USER_LIBDIR)/$(CLIB_PREFIX)Hosted-Lib.a $(COMPONENTS_AR)
+endif
+
 # Target definitions
 
 .PHONY: application
