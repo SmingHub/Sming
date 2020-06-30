@@ -17,8 +17,8 @@ Descr: SDCard/FAT file usage and write benchmark.
 #define PIN_CARD_SS 15 /* Slave Select */
 
 #define SPI_BYTE_ORDER LSBFIRST /* Sets the order the bytes are transmitted. WEMOS D1 mini requires LSBFIRST */
-#define SPI_FREQ_LIMIT                                                                                                 \
-	40000000 /* Sets the max frequency of SPI (init is done at a lower speed than the main communication) */
+/* Sets the max frequency of SPI (init is done at a lower speed than the main communication) */
+#define SPI_FREQ_LIMIT 40000000
 
 void writeToFile(const char* filename, uint32_t totalBytes, uint32_t bytesPerRound)
 {
@@ -137,7 +137,8 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
-	//	SDCardSPI = new SPISoft(PIN_CARD_DO, PIN_CARD_DI, PIN_CARD_CK, 0);
+	//  select between hardware SPI or software SPI. Comment out one or the other
+	//  SDCardSPI = new SPISoft(PIN_CARD_DO, PIN_CARD_DI, PIN_CARD_CK, 0);
 	SDCardSPI = new SPIClass();
 	SDCard_begin(PIN_CARD_SS, SPI_BYTE_ORDER, SPI_FREQ_LIMIT);
 

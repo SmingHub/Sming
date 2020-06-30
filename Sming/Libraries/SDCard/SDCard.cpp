@@ -37,15 +37,15 @@ Descr: Low-level SDCard functions
 
 FATFS* pFatFs = NULL; /* FatFs work area needed for each volume */
 SPIBase* SDCardSPI = NULL;
-uint8 SPI_CS;		  /* SPI client selector */
-uint8 SPI_byteOrder;  /* The order the SPI bytes are sent */
-uint32 SPI_freqLimit; /* The max frequency the SPI should run */
-uint32 SPI_init_freq; /* SPI frequency usined for init */
+uint8_t SPI_CS;		   /* SPI client selector */
+uint8_t SPIByteOrder;  /* The order the SPI bytes are sent */
+uint32_t SPIFreqLimit; /* The max frequency the SPI should run */
+uint32_t SPIInitFreq;  /* SPI frequency usined for init */
 
 #define SCK_SLOW_INIT 10
 #define SCK_NORMAL 0
 
-void SDCard_begin(uint8 PIN_CARD_SS, uint8 byteOrder, uint32 freqLimit)
+void SDCard_begin(uint8_t PIN_CARD_SS, uint8_t byteOrder, uint32_t freqLimit)
 {
 	FIL file;
 
@@ -53,17 +53,17 @@ void SDCard_begin(uint8 PIN_CARD_SS, uint8 byteOrder, uint32 freqLimit)
 	pinMode(SPI_CS, OUTPUT);
 	digitalWrite(SPI_CS, HIGH);
 
-	SPI_byteOrder = byteOrder;
+	SPIByteOrder = byteOrder;
 
 	if(freqLimit < 4000000)
-		SPI_init_freq = freqLimit; /* Test if the limit frequency is higher that the init frequency */
+		SPIInitFreq = freqLimit; /* Test if the limit frequency is higher that the init frequency */
 	else
-		SPI_init_freq = 4000000; /* It is useful to debug at a lower speed so the logic analyser can catch everything */
+		SPIInitFreq = 4000000; /* It is useful to debug at a lower speed so the logic analyser can catch everything */
 
 	if(freqLimit <= 40000000)
-		SPI_freqLimit = freqLimit; /* Test to see if frequency is too high */
+		SPIFreqLimit = freqLimit; /* Test to see if frequency is too high */
 	else
-		SPI_freqLimit = 40000000; /* Some SD cards struggle at 40MHz */
+		SPIFreqLimit = 40000000; /* Some SD cards struggle at 40MHz */
 
 	if(!SDCardSPI) {
 		debugf("Error: SDCardSPI object not created.");
@@ -137,7 +137,7 @@ static BYTE CardType; /* b0:MMC, b1:SDv1, b2:SDv2, b3:Block addressing */
 
 static int wait_ready(void) /* 1:OK, 0:Timeout */
 {
-	uint8 d = 0xFF;
+	uint8_t d = 0xFF;
 	UINT tmr;
 
 	for(tmr = 5000; tmr; tmr--) { /* Wait for ready in timeout of 500ms */
@@ -229,9 +229,9 @@ static int xmit_datablock(					/* 1:OK, 0:Failed */
 		return 0;
 
 	d[0] = token;
-	SDCardSPI->transfer(d, 1);					/* Xmit a token */
-	if(token != 0xFD) {							/* Is it data token? */
-		SDCardSPI->transfer((uint8*)buff, 512); /* Xmit the 512 byte data block to MMC */
+	SDCardSPI->transfer(d, 1);					  /* Xmit a token */
+	if(token != 0xFD) {							  /* Is it data token? */
+		SDCardSPI->transfer((uint8_t*)buff, 512); /* Xmit the 512 byte data block to MMC */
 
 		//		SDCardSPI->setMOSI(HIGH); /* Send 0xFF */
 		memset(d, 0xFF, 2);		   /* keep MOSI HIGH */
@@ -333,7 +333,7 @@ DSTATUS disk_initialize(BYTE drv /* Physical drive nmuber (0) */
 		return RES_NOTRDY;
 
 	//	SDCardSPI->setDelay(SCK_SLOW_INIT);
-	SDCardSPI->beginTransaction(SPISettings(SPI_init_freq, SPI_byteOrder, SPI_MODE0));
+	SDCardSPI->beginTransaction(SPISettings(SPIInitFreq, SPIByteOrder, SPI_MODE0));
 
 	dly_us(10000); /* 10ms */
 
@@ -412,7 +412,7 @@ DSTATUS disk_initialize(BYTE drv /* Physical drive nmuber (0) */
 	deselect();
 
 	//	SDCardSPI->setDelay(SCK_NORMAL);
-	SDCardSPI->beginTransaction(SPISettings(SPI_freqLimit, SPI_byteOrder, SPI_MODE0));
+	SDCardSPI->beginTransaction(SPISettings(SPIFreqLimit, SPIByteOrder, SPI_MODE0));
 
 	return Stat;
 }
