@@ -14,10 +14,11 @@ Descr: SDCard/FAT file usage and write benchmark.
 #define PIN_CARD_DO 12 /* Master In Slave Out */
 #define PIN_CARD_DI 13 /* Master Out Slave In */
 #define PIN_CARD_CK 14 /* Serial Clock */
-#define PIN_CARD_SS 15  /* Slave Select */
+#define PIN_CARD_SS 15 /* Slave Select */
 
 #define SPI_BYTE_ORDER LSBFIRST /* Sets the order the bytes are transmitted. WEMOS D1 mini requires LSBFIRST */
-#define SPI_FREQ_LIMIT 40000000 /* Sets the max frequency of SPI (init is done at a lower speed than the main communication) */
+#define SPI_FREQ_LIMIT                                                                                                 \
+	40000000 /* Sets the max frequency of SPI (init is done at a lower speed than the main communication) */
 
 void writeToFile(const char* filename, uint32_t totalBytes, uint32_t bytesPerRound)
 {

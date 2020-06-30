@@ -15,6 +15,6 @@ void SDCard_begin(uint8 PIN_CARD_SS, uint8 byteOrder, uint32 freqLimit);
 
 //extern SPISoft *SDCardSPI;
 
-extern SPIBase	*SDCardSPI;
+extern SPIBase* SDCardSPI;
 
 #endif /*_SD_CARD_*/
