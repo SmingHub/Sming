@@ -25,15 +25,13 @@ message ResponseDigitalRead {
     uint32 value = 1;
 }
 
-enum HostedMessageType {
-    TypeRequestDigitalWrite = 0;
-    TypeRequestPinMode = 1;
-    TypeRequestDigitalRead = 2;
-    TypeResponseDigitalRead = 3;
-}
-
 message HostedCommand {
-    HostedMessageType type = 1;
+    // Version of the protocol for future compatibility
+    enum Version {
+        HOSTED_V_1_0 = 0;
+    }
+    Version version = 1;
+    uint32 id = 2; // unique message id, > 0
     oneof payload {
         RequestDigitalWrite requestDigitalWrite = 10;
         RequestPinMode requestPinMode = 11;

@@ -2,16 +2,7 @@
 
 #include <SmingCore.h>
 #include <Data/Stream/ReadWriteStream.h>
-
-#include <pb_encode.h>
-#include "hosted.pb.h"
-
-// Initializes hosted command
-#define INIT_HD_COMMAND(XX) \
-	HostedCommand message = HostedCommand_init_zero; \
-	message.type = HostedMessageType_TypeRequest ## XX; \
-	message.which_payload = HostedCommand_request ## XX ##_tag; \
-	auto command = &message.payload.request ## XX;
+#include "HostedCommon.h"
 
 class HostedClient
 {
@@ -30,30 +21,53 @@ public:
 		this->stream = stream;
 	}
 
-	bool send(const HostedCommand& message)
+	bool send(HostedCommand* message, HostedCommandDelegate callback = nullptr)
 	{
-		bool status;
+		if(++messageId == 0) {
+			messageId = 1; // messages with id 0 will be discarded...
+		}
+		message->id = messageId;
 
-		pb_ostream_t ouput = pb_ostream_from_buffer(buffer, sizeof(buffer));
-		status = pb_encode(&ouput, HostedCommand_fields, &message);
-
-		if (!status) {
+		pb_ostream_t ouput = newOutputStream();
+		bool success = pb_encode_ex(&ouput, HostedCommand_fields, message, PB_ENCODE_DELIMITED);
+		if (!success) {
 			debug_e("Encoding failed: %s\n", PB_GET_ERROR(&ouput));
 			return false;
 		}
 
-		if(ouput.bytes_written > 0) {
-			size_t written = stream->write(buffer, ouput.bytes_written);
-			if(written != ouput.bytes_written) {
-				debug_e("Unable to queue message in transport stream");
-				return false;
-			}
+		if(callback != nullptr) {
+			responseCallbacks[message->id] = callback;
 		}
 
 		return true;
 	}
-private:
-	ReadWriteStream* stream = nullptr;
 
-	uint8_t buffer[128]; /* This is the buffer where we will store our message. */
+	/**
+	 * @brief This method handles incoming data
+	 */
+	bool onData(const char* at, size_t length)
+	{
+		return true;
+	}
+private:
+	pb_ostream_t newOutputStream()
+	{
+		pb_ostream_t outputStream;
+		outputStream.callback = [](pb_ostream_t *stream, const pb_byte_t *buf, size_t count) -> bool {
+			ReadWriteStream* destination = (ReadWriteStream* )stream->state;
+			size_t written = destination->write((const uint8_t *)buf, count);
+
+			return (written == count);
+		};
+		outputStream.state = (void*)this->stream;
+		outputStream.max_size = SIZE_MAX;
+		outputStream.bytes_written = 0;
+		outputStream.errmsg = nullptr;
+
+		return outputStream;
+	}
+private:
+	HashMap<uint32_t,HostedCommandDelegate> responseCallbacks;
+	uint32_t messageId = 0;
+	ReadWriteStream* stream = nullptr;
 };

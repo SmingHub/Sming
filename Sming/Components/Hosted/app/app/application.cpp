@@ -28,12 +28,12 @@ void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 void init()
 {
 	// Register Command Handlers
-	hostedServer.registerCommand(HostedMessageType_TypeRequestPinMode, [](HostedCommand *request, HostedCommand *response)-> int {
+	hostedServer.registerCommand(HostedCommand_requestPinMode_tag, [](HostedCommand *request, HostedCommand *response)-> int {
 		pinMode((uint16_t)request->payload.requestPinMode.pin, (uint8_t)request->payload.requestPinMode.mode);
 		return 0;
 	});
 
-	hostedServer.registerCommand(HostedMessageType_TypeRequestDigitalWrite, [](HostedCommand *request, HostedCommand *response)-> int {
+	hostedServer.registerCommand(HostedCommand_requestDigitalWrite_tag, [](HostedCommand *request, HostedCommand *response)-> int {
 		digitalWrite((uint16_t)request->payload.requestDigitalWrite.pin, (uint8_t)request->payload.requestDigitalWrite.value);
 		return 0;
 	});

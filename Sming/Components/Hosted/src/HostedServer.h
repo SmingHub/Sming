@@ -8,19 +8,18 @@
 #pragma once
 
 #include <SmingCore.h>
-#include <pb_decode.h>
-#include "hosted.pb.h"
-
-constexpr int HOSTED_OK = 0;
-constexpr int HOSTED_FAIL = -1;
-constexpr int HOSTED_NO_MEM = -2;
-
-typedef Delegate<int(HostedCommand *request, HostedCommand *response)> HostedCommandDelegate;
+#include <Data/Buffer/CircularBuffer.h>
+#include <HostedCommon.h>
 
 class HostedServer
 {
 public:
-	void registerCommand(HostedMessageType type, HostedCommandDelegate callback)
+	HostedServer(size_t storageSize = 1024): storage(new CircularBuffer(storageSize))
+    {
+
+    }
+
+	void registerCommand(uint32_t type, HostedCommandDelegate callback)
 	{
 		commands[type] = callback;
 	}
@@ -39,32 +38,64 @@ public:
 			return HOSTED_FAIL;
 		}
 
+		size_t written = storage->write(at, length);
+		if(written != length) {
+			// Not enough space to store the message...
+			return HOSTED_NO_MEM;
+		}
+
 		int result = HOSTED_OK;
-		bool status;
+		bool success;
 
-		// extract the request message
-		pb_istream_t input = pb_istream_from_buffer(at, length);
+		pb_istream_t input = newInputStream();
+		size_t leftBytes = input.bytes_left;
+		do {
+			success = pb_decode_ex(&input, HostedCommand_fields, &request, PB_DECODE_DELIMITED);
+			if (!(success && request.id)) {
+				Serial.printf("Decoding failed: %s\n", PB_GET_ERROR(&input));
+				storage->seek(storage->available()- leftBytes);
+				break;
+			}
 
-		status = pb_decode(&input, HostedCommand_fields, &request);
-		if (!status) {
-			debug_e("Decoding failed: %s\n", PB_GET_ERROR(&input));
-			return HOSTED_FAIL;
-		}
+			// dispatch the command
+			if(!(commands.contains(request.which_payload) && commands[request.which_payload] != nullptr)) {
+				debug_w("No command registered for type: %d", request.which_payload);
+				continue;
+			}
 
-		// dispatch the command
-		if(commands.contains(request.type) && commands[request.type] != nullptr) {
-			result = commands[request.type](&request, &response);
-		}
-		else {
-			debug_w("No command registered for type: %d", request.type);
-		}
+			result = commands[request.which_payload](&request, &response);
 
-		// TODO: cleanup
+			// TODO: process the response
+
+			// and send it back...
+			leftBytes = input.bytes_left;
+
+		} while(input.bytes_left && success);
 
 		return result;
 
 	}
 
 private:
-	HashMap<HostedMessageType, HostedCommandDelegate> commands;
+	pb_istream_t newInputStream()
+	{
+	    pb_istream_t stream;
+	    stream.callback = [](pb_istream_t *stream, pb_byte_t *buf, size_t count) -> bool {
+	    	CircularBuffer* source = (CircularBuffer* )stream->state;
+	    	int read = source->readBytes((char *)buf, count);
+	    	stream->bytes_left = source->available() - read;
+
+	    	return true;
+	    };
+	    stream.state = (void*)storage;
+	    stream.bytes_left = storage->available();
+	    stream.errmsg = nullptr;
+
+	    return stream;
+	}
+
+
+private:
+	CircularBuffer* storage = nullptr;
+	HashMap<uint32_t, HostedCommandDelegate> commands;
 };
