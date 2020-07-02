@@ -20,12 +20,9 @@ typedef enum _PinMode {
     PinMode_INPUT_PULLUP = 2
 } PinMode;
 
-typedef enum _HostedMessageType {
-    HostedMessageType_TypeRequestDigitalWrite = 0,
-    HostedMessageType_TypeRequestPinMode = 1,
-    HostedMessageType_TypeRequestDigitalRead = 2,
-    HostedMessageType_TypeResponseDigitalRead = 3
-} HostedMessageType;
+typedef enum _HostedCommand_Version {
+    HostedCommand_Version_HOSTED_V_1_0 = 0
+} HostedCommand_Version;
 
 /* Struct definitions */
 typedef struct _RequestDigitalRead {
@@ -47,7 +44,8 @@ typedef struct _ResponseDigitalRead {
 } ResponseDigitalRead;
 
 typedef struct _HostedCommand {
-    HostedMessageType type;
+    HostedCommand_Version version;
+    uint32_t id;
     pb_size_t which_payload;
     union {
         RequestDigitalWrite requestDigitalWrite;
@@ -63,9 +61,9 @@ typedef struct _HostedCommand {
 #define _PinMode_MAX PinMode_INPUT_PULLUP
 #define _PinMode_ARRAYSIZE ((PinMode)(PinMode_INPUT_PULLUP+1))
 
-#define _HostedMessageType_MIN HostedMessageType_TypeRequestDigitalWrite
-#define _HostedMessageType_MAX HostedMessageType_TypeResponseDigitalRead
-#define _HostedMessageType_ARRAYSIZE ((HostedMessageType)(HostedMessageType_TypeResponseDigitalRead+1))
+#define _HostedCommand_Version_MIN HostedCommand_Version_HOSTED_V_1_0
+#define _HostedCommand_Version_MAX HostedCommand_Version_HOSTED_V_1_0
+#define _HostedCommand_Version_ARRAYSIZE ((HostedCommand_Version)(HostedCommand_Version_HOSTED_V_1_0+1))
 
 
 /* Initializer values for message structs */
@@ -73,12 +71,12 @@ typedef struct _HostedCommand {
 #define RequestPinMode_init_default              {0, _PinMode_MIN}
 #define RequestDigitalRead_init_default          {0}
 #define ResponseDigitalRead_init_default         {0}
-#define HostedCommand_init_default               {_HostedMessageType_MIN, 0, {RequestDigitalWrite_init_default}}
+#define HostedCommand_init_default               {_HostedCommand_Version_MIN, 0, 0, {RequestDigitalWrite_init_default}}
 #define RequestDigitalWrite_init_zero            {0, 0}
 #define RequestPinMode_init_zero                 {0, _PinMode_MIN}
 #define RequestDigitalRead_init_zero             {0}
 #define ResponseDigitalRead_init_zero            {0}
-#define HostedCommand_init_zero                  {_HostedMessageType_MIN, 0, {RequestDigitalWrite_init_zero}}
+#define HostedCommand_init_zero                  {_HostedCommand_Version_MIN, 0, 0, {RequestDigitalWrite_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define RequestDigitalRead_pin_tag               1
@@ -87,7 +85,8 @@ typedef struct _HostedCommand {
 #define RequestPinMode_pin_tag                   1
 #define RequestPinMode_mode_tag                  2
 #define ResponseDigitalRead_value_tag            1
-#define HostedCommand_type_tag                   1
+#define HostedCommand_version_tag                1
+#define HostedCommand_id_tag                     2
 #define HostedCommand_requestDigitalWrite_tag    10
 #define HostedCommand_requestPinMode_tag         11
 #define HostedCommand_requestDigitalRead_tag     12
@@ -117,7 +116,8 @@ X(a, STATIC,   SINGULAR, UINT32,   value,             1)
 #define ResponseDigitalRead_DEFAULT NULL
 
 #define HostedCommand_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UENUM,    type,              1) \
+X(a, STATIC,   SINGULAR, UENUM,    version,           1) \
+X(a, STATIC,   SINGULAR, UINT32,   id,                2) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,requestDigitalWrite,payload.requestDigitalWrite),  10) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,requestPinMode,payload.requestPinMode),  11) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,requestDigitalRead,payload.requestDigitalRead),  12) \
@@ -147,7 +147,7 @@ extern const pb_msgdesc_t HostedCommand_msg;
 #define RequestPinMode_size                      8
 #define RequestDigitalRead_size                  6
 #define ResponseDigitalRead_size                 6
-#define HostedCommand_size                       16
+#define HostedCommand_size                       22
 
 #ifdef __cplusplus
 } /* extern "C" */

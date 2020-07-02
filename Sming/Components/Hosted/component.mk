@@ -11,14 +11,14 @@ RELINK_VARS = ENABLE_HOSTED
 
 ##@Building
 
-hostedservice: ##Builds the hosted service firmware
+hosted-app: ##Builds the hosted service firmware
 	$(MAKE) -C $(HOSTED_APP_DIR) SMING_ARCH=$(HOSTED_ARCH)
 
 ##@Flashing
 
-flashhostedservice: ##Flashes the hosted service firmware to an actual device
+hosted-flash: ##Flashes the hosted service firmware to an actual device
 	$(MAKE) -C $(HOSTED_APP_DIR) flash SMING_ARCH=$(HOSTED_ARCH)
 	
-flashhostedserviceapp: ##Flashes only the hosted service app
+hosted-flashapp: ##Flashes only the hosted service app
 	$(MAKE) -C $(HOSTED_APP_DIR) flashapp SMING_ARCH=$(HOSTED_ARCH)
 
