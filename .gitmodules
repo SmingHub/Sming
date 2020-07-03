@@ -57,9 +57,9 @@
 	path = Sming/Components/libyuarel
 	url = https://github.com/jacketizer/libyuarel.git
 	ignore = dirty
-[submodule "mqtt-codec"]
-	path = Sming/Components/mqtt-codec
-	url = https://github.com/slaff/mqtt-codec.git
+[submodule "nanopb"]
+	path = Sming/Components/nanopb/nanopb
+	url = https://github.com/nanopb/nanopb.git
 	ignore = dirty
 [submodule "rboot"]
 	path = Sming/Components/rboot/rboot

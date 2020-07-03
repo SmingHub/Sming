@@ -29,6 +29,6 @@ TDB
 Protobuf with nanopb::
 
     cd $SMING_HOME/Components/Hosted/proto
-    python ~/dev/nanopb/generator/nanopb_generator.py hosted.proto
+    python $SMING_HOME/Components/nanopb/nanopb/generator/nanopb_generator.py hosted.proto
 
 TBD...
