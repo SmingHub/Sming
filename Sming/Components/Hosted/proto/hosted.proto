@@ -31,7 +31,6 @@ message HostedCommand {
         HOSTED_V_1_0 = 0;
     }
     Version version = 1;
-    uint32 id = 2; // unique message id, > 0
     oneof payload {
         RequestDigitalWrite requestDigitalWrite = 10;
         RequestPinMode requestPinMode = 11;

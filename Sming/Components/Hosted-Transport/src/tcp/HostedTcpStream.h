@@ -1,4 +1,5 @@
 #include <SmingCore.h>
+#include <Data/Buffer/CircularBuffer.h>
 
 class HostedTcpStream: public ReadWriteStream
 {
@@ -14,8 +15,9 @@ public:
 
 	   };
 
-	   auto onReceive = [](TcpClient& client, char* data, int size)->bool {
-		   	 return true;
+	   auto onReceive = [this](TcpClient& client, char* data, int size)->bool {
+		   	 size_t written = this->buffer.write((const uint8_t*)data, size);
+		   	 return (written == (size_t)size);
 	   };
 
 	   client = new TcpClient(onCompleted, onReadyToSend, onReceive);
@@ -23,16 +25,25 @@ public:
 
 	size_t write(const uint8_t* buffer, size_t size) override
 	{
-		if(client->getConnectionState() == eTCS_Ready) {
+		if(!client->isProcessing()) {
 			client->connect(host, (int)port);
 		}
-		client->send((const char *)buffer, size);
+
+		if(!client->send((const char *)buffer, size)) {
+			return 0;
+		}
+
 		return size;
 	}
 
 	uint16_t readMemoryBlock(char* data, int bufSize) override
 	{
-		return 0;
+		return buffer.readMemoryBlock(data, bufSize);
+	}
+
+	bool seek(int len) override
+	{
+		return buffer.seek(len);
 	}
 
 
@@ -41,9 +52,15 @@ public:
 		return false;
 	}
 
+	void flush() override
+	{
+		client->commit();
+	}
+
 
 private:
-	TcpClient* client =nullptr;
+	TcpClient* client = nullptr;
+	CircularBuffer buffer = CircularBuffer(1024);
 	String host;
 	uint16_t port = 0;
 };

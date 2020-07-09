@@ -52,13 +52,12 @@ public:
 		size_t leftBytes = input.bytes_left;
 		do {
 			success = pb_decode_ex(&input, HostedCommand_fields, &request, PB_DECODE_DELIMITED);
-			if (!(success && request.id)) {
+			if (!(success && request.which_payload)) {
 				Serial.printf("Decoding failed: %s\n", PB_GET_ERROR(&input));
 				inputBuffer->seek(inputBuffer->available()- leftBytes);
 				break;
 			}
 
-			// and send it back...
 			leftBytes = input.bytes_left;
 
 			// dispatch the command
@@ -73,7 +72,7 @@ public:
 			}
 
 			// process the response
-			if(response.id && !send(&response)) {
+			if(response.which_payload && !send(&response)) {
 				result = HOSTED_FAIL;
 				break;
 			}

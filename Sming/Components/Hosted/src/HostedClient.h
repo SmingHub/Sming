@@ -4,6 +4,8 @@
 #include <Data/Stream/ReadWriteStream.h>
 #include "HostedCommon.h"
 
+extern void host_main_loop();
+
 class HostedClient
 {
 public:
@@ -21,13 +23,8 @@ public:
 		this->stream = stream;
 	}
 
-	bool send(HostedCommand* message, HostedCommandDelegate callback = nullptr)
+	bool send(HostedCommand* message)
 	{
-		if(++messageId == 0) {
-			messageId = 1; // messages with id 0 will be discarded...
-		}
-		message->id = messageId;
-
 		pb_ostream_t ouput = newOutputStream();
 		bool success = pb_encode_ex(&ouput, HostedCommand_fields, message, PB_ENCODE_DELIMITED);
 		if (!success) {
@@ -35,11 +32,33 @@ public:
 			return false;
 		}
 
-		if(callback != nullptr) {
-			responseCallbacks[message->id] = callback;
-		}
+		stream->flush();
 
 		return true;
+	}
+
+	/**
+	 * @brief This method will block the execution until a message is detected
+	 * @retval HostedCommand
+	 */
+	HostedCommand wait()
+	{
+		HostedCommand command = HostedCommand_init_zero;
+
+		pb_istream_t input = newInputStream();
+		size_t leftBytes = input.bytes_left;
+		size_t totalBytes = input.bytes_left;
+		bool success = false;
+		do {
+			stream->flush();
+			success = pb_decode_ex(&input, HostedCommand_fields, &command, PB_DECODE_DELIMITED);
+			host_main_loop();
+		}
+		while(!success);
+
+		stream->seek(totalBytes - input.bytes_left);
+
+		return command;
 	}
 
 	/**
@@ -50,6 +69,23 @@ public:
 		return true;
 	}
 private:
+	pb_istream_t newInputStream()
+	{
+		pb_istream_t stream;
+		stream.callback = [](pb_istream_t *stream, pb_byte_t *buf, size_t count) -> bool {
+			ReadWriteStream* source = (ReadWriteStream* )stream->state;
+			size_t read = source->readMemoryBlock((char *)buf, count);
+			source->seek(read);
+
+			return true;
+		};
+		stream.state = (void*)this->stream;
+		stream.bytes_left = this->stream->available();
+		stream.errmsg = nullptr;
+
+		return stream;
+	}
+
 	pb_ostream_t newOutputStream()
 	{
 		pb_ostream_t outputStream;
@@ -68,6 +104,5 @@ private:
 	}
 private:
 	HashMap<uint32_t,HostedCommandDelegate> responseCallbacks;
-	uint32_t messageId = 0;
 	ReadWriteStream* stream = nullptr;
 };
