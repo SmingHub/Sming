@@ -39,10 +39,17 @@
 
 static int exitCode = 0;
 static bool done = false;
+static bool lwip_initialised = false;
+static OneShotElapseTimer<NanoTime::Milliseconds> lwipServiceTimer;
 
 extern void init();
 extern void host_wifi_lwip_init_complete();
 extern void host_init_bootloader();
+
+void  __attribute__((weak)) host_init()
+{
+	init();
+}
 
 static void cleanup()
 {
@@ -102,6 +109,16 @@ static void pause(int secs)
 		hostmsg("Waiting for %u seconds...", secs);
 		msleep(secs * 1000);
 	}
+}
+
+void host_main_loop() {
+	host_service_tasks();
+	host_service_timers();
+	if (lwip_initialised && lwipServiceTimer.expired()) {
+		host_lwip_service();
+		lwipServiceTimer.start();
+	}
+	system_soft_wdt_feed();
 }
 
 int main(int argc, char* argv[])
@@ -230,7 +247,7 @@ int main(int argc, char* argv[])
 		sockets_initialise();
 		CUartServer::startup(config.uart);
 
-		bool lwip_initialised = false;
+
 		if(config.enable_network) {
 			lwip_initialised = host_lwip_init(&config.lwip);
 			if(lwip_initialised) {
@@ -247,18 +264,11 @@ int main(int argc, char* argv[])
 
 		System.initialize();
 
-		init();
+		host_init();
 
-		OneShotElapseTimer<NanoTime::Milliseconds> lwipServiceTimer;
 		lwipServiceTimer.reset<LWIP_SERVICE_INTERVAL>();
 		while(!done) {
-			host_service_tasks();
-			host_service_timers();
-			if(lwip_initialised && lwipServiceTimer.expired()) {
-				host_lwip_service();
-				lwipServiceTimer.start();
-			}
-			system_soft_wdt_feed();
+			host_main_loop();
 		}
 
 		host_debug_i(">> Normal Exit <<\n");

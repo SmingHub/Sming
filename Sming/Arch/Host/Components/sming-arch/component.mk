@@ -40,7 +40,7 @@ COMPONENT_DEPENDS := \
 	
 
 ifneq ($(ENABLE_HOSTED),)
-	COMPONENT_DEPENDS += Hosted-Lib
+	COMPONENT_DEPENDS += Hosted-Lib Hosted-Transport
 endif
 
 # => Platform WiFi

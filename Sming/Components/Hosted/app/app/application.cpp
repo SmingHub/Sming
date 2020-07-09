@@ -52,7 +52,6 @@ void init()
 
 	hostedServer.registerCommand(HostedCommand_requestDigitalRead_tag, [](HostedCommand *request, HostedCommand *response)-> int {
 		uint8_t result = digitalRead((uint16_t)request->payload.requestDigitalRead.pin);
-		response->id = request->id;
 		response->which_payload = HostedCommand_responseDigitalRead_tag;
 		response->payload.responseDigitalRead.value = result;
 

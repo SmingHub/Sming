@@ -45,7 +45,6 @@ typedef struct _ResponseDigitalRead {
 
 typedef struct _HostedCommand {
     HostedCommand_Version version;
-    uint32_t id;
     pb_size_t which_payload;
     union {
         RequestDigitalWrite requestDigitalWrite;
@@ -71,12 +70,12 @@ typedef struct _HostedCommand {
 #define RequestPinMode_init_default              {0, _PinMode_MIN}
 #define RequestDigitalRead_init_default          {0}
 #define ResponseDigitalRead_init_default         {0}
-#define HostedCommand_init_default               {_HostedCommand_Version_MIN, 0, 0, {RequestDigitalWrite_init_default}}
+#define HostedCommand_init_default               {_HostedCommand_Version_MIN, 0, {RequestDigitalWrite_init_default}}
 #define RequestDigitalWrite_init_zero            {0, 0}
 #define RequestPinMode_init_zero                 {0, _PinMode_MIN}
 #define RequestDigitalRead_init_zero             {0}
 #define ResponseDigitalRead_init_zero            {0}
-#define HostedCommand_init_zero                  {_HostedCommand_Version_MIN, 0, 0, {RequestDigitalWrite_init_zero}}
+#define HostedCommand_init_zero                  {_HostedCommand_Version_MIN, 0, {RequestDigitalWrite_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define RequestDigitalRead_pin_tag               1
@@ -86,7 +85,6 @@ typedef struct _HostedCommand {
 #define RequestPinMode_mode_tag                  2
 #define ResponseDigitalRead_value_tag            1
 #define HostedCommand_version_tag                1
-#define HostedCommand_id_tag                     2
 #define HostedCommand_requestDigitalWrite_tag    10
 #define HostedCommand_requestPinMode_tag         11
 #define HostedCommand_requestDigitalRead_tag     12
@@ -117,7 +115,6 @@ X(a, STATIC,   SINGULAR, UINT32,   value,             1)
 
 #define HostedCommand_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UENUM,    version,           1) \
-X(a, STATIC,   SINGULAR, UINT32,   id,                2) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,requestDigitalWrite,payload.requestDigitalWrite),  10) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,requestPinMode,payload.requestPinMode),  11) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload,requestDigitalRead,payload.requestDigitalRead),  12) \
@@ -147,7 +144,7 @@ extern const pb_msgdesc_t HostedCommand_msg;
 #define RequestPinMode_size                      8
 #define RequestDigitalRead_size                  6
 #define ResponseDigitalRead_size                 6
-#define HostedCommand_size                       22
+#define HostedCommand_size                       16
 
 #ifdef __cplusplus
 } /* extern "C" */

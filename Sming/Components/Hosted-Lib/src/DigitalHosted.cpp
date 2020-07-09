@@ -1,7 +1,7 @@
 #include <Digital.h>
 #include <HostedClient.h>
 
-extern HostedClient hostedClient;
+extern HostedClient* hostedClient;
 
 void pinMode(uint16_t pin, uint8_t mode)
 {
@@ -10,7 +10,7 @@ void pinMode(uint16_t pin, uint8_t mode)
 		command->mode = (PinMode)mode;
 	});
 
-	hostedClient.send(&message);
+	hostedClient->send(&message);
 }
 
 void digitalWrite(uint16_t pin, uint8_t val)
@@ -20,5 +20,17 @@ void digitalWrite(uint16_t pin, uint8_t val)
 		command->value = val;
 	});
 
-	hostedClient.send(&message);
+	hostedClient->send(&message);
+}
+
+uint8_t digitalRead(uint16_t pin)
+{
+	NEW_HD_COMMAND(message, DigitalRead, {
+		command->pin = pin;
+	});
+
+	hostedClient->send(&message);
+	HostedCommand response = hostedClient->wait();
+
+	return (uint8_t)response.payload.responseDigitalRead.value;
 }
