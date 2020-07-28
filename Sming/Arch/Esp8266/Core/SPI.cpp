@@ -183,7 +183,14 @@ void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 											  (((num_bits - 1) & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
 
 		// copy the registers starting from last index position
-		memcpy((void*)SPI_W0(SPI_NO), &buffer[bufIndx], bufLength);
+		if(IS_ALIGNED(buffer)) {
+			memcpy((void*)SPI_W0(SPI_NO), &buffer[bufIndx], ALIGNUP4(bufLength));
+		} else {
+			auto spiBuffer = reinterpret_cast<volatile uint32_t*>(SPI_W0(SPI_NO));
+			uint32_t wordBuffer[BLOCKSIZE / 4];
+			memcpy(wordBuffer, &buffer[bufIndx], bufLength);
+			memcpy((void*)SPI_W0(SPI_NO), wordBuffer, ALIGNUP4(bufLength));
+		}
 
 		// Begin SPI Transaction
 		SET_PERI_REG_MASK(SPI_CMD(SPI_NO), SPI_USR);
