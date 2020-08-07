@@ -18,7 +18,36 @@ PB_BIND(RequestDigitalRead, RequestDigitalRead, AUTO)
 PB_BIND(ResponseDigitalRead, ResponseDigitalRead, AUTO)
 
 
+PB_BIND(SpiSettings, SpiSettings, AUTO)
+
+
+PB_BIND(RequestSpiBeginTransaction, RequestSpiBeginTransaction, AUTO)
+
+
+PB_BIND(RequestSpiEndTransaction, RequestSpiEndTransaction, AUTO)
+
+
+PB_BIND(RequestSpiTransfer, RequestSpiTransfer, AUTO)
+
+
+PB_BIND(ResponseSpiTransfer, ResponseSpiTransfer, AUTO)
+
+
+PB_BIND(RequestSpiWrite, RequestSpiWrite, AUTO)
+
+
+PB_BIND(ResponseSpiWrite, ResponseSpiWrite, AUTO)
+
+
+PB_BIND(RequestSpiRead, RequestSpiRead, AUTO)
+
+
+PB_BIND(ResponseSpiRead, ResponseSpiRead, AUTO)
+
+
 PB_BIND(HostedCommand, HostedCommand, AUTO)
+
+
 
 
 

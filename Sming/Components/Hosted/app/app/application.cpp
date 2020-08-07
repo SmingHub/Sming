@@ -1,6 +1,5 @@
 #include <SmingCore.h>
 #include <HostedServer.h>
-#include <Digital.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -10,6 +9,15 @@
 
 HostedServer hostedServer;
 TcpServer* tcpServer;
+
+namespace Hosted {
+	namespace Digital {
+		void registerCommands(HostedServer& server);
+	}
+	namespace Spi {
+		void registerCommands(HostedServer& server);
+	}
+}
 
 // Will be called when WiFi station was connected to AP
 void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
@@ -39,24 +47,9 @@ void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 
 void init()
 {
-	// Register Command Handlers
-	hostedServer.registerCommand(HostedCommand_requestPinMode_tag, [](HostedCommand *request, HostedCommand *response)-> int {
-		pinMode((uint16_t)request->payload.requestPinMode.pin, (uint8_t)request->payload.requestPinMode.mode);
-		return 0;
-	});
+	Hosted::Digital::registerCommands(hostedServer);
+	Hosted::Spi::registerCommands(hostedServer);
 
-	hostedServer.registerCommand(HostedCommand_requestDigitalWrite_tag, [](HostedCommand *request, HostedCommand *response)-> int {
-		digitalWrite((uint16_t)request->payload.requestDigitalWrite.pin, (uint8_t)request->payload.requestDigitalWrite.value);
-		return 0;
-	});
-
-	hostedServer.registerCommand(HostedCommand_requestDigitalRead_tag, [](HostedCommand *request, HostedCommand *response)-> int {
-		uint8_t result = digitalRead((uint16_t)request->payload.requestDigitalRead.pin);
-		response->which_payload = HostedCommand_responseDigitalRead_tag;
-		response->payload.responseDigitalRead.value = result;
-
-		return 0;
-	});
 
 	// Connect to same AP as the client application
 	WifiStation.enable(true);

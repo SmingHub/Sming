@@ -35,6 +35,8 @@ public:
 		HostedCommand request = HostedCommand_init_zero;
 		HostedCommand response = HostedCommand_init_zero;
 
+		request.payload.requestSpiTransfer.data.funcs.decode = &pbDecodeData;
+
 		if (at == nullptr || length < 0) {
 			debug_e("empty buffer");
 			return HOSTED_FAIL;
@@ -76,6 +78,9 @@ public:
 				result = HOSTED_FAIL;
 				break;
 			}
+
+			// TODO: cleanup
+
 		} while(input.bytes_left && success);
 
 		return result;
