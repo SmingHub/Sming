@@ -5,12 +5,23 @@ Requirements
 ------------
 
 In order to be able to compile for the ESP32 architecture you should have ESP-IDF v4.0 installed.
-A detailed installation manual can be found in the `ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.0/get-started/index.html#installation-step-by-step>`__.
+
+Get the latest `release/v4.0` branch. This can be done using the following command::
+
+    git clone -b release/v4.0 --recursive https://github.com/espressif/esp-idf.git
+
+Once the command above finishes follow the installation steps described in the `ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.0/get-started/index.html#installation-step-by-step>`__.
 
 Building
 --------
 
-Make sure that the IDF_PATH environmental variable is set. Also make sure that the other ESP-IDF environmental variables are set.
+Make sure that the IDF_PATH environmental variable is set. On Linux you can use for example the following command::
+
+    export IDF_PATH=path/to/esp-idf
+
+Replace `path/to` with the correct path.
+
+Also make sure that the other ESP-IDF environmental variables are set.
 For example on Linux this can be done using the following command::
 
   source $IDF_PATH/export.sh
