@@ -61,6 +61,7 @@
 	path = Sming/Components/nanopb/nanopb
 	url = https://github.com/nanopb/nanopb.git
 	ignore = dirty
+	ignore = dirty
 [submodule "rboot"]
 	path = Sming/Components/rboot/rboot
 	url = https://github.com/mikee47/rboot

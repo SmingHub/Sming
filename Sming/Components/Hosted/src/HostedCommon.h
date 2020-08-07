@@ -4,6 +4,7 @@
 #include <pb_encode.h>
 #include <pb_decode.h>
 #include "hosted.pb.h"
+#include "HostedUtils.h"
 
 constexpr int HOSTED_OK = 0;
 constexpr int HOSTED_FAIL = -1;
@@ -24,6 +25,8 @@ class HostedCommon
 {
 public:
 	virtual bool onData(const char* at, size_t length) = 0;
-
+	virtual ~HostedCommon()
+	{
+	}
 private:
 };
