@@ -224,14 +224,11 @@ $(SDK_BUILD_BASE):
 	
 checksdk:
 	$(Q) if [ ! -f $(SDK_BUILD_BASE)/include/sdkconfig.h ]; then \
-		$(MAKE) sdk-default; \
-	fi 
-	
-.PHONY: sdk-default 
-sdk-default: $(SDK_BUILD_BASE)##Installs default ESP-IDF SDK
-	$(Q) echo "Installing pre-compiled SDK."
-	$(Q) rm -rf $<; 
-	$(Q) cp -r $(SDK_DEFAULT_PATH) $(SDK_BUILD_BASE)
+		$(Q) echo "Compiling ESP-IDF SDK libraries."; \
+		$(MAKE) sdk-menuconfig; \
+		$(MAKE) sdk-build; \
+	fi
+
 
 $(SDK_CONFIG_DEFAULTS):
 	$(Q) cp $@.$(BUILD_TYPE) $@
