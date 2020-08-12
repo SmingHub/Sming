@@ -40,14 +40,10 @@ Flashing can be done using the following command::
 SDK
 ---
 
-Sming comes with pre-compiled libraries and configuration files. If needed you can re-configure ESP-IDF using the command below::
+Sming comes with initial configuration for ESP-IDF. If needed you can re-configure ESP-IDF using the command below::
 
   make SMING_ARCH=Esp32 sdk-menuconfig
 
 A re-compilation is required after the change of the configuration. This can be done with the following command::
 
   make SMING_ARCH=Esp32 sdk-build
-
-If you want to revert to using the default pre-compiled SDK then issue the following command::
-
-  make SMING_ARCH=Esp32 sdk-default
