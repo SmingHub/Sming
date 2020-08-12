@@ -224,14 +224,11 @@ $(SDK_BUILD_BASE):
 	
 checksdk:
 	$(Q) if [ ! -f $(SDK_BUILD_BASE)/include/sdkconfig.h ]; then \
-		$(MAKE) sdk-default; \
-	fi 
-	
-.PHONY: sdk-default 
-sdk-default: $(SDK_BUILD_BASE)##Installs default ESP-IDF SDK
-	$(Q) echo "Installing pre-compiled SDK."
-	$(Q) rm -rf $<; 
-	$(Q) cp -r $(SDK_DEFAULT_PATH) $(SDK_BUILD_BASE)
+		$(Q) echo "Compiling ESP-IDF SDK libraries."; \
+		$(MAKE) sdk-defconfig; \
+		$(MAKE) sdk-build; \
+	fi
+
 
 $(SDK_CONFIG_DEFAULTS):
 	$(Q) cp $@.$(BUILD_TYPE) $@
@@ -239,6 +236,11 @@ $(SDK_CONFIG_DEFAULTS):
 .PHONY: sdk-menuconfig
 sdk-menuconfig: $(SDK_BUILD_BASE) $(SDK_CONFIG_DEFAULTS)##Reconfigure ESP-IDF SDK. To (re-)build it run `make sdk-build`
 	$(MAKE) -C $(SDK_PROJECT_PATH) menuconfig BUILD_DIR_BASE=$(SDK_BUILD_BASE)
+	
+.PHONY: sdk-defconfig
+sdk-defconfig: $(SDK_BUILD_BASE) $(SDK_CONFIG_DEFAULTS)##Creates default ESP-IDF SDK config files.
+	$(MAKE) -C $(SDK_PROJECT_PATH) defconfig BUILD_DIR_BASE=$(SDK_BUILD_BASE)
+
 	
 .PHONY: sdk-menuconfig-clean
 sdk-menuconfig-clean: 
