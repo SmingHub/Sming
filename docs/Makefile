@@ -247,7 +247,7 @@ SOURCE_INCFILES			:= $(call GetIncPath,$(SOURCE_FILES))
 COMPONENT_INDEXFILES	:= $(addsuffix /index.rst,$(call GetIncPath,$(COMPONENT_DIRS)))
 
 .PHONY: setup
-setup: checkdirs $(SOURCE_INCFILES) $(COMPONENT_INDEXFILES)
+setup: initdirs $(SOURCE_INCFILES) $(COMPONENT_INDEXFILES)
 ifeq ($V,1)
 	$(call PrintVariable,SOURCE_DIRS)
 	$(call PrintVariable,SOURCE_FILES)
@@ -266,8 +266,8 @@ endef
 $(foreach f,$(SOURCE_FILES),$(eval $(call CopyFileTarget,$(call GetIncPath,$f),$f)))
 
 
-.PHONY: checkdirs
-checkdirs:
+.PHONY: initdirs
+initdirs:
 	$(Q) mkdir -p $(SOURCE_INCDIRS)
 
 .PHONY: api
