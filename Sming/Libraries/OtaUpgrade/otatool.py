@@ -15,7 +15,7 @@ def import_nacl():
         sys.stderr.write("""\
     It seems you have not installed libsodium bindings for python.
     Run 'make python-requirements' to install the necessary files using pip (recommended for Windows users).
-    Linux users are advised to use their distribution's package manager instead. Search for a package 
+    Linux users are advised to use their distribution's package manager instead. Search for a package
     named 'python-nacl' or similar.
     """)
         sys.exit(2)
@@ -92,7 +92,7 @@ def make_ota_file(args):
     assert len(args.roms) < 256
 
     magic = MAGIC_SIGNED if args.signed else MAGIC_UNSIGNED
-    timestamp = int((datetime.now() - datetime(1900, 1, 1)).total_seconds() * 1000)
+    timestamp = int((datetime.utcnow() - datetime(1900, 1, 1)).total_seconds() * 1000)
     ota = struct.pack('<IQBxxx', magic, timestamp, len(args.roms))
 
     for (address, filepath) in args.roms:

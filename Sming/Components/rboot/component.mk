@@ -67,6 +67,10 @@ else
 RBOOT_TWO_ROMS := 0
 endif
 
+ifeq ($(THINK_MODULE),1)
+RBOOT_TWO_ROMS := 1
+endif
+
 DEBUG_VARS 				+= RBOOT_TWO_ROMS
 
 # BIGFLASH mode is needed if at least one ROM address exceeds the first 1MB of flash

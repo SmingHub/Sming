@@ -1,7 +1,7 @@
 COMPONENT_SRCDIRS :=
 COMPONENT_SRCFILES := OtaUpgrade/BasicStream.cpp
 COMPONENT_APPCODE := appcode
-COMPONENT_DEPENDS := 
+COMPONENT_DEPENDS :=
 
 COMPONENT_INCDIRS := .
 
@@ -21,7 +21,7 @@ ota-gencode-clean:
 COMPONENT_APPCODE += $(abspath $(OTA_GENCODE_DIR))
 
 
-COMPONENT_VARS += ENABLE_OTA_SIGNING 
+COMPONENT_VARS += ENABLE_OTA_SIGNING
 ENABLE_OTA_SIGNING ?= 1
 
 ifeq ($(ENABLE_OTA_SIGNING),1)
@@ -88,7 +88,13 @@ OTA_BUILD_TIMESTAMP_SRC := $(OTA_GENCODE_DIR)/BuildTimestamp.cpp
 # Date reference for build timestamps, generated using this:
 # date --date 1900-01-01 +%s%3NLL
 # Note: Out of range in bash 3.1.23 (MinGW) hence included here as a constant
-OTA_DATE_REF := -2208988800000LL
+OTA_DATE_REF := -2208988800000
+OTA_BUILD_TIMESTAMP := $(shell date +%s%3N)
+
+OTA_BUILD_TIMESTAMP := $(shell expr $(OTA_BUILD_TIMESTAMP) - $(OTA_DATE_REF))
+
+# This is to convert timestamps to minutes and therefore keep them from ever overflowing
+#OTA_BUILD_TIMESTAMP := $(shell expr $(OTA_BUILD_TIMESTAMP) / 60000)
 
 # Using a phony target, the source file containing the build timestamp is regenerated with every build.
 # (This also enforces relinking the firmware with every make invocation, even if nothing has changed, but Sming does that anyway.)
@@ -96,7 +102,7 @@ OTA_DATE_REF := -2208988800000LL
 _ota-make-build-timestamp: | $(OTA_GENCODE_DIR)
 	$(Q) echo '#include <FakePgmSpace.h>' > $(OTA_BUILD_TIMESTAMP_SRC)
 	$(Q) echo 'namespace OtaUpgrade {' >> $(OTA_BUILD_TIMESTAMP_SRC)
-	$(Q) echo 'extern const uint64_t BuildTimestamp PROGMEM = $(shell date +%s%3NLL) - $(OTA_DATE_REF);' >> $(OTA_BUILD_TIMESTAMP_SRC)
+	$(Q) echo 'extern const uint64_t BuildTimestamp PROGMEM = $(OTA_BUILD_TIMESTAMP)LL;' >> $(OTA_BUILD_TIMESTAMP_SRC)
 	$(Q) echo '} // namespace OtaUpgrade' >> $(OTA_BUILD_TIMESTAMP_SRC)
 
 App-build: _ota-make-build-timestamp
@@ -138,10 +144,30 @@ ota-rollover-done:
 endif
 
 
+# Generate fw.json file
+$(info Build timestamp: $(OTA_BUILD_TIMESTAMP))
+$(info fw version: $(FW_VER))
+
+FW_JSON := $(FW_BASE)/fw.json
+
+# Create fw.json file fow downloading by devices
+.PHONY: fw-json
+fw-json: | $(FW_BASE)
+	$(Q) echo '{' > $(FW_JSON)
+	$(Q) echo '  "name": "$(DEVICE_TYPE_NAME)",' >> $(FW_JSON)
+	$(Q) echo '  "deviceTypeUuid": "$(DEVICE_TYPE_UUID)",' >> $(FW_JSON)
+	$(Q) echo '  "fileName": "firmware.ota",' >> $(FW_JSON)
+	$(Q) echo '  "fwVersion": "$(FW_VER)",' >> $(FW_JSON)
+	$(Q) echo '  "fwTimestamp": "$(OTA_BUILD_TIMESTAMP)"' >> $(FW_JSON)
+	$(Q) echo '}' >> $(FW_JSON)
+
+App-build: fw-json
+
+
 # Build final OTA upgrade file
 OTA_UPGRADE_FILE = $(FW_BASE)/firmware.ota
 
-.PHONY: ota-file 
+.PHONY: ota-file
 ota-file: $(OTA_UPGRADE_FILE) ##Generate OTA upgrade file (done as part of the default target)
 
 ifneq ($(SMING_ARCH),Host)
@@ -182,7 +208,7 @@ $(eval $(call _ota-verify-boolean-setting,ENABLE_OTA_DOWNGRADE))
 
 # Convenience target for uploading file via HTTP POST
 CACHE_VARS += OTA_UPLOAD_URL OTA_UPLOAD_NAME
-OTA_UPLOAD_URL ?= 
+OTA_UPLOAD_URL ?=
 OTA_UPLOAD_NAME ?= firmware
 
 # otatool.py includes a HTTP POST upload feature, no need to use install additional tools like curl
