@@ -8,7 +8,7 @@ index 0fbbb5b..fe7ff1d 100644
  
 -#include <arduino.h>
 +//#include <arduino.h>
-+#include <SmingCore/SmingCore.h>
++#include <SmingCore.h>
  #include <stdint.h>
  #include <SPI.h>
  
