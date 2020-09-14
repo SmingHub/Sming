@@ -149,3 +149,8 @@
 	path = Sming/Libraries/modbusino/modbusino
 	url = https://github.com/kmihaylov/modbusino.git
 	ignore = dirty
+[submodule "Libraries.CS5460"]
+	path = Sming/Libraries/CS5460/CS5460
+	url = https://github.com/xxzl0130/CS5460.git
+	ignore = dirty
+
