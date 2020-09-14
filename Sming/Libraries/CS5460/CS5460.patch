@@ -2,13 +2,12 @@ diff --git a/CS5460.h b/CS5460.h
 index 0fbbb5b..fe7ff1d 100644
 --- a/CS5460.h
 +++ b/CS5460.h
-@@ -1,7 +1,8 @@
+@@ -1,7 +1,7 @@
  #ifndef __CS5460_H__
  #define __CS5460_H__
  
 -#include <arduino.h>
-+//#include <arduino.h>
-+#include <SmingCore.h>
++#include <Arduino.h>
  #include <stdint.h>
  #include <SPI.h>
  
