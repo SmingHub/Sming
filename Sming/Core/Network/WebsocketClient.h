@@ -43,6 +43,7 @@ public:
 	using WebsocketConnection::setConnectionHandler;
 	using WebsocketConnection::setDisconnectionHandler;
 	using WebsocketConnection::setMessageHandler;
+	using WebsocketConnection::setPingHandler;
 
 	HttpConnection* getHttpConnection();
 

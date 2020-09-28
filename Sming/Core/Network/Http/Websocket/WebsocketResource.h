@@ -49,6 +49,11 @@ public:
 		wsDisconnect = handler;
 	}
 
+	void setPingHandler(WebsocketDelegate handler)
+	{
+		wsPing = handler;
+	}
+
 protected:
 	bool onConnect();
 
@@ -57,4 +62,5 @@ protected:
 	WebsocketMessageDelegate wsMessage = nullptr;
 	WebsocketBinaryDelegate wsBinary = nullptr;
 	WebsocketDelegate wsDisconnect = nullptr;
+	WebsocketDelegate wsPing = nullptr;
 };

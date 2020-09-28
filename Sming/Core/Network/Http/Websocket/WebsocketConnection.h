@@ -212,6 +212,15 @@ public:
 	}
 
 	/**
+	 * @brief Sets the callback handler to be called before sending required pong response
+	 * @param handler
+	 */
+	void setPingHandler(WebsocketDelegate handler)
+	{
+		wsPing = handler;
+	}
+
+	/**
 	 * @brief Sets the callback handler to be called before closing a websocket connection
 	 * @param handler
 	 */
@@ -294,6 +303,7 @@ protected:
 	WebsocketDelegate wsConnect = nullptr;
 	WebsocketMessageDelegate wsMessage = nullptr;
 	WebsocketBinaryDelegate wsBinary = nullptr;
+	WebsocketDelegate wsPing = nullptr;
 	WebsocketDelegate wsDisconnect = nullptr;
 
 	void* userData = nullptr;

@@ -163,6 +163,9 @@ int WebsocketConnection::staticOnControlEnd(void* userData)
 	GET_CONNECTION();
 
 	if(connection->controlFrame.type == WS_FRAME_PING) {
+		if(connection->wsPing) {
+			connection->wsPing(*connection);
+		}
 		connection->send(connection->controlFrame.payload, connection->controlFrame.payloadLength, WS_FRAME_PONG);
 	}
 
