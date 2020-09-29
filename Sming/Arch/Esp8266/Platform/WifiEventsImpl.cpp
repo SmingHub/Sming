@@ -11,6 +11,7 @@
  */
 
 #include "WifiEventsImpl.h"
+#include <Platform/Station.h>
 #include <esp_wifi.h>
 
 static WifiEventsImpl events;
@@ -48,6 +49,16 @@ void WifiEventsImpl::WifiEventHandler(System_Event_t* evt)
 		auto oldMode = WifiAuthMode(evt->event_info.auth_change.old_mode);
 		auto newMode = WifiAuthMode(evt->event_info.auth_change.new_mode);
 		debugf("mode: %d -> %d\n", oldMode, newMode);
+
+		if((oldMode != AUTH_OPEN) && (newMode == AUTH_OPEN)) {
+			// CVE-2020-12638 workaround.
+			// TODO: Remove this workaround once NON-OS SDK 3.0.x plays nicely with Sming
+			debugf("Potential downgrade attack. Reconnecting WiFi. See CVE-2020-12638 for more details\n");
+			WifiStation.disconnect();
+			WifiStation.connect();
+			break;
+		}
+
 		if(onSTAAuthModeChange) {
 			onSTAAuthModeChange(oldMode, newMode);
 		}

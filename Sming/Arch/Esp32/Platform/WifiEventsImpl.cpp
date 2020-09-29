@@ -11,6 +11,7 @@
  */
 
 #include "WifiEventsImpl.h"
+#include <Platform/Station.h>
 #include <esp_wifi.h>
 #include <esp_event.h>
 
@@ -66,6 +67,16 @@ void WifiEventsImpl::WifiEventHandler(void* arg, esp_event_base_t base, int32_t 
 			auto oldMode = WifiAuthMode(event->old_mode);
 			auto newMode = WifiAuthMode(event->new_mode);
 			debugf("mode: %d -> %d\n", oldMode, newMode);
+
+			if((oldMode != AUTH_OPEN) && (newMode == AUTH_OPEN)) {
+				// CVE-2020-12638 workaround.
+				// TODO: Remove this workaround once ESP-IDF has the proper fix.
+				debugf("Potential downgrade attack. Reconnecting WiFi. See CVE-2020-12638 for more details\n");
+				WifiStation.disconnect();
+				WifiStation.connect();
+				break;
+			}
+
 			if(onSTAAuthModeChange) {
 				onSTAAuthModeChange(oldMode, newMode);
 			}
