@@ -51,7 +51,18 @@ void pinMode(uint16_t pin, uint8_t mode)
 //Detect if pin is input
 bool isInputPin(uint16_t pin)
 {
-	return checkPin(__FUNCTION__, pin) ? pinModes[pin] : false;
+	if(checkPin(__FUNCTION__, pin)) {
+		switch(pinModes[pin]) {
+		case INPUT:
+		case INPUT_PULLUP:
+		case INPUT_PULLDOWN_16:
+		case WAKEUP_PULLUP:
+		case WAKEUP_PULLDOWN:
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void digitalWrite(uint16_t pin, uint8_t val)
