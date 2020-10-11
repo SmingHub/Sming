@@ -38,17 +38,16 @@ enum TemplateExpandState {
 /** @addtogroup stream
  *  @{
  */
-
 class TemplateStream : public IDataSourceStream
 {
 public:
+	using GetValueDelegate = Delegate<String(const char* name)>;
+
 	/** @brief Create a template stream
      *  @param stream source of template data
      */
 	TemplateStream(IDataSourceStream* stream) : stream(stream)
 	{
-		// Pre-allocate string to maximum length
-		varName.reserve(TEMPLATE_MAX_VAR_NAME_LEN);
 	}
 
 	~TemplateStream()
@@ -105,22 +104,29 @@ public:
 	}
 
 	/**
-	 * @brief Return the total length of the stream
-	 * @retval int -1 is returned when the size cannot be determined
-	 *
-	 * We cannot reliably determine available size so use default method which returns -1.
-	 *
-	 * 	int available()
+	 * @brief Set a callback to obtain variable values
+	 * @param callback Invoked only if variable name not found in map
 	 */
+	void onGetValue(GetValueDelegate callback)
+	{
+		getValueCallback = callback;
+	}
+
+protected:
+	String getValue(const char* name);
 
 private:
 	IDataSourceStream* stream = nullptr;
 	TemplateVariables templateData;
+	GetValueDelegate getValueCallback;
 	TemplateExpandState state = eTES_Wait;
-	String varName;
+	String value;
 	size_t skipBlockSize = 0;
 	size_t varDataPos = 0;
 	size_t varWaitSize = 0;
 };
 
-/** @} */
+/**
+ * @deprecated Use `TemplateStream::Variables` instead
+ */
+typedef TemplateStream::Variables TemplateVariables;
