@@ -24,13 +24,14 @@ uint16_t TemplateStream::readMemoryBlock(char* data, int bufSize)
 {
 	debug_d("TemplateStream::read(%d), state = %d", bufSize, state);
 
-	if(!data || bufSize <= 0)
+	if(data == nullptr || bufSize <= 0) {
 		return 0;
+	}
 
-	if(state == eTES_StartVar) {
+	if(state == State::StartVar) {
 		if(!value) {
 			debug_d("var not found");
-			state = eTES_Wait;
+			state = State::Wait;
 			return stream->readMemoryBlock(data, std::min(size_t(bufSize), skipBlockSize));
 		}
 
@@ -42,11 +43,11 @@ uint16_t TemplateStream::readMemoryBlock(char* data, int bufSize)
 		memcpy(data, value.c_str(), value.length());
 		stream->seek(skipBlockSize);
 		varDataPos = 0;
-		state = eTES_SendingVar;
+		state = State::SendingVar;
 		return value.length();
 	}
 
-	if(state == eTES_SendingVar) {
+	if(state == State::SendingVar) {
 		if(varDataPos < value.length()) {
 			debug_d("continue TRANSFER variable value (not completed)");
 			size_t available = value.length() - varDataPos;
@@ -54,7 +55,7 @@ uint16_t TemplateStream::readMemoryBlock(char* data, int bufSize)
 			return available;
 		} else {
 			debug_d("continue to plain text");
-			state = eTES_Wait;
+			state = State::Wait;
 		}
 	}
 
@@ -67,25 +68,30 @@ uint16_t TemplateStream::readMemoryBlock(char* data, int bufSize)
 			lastFound = cur;
 			char* p = cur + 1;
 			for(; p < end; p++) {
-				if(isspace(*p))
+				if(isspace(*p)) {
 					break; // Not a var name
-				else if(p - cur > TEMPLATE_MAX_VAR_NAME_LEN)
-					break; // To long for var name
-				else if(*p == '{')
-					break; // New start..
-
-				if(*p == '}') {
-					*p = '\0';
-					const char* varName = cur + 1;
-					value = getValue(varName);
-					skipBlockSize = p - cur + 1;
-					varWaitSize = cur - data;
-					state = varWaitSize ? eTES_Found : eTES_StartVar;
-					debug_d("found var '%s' at %u - %u, send size %u", varName, varWaitSize + 1, p - data, varWaitSize);
-
-					// return only plain text from template without our variable
-					return varWaitSize;
 				}
+				if(p - cur > TEMPLATE_MAX_VAR_NAME_LEN) {
+					break; // To long for var name
+				}
+				if(*p == '{') {
+					break; // New start..
+				}
+
+				if(*p != '}') {
+					continue;
+				}
+
+				*p = '\0';
+				const char* varName = cur + 1;
+				value = getValue(varName);
+				skipBlockSize = p - cur + 1;
+				varWaitSize = cur - data;
+				state = varWaitSize ? State::Found : State::StartVar;
+				debug_d("found var '%s' at %u - %u, send size %u", varName, varWaitSize + 1, p - data, varWaitSize);
+
+				// return only plain text from template without our variable
+				return varWaitSize;
 			}
 
 			// continue searching...
@@ -111,19 +117,20 @@ bool TemplateStream::seek(int len)
 	debug_d("TemplateStream::seek(%d), state = %d", len, state);
 
 	// Forward-only seeks
-	if(len <= 0)
+	if(len < 0) {
 		return false;
+	}
 
-	if(state == eTES_Found) {
-		//debug_d("SEEK before Var: %d, (%d)", len, varWaitSize);
+	if(state == State::Found) {
 		if(varWaitSize < (unsigned)len) {
 			debug_e("len > varWaitSize");
 			return false;
 		}
 		varWaitSize -= len;
-		if(varWaitSize == 0)
-			state = eTES_StartVar;
-	} else if(state == eTES_SendingVar) {
+		if(varWaitSize == 0) {
+			state = State::StartVar;
+		}
+	} else if(state == State::SendingVar) {
 		varDataPos += len;
 		return false; // not the end
 	}

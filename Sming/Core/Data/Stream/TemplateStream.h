@@ -14,33 +14,24 @@
 #include "WHashMap.h"
 #include "WString.h"
 
+/**
+ * @brief Maximum length of a template variable name
+ * @see See `TemplateStream`
+ */
 #define TEMPLATE_MAX_VAR_NAME_LEN 16
 
-/** @brief  Template variable (hash map) class
- *  @see    Wiring HashMap
- */
-class TemplateVariables : public HashMap<String, String>
-{
-};
-
-/** @brief  Template file stream expand state
- *  @ingroup constants
- *  @{
- */
-enum TemplateExpandState {
-	eTES_Wait,		///< Template expand state wait
-	eTES_Found,		///< Template expand state found
-	eTES_StartVar,  ///< Template expand state start variable
-	eTES_SendingVar ///< Template expand state sending variable
-};
-/** @} */
-
-/** @addtogroup stream
- *  @{
+/**
+ * @brief Stream which performs variable-value substitution on-the-fly
+ *
+ * Template uses {varname} style markers which are replaced as the stream is read
+ * using content from a hashmap.
+ *
+ * @ingroup stream
  */
 class TemplateStream : public IDataSourceStream
 {
 public:
+	using Variables = HashMap<String, String>;
 	using GetValueDelegate = Delegate<String(const char* name)>;
 
 	/** @brief Create a template stream
@@ -55,16 +46,13 @@ public:
 		delete stream;
 	}
 
-	//Use base class documentation
 	StreamType getStreamType() const override
 	{
 		return stream ? eSST_Template : eSST_Invalid;
 	}
 
-	//Use base class documentation
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
-	//Use base class documentation
 	bool seek(int len) override;
 
 	bool isFinished() override
@@ -85,7 +73,7 @@ public:
 	/** @brief  Set multiple variables in the template file
      *  @param  vars Template Variables
      */
-	void setVars(const TemplateVariables& vars)
+	void setVars(const Variables& vars)
 	{
 		templateData.setMultiple(vars);
 	}
@@ -93,7 +81,7 @@ public:
 	/** @brief  Get the template variables
      *  @retval TemplateVariables Reference to the template variables
      */
-	inline TemplateVariables& variables()
+	Variables& variables()
 	{
 		return templateData;
 	}
@@ -116,10 +104,17 @@ protected:
 	String getValue(const char* name);
 
 private:
+	enum class State {
+		Wait,
+		Found,
+		StartVar,
+		SendingVar,
+	};
+
 	IDataSourceStream* stream = nullptr;
-	TemplateVariables templateData;
+	Variables templateData;
 	GetValueDelegate getValueCallback;
-	TemplateExpandState state = eTES_Wait;
+	State state = State::Wait;
 	String value;
 	size_t skipBlockSize = 0;
 	size_t varDataPos = 0;
