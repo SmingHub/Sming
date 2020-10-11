@@ -7,6 +7,7 @@
 	XX(arduino_string)                                                                                                 \
 	XX(crypto)                                                                                                         \
 	XX(cstringarray)                                                                                                   \
+	XX(stream)                                                                                                         \
 	XX(serial)                                                                                                         \
 	XX(objectmap)                                                                                                      \
 	XX(base64)                                                                                                         \
