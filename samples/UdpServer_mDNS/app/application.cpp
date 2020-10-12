@@ -1,4 +1,5 @@
 #include <SmingCore.h>
+#include <Network/Mdns/Responder.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -6,18 +7,33 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
+DEFINE_FSTR_LOCAL(hostName, "UDP_Server");
+
 HttpServer server;
 
-//mDNS using ESP8266 SDK functions
+class MyService : public mDNS::Service
+{
+public:
+	Info getInfo() override
+	{
+		Info info;
+		info.name = F("Sming");
+		return info;
+	}
+
+	CStringArray getTxt() override
+	{
+		return F("version=now");
+	}
+};
+
+static mDNS::Responder responder;
+static MyService service;
+
 void startmDNS()
 {
-	struct mdns_info* info = (struct mdns_info*)os_zalloc(sizeof(struct mdns_info));
-	info->host_name = (char*)"test"; // You can replace test with your own host name
-	info->ipAddr = WifiStation.getIP();
-	info->server_name = (char*)"Sming";
-	info->server_port = 80;
-	info->txt_data[0] = (char*)"version = now";
-	espconn_mdns_init(info);
+	responder.begin(hostName);
+	responder.addService(service);
 }
 
 void onIndex(HttpRequest& request, HttpResponse& response)
@@ -54,9 +70,11 @@ void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reas
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	if(!fileExist("index.html"))
-		fileSetContent("index.html",
-					   "<h3>Congrats !! You are Connected to your ESP module with mDNS address test.local</h3>");
+	if(!fileExist("index.html")) {
+		String content = F("<h3>Congrats !! You are Connected to your ESP module with mDNS address %host%.local</h3>");
+		content.replace(F("%host%"), hostName);
+		fileSetContent("index.html", content);
+	}
 	startWebServer();
 	startmDNS(); // Start mDNS "Advertise" of your hostname "test.local" for this example
 }

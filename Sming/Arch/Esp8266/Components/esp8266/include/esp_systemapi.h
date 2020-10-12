@@ -39,7 +39,9 @@ extern "C" {
 #include <os_type.h>
 #include "esp_missing.h"
 #include <user_interface.h>
+#ifdef ENABLE_ESPCONN
 #include <espconn.h>
+#endif
 
 #include "m_printf.h"
 #include "debug_progmem.h"

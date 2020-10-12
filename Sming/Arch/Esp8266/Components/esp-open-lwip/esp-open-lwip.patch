@@ -405,10 +405,21 @@ index ae9ed50..46420df 100644
  #endif
  
 diff --git a/include/lwip/mdns.h b/include/lwip/mdns.h
-index 08db68a..b4763ec 100644
+index 08db68a..93ca93d 100644
 --- a/include/lwip/mdns.h
 +++ b/include/lwip/mdns.h
-@@ -96,16 +96,17 @@ struct mdns_info {
+@@ -32,8 +32,8 @@
+  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#ifndef __LWIP_DNS_H__
+-#define __LWIP_DNS_H__
++#ifndef __LWIP_MDNS_H__
++#define __LWIP_MDNS_H__
+ 
+ #include "lwip/opt.h"
+ 
+@@ -96,19 +96,20 @@ struct mdns_info {
  	char *txt_data[10];
  };
  #endif
@@ -436,6 +447,12 @@ index 08db68a..b4763ec 100644
  //void           mdns_tmr(void);
  //void           Delay(unsigned long ulSeconds);
  
+-#endif /* LWIP_DNS */
++#endif /* LWIP_MDNS */
+ 
+-#endif /* __LWIP_DNS_H__ */
++#endif /* __LWIP_MDNS_H__ */
+
 diff --git a/lwip/app/espconn_udp.c b/lwip/app/espconn_udp.c
 index 77ef471..0e4936a 100644
 --- a/lwip/app/espconn_udp.c
