@@ -120,6 +120,11 @@ protected:
 
 	virtual bool sendFoundResponse();
 
+	/**
+	 * @brief Generates unique device id
+	 */
+	virtual String getUniqueUDN();
+
 protected:
 	// @TODO:  put the xmlTemplate in PROGMEM
 	String xmlTemplate = "<?xml version=\"1.0\"?>"

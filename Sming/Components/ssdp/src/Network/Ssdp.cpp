@@ -28,14 +28,14 @@ const http_parser_settings Ssdp::parserSettings PROGMEM = {
 Ssdp::Ssdp(uint16_t webPort) : webPort(webPort)
 {
 	// default settings
-	settings["baseURL"] = "http://" + WifiStation.getIP().toString() + ":" + webPort + SSDP_URI;
+	settings["baseURL"] = "";
 	settings["deviceType"] = "urn:sming-org:device:TestController:1";
 	settings["friendlyName"] = "Sming Embedded Device";
 	settings["manufacturer"] = "Sming Framework";
 	settings["manufacturerURL"] = "https://github.com/SmingHub/Sming";
 	settings["modelName"] = "Sming Smart Model";
 	settings["modelNumber"] = "S01";
-	settings["UDN"] = "uuid:" + String("<unique-id>"); // TODO: generate unique device id
+	settings["UDN"] = "";
 
 	http_parser_init(&parser, HTTP_BOTH);
 	parser.data = this;
@@ -43,6 +43,14 @@ Ssdp::Ssdp(uint16_t webPort) : webPort(webPort)
 
 bool Ssdp::connect(IpAddress ip, uint16_t port)
 {
+	if(!settings["baseURL"].length()) {
+		settings["baseURL"] = "http://" + WifiStation.getIP().toString() + ":" + webPort + SSDP_URI;
+	}
+
+	if(!settings["UDN"].length()) {
+		settings["UDN"] = "uuid:sming:" + getUniqueUDN();
+	}
+
 	server.listen(webPort);
 	server.paths.set(SSDP_URI, [this](HttpRequest& request, HttpResponse& response) {
 		response.setAllowCrossDomainOrigin("*");
@@ -181,6 +189,23 @@ bool Ssdp::sendFoundResponse()
 	response.headers.setMultiple(headers);
 
 	return sendStringTo(remoteIp, remotePort, response.toString());
+}
+
+String Ssdp::getUniqueUDN()
+{
+	char boundary[16] = {0};
+	PSTR_ARRAY(pool, "0123456789"
+					 "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+					 "abcdefghijklmnopqrstuvwxyz");
+
+	int len = sizeof(boundary);
+	memset(boundary, 0, len);
+	for(int i = 0; i < len - 1; ++i) {
+		boundary[i] = pool[os_random() % (sizeof(__pstr__pool) - 1)];
+	}
+	boundary[len - 1] = 0;
+
+	return boundary;
 }
 
 int Ssdp::onHeadersComplete(const HttpHeaders& headers, http_parser* parser)
