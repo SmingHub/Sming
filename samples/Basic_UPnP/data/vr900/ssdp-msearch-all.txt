@@ -1,0 +1,237 @@
+
+8513424 SSDP-TX 239.255.255.250:1900
+M-SEARCH * HTTP/1.1
+Host: 239.255.255.250:1900
+User-Agent: Sming/4.0.0-rc2 UPnP/2.0
+MAN: "ssdp:discover"
+MX: 2
+ST: ssdp:all
+
+8527303 UDP-RX 192.168.1.254:1900, 319 chars, 319 bytes, 319 total
+HTTP/1.1 200 OK
+CACHE-CONTROL: max-age=1800
+DATE: Mon, 14 Oct 2019 11:02:18 GMT
+ST: uuid:4d696e69-444c-164e-9d41-4e39d7c8f0c9
+USN: uuid:4d696e69-444c-164e-9d41-4e39d7c8f0c9
+EXT:
+SERVER: 3.13.0-32-generic DLNADOC/1.50 UPnP/1.0 MiniDLNA/1.1.0
+LOCATION: http://192.168.1.254:8200/rootDesc.xml
+Content-Length: 0
+
+8530689 MESSAGE: OK, 8 headers
+
+8535599 UDP-RX 192.168.1.254:1900, 310 chars, 310 bytes, 310 total
+HTTP/1.1 200 OK
+CACHE-CONTROL: max-age=1800
+DATE: Mon, 14 Oct 2019 11:02:18 GMT
+ST: upnp:rootdevice
+USN: uuid:4d696e69-444c-164e-9d41-4e39d7c8f0c9::upnp:rootdevice
+EXT:
+SERVER: 3.13.0-32-generic DLNADOC/1.50 UPnP/1.0 MiniDLNA/1.1.0
+LOCATION: http://192.168.1.254:8200/rootDesc.xml
+Content-Length: 0
+
+8537914 MESSAGE: OK, 8 headers
+
+8544902 UDP-RX 192.168.1.254:1900, 362 chars, 362 bytes, 362 total
+HTTP/1.1 200 OK
+CACHE-CONTROL: max-age=1800
+DATE: Mon, 14 Oct 2019 11:02:18 GMT
+ST: urn:schemas-upnp-org:device:MediaServer:1
+USN: uuid:4d696e69-444c-164e-9d41-4e39d7c8f0c9::urn:schemas-upnp-org:device:MediaServer:1
+EXT:
+SERVER: 3.13.0-32-generic DLNADOC/1.50 UPnP/1.0 MiniDLNA/1.1.0
+LOCATION: http://192.168.1.254:8200/rootDesc.xml
+Content-Length: 0
+
+8547541 MESSAGE: OK, 8 headers
+
+8557523 UDP-RX 192.168.1.254:1900, 374 chars, 374 bytes, 374 total
+HTTP/1.1 200 OK
+CACHE-CONTROL: max-age=1800
+DATE: Mon, 14 Oct 2019 11:02:18 GMT
+ST: urn:schemas-upnp-org:service:ContentDirectory:1
+USN: uuid:4d696e69-444c-164e-9d41-4e39d7c8f0c9::urn:schemas-upnp-org:service:ContentDirectory:1
+EXT:
+SERVER: 3.13.0-32-generic DLNADOC/1.50 UPnP/1.0 MiniDLNA/1.1.0
+LOCATION: http://192.168.1.254:8200/rootDesc.xml
+Content-Length: 0
+
+8560150 MESSAGE: OK, 8 headers
+
+8562444 UDP-RX 192.168.1.254:1900, 376 chars, 376 bytes, 376 total
+HTTP/1.1 200 OK
+CACHE-CONTROL: max-age=1800
+DATE: Mon, 14 Oct 2019 11:02:18 GMT
+ST: urn:schemas-upnp-org:service:ConnectionManager:1
+USN: uuid:4d696e69-444c-164e-9d41-4e39d7c8f0c9::urn:schemas-upnp-org:service:ConnectionManager:1
+EXT:
+SERVER: 3.13.0-32-generic DLNADOC/1.50 UPnP/1.0 MiniDLNA/1.1.0
+LOCATION: http://192.168.1.254:8200/rootDesc.xml
+Content-Length: 0
+
+8567480 MESSAGE: OK, 8 headers
+
+8577593 UDP-RX 192.168.1.254:1900, 390 chars, 390 bytes, 390 total
+HTTP/1.1 200 OK
+CACHE-CONTROL: max-age=1800
+DATE: Mon, 14 Oct 2019 11:02:18 GMT
+ST: urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1
+USN: uuid:4d696e69-444c-164e-9d41-4e39d7c8f0c9::urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:1
+EXT:
+SERVER: 3.13.0-32-generic DLNADOC/1.50 UPnP/1.0 MiniDLNA/1.1.0
+LOCATION: http://192.168.1.254:8200/rootDesc.xml
+Content-Length: 0
+
+8579876 MESSAGE: OK, 8 headers
+
+8584498 UDP-RX 192.168.1.254:1900, 424 chars, 424 bytes, 424 total
+HTTP/1.1 200 OK
+CACHE-CONTROL: max-age=300
+DATE: Mon, 14 Oct 2019 11:02:18 GMT
+EXT:
+LOCATION: http://192.168.1.254:1900/gatedesc.xml
+OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
+01-NLS: 1f735b00-1dd2-11b2-ac46-d9605657e26c
+SERVER: Linux/2.6.36.4brcmarm, UPnP/1.0, Portable SDK for UPnP devices/1.6.19
+X-User-Agent: redsonic
+ST: upnp:rootdevice
+USN: uuid:9f0865b3-f5da-4ad5-85b7-7404637fdf37::upnp:rootdevice
+
+8590473 MESSAGE: OK, 10 headers
+
+8591412 UDP-RX 192.168.1.254:1900, 433 chars, 433 bytes, 433 total
+HTTP/1.1 200 OK
+CACHE-CONTROL: max-age=300
+DATE: Mon, 14 Oct 2019 11:02:18 GMT
+EXT:
+LOCATION: http://192.168.1.254:1900/gatedesc.xml
+OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
+01-NLS: 1f735b00-1dd2-11b2-ac46-d9605657e26c
+SERVER: Linux/2.6.36.4brcmarm, UPnP/1.0, Portable SDK for UPnP devices/1.6.19
+X-User-Agent: redsonic
+ST: uuid:9f0865b3-f5da-4ad5-85b7-7404637fdf37
+USN: uuid:9f0865b3-f5da-4ad5-85b7-7404637fdf37
+
+8600519 MESSAGE: OK, 10 headers
+
+8622305 UDP-RX 192.168.1.254:1900, 496 chars, 496 bytes, 496 total
+HTTP/1.1 200 OK
+CACHE-CONTROL: max-age=300
+DATE: Mon, 14 Oct 2019 11:02:18 GMT
+EXT:
+LOCATION: http://192.168.1.254:1900/gatedesc.xml
+OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
+01-NLS: 1f735b00-1dd2-11b2-ac46-d9605657e26c
+SERVER: Linux/2.6.36.4brcmarm, UPnP/1.0, Portable SDK for UPnP devices/1.6.19
+X-User-Agent: redsonic
+ST: urn:schemas-upnp-org:device:InternetGatewayDevice:1
+USN: uuid:9f0865b3-f5da-4ad5-85b7-7404637fdf37::urn:schemas-upnp-org:device:InternetGatewayDevice:1
+
+8627560 MESSAGE: OK, 10 headers
+
+8655779 UDP-RX 192.168.1.254:1900, 488 chars, 488 bytes, 488 total
+HTTP/1.1 200 OK
+CACHE-CONTROL: max-age=300
+DATE: Mon, 14 Oct 2019 11:02:18 GMT
+EXT:
+LOCATION: http://192.168.1.254:1900/gatedesc.xml
+OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
+01-NLS: 1f735b00-1dd2-11b2-ac46-d9605657e26c
+SERVER: Linux/2.6.36.4brcmarm, UPnP/1.0, Portable SDK for UPnP devices/1.6.19
+X-User-Agent: redsonic
+ST: urn:schemas-upnp-org:service:Layer3Forwarding:1
+USN: uuid:9f0865b3-f5da-4ad5-85b7-7404637fdf37::urn:schemas-upnp-org:service:Layer3Forwarding:1
+
+8660328 MESSAGE: OK, 10 headers
+
+8666474 UDP-RX 192.168.1.254:1900, 433 chars, 433 bytes, 433 total
+HTTP/1.1 200 OK
+CACHE-CONTROL: max-age=300
+DATE: Mon, 14 Oct 2019 11:02:18 GMT
+EXT:
+LOCATION: http://192.168.1.254:1900/gatedesc.xml
+OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
+01-NLS: 1f735b00-1dd2-11b2-ac46-d9605657e26c
+SERVER: Linux/2.6.36.4brcmarm, UPnP/1.0, Portable SDK for UPnP devices/1.6.19
+X-User-Agent: redsonic
+ST: uuid:9f0865b3-f5da-4ad5-85b7-7404637fdf38
+USN: uuid:9f0865b3-f5da-4ad5-85b7-7404637fdf38
+
+8670488 MESSAGE: OK, 10 headers
+
+8677555 UDP-RX 192.168.1.254:1900, 472 chars, 472 bytes, 472 total
+HTTP/1.1 200 OK
+CACHE-CONTROL: max-age=300
+DATE: Mon, 14 Oct 2019 11:02:18 GMT
+EXT:
+LOCATION: http://192.168.1.254:1900/gatedesc.xml
+OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
+01-NLS: 1f735b00-1dd2-11b2-ac46-d9605657e26c
+SERVER: Linux/2.6.36.4brcmarm, UPnP/1.0, Portable SDK for UPnP devices/1.6.19
+X-User-Agent: redsonic
+ST: urn:schemas-upnp-org:device:WANDevice:1
+USN: uuid:9f0865b3-f5da-4ad5-85b7-7404637fdf38::urn:schemas-upnp-org:device:WANDevice:1
+
+8684383 MESSAGE: OK, 10 headers
+
+8701559 UDP-RX 192.168.1.254:1900, 504 chars, 504 bytes, 504 total
+HTTP/1.1 200 OK
+CACHE-CONTROL: max-age=300
+DATE: Mon, 14 Oct 2019 11:02:18 GMT
+EXT:
+LOCATION: http://192.168.1.254:1900/gatedesc.xml
+OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
+01-NLS: 1f735b00-1dd2-11b2-ac46-d9605657e26c
+SERVER: Linux/2.6.36.4brcmarm, UPnP/1.0, Portable SDK for UPnP devices/1.6.19
+X-User-Agent: redsonic
+ST: urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1
+USN: uuid:9f0865b3-f5da-4ad5-85b7-7404637fdf38::urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1
+
+8709627 MESSAGE: OK, 10 headers
+
+8711286 UDP-RX 192.168.1.254:1900, 433 chars, 433 bytes, 433 total
+HTTP/1.1 200 OK
+CACHE-CONTROL: max-age=300
+DATE: Mon, 14 Oct 2019 11:02:18 GMT
+EXT:
+LOCATION: http://192.168.1.254:1900/gatedesc.xml
+OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
+01-NLS: 1f735b00-1dd2-11b2-ac46-d9605657e26c
+SERVER: Linux/2.6.36.4brcmarm, UPnP/1.0, Portable SDK for UPnP devices/1.6.19
+X-User-Agent: redsonic
+ST: uuid:9f0865b3-f5da-4ad5-85b7-7404637fdf39
+USN: uuid:9f0865b3-f5da-4ad5-85b7-7404637fdf39
+
+8721025 MESSAGE: OK, 10 headers
+
+8728140 UDP-RX 192.168.1.254:1900, 492 chars, 492 bytes, 492 total
+HTTP/1.1 200 OK
+CACHE-CONTROL: max-age=300
+DATE: Mon, 14 Oct 2019 11:02:18 GMT
+EXT:
+LOCATION: http://192.168.1.254:1900/gatedesc.xml
+OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
+01-NLS: 1f735b00-1dd2-11b2-ac46-d9605657e26c
+SERVER: Linux/2.6.36.4brcmarm, UPnP/1.0, Portable SDK for UPnP devices/1.6.19
+X-User-Agent: redsonic
+ST: urn:schemas-upnp-org:device:WANConnectionDevice:1
+USN: uuid:9f0865b3-f5da-4ad5-85b7-7404637fdf39::urn:schemas-upnp-org:device:WANConnectionDevice:1
+
+8733293 MESSAGE: OK, 10 headers
+
+8739953 UDP-RX 192.168.1.254:1900, 486 chars, 486 bytes, 486 total
+HTTP/1.1 200 OK
+CACHE-CONTROL: max-age=300
+DATE: Mon, 14 Oct 2019 11:02:18 GMT
+EXT:
+LOCATION: http://192.168.1.254:1900/gatedesc.xml
+OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
+01-NLS: 1f735b00-1dd2-11b2-ac46-d9605657e26c
+SERVER: Linux/2.6.36.4brcmarm, UPnP/1.0, Portable SDK for UPnP devices/1.6.19
+X-User-Agent: redsonic
+ST: urn:schemas-upnp-org:service:WANIPConnection:1
+USN: uuid:9f0865b3-f5da-4ad5-85b7-7404637fdf39::urn:schemas-upnp-org:service:WANIPConnection:1
+
+8748417 MESSAGE: OK, 10 headers
+

@@ -1,0 +1,75 @@
+<DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"
+	xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"
+	xmlns:dlna="urn:schemas-dlna-org:metadata-1-0/">
+	<container id="1$4" parentID="1" restricted="1"
+		childCount="9124">
+		<dc:title>All Music</dc:title>
+		<upnp:class>object.container.storageFolder</upnp:class>
+		<upnp:storageUsed>-1</upnp:storageUsed>
+	</container>
+	<container id="1$5" parentID="1" restricted="1"
+		childCount="59">
+		<dc:title>Genre</dc:title>
+		<upnp:class>object.container.storageFolder</upnp:class>
+		<upnp:storageUsed>-1</upnp:storageUsed>
+	</container>
+	<container id="1$6" parentID="1" restricted="1"
+		childCount="1375">
+		<dc:title>Artist</dc:title>
+		<upnp:class>object.container.storageFolder</upnp:class>
+		<upnp:storageUsed>-1</upnp:storageUsed>
+	</container>
+	<container id="1$7" parentID="1" restricted="1"
+		childCount="677">
+		<dc:title>Album</dc:title>
+		<upnp:class>object.container.storageFolder</upnp:class>
+		<upnp:storageUsed>-1</upnp:storageUsed>
+	</container>
+	<container id="1$14" parentID="1" restricted="1"
+		childCount="6">
+		<dc:title>Folders</dc:title>
+		<upnp:class>object.container.storageFolder</upnp:class>
+		<upnp:storageUsed>-1</upnp:storageUsed>
+	</container>
+	<container id="1$F" parentID="1" restricted="1"
+		childCount="1">
+		<dc:title>Playlists</dc:title>
+		<upnp:class>object.container.storageFolder</upnp:class>
+		<upnp:storageUsed>-1</upnp:storageUsed>
+	</container>
+	<container id="1$14$0" parentID="1$14" restricted="1"
+		childCount="172">
+		<dc:title>Artists</dc:title>
+		<upnp:class>object.container.storageFolder</upnp:class>
+		<upnp:storageUsed>-1</upnp:storageUsed>
+	</container>
+	<container id="1$14$0$0" parentID="1$14$0" restricted="1"
+		childCount="6">
+		<dc:title>A-ha</dc:title>
+		<upnp:class>object.container.storageFolder</upnp:class>
+		<upnp:storageUsed>-1</upnp:storageUsed>
+	</container>
+	<container id="1$14$0$0$0" parentID="1$14$0$0" restricted="1"
+		childCount="11">
+		<dc:title>East Of The Sun, West Of The Moon</dc:title>
+		<upnp:class>object.container.storageFolder</upnp:class>
+		<upnp:storageUsed>-1</upnp:storageUsed>
+	</container>
+	<item id="1$7$0$0" parentID="1$7$0" restricted="1"
+		refID="64$0$0$0$0">
+		<dc:title>Crying in the Rain</dc:title>
+		<upnp:class>object.item.audioItem.musicTrack</upnp:class>
+		<dc:creator>A-Ha</dc:creator>
+		<dc:date>1990-01-01</dc:date>
+		<upnp:artist>A-Ha</upnp:artist>
+		<upnp:album>East Of The Sun, West Of The Moon</upnp:album>
+		<upnp:originalTrackNumber>1</upnp:originalTrackNumber>
+		<upnp:albumArtURI dlna:profileID="JPEG_TN"
+			xmlns:dlna="urn:schemas-dlna-org:metadata-1-0/">http://192.168.1.254:8200/AlbumArt/1-22.jpg
+		</upnp:albumArtURI>
+		<res size="27986616" duration="0:04:24.400" bitrate="846796"
+			sampleFrequency="44100" nrAudioChannels="2"
+			protocolInfo="http-get:*:audio/x-flac:DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01700000000000000000000000000000">http://192.168.1.254:8200/MediaItems/22.flac</res>
+	</item>
+</DIDL-Lite>

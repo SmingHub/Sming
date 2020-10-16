@@ -1,0 +1,97 @@
+Origin: OpenSource.UPnP.HTTPSession [50632145]
+Time: 19/10/2019 14:03:52
+
+POST /ctl/ContentDir HTTP/1.1
+HOST: 192.168.1.254:8200
+SOAPACTION: "urn:schemas-upnp-org:service:ContentDirectory:1#Browse"
+CONTENT-TYPE: text/xml; charset="utf-8"
+Content-Length: 528
+
+<?xml version="1.0" encoding="utf-8"?>
+<s:Envelope s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+   <s:Body>
+      <u:Browse xmlns:u="urn:schemas-upnp-org:service:ContentDirectory:1">
+         <ObjectID>0</ObjectID>
+         <BrowseFlag>BrowseMetadata</BrowseFlag>
+         <Filter>*</Filter>
+         <StartingIndex>0</StartingIndex>
+         <RequestedCount>0</RequestedCount>
+         <SortCriteria />
+      </u:Browse>
+   </s:Body>
+</s:Envelope>
+
+
+=====
+
+
+
+Origin: OpenSource.UPnP.HTTPSession [50632145]
+Time: 19/10/2019 14:03:54
+
+HTTP/1.1 200  OK
+EXT: 
+CONTENT-TYPE:  text/xml; charset="utf-8"
+DATE:  Sat, 19 Oct 2019 13:03:55 GMT
+SERVER:  3.13.0-32-generic DLNADOC/1.50 UPnP/1.0 MiniDLNA/1.1.0
+CONNECTION:  close
+Content-Length: 1154
+
+<?xml version="1.0" encoding="utf-8"?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><s:Body><u:BrowseResponse xmlns:u="urn:schemas-upnp-org:service:ContentDirectory:1"><Result>&lt;DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/" xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/" xmlns:dlna="urn:schemas-dlna-org:metadata-1-0/"&gt;
+&lt;container id="0" parentID="-1" restricted="1" childCount="4" searchable="1"&gt;&lt;upnp:searchClass includeDerived="1"&gt;object.item.audioItem&lt;/upnp:searchClass&gt;&lt;upnp:searchClass includeDerived="1"&gt;object.item.imageItem&lt;/upnp:searchClass&gt;&lt;upnp:searchClass includeDerived="1"&gt;object.item.videoItem&lt;/upnp:searchClass&gt;&lt;dc:title&gt;root&lt;/dc:title&gt;&lt;upnp:class&gt;object.container.storageFolder&lt;/upnp:class&gt;&lt;upnp:storageUsed&gt;-1&lt;/upnp:storageUsed&gt;&lt;/container&gt;&lt;/DIDL-Lite&gt;</Result>
+<NumberReturned>1</NumberReturned>
+<TotalMatches>1</TotalMatches>
+<UpdateID>6</UpdateID></u:BrowseResponse></s:Body></s:Envelope>
+
+
+=====
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<s:Envelope
+	xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"
+	s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+	<s:Body>
+		<u:BrowseResponse
+			xmlns:u="urn:schemas-upnp-org:service:ContentDirectory:1">
+			<Result>&lt;DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/"
+				xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"
+				xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"
+				xmlns:dlna="urn:schemas-dlna-org:metadata-1-0/"&gt;
+				&lt;container id="0" parentID="-1" restricted="1" childCount="4"
+				searchable="1"&gt;&lt;upnp:searchClass
+				includeDerived="1"&gt;object.item.audioItem&lt;/upnp:searchClass&gt;&lt;upnp:searchClass
+				includeDerived="1"&gt;object.item.imageItem&lt;/upnp:searchClass&gt;&lt;upnp:searchClass
+				includeDerived="1"&gt;object.item.videoItem&lt;/upnp:searchClass&gt;&lt;dc:title&gt;root&lt;/dc:title&gt;&lt;upnp:class&gt;object.container.storageFolder&lt;/upnp:class&gt;&lt;upnp:storageUsed&gt;-1&lt;/upnp:storageUsed&gt;&lt;/container&gt;&lt;/DIDL-Lite&gt;</Result>
+			<NumberReturned>1</NumberReturned>
+			<TotalMatches>1</TotalMatches>
+			<UpdateID>6</UpdateID>
+		</u:BrowseResponse>
+	</s:Body>
+</s:Envelope>
+
+
+=====
+
+
+<DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/" xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/" xmlns:dlna="urn:schemas-dlna-org:metadata-1-0/">
+<container id="0" parentID="-1" restricted="1" childCount="4" searchable="1"><upnp:searchClass includeDerived="1">object.item.audioItem</upnp:searchClass><upnp:searchClass includeDerived="1">object.item.imageItem</upnp:searchClass><upnp:searchClass includeDerived="1">object.item.videoItem</upnp:searchClass><dc:title>root</dc:title><upnp:class>object.container.storageFolder</upnp:class><upnp:storageUsed>-1</upnp:storageUsed></container></DIDL-Lite>
+
+=====
+
+<DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"
+	xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"
+	xmlns:dlna="urn:schemas-dlna-org:metadata-1-0/">
+	<container id="0" parentID="-1" restricted="1" childCount="4"
+		searchable="1">
+		<upnp:searchClass includeDerived="1">object.item.audioItem</upnp:searchClass>
+		<upnp:searchClass includeDerived="1">object.item.imageItem</upnp:searchClass>
+		<upnp:searchClass includeDerived="1">object.item.videoItem</upnp:searchClass>
+		<dc:title>root</dc:title>
+		<upnp:class>object.container.storageFolder</upnp:class>
+		<upnp:storageUsed>-1</upnp:storageUsed>
+	</container>
+</DIDL-Lite>
+
