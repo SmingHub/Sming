@@ -166,3 +166,7 @@
 	path = Sming/Libraries/UPnP
 	url = https://github.com/mikee47/Sming-UPnP
 	ignore = dirty
+[submodule "Libraries.HueEmulator"]
+	path = Sming/Libraries/HueEmulator
+	url = https://github.com/mikee47/HueEmulator
+	ignore = dirty
