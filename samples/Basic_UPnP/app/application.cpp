@@ -1,6 +1,6 @@
 #include <SmingCore.h>
-#include <UPnP/DeviceHost.h>
-#include <SSDP/Server.h>
+#include <Network/UPnP/DeviceHost.h>
+#include <Network/SSDP/Server.h>
 #include <vr900.h>
 #include <AV.h>
 #include <Wemo.h>
@@ -88,9 +88,8 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true);
 
-//	testSoap();
-//	testSoap2();
-//	dumpDescription(&avServer);
+	//	dumpDescription(&avServer);
+
 #ifdef ARCH_HOST
 //	system_restart();
 //	return;

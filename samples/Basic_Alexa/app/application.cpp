@@ -1,5 +1,5 @@
 #include <SmingCore.h>
-#include <UPnP/DeviceHost.h>
+#include <Network/UPnP/DeviceHost.h>
 #include <Hue/Bridge.h>
 #include <Hue/DeviceList.h>
 #include <malloc_count.h>

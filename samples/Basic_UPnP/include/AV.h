@@ -1,4 +1,4 @@
-#include <UPnP/RootDevice.h>
+#include <Network/UPnP/RootDevice.h>
 #include <Data/Stream/FlashMemoryStream.h>
 
 DECLARE_FSTR(contentDirectorySCPD);

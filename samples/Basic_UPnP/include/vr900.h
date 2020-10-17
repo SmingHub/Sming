@@ -6,7 +6,7 @@
  * which you can construct your own compliant devices.
  */
 
-#include <UPnP/RootDevice.h>
+#include <Network/UPnP/RootDevice.h>
 
 namespace VR900
 {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <UPnP/RootDevice.h>
-#include <UPnP/Enumerator.h>
+#include <Network/UPnP/RootDevice.h>
+#include <Network/UPnP/Enumerator.h>
 #include <Data/Stream/FlashMemoryStream.h>
 
 DECLARE_FSTR(WEMO_SERVICE_SCPD);
