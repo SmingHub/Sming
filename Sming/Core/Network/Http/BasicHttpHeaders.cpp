@@ -72,8 +72,12 @@ int BasicHttpHeaders::onValue(const char* at, size_t length)
 	if(count_ >= ARRAY_SIZE(headers)) {
 		return -1;
 	}
-	const_cast<char*>(at)[length] = '\0';
-	headers[count_].value = at;
+	if(length == 0) {
+		headers[count_].value = nullptr;
+	} else {
+		const_cast<char*>(at)[length] = '\0';
+		headers[count_].value = at;
+	}
 	++count_;
 	return 0;
 }
