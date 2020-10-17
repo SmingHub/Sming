@@ -57,6 +57,16 @@ public:
 		msg["ST"] = F("urn:dial-multiscreen-org:service:dial:1");
 		return true;
 	}
+
+	void onNotify(SSDP::BasicMessage& msg) override
+	{
+		Serial.println();
+		Serial.println(F("SSDP message received:"));
+		for(unsigned i = 0; i < msg.count(); ++i) {
+			Serial.print(msg[i]);
+		}
+		Serial.println();
+	}
 };
 
 SearchHandler searchHandler;
@@ -79,6 +89,8 @@ void initUPnP()
 	UPnP::deviceHost.registerDevice(&avServer);
 	UPnP::deviceHost.registerDevice(&wemo1);
 	UPnP::deviceHost.registerDevice(&wemo2);
+
+	UPnP::deviceHost.registerDevice(&searchHandler);
 
 	auto timer = new AutoDeleteTimer;
 	timer->initializeMs<1000>(InterruptCallback([]() {
