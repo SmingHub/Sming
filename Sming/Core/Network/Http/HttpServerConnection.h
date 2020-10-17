@@ -60,8 +60,12 @@ public:
 
 	void send()
 	{
-		state = eHCS_StartSending;
-		onReadyToSendData(eTCE_Received);
+		if(state == eHCS_Ready) {
+			state = eHCS_StartSending;
+			onReadyToSendData(eTCE_Received);
+		} else {
+			onReadyToSendData(eTCE_Poll);
+		}
 	}
 
 	using TcpClient::send;
