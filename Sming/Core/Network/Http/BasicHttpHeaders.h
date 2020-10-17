@@ -143,7 +143,7 @@ public:
 		return http_status(parser.status_code);
 	}
 
-	String statusStr() const
+	String statusText() const
 	{
 		return httpGetStatusText(status());
 	}
