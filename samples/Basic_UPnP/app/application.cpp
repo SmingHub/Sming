@@ -45,6 +45,22 @@ int onHttpRequest(HttpServerConnection& connection, HttpRequest& request, HttpRe
 	return 0;
 }
 
+/*
+ * Helper class for handling DIAL searches.
+ */
+class SearchHandler : public UPnP::RootDevice
+{
+public:
+	bool formatMessage(SSDP::Message& msg, SSDP::MessageSpec& ms) override
+	{
+		// Override the search target
+		msg["ST"] = F("urn:dial-multiscreen-org:service:dial:1");
+		return true;
+	}
+};
+
+SearchHandler searchHandler;
+
 void initUPnP()
 {
 	//	dumpDescription(vr900Gateway);
@@ -63,6 +79,17 @@ void initUPnP()
 	UPnP::deviceHost.registerDevice(&avServer);
 	UPnP::deviceHost.registerDevice(&wemo1);
 	UPnP::deviceHost.registerDevice(&wemo2);
+
+	auto timer = new AutoDeleteTimer;
+	timer->initializeMs<1000>(InterruptCallback([]() {
+		Serial.println();
+		auto ms = new SSDP::MessageSpec(SSDP::MESSAGE_MSEARCH);
+		ms->object = &searchHandler;
+		ms->repeat = 2;
+		ms->target = SSDP::TARGET_ROOT; // Will get overridden by our custom search handler
+		SSDP::server.messageQueue.add(ms, 1000);
+	}));
+	timer->startOnce();
 }
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
