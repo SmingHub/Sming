@@ -2,6 +2,7 @@
 #include <Network/UPnP/DeviceHost.h>
 #include <Network/SSDP/Server.h>
 #include <DeviceFinder.h>
+#include <TeaPot.h>
 #include <vr900.h>
 #include <AV.h>
 #include <Wemo.h>
@@ -21,6 +22,7 @@ namespace
 {
 NtpClient* ntpClient;
 HttpServer server;
+TeaPot teapot;
 VR900::GatewayDevice vr900Gateway;
 AV::Server avServer;
 DeviceFinder deviceFinder;
@@ -60,6 +62,8 @@ void initUPnP()
 		debug_e("UPnP initialisation failed");
 		return;
 	}
+
+	UPnP::deviceHost.registerDevice(&teapot);
 
 	//	UPnP::deviceHost.registerDevice(&vr900Gateway);
 	//	UPnP::deviceHost.registerDevice(&avServer);
