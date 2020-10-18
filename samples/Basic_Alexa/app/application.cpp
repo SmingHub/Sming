@@ -2,9 +2,8 @@
 #include <Network/UPnP/DeviceHost.h>
 #include <Hue/Bridge.h>
 #include <Hue/DeviceList.h>
+#include <Hue/ColourDevice.h>
 #include <malloc_count.h>
-
-static HttpServer server;
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -12,20 +11,22 @@ static HttpServer server;
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-/*
- * TODO: We should be able to use UPnP to manage our device list
- * as linked items, then we can get rid of DeviceList completely.
- */
-static Hue::DeviceList devices;
-static Hue::DeviceListEnumerator enumerator(devices);
-static Hue::Bridge bridge(enumerator);
+namespace
+{
+NtpClient* ntpClient;
+HttpServer server;
+Hue::DeviceList devices;
+Hue::DeviceListEnumerator enumerator(devices);
+Hue::Bridge bridge(enumerator);
+
+constexpr uint8_t LED_PIN{2}; // GPIO2
 
 void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	debugf("I'm NOT CONNECTED!");
 }
 
-static int onHttpRequest(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
+int onHttpRequest(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
 	if(UPnP::deviceHost.onHttpRequest(connection)) {
 		return 0;
@@ -51,6 +52,14 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	debugf("GotIP: %s", ip.toString().c_str());
 
+	if(ntpClient == nullptr) {
+		ntpClient = new NtpClient([](NtpClient& client, time_t timestamp) {
+			SystemClock.setTime(timestamp, eTZ_UTC);
+			Serial.print("Time synchronized: ");
+			Serial.println(SystemClock.getSystemTimeString());
+		});
+	};
+
 	server.listen(bridge.getTcpPort());
 	server.paths.setDefault(onHttpRequest);
 	server.setBodyParser(MIME_JSON, bodyToStringParser);
@@ -63,6 +72,10 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 
 	UPnP::deviceHost.registerDevice(&bridge);
 
+	/*
+	 * To avoid confusion when testing with a Host or real device, ensure lighting devices are
+	 * created with different names so they can be distinguished in the Alexa App.
+	 */
 	auto Name = [](unsigned id) -> String {
 		String s;
 #ifdef ARCH_HOST
@@ -92,10 +105,47 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	devices.addElement(new Hue::ColourDevice(54321, Name(54321)));
 	devices.addElement(new Hue::ColourDevice(0x7FFFFFFF, Name(0x7FFFFFFF)));
 
-	bridge.onStateChanged([](const Hue::Device& device, unsigned attr) {
-		debug_i("#%u %s changed 0x%08x", device.getId(), device.getName().c_str(), attr);
+	// Connect the LED pin to light 101
+	digitalWrite(LED_PIN, HIGH); // Turn off - state is inverted
+	pinMode(LED_PIN, OUTPUT);
+
+	// Monitor when device attributes change
+	bridge.onStateChanged([&](const Hue::Device& device, Hue::Device::Attributes attr) {
+		debug_i("#%u %s changed [%s]", device.getId(), device.getName().c_str(), toString(attr));
+
+		/*
+		 * Control the LED pin
+		 */
+		using Attr = Hue::Device::Attribute;
+		if(device.getId() == 101 && attr[Attr::on]) {
+			unsigned value;
+			if(device.getAttribute(Attr::on, value)) {
+				digitalWrite(LED_PIN, value == 0);
+			}
+		}
 	});
+
+	// Monitor and handle requests to authorize or revoke users
+	bridge.onConfigChange([&](const Hue::Bridge::Config& config) {
+		debug_i("%s: deviceType=%s, name=%s",
+				config.type == Hue::Bridge::Config::Type::AuthorizeUser ? "Authorize" : "Revoke", config.deviceType,
+				config.name);
+
+		bridge.configure(config);
+	});
+
+	/*
+	 * Allow creation of users.
+	 *
+	 * WARNING! Security risk. In a real application, you would only enable pairing
+	 * on request from a secure web-page or by pressing a button. In addition, a suitable
+	 * timeout should be applied (e.g. 1 minute).
+	 *
+	 */
+	bridge.enablePairing(true);
 }
+
+} // namespace
 
 void init()
 {
