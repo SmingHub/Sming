@@ -1,6 +1,7 @@
 #include <SmingCore.h>
 #include <Network/UPnP/DeviceHost.h>
 #include <Network/SSDP/Server.h>
+#include <DeviceFinder.h>
 #include <vr900.h>
 #include <AV.h>
 #include <Wemo.h>
@@ -22,6 +23,7 @@ NtpClient* ntpClient;
 HttpServer server;
 VR900::GatewayDevice vr900Gateway;
 AV::Server avServer;
+DeviceFinder deviceFinder;
 
 //static Wemo::SocketList sockets;
 Wemo::Controllee wemo1(1, "Socket #1");
@@ -45,32 +47,6 @@ int onHttpRequest(HttpServerConnection& connection, HttpRequest& request, HttpRe
 	return 0;
 }
 
-/*
- * Helper class for handling DIAL searches.
- */
-class SearchHandler : public UPnP::RootDevice
-{
-public:
-	bool formatMessage(SSDP::Message& msg, SSDP::MessageSpec& ms) override
-	{
-		// Override the search target
-		msg["ST"] = F("urn:dial-multiscreen-org:service:dial:1");
-		return true;
-	}
-
-	void onNotify(SSDP::BasicMessage& msg) override
-	{
-		Serial.println();
-		Serial.println(F("SSDP message received:"));
-		for(unsigned i = 0; i < msg.count(); ++i) {
-			Serial.print(msg[i]);
-		}
-		Serial.println();
-	}
-};
-
-SearchHandler searchHandler;
-
 void initUPnP()
 {
 	//	dumpDescription(vr900Gateway);
@@ -85,18 +61,18 @@ void initUPnP()
 		return;
 	}
 
-	UPnP::deviceHost.registerDevice(&vr900Gateway);
-	UPnP::deviceHost.registerDevice(&avServer);
-	UPnP::deviceHost.registerDevice(&wemo1);
-	UPnP::deviceHost.registerDevice(&wemo2);
+	//	UPnP::deviceHost.registerDevice(&vr900Gateway);
+	//	UPnP::deviceHost.registerDevice(&avServer);
+	//	UPnP::deviceHost.registerDevice(&wemo1);
+	//	UPnP::deviceHost.registerDevice(&wemo2);
 
-	UPnP::deviceHost.registerDevice(&searchHandler);
+	UPnP::deviceHost.registerControlPoint(&deviceFinder);
 
 	auto timer = new AutoDeleteTimer;
 	timer->initializeMs<1000>(InterruptCallback([]() {
 		Serial.println();
 		auto ms = new SSDP::MessageSpec(SSDP::MESSAGE_MSEARCH);
-		ms->object = &searchHandler;
+		ms->object = &deviceFinder;
 		ms->repeat = 2;
 		ms->target = SSDP::TARGET_ROOT; // Will get overridden by our custom search handler
 		SSDP::server.messageQueue.add(ms, 1000);
