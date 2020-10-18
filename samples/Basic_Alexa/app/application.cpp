@@ -78,11 +78,7 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	 */
 	auto Name = [](unsigned id) -> String {
 		String s;
-#ifdef ARCH_HOST
-		s += "Host";
-#else
-		s += "Esp";
-#endif
+		s += MACROQUOTE(SMING_ARCH);
 		s += '-';
 		s += id;
 		return s;

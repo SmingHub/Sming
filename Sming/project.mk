@@ -68,7 +68,11 @@ CONFIG_VARS			+= USER_CFLAGS
 
 # CFLAGS exported for every Component to use whilst building, including any CUSTOM_TARGETS
 DEBUG_VARS			+= GLOBAL_CFLAGS
-GLOBAL_CFLAGS			= $(USER_CFLAGS) -DPROJECT_DIR=\"$(PROJECT_DIR)\" -DSMING_HOME=\"$(SMING_HOME)\"
+GLOBAL_CFLAGS = \
+	-DSMING_ARCH=$(SMING_ARCH) \
+	-DPROJECT_DIR=\"$(PROJECT_DIR)\" \
+	-DSMING_HOME=\"$(SMING_HOME)\" \
+	$(USER_CFLAGS)
 CPPFLAGS			+= $(GLOBAL_CFLAGS)
 
 # Targets to be added as dependencies of the application, built directly in this make instance
