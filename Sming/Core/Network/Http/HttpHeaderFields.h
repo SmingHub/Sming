@@ -27,6 +27,7 @@
  *
  */
 #define HTTP_HEADER_FIELDNAME_MAP(XX)                                                                                  \
+	XX(ACCEPT, "Accept", "Limit acceptable response types")                                                            \
 	XX(ACCESS_CONTROL_ALLOW_ORIGIN, "Access-Control-Allow-Origin", "")                                                 \
 	XX(AUTHORIZATION, "Authorization", "Basic user agent authentication")                                              \
 	XX(CC, "Cc", "email field")                                                                                        \
