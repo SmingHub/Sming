@@ -13,16 +13,17 @@
 #pragma once
 
 #include "HttpCommon.h"
+#include "HttpHeaderFields.h"
 
 /**
  * @brief Parse array of name/value pairs as references to original data
  * @note When parsing a fixed block of text we don't need to make copies of the content,
  * just nul-terminate the elements and build a list of references.
  */
-class BasicHttpHeaders
+class BasicHttpHeaders : public HttpHeaderFields
 {
 public:
-	// Uses a array...
+	// Uses an array...
 	static constexpr size_t maxValues = 16;
 
 	// ...of these
@@ -100,7 +101,17 @@ public:
 	 */
 	const char* operator[](const char* name) const;
 
+	const char* operator[](HttpHeaderFieldName name) const
+	{
+		return operator[](HttpHeaderFields::toString(name).c_str());
+	}
+
 	bool contains(const char* name) const
+	{
+		return operator[](name) != nullptr;
+	}
+
+	bool contains(HttpHeaderFieldName name) const
 	{
 		return operator[](name) != nullptr;
 	}
