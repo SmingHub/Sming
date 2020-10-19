@@ -98,7 +98,7 @@ public:
 	void handleAction(ActionInfo& info) override;
 
 private:
-	int systemUpdateId = 1;
+	int systemUpdateId{1};
 };
 
 class Server : public RootDevice

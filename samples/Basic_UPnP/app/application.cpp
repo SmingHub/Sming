@@ -22,7 +22,7 @@ namespace
 {
 NtpClient* ntpClient;
 HttpServer server;
-TeaPot teapot;
+TeaPot teapot(1);
 VR900::GatewayDevice vr900Gateway;
 AV::Server avServer;
 DeviceFinder deviceFinder;

@@ -3,7 +3,7 @@
 class TeaPot : public UPnP::RootDevice
 {
 public:
-	TeaPot()
+	TeaPot(uint8_t id) : id_(id)
 	{
 	}
 
@@ -28,10 +28,19 @@ public:
 			return F("1");
 		case Field::serialNumber:
 			return F("12345678");
-		case Field::baseURL:
-			return F("/teapot/"); // Serve up any files at this location
+		case Field::baseURL: {
+			// Ensure URL is unique if there are multiple devices
+			String s;
+			s += F("/teapot/");
+			s += id_;
+			s += '/';
+			return s;
+		}
 		default:
 			return RootDevice::getField(desc);
 		}
 	}
+
+private:
+	uint8_t id_;
 };
