@@ -16,14 +16,14 @@
 
 #pragma once
 
-#include <IpAddress.h>
+#include <Network/IpConnection.h>
 
 class UdpConnection;
 
 typedef Delegate<void(UdpConnection& connection, char* data, int size, IpAddress remoteIP, uint16_t remotePort)>
 	UdpConnectionDataDelegate;
 
-class UdpConnection
+class UdpConnection : public IpConnection
 {
 public:
 	UdpConnection()
