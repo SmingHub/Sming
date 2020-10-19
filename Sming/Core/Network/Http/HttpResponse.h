@@ -141,10 +141,21 @@ public:
 	}
 
 	/**
-	 * @brief Tries to present a readable version of the current request values
+	 * @brief Tries to present a readable version of the current response values
 	 * @retval String
 	 */
-	String toString();
+	String toString()
+	{
+		return toString(*this);
+	}
+
+	/**
+	 * @brief Tries to present a readable version of the response
+	 * @param res
+	 *
+	 * @retval String
+	 */
+	String toString(const HttpResponse& res);
 
 private:
 	void setStream(IDataSourceStream* stream);
