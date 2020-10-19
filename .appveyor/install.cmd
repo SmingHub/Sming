@@ -1,7 +1,7 @@
 REM Windows install script
 
 rmdir /s /q c:\MinGW
-curl -LO %SMINGTOOLS%/MinGW.7z
+curl -LO %SMINGTOOLS%/MinGW-2020-10-19.7z
 7z -oC:\ x MinGW.7z
 
 goto :%SMING_ARCH%
