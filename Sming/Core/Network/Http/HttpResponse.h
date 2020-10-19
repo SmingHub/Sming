@@ -140,6 +140,12 @@ public:
 		return (code >= HTTP_STATUS_OK && code <= 399);
 	}
 
+	/**
+	 * @brief Tries to present a readable version of the current request values
+	 * @retval String
+	 */
+	String toString();
+
 private:
 	void setStream(IDataSourceStream* stream);
 

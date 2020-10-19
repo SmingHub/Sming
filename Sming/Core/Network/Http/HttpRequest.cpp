@@ -83,11 +83,10 @@ void HttpRequest::reset()
 	files.clear();
 }
 
-#ifndef SMING_RELEASE
 String HttpRequest::toString()
 {
 	String content;
-	content += String(http_method_str(method)) + ' ' + uri.getPathWithQuery() + _F(" HTTP/1.1\n");
+	content += String(http_method_str(method)) + ' ' + uri.getPathWithQuery() + _F(" HTTP/1.1\r\n");
 	content += headers.toString(HTTP_HEADER_HOST, uri.getHostWithPort());
 	for(unsigned i = 0; i < headers.count(); i++) {
 		content += headers[i];
@@ -95,8 +94,9 @@ String HttpRequest::toString()
 
 	if(bodyStream != nullptr && bodyStream->available() >= 0) {
 		content += headers.toString(HTTP_HEADER_CONTENT_LENGTH, String(bodyStream->available()));
+	} else {
+		content += _F("\r\n");
 	}
 
 	return content;
 }
-#endif

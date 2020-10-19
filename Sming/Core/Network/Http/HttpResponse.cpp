@@ -140,6 +140,23 @@ void HttpResponse::reset()
 	freeStreams();
 }
 
+String HttpResponse::toString()
+{
+	String content;
+	content += F("HTTP/1.1 ") + String(code) + F(" ") + httpGetStatusText(code) + F(" \r\n");
+	for(unsigned i = 0; i < headers.count(); i++) {
+		content += headers[i];
+	}
+
+	if(stream != nullptr && stream->available() >= 0) {
+		content += headers.toString(HTTP_HEADER_CONTENT_LENGTH, String(stream->available()));
+	} else {
+		content += F("\r\n");
+	}
+
+	return content;
+}
+
 void HttpResponse::freeStreams()
 {
 	// Consistency check
