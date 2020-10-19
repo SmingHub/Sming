@@ -17,6 +17,11 @@
 #include "HttpHeaders.h"
 #include "FileSystem.h"
 
+/**
+ * @brief Represents either an incoming or outgoing response to a HTTP request
+ * @ingroup http
+ *
+ */
 class HttpResponse
 {
 public:

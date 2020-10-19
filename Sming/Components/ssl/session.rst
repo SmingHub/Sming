@@ -11,4 +11,3 @@ Session
    :members:
 
 .. doxygenenum:: MaxBufferSize
-   :members:

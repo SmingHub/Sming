@@ -29,8 +29,10 @@ typedef Delegate<int(HttpConnection& client, HttpResponse& response)> RequestHea
 typedef Delegate<int(HttpConnection& client, const char* at, size_t length)> RequestBodyDelegate;
 typedef Delegate<int(HttpConnection& client, bool successful)> RequestCompletedDelegate;
 
-/*
- * Encapsulates an incoming or outgoing request
+/**
+ * @brief Encapsulates an incoming or outgoing request
+ * @ingroup http
+ *
  */
 class HttpRequest
 {

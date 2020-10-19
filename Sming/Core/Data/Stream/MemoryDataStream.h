@@ -12,7 +12,7 @@
 
 #include "ReadWriteStream.h"
 
-/*
+/**
  * @brief Read/write stream using expandable memory buffer
  *
  * This is intended to allow data to be streamed into it, then streamed back out at a later date.
