@@ -8,15 +8,15 @@
  *
  ****/
 
+#pragma once
+
+#include <Network/IpConnection.h>
+
 /** @defgroup   udp UDP
  *  @brief      Provides base for UDP clients or services
  *  @ingroup    networking
  *  @{
  */
-
-#pragma once
-
-#include <Network/IpConnection.h>
 
 class UdpConnection;
 
