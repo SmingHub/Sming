@@ -92,6 +92,7 @@ enum HttpHeaderFieldName {
  *  Behaviour is as for HashMap, with the addition of methods to support enumerated field names.
  *
  *  @todo add name and/or value escaping
+ *  @ingroup http
  */
 class HttpHeaders : private HashMap<HttpHeaderFieldName, String>
 {

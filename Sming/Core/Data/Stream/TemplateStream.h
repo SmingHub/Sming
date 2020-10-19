@@ -23,8 +23,7 @@
 /**
  * @brief Stream which performs variable-value substitution on-the-fly
  *
- * Template uses {varname} style markers which are replaced as the stream is read
- * using content from a hashmap.
+ * Template uses {varname} style markers which are replaced as the stream is read.
  *
  * @ingroup stream
  */

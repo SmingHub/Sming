@@ -31,8 +31,16 @@
 
 #include "http-parser/http_parser.h"
 
-typedef enum http_method HttpMethod;
+/**
+ * @ingroup http
+ * {
+ */
 
+using HttpMethod = enum http_method;
+
+/**
+ * @brief Identifies current state for an HTTP connection
+ */
 enum HttpConnectionState {
 	eHCS_Ready = 0,
 	eHCS_StartSending,
@@ -75,3 +83,5 @@ static inline String httpGetStatusText(unsigned code)
 {
 	return httpGetStatusText((enum http_status)code);
 }
+
+/** @} */

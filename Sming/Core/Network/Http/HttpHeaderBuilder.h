@@ -12,7 +12,10 @@
 
 #include "HttpHeaders.h"
 
-/** @brief Re-assembles headers from fragments via onHeaderField / onHeaderValue callbacks */
+/**
+ * @brief Re-assembles headers from fragments via onHeaderField / onHeaderValue callbacks
+ * @ingroup http
+ */
 class HttpHeaderBuilder
 {
 public:

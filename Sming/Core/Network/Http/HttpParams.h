@@ -22,10 +22,13 @@
 #include "WHashMap.h"
 #include "Printable.h"
 
-/** @brief
+/**
+ * @brief Handles the query portion of a URI
  *
  *  @todo values stored in escaped form, unescape return value and escape provided values.
  *  Revise HttpBodyParser.cpp as it will no longer do this job.
+ *
+ * @ingroup http
  *
  */
 class HttpParams : public HashMap<String, String>, public Printable

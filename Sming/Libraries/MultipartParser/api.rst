@@ -1,5 +1,7 @@
-MultipartParser API 
+MultipartParser API
 ===================
 
 .. doxygenfunction:: formMultipartParser
+
 .. doxygenclass:: HttpMultipartResource
+   :members:

@@ -14,8 +14,8 @@
 #include "FileSystem.h"
 
 /**
-  * @ingroup stream gdb_syscall
   * @brief GDB File stream class to provide access to host files whilst running under debugger
+  * @ingroup stream gdb_syscall
  */
 class GdbFileStream : public ReadWriteStream
 {

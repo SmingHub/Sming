@@ -8,3 +8,4 @@ Connection API
 
 .. doxygengroup:: udp
    :content-only:
+   :members:

@@ -6,3 +6,4 @@ Core Data Classes
    :maxdepth: 1
 
    *
+   streams/index

@@ -27,6 +27,10 @@ typedef Delegate<int(HttpServerConnection& connection, HttpRequest&, char* at, i
 typedef Delegate<int(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)>
 	HttpResourceDelegate;
 
+/**
+ * @brief Instances of this class are registered with an HttpServer for a specific URL
+ * @ingroup http
+ */
 class HttpResource
 {
 public:

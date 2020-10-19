@@ -39,3 +39,4 @@ API Documentation
 
 .. doxygengroup:: commandhandler
    :content-only:
+   :members:

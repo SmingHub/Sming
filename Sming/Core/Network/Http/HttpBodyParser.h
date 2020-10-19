@@ -15,6 +15,11 @@
 #include "HttpCommon.h"
 #include "HttpRequest.h"
 
+/**
+ * @ingroup http
+ * {
+ */
+
 /** @brief special length values passed to parse functions */
 const int PARSE_DATASTART = -1; ///< Start of incoming data
 const int PARSE_DATAEND = -2;   ///< End of incoming data
@@ -47,3 +52,5 @@ size_t formUrlParser(HttpRequest& request, const char* at, int length);
  * @note The content later can be retrieved by calling request.getBody()
  */
 size_t bodyToStringParser(HttpRequest& request, const char* at, int length);
+
+/** @} */

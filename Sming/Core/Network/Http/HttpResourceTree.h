@@ -19,7 +19,9 @@ typedef Delegate<void(HttpRequest& request, HttpResponse& response)> HttpPathDel
 /** @brief Identifies the default resource path */
 #define RESOURCE_PATH_DEFAULT String('*')
 
-/** @brief Class to map URL paths to classes which handle them
+/**
+ * @brief Class to map URL paths to classes which handle them
+ * @ingroup http
  */
 class HttpResourceTree : public ObjectMap<String, HttpResource>
 {

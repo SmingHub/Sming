@@ -1,0 +1,6 @@
+IDataSourceStream
+=================
+
+.. doxygenclass:: IDataSourceStream
+   :members:
+

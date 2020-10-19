@@ -8,6 +8,7 @@ Connection API
 
 .. doxygengroup:: websocket
    :content-only:
+   :members:
 
 
 Client API
@@ -15,4 +16,4 @@ Client API
 
 .. doxygengroup:: wsclient
    :content-only:
-
+   :members:

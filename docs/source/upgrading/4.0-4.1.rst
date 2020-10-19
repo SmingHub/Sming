@@ -51,3 +51,14 @@ by the application code:
    server.setBodyParser(MIME_FORM_MULTIPART, formMultipartParser);
 
 
+Stream methods
+==============
+
+:pull-request:`1867` added a :cpp:func:`IDataSourceStream::readString(size_t)` method which shadows
+:cpp:func:`Stream::readString`. Its behaviour was also inconsistent in that the stream position
+was left unchanged for memory streams. This has been corrected, and is now a virtual method.
+
+The :c:func:`Stream::readBytes` has been virtualised and overriden for :cpp:class:`IDataSourceStream`
+descendents for more efficient operation, especially with ArduinoJson.
+For normal read operations where the stream position is to be updated, applications should use
+this method in preference to :c:func:`IDataSourceStream::readMemoryBlock`.

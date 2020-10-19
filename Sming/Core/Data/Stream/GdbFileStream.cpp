@@ -11,8 +11,6 @@
 #include "GdbFileStream.h"
 #include <gdb/gdb_syscall.h>
 
-/* GdbFileStream */
-
 bool GdbFileStream::open(const String& fileName, FileOpenFlags openFlags)
 {
 	lastError = 0;
