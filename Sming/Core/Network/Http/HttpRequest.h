@@ -255,13 +255,22 @@ public:
 		return this;
 	}
 
-#ifndef SMING_RELEASE
 	/**
 	 * @brief Tries to present a readable version of the current request values
 	 * @retval String
 	 */
-	String toString();
-#endif
+	String toString()
+	{
+		return toString(*this);
+	}
+
+	/**
+	 * @brief Tries to present a readable version of the request
+	 * @param req
+	 *
+	 * @retval String
+	 */
+	String toString(const HttpRequest& req);
 
 public:
 	Url uri;

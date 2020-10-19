@@ -83,20 +83,23 @@ void HttpRequest::reset()
 	files.clear();
 }
 
-#ifndef SMING_RELEASE
-String HttpRequest::toString()
+String HttpRequest::toString(const HttpRequest& req)
 {
 	String content;
-	content += String(http_method_str(method)) + ' ' + uri.getPathWithQuery() + _F(" HTTP/1.1\n");
-	content += headers.toString(HTTP_HEADER_HOST, uri.getHostWithPort());
-	for(unsigned i = 0; i < headers.count(); i++) {
-		content += headers[i];
+	content += http_method_str(req.method);
+	content += ' ';
+	content += req.uri.getPathWithQuery();
+	content += _F(" HTTP/1.1\r\n");
+	content += req.headers.toString(HTTP_HEADER_HOST, uri.getHostWithPort());
+	for(unsigned i = 0; i < req.headers.count(); i++) {
+		content += req.headers[i];
 	}
 
-	if(bodyStream != nullptr && bodyStream->available() >= 0) {
-		content += headers.toString(HTTP_HEADER_CONTENT_LENGTH, String(bodyStream->available()));
+	if(req.bodyStream != nullptr && req.bodyStream->available() >= 0) {
+		content += req.headers.toString(HTTP_HEADER_CONTENT_LENGTH, String(req.bodyStream->available()));
+	} else {
+		content += "\r\n";
 	}
 
 	return content;
 }
-#endif

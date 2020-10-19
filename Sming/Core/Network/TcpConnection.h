@@ -15,8 +15,8 @@
 
 #pragma once
 
+#include <Network/IpConnection.h>
 #include <Network/Ssl/Session.h>
-#include <IpAddress.h>
 
 #define NETWORK_DEBUG
 
@@ -36,7 +36,7 @@ class TcpConnection;
 
 typedef Delegate<void(TcpConnection&)> TcpConnectionDestroyedDelegate;
 
-class TcpConnection
+class TcpConnection : public IpConnection
 {
 public:
 	TcpConnection(bool autoDestruct) : autoSelfDestruct(autoDestruct)

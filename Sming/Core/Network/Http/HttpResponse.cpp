@@ -140,6 +140,27 @@ void HttpResponse::reset()
 	freeStreams();
 }
 
+String HttpResponse::toString(const HttpResponse& res)
+{
+	String content;
+	content += F("HTTP/1.1 ");
+	content += res.code;
+	content += ' ';
+	content += httpGetStatusText(res.code);
+	content += " \r\n";
+	for(unsigned i = 0; i < res.headers.count(); i++) {
+		content += res.headers[i];
+	}
+
+	if(res.stream != nullptr && res.stream->available() >= 0) {
+		content += res.headers.toString(HTTP_HEADER_CONTENT_LENGTH, String(res.stream->available()));
+	} else {
+		content += "\r\n";
+	}
+
+	return content;
+}
+
 void HttpResponse::freeStreams()
 {
 	// Consistency check
