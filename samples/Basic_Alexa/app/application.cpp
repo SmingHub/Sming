@@ -127,8 +127,8 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	// Monitor and handle requests to authorize or revoke users
 	bridge.onConfigChange([&](const Hue::Bridge::Config& config) {
 		debug_i("%s: deviceType=%s, name=%s",
-				config.type == Hue::Bridge::Config::Type::AuthorizeUser ? "Authorize" : "Revoke", config.deviceType,
-				config.name);
+				config.type == Hue::Bridge::Config::Type::AuthorizeUser ? "Authorize" : "Revoke",
+				config.deviceType.c_str(), config.name.c_str());
 	});
 
 	/*
