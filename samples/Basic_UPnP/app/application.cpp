@@ -1,16 +1,10 @@
 #include <SmingCore.h>
 #include <Network/UPnP/DeviceHost.h>
 #include <Network/SSDP/Server.h>
-#include <DeviceFinder.h>
 #include <TeaPot.h>
-#include <vr900.h>
-#include <AV.h>
 #include <Wemo.h>
+#include <DeviceFinder.h>
 #include <malloc_count.h>
-
-#include "test-desc.h"
-extern void testSoap();
-extern void testSoap2();
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -23,13 +17,9 @@ namespace
 NtpClient* ntpClient;
 HttpServer server;
 TeaPot teapot(1);
-VR900::GatewayDevice vr900Gateway;
-AV::Server avServer;
-DeviceFinder deviceFinder;
-
-//static Wemo::SocketList sockets;
 Wemo::Controllee wemo1(1, "Socket #1");
 Wemo::Controllee wemo2(2, "Socket #2");
+DeviceFinder deviceFinder;
 
 void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
@@ -38,9 +28,12 @@ void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reas
 
 int onHttpRequest(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
+	// Pass the request into the UPnP stack
 	if(UPnP::deviceHost.onHttpRequest(connection)) {
 		return 0;
 	}
+
+	// Not a UPnP request. Handle any application-specific pages here
 
 	Serial.print("Page not found: ");
 	Serial.println(request.uri.Path);
@@ -51,8 +44,7 @@ int onHttpRequest(HttpServerConnection& connection, HttpRequest& request, HttpRe
 
 void initUPnP()
 {
-	//	dumpDescription(vr900Gateway);
-
+	// Configure our HTTP Server to listen for HTTP requests
 	server.listen(80);
 	server.paths.setDefault(onHttpRequest);
 	server.setBodyParser(MIME_JSON, bodyToStringParser);
@@ -63,13 +55,14 @@ void initUPnP()
 		return;
 	}
 
+	// Advertise our Tea Pot
 	UPnP::deviceHost.registerDevice(&teapot);
 
-	//	UPnP::deviceHost.registerDevice(&vr900Gateway);
-	//	UPnP::deviceHost.registerDevice(&avServer);
-	//	UPnP::deviceHost.registerDevice(&wemo1);
-	//	UPnP::deviceHost.registerDevice(&wemo2);
+	// These two devices handle service requests
+	UPnP::deviceHost.registerDevice(&wemo1);
+	UPnP::deviceHost.registerDevice(&wemo2);
 
+	// Simple search for devices
 	UPnP::deviceHost.registerControlPoint(&deviceFinder);
 
 	auto timer = new AutoDeleteTimer;
@@ -106,13 +99,6 @@ void init()
 	Serial.setTxBufferSize(4096);
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true);
-
-	//	dumpDescription(&avServer);
-
-#ifdef ARCH_HOST
-//	system_restart();
-//	return;
-#endif
 
 	WifiStation.enable(true, false);
 	WifiStation.config(WIFI_SSID, WIFI_PWD);

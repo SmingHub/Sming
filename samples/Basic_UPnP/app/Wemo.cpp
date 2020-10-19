@@ -99,9 +99,6 @@ String Controllee::getField(Field desc)
 		return s;
 	}
 
-	case Field::presentationURL:
-		return F("index.html");
-
 	case Field::baseURL: {
 		String url = RootDevice::getField(desc);
 		url += _F("wemo/");
