@@ -3,6 +3,7 @@
 #include <Hue/Bridge.h>
 #include <Hue/DeviceList.h>
 #include <Hue/ColourDevice.h>
+#include <MyHueDevice.h>
 #include <malloc_count.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
@@ -101,13 +102,15 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	devices.addElement(new Hue::ColourDevice(54321, Name(54321)));
 	devices.addElement(new Hue::ColourDevice(0x7FFFFFFF, Name(0x7FFFFFFF)));
 
+	devices.addElement(new MyHueDevice(666, F("My Custom Hue Device")));
+
 	// Connect the LED pin to light 101
-	digitalWrite(LED_PIN, HIGH); // Turn off - state is inverted
 	pinMode(LED_PIN, OUTPUT);
+	digitalWrite(LED_PIN, HIGH); // Turn off - state is inverted
 
 	// Monitor when device attributes change
 	bridge.onStateChanged([&](const Hue::Device& device, Hue::Device::Attributes attr) {
-		debug_i("#%u %s changed [%s]", device.getId(), device.getName().c_str(), toString(attr));
+		debug_i("#%u %s changed [%s]", device.getId(), device.getName().c_str(), toString(attr).c_str());
 
 		/*
 		 * Control the LED pin
@@ -126,8 +129,6 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 		debug_i("%s: deviceType=%s, name=%s",
 				config.type == Hue::Bridge::Config::Type::AuthorizeUser ? "Authorize" : "Revoke", config.deviceType,
 				config.name);
-
-		bridge.configure(config);
 	});
 
 	/*
