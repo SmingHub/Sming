@@ -13,22 +13,38 @@
 #include "ReadWriteStream.h"
 
 /**
- * @brief Memory stream that stores limited number of bytes
- *
- * Once the limit is reached the stream will discard incoming bytes on write
+ * @brief Memory stream operating on fixed-size buffer
+ * 		  Once the limit is reached the stream will discard incoming bytes on write
  *
  * @ingroup stream
  */
 class LimitedMemoryStream : public ReadWriteStream
 {
 public:
-	LimitedMemoryStream(size_t length) : buffer(new uint8_t[length]), length(length)
+	/** @brief Constructor for use with pre-existing buffer
+	 *  @param buffer
+	 *  @param length Size of buffer
+	 *  @param available How much valid data already present in buffer
+	 *  @param owned If true, buffer will be freed when this stream is destroyed
+	 */
+	LimitedMemoryStream(void* buffer, size_t length, size_t available, bool owned)
+		: owned(owned), buffer(static_cast<char*>(buffer)), capacity(length),
+		  writePos(available <= length ? available : length)
+	{
+	}
+
+	/** @brief Constructor to allocate internal buffer for use
+	 *  @param length Size of buffer
+	 */
+	LimitedMemoryStream(size_t length) : LimitedMemoryStream(new uint8_t[length], length, 0, true)
 	{
 	}
 
 	~LimitedMemoryStream()
 	{
-		delete[] buffer;
+		if(owned) {
+			delete[] buffer;
+		}
 	}
 
 	StreamType getStreamType() const override
@@ -49,12 +65,15 @@ public:
 
 	bool isFinished() override
 	{
-		return (readPos >= length);
+		return (readPos >= capacity);
 	}
 
+	bool moveString(String& s) override;
+
 private:
-	uint8_t* buffer = nullptr;
-	size_t writePos = 0;
-	size_t readPos = 0;
-	size_t length = 0;
+	bool owned;
+	char* buffer;
+	size_t capacity;
+	size_t writePos{0};
+	size_t readPos{0};
 };
