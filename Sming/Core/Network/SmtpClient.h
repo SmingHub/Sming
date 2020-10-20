@@ -114,7 +114,7 @@ public:
 	 * @{
 	 */
 	bool send(const String& from, const String& to, const String& subject, const String& body);
-	bool send(const String& from, const String& to, const String& subject, String&& body);
+	bool send(const String& from, const String& to, const String& subject, String&& body) noexcept;
 	/** @} */
 
 	/**

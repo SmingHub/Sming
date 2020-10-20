@@ -47,7 +47,7 @@ MailMessage& MailMessage::setBody(const String& body, MimeType mime)
 	return setBody(memory, mime);
 }
 
-MailMessage& MailMessage::setBody(String&& body, MimeType mime)
+MailMessage& MailMessage::setBody(String&& body, MimeType mime) noexcept
 {
 	auto memory = new MemoryDataStream(std::move(body));
 	return setBody(memory, mime);

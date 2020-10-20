@@ -201,7 +201,7 @@ public:
 		return setBody(reinterpret_cast<const uint8_t*>(body.c_str()), body.length());
 	}
 
-	HttpRequest* setBody(String&& body);
+	HttpRequest* setBody(String&& body) noexcept;
 
 	HttpRequest* setBody(IDataSourceStream* stream);
 

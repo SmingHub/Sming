@@ -32,7 +32,7 @@ public:
 
 	bool sendString(const String& text);
 
-	bool sendString(String&& text);
+	bool sendString(String&& text) noexcept;
 
 	/**
 	 * @deprecated Use `headers.contains()` instead

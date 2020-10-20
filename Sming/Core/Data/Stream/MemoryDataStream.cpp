@@ -10,7 +10,7 @@
 
 #include "MemoryDataStream.h"
 
-MemoryDataStream::MemoryDataStream(String&& string)
+MemoryDataStream::MemoryDataStream(String&& string) noexcept
 {
 	auto buf = string.getBuffer();
 	buffer = buf.data;

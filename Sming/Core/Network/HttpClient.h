@@ -59,7 +59,7 @@ public:
 	}
 
 	bool sendRequest(const HttpMethod method, const Url& url, const HttpHeaders& headers, String&& body,
-					 RequestCompletedDelegate requestComplete)
+					 RequestCompletedDelegate requestComplete) noexcept
 	{
 		return send(createRequest(url)
 						->setMethod(method)

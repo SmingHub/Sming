@@ -36,7 +36,7 @@ String::String(const char* cstr) : String()
 }
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-String::String(StringSumHelper&& rval) : String()
+String::String(StringSumHelper&& rval) noexcept : String()
 {
 	move(rval);
 }
@@ -331,7 +331,7 @@ String& String::operator=(const String& rhs)
 }
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-String& String::operator=(StringSumHelper&& rval)
+String& String::operator=(StringSumHelper&& rval) noexcept
 {
 	if(this != &rval) {
 		move(rval);

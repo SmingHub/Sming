@@ -31,7 +31,7 @@ public:
 	/**
 	 * @brief Stream takes ownership of String content using move semantics
 	 */
-	MemoryDataStream(String&& string);
+	MemoryDataStream(String&& string) noexcept;
 
 	~MemoryDataStream()
 	{

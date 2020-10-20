@@ -184,11 +184,11 @@ public:
 	}
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-	String(String&& rval) : String()
+	String(String&& rval) noexcept : String()
 	{
 		move(rval);
 	}
-	String(StringSumHelper&& rval);
+	String(StringSumHelper&& rval) noexcept;
 #endif
 	explicit String(char c);
 	explicit String(unsigned char, unsigned char base = 10);
@@ -294,13 +294,13 @@ public:
      * @{
      */
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-	String& operator=(String&& rval)
+	String& operator=(String&& rval) noexcept
 	{
 		if(this != &rval)
 			move(rval);
 		return *this;
 	}
-	String& operator=(StringSumHelper&& rval);
+	String& operator=(StringSumHelper&& rval) noexcept;
 #endif
 	/** @} */
 

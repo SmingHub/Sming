@@ -98,7 +98,7 @@ bool SmtpClient::send(const String& from, const String& to, const String& subjec
 	return send(mail);
 }
 
-bool SmtpClient::send(const String& from, const String& to, const String& subject, String&& body)
+bool SmtpClient::send(const String& from, const String& to, const String& subject, String&& body) noexcept
 {
 	MailMessage* mail = new MailMessage();
 

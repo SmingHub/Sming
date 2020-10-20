@@ -66,7 +66,7 @@ public:
 	 * @param mime
 	 * @retval MailMessage&
 	 */
-	MailMessage& setBody(String&& body, MimeType mime = MIME_TEXT);
+	MailMessage& setBody(String&& body, MimeType mime = MIME_TEXT) noexcept;
 
 	/**
 	 * @brief Sets the body of the email

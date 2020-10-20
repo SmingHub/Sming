@@ -64,7 +64,7 @@ bool HttpResponse::sendString(const String& text)
 	return memoryStream->print(text) == text.length();
 }
 
-bool HttpResponse::sendString(String&& text)
+bool HttpResponse::sendString(String&& text) noexcept
 {
 	auto memoryStream = new MemoryDataStream(std::move(text));
 	if(memoryStream == nullptr) {
