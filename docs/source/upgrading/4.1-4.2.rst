@@ -1,0 +1,34 @@
+*****************
+From v4.1 to v4.2
+*****************
+
+.. highlight:: c++
+
+
+Summary
+=======
+
+
+Stream methods
+--------------
+
+The :c:func:`Stream::readBytes` has been virtualised and overriden for :cpp:class:`IDataSourceStream`
+descendents for more efficient operation, especially with ArduinoJson.
+For normal read operations where the stream position is to be updated, applications should use
+this method in preference to :c:func:`IDataSourceStream::readMemoryBlock`.
+
+An addition method :cpp:func:`IDataSourceStream::moveString` has been added to support extracting
+the content of a memory-based stream into a String object without duplicating the data.
+This is supported by :cpp:class:`LimitedMemoryStream` and :cpp:class:`MemoryDataStream`.
+
+
+getBody methods
+---------------
+
+A ``size_t`` parameter has been added to :cpp:func:`HttpRequest::getBody` and :cpp:func:`HttpResponse::getBody`.
+This is to restrict the amount of memory which might be allocated to the returned :cpp:class:`String` object.
+
+This can be used to help mitigate memory-overflow attacks.
+You should generally choose a value no greater than absolutely necessary for the expected body size.
+
+For larger amounts of data use :cpp:func:`HttpResponse::getBodyStream` instead.
