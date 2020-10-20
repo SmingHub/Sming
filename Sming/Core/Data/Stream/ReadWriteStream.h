@@ -39,5 +39,5 @@ public:
      *  @param  size Quantity of chars to write, determines size of intermediate buffer to use
      *  @retval size_t Quantity of chars actually written, may be less than requested
      */
-	virtual size_t copyFrom(IDataSourceStream* source, size_t size);
+	virtual size_t copyFrom(IDataSourceStream* source, size_t size = SIZE_MAX);
 };

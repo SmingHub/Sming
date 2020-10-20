@@ -16,7 +16,7 @@ int onDownload(HttpConnection& connection, bool success)
 	debugf("Got response code: %d", connection.getResponse()->code);
 	debugf("Success: %d", success);
 	if(connection.getRequest()->method != HTTP_HEAD) {
-		debugf("Got content starting with: %s", connection.getResponse()->getBody().substring(0, 1000).c_str());
+		debugf("Got content starting with: %s", connection.getResponse()->getBody(1000).c_str());
 	}
 
 	auto ssl = connection.getSsl();

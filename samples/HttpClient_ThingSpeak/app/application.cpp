@@ -17,7 +17,7 @@ int onDataSent(HttpConnection& client, bool successful)
 	else
 		Serial.println("Failed");
 
-	String response = client.getResponse()->getBody();
+	String response = client.getResponse()->getBody(256);
 	Serial.println("Server response: '" + response + "'");
 	if(response.length() > 0) {
 		int intVal = response.toInt();

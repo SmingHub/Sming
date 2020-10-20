@@ -14,12 +14,12 @@ void onConfiguration(HttpRequest& request, HttpResponse& response)
 	if(request.method == HTTP_POST) {
 		debugf("Update config");
 		// Update config
-		if(request.getBody() == nullptr) {
+		if(request.getBodyStream() == nullptr) {
 			debugf("NULL bodyBuf");
 			return;
 		} else {
 			StaticJsonBuffer<ConfigJsonBufferSize> jsonBuffer;
-			JsonObject& root = jsonBuffer.parseObject(request.getBody());
+			JsonObject& root = jsonBuffer.parseObject(*request.getBodyStream());
 			root.prettyPrintTo(Serial); //Uncomment it for debuging
 
 			if(root["StaSSID"].success()) // Settings

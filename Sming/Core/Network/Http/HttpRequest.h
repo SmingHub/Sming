@@ -168,14 +168,19 @@ public:
 
 	/**
 	 * @brief Returns content from the body stream as string.
+	 * @param maxLen Limit size of returned String
 	 * @retval String
-	 *
-	 * @note This method consumes the stream and it will work only with text data.
-	 * 		 If you have binary data in the stream use getBodyStream instead.
-	 *
+	 * @note This method consumes the stream
 	 * @note Allocation of String doubles amount of memory required, so use with care.
 	 */
-	String getBody();
+	String getBody(size_t maxLen)
+	{
+		if(bodyStream == nullptr) {
+			return nullptr;
+		}
+
+		return bodyStream->readString(maxLen);
+	}
 
 	/**
 	 * @brief Return the current body stream
