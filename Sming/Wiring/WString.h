@@ -234,6 +234,30 @@ public:
 	}
 
 	/**
+     * @brief Used with setBuffer and getBuffer methods
+     */
+	struct Buffer {
+		char* data;	///< Allocated using malloc
+		size_t size;   ///< Size of memory allocation
+		size_t length; ///< Length of content, MUST be < size
+	};
+
+	/**
+     * @brief Set String content using move semantics from external memory buffer
+     * @param buffer We'll take ownership of this buffer
+     * @retval bool true on success; on failure, ownership of buffer is not transferred
+     * @note length MUST be < `size` - A NUL character is written at this location
+     */
+	bool setBuffer(const Buffer& buffer);
+
+	/**
+     * @brief Get String content using move semantics
+     * @retval Buffer
+     * @note String is invalidated by this call. Caller is responsible for buffer memory.
+     */
+	Buffer getBuffer();
+
+	/**
      * @name Copy operators
      *
      * If the value is null or invalid, or if the memory allocation fails,

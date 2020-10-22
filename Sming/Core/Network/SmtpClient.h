@@ -111,8 +111,11 @@ public:
 	 * @param body The body in plain text format
 	 *
 	 * @retval bool true when the message was queued successfully, false otherwise
+	 * @{
 	 */
 	bool send(const String& from, const String& to, const String& subject, const String& body);
+	bool send(const String& from, const String& to, const String& subject, String&& body);
+	/** @} */
 
 	/**
 	 * @brief Powerful method to queues a single message before it is sent later to the SMTP server

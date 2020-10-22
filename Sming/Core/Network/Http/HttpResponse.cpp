@@ -64,6 +64,16 @@ bool HttpResponse::sendString(const String& text)
 	return memoryStream->print(text) == text.length();
 }
 
+bool HttpResponse::sendString(String&& text)
+{
+	auto memoryStream = new MemoryDataStream(std::move(text));
+	if(memoryStream == nullptr) {
+		return false;
+	}
+	setStream(memoryStream);
+	return true;
+}
+
 bool HttpResponse::sendFile(const String& fileName, bool allowGzipFileCheck)
 {
 	IDataSourceStream* stream = nullptr;

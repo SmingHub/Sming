@@ -98,6 +98,18 @@ bool SmtpClient::send(const String& from, const String& to, const String& subjec
 	return send(mail);
 }
 
+bool SmtpClient::send(const String& from, const String& to, const String& subject, String&& body)
+{
+	MailMessage* mail = new MailMessage();
+
+	mail->to = to;
+	mail->from = from;
+	mail->subject = subject;
+	mail->setBody(std::move(body));
+
+	return send(mail);
+}
+
 MailMessage* SmtpClient::getCurrentMessage()
 {
 	return outgoingMail;

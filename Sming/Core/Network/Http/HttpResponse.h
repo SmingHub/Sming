@@ -32,6 +32,8 @@ public:
 
 	bool sendString(const String& text);
 
+	bool sendString(String&& text);
+
 	/**
 	 * @deprecated Use `headers.contains()` instead
 	 */

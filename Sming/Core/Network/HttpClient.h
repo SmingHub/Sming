@@ -58,6 +58,16 @@ public:
 			requestComplete));
 	}
 
+	bool sendRequest(const HttpMethod method, const Url& url, const HttpHeaders& headers, String&& body,
+					 RequestCompletedDelegate requestComplete)
+	{
+		return send(createRequest(url)
+						->setMethod(method)
+						->setHeaders(headers)
+						->setBody(std::move(body))
+						->onRequestComplete(requestComplete));
+	}
+
 	/**
 	 * @brief Queue request to download content as string (in memory)
 	 * @param url URL from which the content will be fetched

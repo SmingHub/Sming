@@ -198,6 +198,44 @@ bool String::reserve(size_t size)
 	return true;
 }
 
+String::Buffer String::getBuffer()
+{
+	String::Buffer buf;
+	if(sso.set) {
+		buf.size = sso.len + 1;
+		buf.length = sso.len;
+		buf.data = static_cast<char*>(malloc(buf.size));
+		memcpy(buf.data, sso.buffer, sso.len);
+		buf.data[sso.len] = '\0';
+	} else {
+		buf.data = ptr.buffer;
+		buf.size = ptr.capacity + 1;
+		buf.length = ptr.len;
+	}
+	sso.set = false;
+	ptr.buffer = nullptr;
+	ptr.capacity = 0;
+	ptr.len = 0;
+
+	return buf;
+}
+
+bool String::setBuffer(const Buffer& buffer)
+{
+	invalidate();
+	if(buffer.data == nullptr || buffer.size == 0) {
+		return true;
+	}
+	if(buffer.length >= buffer.size) {
+		return false;
+	}
+	ptr.capacity = buffer.size - 1;
+	ptr.len = buffer.length;
+	ptr.buffer = buffer.data;
+	ptr.buffer[ptr.len] = '\0';
+	return true;
+}
+
 /*********************************************/
 /*  Copy and Move                            */
 /*********************************************/

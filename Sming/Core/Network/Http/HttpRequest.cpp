@@ -57,6 +57,11 @@ HttpRequest* HttpRequest::setBody(const uint8_t* rawData, size_t length)
 	return setBody(memory);
 }
 
+HttpRequest* HttpRequest::setBody(String&& body)
+{
+	return setBody(new MemoryDataStream(std::move(body)));
+}
+
 HttpRequest* HttpRequest::setBody(IDataSourceStream* stream)
 {
 	if(bodyStream != nullptr) {

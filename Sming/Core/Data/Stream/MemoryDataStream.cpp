@@ -10,6 +10,14 @@
 
 #include "MemoryDataStream.h"
 
+MemoryDataStream::MemoryDataStream(String&& string)
+{
+	auto buf = string.getBuffer();
+	buffer = buf.data;
+	size = buf.length;
+	capacity = buf.size;
+}
+
 bool MemoryDataStream::ensureCapacity(size_t minCapacity)
 {
 	if(capacity < minCapacity) {

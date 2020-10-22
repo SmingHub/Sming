@@ -193,9 +193,10 @@ public:
 	 */
 	HttpRequest* setBody(const String& body)
 	{
-		setBody(reinterpret_cast<const uint8_t*>(body.c_str()), body.length());
-		return this;
+		return setBody(reinterpret_cast<const uint8_t*>(body.c_str()), body.length());
 	}
+
+	HttpRequest* setBody(String&& body);
 
 	HttpRequest* setBody(IDataSourceStream* stream);
 

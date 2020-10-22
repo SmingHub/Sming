@@ -58,9 +58,11 @@ void onConnected(IpAddress ip, IpAddress mask, IpAddress gateway)
 	mail->from = MAIL_FROM;
 	mail->to = MAIL_TO;
 	mail->subject = "Greetings from Sming";
-	mail->setBody("Hello.\r\n.\r\n"
-				  "This is test email from Sming <https://github.com/SmingHub/Sming>"
-				  "It contains attachment, Ümlauts, кирилица + etc");
+	String body = F("Hello.\r\n.\r\n"
+					"This is test email from Sming <https://github.com/SmingHub/Sming>"
+					"It contains attachment, Ümlauts, кирилица + etc");
+	// Note: Body can be quite large so use move semantics to avoid additional heap allocation
+	mail->setBody(std::move(body));
 
 	FileStream* file = new FileStream("image.png");
 	mail->addAttachment(file);
