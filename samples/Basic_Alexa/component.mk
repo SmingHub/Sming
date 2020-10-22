@@ -1,3 +1,0 @@
-DISABLE_SPIFFS := 1
-ARDUINO_LIBRARIES := HueEmulator
-COMPONENT_DEPENDS := malloc_count
