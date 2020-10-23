@@ -25,10 +25,8 @@ This is supported by :cpp:class:`LimitedMemoryStream` and :cpp:class:`MemoryData
 getBody methods
 ---------------
 
-A ``size_t`` parameter has been added to :cpp:func:`HttpRequest::getBody` and :cpp:func:`HttpResponse::getBody`.
-This is to restrict the amount of memory which might be allocated to the returned :cpp:class:`String` object.
+The :cpp:func:`HttpRequest::getBody` and :cpp:func:`HttpResponse::getBody` methods have been revised to use
+move semantics. Previously, the data was copied into a new String which effectively doubled memory usage.
 
-This can be used to help mitigate memory-overflow attacks.
-You should generally choose a value no greater than absolutely necessary for the expected body size.
-
-For larger amounts of data use :cpp:func:`HttpResponse::getBodyStream` instead.
+If you have set a non-memory stream type (e.g. :cpp:class:`FileStream`) which does not implement `:cpp:func:`IDataSourceStream::moveString()`
+then an invalid String will be returned. In this situation you should use :cpp:func:`HttpResponse::getBodyStream` instead.

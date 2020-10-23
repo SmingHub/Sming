@@ -16,7 +16,14 @@ int onDownload(HttpConnection& connection, bool success)
 	debugf("Got response code: %d", connection.getResponse()->code);
 	debugf("Success: %d", success);
 	if(connection.getRequest()->method != HTTP_HEAD) {
-		debugf("Got content starting with: %s", connection.getResponse()->getBody(1000).c_str());
+		Serial.print(_F("Got content: "));
+		auto stream = connection.getResponse()->stream;
+		if(stream == nullptr || stream->available() == 0) {
+			Serial.println("EMPTY!");
+		} else {
+			Serial.copyFrom(stream);
+			Serial.println();
+		}
 	}
 
 	auto ssl = connection.getSsl();

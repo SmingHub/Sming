@@ -120,18 +120,19 @@ public:
 	bool sendDataStream(IDataSourceStream* newDataStream, const String& reqContentType = nullptr);
 
 	/**
-	 * @brief Get response body as a string
-	 * @param maxLen Limit size of returned String
+	 * @brief Moves content from the body stream into a String.
 	 * @retval String
-	 * @note Use with caution if response is large
+	 * @note Move semantics are used to ensure that no/minimal additional memory is required.
+	 * If your application has set a non-memory stream type then the method will
+	 * fail and return an invalid String. The stream content will be left unchanged.
 	 */
-	String getBody(size_t maxLen)
+	String getBody()
 	{
-		if(stream == nullptr) {
-			return nullptr;
+		String s;
+		if(stream != nullptr) {
+			stream->moveString(s);
 		}
-
-		return stream->readString(maxLen);
+		return s;
 	}
 
 	/**
