@@ -84,7 +84,7 @@ public:
 			copyFrom(rhv);
 		return *this;
 	}
-	const Vector<Element>& operator=(const Vector<Element>&& other) // move assignment
+	const Vector<Element>& operator=(const Vector<Element>&& other)  noexcept // move assignment
 	{
 		if(_data != nullptr) {
 			removeAllElements();

@@ -32,6 +32,8 @@ public:
 
 	bool sendString(const String& text);
 
+	bool sendString(String&& text) noexcept;
+
 	/**
 	 * @deprecated Use `headers.contains()` instead
 	 */
@@ -119,10 +121,18 @@ public:
 
 	/**
 	 * @brief Get response body as a string
+	 * @param maxLen Limit size of returned String
 	 * @retval String
 	 * @note Use with caution if response is large
 	 */
-	String getBody();
+	String getBody(size_t maxLen)
+	{
+		if(stream == nullptr) {
+			return nullptr;
+		}
+
+		return stream->readString(maxLen);
+	}
 
 	/**
 	 * @brief reset response so it can be re-used

@@ -57,6 +57,8 @@ public:
 		return getStreamType() != eSST_Invalid;
 	}
 
+	size_t readBytes(char* buffer, size_t length) override;
+
 	/** @brief  Read a block of memory
      *  @param  data Pointer to the data to be read
      *  @param  bufSize Quantity of chars to read
@@ -161,7 +163,27 @@ public:
 
 	/**
 	 * @brief Overrides Stream method for more efficient reading
-	 * @note Content is read using `readMemoryBlock()` so read position (for seekable streams) is not changed
+	 * @note Stream position is updated by this call
 	 */
-	String readString(size_t maxLen = UINT16_MAX);
+	String readString(size_t maxLen) override;
+
+	/**
+	 * @brief Memory-based streams may be able to move content into a String
+	 * @param s String object to move data into
+	 * @retval bool true on success, false if there's a problem.
+	 *
+	 * If the operation is not supported by the stream, `s` will be invalidated and false returned.
+	 *
+	 * Because a String object must have a NUL terminator, this will be appended if there is
+	 * sufficient capacity. In this case, the method returns true.
+	 *
+	 * If there is no capacity to add a NUL terminator, then the final character of stream data
+	 * will be replaced with a NUL. The method returns false to indicate this.
+	 *
+	 */
+	virtual bool moveString(String& s)
+	{
+		s = nullptr;
+		return false;
+	};
 };

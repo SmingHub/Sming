@@ -118,7 +118,7 @@ size_t bodyToStringParser(HttpRequest& request, const char* at, int length)
 	}
 
 	if(length == PARSE_DATAEND || length < 0) {
-		request.setBody(*data);
+		request.setBody(std::move(*data));
 		delete data;
 		request.args = nullptr;
 		return 0;

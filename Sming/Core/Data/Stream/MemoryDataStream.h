@@ -11,6 +11,7 @@
 #pragma once
 
 #include "ReadWriteStream.h"
+#include <WString.h>
 
 /**
  * @brief Read/write stream using expandable memory buffer
@@ -25,6 +26,13 @@
 class MemoryDataStream : public ReadWriteStream
 {
 public:
+	MemoryDataStream() = default;
+
+	/**
+	 * @brief Stream takes ownership of String content using move semantics
+	 */
+	MemoryDataStream(String&& string) noexcept;
+
 	~MemoryDataStream()
 	{
 		free(buffer);
@@ -69,6 +77,8 @@ public:
 	{
 		return readPos >= size;
 	}
+
+	bool moveString(String& s) override;
 
 	/**
 	 * @brief Pre-allocate stream to given size

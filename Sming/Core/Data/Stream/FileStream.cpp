@@ -56,19 +56,32 @@ void FileStream::close()
 	lastError = SPIFFS_OK;
 }
 
-uint16_t FileStream::readMemoryBlock(char* data, int bufSize)
+size_t FileStream::readBytes(char* buffer, size_t length)
 {
-	if(data == nullptr || bufSize <= 0 || pos >= size) {
+	if(buffer == nullptr || length == 0 || pos >= size) {
 		return 0;
 	}
 
-	int available = fileRead(handle, data, std::min(size - pos, size_t(bufSize)));
-	(void)check(available);
+	int available = fileRead(handle, buffer, std::min(size - pos, length));
+	if(!check(available)) {
+		return 0;
+	}
 
-	// Don't move cursor now (waiting seek)
-	(void)fileSeek(handle, pos, eSO_FileStart);
+	pos += size_t(available);
 
-	return available > 0 ? available : 0;
+	return available;
+}
+
+uint16_t FileStream::readMemoryBlock(char* data, int bufSize)
+{
+	assert(bufSize >= 0);
+	size_t startPos = pos;
+	size_t count = readBytes(data, bufSize);
+
+	// Move cursor back to start position
+	(void)fileSeek(handle, startPos, eSO_FileStart);
+
+	return count;
 }
 
 size_t FileStream::write(const uint8_t* buffer, size_t size)

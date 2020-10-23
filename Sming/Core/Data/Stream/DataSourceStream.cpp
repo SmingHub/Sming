@@ -30,17 +30,24 @@ int IDataSourceStream::peek()
 	return -1;
 }
 
+size_t IDataSourceStream::readBytes(char* buffer, size_t length)
+{
+	auto count = readMemoryBlock(buffer, length);
+	if(count > 0) {
+		seek(count);
+	}
+	return count;
+}
+
 String IDataSourceStream::readString(size_t maxLen)
 {
-	int avail = available();
-	if(avail < 0) {
-		return nullptr;
-	}
+	size_t avail = available();
+	size_t len = std::min(avail, maxLen);
 
 	String s;
-	size_t len = std::min(size_t(avail), maxLen);
 	if(s.setLength(len)) {
-		readMemoryBlock(s.begin(), len);
+		len = readBytes(s.begin(), len);
+		s.setLength(len);
 	}
 	return s;
 }

@@ -99,7 +99,7 @@ int onConfiguration(HttpServerConnection& connection, HttpRequest& request, Http
 
 	debugf("Update config");
 	// Update config
-	if(request.getBody() == nullptr) {
+	if(request.getBodyStream() == nullptr) {
 		debugf("NULL bodyBuf");
 		return 0;
 	}

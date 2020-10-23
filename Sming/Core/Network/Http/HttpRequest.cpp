@@ -13,28 +13,6 @@
 #include "HttpRequest.h"
 #include "Data/Stream/MemoryDataStream.h"
 
-String HttpRequest::getBody()
-{
-	if(bodyStream == nullptr || bodyStream->getStreamType() != eSST_Memory) {
-		return nullptr;
-	}
-
-	int len = bodyStream->available();
-	if(len <= 0) {
-		// Cannot determine body size so need to use stream
-		return nullptr;
-	}
-
-	String ret;
-	if(ret.setLength(len)) {
-		len = bodyStream->readMemoryBlock(ret.begin(), len);
-		// Just in case read count is less than reported count
-		ret.setLength(len);
-	}
-
-	return ret;
-}
-
 HttpRequest* HttpRequest::setResponseStream(ReadWriteStream* stream)
 {
 	if(responseStream != nullptr) {
@@ -55,6 +33,11 @@ HttpRequest* HttpRequest::setBody(const uint8_t* rawData, size_t length)
 	}
 
 	return setBody(memory);
+}
+
+HttpRequest* HttpRequest::setBody(String&& body) noexcept
+{
+	return setBody(new MemoryDataStream(std::move(body)));
 }
 
 HttpRequest* HttpRequest::setBody(IDataSourceStream* stream)

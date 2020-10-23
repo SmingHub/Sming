@@ -135,22 +135,24 @@ typedef const __FlashStringHelper* flash_string_t;
  */
 class String
 {
-    // use a function pointer to allow for "if (s)" without the
-    // complications of an operator bool(). for more information, see:
-    // http://www.artima.com/cppsource/safebool.html
-    typedef void (String::*StringIfHelperType)() const;
-    void StringIfHelper() const {}
+	// use a function pointer to allow for "if (s)" without the
+	// complications of an operator bool(). for more information, see:
+	// http://www.artima.com/cppsource/safebool.html
+	typedef void (String::*StringIfHelperType)() const;
+	void StringIfHelper() const
+	{
+	}
 
-  public:
-    // Use these for const references, e.g. in function return values
-    static const String nullstr; ///< A null string evaluates to false
-    static const String empty; ///< An empty string evaluates to true
+public:
+	// Use these for const references, e.g. in function return values
+	static const String nullstr; ///< A null string evaluates to false
+	static const String empty;   ///< An empty string evaluates to true
 
-    /**
+	/**
      * @brief Default constructor
      * @note Creates a null String which evaluates to false.
      */
-    String() : ptr{nullptr, 0, 0}
+	String() : ptr{nullptr, 0, 0}
 	{
 	}
 
@@ -162,50 +164,57 @@ class String
      *
      * @{
     */
-    String(const char *cstr);
-    String(const char *cstr, size_t length) : String()
-    {
-      if (cstr) copy(cstr, length);
-    }
-    String(const String &str) : String()
-    {
-      *this = str;
-    }
-    explicit String(flash_string_t pstr, int length = -1) : String()
-    {
-      setString(pstr, length);
-    }
+	String(const char* cstr);
+	String(const char* cstr, size_t length) : String()
+	{
+		if(cstr)
+			copy(cstr, length);
+	}
+	String(const String& str) : String()
+	{
+		*this = str;
+	}
+	explicit String(flash_string_t pstr, size_t length) : String()
+	{
+		setString(pstr, length);
+	}
+	explicit String(flash_string_t pstr) : String()
+	{
+		setString(pstr);
+	}
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-    String(String && rval) : String()
-    {
-   	  move(rval);
-    }
-    String(StringSumHelper && rval);
+	String(String&& rval) noexcept : String()
+	{
+		move(rval);
+	}
+	String(StringSumHelper&& rval) noexcept;
 #endif
-    explicit String(char c);
-    explicit String(unsigned char, unsigned char base = 10);
-    explicit String(int, unsigned char base = 10);
-    explicit String(unsigned int, unsigned char base = 10);
-    explicit String(long, unsigned char base = 10);
-    explicit String(long long, unsigned char base = 10);
-    explicit String(unsigned long, unsigned char base = 10);
-    explicit String(unsigned long long, unsigned char base = 10);
-    explicit String(float, unsigned char decimalPlaces=2);
-    explicit String(double, unsigned char decimalPlaces=2);
-    /** @} */
+	explicit String(char c);
+	explicit String(unsigned char, unsigned char base = 10);
+	explicit String(int, unsigned char base = 10);
+	explicit String(unsigned int, unsigned char base = 10);
+	explicit String(long, unsigned char base = 10);
+	explicit String(long long, unsigned char base = 10);
+	explicit String(unsigned long, unsigned char base = 10);
+	explicit String(unsigned long long, unsigned char base = 10);
+	explicit String(float, unsigned char decimalPlaces = 2);
+	explicit String(double, unsigned char decimalPlaces = 2);
+	/** @} */
 
-    ~String(void)
-    {
-    	invalidate();
-    }
+	~String(void)
+	{
+		invalidate();
+	}
 
-    void setString(const char *cstr, int length = -1);
-    void setString(flash_string_t pstr, int length = -1);
+	void setString(const char* cstr);
+	void setString(const char* cstr, size_t length);
+	void setString(flash_string_t pstr);
+	void setString(flash_string_t pstr, size_t length);
 
-    // memory management
+	// memory management
 
-    /**
+	/**
      * @brief Pre-allocate String memory
      * @param size
      * @retval bool true on success, false on failure
@@ -213,24 +222,48 @@ class String
      * On failure, the String is left unchanged.
      * reserve(0), if successful, will validate an invalid string (i.e., "if (s)" will be true afterwards)
      */
-    bool reserve(size_t size);
+	bool reserve(size_t size);
 
-    /** @brief set the string length accordingly, expanding if necessary
+	/** @brief set the string length accordingly, expanding if necessary
      *  @param length required for string (nul terminator additional)
      *  @retval true on success, false on failure
      *  @note extra characters are undefined
      */
-    bool setLength(size_t length);
+	bool setLength(size_t length);
 
-    /**
+	/**
      * @brief Obtain the String length in characters, excluding NUL terminator
      */
-    inline size_t length(void) const
-    {
-      return sso.set ? sso.len : ptr.len;
-    }
+	inline size_t length(void) const
+	{
+		return sso.set ? sso.len : ptr.len;
+	}
 
-    /**
+	/**
+     * @brief Used with setBuffer and getBuffer methods
+     */
+	struct Buffer {
+		char* data;	///< Allocated using malloc
+		size_t size;   ///< Size of memory allocation
+		size_t length; ///< Length of content, MUST be < size
+	};
+
+	/**
+     * @brief Set String content using move semantics from external memory buffer
+     * @param buffer We'll take ownership of this buffer
+     * @retval bool true on success; on failure, ownership of buffer is not transferred
+     * @note length MUST be < `size` - A NUL character is written at this location
+     */
+	bool setBuffer(const Buffer& buffer);
+
+	/**
+     * @brief Get String content using move semantics
+     * @retval Buffer
+     * @note String is invalidated by this call. Caller is responsible for buffer memory.
+     */
+	Buffer getBuffer();
+
+	/**
      * @name Copy operators
      *
      * If the value is null or invalid, or if the memory allocation fails,
@@ -238,11 +271,11 @@ class String
      *
      * @{
      */
-    String & operator = (const String &rhs);
-    String & operator = (const char *cstr);
-    /** @} */
+	String& operator=(const String& rhs);
+	String& operator=(const char* cstr);
+	/** @} */
 
-    /**
+	/**
      * @name Move operators
      *
      * Move content from one String to another without any heap allocation.
@@ -261,16 +294,17 @@ class String
      * @{
      */
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-    String & operator = (String && rval)
-    {
-      if (this != &rval) move(rval);
-      return *this;
-    }
-    String & operator = (StringSumHelper && rval);
+	String& operator=(String&& rval) noexcept
+	{
+		if(this != &rval)
+			move(rval);
+		return *this;
+	}
+	String& operator=(StringSumHelper&& rval) noexcept;
 #endif
-    /** @} */
+	/** @} */
 
-    /**
+	/**
      * @name Concatenation methods
      * @retval bool true on success, false on failure
      *
@@ -280,29 +314,29 @@ class String
      *
      * @{
      */
-    bool concat(const String &str)
-    {
-      return concat(str.cbuffer(), str.length());
-    }
-    bool concat(const FlashString& fstr);
-    bool concat(const char *cstr);
-    bool concat(const char *cstr, size_t length);
-    bool concat(char c)
-    {
-      return concat(&c, 1);
-    }
-    bool concat(unsigned char num);
-    bool concat(int num);
-    bool concat(unsigned int num);
-    bool concat(long num);
-    bool concat(long long num);
-    bool concat(unsigned long num);
-    bool concat(unsigned long long num);
-    bool concat(float num);
-    bool concat(double num);
-    /** @} */
-  
-    /**
+	bool concat(const String& str)
+	{
+		return concat(str.cbuffer(), str.length());
+	}
+	bool concat(const FlashString& fstr);
+	bool concat(const char* cstr);
+	bool concat(const char* cstr, size_t length);
+	bool concat(char c)
+	{
+		return concat(&c, 1);
+	}
+	bool concat(unsigned char num);
+	bool concat(int num);
+	bool concat(unsigned int num);
+	bool concat(long num);
+	bool concat(long long num);
+	bool concat(unsigned long num);
+	bool concat(unsigned long long num);
+	bool concat(float num);
+	bool concat(double num);
+	/** @} */
+
+	/**
      * @name Concatenation operators
      *
      * If there's not enough memory for the concatenated value, the string
@@ -310,96 +344,96 @@ class String
      *
      * @{
      */
-    String & operator += (const String &rhs)
-    {
-      concat(rhs);
-      return (*this);
-    }
-    String & operator += (const FlashString &rhs)
-    {
-      concat(rhs);
-      return (*this);
-    }
-    String & operator += (const char *cstr)
-    {
-      concat(cstr);
-      return (*this);
-    }
-    String & operator += (char c)
-    {
-      concat(c);
-      return (*this);
-    }
-    String & operator += (unsigned char num)
-    {
-      concat(num);
-      return (*this);
-    }
-    String & operator += (int num)
-    {
-      concat(num);
-      return (*this);
-    }
-    String & operator += (unsigned int num)
-    {
-      concat(num);
-      return (*this);
-    }
-    String & operator += (long num)
-    {
-      concat(num);
-      return (*this);
-    }
-    String & operator += (long long num)
-    {
-      concat(num);
-      return (*this);
-    }
-    String & operator += (unsigned long num)
-    {
-      concat(num);
-      return (*this);
-    }
-    String & operator += (unsigned long long num)
-    {
-      concat(num);
-      return (*this);
-    }
-    String & operator += (float num)
-    {
-      concat(num);
-      return (*this);
-    }
-    String & operator += (double num)
-    {
-      concat(num);
-      return (*this);
-    }
-    /** @} */
+	String& operator+=(const String& rhs)
+	{
+		concat(rhs);
+		return (*this);
+	}
+	String& operator+=(const FlashString& rhs)
+	{
+		concat(rhs);
+		return (*this);
+	}
+	String& operator+=(const char* cstr)
+	{
+		concat(cstr);
+		return (*this);
+	}
+	String& operator+=(char c)
+	{
+		concat(c);
+		return (*this);
+	}
+	String& operator+=(unsigned char num)
+	{
+		concat(num);
+		return (*this);
+	}
+	String& operator+=(int num)
+	{
+		concat(num);
+		return (*this);
+	}
+	String& operator+=(unsigned int num)
+	{
+		concat(num);
+		return (*this);
+	}
+	String& operator+=(long num)
+	{
+		concat(num);
+		return (*this);
+	}
+	String& operator+=(long long num)
+	{
+		concat(num);
+		return (*this);
+	}
+	String& operator+=(unsigned long num)
+	{
+		concat(num);
+		return (*this);
+	}
+	String& operator+=(unsigned long long num)
+	{
+		concat(num);
+		return (*this);
+	}
+	String& operator+=(float num)
+	{
+		concat(num);
+		return (*this);
+	}
+	String& operator+=(double num)
+	{
+		concat(num);
+		return (*this);
+	}
+	/** @} */
 
-    friend StringSumHelper & operator + (const StringSumHelper &lhs, const String &rhs);
-    friend StringSumHelper & operator + (const StringSumHelper &lhs, const char *cstr);
-    friend StringSumHelper & operator + (const StringSumHelper &lhs, char c);
-    friend StringSumHelper & operator + (const StringSumHelper &lhs, unsigned char num);
-    friend StringSumHelper & operator + (const StringSumHelper &lhs, int num);
-    friend StringSumHelper & operator + (const StringSumHelper &lhs, unsigned int num);
-    friend StringSumHelper & operator + (const StringSumHelper &lhs, long num);
-    friend StringSumHelper & operator + (const StringSumHelper &lhs, unsigned long num);
-    friend StringSumHelper & operator + (const StringSumHelper &lhs, unsigned long long num);
-    friend StringSumHelper & operator + (const StringSumHelper &lhs, float num);
-    friend StringSumHelper & operator + (const StringSumHelper &lhs, double num);
+	friend StringSumHelper& operator+(const StringSumHelper& lhs, const String& rhs);
+	friend StringSumHelper& operator+(const StringSumHelper& lhs, const char* cstr);
+	friend StringSumHelper& operator+(const StringSumHelper& lhs, char c);
+	friend StringSumHelper& operator+(const StringSumHelper& lhs, unsigned char num);
+	friend StringSumHelper& operator+(const StringSumHelper& lhs, int num);
+	friend StringSumHelper& operator+(const StringSumHelper& lhs, unsigned int num);
+	friend StringSumHelper& operator+(const StringSumHelper& lhs, long num);
+	friend StringSumHelper& operator+(const StringSumHelper& lhs, unsigned long num);
+	friend StringSumHelper& operator+(const StringSumHelper& lhs, unsigned long long num);
+	friend StringSumHelper& operator+(const StringSumHelper& lhs, float num);
+	friend StringSumHelper& operator+(const StringSumHelper& lhs, double num);
 
-    /**
+	/**
      * @brief Provides safe bool() operator
      *
      * Evaluates as false if String is null, otherwise evaluates as true
      */
-    operator StringIfHelperType() const
-    {
-      return isNull() ? 0 : &String::StringIfHelper;
-    }
+	operator StringIfHelperType() const
+	{
+		return isNull() ? 0 : &String::StringIfHelper;
+	}
 
-    /**
+	/**
      * @name Comparison methods
      * Works with String and 'c' string
      * @retval int Returns < 0 if String is lexically before the argument, > 0 if after or 0 if the same
@@ -409,14 +443,14 @@ class String
      *
      * @{
      */
-    int compareTo(const char* cstr, size_t length) const;
-    int compareTo(const String &s) const
-    {
-   	  return compareTo(s.cbuffer(), s.length());
-    }
-    /** @} */
+	int compareTo(const char* cstr, size_t length) const;
+	int compareTo(const String& s) const
+	{
+		return compareTo(s.cbuffer(), s.length());
+	}
+	/** @} */
 
-    /**
+	/**
      * @name Test for equality
      * Compares content byte-for-byte using binary comparison
      * @retval bool Returns true if strings are identical
@@ -425,75 +459,75 @@ class String
      *
      * @{
      */
-    bool equals(const String &s) const
-    {
-    	return equals(s.cbuffer(), s.length());
-    }
-    bool equals(const char *cstr) const;
-    bool equals(const char *cstr, size_t length) const;
-    bool equals(const FlashString& fstr) const
-    {
-    	return fstr.equals(*this);
-    }
-    /** @} */
+	bool equals(const String& s) const
+	{
+		return equals(s.cbuffer(), s.length());
+	}
+	bool equals(const char* cstr) const;
+	bool equals(const char* cstr, size_t length) const;
+	bool equals(const FlashString& fstr) const
+	{
+		return fstr.equals(*this);
+	}
+	/** @} */
 
-    /**
+	/**
      * @name Equality operator ==
      * @retval bool true if Strings are identical
      * @{
      */
-    bool operator == (const String &rhs) const
-    {
-      return equals(rhs);
-    }
-    bool operator == (const char *cstr) const
-    {
-      return equals(cstr);
-    }
-    bool operator==(const FlashString& fstr) const
-    {
-      return equals(fstr);
-    }
-    /** @} */
+	bool operator==(const String& rhs) const
+	{
+		return equals(rhs);
+	}
+	bool operator==(const char* cstr) const
+	{
+		return equals(cstr);
+	}
+	bool operator==(const FlashString& fstr) const
+	{
+		return equals(fstr);
+	}
+	/** @} */
 
-    /**
+	/**
      * @name In-equality operator !=
      * @retval bool Returns true if strings are not identical
      * @{
      */
-    bool operator != (const String &rhs) const
-    {
-      return !equals(rhs);
-    }
-    bool operator != (const char *cstr) const
-    {
-      return !equals(cstr);
-    }
-    /** @} */
+	bool operator!=(const String& rhs) const
+	{
+		return !equals(rhs);
+	}
+	bool operator!=(const char* cstr) const
+	{
+		return !equals(cstr);
+	}
+	/** @} */
 
-    /**
+	/**
      * @name Comparison operators
      * @{
      */
-    bool operator < (const String &rhs) const
-    {
-      return compareTo(rhs) < 0;
-    }
-    bool operator > (const String &rhs) const
-    {
-      return compareTo(rhs) > 0;
-    }
-    bool operator <= (const String &rhs) const
+	bool operator<(const String& rhs) const
 	{
-	  return compareTo(rhs) <= 0;
+		return compareTo(rhs) < 0;
 	}
-    bool operator >= (const String &rhs) const
-    {
-      return compareTo(rhs) >= 0;
-    }
-    /** @} */
+	bool operator>(const String& rhs) const
+	{
+		return compareTo(rhs) > 0;
+	}
+	bool operator<=(const String& rhs) const
+	{
+		return compareTo(rhs) <= 0;
+	}
+	bool operator>=(const String& rhs) const
+	{
+		return compareTo(rhs) >= 0;
+	}
+	/** @} */
 
-    /**
+	/**
      * @name Test for equality, without case-sensitivity
      * @retval bool true if strings are considered the same
      *
@@ -501,30 +535,30 @@ class String
      *
      * @{
      */
-    bool equalsIgnoreCase(const char* cstr) const;
-    bool equalsIgnoreCase(const char* cstr, size_t length) const;
-    bool equalsIgnoreCase(const String &s2) const
-    {
-    	return equalsIgnoreCase(s2.cbuffer(), s2.length());
-    }
-    bool equalsIgnoreCase(const FlashString& fstr) const
-    {
-    	return fstr.equalsIgnoreCase(*this);
-    }
-    /** @} */
+	bool equalsIgnoreCase(const char* cstr) const;
+	bool equalsIgnoreCase(const char* cstr, size_t length) const;
+	bool equalsIgnoreCase(const String& s2) const
+	{
+		return equalsIgnoreCase(s2.cbuffer(), s2.length());
+	}
+	bool equalsIgnoreCase(const FlashString& fstr) const
+	{
+		return fstr.equalsIgnoreCase(*this);
+	}
+	/** @} */
 
-    /**
+	/**
      * @brief Compare the start of a String
      * Comparison is case-sensitive, must match exactly
      * @param prefix
      * @retval bool true on match
      */
-    bool startsWith(const String &prefix) const
-    {
-    	return startsWith(prefix, 0);
-    }
+	bool startsWith(const String& prefix) const
+	{
+		return startsWith(prefix, 0);
+	}
 
-    /**
+	/**
      * @brief Compare a string portion
      * @param prefix
      * @param offset Index to start comparison at
@@ -533,48 +567,48 @@ class String
      *
      * mis-named as does not necessarily compare from start
      */
-    bool startsWith(const String &prefix, size_t offset) const;
+	bool startsWith(const String& prefix, size_t offset) const;
 
-    /**
+	/**
      * @brief Compare the end of a String
      * @param suffix
      * @retval bool true on match
      */
-    bool endsWith(const String &suffix) const;
+	bool endsWith(const String& suffix) const;
 
-    // character acccess
+	// character acccess
 
-    /**
+	/**
      * @brief Obtain the character at the given index
      * @param index
      * @retval char
      * @note If index is invalid, returns NUL \0
      */
-    char charAt(size_t index) const
-    {
-      return operator[](index);
-    }
+	char charAt(size_t index) const
+	{
+		return operator[](index);
+	}
 
-    /**
+	/**
      * @brief Sets the character at a given index
      * @param index
      * @param c
      * @note If index is invalid, does nothing
      */
-    void setCharAt(size_t index, char c);
+	void setCharAt(size_t index, char c);
 
-    /**
+	/**
      * @name Array operators
      *
      * If index is invalid, returns NUL \0
      *
      * @{
      */
-    char operator [](size_t index) const;
-    char& operator [](size_t index);
-    /** @} */
+	char operator[](size_t index) const;
+	char& operator[](size_t index);
+	/** @} */
 
-    /** @brief Read contents of a String into a buffer
+	/** @brief Read contents of a String into a buffer
      *  @param buf buffer to write data
      *  @param bufsize size of buffer in bytes
      *  @param index offset to start
@@ -582,41 +616,56 @@ class String
      *  @note Returned data always nul terminated so buffer size needs to take this
      *  into account
      */
-    size_t getBytes(unsigned char *buf, size_t bufsize, size_t index = 0) const;
+	size_t getBytes(unsigned char* buf, size_t bufsize, size_t index = 0) const;
 
-    /**
+	/**
      * @brief Read contents of String into a buffer
      * @see See `getBytes()`
      */
-    void toCharArray(char *buf, size_t bufsize, size_t index = 0) const
-    {
-      getBytes((unsigned char *)buf, bufsize, index);
-    }
+	void toCharArray(char* buf, size_t bufsize, size_t index = 0) const
+	{
+		getBytes((unsigned char*)buf, bufsize, index);
+	}
 
-    /**
+	/**
      * @brief Get a constant (un-modifiable) pointer to String content
      * @retval const char* Always valid, even for a null string
      */
-    const char* c_str() const { return cbuffer() ?: empty.cbuffer(); }
+	const char* c_str() const
+	{
+		return cbuffer() ?: empty.cbuffer();
+	}
 
-    /**
+	/**
      * @brief Get a modifiable pointer to String content
      * @note If String is NUL, returns nullptr.
      */
-    char* begin() { return buffer(); }
+	char* begin()
+	{
+		return buffer();
+	}
 
-    /**
+	/**
      * @brief Get a modifiable pointer to one-past the end of the String
      * @note Points to the terminating NUL character.
      * If String is NUL, returns nullptr.
      */
-    char* end() { return buffer() + length(); }
-    const char* begin() const { return c_str(); }
-    const char* end() const { return c_str() + length(); }
-  
-    // search
+	char* end()
+	{
+		return buffer() + length();
+	}
+	const char* begin() const
+	{
+		return c_str();
+	}
+	const char* end() const
+	{
+		return c_str() + length();
+	}
 
-    /**
+	// search
+
+	/**
      * @name int indexOf(...)
      * Locate a character or String within another String.
      * @retval int Index if found, -1 if not found
@@ -626,19 +675,19 @@ class String
      *
      * @{
      */
-    int indexOf(char ch, size_t fromIndex = 0) const;
-    int indexOf(const char* s2_buf, size_t fromIndex, size_t s2_len) const;
-    int indexOf(const char* s2_buf, size_t fromIndex = 0) const
-    {
-    	return indexOf(s2_buf, fromIndex, strlen(s2_buf));
-    }
-    int indexOf(const String &s2, size_t fromIndex = 0) const
-    {
-    	return indexOf(s2.cbuffer(), fromIndex, s2.length());
-    }
-    /** @} */
+	int indexOf(char ch, size_t fromIndex = 0) const;
+	int indexOf(const char* s2_buf, size_t fromIndex, size_t s2_len) const;
+	int indexOf(const char* s2_buf, size_t fromIndex = 0) const
+	{
+		return indexOf(s2_buf, fromIndex, strlen(s2_buf));
+	}
+	int indexOf(const String& s2, size_t fromIndex = 0) const
+	{
+		return indexOf(s2.cbuffer(), fromIndex, s2.length());
+	}
+	/** @} */
 
-    /**
+	/**
      * @name int lastIndexOf(...)
      * Locate a character or String within another String
      * @retval int Index if found, -1 if not found
@@ -648,14 +697,14 @@ class String
      *
      * @{
      */
-    int lastIndexOf(char ch) const;
-    int lastIndexOf(char ch, size_t fromIndex) const;
-    int lastIndexOf(const String &s2) const;
-    int lastIndexOf(const String &s2, size_t fromIndex) const;
-    int lastIndexOf(const char* s2_buf, size_t fromIndex, size_t s2_len) const;
-    /** @} */
+	int lastIndexOf(char ch) const;
+	int lastIndexOf(char ch, size_t fromIndex) const;
+	int lastIndexOf(const String& s2) const;
+	int lastIndexOf(const String& s2, size_t fromIndex) const;
+	int lastIndexOf(const char* s2_buf, size_t fromIndex, size_t s2_len) const;
+	/** @} */
 
-    /**
+	/**
      * @name String substring(...)
      * Get a substring of a String.
      * @param from Index of first character to retrieve
@@ -677,16 +726,16 @@ class String
      *
      * @{
      */
-    String substring(size_t from, size_t to) const;
-    String substring(size_t from) const
-    {
-    	return substring(from, length());
-    }
-    /** @} */
+	String substring(size_t from, size_t to) const;
+	String substring(size_t from) const
+	{
+		return substring(from, length());
+	}
+	/** @} */
 
-    // modification
+	// modification
 
-    /**
+	/**
      * @name replace(...)
      * Replace all instances of a given character or substring with another character or substring.
      * @retval bool true on success, false on allocation failure
@@ -698,12 +747,12 @@ class String
      *
      * @{
      */
-    void replace(char find, char replace);
-    bool replace(const String& find, const String& replace);
-    bool replace(const char* find_buf, size_t find_len, const char* replace_buf, size_t replace_len);
-    /** @} */
+	void replace(char find, char replace);
+	bool replace(const String& find, const String& replace);
+	bool replace(const char* find_buf, size_t find_len, const char* replace_buf, size_t replace_len);
+	/** @} */
 
-    /**
+	/**
      * @name remove()
      * Remove characters from a String.
      * @param index Index of the first character to remove
@@ -715,41 +764,41 @@ class String
      *
      * @{
      */
-    void remove(size_t index)
-    {
-    	remove(index, SIZE_MAX);
-    }
-    void remove(size_t index, size_t count);
-    /** @} */
+	void remove(size_t index)
+	{
+		remove(index, SIZE_MAX);
+	}
+	void remove(size_t index, size_t count);
+	/** @} */
 
-    /**
+	/**
      * @brief Convert the entire String content to lower case
      */
-    void toLowerCase(void);
+	void toLowerCase(void);
 
-    /**
+	/**
      * @brief Convert the entire String content to upper case
      */
-    void toUpperCase(void);
+	void toUpperCase(void);
 
-    /**
+	/**
      * @brief Remove all leading and trailing whitespace characters from the String
      */
-    void trim(void);
+	void trim(void);
 
-    // parsing/conversion
-    long toInt(void) const;
-    float toFloat(void) const;
+	// parsing/conversion
+	long toInt(void) const;
+	float toFloat(void) const;
 
 	/// Max chars. (excluding NUL terminator) we can store in SSO mode
 	static constexpr size_t SSO_CAPACITY = STRING_OBJECT_SIZE - 2;
 
 protected:
-    /// Used when contents allocated on heap
+	/// Used when contents allocated on heap
 	struct PtrBuf {
-		char* buffer;		  // the actual char array
-		size_t len;			  // the String length (not counting the '\0')
-		size_t capacity;	  // the array length minus one (for the '\0')
+		char* buffer;	// the actual char array
+		size_t len;		 // the String length (not counting the '\0')
+		size_t capacity; // the array length minus one (for the '\0')
 	};
 	// For small strings we can store data directly without requiring the heap
 	struct SsoBuf {
@@ -771,47 +820,47 @@ protected:
 	// Free any heap memory and set to non-SSO mode; isNull() will return true
 	void invalidate(void);
 
-    // String is Null (invalid) by default, i.e. non-SSO and null buffer
-    __forceinline bool isNull() const
-    {
-    	return !sso.set && (ptr.buffer == nullptr);
-    }
+	// String is Null (invalid) by default, i.e. non-SSO and null buffer
+	__forceinline bool isNull() const
+	{
+		return !sso.set && (ptr.buffer == nullptr);
+	}
 
-    // Get writeable buffer pointer
-    __forceinline char* buffer()
-    {
-    	return sso.set ? sso.buffer : ptr.buffer;
-    }
+	// Get writeable buffer pointer
+	__forceinline char* buffer()
+	{
+		return sso.set ? sso.buffer : ptr.buffer;
+	}
 
-    // Get read-only buffer pointer
-    __forceinline const char* cbuffer() const
-    {
-    	return sso.set ? sso.buffer : ptr.buffer;
-    }
+	// Get read-only buffer pointer
+	__forceinline const char* cbuffer() const
+	{
+		return sso.set ? sso.buffer : ptr.buffer;
+	}
 
-    // Get currently assigned capacity for current mode
-    __forceinline size_t capacity() const
-    {
-    	return sso.set ? SSO_CAPACITY : ptr.capacity;
-    }
+	// Get currently assigned capacity for current mode
+	__forceinline size_t capacity() const
+	{
+		return sso.set ? SSO_CAPACITY : ptr.capacity;
+	}
 
-    // Called whenever string length changes to ensure NUL terminator is set
-    __forceinline void setlen(size_t len)
-    {
-    	if(sso.set) {
-    		sso.len = len;
-    		sso.buffer[len] = '\0';
-    	} else {
-    		ptr.len = len;
-    		ptr.buffer[len] = '\0';
-    	}
-    }
+	// Called whenever string length changes to ensure NUL terminator is set
+	__forceinline void setlen(size_t len)
+	{
+		if(sso.set) {
+			sso.len = len;
+			sso.buffer[len] = '\0';
+		} else {
+			ptr.len = len;
+			ptr.buffer[len] = '\0';
+		}
+	}
 
-    // copy and move
-    String & copy(const char *cstr, size_t length);
-    String& copy(flash_string_t pstr, size_t length);
+	// copy and move
+	String& copy(const char* cstr, size_t length);
+	String& copy(flash_string_t pstr, size_t length);
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-    void move(String &rhs);
+	void move(String& rhs);
 #endif
 };
 
@@ -819,21 +868,45 @@ protected:
 
 class StringSumHelper : public String
 {
-  public:
-    StringSumHelper(const String &s) : String(s) {}
-    StringSumHelper(const char *p) : String(p) {}
-    StringSumHelper(char c) : String(c) {}
-    StringSumHelper(unsigned char num) : String(num) {}
-    StringSumHelper(int num) : String(num) {}
-    StringSumHelper(unsigned int num) : String(num) {}
-    StringSumHelper(long num) : String(num) {}
-    StringSumHelper(long long num) : String(num) {}
-    StringSumHelper(unsigned long num) : String(num) {}
-    StringSumHelper(unsigned long long num) : String(num) {}
-    StringSumHelper(float num) : String(num) {}
-    StringSumHelper(double num) : String(num) {}
+public:
+	StringSumHelper(const String& s) : String(s)
+	{
+	}
+	StringSumHelper(const char* p) : String(p)
+	{
+	}
+	StringSumHelper(char c) : String(c)
+	{
+	}
+	StringSumHelper(unsigned char num) : String(num)
+	{
+	}
+	StringSumHelper(int num) : String(num)
+	{
+	}
+	StringSumHelper(unsigned int num) : String(num)
+	{
+	}
+	StringSumHelper(long num) : String(num)
+	{
+	}
+	StringSumHelper(long long num) : String(num)
+	{
+	}
+	StringSumHelper(unsigned long num) : String(num)
+	{
+	}
+	StringSumHelper(unsigned long long num) : String(num)
+	{
+	}
+	StringSumHelper(float num) : String(num)
+	{
+	}
+	StringSumHelper(double num) : String(num)
+	{
+	}
 };
 
 #include "SplitString.h"
 
-#endif  // __cplusplus
+#endif // __cplusplus

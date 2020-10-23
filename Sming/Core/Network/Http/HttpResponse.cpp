@@ -64,6 +64,16 @@ bool HttpResponse::sendString(const String& text)
 	return memoryStream->print(text) == text.length();
 }
 
+bool HttpResponse::sendString(String&& text) noexcept
+{
+	auto memoryStream = new MemoryDataStream(std::move(text));
+	if(memoryStream == nullptr) {
+		return false;
+	}
+	setStream(memoryStream);
+	return true;
+}
+
 bool HttpResponse::sendFile(const String& fileName, bool allowGzipFileCheck)
 {
 	IDataSourceStream* stream = nullptr;
@@ -110,27 +120,6 @@ bool HttpResponse::sendDataStream(IDataSourceStream* newDataStream, const String
 	}
 
 	return true;
-}
-
-String HttpResponse::getBody()
-{
-	if(stream == nullptr) {
-		return nullptr;
-	}
-
-	String ret;
-	if(stream->available() > 0 && stream->getStreamType() == eSST_Memory) {
-		char buf[1024];
-		while(stream->available() > 0) {
-			int available = stream->readMemoryBlock(buf, 1024);
-			stream->seek(available);
-			ret += String(buf, available);
-			if(available < 1024) {
-				break;
-			}
-		}
-	}
-	return ret;
 }
 
 void HttpResponse::reset()

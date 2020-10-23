@@ -52,16 +52,16 @@ void sortTunes()
 		const auto& header = parser.getHeader();
 		writer.beginTune(header);
 
-		String headerString = mem.readString();
-		mem.clear();
+		String headerString;
+		mem.moveString(headerString);
 
 		RingTone::NoteDef note;
 		while(parser.readNextNote(note)) {
 			writer.addNote(note);
 		}
 
-		String content = mem.readString();
-		mem.clear();
+		String content;
+		mem.moveString(content);
 
 		auto findContent = [&]() -> int {
 			for(unsigned i = 0; i < tunes.count(); ++i) {

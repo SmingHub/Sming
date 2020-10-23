@@ -39,11 +39,17 @@ HttpHeaders& MailMessage::getHeaders()
 MailMessage& MailMessage::setBody(const String& body, MimeType mime)
 {
 	MemoryDataStream* memory = new MemoryDataStream();
-	auto written = memory->write((uint8_t*)body.c_str(), body.length());
+	auto written = memory->write(reinterpret_cast<const uint8_t*>(body.c_str()), body.length());
 	if(written < body.length()) {
 		debug_e("MailMessage::setBody: Unable to store the complete body");
 	}
 
+	return setBody(memory, mime);
+}
+
+MailMessage& MailMessage::setBody(String&& body, MimeType mime) noexcept
+{
+	auto memory = new MemoryDataStream(std::move(body));
 	return setBody(memory, mime);
 }
 

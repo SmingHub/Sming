@@ -216,7 +216,8 @@ public:
 			size_t serializedLength = Json::serialize(doc, stream);
 			debug_d("serialized length = %u", serializedLength);
 			REQUIRE(serializedLength == jsonTest.length());
-			String content = stream->readString();
+			String content;
+			REQUIRE(stream->moveString(content));
 			debug_d("stream->read returned %u", content.length());
 			debug_d("%s", content.c_str(), content.length());
 			REQUIRE(content == jsonTest);

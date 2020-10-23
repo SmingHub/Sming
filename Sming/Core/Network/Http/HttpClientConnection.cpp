@@ -92,11 +92,9 @@ HttpPartResult HttpClientConnection::multipartProducer()
 
 	if(outgoingRequest->postParams.count()) {
 		const String& name = outgoingRequest->postParams.keyAt(0);
-		const String& value = outgoingRequest->postParams.valueAt(0);
+		String& value = outgoingRequest->postParams.valueAt(0);
 
-		auto mStream = new MemoryDataStream();
-		mStream->print(value);
-		result.stream = mStream;
+		result.stream = new MemoryDataStream(std::move(value));
 
 		auto headers = new HttpHeaders();
 		(*headers)[HTTP_HEADER_CONTENT_DISPOSITION] = F("form-data; name=\"") + name + '"';
