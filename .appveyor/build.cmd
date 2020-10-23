@@ -12,8 +12,8 @@ set MAKE_PARALLEL=make -j2
 
 REM Move samples and tests into directory outside of the Sming repo.
 set SMING_PROJECTS_DIR=%APPVEYOR_BUILD_FOLDER%\..
-move ../samples %SMING_PROJECTS_DIR%
-move ../tests %SMING_PROJECTS_DIR%
+move ..\samples %SMING_PROJECTS_DIR%
+move ..\tests %SMING_PROJECTS_DIR%
 
 REM This will build the Basic_Blink application and most of the framework Components
 cd %SMING_PROJECTS_DIR%/samples/Basic_Blink
