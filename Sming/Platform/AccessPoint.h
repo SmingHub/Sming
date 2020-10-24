@@ -96,6 +96,16 @@ public:
      */
 	virtual IpAddress getNetworkBroadcast() const = 0;
 
+	/** @brief Determine if the given address is on the same subnet
+	 *  @param address
+	 *  @retval bool true if address is local
+	 *  @note Use to prevent external access to services
+	 */
+	bool isLocal(IpAddress address)
+	{
+		return address.compare(getIP(), getNetworkMask());
+	}
+
 	/**	@brief	Get WiFi access point SSID
 	 *	@retval	String WiFi access point SSID
 	 */

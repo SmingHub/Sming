@@ -4,13 +4,13 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * HttpHeaders.cpp
+ * HttpHeaderFields.cpp
  *
  * @author: 2018 - Mikee47 <mike@sillyhouse.net>
  *
  ****/
 
-#include "HttpHeaders.h"
+#include "HttpHeaderFields.h"
 #include <FlashString/Vector.hpp>
 
 // Define field name strings and a lookup table
@@ -22,7 +22,7 @@ HTTP_HEADER_FIELDNAME_MAP(XX)
 DEFINE_FSTR_VECTOR_LOCAL(fieldNameStrings, FlashString, HTTP_HEADER_FIELDNAME_MAP(XX));
 #undef XX
 
-String HttpHeaders::toString(HttpHeaderFieldName name) const
+String HttpHeaderFields::toString(HttpHeaderFieldName name) const
 {
 	if(name == HTTP_HEADER_UNKNOWN) {
 		return nullptr;
@@ -35,7 +35,7 @@ String HttpHeaders::toString(HttpHeaderFieldName name) const
 	return customFieldNames[name - HTTP_HEADER_CUSTOM];
 }
 
-String HttpHeaders::toString(const String& name, const String& value)
+String HttpHeaderFields::toString(const String& name, const String& value)
 {
 	String s;
 	s.reserve(name.length() + 2 + value.length() + 2);
@@ -46,7 +46,7 @@ String HttpHeaders::toString(const String& name, const String& value)
 	return s;
 }
 
-HttpHeaderFieldName HttpHeaders::fromString(const String& name) const
+HttpHeaderFieldName HttpHeaderFields::fromString(const String& name) const
 {
 	auto index = fieldNameStrings.indexOf(name);
 	if(index >= 0) {
@@ -56,7 +56,7 @@ HttpHeaderFieldName HttpHeaders::fromString(const String& name) const
 	return findCustomFieldName(name);
 }
 
-HttpHeaderFieldName HttpHeaders::findCustomFieldName(const String& name) const
+HttpHeaderFieldName HttpHeaderFields::findCustomFieldName(const String& name) const
 {
 	auto index = customFieldNames.indexOf(name);
 	if(index >= 0) {

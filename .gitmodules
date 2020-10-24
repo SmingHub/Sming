@@ -145,6 +145,7 @@
 [submodule "Libraries.Arduino_TensorFlowLite"]
 	path = Sming/Libraries/Arduino_TensorFlowLite
 	url = https://github.com/slaff/Arduino_TensorFlowLite.git
+    ignore = dirty
 [submodule "Libraries.modbusino"]
 	path = Sming/Libraries/modbusino/modbusino
 	url = https://github.com/kmihaylov/modbusino.git
@@ -153,4 +154,19 @@
 	path = Sming/Libraries/CS5460/CS5460
 	url = https://github.com/xxzl0130/CS5460.git
 	ignore = dirty
-
+[submodule "Libraries.RapidXML"]
+	path = Sming/Libraries/RapidXML
+	url = https://github.com/mikee47/Sming-RapidXML
+	ignore = dirty
+[submodule "Libraries.SSDP"]
+	path = Sming/Libraries/SSDP
+	url = https://github.com/mikee47/Sming-SSDP
+	ignore = dirty
+[submodule "Libraries.UPnP"]
+	path = Sming/Libraries/UPnP
+	url = https://github.com/mikee47/Sming-UPnP
+	ignore = dirty
+[submodule "Libraries.HueEmulator"]
+	path = Sming/Libraries/HueEmulator
+	url = https://github.com/mikee47/HueEmulator
+	ignore = dirty

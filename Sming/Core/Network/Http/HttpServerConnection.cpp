@@ -120,6 +120,7 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 		int endPos = contentType.indexOf(';');
 		if(endPos >= 0) {
 			contentType = contentType.substring(0, endPos);
+			contentType.trim();
 		}
 
 		// Content-Type for exact type: application/json

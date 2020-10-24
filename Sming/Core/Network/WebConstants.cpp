@@ -51,6 +51,11 @@ String toString(enum MimeType m)
 MimeType fromString(const char* str)
 {
 	int i = CStringArray(fstr_mime).indexOf(str);
+	if(i < 0) {
+		if(strcasecmp(str, _F("application/xml")) == 0) {
+			i = MIME_XML;
+		}
+	}
 	return (i < 0) ? MIME_UNKNOWN : MimeType(i);
 }
 
