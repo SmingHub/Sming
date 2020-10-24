@@ -15,6 +15,45 @@
 #include "../FtpServer.h"
 #include "Network/NetUtils.h"
 
+namespace
+{
+int getSplitterPos(const String& data, char splitter, uint8_t number)
+{
+	uint8_t k = 0;
+
+	for(unsigned i = 0; i < data.length(); i++) {
+		if(data[i] == splitter) {
+			if(k == number) {
+				return i;
+			}
+			k++;
+		}
+	}
+
+	return -1;
+}
+
+String makeFileName(String name, bool shortIt)
+{
+	if(name[0] == '/') {
+		name.remove(0, 1);
+	}
+
+	if(shortIt && name.length() > 20) {
+		String ext;
+		int dotPos = name.lastIndexOf('.');
+		if(dotPos >= 0) {
+			ext = name.substring(dotPos);
+		}
+
+		return name.substring(0, 16) + ext;
+	}
+
+	return name;
+}
+
+} // namespace
+
 err_t FtpServerConnection::onReceive(pbuf* buf)
 {
 	if(buf == nullptr) {
@@ -24,7 +63,7 @@ err_t FtpServerConnection::onReceive(pbuf* buf)
 
 	while(true) {
 		int p = NetUtils::pbufFindStr(buf, "\r\n", prev);
-		if(p < 0 || p - prev > MAX_FTP_CMD) {
+		if(p < 0 || size_t(p - prev) > MAX_FTP_CMD) {
 			break;
 		}
 		int split = NetUtils::pbufFindChar(buf, ' ', prev);
@@ -67,90 +106,176 @@ void FtpServerConnection::cmdPort(const String& data)
 void FtpServerConnection::onCommand(String cmd, String data)
 {
 	cmd.toUpperCase();
+
+	/* Use macros to make code easier to read */
+#define SWITCH while(true)
+#define CASE(s) if(cmd == _F(s))
+#define DEFAULT
+
 	// We ready to quit always :)
-	if(cmd == _F("QUIT")) {
+	CASE("QUIT")
+	{
 		response(221);
 		close();
 		return;
 	}
 
 	// Strong security check :)
-	if(state == eFCS_Authorization) {
-		if(cmd == _F("USER")) {
-			userName = data;
-			response(331);
-		} else if(cmd == _F("PASS")) {
-			if(server->checkUser(userName, data)) {
-				userName = "";
-				state = eFCS_Active;
-				response(230);
-			} else
-				response(430);
-		} else {
-			response(530);
-		}
-		return;
-	}
-
-	if(state == eFCS_Active) {
-		if(cmd == _F("SYST")) {
-			response(215, F("Windows_NT: Sming Framework")); // Why not? It's look like Windows :)
-		} else if(cmd == _F("PWD")) {
-			response(257, F("\"/\""));
-		} else if(cmd == _F("PORT")) {
-			cmdPort(data);
-		} else if(cmd == _F("CWD")) {
-			if(data == "/")
-				response(250);
-			else
-				response(550);
-		} else if(cmd == _F("TYPE")) {
-			response(250);
-		}
-		/*else if (cmd == _F("SIZE"))
+	switch(state) {
+	case State::Authorization:
+		SWITCH
 		{
-			response(213, String(fileGetSize(makeFileName(data, false))));
-		}*/
-		else if(cmd == _F("DELE")) {
-			String name = makeFileName(data, false);
-			if(fileExist(name)) {
-				fileDelete(name);
-				response(250);
-			} else
-				response(550);
-		}
-		/*else if (cmd == _F("RNFR")) // Bugs!
-		{
-			renameFrom = data;
-			response(350);
-		}
-		else if (cmd == _F("RNTO"))
-		{
-			if (fileExist(renameFrom))
+			CASE("USER")
 			{
-				fileRename(renameFrom, data);
-				response(250);
+				userName = data;
+				response(331);
+				break;
 			}
-			else
-				response(550);
-		}*/
-		else if(cmd == _F("RETR")) {
-			createDataConnection(new FtpDataRetrieve(this, makeFileName(data, false)));
-		} else if(cmd == _F("STOR")) {
-			createDataConnection(new FtpDataStore(this, makeFileName(data, true)));
-		} else if(cmd == _F("LIST")) {
-			createDataConnection(new FtpDataFileList(this));
-		} else if(cmd == _F("PASV")) {
-			response(500, F("Passive mode not supported"));
-		} else if(cmd == _F("NOOP")) {
-			response(200);
-		} else if(!server->onCommand(cmd, data, *this))
-			response(502, F("Not supported"));
 
-		return;
+			CASE("PASS")
+			{
+				if(server.checkUser(userName, data)) {
+					userName = "";
+					state = State::Active;
+					response(230);
+				} else {
+					response(430);
+				}
+				break;
+			}
+
+			DEFAULT
+			{
+				response(530);
+				break;
+			}
+		} // SWITCH
+		break;
+
+	case State::Active:
+		SWITCH
+		{
+			CASE("SYST")
+			{
+				response(215, F("Windows_NT: Sming Framework")); // Why not? It's look like Windows :)
+				break;
+			}
+
+			CASE("PWD")
+			{
+				response(257, F("\"/\""));
+				break;
+			}
+
+			CASE("PORT")
+			{
+				cmdPort(data);
+				break;
+			}
+
+			CASE("CWD")
+			{
+				if(data == "/") {
+					response(250);
+				} else {
+					response(550);
+				}
+				break;
+			}
+
+			CASE("TYPE")
+			{
+				response(250);
+				break;
+			}
+
+			CASE("SIZE")
+			{
+				auto fileName = makeFileName(data, false);
+				if(fileExist(fileName)) {
+					auto fileSize = fileGetSize(fileName);
+					response(213, String(fileSize));
+				} else {
+					response(550);
+				}
+				break;
+			}
+
+			CASE("DELE")
+			{
+				String name = makeFileName(data, false);
+				if(fileExist(name)) {
+					fileDelete(name);
+					response(250);
+				} else {
+					response(550);
+				}
+				break;
+			}
+
+			CASE("RNFR")
+			{
+				renameFrom = data;
+				response(350);
+				break;
+			}
+
+			CASE("RNTO")
+			{
+				if(fileExist(renameFrom)) {
+					fileRename(renameFrom, data);
+					response(250);
+				} else {
+					response(550);
+				}
+				break;
+			}
+
+			CASE("RETR")
+			{
+				createDataConnection(new FtpDataRetrieve(*this, makeFileName(data, false)));
+				break;
+			}
+
+			CASE("STOR")
+			{
+				createDataConnection(new FtpDataStore(*this, makeFileName(data, true)));
+				break;
+			}
+
+			CASE("LIST")
+			{
+				createDataConnection(new FtpDataFileList(*this));
+				break;
+			}
+
+			CASE("PASV")
+			{
+				response(500, F("Passive mode not supported"));
+				break;
+			}
+
+			CASE("NOOP")
+			{
+				response(200);
+				break;
+			}
+
+			DEFAULT
+			{
+				if(!server.onCommand(cmd, data, *this)) {
+					response(502, F("Not supported"));
+				}
+				break;
+			}
+		} // SWITCH
+
+		break;
+
+	default:
+		debug_e("Invalid state");
+		assert(false);
 	}
-
-	debug_e("!!!CASE NOT IMPLEMENTED?!!!");
 }
 
 err_t FtpServerConnection::onSent(uint16_t len)
@@ -158,24 +283,6 @@ err_t FtpServerConnection::onSent(uint16_t len)
 	canTransfer = true;
 
 	return ERR_OK;
-}
-
-String FtpServerConnection::makeFileName(String name, bool shortIt)
-{
-	if(name[0] == '/') {
-		name.remove(0, 1);
-	}
-
-	if(shortIt && name.length() > 20) {
-		String ext;
-		int dotPos = name.lastIndexOf('.');
-		if(dotPos >= 0) {
-			ext = name.substring(dotPos);
-		}
-
-		return name.substring(0, 16) + ext;
-	}
-	return name;
 }
 
 void FtpServerConnection::createDataConnection(TcpConnection* connection)
@@ -195,22 +302,6 @@ void FtpServerConnection::dataTransferFinished(TcpConnection* connection)
 	response(226, F("Transfer Complete."));
 }
 
-int FtpServerConnection::getSplitterPos(const String& data, char splitter, uint8_t number)
-{
-	uint8_t k = 0;
-
-	for(unsigned i = 0; i < data.length(); i++) {
-		if(data[i] == splitter) {
-			if(k == number) {
-				return i;
-			}
-			k++;
-		}
-	}
-
-	return -1;
-}
-
 void FtpServerConnection::response(int code, String text)
 {
 	String response = String(code, DEC);
@@ -221,7 +312,8 @@ void FtpServerConnection::response(int code, String text)
 			response += _F(" FAIL");
 		}
 	} else {
-		response += ' ' + text;
+		response += ' ';
+		response += text;
 	}
 	response += "\r\n";
 
@@ -234,9 +326,9 @@ void FtpServerConnection::response(int code, String text)
 void FtpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
 	switch(state) {
-	case eFCS_Ready:
+	case State::Ready:
 		writeString(_F("220 Welcome to Sming FTP\r\n"), 0);
-		state = eFCS_Authorization;
+		state = State::Authorization;
 		break;
 
 	default:; // Do nothing
