@@ -134,3 +134,5 @@ inline String toString(HttpMethod method)
 {
 	return http_method_str(http_method(method));
 }
+
+/** @} */
