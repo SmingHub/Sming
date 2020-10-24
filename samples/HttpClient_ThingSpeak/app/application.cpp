@@ -12,18 +12,18 @@ HttpClient thingSpeak;
 
 int onDataSent(HttpConnection& client, bool successful)
 {
-	if(successful)
-		Serial.println("Success sent");
-	else
-		Serial.println("Failed");
+	Serial.println(successful ? _F("Success sent") : _F("Failed"));
 
-	String response = client.getResponse()->getBody(256);
-	Serial.println("Server response: '" + response + "'");
+	String response = client.getResponse()->getBody();
+	Serial.print(_F("Server response: '"));
+	Serial.print(response);
+	Serial.println('\'');
 	if(response.length() > 0) {
 		int intVal = response.toInt();
 
-		if(intVal == 0)
+		if(intVal == 0) {
 			Serial.println("Sensor value wasn't accepted. May be we need to wait a little?");
+		}
 	}
 
 	return 0;
@@ -44,7 +44,7 @@ void sendData()
 	url.Scheme = URI_SCHEME_HTTP;
 	url.Host = "api.thingspeak.com";
 	url.Path = "/update";
-	url.Query["key"] = "7XXUJWCWYTMXKN3L";
+	url.Query["key"] = F("7XXUJWCWYTMXKN3L");
 	url.Query["field1"] = String(sensorValue);
 	thingSpeak.downloadString(url, onDataSent);
 }
@@ -52,10 +52,10 @@ void sendData()
 // Will be called when WiFi station timeout was reached
 void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
-	Serial.println("I'm NOT CONNECTED. Need help :(");
+	Serial.println(_F("I'm NOT CONNECTED. Need help :("));
 
 	// Start soft access point
-	WifiAccessPoint.config("CONFIG ME PLEEEEASE...", "", AUTH_OPEN);
+	WifiAccessPoint.config(F("CONFIG ME PLEEEEASE..."), "", AUTH_OPEN);
 	WifiAccessPoint.enable(true);
 
 	// .. some you code for configuration ..

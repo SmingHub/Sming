@@ -14,7 +14,7 @@
 
 /**
  * @brief Memory stream operating on fixed-size buffer
- * 		  Once the limit is reached the stream will discard incoming bytes on write
+ * Once the limit is reached the stream will discard incoming bytes on write
  *
  * @ingroup stream
  */
@@ -52,6 +52,14 @@ public:
 		return eSST_Memory;
 	}
 
+	/** @brief  Get a pointer to the current position
+	 *  @retval "const char*" Pointer to current cursor position within the data stream
+	 */
+	char* getStreamPointer() const
+	{
+		return reinterpret_cast<char*>(buffer ? buffer + readPos : nullptr);
+	}
+
 	int available() override
 	{
 		return writePos - readPos;
@@ -59,7 +67,7 @@ public:
 
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
-	bool seek(int len) override;
+	int seekFrom(int offset, unsigned origin) override;
 
 	size_t write(const uint8_t* buffer, size_t size) override;
 

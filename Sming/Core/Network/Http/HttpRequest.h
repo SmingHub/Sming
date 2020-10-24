@@ -167,19 +167,19 @@ public:
 	}
 
 	/**
-	 * @brief Returns content from the body stream as string.
-	 * @param maxLen Limit size of returned String
+	 * @brief Moves content from the body stream into a String.
 	 * @retval String
-	 * @note This method consumes the stream
-	 * @note Allocation of String doubles amount of memory required, so use with care.
+	 * @note Move semantics are used to ensure that no/minimal additional memory is required.
+	 * If your application has set a non-memory stream type then the method will
+	 * fail and return an invalid String. The stream content will be left unchanged.
 	 */
-	String getBody(size_t maxLen)
+	String getBody()
 	{
-		if(bodyStream == nullptr) {
-			return nullptr;
+		String s;
+		if(bodyStream != nullptr) {
+			bodyStream->moveString(s);
 		}
-
-		return bodyStream->readString(maxLen);
+		return s;
 	}
 
 	/**

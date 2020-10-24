@@ -72,9 +72,9 @@ int HttpClientConnection::onMessageBegin(http_parser* parser)
 	return 0;
 }
 
-HttpPartResult HttpClientConnection::multipartProducer()
+MultipartStream::BodyPart HttpClientConnection::multipartProducer()
 {
-	HttpPartResult result;
+	MultipartStream::BodyPart result;
 
 	if(outgoingRequest->files.count()) {
 		const String& name = outgoingRequest->files.keyAt(0);
@@ -290,16 +290,15 @@ void HttpClientConnection::sendRequestHeaders(HttpRequest* request)
 
 	request->headers[HTTP_HEADER_CONTENT_LENGTH] = "0";
 	if(request->files.count()) {
-		MultipartStream* mStream =
-			new MultipartStream(HttpPartProducerDelegate(&HttpClientConnection::multipartProducer, this));
+		auto mStream = new MultipartStream(MultipartStream::Producer(&HttpClientConnection::multipartProducer, this));
 		request->headers[HTTP_HEADER_CONTENT_TYPE] =
 			ContentType::toString(MIME_FORM_MULTIPART) + _F("; boundary=") + mStream->getBoundary();
-		if(request->bodyStream) {
+		if(request->bodyStream != nullptr) {
 			debug_e("HttpClientConnection: existing stream is discarded due to POST params");
 			delete request->bodyStream;
 		}
 		request->bodyStream = mStream;
-	} else if(request->postParams.count()) {
+	} else if(request->postParams.count() != 0) {
 		UrlencodedOutputStream* uStream = new UrlencodedOutputStream(request->postParams);
 		request->headers[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(MIME_FORM_URL_ENCODED);
 		if(request->bodyStream) {

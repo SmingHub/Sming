@@ -86,7 +86,7 @@ MailMessage& MailMessage::addAttachment(IDataSourceStream* stream, MimeType mime
 
 MailMessage& MailMessage::addAttachment(IDataSourceStream* stream, const String& mime, const String& filename)
 {
-	HttpPartResult attachment;
+	MultipartStream::BodyPart attachment;
 	attachment.stream = stream;
 	attachment.headers = new HttpHeaders();
 	(*attachment.headers)[HTTP_HEADER_CONTENT_TYPE] = mime;

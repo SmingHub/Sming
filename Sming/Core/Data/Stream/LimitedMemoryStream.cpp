@@ -18,24 +18,40 @@ uint16_t LimitedMemoryStream::readMemoryBlock(char* data, int bufSize)
 	return written;
 }
 
-bool LimitedMemoryStream::seek(int len)
+int LimitedMemoryStream::seekFrom(int offset, unsigned origin)
 {
-	if(readPos + len > capacity) {
-		return false;
+	size_t newPos;
+	switch(origin) {
+	case SEEK_SET:
+		newPos = offset;
+		break;
+	case SEEK_CUR:
+		newPos = readPos + offset;
+		break;
+	case SEEK_END:
+		newPos = writePos + offset;
+		break;
+	default:
+		return -1;
 	}
 
-	readPos += len;
+	if(newPos > writePos) {
+		return -1;
+	}
 
-	return true;
+	readPos = newPos;
+	return readPos;
 }
 
 size_t LimitedMemoryStream::write(const uint8_t* data, size_t size)
 {
-	if(writePos + size <= capacity) {
-		memcpy(buffer + writePos, data, size);
-		writePos += size;
+	auto len = std::min(capacity - writePos, size);
+	if(len != 0) {
+		memcpy(buffer + writePos, data, len);
+		writePos += len;
 	}
 
+	// Any data which couldn't be written is just discarded
 	return size;
 }
 

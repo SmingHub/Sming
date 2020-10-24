@@ -16,11 +16,17 @@
 #include "../ObjectQueue.h"
 
 #ifndef MAX_STREAM_CHAIN_SIZE
+/**
+ * @brief Limit on number of streams in a chain
+ */
 #define MAX_STREAM_CHAIN_SIZE 10
 #endif
 
-typedef ObjectQueue<IDataSourceStream, MAX_STREAM_CHAIN_SIZE> StreamChainQueue;
-
+/**
+ * @brief Provides a read-only stream which concatenates content from multiple source streams
+ *
+ * Attached streams are released as soon as they are read out.
+ */
 class StreamChain : public MultiStream
 {
 public:
@@ -44,5 +50,7 @@ protected:
 	}
 
 private:
-	StreamChainQueue queue;
+	using Queue = ObjectQueue<IDataSourceStream, MAX_STREAM_CHAIN_SIZE>;
+
+	Queue queue;
 };

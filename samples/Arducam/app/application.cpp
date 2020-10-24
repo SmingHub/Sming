@@ -180,9 +180,9 @@ void onCapture(HttpRequest& request, HttpResponse& response)
 	Serial.printf("onCapture() process Stream %s\r\n", timer.elapsedTime().toString().c_str());
 }
 
-HttpPartResult snapshotProducer()
+MultipartStream::BodyPart snapshotProducer()
 {
-	HttpPartResult result;
+	MultipartStream::BodyPart result;
 
 	startCapture();
 	ArduCAMStream* camStream = new ArduCAMStream(&myCAM);

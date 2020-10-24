@@ -104,7 +104,7 @@ public:
 private:
 	IDataSourceStream* stream = nullptr;
 	HttpHeaders headers;
-	Vector<HttpPartResult> attachments;
+	Vector<MultipartStream::BodyPart> attachments;
 };
 
 /** @} */

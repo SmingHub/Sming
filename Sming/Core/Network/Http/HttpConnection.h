@@ -125,8 +125,7 @@ public:
 	 */
 	String getResponseString() SMING_DEPRECATED
 	{
-		// Place a reasonable limit on returned content
-		return response.getBody(4096);
+		return response.getBody();
 	}
 
 protected:

@@ -34,9 +34,9 @@ void onFile(HttpRequest& request, HttpResponse& response)
 	}
 }
 
-HttpPartResult snapshotProducer()
+MultipartStream::BodyPart snapshotProducer()
 {
-	HttpPartResult result;
+	MultipartStream::BodyPart result;
 
 	WebcamStream* webcamStream = new WebcamStream(camera);
 	result.stream = webcamStream;

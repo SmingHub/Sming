@@ -273,9 +273,9 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	TcpClient::onReadyToSendData(sourceEvent);
 }
 
-HttpPartResult SmtpClient::multipartProducer()
+MultipartStream::BodyPart SmtpClient::multipartProducer()
 {
-	HttpPartResult result;
+	MultipartStream::BodyPart result;
 
 	if(outgoingMail->attachments.count()) {
 		result = outgoingMail->attachments[0];
@@ -301,8 +301,8 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 	}
 
 	if(mail->attachments.count()) {
-		MultipartStream* mStream = new MultipartStream(HttpPartProducerDelegate(&SmtpClient::multipartProducer, this));
-		HttpPartResult text;
+		MultipartStream* mStream = new MultipartStream(MultipartStream::Producer(&SmtpClient::multipartProducer, this));
+		MultipartStream::BodyPart text;
 		text.headers = new HttpHeaders();
 		(*text.headers)[HTTP_HEADER_CONTENT_TYPE] = mail->headers[HTTP_HEADER_CONTENT_TYPE];
 		(*text.headers)[HTTP_HEADER_CONTENT_TRANSFER_ENCODING] = mail->headers[HTTP_HEADER_CONTENT_TRANSFER_ENCODING];

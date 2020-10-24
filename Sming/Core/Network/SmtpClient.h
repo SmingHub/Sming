@@ -206,7 +206,7 @@ private:
 	 * @brief Takes care to fetch the correct streams for a message
 	 * @note The magic where all streams and attachments are packed together is happening here
 	 */
-	HttpPartResult multipartProducer();
+	MultipartStream::BodyPart multipartProducer();
 };
 
 /** @} */
