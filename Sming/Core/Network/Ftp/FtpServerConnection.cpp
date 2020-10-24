@@ -106,91 +106,176 @@ void FtpServerConnection::cmdPort(const String& data)
 void FtpServerConnection::onCommand(String cmd, String data)
 {
 	cmd.toUpperCase();
+
+	/* Use macros to make code easier to read */
+#define SWITCH while(true)
+#define CASE(s) if(cmd == _F(s))
+#define DEFAULT
+
 	// We ready to quit always :)
-	if(cmd == _F("QUIT")) {
+	CASE("QUIT")
+	{
 		response(221);
 		close();
 		return;
 	}
 
 	// Strong security check :)
-	if(state == State::Authorization) {
-		if(cmd == _F("USER")) {
-			userName = data;
-			response(331);
-		} else if(cmd == _F("PASS")) {
-			if(server.checkUser(userName, data)) {
-				userName = "";
-				state = State::Active;
-				response(230);
-			} else {
-				response(430);
+	switch(state) {
+	case State::Authorization:
+		SWITCH
+		{
+			CASE("USER")
+			{
+				userName = data;
+				response(331);
+				break;
 			}
-		} else {
-			response(530);
-		}
-		return;
+
+			CASE("PASS")
+			{
+				if(server.checkUser(userName, data)) {
+					userName = "";
+					state = State::Active;
+					response(230);
+				} else {
+					response(430);
+				}
+				break;
+			}
+
+			DEFAULT
+			{
+				response(530);
+				break;
+			}
+		} // SWITCH
+		break;
+
+	case State::Active:
+		SWITCH
+		{
+			CASE("SYST")
+			{
+				response(215, F("Windows_NT: Sming Framework")); // Why not? It's look like Windows :)
+				break;
+			}
+
+			CASE("PWD")
+			{
+				response(257, F("\"/\""));
+				break;
+			}
+
+			CASE("PORT")
+			{
+				cmdPort(data);
+				break;
+			}
+
+			CASE("CWD")
+			{
+				if(data == "/") {
+					response(250);
+				} else {
+					response(550);
+				}
+				break;
+			}
+
+			CASE("TYPE")
+			{
+				response(250);
+				break;
+			}
+
+			CASE("SIZE")
+			{
+				auto fileName = makeFileName(data, false);
+				if(fileExist(fileName)) {
+					auto fileSize = fileGetSize(fileName);
+					response(213, String(fileSize));
+				} else {
+					response(550);
+				}
+				break;
+			}
+
+			CASE("DELE")
+			{
+				String name = makeFileName(data, false);
+				if(fileExist(name)) {
+					fileDelete(name);
+					response(250);
+				} else {
+					response(550);
+				}
+				break;
+			}
+
+			CASE("RNFR")
+			{
+				renameFrom = data;
+				response(350);
+				break;
+			}
+
+			CASE("RNTO")
+			{
+				if(fileExist(renameFrom)) {
+					fileRename(renameFrom, data);
+					response(250);
+				} else {
+					response(550);
+				}
+				break;
+			}
+
+			CASE("RETR")
+			{
+				createDataConnection(new FtpDataRetrieve(*this, makeFileName(data, false)));
+				break;
+			}
+
+			CASE("STOR")
+			{
+				createDataConnection(new FtpDataStore(*this, makeFileName(data, true)));
+				break;
+			}
+
+			CASE("LIST")
+			{
+				createDataConnection(new FtpDataFileList(*this));
+				break;
+			}
+
+			CASE("PASV")
+			{
+				response(500, F("Passive mode not supported"));
+				break;
+			}
+
+			CASE("NOOP")
+			{
+				response(200);
+				break;
+			}
+
+			DEFAULT
+			{
+				if(!server.onCommand(cmd, data, *this)) {
+					response(502, F("Not supported"));
+				}
+				break;
+			}
+		} // SWITCH
+
+		break;
+
+	default:
+		debug_e("Invalid state");
+		assert(false);
 	}
-
-	if(state == State::Active) {
-		if(cmd == _F("SYST")) {
-			response(215, F("Windows_NT: Sming Framework")); // Why not? It's look like Windows :)
-		} else if(cmd == _F("PWD")) {
-			response(257, F("\"/\""));
-		} else if(cmd == _F("PORT")) {
-			cmdPort(data);
-		} else if(cmd == _F("CWD")) {
-			if(data == "/") {
-				response(250);
-			} else {
-				response(550);
-			}
-		} else if(cmd == _F("TYPE")) {
-			response(250);
-		} else if(cmd == _F("SIZE")) {
-			auto fileName = makeFileName(data, false);
-			if(fileExist(fileName)) {
-				auto fileSize = fileGetSize(fileName);
-				response(213, String(fileSize));
-			} else {
-				response(550);
-			}
-		} else if(cmd == _F("DELE")) {
-			String name = makeFileName(data, false);
-			if(fileExist(name)) {
-				fileDelete(name);
-				response(250);
-			} else {
-				response(550);
-			}
-		} else if(cmd == _F("RNFR")) {
-			renameFrom = data;
-			response(350);
-		} else if(cmd == _F("RNTO")) {
-			if(fileExist(renameFrom)) {
-				fileRename(renameFrom, data);
-				response(250);
-			} else {
-				response(550);
-			}
-		} else if(cmd == _F("RETR")) {
-			createDataConnection(new FtpDataRetrieve(*this, makeFileName(data, false)));
-		} else if(cmd == _F("STOR")) {
-			createDataConnection(new FtpDataStore(*this, makeFileName(data, true)));
-		} else if(cmd == _F("LIST")) {
-			createDataConnection(new FtpDataFileList(*this));
-		} else if(cmd == _F("PASV")) {
-			response(500, F("Passive mode not supported"));
-		} else if(cmd == _F("NOOP")) {
-			response(200);
-		} else if(!server.onCommand(cmd, data, *this)) {
-			response(502, F("Not supported"));
-		}
-
-		return;
-	}
-
-	debug_e("!!!CASE NOT IMPLEMENTED?!!!");
 }
 
 err_t FtpServerConnection::onSent(uint16_t len)
