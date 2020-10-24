@@ -166,10 +166,23 @@ include $(wildcard $(ABS_BUILD_DIRS:=/*.c.d))
 include $(wildcard $(ABS_BUILD_DIRS:=/*.cpp.d))
 
 # Provide a target unless Component is custom built, in which case the component.mk will have defined this already
-$(COMPONENT_LIBPATH): $(OBJ) $(EXTRA_OBJ)
+$(COMPONENT_LIBPATH): build.ar
 	$(vecho) "AR $@"
 	$(Q) test ! -f $@ || rm $@
-	$(Q) $(AR) rcsP $@ $^
+	$(Q) $(AR) -M < build.ar
+	$(Q) mv $(notdir $(COMPONENT_LIBPATH)) $(COMPONENT_LIBPATH)
+
+define addmod
+	@echo ADDMOD $2 >> $1
+
+endef
+
+build.ar: $(OBJ) $(EXTRA_OBJ)
+	@echo CREATE $(notdir $(COMPONENT_LIBPATH)) > $@
+	$(foreach o,$(OBJ) $(EXTRA_OBJ),$(call addmod,$@,$o))
+	@echo SAVE >> $@
+	@echo END >> $@
+
 
 endif # ifeq (,$(CUSTOM_BUILD))
 endif # ifneq (,$(COMPONENT_LIBNAME))

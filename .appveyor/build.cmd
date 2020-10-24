@@ -1,19 +1,20 @@
 REM Windows build script
 
-set SMING_HOME=%APPVEYOR_BUILD_FOLDER%\Sming
+subst Z: %APPVEYOR_BUILD_FOLDER%
+set SMING_HOME=Z:\Sming
 
 if "%build_compiler%" == "udk" set ESP_HOME=%UDK_ROOT%
 if "%build_compiler%" == "eqt" set ESP_HOME=%EQT_ROOT%
 
-cd %SMING_HOME%
+cd /d %SMING_HOME%
 gcc -v
 
 set MAKE_PARALLEL=make -j2
 
 REM Move samples and tests into directory outside of the Sming repo.
 set SMING_PROJECTS_DIR=%APPVEYOR_BUILD_FOLDER%\..
-move ../samples %SMING_PROJECTS_DIR%
-move ../tests %SMING_PROJECTS_DIR%
+move ..\samples %SMING_PROJECTS_DIR%
+move ..\tests %SMING_PROJECTS_DIR%
 
 REM This will build the Basic_Blink application and most of the framework Components
 cd %SMING_PROJECTS_DIR%/samples/Basic_Blink
