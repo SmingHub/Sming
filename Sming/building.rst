@@ -741,6 +741,3 @@ directory called ‘spiffs’ still remains then it will be picked up
 instead of the main one. These sorts of issues can be checked using
 ``make list-components`` to ensure the correct Component path has been
 selected.
-
-**Components as submodules** All component.mk files must be available
-for parsing. For submodules, it can be provided in a .patch/ sub-directory.

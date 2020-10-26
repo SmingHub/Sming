@@ -18,7 +18,8 @@ endif
 .NOTPARALLEL:
 
 .PHONY: all
-all: checkdirs components application ##(default) Build all Component libraries
+all: checkdirs submodules
+	$(MAKE) components application ##(default) Build all Component libraries
 
 # Load current build type from file
 BUILD_TYPE_FILE	:= out/build-type.mk
@@ -55,8 +56,10 @@ CACHE_VARS		:=
 CONFIG_VARS			+= PROJECT_DIR
 PROJECT_DIR			:= $(CURDIR)
 
+ifndef SUBMAKE_LEVEL
 $(info )
 $(info $(notdir $(PROJECT_DIR)): Invoking '$(MAKECMDGOALS)' for $(SMING_ARCH) ($(BUILD_TYPE)) architecture)
+endif
 
 # CFLAGS used for application and any custom targets
 DEBUG_VARS			+= APP_CFLAGS
@@ -238,10 +241,6 @@ COMPONENT_SEARCH_DIRS	:= $(call FixPath,$(abspath $(COMPONENT_SEARCH_DIRS)))
 COMPONENTS_EXTRA_INCDIR	+= $(COMPONENT_SEARCH_DIRS)
 COMPONENT_SEARCH_DIRS	+= $(ARCH_COMPONENTS) $(SMING_HOME)/Components $(SMING_HOME)/Libraries
 
-# Perform whole-file patching to ensure submodule component.mk files are present
-$(foreach d,$(COMPONENT_SEARCH_DIRS),\
-	$(if $(wildcard $d/.patches/*/.),$(shell cd $d && cp -r .patches/*/ .)))
-
 # And add in any requested libraries
 COMPONENTS				+= $(sort $(ARDUINO_LIBRARIES))
 
@@ -316,6 +315,21 @@ $(foreach v,$(EXPORT_VARS),$(eval export $v))
 
 
 ##@Building
+
+COMPONENT_DIRS := $(foreach d,$(COMPONENT_SEARCH_DIRS),$(wildcard $d/*))
+
+%/component.mk:
+	@if [ -f $(@D)/../.patches/$(notdir $(@D))/component.mk ]; then \
+		echo Patching $(abspath $(@D)/../.patches/$(notdir $(@D))/component.mk); \
+		cp -u $(@D)/../.patches/$(notdir $(@D))/component.mk $@; \
+	fi
+
+.PHONY: submodules
+submodules: | $(COMPONENT_DIRS:=/component.mk) $(SUBMODULES:=/.submodule) ##Recursively fetch all required submodules
+ifneq ($(SUBMAKE_LEVEL),xxx)
+	$(Q) $(MAKE) -s --no-print-directory submodules SUBMAKE_LEVEL=$(SUBMAKE_LEVEL)x
+endif
+
 
 # Define target for building a component library
 # We add a pseudo-target for each Component (using its name) to (re)build all contained targets
@@ -402,7 +416,7 @@ $(BUILD_DIRS) $(FW_BASE) $(TOOLS_BASE) $(APP_LIBDIR) $(USER_LIBDIR):
 
 # Build all Component (user) libraries
 .PHONY: components
-components: $(SUBMODULES:=/.submodule) $(ALL_COMPONENT_TARGETS) $(CUSTOM_TARGETS)
+components: $(ALL_COMPONENT_TARGETS) $(CUSTOM_TARGETS)
 
 ##@Cleaning
 
