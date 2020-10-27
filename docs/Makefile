@@ -16,6 +16,9 @@ SPHINXBUILD		?= sphinx-build
 SOURCEDIR		= source
 BUILDDIR		= build
 
+# Components can detect when docs are being built
+MAKE_DOCS		:= 1
+
 # Documentation is copied into this directory so it gets pulled into build
 SOURCE_INCDIR	:= $(SOURCEDIR)/_inc
 
