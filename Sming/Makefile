@@ -35,8 +35,9 @@ components-clean: ##Remove generated Component (user) libraries
 	-$(Q) rm -f $(USER_LIBDIR)/*
 	-$(Q) rm -rf $(OUT_BASE)
 
+# Build list of relative paths to all submodules
+ALL_SUBMODULES := $(patsubst $(SMING_HOME)/%,%,$(ListSubmodules))
 
-ALL_SUBMODULES = $(ListSubmodules)
 
 .PHONY: submodules-clean
 submodules-clean: ##Reset state of all third-party submodules
@@ -56,6 +57,40 @@ docs-clean: ##Clean the Sming documentation
 # Pull in all submodules, regardless of whether they're used or not
 .PHONY: submodules
 submodules: $(ALL_SUBMODULES:=/.submodule) ##Fetch all third-party submodules (but do not build)
+
+# Build a list of available Components
+COMPONENT_SEARCH_DIRS	+= $(ARCH_COMPONENTS) Components Libraries
+ALL_COMPONENT_DIRS := $(sort $(foreach d,$(COMPONENT_SEARCH_DIRS),$(call ListSubDirs,$d)))
+
+# Generates a rule to fetch all submodules for a Component
+# $1 Component name
+# $2 Component path
+define GenerateFetchRule
+.PHONY: fetch-$1
+fetch-$1: $(addsuffix /.submodule,$(filter $2%,$(ALL_SUBMODULES)))
+endef
+
+# Add rules for all submodules within components
+$(foreach c,$(ALL_COMPONENT_DIRS),$(eval $(call GenerateFetchRule,$(notdir $c),$c)))
+
+FETCH_NAMES := $(filter-out fetch,$(MAKECMDGOALS))
+
+.PHONY: fetch
+ifeq (fetch,$(firstword $(MAKECMDGOALS)))
+fetch: $(foreach c,$(FETCH_NAMES),fetch-$c)
+ifndef FETCH_NAMES
+	$(info These are Components with submodules, or which are submodules themselves:)
+	$(foreach c,$(ALL_COMPONENT_DIRS),\
+		$(if $(filter $c%,$(ALL_SUBMODULES)),\
+		$(eval $$(info - $(notdir $c): $c))))
+	$(info Fetch one or more components like this: make fetch BMP180 Bounce)
+else
+	$(foreach c,$(FETCH_NAMES),$(eval $(info $c: found in '$(filter %/$c,$(ALL_COMPONENT_DIRS))')))
+	$(error OK)
+endif
+else
+fetch: ##Fetch Component or Library and display location
+endif
 
 .PHONY: test
 test: Basic_Blink Basic_rBoot Basic_Ssl Basic_HwPWM ##Build a few sample applications
