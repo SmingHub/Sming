@@ -49,7 +49,8 @@ submodules-clean: ##Reset state of all third-party submodules
 
 .PHONY: docs-clean
 docs-clean: ##Clean the Sming documentation
-	$(Q) $(MAKE) -C ../docs clean
+	@echo Cleaning documentation...
+	$(Q) $(MAKE) -s -C ../docs clean
 
 
 ##@Building

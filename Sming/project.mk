@@ -232,7 +232,7 @@ $(eval $(call ParseComponent,App,$(CURDIR),$(BUILD_BASE),$(abspath $(APP_LIBDIR)
 # Values may be overriden via command line to update the cache.
 # If file has become corrupted it will prevent cleaning, so make this conditional.
 CONFIG_CACHE_FILE	:= $(OUT_BASE)/config.mk
-ifeq (,$(findstring clean,$(MAKECMDGOALS)))
+ifndef MAKE_CLEAN
 -include $(CONFIG_CACHE_FILE)
 endif
 
@@ -601,7 +601,7 @@ $(shell	echo >> $1;
 endef
 
 # Update variable cache for all operations except cleaning
-ifeq (,$(findstring clean,$(MAKECMDGOALS)))
+ifndef MAKE_CLEAN
 CACHED_VAR_NAMES := $(sort $(CACHED_VAR_NAMES) $(CONFIG_VARS) $(RELINK_VARS) $(CACHE_VARS))
 $(eval $(call WriteConfigCache,$(CONFIG_CACHE_FILE),CACHED_VAR_NAMES))
 endif
