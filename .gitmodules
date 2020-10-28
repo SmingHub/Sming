@@ -170,3 +170,23 @@
 	path = Sming/Libraries/HueEmulator
 	url = https://github.com/mikee47/HueEmulator
 	ignore = dirty
+[submodule "Libraries.SignalGenerator"]
+	path = Sming/Libraries/SignalGenerator
+	url = https://github.com/mikee47/SignalGenerator
+	ignore = dirty
+[submodule "Libraries.SolarCalculator"]
+	path = Sming/Libraries/SolarCalculator
+	url = https://github.com/mikee47/SolarCalculator
+	ignore = dirty
+[submodule "Libraries.Timezone"]
+	path = Sming/Libraries/Timezone
+	url = https://github.com/mikee47/Timezone
+	ignore = dirty
+[submodule "Libraries.ToneGenerator"]
+	path = Sming/Libraries/ToneGenerator
+	url = https://github.com/mikee47/ToneGenerator
+	ignore = dirty
+[submodule "Libraries.RingTone"]
+	path = Sming/Libraries/RingTone
+	url = https://github.com/mikee47/RingTone
+	ignore = dirty
