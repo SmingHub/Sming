@@ -60,6 +60,11 @@ endif
 
 MAKECMDGOALS	?= all
 
+# Some components play nicer if they avoid doing stuff doing a cleanup
+ifneq (,$(findstring clean,$(MAKECMDGOALS)))
+export MAKE_CLEAN := 1
+endif
+
 export SMING_HOME
 export COMPILE := gcc
 

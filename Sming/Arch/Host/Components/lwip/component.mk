@@ -2,10 +2,12 @@
 CUSTOM_BUILD := 1
 
 # => LWIP
+ifndef MAKE_CLEAN
 ifndef ENABLE_CUSTOM_LWIP
 ENABLE_CUSTOM_LWIP		:= 2
 else ifneq ($(ENABLE_CUSTOM_LWIP), 2)
 $(error Host only supports LWIP version 2)
+endif
 endif
 
 COMPONENT_SUBMODULES	:= lwip

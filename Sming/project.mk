@@ -18,7 +18,8 @@ endif
 .NOTPARALLEL:
 
 .PHONY: all
-all: checkdirs components application ##(default) Build all Component libraries
+all: checkdirs submodules ##(default) Build all Component libraries
+	$(MAKE) components application
 
 # Load current build type from file
 BUILD_TYPE_FILE	:= out/build-type.mk
@@ -55,8 +56,10 @@ CACHE_VARS		:=
 CONFIG_VARS			+= PROJECT_DIR
 PROJECT_DIR			:= $(CURDIR)
 
+ifeq ($(MAKELEVEL),0)
 $(info )
 $(info $(notdir $(PROJECT_DIR)): Invoking '$(MAKECMDGOALS)' for $(SMING_ARCH) ($(BUILD_TYPE)) architecture)
+endif
 
 # CFLAGS used for application and any custom targets
 DEBUG_VARS			+= APP_CFLAGS
@@ -229,7 +232,7 @@ $(eval $(call ParseComponent,App,$(CURDIR),$(BUILD_BASE),$(abspath $(APP_LIBDIR)
 # Values may be overriden via command line to update the cache.
 # If file has become corrupted it will prevent cleaning, so make this conditional.
 CONFIG_CACHE_FILE	:= $(OUT_BASE)/config.mk
-ifeq (,$(findstring clean,$(MAKECMDGOALS)))
+ifndef MAKE_CLEAN
 -include $(CONFIG_CACHE_FILE)
 endif
 
@@ -237,10 +240,6 @@ endif
 COMPONENT_SEARCH_DIRS	:= $(call FixPath,$(abspath $(COMPONENT_SEARCH_DIRS)))
 COMPONENTS_EXTRA_INCDIR	+= $(COMPONENT_SEARCH_DIRS)
 COMPONENT_SEARCH_DIRS	+= $(ARCH_COMPONENTS) $(SMING_HOME)/Components $(SMING_HOME)/Libraries
-
-# Perform whole-file patching to ensure submodule component.mk files are present
-$(foreach d,$(COMPONENT_SEARCH_DIRS),\
-	$(if $(wildcard $d/.patches/*/.),$(shell cd $d && cp -r .patches/*/ .)))
 
 # And add in any requested libraries
 COMPONENTS				+= $(sort $(ARDUINO_LIBRARIES))
@@ -266,6 +265,23 @@ CMP_$1_ALL_VARS	:= $$(sort $(CMP_$1_VARS) $$(foreach c,$$(CMP_$1_DEPENDS),$$(CMP
 endef
 
 $(foreach c,$(COMPONENTS),$(eval $(call ResolveDependencies,$c)))
+
+
+# Check number of matches for a Component: should be exactly 1
+# $1 => Component name
+define CheckComponentMatches
+ifneq ($1,Sming)
+COMPONENT_MATCHES := $(filter %/$1,$(ALL_COMPONENT_DIRS))
+ifeq ($$(words $$(COMPONENT_MATCHES)),0)
+$$(warning No matches found for Component '$1')
+else ifneq ($$(words $$(COMPONENT_MATCHES)),1)
+$$(warning Multiple matches found for Component '$1':)
+$$(foreach m,$$(COMPONENT_MATCHES),$$(info - $$m))
+endif
+endif
+endef
+
+$(foreach c,$(COMPONENTS),$(eval $(call CheckComponentMatches,$c)))
 
 
 # This macro assigns a library and build path based on a hash of the component variables
@@ -316,6 +332,27 @@ $(foreach v,$(EXPORT_VARS),$(eval export $v))
 
 
 ##@Building
+
+COMPONENT_DIRS := $(foreach d,$(COMPONENT_SEARCH_DIRS),$(wildcard $d/*))
+
+%/component.mk:
+	@if [ -f $(@D)/../.patches/$(notdir $(@D))/component.mk ]; then \
+		echo Patching $(abspath $(@D)/../.patches/$(notdir $(@D))/component.mk); \
+		cp -u $(@D)/../.patches/$(notdir $(@D))/component.mk $@; \
+	fi
+
+SUBMODULES_FOUND = $(wildcard $(SUBMODULES:=/.submodule))
+SUBMODULES_FETCHED = $(filter-out $(SUBMODULES_FOUND:/.submodule=),$(SUBMODULES))
+
+.PHONY: submodules
+submodules: | $(COMPONENT_DIRS:=/component.mk) $(SUBMODULES:=/.submodule) ##Recursively fetch all required submodules
+ifneq (,$V)
+	$(call PrintVariable,SUBMODULES_FETCHED)
+endif
+ifneq ($(SUBMODULES_FETCHED),)
+	$(Q) $(MAKE) -s --no-print-directory submodules
+endif
+
 
 # Define target for building a component library
 # We add a pseudo-target for each Component (using its name) to (re)build all contained targets
@@ -402,7 +439,7 @@ $(BUILD_DIRS) $(FW_BASE) $(TOOLS_BASE) $(APP_LIBDIR) $(USER_LIBDIR):
 
 # Build all Component (user) libraries
 .PHONY: components
-components: $(SUBMODULES:=/.submodule) $(ALL_COMPONENT_TARGETS) $(CUSTOM_TARGETS)
+components: $(ALL_COMPONENT_TARGETS) $(CUSTOM_TARGETS)
 
 ##@Cleaning
 
@@ -587,7 +624,7 @@ $(shell	echo >> $1;
 endef
 
 # Update variable cache for all operations except cleaning
-ifeq (,$(findstring clean,$(MAKECMDGOALS)))
+ifndef MAKE_CLEAN
 CACHED_VAR_NAMES := $(sort $(CACHED_VAR_NAMES) $(CONFIG_VARS) $(RELINK_VARS) $(CACHE_VARS))
 $(eval $(call WriteConfigCache,$(CONFIG_CACHE_FILE),CACHED_VAR_NAMES))
 endif
