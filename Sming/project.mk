@@ -18,8 +18,8 @@ endif
 .NOTPARALLEL:
 
 .PHONY: all
-all: checkdirs submodules
-	$(MAKE) components application ##(default) Build all Component libraries
+all: checkdirs submodules ##(default) Build all Component libraries
+	$(MAKE) components application
 
 # Load current build type from file
 BUILD_TYPE_FILE	:= out/build-type.mk
@@ -56,7 +56,7 @@ CACHE_VARS		:=
 CONFIG_VARS			+= PROJECT_DIR
 PROJECT_DIR			:= $(CURDIR)
 
-ifndef SUBMAKE_LEVEL
+ifeq ($(MAKELEVEL),0)
 $(info )
 $(info $(notdir $(PROJECT_DIR)): Invoking '$(MAKECMDGOALS)' for $(SMING_ARCH) ($(BUILD_TYPE)) architecture)
 endif
@@ -324,10 +324,16 @@ COMPONENT_DIRS := $(foreach d,$(COMPONENT_SEARCH_DIRS),$(wildcard $d/*))
 		cp -u $(@D)/../.patches/$(notdir $(@D))/component.mk $@; \
 	fi
 
+SUBMODULES_FOUND = $(wildcard $(SUBMODULES:=/.submodule))
+SUBMODULES_FETCHED = $(filter-out $(SUBMODULES_FOUND:/.submodule=),$(SUBMODULES))
+
 .PHONY: submodules
 submodules: | $(COMPONENT_DIRS:=/component.mk) $(SUBMODULES:=/.submodule) ##Recursively fetch all required submodules
-ifneq ($(SUBMAKE_LEVEL),xxx)
-	$(Q) $(MAKE) -s --no-print-directory submodules SUBMAKE_LEVEL=$(SUBMAKE_LEVEL)x
+ifneq (,$V)
+	$(call PrintVariable,SUBMODULES_FETCHED)
+endif
+ifneq ($(SUBMODULES_FETCHED),)
+	$(Q) $(MAKE) -s --no-print-directory submodules
 endif
 
 
