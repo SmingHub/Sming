@@ -59,7 +59,7 @@ public:
 	unsigned getUtilisation()
 	{
 		auto elapsedCycles = getElapsedCycles();
-		if(elapsedCycles <= minLoopCycles) {
+		if(elapsedCycles <= minLoopCycles || minLoopCycles == 0) {
 			return 0;
 		}
 
