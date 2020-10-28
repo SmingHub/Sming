@@ -267,6 +267,23 @@ endef
 $(foreach c,$(COMPONENTS),$(eval $(call ResolveDependencies,$c)))
 
 
+# Check number of matches for a Component: should be exactly 1
+# $1 => Component name
+define CheckComponentMatches
+ifneq ($1,Sming)
+COMPONENT_MATCHES := $(filter %/$1,$(ALL_COMPONENT_DIRS))
+ifeq ($$(words $$(COMPONENT_MATCHES)),0)
+$$(warning No matches found for Component '$1')
+else ifneq ($$(words $$(COMPONENT_MATCHES)),1)
+$$(warning Multiple matches found for Component '$1':)
+$$(foreach m,$$(COMPONENT_MATCHES),$$(info - $$m))
+endif
+endif
+endef
+
+$(foreach c,$(COMPONENTS),$(eval $(call CheckComponentMatches,$c)))
+
+
 # This macro assigns a library and build path based on a hash of the component variables
 # $1 -> Component name
 define ParseComponentLibs
