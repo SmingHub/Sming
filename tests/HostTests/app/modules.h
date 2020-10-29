@@ -3,6 +3,7 @@
 #define TEST_MAP(XX)                                                                                                   \
 	XX(libc)                                                                                                           \
 	XX(precache)                                                                                                       \
+	XX(bitset)                                                                                                         \
 	XX(string)                                                                                                         \
 	XX(arduino_string)                                                                                                 \
 	XX(crypto)                                                                                                         \
