@@ -12,9 +12,11 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 #include <limits>
 #include <type_traits>
+#include <WString.h>
 
 /**
  * @brief Manage a set of bit values using enumeration
@@ -414,26 +416,7 @@ inline constexpr BitSet<S, E, size_> operator-(const BitSet<S, E, size_>& x, E b
 	return BitSet<S, E, size_>(S(x) & ~BitSet<S, E, size_>::bitVal(b));
 }
 
-/*
- * These allow construction of a maximally-sized BitSet in an expression,
- * which is then copy-constructed to the actual value. For example:
- *
- * 		constexpr BitSet<uint8_t, Fruit> fixedBasket = Fruit::apple | Fruit::orange;
- */
-template <typename E> inline constexpr BitSet<uint32_t, E> operator|(E a, E b)
-{
-	return BitSet<uint32_t, E>(BitSet<uint32_t, E>::bitVal(a) | BitSet<uint32_t, E>::bitVal(b));
-}
-
-template <typename E> inline constexpr BitSet<uint32_t, E> operator+(E a, E b)
-{
-	return a | b;
-}
-
-inline String toString(uint8_t value)
-{
-	return String(value);
-}
+String toString(uint8_t value);
 
 /**
  * @brief Class template to print the contents of a BitSet to a String
@@ -442,6 +425,8 @@ inline String toString(uint8_t value)
 template <typename S, typename E, size_t size_>
 String toString(const BitSet<S, E, size_>& bitset, const String& separator = ", ")
 {
+	extern String toString(E e);
+
 	String s;
 
 	for(unsigned i = 0; i < bitset.size(); ++i) {

@@ -1,8 +1,6 @@
 #include <SmingTest.h>
 #include <Data/BitSet.h>
 
-namespace
-{
 #define FRUIT_ELEMENT_MAP(XX)                                                                                          \
 	XX(apple)                                                                                                          \
 	XX(banana)                                                                                                         \
@@ -29,6 +27,11 @@ String toString(Fruit f)
 }
 
 using FruitBasket = BitSet<uint8_t, Fruit, size_t(Fruit::MAX)>;
+
+inline constexpr FruitBasket operator|(Fruit a, Fruit b)
+{
+	return FruitBasket(a) | b;
+}
 
 static constexpr FruitBasket fixedBasket = Fruit::orange | Fruit::banana | Fruit::tomato;
 
@@ -57,8 +60,6 @@ BitSet<float, uint8_t, 9> badBitSet5;
 
 */
 
-}; // namespace
-
 class BitSetTest : public TestGroup
 {
 public:
@@ -82,7 +83,7 @@ public:
 			REQUIRE(basket.value() == 0);
 			REQUIRE(!basket);
 
-			basket += Fruit::pear + Fruit::tomato;
+			basket += Fruit::pear | Fruit::tomato;
 			REQUIRE(basket);
 			REQUIRE(basket.value() == (_BV(Fruit::pear) | _BV(Fruit::tomato)));
 
