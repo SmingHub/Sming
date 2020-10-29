@@ -83,7 +83,7 @@ public:
 	 * @brief Copy constructor
 	 * @param bitset The set to copy
 	 */
-	template <typename S2> constexpr BitSet(const BitSet<S2, E>& bitset) : value_(bitset.value())
+	template <typename S2> constexpr BitSet(const BitSet<S2, E>& bitset) : bitSetValue(bitset.value())
 	{
 	}
 
@@ -91,7 +91,7 @@ public:
 	 * @brief Construct from a raw set of bits
 	 * @param value Integral type whose bits will be interpreted as set{E}
 	 */
-	constexpr BitSet(S value) : value_(value)
+	constexpr BitSet(S value) : bitSetValue(value)
 	{
 	}
 
@@ -99,7 +99,7 @@ public:
 	 * @brief Construct set containing a single value
 	 * @param e Value to place in our new BitSet object
 	 */
-	constexpr BitSet(E e) : value_{bitVal(e)}
+	constexpr BitSet(E e) : bitSetValue{bitVal(e)}
 	{
 	}
 
@@ -108,7 +108,7 @@ public:
 	 */
 	bool operator==(const BitSet& other) const
 	{
-		return value_ == other.value_;
+		return bitSetValue == other.bitSetValue;
 	}
 
 	/**
@@ -116,7 +116,7 @@ public:
 	 */
 	bool operator!=(const BitSet& other) const
 	{
-		return value_ != other.value_;
+		return bitSetValue != other.bitSetValue;
 	}
 
 	/**
@@ -124,7 +124,7 @@ public:
 	 */
 	constexpr BitSet operator~() const
 	{
-		return BitSet(~value_ & domain().value_);
+		return BitSet(~bitSetValue & domain().bitSetValue);
 	}
 
 	/**
@@ -156,7 +156,7 @@ public:
 	 */
 	BitSet& flip()
 	{
-		value_ = ~value_ & domain().value_;
+		bitSetValue = ~bitSetValue & domain().bitSetValue;
 		return *this;
 	}
 
@@ -165,7 +165,7 @@ public:
 	 */
 	BitSet& flip(E e)
 	{
-		value_ ^= bitVal(e);
+		bitSetValue ^= bitVal(e);
 		return *this;
 	}
 
@@ -174,7 +174,7 @@ public:
 	 */
 	size_t count() const
 	{
-		return __builtin_popcount(value_);
+		return __builtin_popcount(bitSetValue);
 	}
 
 	/**
@@ -182,7 +182,7 @@ public:
 	 */
 	BitSet& operator+=(const BitSet& rhs)
 	{
-		value_ |= rhs.value_;
+		bitSetValue |= rhs.bitSetValue;
 		return *this;
 	}
 
@@ -191,7 +191,7 @@ public:
 	 */
 	BitSet& operator-=(const BitSet& rhs)
 	{
-		value_ &= ~rhs.value_;
+		bitSetValue &= ~rhs.bitSetValue;
 		return *this;
 	}
 
@@ -200,7 +200,7 @@ public:
 	 */
 	BitSet& operator&=(const BitSet& rhs)
 	{
-		value_ &= rhs.value_;
+		bitSetValue &= rhs.bitSetValue;
 		return *this;
 	}
 
@@ -209,7 +209,7 @@ public:
 	 */
 	BitSet& operator|=(const BitSet& rhs)
 	{
-		value_ |= rhs.value_;
+		bitSetValue |= rhs.bitSetValue;
 		return *this;
 	}
 
@@ -218,7 +218,7 @@ public:
 	 */
 	BitSet& operator^=(const BitSet& rhs)
 	{
-		value_ ^= rhs.value_;
+		bitSetValue ^= rhs.bitSetValue;
 		return *this;
 	}
 
@@ -227,7 +227,7 @@ public:
 	 */
 	bool test(E e) const
 	{
-		return (value_ & bitVal(e)) != 0;
+		return (bitSetValue & bitVal(e)) != 0;
 	}
 
 	/**
@@ -257,7 +257,7 @@ public:
 	 */
 	bool any() const
 	{
-		return value_ != 0;
+		return bitSetValue != 0;
 	}
 
 	/**
@@ -266,7 +266,7 @@ public:
 	 */
 	bool any(const BitSet& other) const
 	{
-		return (value_ & other.value_) != 0;
+		return (bitSetValue & other.bitSetValue) != 0;
 	}
 
 	/**
@@ -274,7 +274,7 @@ public:
 	 */
 	bool all() const
 	{
-		return value_ == domain().value_;
+		return bitSetValue == domain().bitSetValue;
 	}
 
 	/**
@@ -282,7 +282,7 @@ public:
 	 */
 	bool none() const
 	{
-		return value_ == S{0};
+		return bitSetValue == S{0};
 	}
 
 	/**
@@ -290,7 +290,7 @@ public:
 	 */
 	BitSet& set()
 	{
-		value_ = domain().value_;
+		bitSetValue = domain().bitSetValue;
 		return *this;
 	}
 
@@ -302,9 +302,9 @@ public:
 	BitSet& set(E e, bool state = true)
 	{
 		if(state) {
-			value_ |= bitVal(e);
+			bitSetValue |= bitVal(e);
 		} else {
-			value_ &= ~bitVal(e);
+			bitSetValue &= ~bitVal(e);
 		}
 		return *this;
 	}
@@ -314,7 +314,7 @@ public:
 	 */
 	BitSet& reset()
 	{
-		value_ = S{0};
+		bitSetValue = S{0};
 		return *this;
 	}
 
@@ -331,7 +331,7 @@ public:
 	 */
 	bool operator==(E e) const
 	{
-		return value_ == bitVal(e);
+		return bitSetValue == bitVal(e);
 	}
 
 	/**
@@ -339,7 +339,7 @@ public:
 	 */
 	explicit constexpr operator S() const
 	{
-		return value_;
+		return bitSetValue;
 	}
 
 	/**
@@ -347,7 +347,7 @@ public:
 	 */
 	constexpr S value() const
 	{
-		return value_;
+		return bitSetValue;
 	}
 
 	/*
@@ -371,7 +371,7 @@ private:
 	{
 	}
 
-	S value_{0};
+	S bitSetValue{0};
 };
 
 template <typename S, typename E, size_t size_>
