@@ -416,6 +416,24 @@ inline constexpr BitSet<S, E, size_> operator-(const BitSet<S, E, size_>& x, E b
 	return BitSet<S, E, size_>(S(x) & ~BitSet<S, E, size_>::bitVal(b));
 }
 
+/*
+ * These allow construction of a maximally-sized BitSet in an expression,
+ * which is then copy-constructed to the actual value. For example:
+ *
+ * 		constexpr BitSet<uint8_t, Fruit> fixedBasket = Fruit::apple | Fruit::orange;
+ */
+template <typename E>
+constexpr typename std::enable_if<std::is_enum<E>::value, BitSet<uint32_t, E>>::type operator|(E a, E b)
+{
+	return BitSet<uint32_t, E>(BitSet<uint32_t, E>::bitVal(a) | BitSet<uint32_t, E>::bitVal(b));
+}
+
+template <typename E>
+constexpr typename std::enable_if<std::is_enum<E>::value, BitSet<uint32_t, E>>::type operator+(E a, E b)
+{
+	return a | b;
+}
+
 String toString(uint8_t value);
 
 /**

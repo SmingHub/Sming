@@ -24,26 +24,11 @@ For example::
 
    using FruitBasket = BitSet<uint8_t, Fruit, unsigned(Fruit::tomato) + 1>;
 
-   static constexpr FruitBasket fixedBasket = FruitBasket(Fruit::orange) | Fruit::banana | Fruit::tomato;
+   static constexpr FruitBasket fixedBasket = Fruit::orange | Fruit::banana | Fruit::tomato;
 
 A ``FruitBasket`` uses one byte of storage, with each bit representing an item of ``Fruit``.
 If the basket contains a piece of fruit, the corresponding bit is set.
 If it does not, the bit is clear.
-
-.. note::
-
-   We must add the initial ``FruitBasket(Fruit::orange)`` cast to allow the | operator to function.
-   To avoid this, declare an operator like this::
-
-      inline constexpr FruitBasket operator|(Fruit a, Fruit b)
-      {
-         return FruitBasket(a) | b;
-      }
-
-   From now on, we can just write::
-
-      FruitBasket basket = Fruit::orange | Fruit::banana | Fruit::tomato;
-   
 
 Without BitSet you implement this as follows::
 

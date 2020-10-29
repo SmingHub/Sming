@@ -28,11 +28,6 @@ String toString(Fruit f)
 
 using FruitBasket = BitSet<uint8_t, Fruit, size_t(Fruit::MAX)>;
 
-inline constexpr FruitBasket operator|(Fruit a, Fruit b)
-{
-	return FruitBasket(a) | b;
-}
-
 static constexpr FruitBasket fixedBasket = Fruit::orange | Fruit::banana | Fruit::tomato;
 
 /*
