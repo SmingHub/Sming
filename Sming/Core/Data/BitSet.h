@@ -430,6 +430,34 @@ template <typename E> inline constexpr BitSet<uint32_t, E> operator+(E a, E b)
 	return a | b;
 }
 
+inline String toString(uint8_t value)
+{
+	return String(value);
+}
+
+/**
+ * @brief Class template to print the contents of a BitSet to a String
+ * @note Requires an implementation of `toString(E)`
+ */
+template <typename S, typename E, size_t size_>
+String toString(const BitSet<S, E, size_>& bitset, const String& separator = ", ")
+{
+	String s;
+
+	for(unsigned i = 0; i < bitset.size(); ++i) {
+		if(!bitset[E(i)]) {
+			continue;
+		}
+
+		if(s) {
+			s += separator;
+		}
+		s += toString(E(i));
+	}
+
+	return s;
+}
+
 /**
  * @brief A set of 32 bits
  */

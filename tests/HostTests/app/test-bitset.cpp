@@ -3,18 +3,32 @@
 
 namespace
 {
+#define FRUIT_ELEMENT_MAP(XX)                                                                                          \
+	XX(apple)                                                                                                          \
+	XX(banana)                                                                                                         \
+	XX(kiwi)                                                                                                           \
+	XX(orange)                                                                                                         \
+	XX(passion)                                                                                                        \
+	XX(pear)                                                                                                           \
+	XX(tomato)
+
 enum class Fruit {
-	apple,
-	banana,
-	kiwi,
-	orange,
-	passion,
-	pear,
-	tomato,
+#define XX(n) n,
+	FRUIT_ELEMENT_MAP(XX)
+#undef XX
+		MAX
 };
 
-using FruitBasket = BitSet<uint8_t, Fruit, unsigned(Fruit::tomato) + 1>;
-using NumberSet = BitSet<uint32_t, uint8_t>;
+#define XX(n) #n "\0"
+DEFINE_FSTR_LOCAL(fruitStrings, FRUIT_ELEMENT_MAP(XX))
+#undef XX
+
+String toString(Fruit f)
+{
+	return CStringArray(fruitStrings)[unsigned(f)];
+}
+
+using FruitBasket = BitSet<uint8_t, Fruit, size_t(Fruit::MAX)>;
 
 static constexpr FruitBasket fixedBasket = Fruit::orange | Fruit::banana | Fruit::tomato;
 
@@ -61,6 +75,9 @@ public:
 
 		TEST_CASE("Operations")
 		{
+			Serial.print(_F("fixedBasket contains: "));
+			Serial.println(toString(fixedBasket));
+
 			FruitBasket basket;
 			REQUIRE(basket.value() == 0);
 			REQUIRE(!basket);
@@ -103,8 +120,11 @@ public:
 
 		TEST_CASE("Number set")
 		{
-			NumberSet numbers = 12U;
-			REQUIRE(numbers.value() == 12);
+			using NumberSet = BitSet<uint32_t, uint8_t>;
+			NumberSet numbers = 0x12345678U;
+			Serial.print(_F("numbers = "));
+			Serial.println(toString(numbers));
+			REQUIRE(numbers.value() == 0x12345678U);
 
 			numbers = NumberSet{};
 			REQUIRE(numbers.value() == 0);

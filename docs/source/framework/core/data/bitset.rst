@@ -68,6 +68,14 @@ Bit manipulation operators are provided so you can do logical stuff like this::
 
 And so on.
 
+To display the contents of a BitSet, do this::
+
+   Serial.print(_F("My basket contains: "));
+   Serial.println(basket1);
+
+You will also need to provide an implementation of ``toString(Fruit)``
+or whatever type you are using for the set elements.
+
 
 API
 ---
