@@ -22,7 +22,11 @@ size_t ReadWriteStream::copyFrom(IDataSourceStream* source, size_t size)
 	char buffer[bufSize];
 	size_t total = 0;
 	size_t count;
-	while((count = source->readMemoryBlock(buffer, sizeof(buffer))) != 0) {
+	while(!source->isFinished()) {
+		count = source->readMemoryBlock(buffer, sizeof(buffer));
+		if(count == 0) {
+			continue;
+		}
 		auto written = write(reinterpret_cast<uint8_t*>(buffer), count);
 		source->seek(written);
 		total += count;
