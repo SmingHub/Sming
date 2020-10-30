@@ -1,5 +1,7 @@
 #include <SmingCore.h>
+#ifdef ARCH_HOST
 #include <hostlib/CommandLine.h>
+#endif
 
 namespace
 {
@@ -45,6 +47,8 @@ void init()
 	 * See Arch/Host/Components/hostlib/options.h for one way to do this.
 	 */
 	m_printf("\n** Basic Host utility sample **\n");
+
+#ifdef ARCH_HOST
 	auto parameters = commandLine.getParameters();
 	if(parameters.count() == 0) {
 		m_printf("No command line parameters\n"
@@ -75,4 +79,14 @@ void init()
 	m_putc('\n');
 
 	System.restart();
+
+#else
+
+	Serial.println();
+	Serial.println(_F("** THIS IS A HOST-ONLY APPLICATION **"));
+	Serial.println();
+	Serial.println(_F("Please build with SMING_ARCH=Host"));
+	Serial.println();
+
+#endif
 }
