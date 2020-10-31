@@ -133,17 +133,17 @@ uint16_t HostFileStream::readMemoryBlock(char* data, int bufSize)
 	return res;
 }
 
-int HostFileStream::seekFrom(int offset, unsigned origin)
+int HostFileStream::seekFrom(int offset, SeekOrigin origin)
 {
 	if(!isValid()) {
 		return -1;
 	}
 
-	if(origin == SEEK_CUR) {
-		origin = SEEK_SET;
+	if(origin == SeekOrigin::Current) {
+		origin = SeekOrigin::Start;
 		offset += pos;
 	}
-	int newPos = ::lseek(handle, offset, origin);
+	int newPos = ::lseek(handle, offset, int(origin));
 	if(!CHECK(newPos)) {
 		return -1;
 	}

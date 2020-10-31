@@ -105,7 +105,7 @@ public:
 			Url url(FS_url);
 			MemoryDataStream stream;
 			stream.print(url);
-			stream.seekFrom(0, SEEK_SET);
+			stream.seekFrom(0, SeekOrigin::Start);
 			String s(stream.getStreamPointer(), stream.available());
 			REQUIRE(s == FS_url_out);
 		}

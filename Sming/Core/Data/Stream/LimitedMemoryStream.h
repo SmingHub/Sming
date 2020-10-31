@@ -67,7 +67,7 @@ public:
 
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
-	int seekFrom(int offset, unsigned origin) override;
+	int seekFrom(int offset, SeekOrigin origin) override;
 
 	size_t write(const uint8_t* buffer, size_t size) override;
 

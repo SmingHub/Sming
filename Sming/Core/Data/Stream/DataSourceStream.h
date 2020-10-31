@@ -11,9 +11,9 @@
 #pragma once
 
 #include <user_config.h>
-#include "Stream.h"
-#include "WString.h"
-#include <unistd.h>
+#include <Stream.h>
+#include <WString.h>
+#include "SeekOrigin.h"
 
 /** @defgroup   stream Stream functions
  *  @brief      Data stream classes
@@ -81,12 +81,12 @@ public:
 
 	/** @brief Change position in stream
 	 *  @param offset
-	 *  @param origin SEEK_SET, SEEK_CUR, SEEK_END
+	 *  @param origin
 	 *  @retval New position, < 0 on error
 	 *  @note This method is implemented by streams which support random seeking,
 	 *  such as files and memory streams.
 	 */
-	virtual int seekFrom(int offset, unsigned origin)
+	virtual int seekFrom(int offset, SeekOrigin origin)
 	{
 		return -1;
 	}
@@ -97,7 +97,7 @@ public:
 	 */
 	virtual bool seek(int len)
 	{
-		return seekFrom(len, SEEK_CUR) >= 0;
+		return seekFrom(len, SeekOrigin::Current) >= 0;
 	}
 
 	/** @brief  Check if all data has been read

@@ -284,7 +284,7 @@ public:
 
 	void __attribute__((noinline)) loadStream(IDataSourceStream& stream)
 	{
-		stream.seekFrom(0, SEEK_SET);
+		stream.seekFrom(0, SeekOrigin::Start);
 		assert(Json::deserialize(doc, stream));
 	}
 

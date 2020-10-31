@@ -108,7 +108,7 @@ public:
 		}
 
 		// get the current picture and read the desired data from it.
-		file->seekFrom(offset, SEEK_SET);
+		file->seekFrom(offset, SeekOrigin::Start);
 		return file->readMemoryBlock(buffer, size);
 	}
 
