@@ -16,6 +16,10 @@
 
 uint16_t StreamTransformer::readMemoryBlock(char* data, int bufSize)
 {
+	if(!isValid()) {
+		return 0;
+	}
+
 	if(tempStream == nullptr) {
 		tempStream = new CircularBuffer(NETWORK_SEND_BUFFER_SIZE + 10);
 	}
