@@ -1,0 +1,165 @@
+
+/* 
+  Safari (iPhone) will auto-zoom if input elements are less than 16px, and the
+  default for that platform is 11px. That causes the 'Connect' button to disappear
+  from the screen when entering login details.
+  To fix this, change the default text size to the minimum; it also makes things
+  easier to read.
+*/
+body {
+  font-size: 16px;
+}
+
+input, button {
+  font-size: inherit;
+}
+
+select {
+	font-family:"Lucida Console", monospace, serif;
+	width: 100%;
+	display: block;
+}
+
+select option {
+	width:auto;
+}
+
+
+div .menu {
+  display: inline-block;
+  cursor: pointer;
+}
+
+div .bar {
+  width: 25px;
+  height: 5px;
+  background-color: black;
+  margin: 4px 0;
+}
+
+.sidenav {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: rgba(0,0,0,0.85);
+  overflow-x: hidden;
+  transition: 0.1s;
+  padding-top: 60px;
+}
+
+.sidenav a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.2s;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+
+
+
+
+
+
+.accordion {
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  padding: 18px;
+  text-align: left;
+  border: none;
+  width: 100%;
+  outline: none;
+  transition: 0.25s;
+}
+
+/*
+  Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover)
+*/
+.active, .accordion:hover {
+  background-color: #ccc;
+}
+
+.accordion:before {
+  content: '\02795'; /* Unicode character for "plus" sign (+) */
+}
+
+.active:before {
+  content: "\2796"; /* Unicode character for "minus" sign (-) */
+}
+
+
+/*
+  Style the accordion panel. Note: hidden by default
+*/
+.panel {
+  display: none;
+  padding: 0 18px;
+  background-color: white;
+  overflow: hidden;
+}
+
+
+.panel button {
+  outline: none;
+  border: none;
+  border-radius: 8px;
+  color: black;
+  background-color: GainsBoro; 
+  padding: 10px 10px;
+  text-align: left;
+  text-decoration: none;
+  display: inline-block;
+  margin: 2px 2px;
+  cursor: pointer;
+}
+
+.panel button.on        { background-color: Red; color: white; }
+.panel button.someon    { background-color: Orange; color: white; }
+.panel button.off       { background-color: DimGray; color: white; }
+.panel button.unk       { background-color: WhiteSmoke; color: DarkGrey; opacity: 0.6; }
+.panel button.pending   { background-color: DarkSeaGreen;   color: white; }
+.panel button.disabled  { background-color: WhiteSmoke; color: black; opacity: 0.6 }
+
+.panel button.accordion { border-radius: 0px; opacity: 0.8; }
+
+
+.content {
+	display: block;
+}
+
+.group {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+} 
+
+
+#progress {
+  width: 100%;
+  background-color: lightgrey;
+  text-align: center;
+  color: white;
+}
+

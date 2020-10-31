@@ -1,0 +1,76 @@
+#
+# HTML template to list directory with links 
+#
+
+# 0: Header
+{SECTION}
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="/bootstrap.min.css">
+<title>Index of '{path}'</title>
+</head>
+<body>
+<h1><a href="/"><img src="/sming.png"></a> Basic IFS demo</h1>
+Request count: {request-count}
+<h2>{path}</h2>
+<table class="table">
+<thead >
+<tr>
+<th></th>
+<th>ID</th>
+<th>Name</th>
+<th>MIME type</th>
+<th>Last modified</th>
+<th>Size</th>
+<th>Original Size</th>
+<th>Attributes</th>
+<th>Compression</th>
+<th>Access R/W</th>
+</tr>
+</thead>
+
+{!ifdef:parent}
+<tr>
+<td colspan="6"><a href="{parent}"><span style='font-size:20px'>&hookleftarrow;</span> {parent}</a></td>
+</tr>
+{!endif}
+
+{/SECTION}
+
+
+# 1: Content
+{SECTION}
+{!iflt:$record:100}
+<tr>
+<td>{$record}</td>
+<td>{file_id}</td>
+<td><a href="{path}{name}"><span style='font-size:20px'>{icon}</span> {name}</a></td>
+<td>{!mime_type:name}</td>
+<td>{modified}</td>
+{!ifin:attr:"D"}<td></td><td></td>
+{!else}
+<td>{size}<br>{!kb:size}&nbsp;KB</td>
+<td>{original_size}<br>{!kb:original_size}&nbsp;KB</td>
+{!endif}
+<td>{!replace:attr_long:", ":"<br>"}</td>
+<td>{compression}</td>
+<td>{access_long}</td>
+</tr>
+{!else}
+Too many records {$record}
+{!endif}
+{/SECTION}
+
+
+# 2: Footer
+{SECTION}
+</table>
+<p>
+{!ifeq:{!count:1}}No files found. Last error: <b>{last_error}</b>
+{!else}{!count:1} files, {total_size} bytes ({!kb:total_size} KB){!endif}
+</body>
+</html>
+{/SECTION}
