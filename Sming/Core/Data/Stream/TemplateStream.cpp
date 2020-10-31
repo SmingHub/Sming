@@ -103,7 +103,10 @@ uint16_t TemplateStream::readMemoryBlock(char* data, int bufSize)
 			if(newlen + TEMPLATE_MAX_VAR_NAME_LEN > datalen) {
 				debug_d("trim end to %u from %u", newlen, datalen);
 				// It can be a incomplete variable name - don't split it
-				datalen = newlen;
+				// provided we're not at end of input stream
+				if(datalen == size_t(bufSize)) {
+					datalen = newlen;
+				}
 			}
 		}
 	}
