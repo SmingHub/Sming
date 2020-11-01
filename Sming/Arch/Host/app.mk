@@ -48,7 +48,7 @@ run: all $(RUN_SCRIPT) ##Run the application image
 $(RUN_SCRIPT)::
 	$(Q) echo '#!/bin/bash' > $@; \
 	$(foreach id,$(ENABLE_HOST_UARTID),echo '$(call RunHostTerminal,$(id))' >> $@;) \
-	echo '$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS)' >> $@; \
+	echo '$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS) -- $(HOST_PARAMETERS)' >> $@; \
 	chmod a+x $@
 
 .PHONY: flashfs

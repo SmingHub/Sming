@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "hostlib.h"
+#include "include/hostlib/hostlib.h"
 #include "threads.h"
 #include <vector>
 #include <string>

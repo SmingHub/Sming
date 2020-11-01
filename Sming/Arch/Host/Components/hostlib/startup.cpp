@@ -31,6 +31,7 @@
 #include <esp_tasks.h>
 #include <host_lwip.h>
 #include <stdlib.h>
+#include "include/hostlib/CommandLine.h"
 
 #include <Platform/System.h>
 #include <Platform/Timers.h>
@@ -198,6 +199,8 @@ int main(int argc, char* argv[])
 		default:;
 		}
 	}
+
+	commandLine.parse(argc - optind, &argv[optind]);
 
 	if(!host_flashmem_init(config.flash)) {
 		return 1;

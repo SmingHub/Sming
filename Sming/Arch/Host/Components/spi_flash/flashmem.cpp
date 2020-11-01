@@ -17,6 +17,7 @@
  *
  ****/
 
+#include <hostlib/hostlib.h>
 #include "flashmem.h"
 #include <string.h>
 #include <esp_spi_flash.h>
