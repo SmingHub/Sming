@@ -14,6 +14,7 @@
 #include "Data/Stream/FileStream.h"
 
 HttpClient::HttpConnectionPool HttpClient::httpConnectionPool;
+Timer HttpClient::cleanUpTimer;
 
 bool HttpClient::send(HttpRequest* request)
 {
@@ -25,18 +26,13 @@ bool HttpClient::send(HttpRequest* request)
 	if(i >= 0) {
 		// Check existing connection
 		connection = httpConnectionPool.valueAt(i);
-		if(connection->getConnectionState() > eTCS_Connecting && !connection->isActive()) {
-			debug_d("Removing stale connection: State: %d, Active: %d", connection->getConnectionState(),
-					connection->isActive());
-			httpConnectionPool.removeAt(i);
-			connection = nullptr;
-		}
 	}
 
 	if(connection == nullptr) {
 		debug_d("Creating new HttpClientConnection");
 		connection = new HttpClientConnection();
 		if(connection == nullptr) {
+			debug_e("Cannot send request. Out of memory");
 			// Out of memory
 			delete request;
 			return false;
@@ -44,6 +40,9 @@ bool HttpClient::send(HttpRequest* request)
 		httpConnectionPool[cacheKey] = connection;
 	}
 
+	if(!cleanUpTimer.isStarted()) {
+		cleanUpTimer.initializeMs<60000>(&HttpClient::cleanInactive).start(); // run every minute
+	}
 	return connection->send(request);
 }
 
@@ -63,4 +62,19 @@ bool HttpClient::downloadFile(const Url& url, const String& saveFileName, Reques
 
 	return send(
 		createRequest(url)->setResponseStream(fileStream)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
+}
+
+void HttpClient::cleanInactive()
+{
+	debug_d("Total connections: %d", httpConnectionPool.count());
+
+	for(size_t i = 0; i < httpConnectionPool.count(); i++) {
+		auto connection = httpConnectionPool.valueAt(i);
+
+		if(connection->getConnectionState() > eTCS_Connecting && !connection->isActive()) {
+			debug_d("Removing stale connection: State: %d, Active: %d, Finished: %d", connection->getConnectionState(),
+					connection->isActive(), connection->isFinished());
+			httpConnectionPool.removeAt(i);
+		}
+	}
 }

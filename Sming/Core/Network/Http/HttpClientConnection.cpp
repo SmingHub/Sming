@@ -19,22 +19,22 @@
 
 bool HttpClientConnection::connect(const String& host, int port, bool useSsl)
 {
-	debug_d("HttpClientConnection::connect: TCP state: %d, isStarted: %d, isActive: %d",
-			(tcp != nullptr ? tcp->state : -1), (int)(getConnectionState() != eTCS_Ready), (int)isActive());
+	debug_d("HCC::connect: TCP state: %d, isStarted: %d, isActive: %d", (tcp != nullptr ? tcp->state : -1),
+			(int)(getConnectionState() != eTCS_Ready), (int)isActive());
 
 	if(isProcessing()) {
 		return true;
 	}
 
 	if(getConnectionState() != eTCS_Ready && isActive()) {
-		debug_d("HttpClientConnection::reusing TCP connection ");
+		debug_d("HCC::connect: reusing TCP connection ");
 
 		// we might have still alive connection
 		onConnected(ERR_OK);
 		return true;
 	}
 
-	debug_d("HttpClientConnection::connecting ...");
+	debug_d("HCC::connect: connecting ...");
 
 	return TcpClient::connect(host, port, useSsl);
 }
@@ -43,7 +43,7 @@ bool HttpClientConnection::send(HttpRequest* request)
 {
 	if(!waitingQueue.enqueue(request)) {
 		// the queue is full and we cannot add more requests at the time.
-		debug_e("The request queue is full at the moment");
+		debug_e("HCC::send: The request queue is full at the moment");
 		delete request;
 		return false;
 	}
@@ -113,7 +113,7 @@ int HttpClientConnection::onMessageComplete(http_parser* parser)
 		return -2; // no current request...
 	}
 
-	debug_d("staticOnMessageComplete: Execution queue: %d, %s", executionQueue.count(),
+	debug_d("HCC::onMessageComplete: Execution queue: %d, %s", executionQueue.count(),
 			incomingRequest->uri.toString().c_str());
 
 	// we are finished with this request
@@ -132,7 +132,17 @@ int HttpClientConnection::onMessageComplete(http_parser* parser)
 	delete incomingRequest;
 	incomingRequest = nullptr;
 
-	if(!executionQueue.count()) {
+	state = eHCS_Ready;
+
+	auto response = getResponse();
+
+	if(response->headers.contains(HTTP_HEADER_CONNECTION) &&
+	   response->headers[HTTP_HEADER_CONNECTION].equalsIgnoreCase(_F("close"))) {
+		// if the server does not support keep-alive -> close the connection
+		// see: https://tools.ietf.org/html/rfc2616#section-14.10
+		debug_d("HCC::onMessageComplete: Closing as requested by server");
+		close();
+	} else if(executionQueue.count() == 0) {
 		onConnected(ERR_OK);
 	}
 
@@ -215,14 +225,15 @@ int HttpClientConnection::onBody(const char* at, size_t length)
 
 void HttpClientConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	debug_d("HttpClientConnection::onReadyToSendData: waitingQueue.count: %d", waitingQueue.count());
+	debug_d("HCC::onReadyToSendData: executionQueue: %d, waitingQueue.count: %d", executionQueue.count(),
+			waitingQueue.count());
 
 REENTER:
 	switch(state) {
 	case eHCS_Ready: {
 		HttpRequest* request = waitingQueue.peek();
 		if(request == nullptr) {
-			debug_d("Nothing in the waiting queue");
+			debug_d("HCC::onReadyToSendData: Nothing in the waiting queue");
 			outgoingRequest = nullptr;
 			break;
 		}
@@ -244,7 +255,7 @@ REENTER:
 		} // executionQueue.count()
 
 		if(!executionQueue.enqueue(request)) {
-			debug_e("The working queue is full at the moment");
+			debug_e("HCC::onReadyToSendData: The working queue is full at the moment");
 			break;
 		}
 
@@ -267,6 +278,12 @@ REENTER:
 	case eHCS_StartBody:
 	case eHCS_SendingBody: {
 		if(sendRequestBody(outgoingRequest)) {
+			if(!(outgoingRequest->method == HTTP_GET || outgoingRequest->method == HTTP_HEAD)) {
+				// we should wait for the response from this request.
+				state = eHCS_WaitResponse;
+				break;
+			}
+
 			state = eHCS_Ready;
 			delete stream;
 			stream = nullptr;
@@ -274,10 +291,29 @@ REENTER:
 		}
 	}
 
+	case eHCS_WaitResponse:
 	default:; // Do nothing
 	}		  // switch(state)
 
 	TcpClient::onReadyToSendData(sourceEvent);
+}
+
+void HttpClientConnection::onClosed()
+{
+	if(waitingQueue.count() + executionQueue.count() > 0) {
+		debug_d("HCC::onClosed: Trying to reconnect and send pending requests");
+		reset();
+		init(HTTP_RESPONSE);
+
+		HttpRequest* request = nullptr;
+		if(executionQueue.count() > 0) {
+			request = executionQueue.peek();
+		} else {
+			request = waitingQueue.peek();
+		}
+		bool useSsl = (request->uri.Scheme == URI_SCHEME_HTTP_SECURE);
+		connect(request->uri.Host, request->uri.getPort(), useSsl);
+	}
 }
 
 void HttpClientConnection::sendRequestHeaders(HttpRequest* request)
@@ -294,7 +330,7 @@ void HttpClientConnection::sendRequestHeaders(HttpRequest* request)
 		request->headers[HTTP_HEADER_CONTENT_TYPE] =
 			ContentType::toString(MIME_FORM_MULTIPART) + _F("; boundary=") + mStream->getBoundary();
 		if(request->bodyStream != nullptr) {
-			debug_e("HttpClientConnection: existing stream is discarded due to POST params");
+			debug_e("HCC::sendRequestHeaders: existing stream is discarded due to POST params");
 			delete request->bodyStream;
 		}
 		request->bodyStream = mStream;
@@ -302,7 +338,7 @@ void HttpClientConnection::sendRequestHeaders(HttpRequest* request)
 		UrlencodedOutputStream* uStream = new UrlencodedOutputStream(request->postParams);
 		request->headers[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(MIME_FORM_URL_ENCODED);
 		if(request->bodyStream) {
-			debug_e("HttpClientConnection: existing stream is discarded due to POST params");
+			debug_e("HCC::sendRequestHeaders: existing stream is discarded due to POST params");
 			delete request->bodyStream;
 		}
 		request->bodyStream = uStream;

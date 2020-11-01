@@ -52,6 +52,11 @@ public:
 
 	void reset() override;
 
+	bool isFinished()
+	{
+		return (waitingQueue.count() + executionQueue.count() == 0);
+	}
+
 protected:
 	// HTTP parser methods
 
@@ -62,6 +67,8 @@ protected:
 
 	// TCP methods
 	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
+
+	void onClosed() override;
 
 	void cleanup() override;
 

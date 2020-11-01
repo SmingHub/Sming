@@ -47,7 +47,8 @@ enum HttpConnectionState {
 	eHCS_SendingHeaders,
 	eHCS_StartBody,
 	eHCS_SendingBody,
-	eHCS_Sent
+	eHCS_Sent,
+	eHCS_WaitResponse
 };
 
 typedef ObjectMap<String, ReadWriteStream> HttpFiles;
