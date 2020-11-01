@@ -76,7 +76,7 @@ bool TcpConnection::connect(const String& server, int port, bool useSsl)
 		ssl->hostName = server;
 	}
 
-	debug_tcp_d("connect to \"%s\"", server.c_str());
+	debug_tcp_d("connect to \"%s:%d\"", server.c_str(), port);
 	canSend = false; // Wait for connection
 
 	struct DnsLookup {
