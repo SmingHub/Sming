@@ -187,6 +187,13 @@ void TcpClient::onError(err_t err)
 	TcpConnection::onError(err);
 }
 
+void TcpClient::onClosed()
+{
+	onFinished(state);
+	TcpConnection::onClosed();
+	state = eTCS_Ready;
+}
+
 void TcpClient::onFinished(TcpClientState finishState)
 {
 	freeStreams();

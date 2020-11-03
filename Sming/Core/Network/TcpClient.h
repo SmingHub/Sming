@@ -131,6 +131,8 @@ protected:
 	err_t onReceive(pbuf* buf) override;
 	err_t onSent(uint16_t len) override;
 	void onError(err_t err) override;
+	void onClosed() override;
+
 	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
 
 	virtual void onFinished(TcpClientState finishState);

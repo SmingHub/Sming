@@ -23,6 +23,7 @@
 #include "Http/HttpRequest.h"
 #include "Http/HttpClientConnection.h"
 #include "Data/Stream/LimitedMemoryStream.h"
+#include <Timer.h>
 
 class HttpClient
 {
@@ -126,7 +127,7 @@ public:
 	}
 
 	/**
-	 * Use this method to clean all request queues and object pools
+	 * @brief Use this method to clean all object pools
 	 */
 	static void cleanup()
 	{
@@ -142,6 +143,10 @@ protected:
 protected:
 	typedef ObjectMap<String, HttpClientConnection> HttpConnectionPool;
 	static HttpConnectionPool httpConnectionPool;
+
+private:
+	static Timer cleanUpTimer;
+	static void cleanInactive();
 };
 
 /** @} */
