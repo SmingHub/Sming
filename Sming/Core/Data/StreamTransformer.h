@@ -69,13 +69,15 @@ public:
 		return -1;
 	}
 
-	//Use base class documentation
+	bool isValid() const
+	{
+		return sourceStream != nullptr && sourceStream->isValid();
+	}
+
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
-	//Use base class documentation
 	bool seek(int len) override;
 
-	//Use base class documentation
 	bool isFinished() override;
 
 	String getName() const override

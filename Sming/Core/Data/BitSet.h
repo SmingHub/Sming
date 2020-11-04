@@ -421,15 +421,22 @@ inline constexpr BitSet<S, E, size_> operator-(const BitSet<S, E, size_>& x, E b
  * which is then copy-constructed to the actual value. For example:
  *
  * 		constexpr BitSet<uint8_t, Fruit> fixedBasket = Fruit::apple | Fruit::orange;
+ *
+ * `is_convertible` prevents match to regular enums or integral values, but allows enum class.
+ *
  */
 template <typename E>
-constexpr typename std::enable_if<std::is_enum<E>::value, BitSet<uint32_t, E>>::type operator|(E a, E b)
+constexpr
+	typename std::enable_if<std::is_enum<E>::value && !std::is_convertible<E, int>::value, BitSet<uint32_t, E>>::type
+	operator|(E a, E b)
 {
 	return BitSet<uint32_t, E>(BitSet<uint32_t, E>::bitVal(a) | BitSet<uint32_t, E>::bitVal(b));
 }
 
 template <typename E>
-constexpr typename std::enable_if<std::is_enum<E>::value, BitSet<uint32_t, E>>::type operator+(E a, E b)
+constexpr
+	typename std::enable_if<std::is_enum<E>::value && !std::is_convertible<E, int>::value, BitSet<uint32_t, E>>::type
+	operator+(E a, E b)
 {
 	return a | b;
 }
@@ -445,14 +452,14 @@ String toString(const BitSet<S, E, size_>& bitset, const String& separator = ", 
 {
 	extern String toString(E e);
 
-	String s;
+	String s = String::empty;
 
 	for(unsigned i = 0; i < bitset.size(); ++i) {
 		if(!bitset[E(i)]) {
 			continue;
 		}
 
-		if(s) {
+		if(s.length() != 0) {
 			s += separator;
 		}
 		s += toString(E(i));

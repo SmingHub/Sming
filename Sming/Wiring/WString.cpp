@@ -616,6 +616,13 @@ bool String::equals(const char* cstr, size_t length) const
 
 bool String::equalsIgnoreCase(const char* cstr) const
 {
+	auto len = length();
+	if(len == 0) {
+		return (cstr == nullptr || *cstr == '\0');
+	}
+	if(cstr == nullptr) {
+		return false;
+	}
 	auto buf = cbuffer();
 	if(buf == cstr) {
 		return true;
