@@ -7,7 +7,7 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-Dial::Client client;
+static Dial::Client client;
 
 void onRun(Dial::App& app, HttpResponse& response)
 {

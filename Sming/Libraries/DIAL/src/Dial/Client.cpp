@@ -101,7 +101,6 @@ bool Client::connect(ConnectedCallback callback, const String& type)
 
 bool Client::connect(const Url& descriptionUrl, ConnectedCallback callback)
 {
-	this->descriptionUrl = descriptionUrl;
 	onConnected = callback;
 
 	debug_d("Fetching '%s'", descriptionUrl.toString().c_str());

@@ -1,3 +1,22 @@
+/**
+ * Client.h
+ *
+ * Copyright 2020 slaff <slaff@attachix.com>
+ *
+ * This file is part of the Sming DIAL Library
+ *
+ * This library is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, version 3 or later.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with FlashString.
+ * If not, see <https://www.gnu.org/licenses/>.
+ *
+ ****/
+
 #pragma once
 
 #include <SmingCore.h>
@@ -6,6 +25,12 @@
 #include "App.h"
 
 using namespace rapidxml;
+
+/** @defgroup   DIAL client
+ *  @brief      Provides DIAL client
+ *  @ingroup    multimedia SSDP
+ *  @{
+ */
 
 namespace Dial
 {
@@ -41,6 +66,12 @@ public:
 
 	void onNotify(SSDP::BasicMessage& msg) override;
 
+	/**
+	 * @brief Gets pointer to an application object
+	 * @param applicationId the unique application.
+	 * 				A list of registered ids can be found here: http://www.dial-multiscreen.org/dial-registry/namespace-database#TOC-Registered-Names
+	 * @retval pointer to an application obeject
+	 */
 	App* getApp(const String& applicationId);
 
 	/**
@@ -79,3 +110,5 @@ private:
 };
 
 } // namespace Dial
+
+/** @} */
