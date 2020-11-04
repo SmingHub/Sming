@@ -3,6 +3,8 @@
 #include <hostlib/CommandLine.h>
 #endif
 
+#ifdef ARCH_HOST
+
 namespace
 {
 #define XX(name, ext, mime) ext "\0"
@@ -35,6 +37,8 @@ void testWebConstants()
 }
 
 } // namespace
+
+#endif
 
 void init()
 {
