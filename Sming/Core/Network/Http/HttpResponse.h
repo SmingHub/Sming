@@ -66,13 +66,33 @@ public:
 		code = HTTP_STATUS_NOT_FOUND;
 	}
 
-	HttpResponse* setContentType(const String& type);
-	HttpResponse* setContentType(enum MimeType type);
+	HttpResponse* setContentType(const String& type)
+	{
+		headers[HTTP_HEADER_CONTENT_TYPE] = type;
+		return this;
+	}
+
+	HttpResponse* setContentType(enum MimeType type)
+	{
+		return setContentType(ContentType::toString(type));
+	}
+
 	HttpResponse* setCookie(const String& name, const String& value);
-	HttpResponse* setHeader(const String& name, const String& value);
+
+	HttpResponse* setHeader(const String& name, const String& value)
+	{
+		headers[name] = value;
+		return this;
+	}
+
 	HttpResponse* setCache(int maxAgeSeconds = 3600, bool isPublic = false);
+
 	// Access-Control-Allow-Origin for AJAX from a different domain
-	HttpResponse* setAllowCrossDomainOrigin(const String& controlAllowOrigin);
+	HttpResponse* setAllowCrossDomainOrigin(const String& controlAllowOrigin)
+	{
+		headers[HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN] = controlAllowOrigin;
+		return this;
+	}
 
 	/**
 	 * @brief Send file by name

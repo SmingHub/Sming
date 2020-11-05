@@ -44,7 +44,11 @@ public:
 	 * @param value
 	 * @retval MailMessage&
 	 */
-	MailMessage& setHeader(const String& name, const String& value);
+	MailMessage& setHeader(const String& name, const String& value)
+	{
+		headers[name] = value;
+		return *this;
+	}
 
 	/**
 	 * @brief Get a reference to the current set of headers

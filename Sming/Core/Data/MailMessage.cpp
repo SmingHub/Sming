@@ -13,13 +13,6 @@
 #include "MailMessage.h"
 #include "Stream/MemoryDataStream.h"
 
-MailMessage& MailMessage::setHeader(const String& name, const String& value)
-{
-	headers[name] = value;
-
-	return *this;
-}
-
 HttpHeaders& MailMessage::getHeaders()
 {
 	if(!headers.contains(HTTP_HEADER_FROM)) {

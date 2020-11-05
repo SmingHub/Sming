@@ -229,7 +229,7 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	}
 
 	case eHCS_Sent: {
-		if(response.headers[HTTP_HEADER_CONNECTION] == _F("close")) {
+		if(response.headers[HTTP_HEADER_CONNECTION] == F("close")) {
 			setTimeOut(1); // decrease the timeout to 1 tick
 		}
 
@@ -254,7 +254,11 @@ void HttpServerConnection::sendResponseHeaders(HttpResponse* response)
 	if(response->stream != nullptr && !response->headers.contains(HTTP_HEADER_ETAG)) {
 		String tag = response->stream->id();
 		if(tag.length() > 0) {
-			response->headers[HTTP_HEADER_ETAG] = String('"' + tag + '"');
+			String s;
+			s += '"';
+			s += tag;
+			s += '"';
+			response->headers[HTTP_HEADER_ETAG] = s;
 		}
 	}
 
@@ -269,8 +273,11 @@ void HttpServerConnection::sendResponseHeaders(HttpResponse* response)
 	}
 #endif /* DISABLE_HTTPSRV_ETAG */
 
-	String statusLine =
-		F("HTTP/1.1 ") + String(response->code) + ' ' + httpGetStatusText((enum http_status)response->code) + "\r\n";
+	String statusLine = F("HTTP/1.1 ");
+	statusLine += response->code;
+	statusLine += ' ';
+	statusLine += httpGetStatusText(HttpStatus(response->code);
+	statusLine += "\r\n";
 	sendString(statusLine);
 	if(response->stream != nullptr && response->stream->available() >= 0) {
 		response->headers[HTTP_HEADER_CONTENT_LENGTH] = String(response->stream->available());
@@ -280,19 +287,19 @@ void HttpServerConnection::sendResponseHeaders(HttpResponse* response)
 	}
 
 	if(!response->headers.contains(HTTP_HEADER_CONNECTION)) {
-		if(request.headers[HTTP_HEADER_CONNECTION] == _F("close")) {
+		if(request.headers[HTTP_HEADER_CONNECTION] == F("close")) {
 			// the other side requests closing of the tcp connection...
-			response->headers[HTTP_HEADER_CONNECTION] = _F("close");
+			response->headers[HTTP_HEADER_CONNECTION] = F("close");
 		} else {
-			response->headers[HTTP_HEADER_CONNECTION] = _F("keep-alive"); // Keep-Alive to reuse the connection
+			response->headers[HTTP_HEADER_CONNECTION] = F("keep-alive"); // Keep-Alive to reuse the connection
 		}
 	}
 
 #if HTTP_SERVER_EXPOSE_NAME == 1
 	if(!response->headers.contains(HTTP_HEADER_SERVER)) {
-		String s = _F("HttpServer/Sming");
+		String s = F("HttpServer/Sming");
 #if HTTP_SERVER_EXPOSE_VERSION == 1
-		s += _F(" Sming/" SMING_VERSION);
+		s += F(" Sming/" SMING_VERSION);
 #endif
 		response->headers[HTTP_HEADER_SERVER] = s;
 	}
@@ -325,7 +332,7 @@ bool HttpServerConnection::sendResponseBody(HttpResponse* response)
 		}
 
 		delete stream;
-		if(response->headers[HTTP_HEADER_TRANSFER_ENCODING] == _F("chunked")) {
+		if(response->headers[HTTP_HEADER_TRANSFER_ENCODING] == F("chunked")) {
 			stream = new ChunkedStream(response->stream);
 		} else {
 			stream = response->stream; // avoid intermediate buffers
@@ -358,7 +365,7 @@ void HttpServerConnection::sendError(const String& message, enum http_status cod
 	html += message ? message : httpGetStatusText((enum http_status)response.code);
 	html += F("</H2>");
 	response.headers[HTTP_HEADER_CONTENT_LENGTH] = html.length();
-	response.headers[HTTP_HEADER_CONNECTION] = _F("close");
+	response.headers[HTTP_HEADER_CONNECTION] = F("close");
 	response.sendString(html);
 
 	send();

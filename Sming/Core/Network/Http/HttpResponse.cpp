@@ -15,40 +15,22 @@
 #include "Data/Stream/MemoryDataStream.h"
 #include "Data/Stream/FileStream.h"
 
-HttpResponse* HttpResponse::setContentType(const String& type)
-{
-	headers[HTTP_HEADER_CONTENT_TYPE] = type;
-	return this;
-}
-
-HttpResponse* HttpResponse::setContentType(enum MimeType type)
-{
-	return setContentType(ContentType::toString(type));
-}
-
 HttpResponse* HttpResponse::setCookie(const String& name, const String& value)
 {
-	headers[HTTP_HEADER_SET_COOKIE] = name + '=' + value;
+	String s = name;
+	s += '=';
+	s += value;
+	headers[HTTP_HEADER_SET_COOKIE] = s;
 	return this;
 }
 
 HttpResponse* HttpResponse::setCache(int maxAgeSeconds, bool isPublic)
 {
 	String cache = isPublic ? F("public") : F("private");
-	cache += F(", max-age=") + String(maxAgeSeconds) + F(", must-revalidate");
+	cache += F(", max-age=");
+	cache += maxAgeSeconds;
+	cache += F(", must-revalidate");
 	headers[HTTP_HEADER_CACHE_CONTROL] = cache;
-	return this;
-}
-
-HttpResponse* HttpResponse::setAllowCrossDomainOrigin(const String& controlAllowOrigin)
-{
-	headers[HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN] = controlAllowOrigin;
-	return this;
-}
-
-HttpResponse* HttpResponse::setHeader(const String& name, const String& value)
-{
-	headers[name] = value;
 	return this;
 }
 
