@@ -36,7 +36,18 @@
  * {
  */
 
-using HttpMethod = enum http_method;
+/**
+ * @brief Strongly-typed enum which shadows http_method from http_parser library
+ */
+enum class HttpMethod {
+#define XX(num, name, string) name = num,
+	HTTP_METHOD_MAP(XX)
+#undef XX
+};
+
+#define XX(num, name, string) constexpr HttpMethod HTTP_##name = HttpMethod::name;
+HTTP_METHOD_MAP(XX)
+#undef XX
 
 /**
  * @brief Identifies current state for an HTTP connection
@@ -97,5 +108,5 @@ static inline String httpGetStatusText(unsigned code)
 
 inline String toString(HttpMethod method)
 {
-	return http_method_str(method);
+	return http_method_str(http_method(method));
 }

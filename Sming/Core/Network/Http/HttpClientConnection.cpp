@@ -318,7 +318,11 @@ void HttpClientConnection::onClosed()
 
 void HttpClientConnection::sendRequestHeaders(HttpRequest* request)
 {
-	sendString(String(http_method_str(request->method)) + ' ' + request->uri.getPathWithQuery() + _F(" HTTP/1.1\r\n"));
+	String s = toString(request->method);
+	s += ' ';
+	s += request->uri.getPathWithQuery();
+	s += _F(" HTTP/1.1\r\n");
+	sendString(s);
 
 	if(!request->headers.contains(HTTP_HEADER_HOST)) {
 		request->headers[HTTP_HEADER_HOST] = request->uri.getHostWithPort();

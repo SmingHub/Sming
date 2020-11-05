@@ -69,7 +69,7 @@ void HttpRequest::reset()
 String HttpRequest::toString(const HttpRequest& req)
 {
 	String content;
-	content += http_method_str(req.method);
+	content += ::toString(req.method);
 	content += ' ';
 	content += req.uri.getPathWithQuery();
 	content += _F(" HTTP/1.1\r\n");

@@ -128,22 +128,14 @@ public:
 	/**
 	 * @brief Obtain request method
 	 */
-	http_method method() const
+	HttpMethod method() const
 	{
-		return http_method(parser.method);
+		return HttpMethod(parser.method);
 	}
 
-	void setMethod(http_method method)
+	void setMethod(HttpMethod method)
 	{
 		parser.method = unsigned(method);
-	}
-
-	/**
-	 * @brief Obtain text for request method
-	 */
-	const char* methodStr() const
-	{
-		return http_method_str(method());
 	}
 
 	/**
