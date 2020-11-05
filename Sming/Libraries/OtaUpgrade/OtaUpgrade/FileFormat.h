@@ -21,20 +21,20 @@ extern "C" {
 
 /** File header of an unencrypted OTA upgrade file.
  */
-typedef struct {
+struct OtaFileHeader {
 	uint32_t magic; ///< File type identification, either #OTA_HEADER_MAGIC_SIGNED or #OTA_HEADER_MAGIC_NOT_SIGNED.
 	uint32_t buildTimestampLow;  ///< File creation timestamp, Milliseconds since 1900/01/01 (lower 32 bits)
 	uint32_t buildTimestampHigh; ///< File creation timestamp, Milliseconds since 1900/01/01 (lower 32 bits)
 	uint8_t romCount;			 ///< Number of ROM images in this filem, each preceeded with an #OTA_RomHeader.
 	uint8_t reserved[3];		 ///< Reserved bytes, must be zero for compatibility with future versions.
-} OtaFileHeader;
+};
 
 /** Header of ROM image inside an OTA upgrade file.
  */
-typedef struct {
+struct OtaRomHeader {
 	uint32_t address; ///< Flash memory destination offset for this ROM image.
 	uint32_t size;	///< Size of ROM image content following this header, in bytes.
-} OtaRomHeader;
+};
 
 /** Expected value for OTA_FileHeader::magic for digitally signed upgrad file. */
 #define OTA_HEADER_MAGIC_SIGNED 0xf01af02a

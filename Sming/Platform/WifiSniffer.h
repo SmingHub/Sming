@@ -89,9 +89,9 @@ public:
 	}
 };
 
-typedef Delegate<void(uint8_t* data, uint16_t length)> WifiSnifferCallback;
-typedef Delegate<void(const BeaconInfo& beacon)> WifiBeaconCallback;
-typedef Delegate<void(const ClientInfo& client)> WifiClientCallback;
+using WifiSnifferCallback = Delegate<void(uint8_t* data, uint16_t length)>;
+using WifiBeaconCallback = Delegate<void(const BeaconInfo& beacon)>;
+using WifiClientCallback = Delegate<void(const ClientInfo& client)>;
 
 class WifiSniffer : public ISystemReadyHandler
 {

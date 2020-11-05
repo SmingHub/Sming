@@ -20,7 +20,7 @@ const uint16_t A0 = 9999;
 //#define PB 2
 //#define PC 3
 
-typedef uint32_t GPIO_REG_TYPE;
+using GPIO_REG_TYPE = uint32_t;
 
 // We use maximum compatibility to standard Arduino logic.
 

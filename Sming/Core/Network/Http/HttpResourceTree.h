@@ -14,7 +14,7 @@
 
 #include "HttpResource.h"
 
-typedef Delegate<void(HttpRequest& request, HttpResponse& response)> HttpPathDelegate;
+using HttpPathDelegate = Delegate<void(HttpRequest& request, HttpResponse& response)>;
 
 /** @brief Identifies the default resource path */
 #define RESOURCE_PATH_DEFAULT String('*')

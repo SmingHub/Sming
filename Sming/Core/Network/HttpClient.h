@@ -141,7 +141,7 @@ protected:
 	}
 
 protected:
-	typedef ObjectMap<String, HttpClientConnection> HttpConnectionPool;
+	using HttpConnectionPool = ObjectMap<String, HttpClientConnection>;
 	static HttpConnectionPool httpConnectionPool;
 
 private:

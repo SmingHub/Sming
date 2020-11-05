@@ -74,7 +74,7 @@ enum WpsStatus {
 /**
  * @brief Scan complete handler function
  */
-typedef Delegate<void(bool success, BssList& list)> ScanCompletedDelegate;
+using ScanCompletedDelegate = Delegate<void(bool success, BssList& list)>;
 
 /**
  * @brief Smart configuration handler function
@@ -82,14 +82,14 @@ typedef Delegate<void(bool success, BssList& list)> ScanCompletedDelegate;
  * @param info
  * @retval bool return true to perform default configuration
  */
-typedef Delegate<bool(SmartConfigEvent event, const SmartConfigEventInfo& info)> SmartConfigDelegate;
+using SmartConfigDelegate = Delegate<bool(SmartConfigEvent event, const SmartConfigEventInfo& info)>;
 
 /**
  * @brief WPS configuration callback function
  * @param status
  * @retval bool return true to perform default configuration
  */
-typedef Delegate<bool(WpsStatus status)> WPSConfigDelegate;
+using WPSConfigDelegate = Delegate<bool(WpsStatus status)>;
 
 /** @brief  WiFi station class
  */

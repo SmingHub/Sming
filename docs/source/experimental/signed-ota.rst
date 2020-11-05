@@ -30,10 +30,10 @@ To use it, you can subclass RbootOutputStream like this:
 
    const u8 _my_prefix[6] = { PREFIX_MAGIC, PREFIX_TYPE };
 
-   typedef struct {
+   struct MyHdr {
        u8  prefix[PREFIX_SIZE];
        u8  signature[SIGNATURE_SIZE];
-   } MyHdr;
+   };
 
    //-----------------------------------------------------------------------------
    class MyStream : public RbootOutputStream {

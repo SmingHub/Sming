@@ -44,14 +44,14 @@ enum MqttClientState { eMCS_Ready = 0, eMCS_SendingData };
 
 class MqttClient;
 
-typedef Delegate<int(MqttClient& client, mqtt_message_t* message)> MqttDelegate;
-typedef ObjectQueue<mqtt_message_t, MQTT_REQUEST_POOL_SIZE> MqttRequestQueue;
+using MqttDelegate = Delegate<int(MqttClient& client, mqtt_message_t* message)>;
+using MqttRequestQueue = ObjectQueue<mqtt_message_t, MQTT_REQUEST_POOL_SIZE>;
 
 #ifndef MQTT_NO_COMPAT
 /** @deprecated Use MqttDelegate instead */
-typedef Delegate<void(String topic, String message)> MqttStringSubscriptionCallback;
+using MqttStringSubscriptionCallback = Delegate<void(String topic, String message)>;
 /** @deprecated Use MqttDelegate instead */
-typedef Delegate<void(uint16_t msgId, int type)> MqttMessageDeliveredCallback;
+using MqttMessageDeliveredCallback = Delegate<void(uint16_t msgId, int type)>;
 #endif
 
 class MqttClient : protected TcpClient

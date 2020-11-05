@@ -91,7 +91,7 @@ enum HttpConnectionState {
 	eHCS_WaitResponse
 };
 
-typedef ObjectMap<String, ReadWriteStream> HttpFiles;
+using HttpFiles = ObjectMap<String, ReadWriteStream>;
 
 /**
  * @brief Return a descriptive string for the given error

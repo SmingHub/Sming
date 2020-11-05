@@ -56,7 +56,7 @@
 
 /** @brief  Days of week
 */
-typedef enum {
+enum dtDays_t {
 	dtSunday,	///< Sunday
 	dtMonday,	///< Monday
 	dtTuesday,   ///< Tuesday
@@ -64,7 +64,7 @@ typedef enum {
 	dtThursday,  ///< Thursday
 	dtFriday,	///< Friday
 	dtSaturday   ///< Saturday
-} dtDays_t;
+};
 
 /** @brief  Date and time class
  *

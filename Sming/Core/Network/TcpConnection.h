@@ -34,7 +34,7 @@ class String;
 class IDataSourceStream;
 class TcpConnection;
 
-typedef Delegate<void(TcpConnection&)> TcpConnectionDestroyedDelegate;
+using TcpConnectionDestroyedDelegate = Delegate<void(TcpConnection&)>;
 
 class TcpConnection : public IpConnection
 {

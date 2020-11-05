@@ -20,7 +20,7 @@
 #include <WString.h>
 #include "Data/Stream/SeekOrigin.h"
 
-typedef signed short file_t; ///< File handle
+using file_t = signed short; ///< File handle
 
 /// File open flags
 enum FileOpenFlags {

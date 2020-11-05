@@ -20,8 +20,8 @@
  * @{
 */
 
-typedef void (*TimerCallback)(void* arg); ///< Interrupt-compatible C callback function pointer
-using TimerDelegate = Delegate<void()>;   ///< Delegate callback
+using TimerCallback = void (*)(void* arg); ///< Interrupt-compatible C callback function pointer
+using TimerDelegate = Delegate<void()>;	///< Delegate callback
 
 /**
  * @brief Callback timer API class template

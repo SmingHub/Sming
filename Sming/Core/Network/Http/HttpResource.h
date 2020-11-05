@@ -20,12 +20,12 @@
 
 class HttpServerConnection;
 
-typedef Delegate<int(HttpServerConnection& connection, HttpRequest&, const char* at, int length)>
-	HttpServerConnectionBodyDelegate;
-typedef Delegate<int(HttpServerConnection& connection, HttpRequest&, char* at, int length)>
-	HttpServerConnectionUpgradeDelegate;
-typedef Delegate<int(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)>
-	HttpResourceDelegate;
+using HttpServerConnectionBodyDelegate =
+	Delegate<int(HttpServerConnection& connection, HttpRequest&, const char* at, int length)>;
+using HttpServerConnectionUpgradeDelegate =
+	Delegate<int(HttpServerConnection& connection, HttpRequest&, char* at, int length)>;
+using HttpResourceDelegate =
+	Delegate<int(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)>;
 
 /**
  * @brief Instances of this class are registered with an HttpServer for a specific URL

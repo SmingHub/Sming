@@ -36,13 +36,17 @@ DECLARE_FSTR(WSSTR_SECRET)
 
 class WebsocketConnection;
 
-typedef Vector<WebsocketConnection*> WebsocketList;
+using WebsocketList = Vector<WebsocketConnection*>;
 
-typedef Delegate<void(WebsocketConnection&)> WebsocketDelegate;
-typedef Delegate<void(WebsocketConnection&, const String&)> WebsocketMessageDelegate;
-typedef Delegate<void(WebsocketConnection&, uint8_t* data, size_t size)> WebsocketBinaryDelegate;
+using WebsocketDelegate = Delegate<void(WebsocketConnection&)>;
+using WebsocketMessageDelegate = Delegate<void(WebsocketConnection&, const String&)>;
+using WebsocketBinaryDelegate = Delegate<void(WebsocketConnection&, uint8_t* data, size_t size)>;
 
-enum WsConnectionState { eWSCS_Ready, eWSCS_Open, eWSCS_Closed };
+enum WsConnectionState {
+	eWSCS_Ready,
+	eWSCS_Open,
+	eWSCS_Closed,
+};
 
 struct WsFrameInfo {
 	ws_frame_type_t type = WS_FRAME_TEXT;

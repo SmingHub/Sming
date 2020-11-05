@@ -20,8 +20,8 @@
 #include <WConstants.h>
 #include <sming_attr.h>
 
-typedef void (*InterruptCallback)();
-typedef Delegate<void()> InterruptDelegate;
+using InterruptCallback = void (*)();
+using InterruptDelegate = Delegate<void()>;
 
 /** @brief  Convert Arduino interrupt mode to Sming mode
  *  @param  mode Arduino mode type

@@ -29,7 +29,7 @@
 template <typename Element> class Vector : public Countable<Element>
 {
 public:
-	typedef int (*Comparer)(const Element& lhs, const Element& rhs);
+	using Comparer = int (*)(const Element& lhs, const Element& rhs);
 
 	// constructors
 	Vector(unsigned int initialCapacity = 10, unsigned int capacityIncrement = 10);
@@ -84,7 +84,7 @@ public:
 			copyFrom(rhv);
 		return *this;
 	}
-	const Vector<Element>& operator=(const Vector<Element>&& other)  noexcept // move assignment
+	const Vector<Element>& operator=(const Vector<Element>&& other) noexcept // move assignment
 	{
 		if(_data != nullptr) {
 			removeAllElements();

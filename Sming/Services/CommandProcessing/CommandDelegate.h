@@ -20,7 +20,7 @@
  *  @note   CommandFunctionDelegate defines the structure of a function that handles individual commands
  *  @note   Can use standard print functions on commandOutput
  */
-typedef Delegate<void(String commandLine, CommandOutput* commandOutput)> CommandFunctionDelegate;
+using CommandFunctionDelegate = Delegate<void(String commandLine, CommandOutput* commandOutput)>;
 
 /** @deprecated Use `CommandFunctionDelegate` instead */
 typedef CommandFunctionDelegate commandFunctionDelegate SMING_DEPRECATED;

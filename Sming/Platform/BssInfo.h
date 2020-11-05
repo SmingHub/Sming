@@ -25,7 +25,7 @@ enum WifiAuthMode {
 };
 #else
 #include <esp_systemapi.h>
-typedef AUTH_MODE WifiAuthMode;
+using WifiAuthMode = AUTH_MODE;
 #endif
 
 class BssInfo
@@ -61,4 +61,4 @@ public:
 	bool hidden;				///< True if AP is hidden
 };
 
-typedef Vector<BssInfo> BssList; ///< List of BSS
+using BssList = Vector<BssInfo>; ///< List of BSS

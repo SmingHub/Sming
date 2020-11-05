@@ -25,17 +25,15 @@
 #include "SystemClock.h"
 #include "Services/CommandProcessing/CommandExecutor.h"
 
+#ifndef TELNETSERVER_MAX_COMMANDSIZE
 #define TELNETSERVER_MAX_COMMANDSIZE 64
+#endif
 
-typedef Delegate<void(TcpClient* client, char* data, int size)> TelnetServerCommandDelegate;
+using TelnetServerCommandDelegate = Delegate<void(TcpClient* client, char* data, int size)>;
 
 class TelnetServer : public TcpServer
 {
 public:
-	TelnetServer()
-	{
-	}
-
 	//	void setCommandDelegate(TelnetServerCommandDelegate reqDelegate);
 	void enableDebug(bool reqStatus);
 	void enableCommand(bool reqStatus);

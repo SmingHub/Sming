@@ -16,25 +16,26 @@
 #include "Services/CommandProcessing/CommandProcessingIncludes.h"
 
 /** @brief  Delegate constructor usage: (&YourClass::method, this)
+ * 	Handler function for debug print
  *  @ingroup event_handlers
  */
-typedef Delegate<void(char dbgChar)> DebugPrintCharDelegate; ///<Handler function for debug print
+using DebugPrintCharDelegate = Delegate<void(char dbgChar)>;
 
 /** @brief  Structure for debug options
  *  @ingroup structures
  */
-typedef struct {
-	DebugPrintCharDelegate debugDelegate = nullptr; ///< Function to handle debug output
-	Stream* debugStream = nullptr;					///< Debug output stream
-} DebugOuputOptions;
+struct DebugOuputOptions {
+	DebugPrintCharDelegate debugDelegate; ///< Function to handle debug output
+	Stream* debugStream{nullptr};		  ///< Debug output stream
+};
 
 /** @brief  Debug prefix state
  *  @ingroup constants
  */
-typedef enum {
+enum eDBGPrefix {
 	eDBGnoPrefix = 0, ///< Do not use debug prefix
 	eDBGusePrefix = 1 ///< Use debug prefix
-} eDBGPrefix;
+};
 
 /** @defgroup   debug Debug functions
  *  @brief      Provides debug functions

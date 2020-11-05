@@ -85,7 +85,7 @@ enum SmtpState {
 
 class SmtpClient;
 
-typedef Delegate<int(SmtpClient& client, int code, char* status)> SmtpClientCallback;
+using SmtpClientCallback = Delegate<int(SmtpClient& client, int code, char* status)>;
 
 class SmtpClient : protected TcpClient
 {

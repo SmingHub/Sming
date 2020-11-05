@@ -23,7 +23,7 @@
  *  @{
  */
 
-typedef ObjectQueue<HttpRequest, HTTP_REQUEST_POOL_SIZE> RequestQueue;
+using RequestQueue = ObjectQueue<HttpRequest, HTTP_REQUEST_POOL_SIZE>;
 
 class HttpClientConnection : public HttpConnection
 {

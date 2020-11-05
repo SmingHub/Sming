@@ -21,11 +21,11 @@
  * Content is received in chunks which we need to reassemble into name=value pairs.
  * This structure stores the temporary values during parsing.
  */
-typedef struct {
-	char searchChar = '=';
+struct FormUrlParserState {
+	char searchChar{'='};
 	String postName;
 	String postValue;
-} FormUrlParserState;
+};
 
 /*
  * The incoming URL is parsed

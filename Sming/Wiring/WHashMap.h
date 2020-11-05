@@ -37,7 +37,7 @@
 template <typename K, typename V> class HashMap
 {
 public:
-	typedef bool (*comparator)(const K&, const K&);
+	using Comparator = bool (*)(const K&, const K&);
 
 	/*
     || @constructor
@@ -55,7 +55,7 @@ public:
     ||
     || @parameter compare optional function for comparing a key against another (for complex types)
     */
-	HashMap(comparator compare) : cb_comparator(compare)
+	HashMap(Comparator compare) : cb_comparator(compare)
 	{
 	}
 
@@ -228,7 +228,7 @@ protected:
 	V nil;
 	uint16_t currentIndex = 0;
 	uint16_t size = 0;
-	comparator cb_comparator = nullptr;
+	Comparator cb_comparator = nullptr;
 
 private:
 	HashMap(const HashMap<K, V>& that);
