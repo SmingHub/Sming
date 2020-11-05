@@ -1,7 +1,16 @@
 diff --git a/http_parser.h b/http_parser.h
-index df88252..b237dfd 100644
+index df88252..b6bbf2e 100644
 --- a/http_parser.h
 +++ b/http_parser.h
+@@ -153,7 +153,7 @@ typedef int (*http_cb) (http_parser*);
+ 
+ enum http_status
+   {
+-#define XX(num, name, string) HTTP_STATUS_##name = num,
++#define XX(num, name, string) HTTP_STATUS_CODE_##name = num,
+   HTTP_STATUS_MAP(XX)
+ #undef XX
+   };
 @@ -206,7 +206,7 @@ enum http_status
  
  enum http_method
@@ -13,7 +22,7 @@ index df88252..b237dfd 100644
    };
 
 diff --git a/http_parser.c b/http_parser.c
-index 95ff42f..8724810 100644
+index 95ff42f..1329701 100644
 --- a/http_parser.c
 +++ b/http_parser.c
 @@ -19,8 +19,7 @@
@@ -206,6 +215,15 @@ index 95ff42f..8724810 100644
  
          if (unhex_val == -1) {
            if (ch == ';' || ch == ' ') {
+@@ -2207,7 +2187,7 @@ const char *
+ http_status_str (enum http_status s)
+ {
+   switch (s) {
+-#define XX(num, name, string) case HTTP_STATUS_##name: return #string;
++#define XX(num, name, string) case HTTP_STATUS_CODE_##name: return #string;
+     HTTP_STATUS_MAP(XX)
+ #undef XX
+     default: return "<unknown>";
 @@ -2231,18 +2211,6 @@ http_parser_settings_init(http_parser_settings *settings)
    memset(settings, 0, sizeof(*settings));
  }

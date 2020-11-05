@@ -172,7 +172,7 @@ int HttpClientConnection::onHeadersComplete(const HttpHeaders& headers)
 	}
 
 	response.headers.setMultiple(headers);
-	response.code = parser.status_code;
+	response.code = HttpStatus(parser.status_code);
 
 	if(incomingRequest->auth != nullptr) {
 		incomingRequest->auth->setResponse(getResponse());

@@ -50,6 +50,19 @@ HTTP_METHOD_MAP(XX)
 #undef XX
 
 /**
+ * @brief HTTP status code
+ */
+enum class HttpStatus {
+#define XX(num, name, string) name = num,
+	HTTP_STATUS_MAP(XX)
+#undef XX
+};
+
+#define XX(num, name, string) constexpr HttpStatus HTTP_STATUS_##name = HttpStatus::name;
+HTTP_STATUS_MAP(XX)
+#undef XX
+
+/**
  * @brief Identifies current state for an HTTP connection
  */
 enum HttpConnectionState {
@@ -66,8 +79,6 @@ typedef ObjectMap<String, ReadWriteStream> HttpFiles;
 
 /**
  * @brief Return a string name of the given error
- * @param err
- * @retval String
  * @note This replaces the one in http_parser module which uses a load of RAM
  */
 String httpGetErrorName(enum http_errno err);
@@ -79,33 +90,25 @@ inline String toString(enum http_errno err)
 
 /**
  * @brief Return a descriptive string for the given error
- * @param err
- * @retval String
  */
 String httpGetErrorDescription(enum http_errno err);
 
 /**
  * @brief Return a descriptive string for an HTTP status code
- * @param code
- * @retval String
  */
-String httpGetStatusText(enum http_status code);
-
-inline String toString(enum http_status code)
-{
-	return httpGetStatusText(code);
-}
+String toString(HttpStatus code);
 
 /**
  * @brief Return a descriptive string for an HTTP status code
- * @param code
- * @retval String
  */
 static inline String httpGetStatusText(unsigned code)
 {
-	return httpGetStatusText((enum http_status)code);
+	return toString(HttpStatus(code));
 }
 
+/**
+ * @brief Return text for an HTTP method
+ */
 inline String toString(HttpMethod method)
 {
 	return http_method_str(http_method(method));

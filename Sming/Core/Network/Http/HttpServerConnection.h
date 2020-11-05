@@ -107,7 +107,7 @@ protected:
 
 	// TCP methods
 	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
-	virtual void sendError(const String& message = nullptr, enum http_status code = HTTP_STATUS_BAD_REQUEST);
+	virtual void sendError(const String& message = nullptr, HttpStatus code = HTTP_STATUS_BAD_REQUEST);
 
 private:
 	void sendResponseHeaders(HttpResponse* response);

@@ -274,9 +274,9 @@ void HttpServerConnection::sendResponseHeaders(HttpResponse* response)
 #endif /* DISABLE_HTTPSRV_ETAG */
 
 	String statusLine = F("HTTP/1.1 ");
-	statusLine += response->code;
+	statusLine += unsigned(response->code);
 	statusLine += ' ';
-	statusLine += httpGetStatusText(HttpStatus(response->code);
+	statusLine += toString(response->code);
 	statusLine += "\r\n";
 	sendString(statusLine);
 	if(response->stream != nullptr && response->stream->available() >= 0) {
@@ -354,7 +354,7 @@ bool HttpServerConnection::sendResponseBody(HttpResponse* response)
 	return true;
 }
 
-void HttpServerConnection::sendError(const String& message, enum http_status code)
+void HttpServerConnection::sendError(const String& message, HttpStatus code)
 {
 	debug_d("SEND ERROR PAGE");
 	response.reset();
@@ -362,7 +362,7 @@ void HttpServerConnection::sendError(const String& message, enum http_status cod
 	response.setContentType(MIME_HTML);
 
 	String html = F("<H2 color='#444'>");
-	html += message ? message : httpGetStatusText((enum http_status)response.code);
+	html += message ?: toString(code);
 	html += F("</H2>");
 	response.headers[HTTP_HEADER_CONTENT_LENGTH] = html.length();
 	response.headers[HTTP_HEADER_CONNECTION] = F("close");

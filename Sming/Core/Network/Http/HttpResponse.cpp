@@ -115,9 +115,9 @@ String HttpResponse::toString(const HttpResponse& res)
 {
 	String content;
 	content += F("HTTP/1.1 ");
-	content += res.code;
+	content += unsigned(res.code);
 	content += ' ';
-	content += httpGetStatusText(res.code);
+	content += ::toString(res.code);
 	content += " \r\n";
 	for(unsigned i = 0; i < res.headers.count(); i++) {
 		content += res.headers[i];

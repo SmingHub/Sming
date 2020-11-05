@@ -173,7 +173,7 @@ public:
 
 	bool isSuccess()
 	{
-		return (code >= HTTP_STATUS_OK && code <= 399);
+		return (code >= HTTP_STATUS_OK && code < HTTP_STATUS_BAD_REQUEST);
 	}
 
 	/**
@@ -197,7 +197,7 @@ private:
 	void setStream(IDataSourceStream* stream);
 
 public:
-	unsigned code = HTTP_STATUS_OK; ///< The HTTP status response code
+	HttpStatus code = HTTP_STATUS_OK; ///< The HTTP status response code
 	HttpHeaders headers;
 	ReadWriteStream* buffer = nullptr;   ///< Internal stream for storing strings and receiving responses
 	IDataSourceStream* stream = nullptr; ///< The body stream

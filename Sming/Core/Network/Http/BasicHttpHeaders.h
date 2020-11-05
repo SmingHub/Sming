@@ -141,14 +141,9 @@ public:
 	/**
 	 * @brief Obtain response status
 	 */
-	http_status status() const
+	HttpStatus status() const
 	{
-		return http_status(parser.status_code);
-	}
-
-	String statusText() const
-	{
-		return httpGetStatusText(status());
+		return HttpStatus(parser.status_code);
 	}
 
 	/**

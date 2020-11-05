@@ -85,7 +85,7 @@ public:
 	 */
 	int getResponseCode() const SMING_DEPRECATED
 	{
-		return response.code;
+		return int(response.code);
 	}
 
 	/**

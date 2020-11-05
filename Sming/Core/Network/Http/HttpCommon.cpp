@@ -6,10 +6,6 @@
  *
  * HttpCommon.cpp
  *
- * @author: 2018 - Mikee47 <mike@sillyhouse.net>
- *
- * 	httpGetErrorName(), httpGetErrorDescription() and httpGetStatusText() functions added
- *
  ****/
 
 #include "HttpCommon.h"
@@ -52,11 +48,11 @@ HTTP_STATUS_MAP(XX)
 #undef XX
 
 #define XX(num, name, string) {HTTP_STATUS_##name, &hpsText_##name},
-DEFINE_FSTR_MAP_LOCAL(httpStatusMap, enum http_status, FlashString, HTTP_STATUS_MAP(XX));
+DEFINE_FSTR_MAP_LOCAL(httpStatusMap, HttpStatus, FlashString, HTTP_STATUS_MAP(XX));
 #undef XX
 
-String httpGetStatusText(enum http_status code)
+String toString(HttpStatus code)
 {
 	auto s = String(httpStatusMap[code]);
-	return s ?: F("<unknown_") + String(code) + '>';
+	return s ?: F("<unknown_") + String(unsigned(code)) + '>';
 }

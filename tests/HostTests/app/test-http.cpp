@@ -29,7 +29,7 @@ public:
 		}
 
 		for(int i = 100; i < 550; ++i) {
-			debug_d("http_status(%d) = \"%s\"", i, httpGetStatusText(i).c_str());
+			debug_d("HTTP Status(%d) = \"%s\"", i, toString(HttpStatus(i)).c_str());
 		}
 #endif
 
@@ -39,7 +39,7 @@ public:
 			REQUIRE(s == F("HPE_UNKNOWN"));
 			s = httpGetErrorDescription(HPE_INVALID_URL);
 			REQUIRE(s == F("invalid URL"));
-			s = httpGetStatusText(HTTP_STATUS_TOO_MANY_REQUESTS);
+			s = toString(HTTP_STATUS_TOO_MANY_REQUESTS);
 			REQUIRE(s.equalsIgnoreCase(F("too many requests")));
 		}
 	}
