@@ -65,10 +65,10 @@ int Client::onDescription(HttpConnection& connection, bool success)
 		applicationUrl = response->headers[_F("Application-URL")];
 	}
 
-	auto stream = reinterpret_cast<LimitedMemoryStream*>(response->stream);
-	stream->print('\0');
+	String content;
+	response->stream->moveString(content);
 	XML::Document doc;
-	XML::deserialize(doc, stream->getStreamPointer());
+	XML::deserialize(doc, content.begin());
 
 	descriptionUrl = Url(connection.getRequest()->uri);
 
@@ -133,10 +133,10 @@ XML::Node* Client::getNode(HttpConnection& connection, const String& path)
 		return nullptr;
 	}
 
-	auto stream = reinterpret_cast<LimitedMemoryStream*>(response->stream);
-	stream->print('\0');
+	String content;
+	response->stream->moveString(content);
 	XML::Document doc;
-	XML::deserialize(doc, stream->getStreamPointer());
+	XML::deserialize(doc, content.begin());
 
 	return XML::getNode(doc, path);
 }
