@@ -70,7 +70,7 @@ bool App::run(const HttpParams& params, ResponseCallback onResponse)
 {
 	auto request = new HttpRequest(applicationUrl);
 	request->method = HTTP_POST;
-	request->setPostParameters(params);
+	request->postParams = params;
 	request->setResponseStream(new LimitedMemoryStream(maxDescriptionSize));
 	request->onRequestComplete([onResponse, this](HttpConnection& connection, bool successful) -> int {
 		auto headers = connection.getResponse()->headers;
