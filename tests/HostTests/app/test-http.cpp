@@ -23,9 +23,8 @@ public:
 	{
 #if DEBUG_VERBOSE_LEVEL == DBG
 		for(int i = 0; i < 100; ++i) {
-			auto err = http_errno(i);
-			debug_d("httpError(%d) = \"%s\", \"%s\"", i, httpGetErrorName(err).c_str(),
-					httpGetErrorDescription(err).c_str());
+			auto err = HttpError(i);
+			debug_d("httpError(%d) = \"%s\", \"%s\"", i, toString(err).c_str(), httpGetErrorDescription(err).c_str());
 		}
 
 		for(int i = 100; i < 550; ++i) {
@@ -35,7 +34,7 @@ public:
 
 		TEST_CASE("http lookups")
 		{
-			auto s = httpGetErrorName(HPE_UNKNOWN);
+			auto s = toString(HPE_UNKNOWN);
 			REQUIRE(s == F("HPE_UNKNOWN"));
 			s = httpGetErrorDescription(HPE_INVALID_URL);
 			REQUIRE(s == F("invalid URL"));

@@ -63,6 +63,22 @@ HTTP_STATUS_MAP(XX)
 #undef XX
 
 /**
+ * @brief HTTP error codes
+ */
+enum class HttpError {
+#define XX(n, s) n,
+	HTTP_ERRNO_MAP(XX)
+#undef XX
+};
+
+#define XX(n, s) constexpr HttpError HPE_##n = HttpError::n;
+HTTP_ERRNO_MAP(XX)
+#undef XX
+
+/* Macro defined using C++ type. Internal http_parser code has own definition */
+#define HTTP_PARSER_ERRNO(p) HttpError((p)->http_errno)
+
+/**
  * @brief Identifies current state for an HTTP connection
  */
 enum HttpConnectionState {
@@ -78,20 +94,25 @@ enum HttpConnectionState {
 typedef ObjectMap<String, ReadWriteStream> HttpFiles;
 
 /**
+ * @brief Return a descriptive string for the given error
+ */
+String toString(HttpError err);
+
+/**
  * @brief Return a string name of the given error
  * @note This replaces the one in http_parser module which uses a load of RAM
+ * @deprecated Use `toString(HttpError)`
  */
-String httpGetErrorName(enum http_errno err);
-
-inline String toString(enum http_errno err)
+inline String httpGetErrorName(HttpError err) SMING_DEPRECATED;
+inline String httpGetErrorName(HttpError err)
 {
-	return httpGetErrorName(err);
+	return toString(err);
 }
 
 /**
  * @brief Return a descriptive string for the given error
  */
-String httpGetErrorDescription(enum http_errno err);
+String httpGetErrorDescription(HttpError err);
 
 /**
  * @brief Return a descriptive string for an HTTP status code

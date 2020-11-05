@@ -184,7 +184,7 @@ int HttpServerConnection::onBody(const char* at, size_t length)
 	return 0;
 }
 
-bool HttpServerConnection::onHttpError(http_errno error)
+bool HttpServerConnection::onHttpError(HttpError error)
 {
 	response.code = HTTP_STATUS_BAD_REQUEST;
 	int hasError = onMessageComplete(nullptr);

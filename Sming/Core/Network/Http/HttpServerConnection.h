@@ -103,7 +103,7 @@ protected:
 		return true;
 	}
 
-	bool onHttpError(http_errno error) override;
+	bool onHttpError(HttpError error) override;
 
 	// TCP methods
 	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
