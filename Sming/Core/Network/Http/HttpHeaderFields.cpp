@@ -29,20 +29,20 @@ String HttpHeaderFields::toString(HttpHeaderFieldName name) const
 	}
 
 	if(name < HTTP_HEADER_CUSTOM) {
-		return fieldNameStrings[name - 1];
+		return fieldNameStrings[unsigned(name) - 1];
 	}
 
-	return customFieldNames[name - HTTP_HEADER_CUSTOM];
+	return customFieldNames[unsigned(name) - unsigned(HTTP_HEADER_CUSTOM)];
 }
 
 String HttpHeaderFields::toString(const String& name, const String& value)
 {
 	String s;
 	s.reserve(name.length() + 2 + value.length() + 2);
-	s.concat(name);
-	s.concat(": ");
-	s.concat(value);
-	s.concat("\r\n");
+	s += name;
+	s += ": ";
+	s += value;
+	s += "\r\n";
 	return s;
 }
 
@@ -60,7 +60,7 @@ HttpHeaderFieldName HttpHeaderFields::findCustomFieldName(const String& name) co
 {
 	auto index = customFieldNames.indexOf(name);
 	if(index >= 0) {
-		return static_cast<HttpHeaderFieldName>(HTTP_HEADER_CUSTOM + index);
+		return static_cast<HttpHeaderFieldName>(unsigned(HTTP_HEADER_CUSTOM) + index);
 	}
 
 	return HTTP_HEADER_UNKNOWN;
