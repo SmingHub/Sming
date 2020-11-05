@@ -59,6 +59,13 @@ enum MimeType {
 
 namespace ContentType
 {
+/** @brief Obtain MIME type value from file extension
+ *  @param extension excluding '.' separator (e.g. "htm", "json")
+ *  @param unknown Value to return if type cannot be determined
+ *  @retval MimeType
+ */
+MimeType fromFileExtension(const char* extension, MimeType unknown);
+
 /** @brief Obtain content type string from file extension
  *  @param extension excluding '.' separator (e.g. "htm", "json")
  *  @retval String
@@ -78,7 +85,7 @@ static inline String fromFileExtension(const String& extension)
  *  @param m the MIME type
  *  @retval String
  */
-String toString(enum MimeType m);
+String toString(MimeType m);
 
 /** @brief Get enumerated value for a MIME type string
  *  @param str
@@ -94,6 +101,13 @@ inline MimeType fromString(const String& str)
 {
 	return fromString(str.c_str());
 }
+
+/** @brief Obtain MIME type value from file name or path, with extension
+ *  @param fileName
+ *  @param unknown Value to return if type cannot be determined
+ *  @retval MimeType
+ */
+MimeType fromFullFileName(const char* fileName, MimeType unknown);
 
 /** @brief Obtain content type string from file name or path, with extension
  *  @param fileName

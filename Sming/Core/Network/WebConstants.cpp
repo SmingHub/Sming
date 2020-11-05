@@ -25,26 +25,34 @@ DEFINE_FSTR_LOCAL(fstr_mime, MIME_TYPE_MAP(XX))
 DEFINE_FSTR_LOCAL(fstr_ext, MIME_TYPE_MAP(XX))
 #undef XX
 
-String fromFileExtension(const char* extension)
+MimeType fromFileExtension(const char* extension, MimeType unknown)
 {
-	CStringArray mimeStrings(fstr_mime);
-
 	// We accept 'htm' or 'html', but the latter is preferred
 	if(strcasecmp(extension, _F("htm")) == 0) {
-		return mimeStrings[MIME_HTML];
+		return MIME_HTML;
 	}
 
 	int i = CStringArray(fstr_ext).indexOf(extension);
-	if(i < 0) {
+	return (i < 0) ? unknown : MimeType(i);
+}
+
+String fromFileExtension(const char* extension)
+{
+	auto mime = fromFileExtension(extension, MIME_UNKNOWN);
+	if(mime == MIME_UNKNOWN) {
 		// Type undefined - if (String) will return false
 		return nullptr;
 	}
 
-	return mimeStrings[i];
+	return toString(mime);
 }
 
-String toString(enum MimeType m)
+String toString(MimeType m)
 {
+	if(m == MIME_UNKNOWN) {
+		return nullptr;
+	}
+
 	return CStringArray(fstr_mime)[m];
 }
 
@@ -59,15 +67,20 @@ MimeType fromString(const char* str)
 	return (i < 0) ? MIME_UNKNOWN : MimeType(i);
 }
 
-String fromFullFileName(const char* fileName)
+MimeType fromFullFileName(const char* fileName, MimeType unknown)
 {
 	if(fileName == nullptr) {
-		return nullptr;
+		return unknown;
 	}
 
 	const char* extension = strrchr(fileName, '.');
+	return extension ? fromFileExtension(extension + 1, unknown) : unknown;
+}
 
-	return extension ? fromFileExtension(extension + 1) : nullptr;
+String fromFullFileName(const char* fileName)
+{
+	MimeType mime = fromFullFileName(fileName, MIME_UNKNOWN);
+	return toString(mime);
 }
 
 }; // namespace ContentType
