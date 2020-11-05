@@ -55,7 +55,7 @@ MailMessage& MailMessage::setBody(IDataSourceStream* stream, MimeType mime)
 	}
 
 	this->stream = stream;
-	headers[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(mime);
+	headers[HTTP_HEADER_CONTENT_TYPE] = toString(mime);
 
 	return *this;
 }
@@ -74,7 +74,7 @@ MailMessage& MailMessage::addAttachment(FileStream* stream)
 
 MailMessage& MailMessage::addAttachment(IDataSourceStream* stream, MimeType mime, const String& filename)
 {
-	return addAttachment(stream, ContentType::toString(mime), filename);
+	return addAttachment(stream, toString(mime), filename);
 }
 
 MailMessage& MailMessage::addAttachment(IDataSourceStream* stream, const String& mime, const String& filename)

@@ -73,7 +73,7 @@ public:
 	 */
 	void setBodyParser(MimeType mimeType, HttpBodyParserDelegate parser)
 	{
-		bodyParsers[ContentType::toString(mimeType)] = parser;
+		bodyParsers[toString(mimeType)] = parser;
 	}
 
 	/** @deprecated Use `paths.set()` instead */

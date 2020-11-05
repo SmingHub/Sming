@@ -27,7 +27,6 @@
 	/* Type, extension start, Mime type */                                                                             \
                                                                                                                        \
 	/* Texts */                                                                                                        \
-	XX(UNKNOWN, "", "")                                                                                                \
 	XX(HTML, "html", "text/html")                                                                                      \
 	XX(TEXT, "txt", "text/plain")                                                                                      \
 	XX(JS, "js", "text/javascript")                                                                                    \
@@ -51,11 +50,23 @@
 	XX(FORM_URL_ENCODED, "", "application/x-www-form-urlencoded")                                                      \
 	XX(FORM_MULTIPART, "", "multipart/form-data")
 
-enum MimeType {
-#define XX(name, extensionStart, mime) MIME_##name,
+enum class MimeType {
+#define XX(name, extensionStart, mime) name,
 	MIME_TYPE_MAP(XX)
 #undef XX
+		UNKNOWN
 };
+
+#define XX(name, extensionStart, mime) constexpr MimeType MIME_##name = MimeType::name;
+MIME_TYPE_MAP(XX)
+XX(UNKNOWN, "", "")
+#undef XX
+
+/** @brief Get textual representation for a MIME type
+ *  @param m the MIME type
+ *  @retval String
+ */
+String toString(MimeType m);
 
 namespace ContentType
 {
@@ -80,12 +91,6 @@ static inline String fromFileExtension(const String& extension)
 {
 	return fromFileExtension(extension.c_str());
 }
-
-/** @brief Get textual representation for a MIME type
- *  @param m the MIME type
- *  @retval String
- */
-String toString(MimeType m);
 
 /** @brief Get enumerated value for a MIME type string
  *  @param str

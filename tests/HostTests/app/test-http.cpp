@@ -71,7 +71,7 @@ public:
 		headers[HTTP_HEADER_ETAG] = _F("00f-3d-179a0-0");
 		headers[HTTP_HEADER_CONNECTION] = _F("keep-alive");
 		headers[HTTP_HEADER_SERVER] = _F("HttpServer/Sming");
-		headers[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(MIME_JS);
+		headers[HTTP_HEADER_CONTENT_TYPE] = toString(MIME_JS);
 		headers[HTTP_HEADER_CACHE_CONTROL] = F("max-age=31536000, public");
 		headers[HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN] = "*";
 		auto standardElapsed = timer.elapsedTime();

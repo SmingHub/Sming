@@ -331,7 +331,7 @@ void HttpClientConnection::sendRequestHeaders(HttpRequest* request)
 	request->headers[HTTP_HEADER_CONTENT_LENGTH] = "0";
 	if(request->files.count()) {
 		auto mStream = new MultipartStream(MultipartStream::Producer(&HttpClientConnection::multipartProducer, this));
-		s = ContentType::toString(MIME_FORM_MULTIPART);
+		s = toString(MIME_FORM_MULTIPART);
 		s += F("; boundary=");
 		s += mStream->getBoundary();
 		request->headers[HTTP_HEADER_CONTENT_TYPE] = s;
@@ -342,7 +342,7 @@ void HttpClientConnection::sendRequestHeaders(HttpRequest* request)
 		request->bodyStream = mStream;
 	} else if(request->postParams.count() != 0) {
 		UrlencodedOutputStream* uStream = new UrlencodedOutputStream(request->postParams);
-		request->headers[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(MIME_FORM_URL_ENCODED);
+		request->headers[HTTP_HEADER_CONTENT_TYPE] = toString(MIME_FORM_URL_ENCODED);
 		if(request->bodyStream) {
 			debug_e("HCC::sendRequestHeaders: existing stream is discarded due to POST params");
 			delete request->bodyStream;

@@ -15,7 +15,7 @@
 int HttpMultipartResource::setFileMap(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
 	String contentType = request.headers[HTTP_HEADER_CONTENT_TYPE];
-	String mimeType = ContentType::toString(MIME_FORM_MULTIPART);
+	String mimeType = toString(MIME_FORM_MULTIPART);
 	if(!(request.method == HTTP_POST && contentType.startsWith(mimeType))) {
 		return 0;
 	}

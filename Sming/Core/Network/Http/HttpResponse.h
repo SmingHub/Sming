@@ -74,7 +74,7 @@ public:
 
 	HttpResponse* setContentType(enum MimeType type)
 	{
-		return setContentType(ContentType::toString(type));
+		return setContentType(::toString(type));
 	}
 
 	HttpResponse* setCookie(const String& name, const String& value);
@@ -127,7 +127,7 @@ public:
 	 */
 	bool sendDataStream(IDataSourceStream* newDataStream, enum MimeType type)
 	{
-		return sendDataStream(newDataStream, ContentType::toString(type));
+		return sendDataStream(newDataStream, ::toString(type));
 	}
 
 	/** @brief Send data from the given stream object
