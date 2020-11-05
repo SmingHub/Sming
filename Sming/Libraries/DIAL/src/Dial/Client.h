@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include <SmingCore.h>
 #include <Data/CStringArray.h>
 #include <Network/UPnP/ControlPoint.h>
 #include "App.h"
