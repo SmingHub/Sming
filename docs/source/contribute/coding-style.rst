@@ -1,159 +1,44 @@
-******************
 Coding Style Rules
-******************
+==================
 
-.. highlight:: bash
+.. highlight:: c++
 
 The benefits of coding standards are readability, maintainability and
 compatibility. Any member of the development team in Sming should be
 able to read the code of another developer. The developer who maintains
 a piece of code tomorrow may not be the coder who programmed it today.
 
-Therefore we enforce coding standards described in our
-`Style Guide <#style-guide>`__. The coding style rules are mandatory for the
-``Sming/SmingCore`` and ``samples`` directories and all their
-sub-directories. And they should be applied to all C, C++ and header
-files in those directories.
-
-A Pull Request that does not adhere to the coding style rules will not
+Therefore we enforce coding standards as described in this guide.
+The coding style rules are mandatory for most of the framework,
+and Pull Request that does not adhere to the coding style rules will not
 be merged until those rules are applied.
 
-Please also bookmark the `C++ Core Guidelines <https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines>`__
-as this is an invaluable reference for writing good code and making the best use of this powerful language.
+The rules are optional for libraries, but recommended.
+
+Tools will help you adhere to these coding standards without the need to know them by heart.
+See :doc:`clang-tools` for further details.
+
+Please also bookmark the `C++ Core Guidelines <https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines>`__.
+This is an invaluable reference for writing good code and making the best use of this powerful language.
 
 
-
-Tools
-=====
-
-Tools will help you easily adhere to the coding standards described in
-our `Style Guide <#style-guide>`__ without the need to know them by
-heart.
-
-Installation
-------------
-
-Clang-Format and Clang-Tidy
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-In order to automatically check and apply our coding standards you need
-to install ``clang-format`` and optionally ``clang-tidy``.
-
-In Ubuntu you should be able to install them using the following command::
-
-   sudo apt-get install clang-format clang-tidy
-
-See the the `download <http://releases.llvm.org/download.html>`__ page
-of the Clang project for installation instructions for other operating
-systems.
-
-We are using version 6.0 of clang-format and clang-tidy on our
-Continuous Integration (CI) System. If possible try to install the same
-version or newer on your development computer.
-
-Configuration
--------------
-
-Rules
-~~~~~
-
-The coding rules are described in the
-`.clang-format <https://github.com/SmingHub/Sming/blob/develop/.clang-format>`__
-which can be found in the root directory of the project. You don’t have
-to change anything on this file unless it is discussed and agreed coding
-style change.
-
-IDE integration
-~~~~~~~~~~~~~~~
-
-There are multiple existing integrations for IDEs that can be found at
-the bottom of that page
-`ClangFormat.html <https://clang.llvm.org/docs/ClangFormat.html>`__.
-
-Eclipse IDE
-^^^^^^^^^^^
-
-For our Eclipse IDE, which is our preferred IDE, we recommend installing
-the `CppStyle plugin <https://github.com/wangzw/CppStyle>`__. You can
-configure your IDE to auto-format the code on “Save” using the
-recommended coding style and/or format according to our coding style
-rules using Ctrl-Shift-F (for formatting of whole file or selection of
-lines). Read
-`Configure CppStyle <https://github.com/wangzw/CppStyle#configure-cppstyle>`__
-for details.
-
-Usage
------
-
-Command Line
-~~~~~~~~~~~~
-
-Single File
-^^^^^^^^^^^
-
-If you want to directly apply the coding standards from the command line
-you can run the following command::
-
-   cd $SMING_HOME
-   clang-format -style=file -i Core/<modified-file>
-
-Where ``Core/<modified-file>`` should be replaced with the path to
-the file that you have modified.
-
-All files
-~~~~~~~~~
-
-The following command will run again the coding standards formatter over
-all C, C++ and header files inside the ``Sming/Core``, ``samples`` and 
-other key directories::
-
-   cd $SMING_HOME
-   make cs
-
-The command needs time to finish. So be patient. It will go over all
-files and will try to fix any coding style issues.
-
-If you wish to apply coding style to your own project, add an empty ``.cs`` marker file
-to any directory containing source code or header files. All source/header files
-in that directory and any sub-directories will be formatted when you run::
-
-   make cs
-
-from your project directory.
-
-Eclipse
-~~~~~~~
-
-If you have installed CppStyle as described above you can either
-configure Eclipse to auto-format your files on “Save” or you can
-manually apply the coding style rules by selecting the source code of a
-C,C++ or header file or a selection in it and run the ``Format`` command
-(usually Ctrl-Shift-F).
-
-Style Guide
-===========
-
-.. highlight:: c++
-
-You don’t have to know by heart the coding style but it is worth having
-an idea about our rules. Below are described some of them. Those rules
-will be can be automatically applied as mentioned in the previous
-chapter.
 
 Indentation
 -----------
 
 We use tabs for indentation. Configure your editor to display a tab as
-long as 4 spaces. The corresponding settings in clang-format are::
+long as 4 spaces. For reference, the corresponding settings in clang-format are::
 
    TabWidth:        4
    UseTab:          Always
    IndentWidth:     4
 
+
+
 Naming
 ------
 
-Classes
+Classes, Structures, type aliases
 
    Must be nouns in UpperCamelCase, with the first letter of  every word capitalised.
    Use whole words — avoid acronyms and abbreviations (unless the abbreviation is much more widely
@@ -162,7 +47,28 @@ Classes
    Examples::
 
       class HttpClient {}
+
       class HttpClientConnection {}
+
+      using LargeValue = uint32_t;
+
+      struct MyStruct {
+         ...
+      };
+
+      enum MyEnum {
+         a, ///< Comment if required
+         b,
+         c,
+      };
+
+   .. note::
+   
+      The trailing , on the final item in an enumeration declaration will ensure that clang-format
+      places each item on a separate line. This makes for easier reading and the addition of line
+      comments if appropriate.
+
+
 
 Methods
 
@@ -172,6 +78,7 @@ Methods
    Examples::
 
       bind();
+
       getStatus();
 
 
@@ -189,7 +96,9 @@ Variables
    Examples::
 
       int i;
+
       char c;                  
+
       WebsocketClient* client;
 
 
@@ -207,6 +116,55 @@ Constants
    Names **MUST NOT** be all-uppercase as these may be confused with #defined values.
 
    See `C++ Core Guidelines <https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#enum5-dont-use-all_caps-for-enumerators>`__.
+
+
+Use of ``typedef`` in C++
+-------------------------
+
+Use of ``typedef`` in C++ code is not recommended.
+
+The `using` keyword has been available since C++11 and offers a more natural way to express type definitions.
+It is also necessary in certain situations such as templating.
+
+For example::
+
+   using ValueType = uint32_t;
+
+is more readable than::
+
+   typedef uint32_t ValueType;
+
+Especially in multiple type declarations the subject is always immediately after the ``using`` keyword
+and makes reading much easier.
+
+https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#t43-prefer-using-over-typedef-for-defining-aliases
+
+https://www.nextptr.com/tutorial/ta1193988140/how-cplusplus-using-or-aliasdeclaration-is-better-than-typedef
+
+enum/struct declarations
+------------------------
+
+This::
+
+   typedef struct _MyStructTag {
+     ...
+   } MyStruct;
+   
+   typedef enum _MyEnumTag {
+     ...
+   } MyEnum;
+   
+is overly verbose and un-necessary. It's a hangover from 'C' code and should generally be avoided for readability and consistency.
+This is the preferred definition::
+
+   struct MyStruct {
+     ...
+   };
+   enum MyEnum {
+   .............
+   };
+
+It's also un-necessary to qualify usage with `enum`. i.e. `MyEnum e;` is sufficient, don't need `enum MyEnum e;`.
 
 
 .. highlight:: text
@@ -305,11 +263,6 @@ Spaces
 For readability put always spaces before assignment operators::
 
    SpaceBeforeAssignmentOperators: true
-
-Other Elements
-==============
-
-.. highlight:: c++
 
 Standard file headers
 ---------------------
@@ -484,49 +437,3 @@ Some notes on commonly occurring issues::
    };
 
 
-Use of ``typedef`` in C++
--------------------------
-
-Use of ``typedef`` in C++ code is not recommended.
-
-The `using` keyword has been available since C++11 and offers a more natural way to express type definitions.
-It is also necessary in certain situations such as templating.
-
-For example::
-
-   using ValueType = uint32_t;
-
-is more readable than::
-
-   typdef uint32_t ValueType;
-
-Especially in multiple type declarations the subject is always immediately after the ``using`` keyword
-and makes reading much easier.
-
-https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#t43-prefer-using-over-typedef-for-defining-aliases
-https://www.nextptr.com/tutorial/ta1193988140/how-cplusplus-using-or-aliasdeclaration-is-better-than-typedef
-
-enum/struct declarations
-------------------------
-
-This::
-
-   typedef struct _MyStructTag {
-     ...
-   } MyStruct;
-   
-   typedef enum _MyEnumTag {
-     ...
-   } MyEnum;
-   
-is overly verbose and un-necessary. It's a hangover from 'C' code and should generally be avoided for readability and consistency.
-This is the preferred definition::
-
-   struct MyStruct {
-     ...
-   };
-   enum MyEnum {
-   .............
-   };
-
-It's also un-necessary to qualify usage with `enum`. i.e. `MyEnum e;` is sufficient, don't need `enum MyEnum e;`.
