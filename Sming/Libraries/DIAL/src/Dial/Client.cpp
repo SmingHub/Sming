@@ -81,7 +81,7 @@ int Client::onDescription(HttpConnection& connection, bool success)
 	return 0;
 }
 
-bool Client::connect(ConnectedCallback callback, const String& type)
+bool Client::connect(Connected callback, const String& type)
 {
 	if(!UPnP::deviceHost.begin()) {
 		debug_e("UPnP initialisation failed");
@@ -102,7 +102,7 @@ bool Client::connect(ConnectedCallback callback, const String& type)
 	return true;
 }
 
-bool Client::connect(const Url& descriptionUrl, ConnectedCallback callback)
+bool Client::connect(const Url& descriptionUrl, Connected callback)
 {
 	onConnected = callback;
 

@@ -38,7 +38,7 @@ DECLARE_FSTR(service_urn)
 class Client : public UPnP::ControlPoint
 {
 public:
-	using ConnectedCallback = Delegate<void(Client&, const XML::Document& doc, const HttpHeaders& headers)>;
+	using Connected = Delegate<void(Client&, const XML::Document& doc, const HttpHeaders& headers)>;
 
 	Client(size_t maxDescriptionSize = 4096) : maxDescriptionSize(maxDescriptionSize)
 	{
@@ -51,7 +51,7 @@ public:
 	 *
 	 * @retval true when the connect request can be started
 	 */
-	virtual bool connect(ConnectedCallback callback, const String& type = nullptr);
+	virtual bool connect(Connected callback, const String& type = nullptr);
 
 	/**
 	 * @brief Directly connects to a device's description xml URL.
@@ -61,7 +61,7 @@ public:
 	 *
 	 * @retval true when the connect request can be started
 	 */
-	bool connect(const Url& descriptionUrl, ConnectedCallback callback);
+	bool connect(const Url& descriptionUrl, Connected callback);
 
 	bool formatMessage(SSDP::Message& msg, SSDP::MessageSpec& ms) override;
 
@@ -89,7 +89,7 @@ private:
 	using AppMap = ObjectMap<String, App>;
 
 	size_t maxDescriptionSize; // <<< Maximum size of TV XML description that is stored.
-	ConnectedCallback onConnected;
+	Connected onConnected;
 
 	Url descriptionUrl;
 	Url applicationUrl;
