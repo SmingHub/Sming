@@ -33,6 +33,8 @@ using namespace rapidxml;
 
 namespace Dial
 {
+DECLARE_FSTR(service_urn)
+
 class Client : public UPnP::ControlPoint
 {
 public:
@@ -45,11 +47,11 @@ public:
 	/**
 	 * @brief Searches for a DIAL device identified by a search type
 	 * @param callback will be called once such a device is auto-discovered
-	 * @param urn unique identifier of the search type
+	 * @param urn unique identifier of the search type. Default is Dial::service_urn
 	 *
 	 * @retval true when the connect request can be started
 	 */
-	virtual bool connect(ConnectedCallback callback, const String& type = "urn:dial-multiscreen-org:service:dial:1");
+	virtual bool connect(ConnectedCallback callback, const String& type = nullptr);
 
 	/**
 	 * @brief Directly connects to a device's description xml URL.

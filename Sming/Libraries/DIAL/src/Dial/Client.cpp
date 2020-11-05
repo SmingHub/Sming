@@ -5,6 +5,8 @@
 
 namespace Dial
 {
+DEFINE_FSTR(service_urn, "urn:dial-multiscreen-org:service:dial:1")
+
 HttpClient Client::http;
 
 bool Client::formatMessage(SSDP::Message& message, SSDP::MessageSpec& ms)
@@ -86,7 +88,7 @@ bool Client::connect(ConnectedCallback callback, const String& type)
 	}
 
 	onConnected = callback;
-	searchType = type;
+	searchType = type ?: service_urn;
 
 	UPnP::deviceHost.registerControlPoint(this);
 
