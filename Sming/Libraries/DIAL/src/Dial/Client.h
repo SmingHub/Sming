@@ -86,6 +86,8 @@ protected:
 	XML::Node* getNode(HttpConnection& connection, const String& path);
 
 private:
+	using AppMap = ObjectMap<String, App>;
+
 	size_t maxDescriptionSize; // <<< Maximum size of TV XML description that is stored.
 	ConnectedCallback onConnected;
 
@@ -93,7 +95,7 @@ private:
 	Url applicationUrl;
 	String searchType;
 	CStringArray uniqueServiceNames;
-	ObjectMap<String, App> apps; // <<< list of invoked apps
+	AppMap apps; // <<< list of invoked apps
 
 	int onDescription(HttpConnection& conn, bool success);
 };

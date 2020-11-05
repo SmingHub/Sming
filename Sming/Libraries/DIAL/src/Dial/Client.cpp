@@ -61,8 +61,9 @@ int Client::onDescription(HttpConnection& connection, bool success)
 		return 0;
 	}
 
-	if(response->headers.contains(_F("Application-URL"))) {
-		applicationUrl = response->headers[_F("Application-URL")];
+	String url = response->headers[_F("Application-URL")];
+	if(url) {
+		applicationUrl = url;
 	}
 
 	String content;
@@ -70,7 +71,7 @@ int Client::onDescription(HttpConnection& connection, bool success)
 	XML::Document doc;
 	XML::deserialize(doc, content.begin());
 
-	descriptionUrl = Url(connection.getRequest()->uri);
+	descriptionUrl = connection.getRequest()->uri;
 
 	debug_d("Found DIAL device with searchType: %s", searchType.c_str());
 	if(onConnected) {
@@ -116,15 +117,15 @@ bool Client::connect(const Url& descriptionUrl, ConnectedCallback callback)
 
 App* Client::getApp(const String& applicationId)
 {
-	if(apps.contains(applicationId)) {
-		return apps[applicationId];
+	auto app = apps[applicationId];
+	if(!app) {
+		app = new App(applicationId, applicationUrl);
 	}
 
-	apps[applicationId] = new App(applicationId, applicationUrl);
-
-	return apps[applicationId];
+	return app;
 }
 
+// EEEKK!!! Cannot do this - returns dangling pointer
 XML::Node* Client::getNode(HttpConnection& connection, const String& path)
 {
 	HttpResponse* response = connection.getResponse();
