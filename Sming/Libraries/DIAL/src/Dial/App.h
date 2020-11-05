@@ -35,10 +35,8 @@ public:
 	using ResponseCallback = Delegate<void(App& app, HttpResponse& response)>;
 
 	App(const String& name, const Url& appsUrl, size_t maxDescriptionSize = 2048)
-		: name(name), maxDescriptionSize(maxDescriptionSize)
+		: name(name), appsUrl(appsUrl), maxDescriptionSize(maxDescriptionSize)
 	{
-		applicationUrl = Url(appsUrl.toString() + '/' + name);
-		instanceUrl = applicationUrl;
 	}
 
 	String getName()
@@ -60,8 +58,18 @@ public:
 	bool stop(ResponseCallback onResponse = nullptr);
 
 private:
+	bool sendRunRequest(HttpRequest* request, ResponseCallback onResponse);
+
+	Url getApplicationUrl()
+	{
+		Url url{appsUrl};
+		url.Path += '/';
+		url.Path += name;
+		return url;
+	}
+
 	String name;
-	Url applicationUrl;
+	Url appsUrl;
 	String instanceUrl;
 	size_t maxDescriptionSize;
 	static HttpClient http;
