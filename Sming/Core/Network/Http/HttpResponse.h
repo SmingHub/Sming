@@ -171,6 +171,9 @@ public:
 	 */
 	void freeStreams();
 
+	/**
+	 * @brief Determine if the response status indicates success
+	 */
 	bool isSuccess()
 	{
 		return (code >= HTTP_STATUS_OK && code < HTTP_STATUS_BAD_REQUEST);
@@ -180,18 +183,18 @@ public:
 	 * @brief Tries to present a readable version of the current response values
 	 * @retval String
 	 */
-	String toString()
-	{
-		return toString(*this);
-	}
+	String toString() const;
 
 	/**
 	 * @brief Tries to present a readable version of the response
 	 * @param res
-	 *
 	 * @retval String
+	 * @deprecated use `toString()` method or `toString(HttpResponse)` function
 	 */
-	String toString(const HttpResponse& res);
+	static String toString(const HttpResponse& res) SMING_DEPRECATED
+	{
+		return res.toString();
+	}
 
 private:
 	void setStream(IDataSourceStream* stream);
@@ -202,3 +205,8 @@ public:
 	ReadWriteStream* buffer = nullptr;   ///< Internal stream for storing strings and receiving responses
 	IDataSourceStream* stream = nullptr; ///< The body stream
 };
+
+inline String toString(const HttpResponse& res)
+{
+	return res.toString();
+}

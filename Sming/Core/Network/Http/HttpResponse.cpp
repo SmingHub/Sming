@@ -111,20 +111,20 @@ void HttpResponse::reset()
 	freeStreams();
 }
 
-String HttpResponse::toString(const HttpResponse& res)
+String HttpResponse::toString() const
 {
 	String content;
 	content += F("HTTP/1.1 ");
-	content += unsigned(res.code);
+	content += unsigned(code);
 	content += ' ';
-	content += ::toString(res.code);
+	content += ::toString(code);
 	content += " \r\n";
-	for(unsigned i = 0; i < res.headers.count(); i++) {
-		content += res.headers[i];
+	for(unsigned i = 0; i < headers.count(); i++) {
+		content += headers[i];
 	}
 
-	if(res.stream != nullptr && res.stream->available() >= 0) {
-		content += res.headers.toString(HTTP_HEADER_CONTENT_LENGTH, String(res.stream->available()));
+	if(stream != nullptr && stream->available() >= 0) {
+		content += headers.toString(HTTP_HEADER_CONTENT_LENGTH, String(stream->available()));
 	} else {
 		content += "\r\n";
 	}
