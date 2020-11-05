@@ -53,7 +53,7 @@ public:
 	 */
 	bool run(ResponseCallback onResponse = nullptr);
 
-	bool run(const String& body, enum MimeType mime, ResponseCallback onResponse = nullptr);
+	bool run(const String& body, MimeType mime, ResponseCallback onResponse = nullptr);
 
 	bool run(const HttpParams& params, ResponseCallback onResponse = nullptr);
 

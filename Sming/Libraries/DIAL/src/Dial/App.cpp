@@ -41,7 +41,7 @@ bool App::run(ResponseCallback onResponse)
 	return http.send(request);
 }
 
-bool App::run(const String& body, enum MimeType mime, ResponseCallback onResponse)
+bool App::run(const String& body, MimeType mime, ResponseCallback onResponse)
 {
 	auto request = new HttpRequest(applicationUrl);
 	request->method = HTTP_POST;
