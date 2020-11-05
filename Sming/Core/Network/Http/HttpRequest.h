@@ -265,10 +265,7 @@ public:
 	 * @brief Tries to present a readable version of the current request values
 	 * @retval String
 	 */
-	String toString()
-	{
-		return toString(*this);
-	}
+	String toString() const;
 
 	/**
 	 * @brief Tries to present a readable version of the request
@@ -276,7 +273,10 @@ public:
 	 *
 	 * @retval String
 	 */
-	String toString(const HttpRequest& req);
+	static String toString(const HttpRequest& req)
+	{
+		return req.toString();
+	}
 
 public:
 	Url uri;
@@ -305,3 +305,8 @@ protected:
 private:
 	HttpParams* queryParams = nullptr; // << @todo deprecate
 };
+
+inline String toString(const HttpRequest& req)
+{
+	return req.toString();
+}
