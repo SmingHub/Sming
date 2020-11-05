@@ -21,6 +21,19 @@ An addition method :cpp:func:`IDataSourceStream::moveString` has been added to s
 the content of a memory-based stream into a String object without duplicating the data.
 This is supported by :cpp:class:`LimitedMemoryStream` and :cpp:class:`MemoryDataStream`.
 
+Stream / file seeking
+---------------------
+
+To provide a consistent interface :cpp:type:`SeekOrigin` is now used with all *seek* methods for streams,
+and also by file system functions. Mappings are::
+
+   SeekOrigin::Start instead of eSO_FileStart
+   SeekOrigin::Current instead of eSO_CurrentPos
+   SeekOrigin::End instead of eSO_FileEnd
+ 
+These map to the standard C *SEEK_SET*, *SEEK_CUR* and *SEEK_END* but as SeekOrigin is strongly typed
+it offers compile-time checking, and has a `toString(SeekOrigin)` overload.
+
 
 getBody methods
 ---------------
