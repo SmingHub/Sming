@@ -87,8 +87,6 @@ protected:
 		return descriptionUrl;
 	}
 
-	XML::Node* getNode(HttpConnection& connection, const String& path);
-
 private:
 	using AppMap = ObjectMap<String, App>;
 

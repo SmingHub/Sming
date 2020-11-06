@@ -130,21 +130,4 @@ App& Client::getApp(const String& applicationId)
 	return *app;
 }
 
-// EEEKK!!! Cannot do this - returns dangling pointer
-XML::Node* Client::getNode(HttpConnection& connection, const String& path)
-{
-	HttpResponse* response = connection.getResponse();
-	if(response->stream == nullptr) {
-		debug_e("No body");
-		return nullptr;
-	}
-
-	String content;
-	response->stream->moveString(content);
-	XML::Document doc;
-	XML::deserialize(doc, content);
-
-	return XML::getNode(doc, path);
-}
-
 } // namespace Dial
