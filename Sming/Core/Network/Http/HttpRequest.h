@@ -18,7 +18,6 @@
 #endif
 #include "../TcpConnection.h"
 #include "Data/Stream/DataSourceStream.h"
-#include "Data/Stream/MultipartStream.h"
 #include "HttpHeaders.h"
 #include "HttpParams.h"
 #include "Data/ObjectMap.h"

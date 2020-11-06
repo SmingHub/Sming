@@ -15,6 +15,7 @@
 #include "HttpConnection.h"
 #include "DateTime.h"
 #include "Data/ObjectQueue.h"
+#include <Data/Stream/MultipartStream.h>
 
 /**
  *  @brief      Provides http client connection
