@@ -42,9 +42,12 @@ void Client::onNotify(SSDP::BasicMessage& message)
 	if(uniqueServiceNames.contains(uniqueServiceName)) {
 		return; // Already found
 	}
-	uniqueServiceNames += uniqueServiceName;
 
-	requestDescription(location);
+	if(requestDescription(location)) {
+		// Request queued
+		// TODO: Consider what happens if request fails to complete
+		uniqueServiceNames += uniqueServiceName;
+	}
 }
 
 bool Client::requestDescription(const String& url)
