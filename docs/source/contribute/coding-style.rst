@@ -18,6 +18,11 @@ files in those directories.
 A Pull Request that does not adhere to the coding style rules will not
 be merged until those rules are applied.
 
+Please also bookmark the `C++ Core Guidelines <https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines>`__
+as this is an invaluable reference for writing good code and making the best use of this powerful language.
+
+
+
 Tools
 =====
 
@@ -148,47 +153,61 @@ long as 4 spaces. The corresponding settings in clang-format are::
 Naming
 ------
 
-+---------------------------+-----------------------+-----------------------------------+
-| Identifier type           |   Rules for naming    | Examples                          |
-+===========================+=======================+===================================+
-| Classes                   |   |class-names|       | ::                                |
-|                           |                       |                                   |
-|                           |                       |    class HttpClient {}            |
-|                           |                       |    class HttpClientConnection {}  |
-+---------------------------+-----------------------+-----------------------------------+
-| Methods                   |   |methods|           | ::                                |
-|                           |                       |                                   |
-|                           |                       |    bind();                        |
-|                           |                       |    getStatus();                   |
-+---------------------------+-----------------------+-----------------------------------+
-| Variables                 |   |local-vars|        | ::                                |
-|                           |                       |                                   |
-|                           |                       |    int i;                         |
-|                           |   |varnames|          |    char c;                        |
-|                           |                       |    WebsocketClient* client;       |
-+---------------------------+-----------------------+-----------------------------------+
-| Constants                 |   |constants|         | ::                                |
-|                           |                       |                                   |
-|                           |                       |    #define MAX_PARTICIPANTS 10    |
-+---------------------------+-----------------------+-----------------------------------+
+Classes
 
-.. |methods| replace:: Methods must be either verbs in lowerCamelCase, or a multi-word name that begins with a verb in lowercase; 
+   Must be nouns in UpperCamelCase, with the first letter of  every word capitalised.
+   Use whole words — avoid acronyms and abbreviations (unless the abbreviation is much more widely
+   used than the long form, such as URL or HTML).
+   
+   Examples::
+
+      class HttpClient {}
+      class HttpClientConnection {}
+
+Methods
+
+   Must be either verbs in lowerCamelCase, or a multi-word name that begins with a verb in lowercase;
    that is, with the first letter lowercase and the first letters of subsequent words in uppercase.
+   
+   Examples::
 
-.. |class-names| replace:: Class names must be nouns in UpperCamelCase, with the first letter of  every word capitalised.
-   Use whole words — avoid acronyms and abbreviations (unless the abbreviation is much more widely used than the long form, such as URL or HTML).
+      bind();
+      getStatus();
 
-.. |local-vars| replace:: Local variables, instance variables, and class variables must also be written in lowerCamelCase.
+
+Variables
+
+   Local variables, instance variables, and class variables must also be written in lowerCamelCase.
    Variable names must not start with, end with or contain underscore (\_) or dollar sign ($) characters.
    This is in constrast to some coding conventions which prefix all instance variables with underscore,
    however this is reserved by the C++ standard and can create problems.
 
-.. |varnames| replace:: Variable names should be short yet meaningful. The choice of a variable name should be mnemonic — that is,
+   Variable names should be short yet meaningful. The choice of a variable name should be mnemonic — that is,
    designed to indicate to the casual observer the intent of its use. One-character variable names should be avoided except for
    temporary “throwaway” variables. Common names for temporary variables are i, j, k, m, and n for integers; c, d, and e for characters.
+   
+   Examples::
 
-.. |constants| replace:: Constants must be written in uppercase characters separated by underscores.
-   Constant names may contain digits if appropriate, but not as the first character.
+      int i;
+      char c;                  
+      WebsocketClient* client;
+
+
+Pre-processor definitions
+
+   #defined macros must be written in uppercase characters separated by underscores.
+   Names may contain digits if appropriate, but not as the first character. For example::
+
+      #define MAX_PARTICIPANTS 10
+
+
+Constants
+
+   Typically declared using ``const`` or ``constexpr`` and, like variables, should be lower-camelcase.
+   Names **MUST NOT** be all-uppercase as these may be confused with #defined values.
+
+   See `C++ Core Guidelines <https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#enum5-dont-use-all_caps-for-enumerators>`__.
+
 
 .. highlight:: text
 
