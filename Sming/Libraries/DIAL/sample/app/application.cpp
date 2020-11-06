@@ -17,7 +17,8 @@ void onRun(Dial::App& app, HttpResponse& response)
 		auto timer = new AutoDeleteTimer;
 		timer->initializeMs<20000>([&]() {
 			// Once started the app can also be stopped using the command below
-			Serial.printf(_F("Stopping application: %s\n"), app.getName().c_str());
+			Serial.print(_F("Stopping application: "));
+			Serial.println(app.getName());
 			app.stop();
 		});
 		timer->startOnce();
@@ -27,7 +28,10 @@ void onRun(Dial::App& app, HttpResponse& response)
 void onStatus(Dial::App& app, HttpResponse& response)
 {
 	if(!response.isSuccess()) {
-		Serial.printf(_F("Unable to find the desired application: %s\n"), app.getName().c_str());
+		Serial.print(_F("Error locating '"));
+		Serial.print(app.getName());
+		Serial.print(_F("' application: "));
+		Serial.println(httpGetStatusText(response.code));
 		return;
 	}
 
@@ -38,11 +42,22 @@ void onStatus(Dial::App& app, HttpResponse& response)
 
 void onConnected(Dial::Client& client, const XML::Document& doc, const HttpHeaders& headers)
 {
-	auto node = XML::getNode(doc, "/device/friendlyName");
-	Serial.println(_F("New DIAL device found."));
-	if(node != nullptr) {
-		Serial.printf(_F("Friendly name: %s.\n"), node->value());
+	Serial.println(_F("New DIAL device found: "));
+
+	auto node = XML::getNode(doc, F("/device/friendlyName"));
+	if(node == nullptr) {
+		Serial.println(_F("UNEXPECTED! friendlyName missing from device description"));
+	} else {
+		Serial.print(_F("Friendly name '"));
+		Serial.print(node->value());
+		Serial.println('\'');
 	}
+
+#if DEBUG_VERBOSE_LEVEL == DBG
+	Serial.println();
+	XML::serialize(doc, Serial, true);
+	Serial.println();
+#endif
 
 	auto& app = client.getApp("YouTube");
 	app.status(onStatus);
