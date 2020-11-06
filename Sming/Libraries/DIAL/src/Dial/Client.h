@@ -68,12 +68,12 @@ public:
 	void onNotify(SSDP::BasicMessage& msg) override;
 
 	/**
-	 * @brief Gets pointer to an application object
+	 * @brief Get application object by name
 	 * @param applicationId the unique application.
 	 * 				A list of registered ids can be found here: http://www.dial-multiscreen.org/dial-registry/namespace-database#TOC-Registered-Names
-	 * @retval pointer to an application obeject
+	 * @retval App& Application object reference
 	 */
-	App* getApp(const String& applicationId);
+	App& getApp(const String& applicationId);
 
 protected:
 	static HttpClient http;

@@ -42,7 +42,7 @@ void onConnected(Dial::Client& client, const XML::Document& doc, const HttpHeade
 		Serial.printf(_F("Friendly name: %s.\n"), node->value());
 	}
 
-	auto app = client.getApp("YouTube");
+	auto& app = client.getApp("YouTube");
 	app.status(onStatus);
 }
 

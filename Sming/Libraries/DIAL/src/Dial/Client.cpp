@@ -115,14 +115,14 @@ bool Client::connect(const Url& descriptionUrl, Connected callback)
 	return true;
 }
 
-App* Client::getApp(const String& applicationId)
+App& Client::getApp(const String& applicationId)
 {
 	auto app = apps[applicationId];
 	if(!app) {
 		app = new App(applicationId, applicationUrl);
 	}
 
-	return app;
+	return *app;
 }
 
 // EEEKK!!! Cannot do this - returns dangling pointer
