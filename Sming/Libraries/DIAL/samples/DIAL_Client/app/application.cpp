@@ -1,4 +1,5 @@
 #include <SmingCore.h>
+#include <Network/UPnP/DeviceHost.h>
 #include <Dial/Client.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
@@ -38,7 +39,7 @@ void onStatus(Dial::App& app, HttpResponse& response)
 	app.run(params, onRun);
 }
 
-void onConnected(Dial::Client& client, const XML::Document& doc, const HttpHeaders& headers)
+void onConnected(Dial::Client& client, HttpConnection& connection, const XML::Document& doc)
 {
 	Serial.println(_F("New DIAL device found: "));
 

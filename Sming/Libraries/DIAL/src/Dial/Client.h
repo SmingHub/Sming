@@ -40,18 +40,24 @@ constexpr uint8_t version{1};
 class Client : public UPnP::ControlPoint
 {
 public:
-	using Connected = Delegate<void(Client&, const XML::Document& doc, const HttpHeaders& headers)>;
+	using Connected = Delegate<void(Client&, HttpConnection& connection, const XML::Document& doc)>;
 
 	/**
-	 * @brief Searches for a DIAL device identified by a search type
+	 * @brief Searches for a DIAL device
 	 * @param callback will be called once such a device is auto-discovered
-	 * @param urn unique identifier of the search type, if different from Dial default
-	 * which is { Dial::domain, Dial::service }
-	 * Use UPnP::Service::getUrn() to construct others.
 	 *
 	 * @retval true when the connect request can be started
 	 */
-	virtual bool connect(Connected callback, const String& urn = nullptr);
+	bool connect(Connected callback);
+
+	/**
+	 * @brief Searches for a DIAL device identified by a search type
+	 * @param urn unique identifier of the search type
+	 * @param callback will be called once such a device is auto-discovered
+	 *
+	 * @retval true when the connect request can be started
+	 */
+	bool connect(const UPnP::ServiceUrn& urn, Connected callback);
 
 	/**
 	 * @brief Directly connects to a device's description xml URL.
@@ -84,6 +90,7 @@ protected:
 private:
 	using AppMap = ObjectMap<String, App>;
 
+	bool isConnecting();
 	String getSearchType() const;
 	bool requestDescription(const String& url);
 	void onDescription(HttpConnection& connection, XML::Document& description);
@@ -91,7 +98,7 @@ private:
 	Connected onConnected;
 	Url descriptionUrl;
 	Url applicationUrl;
-	String searchType;
+	UPnP::ServiceUrn searchType;
 	CStringArray uniqueServiceNames;
 	AppMap apps; // <<< list of invoked apps
 };

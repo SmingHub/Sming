@@ -61,18 +61,33 @@ void Client::onDescription(HttpConnection& connection, XML::Document& descriptio
 		applicationUrl = url;
 	}
 
-	debug_d("Found DIAL device with searchType: %s", searchType.c_str());
+	debug_d("Found DIAL device with searchType: %s", toString(searchType).c_str());
 	if(onConnected) {
-		onConnected(*this, description, response->headers);
+		onConnected(*this, connection, description);
 	}
 }
 
-bool Client::connect(Connected callback, const String& urn)
+bool Client::isConnecting()
 {
-	onConnected = callback;
-	searchType = urn;
+	// TODO: Consider timeout and/or checking if HTTP request is in progress
+
+	//	if(onConnected) {
+	//		debug_e("Dial: Connection already in progress");
+	//		return true;
+	//	}
+
+	return false;
+}
+
+bool Client::connect(Connected callback)
+{
+	if(isConnecting()) {
+		return false;
+	}
 
 	UPnP::deviceHost.registerControlPoint(this);
+
+	onConnected = callback;
 
 	auto message = new SSDP::MessageSpec(SSDP::MessageType::msearch, SSDP::SearchTarget::root, this);
 	message->setRepeat(2);
@@ -81,8 +96,22 @@ bool Client::connect(Connected callback, const String& urn)
 	return true;
 }
 
+bool Client::connect(const UPnP::ServiceUrn& urn, Connected callback)
+{
+	if(isConnecting()) {
+		return false;
+	}
+
+	searchType = urn;
+	return connect(callback);
+}
+
 bool Client::connect(const Url& descriptionUrl, Connected callback)
 {
+	if(isConnecting()) {
+		return false;
+	}
+
 	onConnected = callback;
 
 	debug_d("Fetching '%s'", descriptionUrl.toString().c_str());
