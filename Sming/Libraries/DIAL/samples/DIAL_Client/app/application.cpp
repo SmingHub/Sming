@@ -30,7 +30,7 @@ void onStatus(Dial::App& app, HttpResponse& response)
 		Serial.print(_F("Error locating '"));
 		Serial.print(app.getName());
 		Serial.print(_F("' application: "));
-		Serial.println(httpGetStatusText(response.code));
+		Serial.println(toString(response.code));
 		return;
 	}
 

@@ -46,7 +46,7 @@ bool App::run(ResponseCallback onResponse)
 bool App::run(const String& body, MimeType mime, ResponseCallback onResponse)
 {
 	auto request = new HttpRequest(getApplicationUrl());
-	request->headers[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(mime);
+	request->headers[HTTP_HEADER_CONTENT_TYPE] = toString(mime);
 	if(body.length() != 0) {
 		request->setBody(body);
 	}
