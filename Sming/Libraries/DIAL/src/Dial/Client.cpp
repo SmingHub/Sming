@@ -45,7 +45,7 @@ void Client::onNotify(SSDP::BasicMessage& message)
 	http.send(request);
 }
 
-int Client::onDescription(HttpConnection& conn, bool success)
+int Client::onDescription(HttpConnection& connection, bool success)
 {
 	if(!success) {
 		debug_e("Fetch failed");
@@ -53,7 +53,7 @@ int Client::onDescription(HttpConnection& conn, bool success)
 	}
 
 	debug_i("Received description");
-	auto response = conn.getResponse();
+	auto response = connection.getResponse();
 	if(response->stream == nullptr) {
 		debug_e("No body");
 		return 0;
@@ -68,7 +68,7 @@ int Client::onDescription(HttpConnection& conn, bool success)
 	XML::Document doc;
 	XML::deserialize(doc, stream->getStreamPointer());
 
-	descriptionUrl = Url(conn.getRequest()->uri);
+	descriptionUrl = Url(connection.getRequest()->uri);
 
 	debug_d("Found DIAL device with searchType: %s", searchType.c_str());
 	if(onConnected) {
@@ -123,7 +123,7 @@ App* Client::getApp(const String& applicationId)
 	return apps[applicationId];
 }
 
-XML::Node* Client::getNode(HttpConnection& connection, const CStringArray& path)
+XML::Node* Client::getNode(HttpConnection& connection, const String& path)
 {
 	HttpResponse* response = connection.getResponse();
 	if(response->stream == nullptr) {
@@ -136,22 +136,7 @@ XML::Node* Client::getNode(HttpConnection& connection, const CStringArray& path)
 	XML::Document doc;
 	XML::deserialize(doc, stream->getStreamPointer());
 
-	return getNode(doc, path);
-}
-
-XML::Node* Client::getNode(const XML::Document& doc, const CStringArray& path)
-{
-	auto node = doc.first_node();
-	if(node != nullptr) {
-		for(size_t i = 0; i < path.count(); i++) {
-			node = node->first_node(path[i]);
-			if(node == nullptr) {
-				break;
-			}
-		}
-	}
-
-	return node;
+	return XML::getNode(doc, path);
 }
 
 } // namespace Dial

@@ -74,18 +74,6 @@ public:
 	 */
 	App* getApp(const String& applicationId);
 
-	/**
-	 * TODO: Move this method to XML::Document ...
-	 *
-	 * @brief Gets XML node by path
-	 * @param doc the XML document
-	 * @param path the paths that have to be traversed to get the node (excluding the root node).
-	 *
-	 * @retval node
-	 *
-	 */
-	XML::Node* getNode(const XML::Document& doc, const CStringArray& path);
-
 protected:
 	static HttpClient http;
 
@@ -94,7 +82,7 @@ protected:
 		return descriptionUrl;
 	}
 
-	XML::Node* getNode(HttpConnection& connection, const CStringArray& path);
+	XML::Node* getNode(HttpConnection& connection, const String& path);
 
 private:
 	size_t maxDescriptionSize; // <<< Maximum size of TV XML description that is stored.

@@ -38,9 +38,7 @@ void onStatus(Dial::App& app, HttpResponse& response)
 
 void onConnected(Dial::Client& client, const XML::Document& doc, const HttpHeaders& headers)
 {
-	CStringArray path("device");
-	path.add("friendlyName");
-	auto node = client.getNode(doc, path);
+	auto node = XML::getNode(doc, "/device/friendlyName");
 	Serial.println(_F("New DIAL device found."));
 	if(node != nullptr) {
 		Serial.printf(_F("Friendly name: %s.\n"), node->value());
@@ -60,7 +58,7 @@ void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 
 	/* Alternatevely one can use the commands below when auto-discovery is not working */
 	/*
-	Url descriptionUrl{"192.168.22.222:55000/nrc/ddd.xml"};
+	Url descriptionUrl{"http://192.168.22.222:55000/nrc/ddd.xml"};
 
 	client.connect(descriptionUrl, onConnected);
 	*/
