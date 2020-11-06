@@ -33,7 +33,9 @@ using namespace rapidxml;
 
 namespace Dial
 {
-DECLARE_FSTR(service_urn)
+DECLARE_FSTR(domain)
+DECLARE_FSTR(service)
+constexpr uint8_t version{1};
 
 class Client : public UPnP::ControlPoint
 {
@@ -47,11 +49,13 @@ public:
 	/**
 	 * @brief Searches for a DIAL device identified by a search type
 	 * @param callback will be called once such a device is auto-discovered
-	 * @param urn unique identifier of the search type. Default is Dial::service_urn
+	 * @param urn unique identifier of the search type, if different from Dial default
+	 * which is { Dial::domain, Dial::service }
+	 * Use UPnP::Service::getUrn() to construct others.
 	 *
 	 * @retval true when the connect request can be started
 	 */
-	virtual bool connect(Connected callback, const String& type = nullptr);
+	virtual bool connect(Connected callback, const String& urn = nullptr);
 
 	/**
 	 * @brief Directly connects to a device's description xml URL.
@@ -87,6 +91,8 @@ protected:
 
 private:
 	using AppMap = ObjectMap<String, App>;
+
+	String getSearchType() const;
 
 	size_t maxDescriptionSize; // <<< Maximum size of TV XML description that is stored.
 	Connected onConnected;

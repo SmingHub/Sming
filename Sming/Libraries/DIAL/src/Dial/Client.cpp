@@ -5,20 +5,27 @@
 
 namespace Dial
 {
-DEFINE_FSTR(service_urn, "urn:dial-multiscreen-org:service:dial:1")
+DEFINE_FSTR(domain, "dial-multiscreen-org")
+DEFINE_FSTR(service, "dial")
 
 HttpClient Client::http;
+
+String Client::getSearchType() const
+{
+	return searchType ?: UPnP::ServiceUrn(domain, service, version);
+}
 
 bool Client::formatMessage(SSDP::Message& message, SSDP::MessageSpec& ms)
 {
 	// Override the search target
-	message["ST"] = searchType;
+	message["ST"] = getSearchType();
 	return true;
 }
 
 void Client::onNotify(SSDP::BasicMessage& message)
 {
-	if(searchType != message["NT"] && searchType != message["ST"]) {
+	auto st = getSearchType();
+	if(st != message["NT"] && st != message["ST"]) {
 		return;
 	}
 
@@ -69,11 +76,11 @@ int Client::onDescription(HttpConnection& connection, bool success)
 	String content;
 	response->stream->moveString(content);
 	XML::Document doc;
-	XML::deserialize(doc, content.begin());
+	XML::deserialize(doc, content);
 
 	descriptionUrl = connection.getRequest()->uri;
 
-	debug_d("Found DIAL device with searchType: %s", searchType.c_str());
+	debug_d("Found DIAL device with searchType: %s", String(searchType).c_str());
 	if(onConnected) {
 		onConnected(*this, doc, response->headers);
 	}
@@ -81,7 +88,7 @@ int Client::onDescription(HttpConnection& connection, bool success)
 	return 0;
 }
 
-bool Client::connect(Connected callback, const String& type)
+bool Client::connect(Connected callback, const String& urn)
 {
 	if(!UPnP::deviceHost.begin()) {
 		debug_e("UPnP initialisation failed");
@@ -89,14 +96,12 @@ bool Client::connect(Connected callback, const String& type)
 	}
 
 	onConnected = callback;
-	searchType = type ?: service_urn;
+	searchType = urn;
 
 	UPnP::deviceHost.registerControlPoint(this);
 
-	auto message = new SSDP::MessageSpec(SSDP::MESSAGE_MSEARCH);
-	message->object = this;
-	message->repeat = 2;
-	message->target = SSDP::TARGET_ROOT;
+	auto message = new SSDP::MessageSpec(SSDP::MessageType::msearch, SSDP::SearchTarget::root, this);
+	message->setRepeat(2);
 	SSDP::server.messageQueue.add(message, 0);
 
 	return true;
@@ -137,7 +142,7 @@ XML::Node* Client::getNode(HttpConnection& connection, const String& path)
 	String content;
 	response->stream->moveString(content);
 	XML::Document doc;
-	XML::deserialize(doc, content.begin());
+	XML::deserialize(doc, content);
 
 	return XML::getNode(doc, path);
 }
