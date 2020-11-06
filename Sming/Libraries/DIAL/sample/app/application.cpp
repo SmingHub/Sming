@@ -7,9 +7,7 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-namespace
-{
-Dial::Client client;
+static Dial::Client client;
 
 void onRun(Dial::App& app, HttpResponse& response)
 {
@@ -87,8 +85,6 @@ void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reas
 	Serial.print(_F("\", reason: "));
 	Serial.println(WifiEvents.getDisconnectReasonDesc(reason));
 }
-
-} // namespace
 
 void init()
 {
