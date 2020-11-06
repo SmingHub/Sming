@@ -11,8 +11,7 @@ static Dial::Client client;
 
 void onRun(Dial::App& app, HttpResponse& response)
 {
-	auto responseCode = response.code;
-	if(responseCode < 400) {
+	if(response.isSuccess()) {
 		auto timer = new AutoDeleteTimer;
 		timer->initializeMs<20000>([&]() {
 			// Once started the app can also be stopped using the command below
@@ -25,8 +24,7 @@ void onRun(Dial::App& app, HttpResponse& response)
 
 void onStatus(Dial::App& app, HttpResponse& response)
 {
-	auto responseCode = response.code;
-	if(responseCode == HTTP_STATUS_NOT_FOUND) {
+	if(!response.isSuccess()) {
 		Serial.printf(_F("Unable to find the desired application: %s\n"), app.getName().c_str());
 		return;
 	}
@@ -45,7 +43,7 @@ void onConnected(Dial::Client& client, const XML::Document& doc, const HttpHeade
 	}
 
 	auto app = client.getApp("YouTube");
-	app->status(onStatus);
+	app.status(onStatus);
 }
 
 void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
