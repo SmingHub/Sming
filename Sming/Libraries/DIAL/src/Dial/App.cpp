@@ -1,15 +1,13 @@
 #include "App.h"
+#include "Client.h"
 
 namespace Dial
 {
-HttpClient App::http;
-
 bool App::status(ResponseCallback onResponse)
 {
 	auto request = new HttpRequest(getApplicationUrl());
 	request->method = HTTP_GET;
-	request->setResponseStream(new LimitedMemoryStream(maxDescriptionSize));
-	if(onResponse != nullptr) {
+	if(onResponse) {
 		request->onRequestComplete([onResponse, this](HttpConnection& connection, bool successful) -> int {
 			onResponse(*this, *(connection.getResponse()));
 
@@ -17,13 +15,12 @@ bool App::status(ResponseCallback onResponse)
 		});
 	}
 
-	return http.send(request);
+	return client.sendRequest(request);
 }
 
 bool App::sendRunRequest(HttpRequest* request, ResponseCallback onResponse)
 {
 	request->method = HTTP_POST;
-	request->setResponseStream(new LimitedMemoryStream(maxDescriptionSize));
 	request->onRequestComplete([onResponse, this](HttpConnection& connection, bool successful) -> int {
 		auto headers = connection.getResponse()->headers;
 		if(headers.contains(HTTP_HEADER_LOCATION)) {
@@ -37,7 +34,7 @@ bool App::sendRunRequest(HttpRequest* request, ResponseCallback onResponse)
 		return 0;
 	});
 
-	return http.send(request);
+	return client.sendRequest(request);
 }
 
 bool App::run(ResponseCallback onResponse)
@@ -49,7 +46,6 @@ bool App::run(ResponseCallback onResponse)
 bool App::run(const String& body, MimeType mime, ResponseCallback onResponse)
 {
 	auto request = new HttpRequest(getApplicationUrl());
-
 	request->headers[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(mime);
 	if(body.length() != 0) {
 		request->setBody(body);
@@ -74,7 +70,6 @@ bool App::stop(ResponseCallback onResponse)
 
 	auto request = new HttpRequest(Url(instanceUrl));
 	request->method = HTTP_DELETE;
-	request->setResponseStream(new LimitedMemoryStream(maxDescriptionSize));
 	if(onResponse != nullptr) {
 		request->onRequestComplete([onResponse, this](HttpConnection& connection, bool successful) -> int {
 			onResponse(*this, *(connection.getResponse()));
@@ -83,7 +78,7 @@ bool App::stop(ResponseCallback onResponse)
 		});
 	}
 
-	return http.send(request);
+	return client.sendRequest(request);
 }
 
 } // namespace Dial

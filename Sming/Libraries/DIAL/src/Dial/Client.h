@@ -42,10 +42,6 @@ class Client : public UPnP::ControlPoint
 public:
 	using Connected = Delegate<void(Client&, const XML::Document& doc, const HttpHeaders& headers)>;
 
-	Client(size_t maxDescriptionSize = 4096) : maxDescriptionSize(maxDescriptionSize)
-	{
-	}
-
 	/**
 	 * @brief Searches for a DIAL device identified by a search type
 	 * @param callback will be called once such a device is auto-discovered
@@ -80,8 +76,6 @@ public:
 	App& getApp(const String& applicationId);
 
 protected:
-	static HttpClient http;
-
 	Url getDescriptionUrl()
 	{
 		return descriptionUrl;
@@ -91,17 +85,15 @@ private:
 	using AppMap = ObjectMap<String, App>;
 
 	String getSearchType() const;
+	bool requestDescription(const String& url);
+	void onDescription(HttpConnection& connection, XML::Document& description);
 
-	size_t maxDescriptionSize; // <<< Maximum size of TV XML description that is stored.
 	Connected onConnected;
-
 	Url descriptionUrl;
 	Url applicationUrl;
 	String searchType;
 	CStringArray uniqueServiceNames;
 	AppMap apps; // <<< list of invoked apps
-
-	int onDescription(HttpConnection& conn, bool success);
 };
 
 } // namespace Dial

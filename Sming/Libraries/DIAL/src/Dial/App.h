@@ -19,7 +19,10 @@
 
 #pragma once
 
-#include <SmingCore.h>
+#include <WString.h>
+#include <Delegate.h>
+#include <Network/Http/HttpRequest.h>
+#include <Network/Http/HttpResponse.h>
 
 /** @defgroup   DIAL application
  *  @brief      Provides DIAL application control
@@ -29,13 +32,14 @@
 
 namespace Dial
 {
+class Client;
+
 class App
 {
 public:
 	using ResponseCallback = Delegate<void(App& app, HttpResponse& response)>;
 
-	App(const String& name, const Url& appsUrl, size_t maxDescriptionSize = 2048)
-		: name(name), appsUrl(appsUrl), maxDescriptionSize(maxDescriptionSize)
+	App(Client& client, const String& name, const Url& appsUrl) : client(client), name(name), appsUrl(appsUrl)
 	{
 	}
 
@@ -68,11 +72,10 @@ private:
 		return url;
 	}
 
+	Client& client;
 	String name;
 	Url appsUrl;
 	String instanceUrl;
-	size_t maxDescriptionSize;
-	static HttpClient http;
 };
 
 } // namespace Dial

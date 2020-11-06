@@ -8,8 +8,6 @@ namespace Dial
 DEFINE_FSTR(domain, "dial-multiscreen-org")
 DEFINE_FSTR(service, "dial")
 
-HttpClient Client::http;
-
 String Client::getSearchType() const
 {
 	return searchType ?: UPnP::ServiceUrn(domain, service, version);
@@ -46,46 +44,27 @@ void Client::onNotify(SSDP::BasicMessage& message)
 	}
 	uniqueServiceNames += uniqueServiceName;
 
-	debug_d("Fetching description from URL: '%s'", location);
-	Url url(location);
-	auto request = new HttpRequest(url);
-	request->setResponseStream(new LimitedMemoryStream(maxDescriptionSize));
-	request->onRequestComplete(RequestCompletedDelegate(&Client::onDescription, this));
-	http.send(request);
+	requestDescription(location);
 }
 
-int Client::onDescription(HttpConnection& connection, bool success)
+bool Client::requestDescription(const String& url)
 {
-	if(!success) {
-		debug_e("Fetch failed");
-		return 0;
-	}
+	return ControlPoint::requestDescription(url, DescriptionCallback(&Client::onDescription, this));
+}
 
-	debug_i("Received description");
+void Client::onDescription(HttpConnection& connection, XML::Document& description)
+{
+	descriptionUrl = connection.getRequest()->uri;
 	auto response = connection.getResponse();
-	if(response->stream == nullptr) {
-		debug_e("No body");
-		return 0;
-	}
-
 	String url = response->headers[_F("Application-URL")];
 	if(url) {
 		applicationUrl = url;
 	}
 
-	String content;
-	response->stream->moveString(content);
-	XML::Document doc;
-	XML::deserialize(doc, content);
-
-	descriptionUrl = connection.getRequest()->uri;
-
-	debug_d("Found DIAL device with searchType: %s", String(searchType).c_str());
+	debug_d("Found DIAL device with searchType: %s", searchType.c_str());
 	if(onConnected) {
-		onConnected(*this, doc, response->headers);
+		onConnected(*this, description, response->headers);
 	}
-
-	return 0;
 }
 
 bool Client::connect(Connected callback, const String& urn)
@@ -112,19 +91,14 @@ bool Client::connect(const Url& descriptionUrl, Connected callback)
 	onConnected = callback;
 
 	debug_d("Fetching '%s'", descriptionUrl.toString().c_str());
-	auto request = new HttpRequest(descriptionUrl);
-	request->setResponseStream(new LimitedMemoryStream(maxDescriptionSize));
-	request->onRequestComplete(RequestCompletedDelegate(&Client::onDescription, this));
-	http.send(request);
-
-	return true;
+	return requestDescription(descriptionUrl);
 }
 
 App& Client::getApp(const String& applicationId)
 {
-	auto app = apps[applicationId];
+	AppMap::Value app = apps[applicationId];
 	if(!app) {
-		app = new App(applicationId, applicationUrl);
+		app = new App(*this, applicationId, applicationUrl);
 	}
 
 	return *app;
