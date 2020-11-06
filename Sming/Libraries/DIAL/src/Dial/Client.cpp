@@ -69,11 +69,6 @@ void Client::onDescription(HttpConnection& connection, XML::Document& descriptio
 
 bool Client::connect(Connected callback, const String& urn)
 {
-	if(!UPnP::deviceHost.begin()) {
-		debug_e("UPnP initialisation failed");
-		return false;
-	}
-
 	onConnected = callback;
 	searchType = urn;
 

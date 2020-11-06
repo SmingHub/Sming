@@ -66,6 +66,11 @@ void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 	Serial.print(_F("I'm CONNECTED to "));
 	Serial.println(ip);
 
+	if(!UPnP::deviceHost.begin()) {
+		debug_e("UPnP initialisation failed");
+		return;
+	}
+
 	/* The command below will use UPnP to auto-discover a smart monitor/TV */
 	client.connect(onConnected);
 
