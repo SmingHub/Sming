@@ -85,7 +85,7 @@ public:
 	 */
 	int getResponseCode() const SMING_DEPRECATED
 	{
-		return response.code;
+		return int(response.code);
 	}
 
 	/**
@@ -205,7 +205,7 @@ protected:
 	 * @param error - the error code
 	 * @retval bool - false if the problem is not recoverable, true otherwise
 	 */
-	virtual bool onHttpError(http_errno error);
+	virtual bool onHttpError(HttpError error);
 
 	// TCP methods
 	virtual bool onTcpReceive(TcpClient& client, char* data, int size);

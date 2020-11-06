@@ -173,7 +173,7 @@ void onCapture(HttpRequest& request, HttpResponse& response)
 	const char* contentType = arduCamCommand.getContentType();
 
 	if(stream->dataReady()) {
-		response.setHeader("Content-Length", String(stream->available()));
+		response.headers[HTTP_HEADER_CONTENT_LENGTH] = String(stream->available());
 		response.sendDataStream(stream, contentType);
 	}
 
@@ -189,7 +189,7 @@ MultipartStream::BodyPart snapshotProducer()
 	result.stream = camStream;
 
 	result.headers = new HttpHeaders();
-	(*result.headers)["Content-Type"] = "image/jpeg";
+	(*result.headers)[HTTP_HEADER_CONTENT_TYPE] = "image/jpeg";
 
 	return result;
 }

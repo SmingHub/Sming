@@ -13,13 +13,6 @@
 #include "MailMessage.h"
 #include "Stream/MemoryDataStream.h"
 
-MailMessage& MailMessage::setHeader(const String& name, const String& value)
-{
-	headers[name] = value;
-
-	return *this;
-}
-
 HttpHeaders& MailMessage::getHeaders()
 {
 	if(!headers.contains(HTTP_HEADER_FROM)) {
@@ -62,7 +55,7 @@ MailMessage& MailMessage::setBody(IDataSourceStream* stream, MimeType mime)
 	}
 
 	this->stream = stream;
-	headers[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(mime);
+	headers[HTTP_HEADER_CONTENT_TYPE] = toString(mime);
 
 	return *this;
 }
@@ -81,7 +74,7 @@ MailMessage& MailMessage::addAttachment(FileStream* stream)
 
 MailMessage& MailMessage::addAttachment(IDataSourceStream* stream, MimeType mime, const String& filename)
 {
-	return addAttachment(stream, ContentType::toString(mime), filename);
+	return addAttachment(stream, toString(mime), filename);
 }
 
 MailMessage& MailMessage::addAttachment(IDataSourceStream* stream, const String& mime, const String& filename)

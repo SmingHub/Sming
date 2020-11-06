@@ -162,9 +162,9 @@ int HttpConnection::staticOnMessageComplete(http_parser* parser)
 	return error;
 }
 
-bool HttpConnection::onHttpError(http_errno error)
+bool HttpConnection::onHttpError(HttpError error)
 {
-	debug_e("HTTP parser error: %s", httpGetErrorName(error).c_str());
+	debug_e("HTTP parser error: %s", toString(error).c_str());
 	return false;
 }
 

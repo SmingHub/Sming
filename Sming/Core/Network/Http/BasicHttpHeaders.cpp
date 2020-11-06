@@ -38,11 +38,11 @@ void BasicHttpHeaders::clear()
 	count_ = 0;
 }
 
-http_errno BasicHttpHeaders::parse(char* data, size_t len, http_parser_type type)
+HttpError BasicHttpHeaders::parse(char* data, size_t len, http_parser_type type)
 {
 	http_parser_init(&parser, type);
 	http_parser_execute(&parser, &parserSettings, data, len);
-	return http_errno(parser.http_errno);
+	return HttpError(HTTP_PARSER_ERRNO(&parser));
 }
 
 int BasicHttpHeaders::staticOnField(http_parser* parser, const char* at, size_t length)

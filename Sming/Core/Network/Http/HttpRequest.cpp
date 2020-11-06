@@ -66,20 +66,20 @@ void HttpRequest::reset()
 	files.clear();
 }
 
-String HttpRequest::toString(const HttpRequest& req)
+String HttpRequest::toString() const
 {
 	String content;
-	content += http_method_str(req.method);
+	content += ::toString(method);
 	content += ' ';
-	content += req.uri.getPathWithQuery();
+	content += uri.getPathWithQuery();
 	content += _F(" HTTP/1.1\r\n");
-	content += req.headers.toString(HTTP_HEADER_HOST, uri.getHostWithPort());
-	for(unsigned i = 0; i < req.headers.count(); i++) {
-		content += req.headers[i];
+	content += headers.toString(HTTP_HEADER_HOST, uri.getHostWithPort());
+	for(unsigned i = 0; i < headers.count(); i++) {
+		content += headers[i];
 	}
 
-	if(req.bodyStream != nullptr && req.bodyStream->available() >= 0) {
-		content += req.headers.toString(HTTP_HEADER_CONTENT_LENGTH, String(req.bodyStream->available()));
+	if(bodyStream != nullptr && bodyStream->available() >= 0) {
+		content += headers.toString(HTTP_HEADER_CONTENT_LENGTH, String(bodyStream->available()));
 	} else {
 		content += "\r\n";
 	}

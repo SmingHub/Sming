@@ -67,12 +67,12 @@ public:
 	 * @param type Type of headers to parse. The default (HTTP_BOTH) detects this automatically,
 	 * use `type()` to determine which. Specifying HTTP_REQUEST or HTTP_RESPONSE will only accept
 	 * the given type and fail on mismatch.
-	 * @retval http_errno Result of parsing, HPE_OK on success.
-	 * Can use with `httpGetErrorName()` or `httpGetErrorDescription()`.
+	 * @retval HttpError Result of parsing, HPE_OK on success.
+	 * Can use with `toString()` or `httpGetErrorDescription()`.
 	 * @note Content of provided data is modified to insert NUL terminators on string values
 	 * Use type() method to determine whether it's a request or response
 	 */
-	http_errno parse(char* data, size_t len, http_parser_type type = HTTP_BOTH);
+	HttpError parse(char* data, size_t len, http_parser_type type = HTTP_BOTH);
 
 	const Header& operator[](unsigned i) const
 	{
@@ -128,35 +128,22 @@ public:
 	/**
 	 * @brief Obtain request method
 	 */
-	http_method method() const
+	HttpMethod method() const
 	{
-		return http_method(parser.method);
+		return HttpMethod(parser.method);
 	}
 
-	void setMethod(http_method method)
+	void setMethod(HttpMethod method)
 	{
 		parser.method = unsigned(method);
 	}
 
 	/**
-	 * @brief Obtain text for request method
-	 */
-	const char* methodStr() const
-	{
-		return http_method_str(method());
-	}
-
-	/**
 	 * @brief Obtain response status
 	 */
-	http_status status() const
+	HttpStatus status() const
 	{
-		return http_status(parser.status_code);
-	}
-
-	String statusText() const
-	{
-		return httpGetStatusText(status());
+		return HttpStatus(parser.status_code);
 	}
 
 	/**

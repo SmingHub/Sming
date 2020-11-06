@@ -10,64 +10,90 @@
 
 #include "WebConstants.h"
 #include <FakePgmSpace.h>
-#include <Data/CStringArray.h>
+#include <FlashString/Vector.hpp>
 #include <stringutil.h>
 
-namespace ContentType
+namespace
 {
 // MIME type strings
-#define XX(name, ext, mime) mime "\0"
-DEFINE_FSTR_LOCAL(fstr_mime, MIME_TYPE_MAP(XX))
+#define XX(name, ext, mime) DEFINE_FSTR_LOCAL(str_contenttype_##name, mime)
+MIME_TYPE_MAP(XX)
+#undef XX
+
+#define XX(name, ext, mime) &str_contenttype_##name,
+DEFINE_FSTR_VECTOR(contentTypeStrings, FlashString, MIME_TYPE_MAP(XX))
 #undef XX
 
 // File extensions
-#define XX(name, ext, mime) ext "\0"
-DEFINE_FSTR_LOCAL(fstr_ext, MIME_TYPE_MAP(XX))
+#define XX(name, ext, mime) DEFINE_FSTR_LOCAL(str_ext_##name, ext)
+MIME_TYPE_MAP(XX)
 #undef XX
+
+#define XX(name, ext, mime) &str_ext_##name,
+DEFINE_FSTR_VECTOR(extensionStrings, FlashString, MIME_TYPE_MAP(XX))
+#undef XX
+} // namespace
+
+String toString(MimeType m)
+{
+	if(m == MIME_UNKNOWN) {
+		return nullptr;
+	}
+
+	return contentTypeStrings[unsigned(m)];
+}
+
+namespace ContentType
+{
+MimeType fromFileExtension(const char* extension, MimeType unknown)
+{
+	// We accept 'htm' or 'html', but the latter is preferred
+	if(strcasecmp(extension, _F("htm")) == 0) {
+		return MIME_HTML;
+	}
+
+	int i = extensionStrings.indexOf(extension);
+	return (i < 0) ? unknown : MimeType(i);
+}
 
 String fromFileExtension(const char* extension)
 {
-	CStringArray mimeStrings(fstr_mime);
-
-	// We accept 'htm' or 'html', but the latter is preferred
-	if(strcasecmp(extension, _F("htm")) == 0) {
-		return mimeStrings[MIME_HTML];
-	}
-
-	int i = CStringArray(fstr_ext).indexOf(extension);
-	if(i < 0) {
+	auto mime = fromFileExtension(extension, MIME_UNKNOWN);
+	if(mime == MIME_UNKNOWN) {
 		// Type undefined - if (String) will return false
 		return nullptr;
 	}
 
-	return mimeStrings[i];
-}
-
-String toString(enum MimeType m)
-{
-	return CStringArray(fstr_mime)[m];
+	return toString(mime);
 }
 
 MimeType fromString(const char* str)
 {
-	int i = CStringArray(fstr_mime).indexOf(str);
+	int i = contentTypeStrings.indexOf(str);
 	if(i < 0) {
 		if(strcasecmp(str, _F("application/xml")) == 0) {
-			i = MIME_XML;
+			return MIME_XML;
+		} else {
+			return MIME_UNKNOWN;
 		}
 	}
-	return (i < 0) ? MIME_UNKNOWN : MimeType(i);
+	return MimeType(i);
+}
+
+MimeType fromFullFileName(const char* fileName, MimeType unknown)
+{
+	if(fileName == nullptr) {
+		return unknown;
+	}
+
+	const char* extension = strrchr(fileName, '.');
+	return extension ? fromFileExtension(extension + 1, unknown) : unknown;
 }
 
 String fromFullFileName(const char* fileName)
 {
-	if(fileName == nullptr) {
-		return nullptr;
-	}
-
-	const char* extension = strrchr(fileName, '.');
-
-	return extension ? fromFileExtension(extension + 1) : nullptr;
+	MimeType mime = fromFullFileName(fileName, MIME_UNKNOWN);
+	return toString(mime);
 }
 
 }; // namespace ContentType

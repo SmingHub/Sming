@@ -172,7 +172,7 @@ int HttpClientConnection::onHeadersComplete(const HttpHeaders& headers)
 	}
 
 	response.headers.setMultiple(headers);
-	response.code = parser.status_code;
+	response.code = HttpStatus(parser.status_code);
 
 	if(incomingRequest->auth != nullptr) {
 		incomingRequest->auth->setResponse(getResponse());
@@ -318,7 +318,11 @@ void HttpClientConnection::onClosed()
 
 void HttpClientConnection::sendRequestHeaders(HttpRequest* request)
 {
-	sendString(String(http_method_str(request->method)) + ' ' + request->uri.getPathWithQuery() + _F(" HTTP/1.1\r\n"));
+	String s = toString(request->method);
+	s += ' ';
+	s += request->uri.getPathWithQuery();
+	s += _F(" HTTP/1.1\r\n");
+	sendString(s);
 
 	if(!request->headers.contains(HTTP_HEADER_HOST)) {
 		request->headers[HTTP_HEADER_HOST] = request->uri.getHostWithPort();
@@ -327,8 +331,10 @@ void HttpClientConnection::sendRequestHeaders(HttpRequest* request)
 	request->headers[HTTP_HEADER_CONTENT_LENGTH] = "0";
 	if(request->files.count()) {
 		auto mStream = new MultipartStream(MultipartStream::Producer(&HttpClientConnection::multipartProducer, this));
-		request->headers[HTTP_HEADER_CONTENT_TYPE] =
-			ContentType::toString(MIME_FORM_MULTIPART) + _F("; boundary=") + mStream->getBoundary();
+		s = toString(MIME_FORM_MULTIPART);
+		s += F("; boundary=");
+		s += mStream->getBoundary();
+		request->headers[HTTP_HEADER_CONTENT_TYPE] = s;
 		if(request->bodyStream != nullptr) {
 			debug_e("HCC::sendRequestHeaders: existing stream is discarded due to POST params");
 			delete request->bodyStream;
@@ -336,7 +342,7 @@ void HttpClientConnection::sendRequestHeaders(HttpRequest* request)
 		request->bodyStream = mStream;
 	} else if(request->postParams.count() != 0) {
 		UrlencodedOutputStream* uStream = new UrlencodedOutputStream(request->postParams);
-		request->headers[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(MIME_FORM_URL_ENCODED);
+		request->headers[HTTP_HEADER_CONTENT_TYPE] = toString(MIME_FORM_URL_ENCODED);
 		if(request->bodyStream) {
 			debug_e("HCC::sendRequestHeaders: existing stream is discarded due to POST params");
 			delete request->bodyStream;

@@ -70,15 +70,19 @@
 	XX(USER_AGENT, "User-Agent", "Information about the user agent originating the request")                           \
 	XX(WWW_AUTHENTICATE, "WWW-Authenticate", "Indicates HTTP authentication scheme(s) and applicable parameters")
 
-enum HttpHeaderFieldName {
-	HTTP_HEADER_UNKNOWN = 0,
-#define XX(_tag, _str, _comment) HTTP_HEADER_##_tag,
+enum class HttpHeaderFieldName {
+	UNKNOWN = 0,
+#define XX(tag, str, comment) tag,
 	HTTP_HEADER_FIELDNAME_MAP(XX)
 #undef XX
-		HTTP_HEADER_CUSTOM // First custom header tag value
+		CUSTOM // First custom header tag value
 };
 
-String toString(HttpHeaderFieldName name);
+#define XX(tag, str, comment) constexpr HttpHeaderFieldName HTTP_HEADER_##tag = HttpHeaderFieldName::tag;
+XX(UNKNOWN, "", "")
+HTTP_HEADER_FIELDNAME_MAP(XX)
+XX(CUSTOM, "", "")
+#undef XX
 
 class HttpHeaderFields
 {
@@ -113,7 +117,7 @@ public:
 	{
 		auto field = fromString(name);
 		if(field == HTTP_HEADER_UNKNOWN) {
-			field = static_cast<HttpHeaderFieldName>(HTTP_HEADER_CUSTOM + customFieldNames.count());
+			field = static_cast<HttpHeaderFieldName>(unsigned(HTTP_HEADER_CUSTOM) + customFieldNames.count());
 			customFieldNames.add(name);
 		}
 		return field;

@@ -23,23 +23,22 @@ public:
 	{
 #if DEBUG_VERBOSE_LEVEL == DBG
 		for(int i = 0; i < 100; ++i) {
-			auto err = http_errno(i);
-			debug_d("httpError(%d) = \"%s\", \"%s\"", i, httpGetErrorName(err).c_str(),
-					httpGetErrorDescription(err).c_str());
+			auto err = HttpError(i);
+			debug_d("httpError(%d) = \"%s\", \"%s\"", i, toString(err).c_str(), httpGetErrorDescription(err).c_str());
 		}
 
 		for(int i = 100; i < 550; ++i) {
-			debug_d("http_status(%d) = \"%s\"", i, httpGetStatusText(i).c_str());
+			debug_d("HTTP Status(%d) = \"%s\"", i, toString(HttpStatus(i)).c_str());
 		}
 #endif
 
 		TEST_CASE("http lookups")
 		{
-			auto s = httpGetErrorName(HPE_UNKNOWN);
+			auto s = toString(HPE_UNKNOWN);
 			REQUIRE(s == F("HPE_UNKNOWN"));
 			s = httpGetErrorDescription(HPE_INVALID_URL);
 			REQUIRE(s == F("invalid URL"));
-			s = httpGetStatusText(HTTP_STATUS_TOO_MANY_REQUESTS);
+			s = toString(HTTP_STATUS_TOO_MANY_REQUESTS);
 			REQUIRE(s.equalsIgnoreCase(F("too many requests")));
 		}
 	}
@@ -72,7 +71,7 @@ public:
 		headers[HTTP_HEADER_ETAG] = _F("00f-3d-179a0-0");
 		headers[HTTP_HEADER_CONNECTION] = _F("keep-alive");
 		headers[HTTP_HEADER_SERVER] = _F("HttpServer/Sming");
-		headers[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(MIME_JS);
+		headers[HTTP_HEADER_CONTENT_TYPE] = toString(MIME_JS);
 		headers[HTTP_HEADER_CACHE_CONTROL] = F("max-age=31536000, public");
 		headers[HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN] = "*";
 		auto standardElapsed = timer.elapsedTime();

@@ -39,9 +39,9 @@ int onDownload(HttpConnection& connection, bool success)
 
 	Serial.print(_F("Got response code: "));
 	auto status = connection.getResponse()->code;
-	Serial.print(status);
+	Serial.print(unsigned(status));
 	Serial.print(" (");
-	Serial.print(httpGetStatusText(status));
+	Serial.print(toString(status));
 	Serial.print(_F("), success: "));
 	Serial.print(success);
 

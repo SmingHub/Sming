@@ -1,8 +1,49 @@
+diff --git a/http_parser.h b/http_parser.h
+index df88252..5935bcf 100644
+--- a/http_parser.h
++++ b/http_parser.h
+@@ -153,7 +153,7 @@ typedef int (*http_cb) (http_parser*);
+ 
+ enum http_status
+   {
+-#define XX(num, name, string) HTTP_STATUS_##name = num,
++#define XX(num, name, string) HTTP_STATUS_CODE_##name = num,
+   HTTP_STATUS_MAP(XX)
+ #undef XX
+   };
+@@ -206,7 +206,7 @@ enum http_status
+ 
+ enum http_method
+   {
+-#define XX(num, name, string) HTTP_##name = num,
++#define XX(num, name, string) HTTP_METHOD_##name = num,
+   HTTP_METHOD_MAP(XX)
+ #undef XX
+   };
+@@ -282,17 +282,13 @@ enum flags
+ 
+ 
+ /* Define HPE_* values for each errno value above */
+-#define HTTP_ERRNO_GEN(n, s) HPE_##n,
++#define HTTP_ERRNO_GEN(n, s) HTTP_ERRNO_##n,
+ enum http_errno {
+   HTTP_ERRNO_MAP(HTTP_ERRNO_GEN)
+ };
+ #undef HTTP_ERRNO_GEN
+ 
+ 
+-/* Get an http_errno value from an http_parser */
+-#define HTTP_PARSER_ERRNO(p)            ((enum http_errno) (p)->http_errno)
+-
+-
+ struct http_parser {
+   /** PRIVATE **/
+   unsigned int type : 2;         /* enum http_parser_type */
 diff --git a/http_parser.c b/http_parser.c
-index 95ff42f..1b95feb 100644
+index 95ff42f..2c7510b 100644
 --- a/http_parser.c
 +++ b/http_parser.c
-@@ -19,8 +19,7 @@
+@@ -19,12 +19,19 @@
   * IN THE SOFTWARE.
   */
  #include "http_parser.h"
@@ -12,7 +53,19 @@ index 95ff42f..1b95feb 100644
  #include <ctype.h>
  #include <string.h>
  #include <limits.h>
-@@ -186,7 +185,7 @@ static const char *method_strings[] =
+ 
++/* Define HPE_* values for each errno value above */
++#define XX(n, s) const enum http_errno HPE_##n = HTTP_ERRNO_##n;
++ HTTP_ERRNO_MAP(XX)
++#undef XX
++
++#undef HTTP_PARSER_ERRNO
++#define HTTP_PARSER_ERRNO(p)            ((enum http_errno) (p)->http_errno)
++
+ static uint32_t max_header_size = HTTP_MAX_HEADER_SIZE;
+ 
+ #ifndef ULLONG_MAX
+@@ -186,7 +193,7 @@ static const char *method_strings[] =
   *                    | "/" | "[" | "]" | "?" | "="
   *                    | "{" | "}" | SP | HT
   */
@@ -21,7 +74,7 @@ index 95ff42f..1b95feb 100644
  /*   0 nul    1 soh    2 stx    3 etx    4 eot    5 enq    6 ack    7 bel  */
          0,       0,       0,       0,       0,       0,       0,       0,
  /*   8 bs     9 ht    10 nl    11 vt    12 np    13 cr    14 so    15 si   */
-@@ -220,19 +219,10 @@ static const char tokens[256] = {
+@@ -220,19 +227,10 @@ static const char tokens[256] = {
  /* 120  x   121  y   122  z   123  {   124  |   125  }   126  ~   127 del */
         'x',     'y',     'z',      0,      '|',      0,      '~',       0 };
  
@@ -45,7 +98,7 @@ index 95ff42f..1b95feb 100644
  #if HTTP_PARSER_STRICT
  # define T(v) 0
  #else
-@@ -428,14 +418,14 @@ enum http_host_state
+@@ -428,14 +426,14 @@ enum http_host_state
    (c) == ';' || (c) == ':' || (c) == '&' || (c) == '=' || (c) == '+' || \
    (c) == '$' || (c) == ',')
  
@@ -62,7 +115,7 @@ index 95ff42f..1b95feb 100644
  #define IS_URL_CHAR(c)                                                         \
    (BIT_AT(normal_url_char, (unsigned char)c) || ((c) & 0x80))
  #define IS_HOST_CHAR(c)                                                        \
-@@ -467,16 +457,6 @@ do {                                                                 \
+@@ -467,16 +465,6 @@ do {                                                                 \
  #endif
  
  
@@ -79,7 +132,102 @@ index 95ff42f..1b95feb 100644
  int http_message_needs_eof(const http_parser *parser);
  
  /* Our URL parser.
-@@ -1991,7 +1971,7 @@ reexecute:
+@@ -758,7 +746,7 @@ reexecute:
+           }
+ 
+           parser->type = HTTP_REQUEST;
+-          parser->method = HTTP_HEAD;
++          parser->method = HTTP_METHOD_HEAD;
+           parser->index = 2;
+           UPDATE_STATE(s_req_method);
+         }
+@@ -938,23 +926,23 @@ reexecute:
+         parser->method = (enum http_method) 0;
+         parser->index = 1;
+         switch (ch) {
+-          case 'A': parser->method = HTTP_ACL; break;
+-          case 'B': parser->method = HTTP_BIND; break;
+-          case 'C': parser->method = HTTP_CONNECT; /* or COPY, CHECKOUT */ break;
+-          case 'D': parser->method = HTTP_DELETE; break;
+-          case 'G': parser->method = HTTP_GET; break;
+-          case 'H': parser->method = HTTP_HEAD; break;
+-          case 'L': parser->method = HTTP_LOCK; /* or LINK */ break;
+-          case 'M': parser->method = HTTP_MKCOL; /* or MOVE, MKACTIVITY, MERGE, M-SEARCH, MKCALENDAR */ break;
+-          case 'N': parser->method = HTTP_NOTIFY; break;
+-          case 'O': parser->method = HTTP_OPTIONS; break;
+-          case 'P': parser->method = HTTP_POST;
++          case 'A': parser->method = HTTP_METHOD_ACL; break;
++          case 'B': parser->method = HTTP_METHOD_BIND; break;
++          case 'C': parser->method = HTTP_METHOD_CONNECT; /* or COPY, CHECKOUT */ break;
++          case 'D': parser->method = HTTP_METHOD_DELETE; break;
++          case 'G': parser->method = HTTP_METHOD_GET; break;
++          case 'H': parser->method = HTTP_METHOD_HEAD; break;
++          case 'L': parser->method = HTTP_METHOD_LOCK; /* or LINK */ break;
++          case 'M': parser->method = HTTP_METHOD_MKCOL; /* or MOVE, MKACTIVITY, MERGE, M-SEARCH, MKCALENDAR */ break;
++          case 'N': parser->method = HTTP_METHOD_NOTIFY; break;
++          case 'O': parser->method = HTTP_METHOD_OPTIONS; break;
++          case 'P': parser->method = HTTP_METHOD_POST;
+             /* or PROPFIND|PROPPATCH|PUT|PATCH|PURGE */
+             break;
+-          case 'R': parser->method = HTTP_REPORT; /* or REBIND */ break;
+-          case 'S': parser->method = HTTP_SUBSCRIBE; /* or SEARCH, SOURCE */ break;
+-          case 'T': parser->method = HTTP_TRACE; break;
+-          case 'U': parser->method = HTTP_UNLOCK; /* or UNSUBSCRIBE, UNBIND, UNLINK */ break;
++          case 'R': parser->method = HTTP_METHOD_REPORT; /* or REBIND */ break;
++          case 'S': parser->method = HTTP_METHOD_SUBSCRIBE; /* or SEARCH, SOURCE */ break;
++          case 'T': parser->method = HTTP_METHOD_TRACE; break;
++          case 'U': parser->method = HTTP_METHOD_UNLOCK; /* or UNSUBSCRIBE, UNBIND, UNLINK */ break;
+           default:
+             SET_ERRNO(HPE_INVALID_METHOD);
+             goto error;
+@@ -983,8 +971,8 @@ reexecute:
+ 
+           switch (parser->method << 16 | parser->index << 8 | ch) {
+ #define XX(meth, pos, ch, new_meth) \
+-            case (HTTP_##meth << 16 | pos << 8 | ch): \
+-              parser->method = HTTP_##new_meth; break;
++            case (HTTP_METHOD_##meth << 16 | pos << 8 | ch): \
++              parser->method = HTTP_METHOD_##new_meth; break;
+ 
+             XX(POST,      1, 'U', PUT)
+             XX(POST,      1, 'A', PATCH)
+@@ -1024,7 +1012,7 @@ reexecute:
+         if (ch == ' ') break;
+ 
+         MARK(url);
+-        if (parser->method == HTTP_CONNECT) {
++        if (parser->method == HTTP_METHOD_CONNECT) {
+           UPDATE_STATE(s_req_server_start);
+         }
+ 
+@@ -1100,7 +1088,7 @@ reexecute:
+             UPDATE_STATE(s_req_http_H);
+             break;
+           case 'I':
+-            if (parser->method == HTTP_SOURCE) {
++            if (parser->method == HTTP_METHOD_SOURCE) {
+               UPDATE_STATE(s_req_http_I);
+               break;
+             }
+@@ -1826,7 +1814,7 @@ reexecute:
+           parser->upgrade =
+               (parser->type == HTTP_REQUEST || parser->status_code == 101);
+         } else {
+-          parser->upgrade = (parser->method == HTTP_CONNECT);
++          parser->upgrade = (parser->method == HTTP_METHOD_CONNECT);
+         }
+ 
+         /* Here we call the headers_complete callback. This is somewhat
+@@ -1874,7 +1862,7 @@ reexecute:
+ 
+         hasBody = parser->flags & F_CHUNKED ||
+           (parser->content_length > 0 && parser->content_length != ULLONG_MAX);
+-        if (parser->upgrade && (parser->method == HTTP_CONNECT ||
++        if (parser->upgrade && (parser->method == HTTP_METHOD_CONNECT ||
+                                 (parser->flags & F_SKIPBODY) || !hasBody)) {
+           /* Exit, the rest of the message is in a different protocol. */
+           UPDATE_STATE(NEW_MESSAGE());
+@@ -1991,7 +1979,7 @@ reexecute:
          assert(nread == 1);
          assert(parser->flags & F_CHUNKED);
  
@@ -88,7 +236,7 @@ index 95ff42f..1b95feb 100644
          if (UNLIKELY(unhex_val == -1)) {
            SET_ERRNO(HPE_INVALID_CHUNK_SIZE);
            goto error;
-@@ -2013,7 +1993,7 @@ reexecute:
+@@ -2013,7 +2001,7 @@ reexecute:
            break;
          }
  
@@ -97,7 +245,16 @@ index 95ff42f..1b95feb 100644
  
          if (unhex_val == -1) {
            if (ch == ';' || ch == ' ') {
-@@ -2231,18 +2211,6 @@ http_parser_settings_init(http_parser_settings *settings)
+@@ -2207,7 +2195,7 @@ const char *
+ http_status_str (enum http_status s)
+ {
+   switch (s) {
+-#define XX(num, name, string) case HTTP_STATUS_##name: return #string;
++#define XX(num, name, string) case HTTP_STATUS_CODE_##name: return #string;
+     HTTP_STATUS_MAP(XX)
+ #undef XX
+     default: return "<unknown>";
+@@ -2231,18 +2219,6 @@ http_parser_settings_init(http_parser_settings *settings)
    memset(settings, 0, sizeof(*settings));
  }
  
@@ -116,3 +273,4 @@ index 95ff42f..1b95feb 100644
  static enum http_host_state
  http_parse_host_char(enum http_host_state s, const char ch) {
    switch(s) {
+
