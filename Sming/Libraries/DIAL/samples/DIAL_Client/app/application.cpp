@@ -39,11 +39,11 @@ void onStatus(Dial::App& app, HttpResponse& response)
 	app.run(params, onRun);
 }
 
-void onConnected(Dial::Client& client, HttpConnection& connection, const XML::Document& doc)
+void onConnected(Dial::Client& client, HttpConnection& connection, const XML::Document& description)
 {
 	Serial.println(_F("New DIAL device found: "));
 
-	auto node = XML::getNode(doc, F("/device/friendlyName"));
+	auto node = XML::getNode(description, F("/device/friendlyName"));
 	if(node == nullptr) {
 		Serial.println(_F("UNEXPECTED! friendlyName missing from device description"));
 	} else {
@@ -54,7 +54,7 @@ void onConnected(Dial::Client& client, HttpConnection& connection, const XML::Do
 
 #if DEBUG_VERBOSE_LEVEL == DBG
 	Serial.println();
-	XML::serialize(doc, Serial, true);
+	XML::serialize(description, Serial, true);
 	Serial.println();
 #endif
 

@@ -40,7 +40,9 @@ constexpr uint8_t version{1};
 class Client : public UPnP::ControlPoint
 {
 public:
-	using Connected = Delegate<void(Client&, HttpConnection& connection, const XML::Document& doc)>;
+	using Connected = Delegate<void(Client&, HttpConnection& connection, const XML::Document& description)>;
+
+	using ControlPoint::ControlPoint;
 
 	/**
 	 * @brief Searches for a DIAL device
@@ -51,15 +53,6 @@ public:
 	bool connect(Connected callback);
 
 	/**
-	 * @brief Searches for a DIAL device identified by a search type
-	 * @param urn unique identifier of the search type
-	 * @param callback will be called once such a device is auto-discovered
-	 *
-	 * @retval true when the connect request can be started
-	 */
-	bool connect(const UPnP::ServiceUrn& urn, Connected callback);
-
-	/**
 	 * @brief Directly connects to a device's description xml URL.
 	 * @param descriptionUrl the full URL where a description XML can be found.
 	 * 		  For example: http://192.168.22.222:55000/nrc/ddd.xml";
@@ -68,10 +61,6 @@ public:
 	 * @retval true when the connect request can be started
 	 */
 	bool connect(const Url& descriptionUrl, Connected callback);
-
-	bool formatMessage(SSDP::Message& msg, SSDP::MessageSpec& ms) override;
-
-	void onNotify(SSDP::BasicMessage& msg) override;
 
 	/**
 	 * @brief Get application object by name
@@ -90,16 +79,11 @@ protected:
 private:
 	using AppMap = ObjectMap<String, App>;
 
-	bool isConnecting();
-	String getSearchType() const;
-	bool requestDescription(const String& url);
-	void onDescription(HttpConnection& connection, XML::Document& description);
+	void onDescription(HttpConnection& connection, XML::Document& description, Connected callback);
 
-	Connected onConnected;
 	Url descriptionUrl;
 	Url applicationUrl;
 	UPnP::ServiceUrn searchType;
-	CStringArray uniqueServiceNames;
 	AppMap apps; // <<< list of invoked apps
 };
 
