@@ -482,3 +482,51 @@ Some notes on commonly occurring issues::
        */
        unsigned length = 0;
    };
+
+
+Use of ``typedef`` in C++
+-------------------------
+
+Use of ``typedef`` in C++ code is not recommended.
+
+The `using` keyword has been available since C++11 and offers a more natural way to express type definitions.
+It is also necessary in certain situations such as templating.
+
+For example::
+
+   using ValueType = uint32_t;
+
+is more readable than::
+
+   typdef uint32_t ValueType;
+
+Especially in multiple type declarations the subject is always immediately after the ``using`` keyword
+and makes reading much easier.
+
+https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#t43-prefer-using-over-typedef-for-defining-aliases
+https://www.nextptr.com/tutorial/ta1193988140/how-cplusplus-using-or-aliasdeclaration-is-better-than-typedef
+
+enum/struct declarations
+------------------------
+
+This::
+
+   typedef struct _MyStructTag {
+     ...
+   } MyStruct;
+   
+   typedef enum _MyEnumTag {
+     ...
+   } MyEnum;
+   
+is overly verbose and un-necessary. It's a hangover from 'C' code and should generally be avoided for readability and consistency.
+This is the preferred definition::
+
+   struct MyStruct {
+     ...
+   };
+   enum MyEnum {
+   .............
+   };
+
+It's also un-necessary to qualify usage with `enum`. i.e. `MyEnum e;` is sufficient, don't need `enum MyEnum e;`.
