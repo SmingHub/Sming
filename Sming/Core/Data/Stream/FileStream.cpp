@@ -18,7 +18,7 @@ void FileStream::attach(file_t file, size_t size)
 	if(file >= 0) {
 		handle = file;
 		this->size = size;
-		fileSeek(handle, 0, eSO_FileStart);
+		fileSeek(handle, 0, SeekOrigin::Start);
 		pos = 0;
 		debug_d("attached file: '%s' (%u bytes) #0x%08X", fileName().c_str(), size, this);
 	}
@@ -35,7 +35,7 @@ bool FileStream::open(const String& fileName, FileOpenFlags openFlags)
 	}
 
 	// Get size
-	int size = fileSeek(file, 0, eSO_FileEnd);
+	int size = fileSeek(file, 0, SeekOrigin::End);
 	if(check(size)) {
 		attach(file, size);
 		return true;
@@ -79,7 +79,7 @@ uint16_t FileStream::readMemoryBlock(char* data, int bufSize)
 	size_t count = readBytes(data, bufSize);
 
 	// Move cursor back to start position
-	(void)fileSeek(handle, startPos, eSO_FileStart);
+	(void)fileSeek(handle, startPos, SeekOrigin::Start);
 
 	return count;
 }
@@ -91,7 +91,7 @@ size_t FileStream::write(const uint8_t* buffer, size_t size)
 	}
 
 	if(pos != this->size) {
-		int writePos = fileSeek(handle, 0, eSO_FileEnd);
+		int writePos = fileSeek(handle, 0, SeekOrigin::End);
 		if(!check(writePos)) {
 			return 0;
 		}
@@ -108,10 +108,10 @@ size_t FileStream::write(const uint8_t* buffer, size_t size)
 	return written > 0 ? written : 0;
 }
 
-int FileStream::seekFrom(int offset, unsigned origin)
+int FileStream::seekFrom(int offset, SeekOrigin origin)
 {
 	// Cannot rely on return value from fileSeek - failure does not mean position hasn't changed
-	fileSeek(handle, offset, SeekOriginFlags(origin));
+	fileSeek(handle, offset, origin);
 	int newpos = fileTell(handle);
 	if(check(newpos)) {
 		pos = size_t(newpos);

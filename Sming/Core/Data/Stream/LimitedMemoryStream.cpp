@@ -18,17 +18,17 @@ uint16_t LimitedMemoryStream::readMemoryBlock(char* data, int bufSize)
 	return written;
 }
 
-int LimitedMemoryStream::seekFrom(int offset, unsigned origin)
+int LimitedMemoryStream::seekFrom(int offset, SeekOrigin origin)
 {
 	size_t newPos;
 	switch(origin) {
-	case SEEK_SET:
+	case SeekOrigin::Start:
 		newPos = offset;
 		break;
-	case SEEK_CUR:
+	case SeekOrigin::Current:
 		newPos = readPos + offset;
 		break;
-	case SEEK_END:
+	case SeekOrigin::End:
 		newPos = writePos + offset;
 		break;
 	default:

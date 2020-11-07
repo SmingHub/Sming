@@ -24,8 +24,8 @@ public:
 			debug_i("fileSetContent() returned %d", res);
 			REQUIRE(size_t(res) == testContent.length());
 			file = fileOpen(testFileName, eFO_ReadWrite);
-			size = fileSeek(file, 0, eSO_FileEnd);
-			pos = fileSeek(file, 100, eSO_FileStart);
+			size = fileSeek(file, 0, SeekOrigin::End);
+			pos = fileSeek(file, 100, SeekOrigin::Start);
 			debug_i("pos = %d, size = %d", pos, size);
 			REQUIRE(pos == 100);
 			REQUIRE(size_t(size) == testContent.length());
@@ -35,7 +35,7 @@ public:
 		{
 			res = fileTruncate(file, 555);
 			pos = fileTell(file);
-			size = fileSeek(file, 0, eSO_FileEnd);
+			size = fileSeek(file, 0, SeekOrigin::End);
 			debug_i("res = %d, pos = %d, size = %d", res, pos, size);
 			REQUIRE(res == 0);
 			REQUIRE(pos == 100);
@@ -45,7 +45,7 @@ public:
 		TEST_CASE("Increase file size")
 		{
 			res = fileTruncate(file, 12345);
-			size = fileSeek(file, 0, eSO_FileEnd);
+			size = fileSeek(file, 0, SeekOrigin::End);
 			debug_i("res = %d, size = %d", res, size);
 			REQUIRE(res < 0);
 			REQUIRE(size == 555);
@@ -123,7 +123,7 @@ public:
 		{
 			FileStream fs;
 			fs.open(testFileName, eFO_ReadWrite);
-			res = fs.seekFrom(101, eSO_FileStart);
+			res = fs.seekFrom(101, SeekOrigin::Start);
 			pos = fs.getPos();
 			size = fs.getSize();
 			debug_i("fs.seekFrom() returned %d, pos = %d, size = %d", res, pos, size);

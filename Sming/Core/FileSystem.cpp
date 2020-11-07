@@ -53,9 +53,9 @@ int fileRead(file_t file, void* data, size_t size)
 	return res;
 }
 
-int fileSeek(file_t file, int offset, SeekOriginFlags origin)
+int fileSeek(file_t file, int offset, SeekOrigin origin)
 {
-	return SPIFFS_lseek(&_filesystemStorageHandle, file, offset, origin);
+	return SPIFFS_lseek(&_filesystemStorageHandle, file, offset, int(origin));
 }
 
 bool fileIsEOF(file_t file)
@@ -134,7 +134,7 @@ int fileSetContent(const String& fileName, const char* content, int length)
 uint32_t fileGetSize(const String& fileName)
 {
 	file_t file = fileOpen(fileName.c_str(), eFO_ReadOnly);
-	int size = fileSeek(file, 0, eSO_FileEnd);
+	int size = fileSeek(file, 0, SeekOrigin::End);
 	fileClose(file);
 	return (size < 0) ? 0 : size;
 }
@@ -165,11 +165,11 @@ String fileGetContent(const String& fileName)
 {
 	String res;
 	file_t file = fileOpen(fileName.c_str(), eFO_ReadOnly);
-	int size = fileSeek(file, 0, eSO_FileEnd);
+	int size = fileSeek(file, 0, SeekOrigin::End);
 	if(size == 0) {
 		res = ""; // Valid String, file is empty
 	} else if(size > 0) {
-		fileSeek(file, 0, eSO_FileStart);
+		fileSeek(file, 0, SeekOrigin::Start);
 		res.setLength(size);
 		if(fileRead(file, res.begin(), res.length()) != size) {
 			res = nullptr; // read failed, invalidate String
@@ -186,11 +186,11 @@ size_t fileGetContent(const String& fileName, char* buffer, size_t bufSize)
 	}
 
 	file_t file = fileOpen(fileName.c_str(), eFO_ReadOnly);
-	int size = fileSeek(file, 0, eSO_FileEnd);
+	int size = fileSeek(file, 0, SeekOrigin::End);
 	if(size <= 0 || bufSize <= size_t(size)) {
 		size = 0;
 	} else {
-		fileSeek(file, 0, eSO_FileStart);
+		fileSeek(file, 0, SeekOrigin::Start);
 		if(fileRead(file, buffer, size) != size) {
 			size = 0; // Error
 		}

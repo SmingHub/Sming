@@ -165,7 +165,7 @@ template <class Adafruit_TFT> bool bmpDraw(Adafruit_TFT& tft, String fileName, u
 				pos = bmpImageoffset + row * rowSize;
 			}
 			if(fileTell(handle) != int(pos)) {
-				fileSeek(handle, pos, eSO_FileStart);
+				fileSeek(handle, pos, SeekOrigin::Start);
 				buffidx = sizeof(sdbuffer); // Force buffer reload
 			}
 			for(int col = 0; col < w; col++) { // For each pixel...
