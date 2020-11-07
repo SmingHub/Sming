@@ -1,6 +1,7 @@
 #include <HostTests.h>
 #include <FlashString/TemplateStream.hpp>
 #include <Data/Stream/MemoryDataStream.h>
+#include <Data/Stream/SectionTemplate.h>
 
 DEFINE_FSTR_LOCAL(template1, "Stream containing {var1}, {var2} and {var3}. {} {{}} {{12345")
 DEFINE_FSTR_LOCAL(template1_1, "Stream containing value #1, value #2 and {var3}. {} {{}} {{12345")
@@ -69,18 +70,41 @@ public:
 
 			check(tmpl, template2_1);
 		}
+
+		TEST_CASE("ut_template1")
+		{
+			SectionTemplate tmpl(new FlashMemoryStream(Resource::ut_template1_in_rst));
+			REQUIRE(tmpl.sectionCount() == 1);
+			tmpl.setDoubleBraces(true);
+			tmpl.onGetValue([&tmpl](const char* name) -> String {
+				debug_e("getValue(%s)", name);
+				if(FS("emit_contents") == name) {
+					return "1";
+				}
+
+				if(memcmp(name, "emit_", 5) == 0) {
+					return "";
+				}
+
+				return nullptr;
+			});
+
+			check(tmpl, Resource::ut_template1_out1_rst);
+		}
 	}
 
 private:
-	void check(TemplateStream& stream, const FlashString& ref)
+	void check(TemplateStream& tmpl, const FlashString& ref)
 	{
 		MemoryDataStream mem;
-		mem.copyFrom(&stream, 1024);
-		String tmpl;
-		REQUIRE(mem.moveString(tmpl));
-		debug_i("tmpl: %s", tmpl.c_str());
-		debug_i(" ref: %s", String(ref).c_str());
-		REQUIRE(ref == tmpl);
+		auto len = mem.copyFrom(&tmpl);
+		debug_i("Copied %u bytes", len);
+		String output;
+		REQUIRE(mem.moveString(output));
+		debug_i("output.length() == %u", output.length());
+		REQUIRE(output.length() == len);
+		REQUIRE(output.length() == ref.length());
+		REQUIRE(ref == output);
 	}
 };
 
