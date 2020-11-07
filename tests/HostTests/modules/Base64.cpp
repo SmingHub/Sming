@@ -1,4 +1,4 @@
-#include <SmingTest.h>
+#include <HostTests.h>
 
 #include <Network/WebHelpers/base64.h>
 

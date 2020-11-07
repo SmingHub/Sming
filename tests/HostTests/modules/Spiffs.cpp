@@ -1,4 +1,4 @@
-#include <SmingTest.h>
+#include <HostTests.h>
 #include <esp_spi_flash.h>
 
 class SpiffsTest : public TestGroup

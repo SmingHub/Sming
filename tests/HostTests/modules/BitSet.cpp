@@ -1,4 +1,4 @@
-#include <SmingTest.h>
+#include <HostTests.h>
 #include <Data/BitSet.h>
 
 #define FRUIT_ELEMENT_MAP(XX)                                                                                          \

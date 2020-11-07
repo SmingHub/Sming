@@ -1,8 +1,7 @@
-#include <SmingTest.h>
+#include <HostTests.h>
 #include <FlashString/TemplateStream.hpp>
 #include <Data/Stream/MemoryDataStream.h>
 
-IMPORT_FSTR_LOCAL(FS_abstract, PROJECT_DIR "/files/abstract.txt");
 DEFINE_FSTR_LOCAL(template1, "Stream containing {var1}, {var2} and {var3}. {} {{}} {{12345")
 DEFINE_FSTR_LOCAL(template1_1, "Stream containing value #1, value #2 and {var3}. {} {{}} {{12345")
 DEFINE_FSTR_LOCAL(template1_2, "Stream containing value #1, value #2 and [value #3]. {} {{}} {{12345")
@@ -48,6 +47,8 @@ public:
 
 			check(tmpl, template1_2);
 		}
+
+		const FlashString& FS_abstract = Resource::abstract_txt;
 
 		TEST_CASE("MemoryDataStream::moveString")
 		{

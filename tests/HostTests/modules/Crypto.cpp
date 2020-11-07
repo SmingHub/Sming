@@ -1,4 +1,4 @@
-#include <SmingTest.h>
+#include <HostTests.h>
 #include <Crypto/Md5.h>
 #include <Crypto/Sha1.h>
 #include <Crypto/Sha2.h>
@@ -10,7 +10,8 @@
 #include "Crypto/EspHash.h"
 #endif
 
-IMPORT_FSTR_LOCAL(FS_plainText, PROJECT_DIR "/files/abstract.txt");
+const FlashString& FS_plainText = Resource::abstract_txt;
+
 DEFINE_FSTR_LOCAL(FS_hmacKey, "very small key");
 
 /*

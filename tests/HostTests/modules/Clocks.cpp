@@ -4,7 +4,7 @@
  * calculation.
  */
 
-#include <SmingTest.h>
+#include <HostTests.h>
 #include <Platform/Timers.h>
 
 template <class Clock, typename TimeType> class ClockTestTemplate : public TestGroup

@@ -1,4 +1,4 @@
-#include <SmingTest.h>
+#include <HostTests.h>
 
 static int num_instances;
 

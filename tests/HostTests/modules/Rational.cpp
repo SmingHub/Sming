@@ -2,7 +2,7 @@
  * Tests rational number calculations by comparing against expected results using floating point.
  */
 
-#include <SmingTest.h>
+#include <HostTests.h>
 #include <Rational.h>
 
 class TestRational : public TestGroup

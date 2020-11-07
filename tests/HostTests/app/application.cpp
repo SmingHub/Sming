@@ -6,7 +6,7 @@
  */
 
 #include <SmingTest.h>
-#include "modules.h"
+#include <modules.h>
 
 #define XX(t) extern void REGISTER_TEST(t);
 TEST_MAP(XX)

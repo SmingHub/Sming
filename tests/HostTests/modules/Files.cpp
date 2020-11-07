@@ -1,6 +1,4 @@
-#include <SmingTest.h>
-
-IMPORT_FSTR(testContent, SMING_HOME "/../README.md");
+#include <HostTests.h>
 
 class FilesTest : public TestGroup
 {
@@ -11,6 +9,8 @@ public:
 
 	void execute() override
 	{
+		const FlashString& testContent = Resource::README_md;
+
 		debug_i("testContent.length = 0x%08x", testContent.length());
 
 		DEFINE_FSTR_LOCAL(testFileName, "test.txt");

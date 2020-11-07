@@ -1,11 +1,9 @@
-#include <SmingTest.h>
+#include <HostTests.h>
 #define ARDUINOJSON_USE_LONG_LONG 1
 #include <JsonObjectStream6.h>
 #include <Data/CStringArray.h>
 #include <Data/CString.h>
 #include <FlashString/Stream.hpp>
-
-IMPORT_FSTR(testJsonFile, PROJECT_DIR "/files/test.json");
 
 class JsonTest6 : public TestGroup
 {
@@ -273,12 +271,12 @@ public:
 
 	void __attribute__((noinline)) loadFlashString()
 	{
-		TEST_ASSERT(Json::deserialize(doc, testJsonFile));
+		TEST_ASSERT(Json::deserialize(doc, Resource::test_json));
 	}
 
 	void __attribute__((noinline)) loadFlashStringViaStream(bool useFlashRead)
 	{
-		FSTR::Stream stream(testJsonFile, useFlashRead);
+		FSTR::Stream stream(Resource::test_json, useFlashRead);
 		TEST_ASSERT(Json::deserialize(doc, stream));
 	}
 
@@ -307,14 +305,14 @@ public:
 		if(!fileExist(filename)) {
 			FileStream fs(filename, eFO_CreateNewAlways | eFO_WriteOnly);
 			REQUIRE(fs.isValid());
-			FSTR::Stream os(testJsonFile);
-			REQUIRE(fs.copyFrom(&os, os.available()) == testJsonFile.length());
+			FSTR::Stream os(Resource::test_json);
+			REQUIRE(fs.copyFrom(&os, os.available()) == Resource::test_json.length());
 		}
 
 		TEST_CASE("loadBuffer")
 		{
-			LOAD_FSTR(buffer, testJsonFile);
-			CHECK(loadBuffer(buffer, testJsonFile.length()));
+			LOAD_FSTR(buffer, Resource::test_json);
+			CHECK(loadBuffer(buffer, Resource::test_json.length()));
 		}
 		TEST_CASE("loadFlashString")
 		{

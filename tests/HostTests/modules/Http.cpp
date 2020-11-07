@@ -1,4 +1,4 @@
-#include <SmingTest.h>
+#include <HostTests.h>
 
 #include "Network/Http/HttpCommon.h"
 #include "Network/Http/HttpHeaders.h"

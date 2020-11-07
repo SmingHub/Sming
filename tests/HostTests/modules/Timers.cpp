@@ -4,7 +4,7 @@
  * calculation.
  */
 
-#include <SmingTest.h>
+#include <HostTests.h>
 #include <HardwareTimer.h>
 #include <Platform/Timers.h>
 #include <malloc_count.h>
