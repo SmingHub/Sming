@@ -13,7 +13,7 @@ void DelayStream::sendFile()
 
 	if(FileStream::open(fn, eFO_ReadOnly)) {
 		debug_i("opened '%s', %u bytes", fn.c_str(), FileStream::available());
-		response->setContentType(ContentType::fromFullFileName(filename));
+		response->setContentType(getMimeType());
 	} else {
 		debug_e("open '%s' failed!", fn.c_str());
 		response->code = HTTP_STATUS_NOT_FOUND;

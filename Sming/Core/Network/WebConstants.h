@@ -87,7 +87,7 @@ String fromFileExtension(const char* extension);
  *  @param extension
  *  @retval String
  */
-static inline String fromFileExtension(const String& extension)
+inline String fromFileExtension(const String& extension)
 {
 	return fromFileExtension(extension.c_str());
 }
@@ -114,20 +114,26 @@ inline MimeType fromString(const String& str)
  */
 MimeType fromFullFileName(const char* fileName, MimeType unknown);
 
-/** @brief Obtain content type string from file name or path, with extension
+inline MimeType fromFullFileName(const String& fileName, MimeType unknown)
+{
+	return fromFullFileName(fileName.c_str(), unknown);
+}
+
+/** @name Obtain content type string from file name or path, with extension
  *  @param fileName
  *  @retval String
+ *  @{
  */
 String fromFullFileName(const char* fileName);
 
 /** @brief Obtain content type string from file name or path, with extension
- *  @param fileName
- *  @retval String
  */
-static inline String fromFullFileName(const String& fileName)
+inline String fromFullFileName(const String& fileName)
 {
 	return fromFullFileName(fileName.c_str());
 }
+
+/** @} */
 
 }; // namespace ContentType
 

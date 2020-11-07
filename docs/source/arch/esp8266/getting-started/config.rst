@@ -32,6 +32,14 @@ If you want to reset back to default values, do this::
 
    make config-clean
 
+.. note::
+
+   When :envvar:`SPI_MODE` or :envvar:`SPI_SIZE` are changed, you must update the on-flash configuration
+   data by running::
+   
+      make flashinit
+
+   You should do this before uploading your program code.
 
 * See :doc:`/_inc/Sming/building` for further details about configuring your project.
 * See :doc:`/features` for configuring Sming options.

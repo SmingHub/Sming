@@ -122,7 +122,7 @@ String toString(HttpStatus code);
 /**
  * @brief Return a descriptive string for an HTTP status code
  */
-static inline String httpGetStatusText(unsigned code)
+inline String httpGetStatusText(unsigned code)
 {
 	return toString(HttpStatus(code));
 }
@@ -134,3 +134,5 @@ inline String toString(HttpMethod method)
 {
 	return http_method_str(http_method(method));
 }
+
+/** @} */
