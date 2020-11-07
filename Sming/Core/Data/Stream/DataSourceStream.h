@@ -14,6 +14,7 @@
 #include <Stream.h>
 #include <WString.h>
 #include "SeekOrigin.h"
+#include <Network/WebConstants.h>
 
 /** @defgroup   stream Stream functions
  *  @brief      Data stream classes
@@ -159,6 +160,15 @@ public:
 	virtual String getName() const
 	{
 		return nullptr;
+	}
+
+	/**
+	 * @brief Get MIME type for stream content
+	 * @retval MimeType
+	 */
+	virtual MimeType getMimeType() const
+	{
+		return ContentType::fromFullFileName(getName(), MIME_UNKNOWN);
 	}
 
 	/**
