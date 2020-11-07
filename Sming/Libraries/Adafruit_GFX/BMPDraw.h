@@ -64,7 +64,7 @@ template <class Adafruit_TFT> bool bmpDraw(Adafruit_TFT& tft, String fileName, u
 
 	uint32_t startTime = millis();
 
-	file_t handle = fileOpen(fileName.c_str(), eFO_ReadOnly);
+	file_t handle = fileOpen(fileName.c_str(), File::ReadOnly);
 	if(handle < 0) {
 		debug_e("File wasn't found: %s", fileName.c_str());
 		return false;

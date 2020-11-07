@@ -222,7 +222,7 @@ void handleCommand(const String& command)
 	if(command.equalsIgnoreCase(_F("cat"))) {
 		String filename = F("README.md");
 		FileStream* fileStream = new FileStream;
-		if(fileStream && fileStream->open(filename, eFO_ReadOnly)) {
+		if(fileStream && fileStream->open(filename, File::ReadOnly)) {
 			Serial.printf(_F("Sending \"%s\" (%u bytes)\r\n"), filename.c_str(), fileStream->available());
 			auto demo = new SerialTransmitDemo(Serial1, fileStream);
 			demo->begin();

@@ -28,7 +28,7 @@ public:
      *  @param  fileName Name of file to open
      *  @param	openFlags
      */
-	GdbFileStream(const String& fileName, FileOpenFlags openFlags = eFO_ReadOnly)
+	GdbFileStream(const String& fileName, FileOpenFlags openFlags = File::ReadOnly)
 	{
 		open(fileName, openFlags);
 	}
@@ -44,7 +44,7 @@ public:
 	 *  @retval bool true on success, false on error
 	 *  @note call getLastError() to determine cause of failure
 	 */
-	bool open(const String& fileName, FileOpenFlags openFlags = eFO_ReadOnly);
+	bool open(const String& fileName, FileOpenFlags openFlags = File::ReadOnly);
 
 	/** @brief Close file
 	 */

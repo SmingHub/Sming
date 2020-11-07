@@ -16,17 +16,17 @@ bool GdbFileStream::open(const String& fileName, FileOpenFlags openFlags)
 	lastError = 0;
 
 	int flags = 0;
-	if((openFlags & eFO_ReadWrite) == eFO_ReadWrite) {
+	if(openFlags == File::ReadWrite) {
 		flags = O_RDWR;
-	} else if(openFlags & eFO_WriteOnly) {
+	} else if(openFlags & File::WriteOnly) {
 		flags = O_WRONLY;
 	} else {
 		flags = O_RDONLY;
 	}
-	if(openFlags & eFO_CreateIfNotExist) {
+	if(openFlags & File::Create) {
 		flags |= O_CREAT;
 	}
-	if(openFlags & eFO_Truncate) {
+	if(openFlags & File::Truncate) {
 		flags |= O_TRUNC;
 	}
 

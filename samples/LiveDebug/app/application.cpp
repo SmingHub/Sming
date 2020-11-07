@@ -649,7 +649,7 @@ extern "C" void gdb_on_attach(bool attached)
 	debug_i("GdbAttach(%d)", attached);
 	if(attached) {
 		// Open a log file on the host to demonstrate use of GdbFileStream
-		logFile.open(F(LOG_FILENAME), eFO_WriteOnly | eFO_CreateIfNotExist);
+		logFile.open(F(LOG_FILENAME), File::WriteOnly | File::Create);
 		debug_i("open log %d", logFile.getLastError());
 		logFile.println();
 
