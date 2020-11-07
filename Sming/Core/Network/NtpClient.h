@@ -36,7 +36,7 @@
 class NtpClient;
 
 // Delegate constructor usage: (&YourClass::method, this)
-typedef Delegate<void(NtpClient& client, time_t ntpTime)> NtpTimeResultDelegate;
+using NtpTimeResultDelegate = Delegate<void(NtpClient& client, time_t ntpTime)>;
 
 /** @brief  NTP client class */
 class NtpClient : protected UdpConnection

@@ -99,7 +99,7 @@ struct GdbSyscallInfo;
  * @brief GDB Syscall completion callback function
  * @param info Reference to request information, containing result code and user-provided 'param'
  */
-typedef void (*gdb_syscall_callback_t)(const GdbSyscallInfo& info);
+using gdb_syscall_callback_t = void (*)(const GdbSyscallInfo& info);
 
 /**
  * @brief GDB Syscall request information

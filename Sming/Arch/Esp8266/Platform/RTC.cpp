@@ -20,11 +20,11 @@ RtcClass RTC;
 /** @brief  Structure to hold RTC data
  *  @addtogroup structures
  */
-typedef struct {
+struct RtcData {
 	uint64_t time;   ///< Quantity of nanoseconds since epoch
 	uint32_t magic;  ///< Magic ID used to identify that RTC has been initialised
 	uint32_t cycles; ///< Quantity of RTC cycles since last update
-} RtcData;
+};
 
 static bool hardwareReset;
 static bool saveTime(RtcData& data);

@@ -26,14 +26,19 @@
 
 class AtClient;
 
-typedef Delegate<bool(AtClient& atClient, Stream& source)> AtReceiveCallback;
-// ^ If the callback returns true then this means that we have
-//     finished successfully processing the command
-typedef Delegate<bool(AtClient& atClient, String& reply)> AtCompleteCallback;
-// ^ If the callback returns true then this means that we have
-//     finished successfully processing the command
+/**
+ * @brief If the callback returns true then this means that we have
+ * finished successfully processing the command
+ */
+using AtReceiveCallback = Delegate<bool(AtClient& atClient, Stream& source)>;
 
-typedef struct {
+/**
+ * @brief If the callback returns true then this means that we have
+ * finished successfully processing the command
+ */
+using AtCompleteCallback = Delegate<bool(AtClient& atClient, String& reply)>;
+
+struct AtCommand {
 	String text;				   ///< the actual AT command
 	String response2;			   ///< alternative successful response
 	unsigned timeout;			   ///< timeout in milliseconds
@@ -41,9 +46,13 @@ typedef struct {
 	bool breakOnError = true;	  ///< stop executing next command if that one has failed
 	AtReceiveCallback onReceive;   ///< if set you can process manually all incoming data in a callback
 	AtCompleteCallback onComplete; ///< if set then you can process the complete response manually
-} AtCommand;
+};
 
-typedef enum { eAtOK = 0, eAtRunning, eAtError } AtState;
+enum AtState {
+	eAtOK = 0,
+	eAtRunning,
+	eAtError,
+};
 
 /**
  * @brief Class that facilitates the communication with an AT device.

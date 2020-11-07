@@ -24,7 +24,7 @@ extern "C++" {
  *  @retval number of characters written, which may be less than the requested size
  *  @note data does not need to be nul terminated and may contain any 8-bit values including nul
  */
-typedef Delegate<size_t(const char* str, size_t length)> nputs_callback_t;
+using nputs_callback_t = Delegate<size_t(const char* str, size_t length)>;
 
 /** @brief set the character output routine
  *  @param callback

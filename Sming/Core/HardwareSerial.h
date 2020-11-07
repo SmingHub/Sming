@@ -41,12 +41,12 @@ class HardwareSerial;
  * 	If no receive buffer has been allocated, or it's not big enough to contain the full message,
  * 	then this value will be incorrect as data is stored in the hardware FIFO until read out.
  */
-typedef Delegate<void(Stream& source, char arrivedChar, uint16_t availableCharsCount)> StreamDataReceivedDelegate;
+using StreamDataReceivedDelegate = Delegate<void(Stream& source, char arrivedChar, uint16_t availableCharsCount)>;
 
 /** @brief Delegate callback type for serial data transmit completion
  *  @note Invoked when the last byte has left the hardware FIFO
  */
-typedef Delegate<void(HardwareSerial& serial)> TransmitCompleteDelegate;
+using TransmitCompleteDelegate = Delegate<void(HardwareSerial& serial)>;
 
 class CommandExecutor;
 
@@ -78,7 +78,11 @@ enum SerialConfig {
 };
 
 /** @brief values equivalent to uart_mode_t */
-enum SerialMode { SERIAL_FULL = UART_FULL, SERIAL_RX_ONLY = UART_RX_ONLY, SERIAL_TX_ONLY = UART_TX_ONLY };
+enum SerialMode {
+	SERIAL_FULL = UART_FULL,
+	SERIAL_RX_ONLY = UART_RX_ONLY,
+	SERIAL_TX_ONLY = UART_TX_ONLY,
+};
 
 #ifndef DEFAULT_RX_BUFFER_SIZE
 #define DEFAULT_RX_BUFFER_SIZE 256

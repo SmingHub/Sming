@@ -26,9 +26,9 @@
 class HttpResourceTree;
 class HttpServerConnection;
 
-typedef Delegate<void(HttpServerConnection& connection)> HttpServerConnectionDelegate;
+using HttpServerConnectionDelegate = Delegate<void(HttpServerConnection& connection)>;
 
-typedef Delegate<bool()> HttpServerProtocolUpgradeCallback;
+using HttpServerProtocolUpgradeCallback = Delegate<bool()>;
 
 class HttpServerConnection : public HttpConnection
 {

@@ -31,10 +31,10 @@
 
 /** @brief  Verbose mode
 */
-typedef enum {
+enum VerboseMode {
 	VERBOSE, ///< Verbose mode
 	SILENT   ///< Silent mode
-} VerboseMode;
+};
 
 /** @brief  Command handler class */
 class CommandHandler

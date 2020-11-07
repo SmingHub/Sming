@@ -93,7 +93,7 @@ class __FlashStringHelper; // Never actually defined
  * @brief Provides a strongly-typed pointer to allow safe implicit
  * operation using String class methods.
  */
-typedef const __FlashStringHelper* flash_string_t;
+using flash_string_t = const __FlashStringHelper*;
 
 /**
  * @brief Cast a PGM_P (flash memory) pointer to a flash string pointer
@@ -138,7 +138,7 @@ class String
 	// use a function pointer to allow for "if (s)" without the
 	// complications of an operator bool(). for more information, see:
 	// http://www.artima.com/cppsource/safebool.html
-	typedef void (String::*StringIfHelperType)() const;
+	using StringIfHelperType = void (String::*)() const;
 	void StringIfHelper() const
 	{
 	}

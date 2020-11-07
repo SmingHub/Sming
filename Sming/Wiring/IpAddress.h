@@ -26,8 +26,8 @@
 #if LWIP_VERSION_MAJOR == 2
 #define LWIP_IP_ADDR_T const ip_addr_t
 #else
-typedef struct ip_addr ip_addr_t;
-typedef ip_addr_t ip4_addr_t;
+using ip_addr_t = struct ip_addr;
+using ip4_addr_t = ip_addr_t;
 #define IP_ADDR4(IP, A, B, C, D) IP4_ADDR(IP, A, B, C, D)
 #define ip_addr_set_ip4_u32(IP, U32) ip4_addr_set_u32(IP, U32)
 #define ip_addr_get_ip4_u32(IP) ip4_addr_get_u32(IP)
@@ -43,7 +43,7 @@ typedef ip_addr_t ip4_addr_t;
 class IpAddress : public Printable
 {
 private:
-	ip_addr_t address = {0}; ///< IPv4 address
+	ip_addr_t address{0}; ///< IPv4 address
 
 	void fromString(const String& address);
 
@@ -63,18 +63,18 @@ public:
 		ip_addr_set_ip4_u32(&this->address, address);
 	}
 
-	IpAddress(ip_addr_t &addr)
+	IpAddress(ip_addr_t& addr)
 	{
 		address = addr;
 	}
 
-	IpAddress(const ip_addr_t &addr)
+	IpAddress(const ip_addr_t& addr)
 	{
 		address = addr;
 	}
 
 #if LWIP_VERSION_MAJOR == 2 && LWIP_IPV6
-	IpAddress(ip4_addr_t &addr)
+	IpAddress(ip4_addr_t& addr)
 	{
 		ip_addr_copy_from_ip4(address, addr);
 	}

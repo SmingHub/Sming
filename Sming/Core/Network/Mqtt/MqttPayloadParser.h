@@ -26,16 +26,16 @@
 
 #define MQTT_PAYLOAD_LENGTH 1024
 
-typedef struct {
+struct MqttPayloadParserState {
 	void* userData; ///< custom user data
 	size_t offset;  ///< bytes read so far.
-} MqttPayloadParserState;
+};
 
 /**
  * A payload parser must return 0 on success
  */
-typedef Delegate<int(MqttPayloadParserState& state, mqtt_message_t* message, const char* buffer, int length)>
-	MqttPayloadParser;
+using MqttPayloadParser =
+	Delegate<int(MqttPayloadParserState& state, mqtt_message_t* message, const char* buffer, int length)>;
 
 int defaultPayloadParser(MqttPayloadParserState& state, mqtt_message_t* message, const char* buffer, int length);
 

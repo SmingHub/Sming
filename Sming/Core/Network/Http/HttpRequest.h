@@ -24,9 +24,9 @@
 
 class HttpConnection;
 
-typedef Delegate<int(HttpConnection& client, HttpResponse& response)> RequestHeadersCompletedDelegate;
-typedef Delegate<int(HttpConnection& client, const char* at, size_t length)> RequestBodyDelegate;
-typedef Delegate<int(HttpConnection& client, bool successful)> RequestCompletedDelegate;
+using RequestHeadersCompletedDelegate = Delegate<int(HttpConnection& client, HttpResponse& response)>;
+using RequestBodyDelegate = Delegate<int(HttpConnection& client, const char* at, size_t length)>;
+using RequestCompletedDelegate = Delegate<int(HttpConnection& client, bool successful)>;
 
 /**
  * @brief Encapsulates an incoming or outgoing request

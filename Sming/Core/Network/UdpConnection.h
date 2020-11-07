@@ -20,8 +20,8 @@
 
 class UdpConnection;
 
-typedef Delegate<void(UdpConnection& connection, char* data, int size, IpAddress remoteIP, uint16_t remotePort)>
-	UdpConnectionDataDelegate;
+using UdpConnectionDataDelegate =
+	Delegate<void(UdpConnection& connection, char* data, int size, IpAddress remoteIP, uint16_t remotePort)>;
 
 class UdpConnection : public IpConnection
 {

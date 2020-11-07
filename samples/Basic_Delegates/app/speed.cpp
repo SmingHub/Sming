@@ -12,8 +12,8 @@ const unsigned ITERATIONS = 10000000;
 const unsigned ITERATIONS = 100000;
 #endif
 
-typedef Delegate<void(int)> TestDelegate;
-typedef void (*TestCallback)(int);
+using TestDelegate = Delegate<void(int)>;
+using TestCallback = void (*)(int);
 
 // Use for high resolution loop timing
 static CpuCycleTimer timer;

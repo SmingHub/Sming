@@ -90,7 +90,7 @@ enum WifiDisconnectReason {
  * @note This event occurs when the station successfully connects to the target AP. Upon receiving this event,
  * the DHCP client begins the process of getting an IP address.
  */
-typedef Delegate<void(const String& ssid, MacAddress bssid, uint8_t channel)> StationConnectDelegate;
+using StationConnectDelegate = Delegate<void(const String& ssid, MacAddress bssid, uint8_t channel)>;
 
 /**
  * @brief Delegate type for 'station disconnected' event
@@ -105,7 +105,7 @@ typedef Delegate<void(const String& ssid, MacAddress bssid, uint8_t channel)> St
  * 	- When the Wi-Fi connection is disrupted because of specific reasons, e.g., the station continuously loses N beacons, the AP kicks off the station,
  * 	  the AP's authentication mode is changed, etc.
  */
-typedef Delegate<void(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)> StationDisconnectDelegate;
+using StationDisconnectDelegate = Delegate<void(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)>;
 
 /**
  * @brief Delegate type for 'station authorisation mode changed' event
@@ -114,7 +114,7 @@ typedef Delegate<void(const String& ssid, MacAddress bssid, WifiDisconnectReason
  * @note This event arises when the AP to which the station is connected changes its authentication mode,
  * e.g., from 'no auth' to WPA. Generally, the application event callback does not need to handle this.
  */
-typedef Delegate<void(WifiAuthMode oldMode, WifiAuthMode newMode)> StationAuthModeChangeDelegate;
+using StationAuthModeChangeDelegate = Delegate<void(WifiAuthMode oldMode, WifiAuthMode newMode)>;
 
 /**
  * @brief Delegate type for 'station got IP address' event
@@ -127,7 +127,7 @@ typedef Delegate<void(WifiAuthMode oldMode, WifiAuthMode newMode)> StationAuthMo
  *	- The DHCP client rebinds to a different address.
  *	- The static-configured IPV4 address is changed.
  */
-typedef Delegate<void(IpAddress ip, IpAddress netmask, IpAddress gateway)> StationGotIPDelegate;
+using StationGotIPDelegate = Delegate<void(IpAddress ip, IpAddress netmask, IpAddress gateway)>;
 
 /**
  * @brief Delegate type for 'Access Point Connect' event
@@ -135,7 +135,7 @@ typedef Delegate<void(IpAddress ip, IpAddress netmask, IpAddress gateway)> Stati
  * @param aid Association ID representing the connected station
  * @note This event occurs every time a station is connected to our Access Point.
  */
-typedef Delegate<void(MacAddress mac, uint16_t aid)> AccessPointConnectDelegate;
+using AccessPointConnectDelegate = Delegate<void(MacAddress mac, uint16_t aid)>;
 
 /**
  * @brief Delegate type for 'Access Point Disconnect' event
@@ -143,7 +143,7 @@ typedef Delegate<void(MacAddress mac, uint16_t aid)> AccessPointConnectDelegate;
  * @param aid Association ID assigned to the station
  * @note This event occurs every time a station is disconnected from our Access Point.
  */
-typedef Delegate<void(MacAddress mac, uint16_t aid)> AccessPointDisconnectDelegate;
+using AccessPointDisconnectDelegate = Delegate<void(MacAddress mac, uint16_t aid)>;
 
 /**
  * @brief Delegate type for 'Access Point Probe Request Received' event
@@ -152,7 +152,7 @@ typedef Delegate<void(MacAddress mac, uint16_t aid)> AccessPointDisconnectDelega
  * @note Probe Requests are a low-level management frame which are used to determine
  * informaton about our Access Point, such as which authentication modes are supported.
  */
-typedef Delegate<void(int rssi, MacAddress mac)> AccessPointProbeReqRecvedDelegate;
+using AccessPointProbeReqRecvedDelegate = Delegate<void(int rssi, MacAddress mac)>;
 
 /** @brief  WiFi events class
  */
@@ -226,13 +226,13 @@ public:
 	}
 
 protected:
-	StationConnectDelegate onSTAConnect = nullptr;
-	StationDisconnectDelegate onSTADisconnect = nullptr;
-	StationAuthModeChangeDelegate onSTAAuthModeChange = nullptr;
-	StationGotIPDelegate onSTAGotIP = nullptr;
-	AccessPointConnectDelegate onSOFTAPConnect = nullptr;
-	AccessPointDisconnectDelegate onSOFTAPDisconnect = nullptr;
-	AccessPointProbeReqRecvedDelegate onSOFTAPProbeReqRecved = nullptr;
+	StationConnectDelegate onSTAConnect;
+	StationDisconnectDelegate onSTADisconnect;
+	StationAuthModeChangeDelegate onSTAAuthModeChange;
+	StationGotIPDelegate onSTAGotIP;
+	AccessPointConnectDelegate onSOFTAPConnect;
+	AccessPointDisconnectDelegate onSOFTAPDisconnect;
+	AccessPointProbeReqRecvedDelegate onSOFTAPProbeReqRecved;
 };
 
 /**

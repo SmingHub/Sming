@@ -33,12 +33,12 @@ const int PARSE_DATAEND = -2;   ///< End of incoming data
  * @see `PARSE_DATAEND`
  * @return parsed bytes
  */
-typedef Delegate<size_t(HttpRequest& request, const char* at, int length)> HttpBodyParserDelegate;
+using HttpBodyParserDelegate = Delegate<size_t(HttpRequest& request, const char* at, int length)>;
 
 /**
  * @brief Maps body parsers to a specific content type
  */
-typedef HashMap<String, HttpBodyParserDelegate> BodyParsers;
+using BodyParsers = HashMap<String, HttpBodyParserDelegate>;
 
 /**
  * @brief Parses application/x-www-form-urlencoded body data

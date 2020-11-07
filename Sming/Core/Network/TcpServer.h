@@ -20,10 +20,12 @@
 #include "TcpConnection.h"
 #include "TcpClient.h"
 
-typedef Delegate<void(TcpClient* client)> TcpClientConnectDelegate;
+using TcpClientConnectDelegate = Delegate<void(TcpClient* client)>;
 
 // By default a TCP server will wait for a new remote client connection to get established for 20 seconds
+#ifndef TCP_SERVER_TIMEOUT
 #define TCP_SERVER_TIMEOUT 20
+#endif
 
 class TcpServer : public TcpConnection
 {

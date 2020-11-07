@@ -14,7 +14,7 @@ public:
 
 	void execute() override
 	{
-		typedef uint32_t T;
+		using T = uint32_t;
 
 		const T max = 0x10000;
 

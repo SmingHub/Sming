@@ -22,7 +22,7 @@ namespace OtaUpgrade
 class ChecksumVerifier : public Crypto::Md5
 {
 public:
-	typedef Hash VerificationData; ///< Checksum type
+	using VerificationData = Hash; ///< Checksum type
 
 	/** Verify the given \c checksum.
 	 * @return `true` if checksum matches content, `false` otherwise.

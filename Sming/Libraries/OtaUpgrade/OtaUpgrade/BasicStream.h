@@ -131,10 +131,10 @@ private:
 	State state = State::Header;
 
 #ifdef ENABLE_OTA_SIGNING
-	typedef SignatureVerifier Verifier;
+	using Verifier = SignatureVerifier;
 	static const uint32_t expectedHeaderMagic = OTA_HEADER_MAGIC_SIGNED;
 #else
-	typedef ChecksumVerifier Verifier;
+	using Verifier = ChecksumVerifier;
 	static const uint32_t expectedHeaderMagic = OTA_HEADER_MAGIC_NOT_SIGNED;
 #endif
 	Verifier verifier;
