@@ -191,6 +191,6 @@
 	url = https://github.com/mikee47/RingTone
 	ignore = dirty
 [submodule "Libraries.DIAL"]
-	path = Sming-DIAL
+	path = Sming/Libraries/DIAL
 	url = https://github.com/slaff/Sming-DIAL.git
 	ignore = dirty
