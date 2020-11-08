@@ -516,6 +516,10 @@ changed as required.
 
    Locations for source code relative to COMPONENT_PATH (defaults to “. src”)
 
+.. envvar:: COMPONENT_SRCFILES
+
+   Individual source files. Useful for conditional includes.
+
 .. envvar:: COMPONENT_INCDIRS
 
    Default: "include".

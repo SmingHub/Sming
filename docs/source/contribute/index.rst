@@ -10,18 +10,7 @@ You can contribute to Sming by
 - Testing our latest source code and reporting issues.
 - Supporting us financially to acquire hardware for testing and implementing or out of gratitude.
 
-Development guides
-------------------
-
-.. toctree::
-   :glob:
-   :maxdepth: 1
-
-   Contributing Guide </_inc/CONTRIBUTING>
-   Building the documentation </_inc/docs/README>
-   /_inc/Sming/building
-   *
-
+See :doc:`/information/develop/index` for details.
 
 Financial contributions
 -----------------------

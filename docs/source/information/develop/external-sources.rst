@@ -63,11 +63,11 @@ As an example, this is how the `new PWM` submodule was added to the :component-e
 
 1. Add the submodule using GIT::
 
-      cd <Sming-root-folder>/
+      cd $SMING_HOME
       git submodule add \
+         --name ESP8266.new-pwm \
          https://github.com/StefanBruens/ESP8266_new_pwm.git \
-         Sming/Arch/Esp8266/Components/driver/new-pwm \
-         --name ESP8266.new-pwm
+         Arch/Esp8266/Components/driver/new-pwm
 
 This adds an entry to the end of the ``.gitmodules`` file::
 

@@ -4,7 +4,7 @@ Information
 .. toctree::
    :maxdepth: 1
 
-   /_inc/Sming/building
+   develop/index
    multitasking
    events
    memory
