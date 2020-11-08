@@ -1,0 +1,7 @@
+The S1D13781 Shield Graphics Library is intended to allow rapid implementation of basic graphics tasks on the S1D13781 Shield evalution board when connected to an Arduino DUE. Functions for drawing pixels, lines, and rectangles are provided. Additionally, basic font support allows for simple text drawing.
+
+The original code was a bit, well, clunky; it assumed a very basic method of SPI communication. We're now using an asynchronous driver - in part, at least - but more importantly this text drawing demo uses the BLT copy with expansion. It's such a good fit for drawing text it's surprising there isn't a note about that in the library.
+
+Anyway, this is what you get - super-fast text writing!
+
+Next step is to implement a debug terminal with scrolling...
