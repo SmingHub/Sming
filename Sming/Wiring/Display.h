@@ -20,11 +20,11 @@
 
 class Display : public Print
 {
-  public:        
-    virtual void clear(void) = 0;
-    virtual void home(void) = 0;
-    virtual void setCursor(uint8_t, uint8_t) = 0;
-    /* rename shift?
+public:
+	virtual void clear(void) = 0;
+	virtual void home(void) = 0;
+	virtual void setCursor(uint8_t, uint8_t) = 0;
+	/* rename shift?
     virtual void scrollUp(void) = 0;
     virtual void scrollDown(void) = 0;
     virtual void scrollLeft(void) = 0;

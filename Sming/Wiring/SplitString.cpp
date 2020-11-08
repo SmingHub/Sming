@@ -11,50 +11,46 @@
 
 #include "SplitString.h"
 
-int splitString(String &what, char delim,  Vector<int> &splits)
-{
-  what.trim();
-  splits.removeAllElements();
-  const char *chars = what.c_str();
-  unsigned splitCount = 0;
-  for (unsigned i = 0; i < what.length(); i++)
-  {
-    if (chars[i] == delim) splitCount++;
-  }
-  if (splitCount == 0)
-  {
-    splits.addElement(what.toInt());
-    return(1);
-  }
-
-  int startIndex = 0;
-  for (unsigned i = 0; i < what.length(); i++)
-  {
-    if(what[i] == delim)
-    {
-      splits.addElement(what.substring(startIndex, i).toInt());
-      startIndex = i + 1;
-    }
-  }
-  splits.addElement(what.substring(startIndex).toInt());
-
-  return splits.count();
-}
-
-int splitString(String &what, char delim, Vector<String> &splits)
+int splitString(String& what, char delim, Vector<int>& splits)
 {
 	what.trim();
 	splits.removeAllElements();
-	const char *chars = what.c_str();
+	const char* chars = what.c_str();
+	unsigned splitCount = 0;
+	for(unsigned i = 0; i < what.length(); i++) {
+		if(chars[i] == delim) {
+			splitCount++;
+		}
+	}
+	if(splitCount == 0) {
+		splits.addElement(what.toInt());
+		return (1);
+	}
 
 	int startIndex = 0;
-	for (unsigned i = 0; i < what.length(); i++)
-	{
-	  if (chars[i] == delim)
-	  {
-	    splits.addElement(what.substring(startIndex, i));
-	    startIndex = i + 1;
-	  }
+	for(unsigned i = 0; i < what.length(); i++) {
+		if(what[i] == delim) {
+			splits.addElement(what.substring(startIndex, i).toInt());
+			startIndex = i + 1;
+		}
+	}
+	splits.addElement(what.substring(startIndex).toInt());
+
+	return splits.count();
+}
+
+int splitString(String& what, char delim, Vector<String>& splits)
+{
+	what.trim();
+	splits.removeAllElements();
+	const char* chars = what.c_str();
+
+	int startIndex = 0;
+	for(unsigned i = 0; i < what.length(); i++) {
+		if(chars[i] == delim) {
+			splits.addElement(what.substring(startIndex, i));
+			startIndex = i + 1;
+		}
 	}
 	splits.addElement(what.substring(startIndex));
 

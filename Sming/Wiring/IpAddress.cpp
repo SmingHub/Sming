@@ -22,17 +22,17 @@
 
 void IpAddress::fromString(const String& address)
 {
-    ipaddr_aton(address.c_str(), &(this->address));
+	ipaddr_aton(address.c_str(), &(this->address));
 }
 
 size_t IpAddress::printTo(Print& p) const
 {
-    return p.print(toString());
+	return p.print(toString());
 }
 
 String IpAddress::toString() const
 {
-    char text[16];
-    ipaddr_ntoa_r(&address, text, 16);
-    return text;
+	char text[16];
+	ipaddr_ntoa_r(&address, text, 16);
+	return text;
 }
