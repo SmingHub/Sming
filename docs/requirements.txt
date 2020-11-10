@@ -6,3 +6,4 @@ m2r
 breathe==4.11.1
 sphinxcontrib-wavedrom
 sphinx-copybutton
+sphinxcontrib-seqdiag>=0.8.5

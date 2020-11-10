@@ -193,6 +193,11 @@ public:
 	size_t printTo(Print& p) const override;
 };
 
+inline String toString(IpAddress address)
+{
+	return address.toString();
+}
+
 /** @deprecated Use `IpAddress` instead. */
 typedef IpAddress IPAddress SMING_DEPRECATED;
 
