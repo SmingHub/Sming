@@ -3,11 +3,11 @@
 #include <Crypto/Sha1.h>
 #include <Crypto/Sha2.h>
 #include <Crypto/Blake2s.h>
-#include "crypto/AxHash.h"
-#include "crypto/BrHash.h"
+#include "Crypto/AxHash.h"
+#include "Crypto/BrHash.h"
 
 #ifdef ARCH_ESP8266
-#include "crypto/EspHash.h"
+#include "Crypto/EspHash.h"
 #endif
 
 IMPORT_FSTR_LOCAL(FS_plainText, PROJECT_DIR "/files/abstract.txt");
@@ -140,7 +140,7 @@ public:
 			times.start();
 			auto hash = Context().calculate(plainText);
 			times.update();
-			assert(Crypto::toString(hash) == expected);
+			TEST_ASSERT(Crypto::toString(hash) == expected);
 		}
 		Serial.println(times);
 	}
@@ -152,7 +152,7 @@ public:
 			times.start();
 			auto hash = Context(hmacKey).calculate(plainText);
 			times.update();
-			assert(Crypto::toString(hash) == expected);
+			TEST_ASSERT(Crypto::toString(hash) == expected);
 		}
 		Serial.println(times);
 	}
@@ -383,7 +383,7 @@ private:
 	String plainText;
 };
 
-void REGISTER_TEST(crypto)
+void REGISTER_TEST(Crypto)
 {
 	registerGroup<CryptoTest>();
 }

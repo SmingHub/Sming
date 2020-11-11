@@ -115,7 +115,7 @@ private:
 	}
 };
 
-void REGISTER_TEST(stream)
+void REGISTER_TEST(Stream)
 {
 	registerGroup<StreamTest>();
 }

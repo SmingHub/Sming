@@ -131,7 +131,7 @@ public:
 	}
 };
 
-void REGISTER_TEST(url)
+void REGISTER_TEST(Url)
 {
 	registerGroup<UrlTest>();
 }

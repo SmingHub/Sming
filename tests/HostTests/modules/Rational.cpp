@@ -55,7 +55,7 @@ public:
 	}
 };
 
-void REGISTER_TEST(rational)
+void REGISTER_TEST(Rational)
 {
 	registerGroup<TestRational>();
 }

@@ -2,10 +2,10 @@
 
 #include <iram_precache.h>
 
-class PrecacheTest : public TestGroup
+class PreCacheTest : public TestGroup
 {
 public:
-	PrecacheTest() : TestGroup(_F("IRAM Pre-caching"))
+	PreCacheTest() : TestGroup(_F("IRAM Pre-caching"))
 	{
 	}
 
@@ -27,7 +27,7 @@ public:
 	}
 };
 
-void REGISTER_TEST(precache)
+void REGISTER_TEST(PreCache)
 {
-	registerGroup<PrecacheTest>();
+	registerGroup<PreCacheTest>();
 }

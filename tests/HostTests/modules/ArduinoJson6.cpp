@@ -268,24 +268,24 @@ public:
 
 	void __attribute__((noinline)) loadBuffer(const char* buffer, size_t length)
 	{
-		assert(Json::deserialize(doc, buffer, length));
+		TEST_ASSERT(Json::deserialize(doc, buffer, length));
 	}
 
 	void __attribute__((noinline)) loadFlashString()
 	{
-		assert(Json::deserialize(doc, testJsonFile));
+		TEST_ASSERT(Json::deserialize(doc, testJsonFile));
 	}
 
 	void __attribute__((noinline)) loadFlashStringViaStream(bool useFlashRead)
 	{
 		FSTR::Stream stream(testJsonFile, useFlashRead);
-		assert(Json::deserialize(doc, stream));
+		TEST_ASSERT(Json::deserialize(doc, stream));
 	}
 
 	void __attribute__((noinline)) loadStream(IDataSourceStream& stream)
 	{
 		stream.seekFrom(0, SeekOrigin::Start);
-		assert(Json::deserialize(doc, stream));
+		TEST_ASSERT(Json::deserialize(doc, stream));
 	}
 
 	void __attribute__((noinline)) loadFile(const char* filename)
@@ -343,7 +343,7 @@ private:
 	StaticJsonDocument<2048> doc;
 };
 
-void REGISTER_TEST(json6)
+void REGISTER_TEST(ArduinoJson6)
 {
 	registerGroup<JsonTest6>();
 }

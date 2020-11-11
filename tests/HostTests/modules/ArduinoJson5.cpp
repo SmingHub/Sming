@@ -22,7 +22,7 @@ public:
 	}
 };
 
-void REGISTER_TEST(json5)
+void REGISTER_TEST(ArduinoJson5)
 {
 	registerGroup<Json5Test>();
 }

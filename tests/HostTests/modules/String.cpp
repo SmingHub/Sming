@@ -161,7 +161,7 @@ public:
 	}
 };
 
-void REGISTER_TEST(string)
+void REGISTER_TEST(String)
 {
 	registerGroup<StringTest>();
 }

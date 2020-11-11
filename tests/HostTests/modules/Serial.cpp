@@ -59,7 +59,7 @@ public:
 	}
 };
 
-void REGISTER_TEST(serial)
+void REGISTER_TEST(Serial)
 {
 	registerGroup<SerialTest>();
 }

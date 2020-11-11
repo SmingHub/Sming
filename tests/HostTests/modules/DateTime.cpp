@@ -54,7 +54,7 @@ public:
 	}
 };
 
-void REGISTER_TEST(datetime)
+void REGISTER_TEST(DateTime)
 {
 	registerGroup<DateTimeTest>();
 }

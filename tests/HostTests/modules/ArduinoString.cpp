@@ -437,7 +437,7 @@ public:
 	}
 };
 
-void REGISTER_TEST(arduino_string)
+void REGISTER_TEST(ArduinoString)
 {
 	registerGroup<ArduinoStringTest>();
 }

@@ -143,7 +143,7 @@ public:
 	}
 };
 
-void REGISTER_TEST(bitset)
+void REGISTER_TEST(BitSet)
 {
 	registerGroup<BitSetTest>();
 }

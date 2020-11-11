@@ -424,7 +424,7 @@ template <hw_timer_clkdiv_t clkdiv, typename TimeType> void testTimer1()
 class TimerCalcTest : public TestGroup
 {
 public:
-	TimerCalcTest() : TestGroup(_F("Timer calculations"))
+	TimerCalcTest() : TestGroup(_F("Clock calculations"))
 	{
 	}
 
@@ -435,7 +435,7 @@ public:
 	}
 };
 
-void REGISTER_TEST(clocks)
+void REGISTER_TEST(Clocks)
 {
 	registerGroup<BenchmarkPolledTimer>();
 

@@ -24,7 +24,10 @@ public:
 	void cycleFlash()
 	{
 		spiffs_unmount();
-		spiffs_mount();
+		if(!spiffs_mount()) {
+			debug_e("SPIFFS mount failed");
+			return;
+		}
 
 		DEFINE_FSTR_LOCAL(testFile, "testfile");
 		DEFINE_FSTR_LOCAL(testContent, "Some test content to write to a file");
@@ -48,7 +51,7 @@ public:
 	}
 };
 
-void REGISTER_TEST(spiffs)
+void REGISTER_TEST(Spiffs)
 {
 	registerGroup<SpiffsTest>();
 }

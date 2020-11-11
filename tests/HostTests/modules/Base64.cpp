@@ -33,7 +33,7 @@ public:
 	}
 };
 
-void REGISTER_TEST(base64)
+void REGISTER_TEST(Base64)
 {
 	registerGroup<Base64Test>();
 }

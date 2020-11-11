@@ -138,7 +138,7 @@ public:
 	}
 };
 
-void REGISTER_TEST(files)
+void REGISTER_TEST(Files)
 {
 	registerGroup<FilesTest>();
 }

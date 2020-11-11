@@ -183,7 +183,7 @@ public:
 	}
 };
 
-void REGISTER_TEST(cstringarray)
+void REGISTER_TEST(CStringArray)
 {
 	registerGroup<CStringArrayTest>();
 }

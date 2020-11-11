@@ -60,7 +60,7 @@ public:
 	}
 };
 
-void REGISTER_TEST(libc)
+void REGISTER_TEST(Libc)
 {
 	registerGroup<LibcTest>();
 }

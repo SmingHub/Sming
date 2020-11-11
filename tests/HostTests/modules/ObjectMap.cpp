@@ -92,7 +92,7 @@ public:
 	}
 };
 
-void REGISTER_TEST(objectmap)
+void REGISTER_TEST(ObjectMap)
 {
 	registerGroup<ObjectMapTest>();
 }

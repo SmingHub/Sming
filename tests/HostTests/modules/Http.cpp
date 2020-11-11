@@ -198,7 +198,7 @@ public:
 	}
 };
 
-void REGISTER_TEST(http)
+void REGISTER_TEST(Http)
 {
 	registerGroup<HttpTest>();
 }

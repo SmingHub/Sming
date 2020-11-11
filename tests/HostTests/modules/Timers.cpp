@@ -411,7 +411,7 @@ public:
 	}
 };
 
-void REGISTER_TEST(timers)
+void REGISTER_TEST(Timers)
 {
 	registerGroup<CallbackTimerApiTest<Timer1TestApi>>();
 	registerGroup<CallbackTimerApiTest<OsTimerApi>>();
