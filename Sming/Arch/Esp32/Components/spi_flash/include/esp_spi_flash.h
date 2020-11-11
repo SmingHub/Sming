@@ -46,26 +46,22 @@ extern "C" {
 /** @brief SPI Flash memory information block.
  * Stored at the beginning of flash memory.
  */
-typedef struct
-{
+typedef struct {
 	uint8_t unknown0;
 	uint8_t unknown1;
-    enum
-    {
+	enum {
 		MODE_QIO = 0,
 		MODE_QOUT = 1,
 		MODE_DIO = 2,
 		MODE_DOUT = 15,
 	} mode : 8;
-    enum
-    {
+	enum {
 		SPEED_40MHZ = 0,
 		SPEED_26MHZ = 1,
 		SPEED_20MHZ = 2,
 		SPEED_80MHZ = 15,
 	} speed : 4;
-    enum
-    {
+	enum {
 		SIZE_4MBIT = 0,
 		SIZE_2MBIT = 1,
 		SIZE_8MBIT = 2,

@@ -19,7 +19,6 @@ static struct {
 // Return base time in us
 static uint64_t initTime()
 {
-
 	timeval tv = {};
 	gettimeofday(&tv, nullptr);
 	return (1000000ULL * tv.tv_sec) + tv.tv_usec;
@@ -33,7 +32,6 @@ uint64_t os_get_nanoseconds()
 	clock_gettime(CLOCK_MONOTONIC, &ts);
 	return (1000000000ULL * ts.tv_sec) + ts.tv_nsec - timeref.startTicks;
 }
-
 
 // TODO: Remove - defined in $IDF_PATH/components/newlib/time.c
 //uint32_t system_get_time()
@@ -86,19 +84,19 @@ uint32 system_get_chip_id(void)
 {
 	uint8_t baseMac[6];
 	esp_read_mac(baseMac, ESP_MAC_WIFI_STA);
-	return (uint32_t)(*(baseMac+2)); // get the last 4 bytes. they should be unique per device
+	return (uint32_t)(*(baseMac + 2)); // get the last 4 bytes. they should be unique per device
 }
 
 /* Interrupts */
 
 void ets_intr_lock()
 {
-//	CThread::interrupt_lock();
+	//	CThread::interrupt_lock();
 }
 
 void ets_intr_unlock()
 {
-//	CThread::interrupt_unlock();
+	//	CThread::interrupt_unlock();
 }
 
 void xt_disable_interrupts()

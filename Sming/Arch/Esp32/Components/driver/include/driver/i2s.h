@@ -313,7 +313,6 @@ bool i2s_stat_rx(i2s_buffer_stat_t* stat);
  */
 //unsigned i2s_rx_available();
 
-
 /** @} */
 
 #ifdef __cplusplus

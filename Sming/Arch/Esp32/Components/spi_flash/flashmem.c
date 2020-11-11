@@ -46,7 +46,7 @@ uint32_t flashmem_get_address(const void* memptr)
 	uint32_t addr = (uint32_t)memptr - INTERNAL_FLASH_START_ADDRESS;
 	// Determine which 1MB memory bank is mapped
 	uint32_t ctrl = DPORT_READ_PERI_REG(CACHE_FLASH_CTRL_REG);
-	uint8_t bank = (((ctrl >> 16) & 0x07) << 1) | ((ctrl >>25) & 0x01);
+	uint8_t bank = (((ctrl >> 16) & 0x07) << 1) | ((ctrl >> 25) & 0x01);
 	addr += 0x100000U * bank;
 	return addr;
 }
@@ -64,16 +64,14 @@ uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 	uint32_t remain = size;
 
 	// Align the start
-	if(toaddr & blkmask)
-	{
+	if(toaddr & blkmask) {
 		uint32_t rest = toaddr & blkmask;
 		uint32_t addr_aligned = toaddr & ~blkmask; // this is the actual aligned address
 
 		// Read existing unit and overlay with new data
 		if(flashmem_read_internal(tmpdata, addr_aligned, blksize) != blksize)
 			return 0;
-		while(remain && rest < blksize)
-		{
+		while(remain && rest < blksize) {
 			tmpdata[rest++] = *pfrom++;
 			--remain;
 		}
@@ -83,7 +81,7 @@ uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 		if(written != blksize)
 			return written;
 
-		if (remain == 0)
+		if(remain == 0)
 			return size;
 
 		toaddr = addr_aligned + blksize;
@@ -94,8 +92,7 @@ uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 	uint32_t rest = remain & blkmask;
 	remain &= ~blkmask;
 	// Program the blocks now
-	while(remain)
-	{
+	while(remain) {
 		unsigned count = min(remain, sizeof(tmpdata));
 		memcpy(tmpdata, pfrom, count);
 		uint32_t written = flashmem_write_internal(tmpdata, toaddr, count);
@@ -107,8 +104,7 @@ uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 	}
 
 	// And the final part of a block if needed
-	if(rest)
-	{
+	if(rest) {
 		if(flashmem_read_internal(tmpdata, toaddr, blksize) != blksize)
 			return size - remain;
 		unsigned i;
@@ -136,19 +132,17 @@ uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
 	uint32_t remain = size;
 
 	// Align the start
-	if(fromaddr & blkmask)
-	{
+	if(fromaddr & blkmask) {
 		uint32_t rest = fromaddr & blkmask;
 		uint32_t addr_aligned = fromaddr & ~blkmask; // this is the actual aligned address
-		if (flashmem_read_internal(tmpdata, addr_aligned, blksize) != blksize)
+		if(flashmem_read_internal(tmpdata, addr_aligned, blksize) != blksize)
 			return 0;
 		// memcpy(pto, &tmpdata[rest], std::min(blksize - rest, remain))
-		while(remain && rest < blksize)
-		{
+		while(remain && rest < blksize) {
 			*pto++ = tmpdata[rest++];
 			--remain;
 		}
-		if (remain == 0)
+		if(remain == 0)
 			return size;
 		fromaddr = addr_aligned + blksize;
 	}
@@ -158,8 +152,7 @@ uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
 	uint32_t rest = remain & blkmask;
 	remain &= ~blkmask;
 	// Read the blocks now
-	while(remain)
-	{
+	while(remain) {
 		unsigned count = min(remain, sizeof(tmpdata));
 		uint32_t read = flashmem_read_internal(tmpdata, fromaddr, count);
 		memcpy(pto, tmpdata, read);
@@ -171,8 +164,7 @@ uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
 	}
 
 	// And the final part of a block if needed
-	if(rest)
-	{
+	if(rest) {
 		if(flashmem_read_internal(tmpdata, fromaddr, blksize) != blksize)
 			return size - remain;
 		unsigned i;
@@ -190,83 +182,82 @@ bool flashmem_erase_sector(uint32_t sector_id)
 
 SPIFlashInfo flashmem_get_info()
 {
-    SPIFlashInfo spi_flash_info STORE_ATTR;
-    if(flashmem_read_internal(&spi_flash_info, 0x00000000, sizeof(spi_flash_info)) == 0) {
-    	memset(&spi_flash_info, 0, sizeof(spi_flash_info));
-    }
-    return spi_flash_info;
+	SPIFlashInfo spi_flash_info STORE_ATTR;
+	if(flashmem_read_internal(&spi_flash_info, 0x00000000, sizeof(spi_flash_info)) == 0) {
+		memset(&spi_flash_info, 0, sizeof(spi_flash_info));
+	}
+	return spi_flash_info;
 }
 
 uint8_t flashmem_get_size_type()
 {
-    return flashmem_get_info().size;
+	return flashmem_get_info().size;
 }
 
 uint32_t flashmem_get_size_bytes()
 {
-    return g_rom_flashchip.chip_size;
+	return g_rom_flashchip.chip_size;
 }
 
 uint16_t flashmem_get_size_sectors()
 {
-    return flashmem_get_size_bytes() / SPI_FLASH_SEC_SIZE;
+	return flashmem_get_size_bytes() / SPI_FLASH_SEC_SIZE;
 }
 
-uint32_t flashmem_find_sector(uint32_t address, uint32_t *pstart, uint32_t *pend)
+uint32_t flashmem_find_sector(uint32_t address, uint32_t* pstart, uint32_t* pend)
 {
-  // All the sectors in the flash have the same size, so just align the address
-  uint32_t sect_id = address / INTERNAL_FLASH_SECTOR_SIZE;
+	// All the sectors in the flash have the same size, so just align the address
+	uint32_t sect_id = address / INTERNAL_FLASH_SECTOR_SIZE;
 
-  if( pstart )
-    *pstart = sect_id * INTERNAL_FLASH_SECTOR_SIZE;
-  if( pend )
-    *pend = ( sect_id + 1 ) * INTERNAL_FLASH_SECTOR_SIZE - 1;
-  return sect_id;
+	if(pstart)
+		*pstart = sect_id * INTERNAL_FLASH_SECTOR_SIZE;
+	if(pend)
+		*pend = (sect_id + 1) * INTERNAL_FLASH_SECTOR_SIZE - 1;
+	return sect_id;
 }
 
-uint32_t flashmem_get_sector_of_address( uint32_t addr )
+uint32_t flashmem_get_sector_of_address(uint32_t addr)
 {
-  return flashmem_find_sector( addr, NULL, NULL );
+	return flashmem_find_sector(addr, NULL, NULL);
 }
 
 /////////////////////////////////////////////////////
 
-uint32_t flashmem_write_internal( const void *from, uint32_t toaddr, uint32_t size )
+uint32_t flashmem_write_internal(const void* from, uint32_t toaddr, uint32_t size)
 {
-  assert(IS_ALIGNED(from) && IS_ALIGNED(toaddr) && IS_ALIGNED(size));
+	assert(IS_ALIGNED(from) && IS_ALIGNED(toaddr) && IS_ALIGNED(size));
 
-  esp_err_t r = spi_flash_write(toaddr, (uint32*)from, size);
-  if(SPI_FLASH_RESULT_OK == r)
-    return size;
-  else{
-	SYSTEM_ERROR( "ERROR in flash_write: r=%d at %08X\n", ( int )r, ( unsigned )toaddr );
-    return 0;
-  }
+	esp_err_t r = spi_flash_write(toaddr, (uint32*)from, size);
+	if(SPI_FLASH_RESULT_OK == r)
+		return size;
+	else {
+		SYSTEM_ERROR("ERROR in flash_write: r=%d at %08X\n", (int)r, (unsigned)toaddr);
+		return 0;
+	}
 }
 
-uint32_t flashmem_read_internal( void *to, uint32_t fromaddr, uint32_t size )
+uint32_t flashmem_read_internal(void* to, uint32_t fromaddr, uint32_t size)
 {
-  assert(IS_ALIGNED(to) && IS_ALIGNED(fromaddr) && IS_ALIGNED(size));
+	assert(IS_ALIGNED(to) && IS_ALIGNED(fromaddr) && IS_ALIGNED(size));
 
-  esp_err_t r = spi_flash_read(fromaddr, (uint32*)to, size);
-  if(SPI_FLASH_RESULT_OK == r)
-    return size;
-  else{
-	SYSTEM_ERROR( "ERROR in flash_read: r=%d at %08X\n", ( int )r, ( unsigned )fromaddr );
-    return 0;
-  }
+	esp_err_t r = spi_flash_read(fromaddr, (uint32*)to, size);
+	if(SPI_FLASH_RESULT_OK == r)
+		return size;
+	else {
+		SYSTEM_ERROR("ERROR in flash_read: r=%d at %08X\n", (int)r, (unsigned)fromaddr);
+		return 0;
+	}
 }
 
 uint32_t flashmem_get_first_free_block_address()
 {
-  if(_flash_code_end == NULL)
-  {
-	  debugf("_flash_code_end is null");
-	  return 0;
-  }
+	if(_flash_code_end == NULL) {
+		debugf("_flash_code_end is null");
+		return 0;
+	}
 
-  // Round the total used flash size to the closest flash block address
-  uint32_t end;
-  flashmem_find_sector( ( uint32_t )_flash_code_end - INTERNAL_FLASH_START_ADDRESS - 1, NULL, &end);
-  return end + 1;
+	// Round the total used flash size to the closest flash block address
+	uint32_t end;
+	flashmem_find_sector((uint32_t)_flash_code_end - INTERNAL_FLASH_START_ADDRESS - 1, NULL, &end);
+	return end + 1;
 }

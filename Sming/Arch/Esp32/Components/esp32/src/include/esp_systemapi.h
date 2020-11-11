@@ -15,7 +15,7 @@ extern "C" {
 #endif
 
 // ==== taken from ESP8266/ets_sys.h
-#define ETS_GPIO_INUM       4
+#define ETS_GPIO_INUM 4
 
 // ====
 
@@ -49,14 +49,13 @@ extern "C" {
 
 #define __ESP32_EX__ // System definition ESP8266 SOC
 
-#define LOCAL           static
+#define LOCAL static
 
 #define SYSTEM_ERROR(fmt, ...) debug_e("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 
 extern void ets_wdt_enable(void);
 extern void ets_wdt_disable(void);
 extern void wdt_feed(void);
-
 
 /** @brief  Disable interrupts
  *  @retval Current interrupt level

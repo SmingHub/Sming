@@ -36,7 +36,7 @@
 
 #pragma once
 
-#if defined (__cplusplus)
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -49,61 +49,61 @@ extern "C" {
  * @{
  */
 
-#define UART0    0
-#define UART1    1
-#define UART2    2				///< Virtualised UART0
-#define UART_NO -1				///< No UART specified
-#define UART_PHYSICAL_COUNT UART_NUM_MAX	///< Number of physical UARTs on the system
-#define UART_COUNT UART_NUM_MAX			///< Number of UARTs on the system, virtual or otherwise
+#define UART0 0
+#define UART1 1
+#define UART2 2							 ///< Virtualised UART0
+#define UART_NO -1						 ///< No UART specified
+#define UART_PHYSICAL_COUNT UART_NUM_MAX ///< Number of physical UARTs on the system
+#define UART_COUNT UART_NUM_MAX			 ///< Number of UARTs on the system, virtual or otherwise
 
 // Options for `config` argument of uart_init
-#define UART_NB_BIT_MASK      0B00001100
-#define UART_NB_BIT_5         0B00000000
-#define UART_NB_BIT_6         0B00000100
-#define UART_NB_BIT_7         0B00001000
-#define UART_NB_BIT_8         0B00001100
+#define UART_NB_BIT_MASK 0B00001100
+#define UART_NB_BIT_5 0B00000000
+#define UART_NB_BIT_6 0B00000100
+#define UART_NB_BIT_7 0B00001000
+#define UART_NB_BIT_8 0B00001100
 
-#define UART_PARITY_MASK      0B00000011
-#define UART_PARITY_NONE      0B00000000
-#define UART_PARITY_EVEN      0B00000010
-#define UART_PARITY_ODD       0B00000011
+#define UART_PARITY_MASK 0B00000011
+#define UART_PARITY_NONE 0B00000000
+#define UART_PARITY_EVEN 0B00000010
+#define UART_PARITY_ODD 0B00000011
 
 #define UART_NB_STOP_BIT_MASK 0B00110000
-#define UART_NB_STOP_BIT_0    0B00000000
-#define UART_NB_STOP_BIT_1    0B00010000
-#define UART_NB_STOP_BIT_15   0B00100000
-#define UART_NB_STOP_BIT_2    0B00110000
+#define UART_NB_STOP_BIT_0 0B00000000
+#define UART_NB_STOP_BIT_1 0B00010000
+#define UART_NB_STOP_BIT_15 0B00100000
+#define UART_NB_STOP_BIT_2 0B00110000
 
-#define UART_5N1 ( UART_NB_BIT_5 | UART_PARITY_NONE | UART_NB_STOP_BIT_1 )
-#define UART_6N1 ( UART_NB_BIT_6 | UART_PARITY_NONE | UART_NB_STOP_BIT_1 )
-#define UART_7N1 ( UART_NB_BIT_7 | UART_PARITY_NONE | UART_NB_STOP_BIT_1 )
-#define UART_8N1 ( UART_NB_BIT_8 | UART_PARITY_NONE | UART_NB_STOP_BIT_1 )
-#define UART_5N2 ( UART_NB_BIT_5 | UART_PARITY_NONE | UART_NB_STOP_BIT_2 )
-#define UART_6N2 ( UART_NB_BIT_6 | UART_PARITY_NONE | UART_NB_STOP_BIT_2 )
-#define UART_7N2 ( UART_NB_BIT_7 | UART_PARITY_NONE | UART_NB_STOP_BIT_2 )
-#define UART_8N2 ( UART_NB_BIT_8 | UART_PARITY_NONE | UART_NB_STOP_BIT_2 )
-#define UART_5E1 ( UART_NB_BIT_5 | UART_PARITY_EVEN | UART_NB_STOP_BIT_1 )
-#define UART_6E1 ( UART_NB_BIT_6 | UART_PARITY_EVEN | UART_NB_STOP_BIT_1 )
-#define UART_7E1 ( UART_NB_BIT_7 | UART_PARITY_EVEN | UART_NB_STOP_BIT_1 )
-#define UART_8E1 ( UART_NB_BIT_8 | UART_PARITY_EVEN | UART_NB_STOP_BIT_1 )
-#define UART_5E2 ( UART_NB_BIT_5 | UART_PARITY_EVEN | UART_NB_STOP_BIT_2 )
-#define UART_6E2 ( UART_NB_BIT_6 | UART_PARITY_EVEN | UART_NB_STOP_BIT_2 )
-#define UART_7E2 ( UART_NB_BIT_7 | UART_PARITY_EVEN | UART_NB_STOP_BIT_2 )
-#define UART_8E2 ( UART_NB_BIT_8 | UART_PARITY_EVEN | UART_NB_STOP_BIT_2 )
-#define UART_5O1 ( UART_NB_BIT_5 | UART_PARITY_ODD  | UART_NB_STOP_BIT_1 )
-#define UART_6O1 ( UART_NB_BIT_6 | UART_PARITY_ODD  | UART_NB_STOP_BIT_1 )
-#define UART_7O1 ( UART_NB_BIT_7 | UART_PARITY_ODD  | UART_NB_STOP_BIT_1 )
-#define UART_8O1 ( UART_NB_BIT_8 | UART_PARITY_ODD  | UART_NB_STOP_BIT_1 )
-#define UART_5O2 ( UART_NB_BIT_5 | UART_PARITY_ODD  | UART_NB_STOP_BIT_2 )
-#define UART_6O2 ( UART_NB_BIT_6 | UART_PARITY_ODD  | UART_NB_STOP_BIT_2 )
-#define UART_7O2 ( UART_NB_BIT_7 | UART_PARITY_ODD  | UART_NB_STOP_BIT_2 )
-#define UART_8O2 ( UART_NB_BIT_8 | UART_PARITY_ODD  | UART_NB_STOP_BIT_2 )
+#define UART_5N1 (UART_NB_BIT_5 | UART_PARITY_NONE | UART_NB_STOP_BIT_1)
+#define UART_6N1 (UART_NB_BIT_6 | UART_PARITY_NONE | UART_NB_STOP_BIT_1)
+#define UART_7N1 (UART_NB_BIT_7 | UART_PARITY_NONE | UART_NB_STOP_BIT_1)
+#define UART_8N1 (UART_NB_BIT_8 | UART_PARITY_NONE | UART_NB_STOP_BIT_1)
+#define UART_5N2 (UART_NB_BIT_5 | UART_PARITY_NONE | UART_NB_STOP_BIT_2)
+#define UART_6N2 (UART_NB_BIT_6 | UART_PARITY_NONE | UART_NB_STOP_BIT_2)
+#define UART_7N2 (UART_NB_BIT_7 | UART_PARITY_NONE | UART_NB_STOP_BIT_2)
+#define UART_8N2 (UART_NB_BIT_8 | UART_PARITY_NONE | UART_NB_STOP_BIT_2)
+#define UART_5E1 (UART_NB_BIT_5 | UART_PARITY_EVEN | UART_NB_STOP_BIT_1)
+#define UART_6E1 (UART_NB_BIT_6 | UART_PARITY_EVEN | UART_NB_STOP_BIT_1)
+#define UART_7E1 (UART_NB_BIT_7 | UART_PARITY_EVEN | UART_NB_STOP_BIT_1)
+#define UART_8E1 (UART_NB_BIT_8 | UART_PARITY_EVEN | UART_NB_STOP_BIT_1)
+#define UART_5E2 (UART_NB_BIT_5 | UART_PARITY_EVEN | UART_NB_STOP_BIT_2)
+#define UART_6E2 (UART_NB_BIT_6 | UART_PARITY_EVEN | UART_NB_STOP_BIT_2)
+#define UART_7E2 (UART_NB_BIT_7 | UART_PARITY_EVEN | UART_NB_STOP_BIT_2)
+#define UART_8E2 (UART_NB_BIT_8 | UART_PARITY_EVEN | UART_NB_STOP_BIT_2)
+#define UART_5O1 (UART_NB_BIT_5 | UART_PARITY_ODD | UART_NB_STOP_BIT_1)
+#define UART_6O1 (UART_NB_BIT_6 | UART_PARITY_ODD | UART_NB_STOP_BIT_1)
+#define UART_7O1 (UART_NB_BIT_7 | UART_PARITY_ODD | UART_NB_STOP_BIT_1)
+#define UART_8O1 (UART_NB_BIT_8 | UART_PARITY_ODD | UART_NB_STOP_BIT_1)
+#define UART_5O2 (UART_NB_BIT_5 | UART_PARITY_ODD | UART_NB_STOP_BIT_2)
+#define UART_6O2 (UART_NB_BIT_6 | UART_PARITY_ODD | UART_NB_STOP_BIT_2)
+#define UART_7O2 (UART_NB_BIT_7 | UART_PARITY_ODD | UART_NB_STOP_BIT_2)
+#define UART_8O2 (UART_NB_BIT_8 | UART_PARITY_ODD | UART_NB_STOP_BIT_2)
 
 /** @brief values for `mode` argument of uart_init */
 enum smg_uart_mode_ {
-	UART_FULL,		///< Both receive and transmit - will revert to TX only if RX not supported
-	UART_RX_ONLY,	///< Receive only
-	UART_TX_ONLY	///< Transmit only
+	UART_FULL,	///< Both receive and transmit - will revert to TX only if RX not supported
+	UART_RX_ONLY, ///< Receive only
+	UART_TX_ONLY  ///< Transmit only
 };
 typedef enum smg_uart_mode_ smg_uart_mode_t;
 
@@ -134,7 +134,6 @@ typedef struct smg_uart_ smg_uart_t;
  * Errors can be detected via uart_get_status().
  */
 typedef void (*smg_uart_callback_t)(smg_uart_t* uart, uint32_t status);
-
 
 /*
  * Port notifications
@@ -172,7 +171,6 @@ typedef void (*smg_uart_notify_callback_t)(smg_uart_t* uart, smg_uart_notify_cod
  */
 bool smg_uart_set_notify(unsigned uart_nr, smg_uart_notify_callback_t callback);
 
-
 struct SerialBuffer;
 
 struct smg_uart_ {
@@ -182,20 +180,19 @@ struct smg_uart_ {
 	uint8_t options;
 	uint8_t rx_pin;
 	uint8_t tx_pin;
-	uint8_t rx_headroom; ///< Callback when rx_buffer free space <= headroom
-	uint16_t status; ///< All status flags reported to callback since last uart_get_status() call
-	struct SerialBuffer* rx_buffer;  ///< Optional receive buffer
-	struct SerialBuffer* tx_buffer;  ///< Optional transmit buffer
-	smg_uart_callback_t callback; ///< Optional User callback routine
-	void* param; ///< User-supplied callback parameter
+	uint8_t rx_headroom;			///< Callback when rx_buffer free space <= headroom
+	uint16_t status;				///< All status flags reported to callback since last uart_get_status() call
+	struct SerialBuffer* rx_buffer; ///< Optional receive buffer
+	struct SerialBuffer* tx_buffer; ///< Optional transmit buffer
+	smg_uart_callback_t callback;   ///< Optional User callback routine
+	void* param;					///< User-supplied callback parameter
 };
-
 
 struct smg_uart_config {
 	uint8_t uart_nr;
-	uint8_t tx_pin;	///< Specify 2 for alternate pin, otherwise defaults to pin 1
+	uint8_t tx_pin; ///< Specify 2 for alternate pin, otherwise defaults to pin 1
 	uint8_t rx_pin;
-	smg_uart_mode_t mode;  ///< Whether to enable receive, transmit or both
+	smg_uart_mode_t mode; ///< Whether to enable receive, transmit or both
 	uart_options_t options;
 	uint32_t baudrate; ///< Requested baudrate; actual baudrate may differ
 	uint32_t config;   ///< UART CONF0 register bits
@@ -204,7 +201,8 @@ struct smg_uart_config {
 };
 
 // @deprecated Use `uart_init_ex()` instead
-smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin, size_t rx_size, size_t tx_size = 0);
+smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin,
+						  size_t rx_size, size_t tx_size = 0);
 
 smg_uart_t* smg_uart_init_ex(const smg_uart_config& cfg);
 
@@ -243,7 +241,7 @@ __forceinline void* smg_uart_get_callback_param(smg_uart_t* uart)
  */
 static inline void smg_uart_set_options(smg_uart_t* uart, uart_options_t options)
 {
-	if (uart)
+	if(uart)
 		uart->options = options;
 }
 
@@ -303,7 +301,6 @@ size_t smg_uart_resize_rx_buffer(smg_uart_t* uart, size_t new_size);
 size_t smg_uart_rx_buffer_size(smg_uart_t* uart);
 size_t smg_uart_resize_tx_buffer(smg_uart_t* uart, size_t new_size);
 size_t smg_uart_tx_buffer_size(smg_uart_t* uart);
-
 
 /** @brief write a block of data
  *  @param uart
@@ -408,6 +405,6 @@ void smg_uart_restore_interrupts();
 
 /** @} */
 
-#if defined (__cplusplus)
+#if defined(__cplusplus)
 } // extern "C"
 #endif

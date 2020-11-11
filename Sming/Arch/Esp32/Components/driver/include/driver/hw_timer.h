@@ -93,8 +93,8 @@ inline void IRAM_ATTR hw_timer1_enable(hw_timer_clkdiv_t div, hw_timer_intr_type
 	}
 
 	WRITE_PERI_REG(FRC1_CTRL_ADDRESS, ctrl);
-//	TM1_EDGE_INT_ENABLE();
-//	ETS_FRC1_INTR_ENABLE();
+	//	TM1_EDGE_INT_ENABLE();
+	//	ETS_FRC1_INTR_ENABLE();
 }
 
 /**
@@ -111,8 +111,8 @@ __forceinline void IRAM_ATTR hw_timer1_write(uint32_t ticks)
  */
 __forceinline void IRAM_ATTR hw_timer1_disable(void)
 {
-//	TM1_EDGE_INT_DISABLE();
-//	ETS_FRC1_INTR_DISABLE();
+	//	TM1_EDGE_INT_DISABLE();
+	//	ETS_FRC1_INTR_DISABLE();
 }
 
 /**
@@ -121,8 +121,8 @@ __forceinline void IRAM_ATTR hw_timer1_disable(void)
 __forceinline void IRAM_ATTR hw_timer1_detach_interrupt(void)
 {
 	hw_timer1_disable();
-//	ETS_FRC_TIMER1_NMI_INTR_ATTACH(NULL);
-//	ETS_FRC_TIMER1_INTR_ATTACH(NULL, NULL);
+	//	ETS_FRC_TIMER1_NMI_INTR_ATTACH(NULL);
+	//	ETS_FRC_TIMER1_INTR_ATTACH(NULL, NULL);
 }
 
 /**

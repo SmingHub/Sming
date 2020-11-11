@@ -16,7 +16,7 @@ extern void init();
 
 extern "C" void app_main(void)
 {
-//	esp_timer_dump(stdout);
+	//	esp_timer_dump(stdout);
 
 	host_init_tasks();
 
@@ -31,5 +31,5 @@ extern "C" void app_main(void)
 	// TODO: Call all System.onReady event listeners
 	host_service_tasks();
 
-//	esp_timer_dump(stdout);
+	//	esp_timer_dump(stdout);
 }

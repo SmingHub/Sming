@@ -41,14 +41,14 @@ void hw_timer1_attach_interrupt(hw_timer_source_type_t source_type, hw_timer_cal
 {
 	if(source_type == TIMER_NMI_SOURCE) {
 		if(arg == NULL) {
-//			ETS_FRC_TIMER1_NMI_INTR_ATTACH(reinterpret_cast<void (*)()>(callback));
+			//			ETS_FRC_TIMER1_NMI_INTR_ATTACH(reinterpret_cast<void (*)()>(callback));
 		} else {
 			nmi_callback.func = callback;
 			nmi_callback.arg = arg;
-//			ETS_FRC_TIMER1_NMI_INTR_ATTACH(nmi_handler);
+			//			ETS_FRC_TIMER1_NMI_INTR_ATTACH(nmi_handler);
 		}
 	} else {
-//		ETS_FRC_TIMER1_INTR_ATTACH(callback, arg);
+		//		ETS_FRC_TIMER1_INTR_ATTACH(callback, arg);
 	}
 }
 

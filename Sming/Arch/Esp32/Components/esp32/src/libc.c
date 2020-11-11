@@ -12,4 +12,3 @@ void system_set_os_print(bool onoff)
 {
 	//
 }
-

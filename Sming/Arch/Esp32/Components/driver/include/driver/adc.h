@@ -12,4 +12,3 @@ uint16_t system_get_vdd33(void);
 #ifdef __cplusplus
 }
 #endif
-

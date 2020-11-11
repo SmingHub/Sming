@@ -59,7 +59,7 @@
 
 #include "esp_log.h"
 
-static const char *TAG = "uart_events";
+static const char* TAG = "uart_events";
 
 static QueueHandle_t uartQueues[UART_COUNT];
 static bool doneHandler[UART_COUNT] = {};
@@ -273,108 +273,107 @@ size_t smg_uart_rx_available(smg_uart_t* uart)
 
 static void smg_uart_event_handler(uart_port_t uart_nr)
 {
-    uart_event_t event;
-    auto queue = uartQueues[uart_nr];
+	uart_event_t event;
+	auto queue = uartQueues[uart_nr];
 
-    auto uart = smg_uart_get_uart(uart_nr);
-    if(uart == nullptr) {
-    	vTaskDelete(NULL);
-    	return;
-    }
+	auto uart = smg_uart_get_uart(uart_nr);
+	if(uart == nullptr) {
+		vTaskDelete(NULL);
+		return;
+	}
 
-    uint32_t status = 0;
-    while(!doneHandler[uart_nr]) {
-    	if(xQueueReceive(uartQueues[uart_nr], (void * )&event, (portTickType)portMAX_DELAY)) {
-//    			debugf("event type: %d", event.type);
+	uint32_t status = 0;
+	while(!doneHandler[uart_nr]) {
+		if(xQueueReceive(uartQueues[uart_nr], (void*)&event, (portTickType)portMAX_DELAY)) {
+			//    			debugf("event type: %d", event.type);
 
-    			switch(event.type) {
-    				case UART_FIFO_OVF:
-    					uart_get_buffered_data_len(uart_nr, &event.size);
-    			    	status = UART_RXFIFO_OVF_INT_ST; //Event of HW FIFO overflow detected
-    			    	/* fall-through */
-    			    case UART_BUFFER_FULL:
-    			    	if(!status) {
-    			    		uart_get_buffered_data_len(uart_nr, &event.size);
-    			    		status = UART_RXFIFO_FULL_INT_ST; //Event of UART ring buffer full
-    			    	}
-    			    	/* fall-through */
-    				case UART_DATA:
-    					if(!status) {
-    						status = UART_RXFIFO_TOUT_INT_ST; //Event of UART receiving data
-    					}
+			switch(event.type) {
+			case UART_FIFO_OVF:
+				uart_get_buffered_data_len(uart_nr, &event.size);
+				status = UART_RXFIFO_OVF_INT_ST; //Event of HW FIFO overflow detected
+												 /* fall-through */
+			case UART_BUFFER_FULL:
+				if(!status) {
+					uart_get_buffered_data_len(uart_nr, &event.size);
+					status = UART_RXFIFO_FULL_INT_ST; //Event of UART ring buffer full
+				}
+				/* fall-through */
+			case UART_DATA:
+				if(!status) {
+					status = UART_RXFIFO_TOUT_INT_ST; //Event of UART receiving data
+				}
 
-    					if(uart->rx_buffer != nullptr) {
+				if(uart->rx_buffer != nullptr) {
+					size_t avail = event.size;
 
-    						size_t avail = event.size;
+					size_t space = uart->rx_buffer->getFreeSpace();
+					size_t read = (avail <= space) ? avail : space;
+					space -= read;
+					while(read-- != 0) {
+						uint8_t c;
+						int ret = uart_read_bytes(uart_nr, &c, 1, 0);
+						if(ret == -1) {
+							break; //
+						}
 
-    						size_t space = uart->rx_buffer->getFreeSpace();
-    						size_t read = (avail <= space) ? avail : space;
-    						space -= read;
-    						while(read-- != 0) {
-    							uint8_t c;
-    							int ret = uart_read_bytes(uart_nr, &c, 1, 0);
-    							if(ret == -1) {
-    								break; //
-    							}
+						if(!uart->rx_buffer->writeChar(c)) {
+							break;
+						}
+					}
 
-    							if(!uart->rx_buffer->writeChar(c)) {
-    								break;
-    							}
-    						}
+					// Don't call back until buffer is (almost) full
+					if(space > uart->rx_headroom) {
+						status &= ~UART_RXFIFO_FULL_INT_ST;
+					}
 
-    						// Don't call back until buffer is (almost) full
-    						if(space > uart->rx_headroom) {
-    							status &= ~UART_RXFIFO_FULL_INT_ST;
-    						}
-
-//    						debugf("avail: %d, read: %d", avail, read);
-    					}
-    					break;
-    				//Event of UART RX break detected
-    				case UART_BREAK:
-    					break;
-    				//Event of UART parity check error
-    				case UART_PARITY_ERR:
-    					break;
-    				//Event of UART frame error
-    				case UART_FRAME_ERR:
-    					break;
-    				//UART_PATTERN_DET
-    				case UART_PATTERN_DET:
-    					break;
-    	//			case UART_DATA_BREAK:
-    	//				// Dump as much data as we can from buffer into the TX FIFO
-    	//				if(uart->tx_buffer != nullptr) {
-    	//					size_t space = smg_uart_txfifo_free(uart_nr);
-    	//					size_t avail = uart->tx_buffer->available();
-    	//					size_t count = (avail <= space) ? avail : space;
-    	//					while(count-- != 0) {
-    	//						WRITE_PERI_REG(UART_FIFO(uart_nr), uart->tx_buffer->readChar());
-    	//					}
-    	//				}
-    	//				break;
-    				//Others
-    				default:
-    					break;
-    		} // end switch
+					//    						debugf("avail: %d, read: %d", avail, read);
+				}
+				break;
+			//Event of UART RX break detected
+			case UART_BREAK:
+				break;
+			//Event of UART parity check error
+			case UART_PARITY_ERR:
+				break;
+			//Event of UART frame error
+			case UART_FRAME_ERR:
+				break;
+			//UART_PATTERN_DET
+			case UART_PATTERN_DET:
+				break;
+				//			case UART_DATA_BREAK:
+				//				// Dump as much data as we can from buffer into the TX FIFO
+				//				if(uart->tx_buffer != nullptr) {
+				//					size_t space = smg_uart_txfifo_free(uart_nr);
+				//					size_t avail = uart->tx_buffer->available();
+				//					size_t count = (avail <= space) ? avail : space;
+				//					while(count-- != 0) {
+				//						WRITE_PERI_REG(UART_FIFO(uart_nr), uart->tx_buffer->readChar());
+				//					}
+				//				}
+				//				break;
+				//Others
+			default:
+				break;
+			} // end switch
 
 			uart->status |= status;
 
 			if(status != 0 && uart->callback != nullptr) {
-//				debugf("callback with status: %d", status);
+				//				debugf("callback with status: %d", status);
 				uart->callback(uart, status);
 			}
 
-	    	status = 0;
-    	} // end if
-	} // end while
+			status = 0;
+		} // end if
+	}	 // end while
 
-    vTaskDelete(NULL);
+	vTaskDelete(NULL);
 }
 
-void smg_uart_event_task(void *pvParameters)
+void smg_uart_event_task(void* pvParameters)
 {
-	uint8_t* port =  reinterpret_cast<uint8_t*>(pvParameters);
+	uint8_t* port = reinterpret_cast<uint8_t*>(pvParameters);
 	smg_uart_event_handler((uart_port_t)(*port));
 }
 
@@ -394,7 +393,7 @@ size_t smg_uart_write(smg_uart_t* uart, const void* buffer, size_t size)
 		if(isPhysical) {
 			// If TX buffer not in use or it's empty then write directly to hardware FIFO
 			if(uart->tx_buffer == nullptr || uart->tx_buffer->isEmpty()) {
-				int sent = uart_write_bytes(uart->uart_nr, (const char* )&buf[written], (size - written));
+				int sent = uart_write_bytes(uart->uart_nr, (const char*)&buf[written], (size - written));
 				if(sent > 0) {
 					written += sent;
 				}
@@ -423,20 +422,20 @@ uint8_t smg_uart_get_status(smg_uart_t* uart)
 	uint8_t status = 0;
 	if(uart != nullptr) {
 		// TODO:
-//		smg_uart_disable_interrupts();
-//		// Get break/overflow flags from actual uart (physical or otherwise)
-//		status = uart->status & (UART_BRK_DET_INT_ST | UART_RXFIFO_OVF_INT_ST);
-//		uart->status = 0;
-//		// Read raw status register directly from real uart, masking out non-error bits
-//		uart = get_physical(uart);
-//		if(uart != nullptr) {
-//			uint32_t intraw = READ_PERI_REG(UART_INT_RAW(uart->uart_nr));
-//			intraw &= UART_BRK_DET_INT_ST | UART_RXFIFO_OVF_INT_ST | UART_FRM_ERR_INT_ST | UART_PARITY_ERR_INT_ST;
-//			status |= intraw;
-//			// Clear errors
-//			WRITE_PERI_REG(UART_INT_CLR(uart->uart_nr), status);
-//		}
-//		smg_uart_restore_interrupts();
+		//		smg_uart_disable_interrupts();
+		//		// Get break/overflow flags from actual uart (physical or otherwise)
+		//		status = uart->status & (UART_BRK_DET_INT_ST | UART_RXFIFO_OVF_INT_ST);
+		//		uart->status = 0;
+		//		// Read raw status register directly from real uart, masking out non-error bits
+		//		uart = get_physical(uart);
+		//		if(uart != nullptr) {
+		//			uint32_t intraw = READ_PERI_REG(UART_INT_RAW(uart->uart_nr));
+		//			intraw &= UART_BRK_DET_INT_ST | UART_RXFIFO_OVF_INT_ST | UART_FRM_ERR_INT_ST | UART_PARITY_ERR_INT_ST;
+		//			status |= intraw;
+		//			// Clear errors
+		//			WRITE_PERI_REG(UART_INT_CLR(uart->uart_nr), status);
+		//		}
+		//		smg_uart_restore_interrupts();
 	}
 	return status;
 }
@@ -492,7 +491,6 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config& cfg)
 	//Set UART log level
 	esp_log_level_set(TAG, ESP_LOG_INFO);
 
-
 	// Already initialised?
 	if(smg_uart_get_uart(cfg.uart_nr) != nullptr) {
 		return nullptr;
@@ -511,13 +509,11 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config& cfg)
 	uart->rx_pin = 255;
 	uart->rx_headroom = DEFAULT_RX_HEADROOM;
 
-	uart_config_t uart_config = {
-	        .baud_rate = (int)cfg.baudrate,
-	        .data_bits = UART_DATA_8_BITS,
-	        .parity    = UART_PARITY_DISABLE,
-	        .stop_bits = UART_STOP_BITS_1,
-	        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE
-	};
+	uart_config_t uart_config = {.baud_rate = (int)cfg.baudrate,
+								 .data_bits = UART_DATA_8_BITS,
+								 .parity = UART_PARITY_DISABLE,
+								 .stop_bits = UART_STOP_BITS_1,
+								 .flow_ctrl = UART_HW_FLOWCTRL_DISABLE};
 
 	if(!realloc_buffer(uart->rx_buffer, cfg.rx_size)) {
 		delete uart;
@@ -537,9 +533,9 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config& cfg)
 
 	uartInstances[cfg.uart_nr] = uart;
 
-    //Create a task to handle UART event from ISR
+	//Create a task to handle UART event from ISR
 	doneHandler[uart->uart_nr] = false;
-    xTaskCreate(smg_uart_event_task, "uart_event_task", 2048, &uart->uart_nr, 12, NULL);
+	xTaskCreate(smg_uart_event_task, "uart_event_task", 2048, &uart->uart_nr, 12, NULL);
 
 	notify(uart, UART_NOTIFY_AFTER_OPEN);
 
@@ -569,17 +565,17 @@ void smg_uart_uninit(smg_uart_t* uart)
 	delete uart;
 }
 
-smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin, size_t rx_size,
-				  size_t tx_size)
+smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin,
+						  size_t rx_size, size_t tx_size)
 {
 	smg_uart_config cfg = {.uart_nr = (uart_port_t)uart_nr,
-					   .tx_pin = tx_pin,
-					   .mode = mode,
-					   .options = _BV(UART_OPT_TXWAIT),
-					   .baudrate = baudrate,
-					   .config = config,
-					   .rx_size = rx_size,
-					   .tx_size = tx_size};
+						   .tx_pin = tx_pin,
+						   .mode = mode,
+						   .options = _BV(UART_OPT_TXWAIT),
+						   .baudrate = baudrate,
+						   .config = config,
+						   .rx_size = rx_size,
+						   .tx_size = tx_size};
 	return smg_uart_init_ex(cfg);
 }
 
@@ -628,9 +624,9 @@ void smg_uart_debug_putc(char c)
 
 void smg_uart_set_debug(int uart_nr)
 {
-//	s_uart_debug_nr = uart_nr;
-//	system_set_os_print(uart_nr >= 0);
-//	ets_install_putc1(smg_uart_debug_putc);
+	//	s_uart_debug_nr = uart_nr;
+	//	system_set_os_print(uart_nr >= 0);
+	//	ets_install_putc1(smg_uart_debug_putc);
 }
 
 int smg_uart_get_debug()
