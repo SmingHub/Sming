@@ -34,7 +34,7 @@ define FindTool
 $(lastword $(sort $(wildcard $(IDF_TOOLS_PATH)/$1/*))$2)
 endef
 
-DEBUG_VARS			+= ESP32_COMPILER_PATH ESP32_ULP_PATH ESP32_OPENOCD_PATH ESP32_PYTHON_PATH
+DEBUG_VARS			+= ESP32_COMPILER_PATH ESP32_ULP_PATH ESP32_OPENOCD_PATH ESP32_NINJA_PATH ESP32_PYTHON_PATH
 ifndef ESP32_COMPILER_PATH
 ESP32_COMPILER_PATH	:= $(call FindTool,tools/$(ESP32_COMPILER_PREFIX),/$(ESP32_COMPILER_PREFIX))
 endif
@@ -47,6 +47,9 @@ endif
 ifndef ESP32_PYTHON_PATH
 ESP32_PYTHON_PATH	:= $(call FindTool,python_env)
 endif
+ifndef ESP32_NINJA_PATH
+ESP32_NINJA_PATH	:= $(call FindTool,ninja)
+endif
 
 # Required by v4.2 SDK
 export IDF_PYTHON_ENV_PATH=$(ESP32_PYTHON_PATH)
@@ -56,6 +59,7 @@ IDF_PATH_LIST := \
 	$(ESP32_COMPILER_PATH)/bin \
 	$(ESP32_ULP_PATH)/$(ESP_VARIANT)ulp-elf-binutils/bin \
 	$(ESP32_OPENOCD_PATH)/openocd-esp32/bin \
+	$(ESP32_NINJA_PATH) \
 	$(ESP32_PYTHON_PATH)/bin \
 	$(IDF_PATH)/components/esptool_py/esptool \
 	$(IDF_PATH)/components/espcoredump \
