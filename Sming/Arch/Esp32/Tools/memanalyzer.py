@@ -12,15 +12,25 @@ import shlex
 import subprocess
 import sys
 
-TOTAL_DRAM = 0x3FFB0000 - 0x3FFF0000;
-TOTAL_IRAM = 0x400A0000 - 0x40080000;
+# From soc/soc.h
+SOC_DROM_LOW    = 0x3F400000
+SOC_DROM_HIGH   = 0x3F800000
+SOC_DRAM_LOW    = 0x3FFAE000
+SOC_DRAM_HIGH   = 0x40000000
+SOC_IROM_LOW    = 0x400D0000
+SOC_IROM_HIGH   = 0x40400000
+SOC_IRAM_LOW    = 0x40080000
+SOC_IRAM_HIGH   = 0x400A0000
+
+TOTAL_DRAM = SOC_DRAM_HIGH - SOC_DRAM_LOW;
+TOTAL_IRAM = SOC_IRAM_HIGH - SOC_IRAM_LOW;
 
 sections = OrderedDict([
     ("data", "Initialized Data (RAM)"),
-    ("rodata", "ReadOnly Data (RAM)"),
+    ("rodata", "ReadOnly Data (SPI)"),
     ("bss", "Uninitialized Data (RAM)"),
-    ("text", "Cached Code (IRAM)"),
-    ("iram0_text", "Uncached Code (SPI)")
+    ("iram_text", "Cached Code (IRAM)"),
+    ("text", "Uncached Code (SPI)")
 ])
 
 if len(sys.argv) < 2:
@@ -66,14 +76,14 @@ for (name, descr) in list(sections.items()):
             break
 
     sectionLength = sectionEnd - sectionStart
-    if i < 3:
+    if i == 0 or i == 2:
         usedRAM += sectionLength
     if i == 3:
-        usedIRAM = TOTAL_DRAM - sectionLength;
+        usedIRAM = sectionLength;
 
     print("{0: >10}|{1: >30}|{2:12X}|{3:12X}|{4:8}".format(name, descr, sectionStart, sectionEnd, sectionLength))
     i += 1
 
 print("Total Used RAM : %d" % usedRAM)
-print("Free RAM : %d" % (TOTAL_IRAM - usedRAM))
-print("Free IRam : %d" % usedIRAM)
+print("Free RAM : %d" % (TOTAL_DRAM - usedRAM))
+print("Free IRam : %d" % (TOTAL_IRAM - usedIRAM))
