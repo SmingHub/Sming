@@ -11,6 +11,7 @@
 #pragma once
 
 #include <esp_systemapi.h>
+#include <espinc/timer_register.h>
 
 #define HW_TIMER_BASE_CLK APB_CLK_FREQ
 
@@ -131,7 +132,7 @@ __forceinline void IRAM_ATTR hw_timer1_detach_interrupt(void)
  */
 __forceinline uint32_t hw_timer1_read(void)
 {
-	return FRC_TIMER_COUNT_REG(0);
+	return REG_READ(FRC_TIMER_COUNT_REG(0));
 }
 
 /*************************************
@@ -156,8 +157,10 @@ constexpr uint32_t HW_TIMER2_CLK = HW_TIMER_BASE_CLK >> HW_TIMER2_CLKDIV;
  */
 __forceinline uint32_t hw_timer2_read(void)
 {
-	return FRC_TIMER_COUNT_REG(1);
+	return REG_READ(FRC_TIMER_COUNT_REG(1));
 }
+
+#define NOW() hw_timer2_read()
 
 /**
  * @brief Set timer2 alarm count value

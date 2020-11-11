@@ -25,8 +25,6 @@
 #ifndef _TIMER_REGISTER_H_
 #define _TIMER_REGISTER_H_
 
-#include "espinc/eagle_soc.h"
-
 #include <soc/frc_timer_reg.h>
 
 #define PERIPHS_TIMER_BASEDDR       DR_REG_FRC_TIMER_BASE
@@ -93,7 +91,5 @@
 #define FRC2_ALARM_DATA_MSB             31
 #define FRC2_ALARM_DATA_LSB             0
 #define FRC2_ALARM_DATA_MASK            0xffffffff
-
-#define NOW()                       FRC_TIMER_COUNT_REG(1)
 
 #endif
