@@ -106,10 +106,6 @@ FW_MEMINFO_NEW		:= $(FW_BASE)/fwMeminfo.new
 FW_MEMINFO_OLD		:= $(FW_BASE)/fwMeminfo.old
 FW_MEMINFO_SAVED	:= out/fwMeminfo
 
-# Set to 1 to enable some legacy building behaviour
-CACHE_VARS			+= ENABLE_LEGACY_BUILD
-ENABLE_LEGACY_BUILD	?= 0
-
 # List of Components we're going to parse, with duplicate libraries removed
 COMPONENTS			:= Sming
 
