@@ -34,21 +34,30 @@ define FindTool
 $(lastword $(sort $(wildcard $(IDF_TOOLS_PATH)/$1/*))$2)
 endef
 
-DEBUG_VARS			+= ESP32_COMPILER_PATH ESP32_ULP_PATH ESP32_OPENOCD_PATH ESP32_NINJA_PATH ESP32_PYTHON_PATH
+DEBUG_VARS			+= ESP32_COMPILER_PATH ESP32_ULP_PATH ESP32_OPENOCD_PATH ESP32_PYTHON_PATH
+
 ifndef ESP32_COMPILER_PATH
 ESP32_COMPILER_PATH	:= $(call FindTool,tools/$(ESP32_COMPILER_PREFIX),/$(ESP32_COMPILER_PREFIX))
 endif
+
 ifndef ESP32_ULP_PATH
 ESP32_ULP_PATH		:= $(call FindTool,tools/$(ESP_VARIANT)ulp-elf)
 endif
+
 ifndef ESP32_OPENOCD_PATH
 ESP32_OPENOCD_PATH	:= $(call FindTool,tools/openocd-esp32)
 endif
+
 ifndef ESP32_PYTHON_PATH
 ESP32_PYTHON_PATH	:= $(call FindTool,python_env)
+ifneq (,$(wildcard $(ESP32_PYTHON_PATH)/bin))
+ESP32_PYTHON_PATH := $(ESP32_PYTHON_PATH)/bin
+else ifneq (,$(wildcard $(ESP32_PYTHON_PATH)/Scripts))
+ESP32_PYTHON_PATH := $(ESP32_PYTHON_PATH)/Scripts
+else
+$(error Failed to find ESP32 Python installation)
 endif
-ifndef ESP32_NINJA_PATH
-ESP32_NINJA_PATH	:= $(call FindTool,ninja)
+ESP32_PYTHON = $(ESP32_PYTHON_PATH)/python
 endif
 
 # Required by v4.2 SDK
@@ -56,14 +65,31 @@ export IDF_PYTHON_ENV_PATH=$(ESP32_PYTHON_PATH)
 
 # Add ESP-IDF tools to PATH
 IDF_PATH_LIST := \
+	$(IDF_PATH)/tools \
 	$(ESP32_COMPILER_PATH)/bin \
 	$(ESP32_ULP_PATH)/$(ESP_VARIANT)ulp-elf-binutils/bin \
 	$(ESP32_OPENOCD_PATH)/openocd-esp32/bin \
-	$(ESP32_NINJA_PATH) \
 	$(ESP32_PYTHON_PATH)/bin \
 	$(IDF_PATH)/components/esptool_py/esptool \
 	$(IDF_PATH)/components/espcoredump \
 	$(IDF_PATH)/components/partition_table
+
+ifeq ($(UNAME),Windows)
+DEBUG_VARS += ESP32_NINJA_PATH
+ifndef ESP32_NINJA_PATH
+ESP32_NINJA_PATH	:= $(call FindTool,tools/ninja)
+endif
+ifeq (,$(wildcard $(ESP32_NINJA_PATH)/ninja.exe))
+$(error Failed to find NINJA)
+endif
+IDF_PATH_LIST += $(ESP32_NINJA_PATH)
+
+DEBUG_VARS += ESP32_IDFEXE_PATH
+ifndef ESP32_IDFEXE_PATH
+ESP32_IDFEXE_PATH := $(call FindTool,tools/idf-exe)
+endif
+IDF_PATH_LIST += ESP32_IDFEXE_PATH
+endif
 
 space :=
 space +=

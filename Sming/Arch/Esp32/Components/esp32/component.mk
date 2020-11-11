@@ -288,7 +288,7 @@ CUSTOM_TARGETS := checksdk
 .PHONY: checksdk
 checksdk: $(SDKCONFIG_H) $(SDK_COMPONENT_LIBS) $(SDK_BUILD_COMPLETE)
 
-SDK_BUILD = $(IDF_PATH)/tools/idf.py -C $(SDK_PROJECT_PATH) -B $(SDK_BUILD_BASE) -G Ninja
+SDK_BUILD = $(ESP32_PYTHON) $(IDF_PATH)/tools/idf.py -C $(SDK_PROJECT_PATH) -B $(SDK_BUILD_BASE) -G Ninja
 
 # For misc.mk / copylibs
 export SDK_BUILD_BASE
