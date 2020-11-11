@@ -73,6 +73,7 @@ CONFIG_VARS			+= USER_CFLAGS
 DEBUG_VARS			+= GLOBAL_CFLAGS
 GLOBAL_CFLAGS = \
 	-DSMING_ARCH=$(SMING_ARCH) \
+	-DESP_VARIANT=$(ESP_VARIANT) \
 	-DPROJECT_DIR=\"$(PROJECT_DIR)\" \
 	-DSMING_HOME=\"$(SMING_HOME)\" \
 	$(USER_CFLAGS)
@@ -600,7 +601,7 @@ $(shell	mkdir -p $(dir $1);
 endef
 
 # Update build type cache
-$(eval $(call WriteCacheValues,$(BUILD_TYPE_FILE),SMING_ARCH SMING_RELEASE STRICT))
+$(eval $(call WriteCacheValues,$(BUILD_TYPE_FILE),SMING_ARCH ESP_VARIANT SMING_RELEASE STRICT))
 
 # Update config cache file
 # We store the list of variable names to ensure that any not actively in use don't get lost

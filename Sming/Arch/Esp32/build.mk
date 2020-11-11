@@ -22,8 +22,9 @@ endif
 
 export IDF_TOOLS_PATH := $(call FixPath,$(IDF_TOOLS_PATH))
 
-# esp32s2
-ESP_VARIANT ?= esp32
+ifndef ESP_VARIANT
+ESP_VARIANT := esp32
+endif
 
 ESP32_COMPILER_PREFIX := xtensa-$(ESP_VARIANT)-elf
 

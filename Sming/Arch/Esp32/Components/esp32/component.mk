@@ -1,13 +1,10 @@
 SDK_COMPONENTS_PATH := $(IDF_PATH)/components
 
 # See build.mk for default ESP_VARIANT - determines toolchain
-CACHE_VARS := ESP_VARIANT
-DEBUG_VARS += ESP_BUILD_VARIANT
-
 ifeq (esp32s2,$(ESP_VARIANT))
-ESP_BUILD_VARIANT := esp32s2beta
+SDK_BUILD_VARIANT := esp32s2beta
 else
-ESP_BUILD_VARIANT := $(ESP_VARIANT)
+SDK_BUILD_VARIANT := $(ESP_VARIANT)
 endif
 
 COMPONENT_DEPENDS := libc
@@ -25,15 +22,15 @@ SDK_COMPONENT_LIBDIR := $(COMPONENT_BUILD_DIR)/lib
 SDKCONFIG_H := $(SDK_BUILD_BASE)/config/sdkconfig.h
 
 SDK_LIBDIRS := \
-	esp_wifi/lib/$(ESP_BUILD_VARIANT) \
-	xtensa/$(ESP_BUILD_VARIANT)/ \
+	esp_wifi/lib/$(SDK_BUILD_VARIANT) \
+	xtensa/$(SDK_BUILD_VARIANT)/ \
 	esp32/ld \
 	esp_rom/esp32/ld
 
 LIBDIRS += \
 	$(SDK_COMPONENT_LIBDIR) \
-	$(SDK_BUILD_BASE)/esp-idf/$(ESP_BUILD_VARIANT) \
-	$(SDK_BUILD_BASE)/esp-idf/$(ESP_BUILD_VARIANT)/ld \
+	$(SDK_BUILD_BASE)/esp-idf/$(SDK_BUILD_VARIANT) \
+	$(SDK_BUILD_BASE)/esp-idf/$(SDK_BUILD_VARIANT)/ld \
 	$(COMPONENT_PATH)/ld \
 	$(addprefix $(SDK_COMPONENTS_PATH)/,$(SDK_LIBDIRS))
 

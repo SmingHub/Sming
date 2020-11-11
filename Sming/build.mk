@@ -175,6 +175,8 @@ endif
 
 include $(ARCH_BASE)/build.mk
 
+DEBUG_VARS += ESP_VARIANT
+
 # Detect compiler version
 DEBUG_VARS			+= GCC_VERSION
 GCC_VERSION			:= $(shell $(CC) -dumpversion)
