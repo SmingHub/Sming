@@ -8,7 +8,7 @@
  *
  ****/
 
-#include "driver/driver_api.h"
+#include <driver/gpio.h>
 #include <Digital.h>
 #include <esp_attr.h>
 #include <esp32/rom/ets_sys.h>

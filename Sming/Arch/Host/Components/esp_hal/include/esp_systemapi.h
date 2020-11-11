@@ -7,10 +7,6 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 // ESP SDK config
 #define LWIP_OPEN_SRC
 
@@ -19,7 +15,7 @@ extern "C" {
 #include "c_types.h"
 
 #include <sming_attr.h>
-#include "esp_attr.h"
+#include <esp_attr.h>
 #include "esp_clk.h"
 #include "esp_libc.h"
 #include "esp_tasks.h"
@@ -61,7 +57,3 @@ __forceinline void restoreInterrupts(unsigned level)
 }
 
 #define BIT(nr) (1UL << (nr))
-
-#ifdef __cplusplus
-}
-#endif

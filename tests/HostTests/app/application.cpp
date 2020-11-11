@@ -14,7 +14,9 @@ TEST_MAP(XX)
 
 static void registerTests()
 {
-#define XX(t) REGISTER_TEST(t);
+#define XX(t)                                                                                                          \
+	REGISTER_TEST(t);                                                                                                  \
+	debug_i("Test '" #t "' registered");
 	TEST_MAP(XX)
 #undef XX
 }
@@ -33,6 +35,8 @@ void init()
 	Serial.setTxBufferSize(1024);
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true);
+
+	debug_e("WELCOME to SMING! Host Tests application running.");
 
 	spiffs_mount();
 

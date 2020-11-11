@@ -36,12 +36,12 @@
 
 #pragma once
 
+#include <esp_systemapi.h>
+#include_next <driver/uart.h>
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
-
-#include <esp_systemapi.h>
-#include_next <driver/uart.h>
 
 /**
  * @defgroup uart_driver UART Driver
@@ -51,7 +51,7 @@ extern "C" {
 
 #define UART0 0
 #define UART1 1
-#define UART2 2							 ///< Virtualised UART0
+#define UART2 2
 #define UART_NO -1						 ///< No UART specified
 #define UART_PHYSICAL_COUNT UART_NUM_MAX ///< Number of physical UARTs on the system
 #define UART_COUNT UART_NUM_MAX			 ///< Number of UARTs on the system, virtual or otherwise
@@ -174,7 +174,7 @@ bool smg_uart_set_notify(unsigned uart_nr, smg_uart_notify_callback_t callback);
 struct SerialBuffer;
 
 struct smg_uart_ {
-	uart_port_t uart_nr;
+	uint8_t uart_nr;
 	uint32_t baud_rate;
 	smg_uart_mode_t mode;
 	uint8_t options;

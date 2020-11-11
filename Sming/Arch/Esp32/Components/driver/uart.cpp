@@ -18,42 +18,19 @@
  License along with this library; if not, write to the Free Software
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
- @author 2018 mikee47 <mike@sillyhouse.net>
-
- Additional features to support flexible transmit buffering and callbacks
-
  */
 
-/**
- *  UART GPIOs
- *
- * UART0 TX: 1 or 2
- * UART0 RX: 3
- *
- * UART0 SWAP TX: 15
- * UART0 SWAP RX: 13
- *
- *
- * UART1 TX: 7 (NC) or 2
- * UART1 RX: 8 (NC)
- *
- * UART1 SWAP TX: 11 (NC)
- * UART1 SWAP RX: 6 (NC)
- *
- * NC = Not Connected to Module Pads --> No Access
- *
- */
+#include <driver/uart.h>
+
 #include <BitManipulations.h>
 
-#include "include/driver/uart.h"
 #include "espinc/uart_register.h"
 #include "espinc/pin_mux_register.h"
-#include <esp32/rom/ets_sys.h>
-#include <soc/dport_access.h>
+#include <ets_sys.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "esp_system.h"
+#include <esp_system.h>
 
 #include "SerialBuffer.h"
 
@@ -61,7 +38,7 @@
 
 static const char* TAG = "uart_events";
 
-static QueueHandle_t uartQueues[UART_COUNT];
+static xQueueHandle uartQueues[UART_COUNT];
 static bool doneHandler[UART_COUNT] = {};
 
 /*
@@ -242,7 +219,7 @@ size_t smg_uart_read(smg_uart_t* uart, void* buffer, size_t size)
 	// Top up from hardware FIFO
 	if(is_physical(uart)) {
 		if(read < size) {
-			int received = uart_read_bytes(uart->uart_nr, &buf[read], (size - read), 0);
+			int received = uart_read_bytes(uart_port_t(uart->uart_nr), &buf[read], (size - read), 0);
 			if(received > 0) {
 				read += received;
 			}
@@ -271,30 +248,26 @@ size_t smg_uart_rx_available(smg_uart_t* uart)
 	return avail;
 }
 
-static void smg_uart_event_handler(uart_port_t uart_nr)
+static void smg_uart_event_handler(smg_uart_t* uart)
 {
 	uart_event_t event;
-	auto queue = uartQueues[uart_nr];
+	auto queue = uartQueues[uart->uart_nr];
 
-	auto uart = smg_uart_get_uart(uart_nr);
-	if(uart == nullptr) {
-		vTaskDelete(NULL);
-		return;
-	}
+	auto port = uart_port_t(uart->uart_nr);
 
 	uint32_t status = 0;
-	while(!doneHandler[uart_nr]) {
-		if(xQueueReceive(uartQueues[uart_nr], (void*)&event, (portTickType)portMAX_DELAY)) {
+	while(!doneHandler[uart->uart_nr]) {
+		if(xQueueReceive(queue, &event, portMAX_DELAY)) {
 			//    			debugf("event type: %d", event.type);
 
 			switch(event.type) {
 			case UART_FIFO_OVF:
-				uart_get_buffered_data_len(uart_nr, &event.size);
+				uart_get_buffered_data_len(port, &event.size);
 				status = UART_RXFIFO_OVF_INT_ST; //Event of HW FIFO overflow detected
 												 /* fall-through */
 			case UART_BUFFER_FULL:
 				if(!status) {
-					uart_get_buffered_data_len(uart_nr, &event.size);
+					uart_get_buffered_data_len(port, &event.size);
 					status = UART_RXFIFO_FULL_INT_ST; //Event of UART ring buffer full
 				}
 				/* fall-through */
@@ -311,7 +284,7 @@ static void smg_uart_event_handler(uart_port_t uart_nr)
 					space -= read;
 					while(read-- != 0) {
 						uint8_t c;
-						int ret = uart_read_bytes(uart_nr, &c, 1, 0);
+						int ret = uart_read_bytes(port, &c, 1, 0);
 						if(ret == -1) {
 							break; //
 						}
@@ -373,8 +346,8 @@ static void smg_uart_event_handler(uart_port_t uart_nr)
 
 void smg_uart_event_task(void* pvParameters)
 {
-	uint8_t* port = reinterpret_cast<uint8_t*>(pvParameters);
-	smg_uart_event_handler((uart_port_t)(*port));
+	auto uart = static_cast<smg_uart_t*>(pvParameters);
+	smg_uart_event_handler(uart);
 }
 
 size_t smg_uart_write(smg_uart_t* uart, const void* buffer, size_t size)
@@ -393,7 +366,8 @@ size_t smg_uart_write(smg_uart_t* uart, const void* buffer, size_t size)
 		if(isPhysical) {
 			// If TX buffer not in use or it's empty then write directly to hardware FIFO
 			if(uart->tx_buffer == nullptr || uart->tx_buffer->isEmpty()) {
-				int sent = uart_write_bytes(uart->uart_nr, (const char*)&buf[written], (size - written));
+				int sent = uart_write_bytes(uart_port_t(uart->uart_nr), reinterpret_cast<const char*>(&buf[written]),
+											(size - written));
 				if(sent > 0) {
 					written += sent;
 				}
@@ -443,7 +417,7 @@ uint8_t smg_uart_get_status(smg_uart_t* uart)
 void smg_uart_flush(smg_uart_t* uart, smg_uart_mode_t mode)
 {
 	// TODO: check if mode can be set.
-	uart_flush(uart->uart_nr);
+	uart_flush(uart_port_t(uart->uart_nr));
 }
 
 void smg_uart_wait_tx_empty(smg_uart_t* uart)
@@ -453,7 +427,7 @@ void smg_uart_wait_tx_empty(smg_uart_t* uart)
 		return;
 	}
 
-	uart_wait_tx_done(uart->uart_nr, portMAX_DELAY);
+	uart_wait_tx_done(uart_port_t(uart->uart_nr), portMAX_DELAY);
 }
 
 uint32_t smg_uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate)
@@ -462,7 +436,7 @@ uint32_t smg_uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate)
 		return 0;
 	}
 
-	uart_set_baudrate((uart_port_t)uart_nr, baud_rate);
+	uart_set_baudrate(uart_port_t(uart_nr), baud_rate);
 
 	return baud_rate;
 }
@@ -502,7 +476,7 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config& cfg)
 	}
 
 	memset(uart, 0, sizeof(smg_uart_t));
-	uart->uart_nr = (uart_port_t)cfg.uart_nr;
+	uart->uart_nr = cfg.uart_nr;
 	uart->mode = cfg.mode;
 	uart->options = cfg.options;
 	uart->tx_pin = 255;
@@ -525,7 +499,7 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config& cfg)
 		return nullptr;
 	}
 
-	uart_port_t port = (uart_port_t)cfg.uart_nr;
+	auto port = uart_port_t(cfg.uart_nr);
 	uart_param_config(port, &uart_config);
 	uart_set_pin(port, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
 
@@ -535,7 +509,7 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config& cfg)
 
 	//Create a task to handle UART event from ISR
 	doneHandler[uart->uart_nr] = false;
-	xTaskCreate(smg_uart_event_task, "uart_event_task", 2048, &uart->uart_nr, 12, NULL);
+	xTaskCreate(smg_uart_event_task, "uart_event_task", 2048, uart, 12, NULL);
 
 	notify(uart, UART_NOTIFY_AFTER_OPEN);
 
@@ -556,7 +530,7 @@ void smg_uart_uninit(smg_uart_t* uart)
 	}
 
 	doneHandler[uart->uart_nr] = true;
-	uart_driver_delete(uart->uart_nr);
+	uart_driver_delete(uart_port_t(uart->uart_nr));
 
 	uartInstances[uart->uart_nr] = nullptr;
 
@@ -568,7 +542,7 @@ void smg_uart_uninit(smg_uart_t* uart)
 smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin,
 						  size_t rx_size, size_t tx_size)
 {
-	smg_uart_config cfg = {.uart_nr = (uart_port_t)uart_nr,
+	smg_uart_config cfg = {.uart_nr = uart_nr,
 						   .tx_pin = tx_pin,
 						   .mode = mode,
 						   .options = _BV(UART_OPT_TXWAIT),
@@ -611,7 +585,7 @@ void smg_uart_set_pins(smg_uart_t* uart, int tx, int rx)
 		return;
 	}
 
-	uart_set_pin(uart->uart_nr, tx, rx, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+	uart_set_pin(uart_port_t(uart->uart_nr), tx, rx, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
 }
 
 void smg_uart_debug_putc(char c)

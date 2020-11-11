@@ -41,7 +41,6 @@ extern "C" {
 
 #define INTERNAL_FLASH_SECTOR_SIZE SPI_FLASH_SEC_SIZE
 #define INTERNAL_FLASH_SIZE ((FLASH_WORK_SEC_COUNT)*INTERNAL_FLASH_SECTOR_SIZE)
-#define INTERNAL_FLASH_START_ADDRESS 0x40200000
 
 /** @brief SPI Flash memory information block.
  * Stored at the beginning of flash memory.
@@ -137,30 +136,6 @@ uint32_t flashmem_find_sector(uint32_t address, uint32_t* pstart, uint32_t* pend
  *  @retval uint32_t sector number
  */
 uint32_t flashmem_get_sector_of_address(uint32_t addr);
-
-/** @brief write to flash memory
- *  @param from Buffer to read data from - MUST be word-aligned
- *  @param toaddr Flash address (offset) to write to - MUST be word-aligned
- *  @param size Number of bytes to write - MUST be word-aligned
- *  @retval uint32_t Number of bytes actually written
- *  @note All parameters MUST be aligned to 4-byte word boundaries, **including** the RAM pointer
- */
-uint32_t flashmem_write_internal(const void* from, uint32_t toaddr, uint32_t size);
-
-/** @brief Read from flash memory
- *  @param to Buffer to store data - MUST be word-aligned
- *  @param fromaddr Flash address (offset) to read from - MUST be word-aligned
- *  @param size Number of bytes to read - MUST be word-aligned
- *  @retval uint32_t Number of bytes actually read
- *  @note All parameters MUST be aligned to 4-byte word boundaries, **including** the RAM pointer
- */
-uint32_t flashmem_read_internal(void* to, uint32_t fromaddr, uint32_t size);
-
-/*
- * @brief Returns the address of the first free block on flash
- * @retval  uint32_t The actual address on flash
- */
-uint32_t flashmem_get_first_free_block_address();
 
 /** @} */
 

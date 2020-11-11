@@ -3,7 +3,7 @@
 # project subdirectory.
 #
 
-PROJECT_NAME := Sming Application
+PROJECT_NAME := Sming
 
 include $(IDF_PATH)/make/project.mk
 

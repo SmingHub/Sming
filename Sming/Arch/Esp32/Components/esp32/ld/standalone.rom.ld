@@ -1,5 +1,6 @@
-/* linker script for espressif bootloader */
+/* linker script to bind symbols to their correct segments */
 
+/*
 MEMORY
 {
   dport0_0_seg :                        org = 0x3FF00000, len = 0x10
@@ -9,3 +10,4 @@ MEMORY
 }
 
 INCLUDE "common.ld"
+*/

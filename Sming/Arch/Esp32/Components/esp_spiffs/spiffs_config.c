@@ -10,6 +10,7 @@
 
 #include "spiffs_sming.h"
 #include <esp_spi_flash.h>
+#include <esp_partition.h>
 
 /*
  * rBoot uses different spiffs organization and we need to override this method
@@ -19,18 +20,18 @@
 spiffs_config spiffs_get_storage_config()
 {
 	spiffs_config cfg = {0};
-	u32_t max_allowed_sector, requested_sector;
 
-	// TODO
-	cfg.phys_addr = SPIFF_START_ADDR;
+	const esp_partition_t* partition =
+		esp_partition_find_first(ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_DATA_SPIFFS, NULL);
 
-	max_allowed_sector = flashmem_get_sector_of_address(INTERNAL_FLASH_SIZE - 1);
-	requested_sector = flashmem_get_sector_of_address((cfg.phys_addr + SPIFF_SIZE) - 1);
-	if(requested_sector > max_allowed_sector) {
-		debug_w("The requested SPIFFS size is too big.");
-		requested_sector = max_allowed_sector;
+	if(partition == NULL) {
+		debug_w("No SPIFFS partition registered");
+	} else {
+		cfg.phys_addr = partition->address;
+		cfg.phys_size = partition->size;
+		debug_w("SPIFFS partition found at 0x%08x, size 0x%08x", cfg.phys_addr, cfg.phys_size);
+		// TODO: Check partition->flash_chip is valid?
 	}
-	// get the max size until the sector end
-	cfg.phys_size = ((requested_sector + 1) * INTERNAL_FLASH_SECTOR_SIZE) - cfg.phys_addr;
+
 	return cfg;
 }

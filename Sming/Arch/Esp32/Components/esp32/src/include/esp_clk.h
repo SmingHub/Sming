@@ -10,8 +10,7 @@ extern "C" {
 #define SYS_CPU_80MHZ 80
 #define SYS_CPU_160MHZ 160
 
-bool system_update_cpu_freq(uint8 freq);
-uint32_t ets_get_cpu_frequency(void);
+bool system_update_cpu_freq(uint8_t freq);
 uint32_t system_get_cpu_freq(void);
 
 /* Emulation of CPU cycle count */

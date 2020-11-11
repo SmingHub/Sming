@@ -1,41 +1,18 @@
 Esp32 Core Component
-======================
+====================
 
 .. highlight:: bash
 
-Contains startup code, crash handling and additional Esp32-specific
-support code. Sming may be built using a pre-installed SDK, or by using
-the current version 3 SDK as a submodule.
+Contains startup code, crash handling and additional Esp32-specific support code.
 
-.. attention::
+If you want to tune ESP-IDF to your needs you should run::
 
-   At time of writing, SDK 3 does not appear to support use of devices with 256K or 512K memory,
-   such as the ESP-01. For now, please use the default SDK 1.5.4 or SDK 2.0.0.
+    make sdk-menuconfig
 
-.. envvar:: SDK_BASE
+Followed by::
 
-   Points to the location of the Espressif Non-OS SDK. To use the Espressif version 3 SDK, you need
-   only set this variable to point at the Sming repository (:envvar:`SMING_HOME`). The actual location
-   will be subsituted by the build system and the SDK pulled in via GIT.
-
-   So for Windows you need to do:
-
-   .. code-block:: batch
-
-      set SDK_BASE=%SMING_HOME%
-
-   For Linux (bash):
-
-   ::
-
-      export SDK_BASE="$SMING_HOME"
-
-   If you change this value then your application and Sming must both be recompiled:
-
-   ::
-
-      make components-clean clean
-      make
+    make sdk-build
+   
 
 .. envvar:: SDK_INTERNAL
 
@@ -48,3 +25,4 @@ the current version 3 SDK as a submodule.
 .. envvar:: SDK_INCDIR
 
    **READONLY** Path to the directory containing SDK header files
+

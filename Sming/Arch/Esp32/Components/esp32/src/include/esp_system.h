@@ -1,11 +1,16 @@
 #pragma once
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-compare"
+
+#include_next <esp_system.h>
+#include <ets_sys.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include_next <esp_system.h>
-#include "c_types.h"
+#include <os.h>
 
 void system_restart(void);
 
@@ -13,23 +18,24 @@ void system_soft_wdt_stop(void);
 void system_soft_wdt_restart(void);
 void system_soft_wdt_feed(void);
 
-/* Arch/Esp8266/Components/spiffs/spiffs_sming.c */
-#define ETS_INTR_LOCK() ets_intr_lock()
-#define ETS_INTR_UNLOCK() ets_intr_unlock()
+inline void xt_disable_interrupts()
+{
+	ets_intr_lock();
+}
 
-void ets_intr_lock();
-void ets_intr_unlock();
-void xt_disable_interrupts();
-void xt_enable_interrupts();
+inline void xt_enable_interrupts()
+{
+	ets_intr_unlock();
+}
 
 enum rst_reason {
-	REASON_DEFAULT_RST = 0,
-	REASON_WDT_RST = 1,
-	REASON_EXCEPTION_RST = 2,
-	REASON_SOFT_WDT_RST = 3,
-	REASON_SOFT_RESTART = 4,
-	REASON_DEEP_SLEEP_AWAKE = 5,
-	REASON_EXT_SYS_RST = 6
+	REASON_DEFAULT_RST = ESP_RST_UNKNOWN,
+	REASON_WDT_RST = ESP_RST_WDT,
+	REASON_EXCEPTION_RST = ESP_RST_PANIC,
+	REASON_SOFT_WDT_RST = ESP_RST_TASK_WDT,
+	REASON_SOFT_RESTART = ESP_RST_SW,
+	REASON_DEEP_SLEEP_AWAKE = ESP_RST_DEEPSLEEP,
+	REASON_EXT_SYS_RST = ESP_RST_POWERON,
 };
 
 struct rst_info {
@@ -44,18 +50,17 @@ struct rst_info {
 
 struct rst_info* system_get_rst_info(void);
 
-/* System/include/debug_progmem.h */
-uint32_t system_get_time(void);
-
-/* Use nanosecond count as base for hardware and CPU cycle counting */
-uint64_t os_get_nanoseconds(void);
-
-void os_delay_us(uint32_t us);
+inline void os_delay_us(uint32_t us)
+{
+	return ets_delay_us(us);
+}
 
 const char* system_get_sdk_version(void);
 
-uint32 system_get_chip_id(void);
+uint32_t system_get_chip_id(void);
 
 #ifdef __cplusplus
 }
 #endif
+
+#pragma GCC diagnostic pop

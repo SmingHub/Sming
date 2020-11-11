@@ -1,4 +1,4 @@
-#include <driver/driver_api.h>
+#include <driver/adc.h>
 #include <esp_adc_cal.h>
 
 #define DEFAULT_VREF 1100 //Use adc2_vref_to_gpio() to obtain a better estimate

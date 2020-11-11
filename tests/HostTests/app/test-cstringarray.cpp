@@ -12,10 +12,12 @@ public:
 	void execute() override
 	{
 		// Use to help diagnose any issues
+		/*
 		auto debug = [](const CStringArray& csa) {
 			debug_hex(DBG, "csa", csa.c_str(), csa.length());
 			debug_d("csa.count() = %u", csa.count());
 		};
+		 */
 
 		// FlashStrings are super-handy for this sort of thing as they're counted
 		DEFINE_FSTR_LOCAL(FS_Basic, "a\0"

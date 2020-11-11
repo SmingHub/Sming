@@ -16,22 +16,6 @@ static struct {
 	void* arg = nullptr;
 } nmi_callback;
 
-/**
- * @brief timer2_ms_flag
- *
- * FRC2 used as reference for NOW() - a macro which reads FRC2_COUNT register
- *
- * eagle_soc.h defines TIMER_CLK_FREQ using a divisor of 256, but this is only the SDK default setting and
- * is changed to 16 when `system_timer_reinit()` is called.
- *
- * The `timer2_ms_flag` indicates the current prescaler setting, however all related timing constants are
- * pre-calculated to avoid un-necessary runtime calculations.
- *
- * Note: This setting is reflected in the FRC2_CTRL register
- * 		 FRC2_CTRL_ADDRESS = 0x28 (omitted from eagle_soc.h).
- */
-static bool timer2_ms_flag;
-
 static void IRAM_ATTR nmi_handler()
 {
 	nmi_callback.func(nmi_callback.arg);

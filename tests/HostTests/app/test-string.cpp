@@ -20,7 +20,7 @@ public:
 
 	template <typename T> void templateTest(T x)
 	{
-#ifdef ARCH_ESP8266
+#ifndef ARCH_HOST
 		auto pstr = PSTR("This PSTR should get moved out of RAM, filtered by __pstr__ in symbol name.");
 		REQUIRE(isFlashPtr(pstr));
 
@@ -38,7 +38,7 @@ public:
 
 	void nonTemplateTest()
 	{
-#ifdef ARCH_ESP8266
+#ifndef ARCH_HOST
 		auto pstr = PSTR("This PSTR should get moved out of RAM, filtered by section name.");
 		REQUIRE(isFlashPtr(pstr));
 

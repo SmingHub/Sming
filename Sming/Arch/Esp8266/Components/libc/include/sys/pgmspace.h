@@ -22,6 +22,11 @@
 #define FLASH_MEMORY_START_ADDR 0x40200000
 
 /**
+ * @brief Simple check to determine if a pointer refers to flash memory
+ */
+#define isFlashPtr(ptr) ((uint32_t)ptr >= FLASH_MEMORY_START_ADDR)
+
+/**
  * @brief Place entity into flash memory
  * @brief Attach to const variable declaration to have it stored in flash memory
  *

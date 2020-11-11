@@ -65,7 +65,7 @@ public:
 			String s(FS_abstract);
 			MemoryDataStream stream(std::move(s));
 			TEST_ASSERT(!s);
-			TEST_ASSERT(FS_abstract.length() == stream.available());
+			TEST_ASSERT(FS_abstract.length() == size_t(stream.available()));
 			// And back again
 			stream.moveString(s);
 			TEST_ASSERT(FS_abstract == s);
@@ -75,7 +75,7 @@ public:
 		TEST_CASE("LimitedMemoryStream::moveString (1)")
 		{
 			FSTR::Stream src(FS_abstract);
-			REQUIRE(src.available() == FS_abstract.length());
+			REQUIRE(size_t(src.available()) == FS_abstract.length());
 			LimitedMemoryStream dest(FS_abstract.length());
 			// Operation will drop last character as this is converted to NUL
 			dest.copyFrom(&src);
@@ -91,7 +91,7 @@ public:
 		TEST_CASE("LimitedMemoryStream::moveString (2)")
 		{
 			FSTR::Stream src(FS_abstract);
-			REQUIRE(src.available() == FS_abstract.length());
+			REQUIRE(size_t(src.available()) == FS_abstract.length());
 			LimitedMemoryStream dest(FS_abstract.length() + 10);
 			// Operation will drop last character as this is converted to NUL
 			dest.copyFrom(&src);

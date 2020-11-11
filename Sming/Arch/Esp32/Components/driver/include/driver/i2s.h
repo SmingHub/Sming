@@ -28,7 +28,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <esp_attr.h>
-#include <esp32/rom/ets_sys.h>
+#include <ets_sys.h>
 #include "espinc/timer_register.h"
 
 #ifdef __cplusplus

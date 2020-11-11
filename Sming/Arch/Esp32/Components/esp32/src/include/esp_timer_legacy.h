@@ -7,41 +7,22 @@
  */
 
 #pragma once
-#include "c_types.h"
+
+#include <esp32/rom/ets_sys.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef void os_timer_func_t(void* timer_arg);
+#define os_timer_func_t ETSTimerFunc
+#define os_timer_t ETSTimer
 
-/**
- * @brief This is the structure used by the Espressif timer API
- * @note This is used as an element in a linked list
- * The Espressif implementation orders the list according to next expiry time.
- * os_timer_setfn and os_timer_disarm set timer_next to -1
- * When expired, timer_next is 0
- */
-struct os_timer_t {
-	/// If disarmed, set to -1, otherwise points to the next queued timer (or NULL if last in the list)
-	struct os_timer_t* timer_next;
-	/// Set to the next Timer2 count value when the timer will expire
-	uint32_t timer_expire;
-	/// 0 if this is a one-shot timer, otherwise defines the interval in Timer2 ticks
-	uint32_t timer_period;
-	/// User-provided callback function pointer
-	os_timer_func_t* timer_func;
-	/// Argument passed to the callback function
-	void* timer_arg;
-};
+void os_timer_arm_ticks(os_timer_t* ptimer, uint32_t ticks, bool repeat_flag);
 
-void os_timer_arm_ticks(struct os_timer_t* ptimer, uint32_t ticks, bool repeat_flag);
-
-void os_timer_arm(struct os_timer_t* ptimer, uint32_t time, bool repeat_flag);
-void os_timer_arm_us(struct os_timer_t* ptimer, uint32_t time, bool repeat_flag);
-
-void os_timer_disarm(struct os_timer_t* ptimer);
-void os_timer_setfn(struct os_timer_t* ptimer, os_timer_func_t* pfunction, void* parg);
+#define os_timer_arm(ptimer, ms, repeat_flag) ets_timer_arm(ptimer, ms, repeat_flag)
+#define os_timer_arm_us(ptimer, us, repeat_flag) ets_timer_arm_us(ptimer, us, repeat_flag)
+#define os_timer_disarm(ptimer) ets_timer_disarm(ptimer)
+#define os_timer_setfn(ptimer, pfunction, parg) ets_timer_setfn(ptimer, pfunction, parg)
 
 #ifdef __cplusplus
 }

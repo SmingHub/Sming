@@ -37,6 +37,4 @@ typedef uint64_t u64;
 typedef float real32;
 typedef double real64;
 
-#define __result_use_check __attribute__((__warn_unused_result__))
-
 #endif /* _C_TYPES_H_ */

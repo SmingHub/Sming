@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <c_types.h>
 #include <soc/spi_reg.h>
 
 #define SPI_CMD(i)                            (REG_SPI_BASE(i)  + 0x0)

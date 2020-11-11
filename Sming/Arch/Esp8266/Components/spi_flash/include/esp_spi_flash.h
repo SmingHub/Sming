@@ -36,7 +36,7 @@ extern "C" {
 
 #define INTERNAL_FLASH_SECTOR_SIZE SPI_FLASH_SEC_SIZE
 #define INTERNAL_FLASH_SIZE ((FLASH_WORK_SEC_COUNT)*INTERNAL_FLASH_SECTOR_SIZE)
-#define INTERNAL_FLASH_START_ADDRESS 0x40200000
+#define INTERNAL_FLASH_START_ADDRESS FLASH_BASE
 
 /** @brief SPI Flash memory information block.
  * Stored at the beginning of flash memory.

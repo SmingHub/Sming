@@ -12,6 +12,7 @@
 #include "WifiEventsImpl.h"
 
 #include <esp_wifi.h>
+#include <tcpip_adapter.h>
 #include <esp_event.h>
 
 static StationImpl station;

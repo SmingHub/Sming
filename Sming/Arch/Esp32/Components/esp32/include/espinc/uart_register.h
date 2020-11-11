@@ -14,7 +14,6 @@
 
 #pragma once
 
-#include "c_types.h"
 #include <soc/uart_reg.h>
 
 #define UART_FIFO(i)                    (REG_UART_BASE(i) + 0x0)

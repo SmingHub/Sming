@@ -8,7 +8,7 @@ extern "C" {
 #include <soc/adc_periph.h>
 #include <soc/mcpwm_periph.h>
 #include <soc/hwcrypto_periph.h>
-#include <soc/touch_periph.h>
+#include <soc/touch_sensor_periph.h>
 #include <soc/sens_periph.h>
 #include <soc/pcnt_periph.h>
 #include <soc/sdio_slave_periph.h>

@@ -1,6 +1,8 @@
 #include <SmingTest.h>
 
+#if defined(ARCH_HOST) || defined(ARCH_ESP8266)
 #include <SerialBuffer.h>
+#endif
 
 class SerialTest : public TestGroup
 {
@@ -13,6 +15,7 @@ public:
 	{
 		TEST_CASE("SerialBuffer write/read")
 		{
+#if defined(ARCH_HOST) || defined(ARCH_ESP8266)
 			static constexpr size_t BUFSIZE = 128;
 			SerialBuffer txbuf;
 			txbuf.resize(BUFSIZE);
@@ -55,6 +58,7 @@ public:
 			readBuffer += read();
 			REQUIRE(txbuf.available() == 0);
 			REQUIRE(compareBuffer == readBuffer);
+#endif
 		}
 	}
 };

@@ -16,11 +16,11 @@ application: $(CUSTOM_TARGETS) $(TARGET_BIN)
 # $1 -> Linker script
 define LinkTarget
 	$(info $(notdir $(PROJECT_DIR)): Linking $@)
-	$(Q) $(LD) $(addprefix -L,$(LIBDIRS)) $(LDFLAGS) -Wl,--start-group $(COMPONENTS_AR) $(addprefix -l,$(LIBS)) -Wl,--end-group -o $@
+	$(Q) $(LD) $(addprefix -L,$(LIBDIRS)) -T$1 $(LDFLAGS) -Wl,--start-group $(COMPONENTS_AR) $(addprefix -l,$(LIBS)) -Wl,--end-group -o $@
 endef
 
 $(TARGET_OUT): $(COMPONENTS_AR)
-	$(call LinkTarget,$(RBOOT_LD_0))
+	$(call LinkTarget,standalone.rom.ld)
 
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
 
@@ -41,7 +41,7 @@ $(TARGET_OUT): $(COMPONENTS_AR)
 			fi
 			
 $(TARGET_BIN): $(TARGET_OUT)
-		$(Q) $(PYTHON) $(IDF_COMPONENTS_PATH)/esptool_py/esptool/esptool.py --chip esp32 elf2image --flash_mode "dio" --flash_freq "40m" --flash_size "2MB"  --min-rev 0 --elf-sha256-offset 0xb0 -o $@ $<			
+		$(Q) $(PYTHON) $(SDK_COMPONENTS_PATH)/esptool_py/esptool/esptool.py --chip esp32 elf2image --flash_mode "dio" --flash_freq "40m" --flash_size "2MB"  --min-rev 0 --elf-sha256-offset 0xb0 -o $@ $<
 
 ##@Flashing
 
@@ -57,7 +57,7 @@ else
 endif
 
 $(PARTITIONS_BIN): $(PARTITIONS_CSV)
-	$(Q) $(PYTHON) $(IDF_COMPONENTS_PATH)/partition_table/gen_esp32part.py $< $@
+	$(Q) $(PYTHON) $(SDK_COMPONENTS_PATH)/partition_table/gen_esp32part.py $< $@
 
 .PHONY: partitions
 partitions: $(PARTITIONS_BIN) ##Generate partitions table

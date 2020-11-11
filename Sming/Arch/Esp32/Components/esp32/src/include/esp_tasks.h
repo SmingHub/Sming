@@ -26,10 +26,10 @@ bool system_os_task(os_task_t task, uint8_t prio, os_event_t* queue, uint8_t qle
 bool system_os_post(uint8_t prio, os_signal_t sig, os_param_t par);
 
 // Setup default task queues
-void host_init_tasks();
+void ets_init_tasks();
 
 // Hook function to process task queues
-void host_service_tasks();
+void ets_service_tasks();
 
 typedef void (*host_task_callback_t)(uint32_t param);
 
