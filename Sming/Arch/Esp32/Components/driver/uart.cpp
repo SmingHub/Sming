@@ -1,36 +1,12 @@
 /*
- uart.cpp - esp8266 UART HAL
-
- Copyright (c) 2014 Ivan Grokhotkov. All rights reserved.
- This file is part of the esp8266 core for Arduino environment.
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
+ uart.cpp - esp32 UART HAL
  */
 
-#include <driver/uart.h>
-#include <driver/SerialBuffer.h>
 #include <BitManipulations.h>
+
+#include <driver/uart.h>
 #include <espinc/uart_register.h>
-#include <freertos/FreeRTOS.h>
-#include <esp_log.h>
-
-static const char* TAG = "uart_events";
-
-static xQueueHandle uartQueues[UART_COUNT];
-static bool doneHandler[UART_COUNT] = {};
+#include <driver/SerialBuffer.h>
 
 /*
  * Parameters relating to RX FIFO and buffer thresholds
@@ -52,6 +28,32 @@ static bool doneHandler[UART_COUNT] = {};
 
 static int s_uart_debug_nr = UART_NO;
 
+// Get number of characters in receive FIFO
+__forceinline static uint8_t uart_rxfifo_count(uint8_t nr)
+{
+	return (READ_PERI_REG(UART_STATUS(nr)) >> UART_RXFIFO_CNT_S) & UART_RXFIFO_CNT;
+}
+
+// Get number of characters in transmit FIFO
+__forceinline static uint8_t uart_txfifo_count(uint8_t nr)
+{
+	return (READ_PERI_REG(UART_STATUS(nr)) >> UART_TXFIFO_CNT_S) & UART_TXFIFO_CNT;
+}
+
+// Get available free characters in transmit FIFO
+__forceinline static uint8_t uart_txfifo_free(uint8_t nr)
+{
+	return UART_TX_FIFO_SIZE - uart_txfifo_count(nr) - 1;
+}
+
+// Return true if transmit FIFO is full
+__forceinline static bool uart_txfifo_full(uint8_t nr)
+{
+	return uart_txfifo_count(nr) >= (UART_TX_FIFO_SIZE - 1);
+}
+
+// Keep track of interrupt enable state for each UART
+static uint8_t isrMask;
 // Keep a reference to all created UARTS - required because they share an ISR
 static smg_uart_t* uartInstances[UART_COUNT];
 
@@ -70,9 +72,27 @@ static void notify(smg_uart_t* uart, smg_uart_notify_code_t code)
 	}
 }
 
+__forceinline static bool uart_isr_enabled(uint8_t nr)
+{
+	return bitRead(isrMask, nr);
+}
+
 smg_uart_t* smg_uart_get_uart(uint8_t uart_nr)
 {
 	return (uart_nr < UART_COUNT) ? uartInstances[uart_nr] : nullptr;
+}
+
+uint8_t smg_uart_disable_interrupts()
+{
+	ETS_UART_INTR_DISABLE();
+	return isrMask;
+}
+
+void smg_uart_restore_interrupts()
+{
+	if(isrMask != 0) {
+		ETS_UART_INTR_ENABLE();
+	}
 }
 
 bool smg_uart_set_notify(unsigned uart_nr, smg_uart_notify_callback_t callback)
@@ -209,12 +229,15 @@ size_t smg_uart_read(smg_uart_t* uart, void* buffer, size_t size)
 
 	// Top up from hardware FIFO
 	if(is_physical(uart)) {
-		if(read < size) {
-			int received = uart_read_bytes(uart_port_t(uart->uart_nr), &buf[read], (size - read), 0);
-			if(received > 0) {
-				read += received;
-			}
+		while(read < size && uart_rxfifo_count(uart->uart_nr) != 0) {
+			buf[read++] = READ_PERI_REG(UART_FIFO(uart->uart_nr));
 		}
+
+		// FIFO full may have been disabled if buffer overflowed, re-enabled it now
+		WRITE_PERI_REG(UART_INT_CLR(uart->uart_nr),
+					   UART_RXFIFO_FULL_INT_CLR | UART_RXFIFO_TOUT_INT_CLR | UART_RXFIFO_OVF_INT_CLR);
+		SET_PERI_REG_MASK(UART_INT_ENA(uart->uart_nr),
+						  UART_RXFIFO_FULL_INT_ENA | UART_RXFIFO_TOUT_INT_ENA | UART_RXFIFO_OVF_INT_ENA);
 	}
 
 	return read;
@@ -228,7 +251,7 @@ size_t smg_uart_rx_available(smg_uart_t* uart)
 
 	smg_uart_disable_interrupts();
 
-	size_t avail = 0;
+	size_t avail = is_physical(uart) ? uart_rxfifo_count(uart->uart_nr) : 0;
 
 	if(uart->rx_buffer != nullptr) {
 		avail += uart->rx_buffer->available();
@@ -239,105 +262,161 @@ size_t smg_uart_rx_available(smg_uart_t* uart)
 	return avail;
 }
 
-static void smg_uart_event_handler(smg_uart_t* uart)
+/**
+ * @brief service interrupts for a UART
+ * @param uart_nr identifies which UART to check
+ * @param uart the allocated uart structure, which may be NULL if port hasn't been setup
+ */
+static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, smg_uart_t* uart)
 {
-	auto queue = uartQueues[uart->uart_nr];
-	auto port = uart_port_t(uart->uart_nr);
+	uint32_t usis = READ_PERI_REG(UART_INT_ST(uart_nr));
 
-	uint32_t status = 0;
-	uart_event_t event;
-	while(!doneHandler[uart->uart_nr]) {
-		if(xQueueReceive(queue, &event, portMAX_DELAY)) {
-			//    			debugf("event type: %d", event.type);
+	// If status is clear there's no interrupt to service on this UART
+	if(usis == 0) {
+		return;
+	}
 
-			switch(event.type) {
-			case UART_FIFO_OVF:
-				uart_get_buffered_data_len(port, &event.size);
-				status = UART_RXFIFO_OVF_INT_ST; //Event of HW FIFO overflow detected
-												 /* fall-through */
-			case UART_BUFFER_FULL:
-				if(!status) {
-					uart_get_buffered_data_len(port, &event.size);
-					status = UART_RXFIFO_FULL_INT_ST; //Event of UART ring buffer full
+	/*
+	 * If we haven't asked for interrupts on this UART, then disable all interrupt sources for it.
+	 *
+	 * This happens at startup where we've only initialised one of the UARTS. For example, we initialise
+	 * UART1 for debug output but leave UART0 alone. However, the SDK has enabled some interrupt sources
+	 * which we're not expecting.
+	 *
+	 * (Calling uart_detach_all() at startup pre-empts all this.)
+	 */
+	if(uart == nullptr || !uart_isr_enabled(uart_nr)) {
+		WRITE_PERI_REG(UART_INT_ENA(uart_nr), 0);
+		return;
+	}
+
+	// Value to be passed to callback
+	uint32_t status = usis;
+
+	// Deal with the event, unless we're in raw mode
+	if(!bitRead(uart->options, UART_OPT_CALLBACK_RAW)) {
+		// Rx FIFO full or timeout
+		if(usis & (UART_RXFIFO_FULL_INT_ST | UART_RXFIFO_TOUT_INT_ST | UART_RXFIFO_OVF_INT_ST)) {
+			size_t read = 0;
+
+			// Read as much data as possible from the RX FIFO into buffer
+			if(uart->rx_buffer != nullptr) {
+				size_t avail = uart_rxfifo_count(uart_nr);
+				size_t space = uart->rx_buffer->getFreeSpace();
+				read = (avail <= space) ? avail : space;
+				space -= read;
+				while(read-- != 0) {
+					uint8_t c = READ_PERI_REG(UART_FIFO(uart_nr));
+					uart->rx_buffer->writeChar(c);
 				}
-				/* fall-through */
-			case UART_DATA:
-				if(!status) {
-					status = UART_RXFIFO_TOUT_INT_ST; //Event of UART receiving data
+
+				// Don't call back until buffer is (almost) full
+				if(space > uart->rx_headroom) {
+					status &= ~UART_RXFIFO_FULL_INT_ST;
 				}
-
-				if(uart->rx_buffer != nullptr) {
-					size_t avail = event.size;
-
-					size_t space = uart->rx_buffer->getFreeSpace();
-					size_t read = (avail <= space) ? avail : space;
-					space -= read;
-					while(read-- != 0) {
-						uint8_t c;
-						int ret = uart_read_bytes(port, &c, 1, 0);
-						if(ret == -1) {
-							break; //
-						}
-
-						if(!uart->rx_buffer->writeChar(c)) {
-							break;
-						}
-					}
-
-					// Don't call back until buffer is (almost) full
-					if(space > uart->rx_headroom) {
-						status &= ~UART_RXFIFO_FULL_INT_ST;
-					}
-
-					//    						debugf("avail: %d, read: %d", avail, read);
-				}
-				break;
-			//Event of UART RX break detected
-			case UART_BREAK:
-				break;
-			//Event of UART parity check error
-			case UART_PARITY_ERR:
-				break;
-			//Event of UART frame error
-			case UART_FRAME_ERR:
-				break;
-			//UART_PATTERN_DET
-			case UART_PATTERN_DET:
-				break;
-				//			case UART_DATA_BREAK:
-				//				// Dump as much data as we can from buffer into the TX FIFO
-				//				if(uart->tx_buffer != nullptr) {
-				//					size_t space = smg_uart_txfifo_free(uart_nr);
-				//					size_t avail = uart->tx_buffer->available();
-				//					size_t count = (avail <= space) ? avail : space;
-				//					while(count-- != 0) {
-				//						WRITE_PERI_REG(UART_FIFO(uart_nr), uart->tx_buffer->readChar());
-				//					}
-				//				}
-				//				break;
-				//Others
-			default:
-				break;
-			} // end switch
-
-			uart->status |= status;
-
-			if(status != 0 && uart->callback != nullptr) {
-				//				debugf("callback with status: %d", status);
-				uart->callback(uart, status);
 			}
 
-			status = 0;
-		} // end if
-	}	 // end while
+			/*
+			 * If the FIFO is full and we didn't read any of the data then need to mask the interrupt out or it'll recur.
+			 * The interrupt gets re-enabled by a call to uart_read() or uart_flush()
+			 */
+			if(usis &  UART_RXFIFO_OVF_INT_ST) {
+				CLEAR_PERI_REG_MASK(UART_INT_ENA(uart_nr), UART_RXFIFO_OVF_INT_ENA);
+			} else if(read == 0) {
+				CLEAR_PERI_REG_MASK(UART_INT_ENA(uart_nr), UART_RXFIFO_FULL_INT_ENA | UART_RXFIFO_TOUT_INT_ENA);
+			}
+		}
 
-	vTaskDelete(NULL);
+		// Unless we replenish TX FIFO, disable after handling interrupt
+		if(usis & UART_TXFIFO_EMPTY_INT_ST) {
+			// Dump as much data as we can from buffer into the TX FIFO
+			if(uart->tx_buffer != nullptr) {
+				size_t space = uart_txfifo_free(uart_nr);
+				size_t avail = uart->tx_buffer->available();
+				size_t count = (avail <= space) ? avail : space;
+				while(count-- != 0) {
+					WRITE_PERI_REG(UART_FIFO(uart_nr), uart->tx_buffer->readChar());
+				}
+			}
+
+			// If TX FIFO remains empty then we must disable TX FIFO EMPTY interrupt to stop it recurring.
+			if(uart_txfifo_count(uart_nr) == 0) {
+				// The interrupt gets re-enabled by uart_write()
+				CLEAR_PERI_REG_MASK(UART_INT_ENA(uart_nr), UART_TXFIFO_EMPTY_INT_ENA);
+			} else {
+				// We've topped up TX FIFO so defer callback until next time
+				status &= ~UART_TXFIFO_EMPTY_INT_ST;
+			}
+		}
+	}
+
+	// Keep a note of persistent flags - cleared via uart_get_status()
+	uart->status |= status;
+
+	if(status != 0 && uart->callback != nullptr) {
+		uart->callback(uart, status);
+	}
+
+	// Final step is to clear status flags
+	WRITE_PERI_REG(UART_INT_CLR(uart_nr), usis);
 }
 
-void smg_uart_event_task(void* pvParameters)
+/** @brief UART interrupt service routine
+ *  @note both UARTS share the same ISR, although UART1 only supports transmit
+ */
+static void IRAM_ATTR uart_isr(void* arg)
 {
-	auto uart = static_cast<smg_uart_t*>(pvParameters);
-	smg_uart_event_handler(uart);
+	handle_uart_interrupt(UART0, uartInstances[UART0]);
+	handle_uart_interrupt(UART1, uartInstances[UART1]);
+}
+
+void smg_uart_start_isr(smg_uart_t* uart)
+{
+	if(!is_physical(uart)) {
+		return;
+	}
+
+	uint32_t conf1 = 0;
+	uint32_t intena = 0;
+
+	if(smg_uart_rx_enabled(uart)) {
+		conf1 = (120 << UART_RXFIFO_FULL_THRHD_S) | (0x02 << UART_RX_TOUT_THRHD_S) | UART_RX_TOUT_EN;
+
+		/*
+		 * There is little benefit in generating interrupts on errors, instead these
+		 * should be cleared at the start of a transaction and checked at the end.
+		 * See uart_get_status().
+		 */
+		intena = UART_RXFIFO_FULL_INT_ENA | UART_RXFIFO_TOUT_INT_ENA | UART_BRK_DET_INT_ENA | UART_RXFIFO_OVF_INT_ENA;
+	}
+
+	if(smg_uart_tx_enabled(uart)) {
+		/*
+		 * We can interrupt when TX FIFO is empty; at 1Mbit that gives us 800 CPU
+		 * cycles before the last character has actually gone over the wire. Even if
+		 * a gap occurs it is unlike to cause any problems. It also makes the callback
+		 * more useful, for example if using it for RS485 we'd then want to reverse
+		 * transfer direction and begin waiting for a response.
+		 */
+
+		// TX FIFO empty threshold
+		// conf1 |= (0 << UART_TXFIFO_EMPTY_THRHD_S);
+		// TX FIFO empty interrupt only gets enabled via uart_write function()
+	}
+
+	WRITE_PERI_REG(UART_CONF1(uart->uart_nr), conf1);
+	WRITE_PERI_REG(UART_INT_CLR(uart->uart_nr), 0xffff);
+	WRITE_PERI_REG(UART_INT_ENA(uart->uart_nr), intena);
+
+	uint8_t oldmask = isrMask;
+
+	bitSet(isrMask, uart->uart_nr);
+
+	if(oldmask == 0) {
+		ETS_UART_INTR_DISABLE();
+		ETS_UART_INTR_ATTACH(uart_isr, nullptr);
+		ETS_UART_INTR_ENABLE();
+	}
 }
 
 size_t smg_uart_write(smg_uart_t* uart, const void* buffer, size_t size)
@@ -356,11 +435,12 @@ size_t smg_uart_write(smg_uart_t* uart, const void* buffer, size_t size)
 		if(isPhysical) {
 			// If TX buffer not in use or it's empty then write directly to hardware FIFO
 			if(uart->tx_buffer == nullptr || uart->tx_buffer->isEmpty()) {
-				int sent = uart_write_bytes(uart_port_t(uart->uart_nr), reinterpret_cast<const char*>(&buf[written]),
-											(size - written));
-				if(sent > 0) {
-					written += sent;
+				while(written < size && !uart_txfifo_full(uart->uart_nr)) {
+					WRITE_PERI_REG(UART_FIFO(uart->uart_nr), buf[written++]);
 				}
+				// Enable TX FIFO EMPTY interrupt
+				WRITE_PERI_REG(UART_INT_CLR(uart->uart_nr), UART_TXFIFO_EMPTY_INT_CLR);
+				SET_PERI_REG_MASK(UART_INT_ENA(uart->uart_nr), UART_TXFIFO_EMPTY_INT_ENA);
 			}
 		}
 
@@ -381,43 +461,122 @@ size_t smg_uart_write(smg_uart_t* uart, const void* buffer, size_t size)
 	return written;
 }
 
+size_t smg_uart_tx_free(smg_uart_t* uart)
+{
+	if(!smg_uart_tx_enabled(uart)) {
+		return 0;
+	}
+
+	smg_uart_disable_interrupts();
+
+	size_t space = is_physical(uart) ? uart_txfifo_free(uart->uart_nr) : 0;
+	if(uart->tx_buffer != nullptr) {
+		space += uart->tx_buffer->getFreeSpace();
+	}
+
+	smg_uart_restore_interrupts();
+
+	return space;
+}
+
+void smg_uart_wait_tx_empty(smg_uart_t* uart)
+{
+	if(!smg_uart_tx_enabled(uart)) {
+		return;
+	}
+
+	notify(uart, UART_NOTIFY_WAIT_TX);
+
+	if(uart->tx_buffer != nullptr) {
+		while(!uart->tx_buffer->isEmpty()) {
+			system_soft_wdt_feed();
+		}
+	}
+
+	if(is_physical(uart)) {
+		while(uart_txfifo_count(uart->uart_nr) != 0)
+			system_soft_wdt_feed();
+	}
+}
+
+void smg_uart_set_break(smg_uart_t* uart, bool state)
+{
+	uart = get_physical(uart);
+	if(uart != nullptr) {
+		if(state) {
+			SET_PERI_REG_MASK(UART_CONF0(uart->uart_nr), UART_TXD_BRK);
+		} else {
+			CLEAR_PERI_REG_MASK(UART_CONF0(uart->uart_nr), UART_TXD_BRK);
+		}
+	}
+}
+
 uint8_t smg_uart_get_status(smg_uart_t* uart)
 {
 	uint8_t status = 0;
 	if(uart != nullptr) {
-		// TODO:
-		//		smg_uart_disable_interrupts();
-		//		// Get break/overflow flags from actual uart (physical or otherwise)
-		//		status = uart->status & (UART_BRK_DET_INT_ST | UART_RXFIFO_OVF_INT_ST);
-		//		uart->status = 0;
-		//		// Read raw status register directly from real uart, masking out non-error bits
-		//		uart = get_physical(uart);
-		//		if(uart != nullptr) {
-		//			uint32_t intraw = READ_PERI_REG(UART_INT_RAW(uart->uart_nr));
-		//			intraw &= UART_BRK_DET_INT_ST | UART_RXFIFO_OVF_INT_ST | UART_FRM_ERR_INT_ST | UART_PARITY_ERR_INT_ST;
-		//			status |= intraw;
-		//			// Clear errors
-		//			WRITE_PERI_REG(UART_INT_CLR(uart->uart_nr), status);
-		//		}
-		//		smg_uart_restore_interrupts();
+		smg_uart_disable_interrupts();
+		// Get break/overflow flags from actual uart (physical or otherwise)
+		status = uart->status & (UART_BRK_DET_INT_ST | UART_RXFIFO_OVF_INT_ST);
+		uart->status = 0;
+		// Read raw status register directly from real uart, masking out non-error bits
+		uart = get_physical(uart);
+		if(uart != nullptr) {
+			uint32_t intraw = READ_PERI_REG(UART_INT_RAW(uart->uart_nr));
+			intraw &= UART_BRK_DET_INT_ST | UART_RXFIFO_OVF_INT_ST | UART_FRM_ERR_INT_ST | UART_PARITY_ERR_INT_ST;
+			status |= intraw;
+			// Clear errors
+			WRITE_PERI_REG(UART_INT_CLR(uart->uart_nr), status);
+		}
+		smg_uart_restore_interrupts();
 	}
 	return status;
 }
 
 void smg_uart_flush(smg_uart_t* uart, smg_uart_mode_t mode)
 {
-	// TODO: check if mode can be set.
-	uart_flush(uart_port_t(uart->uart_nr));
-}
-
-void smg_uart_wait_tx_empty(smg_uart_t* uart)
-{
-	uart = get_physical(uart);
 	if(uart == nullptr) {
 		return;
 	}
 
-	uart_wait_tx_done(uart_port_t(uart->uart_nr), portMAX_DELAY);
+	bool flushRx = mode != UART_TX_ONLY && uart->mode != UART_TX_ONLY;
+	bool flushTx = mode != UART_RX_ONLY && uart->mode != UART_RX_ONLY;
+
+	smg_uart_disable_interrupts();
+	if(flushRx && uart->rx_buffer != nullptr) {
+		uart->rx_buffer->clear();
+	}
+
+	if(flushTx && uart->tx_buffer != nullptr) {
+		uart->tx_buffer->clear();
+	}
+
+	if(is_physical(uart)) {
+		// Clear the hardware FIFOs
+		uint32_t flushBits = 0;
+		if(flushTx) {
+			flushBits |= UART_TXFIFO_RST;
+		}
+		if(flushRx) {
+			flushBits |= UART_RXFIFO_RST;
+		}
+		SET_PERI_REG_MASK(UART_CONF0(uart->uart_nr), flushBits);
+		CLEAR_PERI_REG_MASK(UART_CONF0(uart->uart_nr), flushBits);
+
+		if(flushTx) {
+			// Prevent TX FIFO EMPTY interrupts - don't need them until uart_write is called again
+			CLEAR_PERI_REG_MASK(UART_INT_ENA(uart->uart_nr), UART_TXFIFO_EMPTY_INT_ENA);
+		}
+
+		// If receive overflow occurred then these interrupts will be masked
+		if(flushRx) {
+			WRITE_PERI_REG(UART_INT_CLR(uart->uart_nr), ~UART_TXFIFO_EMPTY_INT_CLR);
+			SET_PERI_REG_MASK(UART_INT_ENA(uart->uart_nr),
+							  UART_RXFIFO_FULL_INT_ENA | UART_RXFIFO_TOUT_INT_ENA | UART_RXFIFO_OVF_INT_ENA);
+		}
+	}
+
+	smg_uart_restore_interrupts();
 }
 
 uint32_t smg_uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate)
@@ -426,8 +585,10 @@ uint32_t smg_uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate)
 		return 0;
 	}
 
-	uart_set_baudrate(uart_port_t(uart_nr), baud_rate);
-
+	uint32_t clkdiv = UART_CLK_FREQ / baud_rate;
+	WRITE_PERI_REG(UART_CLKDIV(uart_nr), clkdiv);
+	// Return the actual baud rate in use
+	baud_rate = clkdiv ? UART_CLK_FREQ / clkdiv : 0;
 	return baud_rate;
 }
 
@@ -450,11 +611,69 @@ uint32_t smg_uart_get_baudrate(smg_uart_t* uart)
 	return (uart == nullptr) ? 0 : uart->baud_rate;
 }
 
+static void uart0_pin_select(unsigned pin)
+{
+	switch(pin) {
+	case 1:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_U0TXD_U, FUNC_UART0_TXD);
+		break;
+	case 2:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_UART0_TXD_BK);
+		break;
+	case 3:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_U0RXD_U, FUNC_UART0_RXD);
+		break;
+	case 13:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U, FUNC_UART0_CTS);
+		break;
+	case 15:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_UART0_RTS);
+		break;
+	}
+}
+
+static void uart0_pin_restore(unsigned pin)
+{
+	switch(pin) {
+	case 1:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_U0TXD_U, FUNC_GPIO1);
+		break;
+	case 2:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2);
+		break;
+	case 3:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_U0RXD_U, FUNC_GPIO3);
+		break;
+	case 13:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U, FUNC_GPIO13);
+		break;
+	case 15:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15);
+		break;
+	}
+}
+
+static void uart1_pin_select(unsigned pin)
+{
+	// GPIO7 as TX not possible! See GPIO pins used by UART
+	switch(pin) {
+	case 2:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_UART1_TXD_BK);
+		break;
+	}
+}
+
+static void uart1_pin_restore(const unsigned pin)
+{
+	switch(pin) {
+	case 2:
+		PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2);
+		break;
+	}
+}
+
 smg_uart_t* smg_uart_init_ex(const smg_uart_config& cfg)
 {
-	//Set UART log level
-	esp_log_level_set(TAG, ESP_LOG_INFO);
-
 	// Already initialised?
 	if(smg_uart_get_uart(cfg.uart_nr) != nullptr) {
 		return nullptr;
@@ -473,33 +692,82 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config& cfg)
 	uart->rx_pin = 255;
 	uart->rx_headroom = DEFAULT_RX_HEADROOM;
 
-	uart_config_t uart_config = {.baud_rate = (int)cfg.baudrate,
-								 .data_bits = UART_DATA_8_BITS,
-								 .parity = UART_PARITY_DISABLE,
-								 .stop_bits = UART_STOP_BITS_1,
-								 .flow_ctrl = UART_HW_FLOWCTRL_DISABLE};
+	auto rxBufferSize = cfg.rx_size;
+	auto txBufferSize = cfg.tx_size;
 
-	if(!realloc_buffer(uart->rx_buffer, cfg.rx_size)) {
+	switch(cfg.uart_nr) {
+	case UART0:
+	case UART2:
+		// Virtual uart requires a minimum RAM buffer
+		if(cfg.uart_nr == UART2) {
+			rxBufferSize += UART_RX_FIFO_SIZE;
+			txBufferSize += UART_TX_FIFO_SIZE;
+		}
+
+		if(smg_uart_rx_enabled(uart) && !realloc_buffer(uart->rx_buffer, rxBufferSize)) {
+			delete uart;
+			return nullptr;
+		}
+
+		if(smg_uart_tx_enabled(uart) && !realloc_buffer(uart->tx_buffer, txBufferSize)) {
+			delete uart->rx_buffer;
+			delete uart;
+			return nullptr;
+		}
+
+		if(cfg.uart_nr == UART2) {
+			break;
+		}
+
+		// OK, buffers allocated so setup hardware
+		smg_uart_detach(cfg.uart_nr);
+
+		if(smg_uart_rx_enabled(uart)) {
+			uart->rx_pin = 3;
+			uart0_pin_select(uart->rx_pin);
+		}
+
+		if(smg_uart_tx_enabled(uart)) {
+			uart->tx_pin = (cfg.tx_pin == 2) ? 2 : 1;
+			uart0_pin_select(uart->tx_pin);
+		}
+
+		CLEAR_PERI_REG_MASK(UART_SWAP_REG, UART_SWAP0);
+
+		WRITE_PERI_REG(UART_CONF0(UART0), cfg.config);
+		break;
+
+	case UART1:
+		// Note: uart_interrupt_handler does not support RX on UART 1
+		if(uart->mode == UART_RX_ONLY) {
+			delete uart;
+			return nullptr;
+		}
+		uart->mode = UART_TX_ONLY;
+
+		// Transmit buffer optional
+		if(!realloc_buffer(uart->tx_buffer, txBufferSize)) {
+			delete uart;
+			return nullptr;
+		}
+
+		// Setup hardware
+		smg_uart_detach(cfg.uart_nr);
+		uart->tx_pin = 2;
+		uart1_pin_select(uart->tx_pin);
+		WRITE_PERI_REG(UART_CONF0(UART1), cfg.config);
+		break;
+
+	default:
+		// big fail!
 		delete uart;
 		return nullptr;
 	}
 
-	if(!realloc_buffer(uart->tx_buffer, cfg.tx_size)) {
-		delete uart;
-		return nullptr;
-	}
-
-	auto port = uart_port_t(cfg.uart_nr);
-	uart_param_config(port, &uart_config);
-	uart_set_pin(port, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
-
-	uart_driver_install(port, cfg.rx_size, cfg.tx_size, 20, &uartQueues[cfg.uart_nr], 0);
-
+	smg_uart_set_baudrate(uart, cfg.baudrate);
+	smg_uart_flush(uart);
 	uartInstances[cfg.uart_nr] = uart;
-
-	//Create a task to handle UART event from ISR
-	doneHandler[uart->uart_nr] = false;
-	xTaskCreate(smg_uart_event_task, "uart_event_task", 2048, uart, 12, NULL);
+	smg_uart_start_isr(uart);
 
 	notify(uart, UART_NOTIFY_AFTER_OPEN);
 
@@ -514,32 +782,38 @@ void smg_uart_uninit(smg_uart_t* uart)
 
 	notify(uart, UART_NOTIFY_BEFORE_CLOSE);
 
+	smg_uart_stop_isr(uart);
 	// If debug output being sent to this UART, disable it
 	if(uart->uart_nr == s_uart_debug_nr) {
 		smg_uart_set_debug(UART_NO);
 	}
 
-	doneHandler[uart->uart_nr] = true;
-	uart_driver_delete(uart_port_t(uart->uart_nr));
-
-	uartInstances[uart->uart_nr] = nullptr;
+	switch(uart->uart_nr) {
+	case UART0:
+		uart0_pin_restore(uart->rx_pin);
+		uart0_pin_restore(uart->tx_pin);
+		break;
+	case UART1:
+		uart1_pin_restore(uart->tx_pin);
+		break;
+	}
 
 	delete uart->rx_buffer;
 	delete uart->tx_buffer;
 	delete uart;
 }
 
-smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin,
-						  size_t rx_size, size_t tx_size)
+smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin, size_t rx_size,
+				  size_t tx_size)
 {
 	smg_uart_config cfg = {.uart_nr = uart_nr,
-						   .tx_pin = tx_pin,
-						   .mode = mode,
-						   .options = _BV(UART_OPT_TXWAIT),
-						   .baudrate = baudrate,
-						   .config = config,
-						   .rx_size = rx_size,
-						   .tx_size = tx_size};
+					   .tx_pin = tx_pin,
+					   .mode = mode,
+					   .options = _BV(UART_OPT_TXWAIT),
+					   .baudrate = baudrate,
+					   .config = config,
+					   .rx_size = rx_size,
+					   .tx_size = tx_size};
 	return smg_uart_init_ex(cfg);
 }
 
@@ -551,6 +825,35 @@ void smg_uart_swap(smg_uart_t* uart, int tx_pin)
 
 	switch(uart->uart_nr) {
 	case UART0:
+		uart0_pin_restore(uart->tx_pin);
+		uart0_pin_restore(uart->rx_pin);
+
+		if(uart->tx_pin == 1 || uart->tx_pin == 2 || uart->rx_pin == 3) {
+			if(smg_uart_tx_enabled(uart)) {
+				uart->tx_pin = 15;
+			}
+
+			if(smg_uart_rx_enabled(uart)) {
+				uart->rx_pin = 13;
+			}
+
+			SET_PERI_REG_MASK(UART_SWAP_REG, UART_SWAP0);
+		} else {
+			if(smg_uart_tx_enabled(uart)) {
+				uart->tx_pin = (tx_pin == 2) ? 2 : 1;
+			}
+
+			if(smg_uart_rx_enabled(uart)) {
+				uart->rx_pin = 3;
+			}
+
+			CLEAR_PERI_REG_MASK(UART_SWAP_REG, UART_SWAP0);
+		}
+
+		uart0_pin_select(uart->tx_pin);
+		uart0_pin_select(uart->rx_pin);
+		break;
+
 	case UART1:
 		// Currently no swap possible! See GPIO pins used by UART
 		break;
@@ -566,7 +869,23 @@ void smg_uart_set_tx(smg_uart_t* uart, int tx_pin)
 		return;
 	}
 
-	// TODO:
+	switch(uart->uart_nr) {
+	case UART0:
+		if(smg_uart_tx_enabled(uart)) {
+			uart1_pin_restore(uart->tx_pin);
+			uart->tx_pin = (tx_pin == 2) ? 2 : 1;
+			uart1_pin_select(uart->tx_pin);
+		}
+
+		break;
+
+	case UART1:
+		// GPIO7 as TX not possible! See GPIO pins used by UART
+		break;
+
+	default:
+		break;
+	}
 }
 
 void smg_uart_set_pins(smg_uart_t* uart, int tx, int rx)
@@ -575,7 +894,23 @@ void smg_uart_set_pins(smg_uart_t* uart, int tx, int rx)
 		return;
 	}
 
-	uart_set_pin(uart_port_t(uart->uart_nr), tx, rx, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+	// Only UART0 allows pin changes
+	if(uart->uart_nr == UART0) {
+		if(smg_uart_tx_enabled(uart) && uart->tx_pin != tx) {
+			if(rx == 13 && tx == 15)
+				smg_uart_swap(uart, 15);
+			else if(rx == 3 && (tx == 1 || tx == 2)) {
+				if(uart->rx_pin != rx) {
+					smg_uart_swap(uart, tx);
+				} else {
+					smg_uart_set_tx(uart, tx);
+				}
+			}
+		}
+		if(smg_uart_rx_enabled(uart) && uart->rx_pin != rx && rx == 13 && tx == 15) {
+			smg_uart_swap(uart, 15);
+		}
+	}
 }
 
 void smg_uart_debug_putc(char c)
@@ -588,9 +923,9 @@ void smg_uart_debug_putc(char c)
 
 void smg_uart_set_debug(int uart_nr)
 {
-	//	s_uart_debug_nr = uart_nr;
-	//	system_set_os_print(uart_nr >= 0);
-	//	ets_install_putc1(smg_uart_debug_putc);
+	s_uart_debug_nr = uart_nr;
+	system_set_os_print(uart_nr >= 0);
+	ets_install_putc1(smg_uart_debug_putc);
 }
 
 int smg_uart_get_debug()
@@ -598,13 +933,27 @@ int smg_uart_get_debug()
 	return s_uart_debug_nr;
 }
 
-uint8_t smg_uart_disable_interrupts()
+void smg_uart_detach(int uart_nr)
 {
-	// TODO:...
-	return 0;
+	if(!is_physical(uart_nr)) {
+		return;
+	}
+
+	smg_uart_disable_interrupts();
+	bitClear(isrMask, uart_nr);
+	WRITE_PERI_REG(UART_CONF1(uart_nr), 0);
+	WRITE_PERI_REG(UART_INT_CLR(uart_nr), 0xffff);
+	WRITE_PERI_REG(UART_INT_ENA(uart_nr), 0);
+	smg_uart_restore_interrupts();
 }
 
-void smg_uart_restore_interrupts()
+void smg_uart_detach_all()
 {
-	// TODO: ...
+	smg_uart_disable_interrupts();
+	for(unsigned uart_nr = 0; uart_nr < UART_PHYSICAL_COUNT; ++uart_nr) {
+		WRITE_PERI_REG(UART_CONF1(uart_nr), 0);
+		WRITE_PERI_REG(UART_INT_CLR(uart_nr), 0xffff);
+		WRITE_PERI_REG(UART_INT_ENA(uart_nr), 0);
+	}
+	isrMask = 0;
 }
