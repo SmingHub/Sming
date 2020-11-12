@@ -479,6 +479,9 @@ cs-dev: ##Apply coding style to all files changed from current upstream develop 
 gdb: kill_term ##Run the debugger console
 	$(GDB_CMDLINE)
 
+.PHONY: fetch
+fetch: ##Fetch Component or Library and display location
+	$(SMING_MAKE) $(MAKECMDGOALS)
 
 # Stack trace decoder
 CACHE_VARS += TRACE
