@@ -21,20 +21,11 @@
  */
 
 #include <driver/uart.h>
-
+#include <driver/SerialBuffer.h>
 #include <BitManipulations.h>
-
-#include "espinc/uart_register.h"
-#include "espinc/pin_mux_register.h"
-#include <ets_sys.h>
-
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include <esp_system.h>
-
-#include "SerialBuffer.h"
-
-#include "esp_log.h"
+#include <espinc/uart_register.h>
+#include <freertos/FreeRTOS.h>
+#include <esp_log.h>
 
 static const char* TAG = "uart_events";
 
@@ -250,12 +241,11 @@ size_t smg_uart_rx_available(smg_uart_t* uart)
 
 static void smg_uart_event_handler(smg_uart_t* uart)
 {
-	uart_event_t event;
 	auto queue = uartQueues[uart->uart_nr];
-
 	auto port = uart_port_t(uart->uart_nr);
 
 	uint32_t status = 0;
+	uart_event_t event;
 	while(!doneHandler[uart->uart_nr]) {
 		if(xQueueReceive(queue, &event, portMAX_DELAY)) {
 			//    			debugf("event type: %d", event.type);

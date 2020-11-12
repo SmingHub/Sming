@@ -10,7 +10,7 @@
  *
  ****/
 
-#include "SerialBuffer.h"
+#include "include/driver/SerialBuffer.h"
 
 /** @brief find a character in the buffer
  *  @param c

@@ -1,5 +1,4 @@
-#include "include/esp_system.h"
-#include "include/esp_timer_legacy.h"
+#include <driver/os_timer.h>
 #include <hostlib/threads.h>
 #include <driver/hw_timer.h>
 #include <muldiv.h>

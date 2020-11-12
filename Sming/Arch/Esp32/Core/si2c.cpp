@@ -1,3 +1,5 @@
+#if 0
+
 /*
   si2c.c - Software I2C library for esp8266
 
@@ -258,3 +260,5 @@ uint8_t twi_status()
 	else
 		return I2C_OK; //all ok
 }
+
+#endif

@@ -25,7 +25,6 @@
 #include "esp_sleep.h"
 #include "esp_clk.h"
 #include "esp_tasks.h"
-#include "esp_timer_legacy.h"
 #include <heap.h>
 #include <esp_system.h>
 #include <espinc/pin_mux_register.h>

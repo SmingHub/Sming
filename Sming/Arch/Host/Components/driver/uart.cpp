@@ -25,7 +25,7 @@
  */
 
 #include <driver/uart.h>
-#include <SerialBuffer.h>
+#include <driver/SerialBuffer.h>
 #include <BitManipulations.h>
 #include <Clock.h>
 

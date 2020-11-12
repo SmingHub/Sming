@@ -99,7 +99,7 @@ static void IRAM_ATTR timer_insert(os_timer_t* ptimer, uint32_t expire)
 	ptimer->timer_expire = expire;
 }
 
-void os_timer_arm_ticks(os_timer_t* ptimer, uint32_t ticks, bool repeat_flag)
+void IRAM_ATTR os_timer_arm_ticks(os_timer_t* ptimer, uint32_t ticks, bool repeat_flag)
 {
 	os_timer_disarm(ptimer);
 	ptimer->timer_period = repeat_flag ? ticks : 0;

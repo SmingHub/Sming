@@ -1,11 +1,9 @@
-/****
- * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
- * Created 2015 by Skurydin Alexey
- * http://github.com/SmingHub/Sming
- * All files of the Sming Core are provided under the LGPL v3 license.
- *
- * uart.h
- *
- ****/
+#pragma once
+
+#define UART0 0
+#define UART1 1
+#define UART2 2				  ///< Virtualised UART0
+#define UART_PHYSICAL_COUNT 2 ///< Number of physical UARTs on the system
+#define UART_COUNT 3		  ///< Number of UARTs on the system, virtual or otherwise
 
 #include_next <driver/uart.h>

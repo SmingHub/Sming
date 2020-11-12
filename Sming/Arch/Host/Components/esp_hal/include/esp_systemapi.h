@@ -19,7 +19,6 @@
 #include "esp_clk.h"
 #include "esp_libc.h"
 #include "esp_tasks.h"
-#include "esp_timer_legacy.h"
 #include <heap.h>
 #include "esp_system.h"
 #include <driver/gpio.h>

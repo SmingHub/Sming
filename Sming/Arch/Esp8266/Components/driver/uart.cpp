@@ -45,10 +45,9 @@
  */
 #include <BitManipulations.h>
 
-#include "driver/uart.h"
+#include <driver/uart.h>
 #include <espinc/uart_register.h>
-
-#include "SerialBuffer.h"
+#include <driver/SerialBuffer.h>
 
 /*
  * Parameters relating to RX FIFO and buffer thresholds
@@ -930,7 +929,7 @@ void smg_uart_set_tx(smg_uart_t* uart, int tx_pin)
 	}
 }
 
-void smg_uart_set_pins(smg_uart_t* uart, int tx, int rx)
+void smg_uart_set_pins(smg_uart_t* uart, int tx_pin, int rx_pin)
 {
 	if(uart == nullptr) {
 		return;
@@ -938,18 +937,18 @@ void smg_uart_set_pins(smg_uart_t* uart, int tx, int rx)
 
 	// Only UART0 allows pin changes
 	if(uart->uart_nr == UART0) {
-		if(smg_uart_tx_enabled(uart) && uart->tx_pin != tx) {
-			if(rx == 13 && tx == 15)
+		if(smg_uart_tx_enabled(uart) && uart->tx_pin != tx_pin) {
+			if(rx_pin == 13 && tx_pin == 15)
 				smg_uart_swap(uart, 15);
-			else if(rx == 3 && (tx == 1 || tx == 2)) {
-				if(uart->rx_pin != rx) {
-					smg_uart_swap(uart, tx);
+			else if(rx_pin == 3 && (tx_pin == 1 || tx_pin == 2)) {
+				if(uart->rx_pin != rx_pin) {
+					smg_uart_swap(uart, tx_pin);
 				} else {
-					smg_uart_set_tx(uart, tx);
+					smg_uart_set_tx(uart, tx_pin);
 				}
 			}
 		}
-		if(smg_uart_rx_enabled(uart) && uart->rx_pin != rx && rx == 13 && tx == 15) {
+		if(smg_uart_rx_enabled(uart) && uart->rx_pin != rx_pin && rx_pin == 13 && tx_pin == 15) {
 			smg_uart_swap(uart, 15);
 		}
 	}
