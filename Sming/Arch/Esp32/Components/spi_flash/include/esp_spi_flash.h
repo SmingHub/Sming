@@ -13,6 +13,7 @@
 
 #include_next <esp_spi_flash.h>
 #include <esp32/rom/spi_flash.h>
+#include <esp_app_format.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,32 +43,41 @@ extern "C" {
 #define INTERNAL_FLASH_SECTOR_SIZE SPI_FLASH_SEC_SIZE
 #define INTERNAL_FLASH_SIZE ((FLASH_WORK_SEC_COUNT)*INTERNAL_FLASH_SECTOR_SIZE)
 
-/** @brief SPI Flash memory information block.
- * Stored at the beginning of flash memory.
+typedef enum {
+	MODE_QIO = ESP_IMAGE_SPI_MODE_QIO,
+	MODE_QOUT = ESP_IMAGE_SPI_MODE_QOUT,
+	MODE_DIO = ESP_IMAGE_SPI_MODE_DIO,
+	MODE_DOUT = ESP_IMAGE_SPI_MODE_DOUT,
+	MODE_FAST_READ = ESP_IMAGE_SPI_MODE_FAST_READ,
+	MODE_SLOW_READ = ESP_IMAGE_SPI_MODE_SLOW_READ,
+} SPIFlashMode;
+
+typedef enum {
+	SPEED_40MHZ = ESP_IMAGE_SPI_SPEED_40M,
+	SPEED_26MHZ = ESP_IMAGE_SPI_SPEED_26M,
+	SPEED_20MHZ = ESP_IMAGE_SPI_SPEED_20M,
+	SPEED_80MHZ = ESP_IMAGE_SPI_SPEED_80M,
+} SPIFlashSpeed;
+
+typedef enum {
+	SIZE_1MBIT = ESP_IMAGE_FLASH_SIZE_1MB,
+	SIZE_2MBIT = ESP_IMAGE_FLASH_SIZE_2MB,
+	SIZE_4MBIT = ESP_IMAGE_FLASH_SIZE_4MB,
+	SIZE_8MBIT = ESP_IMAGE_FLASH_SIZE_8MB,
+	SIZE_16MBIT = ESP_IMAGE_FLASH_SIZE_16MB,
+	SIZE_32MBIT = 0xFF, ///< Not listed
+} SPIFlashSize;
+
+/**
+ * @brief SPI Flash memory information block.
+ * Copied from bootloader header.
+ * See `esp_image_header_t`.
  */
 typedef struct {
-	uint8_t unknown0;
-	uint8_t unknown1;
-	enum {
-		MODE_QIO = 0,
-		MODE_QOUT = 1,
-		MODE_DIO = 2,
-		MODE_DOUT = 15,
-	} mode : 8;
-	enum {
-		SPEED_40MHZ = 0,
-		SPEED_26MHZ = 1,
-		SPEED_20MHZ = 2,
-		SPEED_80MHZ = 15,
-	} speed : 4;
-	enum {
-		SIZE_4MBIT = 0,
-		SIZE_2MBIT = 1,
-		SIZE_8MBIT = 2,
-		SIZE_16MBIT = 3,
-		SIZE_32MBIT = 4,
-	} size : 4;
-} STORE_TYPEDEF_ATTR SPIFlashInfo;
+	SPIFlashMode mode;
+	SPIFlashSpeed speed;
+	SPIFlashSize size;
+} SPIFlashInfo;
 
 /** @brief Obtain the flash memory address for a memory pointer
  *  @param memptr

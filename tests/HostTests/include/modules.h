@@ -18,6 +18,7 @@
 	XX(ArduinoJson5)                                                                                                   \
 	XX(ArduinoJson6)                                                                                                   \
 	XX(Files)                                                                                                          \
+	XX(SpiFlash)                                                                                                       \
 	XX(Spiffs)                                                                                                         \
 	XX(Rational)                                                                                                       \
 	XX(Clocks)                                                                                                         \

@@ -11,6 +11,8 @@
 #include <esp_spi_flash.h>
 #include <soc/soc.h>
 #include <soc/dport_reg.h>
+#include <esp_app_format.h>
+#include <esp_flash_partitions.h>
 
 /*
  * Physical <-> Virtual address mapping is handled in `$IDF_COMPONENTS/spi_flash/flash_mmap.c`.
@@ -70,11 +72,16 @@ bool flashmem_erase_sector(uint32_t sector_id)
 
 SPIFlashInfo flashmem_get_info()
 {
-	SPIFlashInfo spi_flash_info STORE_ATTR;
-	if(flashmem_read(&spi_flash_info, 0x00000000, sizeof(spi_flash_info)) == 0) {
-		memset(&spi_flash_info, 0, sizeof(spi_flash_info));
+	SPIFlashInfo info{};
+	esp_image_header_t hdr{};
+	flashmem_read(&hdr, ESP_BOOTLOADER_OFFSET, sizeof(hdr));
+	if(hdr.magic == ESP_IMAGE_HEADER_MAGIC) {
+		info.mode = SPIFlashMode(hdr.spi_mode);
+		info.speed = SPIFlashSpeed(hdr.spi_speed);
+		info.size = SPIFlashSize(hdr.spi_size);
 	}
-	return spi_flash_info;
+
+	return info;
 }
 
 uint8_t flashmem_get_size_type()
