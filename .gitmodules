@@ -187,6 +187,10 @@
 	path = Sming/Libraries/DHTesp
 	url = https://github.com/beegee-tokyo/DHTesp.git
 	ignore = dirty
+[submodule "Libraries.HardwareSPI"]
+	path = Sming/Libraries/HardwareSPI
+	url = https://github.com/mikee47/HardwareSPI
+	ignore = dirty
 [submodule "Libraries.HueEmulator"]
 	path = Sming/Libraries/HueEmulator
 	url = https://github.com/mikee47/HueEmulator
@@ -247,6 +251,10 @@
 	path = Sming/Libraries/SSDP
 	url = https://github.com/mikee47/Sming-SSDP
 	ignore = dirty
+[submodule "Libraries.TFT_S1D13781"]
+	path = Sming/Libraries/TFT_S1D13781
+	url = https://github.com/mikee47/TFT_S1D13781
+	ignore = dirty
 [submodule "Libraries.Timezone"]
 	path = Sming/Libraries/Timezone
 	url = https://github.com/mikee47/Timezone
@@ -263,6 +271,11 @@
 	path = Sming/Libraries/UPnP
 	url = https://github.com/mikee47/Sming-UPnP
 	ignore = dirty
+[submodule "Libraries.VT100"]
+	path = Sming/Libraries/VT100
+	url = https://github.com/mikee47/VT100
+	ignore = dirty
+
 
 #
 # Esp8266 libraries
