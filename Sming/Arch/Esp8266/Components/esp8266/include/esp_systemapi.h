@@ -22,11 +22,14 @@ extern "C" {
 // Default types
 #define __CORRECT_ISO_CPP_STDLIB_H_PROTO
 #include <limits.h>
-#include "c_types.h"
+#include <c_types.h>
 #include <assert.h>
 
 // Remove buggy espconn
 #define _NO_ESPCON_
+
+// And c_types
+#define _C_TYPES_H_
 
 #include <sming_attr.h>
 #include "esp_attr.h"

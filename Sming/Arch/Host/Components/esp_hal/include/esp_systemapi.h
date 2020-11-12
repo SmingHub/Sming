@@ -12,7 +12,7 @@
 
 // Default types
 #include <limits.h>
-#include "c_types.h"
+#include <c_types.h>
 
 #include <sming_attr.h>
 #include <esp_attr.h>

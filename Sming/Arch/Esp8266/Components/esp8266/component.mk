@@ -31,7 +31,7 @@ export SDK_INTERNAL
 export SDK_LIBDIR
 export SDK_INCDIR
 
-DOXYGEN_INPUT += \
+COMPONENT_DOXYGEN_INPUT := \
 	$(SDK_INCDIR)/gpio.h \
 	$(SDK_INCDIR)/pwm.h
 

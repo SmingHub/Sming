@@ -14,7 +14,7 @@
 #include <sys/pgmspace.h>
 
 #include "m_printf.h"
-#include "c_types.h"
+#include <c_types.h>
 
 #ifdef __cplusplus
 extern "C" {
