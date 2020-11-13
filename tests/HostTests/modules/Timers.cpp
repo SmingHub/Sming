@@ -95,7 +95,9 @@ public:
 				if(mem != memStart) {
 					Serial.print("mem != memStart, memStart = ");
 					Serial.println(memStart);
+#ifndef ARCH_ESP32
 					TEST_ASSERT(false);
+#endif
 				}
 				complete();
 			}
