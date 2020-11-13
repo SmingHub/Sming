@@ -96,6 +96,19 @@ extern "C" {
 #define UART_7O2 (UART_NB_BIT_7 | UART_PARITY_ODD | UART_NB_STOP_BIT_2)
 #define UART_8O2 (UART_NB_BIT_8 | UART_PARITY_ODD | UART_NB_STOP_BIT_2)
 
+// Status values
+enum smg_uart_status_t {
+	UART_STATUS_RXFIFO_TOUT = BIT(8),
+	UART_STATUS_BRK_DET = BIT(7),
+	UART_STATUS_CTS_CHG = BIT(6),
+	UART_STATUS_DSR_CHG = BIT(5),
+	UART_STATUS_RXFIFO_OVF = BIT(4),
+	UART_STATUS_FRM_ERR = BIT(3),
+	UART_STATUS_PARITY_ERR = BIT(2),
+	UART_STATUS_TXFIFO_EMPTY = BIT(1),
+	UART_STATUS_RXFIFO_FULL = BIT(0),
+};
+
 /** @brief values for `mode` argument of uart_init */
 enum smg_uart_mode_t {
 	UART_FULL,	///< Both receive and transmit - will revert to TX only if RX not supported
