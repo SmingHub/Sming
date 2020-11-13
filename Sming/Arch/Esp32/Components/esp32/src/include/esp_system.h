@@ -18,16 +18,6 @@ void system_soft_wdt_stop(void);
 void system_soft_wdt_restart(void);
 void system_soft_wdt_feed(void);
 
-inline void xt_disable_interrupts()
-{
-	ets_intr_lock();
-}
-
-inline void xt_enable_interrupts()
-{
-	ets_intr_unlock();
-}
-
 enum rst_reason {
 	REASON_DEFAULT_RST = ESP_RST_UNKNOWN,
 	REASON_WDT_RST = ESP_RST_WDT,

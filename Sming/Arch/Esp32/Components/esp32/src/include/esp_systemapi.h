@@ -50,7 +50,7 @@
  *  @retval Current interrupt level
  *  @note Hardware timer is unaffected if operating in non-maskable mode
  */
-#define noInterrupts() XTOS_SET_INTLEVEL(15)
+#define noInterrupts() XTOS_SET_INTLEVEL(XCHAL_EXCM_LEVEL)
 
 /** @brief  Enable interrupts
 */
@@ -59,15 +59,3 @@
 /** @brief Restore interrupts to level saved from previous noInterrupts() call
  */
 #define restoreInterrupts(level) XTOS_RESTORE_INTLEVEL(level)
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-extern void ets_wdt_enable(void);
-extern void ets_wdt_disable(void);
-extern void wdt_feed(void);
-
-#ifdef __cplusplus
-}
-#endif
