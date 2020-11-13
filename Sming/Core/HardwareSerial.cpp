@@ -29,21 +29,24 @@ HardwareSerial::~HardwareSerial()
 #endif
 }
 
-void HardwareSerial::begin(uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin)
+void HardwareSerial::begin(uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin, uint8_t rxPin)
 {
 	end();
 
 	if(uartNr < 0)
 		return;
 
-	smg_uart_config cfg = {.uart_nr = (uint8_t)uartNr,
-						   .tx_pin = txPin,
-						   .mode = static_cast<smg_uart_mode_t>(mode),
-						   .options = options,
-						   .baudrate = baud,
-						   .config = config,
-						   .rx_size = rxSize,
-						   .tx_size = txSize};
+	smg_uart_config_t cfg = {
+		.uart_nr = (uint8_t)uartNr,
+		.tx_pin = txPin,
+		.rx_pin = rxPin,
+		.mode = static_cast<smg_uart_mode_t>(mode),
+		.options = options,
+		.baudrate = baud,
+		.config = config,
+		.rx_size = rxSize,
+		.tx_size = txSize,
+	};
 	uart = smg_uart_init_ex(cfg);
 	updateUartCallback();
 }

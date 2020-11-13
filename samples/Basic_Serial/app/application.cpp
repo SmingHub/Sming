@@ -239,6 +239,7 @@ void init()
 	Serial.setTxWait(false);
 
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.systemDebugOutput(true);
 
 	// There's a large file on SPIFFS we'll be accessing later on
 	spiffs_mount();
@@ -285,6 +286,13 @@ void init()
 
 	// Initialise and prepare the second (debug) serial port
 	Serial1.begin(SERIAL_BAUD_RATE);
+#ifdef ARCH_ESP32
+	// Default pins are occupied by flash lines
+	Serial1.pins(17, 16);
+	Serial1.onDataReceived([](Stream& stream, char arrivedChar, unsigned short availableCharsCount) {
+		debug_e("arrivedchar: %c, avail = %d", arrivedChar, availableCharsCount);
+	});
+#endif
 	Serial1.setTxBufferSize(1024);
 	Serial1.setTxWait(false);
 

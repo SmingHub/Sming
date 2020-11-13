@@ -366,7 +366,7 @@ uint32_t smg_uart_get_baudrate(smg_uart_t* uart)
 	return (uart == nullptr) ? 0 : uart->baud_rate;
 }
 
-smg_uart_t* smg_uart_init_ex(const smg_uart_config& cfg)
+smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 {
 	// Already initialised?
 	if(smg_uart_get_uart(cfg.uart_nr) != nullptr) {
@@ -382,8 +382,8 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config& cfg)
 	uart->uart_nr = cfg.uart_nr;
 	uart->mode = cfg.mode;
 	uart->options = cfg.options;
-	uart->tx_pin = 255;
-	uart->rx_pin = 255;
+	uart->tx_pin = UART_PIN_DEFAULT;
+	uart->rx_pin = UART_PIN_DEFAULT;
 	uart->rx_headroom = DEFAULT_RX_HEADROOM;
 
 	auto rxBufferSize = cfg.rx_size;
@@ -469,17 +469,20 @@ void smg_uart_uninit(smg_uart_t* uart)
 	delete uart;
 }
 
-smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin, size_t rx_size,
-				  size_t tx_size)
+smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin,
+						  size_t rx_size, size_t tx_size)
 {
-	smg_uart_config cfg = {.uart_nr = uart_nr,
-					   .tx_pin = tx_pin,
-					   .mode = mode,
-					   .options = _BV(UART_OPT_TXWAIT),
-					   .baudrate = baudrate,
-					   .config = config,
-					   .rx_size = rx_size,
-					   .tx_size = tx_size};
+	smg_uart_config_t cfg = {
+		.uart_nr = uart_nr,
+		.tx_pin = tx_pin,
+		.rx_pin = UART_PIN_DEFAULT,
+		.mode = mode,
+		.options = _BV(UART_OPT_TXWAIT),
+		.baudrate = baudrate,
+		.config = config,
+		.rx_size = rx_size,
+		.tx_size = tx_size,
+	};
 	return smg_uart_init_ex(cfg);
 }
 
@@ -487,12 +490,31 @@ void smg_uart_swap(smg_uart_t* uart, int tx_pin)
 {
 }
 
-void smg_uart_set_tx(smg_uart_t* uart, int tx_pin)
+bool smg_uart_set_tx(smg_uart_t* uart, int tx_pin)
 {
+	if(uart == nullptr) {
+		return false;
+	}
+
+	uart->tx_pin = tx_pin;
+	return true;
 }
 
-void smg_uart_set_pins(smg_uart_t* uart, int tx, int rx)
+bool smg_uart_set_pins(smg_uart_t* uart, int tx_pin, int rx_pin)
 {
+	if(uart == nullptr) {
+		return false;
+	}
+
+	if(tx_pin != UART_PIN_NO_CHANGE) {
+		uart->tx_pin = tx_pin;
+	}
+
+	if(rx_pin != UART_PIN_NO_CHANGE) {
+		uart->rx_pin = rx_pin;
+	}
+
+	return true;
 }
 
 void smg_uart_debug_putc(char c)

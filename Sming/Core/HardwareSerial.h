@@ -166,8 +166,9 @@ public:
 	 * @param config
 	 * @param mode
 	 * @param txPin Can specify alternate pin for TX
+	 * @param rxPin
 	 */
-	void begin(uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin);
+	void begin(uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin, uint8_t rxPin = UART_PIN_DEFAULT);
 
 	/**
 	 * @brief De-inits the current UART if it is already used
@@ -447,7 +448,7 @@ public:
 	unsigned getStatus();
 
 private:
-	int uartNr = -1;
+	int uartNr = UART_NO;
 	TransmitCompleteDelegate transmitComplete = nullptr; ///< Callback for transmit completion
 	StreamDataReceivedDelegate HWSDelegate = nullptr;	///< Callback for received data
 	CommandExecutor* commandExecutor = nullptr;			 ///< Callback for command execution (received data)

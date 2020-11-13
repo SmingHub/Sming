@@ -1,6 +1,6 @@
 SPIFF_SIZE      ?= 65536
 
-CUSTOM_TARGETS	:= files/README.md
+CUSTOM_TARGETS	+= files/README.md
 
 # Large text file for demo purposes
 files/README.md: $(SMING_HOME)/../README.md
