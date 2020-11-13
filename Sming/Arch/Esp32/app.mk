@@ -46,18 +46,19 @@ $(TARGET_BIN): $(TARGET_OUT)
 ##@Flashing
 
 # Partitions
-PARTITIONS_CSV = $(BUILD_BASE)/partitions.csv
+PARTITIONS_CSV ?= $(BUILD_BASE)/partitions.csv
 PARTITIONS_BIN = $(FW_BASE)/partitions.bin
 
-$(BUILD_BASE)/partitions.csv: 
-ifeq ($(DISABLE_SPIFFS), 1)
+CUSTOM_TARGETS += $(PARTITIONS_CSV)
+
+$(BUILD_BASE)/partitions.csv:
 	$(Q) cp $(SDK_PARTITION_PATH)/base.csv $@
-else
-	$(Q) cp $(SDK_PARTITION_PATH)/spiffs.csv $@ 
+ifneq ($(DISABLE_SPIFFS),1)
+	@echo "storage, data, spiffs, , $(SPIFF_START_ADDR)," >> $@
 endif
 
 $(PARTITIONS_BIN): $(PARTITIONS_CSV)
-	$(Q) $(PYTHON) $(SDK_COMPONENTS_PATH)/partition_table/gen_esp32part.py $< $@
+	$(Q) $(ESP32_PYTHON) $(SDK_COMPONENTS_PATH)/partition_table/gen_esp32part.py $< $@
 
 .PHONY: partitions
 partitions: $(PARTITIONS_BIN) ##Generate partitions table
