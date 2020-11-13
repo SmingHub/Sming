@@ -19,10 +19,13 @@
 #include <debug_progmem.h>
 #include <Platform/System.h>
 #include <driver/hw_timer.h>
+#include <driver/uart.h>
 
 #ifndef ESP32_STACK_SIZE
 #define ESP32_STACK_SIZE 16384U
 #endif
+
+extern void init();
 
 namespace
 {
@@ -47,16 +50,21 @@ void esp_init_wifi()
 	ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 }
 
-void loop(void* parameters)
+void main(void*)
 {
-	ets_printf("Entering Main loop\n");
 	assert(esp_task_wdt_init(WDT_TIMEOUT_MS, true) == ESP_OK);
 	assert(esp_task_wdt_add(NULL) == ESP_OK);
 	assert(esp_task_wdt_status(NULL) == ESP_OK);
 
-#ifndef CONFIG_FREERTOS_UNICORE
-	esp_task_wdt_delete(xTaskGetIdleTaskHandleForCPU(1));
-#endif
+	hw_timer_init();
+
+	smg_uart_detach_all();
+
+	esp_init_flash();
+	esp_init_wifi();
+	ets_init_tasks();
+	System.initialize();
+	init();
 
 	while(true) {
 		esp_task_wdt_reset();
@@ -66,20 +74,12 @@ void loop(void* parameters)
 
 } // namespace
 
-extern void init();
-
 extern "C" void app_main(void)
 {
-	hw_timer_init();
-	esp_init_flash();
-	esp_init_wifi();
-	ets_init_tasks();
-	System.initialize();
-	init();
-
 #ifdef CONFIG_FREERTOS_UNICORE
 	xTaskCreate(loop, "Sming", ESP32_STACK_SIZE, nullptr, 1, nullptr);
 #else
-	xTaskCreatePinnedToCore(loop, "Sming", ESP32_STACK_SIZE, nullptr, 1, nullptr, 1);
+	esp_task_wdt_delete(xTaskGetIdleTaskHandleForCPU(1));
+	xTaskCreatePinnedToCore(main, "Sming", ESP32_STACK_SIZE, nullptr, 1, nullptr, 1);
 #endif
 }
