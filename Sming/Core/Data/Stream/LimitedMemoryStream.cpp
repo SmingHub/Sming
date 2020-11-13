@@ -12,6 +12,10 @@
 
 uint16_t LimitedMemoryStream::readMemoryBlock(char* data, int bufSize)
 {
+	if(buffer == nullptr) {
+		return 0;
+	}
+
 	int written = std::min(bufSize, available());
 	memcpy(data, buffer + readPos, written);
 
@@ -45,6 +49,11 @@ int LimitedMemoryStream::seekFrom(int offset, SeekOrigin origin)
 
 size_t LimitedMemoryStream::write(const uint8_t* data, size_t size)
 {
+	if(buffer == nullptr) {
+		buffer = new char[capacity];
+		owned = true;
+	}
+
 	auto len = std::min(capacity - writePos, size);
 	if(len != 0) {
 		memcpy(buffer + writePos, data, len);
