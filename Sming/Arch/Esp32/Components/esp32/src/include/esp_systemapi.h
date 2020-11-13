@@ -27,9 +27,6 @@
 #include "esp_tasks.h"
 #include <heap.h>
 #include <esp_system.h>
-#include <espinc/pin_mux_register.h>
-#include <espinc/gpio_register.h>
-#include <espinc/timer_register.h>
 #include <esp32/rom/ets_sys.h>
 #include <soc/soc.h>
 #include <driver/gpio.h>
