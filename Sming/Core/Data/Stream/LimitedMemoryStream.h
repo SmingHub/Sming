@@ -37,7 +37,7 @@ public:
 	 *  @param length Size of buffer
 	 *  @note The actual momory for the buffer will be allocated at the first write operation.
 	 */
-	LimitedMemoryStream(size_t length) : LimitedMemoryStream(nullptr, length, 0, true)
+	LimitedMemoryStream(size_t length) : LimitedMemoryStream(nullptr, length, 0, false)
 	{
 	}
 
