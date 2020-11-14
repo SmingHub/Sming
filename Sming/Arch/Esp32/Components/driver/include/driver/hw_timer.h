@@ -11,7 +11,7 @@
 #pragma once
 
 #include <esp_systemapi.h>
-#include <espinc/timer_register.h>
+#include <soc/frc_timer_reg.h>
 
 #define HW_TIMER_BASE_CLK APB_CLK_FREQ
 
@@ -85,15 +85,12 @@ void IRAM_ATTR hw_timer1_attach_interrupt(hw_timer_source_type_t source_type, hw
  */
 inline void IRAM_ATTR hw_timer1_enable(hw_timer_clkdiv_t div, hw_timer_intr_type_t intr_type, bool auto_load)
 {
-	constexpr uint32_t FRC1_ENABLE_TIMER = BIT7;
-	constexpr uint32_t FRC1_AUTO_LOAD = BIT6;
-
-	uint32_t ctrl = (div & 0x0C) | (intr_type & 0x01) | FRC1_ENABLE_TIMER;
+	uint32_t ctrl = (div & 0x0C) | (intr_type & 0x01) | FRC_TIMER_ENABLE;
 	if(auto_load) {
-		ctrl |= FRC1_AUTO_LOAD;
+		ctrl |= FRC_TIMER_AUTOLOAD;
 	}
 
-	WRITE_PERI_REG(FRC1_CTRL_ADDRESS, ctrl);
+	REG_WRITE(FRC_TIMER_CTRL_REG(0), ctrl);
 	//	TM1_EDGE_INT_ENABLE();
 	//	ETS_FRC1_INTR_ENABLE();
 }
@@ -104,7 +101,7 @@ inline void IRAM_ATTR hw_timer1_enable(hw_timer_clkdiv_t div, hw_timer_intr_type
  */
 __forceinline void IRAM_ATTR hw_timer1_write(uint32_t ticks)
 {
-	WRITE_PERI_REG(FRC1_LOAD_ADDRESS, ticks);
+	REG_WRITE(FRC_TIMER_LOAD_REG(0), ticks);
 }
 
 /**
@@ -141,14 +138,11 @@ __forceinline uint32_t hw_timer1_read(void)
  *
  * This is a 32-bit count-up timer
  *
+ * See idf components/esp32/esp_timer_esp32.c
+ *
  *************************************/
 
-#ifdef USE_US_TIMER
-constexpr uint32_t HW_TIMER2_CLKDIV = TIMER_CLKDIV_16;
-#else
-constexpr uint32_t HW_TIMER2_CLKDIV = TIMER_CLKDIV_256;
-#endif
-
+constexpr uint32_t HW_TIMER2_CLKDIV = TIMER_CLKDIV_1;
 constexpr uint32_t HW_TIMER2_CLK = HW_TIMER_BASE_CLK >> HW_TIMER2_CLKDIV;
 
 /**
@@ -161,16 +155,6 @@ __forceinline uint32_t hw_timer2_read(void)
 }
 
 #define NOW() hw_timer2_read()
-
-/**
- * @brief Set timer2 alarm count value
- * @param ticks
- * @note For internal use ONLY; used by software timers
- */
-__forceinline void hw_timer2_set_alarm(uint32_t ticks)
-{
-	WRITE_PERI_REG(FRC_TIMER_ALARM_REG(1), ticks);
-}
 
 /**
  * @brief Initialise hardware timers

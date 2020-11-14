@@ -39,6 +39,23 @@ public:
 		}
 
 		printStats();
+
+		TEST_CASE("vs. system time")
+		{
+			constexpr uint32_t duration{2000000};
+			auto startTicks = Clock::ticks();
+			auto startTime = system_get_time();
+			uint32_t time;
+			while((time = system_get_time()) < startTime + duration) {
+				//
+			}
+			auto endTicks = Clock::ticks();
+
+			debug_w("System time elapsed: %u", time - startTime);
+			debug_w("%s ticks: %u", Clock::typeName(), endTicks - startTicks);
+			debug_w("Ratio: x %f", float(endTicks - startTicks) / (time - startTime));
+			debug_w("Apparent time: %u", uint32_t(Micros::ticksToTime(endTicks - startTicks)));
+		}
 	}
 
 	template <NanoTime::Unit unit> void check(TimeType value)
