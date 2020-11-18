@@ -468,6 +468,14 @@ These values are for reference only and should not be modified.
    This should be used if the Component provides any application code or targets to ensure it is
    built in the correct directory (but not by this makefile).
 
+   This value changes depending on the build variant.
+
+.. envvar:: COMPONENT_BUILD_BASE
+
+   This value does not change with build variant.
+
+   If the Component generates source code, for example, it can be placed here (in a sub-directory).
+
 .. envvar:: COMPONENT_LIBDIR
 
    Location to store created Component (shared) libraries
@@ -499,6 +507,11 @@ changed as required.
 
    If targets should be built for each application, use :envvar:`CUSTOM_TARGETS` instead.
    See :component:`spiffs` for an example.
+
+.. envvar:: COMPONENT_PREREQUISITES
+
+   These targets will be built before anything else. If your library generates source code,
+   for example, then it should be done by setting this value to the appropriate targets.
 
 .. envvar:: COMPONENT_RULE
 
