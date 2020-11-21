@@ -36,7 +36,11 @@ public:
 
 	void assign(const String& src)
 	{
-		assign(src.c_str(), src.length());
+		if(src) {
+			assign(src.c_str(), src.length());
+		} else {
+			reset();
+		}
 	}
 
 	void assign(const char* src)
@@ -65,6 +69,11 @@ public:
 	{
 		assign(src);
 		return *this;
+	}
+
+	char* begin()
+	{
+		return get();
 	}
 
 	const char* c_str() const
