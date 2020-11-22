@@ -40,6 +40,8 @@ OBJCOPY			 	:= $(TOOLSPEC)objcopy
 OBJDUMP			 	:= $(TOOLSPEC)objdump
 GDB				:= $(TOOLSPEC)gdb
 
+GCC_UPGRADE_URL := https://sming.readthedocs.io/en/latest/arch/esp8266/getting-started/eqt.html
+
 CPPFLAGS += \
 	-nostdlib \
 	-mlongcalls \

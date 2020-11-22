@@ -17,6 +17,8 @@ OBJCOPY		:= $(TOOLSPEC)objcopy
 OBJDUMP		:= $(TOOLSPEC)objdump
 GDB		:= $(TOOLSPEC)gdb
 
+GCC_UPGRADE_URL := https://sming.readthedocs.io/en/latest/arch/host/host-emulator.html\#c-c-32-bit-compiler-and-libraries
+
 CPPFLAGS += \
 	-m32 \
 	-Wno-deprecated-declarations

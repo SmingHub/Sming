@@ -23,25 +23,21 @@ develop only with Ubuntu 16.04 and 18.04.
 C/C++ 32 bit compiler and libraries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+The latest versions of Sming require GCC version 8 or newer.
 If your OS is 64 bit then you should install also 32 bit C/C++ compiler and libraries.
-For Ubuntu, install like this::
-
-   sudo apt-get install gcc-multilib g++-multilib
-
-You may wish to install the latest compilers for testing alongside the recent
-:doc:`/arch/esp8266/getting-started/eqt` updates. Here's a summary of how to do this::
+Here's a summary of how to do this::
 
    sudo add-apt-repository ppa:ubuntu-toolchain-r/test
    sudo apt update
    sudo apt install gcc-9 g++-9
-   
+
    # For 64-bit systems
    sudo apt install gcc-9-multilib g++-9-multilib
 
    # Set GCC 9 as default
    sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-9
 
-The current version is `GCC 9.2.1 <https://www.gnu.org/software/gcc/gcc-9>`__.
+The current version is `GCC 9.3.0 <https://www.gnu.org/software/gcc/gcc-9>`__.
 
 CMake 3.8 or newer
 ~~~~~~~~~~~~~~~~~~

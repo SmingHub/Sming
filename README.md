@@ -74,6 +74,15 @@ Please note Version 4 documentation is at [sming.readthedocs.io](https://sming.r
 
 ## Compatibility
 
+
+### GCC compiler >= 8
+
+Your GCC compiler should be version 8 or newer! See the different architectures for details.
+Newer compilers
+
+- produce smaller and better code
+- have features which improve code quality, easy of use, etc.
+
 ### Architecture: ESP8266
 
 OS/SDK | Linux | Mac OS X | Windows | FreeBSD-current |
