@@ -124,7 +124,7 @@ for your ESP8266. You can change it like this::
 
 Next, ensure that you can build the :sample:`Basic_Blink` from a terminal window::
 
-   cd $SMING_HOME/samples/Basic_Blink
+   cd $SMING_HOME/../samples/Basic_Blink
    make
 
 This will also build the required framework components, so may take a few minutes.

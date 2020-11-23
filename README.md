@@ -24,6 +24,7 @@ Table of Contents
 
 * [Summary](#summary)
 * [Compatibility](#compatibility)
+   * [Architecture: Esp32](#architecture-esp32-experimental)
    * [Architecture: ESP8266](#architecture-esp8266)
    * [Architecture: Host](#architecture-host)
 * [Releases](#releases)
@@ -73,6 +74,16 @@ Please note Version 4 documentation is at [sming.readthedocs.io](https://sming.r
     * Sming has a [host emulator](https://sming.readthedocs.io/en/latest/arch/host/host-emulator.html) that allows libraries and sample applications to be compiled on a Linux/Windows host system and be tested before uploading them to an actual microcontroller.
 
 ## Compatibility
+
+
+### GCC compiler >= 8
+
+Your GCC compiler should be version 8 or newer! See the different architectures for details.
+Newer compilers
+
+- contain bugfixes
+- produce smaller and better code
+- have features which facilitate code quality, ease of use, etc.
 
 ### Architecture: ESP8266
 
