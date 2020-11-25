@@ -48,6 +48,11 @@ public:
 		wsBinary = handler;
 	}
 
+	void setPongHandler(WebsocketDelegate handler)
+	{
+		wsPong = handler;
+	}
+
 	void setDisconnectionHandler(WebsocketDelegate handler)
 	{
 		wsDisconnect = handler;
@@ -60,5 +65,6 @@ protected:
 	WebsocketDelegate wsConnect = nullptr;
 	WebsocketMessageDelegate wsMessage = nullptr;
 	WebsocketBinaryDelegate wsBinary = nullptr;
+	WebsocketDelegate wsPong = nullptr;
 	WebsocketDelegate wsDisconnect = nullptr;
 };

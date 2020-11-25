@@ -23,6 +23,7 @@ int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpReques
 	socket->setBinaryHandler(wsBinary);
 	socket->setMessageHandler(wsMessage);
 	socket->setConnectionHandler(wsConnect);
+	socket->setPongHandler(wsPong);
 	socket->setDisconnectionHandler(wsDisconnect);
 	if(!socket->bind(request, response)) {
 		debug_w("Not a valid WebsocketRequest?");
