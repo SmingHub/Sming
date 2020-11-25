@@ -9,12 +9,14 @@
  ****/
 
 #include "AccessPointImpl.h"
-#include <tcpip_adapter.h>
+#include <esp_netif.h>
 #include <esp_wifi.h>
 #include <esp_system.h>
 
 static AccessPointImpl accessPoint;
 AccessPointClass& WifiAccessPoint = accessPoint;
+
+static esp_netif_t* apNetworkInterface = nullptr;
 
 void AccessPointImpl::enable(bool enabled, bool save)
 {
@@ -22,6 +24,12 @@ void AccessPointImpl::enable(bool enabled, bool save)
 	esp_wifi_get_mode((wifi_mode_t*)&mode);
 	if(enabled) {
 		mode |= WIFI_MODE_AP;
+		if(apNetworkInterface == nullptr) {
+			apNetworkInterface = esp_netif_create_default_wifi_ap();
+		}
+	} else if(apNetworkInterface) {
+		esp_netif_destroy(apNetworkInterface);
+		apNetworkInterface = nullptr;
 	}
 	esp_wifi_set_storage(save ? WIFI_STORAGE_FLASH : WIFI_STORAGE_RAM);
 	esp_wifi_set_mode((wifi_mode_t)mode);
@@ -68,49 +76,49 @@ bool AccessPointImpl::config(const String& ssid, String password, WifiAuthMode m
 
 IpAddress AccessPointImpl::getIP() const
 {
-	tcpip_adapter_ip_info_t info;
-	tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_AP, &info);
-	return info.ip;
+	esp_netif_ip_info_t info;
+	esp_netif_get_ip_info(apNetworkInterface, &info);
+	return info.ip.addr;
 }
 
 IpAddress AccessPointImpl::getNetworkBroadcast() const
 {
-	tcpip_adapter_ip_info_t info;
-	tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_AP, &info);
+	esp_netif_ip_info_t info;
+	esp_netif_get_ip_info(apNetworkInterface, &info);
 	return (info.ip.addr | ~info.netmask.addr);
 }
 
 IpAddress AccessPointImpl::getNetworkMask() const
 {
-	tcpip_adapter_ip_info_t info;
-	tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_AP, &info);
-	return info.netmask;
+	esp_netif_ip_info_t info;
+	esp_netif_get_ip_info(apNetworkInterface, &info);
+	return info.netmask.addr;
 }
 
 IpAddress AccessPointImpl::getNetworkGateway() const
 {
-	tcpip_adapter_ip_info_t info;
-	tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_AP, &info);
-	return info.gw;
+	esp_netif_ip_info_t info;
+	esp_netif_get_ip_info(apNetworkInterface, &info);
+	return info.gw.addr;
 }
 
 bool AccessPointImpl::setIP(IpAddress address)
 {
-	tcpip_adapter_dhcps_stop(TCPIP_ADAPTER_IF_AP);
-	tcpip_adapter_ip_info_t info;
-	tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_AP, &info);
-	info.ip = address;
-	info.gw = address;
+	esp_netif_dhcps_stop(apNetworkInterface);
+	esp_netif_ip_info_t info;
+	esp_netif_get_ip_info(apNetworkInterface, &info);
+	info.ip.addr = address;
+	info.gw.addr = address;
 	IP4_ADDR(&info.netmask, 255, 255, 255, 0);
-	tcpip_adapter_set_ip_info(TCPIP_ADAPTER_IF_AP, &info);
-	tcpip_adapter_dhcps_start(TCPIP_ADAPTER_IF_AP);
+	esp_netif_set_ip_info(apNetworkInterface, &info);
+	esp_netif_dhcps_start(apNetworkInterface);
 	return true;
 }
 
 MacAddress AccessPointImpl::getMacAddress() const
 {
 	MacAddress addr;
-	if(esp_wifi_get_mac(WIFI_IF_AP, (uint8_t*)&addr[0]) == ESP_OK) {
+	if(esp_wifi_get_mac(ESP_IF_WIFI_AP, (uint8_t*)&addr[0]) == ESP_OK) {
 		return addr;
 	} else {
 		return MACADDR_NONE;
@@ -120,7 +128,7 @@ MacAddress AccessPointImpl::getMacAddress() const
 String AccessPointImpl::getSSID() const
 {
 	wifi_config_t config = {0};
-	if(esp_wifi_get_config(WIFI_IF_AP, &config) != ESP_OK) {
+	if(esp_wifi_get_config(ESP_IF_WIFI_AP, &config) != ESP_OK) {
 		debugf("Can't read station configuration!");
 		return nullptr;
 	}
@@ -132,7 +140,7 @@ String AccessPointImpl::getSSID() const
 String AccessPointImpl::getPassword() const
 {
 	wifi_config_t config = {0};
-	if(esp_wifi_get_config(WIFI_IF_AP, &config) != ESP_OK) {
+	if(esp_wifi_get_config(ESP_IF_WIFI_AP, &config) != ESP_OK) {
 		debugf("Can't read station configuration!");
 		return nullptr;
 	}

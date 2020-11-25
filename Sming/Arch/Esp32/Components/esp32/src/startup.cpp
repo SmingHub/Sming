@@ -10,7 +10,7 @@
 
 #include <esp_system.h>
 #include <esp_wifi.h>
-#include <tcpip_adapter.h>
+#include <esp_netif.h>
 #include <esp_event.h>
 #include <esp_log.h>
 #include <esp_task_wdt.h>
@@ -43,7 +43,7 @@ void esp_init_flash()
 
 void esp_init_wifi()
 {
-	tcpip_adapter_init();
+	esp_netif_init();
 	esp_event_loop_create_default();
 
 	wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
