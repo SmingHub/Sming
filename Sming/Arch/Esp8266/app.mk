@@ -71,12 +71,6 @@ $(TARGET_OUT_1): $(COMPONENTS_AR) $(LIBMAIN_DST)
 
 ##@Flashing
 
-# If enabled, add the SPIFFS image to the chunks to write
-ifneq ($(DISABLE_SPIFFS), 1)
-FLASH_SPIFFS_CHUNKS	:= $(RBOOT_SPIFFS_0)=$(SPIFF_BIN_OUT)
-FLASH_INIT_CHUNKS	+= $(RBOOT_SPIFFS_0)=$(ARCH_BASE)/Compiler/data/blankfs.bin
-endif
-
 .PHONY: flashboot
 flashboot: $(RBOOT_BIN) ##Write just the rBoot boot sector
 	$(call WriteFlash,$(FLASH_RBOOT_BOOT_CHUNKS))
@@ -90,14 +84,6 @@ flashconfig: kill_term ##Erase the rBoot config sector
 flashapp: all kill_term ##Write just the application image
 	$(call WriteFlash,$(FLASH_RBOOT_APP_CHUNKS))
 
-.PHONY: flashfs
-flashfs: $(SPIFF_BIN_OUT) ##Write just the SPIFFS filesystem image
-ifeq ($(DISABLE_SPIFFS), 1)
-	$(info SPIFFS image creation disabled!)
-else
-	$(call WriteFlash,$(FLASH_SPIFFS_CHUNKS))
-endif
-
 .PHONY: flash
 flash: all kill_term ##Write the rBoot boot sector, application image and (if enabled) SPIFFS image
 	$(call WriteFlash,$(FLASH_RBOOT_BOOT_CHUNKS) $(FLASH_RBOOT_APP_CHUNKS) $(FLASH_SPIFFS_CHUNKS))
@@ -106,10 +92,3 @@ ifeq ($(ENABLE_GDB), 1)
 else
 	$(TERMINAL)
 endif
-
-.PHONY: flashinit
-flashinit: $(ESPTOOL) $(FLASH_INIT_DATA) ##Erase your device's flash memory and reset system configuration area to defaults
-	$(info Flash init data default and blank data)
-	$(info DISABLE_SPIFFS = $(DISABLE_SPIFFS))
-	$(EraseFlash)
-	$(call WriteFlash,$(FLASH_INIT_CHUNKS))

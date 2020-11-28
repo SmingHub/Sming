@@ -240,23 +240,7 @@ EXTRA_LDFLAGS := \
 FLASH_BOOT_LOADER       := $(SDK_BUILD_BASE)/bootloader/bootloader.bin
 FLASH_BOOT_CHUNKS		:= 0x1000=$(FLASH_BOOT_LOADER)
 
-CACHE_VARS				+= COM_PORT_ESPTOOL COM_SPEED_ESPTOOL
-COM_PORT_ESPTOOL		?= $(COM_PORT)
-COM_SPEED_ESPTOOL		?= $(COM_SPEED)
-ESPTOOL_CMDLINE := \
-	$(PYTHON) $(SDK_COMPONENTS_PATH)/esptool_py/esptool/esptool.py --chip esp32 \
-	--port $(COM_PORT_ESPTOOL) --baud $(COM_SPEED_ESPTOOL) \
-	--before default_reset --after hard_reset
-
-# Write file contents to Flash
-# $1 -> List of `Offset=File` chunks
-define WriteFlash
-	$(info WriteFlash $1)
-	$(ESPTOOL_CMDLINE) write_flash -z --flash_mode dio --flash_freq 40m --flash_size detect $(flashimageoptions) $(subst =, ,$1)
-endef
-
 SDK_DEFAULT_PATH := $(COMPONENT_PATH)/sdk
-
 
 ##@Debugging
 

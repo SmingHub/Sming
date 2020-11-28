@@ -1,7 +1,5 @@
 COMPONENT_LIBNAME :=
 
-COMPONENT_DEPENDS		:= esp8266
-
 CONFIG_VARS				+= SPI_SPEED SPI_MODE SPI_SIZE
 
 # SPI_SPEED = 40, 26, 20, 80
@@ -32,14 +30,15 @@ else
 endif
 
 # Calculate parameters from SPI_SIZE value (esptool will check validity)
+ifeq ($(SPI_SIZE),detect)
+flashimageoptions	+= -fs detect
+else
 flashimageoptions	+= -fs $(SPI_SIZE)B
+endif
 FLASH_SIZE			:= $(subst M,*1024K,$(SPI_SIZE))
 FLASH_SIZE			:= $(subst K,*1024,$(FLASH_SIZE))
 FlashOffset			= $$(($(FLASH_SIZE)-$1))
-FLASH_INIT_CHUNKS += \
-	$(call FlashOffset,0x5000)=$(SDK_BASE)/bin/blank.bin \
-	$(call FlashOffset,0x4000)=$(FLASH_INIT_DATA) \
-	$(call FlashOffset,0x2000)=$(SDK_BASE)/bin/blank.bin
+BLANK_BIN			:= $(COMPONENT_PATH)/blank.bin
 
 # Default COM port and speed used for flashing
 CACHE_VARS				+= COM_PORT_ESPTOOL COM_SPEED_ESPTOOL
@@ -53,13 +52,23 @@ ESPTOOL_SUBMODULE		:= $(COMPONENT_PATH)/esptool
 
 $(ESPTOOL): $(ESPTOOL_SUBMODULE)/.submodule
 
-ESPTOOL_CMDLINE			:= $(ESPTOOL) -p $(COM_PORT_ESPTOOL) -b $(COM_SPEED_ESPTOOL)
+ifeq ($(SMING_ARCH),Esp8266)
+ESP_CHIP := esp8266
+else ifeq ($(SMING_ARCH),Esp32)
+ESP_CHIP := esp32
+else ifeq ($(MAKE_DOCS),)
+$(error esptool unsupported arch: $(SMING_ARCH))
+endif
+
+ESPTOOL_CMDLINE := $(ESPTOOL) \
+	-p $(COM_PORT_ESPTOOL) -b $(COM_SPEED_ESPTOOL) \
+	--chip $(ESP_CHIP) --before default_reset --after hard_reset
 
 # Write file contents to Flash
 # $1 -> List of `Offset=File` chunks
 define WriteFlash
 	$(info WriteFlash $1)
-	$(ESPTOOL_CMDLINE) write_flash $(flashimageoptions) $(subst =, ,$1)
+	$(ESPTOOL_CMDLINE) write_flash -z $(flashimageoptions) $(subst =, ,$1)
 endef
 
 # Erase flash memory contents

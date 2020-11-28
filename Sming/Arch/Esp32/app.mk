@@ -51,11 +51,9 @@ PARTITIONS_BIN = $(FW_BASE)/partitions.bin
 
 CUSTOM_TARGETS += $(PARTITIONS_CSV)
 
-$(BUILD_BASE)/partitions.csv:
+$(BUILD_BASE)/partitions.csv: | $(BUILD_BASE)
 	$(Q) cp $(SDK_PARTITION_PATH)/base.csv $@
-ifneq ($(DISABLE_SPIFFS),1)
-	@echo "storage, data, spiffs, , $(SPIFF_START_ADDR)," >> $@
-endif
+	@echo "storage, data, spiffs, $(SPIFF_START_ADDR), $(SPIFF_SIZE)," >> $@
 
 $(PARTITIONS_BIN): $(PARTITIONS_CSV)
 	$(Q) $(ESP32_PYTHON) $(SDK_COMPONENTS_PATH)/partition_table/gen_esp32part.py $< $@
@@ -69,12 +67,6 @@ FLASH_PARTITION_CHUNKS	:= 0x8000=$(PARTITIONS_BIN)
 # Application
 
 FLASH_APP_CHUNKS := 0x10000=$(TARGET_BIN)
-
-# If enabled, add the SPIFFS image to the chunks to write
-ifneq ($(DISABLE_SPIFFS), 1)
-FLASH_SPIFFS_CHUNKS	:= $(SPIFF_START_ADDR)=$(SPIFF_BIN_OUT)
-FLASH_INIT_CHUNKS	+= $(SPIFF_START_ADDR)=$(ARCH_BASE)/Compiler/data/blankfs.bin
-endif
 
 .PHONY: flashboot
 flashboot: $(FLASH_BOOT_LOADER) ##Write just the Bootloader
@@ -91,14 +83,6 @@ flashpartition: flashconfig
 flashapp: all kill_term ##Write just the application image
 	$(call WriteFlash,$(FLASH_APP_CHUNKS))
 
-.PHONY: flashfs
-flashfs: $(SPIFF_BIN_OUT) ##Write just the SPIFFS filesystem image
-ifeq ($(DISABLE_SPIFFS), 1)
-	$(info SPIFFS image creation disabled!)
-else
-	$(call WriteFlash,$(FLASH_SPIFFS_CHUNKS))
-endif
-
 .PHONY: flash
 flash: all partitions kill_term ##Write the boot loader, application image, partition table and (if enabled) SPIFFS image
 	$(call WriteFlash,$(FLASH_BOOT_CHUNKS) $(FLASH_APP_CHUNKS) $(FLASH_PARTITION_CHUNKS) $(FLASH_SPIFFS_CHUNKS))
@@ -107,10 +91,3 @@ ifeq ($(ENABLE_GDB), 1)
 else
 	$(TERMINAL)
 endif
-
-.PHONY: flashinit
-flashinit: $(ESPTOOL) $(FLASH_INIT_DATA) ##Erase your device's flash memory and reset system configuration area to defaults
-	$(info Flash init data default and blank data)
-	$(info DISABLE_SPIFFS = $(DISABLE_SPIFFS))
-	$(EraseFlash)
-	$(call WriteFlash,$(FLASH_INIT_CHUNKS))

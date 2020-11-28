@@ -52,7 +52,6 @@ SPIFF_START_ADDR		?= 0x200000
 APP_CFLAGS				+= -DSPIFF_SIZE=$(SPIFF_SIZE) -DSPIFF_START_ADDR=$(SPIFF_START_ADDR)
 endif
 
-
 ##@Building
 
 .PHONY: spiffs-image-update
@@ -80,4 +79,24 @@ else
 				echo "Creating empty $(SPIFF_BIN_OUT)"; \
 				$(SPIFFY) $(SPIFF_SIZE) dummy.dir $(SPIFF_BIN_OUT); \
 			fi
+endif
+
+##@Flashing
+
+BLANKFS_BIN := $(COMPONENT_PATH)/blankfs.bin
+
+# If enabled, add the SPIFFS image to the chunks to write
+ifeq ($(DISABLE_SPIFFS), 1)
+FLASH_SPIFFS_CHUNKS	:=
+else
+FLASH_SPIFFS_CHUNKS	:= $(SPIFF_START_ADDR)=$(SPIFF_BIN_OUT)
+FLASH_INIT_CHUNKS	+= $(SPIFF_START_ADDR)=$(BLANKFS_BIN)
+endif
+
+.PHONY: flashfs
+flashfs: $(SPIFF_BIN_OUT) ##Write just the SPIFFS filesystem image
+ifeq ($(DISABLE_SPIFFS), 1)
+	$(info SPIFFS image creation disabled!)
+else
+	$(call WriteFlash,$(FLASH_SPIFFS_CHUNKS))
 endif

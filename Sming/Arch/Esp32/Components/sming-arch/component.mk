@@ -19,7 +19,8 @@ COMPONENT_DEPENDS := \
 	heap \
 	fatfs \
 	esp_spiffs \
-	esp32
+	esp32 \
+	esptool
 
 #
 DISABLE_WIFI ?= 0

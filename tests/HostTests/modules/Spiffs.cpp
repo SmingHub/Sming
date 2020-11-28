@@ -32,13 +32,23 @@ public:
 		DEFINE_FSTR_LOCAL(testFile, "testfile");
 		DEFINE_FSTR_LOCAL(testContent, "Some test content to write to a file");
 
+		auto cfg = spiffs_get_storage_config();
+
 		// Write to filesystem until sector #0 gets erased
 		unsigned writeCount = 0;
 		uint32_t word0 = 0;
 		do {
-			fileSetContent(testFile, testContent);
+			if(fileSetContent(testFile, testContent) != int(testContent.length())) {
+				debug_e("fileSetContent() failed");
+				TEST_ASSERT(false);
+				break;
+			}
 			++writeCount;
-			flashmem_read(&word0, _filesystemStorageHandle.cfg.phys_addr, sizeof(word0));
+			if(flashmem_read(&word0, cfg.phys_addr, sizeof(word0)) != sizeof(word0)) {
+				debug_e("flashmem_read failed");
+				TEST_ASSERT(false);
+				break;
+			}
 		} while(word0 != 0xFFFFFFFF);
 
 		debug_i("Sector #0 erased after %u writes", writeCount);

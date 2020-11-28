@@ -93,6 +93,8 @@ RBOOT_SPIFFS_1			?= 0x300000
 APP_CFLAGS				+= -DRBOOT_SPIFFS_0=$(RBOOT_SPIFFS_0)
 APP_CFLAGS				+= -DRBOOT_SPIFFS_1=$(RBOOT_SPIFFS_1)
 
+SPIFF_START_ADDR		?= $(RBOOT_SPIFFS_0)
+
 # filenames and options for generating rBoot rom images with esptool2
 RBOOT_E2_SECTS			?= .text .text1 .data .rodata
 RBOOT_E2_USER_ARGS		?= -quiet -bin -boot2
