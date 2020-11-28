@@ -7,8 +7,8 @@
 #endif
 
 // For testing purposes, try a few different URL formats
-#define MQTT_URL1 "mqtt://attachix.com:1883"
-#define MQTT_URL2 "mqtts://attachix.com:8883" // (Need ENABLE_SSL)
+#define MQTT_URL1 "mqtt://test.mosquitto.org:1883"
+#define MQTT_URL2 "mqtts://test.mosquitto.org:8883" // (Need ENABLE_SSL)
 #define MQTT_URL3 "mqtt://frank:fiddle@192.168.100.107:1883"
 
 #ifdef ENABLE_SSL
