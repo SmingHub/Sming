@@ -68,13 +68,17 @@ public:
 	void setKeepAlive(uint16_t seconds) //send to broker
 	{
 		keepAlive = seconds;
+		pingRepeatTime = std::min(pingRepeatTime, keepAlive);
 	}
 
 	/**
 	 * Sets the interval in which to ping the remote server if there was no activity
 	 * @param seconds
 	 */
-	void setPingRepeatTime(unsigned seconds);
+	void setPingRepeatTime(uint16_t seconds)
+	{
+		pingRepeatTime = std::min(keepAlive, seconds);
+	}
 
 	/**
 	 * Sets last will and testament
@@ -297,7 +301,7 @@ private:
 
 	// keep-alives and pings
 	uint16_t keepAlive = 60;
-	unsigned pingRepeatTime = 20;
+	uint16_t pingRepeatTime = 20;
 	unsigned long lastMessage = 0;
 
 	// messages

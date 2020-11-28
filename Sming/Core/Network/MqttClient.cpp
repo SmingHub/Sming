@@ -186,15 +186,6 @@ int MqttClient::onMessageEnd(mqtt_message_t* message)
 	return 0;
 }
 
-void MqttClient::setPingRepeatTime(unsigned seconds)
-{
-	if(pingRepeatTime > keepAlive) {
-		pingRepeatTime = keepAlive;
-	} else {
-		pingRepeatTime = seconds;
-	}
-}
-
 bool MqttClient::setWill(const String& topic, const String& message, uint8_t flags)
 {
 	if(bitsSet(this->flags, MQTT_CLIENT_CONNECTED)) {
