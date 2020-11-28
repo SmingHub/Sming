@@ -401,15 +401,12 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		mqtt_serialiser_write(&serialiser, outgoingMessage, packet, packetLength);
 
 		delete stream;
-		MemoryDataStream* headerStream = new MemoryDataStream();
+		auto headerStream = new MemoryDataStream();
 		headerStream->write(packet, packetLength);
-		if(outgoingMessage->common.type == MQTT_TYPE_PUBLISH && payloadStream) {
-			StreamChain* streamChain = new StreamChain();
-
+		if(outgoingMessage->common.type == MQTT_TYPE_PUBLISH && payloadStream != nullptr) {
+			auto streamChain = new StreamChain();
 			streamChain->attachStream(headerStream);
-			if(payloadStream) {
-				streamChain->attachStream(payloadStream);
-			}
+			streamChain->attachStream(payloadStream);
 			stream = streamChain;
 		} else {
 			stream = headerStream;
