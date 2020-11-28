@@ -16,6 +16,7 @@
 #include <WString.h>
 #include <WHashMap.h>
 #include <Data/ObjectQueue.h>
+#include <Platform/Timers.h>
 #include "Mqtt/MqttPayloadParser.h"
 #include "mqtt-codec/src/message.h"
 #include "mqtt-codec/src/serialiser.h"
@@ -68,7 +69,9 @@ public:
 	void setKeepAlive(uint16_t seconds) //send to broker
 	{
 		keepAlive = seconds;
-		pingRepeatTime = std::min(pingRepeatTime, keepAlive);
+		if(seconds < pingRepeatTime) {
+			setPingRepeatTime(seconds);
+		}
 	}
 
 	/**
@@ -77,7 +80,11 @@ public:
 	 */
 	void setPingRepeatTime(uint16_t seconds)
 	{
-		pingRepeatTime = std::min(keepAlive, seconds);
+		seconds = std::min(keepAlive, seconds);
+		if(seconds != pingRepeatTime) {
+			pingRepeatTime = seconds;
+			pingTimer.reset(seconds);
+		}
 	}
 
 	/**
@@ -301,8 +308,8 @@ private:
 
 	// keep-alives and pings
 	uint16_t keepAlive = 60;
-	uint16_t pingRepeatTime = 20;
-	unsigned long lastMessage = 0;
+	uint16_t pingRepeatTime = 20; ///< pingRepeatTime should be <= keepAlive
+	OneShotElapseTimer<NanoTime::Seconds> pingTimer;
 
 	// messages
 	MqttRequestQueue requestQueue;

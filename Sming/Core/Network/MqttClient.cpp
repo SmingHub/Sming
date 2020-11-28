@@ -13,8 +13,6 @@
 #include "Data/Stream/MemoryDataStream.h"
 #include "Data/Stream/StreamChain.h"
 
-#include "Clock.h"
-
 const mqtt_parser_callbacks_t MqttClient::callbacks PROGMEM = {
 	.on_message_begin = staticOnMessageBegin,
 	.on_data_begin = staticOnDataBegin,
@@ -72,7 +70,8 @@ bool copyString(mqtt_buffer_t& destBuffer, const String& sourceString)
 
 } // namespace
 
-MqttClient::MqttClient(bool withDefaultPayloadParser, bool autoDestruct) : TcpClient(autoDestruct)
+MqttClient::MqttClient(bool withDefaultPayloadParser, bool autoDestruct)
+	: TcpClient(autoDestruct), pingTimer(pingRepeatTime)
 {
 	mqtt_parser_init(&parser, const_cast<mqtt_parser_callbacks_t*>(&callbacks));
 	mqtt_serialiser_init(&serialiser);
@@ -106,7 +105,7 @@ MqttClient::~MqttClient()
 
 bool MqttClient::onTcpReceive(TcpClient& client, char* data, int size)
 {
-	lastMessage = millis();
+	pingTimer.start();
 	int rc = mqtt_parser_execute(&parser, &incomingMessage, (uint8_t*)data, (size_t)size);
 	if(rc == MQTT_PARSER_RC_ERROR) {
 		debug_e("MqttClient parse error: %s", mqtt_error_string(parser.error));
@@ -365,13 +364,14 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		}
 		if(!outgoingMessage) {
 			// Send PINGREQ every PingRepeatTime time, if there is no outgoing traffic
-			// PingRepeatTime should be <= keepAlive
-			if(!(lastMessage && (millis() - lastMessage >= pingRepeatTime * 1000))) {
+			if(!pingTimer.expired()) {
 				break;
 			}
 
 			outgoingMessage = createMessage(MQTT_TYPE_PINGREQ);
 		}
+
+		debug_d("[MQTT] Sending message type %u", outgoingMessage->common.type);
 
 		IDataSourceStream* payloadStream{nullptr};
 		if(outgoingMessage->common.type == MQTT_TYPE_PUBLISH &&
@@ -407,7 +407,7 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	}
 
 	case eMCS_SendingData:
-		lastMessage = millis();
+		pingTimer.start();
 		if(stream != nullptr && !stream->isFinished()) {
 			break;
 		}
