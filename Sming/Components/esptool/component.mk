@@ -67,8 +67,10 @@ ESPTOOL_CMDLINE := $(ESPTOOL) \
 # Write file contents to Flash
 # $1 -> List of `Offset=File` chunks
 define WriteFlash
-	$(info WriteFlash $1)
-	$(ESPTOOL_CMDLINE) write_flash -z $(flashimageoptions) $(subst =, ,$1)
+	$(if $1,\
+		$(info WriteFlash $1) \
+		$(ESPTOOL_CMDLINE) write_flash -z $(flashimageoptions) $(subst =, ,$1) \
+	)
 endef
 
 # Erase flash memory contents
