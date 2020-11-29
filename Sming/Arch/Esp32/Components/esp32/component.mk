@@ -291,7 +291,8 @@ $(SDK_CONFIG_DEFAULTS):
 
 PHONY: sdk-menuconfig
 sdk-menuconfig: $(SDK_CONFIG_DEFAULTS) | $(SDK_BUILD_BASE) ##Configure SDK options
-	$(SDK_BUILD) menuconfig
+	$(Q) $(SDK_BUILD) menuconfig
+	$(Q) rm $(SDK_BUILD_COMPLETE)
 	@echo Now run 'make esp32-build'
 
 .PHONY: sdk-defconfig
