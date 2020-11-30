@@ -17,7 +17,7 @@ Now install the toolchain::
    esp-idf/install
 
 For information about pre-requisites and other issues, see
-`ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.0/get-started/index.html#installation-step-by-step>`__.
+`ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.1/get-started/index.html#installation-step-by-step>`__.
 
 Building
 --------

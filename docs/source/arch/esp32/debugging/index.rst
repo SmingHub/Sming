@@ -10,7 +10,7 @@ Make sure that you have the following executable in your PATH::
 
     xtensa-esp32-elf-gdb
 
-Debugging with JTAG is explained in details in the `ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.0.1/api-guides/jtag-debugging/index.html>`__.
+Debugging with JTAG is explained in details in the `ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.1/api-guides/jtag-debugging/index.html>`__.
 Make sure to read it carefully.
 
 For the purposes of this documentation we will be using `ESP-Prog JTAG adapter <https://github.com/espressif/esp-iot-solution/blob/master/documents/evaluation_boards/ESP-Prog_guide_en.md>`__

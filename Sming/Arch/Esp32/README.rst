@@ -14,8 +14,8 @@ Build variables
 Requirements
 ------------
 
-In order to be able to compile for the ESP32 architecture you should have ESP-IDF v4.0 installed.
-A detailed installation manual can be found in the `ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.0/get-started/index.html#installation-step-by-step>`__.
+In order to be able to compile for the ESP32 architecture you should have ESP-IDF v4.1 installed.
+A detailed installation manual can be found in the `ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.1/get-started/index.html#installation-step-by-step>`__.
 
 Building
 --------
