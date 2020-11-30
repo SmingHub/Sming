@@ -14,7 +14,7 @@
 #include <sys/pgmspace.h>
 
 #include "m_printf.h"
-#include "c_types.h"
+#include <c_types.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,15 +26,6 @@ extern "C" {
  * @brief Support for data stored in flash memory
  * @{
  */
-
-#ifndef FLASH_MEMORY_START_ADDR
-#define FLASH_MEMORY_START_ADDR 0
-#endif
-
-/**
- * @brief Simple check to determine if a pointer refers to flash memory
- */
-#define isFlashPtr(ptr) ((uint32_t)ptr >= FLASH_MEMORY_START_ADDR)
 
 /**
  * @brief determines if the given value is aligned to a word (4-byte) boundary

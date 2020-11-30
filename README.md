@@ -24,9 +24,9 @@ Table of Contents
 
 * [Summary](#summary)
 * [Compatibility](#compatibility)
-   * [Architecture: Esp32](#architecture-esp32-experimental)
    * [Architecture: ESP8266](#architecture-esp8266)
    * [Architecture: Host](#architecture-host)
+   * [Architecture: Esp32](#architecture-esp32-experimental)
 * [Releases](#releases)
    * [Stable](#stable)
    * [Development](#development)
@@ -104,7 +104,7 @@ Linux and Windows OSes with gcc compilers are supported. Clang is NOT supported.
 
 ### Architecture: ESP32 (Experimental)
 
-Supported SDK: ESP-IDF v4.0
+Supported SDK: ESP-IDF v4.1
 
 
 ## Releases

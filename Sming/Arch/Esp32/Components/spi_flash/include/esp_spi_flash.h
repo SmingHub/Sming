@@ -13,6 +13,7 @@
 
 #include_next <esp_spi_flash.h>
 #include <esp32/rom/spi_flash.h>
+#include <esp_app_format.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,38 +42,42 @@ extern "C" {
 
 #define INTERNAL_FLASH_SECTOR_SIZE SPI_FLASH_SEC_SIZE
 #define INTERNAL_FLASH_SIZE ((FLASH_WORK_SEC_COUNT)*INTERNAL_FLASH_SECTOR_SIZE)
-#define INTERNAL_FLASH_START_ADDRESS 0x40200000
 
-/** @brief SPI Flash memory information block.
- * Stored at the beginning of flash memory.
+typedef enum {
+	MODE_QIO = ESP_IMAGE_SPI_MODE_QIO,
+	MODE_QOUT = ESP_IMAGE_SPI_MODE_QOUT,
+	MODE_DIO = ESP_IMAGE_SPI_MODE_DIO,
+	MODE_DOUT = ESP_IMAGE_SPI_MODE_DOUT,
+	MODE_FAST_READ = ESP_IMAGE_SPI_MODE_FAST_READ,
+	MODE_SLOW_READ = ESP_IMAGE_SPI_MODE_SLOW_READ,
+} SPIFlashMode;
+
+typedef enum {
+	SPEED_40MHZ = ESP_IMAGE_SPI_SPEED_40M,
+	SPEED_26MHZ = ESP_IMAGE_SPI_SPEED_26M,
+	SPEED_20MHZ = ESP_IMAGE_SPI_SPEED_20M,
+	SPEED_80MHZ = ESP_IMAGE_SPI_SPEED_80M,
+} SPIFlashSpeed;
+
+typedef enum {
+	SIZE_1MBIT = ESP_IMAGE_FLASH_SIZE_1MB,
+	SIZE_2MBIT = ESP_IMAGE_FLASH_SIZE_2MB,
+	SIZE_4MBIT = ESP_IMAGE_FLASH_SIZE_4MB,
+	SIZE_8MBIT = ESP_IMAGE_FLASH_SIZE_8MB,
+	SIZE_16MBIT = ESP_IMAGE_FLASH_SIZE_16MB,
+	SIZE_32MBIT = 0xFF, ///< Not listed
+} SPIFlashSize;
+
+/**
+ * @brief SPI Flash memory information block.
+ * Copied from bootloader header.
+ * See `esp_image_header_t`.
  */
-typedef struct
-{
-	uint8_t unknown0;
-	uint8_t unknown1;
-    enum
-    {
-		MODE_QIO = 0,
-		MODE_QOUT = 1,
-		MODE_DIO = 2,
-		MODE_DOUT = 15,
-	} mode : 8;
-    enum
-    {
-		SPEED_40MHZ = 0,
-		SPEED_26MHZ = 1,
-		SPEED_20MHZ = 2,
-		SPEED_80MHZ = 15,
-	} speed : 4;
-    enum
-    {
-		SIZE_4MBIT = 0,
-		SIZE_2MBIT = 1,
-		SIZE_8MBIT = 2,
-		SIZE_16MBIT = 3,
-		SIZE_32MBIT = 4,
-	} size : 4;
-} STORE_TYPEDEF_ATTR SPIFlashInfo;
+typedef struct {
+	SPIFlashMode mode;
+	SPIFlashSpeed speed;
+	SPIFlashSize size;
+} SPIFlashInfo;
 
 /** @brief Obtain the flash memory address for a memory pointer
  *  @param memptr
@@ -141,30 +146,6 @@ uint32_t flashmem_find_sector(uint32_t address, uint32_t* pstart, uint32_t* pend
  *  @retval uint32_t sector number
  */
 uint32_t flashmem_get_sector_of_address(uint32_t addr);
-
-/** @brief write to flash memory
- *  @param from Buffer to read data from - MUST be word-aligned
- *  @param toaddr Flash address (offset) to write to - MUST be word-aligned
- *  @param size Number of bytes to write - MUST be word-aligned
- *  @retval uint32_t Number of bytes actually written
- *  @note All parameters MUST be aligned to 4-byte word boundaries, **including** the RAM pointer
- */
-uint32_t flashmem_write_internal(const void* from, uint32_t toaddr, uint32_t size);
-
-/** @brief Read from flash memory
- *  @param to Buffer to store data - MUST be word-aligned
- *  @param fromaddr Flash address (offset) to read from - MUST be word-aligned
- *  @param size Number of bytes to read - MUST be word-aligned
- *  @retval uint32_t Number of bytes actually read
- *  @note All parameters MUST be aligned to 4-byte word boundaries, **including** the RAM pointer
- */
-uint32_t flashmem_read_internal(void* to, uint32_t fromaddr, uint32_t size);
-
-/*
- * @brief Returns the address of the first free block on flash
- * @retval  uint32_t The actual address on flash
- */
-uint32_t flashmem_get_first_free_block_address();
 
 /** @} */
 

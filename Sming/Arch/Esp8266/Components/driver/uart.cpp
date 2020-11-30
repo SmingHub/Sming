@@ -45,10 +45,9 @@
  */
 #include <BitManipulations.h>
 
-#include "driver/uart.h"
+#include <driver/uart.h>
 #include <espinc/uart_register.h>
-
-#include "SerialBuffer.h"
+#include <driver/SerialBuffer.h>
 
 /*
  * Parameters relating to RX FIFO and buffer thresholds
@@ -362,7 +361,7 @@ static void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, smg_uart_t* uart)
 			 * If the FIFO is full and we didn't read any of the data then need to mask the interrupt out or it'll recur.
 			 * The interrupt gets re-enabled by a call to uart_read() or uart_flush()
 			 */
-			if(usis &  UART_RXFIFO_OVF_INT_ST) {
+			if(usis & UART_RXFIFO_OVF_INT_ST) {
 				CLEAR_PERI_REG_MASK(UART_INT_ENA(uart_nr), UART_RXFIFO_OVF_INT_ENA);
 			} else if(read == 0) {
 				CLEAR_PERI_REG_MASK(UART_INT_ENA(uart_nr), UART_RXFIFO_FULL_INT_ENA | UART_RXFIFO_TOUT_INT_ENA);
@@ -714,7 +713,7 @@ static void uart1_pin_restore(const unsigned pin)
 	}
 }
 
-smg_uart_t* smg_uart_init_ex(const smg_uart_config& cfg)
+smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 {
 	// Already initialised?
 	if(smg_uart_get_uart(cfg.uart_nr) != nullptr) {
@@ -730,8 +729,8 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config& cfg)
 	uart->uart_nr = cfg.uart_nr;
 	uart->mode = cfg.mode;
 	uart->options = cfg.options;
-	uart->tx_pin = 255;
-	uart->rx_pin = 255;
+	uart->tx_pin = UART_PIN_DEFAULT;
+	uart->rx_pin = UART_PIN_DEFAULT;
 	uart->rx_headroom = DEFAULT_RX_HEADROOM;
 
 	auto rxBufferSize = cfg.rx_size;
@@ -845,17 +844,20 @@ void smg_uart_uninit(smg_uart_t* uart)
 	delete uart;
 }
 
-smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin, size_t rx_size,
-				  size_t tx_size)
+smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin,
+						  size_t rx_size, size_t tx_size)
 {
-	smg_uart_config cfg = {.uart_nr = uart_nr,
-					   .tx_pin = tx_pin,
-					   .mode = mode,
-					   .options = _BV(UART_OPT_TXWAIT),
-					   .baudrate = baudrate,
-					   .config = config,
-					   .rx_size = rx_size,
-					   .tx_size = tx_size};
+	smg_uart_config_t cfg = {
+		.uart_nr = uart_nr,
+		.tx_pin = tx_pin,
+		.rx_pin = UART_PIN_DEFAULT,
+		.mode = mode,
+		.options = _BV(UART_OPT_TXWAIT),
+		.baudrate = baudrate,
+		.config = config,
+		.rx_size = rx_size,
+		.tx_size = tx_size,
+	};
 	return smg_uart_init_ex(cfg);
 }
 
@@ -905,54 +907,55 @@ void smg_uart_swap(smg_uart_t* uart, int tx_pin)
 	}
 }
 
-void smg_uart_set_tx(smg_uart_t* uart, int tx_pin)
+bool smg_uart_set_tx(smg_uart_t* uart, int tx_pin)
 {
-	if(uart == nullptr) {
-		return;
+	if(uart != nullptr && uart->uart_nr == UART0 && smg_uart_tx_enabled(uart)) {
+		uart1_pin_restore(uart->tx_pin);
+		uart->tx_pin = (tx_pin == 2) ? 2 : 1;
+		uart1_pin_select(uart->tx_pin);
+		return true;
 	}
 
-	switch(uart->uart_nr) {
-	case UART0:
-		if(smg_uart_tx_enabled(uart)) {
-			uart1_pin_restore(uart->tx_pin);
-			uart->tx_pin = (tx_pin == 2) ? 2 : 1;
-			uart1_pin_select(uart->tx_pin);
-		}
-
-		break;
-
-	case UART1:
-		// GPIO7 as TX not possible! See GPIO pins used by UART
-		break;
-
-	default:
-		break;
-	}
+	// All other combinations, e.g. GPIO7 as TX not possible! See GPIO pins used by UART
+	return false;
 }
 
-void smg_uart_set_pins(smg_uart_t* uart, int tx, int rx)
+bool smg_uart_set_pins(smg_uart_t* uart, int tx_pin, int rx_pin)
 {
 	if(uart == nullptr) {
-		return;
+		return false;
 	}
 
 	// Only UART0 allows pin changes
-	if(uart->uart_nr == UART0) {
-		if(smg_uart_tx_enabled(uart) && uart->tx_pin != tx) {
-			if(rx == 13 && tx == 15)
-				smg_uart_swap(uart, 15);
-			else if(rx == 3 && (tx == 1 || tx == 2)) {
-				if(uart->rx_pin != rx) {
-					smg_uart_swap(uart, tx);
-				} else {
-					smg_uart_set_tx(uart, tx);
-				}
-			}
-		}
-		if(smg_uart_rx_enabled(uart) && uart->rx_pin != rx && rx == 13 && tx == 15) {
+	if(uart->uart_nr != UART0) {
+		return false;
+	}
+
+	bool res{true};
+
+	if(smg_uart_tx_enabled(uart) && uart->tx_pin != tx_pin) {
+		if(rx_pin == 13 && tx_pin == 15) {
 			smg_uart_swap(uart, 15);
+		} else if(rx_pin == 3 && (tx_pin == 1 || tx_pin == 2)) {
+			if(uart->rx_pin != rx_pin) {
+				smg_uart_swap(uart, tx_pin);
+			} else {
+				smg_uart_set_tx(uart, tx_pin);
+			}
+		} else {
+			res = false;
 		}
 	}
+
+	if(smg_uart_rx_enabled(uart) && uart->rx_pin != rx_pin) {
+		if(rx_pin == 13 && tx_pin == 15) {
+			smg_uart_swap(uart, 15);
+		} else {
+			res = false;
+		}
+	}
+
+	return res;
 }
 
 void smg_uart_debug_putc(char c)

@@ -10,7 +10,7 @@ Make sure that you have the following executable in your PATH::
 
     xtensa-esp32-elf-gdb
 
-Debugging with JTAG is explained in details in the `ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.0.1/api-guides/jtag-debugging/index.html>`__.
+Debugging with JTAG is explained in details in the `ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.1/api-guides/jtag-debugging/index.html>`__.
 Make sure to read it carefully.
 
 For the purposes of this documentation we will be using `ESP-Prog JTAG adapter <https://github.com/espressif/esp-iot-solution/blob/master/documents/evaluation_boards/ESP-Prog_guide_en.md>`__
@@ -21,21 +21,21 @@ Configure Hardware
 The JTAG adapter has to be connected to your ESP32 microcontroller.
 The following pins from the JTAG adapter have to be connected to ESP32 for the communication to work.
 
-    +---+---------------+-------------+
-    |   | ESP32 Pin     | JTAG Signal |
-    +===+===============+=============+
-    | 1 | VCC           | VCC         |
-    +---+---------------+-------------+
-    | 2 | MTDO / GPIO15 | TDO         |
-    +---+---------------+-------------+
-    | 3 | MTDI / GPIO12 | TDI         |
-    +---+---------------+-------------+
-    | 4 | MTCK / GPIO13 | TCK         |
-    +---+---------------+-------------+
-    | 5 | MTMS / GPIO14 | TMS         |
-    +---+---------------+-------------+
-    | 6 | GND           | GND         |
-    +---+---------------+-------------+
+    +---+---------------+-------------+-------------+-------------+
+    |   | ESP32 Pin     | nodeMCU Pin | USB Blaster | JTAG Signal |
+    +===+===============+=============+=============+=============+
+    | 1 | VCC           | 3V3         | 4           | VCC         |
+    +---+---------------+-------------+-------------+-------------+
+    | 2 | MTDO / GPIO15 | D15         | 3           | TDO         |
+    +---+---------------+-------------+-------------+-------------+
+    | 3 | MTDI / GPIO12 | D12         | 9           | TDI         |
+    +---+---------------+-------------+-------------+-------------+
+    | 4 | MTCK / GPIO13 | D13         | 1           | TCK         |
+    +---+---------------+-------------+-------------+-------------+
+    | 5 | MTMS / GPIO14 | D14         | 5           | TMS         |
+    +---+---------------+-------------+-------------+-------------+
+    | 6 | GND           | GND         | 2           | GND         |
+    +---+---------------+-------------+-------------+-------------+
 
 
 Running OpenOCD
@@ -43,7 +43,7 @@ Running OpenOCD
 Once the JTAG adapter is connected to the microcontroller and to a computer we have to start the OpenOCD server that will communicate with the JTAG adapter.
 For our specific hardware the following command has to be executed::
 
-    openocd -f interface/ftdi/esp32_devkitj_v1.cfg -f board/esp-wroom-32.cfg
+    openocd -f interface/ftdi/esp32_devkitj_v1.cfg -f target/esp32.cfg
 
 If you have configured your JTAG adapter correctly the following messages should show up::
 
@@ -103,7 +103,7 @@ sample application::
 The device will restart then wait for a debugger to be connected. Before starting the debugger you
 must be sure that the OpenOCD server is running and listening for incoming connections on localhost port 3333.
 Now start the debugger with the command below
-::
+:::::::::::::::::::::::::::::::::::::::::::::
 
    make gdb
 

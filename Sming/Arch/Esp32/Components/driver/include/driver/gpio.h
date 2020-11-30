@@ -12,13 +12,11 @@
 
 #pragma once
 
-#include <c_types.h>
+#include_next <driver/gpio.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <driver/gpio.h>
 
 /**
  * @defgroup gpio_driver GPIO driver

@@ -8,15 +8,104 @@ ifeq (,$(IDF_PATH))
 $(error IDF_PATH not set correctly: "$(IDF_PATH)")
 endif
 
-CC 	:= xtensa-esp32-elf-gcc
-CXX 	:= xtensa-esp32-elf-g++
-LD 	:= xtensa-esp32-elf-gcc
-AR 	:= xtensa-esp32-elf-ar
-OBJCOPY := xtensa-esp32-elf-objcopy
-OBJDUMP := xtensa-esp32-elf-objdump
-SIZE 	:= xtensa-esp32-elf-size
-AS	:= xtensa-esp32-elf-gcc
-GDB	:= xtensa-esp32-elf-gdb
+export IDF_PATH := $(call FixPath,$(IDF_PATH))
+
+# By default, downloaded tools will be installed under $HOME/.espressif directory
+# (%USERPROFILE%/.espressif on Windows). This path can be modified by setting
+# IDF_TOOLS_PATH variable prior to running this tool.
+DEBUG_VARS += IDF_TOOLS_PATH
+ifeq ($(UNAME),Windows)
+IDF_TOOLS_PATH ?= $(USERPROFILE)/.espressif
+else
+IDF_TOOLS_PATH ?= $(HOME)/.espressif
+endif
+
+export IDF_TOOLS_PATH := $(call FixPath,$(IDF_TOOLS_PATH))
+
+ifndef ESP_VARIANT
+ESP_VARIANT := esp32
+endif
+
+ESP32_COMPILER_PREFIX := xtensa-$(ESP_VARIANT)-elf
+
+# $1 => Root directory
+# $2 => Sub-directory
+define FindTool
+$(lastword $(sort $(wildcard $(IDF_TOOLS_PATH)/$1/*))$2)
+endef
+
+DEBUG_VARS			+= ESP32_COMPILER_PATH ESP32_ULP_PATH ESP32_OPENOCD_PATH ESP32_PYTHON_PATH
+
+ifndef ESP32_COMPILER_PATH
+ESP32_COMPILER_PATH	:= $(call FindTool,tools/$(ESP32_COMPILER_PREFIX),/$(ESP32_COMPILER_PREFIX))
+endif
+
+ifndef ESP32_ULP_PATH
+ESP32_ULP_PATH		:= $(call FindTool,tools/$(ESP_VARIANT)ulp-elf)
+endif
+
+ifndef ESP32_OPENOCD_PATH
+ESP32_OPENOCD_PATH	:= $(call FindTool,tools/openocd-esp32)
+endif
+
+ifndef ESP32_PYTHON_PATH
+ESP32_PYTHON_PATH	:= $(call FindTool,python_env)
+ifneq (,$(wildcard $(ESP32_PYTHON_PATH)/bin))
+ESP32_PYTHON_PATH := $(ESP32_PYTHON_PATH)/bin
+else ifneq (,$(wildcard $(ESP32_PYTHON_PATH)/Scripts))
+ESP32_PYTHON_PATH := $(ESP32_PYTHON_PATH)/Scripts
+else
+$(error Failed to find ESP32 Python installation)
+endif
+ESP32_PYTHON = $(ESP32_PYTHON_PATH)/python
+endif
+
+# Required by v4.2 SDK
+export IDF_PYTHON_ENV_PATH=$(ESP32_PYTHON_PATH)
+
+# Add ESP-IDF tools to PATH
+IDF_PATH_LIST := \
+	$(IDF_PATH)/tools \
+	$(ESP32_COMPILER_PATH)/bin \
+	$(ESP32_ULP_PATH)/$(ESP_VARIANT)ulp-elf-binutils/bin \
+	$(ESP32_OPENOCD_PATH)/openocd-esp32/bin \
+	$(ESP32_PYTHON_PATH)/bin \
+	$(IDF_PATH)/components/esptool_py/esptool \
+	$(IDF_PATH)/components/espcoredump \
+	$(IDF_PATH)/components/partition_table
+
+ifeq ($(UNAME),Windows)
+DEBUG_VARS += ESP32_NINJA_PATH
+ifndef ESP32_NINJA_PATH
+ESP32_NINJA_PATH	:= $(call FindTool,tools/ninja)
+endif
+ifeq (,$(wildcard $(ESP32_NINJA_PATH)/ninja.exe))
+$(error Failed to find NINJA)
+endif
+IDF_PATH_LIST += $(ESP32_NINJA_PATH)
+
+DEBUG_VARS += ESP32_IDFEXE_PATH
+ifndef ESP32_IDFEXE_PATH
+ESP32_IDFEXE_PATH := $(call FindTool,tools/idf-exe)
+endif
+IDF_PATH_LIST += ESP32_IDFEXE_PATH
+endif
+
+space :=
+space +=
+
+export PATH := $(subst $(space),:,$(IDF_PATH_LIST)):$(PATH)
+
+TOOLSPEC 	:= $(ESP32_COMPILER_PATH)/bin/$(ESP32_COMPILER_PREFIX)
+AS			:= $(TOOLSPEC)-gcc
+CC			:= $(TOOLSPEC)-gcc
+CXX			:= $(TOOLSPEC)-g++
+AR			:= $(TOOLSPEC)-ar
+LD			:= $(TOOLSPEC)-gcc
+OBJCOPY		:= $(TOOLSPEC)-objcopy
+OBJDUMP		:= $(TOOLSPEC)-objdump
+GDB			:= $(TOOLSPEC)-gdb
+SIZE 		:= $(TOOLSPEC)-size
 
 # Get version variables
 include $(IDF_PATH)/make/version.mk
@@ -31,7 +120,7 @@ endif
 IDF_VER := $(shell echo "$(IDF_VER_T)"  | cut -c 1-31)
 
 # [ Sming specific flags ]
-DEBUG_VARS			+= IDF_VER
+DEBUG_VARS			+= IDF_PATH IDF_VER
 
 # Set default LDFLAGS
 EXTRA_LDFLAGS ?=
@@ -117,6 +206,7 @@ COMMON_FLAGS := \
 	-ffunction-sections -fdata-sections \
 	-fstrict-volatile-bitfields \
 	-mlongcalls \
+	-mtext-section-literals \
 	-nostdlib
 
 ifndef IS_BOOTLOADER_BUILD

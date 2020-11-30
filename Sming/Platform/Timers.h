@@ -31,8 +31,8 @@
  * Elapse timers
  */
 
-template <NanoTime::Unit unit> using OneShotElapseTimer = PolledTimer::OneShot<Timer2Clock, unit>;
-template <NanoTime::Unit unit> using PeriodicElapseTimer = PolledTimer::Periodic<Timer2Clock, unit>;
+template <NanoTime::Unit unit> using OneShotElapseTimer = PolledTimer::OneShot<PolledTimerClock, unit>;
+template <NanoTime::Unit unit> using PeriodicElapseTimer = PolledTimer::Periodic<PolledTimerClock, unit>;
 
 using OneShotFastMs = OneShotElapseTimer<NanoTime::Milliseconds>;
 using PeriodicFastMs = PeriodicElapseTimer<NanoTime::Milliseconds>;

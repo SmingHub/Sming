@@ -19,7 +19,7 @@
 #include <Delegate.h>
 #include <Data/Stream/ReadWriteStream.h>
 #include <BitManipulations.h>
-#include "driver/driver_api.h"
+#include <driver/uart.h>
 
 #define UART_ID_0 0 ///< ID of UART 0
 #define UART_ID_1 1 ///< ID of UART 1
@@ -50,39 +50,32 @@ using TransmitCompleteDelegate = Delegate<void(HardwareSerial& serial)>;
 
 class CommandExecutor;
 
-enum SerialConfig {
-	SERIAL_5N1 = UART_5N1,
-	SERIAL_6N1 = UART_6N1,
-	SERIAL_7N1 = UART_7N1,
-	SERIAL_8N1 = UART_8N1,
-	SERIAL_5N2 = UART_5N2,
-	SERIAL_6N2 = UART_6N2,
-	SERIAL_7N2 = UART_7N2,
-	SERIAL_8N2 = UART_8N2,
-	SERIAL_5E1 = UART_5E1,
-	SERIAL_6E1 = UART_6E1,
-	SERIAL_7E1 = UART_7E1,
-	SERIAL_8E1 = UART_8E1,
-	SERIAL_5E2 = UART_5E2,
-	SERIAL_6E2 = UART_6E2,
-	SERIAL_7E2 = UART_7E2,
-	SERIAL_8E2 = UART_8E2,
-	SERIAL_5O1 = UART_5O1,
-	SERIAL_6O1 = UART_6O1,
-	SERIAL_7O1 = UART_7O1,
-	SERIAL_8O1 = UART_8O1,
-	SERIAL_5O2 = UART_5O2,
-	SERIAL_6O2 = UART_6O2,
-	SERIAL_7O2 = UART_7O2,
-	SERIAL_8O2 = UART_8O2,
+// clang-format off
+#define SERIAL_CONFIG_MAP(XX) \
+	XX(5N1) XX(6N1) XX(7N1) XX(8N1) XX(5N2) XX(6N2) XX(7N2) XX(8N2) XX(5E1) XX(6E1) XX(7E1) XX(8E1) \
+	XX(5E2) XX(6E2) XX(7E2) XX(8E2) XX(5O1) XX(6O1) XX(7O1) XX(8O1) XX(5O2) XX(6O2) XX(7O2) XX(8O2)
+// clang-format on
+
+enum class SerialConfig {
+#define XX(x) Cfg##x = UART_##x,
+	SERIAL_CONFIG_MAP(XX)
+#undef XX
 };
 
+#define XX(x) static constexpr SerialConfig SERIAL_##x{SerialConfig::Cfg##x};
+SERIAL_CONFIG_MAP(XX)
+#undef XX
+
 /** @brief values equivalent to uart_mode_t */
-enum SerialMode {
-	SERIAL_FULL = UART_FULL,
-	SERIAL_RX_ONLY = UART_RX_ONLY,
-	SERIAL_TX_ONLY = UART_TX_ONLY,
+enum class SerialMode {
+	Full = UART_FULL,
+	RxOnly = UART_RX_ONLY,
+	TxOnly = UART_TX_ONLY,
 };
+
+static constexpr SerialMode SERIAL_FULL{SerialMode::Full};
+static constexpr SerialMode SERIAL_RX_ONLY{SerialMode::RxOnly};
+static constexpr SerialMode SERIAL_TX_ONLY{SerialMode::TxOnly};
 
 #ifndef DEFAULT_RX_BUFFER_SIZE
 #define DEFAULT_RX_BUFFER_SIZE 256
@@ -92,13 +85,22 @@ enum SerialMode {
 #define DEFAULT_TX_BUFFER_SIZE 0
 #endif
 
+#define SERIAL_STATUS_MAP(XX)                                                                                          \
+	XX(BreakDetected, "Break condition detected on receive line")                                                      \
+	XX(Overflow, "Receive buffer overflowed")                                                                          \
+	XX(FramingError, "Receive framing error")                                                                          \
+	XX(ParityError, "Parity check failed on received data")
+
 /** @brief Notification and error status bits */
-enum SerialStatus {
-	eSERS_BreakDetected, ///< Break condition detected on receive line
-	eSERS_Overflow,		 ///< Receive buffer overflowed
-	eSERS_FramingError,  ///< Receive framing error
-	eSERS_ParityError,   ///< Parity check failed on received data
+enum class SerialStatus {
+#define XX(tag, comment) tag,
+	SERIAL_STATUS_MAP(XX)
+#undef XX
 };
+
+#define XX(tag, comment) static constexpr SerialStatus eSERS_##tag{SerialStatus::tag};
+SERIAL_STATUS_MAP(XX)
+#undef XX
 
 /// Hardware serial class
 class HardwareSerial : public ReadWriteStream
@@ -166,8 +168,9 @@ public:
 	 * @param config
 	 * @param mode
 	 * @param txPin Can specify alternate pin for TX
+	 * @param rxPin
 	 */
-	void begin(uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin);
+	void begin(uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin, uint8_t rxPin = UART_PIN_DEFAULT);
 
 	/**
 	 * @brief De-inits the current UART if it is already used
@@ -447,7 +450,7 @@ public:
 	unsigned getStatus();
 
 private:
-	int uartNr = -1;
+	int uartNr = UART_NO;
 	TransmitCompleteDelegate transmitComplete = nullptr; ///< Callback for transmit completion
 	StreamDataReceivedDelegate HWSDelegate = nullptr;	///< Callback for received data
 	CommandExecutor* commandExecutor = nullptr;			 ///< Callback for command execution (received data)

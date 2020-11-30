@@ -70,6 +70,7 @@ public:
 enum CpuFrequency {
 	eCF_80MHz = 80,   ///< CPU 80MHz
 	eCF_160MHz = 160, ///< CPU 160MHz
+	eCF_240MHz = 240, ///< CPU 240MHz
 };
 
 /**

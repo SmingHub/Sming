@@ -27,7 +27,7 @@
 #include <spi_flash/flashmem.h>
 #include <driver/uart_server.h>
 #include <BitManipulations.h>
-#include <esp_timer_legacy.h>
+#include <driver/os_timer.h>
 #include <esp_tasks.h>
 #include <host_lwip.h>
 #include <stdlib.h>

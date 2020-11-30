@@ -1,3 +1,5 @@
+#if 0
+
 /****
  * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
  * Created 2015 by Skurydin Alexey
@@ -880,3 +882,5 @@ void i2s_set_pins(i2s_pin_set_t pins, bool enable)
 		PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U, enable ? FUNC_I2SI_DATA : FUNC_GPIO12);
 	}
 }
+
+#endif

@@ -139,6 +139,9 @@ CPPFLAGS += \
 	-DARDUINO=106
 
 # If STRICT is enabled, show all warnings but don't treat as errors
+DEBUG_VARS += STRICT
+STRICT ?= 0
+export STRICT
 ifneq ($(STRICT),1)
 CPPFLAGS += \
 	-Werror \
@@ -171,6 +174,8 @@ ifneq ($(STRICT),1)
 endif
 
 include $(ARCH_BASE)/build.mk
+
+DEBUG_VARS += ESP_VARIANT
 
 # Detect compiler version
 DEBUG_VARS			+= GCC_VERSION

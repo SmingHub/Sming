@@ -12,10 +12,13 @@
 #include "WifiEventsImpl.h"
 
 #include <esp_wifi.h>
+#include <esp_netif.h>
 #include <esp_event.h>
 
 static StationImpl station;
 StationClass& WifiStation = station;
+
+static esp_netif_t* stationNetworkInterface = nullptr;
 
 class BssInfoImpl : public BssInfo
 {
@@ -37,6 +40,12 @@ void StationImpl::enable(bool enabled, bool save)
 	esp_wifi_get_mode((wifi_mode_t*)&mode);
 	if(enabled) {
 		mode |= WIFI_MODE_STA;
+		if(stationNetworkInterface == nullptr) {
+			stationNetworkInterface = esp_netif_create_default_wifi_sta();
+		}
+	} else if(stationNetworkInterface) {
+		esp_netif_destroy(stationNetworkInterface);
+		stationNetworkInterface = nullptr;
 	}
 	esp_wifi_set_storage(save ? WIFI_STORAGE_FLASH : WIFI_STORAGE_RAM);
 	esp_wifi_set_mode((wifi_mode_t)mode);
@@ -88,46 +97,46 @@ bool StationImpl::disconnect()
 
 bool StationImpl::isEnabledDHCP() const
 {
-	tcpip_adapter_dhcp_status_t status;
-	if(tcpip_adapter_dhcps_get_status(TCPIP_ADAPTER_IF_STA, &status) != ESP_OK) {
+	esp_netif_dhcp_status_t status;
+	if(esp_netif_dhcps_get_status(stationNetworkInterface, &status) != ESP_OK) {
 		return false;
 	}
 
-	return status == TCPIP_ADAPTER_DHCP_STARTED;
+	return status == ESP_NETIF_DHCP_STARTED;
 }
 
 void StationImpl::enableDHCP(bool enable)
 {
 	if(enable) {
-		tcpip_adapter_dhcpc_start(TCPIP_ADAPTER_IF_STA);
+		esp_netif_dhcpc_start(stationNetworkInterface);
 	} else {
-		tcpip_adapter_dhcpc_stop(TCPIP_ADAPTER_IF_STA);
+		esp_netif_dhcpc_stop(stationNetworkInterface);
 	}
 }
 
 void StationImpl::setHostname(const String& hostname)
 {
-	tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA, const_cast<char*>(hostname.c_str()));
+	esp_netif_set_hostname(stationNetworkInterface, const_cast<char*>(hostname.c_str()));
 }
 
 String StationImpl::getHostname() const
 {
 	char* hostName;
-	tcpip_adapter_get_hostname(TCPIP_ADAPTER_IF_STA, (const char**)&hostName);
+	esp_netif_get_hostname(stationNetworkInterface, (const char**)&hostName);
 	return hostName;
 }
 
 IpAddress StationImpl::getIP() const
 {
-	tcpip_adapter_ip_info_t info;
-	tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &info);
-	return info.ip;
+	esp_netif_ip_info_t info;
+	esp_netif_get_ip_info(stationNetworkInterface, &info);
+	return info.ip.addr;
 }
 
 MacAddress StationImpl::getMacAddress() const
 {
 	MacAddress addr;
-	if(esp_wifi_get_mac(WIFI_IF_STA, (uint8_t*)&addr[0]) == ESP_OK) {
+	if(esp_wifi_get_mac(ESP_IF_WIFI_STA, (uint8_t*)&addr[0]) == ESP_OK) {
 		return addr;
 	} else {
 		return MACADDR_NONE;
@@ -136,35 +145,35 @@ MacAddress StationImpl::getMacAddress() const
 
 IpAddress StationImpl::getNetworkBroadcast() const
 {
-	tcpip_adapter_ip_info_t info;
-	tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &info);
+	esp_netif_ip_info_t info;
+	esp_netif_get_ip_info(stationNetworkInterface, &info);
 	return (info.ip.addr | ~info.netmask.addr);
 }
 
 IpAddress StationImpl::getNetworkMask() const
 {
-	tcpip_adapter_ip_info_t info;
-	tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &info);
-	return info.netmask;
+	esp_netif_ip_info_t info;
+	esp_netif_get_ip_info(stationNetworkInterface, &info);
+	return info.netmask.addr;
 }
 
 IpAddress StationImpl::getNetworkGateway() const
 {
-	tcpip_adapter_ip_info_t info;
-	tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &info);
-	return info.gw;
+	esp_netif_ip_info_t info;
+	esp_netif_get_ip_info(stationNetworkInterface, &info);
+	return info.gw.addr;
 }
 
 bool StationImpl::setIP(IpAddress address, IpAddress netmask, IpAddress gateway)
 {
 	disconnect();
 	enableDHCP(false);
-	tcpip_adapter_ip_info_t ipinfo;
-	tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ipinfo);
-	ipinfo.ip = address;
-	ipinfo.netmask = netmask;
-	ipinfo.gw = gateway;
-	if(tcpip_adapter_set_ip_info(TCPIP_ADAPTER_IF_STA, &ipinfo) == ESP_OK) {
+	esp_netif_ip_info_t ipinfo;
+	esp_netif_get_ip_info(stationNetworkInterface, &ipinfo);
+	ipinfo.ip.addr = address;
+	ipinfo.netmask.addr = netmask;
+	ipinfo.gw.addr = gateway;
+	if(esp_netif_set_ip_info(stationNetworkInterface, &ipinfo) == ESP_OK) {
 		debugf("Station IP successfully updated");
 	} else {
 		debugf("Station IP can't be updated");
@@ -177,7 +186,7 @@ bool StationImpl::setIP(IpAddress address, IpAddress netmask, IpAddress gateway)
 String StationImpl::getSSID() const
 {
 	wifi_config_t config = {0};
-	if(esp_wifi_get_config(WIFI_IF_STA, &config) != ESP_OK) {
+	if(esp_wifi_get_config(ESP_IF_WIFI_STA, &config) != ESP_OK) {
 		debugf("Can't read station configuration!");
 		return nullptr;
 	}
@@ -197,7 +206,7 @@ int8_t StationImpl::getRssi() const
 uint8_t StationImpl::getChannel() const
 {
 	wifi_config_t config = {0};
-	if(esp_wifi_get_config(WIFI_IF_STA, &config) != ESP_OK) {
+	if(esp_wifi_get_config(ESP_IF_WIFI_STA, &config) != ESP_OK) {
 		debugf("Can't read station configuration!");
 		return 0;
 	}
@@ -208,7 +217,7 @@ uint8_t StationImpl::getChannel() const
 String StationImpl::getPassword() const
 {
 	wifi_config_t config = {0};
-	if(esp_wifi_get_config(WIFI_IF_STA, &config) != ESP_OK) {
+	if(esp_wifi_get_config(ESP_IF_WIFI_STA, &config) != ESP_OK) {
 		debugf("Can't read station configuration!");
 		return nullptr;
 	}

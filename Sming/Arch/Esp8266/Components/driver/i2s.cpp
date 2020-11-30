@@ -41,12 +41,12 @@
  *
  ****/
 
+#include <driver/i2s.h>
 #include <espinc/slc_register.h>
 #include <espinc/slc_struct.h>
 #include <espinc/i2s_register.h>
 #include <espinc/i2s_struct.h>
 #include <espinc/i2c_bbpll.h>
-#include "include/driver/i2s.h"
 #include <esp_systemapi.h>
 #include <Platform/Timers.h>
 

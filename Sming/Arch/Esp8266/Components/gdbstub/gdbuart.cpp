@@ -25,7 +25,7 @@
 static smg_uart_t* gdb_uart; // Port debugger is attached to
 
 #if GDBSTUB_ENABLE_UART2
-static smg_uart_t* user_uart;			  // If open, virtual port being used for user passthrough
+static smg_uart_t* user_uart;		  // If open, virtual port being used for user passthrough
 static uint32_t user_uart_status;	 // See gdb_uart_callback (ISR handler)
 static volatile bool userDataSending; // Transmit completion callback invoked on user uart
 static bool sendUserDataQueued;		  // Ensures only one call to gdbSendUserData() is queued at a time
@@ -375,14 +375,17 @@ bool ATTR_GDBINIT gdb_uart_init()
 	smg_uart_set_debug(UART_NO);
 
 	// Additional buffering not supported because interrupts are disabled when debugger halted
-	smg_uart_config cfg = {.uart_nr = GDB_UART,
-					   .tx_pin = 1,
-					   .mode = UART_FULL,
-					   .options = _BV(UART_OPT_TXWAIT) | _BV(UART_OPT_CALLBACK_RAW),
-					   .baudrate = SERIAL_BAUD_RATE,
-					   .config = UART_8N1,
-					   .rx_size = 0,
-					   .tx_size = 0};
+	smg_uart_config_t cfg = {
+		.uart_nr = GDB_UART,
+		.tx_pin = 1,
+		.rx_pin = UART_PIN_DEFAULT,
+		.mode = UART_FULL,
+		.options = _BV(UART_OPT_TXWAIT) | _BV(UART_OPT_CALLBACK_RAW),
+		.baudrate = SERIAL_BAUD_RATE,
+		.config = UART_8N1,
+		.rx_size = 0,
+		.tx_size = 0,
+	};
 	gdb_uart = smg_uart_init_ex(cfg);
 	if(gdb_uart == nullptr) {
 		return false;

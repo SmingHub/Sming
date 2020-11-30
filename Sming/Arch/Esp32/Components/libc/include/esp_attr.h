@@ -1,4 +1,7 @@
-// ESP32 attribute definitions (previously in c_types.h)
+/*
+ * ESP32 attribute definitions
+ */
+
 #pragma once
 
 #include_next <esp_attr.h>
@@ -13,16 +16,23 @@
 #define DMEM_ATTR __attribute__((section(".bss")))
 #define SHMEM_ATTR
 
+#define ICACHE_FLASH_SECTION ".irom0.text"
+
 #undef ICACHE_FLASH_ATTR
-#define ICACHE_FLASH_ATTR \
-	__attribute__((section(".irom0.text." __FILE__ "." MACROQUOTE(__LINE__) "." MACROQUOTE(__COUNTER__))))
+#define ICACHE_FLASH_ATTR                                                                                              \
+	__attribute__((section(ICACHE_FLASH_SECTION "." __FILE__ "." MACROQUOTE(__LINE__) "." MACROQUOTE(__COUNTER__))))
+
+#define ICACHE_RODATA_SECTION ".irom1.text"
 
 #undef ICACHE_RODATA_ATTR
-#define ICACHE_RODATA_ATTR ICACHE_FLASH_ATTR
+#define ICACHE_RODATA_ATTR                                                                                             \
+	__attribute__((section(ICACHE_RODATA_SECTION "." __FILE__ "." MACROQUOTE(__LINE__) "." MACROQUOTE(__COUNTER__))))
+
+#define ICACHE_RAM_SECTION ".iram0.text"
 
 #undef ICACHE_RAM_ATTR
-#define ICACHE_RAM_ATTR \
-	__attribute__((section(".iram.text." __FILE__ "." MACROQUOTE(__LINE__) "." MACROQUOTE(__COUNTER__))))
+#define ICACHE_RAM_ATTR                                                                                                \
+	__attribute__((section(ICACHE_RAM_SECTION "." __FILE__ "." MACROQUOTE(__LINE__) "." MACROQUOTE(__COUNTER__))))
 
 #define STORE_ATTR __attribute__((aligned(4)))
 
@@ -31,5 +41,3 @@
 #else
 #define GDB_IRAM_ATTR
 #endif
-
-#define __result_use_check  __attribute__((__warn_unused_result__))

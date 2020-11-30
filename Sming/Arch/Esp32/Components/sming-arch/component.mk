@@ -13,15 +13,14 @@ COMPONENT_INCDIRS := \
 	$(ARCH_COMPONENTS)
 
 COMPONENT_DEPENDS := \
-	esp_hal \
 	libc \
 	spi_flash \
-	esp32 \
-	esp_idf \
 	driver \
 	heap \
 	fatfs \
-	esp_spiffs
+	esp_spiffs \
+	esp32 \
+	esptool
 
 #
 DISABLE_WIFI ?= 0

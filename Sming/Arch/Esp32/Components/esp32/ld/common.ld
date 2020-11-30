@@ -2,127 +2,14 @@
     common.ld
 */
 
-INCLUDE "peripherals.ld"
-
-PHDRS
-{
-  dport0_0_phdr PT_LOAD;
-  dram0_0_phdr PT_LOAD;
-  dram0_0_bss_phdr PT_LOAD;
-  iram1_0_phdr PT_LOAD;
-  irom0_0_phdr PT_LOAD;
-}
-
-
-/*  Default entry point:  */
-ENTRY(call_user_start)
-EXTERN(_DebugExceptionVector)
-EXTERN(_DoubleExceptionVector)
-EXTERN(_KernelExceptionVector)
-EXTERN(_NMIExceptionVector)
-EXTERN(_UserExceptionVector)
-PROVIDE(_memmap_vecbase_reset = 0x40000000);
-/* Various memory-map dependent cache attribute settings: */
-_memmap_cacheattr_wb_base = 0x00000110;
-_memmap_cacheattr_wt_base = 0x00000110;
-_memmap_cacheattr_bp_base = 0x00000220;
-_memmap_cacheattr_unused_mask = 0xFFFFF00F;
-_memmap_cacheattr_wb_trapnull = 0x2222211F;
-_memmap_cacheattr_wba_trapnull = 0x2222211F;
-_memmap_cacheattr_wbna_trapnull = 0x2222211F;
-_memmap_cacheattr_wt_trapnull = 0x2222211F;
-_memmap_cacheattr_bp_trapnull = 0x2222222F;
-_memmap_cacheattr_wb_strict = 0xFFFFF11F;
-_memmap_cacheattr_wt_strict = 0xFFFFF11F;
-_memmap_cacheattr_bp_strict = 0xFFFFF22F;
-_memmap_cacheattr_wb_allvalid = 0x22222112;
-_memmap_cacheattr_wt_allvalid = 0x22222112;
-_memmap_cacheattr_bp_allvalid = 0x22222222;
-PROVIDE(_memmap_cacheattr_reset = _memmap_cacheattr_wb_trapnull);
-
 SECTIONS
 {
-
-  .dport0.rodata : ALIGN(4)
-  {
-    _dport0_rodata_start = ABSOLUTE(.);
-    *(.dport0.rodata)
-    *(.dport.rodata)
-    _dport0_rodata_end = ABSOLUTE(.);
-  } >dport0_0_seg :dport0_0_phdr
-
-  .dport0.literal : ALIGN(4)
-  {
-    _dport0_literal_start = ABSOLUTE(.);
-    *(.dport0.literal)
-    *(.dport.literal)
-    _dport0_literal_end = ABSOLUTE(.);
-  } >dport0_0_seg :dport0_0_phdr
-
-  .dport0.data : ALIGN(4)
-  {
-    _dport0_data_start = ABSOLUTE(.);
-    *(.dport0.data)
-    *(.dport.data)
-    _dport0_data_end = ABSOLUTE(.);
-  } >dport0_0_seg :dport0_0_phdr
-
-  .data : ALIGN(4)
-  {
-    _data_start = ABSOLUTE(.);
-    *(.data)
-    *(.data.*)
-    *(.gnu.linkonce.d.*)
-    *(.data1)
-    *(.sdata)
-    *(.sdata.*)
-    *(.gnu.linkonce.s.*)
-    *(.sdata2)
-    *(.sdata2.*)
-    *(.gnu.linkonce.s2.*)
-    *(.jcr)
-    _data_end = ABSOLUTE(.);
-  } >dram0_0_seg :dram0_0_phdr
-
-
   /*
   	IRAM is split into .text and .text1 to allow for moving specific
   	functions into IRAM that would be matched by the irom0.text matcher
   */
   .text : ALIGN(4)
   {
-    _stext = .;
-    _text_start = ABSOLUTE(.);
-     *(.UserEnter.text)
-    . = ALIGN(16);
-    *(.DebugExceptionVector.text)
-    . = ALIGN(16);
-    *(.NMIExceptionVector.text)
-    . = ALIGN(16);
-    *(.KernelExceptionVector.text)
-    LONG(0)
-    LONG(0)
-    LONG(0)
-    LONG(0)
-    . = ALIGN(16);
-    *(.UserExceptionVector.text)
-    LONG(0)
-    LONG(0)
-    LONG(0)
-    LONG(0)
-    . = ALIGN(16);
-    *(.DoubleExceptionVector.text)
-    LONG(0)
-    LONG(0)
-    LONG(0)
-    LONG(0)
-    . = ALIGN (16);
-    *(.entry.text)
-    *(.init.literal)
-    *(.init)
-
-    *(.iram.literal .iram.text.literal .iram.text .iram.text.*)
-
 	/*
 		GCC silently ignores section attributes on templated code.
 		The only practical workaround is enforcing sections in the linker script.

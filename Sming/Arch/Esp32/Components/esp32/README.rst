@@ -1,50 +1,70 @@
 Esp32 Core Component
-======================
+====================
 
 .. highlight:: bash
 
-Contains startup code, crash handling and additional Esp32-specific
-support code. Sming may be built using a pre-installed SDK, or by using
-the current version 3 SDK as a submodule.
+Introduction
+------------
 
-.. attention::
+Contains startup code, crash handling and additional Esp32-specific support code,
+including the ESP-IDF SDK.
 
-   At time of writing, SDK 3 does not appear to support use of devices with 256K or 512K memory,
-   such as the ESP-01. For now, please use the default SDK 1.5.4 or SDK 2.0.0.
+If you want to tune ESP-IDF to your needs you should run::
 
-.. envvar:: SDK_BASE
+    make SMING_ARCH=Esp32 sdk-menuconfig
 
-   Points to the location of the Espressif Non-OS SDK. To use the Espressif version 3 SDK, you need
-   only set this variable to point at the Sming repository (:envvar:`SMING_HOME`). The actual location
-   will be subsituted by the build system and the SDK pulled in via GIT.
+Followed by::
 
-   So for Windows you need to do:
+    make
 
-   .. code-block:: batch
 
-      set SDK_BASE=%SMING_HOME%
+Configuration variables
+-----------------------
 
-   For Linux (bash):
-
-   ::
-
-      export SDK_BASE="$SMING_HOME"
-
-   If you change this value then your application and Sming must both be recompiled:
-
-   ::
-
-      make components-clean clean
-      make
+These are read-only debug variables:
 
 .. envvar:: SDK_INTERNAL
 
    **READONLY** When compiled using the current (version 3+) Espressif SDK this value is set to 1.
 
+
 .. envvar:: SDK_LIBDIR
 
    **READONLY** Path to the directory containing SDK archive libraries
 
+
 .. envvar:: SDK_INCDIR
 
    **READONLY** Path to the directory containing SDK header files
+
+
+Option variables:
+
+.. envvar:: ESP_VARIANT
+
+   Build for for esp32 or esp32s2 device
+
+
+The following variables may need to be changed if tools are installed in a different location,
+or if multiple versions are installed. By default, the most current version will be used.
+
+
+.. envvar:: ESP32_COMPILER_PATH
+
+   Location of xtensa compiler toolchain
+
+
+.. envvar:: ESP32_ULP_PATH
+
+   Location of ULP compiler toolchain
+   
+
+.. envvar:: ESP32_OPENOCD_PATH
+
+   Location of ESP32 version of Open OCD JTAG debugging tools.
+
+
+.. envvar:: ESP32_PYTHON_PATH
+
+   Location of ESP-IDF python.
+

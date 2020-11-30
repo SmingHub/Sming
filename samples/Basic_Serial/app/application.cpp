@@ -5,6 +5,28 @@
 #include "SerialReadingDelegateDemo.h"
 #include "SerialTransmitDemo.h"
 
+struct SerialPins {
+	uint8_t tx;
+	uint8_t rx;
+};
+
+SerialPins serialPins[2]{
+	{
+		UART_PIN_DEFAULT,
+		UART_PIN_DEFAULT,
+	},
+	{
+#ifdef ESP32
+		// Default pins are occupied by flash lines
+		17,
+		16,
+#else
+		UART_PIN_DEFAULT,
+		UART_PIN_DEFAULT,
+#endif
+	},
+};
+
 DEFINE_FSTR(testFlashData, "The following are the graphical (non-control) characters defined by\r\n"
 						   "ISO 8859-1 (1987).  Descriptions in words aren't all that helpful,\r\n"
 						   "but they're the best we can do in text.  A graphics file illustrating\r\n"
@@ -238,7 +260,8 @@ void init()
 	Serial.setTxBufferSize(2048);
 	Serial.setTxWait(false);
 
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.begin(SERIAL_BAUD_RATE, SERIAL_8N1, SERIAL_FULL, serialPins[0].tx, serialPins[0].rx);
+	Serial.systemDebugOutput(true);
 
 	// There's a large file on SPIFFS we'll be accessing later on
 	spiffs_mount();
@@ -284,7 +307,10 @@ void init()
 	debugf("(DEBUG) print me again on UART0");
 
 	// Initialise and prepare the second (debug) serial port
-	Serial1.begin(SERIAL_BAUD_RATE);
+	Serial1.begin(SERIAL_BAUD_RATE, SERIAL_8N1, SERIAL_FULL, serialPins[1].tx, serialPins[1].rx);
+	Serial1.onDataReceived([](Stream& stream, char arrivedChar, unsigned short availableCharsCount) {
+		debug_e("arrivedchar: %c, avail = %d", arrivedChar, availableCharsCount);
+	});
 	Serial1.setTxBufferSize(1024);
 	Serial1.setTxWait(false);
 

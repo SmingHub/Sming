@@ -19,7 +19,7 @@
 
 #include "uart_server.h"
 #include <espinc/uart_register.h>
-#include <SerialBuffer.h>
+#include <driver/SerialBuffer.h>
 #include <BitManipulations.h>
 #include <hostlib/keyb.h>
 

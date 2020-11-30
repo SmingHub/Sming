@@ -6,6 +6,13 @@ SDK_BASE ?= $(COMPONENT_PATH)/ESP8266_NONOS_SDK
 SDK_BASE				:= $(call FixPath,$(SDK_BASE))
 FLASH_INIT_DATA			= $(SDK_BASE)/bin/esp_init_data_default.bin
 
+CUSTOM_TARGETS			+= $(FLASH_INIT_DATA)
+
+FLASH_INIT_CHUNKS += \
+	$(call FlashOffset,0x5000)=$(BLANK_BIN) \
+	$(call FlashOffset,0x4000)=$(FLASH_INIT_DATA) \
+	$(call FlashOffset,0x2000)=$(BLANK_BIN)
+
 # => 'Internal' SDK - for SDK Version 3+ as submodule in Sming repository
 # SDK_BASE just needs to point into our repo as it's overridden with the correct submodule path
 # This provides backward-compatiblity, so $(SMING)/third-party/ESP8266_NONOS_SDK) still works
@@ -31,7 +38,7 @@ export SDK_INTERNAL
 export SDK_LIBDIR
 export SDK_INCDIR
 
-DOXYGEN_INPUT += \
+COMPONENT_DOXYGEN_INPUT := \
 	$(SDK_INCDIR)/gpio.h \
 	$(SDK_INCDIR)/pwm.h
 

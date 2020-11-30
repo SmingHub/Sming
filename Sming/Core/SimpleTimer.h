@@ -32,7 +32,7 @@
 class OsTimerApi : public CallbackTimerApi<OsTimerApi>
 {
 public:
-	using Clock = Timer2Clock;
+	using Clock = OsTimerClock;
 	using TickType = uint32_t;
 	using TimeType = uint32_t;
 

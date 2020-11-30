@@ -73,6 +73,7 @@ CONFIG_VARS			+= USER_CFLAGS
 DEBUG_VARS			+= GLOBAL_CFLAGS
 GLOBAL_CFLAGS = \
 	-DSMING_ARCH=$(SMING_ARCH) \
+	-DESP_VARIANT=$(ESP_VARIANT) \
 	-DPROJECT_DIR=\"$(PROJECT_DIR)\" \
 	-DSMING_HOME=\"$(SMING_HOME)\" \
 	$(USER_CFLAGS)
@@ -105,13 +106,6 @@ APP_NAME			?= app
 FW_MEMINFO_NEW		:= $(FW_BASE)/fwMeminfo.new
 FW_MEMINFO_OLD		:= $(FW_BASE)/fwMeminfo.old
 FW_MEMINFO_SAVED	:= out/fwMeminfo
-
-# Enable extra warnings but don't stop on error
-CACHE_VARS			+= STRICT
-
-# Set to 1 to enable some legacy building behaviour
-CACHE_VARS			+= ENABLE_LEGACY_BUILD
-ENABLE_LEGACY_BUILD	?= 0
 
 # List of Components we're going to parse, with duplicate libraries removed
 COMPONENTS			:= Sming
@@ -485,6 +479,9 @@ cs-dev: ##Apply coding style to all files changed from current upstream develop 
 gdb: kill_term ##Run the debugger console
 	$(GDB_CMDLINE)
 
+.PHONY: fetch
+fetch: ##Fetch Component or Library and display location
+	$(SMING_MAKE) $(MAKECMDGOALS)
 
 # Stack trace decoder
 CACHE_VARS += TRACE
@@ -590,14 +587,6 @@ ifneq (,$V)
 endif
 
 
-# Update build type cache
-$(shell	mkdir -p $(dir $(BUILD_TYPE_FILE)); \
-		echo '# Automatically generated file. Do not edit.' > $(BUILD_TYPE_FILE); \
-		echo >> $(BUILD_TYPE_FILE); \
-		echo 'SMING_ARCH := $(SMING_ARCH)' >> $(BUILD_TYPE_FILE); \
-		echo 'SMING_RELEASE := $(SMING_RELEASE)' >> $(BUILD_TYPE_FILE); )
-
-
 # Called at final output stage to write a copy of config variables used for the build
 # $1 -> Name of output file
 define WriteFirmwareConfigFile
@@ -611,8 +600,11 @@ define WriteCacheValues
 $(shell	mkdir -p $(dir $1);
 	echo '# Automatically generated file. Do not edit.' > $1;
 	echo >> $1;
-	$(foreach v,$2,echo '$v = $(value $v)' >> $1;) )
+	$(foreach v,$2,echo '$v=$(value $v)' >> $1;) )
 endef
+
+# Update build type cache
+$(eval $(call WriteCacheValues,$(BUILD_TYPE_FILE),SMING_ARCH ESP_VARIANT SMING_RELEASE STRICT))
 
 # Update config cache file
 # We store the list of variable names to ensure that any not actively in use don't get lost

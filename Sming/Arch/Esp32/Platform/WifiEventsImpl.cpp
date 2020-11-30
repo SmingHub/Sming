@@ -20,6 +20,12 @@ WifiEventsClass& WifiEvents = events;
 
 StationConnectionStatus WifiEventsImpl::stationConnectionStatus = eSCS_Idle;
 
+ip_addr_t ip(esp_ip4_addr_t ip)
+{
+	ip_addr_t r = IPADDR4_INIT(ip.addr);
+	return r;
+}
+
 WifiEventsImpl::WifiEventsImpl()
 {
 	auto eventHandler = [](void* arg, esp_event_base_t base, int32_t id, void* data) -> void {
@@ -118,7 +124,7 @@ void WifiEventsImpl::WifiEventHandler(void* arg, esp_event_base_t base, int32_t 
 			debugf("ip:" IPSTR ",mask:" IPSTR ",gw:" IPSTR "\n", IP2STR(&event->ip_info.ip),
 				   IP2STR(&event->ip_info.netmask), IP2STR(&event->ip_info.gw));
 			if(onSTAGotIP) {
-				onSTAGotIP(event->ip_info.ip, event->ip_info.netmask, event->ip_info.gw);
+				onSTAGotIP(ip(event->ip_info.ip), ip(event->ip_info.netmask), ip(event->ip_info.gw));
 			}
 			break;
 		}

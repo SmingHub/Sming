@@ -2,6 +2,9 @@ DISABLE_SPIFFS = 1
 DEBUG_VERBOSE_LEVEL = 2
 SPI_SIZE = 4M
 
+COMPONENT_INCDIRS := include
+COMPONENT_SRCDIRS := app modules
+
 ARDUINO_LIBRARIES := \
 	SmingTest \
 	ArduinoJson5 \

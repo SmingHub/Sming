@@ -1,3 +1,5 @@
+#if 0
+
 /*
 Author: (github.com/)ADiea
 Project: Sming for ESP8266 - https://github.com/anakod/Sming
@@ -77,3 +79,5 @@ void SPISoft::transfer(uint8_t* buffer, uint32_t size)
 		*buffer++ = r;
 	} while(--size);
 }
+
+#endif

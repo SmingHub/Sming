@@ -1,3 +1,5 @@
+#if 0
+
 /****
  * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
  * Created 2015 by Skurydin Alexey
@@ -20,7 +22,7 @@
 
 #include "espinc/eagle_soc.h"
 #include "espinc/spi_register.h"
-#include "c_types.h"
+#include <c_types.h>
 
 // define the static singleton
 SPIClass SPI;
@@ -446,3 +448,5 @@ void SPIClass::setFrequency(int freq)
 		}
 	}
 }
+
+#endif

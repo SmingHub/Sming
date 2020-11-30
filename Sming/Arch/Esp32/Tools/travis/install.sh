@@ -9,9 +9,9 @@ if [ "$TRAVIS_OS_NAME" == "linux" ]; then
     python -m pip install --upgrade virtualenv==16.7.9
     mkdir -p $TRAVIS_BUILD_DIR/opt
     cd $TRAVIS_BUILD_DIR/opt
-    git clone -b v4.0 --recursive https://github.com/espressif/esp-idf.git
-    cd $TRAVIS_BUILD_DIR/opt/esp-idf
-    ./install.sh
-    source $TRAVIS_BUILD_DIR/opt/esp-idf/export.sh
-    export IDF_PATH PATH
+    git clone -b v4.1 --recursive https://github.com/espressif/esp-idf.git
+    export IDF_PATH=$TRAVIS_BUILD_DIR/opt/esp-idf
+    $IDF_PATH/install.sh
+
+    python -m pip install --user -r $IDF_PATH/requirements.txt
 fi
