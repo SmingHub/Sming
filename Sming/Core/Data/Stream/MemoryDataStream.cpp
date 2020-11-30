@@ -21,6 +21,10 @@ MemoryDataStream::MemoryDataStream(String&& string) noexcept
 bool MemoryDataStream::ensureCapacity(size_t minCapacity)
 {
 	if(capacity < minCapacity) {
+		if(minCapacity > maxCapacity) {
+			debug_e("MemoryDataStream too large, requested %u limit is %u", minCapacity, maxCapacity);
+			return false;
+		}
 		size_t newCapacity = minCapacity;
 		if(capacity != 0) {
 			// If expanding stream, increase buffer capacity in anticipation of further writes
@@ -30,6 +34,7 @@ bool MemoryDataStream::ensureCapacity(size_t minCapacity)
 		// realloc can fail, store the result in temporary pointer
 		auto newBuffer = (char*)realloc(buffer, newCapacity);
 		if(newBuffer == nullptr) {
+			debug_e("MemoryDataStream realloc(%u) failed", newCapacity);
 			return false;
 		}
 

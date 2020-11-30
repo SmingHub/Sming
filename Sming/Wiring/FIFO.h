@@ -73,8 +73,10 @@ template <typename T, int rawSize> bool FIFO<T, rawSize>::enqueue(T element)
 	}
 	numberOfElements++;
 	raw[nextIn] = element;
-	if(++nextIn >= rawSize) // advance to next index, wrap if needed
+	// advance to next index, wrap if needed
+	if(++nextIn >= rawSize) {
 		nextIn = 0;
+	}
 	return true;
 }
 

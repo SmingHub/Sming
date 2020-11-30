@@ -26,7 +26,9 @@
 class MemoryDataStream : public ReadWriteStream
 {
 public:
-	MemoryDataStream() = default;
+	MemoryDataStream(size_t maxCapacity = UINT16_MAX) : maxCapacity(maxCapacity)
+	{
+	}
 
 	/**
 	 * @brief Stream takes ownership of String content using move semantics
@@ -103,8 +105,9 @@ public:
 	}
 
 private:
-	char* buffer = nullptr; ///< Stream content stored here
-	size_t readPos = 0;		///< Offset to current read position
-	size_t size = 0;		///< Number of bytes stored in stream (i.e. the write position)
-	size_t capacity = 0;	///< Number of bytes allocated in buffer
+	char* buffer = nullptr;			///< Stream content stored here
+	size_t maxCapacity{UINT16_MAX}; ///< Limit size of stream
+	size_t readPos = 0;				///< Offset to current read position
+	size_t size = 0;				///< Number of bytes stored in stream (i.e. the write position)
+	size_t capacity = 0;			///< Number of bytes allocated in buffer
 };
