@@ -58,4 +58,5 @@ enum option_tag_t {
 };
 
 option_tag_t get_option(int argc, char* argv[], const char*& arg);
+int get_first_non_option();
 void print_help();

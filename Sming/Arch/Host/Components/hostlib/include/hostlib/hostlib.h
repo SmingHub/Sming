@@ -19,7 +19,7 @@
 
 #pragma once
 
-// Required for sleep(), ftruncate(), probably others
+// Required for sleep(), probably others
 #undef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 200112L
 
@@ -34,10 +34,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <unistd.h>
-
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
 
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(x) (int)(sizeof(x) / sizeof((x)[0]))
