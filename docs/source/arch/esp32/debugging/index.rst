@@ -102,8 +102,8 @@ sample application::
 
 The device will restart then wait for a debugger to be connected. Before starting the debugger you
 must be sure that the OpenOCD server is running and listening for incoming connections on localhost port 3333.
-Now start the debugger with the command below
-:::::::::::::::::::::::::::::::::::::::::::::
+
+Now start the debugger::
 
    make gdb
 
