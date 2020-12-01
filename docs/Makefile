@@ -16,6 +16,10 @@ SPHINXBUILD		?= sphinx-build
 SOURCEDIR		= source
 BUILDDIR		= build
 
+BUILD_TYPE		:= release
+OUT_BASE		:= out/$(SMING_ARCH)/$(BUILD_TYPE)
+BUILD_BASE		= $(OUT_BASE)/build
+
 # Components can detect when docs are being built
 MAKE_DOCS		:= 1
 
@@ -183,6 +187,8 @@ CACHE_VARS				:=
 DEBUG_VARS				:=
 COMPONENT_DEPENDS		:=
 ARDUINO_LIBRARIES		:=
+COMPONENT_BUILD_BASE	:= $(BUILD_BASE)/$1
+COMPONENT_BUILD_DIR		:= $(BUILD_BASE)/$1
 include defines.mk
 -include $2/component.mk
 CMP_$2_VARS				:= $$(sort $$(COMPONENT_VARS))
