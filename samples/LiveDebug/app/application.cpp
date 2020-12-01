@@ -1,6 +1,7 @@
 #include <SmingCore.h>
 #include "HardwareTimer.h"
 #include <gdb/gdb_syscall.h>
+#include <IFS/Gdb/FileSystem.h>
 #include <Data/Stream/GdbFileStream.h>
 #include <Data/Buffer/LineBuffer.h>
 #include <Platform/OsMessageInterceptor.h>
@@ -60,6 +61,9 @@ static OsMessageInterceptor osMessageInterceptor;
 
 // Supports `consoleOff` command to prevent re-enabling when debugger is attached
 bool consoleOffRequested = false;
+
+//
+IFS::Gdb::FileSystem gdbfs;
 
 // Forward declarations
 bool handleCommand(const String& cmd);
@@ -154,15 +158,15 @@ void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCh
  */
 void readFile(const char* filename, bool display)
 {
-	auto start = millis();
-	int fd = gdb_syscall_open(filename, O_RDONLY, 0);
-	Serial.printf(_F("gdb_syscall_open(\"%s\") = %d\r\n"), filename, fd);
-	if(fd > 0) {
+	int file = gdbfs.open(filename, File::ReadOnly);
+	Serial.printf(_F("gdbfs.open(\"%s\") = %d\r\n"), filename, file);
+	if(file >= 0) {
+		OneShotFastMs timer;
 		char buf[256];
-		size_t total = 0;
+		size_t total{0};
 		int len;
 		do {
-			len = gdb_syscall_read(fd, buf, sizeof(buf));
+			len = gdbfs.read(file, buf, sizeof(buf));
 			if(len > 0) {
 				total += size_t(len);
 				if(display) {
@@ -170,11 +174,11 @@ void readFile(const char* filename, bool display)
 				}
 			}
 		} while(len == sizeof(buf));
-		auto elapsed = millis() - start;
-		Serial.printf(_F("\r\ngdb_syscall_read() = %d, total = %u, elapsed = %u ms, av. %u bytes/sec\r\n"), len, total,
-					  elapsed, total == 0 ? 0 : 1000U * total / elapsed);
+		auto elapsed = timer.elapsedTime();
+		Serial.printf(_F("\r\ngdbfs.read() = %d, total = %u, elapsed = %s, av. %u bytes/sec\r\n"), len, total,
+					  elapsed.toString().c_str(), total == 0 ? 0 : 1000U * total / elapsed);
 
-		gdb_syscall_close(fd);
+		gdbfs.close(file);
 	}
 }
 
