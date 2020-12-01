@@ -40,6 +40,10 @@ public:
 
 	bool attachStream(IDataSourceStream* stream)
 	{
+		if(stream == nullptr) {
+			return false;
+		}
+
 		return queue.enqueue(stream);
 	}
 
