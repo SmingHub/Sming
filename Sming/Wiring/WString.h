@@ -852,7 +852,9 @@ protected:
 			sso.buffer[len] = '\0';
 		} else {
 			ptr.len = len;
-			ptr.buffer[len] = '\0';
+			if(ptr.buffer != nullptr) {
+				ptr.buffer[len] = '\0';
+			}
 		}
 	}
 
