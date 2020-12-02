@@ -93,6 +93,8 @@ private:
 
 	HttpRequest* incomingRequest = nullptr;
 	HttpRequest* outgoingRequest = nullptr;
+
+	bool allowPipe = false; /// < Flag to specify if HTTP pipelining is allowed for this connection
 };
 
 /** @} */

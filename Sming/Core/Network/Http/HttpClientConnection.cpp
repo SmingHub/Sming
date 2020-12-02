@@ -138,11 +138,18 @@ int HttpClientConnection::onMessageComplete(http_parser* parser)
 
 	if(response->headers.contains(HTTP_HEADER_CONNECTION) &&
 	   response->headers[HTTP_HEADER_CONNECTION].equalsIgnoreCase(_F("close"))) {
+		allowPipe = false;
 		// if the server does not support keep-alive -> close the connection
 		// see: https://tools.ietf.org/html/rfc2616#section-14.10
 		debug_d("HCC::onMessageComplete: Closing as requested by server");
 		close();
-	} else if(executionQueue.count() == 0) {
+
+		return hasError;
+	}
+
+	allowPipe = true; // if the server supports keep-alive then it would most probably support also pipelining...
+
+	if(executionQueue.count() == 0) {
 		onConnected(ERR_OK);
 	}
 
@@ -240,6 +247,10 @@ REENTER:
 
 		// if the executionQueue is not empty then we have to check if we can pipeline that request
 		if(executionQueue.count()) {
+			if(!allowPipe) {
+				break;
+			}
+
 			if(!(request->method == HTTP_GET || request->method == HTTP_HEAD)) {
 				// if the current request cannot be pipelined -> break;
 				break;
