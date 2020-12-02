@@ -41,7 +41,7 @@ bool SystemClockClass::setTime(time_t time, TimeZone timeType)
 String SystemClockClass::getSystemTimeString(TimeZone timeType) const
 {
 	DateTime dt(now(timeType));
-	return DateTime(now(timeType)).toFullDateTimeString();
+	return dt.toFullDateTimeString();
 }
 
 bool SystemClockClass::setTimeZoneOffset(int seconds)
