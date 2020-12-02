@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Sming hardware configuration tool
 #
@@ -23,12 +23,12 @@ from __future__ import print_function, division
 from __future__ import unicode_literals
 import argparse
 import os
-import re
 import struct
 import sys
 import hashlib
 import binascii
 import errno
+import json, configparser
 
 MAX_PARTITION_LENGTH = 0xC00  # 3K for partition data (96 entries) leaves 1K in a 4K sector for signature
 MD5_PARTITION_BEGIN = b"\xEB\xEB" + b"\xFF" * 14  # The first 2 bytes are like magic numbers for MD5 sum
@@ -90,27 +90,22 @@ class PartitionTable(list):
         super(PartitionTable, self).__init__(self)
 
     @classmethod
-    def from_csv(cls, csv_contents):
+    def from_json(cls, table):
         res = PartitionTable()
-        lines = csv_contents.splitlines()
 
-        def expand_vars(f):
-            f = os.path.expandvars(f)
-            m = re.match(r'(?<!\\)\$([A-Za-z_][A-Za-z0-9_]*)', f)
-            if m:
-                raise InputError("unknown variable '%s'" % m.group(1))
-            return f
+        if 'offset' in table:
+            global offset_part_table
+            offset_part_table = parse_int(table['offset'])
 
-        for line_no in range(len(lines)):
-            line = expand_vars(lines[line_no]).strip()
-            if line.startswith("#") or len(line) == 0:
-                continue
+        index = 0
+        for (label, entry) in table['entries'].items():
             try:
-                res.append(PartitionDefinition.from_csv(line, line_no + 1))
+                res.append(PartitionDefinition.from_json(label, entry, index))
+                index += 1
             except InputError as e:
-                raise InputError("Error at line %d: %s" % (line_no + 1, e))
+                raise InputError("Error in partition '%s'" % (label))
             except Exception:
-                critical("Unexpected error parsing CSV line %d: %s" % (line_no + 1, line))
+                critical("Unexpected error in partition '%s': %s" % (label, entry))
                 raise
 
         # fix up missing offsets & negative sizes
@@ -118,11 +113,11 @@ class PartitionTable(list):
         for e in res:
             if e.offset is not None and e.offset < last_end:
                 if e == res[0]:
-                    raise InputError("CSV Error: First partition offset 0x%x overlaps end of partition table 0x%x"
+                    raise InputError("Error: First partition offset 0x%x overlaps end of partition table 0x%x"
                                      % (e.offset, last_end))
                 else:
-                    raise InputError("CSV Error: Partitions overlap. Partition at line %d sets offset 0x%x. Previous partition ends 0x%x"
-                                     % (e.line_no, e.offset, last_end))
+                    raise InputError("Error: Partitions overlap. Partition '%s' sets offset 0x%x. Previous partition ends 0x%x"
+                                     % (e.name, e.offset, last_end))
             if e.offset is None:
                 pad_to = e.alignment()
                 if last_end % pad_to != 0:
@@ -196,9 +191,9 @@ class PartitionTable(list):
         last = None
         for p in sorted(self, key=lambda x:x.offset):
             if p.offset < offset_part_table + PARTITION_TABLE_SIZE:
-                raise InputError("Partition offset 0x%x is below 0x%x" % (p.offset, offset_part_table + PARTITION_TABLE_SIZE))
+                raise InputError("Partition '%s' offset 0x%x is below 0x%x" % (p.name, p.offset, offset_part_table + PARTITION_TABLE_SIZE))
             if last is not None and p.offset < last.offset + last.size:
-                raise InputError("Partition at 0x%x overlaps 0x%x-0x%x" % (p.offset, last.offset, last.offset + last.size - 1))
+                raise InputError("Partition '%s' at 0x%x overlaps 0x%x-0x%x" % (p.name, p.offset, last.offset, last.offset + last.size - 1))
             last = p
 
     def flash_size(self):
@@ -274,27 +269,25 @@ class PartitionDefinition(object):
         self.encrypted = False
 
     @classmethod
-    def from_csv(cls, line, line_no):
-        """ Parse a line from the CSV """
-        line_w_defaults = line + ",,,,"  # lazy way to support default fields
-        fields = [f.strip() for f in line_w_defaults.split(",")]
-
+    def from_json(cls, label, entry, index):
+        """ Parse a JSON partition table entry """
         res = PartitionDefinition()
-        res.line_no = line_no
-        res.name = fields[0]
-        res.type = res.parse_type(fields[1])
-        res.subtype = res.parse_subtype(fields[2])
-        res.offset = res.parse_address(fields[3])
-        res.size = res.parse_address(fields[4])
-        if res.size is None:
-            raise InputError("Size field can't be empty")
+        res.line_no = index
+        res.name = label
+        res.type = res.parse_type(entry['type'])
+        res.subtype = res.parse_subtype(entry['subtype'])
+        res.offset = res.parse_address(entry['address'])
+        res.size = res.parse_address(entry['size'])
+        if res.offset is None or res.size is None:
+            raise InputError("Offset/Size fields may not be empty")
 
-        flags = fields[5].split(":")
-        for flag in flags:
-            if flag in cls.FLAGS:
-                setattr(res, flag, True)
-            elif len(flag) > 0:
-                raise InputError("CSV flag column contains unknown flag '%s'" % (flag))
+        if 'flags' in entry:
+            flags = entry['flags'].split(":")
+            for flag in flags:
+                if flag in cls.FLAGS:
+                    setattr(res, flag, True)
+                elif len(flag) > 0:
+                    raise InputError("Unknown flag '%s' in partition entry '%s'" % (flag, label))
 
         return res
 
@@ -451,6 +444,90 @@ def parse_int(v, keywords={}):
             raise InputError("Value '%s' is not valid. Known keywords: %s" % (v, ", ".join(keywords)))
 
 
+def createConfig(input, output):
+    """Parse makefile variables to create default configuration"""
+
+    print("createConfig(%s, %s)" % (input.name, output))
+    parser = configparser.ConfigParser()
+    parser.optionxform = str  # Preserve case
+    data = "[DEFAULT]\r\n" + input.read().decode()
+    parser.read_string(data)
+    vars = parser['DEFAULT']
+
+    config = {}
+    config['name'] ='Generated configuration'
+    arch = os.environ['SMING_ARCH']
+    config['arch'] = arch
+    if arch == 'Esp8266':
+        config['flash-size'] = vars['SPI_SIZE']
+        config['spi-mode'] = vars['SPI_MODE']
+        config['spi-speed'] = vars['SPI_SPEED']
+    table = {}
+    config['partition-table'] = table
+    table['offset'] = "0x2000"
+    entries = {}
+    table['entries'] = entries
+
+    def createEntry(address, size, type, subtype):
+        entry = {}
+        entry['address'] = '0x%06x' % address
+        entry['size'] = '0x%06x' % size
+        entry['type'] = type
+        entry['subtype'] = subtype
+        return entry
+    
+    def tryAddEntry(label, addressVar, type, subtype):
+        if not addressVar in vars:
+            return
+        s = vars[addressVar]
+        if s == '':
+            return None
+        addr = parse_int(s)
+        size= 0x100000 - (addr % 0x100000)
+        entry = createEntry(addr, size, type, subtype)
+        entries[label] = entry
+        return entry
+    
+    def addMake(entry, target):
+        make = {}
+        make['target'] = target
+        entry['make'] = make
+        return make
+
+    def firmwareFilename(name, ext = '.bin'):
+        return os.environ['BUILD_BASE'] + '/' + vars[name] + ext
+
+    if arch == 'Esp32':
+        entries['nvs'] = createEntry(0x9000, 0x6000, "data", "nvs")
+        entries['phy_init'] = createEntry(0xf000, 0x1000, "data", "phy")
+        entries['factory'] = createEntry(0x10000, 0x1f000, "app", "factory")
+        vars['RBOOT_SPIFFS_0'] = '0x100000'
+    else:
+        entries['phy_init'] = createEntry(0x3000, 0x1000, "data", "phy")
+        entries['sysconfig'] = createEntry(0x4000, 0x4000, "data", "nvs")
+        entry = tryAddEntry('rom0', 'RBOOT_ROM0_ADDR', 'app', 'factory')
+        if not entry is None:
+            entry['filename'] = firmwareFilename('RBOOT_ROM_0')
+            addMake(entry, 'fwimage')
+        entry = tryAddEntry('rom1', 'RBOOT_ROM1_ADDR', 'app', 'ota_0')
+        if not entry is None:
+            entry['filename'] = firmwareFilename('RBOOT_ROM_1')
+            addMake(entry, 'fwimage')
+        tryAddEntry('rom2', 'RBOOT_ROM2_ADDR', 'app', 'ota_1')
+
+    entry = tryAddEntry('spiffs1', 'RBOOT_SPIFFS_0', 'data', 'spiffs')
+    if vars['DISABLE_SPIFFS'] == '0' and not entry is None:
+        entry['filename'] = firmwareFilename('SPIFF_BIN')
+        make = addMake(entry, 'spiffsgen')
+        make['content'] = vars['SPIFF_FILES']
+        make['size'] = vars['SPIFF_SIZE']
+    tryAddEntry('spiffs2', 'RBOOT_SPIFFS_1', 'data', 'spiffs')
+
+    with sys.stdout if output == '-' else open(output, 'w') as f:
+        f.write(json.dumps(config, indent=4))
+
+
+
 def main():
     global quiet
     global md5sum
@@ -467,7 +544,7 @@ def main():
     parser.add_argument('--quiet', '-q', help="Don't print non-critical status messages to stderr", action='store_true')
     parser.add_argument('--offset', '-o', help='Set offset partition table', default='0x8000')
     parser.add_argument('--secure', help="Require app partitions to be suitable for secure boot", action='store_true')
-    parser.add_argument('input', help='Path to CSV or binary file to parse.', type=argparse.FileType('rb'))
+    parser.add_argument('input', help='Path to JSON or binary file to parse.', type=argparse.FileType('rb'))
     parser.add_argument('output', help='Path to output converted binary or CSV file. Will use stdout if omitted.',
                         nargs='?', default='-')
 
@@ -477,15 +554,22 @@ def main():
     md5sum = not args.disable_md5sum
     secure = args.secure
     offset_part_table = int(args.offset, 0)
+
+    if args.input.name.endswith('.mk'):
+        createConfig(args.input, args.output)
+        return
+
     input = args.input.read()
-    input_is_binary = input[0:2] == PartitionDefinition.MAGIC_BYTES
-    if input_is_binary:
+    input_is_binary = (input[0:2] == PartitionDefinition.MAGIC_BYTES)
+    if args.input.name.endswith('.hw'):
+        status("Parsing JSON input...")
+        config = json.loads(input.decode())
+        table = PartitionTable.from_json(config['partition-table'])
+    elif input_is_binary:
         status("Parsing binary partition input...")
         table = PartitionTable.from_binary(input)
     else:
-        input = input.decode()
-        status("Parsing CSV input...")
-        table = PartitionTable.from_csv(input)
+        raise InputError("Unknown input file format")
 
     if not args.no_verify:
         status("Verifying table...")
