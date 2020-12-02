@@ -6,6 +6,9 @@ DEFINE_FSTR_LOCAL(template1, "Stream containing {var1}, {var2} and {var3}. {} {{
 DEFINE_FSTR_LOCAL(template1_1, "Stream containing value #1, value #2 and {var3}. {} {{}} {{12345")
 DEFINE_FSTR_LOCAL(template1_2, "Stream containing value #1, value #2 and [value #3]. {} {{}} {{12345")
 
+DEFINE_FSTR_LOCAL(template2, "This text should {disable}not {var1} really {var2:hello} again {enable}be missing.")
+DEFINE_FSTR_LOCAL(template2_1, "This text should be missing.")
+
 class StreamTest : public TestGroup
 {
 public:
@@ -15,39 +18,6 @@ public:
 
 	void execute() override
 	{
-		TEST_CASE("template1.1")
-		{
-			FSTR::TemplateStream tmpl(template1);
-			tmpl.onGetValue([](const char* name) -> String {
-				if(FS("var1") == name) {
-					return F("value #1");
-				}
-				if(FS("var2") == name) {
-					return F("value #2");
-				}
-				return nullptr;
-			});
-
-			check(tmpl, template1_1);
-		}
-
-		TEST_CASE("template1.2")
-		{
-			FSTR::TemplateStream tmpl(template1);
-			tmpl.setVar("var3", "[value #3]");
-			tmpl.onGetValue([](const char* name) -> String {
-				if(FS("var1") == name) {
-					return F("value #1");
-				}
-				if(FS("var2") == name) {
-					return F("value #2");
-				}
-				return nullptr;
-			});
-
-			check(tmpl, template1_2);
-		}
-
 		const FlashString& FS_abstract = Resource::abstract_txt;
 
 		TEST_CASE("MemoryDataStream::moveString")

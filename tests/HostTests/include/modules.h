@@ -9,6 +9,7 @@
 	XX(Crypto)                                                                                                         \
 	XX(CStringArray)                                                                                                   \
 	XX(Stream)                                                                                                         \
+	XX(TemplateStream)                                                                                                 \
 	XX(Serial)                                                                                                         \
 	XX(ObjectMap)                                                                                                      \
 	XX(Base64)                                                                                                         \

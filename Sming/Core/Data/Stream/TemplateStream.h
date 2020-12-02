@@ -19,7 +19,7 @@
  * @brief Maximum length of a template variable name
  * @see See `TemplateStream`
  */
-#define TEMPLATE_MAX_VAR_NAME_LEN 16
+#define TEMPLATE_MAX_VAR_NAME_LEN 32
 #endif
 
 /**
@@ -37,14 +37,20 @@ public:
 
 	/** @brief Create a template stream
      *  @param stream source of template data
+     *  @param owned If true (default) then stream will be destroyed when complete
      */
-	TemplateStream(IDataSourceStream* stream) : stream(stream)
+	TemplateStream(IDataSourceStream* stream, bool owned = true)
+		: stream(stream), streamOwned(owned), doubleBraces(false)
+
 	{
+		reset();
 	}
 
 	~TemplateStream()
 	{
-		delete stream;
+		if(streamOwned) {
+			delete stream;
+		}
 	}
 
 	StreamType getStreamType() const override
@@ -54,7 +60,7 @@ public:
 
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
-	bool seek(int len) override;
+	int seekFrom(int offset, SeekOrigin origin) override;
 
 	bool isFinished() override
 	{
@@ -101,25 +107,64 @@ public:
 		getValueCallback = callback;
 	}
 
-protected:
-	String getValue(const char* name);
+	/**
+	 * @brief During processing applications may suppress output of certain sections
+	 * by calling this method from within the getValue callback
+	 */
+	void enableOutput(bool enable)
+	{
+		enableNextState = enable;
+	}
+
+	bool isOutputEnabled() const
+	{
+		return outputEnabled;
+	}
+
+	/**
+	 * @brief Use two braces {{X}} to mark tags
+	 * @param enable true: use two braces, false (default): single brace only
+	 */
+	void setDoubleBraces(bool enable)
+	{
+		doubleBraces = enable;
+	}
+
+	virtual String evaluate(char*& expr);
+
+	/**
+	 * @brief Fetch a templated value
+	 * @param name The variable name
+	 * @retval String value, invalid to emit tag unprocessed
+	 */
+	virtual String getValue(const char* name);
 
 private:
-	enum class State {
-		Wait,
-		Found,
-		StartVar,
-		SendingVar,
-	};
+	void reset()
+	{
+		value = nullptr;
+		streamPos = 0;
+		valuePos = 0;
+		valueWaitSize = 0;
+		tagLength = 0;
+		sendingValue = false;
+		outputEnabled = true;
+		enableNextState = true;
+	}
 
-	IDataSourceStream* stream = nullptr;
+	IDataSourceStream* stream;
 	Variables templateData;
 	GetValueDelegate getValueCallback;
-	State state = State::Wait;
 	String value;
-	size_t skipBlockSize = 0;
-	size_t varDataPos = 0;
-	size_t varWaitSize = 0;
+	uint32_t streamPos;		///< Position in output stream
+	uint16_t valuePos;		///< How much of variable value has been sent
+	uint16_t valueWaitSize; ///< Chars to send before variable value
+	uint8_t tagLength;
+	bool streamOwned : 1;
+	bool sendingValue : 1;
+	bool outputEnabled : 1;
+	bool enableNextState : 1;
+	bool doubleBraces : 1;
 };
 
 /**
