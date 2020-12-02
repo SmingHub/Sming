@@ -60,6 +60,7 @@ private:
 	Producer producer;
 	BodyPart bodyPart;
 	char boundary[16] = {0};
+	bool finished = false;
 };
 
 /**

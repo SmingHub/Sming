@@ -15,6 +15,10 @@
 
 IDataSourceStream* MultipartStream::getNextStream()
 {
+	if(finished) {
+		return nullptr;
+	}
+
 	// Return content, if available
 	if(bodyPart.stream != nullptr) {
 		auto stream = bodyPart.stream;
@@ -24,6 +28,10 @@ IDataSourceStream* MultipartStream::getNextStream()
 
 	// Fetch next part to send
 	bodyPart = producer();
+	if(bodyPart.headers == nullptr && bodyPart.stream == nullptr) {
+		// Nothing else to send...
+		finished = true;
+	}
 
 	// Generate header fragment
 	auto stream = new MemoryDataStream();
@@ -31,8 +39,7 @@ IDataSourceStream* MultipartStream::getNextStream()
 	stream->print("\r\n");
 	stream->print("--");
 	stream->print(getBoundary());
-	if(bodyPart.headers == nullptr) {
-		// No more parts
+	if(finished) {
 		stream->print("--");
 	}
 	stream->print("\r\n");
