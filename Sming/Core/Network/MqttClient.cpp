@@ -177,7 +177,7 @@ int MqttClient::onMessageEnd(mqtt_message_t* message)
 		setBits(flags, MQTT_CLIENT_CONNECTED);
 	}
 
-	auto& handler = reinterpret_cast<const HandlerMap&>(eventHandlers)[message->common.type];
+	auto& handler = static_cast<const HandlerMap&>(eventHandlers)[message->common.type];
 	if(handler) {
 		return handler(*this, message);
 	}

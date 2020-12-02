@@ -136,8 +136,8 @@ int HttpClientConnection::onMessageComplete(http_parser* parser)
 
 	auto response = getResponse();
 
-	if(response->headers.contains(HTTP_HEADER_CONNECTION) &&
-	   response->headers[HTTP_HEADER_CONNECTION].equalsIgnoreCase(_F("close"))) {
+	const String& headerConnection = static_cast<const HttpHeaders&>(response->headers)[HTTP_HEADER_CONNECTION];
+	if(headerConnection.equalsIgnoreCase(_F("close"))) {
 		allowPipe = false;
 		// if the server does not support keep-alive -> close the connection
 		// see: https://tools.ietf.org/html/rfc2616#section-14.10
@@ -246,11 +246,7 @@ REENTER:
 		}
 
 		// if the executionQueue is not empty then we have to check if we can pipeline that request
-		if(executionQueue.count()) {
-			if(!allowPipe) {
-				break;
-			}
-
+		if(allowPipe && executionQueue.count() != 0) {
 			if(!(request->method == HTTP_GET || request->method == HTTP_HEAD)) {
 				// if the current request cannot be pipelined -> break;
 				break;
