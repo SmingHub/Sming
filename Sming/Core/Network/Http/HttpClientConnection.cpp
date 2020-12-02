@@ -77,7 +77,7 @@ MultipartStream::BodyPart HttpClientConnection::multipartProducer()
 	MultipartStream::BodyPart result;
 
 	if(outgoingRequest->files.count()) {
-		const String& name = outgoingRequest->files.keyAt(0);
+		String name = outgoingRequest->files.keyAt(0);
 		auto file = outgoingRequest->files.extractAt(0);
 		result.stream = file;
 
