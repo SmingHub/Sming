@@ -313,7 +313,7 @@ String SectionTemplate::evaluate(char*& expr)
 	}
 
 	auto exprStart = expr;
-	*expr = '_';
+	*expr = 'Q';
 
 	// Process conditional expressions such as {length:varname}, {width:10:text to pad}
 	ArgList args(*this);
@@ -333,16 +333,16 @@ String SectionTemplate::evaluate(char*& expr)
 	expr = ptr;
 
 	switch(field) {
-	case Command::_unknown:
+	case Command::Qunknown:
 		break;
 
-	case Command::_as_int:
+	case Command::Qas_int:
 		return String(args[0].toInt());
 
-	case Command::_as_float:
+	case Command::Qas_float:
 		return String(args[0].toFloat());
 
-	case Command::_as_string: {
+	case Command::Qas_string: {
 		/*
 		 * TODO: Find/write strQuote() helper function to ensure any containing quotes are escaped.
 		 * This will be format-specific so perhaps another callback or look at putting Stream/Format
@@ -355,24 +355,24 @@ String SectionTemplate::evaluate(char*& expr)
 		return s;
 	}
 
-	case Command::_kb:
+	case Command::Qkb:
 		return String(args[0].toFloat() / 1024);
 
-	case Command::_replace: {
+	case Command::Qreplace: {
 		String value = args[0];
 		value.replace(args[1], args[2]);
 		return value;
 	}
 
-	case Command::_length:
+	case Command::Qlength:
 		return String(args[0].toString().length());
 
-	case Command::_mime_type: {
+	case Command::Qmime_type: {
 		String s = ContentType::fromFullFileName(args[0]);
 		return s ?: "";
 	}
 
-	case Command::_pad: {
+	case Command::Qpad: {
 		String value = args[0];
 		int strlen = value.length();
 		int padlen = args[1].toInt();
@@ -392,7 +392,7 @@ String SectionTemplate::evaluate(char*& expr)
 		return value;
 	}
 
-	case Command::_repeat: {
+	case Command::Qrepeat: {
 		int count = args[1].toInt();
 		if(count <= 0) {
 			return "";
@@ -406,52 +406,52 @@ String SectionTemplate::evaluate(char*& expr)
 		return value;
 	}
 
-	case Command::_ifdef:
+	case Command::Qifdef:
 		return openTag(args[0].toString().length() != 0);
 
-	case Command::_ifndef:
+	case Command::Qifndef:
 		return openTag(args[0].toString().length() == 0);
 
-	case Command::_ifeq:
+	case Command::Qifeq:
 		return openTag(args[0].compare(args[1]) == 0);
 
-	case Command::_ifneq:
+	case Command::Qifneq:
 		return openTag(args[0].compare(args[1]) != 0);
 
-	case Command::_ifgt:
+	case Command::Qifgt:
 		return openTag(args[0].compare(args[1]) > 0);
 
-	case Command::_iflt:
+	case Command::Qiflt:
 		return openTag(args[0].compare(args[1]) < 0);
 
-	case Command::_ifge:
+	case Command::Qifge:
 		return openTag(args[0].compare(args[1]) >= 0);
 
-	case Command::_ifle:
+	case Command::Qifle:
 		return openTag(args[0].compare(args[1]) <= 0);
 
-	case Command::_ifbtw:
+	case Command::Qifbtw:
 		return openTag(args[0].compare(args[1]) >= 0 && args[0].compare(args[2]) <= 0);
 
-	case Command::_ifin:
+	case Command::Qifin:
 		return openTag(String(args[0]).indexOf(args[1]) >= 0);
 
-	case Command::_ifnin:
+	case Command::Qifnin:
 		return openTag(String(args[0]).indexOf(args[1]) < 0);
 
-	case Command::_add:
+	case Command::Qadd:
 		return args[0].add(args[1]);
 
-	case Command::_sub:
+	case Command::Qsub:
 		return args[0].sub(args[1]);
 
-	case Command::_else:
+	case Command::Qelse:
 		return elseTag();
 
-	case Command::_endif:
+	case Command::Qendif:
 		return closeTag();
 
-	case Command::_goto:
+	case Command::Qgoto:
 		if(isOutputEnabled()) {
 			int n = args[0].toInt();
 			if(unsigned(n) >= sectionStream.count()) {
@@ -462,7 +462,7 @@ String SectionTemplate::evaluate(char*& expr)
 		}
 		return "";
 
-	case Command::_count: {
+	case Command::Qcount: {
 		auto section = sectionStream.getSection(args[0].toInt());
 		if(section == nullptr) {
 			return nullptr;
@@ -470,7 +470,7 @@ String SectionTemplate::evaluate(char*& expr)
 		return String(section->recordCount);
 	}
 
-	case Command::_index: {
+	case Command::Qindex: {
 		auto section = sectionStream.getSection(args[0].toInt());
 		if(section == nullptr) {
 			return nullptr;

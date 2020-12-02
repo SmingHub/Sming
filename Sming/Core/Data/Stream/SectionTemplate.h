@@ -28,38 +28,38 @@
  * Anything else is treated as a variable name.
  * Separator is :
  *
- * @note Command tags are prefixed with _ to allow use of reserved words
+ * @note Command tags are prefixed with 'Q' to allow use of reserved words
  * in the Command enumeration. This represents the ! prefix in actual use.
  */
 #define SECTION_TEMPLATE_COMMAND_MAP(XX)                                                                               \
-	XX(_as_int, "{!int:A} Output A as integer")                                                                        \
-	XX(_as_float, "{!float:A} Output A as float")                                                                      \
-	XX(_as_string, "{!string:A} Output A as quoted string")                                                            \
-	XX(_mime_type, "{!mime_type:A} Get MIME type string for a filename")                                               \
-	XX(_replace, "{!replace:A:B:C} Copy of A with all occurrences of B replaced with C")                               \
-	XX(_length, "{!length:A} Number of characters in A")                                                               \
-	XX(_pad,                                                                                                           \
+	XX(Qas_int, "{!int:A} Output A as integer")                                                                        \
+	XX(Qas_float, "{!float:A} Output A as float")                                                                      \
+	XX(Qas_string, "{!string:A} Output A as quoted string")                                                            \
+	XX(Qmime_type, "{!mime_type:A} Get MIME type string for a filename")                                               \
+	XX(Qreplace, "{!replace:A:B:C} Copy of A with all occurrences of B replaced with C")                               \
+	XX(Qlength, "{!length:A} Number of characters in A")                                                               \
+	XX(Qpad,                                                                                                           \
 	   "{!pad:A:B:C} Copy of A padded to at least B characters with C (default is space). Use -ve B to left-pad. C")   \
-	XX(_repeat, "{!repeat:A:B} Repeat A, number of iterations is B")                                                   \
-	XX(_kb, "{!kb:A} Convert A to KB")                                                                                 \
-	XX(_ifdef, "{!ifdef:A}block{/if} emit block if A is not zero-length")                                              \
-	XX(_ifndef, "{!ifdef:A}block{/if} emit block if A is zero-length")                                                 \
-	XX(_ifeq, "{!ifeq:A:B} emit block if A == B")                                                                      \
-	XX(_ifneq, "{!ifneq:A:B} emit block if A != B")                                                                    \
-	XX(_ifgt, "{!ifgt:A:B} emit block if A > B")                                                                       \
-	XX(_iflt, "{!iflt:A:B} emit block if A < B")                                                                       \
-	XX(_ifge, "{!ifge:A:B} emit block if A >= B")                                                                      \
-	XX(_ifle, "{!ifle:A:B} emit block if A <= B")                                                                      \
-	XX(_ifbtw, "{!ifbtw:A:B:C} emit block if B <= A <= C")                                                             \
-	XX(_ifin, "{!ifin:A:B} emit block if A contains B")                                                                \
-	XX(_ifnin, "{!ifin:A:B} emit block if A does not contain B")                                                       \
-	XX(_else, "{!else}")                                                                                               \
-	XX(_endif, "{!endif}")                                                                                             \
-	XX(_add, "{!add:A:B} A - B")                                                                                       \
-	XX(_sub, "{!sub:A:B} A - B")                                                                                       \
-	XX(_goto, "{!goto:A} move to section A")                                                                           \
-	XX(_count, "{!count:A} emit number of records in section A")                                                       \
-	XX(_index, "{!index:A} emit current record index for section A")
+	XX(Qrepeat, "{!repeat:A:B} Repeat A, number of iterations is B")                                                   \
+	XX(Qkb, "{!kb:A} Convert A to KB")                                                                                 \
+	XX(Qifdef, "{!ifdef:A}block{/if} emit block if A is not zero-length")                                              \
+	XX(Qifndef, "{!ifdef:A}block{/if} emit block if A is zero-length")                                                 \
+	XX(Qifeq, "{!ifeq:A:B} emit block if A == B")                                                                      \
+	XX(Qifneq, "{!ifneq:A:B} emit block if A != B")                                                                    \
+	XX(Qifgt, "{!ifgt:A:B} emit block if A > B")                                                                       \
+	XX(Qiflt, "{!iflt:A:B} emit block if A < B")                                                                       \
+	XX(Qifge, "{!ifge:A:B} emit block if A >= B")                                                                      \
+	XX(Qifle, "{!ifle:A:B} emit block if A <= B")                                                                      \
+	XX(Qifbtw, "{!ifbtw:A:B:C} emit block if B <= A <= C")                                                             \
+	XX(Qifin, "{!ifin:A:B} emit block if A contains B")                                                                \
+	XX(Qifnin, "{!ifin:A:B} emit block if A does not contain B")                                                       \
+	XX(Qelse, "{!else}")                                                                                               \
+	XX(Qendif, "{!endif}")                                                                                             \
+	XX(Qadd, "{!add:A:B} A - B")                                                                                       \
+	XX(Qsub, "{!sub:A:B} A - B")                                                                                       \
+	XX(Qgoto, "{!goto:A} move to section A")                                                                           \
+	XX(Qcount, "{!count:A} emit number of records in section A")                                                       \
+	XX(Qindex, "{!index:A} emit current record index for section A")
 
 #define SECTION_TEMPLATE_FIELD_MAP(XX)                                                                                 \
 	XX(section, "{$section} Current section index")                                                                    \
@@ -72,7 +72,7 @@ class SectionTemplate : public TemplateStream
 {
 public:
 	enum class Command {
-		_unknown = 0,
+		Qunknown = 0,
 #define XX(name, comment) name,
 		SECTION_TEMPLATE_COMMAND_MAP(XX)
 #undef XX
