@@ -233,7 +233,7 @@ int HttpClientConnection::onBody(const char* at, size_t length)
 
 void HttpClientConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	debug_d("HCC::onReadyToSendData: executionQueue: %d, waitingQueue: %d", executionQueue.count(),
+	debug_d("HCC::onReadyToSendData: State: %d, executionQueue: %d, waitingQueue: %d", state, executionQueue.count(),
 			waitingQueue.count());
 
 REENTER:
