@@ -205,7 +205,7 @@ endif # App
 endef # ParseComponent
 
 # Build a list of all available Components
-ALL_COMPONENT_DIRS = $(foreach d,$(COMPONENT_SEARCH_DIRS),$(call ListSubDirs,$d))
+ALL_COMPONENT_DIRS = $(foreach d,$(ALL_SEARCH_DIRS),$(call ListSubDirs,$d))
 
 # Lookup Component directory from a name
 # $1 -> Component name
@@ -232,9 +232,9 @@ ifndef MAKE_CLEAN
 endif
 
 # Append standard search directories to any defined by the application
-COMPONENT_SEARCH_DIRS	:= $(call FixPath,$(abspath $(COMPONENT_SEARCH_DIRS)))
-COMPONENTS_EXTRA_INCDIR	+= $(COMPONENT_SEARCH_DIRS)
-COMPONENT_SEARCH_DIRS	+= $(ARCH_COMPONENTS) $(SMING_HOME)/Components $(SMING_HOME)/Libraries
+ALL_SEARCH_DIRS			:= $(call FixPath,$(abspath $(COMPONENT_SEARCH_DIRS)))
+COMPONENTS_EXTRA_INCDIR	+= $(ALL_SEARCH_DIRS)
+ALL_SEARCH_DIRS			+= $(ARCH_COMPONENTS) $(SMING_HOME)/Components $(SMING_HOME)/Libraries
 
 # And add in any requested libraries
 COMPONENTS				+= $(sort $(ARDUINO_LIBRARIES))
@@ -328,7 +328,7 @@ $(foreach v,$(EXPORT_VARS),$(eval export $v))
 
 ##@Building
 
-COMPONENT_DIRS := $(foreach d,$(COMPONENT_SEARCH_DIRS),$(wildcard $d/*))
+COMPONENT_DIRS := $(foreach d,$(ALL_SEARCH_DIRS),$(wildcard $d/*))
 
 %/component.mk:
 	@if [ -f $(@D)/../.patches/$(notdir $(@D))/component.mk ]; then \
@@ -555,7 +555,7 @@ endef
 
 .PHONY: list-components
 list-components: ##Print details of all Components for this project
-	$(call PrintVariable,COMPONENT_SEARCH_DIRS)
+	$(call PrintVariable,ALL_SEARCH_DIRS)
 	$(if $(V),$(call PrintVariable,ALL_COMPONENT_DIRS))
 	$(info Components:)
 	$(foreach c,$(sort $(COMPONENTS)),$(eval $(call PrintComponentInfo,$c)))
