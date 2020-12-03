@@ -124,7 +124,7 @@ class PartitionTable(list):
                     raise InputError("CSV Error: Partitions overlap. Partition at line %d sets offset 0x%x. Previous partition ends 0x%x"
                                      % (e.line_no, e.offset, last_end))
             if e.offset is None:
-                pad_to = 0x10000 if e.type == APP_TYPE else 4
+                pad_to = e.alignment()
                 if last_end % pad_to != 0:
                     last_end += pad_to - (last_end % pad_to)
                 e.offset = last_end
@@ -251,7 +251,7 @@ class PartitionDefinition(object):
     MAGIC_BYTES = b"\xAA\x50"
 
     ALIGNMENT = {
-        APP_TYPE: 0x10000,
+        APP_TYPE: 0x1000,
         DATA_TYPE: 0x04,
     }
 
@@ -342,6 +342,9 @@ class PartitionDefinition(object):
             return None  # PartitionTable will fill in default
         return parse_int(strval)
 
+    def alignment(self):
+        return self.ALIGNMENT.get(self.type, 4)
+
     def verify(self):
         if self.type is None:
             raise ValidationError(self, "Type field is not set")
@@ -349,7 +352,7 @@ class PartitionDefinition(object):
             raise ValidationError(self, "Subtype field is not set")
         if self.offset is None:
             raise ValidationError(self, "Offset field is not set")
-        align = self.ALIGNMENT.get(self.type, 4)
+        align = self.alignment()
         if self.offset % align:
             raise ValidationError(self, "Offset 0x%x is not aligned to 0x%x" % (self.offset, align))
         if self.size % align and secure:
@@ -491,7 +494,7 @@ def main():
         table_size = table.flash_size()
         if size < table_size:
             raise InputError("Partitions defined in '%s' occupy %.1fMB of flash (%d bytes) which does not fit in configured "
-                             "flash size %dMB. Change the flash size in menuconfig under the 'Serial Flasher Config' menu." %
+                             "flash size %dMB. Please change SPI_SIZE setting." %
                              (args.input.name, table_size / 1024.0 / 1024.0, table_size, size_mb))
 
     # Make sure that the output directory is created
