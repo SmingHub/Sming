@@ -74,7 +74,7 @@ public:
 
 	bool isFinished() override
 	{
-		return (readPos >= capacity);
+		return available() <= 0;
 	}
 
 	bool moveString(String& s) override;
