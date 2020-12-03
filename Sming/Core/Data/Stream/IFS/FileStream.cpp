@@ -10,23 +10,39 @@
 
 #include "FileStream.h"
 
-void FileStream::attach(file_t file, size_t size)
+#define ETAG_SIZE 16
+
+namespace IFS
+{
+void FileStream::attach(File::Handle file, size_t size)
 {
 	close();
-	if(file >= 0) {
-		handle = file;
-		this->size = size;
-		fileSeek(handle, 0, SeekOrigin::Start);
-		pos = 0;
-		debug_d("attached file: '%s' (%u bytes) #0x%08X", fileName().c_str(), size, this);
+	if(file < 0) {
+		return;
 	}
+
+	auto fs = getFileSystem();
+	if(fs == nullptr) {
+		return;
+	}
+	handle = file;
+	this->size = size;
+	fs->lseek(handle, 0, SeekOrigin::Start);
+	pos = 0;
+
+	debug_d("attached file: '%s' (%u bytes) #0x%08X", fileName().c_str(), size, this);
 }
 
-bool FileStream::open(const FileStat& stat, FileOpenFlags openFlags)
+bool FileStream::open(const FileStat& stat, File::OpenFlags openFlags)
 {
+	auto fs = getFileSystem();
+	if(fs == nullptr) {
+		return false;
+	}
+
 	lastError = FS_OK;
 
-	file_t file = fileOpen(stat, openFlags);
+	File::Handle file = fs->fopen(stat, openFlags);
 	if(!check(file)) {
 		return false;
 	}
@@ -35,31 +51,38 @@ bool FileStream::open(const FileStat& stat, FileOpenFlags openFlags)
 	return true;
 }
 
-bool FileStream::open(const String& fileName, FileOpenFlags openFlags)
+bool FileStream::open(const String& fileName, File::OpenFlags openFlags)
 {
+	auto fs = getFileSystem();
+	if(fs == nullptr) {
+		return false;
+	}
+
 	lastError = FS_OK;
 
-	file_t file = fileOpen(fileName, openFlags);
+	File::Handle file = fs->open(fileName, openFlags);
 	if(!check(file)) {
-		debug_w("File '%s' open error: %s", fileName.c_str(), fileGetErrorString(file).c_str());
+		debug_w("File '%s' open error: %s", fileName.c_str(), fs->getErrorString(file).c_str());
 		return false;
 	}
 
 	// Get size
-	int size = fileSeek(file, 0, SeekOrigin::End);
+	int size = fs->lseek(file, 0, SeekOrigin::End);
 	if(check(size)) {
 		attach(file, size);
 		return true;
 	}
 
-	fileClose(file);
+	fs->close(file);
 	return false;
 }
 
 void FileStream::close()
 {
 	if(handle >= 0) {
-		fileClose(handle);
+		auto fs = getFileSystem();
+		assert(fs != nullptr);
+		fs->close(handle);
 		handle = -1;
 	}
 	size = 0;
@@ -73,7 +96,12 @@ size_t FileStream::readBytes(char* buffer, size_t length)
 		return 0;
 	}
 
-	int available = fileRead(handle, buffer, std::min(size - pos, length));
+	auto fs = getFileSystem();
+	if(fs == nullptr) {
+		return 0;
+	}
+
+	int available = fs->read(handle, buffer, std::min(size - pos, length));
 	if(!check(available)) {
 		return 0;
 	}
@@ -85,24 +113,30 @@ size_t FileStream::readBytes(char* buffer, size_t length)
 
 uint16_t FileStream::readMemoryBlock(char* data, int bufSize)
 {
+	auto fs = getFileSystem();
+	if(fs == nullptr) {
+		return 0;
+	}
+
 	assert(bufSize >= 0);
 	size_t startPos = pos;
 	size_t count = readBytes(data, bufSize);
 
 	// Move cursor back to start position
-	(void)fileSeek(handle, startPos, SeekOrigin::Start);
+	(void)fs->lseek(handle, startPos, SeekOrigin::Start);
 
 	return count;
 }
 
 size_t FileStream::write(const uint8_t* buffer, size_t size)
 {
-	if(!fileExist()) {
+	auto fs = getFileSystem();
+	if(fs == nullptr) {
 		return 0;
 	}
 
 	if(pos != this->size) {
-		int writePos = fileSeek(handle, 0, SeekOrigin::End);
+		int writePos = fs->lseek(handle, 0, SeekOrigin::End);
 		if(!check(writePos)) {
 			return 0;
 		}
@@ -110,7 +144,7 @@ size_t FileStream::write(const uint8_t* buffer, size_t size)
 		pos = size_t(writePos);
 	}
 
-	int written = fileWrite(handle, buffer, size);
+	int written = fs->write(handle, buffer, size);
 	if(check(written)) {
 		pos += size_t(written);
 		this->size = pos;
@@ -121,9 +155,14 @@ size_t FileStream::write(const uint8_t* buffer, size_t size)
 
 int FileStream::seekFrom(int offset, SeekOrigin origin)
 {
+	auto fs = getFileSystem();
+	if(fs == nullptr) {
+		return 0;
+	}
+
 	// Cannot rely on return value from fileSeek - failure does not mean position hasn't changed
-	fileSeek(handle, offset, origin);
-	int newpos = fileTell(handle);
+	fs->lseek(handle, offset, origin);
+	int newpos = fs->tell(handle);
 	if(check(newpos)) {
 		pos = size_t(newpos);
 		if(pos > size) {
@@ -135,20 +174,29 @@ int FileStream::seekFrom(int offset, SeekOrigin origin)
 
 String FileStream::fileName() const
 {
+	auto fs = getFileSystem();
+	if(fs == nullptr) {
+		return nullptr;
+	}
+
 	FileNameStat stat;
-	int res = fileStats(handle, stat);
-	return (res < 0) ? nullptr : stat.name.buffer;
+	int res = fs->fstat(handle, stat);
+	return (res < 0 || stat.name.length == 0) ? nullptr : stat.name.buffer;
 }
 
 String FileStream::id() const
 {
+	auto fs = getFileSystem();
+	if(fs == nullptr) {
+		return 0;
+	}
+
 	FileStat stat;
-	int res = fileStats(handle, stat);
+	int res = fs->fstat(handle, stat);
 	if(res < 0) {
 		return nullptr;
 	}
 
-#define ETAG_SIZE 16
 	char buf[ETAG_SIZE];
 	m_snprintf(buf, ETAG_SIZE, _F("00f-%x-%x0-%x"), stat.id, stat.size, stat.name.length);
 
@@ -157,7 +205,12 @@ String FileStream::id() const
 
 bool FileStream::truncate(size_t newSize)
 {
-	bool res = check(fileTruncate(handle, newSize));
+	auto fs = getFileSystem();
+	if(fs == nullptr) {
+		return 0;
+	}
+
+	bool res = check(fs->truncate(handle, newSize));
 	if(res) {
 		size = newSize;
 		if(pos > size) {
@@ -166,3 +219,5 @@ bool FileStream::truncate(size_t newSize)
 	}
 	return res;
 }
+
+} // namespace IFS
