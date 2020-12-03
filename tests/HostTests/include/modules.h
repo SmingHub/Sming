@@ -6,6 +6,7 @@
 	XX(BitSet)                                                                                                         \
 	XX(String)                                                                                                         \
 	XX(ArduinoString)                                                                                                  \
+	XX(Wiring)                                                                                                         \
 	XX(Crypto)                                                                                                         \
 	XX(CStringArray)                                                                                                   \
 	XX(Stream)                                                                                                         \
