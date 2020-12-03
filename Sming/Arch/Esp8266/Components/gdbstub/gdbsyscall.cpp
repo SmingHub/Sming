@@ -203,20 +203,26 @@ bool ATTR_GDBEXTERNFN gdb_syscall_complete(const char* data)
 		++data;
 		isNeg = true;
 	}
-	int len = GdbPacket::readHexValue(data);
+	int retcode = GdbPacket::readHexValue(data);
 	if(isNeg) {
-		len = -len;
+		retcode = -retcode;
 	}
+	syscall_info.result = retcode;
 
 	char ctrl_c_flag = '\0';
 
 	if(*data == ',') {
 		++data;
-		unsigned err = GdbPacket::readHexValue(data);
-		syscall_info.result = -err;
-	} else {
-		syscall_info.result = len;
+		errno = GdbPacket::readHexValue(data);
 
+		if(*data == ',') {
+			++data;
+			ctrl_c_flag = *data;
+			if(ctrl_c_flag) {
+				bitSet(gdb_state.flags, DBGFLAG_CTRL_BREAK);
+			}
+		}
+	} else {
 		switch(syscall_info.command) {
 		case eGDBSYS_gettimeofday: {
 			auto tv = syscall_info.gettimeofday.tv;
@@ -241,14 +247,6 @@ bool ATTR_GDBEXTERNFN gdb_syscall_complete(const char* data)
 		}
 
 		default:; // No processing required for other commands
-		}
-	}
-
-	if(*data == ',') {
-		++data;
-		ctrl_c_flag = *data;
-		if(ctrl_c_flag) {
-			bitSet(gdb_state.flags, DBGFLAG_CTRL_BREAK);
 		}
 	}
 

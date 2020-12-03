@@ -242,11 +242,6 @@ FLASH_BOOT_CHUNKS		:= 0x1000=$(FLASH_BOOT_LOADER)
 
 SDK_DEFAULT_PATH := $(COMPONENT_PATH)/sdk
 
-##@Debugging
-
-CACHE_VARS += GDB_CMDLINE
-GDB_CMDLINE = trap '' INT; $(GDB) -x $(ARCH_TOOLS)/gdbinit $(TARGET_OUT)
-     
 ##@Partitions
 
 SDK_PARTITION_PATH := $(SDK_DEFAULT_PATH)/partitions

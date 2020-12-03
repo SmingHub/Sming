@@ -20,6 +20,7 @@ COMPONENT_DEPENDS := \
 	fatfs \
 	esp_spiffs \
 	esp32 \
+	gdbstub \
 	esptool
 
 #
