@@ -311,15 +311,13 @@ void HttpClientConnection::onClosed()
 	if(waitingQueue.count() + executionQueue.count() > 0) {
 		debug_d("HCC::onClosed: Trying to reconnect and send pending requests");
 
-		System.queueCallback([this]() {
-			cleanup();
-			init(HTTP_RESPONSE);
-			auto request = waitingQueue.peek();
-			if(request != nullptr) {
-				bool useSsl = (request->uri.Scheme == URI_SCHEME_HTTP_SECURE);
-				connect(request->uri.Host, request->uri.getPort(), useSsl);
-			}
-		});
+		cleanup();
+		init(HTTP_RESPONSE);
+		auto request = waitingQueue.peek();
+		if(request != nullptr) {
+			bool useSsl = (request->uri.Scheme == URI_SCHEME_HTTP_SECURE);
+			connect(request->uri.Host, request->uri.getPort(), useSsl);
+		}
 	}
 }
 
