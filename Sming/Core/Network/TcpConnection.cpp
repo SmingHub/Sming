@@ -254,14 +254,17 @@ int TcpConnection::write(IDataSourceStream* stream)
 		int bytesWritten = write(buffer, bytesRead, TCP_WRITE_FLAG_COPY | TCP_WRITE_FLAG_MORE);
 		debug_tcp_d("Written: %d, Available: %u, isFinished: %d, PushCount: %u", bytesWritten, available,
 					stream->isFinished(), pushCount);
-		if(bytesWritten <= 0) {
+
+		if(bytesWritten < 0) {
+			break;
+		}
+
+		if(bytesWritten == 0) {
 			continue;
 		}
 
-		if(bytesWritten > 0) {
-			total += size_t(bytesWritten);
-			stream->seek(bytesWritten);
-		}
+		total += size_t(bytesWritten);
+		stream->seek(bytesWritten);
 	}
 
 	if(pushCount == 0) {
