@@ -54,7 +54,6 @@ bool HttpClientConnection::send(HttpRequest* request)
 
 void HttpClientConnection::reset()
 {
-	delete incomingRequest;
 	incomingRequest = nullptr;
 
 	response.reset();
@@ -64,7 +63,7 @@ void HttpClientConnection::reset()
 
 int HttpClientConnection::onMessageBegin(http_parser* parser)
 {
-	incomingRequest = executionQueue.dequeue();
+	incomingRequest = executionQueue.peek();
 	if(incomingRequest == nullptr) {
 		return 1; // there are no requests in the queue
 	}
@@ -113,7 +112,7 @@ int HttpClientConnection::onMessageComplete(http_parser* parser)
 		return -2; // no current request...
 	}
 
-	debug_d("HCC::onMessageComplete: Execution queue: %d, %s", executionQueue.count(),
+	debug_d("HCC::onMessageComplete: executionQueue: %d, %s", executionQueue.count(),
 			incomingRequest->uri.toString().c_str());
 
 	// we are finished with this request
@@ -126,8 +125,10 @@ int HttpClientConnection::onMessageComplete(http_parser* parser)
 
 	if(incomingRequest->retries > 0) {
 		incomingRequest->retries--;
-		return (executionQueue.enqueue(incomingRequest) ? 0 : -1);
+		return 0;
 	}
+
+	executionQueue.dequeue();
 
 	delete incomingRequest;
 	incomingRequest = nullptr;
@@ -232,7 +233,7 @@ int HttpClientConnection::onBody(const char* at, size_t length)
 
 void HttpClientConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	debug_d("HCC::onReadyToSendData: executionQueue: %d, waitingQueue.count: %d", executionQueue.count(),
+	debug_d("HCC::onReadyToSendData: executionQueue: %d, waitingQueue: %d", executionQueue.count(),
 			waitingQueue.count());
 
 REENTER:
@@ -246,8 +247,8 @@ REENTER:
 		}
 
 		// if the executionQueue is not empty then we have to check if we can pipeline that request
-		if(allowPipe && executionQueue.count() != 0) {
-			if(!(request->method == HTTP_GET || request->method == HTTP_HEAD)) {
+		if(executionQueue.count() != 0) {
+			if(!(allowPipe && (request->method == HTTP_GET || request->method == HTTP_HEAD))) {
 				// if the current request cannot be pipelined -> break;
 				break;
 			}
