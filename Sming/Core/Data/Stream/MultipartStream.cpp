@@ -15,7 +15,7 @@
 
 IDataSourceStream* MultipartStream::getNextStream()
 {
-	if(finished) {
+	if(footerSent) {
 		return nullptr;
 	}
 
@@ -28,10 +28,6 @@ IDataSourceStream* MultipartStream::getNextStream()
 
 	// Fetch next part to send
 	bodyPart = producer();
-	if(bodyPart.headers == nullptr && bodyPart.stream == nullptr) {
-		// Nothing else to send...
-		finished = true;
-	}
 
 	// Generate header fragment
 	auto stream = new MemoryDataStream();
@@ -39,12 +35,13 @@ IDataSourceStream* MultipartStream::getNextStream()
 	stream->print("\r\n");
 	stream->print("--");
 	stream->print(getBoundary());
-	if(finished) {
+	if(!bodyPart) {
 		stream->print("--");
+		footerSent = true;
 	}
 	stream->print("\r\n");
 
-	if(bodyPart.headers != nullptr) {
+	if(bodyPart) {
 		if(bodyPart.stream != nullptr && !bodyPart.headers->contains(HTTP_HEADER_CONTENT_LENGTH)) {
 			auto avail = bodyPart.stream->available();
 			if(avail >= 0) {
