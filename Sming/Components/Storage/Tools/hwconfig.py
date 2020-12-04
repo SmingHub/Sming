@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 #
-# ESP32 partition table generation tool
+# Sming hardware configuration tool
 #
-# Converts partition tables to/from CSV and binary formats.
+# Forked from Espressif gen_esp32part.py
 #
-# See https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/partition-tables.html
-# for explanation of partition table structure and uses.
+# Original license:
 #
 # Copyright 2015-2016 Espressif Systems (Shanghai) PTE LTD
 #
@@ -31,9 +30,9 @@ import hashlib
 import binascii
 import errno
 
-MAX_PARTITION_LENGTH = 0xC00   # 3K for partition data (96 entries) leaves 1K in a 4K sector for signature
+MAX_PARTITION_LENGTH = 0xC00  # 3K for partition data (96 entries) leaves 1K in a 4K sector for signature
 MD5_PARTITION_BEGIN = b"\xEB\xEB" + b"\xFF" * 14  # The first 2 bytes are like magic numbers for MD5 sum
-PARTITION_TABLE_SIZE  = 0x1000  # Size of partition table
+PARTITION_TABLE_SIZE = 0x1000  # Size of partition table
 
 MIN_PARTITION_SUBTYPE_APP_OTA = 0x10
 NUM_PARTITION_SUBTYPE_APP_OTA = 16
@@ -86,6 +85,7 @@ def critical(msg):
 
 
 class PartitionTable(list):
+
     def __init__(self):
         super(PartitionTable, self).__init__(self)
 
@@ -215,7 +215,7 @@ class PartitionTable(list):
     def from_binary(cls, b):
         md5 = hashlib.md5()
         result = cls()
-        for o in range(0,len(b),32):
+        for o in range(0, len(b), 32):
             data = b[o:o + 32]
             if len(data) != 32:
                 raise InputError("Partition table length must be a multiple of 32 bytes")
@@ -304,8 +304,10 @@ class PartitionDefinition(object):
             and self.size == other.size
 
     def __repr__(self):
+
         def maybe_hex(x):
             return "0x%x" % x if x is not None else "None"
+
         return "PartitionDefinition('%s', 0x%x, 0x%x, %s, %s)" % (self.name, self.type, self.subtype or 0,
                                                                   maybe_hex(self.offset), maybe_hex(self.size))
 
@@ -384,7 +386,7 @@ class PartitionDefinition(object):
         res.name = res.name.decode()
         if magic != cls.MAGIC_BYTES:
             raise InputError("Invalid magic bytes (%r) for partition definition" % magic)
-        for flag,bit in cls.FLAGS.items():
+        for flag, bit in cls.FLAGS.items():
             if flags & (1 << bit):
                 setattr(res, flag, True)
                 flags &= ~(1 << bit)
@@ -405,6 +407,7 @@ class PartitionDefinition(object):
                            flags)
 
     def to_csv(self, simple_formatting=False):
+
         def addr_format(a, include_sizes):
             if not simple_formatting and include_sizes:
                 for (val, suffix) in [(0x100000, "M"), (0x400, "K")]:
@@ -413,7 +416,7 @@ class PartitionDefinition(object):
             return "0x%x" % a
 
         def lookup_keyword(t, keywords):
-            for k,v in keywords.items():
+            for k, v in keywords.items():
                 if simple_formatting is False and t == v:
                     return k
             return "%d" % t
@@ -453,7 +456,7 @@ def main():
     global md5sum
     global offset_part_table
     global secure
-    parser = argparse.ArgumentParser(description='ESP32 partition table utility')
+    parser = argparse.ArgumentParser(description='Sming hardware configuration utility')
 
     parser.add_argument('--flash-size', help='Optional flash size limit, checks partition table fits in flash',
                         nargs='?', choices=['1MB', '2MB', '4MB', '8MB', '16MB'])
@@ -494,7 +497,7 @@ def main():
         table_size = table.flash_size()
         if size < table_size:
             raise InputError("Partitions defined in '%s' occupy %.1fMB of flash (%d bytes) which does not fit in configured "
-                             "flash size %dMB. Please change SPI_SIZE setting." %
+                             "flash size %dMB. Please change SPI_SIZE setting." % 
                              (args.input.name, table_size / 1024.0 / 1024.0, table_size, size_mb))
 
     # Make sure that the output directory is created
@@ -522,11 +525,13 @@ def main():
 
 
 class InputError(RuntimeError):
+
     def __init__(self, e):
         super(InputError, self).__init__(e)
 
 
 class ValidationError(InputError):
+
     def __init__(self, partition, message):
         super(ValidationError, self).__init__(
             "Partition %s invalid: %s" % (partition.name, message))
