@@ -54,6 +54,7 @@ void HttpConnection::init(http_parser_type type)
 	http_parser_init(&parser, type);
 	parser.data = this;
 	setDefaultParser();
+	state = eHCS_Ready;
 }
 
 void HttpConnection::setDefaultParser()

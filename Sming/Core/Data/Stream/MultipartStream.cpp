@@ -15,6 +15,10 @@
 
 IDataSourceStream* MultipartStream::getNextStream()
 {
+	if(footerSent) {
+		return nullptr;
+	}
+
 	// Return content, if available
 	if(bodyPart.stream != nullptr) {
 		auto stream = bodyPart.stream;
@@ -31,13 +35,13 @@ IDataSourceStream* MultipartStream::getNextStream()
 	stream->print("\r\n");
 	stream->print("--");
 	stream->print(getBoundary());
-	if(bodyPart.headers == nullptr) {
-		// No more parts
+	if(!bodyPart) {
 		stream->print("--");
+		footerSent = true;
 	}
 	stream->print("\r\n");
 
-	if(bodyPart.headers != nullptr) {
+	if(bodyPart) {
 		if(bodyPart.stream != nullptr && !bodyPart.headers->contains(HTTP_HEADER_CONTENT_LENGTH)) {
 			auto avail = bodyPart.stream->available();
 			if(avail >= 0) {

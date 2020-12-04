@@ -55,13 +55,21 @@ public:
 	virtual bool connect(IpAddress addr, uint16_t port, bool useSsl = false);
 	virtual void close();
 
-	// return -1 on error
+	/** @brief Writes string data directly to the TCP buffer
+	 *  @param data null terminated string
+	 *  @param apiflags TCP_WRITE_FLAG_COPY, TCP_WRITE_FLAG_MORE
+	 *  @retval int negative on error, 0 when retry is needed or possitive on success
+	 */
 	int writeString(const char* data, uint8_t apiflags = TCP_WRITE_FLAG_COPY)
 	{
 		return write(data, strlen(data), apiflags);
 	}
 
-	// return -1 on error
+	/** @brief Writes string data directly to the TCP buffer
+	 *  @param data
+	 *  @param apiflags TCP_WRITE_FLAG_COPY, TCP_WRITE_FLAG_MORE
+	 *  @retval int negative on error, 0 when retry is needed or possitive on success
+	 */
 	int writeString(const String& data, uint8_t apiflags = TCP_WRITE_FLAG_COPY)
 	{
 		return write(data.c_str(), data.length(), apiflags);
@@ -71,10 +79,15 @@ public:
 	 *  @param data
 	 *  @param len
 	 *  @param apiflags TCP_WRITE_FLAG_COPY, TCP_WRITE_FLAG_MORE
-	 *	@retval int -1 on error
+	 *  @retval int negative on error, 0 when retry is needed or possitive on success
 	 */
 	virtual int write(const char* data, int len, uint8_t apiflags = TCP_WRITE_FLAG_COPY);
 
+	/** @brief Writes stream data directly to the TCP buffer
+	 *  @param stream
+	 *  @param apiflags TCP_WRITE_FLAG_COPY, TCP_WRITE_FLAG_MORE
+	 *  @retval int negative on error, 0 when retry is needed or possitive on success
+	 */
 	int write(IDataSourceStream* stream);
 
 	uint16_t getAvailableWriteSize()

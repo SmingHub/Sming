@@ -82,6 +82,15 @@ protected:
 		}
 	}
 
+	err_t onConnected(err_t err) override
+	{
+		if(err == ERR_OK) {
+			state = eHCS_Ready;
+		}
+
+		return HttpConnection::onConnected(err);
+	}
+
 private:
 	void sendRequestHeaders(HttpRequest* request);
 	bool sendRequestBody(HttpRequest* request);
@@ -93,6 +102,8 @@ private:
 
 	HttpRequest* incomingRequest = nullptr;
 	HttpRequest* outgoingRequest = nullptr;
+
+	bool allowPipe = false; /// < Flag to specify if HTTP pipelining is allowed for this connection
 };
 
 /** @} */

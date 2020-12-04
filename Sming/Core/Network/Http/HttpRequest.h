@@ -162,7 +162,7 @@ public:
 	/* @deprecated Use methods of `uri.Query` instead */
 	String getQueryParameter(const String& parameterName, const String& defaultValue = nullptr) const
 	{
-		return reinterpret_cast<const HttpParams&>(uri.Query)[parameterName] ?: defaultValue;
+		return static_cast<const HttpParams&>(uri.Query)[parameterName] ?: defaultValue;
 	}
 
 	/**

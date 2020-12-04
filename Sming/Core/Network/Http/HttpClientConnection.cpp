@@ -54,7 +54,6 @@ bool HttpClientConnection::send(HttpRequest* request)
 
 void HttpClientConnection::reset()
 {
-	delete incomingRequest;
 	incomingRequest = nullptr;
 
 	response.reset();
@@ -64,7 +63,7 @@ void HttpClientConnection::reset()
 
 int HttpClientConnection::onMessageBegin(http_parser* parser)
 {
-	incomingRequest = executionQueue.dequeue();
+	incomingRequest = executionQueue.peek();
 	if(incomingRequest == nullptr) {
 		return 1; // there are no requests in the queue
 	}
@@ -77,7 +76,7 @@ MultipartStream::BodyPart HttpClientConnection::multipartProducer()
 	MultipartStream::BodyPart result;
 
 	if(outgoingRequest->files.count()) {
-		const String& name = outgoingRequest->files.keyAt(0);
+		String name = outgoingRequest->files.keyAt(0);
 		auto file = outgoingRequest->files.extractAt(0);
 		result.stream = file;
 
@@ -113,7 +112,7 @@ int HttpClientConnection::onMessageComplete(http_parser* parser)
 		return -2; // no current request...
 	}
 
-	debug_d("HCC::onMessageComplete: Execution queue: %d, %s", executionQueue.count(),
+	debug_d("HCC::onMessageComplete: executionQueue: %d, %s", executionQueue.count(),
 			incomingRequest->uri.toString().c_str());
 
 	// we are finished with this request
@@ -126,8 +125,10 @@ int HttpClientConnection::onMessageComplete(http_parser* parser)
 
 	if(incomingRequest->retries > 0) {
 		incomingRequest->retries--;
-		return (executionQueue.enqueue(incomingRequest) ? 0 : -1);
+		return 0;
 	}
+
+	executionQueue.dequeue();
 
 	delete incomingRequest;
 	incomingRequest = nullptr;
@@ -136,13 +137,20 @@ int HttpClientConnection::onMessageComplete(http_parser* parser)
 
 	auto response = getResponse();
 
-	if(response->headers.contains(HTTP_HEADER_CONNECTION) &&
-	   response->headers[HTTP_HEADER_CONNECTION].equalsIgnoreCase(_F("close"))) {
+	const String& headerConnection = static_cast<const HttpHeaders&>(response->headers)[HTTP_HEADER_CONNECTION];
+	if(headerConnection.equalsIgnoreCase(_F("close"))) {
+		allowPipe = false;
 		// if the server does not support keep-alive -> close the connection
 		// see: https://tools.ietf.org/html/rfc2616#section-14.10
 		debug_d("HCC::onMessageComplete: Closing as requested by server");
 		close();
-	} else if(executionQueue.count() == 0) {
+
+		return hasError;
+	}
+
+	allowPipe = true; // if the server supports keep-alive then it would most probably support also pipelining...
+
+	if(executionQueue.count() == 0) {
 		onConnected(ERR_OK);
 	}
 
@@ -225,7 +233,7 @@ int HttpClientConnection::onBody(const char* at, size_t length)
 
 void HttpClientConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	debug_d("HCC::onReadyToSendData: executionQueue: %d, waitingQueue.count: %d", executionQueue.count(),
+	debug_d("HCC::onReadyToSendData: State: %d, executionQueue: %d, waitingQueue: %d", state, executionQueue.count(),
 			waitingQueue.count());
 
 REENTER:
@@ -239,8 +247,8 @@ REENTER:
 		}
 
 		// if the executionQueue is not empty then we have to check if we can pipeline that request
-		if(executionQueue.count()) {
-			if(!(request->method == HTTP_GET || request->method == HTTP_HEAD)) {
+		if(executionQueue.count() != 0) {
+			if(!(allowPipe && (request->method == HTTP_GET || request->method == HTTP_HEAD))) {
 				// if the current request cannot be pipelined -> break;
 				break;
 			}
@@ -302,17 +310,14 @@ void HttpClientConnection::onClosed()
 {
 	if(waitingQueue.count() + executionQueue.count() > 0) {
 		debug_d("HCC::onClosed: Trying to reconnect and send pending requests");
-		reset();
-		init(HTTP_RESPONSE);
 
-		HttpRequest* request = nullptr;
-		if(executionQueue.count() > 0) {
-			request = executionQueue.peek();
-		} else {
-			request = waitingQueue.peek();
+		cleanup();
+		init(HTTP_RESPONSE);
+		auto request = waitingQueue.peek();
+		if(request != nullptr) {
+			bool useSsl = (request->uri.Scheme == URI_SCHEME_HTTP_SECURE);
+			connect(request->uri.Host, request->uri.getPort(), useSsl);
 		}
-		bool useSsl = (request->uri.Scheme == URI_SCHEME_HTTP_SECURE);
-		connect(request->uri.Host, request->uri.getPort(), useSsl);
 	}
 }
 

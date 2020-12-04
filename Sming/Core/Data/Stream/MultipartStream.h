@@ -27,8 +27,14 @@ public:
 	 * @brief Each result item contains a set of headers plus content stream
 	 */
 	struct BodyPart {
-		HttpHeaders* headers = nullptr;
-		IDataSourceStream* stream = nullptr;
+		HttpHeaders* headers{nullptr};
+		IDataSourceStream* stream{nullptr};
+
+		// Must always have headers, stream is optional (can be empty)
+		explicit operator bool() const
+		{
+			return headers != nullptr;
+		}
 	};
 
 	/**
@@ -59,7 +65,8 @@ protected:
 private:
 	Producer producer;
 	BodyPart bodyPart;
-	char boundary[16] = {0};
+	char boundary[16]{};
+	bool footerSent{false};
 };
 
 /**
