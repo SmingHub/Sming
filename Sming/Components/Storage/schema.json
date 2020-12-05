@@ -1,0 +1,172 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$ref": "#/definitions/Config",
+	"definitions": {
+		"Config": {
+			"title": "Hardware Configuration",
+			"description": "Defines memory devices and partitions for a specific hardware implementation",
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"base_config": {
+					"type": "string",
+					"title": "Base configuration",
+					"description": "Inherit a previously-defined configuration"
+				},
+				"comment": {
+					"type": "string"
+				},
+				"arch": {
+					"type": "string",
+					"title": "Target architecture",
+					"description": "Defined *only* in the base 'standard' spec"
+				},
+				"partition_table_offset": {
+					"type": "string",
+					"description": "Location of partition table in spiFlash"
+				},
+				"devices": {
+					"$ref": "#/definitions/Devices"
+				},
+				"partitions": {
+					"$ref": "#/definitions/Partitions"
+				}
+			},
+			"required": [
+				"name",
+				"arch",
+				"partition_table_offset",
+				"devices",
+				"partitions"
+			]
+		},
+		"Devices": {
+			"title": "Devices",
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"spiFlash": {
+					"$ref": "#/definitions/Device",
+					"description": "Main flash memory device"
+				}
+			},
+			"patternProperties": {
+				"^[A-Za-z_][A-Za-z0-9_]*$": {
+					"type": "object",
+					"$ref": "#/definitions/Device"
+				}
+			},
+			"required": [
+				"spiFlash"
+			]
+		},
+		"Device": {
+			"title": "Storage device definition",
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"size": {
+					"type": "string"
+				},
+				"type": {
+					"type": "string"
+				},
+				"mode": {
+					"type": "string",
+					"enum": [
+						"qio",
+						"qout",
+						"dio",
+						"dout"
+					]
+				},
+				"speed": {
+					"type": "integer"
+				}
+			},
+			"required": [
+				"size",
+				"type"
+			]
+		},
+		"Partitions": {
+			"title": "Partitions",
+			"type": "object",
+			"additionalProperties": false,
+			"patternProperties": {
+				"^[A-Za-z_][A-Za-z0-9_]*$": {
+					"type": "object",
+					"$ref": "#/definitions/Partition"
+				}
+			}
+		},
+		"Partition": {
+			"title": "Partition definition",
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"device": {
+					"type": "string",
+					"description": "ID of device this partition relates to"
+				},
+				"address": {
+					"type": [
+						"string",
+						"integer"
+					]
+				},
+				"size": {
+					"type": [
+						"string",
+						"integer"
+					]
+				},
+				"type": {
+					"type": [
+						"string",
+						"integer"
+					]
+				},
+				"subtype": {
+					"type": [
+						"string",
+						"integer"
+					]
+				},
+				"flags": {
+					"type": "string"
+				},
+				"filename": {
+					"type": "string",
+					"description": "Location of file to write to this partition"
+				},
+				"build": {
+					"type": "object",
+					"$ref": "#/definitions/Build",
+					"description": "If present, used to build 'filename'"
+				}
+			},
+			"required": [
+				"address",
+				"size",
+				"type",
+				"subtype"
+			]
+		},
+		"Build": {
+			"title": "Build specification",
+			"description": "Additional properties as required by build target",
+			"type": "object",
+			"additionalProperties": true,
+			"properties": {
+				"target": {
+					"type": "string",
+					"description": "Makefile target for this build"
+				}
+			}
+		}
+	}
+}

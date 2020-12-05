@@ -1,0 +1,16 @@
+{
+	"name": "Two ROM slots in 1MB of flash",
+	"base_config": "standard",
+	"partitions": {
+		"rom0": {
+			"size": "480K"
+		},
+		"rom1": {
+			"address": "0x80000",
+			"size": "512K",
+			"type": "app",
+			"subtype": "ota_0",
+			"filename": "$(RBOOT_ROM_1_BIN)"
+		}
+	}
+}

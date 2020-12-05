@@ -1,0 +1,39 @@
+{
+	"name": "Standard config with single ROM",
+	"comment": "Should work with any Esp8266 variant",
+	"arch": "Esp8266",
+	"partition_table_offset": "0x2000",
+	"devices": {
+		"spiFlash": {
+			"type": "flash",
+			"size": "1M",
+			"mode": "dio",
+			"speed": 40
+		}
+	},
+	"partitions": {
+		"phy_init": {
+			"address": "0x003000",
+			"size": "4K",
+			"type": "data",
+			"subtype": "phy",
+			"flags": "",
+			"filename": "$(FLASH_INIT_DATA)"
+		},
+		"sys_param": {
+			"address": "0x004000",
+			"size": "16K",
+			"type": "data",
+			"subtype": "sysparam",
+			"flags": ""
+		},
+		"rom0": {
+			"address": "0x008000",
+			"size": "992K",
+			"type": "app",
+			"subtype": "factory",
+			"flags": "",
+			"filename": "$(RBOOT_ROM_0_BIN)"
+		}
+	}
+}
