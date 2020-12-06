@@ -13,7 +13,7 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-RbootHttpUpdater* otaUpdater = 0;
+RbootHttpUpdater* otaUpdater;
 
 void OtaUpdate_CallBack(RbootHttpUpdater& client, bool result)
 {
@@ -22,10 +22,11 @@ void OtaUpdate_CallBack(RbootHttpUpdater& client, bool result)
 		// success
 		uint8 slot;
 		slot = rboot_get_current_rom();
-		if(slot == 0)
+		if(slot == 0) {
 			slot = 1;
-		else
+		} else {
 			slot = 0;
+		}
 		// set to boot new rom and then reboot
 		Serial.printf("Firmware updated, rebooting to rom %d...\r\n", slot);
 		rboot_set_current_rom(slot);
@@ -51,10 +52,11 @@ void OtaUpdate()
 	// select rom slot to flash
 	bootconf = rboot_get_config();
 	slot = bootconf.current_rom;
-	if(slot == 0)
+	if(slot == 0) {
 		slot = 1;
-	else
+	} else {
 		slot = 0;
+	}
 
 #ifndef RBOOT_TWO_ROMS
 	// flash rom to position indicated in the rBoot config rom table
@@ -90,10 +92,11 @@ void Switch()
 {
 	uint8 before, after;
 	before = rboot_get_current_rom();
-	if(before == 0)
+	if(before == 0) {
 		after = 1;
-	else
+	} else {
 		after = 0;
+	}
 	Serial.printf("Swapping from rom %d to rom %d.\r\n", before, after);
 	rboot_set_current_rom(after);
 	Serial.println("Restarting...\r\n");
@@ -191,27 +194,27 @@ void init()
 
 	// mount spiffs
 	int slot = rboot_get_current_rom();
-#if !DISABLE_SPIFFS
+#if DISABLE_SPIFFS
+	debugf("spiffs disabled");
+#else
+	uint32_t addr;
 	if(slot == 0) {
 #ifdef RBOOT_SPIFFS_0
-		debugf("trying to mount spiffs at 0x%08x, length %d", RBOOT_SPIFFS_0, SPIFF_SIZE);
-		spiffs_mount_manual(RBOOT_SPIFFS_0, SPIFF_SIZE);
+		addr = RBOOT_SPIFFS_0;
 #else
-		debugf("trying to mount spiffs at 0x%08x, length %d", 0x100000, SPIFF_SIZE);
-		spiffs_mount_manual(0x100000, SPIFF_SIZE);
+		addr = 0x100000;
 #endif
 	} else {
 #ifdef RBOOT_SPIFFS_1
-		debugf("trying to mount spiffs at 0x%08x, length %d", RBOOT_SPIFFS_1, SPIFF_SIZE);
-		spiffs_mount_manual(RBOOT_SPIFFS_1, SPIFF_SIZE);
+		addr = RBOOT_SPIFFS_1;
 #else
-		debugf("trying to mount spiffs at 0x%08x, length %d", 0x300000, SPIFF_SIZE);
-		spiffs_mount_manual(0x300000, SPIFF_SIZE);
+		addr = 0x300000;
 #endif
 	}
-#else
-	debugf("spiffs disabled");
+	debugf("trying to mount spiffs at 0x%08x, length %d", addr, SPIFF_SIZE);
+	spiffs_mount_manual(addr, SPIFF_SIZE);
 #endif
+
 	WifiAccessPoint.enable(false);
 
 	Serial.printf("\r\nCurrently running rom %d.\r\n", slot);
