@@ -29,18 +29,20 @@ def parse_int(v, keywords=None):
     """Generic parser for integer fields - int(x,0) with provision for
     k/m/K/M suffixes and 'keyword' value lookup.
     """
-    try:
-        for letter, multiplier in [("k", 1024), ("m", 1024 * 1024)]:
-            if v.lower().endswith(letter):
-                return parse_int(v[:-1], keywords) * multiplier
-        return int(v, 0)
-    except ValueError:
-        if keywords is None:
-            raise InputError("Invalid field value %s" % v)
+    if not isinstance(v, str):
+        return v
+    if keywords is None or len(keywords) == 0:
         try:
-            return keywords[v.lower()]
-        except KeyError:
-            raise InputError("Value '%s' is not valid. Known keywords: %s" % (v, ", ".join(keywords)))
+            for letter, multiplier in [("k", 1024), ("m", 1024 * 1024), ("g", 1024 * 1024 * 1024)]:
+                if v.lower().endswith(letter):
+                    return parse_int(v[:-1], keywords) * multiplier
+            return int(v, 0)
+        except ValueError:
+            raise InputError("Invalid field value %s" % v)
+    try:
+        return keywords[v.lower()]
+    except KeyError:
+        raise InputError("Value '%s' is not valid. Known keywords: %s" % (v, ", ".join(keywords)))
 
 
 def stringnum(s):
