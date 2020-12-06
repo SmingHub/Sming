@@ -1,43 +1,10 @@
 COMPONENT_LIBNAME :=
 
-CONFIG_VARS				+= SPI_SPEED SPI_MODE SPI_SIZE
+SPI_SPEED = $(STORAGE_DEVICE_spiFlash_SPEED)
+SPI_MODE = $(STORAGE_DEVICE_spiFlash_MODE)
+SPI_SIZE = $(STORAGE_DEVICE_spiFlash_SIZE)
 
-# SPI_SPEED = 40, 26, 20, 80
-SPI_SPEED				?= 40
-# SPI_MODE: qio, qout, dio, dout
-SPI_MODE				?= dio
-# SPI_SIZE: 512K, 256K, 1M, 2M, 4M
-SPI_SIZE				?= 1M
-
-ifeq ($(SPI_SPEED), 26)
-	flashimageoptions	:= -ff 26m
-else ifeq ($(SPI_SPEED), 20)
-	flashimageoptions	:= -ff 20m
-else ifeq ($(SPI_SPEED), 80)
-	flashimageoptions	:= -ff 80m
-else
-	flashimageoptions	:= -ff 40m
-endif
-
-ifeq ($(SPI_MODE), qout)
-	flashimageoptions	+= -fm qout
-else ifeq ($(SPI_MODE), dio)
-	flashimageoptions	+= -fm dio
-else ifeq ($(SPI_MODE), dout)
-	flashimageoptions	+= -fm dout
-else
-	flashimageoptions	+= -fm qio
-endif
-
-# Calculate parameters from SPI_SIZE value (esptool will check validity)
-ifeq ($(SPI_SIZE),detect)
-flashimageoptions	+= -fs detect
-else
-flashimageoptions	+= -fs $(SPI_SIZE)B
-endif
-FLASH_SIZE			:= $(subst M,*1024K,$(SPI_SIZE))
-FLASH_SIZE			:= $(subst K,*1024,$(FLASH_SIZE))
-BLANK_BIN			:= $(COMPONENT_PATH)/blank.bin
+flashimageoptions += -fs $(SPI_SIZE)B -ff $(SPI_SPEED)m -fm $(SPI_MODE)
 
 # Default COM port and speed used for flashing
 CACHE_VARS				+= COM_PORT_ESPTOOL COM_SPEED_ESPTOOL
@@ -73,6 +40,8 @@ else
 ESPTOOL_EXECUTE = $(ESPTOOL_CMDLINE) $1
 endif
 
+comma := ,
+
 # Write file contents to Flash
 # $1 -> List of `Offset=File` chunks
 define WriteFlash
@@ -80,6 +49,21 @@ define WriteFlash
 		$(info WriteFlash $1) \
 		$(call ESPTOOL_EXECUTE,write_flash -z $(flashimageoptions) $(subst =, ,$1)) \
 	)
+endef
+
+# Read flash memory into file
+# $1 -> `Offset,Size` chunk
+# $2 -> Output filename
+define ReadFlash
+	$(info ReadFlash $1,$2)
+	$(call ESPTOOL_EXECUTE,read_flash $(subst $(comma), ,$1) $2)
+endef
+
+# Erase a region of Flash
+# $1 -> Offset,Size
+define EraseFlashRegion
+	$(info EraseFlashRegion $1)
+	$(call ESPTOOL_EXECUTE,erase_region $(subst $(comma), ,$1))
 endef
 
 # Erase flash memory contents

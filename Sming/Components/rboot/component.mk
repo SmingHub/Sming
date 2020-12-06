@@ -35,23 +35,22 @@ $(error Cannot enable RBOOT_GPIO_ENABLED and RBOOT_GPIO_SKIP_ENABLED at the same
 endif
 
 ### ROM Addresses ###
-# Make sure that your ROM slots and SPIFFS slot(s) do not overlap!
 
-CONFIG_VARS				+= RBOOT_ROM0_ADDR RBOOT_ROM1_ADDR RBOOT_ROM2_ADDR
+DEBUG_VARS				+= RBOOT_ROM0_ADDR RBOOT_ROM1_ADDR RBOOT_ROM2_ADDR
 
 # Location of first ROM
-RBOOT_ROM0_ADDR			?= 0x008000
+RBOOT_ROM0_ADDR := $(PARTITION_rom0_ADDRESS)
 
 # The parameter below specifies the location of the second ROM.
 # You need a second slot for any kind of firmware update mechanism.
 # Leave empty if you don't need a second ROM slot.
-RBOOT_ROM1_ADDR			?=
+RBOOT_ROM1_ADDR := $(PARTITION_rom1_ADDRESS)
 
 # The parameter below specifies the location of the GPIO ROM.
 # It is only used when RBOOT_GPIO_ENABLED = 1
 # Note that setting this parameter will only configure rboot.
 # The Sming build system does not create a ROM for this slot.
-RBOOT_ROM2_ADDR			?=
+RBOOT_ROM2_ADDR := $(PARTITION_rom2_ADDRESS)
 
 ifeq ($(RBOOT_GPIO_ENABLED),0)
 ifneq ($(RBOOT_ROM2_ADDR),)
@@ -85,17 +84,6 @@ RBOOT_ROM_1				?= rom1
 RBOOT_LD_TEMPLATE		?= $(RBOOT_DIR)/rboot.rom0.ld
 RBOOT_LD_0				:= $(BUILD_BASE)/$(RBOOT_ROM_0).ld
 RBOOT_LD_1				:= $(BUILD_BASE)/$(RBOOT_ROM_1).ld
-
-#
-CONFIG_VARS				+= RBOOT_SPIFFS_0 RBOOT_SPIFFS_1
-RBOOT_SPIFFS_0			?= 0x100000
-RBOOT_SPIFFS_1			?= 0x300000
-APP_CFLAGS				+= -DRBOOT_SPIFFS_0=$(RBOOT_SPIFFS_0)
-APP_CFLAGS				+= -DRBOOT_SPIFFS_1=$(RBOOT_SPIFFS_1)
-
-ifneq ($(SPI_SIZE),1M)
-SPIFF_START_ADDR		?= $(RBOOT_SPIFFS_0)
-endif
 
 # filenames and options for generating rBoot rom images with esptool2
 RBOOT_E2_SECTS			?= .text .text1 .data .rodata
@@ -139,7 +127,9 @@ COMPONENT_CXXFLAGS += \
 		-DRBOOT_ROM0_ADDR=$(RBOOT_ROM0_ADDR) \
 		-DRBOOT_ROM1_ADDR=$(RBOOT_ROM1_ADDR)
 
-ifndef RBOOT_EMULATION
+ifdef RBOOT_EMULATION
+FLASH_BOOT_CHUNKS		= 0x00000=$(BLANK_BIN)
+else
 export RBOOT_ROM0_ADDR
 export RBOOT_ROM1_ADDR
 RBOOT_BIN				:= $(FW_BASE)/rboot.bin
@@ -159,14 +149,9 @@ endef
 LIBMAIN_COMMANDS += $(RBOOT_LIBMAIN_COMMANDS)
 endif
 
-endif # RBOOT_EMULATION
-
 # Define our flash chunks
-FLASH_RBOOT_BOOT_CHUNKS				:= 0x00000=$(RBOOT_BIN)
-FLASH_RBOOT_APP_CHUNKS				:= $(RBOOT_ROM0_ADDR)=$(RBOOT_ROM_0_BIN)
-FLASH_RBOOT_ERASE_CONFIG_CHUNKS		:= 0x01000=$(SDK_BASE)/bin/blank.bin
-
-ifndef RBOOT_EMULATION
+FLASH_BOOT_CHUNKS				:= 0x00000=$(RBOOT_BIN)
+FLASH_RBOOT_ERASE_CONFIG_CHUNKS	:= 0x01000=$(SDK_BASE)/bin/blank.bin
 
 # => Automatic linker script generation from template
 # $1 -> application target

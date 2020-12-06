@@ -319,6 +319,8 @@ CMP_App_VARS			:= $(CONFIG_VARS)
 CMP_App_ALL_VARS		:= $(CONFIG_VARS)
 $(foreach c,$(COMPONENTS),$(eval $(call ParseComponentLibs,$c)))
 
+$(PartitionCreateTargets)
+
 export COMPONENTS_EXTRA_INCDIR
 export APPCODE
 export APP_CFLAGS

@@ -42,24 +42,3 @@ $(TARGET_OUT): $(COMPONENTS_AR)
 
 $(TARGET_BIN): $(TARGET_OUT)
 	$(Q) $(ESPTOOL_CMDLINE) elf2image --min-rev 0 --elf-sha256-offset 0xb0 $(flashimageoptions) -o $@ $<
-
-# Application
-
-FLASH_APP_CHUNKS := 0x10000=$(TARGET_BIN)
-
-.PHONY: flashboot
-flashboot: $(FLASH_BOOT_LOADER) ##Write just the Bootloader
-	$(call WriteFlash,$(FLASH_BOOT_CHUNKS))
-
-.PHONY: flashapp
-flashapp: all kill_term ##Write just the application image
-	$(call WriteFlash,$(FLASH_APP_CHUNKS))
-
-.PHONY: flash
-flash: all partitions kill_term ##Write the boot loader, application image, partition table and (if enabled) SPIFFS image
-	$(call WriteFlash,$(FLASH_BOOT_CHUNKS) $(FLASH_APP_CHUNKS) $(FLASH_PARTITION_CHUNKS) $(FLASH_SPIFFS_CHUNKS))
-ifeq ($(ENABLE_GDB), 1)
-	$(GDB_CMDLINE)
-else
-	$(TERMINAL)
-endif

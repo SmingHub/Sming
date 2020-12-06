@@ -148,8 +148,25 @@ GLOBAL_CFLAGS		+= -DSTRING_OBJECT_SIZE=$(STRING_OBJECT_SIZE)
 ##@Flashing
 
 .PHONY: flashinit
-flashinit: $(ESPTOOL) $(FLASH_INIT_DATA) | $(FW_BASE) ##Erase your device's flash memory and reset system configuration area to defaults
+flashinit: $(ESPTOOL) $(FLASH_INIT_DATA) | $(FW_BASE) ##Erase your device's flash memory
 	$(info Flash init data default and blank data)
 	$(info DISABLE_SPIFFS = $(DISABLE_SPIFFS))
 	$(Q) $(EraseFlash)
 	$(call WriteFlash,$(FLASH_INIT_CHUNKS))
+
+.PHONY: flashboot
+flashboot: $(FLASH_BOOT_LOADER) kill_term ##Write just the Bootloader
+	$(call WriteFlash,$(FLASH_BOOT_CHUNKS))
+
+.PHONY: flashapp
+flashapp: all kill_term ##Write just the application image
+	$(call WriteFlash,$(FLASH_APP_CHUNKS))
+
+.PHONY: flash
+flash: all kill_term ##Write the boot loader and all defined partition images
+	$(call WriteFlash,$(FLASH_BOOT_CHUNKS) $(FLASH_MAP_CHUNK) $(FLASH_PARTITION_CHUNKS))
+ifeq ($(ENABLE_GDB), 1)
+	$(GDB_CMDLINE)
+else ifneq ($(SMING_ARCH),Host)
+	$(TERMINAL)
+endif
