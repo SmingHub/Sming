@@ -143,7 +143,8 @@ int HttpClientConnection::onMessageComplete(http_parser* parser)
 		// if the server does not support keep-alive -> close the connection
 		// see: https://tools.ietf.org/html/rfc2616#section-14.10
 		debug_d("HCC::onMessageComplete: Closing as requested by server");
-		close();
+		state = eHCS_WaitResponse; // put the other requests on hold...
+		setTimeOut(0);			   // schedule for closing...
 
 		return hasError;
 	}
@@ -312,7 +313,6 @@ void HttpClientConnection::onClosed()
 		debug_d("HCC::onClosed: Trying to reconnect and send pending requests");
 
 		cleanup();
-		init(HTTP_RESPONSE);
 		auto request = waitingQueue.peek();
 		if(request != nullptr) {
 			bool useSsl = (request->uri.Scheme == URI_SCHEME_HTTP_SECURE);

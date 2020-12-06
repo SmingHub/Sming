@@ -86,6 +86,7 @@ protected:
 	{
 		if(err == ERR_OK) {
 			state = eHCS_Ready;
+			init(HTTP_RESPONSE);
 		}
 
 		return HttpConnection::onConnected(err);
