@@ -21,8 +21,11 @@ void init()
 	powerMeter.init();
 	powerMeter.setCurrentGain(190.84); //0.25 / shunt (0.00131)
 	powerMeter.setVoltageGain(500);	//0.25V (Veff max) * dividerGain
-	powerMeter.writeRegister(CONFIG_REGISTER, ENABLE_CURRENT_HPF);
-	powerMeter.writeRegister(CONFIG_REGISTER, ENABLE_VOLTAGE_HPF);
+	uint32_t conf = 0;
+	conf = powerMeter.readRegister(CONFIG_REGISTER);
+	conf |= ENABLE_VOLTAGE_HPF;
+	conf |= ENABLE_CURRENT_HPF;
+	powerMeter.writeRegister(CONFIG_REGISTER, conf);
 	powerMeter.startMultiConvert();
 
 	printVoltageTimer.initializeMs(1000, printVoltage).start();
