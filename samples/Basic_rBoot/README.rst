@@ -44,12 +44,20 @@ Technical Notes
 
 ``spiffs_mount_manual(address, length)`` must be called from init.
 
+.. note::
+
+   This method is now deprecated. Please configure partitions appropriately,
+   use PartitionTable methods to locate the desired partition, then mount it::
+
+      auto part = PartitionTable().find('spiffs0');
+      spiffs_mount(part);
+
+   See :ref:`hardware-config` for further details.
+
 Important compiler flags used:
 
 -  BOOT_BIG_FLASH - when using big flash mode, ensures flash mapping code is built in to the rom.
 -  RBOOT_INTEGRATION - ensures Sming specific options are pulled in to the rBoot source at compile time.
--  SPIFF_SIZE=value - passed through to code for mounting the filesystem.
-   Also used in the Makefile to create the SPIFFS.
 
 Flash layout considerations
 ---------------------------
@@ -62,8 +70,6 @@ See the rBoot readme for further details.
 
 -  If using a very small flash (e.g. 512k) there may be no room for a
    spiffs fileystem, disable it with *DISABLE_SPIFFS = 1*
--  If you are using spiffs set *RBOOT_SPIFFS_0* & *RBOOT_SPIFFS_1* to
-   indicate where the filesystems are located on the flash.
 -  After building copy all the rom*.bin files to the root of your web
    server.
 
