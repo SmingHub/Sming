@@ -194,11 +194,11 @@ SMING_CXX_STD		?= c++17
 endif
 CXXFLAGS			+= -std=$(SMING_CXX_STD)
 
-GCC_MIN_VERSION := "8.0"
-GCC_VERSION_COMPATIBLE := $(shell expr "$(GCC_VERSION)" ">=" "$(GCC_MIN_VERSION)")
+GCC_MIN_MAJOR_VERSION := 8
+GCC_VERSION_COMPATIBLE := $(shell expr $$(echo $(GCC_VERSION) | cut -f1 -d.) \>= $(GCC_MIN_MAJOR_VERSION))
 
 ifeq ($(GCC_VERSION_COMPATIBLE),0)
-$(warning ***** Please, upgrade your GCC compiler to version $(GCC_MIN_VERSION) or newer *****)
+$(warning ***** Please, upgrade your GCC compiler to version $(GCC_MIN_MAJOR_VERSION) or newer *****)
 ifneq ($(GCC_UPGRADE_URL),)
 $(info Instructions for upgrading your compiler can be found here: $(GCC_UPGRADE_URL))
 endif 
