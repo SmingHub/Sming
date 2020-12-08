@@ -55,6 +55,7 @@ CACHE_VARS		:=
 # Use PROJECT_DIR to identify the project source directory, from where this makefile must be included
 DEBUG_VARS			+= PROJECT_DIR
 PROJECT_DIR			:= $(CURDIR)
+export PROJECT_DIR
 
 ifeq ($(MAKELEVEL),0)
 $(info )

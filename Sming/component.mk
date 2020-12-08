@@ -13,6 +13,7 @@ COMPONENT_INCDIRS := \
 	.
 
 COMPONENT_DEPENDS := \
+	Storage \
 	sming-arch \
 	FlashString \
 	spiffs \
