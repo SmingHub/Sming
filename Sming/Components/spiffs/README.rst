@@ -1,7 +1,7 @@
 SPIFFS for Sming
 ================
 
-This Component provides additional functionality to support SPIFFS running on both Esp8266 and Host architectures.
+This Component provides SPIFFS filesystem support for all architectures.
 
 .. envvar:: DISABLE_SPIFFS
 

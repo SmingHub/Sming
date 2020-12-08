@@ -20,6 +20,7 @@
 #include <Platform/System.h>
 #include <driver/hw_timer.h>
 #include <driver/uart.h>
+#include <Storage.h>
 
 #ifndef ESP32_STACK_SIZE
 #define ESP32_STACK_SIZE 16384U
@@ -63,6 +64,7 @@ void main(void*)
 	esp_init_flash();
 	esp_init_wifi();
 	ets_init_tasks();
+	Storage::initialize();
 	System.initialize();
 	init();
 

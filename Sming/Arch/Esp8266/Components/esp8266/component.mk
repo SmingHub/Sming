@@ -8,10 +8,11 @@ FLASH_INIT_DATA			= $(SDK_BASE)/bin/esp_init_data_default.bin
 
 CUSTOM_TARGETS			+= $(FLASH_INIT_DATA)
 
+# PHY init / System calibration / RF calibration
 FLASH_INIT_CHUNKS += \
-	$(call FlashOffset,0x5000)=$(BLANK_BIN) \
-	$(call FlashOffset,0x4000)=$(FLASH_INIT_DATA) \
-	$(call FlashOffset,0x2000)=$(BLANK_BIN)
+	0x3000=$(FLASH_INIT_DATA) \
+	0x5000=$(BLANK_BIN) \
+	0x6000=$(BLANK_BIN)
 
 # => 'Internal' SDK - for SDK Version 3+ as submodule in Sming repository
 # SDK_BASE just needs to point into our repo as it's overridden with the correct submodule path

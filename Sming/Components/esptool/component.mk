@@ -37,7 +37,6 @@ flashimageoptions	+= -fs $(SPI_SIZE)B
 endif
 FLASH_SIZE			:= $(subst M,*1024K,$(SPI_SIZE))
 FLASH_SIZE			:= $(subst K,*1024,$(FLASH_SIZE))
-FlashOffset			= $$(($(FLASH_SIZE)-$1))
 BLANK_BIN			:= $(COMPONENT_PATH)/blank.bin
 
 # Default COM port and speed used for flashing

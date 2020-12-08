@@ -35,7 +35,7 @@ valgrind: all ##Run the application under valgrind to detect memory issues. Requ
 RUN_SCRIPT := $(FW_BASE)/run.sh
 
 .PHONY: run
-run: all $(RUN_SCRIPT) ##Run the application image
+run: all flashpart $(RUN_SCRIPT) ##Run the application image
 	$(Q) $(RUN_SCRIPT)
 
 $(RUN_SCRIPT)::
@@ -45,4 +45,4 @@ $(RUN_SCRIPT)::
 	chmod a+x $@
 
 .PHONY: flash
-flash: all flashfs ##Write all images to (virtual) flash
+flash: all flashfs flashpart ##Write all images to (virtual) flash

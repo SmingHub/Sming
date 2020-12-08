@@ -33,7 +33,7 @@ void hexdump_mem(u8_t *b, u32_t len) {
 	if ((i % 16) != 0) S_DBG("\n");
 }
 
-static s32_t my_spiffs_read(u32_t addr, u32_t size, u8_t *dst) {
+static s32_t my_spiffs_read(struct spiffs_t* fs, u32_t addr, u32_t size, u8_t *dst) {
 
 	int res;
 
@@ -53,7 +53,7 @@ static s32_t my_spiffs_read(u32_t addr, u32_t size, u8_t *dst) {
 	return SPIFFS_OK;
 }
 
-static s32_t my_spiffs_write(u32_t addr, u32_t size, u8_t *src) {
+static s32_t my_spiffs_write(struct spiffs_t* fs, u32_t addr, u32_t size, u8_t *src) {
 
 	int ret = SPIFFS_OK;
 	u8_t *buff = 0;
@@ -63,7 +63,7 @@ static s32_t my_spiffs_write(u32_t addr, u32_t size, u8_t *src) {
 		printf("Unable to malloc %d bytes.\n", size);
 		ret = SPIFFS_ERR_INTERNAL;
 	} else {
-		ret = my_spiffs_read(addr, size, buff);
+		ret = my_spiffs_read(fs, addr, size, buff);
 		if (ret == SPIFFS_OK) {
 			int i;
 			for(i = 0; i < size; i++) buff[i] &= src[i];
@@ -87,7 +87,7 @@ static s32_t my_spiffs_write(u32_t addr, u32_t size, u8_t *src) {
 	return ret;
 }
 
-static s32_t my_spiffs_erase(u32_t addr, u32_t size) {
+static s32_t my_spiffs_erase(struct spiffs_t* fs, u32_t addr, u32_t size) {
 
 	int i;
 

@@ -32,8 +32,6 @@ public:
 		DEFINE_FSTR_LOCAL(testFile, "testfile");
 		DEFINE_FSTR_LOCAL(testContent, "Some test content to write to a file");
 
-		auto cfg = spiffs_get_storage_config();
-
 		// Write to filesystem until sector #0 gets erased
 		unsigned writeCount = 0;
 		uint32_t word0 = 0;
@@ -44,7 +42,7 @@ public:
 				break;
 			}
 			++writeCount;
-			if(flashmem_read(&word0, cfg.phys_addr, sizeof(word0)) != sizeof(word0)) {
+			if(flashmem_read(&word0, _filesystemStorageHandle.cfg.phys_addr, sizeof(word0)) != sizeof(word0)) {
 				debug_e("flashmem_read failed");
 				TEST_ASSERT(false);
 				break;

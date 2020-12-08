@@ -7,8 +7,8 @@ RBOOT_EMULATION			:= 1
 endif
 
 COMPONENT_SUBMODULES	:= rboot
-COMPONENT_INCDIRS	:= rboot appcode rboot/appcode include
-COMPONENT_SRCDIRS       := src
+COMPONENT_INCDIRS		:= rboot rboot/appcode include
+COMPONENT_SRCDIRS       := src src/Arch/$(SMING_ARCH)
 
 RBOOT_DIR				:= $(COMPONENT_PATH)
 
@@ -39,8 +39,8 @@ endif
 
 CONFIG_VARS				+= RBOOT_ROM0_ADDR RBOOT_ROM1_ADDR RBOOT_ROM2_ADDR
 
-# Loation of first ROM (default is sector 2 after rboot and rboot config sector)
-RBOOT_ROM0_ADDR			?= 0x002000
+# Location of first ROM
+RBOOT_ROM0_ADDR			?= 0x008000
 
 # The parameter below specifies the location of the second ROM.
 # You need a second slot for any kind of firmware update mechanism.
@@ -93,7 +93,9 @@ RBOOT_SPIFFS_1			?= 0x300000
 APP_CFLAGS				+= -DRBOOT_SPIFFS_0=$(RBOOT_SPIFFS_0)
 APP_CFLAGS				+= -DRBOOT_SPIFFS_1=$(RBOOT_SPIFFS_1)
 
+ifneq ($(SPI_SIZE),1M)
 SPIFF_START_ADDR		?= $(RBOOT_SPIFFS_0)
+endif
 
 # filenames and options for generating rBoot rom images with esptool2
 RBOOT_E2_SECTS			?= .text .text1 .data .rodata
@@ -103,7 +105,7 @@ RBOOT_ROM_0_BIN			:= $(FW_BASE)/$(RBOOT_ROM_0).bin
 RBOOT_ROM_1_BIN			:= $(FW_BASE)/$(RBOOT_ROM_1).bin
 
 
-COMPONENT_APPCODE		:= appcode rboot/appcode $(if $(RBOOT_EMULATION),host)
+COMPONENT_APPCODE		:= rboot/appcode
 APP_CFLAGS				+= -DRBOOT_INTEGRATION
 
 # these are exported for use by the rBoot Makefile
@@ -133,11 +135,17 @@ ifeq ($(RBOOT_GPIO_SKIP_ENABLED),1)
 	APP_CFLAGS			+= -DBOOT_GPIO_SKIP_ENABLED
 endif
 
+COMPONENT_CXXFLAGS += \
+		-DRBOOT_ROM0_ADDR=$(RBOOT_ROM0_ADDR) \
+		-DRBOOT_ROM1_ADDR=$(RBOOT_ROM1_ADDR)
+
 ifndef RBOOT_EMULATION
+export RBOOT_ROM0_ADDR
+export RBOOT_ROM1_ADDR
 RBOOT_BIN				:= $(FW_BASE)/rboot.bin
 CUSTOM_TARGETS			+= $(RBOOT_BIN)
 $(RBOOT_BIN):
-	$(Q) $(MAKE) -C $(RBOOT_DIR)/rboot
+	$(Q) $(MAKE) -C $(RBOOT_DIR)/rboot $(RBOOT_CFLAGS)
 
 EXTRA_LDFLAGS			:= -u Cache_Read_Enable_New
 

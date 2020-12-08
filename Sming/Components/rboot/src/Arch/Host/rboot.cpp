@@ -40,12 +40,12 @@ void host_init_bootloader()
 		romconf.magic = BOOT_CONFIG_MAGIC;
 		romconf.version = BOOT_CONFIG_VERSION;
 		romconf.count = 2;
-		romconf.roms[0] = SECTOR_SIZE * (BOOT_CONFIG_SECTOR + 1);
+		romconf.roms[0] = RBOOT_ROM0_ADDR;
 #ifdef BOOT_ROM1_ADDR
-		romconf.roms[1] = BOOT_ROM1_ADDR;
+		romconf.roms[1] = RBOOT_ROM1_ADDR;
 #else
 		size_t flashsize = flashmem_get_size_bytes();
-		romconf.roms[1] = (flashsize / 2) + (SECTOR_SIZE * (BOOT_CONFIG_SECTOR + 1));
+		romconf.roms[1] = RBOOT_ROM0_ADDR + (flashsize / 2);
 #endif
 		bool ok = rboot_set_config(&romconf);
 		hostmsg("Write default config: %s", ok ? "OK" : "FAIL");

@@ -10,9 +10,12 @@
 
 #include "spiffs_sming.h"
 #include <esp_spi_flash.h>
+#include <Storage.h>
 extern "C" {
 #include "spiffs/src/spiffs_nucleus.h"
 }
+
+#define LOG_PAGE_SIZE 256
 
 spiffs _filesystemStorageHandle;
 
@@ -26,32 +29,51 @@ uint16_t spiffs_work_buf[LOG_PAGE_SIZE];
 spiffs_fd spiffs_fds[SPIFF_FILEDESC_COUNT];
 uint32_t spiffs_cache_buf[LOG_PAGE_SIZE + 32];
 
-s32_t api_spiffs_read(u32_t addr, u32_t size, u8_t* dst)
+#define GET_DEVICE()                                                                                                   \
+	if(fs == nullptr || fs->user_data == nullptr) {                                                                    \
+		debug_e("[SPIFFS] NO DEVICE");                                                                                 \
+		return 0;                                                                                                      \
+	}                                                                                                                  \
+	auto device = static_cast<Storage::Device*>(fs->user_data);
+
+s32_t api_spiffs_read(struct spiffs_t* fs, u32_t addr, u32_t size, u8_t* dst)
 {
-	return (flashmem_read(dst, addr, size) == size) ? SPIFFS_OK : SPIFFS_ERR_INTERNAL;
+	GET_DEVICE();
+	return device->read(addr, dst, size) ? SPIFFS_OK : SPIFFS_ERR_INTERNAL;
 }
 
-s32_t api_spiffs_write(u32_t addr, u32_t size, u8_t* src)
+s32_t api_spiffs_write(struct spiffs_t* fs, u32_t addr, u32_t size, u8_t* src)
 {
 	//debugf("api_spiffs_write");
-	return (flashmem_write(src, addr, size) == size) ? SPIFFS_OK : SPIFFS_ERR_INTERNAL;
+	GET_DEVICE();
+	return device->write(addr, src, size) ? SPIFFS_OK : SPIFFS_ERR_INTERNAL;
 }
 
-s32_t api_spiffs_erase(u32_t addr, u32_t size)
+s32_t api_spiffs_erase(struct spiffs_t* fs, u32_t addr, u32_t size)
 {
-	debugf("api_spiffs_erase");
-	uint32_t sect_first = flashmem_get_sector_of_address(addr);
-	uint32_t sect_last = sect_first;
-	while(sect_first <= sect_last) {
-		if(!flashmem_erase_sector(sect_first++)) {
-			return SPIFFS_ERR_INTERNAL;
-		}
-	}
-	return SPIFFS_OK;
+	debugf("api_spiffs_erase(0x%08x, 0x%08x)", addr, size);
+	GET_DEVICE();
+	return device->erase_range(addr, size) ? SPIFFS_OK : SPIFFS_ERR_INTERNAL;
 }
 
-bool tryMount(const spiffs_config& cfg)
+spiffs_config initConfig(Storage::Partition& partition)
 {
+	_filesystemStorageHandle.user_data = partition.getDevice();
+	return spiffs_config{
+		.hal_read_f = api_spiffs_read,
+		.hal_write_f = api_spiffs_write,
+		.hal_erase_f = api_spiffs_erase,
+		.phys_size = partition.size(),
+		.phys_addr = partition.address(),
+		.phys_erase_block = INTERNAL_FLASH_SECTOR_SIZE,
+		.log_block_size = INTERNAL_FLASH_SECTOR_SIZE * 2,
+		.log_page_size = LOG_PAGE_SIZE,
+	};
+}
+
+bool tryMount(Storage::Partition& partition)
+{
+	auto cfg = initConfig(partition);
 	int res = SPIFFS_mount(&_filesystemStorageHandle, const_cast<spiffs_config*>(&cfg),
 						   reinterpret_cast<uint8_t*>(spiffs_work_buf), reinterpret_cast<uint8_t*>(spiffs_fds),
 						   sizeof(spiffs_fds), spiffs_cache_buf, sizeof(spiffs_cache_buf), nullptr);
@@ -60,10 +82,10 @@ bool tryMount(const spiffs_config& cfg)
 	return res >= 0;
 }
 
-bool spiffs_format_internal(const spiffs_config& cfg)
+bool spiffs_format_internal(Storage::Partition& partition)
 {
 	spiffs_unmount();
-	if(tryMount(cfg)) {
+	if(tryMount(partition)) {
 		spiffs_unmount();
 	}
 
@@ -71,22 +93,23 @@ bool spiffs_format_internal(const spiffs_config& cfg)
 	return res >= 0;
 }
 
-bool spiffs_mount_internal(const spiffs_config& cfg)
+bool spiffs_mount_internal(Storage::Partition& partition)
 {
+	auto cfg = initConfig(partition);
 	debugf("fs.start: size:%u Kb, offset:0x%X\n", cfg.phys_size / 1024U, cfg.phys_addr);
 
 	// Simple check of the erase count to see if flash looks like it's already been formatted
-	spiffs_obj_id dat;
-	flashmem_read(&dat, cfg.phys_addr + cfg.log_page_size - sizeof(spiffs_obj_id), sizeof(spiffs_obj_id));
+	spiffs_obj_id dat{UINT16_MAX};
+	partition.read(cfg.log_page_size - sizeof(spiffs_obj_id), &dat, sizeof(dat));
 	//debugf("%X", dat);
-	bool isFormatted = (dat != spiffs_obj_id(UINT32_MAX));
+	bool isFormatted = (dat != UINT16_MAX);
 
 	if(!isFormatted) {
 		debugf("First init file system");
-		spiffs_format_internal(cfg);
+		spiffs_format_internal(partition);
 	}
 
-	if(!tryMount(cfg)) {
+	if(!tryMount(partition)) {
 		return false;
 	}
 
@@ -102,42 +125,30 @@ bool spiffs_mount_internal(const spiffs_config& cfg)
 	return true;
 }
 
-bool initConfig(spiffs_config& cfg, uint32_t phys_addr, uint32_t phys_size)
+Storage::Partition findDefaultPartition()
 {
-	if(phys_addr == 0) {
-		SYSTEM_ERROR("SPIFFS: Start address invalid");
-		return false;
+	auto it = Storage::findPartition(Storage::Partition::SubType::Data::spiffs);
+	if(!it) {
+		debug_e("No SPIFFS partition found");
 	}
-
-	cfg = spiffs_config{
-		.hal_read_f = api_spiffs_read,
-		.hal_write_f = api_spiffs_write,
-		.hal_erase_f = api_spiffs_erase,
-		.phys_size = phys_size,
-		.phys_addr = phys_addr,
-		.phys_erase_block = INTERNAL_FLASH_SECTOR_SIZE,
-		.log_block_size = INTERNAL_FLASH_SECTOR_SIZE * 2,
-		.log_page_size = LOG_PAGE_SIZE,
-	};
-
-	return true;
+	return *it;
 }
 
 } // namespace
 
 bool spiffs_mount()
 {
-	spiffs_config cfg = spiffs_get_storage_config();
-	return spiffs_mount_manual(cfg.phys_addr, cfg.phys_size);
+	auto part = findDefaultPartition();
+	return part ? spiffs_mount_internal(part) : false;
 }
 
-bool spiffs_mount_manual(uint32_t phys_addr, uint32_t phys_size)
+bool spiffs_mount(Storage::Partition partition)
 {
-	spiffs_config cfg;
-	if(!initConfig(cfg, phys_addr, phys_size)) {
+	if(!partition.verify(Storage::Partition::SubType::Data::spiffs)) {
 		return false;
 	}
-	return spiffs_mount_internal(cfg);
+
+	return spiffs_mount_internal(partition);
 }
 
 void spiffs_unmount()
@@ -147,16 +158,21 @@ void spiffs_unmount()
 
 bool spiffs_format()
 {
-	auto cfg = spiffs_get_storage_config();
-	return spiffs_format_manual(cfg.phys_addr, cfg.phys_size);
-}
-
-bool spiffs_format_manual(uint32_t phys_addr, uint32_t phys_size)
-{
-	spiffs_config cfg;
-	if(!initConfig(cfg, phys_addr, phys_size)) {
+	auto part = findDefaultPartition();
+	if(!part) {
 		return false;
 	}
-	spiffs_format_internal(cfg);
-	return spiffs_mount_internal(cfg);
+
+	spiffs_format_internal(part);
+	return spiffs_mount_internal(part);
+}
+
+bool spiffs_format(Storage::Partition& partition)
+{
+	if(!partition.verify(Storage::Partition::SubType::Data::spiffs)) {
+		return false;
+	}
+
+	spiffs_format_internal(partition);
+	return spiffs_mount_internal(partition);
 }
