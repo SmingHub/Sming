@@ -36,6 +36,19 @@ int onDownload(HttpConnection& connection, bool success)
 
 void sslRequestInit(Ssl::Session& session, HttpRequest& request)
 {
+	// Go with maximum buffer sizes
+	session.maxBufferSize = Ssl::MaxBufferSize::K16;
+
+	/**
+	 * If there is not enough RAM and the response from the server is not a big one
+	 * you may prefer to set the size to a lower value. One useful value would be 4K
+	 *
+	 * 	session.maxBufferSize = Ssl::MaxBufferSize::K4;
+	 *
+	 * Unfortunately most of the servers may ignore this plea from
+	 * our HTTP client and send big SSL packet.
+	 */
+
 	/*
 	 * SSL validation: We check the remote server certificate against a fingerprint
 	 * Note that fingerprints _may_ change, in which case these need to be updated.
