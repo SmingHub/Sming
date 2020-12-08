@@ -1,0 +1,2 @@
+HWCONFIG := spiffs
+DISABLE_SPIFFS := 1

@@ -1,4 +1,4 @@
-SPIFF_SIZE      ?= 65536
+HWCONFIG := spiffs
 
 CUSTOM_TARGETS	+= files/README.md
 
@@ -10,3 +10,4 @@ files/README.md: $(SMING_HOME)/../README.md
 	
 # Emulate both serial ports
 ENABLE_HOST_UARTID := 0 1
+HOST_NETWORK_OPTIONS := --pause

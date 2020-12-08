@@ -1,2 +1,3 @@
+HWCONFIG := spiffs
 DISABLE_SPIFFS = 1
 ARDUINO_LIBRARIES := ArduinoJson6
