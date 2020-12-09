@@ -160,9 +160,11 @@ COMPONENT_INCDIRS		:= include
 COMPONENT_NAME			:= $1
 COMPONENT_LIBNAME		:= $1
 CMP_$1_BUILD_BASE		:= $3/$1
+COMPONENT_BUILD_BASE	:= $$(CMP_$1_BUILD_BASE)
 COMPONENT_BUILD_DIR		:= $$(CMP_$1_BUILD_BASE)
 COMPONENT_VARS			:=
 COMPONENT_RELINK_VARS	:=
+COMPONENT_PREREQUISITES	:=
 COMPONENT_TARGETS		:=
 COMPONENT_DEPENDS		:=
 COMPONENT_PYTHON_REQUIREMENTS		:= $$(wildcard $2/requirements.txt)
@@ -184,6 +186,7 @@ LIBS					+= $$(EXTRA_LIBS)
 CMP_$1_LDFLAGS			:= $$(EXTRA_LDFLAGS)
 LDFLAGS					+= $$(CMP_$1_LDFLAGS)
 endif
+CMP_$1_PREREQUISITES	:= $$(COMPONENT_PREREQUISITES)
 CMP_$1_TARGETS			:= $$(COMPONENT_TARGETS)
 CMP_$1_BUILD_DIR		:= $$(COMPONENT_BUILD_DIR)
 CMP_$1_LIBNAME			:= $$(COMPONENT_LIBNAME)
@@ -266,7 +269,7 @@ $(foreach c,$(COMPONENTS),$(eval $(call ResolveDependencies,$c)))
 # $1 => Component name
 define CheckComponentMatches
 ifneq ($1,Sming)
-COMPONENT_MATCHES := $(filter %/$1,$(ALL_COMPONENT_DIRS))
+COMPONENT_MATCHES := $(sort $(filter %/$1,$(ALL_COMPONENT_DIRS)))
 ifeq ($$(words $$(COMPONENT_MATCHES)),0)
 $$(warning No matches found for Component '$1')
 else ifneq ($$(words $$(COMPONENT_MATCHES)),1)
@@ -362,6 +365,7 @@ $1-build: $(addsuffix -build,$(filter $(CMP_$1_DEPENDS),$(BUILDABLE_COMPONENTS))
 	+$(Q) $(MAKE) -r -R --no-print-directory -C $(CMP_$1_BUILD_DIR) -f $(SMING_HOME)/component-wrapper.mk \
 		COMPONENT_NAME=$1 \
 		COMPONENT_PATH=$(CMP_$1_PATH) \
+		COMPONENT_BUILD_BASE=$(CMP_$1_BUILD_BASE) \
 		COMPONENT_LIBDIR=$(CMP_$1_LIBDIR) \
 		COMPONENT_LIBNAME=$(CMP_$1_LIBNAME) \
 		COMPONENT_LIBHASH=$(CMP_$1_LIBHASH) \
@@ -432,9 +436,12 @@ checkdirs: | $(BUILD_BASE) $(FW_BASE) $(TOOLS_BASE) $(APP_LIBDIR) $(USER_LIBDIR)
 $(BUILD_BASE) $(FW_BASE) $(TOOLS_BASE) $(APP_LIBDIR) $(USER_LIBDIR):
 	$(Q) mkdir -p $@
 
+# Targets to be built before anything else (e.g. source code generators)
+PREREQUISITES := $(foreach c,$(COMPONENTS),$(CMP_$c_PREREQUISITES))
+
 # Build all Component (user) libraries
 .PHONY: components
-components: $(ALL_COMPONENT_TARGETS) $(CUSTOM_TARGETS)
+components: $(PREREQUISITES) $(ALL_COMPONENT_TARGETS) $(CUSTOM_TARGETS)
 
 ##@Cleaning
 
@@ -523,6 +530,7 @@ list-config: ##Print the contents of build variables
 	$(info ** Sming build configuration **)
 	$(info )
 	$(if $(V),$(call PrintVariable,MAKEFILE_LIST))
+	$(call PrintVariableSorted,PREREQUISITES)
 	$(call PrintVariableSorted,CUSTOM_TARGETS)
 	$(call PrintVariableSorted,LIBS)
 	$(call PrintVariableSorted,ARDUINO_LIBRARIES)

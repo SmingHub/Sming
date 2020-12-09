@@ -249,13 +249,29 @@ define IsSubDir
 $(if $(subst $(1:/=),,$(2:/=)),$(findstring $(1:/=),$2),)
 endef
 
+# List sub-directories recursively for a single root directory
+# Results are sorted and without trailing path separator
+# Sub-directories with spaces are skipped
+# $1 -> Root path
+define ListAllSubDirsSingle
+$(foreach d,$(dir $(wildcard $1/*/.)),$(if $(call IsSubDir,$1,$d),$(d:/=) $(call ListAllSubDirs,$(d:/=))))
+endef
+
 # List sub-directories recursively for a list of root directories
 # Results are sorted and without trailing path separator
 # Sub-directories with spaces are skipped
 # $1 -> Root paths
 define ListAllSubDirs
-$(foreach d,$(dir $(wildcard $1/*/.)),$(if $(call IsSubDir,$1,$d),$(d:/=) $(call ListAllSubDirs,$(d:/=))))
+$(foreach d,$1,$(call ListAllSubDirsSingle,$d))
 endef
+
+# Recursively search list of directories for matching files
+# $1 -> Directories to scan
+# $2 -> Filename filter
+define ListAllFiles
+$(wildcard $(foreach d,$(call ListAllSubDirs,$1),$d/$2))
+endef
+
 
 # Display variable and list values, e.g. $(call PrintVariable,LIBS)
 # $1 -> Name of variable containing values
@@ -275,6 +291,11 @@ define PrintVariableRefs
 	$(info $1)
 	$(foreach item,$(sort $($1)),$(info - $(item) = $(value $(item))) )
 endef
+
+#
+# Get directory without trailing separator
+# $1 -> List of directories
+dirx = $(patsubst %/,%,$(dir $1))
 
 # Extract commented target information from makefiles and display
 # Based on code from https://suva.sh/posts/well-documented-makefiles/

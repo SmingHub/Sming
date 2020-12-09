@@ -24,6 +24,8 @@ public:
 		return write(&charToWrite, 1);
 	}
 
+	using Print::write;
+
 	/** @brief  Write chars to stream
      *  @param  buffer Pointer to buffer to write to the stream
      *  @param  size Quantity of chars to write
