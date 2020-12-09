@@ -653,6 +653,12 @@ bool String::startsWith(const String& prefix, size_t offset) const
 	return memcmp(&cbuffer()[offset], prefix_buffer, prefix_len) == 0;
 }
 
+bool String::endsWith(char suffix) const
+{
+	auto len = length();
+	return len > 0 && cbuffer()[len - 1] == suffix;
+}
+
 bool String::endsWith(const String& suffix) const
 {
 	auto len = length();
