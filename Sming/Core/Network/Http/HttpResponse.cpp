@@ -122,12 +122,7 @@ String HttpResponse::toString() const
 	for(unsigned i = 0; i < headers.count(); i++) {
 		content += headers[i];
 	}
-
-	if(stream != nullptr && stream->available() >= 0) {
-		content += headers.toString(HTTP_HEADER_CONTENT_LENGTH, String(stream->available()));
-	} else {
-		content += "\r\n";
-	}
+	content += "\r\n";
 
 	return content;
 }

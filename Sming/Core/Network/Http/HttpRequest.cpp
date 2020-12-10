@@ -73,16 +73,21 @@ String HttpRequest::toString() const
 	content += ' ';
 	content += uri.getPathWithQuery();
 	content += _F(" HTTP/1.1\r\n");
-	content += headers.toString(HTTP_HEADER_HOST, uri.getHostWithPort());
+	if(!headers.contains(HTTP_HEADER_HOST)) {
+		content += headers.toString(HTTP_HEADER_HOST, uri.getHostWithPort());
+	}
 	for(unsigned i = 0; i < headers.count(); i++) {
 		content += headers[i];
 	}
 
-	if(bodyStream != nullptr && bodyStream->available() >= 0) {
-		content += headers.toString(HTTP_HEADER_CONTENT_LENGTH, String(bodyStream->available()));
-	} else {
-		content += "\r\n";
+	if(!headers.contains(HTTP_HEADER_CONTENT_LENGTH)) {
+		if(bodyStream == nullptr) {
+			content += headers.toString(HTTP_HEADER_CONTENT_LENGTH, "0");
+		} else if(bodyStream->available() >= 0) {
+			content += headers.toString(HTTP_HEADER_CONTENT_LENGTH, String(bodyStream->available()));
+		}
 	}
+	content += "\r\n";
 
 	return content;
 }
