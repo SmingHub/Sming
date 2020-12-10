@@ -4,7 +4,7 @@ set -ex # exit with nonzero exit code if anything fails
 if [ "$TRAVIS_OS_NAME" == "linux" ]; then
     sudo apt-get install -y git wget flex bison gperf  \
                 cmake ninja-build ccache libffi-dev libssl-dev dfu-util \
-                python3 python3-pip python3-setuptools
+                python3 python3-dev python3-pip python3-setuptools python3-wheel python3-cryptography
     sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
     python -m pip install --upgrade virtualenv==16.7.9
     mkdir -p $TRAVIS_BUILD_DIR/opt
@@ -12,6 +12,4 @@ if [ "$TRAVIS_OS_NAME" == "linux" ]; then
     git clone -b v4.1 --recursive https://github.com/espressif/esp-idf.git
     export IDF_PATH=$TRAVIS_BUILD_DIR/opt/esp-idf
     $IDF_PATH/install.sh
-
-    python -m pip install --user -r $IDF_PATH/requirements.txt
 fi
