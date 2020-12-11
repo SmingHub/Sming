@@ -6,7 +6,7 @@ COMPONENT_SRCDIRS := \
 
 COMPONENT_DEPENDS += crypto
 
-ifneq ($(SMING_ARCH),Host)
+ifeq ($(SMING_ARCH),Esp8266)
 COMPONENT_SRCDIRS += \
 	axtls-8266/replacements
 endif

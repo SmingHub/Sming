@@ -26,7 +26,7 @@
 *********************************************************************************/
 
 #include <xtensa/corebits.h>
-#include <sys/errno.h>
+#include <errno.h>
 
 #include "gdbstub.h"
 #include "gdbstub-entry.h"

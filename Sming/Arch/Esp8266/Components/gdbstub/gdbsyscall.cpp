@@ -17,7 +17,7 @@
 #include "gdbsyscall.h"
 #include "GdbPacket.h"
 #include <gdb/gdb_syscall.h>
-#include <sys/errno.h>
+#include <errno.h>
 #include "Platform/System.h"
 
 // Whilst GCC has intrinsics to do this, they eat IRAM

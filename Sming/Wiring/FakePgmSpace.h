@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <stdio.h>
 #include <esp_attr.h>
 #include <sys/pgmspace.h>
 
