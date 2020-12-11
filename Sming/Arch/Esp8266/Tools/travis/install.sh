@@ -10,8 +10,8 @@ if [ "$TRAVIS_OS_NAME" == "linux" ]; then
 	ln -s $(pwd)/esp-open-sdk/xtensa-lx106-elf $TRAVIS_BUILD_DIR/opt/esp-alt-sdk/.
 
 	# New toolchain
-	TOOLCHAIN=x86_64-linux-gnu.xtensa-lx106-elf-a5c9861.1575819473.tar.gz
-	wget --no-verbose https://github.com/earlephilhower/esp-quick-toolchain/releases/download/3.0.0-gnu5/$TOOLCHAIN
+	TOOLCHAIN=x86_64-linux-gnu.xtensa-lx106-elf-e6a192b.201211.tar.gz
+	wget --no-verbose $SMINGTOOLS/$TOOLCHAIN
 	mkdir -p opt/esp-quick-toolchain
   	tar -zxf $TOOLCHAIN -C opt/esp-quick-toolchain --totals
 fi
