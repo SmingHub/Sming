@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex # exit with nonzero exit code if anything fails
 
-make -C "$SMING_PROJECTS_DIR/samples/HttpServer_FirmwareUpload" python-requirements PIP_ARGS=--user
+make -C "$SMING_PROJECTS_DIR/samples/HttpServer_FirmwareUpload" python-requirements
 $MAKE_PARALLEL samples
 make clean samples-clean
 $MAKE_PARALLEL Basic_Blink ENABLE_CUSTOM_HEAP=1 DEBUG_VERBOSE_LEVEL=3

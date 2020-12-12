@@ -105,7 +105,7 @@ DEBUG_VARS += PYTHON
 ifdef PYTHON
 export PYTHON := $(call FixPath,$(PYTHON))
 else
-PYTHON := python
+PYTHON := python3
 endif
 
 PYTHON_VERSION := $(shell $(PYTHON) --version 2>&1)
