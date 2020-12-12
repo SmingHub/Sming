@@ -80,15 +80,15 @@ To install from the original MinGW source repository:
 Install ESP8266 Toolchain
 -------------------------
 
-1. Download toolchain `esp-udk-win32.7z <https://github.com/SmingHub/SmingTools/releases/download/1.0/esp-udk-win32.7z>`__.
+1. Download toolchain `ESP Quick Toolchain <https://github.com/SmingHub/SmingTools/releases/download/1.0/x86_64-w64-mingw32.xtensa-lx106-elf-e6a192b.201211.zip>`__.
 
 2. Unzip to default location::
 
-      7z -oC:\Espressif x esp-udk-win32.7z
+      7z -oC:\tools\esp-quick-toolchain x x86_64-w64-mingw32.xtensa-lx106-elf-e6a192b.201211.zip
 
 3. Set :envvar:`ESP_HOME` environment variable::
 
-      SETX ESP_HOME C:\Espressif
+      SETX ESP_HOME C:\tools\esp-quick-toolchain
 
 .. note::
    There is NO trailing slash on the path!

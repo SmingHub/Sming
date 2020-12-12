@@ -53,10 +53,11 @@ ESP8266 Toolchain
 We pull this in from the `SmingTools <https://github.com/SmingHub/SmingTools/releases>`__ repository::
 
    cd ~/
-   curl -L -O https://github.com/SmingHub/SmingTools/releases/download/1.0/esp-open-sdk-macosx.tar.gz
-   sudo mkdir -p /opt/
-   sudo tar -zxf esp-open-sdk-macosx.tar.gz -C /opt/
-   sudo chmod -R 775 /opt/esp-open-sdk
+   export ESP_HOME=/opt/esp-quick-toolchain
+   curl -L -O https://github.com/SmingHub/SmingTools/releases/download/1.0/x86_64-apple-darwin14.xtensa-lx106-elf-e6a192b.201211.tar.gz
+   sudo mkdir -p $(ESP_HOME)
+   sudo tar -zxf x86_64-apple-darwin14.xtensa-lx106-elf-e6a192b.201211.tar.gz-C $(ESP_HOME)
+   sudo chmod -R 775 -C $(ESP_HOME)
 
 You can also build it yourself
 `with Homebrew <https://github.com/pfalcon/esp-open-sdk#macos>`__ or
@@ -92,7 +93,7 @@ Environment Variables
 
 Open with a text editor the ``.profile`` file in your home directory, and add these lines::
 
-   export ESP_HOME=/opt/esp-open-sdk
+   export ESP_HOME=/opt/esp-quick-toolchain
    export SMING_HOME=<your-favourite-development-folder>/Sming/Sming
 
 Make sure to replace ``<your-favourite-development-folder>`` in the
