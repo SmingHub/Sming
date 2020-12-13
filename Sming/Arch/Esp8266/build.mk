@@ -58,7 +58,7 @@ $(error ESP_HOME not set correctly: "$(ESP_HOME)")
 endif
 
 # Identifies which library we're building with
-USE_NEWLIB			= $(if $(filter 9%,$(GCC_VERSION)),1,0)
+USE_NEWLIB = $(GCC_VERSION_COMPATIBLE)
 
 # => Tools
 MEMANALYZER = $(PYTHON) $(ARCH_TOOLS)/memanalyzer.py $(OBJDUMP)$(TOOL_EXT)

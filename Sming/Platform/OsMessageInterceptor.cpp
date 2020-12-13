@@ -16,7 +16,7 @@ extern void smg_uart_debug_putc(char);
 
 OsMessageInterceptor* OsMessageInterceptor::self;
 
-void OsMessageInterceptor::putc(char c)
+void OsMessageInterceptor::putch(char c)
 {
 	c = message.addChar(c);
 	if(c == '\n' && callback) {

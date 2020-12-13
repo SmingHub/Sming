@@ -85,11 +85,11 @@ public:
 	void end();
 
 protected:
-	void putc(char c);
+	void putch(char c);
 
 	static void static_putc(char c)
 	{
-		self->putc(c);
+		self->putch(c);
 	}
 
 private:

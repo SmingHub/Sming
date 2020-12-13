@@ -13,7 +13,7 @@ DEFINE_FSTR_LOCAL(template2_1, "This text should be missing.")
 class TemplateStreamTest : public TestGroup
 {
 public:
-	TemplateStreamTest() : TestGroup(_F("Stream"))
+	TemplateStreamTest() : TestGroup(_F("TemplateStream"))
 	{
 	}
 
@@ -96,15 +96,25 @@ public:
 private:
 	void check(TemplateStream& tmpl, const FlashString& ref)
 	{
-		MemoryDataStream mem;
-		auto len = mem.copyFrom(&tmpl);
-		debug_i("Copied %u bytes", len);
-		String output;
-		REQUIRE(mem.moveString(output));
-		debug_i("output.length() == %u", output.length());
-		REQUIRE(output.length() == len);
-		REQUIRE(output.length() == ref.length());
-		REQUIRE(ref == output);
+		static constexpr size_t bufSize{512};
+		char buf1[bufSize];
+		char buf2[bufSize];
+		FSTR::Stream refStream(ref);
+		while(!tmpl.isFinished()) {
+			auto count = tmpl.readBytes(buf1, bufSize);
+			if(count == 0) {
+				continue;
+			}
+			if(refStream.readBytes(buf2, count) != count) {
+				debug_e("TemplateStream output larger than expected");
+				TEST_ASSERT(false);
+			}
+			if(memcmp(buf1, buf2, count) != 0) {
+				debug_e("TemplateStream output incorrect");
+				TEST_ASSERT(false);
+			}
+		}
+		REQUIRE(refStream.isFinished());
 	}
 };
 

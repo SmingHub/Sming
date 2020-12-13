@@ -548,3 +548,30 @@ index 52cd0b0..0ea6ab0 100644
  	remot_info *pinfo = NULL;
  	espconn_msg *pdelete_msg = NULL;
  	struct tcp_pcb *pcb = NULL;
+diff --git a/lwip/core/sntp.c b/lwip/core/sntp.c
+index 677de93..b645772 100644
+--- a/lwip/core/sntp.c
++++ b/lwip/core/sntp.c
+@@ -295,7 +295,6 @@ static ip_addr_t sntp_last_server_address;
+  * to compare against in response */
+ static u32_t sntp_last_timestamp_sent[2];
+ #endif /* SNTP_CHECK_RESPONSE >= 2 */
+-typedef long     time_t;
+ //uint32 current_stamp_1 = 0;
+ //uint32 current_stamp_2 = 0;
+ uint32 realtime_stamp = 0;
+
+diff --git a/include/lwip/sntp.h b/include/lwip/sntp.h
+index 14e802e..61d36de 100644
+--- a/include/lwip/sntp.h
++++ b/include/lwip/sntp.h
+@@ -28,7 +28,7 @@ extern "C" {
+  * #define SNTP_SERVER_ADDRESS "pool.ntp.org"
+  */
+ uint32 sntp_get_current_timestamp();
+-char* sntp_get_real_time(long t);
++char* sntp_get_real_time(time_t);
+ 
+ void sntp_init(void);
+ void sntp_stop(void);
+

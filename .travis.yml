@@ -1,5 +1,7 @@
-language: cpp
+language: python
+python: 3.8.6
 os: linux
+dist: focal
 env:
   global:
   - SMINGTOOLS=https://github.com/SmingHub/SmingTools/releases/download/1.0
@@ -9,6 +11,7 @@ env:
 jobs:
   include:
   - stage: test
+    name: Host
     addons:
       apt:
         packages:
@@ -50,17 +53,8 @@ git:
   submodules: false
 addons:
   apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    - sourceline: ppa:libreoffice/libreoffice-4-2
-    - llvm-toolchain-trusty-6.0
+    update: true
     packages:
-    - bsdtar
-    - doxygen
-    - doxygen-doc
-    - doxygen-latex
-    - doxygen-gui
-    - graphviz
     - xmlstarlet
 install: ".travis/install.sh"
 script: ".travis/build.sh"

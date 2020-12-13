@@ -17,7 +17,7 @@
 #if GDBSTUB_ENABLE_HOSTIO
 
 #include "GdbPacket.h"
-#include <sys/errno.h>
+#include <errno.h>
 #include <fcntl.h>
 #include "FileSystem.h"
 #include "WString.h"

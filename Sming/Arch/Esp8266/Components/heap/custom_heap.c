@@ -8,6 +8,7 @@
 #include "umm_malloc_cfg.h"
 #include "umm_malloc.h"
 
+#undef IRAM_ATTR
 #define IRAM_ATTR __attribute__((section(".iram.text")))
 
 #ifdef UMM_POISON_CHECK
