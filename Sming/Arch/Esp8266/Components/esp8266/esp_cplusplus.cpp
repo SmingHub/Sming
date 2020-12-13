@@ -15,6 +15,10 @@
 extern void (*__init_array_start)();
 extern void (*__init_array_end)();
 
+namespace std {
+const nothrow_t nothrow;
+}
+
 void cpp_core_initialize()
 {
 	/*
