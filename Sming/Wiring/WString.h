@@ -574,6 +574,13 @@ public:
      * @param suffix
      * @retval bool true on match
      */
+	bool endsWith(char suffix) const;
+
+	/**
+     * @brief Compare the end of a String
+     * @param suffix
+     * @retval bool true on match
+     */
 	bool endsWith(const String& suffix) const;
 
 	// character acccess
