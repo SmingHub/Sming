@@ -245,50 +245,67 @@ void m_printHex(const char* tag, const void* data, size_t len, int addr, size_t 
 		return;
 	}
 
+	// tag + ": " + address(*8) + ' ' + hex(*2) + ' ' + char + "\r\n"
+	auto bufSize = taglen + ((bytesPerLine ?: len) * 4) + 16;
+	auto lineBuffer = new char[bufSize];
+
 	size_t offset = 0;
 	while (offset < len) {
-		if (taglen) {
+		auto linePtr = lineBuffer;
+		if (taglen != 0) {
 			if (offset == 0) {
-				m_nputs(tag, taglen);
-				m_putc(':');
+				memcpy(linePtr, tag, taglen);
+				linePtr += taglen;
+				*linePtr++ = ':';
+				*linePtr++ = ' ';
 			}
 			else {
-				for (size_t  i = 0; i <= taglen; ++i)
-					m_putc(' ');
+				memset(lineBuffer, ' ', taglen + 2);
+				linePtr += taglen + 2;
 			}
-			m_putc(' ');
 		}
 
-		if (addr >= 0)
-			m_printf("%08X ", addr);
+		if (addr >= 0) {
+			ultoa_wp(addr, linePtr, 16, 8, '0');
+			linePtr += 8;
+			*linePtr++ = ' ';
+		}
 
 		size_t n = len - offset;
-		if (bytesPerLine && n > bytesPerLine)
+		if (bytesPerLine && n > bytesPerLine) {
 			n = bytesPerLine;
+		}
 
 		for (size_t i = 0; i < n; ++i) {
-			m_putc(hexchar(buf[offset + i] >> 4));
-			m_putc(hexchar(buf[offset + i] & 0x0f));
-			m_putc(' ');
+			*linePtr ++ = hexchar(buf[offset + i] >> 4);
+			*linePtr ++ = hexchar(buf[offset + i] & 0x0f);
+			*linePtr ++ = ' ';
 		}
 
 		// Output ASCII
-		unsigned spaces = 1;
-		if (bytesPerLine)
-			spaces += 3 * (bytesPerLine - n);
-		while (spaces--)
-			m_putc(' ');
+		unsigned spaceCount = 1;
+		if (bytesPerLine != 0) {
+			spaceCount += 3 * (bytesPerLine - n);
+		}
+		memset(linePtr, ' ', spaceCount);
+		linePtr += spaceCount;
 
 		for (size_t i = 0; i < n; ++i) {
 			char c = buf[offset + i];
-			m_putc(is_print(c) ? c : '.');
+			*linePtr++ = is_print(c) ? c : '.';
 		}
 
-		m_puts("\r\n");
+		*linePtr++ = '\r';
+		*linePtr++ = '\n';
+
+		size_t len = linePtr - lineBuffer;
+		m_nputs(lineBuffer, len);
 
 		offset += n;
 
 		if (addr >= 0)
 			addr += n;
 	}
+
+	delete[] lineBuffer;
 }
