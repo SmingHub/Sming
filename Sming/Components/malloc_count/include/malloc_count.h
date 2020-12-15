@@ -74,14 +74,14 @@ void setAllocLimit(size_t maxBytes);
  * @brief Callback function type
  * @param current Current allocated bytes
  */
-typedef std::function<void(size_t current)> MallocCountCallback;
+using Callback = std::function<void(size_t current)>;
 
 /**
  * @brief Set a callback function that is invoked on each change of the current allocation
  * @note The callback function must not use malloc()/realloc()/free()
  * or it will go into an endless recursive loop!
  */
-void setCallback(MallocCountCallback callback);
+void setCallback(Callback callback);
 
 /**
  * @brief Enable/disable logging

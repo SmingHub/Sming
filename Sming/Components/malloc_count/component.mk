@@ -1,3 +1,11 @@
+COMPONENT_RELINK_VARS += ENABLE_MALLOC_COUNT
+
+ENABLE_MALLOC_COUNT ?= 1
+
+ifeq ($(ENABLE_MALLOC_COUNT),1)
+
+COMPONENT_CXXFLAGS += -DENABLE_MALLOC_COUNT=1
+
 # Hook all the memory allocation functions we need to monitor heap activity
 EXTRA_LDFLAGS := \
 	-Wl,-wrap,malloc \
@@ -16,4 +24,6 @@ EXTRA_LDFLAGS += \
 else
 EXTRA_LDFLAGS += \
 	-Wl,-wrap,strdup
+endif
+
 endif
