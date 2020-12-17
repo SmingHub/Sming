@@ -118,7 +118,7 @@
 
 [submodule "Host.lwip"]
 	path = Sming/Arch/Host/Components/lwip/lwip
-	url = git://git.savannah.gnu.org/lwip.git
+	url = https://github.com/lwip-tcpip/lwip
 	ignore = dirty
 
 
