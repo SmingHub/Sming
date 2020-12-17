@@ -11,23 +11,30 @@
 #pragma once
 
 #include "ReadWriteStream.h"
+#include <WString.h>
 
-/** @addtogroup stream
- *  @{
- */
-
-/*
- * MemoryDataStream
+/**
+ * @brief Read/write stream using expandable memory buffer
  *
- * This is intended to allow data to be streamed into it, then streamed back out at a later
- * date.
+ * This is intended to allow data to be streamed into it, then streamed back out at a later date.
  *
  * It is _not_ intended to have data continuously written in and read out; memory is not reclaimed
  * as it is read.
+ *
+ * @ingroup stream
  */
 class MemoryDataStream : public ReadWriteStream
 {
 public:
+	MemoryDataStream(size_t maxCapacity = UINT16_MAX) : maxCapacity(maxCapacity)
+	{
+	}
+
+	/**
+	 * @brief Stream takes ownership of String content using move semantics
+	 */
+	MemoryDataStream(String&& string) noexcept;
+
 	~MemoryDataStream()
 	{
 		free(buffer);
@@ -66,12 +73,14 @@ public:
 
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
-	int seekFrom(int offset, unsigned origin) override;
+	int seekFrom(int offset, SeekOrigin origin) override;
 
 	bool isFinished() override
 	{
 		return readPos >= size;
 	}
+
+	bool moveString(String& s) override;
 
 	/**
 	 * @brief Pre-allocate stream to given size
@@ -96,10 +105,9 @@ public:
 	}
 
 private:
-	char* buffer = nullptr; ///< Stream content stored here
-	size_t readPos = 0;		///< Offset to current read position
-	size_t size = 0;		///< Number of bytes stored in stream (i.e. the write position)
-	size_t capacity = 0;	///< Number of bytes allocated in buffer
+	char* buffer = nullptr;			///< Stream content stored here
+	size_t maxCapacity{UINT16_MAX}; ///< Limit size of stream
+	size_t readPos = 0;				///< Offset to current read position
+	size_t size = 0;				///< Number of bytes stored in stream (i.e. the write position)
+	size_t capacity = 0;			///< Number of bytes allocated in buffer
 };
-
-/** @} */

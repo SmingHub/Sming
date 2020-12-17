@@ -10,116 +10,181 @@
 
 #include "TemplateStream.h"
 
+String TemplateStream::evaluate(char*& expr)
+{
+	auto end = strchr(expr, '}');
+	if(end == nullptr) {
+		return nullptr;
+	}
+
+	*end = '\0';
+	String s = getValue(expr);
+	*end = '}';
+	expr = end + 1;
+	return s;
+}
+
+String TemplateStream::getValue(const char* name)
+{
+	String s = static_cast<const Variables&>(templateData)[name];
+	if(!s && getValueCallback) {
+		s = getValueCallback(name);
+	}
+	debug_d("TemplateStream: value '%s' %sfound: \"%s\"", name, s ? "" : "NOT ", s.c_str());
+	return s;
+}
+
 uint16_t TemplateStream::readMemoryBlock(char* data, int bufSize)
 {
-	debug_d("TemplateStream::read(%d), state = %d", bufSize, state);
-
-	if(!data || bufSize <= 0)
+	if(data == nullptr || bufSize <= 0) {
 		return 0;
-
-	if(state == eTES_StartVar) {
-		int i = templateData.indexOf(varName);
-		debug_d("StartVar '%s' %sfound", varName.c_str(), i < 0 ? "NOT " : "");
-		if(i < 0) {
-			state = eTES_Wait;
-			return stream->readMemoryBlock(data, std::min(size_t(bufSize), skipBlockSize));
-		}
-
-		// Return variable value
-		const String& value = templateData.valueAt(i);
-		if(unsigned(bufSize) < value.length()) {
-			debug_e("TemplateStream, buffer too small");
-			return 0;
-		}
-		memcpy(data, value.c_str(), value.length());
-		stream->seek(skipBlockSize);
-		varDataPos = 0;
-		state = eTES_SendingVar;
-		return value.length();
 	}
 
-	if(state == eTES_SendingVar) {
-		const String& val = templateData[varName];
-		if(varDataPos < val.length()) {
-			debug_d("continue TRANSFER variable value (not completed)");
-			size_t available = val.length() - varDataPos;
-			memcpy(data, val.c_str() + varDataPos, available);
-			return available;
-		} else {
-			debug_d("continue to plain text");
-			state = eTES_Wait;
-		}
+	auto sendValue = [&]() {
+		assert(value.length() != 0);
+		auto len = std::min(size_t(bufSize), value.length() - valuePos);
+		memcpy(data, value.c_str() + valuePos, len);
+		sendingValue = true;
+		return len;
+	};
+
+	if(sendingValue) {
+		return sendValue();
 	}
 
-	unsigned datalen = stream->readMemoryBlock(data, bufSize);
+	const size_t tagDelimiterLength = 1 + doubleBraces;
+
+	if(size_t(bufSize) <= TEMPLATE_MAX_VAR_NAME_LEN + (2 * tagDelimiterLength)) {
+		return 0;
+	}
+
+	auto findStartTag = [this](char* buf) {
+		auto p = doubleBraces ? strstr(buf, "{{") : strchr(buf, '{');
+		return static_cast<char*>(p);
+	};
+
+	auto start = data;
+	size_t datalen = stream->readMemoryBlock(data, bufSize - 1);
 	if(datalen != 0) {
-		auto end = data + datalen;
-		auto cur = (const char*)memchr(data, '{', datalen);
-		auto lastFound = cur;
-		while(cur != nullptr) {
-			lastFound = cur;
-			const char* p = cur + 1;
-			for(; p < end; p++) {
-				if(isspace(*p))
-					break; // Not a var name
-				else if(p - cur > TEMPLATE_MAX_VAR_NAME_LEN)
-					break; // To long for var name
-				else if(*p == '{')
-					break; // New start..
+		data[datalen] = '\0'; // Terminate buffer to mitigate overflow risk
+		auto tagStart = findStartTag(data);
+		auto lastTagFound = tagStart;
+		while(tagStart != nullptr) {
+			lastTagFound = tagStart;
 
-				if(*p == '}') {
-					varName.setLength(p - cur - 1);
-					memcpy(varName.begin(), cur + 1, varName.length()); // name without { and }
-					skipBlockSize = p - cur + 1;
-					varWaitSize = cur - data;
-					state = varWaitSize ? eTES_Found : eTES_StartVar;
-					debug_d("found var '%s' at %u - %u, send size %u", varName.c_str(), varWaitSize + 1, p - data,
-							varWaitSize);
+			char* curPos = tagStart + tagDelimiterLength;
+			value = evaluate(curPos);
+			if(doubleBraces) {
+				// Double end brace isn't necessary, but if present skip it
+				if(*curPos == '}') {
+					++curPos;
+				}
+			}
+			if(!value) {
+				// Not handled, emit unchanged and continue searching
+				tagStart = findStartTag(curPos);
+				continue;
+			}
+			auto tagEnd = curPos;
+			tagLength = tagEnd - tagStart;
+			valueWaitSize = tagStart - start;
 
-					// return only plain text from template without our variable
-					return varWaitSize;
+			if(valueWaitSize == 0 || !outputEnabled) {
+				stream->seek(valueWaitSize + tagLength);
+				valueWaitSize = 0;
+				tagLength = 0;
+				start = tagEnd;
+				if(!outputEnabled || value.length() == 0) {
+					value = nullptr;
+					outputEnabled = enableNextState;
+					tagStart = findStartTag(curPos);
+					continue;
 				}
 			}
 
-			// continue searching...
-			cur = (const char*)memchr(p, '{', datalen - (p - data));
+			if(outputEnabled && valueWaitSize == 0 && value.length() != 0) {
+				valuePos = 0;
+				return sendValue();
+			}
+
+			outputEnabled = enableNextState;
+
+			// return only plain text from template without our variable
+			memmove(data, start, valueWaitSize);
+			return valueWaitSize;
 		}
 
-		if(lastFound != nullptr) {
-			unsigned newlen = lastFound - data;
+		if(lastTagFound != nullptr) {
+			unsigned newlen = lastTagFound - data;
 			if(newlen + TEMPLATE_MAX_VAR_NAME_LEN > datalen) {
-				debug_d("trim end to %u from %u", newlen, datalen);
+				debug_d("TemplateStream: trim end to %u from %u", newlen, datalen);
 				// It can be a incomplete variable name - don't split it
-				datalen = newlen;
+				// provided we're not at end of input stream
+				if(datalen == size_t(bufSize)) {
+					datalen = newlen;
+				}
 			}
 		}
 	}
 
-	debug_d("plain template text pos: %d, len: %d", -1, datalen);
+	datalen -= (start - data);
+	if(outputEnabled) {
+		memmove(data, start, datalen);
+	} else {
+		stream->seek(datalen);
+		datalen = 0;
+	}
+
 	return datalen;
 }
 
-bool TemplateStream::seek(int len)
+int TemplateStream::seekFrom(int offset, SeekOrigin origin)
 {
-	debug_d("TemplateStream::seek(%d), state = %d", len, state);
-
-	// Forward-only seeks
-	if(len < 0)
-		return false;
-
-	if(state == eTES_Found) {
-		//debug_d("SEEK before Var: %d, (%d)", len, varWaitSize);
-		if(varWaitSize < (unsigned)len) {
-			debug_e("len > varWaitSize");
-			return false;
+	if(origin == SeekOrigin::Start && offset == 0) {
+		if(stream->seekFrom(0, SeekOrigin::Start) != 0) {
+			return 0;
 		}
-		varWaitSize -= len;
-		if(varWaitSize == 0)
-			state = eTES_StartVar;
-	} else if(state == eTES_SendingVar) {
-		varDataPos += len;
-		return false; // not the end
+		reset();
+		streamPos = 0;
+		return streamPos;
 	}
 
-	return stream->seek(len);
+	// Forward-only seeks
+	if(origin != SeekOrigin::Current || offset < 0) {
+		return -1;
+	}
+
+	if(sendingValue) {
+		valuePos += offset;
+		assert(valuePos <= value.length());
+		if(valuePos >= value.length()) {
+			sendingValue = false;
+			value = nullptr;
+		}
+		streamPos += offset;
+		return streamPos;
+	}
+
+	if(valueWaitSize != 0) {
+		if(size_t(offset) > valueWaitSize) {
+			debug_e("TemplateStream: offset > valueWaitSize");
+			return -1;
+		}
+		valueWaitSize -= offset;
+		if(valueWaitSize == 0) {
+			stream->seek(tagLength);
+			tagLength = 0;
+			if(value.length() != 0) {
+				valuePos = 0;
+				sendingValue = true;
+			}
+		}
+	}
+
+	if(stream->seekFrom(offset, SeekOrigin::Current) < 0) {
+		return -1;
+	}
+
+	streamPos += offset;
+	return streamPos;
 }

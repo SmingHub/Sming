@@ -13,28 +13,6 @@
 #include "HttpRequest.h"
 #include "Data/Stream/MemoryDataStream.h"
 
-String HttpRequest::getBody()
-{
-	if(bodyStream == nullptr || bodyStream->getStreamType() != eSST_Memory) {
-		return nullptr;
-	}
-
-	int len = bodyStream->available();
-	if(len <= 0) {
-		// Cannot determine body size so need to use stream
-		return nullptr;
-	}
-
-	String ret;
-	if(ret.setLength(len)) {
-		len = bodyStream->readMemoryBlock(ret.begin(), len);
-		// Just in case read count is less than reported count
-		ret.setLength(len);
-	}
-
-	return ret;
-}
-
 HttpRequest* HttpRequest::setResponseStream(ReadWriteStream* stream)
 {
 	if(responseStream != nullptr) {
@@ -55,6 +33,11 @@ HttpRequest* HttpRequest::setBody(const uint8_t* rawData, size_t length)
 	}
 
 	return setBody(memory);
+}
+
+HttpRequest* HttpRequest::setBody(String&& body) noexcept
+{
+	return setBody(new MemoryDataStream(std::move(body)));
 }
 
 HttpRequest* HttpRequest::setBody(IDataSourceStream* stream)
@@ -83,20 +66,28 @@ void HttpRequest::reset()
 	files.clear();
 }
 
-#ifndef SMING_RELEASE
-String HttpRequest::toString()
+String HttpRequest::toString() const
 {
 	String content;
-	content += String(http_method_str(method)) + ' ' + uri.getPathWithQuery() + _F(" HTTP/1.1\n");
-	content += headers.toString(HTTP_HEADER_HOST, uri.getHostWithPort());
+	content += ::toString(method);
+	content += ' ';
+	content += uri.getPathWithQuery();
+	content += _F(" HTTP/1.1\r\n");
+	if(!headers.contains(HTTP_HEADER_HOST)) {
+		content += headers.toString(HTTP_HEADER_HOST, uri.getHostWithPort());
+	}
 	for(unsigned i = 0; i < headers.count(); i++) {
 		content += headers[i];
 	}
 
-	if(bodyStream != nullptr && bodyStream->available() >= 0) {
-		content += headers.toString(HTTP_HEADER_CONTENT_LENGTH, String(bodyStream->available()));
+	if(!headers.contains(HTTP_HEADER_CONTENT_LENGTH)) {
+		if(bodyStream == nullptr) {
+			content += headers.toString(HTTP_HEADER_CONTENT_LENGTH, "0");
+		} else if(bodyStream->available() >= 0) {
+			content += headers.toString(HTTP_HEADER_CONTENT_LENGTH, String(bodyStream->available()));
+		}
 	}
+	content += "\r\n";
 
 	return content;
 }
-#endif

@@ -27,7 +27,6 @@
 	/* Type, extension start, Mime type */                                                                             \
                                                                                                                        \
 	/* Texts */                                                                                                        \
-	XX(UNKNOWN, "", "")                                                                                                \
 	XX(HTML, "html", "text/html")                                                                                      \
 	XX(TEXT, "txt", "text/plain")                                                                                      \
 	XX(JS, "js", "text/javascript")                                                                                    \

@@ -14,59 +14,53 @@
 #include "WHashMap.h"
 #include "WString.h"
 
-#define TEMPLATE_MAX_VAR_NAME_LEN 16
-
-/** @brief  Template variable (hash map) class
- *  @see    Wiring HashMap
+#ifndef TEMPLATE_MAX_VAR_NAME_LEN
+/**
+ * @brief Maximum length of a template variable name
+ * @see See `TemplateStream`
  */
-class TemplateVariables : public HashMap<String, String>
-{
-};
+#define TEMPLATE_MAX_VAR_NAME_LEN 32
+#endif
 
-/** @brief  Template file stream expand state
- *  @ingroup constants
- *  @{
+/**
+ * @brief Stream which performs variable-value substitution on-the-fly
+ *
+ * Template uses {varname} style markers which are replaced as the stream is read.
+ *
+ * @ingroup stream
  */
-enum TemplateExpandState {
-	eTES_Wait,		///< Template expand state wait
-	eTES_Found,		///< Template expand state found
-	eTES_StartVar,  ///< Template expand state start variable
-	eTES_SendingVar ///< Template expand state sending variable
-};
-/** @} */
-
-/** @addtogroup stream
- *  @{
- */
-
 class TemplateStream : public IDataSourceStream
 {
 public:
+	using Variables = HashMap<String, String>;
+	using GetValueDelegate = Delegate<String(const char* name)>;
+
 	/** @brief Create a template stream
      *  @param stream source of template data
+     *  @param owned If true (default) then stream will be destroyed when complete
      */
-	TemplateStream(IDataSourceStream* stream) : stream(stream)
+	TemplateStream(IDataSourceStream* stream, bool owned = true)
+		: stream(stream), streamOwned(owned), doubleBraces(false)
+
 	{
-		// Pre-allocate string to maximum length
-		varName.reserve(TEMPLATE_MAX_VAR_NAME_LEN);
+		reset();
 	}
 
 	~TemplateStream()
 	{
-		delete stream;
+		if(streamOwned) {
+			delete stream;
+		}
 	}
 
-	//Use base class documentation
 	StreamType getStreamType() const override
 	{
 		return stream ? eSST_Template : eSST_Invalid;
 	}
 
-	//Use base class documentation
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
-	//Use base class documentation
-	bool seek(int len) override;
+	int seekFrom(int offset, SeekOrigin origin) override;
 
 	bool isFinished() override
 	{
@@ -86,7 +80,7 @@ public:
 	/** @brief  Set multiple variables in the template file
      *  @param  vars Template Variables
      */
-	void setVars(const TemplateVariables& vars)
+	void setVars(const Variables& vars)
 	{
 		templateData.setMultiple(vars);
 	}
@@ -94,7 +88,7 @@ public:
 	/** @brief  Get the template variables
      *  @retval TemplateVariables Reference to the template variables
      */
-	inline TemplateVariables& variables()
+	Variables& variables()
 	{
 		return templateData;
 	}
@@ -105,22 +99,75 @@ public:
 	}
 
 	/**
-	 * @brief Return the total length of the stream
-	 * @retval int -1 is returned when the size cannot be determined
-	 *
-	 * We cannot reliably determine available size so use default method which returns -1.
-	 *
-	 * 	int available()
+	 * @brief Set a callback to obtain variable values
+	 * @param callback Invoked only if variable name not found in map
 	 */
+	void onGetValue(GetValueDelegate callback)
+	{
+		getValueCallback = callback;
+	}
+
+	/**
+	 * @brief During processing applications may suppress output of certain sections
+	 * by calling this method from within the getValue callback
+	 */
+	void enableOutput(bool enable)
+	{
+		enableNextState = enable;
+	}
+
+	bool isOutputEnabled() const
+	{
+		return outputEnabled;
+	}
+
+	/**
+	 * @brief Use two braces {{X}} to mark tags
+	 * @param enable true: use two braces, false (default): single brace only
+	 */
+	void setDoubleBraces(bool enable)
+	{
+		doubleBraces = enable;
+	}
+
+	virtual String evaluate(char*& expr);
+
+	/**
+	 * @brief Fetch a templated value
+	 * @param name The variable name
+	 * @retval String value, invalid to emit tag unprocessed
+	 */
+	virtual String getValue(const char* name);
 
 private:
-	IDataSourceStream* stream = nullptr;
-	TemplateVariables templateData;
-	TemplateExpandState state = eTES_Wait;
-	String varName;
-	size_t skipBlockSize = 0;
-	size_t varDataPos = 0;
-	size_t varWaitSize = 0;
+	void reset()
+	{
+		value = nullptr;
+		streamPos = 0;
+		valuePos = 0;
+		valueWaitSize = 0;
+		tagLength = 0;
+		sendingValue = false;
+		outputEnabled = true;
+		enableNextState = true;
+	}
+
+	IDataSourceStream* stream;
+	Variables templateData;
+	GetValueDelegate getValueCallback;
+	String value;
+	uint32_t streamPos;		///< Position in output stream
+	uint16_t valuePos;		///< How much of variable value has been sent
+	uint16_t valueWaitSize; ///< Chars to send before variable value
+	uint8_t tagLength;
+	bool streamOwned : 1;
+	bool sendingValue : 1;
+	bool outputEnabled : 1;
+	bool enableNextState : 1;
+	bool doubleBraces : 1;
 };
 
-/** @} */
+/**
+ * @deprecated Use `TemplateStream::Variables` instead
+ */
+typedef TemplateStream::Variables TemplateVariables;

@@ -14,7 +14,6 @@
 #include <cstdarg>
 #include "Platform/System.h"
 #include "m_printf.h"
-#include <espinc/uart_register.h>
 
 #if ENABLE_CMD_EXECUTOR
 #include <Services/CommandProcessing/CommandExecutor.h>

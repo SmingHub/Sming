@@ -36,37 +36,42 @@ extern "C" {
 
 #define INTERNAL_FLASH_SECTOR_SIZE SPI_FLASH_SEC_SIZE
 #define INTERNAL_FLASH_SIZE ((FLASH_WORK_SEC_COUNT)*INTERNAL_FLASH_SECTOR_SIZE)
-#define INTERNAL_FLASH_START_ADDRESS 0x40200000
+#define INTERNAL_FLASH_START_ADDRESS FLASH_BASE
+
+typedef enum {
+	MODE_QIO = 0,
+	MODE_QOUT = 1,
+	MODE_DIO = 2,
+	MODE_DOUT = 15,
+	MODE_SLOW_READ = 0xFE, ///< Not supported
+	MODE_FAST_READ = 0xFF, ///< Not supported
+} SPIFlashMode;
+
+typedef enum {
+	SPEED_40MHZ = 0,
+	SPEED_26MHZ = 1,
+	SPEED_20MHZ = 2,
+	SPEED_80MHZ = 15,
+} SPIFlashSpeed;
+
+typedef enum {
+	SIZE_4MBIT = 0,
+	SIZE_2MBIT = 1,
+	SIZE_8MBIT = 2,
+	SIZE_16MBIT = 3,
+	SIZE_32MBIT = 4,
+	SIZE_1MBIT = 0xFF, ///< Not supported
+} SPIFlashSize;
 
 /** @brief SPI Flash memory information block.
  * Stored at the beginning of flash memory.
  */
-typedef struct
-{
+typedef struct {
 	uint8_t unknown0;
 	uint8_t unknown1;
-    enum
-    {
-		MODE_QIO = 0,
-		MODE_QOUT = 1,
-		MODE_DIO = 2,
-		MODE_DOUT = 15,
-	} mode : 8;
-    enum
-    {
-		SPEED_40MHZ = 0,
-		SPEED_26MHZ = 1,
-		SPEED_20MHZ = 2,
-		SPEED_80MHZ = 15,
-	} speed : 4;
-    enum
-    {
-		SIZE_4MBIT = 0,
-		SIZE_2MBIT = 1,
-		SIZE_8MBIT = 2,
-		SIZE_16MBIT = 3,
-		SIZE_32MBIT = 4,
-	} size : 4;
+	uint8_t mode : 8;  ///< SPIFlashMode
+	uint8_t speed : 4; ///< SPIFlashSpeed
+	uint8_t size : 4;  ///< SPIFlashSize
 } STORE_TYPEDEF_ATTR SPIFlashInfo;
 
 /** @brief Obtain the flash memory address for a memory pointer

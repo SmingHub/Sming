@@ -99,9 +99,8 @@ String::String(unsigned long long value, unsigned char base) : String()
 
 String::String(float value, unsigned char decimalPlaces) : String()
 {
-  char buf[8 + 8 * sizeof(value)];
-  ulltoa(value, buf, base);
-  *this = buf;
+	char buf[33];
+	*this = dtostrf(value, 0, decimalPlaces, buf);
 }
 
 String::String(double value, unsigned char decimalPlaces) : String()
@@ -135,10 +134,6 @@ void String::setString(flash_string_t pstr)
 	} else {
 		invalidate();
 	}
-	else
-	{
-		invalidate();
-	}
 }
 
 void String::setString(flash_string_t pstr, size_t length)
@@ -146,10 +141,6 @@ void String::setString(flash_string_t pstr, size_t length)
 	if(pstr) {
 		copy(pstr, length);
 	} else {
-		invalidate();
-	}
-	else
-	{
 		invalidate();
 	}
 }
@@ -452,13 +443,6 @@ bool String::concat(long long num)
 	return concat(buf, strlen(buf));
 }
 
-bool String::concat(long long num)
-{
-  char buf[8 + 3 * sizeof(num)];
-  lltoa(num, buf, 10);
-  return concat(buf, strlen(buf));
-}
-
 bool String::concat(unsigned long num)
 {
 	char buf[8 + 3 * sizeof(num)];
@@ -471,13 +455,6 @@ bool String::concat(unsigned long long num)
 	char buf[8 + 3 * sizeof(num)];
 	ulltoa(num, buf, 10);
 	return concat(buf, strlen(buf));
-}
-
-bool String::concat(unsigned long long num)
-{
-  char buf[8 + 3 * sizeof(num)];
-  ulltoa(num, buf, 10);
-  return concat(buf, strlen(buf));
 }
 
 bool String::concat(float num)
