@@ -18,6 +18,9 @@
 #include <Data/Stream/ReadWriteStream.h>
 #include <rboot-api.h>
 
+/**
+ * @brief Write-only stream type used during rBoot firmware updates
+ */
 class RbootOutputStream : public ReadWriteStream
 {
 public:

@@ -9,3 +9,4 @@ Server API
 
 .. doxygengroup:: dnsserver
    :content-only:
+   :members:

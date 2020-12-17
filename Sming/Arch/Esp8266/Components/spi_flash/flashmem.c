@@ -290,12 +290,6 @@ uint32_t flashmem_read_internal( void *to, uint32_t fromaddr, uint32_t size )
 
 uint32_t flashmem_get_first_free_block_address()
 {
-  if(_flash_code_end == NULL)
-  {
-	  debugf("_flash_code_end is null");
-	  return 0;
-  }
-
   // Round the total used flash size to the closest flash block address
   uint32_t end;
   flashmem_find_sector( ( uint32_t )_flash_code_end - INTERNAL_FLASH_START_ADDRESS - 1, NULL, &end);

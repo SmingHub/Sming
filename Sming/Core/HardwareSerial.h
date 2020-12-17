@@ -41,44 +41,41 @@ class HardwareSerial;
  * 	If no receive buffer has been allocated, or it's not big enough to contain the full message,
  * 	then this value will be incorrect as data is stored in the hardware FIFO until read out.
  */
-typedef Delegate<void(Stream& source, char arrivedChar, uint16_t availableCharsCount)> StreamDataReceivedDelegate;
+using StreamDataReceivedDelegate = Delegate<void(Stream& source, char arrivedChar, uint16_t availableCharsCount)>;
 
 /** @brief Delegate callback type for serial data transmit completion
  *  @note Invoked when the last byte has left the hardware FIFO
  */
-typedef Delegate<void(HardwareSerial& serial)> TransmitCompleteDelegate;
+using TransmitCompleteDelegate = Delegate<void(HardwareSerial& serial)>;
 
 class CommandExecutor;
 
-enum SerialConfig {
-	SERIAL_5N1 = UART_5N1,
-	SERIAL_6N1 = UART_6N1,
-	SERIAL_7N1 = UART_7N1,
-	SERIAL_8N1 = UART_8N1,
-	SERIAL_5N2 = UART_5N2,
-	SERIAL_6N2 = UART_6N2,
-	SERIAL_7N2 = UART_7N2,
-	SERIAL_8N2 = UART_8N2,
-	SERIAL_5E1 = UART_5E1,
-	SERIAL_6E1 = UART_6E1,
-	SERIAL_7E1 = UART_7E1,
-	SERIAL_8E1 = UART_8E1,
-	SERIAL_5E2 = UART_5E2,
-	SERIAL_6E2 = UART_6E2,
-	SERIAL_7E2 = UART_7E2,
-	SERIAL_8E2 = UART_8E2,
-	SERIAL_5O1 = UART_5O1,
-	SERIAL_6O1 = UART_6O1,
-	SERIAL_7O1 = UART_7O1,
-	SERIAL_8O1 = UART_8O1,
-	SERIAL_5O2 = UART_5O2,
-	SERIAL_6O2 = UART_6O2,
-	SERIAL_7O2 = UART_7O2,
-	SERIAL_8O2 = UART_8O2,
+// clang-format off
+#define SERIAL_CONFIG_MAP(XX) \
+	XX(5N1) XX(6N1) XX(7N1) XX(8N1) XX(5N2) XX(6N2) XX(7N2) XX(8N2) XX(5E1) XX(6E1) XX(7E1) XX(8E1) \
+	XX(5E2) XX(6E2) XX(7E2) XX(8E2) XX(5O1) XX(6O1) XX(7O1) XX(8O1) XX(5O2) XX(6O2) XX(7O2) XX(8O2)
+// clang-format on
+
+enum class SerialConfig {
+#define XX(x) Cfg##x = UART_##x,
+	SERIAL_CONFIG_MAP(XX)
+#undef XX
 };
 
+#define XX(x) static constexpr SerialConfig SERIAL_##x{SerialConfig::Cfg##x};
+SERIAL_CONFIG_MAP(XX)
+#undef XX
+
 /** @brief values equivalent to uart_mode_t */
-enum SerialMode { SERIAL_FULL = UART_FULL, SERIAL_RX_ONLY = UART_RX_ONLY, SERIAL_TX_ONLY = UART_TX_ONLY };
+enum class SerialMode {
+	Full = UART_FULL,
+	RxOnly = UART_RX_ONLY,
+	TxOnly = UART_TX_ONLY,
+};
+
+static constexpr SerialMode SERIAL_FULL{SerialMode::Full};
+static constexpr SerialMode SERIAL_RX_ONLY{SerialMode::RxOnly};
+static constexpr SerialMode SERIAL_TX_ONLY{SerialMode::TxOnly};
 
 #ifndef DEFAULT_RX_BUFFER_SIZE
 #define DEFAULT_RX_BUFFER_SIZE 256
@@ -88,13 +85,22 @@ enum SerialMode { SERIAL_FULL = UART_FULL, SERIAL_RX_ONLY = UART_RX_ONLY, SERIAL
 #define DEFAULT_TX_BUFFER_SIZE 0
 #endif
 
+#define SERIAL_STATUS_MAP(XX)                                                                                          \
+	XX(BreakDetected, "Break condition detected on receive line")                                                      \
+	XX(Overflow, "Receive buffer overflowed")                                                                          \
+	XX(FramingError, "Receive framing error")                                                                          \
+	XX(ParityError, "Parity check failed on received data")
+
 /** @brief Notification and error status bits */
-enum SerialStatus {
-	eSERS_BreakDetected, ///< Break condition detected on receive line
-	eSERS_Overflow,		 ///< Receive buffer overflowed
-	eSERS_FramingError,  ///< Receive framing error
-	eSERS_ParityError,   ///< Parity check failed on received data
+enum class SerialStatus {
+#define XX(tag, comment) tag,
+	SERIAL_STATUS_MAP(XX)
+#undef XX
 };
+
+#define XX(tag, comment) static constexpr SerialStatus eSERS_##tag{SerialStatus::tag};
+SERIAL_STATUS_MAP(XX)
+#undef XX
 
 /// Hardware serial class
 class HardwareSerial : public ReadWriteStream
@@ -162,8 +168,9 @@ public:
 	 * @param config
 	 * @param mode
 	 * @param txPin Can specify alternate pin for TX
+	 * @param rxPin
 	 */
-	void begin(uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin);
+	void begin(uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin, uint8_t rxPin = UART_PIN_DEFAULT);
 
 	/**
 	 * @brief De-inits the current UART if it is already used
@@ -193,7 +200,7 @@ public:
 	void setTxWait(bool wait)
 	{
 		bitWrite(options, UART_OPT_TXWAIT, wait);
-		uart_set_options(uart, options);
+		smg_uart_set_options(uart, options);
 	}
 
 	/**
@@ -212,7 +219,7 @@ public:
 	 */
 	void swap(uint8_t tx_pin)
 	{
-		uart_swap(uart, tx_pin);
+		smg_uart_swap(uart, tx_pin);
 	}
 
 	/**
@@ -225,7 +232,7 @@ public:
 	 */
 	void setTx(uint8_t tx_pin)
 	{
-		uart_set_tx(uart, tx_pin);
+		smg_uart_set_tx(uart, tx_pin);
 	}
 
 	/**
@@ -237,7 +244,7 @@ public:
 	 */
 	void pins(uint8_t tx, uint8_t rx)
 	{
-		uart_set_pins(uart, tx, rx);
+		smg_uart_set_pins(uart, tx, rx);
 	}
 
 	/** @brief  Get quantity characters available from serial input
@@ -245,7 +252,7 @@ public:
      */
 	int available() override
 	{
-		return (int)uart_rx_available(uart);
+		return (int)smg_uart_rx_available(uart);
 	}
 
 	/** @brief  Read a character from serial port
@@ -254,7 +261,7 @@ public:
     */
 	int read() override
 	{
-		return uart_read_char(uart);
+		return smg_uart_read_char(uart);
 	}
 
 	/** @brief  Read a block of characters from serial port
@@ -266,7 +273,7 @@ public:
 	 */
 	uint16_t readMemoryBlock(char* buf, int max_len) override
 	{
-		return uart_read(uart, buf, max_len);
+		return smg_uart_read(uart, buf, max_len);
 	}
 
 	bool seek(int len) override
@@ -285,7 +292,7 @@ public:
      */
 	int peek() override
 	{
-		return uart_peek_char(uart);
+		return smg_uart_peek_char(uart);
 	}
 
 	/** @brief  Clear the serial port transmit/receive buffers
@@ -294,7 +301,7 @@ public:
 	 */
 	void clear(SerialMode mode = SERIAL_FULL)
 	{
-		uart_flush(uart, uart_mode_t(mode));
+		smg_uart_flush(uart, smg_uart_mode_t(mode));
 	}
 
 	/** @brief Flush all pending data to the serial port
@@ -302,7 +309,7 @@ public:
 	 */
 	void flush() override // Stream
 	{
-		uart_wait_tx_empty(uart);
+		smg_uart_wait_tx_empty(uart);
 	}
 
 	using Stream::write;
@@ -314,7 +321,7 @@ public:
 	 */
 	size_t write(const uint8_t* buffer, size_t size) override
 	{
-		return uart_write(uart, buffer, size);
+		return smg_uart_write(uart, buffer, size);
 	}
 
 	/** @brief  Configure serial port for system debug output and redirect output from debugf
@@ -366,9 +373,9 @@ public:
 	 * @param  param Set as return value for `uart_get_callback_param()`
 	 * @note callback is invoked directly from serial ISR and bypasses any registered delgates
 	 */
-	__forceinline void setUartCallback(uart_callback_t callback, void* param = nullptr)
+	__forceinline void setUartCallback(smg_uart_callback_t callback, void* param = nullptr)
 	{
-		uart_set_callback(uart, callback, param);
+		smg_uart_set_callback(uart, callback, param);
 	}
 
 	/**
@@ -377,7 +384,7 @@ public:
 	 */
 	bool isTxEnabled()
 	{
-		return uart_tx_enabled(uart);
+		return smg_uart_tx_enabled(uart);
 	}
 
 	/**
@@ -386,7 +393,7 @@ public:
 	 */
 	bool isRxEnabled()
 	{
-		return uart_rx_enabled(uart);
+		return smg_uart_rx_enabled(uart);
 	}
 
 	/**
@@ -395,7 +402,7 @@ public:
 	 */
 	uint32_t baudRate()
 	{
-		return uart_get_baudrate(uart);
+		return smg_uart_get_baudrate(uart);
 	}
 
 	/**
@@ -405,7 +412,7 @@ public:
 	 */
 	uint32_t setBaudRate(uint32_t baudrate)
 	{
-		return uart_set_baudrate(uart, baudrate);
+		return smg_uart_set_baudrate(uart, baudrate);
 	}
 
 	/**
@@ -423,14 +430,14 @@ public:
 	 */
 	int indexOf(char c) override
 	{
-		return uart_rx_find(uart, c);
+		return smg_uart_rx_find(uart, c);
 	}
 
 	/**
 	 * @brief Returns a pointer to the internal uart object. Use with care.
 	 * @retval pointer to uart_t
 	 */
-	uart_t* getUart()
+	smg_uart_t* getUart()
 	{
 		return uart;
 	}
@@ -443,11 +450,11 @@ public:
 	unsigned getStatus();
 
 private:
-	int uartNr = -1;
+	int uartNr = UART_NO;
 	TransmitCompleteDelegate transmitComplete = nullptr; ///< Callback for transmit completion
 	StreamDataReceivedDelegate HWSDelegate = nullptr;	///< Callback for received data
 	CommandExecutor* commandExecutor = nullptr;			 ///< Callback for command execution (received data)
-	uart_t* uart = nullptr;
+	smg_uart_t* uart = nullptr;
 	uart_options_t options = _BV(UART_OPT_TXWAIT);
 	size_t txSize = DEFAULT_TX_BUFFER_SIZE;
 	size_t rxSize = DEFAULT_RX_BUFFER_SIZE;
@@ -460,7 +467,7 @@ private:
 	 * @param uart pointer to UART object
 	 * @param status UART status flags indicating cause(s) of interrupt
 	 */
-	static void IRAM_ATTR staticCallbackHandler(uart_t* uart, uint32_t status);
+	static void IRAM_ATTR staticCallbackHandler(smg_uart_t* uart, uint32_t status);
 	static void staticOnStatusChange(void* param);
 	void invokeCallbacks();
 

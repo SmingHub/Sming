@@ -15,6 +15,11 @@
 #include "HttpCommon.h"
 #include "HttpRequest.h"
 
+/**
+ * @ingroup http
+ * {
+ */
+
 /** @brief special length values passed to parse functions */
 const int PARSE_DATASTART = -1; ///< Start of incoming data
 const int PARSE_DATAEND = -2;   ///< End of incoming data
@@ -28,12 +33,12 @@ const int PARSE_DATAEND = -2;   ///< End of incoming data
  * @see `PARSE_DATAEND`
  * @return parsed bytes
  */
-typedef Delegate<size_t(HttpRequest& request, const char* at, int length)> HttpBodyParserDelegate;
+using HttpBodyParserDelegate = Delegate<size_t(HttpRequest& request, const char* at, int length)>;
 
 /**
  * @brief Maps body parsers to a specific content type
  */
-typedef HashMap<String, HttpBodyParserDelegate> BodyParsers;
+using BodyParsers = HashMap<String, HttpBodyParserDelegate>;
 
 /**
  * @brief Parses application/x-www-form-urlencoded body data
@@ -47,3 +52,5 @@ size_t formUrlParser(HttpRequest& request, const char* at, int length);
  * @note The content later can be retrieved by calling request.getBody()
  */
 size_t bodyToStringParser(HttpRequest& request, const char* at, int length);
+
+/** @} */

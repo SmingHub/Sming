@@ -15,10 +15,6 @@
 
 #include <Network/RbootHttpUpdater.h>
 
-#include <Platform/System.h>
-#include <Network/Url.h>
-#include <Platform/WDT.h>
-
 bool RbootHttpUpdater::addItem(int offset, const String& firmwareFileUrl, size_t maxSize)
 {
 	RbootHttpUpdaterItem add;

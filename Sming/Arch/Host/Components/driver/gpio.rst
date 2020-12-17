@@ -9,3 +9,4 @@ API Documentation
 -----------------
 
 .. doxygenclass:: DigitalHooks
+   :members:

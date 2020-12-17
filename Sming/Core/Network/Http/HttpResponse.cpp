@@ -15,40 +15,22 @@
 #include "Data/Stream/MemoryDataStream.h"
 #include "Data/Stream/FileStream.h"
 
-HttpResponse* HttpResponse::setContentType(const String& type)
-{
-	headers[HTTP_HEADER_CONTENT_TYPE] = type;
-	return this;
-}
-
-HttpResponse* HttpResponse::setContentType(enum MimeType type)
-{
-	return setContentType(ContentType::toString(type));
-}
-
 HttpResponse* HttpResponse::setCookie(const String& name, const String& value)
 {
-	headers[HTTP_HEADER_SET_COOKIE] = name + '=' + value;
+	String s = name;
+	s += '=';
+	s += value;
+	headers[HTTP_HEADER_SET_COOKIE] = s;
 	return this;
 }
 
 HttpResponse* HttpResponse::setCache(int maxAgeSeconds, bool isPublic)
 {
 	String cache = isPublic ? F("public") : F("private");
-	cache += F(", max-age=") + String(maxAgeSeconds) + F(", must-revalidate");
+	cache += F(", max-age=");
+	cache += maxAgeSeconds;
+	cache += F(", must-revalidate");
 	headers[HTTP_HEADER_CACHE_CONTROL] = cache;
-	return this;
-}
-
-HttpResponse* HttpResponse::setAllowCrossDomainOrigin(const String& controlAllowOrigin)
-{
-	headers[HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN] = controlAllowOrigin;
-	return this;
-}
-
-HttpResponse* HttpResponse::setHeader(const String& name, const String& value)
-{
-	headers[name] = value;
 	return this;
 }
 
@@ -62,6 +44,16 @@ bool HttpResponse::sendString(const String& text)
 	setStream(memoryStream);
 
 	return memoryStream->print(text) == text.length();
+}
+
+bool HttpResponse::sendString(String&& text) noexcept
+{
+	auto memoryStream = new MemoryDataStream(std::move(text));
+	if(memoryStream == nullptr) {
+		return false;
+	}
+	setStream(memoryStream);
+	return true;
 }
 
 bool HttpResponse::sendFile(const String& fileName, bool allowGzipFileCheck)
@@ -112,32 +104,27 @@ bool HttpResponse::sendDataStream(IDataSourceStream* newDataStream, const String
 	return true;
 }
 
-String HttpResponse::getBody()
-{
-	if(stream == nullptr) {
-		return nullptr;
-	}
-
-	String ret;
-	if(stream->available() > 0 && stream->getStreamType() == eSST_Memory) {
-		char buf[1024];
-		while(stream->available() > 0) {
-			int available = stream->readMemoryBlock(buf, 1024);
-			stream->seek(available);
-			ret += String(buf, available);
-			if(available < 1024) {
-				break;
-			}
-		}
-	}
-	return ret;
-}
-
 void HttpResponse::reset()
 {
 	code = HTTP_STATUS_OK;
 	headers.clear();
 	freeStreams();
+}
+
+String HttpResponse::toString() const
+{
+	String content;
+	content += F("HTTP/1.1 ");
+	content += unsigned(code);
+	content += ' ';
+	content += ::toString(code);
+	content += " \r\n";
+	for(unsigned i = 0; i < headers.count(); i++) {
+		content += headers[i];
+	}
+	content += "\r\n";
+
+	return content;
 }
 
 void HttpResponse::freeStreams()

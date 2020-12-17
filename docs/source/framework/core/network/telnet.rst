@@ -8,3 +8,4 @@ Server API
 
 .. doxygengroup:: telnetserver
    :content-only:
+   :members:

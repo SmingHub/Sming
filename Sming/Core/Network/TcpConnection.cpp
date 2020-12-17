@@ -21,7 +21,7 @@
 #define debug_tcp_d(fmt, ...) debug_d("TCP %p " fmt, this, ##__VA_ARGS__)
 
 #ifdef DEBUG_TCP_EXTENDED
-#define debug_tcp_ext debug_tcp_d(fmt, ##__VA_ARGS__)
+#define debug_tcp_ext(fmt, ...) debug_tcp_d(fmt, ##__VA_ARGS__)
 #else
 #define debug_tcp_ext(fmt, ...) debug_none(fmt, ##__VA_ARGS__)
 #endif
@@ -63,7 +63,12 @@ bool TcpConnection::sslCreateSession()
 bool TcpConnection::connect(const String& server, int port, bool useSsl)
 {
 	if(tcp == nullptr) {
-		initialize(tcp_new());
+		auto tcpNew = tcp_new();
+		if(tcpNew == nullptr) {
+			debug_e("Out of TCP connections");
+			return false;
+		}
+		initialize(tcpNew);
 	}
 
 	ip_addr_t addr;
@@ -76,7 +81,7 @@ bool TcpConnection::connect(const String& server, int port, bool useSsl)
 		ssl->hostName = server;
 	}
 
-	debug_tcp_d("connect to \"%s\"", server.c_str());
+	debug_tcp_d("connect to \"%s:%d\"", server.c_str(), port);
 	canSend = false; // Wait for connection
 
 	struct DnsLookup {
@@ -249,14 +254,17 @@ int TcpConnection::write(IDataSourceStream* stream)
 		int bytesWritten = write(buffer, bytesRead, TCP_WRITE_FLAG_COPY | TCP_WRITE_FLAG_MORE);
 		debug_tcp_d("Written: %d, Available: %u, isFinished: %d, PushCount: %u", bytesWritten, available,
 					stream->isFinished(), pushCount);
-		if(bytesWritten <= 0) {
+
+		if(bytesWritten < 0) {
+			break;
+		}
+
+		if(bytesWritten == 0) {
 			continue;
 		}
 
-		if(bytesWritten > 0) {
-			total += size_t(bytesWritten);
-			stream->seek(bytesWritten);
-		}
+		total += size_t(bytesWritten);
+		stream->seek(bytesWritten);
 	}
 
 	if(pushCount == 0) {
@@ -283,11 +291,15 @@ void TcpConnection::close()
 	tcp_arg(tcp, nullptr); // reset pointer to close connection on next callback
 	tcp = nullptr;
 
+	onClosed();
+
 	checkSelfFree();
 }
 
 void TcpConnection::initialize(tcp_pcb* pcb)
 {
+	assert(pcb != nullptr);
+
 	tcp = pcb;
 	sleep = 0;
 	canSend = true;
@@ -339,6 +351,8 @@ void TcpConnection::closeTcpConnection(tcp_pcb* tpcb)
 
 	debug_d("-TCP connection");
 
+	auto connection = reinterpret_cast<TcpConnection*>(tpcb->callback_arg);
+
 	tcp_arg(tpcb, nullptr);
 	tcp_sent(tpcb, nullptr);
 	tcp_recv(tpcb, nullptr);
@@ -351,6 +365,11 @@ void TcpConnection::closeTcpConnection(tcp_pcb* tpcb)
 		debug_d("tcp wait close connection");
 		/* error closing, try again later in poll */
 		tcp_poll(tpcb, staticOnPoll, 4);
+		return;
+	}
+
+	if(connection != nullptr) {
+		connection->onClosed();
 	}
 }
 

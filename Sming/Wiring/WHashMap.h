@@ -29,6 +29,7 @@
 #pragma once
 
 #include <cstdint>
+#include <iterator>
 
 /**
  * @brief HashMap class template
@@ -37,7 +38,102 @@
 template <typename K, typename V> class HashMap
 {
 public:
-	typedef bool (*comparator)(const K&, const K&);
+	using Comparator = bool (*)(const K&, const K&);
+
+	template <bool is_const> struct BaseElement {
+	public:
+		using Value = typename std::conditional<is_const, const V, V>::type;
+
+		BaseElement(const K& key, Value& value) : k(key), v(value)
+		{
+		}
+
+		const K& key() const
+		{
+			return k;
+		}
+
+		Value& value()
+		{
+			return v;
+		}
+
+		const V& value() const
+		{
+			return v;
+		}
+
+		BaseElement& operator=(const V& value)
+		{
+			v = value;
+			return *this;
+		}
+
+	private:
+		const K& k;
+		Value& v;
+	};
+
+	using Element = BaseElement<false>;
+	using ElementConst = BaseElement<true>;
+
+	template <bool is_const>
+	class Iterator : public std::iterator<std::random_access_iterator_tag, BaseElement<is_const>>
+	{
+	public:
+		using Map = typename std::conditional<is_const, const HashMap, HashMap>::type;
+		using Value = typename std::conditional<is_const, const V, V>::type;
+
+		Iterator(const Iterator&) = default;
+
+		Iterator(Map& map, unsigned index) : map(map), index(index)
+		{
+		}
+
+		Iterator& operator++()
+		{
+			++index;
+			return *this;
+		}
+
+		Iterator operator++(int)
+		{
+			Iterator tmp(*this);
+			++index;
+			return tmp;
+		}
+
+		Iterator operator+=(size_t distance)
+		{
+			Iterator tmp(*this);
+			index += distance;
+			return tmp;
+		}
+
+		bool operator==(const Iterator& rhs) const
+		{
+			return &map == &rhs.map && index == rhs.index;
+		}
+
+		bool operator!=(const Iterator& rhs) const
+		{
+			return !operator==(rhs);
+		}
+
+		BaseElement<is_const> operator*()
+		{
+			return BaseElement<is_const>{map.keyAt(index), map.valueAt(index)};
+		}
+
+		ElementConst operator*() const
+		{
+			return ElementConst{map.keyAt(index), map.valueAt(index)};
+		}
+
+	private:
+		Map& map;
+		unsigned index{0};
+	};
 
 	/*
     || @constructor
@@ -55,7 +151,7 @@ public:
     ||
     || @parameter compare optional function for comparing a key against another (for complex types)
     */
-	HashMap(comparator compare) : cb_comparator(compare)
+	HashMap(Comparator compare) : cb_comparator(compare)
 	{
 	}
 
@@ -222,13 +318,33 @@ public:
 		nil = nullv;
 	}
 
+	Iterator<false> begin()
+	{
+		return Iterator<false>(*this, 0);
+	}
+
+	Iterator<false> end()
+	{
+		return Iterator<false>(*this, count());
+	}
+
+	Iterator<true> begin() const
+	{
+		return Iterator<true>(*this, 0);
+	}
+
+	Iterator<true> end() const
+	{
+		return Iterator<true>(*this, count());
+	}
+
 protected:
 	K** keys = nullptr;
 	V** values = nullptr;
 	V nil;
 	uint16_t currentIndex = 0;
 	uint16_t size = 0;
-	comparator cb_comparator = nullptr;
+	Comparator cb_comparator = nullptr;
 
 private:
 	HashMap(const HashMap<K, V>& that);

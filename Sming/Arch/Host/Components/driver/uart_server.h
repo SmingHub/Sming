@@ -59,7 +59,7 @@ public:
 	void terminate();
 
 protected:
-	void onNotify(uart_t* uart, uart_notify_code_t code);
+	void onNotify(smg_uart_t* uart, smg_uart_notify_code_t code);
 	int serviceRead();
 	int serviceWrite();
 	void* thread_routine() override;
@@ -69,5 +69,5 @@ private:
 	CSocket* socket = nullptr; ///< Connected client
 	CSemaphore txsem;		   ///< Signals when there's data to be sent out
 	unsigned uart_nr;		   ///< Which port we represent
-	uart_t* uart = nullptr;	///< On set if port is open by application
+	smg_uart_t* uart = nullptr;	///< On set if port is open by application
 };

@@ -115,3 +115,23 @@ void UdpConnection::staticOnReceive(void* arg, struct udp_pcb* pcb, struct pbuf*
 	}
 	pbuf_free(p);
 }
+
+bool UdpConnection::setMulticast(IpAddress ip)
+{
+#if LWIP_MULTICAST_TX_OPTIONS
+	udp_set_multicast_netif_addr(udp, (ip4_addr_t*)ip);
+	return true;
+#else
+	return false;
+#endif
+}
+
+bool UdpConnection::setMulticastTtl(size_t ttl)
+{
+#if LWIP_MULTICAST_TX_OPTIONS
+	udp_set_multicast_ttl(udp, ttl);
+	return true;
+#else
+	return false;
+#endif
+}

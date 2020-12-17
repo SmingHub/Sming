@@ -72,11 +72,11 @@ public:
 	}
 
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
-	CStringArray(String&& rval) : String(std::move(rval))
+	CStringArray(String&& rval) noexcept : String(std::move(rval))
 	{
 		init();
 	}
-	CStringArray(StringSumHelper&& rval) : String(std::move(rval))
+	CStringArray(StringSumHelper&& rval) noexcept : String(std::move(rval))
 	{
 		init();
 	}

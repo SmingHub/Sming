@@ -15,12 +15,12 @@
 #include "../StreamTransformer.h"
 
 /**
- * @brief      Data chunked stream class
- * @ingroup    stream data
+ * @brief Read-only stream to obtain data using HTTP chunked encoding
  *
- *  @{
-*/
-
+ * Used where total length of stream is not known in advance
+ *
+ * @ingroup  stream data
+ */
 class ChunkedStream : public StreamTransformer
 {
 public:
@@ -29,5 +29,3 @@ public:
 protected:
 	size_t transform(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength) override;
 };
-
-/** @} */

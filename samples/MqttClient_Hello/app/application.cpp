@@ -7,8 +7,8 @@
 #endif
 
 // For testing purposes, try a few different URL formats
-#define MQTT_URL1 "mqtt://attachix.com:1883"
-#define MQTT_URL2 "mqtts://attachix.com:8883" // (Need ENABLE_SSL)
+#define MQTT_URL1 "mqtt://test.mosquitto.org:1883"
+#define MQTT_URL2 "mqtts://test.mosquitto.org:8883" // (Need ENABLE_SSL)
 #define MQTT_URL3 "mqtt://frank:fiddle@192.168.100.107:1883"
 
 #ifdef ENABLE_SSL
@@ -42,7 +42,7 @@ void checkMQTTDisconnect(TcpClient& client, bool flag)
 
 void onMessageDelivered(uint16_t msgId, int type)
 {
-	Serial.printf(_F("Message with id %d and QoS %d was delivered successfully."), msgId,
+	Serial.printf(_F("Message with id %d and QoS %d was delivered successfully.\n"), msgId,
 				  (type == MQTT_MSG_PUBREC ? 2 : 1));
 }
 
@@ -82,6 +82,11 @@ void startMqttClient()
 	mqtt.setConnectedHandler([](MqttClient& client, mqtt_message_t* message) {
 		Serial.print(_F("Connected to "));
 		Serial.println(client.getRemoteIp());
+
+		// Start publishing message now
+		publishMessage();
+		// and schedule a timer to send messages every 5 seconds
+		procTimer.initializeMs(5 * 1000, publishMessage).start();
 		return 0;
 	});
 
@@ -106,11 +111,10 @@ void startMqttClient()
 
 void onConnected(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
+	Serial.println(_F("WIFI connected. Starting MQTT client..."));
+
 	// Run MQTT client
 	startMqttClient();
-
-	// Start publishing loop
-	procTimer.initializeMs(20 * 1000, publishMessage).start(); // every 20 seconds
 }
 
 void init()

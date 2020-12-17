@@ -51,14 +51,33 @@
 	XX(FORM_URL_ENCODED, "", "application/x-www-form-urlencoded")                                                      \
 	XX(FORM_MULTIPART, "", "multipart/form-data")
 
-enum MimeType {
-#define XX(name, extensionStart, mime) MIME_##name,
+enum class MimeType {
+#define XX(name, extensionStart, mime) name,
 	MIME_TYPE_MAP(XX)
 #undef XX
+		UNKNOWN
 };
+
+#define XX(name, extensionStart, mime) constexpr MimeType MIME_##name = MimeType::name;
+MIME_TYPE_MAP(XX)
+XX(UNKNOWN, "", "")
+#undef XX
+
+/** @brief Get textual representation for a MIME type
+ *  @param m the MIME type
+ *  @retval String
+ */
+String toString(MimeType m);
 
 namespace ContentType
 {
+/** @brief Obtain MIME type value from file extension
+ *  @param extension excluding '.' separator (e.g. "htm", "json")
+ *  @param unknown Value to return if type cannot be determined
+ *  @retval MimeType
+ */
+MimeType fromFileExtension(const char* extension, MimeType unknown);
+
 /** @brief Obtain content type string from file extension
  *  @param extension excluding '.' separator (e.g. "htm", "json")
  *  @retval String
@@ -69,16 +88,10 @@ String fromFileExtension(const char* extension);
  *  @param extension
  *  @retval String
  */
-static inline String fromFileExtension(const String& extension)
+inline String fromFileExtension(const String& extension)
 {
 	return fromFileExtension(extension.c_str());
 }
-
-/** @brief Get textual representation for a MIME type
- *  @param m the MIME type
- *  @retval String
- */
-String toString(enum MimeType m);
 
 /** @brief Get enumerated value for a MIME type string
  *  @param str
@@ -95,20 +108,33 @@ inline MimeType fromString(const String& str)
 	return fromString(str.c_str());
 }
 
-/** @brief Obtain content type string from file name or path, with extension
+/** @brief Obtain MIME type value from file name or path, with extension
+ *  @param fileName
+ *  @param unknown Value to return if type cannot be determined
+ *  @retval MimeType
+ */
+MimeType fromFullFileName(const char* fileName, MimeType unknown);
+
+inline MimeType fromFullFileName(const String& fileName, MimeType unknown)
+{
+	return fromFullFileName(fileName.c_str(), unknown);
+}
+
+/** @name Obtain content type string from file name or path, with extension
  *  @param fileName
  *  @retval String
+ *  @{
  */
 String fromFullFileName(const char* fileName);
 
 /** @brief Obtain content type string from file name or path, with extension
- *  @param fileName
- *  @retval String
  */
-static inline String fromFullFileName(const String& fileName)
+inline String fromFullFileName(const String& fileName)
 {
 	return fromFullFileName(fileName.c_str());
 }
+
+/** @} */
 
 }; // namespace ContentType
 

@@ -11,13 +11,20 @@
 #pragma once
 
 #include <sys/features.h>
-#include "../c_types.h"
-#include "../esp_attr.h"
+#include <c_types.h>
+#include <esp_attr.h>
 
 /**
  * @ingroup pgmspace
  * @{
  */
+
+#define FLASH_MEMORY_START_ADDR 0x40200000
+
+/**
+ * @brief Simple check to determine if a pointer refers to flash memory
+ */
+#define isFlashPtr(ptr) ((uint32_t)ptr >= FLASH_MEMORY_START_ADDR)
 
 /**
  * @brief Place entity into flash memory

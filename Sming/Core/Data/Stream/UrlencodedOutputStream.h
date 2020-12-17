@@ -16,49 +16,34 @@
 #include "Network/Http/HttpParams.h"
 
 /**
- * @brief      UrlEncoded Stream
- * @ingroup    stream data
- *
- *  @{
+ * @brief Represents key-value pairs as urlencoded string content
+ * @ingroup stream
  */
-
 class UrlencodedOutputStream : public IDataSourceStream
 {
 public:
-	/**
-	 * @brief Represents key-value pairs as urlencoded string
-	 * @param params The key-value parameters
-	 */
 	UrlencodedOutputStream(const HttpParams& params);
 
-	//Use base class documentation
 	StreamType getStreamType() const override
 	{
 		return stream.getStreamType();
 	}
 
-	/**
-	 * @brief Return the total length of the stream
-	 * @retval int -1 is returned when the size cannot be determined
-	 */
 	int available() override
 	{
 		return stream.available();
 	}
 
-	//Use base class documentation
 	uint16_t readMemoryBlock(char* data, int bufSize) override
 	{
 		return stream.readMemoryBlock(data, bufSize);
 	}
 
-	//Use base class documentation
 	bool seek(int len) override
 	{
 		return stream.seek(len);
 	}
 
-	//Use base class documentation
 	bool isFinished() override
 	{
 		return stream.isFinished();
@@ -67,5 +52,3 @@ public:
 private:
 	MemoryDataStream stream;
 };
-
-/** @} */

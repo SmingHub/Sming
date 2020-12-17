@@ -468,6 +468,14 @@ These values are for reference only and should not be modified.
    This should be used if the Component provides any application code or targets to ensure it is
    built in the correct directory (but not by this makefile).
 
+   This value changes depending on the build variant.
+
+.. envvar:: COMPONENT_BUILD_BASE
+
+   This value does not change with build variant.
+
+   If the Component generates source code, for example, it can be placed here (in a sub-directory).
+
 .. envvar:: COMPONENT_LIBDIR
 
    Location to store created Component (shared) libraries
@@ -500,6 +508,11 @@ changed as required.
    If targets should be built for each application, use :envvar:`CUSTOM_TARGETS` instead.
    See :component:`spiffs` for an example.
 
+.. envvar:: COMPONENT_PREREQUISITES
+
+   These targets will be built before anything else. If your library generates source code,
+   for example, then it should be done by setting this value to the appropriate targets.
+
 .. envvar:: COMPONENT_RULE
 
    This is a special value used to prefix any custom targets which are to be built as
@@ -515,6 +528,10 @@ changed as required.
 .. envvar:: COMPONENT_SRCDIRS
 
    Locations for source code relative to COMPONENT_PATH (defaults to “. src”)
+
+.. envvar:: COMPONENT_SRCFILES
+
+   Individual source files. Useful for conditional includes.
 
 .. envvar:: COMPONENT_INCDIRS
 
@@ -741,6 +758,3 @@ directory called ‘spiffs’ still remains then it will be picked up
 instead of the main one. These sorts of issues can be checked using
 ``make list-components`` to ensure the correct Component path has been
 selected.
-
-**Components as submodules** All component.mk files must be available
-for parsing. For submodules, it can be provided in a .patch/ sub-directory.

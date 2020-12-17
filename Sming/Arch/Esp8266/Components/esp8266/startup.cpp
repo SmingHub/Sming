@@ -23,7 +23,7 @@ extern "C" void user_init(void)
 	hw_timer_init();
 
 	// Initialise UARTs to a known state
-	uart_detach_all();
+	smg_uart_detach_all();
 
 	/* Note: System is a static class so it's safe to call initialize() before cpp_core_initialize()
 	 * We need to do this so that class constructors can use the task queue or onReady()
@@ -33,7 +33,7 @@ extern "C" void user_init(void)
 
 #ifdef SMING_RELEASE
 	// disable all debug output for release builds
-	uart_set_debug(UART_NO);
+	smg_uart_set_debug(UART_NO);
 #endif
 
 	gdb_init();

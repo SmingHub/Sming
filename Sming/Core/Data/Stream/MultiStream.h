@@ -15,13 +15,16 @@
 
 #include "DataSourceStream.h"
 
+/**
+ * @brief Base class for read-only stream which generates output from multiple source streams
+ * @ingroup stream data
+ */
 class MultiStream : public IDataSourceStream
 {
 public:
 	~MultiStream()
 	{
 		delete stream;
-		delete nextStream;
 	}
 
 	StreamType getStreamType() const override
@@ -29,41 +32,29 @@ public:
 		return eSST_Unknown;
 	}
 
-	/**
-	 * @brief Return the total length of the stream
-	 * @retval int -1 is returned when the size cannot be determined
-	*/
 	int available() override
 	{
 		return -1;
 	}
 
-	//Use base class documentation
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
-	//Use base class documentation
 	bool seek(int len) override;
 
-	//Use base class documentation
-	bool isFinished() override;
+	bool isFinished() override
+	{
+		return finished;
+	}
 
 protected:
+	/**
+	 * @brief Inherited class must implement this
+	 * @retval IDataSourceStream* Next stream to be read out
+	 * Return nullptr if there are no more streams.
+	 */
 	virtual IDataSourceStream* getNextStream() = 0;
 
-	virtual bool onCompleted()
-	{
-		return false;
-	}
-
-	virtual void onNextStream()
-	{
-		stream = nextStream;
-		nextStream = nullptr;
-	}
-
-protected:
+private:
 	IDataSourceStream* stream = nullptr;
-	IDataSourceStream* nextStream = nullptr;
-
 	bool finished = false;
 };

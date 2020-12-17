@@ -2,3 +2,4 @@ HashMap
 =======
 
 .. doxygenclass:: HashMap
+   :members:

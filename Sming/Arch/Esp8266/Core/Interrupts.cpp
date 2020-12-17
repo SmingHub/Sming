@@ -13,8 +13,10 @@
 #include <Platform/System.h>
 #include <BitManipulations.h>
 
-static InterruptCallback gpioInterruptsList[ESP_MAX_INTERRUPTS] = {0};
-static InterruptDelegate delegateFunctionList[ESP_MAX_INTERRUPTS];
+constexpr unsigned MAX_INTERRUPTS = 16;
+
+static InterruptCallback gpioInterruptsList[MAX_INTERRUPTS] = {0};
+static InterruptDelegate delegateFunctionList[MAX_INTERRUPTS];
 static bool interruptHandlerAttached = false;
 
 static void interruptDelegateCallback(uint32_t interruptNumber)
@@ -36,7 +38,7 @@ static void IRAM_ATTR interruptHandler(uint32 intr_mask, void* arg)
 	do {
 		uint32 gpioStatus = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
 		processed = false;
-		for(uint8 i = 0; i < ESP_MAX_INTERRUPTS; i++) {
+		for(uint8 i = 0; i < MAX_INTERRUPTS; i++) {
 			if(!bitRead(gpioStatus, i)) {
 				continue;
 			}
@@ -57,7 +59,7 @@ static void IRAM_ATTR interruptHandler(uint32 intr_mask, void* arg)
 
 void attachInterrupt(uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE type)
 {
-	if(pin >= ESP_MAX_INTERRUPTS) {
+	if(pin >= MAX_INTERRUPTS) {
 		return; // WTF o_O
 	}
 	gpioInterruptsList[pin] = callback;
@@ -67,7 +69,7 @@ void attachInterrupt(uint8_t pin, InterruptCallback callback, GPIO_INT_TYPE type
 
 void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, GPIO_INT_TYPE type)
 {
-	if(pin >= ESP_MAX_INTERRUPTS) {
+	if(pin >= MAX_INTERRUPTS) {
 		return; // WTF o_O
 	}
 	gpioInterruptsList[pin] = nullptr;

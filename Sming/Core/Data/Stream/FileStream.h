@@ -14,12 +14,9 @@
 #include "FileSystem.h"
 
 /**
-  * @brief      File stream class
-  * @ingroup    stream data
-  *
-  *  @{
+ * @brief    File stream class
+ * @ingroup  stream data
  */
-
 class FileStream : public ReadWriteStream
 {
 public:
@@ -72,9 +69,17 @@ public:
 
 	size_t write(const uint8_t* buffer, size_t size) override;
 
+	int read() override
+	{
+		char c;
+		return readBytes(&c, 1) ? static_cast<unsigned char>(c) : -1;
+	}
+
+	size_t readBytes(char* buffer, size_t length) override;
+
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
-	int seekFrom(int offset, unsigned origin) override;
+	int seekFrom(int offset, SeekOrigin origin) override;
 
 	bool isFinished() override
 	{
@@ -175,5 +180,3 @@ private:
 	size_t size = 0;
 	int lastError = SPIFFS_OK;
 };
-
-/** @} */

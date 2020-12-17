@@ -1,4 +1,4 @@
-COMPONENT_DEPENDS			:= esp8266
+COMPONENT_DEPENDS			:= esp8266 arch_driver
 
 COMPONENT_SRCDIRS			:= .
 COMPONENT_INCDIRS			:= include

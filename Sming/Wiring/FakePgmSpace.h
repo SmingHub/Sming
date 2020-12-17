@@ -10,15 +10,15 @@
 
 #pragma once
 
+#include <stdio.h>
 #include <esp_attr.h>
 #include <sys/pgmspace.h>
 
 #include "m_printf.h"
-#include "c_types.h"
+#include <c_types.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /**
@@ -29,11 +29,6 @@ extern "C"
  */
 
 /**
- * @brief Simple check to determine if a pointer refers to flash memory
- */
-#define isFlashPtr(ptr) ((uint32_t)ptr >= 0x40200000)
-
-/**
  * @brief determines if the given value is aligned to a word (4-byte) boundary
  */
 #define IS_ALIGNED(_x) (((uint32_t)(_x)&3) == 0)
@@ -41,12 +36,12 @@ extern "C"
 /**
  * @brief Align a size up to the nearest word boundary
  */
-#define ALIGNUP(_n) (((_n) + 3) & ~3)
+#define ALIGNUP4(n) (((n) + 3) & ~3)
 
 /**
  * @brief Align a size down to the nearest word boundary
  */
-#define ALIGNDOWN(_n) ((_n) & ~3)
+#define ALIGNDOWN4(n) ((n) & ~3)
 
 #define printf_P_heap(f_P, ...)                                                                                        \
 	(__extension__({                                                                                                   \
@@ -91,7 +86,6 @@ extern "C"
 		LOAD_PSTR(buf, __pstr__);                                                                                      \
 		buf;                                                                                                           \
 	}))
-
 
 /**
  * @brief copy memory aligned to word boundaries
@@ -151,13 +145,13 @@ int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len);
  * 		}
  *
  */
-#define LOAD_PSTR(name, flash_str)                                                                                   \
-	char name[ALIGNUP(sizeof(flash_str))] __attribute__((aligned(4)));                                               \
+#define LOAD_PSTR(name, flash_str)                                                                                     \
+	char name[ALIGNUP4(sizeof(flash_str))] __attribute__((aligned(4)));                                                \
 	memcpy_aligned(name, flash_str, sizeof(flash_str));
 
-#define _FLOAD(pstr)                                                                                                  \
+#define _FLOAD(pstr)                                                                                                   \
 	(__extension__({                                                                                                   \
-		LOAD_PSTR(_buf, pstr);                                                                                        \
+		LOAD_PSTR(_buf, pstr);                                                                                         \
 		_buf;                                                                                                          \
 	}))
 

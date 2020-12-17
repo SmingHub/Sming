@@ -15,21 +15,16 @@
 /**
   * @brief      Base class for read/write stream
   * @ingroup    stream data
-  *
-  *  @{
  */
-
 class ReadWriteStream : public IDataSourceStream
 {
 public:
-	/** @brief Write a single character to the stream
-	 *  @param charToWrite
-	 *  @retval size_t Number of chars written (1 on success, 0 on failure)
-	 */
 	size_t write(uint8_t charToWrite) override
 	{
 		return write(&charToWrite, 1);
 	}
+
+	using Print::write;
 
 	/** @brief  Write chars to stream
      *  @param  buffer Pointer to buffer to write to the stream
@@ -46,7 +41,5 @@ public:
      *  @param  size Quantity of chars to write, determines size of intermediate buffer to use
      *  @retval size_t Quantity of chars actually written, may be less than requested
      */
-	virtual size_t copyFrom(IDataSourceStream* source, size_t size);
+	virtual size_t copyFrom(IDataSourceStream* source, size_t size = SIZE_MAX);
 };
-
-/** @} */

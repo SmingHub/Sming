@@ -1,0 +1,5 @@
+ReadWriteStream
+===============
+
+.. doxygenclass:: ReadWriteStream
+   :members:

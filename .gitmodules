@@ -1,91 +1,140 @@
-[submodule "spiffs"]
-	path = Sming/Components/spiffs/spiffs
-	url = https://github.com/pellepl/spiffs.git
-	ignore = dirty
-[submodule "http-parser"]
-	path = Sming/Components/http-parser
-	url = https://github.com/nodejs/http-parser.git
-	ignore = dirty
-[submodule "ws_parser"]
-	path = Sming/Components/ws_parser
-	url = https://github.com/charliesome/ws_parser.git
-	ignore = dirty
-[submodule "mqtt-codec"]
-	path = Sming/Components/mqtt-codec
-	url = https://github.com/slaff/mqtt-codec.git
-	ignore = dirty
-[submodule "libyuarel"]
-	path = Sming/Components/libyuarel
-	url = https://github.com/jacketizer/libyuarel.git
-	ignore = dirty
-[submodule "multipart-parser"]
-	path = Sming/Libraries/MultipartParser/multipart-parser
-	url = https://github.com/iafonov/multipart-parser-c.git
-	ignore = dirty
-[submodule "FlashString"]
-	path = Sming/Components/FlashString
-	url = https://github.com/mikee47/FlashString
-    ignore = dirty
+#################################################################################################
+#
+# Sming Framework Project - Open Source framework for high efficiency native ESP8266 development
+#
+# Created 2015 by Skurydin Alexey
+#
+# All files of the Sming Core are provided under the LGPL v3 license.
+#
+# http://github.com/SmingHub/Sming/.gitmodules
+#
+# This file tells GIT about all available submodules
+#
+# Please read https://sming.readthedocs.io/en/latest/contribute/external-sources.html
+# before changing this file.
+#
+# ! The entries in this file are grouped and sorted alphabetically to ease maintenance.
+# 	Please ensure that new entries are placed correctly.
+#
+# ! Please ensure entries have `ignore = dirty`
+#
+#
+#################################################################################################
+
+#################################################################################################
+#
+# `Sming/Components` - Core Components
+#
+# Only Components required by the core Sming framework should be added here.
+#
+#################################################################################################
+
+#
+# Arch-independent or multi-arch libraries
+#
 
 [submodule "esptool"]
-	path = Sming/Arch/Esp8266/Components/esptool/esptool
+	path = Sming/Components/esptool/esptool
 	url = https://github.com/espressif/esptool
-	ignore = dirty
-[submodule "rboot"]
-	path = Sming/Components/rboot/rboot
-	url = https://github.com/raburton/rboot.git
 	ignore = dirty
 [submodule "esptool2"]
 	path = Sming/Components/rboot/esptool2
 	url = https://github.com/raburton/esptool2.git
 	ignore = dirty
-[submodule "libsodium"]
-	path = Sming/Libraries/libsodium/libsodium
-	url = https://github.com/jedisct1/libsodium.git
+[submodule "FlashString"]
+	path = Sming/Components/FlashString
+	url = https://github.com/mikee47/FlashString
+    ignore = dirty
+[submodule "http-parser"]
+	path = Sming/Components/http-parser
+	url = https://github.com/nodejs/http-parser.git
+	ignore = dirty
+[submodule "libyuarel"]
+	path = Sming/Components/libyuarel
+	url = https://github.com/jacketizer/libyuarel.git
+	ignore = dirty
+[submodule "mqtt-codec"]
+	path = Sming/Components/mqtt-codec
+	url = https://github.com/slaff/mqtt-codec.git
+	ignore = dirty
+[submodule "rboot"]
+	path = Sming/Components/rboot/rboot
+	url = https://github.com/raburton/rboot.git
+	ignore = dirty
+[submodule "spiffs"]
+	path = Sming/Components/spiffs/spiffs
+	url = https://github.com/pellepl/spiffs.git
+	ignore = dirty
+[submodule "ws_parser"]
+	path = Sming/Components/ws_parser
+	url = https://github.com/charliesome/ws_parser.git
 	ignore = dirty
 
-[submodule "ESP8266.new-pwm"]
-	path = Sming/Arch/Esp8266/Components/driver/new-pwm
-	url = https://github.com/StefanBruens/ESP8266_new_pwm.git
-	ignore = dirty
-[submodule "ESP8266.axtls"]
+
+#
+# `Esp8266` Components
+#
+
+[submodule "Esp8266.axtls"]
 	path = Sming/Components/axtls-8266/axtls-8266
 	url = https://github.com/igrr/axtls-8266.git
 	ignore = dirty
-[submodule "ESP8266.bearssl"]
+[submodule "Esp8266.bearssl"]
 	path = Sming/Components/bearssl-esp8266/bearssl
 	url = https://github.com/earlephilhower/bearssl-esp8266
 	ignore = dirty
-[submodule "ESP8266.umm_malloc"]
-	path = Sming/Arch/Esp8266/Components/heap/umm_malloc
-	url = https://github.com/rhempel/umm_malloc.git
-	ignore = dirty
-[submodule "ESP8266.esp-open-lwip"]
+[submodule "Esp8266.esp-open-lwip"]
 	path = Sming/Arch/Esp8266/Components/esp-open-lwip/esp-open-lwip
 	url = https://github.com/pfalcon/esp-open-lwip.git
 	ignore = dirty
-[submodule "ESP8266.lwip2"]
+[submodule "Esp8266.lwip2"]
 	path = Sming/Arch/Esp8266/Components/lwip2/lwip2
 	url = https://github.com/d-a-v/esp82xx-nonos-linklayer.git
 	ignore = dirty
-[submodule "ESP8266.Sdk"]
+[submodule "Esp8266.new-pwm"]
+	path = Sming/Arch/Esp8266/Components/driver/new-pwm
+	url = https://github.com/StefanBruens/ESP8266_new_pwm.git
+	ignore = dirty
+[submodule "Esp8266.umm_malloc"]
+	path = Sming/Arch/Esp8266/Components/heap/umm_malloc
+	url = https://github.com/rhempel/umm_malloc.git
+	ignore = dirty
+[submodule "Esp8266.Sdk"]
 	path = Sming/Arch/Esp8266/Components/esp8266/ESP8266_NONOS_SDK
 	url = https://github.com/espressif/ESP8266_NONOS_SDK.git
 	ignore = dirty
+
+
+#
+# `Esp32` Components
+#
+
+### NONE ###
+
+
+#
+# `Host` Components
+#
 
 [submodule "Host.lwip"]
 	path = Sming/Arch/Host/Components/lwip/lwip
 	url = git://git.savannah.gnu.org/lwip.git
 	ignore = dirty
 
-[submodule "Libraries.Adafruit_ST7735"]
-	path = Sming/Libraries/Adafruit_ST7735
-	url = https://github.com/adafruit/Adafruit-ST7735-Library.git
-	ignore = dirty
-[submodule "Libraries.Adafruit_SSD1306"]
-	path = Sming/Libraries/Adafruit_SSD1306
-	url = https://github.com/adafruit/Adafruit_SSD1306.git
-	ignore = dirty
+
+
+#################################################################################################
+#
+# `Sming/Libraries` - Optional libraries
+#
+# These must be selected using COMPONENT_DEPENDS setting in your component.mk file
+#
+#################################################################################################
+
+#
+# Arch-independent or multi-arch libraries
+#
+
 [submodule "Libraries.Adafruit_BME280_Library"]
 	path = Sming/Libraries/Adafruit_BME280_Library
 	url = https://github.com/adafruit/Adafruit_BME280_Library.git
@@ -94,58 +143,167 @@
 	path = Sming/Libraries/Adafruit_Sensor
 	url = https://github.com/adafruit/Adafruit_Sensor
 	ignore = dirty
-[submodule "Libraries.RingBufCPP"]
-	path = Sming/Libraries/RingBufCPP
-	url = https://github.com/wizard97/Embedded_RingBuf_CPP.git
+[submodule "Libraries.Adafruit_SSD1306"]
+	path = Sming/Libraries/Adafruit_SSD1306
+	url = https://github.com/adafruit/Adafruit_SSD1306.git
 	ignore = dirty
-[submodule "Libraries.IR"]
-	path = Sming/Libraries/IR
-	url = https://github.com/markszabo/IRremoteESP8266.git
-	ignore = dirty
-[submodule "Libraries.DHTesp"]
-	path = Sming/Libraries/DHTesp
-	url = https://github.com/beegee-tokyo/DHTesp.git
-	ignore = dirty
-[submodule "Libraries.ITEADLIB_Arduino_Nextion"]
-	path = Sming/Libraries/ITEADLIB_Arduino_Nextion
-	url = https://github.com/itead/ITEADLIB_Arduino_Nextion.git
-	ignore = dirty
-[submodule "Libraries.DFRobotDFPlayerMini"]
-	path = Sming/Libraries/DFRobotDFPlayerMini
-	url = https://github.com/DFRobot/DFRobotDFPlayerMini.git
-	ignore = dirty
-[submodule "Libraries.TM1637"]
-	path = Sming/Libraries/TM1637
-	url = https://github.com/avishorp/TM1637.git
-	ignore = dirty
-[submodule "Libraries.ArduinoJson6"]
-	path = Sming/Libraries/ArduinoJson6/ArduinoJson
-	url = https://github.com/bblanchon/ArduinoJson.git
-	ignore = dirty
-[submodule "Libraries.ArduinoJson5"]
-	path = Sming/Libraries/ArduinoJson5/ArduinoJson
-	url = https://github.com/bblanchon/ArduinoJson.git
-	ignore = dirty
-[submodule "Libraries.MCP_CAN_lib"]
-	path = Sming/Libraries/MCP_CAN_lib
-	url = https://github.com/coryjfowler/MCP_CAN_lib.git
-	ignore = dirty
-[submodule "Libraries.SmingTest"]
-	path = Sming/Libraries/SmingTest
-	url = https://github.com/mikee47/SmingTest
-	ignore = dirty
-[submodule "Libraries.ModbusMaster"]
-	path = Sming/Libraries/ModbusMaster/ModbusMaster
-	url = https://github.com/nomis/ModbusMaster.git
+[submodule "Libraries.Adafruit_ST7735"]
+	path = Sming/Libraries/Adafruit_ST7735
+	url = https://github.com/adafruit/Adafruit-ST7735-Library.git
 	ignore = dirty
 [submodule "Libraries.Adafruit_VL53L0X"]
 	path = Sming/Libraries/Adafruit_VL53L0X
 	url = https://github.com/adafruit/Adafruit_VL53L0X.git
 	ignore = dirty
+[submodule "Libraries.ArduinoFFT"]
+	path = Sming/Libraries/ArduinoFFT
+	url = https://github.com/kosme/arduinoFFT.git
+	ignore = dirty
+[submodule "Libraries.ArduinoJson5"]
+	path = Sming/Libraries/ArduinoJson5/ArduinoJson
+	url = https://github.com/bblanchon/ArduinoJson.git
+	ignore = dirty
+[submodule "Libraries.ArduinoJson6"]
+	path = Sming/Libraries/ArduinoJson6/ArduinoJson
+	url = https://github.com/bblanchon/ArduinoJson.git
+	ignore = dirty
 [submodule "Libraries.Arduino_TensorFlowLite"]
 	path = Sming/Libraries/Arduino_TensorFlowLite
 	url = https://github.com/slaff/Arduino_TensorFlowLite.git
+    ignore = dirty
+[submodule "Libraries.CS5460"]
+	path = Sming/Libraries/CS5460/CS5460
+	url = https://github.com/xxzl0130/CS5460.git
+	ignore = dirty
+[submodule "Libraries.DIAL"]
+	path = Sming/Libraries/DIAL
+	url = https://github.com/slaff/Sming-DIAL.git
+	ignore = dirty
+[submodule "Libraries.DFRobotDFPlayerMini"]
+	path = Sming/Libraries/DFRobotDFPlayerMini
+	url = https://github.com/DFRobot/DFRobotDFPlayerMini.git
+	ignore = dirty
+[submodule "Libraries.DHTesp"]
+	path = Sming/Libraries/DHTesp
+	url = https://github.com/beegee-tokyo/DHTesp.git
+	ignore = dirty
+[submodule "Libraries.HardwareSPI"]
+	path = Sming/Libraries/HardwareSPI
+	url = https://github.com/mikee47/HardwareSPI
+	ignore = dirty
+[submodule "Libraries.HueEmulator"]
+	path = Sming/Libraries/HueEmulator
+	url = https://github.com/mikee47/HueEmulator
+	ignore = dirty
+[submodule "Libraries.IR"]
+	path = Sming/Libraries/IR
+	url = https://github.com/markszabo/IRremoteESP8266.git
+	ignore = dirty
+[submodule "Libraries.ITEADLIB_Arduino_Nextion"]
+	path = Sming/Libraries/ITEADLIB_Arduino_Nextion
+	url = https://github.com/itead/ITEADLIB_Arduino_Nextion.git
+	ignore = dirty
+[submodule "Libraries.libsodium"]
+	path = Sming/Libraries/libsodium/libsodium
+	url = https://github.com/jedisct1/libsodium.git
+	ignore = dirty
 [submodule "Libraries.modbusino"]
 	path = Sming/Libraries/modbusino/modbusino
 	url = https://github.com/kmihaylov/modbusino.git
 	ignore = dirty
+[submodule "Libraries.ModbusMaster"]
+	path = Sming/Libraries/ModbusMaster/ModbusMaster
+	url = https://github.com/nomis/ModbusMaster.git
+	ignore = dirty
+[submodule "Libraries.MCP_CAN_lib"]
+	path = Sming/Libraries/MCP_CAN_lib
+	url = https://github.com/coryjfowler/MCP_CAN_lib.git
+	ignore = dirty
+[submodule "Libraries.multipart-parser"]
+	path = Sming/Libraries/MultipartParser/multipart-parser
+	url = https://github.com/iafonov/multipart-parser-c.git
+	ignore = dirty
+[submodule "Libraries.RapidXML"]
+	path = Sming/Libraries/RapidXML
+	url = https://github.com/mikee47/Sming-RapidXML
+	ignore = dirty
+[submodule "Libraries.RingBufCPP"]
+	path = Sming/Libraries/RingBufCPP
+	url = https://github.com/wizard97/Embedded_RingBuf_CPP.git
+	ignore = dirty
+[submodule "Libraries.RingTone"]
+	path = Sming/Libraries/RingTone
+	url = https://github.com/mikee47/RingTone
+	ignore = dirty
+[submodule "Libraries.SignalGenerator"]
+	path = Sming/Libraries/SignalGenerator
+	url = https://github.com/mikee47/SignalGenerator
+	ignore = dirty
+[submodule "Libraries.SmingTest"]
+	path = Sming/Libraries/SmingTest
+	url = https://github.com/mikee47/SmingTest
+	ignore = dirty
+[submodule "Libraries.SolarCalculator"]
+	path = Sming/Libraries/SolarCalculator
+	url = https://github.com/mikee47/SolarCalculator
+	ignore = dirty
+[submodule "Libraries.SSDP"]
+	path = Sming/Libraries/SSDP
+	url = https://github.com/mikee47/Sming-SSDP
+	ignore = dirty
+[submodule "Libraries.TFT_S1D13781"]
+	path = Sming/Libraries/TFT_S1D13781
+	url = https://github.com/mikee47/TFT_S1D13781
+	ignore = dirty
+[submodule "Libraries.Timezone"]
+	path = Sming/Libraries/Timezone
+	url = https://github.com/mikee47/Timezone
+	ignore = dirty
+[submodule "Libraries.ToneGenerator"]
+	path = Sming/Libraries/ToneGenerator
+	url = https://github.com/mikee47/ToneGenerator
+	ignore = dirty
+[submodule "Libraries.TM1637"]
+	path = Sming/Libraries/TM1637
+	url = https://github.com/avishorp/TM1637.git
+	ignore = dirty
+[submodule "Libraries.UPnP"]
+	path = Sming/Libraries/UPnP
+	url = https://github.com/mikee47/Sming-UPnP
+	ignore = dirty
+[submodule "Sming/Libraries/UPnP-Schema"]
+	path = Sming/Libraries/UPnP-Schema
+	url = https://github.com/mikee47/UPnP-Schema
+	ignore = dirty
+[submodule "Libraries.VT100"]
+	path = Sming/Libraries/VT100
+	url = https://github.com/mikee47/VT100
+	ignore = dirty
+
+
+#
+# Esp8266 libraries
+#
+
+### NONE ###
+
+
+#
+# Esp32 libraries
+#
+
+### NONE ###
+
+
+#
+# Host libraries
+#
+
+### NONE ###
+
+
+#################################################################################################
+#
+# END OF .gitmodules
+#
+#################################################################################################

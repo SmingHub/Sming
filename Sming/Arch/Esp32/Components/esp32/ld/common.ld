@@ -1,0 +1,174 @@
+/*
+    common.ld
+*/
+
+SECTIONS
+{
+  /*
+  	IRAM is split into .text and .text1 to allow for moving specific
+  	functions into IRAM that would be matched by the irom0.text matcher
+  */
+  .text : ALIGN(4)
+  {
+	/*
+		GCC silently ignores section attributes on templated code.
+		The only practical workaround is enforcing sections in the linker script.
+	*/
+	*(.literal._ZN13CallbackTimer*)
+	*(.text._ZN13CallbackTimer*)
+    *(.text._ZNKSt8functionIF*EE*)  /* std::function<any(...)>::operator()() const */
+	*(.text._ZN9Profiling6MinMaxIjE6updateEj)
+
+  } >iram1_0_seg :iram1_0_phdr
+
+  .irom0.text : ALIGN(4)
+  {
+    _irom0_text_start = ABSOLUTE(.);
+
+    *libc.a:(.literal .text .literal.* .text.*)
+    *libm.a:(.literal .text .literal.* .text.*)
+    *gcc.a:_divsf3.o(.literal .text)
+    *gcc.a:_fixsfsi.o(.literal .text)
+    *gcc.a:_cmpdf2.o(.literal .text)
+    *gcc.a:_cmpsf2.o(.literal .text)
+    *libstdc++.a:(.literal .text .literal.* .text.*)
+
+    *libsmartconfig.a:(.literal .text .literal.* .text.*)
+    *libat.a:(.literal.* .text.*)
+    *libcrypto.a:(.literal.* .text.*)
+    *libespnow.a:(.literal.* .text.*)
+    *libjson.a:(.literal.* .text.*)
+    *liblwip.a:(.literal.* .text.*)
+    *libmesh.a:(.literal.* .text.*)
+    *libnet80211.a:(.literal.* .text.*)
+    *libsmartconfig.a:(.literal.* .text.*)
+    *libssl.a:(.literal.* .text.*)
+    *libupgrade.a:(.literal.* .text.*)
+    *libwpa.a:(.literal.* .text.*)
+    *libwpa2.a:(.literal.* .text.*)
+    *libwps.a:(.literal.* .text.*)
+
+    *libmbedtls.a:(.literal.* .text.*)
+
+	/* C++ vtables */
+    *(.rodata._ZTV*)
+
+    *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom0.text.* .irom.text .irom.text.* .irom.debug.*)
+
+    /* Generated libraries */
+    *liblwip2.a:(.literal .text .literal.* .text.*)
+    */clib-*.a:*(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.* .irom.debug.*)
+
+    /* Constant strings in flash (PSTRs) */
+    *(.irom0.pstr.*)
+
+	/* __FUNCTION__ locals */
+    *(.rodata._ZZ*__FUNCTION__)
+    *(.rodata._ZZ*__PRETTY_FUNCTION__)
+    *(.rodata._ZZ*__func__)
+    *(.rodata.__func__*)
+
+	/* Inline flash strings, including those within templated code */
+	*(*__pstr__*)
+	*(*__fstr__*)
+
+	/* Templated code */
+	*(.rodata._ZN8NanoTimeL9unitTicksE)
+
+    _irom0_text_end = ABSOLUTE(.);
+    _flash_code_end = ABSOLUTE(.);
+  } >irom0_0_seg :irom0_0_phdr
+
+
+  /* Pick up any remaining IRAM objects and close the text segment */
+  .text1 : ALIGN(4)
+  {
+    *(.literal .text .literal.* .text.* .stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.*)
+
+    *(.fini.literal)
+    *(.fini)
+    *(.gnu.version)
+    _text_end = ABSOLUTE(.);
+    _etext = .;
+  } >iram1_0_seg :iram1_0_phdr
+
+  .rodata : ALIGN(4)
+  {
+    _rodata_start = ABSOLUTE(.);
+    *(.sdk.version)
+    *(.rodata)
+    *(.rodata.*)
+    *(.gnu.linkonce.r.*)
+    *(.rodata1)
+    __XT_EXCEPTION_TABLE__ = ABSOLUTE(.);
+    *(.xt_except_table)
+    *(.gcc_except_table)
+    *(.gnu.linkonce.e.*)
+    *(.gnu.version_r)
+    *(.eh_frame)
+    . = (. + 3) & ~ 3;
+    /*  C++ constructor and destructor tables, properly ordered:  */
+    __dso_handle = ABSOLUTE(.);
+    __init_array_start = ABSOLUTE(.);
+    KEEP (*crtbegin.o(.ctors))
+    KEEP (*(EXCLUDE_FILE (*crtend.o) .ctors))
+    KEEP (*(SORT(.ctors.*)))
+    KEEP (*(.ctors))
+    __init_array_end = ABSOLUTE(.);
+    KEEP (*crtbegin.o(.dtors))
+    KEEP (*(EXCLUDE_FILE (*crtend.o) .dtors))
+    KEEP (*(SORT(.dtors.*)))
+    KEEP (*(.dtors))
+    /*  C++ exception handlers table:  */
+    __XT_EXCEPTION_DESCS__ = ABSOLUTE(.);
+    *(.xt_except_desc)
+    *(.gnu.linkonce.h.*)
+    __XT_EXCEPTION_DESCS_END__ = ABSOLUTE(.);
+    *(.xt_except_desc_end)
+    *(.dynamic)
+    *(.gnu.version_d)
+    . = ALIGN(4);       /* this table MUST be 4-byte aligned */
+    _bss_table_start = ABSOLUTE(.);
+    LONG(_bss_start)
+    LONG(_bss_end)
+    _bss_table_end = ABSOLUTE(.);
+    _rodata_end = ABSOLUTE(.);
+  } >dram0_0_seg :dram0_0_phdr
+
+
+  .bss ALIGN(8) (NOLOAD) : ALIGN(4)
+  {
+    . = ALIGN (8);
+    _bss_start = ABSOLUTE(.);
+    *(.dynsbss)
+    *(.sbss)
+    *(.sbss.*)
+    *(.gnu.linkonce.sb.*)
+    *(.scommon)
+    *(.sbss2)
+    *(.sbss2.*)
+    *(.gnu.linkonce.sb2.*)
+    *(.dynbss)
+    *(.bss)
+    *(.bss.*)
+    *(.gnu.linkonce.b.*)
+    *(COMMON)
+    . = ALIGN (8);
+    _bss_end = ABSOLUTE(.);
+    _heap_start = ABSOLUTE(.);
+/*    _stack_sentry = ALIGN(0x8); */
+  } >dram0_0_seg :dram0_0_bss_phdr
+/* __stack = 0x3ffc8000; */
+
+  .lit4 : ALIGN(4)
+  {
+    _lit4_start = ABSOLUTE(.);
+    *(*.lit4)
+    *(.lit4.*)
+    *(.gnu.linkonce.lit4.*)
+    _lit4_end = ABSOLUTE(.);
+  } >iram1_0_seg :iram1_0_phdr
+}
+
+/* get ROM code address */
+INCLUDE "eagle.rom.addr.v6.ld"

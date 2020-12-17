@@ -24,6 +24,7 @@
 
 #include "UdpConnection.h"
 #include "WString.h"
+#include "IpAddress.h"
 
 #define DNS_QR_QUERY 0
 #define DNS_QR_RESPONSE 1
@@ -86,7 +87,7 @@ protected:
 private:
 	uint16_t port = 0;
 	String domainName;
-	ip_addr resolvedIP;
+	IpAddress resolvedIP;
 	char* buffer = nullptr;
 	DnsHeader* dnsHeader = nullptr;
 	uint32_t ttl = 60;

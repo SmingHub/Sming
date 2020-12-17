@@ -6,12 +6,11 @@ Date: 20.07.2015
 Descr: embedded very simple version of printf with float support
 */
 
-#include <user_config.h>
 #include "m_printf.h"
 #include "stringconversion.h"
 #include "stringutil.h"
 #include <algorithm>
-#include "FakePgmSpace.h"
+#include <sys/pgmspace.h>
 
 #define MPRINTF_BUF_SIZE 256
 
@@ -237,6 +236,15 @@ void m_printHex(const char* tag, const void* data, size_t len, int addr, size_t 
 	auto buf = static_cast<const unsigned char*>(data);
 
 	unsigned taglen = tag ? strlen(tag) : 0;
+
+	if(len == 0) {
+		if(tag != nullptr) {
+			m_nputs(tag, taglen);
+			m_nputs("\r\n", 2);
+		}
+		return;
+	}
+
 	size_t offset = 0;
 	while (offset < len) {
 		if (taglen) {

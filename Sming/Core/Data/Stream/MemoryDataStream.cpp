@@ -10,11 +10,21 @@
 
 #include "MemoryDataStream.h"
 
-/* MemoryDataStream */
+MemoryDataStream::MemoryDataStream(String&& string) noexcept
+{
+	auto buf = string.getBuffer();
+	buffer = buf.data;
+	size = buf.length;
+	capacity = buf.size;
+}
 
 bool MemoryDataStream::ensureCapacity(size_t minCapacity)
 {
 	if(capacity < minCapacity) {
+		if(minCapacity > maxCapacity) {
+			debug_e("MemoryDataStream too large, requested %u limit is %u", minCapacity, maxCapacity);
+			return false;
+		}
 		size_t newCapacity = minCapacity;
 		if(capacity != 0) {
 			// If expanding stream, increase buffer capacity in anticipation of further writes
@@ -24,6 +34,7 @@ bool MemoryDataStream::ensureCapacity(size_t minCapacity)
 		// realloc can fail, store the result in temporary pointer
 		auto newBuffer = (char*)realloc(buffer, newCapacity);
 		if(newBuffer == nullptr) {
+			debug_e("MemoryDataStream realloc(%u) failed", newCapacity);
 			return false;
 		}
 
@@ -60,17 +71,17 @@ uint16_t MemoryDataStream::readMemoryBlock(char* data, int bufSize)
 	return available;
 }
 
-int MemoryDataStream::seekFrom(int offset, unsigned origin)
+int MemoryDataStream::seekFrom(int offset, SeekOrigin origin)
 {
 	size_t newPos;
 	switch(origin) {
-	case SEEK_SET:
+	case SeekOrigin::Start:
 		newPos = offset;
 		break;
-	case SEEK_CUR:
+	case SeekOrigin::Current:
 		newPos = readPos + offset;
 		break;
-	case SEEK_END:
+	case SeekOrigin::End:
 		newPos = size + offset;
 		break;
 	default:
@@ -83,4 +94,19 @@ int MemoryDataStream::seekFrom(int offset, unsigned origin)
 
 	readPos = newPos;
 	return readPos;
+}
+
+bool MemoryDataStream::moveString(String& s)
+{
+	// Ensure size < capacity
+	bool sizeOk = ensureCapacity(size + 1);
+
+	// If we couldn't reallocate for the NUL terminator, drop the last character
+	assert(s.setBuffer({buffer, capacity, sizeOk ? size : size - 1}));
+
+	buffer = nullptr;
+	readPos = 0;
+	size = 0;
+	capacity = 0;
+	return sizeOk;
 }

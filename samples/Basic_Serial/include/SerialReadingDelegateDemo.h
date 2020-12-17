@@ -3,7 +3,7 @@
 
 #include <SmingCore.h>
 
-typedef Delegate<void(const String& command)> CommandCallbackFunction;
+using CommandCallbackFunction = Delegate<void(const String& command)>;
 
 //*** Example of class callback processing
 class SerialReadingDelegateDemo

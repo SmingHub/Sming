@@ -9,3 +9,4 @@ Server API
 
 .. doxygengroup:: ftpserver
    :content-only:
+   :members:

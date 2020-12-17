@@ -27,10 +27,11 @@
 #include <spi_flash/flashmem.h>
 #include <driver/uart_server.h>
 #include <BitManipulations.h>
-#include <esp_timer_legacy.h>
+#include <driver/os_timer.h>
 #include <esp_tasks.h>
 #include <host_lwip.h>
 #include <stdlib.h>
+#include "include/hostlib/CommandLine.h"
 
 #include <Platform/System.h>
 #include <Platform/Timers.h>
@@ -198,6 +199,8 @@ int main(int argc, char* argv[])
 		default:;
 		}
 	}
+
+	commandLine.parse(argc - optind, &argv[optind]);
 
 	if(!host_flashmem_init(config.flash)) {
 		return 1;

@@ -38,13 +38,13 @@
 class MacAddress : public Printable
 {
 	// https://www.artima.com/cppsource/safebool.html
-	typedef void (MacAddress::*bool_type)() const;
+	using bool_type = void (MacAddress::*)() const;
 	void Testable() const
 	{
 	}
 
 public:
-	typedef uint8_t Octets[6];
+	using Octets = uint8_t[6];
 
 	MacAddress() = default;
 

@@ -26,5 +26,7 @@ This is how it was done:
 9. Update callback function parameter lists for ``STADisconnect`` and ``STAGotIP``.
    We can also get a description for disconnection reasons, so display that instead of just a number.
    See :source:`Sming/Platform/WifiEvents.h`.
+10.   In webserver.cpp, the `onConfiguration()` function uses `request.getBody()`.
+      It is more efficient to use streams, so just replace with `request.getBodyStream()`.
 
 That's it.

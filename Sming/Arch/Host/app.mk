@@ -32,13 +32,6 @@ valgrind: all ##Run the application under valgrind to detect memory issues. Requ
 	$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS)
 
 
-##@Flashing
-
-ifneq ($(DISABLE_SPIFFS), 1)
-FLASH_SPIFFS_CHUNKS	:= $(RBOOT_SPIFFS_0)=$(SPIFF_BIN_OUT)
-endif
-
-
 RUN_SCRIPT := $(FW_BASE)/run.sh
 
 .PHONY: run
@@ -48,22 +41,8 @@ run: all $(RUN_SCRIPT) ##Run the application image
 $(RUN_SCRIPT)::
 	$(Q) echo '#!/bin/bash' > $@; \
 	$(foreach id,$(ENABLE_HOST_UARTID),echo '$(call RunHostTerminal,$(id))' >> $@;) \
-	echo '$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS)' >> $@; \
+	echo '$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS) -- $(HOST_PARAMETERS)' >> $@; \
 	chmod a+x $@
-
-.PHONY: flashfs
-flashfs: $(SPIFF_BIN_OUT) ##Write just the SPIFFS filesystem image
-ifeq ($(DISABLE_SPIFFS), 1)
-	$(info SPIFFS image creation disabled!)
-else
-	$(call WriteFlash,$(FLASH_SPIFFS_CHUNKS))
-endif
 
 .PHONY: flash
 flash: all flashfs ##Write all images to (virtual) flash
-
-.PHONY: flashinit
-flashinit: | $(FW_BASE) ##Erase all flash memory
-	$(info Erasing flash (writing default flash backing file))
-	$(Q) $(EraseFlash)
-

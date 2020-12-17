@@ -16,7 +16,7 @@
 class FtpDataFileList : public FtpDataStream
 {
 public:
-	explicit FtpDataFileList(FtpServerConnection* connection) : FtpDataStream(connection)
+	explicit FtpDataFileList(FtpServerConnection& connection) : FtpDataStream(connection)
 	{
 	}
 
@@ -28,7 +28,12 @@ public:
 		Vector<String> list = fileList();
 		debug_d("send file list: %d", list.count());
 		for(unsigned i = 0; i < list.count(); i++) {
-			writeString("01-01-15  01:00AM               " + String(fileGetSize(list[i])) + " " + list[i] + "\r\n");
+			String s = F("01-01-15  01:00AM               ");
+			s += fileGetSize(list[i]);
+			s += ' ';
+			s += list[i];
+			s += "\r\n";
+			writeString(s);
 		}
 		completed = true;
 		finishTransfer();

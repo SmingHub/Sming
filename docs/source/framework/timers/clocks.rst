@@ -50,3 +50,4 @@ System Clock API
 
 .. doxygengroup:: system_clocks
    :content-only:
+   :members:

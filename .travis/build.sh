@@ -4,31 +4,15 @@ set -ex # exit with nonzero exit code if anything fails
 # Build times benefit from parallel building
 export MAKE_PARALLEL="make -j3"
 
-unset SPIFFY
-unset ESPTOOL2
-unset SDK_BASE
-env
-
 export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
 
+# Setup ARCH SDK
 cd $SMING_HOME
-
-# Check coding style
-if [ "$TRAVIS_BUILD_STAGE_NAME" == "test" ]; then
- 	make cs
- 	DIFFS=$(git diff)
- 	if [ "$DIFFS" != "" ]; then
- 	  echo "!!! Coding Style issues Found!!!"
- 	  echo "    Run: 'make cs' to fix them. "
- 	  echo "$DIFFS"
- 	  exit 1
- 	fi
+if [ -f "$SMING_HOME/Arch/$SMING_ARCH/Tools/travis/build.setup.sh" ]; then
+   source "$SMING_HOME/Arch/$SMING_ARCH/Tools/travis/build.setup.sh"
 fi
 
-# Setup ARCH SDK paths
-if [ "$SMING_ARCH" == "Esp8266" ]; then
-	export PATH=$PATH:$ESP_HOME/xtensa-lx106-elf/bin:$ESP_HOME/utils/
-fi
+env
 
 # Full compile checks please
 export STRICT=1
@@ -44,40 +28,8 @@ cd $SMING_PROJECTS_DIR/samples/Basic_Blink
 make help
 make list-config
 
-# Check if we could run static code analysis
-CHECK_SCA=0
-if [[ $TRAVIS_TAG != "" || ( $TRAVIS_COMMIT_MESSAGE == *"[scan:coverity]"*  && $TRAVIS_PULL_REQUEST != "true" ) ]]; then
-  CHECK_SCA=1
-fi
-
-
-# This will build the Basic_Blink application and most of the framework Components
-if [[ $CHECK_SCA -eq 0 ]]; then
-  $MAKE_PARALLEL
-fi
-
+# Run ARCH SDK tests
 cd $SMING_HOME
-
-if [ "$TRAVIS_BUILD_STAGE_NAME" == "test" ]; then
-	if [[ $CHECK_SCA -eq 1 ]]; then
-		$TRAVIS_BUILD_DIR/.travis/coverity-scan.sh
-	else
-	  $MAKE_PARALLEL Basic_DateTime Basic_Delegates Basic_Interrupts Basic_ProgMem Basic_Serial Basic_Servo Basic_Ssl LiveDebug DEBUG_VERBOSE_LEVEL=3
-	fi
-
-	# Build and run tests
-	export SMING_TARGET_OPTIONS='--flashfile=$(FLASH_BIN) --flashsize=$(SPI_SIZE)'
-	$MAKE_PARALLEL tests
-
-	# Build the documentation
-	mv $SMING_PROJECTS_DIR/samples ..
-	mv $SMING_PROJECTS_DIR/tests ..
-	unset SMING_PROJECTS_DIR
-	make docs V=1
-else
-	make -C "$SMING_PROJECTS_DIR/samples/HttpServer_FirmwareUpload" python-requirements PIP_ARGS=--user
-	$MAKE_PARALLEL samples
-	make clean samples-clean
-	$MAKE_PARALLEL Basic_Blink ENABLE_CUSTOM_HEAP=1 DEBUG_VERBOSE_LEVEL=3
-	$MAKE_PARALLEL HttpServer_ConfigNetwork ENABLE_CUSTOM_LWIP=2 STRICT=1
+if [ -f "$SMING_HOME/Arch/$SMING_ARCH/Tools/travis/build.run.sh" ]; then
+   source "$SMING_HOME/Arch/$SMING_ARCH/Tools/travis/build.run.sh"
 fi

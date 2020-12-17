@@ -45,12 +45,14 @@ static const option_help_t option_help[] = {
 
 void print_help()
 {
+	host_printf("Available command-line options:\n");
 	const unsigned COL = 23;
 	auto help = option_help;
 	auto opt = long_options;
 	for(; opt->name; ++opt, ++help) {
 		char s[256];
-		strcpy(s, opt->name);
+		strcpy(s, "  --");
+		strcat(s, opt->name);
 		if(help->argname) {
 			if(opt->has_arg == optional_argument) {
 				strcat(s, "[");

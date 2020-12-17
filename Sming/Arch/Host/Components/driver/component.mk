@@ -1,12 +1,7 @@
-COMPONENT_SRCFILES := \
-	$(ESP8266_COMPONENTS)/driver/SerialBuffer.cpp
+COMPONENT_INCDIRS := include
 
-COMPONENT_INCDIRS := \
-	include \
-	$(ESP8266_COMPONENTS)/driver \
-	$(ESP8266_COMPONENTS)/driver/include
+COMPONENT_DEPENDS := arch_driver
 
-#
 COMPONENT_VARS	+= USE_US_TIMER
 USE_US_TIMER	?= 1
 ifeq ($(USE_US_TIMER),1)

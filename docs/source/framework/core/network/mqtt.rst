@@ -8,3 +8,4 @@ Client API
 
 .. doxygengroup:: mqttclient
    :content-only:
+   :members:

@@ -11,12 +11,7 @@
  ****/
 
 #include "HttpConnection.h"
-
-#ifdef __ets__
-#include "lwip/tcp_impl.h"
-#else
-#include "lwip/priv/tcp_priv.h"
-#endif
+#include <Network/NetUtils.h>
 
 /** @brief http_parser function table
  *  @note stored in flash memory; as it is word-aligned it can be accessed directly
@@ -59,6 +54,7 @@ void HttpConnection::init(http_parser_type type)
 	http_parser_init(&parser, type);
 	parser.data = this;
 	setDefaultParser();
+	state = eHCS_Ready;
 }
 
 void HttpConnection::setDefaultParser()
@@ -167,9 +163,9 @@ int HttpConnection::staticOnMessageComplete(http_parser* parser)
 	return error;
 }
 
-bool HttpConnection::onHttpError(http_errno error)
+bool HttpConnection::onHttpError(HttpError error)
 {
-	debug_e("HTTP parser error: %s", httpGetErrorName(error).c_str());
+	debug_e("HTTP parser error: %s", toString(error).c_str());
 	return false;
 }
 

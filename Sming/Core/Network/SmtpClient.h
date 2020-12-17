@@ -85,7 +85,7 @@ enum SmtpState {
 
 class SmtpClient;
 
-typedef Delegate<int(SmtpClient& client, int code, char* status)> SmtpClientCallback;
+using SmtpClientCallback = Delegate<int(SmtpClient& client, int code, char* status)>;
 
 class SmtpClient : protected TcpClient
 {
@@ -111,8 +111,11 @@ public:
 	 * @param body The body in plain text format
 	 *
 	 * @retval bool true when the message was queued successfully, false otherwise
+	 * @{
 	 */
 	bool send(const String& from, const String& to, const String& subject, const String& body);
+	bool send(const String& from, const String& to, const String& subject, String&& body) noexcept;
+	/** @} */
 
 	/**
 	 * @brief Powerful method to queues a single message before it is sent later to the SMTP server
@@ -203,7 +206,7 @@ private:
 	 * @brief Takes care to fetch the correct streams for a message
 	 * @note The magic where all streams and attachments are packed together is happening here
 	 */
-	HttpPartResult multipartProducer();
+	MultipartStream::BodyPart multipartProducer();
 };
 
 /** @} */

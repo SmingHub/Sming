@@ -16,6 +16,7 @@
 #include <WString.h>
 #include <WHashMap.h>
 #include <Data/ObjectQueue.h>
+#include <Platform/Timers.h>
 #include "Mqtt/MqttPayloadParser.h"
 #include "mqtt-codec/src/message.h"
 #include "mqtt-codec/src/serialiser.h"
@@ -44,14 +45,14 @@ enum MqttClientState { eMCS_Ready = 0, eMCS_SendingData };
 
 class MqttClient;
 
-typedef Delegate<int(MqttClient& client, mqtt_message_t* message)> MqttDelegate;
-typedef ObjectQueue<mqtt_message_t, MQTT_REQUEST_POOL_SIZE> MqttRequestQueue;
+using MqttDelegate = Delegate<int(MqttClient& client, mqtt_message_t* message)>;
+using MqttRequestQueue = ObjectQueue<mqtt_message_t, MQTT_REQUEST_POOL_SIZE>;
 
 #ifndef MQTT_NO_COMPAT
 /** @deprecated Use MqttDelegate instead */
-typedef Delegate<void(String topic, String message)> MqttStringSubscriptionCallback;
+using MqttStringSubscriptionCallback = Delegate<void(String topic, String message)>;
 /** @deprecated Use MqttDelegate instead */
-typedef Delegate<void(uint16_t msgId, int type)> MqttMessageDeliveredCallback;
+using MqttMessageDeliveredCallback = Delegate<void(uint16_t msgId, int type)>;
 #endif
 
 class MqttClient : protected TcpClient
@@ -68,13 +69,23 @@ public:
 	void setKeepAlive(uint16_t seconds) //send to broker
 	{
 		keepAlive = seconds;
+		if(seconds < pingRepeatTime) {
+			setPingRepeatTime(seconds);
+		}
 	}
 
 	/**
 	 * Sets the interval in which to ping the remote server if there was no activity
 	 * @param seconds
 	 */
-	void setPingRepeatTime(unsigned seconds);
+	void setPingRepeatTime(uint16_t seconds)
+	{
+		seconds = std::min(keepAlive, seconds);
+		if(seconds != pingRepeatTime) {
+			pingRepeatTime = seconds;
+			pingTimer.reset(seconds);
+		}
+	}
 
 	/**
 	 * Sets last will and testament
@@ -100,7 +111,7 @@ public:
 
 	void setEventHandler(mqtt_type_t type, MqttDelegate handler)
 	{
-		eventHandler[type] = handler;
+		eventHandlers[type] = handler;
 	}
 
 	/**
@@ -123,7 +134,7 @@ public:
 	 */
 	void setConnectedHandler(MqttDelegate handler)
 	{
-		eventHandler[MQTT_TYPE_CONNACK] = handler;
+		eventHandlers[MQTT_TYPE_CONNACK] = handler;
 	}
 
 	/**
@@ -134,8 +145,8 @@ public:
 	 */
 	void setPublishedHandler(MqttDelegate handler)
 	{
-		eventHandler[MQTT_TYPE_PUBACK] = handler;
-		eventHandler[MQTT_TYPE_PUBREC] = handler;
+		eventHandlers[MQTT_TYPE_PUBACK] = handler;
+		eventHandlers[MQTT_TYPE_PUBREC] = handler;
 	}
 
 	/**
@@ -145,7 +156,7 @@ public:
 	 */
 	void setMessageHandler(MqttDelegate handler)
 	{
-		eventHandler[MQTT_TYPE_PUBLISH] = handler;
+		eventHandlers[MQTT_TYPE_PUBLISH] = handler;
 	}
 
 	/**
@@ -233,6 +244,7 @@ private:
 	static int staticOnDataPayload(void* user_data, mqtt_message_t* message, const char* data, size_t length);
 	static int staticOnDataEnd(void* user_data, mqtt_message_t* message);
 	static int staticOnMessageEnd(void* user_data, mqtt_message_t* message);
+	int onMessageEnd(mqtt_message_t* message);
 
 #ifndef MQTT_NO_COMPAT
 	/** @deprecated This method is only for compatibility with the previous release and will be removed soon. */
@@ -286,7 +298,8 @@ private:
 	Url url;
 
 	// callbacks
-	HashMap<mqtt_type_t, MqttDelegate> eventHandler;
+	using HandlerMap = HashMap<mqtt_type_t, MqttDelegate>;
+	HandlerMap eventHandlers;
 	MqttPayloadParser payloadParser = nullptr;
 
 	// states
@@ -295,8 +308,8 @@ private:
 
 	// keep-alives and pings
 	uint16_t keepAlive = 60;
-	unsigned pingRepeatTime = 20;
-	unsigned long lastMessage = 0;
+	uint16_t pingRepeatTime = 20; ///< pingRepeatTime should be <= keepAlive
+	OneShotElapseTimer<NanoTime::Seconds> pingTimer;
 
 	// messages
 	MqttRequestQueue requestQueue;
@@ -306,8 +319,8 @@ private:
 	mqtt_message_t incomingMessage;
 
 	// parsers and serializers
-	static mqtt_serialiser_t serialiser;
-	static mqtt_parser_callbacks_t callbacks;
+	mqtt_serialiser_t serialiser;
+	static const mqtt_parser_callbacks_t callbacks;
 	mqtt_parser_t parser;
 
 	// client flags

@@ -26,6 +26,7 @@ Table of Contents
 * [Compatibility](#compatibility)
    * [Architecture: ESP8266](#architecture-esp8266)
    * [Architecture: Host](#architecture-host)
+   * [Architecture: Esp32](#architecture-esp32-experimental)
 * [Releases](#releases)
    * [Stable](#stable)
    * [Development](#development)
@@ -74,6 +75,16 @@ Please note Version 4 documentation is at [sming.readthedocs.io](https://sming.r
 
 ## Compatibility
 
+
+### GCC compiler >= 8
+
+Your GCC compiler should be version 8 or newer! See the different architectures for details.
+Newer compilers
+
+- contain bugfixes
+- produce smaller and better code
+- have features which facilitate code quality, ease of use, etc.
+
 ### Architecture: ESP8266
 
 OS/SDK | Linux | Mac OS X | Windows | FreeBSD-current |
@@ -89,6 +100,11 @@ esp-open-sdk (v1.5.x **, v2.0.0 **, v3.0.x) | :sunny:  | :sunny: | n/a | :sunny
 ### Architecture: Host
 
 Linux and Windows OSes with gcc compilers are supported. Clang is NOT supported.
+
+
+### Architecture: ESP32 (Experimental)
+
+Supported SDK: ESP-IDF v4.1
 
 
 ## Releases

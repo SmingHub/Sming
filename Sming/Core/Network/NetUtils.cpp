@@ -13,12 +13,6 @@
 #include <Data/CStringArray.h>
 #include <WString.h>
 
-#ifdef __ets__
-#include "lwip/tcp_impl.h"
-#else
-#include "lwip/priv/tcp_priv.h"
-#endif
-
 #ifdef FIX_NETWORK_ROUTING
 bool NetUtils::ipClientRoutingFixed = false;
 #endif

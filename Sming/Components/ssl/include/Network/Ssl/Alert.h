@@ -44,9 +44,10 @@ namespace Ssl
 
 /**
  * @brief Alert codes defined by the standard
+ * @see See https://tools.ietf.org/html/rfc8446#page-85
  */
 enum class Alert {
-	Invalid = -1,
+	Invalid = -1, ///< Not an alert code
 #define XX(tag, code) tag = code,
 	SSL_ALERT_CODE_MAP(XX)
 #undef XX

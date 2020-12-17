@@ -12,7 +12,7 @@
 
 #include <SmingCore.h>
 #include <driver/i2s.h>
-#include <Libraries/ToneGenerator/DeltaSigma.h>
+#include <ToneGenerator/DeltaSigma.h>
 #include <Services/Profiling/MinMaxTimes.h>
 #include <SignalGenerator.h>
 

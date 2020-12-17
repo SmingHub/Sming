@@ -8,6 +8,7 @@ Connection API
 
 .. doxygengroup:: tcp
    :content-only:
+   :members:
 
 
 Client API
@@ -15,10 +16,11 @@ Client API
 
 .. doxygengroup:: tcpclient
    :content-only:
+   :members:
 
 Server API
 ----------
 
 .. doxygengroup:: tcpserver
    :content-only:
-
+   :members:

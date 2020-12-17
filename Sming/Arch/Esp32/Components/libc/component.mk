@@ -1,0 +1,4 @@
+COMPONENT_SRCDIRS		:= src
+COMPONENT_INCDIRS		:= include
+
+COMPONENT_DOXYGEN_INPUT	:= include/sys

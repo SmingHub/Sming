@@ -13,15 +13,28 @@
 #include "Data/Stream/MemoryDataStream.h"
 #include "Data/Stream/StreamChain.h"
 
-#include "Clock.h"
+const mqtt_parser_callbacks_t MqttClient::callbacks PROGMEM = {
+	.on_message_begin = staticOnMessageBegin,
+	.on_data_begin = staticOnDataBegin,
+	.on_data_payload = staticOnDataPayload,
+	.on_data_end = staticOnDataEnd,
+	.on_message_end = staticOnMessageEnd,
+};
 
+namespace
+{
 // Content length set to this value to indicate data refers to a stream, not a buffer
-#define MQTT_PUBLISH_STREAM 0
+constexpr unsigned MQTT_PUBLISH_STREAM{0};
 
-mqtt_serialiser_t MqttClient::serialiser;
-mqtt_parser_callbacks_t MqttClient::callbacks;
+constexpr uint8_t MQTT_CONNECT_PROTOCOL{4}; // version 3.1.1
 
-static mqtt_message_t* createMessage(mqtt_type_t messageType)
+#define GET_CLIENT()                                                                                                   \
+	auto client = static_cast<MqttClient*>(userData);                                                                  \
+	if(client == nullptr) {                                                                                            \
+		return -1;                                                                                                     \
+	}
+
+mqtt_message_t* createMessage(mqtt_type_t messageType)
 {
 	auto message = new mqtt_message_t;
 	if(message != nullptr) {
@@ -31,18 +44,18 @@ static mqtt_message_t* createMessage(mqtt_type_t messageType)
 	return message;
 }
 
-static void deleteMessage(mqtt_message_t* message)
+void deleteMessage(mqtt_message_t* message)
 {
 	mqtt_message_clear(message, 0);
 	delete message;
 }
 
-static void clearMessage(mqtt_message_t& message)
+void clearMessage(mqtt_message_t& message)
 {
 	mqtt_message_clear(&message, 0);
 }
 
-static bool copyString(mqtt_buffer_t& destBuffer, const String& sourceString)
+bool copyString(mqtt_buffer_t& destBuffer, const String& sourceString)
 {
 	destBuffer.length = sourceString.length();
 	MQTT_FREE(destBuffer.data); // Avoid memory leaks
@@ -55,25 +68,19 @@ static bool copyString(mqtt_buffer_t& destBuffer, const String& sourceString)
 	return true;
 }
 
-MqttClient::MqttClient(bool withDefaultPayloadParser, bool autoDestruct) : TcpClient(autoDestruct)
-{
-	// TODO:...
-	//	if(!bitSet(flags, MQTT_CLIENT_CALLBACKS)) {
-	callbacks.on_message_begin = staticOnMessageBegin;
-	callbacks.on_data_begin = staticOnDataBegin;
-	callbacks.on_data_payload = staticOnDataPayload;
-	callbacks.on_data_end = staticOnDataEnd;
-	callbacks.on_message_end = staticOnMessageEnd;
-	//	}
+} // namespace
 
-	mqtt_parser_init(&parser, &callbacks);
+MqttClient::MqttClient(bool withDefaultPayloadParser, bool autoDestruct)
+	: TcpClient(autoDestruct), pingTimer(pingRepeatTime)
+{
+	mqtt_parser_init(&parser, const_cast<mqtt_parser_callbacks_t*>(&callbacks));
 	mqtt_serialiser_init(&serialiser);
 	mqtt_message_init(&incomingMessage);
 	mqtt_message_init(&connectMessage);
 
 	parser.data = this;
 	connectMessage.common.type = MQTT_TYPE_CONNECT;
-	connectMessage.connect.protocol_version = 4; // version 3.1.1
+	connectMessage.connect.protocol_version = MQTT_CONNECT_PROTOCOL;
 
 	if(withDefaultPayloadParser) {
 		setPayloadParser(defaultPayloadParser);
@@ -98,7 +105,7 @@ MqttClient::~MqttClient()
 
 bool MqttClient::onTcpReceive(TcpClient& client, char* data, int size)
 {
-	lastMessage = millis();
+	pingTimer.start();
 	int rc = mqtt_parser_execute(&parser, &incomingMessage, (uint8_t*)data, (size_t)size);
 	if(rc == MQTT_PARSER_RC_ERROR) {
 		debug_e("MqttClient parse error: %s", mqtt_error_string(parser.error));
@@ -116,10 +123,7 @@ int MqttClient::staticOnMessageBegin(void* userData, mqtt_message_t* message)
 
 int MqttClient::staticOnDataBegin(void* userData, mqtt_message_t* message)
 {
-	MqttClient* client = static_cast<MqttClient*>(userData);
-	if(client == nullptr) {
-		return -1;
-	}
+	GET_CLIENT();
 
 	if(client->payloadParser) {
 		client->payloadState.offset = 0;
@@ -131,10 +135,7 @@ int MqttClient::staticOnDataBegin(void* userData, mqtt_message_t* message)
 
 int MqttClient::staticOnDataPayload(void* userData, mqtt_message_t* message, const char* data, size_t length)
 {
-	MqttClient* client = static_cast<MqttClient*>(userData);
-	if(client == nullptr) {
-		return -1;
-	}
+	GET_CLIENT();
 
 	if(client->payloadParser) {
 		return client->payloadParser(client->payloadState, message, data, length);
@@ -145,10 +146,7 @@ int MqttClient::staticOnDataPayload(void* userData, mqtt_message_t* message, con
 
 int MqttClient::staticOnDataEnd(void* userData, mqtt_message_t* message)
 {
-	MqttClient* client = static_cast<MqttClient*>(userData);
-	if(client == nullptr) {
-		return -1;
-	}
+	GET_CLIENT();
 
 	if(client->payloadParser) {
 		return client->payloadParser(client->payloadState, message, nullptr, MQTT_PAYLOAD_PARSER_END);
@@ -159,39 +157,32 @@ int MqttClient::staticOnDataEnd(void* userData, mqtt_message_t* message)
 
 int MqttClient::staticOnMessageEnd(void* userData, mqtt_message_t* message)
 {
-	MqttClient* client = static_cast<MqttClient*>(userData);
-	if(client == nullptr) {
-		return -1;
-	}
+	GET_CLIENT();
+	return client->onMessageEnd(message);
+}
 
+int MqttClient::onMessageEnd(mqtt_message_t* message)
+{
 	if(message->common.type == MQTT_TYPE_CONNACK) {
 		if(message->connack.return_code) {
 			// failure
-			clearBits(client->flags, MQTT_CLIENT_CONNECTED);
-			client->setTimeOut(1); // schedule the connection for closing
+			clearBits(flags, MQTT_CLIENT_CONNECTED);
+			setTimeOut(1); // schedule the connection for closing
 
 			return message->connack.return_code;
 		}
 
 		// success
-		client->setTimeOut(USHRT_MAX);
-		setBits(client->flags, MQTT_CLIENT_CONNECTED);
+		setTimeOut(USHRT_MAX);
+		setBits(flags, MQTT_CLIENT_CONNECTED);
 	}
 
-	if(client->eventHandler.contains(message->common.type)) {
-		return client->eventHandler[message->common.type](*client, message);
+	auto& handler = static_cast<const HandlerMap&>(eventHandlers)[message->common.type];
+	if(handler) {
+		return handler(*this, message);
 	}
 
 	return 0;
-}
-
-void MqttClient::setPingRepeatTime(unsigned seconds)
-{
-	if(pingRepeatTime > keepAlive) {
-		pingRepeatTime = keepAlive;
-	} else {
-		pingRepeatTime = seconds;
-	}
 }
 
 bool MqttClient::setWill(const String& topic, const String& message, uint8_t flags)
@@ -212,7 +203,7 @@ bool MqttClient::setWill(const String& topic, const String& message, uint8_t fla
 bool MqttClient::connect(const Url& url, const String& clientName)
 {
 	this->url = url;
-	bool useSsl = (url.Scheme == URI_SCHEME_MQTT_SECURE);
+	bool useSsl{url.Scheme == URI_SCHEME_MQTT_SECURE};
 	if(!useSsl && url.Scheme != URI_SCHEME_MQTT) {
 		debug_e("Only mqtt and mqtts protocols are allowed");
 		return false;
@@ -373,15 +364,16 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		}
 		if(!outgoingMessage) {
 			// Send PINGREQ every PingRepeatTime time, if there is no outgoing traffic
-			// PingRepeatTime should be <= keepAlive
-			if(!(lastMessage && (millis() - lastMessage >= pingRepeatTime * 1000))) {
+			if(!pingTimer.expired()) {
 				break;
 			}
 
 			outgoingMessage = createMessage(MQTT_TYPE_PINGREQ);
 		}
 
-		IDataSourceStream* payloadStream = nullptr;
+		debug_d("[MQTT] Sending message type %u", outgoingMessage->common.type);
+
+		IDataSourceStream* payloadStream{nullptr};
 		if(outgoingMessage->common.type == MQTT_TYPE_PUBLISH &&
 		   outgoingMessage->publish.content.length == MQTT_PUBLISH_STREAM) {
 			payloadStream = reinterpret_cast<IDataSourceStream*>(outgoingMessage->publish.content.data);
@@ -400,15 +392,12 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		mqtt_serialiser_write(&serialiser, outgoingMessage, packet, packetLength);
 
 		delete stream;
-		MemoryDataStream* headerStream = new MemoryDataStream();
+		auto headerStream = new MemoryDataStream();
 		headerStream->write(packet, packetLength);
-		if(outgoingMessage->common.type == MQTT_TYPE_PUBLISH && payloadStream) {
-			StreamChain* streamChain = new StreamChain();
-
+		if(outgoingMessage->common.type == MQTT_TYPE_PUBLISH && payloadStream != nullptr) {
+			auto streamChain = new StreamChain();
 			streamChain->attachStream(headerStream);
-			if(payloadStream) {
-				streamChain->attachStream(payloadStream);
-			}
+			streamChain->attachStream(payloadStream);
 			stream = streamChain;
 		} else {
 			stream = headerStream;
@@ -418,7 +407,7 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	}
 
 	case eMCS_SendingData:
-		lastMessage = millis();
+		pingTimer.start();
 		if(stream != nullptr && !stream->isFinished()) {
 			break;
 		}

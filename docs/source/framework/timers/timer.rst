@@ -5,4 +5,4 @@ The :cpp:class:`Timer` class is the most flexible way to use software timers, su
 and delegate callback functions so you can use it with class methods, capturing lambdas, etc.
 
 .. doxygengroup:: timer
-
+   :members:

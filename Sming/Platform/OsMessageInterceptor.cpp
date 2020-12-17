@@ -12,11 +12,11 @@
 
 #include "Platform/OsMessageInterceptor.h"
 
-extern void uart_debug_putc(char);
+extern void smg_uart_debug_putc(char);
 
 OsMessageInterceptor* OsMessageInterceptor::self;
 
-void OsMessageInterceptor::putc(char c)
+void OsMessageInterceptor::putch(char c)
 {
 	c = message.addChar(c);
 	if(c == '\n' && callback) {
@@ -36,5 +36,5 @@ void OsMessageInterceptor::begin(OsMessageCallback callback)
 
 void OsMessageInterceptor::end()
 {
-	ets_install_putc1(uart_debug_putc);
+	ets_install_putc1(smg_uart_debug_putc);
 }

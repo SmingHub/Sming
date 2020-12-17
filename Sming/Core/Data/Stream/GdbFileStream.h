@@ -14,8 +14,8 @@
 #include "FileSystem.h"
 
 /**
-  * @ingroup stream gdb_syscall
   * @brief GDB File stream class to provide access to host files whilst running under debugger
+  * @ingroup stream gdb_syscall
  */
 class GdbFileStream : public ReadWriteStream
 {
@@ -54,7 +54,7 @@ public:
 
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
-	int seekFrom(int offset, unsigned origin) override;
+	int seekFrom(int offset, SeekOrigin origin) override;
 
 	bool isFinished() override
 	{

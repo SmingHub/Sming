@@ -31,11 +31,13 @@
  * Elapse timers
  */
 
-template <NanoTime::Unit unit> using OneShotElapseTimer = PolledTimer::OneShot<Timer2Clock, unit>;
-template <NanoTime::Unit unit> using PeriodicElapseTimer = PolledTimer::Periodic<Timer2Clock, unit>;
+template <NanoTime::Unit unit> using OneShotElapseTimer = PolledTimer::OneShot<PolledTimerClock, unit>;
+template <NanoTime::Unit unit> using PeriodicElapseTimer = PolledTimer::Periodic<PolledTimerClock, unit>;
 
 using OneShotFastMs = OneShotElapseTimer<NanoTime::Milliseconds>;
+using PeriodicFastMs = PeriodicElapseTimer<NanoTime::Milliseconds>;
 using OneShotFastUs = OneShotElapseTimer<NanoTime::Microseconds>;
+using PeriodicFastUs = PeriodicElapseTimer<NanoTime::Microseconds>;
 
 using ElapseTimer = OneShotFastUs;
 
@@ -55,5 +57,7 @@ using CpuCycleTimerFast = OneShotCpuCycleTimerFast<NanoTime::Nanoseconds>;
  */
 
 typedef OneShotFastMs oneShotFastMs SMING_DEPRECATED;
+typedef PeriodicFastMs periodicFastMs SMING_DEPRECATED;
 typedef OneShotFastUs oneShotFastUs SMING_DEPRECATED;
+typedef PeriodicFastUs periodicFastUs SMING_DEPRECATED;
 /** @} */

@@ -14,17 +14,8 @@
 
 #include <FlashString/Stream.hpp>
 
-/** @addtogroup stream
- *  @{
+/**
+ * @brief Provides a read-only stream buffer on flash storage
+ * @ingroup stream
  */
-
-/*
- * FlashMemoryDataStream
- *
- * Provides a stream buffer on flash storage, so it's read-only
- *
- */
-
 using FlashMemoryStream = FSTR::Stream;
-
-/** @} */

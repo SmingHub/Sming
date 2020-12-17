@@ -107,6 +107,13 @@ ifeq (,$(CUSTOM_BUILD))
 CFLAGS		+= $(COMPONENT_CFLAGS)
 CXXFLAGS	+= $(COMPONENT_CXXFLAGS)
 
+# GCC 10 escapes ':' in path names which breaks GNU make for Windows so filter them
+ifeq ($(UNAME),Windows)
+OUTPUT_DEPS := | sed "s/\\\\:/:/g" > $$@
+else
+OUTPUT_DEPS := -MF $$@
+endif
+
 # $1 -> absolute source directory, no trailing path separator
 # $2 -> relative output build directory, with trailing path separator
 define GenerateCompileTargets
@@ -126,7 +133,7 @@ $2%.o: $1/%.c $2%.c.d
 	$(vecho) "CC $$<"
 	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
 $2%.c.d: $1/%.c
-	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -MM -MT $2$$*.o $$< -MF $$@
+	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -MM -MT $2$$*.o $$< $(OUTPUT_DEPS)
 .PRECIOUS: $2%.c.d
 endif
 ifneq (,$(filter $1/%.cpp,$(SOURCE_FILES)))
@@ -134,7 +141,7 @@ $2%.o: $1/%.cpp $2%.cpp.d
 	$(vecho) "C+ $$<"
 	$(Q) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -c $$< -o $$@
 $2%.cpp.d: $1/%.cpp
-	$(Q) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -MM -MT $2$$*.o $$< -MF $$@
+	$(Q) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -MM -MT $2$$*.o $$< $(OUTPUT_DEPS)
 .PRECIOUS: $2%.cpp.d
 endif
 endef
@@ -166,10 +173,23 @@ include $(wildcard $(ABS_BUILD_DIRS:=/*.c.d))
 include $(wildcard $(ABS_BUILD_DIRS:=/*.cpp.d))
 
 # Provide a target unless Component is custom built, in which case the component.mk will have defined this already
-$(COMPONENT_LIBPATH): $(OBJ) $(EXTRA_OBJ)
+$(COMPONENT_LIBPATH): build.ar
 	$(vecho) "AR $@"
 	$(Q) test ! -f $@ || rm $@
-	$(Q) $(AR) rcsP $@ $^
+	$(Q) $(AR) -M < build.ar
+	$(Q) mv $(notdir $(COMPONENT_LIBPATH)) $(COMPONENT_LIBPATH)
+
+define addmod
+	@echo ADDMOD $2 >> $1
+
+endef
+
+build.ar: $(OBJ) $(EXTRA_OBJ)
+	@echo CREATE $(notdir $(COMPONENT_LIBPATH)) > $@
+	$(foreach o,$(OBJ) $(EXTRA_OBJ),$(call addmod,$@,$o))
+	@echo SAVE >> $@
+	@echo END >> $@
+
 
 endif # ifeq (,$(CUSTOM_BUILD))
 endif # ifneq (,$(COMPONENT_LIBNAME))

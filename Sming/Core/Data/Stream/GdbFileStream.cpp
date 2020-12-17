@@ -11,8 +11,6 @@
 #include "GdbFileStream.h"
 #include <gdb/gdb_syscall.h>
 
-/* GdbFileStream */
-
 bool GdbFileStream::open(const String& fileName, FileOpenFlags openFlags)
 {
 	lastError = 0;
@@ -106,9 +104,9 @@ size_t GdbFileStream::write(const uint8_t* buffer, size_t size)
 	return written;
 }
 
-int GdbFileStream::seekFrom(int offset, unsigned origin)
+int GdbFileStream::seekFrom(int offset, SeekOrigin origin)
 {
-	int newpos = gdb_syscall_lseek(handle, offset, origin);
+	int newpos = gdb_syscall_lseek(handle, offset, int(origin));
 	if(check(newpos)) {
 		pos = size_t(newpos);
 		if(pos > size) {

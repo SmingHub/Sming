@@ -11,13 +11,17 @@
 #pragma once
 
 #include <user_config.h>
-#include "Stream.h"
-#include "WString.h"
-#include <unistd.h>
+#include <Stream.h>
+#include <WString.h>
+#include "SeekOrigin.h"
+#include <Network/WebConstants.h>
+
+/** @defgroup   stream Stream functions
+ *  @brief      Data stream classes
+*/
 
 /** @brief  Data stream type
  *  @ingroup constants
- *  @{
  */
 enum StreamType {
 	eSST_Invalid,	///< Stream content not valid
@@ -28,14 +32,11 @@ enum StreamType {
 	eSST_User,		 ///< User defined data stream
 	eSST_Unknown	 ///< Unknown data stream type
 };
-/** @} */
 
-/** @defgroup   stream Stream functions
- *  @brief      Data stream classes
- *  @{
-*/
-
-///Base class for data source stream
+/**
+ * @brief Base class for read-only stream
+ * @ingroup stream
+ */
 class IDataSourceStream : public Stream
 {
 public:
@@ -56,6 +57,8 @@ public:
 	{
 		return getStreamType() != eSST_Invalid;
 	}
+
+	size_t readBytes(char* buffer, size_t length) override;
 
 	/** @brief  Read a block of memory
      *  @param  data Pointer to the data to be read
@@ -79,12 +82,12 @@ public:
 
 	/** @brief Change position in stream
 	 *  @param offset
-	 *  @param origin SEEK_SET, SEEK_CUR, SEEK_END
+	 *  @param origin
 	 *  @retval New position, < 0 on error
 	 *  @note This method is implemented by streams which support random seeking,
 	 *  such as files and memory streams.
 	 */
-	virtual int seekFrom(int offset, unsigned origin)
+	virtual int seekFrom(int offset, SeekOrigin origin)
 	{
 		return -1;
 	}
@@ -95,7 +98,7 @@ public:
 	 */
 	virtual bool seek(int len)
 	{
-		return seekFrom(len, SEEK_CUR) >= 0;
+		return seekFrom(len, SeekOrigin::Current) >= 0;
 	}
 
 	/** @brief  Check if all data has been read
@@ -160,10 +163,37 @@ public:
 	}
 
 	/**
-	 * @brief Overrides Stream method for more efficient reading
-	 * @note Content is read using `readMemoryBlock()` so read position (for seekable streams) is not changed
+	 * @brief Get MIME type for stream content
+	 * @retval MimeType
 	 */
-	String readString(size_t maxLen = UINT16_MAX);
-};
+	virtual MimeType getMimeType() const
+	{
+		return ContentType::fromFullFileName(getName(), MIME_UNKNOWN);
+	}
 
-/** @} */
+	/**
+	 * @brief Overrides Stream method for more efficient reading
+	 * @note Stream position is updated by this call
+	 */
+	String readString(size_t maxLen) override;
+
+	/**
+	 * @brief Memory-based streams may be able to move content into a String
+	 * @param s String object to move data into
+	 * @retval bool true on success, false if there's a problem.
+	 *
+	 * If the operation is not supported by the stream, `s` will be invalidated and false returned.
+	 *
+	 * Because a String object must have a NUL terminator, this will be appended if there is
+	 * sufficient capacity. In this case, the method returns true.
+	 *
+	 * If there is no capacity to add a NUL terminator, then the final character of stream data
+	 * will be replaced with a NUL. The method returns false to indicate this.
+	 *
+	 */
+	virtual bool moveString(String& s)
+	{
+		s = nullptr;
+		return false;
+	};
+};

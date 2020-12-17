@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include "eagle_soc.h"
 #include "espinc/spi_register.h"
-#include "c_types.h"
+#include <c_types.h>
 
 // define the static singleton
 SPIClass SPI;
@@ -32,7 +32,7 @@ SPIClass SPI;
  */
 void SPIClass::begin()
 {
-	WRITE_PERI_REG(PERIPHS_IO_MUX, 0x105); //clear bit9
+	CLEAR_PERI_REG_MASK(PERIPHS_IO_MUX, BIT9);
 
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U, 2); // HSPIQ MISO == GPIO12
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U, 2); // HSPID MOSI == GPIO13
@@ -183,7 +183,14 @@ void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 											  (((num_bits - 1) & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
 
 		// copy the registers starting from last index position
-		memcpy((void*)SPI_W0(SPI_NO), &buffer[bufIndx], bufLength);
+		if(IS_ALIGNED(buffer)) {
+			memcpy((void*)SPI_W0(SPI_NO), &buffer[bufIndx], ALIGNUP4(bufLength));
+		} else {
+			auto spiBuffer = reinterpret_cast<volatile uint32_t*>(SPI_W0(SPI_NO));
+			uint32_t wordBuffer[BLOCKSIZE / 4];
+			memcpy(wordBuffer, &buffer[bufIndx], bufLength);
+			memcpy((void*)SPI_W0(SPI_NO), wordBuffer, ALIGNUP4(bufLength));
+		}
 
 		// Begin SPI Transaction
 		SET_PERI_REG_MASK(SPI_CMD(SPI_NO), SPI_USR);

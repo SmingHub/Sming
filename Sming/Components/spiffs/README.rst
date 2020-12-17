@@ -18,7 +18,7 @@ This Component provides additional functionality to support SPIFFS running on bo
 
 .. envvar:: SPIFF_SIZE
 
-   Size of the SPIFFS area in Flash memory.
+   Size (in bytes) of the SPIFFS area in Flash memory.
 
 
 .. envvar:: SPIFF_FILES

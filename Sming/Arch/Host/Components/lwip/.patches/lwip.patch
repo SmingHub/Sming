@@ -1,10 +1,10 @@
 diff --git a/contrib/ports/unix/port/sys_arch.c b/contrib/ports/unix/port/sys_arch.c
-index a56d7de1..6fc9f434 100644
+index 1b61f205..620133d9 100644
 --- a/contrib/ports/unix/port/sys_arch.c
 +++ b/contrib/ports/unix/port/sys_arch.c
-@@ -68,10 +68,12 @@
- #include "lwip/stats.h"
- #include "lwip/tcpip.h"
+@@ -71,10 +71,12 @@
+ /* Return code for an interrupted timed wait */
+ #define SYS_ARCH_INTR 0xfffffffeUL
  
 +extern u32_t os_random(void);
 +
@@ -16,10 +16,11 @@ index a56d7de1..6fc9f434 100644
  }
  
  static void
-@@ -730,13 +732,3 @@ sys_arch_unprotect(sys_prot_t pval)
+@@ -752,15 +754,3 @@ sys_arch_unprotect(sys_prot_t pval)
  }
  #endif /* SYS_LIGHTWEIGHT_PROT */
  
+-#if !NO_SYS
 -/* get keyboard state to terminate the debug app by using select */
 -int
 -lwip_unix_keypressed(void)
@@ -30,6 +31,7 @@ index a56d7de1..6fc9f434 100644
 -  FD_SET(0, &fds);
 -  return select(1, &fds, NULL, NULL, &tv);
 -}
+-#endif /* !NO_SYS */
 diff --git a/contrib/ports/CMakeCommon.cmake b/contrib/ports/CMakeCommon.cmake
 index fccf0f31..0a6378c4 100644
 --- a/contrib/ports/CMakeCommon.cmake

@@ -6,10 +6,6 @@
  *
  * HttpCommon.cpp
  *
- * @author: 2018 - Mikee47 <mike@sillyhouse.net>
- *
- * 	httpGetErrorName(), httpGetErrorDescription() and httpGetStatusText() functions added
- *
  ****/
 
 #include "HttpCommon.h"
@@ -25,10 +21,10 @@ HTTP_ERRNO_MAP(XX)
 DEFINE_FSTR_VECTOR_LOCAL(hpeNames, FlashString, HTTP_ERRNO_MAP(XX));
 #undef XX
 
-String httpGetErrorName(enum http_errno err)
+String toString(HttpError err)
 {
-	String s = hpeNames[err];
-	return s ?: F("HPE_#") + String(err);
+	String s = hpeNames[unsigned(err)];
+	return s ?: F("HPE_#") + String(unsigned(err));
 }
 
 // Define flash strings and lookup table for HTTP error descriptions
@@ -40,10 +36,10 @@ HTTP_ERRNO_MAP(XX)
 DEFINE_FSTR_VECTOR_LOCAL(hpeDescriptions, FlashString, HTTP_ERRNO_MAP(XX));
 #undef XX
 
-String httpGetErrorDescription(enum http_errno err)
+String httpGetErrorDescription(HttpError err)
 {
-	String s = hpeDescriptions[err];
-	return s ?: F("HPE_#") + String(err);
+	String s = hpeDescriptions[unsigned(err)];
+	return s ?: F("HPE_#") + String(unsigned(err));
 }
 
 // Define flash strings and Map for HTTP status codes
@@ -52,11 +48,11 @@ HTTP_STATUS_MAP(XX)
 #undef XX
 
 #define XX(num, name, string) {HTTP_STATUS_##name, &hpsText_##name},
-DEFINE_FSTR_MAP_LOCAL(httpStatusMap, enum http_status, FlashString, HTTP_STATUS_MAP(XX));
+DEFINE_FSTR_MAP_LOCAL(httpStatusMap, HttpStatus, FlashString, HTTP_STATUS_MAP(XX));
 #undef XX
 
-String httpGetStatusText(enum http_status code)
+String toString(HttpStatus code)
 {
 	auto s = String(httpStatusMap[code]);
-	return s ?: F("<unknown_") + String(code) + '>';
+	return s ?: F("<unknown_") + String(unsigned(code)) + '>';
 }

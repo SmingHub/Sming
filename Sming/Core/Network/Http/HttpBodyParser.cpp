@@ -21,11 +21,11 @@
  * Content is received in chunks which we need to reassemble into name=value pairs.
  * This structure stores the temporary values during parsing.
  */
-typedef struct {
-	char searchChar = '=';
+struct FormUrlParserState {
+	char searchChar{'='};
 	String postName;
 	String postValue;
-} FormUrlParserState;
+};
 
 /*
  * The incoming URL is parsed
@@ -118,7 +118,7 @@ size_t bodyToStringParser(HttpRequest& request, const char* at, int length)
 	}
 
 	if(length == PARSE_DATAEND || length < 0) {
-		request.setBody(*data);
+		request.setBody(std::move(*data));
 		delete data;
 		request.args = nullptr;
 		return 0;

@@ -43,7 +43,7 @@ public:
 		HttpRequest* request = new HttpRequest(String(url));
 
 		HttpHeaders requestHeaders;
-		requestHeaders[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(MIME_JSON);
+		requestHeaders[HTTP_HEADER_CONTENT_TYPE] = toString(MIME_JSON);
 		requestHeaders[F("x-instapush-appid")] = app;
 		requestHeaders[F("x-instapush-appsecret")] = secret;
 
@@ -65,7 +65,7 @@ public:
 
 	int processed(HttpConnection& client, bool successful)
 	{
-		Serial.println(client.getResponse()->getBody());
+		Serial.copyFrom(client.getResponse()->stream);
 
 		return 0;
 	}

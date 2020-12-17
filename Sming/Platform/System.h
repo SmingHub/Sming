@@ -34,23 +34,23 @@
 /** @brief Task callback function type, uint32_t parameter
  * 	@note Callback code does not need to be in IRAM
  */
-typedef void (*TaskCallback32)(uint32_t param);
+using TaskCallback32 = void (*)(uint32_t param);
 
 /** @brief Task callback function type, void* parameter
  * 	@note Callback code does not need to be in IRAM
  */
-typedef void (*TaskCallback)(void* param);
+using TaskCallback = void (*)(void* param);
 
 /** @brief Task Delegate callback type
  */
-typedef Delegate<void()> TaskDelegate;
+using TaskDelegate = Delegate<void()>;
 
 /** @brief Handler function for system ready
  */
-typedef TaskDelegate SystemReadyDelegate;
+using SystemReadyDelegate = TaskDelegate;
 
 /**
- * @brief Interface class implented by classes to support on-ready callback
+ * @brief Interface class implemented by classes to support on-ready callback
  */
 class ISystemReadyHandler
 {
@@ -70,6 +70,7 @@ public:
 enum CpuFrequency {
 	eCF_80MHz = 80,   ///< CPU 80MHz
 	eCF_160MHz = 160, ///< CPU 160MHz
+	eCF_240MHz = 240, ///< CPU 240MHz
 };
 
 /**

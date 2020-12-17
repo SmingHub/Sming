@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "hostlib.h"
+#include "include/hostlib/hostlib.h"
 #include "hostmsg.h"
 #include <pthread.h>
 #include <semaphore.h>

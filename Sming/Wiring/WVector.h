@@ -18,9 +18,10 @@
 #pragma once
 
 #include "Countable.h"
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 #include <algorithm>
+#include <iterator>
 
 /**
  * @brief Vector class template
@@ -29,7 +30,64 @@
 template <typename Element> class Vector : public Countable<Element>
 {
 public:
-	typedef int (*Comparer)(const Element& lhs, const Element& rhs);
+	using Comparer = int (*)(const Element& lhs, const Element& rhs);
+
+	template <bool is_const> class Iterator : public std::iterator<std::random_access_iterator_tag, Element>
+	{
+	public:
+		using V = typename std::conditional<is_const, const Vector, Vector>::type;
+		using E = typename std::conditional<is_const, const Element, Element>::type;
+
+		Iterator(const Iterator&) = default;
+
+		Iterator(V& vector, unsigned index) : vector(vector), index(index)
+		{
+		}
+
+		Iterator& operator++()
+		{
+			++index;
+			return *this;
+		}
+
+		Iterator operator++(int)
+		{
+			Iterator tmp(*this);
+			++index;
+			return tmp;
+		}
+
+		Iterator operator+=(size_t distance)
+		{
+			Iterator tmp(*this);
+			index += distance;
+			return tmp;
+		}
+
+		bool operator==(const Iterator& rhs) const
+		{
+			return &vector == &rhs.vector && index == rhs.index;
+		}
+
+		bool operator!=(const Iterator& rhs) const
+		{
+			return !operator==(rhs);
+		}
+
+		Element& operator*()
+		{
+			return vector[index];
+		}
+
+		E& operator*() const
+		{
+			return vector[index];
+		}
+
+	private:
+		V& vector;
+		unsigned index{0};
+	};
 
 	// constructors
 	Vector(unsigned int initialCapacity = 10, unsigned int capacityIncrement = 10);
@@ -84,7 +142,7 @@ public:
 			copyFrom(rhv);
 		return *this;
 	}
-	const Vector<Element>& operator=(const Vector<Element>&& other) // move assignment
+	const Vector<Element>& operator=(const Vector<Element>&& other) noexcept // move assignment
 	{
 		if(_data != nullptr) {
 			removeAllElements();
@@ -102,6 +160,26 @@ public:
 	}
 
 	void sort(Comparer compareFunction);
+
+	Iterator<false> begin()
+	{
+		return Iterator<false>(*this, 0);
+	}
+
+	Iterator<false> end()
+	{
+		return Iterator<false>(*this, count());
+	}
+
+	Iterator<true> begin() const
+	{
+		return Iterator<true>(*this, 0);
+	}
+
+	Iterator<true> end() const
+	{
+		return Iterator<true>(*this, count());
+	}
 
 protected:
 	void copyFrom(const Vector& rhv);

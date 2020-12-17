@@ -10,6 +10,8 @@
 
 #include "DigitalHooks.h"
 #include <hostlib/hostmsg.h>
+#include <driver/adc.h>
+#include <pins_arduino.h>
 
 void DigitalHooks::badPin(const char* function, uint16_t pin)
 {
@@ -41,5 +43,16 @@ void DigitalHooks::pullup(uint16_t pin, bool enable)
 unsigned long DigitalHooks::pulseIn(uint16_t pin, uint8_t state, unsigned long timeout)
 {
 	host_printfp("pin: %u, state: %u, timeout: %lu\n", __FUNCTION__, pin, state, timeout);
+	return 0;
+}
+
+uint16_t DigitalHooks::analogRead(uint16_t pin)
+{
+	if(pin == A0) {
+		host_printfp("pin: %u\n", __FUNCTION__, pin);
+		return system_adc_read();
+	}
+
+	host_printfp("pin: %u invalid\n", __FUNCTION__, pin);
 	return 0;
 }

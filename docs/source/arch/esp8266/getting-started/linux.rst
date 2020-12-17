@@ -26,8 +26,8 @@ We recommend ``/opt/`` but you can use anything you want::
    mkdir -p /opt/
    cd /opt/
 
-Build/Install Toolchain
------------------------
+Install Toolchain
+-----------------
 
 This builds the cross-compiler, linker, etc. required for the ESP8266::
 
@@ -43,6 +43,14 @@ This builds the cross-compiler, linker, etc. required for the ESP8266::
 
 You can find pre-compiled toolchains in the `SmingTools <https://github.com/SmingHub/SmingTools/releases>`__ repository.
 
+Manual installation::
+
+   export ESP_HOME=/opt/esp-quick-toolchain
+   sudo mkdir $(ESP_HOME)
+   sudo chown $USER:$USER $(ESP_HOME)
+   wget https://github.com/SmingHub/SmingTools/releases/download/1.0/x86_64-linux-gnu.xtensa-lx106-elf-e6a192b.201211.tar.gz
+   tar -zxf x86_64-linux-gnu.xtensa-lx106-elf-e6a192b.201211.tar.gz -C $(ESP_HOME)
+
 Espressif SDK
 -------------
 
@@ -56,13 +64,14 @@ Environment Variables
 
 From the command line::
 
-   export ESP_HOME=/opt/esp-open-sdk
+   export ESP_HOME=/opt/esp-quick-toolchain
    export SMING_HOME=/opt/Sming/Sming
 
 To set these permanently, add them to your home ``.profile`` file.
 
 You can alternatively add them to ``/etc/environment`` for all users, like this::
 
+   ESP_HOME="/opt/esp-quick-toolchain"
    SMING_HOME="/opt/Sming/Sming"
 
 

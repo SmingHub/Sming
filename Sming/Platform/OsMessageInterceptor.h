@@ -49,14 +49,14 @@
 /**
  * @brief Fixed-size buffer for OS messages
  */
-typedef LineBuffer<128> OsMessage;
+using OsMessage = LineBuffer<128>;
 
 /**
  * @brief Callback to receive OS message line
  * @param msg The message
  * @note We don't use std::function because it produces a more elaborate stack trace without any real benefit
  */
-typedef void (*OsMessageCallback)(OsMessage& message);
+using OsMessageCallback = void (*)(OsMessage& message);
 
 /**
  * @brief Class to handle interception of OS messages
@@ -85,11 +85,11 @@ public:
 	void end();
 
 protected:
-	void putc(char c);
+	void putch(char c);
 
 	static void static_putc(char c)
 	{
-		self->putc(c);
+		self->putch(c);
 	}
 
 private:

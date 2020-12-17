@@ -12,17 +12,14 @@
 
 #include "MemoryDataStream.h"
 
-/** @addtogroup stream
- *  @{
- */
-
 /**
  * @brief Memory stream that stores unlimited number of bytes.
  *
- * @note Memory is allocated on write and released when all written
+ * Memory is allocated on write and released when all written
  * bytes have been read out. This behaviour differs from a circular buffer
  * as the size is not fixed.
  *
+ * @ingroup stream
  */
 class EndlessMemoryStream : public ReadWriteStream
 {
@@ -59,5 +56,3 @@ public:
 private:
 	MemoryDataStream* stream = nullptr;
 };
-
-/** @} */

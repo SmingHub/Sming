@@ -12,7 +12,6 @@
 
 #include "MultiStream.h"
 
-//Use base class documentation
 uint16_t MultiStream::readMemoryBlock(char* data, int bufSize)
 {
 	if(stream != nullptr && stream->isFinished()) {
@@ -20,20 +19,11 @@ uint16_t MultiStream::readMemoryBlock(char* data, int bufSize)
 		stream = nullptr;
 	}
 
-	if(stream == nullptr && nextStream != nullptr) {
-		stream = nextStream;
-		nextStream = nullptr;
-	}
-
 	if(stream == nullptr) {
-		nextStream = getNextStream();
-		if(!nextStream) {
+		stream = getNextStream();
+		if(stream == nullptr) {
 			finished = true;
-			if(!onCompleted()) {
-				return 0;
-			}
-		} else {
-			onNextStream();
+			return 0;
 		}
 	}
 
@@ -42,14 +32,5 @@ uint16_t MultiStream::readMemoryBlock(char* data, int bufSize)
 
 bool MultiStream::seek(int len)
 {
-	if(stream == nullptr) {
-		return false;
-	}
-
-	return stream->seek(len);
-}
-
-bool MultiStream::isFinished()
-{
-	return (finished && (stream == nullptr || stream->isFinished()));
+	return stream ? stream->seek(len) : false;
 }

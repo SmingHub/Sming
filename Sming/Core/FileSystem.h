@@ -18,8 +18,9 @@
 #include <spiffs_sming.h>
 #include <WVector.h>
 #include <WString.h>
+#include "Data/Stream/SeekOrigin.h"
 
-typedef signed short file_t; ///< File handle
+using file_t = signed short; ///< File handle
 
 /// File open flags
 enum FileOpenFlags {
@@ -38,11 +39,9 @@ static inline FileOpenFlags operator|(FileOpenFlags lhs, FileOpenFlags rhs)
 }
 
 /// File seek flags
-typedef enum {
-	eSO_FileStart = SPIFFS_SEEK_SET,  ///< Start of file
-	eSO_CurrentPos = SPIFFS_SEEK_CUR, ///< Current position in file
-	eSO_FileEnd = SPIFFS_SEEK_END	 ///< End of file
-} SeekOriginFlags;
+constexpr SeekOrigin eSO_FileStart{SeekOrigin::Start};	///< @deprecated use SeekOrigin::Start
+constexpr SeekOrigin eSO_CurrentPos{SeekOrigin::Current}; ///< @deprecated use SeekOrigin::Current
+constexpr SeekOrigin eSO_FileEnd{SeekOrigin::End};		  ///< @deprecated use SeekOrigin::End
 
 /** @brief  Open file
  *  @param  name File name
@@ -79,7 +78,7 @@ int fileRead(file_t file, void* data, size_t size);
  *  @param  origin Position from where to move cursor
  *  @retval Offset within file or negative error code
  */
-int fileSeek(file_t file, int offset, SeekOriginFlags origin);
+int fileSeek(file_t file, int offset, SeekOrigin origin);
 
 /** @brief  Check if at end of file
  *  @param  file File ID

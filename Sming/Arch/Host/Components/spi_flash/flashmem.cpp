@@ -17,6 +17,7 @@
  *
  ****/
 
+#include <hostlib/hostlib.h>
 #include "flashmem.h"
 #include <string.h>
 #include <esp_spi_flash.h>
@@ -113,13 +114,19 @@ static int writeFlashFile(uint32_t offset, const void* data, size_t count)
 	return (res < 0) ? res : write(flashFile, data, count);
 }
 
-//SPIFlashInfo flashmem_get_info()
-//{
-//}
+SPIFlashInfo flashmem_get_info()
+{
+	SPIFlashInfo info;
+	info.mode = MODE_QIO;
+	info.speed = SPEED_80MHZ;
+	info.size = SIZE_32MBIT;
+	return info;
+}
 
-//uint8_t flashmem_get_size_type()
-//{
-//}
+uint8_t flashmem_get_size_type()
+{
+	return flashmem_get_info().size;
+}
 
 uint32 spi_flash_get_id(void)
 {

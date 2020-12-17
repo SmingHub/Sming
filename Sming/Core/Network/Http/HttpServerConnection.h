@@ -26,9 +26,9 @@
 class HttpResourceTree;
 class HttpServerConnection;
 
-typedef Delegate<void(HttpServerConnection& connection)> HttpServerConnectionDelegate;
+using HttpServerConnectionDelegate = Delegate<void(HttpServerConnection& connection)>;
 
-typedef Delegate<bool()> HttpServerProtocolUpgradeCallback;
+using HttpServerProtocolUpgradeCallback = Delegate<bool()>;
 
 class HttpServerConnection : public HttpConnection
 {
@@ -60,8 +60,12 @@ public:
 
 	void send()
 	{
-		state = eHCS_StartSending;
-		onReadyToSendData(eTCE_Received);
+		if(state == eHCS_Ready) {
+			state = eHCS_StartSending;
+			onReadyToSendData(eTCE_Received);
+		} else {
+			onReadyToSendData(eTCE_Poll);
+		}
 	}
 
 	using TcpClient::send;
@@ -99,11 +103,11 @@ protected:
 		return true;
 	}
 
-	bool onHttpError(http_errno error) override;
+	bool onHttpError(HttpError error) override;
 
 	// TCP methods
 	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
-	virtual void sendError(const String& message = nullptr, enum http_status code = HTTP_STATUS_BAD_REQUEST);
+	virtual void sendError(const String& message = nullptr, HttpStatus code = HTTP_STATUS_BAD_REQUEST);
 
 private:
 	void sendResponseHeaders(HttpResponse* response);

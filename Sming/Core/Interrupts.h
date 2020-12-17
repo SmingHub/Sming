@@ -20,10 +20,30 @@
 #include <WConstants.h>
 #include <sming_attr.h>
 
-constexpr unsigned ESP_MAX_INTERRUPTS = 16;
+using InterruptCallback = void (*)();
+using InterruptDelegate = Delegate<void()>;
 
-typedef void (*InterruptCallback)();
-typedef Delegate<void()> InterruptDelegate;
+/** @brief  Convert Arduino interrupt mode to Sming mode
+ *  @param  mode Arduino mode type
+ *  @retval GPIO_INT_TYPE Sming interrupt type
+ */
+__forceinline GPIO_INT_TYPE ConvertArduinoInterruptMode(uint8_t mode)
+{
+	switch(mode) {
+	case LOW: // to trigger the interrupt whenever the pin is low,
+		return GPIO_PIN_INTR_LOLEVEL;
+	case CHANGE:				 // to trigger the interrupt whenever the pin changes value
+		return (GPIO_INT_TYPE)3; // GPIO_PIN_INTR_ANYEDGE
+	case RISING:				 // to trigger when the pin goes from low to high,
+		return GPIO_PIN_INTR_POSEDGE;
+	case FALLING: // for when the pin goes from high to low.
+		return GPIO_PIN_INTR_NEGEDGE;
+	case HIGH: // to trigger the interrupt whenever the pin is high.
+		return GPIO_PIN_INTR_HILEVEL;
+	default:
+		return GPIO_PIN_INTR_DISABLE;
+	}
+}
 
 /** @brief  Convert Arduino interrupt mode to Sming mode
  *  @param  mode Arduino mode type
@@ -119,8 +139,6 @@ __forceinline void interruptMode(uint8_t pin, uint8_t mode)
 	GPIO_INT_TYPE type = ConvertArduinoInterruptMode(mode);
 	interruptMode(pin, type);
 }
-
-#define digitalPinToInterrupt(pin) ((pin) < ESP_MAX_INTERRUPTS ? (pin) : -1)
 
 // AVR-style interrupt management
 #define cli() noInterrupts()

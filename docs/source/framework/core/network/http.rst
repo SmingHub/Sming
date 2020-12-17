@@ -43,6 +43,7 @@ Client API
 
 .. doxygengroup:: httpclient
    :content-only:
+   :members:
 
 
 Server API
@@ -50,3 +51,4 @@ Server API
 
 .. doxygengroup:: httpserver
    :content-only:
+   :members:

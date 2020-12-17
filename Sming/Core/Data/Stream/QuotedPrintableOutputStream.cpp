@@ -12,13 +12,6 @@
 
 #include "QuotedPrintableOutputStream.h"
 
-/*
- * @brief Stream quoted-printable encoder
- * @param uint8_t* source - the incoming data
- * @param size_t sourceLength -length of the incoming data
- * @param uint8_t* target - the result data. The pointer must point to an already allocated memory
- * @param int* targetLength - the length of the allocated result data
- */
 size_t QuotedPrintableOutputStream::transform(const uint8_t* source, size_t sourceLength, uint8_t* target,
 											  size_t targetLength)
 {

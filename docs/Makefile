@@ -16,6 +16,13 @@ SPHINXBUILD		?= sphinx-build
 SOURCEDIR		= source
 BUILDDIR		= build
 
+BUILD_TYPE		:= release
+OUT_BASE		:= out/$(SMING_ARCH)/$(BUILD_TYPE)
+BUILD_BASE		= $(OUT_BASE)/build
+
+# Components can detect when docs are being built
+MAKE_DOCS		:= 1
+
 # Documentation is copied into this directory so it gets pulled into build
 SOURCE_INCDIR	:= $(SOURCEDIR)/_inc
 
@@ -180,6 +187,8 @@ CACHE_VARS				:=
 DEBUG_VARS				:=
 COMPONENT_DEPENDS		:=
 ARDUINO_LIBRARIES		:=
+COMPONENT_BUILD_BASE	:= $(BUILD_BASE)/$1
+COMPONENT_BUILD_DIR		:= $(BUILD_BASE)/$1
 include defines.mk
 -include $2/component.mk
 CMP_$2_VARS				:= $$(sort $$(COMPONENT_VARS))
@@ -247,7 +256,7 @@ SOURCE_INCFILES			:= $(call GetIncPath,$(SOURCE_FILES))
 COMPONENT_INDEXFILES	:= $(addsuffix /index.rst,$(call GetIncPath,$(COMPONENT_DIRS)))
 
 .PHONY: setup
-setup: checkdirs $(SOURCE_INCFILES) $(COMPONENT_INDEXFILES)
+setup: initdirs $(SOURCE_INCFILES) $(COMPONENT_INDEXFILES)
 ifeq ($V,1)
 	$(call PrintVariable,SOURCE_DIRS)
 	$(call PrintVariable,SOURCE_FILES)
@@ -266,8 +275,8 @@ endef
 $(foreach f,$(SOURCE_FILES),$(eval $(call CopyFileTarget,$(call GetIncPath,$f),$f)))
 
 
-.PHONY: checkdirs
-checkdirs:
+.PHONY: initdirs
+initdirs:
 	$(Q) mkdir -p $(SOURCE_INCDIRS)
 
 .PHONY: api

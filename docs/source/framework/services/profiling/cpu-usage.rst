@@ -1,14 +1,32 @@
 CPU Usage
 =========
 
+.. highlight:: c++
+
 Class to provide a CPU usage indication based on task callback availability.
+To produce useful results it requires a couple of seconds at startup to calibrate.
 
-To use, instantiate a single instance of :cpp:class:`Profiling::CpuUsage`
-and call :cpp:func:`Profiling::CpuUsage::begin` from the application's :c:func:`init`
-function, passing a callback function to be invoked after calibration has completed.
-This function will continue with your application's normal execution.
+Use like this::
 
-See :sample:`RingTonePlayer` for an example.
+   #include <Services/Profiling/CpuUsage.h>
+
+   // instantiate a single instance of :cpp:class:`Profiling::CpuUsage`
+   Profiling::CpuUsage cpuUsage;
+
+   // Will be called when CpuUsage calibration has completed
+   void onReady()
+   {
+      // Continue with application initialisation
+   }
+
+   void init()
+   {
+      // Begin clock calibration
+      cpuUsage.begin(onReady);
+   }
+
+   
+See :sample:`RingTonePlayer` for a more detailed example.
 
 CPU usage is calculated over an update period which begins with a call to :cpp:func:`Profiling::CpuUsage::reset`.
 The actual update period must be managed elsewhere, using a callback timer, web request
@@ -33,3 +51,4 @@ utilisation
 
 
 .. doxygenclass:: Profiling::CpuUsage
+   :members:

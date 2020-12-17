@@ -1,0 +1,604 @@
+<body class="mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject mw-editable page-Unit_testing rootpage-Unit_testing skin-vector action-view skin-vector-legacy"><div id="mw-page-base" class="noprint"></div>
+<div id="mw-head-base" class="noprint"></div>
+<div id="content" class="mw-body" role="main">
+	<a id="top"></a>
+	<div id="siteNotice" class="mw-body-content"><!-- CentralNotice --></div>
+	<div class="mw-indicators mw-body-content">
+	</div>
+	<h1 id="firstHeading" class="firstHeading" lang="en">Unit testing</h1>
+	<div id="bodyContent" class="mw-body-content">
+		<div id="siteSub" class="noprint">From Wikipedia, the free encyclopedia</div>
+		<div id="contentSub"></div>
+		<div id="contentSub2"></div>
+		
+		<div id="jump-to-nav"></div>
+		<a class="mw-jump-link" href="#mw-head">Jump to navigation</a>
+		<a class="mw-jump-link" href="#searchInput">Jump to search</a>
+		<div id="mw-content-text" lang="en" dir="ltr" class="mw-content-ltr"><div class="mw-parser-output"><div class="shortdescription nomobile noexcerpt noprint searchaux" style="display:none">Software testing method by which individual units of source code are validated</div>
+<p class="mw-empty-elt">
+</p>
+<table class="vertical-navbox" style="float:right;clear:right;width:22.0em;margin:0 0 1.0em 1.0em;background:#f8f9fa;border:1px solid #aaa;padding:0.2em;border-spacing:0.4em 0;text-align:center;line-height:1.4em;font-size:88%"><tbody><tr><th style="padding:0.2em 0.4em 0.2em;font-size:145%;line-height:1.2em"><a href="/wiki/Software_development" title="Software development">Software development</a></th></tr><tr><th style="padding:0.1em;background-color: #e7c6a5">
+Core activities</th></tr><tr><td class="hlist" style="padding:0 0.1em 0.4em">
+<ul><li><a href="/wiki/Software_development_process" title="Software development process">Processes</a></li>
+<li><a href="/wiki/Requirements_analysis" title="Requirements analysis">Requirements</a></li>
+<li><a href="/wiki/Software_design" title="Software design">Design</a></li>
+<li><a href="/wiki/Software_engineering" title="Software engineering">Engineering</a></li>
+<li><a href="/wiki/Software_construction" title="Software construction">Construction</a></li>
+<li><a href="/wiki/Software_testing" title="Software testing">Testing</a></li>
+<li><a href="/wiki/Debugging" title="Debugging">Debugging</a></li>
+<li><a href="/wiki/Software_deployment" title="Software deployment">Deployment</a></li>
+<li><a href="/wiki/Software_maintenance" title="Software maintenance">Maintenance</a></li></ul></td>
+</tr><tr><th style="padding:0.1em;background-color: #e7c6a5">
+Paradigms and models</th></tr><tr><td class="hlist" style="padding:0 0.1em 0.4em">
+<ul><li><a href="/wiki/Agile_software_development" title="Agile software development">Agile</a></li>
+<li><a href="/wiki/Cleanroom_software_engineering" title="Cleanroom software engineering">Cleanroom</a></li>
+<li><a href="/wiki/Incremental_build_model" title="Incremental build model">Incremental</a></li>
+<li><a href="/wiki/Software_prototyping" title="Software prototyping">Prototyping</a></li>
+<li><a href="/wiki/Spiral_model" title="Spiral model">Spiral</a></li>
+<li><a href="/wiki/V-Model_(software_development)" title="V-Model (software development)">V model</a></li>
+<li><a href="/wiki/Waterfall_model" title="Waterfall model">Waterfall</a></li></ul></td>
+</tr><tr><th style="padding:0.1em;background-color: #e7c6a5">
+<a href="/wiki/Software_development_methodology" class="mw-redirect" title="Software development methodology">Methodologies</a> and frameworks</th></tr><tr><td class="hlist" style="padding:0 0.1em 0.4em">
+<ul><li><a href="/wiki/Adaptive_software_development" title="Adaptive software development">ASD</a></li>
+<li><a href="/wiki/DevOps" title="DevOps">DevOps</a></li>
+<li><a href="/wiki/Disciplined_agile_delivery" title="Disciplined agile delivery">DAD</a></li>
+<li><a href="/wiki/Dynamic_systems_development_method" title="Dynamic systems development method">DSDM</a></li>
+<li><a href="/wiki/Feature-driven_development" title="Feature-driven development">FDD</a></li>
+<li><a href="/wiki/Iterative_and_incremental_development" title="Iterative and incremental development">IID</a></li>
+<li><a href="/wiki/Kanban_(development)" title="Kanban (development)">Kanban</a></li>
+<li><a href="/wiki/Lean_software_development" title="Lean software development">Lean SD</a></li>
+<li><a href="/wiki/Scrum_(software_development)#Large-scale_Scrum" title="Scrum (software development)">LeSS</a></li>
+<li><a href="/wiki/Model-driven_development" class="mw-redirect" title="Model-driven development">MDD</a></li>
+<li><a href="/wiki/Microsoft_Solutions_Framework" title="Microsoft Solutions Framework">MSF</a></li>
+<li><a href="/wiki/Personal_software_process" title="Personal software process">PSP</a></li>
+<li><a href="/wiki/Rapid_application_development" title="Rapid application development">RAD</a></li>
+<li><a href="/wiki/Rational_Unified_Process" title="Rational Unified Process">RUP</a></li>
+<li><a href="/wiki/Scaled_agile_framework" title="Scaled agile framework">SAFe</a></li>
+<li><a href="/wiki/Scrum_(software_development)" title="Scrum (software development)">Scrum</a></li>
+<li><a href="/wiki/SEMAT" title="SEMAT">SEMAT</a></li>
+<li><a href="/wiki/Team_software_process" title="Team software process">TSP</a></li>
+<li><a href="/wiki/OpenUP" title="OpenUP">OpenUP</a></li>
+<li><a href="/wiki/Unified_Process" title="Unified Process">UP</a></li>
+<li><a href="/wiki/Extreme_programming" title="Extreme programming">XP</a></li></ul></td>
+</tr><tr><th style="padding:0.1em;background-color: #e7c6a5">
+Supporting disciplines</th></tr><tr><td class="hlist" style="padding:0 0.1em 0.4em">
+<ul><li><a href="/wiki/Software_configuration_management" title="Software configuration management">Configuration management</a></li>
+<li><a href="/wiki/Software_documentation" title="Software documentation">Documentation</a></li>
+<li><a href="/wiki/Software_quality_assurance" title="Software quality assurance">Software quality assurance (SQA)</a></li>
+<li><a href="/wiki/Software_project_management" title="Software project management">Project management</a></li>
+<li><a href="/wiki/User_experience" title="User experience">User experience</a></li></ul></td>
+</tr><tr><th style="padding:0.1em;background-color: #e7c6a5">
+Practices</th></tr><tr><td class="hlist" style="padding:0 0.1em 0.4em">
+<ul><li><a href="/wiki/Acceptance_test%E2%80%93driven_development" title="Acceptance test–driven development">ATDD</a></li>
+<li><a href="/wiki/Behavior-driven_development" title="Behavior-driven development">BDD</a></li>
+<li><a href="/wiki/Extreme_programming_practices#Collective_code_ownership" title="Extreme programming practices">CCO</a></li>
+<li><a href="/wiki/Continuous_integration" title="Continuous integration">CI</a></li>
+<li><a href="/wiki/Continuous_delivery" title="Continuous delivery">CD</a></li>
+<li><a href="/wiki/Domain-driven_design" title="Domain-driven design">DDD</a></li>
+<li><a href="/wiki/Pair_programming" title="Pair programming">PP</a></li>
+<li><a href="/wiki/Specification_by_example" title="Specification by example">SBE</a></li>
+<li><a href="/wiki/Stand-up_meeting" title="Stand-up meeting">Stand-up</a></li>
+<li><a href="/wiki/Test-driven_development" title="Test-driven development">TDD</a></li></ul></td>
+</tr><tr><th style="padding:0.1em;background-color: #e7c6a5">
+<a href="/wiki/Programming_tool" title="Programming tool">Tools</a></th></tr><tr><td class="hlist" style="padding:0 0.1em 0.4em">
+<ul><li><a href="/wiki/Compiler" title="Compiler">Compiler</a></li>
+<li><a href="/wiki/Debugger" title="Debugger">Debugger</a></li>
+<li><a href="/wiki/Profiling_(computer_programming)" title="Profiling (computer programming)">Profiler</a></li>
+<li><a href="/wiki/Graphical_user_interface_builder" title="Graphical user interface builder">GUI designer</a></li>
+<li><a href="/wiki/UML_tool" title="UML tool">Modeling</a></li>
+<li><a href="/wiki/Integrated_development_environment" title="Integrated development environment">IDE</a></li>
+<li><a href="/wiki/Build_automation" title="Build automation">Build automation</a></li>
+<li><a href="/wiki/Application-release_automation" title="Application-release automation">Release automation</a></li>
+<li><a href="/wiki/Infrastructure_as_code" title="Infrastructure as code">Infrastructure as code</a></li>
+<li><a href="/wiki/Category:Software_testing_tools" title="Category:Software testing tools">Testing</a></li></ul></td>
+</tr><tr><th style="padding:0.1em;background-color: #e7c6a5">
+Standards and Bodies of Knowledge</th></tr><tr><td class="hlist" style="padding:0 0.1em 0.4em">
+<ul><li><a href="/wiki/A_Guide_to_the_Business_Analysis_Body_of_Knowledge" title="A Guide to the Business Analysis Body of Knowledge">BABOK</a></li>
+<li><a href="/wiki/Capability_Maturity_Model_Integration" title="Capability Maturity Model Integration">CMMI</a></li>
+<li><a href="/wiki/IEEE_Standards_Association" title="IEEE Standards Association">IEEE standards</a></li>
+<li><a href="/wiki/ISO_9001" class="mw-redirect" title="ISO 9001">ISO 9001</a></li>
+<li><a href="/wiki/ISO/IEC_JTC_1/SC_7" title="ISO/IEC JTC 1/SC 7">ISO/IEC standards</a></li>
+<li><a href="/wiki/Project_Management_Body_of_Knowledge" title="Project Management Body of Knowledge">PMBOK</a></li>
+<li><a href="/wiki/Software_Engineering_Body_of_Knowledge" title="Software Engineering Body of Knowledge">SWEBOK</a></li>
+<li><a href="/wiki/ITIL" title="ITIL">ITIL</a></li>
+<li><a href="/wiki/International_Requirements_Engineering_Board" title="International Requirements Engineering Board">IREB</a></li></ul></td>
+</tr><tr><th style="padding:0.1em;background-color: #e7c6a5">
+Glossaries</th></tr><tr><td class="hlist" style="padding:0 0.1em 0.4em">
+<ul><li><a href="/wiki/Glossary_of_artificial_intelligence" title="Glossary of artificial intelligence">Artificial intelligence</a></li>
+<li><a href="/wiki/Glossary_of_computer_science" title="Glossary of computer science">Computer science</a></li>
+<li><a href="/wiki/Glossary_of_electrical_and_electronics_engineering" title="Glossary of electrical and electronics engineering">Electrical and electronics engineering</a></li></ul></td>
+</tr><tr><th style="padding:0.1em;background-color: #e7c6a5">
+Outlines</th></tr><tr><td class="hlist" style="padding:0 0.1em 0.4em">
+<ul><li><a href="/wiki/Outline_of_software_development" title="Outline of software development">Outline of software development</a></li></ul></td>
+</tr><tr><td style="text-align:right;font-size:115%"><div class="plainlinks hlist navbar mini"><ul><li class="nv-view"><a href="/wiki/Template:Software_development_process" title="Template:Software development process"><abbr title="View this template">v</abbr></a></li><li class="nv-talk"><a href="/wiki/Template_talk:Software_development_process" title="Template talk:Software development process"><abbr title="Discuss this template">t</abbr></a></li><li class="nv-edit"><a class="external text" href="https://en.wikipedia.org/w/index.php?title=Template:Software_development_process&amp;action=edit"><abbr title="Edit this template">e</abbr></a></li></ul></div></td></tr></tbody></table>
+<p>In <a href="/wiki/Computer_programming" title="Computer programming">computer programming</a>, <b>unit testing</b> is a <a href="/wiki/Software_testing" title="Software testing">software testing</a> method by which individual units of <a href="/wiki/Source_code" title="Source code">source code</a>&#8212;sets of one or more computer program modules together with associated control data, usage procedures, and operating procedures&#8212;are tested to determine whether they are fit for use.<sup id="cite_ref-kolawa_1-0" class="reference"><a href="#cite_note-kolawa-1">&#91;1&#93;</a></sup>
+</p>
+<div id="toc" class="toc" role="navigation" aria-labelledby="mw-toc-heading"><input type="checkbox" role="button" id="toctogglecheckbox" class="toctogglecheckbox" style="display:none" /><div class="toctitle" lang="en" dir="ltr"><h2 id="mw-toc-heading">Contents</h2><span class="toctogglespan"><label class="toctogglelabel" for="toctogglecheckbox"></label></span></div>
+<ul>
+<li class="toclevel-1 tocsection-1"><a href="#Description"><span class="tocnumber">1</span> <span class="toctext">Description</span></a></li>
+<li class="toclevel-1 tocsection-2"><a href="#Advantages"><span class="tocnumber">2</span> <span class="toctext">Advantages</span></a></li>
+<li class="toclevel-1 tocsection-3"><a href="#Limitations_and_disadvantages"><span class="tocnumber">3</span> <span class="toctext">Limitations and disadvantages</span></a></li>
+<li class="toclevel-1 tocsection-4"><a href="#Example"><span class="tocnumber">4</span> <span class="toctext">Example</span></a></li>
+<li class="toclevel-1 tocsection-5"><a href="#As_executable_specifications"><span class="tocnumber">5</span> <span class="toctext">As executable specifications</span></a></li>
+<li class="toclevel-1 tocsection-6"><a href="#Applications"><span class="tocnumber">6</span> <span class="toctext">Applications</span></a>
+<ul>
+<li class="toclevel-2 tocsection-7"><a href="#Extreme_programming"><span class="tocnumber">6.1</span> <span class="toctext">Extreme programming</span></a></li>
+<li class="toclevel-2 tocsection-8"><a href="#Unit_testing_frameworks"><span class="tocnumber">6.2</span> <span class="toctext">Unit testing frameworks</span></a></li>
+<li class="toclevel-2 tocsection-9"><a href="#Language-level_unit_testing_support"><span class="tocnumber">6.3</span> <span class="toctext">Language-level unit testing support</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1 tocsection-10"><a href="#See_also"><span class="tocnumber">7</span> <span class="toctext">See also</span></a></li>
+<li class="toclevel-1 tocsection-11"><a href="#References"><span class="tocnumber">8</span> <span class="toctext">References</span></a></li>
+<li class="toclevel-1 tocsection-12"><a href="#External_links"><span class="tocnumber">9</span> <span class="toctext">External links</span></a></li>
+</ul>
+</div>
+
+<h2><span class="mw-headline" id="Description">Description</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=Unit_testing&amp;action=edit&amp;section=1" title="Edit section: Description">edit</a><span class="mw-editsection-bracket">]</span></span></h2>
+<table class="box-More_citations_needed_section plainlinks metadata ambox ambox-content ambox-Refimprove" role="presentation"><tbody><tr><td class="mbox-image"><div style="width:52px"><a href="/wiki/File:Question_book-new.svg" class="image"><img alt="" src="//upload.wikimedia.org/wikipedia/en/thumb/9/99/Question_book-new.svg/50px-Question_book-new.svg.png" decoding="async" width="50" height="39" srcset="//upload.wikimedia.org/wikipedia/en/thumb/9/99/Question_book-new.svg/75px-Question_book-new.svg.png 1.5x, //upload.wikimedia.org/wikipedia/en/thumb/9/99/Question_book-new.svg/100px-Question_book-new.svg.png 2x" data-file-width="512" data-file-height="399" /></a></div></td><td class="mbox-text"><div class="mbox-text-span">This section <b>needs additional citations for <a href="/wiki/Wikipedia:Verifiability" title="Wikipedia:Verifiability">verification</a></b>.<span class="hide-when-compact"> Please help <a class="external text" href="https://en.wikipedia.org/w/index.php?title=Unit_testing&amp;action=edit">improve this article</a> by <a href="/wiki/Help:Referencing_for_beginners" title="Help:Referencing for beginners">adding citations to reliable sources</a>. Unsourced material may be challenged and removed.</span>  <small class="date-container"><i>(<span class="date">September 2019</span>)</i></small><small class="hide-when-compact"><i> (<a href="/wiki/Help:Maintenance_template_removal" title="Help:Maintenance template removal">Learn how and when to remove this template message</a>)</i></small></div></td></tr></tbody></table>
+<p>Unit tests are typically <a href="/wiki/Test_automation" title="Test automation">automated</a> tests written and run by <a href="/wiki/Software_developer" class="mw-redirect" title="Software developer">software developers</a> to ensure that a section of an application (known as the "unit") meets its design and behaves as intended.<sup id="cite_ref-hamill_2-0" class="reference"><a href="#cite_note-hamill-2">&#91;2&#93;</a></sup> In <a href="/wiki/Procedural_programming" title="Procedural programming">procedural programming</a>, a unit could be an entire module, but it is more commonly an individual function or procedure. In <a href="/wiki/Object-oriented_programming" title="Object-oriented programming">object-oriented programming</a>, a unit is often an entire interface, such as a class, but could be an individual method.<sup id="cite_ref-3" class="reference"><a href="#cite_note-3">&#91;3&#93;</a></sup> By writing tests first for the smallest testable units, then the compound behaviors between those, one can build up comprehensive tests for complex applications.<sup id="cite_ref-hamill_2-1" class="reference"><a href="#cite_note-hamill-2">&#91;2&#93;</a></sup>
+</p><p>To isolate issues that may arise, each <a href="/wiki/Test_case" title="Test case">test case</a> should be tested independently. Substitutes such as <a href="/wiki/Method_stub" title="Method stub">method stubs</a>, <a href="/wiki/Mock_object" title="Mock object">mock objects</a>,<sup id="cite_ref-mocksarentstubs_4-0" class="reference"><a href="#cite_note-mocksarentstubs-4">&#91;4&#93;</a></sup> <a href="/wiki/Mock_object#Mocks.2C_fakes.2C_and_stubs" title="Mock object">fakes</a>, and <a href="/wiki/Test_harness" title="Test harness">test harnesses</a> can be used to assist testing a module in isolation.
+</p><p>During development, a software developer may code criteria, or results that are known to be good, into the test to verify the unit's correctness. During test case execution, frameworks <a href="/wiki/Computer_data_logging" class="mw-redirect" title="Computer data logging">log</a> tests that fail any criterion and report them in a summary.
+</p><p>Writing and maintaining unit tests can be made faster by using <a href="/wiki/Parameterized_test" class="mw-redirect" title="Parameterized test">parameterized tests</a>. These allow the execution of one test multiple times with different input sets, thus reducing test code duplication. Unlike traditional unit tests, which are usually closed methods and test invariant conditions, parameterized tests take any set of parameters. Parameterized tests are supported by <a href="/wiki/TestNG" title="TestNG">TestNG</a>, <a href="/wiki/JUnit" title="JUnit">JUnit</a> and its .Net counterpart, <a href="/wiki/XUnit" title="XUnit">XUnit</a>. Suitable parameters for the unit tests may be supplied manually or in some cases are automatically generated by the test framework. In recent years support was added for writing more powerful (unit) tests, leveraging the concept of theories, test cases that execute the same steps, but using test data generated at runtime, unlike regular parameterized tests that use the same execution steps with input sets that are pre-defined.<sup id="cite_ref-5" class="reference"><a href="#cite_note-5">&#91;5&#93;</a></sup><sup id="cite_ref-6" class="reference"><a href="#cite_note-6">&#91;6&#93;</a></sup><sup id="cite_ref-7" class="reference"><a href="#cite_note-7">&#91;7&#93;</a></sup>
+</p>
+<h2><span class="mw-headline" id="Advantages">Advantages</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=Unit_testing&amp;action=edit&amp;section=2" title="Edit section: Advantages">edit</a><span class="mw-editsection-bracket">]</span></span></h2>
+<p>The goal of unit testing is to isolate each part of the program and show that the individual parts are correct.<sup id="cite_ref-kolawa_1-1" class="reference"><a href="#cite_note-kolawa-1">&#91;1&#93;</a></sup> A unit test provides a strict, written <a href="/wiki/Design_by_Contract" class="mw-redirect" title="Design by Contract">contract</a> that the piece of code must satisfy. As a result, it affords several benefits.
+</p><p>Unit testing finds problems early in the <a href="/wiki/Development_cycle" class="mw-redirect" title="Development cycle">development cycle</a>. This includes both bugs in the programmer's implementation and flaws or missing parts of the specification for the unit. The process of writing a thorough set of tests forces the author to think through inputs, outputs, and error conditions, and thus more crisply define the unit's desired behavior. The cost of finding a bug before coding begins or when the code is first written is considerably lower than the cost of detecting, identifying, and correcting the bug later. Bugs in released code may also cause costly problems for the end-users of the software.<sup id="cite_ref-8" class="reference"><a href="#cite_note-8">&#91;8&#93;</a></sup><sup id="cite_ref-9" class="reference"><a href="#cite_note-9">&#91;9&#93;</a></sup><sup id="cite_ref-10" class="reference"><a href="#cite_note-10">&#91;10&#93;</a></sup> Code can be impossible or difficult to unit test if poorly written, thus unit testing can force developers to structure functions and objects in better ways.
+</p><p>In <a href="/wiki/Test-driven_development" title="Test-driven development">test-driven development</a> (TDD), which is frequently used in both <a href="/wiki/Extreme_programming" title="Extreme programming">extreme programming</a> and <a href="/wiki/Scrum_(software_development)" title="Scrum (software development)">scrum</a>, unit tests are created before the code itself is written. When the tests pass, that code is considered complete. The same unit tests are run against that function frequently as the larger code base is developed either as the code is changed or via an automated process with the build. If the unit tests fail, it is considered to be a bug either in the changed code or the tests themselves. The unit tests then allow the location of the fault or failure to be easily traced. Since the unit tests alert the development team of the problem before handing the code off to testers or clients, potential problems are caught early in the development process.
+</p><p>Unit testing allows the programmer to <a href="/wiki/Refactoring" class="mw-redirect" title="Refactoring">refactor</a> code or upgrade system libraries at a later date, and make sure the module still works correctly (e.g., in <a href="/wiki/Regression_testing" title="Regression testing">regression testing</a>). The procedure is to write test cases for all <a href="/wiki/Subroutine" title="Subroutine">functions</a> and <a href="/wiki/Method_(computer_science)" class="mw-redirect" title="Method (computer science)">methods</a> so that whenever a change causes a fault, it can be quickly identified.  Unit tests detect changes which may break a <a href="/wiki/Design_by_contract" title="Design by contract">design contract</a>.
+</p><p>Unit testing may reduce uncertainty in the units themselves and can be used in a <a href="/wiki/Top-down_and_bottom-up_design" title="Top-down and bottom-up design">bottom-up</a> testing style approach. By testing the parts of a program first and then testing the sum of its parts, <a href="/wiki/Integration_testing" title="Integration testing">integration testing</a> becomes much easier.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">&#91;<i><a href="/wiki/Wikipedia:Citation_needed" title="Wikipedia:Citation needed"><span title="This claim needs references to reliable sources. (January 2013)">citation needed</span></a></i>&#93;</sup>
+</p><p>Unit testing provides a sort of living documentation of the system. Developers looking to learn what functionality is provided by a unit, and how to use it, can look at the unit tests to gain a basic understanding of the unit's interface (<a href="/wiki/Application_programming_interface" class="mw-redirect" title="Application programming interface">API</a>).<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">&#91;<i><a href="/wiki/Wikipedia:Citation_needed" title="Wikipedia:Citation needed"><span title="This claim needs references to reliable sources. (September 2019)">citation needed</span></a></i>&#93;</sup>
+</p><p>Unit <a href="/wiki/Test_case" title="Test case">test cases</a> embody characteristics that are critical to the success of the unit. These characteristics can indicate appropriate/inappropriate use of a unit as well as negative behaviors that are to be trapped by the unit. A unit test case, in and of itself, documents these critical characteristics, although many software development environments do not rely solely upon code to document the product in development.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">&#91;<i><a href="/wiki/Wikipedia:Citation_needed" title="Wikipedia:Citation needed"><span title="This claim needs references to reliable sources. (September 2019)">citation needed</span></a></i>&#93;</sup>
+</p><p>When software is developed using a test-driven approach, the combination of writing the unit test to specify the interface plus the refactoring activities performed after the test has passed, may take the place of formal design. Each unit test can be seen as a design element specifying classes, methods, and observable behavior.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">&#91;<i><a href="/wiki/Wikipedia:Citation_needed" title="Wikipedia:Citation needed"><span title="This claim needs references to reliable sources. (September 2019)">citation needed</span></a></i>&#93;</sup>
+</p>
+<h2><span class="mw-headline" id="Limitations_and_disadvantages">Limitations and disadvantages</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=Unit_testing&amp;action=edit&amp;section=3" title="Edit section: Limitations and disadvantages">edit</a><span class="mw-editsection-bracket">]</span></span></h2>
+<p>Testing will not catch every error in the program, because it cannot evaluate every execution path in any but the most trivial programs. This <a href="/wiki/Decision_problem" title="Decision problem">problem</a> is a superset of the <a href="/wiki/Halting_problem" title="Halting problem">halting problem</a>, which is <a href="/wiki/Undecidable_problem" title="Undecidable problem">undecidable</a>. The same is true for unit testing. Additionally, unit testing by definition only tests the functionality of the units themselves. Therefore, it will not catch integration errors or broader system-level errors (such as functions performed across multiple units, or non-functional test areas such as <a href="/wiki/Software_performance_testing" title="Software performance testing">performance</a>). Unit testing should be done in conjunction with other <a href="/wiki/Software_testing" title="Software testing">software testing</a> activities, as they can only show the presence or absence of particular errors; they cannot prove a complete absence of errors. To guarantee correct behavior for every execution path and every possible input, and ensure the absence of errors, other techniques are required, namely the application of <a href="/wiki/Formal_verification" title="Formal verification">formal methods</a> to proving that a software component has no unexpected behavior.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">&#91;<i><a href="/wiki/Wikipedia:Citation_needed" title="Wikipedia:Citation needed"><span title="This claim needs references to reliable sources. (September 2019)">citation needed</span></a></i>&#93;</sup>
+</p><p>An elaborate hierarchy of unit tests does not equal integration testing. Integration with peripheral units should be included in integration tests, but not in unit tests.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">&#91;<i><a href="/wiki/Wikipedia:Citation_needed" title="Wikipedia:Citation needed"><span title="This claim needs references to reliable sources. (October 2010)">citation needed</span></a></i>&#93;</sup> Integration testing typically still relies heavily on humans <a href="/wiki/Manual_testing" title="Manual testing">testing manually</a>; high-level or global-scope testing can be difficult to automate, such that manual testing often appears faster and cheaper.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">&#91;<i><a href="/wiki/Wikipedia:Citation_needed" title="Wikipedia:Citation needed"><span title="This claim needs references to reliable sources. (January 2010)">citation needed</span></a></i>&#93;</sup>
+</p><p>Software testing is a combinatorial problem. For example, every Boolean decision statement requires at least two tests: one with an outcome of "true" and one with an outcome of "false". As a result, for every line of code written, programmers often need 3 to 5 lines of test code.<sup id="cite_ref-11" class="reference"><a href="#cite_note-11">&#91;11&#93;</a></sup> This obviously takes time and its investment may not be worth the effort. There are problems that cannot easily be tested at all &#8211; for example those that are <a href="/wiki/Nondeterministic_algorithm" title="Nondeterministic algorithm">nondeterministic</a> or involve multiple <a href="/wiki/Thread_(computer_science)" class="mw-redirect" title="Thread (computer science)">threads</a>. In addition, code for a unit test is likely to be at least as buggy as the code it is testing. <a href="/wiki/Fred_Brooks" title="Fred Brooks">Fred Brooks</a> in <i><a href="/wiki/The_Mythical_Man-Month" title="The Mythical Man-Month">The Mythical Man-Month</a></i> quotes: "Never go to sea with two chronometers; take one or three."<sup id="cite_ref-12" class="reference"><a href="#cite_note-12">&#91;12&#93;</a></sup> Meaning, if two <a href="/wiki/Marine_chronometer" title="Marine chronometer">chronometers</a> contradict, how do you know which one is correct?
+</p><p>Another challenge related to writing the unit tests is the difficulty of setting up realistic and useful tests. It is necessary to create relevant initial conditions so the part of the application being tested behaves like part of the complete system. If these initial conditions are not set correctly, the test will not be exercising the code in a realistic context, which diminishes the value and accuracy of unit test results.<sup id="cite_ref-13" class="reference"><a href="#cite_note-13">&#91;13&#93;</a></sup>
+</p><p>To obtain the intended benefits from unit testing, rigorous discipline is needed throughout the software development process. It is essential to keep careful records not only of the tests that have been performed, but also of all changes that have been made to the source code of this or any other unit in the software. Use of a <a href="/wiki/Version_control" title="Version control">version control</a> system is essential. If a later version of the unit fails a particular test that it had previously passed, the version-control software can provide a list of the source code changes (if any) that have been applied to the unit since that time.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">&#91;<i><a href="/wiki/Wikipedia:Citation_needed" title="Wikipedia:Citation needed"><span title="This claim needs references to reliable sources. (September 2019)">citation needed</span></a></i>&#93;</sup>
+</p><p>It is also essential to implement a sustainable process for ensuring that test case failures are reviewed regularly and addressed immediately.<sup id="cite_ref-14" class="reference"><a href="#cite_note-14">&#91;14&#93;</a></sup> If such a process is not implemented and ingrained into the team's workflow, the application will evolve out of sync with the unit test suite, increasing false positives and reducing the effectiveness of the test suite.
+</p><p>Unit testing embedded system software presents a unique challenge: Because the software is being developed on a different platform than the one it will eventually run on, you cannot readily run a test program in the actual deployment environment, as is possible with desktop programs.<sup id="cite_ref-15" class="reference"><a href="#cite_note-15">&#91;15&#93;</a></sup>
+</p><p>Unit tests tend to be easiest when a method has input parameters and some output. It is not as easy to create unit tests when a major function of the method is to interact with something external to the application. For example, a method that will work with a database might require a mock up of database interactions to be created, which probably won't be as comprehensive as the real database interactions.<sup id="cite_ref-16" class="reference"><a href="#cite_note-16">&#91;16&#93;</a></sup><sup class="noprint Inline-Template noprint noexcerpt Template-Fact" style="white-space:nowrap;">&#91;<i><a href="/wiki/Wikipedia:NOTRS" class="mw-redirect" title="Wikipedia:NOTRS"><span title="This claim needs references to better sources. (February 2019)">better&#160;source&#160;needed</span></a></i>&#93;</sup>
+</p>
+<h2><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=Unit_testing&amp;action=edit&amp;section=4" title="Edit section: Example">edit</a><span class="mw-editsection-bracket">]</span></span></h2>
+<p>Here is a set of test cases in <a href="/wiki/Java_(programming_language)" title="Java (programming language)">Java</a> that specify a number of elements of the implementation. First, that there must be an interface called Adder, and an implementing class with a zero-argument constructor called AdderImpl. It goes on to <a href="/wiki/Assertion_(computing)" class="mw-redirect" title="Assertion (computing)">assert</a> that the Adder interface should have a method called add, with two integer parameters, which returns another integer. It also specifies the behaviour of this method for a small range of values over a number of test methods.
+</p>
+<div class="mw-highlight mw-highlight-lang-java mw-content-ltr" dir="ltr"><pre><span></span><span class="kn">import static</span> <span class="nn">org.junit.Assert.*</span><span class="p">;</span>
+
+<span class="kn">import</span> <span class="nn">org.junit.Test</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestAdder</span> <span class="p">{</span>
+
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testSumPositiveNumbersOneAndOne</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">Adder</span> <span class="n">adder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AdderImpl</span><span class="p">();</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">adder</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// can it add the positive numbers 1 and 2?</span>
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testSumPositiveNumbersOneAndTwo</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">Adder</span> <span class="n">adder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AdderImpl</span><span class="p">();</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">adder</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// can it add the positive numbers 2 and 2?</span>
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testSumPositiveNumbersTwoAndTwo</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">Adder</span> <span class="n">adder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AdderImpl</span><span class="p">();</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">adder</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// is zero neutral?</span>
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testSumZeroNeutral</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">Adder</span> <span class="n">adder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AdderImpl</span><span class="p">();</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">adder</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// can it add the negative numbers -1 and -2?</span>
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testSumNegativeNumbers</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">Adder</span> <span class="n">adder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AdderImpl</span><span class="p">();</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">adder</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">3</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// can it add a positive and a negative?</span>
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testSumPositiveAndNegative</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">Adder</span> <span class="n">adder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AdderImpl</span><span class="p">();</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">adder</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// how about larger numbers?</span>
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">testSumLargeNumbers</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">Adder</span> <span class="n">adder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AdderImpl</span><span class="p">();</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">adder</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">1234</span><span class="p">,</span> <span class="mi">988</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2222</span><span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+<p>In this case the unit tests, having been written first, act as a design document specifying the form and behaviour of a desired solution, but not the implementation details, which are left for the programmer. Following the "do the simplest thing that could possibly work" practice, the easiest solution that will make the test pass is shown below.
+</p>
+<div class="mw-highlight mw-highlight-lang-java mw-content-ltr" dir="ltr"><pre><span></span><span class="kd">interface</span> <span class="nc">Adder</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="kd">class</span> <span class="nc">AdderImpl</span> <span class="kd">implements</span> <span class="n">Adder</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<h2><span class="mw-headline" id="As_executable_specifications">As executable specifications</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=Unit_testing&amp;action=edit&amp;section=5" title="Edit section: As executable specifications">edit</a><span class="mw-editsection-bracket">]</span></span></h2>
+<table class="box-Unreferenced_section plainlinks metadata ambox ambox-content ambox-Unreferenced" role="presentation"><tbody><tr><td class="mbox-image"><div style="width:52px"><a href="/wiki/File:Question_book-new.svg" class="image"><img alt="" src="//upload.wikimedia.org/wikipedia/en/thumb/9/99/Question_book-new.svg/50px-Question_book-new.svg.png" decoding="async" width="50" height="39" srcset="//upload.wikimedia.org/wikipedia/en/thumb/9/99/Question_book-new.svg/75px-Question_book-new.svg.png 1.5x, //upload.wikimedia.org/wikipedia/en/thumb/9/99/Question_book-new.svg/100px-Question_book-new.svg.png 2x" data-file-width="512" data-file-height="399" /></a></div></td><td class="mbox-text"><div class="mbox-text-span">This section <b>does not <a href="/wiki/Wikipedia:Citing_sources" title="Wikipedia:Citing sources">cite</a> any <a href="/wiki/Wikipedia:Verifiability" title="Wikipedia:Verifiability">sources</a></b>.<span class="hide-when-compact"> Please help <a class="external text" href="https://en.wikipedia.org/w/index.php?title=Unit_testing&amp;action=edit">improve this section</a> by <a href="/wiki/Help:Referencing_for_beginners" title="Help:Referencing for beginners">adding citations to reliable sources</a>. Unsourced material may be challenged and <a href="/wiki/Wikipedia:Verifiability#Burden_of_evidence" title="Wikipedia:Verifiability">removed</a>.</span>  <small class="date-container"><i>(<span class="date">September 2019</span>)</i></small><small class="hide-when-compact"><i> (<a href="/wiki/Help:Maintenance_template_removal" title="Help:Maintenance template removal">Learn how and when to remove this template message</a>)</i></small></div></td></tr></tbody></table>
+<p>Using unit-tests as a design specification has one significant advantage over other design methods: The design document (the unit-tests themselves) can itself be used to verify the implementation. The tests will never pass unless the developer implements a solution according to the design.
+</p><p>Unit testing lacks some of the accessibility of a diagrammatic specification such as a <a href="/wiki/Unified_Modeling_Language" title="Unified Modeling Language">UML</a> diagram, but they may be generated from the unit test using automated tools. Most modern languages have free tools (usually available as extensions to <a href="/wiki/Integrated_development_environment" title="Integrated development environment">IDEs</a>). Free tools, like those based on the <a href="/wiki/XUnit" title="XUnit">xUnit</a> framework, outsource to another system the graphical rendering of a view for human consumption.
+</p>
+<h2><span class="mw-headline" id="Applications">Applications</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=Unit_testing&amp;action=edit&amp;section=6" title="Edit section: Applications">edit</a><span class="mw-editsection-bracket">]</span></span></h2>
+<h3><span class="mw-headline" id="Extreme_programming">Extreme programming</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=Unit_testing&amp;action=edit&amp;section=7" title="Edit section: Extreme programming">edit</a><span class="mw-editsection-bracket">]</span></span></h3>
+<p>Unit testing is the cornerstone of <a href="/wiki/Extreme_programming" title="Extreme programming">extreme programming</a>, which relies on an automated <a href="/wiki/List_of_unit_testing_frameworks" title="List of unit testing frameworks">unit testing framework</a>. This automated unit testing framework can be either third party, e.g., <a href="/wiki/XUnit" title="XUnit">xUnit</a>, or created within the development group.
+</p><p>Extreme programming uses the creation of unit tests for <a href="/wiki/Test-driven_development" title="Test-driven development">test-driven development</a>. The developer writes a unit test that exposes either a software requirement or a defect. This test will fail because either the requirement isn't implemented yet, or because it intentionally exposes a defect in the existing code. Then, the developer writes the simplest code to make the test, along with other tests, pass.
+</p><p>Most code in a system is unit tested, but not necessarily all paths through the code. Extreme programming mandates a "test everything that can possibly break" strategy, over the traditional "test every execution path" method. This leads developers to develop fewer tests than classical methods, but this isn't really a problem, more a restatement of fact, as classical methods have rarely ever been followed methodically enough for all execution paths to have been thoroughly tested.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">&#91;<i><a href="/wiki/Wikipedia:Citation_needed" title="Wikipedia:Citation needed"><span title="This claim needs references to reliable sources. (November 2008)">citation needed</span></a></i>&#93;</sup> Extreme programming simply recognizes that testing is rarely exhaustive (because it is often too expensive and time-consuming to be economically viable) and provides guidance on how to effectively focus limited resources.
+</p><p>Crucially, the test code is considered a first class project artifact in that it is maintained at the same quality as the implementation code, with all duplication removed. Developers release unit testing code to the code repository in conjunction with the code it tests. Extreme programming's thorough unit testing allows the benefits mentioned above, such as simpler and more confident code development and <a href="/wiki/Refactoring" class="mw-redirect" title="Refactoring">refactoring</a>, simplified code integration, accurate documentation, and more modular designs. These unit tests are also constantly run as a form of <a href="/wiki/Regression_test" class="mw-redirect" title="Regression test">regression test</a>.
+</p><p>Unit testing is also critical to the concept of <a href="/wiki/Emergent_Design" title="Emergent Design">Emergent Design</a>.  As emergent design is heavily dependent upon refactoring, unit tests are an integral component.<sup id="cite_ref-17" class="reference"><a href="#cite_note-17">&#91;17&#93;</a></sup>
+</p>
+<h3><span class="mw-headline" id="Unit_testing_frameworks">Unit testing frameworks</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=Unit_testing&amp;action=edit&amp;section=8" title="Edit section: Unit testing frameworks">edit</a><span class="mw-editsection-bracket">]</span></span></h3>
+<div role="note" class="hatnote navigation-not-searchable">See also: <a href="/wiki/List_of_unit_testing_frameworks" title="List of unit testing frameworks">List of unit testing frameworks</a></div>
+<p>Unit testing frameworks are most often third-party products that are not distributed as part of the compiler suite. They help simplify the process of unit testing, having been developed for <a href="/wiki/List_of_unit_testing_frameworks" title="List of unit testing frameworks">a wide variety of languages</a>.
+</p><p>It is generally possible to perform unit testing without the support of a specific framework by writing client code that exercises the units under test and uses <a href="/wiki/Assertion_(software_development)" title="Assertion (software development)">assertions</a>, <a href="/wiki/Exception_handling" title="Exception handling">exception handling</a>, or other <a href="/wiki/Control_flow" title="Control flow">control flow</a> mechanisms to signal failure. Unit testing without a framework is valuable in that there is a <a href="/wiki/Barrier_to_entry" class="mw-redirect" title="Barrier to entry">barrier to entry</a> for the adoption of unit testing; having scant unit tests is hardly better than having none at all, whereas once a framework is in place, adding unit tests becomes relatively easy.<sup id="cite_ref-18" class="reference"><a href="#cite_note-18">&#91;18&#93;</a></sup> In some frameworks many advanced unit test features are missing or must be hand-coded.
+</p>
+<h3><span class="mw-headline" id="Language-level_unit_testing_support">Language-level unit testing support</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=Unit_testing&amp;action=edit&amp;section=9" title="Edit section: Language-level unit testing support">edit</a><span class="mw-editsection-bracket">]</span></span></h3>
+<p>Some programming languages directly support unit testing. Their grammar allows the direct declaration of unit tests without importing a library (whether third party or standard). Additionally, the boolean conditions of the unit tests can be expressed in the same syntax as boolean expressions used in non-unit test code, such as what is used for <code class="mw-highlight mw-highlight-lang-java" id="" style="" dir="ltr"><span class="k">if</span></code> and <code class="mw-highlight mw-highlight-lang-java" id="" style="" dir="ltr"><span class="k">while</span></code> statements.
+</p><p>Languages with built-in unit testing support include:
+</p>
+<div class="div-col columns column-width" style="-moz-column-width: 20em; -webkit-column-width: 20em; column-width: 20em;">
+<ul><li><a href="/wiki/Apex_(programming_language)" class="mw-redirect" title="Apex (programming language)">Apex</a></li>
+<li><a href="/wiki/Cobra_(programming_language)" title="Cobra (programming language)">Cobra</a></li>
+<li><a href="/wiki/Crystal_(programming_language)" title="Crystal (programming language)">Crystal</a><sup id="cite_ref-19" class="reference"><a href="#cite_note-19">&#91;19&#93;</a></sup></li>
+<li><a href="/wiki/D_(programming_language)" title="D (programming language)">D</a><sup id="cite_ref-20" class="reference"><a href="#cite_note-20">&#91;20&#93;</a></sup></li>
+<li><a href="/wiki/Go_(programming_language)" title="Go (programming language)">Go</a><sup id="cite_ref-21" class="reference"><a href="#cite_note-21">&#91;21&#93;</a></sup></li>
+<li><a href="/wiki/LabVIEW" title="LabVIEW">LabVIEW</a></li>
+<li><a href="/wiki/MATLAB" title="MATLAB">MATLAB</a></li>
+<li><a href="/wiki/Python_(programming_language)" title="Python (programming language)">Python</a><sup id="cite_ref-22" class="reference"><a href="#cite_note-22">&#91;22&#93;</a></sup></li>
+<li><a href="/wiki/Racket_(programming_language)" title="Racket (programming language)">Racket</a><sup id="cite_ref-Racket_Unit_Testing_23-0" class="reference"><a href="#cite_note-Racket_Unit_Testing-23">&#91;23&#93;</a></sup><sup id="cite_ref-Racket_Unit_Testing_Main_dist_24-0" class="reference"><a href="#cite_note-Racket_Unit_Testing_Main_dist-24">&#91;24&#93;</a></sup></li>
+<li><a href="/wiki/Ruby_(programming_language)" title="Ruby (programming language)">Ruby</a><sup id="cite_ref-25" class="reference"><a href="#cite_note-25">&#91;25&#93;</a></sup></li>
+<li><a href="/wiki/Rust_(programming_language)" title="Rust (programming language)">Rust</a><sup id="cite_ref-26" class="reference"><a href="#cite_note-26">&#91;26&#93;</a></sup></li></ul>
+</div>
+<p>Some languages without built-in unit-testing support have very good unit testing libraries/frameworks. Those languages include:
+</p>
+<div class="div-col columns column-width" style="-moz-column-width: 20em; -webkit-column-width: 20em; column-width: 20em;">
+<ul><li><a href="/wiki/ABAP" title="ABAP">ABAP</a></li>
+<li><a href="/wiki/C%2B%2B" title="C++">C++</a></li>
+<li><a href="/wiki/C_Sharp_(programming_language)" title="C Sharp (programming language)">C#</a></li>
+<li><a href="/wiki/Clojure" title="Clojure">Clojure</a><sup id="cite_ref-Clojure_Unit_Testing_Framework_27-0" class="reference"><a href="#cite_note-Clojure_Unit_Testing_Framework-27">&#91;27&#93;</a></sup></li>
+<li><a href="/wiki/Elixir_(programming_language)" title="Elixir (programming language)">Elixir</a></li>
+<li><a href="/wiki/Java_(programming_language)" title="Java (programming language)">Java</a></li>
+<li><a href="/wiki/JavaScript" title="JavaScript">JavaScript</a></li>
+<li><a href="/wiki/Objective-C" title="Objective-C">Objective-C</a></li>
+<li><a href="/wiki/Perl" title="Perl">Perl</a></li>
+<li><a href="/wiki/PHP" title="PHP">PHP</a></li>
+<li><a href="/wiki/Windows_PowerShell" class="mw-redirect" title="Windows PowerShell">PowerShell</a><sup id="cite_ref-28" class="reference"><a href="#cite_note-28">&#91;28&#93;</a></sup></li>
+<li><a href="/wiki/R_(programming_language)" title="R (programming language)">R</a> with testthat</li>
+<li><a href="/wiki/Scala_(programming_language)" title="Scala (programming language)">Scala</a></li>
+<li><a href="/wiki/Tcl" title="Tcl">tcl</a></li>
+<li><a href="/wiki/Visual_Basic_.NET" class="mw-redirect" title="Visual Basic .NET">Visual Basic .NET</a></li>
+<li><a href="/wiki/Xojo" title="Xojo">Xojo</a> with XojoUnit</li></ul>
+</div>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=Unit_testing&amp;action=edit&amp;section=10" title="Edit section: See also">edit</a><span class="mw-editsection-bracket">]</span></span></h2>
+<div class="div-col columns column-width" style="-moz-column-width: 20em; -webkit-column-width: 20em; column-width: 20em;">
+<ul><li><a href="/wiki/Acceptance_testing" title="Acceptance testing">Acceptance testing</a></li>
+<li><a href="/wiki/Characterization_test" title="Characterization test">Characterization test</a></li>
+<li><a href="/wiki/Component-based_usability_testing" title="Component-based usability testing">Component-based usability testing</a></li>
+<li><a href="/wiki/Design_predicates" title="Design predicates">Design predicates</a></li>
+<li><a href="/wiki/Design_by_contract" title="Design by contract">Design by contract</a></li>
+<li><a href="/wiki/Extreme_programming" title="Extreme programming">Extreme programming</a></li>
+<li><a href="/wiki/Functional_testing" title="Functional testing">Functional testing</a></li>
+<li><a href="/wiki/Integration_testing" title="Integration testing">Integration testing</a></li>
+<li><a href="/wiki/List_of_unit_testing_frameworks" title="List of unit testing frameworks">List of unit testing frameworks</a></li>
+<li><a href="/wiki/Regression_testing" title="Regression testing">Regression testing</a></li>
+<li><a href="/wiki/Software_archaeology" title="Software archaeology">Software archaeology</a></li>
+<li><a href="/wiki/Software_testing" title="Software testing">Software testing</a></li>
+<li><a href="/wiki/Test_case" title="Test case">Test case</a></li>
+<li><a href="/wiki/Test-driven_development" title="Test-driven development">Test-driven development</a></li>
+<li><a href="/wiki/XUnit" title="XUnit">xUnit</a> &#8211; a family of unit testing frameworks.</li></ul>
+</div>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=Unit_testing&amp;action=edit&amp;section=11" title="Edit section: References">edit</a><span class="mw-editsection-bracket">]</span></span></h2>
+<div class="reflist" style="list-style-type: decimal;">
+<div class="mw-references-wrap mw-references-columns"><ol class="references">
+<li id="cite_note-kolawa-1"><span class="mw-cite-backlink">^ <a href="#cite_ref-kolawa_1-0"><sup><i><b>a</b></i></sup></a> <a href="#cite_ref-kolawa_1-1"><sup><i><b>b</b></i></sup></a></span> <span class="reference-text"><cite id="CITEREFKolawaHuizinga,_Dorota2007" class="citation book cs1">Kolawa, Adam; Huizinga, Dorota (2007). <a rel="nofollow" class="external text" href="http://www.wiley.com/WileyCDA/WileyTitle/productCd-0470042125.html"><i>Automated Defect Prevention: Best Practices in Software Management</i></a>. Wiley-IEEE Computer Society Press. p.&#160;75. <a href="/wiki/ISBN_(identifier)" class="mw-redirect" title="ISBN (identifier)">ISBN</a>&#160;<a href="/wiki/Special:BookSources/978-0-470-04212-0" title="Special:BookSources/978-0-470-04212-0"><bdi>978-0-470-04212-0</bdi></a>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Automated+Defect+Prevention%3A+Best+Practices+in+Software+Management&amp;rft.pages=75&amp;rft.pub=Wiley-IEEE+Computer+Society+Press&amp;rft.date=2007&amp;rft.isbn=978-0-470-04212-0&amp;rft.aulast=Kolawa&amp;rft.aufirst=Adam&amp;rft.au=Huizinga%2C+Dorota&amp;rft_id=http%3A%2F%2Fwww.wiley.com%2FWileyCDA%2FWileyTitle%2FproductCd-0470042125.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><style data-mw-deduplicate="TemplateStyles:r982806391">.mw-parser-output cite.citation{font-style:inherit}.mw-parser-output .citation q{quotes:"\"""\"""'""'"}.mw-parser-output .id-lock-free a,.mw-parser-output .citation .cs1-lock-free a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/6/65/Lock-green.svg")right 0.1em center/9px no-repeat}.mw-parser-output .id-lock-limited a,.mw-parser-output .id-lock-registration a,.mw-parser-output .citation .cs1-lock-limited a,.mw-parser-output .citation .cs1-lock-registration a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/d/d6/Lock-gray-alt-2.svg")right 0.1em center/9px no-repeat}.mw-parser-output .id-lock-subscription a,.mw-parser-output .citation .cs1-lock-subscription a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/a/aa/Lock-red-alt-2.svg")right 0.1em center/9px no-repeat}.mw-parser-output .cs1-subscription,.mw-parser-output .cs1-registration{color:#555}.mw-parser-output .cs1-subscription span,.mw-parser-output .cs1-registration span{border-bottom:1px dotted;cursor:help}.mw-parser-output .cs1-ws-icon a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/4/4c/Wikisource-logo.svg")right 0.1em center/12px no-repeat}.mw-parser-output code.cs1-code{color:inherit;background:inherit;border:none;padding:inherit}.mw-parser-output .cs1-hidden-error{display:none;font-size:100%}.mw-parser-output .cs1-visible-error{font-size:100%}.mw-parser-output .cs1-maint{display:none;color:#33aa33;margin-left:0.3em}.mw-parser-output .cs1-subscription,.mw-parser-output .cs1-registration,.mw-parser-output .cs1-format{font-size:95%}.mw-parser-output .cs1-kern-left,.mw-parser-output .cs1-kern-wl-left{padding-left:0.2em}.mw-parser-output .cs1-kern-right,.mw-parser-output .cs1-kern-wl-right{padding-right:0.2em}.mw-parser-output .citation .mw-selflink{font-weight:inherit}</style></span>
+</li>
+<li id="cite_note-hamill-2"><span class="mw-cite-backlink">^ <a href="#cite_ref-hamill_2-0"><sup><i><b>a</b></i></sup></a> <a href="#cite_ref-hamill_2-1"><sup><i><b>b</b></i></sup></a></span> <span class="reference-text"><cite id="CITEREFHamill2004" class="citation book cs1">Hamill, Paul (2004). <a rel="nofollow" class="external text" href="https://books.google.com/books?id=2ksvdhhnWQsC&amp;printsec=frontcover"><i>Unit Test Frameworks: Tools for High-Quality Software Development</i></a>. O'Reilly Media, Inc. <a href="/wiki/ISBN_(identifier)" class="mw-redirect" title="ISBN (identifier)">ISBN</a>&#160;<a href="/wiki/Special:BookSources/9780596552817" title="Special:BookSources/9780596552817"><bdi>9780596552817</bdi></a>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Unit+Test+Frameworks%3A+Tools+for+High-Quality+Software+Development&amp;rft.pub=O%27Reilly+Media%2C+Inc.&amp;rft.date=2004&amp;rft.isbn=9780596552817&amp;rft.aulast=Hamill&amp;rft.aufirst=Paul&amp;rft_id=https%3A%2F%2Fbooks.google.com%2Fbooks%3Fid%3D2ksvdhhnWQsC%26printsec%3Dfrontcover&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-3"><span class="mw-cite-backlink"><b><a href="#cite_ref-3">^</a></b></span> <span class="reference-text"><cite id="CITEREFXie" class="citation web cs1"><a href="/w/index.php?title=Tao_Xie&amp;action=edit&amp;redlink=1" class="new" title="Tao Xie (page does not exist)">Xie, Tao</a>. <a rel="nofollow" class="external text" href="http://people.engr.ncsu.edu/txie/publications/ast07-diffut.pdf">"Towards a Framework for Differential Unit Testing of Object-Oriented Programs"</a> <span class="cs1-format">(PDF)</span><span class="reference-accessdate">. Retrieved <span class="nowrap">23 July</span> 2012</span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Towards+a+Framework+for+Differential+Unit+Testing+of+Object-Oriented+Programs&amp;rft.aulast=Xie&amp;rft.aufirst=Tao&amp;rft_id=http%3A%2F%2Fpeople.engr.ncsu.edu%2Ftxie%2Fpublications%2Fast07-diffut.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-mocksarentstubs-4"><span class="mw-cite-backlink"><b><a href="#cite_ref-mocksarentstubs_4-0">^</a></b></span> <span class="reference-text"><cite id="CITEREFFowler2007" class="citation web cs1"><a href="/wiki/Martin_Fowler_(software_engineer)" title="Martin Fowler (software engineer)">Fowler, Martin</a> (2 January 2007). <a rel="nofollow" class="external text" href="http://martinfowler.com/articles/mocksArentStubs.html">"Mocks aren't Stubs"</a><span class="reference-accessdate">. Retrieved <span class="nowrap">1 April</span> 2008</span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Mocks+aren%27t+Stubs&amp;rft.date=2007-01-02&amp;rft.aulast=Fowler&amp;rft.aufirst=Martin&amp;rft_id=http%3A%2F%2Fmartinfowler.com%2Farticles%2FmocksArentStubs.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-5"><span class="mw-cite-backlink"><b><a href="#cite_ref-5">^</a></b></span> <span class="reference-text"><cite class="citation web cs1"><a rel="nofollow" class="external text" href="https://xunit.github.io/docs/getting-started-desktop.html">"Getting Started with xUnit.net (desktop)"</a>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Getting+Started+with+xUnit.net+%28desktop%29&amp;rft_id=https%3A%2F%2Fxunit.github.io%2Fdocs%2Fgetting-started-desktop.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-6"><span class="mw-cite-backlink"><b><a href="#cite_ref-6">^</a></b></span> <span class="reference-text"><cite class="citation web cs1"><a rel="nofollow" class="external text" href="https://github.com/junit-team/junit4/wiki/Theories">"Theories"</a>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Theories&amp;rft_id=https%3A%2F%2Fgithub.com%2Fjunit-team%2Fjunit4%2Fwiki%2FTheories&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-7"><span class="mw-cite-backlink"><b><a href="#cite_ref-7">^</a></b></span> <span class="reference-text"><cite class="citation web cs1"><a rel="nofollow" class="external text" href="https://github.com/junit-team/junit4/wiki/Parameterized-tests">"Parameterized tests"</a>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Parameterized+tests&amp;rft_id=https%3A%2F%2Fgithub.com%2Fjunit-team%2Fjunit4%2Fwiki%2FParameterized-tests&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-8"><span class="mw-cite-backlink"><b><a href="#cite_ref-8">^</a></b></span> <span class="reference-text"><cite id="CITEREFBoehmPapaccio1988" class="citation journal cs1"><a href="/wiki/Barry_Boehm" title="Barry Boehm">Boehm, Barry W.</a>; Papaccio, Philip N. (October 1988). <a rel="nofollow" class="external text" href="http://faculty.ksu.edu.sa/ghazy/Cost_MSc/R6.pdf">"Understanding and Controlling Software Costs"</a> <span class="cs1-format">(PDF)</span>. <i>IEEE Transactions on Software Engineering</i>. <b>14</b> (10): 1462–1477. <a href="/wiki/Doi_(identifier)" class="mw-redirect" title="Doi (identifier)">doi</a>:<a rel="nofollow" class="external text" href="https://doi.org/10.1109%2F32.6191">10.1109/32.6191</a><span class="reference-accessdate">. Retrieved <span class="nowrap">13 May</span> 2016</span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=IEEE+Transactions+on+Software+Engineering&amp;rft.atitle=Understanding+and+Controlling+Software+Costs&amp;rft.volume=14&amp;rft.issue=10&amp;rft.pages=1462-1477&amp;rft.date=1988-10&amp;rft_id=info%3Adoi%2F10.1109%2F32.6191&amp;rft.aulast=Boehm&amp;rft.aufirst=Barry+W.&amp;rft.au=Papaccio%2C+Philip+N.&amp;rft_id=http%3A%2F%2Ffaculty.ksu.edu.sa%2Fghazy%2FCost_MSc%2FR6.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-9"><span class="mw-cite-backlink"><b><a href="#cite_ref-9">^</a></b></span> <span class="reference-text"><cite class="citation web cs1"><a rel="nofollow" class="external text" href="https://msdn.microsoft.com/en-us/library/ee330950%28v=vs.110%29.aspx">"Test Early and Often"</a>. Microsoft.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Test+Early+and+Often&amp;rft.pub=Microsoft&amp;rft_id=https%3A%2F%2Fmsdn.microsoft.com%2Fen-us%2Flibrary%2Fee330950%2528v%3Dvs.110%2529.aspx&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-10"><span class="mw-cite-backlink"><b><a href="#cite_ref-10">^</a></b></span> <span class="reference-text"><cite class="citation web cs1"><a rel="nofollow" class="external text" href="http://www.ni.com/white-paper/8082/en/">"Prove It Works: Using the Unit Test Framework for Software Testing and Validation"</a>. <a href="/wiki/National_Instruments" title="National Instruments">National Instruments</a>. 21 August 2017.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Prove+It+Works%3A+Using+the+Unit+Test+Framework+for+Software+Testing+and+Validation&amp;rft.pub=National+Instruments&amp;rft.date=2017-08-21&amp;rft_id=http%3A%2F%2Fwww.ni.com%2Fwhite-paper%2F8082%2Fen%2F&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-11"><span class="mw-cite-backlink"><b><a href="#cite_ref-11">^</a></b></span> <span class="reference-text"><cite id="CITEREFCramblitt2007" class="citation web cs1"><a href="/w/index.php?title=Bob_Cramblitt&amp;action=edit&amp;redlink=1" class="new" title="Bob Cramblitt (page does not exist)">Cramblitt, Bob</a> (20 September 2007). <a rel="nofollow" class="external text" href="http://searchsoftwarequality.techtarget.com/originalContent/0,289142,sid92_gci1273161,00.html">"Alberto Savoia sings the praises of software testing"</a><span class="reference-accessdate">. Retrieved <span class="nowrap">29 November</span> 2007</span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Alberto+Savoia+sings+the+praises+of+software+testing&amp;rft.date=2007-09-20&amp;rft.aulast=Cramblitt&amp;rft.aufirst=Bob&amp;rft_id=http%3A%2F%2Fsearchsoftwarequality.techtarget.com%2ForiginalContent%2F0%2C289142%2Csid92_gci1273161%2C00.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-12"><span class="mw-cite-backlink"><b><a href="#cite_ref-12">^</a></b></span> <span class="reference-text"><cite id="CITEREFBrooks1995" class="citation book cs1"><a href="/wiki/Fred_Brooks" title="Fred Brooks">Brooks, Frederick J.</a> (1995) [1975]. <a href="/wiki/The_Mythical_Man-Month" title="The Mythical Man-Month"><i>The Mythical Man-Month</i></a>. Addison-Wesley. p.&#160;<a rel="nofollow" class="external text" href="https://archive.org/details/mythicalmonth00broo/page/64">64</a>. <a href="/wiki/ISBN_(identifier)" class="mw-redirect" title="ISBN (identifier)">ISBN</a>&#160;<a href="/wiki/Special:BookSources/978-0-201-83595-3" title="Special:BookSources/978-0-201-83595-3"><bdi>978-0-201-83595-3</bdi></a>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=The+Mythical+Man-Month&amp;rft.pages=64&amp;rft.pub=Addison-Wesley&amp;rft.date=1995&amp;rft.isbn=978-0-201-83595-3&amp;rft.aulast=Brooks&amp;rft.aufirst=Frederick+J.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-13"><span class="mw-cite-backlink"><b><a href="#cite_ref-13">^</a></b></span> <span class="reference-text"><cite id="CITEREFKolawa2009" class="citation web cs1"><a href="/wiki/Adam_Kolawa" title="Adam Kolawa">Kolawa, Adam</a> (1 July 2009). <a rel="nofollow" class="external text" href="http://www.parasoft.com/unit-testing-best-practices">"Unit Testing Best Practices"</a><span class="reference-accessdate">. Retrieved <span class="nowrap">23 July</span> 2012</span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Unit+Testing+Best+Practices&amp;rft.date=2009-07-01&amp;rft.aulast=Kolawa&amp;rft.aufirst=Adam&amp;rft_id=http%3A%2F%2Fwww.parasoft.com%2Funit-testing-best-practices&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-14"><span class="mw-cite-backlink"><b><a href="#cite_ref-14">^</a></b></span> <span class="reference-text"><cite id="CITEREFdaVeiga2008" class="citation web cs1"><a href="/w/index.php?title=Nada_daVeiga&amp;action=edit&amp;redlink=1" class="new" title="Nada daVeiga (page does not exist)">daVeiga, Nada</a> (6 February 2008). <a rel="nofollow" class="external text" href="http://www.ddj.com/development-tools/206105233">"Change Code Without Fear: Utilize a regression safety net"</a><span class="reference-accessdate">. Retrieved <span class="nowrap">8 February</span> 2008</span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Change+Code+Without+Fear%3A+Utilize+a+regression+safety+net&amp;rft.date=2008-02-06&amp;rft.aulast=daVeiga&amp;rft.aufirst=Nada&amp;rft_id=http%3A%2F%2Fwww.ddj.com%2Fdevelopment-tools%2F206105233&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-15"><span class="mw-cite-backlink"><b><a href="#cite_ref-15">^</a></b></span> <span class="reference-text"><cite id="CITEREFKucharski2011" class="citation web cs1"><a href="/w/index.php?title=Marek_Kucharski&amp;action=edit&amp;redlink=1" class="new" title="Marek Kucharski (page does not exist)">Kucharski, Marek</a> (23 November 2011). <a rel="nofollow" class="external text" href="https://www.electronicdesign.com/technologies/embedded-revolution/article/21794376/making-unit-testing-practical-for-embedded-development">"Making Unit Testing Practical for Embedded Development"</a><span class="reference-accessdate">. Retrieved <span class="nowrap">20 July</span> 2020</span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Making+Unit+Testing+Practical+for+Embedded+Development&amp;rft.date=2011-11-23&amp;rft.aulast=Kucharski&amp;rft.aufirst=Marek&amp;rft_id=https%3A%2F%2Fwww.electronicdesign.com%2Ftechnologies%2Fembedded-revolution%2Farticle%2F21794376%2Fmaking-unit-testing-practical-for-embedded-development&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-16"><span class="mw-cite-backlink"><b><a href="#cite_ref-16">^</a></b></span> <span class="reference-text"><a rel="nofollow" class="external free" href="http://wiki.c2.com/?UnitTestsAndDatabases">http://wiki.c2.com/?UnitTestsAndDatabases</a></span>
+</li>
+<li id="cite_note-17"><span class="mw-cite-backlink"><b><a href="#cite_ref-17">^</a></b></span> <span class="reference-text"><cite class="citation web cs1"><a rel="nofollow" class="external text" href="https://web.archive.org/web/20120322143534/http://www.agilesherpa.org/agile_coach/engineering_practices/emergent_design/">"Agile Emergent Design"</a>. Agile Sherpa. 3 August 2010. Archived from <a rel="nofollow" class="external text" href="http://www.agilesherpa.org/agile_coach/engineering_practices/emergent_design/">the original</a> on 22 March 2012<span class="reference-accessdate">. Retrieved <span class="nowrap">8 May</span> 2012</span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Agile+Emergent+Design&amp;rft.pub=Agile+Sherpa&amp;rft.date=2010-08-03&amp;rft_id=http%3A%2F%2Fwww.agilesherpa.org%2Fagile_coach%2Fengineering_practices%2Femergent_design%2F&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-18"><span class="mw-cite-backlink"><b><a href="#cite_ref-18">^</a></b></span> <span class="reference-text"><cite id="CITEREFBullseye_Testing_Technology2006–2008" class="citation web cs1">Bullseye Testing Technology (2006–2008). <a rel="nofollow" class="external text" href="http://www.bullseye.com/coverage.html">"Intermediate Coverage Goals"</a><span class="reference-accessdate">. Retrieved <span class="nowrap">24 March</span> 2009</span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Intermediate+Coverage+Goals&amp;rft.date=2006%2F2008&amp;rft.au=Bullseye+Testing+Technology&amp;rft_id=http%3A%2F%2Fwww.bullseye.com%2Fcoverage.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-19"><span class="mw-cite-backlink"><b><a href="#cite_ref-19">^</a></b></span> <span class="reference-text"><cite class="citation web cs1"><a rel="nofollow" class="external text" href="https://crystal-lang.org/api/0.23.1/Spec.html">"Crystal Spec"</a>. crystal-lang.org<span class="reference-accessdate">. Retrieved <span class="nowrap">18 September</span> 2017</span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Crystal+Spec&amp;rft.pub=crystal-lang.org&amp;rft_id=https%3A%2F%2Fcrystal-lang.org%2Fapi%2F0.23.1%2FSpec.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-20"><span class="mw-cite-backlink"><b><a href="#cite_ref-20">^</a></b></span> <span class="reference-text"><cite class="citation web cs1"><a rel="nofollow" class="external text" href="http://dlang.org/spec/unittest.html">"Unit Tests - D Programming Language"</a>. <i>D Programming Language</i>. D Language Foundation<span class="reference-accessdate">. Retrieved <span class="nowrap">5 August</span> 2017</span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=unknown&amp;rft.jtitle=D+Programming+Language&amp;rft.atitle=Unit+Tests+-+D+Programming+Language&amp;rft_id=http%3A%2F%2Fdlang.org%2Fspec%2Funittest.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-21"><span class="mw-cite-backlink"><b><a href="#cite_ref-21">^</a></b></span> <span class="reference-text"><cite class="citation web cs1"><a rel="nofollow" class="external text" href="https://golang.org/pkg/testing/">"testing - The Go Programming Language"</a>. golang.org<span class="reference-accessdate">. Retrieved <span class="nowrap">3 December</span> 2013</span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=testing+-+The+Go+Programming+Language&amp;rft.pub=golang.org&amp;rft_id=http%3A%2F%2Fgolang.org%2Fpkg%2Ftesting%2F&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-22"><span class="mw-cite-backlink"><b><a href="#cite_ref-22">^</a></b></span> <span class="reference-text"><cite id="CITEREFPython_Documentation2016" class="citation web cs1">Python Documentation (2016). <a rel="nofollow" class="external text" href="https://docs.python.org/3/library/unittest.html">"unittest -- Unit testing framework"</a><span class="reference-accessdate">. Retrieved <span class="nowrap">18 April</span> 2016</span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=unittest+--+Unit+testing+framework&amp;rft.date=2016&amp;rft.au=Python+Documentation&amp;rft_id=https%3A%2F%2Fdocs.python.org%2F3%2Flibrary%2Funittest.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-Racket_Unit_Testing-23"><span class="mw-cite-backlink"><b><a href="#cite_ref-Racket_Unit_Testing_23-0">^</a></b></span> <span class="reference-text"><cite id="Racket_Unit_Testing" class="citation web cs1">Welsh, Noel; Culpepper, Ryan. <a rel="nofollow" class="external text" href="http://docs.racket-lang.org/rackunit/index.html">"RackUnit: Unit Testing"</a>. PLT Design Inc<span class="reference-accessdate">. Retrieved <span class="nowrap">26 February</span> 2019</span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=RackUnit%3A+Unit+Testing&amp;rft.pub=PLT+Design+Inc.&amp;rft.aulast=Welsh&amp;rft.aufirst=Noel&amp;rft.au=Culpepper%2C+Ryan&amp;rft_id=http%3A%2F%2Fdocs.racket-lang.org%2Frackunit%2Findex.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-Racket_Unit_Testing_Main_dist-24"><span class="mw-cite-backlink"><b><a href="#cite_ref-Racket_Unit_Testing_Main_dist_24-0">^</a></b></span> <span class="reference-text"><cite id="Racket_Unit_Testing_Main_dist" class="citation web cs1">Welsh, Noel; Culpepper, Ryan. <a rel="nofollow" class="external text" href="https://pkgs.racket-lang.org/package/rackunit">"RackUnit Unit Testing package part of Racket main distribution"</a>. PLT Design Inc<span class="reference-accessdate">. Retrieved <span class="nowrap">26 February</span> 2019</span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=RackUnit+Unit+Testing+package+part+of+Racket+main+distribution&amp;rft.pub=PLT+Design+Inc.&amp;rft.aulast=Welsh&amp;rft.aufirst=Noel&amp;rft.au=Culpepper%2C+Ryan&amp;rft_id=https%3A%2F%2Fpkgs.racket-lang.org%2Fpackage%2Frackunit&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-25"><span class="mw-cite-backlink"><b><a href="#cite_ref-25">^</a></b></span> <span class="reference-text"><cite class="citation web cs1"><a rel="nofollow" class="external text" href="http://ruby-doc.org/stdlib-2.0.0/libdoc/minitest/rdoc/MiniTest.html">"Minitest (Ruby 2.0)"</a>. Ruby-Doc.org.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Minitest+%28Ruby+2.0%29&amp;rft.pub=Ruby-Doc.org&amp;rft_id=http%3A%2F%2Fruby-doc.org%2Fstdlib-2.0.0%2Flibdoc%2Fminitest%2Frdoc%2FMiniTest.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-26"><span class="mw-cite-backlink"><b><a href="#cite_ref-26">^</a></b></span> <span class="reference-text"><cite id="CITEREFThe_Rust_Project_Developers2011–2014" class="citation web cs1">The Rust Project Developers (2011–2014). <a rel="nofollow" class="external text" href="http://static.rust-lang.org/doc/master/guide-testing.html">"The Rust Testing Guide (Rust 0.12.0-pre-nightly)"</a><span class="reference-accessdate">. Retrieved <span class="nowrap">12 August</span> 2014</span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=The+Rust+Testing+Guide+%28Rust+0.12.0-pre-nightly%29&amp;rft.date=2011%2F2014&amp;rft.au=The+Rust+Project+Developers&amp;rft_id=http%3A%2F%2Fstatic.rust-lang.org%2Fdoc%2Fmaster%2Fguide-testing.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-Clojure_Unit_Testing_Framework-27"><span class="mw-cite-backlink"><b><a href="#cite_ref-Clojure_Unit_Testing_Framework_27-0">^</a></b></span> <span class="reference-text"><cite id="Clojure_Unit_Testing_Framework" class="citation web cs1">Sierra, Stuart. <a rel="nofollow" class="external text" href="https://clojure.github.io/clojure/clojure.test-api.html">"API for clojure.test - Clojure v1.6 (stable)"</a><span class="reference-accessdate">. Retrieved <span class="nowrap">11 February</span> 2015</span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=API+for+clojure.test+-+Clojure+v1.6+%28stable%29&amp;rft.aulast=Sierra&amp;rft.aufirst=Stuart&amp;rft_id=https%3A%2F%2Fclojure.github.io%2Fclojure%2Fclojure.test-api.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+<li id="cite_note-28"><span class="mw-cite-backlink"><b><a href="#cite_ref-28">^</a></b></span> <span class="reference-text"><cite class="citation web cs1"><a rel="nofollow" class="external text" href="https://github.com/pester/Pester">"Pester Framework"</a><span class="reference-accessdate">. Retrieved <span class="nowrap">28 January</span> 2016</span>.</cite><span title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Pester+Framework&amp;rft_id=https%3A%2F%2Fgithub.com%2Fpester%2FPester&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AUnit+testing" class="Z3988"></span><link rel="mw-deduplicated-inline-style" href="mw-data:TemplateStyles:r982806391"/></span>
+</li>
+</ol></div></div>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/w/index.php?title=Unit_testing&amp;action=edit&amp;section=12" title="Edit section: External links">edit</a><span class="mw-editsection-bracket">]</span></span></h2>
+<ul><li><a rel="nofollow" class="external text" href="http://c2.com/cgi/wiki?TestDrivenDevelopment">Test Driven Development (Ward Cunningham's Wiki)</a></li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw1329
+Cached time: 20201029215145
+Cache expiry: 2592000
+Dynamic content: false
+Complications: [vary‐revision‐sha1]
+CPU time usage: 0.576 seconds
+Real time usage: 0.733 seconds
+Preprocessor visited node count: 3346/1000000
+Post‐expand include size: 83946/2097152 bytes
+Template argument size: 7186/2097152 bytes
+Highest expansion depth: 13/40
+Expensive parser function count: 8/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 91036/5000000 bytes
+Lua time usage: 0.329/10.000 seconds
+Lua memory usage: 6.52 MB/50 MB
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  654.634      1 -total
+ 40.93%  267.970      1 Template:Reflist
+ 19.49%  127.586     23 Template:Cite_web
+ 16.71%  109.422      9 Template:Citation_needed
+ 15.03%   98.412      3 Template:Cite_book
+ 14.20%   92.966     10 Template:Fix
+ 12.65%   82.828      1 Template:Short_description
+  7.90%   51.723      1 Template:More_citations_needed_section
+  7.05%   46.128      1 Template:More_citations_needed
+  6.67%   43.644      2 Template:Ambox
+-->
+
+<!-- Saved in parser cache with key enwiki:pcache:idhash:222828-0!canonical and timestamp 20201029215144 and revision id 968650276
+ -->
+</div><noscript><img src="//en.wikipedia.org/wiki/Special:CentralAutoLogin/start?type=1x1" alt="" title="" width="1" height="1" style="border: none; position: absolute;" /></noscript>
+<div class="printfooter">Retrieved from "<a dir="ltr" href="https://en.wikipedia.org/w/index.php?title=Unit_testing&amp;oldid=968650276">https://en.wikipedia.org/w/index.php?title=Unit_testing&amp;oldid=968650276</a>"</div></div>
+		<div id="catlinks" class="catlinks" data-mw="interface"><div id="mw-normal-catlinks" class="mw-normal-catlinks"><a href="/wiki/Help:Category" title="Help:Category">Categories</a>: <ul><li><a href="/wiki/Category:Unit_testing" title="Category:Unit testing">Unit testing</a></li><li><a href="/wiki/Category:Extreme_programming" title="Category:Extreme programming">Extreme programming</a></li><li><a href="/wiki/Category:Software_testing" title="Category:Software testing">Software testing</a></li><li><a href="/wiki/Category:Types_of_tools_used_in_software_development" title="Category:Types of tools used in software development">Types of tools used in software development</a></li></ul></div><div id="mw-hidden-catlinks" class="mw-hidden-catlinks mw-hidden-cats-hidden">Hidden categories: <ul><li><a href="/wiki/Category:Articles_with_short_description" title="Category:Articles with short description">Articles with short description</a></li><li><a href="/wiki/Category:Short_description_matches_Wikidata" title="Category:Short description matches Wikidata">Short description matches Wikidata</a></li><li><a href="/wiki/Category:Use_dmy_dates_from_April_2020" title="Category:Use dmy dates from April 2020">Use dmy dates from April 2020</a></li><li><a href="/wiki/Category:Articles_needing_additional_references_from_September_2019" title="Category:Articles needing additional references from September 2019">Articles needing additional references from September 2019</a></li><li><a href="/wiki/Category:All_articles_needing_additional_references" title="Category:All articles needing additional references">All articles needing additional references</a></li><li><a href="/wiki/Category:All_articles_with_unsourced_statements" title="Category:All articles with unsourced statements">All articles with unsourced statements</a></li><li><a href="/wiki/Category:Articles_with_unsourced_statements_from_January_2013" title="Category:Articles with unsourced statements from January 2013">Articles with unsourced statements from January 2013</a></li><li><a href="/wiki/Category:Articles_with_unsourced_statements_from_September_2019" title="Category:Articles with unsourced statements from September 2019">Articles with unsourced statements from September 2019</a></li><li><a href="/wiki/Category:Articles_with_unsourced_statements_from_October_2010" title="Category:Articles with unsourced statements from October 2010">Articles with unsourced statements from October 2010</a></li><li><a href="/wiki/Category:Articles_with_unsourced_statements_from_January_2010" title="Category:Articles with unsourced statements from January 2010">Articles with unsourced statements from January 2010</a></li><li><a href="/wiki/Category:All_articles_lacking_reliable_references" title="Category:All articles lacking reliable references">All articles lacking reliable references</a></li><li><a href="/wiki/Category:Articles_lacking_reliable_references_from_February_2019" title="Category:Articles lacking reliable references from February 2019">Articles lacking reliable references from February 2019</a></li><li><a href="/wiki/Category:Articles_with_unsourced_statements_from_November_2008" title="Category:Articles with unsourced statements from November 2008">Articles with unsourced statements from November 2008</a></li><li><a href="/wiki/Category:Articles_with_example_Java_code" title="Category:Articles with example Java code">Articles with example Java code</a></li></ul></div></div>
+	</div>
+</div>
+<div id='mw-data-after-content'>
+	<div class="read-more-container"></div>
+</div>
+
+<div id="mw-navigation">
+	<h2>Navigation menu</h2>
+	<div id="mw-head">
+		<!-- Please do not use role attribute as CSS selector, it is deprecated. -->
+<nav id="p-personal" class="mw-portlet mw-portlet-personal vector-menu" aria-labelledby="p-personal-label" role="navigation" 
+	 >
+	<h3 id="p-personal-label">
+		<span>Personal tools</span>
+	</h3>
+	<div class="vector-menu-content">
+		<ul class="vector-menu-content-list"><li id="pt-anonuserpage">Not logged in</li><li id="pt-anontalk"><a href="/wiki/Special:MyTalk" title="Discussion about edits from this IP address [n]" accesskey="n">Talk</a></li><li id="pt-anoncontribs"><a href="/wiki/Special:MyContributions" title="A list of edits made from this IP address [y]" accesskey="y">Contributions</a></li><li id="pt-createaccount"><a href="/w/index.php?title=Special:CreateAccount&amp;returnto=Unit+testing" title="You are encouraged to create an account and log in; however, it is not mandatory">Create account</a></li><li id="pt-login"><a href="/w/index.php?title=Special:UserLogin&amp;returnto=Unit+testing" title="You&#039;re encouraged to log in; however, it&#039;s not mandatory. [o]" accesskey="o">Log in</a></li></ul>
+		
+	</div>
+</nav>
+
+		<div id="left-navigation">
+			<!-- Please do not use role attribute as CSS selector, it is deprecated. -->
+<nav id="p-namespaces" class="mw-portlet mw-portlet-namespaces vector-menu vector-menu-tabs" aria-labelledby="p-namespaces-label" role="navigation" 
+	 >
+	<h3 id="p-namespaces-label">
+		<span>Namespaces</span>
+	</h3>
+	<div class="vector-menu-content">
+		<ul class="vector-menu-content-list"><li id="ca-nstab-main" class="selected"><a href="/wiki/Unit_testing" title="View the content page [c]" accesskey="c">Article</a></li><li id="ca-talk"><a href="/wiki/Talk:Unit_testing" rel="discussion" title="Discuss improvements to the content page [t]" accesskey="t">Talk</a></li></ul>
+		
+	</div>
+</nav>
+
+			<!-- Please do not use role attribute as CSS selector, it is deprecated. -->
+<nav id="p-variants" class="mw-portlet mw-portlet-variants emptyPortlet vector-menu vector-menu-dropdown" aria-labelledby="p-variants-label" role="navigation" 
+	 >
+	<input type="checkbox" class="vector-menu-checkbox" aria-labelledby="p-variants-label" />
+	<h3 id="p-variants-label">
+		<span>Variants</span>
+	</h3>
+	<div class="vector-menu-content">
+		<ul class="vector-menu-content-list"></ul>
+		
+	</div>
+</nav>
+
+		</div>
+		<div id="right-navigation">
+			<!-- Please do not use role attribute as CSS selector, it is deprecated. -->
+<nav id="p-views" class="mw-portlet mw-portlet-views vector-menu vector-menu-tabs" aria-labelledby="p-views-label" role="navigation" 
+	 >
+	<h3 id="p-views-label">
+		<span>Views</span>
+	</h3>
+	<div class="vector-menu-content">
+		<ul class="vector-menu-content-list"><li id="ca-view" class="selected"><a href="/wiki/Unit_testing">Read</a></li><li id="ca-edit"><a href="/w/index.php?title=Unit_testing&amp;action=edit" title="Edit this page [e]" accesskey="e">Edit</a></li><li id="ca-history"><a href="/w/index.php?title=Unit_testing&amp;action=history" title="Past revisions of this page [h]" accesskey="h">View history</a></li></ul>
+		
+	</div>
+</nav>
+
+			<!-- Please do not use role attribute as CSS selector, it is deprecated. -->
+<nav id="p-cactions" class="mw-portlet mw-portlet-cactions emptyPortlet vector-menu vector-menu-dropdown" aria-labelledby="p-cactions-label" role="navigation" 
+	 >
+	<input type="checkbox" class="vector-menu-checkbox" aria-labelledby="p-cactions-label" />
+	<h3 id="p-cactions-label">
+		<span>More</span>
+	</h3>
+	<div class="vector-menu-content">
+		<ul class="vector-menu-content-list"></ul>
+		
+	</div>
+</nav>
+
+			<div id="p-search" role="search">
+	<h3 >
+		<label for="searchInput">Search</label>
+	</h3>
+	<form action="/w/index.php" id="searchform">
+		<div id="simpleSearch" data-search-loc="header-navigation">
+			<input type="search" name="search" placeholder="Search Wikipedia" title="Search Wikipedia [f]" accesskey="f" id="searchInput"/>
+			<input type="hidden" name="title" value="Special:Search">
+			<input type="submit" name="fulltext" value="Search" title="Search Wikipedia for this text" id="mw-searchButton" class="searchButton mw-fallbackSearchButton"/>
+			<input type="submit" name="go" value="Go" title="Go to a page with this exact name if it exists" id="searchButton" class="searchButton"/>
+		</div>
+	</form>
+</div>
+
+		</div>
+	</div>
+	
+<div id="mw-panel">
+	<div id="p-logo" role="banner">
+		<a  title="Visit the main page" class="mw-wiki-logo" href="/wiki/Main_Page"></a>
+	</div>
+	<!-- Please do not use role attribute as CSS selector, it is deprecated. -->
+<nav id="p-navigation" class="mw-portlet mw-portlet-navigation vector-menu vector-menu-portal portal portal-first" aria-labelledby="p-navigation-label" role="navigation" 
+	 >
+	<h3 id="p-navigation-label">
+		<span>Navigation</span>
+	</h3>
+	<div class="vector-menu-content">
+		<ul class="vector-menu-content-list"><li id="n-mainpage-description"><a href="/wiki/Main_Page" title="Visit the main page [z]" accesskey="z">Main page</a></li><li id="n-contents"><a href="/wiki/Wikipedia:Contents" title="Guides to browsing Wikipedia">Contents</a></li><li id="n-currentevents"><a href="/wiki/Portal:Current_events" title="Articles related to current events">Current events</a></li><li id="n-randompage"><a href="/wiki/Special:Random" title="Visit a randomly selected article [x]" accesskey="x">Random article</a></li><li id="n-aboutsite"><a href="/wiki/Wikipedia:About" title="Learn about Wikipedia and how it works">About Wikipedia</a></li><li id="n-contactpage"><a href="//en.wikipedia.org/wiki/Wikipedia:Contact_us" title="How to contact Wikipedia">Contact us</a></li><li id="n-sitesupport"><a href="https://donate.wikimedia.org/wiki/Special:FundraiserRedirector?utm_source=donate&amp;utm_medium=sidebar&amp;utm_campaign=C13_en.wikipedia.org&amp;uselang=en" title="Support us by donating to the Wikimedia Foundation">Donate</a></li></ul>
+		
+	</div>
+</nav>
+
+	<!-- Please do not use role attribute as CSS selector, it is deprecated. -->
+<nav id="p-interaction" class="mw-portlet mw-portlet-interaction vector-menu vector-menu-portal portal" aria-labelledby="p-interaction-label" role="navigation" 
+	 >
+	<h3 id="p-interaction-label">
+		<span>Contribute</span>
+	</h3>
+	<div class="vector-menu-content">
+		<ul class="vector-menu-content-list"><li id="n-help"><a href="/wiki/Help:Contents" title="Guidance on how to use and edit Wikipedia">Help</a></li><li id="n-introduction"><a href="/wiki/Help:Introduction" title="Learn how to edit Wikipedia">Learn to edit</a></li><li id="n-portal"><a href="/wiki/Wikipedia:Community_portal" title="The hub for editors">Community portal</a></li><li id="n-recentchanges"><a href="/wiki/Special:RecentChanges" title="A list of recent changes to Wikipedia [r]" accesskey="r">Recent changes</a></li><li id="n-upload"><a href="/wiki/Wikipedia:File_Upload_Wizard" title="Add images or other media for use on Wikipedia">Upload file</a></li></ul>
+		
+	</div>
+</nav>
+<!-- Please do not use role attribute as CSS selector, it is deprecated. -->
+<nav id="p-tb" class="mw-portlet mw-portlet-tb vector-menu vector-menu-portal portal" aria-labelledby="p-tb-label" role="navigation" 
+	 >
+	<h3 id="p-tb-label">
+		<span>Tools</span>
+	</h3>
+	<div class="vector-menu-content">
+		<ul class="vector-menu-content-list"><li id="t-whatlinkshere"><a href="/wiki/Special:WhatLinksHere/Unit_testing" title="List of all English Wikipedia pages containing links to this page [j]" accesskey="j">What links here</a></li><li id="t-recentchangeslinked"><a href="/wiki/Special:RecentChangesLinked/Unit_testing" rel="nofollow" title="Recent changes in pages linked from this page [k]" accesskey="k">Related changes</a></li><li id="t-upload"><a href="/wiki/Wikipedia:File_Upload_Wizard" title="Upload files [u]" accesskey="u">Upload file</a></li><li id="t-specialpages"><a href="/wiki/Special:SpecialPages" title="A list of all special pages [q]" accesskey="q">Special pages</a></li><li id="t-permalink"><a href="/w/index.php?title=Unit_testing&amp;oldid=968650276" title="Permanent link to this revision of this page">Permanent link</a></li><li id="t-info"><a href="/w/index.php?title=Unit_testing&amp;action=info" title="More information about this page">Page information</a></li><li id="t-cite"><a href="/w/index.php?title=Special:CiteThisPage&amp;page=Unit_testing&amp;id=968650276&amp;wpFormIdentifier=titleform" title="Information on how to cite this page">Cite this page</a></li><li id="t-wikibase"><a href="https://www.wikidata.org/wiki/Special:EntityPage/Q907375" title="Structured data on this page hosted by Wikidata [g]" accesskey="g">Wikidata item</a></li></ul>
+		
+	</div>
+</nav>
+<!-- Please do not use role attribute as CSS selector, it is deprecated. -->
+<nav id="p-coll-print_export" class="mw-portlet mw-portlet-coll-print_export vector-menu vector-menu-portal portal" aria-labelledby="p-coll-print_export-label" role="navigation" 
+	 >
+	<h3 id="p-coll-print_export-label">
+		<span>Print/export</span>
+	</h3>
+	<div class="vector-menu-content">
+		<ul class="vector-menu-content-list"><li id="coll-download-as-rl"><a href="/w/index.php?title=Special:DownloadAsPdf&amp;page=Unit_testing&amp;action=show-download-screen" title="Download this page as a PDF file">Download as PDF</a></li><li id="t-print"><a href="/w/index.php?title=Unit_testing&amp;printable=yes" title="Printable version of this page [p]" accesskey="p">Printable version</a></li></ul>
+		
+	</div>
+</nav>
+<!-- Please do not use role attribute as CSS selector, it is deprecated. -->
+<nav id="p-wikibase-otherprojects" class="mw-portlet mw-portlet-wikibase-otherprojects vector-menu vector-menu-portal portal" aria-labelledby="p-wikibase-otherprojects-label" role="navigation" 
+	 >
+	<h3 id="p-wikibase-otherprojects-label">
+		<span>In other projects</span>
+	</h3>
+	<div class="vector-menu-content">
+		<ul class="vector-menu-content-list"><li class="wb-otherproject-link wb-otherproject-wikibooks"><a href="https://en.wikibooks.org/wiki/Introduction_to_Software_Engineering/Testing/Unit_Tests" hreflang="en">Wikibooks</a></li></ul>
+		
+	</div>
+</nav>
+
+	<!-- Please do not use role attribute as CSS selector, it is deprecated. -->
+<nav id="p-lang" class="mw-portlet mw-portlet-lang vector-menu vector-menu-portal portal" aria-labelledby="p-lang-label" role="navigation" 
+	 >
+	<h3 id="p-lang-label">
+		<span>Languages</span>
+	</h3>
+	<div class="vector-menu-content">
+		<ul class="vector-menu-content-list"><li class="interlanguage-link interwiki-ar"><a href="https://ar.wikipedia.org/wiki/%D8%A7%D8%AE%D8%AA%D8%A8%D8%A7%D8%B1_%D8%A7%D9%84%D9%88%D8%AD%D8%AF%D8%A9" title="اختبار الوحدة – Arabic" lang="ar" hreflang="ar" class="interlanguage-link-target">العربية</a></li><li class="interlanguage-link interwiki-bg"><a href="https://bg.wikipedia.org/wiki/%D0%9A%D0%BE%D0%BC%D0%BF%D0%BE%D0%BD%D0%B5%D0%BD%D1%82%D0%BD%D0%BE_%D1%82%D0%B5%D1%81%D1%82%D0%B2%D0%B0%D0%BD%D0%B5" title="Компонентно тестване – Bulgarian" lang="bg" hreflang="bg" class="interlanguage-link-target">Български</a></li><li class="interlanguage-link interwiki-ca"><a href="https://ca.wikipedia.org/wiki/Proves_unit%C3%A0ries" title="Proves unitàries – Catalan" lang="ca" hreflang="ca" class="interlanguage-link-target">Català</a></li><li class="interlanguage-link interwiki-cs"><a href="https://cs.wikipedia.org/wiki/Unit_testing" title="Unit testing – Czech" lang="cs" hreflang="cs" class="interlanguage-link-target">Čeština</a></li><li class="interlanguage-link interwiki-da"><a href="https://da.wikipedia.org/wiki/Unit_test" title="Unit test – Danish" lang="da" hreflang="da" class="interlanguage-link-target">Dansk</a></li><li class="interlanguage-link interwiki-de"><a href="https://de.wikipedia.org/wiki/Modultest" title="Modultest – German" lang="de" hreflang="de" class="interlanguage-link-target">Deutsch</a></li><li class="interlanguage-link interwiki-et"><a href="https://et.wikipedia.org/wiki/%C3%9Chiktestimine" title="Ühiktestimine – Estonian" lang="et" hreflang="et" class="interlanguage-link-target">Eesti</a></li><li class="interlanguage-link interwiki-es"><a href="https://es.wikipedia.org/wiki/Prueba_unitaria" title="Prueba unitaria – Spanish" lang="es" hreflang="es" class="interlanguage-link-target">Español</a></li><li class="interlanguage-link interwiki-fa"><a href="https://fa.wikipedia.org/wiki/%D8%A2%D8%B2%D9%85%D8%A7%DB%8C%D8%B4_%D9%88%D8%A7%D8%AD%D8%AF" title="آزمایش واحد – Persian" lang="fa" hreflang="fa" class="interlanguage-link-target">فارسی</a></li><li class="interlanguage-link interwiki-fr"><a href="https://fr.wikipedia.org/wiki/Test_unitaire" title="Test unitaire – French" lang="fr" hreflang="fr" class="interlanguage-link-target">Français</a></li><li class="interlanguage-link interwiki-ko"><a href="https://ko.wikipedia.org/wiki/%EC%9C%A0%EB%8B%9B_%ED%85%8C%EC%8A%A4%ED%8A%B8" title="유닛 테스트 – Korean" lang="ko" hreflang="ko" class="interlanguage-link-target">한국어</a></li><li class="interlanguage-link interwiki-id"><a href="https://id.wikipedia.org/wiki/Pengujian_unit" title="Pengujian unit – Indonesian" lang="id" hreflang="id" class="interlanguage-link-target">Bahasa Indonesia</a></li><li class="interlanguage-link interwiki-ia"><a href="https://ia.wikipedia.org/wiki/Proba_unitari" title="Proba unitari – Interlingua" lang="ia" hreflang="ia" class="interlanguage-link-target">Interlingua</a></li><li class="interlanguage-link interwiki-it"><a href="https://it.wikipedia.org/wiki/Unit_testing" title="Unit testing – Italian" lang="it" hreflang="it" class="interlanguage-link-target">Italiano</a></li><li class="interlanguage-link interwiki-he"><a href="https://he.wikipedia.org/wiki/%D7%91%D7%93%D7%99%D7%A7%D7%95%D7%AA_%D7%99%D7%97%D7%99%D7%93%D7%94" title="בדיקות יחידה – Hebrew" lang="he" hreflang="he" class="interlanguage-link-target">עברית</a></li><li class="interlanguage-link interwiki-hu"><a href="https://hu.wikipedia.org/wiki/Egys%C3%A9gtesztel%C3%A9s" title="Egységtesztelés – Hungarian" lang="hu" hreflang="hu" class="interlanguage-link-target">Magyar</a></li><li class="interlanguage-link interwiki-nl"><a href="https://nl.wikipedia.org/wiki/Unittesten" title="Unittesten – Dutch" lang="nl" hreflang="nl" class="interlanguage-link-target">Nederlands</a></li><li class="interlanguage-link interwiki-ja"><a href="https://ja.wikipedia.org/wiki/%E5%8D%98%E4%BD%93%E3%83%86%E3%82%B9%E3%83%88" title="単体テスト – Japanese" lang="ja" hreflang="ja" class="interlanguage-link-target">日本語</a></li><li class="interlanguage-link interwiki-no"><a href="https://no.wikipedia.org/wiki/Enhetstesting" title="Enhetstesting – Norwegian Bokmål" lang="nb" hreflang="nb" class="interlanguage-link-target">Norsk bokmål</a></li><li class="interlanguage-link interwiki-pl"><a href="https://pl.wikipedia.org/wiki/Test_jednostkowy" title="Test jednostkowy – Polish" lang="pl" hreflang="pl" class="interlanguage-link-target">Polski</a></li><li class="interlanguage-link interwiki-pt"><a href="https://pt.wikipedia.org/wiki/Teste_de_unidade" title="Teste de unidade – Portuguese" lang="pt" hreflang="pt" class="interlanguage-link-target">Português</a></li><li class="interlanguage-link interwiki-ru"><a href="https://ru.wikipedia.org/wiki/%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%D0%BD%D0%BE%D0%B5_%D1%82%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5" title="Модульное тестирование – Russian" lang="ru" hreflang="ru" class="interlanguage-link-target">Русский</a></li><li class="interlanguage-link interwiki-sr"><a href="https://sr.wikipedia.org/wiki/%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D0%B0%D1%80%D0%BD%D0%BE_%D1%82%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%B0%D1%9A%D0%B5" title="Модуларно тестирање – Serbian" lang="sr" hreflang="sr" class="interlanguage-link-target">Српски / srpski</a></li><li class="interlanguage-link interwiki-fi"><a href="https://fi.wikipedia.org/wiki/Yksikk%C3%B6testaaminen" title="Yksikkötestaaminen – Finnish" lang="fi" hreflang="fi" class="interlanguage-link-target">Suomi</a></li><li class="interlanguage-link interwiki-ta"><a href="https://ta.wikipedia.org/wiki/%E0%AE%93%E0%AE%B0%E0%AE%B2%E0%AE%95%E0%AF%81%E0%AE%9A%E0%AF%8D_%E0%AE%9A%E0%AF%8B%E0%AE%A4%E0%AE%A9%E0%AF%88" title="ஓரலகுச் சோதனை – Tamil" lang="ta" hreflang="ta" class="interlanguage-link-target">தமிழ்</a></li><li class="interlanguage-link interwiki-tr"><a href="https://tr.wikipedia.org/wiki/Birim_testi" title="Birim testi – Turkish" lang="tr" hreflang="tr" class="interlanguage-link-target">Türkçe</a></li><li class="interlanguage-link interwiki-uk"><a href="https://uk.wikipedia.org/wiki/%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%D0%BD%D0%B5_%D1%82%D0%B5%D1%81%D1%82%D1%83%D0%B2%D0%B0%D0%BD%D0%BD%D1%8F" title="Модульне тестування – Ukrainian" lang="uk" hreflang="uk" class="interlanguage-link-target">Українська</a></li><li class="interlanguage-link interwiki-vi"><a href="https://vi.wikipedia.org/wiki/Ki%E1%BB%83m_th%E1%BB%AD_%C4%91%C6%A1n_v%E1%BB%8B" title="Kiểm thử đơn vị – Vietnamese" lang="vi" hreflang="vi" class="interlanguage-link-target">Tiếng Việt</a></li><li class="interlanguage-link interwiki-zh"><a href="https://zh.wikipedia.org/wiki/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95" title="单元测试 – Chinese" lang="zh" hreflang="zh" class="interlanguage-link-target">中文</a></li></ul>
+		<div class="after-portlet after-portlet-lang"><span class="wb-langlinks-edit wb-langlinks-link"><a href="https://www.wikidata.org/wiki/Special:EntityPage/Q907375#sitelinks-wikipedia" title="Edit interlanguage links" class="wbc-editpage">Edit links</a></span></div>
+	</div>
+</nav>
+
+</div>
+
+</div>
+<footer id="footer" class="mw-footer" role="contentinfo" >
+	<ul id="footer-info" >
+	<li id="footer-info-lastmod"> This page was last edited on 20 July 2020, at 17:31<span class="anonymous-show">&#160;(UTC)</span>.</li>
+	<li id="footer-info-copyright">Text is available under the <a rel="license" href="//en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License">Creative Commons Attribution-ShareAlike License</a><a rel="license" href="//creativecommons.org/licenses/by-sa/3.0/" style="display:none;"></a>;
+additional terms may apply.  By using this site, you agree to the <a href="//foundation.wikimedia.org/wiki/Terms_of_Use">Terms of Use</a> and <a href="//foundation.wikimedia.org/wiki/Privacy_policy">Privacy Policy</a>. Wikipedia® is a registered trademark of the <a href="//www.wikimediafoundation.org/">Wikimedia Foundation, Inc.</a>, a non-profit organization.</li>
+</ul>
+
+	<ul id="footer-places" >
+	<li id="footer-places-privacy"><a href="https://foundation.wikimedia.org/wiki/Privacy_policy" class="extiw" title="wmf:Privacy policy">Privacy policy</a></li>
+	<li id="footer-places-about"><a href="/wiki/Wikipedia:About" title="Wikipedia:About">About Wikipedia</a></li>
+	<li id="footer-places-disclaimer"><a href="/wiki/Wikipedia:General_disclaimer" title="Wikipedia:General disclaimer">Disclaimers</a></li>
+	<li id="footer-places-contact"><a href="//en.wikipedia.org/wiki/Wikipedia:Contact_us">Contact Wikipedia</a></li>
+	<li id="footer-places-mobileview"><a href="//en.m.wikipedia.org/w/index.php?title=Unit_testing&amp;mobileaction=toggle_view_mobile" class="noprint stopMobileRedirectToggle">Mobile view</a></li>
+	<li id="footer-places-developers"><a href="https://www.mediawiki.org/wiki/Special:MyLanguage/How_to_contribute">Developers</a></li>
+	<li id="footer-places-statslink"><a href="https://stats.wikimedia.org/#/en.wikipedia.org">Statistics</a></li>
+	<li id="footer-places-cookiestatement"><a href="https://foundation.wikimedia.org/wiki/Cookie_statement">Cookie statement</a></li>
+</ul>
+
+	<ul id="footer-icons" class="noprint">
+	<li id="footer-copyrightico"><a href="https://wikimediafoundation.org/"><img src="/static/images/footer/wikimedia-button.png" srcset="/static/images/footer/wikimedia-button-1.5x.png 1.5x, /static/images/footer/wikimedia-button-2x.png 2x" width="88" height="31" alt="Wikimedia Foundation" loading="lazy" /></a></li>
+	<li id="footer-poweredbyico"><a href="https://www.mediawiki.org/"><img src="/static/images/footer/poweredby_mediawiki_88x31.png" alt="Powered by MediaWiki" srcset="/static/images/footer/poweredby_mediawiki_132x47.png 1.5x, /static/images/footer/poweredby_mediawiki_176x62.png 2x" width="88" height="31" loading="lazy"/></a></li>
+</ul>
+
+	<div style="clear: both;"></div>
+</footer>
+
+
+<script>(RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgPageParseReport":{"limitreport":{"cputime":"0.576","walltime":"0.733","ppvisitednodes":{"value":3346,"limit":1000000},"postexpandincludesize":{"value":83946,"limit":2097152},"templateargumentsize":{"value":7186,"limit":2097152},"expansiondepth":{"value":13,"limit":40},"expensivefunctioncount":{"value":8,"limit":500},"unstrip-depth":{"value":1,"limit":20},"unstrip-size":{"value":91036,"limit":5000000},"entityaccesscount":{"value":0,"limit":400},"timingprofile":["100.00%  654.634      1 -total"," 40.93%  267.970      1 Template:Reflist"," 19.49%  127.586     23 Template:Cite_web"," 16.71%  109.422      9 Template:Citation_needed"," 15.03%   98.412      3 Template:Cite_book"," 14.20%   92.966     10 Template:Fix"," 12.65%   82.828      1 Template:Short_description","  7.90%   51.723      1 Template:More_citations_needed_section","  7.05%   46.128      1 Template:More_citations_needed","  6.67%   43.644      2 Template:Ambox"]},"scribunto":{"limitreport-timeusage":{"value":"0.329","limit":"10.000"},"limitreport-memusage":{"value":6834537,"limit":52428800}},"cachereport":{"origin":"mw1329","timestamp":"20201029215145","ttl":2592000,"transientcontent":false}}});});</script>
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Article","name":"Unit testing","url":"https:\/\/en.wikipedia.org\/wiki\/Unit_testing","sameAs":"http:\/\/www.wikidata.org\/entity\/Q907375","mainEntity":"http:\/\/www.wikidata.org\/entity\/Q907375","author":{"@type":"Organization","name":"Contributors to Wikimedia projects"},"publisher":{"@type":"Organization","name":"Wikimedia Foundation, Inc.","logo":{"@type":"ImageObject","url":"https:\/\/www.wikimedia.org\/static\/images\/wmf-hor-googpub.png"}},"datePublished":"2003-05-07T08:03:30Z","dateModified":"2020-07-20T17:31:02Z","headline":"Software testing method by which individual units of source code are validated"}</script>
+<script>(RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgBackendResponseTime":150,"wgHostname":"mw1409"});});</script>
+</body></html>

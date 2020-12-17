@@ -1,0 +1,32 @@
+{
+	"545278320": {
+		"state": {
+			"on": false,
+			"alert": "none",
+			"effect": "none",
+			"mode": "homeautomation",
+			"reachable": true
+		},
+		"uniqueid": "10:f0:38:a3:b5:B1:80:49-70",
+		"name": "Fancy Exterior Light Thingy",
+		"manufacturername": "Philips",
+		"type": "On/off light",
+		"modelid": "LWB001",
+		"swversion": "1.0.0"
+	},
+	"545302939": {
+		"state": {
+			"on": false,
+			"alert": "none",
+			"effect": "none",
+			"mode": "homeautomation",
+			"reachable": true
+		},
+		"uniqueid": "10:f0:38:a3:b5:B1:80:49-9b",
+		"name": "Start the End Of The World celebrations",
+		"manufacturername": "Philips",
+		"type": "On/off light",
+		"modelid": "LWB001",
+		"swversion": "1.0.0"
+	}
+}

@@ -222,7 +222,7 @@ String StationImpl::getSSID() const
 	station_config config = {0};
 	if(!wifi_station_get_config(&config)) {
 		debugf("Can't read station configuration!");
-		return "";
+		return nullptr;
 	}
 	auto ssid = reinterpret_cast<const char*>(config.ssid);
 	debugf("SSID: '%s'", ssid);

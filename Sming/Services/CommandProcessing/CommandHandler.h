@@ -31,10 +31,10 @@
 
 /** @brief  Verbose mode
 */
-typedef enum {
+enum VerboseMode {
 	VERBOSE, ///< Verbose mode
 	SILENT   ///< Silent mode
-} VerboseMode;
+};
 
 /** @brief  Command handler class */
 class CommandHandler
@@ -44,6 +44,8 @@ public:
 	*/
 	CommandHandler();
 	~CommandHandler();
+
+	CommandHandler(const CommandHandler&) = delete;
 
 	/** @brief  Add a new command to the command handler
 	 *  @param  reqDelegate Command delegate to register

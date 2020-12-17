@@ -74,7 +74,7 @@ enum WpsStatus {
 /**
  * @brief Scan complete handler function
  */
-typedef Delegate<void(bool success, BssList& list)> ScanCompletedDelegate;
+using ScanCompletedDelegate = Delegate<void(bool success, BssList& list)>;
 
 /**
  * @brief Smart configuration handler function
@@ -82,14 +82,14 @@ typedef Delegate<void(bool success, BssList& list)> ScanCompletedDelegate;
  * @param info
  * @retval bool return true to perform default configuration
  */
-typedef Delegate<bool(SmartConfigEvent event, const SmartConfigEventInfo& info)> SmartConfigDelegate;
+using SmartConfigDelegate = Delegate<bool(SmartConfigEvent event, const SmartConfigEventInfo& info)>;
 
 /**
  * @brief WPS configuration callback function
  * @param status
  * @retval bool return true to perform default configuration
  */
-typedef Delegate<bool(WpsStatus status)> WPSConfigDelegate;
+using WPSConfigDelegate = Delegate<bool(WpsStatus status)>;
 
 /** @brief  WiFi station class
  */
@@ -199,6 +199,16 @@ public:
 	 *	@retval	IpAddress WiFi station broadcast address
 	 */
 	virtual IpAddress getNetworkBroadcast() const = 0;
+
+	/** @brief Determine if the given address is on the same subnet
+	 *  @param address
+	 *  @retval bool true if address is local
+	 *  @note Use to prevent external access to services
+	 */
+	bool isLocal(IpAddress address)
+	{
+		return address.compare(getIP(), getNetworkMask());
+	}
 
 	/**	@brief	Set WiFi station IP address
 	 *	@param	address IP address

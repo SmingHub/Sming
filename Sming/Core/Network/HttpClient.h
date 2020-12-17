@@ -22,6 +22,8 @@
 #include "Http/HttpCommon.h"
 #include "Http/HttpRequest.h"
 #include "Http/HttpClientConnection.h"
+#include "Data/Stream/LimitedMemoryStream.h"
+#include <Timer.h>
 
 class HttpClient
 {
@@ -57,9 +59,31 @@ public:
 			requestComplete));
 	}
 
-	bool downloadString(const Url& url, RequestCompletedDelegate requestComplete)
+	bool sendRequest(const HttpMethod method, const Url& url, const HttpHeaders& headers, String&& body,
+					 RequestCompletedDelegate requestComplete) noexcept
 	{
-		return send(createRequest(url)->setMethod(HTTP_GET)->onRequestComplete(requestComplete));
+		return send(createRequest(url)
+						->setMethod(method)
+						->setHeaders(headers)
+						->setBody(std::move(body))
+						->onRequestComplete(requestComplete));
+	}
+
+	/**
+	 * @brief Queue request to download content as string (in memory)
+	 * @param url URL from which the content will be fetched
+	 * @param requestComplete Completion callback
+	 * @param maxLength maximum bytes to store in memory. If the response is bigger than `maxLength` then the rest bytes will be discarded.
+	 * 					Use this parameter wisely as setting the value too high may consume all available RAM resulting in
+	 * 					device restart and Denial-Of-Service
+	 */
+	bool downloadString(const Url& url, RequestCompletedDelegate requestComplete,
+						size_t maxLength = NETWORK_SEND_BUFFER_SIZE)
+	{
+		return send(createRequest(url)
+						->setMethod(HTTP_GET)
+						->setResponseStream(new LimitedMemoryStream(maxLength))
+						->onRequestComplete(requestComplete));
 	}
 
 	bool downloadFile(const Url& url, RequestCompletedDelegate requestComplete = nullptr)
@@ -103,7 +127,7 @@ public:
 	}
 
 	/**
-	 * Use this method to clean all request queues and object pools
+	 * @brief Use this method to clean all object pools
 	 */
 	static void cleanup()
 	{
@@ -117,8 +141,12 @@ protected:
 	}
 
 protected:
-	typedef ObjectMap<String, HttpClientConnection> HttpConnectionPool;
+	using HttpConnectionPool = ObjectMap<String, HttpClientConnection>;
 	static HttpConnectionPool httpConnectionPool;
+
+private:
+	static Timer cleanUpTimer;
+	static void cleanInactive();
 };
 
 /** @} */

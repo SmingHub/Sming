@@ -19,22 +19,22 @@
 
 bool HttpClientConnection::connect(const String& host, int port, bool useSsl)
 {
-	debug_d("HttpClientConnection::connect: TCP state: %d, isStarted: %d, isActive: %d",
-			(tcp != nullptr ? tcp->state : -1), (int)(getConnectionState() != eTCS_Ready), (int)isActive());
+	debug_d("HCC::connect: TCP state: %d, isStarted: %d, isActive: %d", (tcp != nullptr ? tcp->state : -1),
+			(int)(getConnectionState() != eTCS_Ready), (int)isActive());
 
 	if(isProcessing()) {
 		return true;
 	}
 
 	if(getConnectionState() != eTCS_Ready && isActive()) {
-		debug_d("HttpClientConnection::reusing TCP connection ");
+		debug_d("HCC::connect: reusing TCP connection ");
 
 		// we might have still alive connection
 		onConnected(ERR_OK);
 		return true;
 	}
 
-	debug_d("HttpClientConnection::connecting ...");
+	debug_d("HCC::connect: connecting ...");
 
 	return TcpClient::connect(host, port, useSsl);
 }
@@ -43,7 +43,7 @@ bool HttpClientConnection::send(HttpRequest* request)
 {
 	if(!waitingQueue.enqueue(request)) {
 		// the queue is full and we cannot add more requests at the time.
-		debug_e("The request queue is full at the moment");
+		debug_e("HCC::send: The request queue is full at the moment");
 		delete request;
 		return false;
 	}
@@ -54,7 +54,6 @@ bool HttpClientConnection::send(HttpRequest* request)
 
 void HttpClientConnection::reset()
 {
-	delete incomingRequest;
 	incomingRequest = nullptr;
 
 	response.reset();
@@ -64,7 +63,7 @@ void HttpClientConnection::reset()
 
 int HttpClientConnection::onMessageBegin(http_parser* parser)
 {
-	incomingRequest = executionQueue.dequeue();
+	incomingRequest = executionQueue.peek();
 	if(incomingRequest == nullptr) {
 		return 1; // there are no requests in the queue
 	}
@@ -72,12 +71,12 @@ int HttpClientConnection::onMessageBegin(http_parser* parser)
 	return 0;
 }
 
-HttpPartResult HttpClientConnection::multipartProducer()
+MultipartStream::BodyPart HttpClientConnection::multipartProducer()
 {
-	HttpPartResult result;
+	MultipartStream::BodyPart result;
 
 	if(outgoingRequest->files.count()) {
-		const String& name = outgoingRequest->files.keyAt(0);
+		String name = outgoingRequest->files.keyAt(0);
 		auto file = outgoingRequest->files.extractAt(0);
 		result.stream = file;
 
@@ -92,11 +91,9 @@ HttpPartResult HttpClientConnection::multipartProducer()
 
 	if(outgoingRequest->postParams.count()) {
 		const String& name = outgoingRequest->postParams.keyAt(0);
-		const String& value = outgoingRequest->postParams.valueAt(0);
+		String& value = outgoingRequest->postParams.valueAt(0);
 
-		auto mStream = new MemoryDataStream();
-		mStream->print(value);
-		result.stream = mStream;
+		result.stream = new MemoryDataStream(std::move(value));
 
 		auto headers = new HttpHeaders();
 		(*headers)[HTTP_HEADER_CONTENT_DISPOSITION] = F("form-data; name=\"") + name + '"';
@@ -115,7 +112,7 @@ int HttpClientConnection::onMessageComplete(http_parser* parser)
 		return -2; // no current request...
 	}
 
-	debug_d("staticOnMessageComplete: Execution queue: %d, %s", executionQueue.count(),
+	debug_d("HCC::onMessageComplete: executionQueue: %d, %s", executionQueue.count(),
 			incomingRequest->uri.toString().c_str());
 
 	// we are finished with this request
@@ -128,13 +125,33 @@ int HttpClientConnection::onMessageComplete(http_parser* parser)
 
 	if(incomingRequest->retries > 0) {
 		incomingRequest->retries--;
-		return (executionQueue.enqueue(incomingRequest) ? 0 : -1);
+		return 0;
 	}
+
+	executionQueue.dequeue();
 
 	delete incomingRequest;
 	incomingRequest = nullptr;
 
-	if(!executionQueue.count()) {
+	state = eHCS_Ready;
+
+	auto response = getResponse();
+
+	const String& headerConnection = static_cast<const HttpHeaders&>(response->headers)[HTTP_HEADER_CONNECTION];
+	if(headerConnection.equalsIgnoreCase(_F("close"))) {
+		allowPipe = false;
+		// if the server does not support keep-alive -> close the connection
+		// see: https://tools.ietf.org/html/rfc2616#section-14.10
+		debug_d("HCC::onMessageComplete: Closing as requested by server");
+		state = eHCS_WaitResponse; // put the other requests on hold...
+		setTimeOut(0);			   // schedule for closing...
+
+		return hasError;
+	}
+
+	allowPipe = true; // if the server supports keep-alive then it would most probably support also pipelining...
+
+	if(executionQueue.count() == 0) {
 		onConnected(ERR_OK);
 	}
 
@@ -164,7 +181,7 @@ int HttpClientConnection::onHeadersComplete(const HttpHeaders& headers)
 	}
 
 	response.headers.setMultiple(headers);
-	response.code = parser.status_code;
+	response.code = HttpStatus(parser.status_code);
 
 	if(incomingRequest->auth != nullptr) {
 		incomingRequest->auth->setResponse(getResponse());
@@ -217,21 +234,22 @@ int HttpClientConnection::onBody(const char* at, size_t length)
 
 void HttpClientConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
-	debug_d("HttpClientConnection::onReadyToSendData: waitingQueue.count: %d", waitingQueue.count());
+	debug_d("HCC::onReadyToSendData: State: %d, executionQueue: %d, waitingQueue: %d", state, executionQueue.count(),
+			waitingQueue.count());
 
 REENTER:
 	switch(state) {
 	case eHCS_Ready: {
 		HttpRequest* request = waitingQueue.peek();
 		if(request == nullptr) {
-			debug_d("Nothing in the waiting queue");
+			debug_d("HCC::onReadyToSendData: Nothing in the waiting queue");
 			outgoingRequest = nullptr;
 			break;
 		}
 
 		// if the executionQueue is not empty then we have to check if we can pipeline that request
-		if(executionQueue.count()) {
-			if(!(request->method == HTTP_GET || request->method == HTTP_HEAD)) {
+		if(executionQueue.count() != 0) {
+			if(!(allowPipe && (request->method == HTTP_GET || request->method == HTTP_HEAD))) {
 				// if the current request cannot be pipelined -> break;
 				break;
 			}
@@ -246,7 +264,7 @@ REENTER:
 		} // executionQueue.count()
 
 		if(!executionQueue.enqueue(request)) {
-			debug_e("The working queue is full at the moment");
+			debug_e("HCC::onReadyToSendData: The working queue is full at the moment");
 			break;
 		}
 
@@ -269,6 +287,12 @@ REENTER:
 	case eHCS_StartBody:
 	case eHCS_SendingBody: {
 		if(sendRequestBody(outgoingRequest)) {
+			if(!(outgoingRequest->method == HTTP_GET || outgoingRequest->method == HTTP_HEAD)) {
+				// we should wait for the response from this request.
+				state = eHCS_WaitResponse;
+				break;
+			}
+
 			state = eHCS_Ready;
 			delete stream;
 			stream = nullptr;
@@ -276,15 +300,34 @@ REENTER:
 		}
 	}
 
+	case eHCS_WaitResponse:
 	default:; // Do nothing
 	}		  // switch(state)
 
 	TcpClient::onReadyToSendData(sourceEvent);
 }
 
+void HttpClientConnection::onClosed()
+{
+	if(waitingQueue.count() + executionQueue.count() > 0) {
+		debug_d("HCC::onClosed: Trying to reconnect and send pending requests");
+
+		cleanup();
+		auto request = waitingQueue.peek();
+		if(request != nullptr) {
+			bool useSsl = (request->uri.Scheme == URI_SCHEME_HTTP_SECURE);
+			connect(request->uri.Host, request->uri.getPort(), useSsl);
+		}
+	}
+}
+
 void HttpClientConnection::sendRequestHeaders(HttpRequest* request)
 {
-	sendString(String(http_method_str(request->method)) + ' ' + request->uri.getPathWithQuery() + _F(" HTTP/1.1\r\n"));
+	String s = toString(request->method);
+	s += ' ';
+	s += request->uri.getPathWithQuery();
+	s += _F(" HTTP/1.1\r\n");
+	sendString(s);
 
 	if(!request->headers.contains(HTTP_HEADER_HOST)) {
 		request->headers[HTTP_HEADER_HOST] = request->uri.getHostWithPort();
@@ -292,20 +335,21 @@ void HttpClientConnection::sendRequestHeaders(HttpRequest* request)
 
 	request->headers[HTTP_HEADER_CONTENT_LENGTH] = "0";
 	if(request->files.count()) {
-		MultipartStream* mStream =
-			new MultipartStream(HttpPartProducerDelegate(&HttpClientConnection::multipartProducer, this));
-		request->headers[HTTP_HEADER_CONTENT_TYPE] =
-			ContentType::toString(MIME_FORM_MULTIPART) + _F("; boundary=") + mStream->getBoundary();
-		if(request->bodyStream) {
-			debug_e("HttpClientConnection: existing stream is discarded due to POST params");
+		auto mStream = new MultipartStream(MultipartStream::Producer(&HttpClientConnection::multipartProducer, this));
+		s = toString(MIME_FORM_MULTIPART);
+		s += F("; boundary=");
+		s += mStream->getBoundary();
+		request->headers[HTTP_HEADER_CONTENT_TYPE] = s;
+		if(request->bodyStream != nullptr) {
+			debug_e("HCC::sendRequestHeaders: existing stream is discarded due to POST params");
 			delete request->bodyStream;
 		}
 		request->bodyStream = mStream;
-	} else if(request->postParams.count()) {
+	} else if(request->postParams.count() != 0) {
 		UrlencodedOutputStream* uStream = new UrlencodedOutputStream(request->postParams);
-		request->headers[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(MIME_FORM_URL_ENCODED);
+		request->headers[HTTP_HEADER_CONTENT_TYPE] = toString(MIME_FORM_URL_ENCODED);
 		if(request->bodyStream) {
-			debug_e("HttpClientConnection: existing stream is discarded due to POST params");
+			debug_e("HCC::sendRequestHeaders: existing stream is discarded due to POST params");
 			delete request->bodyStream;
 		}
 		request->bodyStream = uStream;

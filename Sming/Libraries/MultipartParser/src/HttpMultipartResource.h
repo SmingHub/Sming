@@ -16,7 +16,7 @@
 #include <Network/Http/HttpResource.h>
 #include <WString.h>
 
-typedef Delegate<void(HttpFiles&)> HttpFilesMapper;
+using HttpFilesMapper = Delegate<void(HttpFiles&)>;
 
 /** 
  * @brief HttpResource that allows handling of HTTP file upload.

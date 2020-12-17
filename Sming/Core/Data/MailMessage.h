@@ -44,7 +44,11 @@ public:
 	 * @param value
 	 * @retval MailMessage&
 	 */
-	MailMessage& setHeader(const String& name, const String& value);
+	MailMessage& setHeader(const String& name, const String& value)
+	{
+		headers[name] = value;
+		return *this;
+	}
 
 	/**
 	 * @brief Get a reference to the current set of headers
@@ -59,6 +63,14 @@ public:
 	 * @retval MailMessage&
 	 */
 	MailMessage& setBody(const String& body, MimeType mime = MIME_TEXT);
+
+	/**
+	 * @brief Sets the body of the email using move semantics
+	 * @param body Will be moved into message then invalidated
+	 * @param mime
+	 * @retval MailMessage&
+	 */
+	MailMessage& setBody(String&& body, MimeType mime = MIME_TEXT) noexcept;
 
 	/**
 	 * @brief Sets the body of the email
@@ -96,7 +108,7 @@ public:
 private:
 	IDataSourceStream* stream = nullptr;
 	HttpHeaders headers;
-	Vector<HttpPartResult> attachments;
+	Vector<MultipartStream::BodyPart> attachments;
 };
 
 /** @} */

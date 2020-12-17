@@ -16,12 +16,9 @@
 #include "libb64/cencode.h"
 
 /**
- * @brief      Base64 Stream
- * @ingroup    stream data
- *
- *  @{
+ * @brief    Read-only stream to emit base64-encoded content from source stream
+ * @ingroup stream data
 */
-
 class Base64OutputStream : public StreamTransformer
 {
 public:
@@ -48,5 +45,3 @@ private:
 	base64_encodestate state = {};
 	base64_encodestate lastState = {};
 };
-
-/** @} */

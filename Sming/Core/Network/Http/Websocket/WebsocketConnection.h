@@ -36,13 +36,17 @@ DECLARE_FSTR(WSSTR_SECRET)
 
 class WebsocketConnection;
 
-typedef Vector<WebsocketConnection*> WebsocketList;
+using WebsocketList = Vector<WebsocketConnection*>;
 
-typedef Delegate<void(WebsocketConnection&)> WebsocketDelegate;
-typedef Delegate<void(WebsocketConnection&, const String&)> WebsocketMessageDelegate;
-typedef Delegate<void(WebsocketConnection&, uint8_t* data, size_t size)> WebsocketBinaryDelegate;
+using WebsocketDelegate = Delegate<void(WebsocketConnection&)>;
+using WebsocketMessageDelegate = Delegate<void(WebsocketConnection&, const String&)>;
+using WebsocketBinaryDelegate = Delegate<void(WebsocketConnection&, uint8_t* data, size_t size)>;
 
-enum WsConnectionState { eWSCS_Ready, eWSCS_Open, eWSCS_Closed };
+enum WsConnectionState {
+	eWSCS_Ready,
+	eWSCS_Open,
+	eWSCS_Closed,
+};
 
 struct WsFrameInfo {
 	ws_frame_type_t type = WS_FRAME_TEXT;
@@ -69,7 +73,6 @@ public:
 
 	virtual ~WebsocketConnection()
 	{
-		state = eWSCS_Closed;
 		close();
 	}
 
@@ -210,7 +213,14 @@ public:
 	{
 		wsBinary = handler;
 	}
-
+	/**
+	 * @brief Sets the callback handler to be called when pong reply received
+	 * @param handler
+	 */
+	void setPongHandler(WebsocketDelegate handler)
+	{
+		wsPong = handler;
+	}
 	/**
 	 * @brief Sets the callback handler to be called before closing a websocket connection
 	 * @param handler
@@ -294,6 +304,7 @@ protected:
 	WebsocketDelegate wsConnect = nullptr;
 	WebsocketMessageDelegate wsMessage = nullptr;
 	WebsocketBinaryDelegate wsBinary = nullptr;
+	WebsocketDelegate wsPong = nullptr;
 	WebsocketDelegate wsDisconnect = nullptr;
 
 	void* userData = nullptr;

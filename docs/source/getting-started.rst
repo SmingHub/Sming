@@ -13,6 +13,7 @@ Sming supports multiple architectures. Choose the architecture of your choice to
    :maxdepth: 1
 
    /arch/esp8266/getting-started/index
+   /arch/esp32/getting-started/index
    /arch/host/host-emulator
 
 You can also try Sming without installing anything locally.

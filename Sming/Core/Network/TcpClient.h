@@ -22,9 +22,9 @@ class TcpClient;
 class ReadWriteStream;
 class IpAddress;
 
-typedef Delegate<void(TcpClient& client, TcpConnectionEvent sourceEvent)> TcpClientEventDelegate;
-typedef Delegate<void(TcpClient& client, bool successful)> TcpClientCompleteDelegate;
-typedef Delegate<bool(TcpClient& client, char* data, int size)> TcpClientDataDelegate;
+using TcpClientEventDelegate = Delegate<void(TcpClient& client, TcpConnectionEvent sourceEvent)>;
+using TcpClientCompleteDelegate = Delegate<void(TcpClient& client, bool successful)>;
+using TcpClientDataDelegate = Delegate<bool(TcpClient& client, char* data, int size)>;
 
 enum TcpClientState {
 	eTCS_Ready,
@@ -131,6 +131,8 @@ protected:
 	err_t onReceive(pbuf* buf) override;
 	err_t onSent(uint16_t len) override;
 	void onError(err_t err) override;
+	void onClosed() override;
+
 	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
 
 	virtual void onFinished(TcpClientState finishState);

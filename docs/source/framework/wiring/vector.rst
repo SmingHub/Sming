@@ -2,3 +2,4 @@ Vector
 ======
 
 .. doxygenclass:: Vector
+   :members:

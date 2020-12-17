@@ -24,14 +24,14 @@
 #include "Http/HttpServerConnection.h"
 #include "Http/HttpBodyParser.h"
 
-typedef struct {
+struct HttpServerSettings {
 	uint16_t maxActiveConnections = 10; ///< maximum number of concurrent requests..
 	uint16_t keepAliveSeconds = 0;		///< default seconds to keep the connection alive before closing it
 	int minHeapSize = -1; ///< min heap size that is required to accept connection, -1 means use server default
 	bool useDefaultBodyParsers = 1; ///< if the default body parsers,  as form-url-encoded, should be used
 	bool closeOnContentError =
 		true; ///< close the connection if a body parser or resource fails to parse the body content.
-} HttpServerSettings;
+};
 
 class HttpServer : public TcpServer
 {
@@ -73,7 +73,7 @@ public:
 	 */
 	void setBodyParser(MimeType mimeType, HttpBodyParserDelegate parser)
 	{
-		bodyParsers[ContentType::toString(mimeType)] = parser;
+		bodyParsers[toString(mimeType)] = parser;
 	}
 
 	/** @deprecated Use `paths.set()` instead */

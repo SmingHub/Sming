@@ -20,4 +20,5 @@
 #include <cstdint>
 
 uint16_t shiftIn(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t count = 8, uint8_t delayTime = 1);
-void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint16_t value, uint8_t count = 8, uint8_t delayTime = 1);
+void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint16_t value, uint8_t count = 8,
+			  uint8_t delayTime = 1);

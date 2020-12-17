@@ -17,7 +17,7 @@
 #if GDBSTUB_ENABLE_HOSTIO
 
 #include "GdbPacket.h"
-#include <sys/errno.h>
+#include <errno.h>
 #include <fcntl.h>
 #include "FileSystem.h"
 #include "WString.h"
@@ -59,6 +59,7 @@ void ATTR_GDBEXTERNFN gdbHandleHostIo(char* commandBuffer, unsigned cmdLen)
 		unsigned flags = GdbPacket::readHexValue(data);
 		++data;						   // Skip ,
 		unsigned mode = GdbPacket::readHexValue(data); // Skip mode (not used)
+		(void)mode;
 
 		FileOpenFlags openFlags;
 		if((flags & 0xff) == O_RDWR) {
@@ -113,7 +114,7 @@ void ATTR_GDBEXTERNFN gdbHandleHostIo(char* commandBuffer, unsigned cmdLen)
 		debug_i("File:pread(%d, %u, %u)", fd, count, offset);
 
 		packet.writeChar('F');
-		if(fileSeek(fd, offset, eSO_FileStart) == int(offset)) {
+		if(fileSeek(fd, offset, SeekOrigin::Start) == int(offset)) {
 			count = fileRead(fd, commandBuffer, count);
 			if(int(count) >= 0) {
 				packet.writeHexWord16(count);
@@ -139,7 +140,7 @@ void ATTR_GDBEXTERNFN gdbHandleHostIo(char* commandBuffer, unsigned cmdLen)
 		debug_i("File:pwrite(%d, %u, %u)", fd, offset, size);
 
 		packet.writeChar('F');
-		if(fileSeek(fd, offset, eSO_FileStart) == int(offset)) {
+		if(fileSeek(fd, offset, SeekOrigin::Start) == int(offset)) {
 			int count = fileWrite(fd, data, size);
 			if(count >= 0) {
 				packet.writeHexWord16(count);

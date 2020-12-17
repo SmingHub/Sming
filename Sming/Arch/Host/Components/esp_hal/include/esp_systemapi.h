@@ -7,27 +7,18 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 // ESP SDK config
 #define LWIP_OPEN_SRC
 
 // Default types
 #include <limits.h>
-#include "c_types.h"
-
-struct ip_addr {
-	uint32_t addr;
-};
+#include <c_types.h>
 
 #include <sming_attr.h>
-#include "esp_attr.h"
+#include <esp_attr.h>
 #include "esp_clk.h"
 #include "esp_libc.h"
 #include "esp_tasks.h"
-#include "esp_timer_legacy.h"
 #include <heap.h>
 #include "esp_system.h"
 #include <driver/gpio.h>
@@ -65,7 +56,3 @@ __forceinline void restoreInterrupts(unsigned level)
 }
 
 #define BIT(nr) (1UL << (nr))
-
-#ifdef __cplusplus
-}
-#endif

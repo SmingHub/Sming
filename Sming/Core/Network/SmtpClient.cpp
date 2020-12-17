@@ -98,6 +98,18 @@ bool SmtpClient::send(const String& from, const String& to, const String& subjec
 	return send(mail);
 }
 
+bool SmtpClient::send(const String& from, const String& to, const String& subject, String&& body) noexcept
+{
+	MailMessage* mail = new MailMessage();
+
+	mail->to = to;
+	mail->from = from;
+	mail->subject = subject;
+	mail->setBody(std::move(body));
+
+	return send(mail);
+}
+
 MailMessage* SmtpClient::getCurrentMessage()
 {
 	return outgoingMail;
@@ -261,9 +273,9 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	TcpClient::onReadyToSendData(sourceEvent);
 }
 
-HttpPartResult SmtpClient::multipartProducer()
+MultipartStream::BodyPart SmtpClient::multipartProducer()
 {
-	HttpPartResult result;
+	MultipartStream::BodyPart result;
 
 	if(outgoingMail->attachments.count()) {
 		result = outgoingMail->attachments[0];
@@ -289,8 +301,8 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 	}
 
 	if(mail->attachments.count()) {
-		MultipartStream* mStream = new MultipartStream(HttpPartProducerDelegate(&SmtpClient::multipartProducer, this));
-		HttpPartResult text;
+		MultipartStream* mStream = new MultipartStream(MultipartStream::Producer(&SmtpClient::multipartProducer, this));
+		MultipartStream::BodyPart text;
 		text.headers = new HttpHeaders();
 		(*text.headers)[HTTP_HEADER_CONTENT_TYPE] = mail->headers[HTTP_HEADER_CONTENT_TYPE];
 		(*text.headers)[HTTP_HEADER_CONTENT_TRANSFER_ENCODING] = mail->headers[HTTP_HEADER_CONTENT_TRANSFER_ENCODING];

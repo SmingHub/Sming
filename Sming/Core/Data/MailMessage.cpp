@@ -13,13 +13,6 @@
 #include "MailMessage.h"
 #include "Stream/MemoryDataStream.h"
 
-MailMessage& MailMessage::setHeader(const String& name, const String& value)
-{
-	headers[name] = value;
-
-	return *this;
-}
-
 HttpHeaders& MailMessage::getHeaders()
 {
 	if(!headers.contains(HTTP_HEADER_FROM)) {
@@ -39,11 +32,17 @@ HttpHeaders& MailMessage::getHeaders()
 MailMessage& MailMessage::setBody(const String& body, MimeType mime)
 {
 	MemoryDataStream* memory = new MemoryDataStream();
-	auto written = memory->write((uint8_t*)body.c_str(), body.length());
+	auto written = memory->write(reinterpret_cast<const uint8_t*>(body.c_str()), body.length());
 	if(written < body.length()) {
 		debug_e("MailMessage::setBody: Unable to store the complete body");
 	}
 
+	return setBody(memory, mime);
+}
+
+MailMessage& MailMessage::setBody(String&& body, MimeType mime) noexcept
+{
+	auto memory = new MemoryDataStream(std::move(body));
 	return setBody(memory, mime);
 }
 
@@ -56,7 +55,7 @@ MailMessage& MailMessage::setBody(IDataSourceStream* stream, MimeType mime)
 	}
 
 	this->stream = stream;
-	headers[HTTP_HEADER_CONTENT_TYPE] = ContentType::toString(mime);
+	headers[HTTP_HEADER_CONTENT_TYPE] = toString(mime);
 
 	return *this;
 }
@@ -75,12 +74,12 @@ MailMessage& MailMessage::addAttachment(FileStream* stream)
 
 MailMessage& MailMessage::addAttachment(IDataSourceStream* stream, MimeType mime, const String& filename)
 {
-	return addAttachment(stream, ContentType::toString(mime), filename);
+	return addAttachment(stream, toString(mime), filename);
 }
 
 MailMessage& MailMessage::addAttachment(IDataSourceStream* stream, const String& mime, const String& filename)
 {
-	HttpPartResult attachment;
+	MultipartStream::BodyPart attachment;
 	attachment.stream = stream;
 	attachment.headers = new HttpHeaders();
 	(*attachment.headers)[HTTP_HEADER_CONTENT_TYPE] = mime;

@@ -88,7 +88,7 @@ void gdb_on_attach(bool attached);
 void gdb_detach();
 
 /*
- * @brief Called by framekwork on unexpected system reset
+ * @brief Called by framework on unexpected system reset
  */
 void debug_crash_callback(const struct rst_info* rst_info, uint32_t stack, uint32_t stack_end);
 

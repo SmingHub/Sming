@@ -47,6 +47,7 @@ version = release
 extensions = [
     'm2r',
     'breathe',
+    'sphinxcontrib.seqdiag',
     'link-roles',
     'sphinxcontrib.wavedrom',
     'sphinx_copybutton',
@@ -82,8 +83,6 @@ breathe_projects =  {
 }
 
 breathe_default_project = "api"
-
-breathe_default_members = ('members', 'undoc-members')
 
 # -- Options for HTML output -------------------------------------------------
 

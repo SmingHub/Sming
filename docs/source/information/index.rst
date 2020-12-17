@@ -4,7 +4,7 @@ Information
 .. toctree::
    :maxdepth: 1
 
-   /_inc/Sming/building
+   develop/index
    multitasking
    events
    memory
@@ -12,7 +12,7 @@ Information
    strings
    interrupts
    tasks
-   debugging/index
+   debugging
    rboot-ota
    command-handler
    hot-tips

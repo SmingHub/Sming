@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "hostlib.h"
+#include "include/hostlib/hostlib.h"
 #include "threads.h"
 #include <vector>
 #include <string>
@@ -31,12 +31,13 @@
 #define MSG_DONTWAIT 0x40
 #define SHUT_RDWR SD_BOTH
 typedef char* sock_ptr_t;
-typedef int socklen_t;
+typedef int host_socklen_t;
 
 #else
 
 #include <arpa/inet.h>
 typedef void* sock_ptr_t;
+typedef socklen_t host_socklen_t;
 
 #endif
 

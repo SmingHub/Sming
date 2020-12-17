@@ -7,3 +7,4 @@ API Documentation
 -----------------
 
 .. doxygengroup:: wifi_sniffer
+   :members:

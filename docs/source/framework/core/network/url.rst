@@ -5,3 +5,4 @@ https://en.m.wikipedia.org/wiki/URL
 
 .. doxygengroup:: url
    :content-only:
+   :members:

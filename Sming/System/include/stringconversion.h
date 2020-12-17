@@ -34,10 +34,12 @@ static inline char* ltoa (long val, char* buffer, int base)
 	return ltoa_wp(val, buffer, base, 0, ' ');
 }
 
+#ifndef ARCH_ESP32
 static inline char* itoa (int val, char* buffer, int base)
 {
 	return ltoa_wp(val, buffer, base, 0, ' ');
 }
+#endif
 
 extern char* ultoa_wp(unsigned long val, char* buffer, unsigned int base, int width, char pad);
 

@@ -66,3 +66,4 @@ API Documentation
 -----------------
 
 .. doxygengroup:: polled_timer
+   :members:

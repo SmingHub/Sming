@@ -11,7 +11,8 @@ Classes to provide simple Berkeley socket support for both Linux and Windows
 Options
 -------
 
-Command line argument parsing
+Command line argument parsing. Applications may pass parameters and access them using
+the :cpp:class:`CommandLine`.
 
 Startup
 -------
@@ -46,3 +47,21 @@ The main thread is also suspended during interrupt execution.
    Default: 2ms
 
    LWIP stack is serviced via polling, this determines the interval.
+
+
+.. envvar:: HOST_PARAMETERS
+
+   Set this value to pass additional parameters to a Host application.
+   For example::
+   
+      make run HOST_PARAMETERS='param1=12 param2="parameter with spaces"'
+      make run HOST_PARAMETERS="param1=12 param2=\"parameter with spaces\""
+
+   See :sample:`Basic_Utility` for a worked example.
+
+
+API
+---
+
+.. doxygenclass:: CommandLine
+   :members:

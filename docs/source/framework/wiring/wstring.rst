@@ -13,7 +13,7 @@ To alleviate this problem, Sming uses a technique known as *Small String Optimis
 which uses the available space inside the String object itself to avoid using the heap for small allocations
 of 10 characters or fewer.
 
-This was lifted from the `Arduino Esp8266 core <https://github.com/esp8266/arduino/pull/5690>`.
+This was lifted from the `Arduino Esp8266 core <https://github.com/esp8266/arduino/pull/5690>`__.
 Superb work - thank you!
 
 Configuration Variables
@@ -54,3 +54,4 @@ API Documentation
 -----------------
 
 .. doxygenclass:: String
+   :members:

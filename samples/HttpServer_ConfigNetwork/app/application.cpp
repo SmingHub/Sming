@@ -215,6 +215,9 @@ void networkScanCompleted(bool succeeded, BssList& list)
 
 void init()
 {
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.systemDebugOutput(true); // Enable debug output to serial
+
 	spiffs_mount(); // Mount file system, in order to work with files
 
 	if(fileExist(".lastModified")) {
@@ -223,8 +226,6 @@ void init()
 		lastModified.trim();
 	}
 
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-	Serial.systemDebugOutput(true); // Enable debug output to serial
 	AppSettings.load();
 
 	WifiStation.enable(true);

@@ -12,3 +12,4 @@ The API for hardware (and :doc:`timer-queue` timers) is identical, implemented u
 
 
 .. doxygengroup:: hardware_timer
+   :members:

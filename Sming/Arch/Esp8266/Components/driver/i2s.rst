@@ -62,3 +62,4 @@ API Documentation
 
 .. doxygengroup:: i2s_driver
    :content-only:
+   :members:
