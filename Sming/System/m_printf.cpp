@@ -9,6 +9,7 @@ Descr: embedded very simple version of printf with float support
 #include "m_printf.h"
 #include "stringconversion.h"
 #include "stringutil.h"
+#include <memory>
 #include <algorithm>
 #include <sys/pgmspace.h>
 
@@ -247,11 +248,11 @@ void m_printHex(const char* tag, const void* data, size_t len, int addr, size_t 
 
 	// tag + ": " + address(*8) + ' ' + hex(*2) + ' ' + char + "\r\n"
 	auto bufSize = taglen + ((bytesPerLine ?: len) * 4) + 16;
-	auto lineBuffer = new char[bufSize];
+	auto lineBuffer = std::unique_ptr<char[]>(new char[bufSize]);
 
 	size_t offset = 0;
 	while (offset < len) {
-		auto linePtr = lineBuffer;
+		auto linePtr = lineBuffer.get();
 		if (taglen != 0) {
 			if (offset == 0) {
 				memcpy(linePtr, tag, taglen);
@@ -260,7 +261,7 @@ void m_printHex(const char* tag, const void* data, size_t len, int addr, size_t 
 				*linePtr++ = ' ';
 			}
 			else {
-				memset(lineBuffer, ' ', taglen + 2);
+				memset(linePtr, ' ', taglen + 2);
 				linePtr += taglen + 2;
 			}
 		}
@@ -298,14 +299,12 @@ void m_printHex(const char* tag, const void* data, size_t len, int addr, size_t 
 		*linePtr++ = '\r';
 		*linePtr++ = '\n';
 
-		size_t len = linePtr - lineBuffer;
-		m_nputs(lineBuffer, len);
+		size_t len = linePtr - lineBuffer.get();
+		m_nputs(lineBuffer.get(), len);
 
 		offset += n;
 
 		if (addr >= 0)
 			addr += n;
 	}
-
-	delete[] lineBuffer;
 }
