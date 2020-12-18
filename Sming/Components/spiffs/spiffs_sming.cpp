@@ -22,9 +22,9 @@ spiffs _filesystemStorageHandle;
 
 namespace
 {
-uint8_t spiffs_work_buf[LOG_PAGE_SIZE * 2];
-uint8_t spiffs_fds[sizeof(spiffs_fd) * SPIFF_FILEDESC_COUNT];
-uint8_t spiffs_cache_buf[(LOG_PAGE_SIZE + 32) * 4];
+uint16_t spiffs_work_buf[LOG_PAGE_SIZE];
+spiffs_fd spiffs_fds[SPIFF_FILEDESC_COUNT];
+uint32_t spiffs_cache_buf[LOG_PAGE_SIZE + 32];
 
 s32_t api_spiffs_read(u32_t addr, u32_t size, u8_t* dst)
 {
@@ -52,7 +52,8 @@ s32_t api_spiffs_erase(u32_t addr, u32_t size)
 
 bool tryMount(const spiffs_config& cfg)
 {
-	int res = SPIFFS_mount(&_filesystemStorageHandle, const_cast<spiffs_config*>(&cfg), spiffs_work_buf, spiffs_fds,
+	int res = SPIFFS_mount(&_filesystemStorageHandle, const_cast<spiffs_config*>(&cfg),
+						   reinterpret_cast<uint8_t*>(spiffs_work_buf), reinterpret_cast<uint8_t*>(spiffs_fds),
 						   sizeof(spiffs_fds), spiffs_cache_buf, sizeof(spiffs_cache_buf), nullptr);
 	debugf("mount res: %d", res);
 
