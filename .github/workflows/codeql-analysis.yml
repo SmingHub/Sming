@@ -66,6 +66,7 @@ jobs:
     - if: matrix.language == 'cpp' || matrix.language == 'c'
       name: Build Sming C/C++
       run: |
+       sudo apt-get update -y
        sudo apt-get install -y gcc-multilib g++-multilib
        env
        cd Sming
