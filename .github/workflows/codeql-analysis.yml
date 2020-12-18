@@ -66,8 +66,10 @@ jobs:
     - if: matrix.language == 'cpp' || matrix.language == 'c'
       name: Build Sming C/C++
       run: |
+       sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
        sudo apt-get update -y
-       sudo apt-get install -y gcc-multilib g++-multilib
+       sudo apt-get install gcc-9-multilib g++-9-multilib
+       sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-9
        env
        cd Sming
        export SMING_HOME=$(pwd)
