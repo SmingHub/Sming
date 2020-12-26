@@ -1,12 +1,8 @@
 #ifndef _ADAFRUIT_GFX_H
 #define _ADAFRUIT_GFX_H
 
-#if ARDUINO >= 100
- #include "Arduino.h"
- #include "Print.h"
-#else
- #include "WProgram.h"
-#endif
+#include <Arduino.h>
+#include <Print.h>
 
 class Adafruit_GFX : public Print {
 
@@ -59,11 +55,7 @@ class Adafruit_GFX : public Print {
     setTextWrap(boolean w),
     setRotation(uint8_t r);
 
-#if ARDUINO >= 100
   virtual size_t write(uint8_t);
-#else
-  virtual void   write(uint8_t);
-#endif
 
   int16_t height(void) const;
   int16_t width(void) const;
