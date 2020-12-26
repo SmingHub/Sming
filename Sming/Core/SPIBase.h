@@ -35,7 +35,7 @@ public:
 	/**
 	 * @brief Initialize the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high.
 	 */
-	virtual void begin() = 0;
+	virtual bool begin() = 0;
 
 	/**
 	 * @brief Disable the SPI bus (leaving pin modes unchanged).

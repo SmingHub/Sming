@@ -18,7 +18,7 @@ public:
 	{
 	}
 
-	void begin() override;
+	bool begin() override;
 
 	void end() override
 	{

@@ -111,37 +111,6 @@ void spi_byte_order(uint8_t byte_order)
 }
 
 /**
- * @brief	set CPI bus clock
- *
- * Private method used by setFrequency
- *
- * 		time length HIGHT level = (CPU clock / 10 / 2) ^ -1,
- * 		time length LOW level = (CPU clock / 10 / 2) ^ -1
- * 		Frequency calculation: 80Mhz / predivider / divider
- *
- * @param  prediv  time length HIGHT level
- * @param  prediv  time length LOW level
- */
-void setClock(const SPISpeed& speed)
-{
-	// Clock register value is never 0, so indicates it hasn't been calculated
-	uint32_t regVal = speed.regVal;
-	if(regVal == 0) {
-		SPISpeed tmp = speed;
-		SPIClass::checkSpeed(tmp);
-		regVal = tmp.regVal;
-	} else {
-#ifdef SPI_DEBUG
-		unsigned prescale = (speed.regVal >> SPI_CLKDIV_PRE_S) + 1;
-		unsigned divisor = (speed.regVal >> SPI_CLKCNT_N_S) + 1;
-		debugf("SPIClass::setClock(prescaler %u, divisor %u) for target %u", prescale, divisor, speed.frequency);
-#endif
-	}
-
-	WRITE_PERI_REG(SPI_CLOCK(SPI_NO), regVal);
-}
-
-/**
  * @brief Calculate the closest prescale value for a given frequency and clock-divider
  * @param  cpuFreq current CPU frequency, in Hz
  * @param  freq target SPI bus frequency, in Hz
@@ -174,9 +143,76 @@ SpiPreDiv calculateSpeed(unsigned cpuFreq, unsigned freq, unsigned div)
 	return prediv;
 }
 
+/** @brief Check speed settings and perform any pre-calculation required
+ *  @param speed IN: requested bus frequency, OUT: Modified settings with prescale values
+ *  @note
+ *  		The algorithm is testing with clock dividers 2,3 and 5 to find the best pre-divider
+ *  		The resulting clock frequency is not 100% accurate but delivers result within 5%
+ *
+ *  		It is guaranteed that the frequency will not exceed the given target
+ *
+ *  		Make sure that the ESP clock frequency is set before initializing the SPI bus.
+ *  		Changes on the ESP clock are not recognised once initialized
+ */
+void checkSpeed(SPISpeed& speed)
+{
+	unsigned cpuFreq = system_get_cpu_freq() * 1000000UL;
+#ifdef SPI_DEBUG
+	debugf("SPIClass::calculateSpeed() -> current cpu frequency %u", cpuFreq);
+#endif
+
+	SpiPreDiv prediv;
+
+	// If we're not running at max then need to determine appropriate prescale values
+	if(speed.frequency >= cpuFreq) {
+		// Use maximum speed
+		prediv.freq = cpuFreq;
+		prediv.divisor = 0;
+		speed.regVal = SPI_CLK_EQU_SYSCLK;
+	} else {
+		prediv = calculateSpeed(cpuFreq, speed.frequency, 2);
+		if(prediv.freq != speed.frequency) {
+			// Use whichever divisor gives the highest frequency
+			SpiPreDiv pd3 = calculateSpeed(cpuFreq, speed.frequency, 3);
+			SpiPreDiv pd5 = calculateSpeed(cpuFreq, speed.frequency, 5);
+			if(pd3.freq > prediv.freq || pd5.freq > prediv.freq) {
+				prediv = (pd3.freq > pd5.freq) ? pd3 : pd5;
+			}
+		}
+
+		// We have prescale and divisor values, now get regVal so we don't need to do this every time prepare() is called
+		speed.regVal = (((prediv.prescale - 1) & SPI_CLKDIV_PRE) << SPI_CLKDIV_PRE_S) |
+					   (((prediv.divisor - 1) & SPI_CLKCNT_N) << SPI_CLKCNT_N_S) |
+					   (((prediv.divisor >> 1) & SPI_CLKCNT_H) << SPI_CLKCNT_H_S) |
+					   ((0 & SPI_CLKCNT_L) << SPI_CLKCNT_L_S);
+	}
+
+	//#ifdef SPI_DEBUG
+	debug_e("-> Using clock divider %u -> target freq %u -> result %u", prediv.divisor, speed.frequency, prediv.freq);
+	//#endif
+
+	speed.frequency = prediv.freq;
+}
+
+void spi_set_clock(SPISpeed& speed)
+{
+	// Clock register value is never 0, so indicates it hasn't been calculated
+	if(speed.regVal == 0) {
+		checkSpeed(speed);
+	} else {
+#ifdef SPI_DEBUG
+		unsigned prescale = (speed.regVal >> SPI_CLKDIV_PRE_S) + 1;
+		unsigned divisor = (speed.regVal >> SPI_CLKCNT_N_S) + 1;
+		debugf("spi_set_clock(prescaler %u, divisor %u) for target %u", prescale, divisor, speed.frequency);
+#endif
+	}
+
+	WRITE_PERI_REG(SPI_CLOCK(SPI_NO), speed.regVal);
+}
+
 } // namespace
 
-void SPIClass::begin()
+bool SPIClass::begin()
 {
 	CLEAR_PERI_REG_MASK(PERIPHS_IO_MUX, BIT9);
 
@@ -186,6 +222,8 @@ void SPIClass::begin()
 
 	checkSpeed(SPIDefaultSettings.speed);
 	prepare(SPIDefaultSettings);
+
+	return true;
 }
 
 void SPIClass::beginTransaction(SPISettings& mySettings)
@@ -314,62 +352,11 @@ void SPIClass::prepare(SPISettings& settings)
 #endif
 
 	//  setup clock
-	setClock(settings.speed);
+	spi_set_clock(settings.speed);
 
 	//	set byte order
 	spi_byte_order(settings.byteOrder);
 
 	//	set spi mode
 	spi_mode(settings.dataMode);
-};
-
-/** @brief Check speed settings and perform any pre-calculation required
- *  @param speed IN: requested bus frequency, OUT: Modified settings with prescale values
- *  @note
- *  		The algorithm is testing with clock dividers 2,3 and 5 to find the best pre-divider
- *  		The resulting clock frequency is not 100% accurate but delivers result within 5%
- *
- *  		It is guaranteed that the frequency will not exceed the given target
- *
- *  		Make sure that the ESP clock frequency is set before initializing the SPI bus.
- *  		Changes on the ESP clock are not recognised once initialized
- */
-void SPIClass::checkSpeed(SPISpeed& speed)
-{
-	unsigned cpuFreq = system_get_cpu_freq() * 1000000UL;
-#ifdef SPI_DEBUG
-	debugf("SPIClass::calculateSpeed() -> current cpu frequency %u", cpuFreq);
-#endif
-
-	SpiPreDiv prediv;
-
-	// If we're not running at max then need to determine appropriate prescale values
-	if(speed.frequency >= cpuFreq) {
-		// Use maximum speed
-		prediv.freq = cpuFreq;
-		prediv.divisor = 0;
-		speed.regVal = SPI_CLK_EQU_SYSCLK;
-	} else {
-		prediv = calculateSpeed(cpuFreq, speed.frequency, 2);
-		if(prediv.freq != speed.frequency) {
-			// Use whichever divisor gives the highest frequency
-			SpiPreDiv pd3 = calculateSpeed(cpuFreq, speed.frequency, 3);
-			SpiPreDiv pd5 = calculateSpeed(cpuFreq, speed.frequency, 5);
-			if(pd3.freq > prediv.freq || pd5.freq > prediv.freq) {
-				prediv = (pd3.freq > pd5.freq) ? pd3 : pd5;
-			}
-		}
-
-		// We have prescale and divisor values, now get regVal so we don't need to do this every time prepare() is called
-		speed.regVal = (((prediv.prescale - 1) & SPI_CLKDIV_PRE) << SPI_CLKDIV_PRE_S) |
-					   (((prediv.divisor - 1) & SPI_CLKCNT_N) << SPI_CLKCNT_N_S) |
-					   (((prediv.divisor >> 1) & SPI_CLKCNT_H) << SPI_CLKCNT_H_S) |
-					   ((0 & SPI_CLKCNT_L) << SPI_CLKCNT_L_S);
-	}
-
-	//#ifdef SPI_DEBUG
-	debug_e("-> Using clock divider %u -> target freq %u -> result %u", prediv.divisor, speed.frequency, prediv.freq);
-	//#endif
-
-	speed.frequency = prediv.freq;
 }

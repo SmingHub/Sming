@@ -36,7 +36,7 @@
 class SPIClass : public SPIBase
 {
 public:
-	void begin() override;
+	bool begin() override;
 
 	/**
 	 * @brief Method for compatibility with Arduino API. Provides NOP
@@ -44,23 +44,6 @@ public:
 	void end() override
 	{
 	}
-
-	/**
-	 * @brief Check provided speed settings and perform pre-calculation
-	 * @param settings IN: requested bus settings, OUT: Modified bus settings
-	 * @note
-	 *  		This method allows clients to pre-calculate bus speed settings, so
-	 *  		may return with a lower bus frequency than requested.
-	 *
-	 *  		The algorithm is testing with clock dividers 2,3 and 5 to find the best pre-divider
-	 *  		The resulting clock frequency is not 100% accurate but delivers result within 5%
-	 *
-	 *  		It is guaranteed that the frequency will not exceed the given target
-	 *
-	 *  		Make sure that the ESP clock frequency is set before initializing the SPI bus.
-	 *  		Changes on the ESP clock are not recognised once initialized
-	 */
-	static void checkSpeed(SPISpeed& speed);
 
 	/**
 	 * @brief Initialize the SPI bus using the defined SPISettings
