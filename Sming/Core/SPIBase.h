@@ -69,14 +69,37 @@ public:
 	 * @param val The byte to send
 	 * @retval uint8_t The received byte
 	 */
-	virtual uint8_t transfer(uint8_t val) = 0;
+	uint8_t transfer(uint8_t val)
+	{
+		return transfer32(val, 8);
+	}
 
 	/**
 	 * @brief Send/receive one 16-bit word of data
 	 * @param val The word to send
 	 * @retval uint8_t The received word
 	 */
-	virtual uint16_t transfer16(uint16_t val) = 0;
+	uint16_t transfer16(uint16_t val)
+	{
+		return transfer32(val, 16);
+	}
+
+	/**
+	 * @brief Send/receive a word of variable size
+	 * @param val Word to send
+	 * @param bits Number of bits to send
+	 *
+	 * SPI transfer is based on a simultaneous send and receive:
+	 * the received data is returned in receivedVal (or receivedVal16).
+	 *
+	 * 		receivedVal = SPI.transfer(val)			: single byte
+	 * 		receivedVal16 = SPI.transfer16(val16)	: single short
+	 */
+	virtual uint32_t transfer32(uint32_t val, uint8_t bits = 32)
+	{
+		transfer(reinterpret_cast<uint8_t*>(&val), bits / 8);
+		return val;
+	}
 
 	/**
 	 * @brief Send/receive a variable-length block of data

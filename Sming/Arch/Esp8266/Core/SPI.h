@@ -64,11 +64,6 @@ public:
 #endif
 	}
 
-	uint8_t transfer(uint8_t val) override
-	{
-		return transfer32(val, 8);
-	}
-
 	/** @brief Read one byte from SPI without setting up registers
 	 * 	@param	none
 	 * 	@retval	byte received
@@ -84,10 +79,9 @@ public:
 	 */
 	uint8_t read8();
 
-	uint16_t transfer16(uint16_t val) override
-	{
-		return transfer32(val, 16);
-	}
+	uint32_t transfer32(uint32_t val, uint8_t bits = 32) override;
+
+	using SPIBase::transfer;
 
 	void transfer(uint8_t* buffer, size_t numberBytes) override;
 
@@ -100,22 +94,6 @@ public:
 	SPISettings SPIDefaultSettings;
 
 private:
-	/**
-	 * @brief Send/receive a word of variable size
-	 * @param val Word to send
-	 * @param bits Number of bits to send
-	 *
-	 * private method used by transfer(byte) and transfer16(sort)
-	 * to send/recv one uint32_t
-	 *
-	 * SPI transfer is based on a simultaneous send and receive:
-	 * the received data is returned in receivedVal (or receivedVal16).
-	 *
-	 * 		receivedVal = SPI.transfer(val)			: single byte
-	 * 		receivedVal16 = SPI.transfer16(val16)	: single short
-	 */
-	virtual uint32_t transfer32(uint32_t val, uint8_t bits);
-
 	/**
 	 * @brief Prepare/configure HSPI with settings
 	 * @param  settings include frequency, byte order and SPI mode

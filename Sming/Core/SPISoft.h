@@ -34,18 +34,6 @@ public:
 
 	void transfer(uint8_t* buffer, size_t size) override;
 
-	unsigned char transfer(unsigned char val) override
-	{
-		transfer(&val, 1);
-		return val;
-	}
-
-	uint16_t transfer16(uint16_t val) override
-	{
-		transfer(reinterpret_cast<uint8_t*>(&val), 2);
-		return val;
-	}
-
 	/**
 	 * @brief Set microsecond delay for the SCK signal. Impacts SPI speed
 	*/
