@@ -63,6 +63,24 @@ public:
 	{
 	}
 
+	/** @brief Read one byte from SPI without setting up registers
+	 * 	@param	none
+	 * 	@retval	byte received
+	 *
+	 * 	 used for performance tuning when doing continuous reads
+	 * 	 this method does not reset the registers , so make sure
+	 * 	 that a regular transfer(data) call was performed
+	 *
+	 * 	 Note: this method is not found on the Arduino API
+	 *
+	 * 	 USE WITH CARE !!
+	 *
+	 */
+	virtual uint8_t read8()
+	{
+		return transfer(0xff);
+	}
+
 	/**
 	 * @name Send/receive some data
 	 * @{

@@ -248,16 +248,12 @@ uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 	spi_send();
 	spi_wait();
 
-	// wait a while before reading the register into the buffer
-	//	delayMicroseconds(2);
-
+	auto res = READ_PERI_REG(SPI_W0(SPI_NO));
 	if(READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_RD_BYTE_ORDER) {
-		// Assuming data in is written to MSB. TBC
-		return READ_PERI_REG(SPI_W0(SPI_NO)) >> (32 - bits);
-	} else {
-		// Read in the same way as DOUT is sent. Note existing contents of SPI_W0 remain unless overwritten!
-		return READ_PERI_REG(SPI_W0(SPI_NO));
+		res >>= (32 - bits);
 	}
+
+	return res;
 }
 
 uint8_t SPIClass::read8()
@@ -269,13 +265,12 @@ uint8_t SPIClass::read8()
 	spi_send();
 	spi_wait();
 
+	auto res = READ_PERI_REG(SPI_W0(SPI_NO));
 	if(READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_RD_BYTE_ORDER) {
-		// Assuming data in is written to MSB. TBC
-		return READ_PERI_REG(SPI_W0(SPI_NO)) >> (32 - 8);
-	} else {
-		// Read in the same way as DOUT is sent. Note existing contents of SPI_W0 remain unless overwritten!
-		return READ_PERI_REG(SPI_W0(SPI_NO));
+		res >>= 24;
 	}
+
+	return res;
 }
 
 void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
@@ -323,9 +318,6 @@ void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 
 		spi_send();
 		spi_wait();
-
-		// wait a while before reading the register into the buffer
-		//		delayMicroseconds(8);
 
 		// copy the registers starting from last index position
 		memcpy(&buffer[bufIndx], (void*)SPI_W0(SPI_NO), bufLength);

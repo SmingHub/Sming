@@ -38,32 +38,14 @@ class SPIClass : public SPIBase
 public:
 	bool begin() override;
 
-	/**
-	 * @brief Method for compatibility with Arduino API. Provides NOP
-	 */
 	void end() override
 	{
 	}
 
-	/** @brief Read one byte from SPI without setting up registers
-	 * 	@param	none
-	 * 	@retval	byte received
-	 *
-	 * 	 used for performance tuning when doing continuous reads
-	 * 	 this method does not reset the registers , so make sure
-	 * 	 that a regular transfer(data) call was performed
-	 *
-	 * 	 Note: this method is not found on the Arduino API
-	 *
-	 * 	 USE WITH CARE !!
-	 *
-	 */
-	uint8_t read8();
-
+	uint8_t read8() override;
 	uint32_t transfer32(uint32_t val, uint8_t bits = 32) override;
 
 	using SPIBase::transfer;
-
 	void transfer(uint8_t* buffer, size_t numberBytes) override;
 
 protected:
