@@ -24,14 +24,6 @@ public:
 	{
 	}
 
-	void beginTransaction(SPISettings& mySettings) override
-	{
-	}
-
-	void endTransaction() override
-	{
-	}
-
 	void transfer(uint8_t* buffer, size_t size) override;
 
 	/**
@@ -42,8 +34,12 @@ public:
 		m_delay = dly;
 	}
 
+protected:
+	void prepare(SPISettings& settings) override
+	{
+	}
+
 private:
-	SPISettings mSPISettings;
 	uint16_t mMISO, mMOSI, mCLK;
 	uint8_t m_delay;
 };

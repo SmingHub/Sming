@@ -45,12 +45,23 @@ public:
 	/**
 	 * @brief Initialize the SPI bus using the defined SPISettings.
 	 */
-	virtual void beginTransaction(SPISettings& mySettings) = 0;
+	void beginTransaction(SPISettings& settings)
+	{
+		prepare(settings);
+	}
+
+	void beginTransaction(const SPISettings& settings)
+	{
+		SPISettings tmp{settings};
+		prepare(tmp);
+	}
 
 	/**
 	 * @brief Stop using the SPI bus. Normally this is called after de-asserting the chip select, to allow other libraries to use the SPI bus.
 	 */
-	virtual void endTransaction() = 0;
+	virtual void endTransaction()
+	{
+	}
 
 	/**
 	 * @name Send/receive some data
@@ -117,6 +128,13 @@ public:
 	 * Note: not included in std Arduino lib
 	 */
 	SPISettings SPIDefaultSettings;
+
+protected:
+	/**
+	 * @brief Prepare/configure with settings
+	 * @param  settings include frequency, byte order and SPI mode
+	 */
+	virtual void prepare(SPISettings& settings) = 0;
 };
 
 /** @} */

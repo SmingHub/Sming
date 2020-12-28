@@ -45,25 +45,6 @@ public:
 	{
 	}
 
-	/**
-	 * @brief Initialize the SPI bus using the defined SPISettings
-	 *
-	 * This method does not initiate a transaction, so it can be used to
-	 * setup the SPI after SPI.begin()
-	 *
-	 */
-	void beginTransaction(SPISettings& mySettings) override;
-
-	/**
-	 * @brief Method for compatibility with Arduino API. Provides NOP
-	 */
-	void endTransaction() override
-	{
-#ifdef SPI_DEBUG
-		debugf("SPIhw::endTransaction()");
-#endif
-	}
-
 	/** @brief Read one byte from SPI without setting up registers
 	 * 	@param	none
 	 * 	@retval	byte received
@@ -85,23 +66,8 @@ public:
 
 	void transfer(uint8_t* buffer, size_t numberBytes) override;
 
-	/**
-	 * @brief  Default settings used by the SPI bus
-	 * until reset by beginTransaction(SPISettings)
-	 *
-	 * Note: not included in std Arduino lib
-	 */
-	SPISettings SPIDefaultSettings;
-
-private:
-	/**
-	 * @brief Prepare/configure HSPI with settings
-	 * @param  settings include frequency, byte order and SPI mode
-	 *
-	 * Private method used by beginTransaction and begin (init)
-	 *
-	 */
-	void prepare(SPISettings& settings);
+protected:
+	void prepare(SPISettings& settings) override;
 };
 
 /** @brief  Global instance of SPI class */

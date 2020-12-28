@@ -226,15 +226,6 @@ bool SPIClass::begin()
 	return true;
 }
 
-void SPIClass::beginTransaction(SPISettings& mySettings)
-{
-#ifdef SPI_DEBUG
-	debugf("SPIhw::beginTransaction(SPISettings mySettings)");
-#endif
-
-	prepare(mySettings);
-}
-
 uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 {
 	uint32_t regvalue = READ_PERI_REG(SPI_USER(SPI_NO)) & (SPI_WR_BYTE_ORDER | SPI_RD_BYTE_ORDER | SPI_CK_OUT_EDGE);
