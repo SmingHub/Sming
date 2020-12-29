@@ -52,6 +52,7 @@
 #define FUNCTION_2 0x28
 #define FUNCTION_3 0x38
 #define FUNCTION_4 0x48
+#define ANALOG 0xc0
 
 #define CHANGE 32 // to avoid conflict with HIGH value
 #define FALLING 2
