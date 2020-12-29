@@ -43,11 +43,11 @@
 
 namespace
 {
-unsigned char twi_dcount = 18;
-unsigned char twi_sda, twi_scl;
+uint8_t twi_dcount = 18;
+uint8_t twi_sda, twi_scl;
 uint32_t twi_clockStretchLimit;
 
-void twi_delay(unsigned char v)
+void twi_delay(uint8_t v)
 {
 	unsigned int i;
 #pragma GCC diagnostic push
@@ -115,9 +115,9 @@ bool twi_read_bit(void)
 	return bit;
 }
 
-bool twi_write_byte(unsigned char byte)
+bool twi_write_byte(uint8_t byte)
 {
-	unsigned char bit;
+	uint8_t bit;
 	for(bit = 0; bit < 8; bit++) {
 		twi_write_bit(byte & 0x80);
 		byte <<= 1;
@@ -125,10 +125,10 @@ bool twi_write_byte(unsigned char byte)
 	return !twi_read_bit(); //NACK/ACK
 }
 
-unsigned char twi_read_byte(bool nack)
+uint8_t twi_read_byte(bool nack)
 {
-	unsigned char byte = 0;
-	unsigned char bit;
+	uint8_t byte = 0;
+	uint8_t bit;
 	for(bit = 0; bit < 8; bit++)
 		byte = (byte << 1) | twi_read_bit();
 	twi_write_bit(nack);
@@ -137,7 +137,7 @@ unsigned char twi_read_byte(bool nack)
 
 } // namespace
 
-void twi_setClock(unsigned int freq)
+void twi_setClock(uint32_t freq)
 {
 #if F_CPU == FCPU80
 	if(freq <= 100000)
@@ -173,7 +173,7 @@ void twi_setClockStretchLimit(uint32_t limit)
 	twi_clockStretchLimit = limit * TWI_CLOCK_STRETCH_MULTIPLIER;
 }
 
-void twi_init(unsigned char sda, unsigned char scl)
+void twi_init(uint8_t sda, uint8_t scl)
 {
 	twi_sda = sda;
 	twi_scl = scl;
@@ -189,7 +189,7 @@ void twi_stop(void)
 	pinMode(twi_scl, INPUT);
 }
 
-unsigned char twi_writeTo(unsigned char address, unsigned char* buf, unsigned int len, unsigned char sendStop)
+uint8_t twi_writeTo(uint8_t address, uint8_t* buf, size_t len, uint8_t sendStop)
 {
 	unsigned int i;
 	if(!twi_write_start())
@@ -218,7 +218,7 @@ unsigned char twi_writeTo(unsigned char address, unsigned char* buf, unsigned in
 	return 0;
 }
 
-unsigned char twi_readFrom(unsigned char address, unsigned char* buf, unsigned int len, unsigned char sendStop)
+uint8_t twi_readFrom(uint8_t address, uint8_t* buf, size_t len, uint8_t sendStop)
 {
 	unsigned int i;
 	if(!twi_write_start())

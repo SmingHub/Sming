@@ -22,10 +22,7 @@
 #pragma once
 
 #include <stdint.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <stddef.h>
 
 #define I2C_OK 0
 #define I2C_SCL_HELD_LOW 1
@@ -33,14 +30,10 @@ extern "C" {
 #define I2C_SDA_HELD_LOW 3
 #define I2C_SDA_HELD_LOW_AFTER_INIT 4
 
-void twi_init(unsigned char sda, unsigned char scl);
-void twi_stop(void);
-void twi_setClock(unsigned int freq);
+void twi_init(uint8_t sda, uint8_t scl);
+void twi_stop();
+void twi_setClock(uint32_t freq);
 void twi_setClockStretchLimit(uint32_t limit);
-uint8_t twi_writeTo(unsigned char address, unsigned char* buf, unsigned int len, unsigned char sendStop);
-uint8_t twi_readFrom(unsigned char address, unsigned char* buf, unsigned int len, unsigned char sendStop);
+uint8_t twi_writeTo(uint8_t address, const uint8_t* buf, size_t len, bool sendStop);
+uint8_t twi_readFrom(uint8_t address, uint8_t* buf, size_t len, bool sendStop);
 uint8_t twi_status();
-
-#ifdef __cplusplus
-}
-#endif
