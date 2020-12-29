@@ -18,12 +18,9 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+
 #include "twi.h"
 #include "Digital.h"
-
-unsigned char twi_dcount = 18;
-static unsigned char twi_sda, twi_scl;
-static uint32_t twi_clockStretchLimit;
 
 //Enable SDA (becomes output and since GPO is 0 for the pin, it will pull the line low)
 #define SDA_LOW() (GPES = (1 << twi_sda))
@@ -43,6 +40,102 @@ static uint32_t twi_clockStretchLimit;
 #else
 #define TWI_CLOCK_STRETCH_MULTIPLIER 6
 #endif
+
+namespace
+{
+unsigned char twi_dcount = 18;
+unsigned char twi_sda, twi_scl;
+uint32_t twi_clockStretchLimit;
+
+void twi_delay(unsigned char v)
+{
+	unsigned int i;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+	for(i = 0; i < v; i++)
+		(void)GPI; // Suppress compiler warning for this read
+#pragma GCC diagnostic pop
+}
+
+bool twi_write_start(void)
+{
+	SCL_HIGH();
+	SDA_HIGH();
+	if(SDA_READ() == 0)
+		return false;
+	twi_delay(twi_dcount);
+	SDA_LOW();
+	twi_delay(twi_dcount);
+	return true;
+}
+
+bool twi_write_stop(void)
+{
+	uint32_t i = 0;
+	SCL_LOW();
+	SDA_LOW();
+	twi_delay(twi_dcount);
+	SCL_HIGH();
+	while(SCL_READ() == 0 && (i++) < twi_clockStretchLimit)
+		; // Clock stretching
+	twi_delay(twi_dcount);
+	SDA_HIGH();
+	twi_delay(twi_dcount);
+
+	return true;
+}
+
+bool twi_write_bit(bool bit)
+{
+	uint32_t i = 0;
+	SCL_LOW();
+	if(bit)
+		SDA_HIGH();
+	else
+		SDA_LOW();
+	twi_delay(twi_dcount + 1);
+	SCL_HIGH();
+	while(SCL_READ() == 0 && (i++) < twi_clockStretchLimit)
+		; // Clock stretching
+	twi_delay(twi_dcount);
+	return true;
+}
+
+bool twi_read_bit(void)
+{
+	uint32_t i = 0;
+	SCL_LOW();
+	SDA_HIGH();
+	twi_delay(twi_dcount + 2);
+	SCL_HIGH();
+	while(SCL_READ() == 0 && (i++) < twi_clockStretchLimit)
+		; // Clock stretching
+	bool bit = SDA_READ();
+	twi_delay(twi_dcount);
+	return bit;
+}
+
+bool twi_write_byte(unsigned char byte)
+{
+	unsigned char bit;
+	for(bit = 0; bit < 8; bit++) {
+		twi_write_bit(byte & 0x80);
+		byte <<= 1;
+	}
+	return !twi_read_bit(); //NACK/ACK
+}
+
+unsigned char twi_read_byte(bool nack)
+{
+	unsigned char byte = 0;
+	unsigned char bit;
+	for(bit = 0; bit < 8; bit++)
+		byte = (byte << 1) | twi_read_bit();
+	twi_write_bit(nack);
+	return byte;
+}
+
+} // namespace
 
 void twi_setClock(unsigned int freq)
 {
@@ -94,94 +187,6 @@ void twi_stop(void)
 {
 	pinMode(twi_sda, INPUT);
 	pinMode(twi_scl, INPUT);
-}
-
-static void twi_delay(unsigned char v)
-{
-	unsigned int i;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
-	for(i = 0; i < v; i++)
-		(void)GPI; // Suppress compiler warning for this read
-#pragma GCC diagnostic pop
-}
-
-static bool twi_write_start(void)
-{
-	SCL_HIGH();
-	SDA_HIGH();
-	if(SDA_READ() == 0)
-		return false;
-	twi_delay(twi_dcount);
-	SDA_LOW();
-	twi_delay(twi_dcount);
-	return true;
-}
-
-static bool twi_write_stop(void)
-{
-	uint32_t i = 0;
-	SCL_LOW();
-	SDA_LOW();
-	twi_delay(twi_dcount);
-	SCL_HIGH();
-	while(SCL_READ() == 0 && (i++) < twi_clockStretchLimit)
-		; // Clock stretching
-	twi_delay(twi_dcount);
-	SDA_HIGH();
-	twi_delay(twi_dcount);
-
-	return true;
-}
-
-static bool twi_write_bit(bool bit)
-{
-	uint32_t i = 0;
-	SCL_LOW();
-	if(bit)
-		SDA_HIGH();
-	else
-		SDA_LOW();
-	twi_delay(twi_dcount + 1);
-	SCL_HIGH();
-	while(SCL_READ() == 0 && (i++) < twi_clockStretchLimit)
-		; // Clock stretching
-	twi_delay(twi_dcount);
-	return true;
-}
-
-static bool twi_read_bit(void)
-{
-	uint32_t i = 0;
-	SCL_LOW();
-	SDA_HIGH();
-	twi_delay(twi_dcount + 2);
-	SCL_HIGH();
-	while(SCL_READ() == 0 && (i++) < twi_clockStretchLimit)
-		; // Clock stretching
-	bool bit = SDA_READ();
-	twi_delay(twi_dcount);
-	return bit;
-}
-
-static bool twi_write_byte(unsigned char byte)
-{
-	unsigned char bit;
-	for(bit = 0; bit < 8; bit++) {
-		twi_write_bit(byte & 0x80);
-		byte <<= 1;
-	}
-	return !twi_read_bit(); //NACK/ACK
-}
-
-static unsigned char twi_read_byte(bool nack)
-{
-	unsigned char byte = 0;
-	unsigned char bit;
-	for(bit = 0; bit < 8; bit++)
-		byte = (byte << 1) | twi_read_bit();
-	twi_write_bit(nack);
-	return byte;
 }
 
 unsigned char twi_writeTo(unsigned char address, unsigned char* buf, unsigned int len, unsigned char sendStop)
