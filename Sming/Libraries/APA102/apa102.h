@@ -9,7 +9,7 @@
 #pragma once
 
 #include <SPIBase.h>
-#include <SPISettings.h>
+#include <algorithm>
 
 struct col_t {
 	uint8_t br;

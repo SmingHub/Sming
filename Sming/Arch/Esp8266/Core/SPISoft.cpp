@@ -6,6 +6,7 @@ Date: 15.07.2015
 Descr: Implement software SPI. To improve speed, GPIO16 is not supported(see Digital.cpp)
 */
 #include "SPISoft.h"
+#include <esp_systemapi.h>
 
 #define SPEED 0			   /* You gain ~0.7 kBps (more for larger data chunks)*/
 #define SIZE 1			   /* You gain ~ 400B from the total 32K of cache RAM */

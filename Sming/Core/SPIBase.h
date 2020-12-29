@@ -14,6 +14,7 @@
 #pragma once
 
 #include "SPISettings.h"
+#include <stddef.h>
 
 /** @defgroup base_spi SPI support classes
  *  @brief    Provides SPI support
