@@ -27,32 +27,28 @@
 
 #define SPI_NO 1
 
-/** @brief  Hardware SPI object
- *  @addtogroup hw_spi
- *  @{
+/**
+ * @brief  Hardware SPI object
+ * @addtogroup hw_spi
+ * @{
  */
 
 class SPIClass : public SPIBase
 {
 public:
-	/* @brief begin()
-	 *
-	 * Initializes the SPI bus using the default SPISettings
-	 */
 	void begin() override;
 
-	/** @brief end()
-	 *
-	 * Method for compatibility with Arduino API. Provides NOP
-	 *
+	/**
+	 * @brief Method for compatibility with Arduino API. Provides NOP
 	 */
 	void end() override
 	{
 	}
 
-	/** @brief Check provided speed settings and perform pre-calculation
-	 *  @param settings IN: requested bus settings, OUT: Modified bus settings
-	 *  @note
+	/**
+	 * @brief Check provided speed settings and perform pre-calculation
+	 * @param settings IN: requested bus settings, OUT: Modified bus settings
+	 * @note
 	 *  		This method allows clients to pre-calculate bus speed settings, so
 	 *  		may return with a lower bus frequency than requested.
 	 *
@@ -66,22 +62,17 @@ public:
 	 */
 	static void checkSpeed(SPISpeed& speed);
 
-	/** @brief beginTransaction()
+	/**
+	 * @brief Initialize the SPI bus using the defined SPISettings
 	 *
-	 * Initializes the SPI bus using the defined SPISettings
-	 *
-	 * this methode does not initiate a transaction. So it can be used to
+	 * This method does not initiate a transaction, so it can be used to
 	 * setup the SPI after SPI.begin()
 	 *
 	 */
 	void beginTransaction(SPISettings& mySettings) override;
 
-	/** @brief endTransaction()
-	 *
-	 * Method for compatibility with Arduino API. Provides NOP
-	 *
-	 * endTransaction(): Stop using the SPI bus. Normally this is called after
-	 * de-asserting the chip select, to allow other libraries to use the SPI bus.
+	/**
+	 * @brief Method for compatibility with Arduino API. Provides NOP
 	 */
 	void endTransaction() override
 	{
@@ -90,25 +81,12 @@ public:
 #endif
 	}
 
-	/** @brief 	transfer()
-	 * 	@param	byte to send
-	 * 	@retval	byte received
-	 *
-	 * calls private method transfer32(byte) to send/recv one uint32_t
-	 * input/output casted to rightdta type
-	 *
-	 * SPI transfer is based on a simultaneous send and receive:
-	 * the received data is returned in receivedVal (or receivedVal16).
-	 *
-	 * 		receivedVal = SPI.transfer(val)			: single byte
-	 * 		receivedVal16 = SPI.transfer16(val16)	: single short
-	 */
-	unsigned char transfer(unsigned char val) override
+	uint8_t transfer(uint8_t val) override
 	{
 		return transfer32(val, 8);
 	}
 
-	/** @brief read8() read a byte from SPI without setting up registers
+	/** @brief Read one byte from SPI without setting up registers
 	 * 	@param	none
 	 * 	@retval	byte received
 	 *
@@ -123,38 +101,15 @@ public:
 	 */
 	uint8_t read8();
 
-	/** @brief 	transfer16()
-	 * 	@param	val to send
-	 * 	@retval	short received
-	 *
-	 * calls private method transfer32(byte) to send/recv one uint32_t
-	 * input/output casted to rightdta type
-	 *
-	 * SPI transfer is based on a simultaneous send and receive:
-	 * the received data is returned in receivedVal (or receivedVal16).
-	 *
-	 * 		receivedVal = SPI.transfer(val)			: single byte
-	 * 		receivedVal16 = SPI.transfer16(val16)	: single short
-	 */
-	unsigned short transfer16(unsigned short val) override
+	uint16_t transfer16(uint16_t val) override
 	{
 		return transfer32(val, 16);
-	};
+	}
 
-	/** @brief 	transfer(uint8_t *buffer, size_t numberBytes)
-	 * 	@param	buffer in/out
-	 * 	@param	numberBytes length of buffer
-	 *
-	 * SPI transfer is based on a simultaneous send and receive:
-	 * The buffered transfers does split up the conversation internaly into 64 byte blocks.
-	 * The received data is stored in the buffer passed by reference.
-	 * (the data passed in is replaced with the data received).
-	 *
-	 * 		SPI.transfer(buffer, size)				: memory buffer of length size
-	 */
 	void transfer(uint8_t* buffer, size_t numberBytes) override;
 
-	/** @brief  Default settings used by the SPI bus
+	/**
+	 * @brief  Default settings used by the SPI bus
 	 * until reset by beginTransaction(SPISettings)
 	 *
 	 * Note: not included in std Arduino lib
@@ -162,7 +117,10 @@ public:
 	SPISettings SPIDefaultSettings;
 
 private:
-	/** @brief transfer32()
+	/**
+	 * @brief Send/receive a word of variable size
+	 * @param val Word to send
+	 * @param bits Number of bits to send
 	 *
 	 * private method used by transfer(byte) and transfer16(sort)
 	 * to send/recv one uint32_t
@@ -175,11 +133,12 @@ private:
 	 */
 	virtual uint32_t transfer32(uint32_t val, uint8_t bits);
 
-	/**	@brief Prepare/configure HSPI with settings
+	/**
+	 * @brief Prepare/configure HSPI with settings
+	 * @param  settings include frequency, byte order and SPI mode
 	 *
-	 * 		Private method used by beginTransaction and begin (init)
+	 * Private method used by beginTransaction and begin (init)
 	 *
-	 * 	@param  settings include frequency, byte order and SPI mode
 	 */
 	void prepare(SPISettings& settings);
 };

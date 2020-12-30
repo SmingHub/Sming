@@ -22,16 +22,159 @@
 // define the static singleton
 SPIClass SPI;
 
-static void spi_mode(uint8_t mode);
-static void spi_byte_order(uint8_t byte_order);
-static void setClock(const SPISpeed& speed);
-
+namespace
+{
 // Used internally to calculate optimum SPI speed
 struct SpiPreDiv {
 	unsigned freq;
 	unsigned prescale;
 	unsigned divisor;
 };
+
+/**
+ * @brief Wait until HSPI has finished any current transaction
+ */
+__forceinline void spi_wait()
+{
+	while(READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR) {
+		//
+	}
+}
+
+/**
+ * @brief Initiate an HSPI user transaction
+ */
+__forceinline void spi_send()
+{
+	SET_PERI_REG_MASK(SPI_CMD(SPI_NO), SPI_USR);
+}
+
+/**
+ * @brief	Configure SPI mode parameters for clock edge and clock polarity.
+ *
+ *  		Private method used by SPISetings
+ *
+ * @param	SPI_MODE0 .. SPI_MODE4
+ *
+ * 	 		Mode		Clock Polarity (CPOL)	Clock Phase (CPHA)
+ *			SPI_MODE0	0						0
+ *			SPI_MODE1	0						1
+ *			SPI_MODE2	1						0
+ *			SPI_MODE3	1						1
+ */
+void spi_mode(uint8_t mode)
+{
+	uint8_t spi_cpha = mode & 0x0F;
+	uint8_t spi_cpol = mode & 0xF0;
+
+#ifdef SPI_DEBUG
+	debugf("SPIClass::spi_mode(mode %x) spi_cpha %X,spi_cpol %X)", mode, spi_cpha, spi_cpol);
+#endif
+
+	if(spi_cpha == spi_cpol) {
+		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_CK_OUT_EDGE);
+	} else {
+		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_CK_OUT_EDGE);
+	}
+
+	if(spi_cpol) {
+		SET_PERI_REG_MASK(SPI_PIN(SPI_NO), SPI_IDLE_EDGE);
+	} else {
+		CLEAR_PERI_REG_MASK(SPI_PIN(SPI_NO), SPI_IDLE_EDGE);
+	}
+}
+
+/**
+ * @brief	Setup the byte order for shifting data out of buffer
+ *
+ *  		Private method used by SPISetings
+ *
+ * 	@param	MSBFIRST	1
+ * 	 		Data is sent out starting with Bit31 and down to Bit0
+ * 	 		LSBFIRST	0
+ * 	 		Data is sent out starting with the lowest BYTE, from MSB to LSB
+ * 			0xABCDEFGH would be sent as 0xGHEFCDAB
+ */
+void spi_byte_order(uint8_t byte_order)
+{
+#ifdef SPI_DEBUG
+	debugf("SPIClass::spi_byte_order(byte_order %u)", byte_order);
+#endif
+
+	if(byte_order) {
+		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_WR_BYTE_ORDER);
+		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_RD_BYTE_ORDER);
+	} else {
+		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_WR_BYTE_ORDER);
+		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_RD_BYTE_ORDER);
+	}
+}
+
+/**
+ * @brief	set CPI bus clock
+ *
+ * Private method used by setFrequency
+ *
+ * 		time length HIGHT level = (CPU clock / 10 / 2) ^ -1,
+ * 		time length LOW level = (CPU clock / 10 / 2) ^ -1
+ * 		Frequency calculation: 80Mhz / predivider / divider
+ *
+ * @param  prediv  time length HIGHT level
+ * @param  prediv  time length LOW level
+ */
+void setClock(const SPISpeed& speed)
+{
+	// Clock register value is never 0, so indicates it hasn't been calculated
+	uint32_t regVal = speed.regVal;
+	if(regVal == 0) {
+		SPISpeed tmp = speed;
+		SPIClass::checkSpeed(tmp);
+		regVal = tmp.regVal;
+	} else {
+#ifdef SPI_DEBUG
+		unsigned prescale = (speed.regVal >> SPI_CLKDIV_PRE_S) + 1;
+		unsigned divisor = (speed.regVal >> SPI_CLKCNT_N_S) + 1;
+		debugf("SPIClass::setClock(prescaler %u, divisor %u) for target %u", prescale, divisor, speed.frequency);
+#endif
+	}
+
+	WRITE_PERI_REG(SPI_CLOCK(SPI_NO), regVal);
+}
+
+/**
+ * @brief Calculate the closest prescale value for a given frequency and clock-divider
+ * @param  cpuFreq current CPU frequency, in Hz
+ * @param  freq target SPI bus frequency, in Hz
+ * @param  div divisor value to use
+ * @retval SpiPreDiv contains resulting frequency, prescaler and divisor values
+ */
+SpiPreDiv calculateSpeed(unsigned cpuFreq, unsigned freq, unsigned div)
+{
+	SpiPreDiv prediv;
+	unsigned pre = cpuFreq / (freq * div);
+	if(pre == 0) {
+		pre = 1;
+	}
+	unsigned n = pre * div;
+	while(true) {
+		prediv.freq = cpuFreq / n;
+		if(prediv.freq <= freq) {
+			break;
+		}
+		++pre;
+		n += div;
+	}
+	prediv.prescale = pre;
+	prediv.divisor = div;
+
+#ifdef SPI_DEBUG
+	debugf("SPI calculateSpeed(uint freq %u, uint pre %u, uint div %u)", f, pre, div);
+#endif
+
+	return prediv;
+}
+
+} // namespace
 
 void SPIClass::begin()
 {
@@ -58,8 +201,7 @@ uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 {
 	uint32_t regvalue = READ_PERI_REG(SPI_USER(SPI_NO)) & (SPI_WR_BYTE_ORDER | SPI_RD_BYTE_ORDER | SPI_CK_OUT_EDGE);
 
-	while(READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
-		;
+	spi_wait();
 
 	regvalue |= SPI_USR_MOSI | SPI_DOUTDIN | SPI_CK_I_EDGE;
 	WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
@@ -74,52 +216,39 @@ uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 		WRITE_PERI_REG(SPI_W0(SPI_NO), data);
 	}
 
-	SET_PERI_REG_MASK(SPI_CMD(SPI_NO), SPI_USR); // send
-
-	while(READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
-		;
+	spi_send();
+	spi_wait();
 
 	// wait a while before reading the register into the buffer
 	//	delayMicroseconds(2);
 
 	if(READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_RD_BYTE_ORDER) {
-		return READ_PERI_REG(SPI_W0(SPI_NO)) >> (32 - bits); //Assuming data in is written to MSB. TBC
+		// Assuming data in is written to MSB. TBC
+		return READ_PERI_REG(SPI_W0(SPI_NO)) >> (32 - bits);
 	} else {
-		return READ_PERI_REG(SPI_W0(
-			SPI_NO)); //Read in the same way as DOUT is sent. Note existing contents of SPI_W0 remain unless overwritten!
+		// Read in the same way as DOUT is sent. Note existing contents of SPI_W0 remain unless overwritten!
+		return READ_PERI_REG(SPI_W0(SPI_NO));
 	}
 }
 
 uint8_t SPIClass::read8()
 {
-	while(READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
-		;
+	spi_wait();
 
 	WRITE_PERI_REG(SPI_W0(SPI_NO), 0x00);
 
-	SET_PERI_REG_MASK(SPI_CMD(SPI_NO), SPI_USR); // send
-
-	while(READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
-		;
+	spi_send();
+	spi_wait();
 
 	if(READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_RD_BYTE_ORDER) {
-		return READ_PERI_REG(SPI_W0(SPI_NO)) >> (32 - 8); //Assuming data in is written to MSB. TBC
+		// Assuming data in is written to MSB. TBC
+		return READ_PERI_REG(SPI_W0(SPI_NO)) >> (32 - 8);
 	} else {
-		return READ_PERI_REG(SPI_W0(
-			SPI_NO)); //Read in the same way as DOUT is sent. Note existing contents of SPI_W0 remain unless overwritten!
+		// Read in the same way as DOUT is sent. Note existing contents of SPI_W0 remain unless overwritten!
+		return READ_PERI_REG(SPI_W0(SPI_NO));
 	}
 }
 
-/* @defgroup SPI hardware implementation
- * @brief transfer(uint8_t *buffer, size_t numberBytes)
- *
- * SPI transfer is based on a simultaneous send and receive:
- * The buffered transfers does split up the conversation internaly into 64 byte blocks.
- * The received data is stored in the buffer passed by reference.
- * (the data passed in is replaced with the data received).
- *
- * 		SPI.transfer(buffer, size)				: memory buffer of length size
- */
 void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 {
 #define BLOCKSIZE 64U // the max length of the ESP SPI_W0 registers
@@ -145,8 +274,7 @@ void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 
 		uint32_t regvalue = READ_PERI_REG(SPI_USER(SPI_NO)) & (SPI_WR_BYTE_ORDER | SPI_RD_BYTE_ORDER | SPI_CK_OUT_EDGE);
 
-		while(READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
-			;
+		spi_wait();
 
 		regvalue |= SPI_USR_MOSI | SPI_DOUTDIN | SPI_CK_I_EDGE;
 		WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
@@ -159,18 +287,13 @@ void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 		if(IS_ALIGNED(buffer)) {
 			memcpy((void*)SPI_W0(SPI_NO), &buffer[bufIndx], ALIGNUP4(bufLength));
 		} else {
-			auto spiBuffer = reinterpret_cast<volatile uint32_t*>(SPI_W0(SPI_NO));
 			uint32_t wordBuffer[BLOCKSIZE / 4];
 			memcpy(wordBuffer, &buffer[bufIndx], bufLength);
 			memcpy((void*)SPI_W0(SPI_NO), wordBuffer, ALIGNUP4(bufLength));
 		}
 
-		// Begin SPI Transaction
-		SET_PERI_REG_MASK(SPI_CMD(SPI_NO), SPI_USR);
-
-		// wait for SPI bus to be ready
-		while(READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR)
-			;
+		spi_send();
+		spi_wait();
 
 		// wait a while before reading the register into the buffer
 		//		delayMicroseconds(8);
@@ -181,7 +304,7 @@ void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 		// increment bufIndex
 		bufIndx += bufLength;
 	}
-};
+}
 
 void SPIClass::prepare(SPISettings& settings)
 {
@@ -199,131 +322,6 @@ void SPIClass::prepare(SPISettings& settings)
 	//	set spi mode
 	spi_mode(settings.dataMode);
 };
-
-/** @brief  spi_mode Configures SPI mode parameters for clock edge and clock polarity.
- *
- *  		Private method used by SPISetings
- *
- * 	@param	SPI_MODE0 .. SPI_MODE4
- *
- * 	 		Mode		Clock Polarity (CPOL)	Clock Phase (CPHA)
- *			SPI_MODE0	0						0
- *			SPI_MODE1	0						1
- *			SPI_MODE2	1						0
- *			SPI_MODE3	1						1
- */
-static void spi_mode(uint8_t mode)
-{
-	uint8_t spi_cpha = mode & 0x0F;
-	uint8_t spi_cpol = mode & 0xF0;
-
-#ifdef SPI_DEBUG
-	debugf("SPIClass::spi_mode(mode %x) spi_cpha %X,spi_cpol %X)", mode, spi_cpha, spi_cpol);
-#endif
-
-	if(spi_cpha == spi_cpol) {
-		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_CK_OUT_EDGE);
-	} else {
-		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_CK_OUT_EDGE);
-	}
-
-	if(spi_cpol) {
-		SET_PERI_REG_MASK(SPI_PIN(SPI_NO), SPI_IDLE_EDGE);
-	} else {
-		CLEAR_PERI_REG_MASK(SPI_PIN(SPI_NO), SPI_IDLE_EDGE);
-	}
-}
-
-/** @brief  spi_byte_order Setup the byte order for shifting data out of buffer
- *
- *  		Private method used by SPISetings
- *
- * 	@param	MSBFIRST	1
- * 	 		Data is sent out starting with Bit31 and down to Bit0
- * 	 		LSBFIRST	0
- * 	 		Data is sent out starting with the lowest BYTE, from MSB to LSB
- * 			0xABCDEFGH would be sent as 0xGHEFCDAB
- */
-static void spi_byte_order(uint8_t byte_order)
-{
-#ifdef SPI_DEBUG
-	debugf("SPIClass::spi_byte_order(byte_order %u)", byte_order);
-#endif
-
-	if(byte_order) {
-		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_WR_BYTE_ORDER);
-		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_RD_BYTE_ORDER);
-	} else {
-		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_WR_BYTE_ORDER);
-		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_RD_BYTE_ORDER);
-	}
-}
-
-/** @brief  setClock  set CPI bus clock
- *
- * 		Private method used by setFrequency
- *
- * 		time length HIGHT level = (CPU clock / 10 / 2) ^ -1,
- * 		time length LOW level = (CPU clock / 10 / 2) ^ -1
- * 		Frequency calculation: 80Mhz / predivider / divider
- *
- * 	@param  prediv  time length HIGHT level
- * 	@param  prediv  time length LOW level
- *
- */
-static void setClock(const SPISpeed& speed)
-{
-	// Clock register value is never 0, so indicates it hasn't been calculated
-	uint32_t regVal = speed.regVal;
-	if(regVal == 0) {
-		SPISpeed tmp = speed;
-		SPIClass::checkSpeed(tmp);
-		regVal = tmp.regVal;
-	} else {
-#ifdef SPI_DEBUG
-		unsigned prescale = (speed.regVal >> SPI_CLKDIV_PRE_S) + 1;
-		unsigned divisor = (speed.regVal >> SPI_CLKCNT_N_S) + 1;
-		debugf("SPIClass::setClock(prescaler %u, divisor %u) for target %u", prescale, divisor, speed.frequency);
-#endif
-	}
-
-	WRITE_PERI_REG(SPI_CLOCK(SPI_NO), regVal);
-}
-
-/** @brief Calculate the closest prescale value for a given frequency and clock-divider
- *
- * 	Internal function
- *
- *  @param  cpuFreq current CPU frequency, in Hz
- *  @param  freq target SPI bus frequency, in Hz
- *  @param  div divisor value to use
- *  @retval SpiPreDiv contains resulting frequency, prescaler and divisor values
- */
-static SpiPreDiv calculateSpeed(unsigned cpuFreq, unsigned freq, unsigned div)
-{
-	SpiPreDiv prediv;
-	unsigned pre = cpuFreq / (freq * div);
-	if(pre == 0) {
-		pre = 1;
-	}
-	unsigned n = pre * div;
-	while(true) {
-		prediv.freq = cpuFreq / n;
-		if(prediv.freq <= freq) {
-			break;
-		}
-		++pre;
-		n += div;
-	}
-	prediv.prescale = pre;
-	prediv.divisor = div;
-
-#ifdef SPI_DEBUG
-	debugf("SPI calculateSpeed(uint freq %u, uint pre %u, uint div %u)", f, pre, div);
-#endif
-
-	return prediv;
-}
 
 /** @brief Check speed settings and perform any pre-calculation required
  *  @param speed IN: requested bus frequency, OUT: Modified settings with prescale values
@@ -349,7 +347,6 @@ void SPIClass::checkSpeed(SPISpeed& speed)
 	if(speed.frequency >= cpuFreq) {
 		// Use maximum speed
 		prediv.freq = cpuFreq;
-		prediv.prescale = 0;
 		prediv.divisor = 0;
 		speed.regVal = SPI_CLK_EQU_SYSCLK;
 	} else {
