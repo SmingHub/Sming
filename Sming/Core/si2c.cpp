@@ -21,15 +21,7 @@
 
 #include "twi.h"
 #include "Digital.h"
-
-//Enable SDA (becomes output and since GPO is 0 for the pin, it will pull the line low)
-#define SDA_LOW() (GPES = (1 << twi_sda))
-//Disable SDA (becomes input and since it has pullup it will go high)
-#define SDA_HIGH() (GPEC = (1 << twi_sda))
-#define SDA_READ() ((GPI & (1 << twi_sda)) != 0)
-#define SCL_LOW() (GPES = (1 << twi_scl))
-#define SCL_HIGH() (GPEC = (1 << twi_scl))
-#define SCL_READ() ((GPI & (1 << twi_scl)) != 0)
+#include <twi_arch.h>
 
 #ifndef FCPU80
 #define FCPU80 80000000L
@@ -52,7 +44,7 @@ void twi_delay(uint8_t v)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 	for(unsigned i = 0; i < v; i++) {
-		(void)GPI; // Suppress compiler warning for this read
+		(void)SCL_READ(); // Suppress compiler warning for this read
 	}
 #pragma GCC diagnostic pop
 }
