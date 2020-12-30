@@ -22,6 +22,8 @@
 #include "twi.h"
 #include "Digital.h"
 #include <twi_arch.h>
+#include <sming_attr.h>
+#include <Platform/System.h>
 
 #ifndef FCPU80
 #define FCPU80 80000000L
@@ -39,7 +41,7 @@ uint8_t twi_dcount{18};
 uint8_t twi_sda, twi_scl;
 unsigned twi_clockStretchLimit;
 
-void twi_delay(uint8_t v)
+void __forceinline twi_delay(uint8_t v)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
@@ -132,35 +134,32 @@ uint8_t twi_read_byte(bool nack)
 
 void twi_setClock(uint32_t freq)
 {
-#if F_CPU == FCPU80
-	if(freq <= 100000) {
-		twi_dcount = 19; //about 100KHz
-	} else if(freq <= 200000) {
-		twi_dcount = 8; //about 200KHz
-	} else if(freq <= 300000) {
-		twi_dcount = 3; //about 300KHz
-	} else if(freq <= 400000) {
-		twi_dcount = 1; //about 400KHz
-	} else {
-		twi_dcount = 1; //about 400KHz
+	auto sys = System.getCpuFrequency();
+	if(sys == eCF_80MHz) {
+		if(freq <= 100000) {
+			twi_dcount = 16; //about 100KHz
+		} else if(freq <= 200000) {
+			twi_dcount = 5; //about 200KHz
+		} else if(freq <= 300000) {
+			twi_dcount = 2; //about 300KHz
+		} else {
+			twi_dcount = 0; //about 400KHz
+		}
+	} else { // Assume eCF_160MHz
+		if(freq <= 100000) {
+			twi_dcount = 28; //about 100KHz
+		} else if(freq <= 200000) {
+			twi_dcount = 12; //about 200KHz
+		} else if(freq <= 300000) {
+			twi_dcount = 5; //about 300KHz
+		} else if(freq <= 400000) {
+			twi_dcount = 3; //about 400KHz
+		} else if(freq <= 500000) {
+			twi_dcount = 1; //about 500KHz
+		} else {
+			twi_dcount = 0; //about 600KHz
+		}
 	}
-#else
-	if(freq <= 100000) {
-		twi_dcount = 32; //about 100KHz
-	} else if(freq <= 200000) {
-		twi_dcount = 14; //about 200KHz
-	} else if(freq <= 300000) {
-		twi_dcount = 8; //about 300KHz
-	} else if(freq <= 400000) {
-		twi_dcount = 5; //about 400KHz
-	} else if(freq <= 500000) {
-		twi_dcount = 3; //about 500KHz
-	} else if(freq <= 600000) {
-		twi_dcount = 2; //about 600KHz
-	} else {
-		twi_dcount = 1; //about 700KHz
-	}
-#endif
 }
 
 void twi_setClockStretchLimit(uint32_t limit)
