@@ -36,31 +36,55 @@ public:
 
 void StationImpl::enable(bool enabled, bool save)
 {
-	uint8_t mode;
-	esp_wifi_get_mode((wifi_mode_t*)&mode);
+	wifi_mode_t mode;
+	ESP_ERROR_CHECK(esp_wifi_get_mode(&mode));
 	if(enabled) {
-		mode |= WIFI_MODE_STA;
 		if(stationNetworkInterface == nullptr) {
 			stationNetworkInterface = esp_netif_create_default_wifi_sta();
 		}
-	} else if(stationNetworkInterface) {
-		esp_netif_destroy(stationNetworkInterface);
-		stationNetworkInterface = nullptr;
+		switch(mode) {
+		case WIFI_MODE_STA:
+		case WIFI_MODE_APSTA:
+			return; // No change required
+		case WIFI_MODE_AP:
+			mode = WIFI_MODE_APSTA;
+			break;
+		case WIFI_MODE_NULL:
+		default:
+			mode = WIFI_MODE_STA;
+		}
+	} else {
+		switch(mode) {
+		case WIFI_MODE_NULL:
+		case WIFI_MODE_AP:
+			return; // No change required
+		case WIFI_MODE_APSTA:
+			mode = WIFI_MODE_AP;
+			break;
+		case WIFI_MODE_STA:
+		default:
+			mode = WIFI_MODE_NULL;
+			break;
+		}
+		if(stationNetworkInterface != nullptr) {
+			esp_netif_destroy(stationNetworkInterface);
+			stationNetworkInterface = nullptr;
+		}
 	}
-	esp_wifi_set_storage(save ? WIFI_STORAGE_FLASH : WIFI_STORAGE_RAM);
-	esp_wifi_set_mode((wifi_mode_t)mode);
+	ESP_ERROR_CHECK(esp_wifi_set_storage(save ? WIFI_STORAGE_FLASH : WIFI_STORAGE_RAM));
+	ESP_ERROR_CHECK(esp_wifi_set_mode(mode));
 }
 
 bool StationImpl::isEnabled() const
 {
-	uint8_t mode;
-	esp_wifi_get_mode((wifi_mode_t*)&mode);
-	return mode & WIFI_MODE_STA;
+	wifi_mode_t mode{};
+	ESP_ERROR_CHECK(esp_wifi_get_mode(&mode));
+	return (mode == WIFI_MODE_STA) || (mode == WIFI_MODE_APSTA);
 }
 
 bool StationImpl::config(const String& ssid, const String& password, bool autoConnectOnStartup, bool save)
 {
-	wifi_config_t config = {};
+	wifi_config_t config{};
 
 	if(ssid.length() >= sizeof(config.sta.ssid)) {
 		return false;
@@ -69,15 +93,12 @@ bool StationImpl::config(const String& ssid, const String& password, bool autoCo
 		return false;
 	}
 
-	memcpy(&config.sta.ssid, ssid.c_str(), ssid.length());
-	memcpy(&config.sta.password, password.c_str(), password.length());
+	memcpy(config.sta.ssid, ssid.c_str(), ssid.length());
+	memcpy(config.sta.password, password.c_str(), password.length());
 
-	uint8_t mode;
-	esp_wifi_get_mode((wifi_mode_t*)&mode);
-	mode |= WIFI_MODE_STA;
+	enable(true, save);
 
-	esp_wifi_set_storage(save ? WIFI_STORAGE_FLASH : WIFI_STORAGE_RAM);
-	ESP_ERROR_CHECK(esp_wifi_set_mode((wifi_mode_t)mode));
+	ESP_ERROR_CHECK(esp_wifi_set_storage(save ? WIFI_STORAGE_FLASH : WIFI_STORAGE_RAM));
 	ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &config));
 
 	return connect();
@@ -86,7 +107,7 @@ bool StationImpl::config(const String& ssid, const String& password, bool autoCo
 bool StationImpl::connect()
 {
 	disconnect();
-	return (esp_wifi_start() == ESP_OK);
+	return esp_wifi_start() == ESP_OK;
 }
 
 bool StationImpl::disconnect()
@@ -116,51 +137,51 @@ void StationImpl::enableDHCP(bool enable)
 
 void StationImpl::setHostname(const String& hostname)
 {
-	esp_netif_set_hostname(stationNetworkInterface, const_cast<char*>(hostname.c_str()));
+	ESP_ERROR_CHECK(esp_netif_set_hostname(stationNetworkInterface, hostname.c_str()));
 }
 
 String StationImpl::getHostname() const
 {
-	char* hostName;
-	esp_netif_get_hostname(stationNetworkInterface, (const char**)&hostName);
+	const char* hostName;
+	ESP_ERROR_CHECK(esp_netif_get_hostname(stationNetworkInterface, &hostName));
 	return hostName;
 }
 
 IpAddress StationImpl::getIP() const
 {
+	IpAddress addr;
 	esp_netif_ip_info_t info;
-	esp_netif_get_ip_info(stationNetworkInterface, &info);
-	return info.ip.addr;
+	if(esp_netif_get_ip_info(stationNetworkInterface, &info) == ESP_OK) {
+		addr = info.ip.addr;
+	}
+	return addr;
 }
 
 MacAddress StationImpl::getMacAddress() const
 {
 	MacAddress addr;
-	if(esp_wifi_get_mac(ESP_IF_WIFI_STA, (uint8_t*)&addr[0]) == ESP_OK) {
-		return addr;
-	} else {
-		return MACADDR_NONE;
-	}
+	ESP_ERROR_CHECK(esp_wifi_get_mac(ESP_IF_WIFI_STA, &addr[0]));
+	return addr;
 }
 
 IpAddress StationImpl::getNetworkBroadcast() const
 {
 	esp_netif_ip_info_t info;
-	esp_netif_get_ip_info(stationNetworkInterface, &info);
-	return (info.ip.addr | ~info.netmask.addr);
+	ESP_ERROR_CHECK(esp_netif_get_ip_info(stationNetworkInterface, &info));
+	return info.ip.addr | ~info.netmask.addr;
 }
 
 IpAddress StationImpl::getNetworkMask() const
 {
 	esp_netif_ip_info_t info;
-	esp_netif_get_ip_info(stationNetworkInterface, &info);
+	ESP_ERROR_CHECK(esp_netif_get_ip_info(stationNetworkInterface, &info));
 	return info.netmask.addr;
 }
 
 IpAddress StationImpl::getNetworkGateway() const
 {
 	esp_netif_ip_info_t info;
-	esp_netif_get_ip_info(stationNetworkInterface, &info);
+	ESP_ERROR_CHECK(esp_netif_get_ip_info(stationNetworkInterface, &info));
 	return info.gw.addr;
 }
 
@@ -169,7 +190,9 @@ bool StationImpl::setIP(IpAddress address, IpAddress netmask, IpAddress gateway)
 	disconnect();
 	enableDHCP(false);
 	esp_netif_ip_info_t ipinfo;
-	esp_netif_get_ip_info(stationNetworkInterface, &ipinfo);
+	if(esp_netif_get_ip_info(stationNetworkInterface, &ipinfo) != ESP_OK) {
+		return false;
+	}
 	ipinfo.ip.addr = address;
 	ipinfo.netmask.addr = netmask;
 	ipinfo.gw.addr = gateway;
@@ -185,7 +208,7 @@ bool StationImpl::setIP(IpAddress address, IpAddress netmask, IpAddress gateway)
 
 String StationImpl::getSSID() const
 {
-	wifi_config_t config = {0};
+	wifi_config_t config{};
 	if(esp_wifi_get_config(ESP_IF_WIFI_STA, &config) != ESP_OK) {
 		debugf("Can't read station configuration!");
 		return nullptr;
@@ -198,14 +221,14 @@ String StationImpl::getSSID() const
 int8_t StationImpl::getRssi() const
 {
 	wifi_ap_record_t info;
-	esp_wifi_sta_get_ap_info(&info);
+	ESP_ERROR_CHECK(esp_wifi_sta_get_ap_info(&info));
 	debugf("Rssi: %d dBm", info.rssi);
 	return info.rssi;
 }
 
 uint8_t StationImpl::getChannel() const
 {
-	wifi_config_t config = {0};
+	wifi_config_t config;
 	if(esp_wifi_get_config(ESP_IF_WIFI_STA, &config) != ESP_OK) {
 		debugf("Can't read station configuration!");
 		return 0;
@@ -216,7 +239,7 @@ uint8_t StationImpl::getChannel() const
 
 String StationImpl::getPassword() const
 {
-	wifi_config_t config = {0};
+	wifi_config_t config{};
 	if(esp_wifi_get_config(ESP_IF_WIFI_STA, &config) != ESP_OK) {
 		debugf("Can't read station configuration!");
 		return nullptr;
@@ -264,20 +287,20 @@ void StationImpl::staticScanCompleted(wifi_event_sta_scan_done_t* event, uint8_t
 		if(station.scanCompletedCallback) {
 			uint16_t number = event->number;
 			wifi_ap_record_t ap_info[number];
-			uint16_t ap_count = 0;
+			uint16_t ap_count{0};
 			memset(ap_info, 0, sizeof(ap_info));
 			ESP_ERROR_CHECK(esp_wifi_scan_get_ap_records(&number, ap_info));
 			ESP_ERROR_CHECK(esp_wifi_scan_get_ap_num(&ap_count));
 			// TODO: Handle hidden APs
-			for(int i = 0; (i < event->number) && (i < ap_count); i++) {
+			for(unsigned i = 0; (i < event->number) && (i < ap_count); i++) {
 				list.addElement(new BssInfoImpl(&ap_info[i]));
 			}
 			station.scanCompletedCallback(true, list);
 		}
 
-		debugf("scan completed: %d found", list.count());
+		debugf("scan completed: %u found", list.count());
 	} else {
-		debugf("scan failed %d", status);
+		debugf("scan failed %u", status);
 		if(station.scanCompletedCallback) {
 			station.scanCompletedCallback(false, list);
 		}
