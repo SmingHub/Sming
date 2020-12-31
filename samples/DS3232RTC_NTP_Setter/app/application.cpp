@@ -9,46 +9,58 @@
 #define WIFI_PWD "ENTER_YOUR_PASSWORD"
 #endif
 
+// Change as required
+static constexpr uint8_t SDA_PIN{4};
+static constexpr uint8_t SCL_PIN{5};
+
 void onNtpReceive(NtpClient& client, time_t timestamp);
 
 Timer printTimer;
 
-NtpClient ntpClient("pool.ntp.org", 30, onNtpReceive);
+NtpClient ntpClient(onNtpReceive);
 
 void onPrintSystemTime()
 {
-	DateTime _date_time = DSRTC.get();
-	Serial.printf("Current time\n\tSystem(LOCAL TZ): %s\n\tUTC(UTC TZ): %s\n\tDSRTC(UTC TZ): %s\n\n",
-				  SystemClock.getSystemTimeString().c_str(), SystemClock.getSystemTimeString(eTZ_UTC).c_str(),
-				  _date_time.toFullDateTimeString().c_str());
+	DateTime rtcNow = DSRTC.get();
+	Serial.println(_F("Current time"));
+	Serial.print(_F("  System(LOCAL TZ): "));
+	Serial.println(SystemClock.getSystemTimeString());
+	Serial.print(_F("  UTC(UTC TZ): "));
+	Serial.println(SystemClock.getSystemTimeString(eTZ_UTC));
+	Serial.print(_F("  DSRTC(UTC TZ): "));
+	Serial.println(rtcNow.toFullDateTimeString());
 }
 
 void onNtpReceive(NtpClient& client, time_t timestamp)
 {
 	SystemClock.setTime(timestamp, eTZ_UTC); //System timezone is LOCAL so to set it from UTC we specify TZ
 	DSRTC.set(timestamp);					 //DSRTC timezone is UTC so we need TZ-correct DSRTC.get()
-	Serial.printf("Time synchronized: %s\n", SystemClock.getSystemTimeString().c_str());
+	Serial.print(_F("Time synchronized: "));
+	Serial.println(SystemClock.getSystemTimeString());
 }
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
+	debug_i("Got IP %s", ip.toString().c_str());
+
 	ntpClient.requestTime();
 }
 
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE);
+	Serial.systemDebugOutput(true); // Allow debug print to serial
 	Serial.println("Sming DSRTC_NTP_SETTER started!");
-	Wire.pins(2, 0); //Change to your SDA - 2, SCL - 0 GPIO pin number
+	Wire.pins(SDA_PIN, SCL_PIN);
 	Wire.begin();
 
 	// Station - WiFi client
-	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
 	WifiStation.enable(true);
+	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiEvents.onStationGotIP(gotIP);
 
 	// set timezone hourly difference to UTC
 	SystemClock.setTimeZone(2); // GMT+2
 
-	printTimer.initializeMs(2000, onPrintSystemTime).start();
+	printTimer.initializeMs<2000>(onPrintSystemTime).start();
 }
