@@ -29,21 +29,9 @@ We recommend ``/opt/`` but you can use anything you want::
 Install Toolchain
 -----------------
 
-This builds the cross-compiler, linker, etc. required for the ESP8266::
-
-   git clone --recursive https://github.com/pfalcon/esp-open-sdk.git
-   cd esp-open-sdk
-
-   # be careful this command can do damage if used
-   # in the wrong directory, try without sudo first!
-   sudo chown -R [username] ./
-
-   # This will take a while...
-   make STANDALONE=y
-
 You can find pre-compiled toolchains in the `SmingTools <https://github.com/SmingHub/SmingTools/releases>`__ repository.
 
-Manual installation::
+Install as follows::
 
    export ESP_HOME=/opt/esp-quick-toolchain
    sudo mkdir $(ESP_HOME)
@@ -86,19 +74,20 @@ Clone the Sming ``develop`` branch to your working directory::
 
    cd $SMING_HOME/../..
    git clone https://github.com/SmingHub/Sming.git
-   # Warning: Do NOT use the --recursive option for the command above.
-   #          Our build mechanism will take care to get the third-party
-   #          sources and patch them, if needed.
-
-   # You will get a copy of our `develop` branch which intended for developers
-   # and it is the one where all new cool (unstable) features are landing.
-
-
    cd Sming
+
+.. warning::
+
+   Do NOT use the ``--recursive`` option with ``git``.
+   Our build mechanism will take care to get the third-party sources and patch them, if needed.
+
+This will fetch the `develop` branch which is intended for developers,
+and is the one where all new cool (unstable) features are landing.
 
 If you want to use our stable branch::
 
-   git checkout origin/master
+   git checkout master
+   git pull
 
 
 Build a ‘Basic Blink’ example

@@ -1,5 +1,5 @@
-Getting Started: Linux/Windows
-==============================
+Getting Started: Host (Linux/Windows)
+=====================================
 
 .. highlight:: bash
 
