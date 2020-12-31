@@ -202,12 +202,7 @@ ArduCAM::ArduCAM()
 
 ArduCAM::ArduCAM(byte model,int CS)
 { 
-#if defined(ESP8266) || defined (__ESP8266_EX__)
 	B_CS = CS;
-#else
-	P_CS	= portOutputRegister(digitalPinToPort(CS));
-	B_CS	= digitalPinToBitMask(CS);
-#endif
 	pinMode(CS,OUTPUT);
 	
 	//Must initialize the Bus default status
@@ -456,9 +451,6 @@ int ArduCAM::wrSensorRegs8_8(const struct sensor_reg reglist[])
 		uint16_t reg_val = pgm_read_word(&next->val);
 		wrSensorReg8_8(reg_addr, reg_val);
    	next++;
-#if defined(ESP8266)
-	  yield();
-#endif
 	} 
 	
 	return 1;
@@ -476,9 +468,6 @@ int ArduCAM::wrSensorRegs8_16(const struct sensor_reg reglist[])
 		uint16_t reg_val = pgm_read_word(&next->val);
 		wrSensorReg8_16(reg_addr, reg_val);
 	  next++;
-#if defined(ESP8266)
-	  yield();
-#endif
 	}  
 	
 	return 1;
@@ -496,9 +485,6 @@ int ArduCAM::wrSensorRegs16_8(const struct sensor_reg reglist[])
 		uint8_t reg_val = pgm_read_word(&next->val);
 		wrSensorReg16_8(reg_addr, reg_val);
 	  next++;
-#if defined(ESP8266)
-	  yield();
-#endif
 	} 
 	
 	return 1;
@@ -514,9 +500,6 @@ int ArduCAM::wrSensorRegs16_16(const struct sensor_reg reglist[])
 		uint16_t reg_val = pgm_read_word(&next->val);
 		wrSensorReg16_16(reg_addr, reg_val);
 	  next++;
-#if defined(ESP8266)
-	  yield();
-#endif
 	}
 	
 
