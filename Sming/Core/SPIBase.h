@@ -16,58 +16,143 @@
 #include "SPISettings.h"
 #include <stddef.h>
 
-/** @defgroup base_spi SPI support classes
- *  @brief    Provides SPI support
- *  @{
+/**
+ * @defgroup base_spi SPI support classes
+ * @brief    Provides SPI support
+ * @{
  */
 
-/* @brief Base class/interface for SPI implementations
+/*
+ * @brief Base class/interface for SPI implementations
  */
 class SPIBase
 {
 public:
-	SPIBase()
-	{
-	}
-
 	virtual ~SPIBase()
 	{
 	}
 
-	/** @brief begin(): Initializes the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high.
+	/**
+	 * @brief Initialize the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high.
 	 */
-	virtual void begin() = 0;
+	virtual bool begin() = 0;
 
-	/** @brief end(): Disables the SPI bus (leaving pin modes unchanged).
+	/**
+	 * @brief Disable the SPI bus (leaving pin modes unchanged).
 	 */
 	virtual void end() = 0;
 
-	/** @brief beginTransaction(): Initializes the SPI bus using the defined SPISettings.
+	/**
+	 * @brief Initialize the SPI bus using the defined SPISettings.
 	 */
-	virtual void beginTransaction(SPISettings mySettings) = 0;
+	void beginTransaction(SPISettings& settings)
+	{
+		prepare(settings);
+	}
 
-	/** @brief endTransaction(): Stop using the SPI bus. Normally this is called after de-asserting the chip select, to allow other libraries to use the SPI bus.
+	void beginTransaction(const SPISettings& settings)
+	{
+		SPISettings tmp{settings};
+		prepare(tmp);
+	}
+
+	/**
+	 * @brief Stop using the SPI bus. Normally this is called after de-asserting the chip select, to allow other libraries to use the SPI bus.
 	 */
-	virtual void endTransaction() = 0;
+	virtual void endTransaction()
+	{
+	}
 
-	/** @brief transfer(), transfer16()
+	/** @brief Read one byte from SPI without setting up registers
+	 * 	@param	none
+	 * 	@retval	byte received
 	 *
-	 * SPI transfer is based on a simultaneous send and receive: the received data is returned in receivedVal (or receivedVal16). In case of buffer transfers the received data is stored in the buffer in-place (the old data is replaced with the data received).
+	 * 	 used for performance tuning when doing continuous reads
+	 * 	 this method does not reset the registers , so make sure
+	 * 	 that a regular transfer(data) call was performed
+	 *
+	 * 	 Note: this method is not found on the Arduino API
+	 *
+	 * 	 USE WITH CARE !!
+	 *
+	 */
+	virtual uint8_t read8()
+	{
+		return transfer(0xff);
+	}
+
+	/**
+	 * @name Send/receive some data
+	 * @{
+	 *
+	 * SPI transfer is based on a simultaneous send and receive: the received data is returned in receivedVal (or receivedVal16).
+	 * In case of buffer transfers the received data is stored in the buffer in-place (the old data is replaced with the data received).
 	 *
 	 * 		receivedVal = SPI.transfer(val)
 	 * 		receivedVal16 = SPI.transfer16(val16)
 	 * 		SPI.transfer(buffer, size)
 	 */
-	virtual unsigned char transfer(unsigned char val) = 0;
-	virtual unsigned short transfer16(unsigned short val) = 0;
+
+	/**
+	 * @brief Send/receive one bytes of data
+	 * @param val The byte to send
+	 * @retval uint8_t The received byte
+	 */
+	uint8_t transfer(uint8_t val)
+	{
+		return transfer32(val, 8);
+	}
+
+	/**
+	 * @brief Send/receive one 16-bit word of data
+	 * @param val The word to send
+	 * @retval uint8_t The received word
+	 */
+	uint16_t transfer16(uint16_t val)
+	{
+		return transfer32(val, 16);
+	}
+
+	/**
+	 * @brief Send/receive a word of variable size
+	 * @param val Word to send
+	 * @param bits Number of bits to send
+	 *
+	 * SPI transfer is based on a simultaneous send and receive:
+	 * the received data is returned in receivedVal (or receivedVal16).
+	 *
+	 * 		receivedVal = SPI.transfer(val)			: single byte
+	 * 		receivedVal16 = SPI.transfer16(val16)	: single short
+	 */
+	virtual uint32_t transfer32(uint32_t val, uint8_t bits = 32)
+	{
+		transfer(reinterpret_cast<uint8_t*>(&val), bits / 8);
+		return val;
+	}
+
+	/**
+	 * @brief Send/receive a variable-length block of data
+	 * @param buffer IN: The data to send; OUT: The received data
+	 * @param size Number of bytes to transfer
+	 */
 	virtual void transfer(uint8_t* buffer, size_t size) = 0;
 
-	/** @brief  Default settings used by the SPI bus
+	/** @} */
+
+	/**
+	 * @brief  Default settings used by the SPI bus
 	 * until reset by beginTransaction(SPISettings)
 	 *
 	 * Note: not included in std Arduino lib
 	 */
 	SPISettings SPIDefaultSettings;
+
+protected:
+	/**
+	 * @brief Prepare/configure with settings
+	 * @param  settings include frequency, byte order and SPI mode
+	 */
+	virtual void prepare(SPISettings& settings) = 0;
 };
 
 /** @} */

@@ -11,24 +11,33 @@ Descr: SDCard/FAT file usage and write benchmark.
 
 /*(!) Warning on some hardware versions (ESP07, maybe ESP12)
  * 		pins GPIO4 and GPIO5 are swapped !*/
+// ** Definitions for software SPI ONLY **
 #define PIN_CARD_DO 12 /* Master In Slave Out */
 #define PIN_CARD_DI 13 /* Master Out Slave In */
 #define PIN_CARD_CK 14 /* Serial Clock */
-#define PIN_CARD_SS 15 /* Slave Select */
 
-#define SPI_BYTE_ORDER LSBFIRST /* Sets the order the bytes are transmitted. WEMOS D1 mini requires LSBFIRST */
+// Chip selects independent of SPI controller in use
+#ifdef ARCH_ESP8266
+// Cannot use GPIO15 as this affects boot mode
+#define PIN_CARD_SS 5 /* Slave Select */
+#elif defined(ARCH_ESP32)
+#define PIN_CARD_SS 21
+#else
+static_assert(false, "Unsupported arch.")
+#endif
+
 /* Sets the max frequency of SPI (init is done at a lower speed than the main communication) */
-#define SPI_FREQ_LIMIT 40000000
+#define SPI_FREQ_LIMIT 2000000
 
-void writeToFile(const char* filename, uint32_t totalBytes, uint32_t bytesPerRound)
+void writeToFile(const String& filename, uint32_t totalBytes, uint32_t bytesPerRound)
 {
 	char* buf = new char[totalBytes];
 	if(buf == nullptr) {
-		Serial.print("Failed to allocate heap\n");
+		Serial.println("Failed to allocate heap");
 		return;
 	}
 
-	Serial.printf("Write %d kBytes in %d Bytes increment: ", totalBytes / 1024, bytesPerRound);
+	Serial.printf("Write %d kBytes in %d Bytes increment:\r\n", totalBytes / 1024, bytesPerRound);
 	for(unsigned i = 0; i < totalBytes; i++) {
 		buf[i] = (i % 10) + '0';
 	}
@@ -36,7 +45,7 @@ void writeToFile(const char* filename, uint32_t totalBytes, uint32_t bytesPerRou
 	OneShotFastUs timer;
 
 	FIL file;
-	FRESULT fRes = f_open(&file, filename, FA_WRITE | FA_CREATE_ALWAYS);
+	FRESULT fRes = f_open(&file, filename.c_str(), FA_WRITE | FA_CREATE_ALWAYS);
 
 	if(fRes == FR_OK) {
 		unsigned i = 0;
@@ -45,10 +54,10 @@ void writeToFile(const char* filename, uint32_t totalBytes, uint32_t bytesPerRou
 			uint32_t bytesWritten = 0;
 			f_write(&file, buf + i, remainingBytes, &bytesWritten);
 			if(bytesWritten != remainingBytes) {
-				Serial.printf("Only written %d bytes\n", i + bytesWritten);
+				Serial.printf("Only written %u bytes\n", i + bytesWritten);
 				break;
 			}
-			i += remainingBytes;
+			i += bytesWritten;
 		} while(i < totalBytes);
 
 		f_close(&file);
@@ -57,9 +66,9 @@ void writeToFile(const char* filename, uint32_t totalBytes, uint32_t bytesPerRou
 		unsigned elapsed = timer.elapsedTime();
 
 		Serial.print((i / 1024.0f) * 1000000.0f / elapsed);
-		Serial.print(" kB/s\n");
+		Serial.println(" kB/s");
 	} else {
-		Serial.printf("fopen FAIL: %d \n", (unsigned int)fRes);
+		Serial.printf("fopen FAIL: %u\n", (unsigned int)fRes);
 	}
 
 	delete[] buf;
@@ -111,6 +120,8 @@ void stat_file(char* fname)
  */
 FRESULT ls(const char* path)
 {
+	Serial.println("Size\tName\t\tDate\t\tAttributes");
+
 	DIR dir;
 	FRESULT res = f_opendir(&dir, path); /* Open the directory */
 	if(res == FR_OK) {
@@ -132,27 +143,16 @@ FRESULT ls(const char* path)
 	return res;
 }
 
-void init()
+void listFiles()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-	Serial.systemDebugOutput(true); // Allow debug output to serial
-
-	//  select between hardware SPI or software SPI. Comment out one or the other
-	//  SDCardSPI = new SPISoft(PIN_CARD_DO, PIN_CARD_DI, PIN_CARD_CK, 0);
-	SDCardSPI = new SPIClass();
-	SDCard_begin(PIN_CARD_SS, SPI_BYTE_ORDER, SPI_FREQ_LIMIT);
-
-	Serial.print("\nSDCard example - !!! see code for HW setup !!! \n\n");
-
-	/*Use of some interesting functions*/
-
-	Serial.print("1. Listing files in the root folder:\n");
-	Serial.print("Size\tName\t\tDate\t\tAttributes\n");
-
+	Serial.println("1. Listing files in the root folder");
 	ls("/");
+}
 
+void readWriteTest()
+{
 	//2. Open file, write a few bytes, close reopen and read
-	Serial.print("\n2. Open file \"test\" and write some data...\n");
+	Serial.println("2. Open file \"test.txt\" and write some data...");
 	FIL file;
 	FRESULT fRes = f_open(&file, "test.txt", FA_WRITE | FA_CREATE_ALWAYS);
 
@@ -171,9 +171,14 @@ void init()
 	} else {
 		Serial.printf("fopen FAIL: %d \n", (unsigned int)fRes);
 	}
+}
 
-	Serial.print("\n3. Open file \"test.txt\" and read\n");
-	fRes = f_open(&file, "test", FA_READ);
+void readTest()
+{
+	Serial.println("3. Open file \"test.txt\" and read");
+
+	FIL file;
+	FRESULT fRes = f_open(&file, "test.txt", FA_READ);
 
 	if(fRes == FR_OK) {
 		//read back file contents
@@ -189,23 +194,83 @@ void init()
 	} else {
 		Serial.printf("fopen FAIL: %d \n", fRes);
 	}
+}
 
-	Serial.print("\n4. Write speed benchamark:\n");
-	writeToFile("f1.txt", 1024, 1);
+bool speedTest(unsigned num)
+{
+	struct Test {
+		uint32_t totalBytes;
+		uint32_t bytesPerRound;
+	};
 
-	writeToFile("f2.txt", 1024, 64);
+	static Test tests[] PROGMEM{
+		{1024, 1},	{1024, 64},  {1024, 128},  {1024, 512},  {1024, 1024},
+		{4096, 1024}, {8192, 512}, {8192, 1024}, {8192, 8192},
+	};
 
-	writeToFile("f3.txt", 1024, 128);
+	if(num >= ARRAY_SIZE(tests)) {
+		return false;
+	}
 
-	writeToFile("f4.txt", 1024, 512);
+	Serial.printf("4.%u: Write speed benchmark\r\n", num + 1);
 
-	writeToFile("f5.txt", 1024, 1024);
+	auto& test = tests[num];
+	String filename;
+	filename = 'f';
+	filename += num + 1;
+	filename += ".txt";
+	writeToFile(filename, test.totalBytes, test.bytesPerRound);
+	return true;
+}
 
-	writeToFile("f6.txt", 4096, 1024);
+bool sdInit()
+{
+	//  select between hardware SPI or software SPI. Comment out one or the other
+	//  SDCardSPI = new SPISoft(PIN_CARD_DO, PIN_CARD_DI, PIN_CARD_CK, 0);
+	SDCardSPI = &SPI;
+	if(!SDCard_begin(PIN_CARD_SS, SPI_FREQ_LIMIT)) {
+		Serial.println("SPI init failed");
+		return false;
+	}
 
-	writeToFile("f7.txt", 8192, 512);
+	return true;
+}
 
-	writeToFile("f8.txt", 8192, 1024);
+void runTest(uint32_t state = 0)
+{
+	/* Use of some interesting functions */
+	switch(state) {
+	case 0:
+		break;
+	case 1:
+		if(!sdInit()) {
+			return;
+		}
+		break;
+	case 2:
+		listFiles();
+		break;
+	case 3:
+		readWriteTest();
+		break;
+	case 4:
+		readTest();
+		break;
+	default:
+		if(!speedTest(state - 5)) {
+			Serial.println("End of tests");
+			return;
+		}
+	}
+	Serial.println();
+	System.queueCallback(runTest, state + 1);
+}
 
-	writeToFile("f9.txt", 8192, 8192);
+void init()
+{
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.systemDebugOutput(true); // Allow debug output to serial
+
+	Serial.print("\nSDCard example - !!! see code for HW setup !!! \n\n");
+	runTest();
 }

@@ -36,30 +36,5 @@ extern HardwareSPI SPI;
 #define IF_SERIAL_DEBUG(x)
 #endif
 
-// Avoid spurious warnings
-#if 1
-#if ! defined( NATIVE ) && defined( ARDUINO ) && !defined(__ESP8266_EX__)
-#undef PROGMEM
-#define PROGMEM __attribute__(( section(".progmem.data") ))
-#undef PSTR
-#define PSTR(s) (__extension__({static const char __c[] PROGMEM = (s); &__c[0];}))
-#endif
-#endif
-
-// Progmem is Arduino-specific
-#if defined(ARDUINO) && !defined(__ESP8266_EX__)
-#include <avr/pgmspace.h>
-#define PRIPSTR "%S"
-#elif !defined(__ESP8266_EX__)
-typedef char const char;
-typedef uint16_t prog_uint16_t;
-#define PSTR(x) (x)
-#define printf_P printf
-#define strlen_P strlen
-#define PROGMEM
-#define pgm_read_word(p) (*(p)) 
-#define PRIPSTR "%s"
-#endif
-
 #endif // __RF24_CONFIG_H__
 // vim:ai:cin:sts=2 sw=2 ft=cpp

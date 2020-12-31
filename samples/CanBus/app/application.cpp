@@ -15,6 +15,8 @@ MCP_CAN canBus1(9);  // CAN1 interface using CS on digital pin 9
 
 Timer loopTimer;
 
+SPISettings spiSettings{8000000, MSBFIRST, SPI_MODE3};
+
 void loop()
 {
 	if(!digitalRead(2)) {						 // If pin 2 is low, read CAN0 receive buffer
@@ -48,7 +50,7 @@ void init()
 	}
 
 	// Set SPI to run at 8MHz (16MHz / 2 = 8 MHz)
-	SPI.beginTransaction(SPISettings(8000000, MSBFIRST, SPI_MODE3));
+	SPI.beginTransaction(spiSettings);
 
 	canBus0.sendMsgBuf(0x1000000, 1, 8, txBuf0);
 	canBus1.sendMsgBuf(0x1000001, 1, 8, txBuf1);

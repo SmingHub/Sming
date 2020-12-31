@@ -20,15 +20,8 @@
 #ifndef _ADAFRUIT_ILI9341H_
 #define _ADAFRUIT_ILI9341H_
 
-#if ARDUINO >= 100
- #include "Arduino.h"
- #include "Print.h"
-#else
- #include "WProgram.h"
-#endif
+#include <Digital.h>
 #include <Libraries/Adafruit_GFX/Adafruit_GFX.h>
-
-#include "hspi.h"
 
 #define ILI9341_TFTWIDTH  240
 #define ILI9341_TFTHEIGHT 320
@@ -111,14 +104,6 @@
 #define ILI9341_GREENYELLOW 0xAFE5      /* 173, 255,  47 */
 #define ILI9341_PINK        0xF81F
 
-#define TFT_DC_DATA		GPIO_OUTPUT_SET(5, 1)
-#define TFT_DC_COMMAND	GPIO_OUTPUT_SET(5, 0)
-#define TFT_DC_INIT 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO5_U, FUNC_GPIO5); TFT_DC_DATA
-
-#define TFT_RST_ACTIVE		GPIO_OUTPUT_SET(4, 0)
-#define TFT_RST_DEACTIVE 	GPIO_OUTPUT_SET(4, 1)
-#define TFT_RST_INIT		PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO4_U, FUNC_GPIO4); TFT_RST_DEACTIVE
-
 #define MAKEWORD(b1, b2, b3, b4) (uint32_t(b1) | ((b2) << 8) | ((b3) << 16) | ((b4) << 24))
 
 
@@ -126,11 +111,11 @@ class Adafruit_ILI9341 : public Adafruit_GFX {
 
 private:
  uint8_t  tabcolor;
- void transmitCmdData(uint8_t cmd, const uint8_t *data, uint8_t numDataByte);
- inline void transmitData(uint16_t data) {hspi_wait_ready(); hspi_send_uint16(data);}
- inline void transmitCmdData(uint8_t cmd, uint32_t data) {hspi_wait_ready(); TFT_DC_COMMAND; hspi_send_uint8(cmd); hspi_wait_ready(); TFT_DC_DATA; hspi_send_uint32(data);}
- inline void transmitData(uint16_t data, int32_t repeats){hspi_wait_ready(); hspi_send_uint16_r(data, repeats);}
- inline void transmitCmd(uint8_t cmd){hspi_wait_ready(); TFT_DC_COMMAND; hspi_send_uint8(cmd);hspi_wait_ready(); TFT_DC_DATA;}
+ void transmitCmdData(uint8_t cmd, uint8_t *data, uint8_t numDataByte);
+ void transmitData(uint16_t data);
+ void transmitCmdData(uint8_t cmd, uint32_t data);
+ void transmitData(uint16_t data, int32_t repeats);
+ void transmitCmd(uint8_t cmd);
 
 public:
   Adafruit_ILI9341();

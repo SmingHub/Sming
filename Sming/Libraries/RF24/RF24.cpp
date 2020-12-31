@@ -14,15 +14,6 @@
 
 void RF24::csn(int mode)
 {
-  // Minimum ideal SPI bus speed is 2x data rate
-  // If we assume 2Mbs data rate and 16Mhz clock, a
-  // divider of 4 is the minimum we want.
-  // CLK:BUS 8Mhz:2Mhz, 16Mhz:4Mhz, or 20Mhz:5Mhz
-#if defined(ARDUINO) && !defined(__ESP8266_EX__)
-  SPI.setBitOrder(MSBFIRST);
-  SPI.setDataMode(SPI_MODE0);
-  SPI.setClockDivider(SPI_CLOCK_DIV4);
-#endif
   digitalWrite(csn_pin,mode);
 }
 
@@ -322,7 +313,6 @@ void RF24::printDetails(void)
   print_byte_register(_F("CONFIG"),CONFIG);
   print_byte_register(_F("DYNPD/FEATURE"),DYNPD,2);
 
-#if defined(__ESP8266_EX__)
   char tmpbuf[128];
   strcpy_P(tmpbuf, rf24_datarate_e_str_P[getDataRate()]);
   printf_P(PSTR("Data Rate\t = %s\r\n"), tmpbuf);
@@ -332,12 +322,6 @@ void RF24::printDetails(void)
   printf_P(PSTR("CRC Length\t = %s\r\n"), tmpbuf);
   strcpy_P(tmpbuf, rf24_pa_dbm_e_str_P[getPALevel()]);
   printf_P(PSTR("PA Power\t = %s\r\n"), tmpbuf);
-#else
-  printf_P(PSTR("Data Rate\t = %S\r\n"),pgm_read_word(&rf24_datarate_e_str_P[getDataRate()]));
-  printf_P(PSTR("Model\t\t = %S\r\n"),pgm_read_word(&rf24_model_e_str_P[isPVariant()]));
-  printf_P(PSTR("CRC Length\t = %S\r\n"),pgm_read_word(&rf24_crclength_e_str_P[getCRCLength()]));
-  printf_P(PSTR("PA Power\t = %S\r\n"),pgm_read_word(&rf24_pa_dbm_e_str_P[getPALevel()]));
-#endif
 }
 
 /****************************************************************************/
