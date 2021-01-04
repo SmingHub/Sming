@@ -1,0 +1,1 @@
+export IDF_PATH=$APPVEYOR_BUILD_FOLDER/opt/esp-idf

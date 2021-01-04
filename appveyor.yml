@@ -1,30 +1,49 @@
-os: Windows Server 2012 R2
+image:
+  - Ubuntu
+  - Windows Server 2012 R2
+
+platform: x86
 
 environment:
   SMINGTOOLS: https://github.com/SmingHub/SmingTools/releases/download/1.0
-  PATH: C:\MinGW\msys\1.0\bin;C:\MinGW\bin;%PATH%
-  PYTHON: C:\Python38\python
-  UDK_ROOT: C:\Espressif
-  EQT_ROOT: C:\esp-quick-toolchain
+
   matrix:
-    - build_platform: "x86"
-      build_compiler: "mingw"
-      SMING_ARCH: Host
+    - SMING_ARCH: Host
 
-    - build_platform: "x86"
-      build_compiler: "udk"
+    - build_compiler: "udk"
       SMING_ARCH: Esp8266
       SDK_VERSION: 3.0.1
 
-    - build_platform: "x86"
-      build_compiler: "eqt"
+    - build_compiler: "eqt"
       SMING_ARCH: Esp8266
       SDK_VERSION: 3.0.1
+
+for:
+-
+  matrix:
+    only:
+      - image: Windows Server 2012 R2
+
+  environment:
+    PATH: C:\MinGW\msys\1.0\bin;C:\MinGW\bin;%PATH%
+    PYTHON: C:\Python38\python
+    UDK_ROOT: C:\Espressif
+    EQT_ROOT: C:\esp-quick-toolchain
+
+  build_script:
+    - cmd: .appveyor/build.cmd
+  
+-
+  matrix:
+    only:
+      - image: Ubuntu
+
+  build_script:
+    - sh: .appveyor/build.sh
 
 # cache:
 #   - src/  # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
 install:
   - cmd: .appveyor/install.cmd
+  - sh: .appveyor/install.sh
 
-build_script:
-  - cmd: .appveyor/build.cmd
