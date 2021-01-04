@@ -7,17 +7,6 @@ platform: x86
 environment:
   SMINGTOOLS: https://github.com/SmingHub/SmingTools/releases/download/1.0
 
-  matrix:
-    - SMING_ARCH: Host
-
-    - build_compiler: "udk"
-      SMING_ARCH: Esp8266
-      SDK_VERSION: 3.0.1
-
-    - build_compiler: "eqt"
-      SMING_ARCH: Esp8266
-      SDK_VERSION: 3.0.1
-
 for:
 -
   matrix:
@@ -37,6 +26,10 @@ for:
   matrix:
     only:
       - image: Ubuntu
+
+  environment:
+    UDK_ROOT: $APPVEYOR_BUILD_FOLDER/opt/esp-alt-sdk
+    EQT_ROOT: $APPVEYOR_BUILD_FOLDER/opt/esp-quick-toolchain
 
   build_script:
     - sh: .appveyor/build.sh
