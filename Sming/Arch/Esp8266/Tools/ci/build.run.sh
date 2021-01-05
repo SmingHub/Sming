@@ -2,6 +2,7 @@
 
 run_esp8266() {
 	export ESP_HOME=$1
+	make dist-clean
 	make -C "$SMING_PROJECTS_DIR/samples/HttpServer_FirmwareUpload" python-requirements
 	$MAKE_PARALLEL samples
 	make clean samples-clean
