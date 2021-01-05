@@ -1,5 +1,7 @@
 REM Windows build script
 
+set CI_BUILD_DIR=%APPVEYOR_BUILD_FOLDER%
+
 subst Z: %CI_BUILD_DIR%
 set SMING_HOME=Z:\Sming
 
@@ -16,39 +18,19 @@ move ..\tests %SMING_PROJECTS_DIR%
 
 
 set SMING_ARCH=Host
-call build1
-
-REM Build a couple of basic applications
-%MAKE_PARALLEL% Basic_Serial Basic_ProgMem STRICT=1 V=1 || goto :error
-
-REM Run basic tests
-%MAKE_PARALLEL% tests || goto :error
-
+call :build
 
 set SMING_ARCH=Esp8266
-set ESP_HOME=%UDK_ROOT%
-call build1
-%MAKE_PARALLEL% Basic_Ssl || goto :error
-%MAKE_PARALLEL% Basic_SmartConfig || goto :error
+call :build
 
-
-ESP_HOME=%EQT_ROOT%
-call build1
-%MAKE_PARALLEL% Basic_Ssl || goto :error
-%MAKE_PARALLEL% Basic_SmartConfig || goto :error
+set SMING_ARCH=Esp32
+call :build
 
 goto :EOF
 
 
-:build1
-
-REM This will build the Basic_Blink application and most of the framework Components
-cd %SMING_PROJECTS_DIR%/samples/Basic_Blink
-make help
-make list-config
-%MAKE_PARALLEL% || goto :error
-cd %SMING_HOME%
-
+:build
+call %SMING_HOME%\Arch\%SMING_ARCH%\Tools\ci\build.run.cmd || goto :error
 goto :EOF
 
 

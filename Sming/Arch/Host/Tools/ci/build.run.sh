@@ -1,3 +1,5 @@
+# Host build.run.sh
+
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
   DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
@@ -17,7 +19,7 @@ export SMING_TARGET_OPTIONS='--flashfile=$(FLASH_BIN) --flashsize=$(SPI_SIZE)'
 $MAKE_PARALLEL tests
 
 # Build the documentation
-mv $SMING_PROJECTS_DIR/samples ..
-mv $SMING_PROJECTS_DIR/tests ..
-unset SMING_PROJECTS_DIR
-make docs V=1
+#mv $SMING_PROJECTS_DIR/samples ..
+#mv $SMING_PROJECTS_DIR/tests ..
+#unset SMING_PROJECTS_DIR
+#make docs V=1

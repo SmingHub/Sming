@@ -6,39 +6,13 @@ platform: x86
 
 environment:
   SMINGTOOLS: https://github.com/SmingHub/SmingTools/releases/download/1.0
-  CI_BUILD_DIR: $APPVEYOR_BUILD_FOLDER
-
-for:
--
-  matrix:
-    only:
-      - image: Windows Server 2012 R2
-  environment:
-    PATH: C:\MinGW\msys\1.0\bin;C:\MinGW\bin;%PATH%
-    PYTHON: C:\Python38\python
-    UDK_ROOT: C:\Espressif
-    EQT_ROOT: C:\esp-quick-toolchain
-    IDF_PATH: C:\tools\esp-idf
-    IDF_TOOLS_PATH: C:\tools\esp32
-    SMING_HOME: C:\tools\sming\Sming
-
--
-  matrix:
-    only:
-      - image: Ubuntu
-  environment:
-    UDK_ROOT: $CI_BUILD_DIR/opt/esp-alt-sdk
-    EQT_ROOT: $CI_BUILD_DIR/opt/esp-quick-toolchain
-    IDF_PATH: $CI_BUILD_DIR/opt/esp-idf
-    SMING_HOME: $CI_BUILD_DIR/sming/Sming
 
 # cache:
 #   - src/  # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
 install:
-  - cmd: .ci/install.cmd
-  - sh: .ci/install.sh
+  - cmd: .ci\install.cmd
+  - sh: CI_BUILD_DIR=$APPVEYOR_BUILD_FOLDER . .ci/install.sh
 
 build_script:
-  - cmd: .ci/build.cmd
-  - sh: .ci/build.sh
-
+  - cmd: .ci\build.cmd
+  - sh: . .ci/build.sh

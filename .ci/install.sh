@@ -1,8 +1,14 @@
 #!/bin/bash
 set -ex # exit with nonzero exit code if anything fails
 
+export SMING_HOME=$CI_BUILD_DIR/Sming
+
 sudo apt-get update
 
-source "$SMING_HOME/Arch/Host/Tools/ci/install.sh"
-source "$SMING_HOME/Arch/Esp8266/Tools/ci/install.sh"
-source "$SMING_HOME/Arch/Esp32/Tools/ci/install.sh"
+install() {
+	source $SMING_HOME/Arch/$1/Tools/ci/install.sh
+}
+
+install Host
+install Esp8266
+install Esp32

@@ -1,3 +1,5 @@
+# Host build.setup.sh
+
 # Check coding style
 make cs
 DIFFS=$(git diff)
