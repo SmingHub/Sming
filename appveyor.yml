@@ -1,6 +1,6 @@
 image:
-  - Ubuntu
-  - Windows Server 2012 R2
+  - Ubuntu2004
+  - Visual Studio 2019
 
 platform: x86
 
