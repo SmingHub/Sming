@@ -11,7 +11,8 @@ set ESP_HOME=%EQT_ROOT%
 make dist-clean
 call :basic_build
 
-%MAKE_PARALLEL% samples STRICT=1 || goto :error
+REM Full sample build takes a long time
+REM %MAKE_PARALLEL% samples STRICT=1 || goto :error
 
 goto :EOF
 
