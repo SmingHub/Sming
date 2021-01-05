@@ -3,4 +3,4 @@ sudo apt-get install -y clang-format-6.0 gcc-multilib g++-multilib \
   doxygen graphviz-dev xmlstarlet jq
 sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-6.0 100
 python3 -m pip install --upgrade pip
-python3 -m pip install -r $APPVEYOR_BUILD_FOLDER/docs/requirements.txt
+python3 -m pip install -r $CI_BUILD_DIR/docs/requirements.txt

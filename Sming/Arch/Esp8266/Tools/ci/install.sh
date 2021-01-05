@@ -2,7 +2,7 @@
 TOOLCHAIN=esp-open-sdk-linux-x86_64.tar.gz
 wget --no-verbose $SMINGTOOLS/$TOOLCHAIN
 tar -zxf $TOOLCHAIN
-mkdir -p $APPVEYOR_BUILD_FOLDER/opt/esp-alt-sdk
+mkdir -p $CI_BUILD_DIR/opt/esp-alt-sdk
 ln -s $(pwd)/esp-open-sdk/xtensa-lx106-elf $APPVEYOR_BUILD_FOLDER/opt/esp-alt-sdk/.
 
 # New toolchain
