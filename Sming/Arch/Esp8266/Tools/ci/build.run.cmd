@@ -11,7 +11,7 @@ set ESP_HOME=%EQT_ROOT%
 make dist-clean
 call :basic_build
 
-%MAKE_PARALLEL% samples STRICT=1
+%MAKE_PARALLEL% samples STRICT=1 || goto :error
 
 goto :EOF
 
@@ -22,7 +22,12 @@ REM Build Basic_Blink sample and most of the framework Components
 cd %SMING_PROJECTS_DIR%/samples/Basic_Blink
 make help
 make list-config
-%MAKE_PARALLEL%
+%MAKE_PARALLEL% || goto :error
 cd %SMING_HOME%
 
 goto :EOF
+
+
+:error
+echo Failed with error #%errorlevel%.
+exit /b %errorlevel%
