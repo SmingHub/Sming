@@ -45,13 +45,13 @@ First, tell Chocolatey about the Sming package repository::
 
    choco sources add -name smingrepo -source 'https://www.myget.org/F/sming/'
 
-You can find the installer sources at `https://github.com/slaff/chocolatey-packages`.
+(You can find the installer sources at `https://github.com/slaff/chocolatey-packages`.)
 
-Now, open an **administrative** command prompt and run::
+You can now install with::
 
    choco install -y sming
 
-This will install the following packages: the names are given should you wish to install them individually.
+Packages are as follows:
 
 git
    `GIT <https://git-scm.com/>`__ CLI client.
