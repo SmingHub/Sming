@@ -5,8 +5,8 @@ set CI_BUILD_DIR=%APPVEYOR_BUILD_FOLDER%
 set PATH=C:\MinGW\msys\1.0\bin;C:\MinGW\bin;%PATH%
 set PYTHON=C:\Python38\python
 
-subst Z: %CI_BUILD_DIR%
-set SMING_HOME=Z:\Sming
+subst z: %CI_BUILD_DIR%
+set SMING_HOME=z:\Sming
 
 cd /d %SMING_HOME%
 env

@@ -20,11 +20,11 @@ goto :EOF
 REM Build Basic_Blink sample and most of the framework Components
 :basic_build
 
-cd %SMING_PROJECTS_DIR%/samples/Basic_Blink
+cd /d %SMING_PROJECTS_DIR%\samples\Basic_Blink
 make help
 make list-config
 %MAKE_PARALLEL% || goto :error
-cd %SMING_HOME%
+cd /d %SMING_HOME%
 
 goto :EOF
 
