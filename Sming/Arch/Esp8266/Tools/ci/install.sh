@@ -1,13 +1,10 @@
 # Esp8266 install.sh
 
-export UDK_ROOT=$CI_BUILD_DIR/opt/esp-alt-sdk
-export EQT_ROOT=$CI_BUILD_DIR/opt/esp-quick-toolchain
-
 # Old toolchain
 TOOLCHAIN=esp-open-sdk-linux-x86_64.tar.gz
 wget --no-verbose $SMINGTOOLS/$TOOLCHAIN
 tar -zxf $TOOLCHAIN
-mkdir -p $CI_BUILD_DIR/opt/esp-alt-sdk
+mkdir -p $UDK_ROOT
 ln -s $(pwd)/esp-open-sdk/xtensa-lx106-elf $UDK_ROOT/.
 
 # New toolchain

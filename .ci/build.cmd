@@ -1,16 +1,10 @@
 REM Windows build script
 
-set CI_BUILD_DIR=%APPVEYOR_BUILD_FOLDER%
-
-set PATH=C:\MinGW\msys\1.0\bin;C:\MinGW\bin;%PATH%
-set PYTHON=C:\Python38\python
-
 subst z: %CI_BUILD_DIR%
 set SMING_HOME=z:\Sming
 
 cd /d %SMING_HOME%
 env
-gcc -v
 
 set MAKE_PARALLEL=make -j2
 
@@ -20,17 +14,16 @@ mkdir %SMING_PROJECTS_DIR%
 move ..\samples %SMING_PROJECTS_DIR%
 move ..\tests %SMING_PROJECTS_DIR%
 
+REM Full compile checks please
+set STRICT=1
 
-call :build Host
-call :build Esp8266
-call :build Esp32
+REM Diagnostic info
+cd /d %SMING_PROJECTS_DIR%/samples/Basic_Blink
+make help
+make list-config
 
-goto :EOF
-
-
-:build
-set SMING_ARCH=%1
-call %SMING_HOME%\Arch\%1\Tools\ci\build.run.cmd || goto :error
+cd /d %SMING_HOME%
+call Arch\%SMING_ARCH%\Tools\ci\build.run.cmd || goto :error
 goto :EOF
 
 

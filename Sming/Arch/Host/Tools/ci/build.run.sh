@@ -17,9 +17,3 @@ fi
 # Build and run tests
 export SMING_TARGET_OPTIONS='--flashfile=$(FLASH_BIN) --flashsize=$(SPI_SIZE)'
 $MAKE_PARALLEL tests
-
-# Build the documentation
-#mv $SMING_PROJECTS_DIR/samples ..
-#mv $SMING_PROJECTS_DIR/tests ..
-#unset SMING_PROJECTS_DIR
-#make docs V=1

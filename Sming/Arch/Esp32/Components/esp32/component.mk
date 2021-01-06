@@ -252,7 +252,9 @@ SDK_PROJECT_PATH := $(COMPONENT_PATH)/project
 SDK_CONFIG_DEFAULTS := $(SDK_PROJECT_PATH)/sdkconfig.defaults
 
 SDKCONFIG_MAKEFILE ?= $(SDK_PROJECT_PATH)/sdkconfig
+ifeq ($(MAKE_DOCS),)
 -include $(SDKCONFIG_MAKEFILE)
+endif
 export SDKCONFIG_MAKEFILE  # sub-makes (like bootloader) will reuse this path
 
 $(SDK_BUILD_BASE) $(SDK_COMPONENT_LIBDIR):

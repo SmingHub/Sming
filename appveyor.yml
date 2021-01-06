@@ -1,18 +1,72 @@
 image:
-  - Ubuntu2004
-  - Visual Studio 2019
+- Ubuntu2004
+- Visual Studio 2019
 
 platform: x86
 
 environment:
   SMINGTOOLS: https://github.com/SmingHub/SmingTools/releases/download/1.0
 
-# cache:
-#   - src/  # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
+  matrix:
+    - SMING_ARCH: Host
+
+    - SMING_ARCH: Esp8266
+      BUILD_COMPILER: udk
+
+    - SMING_ARCH: Esp8266
+      BUILD_COMPILER: eqt
+
+    - SMING_ARCH: Esp32
+
+    - SMING_ARCH: Host
+      BUILD_DOCS: 1
+
+
 install:
-  - cmd: .ci\install.cmd
-  - sh: CI_BUILD_DIR=$APPVEYOR_BUILD_FOLDER . .ci/install.sh
+  - ps: |
+      # Set up environment variables for all environments and build types
+      $env:CI_BUILD_DIR = $env:APPVEYOR_BUILD_FOLDER
+      # Esp8266 
+      $env:UDK_ROOT = Join-Path $env:CI_BUILD_DIR "opt/esp-alt-sdk"
+      $env:EQT_ROOT = Join-Path $env:CI_BUILD_DIR "opt/esp-quick-toolchain"
+      if ($env:BUILD_COMPILER -eq "udk") {
+        $env:ESP_HOME = $env:UDK_ROOT
+      } else {
+        $env:ESP_HOME = $env:EQT_ROOT
+      }
+      # Esp32
+      $env:IDF_PATH = Join-Path $env:CI_BUILD_DIR "opt/esp-idf"
+      $env:IDF_TOOLS_PATH = Join-Path $env:CI_BUILD_DIR "opt/tools/esp32"
+      # General
+      $env:SMING_HOME = Join-Path $env:CI_BUILD_DIR "Sming"
+
+  - cmd: |
+      set PATH=C:\Python39;C:\MinGW\msys\1.0\bin;C:\MinGW\bin;%PATH%
+      set PYTHON=C:\Python39\python
+      set ESP32_PYTHON_PATH=C:\Python39
+      .ci\install.cmd
+      set PATH=C:\Python39\Scripts;%PATH%
+
+  - sh: |
+      export PYTHON=$HOME/venv3.9/bin/python
+      export ESP32_PYTHON_PATH=$HOME/venv3.9/bin
+      source $HOME/venv3.9/bin/activate
+      .ci/install.sh
+
 
 build_script:
-  - cmd: .ci\build.cmd
-  - sh: . .ci/build.sh
+  - cmd: if "%BUILD_DOCS%" == "1" (make -C %SMING_HOME% docs V=1) else (.ci\build.cmd)
+
+  - sh: |
+      if [ "$BUILD_DOCS" == "1" ]; then
+        make -C $SMING_HOME docs V=1
+      else
+        .ci/build.sh
+      fi
+
+  - ps: |
+       if ($env:BUILD_DOCS -eq "1") {
+          $docFile = "sming-docs.zip"
+          Compress-Archive -Path $env:CI_BUILD_DIR/docs/build/html -DestinationPath $docFile 
+          Push-AppveyorArtifact $docFile
+       }

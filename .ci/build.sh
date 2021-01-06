@@ -4,16 +4,8 @@ set -ex # exit with nonzero exit code if anything fails
 # Build times benefit from parallel building
 export MAKE_PARALLEL="make -j3"
 
-# Setup ARCH SDK
-setup() {
-	export SMING_ARCH=$1
-	cd $SMING_HOME
-	source Arch/$1/Tools/ci/build.setup.sh
-}
-
-setup Host
-setup Esp8266
-setup Esp32
+cd $SMING_HOME
+source Arch/$SMING_ARCH/Tools/ci/build.setup.sh
 
 env
 
@@ -27,19 +19,13 @@ mv tests $SMING_PROJECTS_DIR
 # Full compile checks please
 export STRICT=1
 
-run() {
-	export SMING_ARCH=$1
+# Diagnostic info
+cd $SMING_PROJECTS_DIR/samples/Basic_Blink
+make help
+make list-config
 
-	# Diagnostic info
-	cd $SMING_PROJECTS_DIR/samples/Basic_Blink
-	make help
-	make list-config
-	
-	# Run ARCH SDK tests
-	cd $SMING_HOME
-	source Arch/$1/Tools/ci/build.run.sh
-}
+$MAKE_PARALLEL
 
-run Host
-run Esp8266
-run Esp32
+# Run ARCH build/tests
+cd $SMING_HOME
+source Arch/$SMING_ARCH/Tools/ci/build.run.sh

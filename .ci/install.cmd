@@ -1,17 +1,9 @@
 REM Windows install script
 
-set CI_BUILD_DIR=%APPVEYOR_BUILD_FOLDER%
-set SMING_HOME=%CI_BUILD_DIR%\Sming
+python -m pip install --upgrade pip
 
-SETX CI_BUILD_DIR %CI_BUILD_DIR%
-SETX SMING_HOME %SMING_HOME%
+rmdir /s /q c:\MinGW
+curl -Lo MinGW.7z %SMINGTOOLS%/MinGW-2020-10-19.7z
+7z -oC:\ x MinGW.7z
 
-call :install Host
-call :install Esp8266
-call :install Esp32
-
-goto :EOF
-
-:install
-call %SMING_HOME%\Arch\%1\Tools\ci\install.cmd
-goto :EOF
+call %SMING_HOME%\Arch\%SMING_ARCH%\Tools\ci\install.cmd

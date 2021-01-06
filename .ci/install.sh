@@ -1,14 +1,11 @@
 #!/bin/bash
 set -ex # exit with nonzero exit code if anything fails
 
-export SMING_HOME=$CI_BUILD_DIR/Sming
+# Common install
 
-sudo apt-get update
+sudo update-alternatives --set gcc /usr/bin/gcc-9
+python -m pip install --upgrade pip
 
-install() {
-	source $SMING_HOME/Arch/$1/Tools/ci/install.sh
-}
+sudo apt-get install -y gcc-9-multilib g++-9-multilib python3-setuptools
 
-install Host
-install Esp8266
-install Esp32
+source $SMING_HOME/Arch/$SMING_ARCH/Tools/ci/install.sh
