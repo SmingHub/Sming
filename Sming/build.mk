@@ -38,6 +38,11 @@ else ifneq ($(filter MSYS%WOW,$(UNAME)),)
 	UNAME		:= Linux
 else ifeq ($(UNAME), Linux)
  	#Linux
+ 	# Detect WSL (Windows Subsystem for Linux)
+ 	ifdef WSL_DISTRO_NAME
+        DEBUG_VARS += WSL_ROOT
+        WSL_ROOT := //wsl$$/$(WSL_DISTRO_NAME)
+ 	endif
 else ifeq ($(UNAME), Darwin)
  	#OS X
 else ifeq ($(UNAME), Freebsd)
