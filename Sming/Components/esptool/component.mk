@@ -47,7 +47,7 @@ COM_SPEED_ESPTOOL		?= $(COM_SPEED)
 
 COMPONENT_SUBMODULES	+= esptool
 DEBUG_VARS				+= ESPTOOL
-ESPTOOL					:= $(PYTHON) $(COMPONENT_PATH)/esptool/esptool.py
+ESPTOOL					:= $(COMPONENT_PATH)/esptool/esptool.py
 ESPTOOL_SUBMODULE		:= $(COMPONENT_PATH)/esptool
 
 $(ESPTOOL): $(ESPTOOL_SUBMODULE)/.submodule
@@ -60,20 +60,30 @@ else ifeq ($(MAKE_DOCS),)
 $(error esptool unsupported arch: $(SMING_ARCH))
 endif
 
-ESPTOOL_CMDLINE := $(ESPTOOL) \
+ESPTOOL_CMDLINE := $(PYTHON) $(ESPTOOL) \
 	-p $(COM_PORT_ESPTOOL) -b $(COM_SPEED_ESPTOOL) \
 	--chip $(ESP_CHIP) --before default_reset --after hard_reset
+
+#
+# USB serial ports are not available under WSL2,
+# but we can use powershell with the regular Windows COM port
+# $1 -> Arguments
+ifdef WSL_ROOT
+ESPTOOL_EXECUTE = powershell.exe -Command "$(ESPTOOL_CMDLINE) $1"
+else
+ESPTOOL_EXECUTE = $(ESPTOOL_CMDLINE) $1
+endif
 
 # Write file contents to Flash
 # $1 -> List of `Offset=File` chunks
 define WriteFlash
 	$(if $1,\
 		$(info WriteFlash $1) \
-		$(ESPTOOL_CMDLINE) write_flash -z $(flashimageoptions) $(subst =, ,$1) \
+		$(call ESPTOOL_EXECUTE,write_flash -z $(flashimageoptions) $(subst =, ,$1)) \
 	)
 endef
 
 # Erase flash memory contents
 define EraseFlash
-	$(ESPTOOL_CMDLINE) erase_flash
+	$(call ESPTOOL_EXECUTE,erase_flash)
 endef
