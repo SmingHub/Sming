@@ -91,3 +91,13 @@ For example::
 
    make flash COM_PORT=COM4
 
+
+Valgrind
+--------
+
+You may get an error running ``make valgrind`` advising that ``libc6-dbg:i386`` be installed. Here's how::
+
+   sudo dpkg --add-architecture i386
+   sudo apt-get update
+   sudo apt-get install libc6-dbg:i386
+
