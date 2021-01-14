@@ -1,4 +1,4 @@
-Getting Started: ESP32
+Getting Started: Esp32
 ======================
 
 Requirements

@@ -48,6 +48,6 @@ then an invalid String will be returned. In this situation you should use :cpp:f
 ContentType / MIME types
 ------------------------
 
-:cpp:func:`toString(MimeType)` has been moved out of the :cpp:namespace:`ContentType` namespace,
+:cpp:func:`toString(MimeType)` has been moved out of the ``ContentType`` namespace,
 so no longer requires the ``ContentType::`` qualifier.
 

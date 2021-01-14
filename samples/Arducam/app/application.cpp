@@ -47,6 +47,8 @@ ArduCAM myCAM(OV2640, CAM_CS);
 
 ArduCamCommand arduCamCommand(&myCAM);
 
+SPISettings spiSettings(20000000, MSBFIRST, SPI_MODE0);
+
 /*
  * set the command handler -> ArduCamCommand handler
  */
@@ -85,7 +87,7 @@ void initCam()
 	pinMode(CAM_CS, OUTPUT);
 	digitalWrite(CAM_CS, HIGH);
 	SPI.begin();
-	SPI.beginTransaction(SPISettings(20000000, MSBFIRST, SPI_MODE0));
+	SPI.beginTransaction(spiSettings);
 
 	//Check if the ArduCAM SPI bus is OK
 	myCAM.write_reg(ARDUCHIP_TEST1, 0x55);

@@ -7,9 +7,16 @@ Descr: Low-level SDCard functions
 */
 #pragma once
 
-#include <SmingCore.h>
-#include "SPISoft.h"
+#include <SPIBase.h>
 
-void SDCard_begin(uint8 PIN_CARD_SS, uint8 byteOrder, uint32 freqLimit);
+/**
+ * @brief Intialise SD card interface
+ * @param slaveSelect Pin to use for CS
+ * @param freqLimit Maximum SPI clock speed
+ * @retval bool true on success, false on error
+ *
+ * It is useful to debug at a lower speed so the logic analyser can catch everything.
+ */
+bool SDCard_begin(uint8_t slaveSelect, uint32_t freqLimit);
 
 extern SPIBase* SDCardSPI;

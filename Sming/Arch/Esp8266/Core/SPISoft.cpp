@@ -6,6 +6,7 @@ Date: 15.07.2015
 Descr: Implement software SPI. To improve speed, GPIO16 is not supported(see Digital.cpp)
 */
 #include "SPISoft.h"
+#include <esp_systemapi.h>
 
 #define SPEED 0			   /* You gain ~0.7 kBps (more for larger data chunks)*/
 #define SIZE 1			   /* You gain ~ 400B from the total 32K of cache RAM */
@@ -26,12 +27,12 @@ static inline void IRAM_ATTR fastDelay(unsigned d)
 		--d;
 }
 
-void SPISoft::begin()
+bool SPISoft::begin()
 {
 	if(16 == mMISO || 16 == mMOSI || 16 == mCLK) {
 		/*To be able to use fast/simple GPIO read/write GPIO16 is not supported*/
 		debugf("SPISoft: GPIO 16 not supported\n");
-		return;
+		return false;
 	}
 
 	pinMode(mCLK, OUTPUT);
@@ -41,6 +42,7 @@ void SPISoft::begin()
 	digitalWrite(mMISO, HIGH);
 
 	pinMode(mMOSI, OUTPUT);
+	return true;
 }
 
 void SPISoft::transfer(uint8_t* buffer, uint32_t size)

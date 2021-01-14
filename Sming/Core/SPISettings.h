@@ -30,18 +30,47 @@
 #define SPI_MODE2 0xF0
 #define SPI_MODE3 0xFF
 
+const uint32_t SPI_SPEED_DEFAULT = 4000000UL;
+
+/** @brief Contains bus frequency and corresponding divisor/prescaler settings
+ *  @note Pre-calculating divisor settings improves performance when switching
+ *  between bus devices
+ */
+struct SPISpeed {
+	uint32_t frequency;
+	uint32_t regVal; ///< Cached clock register value
+
+	SPISpeed(uint32_t freq = SPI_SPEED_DEFAULT)
+	{
+		setFrequency(freq);
+	}
+
+	SPISpeed& operator=(uint32_t freq)
+	{
+		setFrequency(freq);
+		return *this;
+	}
+
+	bool operator==(const SPISpeed& speed) const
+	{
+		return frequency == speed.frequency;
+	}
+
+	void setFrequency(uint32_t freq)
+	{
+		frequency = freq;
+		regVal = 0;
+	}
+};
+
 class SPISettings
 {
 public:
 	SPISettings()
 	{
 #ifdef SPI_DEBUG
-		debugf("SPISettings() default");
+		debugf("SPISettings::SPISettings() default");
 #endif
-	}
-
-	virtual ~SPISettings()
-	{
 	}
 
 	/** @brief constructor for SPISettings
@@ -68,16 +97,12 @@ public:
 	 * 		SPI_MODE2		1					0
 	 * 		SPI_MODE3		1					1
 	 */
-	SPISettings(int speed, uint8_t byteOrder, uint8_t dataMode) : speed(speed), byteOrder(byteOrder), dataMode(dataMode)
+	SPISettings(uint32_t speed, uint8_t byteOrder, uint8_t dataMode)
+		: speed(speed), byteOrder(byteOrder), dataMode(dataMode)
 	{
 #ifdef SPI_DEBUG
-		debugf("SPISettings(int %i, uint8 %d, uint8 %d)", speed, byteOrder, dataMode);
+		debugf("SPISettings(int %i, uint8 %u, uint8 %u)", speed, byteOrder, dataMode);
 #endif
-	}
-
-	inline uint8_t getDataMode()
-	{
-		return dataMode;
 	}
 
 	// overload operator to check wheter the settings are equal
@@ -89,16 +114,13 @@ public:
 	void print(const char* s)
 	{
 #ifdef SPI_DEBUG
-		debugf("->  %s -> SPISettings::print(int %i, uint8 %d, uint8 %d)", s, speed, byteOrder, dataMode);
+		debugf("->  %s -> SPISettings(%u, %u, %u)", s, speed.frequency, byteOrder, dataMode);
 #endif
 	}
 
-	friend class SPIClass;
-
-private:
-	int speed = 4000000;
-	uint8_t byteOrder = MSBFIRST;
-	uint8_t dataMode = SPI_MODE0;
+	SPISpeed speed;
+	uint8_t byteOrder{MSBFIRST};
+	uint8_t dataMode{SPI_MODE0};
 };
 
 /** @} */

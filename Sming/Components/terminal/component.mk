@@ -17,7 +17,11 @@ endif
 CACHE_VARS		+= COM_OPTS KILL_TERM TERMINAL
 COM_OPTS		?= --raw --encoding ascii
 KILL_TERM		?= pkill -9 -f "$(COM_PORT) $(COM_SPEED_SERIAL)" || exit 0
+ifdef WSL_ROOT
+TERMINAL		?= powershell.exe -Command "python -m serial.tools.miniterm $(COM_OPTS) $(COM_PORT) $(COM_SPEED_SERIAL)"
+else
 TERMINAL		?= $(PYTHON) -m serial.tools.miniterm $(COM_OPTS) $(COM_PORT) $(COM_SPEED_SERIAL)
+endif
 
 
 ##@Tools

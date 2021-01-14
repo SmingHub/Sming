@@ -595,6 +595,12 @@ changed as required.
       autodetection (e.g. if the python requirements depend on another
       configuration variable) you must set this variable to an empty value.
 
+
+.. envvar:: PIP_ARGS
+
+   See :envvar:`COMPONENT_PYTHON_REQUIREMENTS`.
+
+
 These values are global so must only be appended to (with ``+=``) ,
 never overwritten.
 

@@ -8,61 +8,75 @@
  *
  ****/
 
-#include <driver/gpio.h>
 #include <Digital.h>
-#include <esp_attr.h>
-#include <esp32/rom/ets_sys.h>
-#include <esp_attr.h>
-#include <esp_intr_alloc.h>
-#include <esp32/rom/gpio.h>
-#include <soc/gpio_reg.h>
-#include <soc/io_mux_reg.h>
-#include <soc/gpio_struct.h>
-#include <soc/rtc_io_reg.h>
-
-const int8_t esp32_adc2gpio[20] = {36, 37, 38, 39, 32, 33, 34, 35, -1, -1, 4, 0, 2, 15, 13, 12, 14, 27, 25, 26};
-
-const DRAM_ATTR esp32_gpioMux_t esp32_gpioMux[40] = {
-	{0x44, 11, 11, 1},  {0x88, -1, -1, -1}, {0x40, 12, 12, 2},  {0x84, -1, -1, -1}, {0x48, 10, 10, 0},
-	{0x6c, -1, -1, -1}, {0x60, -1, -1, -1}, {0x64, -1, -1, -1}, {0x68, -1, -1, -1}, {0x54, -1, -1, -1},
-	{0x58, -1, -1, -1}, {0x5c, -1, -1, -1}, {0x34, 15, 15, 5},  {0x38, 14, 14, 4},  {0x30, 16, 16, 6},
-	{0x3c, 13, 13, 3},  {0x4c, -1, -1, -1}, {0x50, -1, -1, -1}, {0x70, -1, -1, -1}, {0x74, -1, -1, -1},
-	{0x78, -1, -1, -1}, {0x7c, -1, -1, -1}, {0x80, -1, -1, -1}, {0x8c, -1, -1, -1}, {0, -1, -1, -1},
-	{0x24, 6, 18, -1}, //DAC1
-	{0x28, 7, 19, -1}, //DAC2
-	{0x2c, 17, 17, 7},  {0, -1, -1, -1},	{0, -1, -1, -1},	{0, -1, -1, -1},	{0, -1, -1, -1},
-	{0x1c, 9, 4, 8},	{0x20, 8, 5, 9},	{0x14, 4, 6, -1},   {0x18, 5, 7, -1},   {0x04, 0, 0, -1},
-	{0x08, 1, 1, -1},   {0x0c, 2, 2, -1},   {0x10, 3, 3, -1}};
+#include <esp_systemapi.h>
+#define gpio_drive_cap_t uint32_t
+#include <hal/gpio_ll.h>
+#include <driver/rtc_io.h>
+#include <hal/rtc_io_ll.h>
 
 void pinMode(uint16_t pin, uint8_t mode)
 {
-	// remap the mode to ESP32 mode.
-	switch(mode) {
-	case OUTPUT:
-		mode = ESP32_OUTPUT;
-		break;
-	case INPUT:
-		mode = ESP32_INPUT;
-		break;
-		// TODO: add the other modes if needed..
+	if(pin >= GPIO_PIN_COUNT) {
+		return; // Bad pin
 	}
-	gpio_pad_select_gpio((uint8_t)pin + 1);
-	/* Set the GPIO as a push/pull output */
-	gpio_set_direction((gpio_num_t)pin, (gpio_mode_t)mode);
 
-	if(mode & INPUT_PULLUP) {
-		gpio_pullup_en((gpio_num_t)pin);
+	auto gpio = gpio_num_t(pin);
+	auto rtc = rtc_io_number_get(gpio);
+
+	if(mode == ANALOG) {
+		if(rtc < 0) {
+			return; // Not RTC pin
+		}
+
+		auto& desc = rtc_io_desc[rtc];
+		if(READ_PERI_REG(desc.reg) & desc.mux) {
+			return; // Already in ADC mode
+		}
+
+		rtcio_ll_function_select(rtc, RTCIO_FUNC_RTC);
+		rtcio_ll_input_disable(rtc);
+		rtcio_ll_output_disable(rtc);
+		rtcio_ll_pullup_disable(rtc);
+		rtcio_ll_pulldown_disable(rtc);
+
+		return;
+	}
+
+	if(rtc >= 0) {
+		rtcio_ll_function_select(rtc, RTCIO_FUNC_DIGITAL);
+		rtcio_ll_pulldown_disable(rtc);
+		if(mode == INPUT_PULLUP) {
+			rtcio_ll_pullup_enable(rtc);
+		} else {
+			rtcio_ll_pullup_disable(rtc);
+		}
+	}
+
+	gpio_set_level(gpio, 0);
+	gpio_ll_input_enable(&GPIO, gpio);
+	gpio_ll_pulldown_dis(&GPIO, gpio);
+
+	if(mode == OUTPUT_OPEN_DRAIN) {
+		gpio_ll_od_enable(&GPIO, gpio);
 	} else {
-		gpio_pullup_dis((gpio_num_t)pin);
+		gpio_ll_od_disable(&GPIO, gpio);
 	}
 
-	// TODO: Pull-down
-	//	if (mode & INPUT_PULLDOWN) {
-	//		gpio_pulldown_en((gpio_num_t)pin);
-	//	}
-	//	else {
-	//		gpio_pulldown_dis((gpio_num_t)pin);
-	//	}
+	if(mode == OUTPUT || mode == OUTPUT_OPEN_DRAIN) {
+		gpio_ll_output_enable(&GPIO, gpio);
+		gpio_matrix_out(gpio, SIG_GPIO_OUT_IDX, false, false);
+	} else {
+		gpio_ll_output_disable(&GPIO, gpio);
+	}
+
+	if(mode == INPUT_PULLUP) {
+		gpio_ll_pullup_en(&GPIO, gpio);
+	} else {
+		gpio_ll_pullup_dis(&GPIO, gpio);
+	}
+
+	PIN_FUNC_SELECT(GPIO_PIN_MUX_REG[pin], PIN_FUNC_GPIO);
 }
 
 //Detect if pin is input
@@ -80,22 +94,22 @@ bool isInputPin(uint16_t pin)
 
 void digitalWrite(uint16_t pin, uint8_t val)
 {
-	gpio_set_level((gpio_num_t)pin, val);
+	gpio_ll_set_level(&GPIO, gpio_num_t(pin), val);
 }
 
 uint8_t IRAM_ATTR digitalRead(uint16_t pin)
 {
-	return gpio_get_level((gpio_num_t)pin);
+	return gpio_ll_get_level(&GPIO, gpio_num_t(pin));
 }
 
 void pullup(uint16_t pin)
 {
-	gpio_pullup_en((gpio_num_t)pin);
+	gpio_ll_pullup_en(&GPIO, gpio_num_t(pin));
 }
 
 void noPullup(uint16_t pin)
 {
-	gpio_pullup_dis((gpio_num_t)pin);
+	gpio_ll_pullup_dis(&GPIO, gpio_num_t(pin));
 }
 
 /* Measures the length (in microseconds) of a pulse on the pin; state is HIGH

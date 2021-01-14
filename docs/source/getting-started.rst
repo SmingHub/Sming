@@ -19,6 +19,10 @@ Sming supports multiple architectures. Choose the architecture of your choice to
 You can also try Sming without installing anything locally.
 We have an  `interactive tutorial <https://www.katacoda.com/slaff/scenarios/sming-host-emulator>`__ that can be run directly from your browser.
 
+Windows users may also wish to consider building in a Linux virtual environment.
+See :doc:`Windows WSL <windows-wsl>` for further details.
+
+
 Documentation
 -------------
 

@@ -1,5 +1,3 @@
-#if 0
-
 /*
   si2c.c - Software I2C library for esp8266
 
@@ -20,21 +18,12 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+
 #include "twi.h"
 #include "Digital.h"
-
-unsigned char twi_dcount = 18;
-static unsigned char twi_sda, twi_scl;
-static uint32_t twi_clockStretchLimit;
-
-//Enable SDA (becomes output and since GPO is 0 for the pin, it will pull the line low)
-#define SDA_LOW() (GPES = (1 << twi_sda))
-//Disable SDA (becomes input and since it has pullup it will go high)
-#define SDA_HIGH() (GPEC = (1 << twi_sda))
-#define SDA_READ() ((GPI & (1 << twi_sda)) != 0)
-#define SCL_LOW() (GPES = (1 << twi_scl))
-#define SCL_HIGH() (GPEC = (1 << twi_scl))
-#define SCL_READ() ((GPI & (1 << twi_scl)) != 0)
+#include <twi_arch.h>
+#include <sming_attr.h>
+#include <Platform/System.h>
 
 #ifndef FCPU80
 #define FCPU80 80000000L
@@ -46,35 +35,131 @@ static uint32_t twi_clockStretchLimit;
 #define TWI_CLOCK_STRETCH_MULTIPLIER 6
 #endif
 
-void twi_setClock(unsigned int freq)
+namespace
 {
-#if F_CPU == FCPU80
-	if(freq <= 100000)
-		twi_dcount = 19; //about 100KHz
-	else if(freq <= 200000)
-		twi_dcount = 8; //about 200KHz
-	else if(freq <= 300000)
-		twi_dcount = 3; //about 300KHz
-	else if(freq <= 400000)
-		twi_dcount = 1; //about 400KHz
-	else
-		twi_dcount = 1; //about 400KHz
-#else
-	if(freq <= 100000)
-		twi_dcount = 32; //about 100KHz
-	else if(freq <= 200000)
-		twi_dcount = 14; //about 200KHz
-	else if(freq <= 300000)
-		twi_dcount = 8; //about 300KHz
-	else if(freq <= 400000)
-		twi_dcount = 5; //about 400KHz
-	else if(freq <= 500000)
-		twi_dcount = 3; //about 500KHz
-	else if(freq <= 600000)
-		twi_dcount = 2; //about 600KHz
-	else
-		twi_dcount = 1; //about 700KHz
-#endif
+uint8_t twi_dcount{18};
+uint8_t twi_sda, twi_scl;
+unsigned twi_clockStretchLimit;
+
+void __forceinline twi_delay(uint8_t v)
+{
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+	for(unsigned i = 0; i < v; i++) {
+		(void)SCL_READ(); // Suppress compiler warning for this read
+	}
+#pragma GCC diagnostic pop
+}
+
+bool twi_write_start(void)
+{
+	SCL_HIGH();
+	SDA_HIGH();
+	if(SDA_READ() == 0) {
+		return false;
+	}
+	twi_delay(twi_dcount);
+	SDA_LOW();
+	twi_delay(twi_dcount);
+	return true;
+}
+
+bool twi_write_stop(void)
+{
+	SCL_LOW();
+	SDA_LOW();
+	twi_delay(twi_dcount);
+	SCL_HIGH();
+	for(unsigned i = 0; SCL_READ() == 0 && i++ < twi_clockStretchLimit;) {
+		// Clock stretching
+	}
+	twi_delay(twi_dcount);
+	SDA_HIGH();
+	twi_delay(twi_dcount);
+
+	return true;
+}
+
+bool twi_write_bit(bool bit)
+{
+	SCL_LOW();
+	if(bit) {
+		SDA_HIGH();
+	} else {
+		SDA_LOW();
+	}
+	twi_delay(twi_dcount + 1);
+	SCL_HIGH();
+	for(unsigned i = 0; SCL_READ() == 0 && i++ < twi_clockStretchLimit;) {
+		// Clock stretching
+	}
+	twi_delay(twi_dcount);
+	return true;
+}
+
+bool twi_read_bit(void)
+{
+	SCL_LOW();
+	SDA_HIGH();
+	twi_delay(twi_dcount + 2);
+	SCL_HIGH();
+	for(unsigned i = 0; SCL_READ() == 0 && i++ < twi_clockStretchLimit;) {
+		// Clock stretching
+	}
+	bool bit = SDA_READ();
+	twi_delay(twi_dcount);
+	return bit;
+}
+
+bool twi_write_byte(uint8_t byte)
+{
+	for(unsigned bit = 0; bit < 8; bit++) {
+		twi_write_bit(byte & 0x80);
+		byte <<= 1;
+	}
+	return !twi_read_bit(); //NACK/ACK
+}
+
+uint8_t twi_read_byte(bool nack)
+{
+	uint8_t byte{0};
+	for(unsigned bit = 0; bit < 8; bit++) {
+		byte = (byte << 1) | twi_read_bit();
+	}
+	twi_write_bit(nack);
+	return byte;
+}
+
+} // namespace
+
+void twi_setClock(uint32_t freq)
+{
+	auto sys = System.getCpuFrequency();
+	if(sys == eCF_80MHz) {
+		if(freq <= 100000) {
+			twi_dcount = 16; //about 100KHz
+		} else if(freq <= 200000) {
+			twi_dcount = 5; //about 200KHz
+		} else if(freq <= 300000) {
+			twi_dcount = 2; //about 300KHz
+		} else {
+			twi_dcount = 0; //about 400KHz
+		}
+	} else { // Assume eCF_160MHz
+		if(freq <= 100000) {
+			twi_dcount = 28; //about 100KHz
+		} else if(freq <= 200000) {
+			twi_dcount = 12; //about 200KHz
+		} else if(freq <= 300000) {
+			twi_dcount = 5; //about 300KHz
+		} else if(freq <= 400000) {
+			twi_dcount = 3; //about 400KHz
+		} else if(freq <= 500000) {
+			twi_dcount = 1; //about 500KHz
+		} else {
+			twi_dcount = 0; //about 600KHz
+		}
+	}
 }
 
 void twi_setClockStretchLimit(uint32_t limit)
@@ -82,7 +167,7 @@ void twi_setClockStretchLimit(uint32_t limit)
 	twi_clockStretchLimit = limit * TWI_CLOCK_STRETCH_MULTIPLIER;
 }
 
-void twi_init(unsigned char sda, unsigned char scl)
+void twi_init(uint8_t sda, uint8_t scl)
 {
 	twi_sda = sda;
 	twi_scl = scl;
@@ -98,115 +183,29 @@ void twi_stop(void)
 	pinMode(twi_scl, INPUT);
 }
 
-static void twi_delay(unsigned char v)
+uint8_t twi_writeTo(uint8_t address, const uint8_t* buf, size_t len, bool sendStop)
 {
-	unsigned int i;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
-	for(i = 0; i < v; i++)
-		(void)GPI; // Suppress compiler warning for this read
-#pragma GCC diagnostic pop
-}
-
-static bool twi_write_start(void)
-{
-	SCL_HIGH();
-	SDA_HIGH();
-	if(SDA_READ() == 0)
-		return false;
-	twi_delay(twi_dcount);
-	SDA_LOW();
-	twi_delay(twi_dcount);
-	return true;
-}
-
-static bool twi_write_stop(void)
-{
-	uint32_t i = 0;
-	SCL_LOW();
-	SDA_LOW();
-	twi_delay(twi_dcount);
-	SCL_HIGH();
-	while(SCL_READ() == 0 && (i++) < twi_clockStretchLimit)
-		; // Clock stretching
-	twi_delay(twi_dcount);
-	SDA_HIGH();
-	twi_delay(twi_dcount);
-
-	return true;
-}
-
-static bool twi_write_bit(bool bit)
-{
-	uint32_t i = 0;
-	SCL_LOW();
-	if(bit)
-		SDA_HIGH();
-	else
-		SDA_LOW();
-	twi_delay(twi_dcount + 1);
-	SCL_HIGH();
-	while(SCL_READ() == 0 && (i++) < twi_clockStretchLimit)
-		; // Clock stretching
-	twi_delay(twi_dcount);
-	return true;
-}
-
-static bool twi_read_bit(void)
-{
-	uint32_t i = 0;
-	SCL_LOW();
-	SDA_HIGH();
-	twi_delay(twi_dcount + 2);
-	SCL_HIGH();
-	while(SCL_READ() == 0 && (i++) < twi_clockStretchLimit)
-		; // Clock stretching
-	bool bit = SDA_READ();
-	twi_delay(twi_dcount);
-	return bit;
-}
-
-static bool twi_write_byte(unsigned char byte)
-{
-	unsigned char bit;
-	for(bit = 0; bit < 8; bit++) {
-		twi_write_bit(byte & 0x80);
-		byte <<= 1;
-	}
-	return !twi_read_bit(); //NACK/ACK
-}
-
-static unsigned char twi_read_byte(bool nack)
-{
-	unsigned char byte = 0;
-	unsigned char bit;
-	for(bit = 0; bit < 8; bit++)
-		byte = (byte << 1) | twi_read_bit();
-	twi_write_bit(nack);
-	return byte;
-}
-
-unsigned char twi_writeTo(unsigned char address, unsigned char* buf, unsigned int len, unsigned char sendStop)
-{
-	unsigned int i;
-	if(!twi_write_start())
+	if(!twi_write_start()) {
 		return 4; //line busy
+	}
 	if(!twi_write_byte(((address << 1) | 0) & 0xFF)) {
-		if(sendStop)
+		if(sendStop) {
 			twi_write_stop();
+		}
 		return 2; //received NACK on transmit of address
 	}
-	for(i = 0; i < len; i++) {
+	for(unsigned i = 0; i < len; i++) {
 		if(!twi_write_byte(buf[i])) {
-			if(sendStop)
+			if(sendStop) {
 				twi_write_stop();
+			}
 			return 3; //received NACK on transmit of data
 		}
 	}
-	if(sendStop)
+	if(sendStop) {
 		twi_write_stop();
-	i = 0;
-	while(SDA_READ() == 0 && (i++) < 10) {
+	}
+	for(unsigned i = 0; SDA_READ() == 0 && i++ < 10;) {
 		SCL_LOW();
 		twi_delay(twi_dcount);
 		SCL_HIGH();
@@ -215,23 +214,25 @@ unsigned char twi_writeTo(unsigned char address, unsigned char* buf, unsigned in
 	return 0;
 }
 
-unsigned char twi_readFrom(unsigned char address, unsigned char* buf, unsigned int len, unsigned char sendStop)
+uint8_t twi_readFrom(uint8_t address, uint8_t* buf, size_t len, bool sendStop)
 {
-	unsigned int i;
-	if(!twi_write_start())
+	if(!twi_write_start()) {
 		return 4; //line busy
+	}
 	if(!twi_write_byte(((address << 1) | 1) & 0xFF)) {
-		if(sendStop)
+		if(sendStop) {
 			twi_write_stop();
+		}
 		return 2; //received NACK on transmit of address
 	}
-	for(i = 0; i < (len - 1); i++)
+	for(unsigned i = 0; i < (len - 1); i++) {
 		buf[i] = twi_read_byte(false);
+	}
 	buf[len - 1] = twi_read_byte(true);
-	if(sendStop)
+	if(sendStop) {
 		twi_write_stop();
-	i = 0;
-	while(SDA_READ() == 0 && (i++) < 10) {
+	}
+	for(unsigned i = 0; SDA_READ() == 0 && i++ < 10;) {
 		SCL_LOW();
 		twi_delay(twi_dcount);
 		SCL_HIGH();
@@ -242,23 +243,26 @@ unsigned char twi_readFrom(unsigned char address, unsigned char* buf, unsigned i
 
 uint8_t twi_status()
 {
-	if(SCL_READ() == 0)
+	if(SCL_READ() == 0) {
 		return I2C_SCL_HELD_LOW; //SCL held low by another device, no procedure available to recover
+	}
+
 	int clockCount = 20;
 
 	while(SDA_READ() == 0 && clockCount > 0) { //if SDA low, read the bits slaves have to sent to a max
 		twi_read_bit();
-		if(SCL_READ() == 0)
+		if(SCL_READ() == 0) {
 			return I2C_SCL_HELD_LOW_AFTER_READ; //I2C bus error. SCL held low beyond slave clock stretch time
+		}
 	}
 
-	if(SDA_READ() == 0)
+	if(SDA_READ() == 0) {
 		return I2C_SDA_HELD_LOW; //I2C bus error. SDA line held low by slave/another_master after n bits.
+	}
 
-	if(!twi_write_start())
+	if(!twi_write_start()) {
 		return I2C_SDA_HELD_LOW_AFTER_INIT; //line busy. SDA again held low by another device. 2nd master?
-	else
+	} else {
 		return I2C_OK; //all ok
+	}
 }
-
-#endif

@@ -3,28 +3,24 @@ Windows Installation
 
 .. highlight:: powershell
 
+This page describes how to install the required tools and obtain the current
+release version of Sming using the `Chocolatey <https://chocolatey.org>`__ package manager.
+
+Use :doc:`windows-manual` for control over installation locations. 
+
+
 Install Chocolatey
 ------------------
 
-This is a package manager, like apt-get but for Windows. Official
-website: https://chocolatey.org
+Open an *administrative* **cmd.exe** command prompt and paste the text from the box below and press enter::
 
-.. note::
-
-   You may prefer a :doc:`windows-manual`.
-
-Open an *administrative* **cmd.exe** command prompt and paste the text
-from the box below and press enter::
-
-   # Install Latest Chocolatey
    @powershell -NoProfile -ExecutionPolicy unrestricted -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
 
 Upgrade .NET
 ------------
 
-Choco requires recent version of .NET in order to be able to access
-successfully HTTPS links. To check if you need upgrade type the
-following command::
+Choco requires a recent version of .NET in order to be able to access HTTPS links.
+To check if you need to upgrade, type the following command::
 
    choco --v
 
@@ -41,94 +37,109 @@ You can upgrade the .NET version from this
 `direct link <https://www.microsoft.com/en-us/download/details.aspx?id=55170>`__
 or search in internet for “.NET upgrade”.
 
-Add package repository
-----------------------
 
-::
+Install packages
+----------------
+
+First, tell Chocolatey about the Sming package repository::
 
    choco sources add -name smingrepo -source 'https://www.myget.org/F/sming/'
 
-Install Sming
--------------
+(You can find the installer sources at `https://github.com/slaff/chocolatey-packages`.)
 
-::
+You can now install with::
 
-   # Powershell - run as Administrator
    choco install -y sming
 
-This will install:
+Packages are as follows:
 
--  Unofficial Espressif Development Kit for Windows
-   (`source <https://github.com/slaff/chocolatey-packages/blob/master/manual/esp8266-udk/tools/chocolateyInstall.ps1>`__)
--  Mingw & required packages
-   (`source <https://github.com/slaff/chocolatey-packages/blob/master/manual/sming/tools/chocolateyInstall.ps1>`__)
--  Python
--  Latest stable version of Sming
-   (`source <https://github.com/slaff/chocolatey-packages/blob/master/manual/sming.core/tools/chocolateyInstall.ps1>`__)
+git
+   `GIT <https://git-scm.com/>`__ CLI client.
 
-If for some reason you don’t want UDK, MinGW and Environment configured just run::
+   Please configure after installation to leave line-endings intact or else patching will fail::
 
-   choco install sming.core -y -source 'https://www.myget.org/f/sming/'
+      git config --global core.autocrlf input
 
-Configure git for Windows environment
--------------------------------------
+python
+   `Python <https://www.python.org/>`__ version 3.
 
-Configure your git client to leave line-endings intact or else patching will fail::
+cmake
+   `CMake <https://cmake.org/>`__.
 
-   git config --global core.autocrlf input
+   Required to build some Components, also for Host mode.
 
-Install Sming Examples (optional)
----------------------------------
+mingw
+   `MinGW <http://www.mingw.org/>`__ 32-bit.
 
-This will install:
+   The installer updates the system ``PATH`` but please check by running::
 
--  Java Runtime 8
--  Eclipse C/C++ (`source <https://github.com/kireevco/chocolatey-packages/blob/master/manual/eclipse-cpp/tools/chocolateyInstall.ps1>`__)
--  ``sming`` package
+      where make.exe
 
-and will create desktop shortcut *Sming Examples*::
+   The output should show only one result::
 
-   # Run as Administrator
-   choco install sming.examples -y
+      "C:\MinGW\msys\1.0\bin\make.exe"
 
-Configuration
-~~~~~~~~~~~~~
+esp8266-eqt
+   `ESP Quick Toolchain <https://github.com/earlephilhower/esp-quick-toolchain/>`__.
 
-You might want to configure your project before building. :ref:`Edit component.mk <component>` to the proper values.
+   Sets a system-wide :envvar:`ESP_HOME` variable.
 
-Confirm Environment
-~~~~~~~~~~~~~~~~~~~
+sming.core
+   Latest stable version of `Sming <https://github.com/SmingHub/Sming/tree/master>`__.
 
-Make sure the MinGW make.exe is the only one in the path.
-This will correct most “make: \*\* No rule to make target” problems.*::
+   Sets a system-wide :envvar:`SMING_HOME` environment variable.
 
-   # should only show one make
-   where make.exe
-   "C:\Tools\mingw64\msys\1.0\bin\make.exe"
+Note that setting `SMING_HOME` and `ESP_HOME` as system-wide variables means they do
+not need to be set every time a command prompt is opened, and will be seen by eclipse
+without any further configuration.
+
+
+.. important::
+
+   After installation, please close the administrative command prompt and open a new, regular command shell.
+
+   This ensures that environment variables are set correctly.
+
+   It is also inadvisable to continue running with elevated privileges.
+
 
 Build Basic_Blink
 -----------------
 
-1. Open Eclipse via “Sming Examples” Desktop link
-2. Find *Basic_Blink* project
-3. Build
+To check the installation, open a command prompt and type these commands::
+
+   cd %SMING_HOME%\..\samples\Basic_Blink
+   make
+
+The project should build without error.
+   
 
 Update Sming
 ------------
 
-Sming is very dynamic and updates are usually announced in gitter. The
-command below will get for you the latest ``stable`` release::
+Sming is very dynamic and updates are usually announced in gitter. The command below will get for you the latest ``stable`` release::
 
-   choco upgrade sming -y
+   cd %SMING_HOME%
+   git pull
+
+If you would like access to the latest features and bug-fixes, use the ``develop`` branch::
+
+   cd %SMING_HOME%
+   git checkout develop
+
 
 Force Reinstall Sming
 ---------------------
 
-In case something is broken, this will overwrite the current Sming installation::
+In case something is broken, this will perform a forced re-install of all packages::
 
-   choco install sming -y -force -source 'https://www.myget.org/F/sming/'
+   rmdir /s /q c:\tools\sming
+   choco install sming -y -f -x
+
+
 
 Next steps
 ----------
 
 Proceed to :doc:`config`.
+

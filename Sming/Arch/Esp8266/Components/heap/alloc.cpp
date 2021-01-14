@@ -8,14 +8,25 @@
  *
  ****/
 
-#include <stdlib.h>
+#include <cstdlib>
+#include <new>
 
 void* operator new(size_t size)
 {
 	return malloc(size);
 }
 
+void* operator new(size_t size, const std::nothrow_t&)
+{
+	return malloc(size);
+}
+
 void* operator new[](size_t size)
+{
+	return malloc(size);
+}
+
+void* operator new[](size_t size, const std::nothrow_t&)
 {
 	return malloc(size);
 }

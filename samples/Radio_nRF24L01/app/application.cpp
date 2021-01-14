@@ -16,7 +16,14 @@
  * CSN		GPIO5 (changeable)
  * GND      GND
  */
-RF24 radio(4, 5); // Set up nRF24L01 radio on SPI bus plus pins 4 & 5
+#ifdef ARCH_ESP8266
+constexpr uint8_t RF24_CE_PIN{4};
+constexpr uint8_t RF24_CSN_PIN{5};
+#else
+constexpr uint8_t RF24_CE_PIN{19};
+constexpr uint8_t RF24_CSN_PIN{21};
+#endif
+RF24 radio(RF24_CE_PIN, RF24_CSN_PIN);
 
 // Radio pipe addresses for the 2 nodes to communicate.
 const uint64_t pipes[2] = {0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL};

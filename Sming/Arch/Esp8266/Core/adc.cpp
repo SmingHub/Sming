@@ -1,4 +1,5 @@
 #include <Digital.h>
+#include <esp_systemapi.h>
 
 uint16_t analogRead(uint16_t pin)
 {

@@ -18,37 +18,100 @@
  ********************************/
 
 #include "Adafruit_ILI9341.h"
-#include "pins_arduino.h"
-#include "wiring_private.h"
-#include <SPI.h>
+
 #define SWAPBYTES(i) ((i>>8) | (i<<8))
+
+#define	TFT_CS_ACTIVE		digitalWrite(TFT_CS_PIN, false)
+#define	TFT_CS_DEACTIVE		digitalWrite(TFT_CS_PIN, true)
+#define	TFT_CS_INIT			pinMode(TFT_CS_PIN, OUTPUT); TFT_CS_DEACTIVE
+
+#define TFT_DC_DATA			digitalWrite(TFT_DC_PIN, true)
+#define TFT_DC_COMMAND		digitalWrite(TFT_DC_PIN, false)
+#define TFT_DC_INIT 		pinMode(TFT_DC_PIN, OUTPUT); TFT_DC_DATA
+
+// Reset line is optional - must be tied high if not used
+#ifdef TFT_RESET_PIN
+#define TFT_RST_ACTIVE		digitalWrite(TFT_RESET_PIN, false)
+#define TFT_RST_DEACTIVE 	digitalWrite(TFT_RESET_PIN, true)
+#define TFT_RST_INIT		pinMode(TFT_RESET_PIN, OUTPUT); TFT_RST_DEACTIVE
+#else
+#define TFT_RST_ACTIVE
+#define TFT_RST_DEACTIVE
+#define TFT_RST_INIT
+#endif
+
+
 // Constructor when using software SPI.  All output pins are configurable.
 Adafruit_ILI9341::Adafruit_ILI9341() : Adafruit_GFX(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT) {
 	tabcolor = 0;
 }
 
-void Adafruit_ILI9341::transmitCmdData(uint8_t cmd, const uint8_t *data, uint8_t numDataByte)
+void Adafruit_ILI9341::transmitCmdData(uint8_t cmd, uint8_t *data, uint8_t numDataByte)
 {
-	hspi_wait_ready();
 	TFT_DC_COMMAND;
-	hspi_send_uint8(cmd);
-	hspi_wait_ready();
+	TFT_CS_ACTIVE;
+	SPI.transfer(cmd);
+	TFT_CS_DEACTIVE;
+
 	TFT_DC_DATA;
-	hspi_send_data(data, numDataByte);
+	TFT_CS_ACTIVE;
+	SPI.transfer(data, numDataByte);
+	TFT_CS_DEACTIVE;
+}
+
+void Adafruit_ILI9341::transmitData(uint16_t data)
+{
+	TFT_CS_ACTIVE;
+	SPI.transfer((uint8_t*)&data, 2);
+	TFT_CS_DEACTIVE;
+}
+
+void Adafruit_ILI9341::transmitCmdData(uint8_t cmd, uint32_t data)
+{
+	TFT_DC_COMMAND;
+
+	TFT_CS_ACTIVE;
+	SPI.transfer(cmd);
+	TFT_CS_DEACTIVE;
+
+	TFT_DC_DATA;
+	TFT_CS_ACTIVE;
+	SPI.transfer32(data);
+	TFT_CS_DEACTIVE;
+}
+
+void Adafruit_ILI9341::transmitData(uint16_t data, int32_t repeats)
+{
+	TFT_CS_ACTIVE;
+	while(repeats--) {
+		SPI.transfer16(data);
+	}
+	TFT_CS_DEACTIVE;
+}
+
+void Adafruit_ILI9341::transmitCmd(uint8_t cmd)
+{
+	TFT_DC_COMMAND;
+	TFT_CS_ACTIVE;
+	SPI.transfer(cmd);
+	TFT_CS_DEACTIVE;
+	TFT_DC_DATA;
 }
 
 #define DELAY 0x80
 
 //Set communication using HW SPI Port
 void Adafruit_ILI9341::begin(void) {
-	hspi_init();
+	SPI.SPIDefaultSettings = SPISettings(20000000, LSBFIRST, SPI_MODE0);
+	SPI.begin();
 	TFT_DC_INIT;
 	TFT_RST_INIT;
+	TFT_CS_INIT;
 
 	TFT_RST_ACTIVE;
-	os_delay_us(10000);
+	delayMicroseconds(10000);
 	TFT_RST_DEACTIVE;
-	os_delay_us(1000);
+	delayMicroseconds(1000);
 
 	uint8_t data[15] = {0};
 
@@ -157,7 +220,7 @@ void Adafruit_ILI9341::begin(void) {
 	transmitCmdData(0xE1, data, 15);    	//Set Gamma
 
 	transmitCmd(0x11);    	//Exit Sleep
-	os_delay_us(120000);
+	delayMicroseconds(120000);
 
 	transmitCmd(0x29);    //Display on
 	transmitCmd(0x2c);

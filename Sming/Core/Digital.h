@@ -19,7 +19,6 @@
 #include <WConstants.h>
 #include <esp_attr.h>
 #include <pins_arduino.h>
-#include <esp_systemapi.h>
 
 #ifdef ARCH_HOST
 #include <DigitalHooks.h>
