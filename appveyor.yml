@@ -6,6 +6,8 @@ platform: x86
 
 environment:
   SMINGTOOLS: https://github.com/SmingHub/SmingTools/releases/download/1.0
+  SMING_SECRET:
+    secure: rCs19uNvDR07w1d2pfwJIzewiEQ2zpKXdqFp5BqHQAA=
 
   matrix:
     - SMING_ARCH: Host
@@ -18,14 +20,16 @@ environment:
 
     - SMING_ARCH: Esp32
 
-    - SMING_ARCH: Host
-      BUILD_DOCS: 1
-
 
 install:
   - ps: |
       # Set up environment variables for all environments and build types
       $env:CI_BUILD_DIR = $env:APPVEYOR_BUILD_FOLDER
+      $env:CI_PROJECT_SLUG = $env:APPVEYOR_PROJECT_SLUG
+      $env:CI_REPO_NAME = $env:APPVEYOR_REPO_NAME
+      if ($env:APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME -ne $env:APPVEYOR_REPO_NAME) {
+        $env:CI_PULL_REQUEST = "true"
+      }
       # Esp8266 
       $env:UDK_ROOT = Join-Path $env:CI_BUILD_DIR "opt/esp-alt-sdk"
       $env:EQT_ROOT = Join-Path $env:CI_BUILD_DIR "opt/esp-quick-toolchain"
@@ -45,7 +49,7 @@ install:
       set PYTHON=C:\Python39\python
       set ESP32_PYTHON_PATH=C:\Python39
       .ci\install.cmd
-      set PATH=C:\Python39\Scripts;%PATH%
+      set PATH=C:\Python39\Scripts;%PATH%;C:\Program Files\doxygen\bin
 
   - sh: |
       export PYTHON=$HOME/venv3.9/bin/python
@@ -54,19 +58,29 @@ install:
       .ci/install.sh
 
 
-build_script:
-  - cmd: if "%BUILD_DOCS%" == "1" (make -C %SMING_HOME% docs V=1) else (.ci\build.cmd)
-
+before_build:
   - sh: |
-      if [ "$BUILD_DOCS" == "1" ]; then
-        make -C $SMING_HOME docs V=1
-      else
-        .ci/build.sh
+      # Check if we could run static code analysis
+      CHECK_SCA=0
+      if [[ $APPVEYOR_REPO_TAG_NAME != "" || ( $APPVEYOR_REPO_COMMIT_MESSAGE == *"[scan:coverity]"*  && $CI_PULL_REQUEST == "" ) ]]; then
+        CHECK_SCA=1
       fi
 
+build_script:
+  - cmd: .ci\build.cmd
+  - sh: .ci/build.sh
+
+after_build:
   - ps: |
-       if ($env:BUILD_DOCS -eq "1") {
+       if ($env:SMING_ARCH -eq "Host") {
           $docFile = "sming-docs.zip"
-          Compress-Archive -Path $env:CI_BUILD_DIR/docs/build/html -DestinationPath $docFile 
+          Compress-Archive -Path $env:CI_BUILD_DIR/docs/build/html -DestinationPath $docFile
           Push-AppveyorArtifact $docFile
        }
+
+
+deploy_script:
+  - sh: |
+      if [[ $APPVEYOR_REPO_TAG_NAME != "" && $APPVEYOR_BUILD_WORKER_IMAGE == "Ubuntu2004" && $SMING_ARCH == "Host" ]]; then
+        .ci/deploy.sh $APPVEYOR_REPO_TAG_NAME
+      fi

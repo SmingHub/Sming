@@ -7,6 +7,9 @@ export MAKE_PARALLEL="make -j3"
 cd $SMING_HOME
 source Arch/$SMING_ARCH/Tools/ci/build.setup.sh
 
+# Don't leak this!
+unset SMING_SECRET
+
 env
 
 # Move samples and tests into directory outside of the Sming repo.

@@ -1,9 +1,14 @@
 REM Windows build script
 
+REM Don't leak this
+set SMING_SECRET=
+
 subst z: %CI_BUILD_DIR%
 set SMING_HOME=z:\Sming
 
 cd /d %SMING_HOME%
+call Arch\%SMING_ARCH%\Tools\ci\build.setup.cmd || goto :error
+
 env
 
 set MAKE_PARALLEL=make -j2

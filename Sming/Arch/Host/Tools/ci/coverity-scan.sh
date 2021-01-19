@@ -2,9 +2,12 @@
 
 set -e
 
-COVERITY_SCAN_PROJECT_NAME=${TRAVIS_REPO_SLUG}
+COVERITY_SCAN_PROJECT_NAME=${CI_PROJECT_SLUG}
 COVERITY_SCAN_NOTIFICATION_EMAIL="slaff@attachix.com"
 COVERITY_SCAN_BUILD_COMMAND="$MAKE_PARALLEL Basic_Blink Basic_DateTime Basic_Delegates Basic_Interrupts Basic_ProgMem Basic_Serial Basic_Servo Basic_Ssl HttpServer_FirmwareUpload SMING_ARCH=Host DEBUG_VERBOSE_LEVEL=3"
+
+set +x
+source /tmp/secrets.sh
 
 # Environment check
 [ -z "$COVERITY_SCAN_PROJECT_NAME" ] && echo "ERROR: COVERITY_SCAN_PROJECT_NAME must be set" && exit 1
@@ -20,7 +23,7 @@ UPLOAD_URL="https://scan.coverity.com/builds"
 SCAN_URL="https://scan.coverity.com"
 
 # Do not run on pull requests
-if [ "${TRAVIS_PULL_REQUEST}" = "true" ]; then
+if [ -n "${CI_PULL_REQUEST}" ]; then
   echo -e "\033[33;1mINFO: Skipping Coverity Analysis: branch is a pull request.\033[0m"
   exit 0
 fi
@@ -85,7 +88,7 @@ response=$(curl \
   --form email=$COVERITY_SCAN_NOTIFICATION_EMAIL \
   --form file=@$RESULTS_ARCHIVE \
   --form version=$SHA \
-  --form description="Travis CI build" \
+  --form description="CI build" \
   $UPLOAD_URL)
 status_code=$(echo "$response" | sed -n '$p')
 if [ "$status_code" -ge "400" ]; then

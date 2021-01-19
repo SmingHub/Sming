@@ -5,6 +5,4 @@ sudo apt-get install -y clang-format-6.0 \
   doxygen graphviz-dev xmlstarlet jq
 sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-6.0 100
 
-if [ "$BUILD_DOCS" == "1" ]; then
-	python -m pip install -r $SMING_HOME/../docs/requirements.txt
-fi
+python -m pip install -r $SMING_HOME/../docs/requirements.txt

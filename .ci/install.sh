@@ -3,6 +3,8 @@ set -ex # exit with nonzero exit code if anything fails
 
 # Common install
 
+sudo apt-get update
+
 sudo update-alternatives --set gcc /usr/bin/gcc-9
 python -m pip install --upgrade pip
 
