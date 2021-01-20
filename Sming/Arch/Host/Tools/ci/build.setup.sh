@@ -11,11 +11,13 @@ if [ "$DIFFS" != "" ]; then
 fi
 
 # Make deployment keys, etc. available
-set +x
-openssl aes-256-cbc -d -a -iter 100 -in $CI_BUILD_DIR/.ci/secrets.sh.enc -out /tmp/secrets.sh -pass pass:$SMING_SECRET
-source /tmp/secrets.sh
+if [ -z "$CI_PULL_REQUEST" ]; then
+  set +x
+  openssl aes-256-cbc -d -a -iter 100 -in $CI_BUILD_DIR/.ci/secrets.sh.enc -out /tmp/secrets.sh -pass pass:$SMING_SECRET
+  source /tmp/secrets.sh
+  set -x
+fi
 unset SMING_SECRET
-set -x
 
 # Build documentation
 make -C $SMING_HOME docs
