@@ -27,7 +27,7 @@ install:
       $env:CI_BUILD_DIR = $env:APPVEYOR_BUILD_FOLDER
       $env:CI_PROJECT_SLUG = $env:APPVEYOR_PROJECT_SLUG
       $env:CI_REPO_NAME = $env:APPVEYOR_REPO_NAME
-      if ($env:APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME -ne $env:APPVEYOR_REPO_NAME) {
+      if ($env:APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME -ne "") {
         $env:CI_PULL_REQUEST = "true"
       }
       # Esp8266 
