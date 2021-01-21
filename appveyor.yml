@@ -27,7 +27,7 @@ install:
       $env:CI_BUILD_DIR = $env:APPVEYOR_BUILD_FOLDER
       $env:CI_PROJECT_SLUG = $env:APPVEYOR_PROJECT_SLUG
       $env:CI_REPO_NAME = $env:APPVEYOR_REPO_NAME
-      if ($env:APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME -ne "") {
+      if ($env:APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME) {
         $env:CI_PULL_REQUEST = "true"
       }
       # Esp8266 
@@ -61,9 +61,9 @@ install:
 before_build:
   - sh: |
       # Check if we could run static code analysis
-      CHECK_SCA=0
+      export CHECK_SCA=0
       if [[ $APPVEYOR_REPO_TAG_NAME != "" || ( $APPVEYOR_REPO_COMMIT_MESSAGE_EXTENDED == *"[scan:coverity]"*  && $CI_PULL_REQUEST == "" ) ]]; then
-        CHECK_SCA=1
+        export CHECK_SCA=1
       fi
 
 build_script:
