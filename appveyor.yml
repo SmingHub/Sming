@@ -62,7 +62,7 @@ before_build:
   - sh: |
       # Check if we could run static code analysis
       CHECK_SCA=0
-      if [[ $APPVEYOR_REPO_TAG_NAME != "" || ( $APPVEYOR_REPO_COMMIT_MESSAGE == *"[scan:coverity]"*  && $CI_PULL_REQUEST == "" ) ]]; then
+      if [[ $APPVEYOR_REPO_TAG_NAME != "" || ( $APPVEYOR_REPO_COMMIT_MESSAGE_EXTENDED == *"[scan:coverity]"*  && $CI_PULL_REQUEST == "" ) ]]; then
         CHECK_SCA=1
       fi
 
