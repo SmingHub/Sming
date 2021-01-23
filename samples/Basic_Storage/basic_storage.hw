@@ -1,0 +1,55 @@
+{
+	"name": "Basic Storage sample",
+	"base_config": "spiffs",
+	"devices": {
+		"spiFlash": {
+			"mode": "qio",
+			"speed": 80
+		}
+	},
+	"partitions": {
+		"user0": {
+			"address": "0x1F0000",
+			"size": "16K",
+			"type": "user",
+			"subtype": 0,
+			"filename": "user0.bin"
+		},
+		"user1": {
+			"address": "0x1F4000",
+			"size": "16K",
+			"type": "user",
+			"subtype": 1
+		},
+		"spiffs0": {
+			"address": "0x200000",
+			"build": {
+				"files": "files/spiffs0"
+			}
+		},
+		"spiffs1": {
+			"address": "0x280000",
+			"size": "256K",
+			"type": "data",
+			"subtype": "spiffs",
+			"flags": "",
+			"filename": "$(FW_BASE)/spiffs1_rom.bin",
+			"build": {
+				"target": "spiffsgen",
+				"files": "files/spiffs1"
+			}
+		},
+		"spiffs2": {
+			"address": "0x2C0000",
+			"size": "256K",
+			"type": "data",
+			"subtype": "spiffs",
+			"flags": "",
+			"filename": "$(FW_BASE)/spiffs2_rom.bin",
+			"build": {
+				"target": "spiffsgen",
+				"files": "files/spiffs2"
+			}
+		}
+	}
+}
