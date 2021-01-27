@@ -2,7 +2,7 @@
 
 set -e
 
-make -C $SMING_HOME/../samples/HttpServer_FirmwareUpload python-requirements
+make -C "$SMING_PROJECTS_DIR/samples/HttpServer_FirmwareUpload" python-requirements
 
 COVERITY_SCAN_PROJECT_NAME=SmingHub/Sming
 COVERITY_SCAN_NOTIFICATION_EMAIL="slaff@attachix.com"

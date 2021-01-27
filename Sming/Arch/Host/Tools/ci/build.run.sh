@@ -1,5 +1,7 @@
 # Host build.run.sh
 
+make -C "$SMING_PROJECTS_DIR/samples/HttpServer_FirmwareUpload" python-requirements
+
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
   DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"

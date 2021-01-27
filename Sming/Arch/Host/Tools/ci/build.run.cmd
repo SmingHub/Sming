@@ -1,6 +1,7 @@
 REM Host build.run.cmd
 
 REM Build a couple of basic applications
+make -C "%SMING_PROJECTS_DIR%\samples\HttpServer_FirmwareUpload" python-requirements
 %MAKE_PARALLEL% Basic_Serial Basic_ProgMem STRICT=1 V=1 || goto :error
 
 REM Run basic tests
