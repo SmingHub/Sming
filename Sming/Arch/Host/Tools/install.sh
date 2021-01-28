@@ -2,7 +2,7 @@
 
 # Required by deployment script
 if [ -n "$APPVEYOR" ]; then
-    sudo apt-get install -y \
+    $PKG_INSTALL \
         jq \
         xmlstarlet
 fi

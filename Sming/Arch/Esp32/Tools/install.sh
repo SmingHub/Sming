@@ -2,15 +2,31 @@
 
 if [ -n "$IDF_PATH" ] && [ -n "$IDF_TOOLS_PATH" ]; then
 
-sudo apt-get install -y \
+PACKAGES=(\
     bison \
     ccache \
     dfu-util \
     flex \
     gperf \
-    libffi-dev \
-    libssl-dev \
-    ninja-build
+    ninja-build \
+    )
+
+case $DIST in
+    debian)
+        PACKAGES+=(\
+            libffi-dev \
+            libssl-dev \
+            )
+        ;;
+
+    fedora)
+        PACKAGES+=(\
+            libffi-devel \
+            )
+        ;;
+esac
+
+$PKG_INSTALL ${PACKAGES[*]}
 
 git clone -b release/v4.1 https://github.com/espressif/esp-idf.git $IDF_PATH
 

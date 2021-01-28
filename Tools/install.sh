@@ -5,6 +5,8 @@
 #    . /opt/sming/Tools/install.sh
 #
 
+set -e
+
 [ "$0" = "$BASH_SOURCE" ]; sourced=$?
 
 inst_host=0
@@ -48,25 +50,34 @@ if [[ $err -eq 1 ]] || [ $# -eq 0 ]; then
     fi
 fi
 
-if [ $sourced != 1 ]; then
-    echo "Please source this script:"
-    echo "  source $0"
-    exit 1
-fi
-
 SMINGTOOLS=https://github.com/SmingHub/SmingTools/releases/download/1.0
 
 if [ -z "$APPVEYOR" ]; then
     source $(dirname $BASH_SOURCE)/export.sh
 fi
 
-# Common install
+# At present we can only
+if [ -n "$(grep debian /etc/os-release)" ]; then
+    DIST=debian
+    PKG_INSTALL="sudo apt-get install -y"
+elif [ -n "$(grep fedora /etc/os-release)" ]; then
+    DIST=fedora
+    PKG_INSTALL="sudo dnf install -y"
+else
+    echo "Unsupported distribution"
+    if [ $sourced = 1 ]; then
+        return 1
+    else
+        exit 1
+    fi
+fi
 
-sudo apt-get -y update
+# Common install
 
 if [ -n "$APPVEYOR" ]; then
 
-    sudo apt-get install -y \
+    sudo apt-get -y update
+    $PKG_INSTALL \
         clang-format-6.0 \
         g++-9-multilib \
         python3-setuptools
@@ -75,19 +86,43 @@ if [ -n "$APPVEYOR" ]; then
 
 else
 
-    sudo apt-get install -y \
-        clang-format-6.0 \
-        cmake \
-    	curl \
-    	git \
-    	make \
-        unzip \
-        g++ \
-    	g++-multilib \
-    	python3 \
-    	python3-pip \
-    	python3-setuptools \
-        wget
+    case $DIST in
+        debian)
+            sudo apt-get -y update
+            $PKG_INSTALL \
+                clang-format-6.0 \
+                cmake \
+            	curl \
+            	git \
+            	make \
+                unzip \
+                g++ \
+            	g++-multilib \
+            	python3 \
+            	python3-pip \
+            	python3-setuptools \
+                wget
+            ;;
+
+        fedora)
+            $PKG_INSTALL \
+                cmake \
+                gawk \
+                gcc \
+                gcc-c++ \
+                gettext \
+                git \
+                glibc-devel.i686 \
+                libstdc++.i686 \
+                make \
+                python3 \
+                python3-pip \
+                sed \
+                unzip \
+                wget
+            ;;
+
+    esac
 
     sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 100
 
@@ -114,5 +149,15 @@ if [ $inst_esp8266 -eq 1 ]; then
 fi
 
 if [ $inst_esp32 -eq 1 ]; then
-echo    install Esp32
+    install Esp32
+fi
+
+echo
+echo Installation complete
+echo
+
+if [ $sourced != 1 ]; then
+    echo "You may need to set environment variables:"
+    echo "  source $SMING_HOME/../Tools/export.sh"
+    echo
 fi

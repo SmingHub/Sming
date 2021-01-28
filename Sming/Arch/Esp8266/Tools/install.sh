@@ -8,7 +8,7 @@ if [ -n "$UDK_ROOT" ]; then
     mkdir -p $UDK_ROOT
     ln -s $(pwd)/esp-open-sdk/xtensa-lx106-elf $UDK_ROOT/.
     if [ -z "$KEEP_DOWNLOADS" ]; then
-        rm $TOOLCHAIN
+        rm -f $TOOLCHAIN
     fi
 fi
 
@@ -19,6 +19,6 @@ if [ -n "$EQT_ROOT" ]; then
     mkdir -p $EQT_ROOT
     tar -zxf $TOOLCHAIN -C $EQT_ROOT --totals
     if [ -z "$KEEP_DOWNLOADS" ]; then
-        rm $TOOLCHAIN
+        rm -f $TOOLCHAIN
     fi
 fi
