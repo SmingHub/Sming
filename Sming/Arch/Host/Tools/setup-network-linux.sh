@@ -17,7 +17,7 @@ fi
 # Create a tap0 interface with IP network 192.168.13.1/24
 sudo ip tuntap add dev tap0 mode tap user $(whoami)
 sudo ip a a dev tap0 192.168.13.1/24
-sudo ifconfig tap0 up
+sudo ip link set tap0 up
 
 # The following lines are needed if you plan to access Internet
 sudo sysctl net.ipv4.ip_forward=1
