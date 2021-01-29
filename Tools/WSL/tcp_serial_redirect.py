@@ -166,24 +166,24 @@ it waits for the next connect.
             '--- type Ctrl-C / BREAK to quit\n'.format(p=ser))
 
 
+    # Determine primary IP address
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # doesn't even have to be reachable
+        s.connect(('10.255.255.255', 1))
+        local_ip = s.getsockname()[0]
+    except Exception:
+        local_ip = '127.0.0.1'
+    finally:
+        s.close()
+
     srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    srv.bind(('', args.localport))
+    srv.bind((local_ip, args.localport))
     srv.listen(1)
     try:
-        # Determine primary IP address
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        try:
-            # doesn't even have to be reachable
-            s.connect(('10.255.255.255', 1))
-            IP = s.getsockname()[0]
-        except Exception:
-            IP = '127.0.0.1'
-        finally:
-            s.close()
-        
         while True:
-            sys.stderr.write('Waiting for connection on %s::%d...\n' % (str(IP), args.localport))
+            sys.stderr.write('Waiting for connection on %s::%d...\n' % (str(local_ip), args.localport))
             client_socket, addr = srv.accept()
             sys.stderr.write('Connected by {}\n'.format(addr))
             # More quickly detect bad clients who quit without closing the
