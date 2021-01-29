@@ -1,5 +1,5 @@
-Getting Started: Host (Linux/Windows)
-=====================================
+Host Emulator
+=============
 
 .. highlight:: bash
 
@@ -24,7 +24,7 @@ C/C++ 32 bit compiler and libraries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The latest versions of Sming require GCC version 8 or newer.
-If your OS is 64 bit then you should install also 32 bit C/C++ compiler and libraries.
+If your OS is 64 bit then 32 bit C/C++ compiler and libraries are also required.
 Here's a summary of how to do this::
 
    sudo apt update
@@ -59,7 +59,7 @@ The current version is `GCC 8.2.0 <https://gcc.gnu.org/gcc-8>`__.
 
 .. note::
 
-   If you don't already have MinGW installed, see :doc:`/arch/esp8266/getting-started/windows` for the Esp8266.
+   If you don't already have MinGW installed, see :doc:`/getting-started/windows/index`.
 
 
 
