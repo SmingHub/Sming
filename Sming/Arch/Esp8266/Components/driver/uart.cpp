@@ -910,9 +910,9 @@ void smg_uart_swap(smg_uart_t* uart, int tx_pin)
 bool smg_uart_set_tx(smg_uart_t* uart, int tx_pin)
 {
 	if(uart != nullptr && uart->uart_nr == UART0 && smg_uart_tx_enabled(uart)) {
-		uart1_pin_restore(uart->tx_pin);
+		uart0_pin_restore(uart->tx_pin);
 		uart->tx_pin = (tx_pin == 2) ? 2 : 1;
-		uart1_pin_select(uart->tx_pin);
+		uart0_pin_select(uart->tx_pin);
 		return true;
 	}
 
