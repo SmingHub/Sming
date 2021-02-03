@@ -63,7 +63,7 @@ COMPONENT_TARGETS += $(LIBCRYPTO_ORIG)
 # Make backup then modify original
 $(COMPONENT_RULE)$(LIBCRYPTO_ORIG): $(LIBCRYPTO)
 	cp $^ $@
-	ar -d $^ aes-internal-dec.o
+	$(AR) -d $^ aes-internal-dec.o
 
 # Define linker symbols
 EXTRA_LDFLAGS += -Wl,--just-symbols=$(COMPONENT_PATH)/ld/crypto.sym

@@ -336,7 +336,7 @@ COMPONENT_DIRS := $(foreach d,$(ALL_SEARCH_DIRS),$(wildcard $d/*))
 %/component.mk:
 	@if [ -f $(@D)/../.patches/$(notdir $(@D))/component.mk ]; then \
 		echo Patching $(abspath $(@D)/../.patches/$(notdir $(@D))/component.mk); \
-		cp -u $(@D)/../.patches/$(notdir $(@D))/component.mk $@; \
+		cp $(@D)/../.patches/$(notdir $(@D))/component.mk $@; \
 	fi
 
 SUBMODULES_FOUND = $(wildcard $(SUBMODULES:=/.submodule))
