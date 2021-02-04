@@ -6,7 +6,7 @@ set -ex # exit with nonzero exit code if anything fails
 sudo apt-get update
 
 sudo update-alternatives --set gcc /usr/bin/gcc-9
-python -m pip install --upgrade pip
+python -m pip install --upgrade pip -r $SMING_HOME/../Tools/requirements.txt
 
 sudo apt-get install -y gcc-9-multilib g++-9-multilib python3-setuptools
 
