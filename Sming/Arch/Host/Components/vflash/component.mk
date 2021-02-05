@@ -7,8 +7,8 @@ DD					:= dd
 CACHE_VARS			+= FLASH_BIN
 FLASH_BIN			?= $(FW_BASE)/flash.bin
 
-CONFIG_VARS			+= SPI_SIZE
-SPI_SIZE			?= 4M
+DEBUG_VARS			+= SPI_SIZE
+SPI_SIZE			= $(STORAGE_DEVICE_spiFlash_SIZE)
 
 # Options to add when running emulator
 CACHE_VARS			+= HOST_FLASH_OPTIONS

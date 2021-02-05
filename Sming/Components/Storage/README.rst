@@ -156,7 +156,7 @@ This is a concise view of your flash partitions. Display it like this::
 
    make map
 
-For the :sample:`Basic_Storage` samnple application, we get this:
+For the :sample:`Basic_Storage` sample application, we get this:
 
 .. code-block:: text
 
@@ -239,7 +239,7 @@ Configuration
          Overrides ``standard`` to set 4Mbyte flash size
    
          spiffs
-            Adds a single SPIFFS partition
+            Adds a single SPIFFS partition. See :component:`spiffs`.
 
    Other configurations may be available, depending on architecture.
    You can see these by running ``make hwconfig-list``.

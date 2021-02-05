@@ -147,7 +147,7 @@ sessions, and will override any values set in your project’s
 
 -  Type ``make SPIFF_BIN=test-rom`` to build the project and (if
    enabled) create a SPIFFS image file called ``test-rom.bin``
--  Type ``make flash COM_PORT=COM4 SPI_MODE=dio SPI_SIZE=4M`` to flash
+-  Type ``make flash COM_PORT=COM4`` to flash
    the project and ``test-rom`` SPIFFS image using the provided flash
    memory settings
 -  Next time you type ``make flash``, the same settings will be used, no

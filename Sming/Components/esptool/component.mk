@@ -1,10 +1,11 @@
 COMPONENT_LIBNAME :=
 
-SPI_SPEED = $(STORAGE_DEVICE_spiFlash_SPEED)
-SPI_MODE = $(STORAGE_DEVICE_spiFlash_MODE)
-SPI_SIZE = $(STORAGE_DEVICE_spiFlash_SIZE)
+DEBUG_VARS				+= SPI_SPEED SPI_MODE SPI_SIZE
+SPI_SPEED				= $(STORAGE_DEVICE_spiFlash_SPEED)
+SPI_MODE				= $(STORAGE_DEVICE_spiFlash_MODE)
+SPI_SIZE				= $(STORAGE_DEVICE_spiFlash_SIZE)
 
-flashimageoptions += -fs $(SPI_SIZE)B -ff $(SPI_SPEED)m -fm $(SPI_MODE)
+flashimageoptions		+= -fs $(SPI_SIZE)B -ff $(SPI_SPEED)m -fm $(SPI_MODE)
 
 # Default COM port and speed used for flashing
 CACHE_VARS				+= COM_PORT_ESPTOOL COM_SPEED_ESPTOOL
