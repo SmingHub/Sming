@@ -1,3 +1,1 @@
 ARDUINO_LIBRARIES := CapacitiveSensor
-
-DISABLE_SPIFFS = 1

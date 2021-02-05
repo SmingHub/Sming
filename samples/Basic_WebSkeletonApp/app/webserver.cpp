@@ -9,7 +9,7 @@ namespace
 bool serverStarted = false;
 HttpServer server;
 
-#if DISABLE_SPIFFS
+#ifdef ENABLE_FLASHSTRING_MAP
 
 // If a filesystem image hasn't been provided, serve the files using a FlashString map
 #define FILE_LIST(XX)                                                                                                  \

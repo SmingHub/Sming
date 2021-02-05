@@ -33,11 +33,6 @@
 # Default is 'standard' (no spiffs), can also provide your own
 #HWCONFIG := spiffs
 
-## SPIFFS options (deprecated: use HWCONFIG)
-##	0: (default) use `HWCONFIG=standard` as default
-##  1: Use `HWCONFIG=spiffs`
-DISABLE_SPIFFS := 1
-
 ## Select source of content for default `spiffs` partition when built
 # SPIFF_FILES = files
 

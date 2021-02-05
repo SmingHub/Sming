@@ -66,10 +66,10 @@ If you want to use, for example, two 512k roms in the first 1MB block of
 flash (old style) then Sming will automatically create two separately linked 
 roms. If you are flashing a single rom to multiple 1MB flash blocks, all using
 the same offset inside their 1MB blocks, only a single rom is created.
-See the rBoot readme for further details.
+See :component:`rboot` for further details.
 
 -  If using a very small flash (e.g. 512k) there may be no room for a
-   spiffs fileystem, disable it with *DISABLE_SPIFFS = 1*
+   spiffs fileystem, so use *HWCONFIG = standard*
 -  After building copy all the rom*.bin files to the root of your web
    server.
 

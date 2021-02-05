@@ -150,7 +150,6 @@ GLOBAL_CFLAGS		+= -DSTRING_OBJECT_SIZE=$(STRING_OBJECT_SIZE)
 .PHONY: flashinit
 flashinit: $(ESPTOOL) $(FLASH_INIT_DATA) | $(FW_BASE) ##Erase your device's flash memory
 	$(info Flash init data default and blank data)
-	$(info DISABLE_SPIFFS = $(DISABLE_SPIFFS))
 	$(Q) $(EraseFlash)
 	$(call WriteFlash,$(FLASH_INIT_CHUNKS))
 

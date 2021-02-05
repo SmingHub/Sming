@@ -1,5 +1,3 @@
-DISABLE_SPIFFS = 1
-
 #
 ifeq ($(ENABLE_MALLOC_COUNT),1)
 COMPONENT_DEPENDS	+= malloc_count

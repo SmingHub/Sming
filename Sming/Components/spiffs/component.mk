@@ -14,17 +14,14 @@ $(COMPONENT_RULE)$(SPIFFY):
 
 ## Application
 
-# This controls filesystem generation, it doesn't actually disable SPIFFS support in the application
-CONFIG_VARS			+= DISABLE_SPIFFS
-DISABLE_SPIFFS		?= 0
-APP_CFLAGS			+= -DDISABLE_SPIFFS=$(DISABLE_SPIFFS)
+ifdef DISABLE_SPIFFS
+$(error DISABLE_SPIFFS is no longer supported; please remove this option from your component.mk file)
+endif
 
-ifeq ($(DISABLE_SPIFFS),0)
 CACHE_VARS			+= SPIFF_FILES SPIFF_BIN
 SPIFF_FILES			?= files
 SPIFF_BIN			?= spiff_rom
 SPIFF_BIN_OUT		:= $(FW_BASE)/$(SPIFF_BIN).bin
-endif
 
 COMPONENT_RELINK_VARS	+= SPIFF_FILEDESC_COUNT
 SPIFF_FILEDESC_COUNT	?= 7

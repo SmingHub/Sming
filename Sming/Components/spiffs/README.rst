@@ -3,34 +3,45 @@ SPIFFS for Sming
 
 This Component provides SPIFFS filesystem support for all architectures.
 
-.. envvar:: DISABLE_SPIFFS
+A single SPIFFS partition is defined using :envvar:`HWCONFIG` ``=spiffs``, which supports these build variables:
 
-   0 (default)
-      Enable filesystem generation
-      
-   1
-      Disable filesystem generation
+   .. envvar:: DISABLE_SPIFFS
 
-   The value is also #defined for application use.
+      [deprecated and removed]
 
-   Note this doesn't actually disable SPIFFS support in the application!
+      This value is no longer supported. Please remove it from your project's component.mk file.
 
 
-.. envvar:: SPIFF_SIZE
+   .. envvar:: SPIFF_SIZE
 
-   Size (in bytes) of the SPIFFS area in Flash memory.
+      [deprecated and removed]
+
+      Size (in bytes) of the SPIFFS area in Flash memory. To change this, edit the :ref:`hardware_config`.
+
+   .. envvar:: SPIFF_FILES
+
+   .. envvar:: SPIFF_FILES
+
+      default: ``files``
+
+      The SPIFFS image is built using files from this directory, which must exist or the build will fail.
+
+      If you set this to an empty value, then an empty filesystem will be created.
 
 
-.. envvar:: SPIFF_FILES
+   .. envvar:: SPIFF_BIN
 
-   default: ``files``
-
-   The SPIFFS image is built using files from this directory.
+      Filename to use for the generated SPIFFS filesystem image. The default is ``spiff_rom``.
 
 
-.. envvar:: SPIFF_BIN
+   .. envvar:: SPIFF_BIN_OUT
 
-   Path to the generated SPIFFS filesystem image.
+      [read-only] Shows the full path to the generated image file.
+
+
+For more control over the SPIFFS partition you can create your own partition definition in a
+custom :ref:`hardware_config`.
+
 
 
 .. envvar:: SPIFF_FILEDESC_COUNT

@@ -1,4 +1,3 @@
-DISABLE_SPIFFS := 1
 ARDUINO_LIBRARIES := ArduinoFFT SignalGenerator
 ENABLE_TASK_COUNT := 1
 
