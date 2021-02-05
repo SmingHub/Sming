@@ -77,8 +77,9 @@ class Config(object):
     def buildVars(self):
         dict = {}
 
+        dict['SMING_ARCH_HW'] = self.arch
         dict['PARTITION_TABLE_OFFSET'] = self.partitions.offset_str()
-
+        dict['SPIFLASH_PARTITION_NAMES'] = " ".join(p.name for p in filter(lambda p: p.device == self.devices[0], self.partitions))
         dict['HWCONFIG_DEPENDS'] = " ".join(self.depends)
         dict.update(self.devices.buildVars())
         dict.update(self.partitions.buildVars())

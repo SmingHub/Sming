@@ -159,7 +159,7 @@ flashboot: $(FLASH_BOOT_LOADER) kill_term ##Write just the Bootloader
 	$(call WriteFlash,$(FLASH_BOOT_CHUNKS))
 
 .PHONY: flashapp
-flashapp: all kill_term ##Write just the application image
+flashapp: all kill_term ##Write just the application image(s)
 	$(call WriteFlash,$(FLASH_APP_CHUNKS))
 
 .PHONY: flash

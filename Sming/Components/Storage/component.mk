@@ -45,23 +45,13 @@ define HwExpr
 $(shell $(HWEXPR) "$1")
 endef
 
-# Obtain partition information
-# $1 -> Partition name
-# $2 -> Expression
-define PartInfo
-$(shell $(HWCONFIG_TOOL) --part $1 expr $(HWCONFIG) - $2)
-endef
-
-
 # Import PARTITION_TABLE_OFFSET from hardware configuration
 DEBUG_VARS += PARTITION_TABLE_OFFSET
-SMING_ARCH_HW := $(call HwExpr,config.arch)
 ifeq ($(SMING_ARCH_HW),)
 $(error Hardware configuration error)
 else ifneq ($(SMING_ARCH),$(SMING_ARCH_HW))
 $(error Hardware configuration is for arch $(SMING_ARCH_HW), does not match SMING_ARCH ($(SMING_ARCH)))
 endif
-PARTITION_TABLE_OFFSET	:= $(call HwExpr,(config.partitions.offset_str()))
 COMPONENT_CXXFLAGS		:= -DPARTITION_TABLE_OFFSET=$(PARTITION_TABLE_OFFSET)
 
 
@@ -91,12 +81,11 @@ hwconfig-list: ##List available hardware configurations
 	@echo "Available configurations: $(foreach c,$(ALL_HWCONFIG),\n $(if $(subst $c,,$(HWCONFIG)), ,*) $(shell printf "%-25s" "$c") $(filter %/$c.hw,$(ALL_HWCONFIG_PATHS)))"
 	@echo
 
-# @echo "Available configurations: $(foreach c,$(ALL_HWCONFIG_PATHS),\n $(if $(subst $c,,$(HWCONFIG)), ,*) $c)"
-
 .PHONY: hwconfig-validate
 hwconfig-validate: $(HWCONFIG_PATH) ##Validate current hardware configuration
 	@echo "Validating hardware config '$(HWCONFIG)'"
 	$(Q) $(HWCONFIG_TOOL) validate $(HWCONFIG) - $(PARTITION_PATH)/schema.json
+
 
 ##@Building
 
@@ -118,7 +107,7 @@ $$(PTARG):
 CUSTOM_TARGETS += $$(PTARG)
 endef
 
-# Create build targets for all partitions with 'make' entry
+# Create build targets for all partitions with 'build' property
 DEBUG_VARS += PARTITIONS_WITH_TARGETS
 PARTITIONS_WITH_TARGETS := $(call HwExpr,(' '.join([part.name for part in filter(lambda part: part.build is not None, config.partitions)])))
 
@@ -131,23 +120,30 @@ endef
 
 ##@Flashing
 
-# $1 -> Filter expression
-define PartChunks
-$(call HwExpr,(' '.join(['%s=%s' % (part.address_str(), part.filename) for part in filter(lambda part: $1 and part.device.name == 'spiFlash' and part.filename != '', config.partitions)])))
+# $1 -> Partition name
+define PartChunk
+$(if $(PARTITION_$1_FILENAME),$(PARTITION_$1_ADDRESS)=$(PARTITION_$1_FILENAME))
+endef
+
+# $1 -> Partition name
+define PartRegion
+$(PARTITION_$1_ADDRESS),$(PARTITION_$1_SIZE)
 endef
 
 # One flash sector of 0xFF
 BLANK_BIN := $(PARTITION_PATH)/blank.bin
 
-DEBUG_VARS += FLASH_APP_CHUNKS FLASH_MAP_CHUNKS FLASH_PARTITION_CHUNKS
-$(eval FLASH_APP_CHUNKS = $(call PartChunks,(part.type_is('app'))))
+# Just the application chunks
+FLASH_APP_CHUNKS = $(foreach p,$(SPIFLASH_PARTITION_NAMES),$(if $(filter app,$(PARTITION_$p_TYPE)),$(call PartChunk,$p)))
+# Partition map chunk
 FLASH_MAP_CHUNK := $(PARTITION_TABLE_OFFSET)=$(PARTITIONS_BIN)
-$(eval FLASH_PARTITION_CHUNKS = $(patsubst %=,,$(call PartChunks,True)))
+# All partitions with image files
+FLASH_PARTITION_CHUNKS = $(foreach p,$(SPIFLASH_PARTITION_NAMES),$(call PartChunk,$p))
 
 ifdef PART
 DEBUG_VARS += FLASH_PART_CHUNKS FLASH_PART_REGION
-$(eval FLASH_PART_CHUNKS := $(call PartChunks,(part=='$(PART)')))
-$(eval FLASH_PART_REGION := $(call HwExpr,('%s,%s' % (part.address_str(), part.size))))
+FLASH_PART_CHUNKS := $(call PartChunk,$(PART))
+FLASH_PART_REGION := $(call PartRegion,$(PART))
 endif
 
 # Where to store read partition map file
