@@ -103,8 +103,9 @@ docs: submodules ##Build the Sming documentation
 
 # For integration testing both samples and tests are moved outside of the repo.
 SMING_PROJECTS_DIR	?= $(abspath $(SMING_HOME)/..)
-SAMPLES_DIR			:= $(call FixPath,$(SMING_PROJECTS_DIR)/samples)
-TESTS_DIR			:= $(call FixPath,$(SMING_PROJECTS_DIR)/tests)
+SMING_PROJECTS_DIR	:= $(call FixPath, $(SMING_PROJECTS_DIR))
+SAMPLES_DIR			:= $(SMING_PROJECTS_DIR)/samples
+TESTS_DIR			:= $(SMING_PROJECTS_DIR)/tests
 
 SAMPLE_NAMES		= $(shell ls -1 $(SAMPLES_DIR))
 
@@ -112,7 +113,23 @@ SAMPLE_NAMES		= $(shell ls -1 $(SAMPLES_DIR))
 samples: | $(SAMPLE_NAMES) ##Build all sample applications
 
 $(SAMPLE_NAMES):
-	$(Q) $(MAKE) --no-print-directory -C $(SAMPLES_DIR)/$@
+	$(Q) $(MAKE) --no-print-directory -C $(SAMPLES_DIR)/$@ PIP_ARGS=-q python-requirements all
+
+# Build component samples
+.PHONY: component-samples
+component-samples: submodules ##Build all samples contained in components
+	$(Q) $(MAKE) --no-print-directory build-component-samples
+
+# Marks sample as build complete for faster re-testing
+BUILT_SUFFIX := /out/.built
+COMPONENT_SAMPLE_TARGETS = $(addsuffix $(BUILT_SUFFIX),$(wildcard $(foreach c,$(COMPONENT_SEARCH_DIRS),$c/*/samples/*)))
+
+.PHONY: build-component-samples
+build-component-samples: $(COMPONENT_SAMPLE_TARGETS)
+
+$(COMPONENT_SAMPLE_TARGETS):
+	$(Q) $(MAKE) --no-print-directory -C $(@:$(BUILT_SUFFIX)=) PIP_ARGS=-q python-requirements all
+	$(Q) touch $@
 
 
 TESTS_COMPLETED = $(addsuffix /.complete,$(call ListSubDirs,$(TESTS_DIR)))
@@ -123,12 +140,18 @@ $(TESTS_COMPLETED):
 	$(Q) $(MAKE) -C $(@D) execute
 	$(Q) touch $@
 
+
 ##@Cleaning
 
 .PHONY: samples-clean
 samples-clean: ##Clean all sample applications (all arch/build types)
 	@echo Cleaning all samples...
 	-$(Q) cd $(SAMPLES_DIR) && rm -rf $(addsuffix /out,$(SAMPLE_NAMES))
+
+.PHONY: component-samples-clean
+component-samples-clean: ##Clean all component samples
+	@echo Cleaning all component samples...
+	-$(Q) rm -rf $(dir $(COMPONENT_SAMPLE_TARGETS))
 
 CLEAN_TESTS := $(TESTS_COMPLETED:complete=clean)
 .PHONY: tests-clean
