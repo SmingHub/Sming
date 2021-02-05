@@ -47,6 +47,8 @@ Installing WSL
 
 See instructions here https://docs.microsoft.com/en-us/windows/wsl/install-win10#manual-installation-steps.
 
+Install an up-to-date Linux distribution from the Microsoft store, currently ``Ubuntu-20.04``.
+
 .. note::
 
    You may encounter an error message similar to this during installation::
@@ -76,7 +78,7 @@ See instructions here https://docs.microsoft.com/en-us/windows/wsl/install-win10
 Installing Sming
 ----------------
 
-Open a WSL command prompt and follow the :doc:`Linux installation instructions <../linux>`.
+Open a WSL command prompt and follow the instructions in :doc:`linux`.
 
 
 Flashing devices

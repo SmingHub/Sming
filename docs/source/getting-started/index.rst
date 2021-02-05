@@ -5,22 +5,20 @@ Getting Started
 
 Development System Installation
 -------------------------------
-Sming supports multiple architectures. Choose the architecture of your choice to install the needed development software and toolchain(s).
 
+Choose your preferred development environment for how to install the needed development software and toolchain(s):
 
 .. toctree::
    :titlesonly:
    :maxdepth: 1
 
-   /arch/esp8266/getting-started/index
-   /arch/esp32/getting-started/index
-   /arch/host/host-emulator
+   linux/index
+   macos/index
+   windows/index
+   docker/index
 
 You can also try Sming without installing anything locally.
 We have an  `interactive tutorial <https://www.katacoda.com/slaff/scenarios/sming-host-emulator>`__ that can be run directly from your browser.
-
-Windows users may also wish to consider building in a Linux virtual environment.
-See :doc:`Windows WSL <windows-wsl>` for further details.
 
 
 Documentation
@@ -35,13 +33,6 @@ Examples
 --------
 
 The examples are a great way to learn the API and brush up your C/C++ knowledge.
-Once you have completed the installation of the development tools, you can get the latest source code.
-
-::
-
-   git clone https://github.com/SmingHub/Sming.git
-
-And check some of the examples.
 
 -  `Basic Blink <#basic-blink>`__
 -  `Simple GPIO input/output <#simple-gpio-inputoutput>`__

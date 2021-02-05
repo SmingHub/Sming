@@ -49,7 +49,7 @@ Summary
    :caption: Contents:
    :hidden:
 
-   getting-started
+   getting-started/index
    features
    framework/index
    samples

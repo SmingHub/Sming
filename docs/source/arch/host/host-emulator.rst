@@ -27,7 +27,6 @@ The latest versions of Sming require GCC version 8 or newer.
 If your OS is 64 bit then you should install also 32 bit C/C++ compiler and libraries.
 Here's a summary of how to do this::
 
-   sudo add-apt-repository ppa:ubuntu-toolchain-r/test
    sudo apt update
    sudo apt install gcc-9 g++-9
 
@@ -131,7 +130,7 @@ first, and requires root privilege. You can use the
 
    sudo ip tuntap add dev tap0 mode tap user `whoami`
    sudo ip a a dev tap0 192.168.13.1/24
-   sudo ifconfig tap0 up
+   sudo ip link set tap0 up
 
    # The following lines are needed if you plan to access Internet
    sudo sysctl net.ipv4.ip_forward=1
@@ -147,6 +146,10 @@ first, and requires root privilege. You can use the
 This creates the ``tap0`` interface. The emulator will automatically
 select the first ``tap`` interface found. To override this, use the
 ``--ifname`` option.
+
+You can list available network interfaces thus::
+
+   ip link
 
 Troubleshooting
 ---------------

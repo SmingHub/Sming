@@ -21,10 +21,5 @@ Contents
    :glob:
    :maxdepth: 1
    
-   linux
-   macos
-   windows
    windows-manual
-   docker
    eqt
-   config
