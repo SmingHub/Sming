@@ -20,9 +20,11 @@ ALL_HWCONFIG		:= $(ALL_HWCONFIG:.hw=)
 HWCONFIG_PATH		:= $(firstword $(foreach d,$(HWCONFIG_DIRS),$(wildcard $d/$(HWCONFIG).hw)))
 
 ifeq (,$(wildcard $(HWCONFIG_PATH)))
+ifeq (,$(MAKE_CLEAN))
 $(info $(HWCONFIG_DIRS))
 $(eval $(call PrintVariable,ALL_HWCONFIG,Available configurations))
 $(error Hardware configuration '$(HWCONFIG)' not found)
+endif
 endif
 
 PARTITION_PATH		:= $(COMPONENT_PATH)
