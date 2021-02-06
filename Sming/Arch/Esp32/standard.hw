@@ -16,22 +16,19 @@
 			"address": "0x00f000",
 			"size": "0x1000",
 			"type": "data",
-			"subtype": "phy",
-			"flags": ""
+			"subtype": "phy"
 		},
 		"nvs": {
 			"address": "0x009000",
 			"size": "0x6000",
 			"type": "data",
-			"subtype": "nvs",
-			"flags": ""
+			"subtype": "nvs"
 		},
 		"factory": {
 			"address": "0x010000",
 			"size": "0x1f0000",
 			"type": "app",
 			"subtype": "factory",
-			"flags": "",
 			"filename": "$(TARGET_BIN)"
 		}
 	}

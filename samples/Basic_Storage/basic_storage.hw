@@ -32,7 +32,6 @@
 			"size": "256K",
 			"type": "data",
 			"subtype": "spiffs",
-			"flags": "",
 			"filename": "$(FW_BASE)/spiffs1_rom.bin",
 			"build": {
 				"target": "spiffsgen",
@@ -44,7 +43,6 @@
 			"size": "256K",
 			"type": "data",
 			"subtype": "spiffs",
-			"flags": "",
 			"filename": "$(FW_BASE)/spiffs2_rom.bin",
 			"build": {
 				"target": "spiffsgen",

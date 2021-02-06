@@ -314,7 +314,8 @@ class Entry(object):
         self.size = size
         self.type = parse_type(ptype)
         self.subtype = parse_subtype(self.type, subtype)
-        self.flags = set()
+        self.readonly = False
+        self.encrypted = False
         self.filename = ''
         self.build = None
 
@@ -337,12 +338,6 @@ class Entry(object):
                     self.address = parse_int(v)
                 elif k == 'size':
                     self.size = parse_int(v)
-                elif k == 'flags':
-                    flags = v.split()
-                    for flag in flags:
-                        if not flag in Entry.FLAGS:
-                            raise InputError("Unknown flag '%s'" % flag)
-                        self.flags |= {flag}
                 elif k == 'filename':
                     self.filename = v
                 elif k == 'build':
@@ -377,8 +372,6 @@ class Entry(object):
                 res[k] = stringnum(self.type_str())
             elif k == 'subtype':
                 res[k] = stringnum(self.subtype_str())
-            elif k == 'flags':
-                res[k] = self.flags_str()
             elif v is not None and k != 'name':
                 res[k] = v
         return res
@@ -391,7 +384,7 @@ class Entry(object):
         dict.pop('build', None)
         for k, v in dict.items():
             k = "PARTITION_%s_%s" % (self.name, k.upper())
-            res[k] = v
+            res[k] = int(v) if type(v) is bool else v
 
         return res
 
@@ -421,9 +414,6 @@ class Entry(object):
 
     def subtype_is(self, subtype):
         return self.subtype_str() == subtype if isinstance(subtype, str) else self.subtype == subtype
-
-    def flags_str(self):
-        return " ".join(self.flags)
 
     def __eq__(self, other):
         if isinstance(other, str):
@@ -495,7 +485,10 @@ class Entry(object):
         return res
 
     def to_binary(self):
-        flags = sum((1 << self.FLAGS[flag]) for flag in self.flags)
+        flags = 0
+        for key in self.FLAGS:
+            if getattr(self, key):
+                flags |= (1 << self.FLAGS[key])
         return struct.pack(self.STRUCT_FORMAT,
                            self.MAGIC_BYTES,
                            self.type, self.subtype,

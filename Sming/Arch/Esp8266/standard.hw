@@ -17,22 +17,19 @@
 			"size": "4K",
 			"type": "data",
 			"subtype": "phy",
-			"flags": "",
 			"filename": "$(FLASH_INIT_DATA)"
 		},
 		"sys_param": {
 			"address": "0x004000",
 			"size": "16K",
 			"type": "data",
-			"subtype": "sysparam",
-			"flags": ""
+			"subtype": "sysparam"
 		},
 		"rom0": {
 			"address": "0x008000",
 			"size": "992K",
 			"type": "app",
 			"subtype": "factory",
-			"flags": "",
 			"filename": "$(RBOOT_ROM_0_BIN)"
 		}
 	}

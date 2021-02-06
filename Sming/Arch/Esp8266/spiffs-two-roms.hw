@@ -7,7 +7,6 @@
 			"size": "992K",
 			"type": "app",
 			"subtype": "ota_0",
-			"flags": "",
 			"filename": "$(RBOOT_ROM_1_BIN)"
 		}
 	}

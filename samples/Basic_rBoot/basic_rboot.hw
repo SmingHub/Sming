@@ -7,15 +7,13 @@
 			"size": "992K",
 			"type": "app",
 			"subtype": "ota_0",
-			"flags": "",
 			"filename": "$(RBOOT_ROM_1_BIN)"
 		},
 		"spiffs1": {
 			"address": "0x300000",
 			"size": "512K",
 			"type": "data",
-			"subtype": "spiffs",
-			"flags": ""
+			"subtype": "spiffs"
 		}
 	}
 }

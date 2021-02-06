@@ -136,8 +136,11 @@
 						"integer"
 					]
 				},
-				"flags": {
-					"type": "string"
+				"readonly": {
+					"type": "boolean"
+				},
+				"encrypted": {
+					"type": "boolean"
 				},
 				"filename": {
 					"type": "string",

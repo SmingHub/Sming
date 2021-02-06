@@ -14,7 +14,6 @@
 			"size": "992K",
 			"type": "app",
 			"subtype": "factory",
-			"flags": "",
 			"filename": "$(BLANK_BIN)"
 		}
 	}

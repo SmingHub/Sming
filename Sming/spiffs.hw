@@ -7,7 +7,6 @@
 			"size": "512K",
 			"type": "data",
 			"subtype": "spiffs",
-			"flags": "",
 			"filename": "$(SPIFF_BIN_OUT)",
 			"build": {
 				"target": "spiffsgen",
