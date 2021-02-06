@@ -5,20 +5,23 @@ image:
 platform: x86
 
 environment:
-  SMINGTOOLS: https://github.com/SmingHub/SmingTools/releases/download/1.0
   SMING_SECRET:
     secure: rCs19uNvDR07w1d2pfwJIzewiEQ2zpKXdqFp5BqHQAA=
 
   matrix:
     - SMING_ARCH: Host
+      INSTALL_OPTS: host doc
 
     - SMING_ARCH: Esp8266
+      INSTALL_OPTS: esp8266
       BUILD_COMPILER: udk
 
     - SMING_ARCH: Esp8266
+      INSTALL_OPTS: esp8266
       BUILD_COMPILER: eqt
 
     - SMING_ARCH: Esp32
+      INSTALL_OPTS: esp32
 
 
 install:
@@ -55,7 +58,8 @@ install:
       export PYTHON=$HOME/venv3.9/bin/python
       export ESP32_PYTHON_PATH=$HOME/venv3.9/bin
       source $HOME/venv3.9/bin/activate
-      Tools/ci/install.sh
+      Tools/install.sh $INSTALL_OPTS
+      cd $CI_BUILD_DIR
 
 
 before_build:

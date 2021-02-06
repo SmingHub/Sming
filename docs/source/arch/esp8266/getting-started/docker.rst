@@ -2,6 +2,11 @@
 Docker Installation
 *******************
 
+Docker is a useful option if you want to experiment with Sming in an isolated environment.
+If you're unfamiliar with Docker, you can find a good overview in the article,
+`What is a Container? <https://www.docker.com/resources/what-container>`__.
+
+
 Install Docker
 ==============
 
