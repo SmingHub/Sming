@@ -1,6 +1,5 @@
 # Esp8266 build.run.sh
 
-make -C "$SMING_PROJECTS_DIR/samples/HttpServer_FirmwareUpload" python-requirements
 $MAKE_PARALLEL samples
 make clean samples-clean
 $MAKE_PARALLEL Basic_Blink ENABLE_CUSTOM_HEAP=1 DEBUG_VERBOSE_LEVEL=3
