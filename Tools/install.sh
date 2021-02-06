@@ -74,7 +74,7 @@ fi
 
 # Common install
 
-if [ -n "$APPVEYOR" ]; then
+if [ -n "$APPVEYOR" ] || [ -n "$GITHUB_ACTION" ]; then
 
     sudo apt-get -y update
     $PKG_INSTALL \
