@@ -43,7 +43,9 @@ def main():
         input_is_binary = inputData[0:2] == partition.Entry.MAGIC_BYTES
         if input_is_binary:
             config = Config.from_binary(inputData)
-    if not input_is_binary:
+        else:
+            raise InputError("File '%s' not recognised as partition table" % args.input)
+    else:
         config = Config.from_name(args.input)
         partitions = config.partitions
 
