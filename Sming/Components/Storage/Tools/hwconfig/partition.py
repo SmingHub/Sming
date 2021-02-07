@@ -218,15 +218,16 @@ class Table(list):
             raise InputError("Partition names must be unique")
 
         # check for overlaps
+        minPartitionAddress = self.offset + PARTITION_TABLE_SIZE
         dev = ''
         last = None
         for p in self:
             if p.device != dev:
                 last = None
                 dev = p.device
-            if dev == self[0].device and p.address < self.offset + PARTITION_TABLE_SIZE:
-                raise InputError("Partition '%s' @ %s-%s is before partition table @ %s" \
-                                 % (p.name, p.address_str(), p.end_str(), addr_format(self.offset + PARTITION_TABLE_SIZE)))
+            if dev == self[0].device and p.address < minPartitionAddress:
+                raise InputError("Partition '%s' @ %s-%s must be located after @ %s" \
+                                 % (p.name, p.address_str(), p.end_str(), addr_format(minPartitionAddress)))
             if last is not None and p.address <= last.end():
                 raise InputError("Partition '%s' @ %s-%s overlaps '%s' @ %s-%s" \
                                  % (p.name, p.address_str(), p.end_str(), \

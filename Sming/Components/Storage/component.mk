@@ -150,7 +150,7 @@ endif
 
 # Where to store read partition map file
 READMAP_BIN := $(OUT_BASE)/partition-table.read.bin
-PARTITION_TABLE_REGION := $(PARTITION_TABLE_OFFSET),0x0c00
+PARTITION_TABLE_REGION = $(PARTITION_TABLE_OFFSET),$(PARTITION_TABLE_LENGTH)
 
 .PHONY: readmap
 readmap:##Read partition map from device
