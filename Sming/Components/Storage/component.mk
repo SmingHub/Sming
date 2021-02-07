@@ -41,7 +41,7 @@ HWCONFIG_MK := $(PROJECT_DIR)/$(OUT_BASE)/hwconfig.mk
 $(shell $(HWCONFIG_TOOL) --quiet expr $(HWCONFIG) $(HWCONFIG_MK) "config.buildVars()")
 include $(HWCONFIG_MK)
 
-HWEXPR := $(HWCONFIG_TOOL) $(if $(PART),--part $(PART)) expr $(HWCONFIG) -
+HWEXPR := $(HWCONFIG_TOOL) $(if $(PART),--part "$(PART)") expr $(HWCONFIG) -
 
 define HwExpr
 $(shell $(HWEXPR) "$1")
@@ -122,31 +122,32 @@ endef
 
 ##@Flashing
 
-# $1 -> Partition name
-define PartChunk
-$(if $(PARTITION_$1_FILENAME),$(PARTITION_$1_ADDRESS)=$(PARTITION_$1_FILENAME))
+# Get chunks for a list of partitions, ignore any without filenames
+# $1 -> List of partition names
+define PartChunks
+$(foreach p,$1,$(if $(PARTITION_$p_FILENAME),$(PARTITION_$p_ADDRESS)=$(PARTITION_$p_FILENAME)))
 endef
 
-# $1 -> Partition name
-define PartRegion
-$(PARTITION_$1_ADDRESS),$(PARTITION_$1_SIZE)
+# Get regions for list of partitions
+# $1 -> List of partition names
+define PartRegions
+$(foreach p,$1,$(PARTITION_$p_ADDRESS),$(PARTITION_$p_SIZE_BYTES))
 endef
 
 # One flash sector of 0xFF
 BLANK_BIN := $(PARTITION_PATH)/blank.bin
 
 # Just the application chunks
-FLASH_APP_CHUNKS = $(foreach p,$(SPIFLASH_PARTITION_NAMES),$(if $(filter app,$(PARTITION_$p_TYPE)),$(call PartChunk,$p)))
+SPIFLASH_APP_PARTITION_NAMES := $(foreach p,$(SPIFLASH_PARTITION_NAMES),$(if $(filter app,$(PARTITION_$p_TYPE)),$p))
+FLASH_APP_CHUNKS = $(call PartChunks,$(SPIFLASH_APP_PARTITION_NAMES))
 # Partition map chunk
 FLASH_MAP_CHUNK := $(PARTITION_TABLE_OFFSET)=$(PARTITIONS_BIN)
 # All partitions with image files
-FLASH_PARTITION_CHUNKS = $(foreach p,$(SPIFLASH_PARTITION_NAMES),$(call PartChunk,$p))
+FLASH_PARTITION_CHUNKS = $(call PartChunks,$(SPIFLASH_PARTITION_NAMES))
 
-ifdef PART
-DEBUG_VARS += FLASH_PART_CHUNKS FLASH_PART_REGION
-FLASH_PART_CHUNKS := $(call PartChunk,$(PART))
-FLASH_PART_REGION := $(call PartRegion,$(PART))
-endif
+# User-selected partition(s)
+FLASH_PART_CHUNKS = $(call PartChunks,$(PART))
+FLASH_PART_REGION = $(call PartRegions,$(PART))
 
 # Where to store read partition map file
 READMAP_BIN := $(OUT_BASE)/partition-table.read.bin
@@ -160,8 +161,15 @@ readmap:##Read partition map from device
 	$(Q) $(HWCONFIG_TOOL) expr $(READMAP_BIN) - "config.map().to_csv()"
 	@echo
 
+# Run sanity checks against a list of partitions before flashing commences
+# $1 -> List of partition names
+define CheckPartitionChunks
+$(HWCONFIG_TOOL) flashcheck $(HWCONFIG) - "$1"
+endef
+
 .PHONY: flashpart
 flashpart: all kill_term ##Flash a specific partition, set PART=name
+	$(Q) $(call CheckPartitionChunks,$(FLASH_PART_CHUNKS))
 	$(call WriteFlash,$(FLASH_PART_CHUNKS))
 
 .PHONY: erasepart

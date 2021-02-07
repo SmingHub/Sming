@@ -27,7 +27,7 @@ def main():
     parser.add_argument('--quiet', '-q', help="Don't print non-critical status messages to stderr", action='store_true')
     parser.add_argument('--secure', help="Require app partitions to be suitable for secure boot", action='store_true')
     parser.add_argument('--part', help="Name of partition to operate on")
-    parser.add_argument('command', help='Action to perform', choices=['partgen', 'expr', 'validate'])
+    parser.add_argument('command', help='Action to perform', choices=['partgen', 'expr', 'validate', 'flashcheck'])
     parser.add_argument('input', help='Name of hardware configuration or path to binary partition table')
     parser.add_argument('output', help='Path to output file. Will use stdout if omitted.', nargs='?', default='-')
     parser.add_argument('expr', help='Expression to evaluate', nargs='?', default=None)
@@ -35,7 +35,7 @@ def main():
     args = parser.parse_args()
 
     common.quiet = args.quiet
-    
+
     output = None
     input_is_binary = False
     if os.path.exists(args.input):
@@ -56,6 +56,7 @@ def main():
             return
 
     if args.command == 'validate':
+        # Validate resulting hardware configuration against schema
         try:
             from jsonschema import Draft7Validator
             from jsonschema.exceptions import ValidationError
@@ -70,12 +71,30 @@ def main():
             for e in errors:
                 critical("%s @ %s" % (e.message, e.path))
             sys.exit(3)
+    elif args.command == 'flashcheck':
+        # Expect list of chunks, such as "0x100000=/out/Esp8266/debug/firmware/spiff_rom.bin 0x200000=custom.bin"
+        list = args.expr.split()
+        if len(list) == 0:
+            raise InputError("No chunks to flash!")
+        for e in list:
+            addr, filename = e.split('=')
+            addr = int(addr, 0)
+            part = config.partitions.find_by_address(addr)
+            if part is None:
+                raise InputError("No partition contains address 0x%08x" % addr)
+            if part.address != addr:
+                raise InputError("Address 0x%08x is within partition '%s', not at start (0x%08x)" % (addr, part.name, part.address))
+            filesize = os.path.getsize(filename)
+            if filesize > part.size:
+                raise InputError("File '%s' is 0x%08x bytes, too big for partition '%s' (0x%08x bytes)" % (os.path.basename(filename), filesize, part.name, part.size))
     elif args.command == 'partgen':
+        # Generate partition table binary
         if not args.no_verify:
             status("Verifying partition table...")
             config.verify(args.secure)
         output = config.partitions.to_binary(config.devices)
     elif args.command == 'expr':
+        # Evaluate expression against configuration data
         output = str(eval(args.expr)).encode()
     else:
         raise InputError('Unknown command: %s' % args.command)

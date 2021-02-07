@@ -198,6 +198,12 @@ class Table(list):
                 return p
         return None
 
+    def find_by_address(self, addr):
+        for p in self:
+            if p.contains(addr):
+                return p
+        return None
+
     def verify(self, arch, secure):
         """Verify partition layout
         """
@@ -403,6 +409,9 @@ class Entry(object):
 
     def size_str(self):
         return size_format(self.size)
+
+    def contains(self, addr):
+        return addr >= self.address and addr <= self.end()
 
     def type_str(self):
         return "" if self.type == 0xff else lookup_keyword(self.type, TYPES)
