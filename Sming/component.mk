@@ -17,6 +17,7 @@ COMPONENT_DEPENDS := \
 	sming-arch \
 	FlashString \
 	spiffs \
+	IFS \
 	http-parser \
 	libb64 \
 	ws_parser \

@@ -10,8 +10,6 @@
 
 #include "FileStream.h"
 
-/* FileStream */
-
 void FileStream::attach(file_t file, size_t size)
 {
 	close();
@@ -24,13 +22,26 @@ void FileStream::attach(file_t file, size_t size)
 	}
 }
 
+bool FileStream::open(const FileStat& stat, FileOpenFlags openFlags)
+{
+	lastError = FS_OK;
+
+	file_t file = fileOpen(stat, openFlags);
+	if(!check(file)) {
+		return false;
+	}
+
+	attach(file, stat.size);
+	return true;
+}
+
 bool FileStream::open(const String& fileName, FileOpenFlags openFlags)
 {
-	lastError = SPIFFS_OK;
+	lastError = FS_OK;
 
 	file_t file = fileOpen(fileName, openFlags);
 	if(!check(file)) {
-		debug_w("File wasn't found: %s", fileName.c_str());
+		debug_w("File '%s' open error: %s", fileName.c_str(), fileGetErrorString(file).c_str());
 		return false;
 	}
 
@@ -53,7 +64,7 @@ void FileStream::close()
 	}
 	size = 0;
 	pos = 0;
-	lastError = SPIFFS_OK;
+	lastError = FS_OK;
 }
 
 size_t FileStream::readBytes(char* buffer, size_t length)
@@ -124,20 +135,22 @@ int FileStream::seekFrom(int offset, SeekOrigin origin)
 
 String FileStream::fileName() const
 {
-	spiffs_stat stat;
-	fileStats(handle, &stat);
-	return String(reinterpret_cast<const char*>(stat.name));
+	FileNameStat stat;
+	int res = fileStats(handle, stat);
+	return (res < 0) ? nullptr : stat.name.buffer;
 }
 
 String FileStream::id() const
 {
-	spiffs_stat stat;
-	fileStats(handle, &stat);
+	FileStat stat;
+	int res = fileStats(handle, stat);
+	if(res < 0) {
+		return nullptr;
+	}
 
 #define ETAG_SIZE 16
 	char buf[ETAG_SIZE];
-	m_snprintf(buf, ETAG_SIZE, _F("00f-%x-%x0-%x"), stat.obj_id, stat.size,
-			   strlen(reinterpret_cast<const char*>(stat.name)));
+	m_snprintf(buf, ETAG_SIZE, _F("00f-%x-%x0-%x"), stat.id, stat.size, stat.name.length);
 
 	return String(buf);
 }

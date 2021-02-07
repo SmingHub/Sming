@@ -61,7 +61,8 @@
 	XX(sysParam, 0x40, "System Parameters")                                                                            \
 	XX(espHttpd, 0x80, "ESPHTTPD")                                                                                     \
 	XX(fat, 0x81, "FAT")                                                                                               \
-	XX(spiffs, 0x82, "SPIFFS")
+	XX(spiffs, 0x82, "SPIFFS")                                                                                         \
+	XX(fwfs, 0xF1, "FWFS")
 
 namespace Storage
 {

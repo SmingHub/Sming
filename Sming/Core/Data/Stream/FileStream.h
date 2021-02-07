@@ -33,6 +33,11 @@ public:
 		open(fileName, openFlags);
 	}
 
+	FileStream(const FileStat& stat, FileOpenFlags openFlags = eFO_ReadOnly)
+	{
+		open(stat, openFlags);
+	}
+
 	~FileStream()
 	{
 		close();
@@ -49,6 +54,8 @@ public:
 	{
 		return open(fileName, openFlags);
 	}
+
+	bool open(const FileStat& stat, FileOpenFlags openFlags = eFO_ReadOnly);
 
 	/** @brief Open a file and attach this stream object to it
 	 *  @param fileName
@@ -178,5 +185,5 @@ private:
 	file_t handle = -1;
 	size_t pos = 0;
 	size_t size = 0;
-	int lastError = SPIFFS_OK;
+	int lastError = FS_OK;
 };

@@ -9,7 +9,7 @@
  ****/
 #pragma once
 
-#include "spiffs.h"
+#include <spiffs.h>
 #include <Storage/Partition.h>
 
 /**
@@ -44,8 +44,3 @@ bool spiffs_format();
  * @retval bool true on success
  */
 bool spiffs_format(Storage::Partition& partition);
-
-/**
- * @brief Global SPIFFS instance used by FileSystem API
- */
-extern spiffs _filesystemStorageHandle;
