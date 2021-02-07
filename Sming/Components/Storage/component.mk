@@ -34,27 +34,25 @@ HWCONFIG_TOOL := \
 	BUILD_BASE=$(BUILD_BASE) \
 	$(PYTHON) $(PARTITION_TOOLS)/hwconfig/hwconfig.py
 
-ifeq (,$(MAKE_DOCS))
+ifeq (,$(MAKE_DOCS)$(MAKE_CLEAN))
 
 # Generate build variables from hardware configuration
 HWCONFIG_MK := $(PROJECT_DIR)/$(OUT_BASE)/hwconfig.mk
 $(shell $(HWCONFIG_TOOL) --quiet expr $(HWCONFIG) $(HWCONFIG_MK) "config.buildVars()")
 include $(HWCONFIG_MK)
-
-HWEXPR := $(HWCONFIG_TOOL) $(if $(PART),--part "$(PART)") expr $(HWCONFIG) -
-
-define HwExpr
-$(shell $(HWEXPR) "$1")
-endef
-
-# Import PARTITION_TABLE_OFFSET from hardware configuration
-DEBUG_VARS += PARTITION_TABLE_OFFSET
 ifeq ($(SMING_ARCH_HW),)
 $(error Hardware configuration error)
 else ifneq ($(SMING_ARCH),$(SMING_ARCH_HW))
 $(error Hardware configuration is for arch $(SMING_ARCH_HW), does not match SMING_ARCH ($(SMING_ARCH)))
 endif
-COMPONENT_CXXFLAGS		:= -DPARTITION_TABLE_OFFSET=$(PARTITION_TABLE_OFFSET)
+COMPONENT_CXXFLAGS := -DPARTITION_TABLE_OFFSET=$(PARTITION_TABLE_OFFSET)
+
+# Function to evaluate expression against config
+HWEXPR := $(HWCONFIG_TOOL) $(if $(PART),--part "$(PART)") expr $(HWCONFIG) -
+
+define HwExpr
+$(shell $(HWEXPR) "$1")
+endef
 
 
 ##@Configuration

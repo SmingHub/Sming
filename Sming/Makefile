@@ -161,7 +161,7 @@ component-samples-clean: ##Clean all component samples
 
 CLEAN_TESTS := $(TESTS_COMPLETED:complete=clean)
 .PHONY: tests-clean
-tests-clean: $(CLEAN_TESTS) ##Clean all test applications (all arch/build types)
+tests-clean: $(wildcard $(CLEAN_TESTS)) ##Clean all test applications (all arch/build types)
 	-$(Q) rm -f $(TESTS_COMPLETED)
 
 .PHONY: $(CLEAN_TESTS)
