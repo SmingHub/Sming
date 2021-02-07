@@ -169,7 +169,10 @@
 					"type": "string",
 					"description": "Makefile target for this build"
 				}
-			}
+			},
+			"required": [
+				"target"
+			]
 		}
 	}
 }
