@@ -15,7 +15,7 @@
 
 #include <Network/RbootHttpUpdater.h>
 
-bool RbootHttpUpdater::addItem(int offset, const String& firmwareFileUrl, size_t maxSize)
+bool RbootHttpUpdater::addItem(uint32_t offset, const String& firmwareFileUrl, size_t maxSize)
 {
 	RbootHttpUpdaterItem add;
 	add.targetOffset = offset;

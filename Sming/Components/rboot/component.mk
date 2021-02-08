@@ -7,8 +7,8 @@ RBOOT_EMULATION			:= 1
 endif
 
 COMPONENT_SUBMODULES	:= rboot
-COMPONENT_INCDIRS	:= rboot appcode rboot/appcode include
-COMPONENT_SRCDIRS       := src
+COMPONENT_INCDIRS		:= rboot rboot/appcode include
+COMPONENT_SRCDIRS       := src src/Arch/$(SMING_ARCH)
 
 RBOOT_DIR				:= $(COMPONENT_PATH)
 
@@ -35,23 +35,22 @@ $(error Cannot enable RBOOT_GPIO_ENABLED and RBOOT_GPIO_SKIP_ENABLED at the same
 endif
 
 ### ROM Addresses ###
-# Make sure that your ROM slots and SPIFFS slot(s) do not overlap!
 
-CONFIG_VARS				+= RBOOT_ROM0_ADDR RBOOT_ROM1_ADDR RBOOT_ROM2_ADDR
+DEBUG_VARS				+= RBOOT_ROM0_ADDR RBOOT_ROM1_ADDR RBOOT_ROM2_ADDR
 
-# Loation of first ROM (default is sector 2 after rboot and rboot config sector)
-RBOOT_ROM0_ADDR			?= 0x002000
+# Location of first ROM
+RBOOT_ROM0_ADDR := $(PARTITION_rom0_ADDRESS)
 
 # The parameter below specifies the location of the second ROM.
 # You need a second slot for any kind of firmware update mechanism.
 # Leave empty if you don't need a second ROM slot.
-RBOOT_ROM1_ADDR			?=
+RBOOT_ROM1_ADDR := $(PARTITION_rom1_ADDRESS)
 
 # The parameter below specifies the location of the GPIO ROM.
 # It is only used when RBOOT_GPIO_ENABLED = 1
 # Note that setting this parameter will only configure rboot.
 # The Sming build system does not create a ROM for this slot.
-RBOOT_ROM2_ADDR			?=
+RBOOT_ROM2_ADDR := $(PARTITION_rom2_ADDRESS)
 
 ifeq ($(RBOOT_GPIO_ENABLED),0)
 ifneq ($(RBOOT_ROM2_ADDR),)
@@ -86,15 +85,6 @@ RBOOT_LD_TEMPLATE		?= $(RBOOT_DIR)/rboot.rom0.ld
 RBOOT_LD_0				:= $(BUILD_BASE)/$(RBOOT_ROM_0).ld
 RBOOT_LD_1				:= $(BUILD_BASE)/$(RBOOT_ROM_1).ld
 
-#
-CONFIG_VARS				+= RBOOT_SPIFFS_0 RBOOT_SPIFFS_1
-RBOOT_SPIFFS_0			?= 0x100000
-RBOOT_SPIFFS_1			?= 0x300000
-APP_CFLAGS				+= -DRBOOT_SPIFFS_0=$(RBOOT_SPIFFS_0)
-APP_CFLAGS				+= -DRBOOT_SPIFFS_1=$(RBOOT_SPIFFS_1)
-
-SPIFF_START_ADDR		?= $(RBOOT_SPIFFS_0)
-
 # filenames and options for generating rBoot rom images with esptool2
 RBOOT_E2_SECTS			?= .text .text1 .data .rodata
 RBOOT_E2_USER_ARGS		?= -quiet -bin -boot2
@@ -103,7 +93,7 @@ RBOOT_ROM_0_BIN			:= $(FW_BASE)/$(RBOOT_ROM_0).bin
 RBOOT_ROM_1_BIN			:= $(FW_BASE)/$(RBOOT_ROM_1).bin
 
 
-COMPONENT_APPCODE		:= appcode rboot/appcode $(if $(RBOOT_EMULATION),host)
+COMPONENT_APPCODE		:= rboot/appcode
 APP_CFLAGS				+= -DRBOOT_INTEGRATION
 
 # these are exported for use by the rBoot Makefile
@@ -133,11 +123,19 @@ ifeq ($(RBOOT_GPIO_SKIP_ENABLED),1)
 	APP_CFLAGS			+= -DBOOT_GPIO_SKIP_ENABLED
 endif
 
-ifndef RBOOT_EMULATION
+COMPONENT_CXXFLAGS += \
+		-DRBOOT_ROM0_ADDR=$(RBOOT_ROM0_ADDR) \
+		-DRBOOT_ROM1_ADDR=$(RBOOT_ROM1_ADDR)
+
+ifdef RBOOT_EMULATION
+FLASH_BOOT_CHUNKS		= 0x00000=$(BLANK_BIN)
+else
+export RBOOT_ROM0_ADDR
+export RBOOT_ROM1_ADDR
 RBOOT_BIN				:= $(FW_BASE)/rboot.bin
 CUSTOM_TARGETS			+= $(RBOOT_BIN)
 $(RBOOT_BIN):
-	$(Q) $(MAKE) -C $(RBOOT_DIR)/rboot
+	$(Q) $(MAKE) -C $(RBOOT_DIR)/rboot $(RBOOT_CFLAGS)
 
 EXTRA_LDFLAGS			:= -u Cache_Read_Enable_New
 
@@ -151,14 +149,9 @@ endef
 LIBMAIN_COMMANDS += $(RBOOT_LIBMAIN_COMMANDS)
 endif
 
-endif # RBOOT_EMULATION
-
 # Define our flash chunks
-FLASH_RBOOT_BOOT_CHUNKS				:= 0x00000=$(RBOOT_BIN)
-FLASH_RBOOT_APP_CHUNKS				:= $(RBOOT_ROM0_ADDR)=$(RBOOT_ROM_0_BIN)
-FLASH_RBOOT_ERASE_CONFIG_CHUNKS		:= 0x01000=$(SDK_BASE)/bin/blank.bin
-
-ifndef RBOOT_EMULATION
+FLASH_BOOT_CHUNKS				:= 0x00000=$(RBOOT_BIN)
+FLASH_RBOOT_ERASE_CONFIG_CHUNKS	:= 0x01000=$(SDK_BASE)/bin/blank.bin
 
 # => Automatic linker script generation from template
 # $1 -> application target

@@ -1,3 +1,1 @@
 ARDUINO_LIBRARIES := Ultrasonic
-
-DISABLE_SPIFFS = 1

@@ -127,6 +127,13 @@ To switch to a different build architecture, for example:
 
 To inspect the current build configuration, type ``make list-config``.
 
+Hardware configuration
+~~~~~~~~~~~~~~~~~~~~~~
+
+The appropriate hardware configuration should be selected in the
+project's component.mk file. Use one of the standard configurations
+or create your own. See :ref:`hardware-config`.
+
 Configuration variables
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -140,7 +147,7 @@ sessions, and will override any values set in your project’s
 
 -  Type ``make SPIFF_BIN=test-rom`` to build the project and (if
    enabled) create a SPIFFS image file called ``test-rom.bin``
--  Type ``make flash COM_PORT=COM4 SPI_MODE=dio SPI_SIZE=4M`` to flash
+-  Type ``make flash COM_PORT=COM4`` to flash
    the project and ``test-rom`` SPIFFS image using the provided flash
    memory settings
 -  Next time you type ``make flash``, the same settings will be used, no

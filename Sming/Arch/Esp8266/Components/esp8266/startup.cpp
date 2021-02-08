@@ -14,6 +14,7 @@
 #include <driver/hw_timer.h>
 #include <gdb/gdb_hooks.h>
 #include <esp_cplusplus.h>
+#include <Storage.h>
 
 extern void init();
 
@@ -54,46 +55,9 @@ extern "C" void WEAK_ATTR user_rf_pre_init(void)
 
 extern "C" uint32 ICACHE_FLASH_ATTR  WEAK_ATTR user_rf_cal_sector_set(void)
 {
-    enum flash_size_map size_map = system_get_flash_size_map();
-    uint32 rf_cal_sec = 0;
-
-    switch (int(size_map)) {
-        case FLASH_SIZE_2M:
-            rf_cal_sec = 64 - 5;
-            break;
-
-        case FLASH_SIZE_4M_MAP_256_256:
-            rf_cal_sec = 128 - 5;
-            break;
-
-        case FLASH_SIZE_8M_MAP_512_512:
-            rf_cal_sec = 256 - 5;
-            break;
-
-        case FLASH_SIZE_16M_MAP_512_512:
-        case FLASH_SIZE_16M_MAP_1024_1024:
-            rf_cal_sec = 512 - 5;
-            break;
-
-        case FLASH_SIZE_32M_MAP_512_512:
-        case FLASH_SIZE_32M_MAP_1024_1024:
-            rf_cal_sec = 1024 - 5;
-            break;
-
-        case 8: // FLASH_SIZE_64M_MAP_1024_1024
-            rf_cal_sec = 2048 - 5;
-            break;
-
-        case 9: // FLASH_SIZE_128M_MAP_1024_1024
-            rf_cal_sec = 4096 - 5;
-            break;
-
-        default:
-            rf_cal_sec = 0;
-            break;
-    }
-
-    return rf_cal_sec;
+	// RF calibration stored in last sector of sysParam
+	auto sysParam = *Storage::findPartition(Storage::Partition::SubType::Data::sysParam);
+	return ((sysParam.address() + sysParam.size()) / SPI_FLASH_SEC_SIZE) - 1;
 }
 
 #ifdef SDK_INTERNAL
@@ -104,25 +68,19 @@ extern "C" uint32 ICACHE_FLASH_ATTR  WEAK_ATTR user_rf_cal_sector_set(void)
 
 extern "C" void ICACHE_FLASH_ATTR WEAK_ATTR user_pre_init(void)
 {
-	const uint32_t MAX_PROGRAM_SECTORS = 0x100000 / SPI_FLASH_SEC_SIZE; // 1MB addressable
+	Storage::initialize();
 
-	// WARNING: Sming supports SDK 3.0 with rBoot enabled apps ONLY!
-	const partition_type_t SYSTEM_PARTITION_RBOOT_CONFIG = static_cast<partition_type_t>(SYSTEM_PARTITION_CUSTOMER_BEGIN + 0);
-	const partition_type_t SYSTEM_PARTITION_PROGRAM = static_cast<partition_type_t>(SYSTEM_PARTITION_CUSTOMER_BEGIN + 1);
+	auto sysParam = *Storage::findPartition(Storage::Partition::SubType::Data::sysParam);
+	auto phy = *Storage::findPartition(Storage::Partition::SubType::Data::phy);
 
-	// Partitions offsets and sizes must be in sector multiples, so work in sectors
-	#define PARTITION_ITEM(_type, _start, _length) \
-		{_type, (_start) * SPI_FLASH_SEC_SIZE, (_length) * SPI_FLASH_SEC_SIZE}
+	// RF calibration stored in last sector of sysParam
+	auto sysParamSize = sysParam.size() - SPI_FLASH_SEC_SIZE;
 
-	// Partitions in position order
-	uint32_t rfCalSector = user_rf_cal_sector_set();
 	static const partition_item_t partitions[] = {
-			PARTITION_ITEM(SYSTEM_PARTITION_BOOTLOADER,			0,					1),
-			PARTITION_ITEM(SYSTEM_PARTITION_RBOOT_CONFIG,		1,					1),
-			PARTITION_ITEM(SYSTEM_PARTITION_PROGRAM,			2,					std::min(MAX_PROGRAM_SECTORS, rfCalSector) - 2),
-			PARTITION_ITEM(SYSTEM_PARTITION_RF_CAL,				rfCalSector,		1),
-			PARTITION_ITEM(SYSTEM_PARTITION_PHY_DATA,			rfCalSector + 1,	1),
-			PARTITION_ITEM(SYSTEM_PARTITION_SYSTEM_PARAMETER,	rfCalSector + 2,	3),
+			{SYSTEM_PARTITION_BOOTLOADER,		0,						SPI_FLASH_SEC_SIZE},
+			{SYSTEM_PARTITION_PHY_DATA,			phy.address(),			phy.size()},
+			{SYSTEM_PARTITION_SYSTEM_PARAMETER,	sysParam.address(),		sysParamSize},
+			{SYSTEM_PARTITION_RF_CAL,			sysParam.address() + sysParamSize,	SPI_FLASH_SEC_SIZE},
 	};
 
 	enum flash_size_map sizeMap = system_get_flash_size_map();
@@ -134,7 +92,7 @@ extern "C" void ICACHE_FLASH_ATTR WEAK_ATTR user_pre_init(void)
 			os_printf("partition[%u]: %u, 0x%08x, 0x%08x\n", i, part.type, part.addr, part.size);
 		}
 		if(sizeMap < FLASH_SIZE_8M_MAP_512_512) {
-			os_printf("** Note: SDK 3.0.1 requires SPI_SIZE >= 1M\n");
+			os_printf("** Note: SDK 3.0.1 requires spiFlash size >= 1M\n");
 		}
 		while(1) {
 			// Cannot proceed

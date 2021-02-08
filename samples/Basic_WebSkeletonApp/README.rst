@@ -34,6 +34,6 @@ To test this out, build the application without a filesystem image:
 
 .. code-block:: bash
 
-   make DISABLE_SPIFFS=1
+   make HWCONFIG=standard ENABLE_FLASHSTRING_MAP=1
 
 See *webserver.cpp* for the details.

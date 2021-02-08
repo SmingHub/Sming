@@ -32,6 +32,7 @@
 #include <host_lwip.h>
 #include <stdlib.h>
 #include "include/hostlib/CommandLine.h"
+#include <Storage.h>
 
 #include <Platform/System.h>
 #include <Platform/Timers.h>
@@ -213,6 +214,8 @@ int main(int argc, char* argv[])
 	if(config.initonly) {
 		hostmsg("Initialise-only requested");
 	} else {
+		Storage::initialize();
+
 		CThread::startup();
 
 		hw_timer_init();

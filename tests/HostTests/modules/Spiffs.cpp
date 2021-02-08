@@ -1,5 +1,5 @@
 #include <HostTests.h>
-#include <esp_spi_flash.h>
+#include <Storage.h>
 
 class SpiffsTest : public TestGroup
 {
@@ -32,7 +32,7 @@ public:
 		DEFINE_FSTR_LOCAL(testFile, "testfile");
 		DEFINE_FSTR_LOCAL(testContent, "Some test content to write to a file");
 
-		auto cfg = spiffs_get_storage_config();
+		auto part = *Storage::findPartition(Storage::Partition::SubType::Data::spiffs);
 
 		// Write to filesystem until sector #0 gets erased
 		unsigned writeCount = 0;
@@ -44,8 +44,8 @@ public:
 				break;
 			}
 			++writeCount;
-			if(flashmem_read(&word0, cfg.phys_addr, sizeof(word0)) != sizeof(word0)) {
-				debug_e("flashmem_read failed");
+			if(!part.read(0, word0)) {
+				debug_e("part.read() failed");
 				TEST_ASSERT(false);
 				break;
 			}

@@ -15,6 +15,7 @@ all:
 	$(error Internal makefile) 
 
 include $(SMING_HOME)/build.mk
+include $(PROJECT_DIR)/$(OUT_BASE)/hwconfig.mk
 
 # Makefile runs in the build directory
 COMPONENT_BUILD_DIR := $(CURDIR)

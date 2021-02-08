@@ -181,9 +181,7 @@
 #endif
 
 // Enable this if you want the HAL callbacks to be called with the spiffs struct
-#ifndef SPIFFS_HAL_CALLBACK_EXTRA
-#define SPIFFS_HAL_CALLBACK_EXTRA         0
-#endif
+#define SPIFFS_HAL_CALLBACK_EXTRA         1
 
 // Enable this if you want to add an integer offset to all file handles
 // (spiffs_file). This is useful if running multiple instances of spiffs on

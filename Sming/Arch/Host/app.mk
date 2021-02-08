@@ -43,6 +43,3 @@ $(RUN_SCRIPT)::
 	$(foreach id,$(ENABLE_HOST_UARTID),echo '$(call RunHostTerminal,$(id))' >> $@;) \
 	echo '$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS) -- $(HOST_PARAMETERS)' >> $@; \
 	chmod a+x $@
-
-.PHONY: flash
-flash: all flashfs ##Write all images to (virtual) flash

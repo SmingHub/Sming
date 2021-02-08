@@ -9,6 +9,7 @@ AWK ?= POSIXLY_CORRECT= awk
 
 SMINGDIR := ..
 override SMING_HOME := $(SMINGDIR)/Sming
+override SMING_ARCH := Host
 
 # You can set these variables from the command line, and also from the environment for the first two.
 SPHINXOPTS		?=
@@ -16,6 +17,7 @@ SPHINXBUILD		?= sphinx-build
 SOURCEDIR		= source
 BUILDDIR		= build
 
+ARCH_BASE		:= $(SMING_HOME)/Arch/$(SMING_ARCH)
 BUILD_TYPE		:= release
 OUT_BASE		:= out/$(SMING_ARCH)/$(BUILD_TYPE)
 BUILD_BASE		= $(OUT_BASE)/build
@@ -115,7 +117,7 @@ DOXYGEN_PREDEFINED := \
 	ICACHE_FLASH_ATTR= \
 	__forceinline= \
 	SMING_DEPRECATED= \
-	SMING_ARCH=Host \
+	SMING_ARCH=$(SMING_ARCH) \
 	ARCH_HOST=1
 
 

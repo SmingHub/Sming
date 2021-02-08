@@ -1,5 +1,4 @@
 #include <SmingCore.h>
-#include <esp_spi_flash.h>
 #include <Network/RbootHttpUpdater.h>
 
 // download urls, set appropriately
@@ -13,19 +12,32 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-RbootHttpUpdater* otaUpdater = 0;
+RbootHttpUpdater* otaUpdater;
+Storage::Partition spiffsPartition;
 
-void OtaUpdate_CallBack(RbootHttpUpdater& client, bool result)
+Storage::Partition findSpiffsPartition(uint8_t slot)
+{
+	String name = F("spiffs");
+	name += slot;
+	auto part = Storage::findPartition(name);
+	if(!part) {
+		debug_w("Partition '%s' not found", name.c_str());
+	}
+	return part;
+}
+
+void otaUpdateCallBack(RbootHttpUpdater& client, bool result)
 {
 	Serial.println("In callback...");
 	if(result == true) {
 		// success
 		uint8 slot;
 		slot = rboot_get_current_rom();
-		if(slot == 0)
+		if(slot == 0) {
 			slot = 1;
-		else
+		} else {
 			slot = 0;
+		}
 		// set to boot new rom and then reboot
 		Serial.printf("Firmware updated, rebooting to rom %d...\r\n", slot);
 		rboot_set_current_rom(slot);
@@ -44,43 +56,38 @@ void OtaUpdate()
 	Serial.println("Updating...");
 
 	// need a clean object, otherwise if run before and failed will not run again
-	if(otaUpdater)
+	if(otaUpdater) {
 		delete otaUpdater;
+	}
 	otaUpdater = new RbootHttpUpdater();
 
 	// select rom slot to flash
 	bootconf = rboot_get_config();
 	slot = bootconf.current_rom;
-	if(slot == 0)
+	if(slot == 0) {
 		slot = 1;
-	else
+	} else {
 		slot = 0;
+	}
 
 #ifndef RBOOT_TWO_ROMS
 	// flash rom to position indicated in the rBoot config rom table
 	otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
 #else
-	// flash appropriate rom
-	if(slot == 0) {
-		otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
-	} else {
-		otaUpdater->addItem(bootconf.roms[slot], ROM_1_URL);
-	}
+	// flash appropriate ROM
+	otaUpdater->addItem(bootconf.roms[slot], (slot == 0) ? ROM_0_URL : ROM_1_URL);
 #endif
 
-#if !DISABLE_SPIFFS
-	// use user supplied values (defaults for 4mb flash in makefile)
-	if(slot == 0) {
-		otaUpdater->addItem(RBOOT_SPIFFS_0, SPIFFS_URL);
-	} else {
-		otaUpdater->addItem(RBOOT_SPIFFS_1, SPIFFS_URL);
+	auto part = findSpiffsPartition(slot);
+	if(part) {
+		// use user supplied values (defaults for 4mb flash in hardware config)
+		otaUpdater->addItem(part.address(), SPIFFS_URL, part.size());
 	}
-#endif
 
 	// request switch and reboot on success
 	//otaUpdater->switchToRom(slot);
 	// and/or set a callback (called on failure or success without switching requested)
-	otaUpdater->setCallback(OtaUpdate_CallBack);
+	otaUpdater->setCallback(otaUpdateCallBack);
 
 	// start update
 	otaUpdater->start();
@@ -90,10 +97,11 @@ void Switch()
 {
 	uint8 before, after;
 	before = rboot_get_current_rom();
-	if(before == 0)
+	if(before == 0) {
 		after = 1;
-	else
+	} else {
 		after = 0;
+	}
 	Serial.printf("Swapping from rom %d to rom %d.\r\n", before, after);
 	rboot_set_current_rom(after);
 	Serial.println("Restarting...\r\n");
@@ -173,10 +181,10 @@ void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCh
 			Serial.println("  switch - switch to the other rom and reboot");
 			Serial.println("  ota - perform ota update, switch rom and reboot");
 			Serial.println("  info - show esp8266 info");
-#if !DISABLE_SPIFFS
-			Serial.println("  ls - list files in spiffs");
-			Serial.println("  cat - show first file in spiffs");
-#endif
+			if(spiffsPartition) {
+				Serial.println("  ls - list files in spiffs");
+				Serial.println("  cat - show first file in spiffs");
+			}
 			Serial.println();
 		} else {
 			Serial.println("unknown command");
@@ -190,28 +198,14 @@ void init()
 	Serial.systemDebugOutput(true); // Debug output to serial
 
 	// mount spiffs
-	int slot = rboot_get_current_rom();
-#if !DISABLE_SPIFFS
-	if(slot == 0) {
-#ifdef RBOOT_SPIFFS_0
-		debugf("trying to mount spiffs at 0x%08x, length %d", RBOOT_SPIFFS_0, SPIFF_SIZE);
-		spiffs_mount_manual(RBOOT_SPIFFS_0, SPIFF_SIZE);
-#else
-		debugf("trying to mount spiffs at 0x%08x, length %d", 0x100000, SPIFF_SIZE);
-		spiffs_mount_manual(0x100000, SPIFF_SIZE);
-#endif
-	} else {
-#ifdef RBOOT_SPIFFS_1
-		debugf("trying to mount spiffs at 0x%08x, length %d", RBOOT_SPIFFS_1, SPIFF_SIZE);
-		spiffs_mount_manual(RBOOT_SPIFFS_1, SPIFF_SIZE);
-#else
-		debugf("trying to mount spiffs at 0x%08x, length %d", 0x300000, SPIFF_SIZE);
-		spiffs_mount_manual(0x300000, SPIFF_SIZE);
-#endif
+	auto slot = rboot_get_current_rom();
+	spiffsPartition = findSpiffsPartition(slot);
+	if(spiffsPartition) {
+		debugf("trying to mount '%s' at 0x%08x, length %d", spiffsPartition.name().c_str(), spiffsPartition.address(),
+			   spiffsPartition.size());
+		spiffs_mount(spiffsPartition);
 	}
-#else
-	debugf("spiffs disabled");
-#endif
+
 	WifiAccessPoint.enable(false);
 
 	Serial.printf("\r\nCurrently running rom %d.\r\n", slot);

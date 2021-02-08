@@ -184,7 +184,7 @@ size_t BasicStream::write(const uint8_t* data, size_t size)
 			break;
 
 		case State::WriteRom: {
-			bool ok = rboot_write_flash(&rbootWriteStatus, const_cast<uint8_t*>(data), std::min(remainingBytes, size));
+			bool ok = rboot_write_flash(&rbootWriteStatus, data, std::min(remainingBytes, size));
 			if(ok) {
 				if(consume(data, size)) {
 					ok = slot.updated = rboot_write_end(&rbootWriteStatus);

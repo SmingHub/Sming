@@ -1,0 +1,98 @@
+*****************
+From v4.2 to v4.3
+*****************
+
+.. highlight:: c++
+
+
+Storage Management
+------------------
+
+The layout of flash memory has been revised and is now managed via partition table.
+Hardware configuration is stored in a JSON file (with .hw extension).
+
+If your project has minimal customisation then you may only need to change
+the :envvar:`HWCONFIG` setting.
+
+You can find full details in the :component:`Storage` library.
+See also background on :doc:`/information/flash`.
+
+New and updated build targets
+    hwconfig
+        Displays the current configuration in JSON format
+    hwconfig-list
+        Show available hardware configs
+    map
+        Display the current flash memory map
+    readmap
+        Read partition table from device and display the map
+    readpart
+        Read contents of partition into a file, e.g. ``make readpart PART=spiffs0``
+        will create ``out/Esp8266/debug/spiffs0.read.bin``
+    flash
+        Flash partition table and all partitions. Previously it was necessary to run
+        ``make flashinit`` to write system parameter information. Failure to do this
+        was a common problem and should now be a thing of the past.
+    flashinit
+        This now just erases the flash memory, and is no longer a pre-requisite for ``make flash``.
+
+        The ESP8266 system parameter information has been moved into registered
+        partitions (phy_init and sys_param) near the beginning of flash memory.
+        It now gets written when running ``make flash``.
+
+        Previously, this information was kept right at the end of the flash memory,
+        so the location would vary depending on the setting of ``SPI_SIZE``.
+        This was a frequent cause of problems as the system would fail to start if this
+        was set incorrectly.
+    flashmap
+        Flash just the partition map
+    flashpart
+        Flash a single partition, e.g. ``make flashpart PART=spiffs0``
+    erasepart
+        Erase a partition, e.g. ``make erasepart PART=spiffs0``
+
+Configuration variables
+    A number of configuration variables have been removed or made read-only, as these are now
+    generated from the :ref:`hardware_config`.
+
+    :envvar:`SPI_MODE`, :envvar:`SPI_SIZE`, :envvar:`SPI_SPEED`
+        The variables are still used internally but are read-only; they cannot be set at the command line.
+        Values are read from the hardware configuration under ``/devices/spiFlash``.
+
+    :envvar:`RBOOT_ROM0_ADDR`, :envvar:`RBOOT_ROM1_ADDR`, :envvar:`RBOOT_ROM2_ADDR`
+        Used by :component:`rboot`, and are now read-only.
+        Values are read from the ``address`` property of ``rom0-2`` in the hardware configuration.
+
+    :envvar:`RBOOT_SPIFFS_0`, :envvar:`RBOOT_SPIFFS_1`
+        Removed.
+
+    :envvar:`SPIFF_SIZE`
+        Removed. Attempting to set this automatically within a hardware configuration is
+        liable to cause more problems than it solves, so updating the hardware config is
+        the now only way to change this setting.
+
+    :envvar:`SPIFF_FILES`
+        [deprecated]
+
+        You can still use this to specify the source location for the primary
+        SPIFFS partition (spiffs0). The preferred method is to set the ``files``
+        property in a partition ``build`` key.
+
+        The default SPIFFS partition settings can be overridden in a custom profile.
+        For example:
+
+        .. code-block:: json
+
+            {
+                ...
+                "base_config": "spiffs",
+                "partitions": {
+                    "spiffs0": {
+                        "size": "128K",
+                        "build": {
+                            "files": "some/other/folder"
+                        }
+                    }
+                }
+            }
+

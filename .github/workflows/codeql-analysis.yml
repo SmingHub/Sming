@@ -36,11 +36,6 @@ jobs:
         # a pull request then we can checkout the head.
         fetch-depth: 2
 
-    # If this run was triggered by a pull request event, then checkout
-    # the head of the pull request instead of the merge commit.
-    - run: git checkout HEAD^2
-      if: ${{ github.event_name == 'pull_request' }}
-
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
@@ -68,13 +63,14 @@ jobs:
       run: |
        sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
        sudo apt-get update -y
-       sudo apt-get install gcc-9-multilib g++-9-multilib
+       sudo apt-get install gcc-9-multilib g++-9-multilib python3-wheel python3-setuptools
        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-9
+       python3 -m pip install --upgrade pip wheel -r Tools/requirements.txt
        env
        cd Sming
        export SMING_HOME=$(pwd)
        cd ../samples/Basic_Blink
-       make SMING_ARCH=Host
+       make -j3 SMING_ARCH=Host
        
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1

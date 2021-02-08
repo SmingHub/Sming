@@ -55,6 +55,7 @@ CACHE_VARS		:=
 # Use PROJECT_DIR to identify the project source directory, from where this makefile must be included
 DEBUG_VARS			+= PROJECT_DIR
 PROJECT_DIR			:= $(CURDIR)
+export PROJECT_DIR
 
 ifeq ($(MAKELEVEL),0)
 $(info )
@@ -317,6 +318,8 @@ COMPONENTS				+= App
 CMP_App_VARS			:= $(CONFIG_VARS)
 CMP_App_ALL_VARS		:= $(CONFIG_VARS)
 $(foreach c,$(COMPONENTS),$(eval $(call ParseComponentLibs,$c)))
+
+$(PartitionCreateTargets)
 
 export COMPONENTS_EXTRA_INCDIR
 export APPCODE

@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 0b43474..5176f8f 100644
+index 638a8f7..5176f8f 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -58,6 +58,19 @@ endif
@@ -22,17 +22,7 @@ index 0b43474..5176f8f 100644
  ifneq ($(RBOOT_EXTRA_INCDIR),)
  	CFLAGS += $(addprefix -I,$(RBOOT_EXTRA_INCDIR))
  endif
-@@ -75,6 +88,10 @@ else ifeq ($(SPI_SIZE), 2Mb)
- 	E2_OPTS += -2048b
- else ifeq ($(SPI_SIZE), 4M)
- 	E2_OPTS += -4096
-+else ifeq ($(SPI_SIZE), 8M)
-+	E2_OPTS += -8192
-+else ifeq ($(SPI_SIZE), 16M)
-+	E2_OPTS += -16384
- endif
- ifeq ($(SPI_MODE), qio)
- 	E2_OPTS += -qio
+
 diff --git a/rboot.c b/rboot.c
 index d622f97..5e254fa 100644
 --- a/rboot.c
@@ -309,7 +299,7 @@ index d622f97..5e254fa 100644
  	ets_memcpy((void*)_text_addr, _text_data, _text_len);
  	// return address to load from
 diff --git a/appcode/rboot-api.c b/appcode/rboot-api.c
-index eb4d028..490a763 100644
+index eb4d028..bf276a7 100644
 --- a/appcode/rboot-api.c
 +++ b/appcode/rboot-api.c
 @@ -9,7 +9,7 @@
@@ -356,6 +346,15 @@ index eb4d028..490a763 100644
  	return true;
  }
  
+@@ -103,7 +103,7 @@ bool ICACHE_FLASH_ATTR rboot_write_end(rboot_write_status *status) {
+ 
+ // function to do the actual writing to flash
+ // call repeatedly with more data (max len per write is the flash sector size (4k))
+-bool ICACHE_FLASH_ATTR rboot_write_flash(rboot_write_status *status, uint8_t *data, uint16_t len) {
++bool ICACHE_FLASH_ATTR rboot_write_flash(rboot_write_status *status, const uint8_t *data, uint16_t len) {
+ 	
+ 	bool ret = false;
+ 	uint8_t *buffer;
 @@ -114,7 +114,7 @@ bool ICACHE_FLASH_ATTR rboot_write_flash(rboot_write_status *status, uint8_t *da
  	}
  	
@@ -387,3 +386,17 @@ index eb4d028..490a763 100644
  	return ret;
  }
  
+diff --git a/appcode/rboot-api.h b/appcode/rboot-api.h
+index a98c209..ec4f0e5 100644
+--- a/appcode/rboot-api.h
++++ b/appcode/rboot-api.h
+@@ -93,7 +93,7 @@ bool ICACHE_FLASH_ATTR rboot_write_end(rboot_write_status *status);
+  *  of OTA data is received over the network.
+  *  @note   Call rboot_write_init before calling this function to get the rboot_write_status structure
+ */
+-bool ICACHE_FLASH_ATTR rboot_write_flash(rboot_write_status *status, uint8_t *data, uint16_t len);
++bool ICACHE_FLASH_ATTR rboot_write_flash(rboot_write_status *status, const uint8_t *data, uint16_t len);
+ 
+ #ifdef BOOT_RTC_ENABLED
+ /** @brief  Get rBoot status/control data from RTC data area
+

@@ -39,7 +39,7 @@ public:
 		cleanup();
 	}
 
-	bool addItem(int offset, const String& firmwareFileUrl, size_t maxSize = 0);
+	bool addItem(uint32_t offset, const String& firmwareFileUrl, size_t maxSize = 0);
 	bool addItem(const String& firmwareFileUrl, RbootOutputStream* stream = nullptr);
 
 	void start();
