@@ -29,7 +29,7 @@ $(TARGET_OUT_0): $(COMPONENTS_AR)
 valgrind: all ##Run the application under valgrind to detect memory issues. Requires `valgrind` to be installed on the host system.
 	$(Q) valgrind --track-origins=yes --leak-check=full \
 	$(foreach id,$(ENABLE_HOST_UARTID),echo '$(call RunHostTerminal,$(id))' >> $@;) \
-	$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS)
+	$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS) -- $(HOST_PARAMETERS)
 
 
 RUN_SCRIPT := $(FW_BASE)/run.sh
