@@ -61,7 +61,7 @@ bool Device::loadPartitions(Device& source, uint32_t tableOffset)
 	}
 
 	if(buffer[0].type != Partition::Type::storage) {
-		debug_e("[Partition] Bad partition table for device '%s' @ 0x%08x", getName().c_str(), tableOffset);
+		debug_e("[Partition] Bad partition table for device '%s' @ 0x%08x", source.getName().c_str(), tableOffset);
 		return false;
 	}
 
