@@ -40,7 +40,7 @@ bool ObjectList::add(Object* object)
 
 bool ObjectList::remove(Object* object)
 {
-	if(object == nullptr) {
+	if(object == nullptr || mHead == nullptr) {
 		return false;
 	}
 
