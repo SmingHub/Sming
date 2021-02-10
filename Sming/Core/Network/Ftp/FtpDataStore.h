@@ -17,7 +17,7 @@ class FtpDataStore : public FtpDataStream
 {
 public:
 	FtpDataStore(FtpServerConnection& connection, const String& fileName)
-		: FtpDataStream(connection), file(fileOpen(fileName, eFO_WriteOnly | eFO_CreateNewAlways))
+		: FtpDataStream(connection), file(fileOpen(fileName, File::WriteOnly | File::CreateNewAlways))
 	{
 	}
 

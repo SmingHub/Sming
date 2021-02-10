@@ -3,6 +3,11 @@
 #include <Data/Stream/MemoryDataStream.h>
 #include <Data/Stream/SectionTemplate.h>
 
+#ifdef ARCH_HOST
+#include <IFS/Host/FileSystem.h>
+#include <Data/Stream/HostFileStream.h>
+#endif
+
 DEFINE_FSTR_LOCAL(template1, "Stream containing {var1}, {var2} and {var3}. {} {{}} {{12345")
 DEFINE_FSTR_LOCAL(template1_1, "Stream containing value #1, value #2 and {var3}. {} {{}} {{12345")
 DEFINE_FSTR_LOCAL(template1_2, "Stream containing value #1, value #2 and [value #3]. {} {{}} {{12345")
@@ -88,6 +93,22 @@ public:
 
 				return nullptr;
 			});
+
+#ifdef ARCH_HOST
+			{
+				HostFileStream fs("test-src1.out", eFO_CreateNewAlways | eFO_WriteOnly);
+				int res = fs.copyFrom(&tmpl);
+				debug_e("copyfrom(src) = %d", res);
+				tmpl.gotoSection(0);
+			}
+
+			{
+				HostFileStream fs("test-src2.out", eFO_CreateNewAlways | eFO_WriteOnly);
+				int res = fs.copyFrom(&tmpl);
+				debug_e("copyfrom(src) = %d", res);
+				tmpl.gotoSection(0);
+			}
+#endif
 
 			check(tmpl, Resource::ut_template1_out1_rst);
 		}

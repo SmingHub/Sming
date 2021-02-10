@@ -57,23 +57,23 @@ void ATTR_GDBEXTERNFN gdbHandleHostIo(char* commandBuffer, unsigned cmdLen)
 		filename[len] = '\0';
 		++data; // skip ,
 		unsigned flags = GdbPacket::readHexValue(data);
-		++data;						   // Skip ,
+		++data;										   // Skip ,
 		unsigned mode = GdbPacket::readHexValue(data); // Skip mode (not used)
 		(void)mode;
 
 		FileOpenFlags openFlags;
 		if((flags & 0xff) == O_RDWR) {
-			openFlags = eFO_ReadWrite;
+			openFlags = File::ReadWrite;
 		} else if((flags & 0xff) == O_WRONLY) {
-			openFlags = eFO_WriteOnly;
+			openFlags = File::WriteOnly;
 		} else {
-			openFlags = eFO_ReadOnly;
+			openFlags = File::ReadOnly;
 		}
 		if(flags & O_CREAT) {
-			openFlags = openFlags | eFO_CreateIfNotExist;
+			openFlags |= File::Create;
 		}
 		if(flags & O_TRUNC) {
-			openFlags = openFlags | eFO_Truncate;
+			openFlags |= File::Truncate;
 		}
 		int fd = fileOpen(filename, openFlags);
 

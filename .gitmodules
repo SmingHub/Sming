@@ -49,6 +49,10 @@
 	path = Sming/Components/http-parser
 	url = https://github.com/nodejs/http-parser.git
 	ignore = dirty
+[submodule "IFS"]
+	path = Sming/Components/IFS
+	url = https://github.com/mikee47/IFS.git
+	ignore = dirty
 [submodule "libyuarel"]
 	path = Sming/Components/libyuarel
 	url = https://github.com/jacketizer/libyuarel.git

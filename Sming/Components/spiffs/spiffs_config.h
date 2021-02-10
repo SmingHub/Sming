@@ -117,7 +117,7 @@
 // logical_page_size - (SPIFFS_OBJ_NAME_LEN + sizeof(spiffs_page_header) +
 // spiffs_object_ix_header fields + at least some LUT entries)
 #ifndef SPIFFS_OBJ_META_LEN
-#define SPIFFS_OBJ_META_LEN             (0)
+#define SPIFFS_OBJ_META_LEN             (16)
 #endif
 
 // Size of buffer allocated on stack used when copying data.

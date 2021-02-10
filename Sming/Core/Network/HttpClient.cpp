@@ -54,7 +54,7 @@ bool HttpClient::downloadFile(const Url& url, const String& saveFileName, Reques
 	}
 
 	auto fileStream = new FileStream();
-	if(!fileStream->open(file, eFO_CreateNewAlways | eFO_WriteOnly)) {
+	if(!fileStream->open(file, File::CreateNewAlways | File::WriteOnly)) {
 		debug_e("HttpClient failed to open \"%s\"", file.c_str());
 		delete fileStream;
 		return false;

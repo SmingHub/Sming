@@ -36,7 +36,7 @@ bool FtpServer::checkUser(const String& login, const String& pass)
 bool FtpServer::onCommand(String cmd, String data, FtpServerConnection& connection)
 {
 	if(cmd == _F("FSFORMAT")) {
-		spiffs_format();
+		fileSystemFormat();
 		connection.response(200, F("File system successfully formatted"));
 		return true;
 	}

@@ -256,7 +256,7 @@ template <typename TSource> String serialize(const TSource& source, Serializatio
 template <typename TSource>
 bool saveToFile(const TSource& source, const String& filename, SerializationFormat format = JSON_FORMAT_DEFAULT)
 {
-	FileStream stream(filename, eFO_WriteOnly | eFO_CreateNewAlways);
+	FileStream stream(filename, File::WriteOnly | File::CreateNewAlways);
 	if(!stream.isValid()) {
 		return false;
 	}

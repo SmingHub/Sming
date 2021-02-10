@@ -201,7 +201,8 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	commandLine.parse(argc - optind, &argv[optind]);
+	auto i = get_first_non_option();
+	commandLine.parse(argc - i, &argv[i]);
 
 	if(!host_flashmem_init(config.flash)) {
 		return 1;

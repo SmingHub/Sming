@@ -305,7 +305,7 @@ public:
 	{
 		PSTR_ARRAY(filename, "test.json");
 		if(!fileExist(filename)) {
-			FileStream fs(filename, eFO_CreateNewAlways | eFO_WriteOnly);
+			FileStream fs(filename, File::CreateNewAlways | File::WriteOnly);
 			REQUIRE(fs.isValid());
 			FSTR::Stream os(Resource::test_json);
 			REQUIRE(fs.copyFrom(&os, os.available()) == Resource::test_json.length());

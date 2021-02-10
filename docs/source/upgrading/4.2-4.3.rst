@@ -96,3 +96,27 @@ Configuration variables
                 }
             }
 
+
+Installable File System (IFS)
+-----------------------------
+
+Sming now supports multiple filesystems via :component:`IFS`.
+
+See :sample:`Basic_IFS` for a demonstration.
+
+:source:`Core/FileSystem.h` has been modified to use IFS but the API remains largely unchanged, although somewhat expanded.
+Functions are now mainly just wrappers around filing system calls.
+
+A single global IFileSystem instance is used.
+
+SPIFFS
+    All access is now managed via the ``IFS::SPIFFS::FileSystem`` implementation.
+
+    Applications should not use SPIFFS functions directly.
+
+    SPIFFS is now built with ``SPIFFS_OBJ_META_LEN=16`` to store extended attribute information,
+    but existing volumes should still be readable.
+
+File open flags
+    e.g. eFO_ReadOnly. These will still work but are now deprecated and should be replaced with their
+    C++ equivalent such as ``File::ReadOnly``.
