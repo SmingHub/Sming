@@ -4,14 +4,6 @@ COMPONENT_SRCDIRS		:= . spiffs/src
 COMPONENT_INCDIRS		:= . spiffs/src
 COMPONENT_DOXYGEN_INPUT	:= spiffs/src
 
-## Spiffy tool
-
-SPIFFY				:= $(TOOLS_BASE)/spiffy$(TOOL_EXT)
-COMPONENT_TARGETS	+= $(SPIFFY)
-$(COMPONENT_RULE)$(SPIFFY):
-	$(call MakeTarget,spiffy/Makefile)
-
-
 ## Application
 
 ifdef DISABLE_SPIFFS
@@ -31,6 +23,10 @@ COMPONENT_CFLAGS		+= -Wno-tautological-compare
 
 ##@Building
 
+# Spiffs image generation tool
+SPIFFSGEN := $(PYTHON) $(COMPONENT_PATH)/spiffsgen.py
+SPIFFSGEN_SMING = $(SPIFFSGEN) --meta-len=16 --block-size=8192
+
 .PHONY: spiffs-image-update
 spiffs-image-update: spiffs-image-clean $(SPIFF_BIN_OUT) ##Rebuild the SPIFFS filesystem image
 
@@ -38,11 +34,11 @@ spiffs-image-update: spiffs-image-clean $(SPIFF_BIN_OUT) ##Rebuild the SPIFFS fi
 ifneq (,$(filter spiffsgen,$(MAKECMDGOALS)))
 PART_TARGET := $(PARTITION_$(PART)_FILENAME)
 $(eval PART_FILES := $(call HwExpr,part.build['files']))
-SPIFFY_ARGS := $(PARTITION_$(PART)_SIZE_BYTES) "$(or $(PART_FILES),dummy.dir)"
 .PHONY: spiffsgen
-spiffsgen: $(SPIFFY)
+spiffsgen:
 ifneq (,$(PART_TARGET))
+	@echo "Creating SPIFFS image '$(PART_TARGET)'"
 	$(Q) mkdir -p $(dir $(PART_TARGET))
-	$(Q) $(SPIFFY) $(SPIFFY_ARGS) $(PART_TARGET)
+	$(Q) $(SPIFFSGEN_SMING) $(PARTITION_$(PART)_SIZE_BYTES) "$(or $(PART_FILES),)" $(PART_TARGET)
 endif
 endif

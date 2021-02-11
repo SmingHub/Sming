@@ -9,11 +9,7 @@
 #define SPIFFS_CONFIG_H_
 
 // ----------- 8< ------------
-#ifdef __ets__
-	#include <user_config.h>
-#else
-	#include "spiffy_host.h"
-#endif /* __ets__ */
+#include <user_config.h>
 // ----------- >8 ------------
 
 // compile time switches
