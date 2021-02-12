@@ -49,3 +49,13 @@ custom :ref:`hardware_config`.
    Default: 7
 
    Number of file descriptors allocated. This sets the maximum number of files which may be opened at once. 
+
+
+.. envvar:: SPIFFS_OBJ_META_LEN
+
+   Default: 16
+
+   Maximum size of metadata which SPIFFS stores in each file index header (after the filename).
+   If this value is changed, existing SPIFFS images will not be readable.
+
+   The default value given here is provided to support :component:`IFS` extended file attribute information.
