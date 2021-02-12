@@ -112,7 +112,7 @@ SAMPLE_NAMES		= $(shell ls -1 $(SAMPLES_DIR))
 samples: | $(SAMPLE_NAMES) ##Build all sample applications
 
 $(SAMPLE_NAMES):
-	@echo "\n\n** Building ${@F} **\n"
+	@printf "\n\n** Building ${@F} **\n\n"
 	$(Q) $(MAKE) --no-print-directory -C $(SAMPLES_DIR)/$@ PIP_ARGS=-q python-requirements all
 
 # Build component samples
@@ -128,7 +128,7 @@ COMPONENT_SAMPLE_TARGETS = $(addsuffix $(BUILT_SUFFIX),$(wildcard $(foreach c,$(
 build-component-samples: $(COMPONENT_SAMPLE_TARGETS)
 
 $(COMPONENT_SAMPLE_TARGETS):
-	@echo "\n\n** Building $(notdir $(@:$(BUILT_SUFFIX)=)) **\n"
+	@printf "\n\n** Building $(notdir $(@:$(BUILT_SUFFIX)=)) **\n\n"
 	$(Q) $(MAKE) --no-print-directory -C $(@:$(BUILT_SUFFIX)=) PIP_ARGS=-q python-requirements all
 	$(Q) touch $@
 
@@ -145,6 +145,7 @@ PHONY: build-and-run-tests
 build-and-run-tests: $(TESTS_COMPLETED) ##Build and run all test applications
 
 $(TESTS_COMPLETED):
+	@printf "\n\n** Building $(notdir $(@D)) **\n\n"
 	$(Q) $(MAKE) -C $(@D) execute
 	$(Q) touch $@
 
