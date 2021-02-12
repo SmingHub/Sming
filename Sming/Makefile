@@ -112,6 +112,7 @@ SAMPLE_NAMES		= $(shell ls -1 $(SAMPLES_DIR))
 samples: | $(SAMPLE_NAMES) ##Build all sample applications
 
 $(SAMPLE_NAMES):
+	@echo "\n\n** Building ${@F} **\n"
 	$(Q) $(MAKE) --no-print-directory -C $(SAMPLES_DIR)/$@ PIP_ARGS=-q python-requirements all
 
 # Build component samples
@@ -127,6 +128,7 @@ COMPONENT_SAMPLE_TARGETS = $(addsuffix $(BUILT_SUFFIX),$(wildcard $(foreach c,$(
 build-component-samples: $(COMPONENT_SAMPLE_TARGETS)
 
 $(COMPONENT_SAMPLE_TARGETS):
+	@echo "\n\n** Building $(notdir $(@:$(BUILT_SUFFIX)=)) **\n"
 	$(Q) $(MAKE) --no-print-directory -C $(@:$(BUILT_SUFFIX)=) PIP_ARGS=-q python-requirements all
 	$(Q) touch $@
 
