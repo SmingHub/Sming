@@ -236,6 +236,10 @@ class SpiffsObjIndexPage(SpiffsPage):
 
             img += meta
 
+        # Align to word boundary
+        if len(img) % 2 != 0:
+            img += b'\xff'
+
         # Finally, add the page index of data pages
         for page in self.pages:
             page = page >> int(math.log(self.build_config.page_size, 2))
