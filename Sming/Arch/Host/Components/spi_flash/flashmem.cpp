@@ -25,7 +25,7 @@
 
 namespace
 {
-IFS::Host::FileSystem fileSys;
+IFS::IFileSystem& fileSys{IFS::Host::fileSystem};
 IFS::File::Handle flashFile{-1};
 size_t flashFileSize{0x400000U};
 char flashFileName[256];

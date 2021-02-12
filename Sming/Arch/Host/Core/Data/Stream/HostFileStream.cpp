@@ -11,11 +11,6 @@
 #include "HostFileStream.h"
 #include <IFS/Host/FileSystem.h>
 
-namespace
-{
-IFS::Host::FileSystem hostFileSystem;
-}
-
-HostFileStream::HostFileStream() : IFS::FileStream(&hostFileSystem)
+HostFileStream::HostFileStream() : IFS::FileStream(&IFS::Host::fileSystem)
 {
 }
