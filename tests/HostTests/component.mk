@@ -36,3 +36,13 @@ APP_CFLAGS += -DRESTART_DELAY=$(RESTART_DELAY)
 
 .PHONY: execute
 execute: flash run
+
+SPIFFSGEN_BIN := out/spiff_rom_test.bin
+CUSTOM_TARGETS += $(SPIFFSGEN_BIN)
+$(SPIFFSGEN_BIN):
+	$(Q) $(SPIFFSGEN_SMING) 0x10000 spiffsgen/build $@
+
+clean: resource-clean
+.PHONY: resource-clean
+resource-clean:
+	rm -f $(SPIFFSGEN_BIN)
