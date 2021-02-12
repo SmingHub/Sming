@@ -217,9 +217,26 @@ class SpiffsObjIndexPage(SpiffsPage):
                                self.size,
                                SPIFFS_TYPE_FILE)
 
-            img += self.name.encode() + (b'\x00' * ((self.build_config.obj_name_len - len(self.name)) + self.build_config.meta_len))
+            # Append name
+            name = self.name.encode()
+            img += name + (b'\x00' * (self.build_config.obj_name_len - len(name)))
 
-        # Finally, add the page index of daa pages
+            if self.build_config.meta_len >= 16:
+                # Build default IFS metadata
+                magic = 0xE3457A77
+                mtime = self.mtime
+                attr = 0
+                flags = 0xff
+                userRole_none = 0x00
+                userRole_admin = 0x04
+                meta = struct.pack(b'<LLBBBB', magic, mtime, attr, flags, userRole_admin, userRole_admin)
+                meta += b'\x00' * (self.build_config.meta_len - 12)
+            else:
+                meta = b'\00' * self.build_config.meta_len
+
+            img += meta
+
+        # Finally, add the page index of data pages
         for page in self.pages:
             page = page >> int(math.log(self.build_config.page_size, 2))
             img += struct.pack(SpiffsPage._endianness_dict[self.build_config.endianness] +
@@ -301,7 +318,7 @@ class SpiffsBlock():
 
         self.pages.append(page)
 
-    def begin_obj(self, obj_id, size, name, obj_index_span_ix=0, obj_data_span_ix=0):
+    def begin_obj(self, obj_id, size, name, mtime, obj_index_span_ix=0, obj_data_span_ix=0):
         if not self.remaining_pages > 0:
             raise SpiffsFullError()
         self._reset()
@@ -311,6 +328,7 @@ class SpiffsBlock():
         self.cur_obj_data_span_ix = obj_data_span_ix
 
         page = SpiffsObjIndexPage(obj_id, self.cur_obj_index_span_ix, size, name, self.build_config)
+        page.mtime = mtime
         self._register_page(page)
 
         self.cur_obj_idx_page = page
@@ -356,7 +374,7 @@ class SpiffsBlock():
 class SpiffsFS():
     def __init__(self, img_size, build_config):
         if img_size % build_config.block_size != 0:
-            raise RuntimeError('image size should be a multiple of block size')
+            raise RuntimeError('image size should be a multiple of block size (0x%08x, 0x%04x)' % (img_size, build_config.block_size))
 
         self.img_size = img_size
         self.build_config = build_config
@@ -391,12 +409,13 @@ class SpiffsFS():
 
         stream = io.BytesIO(contents)
 
+        mtime = int(os.path.getmtime(file_path))
         try:
             block = self.blocks[-1]
-            block.begin_obj(self.cur_obj_id, len(contents), name)
+            block.begin_obj(self.cur_obj_id, len(contents), name, mtime)
         except (IndexError, SpiffsFullError):
             block = self._create_block()
-            block.begin_obj(self.cur_obj_id, len(contents), name)
+            block.begin_obj(self.cur_obj_id, len(contents), name, mtime)
 
         contents_chunk = stream.read(self.build_config.OBJ_DATA_PAGE_CONTENT_LEN)
 
@@ -412,7 +431,7 @@ class SpiffsFS():
                     if block.is_full():
                         raise SpiffsFullError
                     # If its (2), write another object index page
-                    block.begin_obj(self.cur_obj_id, len(contents), name,
+                    block.begin_obj(self.cur_obj_id, len(contents), name, mtime,
                                     obj_index_span_ix=block.cur_obj_index_span_ix,
                                     obj_data_span_ix=block.cur_obj_data_span_ix)
                     continue
@@ -448,7 +467,7 @@ class SpiffsFS():
                 bix += 1
         else:
             # Just fill remaining spaces FF's
-            img += '\xFF' * (self.img_size - len(img))
+            img += b'\xFF' * (self.img_size - len(img))
         return img
 
 
@@ -492,7 +511,7 @@ def main():
     parser.add_argument('--use-magic',
                         help='Use magic number to create an identifiable SPIFFS image. Specify if CONFIG_SPIFFS_USE_MAGIC.',
                         action='store_true',
-                        default=True)
+                        default=False)
 
     parser.add_argument('--follow-symlinks',
                         help='Take into account symbolic links during partition image creation.',
@@ -502,7 +521,7 @@ def main():
     parser.add_argument('--use-magic-len',
                         help='Use position in memory to create different magic numbers for each block. Specify if CONFIG_SPIFFS_USE_MAGIC_LENGTH.',
                         action='store_true',
-                        default=True)
+                        default=False)
 
     parser.add_argument('--big-endian',
                         help='Specify if the target architecture is big-endian. If not specified, little-endian is assumed.',
@@ -511,7 +530,7 @@ def main():
 
     args = parser.parse_args()
 
-    if not os.path.exists(args.base_dir):
+    if args.base_dir != '' and not os.path.exists(args.base_dir):
         raise RuntimeError('given base directory %s does not exist' % args.base_dir)
 
     with open(args.output_file, 'wb') as image_file:
@@ -524,10 +543,11 @@ def main():
 
         spiffs = SpiffsFS(image_size, spiffs_build_default)
 
-        for root, dirs, files in os.walk(args.base_dir, followlinks=args.follow_symlinks):
-            for f in files:
-                full_path = os.path.join(root, f)
-                spiffs.create_file('/' + os.path.relpath(full_path, args.base_dir).replace('\\', '/'), full_path)
+        if args.base_dir != '':
+            for root, dirs, files in os.walk(args.base_dir, followlinks=args.follow_symlinks):
+                for f in files:
+                    full_path = os.path.join(root, f)
+                    spiffs.create_file(os.path.relpath(full_path, args.base_dir).replace('\\', '/'), full_path)
 
         image = spiffs.to_binary()
 
