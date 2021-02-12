@@ -537,25 +537,25 @@ def main():
     if args.base_dir != '' and not os.path.exists(args.base_dir):
         raise RuntimeError('given base directory %s does not exist' % args.base_dir)
 
-    with open(args.output_file, 'wb') as image_file:
-        image_size = int(args.image_size, 0)
-        spiffs_build_default = SpiffsBuildConfig(args.page_size, SPIFFS_PAGE_IX_LEN,
-                                                 args.block_size, SPIFFS_BLOCK_IX_LEN, args.meta_len,
-                                                 args.obj_name_len, SPIFFS_OBJ_ID_LEN, SPIFFS_SPAN_IX_LEN,
-                                                 True, True, 'big' if args.big_endian else 'little',
-                                                 args.use_magic, args.use_magic_len)
+    image_size = int(args.image_size, 0)
+    spiffs_build_default = SpiffsBuildConfig(args.page_size, SPIFFS_PAGE_IX_LEN,
+                                                args.block_size, SPIFFS_BLOCK_IX_LEN, args.meta_len,
+                                                args.obj_name_len, SPIFFS_OBJ_ID_LEN, SPIFFS_SPAN_IX_LEN,
+                                                True, True, 'big' if args.big_endian else 'little',
+                                                args.use_magic, args.use_magic_len)
 
-        spiffs = SpiffsFS(image_size, spiffs_build_default)
+    spiffs = SpiffsFS(image_size, spiffs_build_default)
 
-        if args.base_dir != '':
-            for root, dirs, files in os.walk(args.base_dir, followlinks=args.follow_symlinks):
-                for f in files:
-                    full_path = os.path.join(root, f)
-                    spiffs.create_file(os.path.relpath(full_path, args.base_dir).replace('\\', '/'), full_path)
+    if args.base_dir != '':
+        for root, dirs, files in os.walk(args.base_dir, followlinks=args.follow_symlinks):
+            for f in files:
+                full_path = os.path.join(root, f)
+                rel_path = os.path.relpath(full_path, args.base_dir)
+                print("'%s', '%s', '%s'" % (rel_path, full_path, args.base_dir))
+                spiffs.create_file(rel_path.replace('\\', '/'), full_path)
 
-        image = spiffs.to_binary()
-
-        image_file.write(image)
+    image = spiffs.to_binary()
+    open(args.output_file, 'wb').write(image)
 
 
 if __name__ == '__main__':
