@@ -1,0 +1,71 @@
+// Filesystem builder configuration
+{
+    "name": "Sming IFS demo volume",
+    "id": "0x12345678",
+    // Where to read files from
+    "source": {
+        "/": "files",
+        "README.rst": "README.rst",
+        "test.jsonc": "basic_ifs.hw",
+        "readme.md": "${SMING_HOME}/Components/IFS/README.rst",
+        "sming.png": "${SMING_HOME}/../docs/api-logo.png",
+        "Data": "${SMING_HOME}/Core/Data",
+        "framework": "${SMING_HOME}/../docs/source/framework",
+        "Sming": "${SMING_HOME}/Core"
+    },
+    // Directories to mount other object stores
+    "mountpoints": {
+        "config": 1
+    },
+    // Rules for file metadata. All rules are evaluated in sequence for every file
+    "rules": [
+        {
+            "mask": "*",
+            "read": "guest",
+            "write": "admin"
+        },
+        {
+            "mask": ".*",
+            "read": "admin"
+        },
+        {
+            "mask": "*.html",
+            "readonly": true
+        },
+        {
+            "mask": [
+                "*.js",
+                "*.png",
+                "*.ico",
+                "*.jpg",
+                "*.jpeg",
+                "*.html",
+                "*.css",
+                "*.txt",
+                "*.md"
+            ],
+            "compress": "gzip"
+        },
+        {
+            "mask": [
+                "/styles.css",
+                "*.ico",
+                "*.png"
+            ],
+            "read": "any"
+        },
+        {
+            "mask": [
+                "/Data/*",
+                "/framework/*",
+                "/Sming/*"
+            ],
+            "compress": "gzip"
+        },
+        //This is a template file so firmware needs to read it
+        {
+            "mask": "/error.html",
+            "compress": "none"
+        }
+    ]
+}

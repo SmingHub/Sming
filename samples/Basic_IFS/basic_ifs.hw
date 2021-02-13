@@ -10,7 +10,7 @@
             "filename": "out/fwfs1.bin",
             "build": {
                 "target": "fwfs-build",
-                "config": "fsimage.ini"
+                "config": "fsimage.fwfs"
             }
         }
     }
