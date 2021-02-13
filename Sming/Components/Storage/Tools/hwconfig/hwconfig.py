@@ -59,7 +59,6 @@ def main():
         # Validate resulting hardware configuration against schema
         try:
             from jsonschema import Draft7Validator
-            from jsonschema.exceptions import ValidationError
         except ImportError:
             critical("hwconfig: `jsonschema` is not installed. Please run `make python-requirements`")
             sys.exit(1)

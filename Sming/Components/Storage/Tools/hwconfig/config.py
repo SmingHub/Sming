@@ -5,6 +5,7 @@
 import os, partition, storage
 from common import *
 from builtins import classmethod
+from rjsmin import jsmin
 
 def findConfig(name):
     dirs = os.environ['HWCONFIG_DIRS'].split(' ')
@@ -32,7 +33,8 @@ class Config(object):
     def load(self, name):
         filename = findConfig(name)
         self.depends.append(filename)
-        data = json.load(open(filename))
+        din = open(filename).read()
+        data = json.loads(jsmin(din))
         self.parse_dict(data)
 
     def parse_dict(self, data):
