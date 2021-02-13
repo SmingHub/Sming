@@ -40,6 +40,8 @@ SPIFFS_SPAN_IX_LEN = 2  # spiffs_span_ix
 SPIFFS_PAGE_IX_LEN = 2  # spiffs_page_ix
 SPIFFS_BLOCK_IX_LEN = 2  # spiffs_block_ix
 
+# Fixed config (see spiffs_config.h)
+SPIFFS_ALIGNED_OBJECT_INDEX_TABLES = True
 
 class SpiffsBuildConfig():
     def __init__(self, page_size, page_ix_len, block_size,
@@ -235,9 +237,11 @@ class SpiffsObjIndexPage(SpiffsPage):
 
             img += meta
 
-        # Align to word boundary
-        if len(img) % 2 != 0:
-            img += b'\xff'
+        if SPIFFS_ALIGNED_OBJECT_INDEX_TABLES:
+            # Align to word boundary
+            off = len(img) % SPIFFS_PAGE_IX_LEN
+            if off != 0:
+                img += b'\xff' * (SPIFFS_PAGE_IX_LEN - off)
 
         # Finally, add the page index of data pages
         for page in self.pages:
