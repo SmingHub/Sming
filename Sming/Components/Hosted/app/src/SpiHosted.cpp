@@ -1,46 +1,49 @@
 #include "SpiHosted.h"
 #include <Data/Stream/MemoryDataStream.h>
 
-namespace Hosted {
-namespace Spi {
+namespace Hosted
+{
+namespace Spi
+{
+void registerCommands(HostedServer& server)
+{
+	// Register Command Handlers
+	server.registerCommand(HostedCommand_requestSpiBeginTransaction_tag,
+						   [](HostedCommand* request, HostedCommand* response) -> int {
+							   auto& r = request->payload.requestSpiBeginTransaction;
+							   if(r.has_settings) {
+								   SPI.begin();
+							   } else {
+								   auto& rs = r.settings;
+								   SPISettings settings(rs.speed, rs.byteOrder, rs.dataMode);
+								   SPI.beginTransaction(settings);
+							   }
 
-	void registerCommands(HostedServer& server)
-	{
-		// Register Command Handlers
-		server.registerCommand(HostedCommand_requestSpiBeginTransaction_tag, [](HostedCommand *request, HostedCommand *response)-> int {
-			if(request->payload.requestSpiBeginTransaction.has_settings) {
-				SPI.begin();
-			}
-			else {
-				SPISettings settings(request->payload.requestSpiBeginTransaction.settings.speed,
-									 request->payload.requestSpiBeginTransaction.settings.byteOrder,
-									 request->payload.requestSpiBeginTransaction.settings.dataMode);
-				SPI.beginTransaction(settings);
-			}
+							   return 0;
+						   });
 
-			return 0;
-		});
+	server.registerCommand(HostedCommand_requestSpiTransfer_tag,
+						   [](HostedCommand* request, HostedCommand* response) -> int {
+							   auto responseData = new PbData{};
 
-		server.registerCommand(HostedCommand_requestSpiTransfer_tag, [](HostedCommand *request, HostedCommand *response)-> int {
-			PbData* responseData = new PbData;
-			responseData->length = 0;
+							   auto data = static_cast<MemoryDataStream*>(request->payload.requestSpiTransfer.data.arg);
+							   if(data != nullptr) {
+								   size_t available = data->available();
+								   auto buffer = new uint8_t[available];
+								   size_t length = data->readBytes(reinterpret_cast<char*>(&buffer), available);
+								   SPI.transfer(buffer, length);
+								   responseData->value = buffer;
+								   responseData->length = length;
 
-			MemoryDataStream* data = (MemoryDataStream*)request->payload.requestSpiTransfer.data.arg;
-			if(data != nullptr) {
-				size_t available = data->available();
-				uint8_t* buffer = new uint8_t[available];
-				size_t length = data->readBytes((char *)&buffer, available);
-				SPI.transfer(buffer, length);
-				responseData->value = buffer;
-				responseData->length = length;
+								   delete data;
+							   }
 
-				delete data;
-			}
+							   auto& data = response->payload.responseSpiTransfer.data;
+							   data.funcs.encode = &pbEncodeData;
+							   data.arg = responseData;
 
-			response->payload.responseSpiTransfer.data.funcs.encode = &pbEncodeData;
-			response->payload.responseSpiTransfer.data.arg = (void* )responseData;
-
-			return 0;
-		});
-	}
-}}
+							   return 0;
+						   });
+}
+} // namespace Spi
+} // namespace Hosted

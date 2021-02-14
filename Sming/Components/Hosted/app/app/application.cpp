@@ -10,14 +10,17 @@
 HostedServer hostedServer;
 TcpServer* tcpServer;
 
-namespace Hosted {
-	namespace Digital {
-		void registerCommands(HostedServer& server);
-	}
-	namespace Spi {
-		void registerCommands(HostedServer& server);
-	}
+namespace Hosted
+{
+namespace Digital
+{
+void registerCommands(HostedServer& server);
 }
+namespace Spi
+{
+void registerCommands(HostedServer& server);
+}
+} // namespace Hosted
 
 // Will be called when WiFi station was connected to AP
 void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
@@ -29,13 +32,13 @@ void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 
 	tcpServer = new TcpServer([](TcpClient& client, char* data, int size) -> bool {
 		// clientReceiveDataHandler
-		int result = hostedServer.process((const uint8_t*)data, size);
+		int result = hostedServer.process(reinterpret_cast<const uint8_t*>(data), size);
 		if(result != HOSTED_OK) {
-			return result == HOSTED_NO_MEM ? false: true;
+			return result == HOSTED_NO_MEM ? false : true;
 		}
 
 		hostedServer.transfer([&client](const uint8_t* data, size_t size) -> bool {
-			return client.send((const char*)data, size);
+			return client.send(reinterpret_cast<const char*>(data), size);
 		});
 
 		return true;
@@ -50,7 +53,6 @@ void init()
 	Hosted::Digital::registerCommands(hostedServer);
 	Hosted::Spi::registerCommands(hostedServer);
 
-
 	// Connect to same AP as the client application
 	WifiStation.enable(true);
 	WifiStation.config(_F(WIFI_SSID), _F(WIFI_PWD));
@@ -58,4 +60,3 @@ void init()
 	// Set callback that should be triggered when we have assigned IP
 	WifiEvents.onStationGotIP(connectOk);
 }
-

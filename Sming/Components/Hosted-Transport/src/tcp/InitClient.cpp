@@ -1,15 +1,13 @@
 #include <SmingCore.h>
 #include <HostedClient.h>
-#include "../../src/tcp/HostedTcpStream.h"
+#include "HostedTcpStream.h"
 
-HostedClient* hostedClient = nullptr;
+HostedClient* hostedClient{nullptr};
 
 #ifndef WIFI_SSID
 #define WIFI_SSID "PleaseEnterSSID" // Put your SSID and password here
 #define WIFI_PWD "PleaseEnterPass"
 #endif
-
-
 
 #ifndef HOSTED_SERVER_IP
 #define REMOTE_IP IpAddress("192.168.13.1")
