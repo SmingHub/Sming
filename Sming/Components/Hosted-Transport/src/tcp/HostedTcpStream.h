@@ -1,35 +1,34 @@
 #include <SmingCore.h>
 #include <Data/Buffer/CircularBuffer.h>
 
-class HostedTcpStream: public ReadWriteStream
+class HostedTcpStream : public ReadWriteStream
 {
 public:
-	HostedTcpStream(const String& host, uint16_t port): host(host), port(port)
+	HostedTcpStream(const String& host, uint16_t port) : host(host), port(port), buffer(1024)
 	{
-	   auto onCompleted = [](TcpClient& client, bool successful) {
+		auto onCompleted = [](TcpClient& client, bool successful) {
 			// onCompleted;
+		};
 
-	   };
+		auto onReadyToSend = [](TcpClient& client, TcpConnectionEvent sourceEvent) {
 
-	   auto onReadyToSend = [](TcpClient& client, TcpConnectionEvent sourceEvent) {
+		};
 
-	   };
+		auto onReceive = [this](TcpClient& client, char* data, int size) -> bool {
+			size_t written = buffer.write(reinterpret_cast<const uint8_t*>(data), size);
+			return written == size_t(size);
+		};
 
-	   auto onReceive = [this](TcpClient& client, char* data, int size)->bool {
-		   	 size_t written = this->buffer.write((const uint8_t*)data, size);
-		   	 return (written == (size_t)size);
-	   };
-
-	   client = new TcpClient(onCompleted, onReadyToSend, onReceive);
+		client = new TcpClient(onCompleted, onReadyToSend, onReceive);
 	}
 
 	size_t write(const uint8_t* buffer, size_t size) override
 	{
 		if(!client->isProcessing()) {
-			client->connect(host, (int)port);
+			client->connect(host, int(port));
 		}
 
-		if(!client->send((const char *)buffer, size)) {
+		if(!client->send(reinterpret_cast<const char*>(buffer), size)) {
 			return 0;
 		}
 
@@ -46,7 +45,6 @@ public:
 		return buffer.seek(len);
 	}
 
-
 	bool isFinished() override
 	{
 		return false;
@@ -57,10 +55,9 @@ public:
 		client->commit();
 	}
 
-
 private:
-	TcpClient* client = nullptr;
-	CircularBuffer buffer = CircularBuffer(1024);
+	TcpClient* client{nullptr};
+	CircularBuffer buffer;
 	String host;
-	uint16_t port = 0;
+	uint16_t port{0};
 };
