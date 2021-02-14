@@ -693,10 +693,8 @@ clean and easy to follow.
 
 Components can be rebuilt and cleaned individually. For example:
 
--  ``make spiffs-build`` runs the Component ‘make’ for spiffs, which
-   contains the spiffs library and spiffy tool.
--  ``make spiffs-clean`` removes all intermediate build files for the
-   Component
+-  ``make spiffs-build`` runs the Component ‘make’ for spiffs, which contains the SPIFFS library.
+-  ``make spiffs-clean`` removes all intermediate build files for the Component
 -  ``make spiffs-rebuild`` cleans and then re-builds the Component
 
 By default, a regular ``make`` performs an incremental build on the

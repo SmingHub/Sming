@@ -1,6 +1,13 @@
 #include <HostTests.h>
 #include <Storage.h>
 
+#ifdef ARCH_HOST
+#include <Storage/FileDevice.h>
+#include <IFS/Host/FileSystem.h>
+#include <IFS/SPIFFS/FileSystem.h>
+using IFileSystem = IFS::IFileSystem;
+#endif
+
 class SpiffsTest : public TestGroup
 {
 public:
@@ -10,6 +17,13 @@ public:
 
 	void execute() override
 	{
+#ifdef ARCH_HOST
+		TEST_CASE("Check Spiffsgen.py")
+		{
+			checkSpiffsGen();
+		}
+#endif
+
 		TEST_CASE("Cycle flash")
 		{
 			cycleFlash();
@@ -33,6 +47,7 @@ public:
 		DEFINE_FSTR_LOCAL(testContent, "Some test content to write to a file");
 
 		auto part = *Storage::findPartition(Storage::Partition::SubType::Data::spiffs);
+		REQUIRE(part.name() == "spiffs0");
 
 		// Write to filesystem until sector #0 gets erased
 		unsigned writeCount = 0;
@@ -59,6 +74,94 @@ public:
 		auto content = fileGetContent(testFile);
 		REQUIRE(testContent == content);
 	}
+
+#ifdef ARCH_HOST
+	/*
+	 * Verify that a legacy volume (i.e. one generated with spiffy before IFS was introduced)
+	 * can still be read correctly.
+	 * 
+	 * Compare content of all files to ensure they are identical.
+	 */
+	void checkSpiffsGen()
+	{
+		IFS::IFileSystem::Info info;
+		int err = fileGetSystemInfo(info);
+		CHECK(err >= 0);
+		debug_i("fs attr = %s", toString(info.attr).c_str());
+
+		IFileSystem* fsOld;
+		if(info.attr[IFileSystem::Attribute::NoMeta]) {
+			fsOld = mountSpiffsFromFile("old", "spiffsgen/spiff_rom_orig.bin");
+		} else {
+			fsOld = mountSpiffsFromFile("old", "spiffsgen/spiff_rom_meta.bin");
+		}
+		auto fsNew = mountSpiffsFromFile("new", "out/spiff_rom_test.bin");
+
+		readCheck(fsOld, fsNew);
+
+		delete fsNew;
+		delete fsOld;
+
+		delete Storage::findDevice("new");
+		delete Storage::findDevice("old");
+	}
+
+	IFileSystem* mountSpiffsFromFile(const String& tag, const String& filename)
+	{
+		auto& hfs = IFS::Host::fileSystem;
+		auto f = hfs.open(filename, IFS::File::ReadOnly);
+		if(f < 0) {
+			debug_e("Failed to open '%s': %s", filename.c_str(), hfs.getErrorString(f).c_str());
+			return nullptr;
+		}
+		auto dev = new Storage::FileDevice(tag, hfs, f);
+		Storage::registerDevice(dev);
+		auto part = dev->createPartition(tag, Storage::Partition::SubType::Data::spiffs, 0, dev->getSize(),
+										 Storage::Partition::Flag::readOnly);
+
+		auto fs = new IFS::SPIFFS::FileSystem(part);
+		int err = fs->mount();
+		if(err < 0) {
+			debug_e("SPIFFS mount '%s' failed: %s", tag.c_str(), fs->getErrorString(err).c_str());
+			delete fs;
+			fs = nullptr;
+			delete dev;
+		}
+
+		debug_i("Mounted '%s' as '%s'", filename.c_str(), tag.c_str());
+		return fs;
+	}
+
+	void readCheck(IFileSystem* fsOld, IFileSystem* fsNew)
+	{
+		DirHandle dir{};
+		int res = fsOld->opendir(nullptr, dir);
+		if(res < 0) {
+			debug_e("opendir failed: %s", fsOld->getErrorString(res).c_str());
+			TEST_ASSERT(false);
+			return;
+		}
+
+		FileNameStat stat;
+		while((res = fsOld->readdir(dir, stat)) >= 0) {
+			FileStat statNew;
+			fsNew->stat(stat.name.buffer, &statNew);
+			debug_i("File '%s' size %u / %u", stat.name.buffer, stat.size, statNew.size);
+
+			String oldContent = fsOld->getContent(stat.name.buffer);
+			CHECK(oldContent);
+			String newContent = fsNew->getContent(stat.name.buffer);
+			CHECK(newContent);
+
+			CHECK_EQ(newContent, oldContent);
+		}
+
+		CHECK_EQ(res, IFS::Error::NoMoreFiles);
+		debug_i("readdir(): %s", fsOld->getErrorString(res).c_str());
+
+		fsOld->closedir(dir);
+	}
+#endif
 };
 
 void REGISTER_TEST(Spiffs)

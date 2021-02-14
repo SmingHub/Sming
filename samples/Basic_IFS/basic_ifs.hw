@@ -2,10 +2,6 @@
     "name": "Basic IFS sample",
     "base_config": "spiffs",
     "partitions": {
-        "spiffs0": {
-            "size": "0x20000",
-            "build": {}
-        },
         "fwfs1": {
             "address": "0x280000",
             "size": "0x60000",

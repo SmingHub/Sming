@@ -130,7 +130,13 @@ bool initFileSystem()
 	IFS::IFileSystem* fs;
 #ifdef FWFS_HYBRID
 	// Create a read/write filesystem
-	fs = IFS::createHybridFilesystem(part);
+	auto spiffsPart = *Storage::findPartition(Storage::Partition::SubType::Data::spiffs);
+	if(spiffsPart) {
+		debug_i("Found '%s'", spiffsPart.name().c_str());
+	} else {
+		debug_e("No SPIFFS partition found");
+	}
+	fs = IFS::createHybridFilesystem(part, spiffsPart);
 #else
 	// Read-only
 	fs = IFS::createFirmwareFilesystem(part);
