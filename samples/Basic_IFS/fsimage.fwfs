@@ -29,7 +29,11 @@
             "read": "admin"
         },
         {
-            "mask": "*.html",
+            "mask": [
+                "*.html",
+                "*.css",
+                "*.png"
+            ],
             "readonly": true
         },
         {

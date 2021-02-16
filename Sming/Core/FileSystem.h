@@ -505,15 +505,23 @@ inline int fileSetACL(file_t file, const File::ACL& acl)
 	return fileSystem->setacl(file, acl);
 }
 
-/** @brief Set file attributes
- *  @param file handle to open file, must have write access
+/** @name Set file attributes
+ *  @param filename
+ *  @param attr
  *  @retval int Error code
+ *  @{
  */
-inline int fileSetAttr(file_t file, File::Attributes attr)
+inline int fileSetAttr(const char* filename, File::Attributes attr)
 {
 	CHECK_FS(setattr)
-	return fileSystem->setattr(file, attr);
+	return fileSystem->setattr(filename, attr);
 }
+
+inline int fileSetAttr(const String& filename, File::Attributes attr)
+{
+	return fileSetAttr(filename.c_str(), attr);
+}
+/** @} */
 
 /** @brief Set access control information for file
  *  @param file handle to open file, must have write access
