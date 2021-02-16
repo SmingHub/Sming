@@ -26,6 +26,9 @@ Hardware configuration
 Each project has an associated ``Hardware configuration``, specified by the :envvar:`HWCONFIG` setting:
 this is a JSON file with a ``.hw`` extension.
 
+For user convenience, the configuration file may contain comments however these are stripped before
+processing.
+
 The build system locates the file by searching, in order:
 
 -  ``{PROJECT_DIR}`` the root project directory
