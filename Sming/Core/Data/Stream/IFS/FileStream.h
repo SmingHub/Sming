@@ -11,7 +11,7 @@
 #pragma once
 
 #include "../ReadWriteStream.h"
-#include "FsBase.h"
+#include <IFS/FsBase.h>
 
 namespace IFS
 {

@@ -14,7 +14,7 @@
 #pragma once
 
 #include "../SectionTemplate.h"
-#include "Directory.h"
+#include <IFS/Directory.h>
 
 #define DIRSTREAM_FIELD_MAP(XX)                                                                                        \
 	XX(file_id, "File identifier")                                                                                     \
