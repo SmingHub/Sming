@@ -227,6 +227,10 @@
 	path = Sming/Libraries/MultipartParser/multipart-parser
 	url = https://github.com/iafonov/multipart-parser-c.git
 	ignore = dirty
+[submodule "Libraries.nanopb"]
+	path = Sming/Libraries/nanopb/nanopb
+	url = https://github.com/nanopb/nanopb.git
+	ignore = dirty
 [submodule "Libraries.RapidXML"]
 	path = Sming/Libraries/RapidXML
 	url = https://github.com/mikee47/Sming-RapidXML
