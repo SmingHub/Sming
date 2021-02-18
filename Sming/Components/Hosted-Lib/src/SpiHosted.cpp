@@ -7,18 +7,18 @@ extern HostedClient* hostedClient;
 // define the static singleton
 SPIClass SPI;
 
-void SPIClass::begin()
+bool SPIClass::begin()
 {
 	NEW_HD_COMMAND(message, SpiBeginTransaction, { command->has_settings = 0; });
 
-	hostedClient->send(&message);
+	return hostedClient->send(&message);
 }
 
-void SPIClass::beginTransaction(SPISettings mySettings)
+void SPIClass::prepare(SPISettings& mySettings)
 {
 	NEW_HD_COMMAND(message, SpiBeginTransaction, {
 		command->has_settings = 1;
-		command->settings.speed = mySettings.speed;
+		//		command->settings.speed = mySettings.speed;
 		command->settings.byteOrder = SpiSettings_ByteOrder(mySettings.byteOrder);
 		command->settings.dataMode = SpiSettings_DataMode(mySettings.dataMode);
 	});
@@ -57,10 +57,4 @@ void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 
 	resultData->readBytes(reinterpret_cast<char*>(buffer), numberBytes);
 	delete resultData;
-}
-
-uint32_t SPIClass::transfer32(uint32_t val, uint8_t bits)
-{
-	// TODO:
-	return 0;
 }

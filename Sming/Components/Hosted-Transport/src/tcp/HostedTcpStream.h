@@ -4,7 +4,7 @@
 class HostedTcpStream : public ReadWriteStream
 {
 public:
-	HostedTcpStream(const String& host, uint16_t port) : host(host), port(port), buffer(1024)
+	HostedTcpStream(const String& host, uint16_t port) : buffer(1024), host(host), port(port)
 	{
 		auto onCompleted = [](TcpClient& client, bool successful) {
 			// onCompleted;
