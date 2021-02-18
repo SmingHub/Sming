@@ -79,7 +79,7 @@ private:
 				return true;
 			},
 			.state = this->stream,
-			.bytes_left = this->stream->available(),
+			.bytes_left = (size_t)this->stream->available(),
 			.errmsg = nullptr,
 		};
 	}
