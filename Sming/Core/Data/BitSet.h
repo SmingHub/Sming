@@ -377,7 +377,7 @@ private:
 template <typename S, typename E, size_t size_>
 inline constexpr BitSet<S, E, size_> operator&(const BitSet<S, E, size_>& x, const BitSet<S, E, size_>& y)
 {
-	return BitSet<S, E, size_>(S(x) & ~S(y));
+	return BitSet<S, E, size_>(S(x) & S(y));
 }
 
 template <typename S, typename E, size_t size_>
@@ -414,6 +414,18 @@ template <typename S, typename E, size_t size_>
 inline constexpr BitSet<S, E, size_> operator-(const BitSet<S, E, size_>& x, E b)
 {
 	return BitSet<S, E, size_>(S(x) & ~BitSet<S, E, size_>::bitVal(b));
+}
+
+template <typename S, typename E, size_t size_>
+inline constexpr BitSet<S, E, size_> operator^(BitSet<S, E, size_> x, BitSet<S, E, size_> y)
+{
+	return BitSet<S, E, size_>(S(x) ^ S(y));
+}
+
+template <typename S, typename E, size_t size_>
+inline constexpr BitSet<S, E, size_> operator^(BitSet<S, E, size_> x, E b)
+{
+	return x ^ BitSet<S, E, size_>(b);
 }
 
 /*
