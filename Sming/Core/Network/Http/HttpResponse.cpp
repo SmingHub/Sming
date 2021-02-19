@@ -59,9 +59,9 @@ bool HttpResponse::sendString(String&& text) noexcept
 bool HttpResponse::sendFile(const FileStat& stat)
 {
 	auto file = new FileStream(stat);
-	if(stat.compression == File::Compression::GZip) {
+	if(stat.compression.type == File::Compression::Type::GZip) {
 		headers[HTTP_HEADER_CONTENT_ENCODING] = F("gzip");
-	} else if(stat.compression != File::Compression::None) {
+	} else if(stat.compression.type != File::Compression::Type::None) {
 		debug_e("Unsupported compression type: %u", stat.compression);
 	}
 
@@ -76,7 +76,7 @@ bool HttpResponse::sendFile(const String& fileName, bool allowGzipFileCheck)
 		String fnCompressed = fileName + _F(".gz");
 		if(fileStats(fnCompressed, stat) >= 0) {
 			debug_d("found %s", stat.name);
-			stat.compression = File::Compression::GZip;
+			stat.compression.type = File::Compression::Type::GZip;
 			stat.name = IFS::NameBuffer(fnCompressed);
 			return sendFile(stat);
 		}

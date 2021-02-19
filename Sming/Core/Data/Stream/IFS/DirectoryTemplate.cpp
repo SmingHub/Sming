@@ -66,7 +66,7 @@ String DirectoryTemplate::getValue(const char* name)
 		return statValid ? String(s.size) : nullptr;
 
 	case Field::original_size:
-		return statValid ? String(s.originalSize) : nullptr;
+		return statValid ? String(s.compression.originalSize) : nullptr;
 
 	case Field::attr:
 		return statValid ? IFS::File::getAttributeString(s.attr) : nullptr;
@@ -80,7 +80,7 @@ String DirectoryTemplate::getValue(const char* name)
 		} else if(!s.attr[File::Attribute::Compressed]) {
 			return "";
 		} else {
-			return toString(s.compression);
+			return toString(s.compression.type);
 		}
 
 	case Field::access:

@@ -12,7 +12,8 @@
 			"size": {{!as_int:size}},
 			"original_size": {{!as_int:original_size}},
 			"attr": "{{attr}}",
-			"access": "{{access}}"
+			"access": "{{access}}",
+			"compression": "{{compression}}"
 		}{/SECTION}
 
 {SECTION}

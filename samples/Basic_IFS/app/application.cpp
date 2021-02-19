@@ -80,10 +80,10 @@ void onFile(HttpRequest& request, HttpResponse& response)
 	} else {
 		//	response.setCache(86400, true); // It's important to use cache for better performance.
 		auto stream = new FileStream(stat);
-		if(stat.compression == File::Compression::GZip) {
+		if(stat.compression.type == File::Compression::Type::GZip) {
 			response.headers[HTTP_HEADER_CONTENT_ENCODING] = F("gzip");
-		} else if(stat.compression != File::Compression::None) {
-			debug_e("Unsupported compression type: %u", stat.compression);
+		} else if(stat.compression.type != File::Compression::Type::None) {
+			debug_e("Unsupported compression type: %u", stat.compression.type);
 		}
 
 		auto mimeType = ContentType::fromFullFileName(file.c_str(), MIME_TEXT);
