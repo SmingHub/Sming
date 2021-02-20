@@ -34,6 +34,9 @@ CLI_TARGET_OPTIONS =
 # $1 -> Command to execute
 ifeq ($(UNAME),Windows)
 DetachCommand = start $1
+# May be required by some applications (e.g. openssl)
+HOME ?= $(USERPROFILE)
+export HOME
 else
 DetachCommand = gnome-terminal -- bash -c "sleep 1; $1"
 endif
