@@ -175,6 +175,14 @@ $(CLEAN_TESTS):
 
 ##@Tools
 
+CACHE_VARS += PIP_ARGS
+PIP_ARGS ?=
+.PHONY: python-requirements
+python-requirements: ##Install Python requirements for framework via pip (use PIP_ARGS=... for additional options)
+	@echo Installing Python requirements...
+	$(Q) $(PYTHON) -m pip install $(PIP_ARGS) -r $(SMING_HOME)/../Tools/requirements.txt
+
+
 # Recursive wildcard search
 # $1 -> list of directories
 # $2 -> file extensions filters (using % as wildcard)
