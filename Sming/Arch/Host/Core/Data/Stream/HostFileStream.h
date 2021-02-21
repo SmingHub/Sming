@@ -21,7 +21,7 @@ class HostFileStream : public IFS::FileStream
 public:
 	HostFileStream();
 
-	HostFileStream(const String& fileName, IFS::File::OpenFlags openFlags = IFS::File::ReadOnly) : HostFileStream()
+	HostFileStream(const String& fileName, IFS::OpenFlags openFlags = IFS::OpenFlag::Read) : HostFileStream()
 	{
 		open(fileName, openFlags);
 	}

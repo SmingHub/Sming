@@ -33,9 +33,9 @@ public:
 	 *  @param file
 	 *  @param size
 	 */
-	void attach(File::Handle file, size_t size);
+	void attach(FileHandle file, size_t size);
 
-	bool open(const FileStat& stat, File::OpenFlags openFlags = File::ReadOnly);
+	bool open(const Stat& stat, OpenFlags openFlags = OpenFlag::Read);
 
 	/** @brief Open a file and attach this stream object to it
 	 *  @param fileName
@@ -43,7 +43,7 @@ public:
 	 *  @retval bool true on success, false on error
 	 *  @note call getLastError() to determine cause of failure
 	 */
-	bool open(const String& fileName, File::OpenFlags openFlags = File::ReadOnly);
+	bool open(const String& fileName, IFS::OpenFlags openFlags = OpenFlag::Read);
 
 	/** @brief Close file
 	 */
@@ -138,7 +138,7 @@ public:
 	}
 
 private:
-	File::Handle handle{-1};
+	FileHandle handle{-1};
 	size_t pos{0};
 	size_t size{0};
 };

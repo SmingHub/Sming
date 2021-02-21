@@ -21,12 +21,11 @@
 #include "flashmem.h"
 #include <string.h>
 #include <esp_spi_flash.h>
-#include <IFS/Host/FileSystem.h>
+#include <IFS/File.h>
 
 namespace
 {
-IFS::IFileSystem& fileSys{IFS::Host::fileSystem};
-IFS::File::Handle flashFile{-1};
+IFS::File flashFile(&IFS::Host::getFileSystem());
 size_t flashFileSize{0x400000U};
 char flashFileName[256];
 const char defaultFlashFileName[]{"flash.bin"};
@@ -59,26 +58,24 @@ bool host_flashmem_init(FlashmemConfig& config)
 		config.filename = flashFileName;
 	}
 
-	flashFile = fileSys.open(flashFileName, IFS::File::Create | IFS::File::ReadWrite);
-	if(flashFile < 0) {
+	if(!flashFile.open(flashFileName, IFS::File::Create | IFS::File::ReadWrite)) {
 		hostmsg("Error opening \"%s\"", flashFileName);
 		return false;
 	}
 
-	int res = fileSys.lseek(flashFile, 0, SeekOrigin::End);
+	int res = flashFile.seek(0, SeekOrigin::End);
 	if(res < 0) {
-		hostmsg("Error seeking \"%s\": %s", flashFileName, fileSys.getErrorString(res).c_str());
-		fileSys.close(flashFile);
-		flashFile = -1;
+		hostmsg("Error seeking \"%s\": %s", flashFileName, flashFile.getErrorString(res).c_str());
+		flashFile.close();
 		return false;
 	}
 
 	if(res == 0) {
 		size_t size = config.createSize ?: flashFileSize;
-		res = fileSys.lseek(flashFile, size, SeekOrigin::Start);
+		res = flashFile.seek(size, SeekOrigin::Start);
 		if(res != int(size)) {
 			hostmsg("Error seeking beyond end of file \"%s\"", flashFileName);
-		} else if(fileSys.truncate(flashFile, size) < 0) {
+		} else if(!flashFile.truncate(size)) {
 			hostmsg("Error truncating \"%s\" to %u bytes", flashFileName, size);
 		} else {
 			hostmsg("Created blank \"%s\", %u bytes", flashFileName, size);
@@ -95,37 +92,36 @@ bool host_flashmem_init(FlashmemConfig& config)
 
 void host_flashmem_cleanup()
 {
-	fileSys.close(flashFile);
-	flashFile = -1;
+	flashFile.close();
 	hostmsg("Closed \"%s\"", flashFileName);
 }
 
 static int readFlashFile(uint32_t offset, void* buffer, size_t count)
 {
-	if(flashFile < 0) {
+	if(!flashFile) {
 		return -1;
 	}
-	int res = fileSys.lseek(flashFile, offset, SeekOrigin::Start);
+	int res = flashFile.seek(offset, SeekOrigin::Start);
 	if(res >= 0) {
-		res = fileSys.read(flashFile, buffer, count);
+		res = flashFile.read(buffer, count);
 	}
 	if(res < 0) {
-		debug_w("readFlashFile(0x%08x, %u) failed: %s", offset, count, fileSys.getErrorString(res).c_str());
+		debug_w("readFlashFile(0x%08x, %u) failed: %s", offset, count, flashFile.getErrorString(res).c_str());
 	}
 	return res;
 }
 
 static int writeFlashFile(uint32_t offset, const void* data, size_t count)
 {
-	if(flashFile < 0) {
+	if(!flashFile) {
 		return -1;
 	}
-	int res = fileSys.lseek(flashFile, offset, SeekOrigin::Start);
+	int res = flashFile.seek(offset, SeekOrigin::Start);
 	if(res >= 0) {
-		res = fileSys.write(flashFile, data, count);
+		res = flashFile.write(data, count);
 	}
 	if(res < 0) {
-		debug_w("writeFlashFile(0x%08x, %u) failed: %s", offset, count, fileSys.getErrorString(res).c_str());
+		debug_w("writeFlashFile(0x%08x, %u) failed: %s", offset, count, flashFile.getErrorString(res).c_str());
 	}
 	return res;
 }

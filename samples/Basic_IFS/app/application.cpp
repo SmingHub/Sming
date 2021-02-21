@@ -5,7 +5,6 @@
 
 #include <SmingCore.h>
 #include <Data/Stream/MemoryDataStream.h>
-#include <Data/Stream/Directory.h>
 #include <Data/Stream/IFS/DirectoryTemplate.h>
 #include <Data/Stream/IFS/HtmlDirectoryTemplate.h>
 #include <Data/Stream/IFS/JsonDirectoryTemplate.h>
@@ -59,7 +58,7 @@ void onFile(HttpRequest& request, HttpResponse& response)
 		return;
 	}
 
-	if(stat.attr[File::Attribute::Directory]) {
+	if(stat.attr[FileAttribute::Directory]) {
 		auto dir = new Directory;
 		IFS::DirectoryTemplate* tmpl;
 		String fmt = request.uri.Query["format"];
@@ -80,9 +79,9 @@ void onFile(HttpRequest& request, HttpResponse& response)
 	} else {
 		//	response.setCache(86400, true); // It's important to use cache for better performance.
 		auto stream = new FileStream(stat);
-		if(stat.compression.type == File::Compression::Type::GZip) {
+		if(stat.compression.type == IFS::Compression::Type::GZip) {
 			response.headers[HTTP_HEADER_CONTENT_ENCODING] = F("gzip");
-		} else if(stat.compression.type != File::Compression::Type::None) {
+		} else if(stat.compression.type != IFS::Compression::Type::None) {
 			debug_e("Unsupported compression type: %u", stat.compression.type);
 		}
 

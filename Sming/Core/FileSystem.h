@@ -16,31 +16,22 @@
 #pragma once
 
 #include <IFS/Helpers.h>
+#include <IFS/File.h>
+#include <IFS/Directory.h>
 #include <spiffs_sming.h>
 #include "WVector.h" ///< @deprecated see fileList()
 
-namespace File
-{
-using namespace IFS::File;
-}
-
-using file_t = IFS::File::Handle;
+using file_t = IFS::FileHandle;
 typedef SeekOrigin SeekOriginFlags; ///< @deprecated Use `SeekOrigin` instead
+using FileHandle = IFS::FileHandle;
 using DirHandle = IFS::DirHandle;
-using FileOpenFlag = File::OpenFlag;
-using FileOpenFlags = File::OpenFlags;
-using FileStat = File::Stat;
-using FileNameStat = File::NameStat;
+using FileOpenFlag = IFS::OpenFlag;
+using FileOpenFlags = IFS::OpenFlags;
+using FileAttribute = IFS::FileAttribute;
+using FileAttributes = IFS::FileAttributes;
+using FileStat = IFS::Stat;
+using FileNameStat = IFS::NameStat;
 constexpr int FS_OK = IFS::FS_OK;
-
-// Various file flag combinations
-constexpr FileOpenFlags eFO_ReadOnly SMING_DEPRECATED{File::ReadOnly};   ///< @deprecated use File::ReadOnly
-constexpr FileOpenFlags eFO_WriteOnly SMING_DEPRECATED{File::WriteOnly}; ///< @deprecated use File::WriteOnly
-constexpr FileOpenFlags eFO_ReadWrite{File::ReadWrite};					 ///< @deprecated use File::ReadWrite
-constexpr FileOpenFlags eFO_CreateIfNotExist{File::Create};				 ///< @deprecated use File::Create
-constexpr FileOpenFlags eFO_Append{File::Append};						 ///< @deprecated use File::Append
-constexpr FileOpenFlags eFO_Truncate{File::Truncate};					 ///< @deprecated use File::Truncate
-constexpr FileOpenFlags eFO_CreateNewAlways{File::CreateNewAlways};		 ///< @deprecated use File::CreateNewAlways
 
 constexpr SeekOrigin eSO_FileStart{SeekOrigin::Start};	///< @deprecated use SeekOrigin::Start
 constexpr SeekOrigin eSO_CurrentPos{SeekOrigin::Current}; ///< @deprecated use SeekOrigin::Current
@@ -60,11 +51,40 @@ extern IFS::IFileSystem* activeFileSystem;
 
 } // namespace SmingInternal
 
+class File : public IFS::File
+{
+public:
+	File() : IFS::File(SmingInternal::activeFileSystem)
+	{
+	}
+};
+
+/**
+  * @brief      Directory stream class
+  * @ingroup    stream data
+ */
+class Directory : public IFS::Directory
+{
+public:
+	Directory() : IFS::Directory(SmingInternal::activeFileSystem)
+	{
+	}
+};
+
+// Various file flag combinations
+constexpr FileOpenFlags eFO_ReadOnly{File::ReadOnly};				///< @deprecated use File::ReadOnly
+constexpr FileOpenFlags eFO_WriteOnly{File::WriteOnly};				///< @deprecated use File::WriteOnly
+constexpr FileOpenFlags eFO_ReadWrite{File::ReadWrite};				///< @deprecated use File::ReadWrite
+constexpr FileOpenFlags eFO_CreateIfNotExist{File::Create};			///< @deprecated use File::Create
+constexpr FileOpenFlags eFO_Append{File::Append};					///< @deprecated use File::Append
+constexpr FileOpenFlags eFO_Truncate{File::Truncate};				///< @deprecated use File::Truncate
+constexpr FileOpenFlags eFO_CreateNewAlways{File::CreateNewAlways}; ///< @deprecated use File::CreateNewAlways
+
 /*
  * Boilerplate check for file function wrappers to catch undefined filesystem.
  */
 #define CHECK_FS(_method)                                                                                              \
-	auto fileSystem = SmingInternal::activeFileSystem;                                                                 \
+	auto fileSystem = static_cast<IFS::FileSystem*>(SmingInternal::activeFileSystem);                                  \
 	if(fileSystem == nullptr) {                                                                                        \
 		debug_e("ERROR in %s(): No active file system", __FUNCTION__);                                                 \
 		return file_t(IFS::Error::NoFileSystem);                                                                       \
@@ -74,12 +94,12 @@ extern IFS::IFileSystem* activeFileSystem;
  * @brief Get the currently active file system, if any
  * @retval IFS::IFileSystem*
  */
-inline IFS::IFileSystem* getFileSystem()
+inline IFS::FileSystem* getFileSystem()
 {
 	if(SmingInternal::activeFileSystem == nullptr) {
 		debug_e("ERROR: No active file system");
 	}
-	return SmingInternal::activeFileSystem;
+	return static_cast<IFS::FileSystem*>(SmingInternal::activeFileSystem);
 }
 
 /** @brief Sets the currently active file system
@@ -499,7 +519,7 @@ inline int fileSystemCheck()
  *  @param acl
  *  @retval int Error code
  */
-inline int fileSetACL(file_t file, const File::ACL& acl)
+inline int fileSetACL(file_t file, const IFS::ACL& acl)
 {
 	CHECK_FS(setacl)
 	return fileSystem->setacl(file, acl);
@@ -511,13 +531,13 @@ inline int fileSetACL(file_t file, const File::ACL& acl)
  *  @retval int Error code
  *  @{
  */
-inline int fileSetAttr(const char* filename, File::Attributes attr)
+inline int fileSetAttr(const char* filename, FileAttributes attr)
 {
 	CHECK_FS(setattr)
 	return fileSystem->setattr(filename, attr);
 }
 
-inline int fileSetAttr(const String& filename, File::Attributes attr)
+inline int fileSetAttr(const String& filename, FileAttributes attr)
 {
 	return fileSetAttr(filename.c_str(), attr);
 }
