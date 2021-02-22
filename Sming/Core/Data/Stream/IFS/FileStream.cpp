@@ -210,7 +210,7 @@ bool FileStream::truncate(size_t newSize)
 		return 0;
 	}
 
-	bool res = check(fs->truncate(handle, newSize));
+	bool res = check(fs->ftruncate(handle, newSize));
 	if(res) {
 		size = newSize;
 		if(pos > size) {

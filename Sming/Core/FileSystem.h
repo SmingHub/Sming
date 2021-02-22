@@ -277,7 +277,7 @@ template <typename TFileName> inline uint32_t fileGetSize(const TFileName& fileN
 inline int fileTruncate(file_t file, size_t newSize)
 {
 	CHECK_FS(truncate);
-	return fileSystem->truncate(file, newSize);
+	return fileSystem->ftruncate(file, newSize);
 }
 
 /** @brief Truncate an open file at the current cursor position
@@ -287,7 +287,7 @@ inline int fileTruncate(file_t file, size_t newSize)
 inline int fileTruncate(file_t file)
 {
 	CHECK_FS(truncate);
-	return fileSystem->truncate(file);
+	return fileSystem->ftruncate(file);
 }
 
 /** @brief Truncate (reduce) the size of a file
