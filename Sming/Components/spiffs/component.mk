@@ -25,6 +25,13 @@ COMPONENT_RELINK_VARS += SPIFFS_OBJ_META_LEN
 SPIFFS_OBJ_META_LEN ?= 16
 COMPONENT_CFLAGS += -DSPIFFS_OBJ_META_LEN=$(SPIFFS_OBJ_META_LEN)
 
+##@Cleaning
+
+.PHONY: spiffs-image-clean
+spiffs-image-clean: ##Remove SPIFFS image file
+	$(info Cleaning $(SPIFF_BIN_OUT))
+	$(Q) rm -f $(SPIFF_BIN_OUT)
+
 ##@Building
 
 # Spiffs image generation tool
