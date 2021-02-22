@@ -439,8 +439,20 @@ checkdirs: | $(BUILD_BASE) $(FW_BASE) $(TOOLS_BASE) $(APP_LIBDIR) $(USER_LIBDIR)
 $(BUILD_BASE) $(FW_BASE) $(TOOLS_BASE) $(APP_LIBDIR) $(USER_LIBDIR):
 	$(Q) mkdir -p $@
 
+
+SMING_MAKE := $(Q) $(MAKE) --no-print-directory -C $(SMING_HOME)
+
+# Prerequisites
+
+$(OUT_BASE)/.python_ready:
+	$(SMING_MAKE) python-requirements
+	$(Q) touch $@
+
+.PHONY: library-python-requirements
+library-python-requirements: $(OUT_BASE)/.python_ready
+
 # Targets to be built before anything else (e.g. source code generators)
-PREREQUISITES := $(foreach c,$(COMPONENTS),$(CMP_$c_PREREQUISITES))
+PREREQUISITES := $(foreach c,$(COMPONENTS),$(CMP_$c_PREREQUISITES)) library-python-requirements
 
 # Build all Component (user) libraries
 .PHONY: components
@@ -448,7 +460,6 @@ components: $(PREREQUISITES) $(ALL_COMPONENT_TARGETS) $(CUSTOM_TARGETS)
 
 ##@Cleaning
 
-SMING_MAKE := $(Q) $(MAKE) --no-print-directory -C $(SMING_HOME)
 
 .PHONY: dist-clean
 dist-clean: ##Clean everything (all arch/build types)
