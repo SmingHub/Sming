@@ -3,15 +3,9 @@
 #
 
 import os, partition, storage
+from rjsmin import jsmin
 from common import *
 from builtins import classmethod
-
-try:
-    from rjsmin import jsmin
-except ImportError as err:
-    sys.stderr.write("\n** %s: please run `make python-requirements` **\n\n" % str(err))
-    sys.exit(1)
-
 
 def findConfig(name):
     dirs = os.environ['HWCONFIG_DIRS'].split(' ')
