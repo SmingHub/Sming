@@ -59,17 +59,16 @@ def main():
         # Validate resulting hardware configuration against schema
         try:
             from jsonschema import Draft7Validator
-        except ImportError:
-            critical("hwconfig: `jsonschema` is not installed. Please run `make python-requirements`")
-            sys.exit(1)
-        inst = json.loads(config.to_json())
-        schema = json.load(open(args.expr))
-        v = Draft7Validator(schema)
-        errors = sorted(v.iter_errors(inst), key=lambda e: e.path)
-        if errors != []:
-            for e in errors:
-                critical("%s @ %s" % (e.message, e.path))
-            sys.exit(3)
+            inst = json.loads(config.to_json())
+            schema = json.load(open(args.expr))
+            v = Draft7Validator(schema)
+            errors = sorted(v.iter_errors(inst), key=lambda e: e.path)
+            if errors != []:
+                for e in errors:
+                    critical("%s @ %s" % (e.message, e.path))
+                sys.exit(3)
+        except ImportError as err:
+            critical("\n** WARNING! %s: Cannot validate '%s', please run `make python-requirements **\n\n" % (str(err), args.input))
     elif args.command == 'flashcheck':
         # Expect list of chunks, such as "0x100000=/out/Esp8266/debug/firmware/spiff_rom.bin 0x200000=custom.bin"
         list = args.expr.split()
