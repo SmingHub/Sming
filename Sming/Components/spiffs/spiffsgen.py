@@ -228,9 +228,10 @@ class SpiffsObjIndexPage(SpiffsPage):
                 magic = 0xE3457A77
                 mtime = self.mtime
                 attr = 0
-                flags = 0xff
                 userRole_admin = 0x04
-                meta = struct.pack(b'<LLBBBB', magic, mtime, attr, flags, userRole_admin, userRole_admin)
+                compression_none = 0
+                original_size = 0
+                meta = struct.pack(b'<LLBBBBB', magic, mtime, attr, userRole_admin, userRole_admin, compression_none, original_size)
                 meta += b'\x00' * (self.build_config.meta_len - 12)
             else:
                 meta = b'\00' * self.build_config.meta_len
