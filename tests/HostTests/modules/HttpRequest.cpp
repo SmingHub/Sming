@@ -5,6 +5,29 @@
 #include <Platform/Station.h>
 #include <IFS/Helpers.h>
 
+namespace
+{
+struct TestFile {
+	const char* name;	 // Name of file requested via HTTP
+	const char* realName; // Actual filename on disk (optional, defaults to name)
+	MimeType mimeType;
+	const char* contentEncoding;
+
+	size_t getSize() const
+	{
+		return fileGetSize(realName ?: name);
+	}
+};
+
+TestFile testFiles[]{
+	{"bootstrap.min.css", "bootstrap.min.css.gz", MimeType::CSS, "gzip"},
+	{"bootstrap.min.css.gz", nullptr, MimeType::UNKNOWN, ""},
+	{"index.html", nullptr, MimeType::HTML, ""},
+	{"index.js", nullptr, MimeType::JS, ""},
+};
+
+} // namespace
+
 class HttpRequestTest : public TestGroup
 {
 public:
@@ -21,31 +44,47 @@ public:
 		fileSetFileSystem(fs);
 
 		server->listen(80);
-		server->paths.setDefault(HttpPathDelegate(&HttpRequestTest::onFile, this));
+		server->paths.setDefault([](HttpRequest& request, HttpResponse& response) {
+			auto path = request.uri.getRelativePath();
+			bool ok = response.sendFile(path);
+			debug_i("Request from '%s' for '%s': %s", request.uri.Host.c_str(), path.c_str(), ok ? "OK" : "FAIL");
+		});
 
+		requestNextFile();
+		pending();
+	}
+
+	void requestNextFile()
+	{
+		if(fileIndex >= ARRAY_SIZE(testFiles)) {
+			shutdown();
+			return;
+		}
+
+		auto& file = testFiles[fileIndex++];
 		Url url;
 		url.Host = WifiStation.getIP().toString();
 		url.Port = 80;
-		url.Path = "/bootstrap.min.css";
+		url.Path = String('/') + file.name;
 
 		auto req = new HttpRequest(url);
-		req->onRequestComplete([this](HttpConnection& connection, bool success) -> int {
+		req->onRequestComplete([this, file](HttpConnection& connection, bool success) -> int {
 			auto response = connection.getResponse();
-			Serial.print(F("Received "));
-			Serial.println(connection.getRequest()->uri.toString());
+			debug_i("Client received '%s'", connection.getRequest()->uri.toString().c_str());
 			Serial.print(response->toString());
 
 			REQUIRE(response->code == HTTP_STATUS_OK);
-			REQUIRE(response->headers[HTTP_HEADER_CONTENT_TYPE] == toString(MimeType::CSS));
+			REQUIRE(response->headers[HTTP_HEADER_CONTENT_TYPE] == toString(file.mimeType));
+			REQUIRE(response->headers[HTTP_HEADER_CONTENT_ENCODING] == file.contentEncoding);
+			REQUIRE(response->headers[HTTP_HEADER_CONTENT_LENGTH] == String(file.getSize()));
 
 			Serial.println();
 
-			shutdown();
+			requestNextFile();
 			return 0;
 		});
-		client.send(req);
-
-		pending();
+		bool ok = client.send(req);
+		debug_i("Requested '%s': %s", file.name, ok ? "OK" : "FAIL");
 	}
 
 	void shutdown()
@@ -56,20 +95,9 @@ public:
 		timer.startOnce();
 	}
 
-	void onFile(HttpRequest& request, HttpResponse& response)
-	{
-		String file = request.uri.getRelativePath();
-
-		if(file[0] == '.')
-			response.code = HTTP_STATUS_FORBIDDEN;
-		else {
-			response.setCache(86400, true); // It's important to use cache for better performance.
-			response.sendFile(file);
-		}
-	}
-
 private:
 	HttpServer* server{nullptr};
+	unsigned fileIndex{0};
 	HttpClient client;
 	Timer timer;
 };
