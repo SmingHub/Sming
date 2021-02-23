@@ -2,6 +2,7 @@
 
 #include "Network/HttpServer.h"
 #include "Network/HttpClient.h"
+#include <Platform/Station.h>
 #include <IFS/Helpers.h>
 
 class HttpRequestTest : public TestGroup
@@ -22,15 +23,19 @@ public:
 		server->listen(80);
 		server->paths.setDefault(HttpPathDelegate(&HttpRequestTest::onFile, this));
 
-		auto req = new HttpRequest(F("http://192.168.13.10/bootstrap.min.css"));
-		req->onRequestComplete([this](HttpConnection& connection, bool success) -> int {
-			REQUIRE(success);
+		Url url;
+		url.Host = WifiStation.getIP().toString();
+		url.Port = 80;
+		url.Path = "/bootstrap.min.css";
 
+		auto req = new HttpRequest(url);
+		req->onRequestComplete([this](HttpConnection& connection, bool success) -> int {
 			auto response = connection.getResponse();
 			Serial.print(F("Received "));
 			Serial.println(connection.getRequest()->uri.toString());
 			Serial.print(response->toString());
 
+			REQUIRE(response->code == HTTP_STATUS_OK);
 			REQUIRE(response->headers[HTTP_HEADER_CONTENT_TYPE] == toString(MimeType::CSS));
 
 			Serial.println();
@@ -72,7 +77,7 @@ private:
 void REGISTER_TEST(HttpRequest)
 {
 	// Currently only supported for Host CI
-#ifdef ARCH_HOST
+#if defined(ARCH_HOST) && defined(__linux__)
 	registerGroup<HttpRequestTest>();
 #endif
 }

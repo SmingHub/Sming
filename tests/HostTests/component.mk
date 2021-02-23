@@ -14,6 +14,11 @@ COMPONENT_DEPENDS := \
 	axtls-8266 \
 	bearssl-esp8266
 
+ifeq ($(UNAME),Windows)
+# Network tests run on Linux only
+HOST_NETWORK_OPTIONS := --nonet
+endif
+
 # Time in milliseconds to pause after a test group has completed
 CONFIG_VARS += TEST_GROUP_INTERVAL
 TEST_GROUP_INTERVAL ?= 500
