@@ -35,7 +35,7 @@ LDFLAGS	+= \
 
 
 .PHONY: application
-application: $(CUSTOM_TARGETS) $(FW_FILE_1) $(FW_FILE_2)
+application: $(FW_FILE_1) $(FW_FILE_2)
 
 # $1 -> Linker script
 define LinkTarget

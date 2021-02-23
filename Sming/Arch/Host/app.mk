@@ -15,7 +15,7 @@ TARGET_OUT_0			:= $(FW_BASE)/$(APP_NAME)$(TOOL_EXT)
 # Target definitions
 
 .PHONY: application
-application: $(CUSTOM_TARGETS) $(TARGET_OUT_0)
+application: $(TARGET_OUT_0)
 
 $(TARGET_OUT_0): $(COMPONENTS_AR)
 	$(info $(notdir $(PROJECT_DIR)): Linking $@)

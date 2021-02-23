@@ -9,8 +9,7 @@
  ****/
 
 #include "HostFileStream.h"
-#include <IFS/Host/FileSystem.h>
 
-HostFileStream::HostFileStream() : IFS::FileStream(&IFS::Host::fileSystem)
+HostFileStream::HostFileStream() : IFS::FileStream(&IFS::Host::getFileSystem())
 {
 }

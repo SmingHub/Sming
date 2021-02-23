@@ -14,7 +14,7 @@
 
 namespace IFS
 {
-void FileStream::attach(File::Handle file, size_t size)
+void FileStream::attach(FileHandle file, size_t size)
 {
 	close();
 	if(file < 0) {
@@ -33,7 +33,7 @@ void FileStream::attach(File::Handle file, size_t size)
 	debug_d("attached file: '%s' (%u bytes) #0x%08X", fileName().c_str(), size, this);
 }
 
-bool FileStream::open(const FileStat& stat, File::OpenFlags openFlags)
+bool FileStream::open(const Stat& stat, OpenFlags openFlags)
 {
 	auto fs = getFileSystem();
 	if(fs == nullptr) {
@@ -42,7 +42,7 @@ bool FileStream::open(const FileStat& stat, File::OpenFlags openFlags)
 
 	lastError = FS_OK;
 
-	File::Handle file = fs->fopen(stat, openFlags);
+	FileHandle file = fs->fopen(stat, openFlags);
 	if(!check(file)) {
 		return false;
 	}
@@ -51,7 +51,7 @@ bool FileStream::open(const FileStat& stat, File::OpenFlags openFlags)
 	return true;
 }
 
-bool FileStream::open(const String& fileName, File::OpenFlags openFlags)
+bool FileStream::open(const String& fileName, OpenFlags openFlags)
 {
 	auto fs = getFileSystem();
 	if(fs == nullptr) {
@@ -60,7 +60,7 @@ bool FileStream::open(const String& fileName, File::OpenFlags openFlags)
 
 	lastError = FS_OK;
 
-	File::Handle file = fs->open(fileName, openFlags);
+	FileHandle file = fs->open(fileName, openFlags);
 	if(!check(file)) {
 		debug_w("File '%s' open error: %s", fileName.c_str(), fs->getErrorString(file).c_str());
 		return false;
@@ -179,7 +179,7 @@ String FileStream::fileName() const
 		return nullptr;
 	}
 
-	FileNameStat stat;
+	NameStat stat;
 	int res = fs->fstat(handle, stat);
 	return (res < 0 || stat.name.length == 0) ? nullptr : stat.name.buffer;
 }
@@ -191,7 +191,7 @@ String FileStream::id() const
 		return 0;
 	}
 
-	FileStat stat;
+	Stat stat;
 	int res = fs->fstat(handle, stat);
 	if(res < 0) {
 		return nullptr;
@@ -210,7 +210,7 @@ bool FileStream::truncate(size_t newSize)
 		return 0;
 	}
 
-	bool res = check(fs->truncate(handle, newSize));
+	bool res = check(fs->ftruncate(handle, newSize));
 	if(res) {
 		size = newSize;
 		if(pos > size) {

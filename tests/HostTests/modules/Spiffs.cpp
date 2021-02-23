@@ -3,9 +3,8 @@
 
 #ifdef ARCH_HOST
 #include <Storage/FileDevice.h>
-#include <IFS/Host/FileSystem.h>
 #include <IFS/SPIFFS/FileSystem.h>
-using IFileSystem = IFS::IFileSystem;
+using FileSystem = IFS::FileSystem;
 #endif
 
 class SpiffsTest : public TestGroup
@@ -84,13 +83,13 @@ public:
 	 */
 	void checkSpiffsGen()
 	{
-		IFS::IFileSystem::Info info;
+		FileSystem::Info info;
 		int err = fileGetSystemInfo(info);
 		CHECK(err >= 0);
 		debug_i("fs attr = %s", toString(info.attr).c_str());
 
-		IFileSystem* fsOld;
-		if(info.attr[IFileSystem::Attribute::NoMeta]) {
+		FileSystem* fsOld;
+		if(info.attr[FileSystem::Attribute::NoMeta]) {
 			fsOld = mountSpiffsFromFile("old", "spiffsgen/spiff_rom_orig.bin");
 		} else {
 			fsOld = mountSpiffsFromFile("old", "spiffsgen/spiff_rom_meta.bin");
@@ -106,9 +105,9 @@ public:
 		delete Storage::findDevice("old");
 	}
 
-	IFileSystem* mountSpiffsFromFile(const String& tag, const String& filename)
+	FileSystem* mountSpiffsFromFile(const String& tag, const String& filename)
 	{
-		auto& hfs = IFS::Host::fileSystem;
+		auto& hfs = IFS::Host::getFileSystem();
 		auto f = hfs.open(filename, IFS::File::ReadOnly);
 		if(f < 0) {
 			debug_e("Failed to open '%s': %s", filename.c_str(), hfs.getErrorString(f).c_str());
@@ -129,10 +128,10 @@ public:
 		}
 
 		debug_i("Mounted '%s' as '%s'", filename.c_str(), tag.c_str());
-		return fs;
+		return FileSystem::cast(fs);
 	}
 
-	void readCheck(IFileSystem* fsOld, IFileSystem* fsNew)
+	void readCheck(IFS::FileSystem* fsOld, IFS::FileSystem* fsNew)
 	{
 		DirHandle dir{};
 		int res = fsOld->opendir(nullptr, dir);

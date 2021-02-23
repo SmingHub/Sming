@@ -11,7 +11,7 @@ LDFLAGS	+= \
 
 
 .PHONY: application
-application: $(CUSTOM_TARGETS) $(TARGET_BIN)
+application: $(TARGET_BIN)
 
 # $1 -> Linker script
 define LinkTarget
