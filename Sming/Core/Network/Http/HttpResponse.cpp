@@ -77,7 +77,7 @@ bool HttpResponse::sendFile(const String& fileName, bool allowGzipFileCheck)
 		if(fileStats(fnCompressed, stat) >= 0) {
 			debug_d("found %s", stat.name);
 			stat.compression.type = IFS::Compression::Type::GZip;
-			stat.name = IFS::NameBuffer(fnCompressed);
+			stat.name = IFS::NameBuffer((char*)fileName.c_str(), fileName.length(), fileName.length());
 			return sendFile(stat);
 		}
 	}
