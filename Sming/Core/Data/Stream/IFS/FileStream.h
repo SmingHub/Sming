@@ -92,6 +92,8 @@ public:
 		return fileName();
 	}
 
+	MimeType getMimeType() const override;
+
 	bool isValid() const override
 	{
 		return fileExist();

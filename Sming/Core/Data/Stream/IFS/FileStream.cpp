@@ -184,6 +184,15 @@ String FileStream::fileName() const
 	return (res < 0 || stat.name.length == 0) ? nullptr : stat.name.buffer;
 }
 
+MimeType FileStream::getMimeType() const
+{
+	String name = fileName();
+	if(name.endsWith(".gz")) {
+		name.remove(name.length() - 3);
+	}
+	return ContentType::fromFullFileName(name, MIME_UNKNOWN);
+}
+
 String FileStream::id() const
 {
 	auto fs = getFileSystem();
