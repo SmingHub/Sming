@@ -453,7 +453,10 @@ constexpr
 	return a | b;
 }
 
-String toString(uint8_t value);
+template <typename T> typename std::enable_if<std::is_integral<T>::value, String>::type toString(T value)
+{
+	return String(value);
+}
 
 /**
  * @brief Class template to print the contents of a BitSet to a String
