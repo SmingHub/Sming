@@ -14,9 +14,6 @@ COMPONENT_DEPENDS := \
 	axtls-8266 \
 	bearssl-esp8266
 
-# Don't need network
-HOST_NETWORK_OPTIONS := --nonet
-
 # Time in milliseconds to pause after a test group has completed
 CONFIG_VARS += TEST_GROUP_INTERVAL
 TEST_GROUP_INTERVAL ?= 500
