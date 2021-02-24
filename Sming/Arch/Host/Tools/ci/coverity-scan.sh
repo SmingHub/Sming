@@ -4,7 +4,7 @@ set -e
 
 COVERITY_SCAN_PROJECT_NAME=SmingHub/Sming
 COVERITY_SCAN_NOTIFICATION_EMAIL="slaff@attachix.com"
-COVERITY_SCAN_BUILD_COMMAND="$MAKE_PARALLEL Basic_Blink Basic_DateTime Basic_Delegates Basic_Interrupts Basic_ProgMem Basic_Serial Basic_Servo Basic_Ssl HttpServer_FirmwareUpload SMING_ARCH=Host DEBUG_VERBOSE_LEVEL=3"
+COVERITY_SCAN_BUILD_COMMAND="$MAKE_PARALLEL Basic_Blink Basic_DateTime Basic_Delegates Basic_Interrupts Basic_ProgMem Basic_Serial Basic_Servo Basic_Ssl HttpServer_WebSockets SMING_ARCH=Host DEBUG_VERBOSE_LEVEL=3"
 
 set +x
 source /tmp/secrets.sh
