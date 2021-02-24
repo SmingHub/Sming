@@ -38,6 +38,11 @@ public:
 
 	void execute() override
 	{
+		if(!WifiStation.isConnected()) {
+			Serial.println("No network, skipping tests");
+			return;
+		}
+
 		auto fs = IFS::createFirmwareFilesystem(*Storage::findPartition(Storage::Partition::SubType::Data::fwfs));
 		CHECK(fs != nullptr);
 		CHECK(fs->mount() == FS_OK);
@@ -105,7 +110,7 @@ private:
 void REGISTER_TEST(HttpRequest)
 {
 	// Currently only supported for Host CI
-#if defined(ARCH_HOST) && defined(__linux__)
+#if defined(ARCH_HOST)
 	registerGroup<HttpRequestTest>();
 #endif
 }

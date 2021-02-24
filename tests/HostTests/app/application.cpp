@@ -55,19 +55,19 @@ void init()
 
 	spiffs_mount();
 
-#ifndef DISABLE_WIFI
-	WifiStation.enable(false, false);
-	WifiAccessPoint.enable(false, false);
-#endif
-
 	registerTests();
 
 #ifdef DISABLE_WIFI
 	beginTests();
 #else
-	WifiStation.enable(true);
-	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiAccessPoint.enable(false);
-	WifiEvents.onStationGotIP([](IpAddress ip, IpAddress netmask, IpAddress gateway) { beginTests(); });
+	if(netif_default == nullptr) {
+		WifiStation.enable(false);
+		beginTests();
+	} else {
+		WifiStation.enable(true);
+		WifiStation.config(WIFI_SSID, WIFI_PWD);
+		WifiEvents.onStationGotIP([](IpAddress ip, IpAddress netmask, IpAddress gateway) { beginTests(); });
+	}
 #endif
 }
