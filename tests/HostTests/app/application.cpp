@@ -8,11 +8,18 @@
 #include <SmingTest.h>
 #include <modules.h>
 
+#ifndef WIFI_SSID
+#define WIFI_SSID "PleaseEnterSSID"
+#define WIFI_PWD "PleaseEnterPass"
+#endif
+
 #define XX(t) extern void REGISTER_TEST(t);
 TEST_MAP(XX)
 #undef XX
 
-static void registerTests()
+namespace
+{
+void registerTests()
 {
 #define XX(t)                                                                                                          \
 	REGISTER_TEST(t);                                                                                                  \
@@ -21,7 +28,7 @@ static void registerTests()
 #undef XX
 }
 
-static void testsComplete()
+void testsComplete()
 {
 #if RESTART_DELAY == 0
 	System.restart();
@@ -29,6 +36,14 @@ static void testsComplete()
 	SmingTest::runner.execute(testsComplete, RESTART_DELAY);
 #endif
 }
+
+void beginTests()
+{
+	SmingTest::runner.setGroupIntervalMs(TEST_GROUP_INTERVAL);
+	System.onReady([]() { SmingTest::runner.execute(testsComplete); });
+}
+
+} // namespace
 
 void init()
 {
@@ -40,13 +55,19 @@ void init()
 
 	spiffs_mount();
 
-#ifndef DISABLE_WIFI
-	WifiStation.enable(false, false);
-	WifiAccessPoint.enable(false, false);
-#endif
-
 	registerTests();
 
-	SmingTest::runner.setGroupIntervalMs(TEST_GROUP_INTERVAL);
-	System.onReady([]() { SmingTest::runner.execute(testsComplete); });
+#ifdef DISABLE_WIFI
+	beginTests();
+#else
+	WifiAccessPoint.enable(false);
+	if(netif_default == nullptr) {
+		WifiStation.enable(false);
+		beginTests();
+	} else {
+		WifiStation.enable(true);
+		WifiStation.config(WIFI_SSID, WIFI_PWD);
+		WifiEvents.onStationGotIP([](IpAddress ip, IpAddress netmask, IpAddress gateway) { beginTests(); });
+	}
+#endif
 }

@@ -19,5 +19,10 @@ if [ -n "$SMING_SECRET" ]; then
 fi
 set -x
 
+# Setup networking
+sudo ip tuntap add dev tap0 mode tap user $(whoami)
+sudo ip a a dev tap0 192.168.13.1/24
+sudo ip link set tap0 up
+
 # Build documentation
 make -C $SMING_HOME docs

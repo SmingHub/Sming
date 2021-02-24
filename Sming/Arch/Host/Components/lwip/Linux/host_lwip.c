@@ -170,6 +170,7 @@ void host_lwip_service(void)
 {
 	/* poll netif, pass packet to lwIP */
 	tapif_select(&netif);
+	netif_poll(&netif);
 	sys_check_timeouts();
 }
 

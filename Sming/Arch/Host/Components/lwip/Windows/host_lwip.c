@@ -216,6 +216,7 @@ void host_lwip_service(void)
 {
 	/* check for packets and link status*/
 	pcapif_poll(&netif);
+	netif_poll(&netif);
 	sys_check_timeouts();
 }
 

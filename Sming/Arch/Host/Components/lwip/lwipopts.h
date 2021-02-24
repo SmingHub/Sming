@@ -382,6 +382,9 @@
  */
 #define LWIP_HAVE_LOOPIF                0
 
+// Enable loopback on interfaces
+#define LWIP_NETIF_LOOPBACK             1
+
 /*
    ----------------------------------------------
    ---------- Sequential layer options ----------

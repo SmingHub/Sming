@@ -25,4 +25,5 @@
 	XX(Spiffs)                                                                                                         \
 	XX(Rational)                                                                                                       \
 	XX(Clocks)                                                                                                         \
-	XX(Timers)
+	XX(Timers)                                                                                                         \
+	XX(HttpRequest)
