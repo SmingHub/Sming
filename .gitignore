@@ -13,6 +13,7 @@ language.settings.xml
 nbproject
 .*.swp
 .vscode
+*.code-workspace
 GTAGS
 GRTAGS
 GPATH
