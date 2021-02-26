@@ -40,15 +40,6 @@ class SerialToNet(serial.threaded.Protocol):
             self.socket.sendall(data)
 
 
-def openSerial(ser):
-    try:
-        ser.open()
-    except serial.SerialException as e:
-        sys.stderr.write('Could not open serial port {}: {}\n'.format(ser.name, e))
-        sys.exit(1)
-
-
-
 if __name__ == '__main__':  # noqa
     import argparse
 
@@ -140,7 +131,7 @@ it waits for the next connect.
         '-P', '--localport',
         type=int,
         help='local TCP port',
-        default=7777)
+        default=7780)
 
     args = parser.parse_args()
 
@@ -166,15 +157,13 @@ it waits for the next connect.
 
 
     # Determine primary IP address
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
-        # doesn't even have to be reachable
-        s.connect(('10.255.255.255', 1))
-        local_ip = s.getsockname()[0]
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            # doesn't even have to be reachable
+            s.connect(('10.255.255.255', 1))
+            local_ip = s.getsockname()[0]
     except Exception:
         local_ip = '127.0.0.1'
-    finally:
-        s.close()
 
     srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -182,7 +171,7 @@ it waits for the next connect.
     srv.listen(1)
     try:
         while True:
-            sys.stderr.write('Waiting for connection on %s::%d...\n' % (str(local_ip), args.localport))
+            sys.stderr.write('Waiting for connection on %s:%d...\n' % (str(local_ip), args.localport))
             client_socket, addr = srv.accept()
             sys.stderr.write('Connected by {}\n'.format(addr))
             # More quickly detect bad clients who quit without closing the
@@ -199,7 +188,15 @@ it waits for the next connect.
             client_socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
             # Open serial port and set up a worker thread to communicate with it
-            openSerial(ser)
+            try:
+                ser.open()
+            except serial.SerialException as e:
+                msg = "%s\n" % e
+                sys.stderr.write(msg)
+                client_socket.sendall(msg.encode())
+                client_socket.close()
+                continue
+
             ser_to_net = SerialToNet()
             ser_to_net.socket = client_socket
             serial_worker = serial.threaded.ReaderThread(ser, ser_to_net)
