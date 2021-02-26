@@ -430,23 +430,6 @@ $(foreach c,$(BUILDABLE_COMPONENTS),$(eval $(call GenerateComponentTargets,$c)))
 # The arch-specific targets, including link and firmware image creation
 include $(ARCH_BASE)/app.mk
 
-.PHONY: vscode
-vscode: checkdirs submodules ##Create/update vscode project configuration
-	$(Q) $(MAKE) --no-print-directory vscode-update
-
-.PHONY: vscode-update
-vscode-update:
-	$(Q) CXX=$(CXX) \
-	SMING_HOME=$(SMING_HOME) \
-	ESP_HOME=$(ESP_HOME) \
-	IDF_PATH=$(IDF_PATH) \
-	IDF_TOOLS_PATH=$(IDF_TOOLS_PATH) \
-	SMING_ARCH=$(SMING_ARCH) \
-	GDB=$(GDB) \
-	COM_SPEED_GDB=$(COM_SPEED_GDB) \
-	WSL_ROOT=$(WSL_ROOT) \
-	$(PYTHON) $(SMING_HOME)/../Tools/vscode/setup.py
-
 .PHONY: rebuild
 rebuild: clean all ##Re-build application
 
@@ -531,6 +514,25 @@ else
 	@echo Installing Python requirements...
 	$(Q) $(PYTHON) -m pip install $(PIP_ARGS) $(foreach reqfile,$(PYTHON_REQUIREMENTS),-r $(reqfile))
 endif
+
+##@IDE Tools
+
+.PHONY: ide-vscode
+ide-vscode: checkdirs submodules ##Create/update vscode project configuration
+	$(Q) $(MAKE) --no-print-directory ide-vscode-update
+
+.PHONY: ide-vscode-update
+ide-vscode-update:
+	$(Q) CXX=$(CXX) \
+	SMING_HOME=$(SMING_HOME) \
+	ESP_HOME=$(ESP_HOME) \
+	IDF_PATH=$(IDF_PATH) \
+	IDF_TOOLS_PATH=$(IDF_TOOLS_PATH) \
+	SMING_ARCH=$(SMING_ARCH) \
+	GDB=$(GDB) \
+	COM_SPEED_GDB=$(COM_SPEED_GDB) \
+	WSL_ROOT=$(WSL_ROOT) \
+	$(PYTHON) $(SMING_HOME)/../Tools/vscode/setup.py
 
 ##@Testing
 

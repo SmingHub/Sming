@@ -38,8 +38,8 @@ The vscode workspace root directory is your project directory.
 
 Change to your project directory (e.g. ``samples/Basic_Blink``) and run these commands::
 
-   make vscode SMING_ARCH=Esp8266
-   make vscode SMING_ARCH=Host
+   make ide-vscode SMING_ARCH=Esp8266
+   make ide-vscode SMING_ARCH=Host
 
 Now open the workspace in vscode, and open a source file (.c, .cpp, .h).
 You should now be able to select the architecture from the icon in the bottom-right corner:
@@ -61,7 +61,7 @@ To debug your application, follow these steps:
 
 -  Update the vscode configuration::
 
-      make vscode
+      make ide-vscode
 
 -  In vscode, select the require 'Run' task:
 
@@ -73,7 +73,7 @@ To debug your application, follow these steps:
 Manual configuration changes
 ----------------------------
 
-When you run ``make vscode`` the configuration files are actually generated using a python script
+When you run ``make ide-vscode`` the configuration files are actually generated using a python script
 ``Tools/vscode/setup.py``. Configuration variables are passed from the project makefile.
 
 If you make any changes to the configuration files, please note the following behaviour:
@@ -97,11 +97,11 @@ And, please consider contributing any changes or suggestions to the community!
 Known issues / features
 -----------------------
 
--  The vscode configuration files are only updated when you manually run ``make vscode``.
+-  The vscode configuration files are only updated when you manually run ``make ide-vscode``.
    If you update change critical build variables or add/remove Components to your project,
    you may need to run it again to update them.
--  When running ``make vscode`` comments in the configuration files will be discarded.
--  ``make vscode`` may overwrite parts of your configuration: be warned!
+-  When running ``make ide-vscode``, comments in the configuration files will be discarded.
+-  ``make ide-vscode`` may overwrite parts of your configuration: be warned!
 -  When debugging for esp8266 output in the console is not formatted correctly.
    Lines appear with @ in front of them.
 -  A debugging configuration is not currently provided for ESP32.
