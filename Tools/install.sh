@@ -50,13 +50,28 @@ if [[ $err -eq 1 ]] || [ $# -eq 0 ]; then
     fi
 fi
 
+# Sming repository for binary archives
 SMINGTOOLS=https://github.com/SmingHub/SmingTools/releases/download/1.0
 
+# Set default environment variables and WGET options
 if [ -z "$APPVEYOR" ]; then
     source $(dirname $BASH_SOURCE)/export.sh
+
+    # Ensure default path is writeable
+    sudo mkdir -p /opt
+    sudo chown $USER:$USER /opt
+
+    WGET="wget"
+else
+    # Don't clutter up logfiles for CI builds
+    WGET="wget --no-verbose"
 fi
 
-# At present we can only
+# Installers put downloaded archives here
+DOWNLOADS="downloads"
+mkdir -p $DOWNLOADS
+
+# Identify package installer for distribution
 if [ -n "$(grep debian /etc/os-release)" ]; then
     DIST=debian
     PKG_INSTALL="sudo apt-get install -y"
@@ -132,6 +147,7 @@ sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/c
 
 python3 -m pip install --upgrade pip -r $SMING_HOME/../Tools/requirements.txt
 
+
 install() {
     source $SMING_HOME/Arch/$1/Tools/install.sh
 }
@@ -151,6 +167,11 @@ fi
 if [ $inst_esp32 -eq 1 ]; then
     install Esp32
 fi
+
+if [ -z "$KEEP_DOWNLOADS" ]; then
+    rm -f $DOWNLOADS/*
+fi
+
 
 echo
 echo Installation complete
