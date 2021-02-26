@@ -486,7 +486,7 @@ cs-dev: ##Apply coding style to all files changed from current upstream develop 
 	$(SMING_MAKE) $@
 
 .PHONY: gdb
-gdb: kill_term ##Run the debugger console
+gdb: ##Run the debugger console
 	$(GDB_CMDLINE)
 
 .PHONY: fetch
@@ -543,6 +543,18 @@ SERVER_OTA_PORT		?= 9999
 otaserver: all ##Launch a simple python HTTP server for testing OTA updates
 	$(info Starting OTA server for TESTING)
 	$(Q) cd $(FW_BASE) && $(PYTHON) -m SimpleHTTPServer $(SERVER_OTA_PORT)
+
+
+#
+.PHONY: tcp-serial-redirect
+tcp-serial-redirect: ##Redirect COM port to TCP port
+	$(info Starting serial redirector)
+ifdef WSL_ROOT
+	$(Q) cmd.exe /c start /MIN python3 $(WSL_ROOT)/$(SMING_HOME)/../Tools/tcp_serial_redirect.py $(COM_PORT) $(COM_SPEED_SERIAL)
+else
+	$(Q) gnome-terminal -- bash -c "$(PYTHON) $(SMING_HOME)/../Tools/tcp_serial_redirect.py $(COM_PORT) $(COM_SPEED_SERIAL)"
+endif
+
 
 ##@Help
 
