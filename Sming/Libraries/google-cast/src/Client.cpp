@@ -283,35 +283,36 @@ bool Client::onTcpReceive(TcpClient& client, char* data, int length)
 
 	// JSON decode the message payload. Pass the message to an event handler....
 	if(onMessage) {
-		auto tmp = static_cast<MemoryDataStream*>(message.source_id.arg);
-		if(tmp != nullptr) {
-			char value[tmp->available()];
-			tmp->readBytes(value, tmp->available());
-			delete tmp;
-			message.source_id.arg = value;
-		}
+		MemoryDataStream* tmp;
 
-		tmp = static_cast<MemoryDataStream*>(message.destination_id.arg);
-		if(tmp != nullptr) {
-			char value[tmp->available()];
-			tmp->readBytes(value, tmp->available());
-			delete tmp;
-			message.destination_id.arg = value;
-		}
+		// tmp = static_cast<MemoryDataStream*>(message.source_id.arg);
+		// if(tmp != nullptr) {
+		// 	size_t len = tmp->available();
+		// 	char value[len];
+		// 	tmp->readBytes(value, len);
+		// 	delete tmp;
+		// 	message.source_id.arg = value;
+		// }
 
-		tmp = static_cast<MemoryDataStream*>(message.destination_id.arg);
-		if(tmp != nullptr) {
-			char value[tmp->available()];
-			tmp->readBytes(value, tmp->available());
-			delete tmp;
+		// tmp = static_cast<MemoryDataStream*>(message.destination_id.arg);
+		// if(tmp != nullptr) {
+		// 	size_t len = tmp->available();
+		// 	char value[len];
+		// 	tmp->readBytes(value, len);
+		// 	delete tmp;
+		// 	message.destination_id.arg = value;
+		// }
 
-			if((message.payload_type == extensions_api_cast_channel_CastMessage_PayloadType_STRING)) {
+		if((message.payload_type == extensions_api_cast_channel_CastMessage_PayloadType_STRING)) {
+			tmp = static_cast<MemoryDataStream*>(message.payload_utf8.arg);
+			if(tmp != nullptr) {
+				size_t len = tmp->available();
+				auto value = tmp->getStreamPointer();
+
+				m_nputs(value, len);
+
 				DynamicJsonDocument doc(1024);
-				Json::deserialize(doc, value, strlen(value));
-
-				message.payload_utf8.arg = &doc;
-			} else {
-				message.payload_utf8.arg = value;
+				Json::deserialize(doc, value, len);
 			}
 		}
 
