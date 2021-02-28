@@ -1,7 +1,7 @@
 Sming Esp32 Architecture
 ==========================
 
-Support building Sming for the Esp32 architecture. See :doc:`/arch/esp32/index`.
+Support building Sming for the Esp32 architecture.
 
 
 Build variables
@@ -15,7 +15,7 @@ Requirements
 ------------
 
 In order to be able to compile for the ESP32 architecture you should have ESP-IDF v4.1 installed.
-The Sming installers can do this for you - see :doc:`getting-started/index`.
+The Sming installers can do this for you - see :doc:`/getting-started/index`.
 
 You can find further details in the `ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.1/get-started/index.html#installation-step-by-step>`__.
 

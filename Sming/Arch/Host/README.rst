@@ -26,7 +26,7 @@ For Linux, you may require the ``gcc-multilib`` and ``g++-multilib``
 packages to build 32-bit executables on a 64-bit OS.
 
 For Windows, make sure your ``MinGW`` distro is up to date.
-See :doc:`/arch/esp8266/getting-started/windows-manual` for further details.
+See :doc:`/getting-started/windows` for further details.
 
 Building
 --------

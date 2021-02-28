@@ -109,5 +109,5 @@ The project should build without error.
 Next steps
 ----------
 
-Proceed to :doc:`config`.
+Proceed to :doc:`../config`.
 

@@ -78,7 +78,7 @@ Install an up-to-date Linux distribution from the Microsoft store, currently ``U
 Installing Sming
 ----------------
 
-Open a WSL command prompt and follow the instructions in :doc:`linux`.
+Open a WSL command prompt and follow the instructions in :doc:`../linux/index`.
 
 
 Flashing devices

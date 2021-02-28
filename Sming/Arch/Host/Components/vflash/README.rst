@@ -21,7 +21,7 @@ The following options are interpreted and used to provide command-line parameter
 
 The size of the flash memory is set via :ref:`hardware_config`.
 
-See :component-esp8266:`esptool` for details and other applicable variables.
+See :component:`esptool` for details and other applicable variables.
 
 
 Build targets

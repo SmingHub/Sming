@@ -176,4 +176,4 @@ If you want to test some of the examples, try this::
 Next steps
 ----------
 
-Proceed to :doc:`config`.
+Proceed to :doc:`../config`.

@@ -21,6 +21,13 @@ You can also try Sming without installing anything locally.
 We have an  `interactive tutorial <https://www.katacoda.com/slaff/scenarios/sming-host-emulator>`__ that can be run directly from your browser.
 
 
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   config
+
+
 Documentation
 -------------
 
@@ -44,7 +51,7 @@ The examples are a great way to learn the API and brush up your C/C++ knowledge.
 -  `Embedded HTTP Web Server <#embedded-http-web-server>`__
 -  `Email Client <#email-client>`__
 
-Further documentation about the :doc:`samples` is available too.
+Further documentation about the :doc:`/samples` is available too.
 
 Basic Blink
 ~~~~~~~~~~~
