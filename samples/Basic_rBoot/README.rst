@@ -52,7 +52,7 @@ Technical Notes
       auto part = PartitionTable().find('spiffs0');
       spiffs_mount(part);
 
-   See :ref:`hardware-config` for further details.
+   See :ref:`hardware_config` for further details.
 
 Important compiler flags used:
 

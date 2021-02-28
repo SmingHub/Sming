@@ -13,7 +13,7 @@ device.
 
 To achieve this do the following:
 
-1) Check the :ref:`hardware-config` especially ``flash_size`` setting.
+1) Check the :ref:`hardware_config` especially ``flash_size`` setting.
 
 2) Run ``flashinit``::
 

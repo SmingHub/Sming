@@ -132,7 +132,7 @@ Hardware configuration
 
 The appropriate hardware configuration should be selected in the
 project's component.mk file. Use one of the standard configurations
-or create your own. See :ref:`hardware-config`.
+or create your own. See :ref:`hardware_config`.
 
 Configuration variables
 ~~~~~~~~~~~~~~~~~~~~~~~
