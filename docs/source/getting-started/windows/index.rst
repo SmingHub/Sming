@@ -85,6 +85,9 @@ esp8266-eqt
 
    Sets a system-wide :envvar:`ESP_HOME` variable.
 
+sming.esp32
+   Sming-compatible version of ESP-IDF and tools.
+
 sming.core
    Latest stable version of `Sming <https://github.com/SmingHub/Sming/tree/master>`__.
 
