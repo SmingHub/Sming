@@ -10,7 +10,7 @@
 #pragma once
 
 #include <WString.h>
-#include "ObjectList.h"
+#include <Core/Data/LinkedObjectList.h>
 #include "PartitionTable.h"
 
 #define STORAGE_TYPE_MAP(XX)                                                                                           \
@@ -29,11 +29,11 @@ class SpiFlash;
 /**
  * @brief Represents a storage device (e.g. flash memory)
  */
-class Device : public ObjectTemplate<Device>
+class Device : public LinkedObjectTemplate<Device>
 {
 public:
-	using List = ObjectListTemplate<Device>;
-	using OwnedList = OwnedObjectListTemplate<Device>;
+	using List = LinkedObjectListTemplate<Device>;
+	using OwnedList = OwnedLinkedObjectListTemplate<Device>;
 
 	/**
 	 * @brief Storage type

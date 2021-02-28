@@ -4,51 +4,48 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * Object.h - Base Storage object definition
+ * LinkedObjectList.h
  *
  ****/
 #pragma once
 
-#include "Object.h"
-#include <vector>
+#include "LinkedObject.h"
 
-namespace Storage
-{
 /**
  * @brief Singly-linked list of objects
  * @note We don't own the items, just keep references to them
  */
-class ObjectList
+class LinkedObjectList
 {
 public:
-	ObjectList()
+	LinkedObjectList()
 	{
 	}
 
-	ObjectList(Object* object) : mHead(object)
+	LinkedObjectList(LinkedObject* object) : mHead(object)
 	{
 	}
 
-	bool add(Object* object);
+	bool add(LinkedObject* object);
 
-	bool add(const Object* object)
+	bool add(const LinkedObject* object)
 	{
-		return add(const_cast<Object*>(object));
+		return add(const_cast<LinkedObject*>(object));
 	}
 
-	bool remove(Object* object);
+	bool remove(LinkedObject* object);
 
 	void clear()
 	{
 		mHead = nullptr;
 	}
 
-	Object* head()
+	LinkedObject* head()
 	{
 		return mHead;
 	}
 
-	const Object* head() const
+	const LinkedObject* head() const
 	{
 		return mHead;
 	}
@@ -59,15 +56,15 @@ public:
 	}
 
 protected:
-	Object* mHead{nullptr};
+	LinkedObject* mHead{nullptr};
 };
 
-template <typename ObjectType> class ObjectListTemplate : public ObjectList
+template <typename ObjectType> class LinkedObjectListTemplate : public LinkedObjectList
 {
 public:
-	ObjectListTemplate() = default;
+	LinkedObjectListTemplate() = default;
 
-	ObjectListTemplate(ObjectType* object) : ObjectList(object)
+	LinkedObjectListTemplate(ObjectType* object) : LinkedObjectList(object)
 	{
 	}
 
@@ -116,12 +113,12 @@ public:
  * @brief Class template for singly-linked list of objects
  * @note We own the objects so are responsible for destroying them when removed
  */
-template <typename ObjectType> class OwnedObjectListTemplate : public ObjectListTemplate<ObjectType>
+template <typename ObjectType> class OwnedLinkedObjectListTemplate : public LinkedObjectListTemplate<ObjectType>
 {
 public:
 	bool remove(ObjectType* object)
 	{
-		bool res = ObjectList::remove(object);
+		bool res = LinkedObjectList::remove(object);
 		delete object;
 		return res;
 	}
@@ -133,5 +130,3 @@ public:
 		}
 	}
 };
-
-} // namespace Storage

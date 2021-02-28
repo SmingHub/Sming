@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * Object.h - Base Storage object definition
+ * LinkedObject.h
  *
  ****/
 #pragma once
@@ -12,46 +12,48 @@
 #include <iterator>
 #include <algorithm>
 
-namespace Storage
-{
-class ObjectList;
-
-class Object
+/**
+ * @brief Base virtual class to allow objects to be linked together
+ * 
+ * This can be more efficient than defining a separate list, as each object
+ * requires only an additional pointer field for 'next'.
+ */
+class LinkedObject
 {
 public:
-	virtual ~Object()
+	virtual ~LinkedObject()
 	{
 	}
 
-	virtual Object* next() const
-	{
-		return mNext;
-	}
-
-	Object* getNext() const
+	virtual LinkedObject* next() const
 	{
 		return mNext;
 	}
 
-	bool operator==(const Object& other) const
+	LinkedObject* getNext() const
+	{
+		return mNext;
+	}
+
+	bool operator==(const LinkedObject& other) const
 	{
 		return this == &other;
 	}
 
-	bool operator!=(const Object& other) const
+	bool operator!=(const LinkedObject& other) const
 	{
 		return this != &other;
 	}
 
 private:
-	friend class ObjectList;
-	Object* mNext{nullptr};
+	friend class LinkedObjectList;
+	LinkedObject* mNext{nullptr};
 };
 
 /**
  * @brief Base class template for linked items with type casting
  */
-template <typename ObjectType> class ObjectTemplate : public Object
+template <typename ObjectType> class LinkedObjectTemplate : public LinkedObject
 {
 public:
 	template <typename T, typename TPtr, typename TRef>
@@ -140,5 +142,3 @@ public:
 		return ConstIterator(nullptr);
 	}
 };
-
-} // namespace Storage
