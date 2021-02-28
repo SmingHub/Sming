@@ -52,7 +52,7 @@ install:
       set PYTHON=C:\Python39\python
       set ESP32_PYTHON_PATH=C:\Python39
       Tools\ci\install.cmd
-      set PATH=C:\Python39\Scripts;%PATH%;C:\Program Files\doxygen\bin
+      set PATH=C:\Python39\Scripts;C:\tools\doxygen;C:\tools\Graphviz\bin;%PATH%
 
   - sh: |
       export PYTHON=$HOME/venv3.9/bin/python
