@@ -8,7 +8,11 @@ This component allows you to communicate with Chrome Cast dongles or smart TVs t
 Using
 -----
 
-1. Add ``COMPONENT_DEPENDS += google-cast`` to your application componenent.mk file.
+1. Add these lines to your application componenent.mk file::
+
+       COMPONENT_DEPENDS += google-cast
+       ENABLE_SSL := Bearssl
+
 2. Add these lines to your application::
 
       #include <Network/GoogleCast/Client.h>
@@ -25,8 +29,8 @@ Using
          castClient.connect(IpAddress("192.168.10.15"));
 
          // Starting YouTube on the device
-         castClient.launch("YouTube");
-         castClient.setResponseHandler(onMessage);
+         castClient.receiver.launch("YouTube");
+         castClient.onMessage(onCastMessage);
       }
 
 Re-Generating C files from proto file
@@ -46,9 +50,11 @@ this presentation and read this documentation.
 # Presentation with insights
 https://docs.google.com/presentation/d/1X1BdFunVnLkF7L0BgevH2zzkcSe0_gtdTJ_pMdEuakQ/htmlpresent
 
-
 # Protocol description
 https://github.com/thibauts/node-castv2#the-tls--protocol-buffers-layer
+
+# Reference python implementation (for Home Assistant)
+https://github.com/home-assistant-libs/pychromecast/tree/master/pychromecast
 
 # Application in C++/Qt
 https://github.com/jhenstridge/cast-app
