@@ -1,7 +1,7 @@
 Sming Esp32 Architecture
 ==========================
 
-Support building Sming for the Esp32 architecture.
+Support building Sming for the Esp32 architecture. See :doc:`/arch/esp32/index`.
 
 
 Build variables
@@ -15,15 +15,19 @@ Requirements
 ------------
 
 In order to be able to compile for the ESP32 architecture you should have ESP-IDF v4.1 installed.
-A detailed installation manual can be found in the `ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.1/get-started/index.html#installation-step-by-step>`__.
+The Sming installers can do this for you - see :doc:`getting-started/index`.
+
+You can find further details in the `ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.1/get-started/index.html#installation-step-by-step>`__.
 
 Building
 --------
 
-Make sure that the IDF_PATH environmental variable is set. Also make sure that the other ESP-IDF environmental variables are set.
-For example on Linux this can be done using the following command::
+Make sure that the :envvar:`IDF_PATH` is set.
+Also make sure that the other ESP-IDF environmental variables are set.
 
-  source $IDF_PATH/export.sh
+In Linux this can be done using the following command::
+
+  source $SMING_HOME/Tools/export.sh
 
 Build the framework and application as usual, specifying :envvar:`SMING_ARCH` =Esp32. For example::
 
@@ -51,6 +55,13 @@ If you want to revert to using the default pre-compiled SDK then issue the follo
 
   make SMING_ARCH=Esp32 sdk-default
 
+.. note::
+
+   If you have an ESP32-S2 device you'll need to change :envvar:`ESP_VARIANT`::
+   
+      make ESP_VARIANT=esp32s2
+
+See :component-esp32:`esp32` for further details.
 
 Components
 ----------

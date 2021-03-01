@@ -84,7 +84,7 @@ Supported architectures
 
 Unless there are specific reasons not to do so, Components should work on all
 supported architectures. In particular, it should build and run under the
-:doc:`Host Emulator </arch/host/host-emulator>`.
+:doc:`Host Emulator </arch/host/index>`.
 
 In order to do this, you should remove any low-level code from the library by:
 

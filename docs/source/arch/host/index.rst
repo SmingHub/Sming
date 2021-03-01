@@ -11,6 +11,11 @@ If you want to try it we have an
 `interactive tutorial <https://www.katacoda.com/slaff/scenarios/sming-host-emulator>`__
 that can be run directly from your browser.
 
+See :doc:`/getting-started/index` for installation details.
+
+The following sections provide more background detail.
+
+
 Requirements (Linux)
 --------------------
 

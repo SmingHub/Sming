@@ -42,7 +42,7 @@ Summary
 
 -  Linux/Windows features
 
-  -  Sming has a :doc:`host emulator <arch/host/host-emulator>` that allows libraries and sample applications to be compiled on a Linux/Windows host system
+  -  Sming has a :doc:`host emulator <arch/host/index>` that allows libraries and sample applications to be compiled on a Linux/Windows host system
      and be tested before uploading them to an actual microcontroller.
 
 .. toctree::
