@@ -175,9 +175,13 @@ err_t Client::onPoll()
 	return ERR_OK;
 }
 
-bool Client::sendMessage(const uint8_t* data, size_t length, ChannelType type, const String& sourceId,
+bool Client::sendMessage(const void* data, size_t length, ChannelType type, const String& sourceId,
 						 const String& destinationId)
 {
+	m_puts(_F("send: "));
+	m_nputs((char*)data, length);
+	m_puts("\r\n");
+
 	extensions_api_cast_channel_CastMessage message = extensions_api_cast_channel_CastMessage_init_default;
 
 	message.protocol_version = extensions_api_cast_channel_CastMessage_ProtocolVersion_CASTV2_1_0;
@@ -251,13 +255,9 @@ bool Client::onTcpReceive(TcpClient& client, char* data, int length)
 		}
 	}
 
-	extensions_api_cast_channel_CastMessage message = extensions_api_cast_channel_CastMessage_init_default;
-	Protobuf::InputCallback source_id(message.source_id);
-	Protobuf::InputCallback destination_id(message.destination_id);
-	Protobuf::InputCallback nameSpace(message.nameSpace);
-	Protobuf::InputCallback payload_utf8(message.payload_utf8);
+	ChannelMessage message;
 	Protobuf::InputStream input(*inputBuffer);
-	bool success = input.decode(extensions_api_cast_channel_CastMessage_fields, &message);
+	bool success = message.decode(input);
 	messageLength = 0;
 	delete inputBuffer;
 	inputBuffer = nullptr;
@@ -268,36 +268,6 @@ bool Client::onTcpReceive(TcpClient& client, char* data, int length)
 
 	// JSON decode the message payload. Pass the message to an event handler....
 	if(onMessage) {
-		// tmp = static_cast<MemoryDataStream*>(message.source_id.arg);
-		// if(tmp != nullptr) {
-		// 	size_t len = tmp->available();
-		// 	char value[len];
-		// 	tmp->readBytes(value, len);
-		// 	delete tmp;
-		// 	message.source_id.arg = value;
-		// }
-
-		// tmp = static_cast<MemoryDataStream*>(message.destination_id.arg);
-		// if(tmp != nullptr) {
-		// 	size_t len = tmp->available();
-		// 	char value[len];
-		// 	tmp->readBytes(value, len);
-		// 	delete tmp;
-		// 	message.destination_id.arg = value;
-		// }
-
-		if((message.payload_type == extensions_api_cast_channel_CastMessage_PayloadType_STRING)) {
-			auto value = payload_utf8.getData();
-			auto len = payload_utf8.getLength();
-
-			m_puts("Response: ");
-			m_nputs(reinterpret_cast<const char*>(value), len);
-			m_puts("\r\n");
-
-			DynamicJsonDocument doc(1024);
-			Json::deserialize(doc, value, len);
-		}
-
 		return onMessage(message);
 	}
 

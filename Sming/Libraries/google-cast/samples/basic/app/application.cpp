@@ -10,9 +10,25 @@
 
 GoogleCast::Client castClient;
 
-bool onMessage(extensions_api_cast_channel_CastMessage message)
+bool onMessage(GoogleCast::ChannelMessage& message)
 {
-	// TODO: do something with the response message
+	if((message.payloadType() == message.PayloadType::string)) {
+		auto value = message.payload_utf8.getData();
+		auto len = message.payload_utf8.getLength();
+
+		m_puts("Response: ");
+		m_nputs(reinterpret_cast<const char*>(value), len);
+		m_puts("\r\n");
+
+		debug_i("source_id: %s", String(message.source_id).c_str());
+		debug_i("destination_id: %s", String(message.destination_id).c_str());
+		debug_i("nameSpace: %s", String(message.nameSpace).c_str());
+
+		// DynamicJsonDocument doc(1024);
+		// Json::deserialize(doc, value, len);
+	} else {
+		m_printHex("RESPONSE", message.payload_binary.getData(), message.payload_binary.getLength());
+	}
 
 	return true;
 }
@@ -23,7 +39,7 @@ void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 	Serial.println(ip);
 
 	Serial.println(F("Connecting to your Smart TV"));
-	castClient.connect(IpAddress("192.168.10.15"));
+	castClient.connect(IpAddress("192.168.1.103"));
 
 	Serial.println(F("Starting YouTube"));
 	castClient.launch("YouTube");

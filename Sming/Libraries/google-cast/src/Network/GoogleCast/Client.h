@@ -6,8 +6,6 @@
 
 namespace GoogleCast
 {
-using MessageDelegate = Delegate<bool(extensions_api_cast_channel_CastMessage)>;
-
 /*
  *
  * See: https://developers.google.com/cast/docs/reference/messages , https://github.com/thibauts/node-castv2
@@ -42,7 +40,7 @@ public:
 	 */
 	bool connect();
 
-	void setResponseHandler(MessageDelegate handler)
+	void setResponseHandler(ChannelMessage::Delegate handler)
 	{
 		onMessage = handler;
 	}
@@ -121,10 +119,10 @@ private:
 	bool sendMessage(const char* data, ChannelType type, const String& sourceId = nullptr,
 					 const String& destinationId = nullptr)
 	{
-		return sendMessage((const uint8_t*)data, strlen(data), type, sourceId, destinationId);
+		return sendMessage(data, strlen(data), type, sourceId, destinationId);
 	}
 
-	bool sendMessage(const uint8_t* data, size_t length, ChannelType type, const String& sourceId = nullptr,
+	bool sendMessage(const void* data, size_t length, ChannelType type, const String& sourceId = nullptr,
 					 const String& destinationId = nullptr);
 
 	bool onTcpReceive(TcpClient& client, char* data, int length);
@@ -132,7 +130,7 @@ private:
 	OneShotElapseTimer<NanoTime::Seconds> pingTimer;
 	size_t messageLength{0};
 	LimitedMemoryStream* inputBuffer{nullptr};
-	MessageDelegate onMessage;
+	ChannelMessage::Delegate onMessage;
 };
 
 } // namespace GoogleCast
