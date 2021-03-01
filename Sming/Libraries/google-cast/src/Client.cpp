@@ -51,8 +51,15 @@ void Client::close()
 
 err_t Client::onConnected(err_t err)
 {
+	debug_i("%s(%d), state = %d", __FUNCTION__, err, getConnectionState());
+
 	TcpClient::onConnected(err);
-	if(getConnectionState() != eTCS_Connected) {
+	bool ok = getConnectionState() == eTCS_Connected;
+	if(connectCallback) {
+		// Send via task queue so callback can send us further requests
+		System.queueCallback([this, ok]() { connectCallback(ok); });
+	}
+	if(!ok) {
 		return err;
 	}
 
@@ -62,6 +69,20 @@ err_t Client::onConnected(err_t err)
 	return ERR_OK;
 }
 
+void Client::onError(err_t err)
+{
+	debug_i("%s(%d), state = %d", __FUNCTION__, err, getConnectionState());
+
+	if(getConnectionState() == eTCS_Connecting && connectCallback) {
+		System.queueCallback([this]() { connectCallback(false); });
+	}
+}
+
+void Client::onClosed()
+{
+	debug_i("%s(), state = %d", __FUNCTION__, getConnectionState());
+}
+
 err_t Client::onPoll()
 {
 	err_t err = TcpClient::onPoll();
@@ -69,7 +90,7 @@ err_t Client::onPoll()
 		return err;
 	}
 
-	if(pingTimer.expired()) {
+	if(getConnectionState() == eTCS_Connected && pingTimer.expired()) {
 		ping();
 	}
 
@@ -171,8 +192,8 @@ bool Client::onTcpReceive(TcpClient& client, char* data, int length)
 
 	if(!dispatch(message)) {
 		// Message not handled (not an error)
-		if(callback) {
-			callback(message);
+		if(messageCallback) {
+			messageCallback(message);
 		}
 	}
 

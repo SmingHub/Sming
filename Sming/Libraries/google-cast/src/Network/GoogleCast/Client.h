@@ -22,6 +22,7 @@ namespace GoogleCast
 class Client : protected TcpClient
 {
 public:
+	using ConnectDelegate = Delegate<void(bool success)>;
 	using MessageDelegate = Delegate<bool(Channel::Message& message)>;
 
 	Client(bool autoDestruct = false)
@@ -38,9 +39,14 @@ public:
 	 */
 	bool connect();
 
+	void onConnect(ConnectDelegate handler)
+	{
+		connectCallback = handler;
+	}
+
 	void onMessage(MessageDelegate handler)
 	{
-		callback = handler;
+		messageCallback = handler;
 	}
 
 	/**
@@ -70,6 +76,8 @@ public:
 
 protected:
 	err_t onConnected(err_t err) override;
+	void onError(err_t err) override;
+	void onClosed() override;
 	err_t onPoll() override;
 
 private:
@@ -88,7 +96,8 @@ private:
 
 	OneShotElapseTimer<NanoTime::Seconds> pingTimer;
 	LimitedMemoryStream* inputBuffer{nullptr};
-	MessageDelegate callback;
+	ConnectDelegate connectCallback;
+	MessageDelegate messageCallback;
 };
 
 } // namespace GoogleCast

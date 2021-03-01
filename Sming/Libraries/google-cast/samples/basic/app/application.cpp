@@ -13,6 +13,9 @@ Timer statusTimer;
 
 static constexpr unsigned minStatusInterval{10000};
 
+DEFINE_FSTR(deviceAddress, "192.168.1.118")
+// DEFINE_FSTR(deviceAddress, "192.168.1.200")
+
 // Pretty-print a JSON document
 void printJson(JsonDocument& doc)
 {
@@ -23,6 +26,7 @@ void printJson(JsonDocument& doc)
 
 bool onReceiverMessage(GoogleCast::Channel& channel, GoogleCast::Channel::Message& message)
 {
+	debug_i("%s", __PRETTY_FUNCTION__);
 	statusTimer.restart();
 
 	DynamicJsonDocument doc(1024);
@@ -43,6 +47,7 @@ bool onReceiverMessage(GoogleCast::Channel& channel, GoogleCast::Channel::Messag
 
 bool onMessage(GoogleCast::Channel::Message& message)
 {
+	debug_i("%s", __PRETTY_FUNCTION__);
 	if((message.payloadType() == message.PayloadType::string)) {
 		debug_i("nameSpace: %s, source: %s, destination: %s", String(message.nameSpace).c_str(),
 				String(message.source_id).c_str(), String(message.destination_id).c_str());
@@ -60,31 +65,26 @@ bool onMessage(GoogleCast::Channel::Message& message)
 	return true;
 }
 
-void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
+void onGotIp(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
-	Serial.print(F("Connected. Got IP: "));
+	Serial.print(F("Got IP: "));
 	Serial.println(ip);
 
 	Serial.println(F("Connecting to your Smart TV"));
-	castClient.connect(IpAddress("192.168.1.118"));
-
-	// Allow time to connect then launch an application
-	auto timer = new AutoDeleteTimer;
-	timer->initializeMs<1000>(InterruptCallback([]() {
+	castClient.onConnect([](bool success) {
+		Serial.print(F("Client connect: "));
+		Serial.println(success ? "OK" : "FAIL");
+		if(!success) {
+			return;
+		}
 		Serial.println(F("Starting YouTube"));
 		castClient.receiver.launch("YouTube");
-		castClient.receiver.getStatus();
-	}));
-	timer->startOnce();
-
-	// Ignore heartbeat messages
-	// castClient.heartbeat.onMessage(
-	// 	[](GoogleCast::Channel& channel, GoogleCast::Channel::Message& message) { return true; });
-
+		statusTimer.initializeMs<minStatusInterval>(InterruptCallback([]() { castClient.receiver.getStatus(); }))
+			.start();
+	});
 	castClient.receiver.onMessage(onReceiverMessage);
 	castClient.onMessage(onMessage);
-
-	statusTimer.initializeMs<minStatusInterval>(InterruptCallback([]() { castClient.receiver.getStatus(); })).start();
+	castClient.connect(IpAddress(deviceAddress));
 }
 
 void init()
@@ -96,5 +96,5 @@ void init()
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 
-	WifiEvents.onStationGotIP(connectOk);
+	WifiEvents.onStationGotIP(onGotIp);
 }
