@@ -26,10 +26,7 @@ public:
 
 	bool launch(const String& appId);
 
-	bool getStatus()
-	{
-		return sendMessage(F("GET_STATUS"), true);
-	}
+	bool getStatus();
 
 	bool isAppAvailable(Vector<String> appIds);
 

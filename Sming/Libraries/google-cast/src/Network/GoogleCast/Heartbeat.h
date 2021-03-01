@@ -26,7 +26,7 @@ public:
 
 	bool ping()
 	{
-		return sendMessage(F("PING"), false);
+		return sendSimpleMessage(F("PING"));
 	}
 };
 

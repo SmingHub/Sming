@@ -15,7 +15,7 @@ namespace GoogleCast
 bool Media::load(const Url& url, const String& mime)
 {
 	StaticJsonDocument<1024> doc;
-	doc[F("type")] = F("LOAD");
+	initRequest(doc, F("LOAD"));
 	doc[F("autoplay")] = true;
 	doc[F("currentTime")] = 0;
 	doc.createNestedArray(F("activeTrackIds"));
@@ -24,7 +24,6 @@ bool Media::load(const Url& url, const String& mime)
 	media[F("contentId")] = url.toString();
 	media[F("contentType")] = mime;
 	media[F("streamType")] = F("BUFFERED");
-	doc[F("requestId")] = requestId++;
 
 	return send(doc);
 }
@@ -32,9 +31,8 @@ bool Media::load(const Url& url, const String& mime)
 bool Media::pause(const String& sessionId)
 {
 	StaticJsonDocument<200> doc;
-	doc[F("type")] = F("PAUSE");
+	initRequest(doc, F("PAUSE"));
 	doc[F("mediaSessionId")] = sessionId;
-	doc[F("requestId")] = requestId++;
 
 	return send(doc);
 }
@@ -42,9 +40,8 @@ bool Media::pause(const String& sessionId)
 bool Media::play(const String& sessionId)
 {
 	StaticJsonDocument<200> doc;
-	doc[F("type")] = F("PLAY");
+	initRequest(doc, F("PLAY"));
 	doc[F("mediaSessionId")] = sessionId;
-	doc[F("requestId")] = requestId++;
 
 	return send(doc);
 }
@@ -52,9 +49,8 @@ bool Media::play(const String& sessionId)
 bool Media::stop(const String& sessionId)
 {
 	StaticJsonDocument<200> doc;
-	doc[F("type")] = F("STOP");
+	initRequest(doc, F("STOP"));
 	doc[F("mediaSessionId")] = sessionId;
-	doc[F("requestId")] = requestId++;
 
 	return send(doc);
 }

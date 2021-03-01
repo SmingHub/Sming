@@ -141,7 +141,7 @@ public:
 
 	/** @} */
 
-	bool sendMessage(const String& type, bool addRequestId);
+	bool sendSimpleMessage(const String& type);
 
 	/**
 	 * @brief Handle a message for this namespace
@@ -154,12 +154,13 @@ public:
 		return callback ? callback(*this, message) : false;
 	}
 
+	void initRequest(JsonDocument& request, const String& type);
+
 protected:
 	Client& client;
 	CString sourceId;
 	CString destinationId;
 	Message::Delegate callback;
-	unsigned requestId{0};
 };
 
 } // namespace GoogleCast

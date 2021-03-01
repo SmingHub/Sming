@@ -38,17 +38,19 @@ String Channel::getDestinationId() const
 	return s ?: STANDARD_RECEIVER;
 }
 
-bool Channel::sendMessage(const String& type, bool addRequestId)
+void Channel::initRequest(JsonDocument& request, const String& type)
 {
-	String msg = F("{\"type\":\"");
+	request[F("type")] = type;
+	request[F("requestId")] = client.getNextRequestId();
+}
+
+bool Channel::sendSimpleMessage(const String& type)
+{
+	String msg;
+	msg.reserve(16 + type.length());
+	msg = F("{\"type\":\"");
 	msg += type;
-	if(addRequestId) {
-		msg += F("\",\"requestId\":");
-		msg += requestId++;
-	} else {
-		msg += '"';
-	}
-	msg += '}';
+	msg += "\"}";
 	return send(msg);
 }
 

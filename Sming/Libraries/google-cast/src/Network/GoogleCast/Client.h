@@ -94,10 +94,16 @@ private:
 
 	bool dispatch(Channel::Message& message);
 
+	unsigned getNextRequestId()
+	{
+		return nextRequestId++;
+	}
+
 	OneShotElapseTimer<NanoTime::Seconds> pingTimer;
 	LimitedMemoryStream* inputBuffer{nullptr};
 	ConnectDelegate connectCallback;
 	MessageDelegate messageCallback;
+	unsigned nextRequestId{1};
 };
 
 } // namespace GoogleCast

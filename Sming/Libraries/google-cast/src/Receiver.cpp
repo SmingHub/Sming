@@ -12,17 +12,23 @@
 
 namespace GoogleCast
 {
+bool Receiver::getStatus()
+{
+	StaticJsonDocument<200> req;
+	initRequest(req, F("GET_STATUS"));
+	return send(req);
+}
+
 bool Receiver::launch(const String& appId)
 {
 	StaticJsonDocument<200> doc;
-	doc[F("type")] = F("LAUNCH");
+	initRequest(doc, F("LAUNCH"));
 	doc[F("appId")] = appId;
-	doc[F("requestId")] = requestId++;
 
 	return send(doc);
 }
 
-bool isAppAvailable(Vector<String> appIds)
+bool Receiver::isAppAvailable(Vector<String> appIds)
 {
 	// TODO
 	return false;
@@ -31,9 +37,8 @@ bool isAppAvailable(Vector<String> appIds)
 bool Receiver::setVolumeLevel(float level)
 {
 	StaticJsonDocument<200> doc;
-	doc[F("type")] = F("SET_VOLUME");
+	initRequest(doc, F("SET_VOLUME"));
 	doc[F("level")] = level;
-	doc[F("requestId")] = requestId++;
 
 	return send(doc);
 }
@@ -41,9 +46,8 @@ bool Receiver::setVolumeLevel(float level)
 bool Receiver::setVolumeMuted(bool muted)
 {
 	StaticJsonDocument<200> doc;
-	doc[F("type")] = F("SET_VOLUME");
+	initRequest(doc, F("SET_VOLUME"));
 	doc[F("volume")] = muted;
-	doc[F("requestId")] = requestId++;
 
 	return send(doc);
 }

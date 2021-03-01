@@ -26,12 +26,12 @@ public:
 
 	bool connect()
 	{
-		return sendMessage(F("CONNECT"), false);
+		return sendSimpleMessage(F("CONNECT"));
 	}
 
 	bool close()
 	{
-		return sendMessage(F("CLOSE"), false);
+		return sendSimpleMessage(F("CLOSE"));
 	}
 };
 
