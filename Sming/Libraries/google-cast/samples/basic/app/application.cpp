@@ -8,13 +8,83 @@
 #endif
 
 GoogleCast::Client castClient;
-String activeSessionId;
 Timer statusTimer;
+
+static constexpr float skipSecs{10};
+
+struct Session {
+	enum class State {
+		idle,
+		playRequestSent,
+		loading,
+		playing,
+		paused,
+		stopped,
+	};
+
+	int id;
+	State state;
+	double currentTime;
+
+	void playPause()
+	{
+		if(state == State::playing) {
+			castClient.media.pause(id);
+			state = State::paused;
+		} else if(state == State::paused) {
+			castClient.media.play(id);
+			state = State::playing;
+		}
+	}
+
+	void seekRelative(float secs)
+	{
+		castClient.media.seek(id, currentTime + secs);
+	}
+
+	void updateState(const char* playerState)
+	{
+		if(F("LOADING") == playerState) {
+			state = State::loading;
+		} else if(F("PLAYING") == playerState) {
+			state = State::playing;
+		} else if(F("PAUSED") == playerState) {
+			state = State::paused;
+		} else {
+			return;
+		}
+		debug_i("** State changed ** ");
+	}
+};
+Session activeSession;
 
 static constexpr unsigned minStatusInterval{10000};
 
 DEFINE_FSTR(deviceAddress, "192.168.1.118")
 // DEFINE_FSTR(deviceAddress, "192.168.1.200")
+
+DEFINE_FSTR(APPID_BACKDROP, "E8C28D3C") // Idle screen
+DEFINE_FSTR(APPID_MEDIA_RECEIVER, "CC1AD845")
+DEFINE_FSTR(APPID_CHROMECAST, "ChromeCast")
+DEFINE_FSTR(APPID_YOUTUBE, "YouTube")
+DEFINE_FSTR(APPID_SCREEN_MIRRORING, "674A0243")
+DEFINE_FSTR(APPID_BUBBLE_UPNP, "3927FA74")
+DEFINE_FSTR(APPID_YOUTUBE_MUSIC, "2DB7CC49")
+DEFINE_FSTR(APPID_GOOGLE_PHOTOS, "5FD0CDC9")
+DEFINE_FSTR(APPID_MUSIC, "F3F3F51B")
+DEFINE_FSTR(APPID_CHROME_MIRRORING, "0F5096E8")
+DEFINE_FSTR(APPID_GOOGLE_PLAY_MOVIES, "9381F2BD")
+DEFINE_FSTR(APPID_BBC_IPLAYER, "19A3DCE0")
+DEFINE_FSTR(APPID_YOUTUBE_TV, "4475D545")
+DEFINE_FSTR(APPID_DEEZER, "28BE5D9A")
+DEFINE_FSTR(APPID_TWITCH, "358E83DC")
+DEFINE_FSTR(APPID_GOOGLE_MUSIC, "GoogleMusic")
+DEFINE_FSTR(APPID_PLEX, "9AC194DC")
+DEFINE_FSTR(APPID_GOOGLE_PLUS, "1A27E40D")
+DEFINE_FSTR(APPID_NETFLIX, "CA5E8412")
+
+DEFINE_FSTR(mediaUrl, "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4");
+DEFINE_FSTR(mediaMimeType, "video/mp4")
 
 // Pretty-print a JSON document
 void printJson(JsonDocument& doc)
@@ -30,17 +100,59 @@ bool onReceiverMessage(GoogleCast::Channel& channel, GoogleCast::Channel::Messag
 	statusTimer.restart();
 
 	DynamicJsonDocument doc(1024);
-	if(message.deserialize(doc)) {
-		printJson(doc);
-		String type = doc["type"];
-		if(type == "RECEIVER_STATUS") {
-			auto app = doc["status"]["applications"][0];
-			if(app) {
-				activeSessionId = app["sessionId"].as<const char*>();
-				debug_i("Status: %s, session: %s", app["statusText"].as<const char*>(), activeSessionId.c_str());
-			}
-		}
+	if(!message.deserialize(doc)) {
+		return true;
 	}
+
+	printJson(doc);
+	String type = doc["type"];
+	if(type != "RECEIVER_STATUS") {
+		return true;
+	}
+
+	auto status = doc["status"];
+	auto app = status["applications"][0];
+	if(!app || APPID_MEDIA_RECEIVER != app["appId"]) {
+		return true;
+	}
+
+	if(activeSession.state != Session::State::idle) {
+		return true;
+	}
+
+	String transportId = app["transportId"].as<const char*>();
+
+	// Connect to the application
+	castClient.connection.setDestinationId(transportId);
+	castClient.connection.connect();
+
+	castClient.media.setDestinationId(transportId);
+	if(castClient.media.load(mediaUrl, mediaMimeType)) {
+		activeSession.state = Session::State::playRequestSent;
+	}
+
+	return true;
+}
+
+bool onMediaMessage(GoogleCast::Channel& channel, GoogleCast::Channel::Message& message)
+{
+	debug_i("%s", __PRETTY_FUNCTION__);
+
+	DynamicJsonDocument doc(1024);
+	if(!message.deserialize(doc)) {
+		return true;
+	}
+
+	printJson(doc);
+	String type = doc["type"];
+	if(type != "MEDIA_STATUS") {
+		return true;
+	}
+
+	auto status = doc["status"][0];
+	activeSession.updateState(status["playerState"].as<const char*>());
+	activeSession.id = status["mediaSessionId"];
+	activeSession.currentTime = status["currentTime"];
 
 	return true;
 }
@@ -77,20 +189,55 @@ void onGotIp(IpAddress ip, IpAddress mask, IpAddress gateway)
 		if(!success) {
 			return;
 		}
-		Serial.println(F("Starting YouTube"));
-		castClient.receiver.launch("YouTube");
+
+		castClient.receiver.launch(APPID_MEDIA_RECEIVER);
+
+		// Serial.println(F("Starting YouTube"));
+		// castClient.receiver.launch("YouTube");
 		statusTimer.initializeMs<minStatusInterval>(InterruptCallback([]() { castClient.receiver.getStatus(); }))
 			.start();
 	});
 	castClient.receiver.onMessage(onReceiverMessage);
+	castClient.media.onMessage(onMediaMessage);
 	castClient.onMessage(onMessage);
 	castClient.connect(IpAddress(deviceAddress));
+}
+
+void onSerialData(Stream& source, char arrivedChar, uint16_t availableCharsCount)
+{
+	// Take only first character, discard the rest
+	while(availableCharsCount--) {
+		source.read();
+	}
+	switch(arrivedChar) {
+	case ' ':
+		activeSession.playPause();
+		break;
+
+	case 'f':
+	case 'F':
+		activeSession.seekRelative(skipSecs);
+		break;
+
+	case 'r':
+	case 'R':
+		activeSession.seekRelative(-skipSecs);
+		break;
+
+	case 'q':
+	case 'Q':
+		// castClient.receiver.launch(APPID_BACKDROP);
+		castClient.connection.close();
+		break;
+	}
 }
 
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true);
+
+	Serial.onDataReceived(onSerialData);
 
 	// Setup the WIFI connection
 	WifiStation.enable(true);

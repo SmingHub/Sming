@@ -17,20 +17,25 @@ Using
 
       #include <Network/GoogleCast/Client.h>
 
-3. Example::
+3. Basic example::
 
       #include <Network/GoogleCast/Client.h>
 
       GoogleCast::Client castClient;
 
-      void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
+      void gotIp(IpAddress ip, IpAddress mask, IpAddress gateway)
       {
          // connect directly to the IP of the devise
          castClient.connect(IpAddress("192.168.10.15"));
 
-         // Starting YouTube on the device
-         castClient.receiver.launch("YouTube");
-         castClient.onMessage(onCastMessage);
+         castClient.onConnect([](bool success) {
+            Serial.print(F("Client connect: "));
+            Serial.println(success ? "OK" : "FAIL");
+            if(success) {
+              // Starting YouTube on the device
+              castClient.receiver.launch(APPID_YOUTUBE);
+		}
+         });
       }
 
 Re-Generating C files from proto file

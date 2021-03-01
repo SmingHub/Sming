@@ -17,6 +17,12 @@ namespace GoogleCast
 class Media : public Channel
 {
 public:
+	enum class State {
+		NoChange,
+		Play,
+		Pause,
+	};
+
 	using Channel::Channel;
 
 	String getNameSpace() const override
@@ -29,11 +35,18 @@ public:
 		return load(url, toString(mime));
 	}
 
-	bool load(const Url& url, const String& mime);
+	bool load(const Url& url, const String& mime)
+	{
+		return load(url.toString(), mime);
+	}
 
-	bool pause(const String& sessionId);
-	bool play(const String& sessionId);
-	bool stop(const String& sessionId);
+	bool load(const String& url, const String& mime);
+
+	bool pause(int sessionId);
+	bool play(int sessionId);
+	bool stop(int sessionId);
+
+	bool seek(int sessionId, float currentTime, State newState = State::NoChange);
 };
 
 } // namespace GoogleCast

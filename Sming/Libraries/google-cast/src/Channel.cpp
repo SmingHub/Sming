@@ -40,8 +40,8 @@ String Channel::getDestinationId() const
 
 void Channel::initRequest(JsonDocument& request, const String& type)
 {
-	request[F("type")] = type;
 	request[F("requestId")] = client.getNextRequestId();
+	request[F("type")] = type;
 }
 
 bool Channel::sendSimpleMessage(const String& type)

@@ -105,6 +105,10 @@ bool Client::sendMessage(const void* data, size_t length, const String& nameSpac
 	m_nputs((char*)data, length);
 	m_puts(" to ");
 	m_puts(nameSpace.c_str());
+	m_puts(_F(", source: "));
+	m_puts(sourceId.c_str());
+	m_puts(_F(", destination: "));
+	m_puts(destinationId.c_str());
 	m_puts("\r\n");
 #endif
 

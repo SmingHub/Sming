@@ -12,23 +12,21 @@
 
 namespace GoogleCast
 {
-bool Media::load(const Url& url, const String& mime)
+bool Media::load(const String& url, const String& mime)
 {
 	StaticJsonDocument<1024> doc;
 	initRequest(doc, F("LOAD"));
 	doc[F("autoplay")] = true;
 	doc[F("currentTime")] = 0;
-	doc.createNestedArray(F("activeTrackIds"));
-	doc[F("repeatMode")] = F("REPEAT_OFF");
 	auto media = doc.createNestedObject(F("media"));
-	media[F("contentId")] = url.toString();
+	media[F("contentId")] = url;
 	media[F("contentType")] = mime;
 	media[F("streamType")] = F("BUFFERED");
 
 	return send(doc);
 }
 
-bool Media::pause(const String& sessionId)
+bool Media::pause(int sessionId)
 {
 	StaticJsonDocument<200> doc;
 	initRequest(doc, F("PAUSE"));
@@ -37,7 +35,7 @@ bool Media::pause(const String& sessionId)
 	return send(doc);
 }
 
-bool Media::play(const String& sessionId)
+bool Media::play(int sessionId)
 {
 	StaticJsonDocument<200> doc;
 	initRequest(doc, F("PLAY"));
@@ -46,11 +44,24 @@ bool Media::play(const String& sessionId)
 	return send(doc);
 }
 
-bool Media::stop(const String& sessionId)
+bool Media::stop(int sessionId)
 {
 	StaticJsonDocument<200> doc;
 	initRequest(doc, F("STOP"));
 	doc[F("mediaSessionId")] = sessionId;
+
+	return send(doc);
+}
+
+bool Media::seek(int sessionId, float currentTime, State newState)
+{
+	StaticJsonDocument<200> doc;
+	initRequest(doc, F("SEEK"));
+	doc[F("mediaSessionId")] = sessionId;
+	if(newState != State::NoChange) {
+		doc[F("resumeState")] = (newState == State::Pause) ? F("PLAYBACK_PAUSE") : F("PLAYBACK_START");
+	}
+	doc[F("currentTime")] = currentTime;
 
 	return send(doc);
 }
