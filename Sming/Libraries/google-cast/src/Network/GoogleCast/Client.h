@@ -59,13 +59,15 @@ public:
 	/* High Level Commands */
 	bool launch(const String& appId);
 
-	bool play(const Url& url, const MimeType& mime)
+	bool load(const Url& url, MimeType mime)
 	{
-		return play(url, toString(mime));
+		return load(url, toString(mime));
 	}
 
-	bool play(const Url& url, const String& mime);
+	bool load(const Url& url, const String& mime);
 
+	bool pause(const String& sessionId);
+	bool play(const String& sessionId);
 	bool stop(const String& sessionId);
 
 	bool getStatus();

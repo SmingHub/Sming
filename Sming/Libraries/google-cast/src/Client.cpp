@@ -55,7 +55,7 @@ bool Client::launch(const String& appId)
 	return publish(doc);
 }
 
-bool Client::play(const Url& url, const String& mime)
+bool Client::load(const Url& url, const String& mime)
 {
 	StaticJsonDocument<1024> doc;
 	doc[F("type")] = F("LOAD");
@@ -72,11 +72,32 @@ bool Client::play(const Url& url, const String& mime)
 	return sendMessage(Json::serialize(doc), ChannelType::MEDIA);
 }
 
+bool Client::pause(const String& sessionId)
+{
+	StaticJsonDocument<200> doc;
+	doc[F("type")] = F("PAUSE");
+	doc[F("mediaSessionId")] = sessionId;
+	doc[F("requestId")] = requestId++;
+
+	return sendMessage(doc, ChannelType::MEDIA);
+}
+
+bool Client::play(const String& sessionId)
+{
+	StaticJsonDocument<200> doc;
+	doc[F("type")] = F("PLAY");
+	doc[F("mediaSessionId")] = sessionId;
+	doc[F("requestId")] = requestId++;
+
+	return sendMessage(doc, ChannelType::MEDIA);
+}
+
 bool Client::stop(const String& sessionId)
 {
 	StaticJsonDocument<200> doc;
 	doc[F("type")] = F("STOP");
-	doc[F("sessionId")] = sessionId.c_str();
+	doc[F("mediaSessionId")] = sessionId;
+	doc[F("requestId")] = requestId++;
 
 	return publish(doc);
 }
