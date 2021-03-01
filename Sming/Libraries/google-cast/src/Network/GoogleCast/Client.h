@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Data/Buffer/CircularBuffer.h>
+#include <Data/Stream/LimitedMemoryStream.h>
 #include <ArduinoJson.h>
-#include "cast_channel.pb.h"
+#include "Messages.h"
 
 namespace GoogleCast
 {
@@ -29,8 +29,7 @@ enum class ChannelType {
 class Client : protected TcpClient
 {
 public:
-	Client(size_t storageSize = 1024, bool autoDestruct = false)
-		: TcpClient(autoDestruct), inputBuffer(new CircularBuffer(storageSize))
+	Client(bool autoDestruct = false) : TcpClient(autoDestruct)
 	{
 		TcpClient::setReceiveDelegate(TcpClientDataDelegate(&Client::onTcpReceive, this));
 	}
@@ -87,12 +86,18 @@ public:
 	/**
 	 * @brief Publishes message in the receiver channel
 	 */
-	bool publish(const String& data);
+	bool publish(const String& data)
+	{
+		return sendMessage(data, ChannelType::RECEIVER);
+	}
 
 	/**
 	 * @brief Publishes message in the receiver channel
 	 */
-	bool publish(JsonDocument& json);
+	bool publish(JsonDocument& json)
+	{
+		return publish(Json::serialize(json));
+	}
 
 	bool ping();
 
@@ -103,21 +108,21 @@ protected:
 	err_t onPoll() override;
 
 private:
-	String generateMessage(const String& data, ChannelType type, const String& sourceId = nullptr,
-						   const String& destinationId = nullptr)
+	bool sendMessage(const String& data, ChannelType type, const String& sourceId = nullptr,
+					 const String& destinationId = nullptr)
 	{
-		return generateMessage(reinterpret_cast<const uint8_t*>(data.c_str()), data.length(), type, sourceId,
-							   destinationId);
+		return sendMessage(reinterpret_cast<const uint8_t*>(data.c_str()), data.length(), type, sourceId,
+						   destinationId);
 	}
 
-	String generateMessage(const char* data, ChannelType type, const String& sourceId = nullptr,
-						   const String& destinationId = nullptr)
+	bool sendMessage(const char* data, ChannelType type, const String& sourceId = nullptr,
+					 const String& destinationId = nullptr)
 	{
-		return generateMessage((const uint8_t*)data, strlen(data), type, sourceId, destinationId);
+		return sendMessage((const uint8_t*)data, strlen(data), type, sourceId, destinationId);
 	}
 
-	String generateMessage(const uint8_t* data, size_t length, ChannelType type, const String& sourceId = nullptr,
-						   const String& destinationId = nullptr);
+	bool sendMessage(const uint8_t* data, size_t length, ChannelType type, const String& sourceId = nullptr,
+					 const String& destinationId = nullptr);
 
 	bool onTcpReceive(TcpClient& client, char* data, int length);
 
@@ -126,7 +131,7 @@ private:
 	unsigned pingRepeatTime{4};
 
 	size_t messageLength{0};
-	CircularBuffer* inputBuffer;
+	LimitedMemoryStream* inputBuffer{nullptr};
 	MessageDelegate onMessage;
 };
 

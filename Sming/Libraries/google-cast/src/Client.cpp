@@ -1,6 +1,6 @@
 #include "Network/GoogleCast/Client.h"
 #include <Data/CStringArray.h>
-#include <PbUtils.h>
+#include <Protobuf.h>
 
 namespace
 {
@@ -11,21 +11,6 @@ DEFINE_FSTR(fstrChannelType, CAST_CHANNEL_TYPE_MAP(XX))
 
 DEFINE_FSTR(STANDARD_SENDER, "sender-0")
 DEFINE_FSTR(STANDARD_RECEIVER, "receiver-0")
-
-pb_istream_t newInputStream(IDataSourceStream* inputBuffer)
-{
-	pb_istream_t stream;
-	stream.callback = [](pb_istream_t* stream, pb_byte_t* buf, size_t count) -> bool {
-		auto source = static_cast<IDataSourceStream*>(stream->state);
-		size_t read = source->readBytes(reinterpret_cast<char*>(buf), count);
-		return true;
-	};
-	stream.state = inputBuffer;
-	stream.bytes_left = inputBuffer->available();
-	stream.errmsg = nullptr;
-
-	return stream;
-}
 
 } // namespace
 
@@ -84,8 +69,7 @@ bool Client::play(const Url& url, const String& mime)
 	media[F("streamType")] = F("BUFFERED");
 	doc[F("requestId")] = 1;
 
-	String command = generateMessage(Json::serialize(doc), ChannelType::MEDIA);
-	return send(command.c_str(), command.length());
+	return sendMessage(Json::serialize(doc), ChannelType::MEDIA);
 }
 
 bool Client::stop(const String& sessionId)
@@ -129,28 +113,15 @@ bool Client::setVolumeMuted(bool muted)
 	return publish(doc);
 }
 
-bool Client::publish(const String& data)
-{
-	String command = generateMessage(data, ChannelType::RECEIVER);
-	return sendString(command);
-}
-
-bool Client::publish(JsonDocument& json)
-{
-	return Client::publish(Json::serialize(json));
-}
-
 bool Client::ping()
 {
-	String command = generateMessage(F("{\"type\":\"PING\"}"), ChannelType::HEARTBEAT);
 	lastPing = millis();
-	return send(command.c_str(), command.length());
+	return sendMessage(F("{\"type\":\"PING\"}"), ChannelType::HEARTBEAT);
 }
 
 void Client::close()
 {
-	String command = generateMessage(F("{\"type\":\"CLOSE\"}"), ChannelType::CONNECTION);
-	send(command.c_str(), command.length());
+	sendMessage(F("{\"type\":\"CLOSE\"}"), ChannelType::CONNECTION);
 
 	TcpClient::close();
 }
@@ -163,8 +134,7 @@ err_t Client::onConnected(err_t err)
 	}
 
 	//
-	String command = generateMessage(F("{ \"type\": \"CONNECT\" }"), ChannelType::CONNECTION);
-	send(command.c_str(), command.length());
+	sendMessage(F("{ \"type\": \"CONNECT\" }"), ChannelType::CONNECTION);
 	ping();
 
 	return ERR_OK;
@@ -185,106 +155,99 @@ err_t Client::onPoll()
 	return ERR_OK;
 }
 
-String Client::generateMessage(const uint8_t* data, size_t length, ChannelType type, const String& sourceId,
-							   const String& destinationId)
+bool Client::sendMessage(const uint8_t* data, size_t length, ChannelType type, const String& sourceId,
+						 const String& destinationId)
 {
 	extensions_api_cast_channel_CastMessage message = extensions_api_cast_channel_CastMessage_init_default;
 
-	String ns = toString(type);
 	message.protocol_version = extensions_api_cast_channel_CastMessage_ProtocolVersion_CASTV2_1_0;
-	message.source_id.funcs.encode = &pbEncodeData;
-	message.source_id.arg = new PbData(sourceId ?: STANDARD_SENDER);
-	message.destination_id.funcs.encode = &pbEncodeData;
-	message.destination_id.arg = new PbData(destinationId ?: STANDARD_RECEIVER);
-	message.nameSpace.funcs.encode = &pbEncodeData;
-	message.nameSpace.arg = new PbData(ns);
+	Protobuf::OutputCallback source_id(message.source_id, sourceId ?: STANDARD_SENDER);
+	Protobuf::OutputCallback destination_id(message.destination_id, destinationId ?: STANDARD_RECEIVER);
+	Protobuf::OutputCallback nameSpace(message.nameSpace, toString(type));
 	message.payload_type = extensions_api_cast_channel_CastMessage_PayloadType_STRING;
-	message.payload_utf8.funcs.encode = &pbEncodeData;
-	message.payload_utf8.arg = new PbData(const_cast<uint8_t*>(data), length);
+	Protobuf::OutputCallback payload_utf8(message.payload_utf8, data, length);
 
-	pb_ostream_t stream;
-	uint8_t* buf{nullptr};
-	uint32_t bufferSize{0};
-	bool status;
-	do {
-		if(buf != nullptr) {
-			delete[] buf;
-		}
-		bufferSize += 1024;
-		buf = new uint8_t[bufferSize];
+	// Calculate and output packet size field first
+	uint32_t packetSize = Protobuf::getEncodeSize(extensions_api_cast_channel_CastMessage_fields, &message);
+	// debug_i("packetSize = %u", packetSize);
+	packetSize = htonl(packetSize);
+	int err = send(reinterpret_cast<const char*>(&packetSize), sizeof(packetSize));
+	// debug_i("write(%u): %d", sizeof(packetSize), err);
 
-		stream = pb_ostream_from_buffer(buf, bufferSize);
-		status = pb_encode(&stream, extensions_api_cast_channel_CastMessage_fields, &message);
-	} while(!status && bufferSize < 10240);
-
-	delete(PbData*)message.source_id.arg;
-	delete(PbData*)message.destination_id.arg;
-	delete(PbData*)message.nameSpace.arg;
-	delete(PbData*)message.payload_utf8.arg;
-
-	if(!status) {
-		char error[128];
-		debug_e("Failed to encode. (source_id=%s, destination_id=%s, namespace=%s, data=%s)", sourceId.c_str(),
-				destinationId.c_str(), ns.c_str(), data);
-		return nullptr;
+	// Now stream the encoded data
+	Protobuf::TcpClientOutputStream stream(*this);
+	auto sent = stream.encode(extensions_api_cast_channel_CastMessage_fields, &message);
+	// debug_i("stream.encode(): %u", sent);
+	if(sent > 0) {
+		return true;
 	}
 
-	String packet;
-	packet.reserve(sizeof(uint32_t) + bufferSize);
-	uint32_t packetSize = htonl(stream.bytes_written);
-	packet.concat(reinterpret_cast<const char*>(&packetSize), sizeof(packetSize));
-	packet.concat((const char*)buf, bufferSize);
-
-	delete[] buf;
-
-	return packet;
+	debug_e("Failed to encode. (source_id='%s', destination_id='%s', namespace='%s', data='%s')",
+			String(source_id).c_str(), String(destination_id).c_str(), String(nameSpace).c_str(), data);
+	return false;
 }
 
 bool Client::onTcpReceive(TcpClient& client, char* data, int length)
 {
-	size_t written = inputBuffer->write((const uint8_t*)data, length);
-	if(written != size_t(length)) {
-		debug_e("Not enough space to store the message...");
-		return false;
-	}
-
-	// parse the incoming message....
 	if(messageLength == 0) {
-		if(inputBuffer->available() < 4) {
-			// we don't have all needed starting bytes yet...
-			return true;
+		if(length < int(sizeof(messageLength))) {
+			// Not enough to read header. Should never happen.
+			debug_e("Unexpected: Got %d bytes but need at least 4", length);
+			return false;
 		}
 
-		// get the message length from the first 4 bytes
+		// get the message length
 		uint32_t tmp;
-		inputBuffer->readBytes(reinterpret_cast<char*>(&tmp), sizeof(tmp));
+		memcpy(&tmp, data, sizeof(tmp));
 		messageLength = ntohl(tmp);
+		data += sizeof(tmp);
+		length -= sizeof(tmp);
+
+		assert(inputBuffer == nullptr);
+
+		// Create stream buffer if we need more data
+		if(length < int(messageLength)) {
+			inputBuffer = new LimitedMemoryStream(messageLength);
+
+			if(inputBuffer == nullptr) {
+				debug_e("Not enough memory");
+				return false;
+			}
+		}
 	}
 
-	if(inputBuffer->available() < int(messageLength)) {
-		// still waiting for the rest of the needed bytes...
-		return true;
+	if(inputBuffer == nullptr) {
+		inputBuffer = new LimitedMemoryStream(data, messageLength, messageLength, false);
+	} else {
+		size_t written = inputBuffer->write((const uint8_t*)data, length);
+		if(written != size_t(length)) {
+			debug_e("Unexpected: Data overran input buffer");
+			return false;
+		}
+
+		if(inputBuffer->available() < int(messageLength)) {
+			// More data required
+			return true;
+		}
 	}
 
 	extensions_api_cast_channel_CastMessage message = extensions_api_cast_channel_CastMessage_init_default;
-	message.source_id.funcs.decode = &pbDecodeData;
-	message.destination_id.funcs.decode = &pbDecodeData;
-	message.nameSpace.funcs.decode = &pbDecodeData;
-	message.payload_utf8.funcs.decode = &pbDecodeData;
-
-	pb_istream_t input = newInputStream(inputBuffer);
-	size_t leftBytes = input.bytes_left;
-	bool success = pb_decode(&input, extensions_api_cast_channel_CastMessage_fields, &message);
+	Protobuf::InputCallback source_id(message.source_id);
+	Protobuf::InputCallback destination_id(message.destination_id);
+	Protobuf::InputCallback nameSpace(message.nameSpace);
+	Protobuf::InputCallback payload_utf8(message.payload_utf8);
+	Protobuf::InputStream input(*inputBuffer);
+	bool success = input.decode(extensions_api_cast_channel_CastMessage_fields, &message);
 	messageLength = 0;
+	delete inputBuffer;
+	inputBuffer = nullptr;
 	if(!success) {
-		debug_e("Decoding failed: %s\n", PB_GET_ERROR(&input));
+		debug_e("Decoding failed: %s", input.getErrorString().c_str());
 		return false;
 	}
 
 	// JSON decode the message payload. Pass the message to an event handler....
 	if(onMessage) {
-		MemoryDataStream* tmp;
-
 		// tmp = static_cast<MemoryDataStream*>(message.source_id.arg);
 		// if(tmp != nullptr) {
 		// 	size_t len = tmp->available();
@@ -304,16 +267,15 @@ bool Client::onTcpReceive(TcpClient& client, char* data, int length)
 		// }
 
 		if((message.payload_type == extensions_api_cast_channel_CastMessage_PayloadType_STRING)) {
-			tmp = static_cast<MemoryDataStream*>(message.payload_utf8.arg);
-			if(tmp != nullptr) {
-				size_t len = tmp->available();
-				auto value = tmp->getStreamPointer();
+			auto value = payload_utf8.getData();
+			auto len = payload_utf8.getLength();
 
-				m_nputs(value, len);
+			m_puts("Response: ");
+			m_nputs(reinterpret_cast<const char*>(value), len);
+			m_puts("\r\n");
 
-				DynamicJsonDocument doc(1024);
-				Json::deserialize(doc, value, len);
-			}
+			DynamicJsonDocument doc(1024);
+			Json::deserialize(doc, value, len);
 		}
 
 		return onMessage(message);

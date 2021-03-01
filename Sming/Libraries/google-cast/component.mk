@@ -1,5 +1,5 @@
 COMPONENT_SRCDIRS := src proto
-COMPONENT_INCDIRS := $(COMPONENT_SRCDIRS) 
+COMPONENT_INCDIRS := src
 COMPONENT_DEPENDS := ArduinoJson6 nanopb
 
 # Google Cast requires SSL for communication. Add this to project configuration.
