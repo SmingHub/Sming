@@ -1,5 +1,5 @@
-Configuring your Esp8266 device
--------------------------------
+Configuring your device
+-----------------------
 
 .. highlight:: bash
 
@@ -12,15 +12,16 @@ You can set these initially on the command line, like this::
 
    make SMING_ARCH=Esp8266 COM_PORT=/dev/ttyUSB3 COM_SPEED_ESPTOOL=921600
 
-For Windows expect to use COM2, COM3, etc.
+(For Windows or :doc:`windows/wsl` expect to use COM2, COM3, etc.)
 
-You can list the current set of configuration variables like this::
-
-   make list-config
-
-If you want to reset back to default values, do this::
+Once you're happy with the settings, you can add them to your project's ``component.mk`` file.
+You may need to do this to reset the cached values::
 
    make config-clean
+
+The current set of configuration variables can be seen thus::
+
+   make list-config
 
 Other hardware-specific settings are stored in the hardware configuration file.
 You can examine the current configuration like this::

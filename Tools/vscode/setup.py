@@ -3,12 +3,24 @@
 # Sming hardware configuration tool
 #
 
-import os, sys, json
+import os, sys, json, shutil
 
 def fix_path(path):
     if path[1:3] == ':/':
         return '/' + path[0] + path[2:]
     return path
+
+def find_tool(name):
+    if os.path.isabs(name):
+        path = name
+    else:
+        path = shutil.which(name)
+        if path is None:
+            sys.stderr.write("Warning! '%s' not found in path\n" % name)
+            path = name
+    if not os.path.exists(path):
+        sys.stderr.write("Warning! '%s' doesn't exist\n" % path)
+    return env_subst_path(path, 'env:')
 
 def env_replace(path, name, prefix):
     if name in os.environ:
@@ -79,7 +91,7 @@ def update_intellisense():
         config['defines'].append('ARCH_%s=1' % arch.upper())
         configurations.append(config)
 
-    config['compilerPath'] = env_subst_path(os.environ['CXX'])
+    config['compilerPath'] = find_tool(os.environ['CXX'])
     config['includePath'] = dirs
 
     save_json(properties, propertiesFile)
@@ -112,10 +124,7 @@ def update_launch():
     is_wsl = (os.environ['WSL_ROOT'] != '')
     config = find_object(configurations, "%s GDB" % arch)
     if not config is None:
-        path = env_subst_path(os.environ['GDB'], 'env:')
-        if sys.platform == 'win32':
-            path = os.path.splitext(path)[0] + '.exe'
-        config['miDebuggerPath'] = path
+        config['miDebuggerPath'] = find_tool(os.environ['GDB'])
         args = "-x ${env:SMING_HOME}/Arch/%s/Components/gdbstub/gdbcmds" % arch
         if arch == 'Esp8266':
             if not is_wsl:

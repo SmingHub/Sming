@@ -47,6 +47,8 @@ Installing WSL
 
 See instructions here https://docs.microsoft.com/en-us/windows/wsl/install-win10#manual-installation-steps.
 
+Install an up-to-date Linux distribution from the Microsoft store, currently ``Ubuntu-20.04``.
+
 .. note::
 
    You may encounter an error message similar to this during installation::
@@ -76,7 +78,7 @@ See instructions here https://docs.microsoft.com/en-us/windows/wsl/install-win10
 Installing Sming
 ----------------
 
-Open a WSL command prompt and follow the :doc:`Linux installation instructions <../linux>`.
+Open a WSL command prompt and follow the instructions in :doc:`../linux/index`.
 
 
 Flashing devices
@@ -90,6 +92,30 @@ Therefore, use the normal Windows COM port name rather than the linux ones (such
 For example::
 
    make flash COM_PORT=COM4
+
+
+Serial debugging
+----------------
+
+Again, as we have no direct access to USB COM ports a workaround is required.
+A small python application can be run on Windows to act as a simple bridge between the serial port and a TCP port.
+See ``Tools/tcp_serial_redirect.py`` - run without arguments to see available options.
+
+You can start the server like this::
+
+   make tcp-serial-redirect
+
+A new console will be created (minimised) showing something like this::
+
+   --- TCP/IP to Serial redirect on COM4  115200,8,N,1 ---
+   --- type Ctrl-C / BREAK to quit
+   Waiting for connection on 192.168.1.101:7780...
+
+This uses the current :envvar:`COM_PORT` and :envvar:`COM_SPEED_SERIAL` settings.
+
+Now we can start the debugger::
+
+   make gdb COM_PORT_GDB=192.168.1.101:7780
 
 
 Valgrind

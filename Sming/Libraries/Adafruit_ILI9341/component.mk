@@ -10,7 +10,7 @@ else ifeq ($(SMING_ARCH),Esp32)
 TFT_CS_PIN		?= 18
 TFT_DC_PIN		?= 19
 TFT_RESET_PIN	?= 21
-else
+else ifndef MAKE_DOCS
 $(warning Arch unsupported)
 endif
 

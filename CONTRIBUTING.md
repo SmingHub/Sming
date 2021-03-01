@@ -32,7 +32,7 @@ __Sming Contributing flow__:
 
 4. Document your code
 
-  As a bare minimum, please include a `README.rst` or `README.md` file. See :doc:`/contribute/documentation` for further information.
+  As a bare minimum, please include a `README.rst` or `README.md` file. See :doc:`/information/develop/documentation` for further information.
 
 5. Commit changes
 

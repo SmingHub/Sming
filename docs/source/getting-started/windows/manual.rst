@@ -215,4 +215,4 @@ the same settings will be used.
 Next steps
 ----------
 
-Proceed to :doc:`config`.
+Proceed to :doc:`../config`.

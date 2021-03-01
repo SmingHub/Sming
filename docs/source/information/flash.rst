@@ -12,7 +12,7 @@ Up to 16MBytes are supported for custom designs.
 Sming version 4.3 introduced partition tables to support multiple architectures,
 different hardware variants and custom flash layouts without restriction.
 
-See :ref:`hardware-config` for details.
+See :ref:`hardware_config` for details.
 
 A typical layout for a 4MByte device might look like this:
 

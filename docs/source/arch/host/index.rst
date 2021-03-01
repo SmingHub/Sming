@@ -1,5 +1,5 @@
-Getting Started: Host (Linux/Windows)
-=====================================
+Host Emulator
+=============
 
 .. highlight:: bash
 
@@ -10,6 +10,11 @@ and be tested before uploading them to the microcontroller.
 If you want to try it we have an
 `interactive tutorial <https://www.katacoda.com/slaff/scenarios/sming-host-emulator>`__
 that can be run directly from your browser.
+
+See :doc:`/getting-started/index` for installation details.
+
+The following sections provide more background detail.
+
 
 Requirements (Linux)
 --------------------
@@ -24,10 +29,9 @@ C/C++ 32 bit compiler and libraries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The latest versions of Sming require GCC version 8 or newer.
-If your OS is 64 bit then you should install also 32 bit C/C++ compiler and libraries.
+If your OS is 64 bit then 32 bit C/C++ compiler and libraries are also required.
 Here's a summary of how to do this::
 
-   sudo add-apt-repository ppa:ubuntu-toolchain-r/test
    sudo apt update
    sudo apt install gcc-9 g++-9
 
@@ -60,7 +64,7 @@ The current version is `GCC 8.2.0 <https://gcc.gnu.org/gcc-8>`__.
 
 .. note::
 
-   If you don't already have MinGW installed, see :doc:`/arch/esp8266/getting-started/windows` for the Esp8266.
+   If you don't already have MinGW installed, see :doc:`/getting-started/windows/index`.
 
 
 
@@ -131,7 +135,7 @@ first, and requires root privilege. You can use the
 
    sudo ip tuntap add dev tap0 mode tap user `whoami`
    sudo ip a a dev tap0 192.168.13.1/24
-   sudo ifconfig tap0 up
+   sudo ip link set tap0 up
 
    # The following lines are needed if you plan to access Internet
    sudo sysctl net.ipv4.ip_forward=1
@@ -147,6 +151,10 @@ first, and requires root privilege. You can use the
 This creates the ``tap0`` interface. The emulator will automatically
 select the first ``tap`` interface found. To override this, use the
 ``--ifname`` option.
+
+You can list available network interfaces thus::
+
+   ip link
 
 Troubleshooting
 ---------------

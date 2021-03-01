@@ -1,5 +1,8 @@
 REM Esp32 install.cmd
 
+if "%IDF_PATH%"=="" goto :EOF
+if "%IDF_TOOLS_PATH%"=="" goto :EOF
+
 git clone -b release/v4.1 https://github.com/espressif/esp-idf.git %IDF_PATH%
 
 REM Espressif downloads very slow, fetch from SmingTools

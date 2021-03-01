@@ -5,20 +5,23 @@ image:
 platform: x86
 
 environment:
-  SMINGTOOLS: https://github.com/SmingHub/SmingTools/releases/download/1.0
   SMING_SECRET:
     secure: rCs19uNvDR07w1d2pfwJIzewiEQ2zpKXdqFp5BqHQAA=
 
   matrix:
     - SMING_ARCH: Host
+      INSTALL_OPTS: host doc
 
     - SMING_ARCH: Esp8266
+      INSTALL_OPTS: esp8266
       BUILD_COMPILER: udk
 
     - SMING_ARCH: Esp8266
+      INSTALL_OPTS: esp8266
       BUILD_COMPILER: eqt
 
     - SMING_ARCH: Esp32
+      INSTALL_OPTS: esp32
 
 
 install:
@@ -48,14 +51,15 @@ install:
       set PATH=C:\Python39;C:\MinGW\msys\1.0\bin;C:\MinGW\bin;%PATH%
       set PYTHON=C:\Python39\python
       set ESP32_PYTHON_PATH=C:\Python39
-      .ci\install.cmd
-      set PATH=C:\Python39\Scripts;%PATH%;C:\Program Files\doxygen\bin
+      Tools\ci\install.cmd
+      set PATH=C:\Python39\Scripts;C:\tools\doxygen;C:\tools\Graphviz\bin;%PATH%
 
   - sh: |
       export PYTHON=$HOME/venv3.9/bin/python
       export ESP32_PYTHON_PATH=$HOME/venv3.9/bin
       source $HOME/venv3.9/bin/activate
-      .ci/install.sh
+      Tools/install.sh $INSTALL_OPTS
+      cd $CI_BUILD_DIR
 
 
 before_build:
@@ -67,8 +71,8 @@ before_build:
       fi
 
 build_script:
-  - cmd: .ci\build.cmd
-  - sh: .ci/build.sh
+  - cmd: Tools\ci\build.cmd
+  - sh: Tools/ci/build.sh
 
 after_build:
   - ps: |
@@ -82,5 +86,5 @@ after_build:
 deploy_script:
   - sh: |
       if [[ $APPVEYOR_REPO_TAG_NAME != "" && $APPVEYOR_BUILD_WORKER_IMAGE == "Ubuntu2004" && $SMING_ARCH == "Host" ]]; then
-        .ci/deploy.sh $APPVEYOR_REPO_TAG_NAME
+        Tools/ci/deploy.sh $APPVEYOR_REPO_TAG_NAME
       fi

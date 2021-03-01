@@ -17,7 +17,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       fail-fast: false
@@ -61,16 +61,10 @@ jobs:
     - if: matrix.language == 'cpp' || matrix.language == 'c'
       name: Build Sming C/C++
       run: |
-       sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-       sudo apt-get update -y
-       sudo apt-get install gcc-9-multilib g++-9-multilib python3-wheel python3-setuptools
-       sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-9
-       python3 -m pip install --upgrade pip wheel -r Tools/requirements.txt
-       env
-       cd Sming
-       export SMING_HOME=$(pwd)
-       cd ../samples/Basic_Blink
-       make -j3 SMING_ARCH=Host
-       
+        sudo Tools/install.sh host
+        . Tools/export.sh
+        cd samples/Basic_Blink
+        make -j3 SMING_ARCH=Host
+
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
