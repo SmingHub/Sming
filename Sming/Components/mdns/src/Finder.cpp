@@ -2,26 +2,20 @@
 
 namespace mDNS
 {
-Finder::Finder()
-{
-	UdpConnection::joinMulticastGroup(IpAddress(MDNS_IP));
-	UdpConnection::setMulticastTtl(MDNS_TTL);
-
-	onDataCallback = UdpConnectionDataDelegate(&Finder::processData, this);
-}
-
 Finder::~Finder()
 {
-	UdpConnection::leaveMulticastGroup(IpAddress(MDNS_IP));
+	if(initialised) {
+		UdpConnection::leaveMulticastGroup(IpAddress(MDNS_IP));
+	}
 }
 
-bool Finder::search(const String& hostname, const QuestionType& type)
+bool Finder::search(const String& hostname, QuestionType type)
 {
 	if(hostname.length() > MAX_MDNS_NAME_LEN - 1) {
 		return false;
 	}
 
-	Query query;
+	Query query{};
 	memcpy(query.name, hostname.c_str(), hostname.length());
 	query.type = type;
 	query.klass = 1; // "INternet"
@@ -33,9 +27,9 @@ bool Finder::search(const String& hostname, const QuestionType& type)
 
 bool Finder::search(const Query& query)
 {
-	uint8_t buffer[MAX_PACKET_SIZE] = {0};
+	uint8_t buffer[MAX_PACKET_SIZE]{};
 
-	size_t pos = 0;
+	uint16_t pos{0};
 	// The first two bytes are the transaction id and they are not used in MDNS
 	buffer[pos++] = 0;
 	buffer[pos++] = 0;
@@ -60,17 +54,17 @@ bool Finder::search(const Query& query)
 	buffer[pos++] = 0;
 	buffer[pos++] = 0;
 
-	size_t word_start = 0, word_end = 0;
+	uint16_t word_start{0};
+	uint16_t word_end{0};
 
-	auto name = query.name;
+	const char* name = query.name;
 	while(true) {
 		if(name[word_end] == '.' || name[word_end] == '\0') {
-			const size_t word_length = word_end - word_start;
+			const uint8_t word_length = word_end - word_start;
 
-			buffer[pos++] = (uint8_t)word_length;
-			for(size_t i = word_start; i < word_end; ++i) {
-				buffer[pos++] = name[i];
-			}
+			buffer[pos++] = word_length;
+			memcpy(&buffer[pos], &name[word_start], word_length);
+			pos += word_length;
 			if(name[word_end] == '\0') {
 				break;
 			}
@@ -95,12 +89,35 @@ bool Finder::search(const Query& query)
 	buffer[pos++] = (qclass & 0xFF00) >> 8;
 	buffer[pos++] = qclass & 0xFF;
 
-	return UdpConnection::sendTo(IpAddress(MDNS_IP), MDNS_TARGET_PORT, (const char*)buffer, pos);
+	initialise();
+	listen(0);
+	return sendTo(IpAddress(MDNS_IP), MDNS_TARGET_PORT, reinterpret_cast<const char*>(buffer), pos);
 }
 
-void Finder::processData(UdpConnection& connection, char* data, int size, IpAddress remoteIP, uint16_t remotePort)
+void Finder::initialise()
 {
+	if(!initialised) {
+		joinMulticastGroup(IpAddress(MDNS_IP));
+		listen(MDNS_SOURCE_PORT);
+		setMulticastTtl(MDNS_TTL);
+		initialised = true;
+	}
+}
+
+void Finder::UdpOut::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
+{
+	finder.onReceive(buf, remoteIP, remotePort);
+}
+
+void Finder::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
+{
+	// debug_d("Finder::onReceive(%u)", buf->len);
+
 	// process the answer here...
+	auto data = static_cast<uint8_t*>(buf->payload);
+	auto size = buf->len;
+
+	// m_printHex("MDNS", data, size, 0);
 
 	// check if we have a response or a query
 	if(!(data[2] & 0b10000000)) {
@@ -118,26 +135,28 @@ void Finder::processData(UdpConnection& connection, char* data, int size, IpAddr
 	}
 
 	// Number of incoming queries.
-	size_t questionsCount = (data[4] << 8) + data[5];
+	uint16_t questionsCount = (data[4] << 8) + data[5];
 	if(questionsCount > 0) {
 		// we are interested only in responses.
 		return;
 	}
 
 	// Number of incoming answers.
-	size_t answersCount = (data[6] << 8) + data[7];
+	uint16_t answersCount = (data[6] << 8) + data[7];
 
 	// Number of incoming Name Server resource records.
-	size_t nsCount = (data[8] << 8) + data[9];
+	uint16_t nsCount = (data[8] << 8) + data[9];
 
 	// Number of incoming Additional resource records.
-	size_t additionalCount = (data[10] << 8) + data[11];
+	uint16_t additionalCount = (data[10] << 8) + data[11];
 
-	size_t pos = 12; // starting from the 12 byte we should have our answers
-	for(size_t i = 0; i < (answersCount + nsCount + additionalCount); i++) {
+	uint16_t pos = 12; // starting from the 12 byte we should have our answers
+	for(uint16_t i = 0; i < (answersCount + nsCount + additionalCount); i++) {
 		Answer answer;
 
-		answer.type = (data[pos++] << 8);
+		pos = nameFromDnsPointer(answer.name, 0, MAX_MDNS_NAME_LEN, data, pos);
+
+		answer.type = data[pos++] << 8;
 		answer.type += data[pos++];
 
 		uint8_t rrclass_0 = data[pos++];
@@ -150,14 +169,14 @@ void Finder::processData(UdpConnection& connection, char* data, int size, IpAddr
 		answer.ttl += (data[pos++] << 8);
 		answer.ttl += data[pos++];
 
-		if(pos > (size_t)size) {
+		if(pos > size_t(size)) {
 			// We've over-run the returned data.
 			// Something has gone wrong receiving or parsing the data.
 			answer.isValid = false;
 			return;
 		}
 
-		size_t rdlength = (data[pos++] << 8);
+		uint16_t rdlength = data[pos++] << 8;
 		rdlength += data[pos++];
 
 		switch(answer.type) {
@@ -169,20 +188,23 @@ void Finder::processData(UdpConnection& connection, char* data, int size, IpAddr
 			}
 			pos += 4;
 			break;
+
 		case MDNS_TYPE_PTR: // Pointer to a canonical name.
-			pos = nameFromDnsPointer(answer.data, 0, MAX_MDNS_NAME_LEN, (const uint8_t*)data, pos);
+			pos = nameFromDnsPointer(answer.data, 0, MAX_MDNS_NAME_LEN, data, pos);
 			break;
+
 		case MDNS_TYPE_HINFO: // HINFO. host information
-			pos = parseText(answer.data, MAX_MDNS_NAME_LEN, rdlength, (const uint8_t*)data, pos);
+			pos = parseText(answer.data, MAX_MDNS_NAME_LEN, rdlength, data, pos);
 			break;
+
 		case MDNS_TYPE_TXT: // Originally for arbitrary human-readable text in a DNS record.
 			// We only return the first MAX_MDNS_NAME_LEN bytes of thir record type.
-			pos = parseText(answer.data, MAX_MDNS_NAME_LEN, rdlength, (const uint8_t*)data, pos);
+			pos = parseText(answer.data, MAX_MDNS_NAME_LEN, rdlength, data, pos);
 			break;
-		case MDNS_TYPE_AAAA: // Returns a 128-bit IPv6 address.
-		{
-			int data_pos = 0;
-			for(size_t i = 0; i < rdlength; i++) {
+
+		case MDNS_TYPE_AAAA: { // Returns a 128-bit IPv6 address.
+			uint16_t data_pos{0};
+			for(uint16_t i = 0; i < rdlength; i++) {
 				if(data_pos < MAX_MDNS_NAME_LEN - 3) {
 					sprintf(answer.data + data_pos, "%02X:", data[pos++]);
 				} else {
@@ -191,9 +213,10 @@ void Finder::processData(UdpConnection& connection, char* data, int size, IpAddr
 				data_pos += 3;
 			}
 			answer.data[--data_pos] = '\0'; // Remove trailing ':'
-		} break;
-		case MDNS_TYPE_SRV: // Server Selection.
-		{
+			break;
+		}
+
+		case MDNS_TYPE_SRV: { // Server Selection.
 			unsigned int priority = (data[pos++] << 8);
 			priority += data[pos++];
 			unsigned int weight = (data[pos++] << 8);
@@ -203,11 +226,13 @@ void Finder::processData(UdpConnection& connection, char* data, int size, IpAddr
 			sprintf(answer.data, "p=%u;w=%u;port=%u;host=", priority, weight, port);
 
 			pos = nameFromDnsPointer(answer.data, strlen(answer.data), MAX_MDNS_NAME_LEN - strlen(answer.data) - 1,
-									 (const uint8_t*)data, pos);
-		} break;
-		default: {
-			int data_pos = 0;
-			for(size_t i = 0; i < rdlength; i++) {
+									 data, pos);
+			break;
+		}
+
+		default:
+			uint16_t data_pos{0};
+			for(uint16_t i = 0; i < rdlength; i++) {
 				if(data_pos < MAX_MDNS_NAME_LEN - 3) {
 					sprintf(answer.data + data_pos, "%02X ", data[pos++]);
 				} else {
@@ -215,49 +240,47 @@ void Finder::processData(UdpConnection& connection, char* data, int size, IpAddr
 				}
 				data_pos += 3;
 			}
-		} break;
 		}
 
 		answer.isValid = true;
 
-		if(answer.isValid) {
-			if(onAnswer) {
-				onAnswer(answer);
-			}
+		if(answerCallback) {
+			answerCallback(answer);
 		}
 	}
 }
 
-bool Finder::writeToBuffer(const uint8_t value, char* name, int* namePos, const int nameLength)
+bool Finder::writeToBuffer(uint8_t value, char* name, uint16_t& namePos, uint16_t nameLength)
 {
-	if(*namePos < nameLength - 1) {
-		*(name + *namePos) = value;
-		(*namePos)++;
-		*(name + *namePos) = '\0';
+	if(namePos + 1 < nameLength) {
+		name[namePos++] = value;
+		name[namePos] = '\0';
 		return true;
 	}
-	(*namePos)++;
+
+	namePos++;
 	return false;
 }
 
-int Finder::parseText(char* buffer, const int bufferLength, const int dataLength, const uint8_t* packet, int packetPos)
+uint16_t Finder::parseText(char* buffer, uint16_t bufferLength, uint16_t dataLength, const uint8_t* packet,
+						   uint16_t packetPos)
 {
-	int i, bufferPos = 0;
-	for(i = 0; i < dataLength; i++) {
-		writeToBuffer(packet[packetPos++], buffer, &bufferPos, bufferLength);
+	uint16_t bufferPos{0};
+	for(uint16_t i = 0; i < dataLength; i++) {
+		writeToBuffer(packet[packetPos++], buffer, bufferPos, bufferLength);
 	}
 	buffer[bufferPos] = '\0';
 	return packetPos;
 }
 
-int Finder::nameFromDnsPointer(char* name, int namePos, const int nameLength, const uint8_t* packet, int packetPos,
-							   const bool recurse)
+uint16_t Finder::nameFromDnsPointer(char* name, uint16_t namePos, uint16_t nameLength, const uint8_t* packet,
+									uint16_t packetPos, bool recurse)
 {
 	if(recurse) {
 		// Since we are adding more to an already populated buffer,
 		// replace the trailing EOL with the FQDN seperator.
 		namePos--;
-		writeToBuffer('.', name, &namePos, nameLength);
+		writeToBuffer('.', name, namePos, nameLength);
 	}
 
 	if(packet[packetPos] < 0xC0) {
@@ -265,12 +288,12 @@ int Finder::nameFromDnsPointer(char* name, int namePos, const int nameLength, co
 		// this is the start of a name section.
 		// http://www.tcpipguide.com/free/t_DNSNameNotationandMessageCompressionTechnique.htm
 
-		const size_t word_len = packet[packetPos++];
-		for(size_t l = 0; l < word_len; l++) {
-			writeToBuffer(*(packet + packetPos++), name, &namePos, nameLength);
+		const uint8_t word_len = packet[packetPos++];
+		for(uint8_t l = 0; l < word_len; l++) {
+			writeToBuffer(packet[packetPos++], name, namePos, nameLength);
 		}
 
-		writeToBuffer('\0', name, &namePos, nameLength);
+		writeToBuffer('\0', name, namePos, nameLength);
 
 		if(packet[packetPos] > 0) {
 			// Next word.
@@ -281,7 +304,7 @@ int Finder::nameFromDnsPointer(char* name, int namePos, const int nameLength, co
 		}
 	} else {
 		// Message Compression used. Next 2 bytes are a pointer to the actual name section.
-		int pointer = (packet[packetPos++] - 0xC0) << 8;
+		uint16_t pointer = (packet[packetPos++] - 0xC0) << 8;
 		pointer += packet[packetPos++];
 		nameFromDnsPointer(name, namePos, nameLength, packet, pointer, false);
 	}
