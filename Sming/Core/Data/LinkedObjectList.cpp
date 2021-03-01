@@ -4,21 +4,19 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * ObjectList.cpp
+ * LinkedObjectList.cpp
  *
  ****/
 
-#include "include/Storage/ObjectList.h"
+#include "LinkedObjectList.h"
 
-namespace Storage
-{
-bool ObjectList::add(Object* object)
+bool LinkedObjectList::add(LinkedObject* object)
 {
 	if(object == nullptr) {
 		return false;
 	}
 
-	Object* prev = nullptr;
+	LinkedObject* prev = nullptr;
 	auto it = mHead;
 	while(it != nullptr) {
 		if(it == object) {
@@ -38,7 +36,7 @@ bool ObjectList::add(Object* object)
 	return true;
 }
 
-bool ObjectList::remove(Object* object)
+bool LinkedObjectList::remove(LinkedObject* object)
 {
 	if(object == nullptr || mHead == nullptr) {
 		return false;
@@ -61,5 +59,3 @@ bool ObjectList::remove(Object* object)
 
 	return false;
 }
-
-} // namespace Storage
