@@ -115,8 +115,8 @@ bool Client::setVolumeMuted(bool muted)
 
 bool Client::ping()
 {
-	lastPing = millis();
-	return sendMessage(F("{\"type\":\"PING\"}"), ChannelType::HEARTBEAT);
+	pingTimer.start();
+	return sendMessage(makeMessage(F("PING")), ChannelType::HEARTBEAT);
 }
 
 void Client::close()
@@ -147,8 +147,7 @@ err_t Client::onPoll()
 		return err;
 	}
 
-	// ping the server if it is high time ...
-	if(!(lastPing && (millis() - lastPing >= pingRepeatTime * 1000))) {
+	if(pingTimer.expired()) {
 		ping();
 	}
 

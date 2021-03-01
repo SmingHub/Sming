@@ -32,6 +32,7 @@ public:
 	Client(bool autoDestruct = false) : TcpClient(autoDestruct)
 	{
 		TcpClient::setReceiveDelegate(TcpClientDataDelegate(&Client::onTcpReceive, this));
+		pingTimer.reset(4);
 	}
 
 	bool connect(const IpAddress addr, int port = 8009);
@@ -52,7 +53,7 @@ public:
 	 */
 	void setPingRepeatTime(unsigned seconds)
 	{
-		pingRepeatTime = seconds;
+		pingTimer.reset(seconds);
 	}
 
 	/* High Level Commands */
@@ -126,10 +127,7 @@ private:
 
 	bool onTcpReceive(TcpClient& client, char* data, int length);
 
-private:
-	unsigned lastPing{0};
-	unsigned pingRepeatTime{4};
-
+	OneShotElapseTimer<NanoTime::Seconds> pingTimer;
 	size_t messageLength{0};
 	LimitedMemoryStream* inputBuffer{nullptr};
 	MessageDelegate onMessage;
