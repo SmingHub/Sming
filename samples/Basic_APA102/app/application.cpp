@@ -1,14 +1,14 @@
 /*
  * File: APA102 LED class demo for Sming framework
- * 
+ *
  * Original Author: https://github.com/HappyCodingRobot
  *
- * This library support the APA102 LED with integrated controller chip.
- * 
+ * This library supports the APA102 LED with integrated controller chip.
+ *
  *
  * hardware SPI: clk=GPIO14 , mosi=GPIO13
  * software SPI: user defined
- * 
+ *
  */
 #include <SmingCore.h>
 
