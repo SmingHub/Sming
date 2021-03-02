@@ -83,8 +83,10 @@ void startWebServer()
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.begin(SERIAL_BAUD_RATE); // Enable serial
 	Serial.systemDebugOutput(true); // Allow debug output to serial
+
+	spiffs_mount();
 
 	WifiStation.enable(true);
 
