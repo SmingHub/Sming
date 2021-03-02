@@ -14,23 +14,24 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	Serial.print(F("Connected. Got IP: "));
 	Serial.println(ip);
 
-	finder.onAnswer([](mDNS::Answer& answer) {
-		// m_printHex("ANSWER", &answer, sizeof(answer));
-		debug_i(">> name:  %s", answer.name.c_str());
-		debug_i("   type:  %s (0x%04X)", toString(answer.type).c_str(), unsigned(answer.type));
-		debug_i("   class: 0x%04x", answer.klass);
-		debug_i("   ttl:   %u", answer.ttl);
-		debug_i("   flsh?: %u", answer.isCachedFlush);
-		debug_i("   vald?: %u", answer.isValid);
-		// auto len = strlen(answer.data);
-		m_printHex("   data", answer.data.c_str(), answer.data.length());
-		m_printHex("   raw ", answer.rawData, answer.rawDataLen);
-		// debug_i("   data:  %s", answer.data);
+	finder.onAnswer([](mDNS::Response& response) {
+		Serial.println();
+		debug_i("RESPONSE!!");
+		for(auto& answer : response) {
+			debug_i(">> name:  %s", String(answer.getName()).c_str());
+			debug_i("   type:  %s (0x%04X)", toString(answer.type).c_str(), unsigned(answer.type));
+			debug_i("   class: 0x%04x", answer.klass);
+			debug_i("   ttl:   %u", answer.ttl);
+			debug_i("   flsh?: %u", answer.isCachedFlush);
+			debug_i("   vald?: %u", answer.isValid);
+			m_printHex("   data", answer.data.c_str(), answer.data.length());
+			m_printHex("   raw ", answer.rawData, answer.rawDataLen);
+		}
 	});
+
 	// bool ok = finder.search("_googlecast._tcp.local");
-	String hostname = F("_googlecast._tcp.local");
 	mDNS::Query query{};
-	memcpy(query.name, hostname.c_str(), hostname.length());
+	query.name = F("_googlecast._tcp.local");
 	query.type = mDNS::ResourceType::PTR;
 	query.klass = 1; // "INternet"
 	query.isUnicastResponse = false;
