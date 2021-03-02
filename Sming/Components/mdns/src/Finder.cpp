@@ -1,6 +1,7 @@
 #include "include/Network/Mdns/Finder.h"
 #include "include/Network/Mdns/Response.h"
 #include "Packet.h"
+#include <IFS/FileSystem.h>
 
 namespace mDNS
 {
@@ -101,6 +102,15 @@ void Finder::UdpOut::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePor
 
 void Finder::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 {
+	// auto& hostfs = IFS::Host::getFileSystem();
+	// String filename = remoteIP.toString();
+	// filename += ".mdns";
+	// auto f = hostfs.open(filename, IFS::OpenFlag::Create | IFS::OpenFlag::Truncate | IFS::OpenFlag::Write);
+	// hostfs.write(f, buf->payload, buf->len);
+	// hostfs.close(f);
+	// debug_i("Saved '%s'", filename.c_str());
+	// return;
+
 	if(!answerCallback) {
 		return;
 	}
