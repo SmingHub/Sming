@@ -3,6 +3,14 @@
  * from MrDunk's mDNS code these files are distributed under the same license as his project.
  *
  * MIT license: https://github.com/mrdunk/esp8266_mdns/blob/master/LICENCE.txt
+ * 
+ * References:
+ * 
+ *  Zero-configuration networking (DNS-SD) https://en.wikipedia.org/wiki/Zero-configuration_networking
+ * 	Multicast DNS https://tools.ietf.org/html/rfc6762
+ * 	DNS-Based Service Discovery https://tools.ietf.org/html/rfc6763
+ * 	DNS record types https://en.wikipedia.org/wiki/List_of_DNS_record_types
+ * 
  */
 #pragma once
 
@@ -13,15 +21,8 @@
 
 namespace mDNS
 {
-#define MDNS_IP 224, 0, 0, 251
-#define MDNS_TARGET_PORT 5353
-#define MDNS_SOURCE_PORT 5353
-#define MDNS_TTL 255
-
-#define MAX_PACKET_SIZE 1024
-
 // The mDNS spec says this should never be more than 256 (including trailing '\0').
-#define MAX_MDNS_NAME_LEN 256
+static constexpr size_t MAX_MDNS_NAME_LEN{256};
 
 class Finder : protected UdpConnection
 {

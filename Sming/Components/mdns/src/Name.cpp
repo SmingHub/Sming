@@ -7,7 +7,7 @@ namespace mDNS
 String Name::toString() const
 {
 	String s;
-	Packet pkt{data, 0};
+	Packet pkt{data};
 
 	while(true) {
 		if(pkt.peek8() < 0xC0) {
@@ -29,14 +29,13 @@ String Name::toString() const
 
 		// Message Compression used. Next 2 bytes are a pointer to the actual name section.
 		uint16_t pointer = pkt.read16() & 0x3fff;
-		pkt.data = response.resolvePointer(pointer);
-		pkt.pos = 0;
+		pkt = Packet{response.resolvePointer(pointer)};
 	}
 }
 
 uint16_t Name::getDataLength() const
 {
-	Packet pkt{data, 0};
+	Packet pkt{data};
 
 	while(true) {
 		if(pkt.peek8() < 0xC0) {

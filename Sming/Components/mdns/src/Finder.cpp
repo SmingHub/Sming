@@ -3,6 +3,13 @@
 #include "Packet.h"
 #include <IFS/FileSystem.h>
 
+#define MDNS_IP 224, 0, 0, 251
+#define MDNS_TARGET_PORT 5353
+#define MDNS_SOURCE_PORT 5353
+#define MDNS_TTL 255
+
+#define MAX_PACKET_SIZE 1024
+
 namespace mDNS
 {
 Finder::~Finder()
@@ -30,9 +37,8 @@ bool Finder::search(const Query& query)
 		return false;
 	}
 
-	uint8_t buffer[MAX_PACKET_SIZE]{};
-
-	Packet pkt{buffer, 0};
+	uint8_t buffer[MAX_PACKET_SIZE];
+	Packet pkt{buffer};
 
 	// The first two bytes are the transaction id and they are not used in MDNS
 	pkt.write16(0);
@@ -52,9 +58,6 @@ bool Finder::search(const Query& query)
 
 	// 2 bytes for Additional PRs
 	pkt.write16(0);
-
-	uint16_t word_start{0};
-	uint16_t word_end{0};
 
 	size_t pos{0};
 	auto& name = query.name;

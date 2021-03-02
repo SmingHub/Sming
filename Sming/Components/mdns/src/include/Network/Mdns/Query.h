@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ResourceType.h"
+#include "Resource.h"
 
 namespace mDNS
 {

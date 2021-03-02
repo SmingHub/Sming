@@ -27,31 +27,31 @@ bool Response::parse()
 	Packet pkt{data, 4};
 
 	// Number of incoming queries.
-	uint16_t questionsCount = pkt.read16();
-	if(questionsCount > 0) {
+	auto questionsCount = pkt.read16();
+	if(questionsCount != 0) {
 		// we are interested only in responses.
 		return false;
 	}
 
 	// Number of incoming answers.
-	uint16_t answersCount = pkt.read16();
+	auto answersCount = pkt.read16();
 
 	// Number of incoming Name Server resource records.
-	uint16_t nsCount = pkt.read16();
+	auto nsCount = pkt.read16();
 
 	// Number of incoming Additional resource records.
-	uint16_t additionalCount = pkt.read16();
+	auto additionalCount = pkt.read16();
 
 	// List of answers
 	bool ok{true};
-	for(uint16_t i = 0; i < (answersCount + nsCount + additionalCount); i++) {
+	auto recordCount = answersCount + nsCount + additionalCount;
+	for(uint16_t i = 0; i < recordCount; i++) {
 		auto answer = new Answer(*this);
-		if(answer->parse(pkt)) {
-			add(answer);
-		} else {
-			ok = false;
-			break;
+		if(!answer->parse(pkt)) {
+			delete answer;
+			return false;
 		}
+		add(answer);
 	}
 
 	return ok;
@@ -59,8 +59,8 @@ bool Response::parse()
 
 Answer* Response::operator[](ResourceType type)
 {
-	for(auto& ans: *this) {
-		if(ans.type == type) {
+	for(auto& ans : *this) {
+		if(ans.getType() == type) {
 			return &ans;
 		}
 	}
