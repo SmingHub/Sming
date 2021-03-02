@@ -41,6 +41,8 @@ public:
 		return size;
 	}
 
+	Answer* operator[](ResourceType type);
+
 private:
 	uint8_t* data;
 	uint16_t size;

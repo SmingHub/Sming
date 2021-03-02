@@ -25,6 +25,19 @@ void printResponse(mDNS::Response& response)
 		// m_printHex("   data", answer.data.c_str(), answer.data.length());
 		// m_printHex("   raw ", answer.rawData, answer.rawDataLen);
 	}
+
+	auto answer = response[mDNS::ResourceType::TXT];
+	if(answer != nullptr) {
+		auto txt = answer->getTXT();
+		auto s = txt["md"];
+		debug_i("md = '%s'", s.c_str());
+	}
+
+	answer = response[mDNS::ResourceType::A];
+	if(answer != nullptr) {
+		auto a = answer->getA();
+		debug_i("addr = %s", a.toString().c_str());
+	}
 }
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)

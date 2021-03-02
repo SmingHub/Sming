@@ -59,7 +59,20 @@ public:
 		using Record::Record;
 		uint8_t count() const;
 		String operator[](uint8_t index) const;
+		String operator[](const char* name) const
+		{
+			return getValue(name);
+		}
 		String toString(const char* sep = ", ") const;
+		String getValue(const char* name, uint16_t namelen) const;
+		String getValue(const char* name) const
+		{
+			return getValue(name, strlen(name));
+		}
+		String getValue(const String& name) const
+		{
+			return getValue(name.c_str(), name.length());
+		}
 
 	private:
 		const char* get(uint8_t index, uint8_t& len) const;

@@ -105,6 +105,20 @@ String Answer::TXT::operator[](uint8_t index) const
 	return p ? String(p, len) : nullptr;
 }
 
+String Answer::TXT::getValue(const char* name, uint16_t namelen) const
+{
+	Packet pkt{answer.record, 0};
+	while(pkt.pos < answer.recordSize) {
+		auto len = pkt.read8();
+		auto entry = reinterpret_cast<const char*>(pkt.ptr());
+		if(len > namelen && entry[namelen] == '=' && memicmp(entry, name, namelen) == 0) {
+			return String(entry + namelen + 1, len - namelen - 1);
+		}
+		pkt.skip(len);
+	}
+	return nullptr;
+}
+
 const char* Answer::TXT::get(uint8_t index, uint8_t& len) const
 {
 	Packet pkt{answer.record, 0};

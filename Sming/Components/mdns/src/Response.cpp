@@ -57,4 +57,14 @@ bool Response::parse()
 	return ok;
 }
 
+Answer* Response::operator[](ResourceType type)
+{
+	for(auto& ans: *this) {
+		if(ans.type == type) {
+			return &ans;
+		}
+	}
+	return nullptr;
+}
+
 } // namespace mDNS
