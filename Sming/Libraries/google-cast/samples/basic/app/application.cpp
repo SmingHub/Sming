@@ -60,8 +60,7 @@ Session activeSession;
 
 static constexpr unsigned minStatusInterval{10000};
 
-DEFINE_FSTR(deviceAddress, "192.168.1.118")
-// DEFINE_FSTR(deviceAddress, "192.168.1.200")
+DEFINE_FSTR(deviceAddress, "192.168.1.118") // TODO: Replace this IP with your device's IP address
 
 DEFINE_FSTR(APPID_BACKDROP, "E8C28D3C") // Idle screen
 DEFINE_FSTR(APPID_MEDIA_RECEIVER, "CC1AD845")
