@@ -10,6 +10,7 @@
 #include <Delegate.h>
 #include <WString.h>
 #include <Network/UdpConnection.h>
+#include <Data/LinkedObject.h>
 
 namespace mDNS
 {
@@ -56,7 +57,12 @@ struct Query {
 /**
  * @brief A single mDNS Answer
  */
-struct Answer {
+class Answer : public LinkedObjectTemplate<Answer>
+{
+public:
+	using List = LinkedObjectListTemplate<Answer>;
+	using OwnedList = OwnedLinkedObjectListTemplate<Answer>;
+
 	void* rawData;
 	uint16_t rawDataLen;
 	String name;		///< object, domain or zone name.
@@ -77,6 +83,26 @@ struct Answer {
 			uint16_t port;
 		} srv;
 	};
+};
+
+/**
+ * @brief Encapsulates a response packet for flexible interrogation
+ */
+class Response : public Answer::OwnedList
+{
+public:
+	Response(const uint8_t data, size_t length) : data(data), length(length)
+	{
+	}
+
+	size_t count() const
+	{
+		return read16()
+	}
+
+private:
+	const uint8_t* data;
+	uint16_t length;
 };
 
 class Finder : protected UdpConnection

@@ -125,6 +125,23 @@ String nameFromDnsPointer(const Packet& pkt, const uint8_t* start)
 	return nameFromDnsPointer(tmp, start);
 }
 
+void skipNameFromDnsPointer(const Packet& pkt, const uint8_t* start)
+{
+	if(pkt.peek8() < 0xC0) {
+		const uint8_t word_len = pkt.read8();
+		pkt.skip(word_len);
+		if(pkt.peek8() != 0) {
+			skipNameFromDnsPointer(pkt, start);
+		} else {
+			pkt.read8();
+		}
+	} else {
+		uint16_t pointer = pkt.read16() & 0x3fff;
+		Packet tmp{const_cast<uint8_t*>(start + pointer), 0};
+		skipNameFromDnsPointer(tmp, start);
+	}
+}
+
 } // namespace
 
 namespace mDNS
