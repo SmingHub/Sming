@@ -116,9 +116,8 @@ void Finder::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 	}
 
 	Response response(buf->payload, buf->len);
-	if(response.parse()) {
-		answerCallback(response);
-	}
+	response.parse();
+	answerCallback(response);
 }
 
 } // namespace mDNS

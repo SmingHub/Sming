@@ -27,57 +27,128 @@ bool Answer::parse(Packet& pkt)
 	if(pkt.pos > size) {
 		debug_e("[MDNS] Packet overrun, pos = %u, size = %u", pkt.pos, size);
 		// Something has gone wrong receiving or parsing the data.
-		isValid = false;
 		return false;
 	}
 
-	uint16_t rdlength = pkt.read16();
-
-	auto dataPos = pkt.pos;
-	rawData = pkt.ptr();
-	rawDataLen = rdlength;
-
-	switch(type) {
-	case ResourceType::A: // Returns a 32-bit IPv4 address
-		a.addr = pkt.read32();
-		data = IpAddress(a.addr).toString();
-		break;
-
-	case ResourceType::PTR: // Pointer to a canonical name.
-		data = Name(response, pkt.ptr());
-		break;
-
-	case ResourceType::HINFO: // HINFO. host information
-		data = pkt.readString(rdlength);
-		break;
-
-	case ResourceType::TXT: // Originally for arbitrary human-readable text in a DNS record.
-		// We only return the first MAX_MDNS_NAME_LEN bytes of this record type.
-		data = pkt.readString(rdlength);
-		break;
-
-	case ResourceType::AAAA: { // Returns a 128-bit IPv6 address.
-		data = makeHexString(static_cast<const uint8_t*>(pkt.ptr()), rdlength, ':');
-		break;
-	}
-
-	case ResourceType::SRV: { // Server Selection.
-		srv.priority = pkt.read16();
-		srv.weight = pkt.read16();
-		srv.port = pkt.read16();
-		data = Name(response, pkt.ptr());
-		// char buffer[64];
-		// sprintf(buffer, "p=%u;w=%u;port=%u;host=", priority, weight, port);
-		// answer->data = buffer;
-		break;
-	}
-
-	default:
-		data = makeHexString(static_cast<const uint8_t*>(pkt.ptr()), rdlength, ' ');
-	}
-
-	pkt.pos = dataPos + rawDataLen;
-	isValid = true;
+	recordSize = pkt.read16();
+	record = pkt.ptr();
+	pkt.pos += recordSize;
 	return true;
 }
+
+String Answer::getRecordString() const
+{
+	switch(type) {
+	case mDNS::ResourceType::A:
+		return getA().toString();
+	case mDNS::ResourceType::PTR:
+		return getPTR().toString();
+	case mDNS::ResourceType::HINFO:
+		return getHINFO().toString();
+	case mDNS::ResourceType::TXT:
+		return getTXT().toString();
+	case mDNS::ResourceType::AAAA:
+		return getAAAA().toString();
+	case mDNS::ResourceType::SRV:
+		return getSRV().toString();
+	default:
+		return getRecord().toString();
+	}
+}
+
+String Answer::Record::toString() const
+{
+	return makeHexString(answer.record, answer.recordSize, ' ');
+}
+
+IpAddress Answer::A::getAddress() const
+{
+	return Packet{answer.record}.read32();
+}
+
+Name Answer::PTR::getName() const
+{
+	return Name(answer.response, answer.record);
+}
+
+String Answer::TXT::toString(const char* sep) const
+{
+	String s;
+	Packet pkt{answer.record, 0};
+	while(pkt.pos < answer.recordSize) {
+		auto len = pkt.read8();
+		if(s) {
+			s += sep;
+		}
+		s += pkt.readString(len);
+	}
+	return s;
+}
+
+uint8_t Answer::TXT::count() const
+{
+	if(mCount == 0) {
+		Packet pkt{answer.record, 0};
+		while(pkt.pos < answer.recordSize) {
+			auto len = pkt.read8();
+			pkt.skip(len);
+			++mCount;
+		}
+	}
+	return mCount;
+}
+
+String Answer::TXT::operator[](uint8_t index) const
+{
+	uint8_t len;
+	auto p = get(index, len);
+	return p ? String(p, len) : nullptr;
+}
+
+const char* Answer::TXT::get(uint8_t index, uint8_t& len) const
+{
+	Packet pkt{answer.record, 0};
+	for(; pkt.pos < answer.recordSize; --index) {
+		len = pkt.read8();
+		if(index == 0) {
+			return reinterpret_cast<const char*>(pkt.ptr());
+		}
+		pkt.skip(len);
+	}
+	return nullptr;
+}
+
+String Answer::AAAA::toString() const
+{
+	return makeHexString(answer.record, answer.recordSize, ':');
+}
+
+uint16_t Answer::SRV::getPriority() const
+{
+	return Packet{answer.record}.read16();
+}
+
+uint16_t Answer::SRV::getWeight() const
+{
+	return Packet{answer.record, 2}.read16();
+}
+
+uint16_t Answer::SRV::getPort() const
+{
+	return Packet{answer.record, 4}.read16();
+}
+
+Name Answer::SRV::getHost() const
+{
+	return Name(answer.response, answer.record + 6);
+}
+
+String Answer::SRV::toString() const
+{
+	// char buffer[64];
+	// sprintf(buffer, "p=%u;w=%u;port=%u;host=", priority, weight, port);
+	// answer->data = buffer;
+	return "todo";
+}
+
 } // namespace mDNS

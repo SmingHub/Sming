@@ -46,8 +46,9 @@ bool Response::parse()
 	bool ok{true};
 	for(uint16_t i = 0; i < (answersCount + nsCount + additionalCount); i++) {
 		auto answer = new Answer(*this);
-		add(answer);
-		if(!answer->parse(pkt)) {
+		if(answer->parse(pkt)) {
+			add(answer);
+		} else {
 			ok = false;
 			break;
 		}

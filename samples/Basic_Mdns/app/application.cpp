@@ -17,13 +17,13 @@ void printResponse(mDNS::Response& response)
 	debug_i("RESPONSE!!");
 	for(auto& answer : response) {
 		debug_i(">> name:  %s", String(answer.getName()).c_str());
+		debug_i("   data:  %s", answer.getRecordString().c_str());
 		debug_i("   type:  %s (0x%04X)", toString(answer.type).c_str(), unsigned(answer.type));
 		debug_i("   class: 0x%04x", answer.klass);
 		debug_i("   ttl:   %u", answer.ttl);
 		debug_i("   flsh?: %u", answer.isCachedFlush);
-		debug_i("   vald?: %u", answer.isValid);
-		m_printHex("   data", answer.data.c_str(), answer.data.length());
-		m_printHex("   raw ", answer.rawData, answer.rawDataLen);
+		// m_printHex("   data", answer.data.c_str(), answer.data.length());
+		// m_printHex("   raw ", answer.rawData, answer.rawDataLen);
 	}
 }
 
