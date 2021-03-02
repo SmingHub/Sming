@@ -17,18 +17,21 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	finder.onAnswer([](mDNS::Answer& answer) {
 		// m_printHex("ANSWER", &answer, sizeof(answer));
 		debug_i(">> name:  %s", answer.name);
-		debug_i("   data:  %s", answer.data);
-		debug_i("   type:  0x%04x", answer.type);
+		debug_i("   type:  %s (0x%04X)", toString(answer.type).c_str(), unsigned(answer.type));
 		debug_i("   class: 0x%04x", answer.klass);
 		debug_i("   ttl:   %u", answer.ttl);
 		debug_i("   flsh?: %u", answer.isCachedFlush);
 		debug_i("   vald?: %u", answer.isValid);
+		// auto len = strlen(answer.data);
+		m_printHex("   data", answer.data, answer.dataLen);
+		m_printHex("   raw ", answer.rawData, answer.rawDataLen);
+		// debug_i("   data:  %s", answer.data);
 	});
 	// bool ok = finder.search("_googlecast._tcp.local");
 	String hostname = F("_googlecast._tcp.local");
 	mDNS::Query query{};
 	memcpy(query.name, hostname.c_str(), hostname.length());
-	query.type = mDNS::MDNS_TYPE_PTR;
+	query.type = mDNS::ResourceType::PTR;
 	query.klass = 1; // "INternet"
 	query.isUnicastResponse = false;
 	query.isValid = true;

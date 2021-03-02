@@ -1,5 +1,126 @@
 #include <Network/Mdns/Finder.h>
 
+String toString(mDNS::ResourceType type)
+{
+	switch(type) {
+#define XX(name, value, desc)                                                                                          \
+	case mDNS::ResourceType::name:                                                                                     \
+		return F(#name);
+		MDNS_RESOURCE_TYPE_MAP(XX)
+#undef XX
+	default:
+		return String(unsigned(type));
+	}
+}
+
+namespace
+{
+struct Packet {
+	uint8_t* data;
+	mutable uint16_t pos;
+
+	void* ptr() const
+	{
+		return data + pos;
+	}
+
+	uint8_t peek8() const
+	{
+		return data[pos];
+	}
+
+	uint8_t read8() const
+	{
+		return data[pos++];
+	}
+
+	uint16_t read16() const
+	{
+		return (read8() << 8) | read8();
+	}
+
+	uint32_t read32() const
+	{
+		return (read16() << 16) | read16();
+	}
+
+	void write(const void* s, uint16_t len)
+	{
+		memcpy(&data[pos], s, len);
+		pos += len;
+	}
+
+	void write8(uint8_t value)
+	{
+		data[pos++] = value;
+	}
+
+	void write16(uint16_t value)
+	{
+		write8(value >> 8);
+		write8(value & 0xff);
+	}
+};
+
+bool writeToBuffer(uint8_t value, char* name, uint16_t& namePos, uint16_t nameLength)
+{
+	if(namePos + 1 < nameLength) {
+		name[namePos++] = value;
+		name[namePos] = '\0';
+		return true;
+	}
+
+	namePos++;
+	return false;
+}
+
+void parseText(Packet& pkt, char* buffer, uint16_t bufferLength, uint16_t dataLength)
+{
+	uint16_t bufferPos{0};
+	for(uint16_t i = 0; i < dataLength; i++) {
+		writeToBuffer(pkt.read8(), buffer, bufferPos, bufferLength);
+	}
+	buffer[bufferPos] = '\0';
+}
+
+void nameFromDnsPointer(const Packet& pkt, char* name, uint16_t namePos, uint16_t nameLength, bool recurse)
+{
+	if(recurse) {
+		// Since we are adding more to an already populated buffer,
+		// replace the trailing EOL with the FQDN seperator.
+		namePos--;
+		writeToBuffer('.', name, namePos, nameLength);
+	}
+
+	if(pkt.peek8() < 0xC0) {
+		// Since the first 2 bits are not set,
+		// this is the start of a name section.
+		// http://www.tcpipguide.com/free/t_DNSNameNotationandMessageCompressionTechnique.htm
+
+		const uint8_t word_len = pkt.read8();
+		for(uint8_t l = 0; l < word_len; l++) {
+			writeToBuffer(pkt.read8(), name, namePos, nameLength);
+		}
+
+		writeToBuffer('\0', name, namePos, nameLength);
+
+		if(pkt.peek8() > 0) {
+			// Next word
+			nameFromDnsPointer(pkt, name, namePos, nameLength, true);
+		} else {
+			// End of string.
+			pkt.read8();
+		}
+	} else {
+		// Message Compression used. Next 2 bytes are a pointer to the actual name section.
+		uint16_t pointer = pkt.read16() & 0x3000;
+		Packet tmp{pkt.data, pointer};
+		nameFromDnsPointer(tmp, name, namePos, nameLength, false);
+	}
+}
+
+} // namespace
+
 namespace mDNS
 {
 Finder::~Finder()
@@ -9,7 +130,7 @@ Finder::~Finder()
 	}
 }
 
-bool Finder::search(const String& hostname, QuestionType type)
+bool Finder::search(const String& hostname, ResourceType type)
 {
 	if(hostname.length() > MAX_MDNS_NAME_LEN - 1) {
 		return false;
@@ -29,30 +150,26 @@ bool Finder::search(const Query& query)
 {
 	uint8_t buffer[MAX_PACKET_SIZE]{};
 
-	uint16_t pos{0};
+	Packet pkt{buffer, 0};
+
 	// The first two bytes are the transaction id and they are not used in MDNS
-	buffer[pos++] = 0;
-	buffer[pos++] = 0;
+	pkt.write16(0);
 
 	// 2 bytes for Flags
-	buffer[pos++] = 0; // 0b00000000 for Query, 0b10000000 for Answer.
-	buffer[pos++] = 0;
+	pkt.write8(0); // 0b00000000 for Query, 0b10000000 for Answer.
+	pkt.write8(0);
 
 	// 2 bytes for number of questions
-	buffer[pos++] = 0;
-	buffer[pos++] = 1; // one
+	pkt.write16(1);
 
 	// 2 bytes for number of Answer RRs
-	buffer[pos++] = 0;
-	buffer[pos++] = 0;
+	pkt.write16(0);
 
 	// 2 bytes for Authority PRs
-	buffer[pos++] = 0;
-	buffer[pos++] = 0;
+	pkt.write16(0);
 
 	// 2 bytes for Additional PRs
-	buffer[pos++] = 0;
-	buffer[pos++] = 0;
+	pkt.write16(0);
 
 	uint16_t word_start{0};
 	uint16_t word_end{0};
@@ -62,9 +179,8 @@ bool Finder::search(const Query& query)
 		if(name[word_end] == '.' || name[word_end] == '\0') {
 			const uint8_t word_length = word_end - word_start;
 
-			buffer[pos++] = word_length;
-			memcpy(&buffer[pos], &name[word_start], word_length);
-			pos += word_length;
+			pkt.write8(word_length);
+			pkt.write(&name[word_start], word_length);
 			if(name[word_end] == '\0') {
 				break;
 			}
@@ -74,11 +190,10 @@ bool Finder::search(const Query& query)
 		word_end++;
 	}
 
-	buffer[pos++] = '\0'; // End of name.
+	pkt.write8('\0'); // End of name.
 
 	// 2 bytes for type
-	buffer[pos++] = (query.type & 0xFF00) >> 8;
-	buffer[pos++] = query.type & 0xFF;
+	pkt.write16(uint16_t(query.type));
 
 	// 2 bytes for class
 	unsigned int qclass = 0;
@@ -86,12 +201,11 @@ bool Finder::search(const Query& query)
 		qclass = 0b1000000000000000;
 	}
 	qclass += query.klass;
-	buffer[pos++] = (qclass & 0xFF00) >> 8;
-	buffer[pos++] = qclass & 0xFF;
+	pkt.write16(qclass);
 
 	initialise();
 	listen(0);
-	return sendTo(IpAddress(MDNS_IP), MDNS_TARGET_PORT, reinterpret_cast<const char*>(buffer), pos);
+	return sendTo(IpAddress(MDNS_IP), MDNS_TARGET_PORT, reinterpret_cast<const char*>(pkt.data), pkt.pos);
 }
 
 void Finder::initialise()
@@ -111,7 +225,9 @@ void Finder::UdpOut::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePor
 
 void Finder::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 {
-	// debug_d("Finder::onReceive(%u)", buf->len);
+	if(!answerCallback) {
+		return;
+	}
 
 	// process the answer here...
 	auto data = static_cast<uint8_t*>(buf->payload);
@@ -134,181 +250,114 @@ void Finder::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 		return;
 	}
 
+	Packet pkt{data, 4};
+
 	// Number of incoming queries.
-	uint16_t questionsCount = (data[4] << 8) + data[5];
+	uint16_t questionsCount = pkt.read16();
 	if(questionsCount > 0) {
 		// we are interested only in responses.
 		return;
 	}
 
 	// Number of incoming answers.
-	uint16_t answersCount = (data[6] << 8) + data[7];
+	uint16_t answersCount = pkt.read16();
 
 	// Number of incoming Name Server resource records.
-	uint16_t nsCount = (data[8] << 8) + data[9];
+	uint16_t nsCount = pkt.read16();
 
 	// Number of incoming Additional resource records.
-	uint16_t additionalCount = (data[10] << 8) + data[11];
+	uint16_t additionalCount = pkt.read16();
 
-	uint16_t pos = 12; // starting from the 12 byte we should have our answers
+	// List of answers
 	for(uint16_t i = 0; i < (answersCount + nsCount + additionalCount); i++) {
-		Answer answer;
+		Answer answer{};
 
-		pos = nameFromDnsPointer(answer.name, 0, MAX_MDNS_NAME_LEN, data, pos);
+		nameFromDnsPointer(pkt, answer.name, 0, MAX_MDNS_NAME_LEN, false);
 
-		answer.type = data[pos++] << 8;
-		answer.type += data[pos++];
+		answer.type = ResourceType(pkt.read16());
 
-		uint8_t rrclass_0 = data[pos++];
-		uint8_t rrclass_1 = data[pos++];
+		uint8_t rrclass_0 = pkt.read8();
+		uint8_t rrclass_1 = pkt.read8();
 		answer.isCachedFlush = (0b10000000 & rrclass_0);
 		answer.klass = ((rrclass_0 & 0b01111111) << 8) + rrclass_1;
 
-		answer.ttl = (data[pos++] << 24);
-		answer.ttl += (data[pos++] << 16);
-		answer.ttl += (data[pos++] << 8);
-		answer.ttl += data[pos++];
+		answer.ttl = pkt.read32();
 
-		if(pos > size_t(size)) {
-			// We've over-run the returned data.
+		if(pkt.pos > size_t(size)) {
+			debug_e("[MDNS] Packet overrun, pos = %u, size = %u", pkt.pos, size);
 			// Something has gone wrong receiving or parsing the data.
 			answer.isValid = false;
-			return;
+			if(answerCallback) {
+				answerCallback(answer);
+			}
+			break;
 		}
 
-		uint16_t rdlength = data[pos++] << 8;
-		rdlength += data[pos++];
+		uint16_t rdlength = pkt.read16();
+
+		answer.rawData = pkt.ptr();
+		answer.rawDataLen = rdlength;
 
 		switch(answer.type) {
-		case MDNS_TYPE_A: // Returns a 32-bit IPv4 address
-			if(MAX_MDNS_NAME_LEN >= 16) {
-				sprintf(answer.data, "%u.%u.%u.%u", data[pos], data[pos + 1], data[pos + 2], data[pos + 3]);
-			} else {
-				sprintf(answer.data, "ipv4");
-			}
-			pos += 4;
+		case ResourceType::A: // Returns a 32-bit IPv4 address
+			answer.dataLen = sprintf(answer.data, "%u.%u.%u.%u", pkt.read8(), pkt.read8(), pkt.read8(), pkt.read8());
 			break;
 
-		case MDNS_TYPE_PTR: // Pointer to a canonical name.
-			pos = nameFromDnsPointer(answer.data, 0, MAX_MDNS_NAME_LEN, data, pos);
+		case ResourceType::PTR: // Pointer to a canonical name.
+			nameFromDnsPointer(pkt, answer.data, 0, MAX_MDNS_NAME_LEN, false);
+			answer.dataLen = strlen(answer.data);
 			break;
 
-		case MDNS_TYPE_HINFO: // HINFO. host information
-			pos = parseText(answer.data, MAX_MDNS_NAME_LEN, rdlength, data, pos);
+		case ResourceType::HINFO: // HINFO. host information
+			parseText(pkt, answer.data, MAX_MDNS_NAME_LEN, rdlength);
+			answer.dataLen = rdlength;
 			break;
 
-		case MDNS_TYPE_TXT: // Originally for arbitrary human-readable text in a DNS record.
-			// We only return the first MAX_MDNS_NAME_LEN bytes of thir record type.
-			pos = parseText(answer.data, MAX_MDNS_NAME_LEN, rdlength, data, pos);
+		case ResourceType::TXT: // Originally for arbitrary human-readable text in a DNS record.
+			// We only return the first MAX_MDNS_NAME_LEN bytes of this record type.
+			parseText(pkt, answer.data, MAX_MDNS_NAME_LEN, rdlength);
+			answer.dataLen = rdlength;
 			break;
 
-		case MDNS_TYPE_AAAA: { // Returns a 128-bit IPv6 address.
+		case ResourceType::AAAA: { // Returns a 128-bit IPv6 address.
 			uint16_t data_pos{0};
 			for(uint16_t i = 0; i < rdlength; i++) {
+				auto c = pkt.read8();
 				if(data_pos < MAX_MDNS_NAME_LEN - 3) {
-					sprintf(answer.data + data_pos, "%02X:", data[pos++]);
-				} else {
-					pos++;
+					sprintf(answer.data + data_pos, "%02X:", c);
 				}
 				data_pos += 3;
 			}
-			answer.data[--data_pos] = '\0'; // Remove trailing ':'
+			answer.data[data_pos - 1] = '\0'; // Remove trailing ':'
+			answer.dataLen = data_pos;
 			break;
 		}
 
-		case MDNS_TYPE_SRV: { // Server Selection.
-			unsigned int priority = (data[pos++] << 8);
-			priority += data[pos++];
-			unsigned int weight = (data[pos++] << 8);
-			weight += data[pos++];
-			unsigned int port = (data[pos++] << 8);
-			port += data[pos++];
-			sprintf(answer.data, "p=%u;w=%u;port=%u;host=", priority, weight, port);
-
-			pos = nameFromDnsPointer(answer.data, strlen(answer.data), MAX_MDNS_NAME_LEN - strlen(answer.data) - 1,
-									 data, pos);
+		case ResourceType::SRV: { // Server Selection.
+			auto priority = pkt.read16();
+			auto weight = pkt.read16();
+			auto port = pkt.read16();
+			auto len = sprintf(answer.data, "p=%u;w=%u;port=%u;host=", priority, weight, port);
+			nameFromDnsPointer(pkt, answer.data, len, MAX_MDNS_NAME_LEN - len - 1, false);
+			answer.dataLen = strlen(answer.data);
 			break;
 		}
 
 		default:
 			uint16_t data_pos{0};
 			for(uint16_t i = 0; i < rdlength; i++) {
+				auto c = pkt.read8();
 				if(data_pos < MAX_MDNS_NAME_LEN - 3) {
-					sprintf(answer.data + data_pos, "%02X ", data[pos++]);
-				} else {
-					pos++;
+					sprintf(answer.data + data_pos, "%02X ", c);
 				}
 				data_pos += 3;
 			}
+			answer.dataLen = strlen(answer.data);
 		}
 
 		answer.isValid = true;
-
-		if(answerCallback) {
-			answerCallback(answer);
-		}
+		answerCallback(answer);
 	}
-}
-
-bool Finder::writeToBuffer(uint8_t value, char* name, uint16_t& namePos, uint16_t nameLength)
-{
-	if(namePos + 1 < nameLength) {
-		name[namePos++] = value;
-		name[namePos] = '\0';
-		return true;
-	}
-
-	namePos++;
-	return false;
-}
-
-uint16_t Finder::parseText(char* buffer, uint16_t bufferLength, uint16_t dataLength, const uint8_t* packet,
-						   uint16_t packetPos)
-{
-	uint16_t bufferPos{0};
-	for(uint16_t i = 0; i < dataLength; i++) {
-		writeToBuffer(packet[packetPos++], buffer, bufferPos, bufferLength);
-	}
-	buffer[bufferPos] = '\0';
-	return packetPos;
-}
-
-uint16_t Finder::nameFromDnsPointer(char* name, uint16_t namePos, uint16_t nameLength, const uint8_t* packet,
-									uint16_t packetPos, bool recurse)
-{
-	if(recurse) {
-		// Since we are adding more to an already populated buffer,
-		// replace the trailing EOL with the FQDN seperator.
-		namePos--;
-		writeToBuffer('.', name, namePos, nameLength);
-	}
-
-	if(packet[packetPos] < 0xC0) {
-		// Since the first 2 bits are not set,
-		// this is the start of a name section.
-		// http://www.tcpipguide.com/free/t_DNSNameNotationandMessageCompressionTechnique.htm
-
-		const uint8_t word_len = packet[packetPos++];
-		for(uint8_t l = 0; l < word_len; l++) {
-			writeToBuffer(packet[packetPos++], name, namePos, nameLength);
-		}
-
-		writeToBuffer('\0', name, namePos, nameLength);
-
-		if(packet[packetPos] > 0) {
-			// Next word.
-			packetPos = nameFromDnsPointer(name, namePos, nameLength, packet, packetPos, true);
-		} else {
-			// End of string.
-			packetPos++;
-		}
-	} else {
-		// Message Compression used. Next 2 bytes are a pointer to the actual name section.
-		uint16_t pointer = (packet[packetPos++] - 0xC0) << 8;
-		pointer += packet[packetPos++];
-		nameFromDnsPointer(name, namePos, nameLength, packet, pointer, false);
-	}
-	return packetPos;
 }
 
 } // namespace mDNS

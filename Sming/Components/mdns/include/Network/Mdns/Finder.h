@@ -13,15 +13,6 @@
 
 namespace mDNS
 {
-enum QuestionType {
-	MDNS_TYPE_A = 0x0001,
-	MDNS_TYPE_PTR = 0x000C,
-	MDNS_TYPE_HINFO = 0x000D,
-	MDNS_TYPE_TXT = 0x0010,
-	MDNS_TYPE_AAAA = 0x001C,
-	MDNS_TYPE_SRV = 0x0021
-};
-
 #define MDNS_IP 224, 0, 0, 251
 #define MDNS_TARGET_PORT 5353
 #define MDNS_SOURCE_PORT 5353
@@ -33,12 +24,31 @@ enum QuestionType {
 #define MAX_MDNS_NAME_LEN 256
 
 /**
+ * @brief MDNS resource type identifiers
+ * 
+ * (name, value, description)
+ */
+#define MDNS_RESOURCE_TYPE_MAP(XX)                                                                                     \
+	XX(A, 0x0001, "32-bit IPv4 address")                                                                               \
+	XX(PTR, 0x000C, "Pointer to a canonical name")                                                                     \
+	XX(HINFO, 0x000D, "Host Information")                                                                              \
+	XX(TXT, 0x0010, "Arbitrary human-readable text")                                                                   \
+	XX(AAAA, 0x001C, "128-bit IPv6 address")                                                                           \
+	XX(SRV, 0x0021, "Server selection")
+
+enum class ResourceType : uint16_t {
+#define XX(name, value, desc) name = value,
+	MDNS_RESOURCE_TYPE_MAP(XX)
+#undef XX
+};
+
+/**
  * @brief A single mDNS Query
  */
 struct Query {
 	char name[MAX_MDNS_NAME_LEN]; ///< Question Name: Contains the object, domain or zone name.
-	enum QuestionType type;		  ///< Question Type: Type of question being asked by client.
-	unsigned int klass;			  ///< Question Class: Normally the value 1 for Internet (“IN”)
+	ResourceType type;			  ///< Question Type: Type of question being asked by client.
+	uint16_t klass;				  ///< Question Class: Normally the value 1 for Internet (“IN”)
 	bool isUnicastResponse;		  //
 	bool isValid;				  ///< False if problems were encountered decoding packet.
 };
@@ -49,11 +59,14 @@ struct Query {
 struct Answer {
 	char name[MAX_MDNS_NAME_LEN]; ///< object, domain or zone name.
 	char data[MAX_MDNS_NAME_LEN]; ///< The data portion of the resource record.
-	unsigned int type;			  ///< ResourceRecord Type.
-	unsigned int klass;			  ///< ResourceRecord Class: Normally the value 1 for Internet (“IN”)
-	unsigned long int ttl;		  ///< ResourceRecord Time To Live: Number of seconds ths should be remembered.
-	bool isCachedFlush;			  ///< Flush cache of records matching this name.
-	bool isValid;				  ///< False if problems were encountered decoding packet.
+	uint16_t dataLen;
+	void* rawData;
+	uint16_t rawDataLen;
+	ResourceType type;  ///< ResourceRecord Type.
+	uint16_t klass;		///< ResourceRecord Class: Normally the value 1 for Internet (“IN”)
+	uint32_t ttl;		///< ResourceRecord Time To Live: Number of seconds ths should be remembered.
+	bool isCachedFlush; ///< Flush cache of records matching this name.
+	bool isValid;		///< False if problems were encountered decoding packet.
 };
 
 class Finder : protected UdpConnection
@@ -72,7 +85,7 @@ public:
 		answerCallback = callback;
 	}
 
-	bool search(const String& hostname, QuestionType type = MDNS_TYPE_SRV);
+	bool search(const String& hostname, ResourceType type = ResourceType::SRV);
 
 	bool search(const Query& query);
 
@@ -96,11 +109,6 @@ private:
 	};
 
 	void initialise();
-	bool writeToBuffer(uint8_t value, char* p_name_buffer, uint16_t& p_name_buffer_pos, uint16_t name_buffer_len);
-	uint16_t parseText(char* buffer, uint16_t bufferLength, uint16_t dataLength, const uint8_t* packet, uint16_t packetPos);
-
-	uint16_t nameFromDnsPointer(char* name, uint16_t namePos, uint16_t nameLEngth, const uint8_t* packet, uint16_t packetPos,
-						   bool recurse = false);
 
 	AnswerDelegate answerCallback;
 	UdpOut out;
@@ -108,3 +116,5 @@ private:
 };
 
 } // namespace mDNS
+
+String toString(mDNS::ResourceType type);
