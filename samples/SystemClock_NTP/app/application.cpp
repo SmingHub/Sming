@@ -87,7 +87,9 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	//  ntpClient = new NtpClient("my_ntp_server", myrefreshinterval);
 
 	//	When using Delegate Callback Option 2
-	demo = new NtpClientDemo();
+	if(demo == nullptr) {
+		demo = new NtpClientDemo();
+	}
 }
 
 // Will be called when WiFi hardware and software initialization was finished
