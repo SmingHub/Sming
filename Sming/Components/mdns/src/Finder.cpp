@@ -1,4 +1,6 @@
 #include <Network/Mdns/Finder.h>
+#include <Data/HexString.h>
+#include <IpAddress.h>
 
 String toString(mDNS::ResourceType type)
 {
@@ -19,9 +21,19 @@ struct Packet {
 	uint8_t* data;
 	mutable uint16_t pos;
 
-	void* ptr() const
+	const void* ptr() const
 	{
 		return data + pos;
+	}
+
+	void* ptr()
+	{
+		return data + pos;
+	}
+
+	void skip(uint16_t len)
+	{
+		pos += len;
 	}
 
 	uint8_t peek8() const
@@ -44,10 +56,21 @@ struct Packet {
 		return (read16() << 16) | read16();
 	}
 
-	void write(const void* s, uint16_t len)
+	void read(void* buffer, uint16_t len) const
 	{
-		memcpy(&data[pos], s, len);
+		memcpy(buffer, ptr(), len);
 		pos += len;
+	}
+
+	String readString(uint16_t length) const
+	{
+		String s;
+		if(s.setLength(length)) {
+			read(s.begin(), length);
+		} else {
+			pos += length;
+		}
+		return s;
 	}
 
 	void write8(uint8_t value)
@@ -60,63 +83,46 @@ struct Packet {
 		write8(value >> 8);
 		write8(value & 0xff);
 	}
+
+	void write32(uint32_t value)
+	{
+		write16(value >> 16);
+		write16(value & 0xffff);
+	}
+
+	void write(const void* s, uint16_t len)
+	{
+		memcpy(ptr(), s, len);
+		pos += len;
+	}
 };
 
-bool writeToBuffer(uint8_t value, char* name, uint16_t& namePos, uint16_t nameLength)
+String nameFromDnsPointer(const Packet& pkt, const uint8_t* start)
 {
-	if(namePos + 1 < nameLength) {
-		name[namePos++] = value;
-		name[namePos] = '\0';
-		return true;
-	}
-
-	namePos++;
-	return false;
-}
-
-void parseText(Packet& pkt, char* buffer, uint16_t bufferLength, uint16_t dataLength)
-{
-	uint16_t bufferPos{0};
-	for(uint16_t i = 0; i < dataLength; i++) {
-		writeToBuffer(pkt.read8(), buffer, bufferPos, bufferLength);
-	}
-	buffer[bufferPos] = '\0';
-}
-
-void nameFromDnsPointer(const Packet& pkt, char* name, uint16_t namePos, uint16_t nameLength, bool recurse)
-{
-	if(recurse) {
-		// Since we are adding more to an already populated buffer,
-		// replace the trailing EOL with the FQDN seperator.
-		namePos--;
-		writeToBuffer('.', name, namePos, nameLength);
-	}
-
 	if(pkt.peek8() < 0xC0) {
 		// Since the first 2 bits are not set,
 		// this is the start of a name section.
 		// http://www.tcpipguide.com/free/t_DNSNameNotationandMessageCompressionTechnique.htm
 
 		const uint8_t word_len = pkt.read8();
-		for(uint8_t l = 0; l < word_len; l++) {
-			writeToBuffer(pkt.read8(), name, namePos, nameLength);
-		}
+		String s = pkt.readString(word_len);
 
-		writeToBuffer('\0', name, namePos, nameLength);
-
-		if(pkt.peek8() > 0) {
+		if(pkt.peek8() != 0) {
 			// Next word
-			nameFromDnsPointer(pkt, name, namePos, nameLength, true);
+			s += '.';
+			s += nameFromDnsPointer(pkt, start);
 		} else {
 			// End of string.
 			pkt.read8();
 		}
-	} else {
-		// Message Compression used. Next 2 bytes are a pointer to the actual name section.
-		uint16_t pointer = pkt.read16() & 0x3000;
-		Packet tmp{pkt.data, pointer};
-		nameFromDnsPointer(tmp, name, namePos, nameLength, false);
+
+		return s;
 	}
+
+	// Message Compression used. Next 2 bytes are a pointer to the actual name section.
+	uint16_t pointer = pkt.read16() & 0x3fff;
+	Packet tmp{const_cast<uint8_t*>(start + pointer), 0};
+	return nameFromDnsPointer(tmp, start);
 }
 
 } // namespace
@@ -272,8 +278,7 @@ void Finder::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 	for(uint16_t i = 0; i < (answersCount + nsCount + additionalCount); i++) {
 		Answer answer{};
 
-		nameFromDnsPointer(pkt, answer.name, 0, MAX_MDNS_NAME_LEN, false);
-
+		answer.name = nameFromDnsPointer(pkt, data);
 		answer.type = ResourceType(pkt.read16());
 
 		uint8_t rrclass_0 = pkt.read8();
@@ -300,59 +305,43 @@ void Finder::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 
 		switch(answer.type) {
 		case ResourceType::A: // Returns a 32-bit IPv4 address
-			answer.dataLen = sprintf(answer.data, "%u.%u.%u.%u", pkt.read8(), pkt.read8(), pkt.read8(), pkt.read8());
+			answer.a.addr = pkt.read32();
+			answer.data = IpAddress(answer.a.addr).toString();
 			break;
 
 		case ResourceType::PTR: // Pointer to a canonical name.
-			nameFromDnsPointer(pkt, answer.data, 0, MAX_MDNS_NAME_LEN, false);
-			answer.dataLen = strlen(answer.data);
+			answer.data = nameFromDnsPointer(pkt, data);
 			break;
 
 		case ResourceType::HINFO: // HINFO. host information
-			parseText(pkt, answer.data, MAX_MDNS_NAME_LEN, rdlength);
-			answer.dataLen = rdlength;
+			answer.data = pkt.readString(rdlength);
 			break;
 
 		case ResourceType::TXT: // Originally for arbitrary human-readable text in a DNS record.
 			// We only return the first MAX_MDNS_NAME_LEN bytes of this record type.
-			parseText(pkt, answer.data, MAX_MDNS_NAME_LEN, rdlength);
-			answer.dataLen = rdlength;
+			answer.data = pkt.readString(rdlength);
 			break;
 
 		case ResourceType::AAAA: { // Returns a 128-bit IPv6 address.
-			uint16_t data_pos{0};
-			for(uint16_t i = 0; i < rdlength; i++) {
-				auto c = pkt.read8();
-				if(data_pos < MAX_MDNS_NAME_LEN - 3) {
-					sprintf(answer.data + data_pos, "%02X:", c);
-				}
-				data_pos += 3;
-			}
-			answer.data[data_pos - 1] = '\0'; // Remove trailing ':'
-			answer.dataLen = data_pos;
+			answer.data = makeHexString(static_cast<const uint8_t*>(pkt.ptr()), rdlength, ':');
+			pkt.skip(rdlength);
 			break;
 		}
 
 		case ResourceType::SRV: { // Server Selection.
-			auto priority = pkt.read16();
-			auto weight = pkt.read16();
-			auto port = pkt.read16();
-			auto len = sprintf(answer.data, "p=%u;w=%u;port=%u;host=", priority, weight, port);
-			nameFromDnsPointer(pkt, answer.data, len, MAX_MDNS_NAME_LEN - len - 1, false);
-			answer.dataLen = strlen(answer.data);
+			answer.srv.priority = pkt.read16();
+			answer.srv.weight = pkt.read16();
+			answer.srv.port = pkt.read16();
+			answer.data = nameFromDnsPointer(pkt, data);
+			// char buffer[64];
+			// sprintf(buffer, "p=%u;w=%u;port=%u;host=", priority, weight, port);
+			// answer.data = buffer;
 			break;
 		}
 
 		default:
-			uint16_t data_pos{0};
-			for(uint16_t i = 0; i < rdlength; i++) {
-				auto c = pkt.read8();
-				if(data_pos < MAX_MDNS_NAME_LEN - 3) {
-					sprintf(answer.data + data_pos, "%02X ", c);
-				}
-				data_pos += 3;
-			}
-			answer.dataLen = strlen(answer.data);
+			answer.data = makeHexString(static_cast<const uint8_t*>(pkt.ptr()), rdlength, ' ');
+			pkt.skip(rdlength);
 		}
 
 		answer.isValid = true;

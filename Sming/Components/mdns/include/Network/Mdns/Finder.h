@@ -57,16 +57,26 @@ struct Query {
  * @brief A single mDNS Answer
  */
 struct Answer {
-	char name[MAX_MDNS_NAME_LEN]; ///< object, domain or zone name.
-	char data[MAX_MDNS_NAME_LEN]; ///< The data portion of the resource record.
-	uint16_t dataLen;
 	void* rawData;
 	uint16_t rawDataLen;
+	String name;		///< object, domain or zone name.
+	String data;		///< The decoded data portion of the resource record.
 	ResourceType type;  ///< ResourceRecord Type.
 	uint16_t klass;		///< ResourceRecord Class: Normally the value 1 for Internet (“IN”)
 	uint32_t ttl;		///< ResourceRecord Time To Live: Number of seconds ths should be remembered.
 	bool isCachedFlush; ///< Flush cache of records matching this name.
 	bool isValid;		///< False if problems were encountered decoding packet.
+	// Decoded fields dependent upon resource type
+	union {
+		struct {
+			uint32_t addr;
+		} a;
+		struct {
+			uint16_t priority;
+			uint16_t weight;
+			uint16_t port;
+		} srv;
+	};
 };
 
 class Finder : protected UdpConnection
