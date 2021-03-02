@@ -1,8 +1,16 @@
-/**
- * Since big portions of the code are copied from Finder.h and Finder.cpp are copied
- * from MrDunk's mDNS code these files are distributed under the same license as his project.
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * Finder.h
+ *
+ * Code originally based on MrDunk's mDNS code distributed under the MIT license.
  *
  * MIT license: https://github.com/mrdunk/esp8266_mdns/blob/master/LICENCE.txt
+ *
+ * However, code has been essentially rewritten so Sming LGPL v3 license applies.
  *
  * References:
  *
@@ -12,6 +20,7 @@
  * 	DNS record types https://en.wikipedia.org/wiki/List_of_DNS_record_types
  * 
  */
+
 #pragma once
 
 #include <Delegate.h>
