@@ -28,6 +28,9 @@ enum class Type : uint16_t {
 #undef XX
 };
 
+/**
+ * @brief Resource Record with no specific type
+ */
 class Record
 {
 public:
@@ -44,7 +47,9 @@ protected:
 	const Answer& answer;
 };
 
-// IP4 address
+/**
+ * @brief 'A' record containing IP4 address
+ */
 class A : public Record
 {
 public:
@@ -58,7 +63,9 @@ public:
 	}
 };
 
-// Pointer to a canonical name
+/**
+ * @brief 'PTR' record containing pointer to a canonical name
+ */
 class PTR : public Record
 {
 public:
@@ -72,14 +79,21 @@ public:
 	}
 };
 
-// Host information
+/**
+ * @brief 'HINFO' record containing Host information
+ */
 class HINFO : public Record
 {
 public:
 	using Record::Record;
 };
 
-// Originally for arbitrary human-readable text in a DNS record
+/**
+ * @brief 'TXT' record containing attribute list
+ * 
+ * Originally for arbitrary human-readable text in a DNS record.
+ * Content is a set of name=value pairs. Value can be binary.
+ */
 class TXT : public Record
 {
 public:
@@ -118,7 +132,9 @@ private:
 	mutable uint8_t mCount{0};
 };
 
-// A 128-bit IPv6 address
+/**
+ * @brief 'AAAA' record containing 128-bit IPv6 address
+ */
 class AAAA : public Record
 {
 public:
@@ -127,7 +143,9 @@ public:
 	String toString() const;
 };
 
-// Server Selection
+/**
+ * @brief 'SRV' Service Locator record
+ */
 class SRV : public Record
 {
 public:

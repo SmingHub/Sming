@@ -21,13 +21,7 @@ Finder::~Finder()
 
 bool Finder::search(const String& hostname, ResourceType type)
 {
-	Query query{};
-	query.name = hostname;
-	query.type = type;
-	query.klass = 1; // "INternet"
-	query.isUnicastResponse = false;
-	query.isValid = true;
-
+	Query query{hostname, type};
 	return search(query);
 }
 
@@ -78,7 +72,7 @@ bool Finder::search(const Query& query)
 	// 2 bytes for class
 	unsigned int qclass = 0;
 	if(query.isUnicastResponse) {
-		qclass = 0b1000000000000000;
+		qclass = 0x8000;
 	}
 	qclass += query.klass;
 	pkt.write16(qclass);
@@ -105,22 +99,14 @@ void Finder::UdpOut::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePor
 
 void Finder::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 {
-	// auto& hostfs = IFS::Host::getFileSystem();
-	// String filename = remoteIP.toString();
-	// filename += ".mdns";
-	// auto f = hostfs.open(filename, IFS::OpenFlag::Create | IFS::OpenFlag::Truncate | IFS::OpenFlag::Write);
-	// hostfs.write(f, buf->payload, buf->len);
-	// hostfs.close(f);
-	// debug_i("Saved '%s'", filename.c_str());
-	// return;
-
 	if(!answerCallback) {
 		return;
 	}
 
-	Response response(buf->payload, buf->len);
-	response.parse();
-	answerCallback(response);
+	Response response(remoteIP, remotePort, buf->payload, buf->len);
+	if(response.parse()) {
+		answerCallback(response);
+	}
 }
 
 } // namespace mDNS

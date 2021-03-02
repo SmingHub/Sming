@@ -20,6 +20,8 @@ namespace mDNS
 {
 namespace Resource
 {
+/* Record */
+
 uint8_t* Record::recordPtr() const
 {
 	return answer.getRecordPtr();
@@ -35,6 +37,8 @@ String Record::toString() const
 	return makeHexString(recordPtr(), recordSize(), ' ');
 }
 
+/* A */
+
 IpAddress A::getAddress() const
 {
 	// Keep bytes in network order
@@ -43,10 +47,14 @@ IpAddress A::getAddress() const
 	return addr;
 }
 
+/* PTR */
+
 Name PTR::getName() const
 {
 	return Name(answer.getResponse(), recordPtr());
 }
+
+/* TXT */
 
 String TXT::toString(const String& sep) const
 {
@@ -113,10 +121,14 @@ const char* TXT::get(uint8_t index, uint8_t& len) const
 	return nullptr;
 }
 
+/* AAAA */
+
 String AAAA::toString() const
 {
 	return makeHexString(recordPtr(), recordSize(), ':');
 }
+
+/* SRV */
 
 uint16_t SRV::getPriority() const
 {

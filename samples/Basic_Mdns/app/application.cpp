@@ -14,7 +14,11 @@ mDNS::Finder finder;
 void printResponse(mDNS::Response& response)
 {
 	Serial.println();
-	debug_i("RESPONSE!!");
+	Serial.print(F("RESPONSE from "));
+	Serial.print(response.getRemoteIp().toString());
+	Serial.print(':');
+	Serial.println(response.getRemotePort());
+
 	for(auto& answer : response) {
 		debug_i(">> name:  %s", String(answer.getName()).c_str());
 		debug_i("   data:  %s", answer.getRecordString().c_str());
@@ -45,19 +49,8 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 
 	finder.onAnswer(printResponse);
 
-	// bool ok = finder.search("_googlecast._tcp.local");
-	mDNS::Query query{};
-	query.name = F("_googlecast._tcp.local");
-	query.type = mDNS::ResourceType::PTR;
-	query.klass = 1; // "INternet"
-	query.isUnicastResponse = false;
-	query.isValid = true;
-	bool ok = finder.search(query);
-
+	bool ok = finder.search(F("_googlecast._tcp.local"));
 	debug_i("search(): %s", ok ? "OK" : "FAIL");
-	// finder.search("googlecast._tcp.local");
-	// finder.search("_googlecast");
-	// finder.search("googlecast");
 }
 
 void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
@@ -74,7 +67,7 @@ void test()
 
 	Serial.println(_F("** Parsing test packet **"));
 	String data(testFile);
-	mDNS::Response response(data.begin(), data.length());
+	mDNS::Response response(0U, 0, data.begin(), data.length());
 	response.parse();
 	printResponse(response);
 	Serial.println(_F("** End of test packet **"));

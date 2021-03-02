@@ -32,6 +32,9 @@ public:
 		return Name(response, namePtr);
 	}
 
+	/**
+	 * @brief ResourceRecord type
+	 */
 	Resource::Type getType() const;
 
 	/**
@@ -49,6 +52,9 @@ public:
 	 */
 	uint32_t getTtl() const;
 
+	/**
+	 * @brief Get content of record as string
+	 */
 	String getRecordString() const;
 
 	Response& getResponse() const
@@ -56,11 +62,17 @@ public:
 		return response;
 	}
 
+	/**
+	 * @brief Get pointer to Resource Record data
+	 */
 	uint8_t* getRecordPtr() const
 	{
 		return namePtr + nameLen + 10;
 	}
 
+	/**
+	 * @brief Get size of Resource Record
+	 */
 	uint16_t getRecordSize() const
 	{
 		return recordSize;
