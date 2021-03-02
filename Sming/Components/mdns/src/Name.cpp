@@ -43,13 +43,16 @@ uint16_t Name::getDataLength() const
 			const uint8_t word_len = pkt.read8();
 			pkt.skip(word_len);
 			if(pkt.peek8() == 0) {
-				return pkt.data - data;
+				pkt.read8();
+				break;
 			}
 		} else {
 			// Pointer at end
-			return (pkt.data - data) + sizeof(uint16_t);
+			pkt.read16();
+			break;
 		}
 	}
+	return pkt.pos;
 }
 
 } // namespace mDNS

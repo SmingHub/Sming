@@ -1,6 +1,8 @@
 #include <SmingCore.h>
 #include <Network/Mdns/Finder.h>
 
+IMPORT_FSTR(testFile, PROJECT_DIR "/resource/192.168.1.100.mdns")
+
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
 #define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
@@ -9,25 +11,28 @@
 
 mDNS::Finder finder;
 
+void printResponse(mDNS::Response& response)
+{
+	Serial.println();
+	debug_i("RESPONSE!!");
+	for(auto& answer : response) {
+		debug_i(">> name:  %s", String(answer.getName()).c_str());
+		debug_i("   type:  %s (0x%04X)", toString(answer.type).c_str(), unsigned(answer.type));
+		debug_i("   class: 0x%04x", answer.klass);
+		debug_i("   ttl:   %u", answer.ttl);
+		debug_i("   flsh?: %u", answer.isCachedFlush);
+		debug_i("   vald?: %u", answer.isValid);
+		m_printHex("   data", answer.data.c_str(), answer.data.length());
+		m_printHex("   raw ", answer.rawData, answer.rawDataLen);
+	}
+}
+
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	Serial.print(F("Connected. Got IP: "));
 	Serial.println(ip);
 
-	finder.onAnswer([](mDNS::Response& response) {
-		Serial.println();
-		debug_i("RESPONSE!!");
-		for(auto& answer : response) {
-			debug_i(">> name:  %s", String(answer.getName()).c_str());
-			debug_i("   type:  %s (0x%04X)", toString(answer.type).c_str(), unsigned(answer.type));
-			debug_i("   class: 0x%04x", answer.klass);
-			debug_i("   ttl:   %u", answer.ttl);
-			debug_i("   flsh?: %u", answer.isCachedFlush);
-			debug_i("   vald?: %u", answer.isValid);
-			m_printHex("   data", answer.data.c_str(), answer.data.length());
-			m_printHex("   raw ", answer.rawData, answer.rawDataLen);
-		}
-	});
+	finder.onAnswer(printResponse);
 
 	// bool ok = finder.search("_googlecast._tcp.local");
 	mDNS::Query query{};
@@ -49,10 +54,20 @@ void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reas
 	Serial.println(F("I'm NOT CONNECTED!"));
 }
 
+void test()
+{
+	String data(testFile);
+	mDNS::Response response(data.begin(), data.length());
+	response.parse();
+	printResponse(response);
+}
+
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true); // Allow debug print to serial
+
+	test();
 
 	// Setup the WIFI connection
 	WifiStation.enable(true);

@@ -11,7 +11,7 @@ bool Answer::parse(Packet& pkt)
 {
 	auto size = response.getSize();
 
-	namePtr = pkt.data;
+	namePtr = pkt.ptr();
 	auto namelen = getName().getDataLength();
 	pkt.skip(namelen);
 
@@ -33,6 +33,7 @@ bool Answer::parse(Packet& pkt)
 
 	uint16_t rdlength = pkt.read16();
 
+	auto dataPos = pkt.pos;
 	rawData = pkt.ptr();
 	rawDataLen = rdlength;
 
@@ -43,7 +44,7 @@ bool Answer::parse(Packet& pkt)
 		break;
 
 	case ResourceType::PTR: // Pointer to a canonical name.
-		data = Name(response, pkt.data);
+		data = Name(response, pkt.ptr());
 		break;
 
 	case ResourceType::HINFO: // HINFO. host information
@@ -64,7 +65,7 @@ bool Answer::parse(Packet& pkt)
 		srv.priority = pkt.read16();
 		srv.weight = pkt.read16();
 		srv.port = pkt.read16();
-		data = Name(response, pkt.data);
+		data = Name(response, pkt.ptr());
 		// char buffer[64];
 		// sprintf(buffer, "p=%u;w=%u;port=%u;host=", priority, weight, port);
 		// answer->data = buffer;
@@ -75,7 +76,7 @@ bool Answer::parse(Packet& pkt)
 		data = makeHexString(static_cast<const uint8_t*>(pkt.ptr()), rdlength, ' ');
 	}
 
-	pkt.data = rawData + rawDataLen;
+	pkt.pos = dataPos + rawDataLen;
 	isValid = true;
 	return true;
 }
