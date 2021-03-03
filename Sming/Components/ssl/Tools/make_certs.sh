@@ -177,6 +177,6 @@ cat ca_x509.pem >> x509_device.pem
 
 # set default key/cert for use in the server
 xxd -i x509_1024.cer | sed -e \
-        "s/axTLS_x509_1024_cer/default_certificate/" > $SSL_INCLUDE_DIR/cert.h
+        "s/x509_1024_cer/default_certificate/" > $SSL_INCLUDE_DIR/cert.h
 xxd -i key_1024 | sed -e \
-        "s/axTLS_key_1024/default_private_key/" > $SSL_INCLUDE_DIR/private_key.h
+        "s/key_1024/default_private_key/" > $SSL_INCLUDE_DIR/private_key.h
