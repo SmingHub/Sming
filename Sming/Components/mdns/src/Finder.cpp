@@ -29,65 +29,30 @@ Finder::~Finder()
 	}
 }
 
-bool Finder::search(const String& hostname, ResourceType type)
+bool Finder::search(const String& name, ResourceType type)
 {
-	Query query{hostname, type};
+	Query query{name, type};
 	return search(query);
 }
 
 bool Finder::search(const Query& query)
 {
-	if(query.name.length() > Name::maxLength - 1) {
+	Query::List list;
+	list.add(&query);
+	return search(list);
+}
+
+bool Finder::search(const Query::List& queries)
+{
+	uint8_t buffer[MAX_PACKET_SIZE];
+	auto len = serialize(queries, buffer, sizeof(buffer));
+	if(len == 0) {
 		return false;
 	}
 
-	uint8_t buffer[MAX_PACKET_SIZE];
-	Packet pkt{buffer};
-
-	// The first two bytes are the transaction id and they are not used in MDNS
-	pkt.write16(0);
-
-	// 2 bytes for Flags
-	pkt.write8(0); // 0b00000000 for Query, 0b10000000 for Answer.
-	pkt.write8(0);
-
-	// 2 bytes for number of questions
-	pkt.write16(1);
-
-	// 2 bytes for number of Answer RRs
-	pkt.write16(0);
-
-	// 2 bytes for Authority PRs
-	pkt.write16(0);
-
-	// 2 bytes for Additional PRs
-	pkt.write16(0);
-
-	size_t pos{0};
-	auto& name = query.name;
-	auto namelen = name.length();
-	do {
-		int sep = name.indexOf('.', pos);
-		auto wordLength = (sep >= 0) ? (sep - pos) : (namelen - pos);
-		pkt.write8(wordLength);
-		pkt.write(name.c_str() + pos, wordLength);
-		pos = sep + 1;
-	} while(pos > 0);
-	pkt.write8(0); // End of name.
-
-	// 2 bytes for type
-	pkt.write16(uint16_t(query.type));
-
-	// 2 bytes for class
-	uint16_t qclass = query.klass;
-	if(query.isUnicastResponse) {
-		qclass |= 0x8000;
-	}
-	pkt.write16(qclass);
-
 	initialise();
 	out.listen(0);
-	return out.sendTo(IpAddress(MDNS_IP), MDNS_TARGET_PORT, reinterpret_cast<const char*>(pkt.data), pkt.pos);
+	return out.sendTo(IpAddress(MDNS_IP), MDNS_TARGET_PORT, reinterpret_cast<const char*>(buffer), len);
 }
 
 bool Finder::initialise()

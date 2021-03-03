@@ -83,6 +83,8 @@ public:
 	 */
 	bool search(const Query& query);
 
+	bool search(const Query::List& queries);
+
 protected:
 	void onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort) override;
 
