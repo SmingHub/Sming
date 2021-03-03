@@ -12,6 +12,8 @@ IMPORT_FSTR(testFile, PROJECT_DIR "/resource/192.168.1.100.mdns")
 
 mDNS::Finder finder;
 
+DEFINE_FSTR_LOCAL(fstrSearchInstance, "_googlecast")
+
 #ifdef ARCH_HOST
 void savePacket(IpAddress remoteIP, uint16_t remotePort, const uint8_t* data, size_t length)
 {
@@ -105,19 +107,50 @@ void printResponse(mDNS::Response& response)
 	for(auto& answer : response.answers) {
 		printAnswer(answer);
 	}
+}
 
-	auto answer = response[mDNS::ResourceType::TXT];
+void handleResponse(mDNS::Response& response)
+{
+	printResponse(response);
+
+	// Check if we're interested in this reponse
+	if(!response.isAnswer()) {
+		return;
+	}
+	auto answer = response[mDNS::ResourceType::PTR];
+	if(answer == nullptr) {
+		return;
+	}
+	if(answer->getName().getInstance() != fstrSearchInstance) {
+		return;
+	}
+
+	// Extract our required information from the response
+	struct {
+		String manufacturerDevice;
+		String friendlyName;
+		IpAddress ipaddr;
+	} info;
+
+	answer = response[mDNS::ResourceType::TXT];
 	if(answer != nullptr) {
 		mDNS::Resource::TXT txt(*answer);
-		auto s = txt["md"];
-		debug_i("md = '%s'", s.c_str());
+		info.manufacturerDevice = txt["md"];
+		info.friendlyName = txt["fn"];
 	}
 
 	answer = response[mDNS::ResourceType::A];
 	if(answer != nullptr) {
 		mDNS::Resource::A a(*answer);
-		debug_i("addr = %s", a.toString().c_str());
+		info.ipaddr = a.getAddress();
 	}
+
+	Serial.print(F("Manufacturer Device = '"));
+	Serial.print(info.manufacturerDevice);
+	Serial.print(F("', Friendly Name = '"));
+	Serial.print(info.friendlyName);
+	Serial.print(F("', IP Address = "));
+	Serial.println(info.ipaddr);
 }
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
@@ -125,14 +158,14 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	Serial.print(F("Connected. Got IP: "));
 	Serial.println(ip);
 
-	finder.onAnswer(printResponse);
+	finder.onAnswer(handleResponse);
 #ifdef ARCH_HOST
 	finder.onPacket(savePacket);
 #endif
 
 	auto timer = new Timer;
 	timer->initializeMs<10000>(InterruptCallback([]() {
-		bool ok = finder.search(F("_googlecast._tcp.local"));
+		bool ok = finder.search(String(fstrSearchInstance) + F("._tcp.local"));
 		debug_i("search(): %s", ok ? "OK" : "FAIL");
 	}));
 	timer->start();
