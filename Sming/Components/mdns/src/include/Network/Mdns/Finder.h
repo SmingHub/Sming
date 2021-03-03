@@ -95,7 +95,7 @@ private:
 		Finder& finder;
 	};
 
-	void initialise();
+	bool initialise();
 
 	AnswerDelegate answerCallback;
 	UdpOut out;

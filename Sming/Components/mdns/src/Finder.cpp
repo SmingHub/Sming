@@ -11,7 +11,7 @@
 #include "include/Network/Mdns/Finder.h"
 #include "include/Network/Mdns/Response.h"
 #include "Packet.h"
-#include <IFS/FileSystem.h>
+#include <Platform/Station.h>
 
 #define MDNS_IP 224, 0, 0, 251
 #define MDNS_TARGET_PORT 5353
@@ -73,33 +73,46 @@ bool Finder::search(const Query& query)
 		pkt.write(name.c_str() + pos, wordLength);
 		pos = sep + 1;
 	} while(pos > 0);
-
-	pkt.write8('\0'); // End of name.
+	pkt.write8(0); // End of name.
 
 	// 2 bytes for type
 	pkt.write16(uint16_t(query.type));
 
 	// 2 bytes for class
-	unsigned int qclass = 0;
+	uint16_t qclass = query.klass;
 	if(query.isUnicastResponse) {
-		qclass = 0x8000;
+		qclass |= 0x8000;
 	}
-	qclass += query.klass;
 	pkt.write16(qclass);
 
 	initialise();
-	listen(0);
-	return sendTo(IpAddress(MDNS_IP), MDNS_TARGET_PORT, reinterpret_cast<const char*>(pkt.data), pkt.pos);
+	out.listen(0);
+	return out.sendTo(IpAddress(MDNS_IP), MDNS_TARGET_PORT, reinterpret_cast<const char*>(pkt.data), pkt.pos);
 }
 
-void Finder::initialise()
+bool Finder::initialise()
 {
-	if(!initialised) {
-		joinMulticastGroup(IpAddress(MDNS_IP));
-		listen(MDNS_SOURCE_PORT);
-		setMulticastTtl(MDNS_TTL);
-		initialised = true;
+	if(initialised) {
+		return true;
 	}
+
+	auto localIp = WifiStation.getIP();
+
+	if(!joinMulticastGroup(localIp, IpAddress(MDNS_IP))) {
+		debug_w("[mDNS] joinMulticastGroup() failed");
+		return false;
+	}
+
+	if(!listen(MDNS_SOURCE_PORT)) {
+		debug_e("[mDNS] listen failed");
+		return false;
+	}
+
+	setMulticast(localIp);
+	setMulticastTtl(MDNS_TTL);
+
+	initialised = true;
+	return true;
 }
 
 void Finder::UdpOut::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)

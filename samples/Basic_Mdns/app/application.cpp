@@ -49,8 +49,12 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 
 	finder.onAnswer(printResponse);
 
-	bool ok = finder.search(F("_googlecast._tcp.local"));
-	debug_i("search(): %s", ok ? "OK" : "FAIL");
+	auto timer = new Timer;
+	timer->initializeMs<10000>(InterruptCallback([]() {
+		bool ok = finder.search(F("_googlecast._tcp.local"));
+		debug_i("search(): %s", ok ? "OK" : "FAIL");
+	}));
+	timer->start();
 }
 
 void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
