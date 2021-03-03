@@ -1,1 +1,0 @@
-C:\Espressif\xtensa-lx106-elf\bin\xtensa-lx106-elf-objdump -S .\out\build\app.out > .\out\app.asm
