@@ -160,14 +160,16 @@ void init()
 
 	Serial.print("NeoPixel demo .. start");
 
-	// Wifi could be used eg. for switching Neopixel from internet
-	// could be also dissabled if no needed
+#ifndef DISABLE_WIFI
+	// Wifi could be used eg. for switching Neopixel from internet.
+	// If not needed compile this sample with `make DISABLE_WIFI=1`
 
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiStation.enable(true);
 	WifiAccessPoint.enable(false);
 	WifiEvents.onStationDisconnect(connect_Fail);
 	WifiEvents.onStationGotIP(got_IP);
+#endif
 
 	StripDemoType = 0; //demo index to be displayed
 
