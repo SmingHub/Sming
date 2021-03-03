@@ -19,24 +19,53 @@ struct Packet;
 
 /**
  * @brief Encoded DNS name
+ * 
+ * mDNS-SD names are represented as instance.service.domain
  */
 class Name
 {
 public:
+	// The mDNS spec says this should never be more than 256 (including trailing '\0').
+	static constexpr size_t maxLength{256};
+
 	Name(Response& response, uint8_t* data) : response(response), data(data)
 	{
 	}
 
-	uint16_t getDataLength() const;
+	/**
+	 * @brief Get number of bytes occupied by the name
+	 * Not the same as the string length because content is encoded.
+	 */
+	uint16_t getDataLength() const
+	{
+		return parse().dataLength;
+	}
 
-	String toString() const;
+	String toString() const
+	{
+		return getString(0, 255);
+	}
 
 	operator String() const
 	{
 		return toString();
 	}
 
+	String getDomain() const;
+	String getService() const;
+	String getInstance() const;
+
 private:
+	struct Info {
+		uint16_t dataLength;
+		uint16_t textLength;
+		uint8_t components;
+	};
+
+	Info parse() const;
+	uint16_t read(char* buffer, uint16_t bufSize, uint8_t firstElement, uint8_t count) const;
+	String getString(uint8_t firstElement, uint8_t count) const;
+
 	Response& response;
 	uint8_t* data;
 };

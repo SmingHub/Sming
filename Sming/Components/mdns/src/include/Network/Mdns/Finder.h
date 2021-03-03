@@ -30,9 +30,6 @@
 
 namespace mDNS
 {
-// The mDNS spec says this should never be more than 256 (including trailing '\0').
-static constexpr size_t MAX_MDNS_NAME_LEN{256};
-
 /**
  * @brief Locates mDNS services by issuing queries
  */

@@ -37,7 +37,7 @@ bool Finder::search(const String& hostname, ResourceType type)
 
 bool Finder::search(const Query& query)
 {
-	if(query.name.length() > MAX_MDNS_NAME_LEN - 1) {
+	if(query.name.length() > Name::maxLength - 1) {
 		return false;
 	}
 

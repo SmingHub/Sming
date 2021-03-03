@@ -14,54 +14,91 @@
 
 namespace mDNS
 {
-String Name::toString() const
+Name::Info Name::parse() const
 {
-	String s;
+	Info info{};
 	Packet pkt{data};
-
 	while(true) {
 		if(pkt.peek8() < 0xC0) {
-			// Since the first 2 bits are not set,
-			// this is the start of a name section.
-			// http://www.tcpipguide.com/free/t_DNSNameNotationandMessageCompressionTechnique.htm
-
-			const uint8_t word_len = pkt.read8();
-			s += pkt.readString(word_len);
-
+			++info.components;
+			auto wordLen = pkt.read8();
+			info.textLength += wordLen;
+			pkt.skip(wordLen);
 			if(pkt.peek8() == 0) {
-				return s; // End of string
+				if(info.dataLength == 0) {
+					info.dataLength = pkt.pos + 1;
+				}
+				return info;
 			}
-
-			// Next word
-			s += '.';
-			continue;
+			++info.textLength; // separator
+		} else {
+			uint16_t pointer = pkt.read16() & 0x3fff;
+			if(info.dataLength == 0) {
+				info.dataLength = pkt.pos;
+			}
+			pkt = Packet{response.resolvePointer(pointer)};
 		}
-
-		// Message Compression used. Next 2 bytes are a pointer to the actual name section.
-		uint16_t pointer = pkt.read16() & 0x3fff;
-		pkt = Packet{response.resolvePointer(pointer)};
 	}
 }
 
-uint16_t Name::getDataLength() const
+uint16_t Name::read(char* buffer, uint16_t bufSize, uint8_t firstElement, uint8_t count) const
 {
+	uint16_t pos{0};
 	Packet pkt{data};
-
-	while(true) {
+	while(count != 0) {
 		if(pkt.peek8() < 0xC0) {
-			const uint8_t word_len = pkt.read8();
-			pkt.skip(word_len);
-			if(pkt.peek8() == 0) {
-				pkt.read8();
+			auto wordLen = pkt.read8();
+			if(firstElement == 0) {
+				--count;
+				if(pos + wordLen > bufSize) {
+					break;
+				}
+				pkt.read(&buffer[pos], wordLen);
+				pos += wordLen;
+			} else {
+				--firstElement;
+				pkt.skip(wordLen);
+			}
+			if(count == 0 || pkt.peek8() == 0) {
 				break;
 			}
+			if(pos >= bufSize) {
+				break;
+			}
+			if(pos != 0) {
+				buffer[pos++] = '.';
+			}
 		} else {
-			// Pointer at end
-			pkt.read16();
-			break;
+			uint16_t pointer = pkt.read16() & 0x3fff;
+			pkt = Packet{response.resolvePointer(pointer)};
 		}
 	}
-	return pkt.pos;
+	return pos;
+}
+
+String Name::getString(uint8_t firstElement, uint8_t count) const
+{
+	char buffer[maxLength];
+	auto len = read(buffer, maxLength, firstElement, count);
+	return String(buffer, len);
+}
+
+String Name::getDomain() const
+{
+	auto info = parse();
+	return getString(info.components - 1, 1);
+}
+
+String Name::getService() const
+{
+	auto info = parse();
+	return getString(info.components - 2, 1);
+}
+
+String Name::getInstance() const
+{
+	auto info = parse();
+	return getString(0, info.components - 2);
 }
 
 } // namespace mDNS
