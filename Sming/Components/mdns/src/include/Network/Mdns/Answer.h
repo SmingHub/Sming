@@ -86,10 +86,12 @@ public:
 		return response;
 	}
 
+	uint8_t* getRecord() const;
+
 	/**
 	 * @brief Get pointer to Resource Record data
 	 */
-	uint8_t* getRecordPtr() const
+	uint16_t getRecordPtr() const
 	{
 		return namePtr + nameLen + 10;
 	}
@@ -104,7 +106,7 @@ public:
 
 private:
 	Response& response;
-	uint8_t* namePtr;
+	uint16_t namePtr;
 	uint16_t recordSize;
 	uint16_t nameLen;
 	Kind kind;

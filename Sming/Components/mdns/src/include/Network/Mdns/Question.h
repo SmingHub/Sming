@@ -64,7 +64,7 @@ public:
 
 private:
 	Response& response;
-	uint8_t* namePtr;
+	uint16_t namePtr;
 	uint16_t nameLen;
 };
 

@@ -17,7 +17,7 @@ namespace mDNS
 Name::Info Name::parse() const
 {
 	Info info{};
-	Packet pkt{data};
+	Packet pkt{response.resolvePointer(ptr)};
 	while(true) {
 		if(pkt.peek8() < 0xC0) {
 			++info.components;
@@ -44,7 +44,7 @@ Name::Info Name::parse() const
 uint16_t Name::read(char* buffer, uint16_t bufSize, uint8_t firstElement, uint8_t count) const
 {
 	uint16_t pos{0};
-	Packet pkt{data};
+	Packet pkt{response.resolvePointer(ptr)};
 	while(count != 0) {
 		if(pkt.peek8() < 0xC0) {
 			auto wordLen = pkt.read8();

@@ -28,7 +28,7 @@ public:
 	// The mDNS spec says this should never be more than 256 (including trailing '\0').
 	static constexpr size_t maxLength{256};
 
-	Name(Response& response, uint8_t* data) : response(response), data(data)
+	Name(Response& response, uint16_t ptr) : response(response), ptr(ptr)
 	{
 	}
 
@@ -67,7 +67,7 @@ private:
 	String getString(uint8_t firstElement, uint8_t count) const;
 
 	Response& response;
-	uint8_t* data;
+	uint16_t ptr;
 };
 
 } // namespace mDNS

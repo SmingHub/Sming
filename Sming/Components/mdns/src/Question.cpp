@@ -17,19 +17,19 @@ namespace mDNS
 {
 uint16_t Question::getClass() const
 {
-	auto qclass = Packet{namePtr, uint16_t(nameLen + 2)}.read16();
+	auto qclass = Packet{response.resolvePointer(namePtr + nameLen + 2)}.read16();
 	return qclass & 0x7fff;
 }
 
 bool Question::isUnicastResponse() const
 {
-	auto qclass = Packet{namePtr, uint16_t(nameLen + 2)}.read16();
+	auto qclass = Packet{response.resolvePointer(namePtr + nameLen + 2)}.read16();
 	return qclass & 0x8000;
 }
 
 Resource::Type Question::getType() const
 {
-	auto type = Packet{namePtr, nameLen}.read16();
+	auto type = Packet{response.resolvePointer(namePtr + nameLen)}.read16();
 	return Resource::Type(type);
 }
 
@@ -37,7 +37,7 @@ bool Question::parse(Packet& pkt)
 {
 	auto size = response.getSize();
 
-	namePtr = pkt.ptr();
+	namePtr = pkt.pos;
 	nameLen = getName().getDataLength();
 	pkt.skip(nameLen + 4);
 

@@ -32,19 +32,19 @@ namespace Resource
 {
 /* Record */
 
-uint8_t* Record::recordPtr() const
+uint8_t* Record::getRecord() const
 {
-	return answer.getRecordPtr();
+	return answer.getRecord();
 }
 
-uint16_t Record::recordSize() const
+uint16_t Record::getRecordSize() const
 {
 	return answer.getRecordSize();
 }
 
 String Record::toString() const
 {
-	return makeHexString(recordPtr(), recordSize(), ' ');
+	return makeHexString(getRecord(), getRecordSize(), ' ');
 }
 
 /* A */
@@ -53,7 +53,7 @@ IpAddress A::getAddress() const
 {
 	// Keep bytes in network order
 	uint32_t addr;
-	memcpy(&addr, recordPtr(), sizeof(addr));
+	memcpy(&addr, getRecord(), sizeof(addr));
 	return addr;
 }
 
@@ -61,7 +61,7 @@ IpAddress A::getAddress() const
 
 Name PTR::getName() const
 {
-	return Name(answer.getResponse(), recordPtr());
+	return Name(answer.getResponse(), answer.getRecordPtr());
 }
 
 /* TXT */
@@ -69,8 +69,8 @@ Name PTR::getName() const
 String TXT::toString(const String& sep) const
 {
 	String s;
-	Packet pkt{recordPtr()};
-	auto size = recordSize();
+	Packet pkt{getRecord()};
+	auto size = getRecordSize();
 	while(pkt.pos < size) {
 		auto len = pkt.read8();
 		if(s) {
@@ -84,8 +84,8 @@ String TXT::toString(const String& sep) const
 uint8_t TXT::count() const
 {
 	if(mCount == 0) {
-		Packet pkt{recordPtr()};
-		auto size = recordSize();
+		Packet pkt{getRecord()};
+		auto size = getRecordSize();
 		while(pkt.pos < size) {
 			auto len = pkt.read8();
 			pkt.skip(len);
@@ -104,8 +104,8 @@ String TXT::operator[](uint8_t index) const
 
 String TXT::getValue(const char* name, uint16_t namelen) const
 {
-	Packet pkt{recordPtr()};
-	auto size = recordSize();
+	Packet pkt{getRecord()};
+	auto size = getRecordSize();
 	while(pkt.pos < size) {
 		auto len = pkt.read8();
 		auto entry = reinterpret_cast<const char*>(pkt.ptr());
@@ -119,8 +119,8 @@ String TXT::getValue(const char* name, uint16_t namelen) const
 
 const char* TXT::get(uint8_t index, uint8_t& len) const
 {
-	Packet pkt{recordPtr()};
-	auto size = recordSize();
+	Packet pkt{getRecord()};
+	auto size = getRecordSize();
 	for(; pkt.pos < size; --index) {
 		len = pkt.read8();
 		if(index == 0) {
@@ -135,29 +135,29 @@ const char* TXT::get(uint8_t index, uint8_t& len) const
 
 String AAAA::toString() const
 {
-	return makeHexString(recordPtr(), recordSize(), ':');
+	return makeHexString(getRecord(), getRecordSize(), ':');
 }
 
 /* SRV */
 
 uint16_t SRV::getPriority() const
 {
-	return Packet{recordPtr()}.read16();
+	return Packet{getRecord()}.read16();
 }
 
 uint16_t SRV::getWeight() const
 {
-	return Packet{recordPtr(), 2}.read16();
+	return Packet{getRecord(), 2}.read16();
 }
 
 uint16_t SRV::getPort() const
 {
-	return Packet{recordPtr(), 4}.read16();
+	return Packet{getRecord(), 4}.read16();
 }
 
 Name SRV::getHost() const
 {
-	return Name(answer.getResponse(), recordPtr() + 6);
+	return Name(answer.getResponse(), answer.getRecordPtr() + 6);
 }
 
 String SRV::toString(const String& sep) const

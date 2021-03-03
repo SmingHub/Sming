@@ -51,8 +51,8 @@ public:
 	String toString() const;
 
 protected:
-	uint8_t* recordPtr() const;
-	uint16_t recordSize() const;
+	uint8_t* getRecord() const;
+	uint16_t getRecordSize() const;
 
 	const Answer& answer;
 };

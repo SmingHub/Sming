@@ -33,31 +33,31 @@ namespace mDNS
 {
 ResourceType Answer::getType() const
 {
-	return ResourceType(Packet{namePtr, nameLen}.read16());
+	return ResourceType(Packet{response.resolvePointer(namePtr + nameLen)}.read16());
 }
 
 uint16_t Answer::getClass() const
 {
-	auto rrclass = Packet{namePtr, uint16_t(nameLen + 2)}.read16();
+	auto rrclass = Packet{response.resolvePointer(namePtr + nameLen + 2)}.read16();
 	return rrclass & 0x7fff;
 }
 
 bool Answer::isCachedFlush() const
 {
-	auto rrclass = Packet{namePtr, uint16_t(nameLen + 2)}.read16();
+	auto rrclass = Packet{response.resolvePointer(namePtr + nameLen + 2)}.read16();
 	return rrclass & 0x8000;
 }
 
 uint32_t Answer::getTtl() const
 {
-	return Packet{namePtr, uint16_t(nameLen + 4)}.read32();
+	return Packet{response.resolvePointer(namePtr + nameLen + 4)}.read32();
 }
 
 bool Answer::parse(Packet& pkt)
 {
 	auto size = response.getSize();
 
-	namePtr = pkt.ptr();
+	namePtr = pkt.pos;
 	nameLen = getName().getDataLength();
 	pkt.skip(nameLen + 8);
 
@@ -70,6 +70,11 @@ bool Answer::parse(Packet& pkt)
 	recordSize = pkt.read16();
 	pkt.pos += recordSize;
 	return true;
+}
+
+uint8_t* Answer::getRecord() const
+{
+	return response.resolvePointer(getRecordPtr());
 }
 
 String Answer::getRecordString() const

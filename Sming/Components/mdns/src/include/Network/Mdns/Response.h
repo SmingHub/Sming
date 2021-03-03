@@ -85,6 +85,8 @@ public:
 	Answer::OwnedList answers;
 
 private:
+	friend class Question;
+	friend class Answer;
 	friend class Name;
 	uint8_t* resolvePointer(uint16_t pointer)
 	{
