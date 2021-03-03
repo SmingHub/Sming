@@ -5,18 +5,19 @@
 #define GPIO_LED 2
 
 Timer timerDFPlayer;
-DFRobotDFPlayerMini player;
-void nextSong()
-{
-	player.next();
-}
-
 Timer timerLedBlink;
+DFRobotDFPlayerMini player;
 bool ledState = true;
+
 void blink()
 {
 	digitalWrite(GPIO_LED, ledState);
 	ledState = !ledState;
+}
+
+void nextSong()
+{
+	player.next();
 }
 
 void init()
