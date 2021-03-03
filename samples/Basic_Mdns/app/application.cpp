@@ -30,48 +30,60 @@ void savePacket(IpAddress remoteIP, uint16_t remotePort, const uint8_t* data, si
 }
 #endif
 
+void print(const String& tag, const String& value)
+{
+	String s = "   ";
+	s += tag;
+	s += ':';
+	while(s.length() < 12) {
+		s += ' ';
+	}
+	Serial.print(s);
+	Serial.print(' ');
+	Serial.println(value);
+}
+
+void printHex(const String& tag, uint16_t value)
+{
+	char buf[10];
+	m_snprintf(buf, sizeof(buf), "0x%04x", value);
+	print(tag, buf);
+}
+
+void printBool(const String& tag, bool value)
+{
+	print(tag, value ? "Y" : "N");
+}
+
 void printQuestion(mDNS::Question& question)
 {
 	Serial.println(F(">> Question"));
-
-	auto name = question.getName();
-	Serial.print(F("  name: "));
-	Serial.println(name);
-
-	Serial.print(F("  instance: "));
-	Serial.println(name.getInstance());
-	Serial.print(F("  service:  "));
-	Serial.println(name.getService());
-	Serial.print(F("  domain:   "));
-	Serial.println(name.getDomain());
-
-	Serial.print(F("  type:  "));
+	print(F("name"), question.getName());
 	auto type = question.getType();
-	Serial.print(toString(type));
-	Serial.print(F(" (0x"));
-	Serial.print(unsigned(type), HEX);
-	Serial.println(")");
-
-	Serial.print(F("  class: 0x"));
-	Serial.println(question.getClass(), HEX);
-	Serial.print(F("  ucast: "));
-	Serial.println(question.isUnicastResponse());
+	print(F("type"), toString(type));
+	printHex(F("type"), uint16_t(type));
+	printHex(F("class"), question.getClass());
+	printBool(F("unicast"), question.isUnicastResponse());
 }
 
 void printAnswer(mDNS::Answer& answer)
 {
-	debug_i(">> name:  %s", String(answer.getName()).c_str());
-	debug_i("   data:  %s", answer.getRecordString().c_str());
-	debug_i("   type:  %s (0x%04X)", toString(answer.getType()).c_str(), unsigned(answer.getType()));
-	debug_i("   class: 0x%04x", answer.getClass());
-	debug_i("   ttl:   %u", answer.getTtl());
-	debug_i("   flush: %u", answer.isCachedFlush());
+	Serial.print(">> ");
+	Serial.println(toString(answer.getKind()));
+	print(F("name"), answer.getName());
+	print(F("data"), answer.getRecordString());
+	auto type = answer.getType();
+	print(F("type"), toString(type));
+	printHex(F("type"), uint16_t(type));
+	print(F("ttl"), String(answer.getTtl()));
+	printHex(F("class"), answer.getClass());
+	printBool(F("flush"), answer.isCachedFlush());
 }
 
 void printResponse(mDNS::Response& response)
 {
 	Serial.println();
-	Serial.print(response.isAnswer() ? F("REQUEST") : F("RESPONSE"));
+	Serial.print(response.isAnswer() ? F("RESPONSE") : F("REQUEST"));
 	auto ip = response.getRemoteIp();
 	if(uint32_t(ip) != 0) {
 		Serial.print(F(" from "));
@@ -81,6 +93,10 @@ void printResponse(mDNS::Response& response)
 	} else {
 		Serial.println();
 	}
+
+	Serial.print(F("Size: "));
+	Serial.print(response.getSize());
+	Serial.println(F(" bytes"));
 
 	for(auto& question : response.questions) {
 		printQuestion(question);
@@ -145,6 +161,7 @@ void test()
 {
 	debug_i("sizeof(mDNS::Finder) = %u", sizeof(mDNS::Finder));
 	debug_i("sizeof(mDNS::Response) = %u", sizeof(mDNS::Response));
+	debug_i("sizeof(mDNS::Question) = %u", sizeof(mDNS::Question));
 	debug_i("sizeof(mDNS::Answer) = %u", sizeof(mDNS::Answer));
 	debug_i("sizeof(LinkedObject) = %u", sizeof(LinkedObject));
 

@@ -53,18 +53,27 @@ bool Response::parse()
 	}
 
 	// List of answers, namespaces and additional records
-	bool ok{true};
-	auto recordCount = answersCount + nsCount + additionalCount;
-	for(uint16_t i = 0; i < recordCount; i++) {
-		auto answer = new Answer(*this);
-		if(!answer->parse(pkt)) {
-			delete answer;
-			return false;
+	auto parseRecords = [&](Answer::Kind kind, uint16_t count) -> bool {
+		for(uint16_t i = 0; i < count; i++) {
+			auto answer = new Answer(*this, kind);
+			if(!answer->parse(pkt)) {
+				delete answer;
+				return false;
+			}
+			answers.add(answer);
 		}
-		answers.add(answer);
+		return true;
+	};
+
+	bool ok = parseRecords(Answer::Kind::answer, answersCount);
+	if(ok) {
+		ok = parseRecords(Answer::Kind::name, nsCount);
+		if(ok) {
+			ok = parseRecords(Answer::Kind::additional, additionalCount);
+		}
 	}
 
-	return ok;
+	return true;
 }
 
 Answer* Response::operator[](ResourceType type)

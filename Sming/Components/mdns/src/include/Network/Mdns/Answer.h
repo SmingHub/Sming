@@ -28,11 +28,25 @@ public:
 	using List = LinkedObjectListTemplate<Answer>;
 	using OwnedList = OwnedLinkedObjectListTemplate<Answer>;
 
-	Answer(Response& response) : response(response)
+	enum class Kind : uint8_t {
+		answer,
+		name,
+		additional,
+	};
+
+	Answer(Response& response, Kind kind) : response(response), kind(kind)
 	{
 	}
 
 	bool parse(Packet& pkt);
+
+	/**
+	 * @brief Identifies what kind of answer this is
+	 */
+	Kind getKind() const
+	{
+		return kind;
+	}
 
 	/**
 	 * @brief Object, domain or zone name
@@ -93,6 +107,9 @@ private:
 	uint8_t* namePtr;
 	uint16_t recordSize;
 	uint16_t nameLen;
+	Kind kind;
 };
 
 } // namespace mDNS
+
+String toString(mDNS::Answer::Kind kind);

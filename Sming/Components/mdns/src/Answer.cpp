@@ -13,6 +13,22 @@
 #include "Packet.h"
 #include <debug_progmem.h>
 
+String toString(mDNS::Answer::Kind kind)
+{
+	using Kind = mDNS::Answer::Kind;
+	switch(kind) {
+	case Kind::answer:
+		return F("answer");
+	case Kind::name:
+		return F("name");
+	case Kind::additional:
+		return F("additional");
+	default:
+		assert(false);
+		return nullptr;
+	}
+}
+
 namespace mDNS
 {
 ResourceType Answer::getType() const
