@@ -27,7 +27,6 @@ void savePacket(IpAddress remoteIP, uint16_t remotePort, const uint8_t* data, si
 	filename += ".bin";
 	filename.replace(':', '-');
 	hostfs.setContent(filename, data, length);
-	// debug_i("Saved '%s'", filename.c_str());
 }
 #endif
 
