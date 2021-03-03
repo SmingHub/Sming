@@ -17,12 +17,6 @@ namespace mDNS
 {
 bool Response::parse()
 {
-	// check if we have a response or a query
-	if(!isAnswer()) {
-		debug_d("Message is not a response. Ignoring.");
-		return false;
-	}
-
 	// TODO: If it's truncated we can expect more data soon so we should wait for additional records before deciding whether to respond.
 	// if(isTruncated())
 	// {
@@ -30,7 +24,7 @@ bool Response::parse()
 
 	// Non zero Response code implies error.
 	if(getResponseCode() != 0) {
-		debug_w("Got errored MDNS answer");
+		debug_w("Got errored MDNS response");
 		return false;
 	}
 
@@ -38,10 +32,6 @@ bool Response::parse()
 
 	// Number of incoming queries.
 	auto questionsCount = pkt.read16();
-	if(questionsCount != 0) {
-		// we are interested only in responses.
-		return false;
-	}
 
 	// Number of incoming answers.
 	auto answersCount = pkt.read16();
@@ -52,7 +42,17 @@ bool Response::parse()
 	// Number of incoming Additional resource records.
 	auto additionalCount = pkt.read16();
 
-	// List of answers
+	// List of questions
+	for(uint16_t i = 0; i < questionsCount; i++) {
+		auto question = new Question(*this);
+		if(!question->parse(pkt)) {
+			delete question;
+			return false;
+		}
+		questions.add(question);
+	}
+
+	// List of answers, namespaces and additional records
 	bool ok{true};
 	auto recordCount = answersCount + nsCount + additionalCount;
 	for(uint16_t i = 0; i < recordCount; i++) {
@@ -61,7 +61,7 @@ bool Response::parse()
 			delete answer;
 			return false;
 		}
-		add(answer);
+		answers.add(answer);
 	}
 
 	return ok;
@@ -69,7 +69,7 @@ bool Response::parse()
 
 Answer* Response::operator[](ResourceType type)
 {
-	for(auto& ans : *this) {
+	for(auto& ans : answers) {
 		if(ans.getType() == type) {
 			return &ans;
 		}

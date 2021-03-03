@@ -46,7 +46,7 @@ bool Answer::parse(Packet& pkt)
 	pkt.skip(nameLen + 8);
 
 	if(pkt.pos > size) {
-		debug_e("[MDNS] Packet overrun, pos = %u, size = %u", pkt.pos, size);
+		debug_e("[MDNS] Answer packet overrun, pos = %u, size = %u", pkt.pos, size);
 		// Something has gone wrong receiving or parsing the data.
 		return false;
 	}

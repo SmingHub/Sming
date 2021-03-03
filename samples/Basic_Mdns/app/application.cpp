@@ -30,21 +30,64 @@ void savePacket(IpAddress remoteIP, uint16_t remotePort, const uint8_t* data, si
 }
 #endif
 
+void printQuestion(mDNS::Question& question)
+{
+	Serial.println(F(">> Question"));
+
+	auto name = question.getName();
+	Serial.print(F("  name: "));
+	Serial.println(name);
+
+	Serial.print(F("  instance: "));
+	Serial.println(name.getInstance());
+	Serial.print(F("  service:  "));
+	Serial.println(name.getService());
+	Serial.print(F("  domain:   "));
+	Serial.println(name.getDomain());
+
+	Serial.print(F("  type:  "));
+	auto type = question.getType();
+	Serial.print(toString(type));
+	Serial.print(F(" (0x"));
+	Serial.print(unsigned(type), HEX);
+	Serial.println(")");
+
+	Serial.print(F("  class: 0x"));
+	Serial.println(question.getClass(), HEX);
+	Serial.print(F("  ucast: "));
+	Serial.println(question.isUnicastResponse());
+}
+
+void printAnswer(mDNS::Answer& answer)
+{
+	debug_i(">> name:  %s", String(answer.getName()).c_str());
+	debug_i("   data:  %s", answer.getRecordString().c_str());
+	debug_i("   type:  %s (0x%04X)", toString(answer.getType()).c_str(), unsigned(answer.getType()));
+	debug_i("   class: 0x%04x", answer.getClass());
+	debug_i("   ttl:   %u", answer.getTtl());
+	debug_i("   flush: %u", answer.isCachedFlush());
+}
+
 void printResponse(mDNS::Response& response)
 {
 	Serial.println();
-	Serial.print(F("RESPONSE from "));
-	Serial.print(response.getRemoteIp().toString());
-	Serial.print(':');
-	Serial.println(response.getRemotePort());
+	Serial.print(response.isAnswer() ? F("REQUEST") : F("RESPONSE"));
+	auto ip = response.getRemoteIp();
+	if(uint32_t(ip) != 0) {
+		Serial.print(F(" from "));
+		Serial.print(response.getRemoteIp().toString());
+		Serial.print(':');
+		Serial.println(response.getRemotePort());
+	} else {
+		Serial.println();
+	}
 
-	for(auto& answer : response) {
-		debug_i(">> name:  %s", String(answer.getName()).c_str());
-		debug_i("   data:  %s", answer.getRecordString().c_str());
-		debug_i("   type:  %s (0x%04X)", toString(answer.getType()).c_str(), unsigned(answer.getType()));
-		debug_i("   class: 0x%04x", answer.getClass());
-		debug_i("   ttl:   %u", answer.getTtl());
-		debug_i("   flush: %u", answer.isCachedFlush());
+	for(auto& question : response.questions) {
+		printQuestion(question);
+	}
+
+	for(auto& answer : response.answers) {
+		printAnswer(answer);
 	}
 
 	auto answer = response[mDNS::ResourceType::TXT];
@@ -84,6 +127,20 @@ void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reas
 	Serial.println(F("I'm NOT CONNECTED!"));
 }
 
+void parseFile(const String& name, const String& data)
+{
+	Serial.println();
+	Serial.print(_F("** Parsing '"));
+	Serial.print(name);
+	Serial.println(_F("' **"));
+	mDNS::Response response(0U, 0, const_cast<char*>(data.begin()), data.length());
+	if(response.parse()) {
+		printResponse(response);
+	}
+	Serial.println(_F("** End of test packet **"));
+	Serial.println();
+}
+
 void test()
 {
 	debug_i("sizeof(mDNS::Finder) = %u", sizeof(mDNS::Finder));
@@ -91,24 +148,21 @@ void test()
 	debug_i("sizeof(mDNS::Answer) = %u", sizeof(mDNS::Answer));
 	debug_i("sizeof(LinkedObject) = %u", sizeof(LinkedObject));
 
+#ifdef ARCH_HOST
+
 	auto& fs = IFS::Host::getFileSystem();
-	Directory dir(fs);
+	IFS::Directory dir(&fs);
 	if(dir.open("resource")) {
 		while(dir.next()) {
-			String filename = dir.stat().name;
-			Serial.println(_F("** Parsing '"));
-			Serial.println(filename);
-			Serial.println(_F("' **"));
+			String filename = dir.getDirName() + "/" + String(dir.stat().name);
 			String data(fs.getContent(filename));
-			// String data(testFile);
-			mDNS::Response response(0U, 0, data.begin(), data.length());
-			response.parse();
-			printResponse(response);
-			Serial.println(_F("** End of test packet **"));
-			Serial.println();
-			Serial.println();
+			parseFile(filename, data);
 		}
 	}
+
+#else
+	parseFile(F("testFile"), testFile);
+#endif
 }
 
 void init()

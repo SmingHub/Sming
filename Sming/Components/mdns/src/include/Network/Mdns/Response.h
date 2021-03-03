@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include "Question.h"
 #include "Answer.h"
 
 namespace mDNS
@@ -17,7 +18,7 @@ namespace mDNS
 /**
  * @brief Encapsulates a response packet for flexible introspection
  */
-class Response : public Answer::OwnedList
+class Response
 {
 public:
 	Response(IpAddress remoteIp, uint16_t remotePort, void* data, uint16_t size)
@@ -79,6 +80,9 @@ public:
 	}
 
 	Answer* operator[](ResourceType type);
+
+	Question::OwnedList questions;
+	Answer::OwnedList answers;
 
 private:
 	friend class Name;
