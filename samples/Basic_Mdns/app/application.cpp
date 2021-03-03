@@ -92,14 +92,24 @@ void test()
 	debug_i("sizeof(mDNS::Answer) = %u", sizeof(mDNS::Answer));
 	debug_i("sizeof(LinkedObject) = %u", sizeof(LinkedObject));
 
-	Serial.println(_F("** Parsing test packet **"));
-	String data(testFile);
-	mDNS::Response response(0U, 0, data.begin(), data.length());
-	response.parse();
-	printResponse(response);
-	Serial.println(_F("** End of test packet **"));
-	Serial.println();
-	Serial.println();
+	auto& fs = IFS::Host::getFileSystem();
+	Directory dir(fs);
+	if(dir.open("resource")) {
+		while(dir.next()) {
+			String filename = dir.stat().name;
+			Serial.println(_F("** Parsing '"));
+			Serial.println(filename);
+			Serial.println(_F("' **"));
+			String data(fs.getContent(filename));
+			// String data(testFile);
+			mDNS::Response response(0U, 0, data.begin(), data.length());
+			response.parse();
+			printResponse(response);
+			Serial.println(_F("** End of test packet **"));
+			Serial.println();
+			Serial.println();
+		}
+	}
 }
 
 void init()
