@@ -104,11 +104,16 @@ public:
 		return recordSize;
 	}
 
+	// Writing
+	uint16_t init(uint16_t namePtr, const String& name, Resource::Type type, uint16_t rclass, bool flush, uint32_t ttl);
+	void allocate(uint16_t size);
+	uint16_t writeName(uint16_t ptr, const String& name);
+
 private:
 	Response& response;
-	uint16_t namePtr;
-	uint16_t recordSize;
-	uint16_t nameLen;
+	uint16_t namePtr{0};
+	uint16_t recordSize{0};
+	uint16_t nameLen{0};
 	Kind kind;
 };
 

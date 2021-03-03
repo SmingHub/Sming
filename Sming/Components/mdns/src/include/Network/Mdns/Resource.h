@@ -13,6 +13,10 @@
 #include "Name.h"
 #include <IpAddress.h>
 
+struct Ip6Address {
+	uint8_t addr[16];
+};
+
 /**
  * @brief MDNS resource type identifiers
  * 
@@ -44,7 +48,7 @@ enum class Type : uint16_t {
 class Record
 {
 public:
-	Record(const Answer& answer) : answer(answer)
+	Record(const Answer& answer) : answer(const_cast<Answer&>(answer))
 	{
 	}
 
@@ -54,7 +58,7 @@ protected:
 	uint8_t* getRecord() const;
 	uint16_t getRecordSize() const;
 
-	const Answer& answer;
+	Answer& answer;
 };
 
 /**
@@ -63,6 +67,8 @@ protected:
 class A : public Record
 {
 public:
+	static constexpr Resource::Type type{Resource::Type::A};
+
 	using Record::Record;
 
 	IpAddress getAddress() const;
@@ -71,6 +77,9 @@ public:
 	{
 		return getAddress().toString();
 	}
+
+	// Writing
+	void init(IpAddress ipaddr);
 };
 
 /**
@@ -79,6 +88,8 @@ public:
 class PTR : public Record
 {
 public:
+	static constexpr Resource::Type type{Resource::Type::PTR};
+
 	using Record::Record;
 
 	Name getName() const;
@@ -87,6 +98,9 @@ public:
 	{
 		return getName();
 	}
+
+	// Writing
+	void init(const String& name);
 };
 
 /**
@@ -95,6 +109,8 @@ public:
 class HINFO : public Record
 {
 public:
+	static constexpr Resource::Type type{Resource::Type::HINFO};
+
 	using Record::Record;
 };
 
@@ -107,6 +123,8 @@ public:
 class TXT : public Record
 {
 public:
+	static constexpr Resource::Type type{Resource::Type::TXT};
+
 	using Record::Record;
 
 	uint8_t count() const;
@@ -137,6 +155,13 @@ public:
 		return getValue(name.c_str(), name.length());
 	}
 
+	// Writing
+	void init()
+	{
+	}
+
+	void add(const String& value);
+
 private:
 	const char* get(uint8_t index, uint8_t& len) const;
 	mutable uint8_t mCount{0};
@@ -148,9 +173,14 @@ private:
 class AAAA : public Record
 {
 public:
+	static constexpr Resource::Type type{Resource::Type::AAAA};
+
 	using Record::Record;
 
 	String toString() const;
+
+	// Writing
+	void init(Ip6Address addr);
 };
 
 /**
@@ -159,6 +189,8 @@ public:
 class SRV : public Record
 {
 public:
+	static constexpr Resource::Type type{Resource::Type::SRV};
+
 	using Record::Record;
 
 	uint16_t getPriority() const;
@@ -170,6 +202,9 @@ public:
 	Name getHost() const;
 
 	String toString(const String& sep = "; ") const;
+
+	// Writing
+	void init(uint16_t priority, uint16_t weight, uint16_t port, const String& host);
 };
 
 } // namespace Resource

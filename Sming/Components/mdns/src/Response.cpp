@@ -86,4 +86,20 @@ Answer* Response::operator[](ResourceType type)
 	return nullptr;
 }
 
+uint16_t Response::writeName(uint16_t ptr, const String& name)
+{
+	Packet pkt{resolvePointer(ptr)};
+	size_t pos{0};
+	auto namelen = name.length();
+	do {
+		int sep = name.indexOf('.', pos);
+		auto wordLength = (sep >= 0) ? (sep - pos) : (namelen - pos);
+		pkt.write8(wordLength);
+		pkt.write(name.c_str() + pos, wordLength);
+		pos = sep + 1;
+	} while(pos > 0);
+	pkt.write8(0); // End of name.
+	return pkt.pos;
+}
+
 } // namespace mDNS

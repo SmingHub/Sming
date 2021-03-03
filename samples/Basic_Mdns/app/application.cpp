@@ -1,5 +1,6 @@
 #include <SmingCore.h>
 #include <Network/Mdns/Finder.h>
+#include <Network/Mdns/Request.h>
 #include <IFS/FileSystem.h>
 
 IMPORT_FSTR(testFile, PROJECT_DIR "/resource/192.168.1.100.mdns")
@@ -199,14 +200,33 @@ void test()
 	debug_i("sizeof(LinkedObject) = %u", sizeof(LinkedObject));
 
 	using namespace mDNS;
-	Query::OwnedList list;
-	list.add(new Query{F("_%9832479817234_sming._tcp.local"), mDNS::ResourceType::PTR});
-	list.add(new Query{F("_sming._tcp.local"), mDNS::ResourceType::PTR});
-	uint8_t buffer[1024];
-	auto len = serialize(list, buffer, sizeof(buffer));
-	Response response(0U, 0, buffer, len);
-	response.parse();
-	printResponse(response);
+
+	// Create list of questions, serialise them then decode and print the result
+	{
+		Query::OwnedList list;
+		list.add(new Query{F("_%9832479817234_sming._tcp.local"), mDNS::ResourceType::PTR});
+		list.add(new Query{F("_sming._tcp.local"), mDNS::ResourceType::PTR});
+		uint8_t buffer[1024];
+		auto len = serialize(list, buffer, sizeof(buffer));
+		Response response(0U, 0, buffer, len);
+		response.parse();
+		printResponse(response);
+	}
+
+	// Create response records
+	{
+		Request request;
+		auto ptr = request.addAnswer<Resource::PTR>(F("_chromecast._tcp.local"), F("my.test.name._tcp.local"));
+		request.nextSection();
+		request.nextSection();
+		auto a = request.addAnswer<Resource::A>(F("my.test.name._tcp.local"), 0x12345678);
+		auto txt = request.addAnswer<Resource::TXT>(F("my.test.name._tcp.local"));
+		txt.add("pm=12");
+		txt.add("fn=My friendly name");
+		auto aaaa = request.addAnswer<Resource::AAAA>(F("abc._tcp.local"), Ip6Address());
+		auto srv = request.addAnswer<Resource::SRV>(F("xxxxx._tcp.local"), 1, 2, 8080, F("sillyhouse.net"));
+		printResponse(request);
+	}
 
 #ifdef ARCH_HOST
 

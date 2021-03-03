@@ -57,11 +57,25 @@ IpAddress A::getAddress() const
 	return addr;
 }
 
+void A::init(IpAddress ipaddr)
+{
+	uint32_t addr = ipaddr;
+	Packet pkt{getRecord()};
+	pkt.write(&addr, sizeof(addr));
+	answer.allocate(pkt.pos);
+}
+
 /* PTR */
 
 Name PTR::getName() const
 {
 	return Name(answer.getResponse(), answer.getRecordPtr());
+}
+
+void PTR::init(const String& name)
+{
+	auto len = answer.writeName(0, name);
+	answer.allocate(len);
 }
 
 /* TXT */
@@ -131,11 +145,27 @@ const char* TXT::get(uint8_t index, uint8_t& len) const
 	return nullptr;
 }
 
+void TXT::add(const String& value)
+{
+	Packet pkt{getRecord(), getRecordSize()};
+	auto len = value.length();
+	pkt.write8(len);
+	pkt.write(value.c_str(), len);
+	answer.allocate(pkt.pos);
+}
+
 /* AAAA */
 
 String AAAA::toString() const
 {
 	return makeHexString(getRecord(), getRecordSize(), ':');
+}
+
+void AAAA::init(Ip6Address addr)
+{
+	Packet pkt{getRecord()};
+	pkt.write(&addr, sizeof(addr));
+	answer.allocate(pkt.pos);
 }
 
 /* SRV */
@@ -176,6 +206,16 @@ String SRV::toString(const String& sep) const
 	s += F("host=");
 	s += getHost();
 	return s;
+}
+
+void SRV::init(uint16_t priority, uint16_t weight, uint16_t port, const String& host)
+{
+	Packet pkt{getRecord()};
+	pkt.write16(priority);
+	pkt.write16(weight);
+	pkt.write16(port);
+	pkt.pos += answer.writeName(pkt.pos, host);
+	answer.allocate(pkt.pos);
 }
 
 } // namespace Resource

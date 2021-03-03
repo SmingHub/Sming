@@ -81,10 +81,17 @@ public:
 
 	Answer* operator[](ResourceType type);
 
+	// Writing
+	uint16_t writeName(uint16_t ptr, const String& name);
+	void allocate(uint16_t recordSize)
+	{
+		size += recordSize;
+	}
+
 	Question::OwnedList questions;
 	Answer::OwnedList answers;
 
-private:
+protected:
 	friend class Question;
 	friend class Answer;
 	friend class Name;

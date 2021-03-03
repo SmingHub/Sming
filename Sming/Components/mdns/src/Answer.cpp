@@ -98,4 +98,31 @@ String Answer::getRecordString() const
 	}
 }
 
+uint16_t Answer::init(uint16_t namePtr, const String& name, Resource::Type type, uint16_t rclass, bool flush,
+					  uint32_t ttl)
+{
+	this->namePtr = namePtr;
+	nameLen = response.writeName(namePtr, name);
+	Packet pkt{response.resolvePointer(namePtr), nameLen};
+	pkt.write16(uint16_t(type));						   // Type
+	pkt.write16((rclass & 0x7fff) | (flush ? 0x8000 : 0)); // Class
+	pkt.write32(ttl);									   // TTL
+	pkt.write16(0);										   // Resource Record Length
+	return pkt.pos;
+}
+
+void Answer::allocate(uint16_t size)
+{
+	assert(size > recordSize);
+	message.allocate(size - recordSize);
+	recordSize = size;
+	Packet pkt{message.resolvePointer(namePtr + nameLen + 8)};
+	pkt.write16(recordSize);
+}
+
+uint16_t Answer::writeName(uint16_t ptr, const String& name)
+{
+	return response.writeName(getRecordPtr() + ptr, name);
+}
+
 } // namespace mDNS
