@@ -67,17 +67,17 @@ Please note Version 4 documentation is at [sming.readthedocs.io](https://sming.r
     * Async TCP and UDP stack based on [LWIP](http://savannah.nongnu.org/projects/lwip/).
     * With clients supporting: HTTP, MQTT, WebSockets and SMTP.
     * And servers for: DNS, FTP, HTTP(+ WebSockets), Telnet.
-    * With [SSL support](https://sming.readthedocs.io/en/latest/framework/core/network/ssl.html) for all network clients and servers. Based on [axTLS](http://axtls.sourceforge.net/) and [BearSSL](https://www.bearssl.org/).
+    * With [SSL support](https://sming.readthedocs.io/en/latest/_inc/Sming/Components/ssl/index.html) for all network clients and servers. Based on [axTLS](http://axtls.sourceforge.net/) and [BearSSL](https://www.bearssl.org/).
     * Out of the box support for OTA over HTTPS.
 * ESP8266 specific features.
     * Integrated boot loader [rboot](https://sming.readthedocs.io/en/latest/_inc/Sming/Components/rboot/index.html) with support for 1MB ROMs, OTA firmware updating and ROM switching.
-    * [Crash handlers](https://sming.readthedocs.io/en/latest/information/debugging/index.html) for analyzing/handling system restarts due to fatal errors or WDT resets.
+    * [Crash handlers](https://sming.readthedocs.io/en/latest/information/debugging.html) for analyzing/handling system restarts due to fatal errors or WDT resets.
     * [PWM support](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/driver/index.html) based on [Stefan Bruens PWM](https://github.com/StefanBruens/ESP8266_new_pwm.git).
     * Optional [custom heap allocation](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/heap/index.html) based on [Umm Malloc](https://github.com/rhempel/umm_malloc.git).
     * Based on Espressif NONOS SDK. Officially suppored NON SDK version is >= 3.0.1.
     * Support for a [thin No-Wifi-SDK](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/esp_no_wifi/index.html). Helpful when a project does not require WiFi (or networking) and reduces code size and memory usage signficantly.
 * Linux/Windows features
-    * Sming has a [host emulator](https://sming.readthedocs.io/en/latest/arch/host/host-emulator.html) that allows libraries and sample applications to be compiled on a Linux/Windows host system and be tested before uploading them to an actual microcontroller.
+    * Sming has a [host emulator](https://sming.readthedocs.io/en/latest/arch/host/index.html) that allows libraries and sample applications to be compiled on a Linux/Windows host system and be tested before uploading them to an actual microcontroller.
 
 ## Compatibility
 
@@ -136,7 +136,7 @@ git clone https://github.com/SmingHub/Sming.git
 
 ## Getting Started
 
-Sming supports multiple architectures. Choose the architecture of your choice to [install the needed development software](https://sming.readthedocs.io/en/latest/getting-started.html) and toolchain(s).
+Sming supports multiple architectures. Choose the architecture of your choice to [install the needed development software](https://sming.readthedocs.io/en/latest/getting-started) and toolchain(s).
 
 You can also try Sming without installing anything locally. We have an [interactive tutorial](https://www.katacoda.com/slaff/scenarios/sming-host-emulator) that can be run directly from your browser.
 
