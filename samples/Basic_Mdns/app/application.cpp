@@ -165,6 +165,16 @@ void test()
 	debug_i("sizeof(mDNS::Answer) = %u", sizeof(mDNS::Answer));
 	debug_i("sizeof(LinkedObject) = %u", sizeof(LinkedObject));
 
+	using namespace mDNS;
+	Query::OwnedList list;
+	list.add(new Query{F("_%9832479817234_sming._tcp.local"), mDNS::ResourceType::PTR});
+	list.add(new Query{F("_sming._tcp.local"), mDNS::ResourceType::PTR});
+	uint8_t buffer[1024];
+	auto len = serialize(list, buffer, sizeof(buffer));
+	Response response(0U, 0, buffer, len);
+	response.parse();
+	printResponse(response);
+
 #ifdef ARCH_HOST
 
 	auto& fs = IFS::Host::getFileSystem();
