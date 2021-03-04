@@ -53,8 +53,9 @@ bool Question::parse(Packet& pkt)
 uint16_t Question::init(uint16_t namePtr, const String& name, ResourceType type, uint16_t qclass, bool unicast)
 {
 	this->namePtr = namePtr;
-	nameLen = message.writeName(namePtr, name);
-	Packet pkt{message.resolvePointer(namePtr), nameLen};
+	Packet pkt{message.resolvePointer(namePtr)};
+	pkt.writeName(name);
+	nameLen = pkt.pos;
 	pkt.write16(uint16_t(type));
 	qclass &= 0x7fff;
 	if(unicast) {

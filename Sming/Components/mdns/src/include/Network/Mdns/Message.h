@@ -109,7 +109,6 @@ public:
 	Answer* operator[](ResourceType type);
 
 	// Writing
-	uint16_t writeName(uint16_t ptr, const String& name);
 	void allocate(uint16_t recordSize)
 	{
 		size += recordSize;

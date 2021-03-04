@@ -74,8 +74,9 @@ Name PTR::getName() const
 
 void PTR::init(const String& name)
 {
-	auto len = answer.writeName(0, name);
-	answer.allocate(len);
+	Packet pkt{getRecord()};
+	pkt.writeName(name);
+	answer.allocate(pkt.pos);
 }
 
 /* TXT */
@@ -214,7 +215,7 @@ void SRV::init(uint16_t priority, uint16_t weight, uint16_t port, const String& 
 	pkt.write16(priority);
 	pkt.write16(weight);
 	pkt.write16(port);
-	pkt.pos += answer.writeName(pkt.pos, host);
+	pkt.writeName(host);
 	answer.allocate(pkt.pos);
 }
 

@@ -100,6 +100,23 @@ struct Packet {
 		memcpy(ptr(), s, len);
 		pos += len;
 	}
+
+	void writeName(const String& name)
+	{
+		size_t namepos{0};
+		auto namelen = name.length();
+		while(true) {
+			int sep = name.indexOf('.', namepos);
+			auto wordLength = (sep >= 0) ? (sep - namepos) : (namelen - namepos);
+			write8(wordLength);
+			write(name.c_str() + namepos, wordLength);
+			if(sep < 0) {
+				write8(0); // End of name.
+				break;
+			}
+			namepos = sep + 1;
+		}
+	}
 };
 
 } // namespace mDNS

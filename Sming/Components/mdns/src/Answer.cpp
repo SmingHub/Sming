@@ -102,8 +102,8 @@ uint16_t Answer::init(uint16_t namePtr, const String& name, Resource::Type type,
 					  uint32_t ttl)
 {
 	this->namePtr = namePtr;
-	nameLen = message.writeName(namePtr, name);
-	Packet pkt{message.resolvePointer(namePtr), nameLen};
+	Packet pkt{message.resolvePointer(namePtr)};
+	pkt.writeName(name);
 	pkt.write16(uint16_t(type));						   // Type
 	pkt.write16((rclass & 0x7fff) | (flush ? 0x8000 : 0)); // Class
 	pkt.write32(ttl);									   // TTL
@@ -118,11 +118,6 @@ void Answer::allocate(uint16_t size)
 	recordSize = size;
 	Packet pkt{message.resolvePointer(namePtr + nameLen + 8)};
 	pkt.write16(recordSize);
-}
-
-uint16_t Answer::writeName(uint16_t ptr, const String& name)
-{
-	return message.writeName(getRecordPtr() + ptr, name);
 }
 
 } // namespace mDNS
