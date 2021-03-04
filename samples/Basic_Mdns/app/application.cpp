@@ -219,17 +219,51 @@ void test()
 
 	// Create message records
 	{
-		// Service is "_test", hostname is "sming"
+		/*
+		 * Service is "_test", hostname is "sming"
+		 *
+		 * We also demonstrate here how to set up a name pointer.
+		*/
 		Request request(Request::Type::reply);
-		auto ptr = request.addAnswer<Resource::PTR>(F("_test._tcp.local"), F("sming._test._tcp.local"));
+
+		/**
+		 * Anywhere a Name is used, if the final character is '.' then it is stored as a 'pointer',
+		 * a 16-bit offset into the message data. We don't know the value of that pointer yet, so a
+		 * placeholder is inserted.
+		 * 
+		 * In this case, we want our PTR record to reference the name of the SRV record which we add later.
+		 */
+		auto ptr = request.addAnswer<Resource::PTR>(F("_test._tcp.local"), ".");
+
+		// Move to 'nameserver' records section
 		request.nextSection();
+		// Move to 'additional' records section
 		request.nextSection();
-		auto txt = request.addAnswer<Resource::TXT>(F("sming._test._tcp.local"));
+
+		/**
+		 * We'll use a pointer for the name here, saves space.
+		 */
+		auto txt = request.addAnswer<Resource::TXT>(".");
 		txt.add("pm=12");
 		txt.add("fn=My friendly name");
 		auto srv = request.addAnswer<Resource::SRV>(F("sming._test._tcp.local"), 1, 2, 8080, F("sming.local"));
+
+		/**
+		 * Now the SRV record is constructed we can fix our name references.
+		 * The 'fixup' call will essentially replace the final '.' we added above with a pointer to the actual name.
+		 * Note that the call will fail if we didn't append that final '.', since there will be nowhere to write
+		 * the pointer value.
+		 */
+		auto serviceName = srv.answer.getName();
+		ptr.getName().fixup(serviceName);
+		txt.answer.getName().fixup(serviceName);
+
+		/**
+		 * Finally, write the address records
+		 */
 		auto a = request.addAnswer<Resource::A>(F("sming.local"), WifiStation.getIP());
 		auto aaaa = request.addAnswer<Resource::AAAA>(F("sming.local"), Ip6Address());
+
 		parseFile(F("Test answers"), request);
 	}
 

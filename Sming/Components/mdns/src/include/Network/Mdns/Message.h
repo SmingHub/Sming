@@ -121,6 +121,15 @@ protected:
 	friend class Question;
 	friend class Answer;
 	friend class Name;
+
+	/*
+	 * Resolve a 16-bit 'pointer' to a memory location
+	 *
+	 * Value represents a 16-bit offset from the start of the message data.
+	 * DNS names may contain pointers, but we use this approach internally to improve
+	 * data portability, reduce memory consumption and avoid data duplication during
+	 * message parsing and construction.
+	 */
 	uint8_t* resolvePointer(uint16_t pointer)
 	{
 		return data + pointer;

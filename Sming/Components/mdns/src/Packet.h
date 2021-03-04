@@ -108,6 +108,11 @@ struct Packet {
 		while(true) {
 			int sep = name.indexOf('.', namepos);
 			auto wordLength = (sep >= 0) ? (sep - namepos) : (namelen - namepos);
+			if(wordLength == 0) {
+				// Name ends in a '.' so add a pointer record; will fixup later
+				write16(0xC000);
+				break;
+			}
 			write8(wordLength);
 			write(name.c_str() + namepos, wordLength);
 			if(sep < 0) {

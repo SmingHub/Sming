@@ -54,11 +54,11 @@ public:
 
 	String toString() const;
 
+	Answer& answer;
+
 protected:
 	uint8_t* getRecord() const;
 	uint16_t getRecordSize() const;
-
-	Answer& answer;
 };
 
 /**

@@ -55,6 +55,13 @@ public:
 	String getService() const;
 	String getInstance() const;
 
+	/**
+	 * @brief Fixup pointer at end of name to point to another name
+	 * @param other Where to point to
+	 * @retval bool true on success, false if name does not end with a pointer
+	 */
+	bool fixup(const Name& other);
+
 private:
 	struct Info {
 		uint16_t dataLength;

@@ -101,4 +101,20 @@ String Name::getInstance() const
 	return getString(0, info.components - 2);
 }
 
+bool Name::fixup(const Name& other)
+{
+	auto info = parse();
+	if(info.dataLength < 2) {
+		// Can't be a pointer, too small
+		return false;
+	}
+	Packet pkt{message.resolvePointer(ptr + info.dataLength - 2)};
+	if(pkt.peek8() < 0xC0) {
+		// Not a pointer
+		return false;
+	}
+	pkt.write16(other.ptr | 0xC000);
+	return true;
+}
+
 } // namespace mDNS
