@@ -143,7 +143,7 @@ bool Client::onTcpReceive(TcpClient& client, char* data, int length)
 	uint32_t messageLength{0};
 
 	if(inputBuffer == nullptr) {
-		constexpr auto headerSize{sizeof messageLength};
+		constexpr auto headerSize = sizeof(messageLength);
 		if(length < int(headerSize)) {
 			// Not enough to read header. Should never happen.
 			debug_e("Unexpected: Got %d bytes but need at least %u", length, headerSize);

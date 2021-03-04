@@ -1,5 +1,6 @@
 #include <SmingCore.h>
 #include <Network/GoogleCast/Client.h>
+#include <Network/GoogleCast/ClientInfo.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -7,6 +8,7 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
+GoogleCast::ClientInfo clientInfo;
 GoogleCast::Client castClient;
 Timer statusTimer;
 
@@ -59,8 +61,6 @@ struct Session {
 Session activeSession;
 
 static constexpr unsigned minStatusInterval{10000};
-
-DEFINE_FSTR(deviceAddress, "192.168.1.118") // TODO: Replace this IP with your device's IP address
 
 DEFINE_FSTR(APPID_BACKDROP, "E8C28D3C") // Idle screen
 DEFINE_FSTR(APPID_MEDIA_RECEIVER, "CC1AD845")
@@ -176,12 +176,37 @@ bool onMessage(GoogleCast::Channel::Message& message)
 	return true;
 }
 
-void onGotIp(IpAddress ip, IpAddress mask, IpAddress gateway)
+void selectDevice()
 {
-	Serial.print(F("Got IP: "));
-	Serial.println(ip);
+	if(clientInfo.count() == 0) {
+		Serial.println(F("No devices found"));
+		return;
+	}
 
-	Serial.println(F("Connecting to your Smart TV"));
+	for(unsigned i = 0; i < clientInfo.count(); ++i) {
+		Serial.print(i + 1);
+		Serial.print(". ");
+		Serial.print(clientInfo.valueAt(i));
+		Serial.print(" - ");
+		Serial.println(clientInfo.keyAt(i));
+	}
+
+	Serial.print(F("Enter device number: "));
+}
+
+void connectDevice(unsigned index)
+{
+	if(index >= clientInfo.count()) {
+		selectDevice();
+		return;
+	}
+
+	auto friendlyName = clientInfo.keyAt(index);
+
+	Serial.print(F("Connecting to '"));
+	Serial.print(friendlyName);
+	Serial.println("'...");
+
 	castClient.onConnect([](bool success) {
 		Serial.print(F("Client connect: "));
 		Serial.println(success ? "OK" : "FAIL");
@@ -199,7 +224,32 @@ void onGotIp(IpAddress ip, IpAddress mask, IpAddress gateway)
 	castClient.receiver.onMessage(onReceiverMessage);
 	castClient.media.onMessage(onMediaMessage);
 	castClient.onMessage(onMessage);
-	castClient.connect(IpAddress(deviceAddress));
+
+	statusTimer.initializeMs<1000>([index]() {
+		auto deviceAddress = clientInfo.valueAt(index);
+		castClient.connect(deviceAddress);
+	});
+	statusTimer.startOnce();
+}
+
+void discoverDevices()
+{
+	if(clientInfo.startDiscovery()) {
+		Serial.println(F("Discovering devices..."));
+	} else {
+		Serial.println(F("ERROR! Device discovery cannot be started"));
+		return;
+	}
+
+	statusTimer.initializeMs<3000>(selectDevice).startOnce();
+}
+
+void onGotIp(IpAddress ip, IpAddress mask, IpAddress gateway)
+{
+	Serial.print(F("Got IP: "));
+	Serial.println(ip);
+
+	discoverDevices();
 }
 
 void onSerialData(Stream& source, char arrivedChar, uint16_t availableCharsCount)
@@ -211,6 +261,11 @@ void onSerialData(Stream& source, char arrivedChar, uint16_t availableCharsCount
 	switch(arrivedChar) {
 	case ' ':
 		activeSession.playPause();
+		break;
+
+	case 'd':
+	case 'D':
+		discoverDevices();
 		break;
 
 	case 'f':
@@ -228,6 +283,9 @@ void onSerialData(Stream& source, char arrivedChar, uint16_t availableCharsCount
 		// castClient.receiver.launch(APPID_BACKDROP);
 		castClient.connection.close();
 		break;
+
+	default:
+		connectDevice(arrivedChar - '1');
 	}
 }
 
@@ -240,6 +298,7 @@ void init()
 
 	// Setup the WIFI connection
 	WifiStation.enable(true);
+	WifiAccessPoint.enable(false);
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 
 	WifiEvents.onStationGotIP(onGotIp);
