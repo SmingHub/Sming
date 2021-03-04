@@ -53,7 +53,7 @@ public:
 	/**
 	 * @brief Check that response contains answers, not queries
 	 */
-	bool isAnswer() const
+	bool isReply() const
 	{
 		return data[2] & 0x80;
 	}
@@ -72,6 +72,11 @@ public:
 	uint8_t getResponseCode() const
 	{
 		return data[3] & 0x0f;
+	}
+
+	uint8_t* getData() const
+	{
+		return data;
 	}
 
 	uint16_t getSize() const

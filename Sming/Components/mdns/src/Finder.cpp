@@ -31,28 +31,19 @@ Finder::~Finder()
 
 bool Finder::search(const String& name, ResourceType type)
 {
-	Query query{name, type};
-	return search(query);
+	Request req(Request::Type::query);
+	auto question = req.addQuestion(name, type);
+	return send(req);
 }
 
-bool Finder::search(const Query& query)
+bool Finder::send(Request& request)
 {
-	Query::List list;
-	list.add(&query);
-	return search(list);
-}
-
-bool Finder::search(const Query::List& queries)
-{
-	uint8_t buffer[MAX_PACKET_SIZE];
-	auto len = serialize(queries, buffer, sizeof(buffer));
-	if(len == 0) {
-		return false;
-	}
+	auto buf = reinterpret_cast<const char*>(request.getData());
+	auto len = request.getSize();
 
 	initialise();
 	out.listen(0);
-	return out.sendTo(IpAddress(MDNS_IP), MDNS_TARGET_PORT, reinterpret_cast<const char*>(buffer), len);
+	return out.sendTo(IpAddress(MDNS_IP), MDNS_TARGET_PORT, buf, len);
 }
 
 bool Finder::initialise()

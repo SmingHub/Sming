@@ -63,7 +63,7 @@ public:
 	}
 
 	// Writing
-	uint16_t init(uint16_t namePtr, const String& name);
+	uint16_t init(uint16_t namePtr, const String& name, ResourceType type, uint16_t qclass, bool unicast);
 
 private:
 	Response& response;

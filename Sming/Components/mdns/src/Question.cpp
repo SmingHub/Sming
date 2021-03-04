@@ -50,13 +50,17 @@ bool Question::parse(Packet& pkt)
 	return true;
 }
 
-uint16_t Question::init(uint16_t namePtr, const String& name)
+uint16_t Question::init(uint16_t namePtr, const String& name, ResourceType type, uint16_t qclass, bool unicast)
 {
 	this->namePtr = namePtr;
 	nameLen = response.writeName(namePtr, name);
 	Packet pkt{response.resolvePointer(namePtr), nameLen};
-	pkt.write16(0);		 // Type
-	pkt.write16(0x0001); // Class
+	pkt.write16(uint16_t(type));
+	qclass &= 0x7fff;
+	if(unicast) {
+		qclass |= 0x8000;
+	}
+	pkt.write16(qclass);
 	return pkt.pos;
 }
 

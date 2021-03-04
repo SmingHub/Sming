@@ -3,7 +3,7 @@
 
 namespace mDNS
 {
-Request::Request() : Response(0U, 0, buffer, 0)
+Request::Request(Type type) : Response(0U, 0, buffer, 0)
 {
 	Packet pkt{data, 0};
 
@@ -11,7 +11,7 @@ Request::Request() : Response(0U, 0, buffer, 0)
 	pkt.write16(0);
 
 	// 2 bytes for Flags and status code
-	pkt.write16(0x8000); // 0x0000 for Query, 0x8000 for Answer
+	pkt.write16(type == Type::query ? 0x0000 : 0x8000);
 
 	// 2 bytes for number of questions
 	pkt.write16(0);
@@ -28,13 +28,13 @@ Request::Request() : Response(0U, 0, buffer, 0)
 	size = pkt.pos;
 }
 
-Question* Request::createQuestion(const String& name)
+Question* Request::addQuestion(const String& name, ResourceType type, uint16_t qclass, bool unicast)
 {
 	auto question = new Question(*this);
 	questions.add(question);
 	Packet pkt{data, 4};
 	pkt.write16(questions.count());
-	size += question->init(size, name);
+	size += question->init(size, name, type, qclass, unicast);
 	return question;
 }
 

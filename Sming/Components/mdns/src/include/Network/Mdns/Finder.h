@@ -12,21 +12,13 @@
  *
  * However, code has been essentially rewritten so Sming LGPL v3 license applies.
  *
- * References:
- *
- *  Zero-configuration networking (DNS-SD) https://en.wikipedia.org/wiki/Zero-configuration_networking
- * 	Multicast DNS https://tools.ietf.org/html/rfc6762
- * 	DNS-Based Service Discovery https://tools.ietf.org/html/rfc6763
- * 	DNS record types https://en.wikipedia.org/wiki/List_of_DNS_record_types
- * 
  */
 
 #pragma once
 
 #include <Delegate.h>
 #include <Network/UdpConnection.h>
-#include "Query.h"
-#include "Response.h"
+#include "Request.h"
 
 namespace mDNS
 {
@@ -77,13 +69,10 @@ public:
 	bool search(const String& hostname, ResourceType type = ResourceType::PTR);
 
 	/**
-	 * @brief Send a multicast query request
-	 * @param query Parameters for query
-	 * @retval bool false if parameters failed validation or UDP request could not be sent
+	 * @brief Send an mDNS request containing questions/answers
+	 * @retval bool true if request sent successfully
 	 */
-	bool search(const Query& query);
-
-	bool search(const Query::List& queries);
+	bool send(Request& request);
 
 protected:
 	void onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort) override;

@@ -1,3 +1,4 @@
+#pragma once
 
 #include "Response.h"
 
@@ -6,14 +7,15 @@ namespace mDNS
 class Request : public Response
 {
 public:
-	Request();
+	enum class Type {
+		query,
+		reply,
+	};
 
-	Question* createQuestion(const String& name);
+	Request(Type type);
 
-	Question* addQuestion(const String& name)
-	{
-		return createQuestion(name);
-	}
+	Question* addQuestion(const String& name, ResourceType type = ResourceType::PTR, uint16_t qclass = 1,
+						  bool unicast = false);
 
 	Answer* createAnswer(const String& name, Resource::Type type, uint16_t rclass = 1, bool flush = false,
 						 uint32_t ttl = 120);
@@ -31,6 +33,11 @@ public:
 		assert(kind < Answer::Kind::additional);
 		kind = Answer::Kind(unsigned(kind) + 1);
 		return kind;
+	}
+
+	const uint8_t* getBuffer() const
+	{
+		return buffer;
 	}
 
 private:
