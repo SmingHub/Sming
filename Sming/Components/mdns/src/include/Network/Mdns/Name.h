@@ -55,6 +55,11 @@ public:
 	String getService() const;
 	String getInstance() const;
 
+	uint16_t getPtr() const
+	{
+		return ptr;
+	}
+
 	/**
 	 * @brief Fixup pointer at end of name to point to another name
 	 * @param other Where to point to

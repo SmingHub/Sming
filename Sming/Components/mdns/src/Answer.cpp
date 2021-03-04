@@ -104,6 +104,21 @@ uint16_t Answer::init(uint16_t namePtr, const String& name, Resource::Type type,
 	this->namePtr = namePtr;
 	Packet pkt{message.resolvePointer(namePtr)};
 	pkt.writeName(name);
+	nameLen = pkt.pos;
+	pkt.write16(uint16_t(type));						   // Type
+	pkt.write16((rclass & 0x7fff) | (flush ? 0x8000 : 0)); // Class
+	pkt.write32(ttl);									   // TTL
+	pkt.write16(0);										   // Resource Record Length
+	return pkt.pos;
+}
+
+uint16_t Answer::init(uint16_t namePtr, const Name& name, Resource::Type type, uint16_t rclass, bool flush,
+					  uint32_t ttl)
+{
+	this->namePtr = namePtr;
+	Packet pkt{message.resolvePointer(namePtr)};
+	pkt.write16(name.getPtr() | 0xC000);
+	nameLen = pkt.pos;
 	pkt.write16(uint16_t(type));						   // Type
 	pkt.write16((rclass & 0x7fff) | (flush ? 0x8000 : 0)); // Class
 	pkt.write32(ttl);									   // TTL

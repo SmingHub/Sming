@@ -48,4 +48,14 @@ Answer* Request::createAnswer(const String& name, Resource::Type type, uint16_t 
 	return answer;
 }
 
+Answer* Request::createAnswer(const Name& name, Resource::Type type, uint16_t rclass, bool flush, uint32_t ttl)
+{
+	auto answer = new Answer(*this, kind);
+	answers.add(answer);
+	Packet pkt{data, uint16_t(6 + unsigned(kind) * 2)};
+	pkt.write16(pkt.peek16() + 1);
+	size += answer->init(size, name, type, rclass, flush, ttl);
+	return answer;
+}
+
 } // namespace mDNS

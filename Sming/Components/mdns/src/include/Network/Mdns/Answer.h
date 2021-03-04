@@ -106,6 +106,7 @@ public:
 
 	// Writing
 	uint16_t init(uint16_t namePtr, const String& name, Resource::Type type, uint16_t rclass, bool flush, uint32_t ttl);
+	uint16_t init(uint16_t namePtr, const Name& name, Resource::Type type, uint16_t rclass, bool flush, uint32_t ttl);
 	void allocate(uint16_t size);
 
 private:

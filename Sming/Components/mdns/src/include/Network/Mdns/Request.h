@@ -22,12 +22,12 @@ public:
 	Question* addQuestion(const String& name, ResourceType type = ResourceType::PTR, uint16_t qclass = 1,
 						  bool unicast = false);
 
-	Answer* createAnswer(const String& name, Resource::Type type, uint16_t rclass = 1, bool flush = false,
-						 uint32_t ttl = 120);
+	Answer* createAnswer(const String& name, Resource::Type type, uint16_t rclass, bool flush, uint32_t ttl);
+	Answer* createAnswer(const Name& name, Resource::Type type, uint16_t rclass, bool flush, uint32_t ttl);
 
-	template <class Resource, typename... ParamTypes> Resource addAnswer(const String& name, ParamTypes... params)
+	template <class Resource, class N, typename... ParamTypes> Resource addAnswer(const N& name, ParamTypes... params)
 	{
-		auto answer = createAnswer(name, Resource::type);
+		auto answer = createAnswer(name, Resource::type, 1, false, 120);
 		Resource r(*answer);
 		r.init(params...);
 		return r;

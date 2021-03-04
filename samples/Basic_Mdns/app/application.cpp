@@ -260,9 +260,11 @@ void test()
 
 		/**
 		 * Finally, write the address records
+		 * We can re-use the host Name from the SRV record, storing a pointer instead of the full text
 		 */
-		auto a = request.addAnswer<Resource::A>(F("sming.local"), WifiStation.getIP());
-		auto aaaa = request.addAnswer<Resource::AAAA>(F("sming.local"), Ip6Address());
+		auto hostName = srv.getHost();
+		auto a = request.addAnswer<Resource::A>(hostName, WifiStation.getIP());
+		auto aaaa = request.addAnswer<Resource::AAAA>(hostName, Ip6Address());
 
 		parseFile(F("Test answers"), request);
 	}
