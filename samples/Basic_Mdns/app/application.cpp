@@ -256,6 +256,8 @@ void init()
 	test();
 
 	// Setup the WIFI connection
+	// IMPORTANT: MUST disable AP or multicast won't work
+	WifiAccessPoint.enable(false);
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
 
