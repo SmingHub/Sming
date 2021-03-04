@@ -3,7 +3,7 @@
 #include <Libraries/Adafruit_NeoPixel/Adafruit_NeoPixel.h>
 
 #ifndef WIFI_SSID
-#define WIFI_SSID "XXX" // Put you SSID and Password here
+#define WIFI_SSID "XXX" // Put your SSID and password here
 #define WIFI_PWD "XXX"
 #endif
 

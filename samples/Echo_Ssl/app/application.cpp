@@ -10,7 +10,7 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_SSID "PleaseEnterSSID" // Put your SSID and password here
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
@@ -66,7 +66,7 @@ void init()
 
 	// Setup the WIFI connection
 	WifiStation.enable(true);
-	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
+	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put your SSID and password here
 
 	// Run our method when station was connected to AP (or not connected)
 	WifiEvents.onStationDisconnect(connectFail);

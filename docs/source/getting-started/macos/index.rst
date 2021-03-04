@@ -77,7 +77,7 @@ Clone from the `Sming <https://github.com/SmingHub/Sming>`__ repository::
    Do NOT use the --recursive option for the command above.
    Our build mechanism will take care to get the third-party sources and patch them, if needed.
 
-You will get a copy of our `develop` branch which intended for developers.
+You will get a copy of our `develop` branch which is intended for developers.
 It is the one where all new cool (unstable) features are landing.
 
 If you want to use our stable branch then use the master branch::
