@@ -2,8 +2,6 @@
 #include <Network/Mdns/Server.h>
 #include <IFS/FileSystem.h>
 
-IMPORT_FSTR(testFile, PROJECT_DIR "/resource/192.168.1.100.mdns")
-
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
 #define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
@@ -83,6 +81,8 @@ void printAnswer(mDNS::Answer& answer)
 void printMessage(mDNS::Message& message)
 {
 	Serial.println();
+	Serial.print(system_get_time());
+	Serial.print(' ');
 	Serial.print(message.isReply() ? F("REPLY") : F("QUERY"));
 	auto ip = message.getRemoteIp();
 	if(uint32_t(ip) != 0) {
@@ -174,18 +174,28 @@ void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reas
 	Serial.println(F("I'm NOT CONNECTED!"));
 }
 
-void parseFile(const String& name, const String& data)
+void parseFile(const String& name, const void* data, size_t length)
 {
 	Serial.println();
 	Serial.print(_F("** Parsing '"));
 	Serial.print(name);
 	Serial.println(_F("' **"));
-	mDNS::Message message(0U, 0, const_cast<char*>(data.begin()), data.length());
+	mDNS::Message message(0U, 0, const_cast<void*>(data), length);
 	if(message.parse()) {
 		printMessage(message);
 	}
 	Serial.println(_F("** End of test packet **"));
 	Serial.println();
+}
+
+void parseFile(const String& name, const String& data)
+{
+	parseFile(name, data.c_str(), data.length());
+}
+
+void parseFile(const String& name, const mDNS::Message& message)
+{
+	parseFile(name, message.getData(), message.getSize());
 }
 
 void test()
@@ -204,26 +214,26 @@ void test()
 		request.addQuestion(F("_chromecast._tcp.local"));
 		request.addQuestion(F("_%9832479817234_sming._tcp.local"), mDNS::ResourceType::PTR);
 		request.addQuestion(F("_sming._tcp.local"), mDNS::ResourceType::PTR);
-		Message message(request);
-		message.parse();
-		printMessage(message);
+		parseFile(F("Test questions"), request);
 	}
 
 	// Create message records
 	{
+		// Service is "_test", hostname is "sming"
 		Request request(Request::Type::reply);
-		auto ptr = request.addAnswer<Resource::PTR>(F("_chromecast._tcp.local"), F("my.test.name._tcp.local"));
+		auto ptr = request.addAnswer<Resource::PTR>(F("_test._tcp.local"), F("sming._test._tcp.local"));
 		request.nextSection();
 		request.nextSection();
-		auto a = request.addAnswer<Resource::A>(F("my.test.name._tcp.local"), 0x12345678);
-		auto txt = request.addAnswer<Resource::TXT>(F("my.test.name._tcp.local"));
+		auto txt = request.addAnswer<Resource::TXT>(F("sming._test._tcp.local"));
 		txt.add("pm=12");
 		txt.add("fn=My friendly name");
-		auto aaaa = request.addAnswer<Resource::AAAA>(F("abc._tcp.local"), Ip6Address());
-		auto srv = request.addAnswer<Resource::SRV>(F("xxxxx._tcp.local"), 1, 2, 8080, F("sillyhouse.net"));
-		printMessage(request);
+		auto srv = request.addAnswer<Resource::SRV>(F("sming._test._tcp.local"), 1, 2, 8080, F("sming.local"));
+		auto a = request.addAnswer<Resource::A>(F("sming.local"), WifiStation.getIP());
+		auto aaaa = request.addAnswer<Resource::AAAA>(F("sming.local"), Ip6Address());
+		parseFile(F("Test answers"), request);
 	}
 
+// For host, read the resource directory directly as we might want to add other files there
 #ifdef ARCH_HOST
 
 	auto& fs = IFS::Host::getFileSystem();
@@ -235,9 +245,6 @@ void test()
 			parseFile(filename, data);
 		}
 	}
-
-#else
-	parseFile(F("testFile"), testFile);
 #endif
 }
 
