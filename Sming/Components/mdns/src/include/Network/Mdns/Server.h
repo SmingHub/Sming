@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * Finder.h
+ * Server.h
  *
  * Code originally based on MrDunk's mDNS code distributed under the MIT license.
  *
@@ -25,7 +25,7 @@ namespace mDNS
 /**
  * @brief Locates mDNS services by issuing queries
  */
-class Finder : protected UdpConnection
+class Server : protected UdpConnection
 {
 public:
 	/**
@@ -38,11 +38,11 @@ public:
 	 */
 	using PacketDelegate = Delegate<void(IpAddress remoteIP, uint16_t remotePort, const uint8_t* data, size_t length)>;
 
-	Finder() : out(*this)
+	Server() : out(*this)
 	{
 	}
 
-	~Finder();
+	~Server();
 
 	/**
 	 * @brief Set callback to be invoked for each received response
@@ -84,13 +84,13 @@ private:
 	class UdpOut : public UdpConnection
 	{
 	public:
-		UdpOut(Finder& finder) : finder(finder)
+		UdpOut(Server& finder) : finder(finder)
 		{
 		}
 
 	protected:
 		void onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort) override;
-		Finder& finder;
+		Server& finder;
 	};
 
 	bool initialise();

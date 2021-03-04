@@ -4,12 +4,11 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * Finder.cpp
+ * Server.cpp
  *
  ****/
 
-#include "include/Network/Mdns/Finder.h"
-#include "include/Network/Mdns/Response.h"
+#include "include/Network/Mdns/Server.h"
 #include "Packet.h"
 #include <Platform/Station.h>
 
@@ -22,21 +21,21 @@
 
 namespace mDNS
 {
-Finder::~Finder()
+Server::~Server()
 {
 	if(initialised) {
 		UdpConnection::leaveMulticastGroup(IpAddress(MDNS_IP));
 	}
 }
 
-bool Finder::search(const String& name, ResourceType type)
+bool Server::search(const String& name, ResourceType type)
 {
 	Request req(Request::Type::query);
 	auto question = req.addQuestion(name, type);
 	return send(req);
 }
 
-bool Finder::send(Request& request)
+bool Server::send(Request& request)
 {
 	auto buf = reinterpret_cast<const char*>(request.getData());
 	auto len = request.getSize();
@@ -46,7 +45,7 @@ bool Finder::send(Request& request)
 	return out.sendTo(IpAddress(MDNS_IP), MDNS_TARGET_PORT, buf, len);
 }
 
-bool Finder::initialise()
+bool Server::initialise()
 {
 	if(initialised) {
 		return true;
@@ -71,12 +70,12 @@ bool Finder::initialise()
 	return true;
 }
 
-void Finder::UdpOut::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
+void Server::UdpOut::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 {
 	finder.onReceive(buf, remoteIP, remotePort);
 }
 
-void Finder::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
+void Server::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 {
 	if(packetCallback) {
 		packetCallback(remoteIP, remotePort, static_cast<const uint8_t*>(buf->payload), buf->len);

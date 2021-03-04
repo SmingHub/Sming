@@ -1,6 +1,5 @@
 #include <SmingCore.h>
-#include <Network/Mdns/Finder.h>
-#include <Network/Mdns/Request.h>
+#include <Network/Mdns/Server.h>
 #include <IFS/FileSystem.h>
 
 IMPORT_FSTR(testFile, PROJECT_DIR "/resource/192.168.1.100.mdns")
@@ -11,7 +10,7 @@ IMPORT_FSTR(testFile, PROJECT_DIR "/resource/192.168.1.100.mdns")
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-mDNS::Finder finder;
+mDNS::Server server;
 
 DEFINE_FSTR_LOCAL(fstrSearchInstance, "_googlecast")
 
@@ -86,7 +85,7 @@ void printAnswer(mDNS::Answer& answer)
 void printResponse(mDNS::Response& response)
 {
 	Serial.println();
-	Serial.print(response.isAnswer() ? F("RESPONSE") : F("REQUEST"));
+	Serial.print(response.isReply() ? F("REPLY") : F("QUERY"));
 	auto ip = response.getRemoteIp();
 	if(uint32_t(ip) != 0) {
 		Serial.print(F(" from "));
@@ -115,7 +114,7 @@ void handleResponse(mDNS::Response& response)
 	printResponse(response);
 
 	// Check if we're interested in this reponse
-	if(!response.isAnswer()) {
+	if(!response.isReply()) {
 		return;
 	}
 	auto answer = response[mDNS::ResourceType::PTR];
@@ -193,7 +192,7 @@ void parseFile(const String& name, const String& data)
 
 void test()
 {
-	debug_i("sizeof(mDNS::Finder) = %u", sizeof(mDNS::Finder));
+	debug_i("sizeof(mDNS::Server) = %u", sizeof(mDNS::Server));
 	debug_i("sizeof(mDNS::Response) = %u", sizeof(mDNS::Response));
 	debug_i("sizeof(mDNS::Question) = %u", sizeof(mDNS::Question));
 	debug_i("sizeof(mDNS::Answer) = %u", sizeof(mDNS::Answer));
