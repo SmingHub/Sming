@@ -52,7 +52,7 @@ include/ssl/private_key.h:
 	$(info Generating unique certificate and key. This may take some time...)
 	$(Q) mkdir -p $(SSL_INCLUDE_DIR) $(SSL_CERT_DIR)
 	$(Q) chmod a+x $(SSL_TOOLS_PATH)/make_certs.sh
-	cd $(SSL_CERT_DIR); SSL_INCLUDE_DIR=$(SSL_INCLUDE_DIR) $(SSL_TOOLS_PATH)/make_certs.sh
+	$(Q) cd $(SSL_CERT_DIR); SSL_INCLUDE_DIR=$(SSL_INCLUDE_DIR) $(SSL_TOOLS_PATH)/make_certs.sh; rm -rf $(SSL_CERT_DIR)
 
 endif
 
