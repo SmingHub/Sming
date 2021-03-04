@@ -3,7 +3,7 @@
 
 namespace mDNS
 {
-Request::Request(Type type) : Message(0U, 0, buffer, 0)
+Request::Request(IpAddress remoteIp, uint16_t remotePort, Type type) : Message(remoteIp, remotePort, buffer, 0)
 {
 	Packet pkt{data, 0};
 

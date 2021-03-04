@@ -12,19 +12,12 @@
 #include "Packet.h"
 #include <Platform/Station.h>
 
-#define MDNS_IP 224, 0, 0, 251
-#define MDNS_TARGET_PORT 5353
-#define MDNS_SOURCE_PORT 5353
-#define MDNS_TTL 255
-
-#define MAX_PACKET_SIZE 1024
-
 namespace mDNS
 {
 Server::~Server()
 {
 	if(initialised) {
-		UdpConnection::leaveMulticastGroup(IpAddress(MDNS_IP));
+		UdpConnection::leaveMulticastGroup(MDNS_IP);
 	}
 }
 
@@ -42,7 +35,7 @@ bool Server::send(Request& request)
 
 	initialise();
 	out.listen(0);
-	return out.sendTo(IpAddress(MDNS_IP), MDNS_TARGET_PORT, buf, len);
+	return out.sendTo(request.getRemoteIp(), request.getRemotePort(), buf, len);
 }
 
 bool Server::initialise()
@@ -53,7 +46,7 @@ bool Server::initialise()
 
 	auto localIp = WifiStation.getIP();
 
-	if(!joinMulticastGroup(localIp, IpAddress(MDNS_IP))) {
+	if(!joinMulticastGroup(localIp, MDNS_IP)) {
 		debug_w("[mDNS] joinMulticastGroup() failed");
 		return false;
 	}

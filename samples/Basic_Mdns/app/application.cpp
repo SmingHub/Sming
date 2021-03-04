@@ -200,13 +200,13 @@ void test()
 
 	using namespace mDNS;
 
-	// Create list of questions, serialise them then decode and print the result
+	// Create list of questions, parse the resulting data and print the result
 	{
 		Request request(Request::Type::query);
 		request.addQuestion(F("_chromecast._tcp.local"));
 		request.addQuestion(F("_%9832479817234_sming._tcp.local"), mDNS::ResourceType::PTR);
 		request.addQuestion(F("_sming._tcp.local"), mDNS::ResourceType::PTR);
-		Message message(0U, 0, request.getData(), request.getSize());
+		Message message(request);
 		message.parse();
 		printMessage(message);
 	}

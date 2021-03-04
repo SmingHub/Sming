@@ -15,6 +15,13 @@
 
 namespace mDNS
 {
+constexpr uint32_t MDNS_IP{0xFB0000E0}; // 224.0.0.251
+constexpr uint16_t MDNS_TARGET_PORT{5353};
+constexpr uint16_t MDNS_SOURCE_PORT{5353};
+constexpr uint16_t MDNS_TTL{255};
+
+constexpr uint16_t MAX_PACKET_SIZE{1024};
+
 /**
  * @brief Encapsulates a message packet for flexible introspection
  */
@@ -28,6 +35,11 @@ public:
 
 	Message(IpAddress remoteIp, uint16_t remotePort, void* data, uint16_t size)
 		: remoteIp(remoteIp), remotePort(remotePort), data(static_cast<uint8_t*>(data)), size(size)
+	{
+	}
+
+	Message(const Message& other)
+		: Message(other.getRemoteIp(), other.getRemotePort(), other.getData(), other.getSize())
 	{
 	}
 

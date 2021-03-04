@@ -7,7 +7,17 @@ namespace mDNS
 class Request : public Message
 {
 public:
-	Request(Type type);
+	/**
+	 * @brief Create a unicast message
+	 */
+	Request(IpAddress remoteIp, uint16_t remotePort, Type type);
+
+	/**
+	 * @brief Create a multicast message
+	 */
+	Request(Type type) : Request(MDNS_IP, MDNS_TARGET_PORT, type)
+	{
+	}
 
 	Question* addQuestion(const String& name, ResourceType type = ResourceType::PTR, uint16_t qclass = 1,
 						  bool unicast = false);
@@ -31,7 +41,7 @@ public:
 	}
 
 private:
-	uint8_t buffer[1024];
+	uint8_t buffer[MAX_PACKET_SIZE];
 	Answer::Kind kind{Answer::Kind::answer};
 };
 
