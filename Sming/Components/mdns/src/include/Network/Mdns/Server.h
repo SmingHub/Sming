@@ -38,11 +38,17 @@ public:
 	 */
 	using PacketDelegate = Delegate<void(IpAddress remoteIP, uint16_t remotePort, const uint8_t* data, size_t length)>;
 
-	Server() : out(*this)
-	{
-	}
-
 	~Server();
+
+	bool begin();
+
+	void end();
+
+	bool restart()
+	{
+		end();
+		return begin();
+	}
 
 	/**
 	 * @brief Set callback to be invoked for each received message
@@ -80,22 +86,16 @@ private:
 	 */
 	class UdpOut : public UdpConnection
 	{
-	public:
-		UdpOut(Server& finder) : finder(finder)
-		{
-		}
-
 	protected:
 		void onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort) override;
-		Server& finder;
 	};
-
-	bool initialise();
 
 	MessageDelegate messageCallback;
 	PacketDelegate packetCallback;
 	UdpOut out;
-	bool initialised{false};
+	bool active{false};
 };
+
+extern Server server;
 
 } // namespace mDNS

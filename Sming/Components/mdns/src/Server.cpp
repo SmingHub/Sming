@@ -14,9 +14,11 @@
 
 namespace mDNS
 {
+Server server;
+
 Server::~Server()
 {
-	if(initialised) {
+	if(active) {
 		UdpConnection::leaveMulticastGroup(MDNS_IP);
 	}
 }
@@ -33,14 +35,14 @@ bool Server::send(Request& request)
 	auto buf = reinterpret_cast<const char*>(request.getData());
 	auto len = request.getSize();
 
-	initialise();
+	begin();
 	out.listen(0);
 	return out.sendTo(request.getRemoteIp(), request.getRemotePort(), buf, len);
 }
 
-bool Server::initialise()
+bool Server::begin()
 {
-	if(initialised) {
+	if(active) {
 		return true;
 	}
 
@@ -59,13 +61,24 @@ bool Server::initialise()
 	setMulticast(localIp);
 	setMulticastTtl(MDNS_TTL);
 
-	initialised = true;
+	active = true;
 	return true;
+}
+
+void Server::end()
+{
+	if(!active) {
+		return;
+	}
+
+	close();
+	leaveMulticastGroup(MDNS_IP);
+	active = false;
 }
 
 void Server::UdpOut::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 {
-	finder.onReceive(buf, remoteIP, remotePort);
+	server.onReceive(buf, remoteIP, remotePort);
 }
 
 void Server::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)

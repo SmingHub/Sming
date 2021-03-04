@@ -10,8 +10,6 @@ IMPORT_FSTR(testFile, PROJECT_DIR "/resource/192.168.1.100.mdns")
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-mDNS::Server server;
-
 DEFINE_FSTR_LOCAL(fstrSearchInstance, "_googlecast")
 
 #ifdef ARCH_HOST
@@ -158,14 +156,14 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	Serial.print(F("Connected. Got IP: "));
 	Serial.println(ip);
 
-	server.onMessage(handleMessage);
+	mDNS::server.onMessage(handleMessage);
 #ifdef ARCH_HOST
-	server.onPacket(savePacket);
+	mDNS::server.onPacket(savePacket);
 #endif
 
 	auto timer = new Timer;
 	timer->initializeMs<10000>(InterruptCallback([]() {
-		bool ok = server.search(String(fstrSearchInstance) + F("._tcp.local"));
+		bool ok = mDNS::server.search(String(fstrSearchInstance) + F("._tcp.local"));
 		debug_i("search(): %s", ok ? "OK" : "FAIL");
 	}));
 	timer->start();
