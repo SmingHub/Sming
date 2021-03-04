@@ -28,6 +28,16 @@ Request::Request() : Response(0U, 0, buffer, 0)
 	size = pkt.pos;
 }
 
+Question* Request::createQuestion(const String& name)
+{
+	auto question = new Question(*this);
+	questions.add(question);
+	Packet pkt{data, 4};
+	pkt.write16(questions.count());
+	size += question->init(size, name);
+	return question;
+}
+
 Answer* Request::createAnswer(const String& name, Resource::Type type, uint16_t rclass, bool flush, uint32_t ttl)
 {
 	auto answer = new Answer(*this, kind);

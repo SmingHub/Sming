@@ -62,6 +62,9 @@ public:
 		return response;
 	}
 
+	// Writing
+	uint16_t init(uint16_t namePtr, const String& name);
+
 private:
 	Response& response;
 	uint16_t namePtr;

@@ -50,4 +50,14 @@ bool Question::parse(Packet& pkt)
 	return true;
 }
 
+uint16_t Question::init(uint16_t namePtr, const String& name)
+{
+	this->namePtr = namePtr;
+	nameLen = response.writeName(namePtr, name);
+	Packet pkt{response.resolvePointer(namePtr), nameLen};
+	pkt.write16(0);		 // Type
+	pkt.write16(0x0001); // Class
+	return pkt.pos;
+}
+
 } // namespace mDNS

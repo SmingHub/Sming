@@ -203,19 +203,18 @@ void test()
 
 	// Create list of questions, serialise them then decode and print the result
 	{
-		Query::OwnedList list;
-		list.add(new Query{F("_%9832479817234_sming._tcp.local"), mDNS::ResourceType::PTR});
-		list.add(new Query{F("_sming._tcp.local"), mDNS::ResourceType::PTR});
-		uint8_t buffer[1024];
-		auto len = serialize(list, buffer, sizeof(buffer));
-		Response response(0U, 0, buffer, len);
+		Request request(Request::Type::query);
+		request.addQuestion(F("_chromecast._tcp.local"));
+		request.addQuestion(F("_%9832479817234_sming._tcp.local"), mDNS::ResourceType::PTR);
+		request.addQuestion(F("_sming._tcp.local"), mDNS::ResourceType::PTR);
+		Response response(0U, 0, request.getData(), request.getSize());
 		response.parse();
 		printResponse(response);
 	}
 
 	// Create response records
 	{
-		Request request;
+		Request request(Request::Type::reply);
 		auto ptr = request.addAnswer<Resource::PTR>(F("_chromecast._tcp.local"), F("my.test.name._tcp.local"));
 		request.nextSection();
 		request.nextSection();

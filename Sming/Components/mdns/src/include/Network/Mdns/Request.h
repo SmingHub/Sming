@@ -8,6 +8,13 @@ class Request : public Response
 public:
 	Request();
 
+	Question* createQuestion(const String& name);
+
+	Question* addQuestion(const String& name)
+	{
+		return createQuestion(name);
+	}
+
 	Answer* createAnswer(const String& name, Resource::Type type, uint16_t rclass = 1, bool flush = false,
 						 uint32_t ttl = 120);
 
