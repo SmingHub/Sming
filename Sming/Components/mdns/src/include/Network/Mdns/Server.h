@@ -30,13 +30,15 @@ class Server : protected UdpConnection
 public:
 	/**
 	 * @brief Callback to be invoked for each received message
+	 * @retval bool Depends on operation
 	 */
-	using MessageDelegate = Delegate<void(Message& message)>;
+	using MessageDelegate = Delegate<bool(Message& message)>;
 
 	/**
 	 * @brief Callback to be invoked with raw data (debugging, etc.)
+	 * @retval bool Depends on operation
 	 */
-	using PacketDelegate = Delegate<void(IpAddress remoteIP, uint16_t remotePort, const uint8_t* data, size_t length)>;
+	using PacketDelegate = Delegate<bool(IpAddress remoteIP, uint16_t remotePort, const uint8_t* data, size_t length)>;
 
 	~Server();
 
@@ -52,12 +54,26 @@ public:
 
 	/**
 	 * @brief Set callback to be invoked for each received message
+	 * @param callback Return false from callback to prevent message being passed to other clients
 	 */
 	void onMessage(MessageDelegate callback)
 	{
 		messageCallback = callback;
 	}
 
+	/**
+	 * @brief Set callback to be invoked before sending a message
+	 * @param callback Return true from callback to actually send packet
+	 */
+	void onSend(MessageDelegate callback)
+	{
+		sendCallback = callback;
+	}
+
+	/**
+	 * @brief Set callback to be invoked for raw received data, before parsing
+	 * @param callback Return true from callback to actually send packet
+	 */
 	void onPacket(PacketDelegate callback)
 	{
 		packetCallback = callback;
@@ -91,6 +107,7 @@ private:
 	};
 
 	MessageDelegate messageCallback;
+	MessageDelegate sendCallback;
 	PacketDelegate packetCallback;
 	UdpOut out;
 	bool active{false};

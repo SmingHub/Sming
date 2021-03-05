@@ -32,6 +32,10 @@ bool Server::search(const String& name, ResourceType type)
 
 bool Server::send(Message& message)
 {
+	if(sendCallback) {
+		sendCallback(message);
+	}
+
 	auto buf = reinterpret_cast<const char*>(message.getData());
 	auto len = message.getSize();
 
@@ -84,7 +88,9 @@ void Server::UdpOut::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePor
 void Server::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 {
 	if(packetCallback) {
-		packetCallback(remoteIP, remotePort, static_cast<const uint8_t*>(buf->payload), buf->len);
+		if(!packetCallback(remoteIP, remotePort, static_cast<const uint8_t*>(buf->payload), buf->len)) {
+			return;
+		}
 	}
 
 	if(!messageCallback) {
@@ -93,6 +99,10 @@ void Server::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 
 	Message message(remoteIP, remotePort, buf->payload, buf->len);
 	if(message.parse()) {
+		/*
+		 * TODO: Establish callback chain/queue to support multiple clients.
+		 * If a client returns false then don't pass it any further.
+		 */
 		messageCallback(message);
 	}
 }
