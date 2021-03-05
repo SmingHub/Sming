@@ -146,12 +146,11 @@ const char* TXT::get(uint8_t index, uint8_t& len) const
 	return nullptr;
 }
 
-void TXT::add(const String& value)
+void TXT::add(const char* value, uint16_t len)
 {
 	Packet pkt{getRecord(), getRecordSize()};
-	auto len = value.length();
 	pkt.write8(len);
-	pkt.write(value.c_str(), len);
+	pkt.write(value, len);
 	answer.allocate(pkt.pos);
 }
 

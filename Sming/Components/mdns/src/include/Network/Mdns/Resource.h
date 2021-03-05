@@ -160,7 +160,24 @@ public:
 	{
 	}
 
-	void add(const String& value);
+	void add(const char* value, uint16_t len);
+
+	void add(const String& value)
+	{
+		add(value.c_str(), value.length());
+	}
+
+	TXT& operator+=(const char* value)
+	{
+		add(value, strlen(value));
+		return *this;
+	}
+
+	TXT& operator+=(const String& value)
+	{
+		add(value);
+		return *this;
+	}
 
 private:
 	const char* get(uint8_t index, uint8_t& len) const;
