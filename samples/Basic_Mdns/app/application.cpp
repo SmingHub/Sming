@@ -9,10 +9,10 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-DEFINE_FSTR_LOCAL(fstrSearchInstance, "_googlecast")
+DEFINE_FSTR_LOCAL(fstrSearchService, "_googlecast._tcp.local")
 
 #ifdef ARCH_HOST
-void savePacket(IpAddress remoteIP, uint16_t remotePort, const uint8_t* data, size_t length)
+bool savePacket(IpAddress remoteIP, uint16_t remotePort, const uint8_t* data, size_t length)
 {
 	auto& hostfs = IFS::Host::getFileSystem();
 	String filename;
@@ -26,23 +26,26 @@ void savePacket(IpAddress remoteIP, uint16_t remotePort, const uint8_t* data, si
 	filename += ".bin";
 	filename.replace(':', '-');
 	hostfs.setContent(filename, data, length);
+
+	return true;
 }
 #endif
 
-void handleMessage(mDNS::Message& message)
+bool handleMessage(mDNS::Message& message)
 {
 	mDNS::printMessage(Serial, message);
 
 	// Check if we're interested in this reponse
 	if(!message.isReply()) {
-		return;
+		return false;
 	}
 	auto answer = message[mDNS::ResourceType::PTR];
 	if(answer == nullptr) {
-		return;
+		return false;
 	}
-	if(answer->getName().getInstance() != fstrSearchInstance) {
-		return;
+	if(answer->getName() != fstrSearchService) {
+		debug_i("Ignoring message");
+		return false;
 	}
 
 	// Extract our required information from the message
@@ -71,12 +74,13 @@ void handleMessage(mDNS::Message& message)
 	Serial.print(info.friendlyName);
 	Serial.print(F("', IP Address = "));
 	Serial.println(info.ipaddr);
+
+	return true;
 }
 
 void sendSearch()
 {
-	String name(fstrSearchInstance);
-	name += _F("._tcp.local");
+	String name(fstrSearchService);
 
 	// To discover all DNS-SD registered services, use:
 	// name = F("_services._dns-sd._udp.local");
@@ -90,6 +94,10 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	Serial.print(F("Connected. Got IP: "));
 	Serial.println(ip);
 
+	mDNS::server.onSend([](mDNS::Message& msg) {
+		printMessage(Serial, msg);
+		return true;
+	});
 	mDNS::server.onMessage(handleMessage);
 #ifdef ARCH_HOST
 	mDNS::server.onPacket(savePacket);
@@ -198,8 +206,8 @@ void test()
 		 * We can re-use the host Name from the SRV record, storing a pointer instead of the full text
 		 */
 		auto hostName = srv.getHost();
-		auto a = reply.addAnswer<Resource::A>(hostName, WifiStation.getIP());
-		auto aaaa = reply.addAnswer<Resource::AAAA>(hostName, Ip6Address());
+		reply.addAnswer<Resource::A>(hostName, WifiStation.getIP());
+		reply.addAnswer<Resource::AAAA>(hostName, Ip6Address());
 
 		parseFile(F("Test answers"), reply);
 	}
