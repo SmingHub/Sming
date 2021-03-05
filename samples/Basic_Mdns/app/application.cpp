@@ -151,6 +151,18 @@ void handleMessage(mDNS::Message& message)
 	Serial.println(info.ipaddr);
 }
 
+void sendSearch()
+{
+	String name(fstrSearchInstance);
+	name += _F("._tcp.local");
+
+	// To discover all DNS-SD registered services, use:
+	// name = F("_services._dns-sd._udp.local");
+
+	bool ok = mDNS::server.search(name);
+	debug_i("search('%s'): %s", name.c_str(), ok ? "OK" : "FAIL");
+}
+
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	Serial.print(F("Connected. Got IP: "));
@@ -161,11 +173,12 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	mDNS::server.onPacket(savePacket);
 #endif
 
+	// Issue a search now
+	sendSearch();
+
+	// Repeat every 30 seconds
 	auto timer = new Timer;
-	timer->initializeMs<10000>(InterruptCallback([]() {
-		bool ok = mDNS::server.search(String(fstrSearchInstance) + F("._tcp.local"));
-		debug_i("search(): %s", ok ? "OK" : "FAIL");
-	}));
+	timer->initializeMs<30000>(sendSearch);
 	timer->start();
 }
 
