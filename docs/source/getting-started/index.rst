@@ -94,7 +94,7 @@ Connect to WiFi
 ::
 
    WifiStation.enable(true);
-   WifiStation.config("LOCAL-NETWORK", "123456789087"); // Put you SSID and Password here
+   WifiStation.config("LOCAL-NETWORK", "123456789087"); // Put your SSID and password here
 
 Read DHT22 sensor
 ~~~~~~~~~~~~~~~~~

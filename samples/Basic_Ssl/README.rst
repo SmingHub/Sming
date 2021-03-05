@@ -42,4 +42,4 @@ Memory usage
 SSL uses a significant amount of RAM. You can build this sample to track heap usage
 and output statistics every 5 seconds::
 
-   make ENABLE_MALLOC_COUNT = 1
+   make ENABLE_MALLOC_COUNT=1

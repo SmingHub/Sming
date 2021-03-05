@@ -9,7 +9,7 @@ Timer procTimer;
 // (At the moment 4 pcs - it depends on the definition in the library)
 // Measuring time: 1.2 seconds * number of sensors
 // The main difference with the previous version of the demo:
-//  - Do not use the Delay function () which discourages by manufacturer of ESP8266
+//  - Do not use the Delay function () which is discouraged by the manufacturer of ESP8266
 //  - We can read several sensors
 // Usage:
 //  Call Init to setup pin eg. ReadTemp.Init(2);   //pin 2 selected

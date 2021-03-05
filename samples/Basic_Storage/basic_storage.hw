@@ -15,7 +15,7 @@
 			"size": "16K",
 			"type": "user",
 			"subtype": 0,
-			"filename": "user0.bin"
+			"filename": "files/user0.bin"
 		},
 		"user1": {
 			"address": "0x1F4000",

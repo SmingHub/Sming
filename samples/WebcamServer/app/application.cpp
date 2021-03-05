@@ -6,7 +6,7 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_SSID "PleaseEnterSSID" // Put your SSID and password here
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
@@ -83,8 +83,10 @@ void startWebServer()
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.begin(SERIAL_BAUD_RATE); // Enable serial
 	Serial.systemDebugOutput(true); // Allow debug output to serial
+
+	spiffs_mount();
 
 	WifiStation.enable(true);
 

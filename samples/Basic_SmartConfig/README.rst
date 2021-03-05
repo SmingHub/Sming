@@ -11,8 +11,8 @@ a special signature. It then tries to extract data like SSID and password from i
 The App on your smart phone sends out that information.
 
 The example here shows how to use ESP_TOUCH method to do smart
-configuration on the device. It ported from the C code that
-Espressif provides in the SDK examples.
+configuration on the device. It is ported from the C code that
+Espressif provides in their SDK examples.
 
 You will need an App for your Smart Phone, such as:
 

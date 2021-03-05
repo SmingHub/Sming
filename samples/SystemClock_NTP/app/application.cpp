@@ -3,7 +3,7 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_SSID "PleaseEnterSSID" // Put your SSID and password here
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
@@ -87,7 +87,9 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	//  ntpClient = new NtpClient("my_ntp_server", myrefreshinterval);
 
 	//	When using Delegate Callback Option 2
-	demo = new NtpClientDemo();
+	if(demo == nullptr) {
+		demo = new NtpClientDemo();
+	}
 }
 
 // Will be called when WiFi hardware and software initialization was finished
@@ -101,7 +103,7 @@ void init()
 
 	// Station - WiFi client
 	WifiStation.enable(true);
-	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put you SSID and Password here
+	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put your SSID and password here
 
 	printTimer.initializeMs<1000>(onPrintSystemTime).start();
 

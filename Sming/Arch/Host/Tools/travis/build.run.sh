@@ -23,4 +23,5 @@ $MAKE_PARALLEL tests
 mv $SMING_PROJECTS_DIR/samples ..
 mv $SMING_PROJECTS_DIR/tests ..
 unset SMING_PROJECTS_DIR
+$SMING_HOME/../Tools/install.sh doc
 make docs V=1

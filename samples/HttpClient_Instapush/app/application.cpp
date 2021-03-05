@@ -19,7 +19,7 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_SSID "PleaseEnterSSID" // Put your SSID and password here
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
@@ -100,8 +100,6 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 
 void init()
 {
-	spiffs_mount(); // Mount file system, in order to work with files
-
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Debug output to serial
 

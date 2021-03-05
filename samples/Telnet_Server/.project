@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>Telnet_TCPServer_TCPClient</name>
+	<name>Telnet_Server</name>
 	<comment></comment>
 	<projects>
 		<project>SmingFramework</project>
