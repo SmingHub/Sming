@@ -72,10 +72,10 @@ public:
 	bool search(const String& hostname, ResourceType type = ResourceType::PTR);
 
 	/**
-	 * @brief Send an mDNS request containing questions/answers
-	 * @retval bool true if request sent successfully
+	 * @brief Send an mDNS message containing questions/answers
+	 * @retval bool true if message sent successfully
 	 */
-	bool send(Request& request);
+	bool send(Message& message);
 
 protected:
 	void onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort) override;

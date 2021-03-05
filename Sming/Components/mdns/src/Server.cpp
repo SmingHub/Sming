@@ -26,18 +26,18 @@ Server::~Server()
 bool Server::search(const String& name, ResourceType type)
 {
 	Request req(Request::Type::query);
-	auto question = req.addQuestion(name, type);
+	req.addQuestion(name, type);
 	return send(req);
 }
 
-bool Server::send(Request& request)
+bool Server::send(Message& message)
 {
-	auto buf = reinterpret_cast<const char*>(request.getData());
-	auto len = request.getSize();
+	auto buf = reinterpret_cast<const char*>(message.getData());
+	auto len = message.getSize();
 
 	begin();
 	out.listen(0);
-	return out.sendTo(request.getRemoteIp(), request.getRemotePort(), buf, len);
+	return out.sendTo(message.getRemoteIp(), message.getRemotePort(), buf, len);
 }
 
 bool Server::begin()
