@@ -18,16 +18,9 @@ class Request : public Message
 {
 public:
 	/**
-	 * @brief Create a unicast message
-	 */
-	Request(IpAddress remoteIp, uint16_t remotePort, Type type);
-
-	/**
 	 * @brief Create a multicast message
 	 */
-	Request(Type type) : Request(MDNS_IP, MDNS_TARGET_PORT, type)
-	{
-	}
+	Request(Type type);
 
 	Question* addQuestion(const String& name, ResourceType type = ResourceType::PTR, uint16_t qclass = 1,
 						  bool unicast = false);
@@ -53,6 +46,27 @@ public:
 private:
 	uint8_t buffer[MAX_PACKET_SIZE];
 	Answer::Kind kind{Answer::Kind::answer};
+};
+
+class Query : public Request
+{
+public:
+	Query() : Request(Type::query)
+	{
+	}
+};
+
+class Reply : public Request
+{
+public:
+	Reply(const Question& question) : Request(Type::reply)
+	{
+		if(question.isUnicastReply()) {
+			auto& msg = question.getMessage();
+			remoteIp = msg.getRemoteIp();
+			remotePort = msg.getRemotePort();
+		}
+	}
 };
 
 } // namespace mDNS

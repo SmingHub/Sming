@@ -145,11 +145,11 @@ void test()
 
 	// Create list of questions, parse the resulting data and print the result
 	{
-		Request request(Request::Type::query);
-		request.addQuestion(F("_chromecast._tcp.local"));
-		request.addQuestion(F("_%9832479817234_sming._tcp.local"), mDNS::ResourceType::PTR);
-		request.addQuestion(F("_sming._tcp.local"), mDNS::ResourceType::PTR);
-		parseFile(F("Test questions"), request);
+		Query query;
+		query.addQuestion(F("_chromecast._tcp.local"));
+		query.addQuestion(F("_%9832479817234_sming._tcp.local"), mDNS::ResourceType::PTR);
+		query.addQuestion(F("_sming._tcp.local"), mDNS::ResourceType::PTR);
+		parseFile(F("Test questions"), query);
 	}
 
 	// Create message records
@@ -159,7 +159,7 @@ void test()
 		 *
 		 * We also demonstrate here how to set up a name pointer.
 		*/
-		Request request(Request::Type::reply);
+		Request reply(Request::Type::reply);
 
 		/**
 		 * Anywhere a Name is used, if the final character is '.' then it is stored as a 'pointer',
@@ -168,20 +168,20 @@ void test()
 		 * 
 		 * In this case, we want our PTR record to reference the name of the SRV record which we add later.
 		 */
-		auto ptr = request.addAnswer<Resource::PTR>(F("_test._tcp.local"), ".");
+		auto ptr = reply.addAnswer<Resource::PTR>(F("_test._tcp.local"), ".");
 
 		// Move to 'nameserver' records section
-		request.nextSection();
+		reply.nextSection();
 		// Move to 'additional' records section
-		request.nextSection();
+		reply.nextSection();
 
 		/**
 		 * We'll use a pointer for the name here, saves space.
 		 */
-		auto txt = request.addAnswer<Resource::TXT>(".");
+		auto txt = reply.addAnswer<Resource::TXT>(".");
 		txt.add("pm=12");
 		txt.add("fn=My friendly name");
-		auto srv = request.addAnswer<Resource::SRV>(F("sming._test._tcp.local"), 1, 2, 8080, F("sming.local"));
+		auto srv = reply.addAnswer<Resource::SRV>(F("sming._test._tcp.local"), 1, 2, 8080, F("sming.local"));
 
 		/**
 		 * Now the SRV record is constructed we can fix our name references.
@@ -198,10 +198,10 @@ void test()
 		 * We can re-use the host Name from the SRV record, storing a pointer instead of the full text
 		 */
 		auto hostName = srv.getHost();
-		auto a = request.addAnswer<Resource::A>(hostName, WifiStation.getIP());
-		auto aaaa = request.addAnswer<Resource::AAAA>(hostName, Ip6Address());
+		auto a = reply.addAnswer<Resource::A>(hostName, WifiStation.getIP());
+		auto aaaa = reply.addAnswer<Resource::AAAA>(hostName, Ip6Address());
 
-		parseFile(F("Test answers"), request);
+		parseFile(F("Test answers"), reply);
 	}
 
 // For host, read the resource directory directly as we might want to add other files there
