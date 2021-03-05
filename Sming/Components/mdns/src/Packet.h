@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <Core/Data/NetworkPacket.h>
+#include <Core/Data/Packet.h>
 
 namespace mDNS
 {
