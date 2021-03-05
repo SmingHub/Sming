@@ -39,6 +39,9 @@ bool Question::parse(Packet& pkt)
 
 	namePtr = pkt.pos;
 	nameLen = getName().getDataLength();
+	if(nameLen == 0) {
+		return false;
+	}
 	pkt.skip(nameLen + 4);
 
 	if(pkt.pos > size) {

@@ -59,6 +59,9 @@ bool Answer::parse(Packet& pkt)
 
 	namePtr = pkt.pos;
 	nameLen = getName().getDataLength();
+	if(nameLen == 0) {
+		return false;
+	}
 	pkt.skip(nameLen + 8);
 
 	if(pkt.pos > size) {
@@ -117,7 +120,7 @@ uint16_t Answer::init(uint16_t namePtr, const Name& name, Resource::Type type, u
 {
 	this->namePtr = namePtr;
 	Packet pkt{message.resolvePointer(namePtr)};
-	pkt.write16(name.getPtr() | 0xC000);
+	pkt.write16(name.makePointer());
 	nameLen = pkt.pos;
 	pkt.write16(uint16_t(type));						   // Type
 	pkt.write16((rclass & 0x7fff) | (flush ? 0x8000 : 0)); // Class

@@ -114,14 +114,6 @@ public:
 		size += recordSize;
 	}
 
-	Question::OwnedList questions;
-	Answer::OwnedList answers;
-
-protected:
-	friend class Question;
-	friend class Answer;
-	friend class Name;
-
 	/*
 	 * Resolve a 16-bit 'pointer' to a memory location
 	 *
@@ -130,11 +122,15 @@ protected:
 	 * data portability, reduce memory consumption and avoid data duplication during
 	 * message parsing and construction.
 	 */
-	uint8_t* resolvePointer(uint16_t pointer)
+	uint8_t* resolvePointer(uint16_t pointer) const
 	{
 		return data + pointer;
 	}
 
+	Question::OwnedList questions;
+	Answer::OwnedList answers;
+
+protected:
 	IpAddress remoteIp;
 	uint16_t remotePort;
 	uint8_t* data;

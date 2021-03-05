@@ -14,106 +14,177 @@
 
 namespace mDNS
 {
-Name::Info Name::parse() const
+static constexpr uint32_t PROTO_TCP{0x7063745F}; // "_tcp"
+static constexpr uint32_t PROTO_UDP{0x7064755F}; // "_udp"
+
+/*
+ * Class for performing operations on a name in segments
+ */
+class Reader : public Packet
 {
-	Info info{};
+public:
+	Reader(const Message& message, uint16_t ptr) : Packet{message.resolvePointer(0), ptr}
+	{
+	}
+
+	// Return length of next segment, 0 for end of name
+	uint8_t next(uint8_t previousLength)
+	{
+		if(previousLength != 0) {
+			skip(previousLength);
+		}
+
+		if(peek8() >= 0xC0) {
+			pos = read16() & 0x3fff;
+		}
+
+		auto len = read8();
+		if(len >= 0xC0) {
+			debug_e("INVALID @ %u", pos);
+			return 0;
+		}
+		return len;
+	}
+};
+
+uint16_t Name::getDataLength() const
+{
 	Packet pkt{message.resolvePointer(ptr)};
 	while(true) {
-		if(pkt.peek8() < 0xC0) {
-			++info.components;
-			auto wordLen = pkt.read8();
-			info.textLength += wordLen;
-			pkt.skip(wordLen);
-			if(pkt.peek8() == 0) {
-				if(info.dataLength == 0) {
-					info.dataLength = pkt.pos + 1;
-				}
-				return info;
-			}
-			++info.textLength; // separator
-		} else {
-			uint16_t pointer = pkt.read16() & 0x3fff;
-			if(info.dataLength == 0) {
-				info.dataLength = pkt.pos;
-			}
-			pkt = Packet{message.resolvePointer(pointer)};
+		if(pkt.peek8() >= 0xC0) {
+			return pkt.pos + 2;
 		}
+		auto wordLen = pkt.read8();
+		if(wordLen >= 0xC0) {
+			// Invalid
+			debug_e("INVALID @ %u", pkt.pos - 1);
+			return 0;
+		}
+		if(wordLen == 0) {
+			return pkt.pos;
+		}
+		pkt.skip(wordLen);
 	}
 }
 
-uint16_t Name::read(char* buffer, uint16_t bufSize, uint8_t firstElement, uint8_t count) const
+uint16_t Name::read(char* buffer, uint16_t bufSize) const
 {
 	uint16_t pos{0};
-	Packet pkt{message.resolvePointer(ptr)};
-	while(count != 0) {
-		if(pkt.peek8() < 0xC0) {
-			auto wordLen = pkt.read8();
-			if(firstElement == 0) {
-				--count;
-				if(pos + wordLen > bufSize) {
-					break;
-				}
-				pkt.read(&buffer[pos], wordLen);
-				pos += wordLen;
-			} else {
-				--firstElement;
-				pkt.skip(wordLen);
-			}
-			if(count == 0 || pkt.peek8() == 0) {
-				break;
-			}
-			if(pos >= bufSize) {
-				break;
-			}
-			if(pos != 0) {
-				buffer[pos++] = '.';
-			}
-		} else {
-			uint16_t pointer = pkt.read16() & 0x3fff;
-			pkt = Packet{message.resolvePointer(pointer)};
+	Reader reader(message, ptr);
+	uint8_t len{0};
+	while((len = reader.next(len)) != 0) {
+		if(pos == bufSize) {
+			break;
 		}
+		if(pos != 0) {
+			buffer[pos++] = '.';
+		}
+		if(pos + len > bufSize) {
+			break;
+		}
+		memcpy(&buffer[pos], reader.ptr(), len);
+		pos += len;
 	}
 	return pos;
 }
 
-String Name::getString(uint8_t firstElement, uint8_t count) const
+String Name::toString() const
 {
 	char buffer[maxLength];
-	auto len = read(buffer, maxLength, firstElement, count);
+	auto len = read(buffer, maxLength);
 	return String(buffer, len);
 }
 
-String Name::getDomain() const
+Name::ElementPointers Name::parseElements() const
 {
-	auto info = parse();
-	return getString(info.components - 1, 1);
+	bool protocolFound{false};
+	ElementPointers elem{};
+	Reader reader(message, ptr);
+	uint8_t len{0};
+	while((len = reader.next(len)) != 0) {
+		if(protocolFound) {
+			elem.domain = reader.pos - 1;
+			return elem;
+		}
+
+		elem.service = elem.protocol;
+		elem.protocol = reader.pos - 1;
+
+		if(len == 4) {
+			uint32_t w;
+			memcpy(&w, reader.ptr(), sizeof(w));
+			if(w == PROTO_TCP || w == PROTO_UDP) {
+				protocolFound = true;
+			}
+		}
+	}
+
+	return ElementPointers{};
 }
 
-String Name::getService() const
+Name Name::getDomain() const
 {
-	auto info = parse();
-	return getString(info.components - 2, 1);
+	return Name(message, parseElements().domain);
 }
 
-String Name::getInstance() const
+Name Name::getProtocol() const
 {
-	auto info = parse();
-	return getString(0, info.components - 2);
+	return Name(message, parseElements().protocol);
+}
+
+Name Name::getService() const
+{
+	return Name(message, parseElements().service);
+}
+
+bool Name::equalsIgnoreCase(const char* str, size_t length) const
+{
+	Reader reader(message, ptr);
+	uint8_t len{0};
+	while((len = reader.next(len)) != 0) {
+		if(len > length) {
+			return false;
+		}
+		auto c = str[len];
+		if(c != '.' && c != '\0') {
+			return false;
+		}
+		if(memicmp(str, reader.ptr(), len) != 0) {
+			return false;
+		}
+		if(c == '\0') {
+			return len == length;
+		}
+		str += len + 1;
+		length -= len + 1;
+	}
+	return true;
+}
+
+uint16_t Name::makePointer() const
+{
+	auto content = ptr;
+	Packet pkt{message.resolvePointer(content)};
+	if(pkt.peek8() >= 0xC0) {
+		// Resolve the pointer to data
+		content = pkt.read16();
+	}
+	return content | 0xC000;
 }
 
 bool Name::fixup(const Name& other)
 {
-	auto info = parse();
-	if(info.dataLength < 2) {
+	auto len = getDataLength();
+	if(len < 2) {
 		// Can't be a pointer, too small
 		return false;
 	}
-	Packet pkt{message.resolvePointer(ptr + info.dataLength - 2)};
+	Packet pkt{message.resolvePointer(ptr + len - 2)};
 	if(pkt.peek8() < 0xC0) {
 		// Not a pointer
 		return false;
 	}
-	pkt.write16(other.ptr | 0xC000);
+	pkt.write16(other.makePointer());
 	return true;
 }
 
