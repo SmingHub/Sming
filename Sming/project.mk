@@ -521,6 +521,9 @@ endif
 ide-vscode: checkdirs submodules ##Create/update vscode project configuration
 	$(Q) $(MAKE) --no-print-directory ide-vscode-update
 
+export CLI_TARGET_OPTIONS
+export HOST_PARAMETERS
+
 .PHONY: ide-vscode-update
 ide-vscode-update:
 	$(Q) CXX=$(CXX) \

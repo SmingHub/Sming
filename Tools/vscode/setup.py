@@ -5,6 +5,47 @@
 
 import os, sys, json, shutil
 
+class Env:
+    """ Cache required environment variables"""
+
+    def __init__(self):
+        self.SMING_HOME = os.environ['SMING_HOME']
+        self.SMING_ARCH = os.environ['SMING_ARCH']
+        self.WSL_ROOT = os.environ.get('WSL_ROOT', '')
+        vars = []
+        if self.SMING_ARCH == 'Esp8266':
+            vars += ['ESP_HOME']
+        if self.SMING_ARCH == 'Esp32':
+            vars += ['IDF_PATH', 'IDF_TOOLS_PATH']
+        for name in vars:
+            value = os.environ.get(name, None)
+            if not value:
+                print("Warning: env['%s'] not found" % name)
+            setattr(env, name, value)
+
+    def replace(self, path, name, prefix):
+        value = getattr(self, name, None)
+        if value is not None:
+            s = fix_path(path)
+            value = fix_path(value)
+            if value != '' and s.startswith(value):
+                return '${%s%s}%s' % (prefix, name, s[len(value):])
+        return path
+
+    def subst_path(self, path, prefix=''):
+        path = self.replace(path, 'SMING_HOME', prefix)
+        path = self.replace(path, 'ESP_HOME', prefix)
+        path = self.replace(path, 'IDF_PATH', prefix)
+        path = self.replace(path, 'IDF_TOOLS_PATH', prefix)
+        return path
+
+    def isWsl(self):
+        return self.WSL_ROOT != ''
+
+
+env = Env()
+
+
 def fix_path(path):
     if path[1:3] == ':/':
         return '/' + path[0] + path[2:]
@@ -20,24 +61,7 @@ def find_tool(name):
             path = name
     if not os.path.exists(path):
         sys.stderr.write("Warning! '%s' doesn't exist\n" % path)
-    return env_subst_path(path, 'env:')
-
-def env_replace(path, name, prefix):
-    if name in os.environ:
-        s = fix_path(path)
-        value = fix_path(os.environ[name])
-        if value != '' and s.startswith(value):
-            return '${%s%s}%s' % (prefix, name, s[len(value):])
-    else:
-        print("env['%s'] not found" % name)
-    return path
-
-def env_subst_path(path, prefix=''):
-    path = env_replace(path, 'SMING_HOME', prefix)
-    path = env_replace(path, 'ESP_HOME', prefix)
-    path = env_replace(path, 'IDF_PATH', prefix)
-    path = env_replace(path, 'IDF_TOOLS_PATH', prefix)
-    return path
+    return env.subst_path(path, 'env:')
 
 def load_json(filename, must_exist=True):
     if must_exist or os.path.exists(filename):
@@ -72,7 +96,7 @@ def get_property(data, name, default):
 def update_intellisense():
     dirs = os.environ['COMPONENTS_EXTRA_INCDIR'].split()
     for i, d in enumerate(dirs):
-        dirs[i] = env_subst_path(d)
+        dirs[i] = env.subst_path(d)
 
     propertiesFile = '.vscode/c_cpp_properties.json'
     if os.path.exists(propertiesFile):
@@ -82,13 +106,12 @@ def update_intellisense():
 
     configurations = get_property(properties, 'configurations', [])
 
-    arch = os.environ['SMING_ARCH']
-    config = find_object(configurations, arch)
+    config = find_object(configurations, env.SMING_ARCH)
 
     if config is None:
         config = load_template('intellisense/configuration.json')
-        config['name'] = arch
-        config['defines'].append('ARCH_%s=1' % arch.upper())
+        config['name'] = env.SMING_ARCH
+        config['defines'].append('ARCH_%s=1' % env.SMING_ARCH.upper())
         configurations.append(config)
 
     config['compilerPath'] = find_tool(os.environ['CXX'])
@@ -120,17 +143,22 @@ def update_launch():
         config = template_config.copy()
         configurations.append(config)
 
-    arch = os.environ['SMING_ARCH']
-    is_wsl = (os.environ['WSL_ROOT'] != '')
-    config = find_object(configurations, "%s GDB" % arch)
+    config = find_object(configurations, "%s GDB" % env.SMING_ARCH)
     if not config is None:
         config['miDebuggerPath'] = find_tool(os.environ['GDB'])
-        args = "-x ${env:SMING_HOME}/Arch/%s/Components/gdbstub/gdbcmds" % arch
-        if arch == 'Esp8266':
-            if not is_wsl:
-                args += " -b %s" % os.environ['COM_SPEED_GDB']
+        dbgargs = "-x ${env:SMING_HOME}/Arch/%s/Components/gdbstub/gdbcmds" % env.SMING_ARCH
+        if env.SMING_ARCH == 'Esp8266':
+            if not env.isWsl():
+                dbgargs += " -b %s" % os.environ['COM_SPEED_GDB']
             config['miDebuggerServerAddress'] = os.environ['COM_PORT_GDB']
-        config['miDebuggerArgs'] = args
+        elif env.SMING_ARCH == 'Host':
+            args = []
+            args += os.environ['CLI_TARGET_OPTIONS'].split()
+            args += ["--pause"]
+            args += ["--"]
+            args += os.environ['HOST_PARAMETERS'].split()
+            config['args'] = args
+        config['miDebuggerArgs'] = dbgargs
 
     save_json(launch, filename)
 
@@ -144,8 +172,11 @@ def update_workspace():
         save_json(ws, filename)
 
 def main():
+    if not env.SMING_HOME or not env.SMING_ARCH:
+        sys.exit(1)
+
     # So we can find rjsmin.py
-    sys.path.append(os.path.join(os.environ['SMING_HOME'], 'Components/Storage/Tools/hwconfig'))
+    sys.path.append(os.path.join(env.SMING_HOME, 'Components/Storage/Tools/hwconfig'))
 
     update_intellisense()
     update_tasks()

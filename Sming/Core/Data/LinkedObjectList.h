@@ -116,6 +116,11 @@ public:
 template <typename ObjectType> class OwnedLinkedObjectListTemplate : public LinkedObjectListTemplate<ObjectType>
 {
 public:
+	~OwnedLinkedObjectListTemplate()
+	{
+		clear();
+	}
+
 	bool remove(ObjectType* object)
 	{
 		bool res = LinkedObjectList::remove(object);
