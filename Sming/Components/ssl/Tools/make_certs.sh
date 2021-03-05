@@ -149,7 +149,7 @@ openssl x509 -req -in x509_512.req -out x509_bad_after.pem \
 
 # some cleanup
 rm *.req
-rm srl
+rm *.srl
 rm *.conf
 
 # need this for the client tests
