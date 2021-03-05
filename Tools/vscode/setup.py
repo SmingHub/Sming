@@ -21,7 +21,7 @@ class Env:
             value = os.environ.get(name, None)
             if not value:
                 print("Warning: env['%s'] not found" % name)
-            setattr(env, name, value)
+            setattr(self, name, value)
 
     def replace(self, path, name, prefix):
         value = getattr(self, name, None)
