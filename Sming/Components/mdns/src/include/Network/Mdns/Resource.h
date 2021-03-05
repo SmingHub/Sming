@@ -24,11 +24,13 @@ struct Ip6Address {
  */
 #define MDNS_RESOURCE_TYPE_MAP(XX)                                                                                     \
 	XX(A, 0x0001, "32-bit IPv4 address")                                                                               \
+	XX(SOA, 0x0006, "Authoritative DNS Zone information")                                                              \
 	XX(PTR, 0x000C, "Pointer to a canonical name")                                                                     \
 	XX(HINFO, 0x000D, "Host Information")                                                                              \
 	XX(TXT, 0x0010, "Arbitrary human-readable text")                                                                   \
 	XX(AAAA, 0x001C, "128-bit IPv6 address")                                                                           \
-	XX(SRV, 0x0021, "Server selection")
+	XX(SRV, 0x0021, "Server selection")                                                                                \
+	XX(ANY, 0x00FF, "Matches any resource type in query")
 
 namespace mDNS
 {
