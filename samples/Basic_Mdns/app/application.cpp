@@ -1,5 +1,6 @@
 #include <SmingCore.h>
 #include <Network/Mdns/Server.h>
+#include <Network/Mdns/debug.h>
 #include <IFS/FileSystem.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
@@ -28,88 +29,9 @@ void savePacket(IpAddress remoteIP, uint16_t remotePort, const uint8_t* data, si
 }
 #endif
 
-void print(const String& tag, const String& value)
-{
-	String s = "   ";
-	s += tag;
-	s += ':';
-	while(s.length() < 12) {
-		s += ' ';
-	}
-	Serial.print(s);
-	Serial.print(' ');
-	Serial.println(value);
-}
-
-void printHex(const String& tag, uint16_t value)
-{
-	char buf[10];
-	m_snprintf(buf, sizeof(buf), "0x%04x", value);
-	print(tag, buf);
-}
-
-void printBool(const String& tag, bool value)
-{
-	print(tag, value ? "Y" : "N");
-}
-
-void printQuestion(mDNS::Question& question)
-{
-	Serial.println(F(">> Question"));
-	print(F("name"), question.getName());
-	auto type = question.getType();
-	print(F("type"), toString(type));
-	printHex(F("type"), uint16_t(type));
-	printHex(F("class"), question.getClass());
-	printBool(F("unicast"), question.isUnicastReply());
-}
-
-void printAnswer(mDNS::Answer& answer)
-{
-	Serial.print(">> ");
-	Serial.println(toString(answer.getKind()));
-	print(F("name"), answer.getName());
-	print(F("data"), answer.getRecordString());
-	auto type = answer.getType();
-	print(F("type"), toString(type));
-	printHex(F("type"), uint16_t(type));
-	print(F("ttl"), String(answer.getTtl()));
-	printHex(F("class"), answer.getClass());
-	printBool(F("flush"), answer.isCachedFlush());
-}
-
-void printMessage(mDNS::Message& message)
-{
-	Serial.println();
-	Serial.print(system_get_time());
-	Serial.print(' ');
-	Serial.print(message.isReply() ? F("REPLY") : F("QUERY"));
-	auto ip = message.getRemoteIp();
-	if(uint32_t(ip) != 0) {
-		Serial.print(F(" from "));
-		Serial.print(message.getRemoteIp().toString());
-		Serial.print(':');
-		Serial.println(message.getRemotePort());
-	} else {
-		Serial.println();
-	}
-
-	Serial.print(F("Size: "));
-	Serial.print(message.getSize());
-	Serial.println(F(" bytes"));
-
-	for(auto& question : message.questions) {
-		printQuestion(question);
-	}
-
-	for(auto& answer : message.answers) {
-		printAnswer(answer);
-	}
-}
-
 void handleMessage(mDNS::Message& message)
 {
-	printMessage(message);
+	mDNS::printMessage(Serial, message);
 
 	// Check if we're interested in this reponse
 	if(!message.isReply()) {
@@ -195,7 +117,7 @@ void parseFile(const String& name, const void* data, size_t length)
 	Serial.println(_F("' **"));
 	mDNS::Message message(0U, 0, const_cast<void*>(data), length);
 	if(message.parse()) {
-		printMessage(message);
+		mDNS::printMessage(Serial, message);
 	}
 	Serial.println(_F("** End of test packet **"));
 	Serial.println();
