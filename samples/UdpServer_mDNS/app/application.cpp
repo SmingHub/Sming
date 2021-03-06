@@ -1,5 +1,7 @@
 #include <SmingCore.h>
 #include <Network/Mdns/Responder.h>
+#include <Network/Mdns/debug.h>
+#include <Platform/Timers.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -7,33 +9,130 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-DEFINE_FSTR_LOCAL(hostName, "UDP_Server");
-
+DEFINE_FSTR_LOCAL(hostName, "sming");
 HttpServer server;
 
-class MyService : public mDNS::Service
+class MyHttpService : public mDNS::Service
 {
 public:
-	Info getInfo() override
+	String getInstance() override
 	{
-		Info info;
-		info.name = F("Sming");
-		return info;
+		return F("UDP Server");
 	}
 
-	CStringArray getTxt() override
+	void addText(mDNS::Resource::TXT& txt) override
 	{
-		return F("version=now");
+		txt.add(F("md=Sming Device"));
+		txt.add(F("fn=My happy little HTTP service"));
 	}
 };
 
 static mDNS::Responder responder;
-static MyService service;
+static MyHttpService myHttpService;
+
+void speedTest(mDNS::Question* question)
+{
+	using namespace mDNS;
+
+	OneShotFastUs timer;
+	unsigned count{0};
+	for(unsigned i = 0; i < 10000; ++i) {
+		if(question->getName() == fstrServicesLocal) {
+			++count;
+		}
+		if(question->getName().equalsIgnoreCase("Haggis basher")) {
+			++count;
+		}
+	}
+	debug_i("(question == fstrServicesLocal): %u, %s", count, timer.elapsedTime().toString().c_str());
+
+	timer.start();
+	count = 0;
+	for(unsigned i = 0; i < 10000; ++i) {
+		if(String(question->getName()).equalsIgnoreCase(fstrServicesLocal)) {
+			++count;
+		}
+		if(String(question->getName()).equalsIgnoreCase("Haggis basher")) {
+			++count;
+		}
+	}
+	debug_i("(question == fstrServicesLocal): %u, %s", count, timer.elapsedTime().toString().c_str());
+}
+
+void test()
+{
+	using namespace mDNS;
+
+	mDNS::server.onSend([](Message& msg) {
+		printMessage(Serial, msg);
+		return false;
+	});
+
+	auto submit = [&](const String& name, ResourceType type) {
+		Query query;
+		auto question = query.addQuestion(name, type);
+		printMessage(Serial, query);
+		responder.onMessage(query);
+	};
+
+	auto checkLike = [](Question* question, const char* s, bool isLike) {
+		auto name = question->getName();
+		bool match = (name == s);
+		debug_i("(question == \"%s\"): %u", s, match);
+		// TEST_ASSERT(match == isLike);
+	};
+
+	auto checkParser = [](const char* s) {
+		Query query;
+		auto question = query.addQuestion(s);
+		auto name = question->getName();
+		debug_i("instance: '%s'", String(name).c_str());
+		debug_i("service:  '%s'", String(name.getService()).c_str());
+		debug_i("protocol: '%s'", String(name.getProtocol()).c_str());
+		debug_i("domain:   '%s'", String(name.getDomain()).c_str());
+	};
+
+	{
+		Query query;
+		auto question = query.addQuestion(fstrServicesLocal, ResourceType::PTR);
+
+		// speedTest(question);
+
+		checkLike(question, "_services._dns-sd._udp.local", true);
+		checkLike(question, "_dns-sd._udp.local", true);
+		checkLike(question, "_udp.local", true);
+		checkLike(question, "local", true);
+
+		checkParser("_some-service-or-other._http._tcp.sming.local");
+
+		// debug_i("(question == fstrServicesLocal): %u", question->getName() == fstrServicesLocal);
+		printMessage(Serial, query);
+		responder.onMessage(query);
+	}
+
+	{
+		Query query;
+		FSTR_ARRAY(bigYin, "I have instances in my name.with.dots.and.everything._dns-sd._udp.local");
+		auto question = query.addQuestion(bigYin, ResourceType::PTR);
+		checkLike(question, "everything._dns-sd._udp.local", false);
+		checkLike(question, "_dns-sd._udp.local", true);
+	}
+
+	auto inst = myHttpService.getInstanceName();
+	submit(inst, ResourceType::PTR);
+	submit(inst, ResourceType::A);
+	submit(inst, ResourceType::TXT);
+	submit(inst, ResourceType::SRV);
+
+	mDNS::server.onSend(nullptr);
+}
 
 void startmDNS()
 {
 	responder.begin(hostName);
-	responder.addService(service);
+	responder.addService(myHttpService);
+
+	test();
 }
 
 void onIndex(HttpRequest& request, HttpResponse& response)
@@ -89,6 +188,12 @@ void init()
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiStation.enable(true);
 	WifiAccessPoint.enable(false);
+
+#ifdef ARCH_ESP8266
+	MacAddress mac({0x12, 0x34, 0x56, 0x78, 0x90, 0xab});
+	auto ok = wifi_set_macaddr(STATION_IF, &mac[0]);
+	debug_i("wifi_set_macaddr(): %u", ok);
+#endif
 
 	WifiEvents.onStationDisconnect(connectFail);
 	WifiEvents.onStationGotIP(gotIP);
