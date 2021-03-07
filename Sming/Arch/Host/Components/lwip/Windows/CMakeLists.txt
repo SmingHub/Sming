@@ -46,7 +46,6 @@ add_library(lwip
 	${lwipcore4_SRCS}
 	${lwipcore6_SRCS}
 	${lwipnetif_SRCS}
-	${lwipmdns_SRCS}
 )
 
 add_dependencies(lwip npcap)

@@ -322,8 +322,6 @@
  * transport.
  */
 #define LWIP_DNS                        LWIP_UDP
-#define LWIP_MDNS_RESPONDER             LWIP_UDP
-#define LWIP_NUM_NETIF_CLIENT_DATA      LWIP_MDNS_RESPONDER
 
 /*
    ---------------------------------

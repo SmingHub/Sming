@@ -25,12 +25,10 @@ endif
 COMPONENT_SUBMODULES	:= esp-open-lwip
 COMPONENT_SRCDIRS		:=
 COMPONENT_SRCFILES		:= \
-	lwip/api/err.c \
 	lwip/core/def.c \
 	lwip/core/dhcp.c \
 	lwip/core/dns.c \
 	lwip/core/init.c \
-	lwip/core/mdns.c \
 	lwip/core/mem.c \
 	lwip/core/memp.c \
 	lwip/core/netif.c \
@@ -63,7 +61,9 @@ ifeq ($(ENABLE_ESPCONN),1)
 			espconn.c \
 			espconn_tcp.c \
 			espconn_udp.c \
-			espconn_mdns.c)
+			espconn_mdns.c) \
+		lwip/api/err.c \
+		lwip/core/mdns.c
 else
 	COMPONENT_SRCFILES	+= espconn_dummy.c
 endif
