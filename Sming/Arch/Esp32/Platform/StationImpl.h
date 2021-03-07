@@ -54,7 +54,7 @@ public:
 #endif
 
 #ifdef ENABLE_WPS
-	bool wpsConfigStart() override;
+	bool wpsConfigStart(WPSConfigDelegate callback) override;
 	void wpsConfigStop() override;
 #endif
 
@@ -63,12 +63,26 @@ protected:
 
 private:
 	static void staticScanCompleted(wifi_event_sta_scan_done_t* event, uint8_t status);
+#ifdef ENABLE_WPS
+	static void staticWpsEventHandler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
+	{
+		auto self = static_cast<StationImpl*>(arg);
+		self->wpsEventHandler(event_base, event_id, event_data);
+	}
+	void wpsEventHandler(esp_event_base_t event_base, int32_t event_id, void* event_data);
+	bool wpsCallback(WpsStatus status);
+	bool wpsConfigure(uint8_t credIndex);
+#endif
 #ifdef ENABLE_SMART_CONFIG
 	void internalSmartConfig(sc_status status, void* pdata);
 #endif
 
 private:
-	bool runScan = false;
+	bool runScan{false};
+#ifdef ENABLE_WPS
+	struct WpsConfig;
+	WpsConfig* wpsConfig;
+#endif
 #ifdef ENABLE_SMART_CONFIG
 	std::unique_ptr<SmartConfigEventInfo> smartConfigEventInfo; ///< Set during smart handling
 #endif
