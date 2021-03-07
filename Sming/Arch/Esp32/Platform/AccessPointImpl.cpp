@@ -69,7 +69,7 @@ bool AccessPointImpl::isEnabled() const
 bool AccessPointImpl::config(const String& ssid, String password, WifiAuthMode mode, bool hidden, int channel,
 							 int beaconInterval)
 {
-	wifi_config_t config;
+	wifi_config_t config{};
 
 	if(ssid.length() >= sizeof(config.ap.ssid)) {
 		return false;
@@ -78,8 +78,8 @@ bool AccessPointImpl::config(const String& ssid, String password, WifiAuthMode m
 		return false;
 	}
 
-	memcpy(&config.ap.ssid, ssid.c_str(), ssid.length());
-	memcpy(&config.ap.password, password.c_str(), password.length());
+	memcpy(config.ap.ssid, ssid.c_str(), ssid.length());
+	memcpy(config.ap.password, password.c_str(), password.length());
 	config.ap.ssid_len = ssid.length();
 	config.ap.ssid_hidden = hidden;
 	config.ap.channel = channel;
@@ -126,6 +126,9 @@ IpAddress AccessPointImpl::getNetworkGateway() const
 
 bool AccessPointImpl::setIP(IpAddress address)
 {
+	if(apNetworkInterface == nullptr) {
+		return false;
+	}
 	esp_netif_dhcps_stop(apNetworkInterface);
 	esp_netif_ip_info_t info;
 	ESP_ERROR_CHECK(esp_netif_get_ip_info(apNetworkInterface, &info));
