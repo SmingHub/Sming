@@ -25,8 +25,7 @@ struct StationImpl::WpsConfig {
 	static constexpr unsigned timeoutMs{60000};
 	static constexpr unsigned maxRetryAttempts{5};
 	WPSConfigDelegate callback;
-	wifi_config_t creds[MAX_WPS_AP_CRED];
-	uint8_t numCreds;
+	wifi_event_sta_wps_er_success_t creds;
 	uint8_t numRetries;
 	uint8_t credIndex;
 	bool ignoreDisconnects;
@@ -481,16 +480,9 @@ void StationImpl::wpsEventHandler(esp_event_base_t event_base, int32_t event_id,
 			return;
 		}
 
-		auto evt = static_cast<wifi_event_sta_wps_er_success_t*>(event_data);
-		if(evt != nullptr) {
-			wpsConfig->numCreds = evt->ap_cred_cnt;
-			for(unsigned i = 0; i < wpsConfig->numCreds; i++) {
-				auto& src = evt->ap_cred[i];
-				auto& dst = wpsConfig->creds[i];
-				memcpy(dst.sta.ssid, src.ssid, sizeof(src.ssid));
-				memcpy(dst.sta.password, src.passphrase, sizeof(src.passphrase));
-			}
+		if(event_data != nullptr) {
 			/* If multiple AP credentials are received from WPS, connect with first one */
+			wpsConfig->creds = *static_cast<wifi_event_sta_wps_er_success_t*>(event_data);
 			wpsConfigure(0);
 		}
 		/*
@@ -534,14 +526,17 @@ void StationImpl::wpsEventHandler(esp_event_base_t event_base, int32_t event_id,
 bool StationImpl::wpsConfigure(uint8_t credIndex)
 {
 	wpsConfig->ignoreDisconnects = false;
-	if(credIndex >= wpsConfig->numCreds) {
+	if(credIndex >= wpsConfig->creds.ap_cred_cnt) {
 		return false;
 	}
 	wpsConfig->numRetries = 0;
 	wpsConfig->credIndex = credIndex;
-	auto& cred = wpsConfig->creds[credIndex];
-	debug_i("Connecting to SSID: %s, Passphrase: %s", cred.sta.ssid, cred.sta.password);
-	ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &cred));
+	auto& cred = wpsConfig->creds.ap_cred[credIndex];
+	debug_i("Connecting to SSID: %s, Passphrase: %s", cred.ssid, cred.passphrase);
+	wifi_config_t cfg{};
+	memcpy(cfg.sta.ssid, cred.ssid, sizeof(cred.ssid));
+	memcpy(cfg.sta.password, cred.passphrase, sizeof(cred.passphrase));
+	ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &cfg));
 	return true;
 }
 
@@ -552,7 +547,7 @@ bool StationImpl::wpsConfigStart(WPSConfigDelegate callback)
 		return false;
 	}
 
-	wpsConfig = new WpsConfig;
+	wpsConfig = new WpsConfig{};
 	wpsConfig->callback = callback;
 	wpsConfig->ignoreDisconnects = true;
 
