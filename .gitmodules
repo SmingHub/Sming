@@ -211,6 +211,10 @@
 	path = Sming/Libraries/libsodium/libsodium
 	url = https://github.com/jedisct1/libsodium.git
 	ignore = dirty
+[submodule "Libraries.MDNS"]
+	path = Sming/Libraries/MDNS
+	url = https://github.com/mikee47/Sming-MDNS
+	ignore = dirty
 [submodule "Libraries.modbusino"]
 	path = Sming/Libraries/modbusino/modbusino
 	url = https://github.com/kmihaylov/modbusino.git
