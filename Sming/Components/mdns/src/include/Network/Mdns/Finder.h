@@ -44,6 +44,11 @@ public:
 	 */
 	using AnswerDelegate = Delegate<void(Response& response)>;
 
+	/**
+	 * @brief Callback to be invoked with raw data (debugging, etc.)
+	 */
+	using PacketDelegate = Delegate<void(IpAddress remoteIP, uint16_t remotePort, const uint8_t* data, size_t length)>;
+
 	Finder() : out(*this)
 	{
 	}
@@ -59,6 +64,11 @@ public:
 	void onAnswer(AnswerDelegate callback)
 	{
 		answerCallback = callback;
+	}
+
+	void onPacket(PacketDelegate callback)
+	{
+		packetCallback = callback;
 	}
 
 	/**
@@ -98,6 +108,7 @@ private:
 	bool initialise();
 
 	AnswerDelegate answerCallback;
+	PacketDelegate packetCallback;
 	UdpOut out;
 	bool initialised{false};
 };

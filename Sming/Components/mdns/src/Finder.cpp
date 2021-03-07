@@ -122,6 +122,10 @@ void Finder::UdpOut::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePor
 
 void Finder::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 {
+	if(packetCallback) {
+		packetCallback(remoteIP, remotePort, static_cast<const uint8_t*>(buf->payload), buf->len);
+	}
+
 	if(!answerCallback) {
 		return;
 	}

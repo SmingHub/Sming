@@ -1,5 +1,6 @@
 #include <SmingCore.h>
 #include <Network/Mdns/Finder.h>
+#include <IFS/FileSystem.h>
 
 IMPORT_FSTR(testFile, PROJECT_DIR "/resource/192.168.1.100.mdns")
 
@@ -10,6 +11,25 @@ IMPORT_FSTR(testFile, PROJECT_DIR "/resource/192.168.1.100.mdns")
 #endif
 
 mDNS::Finder finder;
+
+#ifdef ARCH_HOST
+void savePacket(IpAddress remoteIP, uint16_t remotePort, const uint8_t* data, size_t length)
+{
+	auto& hostfs = IFS::Host::getFileSystem();
+	String filename;
+	filename = "out/mdns/";
+	hostfs.makedirs(filename);
+	filename += DateTime(SystemClock.now()).toISO8601();
+	filename += '-';
+	filename += remoteIP.toString();
+	filename += '-';
+	filename += remotePort;
+	filename += ".bin";
+	filename.replace(':', '-');
+	hostfs.setContent(filename, data, length);
+	// debug_i("Saved '%s'", filename.c_str());
+}
+#endif
 
 void printResponse(mDNS::Response& response)
 {
@@ -48,6 +68,9 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	Serial.println(ip);
 
 	finder.onAnswer(printResponse);
+#ifdef ARCH_HOST
+	finder.onPacket(savePacket);
+#endif
 
 	auto timer = new Timer;
 	timer->initializeMs<10000>(InterruptCallback([]() {
