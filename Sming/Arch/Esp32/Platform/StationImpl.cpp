@@ -499,7 +499,7 @@ void StationImpl::wpsEventHandler(esp_event_base_t event_base, int32_t event_id,
 		 * with legacy apps. So directly attempt connection here.
 		 */
 		wpsConfigStop();
-			esp_wifi_connect();
+		esp_wifi_connect();
 		break;
 	}
 
