@@ -545,7 +545,7 @@ SERVER_OTA_PORT		?= 9999
 .PHONY: otaserver
 otaserver: all ##Launch a simple python HTTP server for testing OTA updates
 	$(info Starting OTA server for TESTING)
-	$(Q) cd $(FW_BASE) && $(PYTHON) -m SimpleHTTPServer $(SERVER_OTA_PORT)
+	$(Q) cd $(FW_BASE) && $(PYTHON) -m http.server $(SERVER_OTA_PORT)
 
 
 #
