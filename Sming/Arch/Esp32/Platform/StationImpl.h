@@ -54,7 +54,7 @@ public:
 #endif
 
 #ifdef ENABLE_WPS
-	bool wpsConfigStart(WPSConfigDelegate callback) override;
+	bool wpsConfigStart() override;
 	void wpsConfigStop() override;
 #endif
 
@@ -65,9 +65,6 @@ private:
 	static void staticScanCompleted(wifi_event_sta_scan_done_t* event, uint8_t status);
 #ifdef ENABLE_SMART_CONFIG
 	void internalSmartConfig(sc_status status, void* pdata);
-#endif
-#ifdef ENABLE_WPS
-	void internalWpsConfig(wps_cb_status status);
 #endif
 
 private:

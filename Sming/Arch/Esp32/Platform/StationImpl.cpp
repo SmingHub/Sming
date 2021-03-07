@@ -14,6 +14,14 @@
 #include <esp_wifi.h>
 #include <esp_netif.h>
 #include <esp_event.h>
+#ifdef ENABLE_WPS
+#include <esp_wps.h>
+#define MAX_RETRY_ATTEMPTS  5
+static wifi_config_t wps_ap_creds[MAX_WPS_AP_CRED];
+static int s_ap_creds_num = 0;
+static int s_retry_num = 0;
+static esp_wps_config_t wps_config = WPS_CONFIG_INIT_DEFAULT(WPS_TYPE_PBC);
+#endif
 
 static StationImpl station;
 StationClass& WifiStation = station;
@@ -424,68 +432,138 @@ void StationImpl::smartConfigStop()
 
 #ifdef ENABLE_WPS
 
-void StationImpl::internalWpsConfig(wps_cb_status status)
+void got_ip_event_handler(void* arg, esp_event_base_t event_base,
+		int32_t event_id, void* event_data)
 {
-	bool processInternal = true;
-	if(wpsConfigCallback) {
-		processInternal = wpsConfigCallback(WpsStatus(status));
-	}
-	if(processInternal) {
-		switch(status) {
-		case WPS_CB_ST_SUCCESS:
-			debugf("wifi_wps_status_cb(): WPS_CB_ST_SUCCESS\n");
-			wpsConfigStop();
-			connect();
-			break;
-		case WPS_CB_ST_FAILED:
-			debugf("wifi_wps_status_cb(): WPS_CB_ST_FAILED\n");
-			wpsConfigStop();
-			connect(); // try to reconnect with old config
-			break;
-		case WPS_CB_ST_TIMEOUT:
-			debugf("wifi_wps_status_cb(): WPS_CB_ST_TIMEOUT\n");
-			wpsConfigStop();
-			connect(); // try to reconnect with old config
-			break;
-		case WPS_CB_ST_WEP:
-			debugf("wifi_wps_status_cb(): WPS_CB_ST_WEP\n");
-			break;
-		default:
-			debugf("wifi_wps_status_cb(): unknown wps_cb_status %d\n", status);
-			wpsConfigStop();
-			connect(); // try to reconnect with old config
+	ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
+	debugf("got ip: " IPSTR, IP2STR(&event->ip_info.ip));
+}
+
+void wifi_event_handler(void* arg, esp_event_base_t event_base,
+		int32_t event_id, void* event_data)
+{
+
+	static int ap_idx = 1;
+
+	switch (event_id) {
+	case WIFI_EVENT_STA_START:
+		debugf("WIFI_EVENT_STA_START");
+		break;
+	case WIFI_EVENT_STA_DISCONNECTED:
+		debugf("WIFI_EVENT_STA_DISCONNECTED");
+		if (s_retry_num < MAX_RETRY_ATTEMPTS) {
+			esp_wifi_connect();
+			s_retry_num++;
+		} else if (ap_idx < s_ap_creds_num) {
+			/* Try the next AP credential if first one fails */
+
+			if (ap_idx < s_ap_creds_num) {
+				debugf("Connecting to SSID: %s, Passphrase: %s",
+						wps_ap_creds[ap_idx].sta.ssid, wps_ap_creds[ap_idx].sta.password);
+				ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wps_ap_creds[ap_idx++]) );
+				esp_wifi_connect();
+			}
+			s_retry_num = 0;
+		} else {
+			debugf("Failed to connect!");
 		}
+
+		break;
+	case WIFI_EVENT_STA_WPS_ER_SUCCESS:
+		debugf("WIFI_EVENT_STA_WPS_ER_SUCCESS");
+		{
+			wifi_event_sta_wps_er_success_t *evt =
+					(wifi_event_sta_wps_er_success_t *)event_data;
+			int i;
+
+			if (evt) {
+				s_ap_creds_num = evt->ap_cred_cnt;
+				for (i = 0; i < s_ap_creds_num; i++) {
+					memcpy(wps_ap_creds[i].sta.ssid, evt->ap_cred[i].ssid,
+							sizeof(evt->ap_cred[i].ssid));
+					memcpy(wps_ap_creds[i].sta.password, evt->ap_cred[i].passphrase,
+							sizeof(evt->ap_cred[i].passphrase));
+				}
+				/* If multiple AP credentials are received from WPS, connect with first one */
+				debugf("Connecting to SSID: %s, Passphrase: %s",
+						wps_ap_creds[0].sta.ssid, wps_ap_creds[0].sta.password);
+				ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wps_ap_creds[0]) );
+			}
+			/*
+			 * If only one AP credential is received from WPS, there will be no event data and
+			 * esp_wifi_set_config() is already called by WPS modules for backward compatibility
+			 * with legacy apps. So directly attempt connection here.
+			 */
+			ESP_ERROR_CHECK(esp_wifi_wps_disable());
+			esp_wifi_connect();
+		}
+		break;
+	case WIFI_EVENT_STA_WPS_ER_FAILED:
+		debugf("WIFI_EVENT_STA_WPS_ER_FAILED");
+		ESP_ERROR_CHECK(esp_wifi_wps_disable());
+		ESP_ERROR_CHECK(esp_wifi_wps_enable(&wps_config));
+		ESP_ERROR_CHECK(esp_wifi_wps_start(0));
+		break;
+	case WIFI_EVENT_STA_WPS_ER_TIMEOUT:
+		debugf("WIFI_EVENT_STA_WPS_ER_TIMEOUT");
+		ESP_ERROR_CHECK(esp_wifi_wps_disable());
+		break;
+	case WIFI_EVENT_STA_WPS_ER_PIN:
+		debugf("WIFI_EVENT_STA_WPS_ER_PIN");
+		debugf("not implemented!");
+		break;
+	default:
+		break;
 	}
 }
 
-bool StationImpl::wpsConfigStart(WPSConfigDelegate callback)
+bool StationImpl::wpsConfigStart()
 {
 	debugf("WPS start\n");
-	wpsConfigCallback = callback;
-	wifi_station_disconnect();
-	wifi_set_opmode_current(wifi_get_opmode() | STATION_MODE);
-	debugf("WPS stationmode activated\n");
-	if(!wifi_wps_enable(WPS_TYPE_PBC)) {
-		debugf("Station::wpsConfigStart() : wps enable failed\n");
-		return false;
-	}
-	if(!wifi_set_wps_cb([](int status) { station.internalWpsConfig(wps_cb_status(status)); })) {
-		debugf("Station::wpsConfigStart() : cb failed\n");
-		return false;
-	}
 
-	if(!wifi_wps_start()) {
-		debugf("Station::wpsConfigStart() : wifi_wps_start() failed\n");
-		return false;
+	esp_wifi_disconnect();
+	/*
+	ESP_ERROR_CHECK(esp_wifi_deinit());
+    ESP_ERROR_CHECK(esp_netif_init());
+    //ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+	if(stationNetworkInterface == nullptr) {
+		stationNetworkInterface = esp_netif_create_default_wifi_sta();
+		assert(stationNetworkInterface);
 	}
+	 */
+	//ESP_ERROR_CHECK(esp_wifi_deinit());
+	wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+	ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+
+	ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL));
+	//ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &got_ip_event_handler, NULL));
+
+	wifi_mode_t mode;
+	ESP_ERROR_CHECK(esp_wifi_get_mode(&mode));
+	switch(mode) {
+	case WIFI_MODE_STA:
+	case WIFI_MODE_APSTA:
+		break; // No change required
+	case WIFI_MODE_AP:
+		mode = WIFI_MODE_APSTA;
+		break;
+	case WIFI_MODE_NULL:
+	default:
+		mode = WIFI_MODE_STA;
+	}
+	ESP_ERROR_CHECK(esp_wifi_set_mode(mode));
+	ESP_ERROR_CHECK(esp_wifi_start());
+	debugf("WPS stationmode activated\n");
+	ESP_ERROR_CHECK(esp_wifi_wps_enable(&wps_config));
+	ESP_ERROR_CHECK(esp_wifi_wps_start(60000));
+
 	return true;
 }
 
 void StationImpl::wpsConfigStop()
 {
-	if(!wifi_wps_disable()) {
-		debugf("Station::wpsConfigStop() : wifi_wps_disable() failed\n");
-	}
+	ESP_ERROR_CHECK(esp_wifi_wps_disable());
 }
 
 #endif // ENABLE_WPS
