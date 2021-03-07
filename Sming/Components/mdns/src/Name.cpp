@@ -9,7 +9,7 @@
  ****/
 
 #include "include/Network/Mdns/Name.h"
-#include "include/Network/Mdns/Response.h"
+#include "include/Network/Mdns/Message.h"
 #include "Packet.h"
 
 namespace mDNS
@@ -17,7 +17,7 @@ namespace mDNS
 Name::Info Name::parse() const
 {
 	Info info{};
-	Packet pkt{response.resolvePointer(ptr)};
+	Packet pkt{message.resolvePointer(ptr)};
 	while(true) {
 		if(pkt.peek8() < 0xC0) {
 			++info.components;
@@ -36,7 +36,7 @@ Name::Info Name::parse() const
 			if(info.dataLength == 0) {
 				info.dataLength = pkt.pos;
 			}
-			pkt = Packet{response.resolvePointer(pointer)};
+			pkt = Packet{message.resolvePointer(pointer)};
 		}
 	}
 }
@@ -44,7 +44,7 @@ Name::Info Name::parse() const
 uint16_t Name::read(char* buffer, uint16_t bufSize, uint8_t firstElement, uint8_t count) const
 {
 	uint16_t pos{0};
-	Packet pkt{response.resolvePointer(ptr)};
+	Packet pkt{message.resolvePointer(ptr)};
 	while(count != 0) {
 		if(pkt.peek8() < 0xC0) {
 			auto wordLen = pkt.read8();
@@ -70,7 +70,7 @@ uint16_t Name::read(char* buffer, uint16_t bufSize, uint8_t firstElement, uint8_
 			}
 		} else {
 			uint16_t pointer = pkt.read16() & 0x3fff;
-			pkt = Packet{response.resolvePointer(pointer)};
+			pkt = Packet{message.resolvePointer(pointer)};
 		}
 	}
 	return pos;

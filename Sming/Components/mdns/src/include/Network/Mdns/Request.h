@@ -1,17 +1,12 @@
 #pragma once
 
-#include "Response.h"
+#include "Message.h"
 
 namespace mDNS
 {
-class Request : public Response
+class Request : public Message
 {
 public:
-	enum class Type {
-		query,
-		reply,
-	};
-
 	Request(Type type);
 
 	Question* addQuestion(const String& name, ResourceType type = ResourceType::PTR, uint16_t qclass = 1,
@@ -33,11 +28,6 @@ public:
 		assert(kind < Answer::Kind::additional);
 		kind = Answer::Kind(unsigned(kind) + 1);
 		return kind;
-	}
-
-	const uint8_t* getBuffer() const
-	{
-		return buffer;
 	}
 
 private:

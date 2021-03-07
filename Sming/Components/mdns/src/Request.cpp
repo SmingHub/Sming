@@ -3,7 +3,7 @@
 
 namespace mDNS
 {
-Request::Request(Type type) : Response(0U, 0, buffer, 0)
+Request::Request(Type type) : Message(0U, 0, buffer, 0)
 {
 	Packet pkt{data, 0};
 

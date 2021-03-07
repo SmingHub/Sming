@@ -9,7 +9,7 @@
  ****/
 
 #include "include/Network/Mdns/Answer.h"
-#include "include/Network/Mdns/Response.h"
+#include "include/Network/Mdns/Message.h"
 #include "Packet.h"
 #include <debug_progmem.h>
 
@@ -33,29 +33,29 @@ namespace mDNS
 {
 ResourceType Answer::getType() const
 {
-	return ResourceType(Packet{response.resolvePointer(namePtr + nameLen)}.read16());
+	return ResourceType(Packet{message.resolvePointer(namePtr + nameLen)}.read16());
 }
 
 uint16_t Answer::getClass() const
 {
-	auto rrclass = Packet{response.resolvePointer(namePtr + nameLen + 2)}.read16();
+	auto rrclass = Packet{message.resolvePointer(namePtr + nameLen + 2)}.read16();
 	return rrclass & 0x7fff;
 }
 
 bool Answer::isCachedFlush() const
 {
-	auto rrclass = Packet{response.resolvePointer(namePtr + nameLen + 2)}.read16();
+	auto rrclass = Packet{message.resolvePointer(namePtr + nameLen + 2)}.read16();
 	return rrclass & 0x8000;
 }
 
 uint32_t Answer::getTtl() const
 {
-	return Packet{response.resolvePointer(namePtr + nameLen + 4)}.read32();
+	return Packet{message.resolvePointer(namePtr + nameLen + 4)}.read32();
 }
 
 bool Answer::parse(Packet& pkt)
 {
-	auto size = response.getSize();
+	auto size = message.getSize();
 
 	namePtr = pkt.pos;
 	nameLen = getName().getDataLength();
@@ -74,7 +74,7 @@ bool Answer::parse(Packet& pkt)
 
 uint8_t* Answer::getRecord() const
 {
-	return response.resolvePointer(getRecordPtr());
+	return message.resolvePointer(getRecordPtr());
 }
 
 String Answer::getRecordString() const
@@ -102,8 +102,8 @@ uint16_t Answer::init(uint16_t namePtr, const String& name, Resource::Type type,
 					  uint32_t ttl)
 {
 	this->namePtr = namePtr;
-	nameLen = response.writeName(namePtr, name);
-	Packet pkt{response.resolvePointer(namePtr), nameLen};
+	nameLen = message.writeName(namePtr, name);
+	Packet pkt{message.resolvePointer(namePtr), nameLen};
 	pkt.write16(uint16_t(type));						   // Type
 	pkt.write16((rclass & 0x7fff) | (flush ? 0x8000 : 0)); // Class
 	pkt.write32(ttl);									   // TTL
@@ -122,7 +122,7 @@ void Answer::allocate(uint16_t size)
 
 uint16_t Answer::writeName(uint16_t ptr, const String& name)
 {
-	return response.writeName(getRecordPtr() + ptr, name);
+	return message.writeName(getRecordPtr() + ptr, name);
 }
 
 } // namespace mDNS

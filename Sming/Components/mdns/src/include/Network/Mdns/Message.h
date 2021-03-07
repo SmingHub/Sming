@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * Response.h
+ * Message.h
  *
  ****/
 
@@ -16,19 +16,24 @@
 namespace mDNS
 {
 /**
- * @brief Encapsulates a response packet for flexible introspection
+ * @brief Encapsulates a message packet for flexible introspection
  */
-class Response
+class Message
 {
 public:
-	Response(IpAddress remoteIp, uint16_t remotePort, void* data, uint16_t size)
+	enum class Type {
+		query,
+		reply,
+	};
+
+	Message(IpAddress remoteIp, uint16_t remotePort, void* data, uint16_t size)
 		: remoteIp(remoteIp), remotePort(remotePort), data(static_cast<uint8_t*>(data)), size(size)
 	{
 	}
 
 	/**
-	 * @brief Parse response data
-	 * @retval bool true if response parsed successfully, false indicates a problem
+	 * @brief Parse message data
+	 * @retval bool true if message parsed successfully, false indicates a problem
 	 * 
 	 * Does basic validation and builds a list of answers.
 	 */
@@ -43,7 +48,7 @@ public:
 	}
 
 	/**
-	 * @brief UDP port in response
+	 * @brief UDP port in message
 	 */
 	uint16_t getRemotePort() const
 	{
@@ -51,11 +56,16 @@ public:
 	}
 
 	/**
-	 * @brief Check that response contains answers, not queries
+	 * @brief Check that message contains answers, not queries
 	 */
 	bool isReply() const
 	{
 		return data[2] & 0x80;
+	}
+
+	Type getType() const
+	{
+		return isReply() ? Type::reply : Type::query;
 	}
 
 	/**

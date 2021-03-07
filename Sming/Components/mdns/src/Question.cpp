@@ -9,7 +9,7 @@
  ****/
 
 #include "include/Network/Mdns/Question.h"
-#include "include/Network/Mdns/Response.h"
+#include "include/Network/Mdns/Message.h"
 #include "Packet.h"
 #include <debug_progmem.h>
 
@@ -17,25 +17,25 @@ namespace mDNS
 {
 uint16_t Question::getClass() const
 {
-	auto qclass = Packet{response.resolvePointer(namePtr + nameLen + 2)}.read16();
+	auto qclass = Packet{message.resolvePointer(namePtr + nameLen + 2)}.read16();
 	return qclass & 0x7fff;
 }
 
-bool Question::isUnicastResponse() const
+bool Question::isUnicastReply() const
 {
-	auto qclass = Packet{response.resolvePointer(namePtr + nameLen + 2)}.read16();
+	auto qclass = Packet{message.resolvePointer(namePtr + nameLen + 2)}.read16();
 	return qclass & 0x8000;
 }
 
 Resource::Type Question::getType() const
 {
-	auto type = Packet{response.resolvePointer(namePtr + nameLen)}.read16();
+	auto type = Packet{message.resolvePointer(namePtr + nameLen)}.read16();
 	return Resource::Type(type);
 }
 
 bool Question::parse(Packet& pkt)
 {
-	auto size = response.getSize();
+	auto size = message.getSize();
 
 	namePtr = pkt.pos;
 	nameLen = getName().getDataLength();
@@ -53,8 +53,8 @@ bool Question::parse(Packet& pkt)
 uint16_t Question::init(uint16_t namePtr, const String& name, ResourceType type, uint16_t qclass, bool unicast)
 {
 	this->namePtr = namePtr;
-	nameLen = response.writeName(namePtr, name);
-	Packet pkt{response.resolvePointer(namePtr), nameLen};
+	nameLen = message.writeName(namePtr, name);
+	Packet pkt{message.resolvePointer(namePtr), nameLen};
 	pkt.write16(uint16_t(type));
 	qclass &= 0x7fff;
 	if(unicast) {

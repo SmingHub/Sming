@@ -16,7 +16,7 @@
 
 namespace mDNS
 {
-class Response;
+class Message;
 struct Packet;
 
 /**
@@ -34,7 +34,7 @@ public:
 		additional,
 	};
 
-	Answer(Response& response, Kind kind) : response(response), kind(kind)
+	Answer(Message& message, Kind kind) : message(message), kind(kind)
 	{
 	}
 
@@ -53,7 +53,7 @@ public:
 	 */
 	Name getName() const
 	{
-		return Name(response, namePtr);
+		return Name(message, namePtr);
 	}
 
 	/**
@@ -81,9 +81,9 @@ public:
 	 */
 	String getRecordString() const;
 
-	Response& getResponse() const
+	Message& getResponse() const
 	{
-		return response;
+		return message;
 	}
 
 	uint8_t* getRecord() const;
@@ -110,7 +110,7 @@ public:
 	uint16_t writeName(uint16_t ptr, const String& name);
 
 private:
-	Response& response;
+	Message& message;
 	uint16_t namePtr{0};
 	uint16_t recordSize{0};
 	uint16_t nameLen{0};

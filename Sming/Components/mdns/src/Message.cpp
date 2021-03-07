@@ -4,18 +4,18 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * Response.cpp
+ * Message.cpp
  *
  ****/
 
-#include "include/Network/Mdns/Response.h"
+#include "include/Network/Mdns/Message.h"
 #include "Packet.h"
 #include <Data/HexString.h>
 #include <debug_progmem.h>
 
 namespace mDNS
 {
-bool Response::parse()
+bool Message::parse()
 {
 	// TODO: If it's truncated we can expect more data soon so we should wait for additional records before deciding whether to respond.
 	// if(isTruncated())
@@ -24,7 +24,7 @@ bool Response::parse()
 
 	// Non zero Response code implies error.
 	if(getResponseCode() != 0) {
-		debug_w("Got errored MDNS response");
+		debug_w("Got errored MDNS message");
 		return false;
 	}
 
@@ -76,7 +76,7 @@ bool Response::parse()
 	return true;
 }
 
-Answer* Response::operator[](ResourceType type)
+Answer* Message::operator[](ResourceType type)
 {
 	for(auto& ans : answers) {
 		if(ans.getType() == type) {
@@ -86,7 +86,7 @@ Answer* Response::operator[](ResourceType type)
 	return nullptr;
 }
 
-uint16_t Response::writeName(uint16_t ptr, const String& name)
+uint16_t Message::writeName(uint16_t ptr, const String& name)
 {
 	Packet pkt{resolvePointer(ptr)};
 	size_t pos{0};

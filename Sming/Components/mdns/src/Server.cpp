@@ -81,13 +81,13 @@ void Server::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 		packetCallback(remoteIP, remotePort, static_cast<const uint8_t*>(buf->payload), buf->len);
 	}
 
-	if(!answerCallback) {
+	if(!messageCallback) {
 		return;
 	}
 
-	Response response(remoteIP, remotePort, buf->payload, buf->len);
-	if(response.parse()) {
-		answerCallback(response);
+	Message message(remoteIP, remotePort, buf->payload, buf->len);
+	if(message.parse()) {
+		messageCallback(message);
 	}
 }
 

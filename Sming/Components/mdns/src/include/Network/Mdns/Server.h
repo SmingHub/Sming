@@ -29,9 +29,9 @@ class Server : protected UdpConnection
 {
 public:
 	/**
-	 * @brief Callback to be invoked for each received response.
+	 * @brief Callback to be invoked for each received message
 	 */
-	using AnswerDelegate = Delegate<void(Response& response)>;
+	using MessageDelegate = Delegate<void(Message& message)>;
 
 	/**
 	 * @brief Callback to be invoked with raw data (debugging, etc.)
@@ -45,14 +45,11 @@ public:
 	~Server();
 
 	/**
-	 * @brief Set callback to be invoked for each received response
-	 *
-	 * An mDNS-SD (Multicast-DNS Service Discovery) response contains related answer records.
-	 * The full set of answer records is passed to the callback.
+	 * @brief Set callback to be invoked for each received message
 	 */
-	void onAnswer(AnswerDelegate callback)
+	void onMessage(MessageDelegate callback)
 	{
-		answerCallback = callback;
+		messageCallback = callback;
 	}
 
 	void onPacket(PacketDelegate callback)
@@ -61,9 +58,9 @@ public:
 	}
 
 	/**
-	 * @brief Send a multicast query request
+	 * @brief Send a multicast query
 	 * @param hostname Name to find, e.g. "_googlecast._tcp.local"
-	 * @param type 
+	 * @param type
 	 * @retval bool false if parameters failed validation or UDP request could not be sent
 	 */
 	bool search(const String& hostname, ResourceType type = ResourceType::PTR);
@@ -95,7 +92,7 @@ private:
 
 	bool initialise();
 
-	AnswerDelegate answerCallback;
+	MessageDelegate messageCallback;
 	PacketDelegate packetCallback;
 	UdpOut out;
 	bool initialised{false};

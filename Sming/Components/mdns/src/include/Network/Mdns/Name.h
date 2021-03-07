@@ -14,7 +14,7 @@
 
 namespace mDNS
 {
-class Response;
+class Message;
 struct Packet;
 
 /**
@@ -28,7 +28,7 @@ public:
 	// The mDNS spec says this should never be more than 256 (including trailing '\0').
 	static constexpr size_t maxLength{256};
 
-	Name(Response& response, uint16_t ptr) : response(response), ptr(ptr)
+	Name(Message& message, uint16_t ptr) : message(message), ptr(ptr)
 	{
 	}
 
@@ -66,7 +66,7 @@ private:
 	uint16_t read(char* buffer, uint16_t bufSize, uint8_t firstElement, uint8_t count) const;
 	String getString(uint8_t firstElement, uint8_t count) const;
 
-	Response& response;
+	Message& message;
 	uint16_t ptr;
 };
 

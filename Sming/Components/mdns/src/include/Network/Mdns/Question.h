@@ -16,7 +16,7 @@
 
 namespace mDNS
 {
-class Response;
+class Message;
 struct Packet;
 
 /**
@@ -28,7 +28,7 @@ public:
 	using List = LinkedObjectListTemplate<Question>;
 	using OwnedList = OwnedLinkedObjectListTemplate<Question>;
 
-	Question(Response& response) : response(response)
+	Question(Message& message) : message(message)
 	{
 	}
 
@@ -39,7 +39,7 @@ public:
 	 */
 	Name getName() const
 	{
-		return Name(response, namePtr);
+		return Name(message, namePtr);
 	}
 
 	/**
@@ -53,20 +53,20 @@ public:
 	uint16_t getClass() const;
 
 	/**
-	 * @brief Whether response to this question should be unicast or multicast
+	 * @brief Whether reply should be unicast or multicast
 	 */
-	bool isUnicastResponse() const;
+	bool isUnicastReply() const;
 
-	Response& getResponse() const
+	Message& getMessage() const
 	{
-		return response;
+		return message;
 	}
 
 	// Writing
 	uint16_t init(uint16_t namePtr, const String& name, ResourceType type, uint16_t qclass, bool unicast);
 
 private:
-	Response& response;
+	Message& message;
 	uint16_t namePtr;
 	uint16_t nameLen;
 };

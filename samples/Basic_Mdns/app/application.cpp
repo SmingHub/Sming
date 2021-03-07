@@ -65,7 +65,7 @@ void printQuestion(mDNS::Question& question)
 	print(F("type"), toString(type));
 	printHex(F("type"), uint16_t(type));
 	printHex(F("class"), question.getClass());
-	printBool(F("unicast"), question.isUnicastResponse());
+	printBool(F("unicast"), question.isUnicastReply());
 }
 
 void printAnswer(mDNS::Answer& answer)
@@ -82,42 +82,42 @@ void printAnswer(mDNS::Answer& answer)
 	printBool(F("flush"), answer.isCachedFlush());
 }
 
-void printResponse(mDNS::Response& response)
+void printMessage(mDNS::Message& message)
 {
 	Serial.println();
-	Serial.print(response.isReply() ? F("REPLY") : F("QUERY"));
-	auto ip = response.getRemoteIp();
+	Serial.print(message.isReply() ? F("REPLY") : F("QUERY"));
+	auto ip = message.getRemoteIp();
 	if(uint32_t(ip) != 0) {
 		Serial.print(F(" from "));
-		Serial.print(response.getRemoteIp().toString());
+		Serial.print(message.getRemoteIp().toString());
 		Serial.print(':');
-		Serial.println(response.getRemotePort());
+		Serial.println(message.getRemotePort());
 	} else {
 		Serial.println();
 	}
 
 	Serial.print(F("Size: "));
-	Serial.print(response.getSize());
+	Serial.print(message.getSize());
 	Serial.println(F(" bytes"));
 
-	for(auto& question : response.questions) {
+	for(auto& question : message.questions) {
 		printQuestion(question);
 	}
 
-	for(auto& answer : response.answers) {
+	for(auto& answer : message.answers) {
 		printAnswer(answer);
 	}
 }
 
-void handleResponse(mDNS::Response& response)
+void handleMessage(mDNS::Message& message)
 {
-	printResponse(response);
+	printMessage(message);
 
 	// Check if we're interested in this reponse
-	if(!response.isReply()) {
+	if(!message.isReply()) {
 		return;
 	}
-	auto answer = response[mDNS::ResourceType::PTR];
+	auto answer = message[mDNS::ResourceType::PTR];
 	if(answer == nullptr) {
 		return;
 	}
@@ -125,21 +125,21 @@ void handleResponse(mDNS::Response& response)
 		return;
 	}
 
-	// Extract our required information from the response
+	// Extract our required information from the message
 	struct {
 		String manufacturerDevice;
 		String friendlyName;
 		IpAddress ipaddr;
 	} info;
 
-	answer = response[mDNS::ResourceType::TXT];
+	answer = message[mDNS::ResourceType::TXT];
 	if(answer != nullptr) {
 		mDNS::Resource::TXT txt(*answer);
 		info.manufacturerDevice = txt["md"];
 		info.friendlyName = txt["fn"];
 	}
 
-	answer = response[mDNS::ResourceType::A];
+	answer = message[mDNS::ResourceType::A];
 	if(answer != nullptr) {
 		mDNS::Resource::A a(*answer);
 		info.ipaddr = a.getAddress();
@@ -158,14 +158,14 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	Serial.print(F("Connected. Got IP: "));
 	Serial.println(ip);
 
-	finder.onAnswer(handleResponse);
+	server.onMessage(handleMessage);
 #ifdef ARCH_HOST
-	finder.onPacket(savePacket);
+	server.onPacket(savePacket);
 #endif
 
 	auto timer = new Timer;
 	timer->initializeMs<10000>(InterruptCallback([]() {
-		bool ok = finder.search(String(fstrSearchInstance) + F("._tcp.local"));
+		bool ok = server.search(String(fstrSearchInstance) + F("._tcp.local"));
 		debug_i("search(): %s", ok ? "OK" : "FAIL");
 	}));
 	timer->start();
@@ -182,9 +182,9 @@ void parseFile(const String& name, const String& data)
 	Serial.print(_F("** Parsing '"));
 	Serial.print(name);
 	Serial.println(_F("' **"));
-	mDNS::Response response(0U, 0, const_cast<char*>(data.begin()), data.length());
-	if(response.parse()) {
-		printResponse(response);
+	mDNS::Message message(0U, 0, const_cast<char*>(data.begin()), data.length());
+	if(message.parse()) {
+		printMessage(message);
 	}
 	Serial.println(_F("** End of test packet **"));
 	Serial.println();
@@ -193,7 +193,7 @@ void parseFile(const String& name, const String& data)
 void test()
 {
 	debug_i("sizeof(mDNS::Server) = %u", sizeof(mDNS::Server));
-	debug_i("sizeof(mDNS::Response) = %u", sizeof(mDNS::Response));
+	debug_i("sizeof(mDNS::Message) = %u", sizeof(mDNS::Message));
 	debug_i("sizeof(mDNS::Question) = %u", sizeof(mDNS::Question));
 	debug_i("sizeof(mDNS::Answer) = %u", sizeof(mDNS::Answer));
 	debug_i("sizeof(LinkedObject) = %u", sizeof(LinkedObject));
@@ -206,12 +206,12 @@ void test()
 		request.addQuestion(F("_chromecast._tcp.local"));
 		request.addQuestion(F("_%9832479817234_sming._tcp.local"), mDNS::ResourceType::PTR);
 		request.addQuestion(F("_sming._tcp.local"), mDNS::ResourceType::PTR);
-		Response response(0U, 0, request.getData(), request.getSize());
-		response.parse();
-		printResponse(response);
+		Message message(0U, 0, request.getData(), request.getSize());
+		message.parse();
+		printMessage(message);
 	}
 
-	// Create response records
+	// Create message records
 	{
 		Request request(Request::Type::reply);
 		auto ptr = request.addAnswer<Resource::PTR>(F("_chromecast._tcp.local"), F("my.test.name._tcp.local"));
@@ -223,7 +223,7 @@ void test()
 		txt.add("fn=My friendly name");
 		auto aaaa = request.addAnswer<Resource::AAAA>(F("abc._tcp.local"), Ip6Address());
 		auto srv = request.addAnswer<Resource::SRV>(F("xxxxx._tcp.local"), 1, 2, 8080, F("sillyhouse.net"));
-		printResponse(request);
+		printMessage(request);
 	}
 
 #ifdef ARCH_HOST
