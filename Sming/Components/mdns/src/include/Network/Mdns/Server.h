@@ -19,6 +19,7 @@
 #include <Delegate.h>
 #include <Network/UdpConnection.h>
 #include "Request.h"
+#include "Handler.h"
 
 namespace mDNS
 {
@@ -30,13 +31,13 @@ class Server : protected UdpConnection
 public:
 	/**
 	 * @brief Callback to be invoked for each received message
-	 * @retval bool Depends on operation
+	 * @retval bool See `onSend()`
 	 */
 	using MessageDelegate = Delegate<bool(Message& message)>;
 
 	/**
 	 * @brief Callback to be invoked with raw data (debugging, etc.)
-	 * @retval bool Depends on operation
+	 * @retval bool See `onPacket()`
 	 */
 	using PacketDelegate = Delegate<bool(IpAddress remoteIP, uint16_t remotePort, const uint8_t* data, size_t length)>;
 
@@ -56,9 +57,18 @@ public:
 	 * @brief Set callback to be invoked for each received message
 	 * @param callback Return false from callback to prevent message being passed to other clients
 	 */
-	void onMessage(MessageDelegate callback)
+	void addHandler(Handler& handler)
 	{
-		messageCallback = callback;
+		handlers.add(&handler);
+	}
+
+	/**
+	 * @brief Remove a message handler
+	 * @note If there are no more handlers then consider setting a timeout and then shutting the server down.
+	 */
+	void removeHandler(Handler& handler)
+	{
+		handlers.remove(&handler);
 	}
 
 	/**
@@ -106,7 +116,7 @@ private:
 		void onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort) override;
 	};
 
-	MessageDelegate messageCallback;
+	Handler::List handlers;
 	MessageDelegate sendCallback;
 	PacketDelegate packetCallback;
 	UdpOut out;

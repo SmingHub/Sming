@@ -9,7 +9,25 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-DEFINE_FSTR_LOCAL(fstrSearchService, "_googlecast._tcp.local")
+class MessageHandler : public mDNS::Handler
+{
+public:
+	/*
+	 * Set the DNS record name we're interested in.
+	 * Used as a filter in our `onMessage` method.
+	 */
+	void setSearchName(const String& name)
+	{
+		searchName = name;
+	}
+
+	bool onMessage(mDNS::Message& message) override;
+
+private:
+	String searchName;
+};
+
+static MessageHandler myMessageHandler;
 
 #ifdef ARCH_HOST
 bool savePacket(IpAddress remoteIP, uint16_t remotePort, const uint8_t* data, size_t length)
@@ -31,20 +49,22 @@ bool savePacket(IpAddress remoteIP, uint16_t remotePort, const uint8_t* data, si
 }
 #endif
 
-bool handleMessage(mDNS::Message& message)
+bool MessageHandler::onMessage(mDNS::Message& message)
 {
 	mDNS::printMessage(Serial, message);
 
-	// Check if we're interested in this reponse
+	// Check if we're interested in this message
 	if(!message.isReply()) {
+		debug_i("Ignoring query");
 		return false;
 	}
 	auto answer = message[mDNS::ResourceType::PTR];
 	if(answer == nullptr) {
+		debug_i("Ignoring message: no PTR record");
 		return false;
 	}
-	if(answer->getName() != fstrSearchService) {
-		debug_i("Ignoring message");
+	if(answer->getName() != searchName) {
+		debug_i("Ignoring message: Name doesn't match");
 		return false;
 	}
 
@@ -80,13 +100,15 @@ bool handleMessage(mDNS::Message& message)
 
 void sendSearch()
 {
-	String name(fstrSearchService);
+	String name = F("_googlecast._tcp.local");
 
 	// To discover all DNS-SD registered services, use:
 	// name = F("_services._dns-sd._udp.local");
 
 	bool ok = mDNS::server.search(name);
 	debug_i("search('%s'): %s", name.c_str(), ok ? "OK" : "FAIL");
+	// Tell our handler what we're looking for
+	myMessageHandler.setSearchName(name);
 }
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
@@ -98,7 +120,7 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 		printMessage(Serial, msg);
 		return true;
 	});
-	mDNS::server.onMessage(handleMessage);
+	mDNS::server.addHandler(myMessageHandler);
 #ifdef ARCH_HOST
 	mDNS::server.onPacket(savePacket);
 #endif

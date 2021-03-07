@@ -93,17 +93,19 @@ void Server::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 		}
 	}
 
-	if(!messageCallback) {
+	if(handlers.isEmpty()) {
 		return;
 	}
 
 	Message message(remoteIP, remotePort, buf->payload, buf->len);
-	if(message.parse()) {
-		/*
-		 * TODO: Establish callback chain/queue to support multiple clients.
-		 * If a client returns false then don't pass it any further.
-		 */
-		messageCallback(message);
+	if(!message.parse()) {
+		return;
+	}
+
+	for(auto& handler : handlers) {
+		if(!handler.onMessage(message)) {
+			break;
+		}
 	}
 }
 
