@@ -27,6 +27,9 @@ UNAME		:= $(shell uname -s)
 ifneq ($(filter MINGW32_NT%,$(UNAME)),)
 	UNAME		:= Windows
 	TOOL_EXT	:= .exe
+	# May be required by some applications (e.g. openssl)
+	HOME ?= $(USERPROFILE)
+	export HOME
 else ifneq ($(filter CYGWIN%,$(UNAME)),)
 	# Cygwin Detected
 	UNAME		:= Linux
