@@ -191,6 +191,10 @@
 	path = Sming/Libraries/DHTesp
 	url = https://github.com/beegee-tokyo/DHTesp.git
 	ignore = dirty
+[submodule "Libraries.GoogleCast"]
+	path = Sming/Libraries/GoogleCast
+	url = https://github.com/slaff/Sming-GoogleCast.git
+	ignore = dirty
 [submodule "Libraries.HardwareSPI"]
 	path = Sming/Libraries/HardwareSPI
 	url = https://github.com/mikee47/HardwareSPI
