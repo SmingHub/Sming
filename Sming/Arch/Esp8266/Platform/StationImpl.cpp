@@ -172,6 +172,11 @@ MacAddress StationImpl::getMacAddress() const
 	}
 }
 
+bool StationImpl::setMacAddress(const MacAddress& addr) const
+{
+	return wifi_set_macaddr(STATION_IF, &const_cast<MacAddress&>(addr)[0]);
+}
+
 IpAddress StationImpl::getNetworkBroadcast() const
 {
 	struct ip_info info = {0};

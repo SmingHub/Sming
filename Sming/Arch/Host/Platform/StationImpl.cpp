@@ -257,6 +257,12 @@ MacAddress StationImpl::getMacAddress() const
 	}
 }
 
+bool StationImpl::setMacAddress(const MacAddress& addr) const
+{
+	debug_w("[HOST] setMacAddress not implemented");
+	return false;
+}
+
 IpAddress StationImpl::getNetworkBroadcast() const
 {
 	return ipaddr | ~netmask;
