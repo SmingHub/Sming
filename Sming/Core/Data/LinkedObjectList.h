@@ -100,7 +100,10 @@ public:
 
 	size_t count() const
 	{
-		return std::count(begin(), end(), true);
+		size_t n{0};
+		for(auto p = mHead; p != nullptr; ++n, p = p->next()) {
+		}
+		return n;
 	}
 
 	bool contains(const ObjectType& object) const
