@@ -143,6 +143,11 @@ MacAddress AccessPointImpl::getMacAddress() const
 	return addr;
 }
 
+bool AccessPointImpl::setMacAddress(const MacAddress& addr) const
+{
+	return esp_wifi_set_mac(ESP_IF_WIFI_AP, &const_cast<MacAddress&>(addr)[0]);
+}
+
 String AccessPointImpl::getSSID() const
 {
 	wifi_config_t config{};

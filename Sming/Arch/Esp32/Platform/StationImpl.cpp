@@ -164,6 +164,11 @@ MacAddress StationImpl::getMacAddress() const
 	return addr;
 }
 
+bool StationImpl::setMacAddress(const MacAddress& addr) const
+{
+	return esp_wifi_set_mac(ESP_IF_WIFI_STA, &const_cast<MacAddress&>(addr)[0]);
+}
+
 IpAddress StationImpl::getNetworkBroadcast() const
 {
 	esp_netif_ip_info_t info;

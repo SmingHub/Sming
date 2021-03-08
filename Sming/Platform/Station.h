@@ -185,6 +185,20 @@ public:
 	 */
 	String getMAC(char sep = '\0') const;
 
+	/**	@brief	Set WiFi station MAC address
+	 *  @param addr The new MAC address
+	 *	@retval	bool true on success
+	 *
+	 *  Must be called from `init()` before activating station.
+	 *  Espressif place certain limitations on MAC addresses:
+	 *
+	 *  Bit 0 of the first byte of the MAC address can not be 1. For example:
+	 *
+	 *     OK:     "1a:XX:XX:XX:XX:XX"
+	 *     NOT OK: "15:XX:XX:XX:XX:XX"
+	 */
+	virtual bool setMacAddress(const MacAddress& addr) const = 0;
+
 	/**	@brief	Get WiFi station network mask
 	 *	@retval	IpAddress WiFi station network mask
 	 */

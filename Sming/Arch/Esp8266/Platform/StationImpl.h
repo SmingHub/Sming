@@ -38,6 +38,7 @@ public:
 	String getHostname() const override;
 	IpAddress getIP() const override;
 	MacAddress getMacAddress() const override;
+	bool setMacAddress(const MacAddress& addr) const override;
 	IpAddress getNetworkMask() const override;
 	IpAddress getNetworkGateway() const override;
 	IpAddress getNetworkBroadcast() const override;
