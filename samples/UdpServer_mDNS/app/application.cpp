@@ -9,7 +9,9 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
+// Our device will be reachable via "sming.local"
 DEFINE_FSTR_LOCAL(hostName, "sming");
+
 HttpServer server;
 
 class MyHttpService : public mDNS::Service
@@ -188,12 +190,6 @@ void init()
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiStation.enable(true);
 	WifiAccessPoint.enable(false);
-
-#ifdef ARCH_ESP8266
-	MacAddress mac({0x12, 0x34, 0x56, 0x78, 0x90, 0xab});
-	auto ok = wifi_set_macaddr(STATION_IF, &mac[0]);
-	debug_i("wifi_set_macaddr(): %u", ok);
-#endif
 
 	WifiEvents.onStationDisconnect(connectFail);
 	WifiEvents.onStationGotIP(gotIP);
