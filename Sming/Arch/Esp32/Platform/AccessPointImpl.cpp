@@ -16,8 +16,6 @@
 static AccessPointImpl accessPoint;
 AccessPointClass& WifiAccessPoint = accessPoint;
 
-static esp_netif_t* apNetworkInterface = nullptr;
-
 void AccessPointImpl::enable(bool enabled, bool save)
 {
 	wifi_mode_t mode;

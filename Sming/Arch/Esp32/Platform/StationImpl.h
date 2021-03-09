@@ -18,6 +18,8 @@
 #include <esp_smartconfig.h>
 #endif
 
+struct esp_netif_obj;
+
 class StationImpl : public StationClass, protected ISystemReadyHandler
 {
 public:
@@ -86,4 +88,5 @@ private:
 #ifdef ENABLE_SMART_CONFIG
 	std::unique_ptr<SmartConfigEventInfo> smartConfigEventInfo; ///< Set during smart handling
 #endif
+	esp_netif_obj* stationNetworkInterface{nullptr};
 };

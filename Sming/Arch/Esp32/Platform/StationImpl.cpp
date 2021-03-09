@@ -34,8 +34,6 @@ struct StationImpl::WpsConfig {
 #endif
 
 static StationImpl station;
-static esp_netif_t* stationNetworkInterface;
-
 StationClass& WifiStation = station;
 
 class BssInfoImpl : public BssInfo
