@@ -2,7 +2,7 @@
 
 #include "monster.h"
 
-using namespace MyGame::Example;
+using namespace MyGame::Sample;
 
 void init()
 {
