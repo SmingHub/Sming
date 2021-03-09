@@ -33,7 +33,7 @@ bool InputCallback::decode(pb_istream_t* stream, const pb_field_t* field)
 		return false;
 	}
 	data = static_cast<uint8_t*>(new_buf);
-	auto old_length{length};
+	auto old_length = length;
 	length += available;
 
 	return pb_read(stream, &data[old_length], available);
