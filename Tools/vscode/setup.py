@@ -42,6 +42,14 @@ class Env:
     def isWsl(self):
         return self.WSL_ROOT != ''
 
+    def update(self, env):
+        env['SMING_HOME'] = self.SMING_HOME
+        if self.SMING_ARCH == 'Esp8266':
+            env['ESP_HOME'] = self.ESP_HOME
+        if self.SMING_ARCH == 'Esp32':
+            env['IDF_PATH'] = self.IDF_PATH
+            env['IDF_TOOLS_PATH'] = self.IDF_PATH
+
 
 env = Env()
 
@@ -107,6 +115,7 @@ def update_intellisense():
     else:
         properties = load_template('intellisense/properties.json')
 
+    env.update(get_property(properties, 'env', {}))
     configurations = get_property(properties, 'configurations', [])
 
     config = find_object(configurations, env.SMING_ARCH)
