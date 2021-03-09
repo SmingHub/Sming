@@ -52,6 +52,9 @@ def fix_path(path):
     return path
 
 def find_tool(name):
+    if sys.platform == 'win32':
+        if os.path.splitext(name)[1] != '.exe':
+            name += '.exe'
     if os.path.isabs(name):
         path = name
     else:
