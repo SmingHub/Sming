@@ -134,6 +134,9 @@ bool StationImpl::disconnect()
 
 bool StationImpl::isEnabledDHCP() const
 {
+	if(stationNetworkInterface == nullptr) {
+		return false;
+	}
 	esp_netif_dhcp_status_t status;
 	if(esp_netif_dhcps_get_status(stationNetworkInterface, &status) != ESP_OK) {
 		return false;
@@ -144,6 +147,9 @@ bool StationImpl::isEnabledDHCP() const
 
 void StationImpl::enableDHCP(bool enable)
 {
+	if(stationNetworkInterface == nullptr) {
+		return;
+	}
 	if(enable) {
 		esp_netif_dhcpc_start(stationNetworkInterface);
 	} else {
@@ -203,6 +209,9 @@ IpAddress StationImpl::getNetworkGateway() const
 
 bool StationImpl::setIP(IpAddress address, IpAddress netmask, IpAddress gateway)
 {
+	if(stationNetworkInterface == nullptr) {
+		return false;
+	}
 	disconnect();
 	enableDHCP(false);
 	esp_netif_ip_info_t ipinfo;
