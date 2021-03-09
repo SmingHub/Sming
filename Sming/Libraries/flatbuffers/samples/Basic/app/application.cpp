@@ -21,12 +21,10 @@ void init()
 	// Call `Finish()` to instruct the builder that this monster is complete.
 	// Note: Regardless of how you created the `orc`, you still need to call
 	// `Finish()` on the `FlatBufferBuilder`.
-	builder.Finish(orc); // You could also call `FinishMonsterBuffer(builder,
-    					//                                          orc);`.
-
+	builder.Finish(orc);
 
 	// and then decode it
-	uint8_t *buffer = builder.GetBufferPointer();
+	uint8_t* buffer = builder.GetBufferPointer();
 	auto monster = GetMonster(buffer);
 	Serial.printf("Monster name: %s\n", monster->name()->c_str());
 }
