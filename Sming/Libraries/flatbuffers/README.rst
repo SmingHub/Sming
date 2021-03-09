@@ -19,7 +19,7 @@ Using
 
       #include <flatbuffers/flatbuffers>
 
-Or directly the header file generated from the `flatc` compiler.
+Or directly use the header file generated from the `flatc` compiler.
 
 3. Basic example::
 
@@ -44,9 +44,7 @@ Or directly the header file generated from the `flatc` compiler.
       // Call `Finish()` to instruct the builder that this monster is complete.
       // Note: Regardless of how you created the `orc`, you still need to call
       // `Finish()` on the `FlatBufferBuilder`.
-      builder.Finish(orc); // You could also call `FinishMonsterBuffer(builder,
-                     //                                          orc);`.
-
+      builder.Finish(orc);
 
       // and then decode it
       uint8_t *buffer = builder.GetBufferPointer();
@@ -55,7 +53,7 @@ Or directly the header file generated from the `flatc` compiler.
    }
 
 
- Furher reading
+ Further reading
  --------------
  Take a look at the `official flatbuffers tutorial <https://google.github.io/flatbuffers/flatbuffers_guide_tutorial.html>`_.
 
