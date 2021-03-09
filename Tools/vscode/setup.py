@@ -55,8 +55,16 @@ env = Env()
 
 
 def fix_path(path):
+    """Fix path so it conforms to makefile specs"""
     if path[1:3] == ':/':
         return '/' + path[0] + path[2:]
+    return path
+
+def check_path(path):
+    """Fix path so it conforms to vscode specs"""
+    if sys.platform == 'win32':
+        if path[:1] == '/':
+            return path[1:2] + ':' + path[2:]
     return path
 
 def find_tool(name):
@@ -107,7 +115,7 @@ def get_property(data, name, default):
 def update_intellisense():
     dirs = os.environ['COMPONENTS_EXTRA_INCDIR'].split()
     for i, d in enumerate(dirs):
-        dirs[i] = env.subst_path(d)
+        dirs[i] = check_path(env.subst_path(d))
 
     propertiesFile = '.vscode/c_cpp_properties.json'
     if os.path.exists(propertiesFile):
