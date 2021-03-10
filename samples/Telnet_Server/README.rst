@@ -1,4 +1,4 @@
-Telnet TCP Client / Server
-==========================
+Telnet Server
+=============
 
 Demonstrates a simple Telnet server application.
