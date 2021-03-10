@@ -376,12 +376,12 @@ private:
 String toString(Storage::Partition::Type type, uint8_t subType);
 String toLongString(Storage::Partition::Type type, uint8_t subType);
 
-template <typename T> String toString(T subType)
+template <typename E> typename std::enable_if<bool(E::partitionType), String>::type toString(E subType)
 {
-	return toString(Storage::Partition::Type(T::partitionType), uint8_t(subType));
+	return toString(Storage::Partition::Type(E::partitionType), uint8_t(subType));
 }
 
-template <typename T> String toLongString(T subType)
+template <typename E> typename std::enable_if<bool(E::partitionType), String>::type toLongString(E subType)
 {
-	return toLongString(Storage::Partition::Type(T::partitionType), uint8_t(subType));
+	return toLongString(Storage::Partition::Type(E::partitionType), uint8_t(subType));
 }
