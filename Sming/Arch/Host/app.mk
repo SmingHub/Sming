@@ -43,3 +43,10 @@ $(RUN_SCRIPT)::
 	$(foreach id,$(ENABLE_HOST_UARTID),echo '$(call RunHostTerminal,$(id))' >> $@;) \
 	echo '$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS) -- $(HOST_PARAMETERS)' >> $@; \
 	chmod a+x $@
+
+##@Flashing
+
+.PHONY: flashconfig
+flashconfig: kill_term ##Erase the rBoot config sector
+	$(info Erasing rBoot config sector)
+	$(call WriteFlash,$(FLASH_RBOOT_ERASE_CONFIG_CHUNKS))
