@@ -8,6 +8,4 @@ ifeq ($(SMING_ARCH),Esp8266)
 HWCONFIG := basic_rboot
 else
 HWCONFIG := spiffs
-# Emulate UART 0
-ENABLE_HOST_UARTID := 0
 endif
