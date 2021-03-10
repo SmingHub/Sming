@@ -30,6 +30,8 @@ public:
 		return Type::flash;
 	}
 
+	uint32_t getID() const;
+
 	bool read(uint32_t address, void* dst, size_t size) override;
 	bool write(uint32_t address, const void* src, size_t size) override;
 	bool erase_range(uint32_t address, size_t size) override;
