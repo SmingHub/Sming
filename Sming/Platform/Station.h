@@ -63,13 +63,24 @@ struct SmartConfigEventInfo {
 	MacAddress bssid;				 ///< AP BSSID
 };
 
+#define WPS_STATUS_MAP(XX)                                                                                             \
+	XX(Success)                                                                                                        \
+	XX(Failed)                                                                                                         \
+	XX(Timeout)                                                                                                        \
+	XX(WEP)
+
 /// WiFi WPS callback status
-enum WpsStatus {
-	eWPS_Success = 0,
-	eWPS_Failed,
-	eWPS_Timeout,
-	eWPS_WEP,
+enum class WpsStatus {
+#define XX(name) name,
+	WPS_STATUS_MAP(XX)
+#undef XX
 };
+
+#define XX(name) constexpr WpsStatus eWPS_##name{WpsStatus::name};
+WPS_STATUS_MAP(XX)
+#undef XX
+
+String toString(WpsStatus status);
 
 /**
  * @brief Scan complete handler function

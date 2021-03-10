@@ -13,6 +13,8 @@
 #include <Platform/AccessPoint.h>
 #include <Platform/System.h>
 
+struct esp_netif_obj;
+
 class AccessPointImpl : public AccessPointClass, protected ISystemReadyHandler
 {
 public:
@@ -37,4 +39,7 @@ public:
 
 protected:
 	void onSystemReady() override;
+
+private:
+	esp_netif_obj* apNetworkInterface{nullptr};
 };
