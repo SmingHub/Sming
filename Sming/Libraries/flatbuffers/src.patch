@@ -1,0 +1,17 @@
+diff --git a/include/flatbuffers/base.h b/include/flatbuffers/base.h
+index 54a51aa..ffc2d7d 100644
+--- a/include/flatbuffers/base.h
++++ b/include/flatbuffers/base.h
+@@ -32,11 +32,7 @@
+ #include <cstdlib>
+ #include <cstring>
+ 
+-#if defined(ARDUINO) && !defined(ARDUINOSTL_M_H)
+-  #include <utility.h>
+-#else
+-  #include <utility>
+-#endif
++#include <utility>
+ 
+ #include <string>
+ #include <type_traits>
