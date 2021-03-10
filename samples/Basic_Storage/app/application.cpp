@@ -5,6 +5,23 @@
 
 IMPORT_FSTR(FS_app, PROJECT_DIR "/app/application.cpp")
 
+void listDevices()
+{
+	Serial.println();
+	Serial.println(_F("Registered storage devices:"));
+	for(auto& dev : Storage::getDevices()) {
+		Serial.print("  name = '");
+		Serial.print(dev.getName());
+		Serial.print(_F("', type = "));
+		Serial.print(toString(dev.getType()));
+		Serial.print(_F(", size = 0x"));
+		Serial.print(dev.getSize(), HEX);
+		Serial.print(_F(", ID = 0x"));
+		Serial.println(dev.getID(), HEX);
+	}
+	Serial.println();
+}
+
 void listSpiffsPartitions()
 {
 	Serial.println(_F("** Enumerate registered SPIFFS partitions"));
@@ -62,6 +79,8 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true);
+
+	listDevices();
 
 	listSpiffsPartitions();
 

@@ -4,7 +4,6 @@
 	"devices": {
 		// Override default (conservative) flash settings for maximum performance
 		"spiFlash": {
-			"mode": "qio",
 			"speed": 80
 		}
 	},
