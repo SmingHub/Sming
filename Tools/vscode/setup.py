@@ -42,16 +42,35 @@ class Env:
     def isWsl(self):
         return self.WSL_ROOT != ''
 
+    def update(self, env):
+        env['SMING_HOME'] = self.SMING_HOME
+        if self.SMING_ARCH == 'Esp8266':
+            env['ESP_HOME'] = self.ESP_HOME
+        if self.SMING_ARCH == 'Esp32':
+            env['IDF_PATH'] = self.IDF_PATH
+            env['IDF_TOOLS_PATH'] = self.IDF_PATH
+
 
 env = Env()
 
 
 def fix_path(path):
+    """Fix path so it conforms to makefile specs"""
     if path[1:3] == ':/':
         return '/' + path[0] + path[2:]
     return path
 
+def check_path(path):
+    """Fix path so it conforms to vscode specs"""
+    if sys.platform == 'win32':
+        if path[:1] == '/':
+            return path[1:2] + ':' + path[2:]
+    return path
+
 def find_tool(name):
+    if sys.platform == 'win32':
+        if os.path.splitext(name)[1] != '.exe':
+            name += '.exe'
     if os.path.isabs(name):
         path = name
     else:
@@ -96,7 +115,7 @@ def get_property(data, name, default):
 def update_intellisense():
     dirs = os.environ['COMPONENTS_EXTRA_INCDIR'].split()
     for i, d in enumerate(dirs):
-        dirs[i] = env.subst_path(d)
+        dirs[i] = check_path(env.subst_path(d))
 
     propertiesFile = '.vscode/c_cpp_properties.json'
     if os.path.exists(propertiesFile):
@@ -104,6 +123,7 @@ def update_intellisense():
     else:
         properties = load_template('intellisense/properties.json')
 
+    env.update(get_property(properties, 'env', {}))
     configurations = get_property(properties, 'configurations', [])
 
     config = find_object(configurations, env.SMING_ARCH)
