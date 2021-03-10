@@ -63,7 +63,9 @@ bool spiffs_format()
 
 bool spiffs_format(Storage::Partition& partition)
 {
-	spiffs_unmount();
+	if(fileSystemType() == IFS::IFileSystem::Type::SPIFFS) {
+		fileFreeFileSystem();
+	}
 	auto fs = new IFS::SPIFFS::FileSystem(partition);
 	int err = fs->format();
 	if(err < 0) {

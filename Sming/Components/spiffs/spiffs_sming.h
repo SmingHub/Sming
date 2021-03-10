@@ -30,13 +30,13 @@ bool spiffs_mount(Storage::Partition partition);
  * @deprecated use fileFreeFileSystem() instead
  * @note this will do nothing if the active filesystem is not SPIFFS
  */
-void spiffs_unmount();
+void spiffs_unmount() SMING_DEPRECATED;
 
 /** @brief Format and mount a SPIFFS filesystem
  *  @deprecated use fileSystemFormat() instead
  *  @note this will fail if the active filesystem is not SPIFFS
  */
-bool spiffs_format();
+bool spiffs_format() SMING_DEPRECATED;
 
 /**
  * @brief Format and mount a SPIFFS volume using given partition
