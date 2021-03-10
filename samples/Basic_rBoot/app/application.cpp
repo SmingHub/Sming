@@ -121,9 +121,9 @@ void ShowInfo()
 	conf = rboot_get_config();
 
 	debugf("Count: %d", conf.count);
-	debugf("ROM 0: %d", conf.roms[0]);
-	debugf("ROM 1: %d", conf.roms[1]);
-	debugf("ROM 2: %d", conf.roms[2]);
+	debugf("ROM 0: 0x%08x", conf.roms[0]);
+	debugf("ROM 1: 0x%08x", conf.roms[1]);
+	debugf("ROM 2: 0x%08x", conf.roms[2]);
 	debugf("GPIO ROM: %d", conf.gpio_rom);
 }
 
