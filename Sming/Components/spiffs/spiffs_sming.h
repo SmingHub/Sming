@@ -13,19 +13,6 @@
 #include <Storage/Partition.h>
 
 /**
- * @brief Mount the SPIFFS volume using default configuration
- * @retval bool true on success
- *
- * Configuration is obtained `spiffs_get_storage_config()`.
- */
-bool spiffs_mount();
-
-/**
- * @brief Mount SPIFFS volume from a specific partition
- */
-bool spiffs_mount(Storage::Partition partition);
-
-/**
  * @brief unmount SPIFFS filesystem
  * @deprecated use fileFreeFileSystem() instead
  * @note this will do nothing if the active filesystem is not SPIFFS

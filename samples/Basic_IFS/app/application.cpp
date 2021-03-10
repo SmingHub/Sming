@@ -211,6 +211,10 @@ void init()
 			"Hello\n");
 #endif
 
+	// Various ways to initialise a filesystem: we'll use a custom approach
+	// spiffs_mount();
+	// fwfs_mount();
+	// hyfs_mount();
 	initFileSystem();
 
 	printDirectory(nullptr);
@@ -220,6 +224,4 @@ void init()
 	WifiAccessPoint.enable(false);
 
 	WifiEvents.onStationGotIP(gotIP);
-
-	//	testDirectoryStreams();
 }

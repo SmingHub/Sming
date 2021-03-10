@@ -117,6 +117,41 @@ inline void fileFreeFileSystem()
 	fileSetFileSystem(nullptr);
 }
 
+/**
+ * @brief Mount the first available SPIFFS volume
+ * @retval bool true on success
+ */
+bool spiffs_mount();
+
+/**
+ * @brief Mount SPIFFS volume from a specific partition
+ */
+bool spiffs_mount(Storage::Partition partition);
+
+/**
+ * @brief Mount the first available FWFS volume
+ * @retval bool true on success
+ */
+bool fwfs_mount();
+
+/**
+ * @brief Mount SPIFFS volume from a specific partition
+ * @retval bool true on success
+ */
+bool fwfs_mount(Storage::Partition partition);
+
+/**
+ * @brief Mount the first available FWFS and SPIFFS partitions as a hybrid filesystem
+ * @retval bool true on success
+ */
+bool hyfs_mount();
+
+/**
+ * @brief Mount the given FWFS and SPIFFS partitions as a hybrid filesystem
+ * @retval bool true on success
+ */
+bool hyfs_mount(Storage::Partition fwfsPartition, Storage::Partition spiffsPartition);
+
 /** @brief  Open file
  *  @param  name File name
  *  @param  flags Mode to open file

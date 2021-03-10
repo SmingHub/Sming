@@ -375,3 +375,13 @@ private:
 
 String toString(Storage::Partition::Type type, uint8_t subType);
 String toLongString(Storage::Partition::Type type, uint8_t subType);
+
+template <typename T> String toString(T subType)
+{
+	return toString(Storage::Partition::Type(T::partitionType), uint8_t(subType));
+}
+
+template <typename T> String toLongString(T subType)
+{
+	return toLongString(Storage::Partition::Type(T::partitionType), uint8_t(subType));
+}
