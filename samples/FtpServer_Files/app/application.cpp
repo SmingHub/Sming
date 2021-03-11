@@ -28,10 +28,12 @@ void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reas
 
 void init()
 {
-	spiffs_mount(); // Mount file system, in order to work with files
-
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
+
+	// Mount file system, in order to work with files
+	// spiffs_mount();
+	fwfs_mount();
 
 	fileSetContent("example.txt", "hello world!");
 	fileSetContent("data.bin", "\1\2\3\4\5");

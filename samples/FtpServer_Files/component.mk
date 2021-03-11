@@ -1,2 +1,2 @@
-HWCONFIG := spiffs
+HWCONFIG := ftpserver
 SPIFF_FILES :=
