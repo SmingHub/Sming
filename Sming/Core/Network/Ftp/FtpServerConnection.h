@@ -21,6 +21,7 @@
  */
 
 class FtpServer;
+class FtpDataStream;
 
 class FtpServerConnection : public TcpConnection
 {
@@ -46,12 +47,7 @@ protected:
 	virtual void response(int code, String text = "");
 
 	void cmdPort(const String& data);
-	void createDataConnection(TcpConnection* connection);
-
-	bool isCanTransfer()
-	{
-		return canTransfer;
-	}
+	void createDataConnection(FtpDataStream* connection);
 
 private:
 	enum class State {
@@ -67,8 +63,7 @@ private:
 
 	IpAddress ip;
 	int port{0};
-	TcpConnection* dataConnection{nullptr};
-	bool canTransfer{true};
+	FtpDataStream* dataConnection{nullptr};
 };
 
 typedef FtpServerConnection FTPServerConnection SMING_DEPRECATED; // @deprecated Use `FtpServerConnection` instead

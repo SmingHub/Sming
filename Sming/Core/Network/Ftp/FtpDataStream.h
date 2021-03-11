@@ -22,19 +22,8 @@ public:
 
 	err_t onConnected(err_t err) override
 	{
-		//response(125, "Connected");
-		setTimeOut(300); // Update timeout
+		setTimeOut(300);
 		return TcpConnection::onConnected(err);
-	}
-
-	err_t onSent(uint16_t len) override
-	{
-		sent += len;
-		if(written < sent || !completed) {
-			return TcpConnection::onSent(len);
-		}
-		finishTransfer();
-		return TcpConnection::onSent(len);
 	}
 
 	void finishTransfer()
@@ -48,21 +37,13 @@ public:
 		parent.response(code, text);
 	}
 
-	int write(const char* data, int len, uint8_t apiflags = 0) override
-	{
-		written += len;
-		return TcpConnection::write(data, len, apiflags);
-	}
-
 	void onReadyToSendData(TcpConnectionEvent sourceEvent) override
 	{
-		if(!parent.isCanTransfer()) {
-			return;
-		}
-		if(completed && written == 0) {
+		if(completed) {
 			finishTransfer();
+		} else {
+			transferData(sourceEvent);
 		}
-		transferData(sourceEvent);
 	}
 
 	virtual void transferData(TcpConnectionEvent sourceEvent)
@@ -72,6 +53,4 @@ public:
 protected:
 	FtpServerConnection& parent;
 	bool completed{false};
-	unsigned written{0};
-	unsigned sent{0};
 };

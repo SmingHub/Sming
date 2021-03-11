@@ -273,19 +273,20 @@ void FtpServerConnection::onCommand(String cmd, String data)
 		break;
 
 	default:
-		debug_e("Invalid state");
-		assert(false);
+		debug_e("Invalid state %u", state);
 	}
 }
 
 err_t FtpServerConnection::onSent(uint16_t len)
 {
-	canTransfer = true;
+	if(dataConnection != nullptr) {
+		dataConnection->onReadyToSendData(eTCE_Poll);
+	}
 
 	return ERR_OK;
 }
 
-void FtpServerConnection::createDataConnection(TcpConnection* connection)
+void FtpServerConnection::createDataConnection(FtpDataStream* connection)
 {
 	dataConnection = connection;
 	dataConnection->connect(ip, port);
@@ -319,7 +320,6 @@ void FtpServerConnection::response(int code, String text)
 
 	debug_d("> %s", response.c_str());
 	writeString(response);
-	canTransfer = false;
 	flush();
 }
 
