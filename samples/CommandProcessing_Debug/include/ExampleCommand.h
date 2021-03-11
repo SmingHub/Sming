@@ -3,8 +3,7 @@
  *
  */
 
-#ifndef SMINGCORE_EXAMPLE_COMMAND_H_
-#define SMINGCORE_EXAMPLE_COMMAND_H_
+#pragma once
 
 #include "WString.h"
 #include <Services/CommandProcessing/CommandProcessingIncludes.h>
@@ -20,5 +19,3 @@ private:
 	bool status = true;
 	void processExampleCommands(String commandLine, CommandOutput* commandOutput);
 };
-
-#endif /* SMINGCORE_DEBUG_H_ */
