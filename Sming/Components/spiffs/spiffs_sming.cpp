@@ -13,39 +13,6 @@
 #include <FileSystem.h>
 #include <Storage.h>
 
-namespace
-{
-Storage::Partition findDefaultPartition()
-{
-	auto it = Storage::findPartition(Storage::Partition::SubType::Data::spiffs);
-	if(!it) {
-		debug_e("No SPIFFS partition found");
-	}
-	return *it;
-}
-
-} // namespace
-
-bool spiffs_mount(Storage::Partition partition)
-{
-	auto fs = new IFS::SPIFFS::FileSystem(partition);
-	int err = fs->mount();
-	if(err < 0) {
-		debug_e("SPIFFS mount failed: %s", fs->getErrorString(err).c_str());
-		delete fs;
-		return false;
-	}
-
-	fileSetFileSystem(fs);
-	return true;
-}
-
-bool spiffs_mount()
-{
-	auto part = findDefaultPartition();
-	return part ? spiffs_mount(part) : false;
-}
-
 void spiffs_unmount()
 {
 	if(fileSystemType() == IFS::IFileSystem::Type::SPIFFS) {
@@ -63,7 +30,9 @@ bool spiffs_format()
 
 bool spiffs_format(Storage::Partition& partition)
 {
-	spiffs_unmount();
+	if(fileSystemType() == IFS::IFileSystem::Type::SPIFFS) {
+		fileFreeFileSystem();
+	}
 	auto fs = new IFS::SPIFFS::FileSystem(partition);
 	int err = fs->format();
 	if(err < 0) {
