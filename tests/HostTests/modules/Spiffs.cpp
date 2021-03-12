@@ -36,7 +36,7 @@ public:
 	 */
 	void cycleFlash()
 	{
-		spiffs_unmount();
+		fileFreeFileSystem();
 		if(!spiffs_mount()) {
 			debug_e("SPIFFS mount failed");
 			return;
@@ -68,7 +68,7 @@ public:
 		debug_i("Sector #0 erased after %u writes", writeCount);
 
 		// Re-mount file system and confirm test file is still present
-		spiffs_unmount();
+		fileFreeFileSystem();
 		spiffs_mount();
 		auto content = fileGetContent(testFile);
 		REQUIRE(testContent == content);
