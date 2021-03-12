@@ -12,34 +12,77 @@
 
 #include "TcpServer.h"
 #include "WHashMap.h"
-#include "WString.h"
+#include <FileSystem.h>
 
 class FtpServerConnection;
 
 /** @defgroup   ftpserver FTP server
  *  @ingroup    tcpserver
- *  @brief      Provides FTP server
+ *  @brief      Base implementation for FTP server
  */
-class FtpServer : public TcpServer
+class CustomFtpServer : public TcpServer
 {
 	friend class FtpServerConnection;
 
 public:
-	FtpServer()
+	CustomFtpServer()
 	{
-		setTimeOut(900); // Update timeout
+		setTimeOut(900);
 	}
 
-	void addUser(const String& login, const String& pass);
-	bool checkUser(const String& login, const String& pass);
+	/**
+	 * @brief Validate user
+	 * @param login User name
+	 * @param pass User password
+	 * @retval IFS::UserRole Returns assigned user role, None if user not validated
+	 */
+	virtual IFS::UserRole validateUser(const String& login, const String& pass) = 0;
 
 protected:
 	TcpConnection* createClient(tcp_pcb* clientTcp) override;
 
-	virtual bool onCommand(String cmd, String data, FtpServerConnection& connection);
+	/**
+	 * @brief Handle an incomding command
+	 * @param cmd The command identifier, e.g. LIST
+	 * @param data Any command arguments
+	 * @param connection The associated TCP connection to receive any response
+	 * @retval bool true if command handled and response sent
+	 */
+	virtual bool onCommand(String cmd, String data, FtpServerConnection& connection)
+	{
+		return false;
+	}
+};
+
+/** @defgroup   ftpserver FTP server
+ *  @ingroup    tcpserver
+ *  @brief      Provides FTP server
+ */
+class FtpServer : public CustomFtpServer
+{
+public:
+	void addUser(const String& login, const String& pass, IFS::UserRole userRole = IFS::UserRole::Admin);
+	IFS::UserRole validateUser(const String& login, const String& pass) override;
+
+	/**
+	 * @brief Legacy user validation
+	 * @deprecated Use `validateUser()` instead
+	 */
+	bool checkUser(const String& login, const String& pass) SMING_DEPRECATED
+	{
+		return validateUser(login, pass) != IFS::UserRole::None;
+	}
+
+protected:
+	bool onCommand(String cmd, String data, FtpServerConnection& connection) override;
 
 private:
-	HashMap<String, String> users;
+	struct User {
+		String password;
+		IFS::UserRole role;
+	};
+	using UserList = HashMap<String, User>;
+	UserList users;
 };
 
 /**

@@ -13,6 +13,30 @@
 #include "FtpServerConnection.h"
 #include "Network/TcpConnection.h"
 
+/*
+	RFC959:
+
+	User-DTP listens on data port when required.
+
+	Server is responsible for creating the data connection.
+
+	The server MUST close the data connection under the following conditions:
+
+		1. The server has completed sending data in a transfer mode
+		that requires a close to indicate EOF.
+
+		2. The server receives an ABORT command from the user.
+
+		3. The port specification is changed by a command from the user.
+
+		4. The control connection is closed legally or otherwise.
+
+		5. An irrecoverable error condition occurs.
+
+	Otherwise the close is a server option, the exercise of which the
+	server must indicate to the user-process by either a 250 or 226
+	reply only.
+*/
 class FtpDataStream : public TcpConnection
 {
 public:

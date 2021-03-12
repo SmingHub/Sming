@@ -14,9 +14,48 @@
 #include "FtpDataFileList.h"
 #include "../FtpServer.h"
 #include "Network/NetUtils.h"
+#include <Data/CStringArray.h>
+
+// Name, Comment
+#define FTP_COMMAND_MAP(XX)                                                                                            \
+	XX(ACCT, "Identifies user's account")                                                                              \
+	XX(CWD, "Change working directory")                                                                                \
+	XX(DELE, "Delete file")                                                                                            \
+	XX(LIST, "List file or directory information")                                                                     \
+	XX(NOOP, "")                                                                                                       \
+	XX(PWD, "Get current working directory")                                                                           \
+	XX(PASS, "Must follow user")                                                                                       \
+	XX(PASV, "")                                                                                                       \
+	XX(PORT, "")                                                                                                       \
+	XX(QUIT, "")                                                                                                       \
+	XX(RNFR, "Rename file: FROM")                                                                                      \
+	XX(RNTO, "Rename file: TO")                                                                                        \
+	XX(RETR, "Retrieve file content")                                                                                  \
+	XX(SIZE, "Get file size")                                                                                          \
+	XX(STOR, "Store file data")                                                                                        \
+	XX(SYST, "Get system information")                                                                                 \
+	XX(TYPE, "")                                                                                                       \
+	XX(USER, "Start login sequence, flushing any current account information")
 
 namespace
 {
+#define XX(name, comment) #name "\0"
+DEFINE_FSTR(fstrCommandList, FTP_COMMAND_MAP(XX))
+#undef XX
+
+enum class Command {
+	UNKNOWN,
+#define XX(name, comment) name,
+	FTP_COMMAND_MAP(XX)
+#undef XX
+};
+
+Command parseCommand(const String& data)
+{
+	int i = CStringArray(fstrCommandList).indexOf(data);
+	return Command(i + 1);
+}
+
 int getSplitterPos(const String& data, char splitter, uint8_t number)
 {
 	uint8_t k = 0;
@@ -33,26 +72,35 @@ int getSplitterPos(const String& data, char splitter, uint8_t number)
 	return -1;
 }
 
-String makeFileName(String name, bool shortIt)
+String resolvePath(const String& cwd, const String& name)
 {
 	if(name[0] == '/') {
-		name.remove(0, 1);
+		return name.substring(1);
 	}
 
-	if(shortIt && name.length() > 20) {
-		String ext;
-		int dotPos = name.lastIndexOf('.');
-		if(dotPos >= 0) {
-			ext = name.substring(dotPos);
-		}
-
-		return name.substring(0, 16) + ext;
+	String path;
+	path.reserve(cwd.length() + name.length() + 1);
+	path = cwd;
+	if(name.length() != 0) {
+		path += '/';
+		path += name;
 	}
-
-	return name;
+	// Remove any trailing path separator
+	auto len = path.length();
+	if(path[len - 1] == '/') {
+		path.setLength(len - 1);
+	}
+	debug_i("resolvePath('%s', '%s'): '%s'", cwd.c_str(), name.c_str(), path.c_str());
+	return path;
 }
 
 } // namespace
+
+FtpServerConnection::FtpServerConnection(CustomFtpServer& parentServer, tcp_pcb* clientTcp)
+	: TcpConnection(clientTcp, true), server(parentServer)
+{
+	writeString(_F("220 Welcome to Sming FTP\r\n"));
+}
 
 err_t FtpServerConnection::onReceive(pbuf* buf)
 {
@@ -105,175 +153,175 @@ void FtpServerConnection::cmdPort(const String& data)
 
 void FtpServerConnection::onCommand(String cmd, String data)
 {
-	cmd.toUpperCase();
+	// TODO: Implement this as a virtual server method
+	auto checkFileAccess = [this](const String& filename, FileOpenFlags flags) {
+		FileStat stat;
+		if(fileStats(filename, stat) != FS_OK) {
+			response(550); // Not found / no access
+			return false;
+		}
+		if(flags[FileOpenFlag::Write]) {
+			if(user.role < stat.acl.writeAccess) {
+				response(550, _F("Write access denied")); // Not found / no access
+				return false;
+			}
+		}
+		if(user.role < stat.acl.readAccess) {
+			response(550, _F("Read access denied")); // Not found / no access
+			return false;
+		}
+		return true;
+	};
 
-	/* Use macros to make code easier to read */
-#define SWITCH while(true)
-#define CASE(s) if(cmd == _F(s))
-#define DEFAULT
-
+	switch(parseCommand(cmd)) {
 	// We ready to quit always :)
-	CASE("QUIT")
-	{
-		response(221);
+	case Command::QUIT:
+		response(221); // Service closing control connection
 		close();
-		return;
-	}
+		break;
 
 	// Strong security check :)
-	switch(state) {
-	case State::Authorization:
-		SWITCH
-		{
-			CASE("USER")
-			{
-				userName = data;
-				response(331);
-				break;
-			}
-
-			CASE("PASS")
-			{
-				if(server.checkUser(userName, data)) {
-					userName = "";
-					state = State::Active;
-					response(230);
-				} else {
-					response(430);
-				}
-				break;
-			}
-
-			DEFAULT
-			{
-				response(530);
-				break;
-			}
-		} // SWITCH
+	case Command::USER:
+		// Authenticate or re-authenticate, wiping existing credentials
+		user = User{data};
+		response(331); // User name OK, need password
 		break;
 
-	case State::Active:
-		SWITCH
-		{
-			CASE("SYST")
-			{
-				response(215, F("Windows_NT: Sming Framework")); // Why not? It's look like Windows :)
-				break;
-			}
+	case Command::PASS: {
+		if(!user.name) {
+			response(332); // Need account for login
+		} else {
+			user.role = server.validateUser(user.name, data);
+			response(user.isValid() ? 230 : 430);
+		}
+		user.name = nullptr;
+		break;
+	}
 
-			CASE("PWD")
-			{
-				response(257, F("\"/\""));
-				break;
-			}
-
-			CASE("PORT")
-			{
-				cmdPort(data);
-				break;
-			}
-
-			CASE("CWD")
-			{
-				if(data == "/") {
-					response(250);
-				} else {
-					response(550);
-				}
-				break;
-			}
-
-			CASE("TYPE")
-			{
-				response(250);
-				break;
-			}
-
-			CASE("SIZE")
-			{
-				auto fileName = makeFileName(data, false);
-				if(fileExist(fileName)) {
-					auto fileSize = fileGetSize(fileName);
-					response(213, String(fileSize));
-				} else {
-					response(550);
-				}
-				break;
-			}
-
-			CASE("DELE")
-			{
-				String name = makeFileName(data, false);
-				if(fileExist(name)) {
-					fileDelete(name);
-					response(250);
-				} else {
-					response(550);
-				}
-				break;
-			}
-
-			CASE("RNFR")
-			{
-				renameFrom = data;
-				response(350);
-				break;
-			}
-
-			CASE("RNTO")
-			{
-				if(fileExist(renameFrom)) {
-					fileRename(renameFrom, data);
-					response(250);
-				} else {
-					response(550);
-				}
-				break;
-			}
-
-			CASE("RETR")
-			{
-				createDataConnection(new FtpDataRetrieve(*this, makeFileName(data, false)));
-				break;
-			}
-
-			CASE("STOR")
-			{
-				createDataConnection(new FtpDataStore(*this, makeFileName(data, true)));
-				break;
-			}
-
-			CASE("LIST")
-			{
-				createDataConnection(new FtpDataFileList(*this));
-				break;
-			}
-
-			CASE("PASV")
-			{
-				response(500, F("Passive mode not supported"));
-				break;
-			}
-
-			CASE("NOOP")
-			{
-				response(200);
-				break;
-			}
-
-			DEFAULT
-			{
-				if(!server.onCommand(cmd, data, *this)) {
-					response(502, F("Not supported"));
-				}
-				break;
-			}
-		} // SWITCH
-
+	case Command::SYST:
+		response(215, F("Windows_NT: Sming Framework")); // Why not? It's look like Windows :)
 		break;
 
+	case Command::PWD: {
+		String s;
+		s += "\"/";
+		s += cwd;
+		s += '"';
+		response(257, s);
+		break;
+	}
+
+	case Command::PORT:
+		cmdPort(data);
+		break;
+
+	case Command::CWD: {
+		String path = resolvePath(cwd, data);
+		if(!checkFileAccess(path, FileOpenFlag::Read)) {
+			break;
+		}
+		debug_i("CWD: '%s'", path.c_str());
+		FileStat stat;
+		if(fileStats(path, stat) == FS_OK && stat.attr[FileAttribute::Directory]) {
+			cwd = path;
+			response(250); // OK
+		} else {
+			response(550); // Not found / no access
+		}
+		break;
+	}
+
+	case Command::TYPE:
+		response(250); // OK
+		break;
+
+	case Command::SIZE: {
+		auto path = resolvePath(cwd, data);
+		if(!checkFileAccess(cwd, FileOpenFlag::Read)) {
+			break;
+		}
+		FileStat stat;
+		if(fileStats(path, stat) == FS_OK) {
+			response(213, String(stat.size).c_str()); // File status
+		} else {
+			response(550); // Not found / no access
+		}
+		break;
+	}
+
+	case Command::DELE: {
+		String path = resolvePath(cwd, data);
+		if(!checkFileAccess(cwd, FileOpenFlag::Write | FileOpenFlag::Truncate)) {
+			break;
+		}
+		int err = fileDelete(path);
+		response((err == FS_OK) ? 250 : 550);
+		break;
+	}
+
+	case Command::RNFR: {
+		renameFrom = data;
+		response(350); // Pending further information
+		break;
+	}
+
+	case Command::RNTO: {
+		if(!renameFrom) {
+			response(550);
+			break;
+		}
+		String pathFrom = resolvePath(cwd, renameFrom);
+		if(!checkFileAccess(pathFrom, FileOpenFlag::Write)) {
+			break;
+		}
+		String pathTo = resolvePath(cwd, data);
+		if(!checkFileAccess(pathTo, FileOpenFlag::Write)) {
+			break;
+		}
+		int err = fileRename(pathFrom, pathTo);
+		response((err == FS_OK) ? 250 : 550);
+		break;
+	}
+
+	case Command::RETR: {
+		String path = resolvePath(cwd, data);
+		if(checkFileAccess(path, FileOpenFlag::Read)) {
+			createDataConnection(new FtpDataRetrieve(*this, path));
+		}
+		break;
+	}
+
+	case Command::STOR: {
+		String path = resolvePath(cwd, data);
+		if(checkFileAccess(path, FileOpenFlag::Write)) {
+			createDataConnection(new FtpDataStore(*this, path));
+		}
+		break;
+	}
+
+	case Command::LIST: {
+		String path = resolvePath(cwd, data);
+		if(checkFileAccess(path, FileOpenFlag::Read)) {
+			createDataConnection(new FtpDataFileList(*this, path));
+		}
+		break;
+	}
+
+	case Command::PASV: {
+		response(500, F("Passive mode not supported"));
+		break;
+	}
+
+	case Command::NOOP: {
+		response(200);
+		break;
+	}
+
+	case Command::UNKNOWN:
 	default:
-		debug_e("Invalid state %u", state);
+		if(!server.onCommand(cmd, data, *this)) {
+			response(502, F("Not supported"));
+		}
 	}
 }
 
@@ -321,16 +369,4 @@ void FtpServerConnection::response(int code, String text)
 	debug_d("> %s", response.c_str());
 	writeString(response);
 	flush();
-}
-
-void FtpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
-{
-	switch(state) {
-	case State::Ready:
-		writeString(_F("220 Welcome to Sming FTP\r\n"));
-		state = State::Authorization;
-		break;
-
-	default:; // Do nothing
-	}
 }

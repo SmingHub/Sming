@@ -14,7 +14,10 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	Serial.println(ip);
 	// Start FTP server
 	ftp.listen(21);
-	ftp.addUser("me", "123"); // FTP account
+	// Add user accounts
+	ftp.addUser("guest", nullptr, IFS::UserRole::Guest);
+	ftp.addUser("me", "123", IFS::UserRole::User);
+	ftp.addUser("admin", "1234", IFS::UserRole::Admin);
 	// You can also use special FTP comand: "fsformat" for clearing file system (for example from TotalCMD)
 }
 
@@ -33,7 +36,8 @@ void init()
 
 	// Mount file system, in order to work with files
 	// spiffs_mount();
-	fwfs_mount();
+	// fwfs_mount();
+	hyfs_mount();
 
 	fileSetContent("example.txt", "hello world!");
 	fileSetContent("data.bin", "\1\2\3\4\5");

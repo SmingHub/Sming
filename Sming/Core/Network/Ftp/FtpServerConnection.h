@@ -13,6 +13,7 @@
 #include "Network/TcpConnection.h"
 #include "IpAddress.h"
 #include "WString.h"
+#include <IFS/Access.h>
 
 /**
  * @defgroup ftp FTP
@@ -20,49 +21,55 @@
  * @{
  */
 
-class FtpServer;
+class CustomFtpServer;
 class FtpDataStream;
 
 class FtpServerConnection : public TcpConnection
 {
 	friend class FtpDataStream;
-	friend class FtpServer;
+	friend class CustomFtpServer;
 
 public:
+	struct User {
+		String name;
+		IFS::UserRole role{};
+
+		bool isValid() const
+		{
+			return role != IFS::UserRole::None;
+		}
+	};
+
 	static constexpr size_t MAX_FTP_CMD{255};
 
-	FtpServerConnection(FtpServer& parentServer, tcp_pcb* clientTcp)
-		: TcpConnection(clientTcp, true), server(parentServer)
-	{
-	}
+	FtpServerConnection(CustomFtpServer& parentServer, tcp_pcb* clientTcp);
 
 	err_t onReceive(pbuf* buf) override;
 	err_t onSent(uint16_t len) override;
-	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
 
 	void dataTransferFinished(TcpConnection* connection);
 
+	const User& getUser() const
+	{
+		return user;
+	}
+
+	virtual void response(int code, String text = nullptr, char sep = ' ');
+
 protected:
 	virtual void onCommand(String cmd, String data);
-	virtual void response(int code, String text = "");
 
 	void cmdPort(const String& data);
 	void createDataConnection(FtpDataStream* connection);
 
 private:
-	enum class State {
-		Ready,
-		Authorization,
-		Active,
-	};
-
-	FtpServer& server;
-	State state{State::Ready};
-	String userName;
+	CustomFtpServer& server;
+	User user{};
 	String renameFrom;
 
 	IpAddress ip;
-	int port{0};
+	uint16_t port{20};
+	String cwd;
 	FtpDataStream* dataConnection{nullptr};
 };
 
