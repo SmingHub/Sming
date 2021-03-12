@@ -318,7 +318,7 @@ void FtpServerConnection::response(int code, String text)
 	response += "\r\n";
 
 	debug_d("> %s", response.c_str());
-	writeString(response, TCP_WRITE_FLAG_COPY); // Dynamic memory, should copy
+	writeString(response);
 	canTransfer = false;
 	flush();
 }
@@ -327,7 +327,7 @@ void FtpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 {
 	switch(state) {
 	case State::Ready:
-		writeString(_F("220 Welcome to Sming FTP\r\n"), 0);
+		writeString(_F("220 Welcome to Sming FTP\r\n"));
 		state = State::Authorization;
 		break;
 
