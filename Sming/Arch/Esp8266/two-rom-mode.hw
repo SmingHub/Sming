@@ -3,13 +3,14 @@
 	"base_config": "standard",
 	"partitions": {
 		"rom0": {
+			"subtype": "ota_0",
 			"size": "480K"
 		},
 		"rom1": {
 			"address": "0x80000",
 			"size": "512K",
 			"type": "app",
-			"subtype": "ota_0",
+			"subtype": "ota_1",
 			"filename": "$(RBOOT_ROM_1_BIN)"
 		}
 	}
