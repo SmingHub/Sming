@@ -27,20 +27,46 @@ class RbootHttpUpdater;
 
 using OtaUpdateDelegate = Delegate<void(RbootHttpUpdater& client, bool result)>;
 
-struct RbootHttpUpdaterItem {
-	String url;
-	uint32_t targetOffset;
-	size_t size;						 // << max allowed size
-	RbootOutputStream* stream = nullptr; // (optional) output stream to use.
-};
-
 class RbootHttpUpdater : protected HttpClient
 {
 public:
-	virtual ~RbootHttpUpdater()
+	struct Item {
+		String url;
+		uint32_t targetOffset;
+		size_t size;						// << max allowed size
+		RbootOutputStream* stream{nullptr}; // (optional) output stream to use.
+
+		Item(String url, uint32_t targetOffset, size_t size, RbootOutputStream* stream)
+			: url(url), targetOffset(targetOffset), size(size), stream(stream)
+		{
+		}
+
+		~Item()
+		{
+			delete stream;
+		}
+
+		RbootOutputStream* getStream()
+		{
+			if(stream == nullptr) {
+				stream = new RbootOutputStream(targetOffset, size);
+			}
+			return stream;
+		}
+	};
+
+	class ItemList : public Vector<Item>
 	{
-		cleanup();
-	}
+	public:
+		bool addNew(Item* it)
+		{
+			if(addElement(it)) {
+				return true;
+			}
+			delete it;
+			return false;
+		}
+	};
 
 	/**
 	 * @brief Add an item to update
@@ -52,12 +78,7 @@ public:
 	 */
 	bool addItem(uint32_t offset, const String& firmwareFileUrl, size_t maxSize = 0)
 	{
-		RbootHttpUpdaterItem add;
-		add.targetOffset = offset;
-		add.url = firmwareFileUrl;
-		add.size = maxSize;
-		add.stream = nullptr;
-		return items.add(add);
+		return items.addNew(new Item{firmwareFileUrl, offset, maxSize, nullptr});
 	}
 
 	/**
@@ -66,7 +87,7 @@ public:
 	 * @param partition Target partition to write
 	 * @retval bool
 	 */
-	bool addItem(const String& firmwareFileUrl, Partition partition)
+	bool addItem(const String& firmwareFileUrl, Storage::Partition partition)
 	{
 		return addItem(partition.address(), firmwareFileUrl, partition.size());
 	}
@@ -83,13 +104,7 @@ public:
 			return false;
 		}
 
-		RbootHttpUpdaterItem add;
-		add.targetOffset = stream->getStartAddress();
-		add.url = firmwareFileUrl;
-		add.size = stream->getMaxLength();
-		add.stream = stream;
-
-		return items.add(add);
+		return items.addNew(new Item{firmwareFileUrl, stream->getStartAddress(), stream->getMaxLength(), stream});
 	}
 
 	void start();
@@ -128,10 +143,21 @@ public:
 		baseRequest = request;
 	}
 
-	// Allow reading items
-	RbootHttpUpdaterItem getItem(unsigned int index)
+	/**
+	 * @brief Allow reading items
+	 * @deprecated Access list directly using `getItems()`
+	 */
+	const Item& getItem(unsigned int index) const SMING_DEPRECATED
 	{
-		return items.elementAt(index);
+		return items[index];
+	}
+
+	/**
+	 * @brief Allow read access to item list
+	 */
+	const ItemList& getItems() const
+	{
+		return items;
 	}
 
 protected:
@@ -142,22 +168,12 @@ protected:
 	virtual int updateComplete(HttpConnection& client, bool success);
 
 protected:
-	Vector<RbootHttpUpdaterItem> items;
+	ItemList items;
 	OtaUpdateDelegate updateDelegate;
 	HttpRequest* baseRequest{nullptr};
 	uint8_t romSlot{NO_ROM_SWITCH};
 	uint8_t currentItem{0};
 	rboot_write_status rbootWriteStatus{};
-
-private:
-	void cleanup()
-	{
-		for(unsigned i = 0; i < items.count(); i++) {
-			delete items[i].stream;
-			items[i].stream = nullptr;
-		}
-		items.clear();
-	}
 };
 
 /** @deprecated Use `RbootHttpUpdater` */

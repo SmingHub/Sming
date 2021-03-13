@@ -32,12 +32,7 @@ void RbootHttpUpdater::start()
 		}
 
 		request->setMethod(HTTP_GET);
-
-		if(it.stream == nullptr) {
-			it.stream = new RbootOutputStream(it.targetOffset, it.size);
-		}
-
-		request->setResponseStream(it.stream);
+		request->setResponseStream(it.getStream());
 
 		if(i == items.count() - 1) {
 			request->onRequestComplete(RequestCompletedDelegate(&RbootHttpUpdater::updateComplete, this));
@@ -101,12 +96,12 @@ void RbootHttpUpdater::updateFailed()
 	if(updateDelegate) {
 		updateDelegate(*this, false);
 	}
-	cleanup();
+	items.clear();
 }
 
 void RbootHttpUpdater::applyUpdate()
 {
-	cleanup();
+	items.clear();
 	if(romSlot == NO_ROM_SWITCH) {
 		debug_d("Firmware updated.");
 		return;
