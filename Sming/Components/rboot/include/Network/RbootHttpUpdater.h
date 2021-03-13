@@ -50,7 +50,15 @@ public:
 	 * @retval bool
 	 * @note Use the `Partition` overload where possible
 	 */
-	bool addItem(uint32_t offset, const String& firmwareFileUrl, size_t maxSize = 0);
+	bool addItem(uint32_t offset, const String& firmwareFileUrl, size_t maxSize = 0)
+	{
+		RbootHttpUpdaterItem add;
+		add.targetOffset = offset;
+		add.url = firmwareFileUrl;
+		add.size = maxSize;
+		add.stream = nullptr;
+		return items.add(add);
+	}
 
 	/**
 	 * @brief Add an item to update
@@ -69,7 +77,20 @@ public:
 	 * @param stream
 	 * @retval bool
 	 */
-	bool addItem(const String& firmwareFileUrl, RbootOutputStream* stream);
+	bool addItem(const String& firmwareFileUrl, RbootOutputStream* stream)
+	{
+		if(stream == nullptr) {
+			return false;
+		}
+
+		RbootHttpUpdaterItem add;
+		add.targetOffset = stream->getStartAddress();
+		add.url = firmwareFileUrl;
+		add.size = stream->getMaxLength();
+		add.stream = stream;
+
+		return items.add(add);
+	}
 
 	void start();
 
