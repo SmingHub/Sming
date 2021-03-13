@@ -17,6 +17,7 @@
 
 #include <Data/Stream/ReadWriteStream.h>
 #include <rboot-api.h>
+#include <Storage/Partition.h>
 
 /**
  * @brief Write-only stream type used during rBoot firmware updates
@@ -29,6 +30,14 @@ public:
 	 * @param maxLength the maximum allowed length of the rom. Use 0 if unlimited.
 	 */
 	RbootOutputStream(uint32_t startAddress, size_t maxLength = 0) : startAddress(startAddress), maxLength(maxLength)
+	{
+	}
+
+	/**
+	 * @brief Construct a stream for the given partition
+	 * @param partition
+	 */
+	RbootOutputStream(Storage::Partition partition) : startAddress(partition.address()), maxLength(partition.size())
 	{
 	}
 
