@@ -68,7 +68,7 @@ bool BasicStream::consume(const uint8_t*& data, size_t& size)
 void BasicStream::setError(Error code)
 {
 	assert(code != Error::None);
-	debug_e("Error: %s", errorToString(code).c_str());
+	debug_e("Error: %s", toString(code).c_str());
 	errorCode = code;
 	state = State::Error;
 }
@@ -210,6 +210,14 @@ size_t BasicStream::write(const uint8_t* data, size_t size)
 
 String BasicStream::errorToString(Error code)
 {
+	return toString(code);
+}
+
+} // namespace OtaUpgrade
+
+String toString(OtaUpgrade::BasicStream::Error code)
+{
+	using Error = OtaUpgrade::BasicStream::Error;
 	switch(code) {
 	case Error::None:
 		return nullptr;
@@ -239,5 +247,3 @@ String BasicStream::errorToString(Error code)
 		return F("<unknown error>");
 	}
 }
-
-} // namespace OtaUpgrade

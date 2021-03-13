@@ -38,7 +38,7 @@ int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpRespons
 
 	response.code = HTTP_STATUS_BAD_REQUEST;
 	response.setContentType(MIME_HTML);
-	String html = "<H2 color='#444'>" + OtaUpgradeStream::errorToString(otaStream->errorCode) + "</H2>";
+	String html = "<H2 color='#444'>" + toString(otaStream->errorCode) + "</H2>";
 	response.headers[HTTP_HEADER_CONTENT_LENGTH] = html.length();
 	response.sendString(html);
 

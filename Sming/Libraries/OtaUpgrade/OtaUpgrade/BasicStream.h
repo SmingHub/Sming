@@ -48,7 +48,7 @@ public:
 	/**
 	 * @brief Error code values
 	 */
-	enum Error {
+	enum class Error {
 		None,			  ///< No error occured thus far (default value of \c #errorCode if `hasError()` returns false)
 		InvalidFormat,	///< Invalid/unsupported upgrade file format
 		UnsupportedData,  ///< Some content of the upgrade file is not supported by this version of OtaUpgradeStream.
@@ -67,8 +67,9 @@ public:
 
 	/** @brief Convert error code to string.
 	 * @see #errorCode
+	 * @deprecated Use `toString()` global function
 	 */
-	static String errorToString(Error code);
+	static String errorToString(Error code) SMING_DEPRECATED;
 
 	/** @brief Process chunk of upgrade file.
 	 * @param data Pointer to chunk of data.
@@ -183,3 +184,8 @@ private:
 };
 
 } // namespace OtaUpgrade
+
+/** @brief Convert error code to string.
+ * @see #errorCode
+ */
+String toString(OtaUpgrade::BasicStream::Error code);
