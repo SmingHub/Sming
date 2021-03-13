@@ -13,6 +13,7 @@
 #include <esp_spi_flash.h>
 #include <Data/HexString.h>
 #include <FlashString/Array.hpp>
+#include <Storage/SpiFlash.h>
 
 extern "C" uint32 user_rf_cal_sector_set(void);
 
@@ -27,29 +28,13 @@ DECLARE_FSTR_ARRAY(AppFlashRegionOffsets, uint32_t);
 BasicStream::Slot::Slot()
 {
 	// Get parameters of the slot where the firmware image should be stored.
-	const rboot_config bootConfig = rboot_get_config();
-	uint8_t currentSlot = bootConfig.current_rom;
-	index = (currentSlot == 0 ? 1 : 0);
-	address = bootConfig.roms[index];
-	size = 0x100000 - (address & 0xFFFFF);
+	uint8_t currentSlot = rboot_get_current_rom();
+	index = (currentSlot == 0) ? 1 : 0;
 
-	const auto limitSize = [&](uint32_t otherAddress) {
-		if(otherAddress > address) {
-			size = std::min(size, otherAddress - address);
-		}
-	};
-
-	limitSize(flashmem_get_size_bytes());
-	limitSize(user_rf_cal_sector_set() * INTERNAL_FLASH_SECTOR_SIZE);
-	for(uint8_t i = 0; i < bootConfig.count; ++i) {
-		if(i != currentSlot) {
-			limitSize(bootConfig.roms[i]);
-		}
-	}
-
-	for(auto offset : AppFlashRegionOffsets) {
-		limitSize(offset);
-	}
+	// Lookup slot details from partition table
+	auto part = Storage::spiFlash->partitions().findOta(index);
+	address = part.address();
+	size = part.size();
 }
 
 BasicStream::BasicStream()
