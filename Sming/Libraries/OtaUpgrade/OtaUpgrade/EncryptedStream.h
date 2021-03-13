@@ -50,12 +50,12 @@ private:
 		Chunk,
 		None,
 	};
-	Fragment fragment = Fragment::Header;
 
-	size_t remainingBytes = sizeof(header);
-	uint8_t* fragmentPtr = header;
+	Fragment fragment{Fragment::Header};
+	size_t remainingBytes{sizeof header};
+	uint8_t* fragmentPtr{header};
 	std::unique_ptr<uint8_t[]> buffer;
-	size_t bufferSize = 0;
+	size_t bufferSize{0};
 };
 
 } // namespace OtaUpgrade

@@ -18,11 +18,14 @@
 #include <Network/HttpClient.h>
 #include "../Data/Stream/RbootOutputStream.h"
 
-#define NO_ROM_SWITCH 0xff
+/**
+ * @brief Magic value for ROM slot indicating slot won't change after successful OTA
+ */
+constexpr uint8_t NO_ROM_SWITCH{0xff};
 
 class RbootHttpUpdater;
 
-typedef Delegate<void(RbootHttpUpdater& client, bool result)> OtaUpdateDelegate;
+using OtaUpdateDelegate = Delegate<void(RbootHttpUpdater& client, bool result)>;
 
 struct RbootHttpUpdaterItem {
 	String url;
@@ -39,11 +42,41 @@ public:
 		cleanup();
 	}
 
+	/**
+	 * @brief Add an item to update
+	 * @param offset
+	 * @param firmwareFileUrl
+	 * @param maxSize
+	 * @retval bool
+	 * @note Use the `Partition` overload where possible
+	 */
 	bool addItem(uint32_t offset, const String& firmwareFileUrl, size_t maxSize = 0);
-	bool addItem(const String& firmwareFileUrl, RbootOutputStream* stream = nullptr);
+
+	/**
+	 * @brief Add an item to update
+	 * @param firmwareFileUrl
+	 * @param partition Target partition to write
+	 * @retval bool
+	 */
+	bool addItem(const String& firmwareFileUrl, Partition partition)
+	{
+		return addItem(partition.address(), firmwareFileUrl, partition.size());
+	}
+
+	/**
+	 * @brief Add an item to update use a pre-constructed stream
+	 * @param firmwareFileUrl
+	 * @param stream
+	 * @retval bool
+	 */
+	bool addItem(const String& firmwareFileUrl, RbootOutputStream* stream);
 
 	void start();
 
+	/**
+	 * @brief On completion, switch to the given ROM slot
+	 * @param romSlot specify NO_ROM_SWITCH (the default) to cancel any previously set switch
+	 */
 	void switchToRom(uint8_t romSlot)
 	{
 		this->romSlot = romSlot;
@@ -59,11 +92,13 @@ public:
 		this->updateDelegate = reqUpdateDelegate;
 	}
 
-	/* Sets the base request that can be used to pass
-	 * - default request parameters, like request headers...
-	 * - default SSL options
-	 * - default SSL fingeprints
-	 * - default SSL client certificates
+	/**
+	 *  @brief Sets the base request that can be used to pass
+	 * 
+	 * 		- default request parameters, like request headers...
+	 * 		- default SSL options
+	 * 		- default SSL fingeprints
+	 * 		- default SSL client certificates
 	 *
 	 * @param request
 	 */
@@ -87,12 +122,11 @@ protected:
 
 protected:
 	Vector<RbootHttpUpdaterItem> items;
-	int currentItem = 0;
-	rboot_write_status rbootWriteStatus;
-	uint8_t romSlot = NO_ROM_SWITCH;
-	OtaUpdateDelegate updateDelegate = nullptr;
-
-	HttpRequest* baseRequest = nullptr;
+	OtaUpdateDelegate updateDelegate;
+	HttpRequest* baseRequest{nullptr};
+	uint8_t romSlot{NO_ROM_SWITCH};
+	uint8_t currentItem{0};
+	rboot_write_status rbootWriteStatus{};
 
 private:
 	void cleanup()

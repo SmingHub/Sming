@@ -26,8 +26,10 @@ class RbootOutputStream : public ReadWriteStream
 {
 public:
 	/**
+	 * @brief Construct a stream using raw flash address/size
 	 * @param startAddress the start address on the storage media
 	 * @param maxLength the maximum allowed length of the rom. Use 0 if unlimited.
+	 * @note This should be avoided, use partition where possible
 	 */
 	RbootOutputStream(uint32_t startAddress, size_t maxLength = 0) : startAddress(startAddress), maxLength(maxLength)
 	{
@@ -86,11 +88,11 @@ public:
 	}
 
 protected:
-	bool initialized = false;
-	rboot_write_status rBootWriteStatus = {};
-	size_t written = 0;		   // << the number of written bytes
-	uint32_t startAddress = 0; // << the start address on the storage
-	size_t maxLength = 0;	  // << maximum allowed length
+	bool initialized{false};
+	rboot_write_status rBootWriteStatus{};
+	size_t written{0};		  // << the number of written bytes
+	uint32_t startAddress{0}; // << the start address on the storage
+	size_t maxLength{0};	  // << maximum allowed length
 
 protected:
 	virtual bool init();
