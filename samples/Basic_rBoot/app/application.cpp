@@ -96,17 +96,16 @@ void OtaUpdate()
 
 void Switch()
 {
-	uint8 before, after;
-	before = rboot_get_current_rom();
-	if(before == 0) {
-		after = 1;
+	uint8_t before = rboot_get_current_rom();
+	uint8_t after = (before == 0) ? 1 : 0;
+
+	Serial.printf(_F("Swapping from rom %u to rom %u.\r\n"), before, after);
+	if(rboot_set_current_rom(after)) {
+		Serial.println(F("Restarting...\r\n"));
+		System.restart();
 	} else {
-		after = 0;
+		Serial.println(F("Switch failed."));
 	}
-	Serial.printf("Swapping from rom %d to rom %d.\r\n", before, after);
-	rboot_set_current_rom(after);
-	Serial.println("Restarting...\r\n");
-	System.restart();
 }
 
 void ShowInfo()
