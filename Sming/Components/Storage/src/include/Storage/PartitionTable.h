@@ -45,7 +45,7 @@ public:
 
 	/**
 	 * @brief Find partition by name
-	 * @param Name to search for, case-sensitive
+	 * @param Name Name to search for, case-sensitive
 	 * @retval Partition
 	 *
 	 * Names are unique so at most only one match
@@ -53,6 +53,26 @@ public:
 	Partition find(const String& name) const
 	{
 		return *std::find(begin(), end(), name);
+	}
+
+	/**
+	 * @brief Find partition containing the given address
+	 * @param address Address to search for
+	 * @retval Partition
+	 */
+	Partition find(uint32_t address) const
+	{
+		return *std::find_if(begin(), end(), [address](Partition part) { return part.contains(address); });
+	}
+
+	/**
+	 * @brief Find the n'th OTA partition
+	 */
+	Partition findOta(uint8_t index)
+	{
+		using App = Partition::SubType::App;
+		auto subtype = App(uint8_t(App::ota0) + index);
+		return (subtype >= App::ota_min && subtype <= App::ota_max) ? *find(subtype) : Partition{};
 	}
 
 	Iterator begin() const
