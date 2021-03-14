@@ -85,6 +85,7 @@ SUBTYPES = {
         "nvs_keys": 0x04,
         "efuse": 0x05,
         "sysparam": 0x40,
+        "rfcal": 0x41,
         "esphttpd": 0x80,
         "fat": 0x81,
         "spiffs": 0x82,

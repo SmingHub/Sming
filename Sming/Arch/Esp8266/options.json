@@ -6,5 +6,24 @@
                 "filename": "$(FLASH_INIT_DATA_VCC)"
             }
         }
+    },
+    "legacy": {
+        "description": "Move partition table and config partitions into legacy locations",
+        "partition_table_offset": "self.devices[0].size - 0x6000",
+        "partitions": {
+            "rom0": {
+                "address": "0x2000",
+                "size": "0x0F8000"
+            },
+            "rf_cal": {
+                "address": "self.device.size - 0x5000"
+            },
+            "phy_init": {
+                "address": "self.device.size - 0x4000"
+            },
+            "sys_param": {
+                "address": "self.device.size - 0x3000"
+            }
+        }
     }
 }

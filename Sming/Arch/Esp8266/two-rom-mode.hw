@@ -8,7 +8,7 @@
 		},
 		"rom1": {
 			"address": "0x80000",
-			"size": "512K",
+			"size": "488K",
 			"type": "app",
 			"subtype": "ota_1",
 			"filename": "$(RBOOT_ROM_1_BIN)"

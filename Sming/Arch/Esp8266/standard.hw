@@ -21,9 +21,15 @@
 		},
 		"sys_param": {
 			"address": "0x004000",
-			"size": "16K",
+			"size": "12K",
 			"type": "data",
 			"subtype": "sysparam"
+		},
+		"rf_cal": {
+			"address": "0x007000",
+			"size": "4K",
+			"type": "data",
+			"subtype": "rfcal"
 		},
 		"rom0": {
 			"address": "0x008000",
