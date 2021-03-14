@@ -10,7 +10,7 @@ from builtins import classmethod
 def findConfig(name):
     dirs = os.environ['HWCONFIG_DIRS'].split(' ')
     for d in dirs:
-        path = os.path.join(fixpath(d), name + '.hw')
+        path = fixpath(d) + '/' + name + '.hw'
         if os.path.exists(path):
             return path
     raise InputError("Config '%s' not found" % name)

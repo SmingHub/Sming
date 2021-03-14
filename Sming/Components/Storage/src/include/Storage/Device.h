@@ -89,6 +89,15 @@ public:
 	virtual String getName() const = 0;
 
 	/**
+	 * @brief Obtain device ID
+	 * @retval uint32_t typically flash chip ID
+	 */
+	virtual uint32_t getId() const
+	{
+		return 0;
+	}
+
+	/**
 	 * @brief Obtain smallest allocation unit for erase operations
 	 */
 	virtual size_t getBlockSize() const = 0;

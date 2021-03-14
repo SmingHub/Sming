@@ -149,6 +149,8 @@ uint32_t flashmem_get_sector_of_address(uint32_t addr);
 
 /** @} */
 
+uint32_t spi_flash_get_id(void);
+
 #ifdef __cplusplus
 }
 #endif

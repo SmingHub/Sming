@@ -129,6 +129,7 @@ COMPONENT_CXXFLAGS += \
 
 ifdef RBOOT_EMULATION
 FLASH_BOOT_CHUNKS		= 0x00000=$(BLANK_BIN)
+FLASH_RBOOT_ERASE_CONFIG_CHUNKS	:= 0x01000=$(BLANK_BIN)
 else
 export RBOOT_ROM0_ADDR
 export RBOOT_ROM1_ADDR
@@ -151,7 +152,7 @@ endif
 
 # Define our flash chunks
 FLASH_BOOT_CHUNKS				:= 0x00000=$(RBOOT_BIN)
-FLASH_RBOOT_ERASE_CONFIG_CHUNKS	:= 0x01000=$(SDK_BASE)/bin/blank.bin
+FLASH_RBOOT_ERASE_CONFIG_CHUNKS	:= 0x01000=$(BLANK_BIN)
 
 # => Automatic linker script generation from template
 # $1 -> application target

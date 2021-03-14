@@ -22,6 +22,11 @@ String SpiFlash::getName() const
 	return FS_SPIFLASH;
 }
 
+uint32_t SpiFlash::getId() const
+{
+	return spi_flash_get_id();
+}
+
 size_t SpiFlash::getBlockSize() const
 {
 	return SPI_FLASH_SEC_SIZE;
