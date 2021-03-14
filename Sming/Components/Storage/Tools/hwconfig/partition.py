@@ -521,7 +521,8 @@ class Map(Table):
             return entry
 
         def add_unused(address, last_end):
-            return add('(unused)', last_end + 1, address - last_end - 1)
+            if address > last_end + 1:
+                add('(unused)', last_end + 1, address - last_end - 1)
 
         if table.offset == 0:
             last = None
@@ -539,5 +540,4 @@ class Map(Table):
             self.append(p)
             last = p
 
-        if last.end() + 1 < device.size:
-            add_unused(device.size, last.end())
+        add_unused(device.size, last.end())
