@@ -26,22 +26,28 @@ class Config(object):
 
     @classmethod
     def from_name(cls, name):
+        """Create configuration given its name and resolve options
+        """
         config = Config()
         config.load(name)
         return config
 
     def load(self, name):
+        """Load a configuration recursively
+        """
         filename = findConfig(name)
         self.depends.append(filename)
-        din = open(filename).read()
-        data = json.loads(jsmin(din))
+        with open(filename) as f:
+            data = json.loads(jsmin(f.read()))
         self.parse_dict(data)
 
     def parse_dict(self, data):
-        base_config = data.get('base_config')
+        base_config = data.pop('base_config', None)
         if base_config is not None:
             self.load(base_config)
-            del data['base_config']
+
+        # We'll process partitions after other settings
+        partitions = data.pop('partitions', None)
 
         for k, v in data.items():
             if k == 'name':
@@ -54,12 +60,13 @@ class Config(object):
                 self.devices.parse_dict(v)
             elif k == 'comment':
                 self.comment = v
-            elif k != 'partitions':
+            elif k == 'options':
+                self.parse_options(v)
+            else:
                 raise InputError("Unknown config key '%s'" % k)
 
-        v = data.get('partitions')
-        if not v is None:
-            self.partitions.parse_dict(v, self.devices)
+        if not partitions is None:
+            self.partitions.parse_dict(partitions, self.devices)
 
     def dict(self):
         res = {}
