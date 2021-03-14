@@ -1,7 +1,30 @@
-Hot Tips!
-=========
+Tips and Tricks
+===============
 
 .. highlight:: c++
+
+Reading VCC on ESP8266
+----------------------
+If you are running on a battery operated device then function `system_get_vdd33()` from
+the official ESP8266 NONOS SDK can help you read the power voltage.
+For the latter to work properly you should make a small change in your application `component.mk`
+file and set the `HWCONFIG` option to the appropriate value for your application.
+
+For example the configuration  below will allow you to use spiffs and have correct vcc readings::
+
+   HWCONFIG := spiffs-vcc
+
+This one will allow you to have the standard configuration with VCC support enabled::
+
+   HWCONFIG := standard-vcc
+
+
+For a list of available predefined hardware configurations run the following command::
+
+   make hwconfig-list
+
+If you are using a custom hardware configuration then read
+`this explanation <https://github.com/SmingHub/Sming/issues/2261#issuecomment-797721777>`_  from our forums.
 
 Minimising Memory Usage
 -----------------------
@@ -37,7 +60,7 @@ version::
 See :component:`FlashString` for further details.
 
 Webpages Performance
-====================
+--------------------
 
 HTML markup can get quite large and the bigger the file the slower the
 page loads. One way to deal with that is to remove the white space, this

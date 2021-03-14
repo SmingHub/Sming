@@ -15,4 +15,4 @@ Information
    debugging
    rboot-ota
    command-handler
-   hot-tips
+   tips-n-tricks

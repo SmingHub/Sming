@@ -1,0 +1,9 @@
+{
+	"name": "Standard config with single ROM and VCC reading support",
+	"base_config": "standard",
+	"partitions": {
+		"phy_init": {
+			"filename": "$(FLASH_INIT_DATA_VCC)"
+		}
+	}
+}

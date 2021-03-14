@@ -1,0 +1,9 @@
+{
+	"name": "Standard config with 4M flash and VCC reading support",
+	"base_config": "standard-4m", // Or whatever suits
+	"partitions": {
+		"phy_init": {
+			"filename": "$(FLASH_INIT_DATA_VCC)"
+		}
+	}
+}

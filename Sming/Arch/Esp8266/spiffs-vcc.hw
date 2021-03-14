@@ -1,0 +1,9 @@
+{
+	"name": Single SPIFFS partition with VCC reading support",
+	"base_config": "spiffs",
+	"partitions": {
+		"phy_init": {
+			"filename": "$(FLASH_INIT_DATA_VCC)"
+		}
+	}
+}
