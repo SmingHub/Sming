@@ -116,15 +116,15 @@ void ShowInfo()
 	Serial.printf("CPU Frequency: %d MHz\r\n", system_get_cpu_freq());
 	Serial.printf("System Chip ID: %x\r\n", system_get_chip_id());
 	Serial.printf("SPI Flash ID: %x\r\n", Storage::spiFlash->getId());
-	//Serial.printf("SPI Flash Size: %d\r\n", (1 << ((spi_flash_get_id() >> 16) & 0xff)));
+	Serial.printf("SPI Flash Size: %x\r\n", Storage::spiFlash->getSize());
 
 	rboot_config conf;
 	conf = rboot_get_config();
 
 	debugf("Count: %d", conf.count);
-	debugf("ROM 0: 0x%08x", conf.roms[0]);
-	debugf("ROM 1: 0x%08x", conf.roms[1]);
-	debugf("ROM 2: 0x%08x", conf.roms[2]);
+	for(unsigned i = 0; i < MAX_ROMS; ++i) {
+		debugf("ROM %u: 0x%08x", i, conf.roms[i]);
+	}
 	debugf("GPIO ROM: %d", conf.gpio_rom);
 }
 
