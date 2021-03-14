@@ -11,17 +11,17 @@ It is available as Open Source on GitHub under the Apache license, v2 (see LICEN
 Using
 -----
 
-1. Add these lines to your application componenent.mk file::
+Step 1. Add these lines to your application componenent.mk file::
 
-       COMPONENT_DEPENDS += flatbuffers
+   COMPONENT_DEPENDS += flatbuffers
 
-2. Add these lines to your application::
+Step 2. Add these lines to your application::
 
-      #include <flatbuffers/flatbuffers>
+   #include <flatbuffers/flatbuffers>
 
 Or directly use the header file generated from the `flatc` compiler.
 
-3. Basic example::
+Step 3. Basic example::
 
    #include "monster.h"
 
@@ -52,8 +52,6 @@ Or directly use the header file generated from the `flatc` compiler.
       Serial.printf("Monster name: %s\n", monster->name()->c_str());
    }
 
-
- Further reading
- --------------
- Take a look at the `official flatbuffers tutorial <https://google.github.io/flatbuffers/flatbuffers_guide_tutorial.html>`_.
-
+Further reading
+---------------
+Take a look at the `official flatbuffers tutorial <https://google.github.io/flatbuffers/flatbuffers_guide_tutorial.html>`_.
