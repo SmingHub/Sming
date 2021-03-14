@@ -2,7 +2,7 @@ COMPONENT_INCDIRS	:= src/include
 COMPONENT_SRCDIRS	:= src
 COMPONENT_DOXYGEN_INPUT := src/include
 
-CONFIG_VARS			+= HWCONFIG
+CONFIG_VARS			+= HWCONFIG HWCONFIG_OPTS
 ifndef HWCONFIG
 override HWCONFIG	:= standard
 $(info Using configuration '$(HWCONFIG)')
@@ -31,6 +31,7 @@ PARTITION_PATH		:= $(COMPONENT_PATH)
 PARTITION_TOOLS		:= $(PARTITION_PATH)/Tools
 HWCONFIG_TOOL := \
 	HWCONFIG_DIRS="$(HWCONFIG_DIRS)" \
+	HWCONFIG_OPTS="$(HWCONFIG_OPTS)" \
 	BUILD_BASE=$(BUILD_BASE) \
 	$(PYTHON) $(PARTITION_TOOLS)/hwconfig/hwconfig.py
 
@@ -59,8 +60,8 @@ endef
 
 .PHONY: map
 map: $(HWCONFIG_PATH) ##Show partition map
-	@echo "Partition map:"
-	$(Q) $(HWEXPR) "config.map().to_csv()"
+	@echo "Partition map: $(HWCONFIG)"
+	$(Q) $(HWEXPR) "'options: %s\n%s' % (', '.join(config.options), config.map().to_csv())"
 	@echo
 
 .PHONY: hwexpr
@@ -79,6 +80,13 @@ endif
 .PHONY: hwconfig-list
 hwconfig-list: ##List available hardware configurations
 	@echo "Available configurations: $(foreach c,$(ALL_HWCONFIG),\n $(if $(subst $c,,$(HWCONFIG)), ,*) $(shell printf "%-25s" "$c") $(filter %/$c.hw,$(ALL_HWCONFIG_PATHS)))"
+	@echo
+
+.PHONY: hwconfig-options
+hwconfig-options: ##List available hardware configuration options
+	@echo
+	@echo "Available options (use with HWCONFIG_OPTS or in custom profile):"
+	$(Q) $(HWEXPR) "''.join(('  %-10s %s\n' % (k, v['description']) for k, v in config.option_library.items()))"
 	@echo
 
 .PHONY: hwconfig-validate

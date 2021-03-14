@@ -16,6 +16,11 @@
 					"title": "Base configuration",
 					"description": "Inherit a previously-defined configuration"
 				},
+				"options": {
+					"type": "array",
+					"title": "List of option fragments",
+					"description": "Import additional settings from option libraries"
+				},
 				"comment": {
 					"type": "string"
 				},
@@ -26,7 +31,7 @@
 				},
 				"partition_table_offset": {
 					"type": "string",
-					"description": "Location of partition table in spiFlash"
+					"description": "Location of partition table in spiFlash. Simple address or python expression to be evaluated."
 				},
 				"devices": {
 					"$ref": "#/definitions/Devices"
@@ -116,7 +121,8 @@
 					"type": [
 						"string",
 						"integer"
-					]
+					],
+					"description": "Starting address for partition. Simple address or python expression to be evaluated."
 				},
 				"size": {
 					"type": [

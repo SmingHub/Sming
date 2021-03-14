@@ -1,9 +1,7 @@
 {
 	"name": "Standard config with 4M flash",
 	"base_config": "standard",
-	"devices": {
-		"spiFlash": {
-			"size": "4M"
-		}
-	}
+	"options": [
+		"4m"
+	]
 }
