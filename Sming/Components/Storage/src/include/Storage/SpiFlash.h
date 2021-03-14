@@ -30,7 +30,7 @@ public:
 		return Type::flash;
 	}
 
-	uint32_t getID() const;
+	uint32_t getId() const;
 
 	bool read(uint32_t address, void* dst, size_t size) override;
 	bool write(uint32_t address, const void* src, size_t size) override;

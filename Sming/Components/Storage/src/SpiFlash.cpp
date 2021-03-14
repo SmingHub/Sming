@@ -22,7 +22,7 @@ String SpiFlash::getName() const
 	return FS_SPIFLASH;
 }
 
-uint32_t SpiFlash::getID() const
+uint32_t SpiFlash::getId() const
 {
 	return spi_flash_get_id();
 }

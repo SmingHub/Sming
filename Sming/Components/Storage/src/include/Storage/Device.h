@@ -92,7 +92,7 @@ public:
 	 * @brief Obtain device ID
 	 * @retval uint32_t typically flash chip ID
 	 */
-	virtual uint32_t getID() const
+	virtual uint32_t getId() const
 	{
 		return 0;
 	}

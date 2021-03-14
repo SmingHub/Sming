@@ -115,7 +115,7 @@ void ShowInfo()
 	Serial.printf("Free Heap: %d\r\n", system_get_free_heap_size());
 	Serial.printf("CPU Frequency: %d MHz\r\n", system_get_cpu_freq());
 	Serial.printf("System Chip ID: %x\r\n", system_get_chip_id());
-	Serial.printf("SPI Flash ID: %x\r\n", Storage::spiFlash->getID());
+	Serial.printf("SPI Flash ID: %x\r\n", Storage::spiFlash->getId());
 	//Serial.printf("SPI Flash Size: %d\r\n", (1 << ((spi_flash_get_id() >> 16) & 0xff)));
 
 	rboot_config conf;
