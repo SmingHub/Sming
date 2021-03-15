@@ -46,6 +46,7 @@ class Config(object):
         config.load(name)
         if options != '':
             config.parse_options(options.split(','))
+        config.partitions.sort()
         return config
 
     def load(self, name):

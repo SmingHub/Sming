@@ -127,7 +127,6 @@ class Table(list):
                 part = Entry(devices[0], name)
                 self.append(part)
             part.parse_dict(entry, devices)
-        self.sort()
 
     def sort(self):
         super(Table, self).sort(key=lambda p: p.device.name + p.address_str())
