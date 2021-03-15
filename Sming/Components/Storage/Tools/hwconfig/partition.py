@@ -16,11 +16,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import struct, hashlib, storage, binascii
+import struct, hashlib, storage, binascii, copy
 from common import *
 
 MAX_PARTITION_LENGTH = 0xC00  # 3K for partition data (96 entries) leaves 1K in a 4K sector for signature
 MD5_PARTITION_BEGIN = b"\xEB\xEB" + b"\xFF" * 14  # The first 2 bytes are like magic numbers for MD5 sum
+FLASH_SECTOR_SIZE = 0x1000
 PARTITION_TABLE_SIZE = 0x1000  # Size of partition table
 PARTITION_ENTRY_SIZE = 32
 
@@ -198,18 +199,27 @@ class Table(list):
                 return p
         return None
 
-    def find_by_address(self, addr):
+    def find_by_address(self, device, addr):
         for p in self:
-            if p.contains(addr):
+            if p.device == device and p.contains(addr):
                 return p
         return None
 
-    def verify(self, arch, secure):
+    def verify(self, arch, spiFlash, secure):
         """Verify partition layout
         """
         # verify each partition individually
         for p in self:
             p.verify(arch, secure)
+
+        if self.offset % FLASH_SECTOR_SIZE != 0:
+            raise InputError("Partition table offset not aligned to flash sector")
+
+        p = self.find_by_address(spiFlash, self.offset)
+        if p is None:
+            p = self.find_by_address(spiFlash, self.offset + PARTITION_TABLE_SIZE - 1)
+        if not p is None:
+            raise InputError("Partition table conflict with '%s'" % p.name)
 
         # check on duplicate name
         names = [p.name for p in self]
@@ -224,7 +234,10 @@ class Table(list):
             raise InputError("Partition names must be unique")
 
         # check for overlaps
-        minPartitionAddress = self.offset + PARTITION_TABLE_SIZE
+        if arch == 'Esp32':
+            minPartitionAddress = self.offset + PARTITION_TABLE_SIZE
+        else:
+            minPartitionAddress = 0x00002000
         dev = ''
         last = None
         for p in self:
@@ -345,7 +358,7 @@ class Entry(object):
                 if k == 'device':
                     self.device = devices.find_by_name(v)
                 elif k == 'address':
-                    self.address = parse_int(v)
+                    self.address = eval(str(v))
                 elif k == 'size':
                     self.size = parse_int(v)
                 elif k == 'filename':
@@ -523,13 +536,17 @@ class Map(Table):
             if address > last_end + 1:
                 add('(unused)', last_end + 1, address - last_end - 1)
 
+        partitions = copy.copy(table)
+
         if table.offset == 0:
             last = None
         else:
-            add("Boot Sector", 0, table.offset)
-            last = add("Partition Table", table.offset, PARTITION_TABLE_SIZE)
+            last = add('Boot Sector', 0, min(table.offset, partitions[0].address))
+            p = Entry(device, 'Partition Table', table.offset, PARTITION_TABLE_SIZE, 0xff, 0xff)
+            partitions.append(p)
+            partitions.sort()
 
-        for p in table:
+        for p in partitions:
             if last is not None:
                 if p.device != last.device:
                     add_unused(last.device.size, last.end())

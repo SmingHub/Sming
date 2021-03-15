@@ -47,6 +47,7 @@ else ifneq ($(SMING_ARCH),$(SMING_ARCH_HW))
 $(error Hardware configuration is for arch $(SMING_ARCH_HW), does not match SMING_ARCH ($(SMING_ARCH)))
 endif
 COMPONENT_CXXFLAGS := -DPARTITION_TABLE_OFFSET=$(PARTITION_TABLE_OFFSET)
+COMPONENT_CPPFLAGS := -DPARTITION_TABLE_OFFSET=$(PARTITION_TABLE_OFFSET)
 
 # Function to evaluate expression against config
 HWEXPR := $(HWCONFIG_TOOL) $(if $(PART),--part "$(PART)") expr $(HWCONFIG) -

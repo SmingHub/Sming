@@ -63,7 +63,7 @@
 	ignore = dirty
 [submodule "rboot"]
 	path = Sming/Components/rboot/rboot
-	url = https://github.com/raburton/rboot.git
+	url = https://github.com/mikee47/rboot
 	ignore = dirty
 [submodule "spiffs"]
 	path = Sming/Components/spiffs/spiffs

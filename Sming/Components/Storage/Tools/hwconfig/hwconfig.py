@@ -44,7 +44,7 @@ def handle_flashcheck(args, config, part):
     for e in list:
         addr, filename = e.split('=')
         addr = int(addr, 0)
-        part = config.partitions.find_by_address(addr)
+        part = config.partitions.find_by_address(config.devices[0], addr)
         if part is None:
             raise InputError("No partition contains address 0x%08x" % addr)
         if part.address != addr:
@@ -113,5 +113,5 @@ if __name__ == '__main__':
     try:
         main()
     except InputError as e:
-        print(e, file=sys.stderr)
+        print("** ERROR! %s" % e, file=sys.stderr)
         sys.exit(2)

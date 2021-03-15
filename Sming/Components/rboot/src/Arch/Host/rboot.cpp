@@ -13,6 +13,16 @@
 #include <hostlib/hostmsg.h>
 #include <WString.h>
 
+static uint32_t SPIRead(uint32_t addr, void* outptr, uint32_t len)
+{
+	return (flashmem_read(outptr, addr, len) == len) ? 0 : 1;
+}
+
+#define SPIEraseSector(sector) flashmem_erase_sector(sector)
+#define echof(fmt, ...) host_printf(fmt, ##__VA_ARGS__)
+
+#include <partition.h>
+
 /*
  * Called from emulator startup code after flash has been initialised.
  */
@@ -20,18 +30,14 @@ void host_init_bootloader()
 {
 	rboot_config romconf = rboot_get_config();
 
-	bool init;
-
 	// fresh install or old version?
+	bool init = false;
 	if(romconf.magic != BOOT_CONFIG_MAGIC) {
 		hostmsg("MAGIC mismatch");
 		init = true;
 	} else if(romconf.version != BOOT_CONFIG_VERSION) {
 		hostmsg("VERSION mismatch: %u found, current %u", romconf.version, BOOT_CONFIG_VERSION);
 		init = true;
-	} else {
-		// OK
-		init = false;
 	}
 
 	if(init) {
@@ -39,16 +45,22 @@ void host_init_bootloader()
 		memset(&romconf, 0, sizeof(romconf));
 		romconf.magic = BOOT_CONFIG_MAGIC;
 		romconf.version = BOOT_CONFIG_VERSION;
-		romconf.count = 2;
-		romconf.roms[0] = RBOOT_ROM0_ADDR;
-#ifdef BOOT_ROM1_ADDR
-		romconf.roms[1] = RBOOT_ROM1_ADDR;
-#else
-		size_t flashsize = flashmem_get_size_bytes();
-		romconf.roms[1] = RBOOT_ROM0_ADDR + (flashsize / 2);
-#endif
+	}
+
+	// Read ROM locations from partition table
+	bool config_changed = false;
+	if(scan_partitions(&romconf)) {
+		config_changed = true;
+	}
+
+	if(romconf.count == 0) {
+		hostmsg("ERROR! No App partitions found\r\n");
+		return;
+	}
+
+	if(init || config_changed) {
 		bool ok = rboot_set_config(&romconf);
-		hostmsg("Write default config: %s", ok ? "OK" : "FAIL");
+		hostmsg("Update rBoot config: %s", ok ? "OK" : "FAIL");
 	}
 
 	String addr;

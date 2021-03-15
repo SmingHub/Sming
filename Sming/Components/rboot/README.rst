@@ -10,9 +10,23 @@ pre-configured flash memory addresses, called "slots". Sming supports up to thre
 .. note::
 
    With Sming 4.3 partitions are used to manage flash storage.
-   A "slot" refers to a specific application partition, namely ``rom0``, ``rom1`` or ``rom2``.
+   A "slot" refers to a specific application partition, typically ``rom0``, ``rom1`` or ``rom2``.
 
    The location or size of these partitions is determined by the :ref:`hardware_config`.
+
+   The bootloader has been modified to use the partition table as reference, identifying slots
+   by the partition sub-type.
+
+   Where systems are to be updated Over the Air (OTA) at least two application partitions are required.
+   The bootloader identifies these by their partition subtype: ``slot #0`` -> ``App/Ota_0``, ``slot #1`` -> ``App/Ota_1``, etc.
+
+   Fixed applications without OTA capability use a single application image.
+   This must be the ``App/Factory`` partition type, and corresponds to ``slot #0``.
+
+   At startup, the bootloader will use the partition table to locate the application image.
+   It will also ensure that the ROM slot information in the boot configuration is consistent,
+   and update it if necessary.
+
 
 .. attention::
 
