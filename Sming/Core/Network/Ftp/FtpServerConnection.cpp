@@ -20,7 +20,9 @@
 #define FTP_COMMAND_MAP(XX)                                                                                            \
 	XX(ACCT, "Identifies user's account")                                                                              \
 	XX(CWD, "Change working directory")                                                                                \
+	XX(CDUP, "Change to parent working directory")                                                                     \
 	XX(DELE, "Delete file")                                                                                            \
+	XX(HELP, "List recognised commands")                                                                               \
 	XX(LIST, "List file or directory information")                                                                     \
 	XX(NLST, "List file or directory names")                                                                           \
 	XX(NOOP, "")                                                                                                       \
@@ -36,7 +38,9 @@
 	XX(STOR, "Store file data")                                                                                        \
 	XX(SYST, "Get system information")                                                                                 \
 	XX(TYPE, "")                                                                                                       \
-	XX(USER, "Start login sequence, flushing any current account information")
+	XX(USER, "Start login sequence, flushing any current account information")                                         \
+	XX(XCWD, "Deprecated alias for CWD")                                                                               \
+	XX(XPWD, "Deprecated alias for PWD")
 
 namespace
 {
@@ -218,7 +222,8 @@ void FtpServerConnection::onCommand(String cmd, String data)
 		response(215, F("Windows_NT: Sming Framework")); // Why not? It's look like Windows :)
 		break;
 
-	case Command::PWD: {
+	case Command::PWD:
+	case Command::XPWD: {
 		String s;
 		s += "\"/";
 		s += cwd;
@@ -231,7 +236,8 @@ void FtpServerConnection::onCommand(String cmd, String data)
 		cmdPort(data);
 		break;
 
-	case Command::CWD: {
+	case Command::CWD:
+	case Command::XCWD: {
 		String path = resolvePath(cwd, data);
 		if(!checkFileAccess(path, FileOpenFlag::Read)) {
 			break;
@@ -244,6 +250,13 @@ void FtpServerConnection::onCommand(String cmd, String data)
 		} else {
 			response(550); // Not found / no access
 		}
+		break;
+	}
+
+	case Command::CDUP: {
+		int i = cwd.lastIndexOf('/');
+		cwd.setLength((i < 0) ? 0 : i);
+		response(250); // OK
 		break;
 	}
 
@@ -335,6 +348,17 @@ void FtpServerConnection::onCommand(String cmd, String data)
 
 	case Command::NOOP: {
 		response(200);
+		break;
+	}
+
+	case Command::HELP: {
+		response(214, _F("The following commands are recognized."), '-');
+		String s(fstrCommandList);
+		s.replace('\0', ' ');
+		writeString("  ");
+		writeString(s);
+		writeString("\r\n");
+		response(214, _F("Help OK."));
 		break;
 	}
 
