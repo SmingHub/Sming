@@ -5,7 +5,7 @@ SDK_BASE ?= $(COMPONENT_PATH)/ESP8266_NONOS_SDK
 
 SDK_BASE				:= $(call FixPath,$(SDK_BASE))
 FLASH_INIT_DATA			= $(SDK_BASE)/bin/esp_init_data_default.bin
-FLASH_INIT_DATA_VCC = $(SDK_BASE)/bin/esp_init_data_vcc_default.bin
+FLASH_INIT_DATA_VCC = $(SDK_BASE)/bin/esp_init_data_vdd_default.bin
 
 CUSTOM_TARGETS			+= $(FLASH_INIT_DATA) $(FLASH_INIT_DATA_VCC)
 
@@ -25,9 +25,11 @@ else
 SDK_INTERNAL			:= 0
 endif
 
+PHY_TOOL := $(COMPONENT_PATH)/Tools/patch-phy-bin.py
+
 $(FLASH_INIT_DATA_VCC): $(FLASH_INIT_DATA)
 	$(Q) cp $< $@
-	$(Q) printf "\377" | dd of=$@ bs=1 seek=107 count=1 conv=notrunc
+	$(Q) $(PYTHON) $(PHY_TOOL) $@
 
 DEBUG_VARS				+= SDK_LIBDIR SDK_INCDIR
 SDK_LIBDIR				:= $(SDK_BASE)/lib

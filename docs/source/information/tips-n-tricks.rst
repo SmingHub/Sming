@@ -10,7 +10,7 @@ the official ESP8266 NONOS SDK can help you read the power voltage.
 For the latter to work properly you should make a small change in your application `component.mk`
 file and add `vdd` to the `HWCONFIG_OPTS` configuration variable.
 
-If you cannot see such a variable in your `component.mk` file then append the following line in `component.mk`::
+If you cannot see such a variable in your `component.mk` file then append the following line to it::
 
    HWCONFIG := vdd
 
