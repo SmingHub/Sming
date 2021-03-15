@@ -156,16 +156,23 @@ void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCh
 		} else if(!strcmp(str, "restart")) {
 			System.restart();
 		} else if(!strcmp(str, "ls")) {
-			Vector<String> files = fileList();
-			Serial.printf("filecount %d\r\n", files.count());
-			for(unsigned int i = 0; i < files.count(); i++) {
-				Serial.println(files[i]);
+			Directory dir;
+			if(dir.open()) {
+				while(dir.next()) {
+					Serial.print("  ");
+					Serial.println(dir.stat().name);
+				}
 			}
+			Serial.printf("filecount %d\r\n", dir.count());
 		} else if(!strcmp(str, "cat")) {
-			Vector<String> files = fileList();
-			if(files.count() > 0) {
-				Serial.printf("dumping file %s:\r\n", files[0].c_str());
-				Serial.println(fileGetContent(files[0]));
+			Directory dir;
+			if(dir.open() && dir.next()) {
+				Serial.printf("dumping file %s:\r\n", dir.stat().name.c_str());
+				// We don't know how big the is, so streaming it is safest
+				FileStream fs;
+				fs.open(dir.stat());
+				Serial.copyFrom(&fs);
+				Serial.println();
 			} else {
 				Serial.println("Empty spiffs!");
 			}
