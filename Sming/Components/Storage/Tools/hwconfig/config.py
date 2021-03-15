@@ -2,10 +2,21 @@
 # Configuration object
 #
 
-import os, partition, storage
+import os, partition, storage, copy
 from rjsmin import jsmin
 from common import *
 from builtins import classmethod
+
+def load_option_library():
+    library = {}
+    dirs = os.environ['HWCONFIG_DIRS'].split(' ')
+    for d in dirs:
+        filename = fixpath(d) + '/options.json'
+        if os.path.exists(filename):
+            with open(filename) as f:
+                data = json.loads(jsmin(f.read()))
+                library.update(data)
+    return library
 
 def findConfig(name):
     dirs = os.environ['HWCONFIG_DIRS'].split(' ')
@@ -20,28 +31,54 @@ class Config(object):
         self.partitions = partition.Table()
         self.devices = storage.List()
         self.depends = []
+        self.options = []
+        self.option_library = load_option_library()
 
     def __str__(self):
         return "'%s' for %s" % (self.name, self.arch)
 
     @classmethod
     def from_name(cls, name):
+        """Create configuration given its name and resolve options
+        """
         config = Config()
-        config.load(name)
+        options = os.environ.get('HWCONFIG_OPTS', '').replace(' ', '')
+        config.load(name, [] if options == '' else options.split(','))
         return config
 
-    def load(self, name):
+    def load(self, name, options=[]):
+        """Load a configuration recursively
+        """
         filename = findConfig(name)
         self.depends.append(filename)
-        din = open(filename).read()
-        data = json.loads(jsmin(din))
-        self.parse_dict(data)
+        with open(filename) as f:
+            data = json.loads(jsmin(f.read()))
+        self.parse_dict(data, options)
 
-    def parse_dict(self, data):
-        base_config = data.get('base_config')
+    def parse_options(self, options):
+        """Apply any specified options, each option is applied only once
+        """
+        for option in options:
+            if option in self.options:
+                continue
+            self.options.append(option)
+            data = self.option_library.get(option)
+            if data is None:
+                raise InputError("Option '%s' undefined" % option)
+            # Don't modify library entries
+            temp = copy.deepcopy(data)
+            temp.pop('description', None)
+            self.parse_dict(temp)
+
+    def parse_dict(self, data, options = []):
+        base_config = data.pop('base_config', None)
         if base_config is not None:
             self.load(base_config)
-            del data['base_config']
+
+        self.parse_options(options)
+
+        # We'll process partitions after other settings
+        partitions = data.pop('partitions', None)
 
         for k, v in data.items():
             if k == 'name':
@@ -54,12 +91,13 @@ class Config(object):
                 self.devices.parse_dict(v)
             elif k == 'comment':
                 self.comment = v
-            elif k != 'partitions':
+            elif k == 'options':
+                self.parse_options(v)
+            else:
                 raise InputError("Unknown config key '%s'" % k)
 
-        v = data.get('partitions')
-        if not v is None:
-            self.partitions.parse_dict(v, self.devices)
+        if not partitions is None:
+            self.partitions.parse_dict(partitions, self.devices)
 
     def dict(self):
         res = {}

@@ -1,0 +1,10 @@
+{
+    "vdd": {
+        "description": "Modify PHY configuration to support `system_get_vdd33()` function",
+        "partitions": {
+            "phy_init": {
+                "filename": "$(FLASH_INIT_DATA_VCC)"
+            }
+        }
+    }
+}

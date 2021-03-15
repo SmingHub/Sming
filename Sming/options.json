@@ -1,0 +1,26 @@
+{
+    "4m": {
+        "description": "Set Flash size to 4MByte",
+        "devices": {
+            "spiFlash": {
+                "size": "4M"
+            }
+        }
+    },
+    "spiffs": {
+        "description": "Add standard SPIFFS partition",
+        "partitions": {
+            "spiffs0": {
+                "address": "0x200000",
+                "size": "512K",
+                "type": "data",
+                "subtype": "spiffs",
+                "filename": "$(SPIFF_BIN_OUT)",
+                "build": {
+                    "target": "spiffsgen",
+                    "files": "$(SPIFF_FILES)"
+                }
+            }
+        }
+    }
+}

@@ -332,12 +332,15 @@ class Entry(object):
         """Construct a partition object from JSON definition
         """
         try:
-            v = data.get('type')
+            # Sort out type information first
+            v = data.pop('type', None)
             if not v is None:
                 self.type = parse_type(v)
-            v = data.get('subtype')
+            v = data.pop('subtype', None)
             if not v is None:
                 self.subtype = parse_subtype(self.type, v)
+            if self.type is None or self.subtype is None:
+                raise InputError("type/subtype missing")
 
             for k, v in data.items():
                 if k == 'device':
@@ -353,11 +356,9 @@ class Entry(object):
                         self.build = v
                     else:
                         self.build.update(v)
-                elif k != 'type' and k != 'subtype':
+                else:
                     setattr(self, k, v)
 
-            if self.type is None or self.subtype is None:
-                raise InputError("type/subtype missing")
             if self.address is None or self.size is None:
                 raise InputError("address/size missing")
             if self.end() >= self.device.size:
@@ -520,7 +521,8 @@ class Map(Table):
             return entry
 
         def add_unused(address, last_end):
-            return add('(unused)', last_end + 1, address - last_end - 1)
+            if address > last_end + 1:
+                add('(unused)', last_end + 1, address - last_end - 1)
 
         if table.offset == 0:
             last = None
@@ -538,5 +540,4 @@ class Map(Table):
             self.append(p)
             last = p
 
-        if last.end() + 1 < device.size:
-            add_unused(device.size, last.end())
+        add_unused(device.size, last.end())

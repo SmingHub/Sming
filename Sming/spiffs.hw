@@ -1,17 +1,7 @@
 {
 	"name": "Single SPIFFS partition",
 	"base_config": "standard-4m",
-	"partitions": {
-		"spiffs0": {
-			"address": "0x200000",
-			"size": "512K",
-			"type": "data",
-			"subtype": "spiffs",
-			"filename": "$(SPIFF_BIN_OUT)",
-			"build": {
-				"target": "spiffsgen",
-				"files": "$(SPIFF_FILES)"
-			}
-		}
-	}
+	"options": [
+		"spiffs"
+	]
 }

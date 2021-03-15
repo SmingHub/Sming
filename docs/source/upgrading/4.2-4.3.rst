@@ -22,6 +22,8 @@ New and updated build targets
         Displays the current configuration in JSON format
     hwconfig-list
         Show available hardware configs
+    hwconfig-options
+        Show available hardware configuration options
     map
         Display the current flash memory map
     readmap

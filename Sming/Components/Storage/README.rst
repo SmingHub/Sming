@@ -65,6 +65,25 @@ or, to show the partition map::
 
    Then either run ``make HWCONFIG=standard-4m`` or ``make config-clean``.
 
+.. _hwconfig_options:
+
+Hardware configuration options
+------------------------------
+
+Commonly used settings can be stored in an option library for easier use.
+The library files are named ``options.json`` and located in the place as .hw files.
+
+For example, we can do this::
+
+   make HWCONFIG=standard HWCONFIG_OPTS=4m,spiffs
+
+This loads the 'standard' profile then merges the fragments found in the option library with the given names.
+This is how the ``standard-4m`` profile is constructed.
+
+If using this approach, remember to updated your project's ``component.mk`` with the desired settings,
+and verify the layout is correct using ``make map``.
+
+
 
 Custom configurations
 ---------------------
@@ -77,10 +96,12 @@ To customise the hardware configuration for a project, for example 'my_project':
 
       {
          "name": "My project config",
-         "base_config": "spiffs"
+         "base_config": "spiffs",
+         "options": ["vdd"]
       }
 
    You can use any available configuration as the base_config.
+   Option fragments can be pulled in as shown. See :ref:`hwconfig_options`.
 
 
 2. If required, modify any inherited settings:
@@ -253,6 +274,11 @@ Configuration
 
    You will also need to run ``make HWCONFIG=spiffs`` to change the cached value
    (or ``make config-clean`` to reset everything).
+
+
+.. envvar:: HWCONFIG_OPTS
+
+   Set this to adjust the hardware profile using option fragments. See :ref:`hwconfig_options`.
 
 
 Binary partition table
