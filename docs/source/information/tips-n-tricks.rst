@@ -8,23 +8,22 @@ Reading VCC on ESP8266
 If you are running on a battery operated device then function `system_get_vdd33()` from
 the official ESP8266 NONOS SDK can help you read the power voltage.
 For the latter to work properly you should make a small change in your application `component.mk`
-file and set the `HWCONFIG` option to the appropriate value for your application.
+file and add `vdd` to the `HWCONFIG_OPTS` configuration variable.
 
-For example the configuration  below will allow you to use spiffs and have correct vcc readings::
+If you cannot see such a variable in your `component.mk` file then append the following line in `component.mk`::
 
-   HWCONFIG := spiffs-vcc
+   HWCONFIG := vdd
 
-This one will allow you to have the standard configuration with VCC support enabled::
+You can have multiple options selected. They should be separated by comma.
+For example the command below will add 4MB flash, spiffs and vdd support::
 
-   HWCONFIG := standard-vcc
+   HWCONFIG := 4m,spiffs,vdd
 
-
-For a list of available predefined hardware configurations run the following command::
+You can check the final hardware configuration using the command below::
 
    make hwconfig-list
 
-If you are using a custom hardware configuration then read
-`this explanation <https://github.com/SmingHub/Sming/issues/2261#issuecomment-797721777>`_  from our forums.
+If would like to use a custom hardware configuration then read :doc:`/_inc/Sming/Components/Storage`.
 
 Minimising Memory Usage
 -----------------------
