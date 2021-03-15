@@ -156,6 +156,10 @@ class Table(list):
     def buildVars(self):
         dict = {}
         dict['PARTITION_NAMES'] = " ".join(p.name for p in self)
+        buildparts = [p for p in self if p.build is not None]
+        dict['PARTITIONS_WITH_TARGETS'] = " ".join(p.name for p in buildparts)
+        dict['PARTITION_BUILD_TARGETS'] = " ".join(p.filename for p in buildparts)
+
         for p in self:
             dict.update(p.buildVars())
         return dict

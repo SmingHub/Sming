@@ -183,6 +183,19 @@ To customise the hardware configuration for a project, for example 'my_project':
    This will flash everything: bootloader, partition table and all defined partitions (those with a ``filename`` entry).
 
 
+.. note::
+
+   The build system isn't smart enough to track dependencies for partition build targets.
+
+   To rebuild these manually type::
+
+      make partbuild
+
+   These will be removed when ``make clean`` is run, but you can also clean them separately thus::
+
+      make part-clean
+
+
 Partition maps
 --------------
 
