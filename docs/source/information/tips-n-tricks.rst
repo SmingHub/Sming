@@ -21,9 +21,9 @@ For example the command below will add 4MB flash, spiffs and vdd support::
 
 You can check the final hardware configuration using the command below::
 
-   make hwconfig-list
+   make hwconfig
 
-If would like to use a custom hardware configuration then read :doc:`/_inc/Sming/Components/Storage`.
+If a custom hardware configuration is needed then read :component:`Storage`.
 
 Minimising Memory Usage
 -----------------------
