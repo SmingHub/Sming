@@ -43,17 +43,20 @@ class Config(object):
         """
         config = Config()
         options = os.environ.get('HWCONFIG_OPTS', '').replace(' ', '')
-        config.load(name, [] if options == '' else options.split(','))
+        config.load(name)
+        if options != '':
+            config.parse_options(options.split(','))
+        config.partitions.sort()
         return config
 
-    def load(self, name, options=[]):
+    def load(self, name):
         """Load a configuration recursively
         """
         filename = findConfig(name)
         self.depends.append(filename)
         with open(filename) as f:
             data = json.loads(jsmin(f.read()))
-        self.parse_dict(data, options)
+        self.parse_dict(data)
 
     def parse_options(self, options):
         """Apply any specified options, each option is applied only once
@@ -70,12 +73,12 @@ class Config(object):
             temp.pop('description', None)
             self.parse_dict(temp)
 
-    def parse_dict(self, data, options = []):
+    def parse_dict(self, data):
         base_config = data.pop('base_config', None)
         if base_config is not None:
             self.load(base_config)
 
-        self.parse_options(options)
+        self.parse_options(data.pop('options', []))
 
         # We'll process partitions after other settings
         partitions = data.pop('partitions', None)
@@ -91,8 +94,6 @@ class Config(object):
                 self.devices.parse_dict(v)
             elif k == 'comment':
                 self.comment = v
-            elif k == 'options':
-                self.parse_options(v)
             else:
                 raise InputError("Unknown config key '%s'" % k)
 
