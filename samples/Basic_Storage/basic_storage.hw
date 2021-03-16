@@ -2,9 +2,15 @@
 	"name": "Basic Storage sample",
 	"base_config": "spiffs",
 	"devices": {
-		// Override default (conservative) flash settings for maximum performance
+		// If required, override default (conservative) flash settings
 		"spiFlash": {
-			// "mode": "qio", // This doesn't always work, depends on the flash chip
+			/*
+			 * The default mode (dio) should work with all flash devices.
+			 * Make sure to set the mode according to your flash chip.
+			 * Allowed SPI modes are listed here:
+			 * https://sming.readthedocs.io/en/latest/_inc/Sming/Components/esptool/index.html#envvar-SPI_MODE.
+			*/
+			// "mode": "qio",
 			"speed": 80
 		}
 	},
