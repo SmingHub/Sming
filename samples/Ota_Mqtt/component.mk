@@ -1,5 +1,9 @@
 ## User configurable settings
 
+ENABLE_CLIENT_CERTIFICATE ?= 0
+
+CONFIG_VARS := ENABLE_SSL ENABLE_CLIENT_CERTIFICATE 
+
 # Application id
 APP_ID := "test"
 
@@ -11,7 +15,11 @@ APP_ID := "test"
 # Firmware Update Server 
 MQTT_URL := "mqtt://test.mosquitto.org:1883"
 ifneq ($(ENABLE_SSL),)
-	MQTT_URL := "mqtts://test.mosquitto.org:8883"
+	ifneq ($(ENABLE_CLIENT_CERTIFICATE),0)
+		MQTT_URL := "mqtts://test.mosquitto.org:8884"
+	else
+		MQTT_URL := "mqtts://test.mosquitto.org:8883"
+	endif
 endif
 
 ## End of user configurable settings. Don't change anything below this line
@@ -26,7 +34,7 @@ else
 	HWCONFIG := basic_rboot
 endif
 
-APP_CFLAGS := -DMQTT_URL="\"$(MQTT_URL)"\" -DAPP_ID="\"$(APP_ID)"\"
+APP_CFLAGS = -DMQTT_URL="\"$(MQTT_URL)"\" -DAPP_ID="\"$(APP_ID)"\" -DENABLE_CLIENT_CERTIFICATE=$(ENABLE_CLIENT_CERTIFICATE)
 ifneq ($(APP_VERSION),)
 	APP_CFLAGS += -DAPP_VERSION="\"$(APP_VERSION)"\"
 endif 

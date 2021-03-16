@@ -17,6 +17,11 @@ namespace
 {
 MqttClient mqtt;
 
+#if ENABLE_CLIENT_CERTIFICATE
+IMPORT_FSTR(privateKeyData, PROJECT_DIR "/files/private.pem.key.der");
+IMPORT_FSTR(certificateData, PROJECT_DIR "/files/certificate.pem.crt.der");
+#endif
+
 struct UpdateState {
 	RbootOutputStream* stream{nullptr};
 	bool started{false};
@@ -90,6 +95,10 @@ void otaUpdate()
 
 		// We're using fingerprints, so don't attempt to validate full certificate
 		session.options.verifyLater = true;
+
+#if ENABLE_CLIENT_CERTIFICATE
+		session.keyCert.assign(privateKeyData, certificateData);
+#endif
 
 		// Use all supported cipher suites to make a connection
 		session.cipherSuites = &Ssl::CipherSuites::full;
