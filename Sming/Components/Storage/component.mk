@@ -29,11 +29,12 @@ endif
 
 PARTITION_PATH		:= $(COMPONENT_PATH)
 PARTITION_TOOLS		:= $(PARTITION_PATH)/Tools
-HWCONFIG_TOOL := \
-	HWCONFIG_DIRS="$(HWCONFIG_DIRS)" \
-	HWCONFIG_OPTS="$(HWCONFIG_OPTS)" \
-	BUILD_BASE=$(BUILD_BASE) \
-	$(PYTHON) $(PARTITION_TOOLS)/hwconfig/hwconfig.py
+HWCONFIG_VARS := \
+	HWCONFIG_DIRS \
+	HWCONFIG_OPTS
+HWCONFIG_CMDLINE	:= $(foreach v,$(HWCONFIG_VARS),$v="$($v)") $(PYTHON) $(PARTITION_TOOLS)/hwconfig
+HWCONFIG_TOOL		:= $(HWCONFIG_CMDLINE)/hwconfig.py
+HWCONFIG_EDITOR		:= $(HWCONFIG_CMDLINE)/editor.py
 
 HWCONFIG_MK := $(PROJECT_DIR)/$(OUT_BASE)/hwconfig.mk
 ifneq (,$(MAKE_DOCS)$(MAKE_CLEAN))
@@ -96,6 +97,9 @@ hwconfig-validate: $(HWCONFIG_PATH) ##Validate current hardware configuration
 	@echo "Validating hardware config '$(HWCONFIG)'"
 	$(Q) $(HWCONFIG_TOOL) validate $(HWCONFIG) - $(PARTITION_PATH)/schema.json
 
+.PHONY: hwconfig-edit
+hwconfig-edit: $(HWCONFIG_PATH) ##Open profile editor
+	$(Q) $(HWCONFIG_EDITOR) $(HWCONFIG)
 
 ##@Building
 
