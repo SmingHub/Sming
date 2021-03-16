@@ -84,28 +84,10 @@ If using this approach, remember to updated your project's ``component.mk`` with
 and verify the layout is correct using ``make map``.
 
 
-Legacy OTA updates
-------------------
+OTA updates
+-----------
 
-Because the standard flash layout has changed, performing OTA updates from Sming 4.2 can be tricky.
-There are a several ways to handle this, but the simplest is to retain the existing partition layout.
-
-You can use the ``legacy`` option to move the partition table and configuration partitions
-back to their original locations::
-
-   make map HWCONFIG_OPTS=legacy
-
-When using this approach, remember to add ``HWCONFIG_OPTS := legacy`` to your project's component.mk file.
-
-If you need to make any further adjustments, see below for how to create a custom profile.
-You can use the ``legacy`` option in your profile like this::
-
-.. code-block:: json
-
-   "options": ["legacy"]
-
-
-Check that the displayed partition map corresponds to your project.
+When planning OTA updates please check that the displayed partition map corresponds to your project.
 For example, the partition table requires a free sector so must not overlap other partitions.
 
 Your OTA update process must include a step to write the partition table to the correct location.
