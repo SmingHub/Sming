@@ -10,6 +10,9 @@ APP_ID := "test"
 
 # Firmware Update Server 
 MQTT_URL := "mqtt://test.mosquitto.org:1883"
+ifneq ($(ENABLE_SSL),)
+	MQTT_URL := "mqtts://test.mosquitto.org:8883"
+endif
 
 ## End of user configurable settings. Don't change anything below this line
 
