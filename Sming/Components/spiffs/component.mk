@@ -25,21 +25,11 @@ COMPONENT_RELINK_VARS += SPIFFS_OBJ_META_LEN
 SPIFFS_OBJ_META_LEN ?= 16
 COMPONENT_CFLAGS += -DSPIFFS_OBJ_META_LEN=$(SPIFFS_OBJ_META_LEN)
 
-##@Cleaning
-
-.PHONY: spiffs-image-clean
-spiffs-image-clean: ##Remove SPIFFS image file
-	$(info Cleaning $(SPIFF_BIN_OUT))
-	$(Q) rm -f $(SPIFF_BIN_OUT)
-
 ##@Building
 
 # Spiffs image generation tool
 SPIFFSGEN := $(PYTHON) $(COMPONENT_PATH)/spiffsgen.py
 SPIFFSGEN_SMING = $(SPIFFSGEN) --meta-len=$(SPIFFS_OBJ_META_LEN) --block-size=8192
-
-.PHONY: spiffs-image-update
-spiffs-image-update: spiffs-image-clean $(SPIFF_BIN_OUT) ##Rebuild the SPIFFS filesystem image
 
 # Target invoked via partition table
 ifneq (,$(filter spiffsgen,$(MAKECMDGOALS)))

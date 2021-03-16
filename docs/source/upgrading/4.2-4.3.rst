@@ -17,6 +17,12 @@ the :envvar:`HWCONFIG` setting.
 You can find full details in the :component:`Storage` library.
 See also background on :doc:`/information/flash`.
 
+Removed build targets
+    spiffs-image-update
+        Use the new `buildpart` target instead
+    spiffs-image-clean
+        Use the new `part-clean` target instead
+
 New and updated build targets
     hwconfig
         Displays the current configuration in JSON format
@@ -44,6 +50,10 @@ New and updated build targets
         Flash a single partition, e.g. ``make flashpart PART=spiffs0``
     erasepart
         Erase a partition, e.g. ``make erasepart PART=spiffs0``
+    buildpart
+        Re-builds images associated with partitions, such as SPIFFS or other filesystem images.
+    part-clean
+        Removes any partition images with build information. This is done as part of a normal project `clean`.
 
 Configuration variables
     A number of configuration variables have been removed or made read-only, as these are now
