@@ -6,5 +6,23 @@
                 "filename": "$(FLASH_INIT_DATA_VCC)"
             }
         }
+    },
+    "alternate": {
+        "description": "ESP8266 layout with critical partitions at start of flash",
+        "partition_table_offset": "0x2000",
+        "partitions": {
+            "rf_cal": {
+                "address": "0x3000"
+            },
+            "phy_init": {
+                "address": "0x4000"
+            },
+            "sys_param": {
+                "address": "0x5000"
+            },
+            "rom0": {
+                "address": "0x8000"
+            }
+        }
     }
 }
