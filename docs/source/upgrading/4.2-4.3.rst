@@ -36,16 +36,8 @@ New and updated build targets
         ``make flashinit`` to write system parameter information. Failure to do this
         was a common problem and should now be a thing of the past.
     flashinit
-        This now just erases the flash memory, and is no longer a pre-requisite for ``make flash``.
-
-        The ESP8266 system parameter information has been moved into registered
-        partitions (phy_init and sys_param) near the beginning of flash memory.
-        It now gets written when running ``make flash``.
-
-        Previously, this information was kept right at the end of the flash memory,
-        so the location would vary depending on the setting of ``SPI_SIZE``.
-        This was a frequent cause of problems as the system would fail to start if this
-        was set incorrectly.
+        This now just erases the flash memory.
+        The ESP8266 initialisation data gets written when running ``make flash``.
     flashmap
         Flash just the partition map
     flashpart
