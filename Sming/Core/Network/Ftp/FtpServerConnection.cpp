@@ -342,7 +342,7 @@ void FtpServerConnection::onCommand(String cmd, String data)
 	case Command::RETR: {
 		String path = resolvePath(cwd, data);
 		if(checkFileAccess(path, IFS::OpenFlag::Read)) {
-			createDataConnection(new FtpDataRetrieve(*this, path));
+			setDataConnection(new FtpDataRetrieve(*this, path));
 		}
 		break;
 	}
@@ -350,7 +350,7 @@ void FtpServerConnection::onCommand(String cmd, String data)
 	case Command::STOR: {
 		String path = resolvePath(cwd, data);
 		if(checkFileAccess(path, IFS::OpenFlag::Write)) {
-			createDataConnection(new FtpDataStore(*this, path));
+			setDataConnection(new FtpDataStore(*this, path));
 		}
 		break;
 	}
@@ -359,7 +359,7 @@ void FtpServerConnection::onCommand(String cmd, String data)
 	case Command::NLST: {
 		String path = resolvePath(cwd, data);
 		if(checkFileAccess(path, IFS::OpenFlag::Read)) {
-			createDataConnection(new FtpDataFileList(*this, path, command == Command::NLST));
+			setDataConnection(new FtpDataFileList(*this, path, command == Command::NLST));
 		}
 		break;
 	}
@@ -403,8 +403,11 @@ err_t FtpServerConnection::onSent(uint16_t len)
 	return ERR_OK;
 }
 
-void FtpServerConnection::createDataConnection(FtpDataStream* connection)
+void FtpServerConnection::setDataConnection(FtpDataStream* connection)
 {
+	if(dataConnection != nullptr) {
+		SYSTEM_ERROR("[FTP] Data connection already exists!");
+	}
 	dataConnection = connection;
 	dataConnection->connect(ip, port);
 	response(150, F("Connecting"));
@@ -421,11 +424,13 @@ void FtpServerConnection::dataStreamDestroyed(TcpConnection* connection)
 
 void FtpServerConnection::dataTransferFinished(TcpConnection* connection)
 {
-	if(connection != dataConnection) {
-		SYSTEM_ERROR("FTP Wrong state: connection != dataConnection");
+	if(dataConnection != nullptr) {
+		if(connection != dataConnection) {
+			SYSTEM_ERROR("FTP Wrong state: connection != dataConnection");
+		}
+		dataConnection = nullptr;
 	}
 
-	dataConnection = nullptr;
 	response(226, F("Transfer Complete."));
 }
 

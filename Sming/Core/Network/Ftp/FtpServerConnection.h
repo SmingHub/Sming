@@ -64,7 +64,7 @@ protected:
 	virtual void onCommand(String cmd, String data);
 
 	void cmdPort(const String& data);
-	void createDataConnection(FtpDataStream* connection);
+	void setDataConnection(FtpDataStream* connection);
 	bool checkFileAccess(const String& filename, IFS::OpenFlags flags);
 
 private:
