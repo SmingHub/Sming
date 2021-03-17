@@ -22,6 +22,7 @@
 	XX(CWD, "Change working directory")                                                                                \
 	XX(DELE, "Delete file")                                                                                            \
 	XX(LIST, "List file or directory information")                                                                     \
+	XX(NLST, "List file or directory names")                                                                           \
 	XX(NOOP, "")                                                                                                       \
 	XX(PWD, "Get current working directory")                                                                           \
 	XX(PASS, "Must follow user")                                                                                       \
@@ -80,9 +81,11 @@ String resolvePath(const String& cwd, const String& name)
 
 	String path;
 	path.reserve(cwd.length() + name.length() + 1);
-	path = cwd;
+	path += cwd;
 	if(name.length() != 0) {
-		path += '/';
+		if(path.length() != 0) {
+			path += '/';
+		}
 		path += name;
 	}
 	// Remove any trailing path separator
@@ -90,7 +93,6 @@ String resolvePath(const String& cwd, const String& name)
 	if(path[len - 1] == '/') {
 		path.setLength(len - 1);
 	}
-	debug_i("resolvePath('%s', '%s'): '%s'", cwd.c_str(), name.c_str(), path.c_str());
 	return path;
 }
 
@@ -151,29 +153,43 @@ void FtpServerConnection::cmdPort(const String& data)
 	response(200);
 }
 
+bool FtpServerConnection::checkFileAccess(const String& filename, FileOpenFlags flags)
+{
+	FileStat stat;
+	int err = fileStats(filename, stat);
+	if(err == IFS::Error::NotFound && flags[FileOpenFlag::Write]) {
+		// File doesn't exist - check permissions on parent directory
+		String path;
+		int i = filename.lastIndexOf('/');
+		if(i > 0) {
+			path = filename.substring(0, i);
+		}
+		err = fileStats(path, stat);
+	}
+	if(err != FS_OK) {
+		response(550, fileGetErrorString(err)); // Not found / no access
+		return false;
+	}
+	if(flags[FileOpenFlag::Write]) {
+		if(stat.attr[FileAttribute::ReadOnly]) {
+			response(550, fileGetErrorString(IFS::Error::ReadOnly));
+		}
+		if(user.role < stat.acl.writeAccess) {
+			response(550, _F("Write access denied")); // Not found / no access
+			return false;
+		}
+	}
+	if(user.role < stat.acl.readAccess) {
+		response(550, _F("Read access denied")); // Not found / no access
+		return false;
+	}
+	return true;
+}
+
 void FtpServerConnection::onCommand(String cmd, String data)
 {
-	// TODO: Implement this as a virtual server method
-	auto checkFileAccess = [this](const String& filename, FileOpenFlags flags) {
-		FileStat stat;
-		if(fileStats(filename, stat) != FS_OK) {
-			response(550); // Not found / no access
-			return false;
-		}
-		if(flags[FileOpenFlag::Write]) {
-			if(user.role < stat.acl.writeAccess) {
-				response(550, _F("Write access denied")); // Not found / no access
-				return false;
-			}
-		}
-		if(user.role < stat.acl.readAccess) {
-			response(550, _F("Read access denied")); // Not found / no access
-			return false;
-		}
-		return true;
-	};
-
-	switch(parseCommand(cmd)) {
+	auto command = parseCommand(cmd);
+	switch(command) {
 	// We ready to quit always :)
 	case Command::QUIT:
 		response(221); // Service closing control connection
@@ -224,7 +240,7 @@ void FtpServerConnection::onCommand(String cmd, String data)
 		FileStat stat;
 		if(fileStats(path, stat) == FS_OK && stat.attr[FileAttribute::Directory]) {
 			cwd = path;
-			response(250); // OK
+			response(250, F("directory changed to /") + cwd); // OK
 		} else {
 			response(550); // Not found / no access
 		}
@@ -279,7 +295,11 @@ void FtpServerConnection::onCommand(String cmd, String data)
 			break;
 		}
 		int err = fileRename(pathFrom, pathTo);
-		response((err == FS_OK) ? 250 : 550);
+		if(err == FS_OK) {
+			response(250);
+		} else {
+			response(550, fileGetErrorString(err));
+		}
 		break;
 	}
 
@@ -299,10 +319,11 @@ void FtpServerConnection::onCommand(String cmd, String data)
 		break;
 	}
 
-	case Command::LIST: {
+	case Command::LIST:
+	case Command::NLST: {
 		String path = resolvePath(cwd, data);
 		if(checkFileAccess(path, FileOpenFlag::Read)) {
-			createDataConnection(new FtpDataFileList(*this, path));
+			createDataConnection(new FtpDataFileList(*this, path, command == Command::NLST));
 		}
 		break;
 	}
@@ -319,6 +340,7 @@ void FtpServerConnection::onCommand(String cmd, String data)
 
 	case Command::UNKNOWN:
 	default:
+		cmd.toUpperCase();
 		if(!server.onCommand(cmd, data, *this)) {
 			response(502, F("Not supported"));
 		}
@@ -351,17 +373,17 @@ void FtpServerConnection::dataTransferFinished(TcpConnection* connection)
 	response(226, F("Transfer Complete."));
 }
 
-void FtpServerConnection::response(int code, String text)
+void FtpServerConnection::response(int code, String text, char sep)
 {
 	String response = String(code, DEC);
+	response += sep;
 	if(text.length() == 0) {
 		if(code >= 200 && code <= 399) { // Just for simplify
-			response += _F(" OK");
+			response += _F("OK");
 		} else {
-			response += _F(" FAIL");
+			response += _F("FAIL");
 		}
 	} else {
-		response += ' ';
 		response += text;
 	}
 	response += "\r\n";

@@ -13,7 +13,7 @@
 #include "Network/TcpConnection.h"
 #include "IpAddress.h"
 #include "WString.h"
-#include <IFS/Access.h>
+#include <FileSystem.h>
 
 /**
  * @defgroup ftp FTP
@@ -61,6 +61,7 @@ protected:
 
 	void cmdPort(const String& data);
 	void createDataConnection(FtpDataStream* connection);
+	bool checkFileAccess(const String& filename, FileOpenFlags flags);
 
 private:
 	CustomFtpServer& server;

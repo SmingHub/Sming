@@ -13,11 +13,13 @@
 #include "FtpDataStream.h"
 #include "FileSystem.h"
 #include <DateTime.h>
+#include <SystemClock.h>
 
 class FtpDataFileList : public FtpDataStream
 {
 public:
-	explicit FtpDataFileList(FtpServerConnection& connection, const String& path = nullptr) : FtpDataStream(connection)
+	explicit FtpDataFileList(FtpServerConnection& connection, const String& path, bool namesOnly = false)
+		: FtpDataStream(connection), namesOnly(namesOnly)
 	{
 		auto& stat = const_cast<FileStat&>(dir.stat());
 		if(fileStats(path, stat) == FS_OK && !stat.attr[FileAttribute::Directory]) {
@@ -26,6 +28,8 @@ public:
 			isFile = false;
 			dir.open(path);
 		}
+
+		year = DateTime(SystemClock.now()).Year;
 	}
 
 	void transferData(TcpConnectionEvent sourceEvent) override
@@ -52,20 +56,25 @@ public:
 
 	void writeStat(const FileStat& stat)
 	{
-		DateTime dt{stat.mtime};
-		char buf[64];
-		int n = m_snprintf(buf, sizeof(buf), _F("%02u-%02u-%02u  %02u:%02u%cM               %-6u "), dt.Day, dt.Month,
-						   dt.Year - 2000, (dt.Hour % 12) ?: 12, dt.Minute, dt.Hour >= 12 ? 'P' : 'A', stat.size);
-		if(n <= 0) {
-			writeString(F("ERROR"));
-		} else {
-			write(buf, n);
+		if(!namesOnly) {
+			auto& user = control.getUser();
+			DateTime dt{stat.mtime};
+			String timestr = dt.format((dt.Year == year) ? _F("%b %e %H:%M") : _F("%b %e  %Y"));
+			char buf[128];
+			PSTR_ARRAY(fmt, "--- %-6u %s ");
+			m_snprintf(buf, sizeof(buf), fmt, stat.size, timestr.c_str());
+			buf[0] = stat.attr[FileAttribute::Directory] ? 'd' : '-';
+			buf[1] = (user.role >= stat.acl.readAccess) ? 'r' : '-';
+			buf[2] = stat.attr[FileAttribute::ReadOnly] && (user.role >= stat.acl.writeAccess) ? 'w' : '-';
+			writeString(buf);
 		}
 		write(stat.name, stat.name.length);
 		write("\r\n", 2);
 	}
 
 private:
+	uint16_t year;
 	Directory dir;
+	bool namesOnly;
 	bool isFile;
 };
