@@ -32,6 +32,11 @@ class Env:
                 return '${%s%s}%s' % (prefix, name, s[len(value):])
         return path
 
+    def resolve(self, path):
+        """Convert any embedded environment variables into real paths
+        """
+        return os.path.expandvars(path)
+
     def subst_path(self, path, prefix=''):
         path = self.replace(path, 'SMING_HOME', prefix)
         path = self.replace(path, 'ESP_HOME', prefix)
@@ -113,9 +118,10 @@ def get_property(data, name, default):
     return data[name]
 
 def update_intellisense():
-    dirs = os.environ['COMPONENTS_EXTRA_INCDIR'].split()
-    for i, d in enumerate(dirs):
-        dirs[i] = check_path(env.subst_path(d))
+    dirs = []
+    for d in os.environ['COMPONENTS_EXTRA_INCDIR'].split():
+        if os.path.exists(d):
+            dirs += [check_path(env.subst_path(d))]
 
     propertiesFile = '.vscode/c_cpp_properties.json'
     if os.path.exists(propertiesFile):
@@ -185,11 +191,15 @@ def update_launch():
 def update_workspace():
     filename = 'sming.code-workspace'
     ws = load_json(filename, False)
+    template = load_template('workspace.json')
     if ws is None:
-        template = load_template('workspace.json')
         ws = template.copy()
-        # TODO: Make any required changes to generated
-        save_json(ws, filename)
+    schemas = ws['settings']['json.schemas'] = []
+    # ws['settings']['json.schemas']
+    for schema in template['settings']['json.schemas']:
+        schema['url'] = env.resolve(schema['url'])
+        schemas += [schema]
+    save_json(ws, filename)
 
 def main():
     if not env.SMING_HOME or not env.SMING_ARCH:

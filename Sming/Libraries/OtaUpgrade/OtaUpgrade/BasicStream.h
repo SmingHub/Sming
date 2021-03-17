@@ -48,7 +48,7 @@ public:
 	/**
 	 * @brief Error code values
 	 */
-	enum Error {
+	enum class Error {
 		None,			  ///< No error occured thus far (default value of \c #errorCode if `hasError()` returns false)
 		InvalidFormat,	///< Invalid/unsupported upgrade file format
 		UnsupportedData,  ///< Some content of the upgrade file is not supported by this version of OtaUpgradeStream.
@@ -67,8 +67,9 @@ public:
 
 	/** @brief Convert error code to string.
 	 * @see #errorCode
+	 * @deprecated Use `toString()` global function
 	 */
-	static String errorToString(Error code);
+	static String errorToString(Error code) SMING_DEPRECATED;
 
 	/** @brief Process chunk of upgrade file.
 	 * @param data Pointer to chunk of data.
@@ -113,11 +114,12 @@ private:
 		uint32_t address;
 		uint32_t size;
 		uint8_t index;
-		bool updated = false;
-	} slot;
+		bool updated{false};
+	};
+	Slot slot;
 
 	// Instead of RbootOutputStream, the rboot write API is used directly because in a future extension the OTA file may contain data for multiple FLASH regions.
-	rboot_write_status rbootWriteStatus = {};
+	rboot_write_status rbootWriteStatus{};
 
 	enum class State {
 		Error,
@@ -128,14 +130,14 @@ private:
 		VerifyRoms,
 		RomsComplete,
 	};
-	State state = State::Header;
+	State state{State::Header};
 
 #ifdef ENABLE_OTA_SIGNING
 	using Verifier = SignatureVerifier;
-	static const uint32_t expectedHeaderMagic = OTA_HEADER_MAGIC_SIGNED;
+	static const uint32_t expectedHeaderMagic{OTA_HEADER_MAGIC_SIGNED};
 #else
 	using Verifier = ChecksumVerifier;
-	static const uint32_t expectedHeaderMagic = OTA_HEADER_MAGIC_NOT_SIGNED;
+	static const uint32_t expectedHeaderMagic{OTA_HEADER_MAGIC_NOT_SIGNED};
 #endif
 	Verifier verifier;
 
@@ -144,9 +146,9 @@ private:
 
 	Verifier::VerificationData verificationData;
 
-	size_t remainingBytes = 0;
-	uint8_t* destinationPtr = nullptr;
-	uint8_t romIndex = 0;
+	size_t remainingBytes{0};
+	uint8_t* destinationPtr{nullptr};
+	uint8_t romIndex{0};
 
 	void setupChunk(State nextState, size_t size, void* destination = nullptr)
 	{
@@ -183,3 +185,8 @@ private:
 };
 
 } // namespace OtaUpgrade
+
+/** @brief Convert error code to string.
+ * @see #errorCode
+ */
+String toString(OtaUpgrade::BasicStream::Error code);

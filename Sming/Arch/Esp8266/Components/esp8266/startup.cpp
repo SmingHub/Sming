@@ -55,9 +55,8 @@ extern "C" void WEAK_ATTR user_rf_pre_init(void)
 
 extern "C" uint32 ICACHE_FLASH_ATTR  WEAK_ATTR user_rf_cal_sector_set(void)
 {
-	// RF calibration stored in last sector of sysParam
-	auto sysParam = *Storage::findPartition(Storage::Partition::SubType::Data::sysParam);
-	return ((sysParam.address() + sysParam.size()) / SPI_FLASH_SEC_SIZE) - 1;
+	auto rfCal = *Storage::findPartition(Storage::Partition::SubType::Data::rfCal);
+	return rfCal.address();
 }
 
 #ifdef SDK_INTERNAL
@@ -71,16 +70,14 @@ extern "C" void ICACHE_FLASH_ATTR WEAK_ATTR user_pre_init(void)
 	Storage::initialize();
 
 	auto sysParam = *Storage::findPartition(Storage::Partition::SubType::Data::sysParam);
+	auto rfCal = *Storage::findPartition(Storage::Partition::SubType::Data::rfCal);
 	auto phy = *Storage::findPartition(Storage::Partition::SubType::Data::phy);
-
-	// RF calibration stored in last sector of sysParam
-	auto sysParamSize = sysParam.size() - SPI_FLASH_SEC_SIZE;
 
 	static const partition_item_t partitions[] = {
 			{SYSTEM_PARTITION_BOOTLOADER,		0,						SPI_FLASH_SEC_SIZE},
 			{SYSTEM_PARTITION_PHY_DATA,			phy.address(),			phy.size()},
-			{SYSTEM_PARTITION_SYSTEM_PARAMETER,	sysParam.address(),		sysParamSize},
-			{SYSTEM_PARTITION_RF_CAL,			sysParam.address() + sysParamSize,	SPI_FLASH_SEC_SIZE},
+			{SYSTEM_PARTITION_SYSTEM_PARAMETER,	sysParam.address(),		sysParam.size()},
+			{SYSTEM_PARTITION_RF_CAL,			rfCal.address(),		rfCal.size()},
 	};
 
 	enum flash_size_map sizeMap = system_get_flash_size_map();

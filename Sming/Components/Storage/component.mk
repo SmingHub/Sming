@@ -35,10 +35,11 @@ HWCONFIG_TOOL := \
 	BUILD_BASE=$(BUILD_BASE) \
 	$(PYTHON) $(PARTITION_TOOLS)/hwconfig/hwconfig.py
 
-ifeq (,$(MAKE_DOCS)$(MAKE_CLEAN))
-
-# Generate build variables from hardware configuration
 HWCONFIG_MK := $(PROJECT_DIR)/$(OUT_BASE)/hwconfig.mk
+ifneq (,$(MAKE_DOCS)$(MAKE_CLEAN))
+-include $(HWCONFIG_MK)
+else
+# Generate build variables from hardware configuration
 $(shell $(HWCONFIG_TOOL) --quiet expr $(HWCONFIG) $(HWCONFIG_MK) "config.buildVars()")
 include $(HWCONFIG_MK)
 ifeq ($(SMING_ARCH_HW),)
@@ -47,6 +48,7 @@ else ifneq ($(SMING_ARCH),$(SMING_ARCH_HW))
 $(error Hardware configuration is for arch $(SMING_ARCH_HW), does not match SMING_ARCH ($(SMING_ARCH)))
 endif
 COMPONENT_CXXFLAGS := -DPARTITION_TABLE_OFFSET=$(PARTITION_TABLE_OFFSET)
+COMPONENT_CPPFLAGS := -DPARTITION_TABLE_OFFSET=$(PARTITION_TABLE_OFFSET)
 
 # Function to evaluate expression against config
 HWEXPR := $(HWCONFIG_TOOL) $(if $(PART),--part "$(PART)") expr $(HWCONFIG) -
@@ -109,15 +111,10 @@ $(PARTITIONS_BIN): $(HWCONFIG_DEPENDS)
 # Create build target for a partition
 # $1 -> Partition name
 define PartitionTarget
-PTARG := $(shell $(HWCONFIG_TOOL) --part $1 expr $(HWCONFIG) - part.filename)
-$$(PTARG):
+$(PARTITION_$1_FILENAME):
 	$$(Q) $$(MAKE) --no-print-directory $$(shell $$(HWCONFIG_TOOL) --part $1 expr $$(HWCONFIG) - "part.build['target']") PART=$1
-CUSTOM_TARGETS += $$(PTARG)
+CUSTOM_TARGETS += $(PARTITION_$1_FILENAME)
 endef
-
-# Create build targets for all partitions with 'build' property
-DEBUG_VARS += PARTITIONS_WITH_TARGETS
-PARTITIONS_WITH_TARGETS := $(call HwExpr,(' '.join([part.name for part in filter(lambda part: part.build is not None, config.partitions)])))
 
 # Must be invoked from project.mk after all Components have been processed
 # This allows partition definitions to include variables which may not yet be defined
@@ -125,6 +122,14 @@ define PartitionCreateTargets
 $(foreach p,$(PARTITIONS_WITH_TARGETS),$(eval $(call PartitionTarget,$p)))
 endef
 
+.PHONY: buildpart
+buildpart: ##Rebuild all partition targets
+ifeq (,$(PARTITION_BUILD_TARGETS))
+	@echo "No partitions have build targets"
+else
+	$(Q) rm -f $(PARTITION_BUILD_TARGETS)
+	$(MAKE) $(PARTITION_BUILD_TARGETS)
+endif
 
 ##@Flashing
 
@@ -192,3 +197,11 @@ flashmap: $(PARTITIONS_BIN) kill_term ##Write partition table to device
 
 
 endif # MAKE_DOCS
+
+##@Cleaning
+
+clean: part-clean
+
+.PHONY: part-clean
+part-clean: ##Clean partition targets
+	$(Q) rm -f $(PARTITION_BUILD_TARGETS)

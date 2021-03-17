@@ -17,6 +17,12 @@ the :envvar:`HWCONFIG` setting.
 You can find full details in the :component:`Storage` library.
 See also background on :doc:`/information/flash`.
 
+Removed build targets
+    spiffs-image-update
+        Use the new `buildpart` target instead
+    spiffs-image-clean
+        Use the new `part-clean` target instead
+
 New and updated build targets
     hwconfig
         Displays the current configuration in JSON format
@@ -36,22 +42,18 @@ New and updated build targets
         ``make flashinit`` to write system parameter information. Failure to do this
         was a common problem and should now be a thing of the past.
     flashinit
-        This now just erases the flash memory, and is no longer a pre-requisite for ``make flash``.
-
-        The ESP8266 system parameter information has been moved into registered
-        partitions (phy_init and sys_param) near the beginning of flash memory.
-        It now gets written when running ``make flash``.
-
-        Previously, this information was kept right at the end of the flash memory,
-        so the location would vary depending on the setting of ``SPI_SIZE``.
-        This was a frequent cause of problems as the system would fail to start if this
-        was set incorrectly.
+        This now just erases the flash memory.
+        The ESP8266 initialisation data gets written when running ``make flash``.
     flashmap
         Flash just the partition map
     flashpart
         Flash a single partition, e.g. ``make flashpart PART=spiffs0``
     erasepart
         Erase a partition, e.g. ``make erasepart PART=spiffs0``
+    buildpart
+        Re-builds images associated with partitions, such as SPIFFS or other filesystem images.
+    part-clean
+        Removes any partition images with build information. This is done as part of a normal project `clean`.
 
 Configuration variables
     A number of configuration variables have been removed or made read-only, as these are now

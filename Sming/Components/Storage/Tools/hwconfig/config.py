@@ -46,6 +46,7 @@ class Config(object):
         config.load(name)
         if options != '':
             config.parse_options(options.split(','))
+        config.resolve_expressions()
         config.partitions.sort()
         return config
 
@@ -73,6 +74,9 @@ class Config(object):
             temp.pop('description', None)
             self.parse_dict(temp)
 
+    def resolve_expressions(self):
+        self.partitions.offset = eval(str(self.partitions.offset))
+
     def parse_dict(self, data):
         base_config = data.pop('base_config', None)
         if base_config is not None:
@@ -89,7 +93,7 @@ class Config(object):
             elif k == 'arch':
                 self.arch = v
             elif k == 'partition_table_offset':
-                self.partitions.offset = parse_int(v)
+                self.partitions.offset = v
             elif k == 'devices':
                 self.devices.parse_dict(v)
             elif k == 'comment':
@@ -132,7 +136,7 @@ class Config(object):
         return res
 
     def verify(self, secure):
-        self.partitions.verify(self.arch, secure)
+        self.partitions.verify(self.arch, self.devices[0], secure)
 
     def map(self):
         return partition.Map(self.partitions, self.devices)

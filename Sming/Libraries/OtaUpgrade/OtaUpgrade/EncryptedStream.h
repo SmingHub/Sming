@@ -28,11 +28,6 @@ class EncryptedStream : public BasicStream
 public:
 	EncryptedStream() = default;
 
-	~EncryptedStream()
-	{
-		free(buffer);
-	}
-
 	/** @brief Process an arbitrarily sized chunk of an encrypted OTA upgrade file.
 	 * @param data Pointer to chunk of data.
 	 * @param size Size of chunk pointed to by \a data in bytes.
@@ -55,12 +50,12 @@ private:
 		Chunk,
 		None,
 	};
-	Fragment fragment = Fragment::Header;
 
-	size_t remainingBytes = sizeof(header);
-	uint8_t* fragmentPtr = header;
-	uint8_t* buffer = nullptr;
-	size_t bufferSize = 0;
+	Fragment fragment{Fragment::Header};
+	size_t remainingBytes{sizeof header};
+	uint8_t* fragmentPtr{header};
+	std::unique_ptr<uint8_t[]> buffer;
+	size_t bufferSize{0};
 };
 
 } // namespace OtaUpgrade

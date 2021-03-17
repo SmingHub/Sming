@@ -59,6 +59,7 @@
 	XX(nvsKeys, 0x04, "NVS key information")                                                                           \
 	XX(eFuseEm, 0x05, "eFuse emulation")                                                                               \
 	XX(sysParam, 0x40, "System Parameters")                                                                            \
+	XX(rfCal, 0x41, "RF Calibration")                                                                                  \
 	XX(espHttpd, 0x80, "ESPHTTPD")                                                                                     \
 	XX(fat, 0x81, "FAT")                                                                                               \
 	XX(spiffs, 0x82, "SPIFFS")                                                                                         \

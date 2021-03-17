@@ -84,6 +84,16 @@ If using this approach, remember to updated your project's ``component.mk`` with
 and verify the layout is correct using ``make map``.
 
 
+OTA updates
+-----------
+
+When planning OTA updates please check that the displayed partition map corresponds to your project.
+For example, the partition table requires a free sector so must not overlap other partitions.
+
+Your OTA update process must include a step to write the partition table to the correct location.
+
+It is not necessary to update the bootloader. See :component:`rboot` for further information.
+
 
 Custom configurations
 ---------------------
@@ -171,6 +181,19 @@ To customise the hardware configuration for a project, for example 'my_project':
       make flash
 
    This will flash everything: bootloader, partition table and all defined partitions (those with a ``filename`` entry).
+
+
+.. note::
+
+   The build system isn't smart enough to track dependencies for partition build targets.
+
+   To rebuild these manually type::
+
+      make partbuild
+
+   These will be removed when ``make clean`` is run, but you can also clean them separately thus::
+
+      make part-clean
 
 
 Partition maps
@@ -356,7 +379,7 @@ you can take advantage of the partition API to manage them as follows:
 -  Create an instance of your custom device and make a call to :cpp:func:`Storage::registerDevice`
    in your ``init()`` function (or elsewhere if more appropriate).
 
- 
+
 API
 ---
 

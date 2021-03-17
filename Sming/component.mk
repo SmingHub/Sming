@@ -149,10 +149,9 @@ GLOBAL_CFLAGS		+= -DSTRING_OBJECT_SIZE=$(STRING_OBJECT_SIZE)
 ##@Flashing
 
 .PHONY: flashinit
-flashinit: $(ESPTOOL) $(FLASH_INIT_DATA) | $(FW_BASE) ##Erase your device's flash memory
+flashinit: $(ESPTOOL) | $(FW_BASE) ##Erase your device's flash memory
 	$(info Flash init data default and blank data)
 	$(Q) $(EraseFlash)
-	$(call WriteFlash,$(FLASH_INIT_CHUNKS))
 
 .PHONY: flashboot
 flashboot: $(FLASH_BOOT_LOADER) kill_term ##Write just the Bootloader
