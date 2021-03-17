@@ -180,4 +180,4 @@ protected:
 typedef RbootHttpUpdater rBootHttpUpdate SMING_DEPRECATED;
 
 /** @deprecated Use 'auto' in expressions or `RbootHttpUpdater::Item` */
-typedef RbootHttpUpdater::Item RBootHttpUpdaterItem SMING_DEPRECATED;
+typedef RbootHttpUpdater::Item RbootHttpUpdaterItem SMING_DEPRECATED;
