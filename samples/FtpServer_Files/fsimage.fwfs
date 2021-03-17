@@ -8,11 +8,13 @@
     "mountpoints": {},
     "rules": [
         {
+            // By default, all files require at least User role and only Admins can write
             "mask": "*",
             "read": "user",
             "write": "admin"
         },
         {
+            // In general, anything starting with . is considered a system file so restrict to admin
             "mask": ".*",
             "read": "admin"
         },
@@ -21,11 +23,12 @@
             "readonly": true
         },
         {
+            // These files won't be readable locally, the client will have to un-compress them
             "mask": "/Network/Mqtt/*",
             "compress": "gzip"
         },
         {
-            // Permit access to one file if user isn't logged in
+            // If no user is logged in, permit listing of root directory and reading of one file
             "mask": [
                 "/",
                 "index.rst"

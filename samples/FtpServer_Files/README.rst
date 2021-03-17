@@ -3,7 +3,18 @@ FTP Server Files
 
 .. highlight:: bash
 
-This example sets up a simple FTP server with a couple of files stored in SPIFFS.
+This example sets up an FTP server with a couple of files stored in SPIFFS.
+It mounts this on top of an FWFS volume (a hybrid filesystem).
+
+The sample creates three users with different roles (guest, user and administrator).
+
+======  ========  =======
+User    Password  Role
+------  --------  -------
+guest   (none)    Guest
+me      "123"     User
+admin   "1234"    Admin
+======  ========  =======
 
 You'll need to have WiFi configured. You can set this information when building like this::
 
@@ -11,12 +22,12 @@ You'll need to have WiFi configured. You can set this information when building 
 
 substituting your actual Access Point details for *ssid* and *password*.
 
-After flashing::
+Flash to your device::
 
-   make flashapp
+   make flash
 
 You should be able to connect using an FTP client:
 
    ftp ipaddress
 
-The default user is ``me``, password ``123``.
+and when prompted log in with one of the above usernames.
