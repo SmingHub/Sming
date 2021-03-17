@@ -32,9 +32,17 @@ PARTITION_TOOLS		:= $(PARTITION_PATH)/Tools
 HWCONFIG_VARS := \
 	HWCONFIG_DIRS \
 	HWCONFIG_OPTS
-HWCONFIG_CMDLINE	:= $(foreach v,$(HWCONFIG_VARS),$v="$($v)") $(PYTHON) $(PARTITION_TOOLS)/hwconfig
-HWCONFIG_TOOL		:= $(HWCONFIG_CMDLINE)/hwconfig.py
-HWCONFIG_EDITOR		:= $(HWCONFIG_CMDLINE)/editor.py
+HWCONFIG_EXPORTS	:= $(foreach v,$(HWCONFIG_VARS),$v="$($v)")
+HWCONFIG_CMDLINE	:= $(PYTHON) $(PARTITION_TOOLS)/hwconfig
+HWCONFIG_TOOL		:= $(HWCONFIG_EXPORTS) $(HWCONFIG_CMDLINE)/hwconfig.py
+
+ifdef WSL_ROOT
+# WSLENV := $(WSLENV)$(foreach v,$(HWCONFIG_VARS),::$v)
+WSLENV := $(WSLENV)::HWCONFIG_DIRS::HWCONFIG_OPTS
+HWCONFIG_EDITOR		:= powershell.exe -Command "$(HWCONFIG_CMDLINE)/editor.py $(HWCONFIG)"
+else
+HWCONFIG_EDITOR		:= $(HWCONFIG_EXPORTS) $(HWCONFIG_CMDLINE)/editor.py $(HWCONFIG)
+endif
 
 HWCONFIG_MK := $(PROJECT_DIR)/$(OUT_BASE)/hwconfig.mk
 ifneq (,$(MAKE_DOCS)$(MAKE_CLEAN))
@@ -99,7 +107,7 @@ hwconfig-validate: $(HWCONFIG_PATH) ##Validate current hardware configuration
 
 .PHONY: hwconfig-edit
 hwconfig-edit: $(HWCONFIG_PATH) ##Open profile editor
-	$(Q) $(HWCONFIG_EDITOR) $(HWCONFIG)
+	$(Q) $(HWCONFIG_EDITOR)
 
 ##@Building
 
