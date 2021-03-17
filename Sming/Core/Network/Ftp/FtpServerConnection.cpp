@@ -225,7 +225,8 @@ void FtpServerConnection::onCommand(String cmd, String data)
 	// Strong security check :)
 	case Command::USER:
 		// Authenticate or re-authenticate, wiping existing credentials
-		user = User{data};
+		user = User{};
+		user.name = data;
 		response(331); // User name OK, need password
 		break;
 
