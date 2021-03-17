@@ -31,13 +31,26 @@ class Editor:
 
         # Partition map (scrollable region)
 
+        def add_label(col, text, sticky = tk.W):
+            label = tk.Label(self.partitions, text = text)
+            label.grid(row = i, column = col, sticky = sticky, pady = 5)
+
+        add_label(0, 'Address')
+        add_label(1, 'Size')
+        add_label(2, 'Type')
+        add_label(3, 'Sub-Type')
+        add_label(4, 'Name')
+
+        i += 1
+
         for p in self.config.map():
             if p.device != device:
                 continue
-            addr = tk.Label(self.partitions, text = p.address_str())
-            addr.grid(row = i, column = 0, sticky=tk.W)
-            label = tk.Label(self.partitions, text = p.name)
-            label.grid(row = i, column = 1, sticky=tk.W, pady=5)
+            add_label(0, p.address_str())
+            add_label(1, p.size_str())
+            add_label(2, p.type_str())
+            add_label(3, p.subtype_str())
+            add_label(4, p.name)
             # notes = tk.Label(self.main, text = "abc")
             # notes.grid(row = i, column = 2, sticky=tk.W)
             i += 1
@@ -49,9 +62,9 @@ class Editor:
         # Combo box with devices
 
         self.devices = ttk.Combobox(self.main, values = [dev.name for dev in config.devices])
-        self.devices.grid(row = 0)
+        self.devices.grid(row = 0, column = 0, sticky=tk.E)
         btn = tk.Button(self.main, text='...', command = lambda: self.selectDevice(self.devices.get()))
-        btn.grid(row = 0, column = 2, sticky=tk.W)
+        btn.grid(row = 0, column = 1, sticky=tk.W)
 
         # Option checkboxes
 
