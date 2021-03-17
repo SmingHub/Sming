@@ -8,73 +8,49 @@ class Editor:
     def __init__(self, root):
         root.title('Sming Hardware Profile Editor')
         self.main = ttk.Frame(root)
-        self.main.grid()
-        self.main.columnconfigure(0, weight=1)
-        self.main.columnconfigure(1, weight=3)
+        self.main.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.createWidgets()
 
     def createWidgets(self):
         quitButton = tk.Button(self.main, text='Quit', command=self.main.quit)
-        quitButton.grid(row=100, sticky=tk.EW, columnspan=2)
-
-    def selectDevice(self, devname):
-        device = self.config.devices[devname]
-        self.devices.set(device.name)
-
-        if hasattr(self, 'partitions'):
-            self.partitions.destroy()
-        self.partitions = ttk.Frame(self.main)
-        self.partitions.grid(row = 1)
-
-
-        i = 1
-
-        # Partition map (scrollable region)
-
-        def add_label(col, text, sticky = tk.W):
-            label = tk.Label(self.partitions, text = text)
-            label.grid(row = i, column = col, sticky = sticky, pady = 5)
-
-        add_label(0, 'Address')
-        add_label(1, 'Size')
-        add_label(2, 'Type')
-        add_label(3, 'Sub-Type')
-        add_label(4, 'Name')
-
-        i += 1
-
-        for p in self.config.map():
-            if p.device != device:
-                continue
-            add_label(0, p.address_str())
-            add_label(1, p.size_str())
-            add_label(2, p.type_str())
-            add_label(3, p.subtype_str())
-            add_label(4, p.name)
-            # notes = tk.Label(self.main, text = "abc")
-            # notes.grid(row = i, column = 2, sticky=tk.W)
-            i += 1
-
+        quitButton.pack()
 
     def setConfig(self, config):
         self.config = config
 
-        # Combo box with devices
+        f = ttk.Frame(self.main)
+        f.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-        self.devices = ttk.Combobox(self.main, values = [dev.name for dev in config.devices])
-        self.devices.grid(row = 0, column = 0, sticky=tk.E)
-        btn = tk.Button(self.main, text='...', command = lambda: self.selectDevice(self.devices.get()))
-        btn.grid(row = 0, column = 1, sticky=tk.W)
+        tree = ttk.Treeview(f, columns=('address', 'size', 'type', 'subtype', 'filename'))
+        tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        s = ttk.Scrollbar(f, orient=tk.VERTICAL, command=tree.yview)
+        s.pack(side=tk.RIGHT, fill=tk.Y, expand=True)
+        tree['yscrollcommand'] = s.set
+
+        tree.heading('#0', text='Device / Partition Name')
+        tree.heading('address', text='Address')
+        tree.heading('size', text='Size')
+        tree.heading('type', text='Type')
+        tree.heading('subtype', text='Sub-Type')
+        tree.heading('filename', text='Image filename')
+
+        # tree.insert('', 'end', 'widgets', text='Widget Tour')
+
+        for dev in config.devices:
+            tree.insert('', 'end', dev.name, text=dev.name, open=True)
+
+        for p in config.map():
+            # id = p.device.name + '/' + p.address_str()
+            tree.insert(p.device.name, 'end', text=p.name,
+                values=(p.address_str(), p.size_str(), p.type_str(), p.subtype_str(), p.filename))
 
         # Option checkboxes
 
-        i = 2
         for k, v in self.config.option_library.items():
             btn = tk.Checkbutton(self.main, text = k + ': ' + v['description'])
-            btn.grid(row = i, sticky=tk.W, columnspan=2)
-            i += 1
+            btn.pack(side=tk.BOTTOM, fill=tk.X)
 
-        self.selectDevice(config.devices[0].name)
 
 
 def main():
