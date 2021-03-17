@@ -16,7 +16,7 @@
 class FtpDataStream : public TcpConnection
 {
 public:
-	explicit FtpDataStream(FtpServerConnection& connection) : TcpConnection(true), parent(connection)
+	explicit FtpDataStream(FtpServerConnection& control) : TcpConnection(true), control(control)
 	{
 	}
 
@@ -29,12 +29,12 @@ public:
 	void finishTransfer()
 	{
 		close();
-		parent.dataTransferFinished(this);
+		control.dataTransferFinished(this);
 	}
 
 	void response(int code, String text = nullptr)
 	{
-		parent.response(code, text);
+		control.response(code, text);
 	}
 
 	void onReadyToSendData(TcpConnectionEvent sourceEvent) override
@@ -51,6 +51,6 @@ public:
 	}
 
 protected:
-	FtpServerConnection& parent;
+	FtpServerConnection& control;
 	bool completed{false};
 };
