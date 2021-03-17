@@ -48,6 +48,7 @@ public:
 	err_t onSent(uint16_t len) override;
 
 	void dataTransferFinished(TcpConnection* connection);
+	void dataStreamDestroyed(TcpConnection* connection);
 
 	const User& getUser() const
 	{

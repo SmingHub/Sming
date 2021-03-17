@@ -44,6 +44,11 @@ public:
 	{
 	}
 
+	~FtpDataStream()
+	{
+		control.dataStreamDestroyed(this);
+	}
+
 	err_t onConnected(err_t err) override
 	{
 		setTimeOut(300);

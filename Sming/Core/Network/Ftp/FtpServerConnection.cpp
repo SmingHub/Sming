@@ -116,6 +116,7 @@ err_t FtpServerConnection::onReceive(pbuf* buf)
 	int prev = 0;
 
 	while(true) {
+		debug_hex(DBG, "CTRL < ", buf->payload, buf->len);
 		int p = NetUtils::pbufFindStr(buf, "\r\n", prev);
 		if(p < 0 || size_t(p - prev) > MAX_FTP_CMD) {
 			break;
@@ -385,6 +386,15 @@ void FtpServerConnection::createDataConnection(FtpDataStream* connection)
 	dataConnection = connection;
 	dataConnection->connect(ip, port);
 	response(150, F("Connecting"));
+}
+
+void FtpServerConnection::dataStreamDestroyed(TcpConnection* connection)
+{
+	if(connection != dataConnection) {
+		SYSTEM_ERROR("FTP Wrong state: connection != dataConnection");
+	}
+
+	dataConnection = nullptr;
 }
 
 void FtpServerConnection::dataTransferFinished(TcpConnection* connection)
