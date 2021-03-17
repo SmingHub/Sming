@@ -22,9 +22,9 @@ void FtpServer::addUser(const String& login, const String& pass, IFS::UserRole r
 	users[login] = User{pass, role};
 }
 
-IFS::UserRole FtpServer::validateUser(const String& login, const String& pass)
+IFS::UserRole FtpServer::validateUser(const char* login, const char* pass)
 {
-	debug_d("validateUser: %s %s", login.c_str(), pass.c_str());
+	debug_d("validateUser: %s %s", login, pass);
 	auto& user = static_cast<const UserList&>(users)[login];
 	return (user.password == pass) ? user.role : IFS::UserRole::None;
 }

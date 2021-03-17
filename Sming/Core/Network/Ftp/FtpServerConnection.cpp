@@ -77,27 +77,16 @@ int getSplitterPos(const String& data, char splitter, uint8_t number)
 	return -1;
 }
 
-String resolvePath(const String& cwd, const String& name)
+String dirname(const char* path)
 {
-	if(name[0] == '/') {
-		return name.substring(1);
+	if(path == nullptr) {
+		return nullptr;
 	}
-
-	String path;
-	path.reserve(cwd.length() + name.length() + 1);
-	path += cwd;
-	if(name.length() != 0) {
-		if(path.length() != 0) {
-			path += '/';
-		}
-		path += name;
+	auto c = strrchr(path, '/');
+	if(c == nullptr) {
+		return nullptr;
 	}
-	// Remove any trailing path separator
-	auto len = path.length();
-	if(path[len - 1] == '/') {
-		path.setLength(len - 1);
-	}
-	return path;
+	return String(path, c - path);
 }
 
 } // namespace
@@ -167,7 +156,29 @@ IFS::FileSystem* FtpServerConnection::getFileSystem()
 	return fs;
 }
 
-bool FtpServerConnection::checkFileAccess(const String& filename, IFS::OpenFlags flags)
+String FtpServerConnection::resolvePath(const char* name)
+{
+	if(name != nullptr && name[0] == '/') {
+		return &name[1];
+	}
+
+	String path;
+	path += cwd.c_str();
+	if(name != nullptr && *name != '\0') {
+		if(path.length() != 0) {
+			path += '/';
+		}
+		path += name;
+		// Remove any trailing path separator
+		auto len = path.length();
+		if(path[len - 1] == '/') {
+			path.setLength(len - 1);
+		}
+	}
+	return path;
+}
+
+bool FtpServerConnection::checkFileAccess(const char* filename, IFS::OpenFlags flags)
 {
 	auto fs = getFileSystem();
 	if(fs == nullptr) {
@@ -178,11 +189,7 @@ bool FtpServerConnection::checkFileAccess(const String& filename, IFS::OpenFlags
 	int err = fs->stat(filename, stat);
 	if(err == IFS::Error::NotFound && flags[IFS::OpenFlag::Write]) {
 		// File doesn't exist - check permissions on parent directory
-		String path;
-		int i = filename.lastIndexOf('/');
-		if(i > 0) {
-			path = filename.substring(0, i);
-		}
+		String path = dirname(filename);
 		err = fs->stat(path, stat);
 	}
 	if(err != FS_OK) {
@@ -226,7 +233,7 @@ void FtpServerConnection::onCommand(String cmd, String data)
 		if(!user.name) {
 			response(332); // Need account for login
 		} else {
-			user.role = server.validateUser(user.name, data);
+			user.role = server.validateUser(user.name.c_str(), data.c_str());
 			response(user.isValid() ? 230 : 430);
 		}
 		user.name = nullptr;
@@ -241,7 +248,7 @@ void FtpServerConnection::onCommand(String cmd, String data)
 	case Command::XPWD: {
 		String s;
 		s += "\"/";
-		s += cwd;
+		s += cwd.c_str();
 		s += '"';
 		response(257, s);
 		break;
@@ -253,15 +260,15 @@ void FtpServerConnection::onCommand(String cmd, String data)
 
 	case Command::CWD:
 	case Command::XCWD: {
-		String path = resolvePath(cwd, data);
-		if(!checkFileAccess(path, IFS::OpenFlag::Read)) {
+		String path = resolvePath(data.c_str());
+		if(!checkFileAccess(path.c_str(), IFS::OpenFlag::Read)) {
 			break;
 		}
 		debug_i("CWD: '%s'", path.c_str());
 		FileStat stat;
 		if(getFileSystem()->stat(path, stat) == FS_OK && stat.attr[FileAttribute::Directory]) {
 			cwd = path;
-			response(250, F("directory changed to /") + cwd); // OK
+			response(250, F("directory changed to /") + cwd.c_str()); // OK
 		} else {
 			response(550); // Not found / no access
 		}
@@ -269,8 +276,7 @@ void FtpServerConnection::onCommand(String cmd, String data)
 	}
 
 	case Command::CDUP: {
-		int i = cwd.lastIndexOf('/');
-		cwd.setLength((i < 0) ? 0 : i);
+		cwd = dirname(cwd.c_str());
 		response(250); // OK
 		break;
 	}
@@ -280,8 +286,8 @@ void FtpServerConnection::onCommand(String cmd, String data)
 		break;
 
 	case Command::SIZE: {
-		auto path = resolvePath(cwd, data);
-		if(!checkFileAccess(cwd, IFS::OpenFlag::Read)) {
+		auto path = resolvePath(data.c_str());
+		if(!checkFileAccess(cwd.c_str(), IFS::OpenFlag::Read)) {
 			break;
 		}
 		auto fs = getFileSystem();
@@ -296,8 +302,8 @@ void FtpServerConnection::onCommand(String cmd, String data)
 	}
 
 	case Command::DELE: {
-		String path = resolvePath(cwd, data);
-		if(!checkFileAccess(cwd, IFS::OpenFlag::Write | IFS::OpenFlag::Truncate)) {
+		String path = resolvePath(data.c_str());
+		if(!checkFileAccess(cwd.c_str(), IFS::OpenFlag::Write | IFS::OpenFlag::Truncate)) {
 			break;
 		}
 		auto fs = getFileSystem();
@@ -321,12 +327,12 @@ void FtpServerConnection::onCommand(String cmd, String data)
 			response(550, F("Rename FROM unspecified"));
 			break;
 		}
-		String pathFrom = resolvePath(cwd, renameFrom);
-		if(!checkFileAccess(pathFrom, IFS::OpenFlag::Write)) {
+		String pathFrom = resolvePath(renameFrom.c_str());
+		if(!checkFileAccess(pathFrom.c_str(), IFS::OpenFlag::Write)) {
 			break;
 		}
-		String pathTo = resolvePath(cwd, data);
-		if(!checkFileAccess(pathTo, IFS::OpenFlag::Write)) {
+		String pathTo = resolvePath(data.c_str());
+		if(!checkFileAccess(pathTo.c_str(), IFS::OpenFlag::Write)) {
 			break;
 		}
 		auto fs = getFileSystem();
@@ -340,16 +346,16 @@ void FtpServerConnection::onCommand(String cmd, String data)
 	}
 
 	case Command::RETR: {
-		String path = resolvePath(cwd, data);
-		if(checkFileAccess(path, IFS::OpenFlag::Read)) {
+		String path = resolvePath(data.c_str());
+		if(checkFileAccess(path.c_str(), IFS::OpenFlag::Read)) {
 			setDataConnection(new FtpDataRetrieve(*this, path));
 		}
 		break;
 	}
 
 	case Command::STOR: {
-		String path = resolvePath(cwd, data);
-		if(checkFileAccess(path, IFS::OpenFlag::Write)) {
+		String path = resolvePath(data.c_str());
+		if(checkFileAccess(path.c_str(), IFS::OpenFlag::Write)) {
 			setDataConnection(new FtpDataStore(*this, path));
 		}
 		break;
@@ -357,8 +363,8 @@ void FtpServerConnection::onCommand(String cmd, String data)
 
 	case Command::LIST:
 	case Command::NLST: {
-		String path = resolvePath(cwd, data);
-		if(checkFileAccess(path, IFS::OpenFlag::Read)) {
+		String path = resolvePath(data.c_str());
+		if(checkFileAccess(path.c_str(), IFS::OpenFlag::Read)) {
 			setDataConnection(new FtpDataFileList(*this, path, command == Command::NLST));
 		}
 		break;

@@ -36,7 +36,7 @@ public:
 	 * @param pass User password
 	 * @retval IFS::UserRole Returns assigned user role, None if user not validated
 	 */
-	virtual IFS::UserRole validateUser(const String& login, const String& pass) = 0;
+	virtual IFS::UserRole validateUser(const char* login, const char* pass) = 0;
 
 protected:
 	TcpConnection* createClient(tcp_pcb* clientTcp) override;
@@ -70,7 +70,7 @@ class FtpServer : public CustomFtpServer
 {
 public:
 	void addUser(const String& login, const String& pass, IFS::UserRole userRole = IFS::UserRole::Admin);
-	IFS::UserRole validateUser(const String& login, const String& pass) override;
+	IFS::UserRole validateUser(const char* login, const char* pass) override;
 
 	/**
 	 * @brief Legacy user validation
@@ -78,7 +78,7 @@ public:
 	 */
 	bool checkUser(const String& login, const String& pass) SMING_DEPRECATED
 	{
-		return validateUser(login, pass) != IFS::UserRole::None;
+		return validateUser(login.c_str(), pass.c_str()) != IFS::UserRole::None;
 	}
 
 protected:

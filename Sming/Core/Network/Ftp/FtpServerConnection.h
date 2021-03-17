@@ -31,7 +31,7 @@ class FtpServerConnection : public TcpConnection
 
 public:
 	struct User {
-		String name;
+		CString name;
 		IFS::UserRole role{};
 
 		bool isValid() const
@@ -65,16 +65,18 @@ protected:
 
 	void cmdPort(const String& data);
 	void setDataConnection(FtpDataStream* connection);
-	bool checkFileAccess(const String& filename, IFS::OpenFlags flags);
+	String resolvePath(const char* name);
+	bool checkFileAccess(const char* filename, IFS::OpenFlags flags);
 
 private:
 	CustomFtpServer& server;
 	User user{};
-	String renameFrom;
+	CString renameFrom;
 
 	IpAddress ip;
 	uint16_t port{20};
-	String cwd;
+	bool readyForData{false};
+	CString cwd;
 	FtpDataStream* dataConnection{nullptr};
 };
 
