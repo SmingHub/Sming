@@ -11,7 +11,6 @@
 #pragma once
 
 #include "FtpDataStream.h"
-#include "FileSystem.h"
 #include <DateTime.h>
 #include <SystemClock.h>
 
@@ -19,17 +18,29 @@ class FtpDataFileList : public FtpDataStream
 {
 public:
 	explicit FtpDataFileList(FtpServerConnection& connection, const String& path, bool namesOnly = false)
-		: FtpDataStream(connection), namesOnly(namesOnly)
+		: FtpDataStream(connection), dir(connection.getFileSystem()), namesOnly(namesOnly)
 	{
+		auto fs = dir.getFileSystem();
+		assert(fs != nullptr);
 		auto& stat = const_cast<FileStat&>(dir.stat());
-		if(fileStats(path, stat) == FS_OK && !stat.attr[FileAttribute::Directory]) {
-			isFile = true;
-		} else {
-			isFile = false;
-			dir.open(path);
+		auto err = fs->stat(path, stat);
+		if(err != FS_OK) {
+			completed = true;
+			return;
 		}
 
-		year = DateTime(SystemClock.now()).Year;
+		if(stat.attr[FileAttribute::Directory]) {
+			dir.open(path);
+			statValid = dir.next();
+		} else {
+			statValid = true;
+		}
+
+		if(SystemClock.isSet()) {
+			year = DateTime(SystemClock.now()).Year;
+		} else {
+			debug_w("[FTP] Warning: system clock hasn't been set!");
+		}
 	}
 
 	void transferData(TcpConnectionEvent sourceEvent) override
@@ -38,15 +49,18 @@ public:
 			return;
 		}
 
-		if(isFile) {
-			writeStat(dir.stat());
-			completed = true;
-			return;
-		}
-
-		if(dir.next()) {
-			writeStat(dir.stat());
-			return;
+		String line;
+		while(statValid) {
+			getStatLine(dir.stat(), line);
+			line += "\r\n";
+			if(line.length() > getAvailableWriteSize()) {
+				return;
+			}
+			int written = writeString(line);
+			if(written < 0) {
+				return;
+			}
+			statValid = dir.next();
 		}
 
 		debug_d("sent file list: %u", dir.count());
@@ -54,8 +68,9 @@ public:
 		finishTransfer();
 	}
 
-	void writeStat(const FileStat& stat)
+	void getStatLine(const FileStat& stat, String& line)
 	{
+		line.setLength(0);
 		if(!namesOnly) {
 			auto& user = control.getUser();
 			DateTime dt{stat.mtime};
@@ -66,15 +81,17 @@ public:
 			buf[0] = stat.attr[FileAttribute::Directory] ? 'd' : '-';
 			buf[1] = (user.role >= stat.acl.readAccess) ? 'r' : '-';
 			buf[2] = stat.attr[FileAttribute::ReadOnly] && (user.role >= stat.acl.writeAccess) ? 'w' : '-';
-			writeString(buf);
+			line = buf;
 		}
-		write(stat.name, stat.name.length);
-		write("\r\n", 2);
+		line.concat(stat.name, stat.name.length);
+		if(stat.attr[FileAttribute::Directory]) {
+			line += '/';
+		}
 	}
 
 private:
+	IFS::Directory dir;
 	uint16_t year;
-	Directory dir;
 	bool namesOnly;
-	bool isFile;
+	bool statValid;
 };

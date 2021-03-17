@@ -32,8 +32,11 @@ IFS::UserRole FtpServer::validateUser(const String& login, const String& pass)
 bool FtpServer::onCommand(String cmd, String data, FtpServerConnection& connection)
 {
 	if(cmd == _F("FSFORMAT")) {
-		int err = fileSystemFormat();
-		connection.response(200, F("File system format: ") + fileGetErrorString(err));
+		auto fs = connection.getFileSystem();
+		if(fs != nullptr) {
+			int err = fs->format();
+			connection.response(200, F("File system format: ") + fileGetErrorString(err));
+		}
 		return true;
 	}
 	return false;

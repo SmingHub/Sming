@@ -13,7 +13,7 @@
 #include "Network/TcpConnection.h"
 #include "IpAddress.h"
 #include "WString.h"
-#include <FileSystem.h>
+#include <IFS/FileSystem.h>
 
 /**
  * @defgroup ftp FTP
@@ -55,6 +55,9 @@ public:
 		return user;
 	}
 
+	// Get the active filesystem, send an error response if undefined
+	IFS::FileSystem* getFileSystem();
+
 	virtual void response(int code, String text = nullptr, char sep = ' ');
 
 protected:
@@ -62,7 +65,7 @@ protected:
 
 	void cmdPort(const String& data);
 	void createDataConnection(FtpDataStream* connection);
-	bool checkFileAccess(const String& filename, FileOpenFlags flags);
+	bool checkFileAccess(const String& filename, IFS::OpenFlags flags);
 
 private:
 	CustomFtpServer& server;

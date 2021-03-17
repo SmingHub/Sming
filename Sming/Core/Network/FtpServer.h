@@ -25,7 +25,7 @@ class CustomFtpServer : public TcpServer
 	friend class FtpServerConnection;
 
 public:
-	CustomFtpServer()
+	CustomFtpServer(IFS::IFileSystem* fileSystem = nullptr) : fileSystem(fileSystem)
 	{
 		setTimeOut(900);
 	}
@@ -52,6 +52,14 @@ protected:
 	{
 		return false;
 	}
+
+	IFS::FileSystem* getFileSystem() const
+	{
+		return fileSystem ? IFS::FileSystem::cast(fileSystem) : ::getFileSystem();
+	}
+
+private:
+	IFS::IFileSystem* fileSystem;
 };
 
 /** @defgroup   ftpserver FTP server

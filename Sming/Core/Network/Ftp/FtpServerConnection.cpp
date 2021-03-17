@@ -158,24 +158,38 @@ void FtpServerConnection::cmdPort(const String& data)
 	response(200);
 }
 
-bool FtpServerConnection::checkFileAccess(const String& filename, FileOpenFlags flags)
+IFS::FileSystem* FtpServerConnection::getFileSystem()
 {
+	auto fs = server.getFileSystem();
+	if(fs == nullptr) {
+		response(550, F("No active file system"));
+	}
+	return fs;
+}
+
+bool FtpServerConnection::checkFileAccess(const String& filename, IFS::OpenFlags flags)
+{
+	auto fs = getFileSystem();
+	if(fs == nullptr) {
+		return false;
+	}
+
 	FileStat stat;
-	int err = fileStats(filename, stat);
-	if(err == IFS::Error::NotFound && flags[FileOpenFlag::Write]) {
+	int err = fs->stat(filename, stat);
+	if(err == IFS::Error::NotFound && flags[IFS::OpenFlag::Write]) {
 		// File doesn't exist - check permissions on parent directory
 		String path;
 		int i = filename.lastIndexOf('/');
 		if(i > 0) {
 			path = filename.substring(0, i);
 		}
-		err = fileStats(path, stat);
+		err = fs->stat(path, stat);
 	}
 	if(err != FS_OK) {
 		response(550, fileGetErrorString(err)); // Not found / no access
 		return false;
 	}
-	if(flags[FileOpenFlag::Write]) {
+	if(flags[IFS::OpenFlag::Write]) {
 		if(stat.attr[FileAttribute::ReadOnly]) {
 			response(550, fileGetErrorString(IFS::Error::ReadOnly));
 		}
@@ -240,12 +254,12 @@ void FtpServerConnection::onCommand(String cmd, String data)
 	case Command::CWD:
 	case Command::XCWD: {
 		String path = resolvePath(cwd, data);
-		if(!checkFileAccess(path, FileOpenFlag::Read)) {
+		if(!checkFileAccess(path, IFS::OpenFlag::Read)) {
 			break;
 		}
 		debug_i("CWD: '%s'", path.c_str());
 		FileStat stat;
-		if(fileStats(path, stat) == FS_OK && stat.attr[FileAttribute::Directory]) {
+		if(getFileSystem()->stat(path, stat) == FS_OK && stat.attr[FileAttribute::Directory]) {
 			cwd = path;
 			response(250, F("directory changed to /") + cwd); // OK
 		} else {
@@ -267,25 +281,32 @@ void FtpServerConnection::onCommand(String cmd, String data)
 
 	case Command::SIZE: {
 		auto path = resolvePath(cwd, data);
-		if(!checkFileAccess(cwd, FileOpenFlag::Read)) {
+		if(!checkFileAccess(cwd, IFS::OpenFlag::Read)) {
 			break;
 		}
+		auto fs = getFileSystem();
 		FileStat stat;
-		if(fileStats(path, stat) == FS_OK) {
-			response(213, String(stat.size).c_str()); // File status
+		int err = fs->stat(path, stat);
+		if(err == FS_OK) {
+			response(213, String(stat.size)); // File status
 		} else {
-			response(550); // Not found / no access
+			response(550, fs->getErrorString(err)); // Not found / no access
 		}
 		break;
 	}
 
 	case Command::DELE: {
 		String path = resolvePath(cwd, data);
-		if(!checkFileAccess(cwd, FileOpenFlag::Write | FileOpenFlag::Truncate)) {
+		if(!checkFileAccess(cwd, IFS::OpenFlag::Write | IFS::OpenFlag::Truncate)) {
 			break;
 		}
-		int err = fileDelete(path);
-		response((err == FS_OK) ? 250 : 550);
+		auto fs = getFileSystem();
+		int err = fs->remove(path);
+		if(err == FS_OK) {
+			response(250);
+		} else {
+			response(550, getFileSystem()->getErrorString(err));
+		}
 		break;
 	}
 
@@ -297,29 +318,30 @@ void FtpServerConnection::onCommand(String cmd, String data)
 
 	case Command::RNTO: {
 		if(!renameFrom) {
-			response(550);
+			response(550, F("Rename FROM unspecified"));
 			break;
 		}
 		String pathFrom = resolvePath(cwd, renameFrom);
-		if(!checkFileAccess(pathFrom, FileOpenFlag::Write)) {
+		if(!checkFileAccess(pathFrom, IFS::OpenFlag::Write)) {
 			break;
 		}
 		String pathTo = resolvePath(cwd, data);
-		if(!checkFileAccess(pathTo, FileOpenFlag::Write)) {
+		if(!checkFileAccess(pathTo, IFS::OpenFlag::Write)) {
 			break;
 		}
-		int err = fileRename(pathFrom, pathTo);
+		auto fs = getFileSystem();
+		int err = fs->rename(pathFrom, pathTo);
 		if(err == FS_OK) {
 			response(250);
 		} else {
-			response(550, fileGetErrorString(err));
+			response(550, fs->getErrorString(err));
 		}
 		break;
 	}
 
 	case Command::RETR: {
 		String path = resolvePath(cwd, data);
-		if(checkFileAccess(path, FileOpenFlag::Read)) {
+		if(checkFileAccess(path, IFS::OpenFlag::Read)) {
 			createDataConnection(new FtpDataRetrieve(*this, path));
 		}
 		break;
@@ -327,7 +349,7 @@ void FtpServerConnection::onCommand(String cmd, String data)
 
 	case Command::STOR: {
 		String path = resolvePath(cwd, data);
-		if(checkFileAccess(path, FileOpenFlag::Write)) {
+		if(checkFileAccess(path, IFS::OpenFlag::Write)) {
 			createDataConnection(new FtpDataStore(*this, path));
 		}
 		break;
@@ -336,7 +358,7 @@ void FtpServerConnection::onCommand(String cmd, String data)
 	case Command::LIST:
 	case Command::NLST: {
 		String path = resolvePath(cwd, data);
-		if(checkFileAccess(path, FileOpenFlag::Read)) {
+		if(checkFileAccess(path, IFS::OpenFlag::Read)) {
 			createDataConnection(new FtpDataFileList(*this, path, command == Command::NLST));
 		}
 		break;
