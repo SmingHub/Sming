@@ -25,7 +25,12 @@ IMPORT_FSTR(certificateData, PROJECT_DIR "/files/certificate.pem.crt.der");
 struct UpdateState {
 	RbootOutputStream* stream{nullptr};
 	bool started{false};
+	size_t offset{0}; // The bytes used for encoding the version.
+	size_t version{0};
 };
+
+constexpr const uint8_t VERSION_NOT_READY = -1;
+constexpr const uint8_t VERSION_MAX_BYTES_ALLOWED = 24;
 
 Storage::Partition findRomPartition(uint8_t slot)
 {
@@ -52,6 +57,32 @@ void switchRom()
 	Serial.println("Restarting...\r\n");
 	System.restart();
 }
+
+#if ENABLE_VARINT_PATCH_VERSION
+int getPatchVersion(const char* buffer, int length, size_t& offset, size_t versionStart = 0)
+{
+	size_t version = versionStart;
+	offset = 0;
+	int useNextByte = 0;
+	do {
+		version += (buffer[offset] & 0x7f);
+		useNextByte = (buffer[offset++] & 0x80);
+	} while(useNextByte && (offset < length));
+
+	if(useNextByte) {
+		// all the data is consumed and we still don't have a version number?!
+		return VERSION_NOT_READY;
+	}
+
+	return version;
+}
+#else
+int getPatchVersion(const char* buffer, int length, size_t& offset, size_t versionStart = 0)
+{
+	offset = 1;
+	return buffer[0];
+}
+#endif
 
 void otaUpdate()
 {
@@ -136,22 +167,35 @@ void otaUpdate()
 			}
 
 			if(!updateState->started) {
+				size_t offset = 0;
+				int patchVersion = getPatchVersion(buffer, length, offset, updateState->version);
+				updateState->offset += offset;
+#if ENABLE_VARINT_PATCH_VERSION
+				if(patchVersion == VERSION_NOT_READY) {
+
+					if(updateState->offset > VERSION_MAX_BYTES_ALLOWED) {
+						debug_e("Invalid patch version.");
+						return -3; //
+					}
+					return 0;
+				}
+#endif
+
 				updateState->started = true;
-				if(message->common.length - 1 > part.size()) {
+				if(patchVersion < APP_VERSION_PATCH) {
+					// The update is not newer than our current patch version
+					return 0;
+				}
+
+				if(message->common.length - updateState->offset > part.size()) {
 					debug_e("The new rom is too big to fit!");
 					return -2;
 				}
 
-				uint8_t patchVersion = buffer[0];
-				if(patchVersion < APP_VERSION_PATCH) {
-					// The update is not newer than our patch version
-					return 0;
-				}
+				length -= offset;
+				buffer += offset;
 
-				updateState->started = true;
 				updateState->stream = new RbootOutputStream(part.address(), part.size());
-				buffer++;
-				length--;
 			}
 
 			auto rbootStream = static_cast<RbootOutputStream*>(updateState->stream);

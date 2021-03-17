@@ -1,11 +1,12 @@
 ## User configurable settings
 
 ENABLE_CLIENT_CERTIFICATE ?= 0
+ENABLE_VARINT_PATCH_VERSION ?=0
 
-CONFIG_VARS := ENABLE_SSL ENABLE_CLIENT_CERTIFICATE 
+CONFIG_VARS := MQTT_URL ENABLE_SSL ENABLE_CLIENT_CERTIFICATE ENABLE_VARINT_PATCH_VERSION
 
 # Application id
-APP_ID := "test"
+APP_ID ?= "test"
 
 # Application version: string containing only the major and minor version separated by comma
 # APP_VERSION := "1.2"
@@ -13,13 +14,15 @@ APP_ID := "test"
 # APP_VERSION_PATCH := 3
 
 # Firmware Update Server 
-MQTT_URL := "mqtt://test.mosquitto.org:1883"
-ifneq ($(ENABLE_SSL),)
-	ifneq ($(ENABLE_CLIENT_CERTIFICATE),0)
-		MQTT_URL := "mqtts://test.mosquitto.org:8884"
-	else
-		MQTT_URL := "mqtts://test.mosquitto.org:8883"
-	endif
+ifeq ($(MQTT_URL),)
+    MQTT_URL := "mqtt://test.mosquitto.org:1883"
+    ifneq ($(ENABLE_SSL),)
+    	ifneq ($(ENABLE_CLIENT_CERTIFICATE),0)
+    		MQTT_URL := "mqtts://test.mosquitto.org:8884"
+    	else
+    		MQTT_URL := "mqtts://test.mosquitto.org:8883"
+    	endif
+    endif
 endif
 
 ## End of user configurable settings. Don't change anything below this line
@@ -34,7 +37,8 @@ else
 	HWCONFIG := basic_rboot
 endif
 
-APP_CFLAGS = -DMQTT_URL="\"$(MQTT_URL)"\" -DAPP_ID="\"$(APP_ID)"\" -DENABLE_CLIENT_CERTIFICATE=$(ENABLE_CLIENT_CERTIFICATE)
+APP_CFLAGS = -DMQTT_URL="\"$(MQTT_URL)"\" -DAPP_ID="\"$(APP_ID)"\" -DENABLE_CLIENT_CERTIFICATE=$(ENABLE_CLIENT_CERTIFICATE) \
+			 -DENABLE_VARINT_PATCH_VERSION=$(ENABLE_VARINT_PATCH_VERSION)
 ifneq ($(APP_VERSION),)
 	APP_CFLAGS += -DAPP_VERSION="\"$(APP_VERSION)"\" -DAPP_VERSION_PATCH=$(APP_VERSION_PATCH)
 endif 

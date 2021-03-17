@@ -26,6 +26,9 @@ enough resources: memory, space on flash, power and time to complete such an upd
 Depending on the size of the new firmware and the speed of the connection an update can take 10 to 20 seconds.
 2) The application connects via MQTT to a remote server and subscribes to a special topic. The topic is based on the
 application id and its current version. If the current application version is 4.3.1 then the topic that will be used for OTA is "/a/test/u/4.3".
+2.1) If there is a need to support both stable and unstable/nightly builds then the topic name can have s or u suffix. For example
+all stable versions should be published and downloaded from the topic "/a/test/u/4.3/s". For the unstable ones we can use the topic "/a/test/u/4.3/u".
+If an application is interested in both then it can subscribe using the following pattern "/a/test/u/4.3/+".
 3) The application is waiting for new firmware. When the application is on battery than it makes sense to wait for a limited time and if there is no
 message coming back to disconnect.
 
@@ -47,3 +50,56 @@ For additional security a standard SSL/TLS can be used
 2) To prove that the server is the correct one: The MQTT clients should pin the public key fingerprint on the server.
 OR have a list of public key fingerprints that are allowed.
 3) To prove that the clients are allowed to connect: Every MQTT client should also have a client certificate that is signed by the server.
+
+
+Configuration and Security features
+-----------------------------------
+
+.. envvar:: APP_ID
+
+   Default: "test"
+
+   This variable contains the unique application name.
+
+.. envvar:: APP_VERSION
+
+   Default: not set
+
+   Contains the application major and minor versions separated by comma. Example "4.2".
+   If not set will use the current major and minor version from Sming.
+
+.. envvar::APP_VERSION_PATCH
+
+   Default: not set
+
+   Contains the application patch version as integer. For stable versions you can use 0 until 255.
+   For unstable versions the current timestamp can be used as a patch version.
+
+.. envvar:: ENABLE_VARINT_PATCH_VERSION
+
+   Default: 0 (disabled)
+
+   If set to 1 the OTA upgrade mechanism and application will use a `varint <https://developers.google.com/protocol-buffers/docs/encoding#varints>`_`
+   encoding for the patch version. Thus allowing unlimited number of patch versions. Useful for enumerating unstable/nightly releases.
+   A bit more difficult to read and write but allows for unlimited versions.
+
+   If set to 0 the OTA upgrade mechanism and application will use one byte for the patch version which will limit it to 256 possible patch versions.
+   Useful for enumarating stable releases. Easier to write and read but limited to 256 versions only.
+
+.. envvar:: ENABLE_SSL
+
+   Default: unset (disable)
+
+   If set to 1 (highly recommended), OTA upgrade files will be trasnferred securely over TLS/SSL.
+
+.. envvar:: ENABLE_CLIENT_CERTIFICATE
+
+   Default: 0 (disabled)
+
+   Used in combination with ``ENABLE_SSL``. Set to 1 if the remote server requires the application to authenticate via client certficate.
+
+.. envvar:: MQTT_URL
+
+   Default: depends on  ``ENABLE_SSL`` and ``ENABLE_CLIENT_CERTIFICATE`` values
+
+   Url containing the location of the firmware update MQTT server.
