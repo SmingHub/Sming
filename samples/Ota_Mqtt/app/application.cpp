@@ -79,16 +79,12 @@ void otaUpdate()
 		return;
 	}
 
-
 #ifdef ENABLE_SSL
 	mqtt.setSslInitHandler([](Ssl::Session& session) {
-		debug_i("Initialising SSL session for GRC");
-
-		// Use the Gibson Research fingerprints web page as an example. Unlike Google, these fingerprints change very infrequently.
-		static const Ssl::Fingerprint::Cert::Sha1 sha1Fingerprint PROGMEM = {
-			0xEE, 0xBC, 0x4B, 0xF8, 0x57, 0xE3, 0xD3, 0xE4, 0x07, 0x54,
-			0x23, 0x1E, 0xF0, 0xC8, 0xA1, 0x56, 0xE0, 0xD3, 0x1A, 0x1C
-		};
+		// These fingerprints change very frequently.
+		static const Ssl::Fingerprint::Cert::Sha1 sha1Fingerprint PROGMEM = {0xEE, 0xBC, 0x4B, 0xF8, 0x57, 0xE3, 0xD3,
+																			 0xE4, 0x07, 0x54, 0x23, 0x1E, 0xF0, 0xC8,
+																			 0xA1, 0x56, 0xE0, 0xD3, 0x1A, 0x1C};
 
 		// Trust certificate only if it matches the SHA1 fingerprint...
 		session.validators.pin(sha1Fingerprint);
@@ -104,7 +100,6 @@ void otaUpdate()
 		session.cipherSuites = &Ssl::CipherSuites::full;
 	});
 #endif
-
 
 	mqtt.connect(Url(MQTT_URL), "sming");
 	mqtt.setPayloadParser(
