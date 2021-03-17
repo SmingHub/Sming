@@ -7,9 +7,14 @@ from rjsmin import jsmin
 from common import *
 from builtins import classmethod
 
+def get_config_dirs():
+    s = os.environ['HWCONFIG_DIRS']
+    dirs = s.replace('  ', ' ').split(' ')
+    return dirs
+
 def load_option_library():
     library = {}
-    dirs = os.environ['HWCONFIG_DIRS'].split(' ')
+    dirs = get_config_dirs()
     for d in dirs:
         filename = fixpath(d) + '/options.json'
         if os.path.exists(filename):
@@ -19,7 +24,7 @@ def load_option_library():
     return library
 
 def findConfig(name):
-    dirs = os.environ['HWCONFIG_DIRS'].split(' ')
+    dirs = get_config_dirs()
     for d in dirs:
         path = fixpath(d) + '/' + name + '.hw'
         if os.path.exists(path):
