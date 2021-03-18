@@ -36,8 +36,15 @@ class Editor:
         f = ttk.LabelFrame(self.main, text = 'Base Configuration')
         f.grid(row=1, column=0, sticky=tk.W)
 
+        def base_config_changed(*args):
+            self.json['base_config'] = self.base_config.get()
+            self.reload()
+
         self.base_config = tk.StringVar(value = 'standard')
-        config_list = ttk.Combobox(f, textvariable = self.base_config, values = list(get_config_list().keys()))
+        config_list = ttk.Combobox(f,
+            textvariable = self.base_config,
+            values = list(get_config_list().keys()))
+        config_list.bind('<<ComboboxSelected>>', base_config_changed)
         config_list.grid()
 
         # Option checkboxes
@@ -59,9 +66,9 @@ class Editor:
                 command=options_changed, variable=self.options[k])
             btn.grid(sticky=tk.W)
 
-        # Status label
-        status = ttk.Label(self.main, text='-')
-        status.grid(row=1, column=1, rowspan=2, sticky=tk.W)
+        # Selection label
+        selection = ttk.Label(self.main, text='-')
+        selection.grid(row=1, column=1, rowspan=2, sticky=tk.W)
         def select(*args):
             id = tree.focus()
             item = tree.item(id)
@@ -73,21 +80,38 @@ class Editor:
                 addr = item['values'][0]
                 part = self.config.map().find_by_address(dev, addr)
                 s = 'Partition: ' + part.to_json()
-            status.configure(text=s)
+            selection.configure(text=s)
         tree.bind('<<TreeviewSelect>>', select)
+
+        # Status box
+        self.status = tk.StringVar()
+        status = ttk.Label(self.main, textvariable=self.status)
+        status.grid(row=3, column=0, columnspan=3, sticky=tk.EW)
 
 
     def loadConfig(self, config_name):
         filename = find_config(config_name)
         with open(filename) as f:
             self.json = json.loads(jsmin(f.read()))
+        if not hasattr(self.json, 'options'):
+            self.json['options'] = []
+        options = self.json['options']
+        for opt in os.environ.get('HWCONFIG_OPTS', '').replace(' ', '').split():
+            critical("options = '%s'" % opt)
+            if not opt in options:
+                options.append(opt)
         self.reload()
 
 
     def reload(self):
-        tree = self.tree
+        self.status.set('')
+        try:
+            self.config = Config.from_json(self.json)
+        except InputError as err:
+            self.status.set(str(err))
+            return
 
-        self.config = Config.from_json(self.json)
+        tree = self.tree
         config = self.config
 
         for c in tree.get_children():

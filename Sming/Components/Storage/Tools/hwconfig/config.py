@@ -72,11 +72,6 @@ class Config(object):
         config.parse_dict(copy.deepcopy(json))
         config.resolve_expressions()
         config.partitions.sort()
-        options = os.environ.get('HWCONFIG_OPTS', '').replace(' ', '')
-        if options != '':
-            config.parse_options(options.split(','))
-        config.resolve_expressions()
-        config.partitions.sort()
         return config
 
     def load(self, name):
