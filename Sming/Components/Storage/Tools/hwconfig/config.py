@@ -31,7 +31,6 @@ def get_config_list():
             if f.endswith('.hw'):
                 n = os.path.splitext(f)[0]
                 list[n] = d + '/' + f
-                critical(list[n])
     return list
 
 def findConfig(name):
