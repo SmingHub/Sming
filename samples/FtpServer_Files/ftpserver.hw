@@ -1,0 +1,26 @@
+{
+    "name": "FTP Server sample",
+    "base_config": "standard",
+    "partitions": {
+        "rom0": {
+            "size": "480K"
+        },
+        "spiffs0": {
+            "type": "data",
+            "subtype": "spiffs",
+            "address": "0x80000",
+            "size": "0x20000"
+        },
+        "fwfs1": {
+            "address": "0xA0000",
+            "size": "330K",
+            "type": "data",
+            "subtype": "fwfs",
+            "filename": "out/fwfs1.bin",
+            "build": {
+                "target": "fwfs-build",
+                "config": "fsimage.fwfs"
+            }
+        }
+    }
+}

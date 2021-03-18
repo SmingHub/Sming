@@ -357,9 +357,9 @@ inline int fileRename(const String& oldName, const String& newName)
 /** @brief  Get list of files on file system
  *  @retval Vector<String> Vector of strings.
             Each string element contains the name of a file on the file system
-    @deprecated use fileOpenDir / fileReadDir / fileCloseDir
+    @deprecated use `Directory` object (or fileOpenDir / fileReadDir / fileCloseDir)
  */
-Vector<String> fileList();
+Vector<String> fileList() SMING_DEPRECATED;
 
 /** @brief  Read content of a file
  *  @param  fileName Name of file to read from

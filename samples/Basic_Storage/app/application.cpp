@@ -32,12 +32,14 @@ void listSpiffsPartitions()
 		bool ok = spiffs_mount(*it);
 		Serial.println(ok ? "OK, listing files:" : "Mount failed!");
 		if(ok) {
-			auto list = fileList();
-			for(auto& f : fileList()) {
-				Serial.print("  ");
-				Serial.println(f);
+			Directory dir;
+			if(dir.open()) {
+				while(dir.next()) {
+					Serial.print("  ");
+					Serial.println(dir.stat().name);
+				}
 			}
-			Serial.print(list.count());
+			Serial.print(dir.count());
 			Serial.println(F(" files found"));
 			Serial.println();
 		}

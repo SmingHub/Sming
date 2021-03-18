@@ -8,10 +8,6 @@
  *
  ****/
 
-/** @defgroup   networking Networking
- *  @{
- */
-
 #pragma once
 
 #ifdef ARCH_ESP8266
@@ -23,32 +19,31 @@
 struct pbuf;
 class String;
 
-class NetUtils
+/** @defgroup   networking Networking
+ *  @{
+ */
+
+namespace NetUtils
 {
-public:
-	// Helpers
-	static bool pbufIsStrEqual(const pbuf* buf, const char* compared, unsigned startPos);
-	static int pbufFindChar(const pbuf* buf, char wtf, unsigned startPos = 0);
-	static int pbufFindStr(const pbuf* buf, const char* wtf, unsigned startPos = 0);
-	static char* pbufAllocateStrCopy(const pbuf* buf, unsigned startPos, unsigned length);
-	static String pbufStrCopy(const pbuf* buf, unsigned startPos, unsigned length);
+// Helpers
+bool pbufIsStrEqual(const pbuf* buf, const char* compared, unsigned startPos);
+int pbufFindChar(const pbuf* buf, char wtf, unsigned startPos = 0);
+int pbufFindStr(const pbuf* buf, const char* wtf, unsigned startPos = 0);
+char* pbufAllocateStrCopy(const pbuf* buf, unsigned startPos, unsigned length);
+String pbufStrCopy(const pbuf* buf, unsigned startPos, unsigned length);
 
 #ifdef FIX_NETWORK_ROUTING
-	static bool FixNetworkRouting();
+bool FixNetworkRouting();
 #else
-	static bool FixNetworkRouting()
-	{
-		return true; // Should work on standard lwip
-	}
+inline bool FixNetworkRouting()
+{
+	return true; // Should work on standard lwip
+}
 #endif
 
-	// Debug
-	static void debugPrintTcpList();
+// Debug
+void debugPrintTcpList();
 
-private:
-#ifdef FIX_NETWORK_ROUTING
-	static bool ipClientRoutingFixed;
-#endif
-};
+}; // namespace NetUtils
 
 /** @} */
