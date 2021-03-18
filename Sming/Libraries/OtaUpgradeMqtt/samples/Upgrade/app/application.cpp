@@ -1,5 +1,11 @@
 #include <SmingCore.h>
-#include <Data/Stream/RbootOutputStream.h>
+#include <rboot-api.h>
+#include <Storage/Partition.h>
+#include <OtaUpgrade/Mqtt/RbootPayloadParser.h>
+
+#if ENABLE_OTA_ADVANCED
+#include <OtaUpgrade/Mqtt/AdvancedPayloadParser.h>
+#endif
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -22,16 +28,6 @@ IMPORT_FSTR(privateKeyData, PROJECT_DIR "/files/private.pem.key.der");
 IMPORT_FSTR(certificateData, PROJECT_DIR "/files/certificate.pem.crt.der");
 #endif
 
-struct UpdateState {
-	RbootOutputStream* stream{nullptr};
-	bool started{false};
-	size_t offset{0}; // The bytes used for encoding the version.
-	size_t version{0};
-};
-
-constexpr const uint8_t VERSION_NOT_READY = -1;
-constexpr const uint8_t VERSION_MAX_BYTES_ALLOWED = 24;
-
 Storage::Partition findRomPartition(uint8_t slot)
 {
 	String name = F("rom");
@@ -42,47 +38,6 @@ Storage::Partition findRomPartition(uint8_t slot)
 	}
 	return part;
 }
-
-void switchRom()
-{
-	uint8 before, after;
-	before = rboot_get_current_rom();
-	if(before == 0) {
-		after = 1;
-	} else {
-		after = 0;
-	}
-	Serial.printf("Swapping from rom %d to rom %d.\r\n", before, after);
-	rboot_set_current_rom(after);
-	Serial.println("Restarting...\r\n");
-	System.restart();
-}
-
-#if ENABLE_VARINT_PATCH_VERSION
-int getPatchVersion(const char* buffer, int length, size_t& offset, size_t versionStart = 0)
-{
-	size_t version = versionStart;
-	offset = 0;
-	int useNextByte = 0;
-	do {
-		version += (buffer[offset] & 0x7f);
-		useNextByte = (buffer[offset++] & 0x80);
-	} while(useNextByte && (offset < length));
-
-	if(useNextByte) {
-		// all the data is consumed and we still don't have a version number?!
-		return VERSION_NOT_READY;
-	}
-
-	return version;
-}
-#else
-int getPatchVersion(const char* buffer, int length, size_t& offset, size_t versionStart = 0)
-{
-	offset = 1;
-	return buffer[0];
-}
-#endif
 
 void otaUpdate()
 {
@@ -133,79 +88,23 @@ void otaUpdate()
 #endif
 
 	mqtt.connect(Url(MQTT_URL), "sming");
-	mqtt.setPayloadParser(
-		[part](MqttPayloadParserState& state, mqtt_message_t* message, const char* buffer, int length) -> int {
-			if(message == nullptr) {
-				debug_e("Invalid MQTT message");
-				return 1;
-			}
 
-			if(length == MQTT_PAYLOAD_PARSER_START) {
-				UpdateState* updateState = new UpdateState();
-				updateState->stream = nullptr;
-				updateState->started = false;
-
-				state.offset = 0;
-				state.userData = updateState;
-				return 0;
-			}
-
-			auto updateState = static_cast<UpdateState*>(state.userData);
-			if(updateState == nullptr) {
-				debug_e("Update failed for unknown reason!");
-				return -1;
-			}
-
-			if(length == MQTT_PAYLOAD_PARSER_END) {
-				bool skip = (updateState->stream == nullptr);
-				if(!skip) {
-					delete updateState->stream;
-					switchRom();
-				}
-
-				return 0;
-			}
-
-			if(!updateState->started) {
-				size_t offset = 0;
-				int patchVersion = getPatchVersion(buffer, length, offset, updateState->version);
-				updateState->offset += offset;
-#if ENABLE_VARINT_PATCH_VERSION
-				if(patchVersion == VERSION_NOT_READY) {
-
-					if(updateState->offset > VERSION_MAX_BYTES_ALLOWED) {
-						debug_e("Invalid patch version.");
-						return -3; //
-					}
-					return 0;
-				}
+#if ENABLE_OTA_ADVANCED
+	/**
+	 * The advanced parser suppors all firmware upgrades supported by the `OtaUpgrade` library.
+	 * It comes with firmware signing, firmware encryption and so on.
+	 */
+	auto parser = new OtaUpgrade::Mqtt::AdvancedPayloadParser(APP_VERSION_PATCH);
+#else
+	/**
+	 * The command below uses class that stores the firmware directly
+	 * using RbootOutputStream on a location provided by us
+	 */
+	auto parser = new OtaUpgrade::Mqtt::RbootPayloadParser(part, APP_VERSION_PATCH);
 #endif
 
-				updateState->started = true;
-				if(patchVersion < APP_VERSION_PATCH) {
-					// The update is not newer than our current patch version
-					return 0;
-				}
-
-				if(message->common.length - updateState->offset > part.size()) {
-					debug_e("The new rom is too big to fit!");
-					return -2;
-				}
-
-				length -= offset;
-				buffer += offset;
-
-				updateState->stream = new RbootOutputStream(part.address(), part.size());
-			}
-
-			auto rbootStream = static_cast<RbootOutputStream*>(updateState->stream);
-			if(rbootStream == nullptr) {
-				return 0;
-			}
-
-			auto written = rbootStream->write(reinterpret_cast<const uint8_t*>(buffer), length);
-			return (written - length);
-		});
+	mqtt.setPayloadParser([parser](MqttPayloadParserState& state, mqtt_message_t* message, const char* buffer,
+								   int length) -> int { return parser->parse(state, message, buffer, length); });
 
 	String updateTopic = "/a/";
 	updateTopic += APP_ID;
