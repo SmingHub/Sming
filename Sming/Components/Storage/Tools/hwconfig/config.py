@@ -33,7 +33,7 @@ def get_config_list():
                 list[n] = d + '/' + f
     return list
 
-def findConfig(name):
+def find_config(name):
     dirs = get_config_dirs()
     for d in dirs:
         path = fixpath(d) + '/' + name + '.hw'
@@ -58,8 +58,21 @@ class Config(object):
         """Create configuration given its name and resolve options
         """
         config = Config()
-        options = os.environ.get('HWCONFIG_OPTS', '').replace(' ', '')
         config.load(name)
+        options = os.environ.get('HWCONFIG_OPTS', '').replace(' ', '')
+        if options != '':
+            config.parse_options(options.split(','))
+        config.resolve_expressions()
+        config.partitions.sort()
+        return config
+
+    @classmethod
+    def from_json(cls, json):
+        config = Config()
+        config.parse_dict(copy.deepcopy(json))
+        config.resolve_expressions()
+        config.partitions.sort()
+        options = os.environ.get('HWCONFIG_OPTS', '').replace(' ', '')
         if options != '':
             config.parse_options(options.split(','))
         config.resolve_expressions()
@@ -69,7 +82,7 @@ class Config(object):
     def load(self, name):
         """Load a configuration recursively
         """
-        filename = findConfig(name)
+        filename = find_config(name)
         self.depends.append(filename)
         with open(filename) as f:
             data = json.loads(jsmin(f.read()))
