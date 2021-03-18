@@ -39,9 +39,10 @@ HWCONFIG_CMDLINE	:= $(PYTHON) $(PARTITION_TOOLS)/hwconfig
 HWCONFIG_TOOL		:= $(HWCONFIG_EXPORTS) $(HWCONFIG_CMDLINE)/hwconfig.py
 
 ifdef WSL_ROOT
-# WSLENV := $(WSLENV)$(foreach v,$(HWCONFIG_VARS),::$v)
-WSLENV := $(WSLENV)::HWCONFIG_DIRS::HWCONFIG_OPTS
-HWCONFIG_EDITOR		:= powershell.exe -Command "$(HWCONFIG_CMDLINE)/editor.py $(HWCONFIG)"
+space :=
+space +=
+WSLENV := $(WSLENV)$(subst $(space),,$(foreach v,$(HWCONFIG_VARS),::$v))
+HWCONFIG_EDITOR		:= $(HWCONFIG_EXPORTS) powershell.exe -Command "$(HWCONFIG_CMDLINE)/editor.py $(HWCONFIG)"
 else
 HWCONFIG_EDITOR		:= $(HWCONFIG_EXPORTS) $(HWCONFIG_CMDLINE)/editor.py $(HWCONFIG)
 endif
