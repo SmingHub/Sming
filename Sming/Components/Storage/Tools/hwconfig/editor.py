@@ -1,6 +1,6 @@
 import common, argparse, os, partition
 from common import *
-from config import Config
+from config import *
 import tkinter as tk
 from tkinter import ttk
 
@@ -14,7 +14,6 @@ class Editor:
     def setConfig(self, config):
         self.config = config
 
-        critical("SCHEMA = '%s'" % os.environ['HWCONFIG_SCHEMA'])
         with open(os.environ['HWCONFIG_SCHEMA']) as f:
             self.schema = json.load(f)
 
@@ -46,16 +45,24 @@ class Editor:
         tree.tag_configure('device', font='+1')
         # tree.tag_configure('normal', font='+1')
 
+        # Base configurations
+        f = ttk.LabelFrame(self.main, text = 'Base Configuration')
+        f.grid(row=1, column=0, sticky=tk.W)
+
+        self.base_config = tk.StringVar(value = config.base_config)
+        config_list = ttk.Combobox(f, textvariable = self.base_config, values = list(get_config_list().keys()))
+        config_list.grid()
+
         # Option checkboxes
 
-        f = ttk.Frame(self.main)
-        f.grid(row=1, column=0, sticky=tk.W)
+        f = ttk.LabelFrame(self.main, text = 'Options')
+        f.grid(row=2, column=0, sticky=tk.W)
 
         def toggle_option(*args):
             critical("Do something... %s" % str(args))
 
         self.options = {}
-        for k, v in self.config.option_library.items():
+        for k, v in load_option_library().items():
             self.options[k] = tk.BooleanVar(value = k in self.config.options)
             btn = tk.Checkbutton(f, text = k + ': ' + v['description'],
                 command=toggle_option, variable=self.options[k])
@@ -71,7 +78,7 @@ class Editor:
 
         # Status label
         status = ttk.Label(self.main, text='-')
-        status.grid(row=1, column=1, sticky=tk.W)
+        status.grid(row=1, column=1, rowspan=2, sticky=tk.W)
         def select(*args):
             id = tree.focus()
             item = tree.item(id)
