@@ -9,11 +9,28 @@ class Editor:
         root.title('Sming Hardware Profile Editor')
         root.columnconfigure(0, weight=1)
         root.rowconfigure(0, weight=1)
+        root.option_add('*tearOff', False)
         self.main = root
 
     def initialise(self):
         with open(os.environ['HWCONFIG_SCHEMA']) as f:
             self.schema = json.load(f)
+
+        # Menus
+        def newFile(*args):
+            critical('newFile')
+            self.reset()
+            self.reload()
+        def openFile(*args):
+            critical('openFile')
+        menubar = tk.Menu(self.main)
+        self.main['menu'] = menubar
+        menu_file = tk.Menu(menubar)
+        menubar.add_cascade(menu=menu_file, label='File')
+        menu_file.add_command(label='New...', command=newFile)
+        menu_file.add_command(label='Open...', command=openFile)
+
+        # Treeview for devices and partitions
 
         tree = ttk.Treeview(self.main, columns=['address', 'size', 'type', 'subtype', 'filename'])
         tree.grid(row=0, column=0, columnspan=2, sticky=tk.NSEW)
@@ -88,8 +105,11 @@ class Editor:
         status = ttk.Label(self.main, textvariable=self.status)
         status.grid(row=3, column=0, columnspan=3, sticky=tk.EW)
 
+        self.reset()
+
 
     def loadConfig(self, config_name):
+        self.reset()
         filename = find_config(config_name)
         with open(filename) as f:
             self.json = json.loads(jsmin(f.read()))
@@ -97,35 +117,45 @@ class Editor:
             self.json['options'] = []
         options = self.json['options']
         for opt in os.environ.get('HWCONFIG_OPTS', '').replace(' ', '').split():
-            critical("options = '%s'" % opt)
             if not opt in options:
                 options.append(opt)
         self.reload()
 
+    def clear(self):
+        # TODO: Prompt to save changes
+
+        # Clear the tree, etc.
+        for c in self.tree.get_children():
+            self.tree.delete(c)
+        self.status.set('')
+
+    def reset(self):
+        self.clear()
+        self.json = {}
+        self.json['base_config'] = 'standard'
+        self.base_config.set('standard')
+        for k, v in self.options.items():
+            v.set(False)
 
     def reload(self):
-        self.status.set('')
+        self.clear()
         try:
             self.config = Config.from_json(self.json)
         except InputError as err:
             self.status.set(str(err))
             return
 
-        tree = self.tree
         config = self.config
-
-        for c in tree.get_children():
-            tree.delete(c)
 
         # Devices are our root nodes
         for dev in config.devices:
-            tree.insert('', 'end', dev.name, text=dev.name, open=True,
+            self.tree.insert('', 'end', dev.name, text=dev.name, open=True,
                 tags = ['device'],
                 values=['', dev.size_str(), dev.type_str()])
 
         # Partitions are children
         for p in config.map():
-            tree.insert(p.device.name, 'end', text=p.name if p.name != '(unused)' else '',
+            self.tree.insert(p.device.name, 'end', text=p.name if p.name != '(unused)' else '',
                 tags = ['unused' if p.type == 0xff else 'normal'],
                 values=[p.address_str(), p.size_str(), p.type_str(), p.subtype_str(), p.filename])
 
