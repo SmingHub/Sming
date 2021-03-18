@@ -29,9 +29,11 @@ endif
 
 PARTITION_PATH		:= $(COMPONENT_PATH)
 PARTITION_TOOLS		:= $(PARTITION_PATH)/Tools
+HWCONFIG_SCHEMA		:= $(PARTITION_PATH)/schema.json
 HWCONFIG_VARS := \
 	HWCONFIG_DIRS \
-	HWCONFIG_OPTS
+	HWCONFIG_OPTS \
+	HWCONFIG_SCHEMA
 HWCONFIG_EXPORTS	:= $(foreach v,$(HWCONFIG_VARS),$v="$($v)")
 HWCONFIG_CMDLINE	:= $(PYTHON) $(PARTITION_TOOLS)/hwconfig
 HWCONFIG_TOOL		:= $(HWCONFIG_EXPORTS) $(HWCONFIG_CMDLINE)/hwconfig.py
@@ -103,7 +105,7 @@ hwconfig-options: ##List available hardware configuration options
 .PHONY: hwconfig-validate
 hwconfig-validate: $(HWCONFIG_PATH) ##Validate current hardware configuration
 	@echo "Validating hardware config '$(HWCONFIG)'"
-	$(Q) $(HWCONFIG_TOOL) validate $(HWCONFIG) - $(PARTITION_PATH)/schema.json
+	$(Q) $(HWCONFIG_TOOL) validate $(HWCONFIG) -
 
 .PHONY: hwconfig-edit
 hwconfig-edit: $(HWCONFIG_PATH) ##Open profile editor
