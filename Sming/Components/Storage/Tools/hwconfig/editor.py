@@ -12,6 +12,14 @@ def read_property(obj, name):
     value = getattr(obj, name + '_str', None)
     return getattr(obj, name, '') if value is None else value()
 
+
+def get_dict_value(dict, key, default):
+    """Read dictionary value, creating one if it doesn't exist
+    """
+    if not key in dict:
+        dict[key] = default
+    return dict[key]
+
 class Editor:
     def __init__(self, root):
         root.title(app_name)
@@ -208,6 +216,7 @@ class Editor:
         schema = self.schema['definitions']['Device']
         f.configure(text=schema['title'])
         self.edit = {}
+        self.edit_device = dev.name
         i = 0
         for k, v in schema['properties'].items():
             self.edit[k] = tk.StringVar(value=read_property(dev, k))
@@ -233,6 +242,7 @@ class Editor:
         schema = self.schema['definitions']['Partition']
         f.configure(text=schema['title'])
         self.edit = {}
+        self.edit_partition = part.name
         i = 0
         for k, v in schema['properties'].items():
             self.edit[k] = tk.StringVar(value=read_property(part, k))
@@ -259,6 +269,19 @@ class Editor:
                 c.configure(textvariable=self.edit[k])
             c.grid(row=i, column=1, sticky=tk.EW)
             i += 1
+
+        def update(*args):
+            partitions = get_dict_value(self.json, 'partitions', {})
+            part = get_dict_value(partitions, self.edit_partition, {})
+            try:
+                for k, v in self.edit.items():
+                    part[k] = v.get()
+            except AttributeError as err:
+                self.status.set(err)
+            self.reload()
+
+        btn = ttk.Button(f, text="Update", command=update)
+        btn.grid(row=i, column=0, columnspan=2)
 
 
 def main():
