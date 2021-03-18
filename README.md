@@ -68,7 +68,7 @@ Please note Version 4 documentation is at [sming.readthedocs.io](https://sming.r
     * With clients supporting: HTTP, MQTT, WebSockets and SMTP.
     * And servers for: DNS, FTP, HTTP(+ WebSockets), Telnet.
     * With [SSL support](https://sming.readthedocs.io/en/latest/_inc/Sming/Components/ssl/index.html) for all network clients and servers. Based on [axTLS](http://axtls.sourceforge.net/) and [BearSSL](https://www.bearssl.org/).
-    * Out of the box support for OTA over HTTPS.
+    * Over-The-Air(OTA) firmware upgrades via HTTP(S) and MQTT(S).
 * ESP8266 specific features.
     * Integrated boot loader [rboot](https://sming.readthedocs.io/en/latest/_inc/Sming/Components/rboot/index.html) with support for 1MB ROMs, OTA firmware updating and ROM switching.
     * [Crash handlers](https://sming.readthedocs.io/en/latest/information/debugging.html) for analyzing/handling system restarts due to fatal errors or WDT resets.
