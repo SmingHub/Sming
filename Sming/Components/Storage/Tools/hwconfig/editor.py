@@ -7,29 +7,24 @@ from tkinter import ttk
 class Editor:
     def __init__(self, root):
         root.title('Sming Hardware Profile Editor')
-        self.main = ttk.Frame(root)
-        self.main.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        # self.createWidgets()
-
-    def createWidgets(self):
-        quitButton = tk.Button(self.main, text='Quit', command=self.main.quit)
-        quitButton.pack()
+        root.columnconfigure(0, weight=1)
+        root.rowconfigure(0, weight=1)
+        self.main = root
 
     def setConfig(self, config):
         self.config = config
 
-        # Frame to contain treeview plus vertical scrollbar
-        f = ttk.Frame(self.main)
-        f.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        critical("SCHEMA = '%s'" % os.environ['HWCONFIG_SCHEMA'])
+        with open(os.environ['HWCONFIG_SCHEMA']) as f:
+            self.schema = json.load(f)
 
-        tree = ttk.Treeview(f, columns=['address', 'size', 'type', 'subtype', 'filename'])
-        tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        tree = ttk.Treeview(self.main, columns=['address', 'size', 'type', 'subtype', 'filename'])
+        tree.grid(row=0, column=0, columnspan=2, sticky=tk.NSEW)
 
-        s = ttk.Scrollbar(f, orient=tk.VERTICAL, command=tree.yview)
-        s.pack(side=tk.RIGHT, fill=tk.Y, expand=True)
+        s = ttk.Scrollbar(self.main, orient=tk.VERTICAL, command=tree.yview)
+        s.grid(row=0, column=2, sticky=tk.NS)
         tree['yscrollcommand'] = s.set
 
-        # tree.heading('#0', text='Device / Partition Name')
         tree.heading('address', text='Address')
         tree.heading('size', text='Size')
         tree.heading('type', text='Type')
@@ -44,13 +39,28 @@ class Editor:
 
         # Partitions are children
         for p in config.map():
-            # id = p.device.name + '/' + p.address_str()
             tree.insert(p.device.name, 'end', text=p.name if p.name != '(unused)' else '',
                 tags = ['unused' if p.type == 0xff else 'normal'],
                 values=[p.address_str(), p.size_str(), p.type_str(), p.subtype_str(), p.filename])
 
         tree.tag_configure('device', font='+1')
         # tree.tag_configure('normal', font='+1')
+
+        # Option checkboxes
+
+        f = ttk.Frame(self.main)
+        f.grid(row=1, column=0, sticky=tk.W)
+
+        def toggle_option(*args):
+            critical("Do something... %s" % str(args))
+
+        self.options = {}
+        for k, v in self.config.option_library.items():
+            self.options[k] = tk.BooleanVar(value = k in self.config.options)
+            btn = tk.Checkbutton(f, text = k + ': ' + v['description'],
+                command=toggle_option, variable=self.options[k])
+            btn.grid(sticky=tk.W)
+
 
         def device_from_id(id):
             item = tree.item(id)
@@ -61,7 +71,7 @@ class Editor:
 
         # Status label
         status = ttk.Label(self.main, text='-')
-        status.pack(side=tk.BOTTOM, fill=tk.X, expand=True)
+        status.grid(row=1, column=1, sticky=tk.W)
         def select(*args):
             id = tree.focus()
             item = tree.item(id)
@@ -75,19 +85,6 @@ class Editor:
                 s = 'Partition: ' + part.to_json()
             status.configure(text=s)
         tree.bind('<<TreeviewSelect>>', select)
-
-        self.options = {}
-
-        def toggle_option(*args):
-            critical("Do something... %s" % str(args))
-
-        # Option checkboxes
-        for k, v in self.config.option_library.items():
-            self.options[k] = tk.BooleanVar(value = k in self.config.options)
-            btn = tk.Checkbutton(self.main, text = k + ': ' + v['description'],
-                command=toggle_option, variable=self.options[k])
-            btn.pack(side=tk.BOTTOM, fill=tk.X)
-
 
 
 def main():
