@@ -6,9 +6,16 @@ from tkinter import ttk
 
 app_name = 'Sming Hardware Profile Editor'
 
+def read_property(obj, name):
+    """Read an object property, preferring string representation
+    """
+    value = getattr(obj, name + '_str', None)
+    return getattr(obj, name, '') if value is None else value()
+
 class Editor:
     def __init__(self, root):
         root.title(app_name)
+        # Window resizing is focused around treeview @ (0, 0)
         root.columnconfigure(0, weight=1)
         root.rowconfigure(0, weight=1)
         root.option_add('*tearOff', False)
@@ -88,22 +95,25 @@ class Editor:
                 command=options_changed, variable=self.options[k])
             btn.grid(sticky=tk.W)
 
-        # Selection label
-        selection = ttk.Label(self.main, text='-')
-        selection.grid(row=1, column=1, rowspan=2, sticky=tk.W)
+        # Selection handling
         def select(*args):
             id = tree.focus()
             item = tree.item(id)
             if 'device' in item['tags']:
                 dev = self.device_from_id(id)
                 s = 'Device: ' + dev.to_json()
+                self.editDevice(dev)
             else:
                 dev = self.device_from_id(tree.parent(id))
                 addr = item['values'][0]
                 part = self.config.map().find_by_address(dev, addr)
                 s = 'Partition: ' + part.to_json()
-            selection.configure(text=s)
+                self.editPartition(part)
         tree.bind('<<TreeviewSelect>>', select)
+
+        # Edit frame
+        self.editFrame = ttk.LabelFrame(self.main, text='Edit Object')
+        self.editFrame.grid(row=1, column=1, rowspan=2, sticky=tk.EW)
 
         # Status box
         self.status = tk.StringVar()
@@ -190,6 +200,65 @@ class Editor:
             return self.config.devices.find_by_name(item['text'])
         else:
             return None
+
+    def editDevice(self, dev):
+        f = self.editFrame
+        for c in f.winfo_children():
+            c.destroy()
+        schema = self.schema['definitions']['Device']
+        f.configure(text=schema['title'])
+        self.edit = {}
+        i = 0
+        for k, v in schema['properties'].items():
+            self.edit[k] = tk.StringVar(value=read_property(dev, k))
+            l = tk.Label(f, text=k)
+            l.grid(row=i, column=0, sticky=tk.W)
+            if k == 'type':
+                c = ttk.Combobox(f, values=list((storage.TYPES).keys()))
+            elif 'enum' in v:
+                c = ttk.Combobox(f, values=v['enum'])
+            else:
+                c = tk.Entry(f)
+            c.configure(textvariable=self.edit[k])
+            c.grid(row=i, column=1, sticky=tk.EW)
+            i += 1
+
+    def editPartition(self, part):
+        f = self.editFrame
+        for c in f.winfo_children():
+            c.destroy()
+        if part.type == 0xff:
+            f.configure(text=part.name)
+            return
+        schema = self.schema['definitions']['Partition']
+        f.configure(text=schema['title'])
+        self.edit = {}
+        i = 0
+        for k, v in schema['properties'].items():
+            self.edit[k] = tk.StringVar(value=read_property(part, k))
+            if v['type'] == 'boolean':
+                c = ttk.Checkbutton(f, text = k, variable=self.edit[k])
+            else:
+                l = tk.Label(f, text=k)
+                l.grid(row=i, column=0, sticky=tk.W)
+                if k == 'device':
+                    self.edit[k].set(part.device.name)
+                    c = ttk.Combobox(f, values=[dev.name for dev in self.config.devices])
+                elif k == 'type':
+                    c = ttk.Combobox(f, values=list((partition.TYPES).keys()))
+                elif k == 'subtype':
+                    subtypes = partition.SUBTYPES.get(part.type, None)
+                    if subtypes is None:
+                        c = tk.Entry(f)
+                    else:
+                        c = ttk.Combobox(f, values=list(subtypes))
+                elif 'enum' in v:
+                    c = ttk.Combobox(f, values=v['enum'])
+                else:
+                    c = tk.Entry(f, width=64)
+                c.configure(textvariable=self.edit[k])
+            c.grid(row=i, column=1, sticky=tk.EW)
+            i += 1
 
 
 def main():
