@@ -4,9 +4,11 @@ from config import *
 import tkinter as tk
 from tkinter import ttk
 
+app_name = 'Sming Hardware Profile Editor'
+
 class Editor:
     def __init__(self, root):
-        root.title('Sming Hardware Profile Editor')
+        root.title(app_name)
         root.columnconfigure(0, weight=1)
         root.rowconfigure(0, weight=1)
         root.option_add('*tearOff', False)
@@ -23,12 +25,15 @@ class Editor:
             self.reload()
         def openFile(*args):
             critical('openFile')
+        def saveFile(*args):
+            critical('saveFile')
         menubar = tk.Menu(self.main)
         self.main['menu'] = menubar
         menu_file = tk.Menu(menubar)
         menubar.add_cascade(menu=menu_file, label='File')
         menu_file.add_command(label='New...', command=newFile)
         menu_file.add_command(label='Open...', command=openFile)
+        menu_file.add_command(label='Save...', command=saveFile)
 
         # Treeview for devices and partitions
 
@@ -119,7 +124,17 @@ class Editor:
         for opt in os.environ.get('HWCONFIG_OPTS', '').replace(' ', '').split():
             if not opt in options:
                 options.append(opt)
+
         self.reload()
+        self.updateWindowTitle()
+
+    def updateWindowTitle(self):
+        name = self.json.get('name', None)
+        if name is None:
+            name = '(new)'
+        else:
+            name = '"' + name + '"'
+        self.main.title(self.config.arch + ' ' + name + ' - ' + app_name)
 
     def clear(self):
         # TODO: Prompt to save changes
@@ -136,6 +151,8 @@ class Editor:
         self.base_config.set('standard')
         for k, v in self.options.items():
             v.set(False)
+        self.reload()
+        self.updateWindowTitle()
 
     def reload(self):
         self.clear()
