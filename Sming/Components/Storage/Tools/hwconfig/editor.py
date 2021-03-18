@@ -76,9 +76,16 @@ class Editor:
             status.configure(text=s)
         tree.bind('<<TreeviewSelect>>', select)
 
+        self.options = {}
+
+        def toggle_option(*args):
+            critical("Do something... %s" % str(args))
+
         # Option checkboxes
         for k, v in self.config.option_library.items():
-            btn = tk.Checkbutton(self.main, text = k + ': ' + v['description'])
+            self.options[k] = tk.BooleanVar(value = k in self.config.options)
+            btn = tk.Checkbutton(self.main, text = k + ': ' + v['description'],
+                command=toggle_option, variable=self.options[k])
             btn.pack(side=tk.BOTTOM, fill=tk.X)
 
 
