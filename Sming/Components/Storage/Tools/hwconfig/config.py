@@ -23,6 +23,17 @@ def load_option_library():
                 library.update(data)
     return library
 
+def get_config_list():
+    list = {}
+    dirs = get_config_dirs()
+    for d in reversed(dirs):
+        for f in os.listdir(d):
+            if f.endswith('.hw'):
+                n = os.path.splitext(f)[0]
+                list[n] = d + '/' + f
+                critical(list[n])
+    return list
+
 def findConfig(name):
     dirs = get_config_dirs()
     for d in dirs:
@@ -38,6 +49,7 @@ class Config(object):
         self.depends = []
         self.options = []
         self.option_library = load_option_library()
+        self.base_config = None
 
     def __str__(self):
         return "'%s' for %s" % (self.name, self.arch)
@@ -84,6 +96,8 @@ class Config(object):
 
     def parse_dict(self, data):
         base_config = data.pop('base_config', None)
+        if self.base_config is None:
+            self.base_config = base_config
         if base_config is not None:
             self.load(base_config)
 
