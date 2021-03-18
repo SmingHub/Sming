@@ -101,11 +101,12 @@ hwconfig-validate: $(HWCONFIG_PATH) ##Validate current hardware configuration
 
 # The partition table
 PARTITIONS_BIN := $(FW_BASE)/partitions.bin
-CUSTOM_TARGETS += $(PARTITIONS_BIN)
+CUSTOM_TARGETS += partmap-build
 
-$(PARTITIONS_BIN): $(HWCONFIG_DEPENDS)
+.PHONY: partmap-build
+partmap-build:
 	$(Q) $(MAKE) --no-print-directory hwconfig-validate
-	$(Q) $(HWCONFIG_TOOL) partgen $(HWCONFIG) $@
+	$(Q) $(HWCONFIG_TOOL) partgen $(HWCONFIG) $(PARTITIONS_BIN)
 
 
 # Create build target for a partition
@@ -192,7 +193,7 @@ readpart: kill_term ##Read partition from device, set PART=name
 	$(call ReadFlash,$(FLASH_PART_REGION),$(OUT_BASE)/$(PART).read.bin)
 
 .PHONY: flashmap
-flashmap: $(PARTITIONS_BIN) kill_term ##Write partition table to device
+flashmap: partmap-build kill_term ##Write partition table to device
 	$(call WriteFlash,$(FLASH_MAP_CHUNK))
 
 
