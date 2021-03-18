@@ -25,8 +25,6 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	Serial.println("I'm NOT CONNECTED. Need help!!! :(");
-
-	// .. some you code for configuration ..
 }
 
 void init()
@@ -34,9 +32,28 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 
-	// Mount file system, in order to work with files
+	/*
+	 * Mount file system, in order to work with files.
+	 *
+	 * This sample uses an FWFS (Firmware FileSystem) partition to store
+	 * files which don't change. This considerably reduces the amount of data
+	 * which might be erased in the event of write failure, etc.
+	 */
+
+	// This option mounts just the SPIFFS partition
 	// spiffs_mount();
+
+	// Mount only the FWFS partition
 	// fwfs_mount();
+
+	/*
+	 * Use the 'Hybrid' filesystem, with SPIFFS layered over FWFS.
+	 * 
+	 * When a file is opened for writing it is transparently copied to the SPIFFS partition so it can be updated.
+	 * Wiping the SPIFFS partition reverts the filesystem to its original state.
+	 *
+	 * Note that files marked as ‘read-only’ may not be written in this manner.
+	 */
 	hyfs_mount();
 
 	fileSetContent("example.txt", "hello world!");
