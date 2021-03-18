@@ -205,6 +205,8 @@ class Table(list):
         return None
 
     def find_by_address(self, device, addr):
+        if isinstance(addr, str):
+            addr = eval(addr)
         for p in self:
             if p.device == device and p.contains(addr):
                 return p
