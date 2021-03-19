@@ -38,7 +38,8 @@ class EditState(dict):
         btn = ttk.Button(editor.editFrame, text="Apply", command=self.apply)
         btn.grid(row=100, column=0, columnspan=2)
 
-    def addControl(self, frame, fieldName, enumDict):
+    def addControl(self, fieldName, enumDict):
+        frame = self.editor.editFrame
         schema = self.get_property(fieldName)
         value = read_property(self.obj, fieldName)
         if hasattr(value, 'name'):
@@ -341,7 +342,7 @@ class Editor:
         return f
 
     def editDevice(self, dev):
-        f = self.resetEditor()
+        self.resetEditor()
         edit = self.edit = EditState(self, 'Device', 'devices', dev)
         self.updateEditTitle()
 
@@ -349,11 +350,11 @@ class Editor:
         values['type'] = list((storage.TYPES).keys())
 
         for k in edit.keys():
-            edit.addControl(f, k, values)
+            edit.addControl(k, values)
 
 
     def editPartition(self, part):
-        f = self.resetEditor()
+        self.resetEditor()
         edit = self.edit = EditState(self, 'Partition', 'partitions', part)
         self.updateEditTitle()
 
@@ -365,7 +366,7 @@ class Editor:
             values['subtype'] = list(subtypes)
 
         for k in edit.keys():
-            c = edit.addControl(f, k, values)
+            c = edit.addControl(k, values)
             if part.type == partition.INTERNAL_TYPE and part.subtype != partition.INTERNAL_UNUSED:
                 c.configure(state='disabled')
 
