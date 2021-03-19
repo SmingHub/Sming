@@ -228,9 +228,9 @@ class Editor:
 
         # JSON editor
         jsonFrame = ttk.LabelFrame(self.main, text='JSON Configuration')
-        jsonFrame.grid(row=1, column=2, rowspan=2, sticky=tk.NSEW)
+        jsonFrame.grid(row=1, column=2, rowspan=2, sticky=tk.EW)
         self.jsonEditor = tk.Text(jsonFrame, height=14, width=50)
-        self.jsonEditor.grid(row=0, sticky=tk.NSEW)
+        self.jsonEditor.grid(row=0, column=0, sticky=tk.NSEW)
         s = ttk.Scrollbar(jsonFrame, orient=tk.VERTICAL, command=self.jsonEditor.yview)
         s.grid(row=0, column=1, sticky=tk.NS)
         self.jsonEditor['yscrollcommand'] = s.set
@@ -238,7 +238,7 @@ class Editor:
             self.json = json.loads(self.jsonEditor.get('1.0', 'end'))
             self.reload()
         btn = ttk.Button(jsonFrame, text="Apply", command=apply)
-        btn.grid(row=1, columnspan=2, sticky=tk.S)
+        btn.grid(row=1, column=0, columnspan=2)
 
         # Status box
         self.status = tk.StringVar()
