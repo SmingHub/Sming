@@ -84,6 +84,8 @@ class EditState(dict):
             self.editor.reload()
         except AttributeError as err:
             self.editor.status.set(err)
+        except ValueError as err:
+            self.editor.status.set(err)
 
 
     def getState(self, field):
