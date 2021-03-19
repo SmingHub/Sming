@@ -35,6 +35,12 @@ DATA_TYPE = 0x01
 STORAGE_TYPE = 0x02 # Reference to storage device
 USER_TYPE = 0x40 # First user-defined type
 
+# Used for internal management, e.g. in maps
+INTERNAL_TYPE = 0xff
+INTERNAL_BOOT_SECTOR = 0x00
+INTERNAL_PARTITION_TABLE = 0x01
+INTERNAL_UNUSED = 0x02
+
 # Default is 4
 ALIGNMENT = {
     "Esp32": {
@@ -53,6 +59,7 @@ TYPES = {
     "data": DATA_TYPE,
     "storage": STORAGE_TYPE,
     "user": USER_TYPE,
+    "internal": INTERNAL_TYPE,
 }
 
 # Keep this map in sync with esp_partition_subtype_t enum in esp_partition.h
@@ -76,6 +83,7 @@ SUBTYPES = {
         "ota_14": 0x1e,
         "ota_15": 0x1f,
         "test": 0x20,
+        "internal": 0xff,
     },
     DATA_TYPE: {
         "ota": 0x00,
@@ -91,7 +99,12 @@ SUBTYPES = {
         "spiffs": 0x82,
         "fwfs": 0xf1,
     },
-    STORAGE_TYPE: storage.TYPES
+    STORAGE_TYPE: storage.TYPES,
+    INTERNAL_TYPE: {
+        "boot": INTERNAL_BOOT_SECTOR,
+        "pt": INTERNAL_PARTITION_TABLE,
+        "unused": INTERNAL_UNUSED,
+    }
 }
 
 
@@ -435,13 +448,13 @@ class Entry(object):
         return addr >= self.address and addr <= self.end()
 
     def type_str(self):
-        return "" if self.type == 0xff else lookup_keyword(self.type, TYPES)
+        return "" if self.type == INTERNAL_TYPE else lookup_keyword(self.type, TYPES)
 
     def type_is(self, t):
         return self.type_str() == t if isinstance(t, str) else self.type == t
 
     def subtype_str(self):
-        return "" if self.subtype == 0xff else lookup_keyword(self.subtype, SUBTYPES.get(self.type, {}))
+        return "" if self.type == INTERNAL_TYPE else lookup_keyword(self.subtype, SUBTYPES.get(self.type, {}))
 
     def subtype_is(self, subtype):
         return self.subtype_str() == subtype if isinstance(subtype, str) else self.subtype == subtype
@@ -534,22 +547,22 @@ class Map(Table):
     def __init__(self, table, devices):
         device = devices[0]
 
-        def add(name, address, size):
-            entry = Entry(device, name, address, size, 0xff, 0xff)
+        def add(name, address, size, subtype):
+            entry = Entry(device, name, address, size, INTERNAL_TYPE, subtype)
             self.append(entry)
             return entry
 
         def add_unused(address, last_end):
             if address > last_end + 1:
-                add('(unused)', last_end + 1, address - last_end - 1)
+                add('(unused)', last_end + 1, address - last_end - 1, INTERNAL_UNUSED)
 
         partitions = copy.copy(table)
 
         if table.offset == 0:
             last = None
         else:
-            last = add('Boot Sector', 0, min(table.offset, partitions[0].address))
-            p = Entry(device, 'Partition Table', table.offset, PARTITION_TABLE_SIZE, 0xff, 0xff)
+            last = add('Boot Sector', 0, min(table.offset, partitions[0].address), INTERNAL_BOOT_SECTOR)
+            p = Entry(device, 'Partition Table', table.offset, PARTITION_TABLE_SIZE, INTERNAL_TYPE, INTERNAL_PARTITION_TABLE)
             partitions.append(p)
             partitions.sort()
 

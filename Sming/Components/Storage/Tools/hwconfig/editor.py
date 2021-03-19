@@ -233,8 +233,7 @@ class Editor:
 
         # Partitions are children
         for p in config.map():
-            self.tree.insert(p.device.name, 'end', text=p.name if p.name != '(unused)' else '',
-                tags = ['unused' if p.type == 0xff else 'normal'],
+            self.tree.insert(p.device.name, 'end', text=p.name,
                 values=[p.address_str(), p.size_str(), p.type_str(), p.subtype_str(), p.filename])
 
         # Base configuration
@@ -333,7 +332,10 @@ class Editor:
                 else:
                     c = tk.Entry(f, width=64)
                 c.configure(textvariable=edit[k])
-            c.configure(state=edit.getState(k))
+            if part.type == partition.INTERNAL_TYPE and part.subtype != partition.INTERNAL_UNUSED:
+                c.configure(state='disabled')
+            else:
+                c.configure(state=edit.getState(k))
             c.grid(row=i, column=1, sticky=tk.EW)
             i += 1
 
