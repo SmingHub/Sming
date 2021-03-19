@@ -35,19 +35,23 @@ class EditState(dict):
         self.config = getattr(editor.config, dictName)
         self.obj = obj
         self.row = 0
+        btn = ttk.Button(editor.editFrame, text="Apply", command=self.apply)
+        btn.grid(row=100, column=0, columnspan=2)
 
     def addControl(self, frame, fieldName, enumDict):
-        v = self.get_property(fieldName)
+        schema = self.get_property(fieldName)
         value = read_property(self.obj, fieldName)
         if hasattr(value, 'name'):
             value = value.name
+        elif schema['type'] == 'object':
+            value = json.dumps(value)
         var = self[fieldName] = tk.StringVar(value=value)
-        if v['type'] == 'boolean':
+        if schema['type'] == 'boolean':
             c = ttk.Checkbutton(frame, text=fieldName, variable=var)
         else:
             l = tk.Label(frame, text=fieldName)
             l.grid(row=self.row, column=0, sticky=tk.W)
-            values = enumDict.get(fieldName, v.get('enum'))
+            values = enumDict.get(fieldName, schema.get('enum'))
             if values is not None:
                 c = ttk.Combobox(frame, values=values)
             else:
@@ -57,6 +61,27 @@ class EditState(dict):
         c.grid(row=self.row, column=1, sticky=tk.EW)
         self.row += 1
         return c
+
+    def apply(self, *args):
+        try:
+            obj = get_dict_value(self.json, self.name, {})
+            for k, v in self.items():
+                schema = self.get_property(k)
+                if k == 'name':
+                    new_name = v.get()
+                    if new_name != self.name:
+                        old = self.json.pop(self.name)
+                        obj = self.json[new_name] = old
+                        self.name = new_name
+                        self.editor.updateEditTitle()
+                elif schema['type'] == 'object':
+                    obj[k] = json.loads(v.get())
+                else:
+                    obj[k] = v.get()
+            self.editor.reload()
+        except AttributeError as err:
+            self.editor.status.set(err)
+
 
     def getState(self, field):
         # Name is read-only for inherited devices/partitions
@@ -89,6 +114,12 @@ class Editor:
         root.rowconfigure(0, weight=1)
         root.option_add('*tearOff', False)
         self.main = root
+        # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+        s = ttk.Style()
+        # critical(str(s.theme_names()))
+        # s.theme_use('xpnative')
+        s.configure('Treeview', font='TkFixedFont')
+        s.configure('Treeview.Heading', font='TkFixedFont')
 
     def initialise(self):
         with open(os.environ['HWCONFIG_SCHEMA']) as f:
@@ -113,7 +144,7 @@ class Editor:
 
         # Treeview for devices and partitions
 
-        tree = ttk.Treeview(self.main, columns=['address', 'size', 'type', 'subtype', 'filename'])
+        tree = ttk.Treeview(self.main, columns=['address', 'size', 'end', 'type', 'subtype', 'filename'])
         tree.grid(row=0, column=0, columnspan=2, sticky=tk.NSEW)
         self.tree = tree
 
@@ -123,11 +154,12 @@ class Editor:
 
         tree.heading('address', text='Address')
         tree.heading('size', text='Size')
+        tree.heading('end', text='End')
         tree.heading('type', text='Type')
         tree.heading('subtype', text='Sub-Type')
         tree.heading('filename', text='Image filename')
 
-        self.tree.tag_configure('device', font='+1')
+        # self.tree.tag_configure('device', font='+1')
         # tree.tag_configure('normal', font='+1')
 
         # Base configurations
@@ -253,12 +285,12 @@ class Editor:
         for dev in config.devices:
             self.tree.insert('', 'end', dev.name, text=dev.name, open=True,
                 tags = ['device'],
-                values=['', dev.size_str(), dev.type_str()])
+                values=[addr_format(0), dev.size_str(), addr_format(dev.size - 1), dev.type_str()])
 
         # Partitions are children
         for p in config.map():
             self.tree.insert(p.device.name, 'end', text=p.name,
-                values=[p.address_str(), p.size_str(), p.type_str(), p.subtype_str(), p.filename])
+                values=[p.address_str(), p.size_str(), p.end_str(), p.type_str(), p.subtype_str(), p.filename])
 
         # Base configuration
         self.base_config.set(config.base_config)
@@ -279,30 +311,10 @@ class Editor:
         self.editFrame.configure(text="Edit %s '%s'" % (self.edit.type, self.edit.name))
 
     def resetEditor(self):
+        self.edit = None
         f = self.editFrame
         for c in f.winfo_children():
             c.destroy()
-
-        def update(*args):
-            edit = self.edit
-            try:
-                obj = get_dict_value(edit.json, edit.name, {})
-                for k, v in edit.items():
-                    if k == 'name':
-                        name = v.get()
-                        if name != edit.name:
-                            old = edit.json.pop(edit.name)
-                            obj = edit.json[name] = old
-                            edit.name = name
-                            self.updateEditTitle()
-                    else:
-                        obj[k] = v.get()
-                self.reload()
-            except AttributeError as err:
-                self.status.set(err)
-
-        btn = ttk.Button(f, text="Update", command=update)
-        btn.grid(row=100, column=0, columnspan=2)
         return f
 
     def editDevice(self, dev):
