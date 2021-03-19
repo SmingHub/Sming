@@ -393,9 +393,6 @@ class Entry(object):
 
             if self.address is None or self.size is None:
                 raise InputError("address/size missing")
-            if self.end() >= self.device.size:
-                raise InputError("Partition '%s' %s-%s too big for %s size %s" \
-                                 % (self.name, self.address_str(), self.end_str(), self.device.name, self.device.size_str()))
         except InputError as e:
             raise InputError("Error in partition entry '%s': %s" % (self.name, e))
 
@@ -495,6 +492,10 @@ class Entry(object):
             raise ValidationError(self, "Size 0x%x is not aligned to 0x%x" % (self.size, align))
         if self.size is None:
             raise ValidationError(self, "Size field is not set")
+        if self.address >= self.device.size:
+            raise ValidationError(self, "Offset 0x%x exceeds device size 0x%x" % (self.address, self.device.size))
+        if self.end() >= self.device.size:
+            raise ValidationError(self, "End 0x%x exceeds device size 0x%x" % (self.end(), self.device.size))
 
         if self.name in TYPES and TYPES.get(self.name, "") != self.type:
             critical("WARNING: Partition has name '%s' which is a partition type, but does not match this partition's "
