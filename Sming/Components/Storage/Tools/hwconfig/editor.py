@@ -20,6 +20,31 @@ def get_dict_value(dict, key, default):
         dict[key] = default
     return dict[key]
 
+
+class EditState(dict):
+    """Dictionary of tk.StringVar objects
+    """
+    def __init__(self, schema, objectType, name):
+        super().__init__(self)
+        self.type = objectType
+        self.name = name
+        self.schema = schema['definitions'][objectType]
+
+    def get_property(self, name):
+        if name == 'name':
+            return {'type': 'text'}
+        else:
+            return self.schema['properties'][name]
+
+    def keys(self):
+        keys = list(self.schema['properties'].keys())
+        keys.insert(0, 'name')
+        return keys
+
+    def nameChanged(self):
+        return self.name != self['name'].get()
+
+
 class Editor:
     def __init__(self, root):
         root.title(app_name)
@@ -209,16 +234,22 @@ class Editor:
         else:
             return None
 
-    def editDevice(self, dev):
+    def updateEditTitle(self):
+        self.editFrame.configure(text="Edit %s '%s'" % (self.edit.type, self.edit.name))
+
+    def resetEditor(self):
         f = self.editFrame
         for c in f.winfo_children():
             c.destroy()
-        schema = self.schema['definitions']['Device']
-        f.configure(text=schema['title'])
-        self.edit = {}
-        self.edit_device = dev.name
+        return f
+
+    def editDevice(self, dev):
+        f = self.resetEditor()
+        self.edit = EditState(self.schema, 'Device', dev.name)
+        self.updateEditTitle()
         i = 0
-        for k, v in schema['properties'].items():
+        for k in self.edit.keys():
+            v = self.edit.get_property(k)
             self.edit[k] = tk.StringVar(value=read_property(dev, k))
             l = tk.Label(f, text=k)
             l.grid(row=i, column=0, sticky=tk.W)
@@ -232,19 +263,47 @@ class Editor:
             c.grid(row=i, column=1, sticky=tk.EW)
             i += 1
 
+        def update(*args):
+            devices = get_dict_value(self.json, 'devices', {})
+            dev = devices.get(self.edit.name, None)
+            try:
+                if dev is None:
+                    # Could be:
+                    # (1) Creating a new device, or
+                    # (2) Overriding properties of inherited device, or
+                    # (3) Attempting to rename an inherited device (not permitted)
+                    inherited = self.config.devices.find_by_name(self.edit.name)
+                    if inherited is not None and self.edit.nameChanged():
+                        raise AttributeError('Cannot rename inherited device')
+                    dev = devices[self.edit.name] = {}
+                for k, v in self.edit.items():
+                    if k == 'name':
+                        name = v.get()
+                        if name != self.edit.name:
+                            old = devices.pop(self.edit.name)
+                            part = devices[name] = old
+                            self.edit.name = name
+                            self.updateEditTitle()
+                    else:
+                        dev[k] = v.get()
+                self.reload()
+            except AttributeError as err:
+                self.status.set(err)
+
+
+        btn = ttk.Button(f, text="Update", command=update)
+        btn.grid(row=i, column=0, columnspan=2)
+
+
     def editPartition(self, part):
         f = self.editFrame
         for c in f.winfo_children():
             c.destroy()
-        if part.type == 0xff:
-            f.configure(text=part.name)
-            return
-        schema = self.schema['definitions']['Partition']
-        f.configure(text=schema['title'])
-        self.edit = {}
-        self.edit_partition = part.name
+        self.edit = EditState(self.schema, 'Partition', part.name)
+        self.updateEditTitle()
         i = 0
-        for k, v in schema['properties'].items():
+        for k in self.edit.keys():
+            v = self.edit.get_property(k)
             self.edit[k] = tk.StringVar(value=read_property(part, k))
             if v['type'] == 'boolean':
                 c = ttk.Checkbutton(f, text = k, variable=self.edit[k])
@@ -272,13 +331,30 @@ class Editor:
 
         def update(*args):
             partitions = get_dict_value(self.json, 'partitions', {})
-            part = get_dict_value(partitions, self.edit_partition, {})
+            part = partitions.get(self.edit.name, None)
             try:
+                if part is None:
+                    # Could be:
+                    # (1) Creating a new partition in unused space, or
+                    # (2) Overriding properties of inherited partition, or
+                    # (3) Attempting to rename an inherited partition (not permitted)
+                    inherited = self.config.partitions.find_by_name(self.edit.name)
+                    if inherited is not None and self.edit.nameChanged():
+                        raise AttributeError('Cannot rename inherited partition')
+                    part = partitions[self.edit.name] = {}
                 for k, v in self.edit.items():
-                    part[k] = v.get()
+                    if k == 'name':
+                        name = v.get()
+                        if name != self.edit.name:
+                            old = partitions.pop(self.edit.name)
+                            part = partitions[name] = old
+                            self.edit.name = name
+                            self.updateEditTitle()
+                    else:
+                        part[k] = v.get()
+                self.reload()
             except AttributeError as err:
                 self.status.set(err)
-            self.reload()
 
         btn = ttk.Button(f, text="Update", command=update)
         btn.grid(row=i, column=0, columnspan=2)
