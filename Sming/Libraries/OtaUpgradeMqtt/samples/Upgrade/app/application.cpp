@@ -1,6 +1,6 @@
 #include <SmingCore.h>
 #include <rboot-api.h>
-#include <Storage/Partition.h>
+#include <Storage/SpiFlash.h>
 #include <OtaUpgrade/Mqtt/RbootPayloadParser.h>
 
 #if ENABLE_OTA_ADVANCED
@@ -30,11 +30,9 @@ IMPORT_FSTR(certificateData, PROJECT_DIR "/files/certificate.pem.crt.der");
 
 Storage::Partition findRomPartition(uint8_t slot)
 {
-	String name = F("rom");
-	name += slot;
-	auto part = Storage::findPartition(name);
+	auto part = Storage::spiFlash->partitions().findOta(slot);
 	if(!part) {
-		debug_w("Partition '%s' not found", name.c_str());
+		debug_w("Rom slot %d not found", slot);
 	}
 	return part;
 }
@@ -46,11 +44,7 @@ void otaUpdate()
 		return;
 	}
 
-	uint8 slot;
-	rboot_config bootconf;
-	// select rom slot to flash
-	bootconf = rboot_get_config();
-	slot = bootconf.current_rom;
+	uint8 slot = rboot_get_current_rom();
 	if(slot == 0) {
 		slot = 1;
 	} else {
@@ -90,13 +84,13 @@ void otaUpdate()
 	mqtt.connect(Url(MQTT_URL), "sming");
 
 #if ENABLE_OTA_ADVANCED
-	/**
+	/*
 	 * The advanced parser suppors all firmware upgrades supported by the `OtaUpgrade` library.
 	 * It comes with firmware signing, firmware encryption and so on.
 	 */
 	auto parser = new OtaUpgrade::Mqtt::AdvancedPayloadParser(APP_VERSION_PATCH);
 #else
-	/**
+	/*
 	 * The command below uses class that stores the firmware directly
 	 * using RbootOutputStream on a location provided by us
 	 */
@@ -116,10 +110,10 @@ void otaUpdate()
 
 void showInfo()
 {
-	Serial.printf("\r\nSDK: v%s\r\n", system_get_sdk_version());
-	Serial.printf("Free Heap: %d\r\n", system_get_free_heap_size());
-	Serial.printf("CPU Frequency: %d MHz\r\n", system_get_cpu_freq());
-	Serial.printf("System Chip ID: %x\r\n", system_get_chip_id());
+	Serial.printf(_F("\r\nSDK: v%s\r\n"), system_get_sdk_version());
+	Serial.printf(_F("Free Heap: %d\r\n"), system_get_free_heap_size());
+	Serial.printf(_F("CPU Frequency: %d MHz\r\n"), system_get_cpu_freq());
+	Serial.printf(_F("System Chip ID: %x\r\n"), system_get_chip_id());
 
 	rboot_config conf;
 	conf = rboot_get_config();
@@ -130,7 +124,7 @@ void showInfo()
 	debug_d("ROM 2: 0x%08x", conf.roms[2]);
 	debug_d("GPIO ROM: %d", conf.gpio_rom);
 
-	Serial.printf("\r\nCurrently running rom %d. Application version: %s\r\n", conf.current_rom, APP_VERSION);
+	Serial.printf(_F("\r\nCurrently running rom %d. Application version: %s\r\n"), conf.current_rom, APP_VERSION);
 	Serial.println();
 }
 

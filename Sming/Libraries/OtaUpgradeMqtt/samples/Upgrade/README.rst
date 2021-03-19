@@ -38,7 +38,7 @@ Configuration
    Contains the application major and minor versions separated by comma. Example "4.2".
    If not set will use the current major and minor version from Sming.
 
-.. envvar::APP_VERSION_PATCH
+.. envvar:: APP_VERSION_PATCH
 
    Default: not set
 

@@ -20,8 +20,11 @@ namespace OtaUpgrade
 {
 namespace Mqtt
 {
-constexpr const uint8_t VERSION_NOT_READY = -1;
-constexpr const uint8_t VERSION_MAX_BYTES_ALLOWED = 24;
+constexpr int8_t VERSION_NOT_READY{-1};
+
+constexpr int8_t ERROR_INVALID_MQTT_MESSAGE{-1};
+constexpr int8_t ERROR_INVALID_PATCH_VERSION{-2};
+constexpr int8_t ERROR_UNKNOWN_REASON{-10};
 
 class PayloadParser
 {
@@ -32,7 +35,13 @@ public:
 		size_t version{0};
 	};
 
-	PayloadParser(size_t currentPatchVersion) : currentPatchVersion(currentPatchVersion)
+	/**
+	 * @brief
+	 * @param currentPatchVersion
+	 * @param allowedVersionBytes - maximum allowed bytes to be used for describing a patch version
+	 */
+	PayloadParser(size_t currentPatchVersion, size_t allowedVersionBytes = 24)
+		: currentPatchVersion(currentPatchVersion), allowedVersionBytes(allowedVersionBytes)
 	{
 	}
 
@@ -66,9 +75,10 @@ public:
 	int parse(MqttPayloadParserState& state, mqtt_message_t* message, const char* buffer, int length);
 
 private:
-	size_t currentPatchVersion;
-
 	int getPatchVersion(const char* buffer, int length, size_t& offset, size_t versionStart = 0);
+
+	size_t currentPatchVersion;
+	size_t allowedVersionBytes;
 };
 
 } // namespace Mqtt

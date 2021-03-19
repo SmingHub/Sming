@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * PayloadParser.h
+ * RbootPayloadParser.cpp
  *
  *  Created: 2021 - Slavey Karadzhov <slav@attachix.com>
  *
@@ -18,14 +18,17 @@ namespace Mqtt
 {
 bool RbootPayloadParser::switchRom(const UpdateState& updateState)
 {
-	uint8 before, after;
-	before = rboot_get_current_rom();
+	uint8_t after;
+	uint8_t before = rboot_get_current_rom();
+
 	if(before == 0) {
 		after = 1;
 	} else {
 		after = 0;
 	}
-	debug_d("Swapping from rom %d to rom %d.\r\n", before, after);
+
+	debug_d("Swapping from rom %u to rom %u.\r\n", before, after);
+
 	return rboot_set_current_rom(after);
 }
 

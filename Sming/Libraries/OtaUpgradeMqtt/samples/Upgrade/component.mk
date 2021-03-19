@@ -11,13 +11,16 @@ APP_ID ?= "test"
 
 ## [TLS/SSL settings ] ##
 # Uncomment the line below to start using SSL
+CONFIG_VARS := ENABLE_SSL 
 # ENABLE_SSL := Bearssl
 
 # Set this to one if the remote firmware server requires client certificate
 # This option is in effect only when ENABLE_SSL is set
+CONFIG_VARS += ENABLE_CLIENT_CERTIFICATE
 ENABLE_CLIENT_CERTIFICATE ?= 0
 
 ## [ Firmware Update Server ] ## 
+CONFIG_VARS += MQTT_URL
 ifeq ($(MQTT_URL),)
     MQTT_URL := "mqtt://test.mosquitto.org:1883"
     ifneq ($(ENABLE_SSL),)
@@ -29,24 +32,25 @@ ifeq ($(MQTT_URL),)
     endif
 endif
 
+CONFIG_VARS += ENABLE_OTA_ADVANCED
+ENABLE_OTA_ADVANCED ?= 0
 
 ## End of user configurable settings. Don't change anything below this line
 
-CONFIG_VARS := MQTT_URL ENABLE_SSL ENABLE_CLIENT_CERTIFICATE ENABLE_OTA_ADVANCED
 COMPONENT_DEPENDS := OtaUpgradeMqtt
 
 ## use rboot build mode
 RBOOT_ENABLED := 1
 
 ## Use standard hardware config with two ROM slots and two SPIFFS partitions
-ifeq ($(SMING_ARCH),Host)
-	HWCONFIG := basic_rboot_host
-else
-	HWCONFIG := basic_rboot
-endif
+HWCONFIG := spiffs-two-roms
 
-APP_CFLAGS = -DMQTT_URL="\"$(MQTT_URL)"\" -DAPP_ID="\"$(APP_ID)"\" -DENABLE_CLIENT_CERTIFICATE=$(ENABLE_CLIENT_CERTIFICATE) \
+APP_CFLAGS = -DMQTT_URL="\"$(MQTT_URL)"\"   \
+			 -DAPP_ID="\"$(APP_ID)"\"       \
+			 -DENABLE_CLIENT_CERTIFICATE=$(ENABLE_CLIENT_CERTIFICATE)  \
 			 -DENABLE_OTA_ADVANCED=$(ENABLE_OTA_ADVANCED)
+			 
 ifneq ($(APP_VERSION),)
-	APP_CFLAGS += -DAPP_VERSION="\"$(APP_VERSION)"\" -DAPP_VERSION_PATCH=$(APP_VERSION_PATCH)
+	APP_CFLAGS += -DAPP_VERSION="\"$(APP_VERSION)"\"         \
+				  -DAPP_VERSION_PATCH=$(APP_VERSION_PATCH)
 endif

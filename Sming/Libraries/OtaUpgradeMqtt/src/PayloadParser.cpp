@@ -1,3 +1,15 @@
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * PayloadParser.cpp
+ *
+ *  Created: 2021 - Slavey Karadzhov <slav@attachix.com>
+ *
+ ****/
+
 #include "include/OtaUpgrade/Mqtt/PayloadParser.h"
 
 namespace OtaUpgrade
@@ -6,9 +18,9 @@ namespace Mqtt
 {
 int PayloadParser::parse(MqttPayloadParserState& state, mqtt_message_t* message, const char* buffer, int length)
 {
-	if(message == nullptr) {
+	if(message == nullptr || buffer == nullptr) {
 		debug_e("Invalid MQTT message");
-		return 1;
+		return ERROR_INVALID_MQTT_MESSAGE;
 	}
 
 	if(length == MQTT_PAYLOAD_PARSER_START) {
@@ -24,7 +36,7 @@ int PayloadParser::parse(MqttPayloadParserState& state, mqtt_message_t* message,
 	auto updateState = static_cast<UpdateState*>(state.userData);
 	if(updateState == nullptr) {
 		debug_e("Update failed for unknown reason!");
-		return -1;
+		return ERROR_UNKNOWN_REASON;
 	}
 
 	if(length == MQTT_PAYLOAD_PARSER_END) {
@@ -49,10 +61,10 @@ int PayloadParser::parse(MqttPayloadParserState& state, mqtt_message_t* message,
 		int patchVersion = getPatchVersion(buffer, length, offset, updateState->version);
 		state.offset += offset;
 #if ENABLE_OTA_VARINT_VERSION
-		if(currentPatchVersion < 0) {
-			if(state.offset > VERSION_MAX_BYTES_ALLOWED) {
+		if(patchVersion < 0) {
+			if(state.offset > allowedVersionBytes) {
 				debug_e("Invalid patch version.");
-				return -3; //
+				return ERROR_INVALID_PATCH_VERSION;
 			}
 			return 0;
 		}
@@ -75,14 +87,18 @@ int PayloadParser::parse(MqttPayloadParserState& state, mqtt_message_t* message,
 		return 0;
 	}
 
-	auto written = stream->write(reinterpret_cast<const uint8_t*>(buffer), length);
+	auto written = stream->write(buffer, length);
 	return (written - length);
 }
 
-#if ENABLE_OTA_VARINT_VERSION
 int PayloadParser::getPatchVersion(const char* buffer, int length, size_t& offset, size_t versionStart)
 {
+	if(buffer == nullptr || length < 1) {
+		return ERROR_INVALID_PATCH_VERSION;
+	}
+
 	size_t version = versionStart;
+#if ENABLE_OTA_VARINT_VERSION
 	offset = 0;
 	int useNextByte = 0;
 	do {
@@ -94,16 +110,13 @@ int PayloadParser::getPatchVersion(const char* buffer, int length, size_t& offse
 		// all the data is consumed and we still don't have a version number?!
 		return VERSION_NOT_READY;
 	}
+#else
+	offset = 1;
+	version += buffer[0];
+#endif
 
 	return version;
 }
-#else
-int PayloadParser::getPatchVersion(const char* buffer, int length, size_t& offset, size_t versionStart)
-{
-	offset = 1;
-	return buffer[0];
-}
-#endif
 
 } // namespace Mqtt
 } // namespace OtaUpgrade

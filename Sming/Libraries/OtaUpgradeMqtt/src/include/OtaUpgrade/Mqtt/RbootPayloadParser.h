@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * PayloadParser.h
+ * RbootPayloadParser.h
  *
  *  Created: 2021 - Slavey Karadzhov <slav@attachix.com>
  *
@@ -26,8 +26,7 @@ namespace Mqtt
 class RbootPayloadParser : public PayloadParser
 {
 public:
-	RbootPayloadParser(const Storage::Partition& part, size_t currentVersion)
-		: PayloadParser(currentVersion), part(part)
+	RbootPayloadParser(Storage::Partition part, size_t currentVersion) : PayloadParser(currentVersion), part(part)
 	{
 	}
 
