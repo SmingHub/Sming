@@ -39,13 +39,16 @@ HWCONFIG_EXPORTS	:= $(foreach v,$(HWCONFIG_VARS),$v="$($v)")
 HWCONFIG_CMDLINE	:= $(PYTHON) $(PARTITION_TOOLS)/hwconfig
 HWCONFIG_TOOL		:= $(HWCONFIG_EXPORTS) $(HWCONFIG_CMDLINE)/hwconfig.py
 
+HWCONFIG_EDITOR		:= $(HWCONFIG_EXPORTS) $(HWCONFIG_CMDLINE)/editor.py $(HWCONFIG)
+
+# When using WSL without an X server available, use native Windows python
 ifdef WSL_ROOT
+ifndef DISPLAY
 space :=
 space +=
 WSLENV := $(WSLENV)$(subst $(space),,$(foreach v,$(HWCONFIG_VARS),::$v))
 HWCONFIG_EDITOR		:= $(HWCONFIG_EXPORTS) powershell.exe -Command "$(HWCONFIG_CMDLINE)/editor.py $(HWCONFIG)"
-else
-HWCONFIG_EDITOR		:= $(HWCONFIG_EXPORTS) $(HWCONFIG_CMDLINE)/editor.py $(HWCONFIG)
+endif
 endif
 
 HWCONFIG_MK := $(PROJECT_DIR)/$(OUT_BASE)/hwconfig.mk
