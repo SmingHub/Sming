@@ -53,7 +53,7 @@ class List(list):
             if d is None:
                 raise ValueError("No device named '%s'" % item)
             return d
-        return super(List, self).__getitem__(item)
+        return super().__getitem__(item)
 
     def find_by_name(self, name):
         for d in self:

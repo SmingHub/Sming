@@ -114,7 +114,7 @@ def parse_subtype(ptype, value):
 class Table(list):
 
     def __init__(self):
-        super(Table, self).__init__(self)
+        super().__init__(self)
 
     def parse_dict(self, data, devices):
         partnames = []
@@ -131,7 +131,7 @@ class Table(list):
             part.parse_dict(entry, devices)
 
     def sort(self):
-        super(Table, self).sort(key=lambda p: p.device.name + p.address_str())
+        super().sort(key=lambda p: p.device.name + p.address_str())
 
     def dict(self):
         res = {}
@@ -172,7 +172,7 @@ class Table(list):
             if p is None:
                 raise ValueError("No partition entry named '%s'" % item)
             return p
-        return super(Table, self).__getitem__(item)
+        return super().__getitem__(item)
 
     def find_by_type(self, ptype, subtype):
         """Return a partition by type & subtype, returns None if not found
