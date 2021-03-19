@@ -79,6 +79,10 @@ class EditState(dict):
                         del obj[k]
                 elif schema['type'] == 'object':
                     obj[k] = json.loads(value)
+                elif schema['type'] == 'boolean':
+                    obj[k] = (value != '0')
+                elif value.isdigit() and 'integer' in schema['type']:
+                    obj[k] = int(value)
                 else:
                     obj[k] = value
             self.editor.reload()
