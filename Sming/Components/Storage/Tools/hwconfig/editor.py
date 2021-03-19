@@ -172,11 +172,16 @@ class Editor:
     def loadConfig(self, config_name):
         self.reset()
         filename = find_config(config_name)
-        with open(filename) as f:
-            self.json = json.loads(jsmin(f.read()))
-        if not hasattr(self.json, 'options'):
-            self.json['options'] = []
-        options = self.json['options']
+        # If this is a core profile, don't edit it but create a new profile based on it
+        if filename.startswith(os.environ['SMING_HOME']):
+            json = self.json = {}
+            json['name'] = 'New profile'
+            json['base_config'] = config_name
+        else:
+            with open(filename) as f:
+                self.json = json.loads(jsmin(f.read()))
+        self.baseConfig = Config.from_name(self.json['base_config'])
+        options = get_dict_value(self.json, 'options', [])
         for opt in os.environ.get('HWCONFIG_OPTS', '').replace(' ', '').split():
             if not opt in options:
                 options.append(opt)
