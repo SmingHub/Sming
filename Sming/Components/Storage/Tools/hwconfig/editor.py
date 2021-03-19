@@ -43,7 +43,7 @@ class EditState(dict):
         value = read_property(self.obj, fieldName)
         if hasattr(value, 'name'):
             value = value.name
-        elif schema['type'] == 'object':
+        elif value and schema['type'] == 'object':
             value = json.dumps(value)
         var = self[fieldName] = tk.StringVar(value=value)
         if schema['type'] == 'boolean':
@@ -66,18 +66,21 @@ class EditState(dict):
         try:
             obj = get_dict_value(self.json, self.name, {})
             for k, v in self.items():
+                value = v.get()
                 schema = self.get_property(k)
                 if k == 'name':
-                    new_name = v.get()
-                    if new_name != self.name:
+                    if value != self.name:
                         old = self.json.pop(self.name)
-                        obj = self.json[new_name] = old
-                        self.name = new_name
+                        obj = self.json[value] = old
+                        self.name = value
                         self.editor.updateEditTitle()
+                elif value == '' and k != 'filename': # TODO mark 'allow empty' values in schema somehow
+                    if k in obj:
+                        del obj[k]
                 elif schema['type'] == 'object':
-                    obj[k] = json.loads(v.get())
+                    obj[k] = json.loads(value)
                 else:
-                    obj[k] = v.get()
+                    obj[k] = value
             self.editor.reload()
         except AttributeError as err:
             self.editor.status.set(err)
@@ -199,6 +202,8 @@ class Editor:
         # Selection handling
         def select(*args):
             id = tree.focus()
+            if id == '':
+                return
             item = tree.item(id)
             if 'device' in item['tags']:
                 dev = self.device_from_id(id)
@@ -271,15 +276,12 @@ class Editor:
     def reload(self):
         critical(to_json(self.json))
 
-
         self.clear()
         try:
-            self.config = Config.from_json(self.json)
+            config = self.config = Config.from_json(self.json)
         except InputError as err:
             self.status.set(str(err))
             return
-
-        config = self.config
 
         # Devices are our root nodes
         for dev in config.devices:
@@ -287,9 +289,16 @@ class Editor:
                 tags = ['device'],
                 values=[addr_format(0), dev.size_str(), addr_format(dev.size - 1), dev.type_str()])
 
+        def get_part_id(part):
+            if part.type == partition.INTERNAL_TYPE and part.subtype == partition.INTERNAL_UNUSED:
+                id = part.device.name + '/' + part.address_str()
+            else:
+                id = part.name
+            return id
+
         # Partitions are children
         for p in config.map():
-            self.tree.insert(p.device.name, 'end', text=p.name,
+            self.tree.insert(p.device.name, 'end', get_part_id(p), text=p.name,
                 values=[p.address_str(), p.size_str(), p.end_str(), p.type_str(), p.subtype_str(), p.filename])
 
         # Base configuration
@@ -298,6 +307,14 @@ class Editor:
         # Options
         for k, v in self.options.items():
             v.set(k in config.options)
+
+        if hasattr(self, 'edit'):
+            id = self.edit.name
+            if not self.tree.exists(id):
+                id = get_part_id(self.edit.obj)
+            if self.tree.exists(id):
+                self.tree.focus(id)
+                self.tree.selection_set(id)
 
 
     def device_from_id(self, id):
@@ -333,8 +350,6 @@ class Editor:
         f = self.resetEditor()
         edit = self.edit = EditState(self, 'Partition', 'partitions', part)
         self.updateEditTitle()
-
-        critical("%s" % edit.obj)
 
         values = {}
         values['device'] = [dev.name for dev in self.config.devices]
