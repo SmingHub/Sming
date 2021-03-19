@@ -155,11 +155,11 @@ class Editor:
         # Treeview for devices and partitions
 
         tree = ttk.Treeview(self.main, columns=['address', 'size', 'end', 'type', 'subtype', 'filename'])
-        tree.grid(row=0, column=0, columnspan=2, sticky=tk.NSEW)
+        tree.grid(row=0, column=0, columnspan=3, sticky=tk.NSEW)
         self.tree = tree
 
         s = ttk.Scrollbar(self.main, orient=tk.VERTICAL, command=tree.yview)
-        s.grid(row=0, column=2, sticky=tk.NS)
+        s.grid(row=0, column=4, sticky=tk.NS)
         tree['yscrollcommand'] = s.set
 
         tree.heading('address', text='Address')
@@ -226,6 +226,20 @@ class Editor:
         self.editFrame = ttk.LabelFrame(self.main, text='Edit Object')
         self.editFrame.grid(row=1, column=1, rowspan=2, sticky=tk.EW)
 
+        # JSON editor
+        jsonFrame = ttk.LabelFrame(self.main, text='JSON Configuration')
+        jsonFrame.grid(row=1, column=2, rowspan=2, sticky=tk.NSEW)
+        self.jsonEditor = tk.Text(jsonFrame, height=14, width=50)
+        self.jsonEditor.grid(row=0, sticky=tk.NSEW)
+        s = ttk.Scrollbar(jsonFrame, orient=tk.VERTICAL, command=self.jsonEditor.yview)
+        s.grid(row=0, column=1, sticky=tk.NS)
+        self.jsonEditor['yscrollcommand'] = s.set
+        def apply(*args):
+            self.json = json.loads(self.jsonEditor.get('1.0', 'end'))
+            self.reload()
+        btn = ttk.Button(jsonFrame, text="Apply", command=apply)
+        btn.grid(row=1, columnspan=2, sticky=tk.S)
+
         # Status box
         self.status = tk.StringVar()
         status = ttk.Label(self.main, textvariable=self.status)
@@ -281,9 +295,8 @@ class Editor:
         self.updateWindowTitle()
 
     def reload(self):
-        critical(to_json(self.json))
-
         self.clear()
+        self.jsonEditor.replace('1.0', 'end', to_json(self.json))
         try:
             config = self.config = Config.from_json(self.json)
         except InputError as err:
