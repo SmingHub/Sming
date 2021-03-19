@@ -22,18 +22,41 @@ def get_dict_value(dict, key, default):
 
 
 class EditState(dict):
-    """Dictionary of tk.StringVar objects
+    """Manage details of device/partition editing using dictionary of tk.StringVar objects
     """
-    def __init__(self, editor, objectType, dictName, objectName):
+    def __init__(self, editor, objectType, dictName, obj):
         super().__init__(self)
         self.editor = editor
         self.type = objectType
         self.dictName = dictName
-        self.name = objectName
+        self.name = obj.name
         self.schema = editor.schema['definitions'][objectType]
         self.json = get_dict_value(editor.json, dictName, {})
         self.config = getattr(editor.config, dictName)
-        self.obj = self.config.find_by_name(objectName)
+        self.obj = obj
+        self.row = 0
+
+    def addControl(self, frame, fieldName, enumDict):
+        v = self.get_property(fieldName)
+        value = read_property(self.obj, fieldName)
+        if hasattr(value, 'name'):
+            value = value.name
+        var = self[fieldName] = tk.StringVar(value=value)
+        if v['type'] == 'boolean':
+            c = ttk.Checkbutton(frame, text=fieldName, variable=var)
+        else:
+            l = tk.Label(frame, text=fieldName)
+            l.grid(row=self.row, column=0, sticky=tk.W)
+            values = enumDict.get(fieldName, v.get('enum'))
+            if values is not None:
+                c = ttk.Combobox(frame, values=values)
+            else:
+                c = tk.Entry(frame, width=64)
+            c.configure(textvariable=var)
+        c.configure(state=self.getState(fieldName))
+        c.grid(row=self.row, column=1, sticky=tk.EW)
+        self.row += 1
+        return c
 
     def getState(self, field):
         # Name is read-only for inherited devices/partitions
@@ -147,13 +170,11 @@ class Editor:
             item = tree.item(id)
             if 'device' in item['tags']:
                 dev = self.device_from_id(id)
-                s = 'Device: ' + dev.to_json()
                 self.editDevice(dev)
             else:
                 dev = self.device_from_id(tree.parent(id))
                 addr = item['values'][0]
                 part = self.config.map().find_by_address(dev, addr)
-                s = 'Partition: ' + part.to_json()
                 self.editPartition(part)
         tree.bind('<<TreeviewSelect>>', select)
 
@@ -216,6 +237,9 @@ class Editor:
         self.updateWindowTitle()
 
     def reload(self):
+        critical(to_json(self.json))
+
+
         self.clear()
         try:
             self.config = Config.from_json(self.json)
@@ -283,64 +307,34 @@ class Editor:
 
     def editDevice(self, dev):
         f = self.resetEditor()
-        edit = self.edit = EditState(self, 'Device', 'devices', dev.name)
+        edit = self.edit = EditState(self, 'Device', 'devices', dev)
         self.updateEditTitle()
-        i = 0
+
+        values = {}
+        values['type'] = list((storage.TYPES).keys())
+
         for k in edit.keys():
-            v = edit.get_property(k)
-            edit[k] = tk.StringVar(value=read_property(dev, k))
-            l = tk.Label(f, text=k)
-            l.grid(row=i, column=0, sticky=tk.W)
-            if k == 'type':
-                c = ttk.Combobox(f, values=list((storage.TYPES).keys()))
-            elif 'enum' in v:
-                c = ttk.Combobox(f, values=v['enum'])
-            else:
-                c = tk.Entry(f)
-            c.configure(textvariable=edit[k])
-            c.configure(state=edit.getState(k))
-            c.grid(row=i, column=1, sticky=tk.EW)
-            i += 1
+            edit.addControl(f, k, values)
 
 
     def editPartition(self, part):
         f = self.resetEditor()
-        edit = self.edit = EditState(self, 'Partition', 'partitions', part.name)
+        edit = self.edit = EditState(self, 'Partition', 'partitions', part)
         self.updateEditTitle()
-        i = 0
+
+        critical("%s" % edit.obj)
+
+        values = {}
+        values['device'] = [dev.name for dev in self.config.devices]
+        values['type'] = list((partition.TYPES).keys())
+        subtypes = partition.SUBTYPES.get(part.type)
+        if subtypes is not None:
+            values['subtype'] = list(subtypes)
+
         for k in edit.keys():
-            v = self.edit.get_property(k)
-            if k == 'device':
-                value = part.device.name
-            else:
-                value = read_property(part, k)
-            edit[k] = tk.StringVar(value=value)
-            if v['type'] == 'boolean':
-                c = ttk.Checkbutton(f, text = k, variable=self.edit[k])
-            else:
-                l = tk.Label(f, text=k)
-                l.grid(row=i, column=0, sticky=tk.W)
-                if k == 'device':
-                    c = ttk.Combobox(f, values=[dev.name for dev in self.config.devices])
-                elif k == 'type':
-                    c = ttk.Combobox(f, values=list((partition.TYPES).keys()))
-                elif k == 'subtype':
-                    subtypes = partition.SUBTYPES.get(part.type, None)
-                    if subtypes is None:
-                        c = tk.Entry(f)
-                    else:
-                        c = ttk.Combobox(f, values=list(subtypes))
-                elif 'enum' in v:
-                    c = ttk.Combobox(f, values=v['enum'])
-                else:
-                    c = tk.Entry(f, width=64)
-                c.configure(textvariable=edit[k])
+            c = edit.addControl(f, k, values)
             if part.type == partition.INTERNAL_TYPE and part.subtype != partition.INTERNAL_UNUSED:
                 c.configure(state='disabled')
-            else:
-                c.configure(state=edit.getState(k))
-            c.grid(row=i, column=1, sticky=tk.EW)
-            i += 1
 
 
 def main():
