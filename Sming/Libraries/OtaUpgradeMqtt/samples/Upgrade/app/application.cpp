@@ -62,9 +62,7 @@ void otaUpdate()
 #ifdef ENABLE_SSL
 	mqtt.setSslInitHandler([](Ssl::Session& session) {
 		// These fingerprints change very frequently.
-		static const Ssl::Fingerprint::Cert::Sha1 sha1Fingerprint PROGMEM = {0xEE, 0xBC, 0x4B, 0xF8, 0x57, 0xE3, 0xD3,
-																			 0xE4, 0x07, 0x54, 0x23, 0x1E, 0xF0, 0xC8,
-																			 0xA1, 0x56, 0xE0, 0xD3, 0x1A, 0x1C};
+		static const Ssl::Fingerprint::Cert::Sha1 sha1Fingerprint PROGMEM = { MQTT_FINGERPRINT_SHA1 };
 
 		// Trust certificate only if it matches the SHA1 fingerprint...
 		session.validators.pin(sha1Fingerprint);
@@ -86,7 +84,7 @@ void otaUpdate()
 #if ENABLE_OTA_ADVANCED
 	/*
 	 * The advanced parser suppors all firmware upgrades supported by the `OtaUpgrade` library.
-	 * It comes with firmware signing, firmware encryption and so on.
+	 * `OtaUpgrade` library provides firmware signing, firmware encryption and so on.
 	 */
 	auto parser = new OtaUpgrade::Mqtt::AdvancedPayloadParser(APP_VERSION_PATCH);
 #else

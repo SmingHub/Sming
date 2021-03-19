@@ -32,6 +32,11 @@ ifeq ($(MQTT_URL),)
     endif
 endif
 
+# This variable contains the SHA1 fingerprint of the SSL certificate of the MQTT server. 
+# It is used for certificate pinning. Make sure to change it whenever changing the MQTT_URL
+CONFIG_VARS += MQTT_FINGERPRINT_SHA1
+MQTT_FINGERPRINT_SHA1 := "0xEE,0xBC,0x4B,0xF8,0x57,0xE3,0xD3,0xE4,0x07,0x54,0x23,0x1E,0xF0,0xC8,0xA1,0x56,0xE0,0xD3,0x1A,0x1C"
+
 CONFIG_VARS += ENABLE_OTA_ADVANCED
 ENABLE_OTA_ADVANCED ?= 0
 
@@ -45,12 +50,13 @@ RBOOT_ENABLED := 1
 ## Use standard hardware config with two ROM slots and two SPIFFS partitions
 HWCONFIG := spiffs-two-roms
 
-APP_CFLAGS = -DMQTT_URL="\"$(MQTT_URL)"\"   \
-			 -DAPP_ID="\"$(APP_ID)"\"       \
+APP_CFLAGS = -DMQTT_URL="\"$(MQTT_URL)"\"                \
+			 -DMQTT_FINGERPRINT_SHA1=$(MQTT_FINGERPRINT_SHA1)   \
+			 -DAPP_ID="\"$(APP_ID)"\"                    \
 			 -DENABLE_CLIENT_CERTIFICATE=$(ENABLE_CLIENT_CERTIFICATE)  \
 			 -DENABLE_OTA_ADVANCED=$(ENABLE_OTA_ADVANCED)
 			 
 ifneq ($(APP_VERSION),)
-	APP_CFLAGS += -DAPP_VERSION="\"$(APP_VERSION)"\"         \
+	APP_CFLAGS += -DAPP_VERSION="\"$(APP_VERSION)"\"       \
 				  -DAPP_VERSION_PATCH=$(APP_VERSION_PATCH)
 endif
