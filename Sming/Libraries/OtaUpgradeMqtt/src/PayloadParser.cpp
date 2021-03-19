@@ -18,7 +18,7 @@ namespace Mqtt
 {
 int PayloadParser::parse(MqttPayloadParserState& state, mqtt_message_t* message, const char* buffer, int length)
 {
-	if(message == nullptr || buffer == nullptr) {
+	if(message == nullptr) {
 		debug_e("Invalid MQTT message");
 		return ERROR_INVALID_MQTT_MESSAGE;
 	}
@@ -46,14 +46,19 @@ int PayloadParser::parse(MqttPayloadParserState& state, mqtt_message_t* message,
 			delete updateState->stream;
 			delete updateState;
 			if(success) {
-				debug_d("Swtiching was successful. Restarting...");
+				debug_d("Switching was successful. Restarting...");
 				System.restart();
 			} else {
-				debug_e("Swtiching failed!");
+				debug_e("Switching failed!");
 			}
 		}
 
 		return 0;
+	}
+
+	if(buffer == nullptr) {
+		debug_e("Invalid MQTT message");
+		return ERROR_INVALID_MQTT_MESSAGE;
 	}
 
 	if(!updateState->started) {
@@ -104,7 +109,7 @@ int PayloadParser::getPatchVersion(const char* buffer, int length, size_t& offse
 	do {
 		version += (buffer[offset] & 0x7f);
 		useNextByte = (buffer[offset++] & 0x80);
-	} while(useNextByte && (offset < length));
+	} while(useNextByte && (offset < size_t(length)));
 
 	if(useNextByte) {
 		// all the data is consumed and we still don't have a version number?!

@@ -26,7 +26,8 @@ namespace Mqtt
 class RbootPayloadParser : public PayloadParser
 {
 public:
-	RbootPayloadParser(Storage::Partition part, size_t currentVersion) : PayloadParser(currentVersion), part(part)
+	RbootPayloadParser(Storage::Partition part, size_t currentVersion, size_t allowedVersionBytes = 24)
+		: PayloadParser(currentVersion, allowedVersionBytes), part(part)
 	{
 	}
 

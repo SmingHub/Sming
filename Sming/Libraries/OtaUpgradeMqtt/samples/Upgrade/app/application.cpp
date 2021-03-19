@@ -62,7 +62,7 @@ void otaUpdate()
 #ifdef ENABLE_SSL
 	mqtt.setSslInitHandler([](Ssl::Session& session) {
 		// These fingerprints change very frequently.
-		static const Ssl::Fingerprint::Cert::Sha1 sha1Fingerprint PROGMEM = { MQTT_FINGERPRINT_SHA1 };
+		static const Ssl::Fingerprint::Cert::Sha1 sha1Fingerprint PROGMEM = {MQTT_FINGERPRINT_SHA1};
 
 		// Trust certificate only if it matches the SHA1 fingerprint...
 		session.validators.pin(sha1Fingerprint);
