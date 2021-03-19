@@ -23,7 +23,7 @@ ENABLE_CLIENT_CERTIFICATE ?= 0
 CONFIG_VARS += MQTT_URL
 ifeq ($(MQTT_URL),)
     MQTT_URL := "mqtt://test.mosquitto.org:1883"
-    ifneq ($(ENABLE_SSL),)
+    ifdef ENABLE_SSL
     	ifneq ($(ENABLE_CLIENT_CERTIFICATE),0)
     		MQTT_URL := "mqtts://test.mosquitto.org:8884"
     	else
