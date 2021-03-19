@@ -310,14 +310,17 @@ class Editor:
         i = 0
         for k in edit.keys():
             v = self.edit.get_property(k)
-            edit[k] = tk.StringVar(value=read_property(part, k))
+            if k == 'device':
+                value = part.device.name
+            else:
+                value = read_property(part, k)
+            edit[k] = tk.StringVar(value=value)
             if v['type'] == 'boolean':
                 c = ttk.Checkbutton(f, text = k, variable=self.edit[k])
             else:
                 l = tk.Label(f, text=k)
                 l.grid(row=i, column=0, sticky=tk.W)
                 if k == 'device':
-                    edit[k].set(part.device.name)
                     c = ttk.Combobox(f, values=[dev.name for dev in self.config.devices])
                 elif k == 'type':
                     c = ttk.Combobox(f, values=list((partition.TYPES).keys()))
