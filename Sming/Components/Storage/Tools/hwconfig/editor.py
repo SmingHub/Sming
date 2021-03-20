@@ -146,17 +146,23 @@ class Editor:
         with open(os.environ['HWCONFIG_SCHEMA']) as f:
             self.schema = json.load(f)
 
+        hwFilter = [('Hardware Profiles', '*' + HW_EXT)]
+
         # Menus
         def fileNew(*args):
             self.reset()
             self.reload()
         def fileOpen(*args):
-            filename = filedialog.askopenfilename()
+            filename = filedialog.askopenfilename(filetypes=hwFilter)
             if filename != '':
                 self.loadConfig(filename)
         def fileSave(*args):
-            filename = filedialog.asksaveasfilename()
+            filename = self.json['name']
+            filename = filedialog.asksaveasfilename(filetypes=hwFilter, initialfile=filename)
             if filename != '':
+                ext = os.path.splitext(filename)[1]
+                if ext != HW_EXT:
+                    filename += HW_EXT
                 with open(filename, "w") as f:
                     json.dump(self.json, f, indent=4)
         menubar = tk.Menu(self.main)
@@ -253,6 +259,7 @@ class Editor:
         self.jsonEditor['yscrollcommand'] = s.set
         def apply(*args):
             self.json = json.loads(self.jsonEditor.get('1.0', 'end'))
+            self.updateWindowTitle()
             self.reload()
         btn = ttk.Button(jsonFrame, text="Apply", command=apply)
         btn.grid(row=1, column=0, columnspan=2)

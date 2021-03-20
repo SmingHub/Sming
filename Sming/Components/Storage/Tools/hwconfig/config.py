@@ -7,6 +7,8 @@ from rjsmin import jsmin
 from common import *
 from builtins import classmethod
 
+HW_EXT = '.hw'
+
 def get_config_dirs():
     s = os.environ['HWCONFIG_DIRS']
     dirs = s.replace('  ', ' ').split(' ')
@@ -28,7 +30,7 @@ def get_config_list():
     dirs = get_config_dirs()
     for d in reversed(dirs):
         for f in os.listdir(d):
-            if f.endswith('.hw'):
+            if f.endswith(HW_EXT):
                 n = os.path.splitext(f)[0]
                 list[n] = d + '/' + f
     return list
@@ -36,7 +38,7 @@ def get_config_list():
 def find_config(name):
     dirs = get_config_dirs()
     for d in dirs:
-        path = fixpath(d) + '/' + name + '.hw'
+        path = fixpath(d) + '/' + name + HW_EXT
         if os.path.exists(path):
             return path
     raise InputError("Config '%s' not found" % name)
