@@ -216,9 +216,11 @@ class Editor:
                 dev = self.device_from_id(id)
                 self.editDevice(dev)
             else:
-                dev = self.device_from_id(tree.parent(id))
-                addr = item['values'][0]
-                part = self.config.map().find_by_address(dev, addr)
+                part = self.config.map().find_by_name(id)
+                if part is None:
+                    dev = self.device_from_id(tree.parent(id))
+                    addr = item['values'][0]
+                    part = self.config.map().find_by_address(dev, addr)
                 self.editPartition(part)
         tree.bind('<<TreeviewSelect>>', select)
 
