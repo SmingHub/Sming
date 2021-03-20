@@ -192,7 +192,7 @@ class Editor:
 
         # Treeview for devices and partitions
 
-        tree = ttk.Treeview(self.main, columns=['address', 'size', 'end', 'type', 'subtype', 'filename'])
+        tree = ttk.Treeview(self.main, columns=['start', 'end', 'size', 'type', 'subtype', 'filename'])
         tree.grid(row=1, column=0, columnspan=3, sticky=tk.NSEW)
         self.tree = tree
 
@@ -200,12 +200,12 @@ class Editor:
         s.grid(row=1, column=4, sticky=tk.NS)
         tree['yscrollcommand'] = s.set
 
-        tree.heading('address', text='Address')
-        tree.heading('size', text='Size')
-        tree.heading('end', text='End')
-        tree.heading('type', text='Type')
-        tree.heading('subtype', text='Sub-Type')
-        tree.heading('filename', text='Image filename')
+        tree.heading('start', text='Start', anchor=tk.W)
+        tree.heading('end', text='End', anchor=tk.W)
+        tree.heading('size', text='Size', anchor=tk.W)
+        tree.heading('type', text='Type', anchor=tk.W)
+        tree.heading('subtype', text='Sub-Type', anchor=tk.W)
+        tree.heading('filename', text='Image filename', anchor=tk.W)
 
         # self.tree.tag_configure('device', font='+1')
         # tree.tag_configure('normal', font='+1')
@@ -348,7 +348,7 @@ class Editor:
         for dev in config.devices:
             self.tree.insert('', 'end', dev.name, text=dev.name, open=True,
                 tags = ['device'],
-                values=[addr_format(0), dev.size_str(), addr_format(dev.size - 1), dev.type_str()])
+                values=[addr_format(0), addr_format(dev.size - 1), dev.size_str(), dev.type_str()])
 
         def get_part_id(part):
             if part.type == partition.INTERNAL_TYPE and part.subtype == partition.INTERNAL_UNUSED:
@@ -360,7 +360,7 @@ class Editor:
         # Partitions are children
         for p in config.map():
             self.tree.insert(p.device.name, 'end', get_part_id(p), text=p.name,
-                values=[p.address_str(), p.size_str(), p.end_str(), p.type_str(), p.subtype_str(), p.filename])
+                values=[p.address_str(), p.end_str(), p.size_str(), p.type_str(), p.subtype_str(), p.filename])
 
         # Base configuration
         self.base_config.set(config.base_config)
