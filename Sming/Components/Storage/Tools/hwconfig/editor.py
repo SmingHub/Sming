@@ -32,7 +32,6 @@ class EditState(dict):
         self.name = obj.name
         self.schema = editor.schema['definitions'][objectType]
         self.json = get_dict_value(editor.json, dictName, {})
-        self.config = getattr(editor.config, dictName)
         self.obj = obj
         self.row = 0
         btn = ttk.Button(editor.editFrame, text="Apply", command=self.apply)
@@ -64,6 +63,14 @@ class EditState(dict):
         return c
 
     def apply(self, *args):
+        # Fetch base JSON for comparison
+        baseConfig = copy.deepcopy(self.editor.baseConfig)
+        baseConfig.parse_options(self.editor.json['options'])
+        base = getattr(baseConfig, self.dictName).find_by_name(self.name)
+        if base is None:
+            base = {}
+        else:
+            base = base.dict()
         try:
             obj = get_dict_value(self.json, self.name, {})
             for k, v in self.items():
@@ -79,13 +86,17 @@ class EditState(dict):
                     if k in obj:
                         del obj[k]
                 elif schema['type'] == 'object':
-                    obj[k] = json.loads(value)
+                    obj[k] = {} if value == '' else json.loads(value)
                 elif schema['type'] == 'boolean':
                     obj[k] = (value != '0')
                 elif value.isdigit() and 'integer' in schema['type']:
                     obj[k] = int(value)
                 else:
                     obj[k] = value
+                if k in base and obj[k] == base[k]:
+                    del obj[k]
+            if len(obj) == 0:
+                del self.json[self.name]
             self.editor.reload()
         except AttributeError as err:
             self.editor.status.set(err)
