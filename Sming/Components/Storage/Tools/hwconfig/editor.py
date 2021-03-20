@@ -171,12 +171,12 @@ class Editor:
             self.reset()
             self.reload()
         def fileOpen(*args):
-            filename = filedialog.askopenfilename(filetypes=hwFilter)
+            filename = filedialog.askopenfilename(filetypes=hwFilter, initialdir=os.getcwd())
             if filename != '':
                 self.loadConfig(filename)
         def fileSave(*args):
             filename = self.json['name']
-            filename = filedialog.asksaveasfilename(filetypes=hwFilter, initialfile=filename)
+            filename = filedialog.asksaveasfilename(filetypes=hwFilter, initialfile=filename, initialdir=os.getcwd())
             if filename != '':
                 ext = os.path.splitext(filename)[1]
                 if ext != HW_EXT:
