@@ -253,9 +253,9 @@ class Editor:
         filename = find_config(config_name)
         # If this is a core profile, don't edit it but create a new profile based on it
         if filename.startswith(os.environ['SMING_HOME']):
-            json = self.json = {}
-            json['name'] = 'New profile'
-            json['base_config'] = config_name
+            self.json = {}
+            self.json['name'] = 'New profile'
+            self.json['base_config'] = config_name
         else:
             with open(filename) as f:
                 self.json = json.loads(jsmin(f.read()))
