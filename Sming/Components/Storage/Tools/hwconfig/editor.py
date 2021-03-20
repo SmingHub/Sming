@@ -130,11 +130,14 @@ class EditState(dict):
 class Editor:
     def __init__(self, root):
         root.title(app_name)
-        # Window resizing is focused around treeview @ (0, 0)
-        root.columnconfigure(0, weight=1)
-        root.rowconfigure(0, weight=1)
-        root.option_add('*tearOff', False)
         self.main = root
+        self.initialise()
+
+    def initialise(self):
+        # Window resizing is focused around treeview @ (0, 0)
+        self.main.columnconfigure(0, weight=1)
+        self.main.rowconfigure(1, weight=1)
+        self.main.option_add('*tearOff', False)
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
         s = ttk.Style()
         # critical(str(s.theme_names()))
@@ -142,7 +145,6 @@ class Editor:
         s.configure('Treeview', font='TkFixedFont')
         s.configure('Treeview.Heading', font='TkFixedFont')
 
-    def initialise(self):
         with open(os.environ['HWCONFIG_SCHEMA']) as f:
             self.schema = json.load(f)
 
@@ -173,14 +175,24 @@ class Editor:
         menu_file.add_command(label='Open...', command=fileOpen)
         menu_file.add_command(label='Save...', command=fileSave)
 
+        # Toolbar
+        toolbar = ttk.Frame(self.main)
+        toolbar.grid(row=0, column=0, columnspan=4, sticky=tk.W)
+        btnNew = ttk.Button(toolbar, text="New", command=fileNew)
+        btnNew.grid(row=0, column=1)
+        btnOpen = ttk.Button(toolbar, text="Open...", command=fileOpen)
+        btnOpen.grid(row=0, column=2)
+        btnSave = ttk.Button(toolbar, text="Save...", command=fileSave)
+        btnSave.grid(row=0, column=3)
+
         # Treeview for devices and partitions
 
         tree = ttk.Treeview(self.main, columns=['address', 'size', 'end', 'type', 'subtype', 'filename'])
-        tree.grid(row=0, column=0, columnspan=3, sticky=tk.NSEW)
+        tree.grid(row=1, column=0, columnspan=3, sticky=tk.NSEW)
         self.tree = tree
 
         s = ttk.Scrollbar(self.main, orient=tk.VERTICAL, command=tree.yview)
-        s.grid(row=0, column=4, sticky=tk.NS)
+        s.grid(row=1, column=4, sticky=tk.NS)
         tree['yscrollcommand'] = s.set
 
         tree.heading('address', text='Address')
@@ -195,7 +207,7 @@ class Editor:
 
         # Base configurations
         f = ttk.LabelFrame(self.main, text = 'Base Configuration')
-        f.grid(row=1, column=0, sticky=tk.W)
+        f.grid(row=2, column=0, sticky=tk.W)
 
         def base_config_changed(*args):
             self.json['base_config'] = self.base_config.get()
@@ -211,7 +223,7 @@ class Editor:
         # Option checkboxes
 
         f = ttk.LabelFrame(self.main, text = 'Options')
-        f.grid(row=2, column=0, sticky=tk.W)
+        f.grid(row=3, column=0, sticky=tk.W)
 
         def options_changed(*args):
             self.json['options'] = []
@@ -247,11 +259,11 @@ class Editor:
 
         # Edit frame
         self.editFrame = ttk.LabelFrame(self.main, text='Edit Object')
-        self.editFrame.grid(row=1, column=1, rowspan=2, sticky=tk.EW)
+        self.editFrame.grid(row=2, column=1, rowspan=2, sticky=tk.EW)
 
         # JSON editor
         jsonFrame = ttk.LabelFrame(self.main, text='JSON Configuration')
-        jsonFrame.grid(row=1, column=2, rowspan=2, sticky=tk.EW)
+        jsonFrame.grid(row=2, column=2, rowspan=2, sticky=tk.EW)
         self.jsonEditor = tk.Text(jsonFrame, height=14, width=50)
         self.jsonEditor.grid(row=0, column=0, sticky=tk.NSEW)
         s = ttk.Scrollbar(jsonFrame, orient=tk.VERTICAL, command=self.jsonEditor.yview)
@@ -267,7 +279,7 @@ class Editor:
         # Status box
         self.status = tk.StringVar()
         status = ttk.Label(self.main, textvariable=self.status)
-        status.grid(row=3, column=0, columnspan=3, sticky=tk.EW)
+        status.grid(row=4, column=0, columnspan=3, sticky=tk.EW)
 
         self.reset()
 
@@ -310,7 +322,7 @@ class Editor:
 
     def reset(self):
         self.clear()
-        self.json = {}
+        self.json = {"name": "New Profile"}
         self.json['base_config'] = 'standard'
         self.base_config.set('standard')
         for k, v in self.options.items():
@@ -415,7 +427,6 @@ def main():
 
     root = tk.Tk()
     editor = Editor(root)
-    editor.initialise()
     editor.loadConfig(find_config(args.input))
     root.mainloop()
 
