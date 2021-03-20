@@ -235,6 +235,9 @@ ifndef MAKE_CLEAN
 -include $(CONFIG_CACHE_FILE)
 endif
 
+# Also export debug variables here for access by external tools (e.g. python)
+CONFIG_DEBUG_FILE	:= $(OUT_BASE)/debug.mk
+
 # Append standard search directories to any defined by the application
 ALL_SEARCH_DIRS			:= $(call FixPath,$(abspath $(COMPONENT_SEARCH_DIRS)))
 COMPONENTS_EXTRA_INCDIR	+= $(ALL_SEARCH_DIRS)
@@ -665,4 +668,5 @@ endef
 ifndef MAKE_CLEAN
 CACHED_VAR_NAMES := $(sort $(CACHED_VAR_NAMES) $(CONFIG_VARS) $(RELINK_VARS) $(CACHE_VARS))
 $(eval $(call WriteConfigCache,$(CONFIG_CACHE_FILE),CACHED_VAR_NAMES))
+$(eval $(call WriteCacheValues,$(CONFIG_DEBUG_FILE),$(sort $(DEBUG_VARS))))
 endif

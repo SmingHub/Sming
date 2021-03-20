@@ -32,6 +32,7 @@ PARTITION_TOOLS		:= $(PARTITION_PATH)/Tools
 HWCONFIG_SCHEMA		:= $(PARTITION_PATH)/schema.json
 HWCONFIG_VARS := \
 	SMING_HOME \
+	OUT_BASE \
 	HWCONFIG_DIRS \
 	HWCONFIG_OPTS \
 	HWCONFIG_SCHEMA
@@ -166,6 +167,7 @@ $(foreach p,$1,$(PARTITION_$p_ADDRESS),$(PARTITION_$p_SIZE_BYTES))
 endef
 
 # One flash sector of 0xFF
+DEBUG_VARS += BLANK_BIN
 BLANK_BIN := $(PARTITION_PATH)/blank.bin
 
 # Just the application chunks

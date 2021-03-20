@@ -1,4 +1,4 @@
-import common, argparse, os, partition
+import common, argparse, os, partition, configparser, string
 from common import *
 from config import *
 import tkinter as tk
@@ -19,6 +19,35 @@ def get_dict_value(dict, key, default):
     if not key in dict:
         dict[key] = default
     return dict[key]
+
+
+def load_config_vars(filename):
+    out_base = os.environ['OUT_BASE']
+    path = out_base + '/' + filename
+    if not os.path.exists(path):
+        return {}
+    parser = configparser.ConfigParser()
+    parser.optionxform = str # preserve case
+    with open(path) as f:
+        data = "[config]\n" + f.read()
+    parser.read_string(data)
+    return parser['config']
+
+
+def to_KB(value):
+    """Round value up to whole KB
+    """
+    return (value + 1023) & ~0x3ff
+
+
+def percent_used(used, total):
+    """Get string showing size and percent of total
+    """
+    s = size_format(to_KB(used))
+    if total != 0:
+        s += " (%u%%)" % round(100 * used / total)
+    return s
+
 
 class Field:
     """Manages widget and associated variable
@@ -194,6 +223,8 @@ class Editor:
         root.title(app_name)
         self.main = root
         self.edit = None
+        self.config_vars = load_config_vars('config.mk')
+        self.config_vars.update(load_config_vars('debug.mk'))
         self.initialise()
 
     def initialise(self):
@@ -250,7 +281,7 @@ class Editor:
 
         # Treeview for devices and partitions
 
-        tree = ttk.Treeview(self.main, columns=['start', 'end', 'size', 'type', 'subtype', 'filename'])
+        tree = ttk.Treeview(self.main, columns=['start', 'end', 'size', 'used', 'type', 'subtype', 'filename'])
         tree.grid(row=1, column=0, columnspan=3, sticky=tk.NSEW)
         self.tree = tree
 
@@ -261,6 +292,7 @@ class Editor:
         tree.heading('start', text='Start', anchor=tk.W)
         tree.heading('end', text='End', anchor=tk.W)
         tree.heading('size', text='Size', anchor=tk.W)
+        tree.heading('used', text='Used', anchor=tk.W)
         tree.heading('type', text='Type', anchor=tk.W)
         tree.heading('subtype', text='Sub-Type', anchor=tk.W)
         tree.heading('filename', text='Image filename', anchor=tk.W)
@@ -394,6 +426,16 @@ class Editor:
         self.reload()
         self.updateWindowTitle()
 
+    def resolve_path(self, path):
+        tmp = str(path)
+        while True:
+            tmp = tmp.replace('(', '{')
+            tmp = tmp.replace(')', '}')
+            new_path = string.Template(tmp).substitute(self.config_vars)
+            if new_path == tmp:
+                return new_path
+            tmp = new_path
+
     def reload(self):
         self.clear()
         self.jsonEditor.replace('1.0', 'end', to_json(self.json))
@@ -405,9 +447,13 @@ class Editor:
 
         # Devices are our root nodes
         for dev in config.devices:
+            used = 0
+            for p in config.map():
+                if p.device == dev and not p.is_unused():
+                    used += p.size
             self.tree.insert('', 'end', dev.name, text=dev.name, open=True,
                 tags = ['device'],
-                values=[addr_format(0), addr_format(dev.size - 1), dev.size_str(), dev.type_str()])
+                values=[addr_format(0), addr_format(dev.size - 1), dev.size_str(), percent_used(used, dev.size), dev.type_str()])
 
         # Partitions are children
         for p in config.map():
@@ -415,8 +461,20 @@ class Editor:
                 id = p.device.name + '/' + p.address_str()
             else:
                 id = p.name
+
+            def get_used():
+                if p.filename == '':
+                    return ''
+                try:
+                    path = self.resolve_path(p.filename)
+                except KeyError as err:
+                    return str(err) + ' undefined'
+                if not os.path.exists(path):
+                    return '(not found)'
+                return percent_used(os.path.getsize(path), p.size)
+
             self.tree.insert(p.device.name, 'end', id, text=p.name,
-                values=[p.address_str(), p.end_str(), p.size_str(), p.type_str(), p.subtype_str(), p.filename])
+                values=[p.address_str(), p.end_str(), p.size_str(), get_used(), p.type_str(), p.subtype_str(), p.filename])
 
         # Base configuration
         self.base_config.set(config.base_config)

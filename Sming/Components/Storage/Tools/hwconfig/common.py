@@ -56,10 +56,11 @@ def addr_format(a):
 
 
 def size_format(a):
-    if a != 0:
-        for (val, suffix) in [(0x40000000, "G"), (0x100000, "M"), (0x400, "K")]:
-            if a % val == 0:
-                return "%d%s" % (a // val, suffix)
+    if a == 0:
+        return '0'
+    for (val, suffix) in [(0x40000000, "G"), (0x100000, "M"), (0x400, "K")]:
+        if a % val == 0:
+            return "%d%s" % (a // val, suffix)
     return "0x%08x" % a
 
 
