@@ -87,6 +87,12 @@ class EditState(dict):
                         obj = self.json[value] = old
                         self.name = value
                         self.editor.updateEditTitle()
+                elif k == 'address' and isinstance(self.obj, partition.Entry) and self.obj.type == partition.INTERNAL_TYPE and self.obj.subtype == partition.INTERNAL_PARTITION_TABLE:
+                    if parse_int(value) == baseConfig.partitions.offset:
+                        if 'partition_table_offset' in self.editor.json:
+                            del self.editor.json['partition_table_offset']
+                    else:
+                        self.editor.json['partition_table_offset'] = value
                 elif value == '' and k != 'filename': # TODO mark 'allow empty' values in schema somehow
                     if k in obj:
                         del obj[k]
@@ -114,6 +120,11 @@ class EditState(dict):
         if field == 'name':
             objlist = getattr(self.editor.baseConfig, self.dictName)
             if objlist.find_by_name(self.name) is not None:
+                return 'disabled'
+        if isinstance(self.obj, partition.Entry) and self.obj.type == partition.INTERNAL_TYPE:
+            if self.obj.subtype == partition.INTERNAL_PARTITION_TABLE and field == 'address':
+                return 'normal'
+            if self.obj.subtype != partition.INTERNAL_UNUSED:
                 return 'disabled'
         return 'normal'
 
@@ -420,9 +431,7 @@ class Editor:
             values['subtype'] = list(subtypes)
 
         for k in edit.keys():
-            c = edit.addControl(k, values)
-            if part.type == partition.INTERNAL_TYPE and part.subtype != partition.INTERNAL_UNUSED:
-                c.configure(state='disabled')
+            edit.addControl(k, values)
 
 
 def main():
