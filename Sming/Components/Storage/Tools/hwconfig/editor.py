@@ -2,7 +2,7 @@ import common, argparse, os, partition
 from common import *
 from config import *
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog
 
 app_name = 'Sming Hardware Profile Editor'
 
@@ -147,21 +147,25 @@ class Editor:
             self.schema = json.load(f)
 
         # Menus
-        def newFile(*args):
-            critical('newFile')
+        def fileNew(*args):
             self.reset()
             self.reload()
-        def openFile(*args):
-            critical('openFile')
-        def saveFile(*args):
-            critical('saveFile')
+        def fileOpen(*args):
+            filename = filedialog.askopenfilename()
+            if filename != '':
+                self.loadConfig(filename)
+        def fileSave(*args):
+            filename = filedialog.asksaveasfilename()
+            if filename != '':
+                with open(filename, "w") as f:
+                    json.dump(self.json, f, indent=4)
         menubar = tk.Menu(self.main)
         self.main['menu'] = menubar
         menu_file = tk.Menu(menubar)
         menubar.add_cascade(menu=menu_file, label='File')
-        menu_file.add_command(label='New...', command=newFile)
-        menu_file.add_command(label='Open...', command=openFile)
-        menu_file.add_command(label='Save...', command=saveFile)
+        menu_file.add_command(label='New...', command=fileNew)
+        menu_file.add_command(label='Open...', command=fileOpen)
+        menu_file.add_command(label='Save...', command=fileSave)
 
         # Treeview for devices and partitions
 
@@ -261,13 +265,13 @@ class Editor:
         self.reset()
 
 
-    def loadConfig(self, config_name):
+    def loadConfig(self, filename):
         self.reset()
-        filename = find_config(config_name)
         # If this is a core profile, don't edit it but create a new profile based on it
         if filename.startswith(os.environ['SMING_HOME']):
             self.json = {}
             self.json['name'] = 'New profile'
+            config_name = os.path.splitext(os.path.basename(filename))[0]
             self.json['base_config'] = config_name
         else:
             with open(filename) as f:
@@ -405,7 +409,7 @@ def main():
     root = tk.Tk()
     editor = Editor(root)
     editor.initialise()
-    editor.loadConfig(args.input)
+    editor.loadConfig(find_config(args.input))
     root.mainloop()
 
 
