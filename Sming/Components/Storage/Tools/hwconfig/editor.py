@@ -45,7 +45,7 @@ class EditState(dict):
             value = value.name
         elif value and schema['type'] == 'object':
             value = json.dumps(value)
-        var = self[fieldName] = tk.StringVar(value=value)
+        var = tk.StringVar(value=value)
         if schema['type'] == 'boolean':
             c = ttk.Checkbutton(frame, text=fieldName, variable=var)
         else:
@@ -57,6 +57,7 @@ class EditState(dict):
             else:
                 c = tk.Entry(frame, width=64)
             c.configure(textvariable=var)
+        self[fieldName] = (var, c)
         c.configure(state=self.getState(fieldName))
         c.grid(row=self.row, column=1, sticky=tk.EW)
         self.row += 1
@@ -73,7 +74,11 @@ class EditState(dict):
             base = base.dict()
         try:
             obj = get_dict_value(self.json, self.name, {})
-            for k, v in self.items():
+            for k, item in self.items():
+                c = item[1]
+                v = item[0]
+                if str(c.cget('state')) == 'disabled':
+                    continue
                 value = v.get()
                 schema = self.get_property(k)
                 if k == 'name':
