@@ -546,35 +546,39 @@ class Map(Table):
     """Contiguous map of flash memory
     """
     def __init__(self, table, devices):
-        device = devices[0]
-
-        def add(name, address, size, subtype):
+        def add(table, device, name, address, size, subtype):
             entry = Entry(device, name, address, size, INTERNAL_TYPE, subtype)
-            self.append(entry)
+            table.append(entry)
             return entry
 
-        def add_unused(address, last_end):
+        def add_unused(table, device, address, last_end):
             if address > last_end + 1:
-                add('(unused)', last_end + 1, address - last_end - 1, INTERNAL_UNUSED)
+                add(table, device, '(unused)', last_end + 1, address - last_end - 1, INTERNAL_UNUSED)
 
+        device = devices[0]
+
+        # Take copy of source partitions and add internal ones to appear in the map
         partitions = copy.copy(table)
+        if table.offset != 0:
+            add(partitions, device, 'Boot Sector', 0, min(table.offset, partitions[0].address), INTERNAL_BOOT_SECTOR)
+            add(partitions, device, 'Partition Table', table.offset, PARTITION_TABLE_SIZE, INTERNAL_PARTITION_TABLE)
 
-        if table.offset == 0:
-            last = None
-        else:
-            last = add('Boot Sector', 0, min(table.offset, partitions[0].address), INTERNAL_BOOT_SECTOR)
-            p = Entry(device, 'Partition Table', table.offset, PARTITION_TABLE_SIZE, INTERNAL_TYPE, INTERNAL_PARTITION_TABLE)
-            partitions.append(p)
-            partitions.sort()
+        # Devices with no defined partitions
+        for dev in devices:
+            if partitions.find_by_address(dev, 0) is None:
+                add_unused(partitions, dev, dev.size, -1)
 
+        partitions.sort()
+
+        last = None
         for p in partitions:
             if last is not None:
                 if p.device != last.device:
-                    add_unused(last.device.size, last.end())
+                    add_unused(self, device, last.device.size, last.end())
                     device = p.device
                 elif p.address > last.end() + 1:
-                    add_unused(p.address, last.end())
+                    add_unused(self, device, p.address, last.end())
             self.append(p)
             last = p
 
-        add_unused(device.size, last.end())
+        add_unused(self, device, device.size, last.end())
