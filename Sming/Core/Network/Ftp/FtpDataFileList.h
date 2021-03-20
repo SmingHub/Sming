@@ -29,7 +29,7 @@ public:
 			return;
 		}
 
-		if(stat.attr[FileAttribute::Directory]) {
+		if(stat.isDir()) {
 			dir.open(path);
 			statValid = dir.next();
 		} else {
@@ -78,13 +78,13 @@ public:
 			char buf[128];
 			PSTR_ARRAY(fmt, "--- %-6u %s ");
 			m_snprintf(buf, sizeof(buf), fmt, stat.size, timestr.c_str());
-			buf[0] = stat.attr[FileAttribute::Directory] ? 'd' : '-';
+			buf[0] = stat.isDir() ? 'd' : '-';
 			buf[1] = (user.role >= stat.acl.readAccess) ? 'r' : '-';
 			buf[2] = stat.attr[FileAttribute::ReadOnly] && (user.role >= stat.acl.writeAccess) ? 'w' : '-';
 			line = buf;
 		}
 		line.concat(stat.name, stat.name.length);
-		if(stat.attr[FileAttribute::Directory]) {
+		if(stat.isDir()) {
 			line += '/';
 		}
 	}

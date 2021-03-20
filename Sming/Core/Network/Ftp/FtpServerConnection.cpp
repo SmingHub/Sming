@@ -267,7 +267,7 @@ void FtpServerConnection::onCommand(String cmd, String data)
 		}
 		debug_i("CWD: '%s'", path.c_str());
 		FileStat stat;
-		if(getFileSystem()->stat(path, stat) == FS_OK && stat.attr[FileAttribute::Directory]) {
+		if(getFileSystem()->stat(path, stat) == FS_OK && stat.isDir()) {
 			cwd = path;
 			response(250, F("directory changed to /") + cwd.c_str()); // OK
 		} else {
