@@ -510,11 +510,22 @@ inline int fileCloseDir(DirHandle dir)
 /** @brief Read a directory entry
  *  @param dir The directory object returned by fileOpenDir()
  *  @param stat The returned information, owned by DirHandle object
+ *  @retval int Error code
  */
 inline int fileReadDir(DirHandle dir, FileStat& stat)
 {
 	CHECK_FS(readdir)
 	return fileSystem->readdir(dir, stat);
+}
+
+/** @brief Rewind to start of directory entries
+ *  @param dir The directory object returned by fileOpenDir()
+ *  @retval int Error code
+ */
+inline int fileRewindDir(DirHandle dir)
+{
+	CHECK_FS(rewinddir)
+	return fileSystem->rewinddir(dir);
 }
 
 /** @brief Get basic file system information

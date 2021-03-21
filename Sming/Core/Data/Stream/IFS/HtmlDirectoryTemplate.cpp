@@ -27,7 +27,7 @@ String HtmlDirectoryTemplate::getValue(const char* name)
 		auto& stat = dir().stat();
 
 		if(FS("icon") == name) {
-			if(stat.attr[FileAttribute::Directory]) {
+			if(stat.isDir()) {
 				return F("&#128193;");
 			}
 

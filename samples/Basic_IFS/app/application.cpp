@@ -58,7 +58,7 @@ void onFile(HttpRequest& request, HttpResponse& response)
 		return;
 	}
 
-	if(stat.attr[FileAttribute::Directory]) {
+	if(stat.isDir()) {
 		auto dir = new Directory;
 		IFS::DirectoryTemplate* tmpl;
 		String fmt = request.uri.Query["format"];
