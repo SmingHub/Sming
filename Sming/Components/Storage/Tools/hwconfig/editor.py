@@ -31,7 +31,6 @@ class EditState(dict):
         self.dictName = dictName
         self.name = obj.name
         self.schema = editor.schema['definitions'][objectType]
-        self.json = get_dict_value(editor.json, dictName, {})
         self.obj = obj
         self.row = 0
         btn = ttk.Button(editor.editFrame, text="Apply", command=self.apply)
@@ -40,9 +39,11 @@ class EditState(dict):
     def addControl(self, fieldName, enumDict):
         frame = self.editor.editFrame
         schema = self.get_property(fieldName)
+        disabled = False
         value = read_property(self.obj, fieldName)
         if hasattr(value, 'name'):
             value = value.name
+            disabled = True
         elif value and schema['type'] == 'object':
             value = json.dumps(value)
         var = tk.StringVar(value=value)
@@ -58,7 +59,18 @@ class EditState(dict):
                 c = tk.Entry(frame, width=64)
             c.configure(textvariable=var)
         self[fieldName] = (var, c)
-        c.configure(state=self.getState(fieldName))
+
+        if fieldName == 'name':
+            # Name is read-only for inherited devices/partitions
+            objlist = getattr(self.editor.baseConfig, self.dictName)
+            disabled = objlist.find_by_name(self.name) is not None
+        if isinstance(self.obj, partition.Entry):
+            if self.obj.type == partition.INTERNAL_TYPE:
+                if self.obj.subtype != partition.INTERNAL_PARTITION_TABLE or fieldName != 'address':
+                    if self.obj.subtype != partition.INTERNAL_UNUSED:
+                        disabled = True
+        if disabled:
+            c.configure(state='disabled')
         c.grid(row=self.row, column=1, sticky=tk.EW)
         self.row += 1
         return c
@@ -72,61 +84,66 @@ class EditState(dict):
             base = {}
         else:
             base = base.dict()
+        json_config = copy.deepcopy(self.editor.json)
+        json_object = get_dict_value(json_config, self.dictName, {})
+        new_name = None
         try:
-            obj = get_dict_value(self.json, self.name, {})
+            obj = get_dict_value(json_object, self.name, {})
             for k, item in self.items():
                 c = item[1]
                 v = item[0]
-                if str(c.cget('state')) == 'disabled':
-                    continue
                 value = v.get()
-                schema = self.get_property(k)
-                if k == 'name':
-                    if value != self.name:
-                        old = self.json.pop(self.name)
-                        obj = self.json[value] = old
-                        self.name = value
-                        self.editor.updateEditTitle()
-                elif k == 'address' and isinstance(self.obj, partition.Entry) and self.obj.type == partition.INTERNAL_TYPE and self.obj.subtype == partition.INTERNAL_PARTITION_TABLE:
-                    if parse_int(value) == baseConfig.partitions.offset:
-                        if 'partition_table_offset' in self.editor.json:
-                            del self.editor.json['partition_table_offset']
-                    else:
-                        self.editor.json['partition_table_offset'] = value
-                elif value == '' and k != 'filename': # TODO mark 'allow empty' values in schema somehow
-                    if k in obj:
-                        del obj[k]
-                elif schema['type'] == 'object':
-                    obj[k] = {} if value == '' else json.loads(value)
-                elif schema['type'] == 'boolean':
-                    obj[k] = (value != '0')
-                elif value.isdigit() and 'integer' in schema['type']:
-                    obj[k] = int(value)
-                else:
+                if str(c.cget('state')) == 'disabled':
                     obj[k] = value
+                else:
+                    schema = self.get_property(k)
+                    if k == 'name':
+                        value = value.strip()
+                        if value != self.name:
+                            if value in self.editor.config.map():
+                                self.editor.status.set("Name '%s' already used" % value)
+                                return
+                            old = json_object.pop(self.name)
+                            obj = json_object[value] = old
+                            new_name = value
+                    elif k == 'address' and isinstance(self.obj, partition.Entry) and self.obj.type == partition.INTERNAL_TYPE and self.obj.subtype == partition.INTERNAL_PARTITION_TABLE:
+                        if parse_int(value) == baseConfig.partitions.offset:
+                            if 'partition_table_offset' in json_config:
+                                del json_config['partition_table_offset']
+                        else:
+                            json_config['partition_table_offset'] = value
+                    elif value == '' and k != 'filename': # TODO mark 'allow empty' values in schema somehow
+                        if k in obj:
+                            del obj[k]
+                    elif schema['type'] == 'object':
+                        obj[k] = {} if value == '' else json.loads(value)
+                    elif schema['type'] == 'boolean':
+                        obj[k] = (value != '0')
+                    elif value.isdigit() and 'integer' in schema['type']:
+                        obj[k] = int(value)
+                    else:
+                        obj[k] = value
                 if k in base and obj[k] == base[k]:
                     del obj[k]
             if len(obj) == 0:
-                del self.json[self.name]
+                del json_object[self.name]
+            critical(to_json(json_config))
+            Config.from_json(json_config).verify(False)
+            self.editor.json = json_config
+            if new_name is not None:
+                self.name = new_name
+                self.editor.updateEditTitle()
             self.editor.reload()
+        except InputError as err:
+            self.editor.status.set(err)
+            raise err
         except AttributeError as err:
             self.editor.status.set(err)
+            raise err
         except ValueError as err:
             self.editor.status.set(err)
+            raise err
 
-
-    def getState(self, field):
-        # Name is read-only for inherited devices/partitions
-        if field == 'name':
-            objlist = getattr(self.editor.baseConfig, self.dictName)
-            if objlist.find_by_name(self.name) is not None:
-                return 'disabled'
-        if isinstance(self.obj, partition.Entry) and self.obj.type == partition.INTERNAL_TYPE:
-            if self.obj.subtype == partition.INTERNAL_PARTITION_TABLE and field == 'address':
-                return 'normal'
-            if self.obj.subtype != partition.INTERNAL_UNUSED:
-                return 'disabled'
-        return 'normal'
 
     def get_property(self, name):
         if name == 'name':
@@ -147,6 +164,7 @@ class Editor:
     def __init__(self, root):
         root.title(app_name)
         self.main = root
+        self.edit = None
         self.initialise()
 
     def initialise(self):
@@ -338,6 +356,7 @@ class Editor:
 
     def reset(self):
         self.clear()
+        self.resetEditor()
         self.json = {"name": "New Profile"}
         self.json['base_config'] = 'standard'
         self.base_config.set('standard')
@@ -361,16 +380,13 @@ class Editor:
                 tags = ['device'],
                 values=[addr_format(0), addr_format(dev.size - 1), dev.size_str(), dev.type_str()])
 
-        def get_part_id(part):
-            if part.type == partition.INTERNAL_TYPE and part.subtype == partition.INTERNAL_UNUSED:
-                id = part.device.name + '/' + part.address_str()
-            else:
-                id = part.name
-            return id
-
         # Partitions are children
         for p in config.map():
-            self.tree.insert(p.device.name, 'end', get_part_id(p), text=p.name,
+            if p.type == partition.INTERNAL_TYPE and p.subtype == partition.INTERNAL_UNUSED:
+                id = p.device.name + '/' + p.address_str()
+            else:
+                id = p.name
+            self.tree.insert(p.device.name, 'end', id, text=p.name,
                 values=[p.address_str(), p.end_str(), p.size_str(), p.type_str(), p.subtype_str(), p.filename])
 
         # Base configuration
@@ -380,13 +396,10 @@ class Editor:
         for k, v in self.options.items():
             v.set(k in config.options)
 
-        if hasattr(self, 'edit'):
+        if self.edit is not None:
             id = self.edit.name
-            if not self.tree.exists(id):
-                id = get_part_id(self.edit.obj)
-            if self.tree.exists(id):
-                self.tree.focus(id)
-                self.tree.selection_set(id)
+            self.tree.focus(id)
+            self.tree.selection_set(id)
 
 
     def device_from_id(self, id):
@@ -404,6 +417,7 @@ class Editor:
         f = self.editFrame
         for c in f.winfo_children():
             c.destroy()
+        self.editFrame.configure(text='')
         return f
 
     def editDevice(self, dev):
