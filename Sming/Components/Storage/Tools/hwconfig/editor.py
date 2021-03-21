@@ -29,7 +29,10 @@ class EditState(dict):
         self.editor = editor
         self.type = objectType
         self.dictName = dictName
-        self.name = obj.name
+        if isinstance(obj, partition.Entry) and obj.type == partition.INTERNAL_TYPE and obj.subtype == partition.INTERNAL_UNUSED:
+            self.name = 'New Partition'
+        else:
+            self.name = obj.name
         self.schema = editor.schema['definitions'][objectType]
         self.obj = obj
         self.row = 0
@@ -64,6 +67,7 @@ class EditState(dict):
             # Name is read-only for inherited devices/partitions
             objlist = getattr(self.editor.baseConfig, self.dictName)
             disabled = objlist.find_by_name(self.name) is not None
+            var.set(self.name)
         if isinstance(self.obj, partition.Entry):
             if self.obj.type == partition.INTERNAL_TYPE:
                 if self.obj.subtype != partition.INTERNAL_PARTITION_TABLE or fieldName != 'address':
