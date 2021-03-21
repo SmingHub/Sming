@@ -29,7 +29,7 @@ class EditState(dict):
         self.editor = editor
         self.objectType = objectType
         self.dictName = dictName
-        if objectType == 'Partition' and obj.type == partition.INTERNAL_TYPE and obj.subtype == partition.INTERNAL_UNUSED:
+        if objectType == 'Partition' and obj.is_unused():
             self.name = 'New Partition'
         else:
             self.name = obj.name
@@ -68,11 +68,12 @@ class EditState(dict):
             objlist = getattr(self.editor.baseConfig, self.dictName)
             disabled = objlist.find_by_name(self.name) is not None
             var.set(self.name)
+        # Internal 'partitions' are generally not editable, but make an exception to allow
+        # creation of new partitions (on an 'unused' type) or changing the partition table offset
         if self.objectType == 'Partition':
-            if self.obj.type == partition.INTERNAL_TYPE:
-                if self.obj.subtype != partition.INTERNAL_PARTITION_TABLE or fieldName != 'address':
-                    if self.obj.subtype != partition.INTERNAL_UNUSED:
-                        disabled = True
+            if self.obj.is_internal() and not self.obj.is_unused():
+                if not (self.obj.is_internal(partition.INTERNAL_PARTITION_TABLE) and fieldName == 'address'):
+                    disabled = True
         if disabled:
             c.configure(state='disabled')
         c.grid(row=self.row, column=1, sticky=tk.EW)
@@ -93,45 +94,46 @@ class EditState(dict):
         new_name = None
         try:
             obj = get_dict_value(json_object, self.name, {})
+            if self.objectType == 'Partition' and self.obj.is_unused():
+                obj['device'] = self.obj.device.name
             for k, item in self.items():
                 c = item[1]
+                if str(c.cget('state')) == 'disabled':
+                    continue
                 v = item[0]
                 value = v.get()
-                if str(c.cget('state')) == 'disabled':
-                    obj[k] = value
-                else:
-                    schema = self.get_property(k)
-                    if k == 'name':
-                        value = value.strip()
-                        if value != self.name:
-                            if value in self.editor.config.map():
-                                self.editor.status.set("Name '%s' already used" % value)
-                                return
-                            old = json_object.pop(self.name)
-                            obj = json_object[value] = old
-                            new_name = value
-                            # If renaming a device, then all partitions must be updated
-                            if self.objectType == 'Device':
-                                for k, p in json_config.get('partitions', {}).items():
-                                    if p['device'] == self.name:
-                                        p['device'] = new_name
-                    elif k == 'address' and self.objectType == 'Partition' and self.obj.type == partition.INTERNAL_TYPE and self.obj.subtype == partition.INTERNAL_PARTITION_TABLE:
-                        if parse_int(value) == baseConfig.partitions.offset:
-                            if 'partition_table_offset' in json_config:
-                                del json_config['partition_table_offset']
-                        else:
-                            json_config['partition_table_offset'] = value
-                    elif value == '' and k != 'filename': # TODO mark 'allow empty' values in schema somehow
-                        if k in obj:
-                            del obj[k]
-                    elif schema['type'] == 'object':
-                        obj[k] = {} if value == '' else json.loads(value)
-                    elif schema['type'] == 'boolean':
-                        obj[k] = (value != '0')
-                    elif value.isdigit() and 'integer' in schema['type']:
-                        obj[k] = int(value)
+                schema = self.get_property(k)
+                if k == 'name':
+                    value = value.strip()
+                    if value != self.name:
+                        if value in self.editor.config.map():
+                            self.editor.status.set("Name '%s' already used" % value)
+                            return
+                        old = json_object.pop(self.name)
+                        obj = json_object[value] = old
+                        new_name = value
+                        # If renaming a device, then all partitions must be updated
+                        if self.objectType == 'Device':
+                            for k, p in json_config.get('partitions', {}).items():
+                                if p['device'] == self.name:
+                                    p['device'] = new_name
+                elif k == 'address' and self.objectType == 'Partition' and self.obj.is_internal(partition.INTERNAL_PARTITION_TABLE):
+                    if parse_int(value) == baseConfig.partitions.offset:
+                        if 'partition_table_offset' in json_config:
+                            del json_config['partition_table_offset']
                     else:
-                        obj[k] = value
+                        json_config['partition_table_offset'] = value
+                elif value == '' and k != 'filename': # TODO mark 'allow empty' values in schema somehow
+                    if k in obj:
+                        del obj[k]
+                elif schema['type'] == 'object':
+                    obj[k] = {} if value == '' else json.loads(value)
+                elif schema['type'] == 'boolean':
+                    obj[k] = (value != '0')
+                elif value.isdigit() and 'integer' in schema['type']:
+                    obj[k] = int(value)
+                else:
+                    obj[k] = value
                 if k in base and obj[k] == base[k]:
                     del obj[k]
             if len(obj) == 0:
@@ -391,7 +393,7 @@ class Editor:
 
         # Partitions are children
         for p in config.map():
-            if p.type == partition.INTERNAL_TYPE and p.subtype == partition.INTERNAL_UNUSED:
+            if p.is_unused():
                 id = p.device.name + '/' + p.address_str()
             else:
                 id = p.name

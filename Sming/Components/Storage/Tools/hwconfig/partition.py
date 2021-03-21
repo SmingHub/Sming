@@ -457,6 +457,12 @@ class Entry(object):
     def subtype_is(self, subtype):
         return self.subtype_str() == subtype if isinstance(subtype, str) else self.subtype == subtype
 
+    def is_internal(self, subtype = None):
+        return (self.type == INTERNAL_TYPE) and (subtype is None or self.subtype == subtype)
+
+    def is_unused(self):
+        return self.is_internal(INTERNAL_UNUSED)
+
     def __eq__(self, other):
         if isinstance(other, str):
             return self.name == other
