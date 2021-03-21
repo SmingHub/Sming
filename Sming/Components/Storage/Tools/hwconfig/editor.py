@@ -201,7 +201,6 @@ class EditState(dict):
                     del obj[k]
             if len(obj) == 0:
                 del json_object[self.name]
-            critical(to_json(json_config))
             Config.from_json(json_config).verify(False)
             self.editor.json = json_config
             if new_name is not None:
@@ -209,14 +208,11 @@ class EditState(dict):
                 self.editor.updateEditTitle()
             self.editor.reload()
         except InputError as err:
-            self.editor.status.set(err)
-            raise err
+            self.editor.user_error(err)
         except AttributeError as err:
-            self.editor.status.set(err)
-            raise err
+            self.editor.user_error(err)
         except ValueError as err:
-            self.editor.status.set(err)
-            raise err
+            self.editor.user_error(err)
 
 
     def get_property(self, name):
@@ -242,11 +238,9 @@ class Editor:
         # Window resizing is focused around treeview @ (0, 0)
         self.main.columnconfigure(0, weight=1)
         self.main.rowconfigure(1, weight=1)
+        self.main.rowconfigure(2, weight=2)
         self.main.option_add('*tearOff', False)
-        # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
         s = ttk.Style()
-        # critical(str(s.theme_names()))
-        # s.theme_use('xpnative')
         s.configure('Treeview', font='TkFixedFont')
         s.configure('Treeview.Heading', font='TkFixedFont')
 
@@ -376,18 +370,27 @@ class Editor:
 
         # JSON editor
         jsonFrame = ttk.LabelFrame(self.main, text='JSON Configuration')
-        jsonFrame.grid(row=2, column=2, rowspan=2, sticky=tk.EW)
-        self.jsonEditor = tk.Text(jsonFrame, height=14, width=50)
+        jsonFrame.grid(row=2, column=2, rowspan=2, sticky=tk.NS)
+        self.jsonEditor = tk.Text(jsonFrame, height=16, width=50)
         self.jsonEditor.grid(row=0, column=0, sticky=tk.NSEW)
         s = ttk.Scrollbar(jsonFrame, orient=tk.VERTICAL, command=self.jsonEditor.yview)
         s.grid(row=0, column=1, sticky=tk.NS)
         self.jsonEditor['yscrollcommand'] = s.set
         def apply(*args):
-            self.json = json.loads(self.jsonEditor.get('1.0', 'end'))
-            self.updateWindowTitle()
-            self.reload()
+            try:
+                json_config = json.loads(self.jsonEditor.get('1.0', 'end'))
+                Config.from_json(json_config).verify(False)
+                self.json = json_config
+                self.updateWindowTitle()
+                self.reload()
+            except InputError as err:
+                self.user_error(err)
+            except AttributeError as err:
+                self.user_error(err)
+            except ValueError as err:
+                self.user_error(err)
         btn = ttk.Button(jsonFrame, text="Apply", command=apply)
-        btn.grid(row=1, column=0, columnspan=2)
+        btn.grid(row=1, column=0, columnspan=2, sticky=tk.S)
 
         # Status box
         self.status = tk.StringVar()
@@ -396,6 +399,9 @@ class Editor:
 
         self.reset()
 
+    def user_error(self, err):
+        self.status.set(err)
+        messagebox.showerror(type(err).__name__, err)
 
     def loadConfig(self, filename):
         self.reset()
