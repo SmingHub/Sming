@@ -259,12 +259,14 @@ class Table(list):
             minPartitionAddress = self.offset + PARTITION_TABLE_SIZE
         else:
             minPartitionAddress = 0x00002000
-        dev = ''
+        dev = None
         last = None
         for p in self:
             if p.device != dev:
                 last = None
                 dev = p.device
+                if dev != spiFlash:
+                    minPartitionAddress = 0
             if dev == self[0].device and p.address < minPartitionAddress:
                 raise InputError("Partition '%s' @ %s-%s must be located after @ %s" \
                                  % (p.name, p.address_str(), p.end_str(), addr_format(minPartitionAddress)))
