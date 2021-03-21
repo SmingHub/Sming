@@ -318,12 +318,9 @@ class Editor:
         tree.heading('subtype', text='Sub-Type', anchor=tk.W)
         tree.heading('filename', text='Image filename', anchor=tk.W)
 
-        # self.tree.tag_configure('device', font='+1')
-        # tree.tag_configure('normal', font='+1')
-
         # Base configurations
         f = ttk.LabelFrame(self.main, text = 'Base Configuration')
-        f.grid(row=2, column=0, sticky=tk.W)
+        f.grid(row=2, column=0, sticky=tk.SW)
 
         def base_config_changed(*args):
             self.json['base_config'] = self.base_config.get()
@@ -339,7 +336,7 @@ class Editor:
         # Option checkboxes
 
         f = ttk.LabelFrame(self.main, text = 'Options')
-        f.grid(row=3, column=0, sticky=tk.W)
+        f.grid(row=3, column=0, sticky=tk.NW)
 
         def options_changed(*args):
             self.json['options'] = []
@@ -375,7 +372,7 @@ class Editor:
 
         # Edit frame
         self.editFrame = ttk.LabelFrame(self.main, text='Edit Object')
-        self.editFrame.grid(row=2, column=1, rowspan=2, sticky=tk.EW)
+        self.editFrame.grid(row=2, column=1, rowspan=2, sticky=tk.SW)
 
         # JSON editor
         jsonFrame = ttk.LabelFrame(self.main, text='JSON Configuration')
