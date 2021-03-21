@@ -103,6 +103,8 @@ class Config(object):
 
     def resolve_expressions(self):
         self.partitions.offset = eval(str(self.partitions.offset))
+        for p in self.partitions:
+            p.resolve_expressions()
 
     def parse_dict(self, data):
         base_config = data.pop('base_config', None)

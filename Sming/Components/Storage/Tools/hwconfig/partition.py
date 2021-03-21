@@ -387,7 +387,7 @@ class Entry(object):
                 if k == 'device':
                     self.device = devices.find_by_name(v)
                 elif k == 'address':
-                    self.address = eval(str(v))
+                    self.address = v
                 elif k == 'size':
                     self.size = parse_int(v)
                 elif k == 'filename':
@@ -405,6 +405,8 @@ class Entry(object):
         except InputError as e:
             raise InputError("Error in partition entry '%s': %s" % (self.name, e))
 
+    def resolve_expressions(self):
+        self.address = eval(str(self.address))
 
     def dict(self):
         res = {}
