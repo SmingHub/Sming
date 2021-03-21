@@ -238,7 +238,7 @@ class Editor:
         # Window resizing is focused around treeview @ (0, 0)
         self.main.columnconfigure(0, weight=1)
         self.main.rowconfigure(1, weight=1)
-        self.main.rowconfigure(2, weight=2)
+        self.main.rowconfigure(2, weight=3)
         self.main.option_add('*tearOff', False)
         s = ttk.Style()
         s.configure('Treeview', font='TkFixedFont')
@@ -381,11 +381,6 @@ class Editor:
         # JSON editor
         jsonFrame = ttk.LabelFrame(self.main, text='JSON Configuration')
         jsonFrame.grid(row=2, column=2, rowspan=2, sticky=tk.NS)
-        self.jsonEditor = tk.Text(jsonFrame, height=16, width=50)
-        self.jsonEditor.grid(row=0, column=0, sticky=tk.NSEW)
-        s = ttk.Scrollbar(jsonFrame, orient=tk.VERTICAL, command=self.jsonEditor.yview)
-        s.grid(row=0, column=1, sticky=tk.NS)
-        self.jsonEditor['yscrollcommand'] = s.set
         def apply(*args):
             try:
                 json_config = json.loads(self.jsonEditor.get('1.0', 'end'))
@@ -400,7 +395,12 @@ class Editor:
             except ValueError as err:
                 self.user_error(err)
         btn = ttk.Button(jsonFrame, text="Apply", command=apply)
-        btn.grid(row=1, column=0, columnspan=2, sticky=tk.S)
+        btn.pack(anchor=tk.S, side=tk.BOTTOM)
+        self.jsonEditor = tk.Text(jsonFrame, height=14)
+        self.jsonEditor.pack(anchor=tk.N, side=tk.LEFT, fill=tk.BOTH)
+        s = ttk.Scrollbar(jsonFrame, orient=tk.VERTICAL, command=self.jsonEditor.yview)
+        s.pack(anchor=tk.N, side=tk.RIGHT, fill=tk.Y)
+        self.jsonEditor['yscrollcommand'] = s.set
 
         # Status box
         self.status = tk.StringVar()
