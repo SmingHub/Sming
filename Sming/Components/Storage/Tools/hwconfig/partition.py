@@ -145,7 +145,13 @@ class Table(list):
             part.parse_dict(entry, devices)
 
     def sort(self):
-        super().sort(key=lambda p: p.device.name + p.address_str())
+        # Ensure spiFlash partitions are first in the list
+        def get_key(p):
+            key = p.device.name + p.address_str()
+            if p.device.name == 'spiFlash':
+                key = ' ' + key
+            return key
+        super().sort(key=get_key)
 
     def dict(self):
         res = {}
