@@ -120,6 +120,8 @@ class Device(object):
         return size_format(self.size)
 
     def verify(self):
+        if self.size == 0:
+            raise ValidationError(self, "Size field is not set")
         if self.type is None:
             raise ValidationError(self, "Type field is not set")
         if self.name == '':

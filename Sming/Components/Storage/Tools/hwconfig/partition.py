@@ -42,7 +42,7 @@ INTERNAL_BOOT_SECTOR = 0x00
 INTERNAL_PARTITION_TABLE = 0x01
 INTERNAL_UNUSED = 0x02
 
-# Default is 4
+# Partition start alignment
 ALIGNMENT = {
     "Esp32": {
         APP_TYPE: 0x10000,
@@ -497,7 +497,7 @@ class Entry(object):
             raise ValidationError(self, "Offset 0x%x is not aligned to 0x%x" % (self.address, align))
         if self.size % align and secure:
             raise ValidationError(self, "Size 0x%x is not aligned to 0x%x" % (self.size, align))
-        if self.size is None:
+        if self.size is None or self.size == 0:
             raise ValidationError(self, "Size field is not set")
         if self.address >= self.device.size:
             raise ValidationError(self, "Offset 0x%x exceeds device size 0x%x" % (self.address, self.device.size))
