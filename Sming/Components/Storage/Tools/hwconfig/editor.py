@@ -24,7 +24,7 @@ def get_dict_value(dict, key, default):
 class EditState(dict):
     """Manage details of device/partition editing using dictionary of tk.StringVar objects
     """
-    def __init__(self, editor, objectType, dictName, obj):
+    def __init__(self, editor, objectType, dictName, obj, enumDict):
         super().__init__(self)
         self.editor = editor
         self.objectType = objectType
@@ -36,10 +36,14 @@ class EditState(dict):
         self.schema = editor.schema['definitions'][objectType]
         self.obj = obj
         self.row = 0
+
+        self.addControl('name')
+        for k in self.schema['properties'].keys():
+            self.addControl(k, enumDict)
         btn = ttk.Button(editor.editFrame, text="Apply", command=self.apply)
         btn.grid(row=100, column=0, columnspan=2)
 
-    def addControl(self, fieldName, enumDict):
+    def addControl(self, fieldName, enumDict = {}):
         frame = self.editor.editFrame
         schema = self.get_property(fieldName)
         disabled = False
@@ -58,6 +62,14 @@ class EditState(dict):
             values = enumDict.get(fieldName, schema.get('enum'))
             if values is not None:
                 c = ttk.Combobox(frame, values=values)
+                if fieldName == 'subtype':
+                    def set_subtype_values():
+                        t = str(self['type'][0].get())
+                        t = partition.TYPES.get(t)
+                        values = partition.SUBTYPES.get(t, [])
+                        critical("t = %s, %s" % (t, values))
+                        c.configure(values=list(values))
+                    c.configure(postcommand=set_subtype_values)
             else:
                 c = tk.Entry(frame, width=64)
             c.configure(textvariable=var)
@@ -161,11 +173,6 @@ class EditState(dict):
             return {'type': 'text'}
         else:
             return self.schema['properties'][name]
-
-    def keys(self):
-        keys = list(self.schema['properties'].keys())
-        keys.insert(0, 'name')
-        return keys
 
     def nameChanged(self):
         return self.name != self['name'].get()
@@ -432,31 +439,21 @@ class Editor:
         return f
 
     def editDevice(self, dev):
+        enumDict = {}
+        enumDict['type'] = list((storage.TYPES).keys())
         self.resetEditor()
-        edit = self.edit = EditState(self, 'Device', 'devices', dev)
+        self.edit = EditState(self, 'Device', 'devices', dev, enumDict)
         self.updateEditTitle()
-
-        values = {}
-        values['type'] = list((storage.TYPES).keys())
-
-        for k in edit.keys():
-            edit.addControl(k, values)
 
 
     def editPartition(self, part):
+        enumDict = {}
+        enumDict['device'] = [dev.name for dev in self.config.devices]
+        enumDict['type'] = list((partition.TYPES).keys())
+        enumDict['subtype'] = []
         self.resetEditor()
-        edit = self.edit = EditState(self, 'Partition', 'partitions', part)
+        self.edit = EditState(self, 'Partition', 'partitions', part, enumDict)
         self.updateEditTitle()
-
-        values = {}
-        values['device'] = [dev.name for dev in self.config.devices]
-        values['type'] = list((partition.TYPES).keys())
-        subtypes = partition.SUBTYPES.get(part.type)
-        if subtypes is not None:
-            values['subtype'] = list(subtypes)
-
-        for k in edit.keys():
-            edit.addControl(k, values)
 
 
 def main():
