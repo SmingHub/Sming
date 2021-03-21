@@ -24,6 +24,7 @@ MD5_PARTITION_BEGIN = b"\xEB\xEB" + b"\xFF" * 14  # The first 2 bytes are like m
 FLASH_SECTOR_SIZE = 0x1000
 PARTITION_TABLE_SIZE = 0x1000  # Size of partition table
 PARTITION_ENTRY_SIZE = 32
+PARTITION_NAME_SIZE = 16
 
 MIN_PARTITION_SUBTYPE_APP_OTA = 0x10
 NUM_PARTITION_SUBTYPE_APP_OTA = 16
@@ -497,15 +498,21 @@ class Entry(object):
         if self.end() >= self.device.size:
             raise ValidationError(self, "End 0x%x exceeds device size 0x%x" % (self.end(), self.device.size))
 
+        if self.name == '':
+            raise ValidationError(self, "Name not specified")
+        if len(self.name) > PARTITION_NAME_SIZE:
+            raise ValidationError(self, "Name too long, max. %u chars" % PARTITION_NAME_SIZE)
+        for c in self.name:
+            if c.isspace():
+                raise ValidationError(self, "Name may not contain whitespace")
         if self.name in TYPES and TYPES.get(self.name, "") != self.type:
-            critical("WARNING: Partition has name '%s' which is a partition type, but does not match this partition's "
-                     "type (0x%x). Mistake in partition table?" % (self.name, self.type))
+            raise ValidationError(self, "Name is a partition type, but does not match this partition's type (%s)" % (self.type))
         all_subtype_names = []
         for names in (t.keys() for t in SUBTYPES.values()):
             all_subtype_names += names
         if self.name in all_subtype_names and SUBTYPES.get(self.type, {}).get(self.name, "") != self.subtype:
-            critical("WARNING: Partition has name '%s' which is a partition subtype, but this partition has "
-                     "non-matching type 0x%x and subtype 0x%x. Mistake in partition table?" % (self.name, self.type, self.subtype))
+            raise ValidationError(self, "Name is a partition subtype, but does not match this partition's type/subtype (%s/%s)" % (self.type_str(), self.subtype_str()))
+
 
     STRUCT_FORMAT = b"<2sBBLL16sL"
 

@@ -83,14 +83,11 @@ def lookup_keyword(t, keywords):
 
 
 class InputError(RuntimeError):
-
     def __init__(self, e):
         super(InputError, self).__init__(e)
 
 
 class ValidationError(InputError):
-
-    def __init__(self, partition, message):
-        super(ValidationError, self).__init__(
-            "Partition %s invalid: %s" % (partition.name, message))
-
+    def __init__(self, obj, message):
+        super(ValidationError, self).__init__("%s.%s '%s' invalid: %s" % (type(obj).__module__, type(obj).__name__, obj.name, message))
+        self.obj = obj
