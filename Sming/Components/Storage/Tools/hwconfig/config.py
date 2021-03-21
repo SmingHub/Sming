@@ -69,9 +69,10 @@ class Config(object):
         return config
 
     @classmethod
-    def from_json(cls, json):
+    def from_json(cls, json, options = []):
         config = Config()
         config.parse_dict(copy.deepcopy(json))
+        config.parse_options(options)
         config.resolve_expressions()
         config.partitions.sort()
         return config

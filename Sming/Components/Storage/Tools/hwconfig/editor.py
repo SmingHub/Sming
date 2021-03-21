@@ -130,7 +130,7 @@ class EditState(dict):
 
         if fieldName == 'name':
             # Name is read-only for inherited devices/partitions
-            objlist = getattr(self.editor.baseConfig, self.dictName)
+            objlist = getattr(self.editor.getBaseConfig(), self.dictName)
             disabled = objlist.find_by_name(self.name) is not None
             var.set(self.name)
         # Internal 'partitions' are generally not editable, but make an exception to allow
@@ -147,8 +147,7 @@ class EditState(dict):
 
     def apply(self, *args):
         # Fetch base JSON for comparison
-        baseConfig = copy.deepcopy(self.editor.baseConfig)
-        baseConfig.parse_options(self.editor.json['options'])
+        baseConfig = self.editor.getBaseConfig()
         base = getattr(baseConfig, self.dictName).find_by_name(self.name)
         if base is None:
             base = {}
@@ -413,6 +412,11 @@ class Editor:
         self.status.set(err)
         messagebox.showerror(type(err).__name__, err)
 
+    def getBaseConfig(self):
+        """Load the base configuration with currently selected options applied
+        """
+        return Config.from_json(self.json_base_config, self.json['options'])
+ 
     def loadConfig(self, filename):
         self.reset()
         # If this is a core profile, don't edit it but create a new profile based on it
@@ -425,7 +429,9 @@ class Editor:
             with open(filename) as f:
                 self.json = json.loads(jsmin(f.read()))
 
-        self.baseConfig = Config.from_name(self.json['base_config'])
+        with open(find_config(self.json['base_config'])) as f:
+            self.json_base_config = json.loads(jsmin(f.read()))
+
         options = get_dict_value(self.json, 'options', [])
         for opt in os.environ.get('HWCONFIG_OPTS', '').replace(' ', '').split():
             if not opt in options:
