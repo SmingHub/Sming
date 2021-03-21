@@ -27,9 +27,9 @@ class EditState(dict):
     def __init__(self, editor, objectType, dictName, obj):
         super().__init__(self)
         self.editor = editor
-        self.type = objectType
+        self.objectType = objectType
         self.dictName = dictName
-        if isinstance(obj, partition.Entry) and obj.type == partition.INTERNAL_TYPE and obj.subtype == partition.INTERNAL_UNUSED:
+        if objectType == 'Partition' and obj.type == partition.INTERNAL_TYPE and obj.subtype == partition.INTERNAL_UNUSED:
             self.name = 'New Partition'
         else:
             self.name = obj.name
@@ -68,7 +68,7 @@ class EditState(dict):
             objlist = getattr(self.editor.baseConfig, self.dictName)
             disabled = objlist.find_by_name(self.name) is not None
             var.set(self.name)
-        if isinstance(self.obj, partition.Entry):
+        if self.objectType == 'Partition':
             if self.obj.type == partition.INTERNAL_TYPE:
                 if self.obj.subtype != partition.INTERNAL_PARTITION_TABLE or fieldName != 'address':
                     if self.obj.subtype != partition.INTERNAL_UNUSED:
@@ -110,7 +110,12 @@ class EditState(dict):
                             old = json_object.pop(self.name)
                             obj = json_object[value] = old
                             new_name = value
-                    elif k == 'address' and isinstance(self.obj, partition.Entry) and self.obj.type == partition.INTERNAL_TYPE and self.obj.subtype == partition.INTERNAL_PARTITION_TABLE:
+                            # If renaming a device, then all partitions must be updated
+                            if self.objectType == 'Device':
+                                for k, p in json_config.get('partitions', {}).items():
+                                    if p['device'] == self.name:
+                                        p['device'] = new_name
+                    elif k == 'address' and self.objectType == 'Partition' and self.obj.type == partition.INTERNAL_TYPE and self.obj.subtype == partition.INTERNAL_PARTITION_TABLE:
                         if parse_int(value) == baseConfig.partitions.offset:
                             if 'partition_table_offset' in json_config:
                                 del json_config['partition_table_offset']
@@ -414,7 +419,7 @@ class Editor:
             return None
 
     def updateEditTitle(self):
-        self.editFrame.configure(text="Edit %s '%s'" % (self.edit.type, self.edit.name))
+        self.editFrame.configure(text="Edit %s '%s'" % (self.edit.objectType, self.edit.name))
 
     def resetEditor(self):
         self.edit = None
