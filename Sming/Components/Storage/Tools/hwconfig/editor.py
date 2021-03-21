@@ -20,9 +20,22 @@ def get_dict_value(dict, key, default):
         dict[key] = default
     return dict[key]
 
+class Field:
+    """Manages widget and associated variable
+    """
+    def __init__(self, var, widget):
+        self.var = var
+        self.widget = widget
+
+    def get_value(self):
+        return str(self.var.get())
+
+    def is_disabled(self):
+        return str(self.widget.cget('state')) == 'disabled'
+
 
 class EditState(dict):
-    """Manage details of device/partition editing using dictionary of tk.StringVar objects
+    """Manage details of device/partition editing using dictionary of Field objects
     """
     def __init__(self, editor, objectType, dictName, obj, enumDict):
         super().__init__(self)
@@ -64,8 +77,8 @@ class EditState(dict):
                 c = ttk.Combobox(frame, values=values)
                 if fieldName == 'subtype':
                     def set_subtype_values():
-                        t = str(self['type'][0].get())
-                        t = partition.TYPES.get(t)
+                        t = self['type'].get_value()
+                        t = partition.TYPES[t]
                         values = partition.SUBTYPES.get(t, [])
                         critical("t = %s, %s" % (t, values))
                         c.configure(values=list(values))
@@ -73,7 +86,7 @@ class EditState(dict):
             else:
                 c = tk.Entry(frame, width=64)
             c.configure(textvariable=var)
-        self[fieldName] = (var, c)
+        self[fieldName] = Field(var, c)
 
         if fieldName == 'name':
             # Name is read-only for inherited devices/partitions
@@ -108,12 +121,10 @@ class EditState(dict):
             obj = get_dict_value(json_object, self.name, {})
             if self.objectType == 'Partition' and self.obj.is_unused():
                 obj['device'] = self.obj.device.name
-            for k, item in self.items():
-                c = item[1]
-                if str(c.cget('state')) == 'disabled':
+            for k, f in self.items():
+                if f.is_disabled():
                     continue
-                v = item[0]
-                value = v.get()
+                value = f.get_value()
                 schema = self.get_property(k)
                 if k == 'name':
                     value = value.strip()
@@ -175,7 +186,7 @@ class EditState(dict):
             return self.schema['properties'][name]
 
     def nameChanged(self):
-        return self.name != self['name'].get()
+        return self.name != self['name'].get_value()
 
 
 class Editor:
