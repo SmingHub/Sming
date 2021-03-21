@@ -2,7 +2,7 @@ import common, argparse, os, partition, configparser, string
 from common import *
 from config import *
 import tkinter as tk
-from tkinter import ttk, filedialog
+from tkinter import ttk, filedialog, messagebox
 
 app_name = 'Sming Hardware Profile Editor'
 
@@ -47,6 +47,17 @@ def percent_used(used, total):
     if total != 0:
         s += " (%u%%)" % round(100 * used / total)
     return s
+
+
+def checkProfilePath(filename):
+    filename = os.path.realpath(filename)
+    if filename.startswith(os.getcwd()):
+        return True
+
+    messagebox.showerror(
+        'Invalid profile path',
+        'Must be in working project directory where `make hwedit-config` was run')
+    return False
 
 
 class Field:
@@ -249,13 +260,20 @@ class Editor:
             self.reset()
             self.reload()
         def fileOpen(*args):
-            filename = filedialog.askopenfilename(filetypes=hwFilter, initialdir=os.getcwd())
-            if filename != '':
+            filename = filedialog.askopenfilename(
+                title='Select profile ' + HW_EXT + ' file',
+                filetypes=hwFilter,
+                initialdir=os.getcwd())
+            if filename != '' and checkProfilePath(filename):
                 self.loadConfig(filename)
         def fileSave(*args):
             filename = self.json['name']
-            filename = filedialog.asksaveasfilename(filetypes=hwFilter, initialfile=filename, initialdir=os.getcwd())
-            if filename != '':
+            filename = filedialog.asksaveasfilename(
+                title='Save profile to file',
+                filetypes=hwFilter,
+                initialfile=filename,
+                initialdir=os.getcwd())
+            if filename != '' and checkProfilePath(filename):
                 ext = os.path.splitext(filename)[1]
                 if ext != HW_EXT:
                     filename += HW_EXT
