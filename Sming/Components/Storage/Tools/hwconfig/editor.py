@@ -253,6 +253,7 @@ class Editor:
         def fileNew(*args):
             self.reset()
             self.reload()
+
         def fileOpen(*args):
             filename = filedialog.askopenfilename(
                 title='Select profile ' + HW_EXT + ' file',
@@ -260,6 +261,7 @@ class Editor:
                 initialdir=os.getcwd())
             if filename != '' and checkProfilePath(filename):
                 self.loadConfig(filename)
+
         def fileSave(*args):
             filename = self.json['name']
             filename = filedialog.asksaveasfilename(
@@ -273,6 +275,11 @@ class Editor:
                     filename += HW_EXT
                 with open(filename, "w") as f:
                     json.dump(self.json, f, indent=4)
+
+        def editAddDevice(*args):
+            dev = storage.Device('New device')
+            self.editDevice(dev)
+
         menubar = tk.Menu(self.main)
         self.main['menu'] = menubar
         menu_file = tk.Menu(menubar)
@@ -280,6 +287,9 @@ class Editor:
         menu_file.add_command(label='New...', command=fileNew)
         menu_file.add_command(label='Open...', command=fileOpen)
         menu_file.add_command(label='Save...', command=fileSave)
+        menu_edit = tk.Menu(menubar)
+        menubar.add_cascade(menu=menu_edit, label='Edit')
+        menu_edit.add_command(label='Add Device', command=editAddDevice)
 
         # Toolbar
         toolbar = ttk.Frame(self.main)
@@ -414,6 +424,7 @@ class Editor:
         else:
             with open(filename) as f:
                 self.json = json.loads(jsmin(f.read()))
+
         self.baseConfig = Config.from_name(self.json['base_config'])
         options = get_dict_value(self.json, 'options', [])
         for opt in os.environ.get('HWCONFIG_OPTS', '').replace(' ', '').split():
