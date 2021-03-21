@@ -520,8 +520,9 @@ class Editor:
 
         if self.edit is not None:
             id = self.edit.name
-            self.tree.focus(id)
-            self.tree.selection_set(id)
+            if self.tree.exists(id):
+                self.tree.focus(id)
+                self.tree.selection_set(id)
 
 
     def device_from_id(self, id):
