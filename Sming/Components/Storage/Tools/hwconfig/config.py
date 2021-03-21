@@ -164,6 +164,7 @@ class Config(object):
         return res
 
     def verify(self, secure):
+        self.devices.verify()
         self.partitions.verify(self.arch, self.devices[0], secure)
 
     def map(self):

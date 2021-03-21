@@ -3,6 +3,7 @@
 #
 
 from common import *
+import partition
 
 TYPES = {
     "unknown": 0x00,
@@ -61,6 +62,9 @@ class List(list):
                 return d
         return None
 
+    def verify(self):
+        for dev in self:
+            dev.verify()
 
 class Device(object):
     def __init__(self, name, stype = 0, size = 0):
@@ -110,7 +114,15 @@ class Device(object):
         return res
 
     def type_str(self):
-        return "" if self.type == 0 else lookup_keyword(self.type, TYPES)
+        return lookup_keyword(self.type, TYPES)
 
     def size_str(self):
         return size_format(self.size)
+
+    def verify(self):
+        if self.type is None:
+            raise ValidationError(self, "Type field is not set")
+        if self.name == '':
+            raise ValidationError(self, "Name not specified")
+        if len(self.name) > partition.PARTITION_NAME_SIZE:
+            raise ValidationError(self, "Name too long, max. %u chars" % partition.PARTITION_NAME_SIZE)
