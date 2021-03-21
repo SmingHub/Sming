@@ -1,4 +1,4 @@
-import common, argparse, os, partition, configparser, string
+import argparse, os, partition, configparser, string
 from common import *
 from config import *
 import tkinter as tk
@@ -177,7 +177,7 @@ class EditState(dict):
                         new_name = value
                         # If renaming a device, then all partitions must be updated
                         if self.objectType == 'Device':
-                            for k, p in json_config.get('partitions', {}).items():
+                            for n, p in json_config.get('partitions', {}).items():
                                 if p['device'] == self.name:
                                     p['device'] = new_name
                 elif k == 'address' and self.objectType == 'Partition' and self.obj.is_internal(partition.INTERNAL_PARTITION_TABLE):
