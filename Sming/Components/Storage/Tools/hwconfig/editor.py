@@ -557,7 +557,7 @@ class Editor:
     def editPartition(self, part):
         enumDict = {}
         enumDict['device'] = [dev.name for dev in self.config.devices]
-        enumDict['type'] = list((partition.TYPES).keys())
+        enumDict['type'] = list((partition.TYPES).keys() - ['storage', 'internal'])
         enumDict['subtype'] = []
         self.resetEditor()
         self.edit = EditState(self, 'Partition', 'partitions', part, enumDict)
