@@ -156,7 +156,7 @@ sessions, and will override any values set in your project’s
 A separate cache is maintained for each build type (arch +
 release/debug). For example:
 
--  Type ``make SMING_RELASE=1 list-config`` to switch to release build
+-  Type ``make SMING_RELEASE=1 list-config`` to switch to release build
    and display the active configuration
 
 Type ``make config-clean`` to clear all caches and revert to defaults.

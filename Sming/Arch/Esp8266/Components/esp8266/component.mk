@@ -4,15 +4,17 @@ COMPONENT_VARS			:= SDK_BASE
 SDK_BASE ?= $(COMPONENT_PATH)/ESP8266_NONOS_SDK
 
 SDK_BASE				:= $(call FixPath,$(SDK_BASE))
+
+DEBUG_VARS				+= FLASH_INIT_DATA FLASH_INIT_DATA_VCC
 FLASH_INIT_DATA			= $(SDK_BASE)/bin/esp_init_data_default.bin
-FLASH_INIT_DATA_VCC = $(SDK_BASE)/bin/esp_init_data_vdd_default.bin
+FLASH_INIT_DATA_VCC		= $(SDK_BASE)/bin/esp_init_data_vdd_default.bin
 
 CUSTOM_TARGETS			+= $(FLASH_INIT_DATA) $(FLASH_INIT_DATA_VCC)
 
 # => 'Internal' SDK - for SDK Version 3+ as submodule in Sming repository
 # SDK_BASE just needs to point into our repo as it's overridden with the correct submodule path
 # This provides backward-compatiblity, so $(SMING)/third-party/ESP8266_NONOS_SDK) still works
-DEBUG_VARS				+= SDK_INTERNAL
+DEBUG_VARS				+= SDK_INTERNAL SDK_BASE
 ifneq (,$(findstring $(SMING_HOME),$(SDK_BASE)))
 GLOBAL_CFLAGS			+= -DSDK_INTERNAL=1
 SDK_INTERNAL			:= 1

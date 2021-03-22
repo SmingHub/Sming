@@ -7,9 +7,16 @@ from rjsmin import jsmin
 from common import *
 from builtins import classmethod
 
+HW_EXT = '.hw'
+
+def get_config_dirs():
+    s = os.environ['HWCONFIG_DIRS']
+    dirs = s.replace('  ', ' ').split(' ')
+    return dirs
+
 def load_option_library():
     library = {}
-    dirs = os.environ['HWCONFIG_DIRS'].split(' ')
+    dirs = get_config_dirs()
     for d in dirs:
         filename = fixpath(d) + '/options.json'
         if os.path.exists(filename):
@@ -18,10 +25,20 @@ def load_option_library():
                 library.update(data)
     return library
 
-def findConfig(name):
-    dirs = os.environ['HWCONFIG_DIRS'].split(' ')
+def get_config_list():
+    list = {}
+    dirs = get_config_dirs()
+    for d in reversed(dirs):
+        for f in os.listdir(d):
+            if f.endswith(HW_EXT):
+                n = os.path.splitext(f)[0]
+                list[n] = d + '/' + f
+    return list
+
+def find_config(name):
+    dirs = get_config_dirs()
     for d in dirs:
-        path = fixpath(d) + '/' + name + '.hw'
+        path = fixpath(d) + '/' + name + HW_EXT
         if os.path.exists(path):
             return path
     raise InputError("Config '%s' not found" % name)
@@ -33,6 +50,7 @@ class Config(object):
         self.depends = []
         self.options = []
         self.option_library = load_option_library()
+        self.base_config = None
 
     def __str__(self):
         return "'%s' for %s" % (self.name, self.arch)
@@ -42,10 +60,19 @@ class Config(object):
         """Create configuration given its name and resolve options
         """
         config = Config()
-        options = os.environ.get('HWCONFIG_OPTS', '').replace(' ', '')
         config.load(name)
+        options = os.environ.get('HWCONFIG_OPTS', '').replace(' ', '')
         if options != '':
             config.parse_options(options.split(','))
+        config.resolve_expressions()
+        config.partitions.sort()
+        return config
+
+    @classmethod
+    def from_json(cls, json, options = []):
+        config = Config()
+        config.parse_dict(copy.deepcopy(json))
+        config.parse_options(options)
         config.resolve_expressions()
         config.partitions.sort()
         return config
@@ -53,7 +80,7 @@ class Config(object):
     def load(self, name):
         """Load a configuration recursively
         """
-        filename = findConfig(name)
+        filename = find_config(name)
         self.depends.append(filename)
         with open(filename) as f:
             data = json.loads(jsmin(f.read()))
@@ -76,9 +103,13 @@ class Config(object):
 
     def resolve_expressions(self):
         self.partitions.offset = eval(str(self.partitions.offset))
+        for p in self.partitions:
+            p.resolve_expressions()
 
     def parse_dict(self, data):
         base_config = data.pop('base_config', None)
+        if self.base_config is None:
+            self.base_config = base_config
         if base_config is not None:
             self.load(base_config)
 
@@ -136,6 +167,7 @@ class Config(object):
         return res
 
     def verify(self, secure):
+        self.devices.verify()
         self.partitions.verify(self.arch, self.devices[0], secure)
 
     def map(self):

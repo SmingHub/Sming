@@ -25,7 +25,8 @@ def handle_validate(args, config, part):
     try:
         from jsonschema import Draft7Validator
         inst = json.loads(config.to_json())
-        schema = json.load(open(args.expr))
+        with open(os.environ['HWCONFIG_SCHEMA']) as f:
+            schema = json.load(f)
         v = Draft7Validator(schema)
         errors = sorted(v.iter_errors(inst), key=lambda e: e.path)
         if errors != []:

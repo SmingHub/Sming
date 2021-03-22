@@ -24,6 +24,7 @@ MD5_PARTITION_BEGIN = b"\xEB\xEB" + b"\xFF" * 14  # The first 2 bytes are like m
 FLASH_SECTOR_SIZE = 0x1000
 PARTITION_TABLE_SIZE = 0x1000  # Size of partition table
 PARTITION_ENTRY_SIZE = 32
+PARTITION_NAME_SIZE = 16
 
 MIN_PARTITION_SUBTYPE_APP_OTA = 0x10
 NUM_PARTITION_SUBTYPE_APP_OTA = 16
@@ -35,7 +36,13 @@ DATA_TYPE = 0x01
 STORAGE_TYPE = 0x02 # Reference to storage device
 USER_TYPE = 0x40 # First user-defined type
 
-# Default is 4
+# Used for internal management, e.g. in maps
+INTERNAL_TYPE = 0xff
+INTERNAL_BOOT_SECTOR = 0x00
+INTERNAL_PARTITION_TABLE = 0x01
+INTERNAL_UNUSED = 0x02
+
+# Partition start alignment
 ALIGNMENT = {
     "Esp32": {
         APP_TYPE: 0x10000,
@@ -53,6 +60,7 @@ TYPES = {
     "data": DATA_TYPE,
     "storage": STORAGE_TYPE,
     "user": USER_TYPE,
+    "internal": INTERNAL_TYPE,
 }
 
 # Keep this map in sync with esp_partition_subtype_t enum in esp_partition.h
@@ -76,6 +84,7 @@ SUBTYPES = {
         "ota_14": 0x1e,
         "ota_15": 0x1f,
         "test": 0x20,
+        "internal": 0xff,
     },
     DATA_TYPE: {
         "ota": 0x00,
@@ -91,7 +100,12 @@ SUBTYPES = {
         "spiffs": 0x82,
         "fwfs": 0xf1,
     },
-    STORAGE_TYPE: storage.TYPES
+    STORAGE_TYPE: storage.TYPES,
+    INTERNAL_TYPE: {
+        "boot": INTERNAL_BOOT_SECTOR,
+        "pt": INTERNAL_PARTITION_TABLE,
+        "unused": INTERNAL_UNUSED,
+    }
 }
 
 
@@ -114,7 +128,7 @@ def parse_subtype(ptype, value):
 class Table(list):
 
     def __init__(self):
-        super(Table, self).__init__(self)
+        super().__init__(self)
 
     def parse_dict(self, data, devices):
         partnames = []
@@ -131,7 +145,13 @@ class Table(list):
             part.parse_dict(entry, devices)
 
     def sort(self):
-        super(Table, self).sort(key=lambda p: p.device.name + p.address_str())
+        # Ensure spiFlash partitions are first in the list
+        def get_key(p):
+            key = p.device.name + p.address_str()
+            if p.device.name == 'spiFlash':
+                key = ' ' + key
+            return key
+        super().sort(key=get_key)
 
     def dict(self):
         res = {}
@@ -172,7 +192,7 @@ class Table(list):
             if p is None:
                 raise ValueError("No partition entry named '%s'" % item)
             return p
-        return super(Table, self).__getitem__(item)
+        return super().__getitem__(item)
 
     def find_by_type(self, ptype, subtype):
         """Return a partition by type & subtype, returns None if not found
@@ -205,6 +225,8 @@ class Table(list):
         return None
 
     def find_by_address(self, device, addr):
+        if isinstance(addr, str):
+            addr = eval(addr)
         for p in self:
             if p.device == device and p.contains(addr):
                 return p
@@ -243,12 +265,14 @@ class Table(list):
             minPartitionAddress = self.offset + PARTITION_TABLE_SIZE
         else:
             minPartitionAddress = 0x00002000
-        dev = ''
+        dev = None
         last = None
         for p in self:
             if p.device != dev:
                 last = None
                 dev = p.device
+                if dev != spiFlash:
+                    minPartitionAddress = 0
             if dev == self[0].device and p.address < minPartitionAddress:
                 raise InputError("Partition '%s' @ %s-%s must be located after @ %s" \
                                  % (p.name, p.address_str(), p.end_str(), addr_format(minPartitionAddress)))
@@ -363,7 +387,7 @@ class Entry(object):
                 if k == 'device':
                     self.device = devices.find_by_name(v)
                 elif k == 'address':
-                    self.address = eval(str(v))
+                    self.address = v
                 elif k == 'size':
                     self.size = parse_int(v)
                 elif k == 'filename':
@@ -378,12 +402,11 @@ class Entry(object):
 
             if self.address is None or self.size is None:
                 raise InputError("address/size missing")
-            if self.end() >= self.device.size:
-                raise InputError("Partition '%s' %s-%s too big for %s size %s" \
-                                 % (self.name, self.address_str(), self.end_str(), self.device.name, self.device.size_str()))
         except InputError as e:
             raise InputError("Error in partition entry '%s': %s" % (self.name, e))
 
+    def resolve_expressions(self):
+        self.address = eval(str(self.address))
 
     def dict(self):
         res = {}
@@ -433,16 +456,22 @@ class Entry(object):
         return addr >= self.address and addr <= self.end()
 
     def type_str(self):
-        return "" if self.type == 0xff else lookup_keyword(self.type, TYPES)
+        return "" if self.type == INTERNAL_TYPE else lookup_keyword(self.type, TYPES)
 
     def type_is(self, t):
         return self.type_str() == t if isinstance(t, str) else self.type == t
 
     def subtype_str(self):
-        return "" if self.subtype == 0xff else lookup_keyword(self.subtype, SUBTYPES.get(self.type, {}))
+        return "" if self.type == INTERNAL_TYPE else lookup_keyword(self.subtype, SUBTYPES.get(self.type, {}))
 
     def subtype_is(self, subtype):
         return self.subtype_str() == subtype if isinstance(subtype, str) else self.subtype == subtype
+
+    def is_internal(self, subtype = None):
+        return (self.type == INTERNAL_TYPE) and (subtype is None or self.subtype == subtype)
+
+    def is_unused(self):
+        return self.is_internal(INTERNAL_UNUSED)
 
     def __eq__(self, other):
         if isinstance(other, str):
@@ -478,18 +507,28 @@ class Entry(object):
             raise ValidationError(self, "Offset 0x%x is not aligned to 0x%x" % (self.address, align))
         if self.size % align and secure:
             raise ValidationError(self, "Size 0x%x is not aligned to 0x%x" % (self.size, align))
-        if self.size is None:
+        if self.size is None or self.size == 0:
             raise ValidationError(self, "Size field is not set")
+        if self.address >= self.device.size:
+            raise ValidationError(self, "Offset 0x%x exceeds device size 0x%x" % (self.address, self.device.size))
+        if self.end() >= self.device.size:
+            raise ValidationError(self, "End 0x%x exceeds device size 0x%x" % (self.end(), self.device.size))
 
+        if self.name == '':
+            raise ValidationError(self, "Name not specified")
+        if len(self.name) > PARTITION_NAME_SIZE:
+            raise ValidationError(self, "Name too long, max. %u chars" % PARTITION_NAME_SIZE)
+        for c in self.name:
+            if c.isspace():
+                raise ValidationError(self, "Name may not contain whitespace")
         if self.name in TYPES and TYPES.get(self.name, "") != self.type:
-            critical("WARNING: Partition has name '%s' which is a partition type, but does not match this partition's "
-                     "type (0x%x). Mistake in partition table?" % (self.name, self.type))
+            raise ValidationError(self, "Name is a partition type, but does not match this partition's type (%s)" % (self.type))
         all_subtype_names = []
         for names in (t.keys() for t in SUBTYPES.values()):
             all_subtype_names += names
         if self.name in all_subtype_names and SUBTYPES.get(self.type, {}).get(self.name, "") != self.subtype:
-            critical("WARNING: Partition has name '%s' which is a partition subtype, but this partition has "
-                     "non-matching type 0x%x and subtype 0x%x. Mistake in partition table?" % (self.name, self.type, self.subtype))
+            raise ValidationError(self, "Name is a partition subtype, but does not match this partition's type/subtype (%s/%s)" % (self.type_str(), self.subtype_str()))
+
 
     STRUCT_FORMAT = b"<2sBBLL16sL"
 
@@ -530,35 +569,39 @@ class Map(Table):
     """Contiguous map of flash memory
     """
     def __init__(self, table, devices):
-        device = devices[0]
-
-        def add(name, address, size):
-            entry = Entry(device, name, address, size, 0xff, 0xff)
-            self.append(entry)
+        def add(table, device, name, address, size, subtype):
+            entry = Entry(device, name, address, size, INTERNAL_TYPE, subtype)
+            table.append(entry)
             return entry
 
-        def add_unused(address, last_end):
+        def add_unused(table, device, address, last_end):
             if address > last_end + 1:
-                add('(unused)', last_end + 1, address - last_end - 1)
+                add(table, device, '(unused)', last_end + 1, address - last_end - 1, INTERNAL_UNUSED)
 
+        device = devices[0]
+
+        # Take copy of source partitions and add internal ones to appear in the map
         partitions = copy.copy(table)
+        if table.offset != 0:
+            add(partitions, device, 'Boot Sector', 0, min(table.offset, partitions[0].address), INTERNAL_BOOT_SECTOR)
+            add(partitions, device, 'Partition Table', table.offset, PARTITION_TABLE_SIZE, INTERNAL_PARTITION_TABLE)
 
-        if table.offset == 0:
-            last = None
-        else:
-            last = add('Boot Sector', 0, min(table.offset, partitions[0].address))
-            p = Entry(device, 'Partition Table', table.offset, PARTITION_TABLE_SIZE, 0xff, 0xff)
-            partitions.append(p)
-            partitions.sort()
+        # Devices with no defined partitions
+        for dev in devices:
+            if partitions.find_by_address(dev, 0) is None:
+                add_unused(partitions, dev, dev.size, -1)
 
+        partitions.sort()
+
+        last = None
         for p in partitions:
             if last is not None:
                 if p.device != last.device:
-                    add_unused(last.device.size, last.end())
+                    add_unused(self, device, last.device.size, last.end())
                     device = p.device
                 elif p.address > last.end() + 1:
-                    add_unused(p.address, last.end())
+                    add_unused(self, device, p.address, last.end())
             self.append(p)
             last = p
 
-        add_unused(device.size, last.end())
+        add_unused(self, device, device.size, last.end())

@@ -56,10 +56,11 @@ def addr_format(a):
 
 
 def size_format(a):
-    if a != 0:
-        for (val, suffix) in [(0x40000000, "G"), (0x100000, "M"), (0x400, "K")]:
-            if a % val == 0:
-                return "%d%s" % (a // val, suffix)
+    if a == 0:
+        return '0'
+    for (val, suffix) in [(0x40000000, "G"), (0x100000, "M"), (0x400, "K")]:
+        if a % val == 0:
+            return "%d%s" % (a // val, suffix)
     return "0x%08x" % a
 
 
@@ -83,14 +84,11 @@ def lookup_keyword(t, keywords):
 
 
 class InputError(RuntimeError):
-
     def __init__(self, e):
         super(InputError, self).__init__(e)
 
 
 class ValidationError(InputError):
-
-    def __init__(self, partition, message):
-        super(ValidationError, self).__init__(
-            "Partition %s invalid: %s" % (partition.name, message))
-
+    def __init__(self, obj, message):
+        super(ValidationError, self).__init__("%s.%s '%s' invalid: %s" % (type(obj).__module__, type(obj).__name__, obj.name, message))
+        self.obj = obj

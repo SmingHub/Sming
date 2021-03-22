@@ -89,6 +89,7 @@ RBOOT_LD_1				:= $(BUILD_BASE)/$(RBOOT_ROM_1).ld
 RBOOT_E2_SECTS			?= .text .text1 .data .rodata
 RBOOT_E2_USER_ARGS		?= -quiet -bin -boot2
 
+DEBUG_VARS				+= RBOOT_ROM_0_BIN RBOOT_ROM_1_BIN
 RBOOT_ROM_0_BIN			:= $(FW_BASE)/$(RBOOT_ROM_0).bin
 RBOOT_ROM_1_BIN			:= $(FW_BASE)/$(RBOOT_ROM_1).bin
 
