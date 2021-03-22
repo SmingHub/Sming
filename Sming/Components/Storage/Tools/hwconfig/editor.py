@@ -224,6 +224,56 @@ class EditState(dict):
         return self.name != self['name'].get_value()
 
 
+class TkMap(tk.Frame):
+    def __init__(self, editor):
+        super().__init__(editor.main, width=200, height=200)
+        self.editor = editor
+        canvas = self.canvas = tk.Canvas(self, width=200, height=200, scrollregion=(0, 0, 200, 10000))
+        canvas.create_text(0, 0, anchor=tk.NW, text='Testing, one, two, three...')
+        canvas.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
+        s = ttk.Scrollbar(self, orient=tk.VERTICAL, command=canvas.yview)
+        s.pack(side=tk.RIGHT, fill=tk.Y)
+        canvas['yscrollcommand'] = s.set
+
+    def update(self, device):
+        canvas = self.canvas
+        canvas.delete('all')
+
+        # Partitions are children
+        yscale = 65536
+        m = 5
+        y = 0
+        for p in self.editor.config.map():
+            if p.device != device:
+                continue
+            if p.is_unused():
+                id = p.device.name + '/' + p.address_str()
+            else:
+                id = p.name
+
+            def get_used():
+                if p.filename == '':
+                    return ''
+                try:
+                    path = self.resolve_path(p.filename)
+                except KeyError as err:
+                    return str(err) + ' undefined'
+                if not os.path.exists(path):
+                    return '(not found)'
+                return percent_used(os.path.getsize(path), p.size)
+
+            x = 0
+            w = 200
+            h = round(yscale * min(16 * 1024, p.size) / device.size)
+            canvas.create_rectangle(x, y, x + w, y + h, outline='red')
+            canvas.create_text(x+m, y+m, anchor=tk.NW, text=p.address_str())
+            canvas.create_text(x+m, y+m+20, anchor=tk.NW, text=p.name)
+            y += h
+
+        canvas.config(scrollregion=(0, 0, 200, y+50))
+
+
+
 class Editor:
     def __init__(self, root):
         root.title(app_name)
@@ -300,14 +350,18 @@ class Editor:
         btnSave = ttk.Button(toolbar, text="Save...", command=fileSave)
         btnSave.grid(row=0, column=3)
 
+        # map
+        self.map = TkMap(self)
+        self.map.grid(row=1, column=0, columnspan=3, sticky=tk.NSEW)
+
         # Treeview for devices and partitions
 
         tree = ttk.Treeview(self.main, columns=['start', 'end', 'size', 'used', 'type', 'subtype', 'filename'])
-        tree.grid(row=1, column=0, columnspan=3, sticky=tk.NSEW)
+        # tree.grid(row=1, column=0, columnspan=3, sticky=tk.NSEW)
         self.tree = tree
 
         s = ttk.Scrollbar(self.main, orient=tk.VERTICAL, command=tree.yview)
-        s.grid(row=1, column=4, sticky=tk.NS)
+        # s.grid(row=1, column=4, sticky=tk.NS)
         tree['yscrollcommand'] = s.set
 
         tree.heading('start', text='Start', anchor=tk.W)
@@ -482,6 +536,8 @@ class Editor:
         except InputError as err:
             self.status.set(str(err))
             return
+
+        self.map.update(config.devices[0])
 
         # Devices are our root nodes
         for dev in config.devices:
