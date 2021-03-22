@@ -269,11 +269,16 @@ class TkMap(tk.Frame):
         labelFontBold = font.Font(family='fixed', size=8, weight='bold')
 
         # Partitions are children
-        xscale = 42
+        xscale = 32
         def xs(x):
             return round(x / xscale)
         m = 5
         r = Rect()
+
+        def draw_tick(x, addr):
+            canvas.create_line(x, r.y, x, r.y2() + 10, fill='black', width=3)
+            canvas.create_text(x, r.y2() + 10, anchor=tk.N, text=str(addr / 1024 / 1024) + 'MB', state='disabled')
+
         xend = 0
         for p in self.editor.config.map():
             if p.device != device:
@@ -297,11 +302,10 @@ class TkMap(tk.Frame):
                     used = str(err) + ' undefined'
 
             # Limit drawn partition width
-            drawsize = min(32 * 1024, p.size)
+            drawsize = min(24 * 1024, p.size)
             r.width = xs(drawsize)
             if xend == 0 and p.end() >= device.size - 1:
                 sz = device.size - p.address
-                critical("sz = %u" % sz)
                 xend = r.x + xs(drawsize * sz / p.size)
 
             # Draw tick marks
@@ -310,8 +314,7 @@ class TkMap(tk.Frame):
             while addr <= p.end():
                 if addr >= p.address:
                     x = r.x + xs(drawsize * (addr - p.address) / p.size)
-                    canvas.create_line(x, r.y, x, r.y2() + 10, fill='black', width=3)
-                    canvas.create_text(x, r.y2() + 10, anchor=tk.N, text=str(addr / 1024 / 1024) + 'MB', state='disabled')
+                    draw_tick(x, addr)
                 addr += div
 
             # w = round(xscale * p.size / device.size)
@@ -342,6 +345,8 @@ class TkMap(tk.Frame):
 
         r2 = Rect(1, 1, xend, r.y2())
         canvas.create_rectangle(r2.bounds(), outline='black', width=3, state='disabled')
+        if xend >= r.x:
+            draw_tick(xend, device.size)
         canvas.config(scrollregion=(0, 0, r.x2() + 100, 0))
 
 
