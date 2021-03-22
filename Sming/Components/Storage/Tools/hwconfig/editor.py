@@ -2,7 +2,7 @@ import argparse, os, partition, configparser, string
 from common import *
 from config import *
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+from tkinter import ttk, filedialog, messagebox, font
 
 app_name = 'Sming Hardware Profile Editor'
 
@@ -265,6 +265,9 @@ class TkMap(tk.Frame):
         canvas = self.canvas
         canvas.delete('all')
 
+        labelFont = font.Font(family='fixed', size=8)
+        labelFontBold = font.Font(family='fixed', size=8, weight='bold')
+
         # Partitions are children
         xscale = 42
         def xs(x):
@@ -308,27 +311,33 @@ class TkMap(tk.Frame):
                 if addr >= p.address:
                     x = r.x + xs(drawsize * (addr - p.address) / p.size)
                     canvas.create_line(x, r.y, x, r.y2() + 10, fill='black', width=3)
-                    canvas.create_text(x, r.y2() + 10, anchor=tk.N, text=size_format(addr), state='disabled')
+                    canvas.create_text(x, r.y2() + 10, anchor=tk.N, text=str(addr / 1024 / 1024) + 'MB', state='disabled')
                 addr += div
 
             # w = round(xscale * p.size / device.size)
-            r.height = 100
+            linespace = 16
+            r.height = 150
             r2 = copy.copy(r)
             r2.inflate(-m, -m)
-            canvas.create_rectangle(r2.bounds(), fill='grey', activefill='white', outline='red')
+            id = canvas.create_rectangle(r2.bounds(), fill='grey', activefill='white', outline='red')
+            canvas.tag_bind(id, "<Button-1>", lambda event, part=p: self.editor.editPartition(part))
             r2.inflate(-m, -m)
             if imgsize != 0:
                 r2.width = imgsize * r2.width / p.size
                 canvas.create_rectangle(r2.bounds(), fill='lightgray', outline='lightgray', state='disabled')
-            canvas.create_text(r2.pos(), anchor=tk.NW, text=p.address_str(), state='disabled')
-            r2.y += 20
-            canvas.create_text(r2.pos(), anchor=tk.NW, text=p.name, state='disabled')
+            canvas.create_text(r2.pos(), anchor=tk.NW, text=p.address_str(), state='disabled', font=labelFont)
+            r2.y += linespace
+            canvas.create_text(r2.pos(), anchor=tk.NW, text=p.name, state='disabled', font=labelFontBold)
+            if not p.is_internal():
+                r2.y += linespace
+                canvas.create_text(r2.pos(), anchor=tk.NW, text=p.type_str() + ' / ' + p.subtype_str(), state='disabled', font=labelFont)
             r2.x += m
-            r2.y += 20
-            canvas.create_text(r2.pos(), anchor=tk.NW, text=used, state='disabled')
+            r2.y += linespace
+            r2.y += linespace
+            canvas.create_text(r2.pos(), anchor=tk.NW, text=used, state='disabled', font=labelFont)
             if p.filename != '':
-                r2.y += 20
-                canvas.create_text(r2.pos(), anchor=tk.NW, text=p.filename, state='disabled')
+                r2.y += linespace
+                canvas.create_text(r2.pos(), anchor=tk.NW, text=p.filename, state='disabled', font=labelFont)
             r.x += r.width
 
         r2 = Rect(1, 1, xend, r.y2())
