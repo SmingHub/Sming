@@ -243,6 +243,12 @@ class Rect:
     def y2(self):
         return self.y + self.height
 
+    def pos(self):
+        return (self.x, self.y)
+
+    def bounds(self):
+        return (self.x, self.y, self.x2(), self.y2())
+
 
 class TkMap(tk.Frame):
     def __init__(self, parent, editor):
@@ -294,29 +300,39 @@ class TkMap(tk.Frame):
                 sz = device.size - p.address
                 critical("sz = %u" % sz)
                 xend = r.x + xs(drawsize * sz / p.size)
+
+            # Draw tick marks
+            div = 256 * 1024
+            addr = p.address - (p.address % div)
+            while addr <= p.end():
+                if addr >= p.address:
+                    x = r.x + xs(drawsize * (addr - p.address) / p.size)
+                    canvas.create_line(x, r.y, x, r.y2() + 10, fill='black', width=3)
+                    canvas.create_text(x, r.y2() + 10, anchor=tk.N, text=size_format(addr), state='disabled')
+                addr += div
+
             # w = round(xscale * p.size / device.size)
             r.height = 100
             r2 = copy.copy(r)
             r2.inflate(-m, -m)
-            canvas.create_rectangle(r2.x, r2.y, r2.x2(), r2.y2(), fill='grey', activefill='white', outline='red')
+            canvas.create_rectangle(r2.bounds(), fill='grey', activefill='white', outline='red')
             r2.inflate(-m, -m)
             if imgsize != 0:
                 r2.width = imgsize * r2.width / p.size
-                canvas.create_rectangle(r2.x, r2.y, r2.x2(), r2.y2(), fill='lightgray', outline='lightgray', state='disabled')
-            canvas.create_text(r2.x, r2.y, anchor=tk.NW, text=p.address_str(), state='disabled')
+                canvas.create_rectangle(r2.bounds(), fill='lightgray', outline='lightgray', state='disabled')
+            canvas.create_text(r2.pos(), anchor=tk.NW, text=p.address_str(), state='disabled')
             r2.y += 20
-            canvas.create_text(r2.x, r2.y, anchor=tk.NW, text=p.name, state='disabled')
+            canvas.create_text(r2.pos(), anchor=tk.NW, text=p.name, state='disabled')
             r2.x += m
             r2.y += 20
-            canvas.create_text(r2.x, r2.y, anchor=tk.NW, text=used, state='disabled')
+            canvas.create_text(r2.pos(), anchor=tk.NW, text=used, state='disabled')
             if p.filename != '':
                 r2.y += 20
-                canvas.create_text(r2.x, r2.y, anchor=tk.NW, text=p.filename, state='disabled')
+                canvas.create_text(r2.pos(), anchor=tk.NW, text=p.filename, state='disabled')
             r.x += r.width
 
         r2 = Rect(1, 1, xend, r.y2())
-        canvas.create_rectangle(r2.x, r2.y, r2.x2(), r2.y2(), outline='black', width=3, state='disabled')
-
+        canvas.create_rectangle(r2.bounds(), outline='black', width=3, state='disabled')
         canvas.config(scrollregion=(0, 0, r.x2() + 100, 0))
 
 
