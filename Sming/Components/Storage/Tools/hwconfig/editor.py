@@ -224,25 +224,48 @@ class EditState(dict):
         return self.name != self['name'].get_value()
 
 
+class Rect:
+    def __init__(self, x=0, y=0, width=0, height=0):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+    def inflate(self, x, y):
+        self.x -= x
+        self.y -= y
+        self.width += 2 * x
+        self.height += 2 * y
+
+    def x2(self):
+        return self.x + self.width
+
+    def y2(self):
+        return self.y + self.height
+
+
 class TkMap(tk.Frame):
-    def __init__(self, editor):
-        super().__init__(editor.main, width=200, height=200)
+    def __init__(self, parent, editor):
+        super().__init__(parent, width=200, height=200)
+        self.pack(fill=tk.BOTH)
         self.editor = editor
-        canvas = self.canvas = tk.Canvas(self, width=200, height=200, scrollregion=(0, 0, 200, 10000))
-        canvas.create_text(0, 0, anchor=tk.NW, text='Testing, one, two, three...')
-        canvas.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
-        s = ttk.Scrollbar(self, orient=tk.VERTICAL, command=canvas.yview)
-        s.pack(side=tk.RIGHT, fill=tk.Y)
-        canvas['yscrollcommand'] = s.set
+        canvas = self.canvas = tk.Canvas(self, width=200, height=200)
+        canvas.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
+        s = ttk.Scrollbar(self, orient=tk.HORIZONTAL, command=canvas.xview)
+        s.pack(side=tk.BOTTOM, fill=tk.X)
+        canvas['xscrollcommand'] = s.set
 
     def update(self, device):
         canvas = self.canvas
         canvas.delete('all')
 
         # Partitions are children
-        yscale = 65536
+        xscale = 42
+        def xs(x):
+            return round(x / xscale)
         m = 5
-        y = 0
+        r = Rect()
+        xend = 0
         for p in self.editor.config.map():
             if p.device != device:
                 continue
@@ -251,26 +274,50 @@ class TkMap(tk.Frame):
             else:
                 id = p.name
 
-            def get_used():
-                if p.filename == '':
-                    return ''
+            used = ''
+            imgsize = 0
+            if p.filename != '':
                 try:
-                    path = self.resolve_path(p.filename)
+                    path = self.editor.resolve_path(p.filename)
+                    if os.path.exists(path):
+                        imgsize = os.path.getsize(path)
+                        used = percent_used(imgsize, p.size)
+                    else:
+                        used = '(not found)'
                 except KeyError as err:
-                    return str(err) + ' undefined'
-                if not os.path.exists(path):
-                    return '(not found)'
-                return percent_used(os.path.getsize(path), p.size)
+                    used = str(err) + ' undefined'
 
-            x = 0
-            w = 200
-            h = round(yscale * min(16 * 1024, p.size) / device.size)
-            canvas.create_rectangle(x, y, x + w, y + h, outline='red')
-            canvas.create_text(x+m, y+m, anchor=tk.NW, text=p.address_str())
-            canvas.create_text(x+m, y+m+20, anchor=tk.NW, text=p.name)
-            y += h
+            # Limit drawn partition width
+            drawsize = min(32 * 1024, p.size)
+            r.width = xs(drawsize)
+            if xend == 0 and p.end() >= device.size - 1:
+                sz = device.size - p.address
+                critical("sz = %u" % sz)
+                xend = r.x + xs(drawsize * sz / p.size)
+            # w = round(xscale * p.size / device.size)
+            r.height = 100
+            r2 = copy.copy(r)
+            r2.inflate(-m, -m)
+            canvas.create_rectangle(r2.x, r2.y, r2.x2(), r2.y2(), fill='grey', activefill='white', outline='red')
+            r2.inflate(-m, -m)
+            if imgsize != 0:
+                r2.width = imgsize * r2.width / p.size
+                canvas.create_rectangle(r2.x, r2.y, r2.x2(), r2.y2(), fill='lightgray', outline='lightgray', state='disabled')
+            canvas.create_text(r2.x, r2.y, anchor=tk.NW, text=p.address_str(), state='disabled')
+            r2.y += 20
+            canvas.create_text(r2.x, r2.y, anchor=tk.NW, text=p.name, state='disabled')
+            r2.x += m
+            r2.y += 20
+            canvas.create_text(r2.x, r2.y, anchor=tk.NW, text=used, state='disabled')
+            if p.filename != '':
+                r2.y += 20
+                canvas.create_text(r2.x, r2.y, anchor=tk.NW, text=p.filename, state='disabled')
+            r.x += r.width
 
-        canvas.config(scrollregion=(0, 0, 200, y+50))
+        r2 = Rect(1, 1, xend, r.y2())
+        canvas.create_rectangle(r2.x, r2.y, r2.x2(), r2.y2(), outline='black', width=3, state='disabled')
+
+        canvas.config(scrollregion=(0, 0, r.x2() + 100, 0))
 
 
 
@@ -284,10 +331,6 @@ class Editor:
         self.initialise()
 
     def initialise(self):
-        # Window resizing is focused around treeview @ (0, 0)
-        self.main.columnconfigure(0, weight=1)
-        self.main.rowconfigure(1, weight=1)
-        self.main.rowconfigure(2, weight=3)
         self.main.option_add('*tearOff', False)
         s = ttk.Style()
         s.configure('Treeview', font='TkFixedFont')
@@ -342,7 +385,7 @@ class Editor:
 
         # Toolbar
         toolbar = ttk.Frame(self.main)
-        toolbar.grid(row=0, column=0, columnspan=4, sticky=tk.W)
+        toolbar.pack(side=tk.TOP, fill=tk.X)
         btnNew = ttk.Button(toolbar, text="New", command=fileNew)
         btnNew.grid(row=0, column=1)
         btnOpen = ttk.Button(toolbar, text="Open...", command=fileOpen)
@@ -350,18 +393,22 @@ class Editor:
         btnSave = ttk.Button(toolbar, text="Save...", command=fileSave)
         btnSave.grid(row=0, column=3)
 
-        # map
-        self.map = TkMap(self)
-        self.map.grid(row=1, column=0, columnspan=3, sticky=tk.NSEW)
+        pwin = ttk.PanedWindow(self.main, orient=tk.VERTICAL)
+        pwin.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
+
+        #
+        self.notebook = ttk.Notebook(pwin)
+        pwin.add(self.notebook)
 
         # Treeview for devices and partitions
 
-        tree = ttk.Treeview(self.main, columns=['start', 'end', 'size', 'used', 'type', 'subtype', 'filename'])
-        # tree.grid(row=1, column=0, columnspan=3, sticky=tk.NSEW)
-        self.tree = tree
+        f = ttk.Frame(self.notebook)
+        self.notebook.add(f, text="Tree")
+        tree = self.tree = ttk.Treeview(f, columns=['start', 'end', 'size', 'used', 'type', 'subtype', 'filename'])
+        tree.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
-        s = ttk.Scrollbar(self.main, orient=tk.VERTICAL, command=tree.yview)
-        # s.grid(row=1, column=4, sticky=tk.NS)
+        s = ttk.Scrollbar(f, orient=tk.VERTICAL, command=tree.yview)
+        s.pack(side=tk.RIGHT, fill=tk.Y)
         tree['yscrollcommand'] = s.set
 
         tree.heading('start', text='Start', anchor=tk.W)
@@ -372,41 +419,6 @@ class Editor:
         tree.heading('subtype', text='Sub-Type', anchor=tk.W)
         tree.heading('filename', text='Image filename', anchor=tk.W)
 
-        # Base configurations
-        f = ttk.LabelFrame(self.main, text = 'Base Configuration')
-        f.grid(row=2, column=0, sticky=tk.SW)
-
-        def base_config_changed(*args):
-            self.json['base_config'] = self.base_config.get()
-            self.reload()
-
-        self.base_config = tk.StringVar(value = 'standard')
-        config_list = ttk.Combobox(f,
-            textvariable = self.base_config,
-            values = list(get_config_list().keys()))
-        config_list.bind('<<ComboboxSelected>>', base_config_changed)
-        config_list.grid()
-
-        # Option checkboxes
-
-        f = ttk.LabelFrame(self.main, text = 'Options')
-        f.grid(row=3, column=0, sticky=tk.NW)
-
-        def options_changed(*args):
-            self.json['options'] = []
-            for k, v in self.options.items():
-                if v.get():
-                    self.json['options'].append(k)
-            self.reload()
-
-        self.options = {}
-        for k, v in load_option_library().items():
-            self.options[k] = tk.BooleanVar()
-            btn = tk.Checkbutton(f, text = k + ': ' + v['description'],
-                command=options_changed, variable=self.options[k])
-            btn.grid(sticky=tk.W)
-
-        # Selection handling
         def select(*args):
             id = tree.focus()
             if id == '':
@@ -424,13 +436,56 @@ class Editor:
                 self.editPartition(part)
         tree.bind('<<TreeviewSelect>>', select)
 
+        # map
+        self.map = TkMap(self.notebook, self)
+        self.notebook.add(self.map, text = 'map')
+
+        # Lower frame
+        frame = ttk.Frame(pwin)
+        frame.pack(expand=True, fill=tk.BOTH)
+        pwin.add(frame)
+
+        # Base configurations
+        f = ttk.LabelFrame(frame, text = 'Base Configuration')
+        f.grid(row=0, column=0, sticky=tk.SW)
+
+        def base_config_changed(*args):
+            self.json['base_config'] = self.base_config.get()
+            self.reload()
+
+        self.base_config = tk.StringVar(value = 'standard')
+        config_list = ttk.Combobox(f,
+            textvariable = self.base_config,
+            values = list(get_config_list().keys()))
+        config_list.bind('<<ComboboxSelected>>', base_config_changed)
+        config_list.grid()
+
+        # Option checkboxes
+
+        f = ttk.LabelFrame(frame, text = 'Options')
+        f.grid(row=1, column=0, sticky=tk.NW)
+
+        def options_changed(*args):
+            self.json['options'] = []
+            for k, v in self.options.items():
+                if v.get():
+                    self.json['options'].append(k)
+            self.reload()
+
+        self.options = {}
+        for k, v in load_option_library().items():
+            self.options[k] = tk.BooleanVar()
+            btn = tk.Checkbutton(f, text = k + ': ' + v['description'],
+                command=options_changed, variable=self.options[k])
+            btn.grid(sticky=tk.W)
+
         # Edit frame
-        self.editFrame = ttk.LabelFrame(self.main, text='Edit Object')
-        self.editFrame.grid(row=2, column=1, rowspan=2, sticky=tk.SW)
+        self.editFrame = ttk.LabelFrame(frame, text='Edit Object')
+        self.editFrame.grid(row=0, column=1, rowspan=2, sticky=tk.NSEW)
 
         # JSON editor
-        jsonFrame = ttk.LabelFrame(self.main, text='JSON Configuration')
-        jsonFrame.grid(row=2, column=2, rowspan=2, sticky=tk.NS)
+        jsonFrame = ttk.LabelFrame(frame, text='JSON Configuration')
+        jsonFrame.grid(row=0, column=2, rowspan=2, sticky=tk.NS)
         def apply(*args):
             try:
                 json_config = json.loads(self.jsonEditor.get('1.0', 'end'))
@@ -455,7 +510,7 @@ class Editor:
         # Status box
         self.status = tk.StringVar()
         status = ttk.Label(self.main, textvariable=self.status)
-        status.grid(row=4, column=0, columnspan=3, sticky=tk.EW)
+        status.pack(side=tk.BOTTOM, fill=tk.X)
 
         self.reset()
 
