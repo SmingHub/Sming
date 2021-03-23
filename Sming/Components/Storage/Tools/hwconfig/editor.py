@@ -2,7 +2,7 @@ import argparse, os, partition, configparser, string
 from common import *
 from config import *
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+from tkinter import ttk, filedialog, messagebox, font
 
 app_name = 'Sming Hardware Profile Editor'
 
@@ -224,6 +224,177 @@ class EditState(dict):
         return self.name != self['name'].get_value()
 
 
+class Rect:
+    def __init__(self, x=0, y=0, width=0, height=0):
+        self.x = x
+        self.y = y
+        self.x2 = x + width
+        self.y2 = y + height
+
+    def inflate(self, x, y):
+        self.x -= x
+        self.y -= y
+        self.x2 += x
+        self.y2 += y
+
+    def getWidth(self):
+        return self.x2 - self.x
+
+    def setWidth(self, w):
+        self.x2 = self.x + w
+
+    def getHeight(self):
+        return self.y2 - self.y
+
+    def setHeight(self, h):
+        self.y2 = self.y + h
+
+    def pos(self):
+        return (self.x, self.y)
+
+    def bounds(self):
+        return (self.x, self.y, self.x2, self.y2)
+
+
+class TkMap(tk.Frame):
+    def __init__(self, parent, editor):
+        super().__init__(parent, width=200, height=200)
+        self.pack(fill=tk.BOTH)
+        self.editor = editor
+        canvas = self.canvas = tk.Canvas(self, width=200, height=200)
+        canvas.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
+        s = ttk.Scrollbar(self, orient=tk.HORIZONTAL, command=canvas.xview)
+        s.pack(side=tk.BOTTOM, fill=tk.X)
+        canvas['xscrollcommand'] = s.set
+
+    def update(self, device):
+        canvas = self.canvas
+        canvas.delete('all')
+
+        labelFont = font.Font(family='fixed', size=8)
+        labelFontBold = font.Font(family='fixed', size=8, weight='bold')
+
+        # Margins to separate drawn rectangular regions
+        M = 5
+        M_OUTER = 20
+
+        # Pixels to draw map row
+        ROW_HEIGHT = 160
+        # Text line spacing
+        LINE_SPACE = 16
+        # How far ticks extend below map
+        TICK_LENGTH = 10
+        # Linear scaling for view
+        BYTES_PER_PIXEL = 32
+        def xs(x):
+            return round(x / BYTES_PER_PIXEL)
+
+        # Drawing the map linearly would make navigation very difficult, too spread-out
+        # Instead, fix a limit for the drawn size of each partition (in bytes)
+        # Marker ticks will be drawn according to this scale
+        MAX_DRAWSIZE = 16 * 1024
+        drawsize = 0      # Equivalent size (in bytes) for the partition
+        x_device_end = 0  # Determines final x co-ordinate for end of device memory
+
+        def draw_tick(x, addr):
+            canvas.create_line(x, r.y, x, r.y2 + 10, fill='black', width=3)
+            canvas.create_text(x, r.y + ROW_HEIGHT + TICK_LENGTH,
+                anchor=tk.N,
+                text=str(addr / 1024 / 1024) + 'MB',
+                state='disabled',
+                font=labelFontBold)
+
+        # Track current partition area
+        r_prev = Rect()
+        r_prev.y = M_OUTER
+        r_prev.x = M_OUTER
+        part_prev = None
+
+        class Used:
+            def __init__(self):
+                self.text = ''
+                self.size = 0
+                self.path = ''
+
+        for p in self.editor.config.map():
+            if p.device != device:
+                continue
+
+            used = Used()
+            if p.filename != '':
+                try:
+                    used.path = self.editor.resolve_path(p.filename)
+                    if os.path.exists(used.path):
+                        used.size = os.path.getsize(used.path)
+                        used.text = percent_used(used.size, p.size)
+                    else:
+                        used.text = '(not found)'
+                except KeyError as err:
+                    used.text = str(err) + ' undefined'
+
+            # Starting x co-ordinate for this partition depends on scale of previous partition
+            r = copy.copy(r_prev)
+            r.setHeight(ROW_HEIGHT)
+            if part_prev is not None:
+                r.x += xs(drawsize * (p.address - part_prev.address) / part_prev.size)
+
+            # Determine actual size to draw this partition (in bytes)
+            drawsize = min(MAX_DRAWSIZE, p.size)
+            r.setWidth(xs(drawsize))
+            # Identify where end of device memory actually is in case partitions exceed this boundary
+            if x_device_end == 0 and p.end() >= device.size - 1:
+                sz = device.size - p.address
+                x_device_end = r.x + xs(drawsize * sz / p.size)
+
+            # Draw tick marks
+            div = 256 * 1024
+            addr = p.address - (p.address % div)
+            while addr <= p.end():
+                if addr >= p.address:
+                    x = r.x + xs(drawsize * (addr - p.address) / p.size)
+                    draw_tick(x, addr)
+                addr += div
+
+            r2 = copy.copy(r)
+            r2.inflate(-M, -M)
+            id = canvas.create_rectangle(r2.bounds(), fill='lightgray' if p.is_unused() else 'gray', activefill='white', outline='red')
+            canvas.tag_bind(id, "<Button-1>", lambda event, part=p: self.editor.editPartition(part))
+            r2.inflate(-M, -M)
+            canvas.create_text(r2.pos(), anchor=tk.NW, text=p.address_str(), state='disabled', font=labelFont)
+            r2.y += LINE_SPACE
+            canvas.create_text(r2.pos(), anchor=tk.NW, text=p.name, state='disabled', font=labelFontBold)
+            r2.y += LINE_SPACE
+            canvas.create_text(r2.pos(), anchor=tk.NW, text=p.size_str(), state='disabled', font=labelFontBold)
+            if not p.is_internal():
+                r2.y += LINE_SPACE
+                canvas.create_text(r2.pos(), anchor=tk.NW, text=p.type_str() + ' / ' + p.subtype_str(), state='disabled', font=labelFont)
+            r2.y += LINE_SPACE
+            if used.size != 0:
+                r2.setWidth(used.size * r2.getWidth() / p.size)
+                canvas.create_rectangle(r2.bounds(), fill='lightblue', outline='lightblue', state='disabled')
+            r2.x += M
+            r2.y += LINE_SPACE
+            canvas.create_text(r2.pos(), anchor=tk.NW, text=used.text, state='disabled', font=labelFont)
+            if p.filename != '':
+                r2.y += LINE_SPACE
+                canvas.create_text(r2.pos(), anchor=tk.NW, text=p.filename, state='disabled', font=labelFont)
+                if used.path != p.filename:
+                    r2.y += LINE_SPACE
+                    canvas.create_text(r2.pos(), anchor=tk.NW, text=used.path, state='disabled', font=labelFont)
+
+            part_prev = p
+            r_prev = r
+
+        r2 = Rect(M_OUTER, M_OUTER)
+        r2.x2 = x_device_end
+        r2.y2 = r.y2
+        canvas.create_rectangle(r2.bounds(), outline='black', width=3, state='disabled')
+        if x_device_end >= r.x:
+            draw_tick(x_device_end, device.size)
+        canvas.config(scrollregion=(0, 0, r.x2 + 100, 0))
+
+
+
 class Editor:
     def __init__(self, root):
         root.title(app_name)
@@ -234,10 +405,6 @@ class Editor:
         self.initialise()
 
     def initialise(self):
-        # Window resizing is focused around treeview @ (0, 0)
-        self.main.columnconfigure(0, weight=1)
-        self.main.rowconfigure(1, weight=1)
-        self.main.rowconfigure(2, weight=3)
         self.main.option_add('*tearOff', False)
         s = ttk.Style()
         s.configure('Treeview', font='TkFixedFont')
@@ -292,7 +459,7 @@ class Editor:
 
         # Toolbar
         toolbar = ttk.Frame(self.main)
-        toolbar.grid(row=0, column=0, columnspan=4, sticky=tk.W)
+        toolbar.pack(side=tk.TOP, fill=tk.X)
         btnNew = ttk.Button(toolbar, text="New", command=fileNew)
         btnNew.grid(row=0, column=1)
         btnOpen = ttk.Button(toolbar, text="Open...", command=fileOpen)
@@ -300,14 +467,23 @@ class Editor:
         btnSave = ttk.Button(toolbar, text="Save...", command=fileSave)
         btnSave.grid(row=0, column=3)
 
+        # Group controls into two areas (top and bottom) which are sizeable by the user
+        pwin = ttk.PanedWindow(self.main, orient=tk.VERTICAL)
+        pwin.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
+
+        # Place alternate views in a tabbed area
+        self.notebook = ttk.Notebook(pwin)
+        pwin.add(self.notebook)
+
         # Treeview for devices and partitions
 
-        tree = ttk.Treeview(self.main, columns=['start', 'end', 'size', 'used', 'type', 'subtype', 'filename'])
-        tree.grid(row=1, column=0, columnspan=3, sticky=tk.NSEW)
-        self.tree = tree
+        f = ttk.Frame(self.notebook)
+        self.notebook.add(f, text="Tree")
+        tree = self.tree = ttk.Treeview(f, columns=['start', 'end', 'size', 'used', 'type', 'subtype', 'filename'])
+        tree.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
-        s = ttk.Scrollbar(self.main, orient=tk.VERTICAL, command=tree.yview)
-        s.grid(row=1, column=4, sticky=tk.NS)
+        s = ttk.Scrollbar(f, orient=tk.VERTICAL, command=tree.yview)
+        s.pack(side=tk.RIGHT, fill=tk.Y)
         tree['yscrollcommand'] = s.set
 
         tree.heading('start', text='Start', anchor=tk.W)
@@ -318,41 +494,6 @@ class Editor:
         tree.heading('subtype', text='Sub-Type', anchor=tk.W)
         tree.heading('filename', text='Image filename', anchor=tk.W)
 
-        # Base configurations
-        f = ttk.LabelFrame(self.main, text = 'Base Configuration')
-        f.grid(row=2, column=0, sticky=tk.SW)
-
-        def base_config_changed(*args):
-            self.json['base_config'] = self.base_config.get()
-            self.reload()
-
-        self.base_config = tk.StringVar(value = 'standard')
-        config_list = ttk.Combobox(f,
-            textvariable = self.base_config,
-            values = list(get_config_list().keys()))
-        config_list.bind('<<ComboboxSelected>>', base_config_changed)
-        config_list.grid()
-
-        # Option checkboxes
-
-        f = ttk.LabelFrame(self.main, text = 'Options')
-        f.grid(row=3, column=0, sticky=tk.NW)
-
-        def options_changed(*args):
-            self.json['options'] = []
-            for k, v in self.options.items():
-                if v.get():
-                    self.json['options'].append(k)
-            self.reload()
-
-        self.options = {}
-        for k, v in load_option_library().items():
-            self.options[k] = tk.BooleanVar()
-            btn = tk.Checkbutton(f, text = k + ': ' + v['description'],
-                command=options_changed, variable=self.options[k])
-            btn.grid(sticky=tk.W)
-
-        # Selection handling
         def select(*args):
             id = tree.focus()
             if id == '':
@@ -370,13 +511,59 @@ class Editor:
                 self.editPartition(part)
         tree.bind('<<TreeviewSelect>>', select)
 
+        # map of spiFlash device
+        self.map = TkMap(self.notebook, self)
+        self.notebook.add(self.map, text = 'map')
+
+        # Lower frame
+        frame = ttk.Frame(pwin)
+        frame.pack(expand=True, fill=tk.BOTH)
+        pwin.add(frame)
+
+        frame.rowconfigure(0, weight=1)
+        frame.columnconfigure(0, weight=1)
+
+        # Base configurations
+        f = ttk.LabelFrame(frame, text = 'Base Configuration')
+        f.grid(row=0, column=0, sticky=tk.SW)
+
+        def base_config_changed(*args):
+            self.json['base_config'] = self.base_config.get()
+            self.reload()
+
+        self.base_config = tk.StringVar(value = 'standard')
+        config_list = ttk.Combobox(f,
+            textvariable = self.base_config,
+            values = list(get_config_list().keys()))
+        config_list.bind('<<ComboboxSelected>>', base_config_changed)
+        config_list.grid()
+
+        # Option checkboxes
+
+        f = ttk.LabelFrame(frame, text = 'Options')
+        f.grid(row=1, column=0, sticky=tk.NW)
+
+        def options_changed(*args):
+            self.json['options'] = []
+            for k, v in self.options.items():
+                if v.get():
+                    self.json['options'].append(k)
+            self.reload()
+
+        self.options = {}
+        for k, v in load_option_library().items():
+            self.options[k] = tk.BooleanVar()
+            btn = tk.Checkbutton(f, text = k + ': ' + v['description'],
+                command=options_changed, variable=self.options[k])
+            btn.grid(sticky=tk.W)
+
         # Edit frame
-        self.editFrame = ttk.LabelFrame(self.main, text='Edit Object')
-        self.editFrame.grid(row=2, column=1, rowspan=2, sticky=tk.SW)
+        self.editFrame = ttk.LabelFrame(frame, text='Edit Object')
+        self.editFrame.grid(row=0, column=1, rowspan=2, sticky=tk.SW)
 
         # JSON editor
-        jsonFrame = ttk.LabelFrame(self.main, text='JSON Configuration')
-        jsonFrame.grid(row=2, column=2, rowspan=2, sticky=tk.NS)
+        jsonFrame = ttk.LabelFrame(frame, text='JSON Configuration')
+        jsonFrame.grid(row=0, column=2, rowspan=2, sticky=tk.NS)
         def apply(*args):
             try:
                 json_config = json.loads(self.jsonEditor.get('1.0', 'end'))
@@ -401,7 +588,7 @@ class Editor:
         # Status box
         self.status = tk.StringVar()
         status = ttk.Label(self.main, textvariable=self.status)
-        status.grid(row=4, column=0, columnspan=3, sticky=tk.EW)
+        status.pack(side=tk.BOTTOM, fill=tk.X)
 
         self.reset()
 
@@ -412,7 +599,7 @@ class Editor:
     def getBaseConfig(self):
         """Load the base configuration with currently selected options applied
         """
-        return Config.from_json(self.json_base_config, self.json['options'])
+        return Config.from_json(self.json_base_config, self.json.get('options', []))
  
     def loadConfig(self, filename):
         self.reset()
@@ -482,6 +669,8 @@ class Editor:
         except InputError as err:
             self.status.set(str(err))
             return
+
+        self.map.update(config.devices[0])
 
         # Devices are our root nodes
         for dev in config.devices:
