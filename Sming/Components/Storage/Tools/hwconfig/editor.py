@@ -310,19 +310,15 @@ class TkMap(tk.Frame):
         r_prev.x = M_OUTER
         part_prev = None
 
+        class Used:
+            def __init__(self):
+                self.text = ''
+                self.size = 0
+                self.path = ''
+
         for p in self.editor.config.map():
             if p.device != device:
                 continue
-            if p.is_unused():
-                id = p.device.name + '/' + p.address_str()
-            else:
-                id = p.name
-
-            class Used:
-                def __init__(self):
-                    self.text = ''
-                    self.size = 0
-                    self.path = ''
 
             used = Used()
             if p.filename != '':
