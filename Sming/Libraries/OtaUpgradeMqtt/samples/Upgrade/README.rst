@@ -11,6 +11,12 @@ This application uses :component:`OtaUpgradeMqtt` and follows the recommended ve
 
 Based on :envvar:`ENABLE_OTA_ADVANCED` the firmware data can be either without any encoding or be signed and encrypted.
 
+Tools
+-----
+There are two tools that facilitate the packiging and deployment of a new firmware.
+
+For more information read ``Firmware packaging`` in the documentation of the :component:`OtaUpgradeMqtt` component.
+
 Security
 --------
 Depending on :envvar:`ENABLE_SSL` a standard SSL/TLS can be enabled. This way

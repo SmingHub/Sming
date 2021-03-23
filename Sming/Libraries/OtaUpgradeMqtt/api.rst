@@ -5,3 +5,4 @@ OTA Upgrade over MQTT classes
 
 .. doxygenclass:: OtaUpgrade::Mqtt::PayloadParser
 .. doxygenclass:: OtaUpgrade::Mqtt::RbootPayloadParser
+.. doxygenclass:: OtaUpgrade::Mqtt::AdvancedPayloadParser

@@ -98,7 +98,7 @@ void otaUpdate()
 	mqtt.setPayloadParser([parser](MqttPayloadParserState& state, mqtt_message_t* message, const char* buffer,
 								   int length) -> int { return parser->parse(state, message, buffer, length); });
 
-	String updateTopic = "/a/";
+	String updateTopic = "a/";
 	updateTopic += APP_ID;
 	updateTopic += "/u/";
 	updateTopic += APP_VERSION;

@@ -1,13 +1,62 @@
 OTA Firmware Upgrade via MQTT
 =============================
 
-.. highlight:: bash
+.. highlight:: c++
 
 Introduction
 ------------
 
 This library allows Sming applications to upgrade their firmware Over-The-Air (OTA) using the MQTT protocol.
 MTQTT has less overhead compared to HTTP and can be used for faster delivery of application updates.
+
+Using
+-----
+
+1. Add ``COMPONENT_DEPENDS += OtaUpgradeMqtt`` to your application componenent.mk file.
+2. Add these lines to your application::
+
+      #include <OtaUpgrade/Mqtt/RbootPayloadParser.h>
+
+      #if ENABLE_OTA_ADVANCED
+      #include <OtaUpgrade/Mqtt/AdvancedPayloadParser.h>
+      #endif
+
+      MqttClient mqtt;
+
+      // Call when IP address has been obtained
+      void onIp(IpAddress ip, IpAddress mask, IpAddress gateway)
+      {
+         // ...
+
+         mqtt.connect(Url(MQTT_URL), "sming");
+
+      #if ENABLE_OTA_ADVANCED
+          /*
+           * The advanced parser suppors all firmware upgrades supported by the `OtaUpgrade` library.
+           * `OtaUpgrade` library provides firmware signing, firmware encryption and so on.
+           */
+          auto parser = new OtaUpgrade::Mqtt::AdvancedPayloadParser(APP_VERSION_PATCH);
+      #else
+          /*
+           * The command below uses class that stores the firmware directly
+           * using RbootOutputStream on a location provided by us
+           */
+          auto parser = new OtaUpgrade::Mqtt::RbootPayloadParser(part, APP_VERSION_PATCH);
+       #endif
+
+            mqtt.setPayloadParser([parser]
+            (MqttPayloadParserState& state, mqtt_message_t* message, const char* buffer, int length) -> int
+            {
+               return parser->parse(state, message, buffer, length);
+            });
+
+            String updateTopic = "a/test/u/4.3";
+            mqtt.subscribe(updateTopic);
+
+         // ...
+      }
+
+See the :sample:`Upgrade` sample application.
 
 Versioning Principles
 ---------------------
@@ -29,11 +78,11 @@ Theory Of Operation
    Depending on the size of the new firmware and the speed of the connection an update can take 10 to 20 seconds.
 
 2. The application connects via MQTT to a remote server and subscribes to a special topic. The topic is based on the
-   application id and its current version. If the current application version is 4.3.1 then the topic that will be used for OTA is ``/a/test/u/4.3``.
+   application id and its current version. If the current application id is ``test`` and version is ``4.3.1`` then the topic that will be used for OTA is ``a/test/u/4.3``.
 
 3. If there is a need to support both stable and unstable/nightly builds then the topic name can have `s` or `u` suffix. For example
-   all stable versions should be published and downloaded from the topic ``/a/test/u/4.3/s``. For the unstable ones we can use the topic ``/a/test/u/4.3/u``.
-   If an application is interested in both then it can subscribe using the following pattern ``/a/test/u/4.3/+``.
+   all stable versions should be published and downloaded from the topic ``a/test/u/4.3/s``. For the unstable ones we can use the topic ``a/test/u/4.3/u``.
+   If an application is interested in both stable and unstable versions then it can subscribe using the following pattern ``a/test/u/4.3/+``.
 
 4. The application is waiting for new firmware. When the application is on battery than it makes sense to wait for a limited time and if there is no
    message coming back to disconnect.
@@ -50,6 +99,27 @@ One MQTT message contains:
 
 Based on the :envvar:`ENABLE_OTA_VARINT_VERSION` the patch version can be encoded either using one byte or a `varint <https://developers.google.com/protocol-buffers/docs/encoding#varints>`_.
 Based on :envvar:`ENABLE_OTA_ADVANCED` the firmware data can be either without any encoding or be signed and encrypted.
+
+To simplify the packaging this library comes with a tool called ``deployer``. To create a package type the following from your application::
+
+   make ota-pack OTA_PATCH_VERSION=127
+
+Replace 127 with the desired patch version.
+If the option ``OTA_PATCH_VERSION`` is omitted from the command line then the patch version will be generated automatically and it will contain the current unix timestamp.
+
+Once a package is created it can be deployed to the firmware MQTT server using the command below::
+
+   make ota-deploy MQTT_FIRMWARE_URL=mqtt://relser:relpassword@attachix.com/a/test/u/4.3
+
+The ``MQTT_FIRMWARE_URL`` above specifies that
+
+- protocol is: mqtt without SSL. Allowed values here are ``mqtt`` and ``mqtts``. The latter uses SSL.
+- user is: relser
+- password is: relpassword
+- host is: attachix.com
+- path is: /a/test/u/4.3. The path without leading and ending slashes is used to generate the topic name ``a/test/u/4.3``.
+
+Make sure to replace the MQTT_FIRMWARE_URL value with your MQTT server credentials, host and topic.
 
 Security
 --------
