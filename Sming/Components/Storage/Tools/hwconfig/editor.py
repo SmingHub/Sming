@@ -228,26 +228,32 @@ class Rect:
     def __init__(self, x=0, y=0, width=0, height=0):
         self.x = x
         self.y = y
-        self.width = width
-        self.height = height
+        self.x2 = x + width
+        self.y2 = y + height
 
     def inflate(self, x, y):
         self.x -= x
         self.y -= y
-        self.width += 2 * x
-        self.height += 2 * y
+        self.x2 += x
+        self.y2 += y
 
-    def x2(self):
-        return self.x + self.width
+    def getWidth(self):
+        return self.x2 - self.x
 
-    def y2(self):
-        return self.y + self.height
+    def setWidth(self, w):
+        self.x2 = self.x + w
+
+    def getHeight(self):
+        return self.y2 - self.y
+
+    def setHeight(self, h):
+        self.y2 = self.y + h
 
     def pos(self):
         return (self.x, self.y)
 
     def bounds(self):
-        return (self.x, self.y, self.x2(), self.y2())
+        return (self.x, self.y, self.x2, self.y2)
 
 
 class TkMap(tk.Frame):
@@ -276,8 +282,8 @@ class TkMap(tk.Frame):
         r = Rect()
 
         def draw_tick(x, addr):
-            canvas.create_line(x, r.y, x, r.y2() + 10, fill='black', width=3)
-            canvas.create_text(x, r.y2() + 10, anchor=tk.N, text=str(addr / 1024 / 1024) + 'MB', state='disabled')
+            canvas.create_line(x, r.y, x, r.y2 + 10, fill='black', width=3)
+            canvas.create_text(x, r.y2 + 10, anchor=tk.N, text=str(addr / 1024 / 1024) + 'MB', state='disabled')
 
         xend = 0
         for p in self.editor.config.map():
@@ -288,22 +294,27 @@ class TkMap(tk.Frame):
             else:
                 id = p.name
 
-            used = ''
-            imgsize = 0
+            class Used:
+                def __init__(self):
+                    self.text = ''
+                    self.size = 0
+                    self.path = ''
+
+            used = Used()
             if p.filename != '':
                 try:
-                    path = self.editor.resolve_path(p.filename)
-                    if os.path.exists(path):
-                        imgsize = os.path.getsize(path)
-                        used = percent_used(imgsize, p.size)
+                    used.path = self.editor.resolve_path(p.filename)
+                    if os.path.exists(used.path):
+                        used.size = os.path.getsize(used.path)
+                        used.text = percent_used(used.size, p.size)
                     else:
-                        used = '(not found)'
+                        used.text = '(not found)'
                 except KeyError as err:
-                    used = str(err) + ' undefined'
+                    used.text = str(err) + ' undefined'
 
             # Limit drawn partition width
             drawsize = min(24 * 1024, p.size)
-            r.width = xs(drawsize)
+            r.setWidth(xs(drawsize))
             if xend == 0 and p.end() >= device.size - 1:
                 sz = device.size - p.address
                 xend = r.x + xs(drawsize * sz / p.size)
@@ -319,35 +330,38 @@ class TkMap(tk.Frame):
 
             # w = round(xscale * p.size / device.size)
             linespace = 16
-            r.height = 150
+            r.setHeight(150)
             r2 = copy.copy(r)
             r2.inflate(-m, -m)
             id = canvas.create_rectangle(r2.bounds(), fill='grey', activefill='white', outline='red')
             canvas.tag_bind(id, "<Button-1>", lambda event, part=p: self.editor.editPartition(part))
             r2.inflate(-m, -m)
-            if imgsize != 0:
-                r2.width = imgsize * r2.width / p.size
-                canvas.create_rectangle(r2.bounds(), fill='lightgray', outline='lightgray', state='disabled')
             canvas.create_text(r2.pos(), anchor=tk.NW, text=p.address_str(), state='disabled', font=labelFont)
             r2.y += linespace
             canvas.create_text(r2.pos(), anchor=tk.NW, text=p.name, state='disabled', font=labelFontBold)
             if not p.is_internal():
                 r2.y += linespace
                 canvas.create_text(r2.pos(), anchor=tk.NW, text=p.type_str() + ' / ' + p.subtype_str(), state='disabled', font=labelFont)
+            r2.y += linespace
+            if used.size != 0:
+                r2.setWidth(used.size * r2.getWidth() / p.size)
+                canvas.create_rectangle(r2.bounds(), fill='lightgray', outline='lightgray', state='disabled')
             r2.x += m
             r2.y += linespace
-            r2.y += linespace
-            canvas.create_text(r2.pos(), anchor=tk.NW, text=used, state='disabled', font=labelFont)
+            canvas.create_text(r2.pos(), anchor=tk.NW, text=used.text, state='disabled', font=labelFont)
             if p.filename != '':
                 r2.y += linespace
                 canvas.create_text(r2.pos(), anchor=tk.NW, text=p.filename, state='disabled', font=labelFont)
-            r.x += r.width
+                if used.path != p.filename:
+                    r2.y += linespace
+                    canvas.create_text(r2.pos(), anchor=tk.NW, text=used.path, state='disabled', font=labelFont)
+            r.x += r.getWidth()
 
-        r2 = Rect(1, 1, xend, r.y2())
+        r2 = Rect(1, 1, xend, r.y2)
         canvas.create_rectangle(r2.bounds(), outline='black', width=3, state='disabled')
         if xend >= r.x:
             draw_tick(xend, device.size)
-        canvas.config(scrollregion=(0, 0, r.x2() + 100, 0))
+        canvas.config(scrollregion=(0, 0, r.x2 + 100, 0))
 
 
 
