@@ -145,7 +145,10 @@ void Session::close()
 
 int Session::read(InputBuffer& input, uint8_t*& output)
 {
-	assert(connection != nullptr);
+	if(connection == nullptr) {
+		debug_w("SSL: no connection");
+		return -1;
+	}
 	int len = connection->read(input, output);
 	if(len < 0) {
 		debug_w("SSL: Got error: %d (%s)", len, connection->getErrorString(len).c_str());

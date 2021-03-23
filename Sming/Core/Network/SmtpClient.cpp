@@ -264,7 +264,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	}
 
 	case eSMTP_Disconnect: {
-		close();
+		setTimeOut(1);
 		return;
 	}
 
@@ -492,7 +492,6 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 
 		case eSMTP_Quitting: {
 			RETURN_ON_ERROR(SMTP_CODE_BYE);
-			close();
 			state = eSMTP_Disconnect;
 
 			break;
