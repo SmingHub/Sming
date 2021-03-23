@@ -143,45 +143,39 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 	}
 
 	case eSMTP_SendAuth: {
-		if(authMethods.count()) {
-			auto methodPlain = F("PLAIN");
-			auto methodCramMd5 = F("CRAM-MD5");
-			// TODO: Simplify the code in that block...
-			Vector<String> preferredOrder;
-			if(useSsl) {
-				preferredOrder.addElement(methodPlain);
-				preferredOrder.addElement(methodCramMd5);
-			} else {
-				preferredOrder.addElement(methodCramMd5);
-				preferredOrder.addElement(methodPlain);
-			}
+		auto authPlain = [this]() {
+			// base64('\0' + username + '\0' + password)
+			String token = '\0' + url.User + '\0' + url.Password;
+			String hash = base64_encode(token);
+			sendString(F("AUTH PLAIN ") + hash + "\r\n");
+			state = eSMTP_SendingAuth;
+		};
 
-			for(unsigned i = 0; i < preferredOrder.count(); i++) {
-				if(authMethods.contains(preferredOrder[i])) {
-					if(preferredOrder[i] == methodPlain) {
-						// base64('\0' + username + '\0' + password)
-						String token = '\0' + url.User + '\0' + url.Password;
-						String hash = base64_encode(token);
-						sendString(F("AUTH PLAIN ") + hash + "\r\n");
-						state = eSMTP_SendingAuth;
-						break;
-					} else if(preferredOrder[i] == methodCramMd5) {
-						// otherwise we can try the slow cram-md5 authentication...
-						sendString(F("AUTH CRAM-MD5\r\n"));
-						state = eSMTP_RequestingAuthChallenge;
-						break;
-					}
-				}
+		auto authCramMd5 = [this]() {
+			// Slower cram-md5 authentication
+			sendString(F("AUTH CRAM-MD5\r\n"));
+			state = eSMTP_RequestingAuthChallenge;
+		};
+
+		DEFINE_FSTR_LOCAL(methodPlain, "PLAIN")
+		DEFINE_FSTR_LOCAL(methodCramMd5, "CRAM-MD5")
+		if(useSsl) {
+			if(authMethods.contains(methodPlain)) {
+				authPlain();
+			} else if(authMethods.contains(methodCramMd5)) {
+				authCramMd5();
 			}
-		} /* authMethods.count */
+		} else if(authMethods.contains(methodCramMd5)) {
+			authCramMd5();
+		} else if(authMethods.contains(methodPlain)) {
+			authPlain();
+		}
 
 		if(state == eSMTP_SendAuth) {
 			state = eSMTP_Ready;
 		}
 
 		break;
-
-	default:; // Do nothing
 	}
 
 	case eSMTP_SendAuthResponse: {
@@ -268,6 +262,8 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		return;
 	}
 
+	default:; // Do nothing
+
 	} /* switch(state) */
 
 	TcpClient::onReadyToSendData(sourceEvent);
@@ -343,12 +339,13 @@ err_t SmtpClient::onReceive(pbuf* buf)
 	pbuf* cur = buf;
 	int parsedBytes = 0;
 	while(cur != nullptr && cur->len > 0) {
-		parsedBytes += smtpParse((char*)cur->payload, cur->len);
+		parsedBytes += smtpParse(static_cast<char*>(cur->payload), cur->len);
 		cur = cur->next;
 	}
 
 	if(parsedBytes != buf->tot_len) {
-		debug_e("Got error: %s:%s", code, message);
+		debug_e("[SMTP] Got error %s: %s", code, message);
+		debug_hex(DBG, "SMTP", buf->payload, buf->len);
 
 		if(!errorCallback || errorCallback(*this, codeValue, message) != 0) {
 			// abort the connection if we cannot handle it.
