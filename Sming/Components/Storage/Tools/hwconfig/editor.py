@@ -274,18 +274,42 @@ class TkMap(tk.Frame):
         labelFont = font.Font(family='fixed', size=8)
         labelFontBold = font.Font(family='fixed', size=8, weight='bold')
 
-        # Partitions are children
-        xscale = 32
+        # Margins to separate drawn rectangular regions
+        M = 5
+        M_OUTER = 20
+
+        # Pixels to draw map row
+        ROW_HEIGHT = 160
+        # Text line spacing
+        LINE_SPACE = 16
+        # How far ticks extend below map
+        TICK_LENGTH = 10
+        # Linear scaling for view
+        BYTES_PER_PIXEL = 32
         def xs(x):
-            return round(x / xscale)
-        m = 5
-        r = Rect()
+            return round(x / BYTES_PER_PIXEL)
+
+        # Drawing the map linearly would make navigation very difficult, too spread-out
+        # Instead, fix a limit for the drawn size of each partition (in bytes)
+        # Marker ticks will be drawn according to this scale
+        MAX_DRAWSIZE = 16 * 1024
+        drawsize = 0      # Equivalent size (in bytes) for the partition
+        x_device_end = 0  # Determines final x co-ordinate for end of device memory
 
         def draw_tick(x, addr):
             canvas.create_line(x, r.y, x, r.y2 + 10, fill='black', width=3)
-            canvas.create_text(x, r.y2 + 10, anchor=tk.N, text=str(addr / 1024 / 1024) + 'MB', state='disabled')
+            canvas.create_text(x, r.y + ROW_HEIGHT + TICK_LENGTH,
+                anchor=tk.N,
+                text=str(addr / 1024 / 1024) + 'MB',
+                state='disabled',
+                font=labelFontBold)
 
-        xend = 0
+        # Track current partition area
+        r_prev = Rect()
+        r_prev.y = M_OUTER
+        r_prev.x = M_OUTER
+        part_prev = None
+
         for p in self.editor.config.map():
             if p.device != device:
                 continue
@@ -312,12 +336,19 @@ class TkMap(tk.Frame):
                 except KeyError as err:
                     used.text = str(err) + ' undefined'
 
-            # Limit drawn partition width
-            drawsize = min(16 * 1024, p.size)
+            # Starting x co-ordinate for this partition depends on scale of previous partition
+            r = copy.copy(r_prev)
+            r.setHeight(ROW_HEIGHT)
+            if part_prev is not None:
+                r.x += xs(drawsize * (p.address - part_prev.address) / part_prev.size)
+
+            # Determine actual size to draw this partition (in bytes)
+            drawsize = min(MAX_DRAWSIZE, p.size)
             r.setWidth(xs(drawsize))
-            if xend == 0 and p.end() >= device.size - 1:
+            # Identify where end of device memory actually is in case partitions exceed this boundary
+            if x_device_end == 0 and p.end() >= device.size - 1:
                 sz = device.size - p.address
-                xend = r.x + xs(drawsize * sz / p.size)
+                x_device_end = r.x + xs(drawsize * sz / p.size)
 
             # Draw tick marks
             div = 256 * 1024
@@ -328,41 +359,42 @@ class TkMap(tk.Frame):
                     draw_tick(x, addr)
                 addr += div
 
-            # w = round(xscale * p.size / device.size)
-            linespace = 16
-            r.setHeight(150)
             r2 = copy.copy(r)
-            r2.inflate(-m, -m)
-            id = canvas.create_rectangle(r2.bounds(), fill='grey', activefill='white', outline='red')
+            r2.inflate(-M, -M)
+            id = canvas.create_rectangle(r2.bounds(), fill='lightgray' if p.is_unused() else 'gray', activefill='white', outline='red')
             canvas.tag_bind(id, "<Button-1>", lambda event, part=p: self.editor.editPartition(part))
-            r2.inflate(-m, -m)
+            r2.inflate(-M, -M)
             canvas.create_text(r2.pos(), anchor=tk.NW, text=p.address_str(), state='disabled', font=labelFont)
-            r2.y += linespace
+            r2.y += LINE_SPACE
             canvas.create_text(r2.pos(), anchor=tk.NW, text=p.name, state='disabled', font=labelFontBold)
-            r2.y += linespace
+            r2.y += LINE_SPACE
             canvas.create_text(r2.pos(), anchor=tk.NW, text=p.size_str(), state='disabled', font=labelFontBold)
             if not p.is_internal():
-                r2.y += linespace
+                r2.y += LINE_SPACE
                 canvas.create_text(r2.pos(), anchor=tk.NW, text=p.type_str() + ' / ' + p.subtype_str(), state='disabled', font=labelFont)
-            r2.y += linespace
+            r2.y += LINE_SPACE
             if used.size != 0:
                 r2.setWidth(used.size * r2.getWidth() / p.size)
-                canvas.create_rectangle(r2.bounds(), fill='lightgray', outline='lightgray', state='disabled')
-            r2.x += m
-            r2.y += linespace
+                canvas.create_rectangle(r2.bounds(), fill='lightblue', outline='lightblue', state='disabled')
+            r2.x += M
+            r2.y += LINE_SPACE
             canvas.create_text(r2.pos(), anchor=tk.NW, text=used.text, state='disabled', font=labelFont)
             if p.filename != '':
-                r2.y += linespace
+                r2.y += LINE_SPACE
                 canvas.create_text(r2.pos(), anchor=tk.NW, text=p.filename, state='disabled', font=labelFont)
                 if used.path != p.filename:
-                    r2.y += linespace
+                    r2.y += LINE_SPACE
                     canvas.create_text(r2.pos(), anchor=tk.NW, text=used.path, state='disabled', font=labelFont)
-            r.x += r.getWidth()
 
-        r2 = Rect(1, 1, xend, r.y2)
+            part_prev = p
+            r_prev = r
+
+        r2 = Rect(M_OUTER, M_OUTER)
+        r2.x2 = x_device_end
+        r2.y2 = r.y2
         canvas.create_rectangle(r2.bounds(), outline='black', width=3, state='disabled')
-        if xend >= r.x:
-            draw_tick(xend, device.size)
+        if x_device_end >= r.x:
+            draw_tick(x_device_end, device.size)
         canvas.config(scrollregion=(0, 0, r.x2 + 100, 0))
 
 
@@ -439,10 +471,11 @@ class Editor:
         btnSave = ttk.Button(toolbar, text="Save...", command=fileSave)
         btnSave.grid(row=0, column=3)
 
+        # Group controls into two areas (top and bottom) which are sizeable by the user
         pwin = ttk.PanedWindow(self.main, orient=tk.VERTICAL)
         pwin.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
 
-        #
+        # Place alternate views in a tabbed area
         self.notebook = ttk.Notebook(pwin)
         pwin.add(self.notebook)
 
@@ -482,7 +515,7 @@ class Editor:
                 self.editPartition(part)
         tree.bind('<<TreeviewSelect>>', select)
 
-        # map
+        # map of spiFlash device
         self.map = TkMap(self.notebook, self)
         self.notebook.add(self.map, text = 'map')
 
@@ -490,6 +523,9 @@ class Editor:
         frame = ttk.Frame(pwin)
         frame.pack(expand=True, fill=tk.BOTH)
         pwin.add(frame)
+
+        frame.rowconfigure(0, weight=1)
+        frame.columnconfigure(0, weight=1)
 
         # Base configurations
         f = ttk.LabelFrame(frame, text = 'Base Configuration')
@@ -527,7 +563,7 @@ class Editor:
 
         # Edit frame
         self.editFrame = ttk.LabelFrame(frame, text='Edit Object')
-        self.editFrame.grid(row=0, column=1, rowspan=2, sticky=tk.NSEW)
+        self.editFrame.grid(row=0, column=1, rowspan=2, sticky=tk.SW)
 
         # JSON editor
         jsonFrame = ttk.LabelFrame(frame, text='JSON Configuration')
@@ -567,7 +603,7 @@ class Editor:
     def getBaseConfig(self):
         """Load the base configuration with currently selected options applied
         """
-        return Config.from_json(self.json_base_config, self.json['options'])
+        return Config.from_json(self.json_base_config, self.json.get('options', []))
  
     def loadConfig(self, filename):
         self.reset()
