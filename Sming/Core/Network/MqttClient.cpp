@@ -168,13 +168,11 @@ int MqttClient::onMessageEnd(mqtt_message_t* message)
 			// failure
 			clearBits(flags, MQTT_CLIENT_CONNECTED);
 			setTimeOut(1); // schedule the connection for closing
-
-			return message->connack.return_code;
+		} else {
+			// success
+			setTimeOut(USHRT_MAX);
+			setBits(flags, MQTT_CLIENT_CONNECTED);
 		}
-
-		// success
-		setTimeOut(USHRT_MAX);
-		setBits(flags, MQTT_CLIENT_CONNECTED);
 	}
 
 	auto& handler = static_cast<const HandlerMap&>(eventHandlers)[message->common.type];
