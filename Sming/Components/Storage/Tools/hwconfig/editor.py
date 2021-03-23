@@ -313,7 +313,7 @@ class TkMap(tk.Frame):
                     used.text = str(err) + ' undefined'
 
             # Limit drawn partition width
-            drawsize = min(24 * 1024, p.size)
+            drawsize = min(16 * 1024, p.size)
             r.setWidth(xs(drawsize))
             if xend == 0 and p.end() >= device.size - 1:
                 sz = device.size - p.address
@@ -339,6 +339,8 @@ class TkMap(tk.Frame):
             canvas.create_text(r2.pos(), anchor=tk.NW, text=p.address_str(), state='disabled', font=labelFont)
             r2.y += linespace
             canvas.create_text(r2.pos(), anchor=tk.NW, text=p.name, state='disabled', font=labelFontBold)
+            r2.y += linespace
+            canvas.create_text(r2.pos(), anchor=tk.NW, text=p.size_str(), state='disabled', font=labelFontBold)
             if not p.is_internal():
                 r2.y += linespace
                 canvas.create_text(r2.pos(), anchor=tk.NW, text=p.type_str() + ' / ' + p.subtype_str(), state='disabled', font=labelFont)
