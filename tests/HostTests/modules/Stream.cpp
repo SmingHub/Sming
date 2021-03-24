@@ -1,6 +1,8 @@
 #include <HostTests.h>
 #include <FlashString/TemplateStream.hpp>
 #include <Data/Stream/MemoryDataStream.h>
+#include <Data/Stream/Base64OutputStream.h>
+#include <Network/WebHelpers/base64.h>
 
 DEFINE_FSTR_LOCAL(template1, "Stream containing {var1}, {var2} and {var3}. {} {{}} {{12345")
 DEFINE_FSTR_LOCAL(template1_1, "Stream containing value #1, value #2 and {var3}. {} {{}} {{12345")
@@ -70,6 +72,46 @@ public:
 			REQUIRE(dest.moveString(s) == true);
 			REQUIRE(FS_abstract == s);
 			REQUIRE(strlen(s.c_str()) == s.length());
+		}
+
+		TEST_CASE("Base64OutputStream / StreamTransformer")
+		{
+			auto src = new FSTR::Stream(Resource::image_png);
+			Base64OutputStream base64stream(src);
+			MemoryDataStream output;
+			output.copyFrom(&base64stream);
+			String s;
+			REQUIRE(output.moveString(s));
+			s = base64_decode(s);
+			REQUIRE(Resource::image_png == s);
+		}
+
+		TEST_CASE("MultipartStream / MultiStream")
+		{
+			unsigned itemIndex{0};
+			constexpr const FlashString* items[]{
+				&template1, &template1_1, &template1_2, &template2, &template2_1,
+			};
+			MultipartStream multi([&]() -> MultipartStream::BodyPart {
+				MultipartStream::BodyPart part;
+				if(itemIndex < ARRAY_SIZE(items)) {
+					part.headers = new HttpHeaders;
+					part.stream = new FSTR::Stream(*items[itemIndex++]);
+				}
+				return part;
+			});
+
+			// For testing, hack the boundary value so we can compare it against a reference output
+			auto boundary = const_cast<char*>(multi.getBoundary());
+			memcpy(boundary, _F("oALsXuO7vSbrvve"), 16);
+
+			MemoryDataStream mem;
+			size_t copySize = mem.copyFrom(&multi);
+			debug_i("copySize = %u", copySize);
+			REQUIRE(int(copySize) == mem.available());
+			String s;
+			REQUIRE(mem.moveString(s));
+			REQUIRE(Resource::multipart_result == s);
 		}
 	}
 
