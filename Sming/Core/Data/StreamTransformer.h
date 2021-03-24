@@ -117,6 +117,8 @@ protected:
 	StreamTransformerCallback transformCallback = nullptr;
 
 private:
+	void fillTempStream(char* buffer, size_t bufSize);
+
 	IDataSourceStream* sourceStream{nullptr};
 	CircularBuffer* tempStream{nullptr};
 	uint8_t* result{nullptr};
