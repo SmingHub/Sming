@@ -90,7 +90,10 @@ using SmtpClientCallback = Delegate<int(SmtpClient& client, int code, char* stat
 class SmtpClient : protected TcpClient
 {
 public:
-	SmtpClient(bool autoDestroy = false);
+	SmtpClient(bool autoDestroy = false) : TcpClient(autoDestroy)
+	{
+	}
+
 	~SmtpClient();
 
 	/**

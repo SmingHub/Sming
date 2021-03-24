@@ -35,7 +35,7 @@
 	}
 #define ADVANCE_UNTIL_EOL                                                                                              \
 	do {                                                                                                               \
-		if(*(buffer - 1) == '\r' && *buffer == '\n') {                                                                 \
+		if(buffer[-1] == '\r' && buffer[0] == '\n') {                                                                  \
 			ADVANCE_AND_BREAK;                                                                                         \
 		}                                                                                                              \
 		ADVANCE;                                                                                                       \
@@ -44,7 +44,7 @@
 #define ADVANCE_UNTIL_EOL_OR_BREAK                                                                                     \
 	{                                                                                                                  \
 		ADVANCE_UNTIL_EOL;                                                                                             \
-		if(*(buffer - 1) != '\n') {                                                                                    \
+		if(buffer[-1] != '\n') {                                                                                       \
 			break;                                                                                                     \
 		}                                                                                                              \
 	}
@@ -60,10 +60,6 @@
 	if(A != nullptr && !A->isFinished()) {                                                                             \
 		break;                                                                                                         \
 	}
-
-SmtpClient::SmtpClient(bool autoDestroy) : TcpClient(autoDestroy)
-{
-}
 
 SmtpClient::~SmtpClient()
 {
@@ -273,15 +269,14 @@ MultipartStream::BodyPart SmtpClient::multipartProducer()
 {
 	MultipartStream::BodyPart result;
 
-	if(outgoingMail->attachments.count()) {
+	if(!outgoingMail->attachments.isEmpty()) {
 		result = outgoingMail->attachments[0];
+		outgoingMail->attachments.remove(0);
 
 		if(!result.headers->contains(HTTP_HEADER_CONTENT_TRANSFER_ENCODING)) {
 			result.stream = new Base64OutputStream(result.stream);
 			(*result.headers)[HTTP_HEADER_CONTENT_TRANSFER_ENCODING] = _F("base64");
 		}
-
-		outgoingMail->attachments.remove(0);
 	}
 
 	return result;
@@ -296,7 +291,7 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 		mail->stream = new QuotedPrintableOutputStream(mail->stream);
 	}
 
-	if(mail->attachments.count()) {
+	if(!mail->attachments.isEmpty()) {
 		MultipartStream* mStream = new MultipartStream(MultipartStream::Producer(&SmtpClient::multipartProducer, this));
 		MultipartStream::BodyPart text;
 		text.headers = new HttpHeaders();
