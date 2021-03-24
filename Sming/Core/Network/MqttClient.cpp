@@ -388,13 +388,20 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 			break;
 		}
 
+		if(outgoingMessage->common.type == MQTT_TYPE_PUBLISH && payloadStream != nullptr) {
+			// The packetLength should be big enought for the header ONLY.
+			// Payload will be attached as a second stream
+			packetLength -= outgoingMessage->publish.content.length;
+			outgoingMessage->publish.content.data = nullptr;
+		}
+
 		uint8_t packet[packetLength];
 		mqtt_serialiser_write(&serialiser, outgoingMessage, packet, packetLength);
 
 		delete stream;
 		auto headerStream = new MemoryDataStream();
 		headerStream->write(packet, packetLength);
-		if(outgoingMessage->common.type == MQTT_TYPE_PUBLISH && payloadStream != nullptr) {
+		if(payloadStream != nullptr) {
 			auto streamChain = new StreamChain();
 			streamChain->attachStream(headerStream);
 			streamChain->attachStream(payloadStream);
