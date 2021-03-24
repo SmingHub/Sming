@@ -168,7 +168,7 @@ void* CTimerThread::thread_routine()
 				continue; // state changed
 			}
 			if(errno != ETIMEDOUT) {
-				hostmsg("Warning! Timer thread errno = %u", errno);
+				host_debug_w("Timer thread errno = %u", errno);
 				break;
 			}
 		}

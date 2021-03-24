@@ -124,10 +124,10 @@ void StationImpl::statusCallback(netif* nif)
 	if(changed_flags & NETIF_FLAG_UP) {
 		assert(currentAp != nullptr);
 		if(nif->flags & NETIF_FLAG_UP) {
-			host_printf("IF_UP, AP: %s\n", currentAp->ssid);
+			host_debug_i("IF_UP, AP: %s", currentAp->ssid);
 			wifiEventsImpl.stationConnected(*currentAp);
 		} else {
-			host_printf("IF_DOWN, AP: %s\n", currentAp->ssid);
+			host_debug_i("IF_DOWN, AP: %s", currentAp->ssid);
 			wifiEventsImpl.stationDisconnected(*currentAp, WIFI_DISCONNECT_REASON_CONNECTION_FAIL);
 		}
 	}
@@ -138,12 +138,12 @@ void StationImpl::statusCallback(netif* nif)
 			ipaddr = nif->ip_addr;
 			netmask = nif->netmask;
 			gateway = nif->gw;
-			host_printf("IP_CHANGE, ip: %s, netmask: %s, gateway: %s\n", ipaddr.toString().c_str(),
-						netmask.toString().c_str(), gateway.toString().c_str());
+			host_debug_i("IP_CHANGE, ip: %s, netmask: %s, gateway: %s", ipaddr.toString().c_str(),
+						 netmask.toString().c_str(), gateway.toString().c_str());
 			wifiEventsImpl.stationGotIp(ipaddr, netmask, gateway);
 		}
 	} else {
-		hostmsg("No IP address");
+		host_debug_w("No IP address");
 		connectionStatus = eSCS_ConnectionFailed;
 	}
 }

@@ -19,7 +19,7 @@ static uint32_t SPIRead(uint32_t addr, void* outptr, uint32_t len)
 }
 
 #define SPIEraseSector(sector) flashmem_erase_sector(sector)
-#define echof(fmt, ...) host_printf(fmt, ##__VA_ARGS__)
+#define echof(fmt, ...) host_debug_i(fmt, ##__VA_ARGS__)
 
 #include <partition.h>
 
@@ -33,10 +33,10 @@ void host_init_bootloader()
 	// fresh install or old version?
 	bool init = false;
 	if(romconf.magic != BOOT_CONFIG_MAGIC) {
-		hostmsg("MAGIC mismatch");
+		host_debug_w("MAGIC mismatch");
 		init = true;
 	} else if(romconf.version != BOOT_CONFIG_VERSION) {
-		hostmsg("VERSION mismatch: %u found, current %u", romconf.version, BOOT_CONFIG_VERSION);
+		host_debug_w("VERSION mismatch: %u found, current %u", romconf.version, BOOT_CONFIG_VERSION);
 		init = true;
 	}
 
@@ -54,13 +54,13 @@ void host_init_bootloader()
 	}
 
 	if(romconf.count == 0) {
-		hostmsg("ERROR! No App partitions found\r\n");
+		host_debug_w("Note: No App partitions found\r\n");
 		return;
 	}
 
 	if(init || config_changed) {
 		bool ok = rboot_set_config(&romconf);
-		hostmsg("Update rBoot config: %s", ok ? "OK" : "FAIL");
+		host_debug_i("Update rBoot config: %s", ok ? "OK" : "FAIL");
 	}
 
 	String addr;
@@ -70,5 +70,5 @@ void host_init_bootloader()
 		}
 		addr += '#' + String(i) + ": 0x" + String(romconf.roms[i], 16);
 	}
-	hostmsg("ROM count = %u, current = %u, %s", romconf.count, romconf.current_rom, addr.c_str());
+	host_debug_i("ROM count = %u, current = %u, %s", romconf.count, romconf.current_rom, addr.c_str());
 }

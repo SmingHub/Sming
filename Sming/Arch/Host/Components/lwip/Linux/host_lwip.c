@@ -75,7 +75,7 @@ static bool getifaddr(const char* ifname, struct net_config* netcfg)
 {
 	struct ifaddrs* list;
 	if(getifaddrs(&list) < 0) {
-		hostmsg("getifaddrs: %s", strerror(errno));
+		host_debug_e("getifaddrs: %s", strerror(errno));
 		return false;
 	}
 
@@ -111,26 +111,26 @@ static bool getifaddr(const char* ifname, struct net_config* netcfg)
 
 bool host_lwip_init(const struct lwip_param* param)
 {
-	hostmsg("%s", "Initialising LWIP");
+	host_debug_i("%s", "Initialising LWIP");
 
 	struct net_config netcfg = {0};
 
 	if(!getifaddr(param->ifname, &netcfg)) {
 		if(param->ifname == NULL) {
-			hostmsg("%s", "No compatible interface found");
+			host_debug_e("%s", "No compatible interface found");
 		} else {
-			hostmsg("Interface '%s' not found", param->ifname);
+			host_debug_e("Interface '%s' not found", param->ifname);
 		}
 		return false;
 	}
 
 	if(param->gateway != NULL && ip4addr_aton(param->gateway, &netcfg.gw) != 1) {
-		hostmsg("Failed to parse provided Gateway address '%s'", param->gateway);
+		host_debug_e("Failed to parse provided Gateway address '%s'", param->gateway);
 		return false;
 	}
 
 	if(param->netmask != NULL && ip4addr_aton(param->netmask, &netcfg.netmask) != 1) {
-		hostmsg("Failed to parse provided Network Mask '%s'", param->netmask);
+		host_debug_e("Failed to parse provided Network Mask '%s'", param->netmask);
 		return false;
 	}
 
@@ -139,7 +139,7 @@ bool host_lwip_init(const struct lwip_param* param)
 		IP4_ADDR(&netcfg.ipaddr, (uint32_t)ip4_addr1(&netcfg.gw), (uint32_t)ip4_addr2(&netcfg.gw),
 				 (uint32_t)ip4_addr3(&netcfg.gw), 10U);
 	} else if(ip4addr_aton(param->ipaddr, &netcfg.ipaddr) != 1) {
-		hostmsg("Failed to parse provided IP address '%s'", param->ipaddr);
+		host_debug_e("Failed to parse provided IP address '%s'", param->ipaddr);
 		return false;
 	}
 
@@ -149,7 +149,8 @@ bool host_lwip_init(const struct lwip_param* param)
 	ip4addr_ntoa_r(&netcfg.netmask, nm_str, sizeof(nm_str));
 	char gw_str[IP4ADDR_STRLEN_MAX];
 	ip4addr_ntoa_r(&netcfg.gw, gw_str, sizeof(gw_str));
-	hostmsg("Using interface '%s', gateway = %s, netmask = %s; using ip = %s", netcfg.ifname, gw_str, nm_str, ip_str);
+	host_debug_i("Using interface '%s', gateway = %s, netmask = %s; using ip = %s", netcfg.ifname, gw_str, nm_str,
+				 ip_str);
 
 	setenv("PRECONFIGURED_TAPIF", netcfg.ifname, true);
 
@@ -158,8 +159,8 @@ bool host_lwip_init(const struct lwip_param* param)
 	netif_add(&netif, &netcfg.ipaddr, &netcfg.netmask, &netcfg.gw, NULL, tapif_init, ethernet_input);
 
 	getMacAddress(netcfg.ifname, netif.hwaddr);
-	hostmsg("MAC: %02x:%02x:%02x:%02x:%02x:%02x", netif.hwaddr[0], netif.hwaddr[1], netif.hwaddr[2], netif.hwaddr[3],
-			netif.hwaddr[4], netif.hwaddr[5]);
+	host_debug_i("MAC: %02x:%02x:%02x:%02x:%02x:%02x", netif.hwaddr[0], netif.hwaddr[1], netif.hwaddr[2],
+				 netif.hwaddr[3], netif.hwaddr[4], netif.hwaddr[5]);
 
 	netif_set_default(&netif);
 
