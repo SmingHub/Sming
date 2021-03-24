@@ -145,12 +145,12 @@ endef
 
 .PHONY: buildpart
 buildpart: ##Rebuild all partition targets
-ifeq (,$(PARTITION_BUILD_TARGETS))
-	@echo "No partitions have build targets"
-else
-	$(Q) rm -f $(PARTITION_BUILD_TARGETS)
-	$(MAKE) $(PARTITION_BUILD_TARGETS)
-endif
+	@if [ "$(PARTITION_BUILD_TARGETS)" -eq "" ]; then \
+		echo "No partitions have build targets"; \
+	else \
+		rm -f $(PARTITION_BUILD_TARGETS); \
+		$(MAKE) $(PARTITION_BUILD_TARGETS); \
+	fi
 
 ##@Flashing
 
