@@ -23,7 +23,7 @@ Base64OutputStream::Base64OutputStream(IDataSourceStream* stream, size_t resultS
 
 size_t Base64OutputStream::transform(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength)
 {
-	size_t count = 0;
+	size_t count;
 	if(sourceLength == 0) {
 		count = base64_encode_blockend((char*)target, &state);
 	} else {
@@ -31,14 +31,4 @@ size_t Base64OutputStream::transform(const uint8_t* source, size_t sourceLength,
 	}
 
 	return count;
-}
-
-void Base64OutputStream::saveState()
-{
-	memcpy(&lastState, &state, sizeof(base64_encodestate));
-}
-
-void Base64OutputStream::restoreState()
-{
-	memcpy(&state, &lastState, sizeof(base64_encodestate));
 }

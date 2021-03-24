@@ -117,9 +117,9 @@ protected:
 	StreamTransformerCallback transformCallback = nullptr;
 
 private:
-	IDataSourceStream* sourceStream = nullptr;
-	CircularBuffer* tempStream = nullptr;
-	uint8_t* result = nullptr;
+	IDataSourceStream* sourceStream{nullptr};
+	CircularBuffer* tempStream{nullptr};
+	uint8_t* result{nullptr};
 	size_t resultSize;
 	size_t blockSize;
 };

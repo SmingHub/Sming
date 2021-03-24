@@ -68,13 +68,11 @@ uint16_t StreamTransformer::readMemoryBlock(char* data, int bufSize)
 	return tempStream->readMemoryBlock(data, bufSize);
 }
 
-//Use base class documentation
 bool StreamTransformer::seek(int len)
 {
 	return tempStream->seek(len);
 }
 
-//Use base class documentation
 bool StreamTransformer::isFinished()
 {
 	return (sourceStream->isFinished() && (tempStream == nullptr || tempStream->isFinished()));
