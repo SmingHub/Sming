@@ -124,6 +124,7 @@ uint16_t FileStream::readMemoryBlock(char* data, int bufSize)
 
 	// Move cursor back to start position
 	(void)fs->lseek(handle, startPos, SeekOrigin::Start);
+	pos = startPos;
 
 	return count;
 }
