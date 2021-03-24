@@ -14,14 +14,13 @@
 
 uint16_t MultiStream::readMemoryBlock(char* data, int bufSize)
 {
-	if(stream != nullptr && stream->isFinished()) {
-		delete stream;
-		stream = nullptr;
+	if(stream && stream->isFinished()) {
+		stream.reset();
 	}
 
-	if(stream == nullptr) {
-		stream = getNextStream();
-		if(stream == nullptr) {
+	if(!stream) {
+		stream.reset(getNextStream());
+		if(!stream) {
 			finished = true;
 			return 0;
 		}
