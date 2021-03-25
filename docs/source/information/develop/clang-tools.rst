@@ -1,11 +1,11 @@
 Clang Tools
 ===========
 
-`clang-format <https://releases.llvm.org/6.0.0/tools/clang/docs/ClangFormat.html>`__
+`clang-format <https://releases.llvm.org/8.0.1/tools/clang/docs/ClangFormat.html>`__
 is a tool that implements automatic source code formatting.
 It can be used to automatically enforce the layout rules for Sming.
 
-`clang-tidy <https://releases.llvm.org/6.0.0/tools/clang/tools/extra/docs/clang-tidy/index.html>`__
+`clang-tidy <https://releases.llvm.org/8.0.1/tools/clang/tools/extra/docs/clang-tidy/index.html>`__
 is a C++ “linter” tool to assist with diagnosing and fixing  typical programming errors
 such as style violations, interface misuse, or bugs that can be deduced via static analysis.
 It is provided as part of 
@@ -26,9 +26,16 @@ See the the `download <http://releases.llvm.org/download.html>`__ page
 of the Clang project for installation instructions for other operating
 systems.
 
-We are using version 6.0 of clang-format and clang-tidy on our
-Continuous Integration (CI) System. You should install the same
-version or newer on your development computer.
+.. important::
+
+   Different versions of clang-format can produce different results,
+   despite using the same configuration file.
+
+   We are using version 8.0.1 of clang-format and clang-tidy on our
+   Continuous Integration (CI) System.
+   
+   You should install the same version on your development computer.
+
 
 
 Configuration
