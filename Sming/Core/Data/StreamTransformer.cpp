@@ -24,57 +24,46 @@ uint16_t StreamTransformer::readMemoryBlock(char* data, int bufSize)
 		tempStream = new CircularBuffer(NETWORK_SEND_BUFFER_SIZE + 10);
 	}
 
-	if(tempStream->isFinished()) {
-		if(sourceStream->isFinished()) {
-			return 0;
-		}
-
-		// Fill the temp stream with data...
-		int i = bufSize / blockSize + 1;
-		do {
-			int len = blockSize;
-			if(i == 1) {
-				len = bufSize % blockSize;
-			}
-
-			len = sourceStream->readMemoryBlock(data, len);
-			if(!len) {
-				break;
-			}
-
-			saveState();
-			size_t outLength = transform(reinterpret_cast<const uint8_t*>(data), len, result, resultSize);
-			if(outLength > tempStream->room()) {
-				restoreState();
-				break;
-			}
-
-			if(tempStream->write(result, outLength) != outLength) {
-				debug_e("That should not happen!");
-				restoreState();
-				break;
-			}
-
-			sourceStream->seek(len);
-		} while(--i);
-
-		if(sourceStream->isFinished()) {
-			int outLength = transform(nullptr, 0, result, resultSize);
-			tempStream->write(result, outLength);
-		}
-
-	} /* if(tempStream->isFinished()) */
+	// Use provided buffer as a temporary store for this operation
+	fillTempStream(data, bufSize);
 
 	return tempStream->readMemoryBlock(data, bufSize);
 }
 
-//Use base class documentation
+void StreamTransformer::fillTempStream(char* buffer, size_t bufSize)
+{
+	size_t room;
+	auto maxChunkSize = std::min(bufSize, blockSize);
+	while((room = tempStream->room()) >= maxChunkSize) {
+		auto chunkSize = sourceStream->readMemoryBlock(buffer, maxChunkSize);
+		if(chunkSize == 0) {
+			return;
+		}
+
+		saveState();
+		size_t outLength = transform(reinterpret_cast<const uint8_t*>(buffer), chunkSize, result, resultSize);
+		if(outLength > room) {
+			restoreState();
+			return;
+		}
+
+		auto written = tempStream->write(result, outLength);
+		assert(written == outLength);
+
+		sourceStream->seek(chunkSize);
+	}
+
+	if(sourceStream->isFinished()) {
+		auto outLength = transform(nullptr, 0, result, resultSize);
+		tempStream->write(result, outLength);
+	}
+}
+
 bool StreamTransformer::seek(int len)
 {
 	return tempStream->seek(len);
 }
 
-//Use base class documentation
 bool StreamTransformer::isFinished()
 {
 	return (sourceStream->isFinished() && (tempStream == nullptr || tempStream->isFinished()));

@@ -31,17 +31,17 @@ public:
 
 	size_t transform(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength) override;
 
-	/**
-	 * @brief A method that backs up the current state
-	 */
-	void saveState() override;
+	void saveState() override
+	{
+		savedState = state;
+	}
 
-	/**
-	 * @brief A method that restores the last backed up state
-	 */
-	void restoreState() override;
+	void restoreState() override
+	{
+		state = savedState;
+	}
 
 private:
-	base64_encodestate state = {};
-	base64_encodestate lastState = {};
+	base64_encodestate state{};
+	base64_encodestate savedState{};
 };
