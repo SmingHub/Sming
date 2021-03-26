@@ -241,7 +241,7 @@ int main(int argc, char* argv[])
 		}
 
 		if(config.pause != 0) {
-			hostmsg("If required, you may start terminal application(s) now");
+			host_debug_i("If required, you may start terminal application(s) now");
 			pause(config.pause);
 		}
 

@@ -23,6 +23,9 @@ Open an *administrative* **cmd.exe** command prompt and paste the text from the 
 
    curl -LO https://raw.githubusercontent.com/SmingHub/Sming/develop/Tools/choco-install.cmd && choco-install.cmd
 
+At the moment the Esp32 toolchain is not installed by default. If you want to install it run the following command::
+
+   choco install -y sming.esp32
 
 .. important::
 
@@ -32,21 +35,30 @@ Open an *administrative* **cmd.exe** command prompt and paste the text from the 
 
    It is also inadvisable to continue running with elevated privileges.
 
+If you followed and executed carefully the steps above Sming should be installed and configured.
+You can scroll down to :ref:`Build Basic_Blink` to check the installation.
 
-The installer uses the latest **develop** branch.
-The command below will get for you the latest ``stable`` release::
+Optional step: Switch to stable version
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The installer uses the latest **develop** branch. This one contains great new features and bugfixes but can be ``unstable`` at times.
 
-   cd %SMING_HOME%
-   git checkout master
-   git pull
+Switching to our ``stable`` release will guarantee you that Sming's code will not change so often.
+On the downside you will have to wait for all new shiny features and bugfixes.
 
+If you really want to use the latest ``stable`` release you can type the command below::
+
+      cd %SMING_HOME%
+      git checkout master
+      git pull
+
+
+Optional step: Re-installation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In case something is broken, this will perform a forced re-install of all packages::
 
    rmdir /s /q c:\tools\sming
    choco install sming -y -f -x
-
-
 
 Packages
 --------
@@ -107,7 +119,7 @@ To check the installation, open a command prompt and type these commands::
    make
 
 The project should build without error.
-   
+
 
 Next steps
 ----------
