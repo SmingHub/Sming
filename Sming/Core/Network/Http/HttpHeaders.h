@@ -88,7 +88,7 @@ public:
 
 	bool append(const HttpHeaderFieldName& name, const String& value)
 	{
-		if(!isMultiHeader(name)) {
+		if(!getFlags(name)[Flag::Multi]) {
 			return false;
 		}
 

@@ -14,13 +14,27 @@
 #include <FlashString/Vector.hpp>
 
 // Define field name strings and a lookup table
-#define XX(_tag, _str, _comment) DEFINE_FSTR_LOCAL(hhfnStr_##_tag, _str);
+#define XX(tag, str, flags, comment) DEFINE_FSTR_LOCAL(hhfnStr_##tag, str);
 HTTP_HEADER_FIELDNAME_MAP(XX)
 #undef XX
 
-#define XX(_tag, _str, _comment) &hhfnStr_##_tag,
+#define XX(tag, str, flags, comment) &hhfnStr_##tag,
 DEFINE_FSTR_VECTOR_LOCAL(fieldNameStrings, FlashString, HTTP_HEADER_FIELDNAME_MAP(XX));
 #undef XX
+
+HttpHeaderFields::Flags HttpHeaderFields::getFlags(HttpHeaderFieldName name) const
+{
+	switch(name) {
+#define XX(tag, str, flags, comment)                                                                                   \
+	case HttpHeaderFieldName::tag:                                                                                     \
+		return flags;
+		HTTP_HEADER_FIELDNAME_MAP(XX)
+#undef XX
+	default:
+		// Custom fields
+		return 0;
+	}
+}
 
 String HttpHeaderFields::toString(HttpHeaderFieldName name) const
 {
@@ -37,7 +51,7 @@ String HttpHeaderFields::toString(HttpHeaderFieldName name) const
 
 String HttpHeaderFields::toString(HttpHeaderFieldName name, const String& value) const
 {
-	if(isMultiHeader(name)) {
+	if(getFlags(name)[Flag::Multi]) {
 		String s;
 		Vector<String> splits;
 		String values(value);
