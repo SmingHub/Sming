@@ -46,13 +46,14 @@ void NtpClient::requestTime()
 	}
 
 	ip_addr_t resolvedIp;
-	int result = dns_gethostbyname(server.c_str(), &resolvedIp,
-								   [](const char* name, LWIP_IP_ADDR_T* ip, void* arg) {
-									   // We do a new request since the last one was never done.
-									   if(ip)
-										   reinterpret_cast<NtpClient*>(arg)->internalRequestTime(*ip);
-								   },
-								   this);
+	int result = dns_gethostbyname(
+		server.c_str(), &resolvedIp,
+		[](const char* name, LWIP_IP_ADDR_T* ip, void* arg) {
+			// We do a new request since the last one was never done.
+			if(ip)
+				reinterpret_cast<NtpClient*>(arg)->internalRequestTime(*ip);
+		},
+		this);
 
 	debug_d("dns_gethostbyname() returned %d", result);
 

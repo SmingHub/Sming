@@ -112,14 +112,15 @@ public:
 		switch(state) {
 		case State::Suspended:
 		case State::Running:
-			sleepTimer.initializeMs(interval,
-									[](void* param) {
-										auto task = static_cast<Task*>(param);
-										task->notify(Notify::Waking);
-										task->state = State::Running;
-										task->service();
-									},
-									this);
+			sleepTimer.initializeMs(
+				interval,
+				[](void* param) {
+					auto task = static_cast<Task*>(param);
+					task->notify(Notify::Waking);
+					task->state = State::Running;
+					task->service();
+				},
+				this);
 			sleepTimer.startOnce();
 			notify(Notify::Sleeping);
 			state = State::Sleeping;

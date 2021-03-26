@@ -93,7 +93,7 @@ if [ -n "$APPVEYOR" ] || [ -n "$GITHUB_ACTION" ]; then
 
     sudo apt-get -y update
     $PKG_INSTALL \
-        clang-format-6.0 \
+        clang-format-8 \
         g++-9-multilib \
         python3-setuptools
 
@@ -105,7 +105,7 @@ else
         debian)
             sudo apt-get -y update
             $PKG_INSTALL \
-                clang-format-6.0 \
+                clang-format-8 \
                 cmake \
             	curl \
             	git \
@@ -143,7 +143,7 @@ else
 
 fi
 
-sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-6.0 100
+sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-8 100
 
 python3 -m pip install --upgrade pip -r $SMING_HOME/../Tools/requirements.txt
 
