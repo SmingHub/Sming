@@ -48,14 +48,7 @@ public:
 	 *  @retval const String& Reference to value
 	 *  @note if the field doesn't exist a null String reference is returned
 	 */
-	const String& operator[](const String& name) const
-	{
-		auto field = fromString(name);
-		if(field == HTTP_HEADER_UNKNOWN) {
-			return nil;
-		}
-		return operator[](field);
-	}
+	const String& operator[](const String& name) const;
 
 	/** @brief Fetch a reference to the header field value by name
 	 *  @param name
@@ -92,37 +85,14 @@ public:
 	 * @param value
 	 * @retval bool false if value exists and field does not permit multiple values
 	 */
-	bool append(const HttpHeaderFieldName& name, const String& value)
-	{
-		int i = indexOf(name);
-		if(i < 0) {
-			operator[](name) = value;
-			return true;
-		}
-
-		if(!getFlags(name)[Flag::Multi]) {
-			debug_w("[HTTP] Append not supported for header field '%s'", toString(name).c_str());
-			return false;
-		}
-
-		valueAt(i) += '\0' + value;
-
-		return true;
-	}
+	bool append(const HttpHeaderFieldName& name, const String& value);
 
 	void remove(const String& name)
 	{
 		remove(fromString(name));
 	}
 
-	void setMultiple(const HttpHeaders& headers)
-	{
-		for(unsigned i = 0; i < headers.count(); i++) {
-			HttpHeaderFieldName fieldName = headers.keyAt(i);
-			auto fieldNameString = headers.toString(fieldName);
-			operator[](fieldNameString) = headers.valueAt(i);
-		}
-	}
+	void setMultiple(const HttpHeaders& headers);
 
 	HttpHeaders& operator=(const HttpHeaders& headers)
 	{
