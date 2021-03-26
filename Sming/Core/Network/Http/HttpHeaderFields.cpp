@@ -51,19 +51,22 @@ String HttpHeaderFields::toString(HttpHeaderFieldName name) const
 
 String HttpHeaderFields::toString(HttpHeaderFieldName name, const String& value) const
 {
+	String tag = toString(name);
 	if(getFlags(name)[Flag::Multi]) {
+		tag += ": ";
+		CStringArray values(value);
 		String s;
-		Vector<String> splits;
-		String values(value);
-		int m = splitString(values, '\0', splits);
-		for(int i = 0; i < m; i++) {
-			s += toString(toString(name), splits[i]);
+		s.reserve((tag.length() + 2) * values.count() + value.length());
+		for(auto p : values) {
+			s += tag;
+			s += p;
+			s += "\r\n";
 		}
 
 		return s;
 	}
 
-	return toString(toString(name), value);
+	return toString(tag, value);
 }
 
 String HttpHeaderFields::toString(const String& name, const String& value)
