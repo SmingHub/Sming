@@ -35,11 +35,12 @@ public:
 		TEST_CASE("http lookups")
 		{
 			auto s = toString(HPE_UNKNOWN);
-			REQUIRE(s == F("HPE_UNKNOWN"));
+			REQUIRE(s == "HPE_UNKNOWN");
 			s = httpGetErrorDescription(HPE_INVALID_URL);
-			REQUIRE(s == F("invalid URL"));
+			REQUIRE(s == "invalid URL");
 			s = toString(HTTP_STATUS_TOO_MANY_REQUESTS);
-			REQUIRE(s.equalsIgnoreCase(F("too many requests")));
+			DEFINE_FSTR_LOCAL(too_many_requests, "too many requests");
+			REQUIRE(s.equalsIgnoreCase(too_many_requests));
 		}
 	}
 
@@ -204,9 +205,14 @@ public:
 			HttpHeaders headers2;
 			headers2.append(HTTP_HEADER_SET_COOKIE, "name1=value1");
 			headers2.append(HTTP_HEADER_SET_COOKIE, "name2=value2");
+			printHeaders(headers2);
 			REQUIRE(headers2.count() == 1);
 			REQUIRE(serialize(headers2) == FS_cookies);
-			printHeaders(headers2);
+
+			// Append should work if field not already set
+			REQUIRE(headers2.append(HTTP_HEADER_CONTENT_LENGTH, "0") == true);
+			// But fail on actual append
+			REQUIRE(headers2.append(HTTP_HEADER_CONTENT_LENGTH, "1234") == false);
 		}
 	}
 };
