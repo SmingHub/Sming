@@ -30,7 +30,7 @@ Summary
   -  And servers for: DNS, FTP, HTTP(+ WebSockets), Telnet.
   -  With :doc:`SSL support <_inc/Sming/Components/ssl/index>` for all network clients and servers.
      Based on `axTLS <http://axtls.sourceforge.net/>`__ and `BearSSL <https://www.bearssl.org/>`__.
-  -  Out of the box support for OTA over HTTPS.
+  -  Over-The-Air(OTA) firmware upgrades via HTTP(S) and MQTT(S).
 
 -  ESP8266 specific features
 
