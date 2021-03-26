@@ -71,7 +71,7 @@ public:
 	bool isFinished() override
 	{
 		auto fs = getFileSystem();
-		return fs == nullptr || fs->eof(handle) != 0;
+		return fs == nullptr || lastError != FS_OK || fs->eof(handle) != 0;
 	}
 
 	/** @brief Filename of file stream is attached to
