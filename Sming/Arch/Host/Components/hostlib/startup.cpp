@@ -240,10 +240,8 @@ int main(int argc, char* argv[])
 			host_debug_i("Network initialisation skipped as requested");
 		}
 
-		if(config.pause != 0) {
-			host_debug_i("If required, you may start terminal application(s) now");
-			pause(config.pause);
-		}
+		host_debug_i("If required, you may start terminal application(s) now");
+		pause(config.pause);
 
 		host_debug_i(">> Starting Sming <<\n");
 
