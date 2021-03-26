@@ -129,15 +129,15 @@ bool deploy(const String& outputFileName, const String& url)
 			}
 
 			if(message->connack.return_code) {
-				m_printf(_F("ERROR: Connection failed. Reason: %s\r\n"),
-						 mqtt_connect_error_string(static_cast<mqtt_connect_error_t>(message->connack.return_code)));
+				print(F("ERROR: Connection failed. Reason: "));
+				println(mqtt_connect_error_string(mqtt_connect_error_t(message->connack.return_code)));
 				System.restart(1000);
 				return 0;
 			}
 
 			uint8_t retained = 1;
 			uint8_t QoS = 2;
-			uint8_t flags = (uint8_t)(retained + (QoS << 1));
+			uint8_t flags = uint8_t(retained + (QoS << 1));
 			mqtt.publish(mqttUrl.Path.substring(1), output, flags);
 			mqtt.setPublishedHandler([](MqttClient& client, mqtt_message_t* message) -> int {
 				println(F("Firmware uploaded successfully."));
@@ -175,31 +175,54 @@ bool parseCommands()
 	}
 
 	String cmd = parameters[0].text;
+
+	auto checkParameterCount = [&](unsigned minCount, unsigned maxCount) -> bool {
+		if(parameters.count() < 4) {
+			print(F("Insufficient"));
+		} else if(parameters.count() > 5) {
+			print(F("Too many"));
+		} else {
+			return true;
+		}
+
+		print(F(" parameters for '"));
+		print(cmd);
+		println("'.");
+		return false;
+	};
+
 	if(cmd == "pack") {
-		if(parameters.count() >= 4) {
+		if(checkParameterCount(4, 5)) {
+			auto inputFileName = parameters[1].text;
+			auto outputFileName = parameters[2].text;
+			auto patchVersion = strtoul(parameters[3].text, nullptr, 0);
 			bool useVarInt = false;
 			if(parameters.count() > 4) {
-				useVarInt = strtol(parameters[4].text, nullptr, 0);
+				String p(parameters[4].text);
+				if(p == "0") {
+					useVarInt = false;
+				} else if(p == "1") {
+					useVarInt = true;
+				} else {
+					println(F("Invalid setting for useVarInt, must be 1 or 0"));
+					return false;
+				}
 			}
-			if(pack(parameters[1].text, parameters[2].text, strtol(parameters[3].text, nullptr, 0), useVarInt)) {
+			if(!useVarInt && patchVersion > 0xff) {
+				println(F("Patch version number too large for `useVarInt = 0`"));
+			} else {
+				pack(inputFileName, outputFileName, patchVersion, useVarInt);
 			}
+			return false; // after packaging the application can be terminated
 		}
-
-		return false; // after packaging the application can be terminated
-	}
-
-	if(cmd == "deploy") {
-		if(parameters.count() < 2) {
-			m_printf(_F("ERROR: Specify package filename.\r\n"));
-			return false;
+	} else if(cmd == "deploy") {
+		if(checkParameterCount(2, 2)) {
+			return deploy(parameters[1].text, parameters[2].text);
 		}
-
-		if(parameters.count() < 3) {
-			m_printf(_F("ERROR: Specify MQTT_FIRMWARE_URL.\r\n"));
-			return false;
-		}
-
-		return deploy(parameters[1].text, parameters[2].text);
+	} else {
+		print(F("ERROR: Unknown command '"));
+		print(cmd);
+		println("'.");
 	}
 
 	help();
