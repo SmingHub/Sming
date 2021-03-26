@@ -195,6 +195,19 @@ public:
 			REQUIRE(serialize(headers2) == FS_serialized);
 			printHeaders(headers2);
 		}
+
+		DEFINE_FSTR_LOCAL(FS_cookies, "Set-Cookie: name1=value1\r\n"
+									  "Set-Cookie: name2=value2\r\n");
+
+		TEST_CASE("appendHeaders")
+		{
+			HttpHeaders headers2;
+			headers2.append(HTTP_HEADER_SET_COOKIE, "name1=value1");
+			headers2.append(HTTP_HEADER_SET_COOKIE, "name2=value2");
+			REQUIRE(headers2.count() == 1);
+			REQUIRE(serialize(headers2) == FS_cookies);
+			printHeaders(headers2);
+		}
 	}
 };
 
