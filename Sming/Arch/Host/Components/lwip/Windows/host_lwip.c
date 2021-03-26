@@ -84,7 +84,7 @@ static bool find_adapter(const struct lwip_param* param, struct net_config* netc
 	pcap_if_t* alldevs;
 	char errbuf[PCAP_ERRBUF_SIZE + 1];
 	if(pcap_findalldevs(&alldevs, errbuf) < 0) {
-		hostmsg("Error in pcap_findalldevs: %s", errbuf);
+		host_debug_e("Error in pcap_findalldevs: %s", errbuf);
 		return false;
 	}
 
@@ -163,7 +163,7 @@ static bool find_adapter(const struct lwip_param* param, struct net_config* netc
 
 bool host_lwip_init(const struct lwip_param* param)
 {
-	hostmsg("%s", "Initialising LWIP");
+	host_debug_i("%s", "Initialising LWIP");
 
 	if(!npcap_init()) {
 		return false;
@@ -172,17 +172,17 @@ bool host_lwip_init(const struct lwip_param* param)
 	struct net_config netcfg = {0};
 
 	if(param->ipaddr != NULL && ip4addr_aton(param->ipaddr, &netcfg.ipaddr) != 1) {
-		hostmsg("Failed to parse IP address '%s'", param->ipaddr);
+		host_debug_e("Failed to parse IP address '%s'", param->ipaddr);
 		return false;
 	}
 
 	if(param->netmask != NULL && ip4addr_aton(param->netmask, &netcfg.netmask) != 1) {
-		hostmsg("Failed to parse Network Mask '%s'", param->netmask);
+		host_debug_e("Failed to parse Network Mask '%s'", param->netmask);
 		return false;
 	}
 
 	if(param->gateway != NULL && ip4addr_aton(param->gateway, &netcfg.gw) != 1) {
-		hostmsg("Failed to parse Gateway address '%s'", param->gateway);
+		host_debug_e("Failed to parse Gateway address '%s'", param->gateway);
 		return false;
 	}
 
@@ -196,7 +196,7 @@ bool host_lwip_init(const struct lwip_param* param)
 	ip4addr_ntoa_r(&netcfg.netmask, nm_str, sizeof(nm_str));
 	char gw_str[IP4ADDR_STRLEN_MAX];
 	ip4addr_ntoa_r(&netcfg.gw, gw_str, sizeof(gw_str));
-	hostmsg("gateway = %s, netmask = %s; using ip = %s", gw_str, nm_str, ip_str);
+	host_debug_i("gateway = %s, netmask = %s; using ip = %s", gw_str, nm_str, ip_str);
 
 	// Even though we're running as NO_SYS, stuff like crypt needs initialising
 	sys_init();
@@ -206,8 +206,8 @@ bool host_lwip_init(const struct lwip_param* param)
 	netif_add(&netif, &netcfg.ipaddr, &netcfg.netmask, &netcfg.gw, state, pcapif_init, ethernet_input);
 	netif_set_default(&netif);
 
-	hostmsg("MAC: %02x:%02x:%02x:%02x:%02x:%02x", netif.hwaddr[0], netif.hwaddr[1], netif.hwaddr[2], netif.hwaddr[3],
-			netif.hwaddr[4], netif.hwaddr[5]);
+	host_debug_i("MAC: %02x:%02x:%02x:%02x:%02x:%02x", netif.hwaddr[0], netif.hwaddr[1], netif.hwaddr[2],
+				 netif.hwaddr[3], netif.hwaddr[4], netif.hwaddr[5]);
 
 	return true;
 }

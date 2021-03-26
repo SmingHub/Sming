@@ -40,7 +40,7 @@ constexpr uint32_t FLASHMEM_REAL_MASK{~FLASHMEM_REAL_BIT};
 
 #define CHECK_RANGE(_addr, _size)                                                                                      \
 	if((_addr) + (_size) > flashFileSize) {                                                                            \
-		hostmsg("addr = 0x%08x, size = 0x%08x", _addr, _size);                                                         \
+		host_debug_e("addr = 0x%08x, size = 0x%08x", _addr, _size);                                                         \
 		return false;                                                                                                  \
 	}
 
@@ -59,13 +59,13 @@ bool host_flashmem_init(FlashmemConfig& config)
 	}
 
 	if(!flashFile.open(flashFileName, IFS::File::Create | IFS::File::ReadWrite)) {
-		hostmsg("Error opening \"%s\"", flashFileName);
+		host_debug_e("Error opening \"%s\"", flashFileName);
 		return false;
 	}
 
 	int res = flashFile.seek(0, SeekOrigin::End);
 	if(res < 0) {
-		hostmsg("Error seeking \"%s\": %s", flashFileName, flashFile.getErrorString(res).c_str());
+		host_debug_e("Error seeking \"%s\": %s", flashFileName, flashFile.getErrorString(res).c_str());
 		flashFile.close();
 		return false;
 	}
@@ -74,14 +74,14 @@ bool host_flashmem_init(FlashmemConfig& config)
 		size_t size = config.createSize ?: flashFileSize;
 		res = flashFile.seek(size, SeekOrigin::Start);
 		if(res != int(size)) {
-			hostmsg("Error seeking beyond end of file \"%s\"", flashFileName);
+			host_debug_e("Error seeking beyond end of file \"%s\"", flashFileName);
 		} else if(!flashFile.truncate(size)) {
-			hostmsg("Error truncating \"%s\" to %u bytes", flashFileName, size);
+			host_debug_e("Error truncating \"%s\" to %u bytes", flashFileName, size);
 		} else {
-			hostmsg("Created blank \"%s\", %u bytes", flashFileName, size);
+			host_debug_i("Created blank \"%s\", %u bytes", flashFileName, size);
 		}
 	} else {
-		hostmsg("Opened \"%s\", size = 0x%08x", flashFileName, res);
+		host_debug_i("Opened \"%s\", size = 0x%08x", flashFileName, res);
 	}
 
 	flashFileSize = res;
@@ -93,7 +93,7 @@ bool host_flashmem_init(FlashmemConfig& config)
 void host_flashmem_cleanup()
 {
 	flashFile.close();
-	hostmsg("Closed \"%s\"", flashFileName);
+	host_debug_i("Closed \"%s\"", flashFileName);
 }
 
 static int readFlashFile(uint32_t offset, void* buffer, size_t count)

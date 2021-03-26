@@ -36,6 +36,22 @@ void host_puts(const char* str);
 #define hostmsg(fmt, ...) host_printfp(fmt "\n", __func__, ##__VA_ARGS__)
 #endif
 
+/**
+ * @brief Emit message only if host_debug_level >= level
+ */
+#define host_debug(level, fmt, ...)                                                                                    \
+	do {                                                                                                               \
+		if(host_debug_level >= (level)) {                                                                              \
+			host_printf(fmt "\n", ##__VA_ARGS__);                                                                      \
+		}                                                                                                              \
+	} while(0)
+
+#define host_debug_e(fmt, ...) host_debug(0, "Error! " fmt, ##__VA_ARGS__)
+#define host_debug_w(fmt, ...) host_debug(1, "Warning! " fmt, ##__VA_ARGS__)
+#define host_debug_i(fmt, ...) host_debug(2, fmt, ##__VA_ARGS__)
+
+extern int host_debug_level;
+
 #ifdef __cplusplus
 }
 #endif

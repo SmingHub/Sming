@@ -147,20 +147,20 @@ bool CSocket::create()
 	// creation of the socket
 	m_fd = ::socket(AF_INET, m_type, 0);
 	if(m_fd <= 0) {
-		hostmsg("%s", socket_strerror().c_str());
+		host_debug_e("%s", socket_strerror().c_str());
 		return false;
 	}
 
 	int reuse = 1;
 	if(setsockopt(m_fd, SOL_SOCKET, SO_REUSEADDR, (sock_ptr_t)&reuse, sizeof(reuse)) < 0) {
-		hostmsg("REUSEADDR: %s", socket_strerror().c_str());
+		host_debug_e("REUSEADDR: %s", socket_strerror().c_str());
 		close();
 		return false;
 	}
 
 #ifdef SO_REUSEPORT
 	if(setsockopt(m_fd, SOL_SOCKET, SO_REUSEPORT, (sock_ptr_t)&reuse, sizeof(reuse)) < 0) {
-		hostmsg("REUSEPORT: %s", socket_strerror().c_str());
+		host_debug_e("REUSEPORT: %s", socket_strerror().c_str());
 		close();
 		return false;
 	}
@@ -212,7 +212,7 @@ void CSocket::close()
 		return;
 	}
 
-	hostmsg("%s", addr().text().c_str());
+	host_debug_i("%s", addr().text().c_str());
 
 	socket_close(m_fd);
 	m_fd = 0;
@@ -375,7 +375,7 @@ CSocket* CSocketList::recv(void* buf, size_t& n)
 #endif
 				if(errno != EPIPE) {
 					// Broken pipe
-					hostmsg("%s", socket_strerror().c_str());
+					host_debug_e("%s", socket_strerror().c_str());
 				}
 				skt->close();
 			}
