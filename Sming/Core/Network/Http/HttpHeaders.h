@@ -86,18 +86,26 @@ public:
 
 	using HashMap::remove;
 
+	/**
+	 * @brief Append value to multi-value field
+	 * @param name
+	 * @param value
+	 * @retval bool false if value exists and field does not permit multiple values
+	 */
 	bool append(const HttpHeaderFieldName& name, const String& value)
 	{
-		if(!getFlags(name)[Flag::Multi]) {
-			return false;
-		}
-
 		int i = indexOf(name);
 		if(i < 0) {
 			operator[](name) = value;
-		} else {
-			operator[](name) += '\0' + value;
+			return true;
 		}
+
+		if(!getFlags(name)[Flag::Multi]) {
+			debug_w("[HTTP] Append not supported for header field '%s'", toString(name).c_str());
+			return false;
+		}
+
+		valueAt(i) += '\0' + value;
 
 		return true;
 	}
