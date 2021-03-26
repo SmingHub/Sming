@@ -28,6 +28,11 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 void onHello(HttpRequest& request, HttpResponse& response)
 {
 	response.setContentType(MIME_HTML);
+
+	// Below is an example how to send multiple cookies
+	response.setCookie("cookie1", "value1");
+	response.setCookie("cookie2", "value", true);
+
 	// Use direct strings output only for small amount of data (huge memory allocation)
 	response.sendString("Sming. Let's do smart things.");
 }

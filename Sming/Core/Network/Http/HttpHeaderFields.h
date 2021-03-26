@@ -68,7 +68,8 @@
 	XX(UPGRADE, "Upgrade",                                                                                             \
 	   "Used to transition from HTTP to some other protocol on the same connection. e.g. Websocket")                   \
 	XX(USER_AGENT, "User-Agent", "Information about the user agent originating the request")                           \
-	XX(WWW_AUTHENTICATE, "WWW-Authenticate", "Indicates HTTP authentication scheme(s) and applicable parameters")
+	XX(WWW_AUTHENTICATE, "WWW-Authenticate", "Indicates HTTP authentication scheme(s) and applicable parameters")      \
+	XX(PROXY_AUTHENTICATE, "Proxy-Authenticate", "Indicates proxy authentication scheme(s) and applicable parameters")
 
 enum class HttpHeaderFieldName {
 	UNKNOWN = 0,
@@ -87,6 +88,24 @@ XX(CUSTOM, "", "")
 class HttpHeaderFields
 {
 public:
+	/**
+	 * @brief Checks if a header is allowed to have multiple values
+	 * @retval bool true if allowed
+	 */
+	bool isMultiHeader(HttpHeaderFieldName name) const
+	{
+		switch(name) {
+		case HTTP_HEADER_SET_COOKIE:
+		case HTTP_HEADER_WWW_AUTHENTICATE:
+		case HTTP_HEADER_PROXY_AUTHENTICATE:
+			break;
+		default:
+			return false;
+		}
+
+		return true;
+	}
+
 	String toString(HttpHeaderFieldName name) const;
 
 	/** @brief Produce a string for output in the HTTP header, with line ending
@@ -96,10 +115,7 @@ public:
 	 */
 	static String toString(const String& name, const String& value);
 
-	String toString(HttpHeaderFieldName name, const String& value) const
-	{
-		return toString(toString(name), value);
-	}
+	String toString(HttpHeaderFieldName name, const String& value) const;
 
 	/** @brief Find the enumerated value for the given field name string
 	 *  @param name

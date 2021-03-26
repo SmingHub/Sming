@@ -77,7 +77,7 @@ public:
 		return setContentType(::toString(type));
 	}
 
-	HttpResponse* setCookie(const String& name, const String& value);
+	HttpResponse* setCookie(const String& name, const String& value, bool append = false);
 
 	HttpResponse* setHeader(const String& name, const String& value)
 	{

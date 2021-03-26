@@ -35,6 +35,23 @@ String HttpHeaderFields::toString(HttpHeaderFieldName name) const
 	return customFieldNames[unsigned(name) - unsigned(HTTP_HEADER_CUSTOM)];
 }
 
+String HttpHeaderFields::toString(HttpHeaderFieldName name, const String& value) const
+{
+	if(isMultiHeader(name)) {
+		String s;
+		Vector<String> splits;
+		String values(value);
+		int m = splitString(values, '\0', splits);
+		for(int i = 0; i < m; i++) {
+			s += toString(toString(name), splits[i]);
+		}
+
+		return s;
+	}
+
+	return toString(toString(name), value);
+}
+
 String HttpHeaderFields::toString(const String& name, const String& value)
 {
 	String s;

@@ -86,6 +86,22 @@ public:
 
 	using HashMap::remove;
 
+	bool append(const HttpHeaderFieldName& name, const String& value)
+	{
+		if(!isMultiHeader(name)) {
+			return false;
+		}
+
+		int i = indexOf(name);
+		if(i < 0) {
+			operator[](name) = value;
+		} else {
+			operator[](name) += '\0' + value;
+		}
+
+		return true;
+	}
+
 	void remove(const String& name)
 	{
 		remove(fromString(name));
