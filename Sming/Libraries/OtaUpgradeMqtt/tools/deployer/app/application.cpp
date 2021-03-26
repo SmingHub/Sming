@@ -104,11 +104,6 @@ bool pack(const String& inputFileName, const String& outputFileName, size_t patc
 
 bool deploy(const String& outputFileName, const String& url)
 {
-	if(mqtt.isProcessing()) {
-		// we are still processing the data...
-		return false;
-	}
-
 	HostFileStream* output = new HostFileStream();
 	if(!output->open(outputFileName)) {
 		fileError(*output, outputFileName, F("open output"));
