@@ -45,27 +45,23 @@ template <typename T> void println(const T& arg)
 	println();
 }
 
-int writePatchVersion(int patchVersion, bool useVarInt, ReadWriteStream* output)
+size_t writePatchVersion(size_t patchVersion, bool useVarInt, ReadWriteStream& output)
 {
-	if(output == nullptr) {
-		return -1;
-	}
-
-	int written = 0;
+	size_t written = 0;
 	if(useVarInt) {
 		while(patchVersion > 0x7f) {
-			if(output->write(((uint8_t)(patchVersion)) | 0x80) < 0) {
+			if(output.write(uint8_t(patchVersion | 0x80)) == 0) {
 				return false;
 			}
 			patchVersion >>= 7;
 			written++;
 		}
-		if(output->write(((uint8_t)patchVersion) & 0x7f) < 0) {
+		if(output.write(uint8_t(patchVersion & 0x7f)) == 0) {
 			return false;
 		}
 		written++;
 	} else {
-		written = output->write((uint8_t)patchVersion);
+		written = output.write(uint8_t(patchVersion));
 	}
 
 	return written;
@@ -82,7 +78,7 @@ bool pack(const String& inputFileName, const String& outputFileName, size_t patc
 
 	HostFileStream output;
 	output.open(outputFileName, eFO_CreateNewAlways | eFO_WriteOnly);
-	writePatchVersion(patchVersion, useVarInt, &output);
+	writePatchVersion(patchVersion, useVarInt, output);
 	output.copyFrom(&input);
 	output.close();
 
