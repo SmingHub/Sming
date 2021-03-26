@@ -33,6 +33,11 @@ public:
 		ReadWriteStream* stream{nullptr};
 		bool started{false};
 		size_t version{0};
+
+		~UpdateState()
+		{
+			delete stream;
+		}
 	};
 
 	/**
