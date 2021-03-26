@@ -67,20 +67,37 @@ size_t writePatchVersion(size_t patchVersion, bool useVarInt, ReadWriteStream& o
 	return written;
 }
 
+static void fileError(IFS::FsBase& fs, const String& filename, const String& operation)
+{
+	print(F("ERROR: Failed to "));
+	print(operation);
+	print(F(" file '"));
+	print(filename);
+	print("': ");
+	println(fs.getLastErrorString());
+}
+
 bool pack(const String& inputFileName, const String& outputFileName, size_t patchVersion, bool useVarInt)
 {
 	HostFileStream input;
-	input.open(inputFileName);
-	if(!input.fileExist()) {
-		m_printf(_F("ERROR: Invalid input file: %s\r\n"), inputFileName.c_str());
+	if(!input.open(inputFileName)) {
+		fileError(input, inputFileName, F("open input"));
 		return false;
 	}
 
 	HostFileStream output;
-	output.open(outputFileName, eFO_CreateNewAlways | eFO_WriteOnly);
+	if(!output.open(outputFileName, eFO_CreateNewAlways | eFO_WriteOnly)) {
+		fileError(output, outputFileName, F("open output"));
+		return false;
+	}
 	writePatchVersion(patchVersion, useVarInt, output);
 	output.copyFrom(&input);
-	output.close();
+	if(input.getLastError() != FS_OK) {
+		fileError(input, inputFileName, F("read from"));
+	}
+	if(output.getLastError() != FS_OK) {
+		fileError(output, outputFileName, F("write to"));
+	}
 
 	return true;
 }
@@ -93,9 +110,8 @@ bool deploy(const String& outputFileName, const String& url)
 	}
 
 	HostFileStream* output = new HostFileStream();
-	output->open(outputFileName);
-	if(!output->fileExist()) {
-		m_printf(_F("ERROR: Invalid input file: %s"), outputFileName.c_str());
+	if(!output->open(outputFileName)) {
+		fileError(*output, outputFileName, F("open output"));
 		return false;
 	}
 
