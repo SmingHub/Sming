@@ -29,7 +29,7 @@ def get_config_list():
     list = {}
     dirs = get_config_dirs()
     for d in reversed(dirs):
-        for f in os.listdir(d):
+        for f in os.listdir(fixpath(d)):
             if f.endswith(HW_EXT):
                 n = os.path.splitext(f)[0]
                 list[n] = d + '/' + f
