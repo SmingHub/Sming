@@ -20,10 +20,10 @@ HttpResponse* HttpResponse::setCookie(const String& name, const String& value, b
 	String s = name;
 	s += '=';
 	s += value;
-	if(!append) {
-		headers[HTTP_HEADER_SET_COOKIE] = s;
-	} else {
+	if(append) {
 		headers.append(HTTP_HEADER_SET_COOKIE, s);
+	} else {
+		headers[HTTP_HEADER_SET_COOKIE] = s;
 	}
 
 	return this;
