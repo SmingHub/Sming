@@ -45,19 +45,22 @@ template <typename T> void println(const T& arg)
 	println();
 }
 
+/*
+ * Return number of bytes written, 0 if *any* writes failed
+ */
 size_t writePatchVersion(size_t patchVersion, bool useVarInt, ReadWriteStream& output)
 {
 	size_t written = 0;
 	if(useVarInt) {
 		while(patchVersion > 0x7f) {
-			if(output.write(uint8_t(patchVersion | 0x80)) == 0) {
-				return false;
+			if(output.write(uint8_t(patchVersion | 0x80)) != 1) {
+				return 0;
 			}
 			patchVersion >>= 7;
 			written++;
 		}
-		if(output.write(uint8_t(patchVersion & 0x7f)) == 0) {
-			return false;
+		if(output.write(uint8_t(patchVersion & 0x7f)) != 1) {
+			return 0;
 		}
 		written++;
 	} else {
@@ -90,13 +93,18 @@ bool pack(const String& inputFileName, const String& outputFileName, size_t patc
 		fileError(output, outputFileName, F("open output"));
 		return false;
 	}
-	writePatchVersion(patchVersion, useVarInt, output);
+	if(writePatchVersion(patchVersion, useVarInt, output) == 0) {
+		print(F("writePatchVersion() failed"));
+		return false;
+	}
 	output.copyFrom(&input);
 	if(input.getLastError() != FS_OK) {
 		fileError(input, inputFileName, F("read from"));
+		return false;
 	}
 	if(output.getLastError() != FS_OK) {
 		fileError(output, outputFileName, F("write to"));
+		return false;
 	}
 
 	return true;
@@ -172,9 +180,9 @@ bool parseCommands()
 	String cmd = parameters[0].text;
 
 	auto checkParameterCount = [&](unsigned minCount, unsigned maxCount) -> bool {
-		if(parameters.count() < 4) {
+		if(parameters.count() < minCount) {
 			print(F("Insufficient"));
-		} else if(parameters.count() > 5) {
+		} else if(parameters.count() > maxCount) {
 			print(F("Too many"));
 		} else {
 			return true;
