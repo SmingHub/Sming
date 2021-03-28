@@ -587,8 +587,9 @@ class Map(Table):
             add(partitions, device, 'Partition Table', table.offset, PARTITION_TABLE_SIZE, INTERNAL_PARTITION_TABLE)
 
         # Devices with no defined partitions
+        pdevs = set(p.device for p in partitions)
         for dev in devices:
-            if partitions.find_by_address(dev, 0) is None:
+            if not dev in pdevs:
                 add_unused(partitions, dev, dev.size, -1)
 
         partitions.sort()
@@ -599,6 +600,7 @@ class Map(Table):
                 if p.device != last.device:
                     add_unused(self, device, last.device.size, last.end())
                     device = p.device
+                    add_unused(self, device, p.address, -1)
                 elif p.address > last.end() + 1:
                     add_unused(self, device, p.address, last.end())
             self.append(p)
