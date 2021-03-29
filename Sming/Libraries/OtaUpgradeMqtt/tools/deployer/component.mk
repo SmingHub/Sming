@@ -11,4 +11,4 @@ pack: application $(APP)  ##Pack firmware files for deployment (HOST_PARAMETERS=
 	$(Q) $(APP) pack -- $(HOST_PARAMETERS)
 	
 deploy: application $(APP) ##Deploy firmware files to MQTT server (HOST_PARAMETERS=packedFile MQTTQ_URL. Example MQTT user: )
-	$(Q) $(APP) deploy -- $(HOST_PARAMETERS) 
+	$(Q) $(APP) deploy -- $(HOST_PARAMETERS)

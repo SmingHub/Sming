@@ -113,8 +113,7 @@ void showInfo()
 	Serial.printf(_F("CPU Frequency: %d MHz\r\n"), system_get_cpu_freq());
 	Serial.printf(_F("System Chip ID: %x\r\n"), system_get_chip_id());
 
-	rboot_config conf;
-	conf = rboot_get_config();
+	rboot_config conf = rboot_get_config();
 
 	debug_d("Count: %d", conf.count);
 	debug_d("ROM 0: 0x%08x", conf.roms[0]);

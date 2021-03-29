@@ -18,10 +18,6 @@ namespace Mqtt
 {
 bool AdvancedPayloadParser::switchRom(const UpdateState& updateState)
 {
-	if(updateState.stream == nullptr) {
-		return false;
-	}
-
 	auto otaStream = static_cast<OtaUpgradeStream*>(updateState.stream);
 	if(otaStream == nullptr) {
 		return false;

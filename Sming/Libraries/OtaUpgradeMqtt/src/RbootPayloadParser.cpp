@@ -18,14 +18,8 @@ namespace Mqtt
 {
 bool RbootPayloadParser::switchRom(const UpdateState& updateState)
 {
-	uint8_t after;
 	uint8_t before = rboot_get_current_rom();
-
-	if(before == 0) {
-		after = 1;
-	} else {
-		after = 0;
-	}
+	uint8_t after = (before == 0) ? 1 : 0;
 
 	debug_d("Swapping from rom %u to rom %u.\r\n", before, after);
 

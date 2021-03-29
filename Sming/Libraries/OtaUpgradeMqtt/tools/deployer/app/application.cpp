@@ -45,61 +45,76 @@ template <typename T> void println(const T& arg)
 	println();
 }
 
-int writePatchVersion(int patchVersion, bool useVarInt, ReadWriteStream* output)
+/*
+ * Return number of bytes written, 0 if *any* writes failed
+ */
+size_t writePatchVersion(size_t patchVersion, bool useVarInt, ReadWriteStream& output)
 {
-	if(output == nullptr) {
-		return -1;
-	}
-
-	int written = 0;
+	size_t written = 0;
 	if(useVarInt) {
 		while(patchVersion > 0x7f) {
-			if(output->write(((uint8_t)(patchVersion)) | 0x80) < 0) {
-				return false;
+			if(output.write(uint8_t(patchVersion | 0x80)) != 1) {
+				return 0;
 			}
 			patchVersion >>= 7;
 			written++;
 		}
-		if(output->write(((uint8_t)patchVersion) & 0x7f) < 0) {
-			return false;
+		if(output.write(uint8_t(patchVersion & 0x7f)) != 1) {
+			return 0;
 		}
 		written++;
 	} else {
-		written = output->write((uint8_t)patchVersion);
+		written = output.write(uint8_t(patchVersion));
 	}
 
 	return written;
 }
 
+static void fileError(IFS::FsBase& fs, const String& filename, const String& operation)
+{
+	print(F("ERROR: Failed to "));
+	print(operation);
+	print(F(" file '"));
+	print(filename);
+	print("': ");
+	println(fs.getLastErrorString());
+}
+
 bool pack(const String& inputFileName, const String& outputFileName, size_t patchVersion, bool useVarInt)
 {
 	HostFileStream input;
-	input.open(inputFileName);
-	if(!input.fileExist()) {
-		m_printf(_F("ERROR: Invalid input file: %s\r\n"), inputFileName.c_str());
+	if(!input.open(inputFileName)) {
+		fileError(input, inputFileName, F("open input"));
 		return false;
 	}
 
 	HostFileStream output;
-	output.open(outputFileName, eFO_CreateNewAlways | eFO_WriteOnly);
-	writePatchVersion(patchVersion, useVarInt, &output);
+	if(!output.open(outputFileName, eFO_CreateNewAlways | eFO_WriteOnly)) {
+		fileError(output, outputFileName, F("open output"));
+		return false;
+	}
+	if(writePatchVersion(patchVersion, useVarInt, output) == 0) {
+		print(F("writePatchVersion() failed"));
+		return false;
+	}
 	output.copyFrom(&input);
-	output.close();
+	if(input.getLastError() != FS_OK) {
+		fileError(input, inputFileName, F("read from"));
+		return false;
+	}
+	if(output.getLastError() != FS_OK) {
+		fileError(output, outputFileName, F("write to"));
+		return false;
+	}
 
 	return true;
 }
 
 bool deploy(const String& outputFileName, const String& url)
 {
-	if(mqtt.isProcessing()) {
-		// we are still processing the data...
-		return false;
-	}
-
 	HostFileStream* output = new HostFileStream();
-	output->open(outputFileName);
-	if(!output->fileExist()) {
-		m_printf(_F("ERROR: Invalid input file: %s"), outputFileName.c_str());
+	if(!output->open(outputFileName)) {
+		fileError(*output, outputFileName, F("open output"));
 		return false;
 	}
 
@@ -117,15 +132,15 @@ bool deploy(const String& outputFileName, const String& url)
 			}
 
 			if(message->connack.return_code) {
-				m_printf(_F("ERROR: Connection failed. Reason: %s\r\n"),
-						 mqtt_connect_error_string(static_cast<mqtt_connect_error_t>(message->connack.return_code)));
+				print(F("ERROR: Connection failed. Reason: "));
+				println(mqtt_connect_error_string(mqtt_connect_error_t(message->connack.return_code)));
 				System.restart(1000);
 				return 0;
 			}
 
 			uint8_t retained = 1;
 			uint8_t QoS = 2;
-			uint8_t flags = (uint8_t)(retained + (QoS << 1));
+			uint8_t flags = uint8_t(retained + (QoS << 1));
 			mqtt.publish(mqttUrl.Path.substring(1), output, flags);
 			mqtt.setPublishedHandler([](MqttClient& client, mqtt_message_t* message) -> int {
 				println(F("Firmware uploaded successfully."));
@@ -163,31 +178,54 @@ bool parseCommands()
 	}
 
 	String cmd = parameters[0].text;
+
+	auto checkParameterCount = [&](unsigned minCount, unsigned maxCount) -> bool {
+		if(parameters.count() < minCount) {
+			print(F("Insufficient"));
+		} else if(parameters.count() > maxCount) {
+			print(F("Too many"));
+		} else {
+			return true;
+		}
+
+		print(F(" parameters for '"));
+		print(cmd);
+		println("'.");
+		return false;
+	};
+
 	if(cmd == "pack") {
-		if(parameters.count() >= 4) {
+		if(checkParameterCount(4, 5)) {
+			auto inputFileName = parameters[1].text;
+			auto outputFileName = parameters[2].text;
+			auto patchVersion = strtoul(parameters[3].text, nullptr, 0);
 			bool useVarInt = false;
 			if(parameters.count() > 4) {
-				useVarInt = strtol(parameters[4].text, nullptr, 0);
+				String p(parameters[4].text);
+				if(p == "0") {
+					useVarInt = false;
+				} else if(p == "1") {
+					useVarInt = true;
+				} else {
+					println(F("Invalid setting for useVarInt, must be 1 or 0"));
+					return false;
+				}
 			}
-			if(pack(parameters[1].text, parameters[2].text, strtol(parameters[3].text, nullptr, 0), useVarInt)) {
+			if(!useVarInt && patchVersion > 0xff) {
+				println(F("Patch version number too large for `useVarInt = 0`"));
+			} else {
+				pack(inputFileName, outputFileName, patchVersion, useVarInt);
 			}
+			return false; // after packaging the application can be terminated
 		}
-
-		return false; // after packaging the application can be terminated
-	}
-
-	if(cmd == "deploy") {
-		if(parameters.count() < 2) {
-			m_printf(_F("ERROR: Specify package filename.\r\n"));
-			return false;
+	} else if(cmd == "deploy") {
+		if(checkParameterCount(2, 2)) {
+			return deploy(parameters[1].text, parameters[2].text);
 		}
-
-		if(parameters.count() < 3) {
-			m_printf(_F("ERROR: Specify MQTT_FIRMWARE_URL.\r\n"));
-			return false;
-		}
-
-		return deploy(parameters[1].text, parameters[2].text);
+	} else {
+		print(F("ERROR: Unknown command '"));
+		print(cmd);
+		println("'.");
 	}
 
 	help();

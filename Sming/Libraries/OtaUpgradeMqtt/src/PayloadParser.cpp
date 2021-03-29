@@ -24,12 +24,7 @@ int PayloadParser::parse(MqttPayloadParserState& state, mqtt_message_t* message,
 	}
 
 	if(length == MQTT_PAYLOAD_PARSER_START) {
-		UpdateState* updateState = new UpdateState();
-		updateState->stream = nullptr;
-		updateState->started = false;
-
-		state.offset = 0;
-		state.userData = updateState;
+		state = MqttPayloadParserState{new UpdateState};
 		return 0;
 	}
 
@@ -43,8 +38,6 @@ int PayloadParser::parse(MqttPayloadParserState& state, mqtt_message_t* message,
 		bool skip = (updateState->stream == nullptr);
 		if(!skip) {
 			bool success = switchRom(*updateState);
-			delete updateState->stream;
-			delete updateState;
 			if(success) {
 				debug_d("Switching was successful. Restarting...");
 				System.restart();
@@ -52,7 +45,8 @@ int PayloadParser::parse(MqttPayloadParserState& state, mqtt_message_t* message,
 				debug_e("Switching failed!");
 			}
 		}
-
+		delete updateState;
+		state.userData = nullptr;
 		return 0;
 	}
 
