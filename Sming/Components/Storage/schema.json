@@ -11,6 +11,14 @@
 				"name": {
 					"type": "string"
 				},
+				"comment": {
+					"type": "string"
+				},
+				"arch": {
+					"type": "string",
+					"title": "Target architecture",
+					"description": "Defined *only* in the base 'standard' spec"
+				},
 				"base_config": {
 					"type": "string",
 					"title": "Base configuration",
@@ -21,22 +29,19 @@
 					"title": "List of option fragments",
 					"description": "Import additional settings from option libraries"
 				},
-				"comment": {
-					"type": "string"
-				},
-				"arch": {
-					"type": "string",
-					"title": "Target architecture",
-					"description": "Defined *only* in the base 'standard' spec"
-				},
 				"partition_table_offset": {
-					"type": "string",
+					"type": [
+						"string",
+						"integer"
+					],
 					"description": "Location of partition table in spiFlash. Simple address or python expression to be evaluated."
 				},
 				"devices": {
+					"type": "object",
 					"$ref": "#/definitions/Devices"
 				},
 				"partitions": {
+					"type": "object",
 					"$ref": "#/definitions/Partitions"
 				}
 			},
