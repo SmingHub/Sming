@@ -135,8 +135,6 @@ class Table(list):
         for name, entry in data.items():
             if name in partnames:
                 raise InputError("Duplicate partition '%s'" % name)
-            if contains_whitespace(name):
-                raise InputError("Partition names may not contain spaces '%s'" % name)
             partnames += name
             part = self.find_by_name(name)
             if part is None:
@@ -380,8 +378,6 @@ class Entry(object):
             v = data.pop('subtype', None)
             if not v is None:
                 self.subtype = parse_subtype(self.type, v)
-            if self.type is None or self.subtype is None:
-                raise InputError("type/subtype missing")
 
             for k, v in data.items():
                 if k == 'device':
@@ -399,9 +395,6 @@ class Entry(object):
                         self.build.update(v)
                 else:
                     setattr(self, k, v)
-
-            if self.address is None or self.size is None:
-                raise InputError("address/size missing")
         except InputError as e:
             raise InputError("Error in partition entry '%s': %s" % (self.name, e))
 
@@ -505,10 +498,10 @@ class Entry(object):
         align = self.alignment(arch)
         if self.address % align:
             raise ValidationError(self, "Offset 0x%x is not aligned to 0x%x" % (self.address, align))
-        if self.size % align and secure:
-            raise ValidationError(self, "Size 0x%x is not aligned to 0x%x" % (self.size, align))
         if self.size is None or self.size == 0:
             raise ValidationError(self, "Size field is not set")
+        if self.size % align and secure:
+            raise ValidationError(self, "Size 0x%x is not aligned to 0x%x" % (self.size, align))
         if self.address >= self.device.size:
             raise ValidationError(self, "Offset 0x%x exceeds device size 0x%x" % (self.address, self.device.size))
         if self.end() >= self.device.size:
@@ -518,9 +511,8 @@ class Entry(object):
             raise ValidationError(self, "Name not specified")
         if len(self.name) > PARTITION_NAME_SIZE:
             raise ValidationError(self, "Name too long, max. %u chars" % PARTITION_NAME_SIZE)
-        for c in self.name:
-            if c.isspace():
-                raise ValidationError(self, "Name may not contain whitespace")
+        if contains_whitespace(self.name):
+            raise ValidationError(self, "Name may not contain whitespace")
         if self.name in TYPES and TYPES.get(self.name, "") != self.type:
             raise ValidationError(self, "Name is a partition type, but does not match this partition's type (%s)" % (self.type))
         all_subtype_names = []
