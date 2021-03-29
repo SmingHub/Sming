@@ -119,18 +119,17 @@ class Config(object):
         partitions = data.pop('partitions', None)
 
         for k, v in data.items():
-            if k == 'name':
-                self.name = v
-            elif k == 'arch':
+            if k == 'arch':
                 self.arch = v
             elif k == 'partition_table_offset':
                 self.partitions.offset = v
             elif k == 'devices':
                 self.devices.parse_dict(v)
-            elif k == 'comment':
-                self.comment = v
-            else:
+            elif k != 'name' and k != 'comment':
                 raise InputError("Unknown config key '%s'" % k)
+
+        self.name = data.get('name', '')
+        self.comment = data.get('comment', '')
 
         if not partitions is None:
             self.partitions.parse_dict(partitions, self.devices)
