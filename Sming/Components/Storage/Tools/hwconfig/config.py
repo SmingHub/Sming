@@ -142,6 +142,7 @@ class Config(object):
         if hasattr(self, 'comment'):
             res['comment'] = self.comment
         res['arch'] = self.arch;
+        res['options'] = self.options
         res['partition_table_offset'] = self.partitions.offset_str()
         res['devices'] = self.devices.dict()
         res['partitions'] = self.partitions.dict()
