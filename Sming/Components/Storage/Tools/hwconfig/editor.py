@@ -164,8 +164,7 @@ class EditState(dict):
             value = self.name
         else:
             value = self.obj_dict.get(fieldName, self.obj.dict().get(fieldName))
-            if hasattr(value, 'name'):
-                value = value.name
+            if fieldName == 'device':
                 disabled = True
             try:
                 if fieldType == 'object':
