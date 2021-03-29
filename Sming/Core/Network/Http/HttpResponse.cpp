@@ -15,12 +15,17 @@
 #include "Data/Stream/MemoryDataStream.h"
 #include "Data/Stream/FileStream.h"
 
-HttpResponse* HttpResponse::setCookie(const String& name, const String& value)
+HttpResponse* HttpResponse::setCookie(const String& name, const String& value, bool append)
 {
 	String s = name;
 	s += '=';
 	s += value;
-	headers[HTTP_HEADER_SET_COOKIE] = s;
+	if(append) {
+		headers.append(HTTP_HEADER_SET_COOKIE, s);
+	} else {
+		headers[HTTP_HEADER_SET_COOKIE] = s;
+	}
+
 	return this;
 }
 
