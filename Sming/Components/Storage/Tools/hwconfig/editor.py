@@ -80,7 +80,7 @@ class Field:
     def is_disabled(self):
         try:
             return str(self.widget.cget('state')) == 'disabled'
-        except:
+        except Exception:
             return False
 
 
