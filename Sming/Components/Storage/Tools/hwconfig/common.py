@@ -64,6 +64,25 @@ def size_format(a):
     return "0x%08x" % a
 
 
+def size_frac_str(a):
+    KB = 1024
+    MB = KB * 1024
+    GB = MB * 1024
+    if a >= GB:
+        div = GB
+        unit = 'G'
+    elif a >= MB:
+        div = MB
+        unit = 'M'
+    else:
+        div = KB
+        unit = 'K'
+    if a % div == 0:
+        return "%u%s" % (a // div, unit)
+    else:
+        return "%.2f%s" % (a / div, unit)
+
+
 def quote(v):
     return '"' + v + '"'
 
