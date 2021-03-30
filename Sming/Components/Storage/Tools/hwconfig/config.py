@@ -3,11 +3,21 @@
 #
 
 import os, partition, storage, copy
-from rjsmin import jsmin
 from common import *
 from builtins import classmethod
 
 HW_EXT = '.hw'
+
+class Schema(dict):
+    def __init__(self, filename):
+        self.schema = json_load(filename)
+
+    def __getitem__(self, name):
+        return self.schema['definitions'][name]
+
+
+
+schema = Schema(os.environ['HWCONFIG_SCHEMA'])
 
 def get_config_dirs():
     s = os.environ['HWCONFIG_DIRS']
@@ -21,7 +31,7 @@ def load_option_library():
         filename = fixpath(d) + '/options.json'
         if os.path.exists(filename):
             with open(filename) as f:
-                data = json.loads(jsmin(f.read()))
+                data = json_loads(f.read())
                 library.update(data)
     return library
 
@@ -82,8 +92,7 @@ class Config(object):
         """
         filename = find_config(name)
         self.depends.append(filename)
-        with open(filename) as f:
-            data = json.loads(jsmin(f.read()))
+        data = json_load(filename)
         self.parse_dict(data)
 
     def parse_options(self, options):

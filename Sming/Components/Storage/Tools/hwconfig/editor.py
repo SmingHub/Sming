@@ -1,4 +1,4 @@
-import argparse, os, partition, configparser, string
+import argparse, os, config, partition, configparser, string
 from common import *
 from config import *
 import tkinter as tk
@@ -68,9 +68,6 @@ def resolve_id(config, id):
     if part is not None:
         return part
 
-def json_loads(s):
-    return json.loads(jsmin(s), object_pairs_hook=OrderedDict)
-
 class Field:
     """Manages widget and associated variable
     """
@@ -99,7 +96,7 @@ class EditState(dict):
         self.enumDict = enumDict
         self.obj = obj
         self.name = obj.name
-        self.schema = editor.schema[objectType]
+        self.schema = config.schema[objectType]
         self.allow_delete = False
         baseConfig = self.editor.getBaseConfig()
         optionBaseConfig = self.editor.getOptionBaseConfig()
@@ -752,15 +749,6 @@ class TkTree(tk.Frame):
             tree.selection_set(id)
 
 
-class Schema(dict):
-    def __init__(self, filename):
-        with open(filename) as f:
-            self.schema = json.load(f, object_pairs_hook=OrderedDict)
-
-    def __getitem__(self, name):
-        return self.schema['definitions'][name]
-
-
 class Editor:
     def __init__(self, root):
         root.title(app_name)
@@ -773,8 +761,6 @@ class Editor:
 
     def initialise(self):
         self.main.option_add('*tearOff', False)
-
-        self.schema = Schema(os.environ['HWCONFIG_SCHEMA'])
 
         hwFilter = [('Hardware Profiles', '*' + HW_EXT)]
 
@@ -803,8 +789,7 @@ class Editor:
                 ext = os.path.splitext(filename)[1]
                 if ext != HW_EXT:
                     filename += HW_EXT
-                with open(filename, "w") as f:
-                    json.dump(self.json, f, indent=4)
+                json_save(self.json, filename)
 
         # Toolbar
         toolbar = ttk.Frame(self.main)
@@ -939,8 +924,8 @@ class Editor:
 
     def set_json(self, json_config):
         # Keep output order consistent
-        self.json = {}
-        for k in self.schema['Config']['properties'].keys():
+        self.json = OrderedDict()
+        for k in config.schema['Config']['properties'].keys():
             if k in json_config:
                 self.json[k] = json_config[k]
 
@@ -948,7 +933,8 @@ class Editor:
         self.tree.clear()
         self.map.clear()
         self.status.set('')
-        self.json = {"name": "New Profile"}
+        self.json = OrderedDict()
+        self.json['name'] = 'New Profile'
         self.json['base_config'] = 'standard'
         self.reload()
         self.updateWindowTitle()
