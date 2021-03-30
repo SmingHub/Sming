@@ -86,12 +86,11 @@ class Field:
 class EditState(dict):
     """Manage details of Config/Device/Partition editing using dictionary of Field objects
     """
-    def __init__(self, editor, objectType, dictName, obj, enumDict):
+    def __init__(self, editor, objectType, dictName, obj):
         super().__init__(self)
         self.editor = editor
         self.objectType = objectType
         self.dictName = dictName
-        self.enumDict = enumDict
         self.obj = obj
         self.name = obj.name
         self.schema = config.schema[objectType]
@@ -181,7 +180,7 @@ class EditState(dict):
         else:
             l = tk.Label(frame, text=fieldName)
             l.grid(row=self.row, column=0, sticky=tk.W)
-            values = self.enumDict.get(fieldName, schema.get('enum'))
+            values = schema.get('enum')
             if values is None:
                 c = tk.Entry(frame, width=64, textvariable=var)
             elif fieldType == 'array':
@@ -1017,14 +1016,7 @@ class Editor:
             obj = resolve_id(self.config, id)
             if obj is not None:
                 self.select(obj)
-        enumDict = {}
-        enumDict['base_config'] = list(get_config_list().keys())
-        optionlib = load_option_library()
-        options = {}
-        for k, v in optionlib.items():
-            options[k] = v['description']
-        enumDict['options'] = options
-        self.edit = EditState(self, 'Config', None, self.config, enumDict)
+        self.edit = EditState(self, 'Config', None, self.config)
 
     def addDevice(self):
         dev = storage.Device('New device')
@@ -1036,9 +1028,7 @@ class Editor:
         if self.is_editing(dev):
             return
         self.select(dev)
-        enumDict = {}
-        enumDict['type'] = list((storage.TYPES).keys())
-        self.edit = EditState(self, 'Device', 'devices', dev, enumDict)
+        self.edit = EditState(self, 'Device', 'devices', dev)
 
     def editPartition(self, part):
         if isinstance(part, str):
@@ -1046,10 +1036,7 @@ class Editor:
         if self.is_editing(part):
             return
         self.select(part)
-        enumDict = {}
-        enumDict['type'] = list((partition.TYPES).keys() - ['storage', 'internal'])
-        enumDict['subtype'] = []
-        self.edit = EditState(self, 'Partition', 'partitions', part, enumDict)
+        self.edit = EditState(self, 'Partition', 'partitions', part)
 
 
 def main():

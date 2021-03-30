@@ -8,17 +8,6 @@ from builtins import classmethod
 
 HW_EXT = '.hw'
 
-class Schema(dict):
-    def __init__(self, filename):
-        self.schema = json_load(filename)
-
-    def __getitem__(self, name):
-        return self.schema['definitions'][name]
-
-
-
-schema = Schema(os.environ['HWCONFIG_SCHEMA'])
-
 def get_config_dirs():
     s = os.environ['HWCONFIG_DIRS']
     dirs = s.replace('  ', ' ').split(' ')
@@ -52,6 +41,32 @@ def find_config(name):
         if os.path.exists(path):
             return path
     raise InputError("Config '%s' not found" % name)
+
+
+class Schema(dict):
+    def __init__(self, filename):
+        self.schema = json_load(filename)
+        # Config
+        properties = self['Config']['properties']
+        properties['base_config']['enum'] = list(get_config_list().keys())
+        optionlib = load_option_library()
+        options = properties['options']['enum'] = {}
+        for k, v in optionlib.items():
+            options[k] = v['description']
+        # Device
+        properties = self['Device']['properties']
+        properties['type']['enum'] = list((storage.TYPES).keys())
+        # Partition
+        properties = self['Partition']['properties']
+        properties['type']['enum'] = list((partition.TYPES).keys() - ['storage', 'internal'])
+        properties['subtype']['enum'] = []
+
+
+    def __getitem__(self, name):
+        return self.schema['definitions'][name]
+
+
+schema = Schema(os.environ['HWCONFIG_SCHEMA'])
 
 class Config(object):
     def __init__(self):
