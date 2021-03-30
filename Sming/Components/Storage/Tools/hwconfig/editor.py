@@ -752,6 +752,7 @@ class TkTree(tk.Frame):
         if tree.exists(id) and tree.focus() != id:
             tree.focus(id)
             tree.selection_set(id)
+            tree.see(id)
 
 
 class Editor:
