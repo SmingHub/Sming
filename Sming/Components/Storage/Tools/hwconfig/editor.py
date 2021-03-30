@@ -3,6 +3,7 @@ from common import *
 from config import *
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, font
+from collections import OrderedDict
 
 app_name = 'Sming Hardware Profile Editor'
 
@@ -10,7 +11,7 @@ def read_property(obj, name):
     """Read an object property, preferring string representation
     """
     value = getattr(obj, name + '_str', None)
-    return getattr(obj, name, '') if value is None else value()
+    return getattr(obj, name, None) if value is None else value()
 
 
 def get_dict_value(dict, key, default):
@@ -34,21 +35,6 @@ def load_config_vars(filename):
     return parser['config']
 
 
-def to_KB(value):
-    """Round value up to whole KB
-    """
-    return (value + 1023) & ~0x3ff
-
-
-def percent_used(used, total):
-    """Get string showing size and percent of total
-    """
-    s = size_format(to_KB(used))
-    if total != 0:
-        s += " (%u%%)" % round(100 * used / total)
-    return s
-
-
 def checkProfilePath(filename):
     filename = os.path.realpath(filename)
     if filename.startswith(os.getcwd()):
@@ -59,6 +45,31 @@ def checkProfilePath(filename):
         'Must be in working project directory where `make hwedit-config` was run')
     return False
 
+
+def get_id(obj):
+    """Get string identifier for a device or partition object
+    """
+    if isinstance(obj, partition.Entry):
+        if obj.is_unused():
+            return obj.device.name + '/' + str(obj.address)
+    return obj.name
+
+def resolve_id(config, id):
+    """Get corresponding device or partition object given the ID value provided from get_id
+    """
+    elem = id.split('/')
+    if len(elem) == 2:
+        dev = config.devices.find_by_name(elem[0])
+        return config.map().find_by_address(dev, elem[1])
+    dev = config.devices.find_by_name(id)
+    if dev is not None:
+        return dev
+    part = config.map().find_by_name(id)
+    if part is not None:
+        return part
+
+def json_loads(s):
+    return json.loads(jsmin(s), object_pairs_hook=OrderedDict)
 
 class Field:
     """Manages widget and associated variable
@@ -71,148 +82,243 @@ class Field:
         return str(self.var.get())
 
     def is_disabled(self):
-        return str(self.widget.cget('state')) == 'disabled'
+        try:
+            return str(self.widget.cget('state')) == 'disabled'
+        except Exception:
+            return False
 
 
 class EditState(dict):
-    """Manage details of device/partition editing using dictionary of Field objects
+    """Manage details of Config/Device/Partition editing using dictionary of Field objects
     """
     def __init__(self, editor, objectType, dictName, obj, enumDict):
         super().__init__(self)
         self.editor = editor
         self.objectType = objectType
         self.dictName = dictName
-        if objectType == 'Partition' and obj.is_unused():
-            self.name = 'New Partition'
-        else:
-            self.name = obj.name
-        self.schema = editor.schema['definitions'][objectType]
+        self.enumDict = enumDict
         self.obj = obj
+        self.name = obj.name
+        self.schema = editor.schema[objectType]
+        self.allow_delete = False
+        baseConfig = self.editor.getBaseConfig()
+        optionBaseConfig = self.editor.getOptionBaseConfig()
+        if objectType == 'Config':
+            self.is_inherited = False
+        elif objectType == 'Device':
+            self.is_inherited = optionBaseConfig.devices.find_by_name(self.name) is not None
+            self.allow_delete = not self.is_inherited
+        elif objectType == 'Partition':
+            if obj.is_unused():
+                self.name = 'New Partition'
+                self.is_inherited = False
+            else:
+                self.is_inherited = optionBaseConfig.map().find_by_name(self.name) is not None
+                self.allow_delete = not self.is_inherited
+        else:
+            raise InputError('Unsupported objectType')
+
+        if objectType == 'Config':
+            self.base_obj = baseConfig
+            self.obj_dict = editor.json
+        else:
+            self.base_obj = getattr(baseConfig, dictName).find_by_name(self.name)
+            self.obj_dict = editor.json.get(dictName, {}).get(self.name, {})
+
+        self.init()
+
+    def init(self):
+        f = self.editor.editFrame
+        for c in f.winfo_children():
+            c.destroy()
+
+        label = ttk.Label(f, text=self.schema['title'], font='heading')
+        label.pack()
+        desc = self.schema.get('description')
+        if desc is not None:
+            label = ttk.Label(f, text=self.schema['description'])
+            label.pack()
+
+        f = self.controlFrame = ttk.Frame(self.editor.editFrame)
+        f.pack(side=tk.TOP)
+        self.array = {} # dictionary for array element variables
         self.row = 0
+        keys = self.schema['properties'].keys()
+        if not 'name' in keys:
+            self.addControl('name')
+        for k in keys:
+            if k != 'devices' and k != 'partitions':
+                self.addControl(k)
+        f = ttk.Frame(self.editor.editFrame)
+        f.pack(side=tk.BOTTOM)
+        btn = ttk.Button(f, text='Apply', command=lambda *args: self.apply())
+        btn.grid(row=0, column=0)
+        btn = ttk.Button(f, text='Undo', command=lambda *args: self.init())
+        btn.grid(row=0, column=1)
+        if self.allow_delete:
+            btn = ttk.Button(f, text='Delete', command=lambda *args: self.delete())
+            btn.grid(row=0, column=2)
 
-        self.addControl('name')
-        for k in self.schema['properties'].keys():
-            self.addControl(k, enumDict)
-        btn = ttk.Button(editor.editFrame, text="Apply", command=self.apply)
-        btn.grid(row=100, column=0, columnspan=2)
-
-    def addControl(self, fieldName, enumDict = {}):
-        frame = self.editor.editFrame
+    def addControl(self, fieldName):
         schema = self.get_property(fieldName)
+        fieldType = schema.get('type')
+        frame = self.controlFrame
         disabled = False
-        value = read_property(self.obj, fieldName)
-        if hasattr(value, 'name'):
-            value = value.name
-            disabled = True
-        elif value and schema['type'] == 'object':
-            value = json.dumps(value)
+        if fieldName == 'name':
+            value = self.name
+        else:
+            value = self.obj_dict.get(fieldName, self.obj.dict().get(fieldName))
+            if fieldName == 'device':
+                disabled = True
+            try:
+                if fieldType == 'object':
+                    value = '' if value is None else json.dumps(value)
+                elif fieldType == 'array':
+                    value = [] if value is None else json.dumps(value)
+            except Exception as err:
+                critical(str(err))
         var = tk.StringVar(value=value)
-        if schema['type'] == 'boolean':
+
+        if fieldType == 'boolean':
             c = ttk.Checkbutton(frame, text=fieldName, variable=var)
         else:
             l = tk.Label(frame, text=fieldName)
             l.grid(row=self.row, column=0, sticky=tk.W)
-            values = enumDict.get(fieldName, schema.get('enum'))
-            if values is not None:
-                c = ttk.Combobox(frame, values=values)
+            values = self.enumDict.get(fieldName, schema.get('enum'))
+            if values is None:
+                c = tk.Entry(frame, width=64, textvariable=var)
+            elif fieldType == 'array':
+                c = ttk.Frame(frame)
+                def array_changed(fieldName, key, var):
+                    values = set(json_loads(var.get()))
+                    if self.array[fieldName][key].get():
+                        values.add(key)
+                    else:
+                        values.discard(key)
+                    var.set(json.dumps(list(values)))
+                elements = self.array[fieldName] = {}
+                for k, v in values.items():
+                    elements[k] = tk.BooleanVar(value=k in getattr(self.obj, fieldName))
+                    btn = tk.Checkbutton(c, text = k + ': ' + v,
+                        command=lambda *args, fieldName=fieldName, key=k, var=var: array_changed(fieldName, key, var),
+                        variable=elements[k])
+                    btn.grid(sticky=tk.W)
+                    base = getattr(self.base_obj, fieldName)
+                    if base is not None and k in base:
+                        btn.configure(state='disabled')
+            else:
+                c = ttk.Combobox(frame, values=values, textvariable=var)
                 if fieldName == 'subtype':
                     def set_subtype_values():
                         t = self['type'].get_value()
                         t = partition.TYPES[t]
                         values = partition.SUBTYPES.get(t, [])
-                        critical("t = %s, %s" % (t, values))
                         c.configure(values=list(values))
                     c.configure(postcommand=set_subtype_values)
-            else:
-                c = tk.Entry(frame, width=64)
-            c.configure(textvariable=var)
         self[fieldName] = Field(var, c)
 
         if fieldName == 'name':
             # Name is read-only for inherited devices/partitions
-            objlist = getattr(self.editor.getBaseConfig(), self.dictName)
-            disabled = objlist.find_by_name(self.name) is not None
-            var.set(self.name)
+            if self.is_inherited:
+                disabled = self.is_inherited
         # Internal 'partitions' are generally not editable, but make an exception to allow
         # creation of new partitions (on an 'unused' type) or changing the partition table offset
-        if self.objectType == 'Partition':
-            if self.obj.is_internal() and not self.obj.is_unused():
-                if not (self.obj.is_internal(partition.INTERNAL_PARTITION_TABLE) and fieldName == 'address'):
-                    disabled = True
+        if self.objectType == 'Partition' and self.is_inherited and self.obj.is_internal() and not self.obj.is_unused():
+            if not (self.obj.is_internal(partition.INTERNAL_PARTITION_TABLE) and fieldName == 'address'):
+                disabled = True
         if disabled:
             c.configure(state='disabled')
         c.grid(row=self.row, column=1, sticky=tk.EW)
         self.row += 1
         return c
 
-    def apply(self, *args):
+    def apply(self):
         # Fetch base JSON for comparison
         baseConfig = self.editor.getBaseConfig()
-        base = getattr(baseConfig, self.dictName).find_by_name(self.name)
-        if base is None:
-            base = {}
-        else:
-            base = base.dict()
         json_config = copy.deepcopy(self.editor.json)
-        json_object = get_dict_value(json_config, self.dictName, {})
-        new_name = None
-        try:
-            obj = get_dict_value(json_object, self.name, {})
+        if self.objectType == 'Config':
+            base = baseConfig
+            json_dict = None
+            obj = json_config
+        else:
+            base = getattr(baseConfig, self.dictName).find_by_name(self.name)
+            json_dict = get_dict_value(json_config, self.dictName, {})
+            obj = get_dict_value(json_dict, self.name, {})
             if self.objectType == 'Partition' and self.obj.is_unused():
                 obj['device'] = self.obj.device.name
+        base = {} if base is None else base.dict()
+        new_name = None
+        try:
             for k, f in self.items():
                 if f.is_disabled():
                     continue
                 value = f.get_value()
                 schema = self.get_property(k)
-                if k == 'name':
+                fieldType = schema.get('type')
+                if k == 'name' and json_dict is not None:
                     value = value.strip()
                     if value != self.name:
                         if value in self.editor.config.map():
-                            self.editor.status.set("Name '%s' already used" % value)
-                            return
-                        old = json_object.pop(self.name)
-                        obj = json_object[value] = old
+                            raise InputError("Name '%s' already used" % value)
+                        old = json_dict.pop(self.name)
+                        obj = json_dict[value] = old
                         new_name = value
                         # If renaming a device, then all partitions must be updated
                         if self.objectType == 'Device':
                             for n, p in json_config.get('partitions', {}).items():
-                                if p['device'] == self.name:
+                                if p.get('device') == self.name:
                                     p['device'] = new_name
                 elif k == 'address' and self.objectType == 'Partition' and self.obj.is_internal(partition.INTERNAL_PARTITION_TABLE):
-                    if parse_int(value) == baseConfig.partitions.offset:
-                        if 'partition_table_offset' in json_config:
-                            del json_config['partition_table_offset']
-                    else:
-                        json_config['partition_table_offset'] = value
+                    json_config['partition_table_offset'] = value
                 elif value == '' and k != 'filename': # TODO mark 'allow empty' values in schema somehow
                     if k in obj:
                         del obj[k]
-                elif schema['type'] == 'object':
-                    obj[k] = {} if value == '' else json.loads(value)
-                elif schema['type'] == 'boolean':
+                elif fieldType == 'object' or fieldType == 'array':
+                    obj[k] = {} if value == '' else json_loads(value)
+                elif fieldType == 'boolean':
                     obj[k] = (value != '0')
-                elif value.isdigit() and 'integer' in schema['type']:
+                elif value.isdigit() and 'integer' in fieldType:
                     obj[k] = int(value)
                 else:
                     obj[k] = value
-                if k in base and obj[k] == base[k]:
+                if k in base and obj.get(k) == base[k]:
                     del obj[k]
-            if len(obj) == 0:
-                del json_object[self.name]
-            Config.from_json(json_config).verify(False)
-            self.editor.json = json_config
-            if new_name is not None:
-                self.name = new_name
-                self.editor.updateEditTitle()
-            self.editor.reload()
-        except InputError as err:
-            self.editor.user_error(err)
-        except AttributeError as err:
-            self.editor.user_error(err)
-        except ValueError as err:
-            self.editor.user_error(err)
 
+            if len(obj) == 0:
+                del json_dict[self.name]
+                if len(json_dict) == 0:
+                    del json_config[self.dictName]
+
+
+            if self.editor.verify_config(json_config):
+                self.editor.set_json(json_config)
+                if new_name is not None:
+                    self.name = new_name
+                if self.objectType != 'Config':
+                    self.editor.selected = self.name
+                self.editor.reload()
+        except Exception as err:
+            self.editor.user_error(err)
+            raise err
+
+    def delete(self):
+        json_dict = self.editor.json[self.dictName]
+        # If deleting a device, then delete all partitions first
+        if self.objectType == 'Device':
+            devparts = []
+            partitions = self.editor.json.get('partitions', {})
+            for n, p in partitions.items():
+                if p.get('device') == self.name:
+                    devparts.append(n)
+            for n in devparts:
+                partitions.pop(n)
+            self.editor.selected = self.editor.config.devices[0].name
+        else:
+            self.editor.selected = self.obj.device.name
+        del json_dict[self.name]
+        if len(json_dict) == 0:
+            del self.editor.json[self.dictName]
+        self.editor.reload()
 
     def get_property(self, name):
         if name == 'name':
@@ -249,7 +355,24 @@ class Rect:
     def setHeight(self, h):
         self.y2 = self.y + h
 
-    def pos(self):
+    def pos(self, anchor=tk.NW):
+        if anchor == tk.N:
+            return ((self.x + self.x2) / 2, self.y)
+        if anchor == tk.NE:
+            return (self.x2, self.y)
+        if anchor == tk.E:
+            return (self.x2, (self.y + self.y2) / 2)
+        if anchor == tk.SE:
+            return (self.x2, self.y2)
+        if anchor == tk.S:
+            return ((self.x + self.x2) / 2, self.y2)
+        if anchor == tk.SW:
+            return (self.x, self.y2)
+        if anchor == tk.W:
+            return (self.x, (self.y + self.y2) / 2)
+        if anchor == tk.CENTER:
+            return ((self.x + self.x2) / 2, (self.y + self.y2) / 2)
+        # Default and NW
         return (self.x, self.y)
 
     def bounds(self):
@@ -258,141 +381,384 @@ class Rect:
 
 class TkMap(tk.Frame):
     def __init__(self, parent, editor):
-        super().__init__(parent, width=200, height=200)
+        super().__init__(parent)
         self.pack(fill=tk.BOTH)
         self.editor = editor
-        canvas = self.canvas = tk.Canvas(self, width=200, height=200)
+        self.device = None
+        self.selected_id = None
+        self.bytesPerPixel = 32
+        self.maxPartitionDrawSize = 0x4000
+        canvas = self.canvas = tk.Canvas(self, height=150, xscrollincrement=1)
         canvas.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
+        self.autoZoom = tk.BooleanVar(value=True)
+        btn = tk.Checkbutton(self, text='Auto Zoom', variable=self.autoZoom,
+            command=lambda *args: self.update())
+        btn.pack(side=tk.LEFT)
         s = ttk.Scrollbar(self, orient=tk.HORIZONTAL, command=canvas.xview)
         s.pack(side=tk.BOTTOM, fill=tk.X)
         canvas['xscrollcommand'] = s.set
+        # Windows
+        canvas.bind('<MouseWheel>', self.onMouseWheel)
+        # Linux
+        canvas.bind('<4>', self.onMouseWheel)
+        canvas.bind('<5>', self.onMouseWheel)
 
-    def update(self, device):
-        canvas = self.canvas
-        canvas.delete('all')
+    def clear(self):
+        self.canvas.delete('all')
+        self.items = {}
 
-        labelFont = font.Font(family='fixed', size=8)
-        labelFontBold = font.Font(family='fixed', size=8, weight='bold')
-
+    def update(self):
         # Margins to separate drawn rectangular regions
         M = 5
+        M_HEADING = 16
         M_OUTER = 20
 
         # Pixels to draw map row
-        ROW_HEIGHT = 160
+        ROW_HEIGHT = 80
         # Text line spacing
         LINE_SPACE = 16
         # How far ticks extend below map
         TICK_LENGTH = 10
-        # Linear scaling for view
-        BYTES_PER_PIXEL = 32
-        def xs(x):
-            return round(x / BYTES_PER_PIXEL)
 
-        # Drawing the map linearly would make navigation very difficult, too spread-out
-        # Instead, fix a limit for the drawn size of each partition (in bytes)
+        self.clear()
+
+        if self.device is None:
+            return
+
+        device = self.device
+        canvas = self.canvas
+        partitions = list(filter(lambda p: p.device == self.device, self.editor.config.map()))
+
+        # Minimum width (in pixels) to draw a partition
+        minPartitionWidth = M
+
+        if self.autoZoom.get():
+            self.bind('<Configure>', lambda x: self.update())
+            maxPartitionDrawSize = 0xffffffffffffffff
+            # Calculate draw width
+            w = self.winfo_width() - (M_OUTER + M) * 2 - M * len(partitions)
+            bytesPerPixel = self.device.size // w
+            minSize = minPartitionWidth * bytesPerPixel
+            # Now re-check to ensure all partitions have a sensible minimum drawn size
+            def is_small(p):
+                return p.size < minSize
+            extra = sum(minSize - p.size for p in filter(is_small, partitions))
+            bytesPerPixel = (self.device.size + extra) // w
+        else:
+            self.unbind('<Configure>')
+            bytesPerPixel = self.bytesPerPixel
+            maxPartitionDrawSize = self.maxPartitionDrawSize
+
+        # Partitions smaller than this will be expanded
+        minPartitionDrawSize = minPartitionWidth * bytesPerPixel
+
+        labelFont = font.Font(family='fixed', size=8)
+        labelFontBold = font.Font(family='fixed', size=8, weight='bold')
+        headingFont = font.Font(family='courier', size=10, weight='bold')
+
+        # Draw device title
+        s = "[%s]" % device.name
+        if device.size != 0:
+            s += ': %s' % size_frac_str(device.size)
+        if device.type != 0:
+            s += ' (%s)' % device.type_str()
+        canvas.create_text(self.winfo_width() / 2, 0, anchor=tk.N, text=s, font=headingFont, fill='blue')
+
+        # When auto-zoom is disabled, drawing the map linearly is unhelpful,
+        # it's too spread-out and navigation is difficult.
+        # So, fix a limit for the drawn size of each partition (in bytes)
         # Marker ticks will be drawn according to this scale
-        MAX_DRAWSIZE = 16 * 1024
         drawsize = 0      # Equivalent size (in bytes) for the partition
         x_device_end = 0  # Determines final x co-ordinate for end of device memory
 
+        MIN_TICK_SPACING = 100
         def draw_tick(x, addr):
-            canvas.create_line(x, r.y, x, r.y2 + 10, fill='black', width=3)
-            canvas.create_text(x, r.y + ROW_HEIGHT + TICK_LENGTH,
+            canvas.create_line(x, r.y2 + M, x, r.y2 + M + TICK_LENGTH, fill='black', width=3)
+            canvas.create_text(x, r.y + ROW_HEIGHT + M + TICK_LENGTH,
                 anchor=tk.N,
-                text=str(addr / 1024 / 1024) + 'MB',
+                text = size_frac_str(addr),
                 state='disabled',
                 font=labelFontBold)
 
         # Track current partition area
         r_prev = Rect()
-        r_prev.y = M_OUTER
+        r_prev.y = M_HEADING + M_OUTER
         r_prev.x = M_OUTER
         part_prev = None
 
-        class Used:
-            def __init__(self):
-                self.text = ''
-                self.size = 0
-                self.path = ''
+        device_item = canvas.create_rectangle(r_prev.bounds(), fill='lightgray',  outline='black')
+        canvas.tag_bind(device_item, '<Button-1>', lambda x: self.editor.editDevice(self.device))
+        self.items[get_id(self.device)] = device_item
 
-        for p in self.editor.config.map():
-            if p.device != device:
-                continue
-
-            used = Used()
-            if p.filename != '':
-                try:
-                    used.path = self.editor.resolve_path(p.filename)
-                    if os.path.exists(used.path):
-                        used.size = os.path.getsize(used.path)
-                        used.text = percent_used(used.size, p.size)
-                    else:
-                        used.text = '(not found)'
-                except KeyError as err:
-                    used.text = str(err) + ' undefined'
-
+        for p in partitions:
             # Starting x co-ordinate for this partition depends on scale of previous partition
             r = copy.copy(r_prev)
             r.setHeight(ROW_HEIGHT)
             if part_prev is not None:
-                r.x += xs(drawsize * (p.address - part_prev.address) / part_prev.size)
+                r.x += M + drawsize * (p.address - part_prev.address) / part_prev.size / bytesPerPixel
 
             # Determine actual size to draw this partition (in bytes)
-            drawsize = min(MAX_DRAWSIZE, p.size)
-            r.setWidth(xs(drawsize))
+            drawsize = min(maxPartitionDrawSize, max(minPartitionDrawSize, p.size))
+            r.setWidth(drawsize / bytesPerPixel)
             # Identify where end of device memory actually is in case partitions exceed this boundary
             if x_device_end == 0 and p.end() >= device.size - 1:
                 sz = device.size - p.address
-                x_device_end = r.x + xs(drawsize * sz / p.size)
+                x_device_end = r.x + (drawsize * sz / p.size / bytesPerPixel)
 
             # Draw tick marks
-            div = 256 * 1024
+            div = device.size // 16
             addr = p.address - (p.address % div)
+            x_next_tick = 0
             while addr <= p.end():
                 if addr >= p.address:
-                    x = r.x + xs(drawsize * (addr - p.address) / p.size)
-                    draw_tick(x, addr)
+                    x = r.x + (drawsize * (addr - p.address) / p.size / bytesPerPixel)
+                    if x >= x_next_tick:
+                        draw_tick(x, addr)
+                        x_next_tick = x + MIN_TICK_SPACING
                 addr += div
 
+            # Outer rectangle for partition
             r2 = copy.copy(r)
-            r2.inflate(-M, -M)
-            id = canvas.create_rectangle(r2.bounds(), fill='lightgray' if p.is_unused() else 'gray', activefill='white', outline='red')
-            canvas.tag_bind(id, "<Button-1>", lambda event, part=p: self.editor.editPartition(part))
-            r2.inflate(-M, -M)
-            canvas.create_text(r2.pos(), anchor=tk.NW, text=p.address_str(), state='disabled', font=labelFont)
-            r2.y += LINE_SPACE
-            canvas.create_text(r2.pos(), anchor=tk.NW, text=p.name, state='disabled', font=labelFontBold)
-            r2.y += LINE_SPACE
-            canvas.create_text(r2.pos(), anchor=tk.NW, text=p.size_str(), state='disabled', font=labelFontBold)
-            if not p.is_internal():
-                r2.y += LINE_SPACE
-                canvas.create_text(r2.pos(), anchor=tk.NW, text=p.type_str() + ' / ' + p.subtype_str(), state='disabled', font=labelFont)
-            r2.y += LINE_SPACE
+            # r2.inflate(-M, -M)
+            color = 'lightgray' if p.is_unused() else 'white'
+            item = canvas.create_rectangle(r2.bounds(), fill=color, outline=color)
+            canvas.tag_bind(item, "<Button-1>", lambda event, part=p: self.editor.editPartition(part))
+            # Used region
+            used = self.editor.get_used(p)
             if used.size != 0:
-                r2.setWidth(used.size * r2.getWidth() / p.size)
-                canvas.create_rectangle(r2.bounds(), fill='lightblue', outline='lightblue', state='disabled')
-            r2.x += M
+                r3 = copy.copy(r2)
+                r3.inflate(-1, -1)
+                if used.size > p.size:
+                    color = 'lightpink'
+                else:
+                    r3.setWidth(used.size * r3.getWidth() / p.size)
+                    color = 'lightblue'
+                canvas.create_rectangle(r3.bounds(), fill=color, outline=color, state='disabled')
+            item = canvas.create_rectangle(r2.bounds(), outline='blue', state='disabled')
+            self.items[get_id(p)] = item
+
+            # Internal text
+            r2.inflate(-M, -M)
+            def createText(r, anchor, text, font):
+                if font.measure(text) < r.getWidth():
+                    canvas.create_text(r.pos(tk.N if anchor == tk.CENTER else tk.NW), anchor=anchor, text=text, state='disabled', font=font)
+            createText(r2, tk.NW, p.address_str(), labelFont)
             r2.y += LINE_SPACE
-            canvas.create_text(r2.pos(), anchor=tk.NW, text=used.text, state='disabled', font=labelFont)
-            if p.filename != '':
-                r2.y += LINE_SPACE
-                canvas.create_text(r2.pos(), anchor=tk.NW, text=p.filename, state='disabled', font=labelFont)
-                if used.path != p.filename:
-                    r2.y += LINE_SPACE
-                    canvas.create_text(r2.pos(), anchor=tk.NW, text=used.path, state='disabled', font=labelFont)
+            r2.y += LINE_SPACE
+            createText(r2, tk.CENTER, p.name, labelFontBold)
+            r2.y += LINE_SPACE
+            createText(r2, tk.CENTER, size_frac_str(p.size), labelFontBold)
 
             part_prev = p
             r_prev = r
 
-        r2 = Rect(M_OUTER, M_OUTER)
+        r2 = Rect(M_OUTER, M_HEADING + M_OUTER)
         r2.x2 = x_device_end
-        r2.y2 = r.y2
-        canvas.create_rectangle(r2.bounds(), outline='black', width=3, state='disabled')
-        if x_device_end >= r.x:
+        r2.y2 = r_prev.y2
+        r2.inflate(M, M)
+        self.canvas.coords(device_item, r2.bounds())
+        if x_device_end >= r_prev.x:
             draw_tick(x_device_end, device.size)
-        canvas.config(scrollregion=(0, 0, r.x2 + 100, 0))
+        self.scroll_width = r_prev.x2 + M_OUTER
+        canvas.config(scrollregion=(0, 0, self.scroll_width, 0))
 
+        # Highlight the selected item (if any)
+        item = self.items.get(self.selected_id)
+        if item is not None:
+            self.canvas.itemconfigure(item, width=3)
+
+    def onMouseWheel(self, event):
+        if self.autoZoom.get():
+            return
+        shift = (event.state & 0x01) != 0
+        control = (event.state & 0x04) != 0
+        if event.num == 5:
+            delta = -120
+        elif event.num == 4:
+            delta = 120
+        else:
+            delta = event.delta
+        # Adjust draw size
+        if shift and not control:
+            ds = self.maxPartitionDrawSize
+            if delta < 0:
+                ds >>= 1
+            else:
+                ds <<= 1
+            if ds >= 0x1000 and ds <= 0x100000:
+                self.maxPartitionDrawSize = ds
+                self.update()
+        if control and not shift:
+            # Zoom
+            bpp = self.bytesPerPixel
+            if delta < 0:
+                bpp <<= 1
+            else:
+                bpp >>= 1
+            if bpp >= 4 and bpp <= 0x10000:
+                self.bytesPerPixel = bpp
+                self.update()
+        if not (shift or control):
+            self.canvas.xview_scroll(delta, tk.UNITS)
+
+    def set_device(self, dev):
+        if self.device != dev:
+            self.device = dev
+            self.update()
+
+    def select(self):
+        id = self.editor.selected
+        if id == self.selected_id:
+            return
+        item = self.items.get(self.selected_id)
+        if item is not None:
+            self.canvas.itemconfigure(item, width=1)
+        item = self.items.get(id)
+        if item is None:
+            return
+        self.canvas.itemconfigure(item, width=3)
+        self.selected_id = id
+        # Ensure item is visible
+        pos = self.canvas.coords(item)
+        id_x1 = pos[0] / self.scroll_width
+        id_x2 = pos[2] / self.scroll_width
+        xview = self.canvas.xview()
+        if id_x1 > xview[0] and id_x1 < xview[1]:
+            return
+        if id_x2 > xview[0] and id_x2 < xview[1]:
+            return
+        if xview[0] >= id_x1 and xview[1] <= id_x2:
+            return
+        self.canvas.xview_moveto(id_x1)
+
+
+class TkTree(tk.Frame):
+    def __init__(self, parent, editor):
+        super().__init__(parent)
+        self.pack(fill=tk.BOTH)
+        self.editor = editor
+        s = ttk.Style()
+        s.configure('Treeview', font='TkFixedFont')
+        s.configure('Treeview.Heading', font='TkFixedFont', padding=4)
+        self.init()
+
+    def init(self):
+        self.headings = [
+            ("#0", "Partition"),
+            ("type", "Type"),
+            ("subtype", "Subtype"),
+            ("start", "Start"),
+            ("end", "End"),
+            ("size", "Size"),
+            ("used", "Used"),
+            ("unused", "Unused"),
+            ("filename", "Image Filename"),
+        ]
+
+        cols = [h[0] for h in self.headings[1:]]
+        tree = self.tree = ttk.Treeview(self, selectmode=tk.BROWSE, columns=cols)
+        tree.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
+
+        s = ttk.Scrollbar(self, orient=tk.VERTICAL, command=tree.yview)
+        s.pack(side=tk.RIGHT, fill=tk.Y)
+        tree['yscrollcommand'] = s.set
+
+        for (k, v) in self.headings:
+            tree.heading(k, text=v, anchor=tk.W)
+
+        def select(*args):
+            id = tree.focus()
+            if id == '':
+                return
+            obj = resolve_id(self.editor.config, id)
+            if isinstance(obj, partition.Entry):
+                self.editor.editPartition(obj)
+            elif isinstance(obj, storage.Device):
+                self.editor.editDevice(obj)
+        tree.bind('<<TreeviewSelect>>', select)
+
+    def clear(self):
+        for c in self.tree.get_children():
+            self.tree.delete(c)
+
+    def update(self):
+        config = self.editor.config
+        tree = self.tree
+        fnt = font.Font(font='TkFixedFont')
+
+        self.clear()
+
+        columnWidths = [0] * len(self.headings)
+        for i, (c, v) in enumerate(self.headings):
+            columnWidths[i] = fnt.measure(v)
+
+        def addItem(parent, id, values):
+            text = []
+            for i, (c, v) in enumerate(self.headings):
+                v = values.get(c, '')
+                if i != 0:
+                    text.append(v)
+                columnWidths[i] = max(columnWidths[i], fnt.measure(v))
+            tree.insert(parent, 'end', id, open=True, text=values['#0'], values=text)
+
+        # Devices are our root nodes
+        map = config.map()
+        for dev in config.devices:
+            def is_used(p):
+                return p.device == dev and not p.is_unused()
+            used = sum(p.size for p in filter(is_used, map))
+            values = {
+                "#0": dev.name,
+                "start": addr_format(0),
+                "end": addr_format(dev.size - 1),
+                "size": size_frac_str(dev.size),
+                "used": size_frac_str(used),
+                "unused": size_frac_str(dev.size - used),
+                "type": dev.type_str()
+            }
+            addItem('', get_id(dev), values)
+
+        # Partitions are children
+        for p in config.map():
+            used = self.editor.get_used(p)
+            values = {
+                "#0": p.name,
+                "start": p.address_str(),
+                "end": p.end_str(),
+                "size": size_frac_str(p.size),
+                "used": used.text,
+                "type": p.type_str(),
+                "subtype": p.subtype_str(),
+                "filename": p.filename
+            }
+            if used.path != '':
+                values['unused'] = size_frac_str(p.size - used.size)
+            addItem(p.device.name, get_id(p), values)
+
+        # Auto-size columns
+        columnWidths[0] += 32 # Allow for indented child items
+        for i, w in enumerate(columnWidths):
+            w += 16
+            tree.column(self.headings[i][0], stretch=False, width=w, minwidth=w)
+
+        self.select()
+
+
+    def select(self):
+        id = self.editor.selected
+        tree = self.tree
+        if tree.exists(id) and tree.focus() != id:
+            tree.focus(id)
+            tree.selection_set(id)
+
+
+class Schema(dict):
+    def __init__(self, filename):
+        with open(filename) as f:
+            self.schema = json.load(f, object_pairs_hook=OrderedDict)
+
+    def __getitem__(self, name):
+        return self.schema['definitions'][name]
 
 
 class Editor:
@@ -400,27 +766,25 @@ class Editor:
         root.title(app_name)
         self.main = root
         self.edit = None
+        self.selected = ''
         self.config_vars = load_config_vars('config.mk')
         self.config_vars.update(load_config_vars('debug.mk'))
         self.initialise()
 
     def initialise(self):
         self.main.option_add('*tearOff', False)
-        s = ttk.Style()
-        s.configure('Treeview', font='TkFixedFont')
-        s.configure('Treeview.Heading', font='TkFixedFont')
 
-        with open(os.environ['HWCONFIG_SCHEMA']) as f:
-            self.schema = json.load(f)
+        self.schema = Schema(os.environ['HWCONFIG_SCHEMA'])
 
         hwFilter = [('Hardware Profiles', '*' + HW_EXT)]
 
         # Menus
-        def fileNew(*args):
+        def fileNew():
             self.reset()
             self.reload()
+            self.editDevice(self.config.devices[0])
 
-        def fileOpen(*args):
+        def fileOpen():
             filename = filedialog.askopenfilename(
                 title='Select profile ' + HW_EXT + ' file',
                 filetypes=hwFilter,
@@ -428,7 +792,7 @@ class Editor:
             if filename != '' and checkProfilePath(filename):
                 self.loadConfig(filename)
 
-        def fileSave(*args):
+        def fileSave():
             filename = self.json['name']
             filename = filedialog.asksaveasfilename(
                 title='Save profile to file',
@@ -442,147 +806,77 @@ class Editor:
                 with open(filename, "w") as f:
                     json.dump(self.json, f, indent=4)
 
-        def editAddDevice(*args):
-            dev = storage.Device('New device')
-            self.editDevice(dev)
-
-        menubar = tk.Menu(self.main)
-        self.main['menu'] = menubar
-        menu_file = tk.Menu(menubar)
-        menubar.add_cascade(menu=menu_file, label='File')
-        menu_file.add_command(label='New...', command=fileNew)
-        menu_file.add_command(label='Open...', command=fileOpen)
-        menu_file.add_command(label='Save...', command=fileSave)
-        menu_edit = tk.Menu(menubar)
-        menubar.add_cascade(menu=menu_edit, label='Edit')
-        menu_edit.add_command(label='Add Device', command=editAddDevice)
-
         # Toolbar
         toolbar = ttk.Frame(self.main)
         toolbar.pack(side=tk.TOP, fill=tk.X)
-        btnNew = ttk.Button(toolbar, text="New", command=fileNew)
-        btnNew.grid(row=0, column=1)
-        btnOpen = ttk.Button(toolbar, text="Open...", command=fileOpen)
-        btnOpen.grid(row=0, column=2)
-        btnSave = ttk.Button(toolbar, text="Save...", command=fileSave)
-        btnSave.grid(row=0, column=3)
+        btn = ttk.Button(toolbar, text="New", command=fileNew)
+        btn.grid(row=0, column=1)
+        btn = ttk.Button(toolbar, text="Open...", command=fileOpen)
+        btn.grid(row=0, column=2)
+        btn = ttk.Button(toolbar, text="Save...", command=fileSave)
+        btn.grid(row=0, column=3)
+        sep = ttk.Separator(toolbar, orient=tk.VERTICAL)
+        sep.grid(row=0, column=4, sticky=tk.NS)
+        btn = ttk.Button(toolbar, text='Edit Config', command=self.editConfig)
+        btn.grid(row=0, column=5)
+        btn = ttk.Button(toolbar, text='Add Device', command=self.addDevice)
+        btn.grid(row=0, column=6)
 
-        # Group controls into two areas (top and bottom) which are sizeable by the user
+
+        # Group main controls into areas which can be re-sized by the user
         pwin = ttk.PanedWindow(self.main, orient=tk.VERTICAL)
         pwin.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
 
-        # Place alternate views in a tabbed area
-        self.notebook = ttk.Notebook(pwin)
-        pwin.add(self.notebook)
+        self.map = TkMap(pwin, self)
+        pwin.add(self.map)
+        self.tree = TkTree(pwin, self)
+        pwin.add(self.tree)
 
-        # Treeview for devices and partitions
 
-        f = ttk.Frame(self.notebook)
-        self.notebook.add(f, text="Tree")
-        tree = self.tree = ttk.Treeview(f, columns=['start', 'end', 'size', 'used', 'type', 'subtype', 'filename'])
-        tree.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
-
-        s = ttk.Scrollbar(f, orient=tk.VERTICAL, command=tree.yview)
-        s.pack(side=tk.RIGHT, fill=tk.Y)
-        tree['yscrollcommand'] = s.set
-
-        tree.heading('start', text='Start', anchor=tk.W)
-        tree.heading('end', text='End', anchor=tk.W)
-        tree.heading('size', text='Size', anchor=tk.W)
-        tree.heading('used', text='Used', anchor=tk.W)
-        tree.heading('type', text='Type', anchor=tk.W)
-        tree.heading('subtype', text='Sub-Type', anchor=tk.W)
-        tree.heading('filename', text='Image filename', anchor=tk.W)
-
-        def select(*args):
-            id = tree.focus()
-            if id == '':
-                return
-            item = tree.item(id)
-            if 'device' in item['tags']:
-                dev = self.device_from_id(id)
-                self.editDevice(dev)
-            else:
-                part = self.config.map().find_by_name(id)
-                if part is None:
-                    dev = self.device_from_id(tree.parent(id))
-                    addr = item['values'][0]
-                    part = self.config.map().find_by_address(dev, addr)
-                self.editPartition(part)
-        tree.bind('<<TreeviewSelect>>', select)
-
-        # map of spiFlash device
-        self.map = TkMap(self.notebook, self)
-        self.notebook.add(self.map, text = 'map')
-
-        # Lower frame
-        frame = ttk.Frame(pwin)
-        frame.pack(expand=True, fill=tk.BOTH)
-        pwin.add(frame)
-
-        frame.rowconfigure(0, weight=1)
-        frame.columnconfigure(0, weight=1)
-
-        # Base configurations
-        f = ttk.LabelFrame(frame, text = 'Base Configuration')
-        f.grid(row=0, column=0, sticky=tk.SW)
-
-        def base_config_changed(*args):
-            self.json['base_config'] = self.base_config.get()
-            self.reload()
-
-        self.base_config = tk.StringVar(value = 'standard')
-        config_list = ttk.Combobox(f,
-            textvariable = self.base_config,
-            values = list(get_config_list().keys()))
-        config_list.bind('<<ComboboxSelected>>', base_config_changed)
-        config_list.grid()
-
-        # Option checkboxes
-
-        f = ttk.LabelFrame(frame, text = 'Options')
-        f.grid(row=1, column=0, sticky=tk.NW)
-
-        def options_changed(*args):
-            self.json['options'] = []
-            for k, v in self.options.items():
-                if v.get():
-                    self.json['options'].append(k)
-            self.reload()
-
-        self.options = {}
-        for k, v in load_option_library().items():
-            self.options[k] = tk.BooleanVar()
-            btn = tk.Checkbutton(f, text = k + ': ' + v['description'],
-                command=options_changed, variable=self.options[k])
-            btn.grid(sticky=tk.W)
+        # Lower pane
+        lower = ttk.Frame(pwin)
+        pwin.add(lower)
 
         # Edit frame
-        self.editFrame = ttk.LabelFrame(frame, text='Edit Object')
-        self.editFrame.grid(row=0, column=1, rowspan=2, sticky=tk.SW)
+        frame = ttk.LabelFrame(lower, text='Edit')
+        frame.pack(anchor=tk.NW, side=tk.LEFT, fill=tk.BOTH)
+        canvas = self.editCanvas = tk.Canvas(frame, highlightthickness=0)
+        canvas.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
+        self.editFrame = ttk.Frame(canvas)
+        canvas.create_window(0, 0, window=self.editFrame, anchor=tk.NW)
+        s = self.editScroll = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=canvas.yview)
+        s.pack(side=tk.RIGHT, fill=tk.Y)
+        canvas['yscrollcommand'] = s.set
+        def configure(event):
+            canvas.config(scrollregion=(0, 0, 0, self.editFrame.winfo_height()))
+            canvas.config(width = self.editFrame.winfo_width())
+        self.editFrame.bind('<Configure>', configure)
+
 
         # JSON editor
-        jsonFrame = ttk.LabelFrame(frame, text='JSON Configuration')
-        jsonFrame.grid(row=0, column=2, rowspan=2, sticky=tk.NS)
+        frame = self.jsonFrame = ttk.LabelFrame(lower, text='JSON')
+        frame.pack(anchor=tk.NW, side=tk.LEFT, expand=True, fill=tk.BOTH)
         def apply(*args):
             try:
-                json_config = json.loads(self.jsonEditor.get('1.0', 'end'))
-                Config.from_json(json_config).verify(False)
-                self.json = json_config
-                self.updateWindowTitle()
-                self.reload()
-            except InputError as err:
+                json_config = json_loads(self.jsonEditor.get('1.0', 'end'))
+                if self.verify_config(json_config):
+                    self.set_json(json_config)
+                    self.updateWindowTitle()
+                    self.reload()
+            except Exception as err:
                 self.user_error(err)
-            except AttributeError as err:
-                self.user_error(err)
-            except ValueError as err:
-                self.user_error(err)
-        btn = ttk.Button(jsonFrame, text="Apply", command=apply)
-        btn.pack(anchor=tk.S, side=tk.BOTTOM)
-        self.jsonEditor = tk.Text(jsonFrame, height=14)
-        self.jsonEditor.pack(anchor=tk.N, side=tk.LEFT, fill=tk.BOTH)
-        s = ttk.Scrollbar(jsonFrame, orient=tk.VERTICAL, command=self.jsonEditor.yview)
-        s.pack(anchor=tk.N, side=tk.RIGHT, fill=tk.Y)
+        def undo(*args):
+            self.jsonEditor.replace('1.0', 'end', to_json(self.json))
+        f = ttk.Frame(frame)
+        f.pack(anchor=tk.S, side=tk.BOTTOM)
+        btn = ttk.Button(f, text="Apply", command=apply)
+        btn.grid(row=0, column=0)
+        btn = ttk.Button(f, text="Undo", command=undo)
+        btn.grid(row=0, column=1)
+        self.jsonEditor = tk.Text(frame, height=14)
+        self.jsonEditor.pack(anchor=tk.N, side=tk.LEFT, expand=True, fill=tk.BOTH)
+        s = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=self.jsonEditor.yview)
+        s.pack(anchor=tk.NE, side=tk.RIGHT, fill=tk.Y)
         self.jsonEditor['yscrollcommand'] = s.set
 
         # Status box
@@ -597,6 +891,11 @@ class Editor:
         messagebox.showerror(type(err).__name__, err)
 
     def getBaseConfig(self):
+        """Load the base configuration
+        """
+        return Config.from_json(self.json_base_config)
+ 
+    def getOptionBaseConfig(self):
         """Load the base configuration with currently selected options applied
         """
         return Config.from_json(self.json_base_config, self.json.get('options', []))
@@ -605,24 +904,22 @@ class Editor:
         self.reset()
         # If this is a core profile, don't edit it but create a new profile based on it
         if filename.startswith(os.environ['SMING_HOME']):
-            self.json = {}
-            self.json['name'] = 'New profile'
             config_name = os.path.splitext(os.path.basename(filename))[0]
             self.json['base_config'] = config_name
         else:
             with open(filename) as f:
-                self.json = json.loads(jsmin(f.read()))
-
-        with open(find_config(self.json['base_config'])) as f:
-            self.json_base_config = json.loads(jsmin(f.read()))
+                json_config = json_loads(f.read())
 
         options = get_dict_value(self.json, 'options', [])
         for opt in os.environ.get('HWCONFIG_OPTS', '').replace(' ', '').split():
             if not opt in options:
                 options.append(opt)
 
+        self.set_json(json_config)
+
         self.reload()
         self.updateWindowTitle()
+        self.editDevice(self.config.devices[0])
 
     def updateWindowTitle(self):
         name = self.json.get('name', None)
@@ -632,22 +929,27 @@ class Editor:
             name = '"' + name + '"'
         self.main.title(self.config.arch + ' ' + name + ' - ' + app_name)
 
-    def clear(self):
-        # TODO: Prompt to save changes
+    def verify_config(self, json_config):
+        try:
+            Config.from_json(json_config).verify(False)
+            return True
+        except Exception as err:
+            self.user_error(err)
+            return False
 
-        # Clear the tree, etc.
-        for c in self.tree.get_children():
-            self.tree.delete(c)
-        self.status.set('')
+    def set_json(self, json_config):
+        # Keep output order consistent
+        self.json = {}
+        for k in self.schema['Config']['properties'].keys():
+            if k in json_config:
+                self.json[k] = json_config[k]
 
     def reset(self):
-        self.clear()
-        self.resetEditor()
+        self.tree.clear()
+        self.map.clear()
+        self.status.set('')
         self.json = {"name": "New Profile"}
         self.json['base_config'] = 'standard'
-        self.base_config.set('standard')
-        for k, v in self.options.items():
-            v.set(False)
         self.reload()
         self.updateWindowTitle()
 
@@ -661,96 +963,91 @@ class Editor:
                 return new_path
             tmp = new_path
 
+    class Used:
+        def __init__(self):
+            self.text = ''
+            self.size = 0
+            self.path = ''
+
+    def get_used(self, part):
+        used = self.Used()
+        if part.filename != '':
+            try:
+                used.path = self.resolve_path(part.filename)
+                if os.path.exists(used.path):
+                    used.size = os.path.getsize(used.path)
+                    used.text = size_frac_str(used.size)
+                else:
+                    used.text = '(not found)'
+            except KeyError as err:
+                used.text = str(err) + ' undefined'
+        return used
+
     def reload(self):
-        self.clear()
+        with open(find_config(self.json['base_config'])) as f:
+            self.json_base_config = json_loads(f.read())
+
         self.jsonEditor.replace('1.0', 'end', to_json(self.json))
         try:
-            config = self.config = Config.from_json(self.json)
-        except InputError as err:
-            self.status.set(str(err))
+            config = Config.from_json(self.json)
+        except Exception as err:
+            self.status.set(err)
             return
 
-        self.map.update(config.devices[0])
+        self.status.set('')
+        self.config = config
 
-        # Devices are our root nodes
-        for dev in config.devices:
-            used = 0
-            for p in config.map():
-                if p.device == dev and not p.is_unused():
-                    used += p.size
-            self.tree.insert('', 'end', dev.name, text=dev.name, open=True,
-                tags = ['device'],
-                values=[addr_format(0), addr_format(dev.size - 1), dev.size_str(), percent_used(used, dev.size), dev.type_str()])
+        self.map.update()
+        self.tree.update()
 
-        # Partitions are children
-        for p in config.map():
-            if p.is_unused():
-                id = p.device.name + '/' + p.address_str()
-            else:
-                id = p.name
-
-            def get_used():
-                if p.filename == '':
-                    return ''
-                try:
-                    path = self.resolve_path(p.filename)
-                except KeyError as err:
-                    return str(err) + ' undefined'
-                if not os.path.exists(path):
-                    return '(not found)'
-                return percent_used(os.path.getsize(path), p.size)
-
-            self.tree.insert(p.device.name, 'end', id, text=p.name,
-                values=[p.address_str(), p.end_str(), p.size_str(), get_used(), p.type_str(), p.subtype_str(), p.filename])
-
-        # Base configuration
-        self.base_config.set(config.base_config)
-
-        # Options
-        for k, v in self.options.items():
-            v.set(k in config.options)
-
-        if self.edit is not None:
-            id = self.edit.name
-            if self.tree.exists(id):
-                self.tree.focus(id)
-                self.tree.selection_set(id)
-
-
-    def device_from_id(self, id):
-        item = self.tree.item(id)
-        if 'device' in item['tags']:
-            return self.config.devices.find_by_name(item['text'])
+    def select(self, obj):
+        self.selected = get_id(obj)
+        if isinstance(obj, partition.Entry):
+            self.map.set_device(obj.device)
         else:
-            return None
+            self.map.set_device(obj)
+        self.map.select()
+        self.tree.select()
 
-    def updateEditTitle(self):
-        self.editFrame.configure(text="Edit %s '%s'" % (self.edit.objectType, self.edit.name))
+    def is_editing(self, obj):
+        return getattr(self.edit, 'obj', None) == obj
 
-    def resetEditor(self):
-        self.edit = None
-        f = self.editFrame
-        for c in f.winfo_children():
-            c.destroy()
-        self.editFrame.configure(text='')
-        return f
+    def editConfig(self):
+        if self.is_editing(self.config):
+            return
+        enumDict = {}
+        enumDict['base_config'] = list(get_config_list().keys())
+        optionlib = load_option_library()
+        options = {}
+        for k, v in optionlib.items():
+            options[k] = v['description']
+        enumDict['options'] = options
+        self.edit = EditState(self, 'Config', None, self.config, enumDict)
+
+    def addDevice(self):
+        dev = storage.Device('New device')
+        self.editDevice(dev)
 
     def editDevice(self, dev):
+        if isinstance(dev, str):
+            dev = self.config.devices.find_by_name(dev)
+        if self.is_editing(dev):
+            return
+        self.select(dev)
         enumDict = {}
         enumDict['type'] = list((storage.TYPES).keys())
-        self.resetEditor()
         self.edit = EditState(self, 'Device', 'devices', dev, enumDict)
-        self.updateEditTitle()
-
 
     def editPartition(self, part):
+        if isinstance(part, str):
+            part = self.config.partitions.find_by_name(part)
+        if self.is_editing(part):
+            return
+        self.select(part)
         enumDict = {}
-        enumDict['device'] = [dev.name for dev in self.config.devices]
         enumDict['type'] = list((partition.TYPES).keys() - ['storage', 'internal'])
         enumDict['subtype'] = []
-        self.resetEditor()
         self.edit = EditState(self, 'Partition', 'partitions', part, enumDict)
-        self.updateEditTitle()
 
 
 def main():

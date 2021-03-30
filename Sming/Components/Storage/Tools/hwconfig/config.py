@@ -29,7 +29,7 @@ def get_config_list():
     list = {}
     dirs = get_config_dirs()
     for d in reversed(dirs):
-        for f in os.listdir(d):
+        for f in os.listdir(fixpath(d)):
             if f.endswith(HW_EXT):
                 n = os.path.splitext(f)[0]
                 list[n] = d + '/' + f
@@ -119,18 +119,17 @@ class Config(object):
         partitions = data.pop('partitions', None)
 
         for k, v in data.items():
-            if k == 'name':
-                self.name = v
-            elif k == 'arch':
+            if k == 'arch':
                 self.arch = v
             elif k == 'partition_table_offset':
                 self.partitions.offset = v
             elif k == 'devices':
                 self.devices.parse_dict(v)
-            elif k == 'comment':
-                self.comment = v
-            else:
+            elif k != 'name' and k != 'comment':
                 raise InputError("Unknown config key '%s'" % k)
+
+        self.name = data.get('name', '')
+        self.comment = data.get('comment', '')
 
         if not partitions is None:
             self.partitions.parse_dict(partitions, self.devices)
@@ -142,6 +141,7 @@ class Config(object):
         if hasattr(self, 'comment'):
             res['comment'] = self.comment
         res['arch'] = self.arch;
+        res['options'] = self.options
         res['partition_table_offset'] = self.partitions.offset_str()
         res['devices'] = self.devices.dict()
         res['partitions'] = self.partitions.dict()
