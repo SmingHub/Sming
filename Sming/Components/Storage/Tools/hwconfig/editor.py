@@ -218,13 +218,12 @@ class EditState(dict):
                     c.configure(postcommand=set_subtype_values)
         self[fieldName] = Field(var, c)
 
-        if fieldName == 'name':
-            # Name is read-only for inherited devices/partitions
-            if self.is_inherited:
-                disabled = self.is_inherited
+        # Name is read-only for inherited devices/partitions
+        if fieldName == 'name' and self.is_inherited:
+            disabled = True
         # Internal 'partitions' are generally not editable, but make an exception to allow
         # creation of new partitions (on an 'unused' type) or changing the partition table offset
-        if self.objectType == 'Partition' and self.is_inherited and self.obj.is_internal() and not self.obj.is_unused():
+        elif self.objectType == 'Partition' and self.is_inherited and self.obj.is_internal() and not self.obj.is_unused():
             if not (self.obj.is_internal(partition.INTERNAL_PARTITION_TABLE) and fieldName == 'address'):
                 disabled = True
         if disabled:
