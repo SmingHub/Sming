@@ -3,6 +3,7 @@ from common import *
 from config import *
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, font
+from collections import OrderedDict
 
 app_name = 'Sming Hardware Profile Editor'
 
@@ -66,6 +67,9 @@ def resolve_id(config, id):
     part = config.map().find_by_name(id)
     if part is not None:
         return part
+
+def json_loads(s):
+    return json.loads(jsmin(s), object_pairs_hook=OrderedDict)
 
 class Field:
     """Manages widget and associated variable
@@ -186,7 +190,7 @@ class EditState(dict):
             elif fieldType == 'array':
                 c = ttk.Frame(frame)
                 def array_changed(fieldName, key, var):
-                    values = set(json.loads(var.get()))
+                    values = set(json_loads(var.get()))
                     if self.array[fieldName][key].get():
                         values.add(key)
                     else:
@@ -270,7 +274,7 @@ class EditState(dict):
                     if k in obj:
                         del obj[k]
                 elif fieldType == 'object' or fieldType == 'array':
-                    obj[k] = {} if value == '' else json.loads(value)
+                    obj[k] = {} if value == '' else json_loads(value)
                 elif fieldType == 'boolean':
                     obj[k] = (value != '0')
                 elif value.isdigit() and 'integer' in fieldType:
@@ -639,26 +643,27 @@ class TkTree(tk.Frame):
         self.init()
 
     def init(self):
-        self.headings = {
-            "#0": "Partition",
-            "type": "Type",
-            "subtype": "Subtype",
-            "start": "Start",
-            "end": "End",
-            "size": "Size",
-            "used": "Used",
-            "unused": "Unused",
-            "filename": "Image Filename"
-        }
+        self.headings = [
+            ("#0", "Partition"),
+            ("type", "Type"),
+            ("subtype", "Subtype"),
+            ("start", "Start"),
+            ("end", "End"),
+            ("size", "Size"),
+            ("used", "Used"),
+            ("unused", "Unused"),
+            ("filename", "Image Filename"),
+        ]
 
-        tree = self.tree = ttk.Treeview(self, selectmode=tk.BROWSE, columns=list(self.headings.keys())[1:])
+        cols = [h[0] for h in self.headings[1:]]
+        tree = self.tree = ttk.Treeview(self, selectmode=tk.BROWSE, columns=cols)
         tree.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
 
         s = ttk.Scrollbar(self, orient=tk.VERTICAL, command=tree.yview)
         s.pack(side=tk.RIGHT, fill=tk.Y)
         tree['yscrollcommand'] = s.set
 
-        for k, v in self.headings.items():
+        for (k, v) in self.headings:
             tree.heading(k, text=v, anchor=tk.W)
 
         def select(*args):
@@ -683,19 +688,17 @@ class TkTree(tk.Frame):
 
         self.clear()
 
-        columnWidths = {}
-        for c, v in self.headings.items():
-            columnWidths[c] = fnt.measure(v)
+        columnWidths = [0] * len(self.headings)
+        for i, (c, v) in enumerate(self.headings):
+            columnWidths[i] = fnt.measure(v)
 
         def addItem(parent, id, values):
             text = []
-            i = 0
-            for c, w in columnWidths.items():
+            for i, (c, v) in enumerate(self.headings):
                 v = values.get(c, '')
                 if i != 0:
                     text.append(v)
-                columnWidths[c] = max(w, fnt.measure(v))
-                i += 1
+                columnWidths[i] = max(columnWidths[i], fnt.measure(v))
             tree.insert(parent, 'end', id, open=True, text=values['#0'], values=text)
 
         # Devices are our root nodes
@@ -733,10 +736,10 @@ class TkTree(tk.Frame):
             addItem(p.device.name, get_id(p), values)
 
         # Auto-size columns
-        columnWidths['#0'] += 32 # Allow for indented child items
-        for c, w in columnWidths.items():
+        columnWidths[0] += 32 # Allow for indented child items
+        for i, w in enumerate(columnWidths):
             w += 16
-            tree.column(c, stretch=False, width=w, minwidth=w)
+            tree.column(self.headings[i][0], stretch=False, width=w, minwidth=w)
 
         self.select()
 
@@ -752,7 +755,7 @@ class TkTree(tk.Frame):
 class Schema(dict):
     def __init__(self, filename):
         with open(filename) as f:
-            self.schema = json.load(f)
+            self.schema = json.load(f, object_pairs_hook=OrderedDict)
 
     def __getitem__(self, name):
         return self.schema['definitions'][name]
@@ -855,7 +858,7 @@ class Editor:
         frame.pack(anchor=tk.NW, side=tk.LEFT, expand=True, fill=tk.BOTH)
         def apply(*args):
             try:
-                json_config = json.loads(self.jsonEditor.get('1.0', 'end'))
+                json_config = json_loads(self.jsonEditor.get('1.0', 'end'))
                 if self.verify_config(json_config):
                     self.set_json(json_config)
                     self.updateWindowTitle()
@@ -905,7 +908,7 @@ class Editor:
             self.json['base_config'] = config_name
         else:
             with open(filename) as f:
-                json_config = json.loads(jsmin(f.read()))
+                json_config = json_loads(f.read())
 
         options = get_dict_value(self.json, 'options', [])
         for opt in os.environ.get('HWCONFIG_OPTS', '').replace(' ', '').split():
@@ -982,7 +985,7 @@ class Editor:
 
     def reload(self):
         with open(find_config(self.json['base_config'])) as f:
-            self.json_base_config = json.loads(jsmin(f.read()))
+            self.json_base_config = json_loads(f.read())
 
         self.jsonEditor.replace('1.0', 'end', to_json(self.json))
         try:
