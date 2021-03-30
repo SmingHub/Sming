@@ -10,7 +10,7 @@ HW_EXT = '.hw'
 
 def get_config_dirs():
     s = os.environ['HWCONFIG_DIRS']
-    dirs = s.replace('  ', ' ').split(' ')
+    dirs = s.strip().replace('  ', ' ').split(' ')
     return dirs
 
 def load_option_library():
@@ -19,9 +19,22 @@ def load_option_library():
     for d in dirs:
         filename = fixpath(d) + '/options.json'
         if os.path.exists(filename):
-            with open(filename) as f:
-                data = json_loads(f.read())
-                library.update(data)
+            data = json_load(filename)
+            library.update(data)
+    return library
+
+def load_build_library():
+    library = {}
+    s = os.environ['HWCONFIG_BUILDSPECS']
+    s = s.strip().replace('  ', ' ')
+    if len(s) != 0:
+        for f in s.split(' '):
+            data = json_load(fixpath(f))
+            for k, v in data.items():
+                props = v['properties']
+                props['target'] = {'type': 'string'}
+                props.move_to_end('target', False)
+            library.update(data)
     return library
 
 def get_config_list():
@@ -60,6 +73,8 @@ class Schema(dict):
         properties = self['Partition']['properties']
         properties['type']['enum'] = list((partition.TYPES).keys() - ['storage', 'internal'])
         properties['subtype']['enum'] = []
+        builders = load_build_library()
+        properties['build']['enum'] = list(builders.keys())
 
 
     def __getitem__(self, name):

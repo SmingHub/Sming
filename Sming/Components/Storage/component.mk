@@ -27,6 +27,7 @@ $(error Hardware configuration '$(HWCONFIG)' not found)
 endif
 endif
 
+HWCONFIG_BUILDSPECS :=
 PARTITION_PATH		:= $(COMPONENT_PATH)
 PARTITION_TOOLS		:= $(PARTITION_PATH)/Tools
 HWCONFIG_SCHEMA		:= $(PARTITION_PATH)/schema.json
@@ -35,12 +36,13 @@ HWCONFIG_VARS := \
 	OUT_BASE \
 	HWCONFIG_DIRS \
 	HWCONFIG_OPTS \
+	HWCONFIG_BUILDSPECS \
 	HWCONFIG_SCHEMA
-HWCONFIG_EXPORTS	:= $(foreach v,$(HWCONFIG_VARS),$v="$($v)")
+HWCONFIG_EXPORTS	= $(foreach v,$(HWCONFIG_VARS),$v="$($v)")
 HWCONFIG_CMDLINE	:= $(PYTHON) $(PARTITION_TOOLS)/hwconfig
-HWCONFIG_TOOL		:= $(HWCONFIG_EXPORTS) $(HWCONFIG_CMDLINE)/hwconfig.py
+HWCONFIG_TOOL		= $(HWCONFIG_EXPORTS) $(HWCONFIG_CMDLINE)/hwconfig.py
 
-HWCONFIG_EDITOR		:= $(HWCONFIG_EXPORTS) $(HWCONFIG_CMDLINE)/editor.py $(HWCONFIG)
+HWCONFIG_EDITOR		= $(HWCONFIG_EXPORTS) $(HWCONFIG_CMDLINE)/editor.py $(HWCONFIG)
 
 # When using WSL without an X server available, use native Windows python
 ifdef WSL_ROOT
@@ -48,7 +50,7 @@ ifndef DISPLAY
 space :=
 space +=
 WSLENV := $(WSLENV)$(subst $(space),,$(foreach v,$(HWCONFIG_VARS),::$v))
-HWCONFIG_EDITOR		:= $(HWCONFIG_EXPORTS) powershell.exe -Command "$(HWCONFIG_CMDLINE)/editor.py $(HWCONFIG)"
+HWCONFIG_EDITOR		= $(HWCONFIG_EXPORTS) powershell.exe -Command "$(HWCONFIG_CMDLINE)/editor.py $(HWCONFIG)"
 endif
 endif
 
