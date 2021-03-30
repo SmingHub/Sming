@@ -194,7 +194,10 @@ class EditState(dict):
                         values.discard(key)
                     var.set(json.dumps(list(values)))
                 elements = self.array[fieldName] = {}
-                for k, v in values.items():
+                keys = list(values.keys())
+                keys.sort()
+                for k in keys:
+                    v = values[k]
                     elements[k] = tk.BooleanVar(value=k in getattr(self.obj, fieldName))
                     btn = tk.Checkbutton(c, text = k + ': ' + v,
                         command=lambda *args, fieldName=fieldName, key=k, var=var: array_changed(fieldName, key, var),
@@ -204,13 +207,15 @@ class EditState(dict):
                     if base is not None and k in base:
                         btn.configure(state='disabled')
             else:
+                values.sort()
                 c = ttk.Combobox(frame, values=values, textvariable=var)
                 if fieldName == 'subtype':
                     def set_subtype_values():
                         t = self['type'].get_value()
-                        t = partition.TYPES[t]
-                        values = partition.SUBTYPES.get(t, [])
-                        c.configure(values=list(values))
+                        t = partition.TYPES.get(t)
+                        subtypes = list(partition.SUBTYPES.get(t, []))
+                        subtypes.sort()
+                        c.configure(values=subtypes)
                     c.configure(postcommand=set_subtype_values)
         self[fieldName] = Field(var, c)
 
