@@ -153,6 +153,8 @@ class EditState(dict):
         if self.allow_delete:
             btn = ttk.Button(f, text='Delete', command=lambda *args: self.delete())
             btn.grid(row=0, column=2)
+        self.editor.sizeEdit()
+
 
     def addControl(self, fieldName):
         schema = self.get_property(fieldName)
@@ -838,7 +840,6 @@ class Editor:
         canvas['yscrollcommand'] = s.set
         def configure(event):
             canvas.config(scrollregion=(0, 0, 0, self.editFrame.winfo_height()))
-            canvas.config(width = self.editFrame.winfo_width())
         self.editFrame.bind('<Configure>', configure)
 
 
@@ -862,7 +863,7 @@ class Editor:
         btn.grid(row=0, column=0)
         btn = ttk.Button(f, text="Undo", command=undo)
         btn.grid(row=0, column=1)
-        self.jsonEditor = tk.Text(frame, height=14)
+        self.jsonEditor = tk.Text(frame, width=10, height=14)
         self.jsonEditor.pack(anchor=tk.N, side=tk.LEFT, expand=True, fill=tk.BOTH)
         s = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=self.jsonEditor.yview)
         s.pack(anchor=tk.NE, side=tk.RIGHT, fill=tk.Y)
@@ -874,6 +875,11 @@ class Editor:
         status.pack(side=tk.BOTTOM, fill=tk.X)
 
         self.reset()
+
+    def sizeEdit(self):
+        self.main.update_idletasks()
+        w = self.editFrame.winfo_width()
+        self.editCanvas.config(width=w+8)
 
     def user_error(self, err):
         self.status.set(err)
