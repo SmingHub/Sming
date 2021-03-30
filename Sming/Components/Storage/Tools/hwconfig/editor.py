@@ -64,9 +64,7 @@ def resolve_id(config, id):
     dev = config.devices.find_by_name(id)
     if dev is not None:
         return dev
-    part = config.map().find_by_name(id)
-    if part is not None:
-        return part
+    return config.map().find_by_name(id)
 
 class Field:
     """Manages widget and associated variable
@@ -1007,6 +1005,12 @@ class Editor:
     def editConfig(self):
         if self.is_editing(self.config):
             return
+        # If we're editing a new device, for example, cancel it
+        id = self.tree.tree.focus()
+        if id != self.selected:
+            obj = resolve_id(self.config, id)
+            if obj is not None:
+                self.select(obj)
         enumDict = {}
         enumDict['base_config'] = list(get_config_list().keys())
         optionlib = load_option_library()
