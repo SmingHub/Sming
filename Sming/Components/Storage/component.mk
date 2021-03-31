@@ -27,7 +27,9 @@ $(error Hardware configuration '$(HWCONFIG)' not found)
 endif
 endif
 
+ifndef HWCONFIG_BUILDSPECS
 HWCONFIG_BUILDSPECS :=
+endif
 PARTITION_PATH		:= $(COMPONENT_PATH)
 PARTITION_TOOLS		:= $(PARTITION_PATH)/Tools
 HWCONFIG_SCHEMA		:= $(PARTITION_PATH)/schema.json
