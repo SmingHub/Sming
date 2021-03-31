@@ -15,12 +15,17 @@
 #include "Data/Stream/MemoryDataStream.h"
 #include "Data/Stream/FileStream.h"
 
-HttpResponse* HttpResponse::setCookie(const String& name, const String& value)
+HttpResponse* HttpResponse::setCookie(const String& name, const String& value, bool append)
 {
 	String s = name;
 	s += '=';
 	s += value;
-	headers[HTTP_HEADER_SET_COOKIE] = s;
+	if(append) {
+		headers.append(HTTP_HEADER_SET_COOKIE, s);
+	} else {
+		headers[HTTP_HEADER_SET_COOKIE] = s;
+	}
+
 	return this;
 }
 
@@ -56,22 +61,40 @@ bool HttpResponse::sendString(String&& text) noexcept
 	return true;
 }
 
-bool HttpResponse::sendFile(const String& fileName, bool allowGzipFileCheck)
+bool HttpResponse::sendFile(const FileStat& stat)
 {
-	IDataSourceStream* stream = nullptr;
-	String compressed = fileName + ".gz";
-	if(allowGzipFileCheck && fileExist(compressed)) {
-		debug_d("found %s", compressed.c_str());
-		stream = new FileStream(compressed);
-		headers[HTTP_HEADER_CONTENT_ENCODING] = _F("gzip");
-	} else if(fileExist(fileName)) {
-		debug_d("found %s", fileName.c_str());
-		stream = new FileStream(fileName);
+	auto file = new FileStream(stat);
+	if(stat.compression.type == IFS::Compression::Type::GZip) {
+		headers[HTTP_HEADER_CONTENT_ENCODING] = F("gzip");
+	} else if(stat.compression.type != IFS::Compression::Type::None) {
+		debug_e("Unsupported compression type: %u", stat.compression);
 	}
 
-	headers[HTTP_HEADER_CONTENT_TYPE] = ContentType::fromFullFileName(fileName);
+	return sendDataStream(file, ContentType::fromFullFileName(stat.name));
+}
 
-	return sendNamedStream(stream);
+bool HttpResponse::sendFile(const String& fileName, bool allowGzipFileCheck)
+{
+	FileStat stat;
+
+	if(allowGzipFileCheck) {
+		String fnCompressed = fileName + _F(".gz");
+		if(fileStats(fnCompressed, stat) >= 0) {
+			debug_d("found %s", stat.name);
+			stat.compression.type = IFS::Compression::Type::GZip;
+			stat.name = IFS::NameBuffer(const_cast<String&>(fileName));
+			return sendFile(stat);
+		}
+	}
+
+	if(fileStats(fileName, stat) >= 0) {
+		debug_d("found %s", fileName.c_str());
+		stat.name = IFS::NameBuffer(const_cast<String&>(fileName));
+		return sendFile(stat);
+	}
+
+	code = HTTP_STATUS_NOT_FOUND;
+	return false;
 }
 
 bool HttpResponse::sendNamedStream(IDataSourceStream* newDataStream)

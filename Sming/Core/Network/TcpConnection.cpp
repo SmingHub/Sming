@@ -89,15 +89,16 @@ bool TcpConnection::connect(const String& server, int port, bool useSsl)
 		int port;
 	};
 	DnsLookup* look = new DnsLookup{this, port};
-	err_t dnslook = dns_gethostbyname(server.c_str(), &addr,
-									  [](const char* name, LWIP_IP_ADDR_T* ipaddr, void* arg) {
-										  auto dlook = static_cast<DnsLookup*>(arg);
-										  if(dlook != nullptr) {
-											  dlook->con->internalOnDnsResponse(name, ipaddr, dlook->port);
-											  delete dlook;
-										  }
-									  },
-									  look);
+	err_t dnslook = dns_gethostbyname(
+		server.c_str(), &addr,
+		[](const char* name, LWIP_IP_ADDR_T* ipaddr, void* arg) {
+			auto dlook = static_cast<DnsLookup*>(arg);
+			if(dlook != nullptr) {
+				dlook->con->internalOnDnsResponse(name, ipaddr, dlook->port);
+				delete dlook;
+			}
+		},
+		look);
 	if(dnslook == ERR_INPROGRESS) {
 		// Operation pending - see internalOnDnsResponse()
 		return true;

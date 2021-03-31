@@ -127,6 +127,13 @@ To switch to a different build architecture, for example:
 
 To inspect the current build configuration, type ``make list-config``.
 
+Hardware configuration
+~~~~~~~~~~~~~~~~~~~~~~
+
+The appropriate hardware configuration should be selected in the
+project's component.mk file. Use one of the standard configurations
+or create your own. See :ref:`hardware_config`.
+
 Configuration variables
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -140,7 +147,7 @@ sessions, and will override any values set in your project’s
 
 -  Type ``make SPIFF_BIN=test-rom`` to build the project and (if
    enabled) create a SPIFFS image file called ``test-rom.bin``
--  Type ``make flash COM_PORT=COM4 SPI_MODE=dio SPI_SIZE=4M`` to flash
+-  Type ``make flash COM_PORT=COM4`` to flash
    the project and ``test-rom`` SPIFFS image using the provided flash
    memory settings
 -  Next time you type ``make flash``, the same settings will be used, no
@@ -149,7 +156,7 @@ sessions, and will override any values set in your project’s
 A separate cache is maintained for each build type (arch +
 release/debug). For example:
 
--  Type ``make SMING_RELASE=1 list-config`` to switch to release build
+-  Type ``make SMING_RELEASE=1 list-config`` to switch to release build
    and display the active configuration
 
 Type ``make config-clean`` to clear all caches and revert to defaults.
@@ -686,10 +693,8 @@ clean and easy to follow.
 
 Components can be rebuilt and cleaned individually. For example:
 
--  ``make spiffs-build`` runs the Component ‘make’ for spiffs, which
-   contains the spiffs library and spiffy tool.
--  ``make spiffs-clean`` removes all intermediate build files for the
-   Component
+-  ``make spiffs-build`` runs the Component ‘make’ for spiffs, which contains the SPIFFS library.
+-  ``make spiffs-clean`` removes all intermediate build files for the Component
 -  ``make spiffs-rebuild`` cleans and then re-builds the Component
 
 By default, a regular ``make`` performs an incremental build on the

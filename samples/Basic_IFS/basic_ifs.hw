@@ -1,0 +1,17 @@
+{
+    "name": "Basic IFS sample",
+    "base_config": "spiffs",
+    "partitions": {
+        "fwfs1": {
+            "address": "0x280000",
+            "size": "0x60000",
+            "type": "data",
+            "subtype": "fwfs",
+            "filename": "out/fwfs1.bin",
+            "build": {
+                "target": "fwfs-build",
+                "config": "fsimage.fwfs"
+            }
+        }
+    }
+}

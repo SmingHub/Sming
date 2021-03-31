@@ -17,7 +17,7 @@ class FtpDataRetrieve : public FtpDataStream
 {
 public:
 	FtpDataRetrieve(FtpServerConnection& connection, const String& fileName)
-		: FtpDataStream(connection), file(fileOpen(fileName, eFO_ReadOnly))
+		: FtpDataStream(connection), file(fileOpen(fileName, File::ReadOnly))
 	{
 	}
 

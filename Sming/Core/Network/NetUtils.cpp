@@ -13,13 +13,17 @@
 #include <Data/CStringArray.h>
 #include <WString.h>
 
+namespace
+{
 #ifdef FIX_NETWORK_ROUTING
-bool NetUtils::ipClientRoutingFixed = false;
+bool ipClientRoutingFixed{false};
 #endif
 
-/// HELPERS ///
+} // namespace
 
-int NetUtils::pbufFindChar(const pbuf* buf, char wtf, unsigned startPos)
+namespace NetUtils
+{
+int pbufFindChar(const pbuf* buf, char wtf, unsigned startPos)
 {
 	unsigned ofs = 0;
 
@@ -48,7 +52,7 @@ int NetUtils::pbufFindChar(const pbuf* buf, char wtf, unsigned startPos)
 	return -1;
 }
 
-bool NetUtils::pbufIsStrEqual(const pbuf* buf, const char* compared, unsigned startPos)
+bool pbufIsStrEqual(const pbuf* buf, const char* compared, unsigned startPos)
 {
 	unsigned cur = startPos;
 
@@ -78,7 +82,7 @@ bool NetUtils::pbufIsStrEqual(const pbuf* buf, const char* compared, unsigned st
 	return true;
 }
 
-int NetUtils::pbufFindStr(const pbuf* buf, const char* wtf, unsigned startPos)
+int pbufFindStr(const pbuf* buf, const char* wtf, unsigned startPos)
 {
 	if(wtf == nullptr) {
 		return -1;
@@ -100,7 +104,7 @@ int NetUtils::pbufFindStr(const pbuf* buf, const char* wtf, unsigned startPos)
 	return -1;
 }
 
-char* NetUtils::pbufAllocateStrCopy(const pbuf* buf, unsigned startPos, unsigned length)
+char* pbufAllocateStrCopy(const pbuf* buf, unsigned startPos, unsigned length)
 {
 	char* stringPtr = new char[length + 1];
 	if(stringPtr == nullptr) {
@@ -111,7 +115,7 @@ char* NetUtils::pbufAllocateStrCopy(const pbuf* buf, unsigned startPos, unsigned
 	return stringPtr;
 }
 
-String NetUtils::pbufStrCopy(const pbuf* buf, unsigned startPos, unsigned length)
+String pbufStrCopy(const pbuf* buf, unsigned startPos, unsigned length)
 {
 	char* stringPtr = new char[length + 1];
 	if(stringPtr == nullptr) {
@@ -125,7 +129,7 @@ String NetUtils::pbufStrCopy(const pbuf* buf, unsigned startPos, unsigned length
 }
 
 #ifdef FIX_NETWORK_ROUTING
-bool NetUtils::FixNetworkRouting()
+bool FixNetworkRouting()
 {
 	if(ipClientRoutingFixed) {
 		return true;
@@ -187,9 +191,11 @@ static void debugPrintTcp(const char* type, const struct tcp_pcb* pcb)
 	}
 }
 
-void NetUtils::debugPrintTcpList()
+void debugPrintTcpList()
 {
 	debugPrintTcp(_F("Active"), tcp_active_pcbs);
 	debugPrintTcp(_F("Listen"), tcp_listen_pcbs.pcbs);
 	debugPrintTcp(_F("TIME-WAIT"), tcp_tw_pcbs);
 }
+
+} // namespace NetUtils

@@ -49,6 +49,10 @@
 	path = Sming/Components/http-parser
 	url = https://github.com/nodejs/http-parser.git
 	ignore = dirty
+[submodule "IFS"]
+	path = Sming/Components/IFS
+	url = https://github.com/mikee47/IFS.git
+	ignore = dirty
 [submodule "libyuarel"]
 	path = Sming/Components/libyuarel
 	url = https://github.com/jacketizer/libyuarel.git
@@ -59,7 +63,7 @@
 	ignore = dirty
 [submodule "rboot"]
 	path = Sming/Components/rboot/rboot
-	url = https://github.com/raburton/rboot.git
+	url = https://github.com/mikee47/rboot
 	ignore = dirty
 [submodule "spiffs"]
 	path = Sming/Components/spiffs/spiffs
@@ -89,7 +93,7 @@
 	ignore = dirty
 [submodule "Esp8266.lwip2"]
 	path = Sming/Arch/Esp8266/Components/lwip2/lwip2
-	url = https://github.com/d-a-v/esp82xx-nonos-linklayer.git
+	url = https://github.com/mikee47/esp82xx-nonos-linklayer.git
 	ignore = dirty
 [submodule "Esp8266.new-pwm"]
 	path = Sming/Arch/Esp8266/Components/driver/new-pwm
@@ -187,6 +191,14 @@
 	path = Sming/Libraries/DHTesp
 	url = https://github.com/beegee-tokyo/DHTesp.git
 	ignore = dirty
+[submodule "Libraries.flatbuffers"]
+	path = Sming/Libraries/flatbuffers/src
+	url = https://github.com/google/flatbuffers.git
+ 	ignore = dirty       
+[submodule "Libraries.GoogleCast"]
+	path = Sming/Libraries/GoogleCast
+	url = https://github.com/slaff/Sming-GoogleCast.git
+	ignore = dirty
 [submodule "Libraries.HardwareSPI"]
 	path = Sming/Libraries/HardwareSPI
 	url = https://github.com/mikee47/HardwareSPI
@@ -207,6 +219,10 @@
 	path = Sming/Libraries/libsodium/libsodium
 	url = https://github.com/jedisct1/libsodium.git
 	ignore = dirty
+[submodule "Libraries.MDNS"]
+	path = Sming/Libraries/MDNS
+	url = https://github.com/mikee47/Sming-MDNS
+	ignore = dirty
 [submodule "Libraries.modbusino"]
 	path = Sming/Libraries/modbusino/modbusino
 	url = https://github.com/kmihaylov/modbusino.git
@@ -222,6 +238,10 @@
 [submodule "Libraries.multipart-parser"]
 	path = Sming/Libraries/MultipartParser/multipart-parser
 	url = https://github.com/iafonov/multipart-parser-c.git
+	ignore = dirty
+[submodule "Libraries.nanopb"]
+	path = Sming/Libraries/nanopb/nanopb
+	url = https://github.com/nanopb/nanopb.git
 	ignore = dirty
 [submodule "Libraries.RapidXML"]
 	path = Sming/Libraries/RapidXML

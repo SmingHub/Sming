@@ -66,6 +66,11 @@ public:
 		return writePos - readPos;
 	}
 
+	size_t getCapacity() const
+	{
+		return capacity;
+	}
+
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
 	int seekFrom(int offset, SeekOrigin origin) override;

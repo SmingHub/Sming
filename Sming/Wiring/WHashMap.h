@@ -30,6 +30,7 @@
 
 #include <cstdint>
 #include <iterator>
+#include <cstdlib>
 
 /**
  * @brief HashMap class template

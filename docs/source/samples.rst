@@ -11,3 +11,6 @@ of the framework. Some are related to specific :doc:`libraries`.
    :titlesonly:
 
    /_inc/samples/*/index
+   /_inc/Sming/Components/*/samples/*/index
+   /_inc/Sming/Libraries/*/samples/*/index
+

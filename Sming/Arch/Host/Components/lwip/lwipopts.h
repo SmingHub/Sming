@@ -322,8 +322,6 @@
  * transport.
  */
 #define LWIP_DNS                        LWIP_UDP
-#define LWIP_MDNS_RESPONDER             LWIP_UDP
-#define LWIP_NUM_NETIF_CLIENT_DATA      LWIP_MDNS_RESPONDER
 
 /*
    ---------------------------------
@@ -381,6 +379,9 @@
  * LWIP_HAVE_LOOPIF==1: Support loop interface (127.0.0.1) and loopif.c
  */
 #define LWIP_HAVE_LOOPIF                0
+
+// Enable loopback on interfaces
+#define LWIP_NETIF_LOOPBACK             1
 
 /*
    ----------------------------------------------

@@ -100,7 +100,11 @@ public:
 			basket -= Fruit::orange;
 			REQUIRE(basket.value() == (_BV(Fruit::banana) | _BV(Fruit::tomato)));
 
+			basket |= Fruit::kiwi;
+			REQUIRE(basket.value() == (_BV(Fruit::kiwi) | _BV(Fruit::banana) | _BV(Fruit::tomato)));
+
 			basket &= fixedBasket;
+			REQUIRE(basket.value() == (_BV(Fruit::banana) | _BV(Fruit::tomato)));
 
 			basket = ~fixedBasket;
 			debug_e("basket.value = 0x%08x", basket.value());
@@ -139,6 +143,13 @@ public:
 
 			REQUIRE(sizeof(large) == 8);
 			REQUIRE(large.domain().value() == 0x7FFFFFFFFULL);
+		}
+
+		TEST_CASE("toString")
+		{
+			REQUIRE(toString(12) == "12");
+			REQUIRE(toString(12345678) == "12345678");
+			REQUIRE(toString(12345678912345ULL) == "12345678912345");
 		}
 	}
 };

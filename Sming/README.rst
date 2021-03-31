@@ -18,7 +18,7 @@ Serial Communications
 
    This will recompile your application to use the revised baud rate.
    Note that this will change the default speed used for both flashing and serial comms.
-   See also :component-esp8266:`esptool` and :component:`terminal` for further details.
+   See also :component:`esptool` and :component:`terminal` for further details.
 
 The default rate for serial ports is 115200 baud. You can change it like this::
 

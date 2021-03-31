@@ -46,13 +46,14 @@ CUSTOM_TARGETS			+= include/ssl/private_key.h
 
 SSL_TOOLS_PATH			:= $(COMPONENT_PATH)/Tools
 SSL_INCLUDE_DIR			:= $(PROJECT_DIR)/include/ssl
-SSL_CERT_DIR			:= $(PROJECT_DIR)/cert
+OUT_SSL                         := out/ssl/
+SSL_CERT_DIR			:= $(OUT_SSL)/cert
 
 include/ssl/private_key.h:
 	$(info Generating unique certificate and key. This may take some time...)
 	$(Q) mkdir -p $(SSL_INCLUDE_DIR) $(SSL_CERT_DIR)
 	$(Q) chmod a+x $(SSL_TOOLS_PATH)/make_certs.sh
-	cd $(SSL_CERT_DIR); SSL_INCLUDE_DIR=$(SSL_INCLUDE_DIR) $(SSL_TOOLS_PATH)/make_certs.sh
+	$(Q) cd $(SSL_CERT_DIR); SSL_INCLUDE_DIR=$(SSL_INCLUDE_DIR) $(SSL_TOOLS_PATH)/make_certs.sh
 
 endif
 

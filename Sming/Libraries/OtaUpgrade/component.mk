@@ -96,7 +96,7 @@ OTA_DATE_REF := -2208988800000LL
 _ota-make-build-timestamp: | $(OTA_GENCODE_DIR)
 	$(Q) echo '#include <FakePgmSpace.h>' > $(OTA_BUILD_TIMESTAMP_SRC)
 	$(Q) echo 'namespace OtaUpgrade {' >> $(OTA_BUILD_TIMESTAMP_SRC)
-	$(Q) echo 'extern const uint64_t BuildTimestamp PROGMEM = $(shell date +%s%3NLL) - $(OTA_DATE_REF);' >> $(OTA_BUILD_TIMESTAMP_SRC)
+	$(Q) echo 'extern const uint64_t BuildTimestamp PROGMEM = $(shell $(PYTHON) -c "import time; print('%uLL' % (1000 * time.time()))") - $(OTA_DATE_REF);' >> $(OTA_BUILD_TIMESTAMP_SRC)
 	$(Q) echo '} // namespace OtaUpgrade' >> $(OTA_BUILD_TIMESTAMP_SRC)
 
 App-build: _ota-make-build-timestamp

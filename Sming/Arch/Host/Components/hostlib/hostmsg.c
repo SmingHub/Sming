@@ -22,6 +22,8 @@
 #include <string.h>
 #include "hostmsg.h"
 
+int host_debug_level = 2;
+
 /*
  * e.g. from "void a::sub(int)" we just want "a::sub"
  */

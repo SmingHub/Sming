@@ -18,7 +18,6 @@ COMPONENT_DEPENDS := \
 	driver \
 	heap \
 	fatfs \
-	esp_spiffs \
 	esp32 \
 	gdbstub \
 	esptool

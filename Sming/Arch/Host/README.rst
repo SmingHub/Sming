@@ -26,7 +26,7 @@ For Linux, you may require the ``gcc-multilib`` and ``g++-multilib``
 packages to build 32-bit executables on a 64-bit OS.
 
 For Windows, make sure your ``MinGW`` distro is up to date.
-See :doc:`/arch/esp8266/getting-started/windows-manual` for further details.
+See :doc:`/getting-started/windows` for further details.
 
 Building
 --------
@@ -58,12 +58,3 @@ Components
 
    Components/sming-arch/index
    Components/*/index
-
-
-todo
-----
-
-* Add passthrough support for real serial ports to permit connection of physical devices.
-* Consider how this mechanism might be used to support emulation of other devices (SPI, I2C, etc).
-* Development platforms with SPI or I2C (e.g. Raspberry Pi) could be supported.
-* Are there any generic device emulators available? For example, to simulate specific types of SPI slave.

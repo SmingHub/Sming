@@ -19,9 +19,11 @@
 	XX(Url)                                                                                                            \
 	XX(ArduinoJson5)                                                                                                   \
 	XX(ArduinoJson6)                                                                                                   \
+	XX(Storage)                                                                                                        \
 	XX(Files)                                                                                                          \
 	XX(SpiFlash)                                                                                                       \
 	XX(Spiffs)                                                                                                         \
 	XX(Rational)                                                                                                       \
 	XX(Clocks)                                                                                                         \
-	XX(Timers)
+	XX(Timers)                                                                                                         \
+	XX(HttpRequest)

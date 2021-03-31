@@ -1,0 +1,39 @@
+{
+    "name": "FTP Server Demo Volume",
+    "id": "0x12345678",
+    "source": {
+        "/": "${SMING_HOME}/../docs/source/framework/core/network",
+        "Network": "${SMING_HOME}/Core/Network"
+    },
+    "mountpoints": {},
+    "rules": [
+        {
+            // By default, all files require at least User role and only Admins can write
+            "mask": "*",
+            "read": "user",
+            "write": "admin"
+        },
+        {
+            // In general, anything starting with . is considered a system file so restrict to admin
+            "mask": ".*",
+            "read": "admin"
+        },
+        {
+            "mask": "*.rst",
+            "readonly": true
+        },
+        {
+            // These files won't be readable locally, the client will have to un-compress them
+            "mask": "/Network/Mqtt/*",
+            "compress": "gzip"
+        },
+        {
+            // If no user is logged in, permit listing of root directory and reading of one file
+            "mask": [
+                "/",
+                "index.rst"
+            ],
+            "read": "any"
+        }
+    ]
+}

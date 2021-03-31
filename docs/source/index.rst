@@ -30,7 +30,7 @@ Summary
   -  And servers for: DNS, FTP, HTTP(+ WebSockets), Telnet.
   -  With :doc:`SSL support <_inc/Sming/Components/ssl/index>` for all network clients and servers.
      Based on `axTLS <http://axtls.sourceforge.net/>`__ and `BearSSL <https://www.bearssl.org/>`__.
-  -  Out of the box support for OTA over HTTPS.
+  -  Over-The-Air(OTA) firmware upgrades via HTTP(S) and MQTT(S).
 
 -  ESP8266 specific features
 
@@ -42,14 +42,14 @@ Summary
 
 -  Linux/Windows features
 
-  -  Sming has a :doc:`host emulator <arch/host/host-emulator>` that allows libraries and sample applications to be compiled on a Linux/Windows host system
+  -  Sming has a :doc:`host emulator <arch/host/index>` that allows libraries and sample applications to be compiled on a Linux/Windows host system
      and be tested before uploading them to an actual microcontroller.
 
 .. toctree::
    :caption: Contents:
    :hidden:
 
-   getting-started
+   getting-started/index
    features
    framework/index
    samples

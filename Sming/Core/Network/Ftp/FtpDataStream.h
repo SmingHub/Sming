@@ -13,56 +13,66 @@
 #include "FtpServerConnection.h"
 #include "Network/TcpConnection.h"
 
+/*
+	RFC959:
+
+	User-DTP listens on data port when required.
+
+	Server is responsible for creating the data connection.
+
+	The server MUST close the data connection under the following conditions:
+
+		1. The server has completed sending data in a transfer mode
+		that requires a close to indicate EOF.
+
+		2. The server receives an ABORT command from the user.
+
+		3. The port specification is changed by a command from the user.
+
+		4. The control connection is closed legally or otherwise.
+
+		5. An irrecoverable error condition occurs.
+
+	Otherwise the close is a server option, the exercise of which the
+	server must indicate to the user-process by either a 250 or 226
+	reply only.
+*/
 class FtpDataStream : public TcpConnection
 {
 public:
-	explicit FtpDataStream(FtpServerConnection& connection) : TcpConnection(true), parent(connection)
+	explicit FtpDataStream(FtpServerConnection& control) : TcpConnection(true), control(control)
 	{
+	}
+
+	~FtpDataStream()
+	{
+		control.dataStreamDestroyed(this);
 	}
 
 	err_t onConnected(err_t err) override
 	{
-		//response(125, "Connected");
-		setTimeOut(300); // Update timeout
+		setTimeOut(300);
 		return TcpConnection::onConnected(err);
-	}
-
-	err_t onSent(uint16_t len) override
-	{
-		sent += len;
-		if(written < sent || !completed) {
-			return TcpConnection::onSent(len);
-		}
-		finishTransfer();
-		return TcpConnection::onSent(len);
 	}
 
 	void finishTransfer()
 	{
 		close();
-		parent.dataTransferFinished(this);
+		control.dataTransferFinished(this);
 	}
 
 	void response(int code, String text = nullptr)
 	{
-		parent.response(code, text);
-	}
-
-	int write(const char* data, int len, uint8_t apiflags = 0) override
-	{
-		written += len;
-		return TcpConnection::write(data, len, apiflags);
+		control.response(code, text);
 	}
 
 	void onReadyToSendData(TcpConnectionEvent sourceEvent) override
 	{
-		if(!parent.isCanTransfer()) {
-			return;
-		}
-		if(completed && written == 0) {
+		if(completed) {
 			finishTransfer();
+		} else {
+			transferData(sourceEvent);
 		}
-		transferData(sourceEvent);
 	}
 
 	virtual void transferData(TcpConnectionEvent sourceEvent)
@@ -70,8 +80,6 @@ public:
 	}
 
 protected:
-	FtpServerConnection& parent;
+	FtpServerConnection& control;
 	bool completed{false};
-	unsigned written{0};
-	unsigned sent{0};
 };

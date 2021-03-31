@@ -55,6 +55,7 @@ CACHE_VARS		:=
 # Use PROJECT_DIR to identify the project source directory, from where this makefile must be included
 DEBUG_VARS			+= PROJECT_DIR
 PROJECT_DIR			:= $(CURDIR)
+export PROJECT_DIR
 
 ifeq ($(MAKELEVEL),0)
 $(info )
@@ -234,6 +235,9 @@ ifndef MAKE_CLEAN
 -include $(CONFIG_CACHE_FILE)
 endif
 
+# Also export debug variables here for access by external tools (e.g. python)
+CONFIG_DEBUG_FILE	:= $(OUT_BASE)/debug.mk
+
 # Append standard search directories to any defined by the application
 ALL_SEARCH_DIRS			:= $(call FixPath,$(abspath $(COMPONENT_SEARCH_DIRS)))
 COMPONENTS_EXTRA_INCDIR	+= $(ALL_SEARCH_DIRS)
@@ -318,6 +322,8 @@ CMP_App_VARS			:= $(CONFIG_VARS)
 CMP_App_ALL_VARS		:= $(CONFIG_VARS)
 $(foreach c,$(COMPONENTS),$(eval $(call ParseComponentLibs,$c)))
 
+$(PartitionCreateTargets)
+
 export COMPONENTS_EXTRA_INCDIR
 export APPCODE
 export APP_CFLAGS
@@ -336,7 +342,7 @@ COMPONENT_DIRS := $(foreach d,$(ALL_SEARCH_DIRS),$(wildcard $d/*))
 %/component.mk:
 	@if [ -f $(@D)/../.patches/$(notdir $(@D))/component.mk ]; then \
 		echo Patching $(abspath $(@D)/../.patches/$(notdir $(@D))/component.mk); \
-		cp -u $(@D)/../.patches/$(notdir $(@D))/component.mk $@; \
+		cp $(@D)/../.patches/$(notdir $(@D))/component.mk $@; \
 	fi
 
 SUBMODULES_FOUND = $(wildcard $(SUBMODULES:=/.submodule))
@@ -483,7 +489,7 @@ cs-dev: ##Apply coding style to all files changed from current upstream develop 
 	$(SMING_MAKE) $@
 
 .PHONY: gdb
-gdb: kill_term ##Run the debugger console
+gdb: ##Run the debugger console
 	$(GDB_CMDLINE)
 
 .PHONY: fetch
@@ -512,6 +518,28 @@ else
 	$(Q) $(PYTHON) -m pip install $(PIP_ARGS) $(foreach reqfile,$(PYTHON_REQUIREMENTS),-r $(reqfile))
 endif
 
+##@IDE Tools
+
+.PHONY: ide-vscode
+ide-vscode: checkdirs submodules ##Create/update vscode project configuration
+	$(Q) $(MAKE) --no-print-directory ide-vscode-update
+
+export CLI_TARGET_OPTIONS
+export HOST_PARAMETERS
+
+.PHONY: ide-vscode-update
+ide-vscode-update:
+	$(Q) CXX=$(CXX) \
+	SMING_HOME=$(SMING_HOME) \
+	ESP_HOME=$(ESP_HOME) \
+	IDF_PATH=$(IDF_PATH) \
+	IDF_TOOLS_PATH=$(IDF_TOOLS_PATH) \
+	SMING_ARCH=$(SMING_ARCH) \
+	GDB=$(GDB) \
+	COM_SPEED_GDB=$(COM_SPEED_GDB) \
+	WSL_ROOT=$(WSL_ROOT) \
+	$(PYTHON) $(SMING_HOME)/../Tools/vscode/setup.py
+
 ##@Testing
 
 # OTA Server
@@ -520,7 +548,19 @@ SERVER_OTA_PORT		?= 9999
 .PHONY: otaserver
 otaserver: all ##Launch a simple python HTTP server for testing OTA updates
 	$(info Starting OTA server for TESTING)
-	$(Q) cd $(FW_BASE) && $(PYTHON) -m SimpleHTTPServer $(SERVER_OTA_PORT)
+	$(Q) cd $(FW_BASE) && $(PYTHON) -m http.server $(SERVER_OTA_PORT)
+
+
+#
+.PHONY: tcp-serial-redirect
+tcp-serial-redirect: ##Redirect COM port to TCP port
+	$(info Starting serial redirector)
+ifdef WSL_ROOT
+	$(Q) cmd.exe /c start /MIN python3 $(WSL_ROOT)/$(SMING_HOME)/../Tools/tcp_serial_redirect.py $(COM_PORT) $(COM_SPEED_SERIAL)
+else
+	$(Q) gnome-terminal -- bash -c "$(PYTHON) $(SMING_HOME)/../Tools/tcp_serial_redirect.py $(COM_PORT) $(COM_SPEED_SERIAL)"
+endif
+
 
 ##@Help
 
@@ -628,4 +668,5 @@ endef
 ifndef MAKE_CLEAN
 CACHED_VAR_NAMES := $(sort $(CACHED_VAR_NAMES) $(CONFIG_VARS) $(RELINK_VARS) $(CACHE_VARS))
 $(eval $(call WriteConfigCache,$(CONFIG_CACHE_FILE),CACHED_VAR_NAMES))
+$(eval $(call WriteCacheValues,$(CONFIG_DEBUG_FILE),$(sort $(DEBUG_VARS))))
 endif

@@ -9,64 +9,25 @@
  ****/
 #pragma once
 
-#if defined(__cplusplus)
-extern "C" {
-#endif
-
-#include "spiffs.h"
-#include <stdbool.h>
-
-#define LOG_PAGE_SIZE 256
+#include <spiffs.h>
+#include <Storage/Partition.h>
 
 /**
- * @brief Mount the SPIFFS volume using default configuration
- * @retval bool true on success
- *
- * Configuration is obtained `spiffs_get_storage_config()`.
+ * @brief unmount SPIFFS filesystem
+ * @deprecated use fileFreeFileSystem() instead
+ * @note this will do nothing if the active filesystem is not SPIFFS
  */
-bool spiffs_mount();
+void spiffs_unmount() SMING_DEPRECATED;
 
-/**
- * @brief Mount a SPIFFS volume using custom location and size
- * @param phys_addr The flash memory address (offset) for the volume
- * @param phys_size The volume size, in bytes
- * @retval bool true on success, false on failure
- * @note If the given flash memory range appears to be empty then it is
- * formatted, erasing any existing content.
+/** @brief Format and mount a SPIFFS filesystem
+ *  @deprecated use fileSystemFormat() instead
+ *  @note this will fail if the active filesystem is not SPIFFS
  */
-bool spiffs_mount_manual(uint32_t phys_addr, uint32_t phys_size);
+bool spiffs_format() SMING_DEPRECATED;
 
 /**
- * @brief Unmount a previously mounted volume
- */
-void spiffs_unmount();
-
-/**
- * @brief Format and mount a SPIFFS volume using default configuration
+ * @brief Format and mount a SPIFFS volume using given partition
+ * @param partition
  * @retval bool true on success
  */
-bool spiffs_format();
-
-/**
- * @brief Format and mount a SPIFFS volume using custom location and size
- * @param phys_addr The flash memory address (offset) for the volume
- * @param phys_size The volume size, in bytes
- * @retval bool true on success
- */
-bool spiffs_format_manual(uint32_t phys_addr, uint32_t phys_size);
-
-/**
- * @brief Obtain the default SPIFFS configuration information
- * @retval spiffs_config
- * @note Only `phys_addr` and `phys_size` are used, all other parameters are overridden.
- */
-spiffs_config spiffs_get_storage_config();
-
-/**
- * @brief Global SPIFFS instance used by FileSystem API
- */
-extern spiffs _filesystemStorageHandle;
-
-#if defined(__cplusplus)
-}
-#endif
+bool spiffs_format(Storage::Partition& partition);

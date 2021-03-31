@@ -377,7 +377,7 @@ private:
 template <typename S, typename E, size_t size_>
 inline constexpr BitSet<S, E, size_> operator&(const BitSet<S, E, size_>& x, const BitSet<S, E, size_>& y)
 {
-	return BitSet<S, E, size_>(S(x) & ~S(y));
+	return BitSet<S, E, size_>(S(x) & S(y));
 }
 
 template <typename S, typename E, size_t size_>
@@ -416,6 +416,18 @@ inline constexpr BitSet<S, E, size_> operator-(const BitSet<S, E, size_>& x, E b
 	return BitSet<S, E, size_>(S(x) & ~BitSet<S, E, size_>::bitVal(b));
 }
 
+template <typename S, typename E, size_t size_>
+inline constexpr BitSet<S, E, size_> operator^(BitSet<S, E, size_> x, BitSet<S, E, size_> y)
+{
+	return BitSet<S, E, size_>(S(x) ^ S(y));
+}
+
+template <typename S, typename E, size_t size_>
+inline constexpr BitSet<S, E, size_> operator^(BitSet<S, E, size_> x, E b)
+{
+	return x ^ BitSet<S, E, size_>(b);
+}
+
 /*
  * These allow construction of a maximally-sized BitSet in an expression,
  * which is then copy-constructed to the actual value. For example:
@@ -441,7 +453,10 @@ constexpr
 	return a | b;
 }
 
-String toString(uint8_t value);
+template <typename T> typename std::enable_if<std::is_integral<T>::value, String>::type toString(T value)
+{
+	return String(value);
+}
 
 /**
  * @brief Class template to print the contents of a BitSet to a String

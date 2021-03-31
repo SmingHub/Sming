@@ -2,7 +2,7 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_SSID "PleaseEnterSSID" // Put your SSID and password here
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
@@ -20,7 +20,6 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
 	auto& vars = tmpl->variables();
 	vars["counter"] = String(counter);
-	//vars["ledstate"] = (*portOutputRegister(digitalPinToPort(LED_PIN)) & digitalPinToBitMask(LED_PIN)) ? "checked" : "";
 	vars["IP"] = WifiStation.getIP().toString();
 	vars["MAC"] = WifiStation.getMacAddress().toString();
 	response.sendNamedStream(tmpl); // this template object will be deleted automatically
@@ -29,6 +28,11 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 void onHello(HttpRequest& request, HttpResponse& response)
 {
 	response.setContentType(MIME_HTML);
+
+	// Below is an example how to send multiple cookies
+	response.setCookie("cookie1", "value1");
+	response.setCookie("cookie2", "value", true);
+
 	// Use direct strings output only for small amount of data (huge memory allocation)
 	response.sendString("Sming. Let's do smart things.");
 }

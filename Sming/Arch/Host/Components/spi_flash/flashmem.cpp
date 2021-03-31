@@ -21,23 +21,26 @@
 #include "flashmem.h"
 #include <string.h>
 #include <esp_spi_flash.h>
+#include <IFS/File.h>
 
-static int flashFile = -1;
-static size_t flashFileSize = 0x400000U;
-static char flashFileName[256];
-static const char defaultFlashFileName[] = "flash.bin";
+namespace
+{
+IFS::File flashFile(&IFS::Host::getFileSystem());
+size_t flashFileSize{0x400000U};
+char flashFileName[256];
+const char defaultFlashFileName[]{"flash.bin"};
 
 // Top bit of flash address is set to indicate it's actually program memory
-static constexpr uint32_t FLASHMEM_REAL_BIT = 0x80000000U;
-static constexpr uint32_t FLASHMEM_REAL_MASK = ~FLASHMEM_REAL_BIT;
+constexpr uint32_t FLASHMEM_REAL_BIT{0x80000000U};
+constexpr uint32_t FLASHMEM_REAL_MASK{~FLASHMEM_REAL_BIT};
 
-#define SPI_FLASH_SEC_SIZE 4096
+} // namespace
 
 #define CHECK_ALIGNMENT(_x) assert(((uint32_t)(_x)&0x00000003) == 0)
 
 #define CHECK_RANGE(_addr, _size)                                                                                      \
 	if((_addr) + (_size) > flashFileSize) {                                                                            \
-		hostmsg("addr = 0x%08x, size = 0x%08x", _addr, _size);                                                         \
+		host_debug_e("addr = 0x%08x, size = 0x%08x", _addr, _size);                                                         \
 		return false;                                                                                                  \
 	}
 
@@ -55,32 +58,30 @@ bool host_flashmem_init(FlashmemConfig& config)
 		config.filename = flashFileName;
 	}
 
-	flashFile = open(flashFileName, O_CREAT | O_RDWR | O_BINARY, 0644);
-	if(flashFile < 0) {
-		hostmsg("Error opening \"%s\"", flashFileName);
+	if(!flashFile.open(flashFileName, IFS::File::Create | IFS::File::ReadWrite)) {
+		host_debug_e("Error opening \"%s\"", flashFileName);
 		return false;
 	}
 
-	int res = lseek(flashFile, 0, SEEK_END);
+	int res = flashFile.seek(0, SeekOrigin::End);
 	if(res < 0) {
-		hostmsg("Error seeking \"%s\"", flashFileName);
-		close(flashFile);
-		flashFile = -1;
+		host_debug_e("Error seeking \"%s\": %s", flashFileName, flashFile.getErrorString(res).c_str());
+		flashFile.close();
 		return false;
 	}
 
 	if(res == 0) {
 		size_t size = config.createSize ?: flashFileSize;
-		res = lseek(flashFile, size, SEEK_SET);
+		res = flashFile.seek(size, SeekOrigin::Start);
 		if(res != int(size)) {
-			hostmsg("Error seeking beyond end of file \"%s\"", flashFileName);
-		} else if(ftruncate(flashFile, size) < 0) {
-			hostmsg("Error truncating \"%s\" to %u bytes", flashFileName, size);
+			host_debug_e("Error seeking beyond end of file \"%s\"", flashFileName);
+		} else if(!flashFile.truncate(size)) {
+			host_debug_e("Error truncating \"%s\" to %u bytes", flashFileName, size);
 		} else {
-			hostmsg("Created blank \"%s\", %u bytes", flashFileName, size);
+			host_debug_i("Created blank \"%s\", %u bytes", flashFileName, size);
 		}
 	} else {
-		hostmsg("Opened \"%s\", size = 0x%08x", flashFileName, res);
+		host_debug_i("Opened \"%s\", size = 0x%08x", flashFileName, res);
 	}
 
 	flashFileSize = res;
@@ -91,27 +92,38 @@ bool host_flashmem_init(FlashmemConfig& config)
 
 void host_flashmem_cleanup()
 {
-	close(flashFile);
-	flashFile = -1;
-	hostmsg("Closed \"%s\"", flashFileName);
+	flashFile.close();
+	host_debug_i("Closed \"%s\"", flashFileName);
 }
 
 static int readFlashFile(uint32_t offset, void* buffer, size_t count)
 {
-	if(flashFile < 0) {
+	if(!flashFile) {
 		return -1;
 	}
-	int res = lseek(flashFile, offset, SEEK_SET);
-	return (res < 0) ? res : read(flashFile, buffer, count);
+	int res = flashFile.seek(offset, SeekOrigin::Start);
+	if(res >= 0) {
+		res = flashFile.read(buffer, count);
+	}
+	if(res < 0) {
+		debug_w("readFlashFile(0x%08x, %u) failed: %s", offset, count, flashFile.getErrorString(res).c_str());
+	}
+	return res;
 }
 
 static int writeFlashFile(uint32_t offset, const void* data, size_t count)
 {
-	if(flashFile < 0) {
+	if(!flashFile) {
 		return -1;
 	}
-	int res = lseek(flashFile, offset, SEEK_SET);
-	return (res < 0) ? res : write(flashFile, data, count);
+	int res = flashFile.seek(offset, SeekOrigin::Start);
+	if(res >= 0) {
+		res = flashFile.write(data, count);
+	}
+	if(res < 0) {
+		debug_w("writeFlashFile(0x%08x, %u) failed: %s", offset, count, flashFile.getErrorString(res).c_str());
+	}
+	return res;
 }
 
 SPIFlashInfo flashmem_get_info()

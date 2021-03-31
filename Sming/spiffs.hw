@@ -1,0 +1,7 @@
+{
+	"name": "Single SPIFFS partition",
+	"base_config": "standard-4m",
+	"options": [
+		"spiffs"
+	]
+}

@@ -44,13 +44,16 @@ Configuring for two ROM mode
 ============================
 
 If you have a 1MB flash, you will need to have two 512KB ROM slots, both
-in the same 1MB block of flash. Set the following options in your project's
-``component.mk`` file:
+in the same 1MB block of flash. You can accommodate this by setting the
+appropriate hardware configuration in your project's component.mk file::
 
 .. code-block:: make
 
-   RBOOT_ROM1_ADDR = 0x80000
-   SPI_SIZE        = 1M
+   HWCONFIG = two-rom-mode
+
+See ``Sming/Arch/Esp8266/two-rom-mode.hw`` for details.
+You can copy this and customise it in your project.
+
 
 SPIFFS
 ======
@@ -60,9 +63,10 @@ To use SPIFFS think about where you want your SPIFFS to sit on the flash.
 If you have a 4MB flash the default position is for the first ROM
 to be placed in the first 1MB block and the second ROM to be placed in
 the third 1MB block of flash. This leaves a whole 1MB spare after each
-ROM in which you can put your SPIFFS.
+ROM in which you can put your SPIFFS. This is the behaviour when you
+set ``HWCONFIG = spiffs`` in your project's component.mk file.
 
-If you have to a smaller flash the SPIFFS will have to share the 1MB block with the ROM.
+If you have a smaller flash the SPIFFS will have to share the 1MB block with the ROM.
 For example, the first part of each 1MB block may contain the ROM, and the second part
 the SPIFFS (but does *not* have to be split equally in half). So for the 4MB example
 you could put the SPIFFS for your first ROM at flash address at 0x100000
@@ -74,9 +78,14 @@ To mount your SPIFFS at boot time add the following code to init:
 .. code-block:: c++
 
    int slot = rboot_get_current_rom();
-   uint32_t address = (slot == 0) ? RBOOT_SPIFFS_0 : RBOOT_SPIFFS_1;
-   //debugf("trying to mount SPIFFS at %x, length %d", address, SPIFF_SIZE);
-   spiffs_mount_manual(address, SPIFF_SIZE);
+   // Find the n'th SPIFFS partition
+   auto part = PartitionTable().find(Partition::SubType::Data::spiffs, slot);
+   if(part) {
+      //debugf("trying to mount SPIFFS at %x, length %d", part.address(), part.size());
+      spiffs_mount(part);
+   } else {
+      debug_e("SPIFFS partition missing for slot #%u", slot);
+   }
 
 Over-the-air (OTA) updates
 ==========================
@@ -98,64 +107,6 @@ products.
  
 A more lightweight solution is provided by :cpp:class:`RbootOutputStream`, which 
 is just a thin wrapper around rBoot's flash API, in combination with :cpp:class:`RbootHttpUpdater`,
-which pulls individual ROM image from an HTTP server. Add the following code:
+which pulls individual ROM image from an HTTP server.
 
-.. code-block:: c++
-
-   RbootHttpUpdater* otaUpdater = nullptr;
-
-   void OtaUpdate_CallBack(RbootHttpUpdater& client, bool result)
-   {
-       if (result) {
-           // success - switch slot
-           uint8_t slot = rboot_get_current_rom();
-           if (slot == 0) {
-               slot = 1;
-           } else {
-               slot = 0;
-           }
-           // set to boot new ROM and then reboot
-           Serial.printf("Firmware updated, rebooting to ROM %d...\r\n", slot);
-           rboot_set_current_rom(slot);
-           System.restart();
-       } else {
-           // fail
-           Serial.println("Firmware update failed!");
-       }
-   }
-
-   void OtaUpdate()
-   {
-       // need a clean object, otherwise if run before and failed will not run again
-       delete otaUpdater;
-       otaUpdater = new RbootHttpUpdater();
-       
-       // select ROM slot to flash
-       rboot_config bootconf = rboot_get_config();
-       uint8_t slot = bootconf.current_rom;
-       if (slot == 0) {
-           slot = 1;
-       } else {
-           slot = 0;
-       }
-
-   #ifndef RBOOT_TWO_ROMS
-       // flash ROM to position indicated in the rBoot config ROM table
-       otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
-   #else
-       // flash appropriate ROM
-       otaUpdater->addItem(bootconf.roms[slot], (slot == 0) ? ROM_0_URL : ROM_1_URL);
-   #endif
-
-       // use user supplied values (defaults for 4MB flash in makefile)
-       otaUpdater->addItem((slot == 0) ? RBOOT_SPIFFS_0 : RBOOT_SPIFFS_1, SPIFFS_URL);
-
-       // set a callback
-       otaUpdater->setCallback(OtaUpdate_CallBack);
-
-       // start update
-       otaUpdater->start();
-   }
-
-You will need to define ``ROM_0_URL``, ``ROM_1_URL`` and ``SPIFFS_URL``
-with http urls for the files to download.
+For details, refer to the `OtaUpdate()` function in the :sample:`Basic_rBoot` sample.

@@ -292,18 +292,20 @@ public:
 		loadStream(fs);
 	}
 
-	void speedChecks()
+	template <typename T> void check(T func)
 	{
-#define CHECK(func)                                                                                                    \
-	for(unsigned i = 0; i < 4; ++i) {                                                                                  \
-		ElapseTimer timer;                                                                                             \
-		func;                                                                                                          \
-		debug_i("Time: %s", timer.elapsedTime().toString().c_str());                                                   \
+		for(unsigned i = 0; i < 4; ++i) {
+			ElapseTimer timer;
+			func();
+			debug_i("Time: %s", timer.elapsedTime().toString().c_str());
+		}
 	}
 
+	void speedChecks()
+	{
 		PSTR_ARRAY(filename, "test.json");
 		if(!fileExist(filename)) {
-			FileStream fs(filename, eFO_CreateNewAlways | eFO_WriteOnly);
+			FileStream fs(filename, File::CreateNewAlways | File::WriteOnly);
 			REQUIRE(fs.isValid());
 			FSTR::Stream os(Resource::test_json);
 			REQUIRE(fs.copyFrom(&os, os.available()) == Resource::test_json.length());
@@ -312,28 +314,28 @@ public:
 		TEST_CASE("loadBuffer")
 		{
 			LOAD_FSTR(buffer, Resource::test_json);
-			CHECK(loadBuffer(buffer, Resource::test_json.length()));
+			check([&] { loadBuffer(buffer, Resource::test_json.length()); });
 		}
 		TEST_CASE("loadFlashString")
 		{
-			CHECK(loadFlashString());
+			check([&] { loadFlashString(); });
 		}
 		TEST_CASE("loadFlashString via Stream (cached)")
 		{
-			CHECK(loadFlashStringViaStream(false));
+			check([&] { loadFlashStringViaStream(false); });
 		}
 		TEST_CASE("loadFlashString via Stream (un-cached)")
 		{
-			CHECK(loadFlashStringViaStream(true));
+			check([&] { loadFlashStringViaStream(true); });
 		}
 		TEST_CASE("loadFile")
 		{
-			CHECK(loadFile(filename));
+			check([&] { loadFile(filename); });
 		}
 		TEST_CASE("loadStream")
 		{
 			FileStream fs(filename);
-			CHECK(loadStream(fs));
+			check([&]() { loadStream(fs); });
 		}
 	}
 

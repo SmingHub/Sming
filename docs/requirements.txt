@@ -1,9 +1,10 @@
 # Requirements file for pip
 # list of Python packages used in documentation build
-sphinx==2.0.0
+sphinx==2.4.4
 sphinx-rtd-theme
 m2r
 breathe==4.13.0
 sphinxcontrib-wavedrom
 sphinx-copybutton
 sphinxcontrib-seqdiag>=0.8.5
+jinja2>=2.11.3

@@ -9,33 +9,50 @@ Introduction
 ESP8266 flash memory sizes vary from 512Kbytes on the ESP-01 up to 4Mbytes on the ESP12F.
 Up to 16MBytes are supported for custom designs.
 
-You can find general details for the memory layout in the `ESP8266 Wiki <https://github.com/esp8266/esp8266-wiki/wiki/Memory-Map>`__.
+Sming version 4.3 introduced partition tables to support multiple architectures,
+different hardware variants and custom flash layouts without restriction.
 
-This is the layout for Sming with a 4MByte flash device:
+See :ref:`hardware_config` for details.
 
-=======  ===============   ====   =========================  ===================================================                                
-Address  Config variable   Size   Source filename            Description            
-(hex)    (if any)          (KB)   (if applicable)            
-=======  ===============   ====   =========================  ===================================================            
-000000                     1      rboot.bin                  Boot loader            
-001000                     4                                 rBoot configuration            
-002000   ROM_0_ADDR               rom0.bin                   First ROM image            
-100000   RBOOT_SPIFFS_0
-202000   ROM_1_ADDR               rom1.bin                   Second ROM image            
-300000   RBOOT_SPIFFS_1
-3FB000                     4      blank.bin                  RF Calibration data (Initialised to FFh)
-3FC000                     4      esp_init_data_default.bin  PHY configuration data            
-3FD000                     12     blank.bin                  System parameter area
-=======  ===============   ====   =========================  ===================================================            
+A typical layout for a 4MByte device might look like this:
 
+   =======  ===============   ====   =========================  ===================================================                                
+   Address  Config variable   Size   Source filename            Description            
+   (hex)    (if any)          (KB)   (if applicable)            
+   =======  ===============   ====   =========================  ===================================================            
+   000000                     1      rboot.bin                  Boot loader            
+   001000                     4                                 rBoot configuration
+   002000                     4                                 Partition table
+   003000                     4      esp_init_data_default.bin  PHY configuration data
+   004000                     12     blank.bin                  System parameter area
+   006000                     4      blank.bin                  RF Calibration data (Initialised to FFh)
+   006000                     4                                 Reserved
+   008000   ROM_0_ADDR               rom0.bin                   First ROM image            
+   100000   RBOOT_SPIFFS_0
+   208000   ROM_1_ADDR               rom1.bin                   Second ROM image            
+   300000   RBOOT_SPIFFS_1
+   =======  ===============   ====   =========================  ===================================================            
+   
 
-Partition Tables
-----------------
+.. note::
 
-{ todo }
+   This was the previous layout for a 4MByte flash device:
 
-Whilst SDK version 3 requires a partition table, previous versions do not but this can be added so that we
-can use it as a common reference for all the above locations.
+   =======  ===============   ====   =========================  ===================================================                                
+   Address  Config variable   Size   Source filename            Description            
+   (hex)    (if any)          (KB)   (if applicable)            
+   =======  ===============   ====   =========================  ===================================================            
+   000000                     1      rboot.bin                  Boot loader            
+   001000                     4                                 rBoot configuration            
+   002000   ROM_0_ADDR               rom0.bin                   First ROM image            
+   100000   RBOOT_SPIFFS_0
+   202000   ROM_1_ADDR               rom1.bin                   Second ROM image            
+   300000   RBOOT_SPIFFS_1
+   3FB000                     4      blank.bin                  RF Calibration data (Initialised to FFh)
+   3FC000                     4      esp_init_data_default.bin  PHY configuration data            
+   3FD000                     12     blank.bin                  System parameter area
+   =======  ===============   ====   =========================  ===================================================            
+   
 
 
 Speed and caching

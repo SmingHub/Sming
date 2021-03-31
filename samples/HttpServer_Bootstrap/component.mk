@@ -1,0 +1,2 @@
+HWCONFIG := spiffs
+SPIFF_FILES :=

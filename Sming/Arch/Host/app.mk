@@ -15,7 +15,7 @@ TARGET_OUT_0			:= $(FW_BASE)/$(APP_NAME)$(TOOL_EXT)
 # Target definitions
 
 .PHONY: application
-application: $(CUSTOM_TARGETS) $(TARGET_OUT_0)
+application: $(TARGET_OUT_0)
 
 $(TARGET_OUT_0): $(COMPONENTS_AR)
 	$(info $(notdir $(PROJECT_DIR)): Linking $@)
@@ -29,7 +29,7 @@ $(TARGET_OUT_0): $(COMPONENTS_AR)
 valgrind: all ##Run the application under valgrind to detect memory issues. Requires `valgrind` to be installed on the host system.
 	$(Q) valgrind --track-origins=yes --leak-check=full \
 	$(foreach id,$(ENABLE_HOST_UARTID),echo '$(call RunHostTerminal,$(id))' >> $@;) \
-	$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS)
+	$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS) -- $(HOST_PARAMETERS)
 
 
 RUN_SCRIPT := $(FW_BASE)/run.sh
@@ -44,5 +44,9 @@ $(RUN_SCRIPT)::
 	echo '$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS) -- $(HOST_PARAMETERS)' >> $@; \
 	chmod a+x $@
 
-.PHONY: flash
-flash: all flashfs ##Write all images to (virtual) flash
+##@Flashing
+
+.PHONY: flashconfig
+flashconfig: kill_term ##Erase the rBoot config sector
+	$(info Erasing rBoot config sector)
+	$(call WriteFlash,$(FLASH_RBOOT_ERASE_CONFIG_CHUNKS))

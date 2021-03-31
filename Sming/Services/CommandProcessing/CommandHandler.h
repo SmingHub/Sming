@@ -162,7 +162,11 @@ private:
 
 	VerboseMode verboseMode = VERBOSE;
 	String currentPrompt;
+#ifdef ARCH_HOST
+	char currentEOL = '\n';
+#else
 	char currentEOL = '\r';
+#endif
 	String currentWelcomeMessage;
 };
 

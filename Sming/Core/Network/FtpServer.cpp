@@ -10,34 +10,33 @@
 
 #include "FtpServer.h"
 #include "Ftp/FtpServerConnection.h"
-#include "FileSystem.h"
 
-TcpConnection* FtpServer::createClient(tcp_pcb* clientTcp)
+TcpConnection* CustomFtpServer::createClient(tcp_pcb* clientTcp)
 {
 	return new FtpServerConnection(*this, clientTcp);
 }
 
-void FtpServer::addUser(const String& login, const String& pass)
+void FtpServer::addUser(const String& login, const String& pass, IFS::UserRole role)
 {
-	debug_d("addUser: %s %s", login.c_str(), pass.c_str());
-	users[login] = pass;
+	debug_d("addUser: %s %s (%s)", login.c_str(), pass.c_str(), toString(role).c_str());
+	users[login] = User{pass, role};
 }
 
-bool FtpServer::checkUser(const String& login, const String& pass)
+IFS::UserRole FtpServer::validateUser(const char* login, const char* pass)
 {
-	debug_d("checkUser: %s %s", login.c_str(), pass.c_str());
-	if(!users.contains(login)) {
-		return false;
-	}
-
-	return users[login] == pass;
+	debug_d("validateUser: %s %s", login, pass);
+	auto& user = static_cast<const UserList&>(users)[login];
+	return (user.password == pass) ? user.role : IFS::UserRole::None;
 }
 
 bool FtpServer::onCommand(String cmd, String data, FtpServerConnection& connection)
 {
 	if(cmd == _F("FSFORMAT")) {
-		spiffs_format();
-		connection.response(200, F("File system successfully formatted"));
+		auto fs = connection.getFileSystem();
+		if(fs != nullptr) {
+			int err = fs->format();
+			connection.response(200, F("File system format: ") + fileGetErrorString(err));
+		}
 		return true;
 	}
 	return false;

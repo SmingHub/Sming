@@ -19,9 +19,9 @@ The following options are interpreted and used to provide command-line parameter
 
    This defaults to a combination of the above variables, but you can override if necessary.
 
-The size of the flash memory is set via :envvar:`SPI_SIZE`.
+The size of the flash memory is set via :ref:`hardware_config`.
 
-See :component-esp8266:`esptool` for details and other applicable variables.
+See :component:`esptool` for details and other applicable variables.
 
 
 Build targets

@@ -46,15 +46,7 @@ documentation for further advice on how to use the security features properly.
 Usage instructions
 ------------------
 
-
-1. Configure your flash memory layout:
-
-   -  Set :envvar:`SPI_SIZE` to the flash memory size of your device.
-   -  If necessary, modify :envvar:`RBOOT_ROM0_ADDR`, :envvar:`RBOOT_ROM1_ADDR`, 
-      :envvar:`RBOOT_SPIFFS_0` and :envvar:`SPIFF_SIZE` to fit both ROM slots and
-      the file system into the available flash memory. Make sure that the 
-      flash areas do not overlap with each other or any the reserved regions.
-      Refer to the :component:`rboot` documentation for further details.
+1. Configure your flash memory layout. See :ref:`hardware_config`.
 
 2. Build the example by running::
 

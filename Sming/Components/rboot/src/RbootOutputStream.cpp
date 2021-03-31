@@ -33,12 +33,12 @@ size_t RbootOutputStream::write(const uint8_t* data, size_t size)
 		initialized = true;
 	}
 
-	if(maxLength && (written + size > maxLength)) {
+	if(maxLength != 0 && (written + size > maxLength)) {
 		debug_e("The ROM size is bigger than the maximum allowed");
 		return 0;
 	}
 
-	if(!rboot_write_flash(&rBootWriteStatus, (uint8_t*)data, size)) {
+	if(!rboot_write_flash(&rBootWriteStatus, data, size)) {
 		debug_e("rboot_write_flash: Failed. Size: %d", size);
 		return 0;
 	}

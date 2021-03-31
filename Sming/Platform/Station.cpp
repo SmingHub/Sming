@@ -10,7 +10,18 @@
 
 #include "Station.h"
 
-/* StationClass */
+String toString(WpsStatus status)
+{
+	switch(status) {
+#define XX(name)                                                                                                       \
+	case WpsStatus::name:                                                                                              \
+		return F(#name);
+		WPS_STATUS_MAP(XX)
+#undef XX
+	default:
+		return F("Unknown_") + unsigned(status);
+	}
+}
 
 bool StationClass::isConnected() const
 {

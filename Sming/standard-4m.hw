@@ -1,0 +1,7 @@
+{
+	"name": "Standard config with 4M flash",
+	"base_config": "standard",
+	"options": [
+		"4m"
+	]
+}

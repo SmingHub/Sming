@@ -13,6 +13,7 @@
 #include <soc/dport_reg.h>
 #include <esp_app_format.h>
 #include <esp_flash_partitions.h>
+#include <esp_flash.h>
 
 /*
  * Physical <-> Virtual address mapping is handled in `$IDF_COMPONENTS/spi_flash/flash_mmap.c`.
@@ -114,4 +115,13 @@ uint32_t flashmem_find_sector(uint32_t address, uint32_t* pstart, uint32_t* pend
 uint32_t flashmem_get_sector_of_address(uint32_t addr)
 {
 	return flashmem_find_sector(addr, NULL, NULL);
+}
+
+uint32_t spi_flash_get_id(void)
+{
+	uint32_t id{0};
+	if(esp_flash_read_id(esp_flash_default_chip, &id) != ESP_OK) {
+		id = 0;
+	}
+	return id;
 }

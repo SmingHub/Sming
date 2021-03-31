@@ -4,7 +4,7 @@ set -e
 
 COVERITY_SCAN_PROJECT_NAME=${TRAVIS_REPO_SLUG}
 COVERITY_SCAN_NOTIFICATION_EMAIL="slaff@attachix.com"
-COVERITY_SCAN_BUILD_COMMAND="$MAKE_PARALLEL Basic_Blink Basic_DateTime Basic_Delegates Basic_Interrupts Basic_ProgMem Basic_Serial Basic_Servo Basic_Ssl HttpServer_FirmwareUpload SMING_ARCH=Host DEBUG_VERBOSE_LEVEL=3"
+COVERITY_SCAN_BUILD_COMMAND="$MAKE_PARALLEL dist-clean Basic_Blink Basic_DateTime Basic_Delegates Basic_Interrupts Basic_ProgMem Basic_Serial Basic_Servo Basic_Ssl HttpServer_WebSockets SMING_ARCH=Host DEBUG_VERBOSE_LEVEL=3"
 
 # Environment check
 [ -z "$COVERITY_SCAN_PROJECT_NAME" ] && echo "ERROR: COVERITY_SCAN_PROJECT_NAME must be set" && exit 1
@@ -63,6 +63,7 @@ TOOL_DIR=$(find $TOOL_BASE -type d -name 'cov-analysis*')
 export PATH=$TOOL_DIR/bin:$PATH
 
 # Build
+
 echo -e "\033[33;1mRunning Coverity Scan Analysis Tool...\033[0m"
 COV_BUILD_OPTIONS=""
 #COV_BUILD_OPTIONS="--return-emit-failures 8 --parse-error-threshold 85"

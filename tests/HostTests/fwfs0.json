@@ -1,0 +1,9 @@
+{
+    "name": "Test files for web requests",
+    "id": "0x12345678",
+    "source": {
+        "/": "../../samples/Basic_WebSkeletonApp/files"
+    },
+    "mountpoints": {},
+    "rules": []
+}

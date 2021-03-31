@@ -1,0 +1,26 @@
+#
+# Sample template to display root directory in a table
+#
+
+{SECTION} 
+Index of '{path}'
+{!ifdef:parent}Parent is '{parent}' (length is {length:parent}){!endif}
+
+{!pad:"#":5} {!pad:"Name":32} {!pad:"Modified":22} {!pad:"Size":10} {!pad:"Size (KB)":10} {!pad:"Orig Size":10} {!pad:"Attributes":10} {!pad:"Access":10}
+{!repeat:"-":5} {!repeat:"-":32} {!repeat:"-":22} {!repeat:"-":10} {!repeat:"-":10} {!repeat:"-":10} {!repeat:"-":10} {!repeat:"-":10}
+{/SECTION}
+
+# Data section follows
+
+{SECTION}{!pad:$record:5} {!pad:name:32} {!pad:modified:22} {!pad:size:10} {!pad:{!kb:size}:10} {!pad:original_size:10} {!pad:attr:10} {!pad:access:10}
+{/SECTION}
+
+{SECTION}{!repeat:"-":10}
+{!count:1} files, {total_size} bytes ({!kb:total_size} KB)
+Last error: {last_error}
+
+LISTING COMPLETE
+
+{/SECTION}
+
+# We're all done.

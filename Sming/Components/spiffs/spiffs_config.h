@@ -9,11 +9,7 @@
 #define SPIFFS_CONFIG_H_
 
 // ----------- 8< ------------
-#ifdef __ets__
-	#include <user_config.h>
-#else
-	#include "spiffy_host.h"
-#endif /* __ets__ */
+#include <user_config.h>
 // ----------- >8 ------------
 
 // compile time switches
@@ -117,7 +113,7 @@
 // logical_page_size - (SPIFFS_OBJ_NAME_LEN + sizeof(spiffs_page_header) +
 // spiffs_object_ix_header fields + at least some LUT entries)
 #ifndef SPIFFS_OBJ_META_LEN
-#define SPIFFS_OBJ_META_LEN             (0)
+#define SPIFFS_OBJ_META_LEN             (16)
 #endif
 
 // Size of buffer allocated on stack used when copying data.
@@ -181,9 +177,7 @@
 #endif
 
 // Enable this if you want the HAL callbacks to be called with the spiffs struct
-#ifndef SPIFFS_HAL_CALLBACK_EXTRA
-#define SPIFFS_HAL_CALLBACK_EXTRA         0
-#endif
+#define SPIFFS_HAL_CALLBACK_EXTRA         1
 
 // Enable this if you want to add an integer offset to all file handles
 // (spiffs_file). This is useful if running multiple instances of spiffs on

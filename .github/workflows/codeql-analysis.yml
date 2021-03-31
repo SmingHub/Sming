@@ -17,7 +17,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       fail-fast: false
@@ -35,11 +35,6 @@ jobs:
         # We must fetch at least the immediate parents so that if this is
         # a pull request then we can checkout the head.
         fetch-depth: 2
-
-    # If this run was triggered by a pull request event, then checkout
-    # the head of the pull request instead of the merge commit.
-    - run: git checkout HEAD^2
-      if: ${{ github.event_name == 'pull_request' }}
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -66,15 +61,10 @@ jobs:
     - if: matrix.language == 'cpp' || matrix.language == 'c'
       name: Build Sming C/C++
       run: |
-       sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-       sudo apt-get update -y
-       sudo apt-get install gcc-9-multilib g++-9-multilib
-       sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-9
-       env
-       cd Sming
-       export SMING_HOME=$(pwd)
-       cd ../samples/Basic_Blink
-       make SMING_ARCH=Host
-       
+        sudo Tools/install.sh host
+        . Tools/export.sh
+        cd samples/Basic_Blink
+        make -j3 SMING_ARCH=Host
+
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1

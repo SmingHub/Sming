@@ -1,0 +1,22 @@
+
+--oALsXuO7vSbrvve
+Content-Length: 60
+
+Stream containing {var1}, {var2} and {var3}. {} {{}} {{12345
+--oALsXuO7vSbrvve
+Content-Length: 64
+
+Stream containing value #1, value #2 and {var3}. {} {{}} {{12345
+--oALsXuO7vSbrvve
+Content-Length: 68
+
+Stream containing value #1, value #2 and [value #3]. {} {{}} {{12345
+--oALsXuO7vSbrvve
+Content-Length: 82
+
+This text should {disable}not {var1} really {var2:hello} again {enable}be missing.
+--oALsXuO7vSbrvve
+Content-Length: 28
+
+This text should be missing.
+--oALsXuO7vSbrvve--

@@ -12,8 +12,9 @@ DECLARE_FSTR(README_md)
 DECLARE_FSTR(unit_testing_rst) // Unmodified file
 DECLARE_FSTR(ut_template1_in_rst)
 DECLARE_FSTR(ut_template1_out1_rst) // emit_contents = true
-//DECLARE_FSTR(ut_template1_out2_rst)
-//DECLARE_FSTR(ut_template2_in_rst)
-//DECLARE_FSTR(ut_template2_out_rst)
+
+// Multipart streams
+DECLARE_FSTR(image_png)
+DECLARE_FSTR(multipart_result)
 
 } // namespace Resource

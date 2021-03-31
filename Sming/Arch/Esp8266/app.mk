@@ -35,7 +35,7 @@ LDFLAGS	+= \
 
 
 .PHONY: application
-application: $(CUSTOM_TARGETS) $(FW_FILE_1) $(FW_FILE_2)
+application: $(FW_FILE_1) $(FW_FILE_2)
 
 # $1 -> Linker script
 define LinkTarget
@@ -71,24 +71,7 @@ $(TARGET_OUT_1): $(COMPONENTS_AR) $(LIBMAIN_DST)
 
 ##@Flashing
 
-.PHONY: flashboot
-flashboot: $(RBOOT_BIN) ##Write just the rBoot boot sector
-	$(call WriteFlash,$(FLASH_RBOOT_BOOT_CHUNKS))
-
 .PHONY: flashconfig
 flashconfig: kill_term ##Erase the rBoot config sector
 	$(info Erasing rBoot config sector)
 	$(call WriteFlash,$(FLASH_RBOOT_ERASE_CONFIG_CHUNKS))
- 
-.PHONY: flashapp
-flashapp: all kill_term ##Write just the application image
-	$(call WriteFlash,$(FLASH_RBOOT_APP_CHUNKS))
-
-.PHONY: flash
-flash: all kill_term ##Write the rBoot boot sector, application image and (if enabled) SPIFFS image
-	$(call WriteFlash,$(FLASH_RBOOT_BOOT_CHUNKS) $(FLASH_RBOOT_APP_CHUNKS) $(FLASH_SPIFFS_CHUNKS))
-ifeq ($(ENABLE_GDB), 1)
-	$(GDB_CMDLINE)
-else
-	$(TERMINAL)
-endif

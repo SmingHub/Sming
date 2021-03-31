@@ -56,11 +56,11 @@ addons:
     update: true
     packages:
     - xmlstarlet
-install: ".travis/install.sh"
-script: ".travis/build.sh"
+install: "Tools/travis/install.sh"
+script: "Tools/travis/build.sh"
 deploy:
   provider: script
-  script: ".travis/deploy.sh $TRAVIS_TAG"
+  script: "Tools/travis/deploy.sh $TRAVIS_TAG"
   skip_cleanup: true
   on:
     tags: true

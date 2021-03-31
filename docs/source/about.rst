@@ -1,21 +1,36 @@
-About Sming
-===========
+About
+=====
+
+
+Sming
+-----
+
+Sming is an asynchronous C/C++ framework with superb performance and multiple network features.
+Sming is open source and is tailored towards embedded devices. It supports multiple architectures.
+
+The project was started in 2015 and is actively developed.
+
+Arduino
+-------
+Arduino is an open-source electronics platform based on easy-to-use hardware and software.
+Sming is compatible with (most) standard `Arduino libraries <https://sming.readthedocs.io/en/latest/libraries.html>`_,
+which means that you can use any popular hardware in few lines of code.
+
 
 ESP8266
 -------
 
-This is the documentation for the API of Sming, a C++ framework for development on the ESP8266 microcontroller platform.
-
-The `ESP8266 <https://www.espressif.com/en/products/hardware/esp8266ex/overview>`__ is a microcontroller with Wi-Fi,
+`ESP8266 <https://www.espressif.com/en/products/hardware/esp8266ex/overview>`__ is a microcontroller with Wi-Fi,
 manufactured by `Espressif <https://espressif.com>`__ Systems.
+It is the first microcontroller that was supported from Sming.
+Sming provides access to all ESP8266 functions such as GPIO, timers, WiFi configuration, etc.
 
-The microcontroller is used in `modules <https://en.wikipedia.org/wiki/ESP8266>`__ from various manufacturers,
-each of which present a subset of the interface pins.
-For example, the ESP-01 only provides 2 digital GPIO whereas the ESP-12 provides 9 digital GPIO plus ADC analogue input.
 
-Sming provides a C++ framework that facilitates the creation of application code for the ESP8266.
-The core framework provides access to the ESP8266 functions such as GPIO, timers, WiFi configuration, etc.
-A set of libraries extend this functionality such as switch debounce, SD Card interface, etc.
+ESP32
+-----
+
+`ESP32 <https://www.espressif.com/en/products/socs/esp32#esp32-overview-wrap>`__ is the second microcontroller by `Espressif <https://espressif.com>`__ Systems.
+At the moment Sming provides partial support for ESP32 functions.
 
 Licenses
 --------
@@ -24,7 +39,7 @@ Sming Core
    LGPL v3
 
 Espressif SDK
-   ESPRSSIF MIT License (with some closed-source blobs)
+   ESPRESSIF MIT License (with some closed-source blobs)
 
 Libraries
    See each library for details of its own open source license

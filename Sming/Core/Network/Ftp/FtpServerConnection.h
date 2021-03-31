@@ -13,6 +13,7 @@
 #include "Network/TcpConnection.h"
 #include "IpAddress.h"
 #include "WString.h"
+#include <IFS/FileSystem.h>
 
 /**
  * @defgroup ftp FTP
@@ -20,55 +21,63 @@
  * @{
  */
 
-class FtpServer;
+class CustomFtpServer;
+class FtpDataStream;
 
 class FtpServerConnection : public TcpConnection
 {
 	friend class FtpDataStream;
-	friend class FtpServer;
+	friend class CustomFtpServer;
 
 public:
+	struct User {
+		CString name;
+		IFS::UserRole role{};
+
+		bool isValid() const
+		{
+			return role != IFS::UserRole::None;
+		}
+	};
+
 	static constexpr size_t MAX_FTP_CMD{255};
 
-	FtpServerConnection(FtpServer& parentServer, tcp_pcb* clientTcp)
-		: TcpConnection(clientTcp, true), server(parentServer)
-	{
-	}
+	FtpServerConnection(CustomFtpServer& parentServer, tcp_pcb* clientTcp);
 
 	err_t onReceive(pbuf* buf) override;
 	err_t onSent(uint16_t len) override;
-	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
 
 	void dataTransferFinished(TcpConnection* connection);
+	void dataStreamDestroyed(TcpConnection* connection);
+
+	const User& getUser() const
+	{
+		return user;
+	}
+
+	// Get the active filesystem, send an error response if undefined
+	IFS::FileSystem* getFileSystem();
+
+	virtual void response(int code, String text = nullptr, char sep = ' ');
 
 protected:
 	virtual void onCommand(String cmd, String data);
-	virtual void response(int code, String text = "");
 
 	void cmdPort(const String& data);
-	void createDataConnection(TcpConnection* connection);
-
-	bool isCanTransfer()
-	{
-		return canTransfer;
-	}
+	void setDataConnection(FtpDataStream* connection);
+	String resolvePath(const char* name);
+	bool checkFileAccess(const char* filename, IFS::OpenFlags flags);
 
 private:
-	enum class State {
-		Ready,
-		Authorization,
-		Active,
-	};
-
-	FtpServer& server;
-	State state{State::Ready};
-	String userName;
-	String renameFrom;
+	CustomFtpServer& server;
+	User user{};
+	CString renameFrom;
 
 	IpAddress ip;
-	int port{0};
-	TcpConnection* dataConnection{nullptr};
-	bool canTransfer{true};
+	uint16_t port{20};
+	bool readyForData{false};
+	CString cwd;
+	FtpDataStream* dataConnection{nullptr};
 };
 
 typedef FtpServerConnection FTPServerConnection SMING_DEPRECATED; // @deprecated Use `FtpServerConnection` instead

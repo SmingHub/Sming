@@ -38,7 +38,9 @@ void init()
 	Serial.systemDebugOutput(true);
 	Serial.commandProcessing(false);
 
+#ifndef ENABLE_FLASHSTRING_MAP
 	spiffs_mount(); // Mount file system, in order to work with files
+#endif
 
 	//SET higher CPU freq & disable wifi sleep
 	//	system_update_cpu_freq(SYS_CPU_160MHZ);

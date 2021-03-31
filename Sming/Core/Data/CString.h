@@ -13,6 +13,7 @@
 #pragma once
 
 #include <WString.h>
+#include <stringutil.h>
 #include <memory>
 
 /**
@@ -27,9 +28,17 @@ class CString : public std::unique_ptr<char[]>
 public:
 	CString() = default;
 
-	CString(const CString& src) = default;
+	CString(const CString& src)
+	{
+		assign(src.get());
+	}
 
 	CString(const String& src)
+	{
+		assign(src);
+	}
+
+	CString(const char* src)
 	{
 		assign(src);
 	}
@@ -59,6 +68,12 @@ public:
 		}
 	}
 
+	CString& operator=(const CString& src)
+	{
+		assign(src.get());
+		return *this;
+	}
+
 	CString& operator=(const String& src)
 	{
 		assign(src);
@@ -81,14 +96,55 @@ public:
 		return get() ?: "";
 	}
 
-	bool operator==(const CString& other) const
+	bool equals(const CString& other) const
 	{
 		return strcmp(c_str(), other.c_str()) == 0;
 	}
 
+	bool equals(const String& other) const
+	{
+		return other.equals(c_str());
+	}
+
+	bool equals(const char* other) const
+	{
+		if(other == nullptr) {
+			return length() == 0;
+		}
+		return strcmp(c_str(), other) == 0;
+	}
+
+	bool equalsIgnoreCase(const CString& other) const
+	{
+		return strcasecmp(c_str(), other.c_str()) == 0;
+	}
+
+	bool equalsIgnoreCase(const String& other) const
+	{
+		return other.equalsIgnoreCase(c_str());
+	}
+
+	bool equalsIgnoreCase(const char* other) const
+	{
+		if(other == nullptr) {
+			return length() == 0;
+		}
+		return strcasecmp(c_str(), other) == 0;
+	}
+
+	bool operator==(const CString& other) const
+	{
+		return equals(other);
+	}
+
 	bool operator==(const String& other) const
 	{
-		return strcmp(c_str(), other.c_str()) == 0;
+		return equals(other);
+	}
+
+	bool operator==(const char* other) const
+	{
+		return equals(other);
 	}
 
 	size_t length() const

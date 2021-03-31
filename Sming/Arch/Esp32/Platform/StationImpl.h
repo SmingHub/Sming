@@ -18,6 +18,8 @@
 #include <esp_smartconfig.h>
 #endif
 
+struct esp_netif_obj;
+
 class StationImpl : public StationClass, protected ISystemReadyHandler
 {
 public:
@@ -38,6 +40,7 @@ public:
 	String getHostname() const override;
 	IpAddress getIP() const override;
 	MacAddress getMacAddress() const override;
+	bool setMacAddress(const MacAddress& addr) const override;
 	IpAddress getNetworkMask() const override;
 	IpAddress getNetworkGateway() const override;
 	IpAddress getNetworkBroadcast() const override;
@@ -63,16 +66,28 @@ protected:
 
 private:
 	static void staticScanCompleted(wifi_event_sta_scan_done_t* event, uint8_t status);
+#ifdef ENABLE_WPS
+	static void staticWpsEventHandler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
+	{
+		auto self = static_cast<StationImpl*>(arg);
+		self->wpsEventHandler(event_base, event_id, event_data);
+	}
+	void wpsEventHandler(esp_event_base_t event_base, int32_t event_id, void* event_data);
+	bool wpsCallback(WpsStatus status);
+	bool wpsConfigure(uint8_t credIndex);
+#endif
 #ifdef ENABLE_SMART_CONFIG
 	void internalSmartConfig(sc_status status, void* pdata);
 #endif
-#ifdef ENABLE_WPS
-	void internalWpsConfig(wps_cb_status status);
-#endif
 
 private:
-	bool runScan = false;
+	bool runScan{false};
+#ifdef ENABLE_WPS
+	struct WpsConfig;
+	WpsConfig* wpsConfig;
+#endif
 #ifdef ENABLE_SMART_CONFIG
 	std::unique_ptr<SmartConfigEventInfo> smartConfigEventInfo; ///< Set during smart handling
 #endif
+	esp_netif_obj* stationNetworkInterface{nullptr};
 };

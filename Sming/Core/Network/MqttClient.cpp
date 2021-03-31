@@ -168,13 +168,11 @@ int MqttClient::onMessageEnd(mqtt_message_t* message)
 			// failure
 			clearBits(flags, MQTT_CLIENT_CONNECTED);
 			setTimeOut(1); // schedule the connection for closing
-
-			return message->connack.return_code;
+		} else {
+			// success
+			setTimeOut(USHRT_MAX);
+			setBits(flags, MQTT_CLIENT_CONNECTED);
 		}
-
-		// success
-		setTimeOut(USHRT_MAX);
-		setBits(flags, MQTT_CLIENT_CONNECTED);
 	}
 
 	auto& handler = static_cast<const HandlerMap&>(eventHandlers)[message->common.type];
@@ -388,13 +386,20 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 			break;
 		}
 
+		if(outgoingMessage->common.type == MQTT_TYPE_PUBLISH && payloadStream != nullptr) {
+			// The packetLength should be big enought for the header ONLY.
+			// Payload will be attached as a second stream
+			packetLength -= outgoingMessage->publish.content.length;
+			outgoingMessage->publish.content.data = nullptr;
+		}
+
 		uint8_t packet[packetLength];
 		mqtt_serialiser_write(&serialiser, outgoingMessage, packet, packetLength);
 
 		delete stream;
 		auto headerStream = new MemoryDataStream();
 		headerStream->write(packet, packetLength);
-		if(outgoingMessage->common.type == MQTT_TYPE_PUBLISH && payloadStream != nullptr) {
+		if(payloadStream != nullptr) {
 			auto streamChain = new StreamChain();
 			streamChain->attachStream(headerStream);
 			streamChain->attachStream(payloadStream);

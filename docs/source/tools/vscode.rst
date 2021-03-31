@@ -1,131 +1,107 @@
-********************************
 Using with MS Visual Studio Code
-********************************
+================================
 
+.. highlight:: bash
 
-`Visual Studio Code <https://code.visualstudio.com/>`__ is free (as in
-“free beer”, and they claim the code is Open Source) code editor for
-Windows, Linux and Mac. While not as sophisticated in C/C++ support as
-full featured Visual Studio, it already has some official support with
-`C/C++ extension from
-Microsoft <https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools>`__.
-GNU Global replaces venerable ``ctags`` tool and help collecting symbols
-for Intellisense engine.
+Microsoft `Visual Studio Code <https://code.visualstudio.com/>`__ is a free (as in
+"free beer") and Open Source code editor for Windows, Linux and Mac.
 
-For easier integration make sure you have both ``ESP_HOME`` and
-``SMING_HOME`` exported in your working environment.
-``${workspaceRoot}`` below is the directory with your project, this
-notation is used also in VS Code config files. All environment variables
-are available in configuration using this notation, eg. ``${HOME}`` etc.
+For easier integration make sure you have both :envvar:`ESP_HOME` and
+:envvar:`SMING_HOME` exported in your working environment.
+
 
 Software involved
-=================
+-----------------
 
 -  `Visual Studio Code <https://code.visualstudio.com/>`__
--  `C/C++
-   extension <https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools>`__
--  `RunOnSave
-   extension <https://marketplace.visualstudio.com/items?itemName=emeraldwalk.RunOnSave>`__
--  `C++ Intellisense
-   extension <https://marketplace.visualstudio.com/items?itemName=austin.code-gnu-global>`__
--  `GNU Global <https://www.gnu.org/software/global/>`__
+-  `C/C++ extension <https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools>`__
 
-Fire and forget way
-===================
 
--  install VS Code, extensions and tools
--  download sming-qstart.py from
-   https://github.com/zgoda/sming-qstart/blob/master/sming-qstart.py
--  run it from terminal, eg. ``python sming-qstart.py myproject``, see
-   the `program
-   documentation <https://github.com/zgoda/sming-qstart/blob/master/README.md>`__
-   for detailed invocation options
+Installation
+------------
 
-Easy way
-========
+-  Install VS Code, extensions and tools
+-  Navigate to project folder and create configuration as described below
+-  Open workspace. If vscode is in your system path you can do this::
 
--  install VS Code, extensions and tools
--  clone project skeleton using https://github.com/zgoda/sming-skel.git
-   as source
--  remove unwanted bits (at least ``.git`` directory)
--  update paths configuration in
-   ``${workspaceRoot}/.vscode/c_cpp_properties.json`` - should already
-   work out of the box with Linux providing you have ``ESP_HOME`` and
-   ``SMING_HOME`` properly exported
+      code .
 
-Step by step
-============
 
--  install VS Code, extensions and tools
--  update paths configuration in
-   ``${workspaceRoot}/.vscode/c_cpp_properties.json`` so the list
-   includes toolchain include path
-   (``${ESP_HOME}/xtensa-lx106-elf/xtensa-lx106-elf/include``), Sming
-   framework include paths (``${SMING_HOME}`` and
-   ``${SMING_HOME}/system/include``) and possibly your project
-   additional paths (eg. ``${workspaceRoot}/lib``), if you screw your
-   configuration just close VS Code, delete this file and start from
-   scratch
--  make sure ``path`` list in ``browse`` section contains the same
-   entries as ``includePath`` list in root section
--  define RunOnSave task in your
-   ``${workspaceRoot}/.vscode/settings.json`` (create file if does not
-   exist) to regenerate GNU Global database on every save, eg:
+Configuration
+-------------
 
-.. code-block:: json
+One of the strengths of vscode is the use of well-documented configuration files.
+You can find comprehensive documentation for these online.
 
-   {
-     "emeraldwalk.runonsave": {
-       "commands": [
-         {
-           "match": "\\.(c|cpp|h|hpp)$",
-           "isAsync": true,
-           "cmd": "gtags ${workspaceRoot}"
-         }
-       ]
-     }
-   }
+However, setting these up is time-consuming so the build system can create them for you.
+The vscode workspace root directory is your project directory.
 
--  create file ``${workspaceRoot}/.vscode/tasks.json`` and define tasks
-   you want to run from command palette, eg minimal set:
+Change to your project directory (e.g. ``samples/Basic_Blink``) and run these commands::
 
-.. code-block:: json
+   make ide-vscode SMING_ARCH=Esp8266
+   make ide-vscode SMING_ARCH=Host
 
-   {
-     "version": "0.1.0",
-     "command": "make",
-     "isShellCommand": true,
-     "showOutput": "always",
-     "echoCommand": true,
-     "suppressTaskName": true,
-     "tasks": [
-       {
-         "taskName": "Build",
-         "isBuildCommand": true
-       },
-       {
-         "taskName": "Clean",
-         "args": [
-           "clean"
-         ]
-       },
-       {
-         "taskName": "Flash",
-         "args": [
-           "flash"
-         ]
-       }
-     ]
-   }
+Now open the workspace in vscode, and open a source file (.c, .cpp, .h).
+You should now be able to select the architecture from the icon in the bottom-right corner:
 
--  add tools and binary artifacts to ``.gitignore``, eg:
+.. figure:: vscode1.png
 
-::
+   VS Code language selection
 
-   out
+A selection of tasks are provided which you can view via ``Terminal`` -> ``Run Task``.
 
-   # development tools
-   .vscode
-   GTAGS
-   GRTAGS
-   GPATH
+To debug your application, follow these steps:
+
+-  Select the appropriate architecture (e.g. Host, Esp8266)
+-  Select ``Terminal`` -> ``Run Task`` -> ``Full rebuild (with debugging)``
+-  Confirm that the baud rate (:envvar:`COM_SPEED_GDB`) and port (:envvar:`COM_PORT_GDB`) are
+   set correctly::
+
+      make gdb SMING_ARCH=Esp8266 COM_PORT_GDB=/dev/ttyUSB0 COM_SPEED_GDB=115200
+
+-  Update the vscode configuration::
+
+      make ide-vscode
+
+-  In vscode, select the require 'Run' task:
+
+.. figure:: vscode2.png
+
+   VS Code debug selection
+
+
+Manual configuration changes
+----------------------------
+
+When you run ``make ide-vscode`` the configuration files are actually generated using a python script
+``Tools/vscode/setup.py``. Configuration variables are passed from the project makefile.
+
+If you make any changes to the configuration files, please note the following behaviour:
+
+-  The ``Host``, ``Esp32`` or ``Esp8266`` intellisense settings will be overwritten.
+-  The ``Esp8266 GDB`` and ``Host GDB`` launch configurations will be overwritten
+-  The ``sming.code-workspace`` and ``.vscode/tasks.json`` files will be created if they do not already exist.
+   To re-create these they must first be deleted.
+
+Ideally the vscode configuration files should not need to be kept under configuration control,
+but generated when required.
+
+Some settings are necessarily configured via the ``setup.py`` script, however most settings can
+be changed by editing the files in ``Tools/vscode/template``.
+
+If you do this, remember to keep a copy as they'll be overwritten otherwise.
+
+And, please consider contributing any changes or suggestions to the community!
+
+
+Known issues / features
+-----------------------
+
+-  The vscode configuration files are only updated when you manually run ``make ide-vscode``.
+   If you update change critical build variables or add/remove Components to your project,
+   you may need to run it again to update them.
+-  When running ``make ide-vscode``, comments in the configuration files will be discarded.
+-  ``make ide-vscode`` may overwrite parts of your configuration: be warned!
+-  When debugging for esp8266 output in the console is not formatted correctly.
+   Lines appear with @ in front of them.
+-  A debugging configuration is not currently provided for ESP32.

@@ -12,6 +12,7 @@
 
 #include "BasicStream.h"
 #include <sodium/crypto_secretstream_xchacha20poly1305.h>
+#include <memory>
 
 namespace OtaUpgrade
 {
@@ -20,18 +21,13 @@ namespace OtaUpgrade
  *
  * The class processes encrypted firmware upgrade files created by otatool.py.
  * A buffer is allocated dynamically to fit the largest chunk of the encryption container
- * (2kB unless otatool.py was modified). The actual processing of the decrypted data is 
+ * (2kB unless otatool.py was modified). The actual processing of the decrypted data is
  * defered to #BasicStream.
  */
 class EncryptedStream : public BasicStream
 {
 public:
 	EncryptedStream() = default;
-
-	~EncryptedStream()
-	{
-		free(buffer);
-	}
 
 	/** @brief Process an arbitrarily sized chunk of an encrypted OTA upgrade file.
 	 * @param data Pointer to chunk of data.
@@ -55,12 +51,12 @@ private:
 		Chunk,
 		None,
 	};
-	Fragment fragment = Fragment::Header;
 
-	size_t remainingBytes = sizeof(header);
-	uint8_t* fragmentPtr = header;
-	uint8_t* buffer = nullptr;
-	size_t bufferSize = 0;
+	Fragment fragment{Fragment::Header};
+	size_t remainingBytes{sizeof header};
+	uint8_t* fragmentPtr{header};
+	std::unique_ptr<uint8_t[]> buffer;
+	size_t bufferSize{0};
 };
 
 } // namespace OtaUpgrade

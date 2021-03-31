@@ -48,7 +48,9 @@
 	XX(flashsize, required_argument, "Change default flash size if file doesn't exist", "SIZE",                        \
 	   "Size of flash in bytes (e.g. 512K, 524288, 0x80000)", nullptr)                                                 \
 	XX(initonly, no_argument, "Initialise only, do not start Sming", nullptr, nullptr, nullptr)                        \
-	XX(nonet, no_argument, "Skip network initialisation", nullptr, nullptr, nullptr)
+	XX(nonet, no_argument, "Skip network initialisation", nullptr, nullptr, nullptr)                                   \
+	XX(debug, required_argument, "Set debug verbosity", "LEVEL", "Maximum debug message level to print",               \
+	   "0 = errors only, 1 = +warnings, 2 = +info\0")
 
 enum option_tag_t {
 #define XX(tag, has_arg, desc, argname, arghelp, examples) opt_##tag,
@@ -58,4 +60,5 @@ enum option_tag_t {
 };
 
 option_tag_t get_option(int argc, char* argv[], const char*& arg);
+int get_first_non_option();
 void print_help();

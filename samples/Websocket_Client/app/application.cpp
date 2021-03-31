@@ -13,7 +13,7 @@
 #include <Network/WebsocketClient.h>
 
 #ifndef WIFI_SSID
-#define WIFI_SSID "PutSsidHere" // Put you SSID and Password here
+#define WIFI_SSID "PutSsidHere" // Put your SSID and password here
 #define WIFI_PWD "PutPasswordHere"
 #endif
 

@@ -1,3 +1,3 @@
 ARDUINO_LIBRARIES := ArduCAM
-
+HWCONFIG = spiffs
 SPIFF_FILES = web/build

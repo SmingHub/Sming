@@ -153,6 +153,11 @@ MacAddress AccessPointImpl::getMacAddress() const
 	}
 }
 
+bool AccessPointImpl::setMacAddress(const MacAddress& addr) const
+{
+	return wifi_set_macaddr(SOFTAP_IF, &const_cast<MacAddress&>(addr)[0]);
+}
+
 String AccessPointImpl::getSSID() const
 {
 	softap_config config = {0};

@@ -92,3 +92,8 @@ option_tag_t get_option(int argc, char* argv[], const char*& arg)
 	arg = optarg;
 	return option_tag_t(option_index);
 }
+
+int get_first_non_option()
+{
+	return optind;
+}

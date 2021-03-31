@@ -7,32 +7,38 @@ DD					:= dd
 CACHE_VARS			+= FLASH_BIN
 FLASH_BIN			?= $(FW_BASE)/flash.bin
 
-CONFIG_VARS			+= SPI_SIZE
-SPI_SIZE			?= 4M
+DEBUG_VARS			+= SPI_SIZE
+SPI_SIZE			= $(STORAGE_DEVICE_spiFlash_SIZE)
 
 # Options to add when running emulator
 CACHE_VARS			+= HOST_FLASH_OPTIONS
 HOST_FLASH_OPTIONS	?= --flashfile=$(FLASH_BIN) --flashsize=$(SPI_SIZE)
 CLI_TARGET_OPTIONS += $(HOST_FLASH_OPTIONS)
 
-# Write data to flash
-# $1 -> Start offset
-# $2 -> File containing data to write
-define WriteFlashChunk
-	$(info WriteFlash $1 -> $2)
-	$(Q) if [ ! -f $(FLASH_BIN) ]; then \
-		$(EraseFlash); \
-	fi
-	$(Q) $(DD) if=$2 of=$(FLASH_BIN) obs=1 seek=$$(($1)) conv=notrunc
-endef
+# Virtual flasher tool
+VFLASH := $(PYTHON) $(COMPONENT_PATH)/vflash.py $(FLASH_BIN) $(STORAGE_DEVICE_spiFlash_SIZE_BYTES)
 
 # Write one or more chunks to flash
 # $1 -> List of `Offset=File` chunks
 define WriteFlash
-	$(foreach c,$1,$(call WriteFlashChunk,$(word 1,$(subst =, ,$c)),$(word 2,$(subst =, ,$c))))
+	$(if $1,$(Q) $(VFLASH) write-chunks $1)
+endef
+
+# Read flash memory into file
+# $1 -> `Offset,Size` chunk
+# $2 -> Output filename
+define ReadFlash
+	$(info ReadFlash $1,$2)
+	$(Q) $(VFLASH) read-chunks $1=$2
+endef
+
+# Erase a region of Flash
+# $1 -> List of `Offset,Size` chunks
+define EraseFlashRegion
+	$(Q) $(VFLASH) fill-regions $1
 endef
 
 # Reset/create flash backing file
 define EraseFlash
-	$(DD) if=/dev/zero ibs=1 count=$(SPI_SIZE) | tr "\000" "\377" > $(FLASH_BIN)
-endef 
+	$(Q) $(VFLASH) erase
+endef

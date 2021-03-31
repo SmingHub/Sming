@@ -183,7 +183,7 @@ void CUartServer::terminate()
 {
 	close();
 	join();
-	hostmsg("UART%u server destroyed", uart_nr);
+	host_debug_i("UART%u server destroyed", uart_nr);
 }
 
 void CUartServer::onNotify(smg_uart_t* uart, smg_uart_notify_code_t code)
@@ -271,7 +271,7 @@ int CUartServer::serviceWrite()
 	do {
 		int sent = socket->send(data, avail);
 		if(sent < 0) {
-			hostmsg("Uart send returned %d", sent);
+			host_debug_w("Uart send returned %d", sent);
 			result = sent;
 			break;
 		}
@@ -295,11 +295,11 @@ void* CUartServer::thread_routine()
 	auto port = portBase + uart_nr;
 	CSockAddr addr(nullptr, port);
 	if(!listen(addr, 1)) {
-		hostmsg("Listen %s failed", addr.text().c_str());
+		host_debug_e("Listen %s failed", addr.text().c_str());
 		return nullptr;
 	}
 
-	hostmsg("UART%u server listening on port %u", uart_nr, port);
+	host_debug_i("UART%u server listening on port %u", uart_nr, port);
 
 	while(active()) {
 		socket = try_connect();
@@ -308,7 +308,7 @@ void* CUartServer::thread_routine()
 			continue;
 		}
 
-		hostmsg("Uart #%u socket open", uart_nr);
+		host_debug_i("Uart #%u socket open", uart_nr);
 
 		while(socket->active()) {
 			if(txsem.timedwait(IDLE_SLEEP_MS)) {
@@ -335,7 +335,7 @@ void* CUartServer::thread_routine()
 		}
 
 		socket->close();
-		hostmsg("Uart #%u socket closed", uart_nr);
+		host_debug_i("Uart #%u socket closed", uart_nr);
 	}
 
 	return nullptr;

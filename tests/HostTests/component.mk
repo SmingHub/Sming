@@ -1,6 +1,5 @@
-DISABLE_SPIFFS = 1
+HWCONFIG = host-tests
 DEBUG_VERBOSE_LEVEL = 2
-SPI_SIZE = 4M
 
 COMPONENT_INCDIRS := include
 COMPONENT_SRCDIRS := app modules
@@ -15,8 +14,10 @@ COMPONENT_DEPENDS := \
 	axtls-8266 \
 	bearssl-esp8266
 
-# Don't need network
+ifeq ($(UNAME),Windows)
+# Network tests run on Linux only
 HOST_NETWORK_OPTIONS := --nonet
+endif
 
 # Time in milliseconds to pause after a test group has completed
 CONFIG_VARS += TEST_GROUP_INTERVAL
@@ -37,3 +38,13 @@ APP_CFLAGS += -DRESTART_DELAY=$(RESTART_DELAY)
 
 .PHONY: execute
 execute: flash run
+
+SPIFFSGEN_BIN := out/spiff_rom_test.bin
+CUSTOM_TARGETS += $(SPIFFSGEN_BIN)
+$(SPIFFSGEN_BIN):
+	$(Q) $(SPIFFSGEN_SMING) 0x10000 spiffsgen/build $@
+
+clean: resource-clean
+.PHONY: resource-clean
+resource-clean:
+	rm -f $(SPIFFSGEN_BIN)

@@ -1,3 +1,4 @@
+HWCONFIG := spiffs
 SPIFF_FILES = web/
 ARDUINO_LIBRARIES := MultipartParser OtaUpgrade
 

@@ -13,6 +13,8 @@
 #include <Platform/AccessPoint.h>
 #include <Platform/System.h>
 
+struct esp_netif_obj;
+
 class AccessPointImpl : public AccessPointClass, protected ISystemReadyHandler
 {
 public:
@@ -28,6 +30,7 @@ public:
 	IpAddress getIP() const override;
 	bool setIP(IpAddress address) override;
 	MacAddress getMacAddress() const override;
+	bool setMacAddress(const MacAddress& addr) const override;
 	IpAddress getNetworkMask() const override;
 	IpAddress getNetworkGateway() const override;
 	IpAddress getNetworkBroadcast() const override;
@@ -36,4 +39,7 @@ public:
 
 protected:
 	void onSystemReady() override;
+
+private:
+	esp_netif_obj* apNetworkInterface{nullptr};
 };

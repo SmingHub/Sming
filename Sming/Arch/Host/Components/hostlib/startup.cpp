@@ -32,6 +32,7 @@
 #include <host_lwip.h>
 #include <stdlib.h>
 #include "include/hostlib/CommandLine.h"
+#include <Storage.h>
 
 #include <Platform/System.h>
 #include <Platform/Timers.h>
@@ -50,19 +51,19 @@ static void cleanup()
 	CUartServer::shutdown();
 	sockets_finalise();
 	host_lwip_shutdown();
-	hostmsg("Goodbye!");
+	host_debug_i("Goodbye!");
 }
 
 void host_exit(int code)
 {
 	static unsigned exit_count;
 
-	hostmsg("returning %d", code);
+	host_debug_i("returning %d", code);
 	exitCode = code;
 	done = true;
 
 	if(exit_count++) {
-		hostmsg("Forcing exit");
+		host_debug_w("Forcing exit");
 		exit(exitCode);
 	}
 }
@@ -106,8 +107,6 @@ static void pause(int secs)
 int main(int argc, char* argv[])
 {
 	trap_exceptions();
-
-	host_printf("\nWelcome to the Sming Host emulator\n\n");
 
 	static struct {
 		int pause;
@@ -196,11 +195,18 @@ int main(int argc, char* argv[])
 			config.enable_network = false;
 			break;
 
+		case opt_debug:
+			host_debug_level = atoi(arg);
+			break;
+
 		default:;
 		}
 	}
 
-	commandLine.parse(argc - optind, &argv[optind]);
+	host_debug_i("\nWelcome to the Sming Host emulator\n\n");
+
+	auto i = get_first_non_option();
+	commandLine.parse(argc - i, &argv[i]);
 
 	if(!host_flashmem_init(config.flash)) {
 		return 1;
@@ -211,8 +217,10 @@ int main(int argc, char* argv[])
 	atexit(cleanup);
 
 	if(config.initonly) {
-		hostmsg("Initialise-only requested");
+		host_debug_i("Initialise-only requested");
 	} else {
+		Storage::initialize();
+
 		CThread::startup();
 
 		hw_timer_init();
@@ -229,13 +237,13 @@ int main(int argc, char* argv[])
 				host_wifi_lwip_init_complete();
 			}
 		} else {
-			hostmsg("Network initialisation skipped as requested");
+			host_debug_i("Network initialisation skipped as requested");
 		}
 
-		hostmsg("If required, you may start terminal application(s) now");
+		host_debug_i("If required, you may start terminal application(s) now");
 		pause(config.pause);
 
-		hostmsg(">> Starting Sming <<\n");
+		host_debug_i(">> Starting Sming <<\n");
 
 		System.initialize();
 
@@ -253,7 +261,7 @@ int main(int argc, char* argv[])
 			system_soft_wdt_feed();
 		}
 
-		hostmsg(">> Normal Exit <<\n");
+		host_debug_i(">> Normal Exit <<\n");
 	}
 
 	pause(config.exitpause);

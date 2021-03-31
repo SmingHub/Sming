@@ -46,16 +46,15 @@ size_t EncryptedStream::write(const uint8_t* data, size_t size)
 
 			case Fragment::ChunkSize:
 				remainingBytes = 1 + chunkSizeMinusOne;
-				if(buffer == nullptr || bufferSize < remainingBytes) {
-					free(buffer);
-					buffer = (uint8_t*)malloc(remainingBytes);
-					if(buffer == nullptr) {
+				if(!buffer || bufferSize < remainingBytes) {
+					buffer.reset(new uint8_t[remainingBytes]);
+					if(!buffer) {
 						setError(Error::OutOfMemory);
 						break;
 					}
 					bufferSize = remainingBytes;
 				}
-				fragmentPtr = buffer;
+				fragmentPtr = buffer.get();
 				fragment = Fragment::Chunk;
 				break;
 
@@ -63,8 +62,8 @@ size_t EncryptedStream::write(const uint8_t* data, size_t size)
 				unsigned char tag;
 				size_t chiperTextLength = 1 + chunkSizeMinusOne;
 				unsigned long long messageLength = 0;
-				bool ok = (crypto_secretstream_xchacha20poly1305_pull(&state, buffer, &messageLength, &tag, buffer,
-																	  chiperTextLength, nullptr, 0) == 0);
+				bool ok = (crypto_secretstream_xchacha20poly1305_pull(&state, buffer.get(), &messageLength, &tag,
+																	  buffer.get(), chiperTextLength, nullptr, 0) == 0);
 				if(!ok || messageLength > bufferSize) {
 					setError(Error::DecryptionFailed);
 					break;
@@ -77,7 +76,7 @@ size_t EncryptedStream::write(const uint8_t* data, size_t size)
 					fragment = Fragment::None;
 				}
 
-				BasicStream::write(buffer, static_cast<size_t>(messageLength));
+				BasicStream::write(buffer.get(), size_t(messageLength));
 			} break;
 
 			case Fragment::None:

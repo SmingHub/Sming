@@ -27,6 +27,9 @@ UNAME		:= $(shell uname -s)
 ifneq ($(filter MINGW32_NT%,$(UNAME)),)
 	UNAME		:= Windows
 	TOOL_EXT	:= .exe
+	# May be required by some applications (e.g. openssl)
+	HOME ?= $(USERPROFILE)
+	export HOME
 else ifneq ($(filter CYGWIN%,$(UNAME)),)
 	# Cygwin Detected
 	UNAME		:= Linux
@@ -280,20 +283,22 @@ endef
 
 # Display variable and list values, e.g. $(call PrintVariable,LIBS)
 # $1 -> Name of variable containing values
+# $2 -> (optional) tag to use instead of variable name
 define PrintVariable
-	$(info $1)
+	$(info $(if $2,$2,$1):)
 	$(foreach item,$($1),$(info - $(item)))
 endef
 
 define PrintVariableSorted
-	$(info $1)
+	$(info $(if $2,$2,$1):)
 	$(foreach item,$(sort $($1)),$(info - $(value item)))
 endef
 
 # Display list of variable references with their values e.g. $(call PrintVariableRefs,DEBUG_VARS)
 # $1 -> Name of variable containing list of variable names
+# $2 -> (optional) tag to use instead of variable name
 define PrintVariableRefs
-	$(info $1)
+	$(info $(if $2,$2,$1):)
 	$(foreach item,$(sort $($1)),$(info - $(item) = $(value $(item))) )
 endef
 

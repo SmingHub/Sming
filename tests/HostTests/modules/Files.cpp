@@ -23,7 +23,7 @@ public:
 			res = fileSetContent(testFileName, testContent);
 			debug_i("fileSetContent() returned %d", res);
 			REQUIRE(size_t(res) == testContent.length());
-			file = fileOpen(testFileName, eFO_ReadWrite);
+			file = fileOpen(testFileName, File::ReadWrite);
 			size = fileSeek(file, 0, SeekOrigin::End);
 			pos = fileSeek(file, 100, SeekOrigin::Start);
 			debug_i("pos = %d, size = %d", pos, size);
@@ -104,7 +104,7 @@ public:
 		TEST_CASE("Truncate read/write file stream")
 		{
 			FileStream fs;
-			fs.open(testFileName, eFO_ReadWrite);
+			fs.open(testFileName, File::ReadWrite);
 			fs.seek(50);
 			res = fs.truncate(100);
 			pos = fs.getPos();
@@ -122,7 +122,7 @@ public:
 		TEST_CASE("Seek file stream past end of file")
 		{
 			FileStream fs;
-			fs.open(testFileName, eFO_ReadWrite);
+			fs.open(testFileName, File::ReadWrite);
 			res = fs.seekFrom(101, SeekOrigin::Start);
 			pos = fs.getPos();
 			size = fs.getSize();

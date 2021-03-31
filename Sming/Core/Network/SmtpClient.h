@@ -90,7 +90,10 @@ using SmtpClientCallback = Delegate<int(SmtpClient& client, int code, char* stat
 class SmtpClient : protected TcpClient
 {
 public:
-	SmtpClient(bool autoDestroy = false);
+	SmtpClient(bool autoDestroy = false) : TcpClient(autoDestroy)
+	{
+	}
+
 	~SmtpClient();
 
 	/**
@@ -183,18 +186,18 @@ private:
 	Url url;
 	Vector<String> authMethods;
 	ObjectQueue<MailMessage, SMTP_QUEUE_SIZE> mailQ;
-	char code[4] = {0};
-	int codeValue = 0;
+	char code[4]{0};
+	int codeValue{0};
 	String authChallenge;
-	char message[SMTP_ERROR_LENGTH + 1] = {0};
-	bool isLastLine = false;
-	uint8_t codeLength = 0;
-	int options = 0;
-	MailMessage* outgoingMail = nullptr;
-	SmtpState state = eSMTP_Banner;
+	char message[SMTP_ERROR_LENGTH + 1]{0};
+	bool isLastLine{false};
+	uint8_t codeLength{0};
+	int options{0};
+	MailMessage* outgoingMail{nullptr};
+	SmtpState state{eSMTP_Banner};
 
-	SmtpClientCallback errorCallback = nullptr;
-	SmtpClientCallback messageSentCallback = nullptr;
+	SmtpClientCallback errorCallback;
+	SmtpClientCallback messageSentCallback;
 
 private:
 	/**

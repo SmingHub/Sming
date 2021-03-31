@@ -22,7 +22,7 @@ all:
 ##@Cleaning
 
 .PHONY: dist-clean
-dist-clean: submodules-clean samples-clean docs-clean ##Clean everything for all arch/build types
+dist-clean: submodules-clean samples-clean docs-clean tests-clean ##Clean everything for all arch/build types
 	-$(Q) rm -rf out
 
 .PHONY: clean
@@ -103,8 +103,8 @@ docs: submodules ##Build the Sming documentation
 
 # For integration testing both samples and tests are moved outside of the repo.
 SMING_PROJECTS_DIR	?= $(abspath $(SMING_HOME)/..)
-SAMPLES_DIR			:= $(call FixPath,$(SMING_PROJECTS_DIR)/samples)
-TESTS_DIR			:= $(call FixPath,$(SMING_PROJECTS_DIR)/tests)
+SMING_PROJECTS_DIR	:= $(call FixPath, $(SMING_PROJECTS_DIR))
+SAMPLES_DIR			:= $(SMING_PROJECTS_DIR)/samples
 
 SAMPLE_NAMES		= $(shell ls -1 $(SAMPLES_DIR))
 
@@ -112,16 +112,43 @@ SAMPLE_NAMES		= $(shell ls -1 $(SAMPLES_DIR))
 samples: | $(SAMPLE_NAMES) ##Build all sample applications
 
 $(SAMPLE_NAMES):
-	$(Q) $(MAKE) --no-print-directory -C $(SAMPLES_DIR)/$@
+	@printf "\n\n** Building ${@F} **\n\n"
+	$(Q) $(MAKE) --no-print-directory -C $(SAMPLES_DIR)/$@ PIP_ARGS=-q python-requirements all
+
+# Build component samples
+.PHONY: component-samples
+component-samples: submodules ##Build all samples contained in components
+	$(Q) $(MAKE) --no-print-directory build-component-samples
+
+# Marks sample as build complete for faster re-testing
+BUILT_SUFFIX := /out/.built
+COMPONENT_SAMPLE_TARGETS = $(addsuffix $(BUILT_SUFFIX),$(wildcard $(foreach c,$(COMPONENT_SEARCH_DIRS),$c/*/samples/*)))
+
+.PHONY: build-component-samples
+build-component-samples: $(COMPONENT_SAMPLE_TARGETS)
+
+$(COMPONENT_SAMPLE_TARGETS):
+	@printf "\n\n** Building $(notdir $(@:$(BUILT_SUFFIX)=)) **\n\n"
+	$(Q) $(MAKE) --no-print-directory -C $(@:$(BUILT_SUFFIX)=) PIP_ARGS=-q python-requirements all
+	$(Q) touch $@
 
 
-TESTS_COMPLETED = $(addsuffix /.complete,$(call ListSubDirs,$(TESTS_DIR)))
 PHONY: tests
-tests: $(TESTS_COMPLETED) ##Build and run all test applications
+tests: submodules ##Build and run all tests
+	$(Q) $(MAKE) --no-print-directory build-and-run-tests
+
+COMPLETED_SUFFIX := /.complete
+COMPONENT_TESTS = $(call dirx,$(wildcard $(foreach c,$(COMPONENT_SEARCH_DIRS),$c/*/test/component.mk)))
+TESTS_COMPLETED = $(addsuffix $(COMPLETED_SUFFIX),$(wildcard $(SMING_PROJECTS_DIR)/tests/* $(COMPONENT_TESTS)))
+
+PHONY: build-and-run-tests
+build-and-run-tests: $(TESTS_COMPLETED) ##Build and run all test applications
 
 $(TESTS_COMPLETED):
+	@printf "\n\n** Building $(notdir $(@D)) **\n\n"
 	$(Q) $(MAKE) -C $(@D) execute
 	$(Q) touch $@
+
 
 ##@Cleaning
 
@@ -130,18 +157,31 @@ samples-clean: ##Clean all sample applications (all arch/build types)
 	@echo Cleaning all samples...
 	-$(Q) cd $(SAMPLES_DIR) && rm -rf $(addsuffix /out,$(SAMPLE_NAMES))
 
+.PHONY: component-samples-clean
+component-samples-clean: ##Clean all component samples
+	@echo Cleaning all component samples...
+	-$(Q) rm -rf $(dir $(COMPONENT_SAMPLE_TARGETS))
+
 CLEAN_TESTS := $(TESTS_COMPLETED:complete=clean)
 .PHONY: tests-clean
-tests-clean: $(CLEAN_TESTS) ##Clean all test applications (all arch/build types)
+tests-clean: $(wildcard $(CLEAN_TESTS)) ##Clean all test applications (all arch/build types)
 	-$(Q) rm -f $(TESTS_COMPLETED)
 
 .PHONY: $(CLEAN_TESTS)
 $(CLEAN_TESTS):
 	@echo Cleaning '$(@D)'
-	$(Q) $(MAKE) -C $(@D) clean
+	-$(Q) $(MAKE) -C $(@D) clean
 
 
 ##@Tools
+
+CACHE_VARS += PIP_ARGS
+PIP_ARGS ?=
+.PHONY: python-requirements
+python-requirements: ##Install Python requirements for framework via pip (use PIP_ARGS=... for additional options)
+	@echo Installing Python requirements...
+	$(Q) $(PYTHON) -m pip install $(PIP_ARGS) -r $(SMING_HOME)/../Tools/requirements.txt
+
 
 # Recursive wildcard search
 # $1 -> list of directories

@@ -14,6 +14,7 @@
 #pragma once
 
 #include "DataSourceStream.h"
+#include <memory>
 
 /**
  * @brief Base class for read-only stream which generates output from multiple source streams
@@ -22,21 +23,6 @@
 class MultiStream : public IDataSourceStream
 {
 public:
-	~MultiStream()
-	{
-		delete stream;
-	}
-
-	StreamType getStreamType() const override
-	{
-		return eSST_Unknown;
-	}
-
-	int available() override
-	{
-		return -1;
-	}
-
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
 
 	bool seek(int len) override;
@@ -55,6 +41,6 @@ protected:
 	virtual IDataSourceStream* getNextStream() = 0;
 
 private:
-	IDataSourceStream* stream = nullptr;
-	bool finished = false;
+	std::unique_ptr<IDataSourceStream> stream;
+	bool finished{false};
 };

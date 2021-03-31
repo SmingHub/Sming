@@ -55,12 +55,12 @@ const uint8_t HOST_TASK_PRIO = USER_TASK_PRIO_MAX;
 bool system_os_task(os_task_t callback, uint8_t prio, os_event_t* events, uint8_t qlen)
 {
 	if(prio >= USER_TASK_PRIO_MAX) {
-		hostmsg("Invalid priority %u", prio);
+		host_debug_e("Invalid priority %u", prio);
 		return false;
 	}
 	auto& queue = task_queues[prio];
 	if(queue != nullptr) {
-		hostmsg("Queue %u already initialised", prio);
+		host_debug_e("Queue %u already initialised", prio);
 		return false;
 	}
 
@@ -71,12 +71,12 @@ bool system_os_task(os_task_t callback, uint8_t prio, os_event_t* events, uint8_
 bool system_os_post(uint8_t prio, os_signal_t sig, os_param_t par)
 {
 	if(prio >= USER_TASK_PRIO_MAX) {
-		hostmsg("Invalid priority %u", prio);
+		host_debug_e("Invalid priority %u", prio);
 		return false;
 	}
 	auto& queue = task_queues[prio];
 	if(queue == nullptr) {
-		hostmsg("Task queue %u not initialised", prio);
+		host_debug_e("Task queue %u not initialised", prio);
 		return false;
 	}
 

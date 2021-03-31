@@ -1,5 +1,5 @@
 diff --git a/Adafruit_SSD1306.cpp b/Adafruit_SSD1306.cpp
-index 570a335..efcc3eb 100644
+index 570a335..750b750 100644
 --- a/Adafruit_SSD1306.cpp
 +++ b/Adafruit_SSD1306.cpp
 @@ -32,12 +32,38 @@ All text above, and the splash screen below must be included in any redistributi
@@ -150,6 +150,78 @@ index 570a335..efcc3eb 100644
  }
  
  // clear everything
+@@ -564,13 +632,13 @@ void Adafruit_SSD1306::drawFastHLineInternal(int16_t x, int16_t y, int16_t w, ui
+   if(w <= 0) { return; }
+ 
+   // set up the pointer for  movement through the buffer
+-  register uint8_t *pBuf = buffer;
++  uint8_t *pBuf = buffer;
+   // adjust the buffer pointer for the current row
+   pBuf += ((y/8) * SSD1306_LCDWIDTH);
+   // and offset x columns in
+   pBuf += x;
+ 
+-  register uint8_t mask = 1 << (y&7);
++  uint8_t mask = 1 << (y&7);
+ 
+   switch (color)
+   {
+@@ -638,27 +706,27 @@ void Adafruit_SSD1306::drawFastVLineInternal(int16_t x, int16_t __y, int16_t __h
+   }
+ 
+   // this display doesn't need ints for coordinates, use local byte registers for faster juggling
+-  register uint8_t y = __y;
+-  register uint8_t h = __h;
++  uint8_t y = __y;
++  uint8_t h = __h;
+ 
+ 
+   // set up the pointer for fast movement through the buffer
+-  register uint8_t *pBuf = buffer;
++  uint8_t *pBuf = buffer;
+   // adjust the buffer pointer for the current row
+   pBuf += ((y/8) * SSD1306_LCDWIDTH);
+   // and offset x columns in
+   pBuf += x;
+ 
+   // do the first partial byte, if necessary - this requires some masking
+-  register uint8_t mod = (y&7);
++  uint8_t mod = (y&7);
+   if(mod) {
+     // mask off the high n bits we want to set
+     mod = 8-mod;
+ 
+     // note - lookup table results in a nearly 10% performance improvement in fill* functions
+-    // register uint8_t mask = ~(0xFF >> (mod));
++    // uint8_t mask = ~(0xFF >> (mod));
+     static uint8_t premask[8] = {0x00, 0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE };
+-    register uint8_t mask = premask[mod];
++    uint8_t mask = premask[mod];
+ 
+     // adjust the mask if we're not going to reach the end of this byte
+     if( h < mod) {
+@@ -696,7 +764,7 @@ void Adafruit_SSD1306::drawFastVLineInternal(int16_t x, int16_t __y, int16_t __h
+       }
+     else {
+       // store a local value to work with
+-      register uint8_t val = (color == WHITE) ? 255 : 0;
++      uint8_t val = (color == WHITE) ? 255 : 0;
+ 
+       do  {
+         // write our value in
+@@ -715,10 +783,10 @@ void Adafruit_SSD1306::drawFastVLineInternal(int16_t x, int16_t __y, int16_t __h
+   if(h) {
+     mod = h & 7;
+     // this time we want to mask the low bits of the byte, vs the high bits we did above
+-    // register uint8_t mask = (1 << mod) - 1;
++    // uint8_t mask = (1 << mod) - 1;
+     // note - lookup table results in a nearly 10% performance improvement in fill* functions
+     static uint8_t postmask[8] = {0x00, 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F };
+-    register uint8_t mask = postmask[mod];
++    uint8_t mask = postmask[mod];
+     switch (color)
+     {
+       case WHITE:   *pBuf |=  mask;  break;
 diff --git a/Adafruit_SSD1306.h b/Adafruit_SSD1306.h
 index 1162f87..28d783f 100644
 --- a/Adafruit_SSD1306.h

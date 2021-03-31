@@ -2,7 +2,7 @@
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
-#define WIFI_SSID "PleaseEnterSSID" // Put you SSID and Password here
+#define WIFI_SSID "PleaseEnterSSID" // Put your SSID and password here
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
@@ -41,6 +41,18 @@ void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reas
 	Serial.print(ssid);
 	Serial.print(_F("\", reason: "));
 	Serial.println(WifiEvents.getDisconnectReasonDesc(reason));
+
+	/*
+	 * Print available access points
+	 * 
+	 * Note: Calling this in init() *may* work, but it also may result in an error,
+	 * "STA is connecting, scan are not allowed!" (ESP32).
+	 *
+	 * The station interface must be enabled, however, so this is a good place to make the call.
+	 * 
+	 * A real application would normally do this elsewhere, for example after a user has logged in via AP.
+	 */
+	WifiStation.startScan(listNetworks); // In Sming we can start network scan from init method without additional code
 }
 
 // Will be called when WiFi hardware and software initialization was finished
@@ -85,9 +97,6 @@ void init()
 		Serial.print(_F(", mac = "));
 		Serial.println(mac);
 	});
-
-	// Print available access points
-	WifiStation.startScan(listNetworks); // In Sming we can start network scan from init method without additional code
 
 	// Set callback that should be triggered when we have assigned IP
 	WifiEvents.onStationGotIP(connectOk);

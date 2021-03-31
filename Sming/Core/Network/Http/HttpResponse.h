@@ -77,7 +77,7 @@ public:
 		return setContentType(::toString(type));
 	}
 
-	HttpResponse* setCookie(const String& name, const String& value);
+	HttpResponse* setCookie(const String& name, const String& value, bool append = false);
 
 	HttpResponse* setHeader(const String& name, const String& value)
 	{
@@ -93,6 +93,12 @@ public:
 		headers[HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN] = controlAllowOrigin;
 		return this;
 	}
+
+	/*
+	 * Send file by stat, indicates whether file is compressed
+	 * A name is required in stat to get the appropriate content type
+	 */
+	bool sendFile(const FileStat& stat);
 
 	/**
 	 * @brief Send file by name

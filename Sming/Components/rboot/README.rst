@@ -7,7 +7,26 @@ Introduction
 rBoot is a second-stage bootloader that allows booting application images from several 
 pre-configured flash memory addresses, called "slots". Sming supports up to three slots.
 
-Sming uses rBoot exclusively because of its flexibility, reliability and ease of use. 
+.. note::
+
+   With Sming 4.3 partitions are used to manage flash storage.
+   A "slot" refers to a specific application partition, typically ``rom0``, ``rom1`` or ``rom2``.
+
+   The location or size of these partitions is determined by the :ref:`hardware_config`.
+
+   The bootloader has been modified to use the partition table as reference, identifying slots
+   by the partition sub-type.
+
+   Where systems are to be updated Over the Air (OTA) at least two application partitions are required.
+   The bootloader identifies these by their partition subtype: ``slot #0`` -> ``App/Ota_0``, ``slot #1`` -> ``App/Ota_1``, etc.
+
+   Fixed applications without OTA capability use a single application image.
+   This must be the ``App/Factory`` partition type, and corresponds to ``slot #0``.
+
+   At startup, the bootloader will use the partition table to locate the application image.
+   It will also ensure that the ROM slot information in the boot configuration is consistent,
+   and update it if necessary.
+
 
 .. attention::
 
@@ -19,38 +38,40 @@ Sming uses rBoot exclusively because of its flexibility, reliability and ease of
 Slot 0
 ------
 
-This is the default slot which is always used.
+This is the default slot (``rom0``, the primary application partition) which is always used.
 
 .. envvar:: RBOOT_ROM0_ADDR
 
-   default: 0x2000.
+   [read-only]
 
-   This is the start address for slot 0. The default is sector 3, immediately after rBoot and its configuration data.
+   This is the start address for slot 0.
 
-   Except for the use case described in `Slot2`_ below, you should not need to set this value.
+   Except for the use case described in `Slot2`_ below, you should not need to change this.
 
 Slot 1
 ------
 
 .. envvar:: RBOOT_ROM1_ADDR
 
-   default: disabled
+   [read-only] default: disabled
 
-   The start address of slot 1. If you don't need it, leave unconfigured (empty).
+   The start address of slot 1.
 
 If your application includes any kind of Over-the-Air (OTA) firmware
 update functionality, you will need a second memory slot to store the received
 update image while the update routines execute from the first slot.
+
+.. note::
+
+   The ``spiffs-two-roms`` configuration can be used for this purpose.
 
 Upon successful completion of the update, the second slot is activated, such that on next reset
 rBoot boots into the uploaded application. While now running from slot 1, the next
 update will be stored to slot 0 again, i.e. the roles of slot 0 and slot 1 are
 flipped with every update.
 
-For devices with more than 1MB of flash memory, it is advisable to choose an address with the same 
-offset within its 1MB block as :envvar:`RBOOT_ROM0_ADDR`, e.g. 0x102000 for the default 
-slot 0 address (0x2000). This way, the same application image can be used for both 
-slots. See :ref:`single_vs_dual` for further details.
+For devices with more than 1MB of flash memory, it is advisable to choose an address
+for ``rom1`` with the same offset within its 1MB block as ``rom0``.
 
 .. _Slot2:
 
@@ -69,23 +90,61 @@ To enable slot 2, set these values:
 
 .. envvar:: RBOOT_ROM2_ADDR
 
-   Address for slot 2
+   [read-only]
 
-Note that this will only configure rBoot.
-Sming will  not create an application image for slot 2.
-You can, however, use a second Sming  project to build a recovery application image as follows:
+   Address for slot 2. You must create a custom :ref:`hardware_config` for your project
+   with a definition for ``rom2``.
 
-1. Create a new Sming project for your recovery application. This will be a simple
-   single-slot project. Set :envvar:`RBOOT_ROM0_ADDR` of the recovery project to the value 
-   of :envvar:`RBOOT_ROM2_ADDR` of the main project.
+   .. code-block:: json
 
-2. Build and flash the recovery project as usual by typing ``make flash``. This will 
-   install the recovery ROM (into slot 2 of the main project) and a temporary 
-   bootloader, which will be overwritten in the next step.
+      {
+         ...
+         "partitions": {
+            "rom2": {
+               "address": "0x100000",
+               "size": "512K",
+               "type": "app",
+               "subtype": "ota_1"
+            }
+         }
+      }
 
-3. Go back to your main project. Build and flash it with ``make flash``. This will 
-   install the main application (into slot 0) and the final bootloader. You are 
-   now all set for booting into the recovery image if the need arises.
+.. note::
+
+   At present, this will only configure rBoot.
+   Sming will not create an application image for slot 2.
+
+   You can, however, use a second Sming  project to build a recovery application image as follows:
+
+   -  Create a new Sming project for your recovery application. This will be a simple
+      single-slot project. Create a new :ref:`hardware_config` and configure the
+      ``rom0`` start address and size to the same as the ``rom2`` partition of the main project.
+
+   option (a)
+
+   -  Build and flash the recovery project as usual by typing ``make flash``. This will 
+      install the recovery ROM (into slot 2 of the main project) and a temporary 
+      bootloader, which will be overwritten in the next step.
+
+   -  Go back to your main project. Build and flash it with ``make flash``. This will 
+      install the main application (into slot 0) and the final bootloader. You are 
+      now all set for booting into the recovery image if the need arises.
+
+   option (b)
+
+   -  Run a normal ``make`` for your recovery project
+   
+   -  Locate the firmware image file, typically ``out/Esp8266/release/firmware/rom0.bin``
+      (adjust accordingly if using a debug build).
+      Copy this image file as ``rom2.bin`` into your main project directory.
+
+   -  Add an additional property to the ``rom2`` partition entry in your main project:
+
+      .. code-block:: json
+
+         "filename": "rom2.bin"
+
+      When you run ``make flash`` in this will get written along with the other partitions.
 
 Automatically derived settings
 ------------------------------
@@ -122,8 +181,9 @@ the same address offsets within their 1MB blocks, i.e. ``(RBOOT_ROM0_ADDR & 0xFF
 Consequently, for such configurations, the Sming build system generates only one ROM image.
 
 In all other cases, two distinct application images must be linked with different addresses 
-for the 'irom0_0_seg' memory region. The Sming build system takes care of all the details, 
-including linker script generation.
+for the 'irom0_0_seg' memory region.
+You should use the ``two-rom-mode`` :ref:`hardware_config` for this.
+The Sming build system will handle everything else, including linker script generation.
 
 .. envvar:: RBOOT_TWO_ROMS
 

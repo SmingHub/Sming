@@ -1,0 +1,65 @@
+{
+	"name": "Basic Storage sample",
+	"base_config": "spiffs",
+	"devices": {
+		// If required, override default (conservative) flash settings
+		"spiFlash": {
+			/*
+			 * The default mode (dio) should work with all flash devices.
+			 * Make sure to set the mode according to your flash chip.
+			 * Allowed SPI modes are listed here:
+			 * https://sming.readthedocs.io/en/latest/_inc/Sming/Components/esptool/index.html#envvar-SPI_MODE.
+			*/
+			// "mode": "qio",
+			"speed": 80
+		}
+	},
+	"partitions": {
+		// User-defined partition type
+		"user0": {
+			"address": "0x1F0000",
+			"size": "16K",
+			"type": "user",
+			"subtype": 0,
+			"filename": "files/user0.bin"
+		},
+		"user1": {
+			"address": "0x1F4000",
+			"size": "16K",
+			"type": "user",
+			"subtype": 1
+		},
+		// Override default SPIFFS partition with new address and source content
+		"spiffs0": {
+			"address": "0x200000",
+			"build": {
+				// target is already defined, just change the folder to pick up files from
+				"files": "files/spiffs0"
+			}
+		},
+		// Add a second SPIFFS partition
+		"spiffs1": {
+			"address": "0x280000",
+			"size": "256K",
+			"type": "data",
+			"subtype": "spiffs",
+			"filename": "$(FW_BASE)/spiffs1_rom.bin",
+			"build": {
+				"target": "spiffsgen",
+				"files": "files/spiffs1"
+			}
+		},
+		// And a third
+		"spiffs2": {
+			"address": "0x2C0000",
+			"size": "256K",
+			"type": "data",
+			"subtype": "spiffs",
+			"filename": "$(FW_BASE)/spiffs2_rom.bin",
+			"build": {
+				"target": "spiffsgen",
+				"files": "files/spiffs2"
+			}
+		}
+	}
+}

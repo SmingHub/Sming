@@ -58,6 +58,12 @@ MacAddress AccessPointImpl::getMacAddress() const
 	return MACADDR_NONE;
 }
 
+bool AccessPointImpl::setMacAddress(const MacAddress& addr) const
+{
+	debug_w("[HOST] setMacAddress not implemented");
+	return false;
+}
+
 String AccessPointImpl::getSSID() const
 {
 	return nullptr;
