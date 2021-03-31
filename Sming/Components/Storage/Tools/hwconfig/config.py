@@ -30,10 +30,6 @@ def load_build_library():
     if len(s) != 0:
         for f in s.split(' '):
             data = json_load(fixpath(f))
-            for k, v in data.items():
-                props = v['properties']
-                props['target'] = {'type': 'string'}
-                props.move_to_end('target', False)
             library.update(data)
     return library
 
@@ -73,9 +69,13 @@ class Schema(dict):
         properties = self['Partition']['properties']
         properties['type']['enum'] = list((partition.TYPES).keys() - ['storage', 'internal'])
         properties['subtype']['enum'] = []
-        builders = load_build_library()
-        properties['build']['enum'] = list(builders.keys())
-
+        # Add defined build targets and all available build fields
+        self.builders = load_build_library()
+        tgt = properties['build.target'] = {'type': 'string'}
+        tgt['enum'] = list(self.builders.keys())
+        for name, builder in self.builders.items():
+            for k, v in builder['properties'].items():
+                properties['build.' + k] = v
 
     def __getitem__(self, name):
         return self.schema['definitions'][name]

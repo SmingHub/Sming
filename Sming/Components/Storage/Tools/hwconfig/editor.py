@@ -162,18 +162,12 @@ class EditState(dict):
         f.pack(side=tk.TOP)
         self.array = {} # dictionary for array element variables
         self.row = 0
-        props = self.schema['properties']
-        if 'build' in props:
-            lib = load_build_library()
-            for builder_name, builder in lib.items():
-                for k, v in builder['properties'].items():
-                    props['build.' + k] = v
-        keys = list(props.keys())
+        keys = self.schema['properties'].keys()
         if not 'name' in keys:
             self.addControl('name')
         for k in keys:
             self.addControl(k)
-        if 'build' in props:
+        if self.objectType == 'Partition':
             self.updateBuildTargets()
         f = ttk.Frame(self.editor.editFrame, padding=(0, 8))
         f.pack(side=tk.BOTTOM)
@@ -197,14 +191,6 @@ class EditState(dict):
         disabled = False
         if fieldName == 'name':
             value = self.name
-        elif fieldName == 'build.target':
-            values = []
-            builders = load_build_library()
-            for n, v in builders.items():
-                if self.obj.type_is(v['partition']['type'])  and self.obj.subtype_is(v['partition']['subtype']):
-                    values += [n]
-            build = self.obj.build
-            value = '' if build is None else build.get('target', '')
         elif '.' in fieldName:
             o, k = resolve_key(self.obj, fieldName)
             value = '' if o is None else o.get(k)
@@ -254,16 +240,18 @@ class EditState(dict):
             else:
                 values.sort()
                 c = ttk.Combobox(frame, values=values, textvariable=var)
-                if fieldName == 'subtype':
-                    def set_subtype_values():
-                        t = self['type'].get_value()
-                        t = partition.TYPES.get(t)
-                        subtypes = list(partition.SUBTYPES.get(t, []))
-                        subtypes.sort()
-                        c.configure(values=subtypes)
-                    c.configure(postcommand=set_subtype_values)
-                if fieldName == 'type' or fieldName == 'subtype' or fieldName == 'build.target':
-                    c.bind('<<ComboboxSelected>>', lambda event: self.updateBuildTargets())
+                if self.objectType == 'Partition':
+                    if fieldName == 'subtype':
+                        def set_subtype_values():
+                            t = self['type'].get_value()
+                            t = partition.TYPES.get(t)
+                            subtypes = list(partition.SUBTYPES.get(t, []))
+                            subtypes.sort()
+                            c.configure(values=subtypes)
+                        c.configure(postcommand=set_subtype_values)
+                    if fieldName == 'type' or fieldName == 'subtype' or fieldName == 'build.target':
+                        c.bind('<<ComboboxSelected>>', lambda event: self.updateBuildTargets())
+                        c.bind('<FocusOut>', lambda event: self.updateBuildTargets())
         field = self[fieldName] = Field(var, label, c)
 
         # Name is read-only for inherited devices/partitions
@@ -284,8 +272,7 @@ class EditState(dict):
         t = self['type'].get_value()
         subtype = self['subtype'].get_value()
         builders = {}
-        lib = load_build_library()
-        for n, v in lib.items():
+        for n, v in config.schema.builders.items():
             if t == v['partition']['type'] and subtype == v['partition']['subtype']:
                 builders[n] = v
         self['build.target'].widget.configure(values=list(builders.keys()))
@@ -321,13 +308,14 @@ class EditState(dict):
         base = {} if base is None else base.dict()
         new_name = None
         try:
-            for k, f in self.items():
-                if not f.is_enabled():
+            for fieldName, field in self.items():
+                if not field.is_enabled():
                     continue
-                value = f.get_value()
-                schema = self.get_property(k)
+                value = field.get_value()
+                schema = self.get_property(fieldName)
                 fieldType = schema.get('type')
-                if k == 'name' and json_dict is not None:
+                o, k = resolve_key(obj, fieldName)
+                if fieldName == 'name' and json_dict is not None:
                     value = value.strip()
                     if value != self.name:
                         if value in self.editor.config.map():
@@ -340,23 +328,22 @@ class EditState(dict):
                             for n, p in json_config.get('partitions', {}).items():
                                 if p.get('device') == self.name:
                                     p['device'] = new_name
-                elif k == 'address' and self.objectType == 'Partition' and self.obj.is_internal(partition.INTERNAL_PARTITION_TABLE):
+                elif fieldName == 'address' and self.objectType == 'Partition' and self.obj.is_internal(partition.INTERNAL_PARTITION_TABLE):
                     json_config['partition_table_offset'] = value
-                elif value == '' and k != 'filename': # TODO mark 'allow empty' values in schema somehow
-                    o, k = resolve_key(obj, k)
+                elif value == '' and fieldName != 'filename': # TODO mark 'allow empty' values in schema somehow
                     if k in o:
                         del o[k]
                 elif fieldType == 'array':
-                    obj[k] = {} if value == '' else json_loads(value)
+                    o[k] = {} if value == '' else json_loads(value)
                 elif fieldType == 'boolean':
-                    obj[k] = (value != '0')
+                    o[k] = (value != '0')
                 elif value.isdigit() and 'integer' in fieldType:
-                    obj[k] = int(value)
+                    o[k] = int(value)
                 else:
-                    o, k = resolve_key(obj, k)
                     o[k] = value
-                if k in base and obj.get(k) == base[k]:
-                    del obj[k]
+                obj_base, key_base = resolve_key(base, fieldName)
+                if key_base in obj_base and o.get(k) == obj_base[key_base]:
+                    del o[k]
 
             if len(obj) == 0:
                 del json_dict[self.name]
