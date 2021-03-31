@@ -143,7 +143,7 @@ class EditState(dict):
         for k in keys:
             if k != 'devices' and k != 'partitions':
                 self.addControl(k)
-        f = ttk.Frame(self.editor.editFrame)
+        f = ttk.Frame(self.editor.editFrame, padding=(0, 8))
         f.pack(side=tk.BOTTOM)
         btn = ttk.Button(f, text='Apply', command=lambda *args: self.apply())
         btn.grid(row=0, column=0)
@@ -855,11 +855,11 @@ class Editor:
                 self.user_error(err)
         def undo(*args):
             self.jsonEditor.replace('1.0', 'end', to_json(self.json))
-        f = ttk.Frame(frame)
+        f = ttk.Frame(frame, padding=(0, 8))
         f.pack(anchor=tk.S, side=tk.BOTTOM)
-        btn = ttk.Button(f, text="Apply", command=apply)
+        btn = ttk.Button(f, text='Apply', command=apply)
         btn.grid(row=0, column=0)
-        btn = ttk.Button(f, text="Undo", command=undo)
+        btn = ttk.Button(f, text='Undo', command=undo)
         btn.grid(row=0, column=1)
         self.jsonEditor = tk.Text(frame, width=10, height=14)
         self.jsonEditor.pack(anchor=tk.N, side=tk.LEFT, expand=True, fill=tk.BOTH)
