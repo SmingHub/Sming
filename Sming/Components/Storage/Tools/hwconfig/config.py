@@ -73,7 +73,7 @@ class Schema(dict):
         self.builders = load_build_library()
         tgt = properties['build.target'] = {'type': 'string'}
         tgt['enum'] = list(self.builders.keys())
-        for name, builder in self.builders.items():
+        for builder in self.builders.values():
             for k, v in builder['properties'].items():
                 properties['build.' + k] = v
 

@@ -96,6 +96,9 @@ class Field:
     def get_value(self):
         return str(self.var.get())
 
+    def set_value(self, value):
+        self.var.set(value)
+
     def enable(self, state):
         self.widget.configure(state='normal' if state else 'disabled')
         if self.label is not None:
@@ -106,6 +109,22 @@ class Field:
             return str(self.widget.cget('state')) != 'disabled'
         except Exception:
             return True
+
+    def show(self, state = True):
+        if state:
+            self.widget.grid()
+            if self.label is not None:
+                self.label.grid()
+        else:
+            self.hide()
+
+    def hide(self):
+        self.widget.grid_remove()
+        if self.label is not None:
+            self.label.grid_remove()
+
+    def is_visible(self):
+        return len(self.widget.grid_info()) != 0
 
 
 class EditState(dict):
@@ -279,17 +298,17 @@ class EditState(dict):
 
         for k, v in self.items():
             if k.startswith('build.'):
-                v.enable(False)
+                v.hide()
         if len(builders) == 0:
             return
         target = self['build.target']
-        target.enable(True)
-        target = target.get_value()
-        builder = builders.get(target)
+        target.show()
+        builder = builders.get(target.get_value())
         if builder is None:
+            target.set_value('')
             return
-        for k, v in builder['properties'].items():
-            self['build.' + k].enable(True)
+        for k in builder['properties']:
+            self['build.' + k].show()
 
     def apply(self):
         # Fetch base JSON for comparison
@@ -315,7 +334,10 @@ class EditState(dict):
                 schema = self.get_property(fieldName)
                 fieldType = schema.get('type')
                 o, k = resolve_key(obj, fieldName)
-                if fieldName == 'name' and json_dict is not None:
+                if not field.is_visible():
+                    if k in o:
+                        del o[k]
+                elif fieldName == 'name' and json_dict is not None:
                     value = value.strip()
                     if value != self.name:
                         if value in self.editor.config.map():
@@ -325,7 +347,7 @@ class EditState(dict):
                         new_name = value
                         # If renaming a device, then all partitions must be updated
                         if self.objectType == 'Device':
-                            for n, p in json_config.get('partitions', {}).items():
+                            for p in json_config.get('partitions', {}).values():
                                 if p.get('device') == self.name:
                                     p['device'] = new_name
                 elif fieldName == 'address' and self.objectType == 'Partition' and self.obj.is_internal(partition.INTERNAL_PARTITION_TABLE):
