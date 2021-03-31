@@ -145,7 +145,7 @@ endef
 
 .PHONY: buildpart
 buildpart: ##Rebuild all partition targets
-	$(Q) if [ "$(PARTITION_BUILD_TARGETS)" -eq "" ]; then \
+	$(Q) if [ -z "$(PARTITION_BUILD_TARGETS)" ]; then \
 		echo "No partitions have build targets"; \
 	else \
 		rm -f $(PARTITION_BUILD_TARGETS); \
