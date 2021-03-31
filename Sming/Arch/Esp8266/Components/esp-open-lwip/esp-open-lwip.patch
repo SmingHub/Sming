@@ -76,10 +76,10 @@ index 1bc584f..e4af916 100644
  $(LIB): $(OBJS)
  	$(AR) rcs $@ $^
 diff --git a/include/arch/cc.h b/include/arch/cc.h
-index ff03b30..5efcf13 100644
+index ff03b30..4a2b4d9 100644
 --- a/include/arch/cc.h
 +++ b/include/arch/cc.h
-@@ -38,8 +38,27 @@
+@@ -38,14 +38,31 @@
  #include "c_types.h"
  #include "ets_sys.h"
  #include "osapi.h"
@@ -106,8 +106,15 @@ index ff03b30..5efcf13 100644
 +
  //#define LWIP_PROVIDE_ERRNO
  
- #if (1)
-@@ -56,6 +75,7 @@ typedef signed     short   s16_t;
+-#if (1)
++#ifndef BYTE_ORDER
+ #define BYTE_ORDER LITTLE_ENDIAN
+-#else
+-#define BYTE_ORDER BIG_ENDIAN
+ #endif
+ 
+ 
+@@ -56,6 +73,7 @@ typedef signed     short   s16_t;
  typedef unsigned   long    u32_t;
  typedef signed     long    s32_t;
  typedef unsigned long   mem_ptr_t;
@@ -115,7 +122,7 @@ index ff03b30..5efcf13 100644
  
  #define S16_F "d"
  #define U16_F "d"
-@@ -73,11 +93,12 @@ typedef unsigned long   mem_ptr_t;
+@@ -73,11 +91,12 @@ typedef unsigned long   mem_ptr_t;
  #define PACK_STRUCT_BEGIN
  #define PACK_STRUCT_END
  

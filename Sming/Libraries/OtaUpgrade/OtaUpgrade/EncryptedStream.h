@@ -12,6 +12,7 @@
 
 #include "BasicStream.h"
 #include <sodium/crypto_secretstream_xchacha20poly1305.h>
+#include <memory>
 
 namespace OtaUpgrade
 {
@@ -20,7 +21,7 @@ namespace OtaUpgrade
  *
  * The class processes encrypted firmware upgrade files created by otatool.py.
  * A buffer is allocated dynamically to fit the largest chunk of the encryption container
- * (2kB unless otatool.py was modified). The actual processing of the decrypted data is 
+ * (2kB unless otatool.py was modified). The actual processing of the decrypted data is
  * defered to #BasicStream.
  */
 class EncryptedStream : public BasicStream
