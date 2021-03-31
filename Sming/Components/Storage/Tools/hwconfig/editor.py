@@ -72,21 +72,40 @@ def resolve_device(config, id):
         return obj
     return obj.device
 
+def resolve_key(obj, key):
+    """Resolve dotted key, e.g. 'build.target' refers to 'target' property of 'build' object
+    """
+    keys = key.split('.')
+    while len(keys) > 1:
+        k = keys.pop(0)
+        if hasattr(obj, k):
+            obj = getattr(obj, k)
+        else:
+            obj = get_dict_value(obj, k, {})
+    return obj, keys[0]
+
+
 class Field:
     """Manages widget and associated variable
     """
-    def __init__(self, var, widget):
+    def __init__(self, var, label, widget):
         self.var = var
+        self.label = label
         self.widget = widget
 
     def get_value(self):
         return str(self.var.get())
 
-    def is_disabled(self):
+    def enable(self, state):
+        self.widget.configure(state='normal' if state else 'disabled')
+        if self.label is not None:
+            self.label.configure(state='normal' if state else 'disabled')
+
+    def is_enabled(self):
         try:
-            return str(self.widget.cget('state')) == 'disabled'
+            return str(self.widget.cget('state')) != 'disabled'
         except Exception:
-            return False
+            return True
 
 
 class EditState(dict):
@@ -143,12 +162,19 @@ class EditState(dict):
         f.pack(side=tk.TOP)
         self.array = {} # dictionary for array element variables
         self.row = 0
-        keys = self.schema['properties'].keys()
+        props = self.schema['properties']
+        if 'build' in props:
+            lib = load_build_library()
+            for builder_name, builder in lib.items():
+                for k, v in builder['properties'].items():
+                    props['build.' + k] = v
+        keys = list(props.keys())
         if not 'name' in keys:
             self.addControl('name')
         for k in keys:
-            if k != 'devices' and k != 'partitions':
-                self.addControl(k)
+            self.addControl(k)
+        if 'build' in props:
+            self.updateBuildTargets()
         f = ttk.Frame(self.editor.editFrame, padding=(0, 8))
         f.pack(side=tk.BOTTOM)
         btn = ttk.Button(f, text='Apply', command=lambda *args: self.apply())
@@ -164,10 +190,24 @@ class EditState(dict):
     def addControl(self, fieldName):
         schema = self.get_property(fieldName)
         fieldType = schema.get('type')
+        if fieldType == 'object':
+            return
+        values = schema.get('enum')
         frame = self.controlFrame
         disabled = False
         if fieldName == 'name':
             value = self.name
+        elif fieldName == 'build.target':
+            values = []
+            builders = load_build_library()
+            for n, v in builders.items():
+                if self.obj.type_is(v['partition']['type'])  and self.obj.subtype_is(v['partition']['subtype']):
+                    values += [n]
+            build = self.obj.build
+            value = '' if build is None else build.get('target', '')
+        elif '.' in fieldName:
+            o, k = resolve_key(self.obj, fieldName)
+            value = '' if o is None else o.get(k)
         else:
             value = self.obj_dict.get(fieldName, self.obj.dict().get(fieldName))
             if fieldName == 'device':
@@ -182,11 +222,11 @@ class EditState(dict):
         var = tk.StringVar(value=value)
 
         if fieldType == 'boolean':
+            label = None
             c = ttk.Checkbutton(frame, text=fieldName, variable=var)
         else:
-            l = tk.Label(frame, text=fieldName)
-            l.grid(row=self.row, column=0, sticky=tk.W)
-            values = schema.get('enum')
+            label = tk.Label(frame, text=fieldName)
+            label.grid(row=self.row, column=0, sticky=tk.W)
             if values is None:
                 c = tk.Entry(frame, width=64, textvariable=var)
             elif fieldType == 'array':
@@ -222,7 +262,9 @@ class EditState(dict):
                         subtypes.sort()
                         c.configure(values=subtypes)
                     c.configure(postcommand=set_subtype_values)
-        self[fieldName] = Field(var, c)
+                if fieldName == 'type' or fieldName == 'subtype' or fieldName == 'build.target':
+                    c.bind('<<ComboboxSelected>>', lambda event: self.updateBuildTargets())
+        field = self[fieldName] = Field(var, label, c)
 
         # Name is read-only for inherited devices/partitions
         if fieldName == 'name' and self.is_inherited:
@@ -233,10 +275,34 @@ class EditState(dict):
             if not (self.obj.is_internal(partition.INTERNAL_PARTITION_TABLE) and fieldName == 'address'):
                 disabled = True
         if disabled:
-            c.configure(state='disabled')
+            field.enable(False)
         c.grid(row=self.row, column=1, sticky=tk.EW)
         self.row += 1
         return c
+
+    def updateBuildTargets(self):
+        t = self['type'].get_value()
+        subtype = self['subtype'].get_value()
+        builders = {}
+        lib = load_build_library()
+        for n, v in lib.items():
+            if t == v['partition']['type'] and subtype == v['partition']['subtype']:
+                builders[n] = v
+        self['build.target'].widget.configure(values=list(builders.keys()))
+
+        for k, v in self.items():
+            if k.startswith('build.'):
+                v.enable(False)
+        if len(builders) == 0:
+            return
+        target = self['build.target']
+        target.enable(True)
+        target = target.get_value()
+        builder = builders.get(target)
+        if builder is None:
+            return
+        for k, v in builder['properties'].items():
+            self['build.' + k].enable(True)
 
     def apply(self):
         # Fetch base JSON for comparison
@@ -256,7 +322,7 @@ class EditState(dict):
         new_name = None
         try:
             for k, f in self.items():
-                if f.is_disabled():
+                if not f.is_enabled():
                     continue
                 value = f.get_value()
                 schema = self.get_property(k)
@@ -277,16 +343,18 @@ class EditState(dict):
                 elif k == 'address' and self.objectType == 'Partition' and self.obj.is_internal(partition.INTERNAL_PARTITION_TABLE):
                     json_config['partition_table_offset'] = value
                 elif value == '' and k != 'filename': # TODO mark 'allow empty' values in schema somehow
-                    if k in obj:
-                        del obj[k]
-                elif fieldType == 'object' or fieldType == 'array':
+                    o, k = resolve_key(obj, k)
+                    if k in o:
+                        del o[k]
+                elif fieldType == 'array':
                     obj[k] = {} if value == '' else json_loads(value)
                 elif fieldType == 'boolean':
                     obj[k] = (value != '0')
                 elif value.isdigit() and 'integer' in fieldType:
                     obj[k] = int(value)
                 else:
-                    obj[k] = value
+                    o, k = resolve_key(obj, k)
+                    o[k] = value
                 if k in base and obj.get(k) == base[k]:
                     del obj[k]
 
@@ -329,8 +397,7 @@ class EditState(dict):
     def get_property(self, name):
         if name == 'name':
             return {'type': 'text'}
-        else:
-            return self.schema['properties'][name]
+        return self.schema['properties'][name]
 
     def nameChanged(self):
         return self.name != self['name'].get_value()
