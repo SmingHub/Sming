@@ -66,6 +66,12 @@ def resolve_id(config, id):
         return dev
     return config.map().find_by_name(id)
 
+def resolve_device(config, id):
+    obj = resolve_id(config, id)
+    if obj is None or isinstance(obj, storage.Device):
+        return obj
+    return obj.device
+
 class Field:
     """Manages widget and associated variable
     """
@@ -384,8 +390,7 @@ class TkMap(tk.Frame):
         super().__init__(parent)
         self.pack(fill=tk.BOTH)
         self.editor = editor
-        self.device = None
-        self.selected_id = None
+        self.selected = ''
         self.bytesPerPixel = 32
         self.maxPartitionDrawSize = 0x4000
         canvas = self.canvas = tk.Canvas(self, height=150, xscrollincrement=1)
@@ -422,12 +427,13 @@ class TkMap(tk.Frame):
 
         self.clear()
 
-        if self.device is None:
+        self.selected = self.editor.selected
+        device = self.device = resolve_device(self.editor.config, self.selected)
+        if device is None:
             return
 
-        device = self.device
         canvas = self.canvas
-        partitions = list(filter(lambda p: p.device == self.device, self.editor.config.map()))
+        partitions = list(filter(lambda p: p.device == device, self.editor.config.map()))
 
         # Minimum width (in pixels) to draw a partition
         minPartitionWidth = M
@@ -563,7 +569,7 @@ class TkMap(tk.Frame):
         canvas.config(scrollregion=(0, 0, self.scroll_width, 0))
 
         # Highlight the selected item (if any)
-        item = self.items.get(self.selected_id)
+        item = self.items.get(self.selected)
         if item is not None:
             self.canvas.itemconfigure(item, width=3)
 
@@ -601,23 +607,24 @@ class TkMap(tk.Frame):
         if not (shift or control):
             self.canvas.xview_scroll(delta, tk.UNITS)
 
-    def set_device(self, dev):
-        if self.device != dev:
-            self.device = dev
-            self.update()
-
     def select(self):
         id = self.editor.selected
-        if id == self.selected_id:
+        if id == self.selected:
             return
-        item = self.items.get(self.selected_id)
-        if item is not None:
-            self.canvas.itemconfigure(item, width=1)
+        dev = resolve_device(self.editor.config, id)
+        if dev != self.device:
+            self.selected = id
+            self.device = dev
+            self.update()
+        else:
+            item = self.items.get(self.selected)
+            if item is not None:
+                self.canvas.itemconfigure(item, width=1)
         item = self.items.get(id)
         if item is None:
             return
         self.canvas.itemconfigure(item, width=3)
-        self.selected_id = id
+        self.selected = id
         # Ensure item is visible
         pos = self.canvas.coords(item)
         id_x1 = pos[0] / self.scroll_width
@@ -978,9 +985,6 @@ class Editor:
         return used
 
     def reload(self):
-        with open(find_config(self.json['base_config'])) as f:
-            self.json_base_config = json_loads(f.read())
-
         self.jsonEditor.replace('1.0', 'end', to_json(self.json))
         try:
             config = Config.from_json(self.json)
@@ -990,16 +994,15 @@ class Editor:
 
         self.status.set('')
         self.config = config
+        self.json_base_config = json_load(find_config(self.json['base_config']))
 
+        if self.selected == '':
+            self.selected = get_id(self.config.devices[0])
         self.map.update()
         self.tree.update()
 
     def select(self, obj):
         self.selected = get_id(obj)
-        if isinstance(obj, partition.Entry):
-            self.map.set_device(obj.device)
-        else:
-            self.map.set_device(obj)
         self.map.select()
         self.tree.select()
 
@@ -1019,7 +1022,7 @@ class Editor:
 
     def addDevice(self):
         dev = storage.Device('New device')
-        self.editDevice(dev)
+        self.edit = EditState(self, 'Device', 'devices', dev)
 
     def editDevice(self, dev):
         if isinstance(dev, str):
