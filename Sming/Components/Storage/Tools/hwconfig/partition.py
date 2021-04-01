@@ -229,16 +229,17 @@ class Table(list):
                 return p
         return None
 
-    def verify(self, arch, spiFlash, secure):
+    def verify(self, config, secure):
         """Verify partition layout
         """
         # verify each partition individually
         for p in self:
-            p.verify(arch, secure)
+            p.verify(config.arch, secure)
 
         if self.offset % FLASH_SECTOR_SIZE != 0:
             raise InputError("Partition table offset not aligned to flash sector")
 
+        spiFlash = config.devices[0]
         p = self.find_by_address(spiFlash, self.offset)
         if p is None:
             p = self.find_by_address(spiFlash, self.offset + PARTITION_TABLE_SIZE - 1)
@@ -258,10 +259,10 @@ class Table(list):
             raise InputError("Partition names must be unique")
 
         # check for overlaps
-        if arch == 'Esp32':
+        if config.arch == 'Esp32':
             minPartitionAddress = self.offset + PARTITION_TABLE_SIZE
         else:
-            minPartitionAddress = 0x00002000
+            minPartitionAddress = config.bootloader_size
         dev = None
         last = None
         for p in self:
@@ -564,7 +565,7 @@ class Entry(object):
 class Map(Table):
     """Contiguous map of flash memory
     """
-    def __init__(self, table, devices):
+    def __init__(self, config):
         def add(table, device, name, address, size, subtype):
             entry = Entry(device, name, address, size, INTERNAL_TYPE, subtype)
             table.append(entry)
@@ -575,17 +576,17 @@ class Map(Table):
                 return add(table, device, '(unused)', last_end + 1, address - last_end - 1, INTERNAL_UNUSED)
             return None
 
-        device = devices[0]
+        device = config.devices[0]
 
         # Take copy of source partitions and add internal ones to appear in the map
-        partitions = copy.copy(table)
-        if table.offset != 0:
-            add(partitions, device, 'Boot Sector', 0, min(table.offset, partitions[0].address), INTERNAL_BOOT_SECTOR)
-            add(partitions, device, 'Partition Table', table.offset, PARTITION_TABLE_SIZE, INTERNAL_PARTITION_TABLE)
+        partitions = copy.copy(config.partitions)
+        if partitions.offset != 0:
+            add(partitions, device, 'Boot Sector', 0, config.bootloader_size, INTERNAL_BOOT_SECTOR)
+            add(partitions, device, 'Partition Table', partitions.offset, PARTITION_TABLE_SIZE, INTERNAL_PARTITION_TABLE)
 
         # Devices with no defined partitions
         pdevs = set(p.device for p in partitions)
-        for dev in devices:
+        for dev in config.devices:
             if not dev in pdevs:
                 add_unused(partitions, dev, dev.size, -1)
 

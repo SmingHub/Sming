@@ -2,6 +2,7 @@
 	"name": "Standard config with single ROM",
 	"comment": "Should work with any Esp8266 variant",
 	"arch": "Esp8266",
+	"bootloader_size": "0x2000",
 	"partition_table_offset": "self.devices[0].size - 0x6000",
 	"devices": {
 		"spiFlash": {

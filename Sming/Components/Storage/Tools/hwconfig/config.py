@@ -160,6 +160,8 @@ class Config(object):
         for k, v in data.items():
             if k == 'arch':
                 self.arch = v
+            elif k == 'bootloader_size':
+                self.bootloader_size = parse_int(v)
             elif k == 'partition_table_offset':
                 self.partitions.offset = v
             elif k == 'devices':
@@ -181,6 +183,7 @@ class Config(object):
             res['comment'] = self.comment
         res['arch'] = self.arch;
         res['options'] = self.options
+        res['bootloader_size'] = size_format(self.bootloader_size)
         res['partition_table_offset'] = self.partitions.offset_str()
         res['devices'] = self.devices.dict()
         res['partitions'] = self.partitions.dict()
@@ -207,10 +210,10 @@ class Config(object):
 
     def verify(self, secure):
         self.devices.verify()
-        self.partitions.verify(self.arch, self.devices[0], secure)
+        self.partitions.verify(self, secure)
 
     def map(self):
-        return partition.Map(self.partitions, self.devices)
+        return partition.Map(self)
 
     @classmethod
     def from_binary(cls, b):

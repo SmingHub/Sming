@@ -1,6 +1,7 @@
 {
 	"name": "Standard config with single ROM",
 	"arch": "Host",
+	"bootloader_size": "0x2000",
 	"partition_table_offset": "0x2000",
 	"devices": {
 		"spiFlash": {

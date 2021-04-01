@@ -37,6 +37,14 @@
 					"title": "List of option fragments",
 					"description": "Import additional settings from option libraries"
 				},
+				"bootloader_size": {
+					"type": [
+						"string",
+						"integer"
+					],
+					"title": "Bootloader size",
+					"description": "Size to reserve for bootloader"
+				},
 				"partition_table_offset": {
 					"type": [
 						"string",
@@ -57,6 +65,7 @@
 			"required": [
 				"name",
 				"arch",
+				"bootloader_size",
 				"partition_table_offset",
 				"devices",
 				"partitions"

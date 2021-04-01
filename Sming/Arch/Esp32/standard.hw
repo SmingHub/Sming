@@ -2,6 +2,7 @@
 	"name": "Standard config with single ROM",
 	"comment": "Should work with any Esp32 variant",
 	"arch": "Esp32",
+	"bootloader_size": "0x8000",
 	"partition_table_offset": "0x8000",
 	"devices": {
 		"spiFlash": {
