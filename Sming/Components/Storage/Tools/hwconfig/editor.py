@@ -6,7 +6,6 @@ from tkinter import ttk, filedialog, messagebox, font
 from collections import OrderedDict
 
 app_name = 'Sming Hardware Profile Editor'
-K = 1024
 
 # Fields not listed in schema and therefore not part of JSON configuration, but present in GUI
 virtual_fields = {
@@ -122,22 +121,24 @@ class Field:
         if scale is not None:
             scale.grid(row=row, column=1, sticky=tk.E)
 
-    def addScale(self, min, max):
+    def addScale(self, min, max, on_change):
         """Add scale controls for address/size fields
         """
-        scale = self.scale = tk.Scale(self.widget.master,
-            orient=tk.HORIZONTAL,
-            from_=min//K,
-            to=max//K,
-            showvalue=False,
-            takefocus=True)
+        scale = self.scale = tk.Scale(
+            self.widget.master,
+            orient = tk.HORIZONTAL,
+            from_ = min // self.align,
+            to = max // self.align,
+            showvalue = False,
+            takefocus = True)
         value = parse_int(self.get_value())
-        scale.set(value//K)
+        scale.set(value // self.align)
         def change(event):
             value = parse_int(self.get_value())
-            self.scale.set(value//K)
+            self.scale.set(value // self.align)
         self.widget.bind('<FocusOut>', change)
         self.widget.configure(foreground='black' if max > min else 'gray')
+        scale.configure(command=lambda val: on_change(int(val) * self.align))
         return scale
 
     def get_value(self):
@@ -147,14 +148,14 @@ class Field:
         self.var.set(value)
 
     def get_scale(self):
-        return self.scale.get() * K
+        return self.scale.get() * self.align
 
     def set_scale(self, value):
-        self.scale.set(value//K)
+        self.scale.set(value // self.align)
 
     def set_scale_max(self, value):
-        self.scale.configure(to=value//K)
-        from_ = self.scale.cget('from') * K
+        self.scale.configure(to = value // self.align)
+        from_ = self.scale.cget('from') * self.align
         self.widget.configure(foreground='black' if value > from_ else 'gray')
 
     def enable(self, state):
@@ -342,21 +343,18 @@ class EditState(dict):
         # Manage address/size fields with scale controls and two additional virtual fields
         if self.objectType == 'Partition':
             part = self.obj
+            field.align = part.alignment(self.editor.config.arch)
             min_address = part.address - part.unused_before
             next_address = part.address + part.size + part.unused_after # max address +1
             max_size = next_address - min_address
             if fieldName == 'address':
-                field.addScale(part.address - part.unused_before, part.address + part.unused_after)
-                def scale_change(val):
-                    address = int(val) * K
+                def change(address):
                     field.set_value(addr_format(address))
                     self['size'].set_scale_max(next_address - address)
                     self['unused_before'].set_scale(address - min_address)
-                field.scale.configure(command=scale_change)
+                field.addScale(part.address - part.unused_before, part.address + part.unused_after, change)
             elif fieldName == 'size':
-                field.addScale(K, part.size + part.unused_after)
-                def scale_change(val):
-                    size = int(val) * K
+                def change(size):
                     field.set_value(size_format(size))
                     address_field = self['address']
                     address_field.set_scale_max(next_address - size)
@@ -365,27 +363,23 @@ class EditState(dict):
                     unused_after = self['unused_after']
                     unused_after.set_scale_max(max_size - size)
                     unused_after.set_scale(next_address - address - size)
-                field.scale.configure(command=scale_change)
+                field.addScale(field.align, part.size + part.unused_after, change)
             elif fieldName == 'unused_before':
                 field.set_value(size_format(part.unused_before))
-                field.addScale(0, part.unused_before + part.unused_after)
-                def scale_change(val):
-                    unused_before = int(val) * K
+                def change(unused_before):
                     field.set_value(size_format(unused_before))
                     self['unused_after'].set_scale(max_size - self['size'].get_scale() - unused_before)
-                field.scale.configure(command=scale_change)
+                field.addScale(0, part.unused_before + part.unused_after, change)
             elif fieldName == 'unused_after':
                 field.set_value(size_format(part.unused_after))
-                field.addScale(0, part.unused_before + part.unused_after)
-                def scale_change(val):
-                    unused_after = int(val) * K
+                def change(unused_after):
                     field.set_value(size_format(unused_after))
                     size = self['size'].get_scale()
                     part = self.obj
                     address = next_address - unused_after - size
                     self['address'].set_scale(address)
                     self['unused_before'].set_scale(part.unused_before + address - part.address)
-                field.scale.configure(command=scale_change)
+                field.addScale(0, part.unused_before + part.unused_after, change)
 
         # Name is read-only for inherited devices/partitions
         if fieldName == 'name' and self.is_inherited:
