@@ -12,7 +12,8 @@ K = 1024
 virtual_fields = {
     "name": {
         "type": "string",
-        "title": "Name of object"
+        "title": "Name",
+        "description": "Name of object"
     },
     "unused_before": {
         "type": "string",
@@ -112,7 +113,7 @@ class Field:
         self.schema = schema
         self.var = var
         self.widget = widget
-        self.label = tk.Label(widget.master, text=name)
+        self.label = tk.Label(widget.master, text=schema.get('title', name))
 
     def grid(self, row):
         self.label.grid(row=row, column=0, sticky=tk.W)
@@ -124,13 +125,19 @@ class Field:
     def addScale(self, min, max):
         """Add scale controls for address/size fields
         """
-        scale = self.scale = tk.Scale(self.widget.master, orient=tk.HORIZONTAL, from_=min//K, to=max//K, showvalue=False, takefocus=True)
+        scale = self.scale = tk.Scale(self.widget.master,
+            orient=tk.HORIZONTAL,
+            from_=min//K,
+            to=max//K,
+            showvalue=False,
+            takefocus=True)
         value = parse_int(self.get_value())
         scale.set(value//K)
         def change(event):
             value = parse_int(self.get_value())
             self.scale.set(value//K)
         self.widget.bind('<FocusOut>', change)
+        self.widget.configure(foreground='black' if max > min else 'gray')
         return scale
 
     def get_value(self):
@@ -147,6 +154,8 @@ class Field:
 
     def set_scale_max(self, value):
         self.scale.configure(to=value//K)
+        from_ = self.scale.cget('from') * K
+        self.widget.configure(foreground='black' if value > from_ else 'gray')
 
     def enable(self, state):
         self.widget.configure(state='normal' if state else 'disabled')
@@ -250,6 +259,9 @@ class EditState(dict):
 
 
     def addControl(self, fieldName):
+        if self.objectType == 'Partition' and fieldName == 'address':
+            self.addControl('unused_before')
+
         schema = self.get_property(fieldName)
         fieldType = schema.get('type')
         if fieldType == 'object':
@@ -334,7 +346,6 @@ class EditState(dict):
             next_address = part.address + part.size + part.unused_after # max address +1
             max_size = next_address - min_address
             if fieldName == 'address':
-                self.addControl('unused_before')
                 field.addScale(part.address - part.unused_before, part.address + part.unused_after)
                 def scale_change(val):
                     address = int(val) * K
@@ -390,9 +401,10 @@ class EditState(dict):
         self.row += 1
 
         if self.objectType == 'Partition' and fieldName == 'size':
-            f = self.addControl('unused_after')
+            self.addControl('unused_after')
 
         return field
+
 
     def updateBuildTargets(self):
         t = self['type'].get_value()
