@@ -309,6 +309,7 @@ class EditState(dict):
             return
         for k in builder['properties']:
             self['build.' + k].show()
+        self.editor.sizeEdit()
 
     def apply(self):
         # Fetch base JSON for comparison
