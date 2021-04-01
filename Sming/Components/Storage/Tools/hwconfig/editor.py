@@ -234,7 +234,7 @@ class EditState(dict):
             label = tk.Label(frame, text=fieldName)
             label.grid(row=self.row, column=0, sticky=tk.W)
             if values is None:
-                c = tk.Entry(frame, width=64, textvariable=var)
+                c = tk.Entry(frame, width=48, textvariable=var)
             elif fieldType == 'array':
                 c = ttk.Frame(frame)
                 def array_changed(fieldName, key, var):
@@ -280,6 +280,44 @@ class EditState(dict):
             self.editor.status.set("%s: %s" % (title, desc))
         c.bind('<FocusIn>', lambda event, f=field: setStatus(f))
         c.bind('<FocusOut>', lambda event: self.editor.status.set(''))
+
+        K = 1024
+        # Add scale controls for address/size fields
+        def addScale(min, max, value):
+            min //= K
+            max //= K
+            value //= K
+            scale = tk.Scale(frame, orient=tk.HORIZONTAL, from_=min, to=max, showvalue=False, takefocus=True)
+            scale.set(value)
+            scale.grid(row=self.row, column=1, sticky=tk.E)
+            return scale
+        if self.objectType == 'Partition':
+            if fieldName == 'address':
+                field.scale = addScale(self.obj.address - self.obj.unused_before, self.obj.address + self.obj.unused_after, self.obj.address)
+                def address_scale_change(val):
+                    address = int(val) * K
+                    self['address'].set_value(addr_format(address))
+                    max_size = self.obj.size + self.obj.unused_after + self.obj.address - address
+                    self['size'].scale.configure(to=max_size//K)
+                field.scale.configure(command=address_scale_change)
+                def address_change(event):
+                    field = self['address']
+                    address = parse_int(field.get_value())
+                    field.scale.set(address//K)
+                c.bind('<FocusOut>', address_change)
+            elif fieldName == 'size':
+                field.scale = addScale(K, self.obj.size + self.obj.unused_after, self.obj.size)
+                def size_scale_change(val):
+                    size = int(val) * K
+                    self['size'].set_value(size_format(size))
+                    max_address = self.obj.address + self.obj.size + self.obj.unused_after - size
+                    self['address'].scale.configure(to=max_address//K)
+                field.scale.configure(command=size_scale_change)
+                def size_change(event):
+                    field = self['size']
+                    size = parse_int(field.get_value())
+                    field.scale.set(size//K)
+                c.bind('<FocusOut>', size_change)
 
         # Name is read-only for inherited devices/partitions
         if fieldName == 'name' and self.is_inherited:

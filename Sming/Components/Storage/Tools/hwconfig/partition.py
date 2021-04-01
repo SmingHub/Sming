@@ -364,7 +364,9 @@ class Entry(object):
         self.encrypted = False
         self.filename = ''
         self.build = None
-
+        # Set during map construction
+        self.unused_before = 0
+        self.unused_after = 0
 
     def parse_dict(self, data, devices):
         """Construct a partition object from JSON definition
@@ -570,7 +572,8 @@ class Map(Table):
 
         def add_unused(table, device, address, last_end):
             if address > last_end + 1:
-                add(table, device, '(unused)', last_end + 1, address - last_end - 1, INTERNAL_UNUSED)
+                return add(table, device, '(unused)', last_end + 1, address - last_end - 1, INTERNAL_UNUSED)
+            return None
 
         device = devices[0]
 
@@ -588,16 +591,22 @@ class Map(Table):
 
         partitions.sort()
 
+        unused = None
         last = None
         for p in partitions:
             if last is not None:
+                start = p.address if p.device == last.device else last.device.size
+                unused = add_unused(self, device, start, last.end())
+                if unused is not None:
+                    last.unused_after = unused.size
                 if p.device != last.device:
-                    add_unused(self, device, last.device.size, last.end())
                     device = p.device
-                    add_unused(self, device, p.address, -1)
-                elif p.address > last.end() + 1:
-                    add_unused(self, device, p.address, last.end())
+                    unused = add_unused(self, device, p.address, -1)
             self.append(p)
+            if unused is not None:
+                p.unused_before = unused.size
             last = p
 
-        add_unused(self, device, device.size, last.end())
+        unused = add_unused(self, device, device.size, last.end())
+        if unused is not None:
+            p.unused_after = unused.size
