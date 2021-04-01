@@ -167,9 +167,6 @@ class Table(list):
                 % (p.device.name, p.address_str(), p.end_str(), p.size_str(), p.type_str(), p.subtype_str(), p.name, p.filename)
         return res
 
-    def offset_str(self):
-        return addr_format(self.offset)
-
     def buildVars(self):
         dict = {}
         dict['PARTITION_NAMES'] = " ".join(p.name for p in self)
@@ -236,13 +233,10 @@ class Table(list):
         for p in self:
             p.verify(config.arch, secure)
 
-        if self.offset % FLASH_SECTOR_SIZE != 0:
-            raise InputError("Partition table offset not aligned to flash sector")
-
         spiFlash = config.devices[0]
-        p = self.find_by_address(spiFlash, self.offset)
+        p = self.find_by_address(spiFlash, config.partition_table_offset)
         if p is None:
-            p = self.find_by_address(spiFlash, self.offset + PARTITION_TABLE_SIZE - 1)
+            p = self.find_by_address(spiFlash, config.partition_table_offset + PARTITION_TABLE_SIZE - 1)
         if not p is None:
             raise InputError("Partition table conflict with '%s'" % p.name)
 
@@ -260,7 +254,7 @@ class Table(list):
 
         # check for overlaps
         if config.arch == 'Esp32':
-            minPartitionAddress = self.offset + PARTITION_TABLE_SIZE
+            minPartitionAddress = config.partition_table_offset + PARTITION_TABLE_SIZE
         else:
             minPartitionAddress = config.bootloader_size
         dev = None
@@ -580,9 +574,9 @@ class Map(Table):
 
         # Take copy of source partitions and add internal ones to appear in the map
         partitions = copy.copy(config.partitions)
-        if partitions.offset != 0:
+        if config.partition_table_offset != 0:
             add(partitions, device, 'Boot Sector', 0, config.bootloader_size, INTERNAL_BOOT_SECTOR)
-            add(partitions, device, 'Partition Table', partitions.offset, PARTITION_TABLE_SIZE, INTERNAL_PARTITION_TABLE)
+            add(partitions, device, 'Partition Table', config.partition_table_offset, PARTITION_TABLE_SIZE, INTERNAL_PARTITION_TABLE)
 
         # Devices with no defined partitions
         pdevs = set(p.device for p in partitions)

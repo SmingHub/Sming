@@ -141,7 +141,7 @@ class Config(object):
             self.parse_dict(temp)
 
     def resolve_expressions(self):
-        self.partitions.offset = eval(str(self.partitions.offset))
+        self.partition_table_offset = eval(str(self.partition_table_offset))
         for p in self.partitions:
             p.resolve_expressions()
 
@@ -163,7 +163,7 @@ class Config(object):
             elif k == 'bootloader_size':
                 self.bootloader_size = parse_int(v)
             elif k == 'partition_table_offset':
-                self.partitions.offset = v
+                self.partition_table_offset = v
             elif k == 'devices':
                 self.devices.parse_dict(v)
             elif k != 'name' and k != 'comment':
@@ -184,7 +184,7 @@ class Config(object):
         res['arch'] = self.arch;
         res['options'] = self.options
         res['bootloader_size'] = size_format(self.bootloader_size)
-        res['partition_table_offset'] = self.partitions.offset_str()
+        res['partition_table_offset'] = addr_format(self.partition_table_offset)
         res['devices'] = self.devices.dict()
         res['partitions'] = self.partitions.dict()
         return res
@@ -196,7 +196,7 @@ class Config(object):
         dict = {}
 
         dict['SMING_ARCH_HW'] = self.arch
-        dict['PARTITION_TABLE_OFFSET'] = self.partitions.offset_str()
+        dict['PARTITION_TABLE_OFFSET'] = addr_format(self.partition_table_offset)
         dict['PARTITION_TABLE_LENGTH'] = "0x%04x" % partition.MAX_PARTITION_LENGTH
         dict['SPIFLASH_PARTITION_NAMES'] = " ".join(p.name for p in filter(lambda p: p.device == self.devices[0], self.partitions))
         dict['HWCONFIG_DEPENDS'] = " ".join(self.depends)
@@ -209,6 +209,8 @@ class Config(object):
         return res
 
     def verify(self, secure):
+        if self.partition_table_offset % partition.FLASH_SECTOR_SIZE != 0:
+            raise InputError("Partition table offset not aligned to flash sector")
         self.devices.verify()
         self.partitions.verify(self, secure)
 
@@ -220,6 +222,6 @@ class Config(object):
         res = Config()
         res.name = 'from binary'
         res.arch = os.environ.get('SMING_ARCH', 'Unknown')
-        res.partitions.offset = 0
+        res.partition_table_offset = 0
         res.partitions.parse_binary(b, res.devices)
         return res
