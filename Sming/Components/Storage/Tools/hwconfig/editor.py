@@ -88,11 +88,16 @@ def resolve_key(obj, key):
 class Field:
     """Manages widget and associated variable
     """
-    def __init__(self, schema, var, label, widget):
+    def __init__(self, name, schema, var, widget):
+        self.name = name
         self.schema = schema
         self.var = var
-        self.label = label
         self.widget = widget
+        self.label = tk.Label(widget.master, text=name)
+
+    def grid(self, row):
+        self.label.grid(row=row, column=0, sticky=tk.W)
+        self.widget.grid(row=row, column=1, sticky=tk.EW)
 
     def get_value(self):
         return str(self.var.get())
@@ -228,51 +233,48 @@ class EditState(dict):
         var = tk.StringVar(value=value)
 
         if fieldType == 'boolean':
-            label = None
-            c = ttk.Checkbutton(frame, text=fieldName, variable=var)
+            c = ttk.Checkbutton(frame, variable=var)
+        elif values is None:
+            c = tk.Entry(frame, width=48, textvariable=var)
+        elif fieldType == 'array':
+            c = ttk.Frame(frame)
+            def array_changed(fieldName, key, var):
+                values = set(json_loads(var.get()))
+                if self.array[fieldName][key].get():
+                    values.add(key)
+                else:
+                    values.discard(key)
+                var.set(json.dumps(list(values)))
+            elements = self.array[fieldName] = {}
+            keys = list(values.keys())
+            keys.sort()
+            for k in keys:
+                v = values[k]
+                elements[k] = tk.BooleanVar(value=k in getattr(self.obj, fieldName))
+                btn = tk.Checkbutton(c, text = k + ': ' + v,
+                    command=lambda *args, fieldName=fieldName, key=k, var=var: array_changed(fieldName, key, var),
+                    variable=elements[k])
+                btn.grid(sticky=tk.W)
+                base = getattr(self.base_obj, fieldName)
+                if base is not None and k in base:
+                    btn.configure(state='disabled')
         else:
-            label = tk.Label(frame, text=fieldName)
-            label.grid(row=self.row, column=0, sticky=tk.W)
-            if values is None:
-                c = tk.Entry(frame, width=48, textvariable=var)
-            elif fieldType == 'array':
-                c = ttk.Frame(frame)
-                def array_changed(fieldName, key, var):
-                    values = set(json_loads(var.get()))
-                    if self.array[fieldName][key].get():
-                        values.add(key)
-                    else:
-                        values.discard(key)
-                    var.set(json.dumps(list(values)))
-                elements = self.array[fieldName] = {}
-                keys = list(values.keys())
-                keys.sort()
-                for k in keys:
-                    v = values[k]
-                    elements[k] = tk.BooleanVar(value=k in getattr(self.obj, fieldName))
-                    btn = tk.Checkbutton(c, text = k + ': ' + v,
-                        command=lambda *args, fieldName=fieldName, key=k, var=var: array_changed(fieldName, key, var),
-                        variable=elements[k])
-                    btn.grid(sticky=tk.W)
-                    base = getattr(self.base_obj, fieldName)
-                    if base is not None and k in base:
-                        btn.configure(state='disabled')
-            else:
-                values.sort()
-                c = ttk.Combobox(frame, values=values, textvariable=var)
-                if self.objectType == 'Partition':
-                    if fieldName == 'subtype':
-                        def set_subtype_values():
-                            t = self['type'].get_value()
-                            t = partition.TYPES.get(t)
-                            subtypes = list(partition.SUBTYPES.get(t, []))
-                            subtypes.sort()
-                            c.configure(values=subtypes)
-                        c.configure(postcommand=set_subtype_values)
-                    if fieldName == 'type' or fieldName == 'subtype' or fieldName == 'build.target':
-                        c.bind('<<ComboboxSelected>>', lambda event: self.updateBuildTargets())
-                        c.bind('<FocusOut>', lambda event: self.updateBuildTargets())
-        field = self[fieldName] = Field(schema, var, label, c)
+            values.sort()
+            c = ttk.Combobox(frame, values=values, textvariable=var)
+            if self.objectType == 'Partition':
+                if fieldName == 'subtype':
+                    def set_subtype_values():
+                        t = self['type'].get_value()
+                        t = partition.TYPES.get(t)
+                        subtypes = list(partition.SUBTYPES.get(t, []))
+                        subtypes.sort()
+                        c.configure(values=subtypes)
+                    c.configure(postcommand=set_subtype_values)
+                if fieldName == 'type' or fieldName == 'subtype' or fieldName == 'build.target':
+                    c.bind('<<ComboboxSelected>>', lambda event: self.updateBuildTargets())
+                    c.bind('<FocusOut>', lambda event: self.updateBuildTargets())
+
+        field = self[fieldName] = Field(fieldName, schema, var, c)
 
         def setStatus(f):
             title = f.schema.get('title', f.name)
@@ -291,33 +293,65 @@ class EditState(dict):
             scale.set(value)
             scale.grid(row=self.row, column=1, sticky=tk.E)
             return scale
+
         if self.objectType == 'Partition':
             if fieldName == 'address':
+                self.addControl('unused_before')
                 field.scale = addScale(self.obj.address - self.obj.unused_before, self.obj.address + self.obj.unused_after, self.obj.address)
-                def address_scale_change(val):
+                def scale_change(val):
                     address = int(val) * K
                     self['address'].set_value(addr_format(address))
                     max_size = self.obj.size + self.obj.unused_after + self.obj.address - address
                     self['size'].scale.configure(to=max_size//K)
-                field.scale.configure(command=address_scale_change)
-                def address_change(event):
+                field.scale.configure(command=scale_change)
+                def change(event):
                     field = self['address']
                     address = parse_int(field.get_value())
                     field.scale.set(address//K)
-                c.bind('<FocusOut>', address_change)
+                c.bind('<FocusOut>', change)
             elif fieldName == 'size':
                 field.scale = addScale(K, self.obj.size + self.obj.unused_after, self.obj.size)
-                def size_scale_change(val):
+                def scale_change(val):
                     size = int(val) * K
                     self['size'].set_value(size_format(size))
                     max_address = self.obj.address + self.obj.size + self.obj.unused_after - size
                     self['address'].scale.configure(to=max_address//K)
-                field.scale.configure(command=size_scale_change)
-                def size_change(event):
+                field.scale.configure(command=scale_change)
+                def change(event):
                     field = self['size']
                     size = parse_int(field.get_value())
                     field.scale.set(size//K)
-                c.bind('<FocusOut>', size_change)
+                c.bind('<FocusOut>', change)
+            elif fieldName == 'unused_before':
+                field.scale = addScale(0, self.obj.unused_before + self.obj.unused_after, self.obj.unused_before)
+                def scale_change(val):
+                    unused_before = int(val) * K
+                    self['unused_before'].set_value(size_format(unused_before))
+                    address = self.obj.address - self.obj.unused_before + unused_before
+                    self['address'].set_value(addr_format(address))
+                    unused_after = self.obj.unused_after + self.obj.address - address
+                    self['unused_after'].scale.set(unused_after//K)
+                field.scale.configure(command=scale_change)
+                def change(event):
+                    field = self['unused_before']
+                    unused_before = parse_int(field.get_value())
+                    field.scale.set(unused_before//K)
+                c.bind('<FocusOut>', change)
+            elif fieldName == 'unused_after':
+                field.scale = addScale(0, self.obj.unused_before + self.obj.unused_after, self.obj.unused_after)
+                def scale_change(val):
+                    unused_after = int(val) * K
+                    self['unused_after'].set_value(size_format(unused_after))
+                    address = self.obj.address + self.obj.unused_after - unused_after
+                    self['address'].set_value(addr_format(address))
+                    unused_before = self.obj.unused_before + address - self.obj.address
+                    self['unused_before'].scale.set(unused_before//K)
+                field.scale.configure(command=scale_change)
+                def change(event):
+                    field = self['unused_before']
+                    unused_before = parse_int(field.get_value())
+                    field.scale.set(unused_before//K)
+                c.bind('<FocusOut>', change)
 
         # Name is read-only for inherited devices/partitions
         if fieldName == 'name' and self.is_inherited:
@@ -329,9 +363,13 @@ class EditState(dict):
                 disabled = True
         if disabled:
             field.enable(False)
-        c.grid(row=self.row, column=1, sticky=tk.EW)
+        field.grid(self.row)
         self.row += 1
-        return c
+
+        if self.objectType == 'Partition' and fieldName == 'size':
+            f = self.addControl('unused_after')
+
+        return field
 
     def updateBuildTargets(self):
         t = self['type'].get_value()
@@ -451,9 +489,7 @@ class EditState(dict):
         self.editor.reload()
 
     def get_property(self, name):
-        if name == 'name':
-            return {'type': 'text'}
-        return self.schema['properties'][name]
+        return self.schema['properties'].get(name, {'type': 'text'})
 
     def nameChanged(self):
         return self.name != self['name'].get_value()
