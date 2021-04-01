@@ -84,6 +84,7 @@ def resolve_key(obj, key):
             obj = get_dict_value(obj, k, {})
     return obj, keys[0]
 
+K = 1024
 
 class Field:
     """Manages widget and associated variable
@@ -98,12 +99,30 @@ class Field:
     def grid(self, row):
         self.label.grid(row=row, column=0, sticky=tk.W)
         self.widget.grid(row=row, column=1, sticky=tk.EW)
+        scale = getattr(self, 'scale', None)
+        if scale is not None:
+            scale.grid(row=row, column=1, sticky=tk.E)
+
+    def addScale(self, min, max):
+        """Add scale controls for address/size fields
+        """
+        scale = self.scale = tk.Scale(self.widget.master, orient=tk.HORIZONTAL, from_=min//K, to=max//K, showvalue=False, takefocus=True)
+        value = parse_int(self.get_value())
+        scale.set(value//K)
+        def change(event):
+            value = parse_int(self.get_value())
+            self.scale.set(value//K)
+        self.widget.bind('<FocusOut>', change)
+        return scale
 
     def get_value(self):
         return str(self.var.get())
 
     def set_value(self, value):
         self.var.set(value)
+
+    def set_scale(self, value):
+        self.scale.set(value//K)
 
     def enable(self, state):
         self.widget.configure(state='normal' if state else 'disabled')
@@ -283,75 +302,46 @@ class EditState(dict):
         c.bind('<FocusIn>', lambda event, f=field: setStatus(f))
         c.bind('<FocusOut>', lambda event: self.editor.status.set(''))
 
-        K = 1024
-        # Add scale controls for address/size fields
-        def addScale(min, max, value):
-            min //= K
-            max //= K
-            value //= K
-            scale = tk.Scale(frame, orient=tk.HORIZONTAL, from_=min, to=max, showvalue=False, takefocus=True)
-            scale.set(value)
-            scale.grid(row=self.row, column=1, sticky=tk.E)
-            return scale
-
         if self.objectType == 'Partition':
             if fieldName == 'address':
                 self.addControl('unused_before')
-                field.scale = addScale(self.obj.address - self.obj.unused_before, self.obj.address + self.obj.unused_after, self.obj.address)
+                field.addScale(self.obj.address - self.obj.unused_before, self.obj.address + self.obj.unused_after)
                 def scale_change(val):
                     address = int(val) * K
-                    self['address'].set_value(addr_format(address))
+                    field.set_value(addr_format(address))
                     max_size = self.obj.size + self.obj.unused_after + self.obj.address - address
                     self['size'].scale.configure(to=max_size//K)
                 field.scale.configure(command=scale_change)
-                def change(event):
-                    field = self['address']
-                    address = parse_int(field.get_value())
-                    field.scale.set(address//K)
-                c.bind('<FocusOut>', change)
             elif fieldName == 'size':
-                field.scale = addScale(K, self.obj.size + self.obj.unused_after, self.obj.size)
+                field.addScale(K, self.obj.size + self.obj.unused_after)
                 def scale_change(val):
                     size = int(val) * K
-                    self['size'].set_value(size_format(size))
+                    field.set_value(size_format(size))
                     max_address = self.obj.address + self.obj.size + self.obj.unused_after - size
                     self['address'].scale.configure(to=max_address//K)
                 field.scale.configure(command=scale_change)
-                def change(event):
-                    field = self['size']
-                    size = parse_int(field.get_value())
-                    field.scale.set(size//K)
-                c.bind('<FocusOut>', change)
             elif fieldName == 'unused_before':
-                field.scale = addScale(0, self.obj.unused_before + self.obj.unused_after, self.obj.unused_before)
+                field.set_value(size_format(self.obj.unused_before))
+                field.addScale(0, self.obj.unused_before + self.obj.unused_after)
                 def scale_change(val):
                     unused_before = int(val) * K
-                    self['unused_before'].set_value(size_format(unused_before))
+                    field.set_value(size_format(unused_before))
                     address = self.obj.address - self.obj.unused_before + unused_before
-                    self['address'].set_value(addr_format(address))
+                    self['address'].set_scale(address)
                     unused_after = self.obj.unused_after + self.obj.address - address
-                    self['unused_after'].scale.set(unused_after//K)
+                    self['unused_after'].set_scale(unused_after)
                 field.scale.configure(command=scale_change)
-                def change(event):
-                    field = self['unused_before']
-                    unused_before = parse_int(field.get_value())
-                    field.scale.set(unused_before//K)
-                c.bind('<FocusOut>', change)
             elif fieldName == 'unused_after':
-                field.scale = addScale(0, self.obj.unused_before + self.obj.unused_after, self.obj.unused_after)
+                field.set_value(size_format(self.obj.unused_after))
+                field.addScale(0, self.obj.unused_before + self.obj.unused_after)
                 def scale_change(val):
                     unused_after = int(val) * K
-                    self['unused_after'].set_value(size_format(unused_after))
+                    field.set_value(size_format(unused_after))
                     address = self.obj.address + self.obj.unused_after - unused_after
-                    self['address'].set_value(addr_format(address))
+                    self['address'].set_scale(address)
                     unused_before = self.obj.unused_before + address - self.obj.address
-                    self['unused_before'].scale.set(unused_before//K)
+                    self['unused_before'].set_scale(unused_before)
                 field.scale.configure(command=scale_change)
-                def change(event):
-                    field = self['unused_before']
-                    unused_before = parse_int(field.get_value())
-                    field.scale.set(unused_before//K)
-                c.bind('<FocusOut>', change)
 
         # Name is read-only for inherited devices/partitions
         if fieldName == 'name' and self.is_inherited:
@@ -435,6 +425,8 @@ class EditState(dict):
                             for p in json_config.get('partitions', {}).values():
                                 if p.get('device') == self.name:
                                     p['device'] = new_name
+                elif 'virtual' in field.schema:
+                    continue
                 elif fieldName == 'address' and self.objectType == 'Partition' and self.obj.is_internal(partition.INTERNAL_PARTITION_TABLE):
                     json_config['partition_table_offset'] = value
                 elif value == '' and fieldName != 'filename': # TODO mark 'allow empty' values in schema somehow
@@ -489,7 +481,7 @@ class EditState(dict):
         self.editor.reload()
 
     def get_property(self, name):
-        return self.schema['properties'].get(name, {'type': 'text'})
+        return self.schema['properties'].get(name, {'type': 'text', 'virtual': True})
 
     def nameChanged(self):
         return self.name != self['name'].get_value()
