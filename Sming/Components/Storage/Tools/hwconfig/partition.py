@@ -486,7 +486,7 @@ class Entry(object):
         return "Part '%s' %s/%s @ 0x%x size 0x%x" % (self.name, self.type_str(), self.subtype_str(), self.address or -1, self.size or -1)
 
     def alignment(self, arch):
-        return ALIGNMENT[arch].get(self.type, 4)
+        return ALIGNMENT[arch].get(self.type, 0x1000)
 
     def verify(self, arch, secure):
         if self.type is None:
