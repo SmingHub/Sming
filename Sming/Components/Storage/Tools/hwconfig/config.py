@@ -71,7 +71,7 @@ class Schema(dict):
         properties['subtype']['enum'] = []
         # Add defined build targets and all available build fields
         self.builders = load_build_library()
-        tgt = properties['build.target'] = {'type': 'string'}
+        tgt = properties['build.target'] = self['Build']['properties']['target']
         tgt['enum'] = list(self.builders.keys())
         for builder in self.builders.values():
             for k, v in builder['properties'].items():

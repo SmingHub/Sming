@@ -88,7 +88,8 @@ def resolve_key(obj, key):
 class Field:
     """Manages widget and associated variable
     """
-    def __init__(self, var, label, widget):
+    def __init__(self, schema, var, label, widget):
+        self.schema = schema
         self.var = var
         self.label = label
         self.widget = widget
@@ -271,7 +272,14 @@ class EditState(dict):
                     if fieldName == 'type' or fieldName == 'subtype' or fieldName == 'build.target':
                         c.bind('<<ComboboxSelected>>', lambda event: self.updateBuildTargets())
                         c.bind('<FocusOut>', lambda event: self.updateBuildTargets())
-        field = self[fieldName] = Field(var, label, c)
+        field = self[fieldName] = Field(schema, var, label, c)
+
+        def setStatus(f):
+            title = f.schema.get('title', f.name)
+            desc = f.schema.get('description', None)
+            self.editor.status.set("%s: %s" % (title, desc))
+        c.bind('<FocusIn>', lambda event, f=field: setStatus(f))
+        c.bind('<FocusOut>', lambda event: self.editor.status.set(''))
 
         # Name is read-only for inherited devices/partitions
         if fieldName == 'name' and self.is_inherited:
