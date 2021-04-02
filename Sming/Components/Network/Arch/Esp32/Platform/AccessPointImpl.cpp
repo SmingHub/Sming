@@ -95,31 +95,42 @@ bool AccessPointImpl::config(const String& ssid, String password, WifiAuthMode m
 
 IpAddress AccessPointImpl::getIP() const
 {
+	IpAddress addr;
 	esp_netif_ip_info_t info;
-	ESP_ERROR_CHECK(esp_netif_get_ip_info(apNetworkInterface, &info));
-	return info.ip.addr;
+	if(esp_netif_get_ip_info(apNetworkInterface, &info) == ESP_OK) {
+		addr = info.ip.addr;
+	}
+	return addr;
 }
 
 IpAddress AccessPointImpl::getNetworkBroadcast() const
 {
+	IpAddress addr;
 	esp_netif_ip_info_t info;
-	ESP_ERROR_CHECK(esp_netif_get_ip_info(apNetworkInterface, &info));
-	return info.ip.addr | ~info.netmask.addr;
+	if(esp_netif_get_ip_info(apNetworkInterface, &info) == ESP_OK) {
+		addr = info.ip.addr | ~info.netmask.addr;
+	}
+	return addr;
 }
 
 IpAddress AccessPointImpl::getNetworkMask() const
 {
+	IpAddress addr;
 	esp_netif_ip_info_t info;
-	ESP_ERROR_CHECK(esp_netif_get_ip_info(apNetworkInterface, &info));
-	return info.netmask.addr;
+	if(esp_netif_get_ip_info(apNetworkInterface, &info) == ESP_OK) {
+		addr = info.netmask.addr;
+	}
+	return addr;
 }
 
 IpAddress AccessPointImpl::getNetworkGateway() const
 {
+	IpAddress addr;
 	esp_netif_ip_info_t info;
-	ESP_ERROR_CHECK(esp_netif_get_ip_info(apNetworkInterface, &info));
-
-	return info.gw.addr;
+	if(esp_netif_get_ip_info(apNetworkInterface, &info) == ESP_OK) {
+		addr = info.gw.addr;
+	}
+	return addr;
 }
 
 bool AccessPointImpl::setIP(IpAddress address)
