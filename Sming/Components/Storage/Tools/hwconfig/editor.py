@@ -136,6 +136,7 @@ class Field:
         def change(event):
             value = parse_int(self.get_value())
             self.scale.set(value // self.align)
+        self.widget.bind('<Return>', change)
         self.widget.bind('<FocusOut>', change)
         self.widget.configure(foreground='black' if max > min else 'gray')
         scale.configure(command=lambda val: on_change(int(val) * self.align))
@@ -327,8 +328,11 @@ class EditState(dict):
                         c.configure(values=subtypes)
                     c.configure(postcommand=set_subtype_values)
                 if fieldName == 'type' or fieldName == 'subtype' or fieldName == 'build.target':
-                    c.bind('<<ComboboxSelected>>', lambda event: self.updateBuildTargets())
-                    c.bind('<FocusOut>', lambda event: self.updateBuildTargets())
+                    def update(e):
+                        self.updateBuildTargets()
+                    c.bind('<<ComboboxSelected>>', update)
+                    c.bind('<FocusOut>', update)
+                    c.bind('<Return>', update)
 
         field = self[fieldName] = Field(fieldName, schema, var, c)
 
@@ -365,13 +369,15 @@ class EditState(dict):
                     unused_after.set_scale(next_address - address - size)
                 field.addScale(field.align, part.size + part.unused_after, change)
             elif fieldName == 'unused_before':
-                field.set_value(size_format(part.unused_before))
+                value = size_format(part.unused_before)
+                field.set_value(value)
                 def change(unused_before):
                     field.set_value(size_format(unused_before))
                     self['unused_after'].set_scale(max_size - self['size'].get_scale() - unused_before)
                 field.addScale(0, part.unused_before + part.unused_after, change)
             elif fieldName == 'unused_after':
-                field.set_value(size_format(part.unused_after))
+                value = size_format(part.unused_after)
+                field.set_value(value)
                 def change(unused_after):
                     field.set_value(size_format(unused_after))
                     size = self['size'].get_scale()
@@ -391,6 +397,8 @@ class EditState(dict):
                 disabled = True
         if disabled:
             field.enable(False)
+        else:
+            c.bind('<Key-Escape>', lambda event: field.set_value(value))
         field.grid(self.row)
         self.row += 1
 
