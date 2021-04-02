@@ -19,6 +19,11 @@ virtual_fields = {
         "title": "Space before",
         "description": "Unused space before partition"
     },
+    "next": {
+        "type": "string",
+        "title": "Next",
+        "description": "Start of next partition"
+    },
     "unused_after": {
         "type": "string",
         "title": "Space after",
@@ -138,9 +143,14 @@ class Field:
             self.scale.set(value // self.align)
         self.widget.bind('<Return>', change)
         self.widget.bind('<FocusOut>', change)
-        self.widget.configure(foreground='black' if max > min else 'gray')
+        self.update_scale_range()
         scale.configure(command=lambda val: on_change(int(val) * self.align))
         return scale
+
+    def update_scale_range(self):
+        min = self.scale.cget('from') * self.align
+        max = self.scale.cget('to') * self.align
+        self.widget.configure(foreground='black' if max > min else 'gray')
 
     def get_value(self):
         return str(self.var.get())
@@ -154,15 +164,16 @@ class Field:
     def set_scale(self, value):
         self.scale.set(value // self.align)
 
+    def set_scale_min(self, value):
+        self.scale.configure(from_ = value // self.align)
+        self.update_scale_range()
+
     def set_scale_max(self, value):
         self.scale.configure(to = value // self.align)
-        from_ = self.scale.cget('from') * self.align
-        self.widget.configure(foreground='black' if value > from_ else 'gray')
+        self.update_scale_range()
 
     def enable(self, state):
         self.widget.configure(state='normal' if state else 'disabled')
-        if self.label is not None:
-            self.label.configure(state='normal' if state else 'disabled')
 
     def is_enabled(self):
         try:
@@ -354,19 +365,25 @@ class EditState(dict):
             if fieldName == 'address':
                 def change(address):
                     field.set_value(addr_format(address))
-                    self['size'].set_scale_max(next_address - address)
+                    f_size = self['size']
+                    f_size.set_scale_max(next_address - address)
                     self['unused_before'].set_scale(address - min_address)
+                    self['next'].set_scale(address + f_size.get_scale())
                 field.addScale(part.address - part.unused_before, part.address + part.unused_after, change)
             elif fieldName == 'size':
                 def change(size):
                     field.set_value(size_format(size))
-                    address_field = self['address']
-                    address_field.set_scale_max(next_address - size)
-                    address = parse_int(address_field.get_value())
-                    self['unused_before'].set_scale_max(max_size - size)
-                    unused_after = self['unused_after']
-                    unused_after.set_scale_max(max_size - size)
-                    unused_after.set_scale(next_address - address - size)
+                    f_address = self['address']
+                    f_address.set_scale_max(next_address - size)
+                    address = parse_int(f_address.get_value())
+                    f_unused_before = self['unused_before']
+                    f_unused_before.set_scale_max(max_size - size)
+                    f_next = self['next']
+                    f_next.set_scale_min(address + size - f_unused_before.get_scale())
+                    f_next.set_scale(address + size)
+                    f_unused_after = self['unused_after']
+                    f_unused_after.set_scale_max(max_size - size)
+                    f_unused_after.set_scale(next_address - address - size)
                 field.addScale(field.align, part.size + part.unused_after, change)
             elif fieldName == 'unused_before':
                 value = size_format(part.unused_before)
@@ -375,13 +392,20 @@ class EditState(dict):
                     field.set_value(size_format(unused_before))
                     self['unused_after'].set_scale(max_size - self['size'].get_scale() - unused_before)
                 field.addScale(0, part.unused_before + part.unused_after, change)
+            elif fieldName == 'next':
+                value = addr_format(part.address + part.size)
+                field.set_value(value)
+                def change(next):
+                    field.set_value(addr_format(next))
+                    size = self['size'].get_scale()
+                    self['unused_before'].set_scale(part.unused_before + next - size - part.address)
+                field.addScale(part.address + part.size - part.unused_before, next_address, change)
             elif fieldName == 'unused_after':
                 value = size_format(part.unused_after)
                 field.set_value(value)
                 def change(unused_after):
                     field.set_value(size_format(unused_after))
                     size = self['size'].get_scale()
-                    part = self.obj
                     address = next_address - unused_after - size
                     self['address'].set_scale(address)
                     self['unused_before'].set_scale(part.unused_before + address - part.address)
@@ -403,6 +427,7 @@ class EditState(dict):
         self.row += 1
 
         if self.objectType == 'Partition' and fieldName == 'size':
+            self.addControl('next')
             self.addControl('unused_after')
 
         return field
