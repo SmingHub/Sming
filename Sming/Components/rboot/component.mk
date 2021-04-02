@@ -10,6 +10,7 @@ COMPONENT_SUBMODULES	:= rboot
 COMPONENT_INCDIRS		:= rboot rboot/appcode include
 COMPONENT_SRCDIRS       := src src/Arch/$(SMING_ARCH)
 
+DEBUG_VARS				+= RBOOT_DIR
 RBOOT_DIR				:= $(COMPONENT_PATH)
 
 ifndef RBOOT_EMULATION
