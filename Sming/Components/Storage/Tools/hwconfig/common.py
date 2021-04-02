@@ -35,7 +35,7 @@ def parse_int(v, keywords=None):
         try:
             for letter, multiplier in [("k", 1024), ("m", 1024 * 1024), ("g", 1024 * 1024 * 1024)]:
                 if v.lower().endswith(letter):
-                    return parse_int(v[:-1], keywords) * multiplier
+                    return round(float(v[:-1]) * multiplier)
             return int(v, 0)
         except ValueError:
             raise InputError("Invalid field value %s" % v)

@@ -399,7 +399,10 @@ class Entry(object):
             raise InputError("Error in partition entry '%s': %s" % (self.name, e))
 
     def resolve_expressions(self):
-        self.address = eval(str(self.address))
+        try:
+            self.address = eval(str(self.address))
+        except Exception:
+            self.address = parse_int(self.address)
 
     def dict(self):
         res = {}
