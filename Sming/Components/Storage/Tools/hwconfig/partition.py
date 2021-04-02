@@ -127,8 +127,9 @@ def parse_subtype(ptype, value):
 
 class Table(list):
 
-    def __init__(self):
+    def __init__(self, devices):
         super().__init__(self)
+        self.devices = devices
 
     def parse_dict(self, data, devices):
         partnames = []
@@ -143,11 +144,9 @@ class Table(list):
             part.parse_dict(entry, devices)
 
     def sort(self):
-        # Ensure spiFlash partitions are first in the list
         def get_key(p):
-            key = p.device.name + p.address_str()
-            if p.device.name == 'spiFlash':
-                key = ' ' + key
+            idx = self.devices.index(p.device)
+            key = "%02x%08x" % (idx, p.address)
             return key
         super().sort(key=get_key)
 

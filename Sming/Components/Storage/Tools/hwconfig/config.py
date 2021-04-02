@@ -45,8 +45,8 @@ def find_config(name):
 
 class Config(object):
     def __init__(self):
-        self.partitions = partition.Table()
         self.devices = storage.List()
+        self.partitions = partition.Table(self.devices)
         self.depends = []
         self.options = []
         self.option_library = load_option_library()
