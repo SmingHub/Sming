@@ -522,13 +522,12 @@ class EditState(dict):
                     del json_config[self.dictName]
 
 
-            if self.editor.verify_config(json_config):
-                self.editor.set_json(json_config)
-                if new_name is not None:
-                    self.name = new_name
-                if self.objectType != 'Config':
-                    self.editor.selected = self.name
-                self.editor.reload()
+            self.editor.json = self.editor.verify_config(json_config)
+            if new_name is not None:
+                self.name = new_name
+            if self.objectType != 'Config':
+                self.editor.selected = self.name
+            self.editor.reload()
         except Exception as err:
             self.editor.user_error(err)
             raise err
@@ -1082,10 +1081,9 @@ class Editor:
         def apply(*args):
             try:
                 json_config = json_loads(self.jsonEditor.get('1.0', 'end'))
-                if self.verify_config(json_config):
-                    self.set_json(json_config)
-                    self.updateWindowTitle()
-                    self.reload()
+                self.json = self.verify_config(json_config)
+                self.updateWindowTitle()
+                self.reload()
             except Exception as err:
                 self.user_error(err)
         def undo(*args):
@@ -1135,15 +1133,12 @@ class Editor:
             config_name = os.path.splitext(os.path.basename(filename))[0]
             self.json['base_config'] = config_name
         else:
-            with open(filename) as f:
-                json_config = json_loads(f.read())
+            self.json = json_load(filename)
 
         options = get_dict_value(self.json, 'options', [])
         for opt in os.environ.get('HWCONFIG_OPTS', '').replace(' ', '').split():
             if not opt in options:
                 options.append(opt)
-
-        self.set_json(json_config)
 
         self.reload()
         self.updateWindowTitle()
@@ -1158,19 +1153,27 @@ class Editor:
         self.main.title(self.config.arch + ' ' + name + ' - ' + app_name)
 
     def verify_config(self, json_config):
-        try:
-            Config.from_json(json_config).verify(False)
-            return True
-        except Exception as err:
-            self.user_error(err)
-            return False
-
-    def set_json(self, json_config):
-        # Keep output order consistent
-        self.json = OrderedDict()
-        for k in config.schema['Config']['properties'].keys():
-            if k in json_config:
-                self.json[k] = json_config[k]
+        """Raises an exception if any problems are found in the configuration.
+        On success, returns a consistently-ordered JSON configuration.
+        """
+        cfg = Config.from_json(json_config)
+        cfg.verify(False)
+        res = OrderedDict()
+        for key in config.schema['Config']['properties'].keys():
+            if key in json_config:
+                value = json_config[key]
+                if key == 'devices':
+                    names = list(dev.name for dev in cfg.devices)
+                elif key == 'partitions':
+                    names = list(p.name for p in cfg.map())
+                else:
+                    res[key] = value
+                    continue
+                output = res[key] = OrderedDict()
+                for n in names:
+                    if n in value:
+                        output[n] = value[n]
+        return res
 
     def reset(self):
         self.tree.clear()
