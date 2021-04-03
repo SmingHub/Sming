@@ -1152,19 +1152,20 @@ class Editor:
         # Toolbar
         toolbar = ttk.Frame(self.main)
         toolbar.pack(side=tk.TOP, fill=tk.X)
-        btn = ttk.Button(toolbar, text="New", command=fileNew)
-        btn.grid(row=0, column=1)
-        btn = ttk.Button(toolbar, text="Open...", command=fileOpen)
-        btn.grid(row=0, column=2)
-        btn = ttk.Button(toolbar, text="Save...", command=fileSave)
-        btn.grid(row=0, column=3)
+        col = 0
+        def addButton(text, command):
+            btn = ttk.Button(toolbar, text=text, command=command)
+            nonlocal col
+            btn.grid(row=0, column=col)
+            col += 1
+        addButton('New', fileNew)
+        addButton('Open...', fileOpen)
+        addButton('Save...', fileSave)
         sep = ttk.Separator(toolbar, orient=tk.VERTICAL)
-        sep.grid(row=0, column=4, sticky=tk.NS)
-        btn = ttk.Button(toolbar, text='Edit Config', command=self.editConfig)
-        btn.grid(row=0, column=5)
-        btn = ttk.Button(toolbar, text='Add Device', command=self.addDevice)
-        btn.grid(row=0, column=6)
-
+        sep.grid(row=0, column=col, sticky=tk.NS)
+        col += 1
+        addButton('Edit Config', self.editConfig)
+        addButton('Add Device', self.addDevice)
 
         # Group main controls into areas which can be re-sized by the user
         pwin = ttk.PanedWindow(self.main, orient=tk.VERTICAL)
