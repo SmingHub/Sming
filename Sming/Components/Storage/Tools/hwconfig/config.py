@@ -58,10 +58,6 @@ class Schema(dict):
         # Config
         properties = self['Config']['properties']
         properties['base_config']['enum'] = list(get_config_list().keys())
-        optionlib = load_option_library()
-        options = properties['options']['enum'] = {}
-        for k, v in optionlib.items():
-            options[k] = v['description']
         # Device
         properties = self['Device']['properties']
         properties['type']['enum'] = list((storage.TYPES).keys())

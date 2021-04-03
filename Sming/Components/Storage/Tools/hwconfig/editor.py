@@ -1,4 +1,4 @@
-import argparse, os, config, partition, configparser, string
+import argparse, os, config, partition, configparser, string, re
 from common import *
 from config import *
 import tkinter as tk
@@ -279,7 +279,6 @@ class EditState(dict):
         fieldType = schema.get('type')
         if fieldType == 'object':
             return
-        values = schema.get('enum')
         frame = self.controlFrame
         disabled = False
         if fieldName == 'name':
@@ -300,12 +299,11 @@ class EditState(dict):
                 critical(str(err))
         var = tk.StringVar(value=value)
 
+        values = schema.get('enum')
         if fieldType == 'boolean':
             c = ttk.Checkbutton(frame, variable=var)
-        elif values is None:
-            c = tk.Entry(frame, width=48, textvariable=var)
         elif fieldType == 'array':
-            c = ttk.Frame(frame)
+            c = ttk.Frame(frame, takefocus=False)
             def array_changed(fieldName, key, var):
                 values = set(json_loads(var.get()))
                 if self.array[fieldName][key].get():
@@ -314,18 +312,24 @@ class EditState(dict):
                     values.discard(key)
                 var.set(json.dumps(list(values)))
             elements = self.array[fieldName] = {}
-            keys = list(values.keys())
-            keys.sort()
-            for k in keys:
-                v = values[k]
+            if self.objectType == 'Config' and fieldName == 'options':
+                optionlib = load_option_library()
+                values = optionlib.keys()
+                details = {k: v['description'] for k, v in optionlib.items()}
+            else:
+                values = schema['items']['enum']
+                details = {}
+            for k in values:
                 elements[k] = tk.BooleanVar(value=k in getattr(self.obj, fieldName))
-                btn = tk.Checkbutton(c, text = k + ': ' + v,
+                btn = tk.Checkbutton(c, text=k + ': ' + details.get(k, '?'),
                     command=lambda *args, fieldName=fieldName, key=k, var=var: array_changed(fieldName, key, var),
                     variable=elements[k])
                 btn.grid(sticky=tk.W)
                 base = getattr(self.base_obj, fieldName)
                 if base is not None and k in base:
                     btn.configure(state='disabled')
+        elif values is None:
+            c = tk.Entry(frame, width=48, textvariable=var)
         else:
             values.sort()
             c = ttk.Combobox(frame, values=values, textvariable=var)
@@ -347,7 +351,7 @@ class EditState(dict):
 
         field = self[fieldName] = Field(fieldName, schema, var, c)
 
-        # Mouse-over hints in status bar
+        # Help text in status bar
         def setStatus(f):
             title = f.schema.get('title', f.name)
             desc = f.schema.get('description', None)
