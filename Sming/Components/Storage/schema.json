@@ -189,6 +189,7 @@
 				},
 				"filename": {
 					"type": "string",
+					"format": "filename",
 					"title": "Filename",
 					"description": "Location of file to write to this partition"
 				},

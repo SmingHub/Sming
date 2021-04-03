@@ -1,4 +1,4 @@
-import argparse, os, config, partition, configparser, string, re, threading
+import argparse, os, config, partition, configparser, string, threading
 from common import *
 from config import *
 import tkinter as tk
@@ -81,7 +81,7 @@ class ConfigVars(dict):
             tmp = tmp.replace(')', '}')
             try:
                 new_path = string.Template(tmp).substitute(self)
-            except Exception:
+            except Exception as err:
                 # Return the value obtained thus far
                 return tmp
             if new_path == tmp:
@@ -94,13 +94,9 @@ class ConfigVars(dict):
             if v == '':
                 continue
             path = self.resolve_path(v)
-            try:
-                path = self.getRelativePath(path)
-                critical('path = %s' % path)
-                if os.path.exists(path):
-                    self.pathVars[k] = path.replace('\\', '/')
-            except Exception as err:
-                critical("%s: %s" % (err, path))
+            path = os.path.abspath(path)
+            if os.path.exists(path):
+                self.pathVars[k] = path
 
 configVars = ConfigVars()
 
@@ -163,13 +159,69 @@ class Field:
         self.var = var
         self.widget = widget
         self.label = tk.Label(widget.master, text=schema.get('title', name))
+        self.scale = None
+        self.browse = None
 
     def grid(self, row):
         self.label.grid(row=row, column=0, sticky=tk.W)
-        self.widget.grid(row=row, column=1, sticky=tk.EW)
-        scale = getattr(self, 'scale', None)
-        if scale is not None:
-            scale.grid(row=row, column=1, sticky=tk.E)
+        cs = 3
+        if self.scale is not None:
+            self.scale.grid(row=row, column=2, columnspan=2, sticky=tk.E)
+            cs = 1
+        if self.browse is not None:
+            self.browse.grid(row=row, column=3, sticky=tk.E)
+            cs = 2
+        self.widget.grid(row=row, column=1, columnspan=cs, sticky=tk.EW)
+
+    def addBrowse(self, isFile):
+        self.browse = ttk.Button(self.widget.master, text='...', width=3,
+            style='Browse.TButton',
+            command=lambda *args: self.selectPath(isFile))
+        self.setPath(self.get_value())
+        def update(e):
+            self.setPath(self.var.get())
+            self.widget.focus()
+            self.widget.event_generate('<Down>')
+        self.widget.bind('<Return>', update)
+        self.widget.bind('<FocusOut>', update)
+
+    def selectPath(self, isFile):
+        if isFile:
+            path = filedialog.asksaveasfilename(
+                title="Select '%s'" % self.schema['title'],
+                initialdir=os.getcwd(),
+                confirmoverwrite=False)
+        else:
+            path = filedialog.askdirectory(
+                title="Select '%s'" % self.schema['title'],
+                initialdir=os.getcwd())
+        if len(path) != 0:
+            path = self.setPath(path)
+            self.var.set('')
+            self.widget.focus()
+            self.widget.event_generate('<Down>')
+
+    def setPath(self, path):
+        resolved_path = configVars.resolve_path(path)
+        if path == '' or '${' in path:
+            values = []
+        else:
+            path = os.path.abspath(resolved_path)
+            values = {path}
+            for k, p in configVars.pathVars.items():
+                if path == p or path.startswith(p + os.path.sep):
+                    v = '$(' + k + ')' + path[len(p):]
+                    v = v.replace('\\', '/')
+                    values.add(v)
+            try:
+                path = os.path.relpath(path).replace('\\', '/')
+                values.add(path)
+            except Exception:
+                None
+            values = list(values)
+            values.sort(key=lambda v: len(v))
+        self.widget.configure(values=values)
+        return path
 
     def addScale(self, min, max, on_change):
         """Add scale controls for address/size fields
@@ -179,6 +231,7 @@ class Field:
             orient = tk.HORIZONTAL,
             from_ = min // self.align,
             to = max // self.align,
+            bigincrement=16,
             showvalue = False,
             takefocus = True)
         value = parse_int(self.get_value())
@@ -202,6 +255,8 @@ class Field:
 
     def set_value(self, value):
         self.var.set(value)
+        if self.browse is not None:
+            self.setPath(value)
 
     def get_scale(self):
         return self.scale.get() * self.align
@@ -218,7 +273,11 @@ class Field:
         self.update_scale_range()
 
     def enable(self, state):
-        self.widget.configure(state='normal' if state else 'disabled')
+        state_str = 'normal' if state else 'disabled'
+        self.widget.configure(state=state_str)
+        for c in [self.scale, self.browse]:
+            if c is not None:
+                c.configure(state=state_str)
 
     def is_enabled(self):
         try:
@@ -229,15 +288,17 @@ class Field:
     def show(self, state = True):
         if state:
             self.widget.grid()
-            if self.label is not None:
-                self.label.grid()
+            for c in [self.label, self.scale, self.browse]:
+                if c is not None:
+                    c.grid()
         else:
             self.hide()
 
     def hide(self):
         self.widget.grid_remove()
-        if self.label is not None:
-            self.label.grid_remove()
+        for c in [self.label, self.scale, self.browse]:
+            if c is not None:
+                c.grid_remove()
 
     def is_visible(self):
         return len(self.widget.grid_info()) != 0
@@ -294,6 +355,7 @@ class EditState(dict):
             label.pack()
 
         f = self.controlFrame = ttk.Frame(self.editor.editFrame)
+        f.grid_columnconfigure(2, weight=1) # 'scale' widget - see Field
         f.pack(side=tk.TOP)
         self.array = {} # dictionary for array element variables
         self.row = 0
@@ -324,6 +386,7 @@ class EditState(dict):
         fieldType = schema.get('type')
         if fieldType == 'object':
             return
+        fieldFormat = schema.get('format')
         frame = self.controlFrame
         disabled = False
         if fieldName == 'name':
@@ -374,7 +437,10 @@ class EditState(dict):
                 if base is not None and k in base:
                     btn.configure(state='disabled')
         elif values is None:
-            c = tk.Entry(frame, width=48, textvariable=var)
+            if fieldFormat == 'filename' or fieldFormat == 'dirname':
+                c = ttk.Combobox(frame, textvariable=var)
+            else:
+                c = tk.Entry(frame, width=32, textvariable=var)
         else:
             values.sort()
             c = ttk.Combobox(frame, values=values, textvariable=var)
@@ -395,6 +461,11 @@ class EditState(dict):
                     c.bind('<Return>', update)
 
         field = self[fieldName] = Field(fieldName, schema, var, c)
+
+        if fieldFormat == 'filename':
+            field.addBrowse(True)
+        elif fieldFormat == 'dirname':
+            field.addBrowse(False)
 
         # Help text in status bar
         def setStatus(f):
@@ -1046,6 +1117,8 @@ class Editor:
 
     def initialise(self):
         self.main.option_add('*tearOff', False)
+        s = ttk.Style()
+        s.configure('Browse.TButton', padding=0)
 
         hwFilter = [('Hardware Profiles', '*' + HW_EXT)]
 
