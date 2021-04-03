@@ -1,4 +1,4 @@
-import argparse, os, config, partition, configparser, string, re
+import argparse, os, config, partition, configparser, string, re, threading
 from common import *
 from config import *
 import tkinter as tk
@@ -58,6 +58,51 @@ def load_config_vars(filename):
     parser.read_string(data)
     return parser['config']
 
+class ConfigVars(dict):
+    def __init__(self):
+        self.update(os.environ)
+        self.update(load_config_vars('config.mk'))
+        self.update(load_config_vars('debug.mk'))
+        # Can take a short while to resolve path variables, so use a background thread
+        # Don't need this information until user requests it
+        threading.Thread(target=self._resolvePathVars).start()
+
+    def getRelativePath(self, path):
+        try:
+            res = os.path.relpath(path)
+            return res.replace('\\', '/')
+        except Exception:
+            return path
+
+    def resolve_path(self, path):
+        tmp = str(path)
+        while True:
+            tmp = tmp.replace('(', '{')
+            tmp = tmp.replace(')', '}')
+            try:
+                new_path = string.Template(tmp).substitute(self)
+            except Exception:
+                # Return the value obtained thus far
+                return tmp
+            if new_path == tmp:
+                return new_path
+            tmp = new_path
+
+    def _resolvePathVars(self):
+        self.pathVars = {}
+        for k, v in self.items():
+            if v == '':
+                continue
+            path = self.resolve_path(v)
+            try:
+                path = self.getRelativePath(path)
+                critical('path = %s' % path)
+                if os.path.exists(path):
+                    self.pathVars[k] = path.replace('\\', '/')
+            except Exception as err:
+                critical("%s: %s" % (err, path))
+
+configVars = ConfigVars()
 
 def checkProfilePath(filename):
     filename = os.path.realpath(filename)
@@ -997,8 +1042,6 @@ class Editor:
         self.main = root
         self.edit = None
         self.selected = ''
-        self.config_vars = load_config_vars('config.mk')
-        self.config_vars.update(load_config_vars('debug.mk'))
         self.initialise()
 
     def initialise(self):
@@ -1189,16 +1232,6 @@ class Editor:
         self.reload()
         self.updateWindowTitle()
 
-    def resolve_path(self, path):
-        tmp = str(path)
-        while True:
-            tmp = tmp.replace('(', '{')
-            tmp = tmp.replace(')', '}')
-            new_path = string.Template(tmp).substitute(self.config_vars)
-            if new_path == tmp:
-                return new_path
-            tmp = new_path
-
     class Used:
         def __init__(self):
             self.text = ''
@@ -1209,7 +1242,7 @@ class Editor:
         used = self.Used()
         if part.filename != '':
             try:
-                used.path = self.resolve_path(part.filename)
+                used.path = configVars.resolve_path(part.filename)
                 if os.path.exists(used.path):
                     used.size = os.path.getsize(used.path)
                     used.text = size_frac_str(used.size)
