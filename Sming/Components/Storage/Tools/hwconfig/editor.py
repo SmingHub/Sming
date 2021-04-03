@@ -1133,7 +1133,7 @@ class Editor:
                 title='Select profile ' + HW_EXT + ' file',
                 filetypes=hwFilter,
                 initialdir=os.getcwd())
-            if filename != '' and checkProfilePath(filename):
+            if len(filename) != 0 and checkProfilePath(filename):
                 self.loadConfig(filename)
 
         def fileSave():
@@ -1143,7 +1143,7 @@ class Editor:
                 filetypes=hwFilter,
                 initialfile=filename,
                 initialdir=os.getcwd())
-            if filename != '' and checkProfilePath(filename):
+            if len(filename) != 0 and checkProfilePath(filename):
                 ext = os.path.splitext(filename)[1]
                 if ext != HW_EXT:
                     filename += HW_EXT
