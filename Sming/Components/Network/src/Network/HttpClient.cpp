@@ -14,7 +14,7 @@
 #include "Data/Stream/FileStream.h"
 
 HttpClient::HttpConnectionPool HttpClient::httpConnectionPool;
-Timer HttpClient::cleanUpTimer;
+SimpleTimer HttpClient::cleanUpTimer;
 
 bool HttpClient::send(HttpRequest* request)
 {
@@ -41,7 +41,7 @@ bool HttpClient::send(HttpRequest* request)
 	}
 
 	if(!cleanUpTimer.isStarted()) {
-		cleanUpTimer.initializeMs<60000>(&HttpClient::cleanInactive).start(); // run every minute
+		cleanUpTimer.initializeMs<60000>(HttpClient::cleanInactive).start(); // run every minute
 	}
 	return connection->send(request);
 }
