@@ -1250,14 +1250,16 @@ class Editor:
     def loadConfig(self, filename):
         self.reset()
         # If this is a core profile, don't edit it but create a new profile based on it
-        if filename.startswith(os.environ['SMING_HOME']):
+        dirname = os.path.dirname(filename)
+        smingHome = configVars['SMING_HOME']
+        if dirname == smingHome or dirname.startswith(smingHome + '/Arch/'):
             config_name = os.path.splitext(os.path.basename(filename))[0]
             self.json['base_config'] = config_name
         else:
             self.json = json_load(filename)
 
         options = get_dict_value(self.json, 'options', [])
-        for opt in os.environ.get('HWCONFIG_OPTS', '').replace(' ', '').split():
+        for opt in configVars.get('HWCONFIG_OPTS', '').replace(' ', '').split():
             if not opt in options:
                 options.append(opt)
 
