@@ -57,6 +57,10 @@
 	path = Sming/Components/libyuarel
 	url = https://github.com/jacketizer/libyuarel.git
 	ignore = dirty
+[submodule "littlefs"]
+	path = Sming/Components/littlefs
+	url = https://github.com/littlefs-project/littlefs
+	ignore = dirty
 [submodule "mqtt-codec"]
 	path = Sming/Components/mqtt-codec
 	url = https://github.com/slaff/mqtt-codec.git

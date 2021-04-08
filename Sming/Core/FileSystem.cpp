@@ -72,6 +72,18 @@ bool spiffs_mount(Storage::Partition partition)
 	return mount(fs);
 }
 
+bool lfs_mount()
+{
+	auto part = findDefaultPartition(Storage::Partition::SubType::Data::littlefs);
+	return part ? lfs_mount(part) : false;
+}
+
+bool lfs_mount(Storage::Partition partition)
+{
+	auto fs = IFS::createLfsFilesystem(partition);
+	return mount(fs);
+}
+
 bool fwfs_mount()
 {
 	auto part = findDefaultPartition(Storage::Partition::SubType::Data::fwfs);

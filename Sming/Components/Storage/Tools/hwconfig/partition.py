@@ -99,6 +99,7 @@ SUBTYPES = {
         "fat": 0x81,
         "spiffs": 0x82,
         "fwfs": 0xf1,
+        "littlefs": 0xf2,
     },
     STORAGE_TYPE: storage.TYPES,
     INTERNAL_TYPE: {

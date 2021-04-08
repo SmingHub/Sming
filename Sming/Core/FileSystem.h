@@ -129,6 +129,18 @@ bool spiffs_mount();
 bool spiffs_mount(Storage::Partition partition);
 
 /**
+ * @brief Mount the first available LittleFS volume
+ * @retval bool true on success
+ */
+bool lfs_mount();
+
+/**
+ * @brief Mount LittleFS volume from a specific partition
+ * @retval bool true on success
+ */
+bool lfs_mount(Storage::Partition partition);
+
+/**
  * @brief Mount the first available FWFS volume
  * @retval bool true on success
  */
