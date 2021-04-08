@@ -1,6 +1,6 @@
-COMPONENT_SRCDIRS := src proto
-COMPONENT_INCDIRS := $(COMPONENT_SRCDIRS) 
-COMPONENT_DEPENDS := nanopb
+COMPONENT_SRCDIRS := $(COMPONENT_PATH)/src
+COMPONENT_INCDIRS := $(COMPONENT_SRCDIRS) $(COMPONENT_PATH)/include 
+COMPONENT_DEPENDS := rpc
 
 # Architecture of the device where the hosted service will be flashed
 HOSTED_ARCH ?= Esp8266
