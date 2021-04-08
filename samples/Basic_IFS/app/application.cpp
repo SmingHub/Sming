@@ -199,6 +199,60 @@ void printDirectory(const char* path)
 		printStream(tmpl);
 	}
 }
+
+void copySomeFiles()
+{
+	auto part = *Storage::findPartition(Storage::Partition::SubType::Data::fwfs);
+	if(!part) {
+		return;
+	}
+	auto fs = IFS::createFirmwareFilesystem(part);
+	if(fs == nullptr) {
+		return;
+	}
+	fs->mount();
+
+	IFS::Directory dir(fs);
+	if(!dir.open()) {
+		return;
+	}
+
+	while(dir.next()) {
+		auto& stat = dir.stat();
+		if(stat.isDir()) {
+			continue;
+		}
+		IFS::FileStream src(fs);
+		auto filename = stat.name.c_str();
+		if(src.open(filename)) {
+			FileStream dst;
+			if(dst.open(filename, File::CreateNewAlways | File::WriteOnly)) {
+				auto len = dst.copyFrom(&src);
+				debug_w("Wrote '%s', %d bytes", filename, len);
+			} else {
+				debug_w("%s", dst.getLastErrorString().c_str());
+			}
+		}
+	}
+}
+
+bool isVolumeEmpty()
+{
+	Directory dir;
+	if(!dir.open()) {
+		return true;
+	}
+
+	while(dir.next()) {
+		if(dir.count() > 2) {
+			// Empty LFS contains "." and ".." entries
+			return false;
+		}
+	}
+
+	return true;
+}
+
 } // namespace
 
 void init()
@@ -213,9 +267,15 @@ void init()
 
 	// Various ways to initialise a filesystem: we'll use a custom approach
 	// spiffs_mount();
+	lfs_mount();
 	// fwfs_mount();
 	// hyfs_mount();
-	initFileSystem();
+	// initFileSystem();
+
+	if(isVolumeEmpty()) {
+		Serial.print(F("Volume appears to be empty, writing some files...\r\n"));
+		copySomeFiles();
+	}
 
 	printDirectory(nullptr);
 
