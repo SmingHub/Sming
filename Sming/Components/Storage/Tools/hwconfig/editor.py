@@ -196,7 +196,7 @@ class Field:
                 title="Select '%s'" % self.schema['title'],
                 initialdir=os.getcwd())
         if len(path) != 0:
-            path = self.setPath(path)
+            self.setPath(path)
             self.var.set('')
             self.widget.focus()
             self.widget.event_generate('<Down>')
