@@ -636,11 +636,14 @@ class EditState(dict):
                 if key_base in obj_base and o.get(k) == obj_base[key_base]:
                     del o[k]
 
+            for k in list(obj.keys()):
+                if obj[k] == {} or obj[k] == []:
+                    del obj[k]
+
             if len(obj) == 0:
                 del json_dict[self.name]
                 if len(json_dict) == 0:
                     del json_config[self.dictName]
-
 
             self.editor.json = self.editor.verify_config(json_config)
             if new_name is not None:
