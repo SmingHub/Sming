@@ -33,6 +33,8 @@ COMPONENT_CFLAGS += -DSPIFFS_OBJ_META_LEN=$(SPIFFS_OBJ_META_LEN)
 SPIFFSGEN := $(PYTHON) $(COMPONENT_PATH)/spiffsgen.py
 SPIFFSGEN_SMING = $(SPIFFSGEN) --meta-len=$(SPIFFS_OBJ_META_LEN) --block-size=8192
 
+HWCONFIG_BUILDSPECS += $(COMPONENT_PATH)/build.json
+
 # Target invoked via partition table
 ifneq (,$(filter spiffsgen,$(MAKECMDGOALS)))
 PART_TARGET := $(PARTITION_$(PART)_FILENAME)

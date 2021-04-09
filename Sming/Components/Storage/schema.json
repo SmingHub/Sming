@@ -9,15 +9,19 @@
 			"additionalProperties": false,
 			"properties": {
 				"name": {
-					"type": "string"
+					"type": "string",
+					"title": "Name",
+					"description": "Configuration name, can be different from the filename"
 				},
 				"comment": {
-					"type": "string"
+					"type": "string",
+					"title": "Comment",
+					"description": "Additional details or notes for this configuration"
 				},
 				"arch": {
 					"type": "string",
 					"title": "Target architecture",
-					"description": "Defined *only* in the base 'standard' spec"
+					"description": "Normally inherited from the base 'standard' spec, but can be overridden"
 				},
 				"base_config": {
 					"type": "string",
@@ -26,14 +30,27 @@
 				},
 				"options": {
 					"type": "array",
+					"items": {
+						"type": "string",
+						"title": "Option name"
+					},
 					"title": "List of option fragments",
 					"description": "Import additional settings from option libraries"
+				},
+				"bootloader_size": {
+					"type": [
+						"string",
+						"integer"
+					],
+					"title": "Bootloader size",
+					"description": "Size to reserve for bootloader"
 				},
 				"partition_table_offset": {
 					"type": [
 						"string",
 						"integer"
 					],
+					"title": "Partition table offset",
 					"description": "Location of partition table in spiFlash. Simple address or python expression to be evaluated."
 				},
 				"devices": {
@@ -48,14 +65,15 @@
 			"required": [
 				"name",
 				"arch",
+				"bootloader_size",
 				"partition_table_offset",
 				"devices",
 				"partitions"
 			]
 		},
 		"Devices": {
-			"title": "Devices",
 			"type": "object",
+			"title": "Devices",
 			"additionalProperties": false,
 			"properties": {
 				"spiFlash": {
@@ -74,15 +92,17 @@
 			]
 		},
 		"Device": {
-			"title": "Storage device definition",
 			"type": "object",
+			"title": "Storage device definition",
 			"additionalProperties": false,
 			"properties": {
 				"size": {
-					"type": "string"
+					"type": "string",
+					"description": "Size of device (decimal, hex or append K, M, G)"
 				},
 				"type": {
-					"type": "string"
+					"type": "string",
+					"description": "Type of storage device"
 				},
 				"mode": {
 					"type": "string",
@@ -91,10 +111,12 @@
 						"qout",
 						"dio",
 						"dout"
-					]
+					],
+					"description": "Flash access mode (spiFlash only)"
 				},
 				"speed": {
-					"type": "integer"
+					"type": "integer",
+					"description": "Clock speed in MHz (spiFlash only)"
 				}
 			},
 			"required": [
@@ -103,8 +125,8 @@
 			]
 		},
 		"Partitions": {
-			"title": "Partitions",
 			"type": "object",
+			"title": "Partitions",
 			"additionalProperties": false,
 			"patternProperties": {
 				"^[A-Za-z_][A-Za-z0-9_]*$": {
@@ -114,12 +136,13 @@
 			}
 		},
 		"Partition": {
-			"title": "Partition definition",
 			"type": "object",
+			"title": "Partition definition",
 			"additionalProperties": false,
 			"properties": {
 				"device": {
 					"type": "string",
+					"title": "Device Name",
 					"description": "ID of device this partition relates to"
 				},
 				"address": {
@@ -127,34 +150,47 @@
 						"string",
 						"integer"
 					],
+					"title": "Address",
 					"description": "Starting address for partition. Simple address or python expression to be evaluated."
 				},
 				"size": {
 					"type": [
 						"string",
 						"integer"
-					]
+					],
+					"title": "Size",
+					"description": "Size of partition (decimal, hex or append K, M, G)"
 				},
 				"type": {
 					"type": [
 						"string",
 						"integer"
-					]
+					],
+					"title": "Type",
+					"description": "Partition type"
 				},
 				"subtype": {
 					"type": [
 						"string",
 						"integer"
-					]
+					],
+					"title": "Sub-type",
+					"description": "Partition sub-type (interpretation depends on selected type)"
 				},
 				"readonly": {
-					"type": "boolean"
+					"type": "boolean",
+					"title": "Read-only",
+					"description": "Whether partition is to be considered read-only in applications"
 				},
 				"encrypted": {
-					"type": "boolean"
+					"type": "boolean",
+					"title": "Encrypted",
+					"description": "ESP32 partitions may be encrypted"
 				},
 				"filename": {
 					"type": "string",
+					"format": "filename",
+					"title": "Filename",
 					"description": "Location of file to write to this partition"
 				},
 				"build": {
@@ -171,13 +207,14 @@
 			]
 		},
 		"Build": {
+			"type": "object",
 			"title": "Build specification",
 			"description": "Additional properties as required by build target",
-			"type": "object",
 			"additionalProperties": true,
 			"properties": {
 				"target": {
 					"type": "string",
+					"title": "Target",
 					"description": "Makefile target for this build"
 				}
 			},
