@@ -118,23 +118,13 @@ bool initFileSystem()
 	// Create a partition wrapping some flashstring data
 	auto part = Storage::progMem.createPartition(F("fwfsMem"), fwfsImage, Storage::Partition::SubType::Data::fwfs);
 #else
-	auto part = *Storage::findPartition(Storage::Partition::SubType::Data::fwfs);
-	if(part) {
-		debug_i("Found '%s'", part.name().c_str());
-	} else {
-		debug_e("No FWFS partition found");
-	}
+	auto part = Storage::findDefaultPartition(Storage::Partition::SubType::Data::fwfs);
 #endif
 
 	IFS::IFileSystem* fs;
 #ifdef FWFS_HYBRID
 	// Create a read/write filesystem
-	auto spiffsPart = *Storage::findPartition(Storage::Partition::SubType::Data::spiffs);
-	if(spiffsPart) {
-		debug_i("Found '%s'", spiffsPart.name().c_str());
-	} else {
-		debug_e("No SPIFFS partition found");
-	}
+	auto spiffsPart = Storage::findDefaultPartition(Storage::Partition::SubType::Data::spiffs);
 	fs = IFS::createHybridFilesystem(part, spiffsPart);
 #else
 	// Read-only
@@ -199,6 +189,39 @@ void printDirectory(const char* path)
 		printStream(tmpl);
 	}
 }
+
+void fstest()
+{
+	// Various ways to initialise a filesystem
+
+	/*
+	 * Mount regular SPIFFS volume
+	 */
+	// spiffs_mount();
+
+	/*
+	 * Mount default Firmware Filesystem
+	 */
+	// fwfs_mount();
+
+	/*
+	 * Mount default FWFS/SPIFFS as hybrid
+	 */
+	// hyfs_mount();
+
+	/*
+	 * Explore some alternative methods of mounting filesystems
+	 */
+	initFileSystem();
+
+	if(isVolumeEmpty()) {
+		Serial.print(F("Volume appears to be empty, writing some files...\r\n"));
+		copySomeFiles();
+	}
+
+	printDirectory(nullptr);
+}
+
 } // namespace
 
 void init()
@@ -211,13 +234,10 @@ void init()
 			"Hello\n");
 #endif
 
-	// Various ways to initialise a filesystem: we'll use a custom approach
-	// spiffs_mount();
-	// fwfs_mount();
-	// hyfs_mount();
-	initFileSystem();
-
-	printDirectory(nullptr);
+	// Delay at startup so terminal gets time to start
+	auto timer = new AutoDeleteTimer;
+	timer->initializeMs<1000>(fstest);
+	timer->startOnce();
 
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
