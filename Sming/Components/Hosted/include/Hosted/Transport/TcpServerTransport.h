@@ -1,19 +1,20 @@
 #include <Network/TcpServer.h>
 #include <Data/ObjectMap.h>
-#include "TcpStream.h"
+#include "TcpTransport.h"
+#include "TcpClientStream.h"
 
 namespace Hosted
 {
 namespace Transport
 {
-class TcpServerStream : public TcpStream
+class TcpServerTransport : public TcpTransport
 {
 public:
-	using ClientMap = ObjectMap<uint32_t, CompoundTcpClientStream>;
+	using ClientMap = ObjectMap<uint32_t, TcpClientStream>;
 
-	TcpServerStream(TcpServer& server)
+	TcpServerTransport(TcpServer& server)
 	{
-		server.setClientReceiveHandler(TcpClientDataDelegate(&TcpServerStream::process, this));
+		server.setClientReceiveHandler(TcpClientDataDelegate(&TcpServerTransport::process, this));
 	}
 
 protected:
@@ -21,13 +22,13 @@ protected:
 	{
 		uint32_t key = uint32_t(&client);
 
-		CompoundTcpClientStream* stream = nullptr;
+		TcpClientStream* stream = nullptr;
 
 		int i = map.indexOf(key);
 		if(i >= 0) {
 			stream = map.valueAt(i);
 		} else {
-			map[key] = new CompoundTcpClientStream(client);
+			map[key] = new TcpClientStream(client);
 		}
 
 		if(!stream->push(reinterpret_cast<const uint8_t*>(data), size)) {

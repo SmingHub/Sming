@@ -31,6 +31,7 @@
 #include <esp_tasks.h>
 #include <host_lwip.h>
 #include <stdlib.h>
+#include "include/hostlib/hostlib.h"
 #include "include/hostlib/CommandLine.h"
 #include <Storage.h>
 
@@ -111,7 +112,8 @@ static void pause(int secs)
 	}
 }
 
-void host_main_loop() {
+void host_main_loop()
+{
 	host_service_tasks();
 	host_service_timers();
 	if (lwip_initialised && lwipServiceTimer.expired()) {

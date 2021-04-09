@@ -9,16 +9,14 @@ HOSTED_APP_DIR := $(COMPONENT_PATH)/app
 
 RELINK_VARS := ENABLE_HOSTED
 
-##@Building
+COMPONENT_VARS := ENABLE_HOSTED
+ENABLE_HOSTED ?=
 
-hosted-app: ##Builds the hosted service firmware
-	$(MAKE) -C $(HOSTED_APP_DIR) SMING_ARCH=$(HOSTED_ARCH)
+ifneq ($(ENABLE_HOSTED),)
+	COMPONENT_SRCDIRS += $(COMPONENT_PATH)/init/$(ENABLE_HOSTED) 
+endif
 
-##@Flashing
+COMPONENT_VARS += HOSTED_SERVER_IP
 
-hosted-flash: ##Flashes the hosted service firmware to an actual device
-	$(MAKE) -C $(HOSTED_APP_DIR) flash SMING_ARCH=$(HOSTED_ARCH)
-	
-hosted-flashapp: ##Flashes only the hosted service app
-	$(MAKE) -C $(HOSTED_APP_DIR) flashapp SMING_ARCH=$(HOSTED_ARCH)
-
+COMPONENT_CFLAGS := -DHOSTED_SERVER_IP=$(HOSTED_SERVER_IP)
+COMPONENT_CXXFLAGS := $(COMPONENT_CFLAGS)

@@ -59,6 +59,9 @@ int msleep(unsigned ms);
  */
 size_t getHostAppDir(char* path, size_t bufSize);
 
+
+void host_main_loop();
+
 #ifdef __cplusplus
 }
 #endif

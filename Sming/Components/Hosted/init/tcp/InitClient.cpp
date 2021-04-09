@@ -1,8 +1,8 @@
 #include <SmingCore.h>
-#include <HostedClient.h>
-#include "HostedTcpStream.h"
+#include <Hosted/Client.h>
+#include <Hosted/Transport/TcpClientStream.h>
 
-HostedClient* hostedClient{nullptr};
+Hosted::Client* hostedClient{nullptr};
 
 #ifndef WIFI_SSID
 #define WIFI_SSID "PleaseEnterSSID" // Put your SSID and password here
@@ -19,16 +19,31 @@ HostedClient* hostedClient{nullptr};
 
 extern void init();
 
+namespace
+{
+TcpClient* tcpClient = nullptr;
+Hosted::Transport::TcpClientStream* stream = nullptr;
+
 static void ready(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
+	if(hostedClient != nullptr) {
+		return;
+	}
+
 	IpAddress remoteIp(REMOTE_IP);
 	if(gateway == IpAddress("192.168.4.1")) {
 		remoteIp = gateway;
 	}
 
-	hostedClient = new HostedClient(new HostedTcpStream(remoteIp.toString(), 4031));
+	tcpClient = new TcpClient(false);
+	tcpClient->connect(remoteIp.toString(), 4031);
+	stream = new Hosted::Transport::TcpClientStream(*tcpClient);
+
+	hostedClient = new Hosted::Client(stream);
 	init();
 }
+
+} // namespace
 
 void host_init()
 {

@@ -1,3 +1,3 @@
-## List the names of any additional Components required for this project
+## This sample depends on the HostEd component
 COMPONENT_DEPENDS := Hosted
 ENABLE_HOSTED :=

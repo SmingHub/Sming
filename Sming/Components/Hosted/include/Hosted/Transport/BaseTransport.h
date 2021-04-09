@@ -6,7 +6,7 @@ namespace Hosted
 {
 namespace Transport
 {
-class TStream
+class BaseTransport
 {
 public:
 	using DataHandler = Delegate<bool(Stream&)>;
@@ -16,7 +16,7 @@ public:
 		this->handler = handler;
 	}
 
-	virtual ~TStream()
+	virtual ~BaseTransport()
 	{
 	}
 

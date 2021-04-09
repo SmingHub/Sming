@@ -1,16 +1,16 @@
 #include <HardwareSerial.h>
-#include "TStream.h"
+#include "BaseTransport.h"
 
 namespace Hosted
 {
 namespace Transport
 {
-class SerialStream : public TStream
+class SerialTransport : public BaseTransport
 {
 public:
-	SerialStream(HardwareSerial& stream)
+	SerialTransport(HardwareSerial& stream)
 	{
-		stream.onDataReceived(StreamDataReceivedDelegate(&SerialStream::process, this));
+		stream.onDataReceived(StreamDataReceivedDelegate(&SerialTransport::process, this));
 	}
 
 private:
