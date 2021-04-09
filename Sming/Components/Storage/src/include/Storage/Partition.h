@@ -63,7 +63,8 @@
 	XX(espHttpd, 0x80, "ESPHTTPD")                                                                                     \
 	XX(fat, 0x81, "FAT")                                                                                               \
 	XX(spiffs, 0x82, "SPIFFS")                                                                                         \
-	XX(fwfs, 0xF1, "FWFS")
+	XX(fwfs, 0xF1, "FWFS")                                                                                             \
+	XX(littlefs, 0xF2, "LittleFS")
 
 namespace Storage
 {

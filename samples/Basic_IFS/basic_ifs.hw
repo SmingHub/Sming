@@ -2,6 +2,12 @@
     "name": "Basic IFS sample",
     "base_config": "spiffs",
     "partitions": {
+        "lfs1": {
+            "address": "0x00100000",
+            "size": "480K",
+            "type": "data",
+            "subtype": "littlefs"
+        },
         "fwfs1": {
             "address": "0x280000",
             "size": "500K",

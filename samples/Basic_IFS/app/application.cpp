@@ -9,6 +9,7 @@
 #include <Data/Stream/IFS/HtmlDirectoryTemplate.h>
 #include <Data/Stream/IFS/JsonDirectoryTemplate.h>
 #include <Storage/ProgMem.h>
+#include <LittleFS.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -109,7 +110,7 @@ bool initFileSystem()
 {
 	fileFreeFileSystem();
 
-#if DEBUG_VERBOSE_LEVEL >= INFO
+#if DEBUG_BUILD
 	auto freeheap = system_get_free_heap_size();
 #endif
 	debug_i("1: heap = %u", freeheap);
@@ -190,6 +191,63 @@ void printDirectory(const char* path)
 	}
 }
 
+void copySomeFiles()
+{
+	auto part = *Storage::findPartition(Storage::Partition::SubType::Data::fwfs);
+	if(!part) {
+		return;
+	}
+	auto fs = IFS::createFirmwareFilesystem(part);
+	if(fs == nullptr) {
+		return;
+	}
+	fs->mount();
+
+	IFS::Directory dir(fs);
+	if(!dir.open()) {
+		return;
+	}
+
+	while(dir.next()) {
+		auto& stat = dir.stat();
+		if(stat.isDir()) {
+			continue;
+		}
+		IFS::File src(fs);
+		auto filename = stat.name.c_str();
+		if(src.open(filename)) {
+			File dst;
+			if(dst.open(filename, File::CreateNewAlways | File::WriteOnly)) {
+				auto len =
+					src.readContent([&dst](const char* buffer, size_t size) -> int { return dst.write(buffer, size); });
+				(void)len;
+				debug_w("Wrote '%s', %d bytes", filename, len);
+				if(!dst.settime(stat.mtime)) {
+					Serial.print(F("settime() failed: "));
+					Serial.println(dst.getLastErrorString());
+				}
+				if(!dst.setcompression(stat.compression)) {
+					Serial.print(F("setcompression() failed: "));
+					Serial.println(dst.getLastErrorString());
+				}
+				if(!dst.setacl(stat.acl)) {
+					Serial.print(F("setacl() failed: "));
+					Serial.println(dst.getLastErrorString());
+				}
+			} else {
+				debug_w("%s", dst.getLastErrorString().c_str());
+			}
+		}
+	}
+}
+
+bool isVolumeEmpty()
+{
+	Directory dir;
+	dir.open();
+	return !dir.next();
+}
+
 void fstest()
 {
 	// Various ways to initialise a filesystem
@@ -198,6 +256,11 @@ void fstest()
 	 * Mount regular SPIFFS volume
 	 */
 	// spiffs_mount();
+
+	/*
+	 * Mount LittleFS volume
+	 */
+	// lfs_mount();
 
 	/*
 	 * Mount default Firmware Filesystem
