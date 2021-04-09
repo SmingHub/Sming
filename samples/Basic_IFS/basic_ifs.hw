@@ -4,7 +4,7 @@
     "partitions": {
         "fwfs1": {
             "address": "0x280000",
-            "size": "0x60000",
+            "size": "500K",
             "type": "data",
             "subtype": "fwfs",
             "filename": "out/fwfs1.bin",
