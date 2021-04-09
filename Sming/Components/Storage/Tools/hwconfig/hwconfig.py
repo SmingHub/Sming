@@ -6,6 +6,7 @@
 import common, argparse, os, partition
 from common import *
 from config import Config
+from config import schema as config_schema
 
 def openOutput(path):
     if path == '-':
@@ -24,10 +25,8 @@ def handle_validate(args, config, part):
     # Validate resulting hardware configuration against schema
     try:
         from jsonschema import Draft7Validator
-        inst = json.loads(config.to_json())
-        with open(os.environ['HWCONFIG_SCHEMA']) as f:
-            schema = json.load(f)
-        v = Draft7Validator(schema)
+        inst = json_loads(config.to_json())
+        v = Draft7Validator(config_schema)
         errors = sorted(v.iter_errors(inst), key=lambda e: e.path)
         if errors != []:
             for e in errors:

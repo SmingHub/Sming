@@ -3,6 +3,8 @@
 #
 
 import sys, json, platform
+from rjsmin import jsmin
+from collections import OrderedDict
 
 quiet = False
 
@@ -35,7 +37,7 @@ def parse_int(v, keywords=None):
         try:
             for letter, multiplier in [("k", 1024), ("m", 1024 * 1024), ("g", 1024 * 1024 * 1024)]:
                 if v.lower().endswith(letter):
-                    return parse_int(v[:-1], keywords) * multiplier
+                    return round(float(v[:-1]) * multiplier)
             return int(v, 0)
         except ValueError:
             raise InputError("Invalid field value %s" % v)
@@ -90,6 +92,17 @@ def quote(v):
 def contains_whitespace(s):
     return ''.join(s.split()) != s
 
+
+def json_loads(s):
+    return json.loads(jsmin(s), object_pairs_hook=OrderedDict)
+
+def json_load(filename):
+    with open(filename) as f:
+        return json_loads(f.read())
+
+def json_save(data, filename):
+    with open(filename, "w") as f:
+        json.dump(data, f, indent=4)
 
 def to_json(obj):
     return json.dumps(obj, indent=4)

@@ -1,0 +1,17 @@
+{
+    "spiffsgen": {
+        "title": "SPIFFS filesystem support",
+        "partition": {
+            "type": "data",
+            "subtype": "spiffs"
+        },
+        "properties": {
+            "files": {
+                "type": "string",
+                "format": "dirname",
+                "title": "Path to files",
+                "description": "Source directory containing filesystem files"
+            }
+        }
+    }
+}
