@@ -80,6 +80,9 @@ void onFile(HttpRequest& request, HttpResponse& response)
 	} else {
 		//	response.setCache(86400, true); // It's important to use cache for better performance.
 		auto stream = new FileStream(stat);
+		if(!stream->isValid()) {
+			stream->open(file);
+		}
 		if(stat.compression.type == IFS::Compression::Type::GZip) {
 			response.headers[HTTP_HEADER_CONTENT_ENCODING] = F("gzip");
 		} else if(stat.compression.type != IFS::Compression::Type::None) {
