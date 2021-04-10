@@ -36,11 +36,11 @@ COMPONENT_DEPENDS := \
 	lwip \
 	spi_flash \
 	vflash \
-	rboot \
+	rboot
 	
 
 ifneq ($(ENABLE_HOSTED),)
-	COMPONENT_DEPENDS += Hosted-Lib Hosted-Transport
+	COMPONENT_DEPENDS += Hosted-Lib
 endif
 
 # => Platform WiFi

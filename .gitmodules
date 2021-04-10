@@ -260,9 +260,9 @@
 	url = https://github.com/mikee47/SignalGenerator
 	ignore = dirty
 [submodule "Libraries.simpleRPC"]
-    path = Sming/Libraries/rpc/simpleRPC
-    url = https://github.com/jfjlaros/simpleRPC.git
-    ignore = dirty
+	path = Sming/Libraries/rpc/simpleRPC
+	url = https://github.com/jfjlaros/simpleRPC.git
+	ignore = dirty
 [submodule "Libraries.SmingTest"]
 	path = Sming/Libraries/SmingTest
 	url = https://github.com/mikee47/SmingTest

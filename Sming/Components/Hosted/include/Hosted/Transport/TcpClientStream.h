@@ -8,7 +8,7 @@ namespace Transport
 class TcpClientStream : public Stream
 {
 public:
-	TcpClientStream(TcpClient& client, size_t cbufferSize = 1024) : client(client), cBuffer(cbufferSize)
+	TcpClientStream(TcpClient& client, size_t cbufferSize = 1024) : cBuffer(cbufferSize), client(client)
 	{
 	}
 
@@ -19,7 +19,7 @@ public:
 
 	bool push(const uint8_t* buffer, size_t size)
 	{
-		int written = cBuffer.write(buffer, size);
+		size_t written = cBuffer.write(buffer, size);
 		return (written == size);
 	}
 

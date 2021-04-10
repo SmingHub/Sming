@@ -1,17 +1,19 @@
 /*
  * This sample application demostrates RPC communication via TCP.
- * It will try to connect to a WIFI access point and start a TCP server.
+ * It will try to connect to create an access point or create to a WIFI access point and start a TCP server.
  * The TCP server will listen on port 4031 for remote commands.
  */
 #include <SmingCore.h>
 #include <simpleRPC.h>
 #include <Hosted/Transport/TcpServerTransport.h>
 
+#if CONNECT_TO_WIFI
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
 #define WIFI_SSID "PleaseEnterSSID" // Put your SSID and password here
 #define WIFI_PWD "PleaseEnterPass"
 #endif
+#endif /* CONNECT_TO_WIFI */
 
 namespace
 {
@@ -53,16 +55,25 @@ void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 
 		return true;
 	});
+
+	Serial.printf("Running RCP server on: %s:%u", ip.toString().c_str(), port);
 }
 
 } // namespace
 
 void init()
 {
+	Serial.begin(SERIAL_BAUD_RATE);
+
+#if CONNECT_TO_WIFI
 	// Connect to same AP as the client application
 	WifiStation.enable(true);
 	WifiStation.config(_F(WIFI_SSID), _F(WIFI_PWD));
-
 	// Set callback that should be triggered when we have assigned IP
 	WifiEvents.onStationGotIP(connectOk);
+#else
+	WifiAccessPoint.enable(true);
+	WifiAccessPoint.config(_F("RCP Server"), nullptr, AUTH_OPEN);
+	connectOk(WifiAccessPoint.getIP(), WifiAccessPoint.getNetworkMask(), WifiAccessPoint.getNetworkGateway());
+#endif
 }

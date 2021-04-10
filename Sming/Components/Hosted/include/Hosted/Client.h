@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef ARCH_HOST
+#error "Hosted::Client can be used only on the Host architecture!"
+#endif
+
 #include <Stream.h>
 #include <simpleRPC.h>
 #include <memory>
@@ -32,7 +36,7 @@ public:
 	{
 		size_t neededBytes = sizeof(R);
 
-		while(stream.available() < neededBytes) {
+		while(stream.available() < int(neededBytes)) {
 			stream.flush();
 			host_main_loop();
 		}

@@ -1,21 +1,32 @@
-Hosted Server Application
-=========================
+Hosted RCP Server over TCP
+==========================
 
-TBD...
+Overview
+--------
+This application creates a RPC server that will communicate over TCP. You can either start an Access Point from the controller
+or connect the application to an existing WIFI Access point. The latter can be compiled using the following command::
 
+    make SMING_ARCH=Esp8266 CONNECT_TO_WIFI=1 WIFI_SSID="MySSID" WIFI_PWD="Secr3tP4Ssw0rd"
 
-Testing
--------
+Configuration
+-------------
 
-You can compile the Hosted App to run also under the Host system. This can be done with the following command::
+.. envvar:: CONNECT_TO_WIFI
 
-    cd $SMING_HOME/Components/Hosted/app
-    make run SMING_ARCH=Host ENABLE_GDB=1
+   Default: 0 (disabled)
 
-Once the HostedServer is up and running you can send protobuffer encoded commands to it. A sample test client can be
-run with the following command::
+   If set to 1 the application will try to connect to a WIFI access point. Make sure to provide also the WIFI_SSID and WIFI_PWD values.
 
-    nc 192.168.13.10 4031 < test/data.pb
+   If set to 0 the application will start an access point to which the Host application can connect.
 
+.. envvar:: WIFI_SSID
 
+   Default: PleaseEnterSSID
 
+   WIFI Access Point name. If you have enabled CONNECT_TO_WIFI then make sure to set also WIFI_SSID and WIFI_PWD values.
+
+.. envvar:: WIFI_PWD
+
+   Default: PleaseEnterPass
+
+   WIFI Access Point password. If you have enabled CONNECT_TO_WIFI then make sure to set also WIFI_SSID and WIFI_PWD values.
