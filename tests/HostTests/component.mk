@@ -7,12 +7,13 @@ COMPONENT_SRCDIRS := app modules
 ARDUINO_LIBRARIES := \
 	SmingTest \
 	ArduinoJson5 \
-	ArduinoJson6
+	ArduinoJson6 \
+	simpleRPC
 
 COMPONENT_DEPENDS := \
 	malloc_count \
 	axtls-8266 \
-	bearssl-esp8266
+	bearssl-esp8266 
 
 ifeq ($(UNAME),Windows)
 # Network tests run on Linux only

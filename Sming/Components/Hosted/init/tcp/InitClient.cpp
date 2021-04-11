@@ -40,6 +40,7 @@ static void ready(IpAddress ip, IpAddress mask, IpAddress gateway)
 	stream = new Hosted::Transport::TcpClientStream(*tcpClient);
 
 	hostedClient = new Hosted::Client(*stream);
+	hostedClient->getRemoteCommands();
 	init();
 }
 

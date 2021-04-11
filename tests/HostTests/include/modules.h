@@ -26,4 +26,5 @@
 	XX(Rational)                                                                                                       \
 	XX(Clocks)                                                                                                         \
 	XX(Timers)                                                                                                         \
-	XX(HttpRequest)
+	XX(HttpRequest)                                                                                                    \
+	XX(Hosted)

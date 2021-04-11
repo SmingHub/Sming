@@ -9,5 +9,6 @@ void host_init()
 {
 	Serial.begin(115200);
 	hostedClient = new Hosted::Client(Serial);
+	hostedClient->getRemoteCommands();
 	init();
 }
