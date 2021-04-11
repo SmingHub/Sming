@@ -118,6 +118,11 @@ inline void fileFreeFileSystem()
 }
 
 /**
+ * @brief Mount a constructed filesystem with debug messages
+ */
+bool fileMountFileSystem(IFS::IFileSystem* fs);
+
+/**
  * @brief Mount the first available SPIFFS volume
  * @retval bool true on success
  */

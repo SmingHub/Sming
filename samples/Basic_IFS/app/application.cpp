@@ -9,6 +9,7 @@
 #include <Data/Stream/IFS/HtmlDirectoryTemplate.h>
 #include <Data/Stream/IFS/JsonDirectoryTemplate.h>
 #include <Storage/ProgMem.h>
+#include <LittleFS.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -79,6 +80,9 @@ void onFile(HttpRequest& request, HttpResponse& response)
 	} else {
 		//	response.setCache(86400, true); // It's important to use cache for better performance.
 		auto stream = new FileStream(stat);
+		if(!stream->isValid()) {
+			stream->open(file);
+		}
 		if(stat.compression.type == IFS::Compression::Type::GZip) {
 			response.headers[HTTP_HEADER_CONTENT_ENCODING] = F("gzip");
 		} else if(stat.compression.type != IFS::Compression::Type::None) {
@@ -109,7 +113,7 @@ bool initFileSystem()
 {
 	fileFreeFileSystem();
 
-#if DEBUG_VERBOSE_LEVEL >= INFO
+#if DEBUG_BUILD
 	auto freeheap = system_get_free_heap_size();
 #endif
 	debug_i("1: heap = %u", freeheap);
@@ -118,23 +122,13 @@ bool initFileSystem()
 	// Create a partition wrapping some flashstring data
 	auto part = Storage::progMem.createPartition(F("fwfsMem"), fwfsImage, Storage::Partition::SubType::Data::fwfs);
 #else
-	auto part = *Storage::findPartition(Storage::Partition::SubType::Data::fwfs);
-	if(part) {
-		debug_i("Found '%s'", part.name().c_str());
-	} else {
-		debug_e("No FWFS partition found");
-	}
+	auto part = Storage::findDefaultPartition(Storage::Partition::SubType::Data::fwfs);
 #endif
 
 	IFS::IFileSystem* fs;
 #ifdef FWFS_HYBRID
 	// Create a read/write filesystem
-	auto spiffsPart = *Storage::findPartition(Storage::Partition::SubType::Data::spiffs);
-	if(spiffsPart) {
-		debug_i("Found '%s'", spiffsPart.name().c_str());
-	} else {
-		debug_e("No SPIFFS partition found");
-	}
+	auto spiffsPart = Storage::findDefaultPartition(Storage::Partition::SubType::Data::spiffs);
 	fs = IFS::createHybridFilesystem(part, spiffsPart);
 #else
 	// Read-only
@@ -199,6 +193,101 @@ void printDirectory(const char* path)
 		printStream(tmpl);
 	}
 }
+
+void copySomeFiles()
+{
+	auto part = *Storage::findPartition(Storage::Partition::SubType::Data::fwfs);
+	if(!part) {
+		return;
+	}
+	auto fs = IFS::createFirmwareFilesystem(part);
+	if(fs == nullptr) {
+		return;
+	}
+	fs->mount();
+
+	IFS::Directory dir(fs);
+	if(!dir.open()) {
+		return;
+	}
+
+	while(dir.next()) {
+		auto& stat = dir.stat();
+		if(stat.isDir()) {
+			continue;
+		}
+		IFS::File src(fs);
+		auto filename = stat.name.c_str();
+		if(src.open(filename)) {
+			File dst;
+			if(dst.open(filename, File::CreateNewAlways | File::WriteOnly)) {
+				auto len =
+					src.readContent([&dst](const char* buffer, size_t size) -> int { return dst.write(buffer, size); });
+				(void)len;
+				debug_w("Wrote '%s', %d bytes", filename, len);
+				if(!dst.settime(stat.mtime)) {
+					Serial.print(F("settime() failed: "));
+					Serial.println(dst.getLastErrorString());
+				}
+				if(!dst.setcompression(stat.compression)) {
+					Serial.print(F("setcompression() failed: "));
+					Serial.println(dst.getLastErrorString());
+				}
+				if(!dst.setacl(stat.acl)) {
+					Serial.print(F("setacl() failed: "));
+					Serial.println(dst.getLastErrorString());
+				}
+			} else {
+				debug_w("%s", dst.getLastErrorString().c_str());
+			}
+		}
+	}
+}
+
+bool isVolumeEmpty()
+{
+	Directory dir;
+	dir.open();
+	return !dir.next();
+}
+
+void fstest()
+{
+	// Various ways to initialise a filesystem
+
+	/*
+	 * Mount regular SPIFFS volume
+	 */
+	// spiffs_mount();
+
+	/*
+	 * Mount LittleFS volume
+	 */
+	// lfs_mount();
+
+	/*
+	 * Mount default Firmware Filesystem
+	 */
+	// fwfs_mount();
+
+	/*
+	 * Mount default FWFS/SPIFFS as hybrid
+	 */
+	// hyfs_mount();
+
+	/*
+	 * Explore some alternative methods of mounting filesystems
+	 */
+	initFileSystem();
+
+	if(isVolumeEmpty()) {
+		Serial.print(F("Volume appears to be empty, writing some files...\r\n"));
+		copySomeFiles();
+	}
+
+	printDirectory(nullptr);
+}
+
 } // namespace
 
 void init()
@@ -211,13 +300,10 @@ void init()
 			"Hello\n");
 #endif
 
-	// Various ways to initialise a filesystem: we'll use a custom approach
-	// spiffs_mount();
-	// fwfs_mount();
-	// hyfs_mount();
-	initFileSystem();
-
-	printDirectory(nullptr);
+	// Delay at startup so terminal gets time to start
+	auto timer = new AutoDeleteTimer;
+	timer->initializeMs<1000>(fstest);
+	timer->startOnce();
 
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD);

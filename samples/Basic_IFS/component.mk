@@ -1,3 +1,5 @@
+COMPONENT_DEPENDS := LittleFS
+
 # Empty SPIFFS partition please
 SPIFF_FILES :=
 
