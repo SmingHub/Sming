@@ -122,15 +122,8 @@ bool initFileSystem()
 	auto part = Storage::findDefaultPartition(Storage::Partition::SubType::Data::fwfs);
 #endif
 
-	IFS::IFileSystem* fs;
-#ifdef FWFS_HYBRID
-	// Create a read/write filesystem
-	auto spiffsPart = Storage::findDefaultPartition(Storage::Partition::SubType::Data::spiffs);
-	fs = IFS::createHybridFilesystem(part, spiffsPart);
-#else
 	// Read-only
-	fs = IFS::createFirmwareFilesystem(part);
-#endif
+	auto fs = IFS::createFirmwareFilesystem(part);
 	debug_i("2: heap = -%u", freeheap - system_get_free_heap_size());
 
 	if(fs == nullptr) {
