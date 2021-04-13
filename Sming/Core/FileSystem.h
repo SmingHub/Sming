@@ -157,20 +157,15 @@ bool hyfs_mount();
  */
 bool hyfs_mount(Storage::Partition fwfsPartition, Storage::Partition spiffsPartition);
 
-/** @brief  Open file
- *  @param  name File name
+/** @brief  Open file by path
+ *  @param  path Full path to file
  *  @param  flags Mode to open file
- *  @retval file File ID or negative error code
+ *  @retval file File handle or negative error code
  */
-inline file_t fileOpen(const char* name, FileOpenFlags flags = File::ReadOnly)
+template <typename T> inline file_t fileOpen(const T& path, FileOpenFlags flags = File::ReadOnly)
 {
 	CHECK_FS(open)
-	return fileSystem->open(name, flags);
-}
-
-inline file_t fileOpen(const String& name, FileOpenFlags flags = File::ReadOnly)
-{
-	return fileOpen(name.c_str(), flags);
+	return fileSystem->open(path, flags);
 }
 
 inline file_t fileOpen(const FileStat& stat, FileOpenFlags flags = File::ReadOnly)
@@ -180,8 +175,8 @@ inline file_t fileOpen(const FileStat& stat, FileOpenFlags flags = File::ReadOnl
 }
 
 /** @brief  Clode file
- *  @param  file ID of file to open
- *  @note   File ID is returned from fileOpen function
+ *  @param  file Handle of file to close
+ *  @note   File Handle is returned from fileOpen function
  */
 inline int fileClose(file_t file)
 {
@@ -190,7 +185,7 @@ inline int fileClose(file_t file)
 }
 
 /** @brief  Write to file
- *  @param  file File ID
+ *  @param  file File handle
  *  @param  data Pointer to data to write to file
  *  @param  size Quantity of data elements to write to file
  *  @retval int Quantity of data elements actually written to file or negative error code
@@ -202,7 +197,7 @@ inline int fileWrite(file_t file, const void* data, size_t size)
 }
 
 /** @brief  Update file modification time
- *  @param  file File ID
+ *  @param  file File handle
  *  @retval int Error code
  */
 inline int fileTouch(file_t file)
@@ -211,7 +206,7 @@ inline int fileTouch(file_t file)
 }
 
 /** @brief  Read from file
- *  @param  file File ID
+ *  @param  file File handle
  *  @param  data Pointer to data buffer in to which to read data
  *  @param  size Quantity of data elements to read from file
  *  @retval int Quantity of data elements actually read from file or negative error code
@@ -223,7 +218,7 @@ inline int fileRead(file_t file, void* data, size_t size)
 }
 
 /** @brief  Position file cursor
- *  @param  file File ID
+ *  @param  file File handle
  *  @param  offset Quantity of bytes to move cursor
  *  @param  origin Position from where to move cursor
  *  @retval int Offset within file or negative error code
@@ -235,7 +230,7 @@ inline int fileSeek(file_t file, int offset, SeekOrigin origin)
 }
 
 /** @brief  Check if at end of file
- *  @param  file File ID
+ *  @param  file File handle
  *  @retval bool true if at end of file
  */
 inline bool fileIsEOF(file_t file)
@@ -245,7 +240,7 @@ inline bool fileIsEOF(file_t file)
 }
 
 /** @brief  Get position in file
- *  @param  file File ID
+ *  @param  file File handle
  *  @retval int32_t Read / write cursor position or error code
  */
 inline int fileTell(file_t file)
@@ -255,7 +250,7 @@ inline int fileTell(file_t file)
 }
 
 /** @brief  Flush pending writes
- *  @param  file File ID
+ *  @param  file File handle
  *  @retval int Size of last file written or error code
  */
 inline int fileFlush(file_t file)
@@ -402,7 +397,7 @@ template <typename TFileName> inline size_t fileGetContent(const TFileName& file
 	return fileSystem ? fileSystem->getContent(fileName, buffer) : 0;
 }
 
-/** @brief   Get file statistics
+/** @brief  Get file statistics
  *  @param  name File name
  *  @param  stat Pointer to SPIFFS statistic structure to populate
  *  @retval int Error code
@@ -419,7 +414,7 @@ inline int fileStats(const String& fileName, FileStat& stat)
 }
 
 /** brief   Get file statistics
- *  @param  file File ID
+ *  @param  file File handle
  *  @param  stat Pointer to SPIFFS statistic structure to populate
  *  @retval int Error code
  */
