@@ -94,12 +94,6 @@ public:
 		return this;
 	}
 
-	/*
-	 * Send file by stat, indicates whether file is compressed
-	 * A name is required in stat to get the appropriate content type
-	 */
-	bool sendFile(const FileStat& stat);
-
 	/**
 	 * @brief Send file by name
 	 * @param fileName

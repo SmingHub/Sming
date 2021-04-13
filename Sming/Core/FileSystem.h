@@ -168,12 +168,6 @@ template <typename T> inline file_t fileOpen(const T& path, FileOpenFlags flags 
 	return fileSystem->open(path, flags);
 }
 
-inline file_t fileOpen(const FileStat& stat, FileOpenFlags flags = File::ReadOnly)
-{
-	CHECK_FS(fopen)
-	return fileSystem->fopen(stat, flags);
-}
-
 /** @brief  Clode file
  *  @param  file Handle of file to close
  *  @note   File Handle is returned from fileOpen function
@@ -484,17 +478,6 @@ inline int fileOpenDir(const String& dirName, DirHandle& dir)
 inline int fileOpenRootDir(DirHandle& dir)
 {
 	return fileOpenDir(nullptr, dir);
-}
-
-/** @brief Open a sub-directory for reading
- *  @param stat Details of directory to open, nullptr for root directory
- *  @param dir  Directory object
- *  @retrval 0 on success or negative error
- */
-inline int fileOpenDir(const FileStat& stat, DirHandle& dir)
-{
-	CHECK_FS(opendir)
-	return fileSystem->fopendir(&stat, dir);
 }
 
 /** @brief close a directory object
