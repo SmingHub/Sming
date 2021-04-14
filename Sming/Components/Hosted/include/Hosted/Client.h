@@ -32,8 +32,7 @@ public:
 	{
 		uint8_t functionId = getFunctionId(functionName);
 
-		rpcPrint(stream, functionId);
-		rpcPrint(stream, args...);
+		rpcPrint(stream, functionId, args...);
 
 		return true;
 	}
@@ -62,9 +61,7 @@ public:
 	int getFunctionId(const char* name)
 	{
 		if(fetchCommands) {
-			if(getRemoteCommands()) {
-				fetchCommands = false;
-			}
+			getRemoteCommands();
 		}
 
 		int id = commands.indexOf(name);
@@ -83,7 +80,8 @@ public:
 	{
 		host_debug_i("Getting remote RPC commands \033[5m...\033[0m");
 
-		stream.write("\0xff", 1);
+		uint8_t head = 0xff;
+		stream.write(&head, 1);
 		char buffer[512];
 		ParserSettings settings;
 		settings.startMethods = ParserSettings::SimpleMethod(&Client::startMethods, this);
@@ -148,6 +146,7 @@ private:
 
 	void endMethods()
 	{
+		fetchCommands = false;
 	}
 };
 

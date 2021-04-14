@@ -8,7 +8,7 @@ ARDUINO_LIBRARIES := \
 	SmingTest \
 	ArduinoJson5 \
 	ArduinoJson6 \
-	simpleRPC
+	Hosted
 
 COMPONENT_DEPENDS := \
 	malloc_count \

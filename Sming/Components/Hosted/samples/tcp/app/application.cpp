@@ -1,6 +1,6 @@
 /*
  * This sample application demostrates RPC communication via TCP.
- * It will try to connect to create an access point or create to a WIFI access point and start a TCP server.
+ * It will try to connect to create an existing Access Point (AP) or create to a new AP and start a TCP server.
  * The TCP server will listen on port 4031 for remote commands.
  */
 #include <SmingCore.h>

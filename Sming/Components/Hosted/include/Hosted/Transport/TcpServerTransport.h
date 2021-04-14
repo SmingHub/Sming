@@ -29,6 +29,7 @@ protected:
 			stream = map.valueAt(i);
 		} else {
 			map[key] = new TcpClientStream(client);
+			stream = map[key];
 		}
 
 		if(!stream->push(reinterpret_cast<const uint8_t*>(data), size)) {
