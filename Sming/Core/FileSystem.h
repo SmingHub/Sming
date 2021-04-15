@@ -87,7 +87,7 @@ constexpr FileOpenFlags eFO_CreateNewAlways{File::CreateNewAlways}; ///< @deprec
 	auto fileSystem = static_cast<IFS::FileSystem*>(SmingInternal::activeFileSystem);                                  \
 	if(fileSystem == nullptr) {                                                                                        \
 		debug_e("ERROR in %s(): No active file system", __FUNCTION__);                                                 \
-		return file_t(IFS::Error::NoFileSystem);                                                                       \
+		return FileHandle(IFS::Error::NoFileSystem);                                                                       \
 	}
 
 /**
@@ -162,7 +162,7 @@ bool hyfs_mount(Storage::Partition fwfsPartition, Storage::Partition spiffsParti
  *  @param  flags Mode to open file
  *  @retval file File handle or negative error code
  */
-template <typename T> inline file_t fileOpen(const T& path, FileOpenFlags flags = File::ReadOnly)
+template <typename T> inline FileHandle fileOpen(const T& path, FileOpenFlags flags = File::ReadOnly)
 {
 	CHECK_FS(open)
 	return fileSystem->open(path, flags);
@@ -172,7 +172,7 @@ template <typename T> inline file_t fileOpen(const T& path, FileOpenFlags flags 
  *  @param  file Handle of file to close
  *  @note   File Handle is returned from fileOpen function
  */
-inline int fileClose(file_t file)
+inline int fileClose(FileHandle file)
 {
 	CHECK_FS(close)
 	return fileSystem->close(file);
@@ -184,7 +184,7 @@ inline int fileClose(file_t file)
  *  @param  size Quantity of data elements to write to file
  *  @retval int Quantity of data elements actually written to file or negative error code
  */
-inline int fileWrite(file_t file, const void* data, size_t size)
+inline int fileWrite(FileHandle file, const void* data, size_t size)
 {
 	CHECK_FS(write);
 	return fileSystem->write(file, data, size);
@@ -194,7 +194,7 @@ inline int fileWrite(file_t file, const void* data, size_t size)
  *  @param  file File handle
  *  @retval int Error code
  */
-inline int fileTouch(file_t file)
+inline int fileTouch(FileHandle file)
 {
 	return fileWrite(file, nullptr, 0);
 }
@@ -205,7 +205,7 @@ inline int fileTouch(file_t file)
  *  @param  size Quantity of data elements to read from file
  *  @retval int Quantity of data elements actually read from file or negative error code
  */
-inline int fileRead(file_t file, void* data, size_t size)
+inline int fileRead(FileHandle file, void* data, size_t size)
 {
 	CHECK_FS(read)
 	return fileSystem->read(file, data, size);
@@ -217,7 +217,7 @@ inline int fileRead(file_t file, void* data, size_t size)
  *  @param  origin Position from where to move cursor
  *  @retval int Offset within file or negative error code
  */
-inline int fileSeek(file_t file, int offset, SeekOrigin origin)
+inline int fileSeek(FileHandle file, int offset, SeekOrigin origin)
 {
 	CHECK_FS(seek)
 	return fileSystem->lseek(file, offset, origin);
@@ -227,7 +227,7 @@ inline int fileSeek(file_t file, int offset, SeekOrigin origin)
  *  @param  file File handle
  *  @retval bool true if at end of file
  */
-inline bool fileIsEOF(file_t file)
+inline bool fileIsEOF(FileHandle file)
 {
 	auto fileSystem = getFileSystem();
 	return fileSystem ? (fileSystem->eof(file) != 0) : true;
@@ -237,7 +237,7 @@ inline bool fileIsEOF(file_t file)
  *  @param  file File handle
  *  @retval int32_t Read / write cursor position or error code
  */
-inline int fileTell(file_t file)
+inline int fileTell(FileHandle file)
 {
 	CHECK_FS(tell)
 	return fileSystem->tell(file);
@@ -247,7 +247,7 @@ inline int fileTell(file_t file)
  *  @param  file File handle
  *  @retval int Size of last file written or error code
  */
-inline int fileFlush(file_t file)
+inline int fileFlush(FileHandle file)
 {
 	CHECK_FS(flush)
 	return fileSystem->flush(file);
@@ -303,7 +303,7 @@ template <typename TFileName> inline uint32_t fileGetSize(const TFileName& fileN
  *  @note In POSIX `ftruncate()` can also make the file bigger, however SPIFFS can only
  *  reduce the file size and will return an error if newSize > fileSize
  */
-inline int fileTruncate(file_t file, size_t newSize)
+inline int fileTruncate(FileHandle file, size_t newSize)
 {
 	CHECK_FS(truncate);
 	return fileSystem->ftruncate(file, newSize);
@@ -313,7 +313,7 @@ inline int fileTruncate(file_t file, size_t newSize)
  *  @param file Open file handle, must have Write access
  *  @retval int Error code
  */
-inline int fileTruncate(file_t file)
+inline int fileTruncate(FileHandle file)
 {
 	CHECK_FS(truncate);
 	return fileSystem->ftruncate(file);
@@ -412,7 +412,7 @@ inline int fileStats(const String& fileName, FileStat& stat)
  *  @param  stat Pointer to SPIFFS statistic structure to populate
  *  @retval int Error code
  */
-inline int fileStats(file_t file, FileStat& stat)
+inline int fileStats(FileHandle file, FileStat& stat)
 {
 	CHECK_FS(fstat)
 	return fileSystem->fstat(file, &stat);
@@ -437,7 +437,7 @@ inline int fileDelete(const String& fileName)
  *  @param  file handle of file to delete
  *  @retval int Error code
  */
-inline int fileDelete(file_t file)
+inline int fileDelete(FileHandle file)
 {
 	CHECK_FS(fremove)
 	return fileSystem->fremove(file);
@@ -548,7 +548,7 @@ inline int fileSystemCheck()
  *  @param acl
  *  @retval int Error code
  */
-inline int fileSetACL(file_t file, const IFS::ACL& acl)
+inline int fileSetACL(FileHandle file, const IFS::ACL& acl)
 {
 	CHECK_FS(setacl)
 	return fileSystem->setacl(file, acl);
@@ -577,7 +577,7 @@ inline int fileSetAttr(const String& filename, FileAttributes attr)
  *  @retval int Error code
  *  @note any writes to file will reset this to current time
  */
-inline int fileSetTime(file_t file, time_t mtime)
+inline int fileSetTime(FileHandle file, time_t mtime)
 {
 	CHECK_FS(settime)
 	return fileSystem->settime(file, mtime);

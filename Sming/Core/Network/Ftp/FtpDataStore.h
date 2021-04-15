@@ -48,5 +48,5 @@ public:
 	}
 
 private:
-	file_t file;
+	FileHandle file;
 };
