@@ -10,6 +10,7 @@ class TcpClientStream : public Stream
 public:
 	TcpClientStream(TcpClient& client, size_t cbufferSize = 1024) : cBuffer(cbufferSize), client(client)
 	{
+		client.setReceiveDelegate(TcpClientDataDelegate(&TcpClientStream::consume, this));
 	}
 
 	void setClient(TcpClient& client)
@@ -64,6 +65,11 @@ public:
 private:
 	CircularBuffer cBuffer;
 	TcpClient& client;
+
+	bool consume(TcpClient& client, char* data, int size)
+	{
+		return push(reinterpret_cast<const uint8_t*>(data), size);
+	}
 };
 
 } // namespace Transport

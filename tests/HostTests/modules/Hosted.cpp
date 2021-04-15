@@ -1,9 +1,20 @@
 #include <HostTests.h>
 #include <WHashMap.h>
 
-#include <simpleRPC/parser.h>
+#include <Network/TcpServer.h>
+#include <Digital.h>
+#include <Hosted/Client.h>
+#include <Hosted/Transport/TcpServerTransport.h>
+#include <Platform/Station.h>
 
 using namespace simpleRPC;
+
+static uint8_t sum = 0;
+static uint8_t plusCommand(uint8_t a, uint8_t b)
+{
+	sum = a + b;
+	return sum;
+};
 
 class HostedTest : public TestGroup
 {
@@ -48,12 +59,63 @@ public:
 			REQUIRE(commands["pinMode"] != 2);
 			REQUIRE(commands["pinMode"] == 0);
 		}
+
+		// RPC Server
+		server = new TcpServer();
+		server->listen(4031);
+		server->setTimeOut(USHRT_MAX);   // disable connection timeout
+		server->setKeepAlive(USHRT_MAX); // disable connection timeout
+
+		Hosted::Transport::TcpServerTransport transport(*server);
+		transport.onData([](Stream& stream) {
+			// clang-format off
+				interface(stream,
+					/*
+					 * Below we are exporting the following remote commands:
+					 * - pinMode
+					 * - digitalRead
+					 * - digitalWrite
+					 * You can add more commands here. For every command you should specify command and text description in the format below.
+					 * For more information read the SimpleRPC interface API: https://simplerpc.readthedocs.io/en/latest/api/interface.html
+					 */
+					pinMode, "pinMode: Sets mode of digital pin. @pin: Pin number, @mode: Mode type.",
+					digitalRead, "digitalRead: Read digital pin. @pin: Pin number. @return: Pin value.",
+					plusCommand, "plusCommand: Sum two numbers. @a: number one. @b: number two."
+				);
+			// clang-format on
+
+			return true;
+		});
+
+		// RCP Client
+
+		IpAddress remoteIp = WifiStation.getIP();
+		client.connect(remoteIp, 4031);
+		Hosted::Transport::TcpClientStream stream(client, 1024);
+
+		Hosted::Client hostedClient(stream);
+
+		TEST_CASE("Client::getRemoteCommands()")
+		{
+			REQUIRE(hostedClient.getRemoteCommands() == true);
+			REQUIRE(hostedClient.getFunctionId("plusCommand") == 2);
+		}
+
+		TEST_CASE("Client::send and wait()")
+		{
+			REQUIRE(hostedClient.send("plusCommand", uint8_t(3), uint8_t(2)) == true);
+			REQUIRE(hostedClient.wait<uint8_t>() == 5);
+		}
 	}
 
 private:
 	RemoteCommands commands;
 	uint8_t methodPosition = 0;
 	String parsedCommand;
+
+	TcpServer* server{nullptr};
+	TcpClient client{false};
+	Hosted::Transport::TcpClientStream* stream{nullptr};
 
 	void startMethods()
 	{

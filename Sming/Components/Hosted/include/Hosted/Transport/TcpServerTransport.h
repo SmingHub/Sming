@@ -29,6 +29,7 @@ protected:
 			stream = map.valueAt(i);
 		} else {
 			map[key] = new TcpClientStream(client);
+			client.setReceiveDelegate(TcpClientDataDelegate(&TcpServerTransport::process, this));
 			stream = map[key];
 		}
 
