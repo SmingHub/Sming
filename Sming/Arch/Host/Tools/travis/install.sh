@@ -1,17 +1,10 @@
 #!/bin/bash
 set -ex # exit with nonzero exit code if anything fails
 
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-9
+
 sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-8 200
-
-
-sudo update-alternatives --query clang-format
-
-sudo rm /usr/local/clang-7.0.0/bin/clang-format
-
-clang-format --version
-whereis clang-format
-export CLANG_FORMAT=/usr/bin/clang-format
-$CLANG_FORMAT --version
+sudo rm -f /usr/local/clang-7.0.0/bin/clang-format
 
 python3 -m pip install -q --upgrade pip
 
