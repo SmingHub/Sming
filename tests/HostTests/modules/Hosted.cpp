@@ -1,19 +1,17 @@
 #include <HostTests.h>
-#include <WHashMap.h>
 
-#include <Network/TcpServer.h>
+#include <WHashMap.h>
 #include <Digital.h>
+#include <Network/TcpServer.h>
 #include <Hosted/Client.h>
 #include <Hosted/Transport/TcpServerTransport.h>
 #include <Platform/Station.h>
 
 using namespace simpleRPC;
 
-static uint8_t sum = 0;
-static uint8_t plusCommand(uint8_t a, uint8_t b)
+static uint32_t plusCommand(uint8_t a, uint16_t b)
 {
-	sum = a + b;
-	return sum;
+	return a + b;
 };
 
 class HostedTest : public TestGroup
@@ -89,8 +87,7 @@ public:
 
 		// RCP Client
 
-		IpAddress remoteIp = WifiStation.getIP();
-		client.connect(remoteIp, 4031);
+		client.connect(WifiStation.getIP(), 4031);
 		Hosted::Transport::TcpClientStream stream(client, 1024);
 
 		Hosted::Client hostedClient(stream);
@@ -103,8 +100,8 @@ public:
 
 		TEST_CASE("Client::send and wait()")
 		{
-			REQUIRE(hostedClient.send("plusCommand", uint8_t(3), uint8_t(2)) == true);
-			REQUIRE(hostedClient.wait<uint8_t>() == 5);
+			REQUIRE(hostedClient.send("plusCommand", uint8_t(3), uint16_t(2)) == true);
+			REQUIRE(hostedClient.wait<uint32_t>() == 5);
 		}
 	}
 

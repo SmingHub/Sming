@@ -1,3 +1,16 @@
+/****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
+ * Client.h
+ *
+ * @author 2021 Slavey Karadzhov <slav@attachix.com>
+ *
+ *
+ ****/
+
 #pragma once
 
 #ifndef ARCH_HOST
@@ -28,6 +41,13 @@ public:
 	{
 	}
 
+	/**
+	 * @brief Method to send commands to the remote server
+	 * @param functionName
+	 * @param variable arguments
+	 *
+	 * @retval true on success
+	 */
 	template <typename... Args> bool send(const char* functionName, Args... args)
 	{
 		uint8_t functionId = getFunctionId(functionName);
@@ -58,6 +78,11 @@ public:
 		return *(reinterpret_cast<R*>(&data));
 	}
 
+	/**
+	 * @brief Fetches a list of commands supported on the RPC server and gives back the id of the desired command
+	 * @param name command name to query
+	 * @retval -1 if not found. Otherwise the id of the function
+	 */
 	int getFunctionId(const char* name)
 	{
 		if(fetchCommands) {
