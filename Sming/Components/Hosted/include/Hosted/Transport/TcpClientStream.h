@@ -25,7 +25,7 @@ class TcpClientStream : public Stream
 public:
 	TcpClientStream(TcpClient& client, size_t cbufferSize = 1024) : cBuffer(cbufferSize), client(client)
 	{
-		client.setReceiveDelegate(TcpClientDataDelegate(&TcpClientStream::consume, this));
+		client.setReceiveDelegate(TcpClientDataDelegate(&TcpClientStream::store, this));
 	}
 
 	void setClient(TcpClient& client)
@@ -81,7 +81,7 @@ private:
 	CircularBuffer cBuffer;
 	TcpClient& client;
 
-	bool consume(TcpClient& client, char* data, int size)
+	bool store(TcpClient& client, char* data, int size)
 	{
 		return push(reinterpret_cast<const uint8_t*>(data), size);
 	}
