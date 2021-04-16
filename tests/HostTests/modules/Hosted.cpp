@@ -58,6 +58,11 @@ public:
 			REQUIRE(commands["pinMode"] == 0);
 		}
 
+		if(!WifiStation.isConnected()) {
+			Serial.println("No network, skipping tests");
+			return;
+		}
+
 		// RPC Server
 		server = new TcpServer();
 		server->listen(4031);
