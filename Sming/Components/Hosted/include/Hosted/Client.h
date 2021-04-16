@@ -70,12 +70,9 @@ public:
 			host_main_loop();
 		}
 
-		std::shared_ptr<uint8_t> data(new uint8_t[neededBytes]);
-		// 		std::unique_ptr<uint8_t> data = std::make_unique<uint8_t>(neededBytes);
-		//		uint8_t* data = new uint8_t[neededBytes];
-		stream.readBytes(reinterpret_cast<char*>(&data), neededBytes);
-
-		return *(reinterpret_cast<R*>(&data));
+		R result{};
+		stream.readBytes(reinterpret_cast<char*>(&result), sizeof(result));
+		return result;
 	}
 
 	/**
