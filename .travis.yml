@@ -15,7 +15,7 @@ jobs:
     addons:
       apt:
         packages:
-        - clang-format-6.0
+        - clang-format-8
         - gcc-multilib
         - g++-multilib
         - doxygen
