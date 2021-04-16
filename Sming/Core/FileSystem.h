@@ -444,18 +444,35 @@ inline int fileDelete(FileHandle file)
 }
 
 /** @brief  Check if a file exists on file system
- *  @param  name Name of file to check for
+ *  @param  fileName Full path to file to check for
  *  @retval bool true if file exists
  */
 inline bool fileExist(const char* fileName)
 {
 	CHECK_FS(stat)
-	return fileSystem->stat(fileName, nullptr) >= 0;
+	FileStat stat;
+	return fileSystem->stat(fileName, &stat) >= 0 && !stat.attr[FileAttribute::Directory];
 }
 
 inline bool fileExist(const String& fileName)
 {
 	return fileExist(fileName.c_str());
+}
+
+/** @brief  Check if a directory exists on file system
+ *  @param  dirName Full path to directory to check for
+ *  @retval bool true if directory exists
+ */
+inline bool dirExist(const char* dirName)
+{
+	CHECK_FS(stat)
+	FileStat stat;
+	return fileSystem->stat(dirName, &stat) >= 0 && stat.attr[FileAttribute::Directory];
+}
+
+inline bool dirExist(const String& dirName)
+{
+	return dirExist(dirName.c_str());
 }
 
 /** @brief Open a named directory for reading
