@@ -87,7 +87,7 @@ constexpr FileOpenFlags eFO_CreateNewAlways{File::CreateNewAlways}; ///< @deprec
 	auto fileSystem = static_cast<IFS::FileSystem*>(SmingInternal::activeFileSystem);                                  \
 	if(fileSystem == nullptr) {                                                                                        \
 		debug_e("ERROR in %s(): No active file system", __FUNCTION__);                                                 \
-		return FileHandle(IFS::Error::NoFileSystem);                                                                       \
+		return FileHandle(IFS::Error::NoFileSystem);                                                                   \
 	}
 
 /**
