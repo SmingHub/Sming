@@ -14,9 +14,27 @@
 #include "libb64/cencode.h"
 #include "libb64/cdecode.h"
 
-// Base-64 encodes 6 bits into one character (4 output chars for every 3 input bytes)
-#define MIN_ENCODE_LEN(_in_len) (((_in_len)*4 + 2) / 3)
-#define MIN_DECODE_LEN(_in_len) (((_in_len)*3 + 3) / 4)
+namespace
+{
+/*
+ * Base-64 encodes 6 bits into one character (4 output chars for every 3 input bytes).
+ * However, it also requires padding such that the output size is a multiple of 4 characters.
+ */
+size_t MIN_ENCODE_LEN(size_t in_len)
+{
+	int groups = 1 + ((int(in_len) - 1) / 3);
+	return groups * 4;
+}
+
+/*
+ * For decoding, do not assume that input is padded.
+ */
+size_t MIN_DECODE_LEN(size_t in_len)
+{
+	return ((in_len * 3) + 3) / 4;
+}
+
+} // namespace
 
 int base64_encode(size_t in_len, const unsigned char* in, size_t out_len, char* out)
 {
