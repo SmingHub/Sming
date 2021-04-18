@@ -264,7 +264,7 @@ bool MqttClient::publish(const String& topic, const String& content, uint8_t fla
 	if(success) {
 		// Try to force-send message to decrease latency.
 		// Should work for small size messages but there is no guarantee.
-		onReadyToSendData(TcpConnectionEvent::eTCE_Poll);
+		commit();
 	}
 
 	return success;
@@ -300,7 +300,7 @@ bool MqttClient::publish(const String& topic, IDataSourceStream* stream, uint8_t
 	if(success) {
 		// Try to force-send message to decrease latency.
 		// Should work for small size messages but there is no guarantee.
-		onReadyToSendData(TcpConnectionEvent::eTCE_Poll);
+		commit();
 	}
 
 	return success;

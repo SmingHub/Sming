@@ -75,6 +75,7 @@ public:
 
 	void flush() override
 	{
+		client.commit();
 	}
 
 private:
