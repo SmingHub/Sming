@@ -1254,7 +1254,7 @@ class Editor:
         self.reset()
         # If this is a core profile, don't edit it but create a new profile based on it
         dirname = os.path.dirname(filename)
-        smingHome = configVars['SMING_HOME']
+        smingHome = fixpath(configVars['SMING_HOME'])
         if dirname == smingHome or dirname.startswith(smingHome + '/Arch/'):
             config_name = os.path.splitext(os.path.basename(filename))[0]
             self.json['base_config'] = config_name
