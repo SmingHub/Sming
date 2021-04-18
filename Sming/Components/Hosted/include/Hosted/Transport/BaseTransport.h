@@ -25,13 +25,13 @@ class BaseTransport
 public:
 	using DataHandler = Delegate<bool(Stream&)>;
 
+	virtual ~BaseTransport()
+	{
+	}
+
 	void onData(DataHandler handler)
 	{
 		this->handler = handler;
-	}
-
-	virtual ~BaseTransport()
-	{
 	}
 
 protected:

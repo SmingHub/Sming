@@ -25,7 +25,7 @@ namespace Transport
 class TcpServerTransport : public TcpTransport
 {
 public:
-	using ClientMap = ObjectMap<uint32_t, TcpClientStream>;
+	using ClientMap = ObjectMap<TcpClient*, TcpClientStream>;
 
 	TcpServerTransport(TcpServer& server)
 	{
@@ -35,15 +35,11 @@ public:
 protected:
 	bool process(TcpClient& client, char* data, int size) override
 	{
-		uint32_t key = uint32_t(&client);
+		auto key = &client;
 
-		TcpClientStream* stream = nullptr;
-
-		int i = map.indexOf(key);
-		if(i >= 0) {
-			stream = map.valueAt(i);
-		} else {
-			map[key] = new TcpClientStream(client);
+		TcpClientStream* stream = map.find(key);
+		if(stream == nullptr) {
+			map[key] = stream = new TcpClientStream(client);
 			client.setReceiveDelegate(TcpClientDataDelegate(&TcpServerTransport::process, this));
 			stream = map[key];
 		}

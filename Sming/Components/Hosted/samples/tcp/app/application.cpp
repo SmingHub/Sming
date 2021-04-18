@@ -21,8 +21,8 @@ constexpr size_t port = 4031;
 
 using namespace Hosted::Transport;
 
-TcpServer* server = nullptr;
-TcpServerTransport* transport = nullptr;
+TcpServer* server;
+TcpServerTransport* transport;
 
 // Will be called when WiFi station was connected to AP
 void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
