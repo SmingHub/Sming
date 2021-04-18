@@ -18,7 +18,6 @@
 #include <IFS/Helpers.h>
 #include <IFS/File.h>
 #include <IFS/Directory.h>
-#include <spiffs_sming.h>
 #include "WVector.h" ///< @deprecated see fileList()
 
 using file_t = IFS::FileHandle;
