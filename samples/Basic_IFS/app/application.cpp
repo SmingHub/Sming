@@ -241,18 +241,17 @@ void copySomeFiles()
 					src.readContent([&dst](const char* buffer, size_t size) -> int { return dst.write(buffer, size); });
 				(void)len;
 				debug_w("Wrote '%s', %d bytes", filename, len);
-				if(!dst.settime(stat.mtime)) {
-					Serial.print(F("settime() failed: "));
-					Serial.println(dst.getLastErrorString());
-				}
-				if(!dst.setcompression(stat.compression)) {
-					Serial.print(F("setcompression() failed: "));
-					Serial.println(dst.getLastErrorString());
-				}
-				if(!dst.setacl(stat.acl)) {
-					Serial.print(F("setacl() failed: "));
-					Serial.println(dst.getLastErrorString());
-				}
+
+				// Copy metadata
+				auto callback = [&](IFS::AttributeEnum& e) -> bool {
+					if(!dst.setAttribute(e.tag, e.buffer, e.size)) {
+						m_printf(_F("setAttribute(%s) failed: %s"), toString(e.tag).c_str(),
+								 dst.getLastErrorString().c_str());
+					}
+					return true;
+				};
+				char buffer[1024];
+				src.enumAttributes(callback, buffer, sizeof(buffer));
 			} else {
 				debug_w("%s", dst.getLastErrorString().c_str());
 			}
@@ -265,6 +264,29 @@ bool isVolumeEmpty()
 	Directory dir;
 	dir.open();
 	return !dir.next();
+}
+
+void listAttributes()
+{
+	Directory dir;
+	if(dir.open()) {
+		while(dir.next()) {
+			auto filename = dir.stat().name.c_str();
+			File f;
+			if(!f.open(filename)) {
+				continue;
+			}
+			m_printf("%s:\r\n", filename);
+			auto callback = [](IFS::AttributeEnum& e) -> bool {
+				m_printf("  attr 0x%04x %s, %u bytes\r\n", unsigned(e.tag), toString(e.tag).c_str(), e.attrsize);
+				m_printHex("  ATTR", e.buffer, e.size);
+				return true;
+			};
+			char buffer[64];
+			int res = f.enumAttributes(callback, buffer, sizeof(buffer));
+			debug_i("res: %d", res);
+		}
+	}
 }
 
 void fstest()
@@ -302,6 +324,8 @@ void fstest()
 	}
 
 	printDirectory(nullptr);
+
+	listAttributes();
 }
 
 } // namespace
