@@ -15,6 +15,25 @@
 
 #include "WString.h"
 
+/**
+ * @brief Get minimum output buffer size required to encode message of given length.
+ * @param in_len Length of input message in bytes
+ * @retval size_t Number of bytes required in output buffer
+ * 
+ * Base-64 encodes 6 bits into one character (4 output chars for every 3 input bytes).
+ * However, it also requires padding such that the output size is a multiple of 4 characters.
+ */
+size_t base64_min_encode_len(size_t in_len);
+
+/**
+ * @brief Get minimum output buffer size required to decode message of given length.
+ * @param in_len Length of base64-encoded input message in characters
+ * @retval size_t Number of characters required in output buffer
+ * 
+ * For decoding, do not assume that input is padded.
+ */
+size_t base64_min_decode_len(size_t in_len);
+
 /** @brief encode binary data into base64 digits with MIME style === pads
  *  @param in_len quantity of characters to encode
  *  @param in data to encode
