@@ -14,14 +14,14 @@
 
 namespace SmingInternal
 {
-IFS::IFileSystem* activeFileSystem;
+IFS::FileSystem* activeFileSystem;
 }
 
 void fileSetFileSystem(IFS::IFileSystem* fileSystem)
 {
 	if(SmingInternal::activeFileSystem != fileSystem) {
 		delete SmingInternal::activeFileSystem;
-		SmingInternal::activeFileSystem = fileSystem;
+		SmingInternal::activeFileSystem = IFS::FileSystem::cast(fileSystem);
 	}
 }
 

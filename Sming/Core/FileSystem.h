@@ -47,7 +47,7 @@ namespace SmingInternal
  * first.
  *
  */
-extern IFS::IFileSystem* activeFileSystem;
+extern IFS::FileSystem* activeFileSystem;
 
 } // namespace SmingInternal
 
@@ -92,14 +92,14 @@ constexpr FileOpenFlags eFO_CreateNewAlways{File::CreateNewAlways}; ///< @deprec
 
 /**
  * @brief Get the currently active file system, if any
- * @retval IFS::IFileSystem*
+ * @retval IFS::FileSystem*
  */
 inline IFS::FileSystem* getFileSystem()
 {
 	if(SmingInternal::activeFileSystem == nullptr) {
 		debug_e("ERROR: No active file system");
 	}
-	return static_cast<IFS::FileSystem*>(SmingInternal::activeFileSystem);
+	return SmingInternal::activeFileSystem;
 }
 
 /** @brief Sets the currently active file system
@@ -531,7 +531,7 @@ inline int fileRewindDir(DirHandle dir)
 /** @brief Get basic file system information
  *  @retval int Error code
  */
-inline int fileGetSystemInfo(IFS::IFileSystem::Info& info)
+inline int fileGetSystemInfo(IFS::FileSystem::Info& info)
 {
 	CHECK_FS(getinfo)
 	return fileSystem->getinfo(info);
@@ -540,7 +540,7 @@ inline int fileGetSystemInfo(IFS::IFileSystem::Info& info)
 /** @brief Get the type of file system currently mounted (if any)
  *  @retval FileSystemType the file system type
  */
-IFS::IFileSystem::Type fileSystemType();
+IFS::FileSystem::Type fileSystemType();
 
 /** @brief Format the active file system
  *  @retval int Error code
