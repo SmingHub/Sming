@@ -31,6 +31,7 @@
 #include <esp_tasks.h>
 #include <host_lwip.h>
 #include <stdlib.h>
+#include "include/hostlib/emu.h"
 #include "include/hostlib/hostlib.h"
 #include "include/hostlib/CommandLine.h"
 #include <Storage.h>

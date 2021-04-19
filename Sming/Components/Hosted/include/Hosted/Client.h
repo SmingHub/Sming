@@ -22,8 +22,7 @@
 #include <WString.h>
 #include <simpleRPC.h>
 #include <simpleRPC/parser.h>
-#include <memory>
-#include <hostlib/hostlib.h>
+#include <hostlib/emu.h>
 #include <hostlib/hostmsg.h>
 
 using namespace simpleRPC;

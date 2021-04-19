@@ -105,7 +105,6 @@ public:
 
 		TEST_CASE("Client::send and wait()")
 		{
-
 			ElapseTimer timer;
 
 			REQUIRE(hostedClient.send("plusCommand", uint8_t(3), uint16_t(2)) == true);
