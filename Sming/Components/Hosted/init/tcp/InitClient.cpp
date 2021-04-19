@@ -30,6 +30,11 @@ Hosted::Client* hostedClient{nullptr};
 #define REMOTE_IP STRINGIFY(HOSTED_SERVER_IP)
 #endif
 
+extern "C" {
+void __real_host_init();
+void __wrap_host_init();
+}
+
 extern void init();
 
 namespace
@@ -59,7 +64,7 @@ static void ready(IpAddress ip, IpAddress mask, IpAddress gateway)
 
 } // namespace
 
-void host_init()
+void __wrap_host_init()
 {
 	WifiEvents.onStationGotIP(ready);
 	WifiStation.enable(true);

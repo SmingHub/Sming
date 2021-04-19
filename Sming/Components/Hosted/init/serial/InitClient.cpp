@@ -18,7 +18,12 @@ Hosted::Client* hostedClient{nullptr};
 
 extern void init();
 
-void host_init()
+extern "C" {
+void __real_host_init();
+void __wrap_host_init();
+}
+
+void __wrap_host_init()
 {
 	Serial.begin(115200);
 	hostedClient = new Hosted::Client(Serial);

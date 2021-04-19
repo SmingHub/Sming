@@ -31,6 +31,7 @@
 #include <esp_tasks.h>
 #include <host_lwip.h>
 #include <stdlib.h>
+#include "include/hostlib/init.h"
 #include "include/hostlib/emu.h"
 #include "include/hostlib/hostlib.h"
 #include "include/hostlib/CommandLine.h"
@@ -44,14 +45,8 @@ static bool done = false;
 static bool lwip_initialised = false;
 static OneShotElapseTimer<NanoTime::Milliseconds> lwipServiceTimer;
 
-extern void init();
 extern void host_wifi_lwip_init_complete();
 extern void host_init_bootloader();
-
-void  __attribute__((weak)) host_init()
-{
-	init();
-}
 
 static void cleanup()
 {

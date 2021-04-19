@@ -5,12 +5,14 @@ COMPONENT_DEPENDS := simpleRPC
 # Architecture of the device where the hosted service will be flashed
 HOSTED_ARCH ?= Esp8266
 
+COMPONENT_RELINK_VARS += ENABLE_HOSTED
 COMPONENT_VARS := ENABLE_HOSTED
 
 ENABLE_HOSTED ?=
 
 ifneq ($(ENABLE_HOSTED),)
 	COMPONENT_SRCDIRS += $(COMPONENT_PATH)/init/$(ENABLE_HOSTED) 
+	EXTRA_LDFLAGS := -Wl,-wrap,host_init
 endif
 
 COMPONENT_VARS += HOSTED_SERVER_IP
