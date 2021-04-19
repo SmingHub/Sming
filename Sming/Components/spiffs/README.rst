@@ -1,5 +1,5 @@
-SPIFFS for Sming
-================
+SPIFFS IFS Library
+==================
 
 This Component provides SPIFFS filesystem support for all architectures.
 
@@ -59,3 +59,10 @@ custom :ref:`hardware_config`.
    If this value is changed, existing SPIFFS images will not be readable.
 
    The default value given here is provided to support :component:`IFS` extended file attribute information.
+
+   The first 16 bytes are used for system attributes (e.g. modified time), so setting this to, say, 64
+   leaves 48 bytes for user metadata. Each attribute has a 2-byte header (tag + size) so a single user
+   attribute can be stored of up to 46 bytes, or multiple tags up to this limit.
+
+   Note: :library:`LittleFS` provides better support for user metadata.
+
