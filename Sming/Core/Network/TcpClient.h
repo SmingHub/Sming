@@ -126,6 +126,16 @@ public:
 		closeAfterSent = ignoreIncomingData ? eTCCASS_AfterSent_Ignore_Received : eTCCASS_AfterSent;
 	}
 
+	/**
+	 * @brief Tries to send the pending data immediately.
+	 * @note Call this method to decrease latency. Use it carefully.
+	 */
+	void commit()
+	{
+		onReadyToSendData(TcpConnectionEvent::eTCE_Poll);
+		TcpConnection::flush();
+	}
+
 protected:
 	err_t onConnected(err_t err) override;
 	err_t onReceive(pbuf* buf) override;

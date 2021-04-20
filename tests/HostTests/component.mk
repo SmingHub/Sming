@@ -7,7 +7,8 @@ COMPONENT_SRCDIRS := app modules
 ARDUINO_LIBRARIES := \
 	SmingTest \
 	ArduinoJson5 \
-	ArduinoJson6
+	ArduinoJson6 \
+	Hosted
 
 COMPONENT_DEPENDS := \
 	malloc_count \
