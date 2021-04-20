@@ -53,13 +53,7 @@ void onFile(HttpRequest& request, HttpResponse& response)
 
 	String file = request.uri.getRelativePath();
 
-	FileStat stat;
-	if(fileStats(file, stat) < 0) {
-		response.code = HTTP_STATUS_INTERNAL_SERVER_ERROR;
-		return;
-	}
-
-	if(stat.isDir()) {
+	if(dirExist(file)) {
 		auto dir = new Directory;
 		IFS::DirectoryTemplate* tmpl;
 		String fmt = request.uri.Query["format"];
@@ -79,17 +73,20 @@ void onFile(HttpRequest& request, HttpResponse& response)
 		response.sendDataStream(tmpl, tmpl->getMimeType());
 	} else {
 		//	response.setCache(86400, true); // It's important to use cache for better performance.
-		auto stream = new FileStream(stat);
-		if(!stream->isValid()) {
-			stream->open(file);
+		auto stream = new FileStream;
+		if(!stream->open(file)) {
+			response.code = HTTP_STATUS_INTERNAL_SERVER_ERROR;
+			delete stream;
+			return;
 		}
+		FileStat stat;
+		stream->stat(stat);
 		if(stat.compression.type == IFS::Compression::Type::GZip) {
 			response.headers[HTTP_HEADER_CONTENT_ENCODING] = F("gzip");
 		} else if(stat.compression.type != IFS::Compression::Type::None) {
 			debug_e("Unsupported compression type: %u", stat.compression.type);
 		}
-
-		auto mimeType = ContentType::fromFullFileName(file.c_str(), MIME_TEXT);
+		auto mimeType = ContentType::fromFullFileName(file, MIME_TEXT);
 		response.sendDataStream(stream, mimeType);
 	}
 }
@@ -125,15 +122,8 @@ bool initFileSystem()
 	auto part = Storage::findDefaultPartition(Storage::Partition::SubType::Data::fwfs);
 #endif
 
-	IFS::IFileSystem* fs;
-#ifdef FWFS_HYBRID
-	// Create a read/write filesystem
-	auto spiffsPart = Storage::findDefaultPartition(Storage::Partition::SubType::Data::spiffs);
-	fs = IFS::createHybridFilesystem(part, spiffsPart);
-#else
 	// Read-only
-	fs = IFS::createFirmwareFilesystem(part);
-#endif
+	auto fs = IFS::createFirmwareFilesystem(part);
 	debug_i("2: heap = -%u", freeheap - system_get_free_heap_size());
 
 	if(fs == nullptr) {

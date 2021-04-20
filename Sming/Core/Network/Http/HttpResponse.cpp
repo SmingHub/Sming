@@ -61,38 +61,32 @@ bool HttpResponse::sendString(String&& text) noexcept
 	return true;
 }
 
-bool HttpResponse::sendFile(const FileStat& stat)
-{
-	auto file = new FileStream(stat);
-	if(stat.compression.type == IFS::Compression::Type::GZip) {
-		headers[HTTP_HEADER_CONTENT_ENCODING] = F("gzip");
-	} else if(stat.compression.type != IFS::Compression::Type::None) {
-		debug_e("Unsupported compression type: %u", stat.compression);
-	}
-
-	return sendDataStream(file, ContentType::fromFullFileName(stat.name));
-}
-
 bool HttpResponse::sendFile(const String& fileName, bool allowGzipFileCheck)
 {
-	FileStat stat;
+	auto fs = new FileStream;
 
 	if(allowGzipFileCheck) {
 		String fnCompressed = fileName + _F(".gz");
-		if(fileStats(fnCompressed, stat) >= 0) {
-			debug_d("found %s", stat.name);
-			stat.compression.type = IFS::Compression::Type::GZip;
-			stat.name = IFS::NameBuffer(const_cast<String&>(fileName));
-			return sendFile(stat);
+		if(fs->open(fnCompressed)) {
+			debug_d("found %s", fnCompressed.c_str());
+			headers[HTTP_HEADER_CONTENT_ENCODING] = F("gzip");
+			return sendDataStream(fs, ContentType::fromFullFileName(fileName));
 		}
 	}
 
-	if(fileStats(fileName, stat) >= 0) {
+	if(fs->open(fileName)) {
 		debug_d("found %s", fileName.c_str());
-		stat.name = IFS::NameBuffer(const_cast<String&>(fileName));
-		return sendFile(stat);
+		FileStat stat;
+		fs->stat(stat);
+		if(stat.compression.type == IFS::Compression::Type::GZip) {
+			headers[HTTP_HEADER_CONTENT_ENCODING] = F("gzip");
+		} else if(stat.compression.type != IFS::Compression::Type::None) {
+			debug_e("Unsupported compression type: %u", stat.compression);
+		}
+		return sendDataStream(fs, ContentType::fromFullFileName(fileName));
 	}
 
+	delete fs;
 	code = HTTP_STATUS_NOT_FOUND;
 	return false;
 }

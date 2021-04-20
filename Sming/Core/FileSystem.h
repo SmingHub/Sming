@@ -18,7 +18,6 @@
 #include <IFS/Helpers.h>
 #include <IFS/File.h>
 #include <IFS/Directory.h>
-#include <spiffs_sming.h>
 #include "WVector.h" ///< @deprecated see fileList()
 
 using file_t = IFS::FileHandle;
@@ -47,7 +46,7 @@ namespace SmingInternal
  * first.
  *
  */
-extern IFS::IFileSystem* activeFileSystem;
+extern IFS::FileSystem* activeFileSystem;
 
 } // namespace SmingInternal
 
@@ -87,19 +86,19 @@ constexpr FileOpenFlags eFO_CreateNewAlways{File::CreateNewAlways}; ///< @deprec
 	auto fileSystem = static_cast<IFS::FileSystem*>(SmingInternal::activeFileSystem);                                  \
 	if(fileSystem == nullptr) {                                                                                        \
 		debug_e("ERROR in %s(): No active file system", __FUNCTION__);                                                 \
-		return file_t(IFS::Error::NoFileSystem);                                                                       \
+		return FileHandle(IFS::Error::NoFileSystem);                                                                   \
 	}
 
 /**
  * @brief Get the currently active file system, if any
- * @retval IFS::IFileSystem*
+ * @retval IFS::FileSystem*
  */
 inline IFS::FileSystem* getFileSystem()
 {
 	if(SmingInternal::activeFileSystem == nullptr) {
 		debug_e("ERROR: No active file system");
 	}
-	return static_cast<IFS::FileSystem*>(SmingInternal::activeFileSystem);
+	return SmingInternal::activeFileSystem;
 }
 
 /** @brief Sets the currently active file system
@@ -157,108 +156,97 @@ bool hyfs_mount();
  */
 bool hyfs_mount(Storage::Partition fwfsPartition, Storage::Partition spiffsPartition);
 
-/** @brief  Open file
- *  @param  name File name
+/** @brief  Open file by path
+ *  @param  path Full path to file
  *  @param  flags Mode to open file
- *  @retval file File ID or negative error code
+ *  @retval file File handle or negative error code
  */
-inline file_t fileOpen(const char* name, FileOpenFlags flags = File::ReadOnly)
+template <typename T> inline FileHandle fileOpen(const T& path, FileOpenFlags flags = File::ReadOnly)
 {
 	CHECK_FS(open)
-	return fileSystem->open(name, flags);
-}
-
-inline file_t fileOpen(const String& name, FileOpenFlags flags = File::ReadOnly)
-{
-	return fileOpen(name.c_str(), flags);
-}
-
-inline file_t fileOpen(const FileStat& stat, FileOpenFlags flags = File::ReadOnly)
-{
-	CHECK_FS(fopen)
-	return fileSystem->fopen(stat, flags);
+	return fileSystem->open(path, flags);
 }
 
 /** @brief  Clode file
- *  @param  file ID of file to open
- *  @note   File ID is returned from fileOpen function
+ *  @param  file Handle of file to close
+ *  @note   File Handle is returned from fileOpen function
  */
-inline int fileClose(file_t file)
+inline int fileClose(FileHandle file)
 {
 	CHECK_FS(close)
 	return fileSystem->close(file);
 }
 
 /** @brief  Write to file
- *  @param  file File ID
+ *  @param  file File handle
  *  @param  data Pointer to data to write to file
  *  @param  size Quantity of data elements to write to file
  *  @retval int Quantity of data elements actually written to file or negative error code
  */
-inline int fileWrite(file_t file, const void* data, size_t size)
+inline int fileWrite(FileHandle file, const void* data, size_t size)
 {
 	CHECK_FS(write);
 	return fileSystem->write(file, data, size);
 }
 
 /** @brief  Update file modification time
- *  @param  file File ID
+ *  @param  file File handle
  *  @retval int Error code
  */
-inline int fileTouch(file_t file)
+inline int fileTouch(FileHandle file)
 {
 	return fileWrite(file, nullptr, 0);
 }
 
 /** @brief  Read from file
- *  @param  file File ID
+ *  @param  file File handle
  *  @param  data Pointer to data buffer in to which to read data
  *  @param  size Quantity of data elements to read from file
  *  @retval int Quantity of data elements actually read from file or negative error code
  */
-inline int fileRead(file_t file, void* data, size_t size)
+inline int fileRead(FileHandle file, void* data, size_t size)
 {
 	CHECK_FS(read)
 	return fileSystem->read(file, data, size);
 }
 
 /** @brief  Position file cursor
- *  @param  file File ID
+ *  @param  file File handle
  *  @param  offset Quantity of bytes to move cursor
  *  @param  origin Position from where to move cursor
  *  @retval int Offset within file or negative error code
  */
-inline int fileSeek(file_t file, int offset, SeekOrigin origin)
+inline int fileSeek(FileHandle file, int offset, SeekOrigin origin)
 {
 	CHECK_FS(seek)
 	return fileSystem->lseek(file, offset, origin);
 }
 
 /** @brief  Check if at end of file
- *  @param  file File ID
+ *  @param  file File handle
  *  @retval bool true if at end of file
  */
-inline bool fileIsEOF(file_t file)
+inline bool fileIsEOF(FileHandle file)
 {
 	auto fileSystem = getFileSystem();
 	return fileSystem ? (fileSystem->eof(file) != 0) : true;
 }
 
 /** @brief  Get position in file
- *  @param  file File ID
+ *  @param  file File handle
  *  @retval int32_t Read / write cursor position or error code
  */
-inline int fileTell(file_t file)
+inline int fileTell(FileHandle file)
 {
 	CHECK_FS(tell)
 	return fileSystem->tell(file);
 }
 
 /** @brief  Flush pending writes
- *  @param  file File ID
+ *  @param  file File handle
  *  @retval int Size of last file written or error code
  */
-inline int fileFlush(file_t file)
+inline int fileFlush(FileHandle file)
 {
 	CHECK_FS(flush)
 	return fileSystem->flush(file);
@@ -314,7 +302,7 @@ template <typename TFileName> inline uint32_t fileGetSize(const TFileName& fileN
  *  @note In POSIX `ftruncate()` can also make the file bigger, however SPIFFS can only
  *  reduce the file size and will return an error if newSize > fileSize
  */
-inline int fileTruncate(file_t file, size_t newSize)
+inline int fileTruncate(FileHandle file, size_t newSize)
 {
 	CHECK_FS(truncate);
 	return fileSystem->ftruncate(file, newSize);
@@ -324,7 +312,7 @@ inline int fileTruncate(file_t file, size_t newSize)
  *  @param file Open file handle, must have Write access
  *  @retval int Error code
  */
-inline int fileTruncate(file_t file)
+inline int fileTruncate(FileHandle file)
 {
 	CHECK_FS(truncate);
 	return fileSystem->ftruncate(file);
@@ -402,7 +390,7 @@ template <typename TFileName> inline size_t fileGetContent(const TFileName& file
 	return fileSystem ? fileSystem->getContent(fileName, buffer) : 0;
 }
 
-/** @brief   Get file statistics
+/** @brief  Get file statistics
  *  @param  name File name
  *  @param  stat Pointer to SPIFFS statistic structure to populate
  *  @retval int Error code
@@ -419,11 +407,11 @@ inline int fileStats(const String& fileName, FileStat& stat)
 }
 
 /** brief   Get file statistics
- *  @param  file File ID
+ *  @param  file File handle
  *  @param  stat Pointer to SPIFFS statistic structure to populate
  *  @retval int Error code
  */
-inline int fileStats(file_t file, FileStat& stat)
+inline int fileStats(FileHandle file, FileStat& stat)
 {
 	CHECK_FS(fstat)
 	return fileSystem->fstat(file, &stat);
@@ -448,25 +436,42 @@ inline int fileDelete(const String& fileName)
  *  @param  file handle of file to delete
  *  @retval int Error code
  */
-inline int fileDelete(file_t file)
+inline int fileDelete(FileHandle file)
 {
 	CHECK_FS(fremove)
 	return fileSystem->fremove(file);
 }
 
 /** @brief  Check if a file exists on file system
- *  @param  name Name of file to check for
+ *  @param  fileName Full path to file to check for
  *  @retval bool true if file exists
  */
 inline bool fileExist(const char* fileName)
 {
 	CHECK_FS(stat)
-	return fileSystem->stat(fileName, nullptr) >= 0;
+	FileStat stat;
+	return fileSystem->stat(fileName, &stat) >= 0 && !stat.attr[FileAttribute::Directory];
 }
 
 inline bool fileExist(const String& fileName)
 {
 	return fileExist(fileName.c_str());
+}
+
+/** @brief  Check if a directory exists on file system
+ *  @param  dirName Full path to directory to check for
+ *  @retval bool true if directory exists
+ */
+inline bool dirExist(const char* dirName)
+{
+	CHECK_FS(stat)
+	FileStat stat;
+	return fileSystem->stat(dirName, &stat) >= 0 && stat.attr[FileAttribute::Directory];
+}
+
+inline bool dirExist(const String& dirName)
+{
+	return dirExist(dirName.c_str());
 }
 
 /** @brief Open a named directory for reading
@@ -489,17 +494,6 @@ inline int fileOpenDir(const String& dirName, DirHandle& dir)
 inline int fileOpenRootDir(DirHandle& dir)
 {
 	return fileOpenDir(nullptr, dir);
-}
-
-/** @brief Open a sub-directory for reading
- *  @param stat Details of directory to open, nullptr for root directory
- *  @param dir  Directory object
- *  @retrval 0 on success or negative error
- */
-inline int fileOpenDir(const FileStat& stat, DirHandle& dir)
-{
-	CHECK_FS(opendir)
-	return fileSystem->fopendir(&stat, dir);
 }
 
 /** @brief close a directory object
@@ -536,7 +530,7 @@ inline int fileRewindDir(DirHandle dir)
 /** @brief Get basic file system information
  *  @retval int Error code
  */
-inline int fileGetSystemInfo(IFS::IFileSystem::Info& info)
+inline int fileGetSystemInfo(IFS::FileSystem::Info& info)
 {
 	CHECK_FS(getinfo)
 	return fileSystem->getinfo(info);
@@ -545,7 +539,7 @@ inline int fileGetSystemInfo(IFS::IFileSystem::Info& info)
 /** @brief Get the type of file system currently mounted (if any)
  *  @retval FileSystemType the file system type
  */
-IFS::IFileSystem::Type fileSystemType();
+IFS::FileSystem::Type fileSystemType();
 
 /** @brief Format the active file system
  *  @retval int Error code
@@ -570,7 +564,7 @@ inline int fileSystemCheck()
  *  @param acl
  *  @retval int Error code
  */
-inline int fileSetACL(file_t file, const IFS::ACL& acl)
+inline int fileSetACL(FileHandle file, const IFS::ACL& acl)
 {
 	CHECK_FS(setacl)
 	return fileSystem->setacl(file, acl);
@@ -599,7 +593,7 @@ inline int fileSetAttr(const String& filename, FileAttributes attr)
  *  @retval int Error code
  *  @note any writes to file will reset this to current time
  */
-inline int fileSetTime(file_t file, time_t mtime)
+inline int fileSetTime(FileHandle file, time_t mtime)
 {
 	CHECK_FS(settime)
 	return fileSystem->settime(file, mtime);
