@@ -16,7 +16,6 @@ jobs:
       apt:
         packages:
         - clang-format-8
-        - gcc-multilib
         - g++-9-multilib
         - doxygen
         - python3-sphinx
