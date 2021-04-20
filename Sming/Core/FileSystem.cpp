@@ -14,14 +14,14 @@
 
 namespace SmingInternal
 {
-IFS::IFileSystem* activeFileSystem;
+IFS::FileSystem* activeFileSystem;
 }
 
 void fileSetFileSystem(IFS::IFileSystem* fileSystem)
 {
 	if(SmingInternal::activeFileSystem != fileSystem) {
 		delete SmingInternal::activeFileSystem;
-		SmingInternal::activeFileSystem = fileSystem;
+		SmingInternal::activeFileSystem = IFS::FileSystem::cast(fileSystem);
 	}
 }
 
@@ -79,7 +79,8 @@ bool hyfs_mount()
 
 bool hyfs_mount(Storage::Partition fwfsPartition, Storage::Partition spiffsPartition)
 {
-	auto fs = IFS::createHybridFilesystem(fwfsPartition, spiffsPartition);
+	auto ffs = IFS::createSpiffsFilesystem(spiffsPartition);
+	auto fs = IFS::createHybridFilesystem(fwfsPartition, ffs);
 	return fileMountFileSystem(fs);
 }
 

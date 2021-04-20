@@ -167,10 +167,11 @@ void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCh
 		} else if(!strcmp(str, "cat")) {
 			Directory dir;
 			if(dir.open() && dir.next()) {
-				Serial.printf("dumping file %s:\r\n", dir.stat().name.c_str());
+				auto filename = dir.stat().name.c_str();
+				Serial.printf("dumping file %s:\r\n", filename);
 				// We don't know how big the is, so streaming it is safest
 				FileStream fs;
-				fs.open(dir.stat());
+				fs.open(filename);
 				Serial.copyFrom(&fs);
 				Serial.println();
 			} else {

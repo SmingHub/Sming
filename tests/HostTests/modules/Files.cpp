@@ -16,7 +16,7 @@ public:
 		DEFINE_FSTR_LOCAL(testFileName, "test.txt");
 
 		int res, pos, size;
-		file_t file = -1;
+		FileHandle file{-1};
 
 		TEST_CASE("Initial position and size")
 		{
