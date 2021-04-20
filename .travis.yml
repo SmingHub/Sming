@@ -32,9 +32,8 @@ jobs:
     name: C++17
     addons:
       apt:
-	packages:
+        packages:
         - linux-libc-dev:i386
-        - gcc-9-multilib
         - g++-9-multilib      
     env:
     - SMING_ARCH=Esp8266
