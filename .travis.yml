@@ -15,9 +15,9 @@ jobs:
     addons:
       apt:
         packages:
-        - clang-format-6.0
+        - clang-format-8
         - gcc-multilib
-        - g++-multilib
+        - g++-9-multilib
         - doxygen
         - python3-sphinx
         - python3-pip
@@ -28,14 +28,6 @@ jobs:
         - jq
     env:
     - SMING_ARCH=Host
-
-  - stage: build
-    name: C++11
-    env:
-    - SMING_ARCH=Esp8266
-    - SDK_VERSION=3.0.1
-    - ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk
-
   - stage: build
     name: C++17
     env:

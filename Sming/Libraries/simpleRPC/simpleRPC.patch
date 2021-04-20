@@ -1,0 +1,65 @@
+diff --git a/src/read.tcc b/src/read.tcc
+index 2e5810f..513d691 100644
+--- a/src/read.tcc
++++ b/src/read.tcc
+@@ -3,7 +3,6 @@
+ 
+ #include "defs.h"
+ #include "tuple.tcc"
+-#include "vector.tcc"
+ 
+ //! \defgroup read
+ 
+diff --git a/src/signature.tcc b/src/signature.tcc
+index 00f5eb1..f3a675d 100644
+--- a/src/signature.tcc
++++ b/src/signature.tcc
+@@ -25,7 +25,7 @@ void _parameterTypes(Stream& io, void (*f_)(H, Tail...)) {
+    * `rpcTypeOf()` to encode its type. The first parameter type `H` is removed
+    * from function pointer `*f_` in the recursive call.
+    */
+-  H data;
++  H data{};
+ 
+   rpcPrint(io, ' ');
+   rpcTypeOf(io, data);
+@@ -49,13 +49,13 @@ void _parameterTypes(Stream& io, void (*f_)(H&, Tail...)) {
+  */
+ template <class R, class... FArgs>
+ void signature(Stream& io, R (*f)(FArgs...)) {
+-  /* 
++  /*
+    * A dummy function pointer is prepared, referred to as `f_` in the template
+    * functions above, which will be used to isolate parameter types. The return
+    * type of this function pointer is removed to avoid unneeded template
+    * expansion.
+    */
+-  R data;
++  R data{};
+ 
+   rpcTypeOf(io, data);
+   rpcPrint(io, ':');
+diff --git a/src/types.tcc b/src/types.tcc
+index 651fb38..8a7cfa5 100644
+--- a/src/types.tcc
++++ b/src/types.tcc
+@@ -3,7 +3,6 @@
+ 
+ #include "print.tcc"
+ #include "tuple.tcc"
+-#include "vector.tcc"
+ 
+ //! \defgroup types
+ 
+diff --git a/src/write.tcc b/src/write.tcc
+index d51cdd1..abf1e7b 100644
+--- a/src/write.tcc
++++ b/src/write.tcc
+@@ -3,7 +3,6 @@
+ 
+ #include "print.tcc"
+ #include "tuple.tcc"
+-#include "vector.tcc"
+ 
+ //! \defgroup write
+ 

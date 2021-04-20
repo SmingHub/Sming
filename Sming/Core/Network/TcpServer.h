@@ -56,6 +56,11 @@ public:
 		TcpConnection::timeOut = TCP_SERVER_TIMEOUT;
 	}
 
+	void setClientReceiveHandler(TcpClientDataDelegate clientReceiveDataHandler)
+	{
+		clientReceiveDelegate = clientReceiveDataHandler;
+	}
+
 	~TcpServer()
 	{
 		debug_i("TcpServer destroyed");

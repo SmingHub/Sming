@@ -37,6 +37,11 @@ COMPONENT_DEPENDS := \
 	spi_flash \
 	vflash \
 	rboot
+	
+
+ifneq ($(ENABLE_HOSTED),)
+	COMPONENT_DEPENDS += Hosted-Lib
+endif
 
 # => Platform WiFi
 COMPONENT_VARS := \
