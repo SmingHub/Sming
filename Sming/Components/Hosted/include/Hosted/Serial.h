@@ -35,6 +35,16 @@ public:
 		transport.closeDevice();
 	}
 
+	bool setDtr(bool on)
+	{
+		return transport.DTR(on);
+	}
+
+	bool setRts(bool on)
+	{
+		return transport.RTS(on);
+	}
+
 	/** @brief  Initialise the serial port
      *  @param  baud BAUD rate of the serial port (Default: 9600)
      */
