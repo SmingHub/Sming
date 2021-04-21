@@ -1,8 +1,6 @@
 #!/bin/bash
 set -ex # exit with nonzero exit code if anything fails
 
-sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-9
-
 sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-8 200
 sudo rm -f /usr/local/clang-7.0.0/bin/clang-format
 
