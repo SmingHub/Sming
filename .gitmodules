@@ -65,10 +65,6 @@
 	path = Sming/Components/rboot/rboot
 	url = https://github.com/mikee47/rboot
 	ignore = dirty
-[submodule "spiffs"]
-	path = Sming/Components/spiffs/spiffs
-	url = https://github.com/pellepl/spiffs.git
-	ignore = dirty
 [submodule "ws_parser"]
 	path = Sming/Components/ws_parser
 	url = https://github.com/charliesome/ws_parser.git
@@ -274,6 +270,10 @@
 [submodule "Libraries.SolarCalculator"]
 	path = Sming/Libraries/SolarCalculator
 	url = https://github.com/mikee47/SolarCalculator
+	ignore = dirty
+[submodule "spiffs"]
+	path = Sming/Libraries/Spiffs/spiffs
+	url = https://github.com/pellepl/spiffs.git
 	ignore = dirty
 [submodule "Libraries.SSDP"]
 	path = Sming/Libraries/SSDP
