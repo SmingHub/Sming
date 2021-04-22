@@ -46,18 +46,6 @@ bool fileMountFileSystem(IFS::IFileSystem* fs)
 	return true;
 }
 
-bool spiffs_mount()
-{
-	auto part = Storage::findDefaultPartition(Storage::Partition::SubType::Data::spiffs);
-	return part ? spiffs_mount(part) : false;
-}
-
-bool spiffs_mount(Storage::Partition partition)
-{
-	auto fs = IFS::createSpiffsFilesystem(partition);
-	return fileMountFileSystem(fs);
-}
-
 bool fwfs_mount()
 {
 	auto part = Storage::findDefaultPartition(Storage::Partition::SubType::Data::fwfs);
@@ -67,20 +55,6 @@ bool fwfs_mount()
 bool fwfs_mount(Storage::Partition partition)
 {
 	auto fs = IFS::createFirmwareFilesystem(partition);
-	return fileMountFileSystem(fs);
-}
-
-bool hyfs_mount()
-{
-	auto fwfsPart = Storage::findDefaultPartition(Storage::Partition::SubType::Data::fwfs);
-	auto spiffsPart = Storage::findDefaultPartition(Storage::Partition::SubType::Data::spiffs);
-	return (fwfsPart && spiffsPart) ? hyfs_mount(fwfsPart, spiffsPart) : false;
-}
-
-bool hyfs_mount(Storage::Partition fwfsPartition, Storage::Partition spiffsPartition)
-{
-	auto ffs = IFS::createSpiffsFilesystem(spiffsPartition);
-	auto fs = IFS::createHybridFilesystem(fwfsPartition, ffs);
 	return fileMountFileSystem(fs);
 }
 

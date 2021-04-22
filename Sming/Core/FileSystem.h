@@ -18,6 +18,7 @@
 #include <IFS/Helpers.h>
 #include <IFS/File.h>
 #include <IFS/Directory.h>
+#include <Spiffs.h>
 #include "WVector.h" ///< @deprecated see fileList()
 
 using file_t = IFS::FileHandle;
@@ -122,17 +123,6 @@ inline void fileFreeFileSystem()
 bool fileMountFileSystem(IFS::IFileSystem* fs);
 
 /**
- * @brief Mount the first available SPIFFS volume
- * @retval bool true on success
- */
-bool spiffs_mount();
-
-/**
- * @brief Mount SPIFFS volume from a specific partition
- */
-bool spiffs_mount(Storage::Partition partition);
-
-/**
  * @brief Mount the first available FWFS volume
  * @retval bool true on success
  */
@@ -143,18 +133,6 @@ bool fwfs_mount();
  * @retval bool true on success
  */
 bool fwfs_mount(Storage::Partition partition);
-
-/**
- * @brief Mount the first available FWFS and SPIFFS partitions as a hybrid filesystem
- * @retval bool true on success
- */
-bool hyfs_mount();
-
-/**
- * @brief Mount the given FWFS and SPIFFS partitions as a hybrid filesystem
- * @retval bool true on success
- */
-bool hyfs_mount(Storage::Partition fwfsPartition, Storage::Partition spiffsPartition);
 
 /** @brief  Open file by path
  *  @param  path Full path to file
