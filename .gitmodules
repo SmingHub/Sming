@@ -255,6 +255,10 @@
 	path = Sming/Libraries/RingTone
 	url = https://github.com/mikee47/RingTone
 	ignore = dirty
+[submodule "Libraries.seriallib"]
+	path = Sming/Libraries/seriallib/seriallib
+	url = https://github.com/imabot2/serialib.git
+	ignore = dirty
 [submodule "Libraries.SignalGenerator"]
 	path = Sming/Libraries/SignalGenerator
 	url = https://github.com/mikee47/SignalGenerator
@@ -335,3 +339,4 @@
 # END OF .gitmodules
 #
 #################################################################################################
+
