@@ -8,7 +8,7 @@ The communication is done via `simplePRC <https://simplerpc.readthedocs.io/>`_ a
 
 Overview
 --------
-Sming's host emulator allows easier debugging and development of embedded applications. This component named "HostEd" extends the host emulator
+Sming's host emulator allows easier debugging and development of embedded applications. This component named "Hosted" extends the host emulator
 and facilitates testing functionality that only a real microcontroller can provide as for example digital I/O operations or SPI operations.
 
 For example in order to run the Basic_Blink application under the host emulator and run the actual blinking of a LED on a microcontroller
@@ -50,3 +50,21 @@ Configuration
    Enables the hosted component. Valid values for the moment are:
    - tcp - for communication over TCP network.
    - serial - for communication over serial interface
+
+.. envvar:: HOSTED_SERVER_IP
+
+   Default: 192.168.13.1
+
+   Used only when ENABLE_HOSTED=tcp is specified. Specifies the IP address of the remote RPC server.
+
+.. envvar:: HOSTED_COM_PORT
+
+   Default: /dev/ttyUSB0 or the value of the environment variable COM_PORT if defined
+
+   Used only when ENABLE_HOSTED=serial is specified. Specifies which local communication port should be used to connect to the remote RPC server.
+
+.. envvar:: HOSTED_COM_SPEED
+
+   Default: 115200
+
+   Used only when ENABLE_HOSTED=serial is specified. Specifies the communication baud rate.

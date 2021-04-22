@@ -13,6 +13,15 @@
 
 #include <SmingCore.h>
 #include <Hosted/Client.h>
+#include <Hosted/Serial.h>
+
+#ifndef HOSTED_COM_PORT
+#define HOSTED_COM_PORT "/dev/ttyUSB0"
+#endif
+
+#ifndef HOSTED_COM_SPEED
+#define HOSTED_COM_SPEED 115200
+#endif
 
 Hosted::Client* hostedClient{nullptr};
 
@@ -23,10 +32,20 @@ void __real_host_init();
 void __wrap_host_init();
 }
 
+Hosted::Serial hostedSerial(HOSTED_COM_PORT);
+
 void __wrap_host_init()
 {
 	Serial.begin(115200);
-	hostedClient = new Hosted::Client(Serial);
+	Serial.printf("Connecting to: %s ...\n", HOSTED_COM_PORT);
+
+	bool serialReady = false;
+	do {
+		serialReady = hostedSerial.begin(HOSTED_COM_SPEED);
+		usleep(200);
+	} while(!serialReady);
+
+	hostedClient = new Hosted::Client(hostedSerial);
 	hostedClient->getRemoteCommands();
 	init();
 }
