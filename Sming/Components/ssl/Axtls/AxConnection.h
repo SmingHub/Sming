@@ -92,9 +92,9 @@ public:
 	}
 
 private:
-	SSL* ssl;
-	mutable AxCertificate* certificate = nullptr;
-	InputBuffer* input = nullptr;
+	SSL* ssl{nullptr};
+	mutable AxCertificate* certificate{nullptr};
+	InputBuffer* input{nullptr};
 };
 
 } // namespace Ssl
