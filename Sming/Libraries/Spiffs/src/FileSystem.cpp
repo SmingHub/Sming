@@ -436,6 +436,15 @@ int FileSystem::stat(const char* path, Stat* stat)
 {
 	CHECK_MOUNTED()
 
+	if(isRootPath(path)) {
+		if(stat != nullptr) {
+			*stat = Stat{};
+			stat->fs = this;
+			stat->attr += FileAttribute::Directory;
+		}
+		return FS_OK;
+	}
+
 	spiffs_stat ss;
 	int err = SPIFFS_stat(handle(), path ?: "", &ss);
 	if(err < 0) {
