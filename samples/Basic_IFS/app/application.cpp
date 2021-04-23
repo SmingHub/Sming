@@ -110,10 +110,8 @@ bool initFileSystem()
 {
 	fileFreeFileSystem();
 
-#if DEBUG_BUILD
-	auto freeheap = system_get_free_heap_size();
-#endif
-	debug_i("1: heap = %u", freeheap);
+	auto initialFreeheap = system_get_free_heap_size();
+	debug_i("Initial freeheap = %u", initialFreeheap);
 
 #ifdef ENABLE_FLASHSTRING_IMAGE
 	// Create a partition wrapping some flashstring data
@@ -124,24 +122,52 @@ bool initFileSystem()
 
 	// Read-only
 	auto fs = IFS::createFirmwareFilesystem(part);
-	debug_i("2: heap = -%u", freeheap - system_get_free_heap_size());
 
 	if(fs == nullptr) {
 		debug_e("Failed to created filesystem object");
 		return false;
 	}
 
-	int res = fs->mount();
-	debug_i("3: heap = -%u", freeheap - system_get_free_heap_size());
+	auto mount = [&](IFS::FileSystem* fs) {
+		int res = fs->mount();
+		debug_i("heap used: %u, mount() returned %d (%s)", initialFreeheap - system_get_free_heap_size(), res,
+				fs->getErrorString(res).c_str());
+		return res == FS_OK;
+	};
 
-	debug_i("mount() returned %d (%s)", res, fs->getErrorString(res).c_str());
-
-	if(res < 0) {
+	if(!mount(fs)) {
 		delete fs;
 		return false;
 	}
 
+	// Make this the default filesystem
 	fileSetFileSystem(fs);
+
+	// Let's mount an LFS volume as well
+	initialFreeheap = system_get_free_heap_size();
+	part = Storage::findDefaultPartition(Storage::Partition::SubType::Data::littlefs);
+	auto lfs = IFS::createLfsFilesystem(part);
+	if(lfs == nullptr) {
+		debug_e("Failed to create LFS filesystem");
+	} else if(mount(lfs)) {
+		// Place the root of this volume at index #0 (the corresponding directory is given in `fwimage.fwfs`)
+		fs->setVolume(0, lfs);
+	} else {
+		delete lfs;
+	}
+
+	// And we'll mount a SPIFFS volume too
+	initialFreeheap = system_get_free_heap_size();
+	part = Storage::findDefaultPartition(Storage::Partition::SubType::Data::spiffs);
+	auto spiffs = IFS::createSpiffsFilesystem(part);
+	if(spiffs == nullptr) {
+		debug_e("Failed to create SPIFFS filesystem");
+	} else if(mount(spiffs)) {
+		// Place the root of this volume at index #1
+		fs->setVolume(1, spiffs);
+	} else {
+		delete spiffs;
+	}
 
 	debug_i("File system initialised");
 	return true;
