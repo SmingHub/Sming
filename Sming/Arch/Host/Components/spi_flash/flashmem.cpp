@@ -40,7 +40,7 @@ constexpr uint32_t FLASHMEM_REAL_MASK{~FLASHMEM_REAL_BIT};
 
 #define CHECK_RANGE(_addr, _size)                                                                                      \
 	if((_addr) + (_size) > flashFileSize) {                                                                            \
-		host_debug_e("addr = 0x%08x, size = 0x%08x", _addr, _size);                                                         \
+		host_debug_e("addr = 0x%08x, size = 0x%08x", _addr, _size);                                                    \
 		return false;                                                                                                  \
 	}
 
@@ -51,7 +51,7 @@ bool host_flashmem_init(FlashmemConfig& config)
 		flashFileName[sizeof(flashFileName) - 1] = '\0';
 	} else {
 		size_t len = getHostAppDir(flashFileName, sizeof(flashFileName));
-		if(len + sizeof(defaultFlashFileName) > sizeof(flashFileName)) {
+		if(len > sizeof(flashFileName) - sizeof(defaultFlashFileName)) {
 			return false;
 		}
 		memcpy(&flashFileName[len], defaultFlashFileName, sizeof(defaultFlashFileName));
@@ -128,7 +128,7 @@ static int writeFlashFile(uint32_t offset, const void* data, size_t count)
 
 SPIFlashInfo flashmem_get_info()
 {
-	SPIFlashInfo info;
+	SPIFlashInfo info{};
 	info.mode = MODE_QIO;
 	info.speed = SPEED_80MHZ;
 	info.size = SIZE_32MBIT;
