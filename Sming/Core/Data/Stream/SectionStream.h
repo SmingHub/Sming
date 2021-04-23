@@ -98,7 +98,7 @@ public:
 
 	const Section* getSection(unsigned index) const
 	{
-		if(index >= 0 && index < sectionCount) {
+		if(index < sectionCount) {
 			return &sections[index];
 		} else {
 			return nullptr;

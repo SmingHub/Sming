@@ -185,6 +185,7 @@ struct SpiffsMetaBuffer {
 	 */
 	int getUserAttribute(unsigned userTag, void* buffer, size_t size)
 	{
+#if SPIFFS_USER_METALEN
 		if(userTag > 255) {
 			return Error::BadParam;
 		}
@@ -204,12 +205,18 @@ struct SpiffsMetaBuffer {
 			}
 			return tagSize;
 		}
+#else
+		(void)userTag;
+		(void)buffer;
+		(void)size;
+#endif
 
 		return Error::NotFound;
 	}
 
 	int setUserAttribute(unsigned userTag, const void* data, size_t size)
 	{
+#if SPIFFS_USER_METALEN
 		if(userTag > 255) {
 			return Error::BadParam;
 		}
@@ -255,6 +262,11 @@ struct SpiffsMetaBuffer {
 
 			i += tagSize;
 		}
+#else
+		(void)userTag;
+		(void)data;
+		(void)size;
+#endif
 
 		// No room for attribute
 		return Error::BufferTooSmall;

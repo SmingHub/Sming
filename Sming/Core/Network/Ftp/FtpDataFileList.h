@@ -91,7 +91,7 @@ public:
 
 private:
 	IFS::Directory dir;
-	uint16_t year;
+	uint16_t year{0};
 	bool namesOnly;
-	bool statValid;
+	bool statValid{false};
 };
