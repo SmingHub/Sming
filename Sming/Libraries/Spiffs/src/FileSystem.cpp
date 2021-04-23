@@ -67,6 +67,8 @@ OpenFlags mapFileOpenFlags(OpenFlags flags, spiffs_flags& sflags)
 	map(OpenFlag::Read, SPIFFS_O_RDONLY);
 	map(OpenFlag::Write, SPIFFS_O_WRONLY);
 
+	flags -= OpenFlag::NoFollow;
+
 	if(flags.any()) {
 		debug_w("Unknown OpenFlags: 0x%02X", flags.value());
 	}
