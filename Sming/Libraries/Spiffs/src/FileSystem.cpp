@@ -74,6 +74,14 @@ OpenFlags mapFileOpenFlags(OpenFlags flags, spiffs_flags& sflags)
 	return flags;
 }
 
+void fillStat(Stat& stat, const SpiffsMetaBuffer& smb)
+{
+	stat.acl = smb.meta.acl;
+	stat.attr = smb.meta.attr;
+	stat.mtime = smb.meta.mtime;
+	stat.compression = smb.meta.compression;
+}
+
 } // namespace
 
 s32_t FileSystem::f_read(struct spiffs_t* spiffs, u32_t addr, u32_t size, u8_t* dst)
@@ -463,7 +471,7 @@ int FileSystem::stat(const char* path, Stat* stat)
 #else
 		smb.init();
 #endif
-		smb.copyTo(*stat);
+		fillStat(*stat, smb);
 		checkStat(*stat);
 	}
 
@@ -493,7 +501,7 @@ int FileSystem::fstat(FileHandle file, Stat* stat)
 		stat->name.copy(reinterpret_cast<const char*>(ss.name));
 		stat->size = ss.size;
 		stat->id = ss.obj_id;
-		smb->copyTo(*stat);
+		fillStat(*stat, *smb);
 		checkStat(*stat);
 	}
 
@@ -706,7 +714,7 @@ int FileSystem::readdir(DirHandle dir, Stat& stat)
 #else
 			smb.init();
 #endif
-			smb.copyTo(stat);
+			fillStat(stat, smb);
 		}
 
 		return FS_OK;

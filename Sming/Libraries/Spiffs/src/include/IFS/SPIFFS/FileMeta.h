@@ -21,9 +21,7 @@
 
 #pragma once
 
-#include <IFS/Access.h>
-#include <IFS/FileAttributes.h>
-#include <IFS/Compression.h>
+#include <IFS/Attribute.h>
 
 namespace IFS
 {
@@ -94,14 +92,6 @@ struct SpiffsMetaBuffer {
 			meta.init();
 			flags += Flag::dirty;
 		}
-	}
-
-	void copyTo(Stat& stat)
-	{
-		stat.acl = meta.acl;
-		stat.attr = meta.attr;
-		stat.mtime = meta.mtime;
-		stat.compression = meta.compression;
 	}
 
 	void setFileTime(time_t t)
