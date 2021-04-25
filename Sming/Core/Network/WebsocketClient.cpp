@@ -15,8 +15,7 @@
 
 #include "WebsocketClient.h"
 #include "Http/HttpHeaders.h"
-#include "WebHelpers/aw-sha1.h"
-#include "WebHelpers/base64.h"
+#include <Data/WebHelpers/base64.h>
 
 HttpConnection* WebsocketClient::getHttpConnection()
 {
@@ -85,9 +84,8 @@ int WebsocketClient::verifyKey(HttpConnection& connection, HttpResponse& respons
 	String serverHashedKey = response.headers[HTTP_HEADER_SEC_WEBSOCKET_ACCEPT];
 
 	String keyToHash = key + WSSTR_SECRET;
-	unsigned char hash[SHA1_SIZE];
-	sha1(hash, keyToHash.c_str(), keyToHash.length());
-	String base64hash = base64_encode(hash, sizeof(hash));
+	auto hash = Crypto::Sha1().calculate(keyToHash);
+	String base64hash = base64_encode(hash.data(), hash.size());
 	if(base64hash != serverHashedKey) {
 		debug_e("wscli key mismatch: %s | %s", serverHashedKey.c_str(), base64hash.c_str());
 		state = eWSCS_Closed;

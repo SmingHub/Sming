@@ -10,8 +10,8 @@
 
 #include "WebsocketConnection.h"
 #include <BitManipulations.h>
-#include <Network/WebHelpers/aw-sha1.h>
-#include <Network/WebHelpers/base64.h>
+#include <Crypto/Sha1.h>
+#include <Data/WebHelpers/base64.h>
 
 DEFINE_FSTR(WSSTR_CONNECTION, "connection")
 DEFINE_FSTR(WSSTR_UPGRADE, "upgrade")
@@ -63,12 +63,11 @@ bool WebsocketConnection::bind(HttpRequest& request, HttpResponse& response)
 	String token = request.headers[HTTP_HEADER_SEC_WEBSOCKET_KEY];
 	token.trim();
 	token += WSSTR_SECRET;
-	unsigned char hash[SHA1_SIZE];
-	sha1(hash, token.c_str(), token.length());
+	auto hash = Crypto::Sha1().calculate(token);
 	response.code = HTTP_STATUS_SWITCHING_PROTOCOLS;
 	response.headers[HTTP_HEADER_CONNECTION] = WSSTR_UPGRADE;
 	response.headers[HTTP_HEADER_UPGRADE] = WSSTR_WEBSOCKET;
-	response.headers[HTTP_HEADER_SEC_WEBSOCKET_ACCEPT] = base64_encode(hash, SHA1_SIZE);
+	response.headers[HTTP_HEADER_SEC_WEBSOCKET_ACCEPT] = base64_encode(hash.data(), hash.size());
 
 	isClientConnection = false;
 
