@@ -98,6 +98,8 @@ LDFLAGS = \
 	-Wl,--gc-sections \
 	-Wl,-Map=$(basename $@).map
 
+# Name of the default output target
+DEBUG_VARS			+= TARGET_OUT_0
 
 # Name of the application to use for link output targets
 CACHE_VARS			+= APP_NAME

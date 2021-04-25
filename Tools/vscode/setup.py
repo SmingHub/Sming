@@ -162,28 +162,33 @@ def update_launch():
     if launch is None:
         launch = template.copy()
     configurations = get_property(launch, 'configurations', [])
-    for template_config in template['configurations']:
-        config = find_object(configurations, template_config['name'])
-        if not config is None:
-            configurations.remove(config)
+    config_name = "%s GDB" % env['SMING_ARCH']
+    config = find_object(configurations, config_name)
+    template_config = find_object(template['configurations'], config_name)
+    if template_config is None:
+        print("Warning: Template launch configuration '%s' not found" % config_name)
+    elif not config is None:
+        configurations.remove(config)
         config = template_config.copy()
         configurations.append(config)
 
-    config = find_object(configurations, "%s GDB" % env['SMING_ARCH'])
-    if not config is None:
-        config['miDebuggerPath'] = find_tool(env['GDB'])
-        dbgargs = "-x ${env:SMING_HOME}/Arch/%s/Components/gdbstub/gdbcmds" % env['SMING_ARCH']
-        if env['SMING_ARCH'] == 'Esp8266':
-            if not env.isWsl():
-                dbgargs += " -b %s" % env['COM_SPEED_GDB']
-            config['miDebuggerServerAddress'] = env['COM_PORT_GDB']
-        elif env['SMING_ARCH'] == 'Host':
-            args = []
-            args += env['CLI_TARGET_OPTIONS'].split()
-            args += ["--"]
-            args += env['HOST_PARAMETERS'].split()
-            config['args'] = args
-        config['miDebuggerArgs'] = dbgargs
+    if config is None:
+        return
+
+    config['miDebuggerPath'] = find_tool(env['GDB'])
+    dbgargs = "-x ${env:SMING_HOME}/Arch/%s/Components/gdbstub/gdbcmds" % env['SMING_ARCH']
+    if env['SMING_ARCH'] == 'Esp8266':
+        if not env.isWsl():
+            dbgargs += " -b %s" % env['COM_SPEED_GDB']
+        config['miDebuggerServerAddress'] = env['COM_PORT_GDB']
+    elif env['SMING_ARCH'] == 'Host':
+        args = []
+        args += env['CLI_TARGET_OPTIONS'].split()
+        args += ["--"]
+        args += env['HOST_PARAMETERS'].split()
+        config['args'] = args
+    config['miDebuggerArgs'] = dbgargs
+    config['program'] = "${workspaceFolder}/" + env.resolve('${TARGET_OUT_0}')
 
     save_json(launch, filename)
 
