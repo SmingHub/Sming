@@ -21,7 +21,7 @@ Summary
 -  Fast and user friendly development
 -  Simple yet powerful hardware API wrappers
 -  Compatible with standard :doc:`libraries` - use any popular hardware in few lines of code
--  Built-in file system: :component:`spiffs`
+-  Multiple file system support: :component:`IFS`, :library:`Spiffs`, :library:`LittleFS`
 -  Built-in powerful wireless modules
 -  Powerful asynchronous (async) network stack.
 

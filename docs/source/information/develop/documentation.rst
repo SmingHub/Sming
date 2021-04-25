@@ -240,7 +240,7 @@ Inserting a link to a Component page, using the title of that page by default:
 
 ::
 
-   See :component:`spiffs` for details of the flash filing system.
+   See :library:`Spiffs` for details of the flash filing system.
 
    We use :component-esp8266:`axtls-8266` for SSL support.
 

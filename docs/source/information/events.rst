@@ -43,10 +43,10 @@ Interrupt events
 
 The :sample:`Basic_Interrupts` sample can be summarised as follows:
 
--  We have a button connected to GPIO0 as an input
--  Button pressed
-   -  Hardware interrupt on GPIO0
-      -  Change output state of LED via GPIO2
+- We have a button connected to GPIO0 as an input
+- Button pressed
+   - Hardware interrupt on GPIO0
+      - Change output state of LED via GPIO2
 
 There are two ways we can determine when the state of our GPIO0 pin changes:
 

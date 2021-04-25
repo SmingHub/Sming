@@ -513,7 +513,7 @@ changed as required.
    part of the Component, prefixed with ``$(COMPONENT_RULE)``.
 
    If targets should be built for each application, use :envvar:`CUSTOM_TARGETS` instead.
-   See :component:`spiffs` for an example.
+   See :library:`Spiffs` for an example.
 
 .. envvar:: COMPONENT_PREREQUISITES
 

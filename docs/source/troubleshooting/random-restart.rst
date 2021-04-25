@@ -25,4 +25,4 @@ To achieve this do the following:
 
 3) Re-program your device::
 
-   make flash
+      make flash
