@@ -15,7 +15,8 @@
     },
     // Directories to mount other object stores
     "mountpoints": {
-        "config": 1
+        "littlefs": 0,
+        "spiffs": 1
     },
     // Rules for file metadata. All rules are evaluated in sequence for every file
     "rules": [
