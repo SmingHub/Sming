@@ -112,6 +112,18 @@ struct SpiffsMetaBuffer {
 		}
 	}
 
+	bool isDefaultValue(AttributeTag tag)
+	{
+		switch(tag) {
+		case AttributeTag::FileAttributes:
+			return meta.attr.none();
+		case AttributeTag::Compression:
+			return meta.compression.type == Compression::Type::None;
+		default:
+			return false;
+		}
+	}
+
 	int enumxattr(AttributeEnumCallback callback, void* buffer, size_t bufsize);
 	int getxattr(AttributeTag tag, void* buffer, size_t size);
 	int setxattr(AttributeTag tag, const void* data, size_t size);

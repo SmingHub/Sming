@@ -51,6 +51,9 @@ int SpiffsMetaBuffer::enumxattr(AttributeEnumCallback callback, void* buffer, si
 
 	for(unsigned i = 0; i < unsigned(AttributeTag::User); ++i) {
 		auto tag = AttributeTag(i);
+		if(isDefaultValue(tag)) {
+			continue;
+		}
 		auto value = meta.getAttributePtr(tag);
 		if(value == nullptr) {
 			continue;
@@ -84,7 +87,7 @@ int SpiffsMetaBuffer::getxattr(AttributeTag tag, void* buffer, size_t size)
 	}
 
 	auto value = meta.getAttributePtr(tag);
-	if(value == nullptr) {
+	if(value == nullptr || isDefaultValue(tag)) {
 		return Error::NotFound;
 	}
 
