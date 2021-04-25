@@ -520,6 +520,18 @@ int FileSystem::fgetxattr(FileHandle file, AttributeTag tag, void* buffer, size_
 	return smb->getxattr(tag, buffer, size);
 }
 
+int FileSystem::fenumxattr(FileHandle file, AttributeEnumCallback callback, void* buffer, size_t bufsize)
+{
+	CHECK_MOUNTED()
+
+	auto smb = getMetaBuffer(file);
+	if(smb == nullptr) {
+		return Error::InvalidHandle;
+	}
+
+	return smb->enumxattr(callback, buffer, bufsize);
+}
+
 int FileSystem::setxattr(const char* path, AttributeTag tag, const void* data, size_t size)
 {
 #ifdef SPIFFS_STORE_META

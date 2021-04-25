@@ -42,22 +42,52 @@ void* FileMeta::getAttributePtr(AttributeTag tag)
 	}
 }
 
+int SpiffsMetaBuffer::enumxattr(AttributeEnumCallback callback, void* buffer, size_t bufsize)
+{
+	size_t count{0};
+	AttributeEnum e{buffer, bufsize};
+
+	for(unsigned i = 0; i < unsigned(AttributeTag::User); ++i) {
+		auto tag = AttributeTag(i);
+		auto value = meta.getAttributePtr(tag);
+		if(value == nullptr) {
+			continue;
+		}
+		e.set(tag, value, getAttributeSize(tag));
+		if(!callback(e)) {
+			return count;
+		}
+	}
+
+	for(unsigned i = 0; i < SPIFFS_USER_METALEN;) {
+		uint8_t tagIndex = user[i++];
+		uint8_t tagSize = user[i++];
+		if(tagIndex == 0xff && tagSize == 0xff) {
+			break;
+		}
+		e.set(AttributeTag(unsigned(AttributeTag::User) + tagIndex), &user[i], tagSize);
+		if(!callback(e)) {
+			break;
+		}
+		i += tagSize;
+	}
+
+	return count;
+}
+
 int SpiffsMetaBuffer::getxattr(AttributeTag tag, void* buffer, size_t size)
 {
 	if(tag >= AttributeTag::User) {
 		return getUserAttribute(unsigned(tag) - unsigned(AttributeTag::User), buffer, size);
 	}
 
+	auto value = meta.getAttributePtr(tag);
+	if(value == nullptr) {
+		return Error::NotFound;
+	}
+
 	auto attrSize = getAttributeSize(tag);
-	if(attrSize == 0) {
-		return Error::BadParam;
-	}
-	if(size >= attrSize) {
-		auto value = meta.getAttributePtr(tag);
-		if(value != nullptr) {
-			memcpy(buffer, value, attrSize);
-		}
-	}
+	memcpy(buffer, value, std::min(size, attrSize));
 	return attrSize;
 }
 
@@ -187,7 +217,6 @@ int SpiffsMetaBuffer::setUserAttribute(unsigned userTag, const void* data, size_
 	// No room for attribute
 	return Error::BufferTooSmall;
 }
-}; // namespace SPIFFS
 
-} // namespace IFS
+} // namespace SPIFFS
 } // namespace IFS
