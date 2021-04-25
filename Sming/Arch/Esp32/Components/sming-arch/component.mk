@@ -22,13 +22,6 @@ COMPONENT_DEPENDS := \
 	gdbstub \
 	esptool
 
-# => Platform WiFi
-COMPONENT_VARS := \
-	ENABLE_WPS \
-	ENABLE_SMART_CONFIG \
-	DISABLE_WIFI
-
-
 # ELF and BIN files
 DEBUG_VARS		+= TARGET_BIN
 TARGET_OUT		= $(BUILD_BASE)/$(APP_NAME).out

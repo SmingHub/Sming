@@ -36,17 +36,6 @@ COMPONENT_DEPENDS := \
 	vflash \
 	rboot
 
-ifneq ($(DISABLE_WIFI),1)
-COMPONENT_DEPENDS += \
-	esp_wifi \
-	lwip
-endif
-
 ifneq ($(ENABLE_HOSTED),)
 	COMPONENT_DEPENDS += Hosted-Lib
 endif
-
-# => Platform WiFi
-COMPONENT_VARS := \
-	ENABLE_WPS \
-	ENABLE_SMART_CONFIG
