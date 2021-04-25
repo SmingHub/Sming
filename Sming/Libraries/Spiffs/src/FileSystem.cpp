@@ -464,6 +464,7 @@ int FileSystem::stat(const char* path, Stat* stat)
 		smb.init();
 #endif
 		smb.copyTo(*stat);
+		checkStat(*stat);
 	}
 
 	return FS_OK;
@@ -493,6 +494,7 @@ int FileSystem::fstat(FileHandle file, Stat* stat)
 		stat->size = ss.size;
 		stat->id = ss.obj_id;
 		smb->copyTo(*stat);
+		checkStat(*stat);
 	}
 
 	return FS_OK;

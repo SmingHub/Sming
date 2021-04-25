@@ -106,11 +106,11 @@ int SpiffsMetaBuffer::setxattr(AttributeTag tag, const void* data, size_t size)
 	if(data == nullptr) {
 		return Error::NotSupported;
 	}
-	if(size != getAttributeSize(tag)) {
-		return Error::BadParam;
-	}
 	auto value = meta.getAttributePtr(tag);
 	if(value == nullptr) {
+		return Error::NotSupported;
+	}
+	if(size != getAttributeSize(tag)) {
 		return Error::BadParam;
 	}
 	if(memcmp(value, data, size) == 0) {
@@ -118,9 +118,6 @@ int SpiffsMetaBuffer::setxattr(AttributeTag tag, const void* data, size_t size)
 		return FS_OK;
 	}
 	memcpy(value, data, size);
-	if(tag == AttributeTag::Compression) {
-		meta.attr[FileAttribute::Compressed] = (meta.compression.type != Compression::Type::None);
-	}
 	flags += Flag::dirty;
 	return FS_OK;
 }
