@@ -31,8 +31,10 @@ void* FileMeta::getAttributePtr(AttributeTag tag)
 	switch(tag) {
 	case AttributeTag::ModifiedTime:
 		return &mtime;
-	case AttributeTag::Acl:
-		return &acl;
+	case AttributeTag::ReadAce:
+		return &acl.readAccess;
+	case AttributeTag::WriteAce:
+		return &acl.writeAccess;
 	case AttributeTag::Compression:
 		return &compression;
 	case AttributeTag::FileAttributes:
