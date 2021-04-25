@@ -27,18 +27,17 @@ namespace IFS
 {
 namespace SPIFFS
 {
+#define CHECK_MOUNTED()                                                                                                \
+	if(!SPIFFS_mounted(handle())) {                                                                                    \
+		return Error::NotMounted;                                                                                      \
+	}
+
 struct FileDir {
 	char path[SPIFFS_OBJ_NAME_LEN]; ///< Filter for readdir()
 	unsigned pathlen;
 	String directories; // Names of discovered directories
 	spiffs_DIR d;
 };
-
-#define GET_FILEDIR()                                                                                                  \
-	if(dir == nullptr) {                                                                                               \
-		return Error::InvalidHandle;                                                                                   \
-	}                                                                                                                  \
-	auto d = reinterpret_cast<FileDir*>(dir);
 
 constexpr uint32_t logicalBlockSize{4096 * 2};
 
@@ -210,6 +209,7 @@ int FileSystem::getinfo(Info& info)
 	info.type = Type::SPIFFS;
 	info.maxNameLength = SPIFFS_OBJ_NAME_LEN - 1;
 	info.maxPathLength = info.maxNameLength;
+
 	if(SPIFFS_mounted(handle())) {
 		info.volumeID = fs.config_magic;
 		info.attr |= Attribute::Mounted;
@@ -247,8 +247,7 @@ String FileSystem::getErrorString(int err)
 
 FileHandle FileSystem::open(const char* path, OpenFlags flags)
 {
-	FS_CHECK_PATH(path);
-	if(path == nullptr) {
+	if(isRootPath(path)) {
 		return Error::BadParam;
 	}
 
@@ -295,6 +294,8 @@ FileHandle FileSystem::open(const char* path, OpenFlags flags)
 
 int FileSystem::close(FileHandle file)
 {
+	CHECK_MOUNTED()
+
 	if(file < 0) {
 		return Error::FileNotOpen;
 	}
@@ -327,6 +328,8 @@ int FileSystem::ftruncate(FileHandle file, size_t new_size)
 
 int FileSystem::flush(FileHandle file)
 {
+	CHECK_MOUNTED()
+
 	int res = flushMeta(file);
 	int err = SPIFFS_fflush(handle(), file);
 	if(err < 0) {
@@ -431,6 +434,17 @@ int FileSystem::flushMeta(FileHandle file)
 
 int FileSystem::stat(const char* path, Stat* stat)
 {
+	CHECK_MOUNTED()
+
+	if(isRootPath(path)) {
+		if(stat != nullptr) {
+			*stat = Stat{};
+			stat->fs = this;
+			stat->attr += FileAttribute::Directory;
+		}
+		return FS_OK;
+	}
+
 	spiffs_stat ss;
 	int err = SPIFFS_stat(handle(), path ?: "", &ss);
 	if(err < 0) {
@@ -486,6 +500,8 @@ int FileSystem::fstat(FileHandle file, Stat* stat)
 
 int FileSystem::fsetxattr(FileHandle file, AttributeTag tag, const void* data, size_t size)
 {
+	CHECK_MOUNTED()
+
 	auto smb = getMetaBuffer(file);
 	if(smb == nullptr) {
 		return Error::InvalidHandle;
@@ -495,6 +511,8 @@ int FileSystem::fsetxattr(FileHandle file, AttributeTag tag, const void* data, s
 
 int FileSystem::fgetxattr(FileHandle file, AttributeTag tag, void* buffer, size_t size)
 {
+	CHECK_MOUNTED()
+
 	auto smb = getMetaBuffer(file);
 	if(smb == nullptr) {
 		return Error::InvalidHandle;
@@ -505,7 +523,7 @@ int FileSystem::fgetxattr(FileHandle file, AttributeTag tag, void* buffer, size_
 int FileSystem::setxattr(const char* path, AttributeTag tag, const void* data, size_t size)
 {
 #ifdef SPIFFS_STORE_META
-	FS_CHECK_PATH(path);
+	FS_CHECK_PATH(path)
 	spiffs_stat ss;
 	int err = SPIFFS_stat(handle(), path ?: "", &ss);
 	if(err < 0) {
@@ -530,7 +548,7 @@ int FileSystem::setxattr(const char* path, AttributeTag tag, const void* data, s
 int FileSystem::getxattr(const char* path, AttributeTag tag, void* buffer, size_t size)
 {
 #ifdef SPIFFS_STORE_META
-	FS_CHECK_PATH(path);
+	FS_CHECK_PATH(path)
 	spiffs_stat ss;
 	int err = SPIFFS_stat(handle(), path, &ss);
 	if(err < 0) {
@@ -546,7 +564,9 @@ int FileSystem::getxattr(const char* path, AttributeTag tag, void* buffer, size_
 
 int FileSystem::opendir(const char* path, DirHandle& dir)
 {
-	FS_CHECK_PATH(path);
+	CHECK_MOUNTED()
+
+	isRootPath(path);
 	unsigned pathlen = 0;
 	if(path != nullptr) {
 		pathlen = strlen(path);
@@ -696,9 +716,7 @@ int FileSystem::mkdir(const char* path)
 
 int FileSystem::rename(const char* oldpath, const char* newpath)
 {
-	FS_CHECK_PATH(oldpath);
-	FS_CHECK_PATH(newpath);
-	if(oldpath == nullptr || newpath == nullptr) {
+	if(isRootPath(oldpath) || isRootPath(newpath)) {
 		return Error::BadParam;
 	}
 
@@ -708,8 +726,7 @@ int FileSystem::rename(const char* oldpath, const char* newpath)
 
 int FileSystem::remove(const char* path)
 {
-	FS_CHECK_PATH(path);
-	if(path == nullptr) {
+	if(isRootPath(path)) {
 		return Error::BadParam;
 	}
 
@@ -733,6 +750,8 @@ int FileSystem::remove(const char* path)
 
 int FileSystem::fremove(FileHandle file)
 {
+	CHECK_MOUNTED()
+
 	// If file is marked read-only, fail request
 	auto smb = getMetaBuffer(file);
 	if(smb == nullptr) {
