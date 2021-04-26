@@ -10,7 +10,8 @@ RESOURCE(abstract_txt, "abstract.txt")
 RESOURCE(test_json, "test.json")
 RESOURCE(ut_template1_in_rst, "ut_template1.in.rst")
 RESOURCE(ut_template1_out1_rst, "ut_template1.out1.rst")
-//RESOURCE(ut_template2_in_rst, "ut_template2.in.rst")
-//RESOURCE(ut_template2_out_rst, "ut_template2.in.rst")
+
+RESOURCE(image_png, "image.png")
+RESOURCE(multipart_result, "multipart-result.txt")
 
 } // namespace Resource
