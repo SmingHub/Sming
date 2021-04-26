@@ -37,7 +37,7 @@ void StreamTransformer::fillTempStream(char* buffer, size_t bufSize)
 	while((room = tempStream->room()) >= maxChunkSize) {
 		auto chunkSize = sourceStream->readMemoryBlock(buffer, maxChunkSize);
 		if(chunkSize == 0) {
-			return;
+			break;
 		}
 
 		saveState();
@@ -55,7 +55,9 @@ void StreamTransformer::fillTempStream(char* buffer, size_t bufSize)
 
 	if(sourceStream->isFinished()) {
 		auto outLength = transform(nullptr, 0, result, resultSize);
-		tempStream->write(result, outLength);
+		auto written = tempStream->write(result, outLength);
+		(void)written;
+		assert(written == outLength);
 	}
 }
 
