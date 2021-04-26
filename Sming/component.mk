@@ -3,8 +3,7 @@ COMPONENT_SRCDIRS := \
 	Platform \
 	System \
 	Wiring \
-	Services/HexDump \
-	Services/Yeelight
+	Services/HexDump
 
 COMPONENT_INCDIRS := \
 	Components \
@@ -18,22 +17,7 @@ COMPONENT_DEPENDS := \
 	FlashString \
 	Spiffs \
 	IFS \
-	http-parser \
-	libb64 \
-	ws_parser \
-	mqtt-codec \
-	libyuarel \
-	ssl \
 	terminal
-
-COMPONENT_DOCFILES := \
-	Core/Network/*.rst \
-	Wiring/*.rst \
-	Platform/*.rst \
-	Services/*.rst \
-	Services/CommandProcessing/*.rst \
-	Services/Profiling/*.rst \
-	Core/Data/*.rst
 
 COMPONENT_DOXYGEN_PREDEFINED := \
 	ENABLE_CMD_EXECUTOR=1
@@ -59,6 +43,15 @@ GLOBAL_CFLAGS			+= -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR)
 COMPONENT_VARS			+= MQTT_NO_COMPAT
 ifeq ($(MQTT_NO_COMPAT),1)
 	GLOBAL_CFLAGS		+= -DMQTT_NO_COMPAT=1
+endif
+
+#
+RELINK_VARS += DISABLE_WIFI
+DISABLE_WIFI ?= 0
+ifeq ($(DISABLE_WIFI),1)
+GLOBAL_CFLAGS += -DDISABLE_WIFI=1
+else
+COMPONENT_DEPENDS += Network
 endif
 
 # WiFi settings may be provide via Environment variables

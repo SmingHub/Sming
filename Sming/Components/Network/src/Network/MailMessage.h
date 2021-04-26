@@ -20,11 +20,11 @@
 
 #include "WString.h"
 #include "WVector.h"
-#include "Network/WebConstants.h"
-#include "Network/Http/HttpHeaders.h"
-#include "Stream/MultipartStream.h"
-#include "Stream/DataSourceStream.h"
-#include "Stream/FileStream.h"
+#include "Http/HttpHeaders.h"
+#include <Data/WebConstants.h>
+#include <Data/Stream/MultipartStream.h>
+#include <Data/Stream/DataSourceStream.h>
+#include <Data/Stream/FileStream.h>
 
 class SmtpClient;
 

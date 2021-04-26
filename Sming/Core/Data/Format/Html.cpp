@@ -11,7 +11,7 @@
  ****/
 
 #include "Html.h"
-#include <Network/WebHelpers/escape.h>
+#include <Data/WebHelpers/escape.h>
 
 namespace Format
 {

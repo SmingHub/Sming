@@ -22,12 +22,6 @@ COMPONENT_DEPENDS := \
 	gdbstub \
 	esptool
 
-#
-DISABLE_WIFI ?= 0
-ifeq ($(DISABLE_WIFI),1)
-GLOBAL_CFLAGS += -DDISABLE_WIFI=1
-endif
-
 # => Platform WiFi
 COMPONENT_VARS := \
 	ENABLE_WPS \

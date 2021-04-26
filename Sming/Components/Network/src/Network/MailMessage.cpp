@@ -11,7 +11,7 @@
  ****/
 
 #include "MailMessage.h"
-#include "Stream/MemoryDataStream.h"
+#include <Data/Stream/MemoryDataStream.h>
 
 HttpHeaders& MailMessage::getHeaders()
 {

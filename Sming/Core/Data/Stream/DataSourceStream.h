@@ -14,7 +14,7 @@
 #include <Stream.h>
 #include <WString.h>
 #include "SeekOrigin.h"
-#include <Network/WebConstants.h>
+#include "../WebConstants.h"
 
 /** @defgroup   stream Stream functions
  *  @brief      Data stream classes

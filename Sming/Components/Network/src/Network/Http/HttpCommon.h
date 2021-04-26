@@ -15,7 +15,7 @@
 #define ENABLE_HTTP_REQUEST_AUTH 1
 
 #include "WString.h"
-#include "../WebConstants.h"
+#include <Data/WebConstants.h>
 #include "../Url.h"
 #include "Data/Stream/ReadWriteStream.h"
 #include "Data/ObjectMap.h"

@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "WString.h"
-#include "Network/TcpClient.h"
+#include <WString.h>
+#include <WHashMap.h>
 #include "CommandOutput.h"
 
 /** @brief  Command delegate function

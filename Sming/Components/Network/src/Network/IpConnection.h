@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <IpAddress.h>
+#include "IpAddress.h"
 
 /** @defgroup   ip IP
  *  @brief      Provides common IP functions

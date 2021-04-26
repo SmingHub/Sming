@@ -28,16 +28,19 @@ COMPONENT_INCDIRS := \
 COMPONENT_DEPENDS := \
 	driver \
 	esp_hal \
-	esp_wifi \
 	gdbstub \
 	heap \
 	hostlib \
 	libc \
-	lwip \
 	spi_flash \
 	vflash \
 	rboot
-	
+
+ifneq ($(DISABLE_WIFI),1)
+COMPONENT_DEPENDS += \
+	esp_wifi \
+	lwip
+endif
 
 ifneq ($(ENABLE_HOSTED),)
 	COMPONENT_DEPENDS += Hosted-Lib

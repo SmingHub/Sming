@@ -10,8 +10,8 @@
  *
  ****/
 
-#include "MultipartStream.h"
-#include "MemoryDataStream.h"
+#include <Data/Stream/MultipartStream.h>
+#include <Data/Stream/MemoryDataStream.h>
 
 IDataSourceStream* MultipartStream::getNextStream()
 {

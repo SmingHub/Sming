@@ -27,7 +27,7 @@
  */
 
 #include "TcpClient.h"
-#include <Data/MailMessage.h>
+#include "MailMessage.h"
 #include "Url.h"
 #include <BitManipulations.h>
 #include <WString.h>

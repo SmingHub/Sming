@@ -7,23 +7,37 @@
 
 #pragma once
 
-#include <Network/TcpClient.h>
 #include <Stream.h>
 #include <Print.h>
+
+#ifndef DISABLE_WIFI
+#include <Network/TcpClient.h>
 #include <Network/Http/Websocket/WebsocketConnection.h>
+#endif
 
 class CommandOutput : public Print
 {
 public:
-	CommandOutput(TcpClient* reqClient);
+#ifndef DISABLE_WIFI
+	CommandOutput(TcpClient* reqClient) : outputTcpClient(reqClient)
+	{
+	}
+
+	CommandOutput(WebsocketConnection* reqSocket) : outputSocket(reqSocket)
+	{
+	}
+
+#endif
+
 	CommandOutput(Stream* reqStream);
-	CommandOutput(WebsocketConnection* reqSocket);
 	virtual ~CommandOutput();
 
 	size_t write(uint8_t outChar);
 
+#ifndef DISABLE_WIFI
 	TcpClient* outputTcpClient = nullptr;
-	Stream* outputStream = nullptr;
 	WebsocketConnection* outputSocket = nullptr;
+#endif
+	Stream* outputStream = nullptr;
 	String tempSocket = "";
 };

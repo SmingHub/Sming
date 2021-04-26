@@ -23,8 +23,8 @@
 #pragma once
 
 #include "UdpConnection.h"
-#include "WString.h"
-#include "IpAddress.h"
+#include <WString.h>
+#include <IpAddress.h>
 
 #define DNS_QR_QUERY 0
 #define DNS_QR_RESPONSE 1

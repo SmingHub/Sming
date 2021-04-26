@@ -13,7 +13,7 @@
 #include "SectionTemplate.h"
 #include "TemplateStream.h"
 #include <FlashString/Vector.hpp>
-#include <Network/WebConstants.h>
+#include "../WebConstants.h"
 
 namespace
 {

@@ -12,7 +12,7 @@
 
 #include "Url.h"
 #include "libyuarel/yuarel.h"
-#include "WebHelpers/escape.h"
+#include <Data/WebHelpers/escape.h>
 #include "Print.h"
 
 /**

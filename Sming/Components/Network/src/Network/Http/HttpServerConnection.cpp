@@ -14,7 +14,7 @@
 #include "HttpResourceTree.h"
 #include "Network/HttpServer.h"
 #include "Network/TcpServer.h"
-#include "Network/WebConstants.h"
+#include <Data/WebConstants.h>
 #include "Data/Stream/ChunkedStream.h"
 #include <SystemClock.h>
 

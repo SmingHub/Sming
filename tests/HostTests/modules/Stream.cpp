@@ -3,7 +3,7 @@
 #include <Data/Stream/MemoryDataStream.h>
 #include <Data/Stream/Base64OutputStream.h>
 #include <Data/Stream/ChunkedStream.h>
-#include <Network/WebHelpers/base64.h>
+#include <Data/WebHelpers/base64.h>
 
 DEFINE_FSTR_LOCAL(template1, "Stream containing {var1}, {var2} and {var3}. {} {{}} {{12345")
 DEFINE_FSTR_LOCAL(template1_1, "Stream containing value #1, value #2 and {var3}. {} {{}} {{12345")

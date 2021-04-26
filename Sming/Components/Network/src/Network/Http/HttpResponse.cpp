@@ -11,7 +11,7 @@
  ****/
 
 #include "HttpResponse.h"
-#include "../WebConstants.h"
+#include <Data/WebConstants.h>
 #include "Data/Stream/MemoryDataStream.h"
 #include "Data/Stream/FileStream.h"
 
