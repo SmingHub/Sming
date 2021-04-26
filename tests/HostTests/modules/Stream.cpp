@@ -2,6 +2,7 @@
 #include <FlashString/TemplateStream.hpp>
 #include <Data/Stream/MemoryDataStream.h>
 #include <Data/Stream/Base64OutputStream.h>
+#include <Data/Stream/ChunkedStream.h>
 #include <Network/WebHelpers/base64.h>
 
 DEFINE_FSTR_LOCAL(template1, "Stream containing {var1}, {var2} and {var3}. {} {{}} {{12345")
@@ -84,6 +85,19 @@ public:
 			REQUIRE(output.moveString(s));
 			s = base64_decode(s);
 			REQUIRE(Resource::image_png == s);
+		}
+
+		TEST_CASE("ChunkedStream / StreamTransformer")
+		{
+			DEFINE_FSTR_LOCAL(FS_INPUT, "Some test data");
+			DEFINE_FSTR_LOCAL(FS_OUTPUT, "e\r\nSome test data\r\n0\r\n\r\n");
+			ChunkedStream chunked(new FlashMemoryStream(FS_INPUT));
+			MemoryDataStream output;
+			output.copyFrom(&chunked);
+			String s;
+			REQUIRE(output.moveString(s));
+			m_printHex("OUTPUT", s.c_str(), s.length());
+			REQUIRE(FS_OUTPUT == s);
 		}
 
 		TEST_CASE("MultipartStream / MultiStream")
