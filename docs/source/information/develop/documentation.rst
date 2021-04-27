@@ -240,7 +240,7 @@ Inserting a link to a Component page, using the title of that page by default:
 
 ::
 
-   See :component:`spiffs` for details of the flash filing system.
+   See :library:`Spiffs` for details of the flash filing system.
 
    We use :component-esp8266:`axtls-8266` for SSL support.
 
@@ -276,7 +276,7 @@ To refer to source code use the path relative to the root working directory, for
 
 ::
 
-   See :source:`Sming/Core/Network/Url.h`
+   See :source:`Sming/Core/DateTime.h`
 
 If the documentation is built locally, it will use the local file path, otherwise it will create
 a link to the source file on github.

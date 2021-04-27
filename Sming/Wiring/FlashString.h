@@ -14,4 +14,4 @@
 
 #include "WString.h"
 
-#pragma warning "It is no longer necessary to #include FlashString.h in your projects, WString.h is sufficient"
+#pragma GCC warning "It is no longer necessary to #include FlashString.h in your projects, WString.h is sufficient"

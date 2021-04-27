@@ -41,7 +41,7 @@ getBody methods
 The :cpp:func:`HttpRequest::getBody` and :cpp:func:`HttpResponse::getBody` methods have been revised to use
 move semantics. Previously, the data was copied into a new String which effectively doubled memory usage.
 
-If you have set a non-memory stream type (e.g. :cpp:class:`FileStream`) which does not implement `:cpp:func:`IDataSourceStream::moveString()`
+If you have set a non-memory stream type (e.g. :cpp:class:`FileStream`) which does not implement :cpp:func:`IDataSourceStream::moveString()`
 then an invalid String will be returned. In this situation you should use :cpp:func:`HttpResponse::getBodyStream` instead.
 
 

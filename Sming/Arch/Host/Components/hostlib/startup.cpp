@@ -29,7 +29,6 @@
 #include <BitManipulations.h>
 #include <driver/os_timer.h>
 #include <esp_tasks.h>
-#include <host_lwip.h>
 #include <stdlib.h>
 #include "include/hostlib/init.h"
 #include "include/hostlib/emu.h"
@@ -40,12 +39,16 @@
 #include <Platform/System.h>
 #include <Platform/Timers.h>
 
-static int exitCode = 0;
-static bool done = false;
-static bool lwip_initialised = false;
+#ifndef DISABLE_WIFI
+#include <host_lwip.h>
+extern void host_wifi_lwip_init_complete();
+static bool lwip_initialised;
+#endif
+
+static int exitCode;
+static bool done;
 static OneShotElapseTimer<NanoTime::Milliseconds> lwipServiceTimer;
 
-extern void host_wifi_lwip_init_complete();
 extern void host_init_bootloader();
 
 static void cleanup()
@@ -54,7 +57,9 @@ static void cleanup()
 	host_flashmem_cleanup();
 	CUartServer::shutdown();
 	sockets_finalise();
+#ifndef DISABLE_WIFI
 	host_lwip_shutdown();
+#endif
 	host_debug_i("Goodbye!");
 }
 
@@ -112,10 +117,12 @@ void host_main_loop()
 {
 	host_service_tasks();
 	host_service_timers();
-	if (lwip_initialised && lwipServiceTimer.expired()) {
+#ifndef DISABLE_WIFI
+	if(lwip_initialised && lwipServiceTimer.expired()) {
 		host_lwip_service();
 		lwipServiceTimer.start();
 	}
+#endif
 	system_soft_wdt_feed();
 }
 
@@ -130,7 +137,9 @@ int main(int argc, char* argv[])
 		bool enable_network;
 		UartServerConfig uart;
 		FlashmemConfig flash;
+#ifndef DISABLE_WIFI
 		struct lwip_param lwip;
+#endif
 	} config = {
 		.pause = -1,
 		.exitpause = -1,
@@ -147,11 +156,13 @@ int main(int argc, char* argv[])
 				.createSize = 0,
 
 			},
+#ifndef DISABLE_WIFI
 		.lwip =
 			{
 				.ifname = nullptr,
 				.ipaddr = nullptr,
 			},
+#endif
 	};
 
 	option_tag_t opt;
@@ -170,6 +181,13 @@ int main(int argc, char* argv[])
 			config.uart.portBase = atoi(arg);
 			break;
 
+#ifdef DISABLE_WIFI
+		case opt_ifname:
+		case opt_ipaddr:
+		case opt_gateway:
+		case opt_netmask:
+			break;
+#else
 		case opt_ifname:
 			config.lwip.ifname = arg;
 			break;
@@ -185,6 +203,7 @@ int main(int argc, char* argv[])
 		case opt_netmask:
 			config.lwip.netmask = arg;
 			break;
+#endif
 
 		case opt_pause:
 			config.pause = arg ? atoi(arg) : 0;
@@ -214,7 +233,8 @@ int main(int argc, char* argv[])
 			host_debug_level = atoi(arg);
 			break;
 
-		default:;
+		case opt_none:
+			break;
 		}
 	}
 
@@ -245,7 +265,7 @@ int main(int argc, char* argv[])
 		sockets_initialise();
 		CUartServer::startup(config.uart);
 
-
+#ifndef DISABLE_WIFI
 		if(config.enable_network) {
 			lwip_initialised = host_lwip_init(&config.lwip);
 			if(lwip_initialised) {
@@ -254,6 +274,7 @@ int main(int argc, char* argv[])
 		} else {
 			host_debug_i("Network initialisation skipped as requested");
 		}
+#endif
 
 		host_debug_i("If required, you may start terminal application(s) now");
 		pause(config.pause);
@@ -264,7 +285,9 @@ int main(int argc, char* argv[])
 
 		host_init();
 
+#ifndef DISABLE_WIFI
 		lwipServiceTimer.reset<LWIP_SERVICE_INTERVAL>();
+#endif
 		while(!done) {
 			host_main_loop();
 		}

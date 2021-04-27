@@ -10,7 +10,7 @@
 #pragma once
 
 #include <WString.h>
-#include <Core/Data/LinkedObjectList.h>
+#include <Data/LinkedObjectList.h>
 #include "PartitionTable.h"
 
 #define STORAGE_TYPE_MAP(XX)                                                                                           \

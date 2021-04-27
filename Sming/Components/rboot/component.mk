@@ -11,6 +11,10 @@ COMPONENT_SUBMODULES	:= rboot
 COMPONENT_INCDIRS		:= rboot rboot/appcode include
 COMPONENT_SRCDIRS       := src src/Arch/$(SMING_ARCH)
 
+ifneq ($(DISABLE_WIFI),1)
+COMPONENT_SRCDIRS += src/Network
+endif
+
 DEBUG_VARS				+= RBOOT_DIR
 RBOOT_DIR				:= $(COMPONENT_PATH)
 

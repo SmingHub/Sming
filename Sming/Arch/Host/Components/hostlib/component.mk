@@ -4,7 +4,15 @@ ifeq ($(UNAME),Windows)
 	EXTRA_LIBS	+= wsock32
 endif
 
-COMPONENT_DEPENDS := esp_wifi lwip driver spi_flash
+COMPONENT_DEPENDS := \
+	driver \
+	spi_flash
+
+ifneq ($(DISABLE_WIFI),1)
+COMPONENT_DEPENDS += \
+	esp_wifi \
+	lwip
+endif
 
 COMPONENT_INCDIRS		:= include
 COMPONENT_SRCDIRS		:= .

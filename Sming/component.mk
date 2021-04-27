@@ -3,8 +3,7 @@ COMPONENT_SRCDIRS := \
 	Platform \
 	System \
 	Wiring \
-	Services/HexDump \
-	Services/Yeelight
+	Services/HexDump
 
 COMPONENT_INCDIRS := \
 	Components \
@@ -18,22 +17,7 @@ COMPONENT_DEPENDS := \
 	FlashString \
 	Spiffs \
 	IFS \
-	http-parser \
-	libb64 \
-	ws_parser \
-	mqtt-codec \
-	libyuarel \
-	ssl \
 	terminal
-
-COMPONENT_DOCFILES := \
-	Core/Network/*.rst \
-	Wiring/*.rst \
-	Platform/*.rst \
-	Services/*.rst \
-	Services/CommandProcessing/*.rst \
-	Services/Profiling/*.rst \
-	Core/Data/*.rst
 
 COMPONENT_DOXYGEN_PREDEFINED := \
 	ENABLE_CMD_EXECUTOR=1
@@ -61,6 +45,15 @@ ifeq ($(MQTT_NO_COMPAT),1)
 	GLOBAL_CFLAGS		+= -DMQTT_NO_COMPAT=1
 endif
 
+#
+RELINK_VARS += DISABLE_WIFI
+DISABLE_WIFI ?= 0
+ifeq ($(DISABLE_WIFI),1)
+GLOBAL_CFLAGS += -DDISABLE_WIFI=1
+else
+COMPONENT_DEPENDS += Network
+endif
+
 # WiFi settings may be provide via Environment variables
 CONFIG_VARS				+= WIFI_SSID WIFI_PWD
 ifdef WIFI_SSID
@@ -68,32 +61,11 @@ ifdef WIFI_SSID
 	APP_CFLAGS			+= -DWIFI_PWD=\"$(WIFI_PWD)\"
 endif
 
-# => WPS
-COMPONENT_VARS			+= ENABLE_WPS
-ifeq ($(ENABLE_WPS), 1)
-	GLOBAL_CFLAGS		+= -DENABLE_WPS=1
-endif
-
-# => Smart Config
-COMPONENT_VARS			+= ENABLE_SMART_CONFIG
-ifeq ($(ENABLE_SMART_CONFIG),1)
-	GLOBAL_CFLAGS		+= -DENABLE_SMART_CONFIG=1
-endif
-
 # => LOCALE
 COMPONENT_VARS			+= LOCALE
 ifdef LOCALE
 	GLOBAL_CFLAGS		+= -DLOCALE=$(LOCALE)
 endif
-
-# => HTTP server
-COMPONENT_VARS			+= HTTP_SERVER_EXPOSE_NAME
-HTTP_SERVER_EXPOSE_NAME ?= 1
-GLOBAL_CFLAGS			+= -DHTTP_SERVER_EXPOSE_NAME=$(HTTP_SERVER_EXPOSE_NAME)
-
-COMPONENT_VARS			+= HTTP_SERVER_EXPOSE_VERSION
-HTTP_SERVER_EXPOSE_VERSION ?= 0
-GLOBAL_CFLAGS			+= -DHTTP_SERVER_EXPOSE_VERSION=$(HTTP_SERVER_EXPOSE_VERSION)
 
 # => SPI
 COMPONENT_VARS			+= ENABLE_SPI_DEBUG

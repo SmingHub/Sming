@@ -6,4 +6,3 @@ Core Framework
 
    pgmspace
    data/index
-   network/index

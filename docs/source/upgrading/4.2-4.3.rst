@@ -19,9 +19,9 @@ See also background on :doc:`/information/flash`.
 
 Removed build targets
     spiffs-image-update
-        Use the new `buildpart` target instead
+        Use the new ``buildpart`` target instead
     spiffs-image-clean
-        Use the new `part-clean` target instead
+        Use the new ``part-clean`` target instead
 
 New and updated build targets
     hwconfig
