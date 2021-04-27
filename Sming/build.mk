@@ -10,6 +10,17 @@ override SMING_ARCH	:= Esp8266
 endif
 export SMING_ARCH
 
+# Paths for standard build tools
+DEBUG_VARS += \
+	AS \
+	CC \
+	CXX \
+	AR \
+	LD \
+	OBJCOPY \
+	OBJDUMP \
+	GDB
+
 DEBUG_VARS		+= SMING_RELEASE
 ifeq ($(SMING_RELEASE),1)
 	BUILD_TYPE	:= release

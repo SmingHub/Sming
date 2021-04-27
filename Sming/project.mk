@@ -98,6 +98,8 @@ LDFLAGS = \
 	-Wl,--gc-sections \
 	-Wl,-Map=$(basename $@).map
 
+# Name of the default output target
+DEBUG_VARS			+= TARGET_OUT_0
 
 # Name of the application to use for link output targets
 CACHE_VARS			+= APP_NAME
@@ -529,15 +531,7 @@ export HOST_PARAMETERS
 
 .PHONY: ide-vscode-update
 ide-vscode-update:
-	$(Q) CXX=$(CXX) \
-	SMING_HOME=$(SMING_HOME) \
-	ESP_HOME=$(ESP_HOME) \
-	IDF_PATH=$(IDF_PATH) \
-	IDF_TOOLS_PATH=$(IDF_TOOLS_PATH) \
-	SMING_ARCH=$(SMING_ARCH) \
-	GDB=$(GDB) \
-	COM_SPEED_GDB=$(COM_SPEED_GDB) \
-	WSL_ROOT=$(WSL_ROOT) \
+	$(Q) SMING_HOME=$(SMING_HOME) OUT_BASE=$(OUT_BASE) \
 	$(PYTHON) $(SMING_HOME)/../Tools/vscode/setup.py
 
 ##@Testing
