@@ -286,7 +286,7 @@ Configuration
          Overrides ``standard`` to set 4Mbyte flash size
    
          spiffs
-            Adds a single SPIFFS partition. See :component:`spiffs`.
+            Adds a single SPIFFS partition. See :library:`Spiffs`.
 
    Other configurations may be available, depending on architecture.
    You can see these by running ``make hwconfig-list``.

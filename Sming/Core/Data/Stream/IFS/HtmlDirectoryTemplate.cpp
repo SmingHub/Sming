@@ -11,8 +11,8 @@
  ****/
 
 #include "HtmlDirectoryTemplate.h"
-#include <Network/WebConstants.h>
-#include <Network/WebHelpers/escape.h>
+#include <Data/WebConstants.h>
+#include <Data/WebHelpers/escape.h>
 
 namespace IFS
 {

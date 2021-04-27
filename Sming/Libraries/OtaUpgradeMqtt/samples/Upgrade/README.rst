@@ -7,7 +7,7 @@ Introduction
 ------------
 
 This example demonstrates how you can create an application that updates its firmware Over The Air (OTA) using the MQTT protocol.
-This application uses :component:`OtaUpgradeMqtt` and follows the recommended versioning principles.
+This application uses :library:`OtaUpgradeMqtt` and follows the recommended versioning principles.
 
 Based on :envvar:`ENABLE_OTA_ADVANCED` the firmware data can be either without any encoding or be signed and encrypted.
 
@@ -15,7 +15,7 @@ Tools
 -----
 There are two tools that facilitate the packiging and deployment of a new firmware.
 
-For more information read ``Firmware packaging`` in the documentation of the :component:`OtaUpgradeMqtt` component.
+For more information read ``Firmware packaging`` in the documentation of the :library:`OtaUpgradeMqtt` component.
 
 Security
 --------
@@ -67,7 +67,7 @@ Configuration
    Default: 0 (disabled)
 
    If set to 1 the library will work with OtaUpgradeStream which supports signature and encryption of the firmware data itself.
-   See :component:`OtaUpgrade` for details.
+   See :library:`OtaUpgrade` for details.
 
 .. envvar:: ENABLE_SSL
 

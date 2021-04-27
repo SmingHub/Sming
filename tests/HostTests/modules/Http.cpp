@@ -2,7 +2,7 @@
 
 #include "Network/Http/HttpCommon.h"
 #include "Network/Http/HttpHeaders.h"
-#include "Network/WebConstants.h"
+#include <Data/WebConstants.h>
 #include <Platform/Timers.h>
 
 class HttpTest : public TestGroup

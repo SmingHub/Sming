@@ -28,22 +28,14 @@ COMPONENT_INCDIRS := \
 COMPONENT_DEPENDS := \
 	driver \
 	esp_hal \
-	esp_wifi \
 	gdbstub \
 	heap \
 	hostlib \
 	libc \
-	lwip \
 	spi_flash \
 	vflash \
 	rboot
-	
 
 ifneq ($(ENABLE_HOSTED),)
 	COMPONENT_DEPENDS += Hosted-Lib
 endif
-
-# => Platform WiFi
-COMPONENT_VARS := \
-	ENABLE_WPS \
-	ENABLE_SMART_CONFIG

@@ -1,6 +1,6 @@
 #include <HostTests.h>
 
-#include <Network/WebHelpers/base64.h>
+#include <Data/WebHelpers/base64.h>
 
 class Base64Test : public TestGroup
 {

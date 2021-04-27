@@ -13,7 +13,7 @@ stored in a single :cpp:class:`String` object. (CStringArray is a subclass of St
 
 You can see some examples in
 :source:`Sming/Core/DateTime.cpp` and
-:source:`Sming/Core/Network/WebConstants.cpp`.
+:source:`Sming/Core/Data/WebConstants.cpp`.
 
 Background
 ----------
@@ -143,8 +143,6 @@ Advantages
 Disadvantages
    Slower. Items must be iterated using multiple strlen() calls
    Ordering and insertions / deletions not supported
-
-An example of use can be found in :source:`Sming/Core/Network/Http/HttpHeaders.h`.
 
 
 API Documentation

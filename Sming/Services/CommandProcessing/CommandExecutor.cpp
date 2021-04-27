@@ -13,19 +13,20 @@ CommandExecutor::CommandExecutor()
 	commandHandler.registerSystemCommands();
 }
 
-CommandExecutor::CommandExecutor(TcpClient* cmdClient) : CommandExecutor()
-{
-	commandOutput = new CommandOutput(cmdClient);
-	if(commandHandler.getVerboseMode() != SILENT) {
-		commandOutput->println(_F("Welcome to the Tcp Command executor"));
-	}
-}
-
 CommandExecutor::CommandExecutor(Stream* reqStream) : CommandExecutor()
 {
 	commandOutput = new CommandOutput(reqStream);
 	if(commandHandler.getVerboseMode() != SILENT) {
 		commandOutput->println(_F("Welcome to the Stream Command executor"));
+	}
+}
+
+#ifndef DISABLE_WIFI
+CommandExecutor::CommandExecutor(TcpClient* cmdClient) : CommandExecutor()
+{
+	commandOutput = new CommandOutput(cmdClient);
+	if(commandHandler.getVerboseMode() != SILENT) {
+		commandOutput->println(_F("Welcome to the Tcp Command executor"));
 	}
 }
 
@@ -36,6 +37,7 @@ CommandExecutor::CommandExecutor(WebsocketConnection* reqSocket)
 		reqSocket->sendString(_F("Welcome to the Websocket Command Executor"));
 	}
 }
+#endif
 
 CommandExecutor::~CommandExecutor()
 {

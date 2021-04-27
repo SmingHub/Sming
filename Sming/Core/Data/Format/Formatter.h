@@ -13,7 +13,7 @@
 #pragma once
 
 #include <WString.h>
-#include <Network/WebConstants.h>
+#include <Data/WebConstants.h>
 
 namespace Format
 {

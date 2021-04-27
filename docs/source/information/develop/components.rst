@@ -13,7 +13,7 @@ The aim here is to make an existing library, https://github.com/nomis/ModbusMast
 available for applications to use within the framework.
 
 Various options and settings are only mentioned here, but are linked through to
-:doc:`building` where you can find full details of what they are and how they work.
+:doc:`/_inc/Sming/building` where you can find full details of what they are and how they work.
 
 You will need to be familiar with GIT and the use of submodules.
 
@@ -169,5 +169,5 @@ with a level 1 heading and brief introduction at an absolute minimum.
    You may not be familiar with ``.rst`` files but they are a considerably improvement on markdown
    and well worth investing a little time to learn.
    
-   See :doc:`/contribute/documentation` for further details.
+   See :doc:`/contribute/index` for further details.
 

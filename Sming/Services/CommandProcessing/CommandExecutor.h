@@ -7,19 +7,24 @@
 
 #pragma once
 
-#include <Network/TcpClient.h>
 #include "CommandHandler.h"
 #include "CommandOutput.h"
 #include <Data/Buffer/LineBuffer.h>
+
+#ifndef DISABLE_WIFI
+#include <Network/TcpClient.h>
+#endif
 
 #define MAX_COMMANDSIZE 64
 
 class CommandExecutor
 {
 public:
+#ifndef DISABLE_WIFI
 	CommandExecutor(TcpClient* cmdClient);
-	CommandExecutor(Stream* reqStream);
 	CommandExecutor(WebsocketConnection* reqSocket);
+#endif
+	CommandExecutor(Stream* reqStream);
 	~CommandExecutor();
 
 	int executorReceive(char* recvData, int recvSize);
