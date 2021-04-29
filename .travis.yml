@@ -18,6 +18,9 @@ jobs:
         - clang-format-8
         - linux-libc-dev:i386
         - g++-9-multilib
+        - gcc-9-multilib
+        - lib32stdc++-9-dev
+        - libx32stdc++-9-dev
         - doxygen
         - python3-sphinx
         - python3-pip
