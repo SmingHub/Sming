@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex # exit with nonzero exit code if anything fails
 
-
+uname -a
 cat /etc/apt/sources.list | grep ^[^#]
 echo "======================================="
 sudo apt-get update 
