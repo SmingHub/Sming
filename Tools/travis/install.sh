@@ -7,7 +7,7 @@ echo "======================================="
 sudo apt-get update 
 sudo apt-get -y upgrade
 sudo apt-mark showhold
-sudo apt-get install -y gcc-9-multilib g++-9-multilib
+sudo apt-get install -y libx32gcc-9-dev gcc-9-multilib g++-9-multilib
 
 if [ -f "$TRAVIS_BUILD_DIR/Sming/Arch/$SMING_ARCH/Tools/travis/install.sh" ]; then
 	source "$TRAVIS_BUILD_DIR/Sming/Arch/$SMING_ARCH/Tools/travis/install.sh"
