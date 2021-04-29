@@ -7,6 +7,10 @@ echo "======================================="
 sudo apt-get update 
 sudo apt-get -y upgrade
 sudo apt-mark showhold
+
+dpkg -l | grep ^iU | awk '{print $2}' | xargs sudo dpkg --purge
+
+
 sudo apt-get install gcc --only-upgrade
 sudo apt-get install -y g++-9-multilib
 
