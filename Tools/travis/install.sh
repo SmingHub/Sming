@@ -1,6 +1,9 @@
 #!/bin/bash
 set -ex # exit with nonzero exit code if anything fails
 
+
+cat /etc/apt/sources.list | grep ^[^#]
+echo "======================================="
 sudo apt-get update 
 sudo apt-get -y upgrade
 sudo apt-mark showhold
