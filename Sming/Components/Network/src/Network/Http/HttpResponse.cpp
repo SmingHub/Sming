@@ -81,7 +81,7 @@ bool HttpResponse::sendFile(const String& fileName, bool allowGzipFileCheck)
 		if(stat.compression.type == IFS::Compression::Type::GZip) {
 			headers[HTTP_HEADER_CONTENT_ENCODING] = F("gzip");
 		} else if(stat.compression.type != IFS::Compression::Type::None) {
-			debug_e("Unsupported compression type: %u", stat.compression);
+			debug_e("Unsupported compression type: %s", ::toString(stat.compression.type).c_str());
 		}
 		return sendDataStream(fs, ContentType::fromFullFileName(fileName));
 	}

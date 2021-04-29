@@ -67,11 +67,21 @@ OpenFlags mapFileOpenFlags(OpenFlags flags, spiffs_flags& sflags)
 	map(OpenFlag::Read, SPIFFS_O_RDONLY);
 	map(OpenFlag::Write, SPIFFS_O_WRONLY);
 
+	flags -= OpenFlag::NoFollow;
+
 	if(flags.any()) {
 		debug_w("Unknown OpenFlags: 0x%02X", flags.value());
 	}
 
 	return flags;
+}
+
+void fillStat(Stat& stat, const SpiffsMetaBuffer& smb)
+{
+	stat.acl = smb.meta.acl;
+	stat.attr = smb.meta.attr;
+	stat.mtime = smb.meta.mtime;
+	stat.compression = smb.meta.compression;
 }
 
 } // namespace
@@ -463,7 +473,8 @@ int FileSystem::stat(const char* path, Stat* stat)
 #else
 		smb.init();
 #endif
-		smb.copyTo(*stat);
+		fillStat(*stat, smb);
+		checkStat(*stat);
 	}
 
 	return FS_OK;
@@ -492,7 +503,8 @@ int FileSystem::fstat(FileHandle file, Stat* stat)
 		stat->name.copy(reinterpret_cast<const char*>(ss.name));
 		stat->size = ss.size;
 		stat->id = ss.obj_id;
-		smb->copyTo(*stat);
+		fillStat(*stat, *smb);
+		checkStat(*stat);
 	}
 
 	return FS_OK;
@@ -518,6 +530,18 @@ int FileSystem::fgetxattr(FileHandle file, AttributeTag tag, void* buffer, size_
 		return Error::InvalidHandle;
 	}
 	return smb->getxattr(tag, buffer, size);
+}
+
+int FileSystem::fenumxattr(FileHandle file, AttributeEnumCallback callback, void* buffer, size_t bufsize)
+{
+	CHECK_MOUNTED()
+
+	auto smb = getMetaBuffer(file);
+	if(smb == nullptr) {
+		return Error::InvalidHandle;
+	}
+
+	return smb->enumxattr(callback, buffer, bufsize);
 }
 
 int FileSystem::setxattr(const char* path, AttributeTag tag, const void* data, size_t size)
@@ -692,7 +716,7 @@ int FileSystem::readdir(DirHandle dir, Stat& stat)
 #else
 			smb.init();
 #endif
-			smb.copyTo(stat);
+			fillStat(stat, smb);
 		}
 
 		return FS_OK;
