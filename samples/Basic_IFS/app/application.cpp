@@ -8,6 +8,7 @@
 #include <Data/Stream/IFS/DirectoryTemplate.h>
 #include <Data/Stream/IFS/HtmlDirectoryTemplate.h>
 #include <Data/Stream/IFS/JsonDirectoryTemplate.h>
+#include <Data/Stream/IFS/ArchiveStream.h>
 #include <Storage/ProgMem.h>
 #include <LittleFS.h>
 
@@ -52,11 +53,25 @@ void onFile(HttpRequest& request, HttpResponse& response)
 	++requestCount;
 
 	String file = request.uri.getRelativePath();
+	String fmt = request.uri.Query["format"];
 
 	if(dirExist(file)) {
+		if(fmt.equalsIgnoreCase("archive")) {
+			debug_i("Sending streaming archive");
+			IFS::FileSystem::NameInfo fsinfo;
+			fileGetSystemInfo(fsinfo);
+			ArchiveStream::VolumeInfo volumeInfo;
+			volumeInfo.name = F("Backup of '") + fsinfo.name + "'";
+			if(file.length() != 0) {
+				volumeInfo.name += F("; root = '") + file + "'";
+			}
+			auto archive = new ArchiveStream(volumeInfo, file, ArchiveStream::Flag::IncludeMountPoints);
+			response.sendDataStream(archive, archive->getMimeType());
+			return;
+		}
+
 		auto dir = new Directory;
 		IFS::DirectoryTemplate* tmpl;
-		String fmt = request.uri.Query["format"];
 		if(fmt.equalsIgnoreCase("json")) {
 			auto source = new FlashMemoryStream(listing_json);
 			tmpl = new IFS::JsonDirectoryTemplate(source, dir);
@@ -71,24 +86,32 @@ void onFile(HttpRequest& request, HttpResponse& response)
 		dir->open(file);
 		tmpl->gotoSection(0);
 		response.sendDataStream(tmpl, tmpl->getMimeType());
-	} else {
-		//	response.setCache(86400, true); // It's important to use cache for better performance.
-		auto stream = new FileStream;
-		if(!stream->open(file)) {
-			response.code = HTTP_STATUS_INTERNAL_SERVER_ERROR;
-			delete stream;
-			return;
-		}
-		FileStat stat;
-		stream->stat(stat);
-		if(stat.compression.type == IFS::Compression::Type::GZip) {
-			response.headers[HTTP_HEADER_CONTENT_ENCODING] = F("gzip");
-		} else if(stat.compression.type != IFS::Compression::Type::None) {
-			debug_e("Unsupported compression type: %u", stat.compression.type);
-		}
-		auto mimeType = ContentType::fromFullFileName(file, MIME_TEXT);
-		response.sendDataStream(stream, mimeType);
+		return;
 	}
+
+	if(fmt) {
+		debug_e("'format' option only supported for directories");
+		response.code = HTTP_STATUS_BAD_REQUEST;
+		return;
+	}
+
+	//	response.setCache(86400, true); // It's important to use cache for better performance.
+	auto stream = new FileStream;
+	if(!stream->open(file)) {
+		int err = stream->getLastError();
+		response.code = (err == IFS::Error::NotFound) ? HTTP_STATUS_NOT_FOUND : HTTP_STATUS_INTERNAL_SERVER_ERROR;
+		delete stream;
+		return;
+	}
+	FileStat stat;
+	stream->stat(stat);
+	if(stat.compression.type == IFS::Compression::Type::GZip) {
+		response.headers[HTTP_HEADER_CONTENT_ENCODING] = F("gzip");
+	} else if(stat.compression.type != IFS::Compression::Type::None) {
+		debug_e("Unsupported compression type: %u", stat.compression.type);
+	}
+	auto mimeType = ContentType::fromFullFileName(file, MIME_TEXT);
+	response.sendDataStream(stream, mimeType);
 }
 
 void startWebServer()
