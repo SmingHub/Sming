@@ -3,7 +3,7 @@ set -ex # exit with nonzero exit code if anything fails
 
 sudo dpkg --add-architecture i386
 sudo apt-get update -qq
-sudo apt-get upgrade -y
+sudo apt-get dist-upgrade -y
 sudo apt-get install -y g++-multilib
 sudo apt-get install -y linux-libc-dev:i386
 
