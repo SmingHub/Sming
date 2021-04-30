@@ -146,7 +146,7 @@ int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len);
  *
  */
 #define LOAD_PSTR(name, flash_str)                                                                                     \
-	char name[ALIGNUP4(sizeof(flash_str))] __attribute__((aligned(4)));                                                \
+	char  __attribute__((aligned(4))) name[ALIGNUP4(sizeof(flash_str))] = {};                                                \
 	memcpy_aligned(name, flash_str, sizeof(flash_str));
 
 #define _FLOAD(pstr)                                                                                                   \
