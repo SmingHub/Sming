@@ -8,13 +8,8 @@ echo "======================================="
 # sudo apt-get -y upgrade
 sudo apt-mark showhold
 
-sudo apt-get --fix-missing update
-sudo apt-get install -f -y
-
-
-# dpkg -l | grep ^iU | awk '{print $2}' | xargs sudo dpkg --purge
-
-# sudo apt-get install gcc --only-upgrade
+sudo apt-get install -y lib32stdc++-9-dev libx32stdc++-9-dev
+sudo apt-get install -y gcc-9-multilib
 sudo apt-get install -y g++-9-multilib
 
 if [ -f "$TRAVIS_BUILD_DIR/Sming/Arch/$SMING_ARCH/Tools/travis/install.sh" ]; then
