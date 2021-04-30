@@ -1,0 +1,9 @@
+{
+    "base_config": "basic_ifs",
+    "arch": "Host",
+    "partitions": {
+        "rom0": {
+            "size": "480K"
+        }
+    }
+}
