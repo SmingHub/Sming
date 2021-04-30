@@ -15,6 +15,11 @@ jobs:
     addons:
       apt:
         packages:
+        - libc6-dev-i386
+        - libc6-dev-x32
+        - libc6-i386
+        - libc6-x32
+        - libc6
         - lib32gcc-s1
         - libx32gcc-s1
         - lib32gomp1
