@@ -15,6 +15,14 @@ jobs:
     addons:
       apt:
         packages:
+        - lib32gcc-9-dev
+        - lib32stdc++6
+        - libx32gcc-9-dev
+        - libx32stdc++6
+        - lib32stdc++-9-dev
+        - libx32stdc++-9-dev
+        - gcc-9-multilib
+        - g++-9-multilib
         - clang-format-8
         - doxygen
         - python3-sphinx
