@@ -4,6 +4,9 @@ set -ex # exit with nonzero exit code if anything fails
 # sudo apt-get remove -y libc6 libc6-dev --allow-remove-essential
 # sudo apt-get autoremove
 
+
+apt show g++-multilib g++-9-multilib -a
+
 sudo apt-get install -y g++-9-multilib=9.3.0-17ubuntu1~20.04
 
 
