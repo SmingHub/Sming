@@ -20,6 +20,7 @@ jobs:
         - libc6-i386
         - libc6-x32
         - libc6
+        - libc6-dev
         - lib32gcc-s1
         - libx32gcc-s1
         - lib32gomp1
