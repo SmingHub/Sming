@@ -7,7 +7,7 @@ echo "======================================="
 # sudo apt-get update 
 # sudo apt-get -y upgrade
 sudo apt-mark showhold
-
+apt-get remove –dry-run g++-9-multilib
 
 sudo apt-get remove -y gcc-multilib
 sudo apt-get autoremove
