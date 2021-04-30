@@ -15,10 +15,10 @@ jobs:
     addons:
       apt:
         packages:
-        - libc6-dev-i386
-        - libc6-dev-x32
-        - libc6-i386
-        - libc6-x32
+        - libc6-dev-i386=2.31-0ubuntu9.2
+        - libc6-dev-x32=2.31-0ubuntu9.2
+        - libc6-i386=2.31-0ubuntu9.2
+        - libc6-x32=2.31-0ubuntu9.2
         - libc6
         - libc6-dev
         - lib32gcc-s1
