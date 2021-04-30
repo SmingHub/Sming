@@ -8,7 +8,7 @@ echo "======================================="
 # sudo apt-get -y upgrade
 sudo apt-mark showhold
 
-sudo apt-get --fix-missing
+sudo apt-get --fix-missing update
 sudo apt-get install -f -y
 
 
