@@ -15,6 +15,39 @@ jobs:
     addons:
       apt:
         packages:
+        - lib32gcc-s1
+        - libx32gcc-s1
+        - lib32gomp1
+        - libx32gomp1
+        - lib32itm1
+        - libx32itm1
+        - lib32atomic1
+        - libx32atomic1
+        - lib32asan5
+        - libx32asan5
+        - lib32ubsan1
+        - libx32ubsan1
+        - lib32quadmath0
+        - libx32quadmath0
+        - libc6-i386
+        - libx32gcc-9-dev
+        - lib32gcc-s1
+        - libx32gcc-s1
+        - lib32gomp1
+        - libx32gomp1
+        - lib32itm1
+        - libx32itm1
+        - lib32atomic1
+        - libx32atomic1
+        - lib32asan5
+        - libx32asan5
+        - lib32ubsan1
+        - libx32ubsan1
+        - lib32quadmath0
+        - libx32quadmath0
+        - libx32stdc++6
+        - libx32gcc-s1
+        - libc6-x32
         - lib32gcc-9-dev
         - lib32stdc++6
         - libx32gcc-9-dev
