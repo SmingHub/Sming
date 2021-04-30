@@ -104,6 +104,16 @@ public:
 		readPos = 0;
 	}
 
+	size_t getSize() const
+	{
+		return size;
+	}
+
+	size_t getCapacity() const
+	{
+		return capacity;
+	}
+
 private:
 	char* buffer = nullptr;			///< Stream content stored here
 	size_t maxCapacity{UINT16_MAX}; ///< Limit size of stream
