@@ -15,15 +15,7 @@ jobs:
     addons:
       apt:
         packages:
-        - clang-format-8
-        - doxygen
-        - python3-sphinx
-        - python3-pip
-        - python3-setuptools
-        - python3-cairocffi
-        - graphviz-dev
-        - xmlstarlet
-        - jq
+        - g++-9-multilib
     env:
     - SMING_ARCH=Host
   - stage: build
