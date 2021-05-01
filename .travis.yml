@@ -15,7 +15,7 @@ jobs:
     addons:
       apt:
         packages:
-        - g++-9-multilib
+        - apt-rdepends
     env:
     - SMING_ARCH=Host
   - stage: build
