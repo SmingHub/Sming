@@ -1,5 +1,5 @@
 language: python
-python: 3.8.6
+python: 3.9
 os: linux
 dist: focal
 env:
@@ -16,8 +16,6 @@ jobs:
       apt:
         packages:
         - clang-format-8
-        - linux-libc-dev:i386
-        - g++-9-multilib
         - doxygen
         - python3-sphinx
         - python3-pip
@@ -30,11 +28,6 @@ jobs:
     - SMING_ARCH=Host
   - stage: build
     name: C++17
-    addons:
-      apt:
-        packages:
-        - linux-libc-dev:i386
-        - g++-9-multilib      
     env:
     - SMING_ARCH=Esp8266
     - SDK_VERSION=3.0.1

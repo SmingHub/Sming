@@ -1,11 +1,9 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # This file should be sourced after pulling in Sming repo, i.e:
 #
 #    . /opt/sming/Tools/install.sh
 #
-
-set -e
 
 [ "$0" = "$BASH_SOURCE" ]; sourced=$?
 
@@ -103,7 +101,7 @@ else
 
     case $DIST in
         debian)
-            sudo apt-get -y update
+            sudo apt-get -y update || echo "Update failed... Try to install anyway..."
             $PKG_INSTALL \
                 clang-format-8 \
                 cmake \
@@ -142,6 +140,8 @@ else
     sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 100
 
 fi
+
+set -e
 
 sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-8 100
 
