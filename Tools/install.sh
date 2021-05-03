@@ -1,11 +1,9 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # This file should be sourced after pulling in Sming repo, i.e:
 #
 #    . /opt/sming/Tools/install.sh
 #
-
-set -e
 
 [ "$0" = "$BASH_SOURCE" ]; sourced=$?
 
@@ -53,6 +51,8 @@ fi
 # Sming repository for binary archives
 SMINGTOOLS=https://github.com/SmingHub/SmingTools/releases/download/1.0
 
+set -x
+
 # Set default environment variables and WGET options
 if [ -z "$APPVEYOR" ]; then
     source $(dirname $BASH_SOURCE)/export.sh
@@ -89,6 +89,7 @@ fi
 
 # Common install
 
+
 if [ -n "$APPVEYOR" ] || [ -n "$GITHUB_ACTION" ]; then
 
     sudo apt-get -y update
@@ -103,7 +104,8 @@ else
 
     case $DIST in
         debian)
-            sudo apt-get -y update
+            sudo apt-get -y update || echo "Update failed... Try to install anyway..."
+            set -e
             $PKG_INSTALL \
                 clang-format-8 \
                 cmake \
@@ -147,6 +149,8 @@ sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/c
 
 python3 -m pip install --upgrade pip -r $SMING_HOME/../Tools/requirements.txt
 
+set -e
+set +x
 
 install() {
     source $SMING_HOME/Arch/$1/Tools/install.sh
