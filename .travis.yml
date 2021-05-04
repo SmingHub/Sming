@@ -16,8 +16,11 @@ jobs:
       apt:
         packages:
         - clang-format-6.0
+        - libc6-dev=2.31-0ubuntu9.2 
+        - libc6=2.31-0ubuntu9.2
         - gcc-multilib
         - g++-multilib
+        - linux-libc-dev:i386
         - doxygen
         - python3-sphinx
         - python3-pip
