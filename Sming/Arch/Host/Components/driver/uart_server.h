@@ -26,8 +26,10 @@
 #define UART_SOCKET_PORT_BASE 10000 ///< Port for UART0
 
 struct UartServerConfig {
-	unsigned enableMask; ///< Bit mask for required servers
-	unsigned portBase;   ///< Base port address (optional)
+	unsigned enableMask;				 ///< Bit mask for required servers
+	unsigned portBase;					 ///< Base port address (optional)
+	const char* deviceNames[UART_COUNT]; ///< Map uart to host port
+	unsigned baud;						 ///< Speed for physical serial device
 };
 
 /*
@@ -66,8 +68,8 @@ protected:
 
 private:
 	static unsigned portBase;
-	CSocket* socket = nullptr; ///< Connected client
-	CSemaphore txsem;		   ///< Signals when there's data to be sent out
-	unsigned uart_nr;		   ///< Which port we represent
-	smg_uart_t* uart = nullptr;	///< On set if port is open by application
+	CSocket* socket = nullptr;  ///< Connected client
+	CSemaphore txsem;			///< Signals when there's data to be sent out
+	unsigned uart_nr;			///< Which port we represent
+	smg_uart_t* uart = nullptr; ///< On set if port is open by application
 };
