@@ -115,9 +115,11 @@ public:
 				return part;
 			});
 
+#pragma GCC diagnostic warning "-Wuninitialized"
 			// For testing, hack the boundary value so we can compare it against a reference output
 			auto boundary = const_cast<char*>(multi.getBoundary());
 			memcpy(boundary, _F("oALsXuO7vSbrvve"), 16);
+#pragma GCC diagnostic error "-Wuninitialized"
 
 			MemoryDataStream mem;
 			size_t copySize = mem.copyFrom(&multi);
