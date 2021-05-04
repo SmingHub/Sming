@@ -65,6 +65,10 @@
 	path = Sming/Components/rboot/rboot
 	url = https://github.com/mikee47/rboot
 	ignore = dirty
+[submodule "seriallib"]
+	path = Sming/Components/SerialLib/seriallib
+	url = https://github.com/imabot2/serialib.git
+	ignore = dirty
 [submodule "ws_parser"]
 	path = Sming/Components/ws_parser
 	url = https://github.com/charliesome/ws_parser.git
@@ -254,10 +258,6 @@
 [submodule "Libraries.RingTone"]
 	path = Sming/Libraries/RingTone
 	url = https://github.com/mikee47/RingTone
-	ignore = dirty
-[submodule "Libraries.seriallib"]
-	path = Sming/Libraries/seriallib/seriallib
-	url = https://github.com/imabot2/serialib.git
 	ignore = dirty
 [submodule "Libraries.SignalGenerator"]
 	path = Sming/Libraries/SignalGenerator

@@ -1,0 +1,22 @@
+diff --git a/lib/serialib.cpp b/lib/serialib.cpp
+index 8dbe52f..dc25811 100644
+--- a/lib/serialib.cpp
++++ b/lib/serialib.cpp
+@@ -135,7 +135,7 @@ char serialib::openDevice(const char *Device,const unsigned int Bauds)
+     case 115200 :   dcbSerialParams.BaudRate=CBR_115200; break;
+     case 128000 :   dcbSerialParams.BaudRate=CBR_128000; break;
+     case 256000 :   dcbSerialParams.BaudRate=CBR_256000; break;
+-    default : return -4;
++    default :       dcbSerialParams.BaudRate=Bauds;
+     }
+     // 8 bit data
+     dcbSerialParams.ByteSize=8;
+@@ -609,7 +609,7 @@ int serialib::available()
+     // Device errors
+     DWORD commErrors;
+     // Device status
+-    COMSTAT commStatus;
++    COMSTAT commStatus{};
+     // Read status
+     ClearCommError(hSerial, &commErrors, &commStatus);
+     // Return the number of pending bytes
