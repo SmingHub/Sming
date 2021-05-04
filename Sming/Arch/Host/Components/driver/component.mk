@@ -1,6 +1,8 @@
 COMPONENT_INCDIRS := include
 
-COMPONENT_DEPENDS := arch_driver
+COMPONENT_DEPENDS := \
+	arch_driver \
+	SerialLib
 
 COMPONENT_VARS	+= USE_US_TIMER
 USE_US_TIMER	?= 1

@@ -22,6 +22,7 @@
 #include <driver/uart.h>
 #include <hostlib/sockets.h>
 #include <hostlib/threads.h>
+#include <memory>
 
 #define UART_SOCKET_PORT_BASE 10000 ///< Port for UART0
 
@@ -29,8 +30,10 @@ struct UartServerConfig {
 	unsigned enableMask;				 ///< Bit mask for required servers
 	unsigned portBase;					 ///< Base port address (optional)
 	const char* deviceNames[UART_COUNT]; ///< Map uart to host port
-	unsigned baud;						 ///< Speed for physical serial device
+	unsigned baud[UART_COUNT];			 ///< Speed for physical serial device
 };
+
+class SerialDevice;
 
 /*
  * Each server allocates a thread to listen for incoming connections. Only one client
@@ -46,6 +49,8 @@ struct UartServerConfig {
 class CUartServer : public CThread, public CServerSocket
 {
 public:
+	static constexpr unsigned DEFAULT_BAUD{115200};
+
 	/**
 	 * @brief Start requested servers
 	 * @param config
@@ -54,22 +59,27 @@ public:
 
 	static void shutdown();
 
-	CUartServer(unsigned uart_nr) : CThread("uart", 1), uart_nr(uart_nr)
-	{
-	}
+	CUartServer(unsigned uart_nr, const char* deviceName, unsigned baud);
 
 	void terminate();
 
 protected:
 	void onNotify(smg_uart_t* uart, smg_uart_notify_code_t code);
+	int available();
+	int readBytes(void* buffer, size_t size);
+	int writeBytes(const void* data, size_t size);
 	int serviceRead();
 	int serviceWrite();
 	void* thread_routine() override;
+	void uartLoop();
+	void deviceLoop();
 
-private:
 	static unsigned portBase;
-	CSocket* socket = nullptr;  ///< Connected client
-	CSemaphore txsem;			///< Signals when there's data to be sent out
-	unsigned uart_nr;			///< Which port we represent
-	smg_uart_t* uart = nullptr; ///< On set if port is open by application
+	CSocket* socket = nullptr;			  ///< Connected client
+	CSemaphore txsem;					  ///< Signals when there's data to be sent out
+	unsigned uart_nr;					  ///< Which port we represent
+	smg_uart_t* uart = nullptr;			  ///< On set if port is open by application
+	std::unique_ptr<SerialDevice> device; ///< Physical device
+	const char* deviceName{nullptr};	  ///< Physical device name
+	unsigned baud_rate{0};				  ///< Command-line override for baud rate
 };
