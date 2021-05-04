@@ -24,7 +24,7 @@ void init()
 	WifiEvents.onStationDisconnect(STADisconnect);
 	WifiEvents.onStationGotIP(STAGotIP);
 
-	startWebServer();
+	System.onReady(startWebServer);
 
 	counterTimer.initializeMs(1000, counterLoop).start();
 }
