@@ -65,10 +65,6 @@
 	path = Sming/Components/rboot/rboot
 	url = https://github.com/mikee47/rboot
 	ignore = dirty
-[submodule "seriallib"]
-	path = Sming/Components/SerialLib/seriallib
-	url = https://github.com/imabot2/serialib.git
-	ignore = dirty
 [submodule "ws_parser"]
 	path = Sming/Components/ws_parser
 	url = https://github.com/charliesome/ws_parser.git
@@ -123,6 +119,10 @@
 [submodule "Host.lwip"]
 	path = Sming/Arch/Host/Components/lwip/lwip
 	url = https://github.com/lwip-tcpip/lwip
+	ignore = dirty
+[submodule "seriallib"]
+	path = Sming/Arch/Host/Components/SerialLib/seriallib
+	url = https://github.com/imabot2/serialib.git
 	ignore = dirty
 
 
