@@ -5,6 +5,30 @@
 #include <Data/Stream/GdbFileStream.h>
 #include <Data/Buffer/LineBuffer.h>
 #include <Platform/OsMessageInterceptor.h>
+#include <hostlib/hostmsg.h>
+
+void Serial_print(char c)
+{
+	host_nputs(&c, 1);
+}
+
+void Serial_print(unsigned value)
+{
+	host_printf("%u", value);
+}
+
+void Serial_print(const String& s)
+{
+	host_nputs(s.c_str(), s.length());
+}
+
+void Serial_println(const String& s = nullptr)
+{
+	host_nputs(s.c_str(), s.length());
+	host_puts("\r\n");
+}
+
+#define Serial_printf host_printf
 
 #define LED_PIN 2 // Note: LED is attached to UART1 TX output
 
@@ -83,14 +107,14 @@ void showPrompt()
 {
 	switch(gdb_present()) {
 	case eGDB_Attached:
-		Serial.print(_F("\r(Attached) "));
+		Serial_print(_F("\r(Attached) "));
 		break;
 	case eGDB_Detached:
-		Serial.print(_F("\r(Detached) "));
+		Serial_print(_F("\r(Detached) "));
 		break;
 	case eGDB_NotPresent:
 	default:
-		Serial.print(_F("\r(Non-GDB) "));
+		Serial_print(_F("\r(Non-GDB) "));
 	}
 }
 
@@ -103,18 +127,18 @@ void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCh
 	// Error detection
 	unsigned status = Serial.getStatus();
 	if(status != 0) {
-		Serial.println();
+		Serial_println();
 		if(bitRead(status, eSERS_Overflow)) {
-			Serial.println(_F("** RECEIVE OVERFLOW **"));
+			Serial_println(_F("** RECEIVE OVERFLOW **"));
 		}
 		if(bitRead(status, eSERS_BreakDetected)) {
-			Serial.println(_F("** BREAK DETECTED **"));
+			Serial_println(_F("** BREAK DETECTED **"));
 		}
 		if(bitRead(status, eSERS_FramingError)) {
-			Serial.println(_F("** FRAMING ERROR **"));
+			Serial_println(_F("** FRAMING ERROR **"));
 		}
 		if(bitRead(status, eSERS_ParityError)) {
-			Serial.println(_F("** PARITY ERROR **"));
+			Serial_println(_F("** PARITY ERROR **"));
 		}
 		// Discard what is likely to be garbage
 		Serial.clear(SERIAL_RX_ONLY);
@@ -130,13 +154,13 @@ void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCh
 		case 0x7f: // xterm ctrl-?
 			if(commandLength > 0) {
 				--commandLength;
-				Serial.print(_F("\b \b"));
+				Serial_print(_F("\b \b"));
 			}
 			break;
 		case '\r':
 		case '\n':
 			if(commandLength > 0) {
-				Serial.println();
+				Serial_println();
 				String cmd(commandBuffer, commandLength);
 				commandLength = 0;
 				Serial.clear(SERIAL_RX_ONLY);
@@ -147,7 +171,7 @@ void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCh
 		default:
 			if(c >= 0x20 && c <= 0x7f && commandLength < MAX_COMMAND_LENGTH) {
 				commandBuffer[commandLength++] = c;
-				Serial.print(char(c));
+				Serial_print(char(c));
 			}
 		}
 	}
@@ -159,7 +183,7 @@ void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCh
 void readFile(const char* filename, bool display)
 {
 	int file = gdbfs.open(filename, File::ReadOnly);
-	Serial.printf(_F("gdbfs.open(\"%s\") = %d\r\n"), filename, file);
+	Serial_printf(_F("gdbfs.open(\"%s\") = %d\r\n"), filename, file);
 	if(file >= 0) {
 		OneShotFastMs timer;
 		char buf[256];
@@ -175,7 +199,7 @@ void readFile(const char* filename, bool display)
 			}
 		} while(len == sizeof(buf));
 		auto elapsed = timer.elapsedTime();
-		Serial.printf(_F("\r\ngdbfs.read() = %d, total = %u, elapsed = %s, av. %u bytes/sec\r\n"), len, total,
+		Serial_printf(_F("\r\ngdbfs.read() = %d, total = %u, elapsed = %s, av. %u bytes/sec\r\n"), len, total,
 					  elapsed.toString().c_str(), total == 0 ? 0 : 1000U * total / elapsed);
 
 		gdbfs.close(file);
@@ -202,7 +226,7 @@ void asyncReadCallback(const GdbSyscallInfo& info)
 	case eGDBSYS_open: {
 		int fd = info.result;
 		String filename(FPSTR(info.open.filename));
-		Serial.printf(_F("gdb_syscall_open(\"%s\") = %d\r\n"), filename.c_str(), fd);
+		Serial_printf(_F("gdb_syscall_open(\"%s\") = %d\r\n"), filename.c_str(), fd);
 		if(fd > 0) {
 			transfer.start = millis();
 			transfer.total = 0;
@@ -227,7 +251,7 @@ void asyncReadCallback(const GdbSyscallInfo& info)
 	case eGDBSYS_close: {
 		long elapsed = millis() - transfer.start;
 		long bps = (transfer.total == 0) ? 0 : 1000U * transfer.total / elapsed;
-		Serial.printf(_F("readFileAsync: total = %u, elapsed = %u ms, av. %u bytes/sec\r\n"), transfer.total, elapsed,
+		Serial_printf(_F("readFileAsync: total = %u, elapsed = %u ms, av. %u bytes/sec\r\n"), transfer.total, elapsed,
 					  bps);
 		readConsole();
 	}
@@ -250,16 +274,16 @@ void fileStat(const char* filename)
 {
 	gdb_stat_t stat;
 	int res = gdb_syscall_stat(filename, &stat);
-	Serial.printf(_F("gdb_syscall_stat(\"%s\") returned %d\r\n"), filename, res);
+	Serial_printf(_F("gdb_syscall_stat(\"%s\") returned %d\r\n"), filename, res);
 	if(res != 0) {
 		return;
 	}
 
-#define PRT(x) Serial.printf(_F("  " #x " = %u\r\n"), stat.x)
-#define PRT_HEX(x) Serial.printf(_F("  " #x " = 0x%08x\r\n"), stat.x)
+#define PRT(x) Serial_printf(_F("  " #x " = %u\r\n"), stat.x)
+#define PRT_HEX(x) Serial_printf(_F("  " #x " = 0x%08x\r\n"), stat.x)
 #define PRT_TIME(x)                                                                                                    \
-	Serial.print(_F("  " #x " = "));                                                                                   \
-	Serial.println(DateTime(stat.x).toFullDateTimeString());
+	Serial_print(_F("  " #x " = "));                                                                                   \
+	Serial_println(DateTime(stat.x).toFullDateTimeString());
 
 	PRT(st_dev);
 	PRT(st_ino);
@@ -334,7 +358,7 @@ COMMAND_HANDLER(readfile1)
 COMMAND_HANDLER(readfile2)
 {
 	// Read a larger file asynchronously and analyse transfer speed
-	Serial.println(_F("Please wait..."));
+	Serial_println(_F("Please wait..."));
 	readFileAsync(PSTR("README.md"));
 	return false; // When read has completed, readConsole() will be called again
 }
@@ -350,10 +374,10 @@ COMMAND_HANDLER(time)
 	gdb_timeval_t tv;
 	int res = gdb_syscall_gettimeofday(&tv, nullptr);
 	if(res < 0) {
-		Serial.printf(_F("gdb_syscall_gettimeofday() returned %d\r\n"), res);
+		Serial_printf(_F("gdb_syscall_gettimeofday() returned %d\r\n"), res);
 	} else {
-		Serial.printf(_F("tv_sec = %u, tv_usec = %u, "), tv.tv_sec, uint32_t(tv.tv_usec));
-		Serial.println(DateTime(tv.tv_sec).toFullDateTimeString() + _F(" UTC"));
+		Serial_printf(_F("tv_sec = %u, tv_usec = %u, "), tv.tv_sec, uint32_t(tv.tv_usec));
+		Serial_println(DateTime(tv.tv_sec).toFullDateTimeString() + _F(" UTC"));
 	}
 	return true;
 }
@@ -361,9 +385,9 @@ COMMAND_HANDLER(time)
 COMMAND_HANDLER(log)
 {
 	if(logFile.isValid()) {
-		Serial.printf(_F("Log file is open, size = %u bytes\r\n"), logFile.getPos());
+		Serial_printf(_F("Log file is open, size = %u bytes\r\n"), logFile.getPos());
 	} else {
-		Serial.println(_F("Log file not available"));
+		Serial_println(_F("Log file not available"));
 	}
 	return true;
 }
@@ -371,20 +395,20 @@ COMMAND_HANDLER(log)
 COMMAND_HANDLER(ls)
 {
 	int res = gdb_syscall_system(PSTR("ls -la"));
-	Serial.printf(_F("gdb_syscall_system() returned %d\r\n"), res);
+	Serial_printf(_F("gdb_syscall_system() returned %d\r\n"), res);
 	return true;
 }
 
 COMMAND_HANDLER(break)
 {
-	Serial.println(_F("Calling gdb_do_break()"));
+	Serial_println(_F("Calling gdb_do_break()"));
 	gdb_do_break();
 	return true;
 }
 
 COMMAND_HANDLER(queueBreak)
 {
-	Serial.println(_F("Queuing a call to gdb_do_break()\r\n"
+	Serial_println(_F("Queuing a call to gdb_do_break()\r\n"
 					  "This differs from `break` in that a console read will be in progress when the break is called"));
 	System.queueCallback(handleCommand_break);
 	return true;
@@ -392,7 +416,7 @@ COMMAND_HANDLER(queueBreak)
 
 COMMAND_HANDLER(consoleOff)
 {
-	Serial.println(_F("To re-enable console reading, enter `call readConsole()` from GDB prompt"));
+	Serial_println(_F("To re-enable console reading, enter `call readConsole()` from GDB prompt"));
 	gdb_do_break();
 	consoleOffRequested = true;
 	return false;
@@ -400,7 +424,7 @@ COMMAND_HANDLER(consoleOff)
 
 COMMAND_HANDLER(hang)
 {
-	Serial.println(_F("Entering infinite loop..."));
+	Serial_println(_F("Entering infinite loop..."));
 	Serial.flush();
 	while(true) {
 		//
@@ -410,23 +434,23 @@ COMMAND_HANDLER(hang)
 
 COMMAND_HANDLER(read0)
 {
-	Serial.println(_F("Crashing app by reading from address 0\r\n"
+	Serial_println(_F("Crashing app by reading from address 0\r\n"
 					  "At GDB prompt, enter `set $pc = $pc + 3` to skip offending instruction,\r\n"
 					  "then enter `c` to continue"));
 	Serial.flush();
 	uint8_t value = *(uint8_t*)0;
-	Serial.printf("Value at address 0 = 0x%02x\r\n", value);
+	Serial_printf("Value at address 0 = 0x%02x\r\n", value);
 	return true;
 }
 
 COMMAND_HANDLER(write0)
 {
-	Serial.println(_F("Crashing app by writing to address 0\r\n"
+	Serial_println(_F("Crashing app by writing to address 0\r\n"
 					  "At GDB prompt, enter `set $pc = $pc + 3` to skip offending instruction,\r\n"
 					  "then enter `c` to continue"));
 	Serial.flush();
 	*(uint8_t*)0 = 0;
-	Serial.println("...still running!");
+	Serial_println("...still running!");
 	return true;
 }
 
@@ -439,10 +463,10 @@ static bool __attribute__((noinline)) parseOsMessage(OsMessage& msg)
 {
 	m_printf(_F("[OS] %s\r\n"), msg.getBuffer());
 	if(msg.startsWith(_F("E:M "))) {
-		Serial.println(_F("** OS Memory Error **"));
+		Serial_println(_F("** OS Memory Error **"));
 		return true;
 	} else if(msg.contains(_F(" assert "))) {
-		Serial.println(_F("** OS Assert **"));
+		Serial_println(_F("** OS Assert **"));
 		return true;
 	} else {
 		return false;
@@ -470,7 +494,7 @@ static void onOsMessage(OsMessage& msg)
 
 COMMAND_HANDLER(malloc0)
 {
-	Serial.println(
+	Serial_println(
 		_F("Attempting to allocate a zero-length array results in an OS debug message.\r\n"
 		   "The message starts with 'E:M ...' and can often indicate a more serious memory allocation issue."));
 
@@ -482,7 +506,7 @@ COMMAND_HANDLER(malloc0)
 
 COMMAND_HANDLER(freetwice)
 {
-	Serial.println(_F("Attempting to free the same memory twice is a common bug.\r\n"
+	Serial_println(_F("Attempting to free the same memory twice is a common bug.\r\n"
 					  "On the test system we see an assertion failure message from the OS."));
 
 	auto mem = static_cast<char*>(os_malloc(123));
@@ -494,7 +518,7 @@ COMMAND_HANDLER(freetwice)
 
 COMMAND_HANDLER(restart)
 {
-	Serial.println(_F("Restarting...."));
+	Serial_println(_F("Restarting...."));
 	System.restart();
 	return false;
 }
@@ -502,13 +526,13 @@ COMMAND_HANDLER(restart)
 COMMAND_HANDLER(disconnect)
 {
 	// End console test
-	Serial.print(_F("Calling gdb_detach() - "));
+	Serial_print(_F("Calling gdb_detach() - "));
 	if(gdb_present() == eGDB_Attached) {
-		Serial.println(_F("resuming normal program execution."));
+		Serial_println(_F("resuming normal program execution."));
 	} else if(gdb_present() == eGDB_Detached) {
-		Serial.println(_F("not attached, so does nothing"));
+		Serial_println(_F("not attached, so does nothing"));
 	} else {
-		Serial.println(_F("Application isn't compiled using ENABLE_GDB so this does nothing."));
+		Serial_println(_F("Application isn't compiled using ENABLE_GDB so this does nothing."));
 	}
 	Serial.flush();
 	gdb_detach();
@@ -517,18 +541,18 @@ COMMAND_HANDLER(disconnect)
 
 COMMAND_HANDLER(help)
 {
-	Serial.print(_F("LiveDebug interactive debugger sample. Available commands:\r\n"));
+	Serial_print(_F("LiveDebug interactive debugger sample. Available commands:\r\n"));
 
 	auto print = [](const char* tag, const char* desc) {
 		const unsigned indent = 10;
-		Serial.print("  ");
+		Serial_print("  ");
 		String s(tag);
 		s.reserve(indent);
 		while(s.length() < indent) {
 			s += ' ';
 		}
-		Serial.print(s);
-		Serial.print(" : ");
+		Serial_print(s);
+		Serial_print(" : ");
 
 		// Print multi-line descriptions in sections to maintain correct line indentation
 		s.setLength(2 + indent + 3);
@@ -537,13 +561,13 @@ COMMAND_HANDLER(help)
 		for(;;) {
 			auto end = strchr(desc, '\n');
 			if(end == nullptr) {
-				Serial.println(desc);
+				Serial_println(desc);
 				break;
 			} else {
 				Serial.write(desc, end - desc);
-				Serial.println();
+				Serial_println();
 				desc = end + 1;
-				Serial.print(s);
+				Serial_print(s);
 			}
 		}
 	};
@@ -573,7 +597,7 @@ bool handleCommand(const String& cmd)
 	COMMAND_MAP(XX)
 #undef XX
 
-	Serial.printf(_F("Unknown command '%s', try 'help'\r\n"), cmd.c_str());
+	Serial_printf(_F("Unknown command '%s', try 'help'\r\n"), cmd.c_str());
 	return true;
 }
 
@@ -630,8 +654,8 @@ void readConsole()
 			static char buffer[MAX_COMMAND_LENGTH];
 			int res = gdb_console_read(buffer, MAX_COMMAND_LENGTH, onConsoleReadCompleted);
 			if(res < 0) {
-				Serial.printf(_F("gdb_console_read() failed, %d\r\n"), res);
-				Serial.println(_F("Is GDBSTUB_ENABLE_SYSCALL enabled ?"));
+				Serial_printf(_F("gdb_console_read() failed, %d\r\n"), res);
+				Serial_println(_F("Is GDBSTUB_ENABLE_SYSCALL enabled ?"));
 				showPrompt();
 			}
 
@@ -674,12 +698,12 @@ extern "C" void gdb_on_attach(bool attached)
 
 static void printTimerDetails()
 {
-	Serial.print(procTimer);
-	Serial.print(", maxTicks = ");
-	Serial.print(procTimer.maxTicks());
-	Serial.print(", maxTime = ");
-	Serial.print(procTimer.micros().ticksToTime(procTimer.maxTicks()).value());
-	Serial.println();
+	Serial_print(procTimer);
+	Serial_print(", maxTicks = ");
+	Serial_print(procTimer.maxTicks());
+	Serial_print(", maxTime = ");
+	Serial_print(procTimer.micros().ticksToTime(procTimer.maxTicks()).value());
+	Serial_println();
 }
 
 void GDB_IRAM_ATTR init()
@@ -688,7 +712,7 @@ void GDB_IRAM_ATTR init()
 	Serial.onDataReceived(onDataReceived);
 	Serial.systemDebugOutput(true);
 
-	Serial.println(_F("LiveDebug sample\r\n"
+	Serial_println(_F("LiveDebug sample\r\n"
 					  "Explore some capabilities of the GDB debugger.\r\n"));
 
 	// Install a debug output hook to monitor OS debug messages
