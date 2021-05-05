@@ -97,3 +97,7 @@ The default baud rate is whatever the application has requested. This can be ove
    make run HOST_UART_OPTIONS="--uart=0 --device=/dev/ttyUSB0 --baud=921600"
 
 For Windows, substitute the appropriate device name, e.g. ``COM4`` instead of ``/dev/ttyUSB0``.
+
+.. note::
+
+   If necessary, add ``ENABLE_HOST_UARTID=`` to prevent telnet windows from being created.
