@@ -58,6 +58,7 @@ int RbootHttpUpdater::itemComplete(HttpConnection& client, bool success)
 	debug_d("Finished: URL: %s, Offset: 0x%X, Length: %u", it.url.c_str(), it.stream->getStartAddress(),
 			it.stream->available());
 
+	it.size = it.stream->available();
 	it.stream = nullptr; // the actual deletion will happen outside of this class
 	currentItem++;
 
