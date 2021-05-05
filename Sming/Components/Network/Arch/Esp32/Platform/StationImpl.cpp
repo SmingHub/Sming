@@ -193,23 +193,32 @@ bool StationImpl::setMacAddress(const MacAddress& addr) const
 
 IpAddress StationImpl::getNetworkBroadcast() const
 {
+	IpAddress addr;
 	esp_netif_ip_info_t info;
-	ESP_ERROR_CHECK(esp_netif_get_ip_info(stationNetworkInterface, &info));
-	return info.ip.addr | ~info.netmask.addr;
+	if(esp_netif_get_ip_info(stationNetworkInterface, &info) == ESP_OK) {
+		addr = info.ip.addr | ~info.netmask.addr;
+	}
+	return addr;
 }
 
 IpAddress StationImpl::getNetworkMask() const
 {
+	IpAddress addr;
 	esp_netif_ip_info_t info;
-	ESP_ERROR_CHECK(esp_netif_get_ip_info(stationNetworkInterface, &info));
-	return info.netmask.addr;
+	if(esp_netif_get_ip_info(stationNetworkInterface, &info) == ESP_OK) {
+		addr = info.netmask.addr;
+	}
+	return addr;
 }
 
 IpAddress StationImpl::getNetworkGateway() const
 {
+	IpAddress addr;
 	esp_netif_ip_info_t info;
-	ESP_ERROR_CHECK(esp_netif_get_ip_info(stationNetworkInterface, &info));
-	return info.gw.addr;
+	if(esp_netif_get_ip_info(stationNetworkInterface, &info) == ESP_OK) {
+		addr = info.gw.addr;
+	}
+	return addr;
 }
 
 bool StationImpl::setIP(IpAddress address, IpAddress netmask, IpAddress gateway)

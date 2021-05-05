@@ -23,7 +23,7 @@
 #include "Http/HttpRequest.h"
 #include "Http/HttpClientConnection.h"
 #include "Data/Stream/LimitedMemoryStream.h"
-#include <Timer.h>
+#include <SimpleTimer.h>
 
 class HttpClient
 {
@@ -145,7 +145,7 @@ protected:
 	static HttpConnectionPool httpConnectionPool;
 
 private:
-	static Timer cleanUpTimer;
+	static SimpleTimer cleanUpTimer;
 	static void cleanInactive();
 };
 

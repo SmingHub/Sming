@@ -24,8 +24,8 @@ String Options::toString() const
 	if(field) {                                                                                                        \
 		if(s) {                                                                                                        \
 			s += ", ";                                                                                                 \
-			s += _F(#field);                                                                                           \
 		}                                                                                                              \
+		s += _F(#field);                                                                                               \
 	}
 
 	ADD(sessionResume);
