@@ -6,7 +6,8 @@ Host UART driver
 Introduction
 ------------
 
-Implements a UART driver to connect via TCP sockets, allowing terminal emulation using telnet.
+Implements a UART driver to connect via TCP socket, allowing terminal emulation using telnet,
+or directly to local host serial device (e.g. /dev/ttyUSB0, COM4, etc.)
 
 By default, output to UART0 is sent to the console and keyboard input is written to the UART0 receive queue.
 If emulation is enabled on any ports then this behaviour is disabled.
@@ -44,11 +45,9 @@ Build variables
 
    Allows full customisation of UART command-line options for ``make run``.
 
-   You should not need to change this for normal use.
 
-
-Usage
------
+TCP port emulation
+------------------
 
 Set required ports for emulation using the :envvar:`ENABLE_HOST_UARTID`, then execute ``make run``.
 
@@ -79,3 +78,26 @@ output at startup.)
 Port numbers are allocated sequentially from 10000. If you want to use
 different port numbers, set :envvar:`HOST_UART_PORTBASE`.
 
+
+Physical device connection
+--------------------------
+
+Override :envvar:`HOST_UART_OPTIONS` adding the `--device` option. For example::
+
+   make run HOST_UART_OPTIONS="--uart=0 --device=/dev/ttyUSB0"
+
+The ``--device`` option must follow the ``--uart`` option. Another example::
+
+   make run HOST_UART_OPTIONS="--uart=0 --device=/dev/ttyUSB0 --uart=1 --device=/dev/ttyUSB1"
+
+The port is opened when ``uart_init()`` gets called.
+
+The default baud rate is whatever the application has requested. This can be overridden as follows::
+
+   make run HOST_UART_OPTIONS="--uart=0 --device=/dev/ttyUSB0 --baud=921600"
+
+For Windows, substitute the appropriate device name, e.g. ``COM4`` instead of ``/dev/ttyUSB0``.
+
+.. note::
+
+   If necessary, add ``ENABLE_HOST_UARTID=`` to prevent telnet windows from being created.

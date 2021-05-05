@@ -55,7 +55,7 @@ static void cleanup()
 {
 	hw_timer_cleanup();
 	host_flashmem_cleanup();
-	CUartServer::shutdown();
+	UartServer::shutdown();
 	sockets_finalise();
 #ifndef DISABLE_WIFI
 	host_lwip_shutdown();
@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
 		int exitpause;
 		bool initonly;
 		bool enable_network;
-		UartServerConfig uart;
+		UartServer::Config uart;
 		FlashmemConfig flash;
 #ifndef DISABLE_WIFI
 		struct lwip_param lwip;
@@ -165,6 +165,7 @@ int main(int argc, char* argv[])
 #endif
 	};
 
+	int uart_num{-1};
 	option_tag_t opt;
 	const char* arg;
 	while((opt = get_option(argc, argv, arg)) != opt_none) {
@@ -174,7 +175,25 @@ int main(int argc, char* argv[])
 			return 0;
 
 		case opt_uart:
-			bitSet(config.uart.enableMask, atoi(arg));
+			uart_num = atoi(arg);
+			if(uart_num < 0 || uart_num >= UART_COUNT) {
+				host_printf("UART %d number invalid\r\n", uart_num);
+				return 0;
+			}
+			bitSet(config.uart.enableMask, uart_num);
+			break;
+
+		case opt_device:
+		case opt_baud:
+			if(uart_num < 0) {
+				host_printf("--uart option missing\r\n");
+				return 0;
+			}
+			if(opt == opt_device) {
+				config.uart.deviceNames[uart_num] = arg;
+			} else if(opt == opt_baud) {
+				config.uart.baud[uart_num] = atoi(arg);
+			}
 			break;
 
 		case opt_portbase:
@@ -263,7 +282,7 @@ int main(int argc, char* argv[])
 		host_init_tasks();
 
 		sockets_initialise();
-		CUartServer::startup(config.uart);
+		UartServer::startup(config.uart);
 
 #ifndef DISABLE_WIFI
 		if(config.enable_network) {
