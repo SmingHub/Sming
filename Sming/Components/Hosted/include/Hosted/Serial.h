@@ -19,7 +19,7 @@
 
 #include <Stream.h>
 #include <WString.h>
-#include <serialib.h>
+#include <SerialLib.h>
 
 namespace Hosted
 {

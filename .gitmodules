@@ -120,6 +120,10 @@
 	path = Sming/Arch/Host/Components/lwip/lwip
 	url = https://github.com/lwip-tcpip/lwip
 	ignore = dirty
+[submodule "seriallib"]
+	path = Sming/Arch/Host/Components/SerialLib/seriallib
+	url = https://github.com/imabot2/serialib.git
+	ignore = dirty
 
 
 
@@ -254,10 +258,6 @@
 [submodule "Libraries.RingTone"]
 	path = Sming/Libraries/RingTone
 	url = https://github.com/mikee47/RingTone
-	ignore = dirty
-[submodule "Libraries.seriallib"]
-	path = Sming/Libraries/seriallib/seriallib
-	url = https://github.com/imabot2/serialib.git
 	ignore = dirty
 [submodule "Libraries.SignalGenerator"]
 	path = Sming/Libraries/SignalGenerator
