@@ -55,7 +55,7 @@ static void cleanup()
 {
 	hw_timer_cleanup();
 	host_flashmem_cleanup();
-	CUartServer::shutdown();
+	UartServer::shutdown();
 	sockets_finalise();
 #ifndef DISABLE_WIFI
 	host_lwip_shutdown();
@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
 		int exitpause;
 		bool initonly;
 		bool enable_network;
-		UartServerConfig uart;
+		UartServer::Config uart;
 		FlashmemConfig flash;
 #ifndef DISABLE_WIFI
 		struct lwip_param lwip;
@@ -282,7 +282,7 @@ int main(int argc, char* argv[])
 		host_init_tasks();
 
 		sockets_initialise();
-		CUartServer::startup(config.uart);
+		UartServer::startup(config.uart);
 
 #ifndef DISABLE_WIFI
 		if(config.enable_network) {

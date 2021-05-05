@@ -24,11 +24,13 @@
 #include <hostlib/keyb.h>
 #include <SerialLib.h>
 
-const unsigned IDLE_SLEEP_MS = 100;
-
-unsigned CUartServer::portBase = 10000;
-
-static CUartServer* uartServers[UART_COUNT];
+namespace UartServer
+{
+namespace
+{
+unsigned portBase{10000};
+std::unique_ptr<CUart> servers[UART_COUNT];
+} // namespace
 
 class KeyboardThread : public CThread
 {
@@ -132,14 +134,14 @@ static void onUart0Notify(smg_uart_t* uart, smg_uart_notify_code_t code)
 	}
 }
 
-void CUartServer::startup(const UartServerConfig& config)
+void startup(const Config& config)
 {
 	if(config.portBase != 0) {
 		portBase = config.portBase;
 	}
 
 	auto notify = [](smg_uart_t* uart, smg_uart_notify_code_t code) {
-		auto server = uartServers[uart->uart_nr];
+		auto& server = servers[uart->uart_nr];
 		if(server) {
 			server->onNotify(uart, code);
 		} else if(code == UART_NOTIFY_AFTER_WRITE) {
@@ -152,8 +154,12 @@ void CUartServer::startup(const UartServerConfig& config)
 		if(!bitRead(config.enableMask, i)) {
 			continue;
 		}
-		auto& server = uartServers[i];
-		server = new CUartServer(i, config.deviceNames[i], config.baud[i]);
+		auto& server = servers[i];
+		if(config.deviceNames[i] == nullptr) {
+			server.reset(new CUartPort(i));
+		} else {
+			server.reset(new CUartDevice(i, config.deviceNames[i], config.baud[i]));
+		}
 		server->execute();
 	}
 
@@ -164,107 +170,62 @@ void CUartServer::startup(const UartServerConfig& config)
 	}
 }
 
-void CUartServer::shutdown()
+void shutdown()
 {
 	destroyKeyboardThread();
 
 	for(unsigned i = 0; i < UART_COUNT; ++i) {
-		auto& server = uartServers[i];
-		if(server == nullptr) {
+		auto& server = servers[i];
+		if(!server) {
 			continue;
 		}
 
 		server->terminate();
-		delete server;
-		server = nullptr;
+		server.reset();
 	}
 }
 
-CUartServer::CUartServer(unsigned uart_nr, const char* deviceName, unsigned baud_rate)
-	: CThread("uart", 1), uart_nr(uart_nr), deviceName(deviceName), baud_rate(baud_rate)
+/* CUart */
+
+CUart::CUart(unsigned uart_nr) : CThread("uart", 1), uart_nr(uart_nr)
 {
 }
 
-void CUartServer::terminate()
+void CUart::terminate()
 {
-	close();
 	join();
 	host_debug_i("UART%u server destroyed", uart_nr);
 }
 
-void CUartServer::onNotify(smg_uart_t* uart, smg_uart_notify_code_t code)
+void CUart::onNotify(smg_uart_t* uart, smg_uart_notify_code_t code)
 {
 	switch(code) {
 	case UART_NOTIFY_AFTER_OPEN:
 		this->uart = uart;
-		if(deviceName != nullptr) {
-			if(baud_rate != 0) {
-				uart->baud_rate = baud_rate;
-			}
-			txsem.post();
-		}
 		break;
 
 	case UART_NOTIFY_BEFORE_CLOSE:
 		this->uart = nullptr;
-		if(deviceName != nullptr) {
-			txsem.post();
-		}
 		break;
 
 	case UART_NOTIFY_AFTER_WRITE: {
-		if(socket == nullptr) {
-			// Not connected, discard data
-			uart->tx_buffer->clear();
-		} else {
+		if(uart != nullptr) {
 			// Kick the thread to send now
 			txsem.post();
+		} else {
+			// Not connected, discard data
+			uart->tx_buffer->clear();
 		}
 		break;
 	}
 
 	case UART_NOTIFY_WAIT_TX:
-		break;
-
 	case UART_NOTIFY_BEFORE_READ:
 		break;
 	}
 }
 
-int CUartServer::available()
-{
-	if(device) {
-		return device->available();
-	}
-	if(socket != nullptr) {
-		return socket->available();
-	}
-	return 0;
-}
-
-int CUartServer::readBytes(void* buffer, size_t size)
-{
-	if(device) {
-		return device->readBytes(buffer, size);
-	}
-	if(socket != nullptr) {
-		return socket->recv(buffer, size);
-	}
-	return 0;
-}
-
-int CUartServer::writeBytes(const void* data, size_t size)
-{
-	if(device) {
-		return device->writeBytes(data, size);
-	}
-	if(socket != nullptr) {
-		return socket->send(data, size);
-	}
-	return 0;
-}
-
-int CUartServer::serviceRead()
+int CUart::serviceRead()
 {
 	if(!smg_uart_rx_enabled(uart)) {
 		return 0;
@@ -303,7 +264,7 @@ int CUartServer::serviceRead()
 	return read;
 }
 
-int CUartServer::serviceWrite()
+int CUart::serviceWrite()
 {
 	if(!smg_uart_tx_enabled(uart)) {
 		return 0;
@@ -341,23 +302,40 @@ int CUartServer::serviceWrite()
 	return result;
 }
 
-void* CUartServer::thread_routine()
+/* CUartPort */
+
+CUartPort::CUartPort(unsigned uart_nr) : CUart(uart_nr)
 {
-	if(deviceName != nullptr) {
-		deviceLoop();
-	} else {
-		uartLoop();
-	}
-	return nullptr;
 }
 
-void CUartServer::uartLoop()
+void CUartPort::terminate()
+{
+	close();
+	CUart::terminate();
+}
+
+int CUartPort::available()
+{
+	return socket ? socket->available() : 0;
+}
+
+int CUartPort::readBytes(void* buffer, size_t size)
+{
+	return socket ? socket->recv(buffer, size) : 0;
+}
+
+int CUartPort::writeBytes(const void* data, size_t size)
+{
+	return socket ? socket->send(data, size) : 0;
+}
+
+void* CUartPort::thread_routine()
 {
 	auto port = portBase + uart_nr;
 	CSockAddr addr(nullptr, port);
 	if(!listen(addr, 1)) {
 		host_debug_e("Listen %s failed", addr.text().c_str());
-		return;
+		return nullptr;
 	}
 
 	host_debug_i("UART%u server listening on port %u", uart_nr, port);
@@ -398,11 +376,64 @@ void CUartServer::uartLoop()
 		socket->close();
 		host_debug_i("Uart #%u socket closed", uart_nr);
 	}
+
+	return nullptr;
 }
 
-void CUartServer::deviceLoop()
+/* CUartDevice */
+
+CUartDevice::CUartDevice(unsigned uart_nr, const char* deviceName, unsigned baud_rate)
+	: CUart(uart_nr), deviceName(deviceName), baud_rate(baud_rate)
 {
-	while(true) {
+}
+
+void CUartDevice::terminate()
+{
+	done = true;
+	txsem.post();
+	CUart::terminate();
+}
+
+void CUartDevice::onNotify(smg_uart_t* uart, smg_uart_notify_code_t code)
+{
+	CUart::onNotify(uart, code);
+	switch(code) {
+	case UART_NOTIFY_AFTER_OPEN:
+		if(baud_rate != 0) {
+			uart->baud_rate = baud_rate;
+		}
+		txsem.post();
+		break;
+
+	case UART_NOTIFY_BEFORE_CLOSE:
+		txsem.post();
+		break;
+
+	case UART_NOTIFY_AFTER_WRITE:
+	case UART_NOTIFY_WAIT_TX:
+	case UART_NOTIFY_BEFORE_READ:
+		break;
+	}
+}
+
+int CUartDevice::available()
+{
+	return device ? device->available() : 0;
+}
+
+int CUartDevice::readBytes(void* buffer, size_t size)
+{
+	return device ? device->readBytes(buffer, size) : 0;
+}
+
+int CUartDevice::writeBytes(const void* data, size_t size)
+{
+	return device ? device->writeBytes(data, size) : 0;
+}
+
+void* CUartDevice::thread_routine()
+{
+	while(!done) {
 		if(txsem.timedwait(IDLE_SLEEP_MS)) {
 			if(uart != nullptr && !device) {
 				device.reset(new SerialDevice);
@@ -441,4 +472,9 @@ void CUartServer::deviceLoop()
 			interrupt_end();
 		}
 	}
+
+	device.reset();
+	return nullptr;
 }
+
+} // namespace UartServer
