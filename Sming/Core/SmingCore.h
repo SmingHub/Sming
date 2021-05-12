@@ -30,6 +30,7 @@
 
 #include "Platform/RTC.h"
 #include "Platform/System.h"
+#include "Platform/Timers.h"
 #include "Platform/WDT.h"
 
 #ifndef DISABLE_WIFI
