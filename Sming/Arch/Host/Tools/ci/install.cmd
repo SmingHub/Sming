@@ -16,5 +16,3 @@ if "%~1"=="" goto :EOF
 mkdir %1
 curl -LO %SMINGTOOLS%/%2
 7z -o%1 -y x %2
-
-where libxcb.dll
