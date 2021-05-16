@@ -15,7 +15,8 @@
 extern void (*__init_array_start)();
 extern void (*__init_array_end)();
 
-namespace std {
+namespace std
+{
 const nothrow_t nothrow;
 }
 
@@ -41,11 +42,4 @@ extern "C" void __cxa_deleted_virtual(void)
 {
 	SYSTEM_ERROR("Bad deleted_virtual_call");
 	abort();
-}
-
-namespace std {
-    void WEAK_ATTR __throw_bad_function_call()
-    {
-        while(1);
-    };
 }
