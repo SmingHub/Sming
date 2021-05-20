@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * RbootPayloadParser.h
+ * StandardPayloadParser.h
  *
  *  Created: 2021 - Slavey Karadzhov <slav@attachix.com>
  *

@@ -44,7 +44,7 @@ Table of Contents
          * [Connect to WiFi](#connect-to-wifi)
          * [Read DHT22 sensor](#read-dht22-sensor)
          * [HTTP Client](#http-client)
-         * [OTA Application Update Based on rBoot](#ota-application-update-based-on-rboot)
+         * [OTA Application Update](#ota-application-update)
          * [HTTP Server](#http-server)
          * [Email Client](#email-client)
       * [Live Debugging](#live-debugging)
@@ -161,7 +161,7 @@ And check some of the examples.
 - [Connect to WiFi](#connect-to-wifi)
 - [Read DHT22 sensor](#read-dht22-sensor)
 - [HTTP Client](#http-client)
-- [OTA Application Update Based on rBoot](#ota-application-update-based-on-rboot)
+- [OTA Application Update](#ota-application-update)
 - [HTTP Server](#http-server)
 - [Email Client](#email-client)
 
@@ -236,34 +236,21 @@ void onDataSent(HttpClient& client, bool successful)
 
 For more examples take a look at the [HttpClient](samples/HttpClient/app/application.cpp), [HttpClient_Instapush](samples/HttpClient_Instapush/app/application.cpp) and [HttpClient_ThingSpeak](samples/HttpClient_ThingSpeak/app/application.cpp) samples.
 
-### OTA Application Update Based on rBoot
+### OTA Application Update
 ```c++
 void OtaUpdate()
 {
-  uint8 slot;
-  rboot_config bootconf;
+  // need a clean object, otherwise if run before and failed will not run again
+  if(otaUpdater) {
+      delete otaUpdater;
+  }
+  otaUpdater = new Ota::Network::HttpUpgrader();
 
-  Serial.println("Updating...");
+  // select rom partition to flash
+  auto part = ota.getNextBootPartition();
 
-  // need a clean object, otherwise if run before and failed will not run again
-  if (otaUpdater) {
-    delete otaUpdater;
-  }
-
-  otaUpdater = new RbootHttpUpdater();
-
-  // select rom slot to flash
-  bootconf = rboot_get_config();
-  slot = bootconf.current_rom;
-  if (slot == 0) {
-    slot = 1;
-  }
-  else {
-    slot = 0;
-  }
-
-  // flash rom to position indicated in the rBoot config rom table
-  otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
+  // The content located on ROM_0_URL will be stored to the new partition
+  otaUpdater->addItem(ROM_0_URL, part);
 
   // and/or set a callback (called on failure or success without switching requested)
   otaUpdater->setCallback(OtaUpdate_CallBack);
@@ -273,7 +260,7 @@ void OtaUpdate()
 }
 ```
 
-For a complete example take a look at the [Basic_rBoot](samples/Basic_rBoot/app/application.cpp) sample.
+For a complete example take a look at the [Basic_Ota](samples/Basic_Ota/app/application.cpp) sample.
 
 ### HTTP Server
 ```c++

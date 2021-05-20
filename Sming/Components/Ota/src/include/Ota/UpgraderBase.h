@@ -76,6 +76,18 @@ public:
 	{
 		return Storage::findPartition(Storage::Partition::Type::app);
 	}
+
+	// utility functions
+
+	uint8_t getSlot(Storage::Partition partition)
+	{
+		auto s = toString(partition.type(), partition.subType());
+		if(!s.startsWith("app/ota")) {
+			return 255;
+		}
+
+		return s.substring(7).toInt();
+	}
 };
 
 } // namespace Ota

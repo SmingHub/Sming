@@ -18,6 +18,7 @@ namespace OtaUpgrade
 {
 namespace Mqtt
 {
+/** @deprecated Use `StandardPayloadParser` */
 using RbootPayloadParser = StandardPayloadParser SMING_DEPRECATED;
 
 } // namespace Mqtt
