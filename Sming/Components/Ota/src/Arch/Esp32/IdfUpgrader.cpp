@@ -8,19 +8,19 @@
  *
  ****/
 
-#include "IdfUpgrader.h"
+#include "include/Ota/IdfUpgrader.h"
 
 namespace Ota
 {
-bool IdfUpgrader::begin(Storage::Partition partition, size_t maxSize)
+bool IdfUpgrader::begin(Storage::Partition partition, size_t size)
 {
-	if(partition.size() < maxSize) {
+	if(partition.size() < size) {
 		return false; // the requested size is too big...
 	}
 
 	writtenSoFar = 0;
 
-	esp_err_t result = esp_ota_begin(convertToIdfPartition(partition), maxSize ? maxSize : partition.size(), &handle);
+	esp_err_t result = esp_ota_begin(convertToIdfPartition(partition), size ? size : partition.size(), &handle);
 
 	return result == ESP_OK;
 }
@@ -68,7 +68,7 @@ Storage::Partition IdfUpgrader::getRunningPartition(void)
 	return convertFromIdfPartition(esp_ota_get_running_partition());
 }
 
-Storage::Partition IdfUpgrader::getNextUpdatePartition(Storage::Partition* startFrom)
+Storage::Partition IdfUpgrader::getNextBootPartition(Storage::Partition* startFrom)
 {
 	return convertFromIdfPartition(esp_ota_get_next_update_partition(convertToIdfPartition(*startFrom)));
 }
@@ -82,7 +82,7 @@ const esp_partition_t* IdfUpgrader::convertToIdfPartition(Storage::Partition par
 									partition.name().c_str());
 }
 
-Storage::Partition convertFromIdfPartition(const esp_partition_t* partition)
+Storage::Partition IdfUpgrader::convertFromIdfPartition(const esp_partition_t* partition)
 {
 	String label;
 	if(partition != nullptr) {

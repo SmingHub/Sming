@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * Ota.h
+ * IdfUpgrader.h
  *
  * This header includes all unified Over-The-Air functions.
  *
@@ -12,34 +12,33 @@
 
 #pragma once
 #include <Ota/UpgraderBase.h>
-#include <rboot-api.h>
+#include <esp_ota_ops.h>
 
 namespace Ota
 {
-class RbootUpgrader : public UpgraderBase
+class IdfUpgrader : public UpgraderBase
 {
 public:
 	/**
 	 * @brief Prepare the partition for
 	 */
-	bool begin(Storage::Partition partition, size_t maxSize = 0) override;
+	bool begin(Storage::Partition partition, size_t size = 0) override;
 	size_t write(const uint8_t* buffer, size_t size) override;
 	bool end() override;
+	bool abort() override;
 
 	bool setBootPartition(Storage::Partition partition) override;
 	Storage::Partition getBootPartition(void) override;
 	Storage::Partition getRunningPartition(void) override;
-	Storage::Partition getNextUpdatePartition(Storage::Partition* startFrom = nullptr) override;
+	Storage::Partition getNextBootPartition(Storage::Partition* startFrom = nullptr) override;
 
-	static uint8_t getSlotForPartition(Storage::Partition partition);
-	static Storage::Partition getPartitionForSlot(uint8_t slot);
+	static const esp_partition_t* convertToIdfPartition(Storage::Partition partition);
+	static Storage::Partition convertFromIdfPartition(const esp_partition_t* partition);
 
 private:
-	rboot_write_status status{};
 	size_t maxSize{0};
 	size_t writtenSoFar{0};
+	esp_ota_handle_t handle{};
 };
-
-using OtaUpgrader = RbootUpgrader;
 
 } // namespace Ota

@@ -1,7 +1,7 @@
 #include <SmingCore.h>
-#include <rboot-api.h>
 #include <Storage/SpiFlash.h>
-#include <OtaUpgrade/Mqtt/RbootPayloadParser.h>
+#include <Ota/Manager.h>
+#include <OtaUpgrade/Mqtt/StandardPayloadParser.h>
 
 #if ENABLE_OTA_ADVANCED
 #include <OtaUpgrade/Mqtt/AdvancedPayloadParser.h>
@@ -28,15 +28,6 @@ IMPORT_FSTR(privateKeyData, PROJECT_DIR "/files/private.pem.key.der");
 IMPORT_FSTR(certificateData, PROJECT_DIR "/files/certificate.pem.crt.der");
 #endif
 
-Storage::Partition findRomPartition(uint8_t slot)
-{
-	auto part = Storage::spiFlash->partitions().findOta(slot);
-	if(!part) {
-		debug_w("Rom slot %d not found", slot);
-	}
-	return part;
-}
-
 void otaUpdate()
 {
 	if(mqtt.isProcessing()) {
@@ -44,16 +35,9 @@ void otaUpdate()
 		return;
 	}
 
-	uint8 slot = rboot_get_current_rom();
-	if(slot == 0) {
-		slot = 1;
-	} else {
-		slot = 0;
-	}
-
 	Serial.println("Checking for a new application firmware...");
 
-	auto part = findRomPartition(slot);
+	auto part = OtaManager.getBootPartition();
 	if(!part) {
 		Serial.println("FAILED: Cannot find application address");
 		return;
@@ -92,7 +76,7 @@ void otaUpdate()
 	 * The command below uses class that stores the firmware directly
 	 * using RbootOutputStream on a location provided by us
 	 */
-	auto parser = new OtaUpgrade::Mqtt::RbootPayloadParser(part, APP_VERSION_PATCH);
+	auto parser = new OtaUpgrade::Mqtt::StandardPayloadParser(part, APP_VERSION_PATCH);
 #endif
 
 	mqtt.setPayloadParser([parser](MqttPayloadParserState& state, mqtt_message_t* message, const char* buffer,
@@ -113,15 +97,20 @@ void showInfo()
 	Serial.printf(_F("CPU Frequency: %d MHz\r\n"), system_get_cpu_freq());
 	Serial.printf(_F("System Chip ID: %x\r\n"), system_get_chip_id());
 
-	rboot_config conf = rboot_get_config();
+	int total = 0;
+	for(auto it = OtaManager.getBootPartitions(); it; ++it) {
+		auto part = *it;
+		debug_d("ROM %s: 0x%08x, SubType: %s", part.name(), part.address(),
+				toLongString(part.type(), part.subType()).c_str());
+		total++;
+	}
+	debug_d("=======================");
+	debug_d("Bootable ROMs found: %d", total);
 
-	debug_d("Count: %d", conf.count);
-	debug_d("ROM 0: 0x%08x", conf.roms[0]);
-	debug_d("ROM 1: 0x%08x", conf.roms[1]);
-	debug_d("ROM 2: 0x%08x", conf.roms[2]);
-	debug_d("GPIO ROM: %d", conf.gpio_rom);
+	auto part = OtaManager.getRunningPartition();
 
-	Serial.printf(_F("\r\nCurrently running rom %d. Application version: %s\r\n"), conf.current_rom, APP_VERSION);
+	Serial.printf(_F("\r\nCurrently running %s: 0x%08x. Application version: %s\r\n"), part.name(), part.address(),
+				  APP_VERSION);
 	Serial.println();
 }
 

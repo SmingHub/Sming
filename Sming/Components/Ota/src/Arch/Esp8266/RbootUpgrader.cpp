@@ -8,23 +8,19 @@
  *
  ****/
 
-#include "RbootUpgrader.h"
+#include "include/Ota/RbootUpgrader.h"
 
 namespace Ota
 {
-bool RbootUpgrader::begin(Storage::Partition partition, size_t maxSize)
+bool RbootUpgrader::begin(Storage::Partition partition, size_t size)
 {
-	if(partition.size() < maxSize) {
+	if(partition.size() < size) {
 		return false; // the requested size is too big...
 	}
 
 	status = rboot_write_init(partition.address());
 
-	if(maxSize) {
-		this->maxSize = maxSize;
-	} else {
-		this->maxSize = partition.size();
-	}
+	maxSize = (size ? size : partition.size());
 
 	writtenSoFar = 0;
 
@@ -69,7 +65,7 @@ Storage::Partition RbootUpgrader::getRunningPartition(void)
 	return getPartitionForSlot(rboot_get_current_rom());
 }
 
-Storage::Partition RbootUpgrader::getNextUpdatePartition(Storage::Partition* startFrom)
+Storage::Partition RbootUpgrader::getNextBootPartition(Storage::Partition* startFrom)
 {
 	uint8_t currentSlot = rboot_get_current_rom();
 	return getPartitionForSlot(currentSlot ? 0 : 1);
