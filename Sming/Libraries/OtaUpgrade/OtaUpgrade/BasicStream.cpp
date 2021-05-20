@@ -10,7 +10,6 @@
 
 #include "BasicStream.h"
 #include <algorithm>
-#include <esp_spi_flash.h>
 #include <Data/HexString.h>
 #include <FlashString/Array.hpp>
 #include <Storage/SpiFlash.h>
@@ -27,14 +26,8 @@ DECLARE_FSTR_ARRAY(AppFlashRegionOffsets, uint32_t);
 
 BasicStream::Slot::Slot()
 {
-	// Get parameters of the slot where the firmware image should be stored.
-	uint8_t currentSlot = rboot_get_current_rom();
-	index = (currentSlot == 0) ? 1 : 0;
-
 	// Lookup slot details from partition table
-	auto part = Storage::spiFlash->partitions().findOta(index);
-	address = part.address();
-	size = part.size();
+	partition = OtaManager.getNextBootPartition();
 }
 
 BasicStream::BasicStream()
@@ -85,11 +78,12 @@ void BasicStream::nextRom()
 
 void BasicStream::processRomHeader()
 {
-	bool addressMatch = (slot.address & 0xFFFFF) == (romHeader.address & 0xFFFFF);
+	bool addressMatch = (slot.partition.address() & 0xFFFFF) == (romHeader.address & 0xFFFFF);
 	if(!slot.updated && addressMatch) {
-		if(romHeader.size <= slot.size) {
-			debug_i("Update slot %u [0x%08X..0x%08X)", slot.index, slot.address, slot.address + romHeader.size);
-			rbootWriteStatus = rboot_write_init(slot.address);
+		if(romHeader.size <= slot.partition.size()) {
+			debug_i("Update slot %s [0x%08X..0x%08X)", slot.partition.name(), slot.partition.address(),
+					slot.partition.address() + romHeader.size);
+			ota.begin(slot.partition);
 			setupChunk(State::WriteRom, romHeader.size);
 		} else {
 			setError(Error::RomTooLarge);
@@ -110,7 +104,7 @@ void BasicStream::verifyRoms()
 	if(!verifier.verify(verificationData)) {
 		if(slot.updated) {
 			// Destroy start sector of updated ROM to avoid accidentally booting an unsanctioned firmware
-			flashmem_erase_sector(slot.address / SECTOR_SIZE);
+			Storage::spiFlash->erase_range(slot.partition.address(), 1);
 		}
 		setError(Error::VerificationFailed);
 		return;
@@ -127,8 +121,8 @@ void BasicStream::verifyRoms()
 		return;
 	}
 
-	if(rboot_set_current_rom(slot.index)) {
-		debug_i("ROM %u activated", slot.index);
+	if(ota.setBootPartition(slot.partition)) {
+		debug_i("ROM %u activated", toLongString(slot.partition.type(), slot.partition.subType()).c_str());
 	} else {
 		setError(Error::RomActivationFailed);
 	}
@@ -169,10 +163,10 @@ size_t BasicStream::write(const uint8_t* data, size_t size)
 			break;
 
 		case State::WriteRom: {
-			bool ok = rboot_write_flash(&rbootWriteStatus, data, std::min(remainingBytes, size));
+			bool ok = ota.write(data, std::min(remainingBytes, size));
 			if(ok) {
 				if(consume(data, size)) {
-					ok = slot.updated = rboot_write_end(&rbootWriteStatus);
+					ok = slot.updated = ota.end();
 					nextRom();
 				}
 			}
