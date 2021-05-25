@@ -2,22 +2,21 @@
 	"name": "Two ROM slots with single SPIFFS",
 	"base_config": "spiffs",
 	"partitions": {
-	    "factory": {
-	       "address": "0x10000",
-	       "size": "1M"
-	    },
+		"factory": {
+			"size": "1M"
+		},
 		"rom0": {
-		    "address": "0x110000",
-            "size": "960K",
-            "type": "app",
+			"address": "0x110000",
+			"size": "960K",
+			"type": "app",
 			"subtype": "ota_0",
 			"filename": "$(TARGET_BIN)"
 		},
-		"ota": { // Ota Table
-		     "address": "0x00200000",
-		     "size": "8K",
-		     "type" : "data",
-		     "subtype": "ota"
+		"ota": {
+			"address": "0x00200000",
+			"size": "8K",
+			"type": "data",
+			"subtype": "ota"
 		},
 		"rom1": {
 			"address": "0x210000",
@@ -27,8 +26,8 @@
 			"filename": ""
 		},
 		"spiffs0": {
-		     "address": "0x300000",
-		     "size": "1M"
+			"address": "0x300000",
+			"size": "1M"
 		}
 	}
 }

@@ -25,7 +25,7 @@ Storage::Partition findSpiffsPartition(Storage::Partition partition)
 	return part;
 }
 
-void otaUpdateCallBack(Ota::Network::HttpUpgrader& client, bool result)
+void upgradeCallback(Ota::Network::HttpUpgrader& client, bool result)
 {
 	Serial.println("In callback...");
 	if(result == true) {
@@ -44,7 +44,7 @@ void otaUpdateCallBack(Ota::Network::HttpUpgrader& client, bool result)
 	}
 }
 
-void OtaUpdate()
+void doUpgrade()
 {
 	Serial.println("Updating...");
 
@@ -76,13 +76,13 @@ void OtaUpdate()
 	// request switch and reboot on success
 	//otaUpdater->switchToRom(slot);
 	// and/or set a callback (called on failure or success without switching requested)
-	otaUpdater->setCallback(otaUpdateCallBack);
+	otaUpdater->setCallback(upgradeCallback);
 
 	// start update
 	otaUpdater->start();
 }
 
-void Switch()
+void doSwitch()
 {
 	auto before = ota.getRunningPartition();
 	auto after = ota.getNextBootPartition();
@@ -97,7 +97,7 @@ void Switch()
 	}
 }
 
-void ShowInfo()
+void showInfo()
 {
 	Serial.printf("\r\nSDK: v%s\r\n", system_get_sdk_version());
 	Serial.printf("Free Heap: %d\r\n", system_get_free_heap_size());
@@ -136,9 +136,9 @@ void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCh
 			Serial.print(" mac: ");
 			Serial.println(WifiStation.getMacAddress());
 		} else if(!strcmp(str, "ota")) {
-			OtaUpdate();
+			doUpgrade();
 		} else if(!strcmp(str, "switch")) {
-			Switch();
+			doSwitch();
 		} else if(!strcmp(str, "restart")) {
 			System.restart();
 		} else if(!strcmp(str, "ls")) {
@@ -164,7 +164,7 @@ void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCh
 				Serial.println("Empty spiffs!");
 			}
 		} else if(!strcmp(str, "info")) {
-			ShowInfo();
+			showInfo();
 		} else if(!strcmp(str, "help")) {
 			Serial.println();
 			Serial.println("available commands:");

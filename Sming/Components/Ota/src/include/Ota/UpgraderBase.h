@@ -60,13 +60,13 @@ public:
 	 * @brief Gets information about the parition that is set as the default one to boot.
 	 * @note The returned parition can be different than the current running partition.
 	 */
-	virtual Partition getBootPartition(void) = 0;
+	virtual Partition getBootPartition() = 0;
 
 	/**
 	 * @brief Gets information about the parition from which the current application is running.
 	 * @note The returned parition can be different than the default boot partition.
 	*/
-	virtual Partition getRunningPartition(void) = 0;
+	virtual Partition getRunningPartition() = 0;
 
 	/**
 	 * @brief Gets the next bootable partition that can be used after successful OTA upgrade

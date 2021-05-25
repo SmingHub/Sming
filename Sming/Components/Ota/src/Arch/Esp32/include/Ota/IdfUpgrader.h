@@ -19,9 +19,6 @@ namespace Ota
 class IdfUpgrader : public UpgraderBase
 {
 public:
-	/**
-	 * @brief Prepare the partition for
-	 */
 	bool begin(Partition partition, size_t size = 0) override;
 	size_t write(const uint8_t* buffer, size_t size) override;
 
@@ -40,12 +37,12 @@ public:
 		return esp_ota_set_boot_partition(convertToIdfPartition(partition)) == ESP_OK;
 	}
 
-	Partition getBootPartition(void) override
+	Partition getBootPartition() override
 	{
 		return convertFromIdfPartition(esp_ota_get_boot_partition());
 	}
 
-	Partition getRunningPartition(void) override
+	Partition getRunningPartition() override
 	{
 		return convertFromIdfPartition(esp_ota_get_running_partition());
 	}

@@ -8,8 +8,8 @@ Introduction
 
 This architecture-agnostic component adds support for Over-The-Air upgrades.
 
-Usaging
--------
+Usage
+-----
 1. Add ``COMPONENT_DEPENDS += Ota`` to your application componenent.mk file.
 2. Add these lines to your application::
 
@@ -24,9 +24,9 @@ After that you will have access to a global ``OtaManager`` instance that can be 
       {
 
           // ...
-          auto part = OtaManager.getRunningPartition();
+          auto partition = OtaManager.getRunningPartition();
 
-          Serial.printf(_F("\r\nCurrently running rom %s@%x.\r\n"), part.name().c_str(), part.address());
+          Serial.printf("\r\nCurrently running %s @ 0x%08x.\r\n", partition.name().c_str(), partition.address());
 
       }
 
@@ -40,9 +40,9 @@ After that you will have access to a global ``OtaManager`` instance that can be 
 
          OtaUpgrader ota;
 
-         auto part = ota.getNextBootPartition();
+         auto partition = ota.getNextBootPartition();
 
-         ota.begin(part);
+         ota.begin(partition);
 
          // ... write all the data to the partition
 
