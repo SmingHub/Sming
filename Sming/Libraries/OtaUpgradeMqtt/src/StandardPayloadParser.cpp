@@ -23,8 +23,8 @@ bool StandardPayloadParser::switchRom(const UpdateState& updateState)
 	auto before = OtaManager.getBootPartition();
 	auto after = OtaManager.getNextBootPartition();
 
-	debug_d("Swapping from rom %s@%x to rom %s@%s.\r\n", before.name(), before.address(), after.name(),
-			after.address());
+	debug_d("Swapping from %s @ 0x%08x to %s @ 0x%08x.\r\n", before.name().c_str(), before.address(),
+			after.name().c_str(), after.address());
 
 	return OtaManager.setBootPartition(after);
 }

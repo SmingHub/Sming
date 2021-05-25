@@ -81,7 +81,7 @@ void BasicStream::processRomHeader()
 	bool addressMatch = (slot.partition.address() & 0xFFFFF) == (romHeader.address & 0xFFFFF);
 	if(!slot.updated && addressMatch) {
 		if(romHeader.size <= slot.partition.size()) {
-			debug_i("Update slot %s [0x%08X..0x%08X)", slot.partition.name(), slot.partition.address(),
+			debug_i("Update slot %s [0x%08X..0x%08X)", slot.partition.name().c_str(), slot.partition.address(),
 					slot.partition.address() + romHeader.size);
 			ota.begin(slot.partition);
 			setupChunk(State::WriteRom, romHeader.size);
