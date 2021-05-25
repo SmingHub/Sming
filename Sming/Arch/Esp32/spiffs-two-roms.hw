@@ -13,6 +13,12 @@
 			"subtype": "ota_0",
 			"filename": "$(TARGET_BIN)"
 		},
+		"ota": { // Ota Table
+		     "address": "0x00200000",
+		     "size": "8K",
+		     "type" : "data",
+		     "subtype": "ota"
+		},
 		"rom1": {
 			"address": "0x210000",
 			"size": "960K",

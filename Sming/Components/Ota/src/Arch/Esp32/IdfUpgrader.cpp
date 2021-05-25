@@ -19,6 +19,7 @@ bool IdfUpgrader::begin(Storage::Partition partition, size_t size)
 	}
 
 	writtenSoFar = 0;
+	maxSize = (size ? size : partition.size());
 
 	esp_err_t result = esp_ota_begin(convertToIdfPartition(partition), size ? size : partition.size(), &handle);
 
@@ -70,7 +71,11 @@ Storage::Partition IdfUpgrader::getRunningPartition(void)
 
 Storage::Partition IdfUpgrader::getNextBootPartition(Storage::Partition* startFrom)
 {
-	return convertFromIdfPartition(esp_ota_get_next_update_partition(convertToIdfPartition(*startFrom)));
+	const esp_partition_t* idfFrom = nullptr;
+	if(startFrom != nullptr) {
+		idfFrom =convertToIdfPartition(*startFrom);
+	}
+	return convertFromIdfPartition(esp_ota_get_next_update_partition(idfFrom));
 }
 
 const esp_partition_t* IdfUpgrader::convertToIdfPartition(Storage::Partition partition)
