@@ -80,7 +80,7 @@ uint8_t RbootUpgrader::getSlotForPartition(Partition partition)
 
 Partition RbootUpgrader::getPartitionForSlot(uint8_t slot)
 {
-	return *findPartition(Partition::apptypeOta(slot));
+	return spiFlash->partitions().findOta(slot);
 }
 
 } // namespace Ota

@@ -12,7 +12,6 @@
 #include <algorithm>
 #include <Data/HexString.h>
 #include <FlashString/Array.hpp>
-#include <Storage/SpiFlash.h>
 
 extern "C" uint32 user_rf_cal_sector_set(void);
 
