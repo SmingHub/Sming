@@ -25,8 +25,8 @@ void HttpUpgrader::start()
 	for(unsigned i = 0; i < items.count(); i++) {
 		auto& it = items[i];
 		debug_d("Download file:\r\n"
-			"    (%u) %s -> %s @ 0x%X",
-			currentItem, it.url.c_str(), it.partition.name(), it.partition.address());
+				"    (%u) %s -> %s @ 0x%X",
+				currentItem, it.url.c_str(), it.partition.name().c_str(), it.partition.address());
 
 		HttpRequest* request;
 		if(baseRequest != nullptr) {

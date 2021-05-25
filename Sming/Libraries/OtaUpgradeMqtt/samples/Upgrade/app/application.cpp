@@ -100,7 +100,7 @@ void showInfo()
 	int total = 0;
 	for(auto it = OtaManager.getBootPartitions(); it; ++it) {
 		auto part = *it;
-		debug_d("ROM %s: 0x%08x, SubType: %s", part.name(), part.address(),
+		debug_d("ROM %s: 0x%08x, SubType: %s", part.name().c_str(), part.address(),
 				toLongString(part.type(), part.subType()).c_str());
 		total++;
 	}
@@ -109,8 +109,8 @@ void showInfo()
 
 	auto part = OtaManager.getRunningPartition();
 
-	Serial.printf(_F("\r\nCurrently running %s: 0x%08x. Application version: %s\r\n"), part.name(), part.address(),
-				  APP_VERSION);
+	Serial.printf(_F("\r\nCurrently running %s: 0x%08x. Application version: %s\r\n"), part.name().c_str(),
+				  part.address(), APP_VERSION);
 	Serial.println();
 }
 

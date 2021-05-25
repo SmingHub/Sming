@@ -26,7 +26,7 @@ After that you will have access to a global ``OtaManager`` instance that can be 
           // ...
           auto part = OtaManager.getRunningPartition();
 
-          Serial.printf(_F("\r\nCurrently running rom %s@%x.\r\n"), part.name(), part.address());
+          Serial.printf(_F("\r\nCurrently running rom %s@%x.\r\n"), part.name().c_str(), part.address());
 
       }
 
