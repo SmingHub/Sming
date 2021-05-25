@@ -17,18 +17,20 @@
 
 namespace Ota
 {
-
 /**
  * @brief Write-only stream type used during firmware upgrade
  */
 class UpgradeOutputStream : public ReadWriteStream
 {
 public:
+	using Partition = Storage::Partition;
+
 	/**
 	 * @brief Construct a stream for the given partition
 	 * @param partition
 	 */
-	UpgradeOutputStream(Storage::Partition partition, size_t maxLength = 0) : partition(partition), maxLength(maxLength !=0 ? std::min(maxLength, partition.size()) : partition.size())
+	UpgradeOutputStream(Partition partition, size_t maxLength = 0)
+		: partition(partition), maxLength(maxLength != 0 ? std::min(maxLength, partition.size()) : partition.size())
 	{
 	}
 
@@ -78,10 +80,10 @@ public:
 
 protected:
 	OtaUpgrader ota;
-	Storage::Partition partition;
+	Partition partition;
 	bool initialized{false};
-	size_t written{0};		  // << the number of written bytes
-	size_t maxLength{0};	  // << maximum allowed length
+	size_t written{0};   // << the number of written bytes
+	size_t maxLength{0}; // << maximum allowed length
 
 protected:
 	virtual bool init();

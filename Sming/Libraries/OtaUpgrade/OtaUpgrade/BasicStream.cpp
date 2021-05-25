@@ -12,7 +12,6 @@
 #include <algorithm>
 #include <Data/HexString.h>
 #include <FlashString/Array.hpp>
-#include <Storage/SpiFlash.h>
 
 extern "C" uint32 user_rf_cal_sector_set(void);
 
@@ -104,7 +103,7 @@ void BasicStream::verifyRoms()
 	if(!verifier.verify(verificationData)) {
 		if(slot.updated) {
 			// Destroy start sector of updated ROM to avoid accidentally booting an unsanctioned firmware
-			Storage::spiFlash->erase_range(slot.partition.address(), 1);
+			Storage::spiFlash->erase_range(slot.partition.address(), Storage::spiFlash->getBlockSize());
 		}
 		setError(Error::VerificationFailed);
 		return;

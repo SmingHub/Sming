@@ -12,13 +12,17 @@
 
 #pragma once
 #include <Storage.h>
+#include <Storage/SpiFlash.h>
 
 namespace Ota
 {
-
 class UpgraderBase
 {
 public:
+	static constexpr uint8_t SLOT_NONE{255};
+
+	using Partition = Storage::Partition;
+
 	virtual ~UpgraderBase()
 	{
 	}
@@ -27,7 +31,7 @@ public:
 	 * @brief Prepares a partition for an upgrade.
 	 * 		  The preparation is bootloader and architecture dependant.
 	 */
-	virtual bool begin(Storage::Partition partition, size_t size) = 0;
+	virtual bool begin(Partition partition, size_t size) = 0;
 
 	/**
 	 * @brief Writes chunk of data to the partition set in ``begin()``.
@@ -50,43 +54,48 @@ public:
 	/**
 	 * @brief Sets the default parition from where the application will be booted on next restart.
 	 */
-	virtual bool setBootPartition(Storage::Partition partition) = 0;
+	virtual bool setBootPartition(Partition partition) = 0;
 
 	/**
 	 * @brief Gets information about the parition that is set as the default one to boot.
 	 * @note The returned parition can be different than the current running partition.
 	 */
-	virtual Storage::Partition getBootPartition(void) = 0;
+	virtual Partition getBootPartition(void) = 0;
 
 	/**
 	 * @brief Gets information about the parition from which the current application is running.
 	 * @note The returned parition can be different than the default boot partition.
 	*/
-	virtual Storage::Partition getRunningPartition(void) = 0;
+	virtual Partition getRunningPartition(void) = 0;
 
 	/**
 	 * @brief Gets the next bootable partition that can be used after successful OTA upgrade
 	 */
-	virtual Storage::Partition getNextBootPartition(Storage::Partition* startFrom = nullptr) = 0;
+	virtual Partition getNextBootPartition(Partition startFrom = {}) = 0;
 
 	/**
 	 * @brief Gets information about all bootable partitions.
 	 */
 	Storage::Iterator getBootPartitions()
 	{
-		return Storage::findPartition(Storage::Partition::Type::app);
+		return Storage::findPartition(Partition::Type::app);
 	}
 
 	// utility functions
 
-	uint8_t getSlot(Storage::Partition partition)
+	uint8_t getSlot(Partition partition)
 	{
-		auto s = toString(partition.type(), partition.subType());
-		if(!s.startsWith("app/ota")) {
-			return 255;
+		if(partition.type() != Partition::Type::app) {
+			return SLOT_NONE;
 		}
 
-		return s.substring(7).toInt();
+		using App = Partition::SubType::App;
+		auto subtype = App(partition.subType());
+		if(subtype < App::ota_min || subtype > App::ota_max) {
+			return SLOT_NONE;
+		}
+
+		return uint8_t(subtype) - uint8_t(App::ota_min);
 	}
 };
 
