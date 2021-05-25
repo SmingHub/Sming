@@ -40,11 +40,7 @@ public:
 		return getPartitionForSlot(rboot_get_current_rom());
 	}
 
-	Partition getRunningPartition() override
-	{
-		// TODO: ...
-		return getPartitionForSlot(rboot_get_current_rom());
-	}
+	Partition getRunningPartition() override;
 
 	Partition getNextBootPartition(Partition startFrom = {}) override
 	{
