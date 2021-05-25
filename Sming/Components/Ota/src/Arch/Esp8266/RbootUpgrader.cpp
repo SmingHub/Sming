@@ -46,41 +46,4 @@ size_t RbootUpgrader::write(const uint8_t* buffer, size_t size)
 	return size;
 }
 
-bool RbootUpgrader::end()
-{
-	return rboot_write_end(&status);
-}
-
-bool RbootUpgrader::setBootPartition(Partition partition)
-{
-	return rboot_set_current_rom(getSlotForPartition(partition));
-}
-
-Partition RbootUpgrader::getBootPartition(void)
-{
-	return getPartitionForSlot(rboot_get_current_rom());
-}
-
-Partition RbootUpgrader::getRunningPartition(void)
-{
-	// TODO: ...
-	return getPartitionForSlot(rboot_get_current_rom());
-}
-
-Partition RbootUpgrader::getNextBootPartition(Partition startFrom)
-{
-	uint8_t currentSlot = rboot_get_current_rom();
-	return getPartitionForSlot(currentSlot ? 0 : 1);
-}
-
-uint8_t RbootUpgrader::getSlotForPartition(Partition partition)
-{
-	return (partition.subType() == uint8_t(Partition::SubType::App::ota1)) ? 1 : 0;
-}
-
-Partition RbootUpgrader::getPartitionForSlot(uint8_t slot)
-{
-	return spiFlash->partitions().findOta(slot);
-}
-
 } // namespace Ota

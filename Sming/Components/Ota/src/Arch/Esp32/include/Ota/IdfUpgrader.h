@@ -24,16 +24,48 @@ public:
 	 */
 	bool begin(Partition partition, size_t size = 0) override;
 	size_t write(const uint8_t* buffer, size_t size) override;
-	bool end() override;
-	bool abort() override;
 
-	bool setBootPartition(Partition partition) override;
-	Partition getBootPartition(void) override;
-	Partition getRunningPartition(void) override;
-	Partition getNextBootPartition(Partition startFrom = {}) override;
+	bool end() override
+	{
+		return esp_ota_end(handle) == ESP_OK;
+	}
 
-	static const esp_partition_t* convertToIdfPartition(Partition partition);
-	static Partition convertFromIdfPartition(const esp_partition_t* partition);
+	bool abort() override
+	{
+		return true;
+	}
+
+	bool setBootPartition(Partition partition) override
+	{
+		return esp_ota_set_boot_partition(convertToIdfPartition(partition)) == ESP_OK;
+	}
+
+	Partition getBootPartition(void) override
+	{
+		return convertFromIdfPartition(esp_ota_get_boot_partition());
+	}
+
+	Partition getRunningPartition(void) override
+	{
+		return convertFromIdfPartition(esp_ota_get_running_partition());
+	}
+
+	Partition getNextBootPartition(Partition startFrom = {}) override
+	{
+		const esp_partition_t* idfFrom = startFrom ? convertToIdfPartition(startFrom) : nullptr;
+		return convertFromIdfPartition(esp_ota_get_next_update_partition(idfFrom));
+	}
+
+	static const esp_partition_t* convertToIdfPartition(Partition partition)
+	{
+		return esp_partition_find_first(esp_partition_type_t(partition.type()),
+										esp_partition_subtype_t(partition.subType()), partition.name().c_str());
+	}
+
+	static Partition convertFromIdfPartition(const esp_partition_t* partition)
+	{
+		return partition ? Storage::findPartition(String(partition->label)) : Partition{};
+	}
 
 private:
 	size_t maxSize{0};
