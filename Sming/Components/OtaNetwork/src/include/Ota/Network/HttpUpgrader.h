@@ -20,10 +20,8 @@
 
 namespace Ota
 {
-
 namespace Network
 {
-
 /**
  * @brief Magic value for ROM slot indicating slot won't change after successful OTA
  */
@@ -33,15 +31,15 @@ class HttpUpgrader : protected HttpClient
 {
 public:
 	using CompletedDelegate = Delegate<void(HttpUpgrader& client, bool result)>;
+	using Partition = Storage::Partition;
 
 	struct Item {
 		String url;
-		Storage::Partition partition;		  // << partition to write the data to
-		size_t size{0};                   // << actual size of written bytes
+		Partition partition;			  // << partition to write the data to
+		size_t size{0};					  // << actual size of written bytes
 		ReadWriteStream* stream{nullptr}; // (optional) output stream to use.
 
-		Item(String url, Storage::Partition partition, ReadWriteStream* stream)
-			: url(url), partition(partition), stream(stream)
+		Item(String url, Partition partition, ReadWriteStream* stream) : url(url), partition(partition), stream(stream)
 		{
 		}
 
@@ -80,7 +78,7 @@ public:
 	 *
 	 * @retval bool
 	 */
-	bool addItem(const String& firmwareFileUrl, Storage::Partition partition, ReadWriteStream* stream = nullptr)
+	bool addItem(const String& firmwareFileUrl, Partition partition, ReadWriteStream* stream = nullptr)
 	{
 		return items.addNew(new Item{firmwareFileUrl, partition, stream});
 	}
@@ -153,8 +151,6 @@ protected:
 	uint8_t currentItem{0};
 };
 
-
 } // namespace Network
-
 
 } // namespace Ota

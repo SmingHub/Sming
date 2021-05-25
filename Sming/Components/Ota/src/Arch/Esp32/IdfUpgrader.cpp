@@ -10,16 +10,18 @@
 
 #include "include/Ota/IdfUpgrader.h"
 
+using namespace Storage;
+
 namespace Ota
 {
-bool IdfUpgrader::begin(Storage::Partition partition, size_t size)
+bool IdfUpgrader::begin(Partition partition, size_t size)
 {
 	if(partition.size() < size) {
 		return false; // the requested size is too big...
 	}
 
 	writtenSoFar = 0;
-	maxSize = (size ? size : partition.size());
+	maxSize = size ?: partition.size();
 
 	esp_err_t result = esp_ota_begin(convertToIdfPartition(partition), size ? size : partition.size(), &handle);
 
@@ -54,47 +56,36 @@ bool IdfUpgrader::abort()
 	return true;
 }
 
-bool IdfUpgrader::setBootPartition(Storage::Partition partition)
+bool IdfUpgrader::setBootPartition(Partition partition)
 {
 	return esp_ota_set_boot_partition(convertToIdfPartition(partition)) == ESP_OK;
 }
 
-Storage::Partition IdfUpgrader::getBootPartition(void)
+Partition IdfUpgrader::getBootPartition(void)
 {
 	return convertFromIdfPartition(esp_ota_get_boot_partition());
 }
 
-Storage::Partition IdfUpgrader::getRunningPartition(void)
+Partition IdfUpgrader::getRunningPartition(void)
 {
 	return convertFromIdfPartition(esp_ota_get_running_partition());
 }
 
-Storage::Partition IdfUpgrader::getNextBootPartition(Storage::Partition* startFrom)
+Partition IdfUpgrader::getNextBootPartition(Partition startFrom)
 {
-	const esp_partition_t* idfFrom = nullptr;
-	if(startFrom != nullptr) {
-		idfFrom =convertToIdfPartition(*startFrom);
-	}
+	const esp_partition_t* idfFrom = startFrom ? convertToIdfPartition(startFrom) : nullptr;
 	return convertFromIdfPartition(esp_ota_get_next_update_partition(idfFrom));
 }
 
-const esp_partition_t* IdfUpgrader::convertToIdfPartition(Storage::Partition partition)
+const esp_partition_t* IdfUpgrader::convertToIdfPartition(Partition partition)
 {
-	return esp_partition_find_first(ESP_PARTITION_TYPE_APP,
-									partition.subType() == uint8_t(Storage::Partition::SubType::App::ota0)
-										? ESP_PARTITION_SUBTYPE_APP_OTA_0
-										: ESP_PARTITION_SUBTYPE_APP_OTA_1,
-									partition.name().c_str());
+	return esp_partition_find_first(esp_partition_type_t(partition.type()),
+									esp_partition_subtype_t(partition.subType()), partition.name().c_str());
 }
 
-Storage::Partition IdfUpgrader::convertFromIdfPartition(const esp_partition_t* partition)
+Partition IdfUpgrader::convertFromIdfPartition(const esp_partition_t* partition)
 {
-	String label;
-	if(partition != nullptr) {
-		label = partition->label;
-	}
-
-	return Storage::findPartition(label);
+	return partition ? findPartition(String(partition->label)) : Partition{};
 }
 
 } // namespace Ota

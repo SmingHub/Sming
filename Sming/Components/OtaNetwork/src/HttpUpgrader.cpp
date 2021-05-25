@@ -18,10 +18,8 @@
 
 namespace Ota
 {
-
 namespace Network
 {
-
 void HttpUpgrader::start()
 {
 	for(unsigned i = 0; i < items.count(); i++) {
@@ -121,7 +119,6 @@ void HttpUpgrader::applyUpdate()
 	OtaManager.setBootPartition(items[romSlot].partition);
 	System.restart();
 }
-
 
 } // namespace Network
 

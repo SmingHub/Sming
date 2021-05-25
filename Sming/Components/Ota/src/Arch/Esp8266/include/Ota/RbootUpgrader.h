@@ -22,17 +22,17 @@ public:
 	/**
 	 * @brief Prepare the partition for
 	 */
-	bool begin(Storage::Partition partition, size_t size = 0) override;
+	bool begin(Partition partition, size_t size = 0) override;
 	size_t write(const uint8_t* buffer, size_t size) override;
 	bool end() override;
 
-	bool setBootPartition(Storage::Partition partition) override;
-	Storage::Partition getBootPartition(void) override;
-	Storage::Partition getRunningPartition(void) override;
-	Storage::Partition getNextBootPartition(Storage::Partition* startFrom = nullptr) override;
+	bool setBootPartition(Partition partition) override;
+	Partition getBootPartition() override;
+	Partition getRunningPartition() override;
+	Partition getNextBootPartition(Partition startFrom = {}) override;
 
-	static uint8_t getSlotForPartition(Storage::Partition partition);
-	static Storage::Partition getPartitionForSlot(uint8_t slot);
+	static uint8_t getSlotForPartition(Partition partition);
+	static Partition getPartitionForSlot(uint8_t slot);
 
 private:
 	rboot_write_status status{};

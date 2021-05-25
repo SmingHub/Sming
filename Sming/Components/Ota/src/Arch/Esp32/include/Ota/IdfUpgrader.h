@@ -22,18 +22,18 @@ public:
 	/**
 	 * @brief Prepare the partition for
 	 */
-	bool begin(Storage::Partition partition, size_t size = 0) override;
+	bool begin(Partition partition, size_t size = 0) override;
 	size_t write(const uint8_t* buffer, size_t size) override;
 	bool end() override;
 	bool abort() override;
 
-	bool setBootPartition(Storage::Partition partition) override;
-	Storage::Partition getBootPartition(void) override;
-	Storage::Partition getRunningPartition(void) override;
-	Storage::Partition getNextBootPartition(Storage::Partition* startFrom = nullptr) override;
+	bool setBootPartition(Partition partition) override;
+	Partition getBootPartition(void) override;
+	Partition getRunningPartition(void) override;
+	Partition getNextBootPartition(Partition startFrom = {}) override;
 
-	static const esp_partition_t* convertToIdfPartition(Storage::Partition partition);
-	static Storage::Partition convertFromIdfPartition(const esp_partition_t* partition);
+	static const esp_partition_t* convertToIdfPartition(Partition partition);
+	static Partition convertFromIdfPartition(const esp_partition_t* partition);
 
 private:
 	size_t maxSize{0};

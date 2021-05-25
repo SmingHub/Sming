@@ -10,9 +10,11 @@
 
 #include "include/Ota/RbootUpgrader.h"
 
+using namespace Storage;
+
 namespace Ota
 {
-bool RbootUpgrader::begin(Storage::Partition partition, size_t size)
+bool RbootUpgrader::begin(Partition partition, size_t size)
 {
 	if(partition.size() < size) {
 		return false; // the requested size is too big...
@@ -20,7 +22,7 @@ bool RbootUpgrader::begin(Storage::Partition partition, size_t size)
 
 	status = rboot_write_init(partition.address());
 
-	maxSize = (size ? size : partition.size());
+	maxSize = size ?: partition.size();
 
 	writtenSoFar = 0;
 
@@ -49,44 +51,36 @@ bool RbootUpgrader::end()
 	return rboot_write_end(&status);
 }
 
-bool RbootUpgrader::setBootPartition(Storage::Partition partition)
+bool RbootUpgrader::setBootPartition(Partition partition)
 {
 	return rboot_set_current_rom(getSlotForPartition(partition));
 }
 
-Storage::Partition RbootUpgrader::getBootPartition(void)
+Partition RbootUpgrader::getBootPartition(void)
 {
 	return getPartitionForSlot(rboot_get_current_rom());
 }
 
-Storage::Partition RbootUpgrader::getRunningPartition(void)
+Partition RbootUpgrader::getRunningPartition(void)
 {
 	// TODO: ...
 	return getPartitionForSlot(rboot_get_current_rom());
 }
 
-Storage::Partition RbootUpgrader::getNextBootPartition(Storage::Partition* startFrom)
+Partition RbootUpgrader::getNextBootPartition(Partition startFrom)
 {
 	uint8_t currentSlot = rboot_get_current_rom();
 	return getPartitionForSlot(currentSlot ? 0 : 1);
 }
 
-uint8_t RbootUpgrader::getSlotForPartition(Storage::Partition partition)
+uint8_t RbootUpgrader::getSlotForPartition(Partition partition)
 {
-	if(partition.subType() == uint8_t(Storage::Partition::SubType::App::ota1)) {
-		return 1;
-	}
-
-	return 0;
+	return (partition.subType() == uint8_t(Partition::SubType::App::ota1)) ? 1 : 0;
 }
 
-Storage::Partition RbootUpgrader::getPartitionForSlot(uint8_t slot)
+Partition RbootUpgrader::getPartitionForSlot(uint8_t slot)
 {
-	auto partitions = Storage::findPartition(
-		Storage::Partition::Type::app,
-		uint8_t(slot == 0 ? Storage::Partition::SubType::App::ota0 : Storage::Partition::SubType::App::ota1));
-
-	return *partitions;
+	return *findPartition(Partition::apptypeOta(slot));
 }
 
 } // namespace Ota

@@ -13,7 +13,6 @@
 
 namespace Ota
 {
-
 bool UpgradeOutputStream::init()
 {
 	bool success = ota.begin(partition, maxLength);
