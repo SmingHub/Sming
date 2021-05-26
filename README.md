@@ -238,7 +238,7 @@ For more examples take a look at the [HttpClient](samples/HttpClient/app/applica
 
 ### OTA Application Update
 ```c++
-void OtaUpdate()
+void doUpgrade()
 {
   // need a clean object, otherwise if run before and failed will not run again
   if(otaUpdater) {
@@ -253,7 +253,7 @@ void OtaUpdate()
   otaUpdater->addItem(ROM_0_URL, part);
 
   // and/or set a callback (called on failure or success without switching requested)
-  otaUpdater->setCallback(OtaUpdate_CallBack);
+  otaUpdater->setCallback(upgradeCallback);
 
   // start update
   otaUpdater->start();

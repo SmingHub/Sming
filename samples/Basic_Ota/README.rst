@@ -28,15 +28,21 @@ Building
 4) Put *rom0.bin* and *spiff_rom.bin* in the root of your webserver for OTA.
 5) Interact with the sample using a terminal (``make terminal``). Sorry - no web-gui (yet).
 
-Technical Notes
----------------
 
-Esp8266
-~~~~~~~
-Important compiler flags used:
+Testing
+-------
 
--  BOOT_BIG_FLASH - when using big flash mode, ensures flash mapping code is built in to the rom.
--  RBOOT_INTEGRATION - ensures Sming specific options are pulled in to the rBoot source at compile time.
+For testing purposes we provide an Ota server that can be started on your desktop machine::
+
+   make otaserver
+
+The server listens on port 9999 and all network interfaces. If your desktop has the following IP address ``192.168.1.30``
+after connecting to your WIFI router then you can compile the sample to use this IP address and the testing OTA server::
+
+   make ROM_0_URL=http://192.168.1.30:9999/rom0.bin SPIFFS_URL=http://192.168.1.30:9999/spiff_rom.bin
+   make flash
+
+Make sure to replace ``192.168.1.30`` with your WIFI IP address.
 
 Flash layout considerations
 ---------------------------
@@ -56,8 +62,6 @@ See :component:`rboot` for further details.
 
 If you want more than two roms you must be an advanced user and should
 be able to work out what to copy and edit to acheive this!
-
-Config Variables
 
 Configuration
 -------------

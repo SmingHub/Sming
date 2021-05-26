@@ -51,8 +51,7 @@ Partition RbootUpgrader::getRunningPartition()
 	uint8_t slot = rboot_get_current_rom();
 #ifdef RBOOT_ENABLE_RTC
 	rboot_rtc_data rtc;
-	rboot_get_rtc_data(&rtc);
-	if(rtc.last_mode == MODE_TEMP_ROM) {
+	if(rboot_get_rtc_data(&rtc) && rtc.last_mode == MODE_TEMP_ROM) {
 		slot = rtc.last_rom;
 	}
 #endif

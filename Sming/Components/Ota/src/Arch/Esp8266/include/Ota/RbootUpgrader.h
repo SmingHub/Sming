@@ -45,6 +45,9 @@ public:
 	Partition getNextBootPartition(Partition startFrom = {}) override
 	{
 		uint8_t currentSlot = rboot_get_current_rom();
+		if(startFrom) {
+			currentSlot = getSlotForPartition(startFrom);
+		}
 		return getPartitionForSlot(currentSlot ? 0 : 1);
 	}
 

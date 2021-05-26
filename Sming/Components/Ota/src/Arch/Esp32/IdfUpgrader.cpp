@@ -21,7 +21,7 @@ bool IdfUpgrader::begin(Partition partition, size_t size)
 	writtenSoFar = 0;
 	maxSize = size ?: partition.size();
 
-	esp_err_t result = esp_ota_begin(convertToIdfPartition(partition), size ?: partition.size(), &handle);
+	esp_err_t result = esp_ota_begin(convertToIdfPartition(partition), maxSize, &handle);
 
 	return result == ESP_OK;
 }
