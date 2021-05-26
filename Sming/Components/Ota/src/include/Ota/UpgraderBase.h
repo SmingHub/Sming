@@ -30,11 +30,19 @@ public:
 	/**
 	 * @brief Prepares a partition for an upgrade.
 	 * 		  The preparation is bootloader and architecture dependant.
+	 * @param partition
+	 * @param size
+	 *
+	 * @retval bool
 	 */
-	virtual bool begin(Partition partition, size_t size) = 0;
+	virtual bool begin(Partition partition, size_t size = 0) = 0;
 
 	/**
 	 * @brief Writes chunk of data to the partition set in ``begin()``.
+	 * @param buffer
+	 * @param size
+	 *
+	 * @retval size_t actually written bytes
 	 */
 	virtual size_t write(const uint8_t* buffer, size_t size) = 0;
 
@@ -53,28 +61,41 @@ public:
 
 	/**
 	 * @brief Sets the default parition from where the application will be booted on next restart.
+	 * @param partition
+	 * @param save  if true the change is persisted on the flash, otherwise it will be valid only for the next boot
+	 *
+	 * @retval bool
 	 */
-	virtual bool setBootPartition(Partition partition) = 0;
+	virtual bool setBootPartition(Partition partition, bool save = true) = 0;
 
 	/**
 	 * @brief Gets information about the parition that is set as the default one to boot.
 	 * @note The returned parition can be different than the current running partition.
+	 *
+	 * @retval partition
 	 */
 	virtual Partition getBootPartition() = 0;
 
 	/**
 	 * @brief Gets information about the parition from which the current application is running.
 	 * @note The returned parition can be different than the default boot partition.
-	*/
+	 *
+	 * @retval partition
+	 */
 	virtual Partition getRunningPartition() = 0;
 
 	/**
 	 * @brief Gets the next bootable partition that can be used after successful OTA upgrade
+	 * @param startFrom - optional
+	 *
+	 * @retval partition
 	 */
 	virtual Partition getNextBootPartition(Partition startFrom = {}) = 0;
 
 	/**
 	 * @brief Gets information about all bootable partitions.
+	 *
+	 * @retval Storage::Iterator
 	 */
 	Storage::Iterator getBootPartitions()
 	{
@@ -83,6 +104,12 @@ public:
 
 	// utility functions
 
+	/**
+	 * @brief Gets slot number for a partition
+	 * @param partition
+	 *
+	 * @retval uint8_t slot number
+	 */
 	uint8_t getSlot(Partition partition)
 	{
 		if(partition.type() != Partition::Type::app) {

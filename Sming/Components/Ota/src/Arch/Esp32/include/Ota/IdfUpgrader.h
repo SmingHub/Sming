@@ -32,8 +32,12 @@ public:
 		return true;
 	}
 
-	bool setBootPartition(Partition partition) override
+	bool setBootPartition(Partition partition, bool save = true) override
 	{
+		if(!save) {
+			return false;
+		}
+
 		return esp_ota_set_boot_partition(convertToIdfPartition(partition)) == ESP_OK;
 	}
 

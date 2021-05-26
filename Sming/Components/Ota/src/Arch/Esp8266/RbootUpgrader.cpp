@@ -46,6 +46,20 @@ size_t RbootUpgrader::write(const uint8_t* buffer, size_t size)
 	return size;
 }
 
+bool RbootUpgrader::setBootPartition(Partition partition, bool save)
+{
+	uint8_t slot = getSlotForPartition(partition);
+	if(!save) {
+#ifdef RBOOT_ENABLE_RTC
+		return rboot_set_temp_rom(slot);
+#else
+		return false;
+#endif
+	}
+
+	return rboot_set_current_rom(slot);
+}
+
 Partition RbootUpgrader::getRunningPartition()
 {
 	uint8_t slot = rboot_get_current_rom();

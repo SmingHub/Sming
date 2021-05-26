@@ -30,10 +30,7 @@ public:
 		return rboot_write_end(&status);
 	}
 
-	bool setBootPartition(Partition partition) override
-	{
-		return rboot_set_current_rom(getSlotForPartition(partition));
-	}
+	bool setBootPartition(Partition partition, bool save = true) override;
 
 	Partition getBootPartition() override
 	{
