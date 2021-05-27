@@ -12,32 +12,14 @@
 
 #pragma once
 
-#include "PayloadParser.h"
-#include <Data/Stream/RbootOutputStream.h>
+#include "StandardPayloadParser.h"
 
 namespace OtaUpgrade
 {
 namespace Mqtt
 {
-/**
- * @brief This parser allows the processing of firmware data that is directly stored
- * 		  to the flash memory using RbootOutputStream.
- */
-class RbootPayloadParser : public PayloadParser
-{
-public:
-	RbootPayloadParser(Storage::Partition part, size_t currentVersion, size_t allowedVersionBytes = 24)
-		: PayloadParser(currentVersion, allowedVersionBytes), part(part)
-	{
-	}
-
-	bool switchRom(const UpdateState& updateState) override;
-
-	ReadWriteStream* getStorageStream(size_t storageSize) override;
-
-private:
-	Storage::Partition part;
-};
+/** @deprecated Use `StandardPayloadParser` */
+using RbootPayloadParser = StandardPayloadParser SMING_DEPRECATED;
 
 } // namespace Mqtt
 } // namespace OtaUpgrade
