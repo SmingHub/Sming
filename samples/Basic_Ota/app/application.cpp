@@ -1,11 +1,8 @@
 #include <SmingCore.h>
-#include <Network/RbootHttpUpdater.h>
+#include <Ota/Network/HttpUpgrader.h>
+#include <Storage/PartitionStream.h>
 #include <Storage/SpiFlash.h>
-
-// download urls, set appropriately
-#define ROM_0_URL "http://192.168.7.5:80/rom0.bin"
-#define ROM_1_URL "http://192.168.7.5:80/rom1.bin"
-#define SPIFFS_URL "http://192.168.7.5:80/spiff_rom.bin"
+#include <Ota/Upgrader.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -13,13 +10,14 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-RbootHttpUpdater* otaUpdater;
+Ota::Network::HttpUpgrader* otaUpdater;
 Storage::Partition spiffsPartition;
+OtaUpgrader ota;
 
-Storage::Partition findSpiffsPartition(uint8_t slot)
+Storage::Partition findSpiffsPartition(Storage::Partition partition)
 {
 	String name = F("spiffs");
-	name += slot;
+	name += ota.getSlot(partition);
 	auto part = Storage::findPartition(name);
 	if(!part) {
 		debug_w("Partition '%s' not found", name.c_str());
@@ -27,80 +25,71 @@ Storage::Partition findSpiffsPartition(uint8_t slot)
 	return part;
 }
 
-void otaUpdateCallBack(RbootHttpUpdater& client, bool result)
+void upgradeCallback(Ota::Network::HttpUpgrader& client, bool result)
 {
 	Serial.println("In callback...");
 	if(result == true) {
 		// success
-		uint8 slot;
-		slot = rboot_get_current_rom();
-		if(slot == 0) {
-			slot = 1;
-		} else {
-			slot = 0;
-		}
+		ota.end();
+
+		auto part = ota.getNextBootPartition();
 		// set to boot new rom and then reboot
-		Serial.printf("Firmware updated, rebooting to rom %d...\r\n", slot);
-		rboot_set_current_rom(slot);
+		Serial.printf("Firmware updated, rebooting to %s @ ...\r\n", part.name().c_str());
+		ota.setBootPartition(part);
 		System.restart();
 	} else {
+		ota.abort();
 		// fail
 		Serial.println("Firmware update failed!");
 	}
 }
 
-void OtaUpdate()
+void doUpgrade()
 {
-	uint8 slot;
-	rboot_config bootconf;
-
 	Serial.println("Updating...");
 
 	// need a clean object, otherwise if run before and failed will not run again
 	if(otaUpdater) {
 		delete otaUpdater;
 	}
-	otaUpdater = new RbootHttpUpdater();
+	otaUpdater = new Ota::Network::HttpUpgrader();
 
 	// select rom slot to flash
-	bootconf = rboot_get_config();
-	slot = bootconf.current_rom;
-	if(slot == 0) {
-		slot = 1;
-	} else {
-		slot = 0;
-	}
+	auto part = ota.getNextBootPartition();
 
 #ifndef RBOOT_TWO_ROMS
 	// flash rom to position indicated in the rBoot config rom table
-	otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
+	otaUpdater->addItem(ROM_0_URL, part);
 #else
 	// flash appropriate ROM
-	otaUpdater->addItem(bootconf.roms[slot], (slot == 0) ? ROM_0_URL : ROM_1_URL);
+	otaUpdater->addItem((ota.getSlot(part) == 0) ? ROM_0_URL : ROM_1_URL, part);
 #endif
 
-	auto part = findSpiffsPartition(slot);
-	if(part) {
+	ota.begin(part);
+
+	auto spiffsPart = findSpiffsPartition(part);
+	if(spiffsPart) {
 		// use user supplied values (defaults for 4mb flash in hardware config)
-		otaUpdater->addItem(part.address(), SPIFFS_URL, part.size());
+		otaUpdater->addItem(SPIFFS_URL, spiffsPart, new Storage::PartitionStream(spiffsPart));
 	}
 
 	// request switch and reboot on success
 	//otaUpdater->switchToRom(slot);
 	// and/or set a callback (called on failure or success without switching requested)
-	otaUpdater->setCallback(otaUpdateCallBack);
+	otaUpdater->setCallback(upgradeCallback);
 
 	// start update
 	otaUpdater->start();
 }
 
-void Switch()
+void doSwitch()
 {
-	uint8_t before = rboot_get_current_rom();
-	uint8_t after = (before == 0) ? 1 : 0;
+	auto before = ota.getRunningPartition();
+	auto after = ota.getNextBootPartition();
 
-	Serial.printf(_F("Swapping from rom %u to rom %u.\r\n"), before, after);
-	if(rboot_set_current_rom(after)) {
+	Serial.printf(_F("Swapping from %s @ 0x%08x to %s @ 0x%08x.\r\n"), before.name().c_str(), before.address(),
+				  after.name().c_str(), after.address());
+	if(ota.setBootPartition(after)) {
 		Serial.println(F("Restarting...\r\n"));
 		System.restart();
 	} else {
@@ -108,7 +97,7 @@ void Switch()
 	}
 }
 
-void ShowInfo()
+void showInfo()
 {
 	Serial.printf("\r\nSDK: v%s\r\n", system_get_sdk_version());
 	Serial.printf("Free Heap: %d\r\n", system_get_free_heap_size());
@@ -117,14 +106,11 @@ void ShowInfo()
 	Serial.printf("SPI Flash ID: %x\r\n", Storage::spiFlash->getId());
 	Serial.printf("SPI Flash Size: %x\r\n", Storage::spiFlash->getSize());
 
-	rboot_config conf;
-	conf = rboot_get_config();
+	auto before = ota.getRunningPartition();
+	auto after = ota.getNextBootPartition();
 
-	debugf("Count: %d", conf.count);
-	for(unsigned i = 0; i < MAX_ROMS; ++i) {
-		debugf("ROM %u: 0x%08x", i, conf.roms[i]);
-	}
-	debugf("GPIO ROM: %d", conf.gpio_rom);
+	Serial.printf(_F("Current %s @ 0x%08x, future %s @ 0x%08x\r\n"), before.name().c_str(), before.address(),
+				  after.name().c_str(), after.address());
 }
 
 void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCharsCount)
@@ -147,12 +133,12 @@ void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCh
 		} else if(!strcmp(str, "ip")) {
 			Serial.print("ip: ");
 			Serial.print(WifiStation.getIP());
-			Serial.print("mac: ");
+			Serial.print(" mac: ");
 			Serial.println(WifiStation.getMacAddress());
 		} else if(!strcmp(str, "ota")) {
-			OtaUpdate();
+			doUpgrade();
 		} else if(!strcmp(str, "switch")) {
-			Switch();
+			doSwitch();
 		} else if(!strcmp(str, "restart")) {
 			System.restart();
 		} else if(!strcmp(str, "ls")) {
@@ -178,17 +164,17 @@ void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCh
 				Serial.println("Empty spiffs!");
 			}
 		} else if(!strcmp(str, "info")) {
-			ShowInfo();
+			showInfo();
 		} else if(!strcmp(str, "help")) {
 			Serial.println();
 			Serial.println("available commands:");
 			Serial.println("  help - display this message");
 			Serial.println("  ip - show current ip address");
 			Serial.println("  connect - connect to wifi");
-			Serial.println("  restart - restart the esp8266");
+			Serial.println("  restart - restart the device");
 			Serial.println("  switch - switch to the other rom and reboot");
 			Serial.println("  ota - perform ota update, switch rom and reboot");
-			Serial.println("  info - show esp8266 info");
+			Serial.println("  info - show device info");
 			if(spiffsPartition) {
 				Serial.println("  ls - list files in spiffs");
 				Serial.println("  cat - show first file in spiffs");
@@ -206,17 +192,17 @@ void init()
 	Serial.systemDebugOutput(true); // Debug output to serial
 
 	// mount spiffs
-	auto slot = rboot_get_current_rom();
-	spiffsPartition = findSpiffsPartition(slot);
+	auto partition = ota.getRunningPartition();
+	spiffsPartition = findSpiffsPartition(partition);
 	if(spiffsPartition) {
-		debugf("trying to mount '%s' at 0x%08x, length %d", spiffsPartition.name().c_str(), spiffsPartition.address(),
+		debugf("trying to mount %s @ 0x%08x, length %d", spiffsPartition.name().c_str(), spiffsPartition.address(),
 			   spiffsPartition.size());
 		spiffs_mount(spiffsPartition);
 	}
 
 	WifiAccessPoint.enable(false);
 
-	Serial.printf("\r\nCurrently running rom %d.\r\n", slot);
+	Serial.printf("\r\nCurrently running %s @ 0x%08x.\r\n", partition.name().c_str(), partition.address());
 	Serial.println("Type 'help' and press enter for instructions.");
 	Serial.println();
 

@@ -47,7 +47,7 @@ The examples are a great way to learn the API and brush up your C/C++ knowledge.
 -  `Connect to WiFi <#connect-to-wifi>`__
 -  `Read DHT22 sensor <#read-dht22-sensor>`__
 -  `HTTP client <#http-client>`__
--  `OTA application update based on rBoot <#ota-application-update-based-on-rboot>`__
+-  `OTA application update based on rBoot <#ota-application-update>`__
 -  `Embedded HTTP Web Server <#embedded-http-web-server>`__
 -  `Email Client <#email-client>`__
 
@@ -140,46 +140,33 @@ For more examples take a look at the
 :sample:`HttpClient_Instapush`
 and :sample:`HttpClient_ThingSpeak` samples.
 
-OTA application update based on rBoot
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+OTA application update
+~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
-   void OtaUpdate()
+   void doUpgrade()
    {
-     uint8 slot;
-     rboot_config bootconf;
-
-     Serial.println("Updating...");
-
      // need a clean object, otherwise if run before and failed will not run again
-     if (otaUpdater) {
-       delete otaUpdater;
+     if(otaUpdater) {
+         delete otaUpdater;
      }
+     otaUpdater = new Ota::Network::HttpUpgrader();
 
-     otaUpdater = new RbootHttpUpdater();
+     // select rom partition to flash
+     auto part = ota.getNextBootPartition();
 
-     // select rom slot to flash
-     bootconf = rboot_get_config();
-     slot = bootconf.current_rom;
-     if (slot == 0) {
-       slot = 1;
-     }
-     else {
-       slot = 0;
-     }
+     // The content located on ROM_0_URL will be stored to the new partition
+     otaUpdater->addItem(ROM_0_URL, part);
 
-     // flash rom to position indicated in the rBoot config rom table
-     otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
+     // and/or set a callback (called on failure or success without switching requested)
+     otaUpdater->setCallback(upgradeCallback);
 
-     // and/or set a callback (called on failure or success without switching requested)
-     otaUpdater->setCallback(OtaUpdate_CallBack);
-
-     // start update
-     otaUpdater->start();
+     // start update
+     otaUpdater->start();
    }
 
-For a complete example take a look at the :sample:`Basic_rBoot` sample.
+For a complete example take a look at the :sample:`Basic_Ota` sample.
 
 Embedded HTTP Web Server
 ~~~~~~~~~~~~~~~~~~~~~~~~

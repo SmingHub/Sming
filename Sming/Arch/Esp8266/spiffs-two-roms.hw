@@ -6,11 +6,11 @@
 			"subtype": "ota_0"
 		},
 		"rom1": {
-			"address": "0x108000",
+			"address": "0x102000",
 			"size": "992K",
 			"type": "app",
 			"subtype": "ota_1",
-			"filename": "$(RBOOT_ROM_1_BIN)"
+			"filename": "$(RBOOT_ROM_0_BIN)"
 		}
 	}
 }
