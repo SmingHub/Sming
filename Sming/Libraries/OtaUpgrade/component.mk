@@ -148,7 +148,7 @@ ifneq ($(SMING_ARCH),Host)
 CUSTOM_TARGETS += ota-file
 endif
 
-$(OTA_UPGRADE_FILE): $(RBOOT_ROM_0_BIN) $(RBOOT_ROM_1_BIN) $(OTA_KEY_IMAGE)
+$(OTA_UPGRADE_FILE): $(PARTITION_factory_FILENAME) $(PARTITION_rom0_FILENAME) $(PARTITION_rom1_FILENAME) $(OTA_KEY_IMAGE)
 ifeq ($(ENABLE_OTA_DOWNGRADE),0)
 ifeq ($(OTA_CRYPTO_FEATURES),)
 	$(warning WARNING: Downgrade protection ineffective without encryption or digital signature. \
@@ -158,8 +158,9 @@ endif
 	$(Q) $(OTATOOL) mkfile \
 		$(OTA_CRYPTO_FEATURES_IMAGE) \
 		$(if $(OTA_CRYPTO_FEATURES_IMAGE),--key=$(OTA_KEY_IMAGE)) \
-		--rom=$(RBOOT_ROM_0_BIN)@$(RBOOT_ROM0_ADDR) \
-		$(if $(RBOOT_ROM_1_BIN),--rom=$(RBOOT_ROM_1_BIN)@$(RBOOT_ROM1_ADDR)) \
+		$(if $(PARTITION_factory_FILENAME),--rom=$(PARTITION_factory_FILENAME)@$(PARTITION_factory_ADDRESS)) \
+		$(if $(PARTITION_rom0_FILENAME),--rom=$(PARTITION_rom0_FILENAME)@$(PARTITION_rom0_ADDRESS))          \
+		$(if $(PARTITION_rom1_FILENAME),--rom=$(PARTITION_rom1_FILENAME)@$(PARTITION_rom1_ADDRESS))          \
 		--output=$@
 ifdef OTA_ROLLOVER_IN_PROGRESS
 	@echo
