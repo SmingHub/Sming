@@ -31,3 +31,9 @@ uint8_t digitalRead(uint16_t pin)
 	hostedClient->send(__func__, pin);
 	return hostedClient->wait<uint8_t>();
 }
+
+unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout)
+{
+	hostedClient->send(__func__, pin, state, timeout);
+	return hostedClient->wait<unsigned long>();
+}
