@@ -182,9 +182,9 @@ public:
 
 #ifndef MQTT_NO_COMPAT
 	/**
-	 * @todo deprecate: Use setWill(const String& topic, const String& message,uint8_t flags) instead
+	 * @deprecated: Use setWill(const String& topic, const String& message,uint8_t flags) instead
 	 */
-	bool setWill(const String& topic, const String& message, int QoS, bool retained = false)
+	bool setWill(const String& topic, const String& message, int QoS, bool retained = false) SMING_DEPRECATED
 	{
 		uint8_t flags = (uint8_t)(retained + (QoS << 1));
 		return setWill(topic, message, flags);
@@ -197,12 +197,12 @@ public:
 	 */
 
 	/**
-	 * @todo deprecate: Use publish(const String& topic, const String& message, uint8_t flags = 0) instead.
+	 * @deprecated: Use publish(const String& topic, const String& message, uint8_t flags = 0) instead.
 	 * 			   If you want to have a callback that should be triggered on successful delivery of messages
 	 * 			   then use setEventHandler(MQTT_TYPE_PUBACK, youCallback) instead.
 	 */
 	bool publishWithQoS(const String& topic, const String& message, int QoS, bool retained = false,
-						MqttMessageDeliveredCallback onDelivery = nullptr)
+						MqttMessageDeliveredCallback onDelivery = nullptr) SMING_DEPRECATED
 	{
 		if(onDelivery) {
 			if(QoS == 1) {
@@ -220,10 +220,11 @@ public:
 		return publish(topic, message, flags);
 	}
 
-	/** @brief  Provide a function to be called when a message is received from the broker
-	 * @todo deprecate: Use setEventHandler(MQTT_TYPE_PUBLISH, MqttDelegate handler) instead.
+	/**
+	 * @brief  Provide a function to be called when a message is received from the broker
+	 * @deprecated: Use setEventHandler(MQTT_TYPE_PUBLISH, MqttDelegate handler) instead.
 	*/
-	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = nullptr)
+	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = nullptr) SMING_DEPRECATED
 	{
 		this->subscriptionCallback = subscriptionCallback;
 		setEventHandler(MQTT_TYPE_PUBLISH, onPublish);
@@ -331,8 +332,8 @@ private:
 	*/
 
 #ifndef MQTT_NO_COMPAT
-	MqttMessageDeliveredCallback onDelivery = nullptr;			   ///< @deprecated
-	MqttStringSubscriptionCallback subscriptionCallback = nullptr; ///< @deprecated
+	SMING_DEPRECATED MqttMessageDeliveredCallback onDelivery = nullptr;			   ///< @deprecated
+	SMING_DEPRECATED MqttStringSubscriptionCallback subscriptionCallback = nullptr; ///< @deprecated
 #endif
 };
 

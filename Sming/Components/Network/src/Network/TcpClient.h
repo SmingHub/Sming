@@ -107,6 +107,8 @@ public:
 		return send(data.c_str(), data.length(), forceCloseAfterSent);
 	}
 
+	bool send(IDataSourceStream* source, bool forceCloseAfterSent = false);
+
 	bool isProcessing()
 	{
 		return state == eTCS_Connected || state == eTCS_Connecting;
@@ -151,9 +153,6 @@ protected:
 	void freeStreams();
 
 protected:
-	void setBuffer(ReadWriteStream* stream);
-
-	ReadWriteStream* buffer = nullptr;   ///< Used internally to buffer arbitrary data via send() methods
 	IDataSourceStream* stream = nullptr; ///< The currently active stream being sent
 
 private:

@@ -10,8 +10,7 @@
 
 #include "MqttClient.h"
 
-#include "Data/Stream/MemoryDataStream.h"
-#include "Data/Stream/StreamChain.h"
+#include "Data/Stream/DataSourceStream.h"
 
 const mqtt_parser_callbacks_t MqttClient::callbacks PROGMEM = {
 	.on_message_begin = staticOnMessageBegin,
@@ -387,7 +386,7 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		}
 
 		if(outgoingMessage->common.type == MQTT_TYPE_PUBLISH && payloadStream != nullptr) {
-			// The packetLength should be big enought for the header ONLY.
+			// The packetLength should be big enough for the header ONLY.
 			// Payload will be attached as a second stream
 			packetLength -= outgoingMessage->publish.content.length;
 			outgoingMessage->publish.content.data = nullptr;
@@ -396,16 +395,9 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		uint8_t packet[packetLength];
 		mqtt_serialiser_write(&serialiser, outgoingMessage, packet, packetLength);
 
-		delete stream;
-		auto headerStream = new MemoryDataStream();
-		headerStream->write(packet, packetLength);
+		send(reinterpret_cast<const char*>(packet), packetLength);
 		if(payloadStream != nullptr) {
-			auto streamChain = new StreamChain();
-			streamChain->attachStream(headerStream);
-			streamChain->attachStream(payloadStream);
-			stream = streamChain;
-		} else {
-			stream = headerStream;
+			send(payloadStream);
 		}
 
 		state = eMCS_SendingData;
