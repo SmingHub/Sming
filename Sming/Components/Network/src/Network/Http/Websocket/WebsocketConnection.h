@@ -12,6 +12,7 @@
 
 #include "Network/TcpServer.h"
 #include "../HttpConnection.h"
+
 extern "C" {
 #include "ws_parser/ws_parser.h"
 }
@@ -90,7 +91,7 @@ public:
 	 * @param length Quantity of data in message
 	 * @param type
 	 */
-	virtual void send(const char* message, size_t length, ws_frame_type_t type = WS_FRAME_TEXT);
+	bool send(const char* message, size_t length, ws_frame_type_t type = WS_FRAME_TEXT);
 
 	/**
 	 * @brief Sends websocket message from a String
@@ -98,10 +99,21 @@ public:
 	 * @param type
 	 * @note A String may contain arbitrary data, not just text, so can use this for any frame type
 	 */
-	void send(const String& message, ws_frame_type_t type = WS_FRAME_TEXT)
+	bool send(const String& message, ws_frame_type_t type = WS_FRAME_TEXT)
 	{
-		send(message.c_str(), message.length(), type);
+		return send(message.c_str(), message.length(), type);
 	}
+
+	/**
+	 * @brief Sends websocket message from a stream
+	 * @param stream
+	 * @param type
+	 * @param useMask MUST be true for client connections
+	 * @param isFin true if this is the final frame
+	 *
+	 * @retval bool true on success
+	 */
+	bool send(IDataSourceStream* stream, ws_frame_type_t type = WS_FRAME_TEXT, bool useMask = false, bool isFin = true);
 
 	/**
 	 * @brief Broadcasts a message to all active websocket connections
@@ -125,9 +137,9 @@ public:
 	 * @brief Sends a string websocket message
 	 * @param message
 	 */
-	void sendString(const String& message)
+	bool sendString(const String& message)
 	{
-		send(message, WS_FRAME_TEXT);
+		return send(message, WS_FRAME_TEXT);
 	}
 
 	/**
@@ -135,9 +147,9 @@ public:
 	 * @param data
 	 * @param length
 	 */
-	void sendBinary(const uint8_t* data, size_t length)
+	bool sendBinary(const uint8_t* data, size_t length)
 	{
-		send(reinterpret_cast<const char*>(data), length, WS_FRAME_BINARY);
+		return send(reinterpret_cast<const char*>(data), length, WS_FRAME_BINARY);
 	}
 
 	/**
@@ -286,19 +298,6 @@ protected:
 	 *  @retval bool true if data parsing successful
 	 */
 	bool processFrame(TcpClient& client, char* at, int size);
-
-	/** @brief Encode user content into a valid websocket frame
-	 *  @param type
-	 *  @param inData
-	 *  @param inLength
-	 *  @param outData
-	 *  @param outLength
-	 *  @param useMask MUST be true for client connections
-	 *  @param isFin true if this is the final frame
-	 *  @retval size_t Size of encoded frame
-	 */
-	size_t encodeFrame(ws_frame_type_t type, const char* inData, size_t inLength, char* outData, size_t outLength,
-					   bool useMask = true, bool isFin = true);
 
 protected:
 	WebsocketDelegate wsConnect = nullptr;

@@ -33,6 +33,7 @@ enum StreamType {
 	eSST_JsonObject,	 ///< JSON object data stream
 	eSST_User,			 ///< User defined data stream
 	eSST_Chain,			 ///< A stream (chain) containing multiple streams
+	eSST_Transform,		 ///< A stream that is transforming the data
 	eSST_Unknown		 ///< Unknown data stream type
 };
 
