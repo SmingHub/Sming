@@ -42,7 +42,7 @@ public:
 
 	StreamType getStreamType() const override
 	{
-		return eSST_Memory;
+		return eSST_MemoryWritable;
 	}
 
 	/** @brief  Get a pointer to the current position

@@ -44,8 +44,8 @@ bool TcpClient::send(const char* data, uint16_t len, bool forceCloseAfterSent)
 		return false;
 	}
 
-	auto memoryStream = dynamic_cast<MemoryDataStream*>(stream);
-	if(memoryStream == nullptr) {
+	auto memoryStream = static_cast<MemoryDataStream*>(stream);
+	if(memoryStream == nullptr || memoryStream->getStreamType() != eSST_MemoryWritable) {
 		memoryStream = new MemoryDataStream();
 		if(stream == nullptr) {
 			stream = memoryStream;
@@ -70,17 +70,16 @@ bool TcpClient::send(IDataSourceStream* source, bool forceCloseAfterSent)
 		return false;
 	}
 
-	// if we have already existing stream -> we check if the stream is ChainStream
 	if(stream == nullptr) {
 		stream = source;
 	}
 	else if(stream != source){
-		debug_d("Creating stream chain ...");
-		auto chainStream = dynamic_cast<StreamChain*>(stream);
-		if(chainStream != nullptr) {
+		auto chainStream = static_cast<StreamChain*>(stream);
+		if(chainStream != nullptr && chainStream->getStreamType() == eSST_Chain) {
 			chainStream->attachStream(source);
 		}
 		else {
+			debug_d("Creating stream chain ...");
 			chainStream  = new StreamChain();
 			chainStream->attachStream(stream);
 			chainStream->attachStream(source);

@@ -24,13 +24,16 @@
  *  @ingroup constants
  */
 enum StreamType {
-	eSST_Invalid,	///< Stream content not valid
-	eSST_Memory,	 ///< Memory data stream
-	eSST_File,		 ///< File data stream
-	eSST_Template,   ///< Template data stream
-	eSST_JsonObject, ///< JSON object data stream
-	eSST_User,		 ///< User defined data stream
-	eSST_Unknown	 ///< Unknown data stream type
+	eSST_Invalid,		 ///< Stream content not valid
+	eSST_Memory,		 ///< Memory stream
+	eSST_MemoryWritable, /// < Memory stream where data can be safely written to.
+						 //  Expands on demand and does not transform the data.
+	eSST_File,			 ///< File data stream
+	eSST_Template,		 ///< Template data stream
+	eSST_JsonObject,	 ///< JSON object data stream
+	eSST_User,			 ///< User defined data stream
+	eSST_Chain,			 ///< A stream (chain) containing multiple streams
+	eSST_Unknown		 ///< Unknown data stream type
 };
 
 /**
