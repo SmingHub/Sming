@@ -122,7 +122,6 @@ void TcpServer::onClientComplete(TcpClient& client, bool successful)
 bool TcpServer::onClientReceive(TcpClient& client, char* data, int size)
 {
 	debug_d("TcpSever onReceive: %s, %d bytes\r\n", client.getRemoteIp().toString().c_str(), size);
-	debug_d("Data: %s", data);
 	if(clientReceiveDelegate) {
 		return clientReceiveDelegate(client, data, size);
 	}

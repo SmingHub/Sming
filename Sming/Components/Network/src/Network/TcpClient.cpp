@@ -10,26 +10,12 @@
 
 #include "TcpClient.h"
 #include "Data/Stream/MemoryDataStream.h"
+#include "Data/Stream/StreamChain.h"
 
 void TcpClient::freeStreams()
 {
-	if(buffer != nullptr) {
-		if(buffer != stream) {
-			debug_e("TcpClient: buffer doesn't match stream");
-			delete buffer;
-		}
-		buffer = nullptr;
-	}
-
 	delete stream;
 	stream = nullptr;
-}
-
-void TcpClient::setBuffer(ReadWriteStream* stream)
-{
-	freeStreams();
-	buffer = stream;
-	this->stream = buffer;
 }
 
 bool TcpClient::connect(const String& server, int port, bool useSsl)
@@ -58,21 +44,56 @@ bool TcpClient::send(const char* data, uint16_t len, bool forceCloseAfterSent)
 		return false;
 	}
 
-	if(buffer == nullptr) {
-		setBuffer(new MemoryDataStream());
-		if(buffer == nullptr) {
-			return false;
+	auto memoryStream = static_cast<MemoryDataStream*>(stream);
+	if(memoryStream == nullptr || memoryStream->getStreamType() != eSST_MemoryWritable) {
+		memoryStream = new MemoryDataStream();
+		if(stream == nullptr) {
+			stream = memoryStream;
 		}
 	}
 
-	if(buffer->write((const uint8_t*)data, len) != len) {
+	if(memoryStream->write(data, len) != len) {
 		debug_e("TcpClient::send ERROR: Unable to store %d bytes in buffer", len);
 		return false;
 	}
 
-	debug_d("Storing %d bytes in stream", len);
+	return send(memoryStream, forceCloseAfterSent);
+}
 
-	totalSentBytes += len;
+bool TcpClient::send(IDataSourceStream* source, bool forceCloseAfterSent)
+{
+	if(state != eTCS_Connecting && state != eTCS_Connected) {
+		return false;
+	}
+
+	if(source == nullptr) {
+		return false;
+	}
+
+	if(stream == nullptr) {
+		stream = source;
+	}
+	else if(stream != source){
+		auto chainStream = static_cast<StreamChain*>(stream);
+		if(chainStream != nullptr && chainStream->getStreamType() == eSST_Chain) {
+			chainStream->attachStream(source);
+		}
+		else {
+			debug_d("Creating stream chain ...");
+			chainStream  = new StreamChain();
+			chainStream->attachStream(stream);
+			chainStream->attachStream(source);
+			stream = chainStream;
+		}
+	}
+
+	int length = source->available();
+	if(length > 0) {
+		totalSentBytes += length;
+	}
+
+	debug_d("Sending stream. Bytes to send: %d", length);
+
 	closeAfterSent = forceCloseAfterSent ? eTCCASS_AfterSent : eTCCASS_None;
 
 	return true;

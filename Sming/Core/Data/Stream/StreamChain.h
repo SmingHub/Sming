@@ -47,6 +47,11 @@ public:
 		return queue.enqueue(stream);
 	}
 
+	StreamType getStreamType() const override
+	{
+		return eSST_Chain;
+	}
+
 protected:
 	IDataSourceStream* getNextStream() override
 	{
