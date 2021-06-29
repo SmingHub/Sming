@@ -27,4 +27,5 @@
 	XX(Clocks)                                                                                                         \
 	XX(Timers)                                                                                                         \
 	XX(HttpRequest)                                                                                                    \
+	XX(TcpClient)                                                                                                      \
 	XX(Hosted)
