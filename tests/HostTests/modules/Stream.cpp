@@ -6,6 +6,7 @@
 #include <Data/Stream/XorOutputStream.h>
 #include <Data/Stream/SharedMemoryStream.h>
 #include <Data/WebHelpers/base64.h>
+#include <malloc_count.h>
 
 DEFINE_FSTR_LOCAL(template1, "Stream containing {var1}, {var2} and {var3}. {} {{}} {{12345")
 DEFINE_FSTR_LOCAL(template1_1, "Stream containing value #1, value #2 and {var3}. {} {{}} {{12345")
@@ -24,6 +25,8 @@ public:
 	void execute() override
 	{
 		const FlashString& FS_abstract = Resource::abstract_txt;
+
+		MallocCount::setLogThreshold(0);
 
 		TEST_CASE("MemoryDataStream::moveString")
 		{
@@ -165,6 +168,8 @@ public:
 			debug_hex(DBG, "Text", unmaskedString.c_str(), unmaskedString.length());
 		}
 
+		auto memStart = MallocCount::getCurrent();
+
 		TEST_CASE("SharedMemoryStream")
 		{
 			char* message = new char[18];
@@ -199,6 +204,9 @@ public:
 
 			REQUIRE(data.use_count() == 1);
 		}
+
+		debug_i("memStart = %d, now mem = %d", memStart, MallocCount::getCurrent());
+		REQUIRE(memStart == MallocCount::getCurrent());
 	}
 
 private:
