@@ -1,4 +1,5 @@
 #include <SmingCore.h>
+#include <Network/Mqtt/MqttBuffer.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -21,7 +22,6 @@
 
 // Forward declarations
 void startMqttClient();
-void onMessageReceived(String topic, String message);
 
 MqttClient mqtt;
 
@@ -40,10 +40,11 @@ void checkMQTTDisconnect(TcpClient& client, bool flag)
 	procTimer.initializeMs(2 * 1000, startMqttClient).start(); // every 2 seconds
 }
 
-void onMessageDelivered(uint16_t msgId, int type)
+int onMessageDelivered(MqttClient& client, mqtt_message_t* message)
 {
-	Serial.printf(_F("Message with id %d and QoS %d was delivered successfully.\n"), msgId,
-				  (type == MQTT_MSG_PUBREC ? 2 : 1));
+	Serial.printf(_F("Message with id %d and QoS %d was delivered successfully.\n"), message->puback.message_id,
+				  message->puback.qos);
+	return 0;
 }
 
 // Publish our message
@@ -57,16 +58,18 @@ void publishMessage()
 	Serial.println(system_get_free_heap_size());
 	mqtt.publish(F("main/frameworks/sming"), F("Hello friends, from Internet of things :)"));
 
-	mqtt.publishWithQoS(F("important/frameworks/sming"), F("Request Return Delivery"), 1, false,
-						onMessageDelivered); // or publishWithQoS
+	mqtt.publish(F("important/frameworks/sming"), F("Request Return Delivery"),
+				 MqttClient::getFlags(MQTT_QOS_AT_LEAST_ONCE));
 }
 
 // Callback for messages, arrived from MQTT server
-void onMessageReceived(String topic, String message)
+int onMessageReceived(MqttClient& client, mqtt_message_t* message)
 {
-	Serial.print(topic);
-	Serial.print(":\r\n\t"); // Prettify alignment for printing
-	Serial.println(message);
+	Serial.print("Received: ");
+	Serial.print(MqttBuffer(message->publish.topic_name));
+	Serial.print(":\r\n\t"); // Pretify alignment for printing
+	Serial.println(MqttBuffer(message->publish.content));
+	return 0;
 }
 
 // Run MQTT client
@@ -75,9 +78,12 @@ void startMqttClient()
 	procTimer.stop();
 
 	// 1. [Setup]
-	if(!mqtt.setWill(F("last/will"), F("The connection from this device is lost:("), 1, true)) {
+	if(!mqtt.setWill(F("last/will"), F("The connection from this device is lost:("),
+					 MqttClient::getFlags(MQTT_QOS_AT_LEAST_ONCE, MQTT_RETAIN_TRUE))) {
 		debugf("Unable to set the last will and testament. Most probably there is not enough memory on the device.");
 	}
+
+	mqtt.setEventHandler(MQTT_TYPE_PUBACK, onMessageDelivered);
 
 	mqtt.setConnectedHandler([](MqttClient& client, mqtt_message_t* message) {
 		Serial.print(_F("Connected to "));
@@ -91,7 +97,7 @@ void startMqttClient()
 	});
 
 	mqtt.setCompleteDelegate(checkMQTTDisconnect);
-	mqtt.setCallback(onMessageReceived);
+	mqtt.setMessageHandler(onMessageReceived);
 
 #ifdef ENABLE_SSL
 	mqtt.setSslInitHandler([](Ssl::Session& session) {

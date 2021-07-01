@@ -128,6 +128,19 @@ public:
 	/* [ Convenience methods ] */
 
 	/**
+	 * @brief Compute the flags value
+	 * @param QoS - Quality of Service
+	 * @param retain - Retain flag
+	 * @param dup - Duplicate delivery
+	 *
+	 * @retval uint8_t calculated flags value
+	 */
+	static uint8_t getFlags(mqtt_qos_t QoS, mqtt_retain_t retain = MQTT_RETAIN_FALSE, mqtt_dup_t dup = MQTT_DUP_FALSE)
+	{
+		return (retain + (QoS << 1) + (dup << 3));
+	}
+
+	/**
 	 * @brief Sets a handler to be called after successful MQTT connection
 	 *
 	 * @param handler

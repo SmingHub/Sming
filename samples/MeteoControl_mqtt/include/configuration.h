@@ -35,7 +35,6 @@ int TIMER = 20; // every N* seconds send to mqtt server
 
 // Forward declarations
 void startMqttClient();
-void onMessageReceived(String topic, String message);
 
 MqttClient mqtt;
 
