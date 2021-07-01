@@ -1,5 +1,5 @@
 #include <SmingCore.h>
-#include "MqttMessage.h"
+#include <Network/Mqtt/MqttBuffer.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
