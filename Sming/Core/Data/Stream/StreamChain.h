@@ -19,7 +19,7 @@
 /**
  * @brief Limit on number of streams in a chain
  */
-#define MAX_STREAM_CHAIN_SIZE 10
+#define MAX_STREAM_CHAIN_SIZE 100
 #endif
 
 /**
