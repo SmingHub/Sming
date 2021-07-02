@@ -236,7 +236,8 @@ bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, 
 		packetLength += 4; // we use mask with size 4 bytes
 	}
 
-	uint8_t packet[packetLength] = {};
+	uint8_t packet[packetLength];
+	memset(packet, 0, packetLength);
 
 	int i = 0;
 	// byte 0
