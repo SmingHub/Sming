@@ -107,6 +107,16 @@ public:
 		return send(data.c_str(), data.length(), forceCloseAfterSent);
 	}
 
+	/**
+	 * @brief Sends data stream
+	 *
+	 * @note This function takes ownership of the stream pointer!
+	 *
+	 * @param source stream pointer
+	 * @param forceCloseAfterSent
+	 *
+	 * @retval bool true when the stream can be used. When false the stream will be deleted.
+	 */
 	bool send(IDataSourceStream* source, bool forceCloseAfterSent = false);
 
 	bool isProcessing()

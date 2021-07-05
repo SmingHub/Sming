@@ -3,7 +3,10 @@
 #include <Data/Stream/MemoryDataStream.h>
 #include <Data/Stream/Base64OutputStream.h>
 #include <Data/Stream/ChunkedStream.h>
+#include <Data/Stream/XorOutputStream.h>
+#include <Data/Stream/SharedMemoryStream.h>
 #include <Data/WebHelpers/base64.h>
+#include <malloc_count.h>
 
 DEFINE_FSTR_LOCAL(template1, "Stream containing {var1}, {var2} and {var3}. {} {{}} {{12345")
 DEFINE_FSTR_LOCAL(template1_1, "Stream containing value #1, value #2 and {var3}. {} {{}} {{12345")
@@ -22,6 +25,8 @@ public:
 	void execute() override
 	{
 		const FlashString& FS_abstract = Resource::abstract_txt;
+
+		MallocCount::setLogThreshold(0);
 
 		TEST_CASE("MemoryDataStream::moveString")
 		{
@@ -127,6 +132,81 @@ public:
 			REQUIRE(mem.moveString(s));
 			REQUIRE(Resource::multipart_result == s);
 		}
+
+		TEST_CASE("XorOutputStream")
+		{
+			auto mem = new MemoryDataStream();
+			String input = "For testing, hack the boundary value so we can compare it against a reference output";
+			mem->write(input.c_str(), input.length());
+
+			uint8_t maskKey[4] = {0x00, 0x01, 0x02, 0x03};
+			for(uint8_t x = 0; x < sizeof(maskKey); x++) {
+				maskKey[x] = (char)os_random();
+			}
+
+			XorOutputStream encodeStream(mem, maskKey, sizeof(maskKey));
+			auto maskedStream = new MemoryDataStream();
+			while(!encodeStream.isFinished()) {
+				char buffer[21];
+				uint16_t obtained = encodeStream.readBytes(buffer, sizeof(buffer));
+				maskedStream->write(buffer, obtained);
+			}
+
+			XorOutputStream decodeStream(maskedStream, maskKey, sizeof(maskKey));
+			MemoryDataStream unmaskedStream;
+			while(!decodeStream.isFinished()) {
+				char buffer[13];
+				uint16_t obtained = decodeStream.readBytes(buffer, sizeof(buffer));
+				unmaskedStream.write(buffer, obtained);
+			}
+
+			String unmaskedString;
+			unmaskedStream.moveString(unmaskedString);
+
+			// running xor two times should produce the original content
+			REQUIRE(input == unmaskedString);
+			debug_hex(DBG, "Text", unmaskedString.c_str(), unmaskedString.length());
+		}
+
+		auto memStart = MallocCount::getCurrent();
+
+		TEST_CASE("SharedMemoryStream")
+		{
+			char* message = new char[18];
+			memcpy(message, "Wonderful data...", 17);
+			message[17] = '\0';
+
+			std::shared_ptr<const char> data(message, [&message](const char* p) { delete[] p; });
+
+			debug_d("RefCount: %d", data.use_count());
+
+			Vector<SharedMemoryStream*> list;
+			for(unsigned i = 0; i < 4; i++) {
+				list.addElement(new SharedMemoryStream(data, strlen(message)));
+			}
+
+			for(unsigned i = 0; i < list.count(); i++) {
+				size_t bufferSize = 5;
+				char buffer[bufferSize]{};
+				auto element = list[i];
+
+				String output;
+				while(!element->isFinished()) {
+					size_t consumed = element->readBytes(buffer, bufferSize);
+					output.concat(buffer, consumed);
+				}
+
+				REQUIRE(output.equals(message));
+
+				delete element;
+				debug_d("RefCount: %d", data.use_count());
+			}
+
+			REQUIRE(data.use_count() == 1);
+		}
+
+		debug_i("memStart = %d, now mem = %d", memStart, MallocCount::getCurrent());
+		REQUIRE(memStart == MallocCount::getCurrent());
 	}
 
 private:
