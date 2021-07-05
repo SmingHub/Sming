@@ -12,6 +12,10 @@
 #include <BitManipulations.h>
 #include <Crypto/Sha1.h>
 #include <Data/WebHelpers/base64.h>
+#include <Data/Stream/MemoryDataStream.h>
+#include <Data/Stream/XorOutputStream.h>
+#include <Data/Stream/SharedMemoryStream.h>
+#include <memory>
 
 DEFINE_FSTR(WSSTR_CONNECTION, "connection")
 DEFINE_FSTR(WSSTR_UPGRADE, "upgrade")
@@ -171,91 +175,132 @@ int WebsocketConnection::staticOnControlEnd(void* userData)
 	return WS_OK;
 }
 
-void WebsocketConnection::send(const char* message, size_t length, ws_frame_type_t type)
+bool WebsocketConnection::send(const char* message, size_t length, ws_frame_type_t type)
 {
-	debug_d("Sending: %s, Type: %d\n", message, type);
+	auto stream = new MemoryDataStream();
+	if(stream == nullptr) {
+		debug_e("Unable to create memory buffer");
+		return false;
+	}
+
+	size_t written = stream->write(message, length);
+	if(written != length) {
+		debug_e("Unable to store data in memory buffer");
+		return false;
+	}
+
+	return send(stream, type, isClientConnection);
+}
+
+bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, bool useMask, bool isFin)
+{
+	if(source == nullptr) {
+		return false;
+	}
+
 	if(connection == nullptr) {
-		return;
+		return false;
 	}
 
 	if(!activated) {
 		debug_e("WS Connection is not activated yet!");
-		return;
+		return false;
 	}
 
-	auto bufferLength = length + 1 + 4 + 4;
-	char buffer[bufferLength];
-	size_t outLength = encodeFrame(type, message, length, buffer, bufferLength, isClientConnection);
-	if(outLength != 0) {
-		connection->send(buffer, outLength);
-	}
-}
 
-void WebsocketConnection::broadcast(const char* message, size_t length, ws_frame_type_t type)
-{
-	for(unsigned i = 0; i < websocketList.count(); i++) {
-		websocketList[i]->send(message, length, type);
-	}
-}
-
-size_t WebsocketConnection::encodeFrame(ws_frame_type_t type, const char* inData, size_t inLength, char* outData,
-										size_t outLength, bool useMask, bool isFin)
-{
-	if(inLength > 0xFFFF) {
-		return 0; // we don't support big payloads yet
+	int available = source->available();
+	if(available < 1) {
+		debug_e("Streams without known size are not supported");
+		return false;
 	}
 
-	int headerLength = 2;
-	uint8_t maskKey[4] = {0x00, 0x00, 0x00, 0x00};
-	if(inLength > 125) {
-		headerLength = 4;
+	debug_d("Sending: %d bytes, Type: %d\n", available, type);
+
+	size_t packetLength = 2;
+	uint16_t lengthValue = available;
+
+	// calculate message length ....
+	if (available <= 125) {
+		lengthValue = available;
 	}
+	else if (available < 65536) {
+		lengthValue = 126;
+		packetLength += 2;
+	}
+	else {
+		lengthValue = 127;
+		packetLength += 8;
+	}
+
 	if(useMask) {
-		headerLength += 4; // if present, mask is 4 bytes in header before payload
+		packetLength += 4; // we use mask with size 4 bytes
 	}
 
-	if(headerLength + inLength > outLength) {
-		// not enough memory to store the data
-		return 0;
-	}
-
-	memset(outData, 0, headerLength); //set initial header state to be all zero
+	uint8_t packet[packetLength];
+	memset(packet, 0, packetLength);
 
 	int i = 0;
 	// byte 0
 	if(isFin) {
-		outData[i] |= bit(7); // set Fin
+		packet[i] |= bit(7); // set Fin
 	}
-	outData[i++] |= (uint8_t)type; // set opcode
-
+	packet[i++] |= (uint8_t)type; // set opcode
 	// byte 1
 	if(useMask) {
-		outData[i] |= bit(7); // set mask
+		packet[i] |= bit(7); // set mask
 	}
 
-	if(inLength < 126) {
-		outData[i++] |= inLength;
-	} else {
-		outData[i++] |= 126;
-		outData[i++] = ((inLength >> 8) & 0xFF);
-		outData[i++] = (inLength & 0xFF);
+	// length
+	if(lengthValue < 126) {
+		packet[i++] |= lengthValue;
+	} else if (lengthValue == 126){
+		packet[i++] |= 126;
+		packet[i++] = (available >> 8) & 0xFF;
+		packet[i++] = available & 0xFF;
+	}
+	else if(lengthValue == 127){
+		packet[i++] |= 127;
+		packet[i++] = 0;
+		packet[i++] = 0;
+		packet[i++] = 0;
+		packet[i++] = 0;
+		packet[i++] = (available >> 24) & 0xFF;
+		packet[i++] = (available >> 16) & 0xFF;
+		packet[i++] = (available >> 8)  & 0xFF;
+		packet[i++] = (available)       & 0xFF;
 	}
 
 	if(useMask) {
+		uint8_t maskKey[4] = {0x00, 0x00, 0x00, 0x00};
 		for(uint8_t x = 0; x < sizeof(maskKey); x++) {
 			maskKey[x] = (char)os_random();
-			outData[i++] = maskKey[x];
+			packet[i++] = maskKey[x];
 		}
 
-		for(size_t x = 0; x < inLength; x++) {
-			outData[i++] = (inData[x] ^ maskKey[x % 4]);
-		}
-	} else {
-		memcpy(&outData[i], inData, inLength);
-		i += inLength;
+		auto xorStream = new XorOutputStream(source, maskKey, sizeof(maskKey));
+		source = xorStream;
 	}
 
-	return i;
+	// send the header
+	if(!connection->send(reinterpret_cast<const char*>(packet), packetLength)) {
+		return false;
+	}
+
+	return connection->send(source);
+}
+
+void WebsocketConnection::broadcast(const char* message, size_t length, ws_frame_type_t type)
+{
+	char* copy = new char[length];
+	memcpy(copy, message, length);
+	std::shared_ptr<const char> data(copy, [](const char* ptr) {
+		delete[] ptr;
+	});
+
+	for(unsigned i = 0; i < websocketList.count(); i++) {
+		auto stream = new SharedMemoryStream(data, length);
+		websocketList[i]->send(stream, type);
+	}
 }
 
 void WebsocketConnection::close()

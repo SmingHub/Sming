@@ -47,9 +47,6 @@ bool TcpClient::send(const char* data, uint16_t len, bool forceCloseAfterSent)
 	auto memoryStream = static_cast<MemoryDataStream*>(stream);
 	if(memoryStream == nullptr || memoryStream->getStreamType() != eSST_MemoryWritable) {
 		memoryStream = new MemoryDataStream();
-		if(stream == nullptr) {
-			stream = memoryStream;
-		}
 	}
 
 	if(memoryStream->write(data, len) != len) {
@@ -76,13 +73,33 @@ bool TcpClient::send(IDataSourceStream* source, bool forceCloseAfterSent)
 	else if(stream != source){
 		auto chainStream = static_cast<StreamChain*>(stream);
 		if(chainStream != nullptr && chainStream->getStreamType() == eSST_Chain) {
-			chainStream->attachStream(source);
+			if(!chainStream->attachStream(source)) {
+				debug_w("Unable to attach source to existing stream chain!");
+				delete source;
+				return false;
+			}
 		}
 		else {
 			debug_d("Creating stream chain ...");
 			chainStream  = new StreamChain();
-			chainStream->attachStream(stream);
-			chainStream->attachStream(source);
+			if(!chainStream) {
+				delete source;
+				debug_w("Unable to create stream chain!");
+				return false;
+			}
+
+			if(!chainStream->attachStream(stream)) {
+				delete source;
+				debug_w("Unable to attach stream to new chain!");
+				return false;
+			}
+
+			if(!chainStream->attachStream(source)) {
+				delete source;
+				debug_w("Unable to attach source to new chain!");
+				return false;
+			}
+
 			stream = chainStream;
 		}
 	}
