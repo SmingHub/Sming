@@ -283,6 +283,7 @@ bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, 
 
 	// send the header
 	if(!connection->send(reinterpret_cast<const char*>(packet), packetLength)) {
+		delete source;
 		return false;
 	}
 

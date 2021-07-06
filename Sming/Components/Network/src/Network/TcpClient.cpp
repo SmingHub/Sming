@@ -90,12 +90,14 @@ bool TcpClient::send(IDataSourceStream* source, bool forceCloseAfterSent)
 
 			if(!chainStream->attachStream(stream)) {
 				delete source;
+				delete chainStream;
 				debug_w("Unable to attach stream to new chain!");
 				return false;
 			}
 
 			if(!chainStream->attachStream(source)) {
 				delete source;
+				delete chainStream;
 				debug_w("Unable to attach source to new chain!");
 				return false;
 			}
