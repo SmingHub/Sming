@@ -10,7 +10,7 @@ It supports multiple architectures as ESP8266 for example.
 [![Sponsors](https://opencollective.com/Sming/sponsors/badge.svg)](#financial-contributions)
 [![Download](https://img.shields.io/badge/download-~1.7M-orange.svg)](https://github.com/SmingHub/Sming/releases/latest)
 [![Build](https://travis-ci.org/SmingHub/Sming.svg?branch=develop)](https://travis-ci.org/SmingHub/Sming)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a450c9b4df08406dba81456261304ace)](https://app.codacy.com/app/slaff2/SmingOfficial?utm_source=github.com&utm_medium=referral&utm_content=SmingHub/Sming&utm_campaign=Badge_Grade_Dashboard)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/23ff16f8d550440787125b0d25ba7ada)](https://www.codacy.com/gh/SmingHub/Sming/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=SmingHub/Sming&amp;utm_campaign=Badge_Grade)
 [![Coverity Badge](https://img.shields.io/coverity/scan/12007.svg)](https://scan.coverity.com/projects/sminghub-sming)
 
 If you like **Sming**, give it a star, or fork it and [contribute](#contribute)!
