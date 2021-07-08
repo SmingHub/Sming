@@ -15,32 +15,26 @@
 
 /**
  * @brief Memory stream operating on fixed shared buffer.
+ * 
+ * One reason for templating this class is for distinction between `char` or `const char` types,
+ * to avoid dangerous casts. Elements may be structures or other types.
  *
  * @ingroup stream
  */
-
-class SharedMemoryStream : public IDataSourceStream
+template <typename T> class SharedMemoryStream : public IDataSourceStream
 {
 public:
 	/** @brief Constructor for use with pre-existing buffer
 	 *  @param buffer
-	 *  @param capacity Size of buffer
+	 *  @param capacity Size of buffer in elements
 	 */
-	SharedMemoryStream(std::shared_ptr<const char>(buffer), size_t size) : buffer(buffer), capacity(size)
+	SharedMemoryStream(std::shared_ptr<T>(buffer), size_t size) : buffer(buffer), capacity(size * sizeof(T))
 	{
 	}
 
 	StreamType getStreamType() const override
 	{
 		return eSST_Memory;
-	}
-
-	/** @brief  Get a pointer to the current position
-	 *  @retval "const char*" Pointer to current cursor position within the data stream
-	 */
-	char* getStreamPointer() const
-	{
-		return (char*)(buffer.get() + readPos);
 	}
 
 	int available() override
@@ -55,8 +49,9 @@ public:
 
 	uint16_t readMemoryBlock(char* data, int bufSize) override
 	{
-		int written = std::min(bufSize, available());
-		memcpy(data, buffer.get() + readPos, written);
+		size_t written = std::min(bufSize, available());
+		auto bufptr = reinterpret_cast<const uint8_t*>(buffer.get()) + readPos;
+		memcpy(data, bufptr, written);
 
 		return written;
 	}
@@ -77,7 +72,7 @@ public:
 	}
 
 private:
-	std::shared_ptr<const char> buffer;
+	std::shared_ptr<T> buffer;
 	size_t capacity;
 	size_t readPos{0};
 };

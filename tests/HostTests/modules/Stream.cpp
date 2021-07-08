@@ -173,16 +173,14 @@ public:
 		TEST_CASE("SharedMemoryStream")
 		{
 			char* message = new char[18];
-			memcpy(message, "Wonderful data...", 17);
-			message[17] = '\0';
-
+			memcpy(message, "Wonderful data...", 18);
 			std::shared_ptr<const char> data(message, [&message](const char* p) { delete[] p; });
 
 			debug_d("RefCount: %d", data.use_count());
 
-			Vector<SharedMemoryStream*> list;
+			Vector<SharedMemoryStream<const char>*> list;
 			for(unsigned i = 0; i < 4; i++) {
-				list.addElement(new SharedMemoryStream(data, strlen(message)));
+				list.addElement(new SharedMemoryStream<const char>(data, strlen(message)));
 			}
 
 			for(unsigned i = 0; i < list.count(); i++) {
