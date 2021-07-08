@@ -9,6 +9,7 @@
  ****/
 
 #include "AccessPointImpl.h"
+#include "StationListImpl.h"
 #include <esp_netif.h>
 #include <esp_wifi.h>
 #include <esp_system.h>
@@ -184,27 +185,9 @@ String AccessPointImpl::getPassword() const
 	return pwd;
 }
 
-const AccessPointClass::StationList AccessPointImpl::getStations() const
+std::unique_ptr<StationList> AccessPointImpl::getStations() const
 {
-	StationList stationList;
-	wifi_sta_list_t stationInfo{};
-	if(esp_wifi_ap_get_sta_list(&stationInfo) != ESP_OK) {
-		debug_w("Can't get list of connected stations");
-		return stationList;
-	}
-
-	for(unsigned i = 0; i < stationInfo.num; i++) {
-		StationInfo info{};
-		auto station = stationInfo.sta[i];
-		MacAddress mac(station.mac);
-		info.mac = mac;
-		info.rssi = station.rssi;
-		// note: ESP32 does not provide IP information
-
-		stationList.addElement(info);
-	}
-
-	return stationList;
+	return std::unique_ptr<StationList>(new StationListImpl);
 }
 
 void AccessPointImpl::onSystemReady()
