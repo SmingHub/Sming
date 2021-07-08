@@ -34,7 +34,7 @@ public:
 	IpAddress getNetworkBroadcast() const override;
 	String getSSID() const override;
 	String getPassword() const override;
-	const StationList getStations() const override;
+	std::unique_ptr<StationList> getStations() const override;
 
 protected:
 	void onSystemReady() override;
