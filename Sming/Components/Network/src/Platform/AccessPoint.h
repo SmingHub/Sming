@@ -13,6 +13,7 @@
 #include <WString.h>
 #include <IpAddress.h>
 #include <MacAddress.h>
+#include <WVector.h>
 #include "BssInfo.h"
 
 /**	@defgroup wifi_ap WiFi Access Point
@@ -32,6 +33,16 @@
 class AccessPointClass
 {
 public:
+	struct StationInfo {
+		MacAddress mac;
+		int8_t rssi;  /// <<< current average rssi of connected station.
+					  ///     available only on some architectures
+		IpAddress ip; /// <<< assigned IP address.
+					  ///     available only on some architectures
+	};
+
+	using StationList = Vector<StationInfo>;
+
 	virtual ~AccessPointClass()
 	{
 	}
@@ -129,6 +140,12 @@ public:
 	 *	@retval	String WiFi access point password
 	 */
 	virtual String getPassword() const = 0;
+
+	/**
+	 * @brief Gets a list of stations connected to the access point
+	 * @retval StationList
+	 */
+	virtual const StationList getStations() const = 0;
 };
 
 /**	@brief	Global instance of WiFi access point object

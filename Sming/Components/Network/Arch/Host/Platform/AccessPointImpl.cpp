@@ -73,3 +73,14 @@ String AccessPointImpl::getPassword() const
 {
 	return nullptr;
 }
+
+const AccessPointClass::StationList AccessPointImpl::getStations() const
+{
+	StationList stationList;
+	StationInfo info{};
+	info.mac = MacAddress({5, 4, 3, 2, 1, 0});
+	info.rssi = 64;
+	stationList.addElement(info);
+
+	return stationList;
+}

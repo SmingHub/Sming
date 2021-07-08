@@ -164,7 +164,7 @@ String AccessPointImpl::getSSID() const
 {
 	wifi_config_t config{};
 	if(esp_wifi_get_config(ESP_IF_WIFI_AP, &config) != ESP_OK) {
-		debugf("Can't read station configuration!");
+		debug_w("Can't read station configuration!");
 		return nullptr;
 	}
 	auto ssid = reinterpret_cast<const char*>(config.ap.ssid);
@@ -176,12 +176,35 @@ String AccessPointImpl::getPassword() const
 {
 	wifi_config_t config{};
 	if(esp_wifi_get_config(ESP_IF_WIFI_AP, &config) != ESP_OK) {
-		debugf("Can't read station configuration!");
+		debug_w("Can't read station configuration!");
 		return nullptr;
 	}
 	auto pwd = reinterpret_cast<const char*>(config.ap.password);
-	debugf("Pass: %s", pwd);
+	debug_d("Pass: %s", pwd);
 	return pwd;
+}
+
+const AccessPointClass::StationList AccessPointImpl::getStations() const
+{
+	StationList stationList;
+	wifi_sta_list_t stationInfo{};
+	if(esp_wifi_ap_get_sta_list(&stationInfo) != ESP_OK) {
+		debug_w("Can't get list of connected stations");
+		return stationList;
+	}
+
+	for(unsigned i = 0; i < stationInfo.num; i++) {
+		StationInfo info{};
+		auto station = stationInfo.sta[i];
+		MacAddress mac(station.mac);
+		info.mac = mac;
+		info.rssi = station.rssi;
+		// note: ESP32 does not provide IP information
+
+		stationList.addElement(info);
+	}
+
+	return stationList;
 }
 
 void AccessPointImpl::onSystemReady()

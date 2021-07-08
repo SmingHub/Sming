@@ -182,6 +182,25 @@ String AccessPointImpl::getPassword() const
 	return pwd;
 }
 
+const AccessPointClass::StationList AccessPointImpl::getStations() const
+{
+	station_info* stationInfo = wifi_softap_get_station_info();
+	StationList stationList;
+	while(stationInfo != nullptr) {
+		StationInfo info{};
+		MacAddress mac(stationInfo->bssid);
+		info.mac = mac;
+		info.ip = stationInfo->ip;
+		// note: ESP8266 does not provide RSSI information
+		stationList.addElement(info);
+
+		stationInfo = STAILQ_NEXT(stationInfo, next);
+	}
+	wifi_softap_free_station_info();
+
+	return stationList;
+}
+
 void AccessPointImpl::onSystemReady()
 {
 	if(runConfig != nullptr) {
