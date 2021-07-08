@@ -14,11 +14,14 @@
 
 #include <Data/Stream/DataSourceStream.h>
 
+/**
+ * @brief Xors original stream content with the specified mask
+ */
 class XorOutputStream : public IDataSourceStream
 {
 public:
 	/**
-	 * @brief Xors original stream content with the specified mask
+	 * @brief Constructor
 	 * @param stream pointer to the original stream. Will be deleted after use
 	 * @param mask
 	 * @param maskLenth
@@ -26,11 +29,6 @@ public:
 	XorOutputStream(IDataSourceStream* stream, uint8_t* mask, size_t maskLength)
 		: stream(stream), mask(mask), maskLength(maskLength)
 	{
-	}
-
-	~XorOutputStream()
-	{
-		delete stream;
 	}
 
 	StreamType getStreamType() const override
@@ -72,7 +70,7 @@ public:
 	}
 
 private:
-	IDataSourceStream* stream;
+	std::unique_ptr<IDataSourceStream> stream;
 	uint8_t* mask;
 	size_t maskLength;
 	size_t maskPos = 0;
