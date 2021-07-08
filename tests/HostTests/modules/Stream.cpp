@@ -122,7 +122,7 @@ public:
 
 			// For testing, hack the boundary value so we can compare it against a reference output
 			auto boundary = const_cast<char*>(multi.getBoundary());
-			memcpy(boundary, _F("oALsXuO7vSbrvve"), 16);
+			memcpy(boundary, "oALsXuO7vSbrvve", 16);
 
 			MemoryDataStream mem;
 			size_t copySize = mem.copyFrom(&multi);
