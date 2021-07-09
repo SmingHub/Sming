@@ -11,6 +11,7 @@
 #pragma once
 
 #include <Platform/StationList.h>
+#include <esp_wifi.h>
 
 class StationListImpl : public StationList
 {

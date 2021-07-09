@@ -11,14 +11,14 @@
 #pragma once
 
 #include <Platform/StationList.h>
-#include <esp_netif.h>
+#include <esp_wifi.h>
 
 class StationListImpl : public StationList
 {
 public:
 	StationListImpl()
 	{
-		err = esp_wifi_ap_get_sta_list(&stationInfo);
+		err = esp_wifi_ap_get_sta_list(&list);
 		if(err != ESP_OK) {
 			debug_w("Can't get list of connected stations");
 		}
@@ -37,7 +37,7 @@ public:
 
 	MacAddress mac() const override
 	{
-		if(isValid()) {
+		if(!isValid()) {
 			return MacAddress{};
 		}
 		return list.sta[index].mac;
@@ -45,7 +45,7 @@ public:
 
 	int8_t rssi() const override
 	{
-		if(isValid()) {
+		if(!isValid()) {
 			return 0;
 		}
 		return list.sta[index].rssi;
