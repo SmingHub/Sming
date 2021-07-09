@@ -14,21 +14,21 @@
 
 #include <Data/Stream/DataSourceStream.h>
 
-class XorOutputStream: public IDataSourceStream {
+/**
+ * @brief Xors original stream content with the specified mask
+ */
+class XorOutputStream : public IDataSourceStream
+{
 public:
 	/**
-	 * @brief Xors original stream content with the specified mask
+	 * @brief Constructor
 	 * @param stream pointer to the original stream. Will be deleted after use
 	 * @param mask
 	 * @param maskLenth
 	 */
-	XorOutputStream(IDataSourceStream *stream, uint8_t *mask, size_t maskLength) :
-			stream(stream), mask(mask), maskLength(maskLength) {
-	}
-
-	~XorOutputStream()
+	XorOutputStream(IDataSourceStream* stream, uint8_t* mask, size_t maskLength)
+		: stream(stream), mask(mask), maskLength(maskLength)
 	{
-		delete stream;
 	}
 
 	StreamType getStreamType() const override
@@ -41,11 +41,11 @@ public:
 		return stream->available();
 	}
 
-	uint16_t readMemoryBlock(char *data, int bufSize) override
+	uint16_t readMemoryBlock(char* data, int bufSize) override
 	{
 		uint16_t max = stream->readMemoryBlock(data, bufSize);
 		size_t pos = maskPos;
-		for(unsigned i=0; i<max; i++) {
+		for(unsigned i = 0; i < max; i++) {
 			pos = pos % maskLength;
 			data[i] = (data[i] ^ mask[pos]);
 			pos++;
@@ -70,8 +70,8 @@ public:
 	}
 
 private:
-	IDataSourceStream *stream;
-	uint8_t *mask;
+	std::unique_ptr<IDataSourceStream> stream;
+	uint8_t* mask;
 	size_t maskLength;
 	size_t maskPos = 0;
 };

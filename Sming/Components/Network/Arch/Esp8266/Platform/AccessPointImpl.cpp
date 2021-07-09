@@ -9,6 +9,7 @@
  ****/
 
 #include "AccessPointImpl.h"
+#include "StationListImpl.h"
 #include <Interrupts.h>
 #include <Data/HexString.h>
 
@@ -180,6 +181,11 @@ String AccessPointImpl::getPassword() const
 	auto pwd = reinterpret_cast<const char*>(config.password);
 	debugf("Pass: %s", pwd);
 	return pwd;
+}
+
+std::unique_ptr<StationList> AccessPointImpl::getStations() const
+{
+	return std::unique_ptr<StationList>(new StationListImpl);
 }
 
 void AccessPointImpl::onSystemReady()

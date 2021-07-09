@@ -207,7 +207,6 @@ bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, 
 		return false;
 	}
 
-
 	int available = source->available();
 	if(available < 1) {
 		debug_e("Streams without known size are not supported");
@@ -220,14 +219,12 @@ bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, 
 	uint16_t lengthValue = available;
 
 	// calculate message length ....
-	if (available <= 125) {
+	if(available <= 125) {
 		lengthValue = available;
-	}
-	else if (available < 65536) {
+	} else if(available < 65536) {
 		lengthValue = 126;
 		packetLength += 2;
-	}
-	else {
+	} else {
 		lengthValue = 127;
 		packetLength += 8;
 	}
@@ -253,12 +250,11 @@ bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, 
 	// length
 	if(lengthValue < 126) {
 		packet[i++] |= lengthValue;
-	} else if (lengthValue == 126){
+	} else if(lengthValue == 126) {
 		packet[i++] |= 126;
 		packet[i++] = (available >> 8) & 0xFF;
 		packet[i++] = available & 0xFF;
-	}
-	else if(lengthValue == 127){
+	} else if(lengthValue == 127) {
 		packet[i++] |= 127;
 		packet[i++] = 0;
 		packet[i++] = 0;
@@ -266,8 +262,8 @@ bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, 
 		packet[i++] = 0;
 		packet[i++] = (available >> 24) & 0xFF;
 		packet[i++] = (available >> 16) & 0xFF;
-		packet[i++] = (available >> 8)  & 0xFF;
-		packet[i++] = (available)       & 0xFF;
+		packet[i++] = (available >> 8) & 0xFF;
+		packet[i++] = (available)&0xFF;
 	}
 
 	if(useMask) {
@@ -294,12 +290,10 @@ void WebsocketConnection::broadcast(const char* message, size_t length, ws_frame
 {
 	char* copy = new char[length];
 	memcpy(copy, message, length);
-	std::shared_ptr<const char> data(copy, [](const char* ptr) {
-		delete[] ptr;
-	});
+	std::shared_ptr<const char> data(copy, [](const char* ptr) { delete[] ptr; });
 
 	for(unsigned i = 0; i < websocketList.count(); i++) {
-		auto stream = new SharedMemoryStream(data, length);
+		auto stream = new SharedMemoryStream<const char>(data, length);
 		websocketList[i]->send(stream, type);
 	}
 }

@@ -9,6 +9,7 @@
  ****/
 
 #include "AccessPointImpl.h"
+#include "StationListImpl.h"
 #include <esp_netif.h>
 #include <esp_wifi.h>
 #include <esp_system.h>
@@ -164,7 +165,7 @@ String AccessPointImpl::getSSID() const
 {
 	wifi_config_t config{};
 	if(esp_wifi_get_config(ESP_IF_WIFI_AP, &config) != ESP_OK) {
-		debugf("Can't read station configuration!");
+		debug_w("Can't read station configuration!");
 		return nullptr;
 	}
 	auto ssid = reinterpret_cast<const char*>(config.ap.ssid);
@@ -176,12 +177,17 @@ String AccessPointImpl::getPassword() const
 {
 	wifi_config_t config{};
 	if(esp_wifi_get_config(ESP_IF_WIFI_AP, &config) != ESP_OK) {
-		debugf("Can't read station configuration!");
+		debug_w("Can't read station configuration!");
 		return nullptr;
 	}
 	auto pwd = reinterpret_cast<const char*>(config.ap.password);
-	debugf("Pass: %s", pwd);
+	debug_d("Pass: %s", pwd);
 	return pwd;
+}
+
+std::unique_ptr<StationList> AccessPointImpl::getStations() const
+{
+	return std::unique_ptr<StationList>(new StationListImpl);
 }
 
 void AccessPointImpl::onSystemReady()

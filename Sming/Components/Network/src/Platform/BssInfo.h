@@ -28,6 +28,8 @@ enum WifiAuthMode {
 using WifiAuthMode = AUTH_MODE;
 #endif
 
+String toString(WifiAuthMode mode);
+
 class BssInfo
 {
 public:
@@ -42,7 +44,10 @@ public:
 	/**	@brief	Get BSS authorisation method name
 	 *	@retval	String
 	*/
-	String getAuthorizationMethodName() const;
+	String getAuthorizationMethodName() const
+	{
+		return toString(authorization);
+	}
 
 	/**	@brief	Get BSS hash ID
 	 *	@retval	uint32_t BSS hash ID

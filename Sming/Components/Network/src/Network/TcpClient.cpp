@@ -69,8 +69,7 @@ bool TcpClient::send(IDataSourceStream* source, bool forceCloseAfterSent)
 
 	if(stream == nullptr) {
 		stream = source;
-	}
-	else if(stream != source){
+	} else if(stream != source) {
 		if(stream->getStreamType() == eSST_Chain) {
 			auto chainStream = static_cast<StreamChain*>(stream);
 			if(!chainStream->attachStream(source)) {
@@ -78,10 +77,9 @@ bool TcpClient::send(IDataSourceStream* source, bool forceCloseAfterSent)
 				delete source;
 				return false;
 			}
-		}
-		else {
+		} else {
 			debug_d("Creating stream chain ...");
-			auto chainStream  = new StreamChain();
+			auto chainStream = new StreamChain();
 			if(chainStream == nullptr) {
 				delete source;
 				debug_w("Unable to create stream chain!");
