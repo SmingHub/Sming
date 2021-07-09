@@ -1,9 +1,9 @@
 
 #include "BssInfo.h"
 
-String BssInfo::getAuthorizationMethodName() const
+String toString(WifiAuthMode mode)
 {
-	switch(authorization) {
+	switch(mode) {
 	case AUTH_OPEN:
 		return F("OPEN");
 	case AUTH_WEP:
@@ -15,6 +15,6 @@ String BssInfo::getAuthorizationMethodName() const
 	case AUTH_WPA_WPA2_PSK:
 		return F("WPA_WPA2_PSK");
 	default:
-		return F("UNKNOWN_") + authorization;
+		return F("UNKNOWN_") + unsigned(mode);
 	}
 }
