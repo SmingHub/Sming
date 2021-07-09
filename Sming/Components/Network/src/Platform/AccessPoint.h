@@ -14,6 +14,8 @@
 #include <IpAddress.h>
 #include <MacAddress.h>
 #include "BssInfo.h"
+#include "StationList.h"
+#include <memory>
 
 /**	@defgroup wifi_ap WiFi Access Point
  *  @ingroup wifi platform
@@ -129,6 +131,12 @@ public:
 	 *	@retval	String WiFi access point password
 	 */
 	virtual String getPassword() const = 0;
+
+	/**
+	 * @brief Gets a list of stations connected to the access point
+	 * @retval StationList
+	 */
+	virtual std::unique_ptr<StationList> getStations() const = 0;
 };
 
 /**	@brief	Global instance of WiFi access point object

@@ -122,7 +122,7 @@ public:
 
 			// For testing, hack the boundary value so we can compare it against a reference output
 			auto boundary = const_cast<char*>(multi.getBoundary());
-			memcpy(boundary, _F("oALsXuO7vSbrvve"), 16);
+			memcpy(boundary, "oALsXuO7vSbrvve", 16);
 
 			MemoryDataStream mem;
 			size_t copySize = mem.copyFrom(&multi);
@@ -173,16 +173,14 @@ public:
 		TEST_CASE("SharedMemoryStream")
 		{
 			char* message = new char[18];
-			memcpy(message, "Wonderful data...", 17);
-			message[17] = '\0';
-
+			memcpy(message, "Wonderful data...", 18);
 			std::shared_ptr<const char> data(message, [&message](const char* p) { delete[] p; });
 
 			debug_d("RefCount: %d", data.use_count());
 
-			Vector<SharedMemoryStream*> list;
+			Vector<SharedMemoryStream<const char>*> list;
 			for(unsigned i = 0; i < 4; i++) {
-				list.addElement(new SharedMemoryStream(data, strlen(message)));
+				list.addElement(new SharedMemoryStream<const char>(data, strlen(message)));
 			}
 
 			for(unsigned i = 0; i < list.count(); i++) {

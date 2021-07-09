@@ -2,13 +2,19 @@ HWCONFIG = host-tests
 DEBUG_VERBOSE_LEVEL = 2
 
 COMPONENT_INCDIRS := include
-COMPONENT_SRCDIRS := app modules
+COMPONENT_SRCDIRS := \
+	app \
+	modules \
+	Arch/$(SMING_ARCH)
 
 ARDUINO_LIBRARIES := \
 	SmingTest \
 	ArduinoJson5 \
-	ArduinoJson6 \
-	Hosted
+	ArduinoJson6
+
+ifeq ($(SMING_ARCH),Host)
+	ARDUINO_LIBRARIES += Hosted
+endif
 
 COMPONENT_DEPENDS := \
 	malloc_count \

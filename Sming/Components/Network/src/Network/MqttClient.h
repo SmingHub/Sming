@@ -345,7 +345,7 @@ private:
 	*/
 
 #ifndef MQTT_NO_COMPAT
-	SMING_DEPRECATED MqttMessageDeliveredCallback onDelivery = nullptr;			   ///< @deprecated
+	SMING_DEPRECATED MqttMessageDeliveredCallback onDelivery = nullptr;				///< @deprecated
 	SMING_DEPRECATED MqttStringSubscriptionCallback subscriptionCallback = nullptr; ///< @deprecated
 #endif
 };
