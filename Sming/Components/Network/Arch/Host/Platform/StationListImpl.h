@@ -16,45 +16,37 @@
 class StationListImpl : public StationList
 {
 public:
-	void reset() override
+	StationListImpl()
 	{
-		index = 0;
-	}
-
-	bool next() override
-	{
-		++index;
-		return isValid();
-	}
-
-	MacAddress mac() const override
-	{
-		if(!isValid()) {
-			return MacAddress{};
+		for(unsigned i = 0; i < 5; ++i) {
+			add(new Info(i));
 		}
-		return MacAddress({5, 4, 3, 2, 1, index});
-	}
-
-	int8_t rssi() const override
-	{
-		if(!isValid()) {
-			return 0;
-		}
-		return TRange<int8_t>(-90, -20).random();
-	}
-
-	IpAddress ip() const override
-	{
-		return IpAddress(10, 0, 0, 100 + index);
 	}
 
 private:
-	static constexpr uint8_t entryCount{5};
-
-	bool isValid() const
+	class Info : public StationInfo
 	{
-		return index < entryCount;
-	}
+	public:
+		Info(int index) : index(index)
+		{
+		}
 
-	uint8_t index{0};
+		MacAddress mac() const override
+		{
+			return (index < 0) ? MacAddress{} : MacAddress({5, 4, 3, 2, 1, uint8_t(index)});
+		}
+
+		int8_t rssi() const override
+		{
+			return (index < 0) ? 0 : TRange<int8_t>(-90, -20).random();
+		}
+
+		IpAddress ip() const override
+		{
+			return (index < 0) ? IpAddress{} : IpAddress(10, 0, 0, 100 + index);
+		}
+
+	private:
+		int index;
+	};
 };

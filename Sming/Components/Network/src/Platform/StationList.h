@@ -13,25 +13,11 @@
 #include <WString.h>
 #include <IpAddress.h>
 #include <MacAddress.h>
+#include <Data/LinkedObjectList.h>
 
-class StationList
+class StationInfo : public LinkedObjectTemplate<StationInfo>
 {
 public:
-	virtual ~StationList()
-	{
-	}
-
-	/**
-	 * @brief Reset to start of list
-	 */
-	virtual void reset() = 0;
-
-	/**
-	 * @brief Query next entry
-	 * @retval bool true on success, false if there are no more entries
-	 */
-	virtual bool next() = 0;
-
 	virtual MacAddress mac() const = 0;
 
 	/**
@@ -45,6 +31,14 @@ public:
 	 * Available only on some architectures.
 	 */
 	virtual IpAddress ip() const = 0;
+};
+
+class StationList : public OwnedLinkedObjectListTemplate<StationInfo>
+{
+public:
+	virtual ~StationList()
+	{
+	}
 };
 
 /** @} */

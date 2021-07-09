@@ -18,52 +18,47 @@ class StationListImpl : public StationList
 public:
 	StationListImpl()
 	{
-		err = esp_wifi_ap_get_sta_list(&list);
+		auto err = esp_wifi_ap_get_sta_list(&list);
 		if(err != ESP_OK) {
 			debug_w("Can't get list of connected stations");
+			return;
 		}
-	}
-
-	void reset() override
-	{
-		index = 0;
-	}
-
-	bool next() override
-	{
-		++index;
-		return isValid();
-	}
-
-	MacAddress mac() const override
-	{
-		if(!isValid()) {
-			return MacAddress{};
+		for(unsigned i = 0; i < list.num; i++) {
+			add(new Info{list.sta[i]});
 		}
-		return list.sta[index].mac;
-	}
-
-	int8_t rssi() const override
-	{
-		if(!isValid()) {
-			return 0;
-		}
-		return list.sta[index].rssi;
-	}
-
-	// Note: ESP32 does not provide IP information
-	IpAddress ip() const override
-	{
-		return IpAddress{};
 	}
 
 private:
-	bool isValid() const
+	class Info : public StationInfo
 	{
-		return int(index) < list.num;
-	}
+	public:
+		Info()
+		{
+		}
+
+		Info(wifi_sta_info_t& info) : info(&info)
+		{
+		}
+
+		MacAddress mac() const override
+		{
+			return info ? MacAddress{info->mac} : MacAddress{};
+		}
+
+		int8_t rssi() const override
+		{
+			return info ? info->rssi : 0;
+		}
+
+		// Note: ESP32 does not provide IP information
+		IpAddress ip() const override
+		{
+			return IpAddress{};
+		}
+
+	private:
+		wifi_sta_info_t* info{nullptr};
+	};
 
 	wifi_sta_list_t list{};
-	esp_err_t err;
-	unsigned index{0};
 };
