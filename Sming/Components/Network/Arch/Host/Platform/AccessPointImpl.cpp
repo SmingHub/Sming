@@ -9,6 +9,7 @@
  ****/
 
 #include "AccessPointImpl.h"
+#include "StationListImpl.h"
 
 static AccessPointImpl accessPoint;
 AccessPointClass& WifiAccessPoint = accessPoint;
@@ -74,13 +75,7 @@ String AccessPointImpl::getPassword() const
 	return nullptr;
 }
 
-const AccessPointClass::StationList AccessPointImpl::getStations() const
+std::unique_ptr<StationList> AccessPointImpl::getStations() const
 {
-	StationList stationList;
-	StationInfo info{};
-	info.mac = MacAddress({5, 4, 3, 2, 1, 0});
-	info.rssi = 64;
-	stationList.addElement(info);
-
-	return stationList;
+	return std::unique_ptr<StationList>(new StationListImpl);
 }
