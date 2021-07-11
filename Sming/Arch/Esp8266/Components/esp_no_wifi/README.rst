@@ -74,6 +74,10 @@ If you want to disassemble other SDK libraries, do this::
 Known issues
 ------------
 
+-  Call to `spi_flash_get_id()` hangs in application code
+-  ROMs must be located below 1M
+   SDK implementation of `Cache_Read_Enable_New()` has internal flag which doesn't get initialised (default is 0xff, must be 1 or the function does nothing).
+
 Further work is required to implement the following (list incomplete):
 
 -  Sleep/power saving modes
