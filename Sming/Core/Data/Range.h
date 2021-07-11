@@ -105,3 +105,8 @@ template <typename T> struct TRange {
 		return s;
 	}
 };
+
+template <typename T> inline String toString(TRange<T> range)
+{
+	return range.toString();
+}
