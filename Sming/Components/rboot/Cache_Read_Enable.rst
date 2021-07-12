@@ -62,3 +62,84 @@ Where SOC_CACHE_SIZE is defined as::
    #endif
 
 
+06/04/2021 @author mikee47 UPDATE
+---------------------------------
+
+RTOS SDK code has changed, now see usage in ``esp_fast_boot.c``.
+Call looks like this::
+
+   Cache_Read_Enable(sub_region, region, SOC_CACHE_SIZE);
+
+See ``esp_fast_boot_restart()``. Code (rearranged) looks like this::
+
+   extern void pm_goto_rf_on(void);
+   extern void clockgate_watchdog(int on);
+
+   int esp_fast_boot_restart(void)
+   {
+      const esp_partition_t* to_boot = esp_ota_get_boot_partition();
+      if (!to_boot) {
+         ESP_LOGI(TAG, "no OTA boot partition");
+         to_boot = esp_ota_get_running_partition();
+         if (!to_boot) {
+               ESP_LOGE(TAG, "ERROR: Fail to get running partition");
+               return -EINVAL;
+         }
+      }
+
+      uint32_t image_start = to_boot->address;
+      uint32_t image_size = to_boot->size - 4;
+
+      esp_image_header_t image;
+      int ret = spi_flash_read(image_start, &image, sizeof(esp_image_header_t));
+      if (ret != ESP_OK) {
+         ESP_LOGE(TAG, "ERROR: Fail to read image head from spi flash error=%d", ret);
+         return -EIO;
+      }
+
+      uint32_t image_entry = image.entry_addr;
+      uint8_t region;
+      if (image_start < 0x200000) {
+         region = 0;
+      } else if (image_start < 0x400000) {
+         region = 1;
+      } else if (image_start < 0x600000) {
+         region = 2;
+      } else if (image_start < 0x800000) {
+         region = 3;
+      } else {
+         ESP_LOGE(TAG, "ERROR: App bin error, start_addr 0x%08x image_len %d\n", image_start, image_size);
+         return -EINVAL;
+      }
+
+      uint8_t sub_region;
+      uint32_t image_mask =  image_start & 0x1fffff;
+      if (image_mask < 0x100000) {
+         sub_region = 0;
+      } else {
+         sub_region = 1;
+      }
+
+      pm_goto_rf_on();
+      clockgate_watchdog(0);
+      REG_WRITE(0x3ff00018, 0xffff00ff);
+      SET_PERI_REG_MASK(0x60000D48, BIT1);
+      CLEAR_PERI_REG_MASK(0x60000D48, BIT1);
+
+      REG_WRITE(INT_ENA_WDEV, 0);
+      _xt_isr_mask(UINT32_MAX);
+
+      const uint32_t sp = DRAM_BASE + DRAM_SIZE - 16;
+
+      Cache_Read_Disable();
+      Cache_Read_Enable(sub_region, region, SOC_CACHE_SIZE);
+
+      __asm__ __volatile__(
+         "mov    a1, %0\n"
+         : : "a"(sp) : "memory"
+      );
+
+      void (*user_start)(size_t start_addr);
+      user_start = (void *)entry_addr;
+      user_start(image_start);
+   }
