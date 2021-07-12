@@ -62,6 +62,8 @@ public:
 		return getStreamType() != eSST_Invalid;
 	}
 
+	using Stream::readBytes;
+
 	size_t readBytes(char* buffer, size_t length) override;
 
 	/** @brief  Read a block of memory

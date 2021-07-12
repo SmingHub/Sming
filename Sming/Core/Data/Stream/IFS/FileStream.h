@@ -69,6 +69,8 @@ public:
 		return readBytes(&c, 1) ? static_cast<unsigned char>(c) : -1;
 	}
 
+	using ReadWriteStream::readBytes;
+
 	size_t readBytes(char* buffer, size_t length) override;
 
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
