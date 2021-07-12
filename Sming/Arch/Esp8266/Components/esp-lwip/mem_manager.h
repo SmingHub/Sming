@@ -55,7 +55,7 @@
 //#define configADJUSTED_HEAP_SIZE	( configTOTAL_HEAP_SIZE - portBYTE_ALIGNMENT )
 
 //static unsigned char ucHeap[ configTOTAL_HEAP_SIZE ];
-static unsigned char *ucHeap;
+// static unsigned char *ucHeap;
 
 typedef struct A_BLOCK_LINK
 {
@@ -67,7 +67,7 @@ static const unsigned short heapSTRUCT_SIZE	= ( sizeof( xBlockLink ) + portBYTE_
 
 //static const size_t xTotalHeapSize = ( ( size_t ) configADJUSTED_HEAP_SIZE ) & ( ( size_t ) ~portBYTE_ALIGNMENT_MASK );
 
-static xBlockLink xStart, *pxEnd = NULL;
+// static xBlockLink xStart, *pxEnd = NULL;
 
 //static size_t xFreeBytesRemaining = ( ( size_t ) configADJUSTED_HEAP_SIZE ) & ( ( size_t ) ~portBYTE_ALIGNMENT_MASK );
 
