@@ -105,6 +105,11 @@ public:
      */
 	virtual size_t readBytes(char* buffer, size_t length);
 
+	size_t readBytes(uint8_t* buffer, size_t length)
+	{
+		return readBytes(reinterpret_cast<char*>(buffer), length);
+	}
+
 	/**
      * @brief As `readBytes()` with terminator character
      *
