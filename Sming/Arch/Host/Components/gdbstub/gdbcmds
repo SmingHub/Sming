@@ -1,3 +1,5 @@
+handle SIGUSR1 nostop noprint
+
 # Enable this if you want to log all traffic between GDB and the stub
 #set remotelogfile gdb_rsp_logfile.txt
 
