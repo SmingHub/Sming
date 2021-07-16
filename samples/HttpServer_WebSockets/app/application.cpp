@@ -1,5 +1,8 @@
 #include <SmingCore.h>
 #include <Network/Http/Websocket/WebsocketResource.h>
+
+#include <Network/Http/Resource/HttpEventedResource.h>
+
 #include "CUserData.h"
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
@@ -108,7 +111,30 @@ void startWebServer()
 	wsResource->setBinaryHandler(wsBinaryReceived);
 	wsResource->setDisconnectionHandler(wsDisconnected);
 
-	server.paths.set("/ws", wsResource);
+
+	auto eventedResource = new HttpEventedResource(wsResource);
+
+	auto callback = [](HttpServerConnection& connection, const char *body, size_t length) {
+		auto request = connection.getRequest();
+		debug_d("URI: %s", request->uri);
+		return true;
+	};
+
+	eventedResource->addEvent(HttpEventedResource::EVENT_PATH, callback, 5);
+	eventedResource->addEvent(HttpEventedResource::EVENT_PATH, callback, 4);
+	eventedResource->addEvent(HttpEventedResource::EVENT_PATH, callback, 3);
+	eventedResource->addEvent(HttpEventedResource::EVENT_PATH, callback, 2);
+	eventedResource->addEvent(HttpEventedResource::EVENT_PATH, callback, 3);
+
+
+	server.paths.set("/ws", eventedResource);
+//	server.paths.set("/protected", onIndex, HttpAuthBasic("realm", "username", "password"));
+//	server.paths.set("/ip", onIndex, HttpAuthIp(IpAddress("192.168.13.0"), IpAddress("255.255.255.0")));
+
+//	HttpResourceChain chain;
+//	chain.add(HttpAuthIp("192.168.13.0", "255.255.255.0"));
+//	chain.add(HttpAuthBasic("Protected Area", "username", "password"));
+//	server.paths.set("/ipauth", onIndex, chain);
 
 	Serial.println(F("\r\n=== WEB SERVER STARTED ==="));
 	Serial.println(WifiStation.getIP());
