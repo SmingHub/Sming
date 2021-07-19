@@ -1,7 +1,7 @@
 #include <SmingCore.h>
 #include <Network/Http/Websocket/WebsocketResource.h>
-
 #include <Network/Http/Resource/HttpEventedResource.h>
+#include <Network/Http/Resource/HttpAuth.h>
 
 #include "CUserData.h"
 
@@ -116,20 +116,29 @@ void startWebServer()
 
 	auto callback = [](HttpServerConnection& connection, const char *body, size_t length) {
 		auto request = connection.getRequest();
-		debug_d("URI: %s", request->uri);
+		debug_d("URI: %s", request->uri.Path.c_str());
 		return true;
 	};
 
-	eventedResource->addEvent(HttpEventedResource::EVENT_PATH, callback, 5);
-	eventedResource->addEvent(HttpEventedResource::EVENT_PATH, callback, 4);
-	eventedResource->addEvent(HttpEventedResource::EVENT_PATH, callback, 3);
-	eventedResource->addEvent(HttpEventedResource::EVENT_PATH, callback, 2);
-	eventedResource->addEvent(HttpEventedResource::EVENT_PATH, callback, 3);
+	eventedResource->addEvent(HttpEventedResource::EVENT_HEADERS, callback, 4);
+	eventedResource->addEvent(HttpEventedResource::EVENT_HEADERS, callback, 5);
+	eventedResource->addEvent(HttpEventedResource::EVENT_HEADERS, callback, 3);
+	eventedResource->addEvent(HttpEventedResource::EVENT_HEADERS, callback, 2);
+	eventedResource->addEvent(HttpEventedResource::EVENT_HEADERS, callback, -1);
 
+	auto list = eventedResource->getEvents(HttpEventedResource::EVENT_HEADERS);
+	if(list != nullptr) {
+		auto start = list->getHead();
+		while(start != nullptr) {
+			debug_d("Priority: %d, Callback %x", start->priority, start->data);
+			start = start->next;
+		}
+	}
 
 	server.paths.set("/ws", eventedResource);
 //	server.paths.set("/protected", onIndex, HttpAuthBasic("realm", "username", "password"));
-//	server.paths.set("/ip", onIndex, HttpAuthIp(IpAddress("192.168.13.0"), IpAddress("255.255.255.0")));
+//	server.paths.set("/ip", onIndex, ResourceIpAuth(IpAddress("192.168.13.0"), IpAddress("255.255.255.0")), ResourceBasicAuth("realm", "username", "password"));
+	server.paths.set("/ip", onIndex, ResourceIpAuth(IpAddress("192.168.13.0"), IpAddress("255.255.255.0")));
 
 //	HttpResourceChain chain;
 //	chain.add(HttpAuthIp("192.168.13.0", "255.255.255.0"));

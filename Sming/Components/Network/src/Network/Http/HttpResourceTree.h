@@ -13,6 +13,8 @@
 #pragma once
 
 #include "HttpResource.h"
+#include "Resource/HttpEventedResource.h"
+#include "Resource/HttpResourcePlugin.h"
 
 using HttpPathDelegate = Delegate<void(HttpRequest& request, HttpResponse& response)>;
 
@@ -70,6 +72,34 @@ public:
 		HttpResource* resource = new HttpResource;
 		resource->onRequestComplete = onRequestComplete;
 		set(path, resource);
+	}
+
+	void set(const String& path, const HttpResourceDelegate& onRequestComplete, HttpResourcePlugin plugin)
+	{
+		HttpResource* resource = get(path);
+		if(resource == nullptr) {
+			HttpResource* resource = new HttpResource;
+			resource->onRequestComplete = onRequestComplete;
+
+			auto eventedResource = new HttpEventedResource(resource);
+			plugin(*eventedResource);
+			set(path, resource);
+
+			return;
+		}
+
+
+		if(resource->getType() == HttpResource::EVENTED_RESOURCE) {
+			plugin(*(static_cast<HttpEventedResource*>(resource)));
+		}
+	}
+
+
+	template <class H, class... Tail>
+	void set(const String& path, const HttpResourceDelegate& onRequestComplete, H plugin, Tail... plugins)
+	{
+		set(path, onRequestComplete, plugin);
+		set(path, onRequestComplete, plugins...);
 	}
 
 	/**
