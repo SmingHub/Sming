@@ -16,11 +16,8 @@ void listDevices()
 		Serial.print(toString(dev.getType()));
 		Serial.print(_F(", size = 0x"));
 		Serial.print(dev.getSize(), HEX);
-#ifndef DISABLE_WIFI
-		// KNOWN ISSUE: Call to `spi_flash_get_id()` hangs in application code
 		Serial.print(_F(", ID = 0x"));
 		Serial.print(dev.getId(), HEX);
-#endif
 		Serial.println();
 	}
 	Serial.println();
