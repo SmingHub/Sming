@@ -9,9 +9,7 @@
  *
  ****/
 
-
-template <typename ObjectType>
-class PriorityNode
+template <typename ObjectType> class PriorityNode
 {
 public:
 	ObjectType data;
@@ -19,21 +17,25 @@ public:
 	PriorityNode* next;
 };
 
-
-template <typename ObjectType>
-class PriorityNodeList
+template <typename ObjectType> class PriorityList
 {
 public:
-	~PriorityNodeList()
+	~PriorityList()
 	{
-		auto start = head;
-		while(start !=nullptr) {
-			auto temp = start;
-			start = start->next;
-			delete temp;
+		auto current = head;
+		while(current != nullptr) {
+			auto next = current->next;
+			delete current;
+			current = next;
 		}
 	}
 
+	/**
+	 * @brief Adds and element and orders it according to its priority. Order is: High to low.
+	 * @param prioty
+	 *
+	 * @retval bool true on success
+	 */
 	bool add(ObjectType object, int priority)
 	{
 		auto node = new PriorityNode<ObjectType>{};
@@ -49,28 +51,31 @@ public:
 			return true;
 		}
 
-		auto start = head;
-		if(start->priority < node->priority) {
-			node->next = start;
+		auto current = head;
+		if(current->priority < node->priority) {
+			node->next = current;
 			head = node;
-			return  true;
+			return true;
 		}
 
-		while(start->next != nullptr && start->next->priority > node->priority) {
-			start = start->next;
+		while(current->next != nullptr && current->next->priority > node->priority) {
+			current = current->next;
 		}
 
-		node->next = start->next;
-		start->next = node;
+		node->next = current->next;
+		current->next = node;
 
 		return true;
 	}
 
+	/**
+	 * @brief Gets the head of the ordered linked list
+	 * @retval pointer
+	 */
 	PriorityNode<ObjectType>* getHead() const
 	{
 		return head;
 	}
-
 
 private:
 	PriorityNode<ObjectType>* head = nullptr;

@@ -33,12 +33,59 @@ private:
 
 /* HttpResourceTree */
 
-void HttpResourceTree::set(String path, const HttpPathDelegate& callback)
+void HttpResourceTree::set(const String path, HttpResource* resource, HttpResourcePlugin* plugin)
+{
+	if(resource == nullptr) {
+		return;
+	}
+
+	HttpResource* oldResource = get(path);
+	bool replaceResource = true;
+	if(oldResource == resource) {
+		replaceResource = false;
+	}
+
+	if(plugin != nullptr) {
+		if(resource->getType() != HttpResource::EVENTED_RESOURCE) {
+			resource = new HttpEventedResource(resource);
+		}
+
+		plugin->registerPlugin(*(static_cast<HttpEventedResource*>(resource)));
+		if(!loadedPlugins.contains(plugin)) {
+			loadedPlugins.addElement(plugin);
+		}
+	}
+
+	if(replaceResource) {
+		set(path, resource);
+	}
+}
+
+void HttpResourceTree::set(const String& path, const HttpResourceDelegate& onRequestComplete,
+						   HttpResourcePlugin* plugin)
+{
+	auto resource = get(path);
+	if(resource == nullptr) {
+		debug_i("'%s' registered", path.c_str());
+		resource = new HttpResource;
+		resource->onRequestComplete = onRequestComplete;
+	}
+
+	set(path, resource, plugin);
+}
+
+void HttpResourceTree::set(String path, const HttpPathDelegate& callback, HttpResourcePlugin* plugin)
 {
 	if(path.length() > 1 && path.endsWith("/")) {
 		path.remove(path.length() - 1);
 	}
-	debug_i("'%s' registered", path.c_str());
 
-	set(path, new HttpCompatResource(callback));
+	HttpResource* resource = get(path);
+	if(resource == nullptr) {
+		debug_i("'%s' registered", path.c_str());
+
+		resource = new HttpCompatResource(callback);
+	}
+
+	set(path, resource, plugin);
 }

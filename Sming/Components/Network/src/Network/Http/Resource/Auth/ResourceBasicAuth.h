@@ -14,23 +14,23 @@
 #include "../HttpResourcePlugin.h"
 #include <Data/WebHelpers/base64.h>
 
-class ResourceBasicAuth
+class ResourceBasicAuth : public HttpResourcePlugin
 {
 public:
 	ResourceBasicAuth(const String& realm, const String& username, const String& password)
-			: realm(realm), username(username), password(password)
+		: realm(realm), username(username), password(password)
 	{
 	}
 
-	bool operator()(HttpEventedResource& resource)
+	bool registerPlugin(HttpEventedResource& resource) override
 	{
-		return resource.addEvent(HttpEventedResource::EVENT_HEADERS, HttpEventedResource::EventCallback(&ResourceBasicAuth::authenticate, this), 1);
+		return resource.addEvent(HttpEventedResource::EVENT_HEADERS,
+								 HttpEventedResource::EventCallback(&ResourceBasicAuth::authenticate, this), 1);
 	}
 
-	bool authenticate(HttpServerConnection& connection, const char* at, size_t length) const
+	bool authenticate(HttpServerConnection& connection, const char* at, size_t length)
 	{
 		auto request = connection.getRequest();
-
 		auto& headers = request->headers;
 		auto authorization = headers[HTTP_HEADER_AUTHORIZATION];
 		if(authorization) {
@@ -66,6 +66,7 @@ public:
 
 		return false;
 	}
+
 private:
 	String realm;
 	String username;

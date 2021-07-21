@@ -34,11 +34,7 @@ using HttpResourceDelegate =
 class HttpResource
 {
 public:
-
-	enum Type {
-		RESOURCE,
-		EVENTED_RESOURCE
-	};
+	enum Type { RESOURCE, EVENTED_RESOURCE };
 
 	virtual Type getType()
 	{
@@ -57,7 +53,7 @@ public:
 	}
 
 public:
-	HttpResourceDelegate onUrlComplete = nullptr;		 ///< URL is ready
+	HttpResourceDelegate onUrlComplete = nullptr;			 ///< URL is ready. Path and status code are available
 	HttpServerConnectionBodyDelegate onBody = nullptr;		 ///< resource wants to process the raw body data
 	HttpResourceDelegate onHeadersComplete = nullptr;		 ///< headers are ready
 	HttpResourceDelegate onRequestComplete = nullptr;		 ///< request is complete OR upgraded

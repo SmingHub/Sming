@@ -14,16 +14,17 @@
 #include "../HttpResourcePlugin.h"
 #include <Data/WebHelpers/base64.h>
 
-class ResourceIpAuth
+class ResourceIpAuth : public HttpResourcePlugin
 {
 public:
 	ResourceIpAuth(IpAddress ip, IpAddress netmask) : ip(ip), netmask(netmask)
 	{
 	}
 
-	bool operator()(HttpEventedResource& resource)
+	bool registerPlugin(HttpEventedResource& resource) override
 	{
-		return resource.addEvent(HttpEventedResource::EVENT_URL, HttpEventedResource::EventCallback(&ResourceIpAuth::authenticate,this), 1);
+		return resource.addEvent(HttpEventedResource::EVENT_URL,
+								 HttpEventedResource::EventCallback(&ResourceIpAuth::authenticate, this), 1);
 	}
 
 	bool authenticate(HttpServerConnection& connection, const char* at, size_t length)

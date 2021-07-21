@@ -8,86 +8,104 @@ HttpEventedResource::HttpEventedResource(HttpResource* resource)
 	// [ Register the main events with priority 0 ]
 	addEvent(EventType::EVENT_URL, [this](HttpServerConnection& connection, const char* at = nullptr, int length = 0) {
 		if(delegate->onUrlComplete) {
-			return delegate->onUrlComplete(connection, *connection.getRequest(), *connection.getResponse());
+			auto hasError = delegate->onUrlComplete(connection, *connection.getRequest(), *connection.getResponse());
+			if(hasError) {
+				return false;
+			}
 		}
 
-		return 0;
+		return true;
 	});
 
-	addEvent(EventType::EVENT_HEADERS, [this](HttpServerConnection& connection, const char* at = nullptr, int length = 0) {
-		if(delegate->onHeadersComplete) {
-			return delegate->onHeadersComplete(connection, *connection.getRequest(), *connection.getResponse());
-		}
+	addEvent(EventType::EVENT_HEADERS,
+			 [this](HttpServerConnection& connection, const char* at = nullptr, int length = 0) {
+				 if(delegate->onHeadersComplete) {
+					 auto hasError =
+						 delegate->onHeadersComplete(connection, *connection.getRequest(), *connection.getResponse());
+					 if(hasError) {
+						 return false;
+					 }
+				 }
 
-		return 0;
-	});
+				 return true;
+			 });
 
-	addEvent(EventType::EVENT_UPGRADE, [this](HttpServerConnection& connection, const char* at = nullptr, int length = 0) {
+	addEvent(EventType::EVENT_UPGRADE, [this](HttpServerConnection& connection, const char* at = nullptr,
+											  int length = 0) {
 		if(delegate->onUpgrade) {
-			return delegate->onUpgrade(connection, *connection.getRequest(), const_cast<char*>(at), length);
+			auto hasError = delegate->onUpgrade(connection, *connection.getRequest(), const_cast<char*>(at), length);
+			if(hasError) {
+				return false;
+			}
 		}
 
-		return 0;
+		return true;
 	});
 
 	addEvent(EventType::EVENT_BODY, [this](HttpServerConnection& connection, const char* at = nullptr, int length = 0) {
 		if(delegate->onBody) {
-			return delegate->onBody(connection, *connection.getRequest(), at, length);
+			auto hasError = delegate->onBody(connection, *connection.getRequest(), at, length);
+			if(hasError) {
+				return false;
+			}
 		}
 
-		return 0;
+		return true;
 	});
 
+	addEvent(EventType::EVENT_COMPLETE,
+			 [this](HttpServerConnection& connection, const char* at = nullptr, int length = 0) {
+				 if(delegate->onRequestComplete) {
+					 auto hasError =
+						 delegate->onRequestComplete(connection, *connection.getRequest(), *connection.getResponse());
+					 if(hasError) {
+						 return false;
+					 }
+				 }
 
-	addEvent(EventType::EVENT_COMPLETE, [this](HttpServerConnection& connection, const char* at = nullptr, int length = 0) {
-		if(delegate->onRequestComplete) {
-			return delegate->onRequestComplete(connection, *connection.getRequest(), *connection.getResponse());
-		}
-
-		return 0;
-	});
-
+				 return true;
+			 });
 
 	// [ Register the resource callbacks ]
 	onUrlComplete = [this](HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) -> int {
-		return runEvent(EventType::EVENT_URL, connection, nullptr, 0, true);
+		return runEvent(EventType::EVENT_URL, connection, nullptr, 0);
 	};
 
 	onHeadersComplete = [this](HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) -> int {
-		return runEvent(EventType::EVENT_HEADERS, connection, nullptr, 0, true);
+		return runEvent(EventType::EVENT_HEADERS, connection, nullptr, 0);
 	};
 
 	onUpgrade = [this](HttpServerConnection& connection, HttpRequest& request, char* at, int length) -> int {
-		return runEvent(EventType::EVENT_UPGRADE, connection, nullptr, 0, false);
+		return runEvent(EventType::EVENT_UPGRADE, connection, nullptr, 0);
 	};
 
 	onBody = [this](HttpServerConnection& connection, HttpRequest& request, const char* at, int length) -> int {
-		return runEvent(EventType::EVENT_BODY, connection, at, length, true);
+		return runEvent(EventType::EVENT_BODY, connection, at, length);
 	};
 
 	onRequestComplete = [this](HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) -> int {
-		return runEvent(EventType::EVENT_COMPLETE, connection, nullptr, 0, false);
+		return runEvent(EventType::EVENT_COMPLETE, connection, nullptr, 0);
 	};
 }
 
-int HttpEventedResource::runEvent(EventType type, HttpServerConnection& connection, const char* at, int length, bool skip)
+int HttpEventedResource::runEvent(EventType type, HttpServerConnection& connection, const char* at, int length)
 {
 	auto request = connection.getRequest();
-	if(skip && request->args) {
+	if(request->headers[SKIP_HEADER] == "1") {
 		// skip this event
 		return 0;
 	}
 
 	auto list = getEvents(type);
 	if(list != nullptr) {
-		auto start = list->getHead();
-		while(start != nullptr) {
-			bool success = start->data(connection, at, length);
+		auto current = list->getHead();
+		while(current != nullptr) {
+			bool success = current->data(connection, at, length);
 			if(!success) {
-				request->args = (void*)1;
+				request->headers[SKIP_HEADER] = "1";
 				break;
 			}
-			start = start->next;
+			current = current->next;
 		}
 	}
 
@@ -96,9 +114,9 @@ int HttpEventedResource::runEvent(EventType type, HttpServerConnection& connecti
 
 bool HttpEventedResource::addEvent(EventType type, EventCallback callback, int priority)
 {
-	PriorityNodeList<EventCallback>* list = events[type];
+	PriorityList<EventCallback>* list = events[type];
 	if(list == nullptr) {
-		list = new PriorityNodeList<EventCallback>();
+		list = new PriorityList<EventCallback>();
 		events[type] = list;
 	}
 

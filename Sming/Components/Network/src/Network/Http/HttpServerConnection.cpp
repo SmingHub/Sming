@@ -53,7 +53,12 @@ int HttpServerConnection::onPath(const Url& uri)
 		resource = resourceTree->getDefault();
 	}
 
-	return 0;
+	int hasError = 0;
+	if(resource != nullptr && resource->onUrlComplete) {
+		hasError = resource->onUrlComplete(*this, request, response);
+	}
+
+	return hasError;
 }
 
 int HttpServerConnection::onMessageComplete(http_parser* parser)

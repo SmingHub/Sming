@@ -15,6 +15,7 @@
 #include "HttpResource.h"
 #include "Resource/HttpEventedResource.h"
 #include "Resource/HttpResourcePlugin.h"
+#include <WVector.h>
 
 using HttpPathDelegate = Delegate<void(HttpRequest& request, HttpResponse& response)>;
 
@@ -28,6 +29,13 @@ using HttpPathDelegate = Delegate<void(HttpRequest& request, HttpResponse& respo
 class HttpResourceTree : public ObjectMap<String, HttpResource>
 {
 public:
+	~HttpResourceTree()
+	{
+		for(unsigned i = 0; i < loadedPlugins.count(); i++) {
+			delete loadedPlugins[i];
+		}
+	}
+
 	/** @brief Set the default resource handler
 	 *  @param resource The default resource handler
 	 */
@@ -74,29 +82,13 @@ public:
 		set(path, resource);
 	}
 
-	void set(const String& path, const HttpResourceDelegate& onRequestComplete, HttpResourcePlugin plugin)
-	{
-		HttpResource* resource = get(path);
-		if(resource == nullptr) {
-			HttpResource* resource = new HttpResource;
-			resource->onRequestComplete = onRequestComplete;
+	void set(const String path, HttpResource* resource, HttpResourcePlugin* plugin);
 
-			auto eventedResource = new HttpEventedResource(resource);
-			plugin(*eventedResource);
-			set(path, resource);
+	void set(const String& path, const HttpResourceDelegate& onRequestComplete, HttpResourcePlugin* plugin);
 
-			return;
-		}
-
-
-		if(resource->getType() == HttpResource::EVENTED_RESOURCE) {
-			plugin(*(static_cast<HttpEventedResource*>(resource)));
-		}
-	}
-
-
-	template <class H, class... Tail>
-	void set(const String& path, const HttpResourceDelegate& onRequestComplete, H plugin, Tail... plugins)
+	template <class... Tail>
+	void set(const String& path, const HttpResourceDelegate& onRequestComplete, HttpResourcePlugin* plugin,
+			 Tail... plugins)
 	{
 		set(path, onRequestComplete, plugin);
 		set(path, onRequestComplete, plugins...);
@@ -106,8 +98,19 @@ public:
 	 * @brief Add a new path resource with a callback
 	 * @param path URL path
 	 * @param callback The callback that will handle this path
+	 * @param plugin - optional resource plugin
 	 * @note Path should start with slash. Trailing slashes will be removed
 	 * @note Any existing handler for this path is replaced
 	 */
-	void set(String path, const HttpPathDelegate& callback);
+	void set(String path, const HttpPathDelegate& callback, HttpResourcePlugin* plugin = nullptr);
+
+	template <class... Tail>
+	void set(const String& path, const HttpPathDelegate& callback, HttpResourcePlugin* plugin, Tail... plugins)
+	{
+		set(path, callback, plugin);
+		set(path, callback, plugins...);
+	}
+
+private:
+	Vector<HttpResourcePlugin*> loadedPlugins;
 };

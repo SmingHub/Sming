@@ -18,16 +18,10 @@
 class HttpEventedResource : public HttpResource
 {
 public:
-	enum EventType {
-		EVENT_URL,
-		EVENT_HEADERS,
-		EVENT_UPGRADE,
-		EVENT_BODY,
-		EVENT_COMPLETE
-	};
+	enum EventType { EVENT_URL, EVENT_HEADERS, EVENT_UPGRADE, EVENT_BODY, EVENT_COMPLETE };
 
-	using EventCallback=Delegate<bool(HttpServerConnection&, const char*, size_t)>;
-	using Events=ObjectMap<EventType, PriorityNodeList<EventCallback>>;
+	using EventCallback = Delegate<bool(HttpServerConnection&, const char*, size_t)>;
+	using Events = ObjectMap<EventType, PriorityList<EventCallback>>;
 
 	/**
 	 * @brief Constructor
@@ -35,28 +29,28 @@ public:
 	 */
 	HttpEventedResource(HttpResource* resource);
 
-	HttpResource::Type getType() override
-	{
-		return HttpResource::Type::EVENTED_RESOURCE;
-	}
-
-	int runEvent(EventType type, HttpServerConnection& connection, const char* at = nullptr, int length = 0, bool skip = false);
-
-	bool addEvent(EventType type, EventCallback callback, int priority = 0);
-
-	const PriorityNodeList<EventCallback>* getEvents(EventType type) const
-	{
-		return events[type];
-	}
-
 	~HttpEventedResource()
 	{
 		delete delegate;
 	}
 
+	Type getType() override
+	{
+		return Type::EVENTED_RESOURCE;
+	}
+
+	int runEvent(EventType type, HttpServerConnection& connection, const char* at = nullptr, int length = 0);
+
+	bool addEvent(EventType type, EventCallback callback, int priority = 0);
+
+	const PriorityList<EventCallback>* getEvents(EventType type) const
+	{
+		return events[type];
+	}
+
 private:
+	static constexpr char SKIP_HEADER[]{2, 1, 0};
+
 	const HttpResource* delegate = nullptr; // << once set the delegate is owned by this class
 	Events events;
-
-
 };

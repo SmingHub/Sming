@@ -13,4 +13,12 @@
 
 #include "HttpEventedResource.h"
 
-using HttpResourcePlugin=Delegate<bool(HttpEventedResource& resource)>;
+class HttpResourcePlugin
+{
+public:
+	virtual ~HttpResourcePlugin()
+	{
+	}
+
+	virtual bool registerPlugin(HttpEventedResource& resource) = 0;
+};
