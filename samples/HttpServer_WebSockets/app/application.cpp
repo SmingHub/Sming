@@ -1,6 +1,7 @@
 #include <SmingCore.h>
 #include <Network/Http/Websocket/WebsocketResource.h>
 #include <Network/Http/Resource/HttpAuth.h>
+#include <Network/Http/Resource/Content/DecoderContent.h>
 #include "CUserData.h"
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
@@ -96,10 +97,9 @@ void wsDisconnected(WebsocketConnection& socket)
 	socket.broadcast(message);
 }
 
-int onTest(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
+void onTest(HttpRequest& request, HttpResponse& response)
 {
-	onIndex(request, response);
-	return 0;
+	debug_d("Got content: %s", request.getBody().c_str());
 }
 
 void startWebServer()
@@ -107,6 +107,8 @@ void startWebServer()
 	server.listen(80);
 	server.paths.set("/", onIndex);
 	server.paths.setDefault(onFile);
+
+	server.setBodyParser(MIME_FORM_URL_ENCODED, bodyToStringParser);
 
 	// Web Sockets configuration
 	auto wsResource = new WebsocketResource();
@@ -121,6 +123,8 @@ void startWebServer()
 	server.paths.set("/protected", onIndex, pluginBasicAuth);
 	server.paths.set("/ip", onIndex, new ResourceIpAuth(IpAddress("192.168.13.0"), IpAddress("255.255.255.0")),
 					 pluginBasicAuth);
+
+	server.paths.set("/test", onTest, new DecoderContent());
 
 	Serial.println(F("\r\n=== WEB SERVER STARTED ==="));
 	Serial.println(WifiStation.getIP());

@@ -166,22 +166,24 @@ int HttpServerConnection::onBody(const char* at, size_t length)
 		return 0;
 	}
 
-	if(bodyParser) {
-		const size_t consumed = bodyParser(request, at, length);
-		if(consumed != length) {
-			hasContentError = true;
-			if(closeOnContentError) {
-				return -1;
-			}
-		}
-	}
-
+	char* data = const_cast<char*>(at);
+	int dataLength = length;
 	if(resource != nullptr && resource->onBody) {
-		const int result = resource->onBody(*this, request, at, length);
+		const int result = resource->onBody(*this, request, &data, &dataLength);
 		if(result != 0) {
 			hasContentError = true;
 			if(closeOnContentError) {
 				return result;
+			}
+		}
+	}
+
+	if(bodyParser) {
+		const size_t consumed = bodyParser(request, data, dataLength);
+		if(consumed != length) {
+			hasContentError = true;
+			if(closeOnContentError) {
+				return -1;
 			}
 		}
 	}

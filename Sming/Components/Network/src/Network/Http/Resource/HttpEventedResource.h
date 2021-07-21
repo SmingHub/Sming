@@ -20,7 +20,7 @@ class HttpEventedResource : public HttpResource
 public:
 	enum EventType { EVENT_URL, EVENT_HEADERS, EVENT_UPGRADE, EVENT_BODY, EVENT_COMPLETE };
 
-	using EventCallback = Delegate<bool(HttpServerConnection&, const char*, size_t)>;
+	using EventCallback = Delegate<bool(HttpServerConnection&, char**, int*)>;
 	using Events = ObjectMap<EventType, PriorityList<EventCallback>>;
 
 	/**
@@ -39,7 +39,7 @@ public:
 		return Type::EVENTED_RESOURCE;
 	}
 
-	int runEvent(EventType type, HttpServerConnection& connection, const char* at = nullptr, int length = 0);
+	int runEvent(EventType type, HttpServerConnection& connection, char** at = nullptr, int* length = nullptr);
 
 	bool addEvent(EventType type, EventCallback callback, int priority = 0);
 

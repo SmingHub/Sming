@@ -27,7 +27,7 @@ public:
 								 HttpEventedResource::EventCallback(&ResourceIpAuth::authenticate, this), 1);
 	}
 
-	bool authenticate(HttpServerConnection& connection, const char* at, size_t length)
+	bool authenticate(HttpServerConnection& connection, char** at, int* length)
 	{
 		auto remoteIp = connection.getRemoteIp();
 		if(remoteIp.compare(ip, netmask)) {

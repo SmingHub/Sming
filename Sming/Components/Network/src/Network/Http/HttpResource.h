@@ -21,7 +21,7 @@
 class HttpServerConnection;
 
 using HttpServerConnectionBodyDelegate =
-	Delegate<int(HttpServerConnection& connection, HttpRequest&, const char* at, int length)>;
+	Delegate<int(HttpServerConnection& connection, HttpRequest&, char** at, int* length)>;
 using HttpServerConnectionUpgradeDelegate =
 	Delegate<int(HttpServerConnection& connection, HttpRequest&, char* at, int length)>;
 using HttpResourceDelegate =
