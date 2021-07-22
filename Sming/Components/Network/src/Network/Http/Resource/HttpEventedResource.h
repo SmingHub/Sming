@@ -49,8 +49,6 @@ public:
 	}
 
 private:
-	static constexpr char SKIP_HEADER[]{2, 1, 0};
-
 	const HttpResource* delegate = nullptr; // << once set the delegate is owned by this class
 	Events events;
 };

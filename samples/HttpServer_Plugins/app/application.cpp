@@ -59,7 +59,7 @@ void startWebServer()
 	 * to get an idea how to create your own plugin.
 	 * You can run the following curl command to test this plugin:
 	 *
-	 * 		curl -vvv http://username@192.168.13.10/test -d "text=1" -H "Content-Encoding: test"
+	 * 		curl -vvv http://username@192.168.13.10/test -d "1234" -H "Content-Encoding: test"
 	 *
 	 * 	make sure to replace the IP address with the IP address of your HttpServer
 	 */

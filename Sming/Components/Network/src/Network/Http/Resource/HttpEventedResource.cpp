@@ -1,6 +1,8 @@
 #include "HttpEventedResource.h"
 #include "../HttpServerConnection.h"
 
+static constexpr char SKIP_HEADER[]{2, 1, 0};
+
 HttpEventedResource::HttpEventedResource(HttpResource* resource)
 {
 	delegate = resource;
