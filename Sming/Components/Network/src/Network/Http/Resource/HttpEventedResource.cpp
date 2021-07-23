@@ -5,7 +5,7 @@ static constexpr char SKIP_HEADER[]{2, 1, 0};
 
 HttpEventedResource::HttpEventedResource(HttpResource* resource)
 {
-	delegate = resource;
+	delegate.reset(resource);
 
 	// [ Register the main events with priority 0 ]
 	addEvent(EventType::EVENT_URL, [this](HttpServerConnection& connection, char** at = nullptr,

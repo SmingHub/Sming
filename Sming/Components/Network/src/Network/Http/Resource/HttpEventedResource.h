@@ -30,11 +30,6 @@ public:
 	 */
 	HttpEventedResource(HttpResource* resource);
 
-	~HttpEventedResource()
-	{
-		delete delegate;
-	}
-
 	Type getType() override
 	{
 		return Type::EVENTED_RESOURCE;
@@ -50,6 +45,6 @@ public:
 	}
 
 private:
-	const HttpResource* delegate = nullptr; // << once set the delegate is owned by this class
+	std::unique_ptr<const HttpResource> delegate;
 	Events events;
 };
