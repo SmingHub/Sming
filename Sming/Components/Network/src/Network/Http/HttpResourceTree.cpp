@@ -33,17 +33,14 @@ private:
 
 /* HttpResourceTree */
 
-void HttpResourceTree::set(const String path, HttpResource* resource, HttpResourcePlugin* plugin)
+void HttpResourceTree::set(const String& path, HttpResource* resource, HttpResourcePlugin* plugin)
 {
 	if(resource == nullptr) {
 		return;
 	}
 
 	HttpResource* oldResource = get(path);
-	bool replaceResource = true;
-	if(oldResource == resource) {
-		replaceResource = false;
-	}
+	bool replaceResource = (oldResource != resource);
 
 	if(plugin != nullptr) {
 		if(resource->getType() != HttpResource::EVENTED_RESOURCE) {

@@ -74,7 +74,7 @@ public:
 		set(path, resource);
 	}
 
-	void set(const String path, HttpResource* resource, HttpResourcePlugin* plugin);
+	void set(const String& path, HttpResource* resource, HttpResourcePlugin* plugin);
 
 	void set(const String& path, const HttpResourceDelegate& onRequestComplete, HttpResourcePlugin* plugin);
 
