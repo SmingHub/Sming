@@ -5,26 +5,27 @@ static constexpr char SKIP_HEADER[]{2, 1, 0};
 
 HttpEventedResource::HttpEventedResource(HttpResource* resource)
 {
-	delegate.reset(resource);
+	originalResource.reset(resource);
 
 	// [ Register the main events with priority 0 ]
-	addEvent(EventType::EVENT_URL, [this](HttpServerConnection& connection, char** at = nullptr,
-										  int* length = nullptr) {
-		if(delegate->onUrlComplete) {
-			auto hasError = delegate->onUrlComplete(connection, *connection.getRequest(), *connection.getResponse());
-			if(hasError) {
-				return false;
+	addEvent(
+		EventType::EVENT_URL, [this](HttpServerConnection& connection, char** at = nullptr, int* length = nullptr) {
+			if(originalResource->onUrlComplete) {
+				auto hasError =
+					originalResource->onUrlComplete(connection, *connection.getRequest(), *connection.getResponse());
+				if(hasError) {
+					return false;
+				}
 			}
-		}
 
-		return true;
-	});
+			return true;
+		});
 
 	addEvent(EventType::EVENT_HEADERS,
 			 [this](HttpServerConnection& connection, char** at = nullptr, int* length = nullptr) {
-				 if(delegate->onHeadersComplete) {
-					 auto hasError =
-						 delegate->onHeadersComplete(connection, *connection.getRequest(), *connection.getResponse());
+				 if(originalResource->onHeadersComplete) {
+					 auto hasError = originalResource->onHeadersComplete(connection, *connection.getRequest(),
+																		 *connection.getResponse());
 					 if(hasError) {
 						 return false;
 					 }
@@ -35,8 +36,8 @@ HttpEventedResource::HttpEventedResource(HttpResource* resource)
 
 	addEvent(EventType::EVENT_UPGRADE,
 			 [this](HttpServerConnection& connection, char** at = nullptr, int* length = nullptr) {
-				 if(delegate->onUpgrade) {
-					 auto hasError = delegate->onUpgrade(connection, *connection.getRequest(), *at, *length);
+				 if(originalResource->onUpgrade) {
+					 auto hasError = originalResource->onUpgrade(connection, *connection.getRequest(), *at, *length);
 					 if(hasError) {
 						 return false;
 					 }
@@ -47,8 +48,8 @@ HttpEventedResource::HttpEventedResource(HttpResource* resource)
 
 	addEvent(EventType::EVENT_BODY,
 			 [this](HttpServerConnection& connection, char** at = nullptr, int* length = nullptr) {
-				 if(delegate->onBody) {
-					 auto hasError = delegate->onBody(connection, *connection.getRequest(), at, length);
+				 if(originalResource->onBody) {
+					 auto hasError = originalResource->onBody(connection, *connection.getRequest(), at, length);
 					 if(hasError) {
 						 return false;
 					 }
@@ -59,9 +60,9 @@ HttpEventedResource::HttpEventedResource(HttpResource* resource)
 
 	addEvent(EventType::EVENT_COMPLETE,
 			 [this](HttpServerConnection& connection, char** at = nullptr, int* length = nullptr) {
-				 if(delegate->onRequestComplete) {
-					 auto hasError =
-						 delegate->onRequestComplete(connection, *connection.getRequest(), *connection.getResponse());
+				 if(originalResource->onRequestComplete) {
+					 auto hasError = originalResource->onRequestComplete(connection, *connection.getRequest(),
+																		 *connection.getResponse());
 					 if(hasError) {
 						 return false;
 					 }

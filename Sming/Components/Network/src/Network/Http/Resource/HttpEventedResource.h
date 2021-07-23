@@ -45,6 +45,6 @@ public:
 	}
 
 private:
-	std::unique_ptr<const HttpResource> delegate;
+	std::unique_ptr<const HttpResource> originalResource;
 	Events events;
 };
