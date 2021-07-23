@@ -102,14 +102,12 @@ int HttpEventedResource::runEvent(EventType type, HttpServerConnection& connecti
 
 	auto list = getEvents(type);
 	if(list != nullptr) {
-		auto current = list->getHead();
-		while(current != nullptr) {
-			bool success = current->data(connection, at, length);
+		for(auto& current : *list) {
+			bool success = current.data(connection, at, length);
 			if(!success) {
 				request->headers[SKIP_HEADER] = "1";
 				break;
 			}
-			current = current->next;
 		}
 	}
 
@@ -118,10 +116,9 @@ int HttpEventedResource::runEvent(EventType type, HttpServerConnection& connecti
 
 bool HttpEventedResource::addEvent(EventType type, EventCallback callback, int priority)
 {
-	PriorityList<EventCallback>* list = events[type];
-	if(list == nullptr) {
-		list = new PriorityList<EventCallback>();
-		events[type] = list;
+	auto list = events[type];
+	if(!list) {
+		list = new EventList();
 	}
 
 	return list->add(callback, priority);

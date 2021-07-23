@@ -21,7 +21,8 @@ public:
 	enum EventType { EVENT_URL, EVENT_HEADERS, EVENT_UPGRADE, EVENT_BODY, EVENT_COMPLETE };
 
 	using EventCallback = Delegate<bool(HttpServerConnection&, char**, int*)>;
-	using Events = ObjectMap<EventType, PriorityList<EventCallback>>;
+	using EventList = PriorityList<EventCallback>;
+	using Events = ObjectMap<EventType, EventList>;
 
 	/**
 	 * @brief Constructor
@@ -43,7 +44,7 @@ public:
 
 	bool addEvent(EventType type, EventCallback callback, int priority = 0);
 
-	const PriorityList<EventCallback>* getEvents(EventType type) const
+	const EventList* getEvents(EventType type) const
 	{
 		return events[type];
 	}

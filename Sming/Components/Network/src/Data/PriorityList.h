@@ -9,74 +9,55 @@
  *
  ****/
 
-template <typename ObjectType> class PriorityNode
+#include <Data/LinkedObjectList.h>
+
+template <typename ObjectType> class PriorityNode : public LinkedObjectTemplate<PriorityNode<ObjectType>>
 {
 public:
+	PriorityNode(ObjectType data, int priority) : data(data), priority(priority)
+	{
+	}
+
 	ObjectType data;
 	int priority;
-	PriorityNode* next;
 };
 
-template <typename ObjectType> class PriorityList
+template <typename ObjectType> class PriorityList : public OwnedLinkedObjectListTemplate<PriorityNode<ObjectType>>
 {
 public:
-	~PriorityList()
-	{
-		auto current = head;
-		while(current != nullptr) {
-			auto next = current->next;
-			delete current;
-			current = next;
-		}
-	}
+	using List = OwnedLinkedObjectListTemplate<PriorityNode<ObjectType>>;
 
 	/**
 	 * @brief Adds and element and orders it according to its priority. Order is: High to low.
-	 * @param prioty
+	 * @param object
+	 * @param priority
 	 *
 	 * @retval bool true on success
 	 */
 	bool add(ObjectType object, int priority)
 	{
-		auto node = new PriorityNode<ObjectType>{};
+		auto node = new PriorityNode<ObjectType>{object, priority};
 		if(node == nullptr) {
 			return false;
 		}
 
-		node->data = object;
-		node->priority = priority;
-
-		if(head == nullptr) {
-			head = node;
+		if(List::isEmpty()) {
+			List::add(node);
 			return true;
 		}
 
-		auto current = head;
+		auto current = this->head();
 		if(current->priority < node->priority) {
-			node->next = current;
-			head = node;
+			List::insert(node);
 			return true;
 		}
 
-		while(current->next != nullptr && current->next->priority > node->priority) {
-			current = current->next;
+		while(current->next() != nullptr && current->getNext()->priority > node->priority) {
+			current = current->getNext();
 		}
 
-		node->next = current->next;
-		current->next = node;
+		node->insertAfter(current);
 
 		return true;
 	}
-
-	/**
-	 * @brief Gets the head of the ordered linked list
-	 * @retval pointer
-	 */
-	PriorityNode<ObjectType>* getHead() const
-	{
-		return head;
-	}
-
-private:
-	PriorityNode<ObjectType>* head = nullptr;
 };
