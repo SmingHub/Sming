@@ -51,9 +51,7 @@ void HttpResourceTree::set(const String path, HttpResource* resource, HttpResour
 		}
 
 		plugin->registerPlugin(*(static_cast<HttpEventedResource*>(resource)));
-		if(!loadedPlugins.contains(plugin)) {
-			loadedPlugins.addElement(plugin);
-		}
+		loadedPlugins.add(plugin);
 	}
 
 	if(replaceResource) {

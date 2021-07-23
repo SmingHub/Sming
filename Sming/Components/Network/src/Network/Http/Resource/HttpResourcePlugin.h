@@ -12,13 +12,12 @@
 #pragma once
 
 #include "HttpEventedResource.h"
+#include <Data/LinkedObjectList.h>
 
-class HttpResourcePlugin
+class HttpResourcePlugin : public LinkedObjectTemplate<HttpResourcePlugin>
 {
 public:
-	virtual ~HttpResourcePlugin()
-	{
-	}
+	using OwnedList = OwnedLinkedObjectListTemplate<HttpResourcePlugin>;
 
 	virtual bool registerPlugin(HttpEventedResource& resource) = 0;
 };

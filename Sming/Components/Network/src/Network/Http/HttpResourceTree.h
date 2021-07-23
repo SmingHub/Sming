@@ -15,7 +15,6 @@
 #include "HttpResource.h"
 #include "Resource/HttpEventedResource.h"
 #include "Resource/HttpResourcePlugin.h"
-#include <WVector.h>
 
 using HttpPathDelegate = Delegate<void(HttpRequest& request, HttpResponse& response)>;
 
@@ -29,13 +28,6 @@ using HttpPathDelegate = Delegate<void(HttpRequest& request, HttpResponse& respo
 class HttpResourceTree : public ObjectMap<String, HttpResource>
 {
 public:
-	~HttpResourceTree()
-	{
-		for(unsigned i = 0; i < loadedPlugins.count(); i++) {
-			delete loadedPlugins[i];
-		}
-	}
-
 	/** @brief Set the default resource handler
 	 *  @param resource The default resource handler
 	 */
@@ -112,5 +104,5 @@ public:
 	}
 
 private:
-	Vector<HttpResourcePlugin*> loadedPlugins;
+	HttpResourcePlugin::OwnedList loadedPlugins;
 };
