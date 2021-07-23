@@ -47,12 +47,12 @@ bool ContentDecoderPlugin::onHeaders(HttpServerConnection& connection, char** at
 bool ContentDecoderPlugin::onUrl(HttpServerConnection& connection, char** at, int* length)
 {
 	auto response = connection.getResponse();
-	String content = response->headers["Accept-Encoding"];
+	String content = response->headers[HTTP_HEADER_ACCEPT_ENCODING];
 	if(content.length() > 0) {
 		content += ", ";
 	}
 	content += ENCODING_NAME;
-	response->headers["Accept-Encoding"] = content;
+	response->headers[HTTP_HEADER_ACCEPT_ENCODING] = content;
 
 	return true;
 }
