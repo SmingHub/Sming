@@ -13,11 +13,18 @@
 
 #include "HttpEventedResource.h"
 #include <Data/LinkedObjectList.h>
+#include <Network/Http/HttpServerConnection.h>
 
 class HttpResourcePlugin : public LinkedObjectTemplate<HttpResourcePlugin>
 {
 public:
 	using OwnedList = OwnedLinkedObjectListTemplate<HttpResourcePlugin>;
 
+	/**
+	 * @brief Every plugin should implement this function to register its events.
+	 * @param resource
+	 *
+	 * @retval bool true on success
+	 */
 	virtual bool registerPlugin(HttpEventedResource& resource) = 0;
 };
