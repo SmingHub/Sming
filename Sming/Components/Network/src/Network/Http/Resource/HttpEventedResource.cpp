@@ -8,68 +8,63 @@ HttpEventedResource::HttpEventedResource(HttpResource* resource)
 	originalResource.reset(resource);
 
 	// [ Register the main events with priority 0 ]
-	addEvent(
-		EventType::EVENT_URL, [this](HttpServerConnection& connection, char** at = nullptr, int* length = nullptr) {
-			if(originalResource->onUrlComplete) {
-				auto hasError =
-					originalResource->onUrlComplete(connection, *connection.getRequest(), *connection.getResponse());
-				if(hasError) {
-					return false;
-				}
+	addEvent(EventType::EVENT_URL, [this](HttpServerConnection& connection, char** at, int* length) {
+		if(originalResource->onUrlComplete) {
+			auto hasError =
+				originalResource->onUrlComplete(connection, *connection.getRequest(), *connection.getResponse());
+			if(hasError) {
+				return false;
 			}
+		}
 
-			return true;
-		});
+		return true;
+	});
 
-	addEvent(EventType::EVENT_HEADERS,
-			 [this](HttpServerConnection& connection, char** at = nullptr, int* length = nullptr) {
-				 if(originalResource->onHeadersComplete) {
-					 auto hasError = originalResource->onHeadersComplete(connection, *connection.getRequest(),
-																		 *connection.getResponse());
-					 if(hasError) {
-						 return false;
-					 }
-				 }
+	addEvent(EventType::EVENT_HEADERS, [this](HttpServerConnection& connection, char** at, int* length) {
+		if(originalResource->onHeadersComplete) {
+			auto hasError =
+				originalResource->onHeadersComplete(connection, *connection.getRequest(), *connection.getResponse());
+			if(hasError) {
+				return false;
+			}
+		}
 
-				 return true;
-			 });
+		return true;
+	});
 
-	addEvent(EventType::EVENT_UPGRADE,
-			 [this](HttpServerConnection& connection, char** at = nullptr, int* length = nullptr) {
-				 if(originalResource->onUpgrade) {
-					 auto hasError = originalResource->onUpgrade(connection, *connection.getRequest(), *at, *length);
-					 if(hasError) {
-						 return false;
-					 }
-				 }
+	addEvent(EventType::EVENT_UPGRADE, [this](HttpServerConnection& connection, char** at, int* length) {
+		if(originalResource->onUpgrade) {
+			auto hasError = originalResource->onUpgrade(connection, *connection.getRequest(), *at, *length);
+			if(hasError) {
+				return false;
+			}
+		}
 
-				 return true;
-			 });
+		return true;
+	});
 
-	addEvent(EventType::EVENT_BODY,
-			 [this](HttpServerConnection& connection, char** at = nullptr, int* length = nullptr) {
-				 if(originalResource->onBody) {
-					 auto hasError = originalResource->onBody(connection, *connection.getRequest(), at, length);
-					 if(hasError) {
-						 return false;
-					 }
-				 }
+	addEvent(EventType::EVENT_BODY, [this](HttpServerConnection& connection, char** at, int* length) {
+		if(originalResource->onBody) {
+			auto hasError = originalResource->onBody(connection, *connection.getRequest(), at, length);
+			if(hasError) {
+				return false;
+			}
+		}
 
-				 return true;
-			 });
+		return true;
+	});
 
-	addEvent(EventType::EVENT_COMPLETE,
-			 [this](HttpServerConnection& connection, char** at = nullptr, int* length = nullptr) {
-				 if(originalResource->onRequestComplete) {
-					 auto hasError = originalResource->onRequestComplete(connection, *connection.getRequest(),
-																		 *connection.getResponse());
-					 if(hasError) {
-						 return false;
-					 }
-				 }
+	addEvent(EventType::EVENT_COMPLETE, [this](HttpServerConnection& connection, char** at, int* length) {
+		if(originalResource->onRequestComplete) {
+			auto hasError =
+				originalResource->onRequestComplete(connection, *connection.getRequest(), *connection.getResponse());
+			if(hasError) {
+				return false;
+			}
+		}
 
-				 return true;
-			 });
+		return true;
+	});
 
 	// [ Register the resource callbacks ]
 	onUrlComplete = [this](HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) -> int {
