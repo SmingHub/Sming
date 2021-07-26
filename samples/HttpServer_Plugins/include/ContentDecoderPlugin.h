@@ -18,6 +18,7 @@ class ContentDecoderPlugin : public HttpResourcePlugin
 public:
 	bool registerPlugin(HttpEventedResource& resource) override;
 
+private:
 	bool onHeaders(HttpServerConnection& connection, char** at, int* length);
 
 	bool onUrl(HttpServerConnection& connection, char** at, int* length);
