@@ -47,13 +47,9 @@ HttpResource* HttpResourceTree::set(String path, const HttpPathDelegate& callbac
 		path.remove(path.length() - 1);
 	}
 
-	HttpResource* resource = get(path);
-	if(resource == nullptr) {
-		debug_i("'%s' registered", path.c_str());
+	debug_i("'%s' registered", path.c_str());
 
-		resource = new HttpCompatResource(callback);
-	}
-
-	set(path, resource);
-	return resource;
+	auto res = new HttpCompatResource(callback);
+	set(path, res);
+	return res;
 }
