@@ -11,7 +11,7 @@
 
 namespace
 {
-HttpServer server;
+HttpServer* server;
 
 void echoContentBody(HttpRequest& request, HttpResponse& response)
 {
@@ -24,21 +24,23 @@ void echoContentBody(HttpRequest& request, HttpResponse& response)
 
 void startWebServer()
 {
-	server.listen(80);
-	server.paths.set("/", echoContentBody);
-	server.paths.setDefault(echoContentBody);
+	server = new HttpServer;
+
+	server->listen(80);
+	server->paths.set("/", echoContentBody);
+	server->paths.setDefault(echoContentBody);
 
 	/*
 	 * By default the server does not store the incoming information.
 	 * There has to be either a plugin that does this or a body parser.
 	 * In this sample we use a body parser that stores the information into memory.
 	 */
-	server.setBodyParser(MIME_FORM_URL_ENCODED, bodyToStringParser);
+	server->setBodyParser(MIME_FORM_URL_ENCODED, bodyToStringParser);
 
 	// Here we use a simple plugin that protects the access to a resource using HTTP Basic Authentication
 	auto pluginBasicAuth = new ResourceBasicAuth("realm", "username", "password");
-	// You can add one  or more authentication methods or other plugins...
-	server.paths.set("/auth", echoContentBody, pluginBasicAuth);
+	// You can add one or more authentication methods or other plugins...
+	server->paths.set("/auth", echoContentBody, pluginBasicAuth);
 
 	/*
 	 * The plugins will be registered in the order in which they are provided.
@@ -50,8 +52,8 @@ void startWebServer()
 	 *
 	 * make sure to replace the IP address with the IP address of your HttpServer
 	*/
-	server.paths.set("/ip-n-auth", echoContentBody,
-					 new ResourceIpAuth(IpAddress("192.168.13.0"), IpAddress("255.255.255.0")), pluginBasicAuth);
+	server->paths.set("/ip-n-auth", echoContentBody,
+					  new ResourceIpAuth(IpAddress("192.168.13.0"), IpAddress("255.255.255.0")), pluginBasicAuth);
 
 	/*
 	 * This content coming to this resource is modified on the fly
@@ -63,7 +65,7 @@ void startWebServer()
 	 *
 	 * 	make sure to replace the IP address with the IP address of your HttpServer
 	 */
-	server.paths.set("/test", echoContentBody, new ContentDecoderPlugin());
+	server->paths.set("/test", echoContentBody, new ContentDecoderPlugin());
 
 	Serial.println(F("\r\n=== WEB SERVER STARTED ==="));
 	Serial.println(WifiStation.getIP());
@@ -74,6 +76,7 @@ void startWebServer()
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	startWebServer();
+	debug_i("free heap = %u", system_get_free_heap_size());
 }
 
 } // namespace

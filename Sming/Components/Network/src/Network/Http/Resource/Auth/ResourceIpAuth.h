@@ -21,13 +21,12 @@ public:
 	{
 	}
 
-	bool registerPlugin(HttpEventedResource& resource) override
+	int getPriority() const
 	{
-		return resource.addEvent(HttpEventedResource::EVENT_URL,
-								 HttpEventedResource::EventCallback(&ResourceIpAuth::authenticate, this), 1);
+		return 1;
 	}
 
-	bool authenticate(HttpServerConnection& connection, char** at, int* length)
+	bool urlComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) override
 	{
 		auto remoteIp = connection.getRemoteIp();
 		if(remoteIp.compare(ip, netmask)) {
@@ -36,9 +35,7 @@ public:
 		}
 
 		// specify that the resource is protected...
-		auto response = connection.getResponse();
-		response->code = HTTP_STATUS_UNAUTHORIZED;
-
+		response.code = HTTP_STATUS_UNAUTHORIZED;
 		return false;
 	}
 

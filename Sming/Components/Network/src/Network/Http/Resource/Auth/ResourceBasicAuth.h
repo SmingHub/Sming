@@ -22,16 +22,14 @@ public:
 	{
 	}
 
-	bool registerPlugin(HttpEventedResource& resource) override
+	int getPriority() const
 	{
-		return resource.addEvent(HttpEventedResource::EVENT_HEADERS,
-								 HttpEventedResource::EventCallback(&ResourceBasicAuth::authenticate, this), 1);
+		return 1;
 	}
 
-	bool authenticate(HttpServerConnection& connection, char** at, int* length)
+	bool headersComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) override
 	{
-		auto request = connection.getRequest();
-		auto& headers = request->headers;
+		auto& headers = request.headers;
 		auto authorization = headers[HTTP_HEADER_AUTHORIZATION];
 		if(authorization) {
 			// check the authorization
@@ -59,10 +57,9 @@ public:
 			}
 		}
 
-		auto response = connection.getResponse();
 		// specify that the resource is protected...
-		response->code = HTTP_STATUS_UNAUTHORIZED;
-		response->headers[HTTP_HEADER_WWW_AUTHENTICATE] = F("Basic realm=\"") + realm + "\"";
+		response.code = HTTP_STATUS_UNAUTHORIZED;
+		response.headers[HTTP_HEADER_WWW_AUTHENTICATE] = F("Basic realm=\"") + realm + "\"";
 
 		return false;
 	}

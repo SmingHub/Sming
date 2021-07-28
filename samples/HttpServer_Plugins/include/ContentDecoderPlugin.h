@@ -16,12 +16,12 @@
 class ContentDecoderPlugin : public HttpResourcePlugin
 {
 public:
-	bool registerPlugin(HttpEventedResource& resource) override;
+	int getPriority() const override
+	{
+		return 1;
+	}
 
-private:
-	bool onHeaders(HttpServerConnection& connection, char** at, int* length);
-
-	bool onUrl(HttpServerConnection& connection, char** at, int* length);
-
-	bool onBody(HttpServerConnection& connection, char** at, int* length);
+	bool headersComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) override;
+	bool urlComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) override;
+	bool bodyReceived(HttpServerConnection& connection, HttpRequest& request, char*& data, size_t& length) override;
 };

@@ -53,12 +53,7 @@ int HttpServerConnection::onPath(const Url& uri)
 		resource = resourceTree->getDefault();
 	}
 
-	int hasError = 0;
-	if(resource != nullptr && resource->onUrlComplete) {
-		hasError = resource->onUrlComplete(*this, request, response);
-	}
-
-	return hasError;
+	return resource ? resource->handleUrl(*this, request, response) : 0;
 }
 
 int HttpServerConnection::onMessageComplete(http_parser* parser)
@@ -74,8 +69,8 @@ int HttpServerConnection::onMessageComplete(http_parser* parser)
 		response.code = HTTP_STATUS_BAD_REQUEST;
 	}
 
-	if(resource != nullptr && resource->onRequestComplete) {
-		hasError = resource->onRequestComplete(*this, request, response);
+	if(resource != nullptr) {
+		hasError = resource->handleRequest(*this, request, response);
 	}
 
 	if(request.responseStream != nullptr) {
@@ -109,8 +104,8 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 	int error = 0;
 	request.setHeaders(headers);
 
-	if(resource != nullptr && resource->onHeadersComplete) {
-		error = resource->onHeadersComplete(*this, request, response);
+	if(resource != nullptr) {
+		error = resource->handleHeaders(*this, request, response);
 		if(error != 0) {
 			return error;
 		}
@@ -167,9 +162,9 @@ int HttpServerConnection::onBody(const char* at, size_t length)
 	}
 
 	char* data = const_cast<char*>(at);
-	int dataLength = length;
-	if(resource != nullptr && resource->onBody) {
-		const int result = resource->onBody(*this, request, &data, &dataLength);
+	size_t dataLength = length;
+	if(resource != nullptr) {
+		int result = resource->handleBody(*this, request, data, dataLength);
 		if(result != 0) {
 			hasContentError = true;
 			if(closeOnContentError) {

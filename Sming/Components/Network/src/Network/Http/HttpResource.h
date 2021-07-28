@@ -12,16 +12,15 @@
 
 #pragma once
 
-#include "WString.h"
-#include "Data/ObjectMap.h"
+#include <WString.h>
+#include <Data/ObjectMap.h>
 
-#include "HttpResponse.h"
-#include "HttpRequest.h"
+#include "Resource/HttpResourcePlugin.h"
 
 class HttpServerConnection;
 
 using HttpServerConnectionBodyDelegate =
-	Delegate<int(HttpServerConnection& connection, HttpRequest&, char** at, int* length)>;
+	Delegate<int(HttpServerConnection& connection, HttpRequest&, const char* at, int length)>;
 using HttpServerConnectionUpgradeDelegate =
 	Delegate<int(HttpServerConnection& connection, HttpRequest&, char* at, int length)>;
 using HttpResourceDelegate =
@@ -34,13 +33,6 @@ using HttpResourceDelegate =
 class HttpResource
 {
 public:
-	enum Type { RESOURCE, EVENTED_RESOURCE };
-
-	virtual Type getType()
-	{
-		return Type::RESOURCE;
-	}
-
 	virtual ~HttpResource()
 	{
 	}
@@ -58,4 +50,15 @@ public:
 	HttpResourceDelegate onHeadersComplete = nullptr;		 ///< headers are ready
 	HttpResourceDelegate onRequestComplete = nullptr;		 ///< request is complete OR upgraded
 	HttpServerConnectionUpgradeDelegate onUpgrade = nullptr; ///< request is upgraded and raw data is passed to it
+
+	HttpResourcePlugin::List plugins;
+
+private:
+	friend class HttpServerConnection;
+
+	int handleUrl(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response);
+	int handleHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response);
+	int handleUpgrade(HttpServerConnection& connection, HttpRequest& request, char* data, size_t length);
+	int handleBody(HttpServerConnection& connection, HttpRequest& request, char*& data, size_t& length);
+	int handleRequest(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response);
 };
