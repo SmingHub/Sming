@@ -40,8 +40,8 @@ public:
 		if(object == nullptr) {
 			return false;
 		}
-		object->mNext = mNext;
-		mNext = object;
+		mNext = object->mNext;
+		object->mNext = this;
 		return true;
 	}
 
