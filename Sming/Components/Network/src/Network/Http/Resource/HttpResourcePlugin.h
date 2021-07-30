@@ -14,7 +14,6 @@
 #include <Data/LinkedObjectList.h>
 #include "../HttpRequest.h"
 #include "../HttpResponse.h"
-#include <Data/PriorityList.h>
 
 class HttpServerConnection;
 
@@ -22,30 +21,11 @@ class HttpResourcePlugin : public LinkedObjectTemplate<HttpResourcePlugin>
 {
 public:
 	using OwnedList = OwnedLinkedObjectListTemplate<HttpResourcePlugin>;
-	class List : public PriorityList<HttpResourcePlugin*>
-	{
-	public:
-		void add(HttpResourcePlugin* plugin)
-		{
-			if(plugin != nullptr) {
-				PriorityList::add(plugin, plugin->getPriority());
-			}
-		}
-
-		template <class... Tail> void add(HttpResourcePlugin* plugin, Tail... plugins)
-		{
-			add(plugin);
-			add(plugins...);
-		}
-	};
-
-	virtual int getPriority() const
-	{
-		return 0;
-	}
 
 protected:
 	friend class HttpResource;
+
+	virtual int getPriority() const = 0;
 
 	virtual bool urlComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 	{

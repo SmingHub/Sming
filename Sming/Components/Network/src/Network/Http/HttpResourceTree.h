@@ -84,7 +84,7 @@ public:
 	{
 		registerPlugin(plugin, plugins...);
 		auto res = set(path, onRequestComplete);
-		res->plugins.add(plugin, plugins...);
+		res->addPlugin(plugin, plugins...);
 		return res;
 	}
 
@@ -111,7 +111,7 @@ public:
 	{
 		registerPlugin(plugin, plugins...);
 		auto res = set(path, callback);
-		res->plugins.add(plugin, plugins...);
+		res->addPlugin(plugin, plugins...);
 		return res;
 	}
 

@@ -27,14 +27,14 @@ int requestFailed(HttpRequest& request, int err)
                                                                                                                        \
 	bool resourceHandled = !delegate;                                                                                  \
 	for(auto& plugin : plugins) {                                                                                      \
-		if(!resourceHandled && plugin.priority == 0) {                                                                 \
+		if(!resourceHandled && plugin->getPriority() == 0) {                                                            \
 			int err = delegate(connection, request, ##__VA_ARGS__);                                                    \
 			if(err != 0) {                                                                                             \
 				return requestFailed(request, err);                                                                    \
 			}                                                                                                          \
 			resourceHandled = true;                                                                                    \
 		}                                                                                                              \
-		if(!plugin.data->method(connection, request, ##__VA_ARGS__)) {                                                 \
+		if(!plugin->method(connection, request, ##__VA_ARGS__)) {                                                       \
 			return requestFailed(request, 0);                                                                          \
 		}                                                                                                              \
 	}                                                                                                                  \
@@ -63,4 +63,25 @@ int HttpResource::handleBody(HttpServerConnection& connection, HttpRequest& requ
 int HttpResource::handleRequest(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
 	FUNCTION_TEMPLATE(onRequestComplete, requestComplete, response)
+}
+
+void HttpResource::addPlugin(HttpResourcePlugin* plugin)
+{
+	if(plugin == nullptr) {
+		return;
+	}
+
+	auto ref = new PluginRef{plugin};
+	auto priority = plugin->getPriority();
+	auto current = plugins.head();
+	if(current == nullptr || (*current)->getPriority() < priority) {
+		plugins.insert(ref);
+		return;
+	}
+
+	while(current->next() != nullptr && (*current->getNext())->getPriority() > priority) {
+		current = current->getNext();
+	}
+
+	ref->insertAfter(current);
 }
