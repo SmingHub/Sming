@@ -17,6 +17,9 @@
 
 class HttpServerConnection;
 
+/**
+ * @brief Base plugin class. Implementations should be based on either `HttpPreFilter` or `HttpPostFilter`
+ */
 class HttpResourcePlugin : public LinkedObjectTemplate<HttpResourcePlugin>
 {
 public:
@@ -50,5 +53,29 @@ protected:
 	virtual bool requestComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 	{
 		return true;
+	}
+};
+
+/**
+ * @brief Filter plugins run *before* the resource is invoked
+ */
+class HttpPreFilter : public HttpResourcePlugin
+{
+private:
+	int getPriority() const override
+	{
+		return 1;
+	}
+};
+
+/**
+ * @brief Filter plugins run *after* the resource is invoked
+ */
+class HttpPostFilter : public HttpResourcePlugin
+{
+private:
+	int getPriority() const override
+	{
+		return -1;
 	}
 };

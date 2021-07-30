@@ -14,17 +14,12 @@
 #include "../HttpResourcePlugin.h"
 #include <Data/WebHelpers/base64.h>
 
-class ResourceBasicAuth : public HttpResourcePlugin
+class ResourceBasicAuth : public HttpPreFilter
 {
 public:
 	ResourceBasicAuth(const String& realm, const String& username, const String& password)
 		: realm(realm), username(username), password(password)
 	{
-	}
-
-	int getPriority() const
-	{
-		return 1;
 	}
 
 	bool headersComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) override

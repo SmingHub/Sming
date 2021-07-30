@@ -14,16 +14,11 @@
 #include "../HttpResourcePlugin.h"
 #include <Data/WebHelpers/base64.h>
 
-class ResourceIpAuth : public HttpResourcePlugin
+class ResourceIpAuth : public HttpPreFilter
 {
 public:
 	ResourceIpAuth(IpAddress ip, IpAddress netmask) : ip(ip), netmask(netmask)
 	{
-	}
-
-	int getPriority() const
-	{
-		return 1;
 	}
 
 	bool urlComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) override

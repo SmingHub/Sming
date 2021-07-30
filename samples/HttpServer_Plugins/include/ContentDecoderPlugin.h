@@ -13,14 +13,9 @@
 
 #include <Network/Http/Resource/HttpResourcePlugin.h>
 
-class ContentDecoderPlugin : public HttpResourcePlugin
+class ContentDecoderPlugin : public HttpPreFilter
 {
 public:
-	int getPriority() const override
-	{
-		return 1;
-	}
-
 	bool headersComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) override;
 	bool urlComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) override;
 	bool bodyReceived(HttpServerConnection& connection, HttpRequest& request, char*& data, size_t& length) override;
