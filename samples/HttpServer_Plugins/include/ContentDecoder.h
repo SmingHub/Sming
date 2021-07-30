@@ -11,9 +11,9 @@
 
 #pragma once
 
-#include <Network/Http/Resource/HttpResourcePlugin.h>
+#include <Network/Http/HttpResource.h>
 
-class ContentDecoderPlugin : public HttpPreFilter
+class ContentDecoder : public HttpPreFilter
 {
 public:
 	bool headersComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) override;

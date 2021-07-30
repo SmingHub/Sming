@@ -1,7 +1,7 @@
 #include <SmingCore.h>
 #include <Network/Http/Websocket/WebsocketResource.h>
 #include <Network/Http/Resource/HttpAuth.h>
-#include "ContentDecoderPlugin.h"
+#include "ContentDecoder.h"
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -57,7 +57,7 @@ void startWebServer()
 
 	/*
 	 * This content coming to this resource is modified on the fly
-	 * using our ContentDecoderPlugin. See the source code of ContentDecoderPlugin
+	 * using our ContentDecoder plugin. See the source code of ContentDecoder
 	 * to get an idea how to create your own plugin.
 	 * You can run the following curl command to test this plugin:
 	 *
@@ -65,7 +65,7 @@ void startWebServer()
 	 *
 	 * 	make sure to replace the IP address with the IP address of your HttpServer
 	 */
-	server->paths.set("/test", echoContentBody, new ContentDecoderPlugin());
+	server->paths.set("/test", echoContentBody, new ContentDecoder());
 
 	Serial.println(F("\r\n=== WEB SERVER STARTED ==="));
 	Serial.println(WifiStation.getIP());
