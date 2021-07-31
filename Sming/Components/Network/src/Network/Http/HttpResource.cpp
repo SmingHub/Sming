@@ -27,14 +27,14 @@ int requestFailed(HttpRequest& request, int err)
                                                                                                                        \
 	bool resourceHandled = !delegate;                                                                                  \
 	for(auto& plugin : plugins) {                                                                                      \
-		if(!resourceHandled && plugin->getPriority() == 0) {                                                            \
+		if(!resourceHandled && plugin->getPriority() == 0) {                                                           \
 			int err = delegate(connection, request, ##__VA_ARGS__);                                                    \
 			if(err != 0) {                                                                                             \
 				return requestFailed(request, err);                                                                    \
 			}                                                                                                          \
 			resourceHandled = true;                                                                                    \
 		}                                                                                                              \
-		if(!plugin->method(connection, request, ##__VA_ARGS__)) {                                                       \
+		if(!plugin->method(connection, request, ##__VA_ARGS__)) {                                                      \
 			return requestFailed(request, 0);                                                                          \
 		}                                                                                                              \
 	}                                                                                                                  \
