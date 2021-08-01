@@ -33,12 +33,23 @@ private:
 
 /* HttpResourceTree */
 
-void HttpResourceTree::set(String path, const HttpPathDelegate& callback)
+HttpResource* HttpResourceTree::set(const String& path, const HttpResourceDelegate& onRequestComplete)
+{
+	auto resource = new HttpResource;
+	resource->onRequestComplete = onRequestComplete;
+	set(path, resource);
+	return resource;
+}
+
+HttpResource* HttpResourceTree::set(String path, const HttpPathDelegate& callback)
 {
 	if(path.length() > 1 && path.endsWith("/")) {
 		path.remove(path.length() - 1);
 	}
+
 	debug_i("'%s' registered", path.c_str());
 
-	set(path, new HttpCompatResource(callback));
+	auto res = new HttpCompatResource(callback);
+	set(path, res);
+	return res;
 }

@@ -12,11 +12,10 @@
 
 #pragma once
 
-#include "WString.h"
-#include "Data/ObjectMap.h"
+#include <WString.h>
+#include <Data/ObjectMap.h>
 
-#include "HttpResponse.h"
-#include "HttpRequest.h"
+#include "Resource/HttpResourcePlugin.h"
 
 class HttpServerConnection;
 
@@ -46,8 +45,46 @@ public:
 	}
 
 public:
+	class PluginRef : public LinkedObjectTemplate<PluginRef>
+	{
+	public:
+		using OwnedList = OwnedLinkedObjectListTemplate<PluginRef>;
+
+		PluginRef(HttpResourcePlugin* plugin) : plugin(plugin)
+		{
+		}
+
+		HttpResourcePlugin* operator->() const
+		{
+			return plugin;
+		}
+
+	private:
+		HttpResourcePlugin* plugin;
+	};
+
+	HttpResourceDelegate onUrlComplete = nullptr;			 ///< URL is ready. Path and status code are available
 	HttpServerConnectionBodyDelegate onBody = nullptr;		 ///< resource wants to process the raw body data
 	HttpResourceDelegate onHeadersComplete = nullptr;		 ///< headers are ready
 	HttpResourceDelegate onRequestComplete = nullptr;		 ///< request is complete OR upgraded
 	HttpServerConnectionUpgradeDelegate onUpgrade = nullptr; ///< request is upgraded and raw data is passed to it
+
+	void addPlugin(HttpResourcePlugin* plugin);
+
+	template <class... Tail> void addPlugin(HttpResourcePlugin* plugin, Tail... plugins)
+	{
+		addPlugin(plugin);
+		addPlugin(plugins...);
+	}
+
+private:
+	friend class HttpServerConnection;
+
+	PluginRef::OwnedList plugins;
+
+	int handleUrl(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response);
+	int handleHeaders(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response);
+	int handleUpgrade(HttpServerConnection& connection, HttpRequest& request, char* data, size_t length);
+	int handleBody(HttpServerConnection& connection, HttpRequest& request, char*& data, size_t& length);
+	int handleRequest(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response);
 };
