@@ -29,23 +29,24 @@ public:
 	/** @brief Set the default resource handler
 	 *  @param resource The default resource handler
 	 */
-	void setDefault(HttpResource* resource)
+	HttpResource* setDefault(HttpResource* resource)
 	{
 		set(RESOURCE_PATH_DEFAULT, resource);
+		return resource;
 	}
 
 	/** @brief Set the default resource handler, identified by "*" wildcard
 	 *  @param onRequestComplete The default resource handler
 	 */
-	void setDefault(const HttpResourceDelegate& onRequestComplete)
+	HttpResource* setDefault(const HttpResourceDelegate& onRequestComplete)
 	{
-		set(RESOURCE_PATH_DEFAULT, onRequestComplete);
+		return set(RESOURCE_PATH_DEFAULT, onRequestComplete);
 	}
 
 	/** @brief Set the default resource handler, identified by "*" wildcard */
-	void setDefault(const HttpPathDelegate& callback)
+	HttpResource* setDefault(const HttpPathDelegate& callback)
 	{
-		set(RESOURCE_PATH_DEFAULT, callback);
+		return set(RESOURCE_PATH_DEFAULT, callback);
 	}
 
 	/** @brief Get the current default resource handler, if any
@@ -62,14 +63,29 @@ public:
 	 * @brief Set a callback to handle the given path
 	 * @param path URL path
 	 * @param onRequestComplete Delegate to handle this path
+	 * @retval HttpResource* The created resource object
 	 * @note Path should start with slash. Trailing slashes will be removed.
 	 * @note Any existing handler for this path is replaced
 	 */
-	void set(const String& path, const HttpResourceDelegate& onRequestComplete)
+	HttpResource* set(const String& path, const HttpResourceDelegate& onRequestComplete);
+
+	/**
+	 * @brief Set a callback to handle the given path, with one or more plugins
+	 * @param path URL path
+	 * @param onRequestComplete Delegate to handle this path
+	 * @param plugin Plugins to register for the resource
+	 * @retval HttpResource* The created resource object
+	 * @note Path should start with slash. Trailing slashes will be removed.
+	 * @note Any existing handler for this path is replaced
+	 */
+	template <class... Tail>
+	HttpResource* set(const String& path, const HttpResourceDelegate& onRequestComplete, HttpResourcePlugin* plugin,
+					  Tail... plugins)
 	{
-		HttpResource* resource = new HttpResource;
-		resource->onRequestComplete = onRequestComplete;
-		set(path, resource);
+		registerPlugin(plugin, plugins...);
+		auto res = set(path, onRequestComplete);
+		res->addPlugin(plugin, plugins...);
+		return res;
 	}
 
 	/**
@@ -79,5 +95,37 @@ public:
 	 * @note Path should start with slash. Trailing slashes will be removed
 	 * @note Any existing handler for this path is replaced
 	 */
-	void set(String path, const HttpPathDelegate& callback);
+	HttpResource* set(String path, const HttpPathDelegate& callback);
+
+	/**
+	 * @brief Add a new path resource with callback and one or more  plugins
+	 * @param path URL path
+	 * @param callback The callback that will handle this path
+	 * @param plugin - optional resource plugin
+	 * @retval HttpResource* The created resource object
+	 * @note Path should start with slash. Trailing slashes will be removed
+	 * @note Any existing handler for this path is replaced
+	 */
+	template <class... Tail>
+	HttpResource* set(const String& path, const HttpPathDelegate& callback, HttpResourcePlugin* plugin, Tail... plugins)
+	{
+		registerPlugin(plugin, plugins...);
+		auto res = set(path, callback);
+		res->addPlugin(plugin, plugins...);
+		return res;
+	}
+
+private:
+	void registerPlugin(HttpResourcePlugin* plugin)
+	{
+		loadedPlugins.add(plugin);
+	}
+
+	template <class... Tail> void registerPlugin(HttpResourcePlugin* plugin, Tail... plugins)
+	{
+		registerPlugin(plugin);
+		registerPlugin(plugins...);
+	}
+
+	HttpResourcePlugin::OwnedList loadedPlugins;
 };
