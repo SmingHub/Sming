@@ -11,20 +11,71 @@
 
 #pragma once
 
-#include "HttpEventedResource.h"
 #include <Data/LinkedObjectList.h>
-#include <Network/Http/HttpServerConnection.h>
+#include "../HttpRequest.h"
+#include "../HttpResponse.h"
 
+class HttpServerConnection;
+
+/**
+ * @brief Base plugin class. Implementations should be based on either `HttpPreFilter` or `HttpPostFilter`
+ */
 class HttpResourcePlugin : public LinkedObjectTemplate<HttpResourcePlugin>
 {
 public:
 	using OwnedList = OwnedLinkedObjectListTemplate<HttpResourcePlugin>;
 
-	/**
-	 * @brief Every plugin should implement this function to register its events.
-	 * @param resource
-	 *
-	 * @retval bool true on success
-	 */
-	virtual bool registerPlugin(HttpEventedResource& resource) = 0;
+protected:
+	friend class HttpResource;
+
+	virtual int getPriority() const = 0;
+
+	virtual bool urlComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
+	{
+		return true;
+	}
+
+	virtual bool headersComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
+	{
+		return true;
+	}
+
+	virtual bool upgradeReceived(HttpServerConnection& connection, HttpRequest&, char* data, size_t length)
+	{
+		return true;
+	}
+
+	virtual bool bodyReceived(HttpServerConnection& connection, HttpRequest& request, char*& data, size_t& length)
+	{
+		return true;
+	}
+
+	virtual bool requestComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
+	{
+		return true;
+	}
+};
+
+/**
+ * @brief Filter plugins run *before* the resource is invoked
+ */
+class HttpPreFilter : public HttpResourcePlugin
+{
+private:
+	int getPriority() const override
+	{
+		return 1;
+	}
+};
+
+/**
+ * @brief Filter plugins run *after* the resource is invoked
+ */
+class HttpPostFilter : public HttpResourcePlugin
+{
+private:
+	int getPriority() const override
+	{
+		return -1;
+	}
 };

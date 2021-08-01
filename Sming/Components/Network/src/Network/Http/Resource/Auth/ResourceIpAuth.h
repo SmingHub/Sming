@@ -14,20 +14,14 @@
 #include "../HttpResourcePlugin.h"
 #include <Data/WebHelpers/base64.h>
 
-class ResourceIpAuth : public HttpResourcePlugin
+class ResourceIpAuth : public HttpPreFilter
 {
 public:
 	ResourceIpAuth(IpAddress ip, IpAddress netmask) : ip(ip), netmask(netmask)
 	{
 	}
 
-	bool registerPlugin(HttpEventedResource& resource) override
-	{
-		return resource.addEvent(HttpEventedResource::EVENT_URL,
-								 HttpEventedResource::EventCallback(&ResourceIpAuth::authenticate, this), 1);
-	}
-
-	bool authenticate(HttpServerConnection& connection, char** at, int* length)
+	bool urlComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) override
 	{
 		auto remoteIp = connection.getRemoteIp();
 		if(remoteIp.compare(ip, netmask)) {
@@ -36,9 +30,7 @@ public:
 		}
 
 		// specify that the resource is protected...
-		auto response = connection.getResponse();
-		response->code = HTTP_STATUS_UNAUTHORIZED;
-
+		response.code = HTTP_STATUS_UNAUTHORIZED;
 		return false;
 	}
 
