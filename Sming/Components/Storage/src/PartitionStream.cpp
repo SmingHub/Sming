@@ -23,7 +23,7 @@ int PartitionStream::seekFrom(int offset, SeekOrigin origin)
 	size_t newPos;
 	switch(origin) {
 	case SeekOrigin::Start:
-		newPos = 0;
+		newPos = offset;
 		break;
 	case SeekOrigin::Current:
 		newPos = readPos + offset;
