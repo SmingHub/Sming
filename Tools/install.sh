@@ -93,7 +93,12 @@ if [ -n "$APPVEYOR" ] || [ -n "$GITHUB_ACTION" ]; then
     $PKG_INSTALL \
         clang-format-8 \
         g++-9-multilib \
-        python3-setuptools
+        python3-setuptools \
+        fonts-ubuntu \
+        fonts-noto-mono \
+        xfonts-base \
+        fonts-urw-base35 \
+        fonts-droid-fallback
 
     sudo update-alternatives --set gcc /usr/bin/gcc-9
 
