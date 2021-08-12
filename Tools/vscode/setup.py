@@ -210,7 +210,7 @@ def main():
         sys.exit(1)
 
     # So we can find rjsmin.py
-    sys.path.append(os.path.join(env['SMING_HOME'], 'Components/Storage/Tools/hwconfig'))
+    sys.path.append(os.path.join(env['SMING_HOME'], '../Tools/Python'))
 
     update_intellisense()
     update_tasks()
