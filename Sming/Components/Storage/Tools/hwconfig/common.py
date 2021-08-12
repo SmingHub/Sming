@@ -2,9 +2,11 @@
 # Common functions and definitions
 #
 
-import sys, json, platform
-from rjsmin import jsmin
+import os, sys, json, platform
 from collections import OrderedDict
+
+sys.path.insert(1, os.path.expandvars('${SMING_HOME}/../Tools/Python'))
+from rjsmin import jsmin
 
 quiet = False
 

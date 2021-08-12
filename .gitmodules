@@ -199,6 +199,10 @@
 	path = Sming/Libraries/GoogleCast
 	url = https://github.com/slaff/Sming-GoogleCast.git
 	ignore = dirty
+[submodule "Libraries.Graphics"]
+	path = Sming/Libraries/Graphics
+	url = https://github.com/mikee47/Sming-Graphics
+	ignore = dirty
 [submodule "Libraries.HardwareSPI"]
 	path = Sming/Libraries/HardwareSPI
 	url = https://github.com/mikee47/HardwareSPI
