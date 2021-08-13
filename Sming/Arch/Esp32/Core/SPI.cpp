@@ -18,7 +18,7 @@
 #include <esp_systemapi.h>
 #include <soc/spi_struct.h>
 #include <soc/spi_reg.h>
-#include <soc/spi_caps.h>
+#include <soc/soc_caps.h>
 #include <soc/dport_reg.h>
 #include <soc/rtc.h>
 
@@ -213,10 +213,10 @@ void checkSpeed(SPISpeed& speed, unsigned apbFreq)
 
 uint32_t getApbFrequency()
 {
-	constexpr uint32_t MHZ{1000000};
+	constexpr uint32_t DIV_MHZ{1000000};
 	rtc_cpu_freq_config_t conf;
 	rtc_clk_cpu_freq_get_config(&conf);
-	return (conf.freq_mhz >= 80) ? (80 * MHZ) : ((conf.source_freq_mhz * MHZ) / conf.div);
+	return (conf.freq_mhz >= 80) ? (80 * DIV_MHZ) : ((conf.source_freq_mhz * DIV_MHZ) / conf.div);
 }
 
 void spi_set_clock(SpiDevice& dev, SPISpeed& speed)

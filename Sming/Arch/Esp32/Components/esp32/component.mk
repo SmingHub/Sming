@@ -24,8 +24,9 @@ SDKCONFIG_H := $(SDK_BUILD_BASE)/config/sdkconfig.h
 SDK_LIBDIRS := \
 	esp_wifi/lib/$(SDK_BUILD_VARIANT) \
 	xtensa/$(SDK_BUILD_VARIANT)/ \
-	esp32/ld \
-	esp_rom/esp32/ld
+	hal/$(SDK_BUILD_VARIANT)/ \
+	$(ESP_VARIANT)/ld \
+	esp_rom/$(ESP_VARIANT)/ld
 
 LIBDIRS += \
 	$(SDK_COMPONENT_LIBDIR) \
@@ -37,18 +38,20 @@ LIBDIRS += \
 SDK_INCDIRS := \
 	bootloader_support/include \
 	bootloader_support/include_bootloader \
+	driver/$(ESP_VARIANT)/include \
 	driver/include \
-	driver/include/driver \
 	efuse/include \
 	efuse/esp32/include \
 	esp32/include \
 	espcoredump/include \
+	esp_timer/include \
 	soc/include \
-	soc/esp32/include \
+	soc/$(ESP_VARIANT)/include \
 	heap/include \
 	log/include \
 	nvs_flash/include \
 	freertos/include \
+	freertos/port/xtensa/include \
 	esp_ringbuf/include \
 	esp_event/include \
 	tcpip_adapter/include \
@@ -68,7 +71,11 @@ SDK_INCDIRS := \
 	wpa_supplicant/port/include \
 	app_trace/include \
 	app_update/include \
-	smartconfig_ack/include
+	smartconfig_ack/include \
+	esp_hw_support/include \
+	hal/include \
+	hal/$(ESP_VARIANT)/include \
+	esp_system/include
 
 ifeq ($(SDK_FULL_BUILD),1)
 SDK_INCDIRS += \
@@ -137,10 +144,17 @@ SDK_COMPONENTS := \
 	esp_common \
 	esp_event \
 	esp_gdbstub \
+	esp_hw_support \
+	esp_ipc \
+	esp_pm \
 	esp_ringbuf \
+	esp_rom \
+	esp_system \
+	esp_timer \
 	esp_wifi \
 	espcoredump \
 	freertos \
+	hal \
 	heap \
 	log \
 	lwip \
@@ -205,10 +219,11 @@ SDK_ESP_WIFI_LIBS := \
 SDK_NEWLIB_LIBS := \
 	c \
 	m  \
-	stdc++
+	stdc++ \
 
 SDK_XTENSA_LIBS := \
-	hal
+	hal \
+	xt_hal
 
 EXTRA_LIBS := \
 	gcc \
@@ -224,11 +239,12 @@ EXTRA_LDFLAGS := \
 	-u ld_include_panic_highint_hdl \
 	-T esp32.project.ld \
 	-T esp32.peripherals.ld  \
-	-T esp32.rom.ld \
+	-T $(ESP_VARIANT).rom.ld \
+	-T $(ESP_VARIANT).rom.api.ld \
 	-T esp32.rom.libgcc.ld \
 	-T esp32.rom.syscalls.ld \
-	-T esp32.rom.newlib-data.ld \
-	-T esp32.rom.newlib-funcs.ld  \
+	-T $(ESP_VARIANT).rom.newlib-data.ld \
+	-T $(ESP_VARIANT).rom.newlib-funcs.ld  \
 	-u newlib_include_locks_impl \
 	-u newlib_include_heap_impl \
 	-u newlib_include_syscalls_impl \

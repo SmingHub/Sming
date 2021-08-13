@@ -1,4 +1,5 @@
 #include <driver/adc.h>
+#include <soc/adc_periph.h>
 #include <esp_adc_cal.h>
 #include <debug_progmem.h>
 #include <Digital.h>
