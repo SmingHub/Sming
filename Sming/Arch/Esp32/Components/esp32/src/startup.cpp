@@ -79,7 +79,7 @@ void main(void*)
 extern "C" void app_main(void)
 {
 #ifdef CONFIG_FREERTOS_UNICORE
-	xTaskCreate(loop, "Sming", ESP32_STACK_SIZE, nullptr, 1, nullptr);
+	xTaskCreate(main, "Sming", ESP32_STACK_SIZE, nullptr, 1, nullptr);
 #else
 	esp_task_wdt_delete(xTaskGetIdleTaskHandleForCPU(1));
 	xTaskCreatePinnedToCore(main, "Sming", ESP32_STACK_SIZE, nullptr, 1, nullptr, 1);

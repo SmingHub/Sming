@@ -12,7 +12,7 @@
 #pragma once
 
 #include_next <esp_spi_flash.h>
-#include <esp32/rom/spi_flash.h>
+#include <rom/spi_flash.h>
 #include <esp_app_format.h>
 
 #ifdef __cplusplus

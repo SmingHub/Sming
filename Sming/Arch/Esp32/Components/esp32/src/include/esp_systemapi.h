@@ -27,7 +27,7 @@
 #include "esp_tasks.h"
 #include <heap.h>
 #include <esp_system.h>
-#include <esp32/rom/ets_sys.h>
+#include <rom/ets_sys.h>
 #include <soc/soc.h>
 #include <driver/gpio.h>
 #include <driver/adc.h>

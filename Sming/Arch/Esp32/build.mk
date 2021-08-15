@@ -26,7 +26,13 @@ ifndef ESP_VARIANT
 ESP_VARIANT := esp32
 endif
 
+export ESP_VARIANT
+
+ifeq ($(ESP_VARIANT),esp32c3)
+ESP32_COMPILER_PREFIX := riscv32-esp-elf
+else
 ESP32_COMPILER_PREFIX := xtensa-$(ESP_VARIANT)-elf
+endif
 
 # $1 => Root directory
 # $2 => Sub-directory

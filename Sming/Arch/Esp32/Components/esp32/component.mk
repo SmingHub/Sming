@@ -1,11 +1,6 @@
 SDK_COMPONENTS_PATH := $(IDF_PATH)/components
 
 # See build.mk for default ESP_VARIANT - determines toolchain
-ifeq (esp32s2,$(ESP_VARIANT))
-SDK_BUILD_VARIANT := esp32s2beta
-else
-SDK_BUILD_VARIANT := $(ESP_VARIANT)
-endif
 
 COMPONENT_DEPENDS := libc
 
@@ -22,16 +17,16 @@ SDK_COMPONENT_LIBDIR := $(COMPONENT_BUILD_DIR)/lib
 SDKCONFIG_H := $(SDK_BUILD_BASE)/config/sdkconfig.h
 
 SDK_LIBDIRS := \
-	esp_wifi/lib/$(SDK_BUILD_VARIANT) \
-	xtensa/$(SDK_BUILD_VARIANT)/ \
-	hal/$(SDK_BUILD_VARIANT)/ \
+	esp_wifi/lib/$(ESP_VARIANT) \
+	xtensa/$(ESP_VARIANT)/ \
+	hal/$(ESP_VARIANT)/ \
 	$(ESP_VARIANT)/ld \
 	esp_rom/$(ESP_VARIANT)/ld
 
 LIBDIRS += \
 	$(SDK_COMPONENT_LIBDIR) \
-	$(SDK_BUILD_BASE)/esp-idf/$(SDK_BUILD_VARIANT) \
-	$(SDK_BUILD_BASE)/esp-idf/$(SDK_BUILD_VARIANT)/ld \
+	$(SDK_BUILD_BASE)/esp-idf/$(ESP_VARIANT) \
+	$(SDK_BUILD_BASE)/esp-idf/$(ESP_VARIANT)/ld \
 	$(COMPONENT_PATH)/ld \
 	$(addprefix $(SDK_COMPONENTS_PATH)/,$(SDK_LIBDIRS))
 
@@ -41,8 +36,10 @@ SDK_INCDIRS := \
 	driver/$(ESP_VARIANT)/include \
 	driver/include \
 	efuse/include \
-	efuse/esp32/include \
-	esp32/include \
+	efuse/$(ESP_VARIANT)/include \
+	esp_rom/include/$(ESP_VARIANT) \
+	esp_rom/include \
+	$(ESP_VARIANT)/include \
 	espcoredump/include \
 	esp_timer/include \
 	soc/include \
@@ -90,7 +87,6 @@ SDK_INCDIRS += \
 	esp_netif/include \
 	esp_eth/include \
 	esp_event/private_include \
-	esp_rom/include \
 	esp_wifi/include \
 	esp_wifi/esp32/include \
 	lwip/include/apps/sntp \
@@ -139,7 +135,7 @@ SDK_COMPONENTS := \
 	driver \
 	efuse \
 	esp-tls \
-	esp32 \
+	$(ESP_VARIANT) \
 	esp_adc_cal \
 	esp_common \
 	esp_event \
@@ -235,13 +231,13 @@ EXTRA_LIBS := \
 EXTRA_LDFLAGS := \
 	-u esp_app_desc \
 	-u __cxa_guard_dummy -u __cxx_fatal_exception \
-	-T esp32_out.ld \
+	-T $(ESP_VARIANT)_out.ld \
 	-u ld_include_panic_highint_hdl \
-	-T esp32.project.ld \
+	-T $(ESP_VARIANT).project.ld \
 	-T esp32.peripherals.ld  \
 	-T $(ESP_VARIANT).rom.ld \
 	-T $(ESP_VARIANT).rom.api.ld \
-	-T esp32.rom.libgcc.ld \
+	-T $(ESP_VARIANT).rom.libgcc.ld \
 	-T esp32.rom.syscalls.ld \
 	-T $(ESP_VARIANT).rom.newlib-data.ld \
 	-T $(ESP_VARIANT).rom.newlib-funcs.ld  \
@@ -312,7 +308,7 @@ sdk-menuconfig: $(SDK_CONFIG_DEFAULTS) | $(SDK_BUILD_BASE) ##Configure SDK optio
 sdk-defconfig: $(SDK_BUILD_BASE)/include/sdkconfig.h ##Create default SDK config files
 
 .PHONY: sdk-menuconfig-clean
-sdk-menuconfig-clean:
+sdk-menuconfig-clean: ##Clean SDK configuration and revert to defaults
 	$(Q) rm -f $(SDKCONFIG_MAKEFILE) $(SDK_CONFIG_DEFAULTS) 
 
 .PHONY: sdk-help

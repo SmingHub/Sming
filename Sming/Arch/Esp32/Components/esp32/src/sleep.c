@@ -1,4 +1,5 @@
 #include "include/esp_sleep.h"
+#include <rom/gpio.h>
 
 void system_deep_sleep(uint32_t time_in_us)
 {
