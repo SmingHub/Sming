@@ -31,17 +31,19 @@ $PKG_INSTALL ${PACKAGES[*]}
 if [ -d "$IDF_PATH" ]; then
     printf "\n\n** Skipping ESP-IDF clone: '$IDF_PATH' exists\n\n"
 else
-    git clone -b release/v4.1 https://github.com/espressif/esp-idf.git $IDF_PATH
+    git clone -b release/v4.3 https://github.com/espressif/esp-idf.git $IDF_PATH
 fi
 
-# Espressif downloads very slow, fetch from SmingTools
-mkdir -p $IDF_TOOLS_PATH
-ESPTOOLS=esp32-tools-linux-4.1.zip
-$WGET $SMINGTOOLS/$ESPTOOLS -O $DOWNLOADS/$ESPTOOLS
-unzip $DOWNLOADS/$ESPTOOLS -d $IDF_TOOLS_PATH/dist
+# Apply IDF patches
+IDF_PATCH=$(dirname $BASH_SOURCE)/idf.patch
+pushd $IDF_PATH
+git apply -v --ignore-whitespace --whitespace=nowarn $IDF_PATCH
 
-python3 $IDF_PATH/tools/idf_tools.py install
+# Install IDF tools and packages
+python3 tools/idf_tools.py install
 python3 -m pip install -r $IDF_PATH/requirements.txt
+
+popd
 
 if [ -z "$KEEP_DOWNLOADS" ]; then
     rm -rf $IDF_TOOLS_PATH/dist
