@@ -45,7 +45,9 @@ struct smg_uart_hardware_t {
 constexpr smg_uart_hardware_t uartHardware[UART_COUNT] = {
 	{UART0, uart_periph_signal[0], 1, 3},
 	{UART1, uart_periph_signal[1], 10, 9},
+#if UART_COUNT > 2
 	{UART2, uart_periph_signal[2], 17, 16},
+#endif
 };
 
 // Keep a reference to all created UARTS
@@ -56,6 +58,12 @@ struct smg_uart_instance_t {
 };
 
 static smg_uart_instance_t uartInstances[UART_COUNT];
+
+#if CONFIG_IDF_TARGET_ESP32
+#define FIFO(dev) dev.fifo.rw_byte
+#else
+#define FIFO(dev) dev.ahb_fifo.rw_byte
+#endif
 
 // Get number of characters in receive FIFO
 __forceinline static uint8_t uart_rxfifo_count(uint8_t nr)
@@ -249,7 +257,7 @@ size_t smg_uart_read(smg_uart_t* uart, void* buffer, size_t size)
 	if(is_physical(uart)) {
 		auto& hw = uartHardware[uart->uart_nr];
 		while(read < size && uart_rxfifo_count(uart->uart_nr) != 0) {
-			buf[read++] = hw.dev.fifo.rw_byte;
+			buf[read++] = FIFO(hw.dev);
 		}
 
 		// FIFO full may have been disabled if buffer overflowed, re-enabled it now
@@ -324,7 +332,7 @@ static void IRAM_ATTR uart_isr(smg_uart_instance_t* inst)
 				read = (avail <= space) ? avail : space;
 				space -= read;
 				while(read-- != 0) {
-					uint8_t c = hw.dev.fifo.rw_byte;
+					uint8_t c = FIFO(hw.dev);
 					uart->rx_buffer->writeChar(c);
 				}
 
@@ -357,7 +365,7 @@ static void IRAM_ATTR uart_isr(smg_uart_instance_t* inst)
 				size_t avail = uart->tx_buffer->available();
 				size_t count = (avail <= space) ? avail : space;
 				while(count-- != 0) {
-					hw.dev.fifo.rw_byte = uart->tx_buffer->readChar();
+					FIFO(hw.dev) = uart->tx_buffer->readChar();
 				}
 			}
 
@@ -392,9 +400,15 @@ void smg_uart_start_isr(smg_uart_t* uart)
 	decltype(uart_dev_t::conf1) conf1{};
 	decltype(uart_dev_t::int_ena) int_ena{};
 
+	auto& hw = uartHardware[uart->uart_nr];
+
 	if(smg_uart_rx_enabled(uart)) {
 		conf1.rxfifo_full_thrhd = 120;
+#if CONFIG_IDF_TARGET_ESP32
 		conf1.rx_tout_thrhd = 2;
+#else
+		hw.dev.mem_conf.rx_tout_thrhd = 2;
+#endif
 		conf1.rx_tout_en = true;
 
 		/*
@@ -421,7 +435,6 @@ void smg_uart_start_isr(smg_uart_t* uart)
 		// conf1.txfifo_empty_thrhd = 0;
 	}
 
-	auto& hw = uartHardware[uart->uart_nr];
 	hw.dev.conf1.val = conf1.val;
 	hw.dev.int_clr.val = 0x0007ffff;
 	hw.dev.int_ena.val = int_ena.val;
@@ -451,7 +464,7 @@ size_t smg_uart_write(smg_uart_t* uart, const void* buffer, size_t size)
 			if(uart->tx_buffer == nullptr || uart->tx_buffer->isEmpty()) {
 				auto& hw = uartHardware[uart->uart_nr];
 				while(written < size && !uart_txfifo_full(uart->uart_nr)) {
-					hw.dev.fifo.rw_byte = buf[written++];
+					FIFO(hw.dev) = buf[written++];
 				}
 				// Enable TX FIFO EMPTY interrupt
 				hw.dev.int_clr.txfifo_empty = true;
@@ -593,7 +606,7 @@ void smg_uart_flush(smg_uart_t* uart, smg_uart_mode_t mode)
 					break;
 				}
 
-				(void)hw.dev.fifo.rw_byte;
+				(void)FIFO(hw.dev);
 			}
 #else
 			hw.dev.conf0.rxfifo_rst = true;

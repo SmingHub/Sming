@@ -11,6 +11,7 @@
 #include <esp_spi_flash.h>
 #include <soc/soc.h>
 #include <soc/dport_reg.h>
+#include <soc/mmu.h>
 #include <esp_app_format.h>
 #include <esp_flash_partitions.h>
 #include <esp_flash.h>
@@ -37,7 +38,11 @@ uint32_t flashmem_get_address(const void* memptr)
 	} else {
 		return 0;
 	}
+#if CONFIG_IDF_TARGET_ESP32 && !CONFIG_FREERTOS_UNICORE
 	uint32_t entry = DPORT_SEQUENCE_REG_READ(uint32_t(&DPORT_APP_FLASH_MMU_TABLE[page]));
+#else
+	uint32_t entry = DPORT_SEQUENCE_REG_READ(uint32_t(&SOC_MMU_DPORT_PRO_FLASH_MMU_TABLE[page]));
+#endif
 	uint32_t paddr = (entry * SPI_FLASH_MMU_PAGE_SIZE) + (vaddr & (SPI_FLASH_MMU_PAGE_SIZE - 1));
 	return (entry & 0x0100) ? 0 : paddr;
 }
