@@ -30,6 +30,7 @@ export ESP_VARIANT
 
 ifeq ($(ESP_VARIANT),esp32c3)
 ESP32_COMPILER_PREFIX := riscv32-esp-elf
+IDF_TARGET_ARCH_RISCV := 1
 else
 ESP32_COMPILER_PREFIX := xtensa-$(ESP_VARIANT)-elf
 endif
@@ -211,9 +212,15 @@ COMMON_FLAGS := \
 	-Wno-frame-address \
 	-ffunction-sections -fdata-sections \
 	-fstrict-volatile-bitfields \
-	-mlongcalls \
-	-mtext-section-literals \
 	-nostdlib
+
+ifdef IDF_TARGET_ARCH_RISCV
+COMMON_FLAGS += -DIDF_TARGET_ARCH_RISCV=1
+else
+COMMON_FLAGS += \
+	-mlongcalls \
+	-mtext-section-literals
+endif
 
 ifndef IS_BOOTLOADER_BUILD
 # stack protection (only one option can be selected in menuconfig)

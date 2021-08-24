@@ -48,7 +48,6 @@ SDK_INCDIRS := \
 	log/include \
 	nvs_flash/include \
 	freertos/include \
-	freertos/port/xtensa/include \
 	esp_ringbuf/include \
 	esp_event/include \
 	tcpip_adapter/include \
@@ -91,10 +90,19 @@ SDK_INCDIRS += \
 	esp_wifi/esp32/include \
 	lwip/include/apps/sntp \
 	spi_flash/private_include \
-	wpa_supplicant/include/esp_supplicant \
+	wpa_supplicant/include/esp_supplicant
+
+ifdef IDF_TARGET_ARCH_RISCV
+SDK_INCDIRS += \
+	freertos/port/riscv/include \
+	riscv/include
+else
+SDK_INCDIRS += \
 	xtensa/include \
-	xtensa/esp32/include
-	
+	xtensa/$(ESP_VARIANT)/include \
+	freertos/port/xtensa/include
+endif
+
 ifeq ($(CONFIG_BT_NIMBLE_ENABLED),y)
 SDK_INCDIRS += \
 	bt/include \
@@ -171,6 +179,10 @@ SDK_COMPONENTS := \
 	wifi_provisioning \
 	wpa_supplicant \
 	xtensa
+
+ifdef IDF_TARGET_ARCH_RISCV
+SDK_COMPONENTS += riscv
+endif
 
 ifeq ($(SDK_FULL_BUILD),1)
 SDK_COMPONENTS += \

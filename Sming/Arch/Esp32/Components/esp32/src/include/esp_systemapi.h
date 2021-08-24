@@ -35,7 +35,6 @@
 #include <m_printf.h>
 #include <debug_progmem.h>
 #include <stringutil.h>
-#include <xtensa/xtruntime.h>
 
 #define __ESP32_EX__ // System definition ESP8266 SOC
 
