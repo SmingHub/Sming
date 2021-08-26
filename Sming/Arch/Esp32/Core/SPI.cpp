@@ -235,6 +235,24 @@ void spi_set_clock(SpiDevice& dev, SPISpeed& speed)
 
 } // namespace
 
+bool SPIClass::setup(SpiBus busId, SpiPins pins)
+{
+	if(busId < SpiBus::MIN || busId > SpiBus::MAX) {
+		debug_e("[SPI] Invalid bus");
+		return false;
+	}
+
+	auto& bus = busInfo[unsigned(busId) - 1];
+	if(bus.assigned) {
+		debug_e("[SPI] Bus #%u already assigned", busId);
+		return false;
+	}
+
+	this->busId = busId;
+	this->pins = pins;
+	return true;
+}
+
 SPIClass::BusInfo& SPIClass::getBusInfo()
 {
 	return busInfo[unsigned(busId) - 1];

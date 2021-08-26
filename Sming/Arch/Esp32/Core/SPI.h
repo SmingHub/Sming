@@ -67,6 +67,14 @@ public:
 	{
 	}
 
+	/**
+	 * @brief Alternative to defining bus and pin set in constructor.
+	 * Use this method to change global `SPI` instance setup.
+	 *
+	 * IMPORTANT: Must be called *before* begin().
+	 */
+	bool setup(SpiBus id, SpiPins pins);
+
 	bool begin() override;
 	void end() override;
 	uint8_t read8() override;
