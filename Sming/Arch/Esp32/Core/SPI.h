@@ -20,6 +20,7 @@
 
 #include "SPIBase.h"
 #include "SPISettings.h"
+#include <soc/soc_caps.h>
 
 //#define SPI_DEBUG  1
 
@@ -40,10 +41,15 @@ static constexpr uint8_t SPI_PIN_DEFAULT{0xff};
 enum class SpiBus {
 	INVALID = 0,
 	MIN = 1,
+	SPI1 = 1,
 	FSPI = 1, // Attached to the flash (can use the same data lines but different SS)
+	SPI2 = 2,
 	HSPI = 2, // Normally mapped to pins 12 - 15, but can be matrixed to any pins
+#if SOC_SPI_PERIPH_NUM > 2
+	SPI3 = 3,
 	VSPI = 3, // Normally attached to pins 5, 18, 19 and 23, but can be matrixed to any pins
-	MAX = 3,
+#endif
+	MAX = SOC_SPI_PERIPH_NUM,
 };
 
 /**
@@ -85,11 +91,6 @@ public:
 
 protected:
 	void prepare(SPISettings& settings) override;
-
-	struct BusInfo;
-	static BusInfo busInfo[];
-
-	BusInfo& getBusInfo();
 
 	SpiBus busId;
 	SpiPins pins;
