@@ -38,7 +38,7 @@ uint32_t flashmem_get_address(const void* memptr)
 	} else {
 		return 0;
 	}
-#if CONFIG_IDF_TARGET_ESP32 && !CONFIG_FREERTOS_UNICORE
+#ifdef DPORT_APP_FLASH_MMU_TABLE
 	uint32_t entry = DPORT_SEQUENCE_REG_READ(uint32_t(&DPORT_APP_FLASH_MMU_TABLE[page]));
 #else
 	uint32_t entry = DPORT_SEQUENCE_REG_READ(uint32_t(&SOC_MMU_DPORT_PRO_FLASH_MMU_TABLE[page]));

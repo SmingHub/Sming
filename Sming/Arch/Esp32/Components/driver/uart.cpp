@@ -59,7 +59,7 @@ struct smg_uart_instance_t {
 
 static smg_uart_instance_t uartInstances[UART_COUNT];
 
-#if CONFIG_IDF_TARGET_ESP32
+#if SUBARCH_ESP32
 #define FIFO(dev) dev.fifo.rw_byte
 #else
 #define FIFO(dev) dev.ahb_fifo.rw_byte
@@ -404,7 +404,7 @@ void smg_uart_start_isr(smg_uart_t* uart)
 
 	if(smg_uart_rx_enabled(uart)) {
 		conf1.rxfifo_full_thrhd = 120;
-#if CONFIG_IDF_TARGET_ESP32
+#if SUBARCH_ESP32
 		conf1.rx_tout_thrhd = 2;
 #else
 		hw.dev.mem_conf.rx_tout_thrhd = 2;
@@ -596,7 +596,7 @@ void smg_uart_flush(smg_uart_t* uart, smg_uart_mode_t mode)
 
 		// If receive overflow occurred then these interrupts will be masked
 		if(flushRx) {
-#if CONFIG_IDF_TARGET_ESP32
+#if SUBARCH_ESP32
 			// Hardware issue: we can not use `rxfifo_rst` to reset the hw rxfifo
 			while(true) {
 				auto fifo_cnt = hw.dev.status.rxfifo_cnt;
