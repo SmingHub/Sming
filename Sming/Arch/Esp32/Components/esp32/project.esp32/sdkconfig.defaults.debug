@@ -8,6 +8,8 @@
 # SDK tool configuration
 #
 
+CONFIG_COMPILER_OPTIMIZATION_SIZE=y
+
 # Mandatory LWIP changes
 CONFIG_LWIP_TCPIP_TASK_STACK_SIZE=8192
 
