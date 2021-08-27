@@ -65,6 +65,9 @@ struct SpiPins {
 class SPIClass : public SPIBase
 {
 public:
+	SPIClass(const SPIClass&) = delete;
+	SPIClass& operator=(const SPIClass&) = delete;
+
 	SPIClass(SpiBus id = SpiBus::VSPI) : busId(id)
 	{
 	}
