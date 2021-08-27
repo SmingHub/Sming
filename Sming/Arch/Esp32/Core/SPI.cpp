@@ -101,8 +101,8 @@ void spi_byte_order(SpiDevice& dev, uint8_t byte_order)
 	dev.user.rd_byte_order = (byte_order == MSBFIRST);
 	dev.user.wr_byte_order = (byte_order == MSBFIRST);
 #else
-	// No definition in datasheet for esp32-c3, perhaps it's just missing?
-	static_assert(false, "SPI byte order unsupported")
+// No definition in datasheet for esp32-c3, perhaps it's just missing?
+#warning "SPI byte order unsupported"
 #endif
 }
 
@@ -264,25 +264,16 @@ bool SPIClass::begin()
 	auto& dev = getDevice(busId);
 
 	// Initialise bus
-	dev.slave.trans_done = 0;
-	dev.slave.slave_mode = 0;
-	dev.pin.val = 0;
-	dev.user.val = 0;
-	dev.user1.val = 0;
-	dev.ctrl.val = 0;
-	dev.ctrl1.val = 0;
-	dev.ctrl2.val = 0;
-	dev.clock.val = 0;
+	spi_ll_master_init(&dev);
+	spi_ll_clear_int_stat(&dev);
+
 	//
-	dev.user.usr_mosi = true;
-	dev.user.usr_miso = true;
-	dev.user.doutdin = true;
-	dev.user.ck_i_edge = true;
+	spi_ll_enable_mosi(&dev, true);
+	spi_ll_enable_miso(&dev, true);
+	spi_ll_set_half_duplex(&dev, false);
 
 	// Not using any auto. chip selects
-	dev.pin.cs0_dis = true;
-	dev.pin.cs1_dis = true;
-	dev.pin.cs2_dis = true;
+	spi_ll_master_select_cs(&dev, -1);
 
 	auto& defPins = defaultPins[unsigned(busId) - 1];
 
@@ -354,13 +345,16 @@ uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 
 	spi_wait(dev);
 
-	dev.mosi_dlen.usr_mosi_dbitlen = bits - 1;
-	dev.miso_dlen.usr_miso_dbitlen = bits - 1;
+	spi_ll_set_mosi_bitlen(&dev, bits);
+	spi_ll_set_miso_bitlen(&dev, bits);
 
 	// copy data to W0
+#if SUBARCH_ESP32 || SUBARCH_ESP32S2
 	if(dev.user.wr_byte_order) {
 		dev.data_buf[0] = data << (32 - bits);
-	} else {
+	} else
+#endif
+	{
 		dev.data_buf[0] = data;
 	}
 
@@ -368,9 +362,11 @@ uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 	spi_wait(dev);
 
 	auto res = dev.data_buf[0];
+#if SUBARCH_ESP32 || SUBARCH_ESP32S2
 	if(dev.user.rd_byte_order) {
 		res >>= (32 - bits);
 	}
+#endif
 	return res;
 }
 
@@ -386,15 +382,17 @@ uint8_t SPIClass::read8()
 	spi_wait(dev);
 
 	auto res = dev.data_buf[0];
+#if SUBARCH_ESP32 || SUBARCH_ESP32S2
 	if(dev.user.rd_byte_order) {
 		res >>= 24;
 	}
+#endif
 	return res;
 }
 
 void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 {
-	constexpr uint32_t BLOCKSIZE{64}; // the max length of the ESP SPI_W0 registers
+	constexpr size_t BLOCKSIZE{64}; // the max length of the ESP SPI_W0 registers
 
 	auto& dev = getDevice(busId);
 
@@ -418,8 +416,8 @@ void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 
 		// setup bit length
 		auto num_bits = bufLength * 8;
-		dev.mosi_dlen.usr_mosi_dbitlen = num_bits - 1;
-		dev.miso_dlen.usr_miso_dbitlen = num_bits - 1;
+		spi_ll_set_mosi_bitlen(&dev, num_bits);
+		spi_ll_set_miso_bitlen(&dev, num_bits);
 
 		// copy the registers starting from last index position
 		if(IS_ALIGNED(buffer)) {

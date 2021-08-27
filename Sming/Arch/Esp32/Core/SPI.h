@@ -50,6 +50,11 @@ enum class SpiBus {
 	VSPI = 3, // Normally attached to pins 5, 18, 19 and 23, but can be matrixed to any pins
 #endif
 	MAX = SOC_SPI_PERIPH_NUM,
+#ifdef SUBARCH_ESP32C3
+	DEFAULT = SPI1,
+#else
+	DEFAULT = VSPI,
+#endif
 };
 
 /**
@@ -68,7 +73,7 @@ public:
 	SPIClass(const SPIClass&) = delete;
 	SPIClass& operator=(const SPIClass&) = delete;
 
-	SPIClass(SpiBus id = SpiBus::VSPI) : busId(id)
+	SPIClass(SpiBus id = SpiBus::DEFAULT) : busId(id)
 	{
 	}
 
