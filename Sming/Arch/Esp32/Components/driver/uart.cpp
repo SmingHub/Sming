@@ -7,6 +7,15 @@
 #include <driver/uart.h>
 #include <driver/SerialBuffer.h>
 #include <soc/uart_periph.h>
+
+// These conflict with enumerated types defined in IDF - values are same though
+#undef UART_PARITY_NONE
+#undef UART_PARITY_EVEN
+#undef UART_PARITY_ODD
+
+// #define typeof(x) std::remove_volatile<decltype(x)>::type
+#define typeof(x) decltype(x)
+#include <hal/uart_ll.h>
 #include <driver/periph_ctrl.h>
 
 /*
@@ -638,14 +647,22 @@ uint32_t smg_uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate)
 
 	auto& hw = uartHardware[uart_nr];
 
-	uint32_t sclk_freq = uart_use_apb_clock ? APB_CLK_FREQ : REF_CLK_FREQ;
+#if SOC_UART_SUPPORT_XTAL_CLK
+#define UART_ALT_CLK UART_SCLK_XTAL
+#define UART_ALT_CLK_FREQ XTAL_CLK_FREQ
+#else
+#define UART_ALT_CLK UART_SCLK_REF_TICK
+#define UART_ALT_CLK_FREQ REF_CLK_FREQ
+#endif
+
+	uint32_t sclk_freq = uart_use_apb_clock ? APB_CLK_FREQ : UART_ALT_CLK_FREQ;
 	uint32_t clk_div = 16U * sclk_freq / baud_rate;
 	// The baud-rate configuration register is divided into
 	// an integer part and a fractional part.
 	hw.dev.clk_div.div_int = clk_div / 16U;
 	hw.dev.clk_div.div_frag = clk_div % 16U;
 	// Configure the UART source clock.
-	hw.dev.conf0.tick_ref_always_on = uart_use_apb_clock;
+	uart_ll_set_sclk(&hw.dev, uart_use_apb_clock ? UART_SCLK_APB : UART_ALT_CLK);
 
 	// Return the actual baud rate in use
 	return 16U * sclk_freq / clk_div;
