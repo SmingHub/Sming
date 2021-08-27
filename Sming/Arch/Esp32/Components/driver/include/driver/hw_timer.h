@@ -10,8 +10,16 @@
 
 #pragma once
 
+#if defined(SUBARCH_ESP32) || defined(SUBARCH_ESP32S2)
+#define FRC_TIMER_ENABLED
+#endif
+
 #include <esp_systemapi.h>
+#ifdef FRC_TIMER_ENABLED
 #include <soc/frc_timer_reg.h>
+#else
+#include <esp_timer.h>
+#endif
 
 #define HW_TIMER_BASE_CLK APB_CLK_FREQ
 
@@ -85,6 +93,7 @@ void IRAM_ATTR hw_timer1_attach_interrupt(hw_timer_source_type_t source_type, hw
  */
 inline void IRAM_ATTR hw_timer1_enable(hw_timer_clkdiv_t div, hw_timer_intr_type_t intr_type, bool auto_load)
 {
+#ifdef FRC_TIMER_ENABLED
 	uint32_t ctrl = (div & 0x0C) | (intr_type & 0x01) | FRC_TIMER_ENABLE;
 	if(auto_load) {
 		ctrl |= FRC_TIMER_AUTOLOAD;
@@ -93,6 +102,7 @@ inline void IRAM_ATTR hw_timer1_enable(hw_timer_clkdiv_t div, hw_timer_intr_type
 	REG_WRITE(FRC_TIMER_CTRL_REG(0), ctrl);
 	//	TM1_EDGE_INT_ENABLE();
 	//	ETS_FRC1_INTR_ENABLE();
+#endif
 }
 
 /**
@@ -101,7 +111,9 @@ inline void IRAM_ATTR hw_timer1_enable(hw_timer_clkdiv_t div, hw_timer_intr_type
  */
 __forceinline void IRAM_ATTR hw_timer1_write(uint32_t ticks)
 {
+#ifdef FRC_TIMER_ENABLED
 	REG_WRITE(FRC_TIMER_LOAD_REG(0), ticks);
+#endif
 }
 
 /**
@@ -129,7 +141,11 @@ __forceinline void IRAM_ATTR hw_timer1_detach_interrupt(void)
  */
 __forceinline uint32_t hw_timer1_read(void)
 {
+#ifdef FRC_TIMER_ENABLED
 	return REG_READ(FRC_TIMER_COUNT_REG(0));
+#else
+	return 0;
+#endif
 }
 
 /*************************************
@@ -151,7 +167,11 @@ constexpr uint32_t HW_TIMER2_CLK = HW_TIMER_BASE_CLK >> HW_TIMER2_CLKDIV;
  */
 __forceinline uint32_t hw_timer2_read(void)
 {
+#ifdef FRC_TIMER_ENABLED
 	return REG_READ(FRC_TIMER_COUNT_REG(1));
+#else
+	return esp_timer_get_time();
+#endif
 }
 
 #define NOW() hw_timer2_read()
