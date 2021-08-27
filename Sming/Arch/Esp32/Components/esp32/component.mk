@@ -177,11 +177,12 @@ SDK_COMPONENTS := \
 	tcpip_adapter \
 	vfs \
 	wifi_provisioning \
-	wpa_supplicant \
-	xtensa
+	wpa_supplicant
 
 ifdef IDF_TARGET_ARCH_RISCV
 SDK_COMPONENTS += riscv
+else
+SDK_COMPONENTS += xtensa
 endif
 
 ifeq ($(SDK_FULL_BUILD),1)
@@ -221,24 +222,29 @@ SDK_ESP_WIFI_LIBS := \
 	net80211 \
 	phy \
 	pp \
-	rtc \
 	smartconfig
+
+ifndef IDF_TARGET_ARCH_RISCV
+SDK_ESP_WIFI_LIBS += rtc
+endif
 
 SDK_NEWLIB_LIBS := \
 	c \
 	m  \
 	stdc++ \
 
-SDK_XTENSA_LIBS := \
-	hal \
-	xt_hal
+ifdef IDF_TARGET_ARCH_RISCV
+SDK_TARGET_ARCH_LIBS := hal
+else
+SDK_TARGET_ARCH_LIBS := hal xt_hal
+endif
 
 EXTRA_LIBS := \
 	gcc \
 	$(SDK_COMPONENTS) \
 	$(SDK_ESP_WIFI_LIBS) \
 	$(SDK_NEWLIB_LIBS) \
-	$(SDK_XTENSA_LIBS)
+	$(SDK_TARGET_ARCH_LIBS)
 
 LinkerScript = -T $(ESP_VARIANT).$1.ld
 
