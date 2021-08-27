@@ -144,7 +144,6 @@ SDK_COMPONENTS := \
 	efuse \
 	esp-tls \
 	$(ESP_VARIANT) \
-	esp_adc_cal \
 	esp_common \
 	esp_event \
 	esp_gdbstub \
@@ -178,6 +177,10 @@ SDK_COMPONENTS := \
 	vfs \
 	wifi_provisioning \
 	wpa_supplicant
+
+ifneq ($(ESP_VARIANT),esp32s3)
+SDK_COMPONENTS += esp_adc_cal
+endif
 
 ifdef IDF_TARGET_ARCH_RISCV
 SDK_COMPONENTS += riscv
@@ -224,7 +227,7 @@ SDK_ESP_WIFI_LIBS := \
 	pp \
 	smartconfig
 
-ifndef IDF_TARGET_ARCH_RISCV
+ifeq ($(ESP_VARIANT),esp32)
 SDK_ESP_WIFI_LIBS += rtc
 endif
 
