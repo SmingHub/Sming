@@ -240,27 +240,49 @@ EXTRA_LIBS := \
 	$(SDK_NEWLIB_LIBS) \
 	$(SDK_XTENSA_LIBS)
 
+LinkerScript = -T $(ESP_VARIANT).$1.ld
+
+LDFLAGS_esp32 := \
+	$(call LinkerScript,rom.newlib-funcs) \
+	$(call LinkerScript,rom.newlib-data) \
+	$(call LinkerScript,rom.syscalls) \
+	$(call LinkerScript,rom.newlib-time) \
+	$(call LinkerScript,rom.eco3)
+
+LDFLAGS_esp32s2 := \
+	$(call LinkerScript,rom.newlib-funcs) \
+	$(call LinkerScript,rom.newlib-data) \
+	$(call LinkerScript,rom.spiflash)
+
+LDFLAGS_esp32c3 := \
+	$(call LinkerScript,rom.newlib) \
+	$(call LinkerScript,rom.version) \
+	$(call LinkerScript,rom.eco3)
+
+LDFLAGS_esp32s3 := \
+	$(call LinkerScript,rom.newlib-funcs) \
+	$(call LinkerScript,rom.newlib-data) \
+	$(call LinkerScript,rom.spiflash)
+
 EXTRA_LDFLAGS := \
 	-u esp_app_desc \
 	-u __cxa_guard_dummy -u __cxx_fatal_exception \
 	-T $(ESP_VARIANT)_out.ld \
 	-u ld_include_panic_highint_hdl \
-	-T $(ESP_VARIANT).project.ld \
-	-T esp32.peripherals.ld  \
-	-T $(ESP_VARIANT).rom.ld \
-	-T $(ESP_VARIANT).rom.api.ld \
-	-T $(ESP_VARIANT).rom.libgcc.ld \
-	-T esp32.rom.syscalls.ld \
-	-T $(ESP_VARIANT).rom.newlib-data.ld \
-	-T $(ESP_VARIANT).rom.newlib-funcs.ld  \
+	$(call LinkerScript,project) \
+	$(call LinkerScript,peripherals) \
+	$(call LinkerScript,rom) \
+	$(call LinkerScript,rom.api) \
+	$(call LinkerScript,rom.libgcc) \
 	-u newlib_include_locks_impl \
 	-u newlib_include_heap_impl \
 	-u newlib_include_syscalls_impl \
 	-u pthread_include_pthread_impl \
 	-u pthread_include_pthread_cond_impl \
 	-u pthread_include_pthread_local_storage_impl \
-	-Wl,--undefined=uxTopUsedPriority        
-            
+	-Wl,--undefined=uxTopUsedPriority \
+	$(LDFLAGS_$(ESP_VARIANT))
+
 FLASH_BOOT_LOADER       := $(SDK_BUILD_BASE)/bootloader/bootloader.bin
 FLASH_BOOT_CHUNKS		:= 0x1000=$(FLASH_BOOT_LOADER)
 
@@ -275,7 +297,7 @@ SDK_PARTITION_PATH := $(SDK_DEFAULT_PATH)/partitions
 SDK_PROJECT_PATH := $(COMPONENT_PATH)/project.$(ESP_VARIANT)
 SDK_CONFIG_DEFAULTS := $(SDK_PROJECT_PATH)/sdkconfig.defaults
 
-SDKCONFIG_MAKEFILE := $(SDK_PROJECT_PATH)/sdkconfig.$(ESP_VARIANT)
+SDKCONFIG_MAKEFILE := $(SDK_PROJECT_PATH)/sdkconfig
 ifeq ($(MAKE_DOCS),)
 -include $(SDKCONFIG_MAKEFILE)
 endif
@@ -320,7 +342,7 @@ sdk-menuconfig: $(SDK_CONFIG_DEFAULTS) | $(SDK_BUILD_BASE) ##Configure SDK optio
 sdk-defconfig: $(SDK_BUILD_BASE)/include/sdkconfig.h ##Create default SDK config files
 
 .PHONY: sdk-menuconfig-clean
-sdk-menuconfig-clean: ##Clean SDK configuration and revert to defaults
+sdk-menuconfig-clean: esp32-clean ##Wipe SDK configuration and revert to defaults
 	$(Q) rm -f $(SDKCONFIG_MAKEFILE) $(SDK_CONFIG_DEFAULTS) 
 
 .PHONY: sdk-help
