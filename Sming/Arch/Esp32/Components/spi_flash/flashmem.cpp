@@ -10,7 +10,7 @@
 
 #include <esp_spi_flash.h>
 #include <soc/soc.h>
-#include <soc/dport_reg.h>
+#include <soc/dport_access.h>
 #include <soc/mmu.h>
 #include <esp_app_format.h>
 #include <esp_flash_partitions.h>
