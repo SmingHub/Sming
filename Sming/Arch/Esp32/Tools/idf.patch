@@ -28,3 +28,319 @@ index 222a5ae801..2348cc9e8d 100644
  /* Yielding within an API call (when interrupts are off), means the yield should be delayed
     until interrupts are re-enabled.
 
+diff --git a/components/hal/esp32/include/hal/uart_ll.h b/components/hal/esp32/include/hal/uart_ll.h
+index c740849360..880045c129 100644
+--- a/components/hal/esp32/include/hal/uart_ll.h
++++ b/components/hal/esp32/include/hal/uart_ll.h
+@@ -128,7 +128,8 @@ FORCE_INLINE_ATTR void uart_ll_set_baudrate(uart_dev_t *hw, uint32_t baud)
+ FORCE_INLINE_ATTR uint32_t uart_ll_get_baudrate(uart_dev_t *hw)
+ {
+     uint32_t sclk_freq = uart_ll_get_sclk_freq(hw);
+-    typeof(hw->clk_div) div_reg = hw->clk_div;
++    typeof(hw->clk_div) div_reg;
++    div_reg.val = hw->clk_div.val;
+     return ((sclk_freq << 4)) / ((div_reg.div_int << 4) | div_reg.div_frag);
+ }
+ 
+@@ -288,7 +289,8 @@ FORCE_INLINE_ATTR void uart_ll_txfifo_rst(uart_dev_t *hw)
+ FORCE_INLINE_ATTR uint32_t uart_ll_get_rxfifo_len(uart_dev_t *hw)
+ {
+     uint32_t fifo_cnt = hw->status.rxfifo_cnt;
+-    typeof(hw->mem_rx_status) rx_status = hw->mem_rx_status;
++    typeof(hw->mem_rx_status) rx_status;
++    rx_status.val = hw->mem_rx_status.val;
+     uint32_t len = 0;
+ 
+     // When using DPort to read fifo, fifo_cnt is not credible, we need to calculate the real cnt based on the fifo read and write pointer.
+@@ -350,7 +352,7 @@ FORCE_INLINE_ATTR void uart_ll_get_stop_bits(uart_dev_t *hw, uart_stop_bits_t *s
+     if(hw->rs485_conf.dl1_en == 1 && hw->conf0.stop_bit_num == 0x1) {
+         *stop_bit = UART_STOP_BITS_2;
+     } else {
+-        *stop_bit = hw->conf0.stop_bit_num;
++        *stop_bit = (uart_stop_bits_t)hw->conf0.stop_bit_num;
+     }
+ }
+ 
+@@ -381,7 +383,7 @@ FORCE_INLINE_ATTR void uart_ll_set_parity(uart_dev_t *hw, uart_parity_t parity_m
+ FORCE_INLINE_ATTR void uart_ll_get_parity(uart_dev_t *hw, uart_parity_t *parity_mode)
+ {
+     if(hw->conf0.parity_en) {
+-        *parity_mode = 0X2 | hw->conf0.parity;
++        *parity_mode = (uart_parity_t)(0X2 | hw->conf0.parity);
+     } else {
+         *parity_mode = UART_PARITY_DISABLE;
+     }
+@@ -497,10 +499,10 @@ FORCE_INLINE_ATTR void uart_ll_get_hw_flow_ctrl(uart_dev_t *hw, uart_hw_flowcont
+ {
+     *flow_ctrl = UART_HW_FLOWCTRL_DISABLE;
+     if(hw->conf1.rx_flow_en) {
+-        *flow_ctrl |= UART_HW_FLOWCTRL_RTS;
++        *flow_ctrl = (uart_hw_flowcontrol_t)(*flow_ctrl | UART_HW_FLOWCTRL_RTS);
+     }
+     if(hw->conf0.tx_flow_en) {
+-        *flow_ctrl |= UART_HW_FLOWCTRL_CTS;
++        *flow_ctrl  = (uart_hw_flowcontrol_t)(*flow_ctrl | UART_HW_FLOWCTRL_CTS);
+     }
+ }
+ 
+@@ -755,7 +757,7 @@ FORCE_INLINE_ATTR uint32_t uart_ll_get_wakeup_thrd(uart_dev_t *hw)
+  */
+ FORCE_INLINE_ATTR void uart_ll_get_data_bit_num(uart_dev_t *hw, uart_word_length_t *data_bit)
+ {
+-    *data_bit = hw->conf0.bit_num;
++    *data_bit = (uart_word_length_t)hw->conf0.bit_num;
+ }
+ 
+ /**
+@@ -767,7 +769,8 @@ FORCE_INLINE_ATTR void uart_ll_get_data_bit_num(uart_dev_t *hw, uart_word_length
+  */
+ FORCE_INLINE_ATTR IRAM_ATTR bool uart_ll_is_tx_idle(uart_dev_t *hw)
+ {
+-    typeof(hw->status) status = hw->status;
++    typeof(hw->status) status;
++    status.val = hw->status.val;
+     return ((status.txfifo_cnt == 0) && (status.st_utx_out == 0));
+ }
+ 
+@@ -819,7 +822,8 @@ FORCE_INLINE_ATTR void uart_ll_set_loop_back(uart_dev_t *hw, bool loop_back_en)
+  */
+ FORCE_INLINE_ATTR void uart_ll_inverse_signal(uart_dev_t *hw, uint32_t inv_mask)
+ {
+-    typeof(hw->conf0) conf0_reg = hw->conf0;
++    typeof(hw->conf0) conf0_reg;
++    conf0_reg.val = hw->conf0.val;
+     conf0_reg.irda_tx_inv = (inv_mask & UART_SIGNAL_IRDA_TX_INV) ? 1 : 0;
+     conf0_reg.irda_rx_inv = (inv_mask & UART_SIGNAL_IRDA_RX_INV) ? 1 : 0;
+     conf0_reg.rxd_inv = (inv_mask & UART_SIGNAL_RXD_INV) ? 1 : 0;
+
+diff --git a/components/hal/esp32c3/include/hal/spi_ll.h b/components/hal/esp32c3/include/hal/spi_ll.h
+index 5527ee1eb7..ab61096180 100644
+--- a/components/hal/esp32c3/include/hal/spi_ll.h
++++ b/components/hal/esp32c3/include/hal/spi_ll.h
+@@ -333,7 +333,7 @@ static inline void spi_ll_dma_set_rx_eof_generation(spi_dev_t *hw, bool enable)
+  */
+ static inline void spi_ll_write_buffer(spi_dev_t *hw, const uint8_t *buffer_to_send, size_t bitlen)
+ {
+-    for (int x = 0; x < bitlen; x += 32) {
++    for (size_t x = 0; x < bitlen; x += 32) {
+         //Use memcpy to get around alignment issues for txdata
+         uint32_t word;
+         memcpy(&word, &buffer_to_send[x / 8], 4);
+@@ -381,7 +381,7 @@ static inline void spi_ll_write_buffer_byte(spi_dev_t *hw, int byte_id, uint8_t
+  */
+ static inline void spi_ll_read_buffer(spi_dev_t *hw, uint8_t *buffer_to_rcv, size_t bitlen)
+ {
+-    for (int x = 0; x < bitlen; x += 32) {
++    for (size_t x = 0; x < bitlen; x += 32) {
+         //Do a memcpy to get around possible alignment issues in rx_buffer
+         uint32_t word = hw->data_buf[x / 32];
+         int len = bitlen - x;
+
+diff --git a/components/hal/esp32c3/include/hal/uart_ll.h b/components/hal/esp32c3/include/hal/uart_ll.h
+index a917caadcb..329185b74d 100644
+--- a/components/hal/esp32c3/include/hal/uart_ll.h
++++ b/components/hal/esp32c3/include/hal/uart_ll.h
+@@ -177,7 +177,8 @@ static inline void uart_ll_set_baudrate(uart_dev_t *hw, uint32_t baud)
+ static inline uint32_t uart_ll_get_baudrate(uart_dev_t *hw)
+ {
+     uint32_t sclk_freq = uart_ll_get_sclk_freq(hw);
+-    typeof(hw->clk_div) div_reg = hw->clk_div;
++    typeof(hw->clk_div) div_reg;
++    div_reg.val = hw->clk_div.val;
+     return ((sclk_freq << 4)) / (((div_reg.div_int << 4) | div_reg.div_frag) * (hw->clk_conf.sclk_div_num + 1));
+ }
+ 
+@@ -349,7 +350,7 @@ static inline void uart_ll_set_stop_bits(uart_dev_t *hw, uart_stop_bits_t stop_b
+  */
+ static inline void uart_ll_get_stop_bits(uart_dev_t *hw, uart_stop_bits_t *stop_bit)
+ {
+-    *stop_bit = hw->conf0.stop_bit_num;
++    *stop_bit = (uart_stop_bits_t)hw->conf0.stop_bit_num;
+ }
+ 
+ /**
+@@ -379,7 +380,7 @@ static inline void uart_ll_set_parity(uart_dev_t *hw, uart_parity_t parity_mode)
+ static inline void uart_ll_get_parity(uart_dev_t *hw, uart_parity_t *parity_mode)
+ {
+     if (hw->conf0.parity_en) {
+-        *parity_mode = 0X2 | hw->conf0.parity;
++        *parity_mode = (uart_parity_t)(0X2 | hw->conf0.parity);
+     } else {
+         *parity_mode = UART_PARITY_DISABLE;
+     }
+@@ -495,10 +496,10 @@ static inline void uart_ll_get_hw_flow_ctrl(uart_dev_t *hw, uart_hw_flowcontrol_
+ {
+     *flow_ctrl = UART_HW_FLOWCTRL_DISABLE;
+     if (hw->conf1.rx_flow_en) {
+-        *flow_ctrl |= UART_HW_FLOWCTRL_RTS;
++        *flow_ctrl = (uart_hw_flowcontrol_t)(*flow_ctrl | UART_HW_FLOWCTRL_RTS);
+     }
+     if (hw->conf0.tx_flow_en) {
+-        *flow_ctrl |= UART_HW_FLOWCTRL_CTS;
++        *flow_ctrl = (uart_hw_flowcontrol_t)(*flow_ctrl | UART_HW_FLOWCTRL_CTS);
+     }
+ }
+ 
+@@ -760,7 +761,7 @@ static inline uint32_t uart_ll_get_wakeup_thrd(uart_dev_t *hw)
+  */
+ static inline void uart_ll_get_data_bit_num(uart_dev_t *hw, uart_word_length_t *data_bit)
+ {
+-    *data_bit = hw->conf0.bit_num;
++    *data_bit = (uart_word_length_t)hw->conf0.bit_num;
+ }
+ 
+ /**
+@@ -831,7 +832,8 @@ static inline void uart_ll_xon_force_on(uart_dev_t *hw, bool always_on)
+  */
+ static inline void uart_ll_inverse_signal(uart_dev_t *hw, uint32_t inv_mask)
+ {
+-    typeof(hw->conf0) conf0_reg = hw->conf0;
++    typeof(hw->conf0) conf0_reg;
++    conf0_reg.val = hw->conf0.val;
+     conf0_reg.irda_tx_inv = (inv_mask & UART_SIGNAL_IRDA_TX_INV) ? 1 : 0;
+     conf0_reg.irda_rx_inv = (inv_mask & UART_SIGNAL_IRDA_RX_INV) ? 1 : 0;
+     conf0_reg.rxd_inv = (inv_mask & UART_SIGNAL_RXD_INV) ? 1 : 0;
+
+diff --git a/components/hal/esp32s2/include/hal/uart_ll.h b/components/hal/esp32s2/include/hal/uart_ll.h
+index 6ece3e4084..29a43359e2 100644
+--- a/components/hal/esp32s2/include/hal/uart_ll.h
++++ b/components/hal/esp32s2/include/hal/uart_ll.h
+@@ -125,7 +125,8 @@ FORCE_INLINE_ATTR void uart_ll_set_baudrate(uart_dev_t *hw, uint32_t baud)
+ FORCE_INLINE_ATTR uint32_t uart_ll_get_baudrate(uart_dev_t *hw)
+ {
+     uint32_t sclk_freq = uart_ll_get_sclk_freq(hw);
+-    typeof(hw->clk_div) div_reg = hw->clk_div;
++    typeof(hw->clk_div) div_reg;
++    div_reg.val = hw->clk_div.val;
+     return ((sclk_freq << 4)) / ((div_reg.div_int << 4) | div_reg.div_frag);
+ }
+ 
+@@ -301,7 +302,7 @@ FORCE_INLINE_ATTR void uart_ll_set_stop_bits(uart_dev_t *hw, uart_stop_bits_t st
+  */
+ FORCE_INLINE_ATTR void uart_ll_get_stop_bits(uart_dev_t *hw, uart_stop_bits_t *stop_bit)
+ {
+-    *stop_bit = hw->conf0.stop_bit_num;
++    *stop_bit = (uart_stop_bits_t)hw->conf0.stop_bit_num;
+ }
+ 
+ /**
+@@ -331,7 +332,7 @@ FORCE_INLINE_ATTR void uart_ll_set_parity(uart_dev_t *hw, uart_parity_t parity_m
+ FORCE_INLINE_ATTR void uart_ll_get_parity(uart_dev_t *hw, uart_parity_t *parity_mode)
+ {
+     if(hw->conf0.parity_en) {
+-        *parity_mode = 0X2 | hw->conf0.parity;
++        *parity_mode = (uart_parity_t)(0X2 | hw->conf0.parity);
+     } else {
+         *parity_mode = UART_PARITY_DISABLE;
+     }
+@@ -447,10 +448,10 @@ FORCE_INLINE_ATTR void uart_ll_get_hw_flow_ctrl(uart_dev_t *hw, uart_hw_flowcont
+ {
+     *flow_ctrl = UART_HW_FLOWCTRL_DISABLE;
+     if(hw->conf1.rx_flow_en) {
+-        *flow_ctrl |= UART_HW_FLOWCTRL_RTS;
++        *flow_ctrl = (uart_hw_flowcontrol_t)(*flow_ctrl | UART_HW_FLOWCTRL_RTS);
+     }
+     if(hw->conf0.tx_flow_en) {
+-        *flow_ctrl |= UART_HW_FLOWCTRL_CTS;
++        *flow_ctrl  = (uart_hw_flowcontrol_t)(*flow_ctrl | UART_HW_FLOWCTRL_CTS);
+     }
+ }
+ 
+@@ -705,7 +706,7 @@ FORCE_INLINE_ATTR uint32_t uart_ll_get_wakeup_thrd(uart_dev_t *hw)
+  */
+ FORCE_INLINE_ATTR void uart_ll_get_data_bit_num(uart_dev_t *hw, uart_word_length_t *data_bit)
+ {
+-    *data_bit = hw->conf0.bit_num;
++    *data_bit = (uart_word_length_t)hw->conf0.bit_num;
+ }
+ 
+ /**
+@@ -768,7 +769,8 @@ FORCE_INLINE_ATTR void uart_ll_set_loop_back(uart_dev_t *hw, bool loop_back_en)
+  */
+ FORCE_INLINE_ATTR void uart_ll_inverse_signal(uart_dev_t *hw, uint32_t inv_mask)
+ {
+-    typeof(hw->conf0) conf0_reg = hw->conf0;
++    typeof(hw->conf0) conf0_reg;
++    conf0_reg.val = hw->conf0.val;
+     conf0_reg.irda_tx_inv = (inv_mask & UART_SIGNAL_IRDA_TX_INV) ? 1 : 0;
+     conf0_reg.irda_rx_inv = (inv_mask & UART_SIGNAL_IRDA_RX_INV) ? 1 : 0;
+     conf0_reg.rxd_inv = (inv_mask & UART_SIGNAL_RXD_INV) ? 1 : 0;
+
+diff --git a/components/hal/esp32s3/include/hal/uart_ll.h b/components/hal/esp32s3/include/hal/uart_ll.h
+index 95b53c5cbd..9ed30f1fe3 100644
+--- a/components/hal/esp32s3/include/hal/uart_ll.h
++++ b/components/hal/esp32s3/include/hal/uart_ll.h
+@@ -160,7 +160,8 @@ FORCE_INLINE_ATTR void uart_ll_set_baudrate(uart_dev_t *hw, uint32_t baud)
+ FORCE_INLINE_ATTR uint32_t uart_ll_get_baudrate(uart_dev_t *hw)
+ {
+     uint32_t sclk_freq = uart_ll_get_sclk_freq(hw);
+-    typeof(hw->clk_div) div_reg = hw->clk_div;
++    typeof(hw->clk_div) div_reg;
++    div_reg.val = hw->clk_div.val;
+     return ((sclk_freq << 4)) / (((div_reg.div_int << 4) | div_reg.div_frag) * (hw->clk_conf.sclk_div_num + 1));
+ }
+ 
+@@ -332,7 +333,7 @@ FORCE_INLINE_ATTR void uart_ll_set_stop_bits(uart_dev_t *hw, uart_stop_bits_t st
+  */
+ FORCE_INLINE_ATTR void uart_ll_get_stop_bits(uart_dev_t *hw, uart_stop_bits_t *stop_bit)
+ {
+-    *stop_bit = hw->conf0.stop_bit_num;
++    *stop_bit = (uart_stop_bits_t)hw->conf0.stop_bit_num;
+ }
+ 
+ /**
+@@ -362,7 +363,7 @@ FORCE_INLINE_ATTR void uart_ll_set_parity(uart_dev_t *hw, uart_parity_t parity_m
+ FORCE_INLINE_ATTR void uart_ll_get_parity(uart_dev_t *hw, uart_parity_t *parity_mode)
+ {
+     if (hw->conf0.parity_en) {
+-        *parity_mode = 0X2 | hw->conf0.parity;
++        *parity_mode = (uart_parity_t)(0X2 | hw->conf0.parity);
+     } else {
+         *parity_mode = UART_PARITY_DISABLE;
+     }
+@@ -477,10 +478,10 @@ FORCE_INLINE_ATTR void uart_ll_get_hw_flow_ctrl(uart_dev_t *hw, uart_hw_flowcont
+ {
+     *flow_ctrl = UART_HW_FLOWCTRL_DISABLE;
+     if (hw->conf1.rx_flow_en) {
+-        *flow_ctrl |= UART_HW_FLOWCTRL_RTS;
++        *flow_ctrl = (uart_hw_flowcontrol_t)(*flow_ctrl | UART_HW_FLOWCTRL_RTS);
+     }
+     if (hw->conf0.tx_flow_en) {
+-        *flow_ctrl |= UART_HW_FLOWCTRL_CTS;
++        *flow_ctrl = (uart_hw_flowcontrol_t)(*flow_ctrl | UART_HW_FLOWCTRL_CTS);
+     }
+ }
+ 
+@@ -736,7 +737,7 @@ FORCE_INLINE_ATTR uint32_t uart_ll_get_wakeup_thrd(uart_dev_t *hw)
+  */
+ FORCE_INLINE_ATTR void uart_ll_get_data_bit_num(uart_dev_t *hw, uart_word_length_t *data_bit)
+ {
+-    *data_bit = hw->conf0.bit_num;
++    *data_bit = (uart_word_length_t)hw->conf0.bit_num;
+ }
+ 
+ /**
+@@ -799,7 +800,8 @@ FORCE_INLINE_ATTR void uart_ll_set_loop_back(uart_dev_t *hw, bool loop_back_en)
+  */
+ FORCE_INLINE_ATTR void uart_ll_inverse_signal(uart_dev_t *hw, uint32_t inv_mask)
+ {
+-    typeof(hw->conf0) conf0_reg = hw->conf0;
++    typeof(hw->conf0) conf0_reg;
++    conf0_reg.val = hw->conf0.val;
+     conf0_reg.irda_tx_inv = (inv_mask & UART_SIGNAL_IRDA_TX_INV) ? 1 : 0;
+     conf0_reg.irda_rx_inv = (inv_mask & UART_SIGNAL_IRDA_RX_INV) ? 1 : 0;
+     conf0_reg.rxd_inv = (inv_mask & UART_SIGNAL_RXD_INV) ? 1 : 0;
+
+diff --git a/components/driver/include/driver/gpio.h b/components/driver/include/driver/gpio.h
+index 2d8b481fda..6128b9e4ec 100644
+--- a/components/driver/include/driver/gpio.h
++++ b/components/driver/include/driver/gpio.h
+@@ -33,6 +33,8 @@
+ #include "esp32s2/rom/gpio.h"
+ #elif CONFIG_IDF_TARGET_ESP32C3
+ #include "esp32c3/rom/gpio.h"
++#elif CONFIG_IDF_TARGET_ESP32S3
++#include "esp32s3/rom/gpio.h"
+ #endif
+ 
+ #ifdef CONFIG_LEGACY_INCLUDE_COMMON_HEADERS
