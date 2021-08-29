@@ -8,6 +8,7 @@
  *
  ****/
 
+#include <sdkconfig.h>
 #include <esp_spi_flash.h>
 #include <soc/soc.h>
 #include <soc/dport_access.h>
@@ -15,6 +16,10 @@
 #include <esp_app_format.h>
 #include <esp_flash_partitions.h>
 #include <esp_flash.h>
+
+#ifndef CONFIG_IDF_TARGET_ESP32C3
+#include <soc/dport_reg.h>
+#endif
 
 /*
  * Physical <-> Virtual address mapping is handled in `$IDF_COMPONENTS/spi_flash/flash_mmap.c`.
@@ -38,7 +43,7 @@ uint32_t flashmem_get_address(const void* memptr)
 	} else {
 		return 0;
 	}
-#ifdef DPORT_APP_FLASH_MMU_TABLE
+#if CONFIG_IDF_TARGET_ESP32 && !CONFIG_FREERTOS_UNICORE
 	uint32_t entry = DPORT_SEQUENCE_REG_READ(uint32_t(&DPORT_APP_FLASH_MMU_TABLE[page]));
 #else
 	uint32_t entry = DPORT_SEQUENCE_REG_READ(uint32_t(&SOC_MMU_DPORT_PRO_FLASH_MMU_TABLE[page]));

@@ -157,7 +157,12 @@ SMING_C_STD := gnu99
 # This variable stores the common C/C++ flags
 # CPPFLAGS used by C preprocessor
 # If any flags are defined in application Makefile, add them at the end.
-CPPFLAGS += -DESP_PLATFORM -D IDF_VER=\"$(IDF_VER)\" -MMD -MP $(EXTRA_CPPFLAGS)
+CPPFLAGS += \
+	-DESP_PLATFORM \
+	-D IDF_VER=\"$(IDF_VER)\" \
+	-MMD \
+	-MP \
+	$(EXTRA_CPPFLAGS)
 
 # Sming specific CPPFLAGS
 CPPFLAGS += \
