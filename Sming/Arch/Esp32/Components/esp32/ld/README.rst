@@ -1,1 +1,0 @@
-Esp32 linker files
