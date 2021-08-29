@@ -29,8 +29,11 @@ Sming provides access to all ESP8266 functions such as GPIO, timers, WiFi config
 ESP32
 -----
 
-`ESP32 <https://www.espressif.com/en/products/socs/esp32#esp32-overview-wrap>`__ is the second microcontroller by `Espressif <https://espressif.com>`__ Systems.
-At the moment Sming provides partial support for ESP32 functions.
+`ESP32 <https://www.espressif.com/en/products/socs/esp32>`__ is the second microcontroller by `Espressif <https://espressif.com>`__ Systems.
+There are also a number of more recent variants such as the esp32-s2 and esp32-c3.
+
+Sming currently provides support for these devices but is more limited and should be considered 'experimental'.
+
 
 Licenses
 --------
