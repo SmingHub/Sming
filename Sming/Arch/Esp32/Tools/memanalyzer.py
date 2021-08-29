@@ -12,18 +12,38 @@ import shlex
 import subprocess
 import sys
 
-# From soc/soc.h
-SOC_DROM_LOW    = 0x3F400000
-SOC_DROM_HIGH   = 0x3F800000
-SOC_DRAM_LOW    = 0x3FFAE000
-SOC_DRAM_HIGH   = 0x40000000
-SOC_IROM_LOW    = 0x400D0000
-SOC_IROM_HIGH   = 0x40400000
-SOC_IRAM_LOW    = 0x40080000
-SOC_IRAM_HIGH   = 0x400A0000
+# esptool defines a load of useful stuff
+sys.path.insert(1, os.path.expandvars('${SMING_HOME}/Components/esptool/esptool'))
+import esptool
 
-TOTAL_DRAM = SOC_DRAM_HIGH - SOC_DRAM_LOW;
-TOTAL_IRAM = SOC_IRAM_HIGH - SOC_IRAM_LOW;
+# Get expected memory sizes from loader tables
+loader = esptool._chip_to_rom_loader(os.environ['ESP_VARIANT'])
+TOTAL_DRAM = sum(end - start for (start, end, n) in loader.MEMORY_MAP if n in ['DRAM'])
+TOTAL_IRAM = sum(end - start for (start, end, n) in loader.MEMORY_MAP if n in ['IRAM'])
+
+# TESTING
+def printMemoryMaps():
+    loaders = OrderedDict({
+            'esp8266': esptool.ESP8266ROM,
+            'esp32': esptool.ESP32ROM,
+            'esp32s2': esptool.ESP32S2ROM,
+            'esp32s3beta2': esptool.ESP32S3BETA2ROM,
+            'esp32s3': esptool.ESP32S3ROM,
+            'esp32c3': esptool.ESP32C3ROM,
+            'esp32c6beta': esptool.ESP32C6BETAROM,
+            'esp32h2': esptool.ESP32H2ROM
+    })
+    for k, v in loaders.items():
+        print(k)
+        for (start, end, n) in v.MEMORY_MAP:
+            print("  %16s: %8u (0x%08x - 0x%08x)" % (n, end - start, start, end))
+        dram = sum(end - start for (start, end, n) in v.MEMORY_MAP if n in ['DRAM'])
+        iram = sum(end - start for (start, end, n) in v.MEMORY_MAP if n in ['IRAM'])
+        print("  %16s: %8u" % ('TOTAL_DRAM', dram))
+        print("  %16s: %8u" % ('TOTAL_IRAM', iram))
+        print("  %16s: %8u" % ('DRAM+IRAM', dram + iram))
+
+# printMemoryMaps()
 
 sections = OrderedDict([
     ("data", "Initialized Data (RAM)"),
