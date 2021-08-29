@@ -59,7 +59,7 @@ export PROJECT_DIR
 
 ifeq ($(MAKELEVEL),0)
 $(info )
-$(info $(notdir $(PROJECT_DIR)): Invoking '$(MAKECMDGOALS)' for $(SMING_ARCH) ($(BUILD_TYPE)) architecture)
+$(info $(notdir $(PROJECT_DIR)): Invoking '$(MAKECMDGOALS)' for $(SMING_ARCH).$(ESP_VARIANT) ($(BUILD_TYPE)) architecture)
 endif
 
 # CFLAGS used for application and any custom targets
