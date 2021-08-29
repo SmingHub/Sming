@@ -28,25 +28,35 @@ esac
 
 $PKG_INSTALL ${PACKAGES[*]}
 
-if [ -d "$IDF_PATH" ]; then
-    printf "\n\n** Skipping ESP-IDF clone: '$IDF_PATH' exists\n\n"
-else
-    git clone -b release/v4.3 https://github.com/espressif/esp-idf.git "$IDF_PATH"
+# If directory exists and isn't a symlink then rename it
+if [ ! -L "$IDF_PATH" ] && [ -d "$IDF_PATH" ]; then
+    echo MOVING OLD
+    mv "$IDF_PATH" "$IDF_PATH-old"
 fi
 
-# Apply IDF patches
-IDF_PATCH="$(dirname $BASH_SOURCE)/idf.patch"
-pushd "$IDF_PATH"
-git apply -v --ignore-whitespace --whitespace=nowarn "$IDF_PATCH"
+IDF_CLONE_PATH="$(readlink -m "$IDF_PATH/..")/esp-idf-4.3"
+
+if [ -d "$IDF_CLONE_PATH" ]; then
+    printf "\n\n** Skipping ESP-IDF clone: '$IDF_CLONE_PATH' exists\n\n"
+else
+    git clone -b release/v4.3 https://github.com/espressif/esp-idf.git "$IDF_CLONE_PATH"
+    # Apply IDF patches
+    IDF_PATCH="$(dirname "$BASH_SOURCE")/idf.patch"
+    pushd "$IDF_CLONE_PATH"
+    git apply --ignore-whitespace --whitespace=nowarn "$IDF_PATCH"
+    popd
+fi
+
+# Create link to clone
+rm -f "$IDF_PATH"
+ln -s "$IDF_CLONE_PATH" "$IDF_PATH"
 
 # Install IDF tools and packages
-python3 tools/idf_tools.py install
-python3 -m pip install -r $IDF_PATH/requirements.txt
-
-popd
+python3 "$IDF_PATH/tools/idf_tools.py" install
+python3 -m pip install -r "$IDF_PATH/requirements.txt"
 
 if [ -z "$KEEP_DOWNLOADS" ]; then
-    rm -rf $IDF_TOOLS_PATH/dist
+    rm -rf "$IDF_TOOLS_PATH/dist"
 fi
 
 fi
