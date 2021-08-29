@@ -234,7 +234,7 @@ endif
 SDK_NEWLIB_LIBS := \
 	c \
 	m  \
-	stdc++ \
+	stdc++
 
 ifdef IDF_TARGET_ARCH_RISCV
 SDK_TARGET_ARCH_LIBS := hal
