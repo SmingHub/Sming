@@ -145,6 +145,7 @@ SDK_COMPONENTS := \
 	esp-tls \
 	$(ESP_VARIANT) \
 	esp_common \
+	esp_eth \
 	esp_event \
 	esp_gdbstub \
 	esp_hw_support \
@@ -195,7 +196,6 @@ SDK_COMPONENTS += \
 	bt \
 	coap \
 	console \
-	esp_eth \
 	esp_http_client \
 	esp_http_server \
 	esp_https_ota \
