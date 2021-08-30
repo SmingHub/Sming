@@ -39,12 +39,7 @@ IDF_CLONE_PATH="$(readlink -m "$IDF_PATH/..")/esp-idf-4.3"
 if [ -d "$IDF_CLONE_PATH" ]; then
     printf "\n\n** Skipping ESP-IDF clone: '$IDF_CLONE_PATH' exists\n\n"
 else
-    git clone -b release/v4.3 https://github.com/espressif/esp-idf.git "$IDF_CLONE_PATH"
-    # Apply IDF patches
-    IDF_PATCH="$(dirname "$BASH_SOURCE")/idf.patch"
-    pushd "$IDF_CLONE_PATH"
-    git apply --ignore-whitespace --whitespace=nowarn "$IDF_PATCH"
-    popd
+    git clone -b sming/release/v4.3 https://github.com/mikee47/esp-idf.git "$IDF_CLONE_PATH"
 fi
 
 # Create link to clone
