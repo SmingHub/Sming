@@ -1,5 +1,5 @@
 #include <SmingCore.h>
-#include <Platform/Ethernet.h>
+#include <Platform/InternalEthernet.h>
 
 #include "config.h"
 
@@ -7,7 +7,7 @@
 #include "driver/spi_master.h"
 #endif // CONFIG_ETH_USE_SPI_ETHERNET
 
-Ethernet ethernet;
+InternalEthernet ethernet;
 
 static void ethernetEventHandler(EthernetEvent event, MacAddress mac)
 {
@@ -36,6 +36,7 @@ void init()
 
 	ethernet.begin();
 
+#if 0
 	esp_netif_config_t cfg = ESP_NETIF_DEFAULT_ETH();
 	esp_netif_t* eth_netif = esp_netif_new(&cfg);
 	// Set default handlers to process TCP/IP stuffs
@@ -115,4 +116,6 @@ void init()
 	ESP_ERROR_CHECK(esp_netif_attach(eth_netif, esp_eth_new_netif_glue(eth_handle)));
 	/* start Ethernet driver state machine */
 	ESP_ERROR_CHECK(esp_eth_start(eth_handle));
+
+#endif
 }
