@@ -23,7 +23,7 @@ public:
 			debug_w("Can't get list of connected stations");
 			return;
 		}
-		for(unsigned i = 0; i < list.num; i++) {
+		for(int i = 0; i < list.num; i++) {
 			add(new Info{list.sta[i]});
 		}
 	}

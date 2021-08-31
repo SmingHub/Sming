@@ -296,7 +296,7 @@ public:
 			Serial.print(" iterations, average loop time = ");
 			using namespace NanoTime;
 			constexpr auto nsTotal = convert<TIMEOUT_MS, Milliseconds, Nanoseconds>();
-			auto nsPerLoop = time(Nanoseconds, muldiv(nsTotal, 1U, loopCount));
+			auto nsPerLoop = time(Nanoseconds, muldiv(nsTotal, uint32_t(1), loopCount));
 			Serial.print(nsPerLoop.toString());
 			Serial.print(" (");
 			auto cycles = CpuCycleClockNormal::template timeToTicks<Nanoseconds>(uint32_t(nsPerLoop));

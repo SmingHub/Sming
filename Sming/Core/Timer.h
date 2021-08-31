@@ -50,12 +50,9 @@ public:
 
 	OsTimer64Api()
 	{
-		osTimer.setCallback(
-			[](void* arg) {
-				auto self = static_cast<OsTimer64Api*>(arg);
-				self->longTick();
-			},
-			this);
+#ifndef ARCH_ESP32
+		initCallback();
+#endif
 	}
 
 	~OsTimer64Api()
@@ -102,6 +99,9 @@ public:
 
 	__forceinline void IRAM_ATTR arm(bool repeating)
 	{
+#ifdef ARCH_ESP32
+		initCallback();
+#endif
 		this->repeating = repeating;
 		osTimer.arm(longIntervalCounterLimit || repeating);
 	}
@@ -127,6 +127,16 @@ private:
 	// was added to allow for longer timer intervals.
 	uint16_t longIntervalCounter = 0;
 	uint16_t longIntervalCounterLimit = 0;
+
+	void initCallback()
+	{
+		osTimer.setCallback(
+			[](void* arg) {
+				auto self = static_cast<OsTimer64Api*>(arg);
+				self->longTick();
+			},
+			this);
+	}
 };
 
 template <class TimerClass> void OsTimer64Api<TimerClass>::setInterval(TickType interval)

@@ -36,6 +36,13 @@
 class SPIClass : public SPIBase
 {
 public:
+	SPIClass()
+	{
+	}
+
+	SPIClass(const SPIClass&) = delete;
+	SPIClass& operator=(const SPIClass&) = delete;
+
 	bool begin() override;
 
 	void end() override

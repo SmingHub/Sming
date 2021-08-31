@@ -2,6 +2,13 @@
 #include <sys/time.h>
 #include <esp_task_wdt.h>
 
+extern "C" uint32_t system_get_time(void)
+{
+	struct timeval tv;
+	gettimeofday(&tv, nullptr);
+	return tv.tv_sec * 1000000U + tv.tv_usec;
+}
+
 struct rst_info* system_get_rst_info(void)
 {
 	static rst_info info{};

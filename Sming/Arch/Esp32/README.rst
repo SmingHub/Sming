@@ -14,10 +14,10 @@ Build variables
 Requirements
 ------------
 
-In order to be able to compile for the ESP32 architecture you should have ESP-IDF v4.1 installed.
+In order to be able to compile for the ESP32 architecture you should have ESP-IDF v4.3 installed.
 The Sming installers can do this for you - see :doc:`/getting-started/index`.
 
-You can find further details in the `ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.1/get-started/index.html#installation-step-by-step>`__.
+You can find further details in the `ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.3/get-started/index.html#installation-step-by-step>`__.
 
 Building
 --------
@@ -62,6 +62,29 @@ If you want to revert to using the default pre-compiled SDK then issue the follo
       make ESP_VARIANT=esp32s2
 
 See :component-esp32:`esp32` for further details.
+
+
+Processor variants
+------------------
+
+Sming leverages the `ESP IDF HAL <https://docs.espressif.com/projects/esp-idf/en/v4.3/esp32/api-guides/hardware-abstraction.html>`__
+to support multiple processor variants.
+
+This is still at an early stage of development however basic applications should build for the following variants:
+
+- esp32 (default)
+- esp32s2
+- esp32c3
+- esp32s3
+
+If changing variant the project must be cleaned first. You can change variants like this:
+
+```
+make SMING_ARCH=Esp32 clean components-clean
+make ESP_VARIANT=esp32c3
+```
+
+
 
 Components
 ----------

@@ -45,7 +45,7 @@ int PartitionStream::seekFrom(int offset, SeekOrigin origin)
 
 size_t PartitionStream::write(const uint8_t* data, size_t length)
 {
-	auto len = std::min(size - writePos, length);
+	auto len = std::min(size_t(size - writePos), length);
 	if(len != 0) {
 		if(!partition.write(startOffset + writePos, data, len)) {
 			len = 0;

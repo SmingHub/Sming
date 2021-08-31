@@ -13,7 +13,9 @@
 #define gpio_drive_cap_t uint32_t
 #include <hal/gpio_ll.h>
 #include <driver/rtc_io.h>
+#if SOC_RTCIO_INPUT_OUTPUT_SUPPORTED
 #include <hal/rtc_io_ll.h>
+#endif
 
 void pinMode(uint16_t pin, uint8_t mode)
 {
@@ -22,6 +24,8 @@ void pinMode(uint16_t pin, uint8_t mode)
 	}
 
 	auto gpio = gpio_num_t(pin);
+
+#if SOC_RTCIO_INPUT_OUTPUT_SUPPORTED
 	auto rtc = rtc_io_number_get(gpio);
 
 	if(mode == ANALOG) {
@@ -52,6 +56,7 @@ void pinMode(uint16_t pin, uint8_t mode)
 			rtcio_ll_pullup_disable(rtc);
 		}
 	}
+#endif
 
 	gpio_set_level(gpio, 0);
 	gpio_ll_input_enable(&GPIO, gpio);

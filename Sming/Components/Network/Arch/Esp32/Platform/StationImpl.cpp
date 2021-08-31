@@ -115,7 +115,7 @@ bool StationImpl::config(const String& ssid, const String& password, bool autoCo
 	enable(true, save);
 
 	ESP_ERROR_CHECK(esp_wifi_set_storage(save ? WIFI_STORAGE_FLASH : WIFI_STORAGE_RAM));
-	ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &config));
+	ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &config));
 
 	return connect();
 }
@@ -182,13 +182,13 @@ IpAddress StationImpl::getIP() const
 MacAddress StationImpl::getMacAddress() const
 {
 	MacAddress addr;
-	ESP_ERROR_CHECK(esp_wifi_get_mac(ESP_IF_WIFI_STA, &addr[0]));
+	ESP_ERROR_CHECK(esp_wifi_get_mac(WIFI_IF_STA, &addr[0]));
 	return addr;
 }
 
 bool StationImpl::setMacAddress(const MacAddress& addr) const
 {
-	return esp_wifi_set_mac(ESP_IF_WIFI_STA, &const_cast<MacAddress&>(addr)[0]);
+	return esp_wifi_set_mac(WIFI_IF_STA, &const_cast<MacAddress&>(addr)[0]);
 }
 
 IpAddress StationImpl::getNetworkBroadcast() const
@@ -248,7 +248,7 @@ bool StationImpl::setIP(IpAddress address, IpAddress netmask, IpAddress gateway)
 String StationImpl::getSSID() const
 {
 	wifi_config_t config{};
-	if(esp_wifi_get_config(ESP_IF_WIFI_STA, &config) != ESP_OK) {
+	if(esp_wifi_get_config(WIFI_IF_STA, &config) != ESP_OK) {
 		debug_e("Can't read station configuration!");
 		return nullptr;
 	}
@@ -268,7 +268,7 @@ int8_t StationImpl::getRssi() const
 uint8_t StationImpl::getChannel() const
 {
 	wifi_config_t config;
-	if(esp_wifi_get_config(ESP_IF_WIFI_STA, &config) != ESP_OK) {
+	if(esp_wifi_get_config(WIFI_IF_STA, &config) != ESP_OK) {
 		debug_e("Can't read station configuration!");
 		return 0;
 	}
@@ -279,7 +279,7 @@ uint8_t StationImpl::getChannel() const
 String StationImpl::getPassword() const
 {
 	wifi_config_t config{};
-	if(esp_wifi_get_config(ESP_IF_WIFI_STA, &config) != ESP_OK) {
+	if(esp_wifi_get_config(WIFI_IF_STA, &config) != ESP_OK) {
 		debug_e("Can't read station configuration!");
 		return nullptr;
 	}
