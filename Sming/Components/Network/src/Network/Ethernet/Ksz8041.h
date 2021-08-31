@@ -12,10 +12,12 @@
 
 #include <Platform/Ethernet.h>
 
+namespace Ethernet
+{
 /**
  * @brief KSZ 8041 PHY interface
  */
-class Ksz8041 : public Ethernet::PhyFactory
+class Ksz8041 : public PhyFactory
 {
 public:
 	using PhyFactory::PhyFactory;
@@ -23,3 +25,5 @@ public:
 	PhyInstance* create() override;
 	void destroy(PhyInstance* inst) override;
 };
+
+} // namespace Ethernet

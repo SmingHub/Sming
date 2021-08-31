@@ -14,6 +14,7 @@
 #include <IpAddress.h>
 #include <MacAddress.h>
 #include <Delegate.h>
+#include <memory>
 
 /**	@defgroup ethernet Ethernet Events Interface
  *	@brief	Event callback interface for Ethernet events
@@ -30,20 +31,74 @@
 	XX(Connected, "Ethernet link established")                                                                         \
 	XX(Disconnected, "Ethernet link lost")
 
+namespace Ethernet
+{
 /**
  * @brief Ethernet event codes
  */
-enum class EthernetEvent {
+enum class Event {
 #define XX(tag, desc) tag,
 	ETHERNET_EVENT_MAP(XX)
 #undef XX
 };
 
-String toString(EthernetEvent event);
-String toLongString(EthernetEvent event);
+/**
+ * @brief Delegate type for Ethernet events
+ * @param event Which event occurred
+ * @param mac Provided on 'Connected' event only
+ */
+using EventDelegate = Delegate<void(Ethernet::Event event, MacAddress mac)>;
 
 /**
- * @brief Ethernet class
+ * @brief Delegate type for 'got IP address' event
+ */
+using GotIpDelegate = Delegate<void(IpAddress ip, IpAddress netmask, IpAddress gateway)>;
+
+/**
+ * @brief Configuration for Ethernet MAC
+ */
+struct MacConfig {
+	int8_t smiMdcPin = 23;  //< SMI MDC GPIO number, -1 if not used
+	int8_t smiMdioPin = 18; //< SMI MDIO GPIO number, -1 if not used
+};
+
+/**
+ * @brief Constructed PHY instance
+ */
+struct PhyInstance;
+
+/**
+ * @brief PHY configuration
+ */
+struct PhyConfig {
+	int8_t phyAddr = -1;			///< PHY address, set -1 to enable PHY address detection at initialization stage
+	int8_t resetPin = 5;			///< Reset GPIO number, -1 means no hardware reset */
+	uint16_t resetTimeout = 100;	///< Reset timeout value in milliseconds
+	uint16_t autoNegTimeout = 4000; ///< Auto-negotiation timeout in milliseconds
+};
+
+/**
+ * @brief Virtual class used to construct a specific PHY instance
+ */
+class PhyFactory
+{
+public:
+	using PhyInstance = Ethernet::PhyInstance;
+
+	PhyFactory(const PhyConfig& config) : config(config)
+	{
+	}
+
+	virtual PhyInstance* create() = 0;
+
+	virtual void destroy(PhyInstance* inst) = 0;
+
+protected:
+	PhyConfig config;
+};
+
+/**
+ * @brief Abstract Service class
  *
  * Provides a common implementation for TCP/IP ethernet support.
  * 
@@ -58,76 +113,17 @@ String toLongString(EthernetEvent event);
  * Ethernet implementations should provide appropriate setup methods which are called by the application
  * before invoking `begin()`.
  */
-class Ethernet
+class Service
 {
 public:
 	/**
-	 * @brief Delegate type for Ethernet events
-	 * @param event Which event occurred
-	 * @param mac Provided on 'Connected' event only
-	 */
-	using EventDelegate = Delegate<void(EthernetEvent event, MacAddress mac)>;
-
-	/**
-	 * @brief Delegate type for 'got IP address' event
-	 */
-	using GotIpDelegate = Delegate<void(IpAddress ip, IpAddress netmask, IpAddress gateway)>;
-
-	/**
-	 * @brief Constructed PHY instance
-	 */
-	struct PhyInstance;
-
-	/**
-	 * @brief PHY configuration
-	 */
-	struct PhyConfig {
-		int8_t phyAddr = -1;			///< PHY address, set -1 to enable PHY address detection at initialization stage
-		int8_t resetPin = 5;			///< Reset GPIO number, -1 means no hardware reset */
-		uint16_t resetTimeout = 100;	///< Reset timeout value in milliseconds
-		uint16_t autoNegTimeout = 4000; ///< Auto-negotiation timeout in milliseconds
-	};
-
-	/**
-	 * @brief Virtual class used to construct a specific PHY instance
-	 */
-	class PhyFactory
-	{
-	public:
-		using PhyInstance = Ethernet::PhyInstance;
-
-		PhyFactory(const PhyConfig& config) : config(config)
-		{
-		}
-
-		virtual PhyInstance* create() = 0;
-
-		virtual void destroy(PhyInstance* inst) = 0;
-
-	protected:
-		PhyConfig config;
-	};
-
-	class NullPhy : public PhyFactory
-	{
-	public:
-		PhyInstance* create() override
-		{
-			return nullptr;
-		};
-
-		void destroy(PhyInstance* inst) override
-		{
-			assert(inst == nullptr);
-		}
-	};
-
-	/**
 	 * @brief Configure and start the ethernet service
-	 * 
+	 * @param config MAC configuration
+	 * @param phyFactory Factory class to manage PHY instance (if required)
+	 *
 	 * Applications should expect to receive Start and Connected events.
 	 */
-	virtual bool begin(PhyFactory* phyFactory) = 0;
+	virtual bool begin(const MacConfig& config, PhyFactory* phyFactory) = 0;
 
 	/**
 	 * @brief Tear down the ethernet connection
@@ -151,8 +147,14 @@ public:
 	}
 
 protected:
+	std::unique_ptr<Ethernet::PhyFactory> phyFactory;
 	EventDelegate eventCallback;
 	GotIpDelegate gotIpCallback;
 };
+
+} // namespace Ethernet
+
+String toString(Ethernet::Event event);
+String toLongString(Ethernet::Event event);
 
 /** @} */

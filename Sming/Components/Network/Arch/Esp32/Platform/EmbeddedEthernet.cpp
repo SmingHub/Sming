@@ -4,20 +4,29 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * Ethernet.cpp
+ * EmbeddedEthernet.cpp
  *
  ****/
 
-#include <Platform/InternalEthernet.h>
+#include <Platform/EmbeddedEthernet.h>
 // #include <freertos/event_groups.h>
 #include <esp_eth.h>
 #include <esp_event.h>
 #include <driver/gpio.h>
 
-bool InternalEthernet::begin(PhyFactory* phyFactory)
+using namespace Ethernet;
+
+bool EmbeddedEthernet::begin(const Ethernet::MacConfig& config, PhyFactory* phyFactory)
 {
+#if !CONFIG_ETH_USE_ESP32_EMAC
+
+	debug_e("[ETH] Internal MAC not available");
+	return false;
+
+#else
+
 	if(phyFactory == nullptr) {
-		debug_e("[ETH] InternalEthernet requires PHY");
+		debug_e("[ETH] EmbeddedEthernet requires PHY");
 		return false;
 	}
 	this->phyFactory.reset(phyFactory);
@@ -31,41 +40,30 @@ bool InternalEthernet::begin(PhyFactory* phyFactory)
 	enableGotIpCallback(true);
 
 	eth_mac_config_t mac_config = ETH_MAC_DEFAULT_CONFIG();
-
-	// CONFIG_EXAMPLE_USE_INTERNAL_ETHERNET
-	// mac_config.smi_mdc_gpio_num = CONFIG_EXAMPLE_ETH_MDC_GPIO;
-	// mac_config.smi_mdio_gpio_num = CONFIG_EXAMPLE_ETH_MDIO_GPIO;
+	mac_config.smi_mdc_gpio_num = config.smiMdcPin;
+	mac_config.smi_mdio_gpio_num = config.smiMdioPin;
 	mac = esp_eth_mac_new_esp32(&mac_config);
+	if(mac == nullptr) {
+		debug_e("[ETH] Failed to construct MAC");
+		return false;
+	}
+
 	phy = reinterpret_cast<esp_eth_phy_t*>(phyFactory->create());
 	if(phy == nullptr) {
 		debug_e("[ETH] Failed to construct PHY");
 		return false;
 	}
 
-	// #if CONFIG_EXAMPLE_ETH_PHY_IP101
-	// 	esp_eth_phy_t* phy = esp_eth_phy_new_ip101(&phy_config);
-	// #elif CONFIG_EXAMPLE_ETH_PHY_RTL8201
-	// 	esp_eth_phy_t* phy = esp_eth_phy_new_rtl8201(&phy_config);
-	// #elif CONFIG_EXAMPLE_ETH_PHY_LAN8720
-	// 	esp_eth_phy_t* phy = esp_eth_phy_new_lan8720(&phy_config);
-	// #elif CONFIG_EXAMPLE_ETH_PHY_DP83848
-	// 	esp_eth_phy_t* phy = esp_eth_phy_new_dp83848(&phy_config);
-	// #elif CONFIG_EXAMPLE_ETH_PHY_KSZ8041
-	// 	esp_eth_phy_t* phy = esp_eth_phy_new_ksz8041(&phy_config);
-	// #endif
-
-	esp_eth_config_t config = ETH_DEFAULT_CONFIG(mac, phy);
-	ESP_ERROR_CHECK(esp_eth_driver_install(&config, &handle));
-
-	/* attach Ethernet driver to TCP/IP stack */
+	esp_eth_config_t eth_config = ETH_DEFAULT_CONFIG(mac, phy);
+	ESP_ERROR_CHECK(esp_eth_driver_install(&eth_config, &handle));
 	ESP_ERROR_CHECK(esp_netif_attach(eth_netif, esp_eth_new_netif_glue(handle)));
-	/* start Ethernet driver state machine */
 	ESP_ERROR_CHECK(esp_eth_start(handle));
 
 	return true;
+#endif
 }
 
-void InternalEthernet::end()
+void EmbeddedEthernet::end()
 {
 	if(handle == nullptr) {
 		return;
@@ -90,18 +88,18 @@ void InternalEthernet::end()
 	enableGotIpCallback(false);
 }
 
-void InternalEthernet::enableEventCallback(bool enable)
+void EmbeddedEthernet::enableEventCallback(bool enable)
 {
 	auto handler = [](void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
-		auto ethernet = static_cast<InternalEthernet*>(arg);
-		ethernet->state = EthernetEvent(event_id);
+		auto ethernet = static_cast<EmbeddedEthernet*>(arg);
+		ethernet->state = Event(event_id);
 		if(!ethernet->eventCallback) {
 			return;
 		}
 		auto eth_handle = *static_cast<esp_eth_handle_t*>(event_data);
 		MacAddress mac;
 		esp_eth_ioctl(eth_handle, ETH_CMD_G_MAC_ADDR, &mac[0]);
-		ethernet->eventCallback(EthernetEvent(event_id), mac);
+		ethernet->eventCallback(Event(event_id), mac);
 	};
 
 	if(enable) {
@@ -112,10 +110,10 @@ void InternalEthernet::enableEventCallback(bool enable)
 	}
 }
 
-void InternalEthernet::enableGotIpCallback(bool enable)
+void EmbeddedEthernet::enableGotIpCallback(bool enable)
 {
 	auto handler = [](void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
-		auto ethernet = static_cast<InternalEthernet*>(arg);
+		auto ethernet = static_cast<EmbeddedEthernet*>(arg);
 		if(!ethernet->gotIpCallback) {
 			return;
 		}

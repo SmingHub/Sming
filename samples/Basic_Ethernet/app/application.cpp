@@ -1,10 +1,13 @@
 #include <SmingCore.h>
-#include <Platform/InternalEthernet.h>
+
+#ifdef SUBARCH_ESP32
+
+#include <Platform/EmbeddedEthernet.h>
 #include <Network/Ethernet/Lan8720.h>
 
-InternalEthernet ethernet;
+EmbeddedEthernet ethernet;
 
-static void ethernetEventHandler(EthernetEvent event, MacAddress mac)
+static void ethernetEventHandler(Ethernet::Event event, MacAddress mac)
 {
 	Serial.print(toString(event));
 	if(mac) {
@@ -29,8 +32,17 @@ void init()
 	ethernet.onEvent(ethernetEventHandler);
 	ethernet.onGotIp(ethernetGotIp);
 
-	Ethernet::PhyConfig config;
-	config.phyAddr = 0;
-	auto phy = new Lan8720(config);
-	ethernet.begin(phy);
+	// Modify default config as required
+	Ethernet::MacConfig macConfig;
+	Ethernet::PhyConfig phyConfig;
+	auto phy = new Ethernet::Lan8720(phyConfig);
+	ethernet.begin(macConfig, phy);
 }
+
+#else
+
+void init()
+{
+}
+
+#endif

@@ -12,10 +12,12 @@
 
 #include <Platform/Ethernet.h>
 
+namespace Ethernet
+{
 /**
  * @brief IP101 PHY interface
  */
-class Ip101 : public Ethernet::PhyFactory
+class Ip101 : public PhyFactory
 {
 public:
 	using PhyFactory::PhyFactory;
@@ -23,3 +25,5 @@ public:
 	PhyInstance* create() override;
 	void destroy(PhyInstance* inst) override;
 };
+
+} // namespace Ethernet
