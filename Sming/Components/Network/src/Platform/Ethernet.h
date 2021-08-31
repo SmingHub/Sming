@@ -74,11 +74,60 @@ public:
 	using GotIpDelegate = Delegate<void(IpAddress ip, IpAddress netmask, IpAddress gateway)>;
 
 	/**
+	 * @brief Constructed PHY instance
+	 */
+	struct PhyInstance;
+
+	/**
+	 * @brief PHY configuration
+	 */
+	struct PhyConfig {
+		int8_t phyAddr = -1;			///< PHY address, set -1 to enable PHY address detection at initialization stage
+		int8_t resetPin = 5;			///< Reset GPIO number, -1 means no hardware reset */
+		uint16_t resetTimeout = 100;	///< Reset timeout value in milliseconds
+		uint16_t autoNegTimeout = 4000; ///< Auto-negotiation timeout in milliseconds
+	};
+
+	/**
+	 * @brief Virtual class used to construct a specific PHY instance
+	 */
+	class PhyFactory
+	{
+	public:
+		using PhyInstance = Ethernet::PhyInstance;
+
+		PhyFactory(const PhyConfig& config) : config(config)
+		{
+		}
+
+		virtual PhyInstance* create() = 0;
+
+		virtual void destroy(PhyInstance* inst) = 0;
+
+	protected:
+		PhyConfig config;
+	};
+
+	class NullPhy : public PhyFactory
+	{
+	public:
+		PhyInstance* create() override
+		{
+			return nullptr;
+		};
+
+		void destroy(PhyInstance* inst) override
+		{
+			assert(inst == nullptr);
+		}
+	};
+
+	/**
 	 * @brief Configure and start the ethernet service
 	 * 
 	 * Applications should expect to receive Start and Connected events.
 	 */
-	virtual bool begin() = 0;
+	virtual bool begin(PhyFactory* phyFactory) = 0;
 
 	/**
 	 * @brief Tear down the ethernet connection
