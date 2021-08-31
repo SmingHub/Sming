@@ -59,7 +59,7 @@ export PROJECT_DIR
 
 ifeq ($(MAKELEVEL),0)
 $(info )
-$(info $(notdir $(PROJECT_DIR)): Invoking '$(MAKECMDGOALS)' for $(SMING_ARCH) ($(BUILD_TYPE)) architecture)
+$(info $(notdir $(PROJECT_DIR)): Invoking '$(MAKECMDGOALS)' for $(SMING_ARCH).$(ESP_VARIANT) ($(BUILD_TYPE)) architecture)
 endif
 
 # CFLAGS used for application and any custom targets
@@ -75,6 +75,7 @@ DEBUG_VARS			+= GLOBAL_CFLAGS
 GLOBAL_CFLAGS = \
 	-DSMING_ARCH=$(SMING_ARCH) \
 	-DESP_VARIANT=$(ESP_VARIANT) \
+	-DSUBARCH_$(call ToUpper,$(ESP_VARIANT))=1 \
 	-DPROJECT_DIR=\"$(PROJECT_DIR)\" \
 	-DSMING_HOME=\"$(SMING_HOME)\" \
 	$(USER_CFLAGS)

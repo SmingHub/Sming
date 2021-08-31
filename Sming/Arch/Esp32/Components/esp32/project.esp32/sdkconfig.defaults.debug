@@ -1,16 +1,14 @@
 #
-# Automatically generated file. DO NOT EDIT.
 # Espressif IoT Development Framework (ESP-IDF) Project Configuration
 #
 # SMING DEBUG SETTINGS
 #
-CONFIG_IDF_TARGET_ESP32=y
-CONFIG_IDF_TARGET="esp32"
-CONFIG_IDF_FIRMWARE_CHIP_ID=0x0000
 
 #
 # SDK tool configuration
 #
+
+CONFIG_COMPILER_OPTIMIZATION_SIZE=y
 
 # Mandatory LWIP changes
 CONFIG_LWIP_TCPIP_TASK_STACK_SIZE=8192
@@ -18,6 +16,7 @@ CONFIG_LWIP_TCPIP_TASK_STACK_SIZE=8192
 # Mandatory Sming framework changes
 CONFIG_ESP_TIMER_TASK_STACK_SIZE=16384
 CONFIG_ESP_SYSTEM_EVENT_TASK_STACK_SIZE=8192
+CONFIG_ESP_TIMER_IMPL_FRC2=y
 
 # The bootloader logs all type of messages
 CONFIG_BOOTLOADER_LOG_LEVEL_NONE=

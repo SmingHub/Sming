@@ -22,7 +22,7 @@
 #define ICACHE_FLASH_ATTR                                                                                              \
 	__attribute__((section(ICACHE_FLASH_SECTION "." __FILE__ "." MACROQUOTE(__LINE__) "." MACROQUOTE(__COUNTER__))))
 
-#define ICACHE_RODATA_SECTION ".irom1.text"
+#define ICACHE_RODATA_SECTION ".rodata"
 
 #undef ICACHE_RODATA_ATTR
 #define ICACHE_RODATA_ATTR                                                                                             \

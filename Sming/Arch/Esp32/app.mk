@@ -13,14 +13,9 @@ LDFLAGS	+= \
 .PHONY: application
 application: $(TARGET_BIN)
 
-# $1 -> Linker script
-define LinkTarget
-	$(info $(notdir $(PROJECT_DIR)): Linking $@)
-	$(Q) $(LD) $(addprefix -L,$(LIBDIRS)) -T$1 $(LDFLAGS) -Wl,--start-group $(COMPONENTS_AR) $(addprefix -l,$(LIBS)) -Wl,--end-group -o $@
-endef
-
 $(TARGET_OUT): $(COMPONENTS_AR)
-	$(call LinkTarget,standalone.rom.ld)
+	$(info $(notdir $(PROJECT_DIR)): Linking $@)
+	$(Q) $(LD) $(addprefix -L,$(LIBDIRS)) $(LDFLAGS) -Wl,--start-group $(COMPONENTS_AR) $(addprefix -l,$(LIBS)) -Wl,--end-group -o $@
 
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
 

@@ -17,3 +17,9 @@ Some support code has been moved into ``Core/Data/WebHelpers``: applications sho
 a compiler warning advising of the changes.
 
 Note that ``Network/WebHelpers/aw-sha1.h`` has been removed in favour of the :component:`crypto` library.
+
+ESP32
+~~~~~
+
+If you have made use of Sming's experimental ESP32 support then you will need to update the ESP IDF SDK and tools to version 4.3.
+See :doc:`/_inc/Sming/Arch/Esp32/README`.

@@ -16,6 +16,9 @@
 #include <esp_intr_alloc.h>
 #include <driver/gpio.h>
 
+#define gpio_drive_cap_t uint32_t
+#include <hal/gpio_ll.h>
+
 constexpr unsigned MAX_INTERRUPTS = 40;
 
 static intr_handle_t interruptHandle = nullptr;
@@ -58,17 +61,19 @@ static void IRAM_ATTR interruptHandler(void* arg)
 	int cpuId = esp_intr_get_cpu(interruptHandle);
 
 	//read status to get interrupt status for GPIO0-31
-	const uint32_t statusLow = (cpuId == 0) ? GPIO.pcpu_int : GPIO.acpu_int;
+	uint32_t statusLow;
+	gpio_ll_get_intr_status(&GPIO, cpuId, &statusLow);
 	if(statusLow) {
 		interruptProcessor(statusLow, 0);
-		GPIO.status_w1tc = statusLow;
+		gpio_ll_clear_intr_status(&GPIO, statusLow);
 	}
 
 	//read status1 to get interrupt status for GPIO32-39
-	const uint32_t statusHigh = (cpuId == 0) ? GPIO.pcpu_int1.intr : GPIO.acpu_int1.intr;
+	uint32_t statusHigh;
+	gpio_ll_get_intr_status_high(&GPIO, cpuId, &statusHigh);
 	if(statusHigh) {
 		interruptProcessor(statusHigh, 32);
-		GPIO.status1_w1tc.intr_st = statusHigh;
+		gpio_ll_clear_intr_status_high(&GPIO, statusHigh);
 	}
 }
 

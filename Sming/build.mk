@@ -226,6 +226,11 @@ endif
 # Component (user) libraries have a special prefix so linker script can identify them
 CLIB_PREFIX := clib-
 
+# Convert string to upper/lower case
+# 1 -> String
+ToUpper = $(shell echo "$1" | tr 'a-z' 'A-Z')
+ToLower = $(shell echo "$1" | tr 'A-Z' 'a-z')
+
 # Apply coding style to list of files using clang-format
 # $1 -> List of files
 define ClangFormat

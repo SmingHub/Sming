@@ -26,7 +26,14 @@ ifndef ESP_VARIANT
 ESP_VARIANT := esp32
 endif
 
+export ESP_VARIANT
+
+ifeq ($(ESP_VARIANT),esp32c3)
+ESP32_COMPILER_PREFIX := riscv32-esp-elf
+IDF_TARGET_ARCH_RISCV := 1
+else
 ESP32_COMPILER_PREFIX := xtensa-$(ESP_VARIANT)-elf
+endif
 
 # $1 => Root directory
 # $2 => Sub-directory
@@ -37,7 +44,8 @@ endef
 DEBUG_VARS			+= ESP32_COMPILER_PATH ESP32_ULP_PATH ESP32_OPENOCD_PATH ESP32_PYTHON_PATH
 
 ifndef ESP32_COMPILER_PATH
-ESP32_COMPILER_PATH	:= $(call FindTool,tools/$(ESP32_COMPILER_PREFIX),/$(ESP32_COMPILER_PREFIX))
+include $(IDF_PATH)/tools/toolchain_versions.mk
+ESP32_COMPILER_PATH	:= $(IDF_TOOLS_PATH)/tools/$(ESP32_COMPILER_PREFIX)/$(CURRENT_TOOLCHAIN_COMMIT_DESC)-$(CURRENT_TOOLCHAIN_GCC_VERSION)/$(ESP32_COMPILER_PREFIX)
 endif
 
 ifndef ESP32_ULP_PATH
@@ -150,7 +158,12 @@ SMING_C_STD := gnu99
 # This variable stores the common C/C++ flags
 # CPPFLAGS used by C preprocessor
 # If any flags are defined in application Makefile, add them at the end.
-CPPFLAGS += -DESP_PLATFORM -D IDF_VER=\"$(IDF_VER)\" -MMD -MP $(EXTRA_CPPFLAGS)
+CPPFLAGS += \
+	-DESP_PLATFORM \
+	-D IDF_VER=\"$(IDF_VER)\" \
+	-MMD \
+	-MP \
+	$(EXTRA_CPPFLAGS)
 
 # Sming specific CPPFLAGS
 CPPFLAGS += \
@@ -205,9 +218,15 @@ COMMON_FLAGS := \
 	-Wno-frame-address \
 	-ffunction-sections -fdata-sections \
 	-fstrict-volatile-bitfields \
-	-mlongcalls \
-	-mtext-section-literals \
 	-nostdlib
+
+ifdef IDF_TARGET_ARCH_RISCV
+COMMON_FLAGS += -DIDF_TARGET_ARCH_RISCV=1
+else
+COMMON_FLAGS += \
+	-mlongcalls \
+	-mtext-section-literals
+endif
 
 ifndef IS_BOOTLOADER_BUILD
 # stack protection (only one option can be selected in menuconfig)

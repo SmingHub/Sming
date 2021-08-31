@@ -145,7 +145,7 @@ uint16_t SectionStream::readMemoryBlock(char* data, int bufSize)
 		}
 	}
 
-	bufSize = std::min(size_t(bufSize), sect->size - sectionOffset);
+	bufSize = std::min(uint32_t(bufSize), sect->size - sectionOffset);
 
 	return stream->readMemoryBlock(data, bufSize);
 }

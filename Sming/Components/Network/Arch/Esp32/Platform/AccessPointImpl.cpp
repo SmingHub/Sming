@@ -88,7 +88,7 @@ bool AccessPointImpl::config(const String& ssid, String password, WifiAuthMode m
 
 	enable(true, false);
 
-	ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &config));
+	ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &config));
 	ESP_ERROR_CHECK(esp_wifi_start());
 
 	return true;
@@ -152,19 +152,19 @@ bool AccessPointImpl::setIP(IpAddress address)
 MacAddress AccessPointImpl::getMacAddress() const
 {
 	MacAddress addr;
-	ESP_ERROR_CHECK(esp_wifi_get_mac(ESP_IF_WIFI_AP, &addr[0]));
+	ESP_ERROR_CHECK(esp_wifi_get_mac(WIFI_IF_AP, &addr[0]));
 	return addr;
 }
 
 bool AccessPointImpl::setMacAddress(const MacAddress& addr) const
 {
-	return esp_wifi_set_mac(ESP_IF_WIFI_AP, &const_cast<MacAddress&>(addr)[0]);
+	return esp_wifi_set_mac(WIFI_IF_AP, &const_cast<MacAddress&>(addr)[0]);
 }
 
 String AccessPointImpl::getSSID() const
 {
 	wifi_config_t config{};
-	if(esp_wifi_get_config(ESP_IF_WIFI_AP, &config) != ESP_OK) {
+	if(esp_wifi_get_config(WIFI_IF_AP, &config) != ESP_OK) {
 		debug_w("Can't read station configuration!");
 		return nullptr;
 	}
@@ -176,7 +176,7 @@ String AccessPointImpl::getSSID() const
 String AccessPointImpl::getPassword() const
 {
 	wifi_config_t config{};
-	if(esp_wifi_get_config(ESP_IF_WIFI_AP, &config) != ESP_OK) {
+	if(esp_wifi_get_config(WIFI_IF_AP, &config) != ESP_OK) {
 		debug_w("Can't read station configuration!");
 		return nullptr;
 	}

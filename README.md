@@ -110,7 +110,7 @@ Linux and Windows OSes with gcc compilers are supported. Clang is NOT supported.
 
 ### Architecture: ESP32 (Experimental)
 
-Supported SDK: ESP-IDF v4.1
+Supported SDK: ESP-IDF v4.3. See https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp32/README.html.
 
 
 ## Releases

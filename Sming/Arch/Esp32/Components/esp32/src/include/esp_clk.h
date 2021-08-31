@@ -1,7 +1,7 @@
 #pragma once
 
 #include <c_types.h>
-#include <xtensa/core-macros.h>
+#include <hal/cpu_hal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,9 +28,9 @@ __forceinline uint32_t system_get_cpu_freq(void)
 	return ets_get_cpu_frequency();
 }
 
-__forceinline uint32_t esp_get_ccount()
+__forceinline static uint32_t esp_get_ccount()
 {
-	return XTHAL_GET_CCOUNT();
+	return cpu_hal_get_cycle_count();
 }
 
 #ifdef __cplusplus

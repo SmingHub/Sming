@@ -121,7 +121,7 @@ public:
 		TEST_CASE("Number set")
 		{
 			using NumberSet = BitSet<uint32_t, uint8_t>;
-			NumberSet numbers = 0x12345678U;
+			NumberSet numbers = uint32_t(0x12345678);
 			Serial.print(_F("numbers = "));
 			Serial.println(toString(numbers));
 			REQUIRE(numbers.value() == 0x12345678U);

@@ -1,11 +1,6 @@
 SDK_COMPONENTS_PATH := $(IDF_PATH)/components
 
 # See build.mk for default ESP_VARIANT - determines toolchain
-ifeq (esp32s2,$(ESP_VARIANT))
-SDK_BUILD_VARIANT := esp32s2beta
-else
-SDK_BUILD_VARIANT := $(ESP_VARIANT)
-endif
 
 COMPONENT_DEPENDS := libc
 
@@ -16,35 +11,39 @@ COMPONENT_INCDIRS := src/include include
 CACHE_VARS += SDK_FULL_BUILD
 SDK_FULL_BUILD ?= 0
 
-SDK_BUILD_BASE := $(COMPONENT_BUILD_DIR)/sdk
-SDK_COMPONENT_LIBDIR := $(COMPONENT_BUILD_DIR)/lib
+SDK_BUILD_BASE := $(COMPONENT_BUILD_DIR)/sdk.$(ESP_VARIANT)
+SDK_COMPONENT_LIBDIR := $(COMPONENT_BUILD_DIR)/lib.$(ESP_VARIANT)
 
 SDKCONFIG_H := $(SDK_BUILD_BASE)/config/sdkconfig.h
 
 SDK_LIBDIRS := \
-	esp_wifi/lib/$(SDK_BUILD_VARIANT) \
-	xtensa/$(SDK_BUILD_VARIANT)/ \
-	esp32/ld \
-	esp_rom/esp32/ld
+	esp_wifi/lib/$(ESP_VARIANT) \
+	xtensa/$(ESP_VARIANT)/ \
+	hal/$(ESP_VARIANT)/ \
+	$(ESP_VARIANT)/ld \
+	esp_rom/$(ESP_VARIANT)/ld
 
 LIBDIRS += \
 	$(SDK_COMPONENT_LIBDIR) \
-	$(SDK_BUILD_BASE)/esp-idf/$(SDK_BUILD_VARIANT) \
-	$(SDK_BUILD_BASE)/esp-idf/$(SDK_BUILD_VARIANT)/ld \
+	$(SDK_BUILD_BASE)/esp-idf/$(ESP_VARIANT) \
+	$(SDK_BUILD_BASE)/esp-idf/$(ESP_VARIANT)/ld \
 	$(COMPONENT_PATH)/ld \
 	$(addprefix $(SDK_COMPONENTS_PATH)/,$(SDK_LIBDIRS))
 
 SDK_INCDIRS := \
 	bootloader_support/include \
 	bootloader_support/include_bootloader \
+	driver/$(ESP_VARIANT)/include \
 	driver/include \
-	driver/include/driver \
 	efuse/include \
-	efuse/esp32/include \
-	esp32/include \
+	efuse/$(ESP_VARIANT)/include \
+	esp_rom/include/$(ESP_VARIANT) \
+	esp_rom/include \
+	$(ESP_VARIANT)/include \
 	espcoredump/include \
+	esp_timer/include \
 	soc/include \
-	soc/esp32/include \
+	soc/$(ESP_VARIANT)/include \
 	heap/include \
 	log/include \
 	nvs_flash/include \
@@ -68,7 +67,11 @@ SDK_INCDIRS := \
 	wpa_supplicant/port/include \
 	app_trace/include \
 	app_update/include \
-	smartconfig_ack/include
+	smartconfig_ack/include \
+	esp_hw_support/include \
+	hal/include \
+	hal/$(ESP_VARIANT)/include \
+	esp_system/include
 
 ifeq ($(SDK_FULL_BUILD),1)
 SDK_INCDIRS += \
@@ -83,15 +86,23 @@ SDK_INCDIRS += \
 	esp_netif/include \
 	esp_eth/include \
 	esp_event/private_include \
-	esp_rom/include \
 	esp_wifi/include \
 	esp_wifi/esp32/include \
 	lwip/include/apps/sntp \
 	spi_flash/private_include \
-	wpa_supplicant/include/esp_supplicant \
+	wpa_supplicant/include/esp_supplicant
+
+ifdef IDF_TARGET_ARCH_RISCV
+SDK_INCDIRS += \
+	freertos/port/riscv/include \
+	riscv/include
+else
+SDK_INCDIRS += \
 	xtensa/include \
-	xtensa/esp32/include
-	
+	xtensa/$(ESP_VARIANT)/include \
+	freertos/port/xtensa/include
+endif
+
 ifeq ($(CONFIG_BT_NIMBLE_ENABLED),y)
 SDK_INCDIRS += \
 	bt/include \
@@ -132,15 +143,21 @@ SDK_COMPONENTS := \
 	driver \
 	efuse \
 	esp-tls \
-	esp32 \
-	esp_adc_cal \
+	$(ESP_VARIANT) \
 	esp_common \
 	esp_event \
 	esp_gdbstub \
+	esp_hw_support \
+	esp_ipc \
+	esp_pm \
 	esp_ringbuf \
+	esp_rom \
+	esp_system \
+	esp_timer \
 	esp_wifi \
 	espcoredump \
 	freertos \
+	hal \
 	heap \
 	log \
 	lwip \
@@ -159,8 +176,17 @@ SDK_COMPONENTS := \
 	tcpip_adapter \
 	vfs \
 	wifi_provisioning \
-	wpa_supplicant \
-	xtensa
+	wpa_supplicant
+
+ifneq ($(ESP_VARIANT),esp32s3)
+SDK_COMPONENTS += esp_adc_cal
+endif
+
+ifdef IDF_TARGET_ARCH_RISCV
+SDK_COMPONENTS += riscv
+else
+SDK_COMPONENTS += xtensa
+endif
 
 ifeq ($(SDK_FULL_BUILD),1)
 SDK_COMPONENTS += \
@@ -199,44 +225,73 @@ SDK_ESP_WIFI_LIBS := \
 	net80211 \
 	phy \
 	pp \
-	rtc \
 	smartconfig
+
+ifeq ($(ESP_VARIANT),esp32)
+SDK_ESP_WIFI_LIBS += rtc
+endif
 
 SDK_NEWLIB_LIBS := \
 	c \
 	m  \
 	stdc++
 
-SDK_XTENSA_LIBS := \
-	hal
+ifdef IDF_TARGET_ARCH_RISCV
+SDK_TARGET_ARCH_LIBS := hal
+else
+SDK_TARGET_ARCH_LIBS := hal xt_hal
+endif
 
 EXTRA_LIBS := \
 	gcc \
 	$(SDK_COMPONENTS) \
 	$(SDK_ESP_WIFI_LIBS) \
 	$(SDK_NEWLIB_LIBS) \
-	$(SDK_XTENSA_LIBS)
+	$(SDK_TARGET_ARCH_LIBS)
+
+LinkerScript = -T $(ESP_VARIANT).$1.ld
+
+LDFLAGS_esp32 := \
+	$(call LinkerScript,rom.newlib-funcs) \
+	$(call LinkerScript,rom.newlib-data) \
+	$(call LinkerScript,rom.syscalls) \
+	$(call LinkerScript,rom.newlib-time) \
+	$(call LinkerScript,rom.eco3)
+
+LDFLAGS_esp32s2 := \
+	$(call LinkerScript,rom.newlib-funcs) \
+	$(call LinkerScript,rom.newlib-data) \
+	$(call LinkerScript,rom.spiflash)
+
+LDFLAGS_esp32c3 := \
+	$(call LinkerScript,rom.newlib) \
+	$(call LinkerScript,rom.version) \
+	$(call LinkerScript,rom.eco3)
+
+LDFLAGS_esp32s3 := \
+	$(call LinkerScript,rom.newlib-funcs) \
+	$(call LinkerScript,rom.newlib-data) \
+	$(call LinkerScript,rom.spiflash)
 
 EXTRA_LDFLAGS := \
 	-u esp_app_desc \
 	-u __cxa_guard_dummy -u __cxx_fatal_exception \
-	-T esp32_out.ld \
+	-T $(ESP_VARIANT)_out.ld \
 	-u ld_include_panic_highint_hdl \
-	-T esp32.project.ld \
-	-T esp32.peripherals.ld  \
-	-T esp32.rom.ld \
-	-T esp32.rom.libgcc.ld \
-	-T esp32.rom.syscalls.ld \
-	-T esp32.rom.newlib-data.ld \
-	-T esp32.rom.newlib-funcs.ld  \
+	$(call LinkerScript,project) \
+	$(call LinkerScript,peripherals) \
+	$(call LinkerScript,rom) \
+	$(call LinkerScript,rom.api) \
+	$(call LinkerScript,rom.libgcc) \
 	-u newlib_include_locks_impl \
 	-u newlib_include_heap_impl \
 	-u newlib_include_syscalls_impl \
 	-u pthread_include_pthread_impl \
 	-u pthread_include_pthread_cond_impl \
 	-u pthread_include_pthread_local_storage_impl \
-	-Wl,--undefined=uxTopUsedPriority        
-            
+	-Wl,--undefined=uxTopUsedPriority \
+	$(LDFLAGS_$(ESP_VARIANT))
+
 FLASH_BOOT_LOADER       := $(SDK_BUILD_BASE)/bootloader/bootloader.bin
 FLASH_BOOT_CHUNKS		:= 0x1000=$(FLASH_BOOT_LOADER)
 
@@ -248,10 +303,10 @@ SDK_PARTITION_PATH := $(SDK_DEFAULT_PATH)/partitions
 
 ##@SDK
 
-SDK_PROJECT_PATH := $(COMPONENT_PATH)/project
+SDK_PROJECT_PATH := $(COMPONENT_PATH)/project.$(ESP_VARIANT)
 SDK_CONFIG_DEFAULTS := $(SDK_PROJECT_PATH)/sdkconfig.defaults
 
-SDKCONFIG_MAKEFILE ?= $(SDK_PROJECT_PATH)/sdkconfig
+SDKCONFIG_MAKEFILE := $(SDK_PROJECT_PATH)/sdkconfig
 ifeq ($(MAKE_DOCS),)
 -include $(SDKCONFIG_MAKEFILE)
 endif
@@ -296,7 +351,7 @@ sdk-menuconfig: $(SDK_CONFIG_DEFAULTS) | $(SDK_BUILD_BASE) ##Configure SDK optio
 sdk-defconfig: $(SDK_BUILD_BASE)/include/sdkconfig.h ##Create default SDK config files
 
 .PHONY: sdk-menuconfig-clean
-sdk-menuconfig-clean:
+sdk-menuconfig-clean: esp32-clean ##Wipe SDK configuration and revert to defaults
 	$(Q) rm -f $(SDKCONFIG_MAKEFILE) $(SDK_CONFIG_DEFAULTS) 
 
 .PHONY: sdk-help

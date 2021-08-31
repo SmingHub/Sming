@@ -9,8 +9,9 @@
  ****/
 
 #include <Platform/RTC.h>
-#include <esp32/clk.h>
-#include <debug_progmem.h>
+
+// #include <ESP_VARIANT/clk.h>
+extern "C" uint64_t esp_clk_rtc_time(void);
 
 RtcClass RTC;
 

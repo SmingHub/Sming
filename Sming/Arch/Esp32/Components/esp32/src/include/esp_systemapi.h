@@ -27,7 +27,7 @@
 #include "esp_tasks.h"
 #include <heap.h>
 #include <esp_system.h>
-#include <esp32/rom/ets_sys.h>
+#include <rom/ets_sys.h>
 #include <soc/soc.h>
 #include <driver/gpio.h>
 #include <driver/adc.h>
@@ -35,7 +35,6 @@
 #include <m_printf.h>
 #include <debug_progmem.h>
 #include <stringutil.h>
-#include <xtensa/xtruntime.h>
 
 #define __ESP32_EX__ // System definition ESP8266 SOC
 
@@ -47,12 +46,12 @@
  *  @retval Current interrupt level
  *  @note Hardware timer is unaffected if operating in non-maskable mode
  */
-#define noInterrupts() XTOS_SET_INTLEVEL(XCHAL_EXCM_LEVEL)
+#define noInterrupts() portENTER_CRITICAL_NESTED()
 
 /** @brief  Enable interrupts
 */
-#define interrupts() XTOS_SET_INTLEVEL(0)
+#define interrupts() portEXIT_CRITICAL_NESTED(0)
 
 /** @brief Restore interrupts to level saved from previous noInterrupts() call
  */
-#define restoreInterrupts(level) XTOS_RESTORE_INTLEVEL(level)
+#define restoreInterrupts(state) portEXIT_CRITICAL_NESTED(state)
