@@ -129,3 +129,52 @@ void EmbeddedEthernet::enableGotIpCallback(bool enable)
 		esp_event_handler_unregister(IP_EVENT, IP_EVENT_ETH_GOT_IP, handler);
 	}
 }
+
+MacAddress EmbeddedEthernet::getMacAddress() const
+{
+	MacAddress addr;
+	if(mac != nullptr) {
+		mac->get_addr(mac, &addr[0]);
+	}
+	return addr;
+}
+
+bool EmbeddedEthernet::setMacAddress(const MacAddress& addr)
+{
+	if(mac == nullptr) {
+		return false;
+	}
+	return mac->set_addr(mac, &const_cast<MacAddress&>(addr)[0]) == ESP_OK;
+}
+
+bool EmbeddedEthernet::setSpeed(Ethernet::Speed speed)
+{
+	if(mac == nullptr) {
+		return false;
+	}
+	return mac->set_speed(mac, eth_speed_t(speed)) == ESP_OK;
+}
+
+bool EmbeddedEthernet::setFullDuplex(bool enable)
+{
+	if(mac == nullptr) {
+		return false;
+	}
+	return mac->set_duplex(mac, enable ? ETH_DUPLEX_FULL : ETH_DUPLEX_HALF) == ESP_OK;
+}
+
+bool EmbeddedEthernet::setLinkState(bool up)
+{
+	if(mac == nullptr) {
+		return false;
+	}
+	return mac->set_link(mac, up ? ETH_LINK_UP : ETH_LINK_DOWN) == ESP_OK;
+}
+
+bool EmbeddedEthernet::setPromiscuous(bool enable)
+{
+	if(mac == nullptr) {
+		return false;
+	}
+	return mac->set_promiscuous(mac, enable) == ESP_OK;
+}

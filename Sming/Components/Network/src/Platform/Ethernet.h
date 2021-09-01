@@ -16,11 +16,6 @@
 #include <Delegate.h>
 #include <memory>
 
-/**	@defgroup ethernet Ethernet Events Interface
- *	@brief	Event callback interface for Ethernet events
- *  @{
-*/
-
 /**
  * @brief Ethernet event code map
  * @note These codes are based on the ESP IDF public API.
@@ -60,6 +55,14 @@ using GotIpDelegate = Delegate<void(IpAddress ip, IpAddress netmask, IpAddress g
 struct MacConfig {
 	int8_t smiMdcPin = 23;  //< SMI MDC GPIO number, -1 if not used
 	int8_t smiMdioPin = 18; //< SMI MDIO GPIO number, -1 if not used
+};
+
+/**
+ * @brief Link speed
+ */
+enum class Speed {
+	MBPS10,
+	MBPS100,
 };
 
 /**
@@ -131,6 +134,36 @@ public:
 	virtual void end() = 0;
 
 	/**
+    * @brief Get MAC address
+    */
+	virtual MacAddress getMacAddress() const = 0;
+
+	/**
+	 * @brief Set MAC address
+	 */
+	virtual bool setMacAddress(const MacAddress& addr) = 0;
+
+	/**
+    * @brief Set speed of MAC
+    */
+	virtual bool setSpeed(Speed speed) = 0;
+
+	/**
+    * @brief Set duplex mode of MAC
+    */
+	virtual bool setFullDuplex(bool enable) = 0;
+
+	/**
+    * @brief Set link status of MAC
+    */
+	virtual bool setLinkState(bool up) = 0;
+
+	/**
+    * @brief Set MAC promiscuous mode
+    */
+	virtual bool setPromiscuous(bool enable) = 0;
+
+	/**
 	 * @brief Set callback for ethernet events
 	 */
 	void onEvent(EventDelegate callback)
@@ -156,5 +189,3 @@ protected:
 
 String toString(Ethernet::Event event);
 String toLongString(Ethernet::Event event);
-
-/** @} */
