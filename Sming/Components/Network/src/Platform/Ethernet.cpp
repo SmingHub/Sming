@@ -14,7 +14,7 @@ String toString(Ethernet::Event event)
 {
 	switch(event) {
 #define XX(tag, desc)                                                                                                  \
-	case Ethernet::Event::tag:                                                                                           \
+	case Ethernet::Event::tag:                                                                                         \
 		return F(#tag);
 		ETHERNET_EVENT_MAP(XX)
 #undef XX
@@ -27,7 +27,7 @@ String toLongString(Ethernet::Event event)
 {
 	switch(event) {
 #define XX(tag, desc)                                                                                                  \
-	case Ethernet::Event::tag:                                                                                           \
+	case Ethernet::Event::tag:                                                                                         \
 		return F(desc);
 		ETHERNET_EVENT_MAP(XX)
 #undef XX

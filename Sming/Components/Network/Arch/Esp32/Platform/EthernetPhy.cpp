@@ -18,8 +18,10 @@
 #include <Network/Ethernet/Ksz8041.h>
 #include <esp_eth_phy.h>
 
+constexpr int PHY_RESET_PIN_DEFAULT{5};
+
 #define PHY_IMPL(class_name, func_name)                                                                                \
-	Ethernet::PhyInstance* class_name::create()                                                                        \
+	Ethernet::PhyInstance* class_name::create(const PhyConfig& config)                                                 \
 	{                                                                                                                  \
 		auto phy_config = get_esp_config(config);                                                                      \
 		auto phy = esp_eth_phy_new_##func_name(&phy_config);                                                           \
@@ -39,7 +41,7 @@ eth_phy_config_t get_esp_config(const Ethernet::PhyConfig& config)
 		.phy_addr = config.phyAddr,
 		.reset_timeout_ms = config.resetTimeout,
 		.autonego_timeout_ms = config.autoNegTimeout,
-		.reset_gpio_num = config.resetPin,
+		.reset_gpio_num = (config.resetPin == Ethernet::PIN_DEFAULT) ? PHY_RESET_PIN_DEFAULT : config.resetPin,
 	};
 }
 

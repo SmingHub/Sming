@@ -16,7 +16,7 @@
 
 using namespace Ethernet;
 
-bool EmbeddedEthernet::begin(const Ethernet::MacConfig& config, PhyFactory* phyFactory)
+bool EmbeddedEthernet::begin(const MacConfig& macConfig, PhyFactory* phyFactory, const PhyConfig& phyConfig)
 {
 #if !CONFIG_ETH_USE_ESP32_EMAC
 
@@ -40,8 +40,12 @@ bool EmbeddedEthernet::begin(const Ethernet::MacConfig& config, PhyFactory* phyF
 	enableGotIpCallback(true);
 
 	eth_mac_config_t mac_config = ETH_MAC_DEFAULT_CONFIG();
-	mac_config.smi_mdc_gpio_num = config.smiMdcPin;
-	mac_config.smi_mdio_gpio_num = config.smiMdioPin;
+	if(macConfig.smiMdcPin != PIN_DEFAULT) {
+		mac_config.smi_mdc_gpio_num = macConfig.smiMdcPin;
+	}
+	if(macConfig.smiMdioPin != PIN_DEFAULT) {
+		mac_config.smi_mdio_gpio_num = macConfig.smiMdioPin;
+	}
 	mac = esp_eth_mac_new_esp32(&mac_config);
 	if(mac == nullptr) {
 		debug_e("[ETH] Failed to construct MAC");
@@ -147,7 +151,7 @@ bool EmbeddedEthernet::setMacAddress(const MacAddress& addr)
 	return mac->set_addr(mac, &const_cast<MacAddress&>(addr)[0]) == ESP_OK;
 }
 
-bool EmbeddedEthernet::setSpeed(Ethernet::Speed speed)
+bool EmbeddedEthernet::setSpeed(Speed speed)
 {
 	if(mac == nullptr) {
 		return false;

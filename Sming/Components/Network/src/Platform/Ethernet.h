@@ -50,11 +50,23 @@ using EventDelegate = Delegate<void(Ethernet::Event event, MacAddress mac)>;
 using GotIpDelegate = Delegate<void(IpAddress ip, IpAddress netmask, IpAddress gateway)>;
 
 /**
+ * @brief Use default pin for platform
+ */
+constexpr int8_t PIN_DEFAULT{-2};
+
+/**
+ * @brief Do not configure this pin
+ *
+ * Only applies if pin is optional, otherwise it will be interpreted as 'auto detect'.
+ */
+constexpr int8_t PIN_UNUSED{-1};
+
+/**
  * @brief Configuration for Ethernet MAC
  */
 struct MacConfig {
-	int8_t smiMdcPin = 23;  //< SMI MDC GPIO number, -1 if not used
-	int8_t smiMdioPin = 18; //< SMI MDIO GPIO number, -1 if not used
+	int8_t smiMdcPin = PIN_DEFAULT;  //< SMI MDC GPIO number
+	int8_t smiMdioPin = PIN_DEFAULT; //< SMI MDIO GPIO number
 };
 
 /**
@@ -66,38 +78,45 @@ enum class Speed {
 };
 
 /**
- * @brief Constructed PHY instance
+ * @brief Constructed PHY instance. An opaque, implementation-specific type.
  */
 struct PhyInstance;
+
+/**
+ * @brief Automatically detect PHY address during initialization
+ */
+constexpr int8_t PHY_ADDR_AUTO{-1};
 
 /**
  * @brief PHY configuration
  */
 struct PhyConfig {
-	int8_t phyAddr = -1;			///< PHY address, set -1 to enable PHY address detection at initialization stage
-	int8_t resetPin = 5;			///< Reset GPIO number, -1 means no hardware reset */
+	int8_t phyAddr = PHY_ADDR_AUTO; ///< PHY address
+	int8_t resetPin = PIN_DEFAULT;  ///< Reset GPIO number */
 	uint16_t resetTimeout = 100;	///< Reset timeout value in milliseconds
 	uint16_t autoNegTimeout = 4000; ///< Auto-negotiation timeout in milliseconds
 };
 
 /**
  * @brief Virtual class used to construct a specific PHY instance
+ *
+ * Applications provide an instance of this factory class so that the Service
+ * can create and configure it at the correct point in initialisation or teardown.
  */
 class PhyFactory
 {
 public:
 	using PhyInstance = Ethernet::PhyInstance;
 
-	PhyFactory(const PhyConfig& config) : config(config)
-	{
-	}
+	/**
+	 * @brief Called by the Service to construct a PHY instance.
+	 */
+	virtual PhyInstance* create(const PhyConfig& config) = 0;
 
-	virtual PhyInstance* create() = 0;
-
+	/**
+	 * @brief Called by the Service to destroy a PHY instance.
+	 */
 	virtual void destroy(PhyInstance* inst) = 0;
-
-protected:
-	PhyConfig config;
 };
 
 /**
@@ -107,11 +126,9 @@ protected:
  * 
  * An Ethernet interface requires a MAC layer plus PHY.
  *
- * The ESP32, for example, contains a MAC but requires an external PHY which must
- * be configured separately. The PHY is therefore a separate class which is used
- * to configure the MAC.
- *
- * Other solutions, such as the W5500, contain MAC+PHY so handle this internally.
+ * The ESP32, for example, contains a MAC but requires an external PHY.
+ * Other solutions, such as the W5500, contain MAC+PHY and require the correct
+ * PhyFactory to work.
  *
  * Ethernet implementations should provide appropriate setup methods which are called by the application
  * before invoking `begin()`.
@@ -122,11 +139,12 @@ public:
 	/**
 	 * @brief Configure and start the ethernet service
 	 * @param config MAC configuration
-	 * @param phyFactory Factory class to manage PHY instance (if required)
+	 * @param phyFactory Factory class to manage creation of PHY instances.
+	 * The Service takes ownership of this object.
 	 *
-	 * Applications should expect to receive Start and Connected events.
+	 * Applications should expect to receive Start and Connected events following this call.
 	 */
-	virtual bool begin(const MacConfig& config, PhyFactory* phyFactory) = 0;
+	virtual bool begin(const MacConfig& macConfig, PhyFactory* phyFactory, const PhyConfig& phyConfig) = 0;
 
 	/**
 	 * @brief Tear down the ethernet connection

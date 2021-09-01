@@ -23,24 +23,29 @@ struct esp_eth_phy_s;
  * These are the reduced (RMII) PHY connections.
  * Note that the high-speed signals may not be re-allocated.
  * 
- * 		Signal	GPIO  Direction
- * 		------	----  ---------
- * 		TXD0    19    OUT
- * 		TXD1    22    OUT
- * 		TX_EN   21    OUT
- * 		RXD0    25    IN
- * 		RXD1    26    IN
- * 		RX_DV   27    IN
+ * 		Signal	  GPIO  Direction
+ * 		------	  ----  ---------
+ * 		TXD0      19    OUT
+ * 		TXD1      22    OUT
+ * 		TX_EN     21    OUT
+ * 		RXD0      25    IN
+ * 		RXD1      26    IN
+ * 		RX_DV     27    IN
  *        Receive Data Valid
- * 		MDC     23    OUT (can be reassigned)
- * 		MDIO    18    OUT (can be reassigned)
- * 		CLK_MII 0     IN or OUT
+ * 		MDC       23    OUT (set via MacConfig)
+ * 		MDIO      18    OUT (set via MacConfig)
+ * 		CLK_MII   0     IN or OUT
  *        50MHz clock provided either by the PHY or the MAC. Default is PHY.
+ *
+ * The following connections are optional and can set to PIN_UNUSED.
+ *
+ * 		PHY_RESET 5   OUT (set via PhyConfig)
  */
 class EmbeddedEthernet : public Ethernet::Service
 {
 public:
-	bool begin(const Ethernet::MacConfig& config, Ethernet::PhyFactory* phyFactory) override;
+	bool begin(const Ethernet::MacConfig& macConfig, Ethernet::PhyFactory* phyFactory,
+			   const Ethernet::PhyConfig& phyConfig) override;
 	void end() override;
 	MacAddress getMacAddress() const override;
 	bool setMacAddress(const MacAddress& addr) override;
