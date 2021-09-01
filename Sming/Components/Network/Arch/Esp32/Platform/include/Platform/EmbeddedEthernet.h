@@ -32,10 +32,14 @@ struct esp_eth_phy_s;
  * 		RXD1      26    IN
  * 		RX_DV     27    IN
  *        Receive Data Valid
- * 		MDC       23    OUT (set via MacConfig)
- * 		MDIO      18    OUT (set via MacConfig)
- * 		CLK_MII   0     IN or OUT
+ * 		MDC       23    OUT: configurable
+ * 		MDIO      18    OUT: configurable
+ * 		CLK_MII   0     IN:  No other pins supported
+ *                      OUT: alternate pins: 16, 17
  *        50MHz clock provided either by the PHY or the MAC. Default is PHY.
+ *
+ * Note: Configuring clock options must be done via SDK (make sdk-menuconfig).
+ * ESP-IDF v4.4 will add the ability to override these in software.
  *
  * The following connections are optional and can set to PIN_UNUSED.
  *
@@ -44,8 +48,11 @@ struct esp_eth_phy_s;
 class EmbeddedEthernet : public Ethernet::Service
 {
 public:
-	bool begin(const Ethernet::MacConfig& macConfig, Ethernet::PhyFactory* phyFactory,
-			   const Ethernet::PhyConfig& phyConfig) override;
+	EmbeddedEthernet(Ethernet::PhyFactory& phyFactory) : phyFactory(phyFactory)
+	{
+	}
+
+	bool begin(const Ethernet::Config& config) override;
 	void end() override;
 	MacAddress getMacAddress() const override;
 	bool setMacAddress(const MacAddress& addr) override;
@@ -58,6 +65,7 @@ private:
 	void enableEventCallback(bool enable);
 	void enableGotIpCallback(bool enable);
 
+	Ethernet::PhyFactory& phyFactory;
 	void* handle{nullptr};
 	esp_eth_mac_s* mac{nullptr};
 	esp_eth_phy_s* phy{nullptr};

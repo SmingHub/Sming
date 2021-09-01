@@ -16,7 +16,7 @@
 
 using namespace Ethernet;
 
-bool EmbeddedEthernet::begin(const MacConfig& macConfig, PhyFactory* phyFactory, const PhyConfig& phyConfig)
+bool EmbeddedEthernet::begin(const Config& config)
 {
 #if !CONFIG_ETH_USE_ESP32_EMAC
 
@@ -24,12 +24,6 @@ bool EmbeddedEthernet::begin(const MacConfig& macConfig, PhyFactory* phyFactory,
 	return false;
 
 #else
-
-	if(phyFactory == nullptr) {
-		debug_e("[ETH] EmbeddedEthernet requires PHY");
-		return false;
-	}
-	this->phyFactory.reset(phyFactory);
 
 	esp_netif_config_t cfg = ESP_NETIF_DEFAULT_ETH();
 	esp_netif_t* eth_netif = esp_netif_new(&cfg);
@@ -40,11 +34,11 @@ bool EmbeddedEthernet::begin(const MacConfig& macConfig, PhyFactory* phyFactory,
 	enableGotIpCallback(true);
 
 	eth_mac_config_t mac_config = ETH_MAC_DEFAULT_CONFIG();
-	if(macConfig.smiMdcPin != PIN_DEFAULT) {
-		mac_config.smi_mdc_gpio_num = macConfig.smiMdcPin;
+	if(config.mac.smiMdcPin != PIN_DEFAULT) {
+		mac_config.smi_mdc_gpio_num = config.mac.smiMdcPin;
 	}
-	if(macConfig.smiMdioPin != PIN_DEFAULT) {
-		mac_config.smi_mdio_gpio_num = macConfig.smiMdioPin;
+	if(config.mac.smiMdioPin != PIN_DEFAULT) {
+		mac_config.smi_mdio_gpio_num = config.mac.smiMdioPin;
 	}
 	mac = esp_eth_mac_new_esp32(&mac_config);
 	if(mac == nullptr) {
@@ -52,7 +46,7 @@ bool EmbeddedEthernet::begin(const MacConfig& macConfig, PhyFactory* phyFactory,
 		return false;
 	}
 
-	phy = reinterpret_cast<esp_eth_phy_t*>(phyFactory->create());
+	phy = reinterpret_cast<esp_eth_phy_t*>(phyFactory.create(config.phy));
 	if(phy == nullptr) {
 		debug_e("[ETH] Failed to construct PHY");
 		return false;
@@ -83,7 +77,7 @@ void EmbeddedEthernet::end()
 	ESP_ERROR_CHECK(esp_eth_driver_uninstall(handle));
 	handle = nullptr;
 
-	phyFactory->destroy(reinterpret_cast<PhyInstance*>(phy));
+	phyFactory.destroy(reinterpret_cast<PhyInstance*>(phy));
 
 	ESP_ERROR_CHECK(mac->del(mac));
 	mac = nullptr;

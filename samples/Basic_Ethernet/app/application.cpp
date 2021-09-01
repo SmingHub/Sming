@@ -5,7 +5,8 @@
 #include <Platform/EmbeddedEthernet.h>
 #include <Network/Ethernet/Lan8720.h>
 
-EmbeddedEthernet ethernet;
+Ethernet::Lan8720 phy;
+EmbeddedEthernet ethernet(phy);
 
 static void ethernetEventHandler(Ethernet::Event event, MacAddress mac)
 {
@@ -33,10 +34,8 @@ void init()
 	ethernet.onGotIp(ethernetGotIp);
 
 	// Modify default config as required
-	Ethernet::MacConfig macConfig;
-	Ethernet::PhyConfig phyConfig;
-	auto phy = new Ethernet::Lan8720(phyConfig);
-	ethernet.begin(macConfig, phy);
+	Ethernet::Config config;
+	ethernet.begin(config);
 }
 
 #else

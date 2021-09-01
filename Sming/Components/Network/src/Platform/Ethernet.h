@@ -120,6 +120,14 @@ public:
 };
 
 /**
+ * @brief Service configuration options
+ */
+struct Config {
+	MacConfig mac;
+	PhyConfig phy;
+};
+
+/**
  * @brief Abstract Service class
  *
  * Provides a common implementation for TCP/IP ethernet support.
@@ -138,13 +146,11 @@ class Service
 public:
 	/**
 	 * @brief Configure and start the ethernet service
-	 * @param config MAC configuration
-	 * @param phyFactory Factory class to manage creation of PHY instances.
-	 * The Service takes ownership of this object.
+	 * @param config Configuration options
 	 *
 	 * Applications should expect to receive Start and Connected events following this call.
 	 */
-	virtual bool begin(const MacConfig& macConfig, PhyFactory* phyFactory, const PhyConfig& phyConfig) = 0;
+	virtual bool begin(const Config& config) = 0;
 
 	/**
 	 * @brief Tear down the ethernet connection
