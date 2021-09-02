@@ -26,10 +26,12 @@ bool EmbeddedEthernet::begin(const Config& config)
 #else
 
 	esp_netif_config_t cfg = ESP_NETIF_DEFAULT_ETH();
-	esp_netif_t* eth_netif = esp_netif_new(&cfg);
+	netif = esp_netif_new(&cfg);
 
 	// Set default handlers to process TCP/IP stuffs
-	ESP_ERROR_CHECK(esp_eth_set_default_handlers(eth_netif));
+	ESP_ERROR_CHECK(esp_eth_set_default_handlers(netif));
+
+	// And register our own event handlers
 	enableEventCallback(true);
 	enableGotIpCallback(true);
 
@@ -54,7 +56,8 @@ bool EmbeddedEthernet::begin(const Config& config)
 
 	esp_eth_config_t eth_config = ETH_DEFAULT_CONFIG(mac, phy);
 	ESP_ERROR_CHECK(esp_eth_driver_install(&eth_config, &handle));
-	ESP_ERROR_CHECK(esp_netif_attach(eth_netif, esp_eth_new_netif_glue(handle)));
+	netif_glue = esp_eth_new_netif_glue(handle);
+	ESP_ERROR_CHECK(esp_netif_attach(netif, netif_glue));
 	ESP_ERROR_CHECK(esp_eth_start(handle));
 
 	return true;
@@ -68,19 +71,21 @@ void EmbeddedEthernet::end()
 	}
 
 	ESP_ERROR_CHECK(esp_eth_stop(handle));
-	// wait for connection stop
-	// auto event_group = xEventGroupCreate();
-	// auto bits = xEventGroupWaitBits(event_group, ETH_STOP_BIT, true, true, pdMS_TO_TICKS(ETH_STOP_TIMEOUT_MS));
-	// vEventGroupDelete(event_group);
-	// TEST_ASSERT((bits & ETH_STOP_BIT) == ETH_STOP_BIT);
-	// driver should be uninstalled within 2 seconds
+	ESP_ERROR_CHECK(esp_eth_del_netif_glue(netif_glue));
+	netif_glue = nullptr;
+	ESP_ERROR_CHECK(esp_eth_clear_default_handlers(netif));
+
 	ESP_ERROR_CHECK(esp_eth_driver_uninstall(handle));
 	handle = nullptr;
 
 	phyFactory.destroy(reinterpret_cast<PhyInstance*>(phy));
+	phy = nullptr;
 
 	ESP_ERROR_CHECK(mac->del(mac));
 	mac = nullptr;
+
+	esp_netif_destroy(netif);
+	netif = nullptr;
 
 	enableEventCallback(false);
 	enableGotIpCallback(false);
@@ -94,10 +99,7 @@ void EmbeddedEthernet::enableEventCallback(bool enable)
 		if(!ethernet->eventCallback) {
 			return;
 		}
-		auto eth_handle = *static_cast<esp_eth_handle_t*>(event_data);
-		MacAddress mac;
-		esp_eth_ioctl(eth_handle, ETH_CMD_G_MAC_ADDR, &mac[0]);
-		ethernet->eventCallback(Event(event_id), mac);
+		ethernet->eventCallback(Event(event_id));
 	};
 
 	if(enable) {
@@ -175,4 +177,63 @@ bool EmbeddedEthernet::setPromiscuous(bool enable)
 		return false;
 	}
 	return mac->set_promiscuous(mac, enable) == ESP_OK;
+}
+
+void EmbeddedEthernet::setHostname(const String& hostname)
+{
+	ESP_ERROR_CHECK(esp_netif_set_hostname(netif, hostname.c_str()));
+}
+
+String EmbeddedEthernet::getHostname() const
+{
+	const char* hostName;
+	ESP_ERROR_CHECK(esp_netif_get_hostname(netif, &hostName));
+	return hostName;
+}
+
+IpAddress EmbeddedEthernet::getIP() const
+{
+	IpAddress addr;
+	esp_netif_ip_info_t info;
+	if(esp_netif_get_ip_info(netif, &info) == ESP_OK) {
+		addr = info.ip.addr;
+	}
+	return addr;
+}
+
+extern "C" esp_err_t esp_netif_up(esp_netif_t* esp_netif);
+
+bool EmbeddedEthernet::setIP(IpAddress address, IpAddress netmask, IpAddress gateway)
+{
+	if(!enableDHCP(false)) {
+		return false;
+	}
+	esp_netif_ip_info_t ipinfo{address, netmask, gateway};
+	if(esp_netif_set_ip_info(netif, &ipinfo) == ESP_OK) {
+		debug_i("Ethernet IP successfully updated");
+		esp_netif_up(netif);
+	} else {
+		debug_e("Ethernet IP can't be updated");
+		enableDHCP(true);
+	}
+	return true;
+}
+
+bool EmbeddedEthernet::isEnabledDHCP() const
+{
+	esp_netif_dhcp_status_t status;
+	if(esp_netif_dhcps_get_status(netif, &status) != ESP_OK) {
+		return false;
+	}
+
+	return status == ESP_NETIF_DHCP_STARTED;
+}
+
+bool EmbeddedEthernet::enableDHCP(bool enable)
+{
+	if(enable) {
+		return esp_netif_dhcpc_start(netif) == ESP_OK;
+	} else {
+		return esp_netif_dhcpc_stop(netif) == ESP_OK;
+	}
 }

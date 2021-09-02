@@ -14,6 +14,7 @@
 
 struct esp_eth_mac_s;
 struct esp_eth_phy_s;
+struct esp_netif_obj;
 
 /**
  * @brief Ethernet provider using ESP32 embedded MAC. Requires an external PHY.
@@ -30,7 +31,7 @@ struct esp_eth_phy_s;
  * 		TX_EN     21    OUT
  * 		RXD0      25    IN
  * 		RXD1      26    IN
- * 		RX_DV     27    IN
+ * 		CRS_DV    27    IN
  *        Receive Data Valid
  * 		MDC       23    OUT: configurable
  * 		MDIO      18    OUT: configurable
@@ -41,9 +42,9 @@ struct esp_eth_phy_s;
  * Note: Configuring clock options must be done via SDK (make sdk-menuconfig).
  * ESP-IDF v4.4 will add the ability to override these in software.
  *
- * The following connections are optional and can set to PIN_UNUSED.
+ * The following connections are optional:
  *
- * 		PHY_RESET 5   OUT (set via PhyConfig)
+ * 		PHY_RESET -     OUT (set via PhyConfig)
  */
 class EmbeddedEthernet : public Ethernet::Service
 {
@@ -60,6 +61,12 @@ public:
 	bool setFullDuplex(bool enable) override;
 	bool setLinkState(bool up) override;
 	bool setPromiscuous(bool enable) override;
+	void setHostname(const String& hostname) override;
+	String getHostname() const override;
+	IpAddress getIP() const override;
+	bool setIP(IpAddress address, IpAddress netmask, IpAddress gateway) override;
+	bool isEnabledDHCP() const override;
+	bool enableDHCP(bool enable) override;
 
 private:
 	void enableEventCallback(bool enable);
@@ -67,6 +74,8 @@ private:
 
 	Ethernet::PhyFactory& phyFactory;
 	void* handle{nullptr};
+	esp_netif_obj* netif{nullptr};
+	void* netif_glue{nullptr};
 	esp_eth_mac_s* mac{nullptr};
 	esp_eth_phy_s* phy{nullptr};
 	Ethernet::Event state{Ethernet::Event::Disconnected};

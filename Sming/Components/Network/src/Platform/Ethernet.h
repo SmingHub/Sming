@@ -42,7 +42,7 @@ enum class Event {
  * @param event Which event occurred
  * @param mac Provided on 'Connected' event only
  */
-using EventDelegate = Delegate<void(Ethernet::Event event, MacAddress mac)>;
+using EventDelegate = Delegate<void(Ethernet::Event event)>;
 
 /**
  * @brief Delegate type for 'got IP address' event
@@ -92,7 +92,7 @@ constexpr int8_t PHY_ADDR_AUTO{-1};
  */
 struct PhyConfig {
 	int8_t phyAddr = PHY_ADDR_AUTO; ///< PHY address
-	int8_t resetPin = PIN_DEFAULT;  ///< Reset GPIO number */
+	int8_t resetPin = PIN_UNUSED;   ///< Reset GPIO number */
 	uint16_t resetTimeout = 100;	///< Reset timeout value in milliseconds
 	uint16_t autoNegTimeout = 4000; ///< Auto-negotiation timeout in milliseconds
 };
@@ -188,6 +188,36 @@ public:
 	virtual bool setPromiscuous(bool enable) = 0;
 
 	/**
+	 * @brief Set DHCP hostname
+	 */
+	virtual void setHostname(const String& hostname) = 0;
+
+	/**
+	 * @brief Get DHCP hostname
+	 */
+	virtual String getHostname() const = 0;
+
+	/**
+	 * @brief Get current IP address
+	 */
+	virtual IpAddress getIP() const = 0;
+
+	/**
+	 * @brief Set static IP address
+	 */
+	virtual bool setIP(IpAddress address, IpAddress netmask, IpAddress gateway) = 0;
+
+	/**
+	 * @brief Determine if DHCP is active for this interface
+	 */
+	virtual bool isEnabledDHCP() const = 0;
+
+	/**
+	 * @brief Enable/disable DHCP on this interface
+	 */
+	virtual bool enableDHCP(bool enable) = 0;
+
+	/**
 	 * @brief Set callback for ethernet events
 	 */
 	void onEvent(EventDelegate callback)
@@ -204,7 +234,6 @@ public:
 	}
 
 protected:
-	std::unique_ptr<Ethernet::PhyFactory> phyFactory;
 	EventDelegate eventCallback;
 	GotIpDelegate gotIpCallback;
 };
