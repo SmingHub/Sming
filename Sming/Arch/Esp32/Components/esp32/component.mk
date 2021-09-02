@@ -25,6 +25,7 @@ SDK_LIBDIRS := \
 
 LIBDIRS += \
 	$(SDK_COMPONENT_LIBDIR) \
+	$(SDK_BUILD_BASE)/esp-idf/mbedtls/mbedtls/library \
 	$(SDK_BUILD_BASE)/esp-idf/$(ESP_VARIANT) \
 	$(SDK_BUILD_BASE)/esp-idf/$(ESP_VARIANT)/ld \
 	$(COMPONENT_PATH)/ld \

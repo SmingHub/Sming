@@ -7,7 +7,7 @@ include $(SMING_HOME)/build.mk
 all:
 
 # List of all generated SDK libraries
-SDK_ARCHIVE_DIRS = $(foreach c,$(SDK_COMPONENTS),$(SDK_BUILD_BASE)/esp-idf/$c $(call ListAllSubDirs,$(SDK_BUILD_BASE)/esp-idf/$c))
+SDK_ARCHIVE_DIRS = $(foreach c,$(SDK_COMPONENTS),$(SDK_BUILD_BASE)/esp-idf/$c)
 SDK_ARCHIVE_LIST = $(sort $(foreach d,$(SDK_ARCHIVE_DIRS),$(wildcard $d/*.a)))
 
 #
