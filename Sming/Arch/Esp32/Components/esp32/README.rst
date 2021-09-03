@@ -66,4 +66,7 @@ The default configuration settings are obtained from ``sdk/config`` and written
 to ``project/{ESP_VARIANT}/sdkconfig.defaults``.
 
 When ``sdk-menuconfig`` is run, the ``project/{ESP_VARIANT}/sdkconfig`` is modified.
-This can be reset using ``make sdk-menuconfig-clean``.
+This can be reset using ``make sdk-config-clean``.
+
+If custom settings are required for a project then place these in a separate file
+and set :envvar:`SDK_CUSTOM_CONFIG` to the location, relative to the project source root directory.

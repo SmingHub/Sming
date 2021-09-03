@@ -11,6 +11,9 @@ COMPONENT_INCDIRS := src/include include
 CACHE_VARS += SDK_FULL_BUILD
 SDK_FULL_BUILD ?= 0
 
+# Applications can provide file with custom SDK configuration settings
+CACHE_VARS += SDK_CUSTOM_CONFIG
+
 COMPONENT_RELINK_VARS += DISABLE_NETWORK DISABLE_WIFI
 
 SDK_BUILD_BASE := $(COMPONENT_BUILD_BASE)/$(ESP_VARIANT)/sdk
@@ -308,10 +311,6 @@ FLASH_BOOT_CHUNKS		:= 0x1000=$(FLASH_BOOT_LOADER)
 
 SDK_DEFAULT_PATH := $(COMPONENT_PATH)/sdk
 
-##@Partitions
-
-SDK_PARTITION_PATH := $(SDK_DEFAULT_PATH)/partitions
-
 ##@SDK
 
 SDK_PROJECT_PATH := $(COMPONENT_PATH)/project/$(ESP_VARIANT)
@@ -356,25 +355,39 @@ $(SDK_PROJECT_PATH):
 
 $(SDK_COMPONENT_LIBS): $(SDK_BUILD_COMPLETE)
 
-SDK_CONFIG_FILES := common $(BUILD_TYPE) $(ESP_VARIANT).common $(ESP_VARIANT).$(BUILD_TYPE)
+SDK_CONFIG_FILES := \
+	common \
+	$(BUILD_TYPE) \
+	$(ESP_VARIANT).common \
+	$(ESP_VARIANT).$(BUILD_TYPE)
 
-$(SDK_CONFIG_DEFAULTS):
-	$(foreach f,$(addprefix $(SDK_DEFAULT_PATH)/config/,$(SDK_CONFIG_FILES)),\
+ifdef SDK_CUSTOM_CONFIG
+SDK_CUSTOM_CONFIG_PATH := $(call AbsoluteSourcePath,$(PROJECT_DIR),$(SDK_CUSTOM_CONFIG))
+endif
+
+SDK_CONFIG_FILES := \
+	$(addprefix $(SDK_DEFAULT_PATH)/config/,$(SDK_CONFIG_FILES)) \
+	$(SDK_CUSTOM_CONFIG_PATH)
+
+$(SDK_CONFIG_DEFAULTS): $(SDK_CUSTOM_CONFIG_PATH)
+	@echo Creating $@
+	$(Q) rm -f $@
+	$(Q) $(foreach f,$(SDK_CONFIG_FILES),\
 		$(if $(wildcard $f),cat $f >> $@;) \
 	)
 
 PHONY: sdk-menuconfig
 sdk-menuconfig: $(SDK_CONFIG_DEFAULTS) | $(SDK_BUILD_BASE) ##Configure SDK options
 	$(Q) $(SDK_BUILD) menuconfig
-	$(Q) rm $(SDK_BUILD_COMPLETE)
+	$(Q) rm -f $(SDK_BUILD_COMPLETE)
 	@echo Now run 'make esp32-build'
 
 .PHONY: sdk-defconfig
 sdk-defconfig: $(SDKCONFIG_H) ##Create default SDK config files
 
-.PHONY: sdk-menuconfig-clean
-sdk-menuconfig-clean: esp32-clean ##Wipe SDK configuration and revert to defaults
-	$(Q) rm -f $(SDKCONFIG_MAKEFILE) $(SDK_CONFIG_DEFAULTS) 
+.PHONY: sdk-config-clean
+sdk-config-clean: esp32-clean ##Wipe SDK configuration and revert to defaults
+	$(Q) rm -rf $(SDK_PROJECT_PATH)
 
 .PHONY: sdk-help
 sdk-help: ##Get SDK build options
