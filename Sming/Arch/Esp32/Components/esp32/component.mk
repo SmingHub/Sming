@@ -11,8 +11,10 @@ COMPONENT_INCDIRS := src/include include
 CACHE_VARS += SDK_FULL_BUILD
 SDK_FULL_BUILD ?= 0
 
-SDK_BUILD_BASE := $(COMPONENT_BUILD_DIR)/sdk.$(ESP_VARIANT)
-SDK_COMPONENT_LIBDIR := $(COMPONENT_BUILD_DIR)/lib.$(ESP_VARIANT)
+COMPONENT_RELINK_VARS += DISABLE_NETWORK DISABLE_WIFI
+
+SDK_BUILD_BASE := $(COMPONENT_BUILD_BASE)/sdk.$(ESP_VARIANT)
+SDK_COMPONENT_LIBDIR := $(COMPONENT_BUILD_BASE)/lib.$(ESP_VARIANT)
 
 SDKCONFIG_H := $(SDK_BUILD_BASE)/config/sdkconfig.h
 
@@ -146,7 +148,6 @@ SDK_COMPONENTS := \
 	esp-tls \
 	$(ESP_VARIANT) \
 	esp_common \
-	esp_eth \
 	esp_event \
 	esp_gdbstub \
 	esp_hw_support \
@@ -156,29 +157,35 @@ SDK_COMPONENTS := \
 	esp_rom \
 	esp_system \
 	esp_timer \
-	esp_wifi \
 	espcoredump \
 	freertos \
 	hal \
 	heap \
 	log \
-	lwip \
-	mbedtls \
-	mbedcrypto \
-	esp_netif \
 	newlib \
 	nvs_flash \
-	openssl \
 	protobuf-c \
 	protocomm \
 	pthread \
 	soc \
 	spi_flash \
-	tcp_transport \
-	tcpip_adapter \
-	vfs \
+	vfs
+
+ifneq ($(DISABLE_NETWORK),1)
+SDK_COMPONENTS += \
+	esp_wifi \
+	esp_eth \
+	lwip \
+	mbedtls \
+	mbedcrypto \
+	esp_netif \
+	openssl
+ifneq ($(DISABLE_WIFI),1)
+SDK_COMPONENTS += \
 	wifi_provisioning \
 	wpa_supplicant
+endif
+endif
 
 ifneq ($(ESP_VARIANT),esp32s3)
 SDK_COMPONENTS += esp_adc_cal
@@ -246,9 +253,12 @@ endif
 EXTRA_LIBS := \
 	gcc \
 	$(SDK_COMPONENTS) \
-	$(SDK_ESP_WIFI_LIBS) \
 	$(SDK_NEWLIB_LIBS) \
 	$(SDK_TARGET_ARCH_LIBS)
+
+ifneq ($(DISABLE_WIFI),1)
+EXTRA_LIBS += $(SDK_ESP_WIFI_LIBS)
+endif
 
 LinkerScript = -T $(ESP_VARIANT).$1.ld
 

@@ -1,22 +1,25 @@
 From v4.3 to v4.4
 =================
 
-4.3.1
------
-
 .. highlight:: c++
 
 Network support
 ~~~~~~~~~~~~~~~
 
-The core network code has been moved out of ``Sming/Core/Network`` and into a separate component at ``Components/Network``.
-This is to extend the use of the :envvar:`DISABLE_WIFI` setting to reduce the code required to be built for applications which
-do not require networking.
+If WiFi is not required then the :envvar:`DISABLE_WIFI` setting can be used to reduce code size.
+This has a more pronounced effect for the ESP8266 which uses an experimental library.
 
+The core network code has been moved out of ``Sming/Core/Network`` and into a separate component at ``Components/Network``.
 Some support code has been moved into ``Core/Data/WebHelpers``: applications should still build OK but you will get
 a compiler warning advising of the changes.
 
 Note that ``Network/WebHelpers/aw-sha1.h`` has been removed in favour of the :component:`crypto` library.
+
+Ethernet support has been added, currently only for the ESP32 embedded MAC.
+If WiFi is not used then the :envvar:`DISABLE_WIFI` setting can be used to reduce code size.
+
+The :envvar:`DISABLE_NETWORK` setting can be used to exclude all networking support for signficant code size reduction.
+
 
 ESP32
 ~~~~~

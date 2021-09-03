@@ -46,12 +46,20 @@ ifeq ($(MQTT_NO_COMPAT),1)
 endif
 
 #
+RELINK_VARS += DISABLE_NETWORK
+DISABLE_NETWORK ?= 0
+ifeq ($(DISABLE_NETWORK),1)
+GLOBAL_CFLAGS += -DDISABLE_NETWORK=1
+DISABLE_WIFI := 1
+else
+COMPONENT_DEPENDS += Network
+endif
+
+#
 RELINK_VARS += DISABLE_WIFI
 DISABLE_WIFI ?= 0
 ifeq ($(DISABLE_WIFI),1)
 GLOBAL_CFLAGS += -DDISABLE_WIFI=1
-else
-COMPONENT_DEPENDS += Network
 endif
 
 # WiFi settings may be provide via Environment variables

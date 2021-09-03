@@ -11,7 +11,7 @@
 #include "CommandOutput.h"
 #include <Data/Buffer/LineBuffer.h>
 
-#ifndef DISABLE_WIFI
+#ifndef DISABLE_NETWORK
 #include <Network/TcpClient.h>
 #endif
 
@@ -20,7 +20,7 @@
 class CommandExecutor
 {
 public:
-#ifndef DISABLE_WIFI
+#ifndef DISABLE_NETWORK
 	CommandExecutor(TcpClient* cmdClient);
 	CommandExecutor(WebsocketConnection* reqSocket);
 #endif

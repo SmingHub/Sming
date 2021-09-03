@@ -23,7 +23,7 @@ size_t CommandOutput::write(uint8_t outChar)
 		return outputStream->write(outChar);
 	}
 
-#ifndef DISABLE_WIFI
+#ifndef DISABLE_NETWORK
 	if(outputTcpClient) {
 		char outBuf[1] = {char(outChar)};
 		return outputTcpClient->write(outBuf, 1);

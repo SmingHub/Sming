@@ -9,18 +9,23 @@
  */
 
 #include <esp_system.h>
-#include <esp_wifi.h>
-#include <esp_netif.h>
-#include <esp_event.h>
 #include <esp_log.h>
 #include <esp_task_wdt.h>
-#include <nvs_flash.h>
 #include <esp_tasks.h>
 #include <debug_progmem.h>
 #include <Platform/System.h>
 #include <driver/hw_timer.h>
 #include <driver/uart.h>
 #include <Storage.h>
+
+#ifndef DISABLE_NETWORK
+#include <esp_netif.h>
+#ifndef DISABLE_WIFI
+#include <esp_wifi.h>
+#include <esp_event.h>
+#include <nvs_flash.h>
+#endif
+#endif
 
 #ifndef ESP32_STACK_SIZE
 #define ESP32_STACK_SIZE 16384U
@@ -32,6 +37,7 @@ namespace
 {
 static constexpr uint32_t WDT_TIMEOUT_MS{8000};
 
+#ifndef DISABLE_WIFI
 void esp_init_flash()
 {
 	esp_err_t ret = nvs_flash_init();
@@ -50,6 +56,7 @@ void esp_init_wifi()
 	wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
 	ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 }
+#endif
 
 void main(void*)
 {
@@ -61,8 +68,10 @@ void main(void*)
 
 	smg_uart_detach_all();
 
+#ifndef DISABLE_WIFI
 	esp_init_flash();
 	esp_init_wifi();
+#endif
 	ets_init_tasks();
 	Storage::initialize();
 	System.initialize();

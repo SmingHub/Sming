@@ -99,7 +99,7 @@ void CommandHandler::procesStatusCommand(String commandLine, CommandOutput* comm
 	commandOutput->print(_F("ESP SDK version : "));
 	commandOutput->print(system_get_sdk_version());
 	commandOutput->println();
-#ifndef DISABLE_WIFI
+#ifndef DISABLE_NETWORK
 	commandOutput->printf(_F("lwIP version : %d.%d.%d(%s)\r\n"), LWIP_VERSION_MAJOR, LWIP_VERSION_MINOR,
 						  LWIP_VERSION_REVISION, LWIP_HASH_STR);
 #endif
