@@ -2,7 +2,7 @@ Platform Support
 ================
 
 .. toctree::
+   :glob:
    :maxdepth: 1
 
-   wifi
-   system
+   *
