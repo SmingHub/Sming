@@ -333,7 +333,8 @@ export SDK_COMPONENT_LIBDIR
 export SDK_COMPONENTS
 
 $(SDK_BUILD_COMPLETE): $(SDKCONFIG_H) $(SDKCONFIG_MAKEFILE)
-	$(Q) $(SDK_BUILD) bootloader app
+	$(Q) $(SDK_BUILD) reconfigure
+	$(Q) $(NINJA) -C $(SDK_BUILD_BASE) bootloader app
 	$(Q) $(MAKE) --no-print-directory -C $(SDK_DEFAULT_PATH) -f misc.mk copylibs
 	touch $(SDK_BUILD_COMPLETE)
 
