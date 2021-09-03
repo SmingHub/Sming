@@ -25,6 +25,7 @@ SDK_LIBDIRS := \
 
 LIBDIRS += \
 	$(SDK_COMPONENT_LIBDIR) \
+	$(SDK_BUILD_BASE)/esp-idf/mbedtls/mbedtls/library \
 	$(SDK_BUILD_BASE)/esp-idf/$(ESP_VARIANT) \
 	$(SDK_BUILD_BASE)/esp-idf/$(ESP_VARIANT)/ld \
 	$(COMPONENT_PATH)/ld \
@@ -145,6 +146,7 @@ SDK_COMPONENTS := \
 	esp-tls \
 	$(ESP_VARIANT) \
 	esp_common \
+	esp_eth \
 	esp_event \
 	esp_gdbstub \
 	esp_hw_support \
@@ -195,7 +197,6 @@ SDK_COMPONENTS += \
 	bt \
 	coap \
 	console \
-	esp_eth \
 	esp_http_client \
 	esp_http_server \
 	esp_https_ota \
@@ -331,12 +332,14 @@ export SDK_BUILD_BASE
 export SDK_COMPONENT_LIBDIR
 export SDK_COMPONENTS
 
-$(SDK_BUILD_COMPLETE): $(SDKCONFIG_H) $(SDK_COMPONENT_LIBS)
+$(SDK_BUILD_COMPLETE): $(SDKCONFIG_H) $(SDKCONFIG_MAKEFILE)
+	$(Q) $(SDK_BUILD) bootloader app
+	$(Q) $(MAKE) --no-print-directory -C $(SDK_DEFAULT_PATH) -f misc.mk copylibs
 	touch $(SDK_BUILD_COMPLETE)
 
 $(SDKCONFIG_H) $(SDKCONFIG_MAKEFILE) $(SDK_COMPONENT_LIBS): $(SDK_CONFIG_DEFAULTS) | $(SDK_BUILD_BASE) $(SDK_COMPONENT_LIBDIR)
-	$(Q) $(SDK_BUILD) bootloader app
-	$(Q) $(MAKE) --no-print-directory -C $(SDK_DEFAULT_PATH) -f misc.mk copylibs
+
+$(SDK_COMPONENT_LIBS): $(SDK_BUILD_COMPLETE)
 
 $(SDK_CONFIG_DEFAULTS):
 	$(Q) cp $@.$(BUILD_TYPE) $@
@@ -348,7 +351,7 @@ sdk-menuconfig: $(SDK_CONFIG_DEFAULTS) | $(SDK_BUILD_BASE) ##Configure SDK optio
 	@echo Now run 'make esp32-build'
 
 .PHONY: sdk-defconfig
-sdk-defconfig: $(SDK_BUILD_BASE)/include/sdkconfig.h ##Create default SDK config files
+sdk-defconfig: $(SDKCONFIG_H) ##Create default SDK config files
 
 .PHONY: sdk-menuconfig-clean
 sdk-menuconfig-clean: esp32-clean ##Wipe SDK configuration and revert to defaults

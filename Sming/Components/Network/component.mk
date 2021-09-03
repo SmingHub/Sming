@@ -3,7 +3,9 @@ COMPONENT_SRCDIRS := \
 	$(call ListAllSubDirs,$(COMPONENT_PATH)/src) \
 	$(call ListAllSubDirs,$(COMPONENT_PATH)/Arch/$(SMING_ARCH))
 
-COMPONENT_INCDIRS := src
+COMPONENT_INCDIRS := \
+	src \
+	Arch/$(SMING_ARCH)/Platform/include
 
 COMPONENT_DOXYGEN_INPUT := src
 
