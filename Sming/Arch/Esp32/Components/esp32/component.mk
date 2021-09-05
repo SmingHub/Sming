@@ -382,9 +382,6 @@ sdk-menuconfig: $(SDK_CONFIG_DEFAULTS) | $(SDK_BUILD_BASE) ##Configure SDK optio
 	$(Q) rm -f $(SDK_BUILD_COMPLETE)
 	@echo Now run 'make esp32-build'
 
-.PHONY: sdk-defconfig
-sdk-defconfig: $(SDKCONFIG_H) ##Create default SDK config files
-
 .PHONY: sdk-config-clean
 sdk-config-clean: esp32-clean ##Wipe SDK configuration and revert to defaults
 	$(Q) rm -rf $(SDK_PROJECT_PATH)
