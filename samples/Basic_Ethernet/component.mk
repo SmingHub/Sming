@@ -1,0 +1,1 @@
+DISABLE_WIFI := 1

@@ -39,7 +39,7 @@
 #include <Platform/System.h>
 #include <Platform/Timers.h>
 
-#ifndef DISABLE_WIFI
+#ifndef DISABLE_NETWORK
 #include <host_lwip.h>
 extern void host_wifi_lwip_init_complete();
 static bool lwip_initialised;
@@ -57,7 +57,7 @@ static void cleanup()
 	host_flashmem_cleanup();
 	UartServer::shutdown();
 	sockets_finalise();
-#ifndef DISABLE_WIFI
+#ifndef DISABLE_NETWORK
 	host_lwip_shutdown();
 #endif
 	host_debug_i("Goodbye!");
@@ -117,7 +117,7 @@ void host_main_loop()
 {
 	host_service_tasks();
 	host_service_timers();
-#ifndef DISABLE_WIFI
+#ifndef DISABLE_NETWORK
 	if(lwip_initialised && lwipServiceTimer.expired()) {
 		host_lwip_service();
 		lwipServiceTimer.start();
@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
 		bool enable_network;
 		UartServer::Config uart;
 		FlashmemConfig flash;
-#ifndef DISABLE_WIFI
+#ifndef DISABLE_NETWORK
 		struct lwip_param lwip;
 #endif
 	} config = {
@@ -156,7 +156,7 @@ int main(int argc, char* argv[])
 				.createSize = 0,
 
 			},
-#ifndef DISABLE_WIFI
+#ifndef DISABLE_NETWORK
 		.lwip =
 			{
 				.ifname = nullptr,
@@ -200,7 +200,7 @@ int main(int argc, char* argv[])
 			config.uart.portBase = atoi(arg);
 			break;
 
-#ifdef DISABLE_WIFI
+#ifdef DISABLE_NETWORK
 		case opt_ifname:
 		case opt_ipaddr:
 		case opt_gateway:
@@ -284,7 +284,7 @@ int main(int argc, char* argv[])
 		sockets_initialise();
 		UartServer::startup(config.uart);
 
-#ifndef DISABLE_WIFI
+#ifndef DISABLE_NETWORK
 		if(config.enable_network) {
 			lwip_initialised = host_lwip_init(&config.lwip);
 			if(lwip_initialised) {
@@ -304,7 +304,7 @@ int main(int argc, char* argv[])
 
 		host_init();
 
-#ifndef DISABLE_WIFI
+#ifndef DISABLE_NETWORK
 		lwipServiceTimer.reset<LWIP_SERVICE_INTERVAL>();
 #endif
 		while(!done) {

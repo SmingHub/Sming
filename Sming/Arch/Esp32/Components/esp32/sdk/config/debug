@@ -1,19 +1,6 @@
 #
-# Espressif IoT Development Framework (ESP-IDF) Project Configuration
+# DEBUG
 #
-# SMING DEBUG SETTINGS
-#
-
-#
-# SDK tool configuration
-#
-
-# Mandatory LWIP changes
-CONFIG_LWIP_TCPIP_TASK_STACK_SIZE=8192
-
-# Mandatory Sming framework changes
-CONFIG_ESP_TIMER_TASK_STACK_SIZE=16384
-CONFIG_ESP_SYSTEM_EVENT_TASK_STACK_SIZE=8192
 
 # The bootloader logs all type of messages
 CONFIG_BOOTLOADER_LOG_LEVEL_NONE=
@@ -35,3 +22,4 @@ CONFIG_LOG_DEFAULT_LEVEL=3
 
 # Sets watchpoint index 1 (the second of two) at the end of any task stack. This is the most accurate way to debug task stack overflows.
 CONFIG_FREERTOS_WATCHPOINT_END_OF_STACK=y
+
