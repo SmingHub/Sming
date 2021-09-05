@@ -33,10 +33,12 @@
 #include "Platform/Timers.h"
 #include "Platform/WDT.h"
 
+#ifndef DISABLE_NETWORK
 #ifndef DISABLE_WIFI
 #include "Platform/WifiEvents.h"
 #include "Platform/Station.h"
 #include "Platform/AccessPoint.h"
+#endif
 
 #include "Network/DnsServer.h"
 #include "Network/HttpClient.h"
@@ -52,7 +54,7 @@
 #include "Network/TcpConnection.h"
 #include "Network/UdpConnection.h"
 #include "Network/Url.h"
-#endif
+#endif // DISABLE_NETWORK
 
 #include "Data/Stream/FileStream.h"
 #include "Data/Stream/TemplateFileStream.h"

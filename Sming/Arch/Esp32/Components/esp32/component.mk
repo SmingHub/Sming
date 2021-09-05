@@ -11,8 +11,13 @@ COMPONENT_INCDIRS := src/include include
 CACHE_VARS += SDK_FULL_BUILD
 SDK_FULL_BUILD ?= 0
 
-SDK_BUILD_BASE := $(COMPONENT_BUILD_DIR)/sdk.$(ESP_VARIANT)
-SDK_COMPONENT_LIBDIR := $(COMPONENT_BUILD_DIR)/lib.$(ESP_VARIANT)
+# Applications can provide file with custom SDK configuration settings
+CACHE_VARS += SDK_CUSTOM_CONFIG
+
+COMPONENT_RELINK_VARS += DISABLE_NETWORK DISABLE_WIFI
+
+SDK_BUILD_BASE := $(COMPONENT_BUILD_BASE)/$(ESP_VARIANT)/sdk
+SDK_COMPONENT_LIBDIR := $(COMPONENT_BUILD_BASE)/$(ESP_VARIANT)/lib
 
 SDKCONFIG_H := $(SDK_BUILD_BASE)/config/sdkconfig.h
 
@@ -146,7 +151,6 @@ SDK_COMPONENTS := \
 	esp-tls \
 	$(ESP_VARIANT) \
 	esp_common \
-	esp_eth \
 	esp_event \
 	esp_gdbstub \
 	esp_hw_support \
@@ -156,29 +160,35 @@ SDK_COMPONENTS := \
 	esp_rom \
 	esp_system \
 	esp_timer \
-	esp_wifi \
 	espcoredump \
 	freertos \
 	hal \
 	heap \
 	log \
-	lwip \
-	mbedtls \
-	mbedcrypto \
-	esp_netif \
 	newlib \
 	nvs_flash \
-	openssl \
 	protobuf-c \
 	protocomm \
 	pthread \
 	soc \
 	spi_flash \
-	tcp_transport \
-	tcpip_adapter \
-	vfs \
+	vfs
+
+ifneq ($(DISABLE_NETWORK),1)
+SDK_COMPONENTS += \
+	esp_wifi \
+	esp_eth \
+	lwip \
+	mbedtls \
+	mbedcrypto \
+	esp_netif \
+	openssl
+ifneq ($(DISABLE_WIFI),1)
+SDK_COMPONENTS += \
 	wifi_provisioning \
 	wpa_supplicant
+endif
+endif
 
 ifneq ($(ESP_VARIANT),esp32s3)
 SDK_COMPONENTS += esp_adc_cal
@@ -246,9 +256,12 @@ endif
 EXTRA_LIBS := \
 	gcc \
 	$(SDK_COMPONENTS) \
-	$(SDK_ESP_WIFI_LIBS) \
 	$(SDK_NEWLIB_LIBS) \
 	$(SDK_TARGET_ARCH_LIBS)
+
+ifneq ($(DISABLE_WIFI),1)
+EXTRA_LIBS += $(SDK_ESP_WIFI_LIBS)
+endif
 
 LinkerScript = -T $(ESP_VARIANT).$1.ld
 
@@ -298,13 +311,9 @@ FLASH_BOOT_CHUNKS		:= 0x1000=$(FLASH_BOOT_LOADER)
 
 SDK_DEFAULT_PATH := $(COMPONENT_PATH)/sdk
 
-##@Partitions
-
-SDK_PARTITION_PATH := $(SDK_DEFAULT_PATH)/partitions
-
 ##@SDK
 
-SDK_PROJECT_PATH := $(COMPONENT_PATH)/project.$(ESP_VARIANT)
+SDK_PROJECT_PATH := $(COMPONENT_PATH)/project/$(ESP_VARIANT)
 SDK_CONFIG_DEFAULTS := $(SDK_PROJECT_PATH)/sdkconfig.defaults
 
 SDKCONFIG_MAKEFILE := $(SDK_PROJECT_PATH)/sdkconfig
@@ -323,7 +332,7 @@ SDK_BUILD_COMPLETE := $(SDK_BUILD_BASE)/.complete
 CUSTOM_TARGETS += checksdk
 
 .PHONY: checksdk
-checksdk: $(SDK_BUILD_COMPLETE)
+checksdk: $(SDK_PROJECT_PATH) $(SDK_BUILD_COMPLETE)
 
 SDK_BUILD = $(ESP32_PYTHON) $(IDF_PATH)/tools/idf.py -C $(SDK_PROJECT_PATH) -B $(SDK_BUILD_BASE) -G Ninja
 
@@ -333,29 +342,52 @@ export SDK_COMPONENT_LIBDIR
 export SDK_COMPONENTS
 
 $(SDK_BUILD_COMPLETE): $(SDKCONFIG_H) $(SDKCONFIG_MAKEFILE)
-	$(Q) $(SDK_BUILD) bootloader app
+	$(Q) $(SDK_BUILD) reconfigure
+	$(Q) $(NINJA) -C $(SDK_BUILD_BASE) bootloader app
 	$(Q) $(MAKE) --no-print-directory -C $(SDK_DEFAULT_PATH) -f misc.mk copylibs
 	touch $(SDK_BUILD_COMPLETE)
 
-$(SDKCONFIG_H) $(SDKCONFIG_MAKEFILE) $(SDK_COMPONENT_LIBS): $(SDK_CONFIG_DEFAULTS) | $(SDK_BUILD_BASE) $(SDK_COMPONENT_LIBDIR)
+$(SDKCONFIG_H) $(SDKCONFIG_MAKEFILE) $(SDK_COMPONENT_LIBS): $(SDK_PROJECT_PATH) $(SDK_CONFIG_DEFAULTS) | $(SDK_BUILD_BASE) $(SDK_COMPONENT_LIBDIR)
+
+$(SDK_PROJECT_PATH):
+	$(Q) mkdir -p $@
+	$(Q) cp -r $(SDK_DEFAULT_PATH)/project/* $@
 
 $(SDK_COMPONENT_LIBS): $(SDK_BUILD_COMPLETE)
 
-$(SDK_CONFIG_DEFAULTS):
-	$(Q) cp $@.$(BUILD_TYPE) $@
+SDK_CONFIG_FILES := \
+	common \
+	$(BUILD_TYPE) \
+	$(ESP_VARIANT).common \
+	$(ESP_VARIANT).$(BUILD_TYPE)
+
+ifdef SDK_CUSTOM_CONFIG
+SDK_CUSTOM_CONFIG_PATH := $(call AbsoluteSourcePath,$(PROJECT_DIR),$(SDK_CUSTOM_CONFIG))
+endif
+
+SDK_CONFIG_FILES := \
+	$(addprefix $(SDK_DEFAULT_PATH)/config/,$(SDK_CONFIG_FILES)) \
+	$(SDK_CUSTOM_CONFIG_PATH)
+
+$(SDK_CONFIG_DEFAULTS): $(SDK_CUSTOM_CONFIG_PATH)
+	@echo Creating $@
+	$(Q) rm -f $@
+	$(Q) $(foreach f,$(SDK_CONFIG_FILES),\
+		$(if $(wildcard $f),cat $f >> $@;) \
+	)
 
 PHONY: sdk-menuconfig
 sdk-menuconfig: $(SDK_CONFIG_DEFAULTS) | $(SDK_BUILD_BASE) ##Configure SDK options
 	$(Q) $(SDK_BUILD) menuconfig
-	$(Q) rm $(SDK_BUILD_COMPLETE)
+	$(Q) rm -f $(SDK_BUILD_COMPLETE)
 	@echo Now run 'make esp32-build'
 
 .PHONY: sdk-defconfig
 sdk-defconfig: $(SDKCONFIG_H) ##Create default SDK config files
 
-.PHONY: sdk-menuconfig-clean
-sdk-menuconfig-clean: esp32-clean ##Wipe SDK configuration and revert to defaults
-	$(Q) rm -f $(SDKCONFIG_MAKEFILE) $(SDK_CONFIG_DEFAULTS) 
+.PHONY: sdk-config-clean
+sdk-config-clean: esp32-clean ##Wipe SDK configuration and revert to defaults
+	$(Q) rm -rf $(SDK_PROJECT_PATH)
 
 .PHONY: sdk-help
 sdk-help: ##Get SDK build options

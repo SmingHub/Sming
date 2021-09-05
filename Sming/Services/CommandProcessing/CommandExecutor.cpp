@@ -21,7 +21,7 @@ CommandExecutor::CommandExecutor(Stream* reqStream) : CommandExecutor()
 	}
 }
 
-#ifndef DISABLE_WIFI
+#ifndef DISABLE_NETWORK
 CommandExecutor::CommandExecutor(TcpClient* cmdClient) : CommandExecutor()
 {
 	commandOutput = new CommandOutput(cmdClient);

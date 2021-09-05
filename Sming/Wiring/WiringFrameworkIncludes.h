@@ -25,6 +25,6 @@
 #include "Display.h"
 #include "WHashMap.h"
 
-#ifndef DISABLE_WIFI
+#ifndef DISABLE_NETWORK
 #include <IpAddress.h>
 #endif

@@ -10,7 +10,7 @@
 #include <Stream.h>
 #include <Print.h>
 
-#ifndef DISABLE_WIFI
+#ifndef DISABLE_NETWORK
 #include <Network/TcpClient.h>
 #include <Network/Http/Websocket/WebsocketConnection.h>
 #endif
@@ -18,7 +18,7 @@
 class CommandOutput : public Print
 {
 public:
-#ifndef DISABLE_WIFI
+#ifndef DISABLE_NETWORK
 	CommandOutput(TcpClient* reqClient) : outputTcpClient(reqClient)
 	{
 	}
@@ -34,7 +34,7 @@ public:
 
 	size_t write(uint8_t outChar);
 
-#ifndef DISABLE_WIFI
+#ifndef DISABLE_NETWORK
 	TcpClient* outputTcpClient = nullptr;
 	WebsocketConnection* outputSocket = nullptr;
 #endif

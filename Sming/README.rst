@@ -85,12 +85,10 @@ Localisation
 Networking
 ~~~~~~~~~~
 
-.. envvar:: DISABLE_WIFI
+.. envvar:: DISABLE_NETWORK
 
    .. note::
    
-      EXPERIMENTAL
-
    0 (Default)
    1 - Remove core networking support
 
@@ -100,6 +98,18 @@ Networking
    This will reduce build times, application size and RAM usage.
    Builds will not succeeded if network code has been inadvertently included.
 
+
+.. envvar:: DISABLE_WIFI
+
+   .. note::
+
+      EXPERIMENTAL
+
+   0 (Default)
+   1 - Exclude WiFi initialisation code
+
+   Keeps the core :component:`Network` library but excludes WiFi code.
+   Applications using ethernet can use this to reduce code size. See :sample:`Basic_Ethernet`.
 
 
 Components

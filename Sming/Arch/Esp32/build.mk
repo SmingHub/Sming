@@ -99,6 +99,9 @@ endif
 IDF_PATH_LIST += ESP32_IDFEXE_PATH
 endif
 
+DEBUG_VARS += NINJA
+NINJA := $(if $(ESP32_NINJA_PATH),$(ESP32_NINJA_PATH)/,)ninja
+
 space :=
 space +=
 

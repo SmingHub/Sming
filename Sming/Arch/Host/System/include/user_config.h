@@ -10,7 +10,7 @@
 #include <stringconversion.h>
 
 // Network base API
-#ifndef DISABLE_WIFI
+#ifndef DISABLE_NETWORK
 #include <lwip/init.h>
 #include <lwip/debug.h>
 #include <lwip/stats.h>

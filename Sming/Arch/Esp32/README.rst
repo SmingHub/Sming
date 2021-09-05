@@ -1,6 +1,8 @@
 Sming Esp32 Architecture
 ==========================
 
+.. highlight:: bash
+
 Support building Sming for the Esp32 architecture.
 
 
@@ -11,11 +13,27 @@ Build variables
 
    This contains the base directory for the ESP-IDF toolchain used to build the framework. This variable is required and must be set accordingly.
 
+
+.. envvar:: SDK_CUSTOM_CONFIG
+
+   Custom SDK settings for a project can be defined in a separate file
+   and setting this value to the location, relative to the project source root directory.
+
+   These will be added to the default SDK settings.
+
+   To make the settings current, you must run ``make sdk-config-clean``.
+   This will discard any changes made via ``make sdk-menuconfig``.
+
+
 Requirements
 ------------
 
 In order to be able to compile for the ESP32 architecture you should have ESP-IDF v4.3 installed.
-The Sming installers can do this for you - see :doc:`/getting-started/index`.
+Some slight changes are required to enable code to compile correctly for C++,
+so a fork has been created here https://github.com/mikee47/esp-idf/tree/sming/release%2Fv4.3
+which you may clone.
+
+The Sming installers do all this for you - see :doc:`/getting-started/index`.
 
 You can find further details in the `ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.3/get-started/index.html#installation-step-by-step>`__.
 
@@ -49,19 +67,13 @@ Sming comes with pre-compiled libraries and configuration files. If needed you c
 
 A re-compilation is required after the change of the configuration. This can be done with the following command::
 
-  make SMING_ARCH=Esp32 sdk-build
+  make SMING_ARCH=Esp32 Sming-build all
 
-If you want to revert to using the default pre-compiled SDK then issue the following command::
+If you want to revert to using the default SDK settings then issue the following command::
 
-  make SMING_ARCH=Esp32 sdk-default
+  make SMING_ARCH=Esp32 sdk-config-clean
 
-.. note::
-
-   If you have an ESP32-S2 device you'll need to change :envvar:`ESP_VARIANT`::
-   
-      make ESP_VARIANT=esp32s2
-
-See :component-esp32:`esp32` for further details.
+You can also configure per-project custom settings via :envvar:`SDK_CUSTOM_CONFIG`.
 
 
 Processor variants
@@ -84,6 +96,7 @@ make SMING_ARCH=Esp32 clean components-clean
 make ESP_VARIANT=esp32c3
 ```
 
+See :component-esp32:`esp32` for further details.
 
 
 Components
