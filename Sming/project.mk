@@ -549,14 +549,16 @@ otaserver: all ##Launch a simple python HTTP server for testing OTA updates
 	$(Q) cd $(FW_BASE) && $(PYTHON) -m http.server $(SERVER_OTA_PORT)
 
 
-#
+# Serial redirector to support GDB
+TCP_SERIAL_REDIRECT = $(SMING_HOME)/../Tools/tcp_serial_redirect.py $(COM_PORT) $(COM_SPEED_SERIAL) --rts 0 --dtr 0
+
 .PHONY: tcp-serial-redirect
 tcp-serial-redirect: ##Redirect COM port to TCP port
 	$(info Starting serial redirector)
 ifdef WSL_ROOT
-	$(Q) cmd.exe /c start /MIN python3 $(WSL_ROOT)/$(SMING_HOME)/../Tools/tcp_serial_redirect.py $(COM_PORT) $(COM_SPEED_SERIAL)
+	$(Q) cmd.exe /c start /MIN python3 $(WSL_ROOT)/$(TCP_SERIAL_REDIRECT)
 else
-	$(Q) gnome-terminal -- bash -c "$(PYTHON) $(SMING_HOME)/../Tools/tcp_serial_redirect.py $(COM_PORT) $(COM_SPEED_SERIAL)"
+	$(Q) gnome-terminal -- bash -c "$(PYTHON) $(TCP_SERIAL_REDIRECT)"
 endif
 
 
