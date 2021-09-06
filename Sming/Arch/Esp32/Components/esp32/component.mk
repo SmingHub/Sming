@@ -67,7 +67,6 @@ SDK_INCDIRS := \
 	mdns/private_include \
 	spi_flash/include \
 	ulp/include \
-	vfs/include \
 	xtensa-debug-module/include \
 	wpa_supplicant/include \
 	wpa_supplicant/port/include \
@@ -148,7 +147,6 @@ SDK_COMPONENTS := \
 	cxx \
 	driver \
 	efuse \
-	esp-tls \
 	$(ESP_VARIANT) \
 	esp_common \
 	esp_event \
@@ -156,7 +154,6 @@ SDK_COMPONENTS := \
 	esp_hw_support \
 	esp_ipc \
 	esp_pm \
-	esp_ringbuf \
 	esp_rom \
 	esp_system \
 	esp_timer \
@@ -167,12 +164,9 @@ SDK_COMPONENTS := \
 	log \
 	newlib \
 	nvs_flash \
-	protobuf-c \
-	protocomm \
 	pthread \
 	soc \
-	spi_flash \
-	vfs
+	spi_flash
 
 ifneq ($(DISABLE_NETWORK),1)
 SDK_COMPONENTS += \
@@ -204,27 +198,29 @@ ifeq ($(SDK_FULL_BUILD),1)
 SDK_COMPONENTS += \
 	app_trace \
 	asio \
-	bt \
 	coap \
 	console \
 	esp_http_client \
 	esp_http_server \
 	esp_https_ota \
 	esp_local_ctrl \
+	esp_ringbuf \
 	esp_websocket_client \
 	expat \
 	fatfs \
 	freemodbus \
-	idf_test \
 	jsmn \
 	json \
 	libsodium \
 	mdns \
 	mqtt \
 	nghttp \
+	protobuf-c \
+	protocomm \
 	sdmmc \
 	ulp \
 	unity \
+	vfs \
 	wear_levelling
 endif
 
