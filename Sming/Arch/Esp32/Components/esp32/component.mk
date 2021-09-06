@@ -302,9 +302,6 @@ EXTRA_LDFLAGS := \
 	-Wl,--undefined=uxTopUsedPriority \
 	$(LDFLAGS_$(ESP_VARIANT))
 
-FLASH_BOOT_LOADER       := $(SDK_BUILD_BASE)/bootloader/bootloader.bin
-FLASH_BOOT_CHUNKS		:= 0x1000=$(FLASH_BOOT_LOADER)
-
 SDK_DEFAULT_PATH := $(COMPONENT_PATH)/sdk
 SDK_PROJECT_PATH := $(COMPONENT_PATH)/project/$(ESP_VARIANT)/$(BUILD_TYPE)
 SDK_CONFIG_DEFAULTS := $(SDK_PROJECT_PATH)/sdkconfig.defaults
@@ -314,6 +311,9 @@ ifeq ($(MAKE_DOCS),)
 -include $(SDKCONFIG_MAKEFILE)
 endif
 export SDKCONFIG_MAKEFILE  # sub-makes (like bootloader) will reuse this path
+
+FLASH_BOOT_LOADER       := $(SDK_BUILD_BASE)/bootloader/bootloader.bin
+FLASH_BOOT_CHUNKS		:= $(CONFIG_BOOTLOADER_OFFSET_IN_FLASH)=$(FLASH_BOOT_LOADER)
 
 $(SDK_BUILD_BASE) $(SDK_COMPONENT_LIBDIR):
 	$(Q) mkdir -p $@
