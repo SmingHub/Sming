@@ -306,9 +306,6 @@ FLASH_BOOT_LOADER       := $(SDK_BUILD_BASE)/bootloader/bootloader.bin
 FLASH_BOOT_CHUNKS		:= 0x1000=$(FLASH_BOOT_LOADER)
 
 SDK_DEFAULT_PATH := $(COMPONENT_PATH)/sdk
-
-##@SDK
-
 SDK_PROJECT_PATH := $(COMPONENT_PATH)/project/$(ESP_VARIANT)/$(BUILD_TYPE)
 SDK_CONFIG_DEFAULTS := $(SDK_PROJECT_PATH)/sdkconfig.defaults
 
@@ -372,19 +369,27 @@ $(SDK_CONFIG_DEFAULTS): $(SDK_CUSTOM_CONFIG_PATH)
 		$(if $(wildcard $f),cat $f >> $@;) \
 	)
 
+##@Configuration
+
 PHONY: sdk-menuconfig
 sdk-menuconfig: $(SDK_CONFIG_DEFAULTS) | $(SDK_BUILD_BASE) ##Configure SDK options
 	$(Q) $(SDK_BUILD) menuconfig
 	$(Q) rm -f $(SDK_BUILD_COMPLETE)
 	@echo Now run 'make esp32-build'
 
+##@Cleaning
+
 .PHONY: sdk-config-clean
 sdk-config-clean: esp32-clean ##Wipe SDK configuration and revert to defaults
 	$(Q) rm -rf $(SDK_PROJECT_PATH)
 
+##@Help
+
 .PHONY: sdk-help
 sdk-help: ##Get SDK build options
 	$(Q) $(SDK_BUILD) --help
+
+##@Tools
 
 .PHONY: sdk
 sdk: ##Pass options to IDF builder, e.g. `make sdk -- --help` or `make sdk menuconfig` 
