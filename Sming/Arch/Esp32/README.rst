@@ -89,12 +89,13 @@ This is still at an early stage of development however basic applications should
 - esp32c3
 - esp32s3
 
-If changing variant the project must be cleaned first. You can change variants like this:
+You can change variants like this:
 
 ```
-make SMING_ARCH=Esp32 clean components-clean
-make ESP_VARIANT=esp32c3
+make SMING_ARCH=Esp32 ESP_VARIANT=esp32c3
 ```
+
+Each variant uses a different build directory, e.g. ``out/Esp32/esp32c3/...`` to avoid conflicts.
 
 See :component-esp32:`esp32` for further details.
 

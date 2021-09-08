@@ -25,6 +25,9 @@ all: checkdirs submodules ##(default) Build all Component libraries
 BUILD_TYPE_FILE	:= out/build-type.mk
 -include $(BUILD_TYPE_FILE)
 
+BUILD_SUBTYPE_FILE = out/$(SMING_ARCH)/build-subtype.mk
+-include $(BUILD_SUBTYPE_FILE)
+
 #
 include $(SMING_HOME)/build.mk
 
@@ -59,7 +62,7 @@ export PROJECT_DIR
 
 ifeq ($(MAKELEVEL),0)
 $(info )
-$(info $(notdir $(PROJECT_DIR)): Invoking '$(MAKECMDGOALS)' for $(SMING_ARCH).$(ESP_VARIANT) ($(BUILD_TYPE)) architecture)
+$(info $(notdir $(PROJECT_DIR)): Invoking '$(MAKECMDGOALS)' for $(SMING_ARCH_FULL) ($(BUILD_TYPE)) architecture)
 endif
 
 # CFLAGS used for application and any custom targets
@@ -647,7 +650,8 @@ $(shell	mkdir -p $(dir $1);
 endef
 
 # Update build type cache
-$(eval $(call WriteCacheValues,$(BUILD_TYPE_FILE),SMING_ARCH ESP_VARIANT SMING_RELEASE STRICT))
+$(eval $(call WriteCacheValues,$(BUILD_TYPE_FILE),SMING_ARCH SMING_RELEASE STRICT))
+$(eval $(call WriteCacheValues,$(BUILD_SUBTYPE_FILE),ESP_VARIANT))
 
 # Update config cache file
 # We store the list of variable names to ensure that any not actively in use don't get lost

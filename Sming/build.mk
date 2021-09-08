@@ -87,7 +87,7 @@ endif
 export SMING_HOME
 export COMPILE := gcc
 
-DEBUG_VARS		+= ARCH_BASE USER_LIBDIR OUT_BASE BUILD_BASE FW_BASE TOOLS_BASE
+DEBUG_VARS		+= ARCH_BASE
 
 ARCH_BASE		:= $(SMING_HOME)/Arch/$(SMING_ARCH)
 ARCH_SYS		= $(ARCH_BASE)/System
@@ -95,11 +95,6 @@ ARCH_CORE		= $(ARCH_BASE)/Core
 ARCH_TOOLS		= $(ARCH_BASE)/Tools
 ARCH_COMPONENTS	= $(ARCH_BASE)/Components
 
-OUT_BASE		:= out/$(SMING_ARCH)/$(BUILD_TYPE)
-BUILD_BASE		= $(OUT_BASE)/build
-FW_BASE			= $(OUT_BASE)/firmware
-TOOLS_BASE		= $(SMING_HOME)/$(OUT_BASE)/tools
-USER_LIBDIR		= $(SMING_HOME)/$(OUT_BASE)/lib
 
 # Git command
 DEBUG_VARS	+= GIT
@@ -194,8 +189,6 @@ endif
 
 include $(ARCH_BASE)/build.mk
 
-DEBUG_VARS += ESP_VARIANT
-
 # Detect compiler version
 DEBUG_VARS			+= GCC_VERSION
 GCC_VERSION			:= $(shell $(CC) -dumpversion)
@@ -222,6 +215,20 @@ ifneq ($(GCC_UPGRADE_URL),)
 $(info Instructions for upgrading your compiler can be found here: $(GCC_UPGRADE_URL))
 endif 
 endif
+
+DEBUG_VARS		+= USER_LIBDIR OUT_BASE BUILD_BASE FW_BASE TOOLS_BASE SMING_ARCH_FULL
+
+ifdef ESP_VARIANT
+SMING_ARCH_FULL := $(SMING_ARCH)/$(ESP_VARIANT)
+else
+SMING_ARCH_FULL	:= $(SMING_ARCH)
+endif
+
+OUT_BASE		:= out/$(SMING_ARCH_FULL)/$(BUILD_TYPE)
+BUILD_BASE		= $(OUT_BASE)/build
+FW_BASE			= $(OUT_BASE)/firmware
+TOOLS_BASE		= $(SMING_HOME)/$(OUT_BASE)/tools
+USER_LIBDIR		= $(SMING_HOME)/$(OUT_BASE)/lib
 
 # Component (user) libraries have a special prefix so linker script can identify them
 CLIB_PREFIX := clib-
