@@ -1,6 +1,7 @@
 #include <esp_system.h>
 #include <sys/time.h>
 #include <esp_task_wdt.h>
+#include <sming_attr.h>
 
 extern "C" uint32_t system_get_time(void)
 {
@@ -66,4 +67,19 @@ uint32_t system_get_chip_id()
 	// get the last 4 bytes. they should be unique per device
 	memcpy(&id, &baseMac[2], sizeof(id));
 	return id;
+}
+
+/*
+ * Building without WiFi sometimes leaves these functions undefined.
+ */
+
+unsigned long WEAK_ATTR os_random(void)
+{
+	return esp_random();
+}
+
+int WEAK_ATTR os_get_random(unsigned char* buf, size_t len)
+{
+	esp_fill_random(buf, len);
+	return 0;
 }
