@@ -168,7 +168,14 @@ public:
 			debug_hex(DBG, "Text", unmaskedString.c_str(), unmaskedString.length());
 		}
 
+		{
+			// STL may perform one-time memory allocation for mutexes, etc.
+			std::shared_ptr<const char> data(new char[18]);
+			SharedMemoryStream<const char>(data, 18);
+		}
+
 		auto memStart = MallocCount::getCurrent();
+		// auto memStart = system_get_free_heap_size();
 
 		TEST_CASE("SharedMemoryStream")
 		{
@@ -203,8 +210,9 @@ public:
 			REQUIRE(data.use_count() == 1);
 		}
 
-		debug_i("memStart = %d, now mem = %d", memStart, MallocCount::getCurrent());
-		REQUIRE(memStart == MallocCount::getCurrent());
+		auto memNow = MallocCount::getCurrent();
+		// auto memNow = system_get_free_heap_size();
+		REQUIRE_EQ(memStart, memNow);
 	}
 
 private:
