@@ -320,13 +320,6 @@ $(SDK_BUILD_BASE) $(SDK_COMPONENT_LIBDIR):
 
 SDK_COMPONENT_LIBS := $(foreach c,$(SDK_COMPONENTS),$(SDK_COMPONENT_LIBDIR)/lib$c.a)
 
-SDK_BUILD_COMPLETE := $(SDK_BUILD_BASE)/.complete
-
-CUSTOM_TARGETS += checksdk
-
-.PHONY: checksdk
-checksdk: $(SDK_PROJECT_PATH) $(SDK_BUILD_COMPLETE)
-
 SDK_BUILD = $(ESP32_PYTHON) $(IDF_PATH)/tools/idf.py -C $(SDK_PROJECT_PATH) -B $(SDK_BUILD_BASE) -G Ninja
 
 # For misc.mk / copylibs
@@ -334,19 +327,21 @@ export SDK_BUILD_BASE
 export SDK_COMPONENT_LIBDIR
 export SDK_COMPONENTS
 
-$(SDK_BUILD_COMPLETE): $(SDKCONFIG_H) $(SDKCONFIG_MAKEFILE)
-	$(Q) $(SDK_BUILD) reconfigure
+CUSTOM_TARGETS += checksdk
+
+.PHONY: checksdk
+checksdk: $(SDK_PROJECT_PATH) $(SDKCONFIG_H) $(SDKCONFIG_MAKEFILE)
 	$(Q) $(NINJA) -C $(SDK_BUILD_BASE) bootloader app
 	$(Q) $(MAKE) --no-print-directory -C $(SDK_DEFAULT_PATH) -f misc.mk copylibs
-	touch $(SDK_BUILD_COMPLETE)
 
 $(SDKCONFIG_H) $(SDKCONFIG_MAKEFILE) $(SDK_COMPONENT_LIBS): $(SDK_PROJECT_PATH) $(SDK_CONFIG_DEFAULTS) | $(SDK_BUILD_BASE) $(SDK_COMPONENT_LIBDIR)
+	$(Q) $(SDK_BUILD) reconfigure
 
 $(SDK_PROJECT_PATH):
 	$(Q) mkdir -p $@
 	$(Q) cp -r $(SDK_DEFAULT_PATH)/project/* $@
 
-$(SDK_COMPONENT_LIBS): $(SDK_BUILD_COMPLETE)
+$(SDK_COMPONENT_LIBS): checksdk
 
 SDK_CONFIG_FILES := \
 	common \
@@ -374,8 +369,7 @@ $(SDK_CONFIG_DEFAULTS): $(SDK_CUSTOM_CONFIG_PATH)
 PHONY: sdk-menuconfig
 sdk-menuconfig: $(SDK_CONFIG_DEFAULTS) | $(SDK_BUILD_BASE) ##Configure SDK options
 	$(Q) $(SDK_BUILD) menuconfig
-	$(Q) rm -f $(SDK_BUILD_COMPLETE)
-	@echo Now run 'make esp32-build'
+	@echo Now run 'make'
 
 ##@Cleaning
 
