@@ -67,10 +67,11 @@ public:
 
 		this->timeunit = unit;
 
-		noInterrupts();
-
+		//
 		valueIsTime = true;
 		this->value = value % (TimeSource::maxCalcTime() + 1);
+
+		noInterrupts();
 		refCycles.start();
 		ref = timeToTicksRef();
 		refCycles.update();
@@ -78,6 +79,7 @@ public:
 		calcCycles.start();
 		calc = TimeSource::timeToTicks(this->value);
 		calcCycles.update();
+		interrupts();
 
 		if(calc != ref) {
 			calc = TimeSource::timeToTicks(this->value);
@@ -85,8 +87,11 @@ public:
 
 		compare();
 
+		//
 		valueIsTime = false;
 		this->value = value % (TimeSource::maxCalcTicks() + 1);
+
+		noInterrupts();
 		refCycles.start();
 		ref = ticksToTimeRef();
 		refCycles.update();
@@ -94,9 +99,8 @@ public:
 		calcCycles.start();
 		calc = TimeSource::ticksToTime(this->value);
 		calcCycles.update();
-		compare();
-
 		interrupts();
+		compare();
 	}
 
 	void printStats()
