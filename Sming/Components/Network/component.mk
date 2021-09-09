@@ -7,7 +7,9 @@ COMPONENT_INCDIRS := \
 	src \
 	Arch/$(SMING_ARCH)/Platform/include
 
-COMPONENT_DOXYGEN_INPUT := src
+COMPONENT_DOXYGEN_INPUT := \
+	src \
+	Arch/Esp32/Platform/include
 
 COMPONENT_DEPENDS := \
 	ssl \

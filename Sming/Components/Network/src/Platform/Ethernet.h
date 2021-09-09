@@ -40,7 +40,6 @@ enum class Event {
 /**
  * @brief Delegate type for Ethernet events
  * @param event Which event occurred
- * @param mac Provided on 'Connected' event only
  */
 using EventDelegate = Delegate<void(Ethernet::Event event)>;
 
