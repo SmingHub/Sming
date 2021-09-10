@@ -10,16 +10,10 @@
 
 #include <sdkconfig.h>
 #include <esp_spi_flash.h>
-#include <soc/soc.h>
-#include <soc/dport_access.h>
 #include <soc/mmu.h>
-#include <esp_app_format.h>
 #include <esp_flash_partitions.h>
 #include <esp_flash.h>
-
-#ifndef CONFIG_IDF_TARGET_ESP32C3
-#include <soc/dport_reg.h>
-#endif
+#include <rom/cache.h>
 
 /*
  * Physical <-> Virtual address mapping is handled in `$IDF_COMPONENTS/spi_flash/flash_mmap.c`.
@@ -28,28 +22,27 @@
  */
 uint32_t flashmem_get_address(const void* memptr)
 {
-#define VADDR0_START_ADDR SOC_DROM_LOW
-#define VADDR1_START_ADDR 0x40000000
-
 	auto vaddr = reinterpret_cast<uint32_t>(memptr);
-
-	uint32_t page;
-	if(vaddr >= SOC_DROM_LOW && vaddr < SOC_DROM_HIGH) {
-		auto offset = vaddr - VADDR0_START_ADDR;
-		page = offset / SPI_FLASH_MMU_PAGE_SIZE;
-	} else if(vaddr >= SOC_IROM_LOW && vaddr < SOC_IROM_HIGH) {
-		auto offset = vaddr - VADDR1_START_ADDR;
-		page = 64 + (offset / SPI_FLASH_MMU_PAGE_SIZE);
-	} else {
+	if(vaddr < SOC_DROM_LOW || vaddr >= SOC_DROM_HIGH) {
 		return 0;
 	}
+
+	auto offset = vaddr - SOC_MMU_VADDR0_START_ADDR;
+	uint32_t page = SOC_MMU_DROM0_PAGES_START + (offset / SPI_FLASH_MMU_PAGE_SIZE);
 #if CONFIG_IDF_TARGET_ESP32 && !CONFIG_FREERTOS_UNICORE
-	uint32_t entry = DPORT_SEQUENCE_REG_READ(uint32_t(&DPORT_APP_FLASH_MMU_TABLE[page]));
+	uint32_t entry = DPORT_APP_FLASH_MMU_TABLE[page];
 #else
-	uint32_t entry = DPORT_SEQUENCE_REG_READ(uint32_t(&SOC_MMU_DPORT_PRO_FLASH_MMU_TABLE[page]));
+	uint32_t entry = SOC_MMU_DPORT_PRO_FLASH_MMU_TABLE[page];
 #endif
-	uint32_t paddr = (entry * SPI_FLASH_MMU_PAGE_SIZE) + (vaddr & (SPI_FLASH_MMU_PAGE_SIZE - 1));
-	return (entry & 0x0100) ? 0 : paddr;
+
+	if(entry == SOC_MMU_INVALID_ENTRY_VAL) {
+		debug_e("Invalid flash address %p (page %u, entry 0x%08x)", memptr, page, entry);
+		return 0;
+	}
+
+	entry &= SOC_MMU_ADDR_MASK;
+	uint32_t paddr = (entry * SPI_FLASH_MMU_PAGE_SIZE) + (vaddr % SPI_FLASH_MMU_PAGE_SIZE);
+	return paddr;
 }
 
 uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
