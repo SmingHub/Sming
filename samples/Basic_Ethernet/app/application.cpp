@@ -34,7 +34,7 @@ void init()
 	ethernet.onGotIp(ethernetGotIp);
 
 	// Modify default config as required
-	Ethernet::Config config;
+	EmbeddedEthernet::Config config;
 	ethernet.begin(config);
 
 	// Change the advertised hostname for DHCP

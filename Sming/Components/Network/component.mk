@@ -5,7 +5,7 @@ COMPONENT_SRCDIRS := \
 
 COMPONENT_INCDIRS := \
 	src \
-	Arch/$(SMING_ARCH)/Platform/include
+	Arch/$(SMING_ARCH)/include
 
 COMPONENT_DOXYGEN_INPUT := \
 	src \
