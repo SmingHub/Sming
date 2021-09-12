@@ -13,7 +13,7 @@ public:
 		read = count = 0;
 	}
 
-	bool post(os_signal_t sig, os_param_t par)
+	bool IRAM_ATTR post(os_signal_t sig, os_param_t par)
 	{
 		bool full = (count == length);
 		if(!full) {
@@ -62,15 +62,13 @@ bool system_os_task(os_task_t callback, uint8_t prio, os_event_t* events, uint8_
 	return queue != nullptr;
 }
 
-bool system_os_post(uint8_t prio, os_signal_t sig, os_param_t par)
+bool IRAM_ATTR system_os_post(uint8_t prio, os_signal_t sig, os_param_t par)
 {
 	if(prio >= USER_TASK_PRIO_MAX) {
-		debug_e("TQ: Invalid priority %u", prio);
 		return false;
 	}
 	auto& queue = task_queues[prio];
 	if(queue == nullptr) {
-		debug_e("TQ: Task queue %u not initialised", prio);
 		return false;
 	}
 
