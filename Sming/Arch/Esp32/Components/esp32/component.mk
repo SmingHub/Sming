@@ -7,10 +7,6 @@ COMPONENT_DEPENDS := libc
 COMPONENT_SRCDIRS := src
 COMPONENT_INCDIRS := src/include include
 
-# Set to build all components, otherwise just the core ones
-CACHE_VARS += SDK_FULL_BUILD
-SDK_FULL_BUILD ?= 0
-
 # Applications can provide file with custom SDK configuration settings
 CACHE_VARS += SDK_CUSTOM_CONFIG
 
@@ -41,13 +37,10 @@ SDK_INCDIRS := \
 	bootloader_support/include_bootloader \
 	driver/$(ESP_VARIANT)/include \
 	driver/include \
-	efuse/include \
-	efuse/$(ESP_VARIANT)/include \
 	esp_pm/include \
 	esp_rom/include/$(ESP_VARIANT) \
 	esp_rom/include \
 	$(ESP_VARIANT)/include \
-	espcoredump/include \
 	esp_timer/include \
 	soc/include \
 	soc/$(ESP_VARIANT)/include \
@@ -55,47 +48,24 @@ SDK_INCDIRS := \
 	log/include \
 	nvs_flash/include \
 	freertos/include \
-	esp_ringbuf/include \
 	esp_event/include \
-	tcpip_adapter/include \
 	lwip/lwip/src/include \
 	lwip/port/esp32/include \
-	lwip/include/apps \
-	lwip/include/apps/sntp \
-	mbedtls/mbedtls/include \
-	mbedtls/port/include \
-	mdns/include \
-	mdns/private_include \
+	newlib/platform_include \
 	spi_flash/include \
-	ulp/include \
-	xtensa-debug-module/include \
 	wpa_supplicant/include \
 	wpa_supplicant/port/include \
-	app_trace/include \
-	app_update/include \
-	smartconfig_ack/include \
 	esp_hw_support/include \
 	hal/include \
 	hal/$(ESP_VARIANT)/include \
-	esp_system/include
-
-ifeq ($(SDK_FULL_BUILD),1)
-SDK_INCDIRS += \
-	console \
-	pthread/include \
-	sdmmc/include
-endif
-
-SDK_INCDIRS += \
+	esp_system/include \
 	esp_common/include \
 	esp_adc_cal/include \
 	esp_netif/include \
 	esp_eth/include \
-	esp_event/private_include \
 	esp_wifi/include \
 	esp_wifi/esp32/include \
 	lwip/include/apps/sntp \
-	spi_flash/private_include \
 	wpa_supplicant/include/esp_supplicant
 
 ifdef IDF_TARGET_ARCH_RISCV
@@ -109,33 +79,6 @@ SDK_INCDIRS += \
 	freertos/port/xtensa/include
 endif
 
-ifeq ($(CONFIG_BT_NIMBLE_ENABLED),y)
-SDK_INCDIRS += \
-	bt/include \
-	bt/common/osi/include \
-	bt/common/btc/include \
-	bt/common/include \
-	bt/host/nimble/nimble/porting/nimble/include \
-	bt/host/nimble/port/include \
-	bt/host/nimble/nimble/nimble/include \
-	bt/host/nimble/nimble/nimble/host/include \
-	bt/host/nimble/nimble/nimble/host/services/ans/include \
-	bt/host/nimble/nimble/nimble/host/services/bas/include \
-	bt/host/nimble/nimble/nimble/host/services/gap/include \
-	bt/host/nimble/nimble/nimble/host/services/gatt/include \
-	bt/host/nimble/nimble/nimble/host/services/ias/include \
-	bt/host/nimble/nimble/nimble/host/services/lls/include \
-	bt/host/nimble/nimble/nimble/host/services/tps/include \
-	bt/host/nimble/nimble/nimble/host/util/include \
-	bt/host/nimble/nimble/nimble/host/store/ram/include \
-	bt/host/nimble/nimble/nimble/host/store/config/include \
-	bt/host/nimble/nimble/porting/npl/freertos/include \
-	bt/host/nimble/nimble/ext/tinycrypt/include \
-	bt/host/nimble/esp-hci/include
-endif
-
-SDK_INCDIRS += \
-	 newlib/platform_include
 	 
 COMPONENT_INCDIRS += \
 	$(dir $(SDKCONFIG_H)) \
@@ -193,36 +136,6 @@ ifdef IDF_TARGET_ARCH_RISCV
 SDK_COMPONENTS += riscv
 else
 SDK_COMPONENTS += xtensa
-endif
-
-ifeq ($(SDK_FULL_BUILD),1)
-SDK_COMPONENTS += \
-	app_trace \
-	asio \
-	coap \
-	console \
-	esp_http_client \
-	esp_http_server \
-	esp_https_ota \
-	esp_local_ctrl \
-	esp_ringbuf \
-	esp_websocket_client \
-	expat \
-	fatfs \
-	freemodbus \
-	jsmn \
-	json \
-	libsodium \
-	mdns \
-	mqtt \
-	nghttp \
-	protobuf-c \
-	protocomm \
-	sdmmc \
-	ulp \
-	unity \
-	vfs \
-	wear_levelling
 endif
 
 SDK_ESP_WIFI_LIBS := \
