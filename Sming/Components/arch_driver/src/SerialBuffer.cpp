@@ -12,6 +12,10 @@
 
 #include "include/driver/SerialBuffer.h"
 
+#ifdef ARCH_ESP32
+#include <esp_heap_caps.h>
+#endif
+
 /** @brief find a character in the buffer
  *  @param c
  *  @retval int position relative to current read pointer, -1 if character not found
@@ -46,7 +50,12 @@ size_t SerialBuffer::resize(size_t newSize)
 		return size;
 	}
 
+#ifdef ARCH_ESP32
+	// Avoid allocating in SPIRAM
+	auto new_buf = static_cast<char*>(heap_caps_malloc(newSize, MALLOC_CAP_DEFAULT | MALLOC_CAP_INTERNAL));
+#else
 	auto new_buf = new char[newSize];
+#endif
 	if(new_buf == nullptr) {
 		return size;
 	}
