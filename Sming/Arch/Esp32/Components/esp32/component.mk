@@ -43,6 +43,7 @@ SDK_INCDIRS := \
 	driver/include \
 	efuse/include \
 	efuse/$(ESP_VARIANT)/include \
+	esp_pm/include \
 	esp_rom/include/$(ESP_VARIANT) \
 	esp_rom/include \
 	$(ESP_VARIANT)/include \

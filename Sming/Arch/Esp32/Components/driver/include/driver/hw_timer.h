@@ -10,7 +10,7 @@
 
 #pragma once
 
-#if defined(SUBARCH_ESP32) || defined(SUBARCH_ESP32S2)
+#if defined(SUBARCH_ESP32)
 #define FRC_TIMER_ENABLED
 #endif
 
@@ -158,8 +158,12 @@ __forceinline uint32_t hw_timer1_read(void)
  *
  *************************************/
 
+#ifdef FRC_TIMER_ENABLED
 constexpr uint32_t HW_TIMER2_CLKDIV = TIMER_CLKDIV_1;
 constexpr uint32_t HW_TIMER2_CLK = HW_TIMER_BASE_CLK >> HW_TIMER2_CLKDIV;
+#else
+constexpr uint32_t HW_TIMER2_CLK = 1000000;
+#endif
 
 /**
  * @brief Read current timer2 value

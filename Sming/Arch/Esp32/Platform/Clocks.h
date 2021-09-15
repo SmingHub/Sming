@@ -38,6 +38,10 @@ using PolledTimerClock = OsTimerClock;
 
 using CpuCycleClockSlow = CpuCycleClock<eCF_80MHz>;
 using CpuCycleClockNormal = CpuCycleClock<eCF_160MHz>;
+#ifdef SUBARCH_ESP32C3
+using CpuCycleClockFast = CpuCycleClockNormal;
+#else
 using CpuCycleClockFast = CpuCycleClock<eCF_240MHz>;
+#endif
 
 /** @} */

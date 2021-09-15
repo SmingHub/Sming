@@ -2,6 +2,7 @@
 
 #include <c_types.h>
 #include <hal/cpu_hal.h>
+#include <sming_attr.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,20 +14,8 @@ extern "C" {
 #define SYS_CPU_160MHZ 160
 #define SYS_CPU_240MHZ 240
 
-__forceinline bool system_update_cpu_freq(uint8_t freq)
-{
-	if(freq != SYS_CPU_80MHZ && freq != SYS_CPU_160MHZ && freq != SYS_CPU_240MHZ) {
-		return false;
-	}
-
-	ets_update_cpu_frequency(freq);
-	return true;
-}
-
-__forceinline uint32_t system_get_cpu_freq(void)
-{
-	return ets_get_cpu_frequency();
-}
+bool system_update_cpu_freq(uint32_t freq);
+uint32_t system_get_cpu_freq(void);
 
 __forceinline static uint32_t esp_get_ccount()
 {

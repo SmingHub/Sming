@@ -23,12 +23,6 @@ public:
 
 	void execute() override
 	{
-		if(Clock::frequency() == 160000000) {
-			System.setCpuFrequency(eCF_160MHz);
-		} else {
-			System.setCpuFrequency(eCF_80MHz);
-		}
-
 		printLimits();
 
 		for(unsigned i = 0; i < 2000; ++i) {
@@ -69,7 +63,7 @@ public:
 
 		//
 		valueIsTime = true;
-		this->value = value % (TimeSource::maxCalcTime() + 1);
+		this->value = value % TimeSource::maxCalcTime();
 
 		noInterrupts();
 		refCycles.start();
@@ -89,7 +83,7 @@ public:
 
 		//
 		valueIsTime = false;
-		this->value = value % (TimeSource::maxCalcTicks() + 1);
+		this->value = value % TimeSource::maxCalcTicks();
 
 		noInterrupts();
 		refCycles.start();
@@ -242,6 +236,23 @@ private:
 	bool verbose = false;
 	CpuCycleTimes refCycles;
 	CpuCycleTimes calcCycles;
+};
+
+template <class Clock, typename TimeType> class CpuClockTestTemplate : public ClockTestTemplate<Clock, TimeType>
+{
+public:
+	using ClockTestTemplate<Clock, TimeType>::ClockTestTemplate;
+
+	void execute() override
+	{
+		uint32_t curFreq = system_get_cpu_freq();
+		System.setCpuFrequency(Clock::cpuFrequency());
+
+		// delay(100);
+		debug_i("CPU freq: %u -> %u MHz", curFreq, system_get_cpu_freq());
+		ClockTestTemplate<Clock, TimeType>::execute();
+		System.setCpuFrequency(CpuCycleClockNormal::cpuFrequency());
+	}
 };
 
 /*
@@ -467,6 +478,9 @@ void REGISTER_TEST(Clocks)
 
 	registerGroup<ClockTestTemplate<Timer2Clock, uint32_t>>();
 
-	registerGroup<ClockTestTemplate<CpuCycleClockNormal, uint32_t>>();
-	registerGroup<ClockTestTemplate<CpuCycleClockFast, uint64_t>>();
+	if(CpuCycleClockSlow::cpuFrequency() != CpuCycleClockNormal::cpuFrequency()) {
+		registerGroup<CpuClockTestTemplate<CpuCycleClockSlow, uint32_t>>();
+	}
+	registerGroup<CpuClockTestTemplate<CpuCycleClockNormal, uint32_t>>();
+	registerGroup<CpuClockTestTemplate<CpuCycleClockFast, uint64_t>>();
 }
