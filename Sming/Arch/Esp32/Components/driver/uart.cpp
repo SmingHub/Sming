@@ -76,19 +76,19 @@ constexpr smg_uart_pins_t defaultPins[UART_COUNT] = {
 
 uart_dev_t* IRAM_ATTR getDevice(uint8_t uart_nr)
 {
-	switch(uart_nr) {
-	case 0:
+	if(uart_nr == 0) {
 		return &UART0;
-	case 1:
-		return &UART1;
-#if UART_COUNT > 2
-	case 2:
-		return &UART2;
-#endif
-	default:
-		assert(false);
-		return nullptr;
 	}
+	if(uart_nr == 1) {
+		return &UART1;
+	}
+#if UART_COUNT > 2
+	if(uart_nr == 2) {
+		return &UART2;
+	}
+#endif
+	assert(false);
+	return nullptr;
 }
 
 // Keep a reference to all created UARTS
