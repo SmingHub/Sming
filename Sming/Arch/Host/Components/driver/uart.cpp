@@ -47,21 +47,23 @@
 */
 #define DEFAULT_RX_HEADROOM (32 - RX_FIFO_HEADROOM)
 
-static int s_uart_debug_nr = UART_NO;
+namespace
+{
+int s_uart_debug_nr = UART_NO;
 
 // Keep track of interrupt enable state for each UART
-static uint8_t isrMask;
+uint8_t isrMask;
 // Keep a reference to all created UARTS - required because they share an ISR
-static smg_uart_t* uartInstances[UART_COUNT];
+smg_uart_t* uartInstances[UART_COUNT];
 
 // Registered port callback functions
-static smg_uart_notify_callback_t notifyCallbacks[UART_COUNT];
+smg_uart_notify_callback_t notifyCallbacks[UART_COUNT];
 
 /** @brief Invoke a port callback, if one has been registered
  *  @param uart
  *  @param code
  */
-static void notify(smg_uart_t* uart, smg_uart_notify_code_t code)
+void notify(smg_uart_t* uart, smg_uart_notify_code_t code)
 {
 	auto callback = notifyCallbacks[uart->uart_nr];
 	if(callback != nullptr) {
@@ -69,10 +71,40 @@ static void notify(smg_uart_t* uart, smg_uart_notify_code_t code)
 	}
 }
 
-__forceinline static bool smg_uart_isr_enabled(uint8_t nr)
+__forceinline bool smg_uart_isr_enabled(uint8_t nr)
 {
 	return bitRead(isrMask, nr);
 }
+
+bool realloc_buffer(SerialBuffer*& buffer, size_t new_size)
+{
+	if(buffer != nullptr) {
+		if(new_size == 0) {
+			(void)smg_uart_disable_interrupts();
+			delete buffer;
+			buffer = nullptr;
+			smg_uart_restore_interrupts();
+			return true;
+		}
+
+		return buffer->resize(new_size) == new_size;
+	}
+
+	if(new_size == 0) {
+		return true;
+	}
+
+	auto new_buf = new SerialBuffer;
+	if(new_buf != nullptr && new_buf->resize(new_size) == new_size) {
+		buffer = new_buf;
+		return true;
+	}
+
+	delete new_buf;
+	return false;
+}
+
+} // namespace
 
 smg_uart_t* smg_uart_get_uart(uint8_t uart_nr)
 {
@@ -105,34 +137,6 @@ void smg_uart_set_callback(smg_uart_t* uart, smg_uart_callback_t callback, void*
 		uart->param = param;
 		uart->callback = callback;
 	}
-}
-
-static bool realloc_buffer(SerialBuffer*& buffer, size_t new_size)
-{
-	if(buffer != nullptr) {
-		if(new_size == 0) {
-			(void)smg_uart_disable_interrupts();
-			delete buffer;
-			buffer = nullptr;
-			smg_uart_restore_interrupts();
-			return true;
-		}
-
-		return buffer->resize(new_size) == new_size;
-	}
-
-	if(new_size == 0) {
-		return true;
-	}
-
-	auto new_buf = new SerialBuffer;
-	if(new_buf != nullptr && new_buf->resize(new_size) == new_size) {
-		buffer = new_buf;
-		return true;
-	}
-
-	delete new_buf;
-	return false;
 }
 
 size_t smg_uart_resize_rx_buffer(smg_uart_t* uart, size_t new_size)
@@ -289,30 +293,16 @@ void smg_uart_wait_tx_empty(smg_uart_t* uart)
 
 void smg_uart_set_break(smg_uart_t* uart, bool state)
 {
-	//	uart = get_physical(uart);
-	//	if(uart != nullptr) {
-	//		bitWrite(USC0(uart->uart_nr), UCBRK, state);
-	//	}
+	(void)uart;
+	(void)state;
+	// Not implemented
 }
 
 uint8_t smg_uart_get_status(smg_uart_t* uart)
 {
-	uint8_t status = 0;
-	//	if(uart != nullptr) {
-	//		uart_disable_interrupts();
-	//		// Get break/overflow flags from actual uart (physical or otherwise)
-	//		status = uart->status & (_BV(UIBD) | _BV(UIOF));
-	//		uart->status = 0;
-	//		// Read raw status register directly from real uart, masking out non-error bits
-	//		uart = get_physical(uart);
-	//		if(uart != nullptr) {
-	//			status |= USIR(uart->uart_nr) & (_BV(UIBD) | _BV(UIOF) | _BV(UIFR) | _BV(UIPE));
-	//			// Clear errors
-	//			USIC(uart->uart_nr) = status;
-	//		}
-	//		uart_restore_interrupts();
-	//	}
-	return status;
+	// Not implemented
+	(void)uart;
+	return 0;
 }
 
 void smg_uart_flush(smg_uart_t* uart, smg_uart_mode_t mode)
@@ -338,14 +328,6 @@ void smg_uart_flush(smg_uart_t* uart, smg_uart_mode_t mode)
 
 uint32_t smg_uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate)
 {
-	//	if(!is_physical(uart_nr) || baud_rate == 0) {
-	//		return 0;
-	//	}
-	//
-	//	uint32_t clkdiv = ESP8266_CLOCK / baud_rate;
-	//	USD(uart_nr) = clkdiv;
-	//	// Return the actual baud rate in use
-	//	baud_rate = clkdiv ? ESP8266_CLOCK / clkdiv : 0;
 	return baud_rate;
 }
 
@@ -488,6 +470,9 @@ smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, s
 
 void smg_uart_swap(smg_uart_t* uart, int tx_pin)
 {
+	(void)uart;
+	(void)tx_pin;
+	// Not implemented
 }
 
 bool smg_uart_set_tx(smg_uart_t* uart, int tx_pin)
@@ -544,11 +529,5 @@ void smg_uart_detach(int uart_nr)
 
 void smg_uart_detach_all()
 {
-	//	uart_disable_interrupts();
-	//	for(unsigned uart_nr = 0; uart_nr < UART_PHYSICAL_COUNT; ++uart_nr) {
-	//		USC1(uart_nr) = 0;
-	//		USIC(uart_nr) = 0xffff;
-	//		USIE(uart_nr) = 0;
-	//	}
-	//	isrMask = 0;
+	// Not implemented
 }
