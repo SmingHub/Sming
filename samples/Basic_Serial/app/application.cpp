@@ -12,18 +12,12 @@ struct SerialPins {
 
 SerialPins serialPins[2]{
 	{
-		UART_PIN_DEFAULT,
-		UART_PIN_DEFAULT,
+		SERIAL_PIN_DEFAULT,
+		SERIAL_PIN_DEFAULT,
 	},
 	{
-#ifdef ESP32
-		// Default pins are occupied by flash lines
-		17,
-		16,
-#else
-		UART_PIN_DEFAULT,
-		UART_PIN_DEFAULT,
-#endif
+		SERIAL_PIN_DEFAULT,
+		SERIAL_PIN_DEFAULT,
 	},
 };
 

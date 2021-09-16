@@ -22,7 +22,7 @@ $(ESPTOOL): $(ESPTOOL_SUBMODULE)/.submodule
 ifeq ($(SMING_ARCH),Esp8266)
 ESP_CHIP := esp8266
 else ifeq ($(SMING_ARCH),Esp32)
-ESP_CHIP := esp32
+ESP_CHIP := $(ESP_VARIANT)
 else ifeq ($(MAKE_DOCS),)
 $(error esptool unsupported arch: $(SMING_ARCH))
 endif

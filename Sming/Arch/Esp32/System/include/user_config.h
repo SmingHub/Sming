@@ -12,10 +12,6 @@
 #include <stringconversion.h>
 
 // Network base API
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsign-compare"
 #include <espinc/lwip_includes.h>
-#pragma GCC diagnostic pop
-
 
 #endif

@@ -2,7 +2,10 @@
 
 // Architecture-specific test modules
 #ifdef ARCH_HOST
-#define ARCH_TEST_MAP(XX) XX(Hosted)
+#define ARCH_TEST_MAP(XX)                                                                                              \
+	XX(Hosted)                                                                                                         \
+	XX(HttpRequest)                                                                                                    \
+	XX(TcpClient)
 #else
 #define ARCH_TEST_MAP(XX)
 #endif
@@ -33,6 +36,4 @@
 	XX(Rational)                                                                                                       \
 	XX(Clocks)                                                                                                         \
 	XX(Timers)                                                                                                         \
-	XX(HttpRequest)                                                                                                    \
-	XX(TcpClient)                                                                                                      \
 	ARCH_TEST_MAP(XX)

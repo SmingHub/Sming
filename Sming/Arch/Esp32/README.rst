@@ -30,7 +30,7 @@ Requirements
 
 In order to be able to compile for the ESP32 architecture you should have ESP-IDF v4.3 installed.
 Some slight changes are required to enable code to compile correctly for C++,
-so a fork has been created here https://github.com/mikee47/esp-idf/tree/sming/release%2Fv4.3
+so a fork has been created here https://github.com/mikee47/esp-idf/tree/sming/release/v4.3
 which you may clone.
 
 The Sming installers do all this for you - see :doc:`/getting-started/index`.
@@ -89,12 +89,13 @@ This is still at an early stage of development however basic applications should
 - esp32c3
 - esp32s3
 
-If changing variant the project must be cleaned first. You can change variants like this:
+You can change variants like this:
 
 ```
-make SMING_ARCH=Esp32 clean components-clean
-make ESP_VARIANT=esp32c3
+make SMING_ARCH=Esp32 ESP_VARIANT=esp32c3
 ```
+
+Each variant uses a different build directory, e.g. ``out/Esp32/esp32c3/...`` to avoid conflicts.
 
 See :component-esp32:`esp32` for further details.
 

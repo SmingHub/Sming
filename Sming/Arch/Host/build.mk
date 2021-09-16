@@ -4,6 +4,10 @@
 #
 ##############
 
+ifdef ESP_VARIANT
+override ESP_VARIANT :=
+endif
+
 CPPFLAGS	+= -DARCH_HOST
 
 TOOLSPEC 	:=

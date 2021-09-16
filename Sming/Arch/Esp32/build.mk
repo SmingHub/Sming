@@ -23,7 +23,7 @@ endif
 export IDF_TOOLS_PATH := $(call FixPath,$(IDF_TOOLS_PATH))
 
 ifndef ESP_VARIANT
-ESP_VARIANT := esp32
+override ESP_VARIANT := esp32
 endif
 
 export ESP_VARIANT

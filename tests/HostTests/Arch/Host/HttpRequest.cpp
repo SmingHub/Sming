@@ -109,8 +109,5 @@ private:
 
 void REGISTER_TEST(HttpRequest)
 {
-	// Currently only supported for Host CI
-#if defined(ARCH_HOST)
 	registerGroup<HttpRequestTest>();
-#endif
 }

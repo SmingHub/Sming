@@ -21,11 +21,9 @@ extern "C" {
 /**
  * @brief Simple check to determine if a pointer refers to flash memory
  */
-#define isFlashPtr(ptr)                                                                                                \
-	(((uint32_t)(ptr) >= SOC_DROM_LOW && (uint32_t)(ptr) < SOC_DROM_HIGH) ||                                           \
-	 ((uint32_t)(ptr) >= SOC_IROM_LOW && (uint32_t)(ptr) < SOC_IROM_HIGH))
+#define isFlashPtr(ptr) ((uint32_t)(ptr) >= SOC_DROM_LOW && (uint32_t)(ptr) < SOC_DROM_HIGH)
 
-#define PROGMEM STORE_ATTR
+#define PROGMEM STORE_ATTR ICACHE_RODATA_ATTR
 #define PROGMEM_PSTR PROGMEM
 #define PSTR(str) (str)
 
