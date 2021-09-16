@@ -98,7 +98,5 @@ private:
 
 void REGISTER_TEST(TcpClient)
 {
-#ifdef ARCH_HOST
 	registerGroup<TcpClientTest>();
-#endif
 }

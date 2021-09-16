@@ -35,5 +35,10 @@ $(TARGET_OUT): $(COMPONENTS_AR)
 			  cat $(FW_MEMINFO_NEW); \
 			fi
 
+CHIP_REV_MIN := $(CONFIG_$(call ToUpper,$(ESP_VARIANT))_REV_MIN)
+ifeq ($(CHIP_REV_MIN),)
+CHIP_REV_MIN := 0
+endif
+
 $(TARGET_BIN): $(TARGET_OUT)
-	$(Q) $(ESPTOOL_CMDLINE) elf2image --min-rev 0 --elf-sha256-offset 0xb0 $(flashimageoptions) -o $@ $<
+	$(Q) $(ESPTOOL_CMDLINE) elf2image --min-rev $(CHIP_REV_MIN) --elf-sha256-offset 0xb0 $(flashimageoptions) -o $@ $<

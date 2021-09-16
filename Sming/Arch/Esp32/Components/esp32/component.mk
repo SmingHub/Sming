@@ -7,17 +7,13 @@ COMPONENT_DEPENDS := libc
 COMPONENT_SRCDIRS := src
 COMPONENT_INCDIRS := src/include include
 
-# Set to build all components, otherwise just the core ones
-CACHE_VARS += SDK_FULL_BUILD
-SDK_FULL_BUILD ?= 0
-
 # Applications can provide file with custom SDK configuration settings
 CACHE_VARS += SDK_CUSTOM_CONFIG
 
 COMPONENT_RELINK_VARS += DISABLE_NETWORK DISABLE_WIFI
 
-SDK_BUILD_BASE := $(COMPONENT_BUILD_BASE)/$(ESP_VARIANT)/sdk
-SDK_COMPONENT_LIBDIR := $(COMPONENT_BUILD_BASE)/$(ESP_VARIANT)/lib
+SDK_BUILD_BASE := $(COMPONENT_BUILD_BASE)/sdk
+SDK_COMPONENT_LIBDIR := $(COMPONENT_BUILD_BASE)/lib
 
 SDKCONFIG_H := $(SDK_BUILD_BASE)/config/sdkconfig.h
 
@@ -41,12 +37,10 @@ SDK_INCDIRS := \
 	bootloader_support/include_bootloader \
 	driver/$(ESP_VARIANT)/include \
 	driver/include \
-	efuse/include \
-	efuse/$(ESP_VARIANT)/include \
+	esp_pm/include \
 	esp_rom/include/$(ESP_VARIANT) \
 	esp_rom/include \
 	$(ESP_VARIANT)/include \
-	espcoredump/include \
 	esp_timer/include \
 	soc/include \
 	soc/$(ESP_VARIANT)/include \
@@ -54,48 +48,24 @@ SDK_INCDIRS := \
 	log/include \
 	nvs_flash/include \
 	freertos/include \
-	esp_ringbuf/include \
 	esp_event/include \
-	tcpip_adapter/include \
 	lwip/lwip/src/include \
 	lwip/port/esp32/include \
-	lwip/include/apps \
-	lwip/include/apps/sntp \
-	mbedtls/mbedtls/include \
-	mbedtls/port/include \
-	mdns/include \
-	mdns/private_include \
+	newlib/platform_include \
 	spi_flash/include \
-	ulp/include \
-	vfs/include \
-	xtensa-debug-module/include \
 	wpa_supplicant/include \
 	wpa_supplicant/port/include \
-	app_trace/include \
-	app_update/include \
-	smartconfig_ack/include \
 	esp_hw_support/include \
 	hal/include \
 	hal/$(ESP_VARIANT)/include \
-	esp_system/include
-
-ifeq ($(SDK_FULL_BUILD),1)
-SDK_INCDIRS += \
-	console \
-	pthread/include \
-	sdmmc/include
-endif
-
-SDK_INCDIRS += \
+	esp_system/include \
 	esp_common/include \
 	esp_adc_cal/include \
 	esp_netif/include \
 	esp_eth/include \
-	esp_event/private_include \
 	esp_wifi/include \
 	esp_wifi/esp32/include \
 	lwip/include/apps/sntp \
-	spi_flash/private_include \
 	wpa_supplicant/include/esp_supplicant
 
 ifdef IDF_TARGET_ARCH_RISCV
@@ -109,33 +79,6 @@ SDK_INCDIRS += \
 	freertos/port/xtensa/include
 endif
 
-ifeq ($(CONFIG_BT_NIMBLE_ENABLED),y)
-SDK_INCDIRS += \
-	bt/include \
-	bt/common/osi/include \
-	bt/common/btc/include \
-	bt/common/include \
-	bt/host/nimble/nimble/porting/nimble/include \
-	bt/host/nimble/port/include \
-	bt/host/nimble/nimble/nimble/include \
-	bt/host/nimble/nimble/nimble/host/include \
-	bt/host/nimble/nimble/nimble/host/services/ans/include \
-	bt/host/nimble/nimble/nimble/host/services/bas/include \
-	bt/host/nimble/nimble/nimble/host/services/gap/include \
-	bt/host/nimble/nimble/nimble/host/services/gatt/include \
-	bt/host/nimble/nimble/nimble/host/services/ias/include \
-	bt/host/nimble/nimble/nimble/host/services/lls/include \
-	bt/host/nimble/nimble/nimble/host/services/tps/include \
-	bt/host/nimble/nimble/nimble/host/util/include \
-	bt/host/nimble/nimble/nimble/host/store/ram/include \
-	bt/host/nimble/nimble/nimble/host/store/config/include \
-	bt/host/nimble/nimble/porting/npl/freertos/include \
-	bt/host/nimble/nimble/ext/tinycrypt/include \
-	bt/host/nimble/esp-hci/include
-endif
-
-SDK_INCDIRS += \
-	 newlib/platform_include
 	 
 COMPONENT_INCDIRS += \
 	$(dir $(SDKCONFIG_H)) \
@@ -148,7 +91,6 @@ SDK_COMPONENTS := \
 	cxx \
 	driver \
 	efuse \
-	esp-tls \
 	$(ESP_VARIANT) \
 	esp_common \
 	esp_event \
@@ -156,7 +98,6 @@ SDK_COMPONENTS := \
 	esp_hw_support \
 	esp_ipc \
 	esp_pm \
-	esp_ringbuf \
 	esp_rom \
 	esp_system \
 	esp_timer \
@@ -167,12 +108,9 @@ SDK_COMPONENTS := \
 	log \
 	newlib \
 	nvs_flash \
-	protobuf-c \
-	protocomm \
 	pthread \
 	soc \
-	spi_flash \
-	vfs
+	spi_flash
 
 ifneq ($(DISABLE_NETWORK),1)
 SDK_COMPONENTS += \
@@ -198,34 +136,6 @@ ifdef IDF_TARGET_ARCH_RISCV
 SDK_COMPONENTS += riscv
 else
 SDK_COMPONENTS += xtensa
-endif
-
-ifeq ($(SDK_FULL_BUILD),1)
-SDK_COMPONENTS += \
-	app_trace \
-	asio \
-	bt \
-	coap \
-	console \
-	esp_http_client \
-	esp_http_server \
-	esp_https_ota \
-	esp_local_ctrl \
-	esp_websocket_client \
-	expat \
-	fatfs \
-	freemodbus \
-	idf_test \
-	jsmn \
-	json \
-	libsodium \
-	mdns \
-	mqtt \
-	nghttp \
-	sdmmc \
-	ulp \
-	unity \
-	wear_levelling
 endif
 
 SDK_ESP_WIFI_LIBS := \
@@ -306,14 +216,8 @@ EXTRA_LDFLAGS := \
 	-Wl,--undefined=uxTopUsedPriority \
 	$(LDFLAGS_$(ESP_VARIANT))
 
-FLASH_BOOT_LOADER       := $(SDK_BUILD_BASE)/bootloader/bootloader.bin
-FLASH_BOOT_CHUNKS		:= 0x1000=$(FLASH_BOOT_LOADER)
-
 SDK_DEFAULT_PATH := $(COMPONENT_PATH)/sdk
-
-##@SDK
-
-SDK_PROJECT_PATH := $(COMPONENT_PATH)/project/$(ESP_VARIANT)
+SDK_PROJECT_PATH := $(COMPONENT_PATH)/project/$(ESP_VARIANT)/$(BUILD_TYPE)
 SDK_CONFIG_DEFAULTS := $(SDK_PROJECT_PATH)/sdkconfig.defaults
 
 SDKCONFIG_MAKEFILE := $(SDK_PROJECT_PATH)/sdkconfig
@@ -322,17 +226,13 @@ ifeq ($(MAKE_DOCS),)
 endif
 export SDKCONFIG_MAKEFILE  # sub-makes (like bootloader) will reuse this path
 
+FLASH_BOOT_LOADER       := $(SDK_BUILD_BASE)/bootloader/bootloader.bin
+FLASH_BOOT_CHUNKS		:= $(CONFIG_BOOTLOADER_OFFSET_IN_FLASH)=$(FLASH_BOOT_LOADER)
+
 $(SDK_BUILD_BASE) $(SDK_COMPONENT_LIBDIR):
 	$(Q) mkdir -p $@
 
 SDK_COMPONENT_LIBS := $(foreach c,$(SDK_COMPONENTS),$(SDK_COMPONENT_LIBDIR)/lib$c.a)
-
-SDK_BUILD_COMPLETE := $(SDK_BUILD_BASE)/.complete
-
-CUSTOM_TARGETS += checksdk
-
-.PHONY: checksdk
-checksdk: $(SDK_PROJECT_PATH) $(SDK_BUILD_COMPLETE)
 
 SDK_BUILD = $(ESP32_PYTHON) $(IDF_PATH)/tools/idf.py -C $(SDK_PROJECT_PATH) -B $(SDK_BUILD_BASE) -G Ninja
 
@@ -341,19 +241,21 @@ export SDK_BUILD_BASE
 export SDK_COMPONENT_LIBDIR
 export SDK_COMPONENTS
 
-$(SDK_BUILD_COMPLETE): $(SDKCONFIG_H) $(SDKCONFIG_MAKEFILE)
-	$(Q) $(SDK_BUILD) reconfigure
+CUSTOM_TARGETS += checksdk
+
+.PHONY: checksdk
+checksdk: $(SDK_PROJECT_PATH) $(SDKCONFIG_H) $(SDKCONFIG_MAKEFILE)
 	$(Q) $(NINJA) -C $(SDK_BUILD_BASE) bootloader app
 	$(Q) $(MAKE) --no-print-directory -C $(SDK_DEFAULT_PATH) -f misc.mk copylibs
-	touch $(SDK_BUILD_COMPLETE)
 
 $(SDKCONFIG_H) $(SDKCONFIG_MAKEFILE) $(SDK_COMPONENT_LIBS): $(SDK_PROJECT_PATH) $(SDK_CONFIG_DEFAULTS) | $(SDK_BUILD_BASE) $(SDK_COMPONENT_LIBDIR)
+	$(Q) $(SDK_BUILD) reconfigure
 
 $(SDK_PROJECT_PATH):
 	$(Q) mkdir -p $@
 	$(Q) cp -r $(SDK_DEFAULT_PATH)/project/* $@
 
-$(SDK_COMPONENT_LIBS): $(SDK_BUILD_COMPLETE)
+$(SDK_COMPONENT_LIBS): checksdk
 
 SDK_CONFIG_FILES := \
 	common \
@@ -376,22 +278,26 @@ $(SDK_CONFIG_DEFAULTS): $(SDK_CUSTOM_CONFIG_PATH)
 		$(if $(wildcard $f),cat $f >> $@;) \
 	)
 
+##@Configuration
+
 PHONY: sdk-menuconfig
 sdk-menuconfig: $(SDK_CONFIG_DEFAULTS) | $(SDK_BUILD_BASE) ##Configure SDK options
 	$(Q) $(SDK_BUILD) menuconfig
-	$(Q) rm -f $(SDK_BUILD_COMPLETE)
-	@echo Now run 'make esp32-build'
+	@echo Now run 'make'
 
-.PHONY: sdk-defconfig
-sdk-defconfig: $(SDKCONFIG_H) ##Create default SDK config files
+##@Cleaning
 
 .PHONY: sdk-config-clean
 sdk-config-clean: esp32-clean ##Wipe SDK configuration and revert to defaults
 	$(Q) rm -rf $(SDK_PROJECT_PATH)
 
+##@Help
+
 .PHONY: sdk-help
 sdk-help: ##Get SDK build options
 	$(Q) $(SDK_BUILD) --help
+
+##@Tools
 
 .PHONY: sdk
 sdk: ##Pass options to IDF builder, e.g. `make sdk -- --help` or `make sdk menuconfig` 

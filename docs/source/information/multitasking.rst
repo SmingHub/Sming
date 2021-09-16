@@ -54,6 +54,9 @@ connections and poor responsiveness. In extreme cases, the system will reset as 
 via *Watchdog Timer*; If it didn't do this, the device would remain unresponsive until physically reset,
 which is generally a bad thing for an embedded device!
 
+Note that whilst the ESP32 implementation uses the ESP IDF framework based on FreeRTOS, which is a pre-emptive OS,
+the programming model for Sming is the same.
+
 .. attention::
 
    Although there are functions available to manually reset watchdog timers, you should endeavour to avoid

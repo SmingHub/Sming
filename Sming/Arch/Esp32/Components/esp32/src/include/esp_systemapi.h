@@ -44,13 +44,12 @@
 
 /** @brief  Disable interrupts
  *  @retval Current interrupt level
- *  @note Hardware timer is unaffected if operating in non-maskable mode
  */
 #define noInterrupts() portENTER_CRITICAL_NESTED()
 
 /** @brief  Enable interrupts
 */
-#define interrupts() portEXIT_CRITICAL_NESTED(0)
+#define interrupts() portENABLE_INTERRUPTS()
 
 /** @brief Restore interrupts to level saved from previous noInterrupts() call
  */

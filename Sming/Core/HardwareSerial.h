@@ -26,6 +26,8 @@
 
 #define NUMBER_UARTS UART_COUNT ///< Quantity of UARTs available
 
+#define SERIAL_PIN_DEFAULT UART_PIN_DEFAULT
+
 class HardwareSerial;
 
 /** @brief  Delegate callback type for serial data reception
@@ -132,7 +134,7 @@ public:
      */
 	void begin(uint32_t baud = 9600)
 	{
-		begin(baud, SERIAL_8N1, SERIAL_FULL, 1);
+		begin(baud, SERIAL_8N1, SERIAL_FULL, SERIAL_PIN_DEFAULT);
 	}
 
 	/**
@@ -145,7 +147,7 @@ public:
 	 */
 	void begin(uint32_t baud, SerialConfig config)
 	{
-		begin(baud, config, SERIAL_FULL, 1);
+		begin(baud, config, SERIAL_FULL, SERIAL_PIN_DEFAULT);
 	}
 
 	/**
@@ -170,7 +172,7 @@ public:
 	 * @param txPin Can specify alternate pin for TX
 	 * @param rxPin
 	 */
-	void begin(uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin, uint8_t rxPin = UART_PIN_DEFAULT);
+	void begin(uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin, uint8_t rxPin = SERIAL_PIN_DEFAULT);
 
 	/**
 	 * @brief De-inits the current UART if it is already used

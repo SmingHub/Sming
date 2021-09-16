@@ -25,6 +25,9 @@ all: checkdirs submodules ##(default) Build all Component libraries
 BUILD_TYPE_FILE	:= out/build-type.mk
 -include $(BUILD_TYPE_FILE)
 
+BUILD_SUBTYPE_FILE = out/$(SMING_ARCH)/build-subtype.mk
+-include $(BUILD_SUBTYPE_FILE)
+
 #
 include $(SMING_HOME)/build.mk
 
@@ -59,7 +62,7 @@ export PROJECT_DIR
 
 ifeq ($(MAKELEVEL),0)
 $(info )
-$(info $(notdir $(PROJECT_DIR)): Invoking '$(MAKECMDGOALS)' for $(SMING_ARCH).$(ESP_VARIANT) ($(BUILD_TYPE)) architecture)
+$(info $(notdir $(PROJECT_DIR)): Invoking '$(MAKECMDGOALS)' for $(SMING_ARCH_FULL) ($(BUILD_TYPE)) architecture)
 endif
 
 # CFLAGS used for application and any custom targets
@@ -546,14 +549,16 @@ otaserver: all ##Launch a simple python HTTP server for testing OTA updates
 	$(Q) cd $(FW_BASE) && $(PYTHON) -m http.server $(SERVER_OTA_PORT)
 
 
-#
+# Serial redirector to support GDB
+TCP_SERIAL_REDIRECT = $(SMING_HOME)/../Tools/tcp_serial_redirect.py $(COM_PORT) $(COM_SPEED_SERIAL) --rts 0 --dtr 0
+
 .PHONY: tcp-serial-redirect
 tcp-serial-redirect: ##Redirect COM port to TCP port
 	$(info Starting serial redirector)
 ifdef WSL_ROOT
-	$(Q) cmd.exe /c start /MIN python3 $(WSL_ROOT)/$(SMING_HOME)/../Tools/tcp_serial_redirect.py $(COM_PORT) $(COM_SPEED_SERIAL)
+	$(Q) cmd.exe /c start /MIN python3 $(WSL_ROOT)/$(TCP_SERIAL_REDIRECT)
 else
-	$(Q) gnome-terminal -- bash -c "$(PYTHON) $(SMING_HOME)/../Tools/tcp_serial_redirect.py $(COM_PORT) $(COM_SPEED_SERIAL)"
+	$(Q) gnome-terminal -- bash -c "$(PYTHON) $(TCP_SERIAL_REDIRECT)"
 endif
 
 
@@ -647,7 +652,8 @@ $(shell	mkdir -p $(dir $1);
 endef
 
 # Update build type cache
-$(eval $(call WriteCacheValues,$(BUILD_TYPE_FILE),SMING_ARCH ESP_VARIANT SMING_RELEASE STRICT))
+$(eval $(call WriteCacheValues,$(BUILD_TYPE_FILE),SMING_ARCH SMING_RELEASE STRICT))
+$(eval $(call WriteCacheValues,$(BUILD_SUBTYPE_FILE),ESP_VARIANT))
 
 # Update config cache file
 # We store the list of variable names to ensure that any not actively in use don't get lost

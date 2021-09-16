@@ -1,9 +1,22 @@
 Debugging on ESP32
 ==================
 
+Serial debugging
+----------------
+
+If an exception occurs in debug builds then a prompt will be printed to the serial terminal
+such as ``Entering gdb stub``.
+
+As with the ESP8266, if such an exception occurs you can stop the serial debug terminal and type ``make gdb``.
+
+More advanced debugging is available via JTAG if you have the appropriate tools.
+
+See https://docs.espressif.com/projects/esp-idf/en/release-v4.3/esp32/api-guides/fatal-errors.html for further details.
+
 
 Required tools and hardware
 ---------------------------
+
 A debugger and a JTAG hardware are required.
 The debugger is part of the provided toolchain.
 Make sure that you have the following executable in your PATH::
@@ -82,11 +95,11 @@ If you want to debug your application and the Sming Framework code make sure to
 (re)compile it with :envvar:`ENABLE_GDB` =1 directive::
 
    cd $SMING_HOME/../samples/Basic_Blink
-   make dist-clean
+   make clean components-clean
    make ENABLE_GDB=1
 
 The commands above will re-compile Sming with debug symbols and
-optimizations for debugging. These commands need to be executed once.
+optimizations for debugging.
 
 Application
 ~~~~~~~~~~~

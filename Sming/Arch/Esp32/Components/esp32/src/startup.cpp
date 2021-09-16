@@ -68,6 +68,8 @@ void main(void*)
 
 	smg_uart_detach_all();
 
+	esp_log_set_vprintf(m_vprintf);
+
 #ifndef DISABLE_WIFI
 	esp_init_flash();
 	esp_init_wifi();

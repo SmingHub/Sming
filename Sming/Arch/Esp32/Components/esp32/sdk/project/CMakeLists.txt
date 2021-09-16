@@ -3,6 +3,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 set(IDF_TARGET "$ENV{ESP_VARIANT}")
+set(COMPONENTS $ENV{SDK_COMPONENTS} esptool_py main)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(Sming)
