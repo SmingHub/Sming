@@ -26,3 +26,7 @@ To achieve this do the following:
 3) Re-program your device::
 
       make flash
+
+4) Verify flash data has been written successfully
+
+      make verifyflash

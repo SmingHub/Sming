@@ -24,6 +24,12 @@ define WriteFlash
 	$(if $1,$(Q) $(VFLASH) write-chunks $1)
 endef
 
+# Verify one or more chunks against flash content
+# $1 -> List of `Offset=File` chunks
+define VerifyFlash
+	@echo VerifyFlash not implemented for Host
+endef
+
 # Read flash memory into file
 # $1 -> `Offset,Size` chunk
 # $2 -> Output filename
