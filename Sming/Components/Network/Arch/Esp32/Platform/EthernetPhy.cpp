@@ -17,6 +17,7 @@
 #include <Network/Ethernet/Dp83848.h>
 #include <Network/Ethernet/Ksz8041.h>
 #include <Network/Ethernet/W5500.h>
+#include <Network/Ethernet/DM9051.h>
 #include <esp_eth_phy.h>
 
 #define PHY_IMPL(class_name, func_name)                                                                                \
@@ -64,5 +65,6 @@ PHY_IMPL(Ksz8041, ksz8041)
 
 // For internal use
 PHY_IMPL(W5500PhyFactory, w5500)
+PHY_IMPL(DM9051PhyFactory, dm9051)
 
 } // namespace Ethernet

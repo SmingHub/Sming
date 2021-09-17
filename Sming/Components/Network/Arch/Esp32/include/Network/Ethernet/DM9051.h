@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * W5500.h
+ * DM9051.h
  *
  ****/
 
@@ -14,7 +14,7 @@
 
 namespace Ethernet
 {
-class W5500PhyFactory : public Ethernet::PhyFactory
+class DM9051PhyFactory : public Ethernet::PhyFactory
 {
 public:
 	using PhyFactory::PhyFactory;
@@ -27,17 +27,17 @@ public:
  * @brief Ethernet provider using W5500 SPI.
  * 
  */
-class W5500Service : public SpiService
+class DM9051Service : public SpiService
 {
 public:
-	W5500Service() : SpiService(w5500PhyFactory)
+	DM9051Service() : SpiService(dm9051PhyFactory)
 	{
 	}
 
 	bool begin(const Config& config);
 
 private:
-	static W5500PhyFactory w5500PhyFactory;
+	static DM9051PhyFactory dm9051PhyFactory;
 };
 
 } // namespace Ethernet

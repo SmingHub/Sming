@@ -4,23 +4,23 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * W5500.cpp
+ * DM9051.cpp
  *
  ****/
 
-#include <Network/Ethernet/W5500.h>
+#include <Network/Ethernet/DM9051.h>
 #include "spi_config.h"
 
 namespace Ethernet
 {
-W5500PhyFactory W5500Service::w5500PhyFactory;
+DM9051PhyFactory DM9051Service::dm9051PhyFactory;
 
 #define CHECK_RET(err)                                                                                                 \
 	if(ESP_ERROR_CHECK_WITHOUT_ABORT(err) != ESP_OK) {                                                                 \
 		return false;                                                                                                  \
 	}
 
-bool W5500Service::begin(const Config& config)
+bool DM9051Service::begin(const Config& config)
 {
 	esp_netif_init();
 	esp_event_loop_create_default();
@@ -41,8 +41,8 @@ bool W5500Service::begin(const Config& config)
 
 	gpio_install_isr_service(0);
 	spi_device_interface_config_t devcfg = {
-		.command_bits = 16, // W5500 address
-		.address_bits = 8,  // W5500 control
+		.command_bits = 1,
+		.address_bits = 7,
 		.mode = 0,
 		.clock_speed_hz = int(config.clockSpeed),
 		.spics_io_num = getPin(config.chipSelectPin, DEFAULT_PIN_CS),
@@ -51,10 +51,10 @@ bool W5500Service::begin(const Config& config)
 	spi_device_handle_t spi_handle{nullptr};
 	CHECK_RET(spi_bus_add_device(spiHost, &devcfg, &spi_handle));
 
-	eth_w5500_config_t w5500_config = ETH_W5500_DEFAULT_CONFIG(spi_handle);
-	w5500_config.int_gpio_num = getPin(config.interruptPin, DEFAULT_PIN_INT);
+	eth_dm9051_config_t dm9051_config = ETH_DM9051_DEFAULT_CONFIG(spi_handle);
+	dm9051_config.int_gpio_num = getPin(config.interruptPin, DEFAULT_PIN_INT);
 	eth_mac_config_t mac_config = ETH_MAC_DEFAULT_CONFIG();
-	mac = esp_eth_mac_new_w5500(&w5500_config, &mac_config);
+	mac = esp_eth_mac_new_dm9051(&dm9051_config, &mac_config);
 
 	auto phy_cfg = config.phy;
 	phy_cfg.resetPin = getPin(phy_cfg.resetPin, DEFAULT_PIN_RESET);

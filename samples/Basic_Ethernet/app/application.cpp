@@ -25,6 +25,9 @@ HSPI::Controller spi;
 #include <Network/Ethernet/W5500.h>
 Ethernet::W5500Service ethernet;
 
+// #include <Network/Ethernet/DM9051.h>
+// Ethernet::DM9051Service ethernet;
+
 #endif
 
 static void ethernetEventHandler(Ethernet::Event event)
@@ -60,7 +63,7 @@ void init()
 	if(!spi.begin()) {
 		return;
 	}
-	Ethernet::W5500Service::Config config;
+	Ethernet::SpiService::Config config;
 	config.spiHost = spi.getHost();
 	if(!ethernet.begin(config)) {
 		return;
