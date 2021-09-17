@@ -35,11 +35,13 @@ if [ ! -L "$IDF_PATH" ] && [ -d "$IDF_PATH" ]; then
 fi
 
 IDF_CLONE_PATH="$(readlink -m "$IDF_PATH/..")/esp-idf-4.3"
+IDF_REPO="${IDF_REPO:=https://github.com/mikee47/esp-idf.git}"
+IDF_BRANCH="${IDF_BRANCH:=sming/release/v4.3}"
 
 if [ -d "$IDF_CLONE_PATH" ]; then
     printf "\n\n** Skipping ESP-IDF clone: '$IDF_CLONE_PATH' exists\n\n"
 else
-    git clone -b sming/release/v4.3 https://github.com/mikee47/esp-idf.git "$IDF_CLONE_PATH"
+    git clone -b "$IDF_BRANCH" "$IDF_REPO" "$IDF_CLONE_PATH"
 fi
 
 # Create link to clone
