@@ -52,6 +52,15 @@ define WriteFlash
 	)
 endef
 
+# Verify flash against file contents
+# $1 -> List of `Offset=File` chunks
+define VerifyFlash
+	$(if $1,\
+		$(info VerifyFlash $1) \
+		$(call ESPTOOL_EXECUTE,verify_flash $(flashimageoptions) $(subst =, ,$1)) \
+	)
+endef
+
 # Read flash memory into file
 # $1 -> `Offset,Size` chunk
 # $2 -> Output filename
