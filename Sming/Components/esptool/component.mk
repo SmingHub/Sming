@@ -43,6 +43,12 @@ endif
 
 comma := ,
 
+# Read flash manufacturer ID and determine actual size
+define ReadFlashID
+	$(info Reading Flash ID)
+	$(call ESPTOOL_EXECUTE,flash_id)
+endef
+
 # Write file contents to Flash
 # $1 -> List of `Offset=File` chunks
 define WriteFlash
