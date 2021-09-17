@@ -151,3 +151,8 @@ ifeq ($(ENABLE_GDB), 1)
 else ifneq ($(SMING_ARCH),Host)
 	$(TERMINAL)
 endif
+
+.PHONY: verifyflash
+verifyflash: ##Read all flash sections and verify against source
+	$(Q) $(call CheckPartitionChunks,$(FLASH_PARTITION_CHUNKS))
+	$(call VerifyFlash,$(FLASH_BOOT_CHUNKS) $(FLASH_MAP_CHUNK) $(FLASH_PARTITION_CHUNKS))
