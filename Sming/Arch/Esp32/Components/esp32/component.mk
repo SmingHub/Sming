@@ -214,6 +214,14 @@ EXTRA_LDFLAGS := \
 	-u pthread_include_pthread_cond_impl \
 	-u pthread_include_pthread_local_storage_impl \
 	-Wl,--undefined=uxTopUsedPriority \
+	$(call Wrap,\
+		esp_event_loop_create_default \
+		esp_event_handler_register \
+		esp_event_handler_unregister \
+		esp_event_handler_instance_register \
+		esp_event_handler_instance_unregister \
+		esp_event_post \
+		esp_event_isr_post) \
 	$(LDFLAGS_$(ESP_VARIANT))
 
 SDK_DEFAULT_PATH := $(COMPONENT_PATH)/sdk

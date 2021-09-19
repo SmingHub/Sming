@@ -19,6 +19,7 @@ static WifiEventsImpl events;
 WifiEventsClass& WifiEvents = events;
 
 StationConnectionStatus WifiEventsImpl::stationConnectionStatus = eSCS_Idle;
+extern void wifi_set_event_handler_cb(esp_event_handler_t eventHandler);
 
 ip_addr_t ip(esp_ip4_addr_t ip)
 {
@@ -31,11 +32,7 @@ WifiEventsImpl::WifiEventsImpl()
 	auto eventHandler = [](void* arg, esp_event_base_t base, int32_t id, void* data) -> void {
 		events.WifiEventHandler(arg, base, id, data);
 	};
-
-	esp_event_loop_create_default();
-
-	ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, eventHandler, NULL));
-	ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, eventHandler, NULL));
+	wifi_set_event_handler_cb(eventHandler);
 }
 
 void WifiEventsImpl::WifiEventHandler(void* arg, esp_event_base_t base, int32_t id, void* data)
