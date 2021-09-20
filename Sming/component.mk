@@ -156,3 +156,7 @@ endif
 verifyflash: ##Read all flash sections and verify against source
 	$(Q) $(call CheckPartitionChunks,$(FLASH_PARTITION_CHUNKS))
 	$(call VerifyFlash,$(FLASH_BOOT_CHUNKS) $(FLASH_MAP_CHUNK) $(FLASH_PARTITION_CHUNKS))
+
+.PHONY: flashid
+flashid: ##Read flash identifier and determine actual size
+	$(call ReadFlashID)
