@@ -31,6 +31,8 @@
 #include <soc/soc.h>
 #include <driver/gpio.h>
 #include <driver/adc.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/portmacro.h>
 
 #include <m_printf.h>
 #include <debug_progmem.h>

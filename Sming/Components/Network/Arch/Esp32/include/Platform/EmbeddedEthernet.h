@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <Platform/Ethernet.h>
+#include "IdfService.h"
 
 struct esp_eth_mac_s;
 struct esp_eth_phy_s;
@@ -46,37 +46,22 @@ struct esp_netif_obj;
  *
  * 		PHY_RESET -     OUT (set via PhyConfig)
  */
-class EmbeddedEthernet : public Ethernet::Service
+class EmbeddedEthernet : public Ethernet::IdfService
 {
 public:
-	EmbeddedEthernet(Ethernet::PhyFactory& phyFactory) : phyFactory(phyFactory)
-	{
-	}
+	struct Config {
+		Ethernet::PhyConfig phy;
+		int8_t smiMdcPin = Ethernet::PIN_DEFAULT;  //< SMI MDC GPIO number
+		int8_t smiMdioPin = Ethernet::PIN_DEFAULT; //< SMI MDIO GPIO number
+	};
 
-	bool begin(const Ethernet::Config& config) override;
-	void end() override;
-	MacAddress getMacAddress() const override;
-	bool setMacAddress(const MacAddress& addr) override;
-	bool setSpeed(Ethernet::Speed speed) override;
-	bool setFullDuplex(bool enable) override;
-	bool setLinkState(bool up) override;
-	bool setPromiscuous(bool enable) override;
-	void setHostname(const String& hostname) override;
-	String getHostname() const override;
-	IpAddress getIP() const override;
-	bool setIP(IpAddress address, IpAddress netmask, IpAddress gateway) override;
-	bool isEnabledDHCP() const override;
-	bool enableDHCP(bool enable) override;
+	using IdfService::IdfService;
 
-private:
-	void enableEventCallback(bool enable);
-	void enableGotIpCallback(bool enable);
-
-	Ethernet::PhyFactory& phyFactory;
-	void* handle{nullptr};
-	esp_netif_obj* netif{nullptr};
-	void* netif_glue{nullptr};
-	esp_eth_mac_s* mac{nullptr};
-	esp_eth_phy_s* phy{nullptr};
-	Ethernet::Event state{Ethernet::Event::Disconnected};
+	/**
+	 * @brief Configure and start the ethernet service
+	 * @param config Configuration options
+	 *
+	 * Applications should expect to receive Start and Connected events following this call.
+	 */
+	bool begin(const Config& config);
 };

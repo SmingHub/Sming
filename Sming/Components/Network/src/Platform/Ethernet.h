@@ -40,7 +40,6 @@ enum class Event {
 /**
  * @brief Delegate type for Ethernet events
  * @param event Which event occurred
- * @param mac Provided on 'Connected' event only
  */
 using EventDelegate = Delegate<void(Ethernet::Event event)>;
 
@@ -60,14 +59,6 @@ constexpr int8_t PIN_DEFAULT{-2};
  * Only applies if pin is optional, otherwise it will be interpreted as 'auto detect'.
  */
 constexpr int8_t PIN_UNUSED{-1};
-
-/**
- * @brief Configuration for Ethernet MAC
- */
-struct MacConfig {
-	int8_t smiMdcPin = PIN_DEFAULT;  //< SMI MDC GPIO number
-	int8_t smiMdioPin = PIN_DEFAULT; //< SMI MDIO GPIO number
-};
 
 /**
  * @brief Link speed
@@ -120,14 +111,6 @@ public:
 };
 
 /**
- * @brief Service configuration options
- */
-struct Config {
-	MacConfig mac;
-	PhyConfig phy;
-};
-
-/**
  * @brief Abstract Service class
  *
  * Provides a common implementation for TCP/IP ethernet support.
@@ -144,14 +127,6 @@ struct Config {
 class Service
 {
 public:
-	/**
-	 * @brief Configure and start the ethernet service
-	 * @param config Configuration options
-	 *
-	 * Applications should expect to receive Start and Connected events following this call.
-	 */
-	virtual bool begin(const Config& config) = 0;
-
 	/**
 	 * @brief Tear down the ethernet connection
 	 */

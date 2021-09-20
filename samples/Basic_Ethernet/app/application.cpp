@@ -1,12 +1,34 @@
 #include <SmingCore.h>
 
-#ifdef SUBARCH_ESP32
+// #define USE_EMBEDDED ARCH_ESP32
 
+#ifdef ARCH_ESP32
+
+#if USE_EMBEDDED
+
+// The Embedded MAC
 #include <Platform/EmbeddedEthernet.h>
+
+// PHY: See `Sming/Components/Network/src/Network/Ethernet` for others
 #include <Network/Ethernet/Lan8720.h>
 
 Ethernet::Lan8720 phy;
 EmbeddedEthernet ethernet(phy);
+
+#else
+
+// Use the HardwareSPI library to initialise SPI bus
+#include <HSPI/Controller.h>
+HSPI::Controller spi;
+
+// The Wiznet W5500 controller with integrated PHY
+#include <Network/Ethernet/W5500.h>
+Ethernet::W5500Service ethernet;
+
+// #include <Network/Ethernet/DM9051.h>
+// Ethernet::DM9051Service ethernet;
+
+#endif
 
 static void ethernetEventHandler(Ethernet::Event event)
 {
@@ -33,9 +55,20 @@ void init()
 	ethernet.onEvent(ethernetEventHandler);
 	ethernet.onGotIp(ethernetGotIp);
 
+#if USE_EMBEDDED
 	// Modify default config as required
-	Ethernet::Config config;
+	EmbeddedEthernet::Config config;
 	ethernet.begin(config);
+#else
+	if(!spi.begin()) {
+		return;
+	}
+	Ethernet::SpiService::Config config;
+	config.spiHost = spi.getHost();
+	if(!ethernet.begin(config)) {
+		return;
+	}
+#endif
 
 	// Change the advertised hostname for DHCP
 	ethernet.setHostname("sming-ethernet");
@@ -44,7 +77,7 @@ void init()
 	// ethernet.setIP(IpAddress("192.168.1.12"), IpAddress("255.255.255.0"), IpAddress("192.168.1.254"));
 }
 
-#else
+#else // ARCH_ESP32
 
 void init()
 {
