@@ -880,6 +880,9 @@ void smg_uart_detach_all()
 			inst.handle = nullptr;
 		}
 		auto dev = getDevice(uart_nr);
+		// Wait for any outgoing data to finish sending (e.g. at boot time)
+		while(uart_txfifo_count(dev) != 0) {
+		}
 		dev->conf1.val = 0;
 		dev->int_clr.val = 0x0007ffff;
 		dev->int_ena.val = 0;
