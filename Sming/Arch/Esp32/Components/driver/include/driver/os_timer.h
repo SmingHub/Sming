@@ -17,6 +17,11 @@
 
 #include <rom/ets_sys.h>
 
+// Disarmed
+#define OS_TIMER_DEFAULT()                                                                                             \
+	{                                                                                                                  \
+	}
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -27,13 +32,26 @@ extern "C" {
  * @{
  */
 
-typedef ETSTimerFunc os_timer_func_t;
-typedef ETSTimer os_timer_t;
+using smg_timer_func_t = ETSTimerFunc;
 
-#define os_timer_arm(ptimer, ms, repeat_flag) ets_timer_arm(ptimer, ms, repeat_flag)
-#define os_timer_arm_us(ptimer, us, repeat_flag) ets_timer_arm_us(ptimer, us, repeat_flag)
-#define os_timer_disarm(ptimer) ets_timer_disarm(ptimer)
-#define os_timer_setfn(ptimer, pfunction, parg) ets_timer_setfn(ptimer, pfunction, parg)
+struct esp_timer;
+
+struct smg_timer_t {
+	struct esp_timer* handle;
+	smg_timer_func_t* timer_func;
+	void* timer_arg;
+};
+
+#define os_timer_func_t smg_timer_func_t
+#define os_timer_t smg_timer_t
+
+#define os_timer_arm smg_timer_arm
+#define os_timer_arm_us smg_timer_arm_us
+#define os_timer_disarm smg_timer_disarm
+#define os_timer_setfn smg_timer_setfn
+#define os_timer_arm_ticks smg_timer_arm_ticks
+#define os_timer_expire smg_timer_expire
+#define os_timer_done smg_timer_done
 
 /**
  * @brief Set a software timer using the Timer2 tick value
@@ -44,7 +62,22 @@ typedef ETSTimer os_timer_t;
  * This function has been added to Sming for more efficient and flexible use of
  * software timers. It can be used alongside the SDK `os_timer_arm_new()` function.
  */
-void os_timer_arm_ticks(os_timer_t* ptimer, uint32_t ticks, bool repeat_flag);
+void smg_timer_arm_ticks(os_timer_t* ptimer, uint32_t ticks, bool repeat_flag);
+
+void smg_timer_setfn(os_timer_t* ptimer, os_timer_func_t* pfunction, void* parg);
+void smg_timer_arm_us(os_timer_t* ptimer, uint32_t time_us, bool repeat_flag);
+void smg_timer_arm(os_timer_t* ptimer, uint32_t time_ms, bool repeat_flag);
+void smg_timer_disarm(os_timer_t* ptimer);
+void smg_timer_done(os_timer_t* ptimer);
+
+static inline uint64_t smg_timer_expire(const os_timer_t* ptimer)
+{
+	if(ptimer == nullptr || ptimer->handle == nullptr) {
+		return 0;
+	}
+	// First field is 'alarm': See esp_timer.c.
+	return *reinterpret_cast<uint64_t*>(ptimer->handle);
+}
 
 /** @} */
 
