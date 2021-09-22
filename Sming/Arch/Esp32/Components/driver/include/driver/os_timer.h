@@ -7,7 +7,7 @@
  * os_timer.h
  *
  * This implementation mimics the behaviour of the ESP8266 Non-OS SDK timers,
- * using Timer2 as the reference (which is _not_ in microseconds!)
+ * using Timer2 as the reference. The ESP32 uses a 1MHz reference so all times
  *
  * The ESP32 IDF contains more sophisticated timer implementations, but also
  * this same API which it refers to as the 'legacy' timer API.
@@ -15,16 +15,12 @@
 
 #pragma once
 
-#include <rom/ets_sys.h>
+#include <cstdint>
 
 // Disarmed
 #define OS_TIMER_DEFAULT()                                                                                             \
 	{                                                                                                                  \
 	}
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * @defgroup os_timer OS Timer API
@@ -32,16 +28,20 @@ extern "C" {
  * @{
  */
 
-using smg_timer_func_t = ETSTimerFunc;
+using smg_timer_func_t = void (*)(void* arg);
 
 struct esp_timer;
 
 struct smg_timer_t {
 	struct esp_timer* handle;
-	smg_timer_func_t* timer_func;
+	smg_timer_func_t timer_func;
 	void* timer_arg;
 };
 
+/*
+ * Re-map the os_timer_* definitions to avoid conflict with the real SDK implementations.
+ * Those are provided as a 'legacy' API which seems to be used only by WiFi in the SDK.
+ */
 #define os_timer_func_t smg_timer_func_t
 #define os_timer_t smg_timer_t
 
@@ -64,7 +64,7 @@ struct smg_timer_t {
  */
 void smg_timer_arm_ticks(os_timer_t* ptimer, uint32_t ticks, bool repeat_flag);
 
-void smg_timer_setfn(os_timer_t* ptimer, os_timer_func_t* pfunction, void* parg);
+void smg_timer_setfn(os_timer_t* ptimer, os_timer_func_t pfunction, void* parg);
 void smg_timer_arm_us(os_timer_t* ptimer, uint32_t time_us, bool repeat_flag);
 void smg_timer_arm(os_timer_t* ptimer, uint32_t time_ms, bool repeat_flag);
 void smg_timer_disarm(os_timer_t* ptimer);
@@ -80,7 +80,3 @@ static inline uint64_t smg_timer_expire(const os_timer_t* ptimer)
 }
 
 /** @} */
-
-#ifdef __cplusplus
-}
-#endif

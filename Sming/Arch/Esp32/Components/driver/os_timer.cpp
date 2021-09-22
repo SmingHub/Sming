@@ -29,7 +29,7 @@ static bool isTimerValid(smg_timer_t* ptimer)
 	return ptimer != nullptr && ptimer->handle != nullptr;
 }
 
-void smg_timer_setfn(smg_timer_t* ptimer, os_timer_func_t* pfunction, void* parg)
+void smg_timer_setfn(smg_timer_t* ptimer, os_timer_func_t pfunction, void* parg)
 {
 	assert(ptimer != nullptr);
 

@@ -10,22 +10,10 @@
 
 #pragma once
 
-#if defined(SUBARCH_ESP32)
-#define FRC_TIMER_ENABLED
-#endif
-
 #include <esp_systemapi.h>
-#ifdef FRC_TIMER_ENABLED
-#include <soc/frc_timer_reg.h>
-#else
 #include <esp_timer.h>
-#endif
 
 #define HW_TIMER_BASE_CLK APB_CLK_FREQ
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * @defgroup hw_timer Hardware Timer Driver
@@ -150,20 +138,11 @@ __forceinline uint32_t hw_timer1_read(void)
 
 /*************************************
  *
- * FRC2 timer
- *
- * This is a 32-bit count-up timer
- *
- * See idf components/esp32/esp_timer_esp32.c
+ * Timer2 uses the idf `esp_timer` component for software-based timers (os_timer.cpp).
  *
  *************************************/
 
-#ifdef FRC_TIMER_ENABLED
-constexpr uint32_t HW_TIMER2_CLKDIV = TIMER_CLKDIV_1;
-constexpr uint32_t HW_TIMER2_CLK = HW_TIMER_BASE_CLK >> HW_TIMER2_CLKDIV;
-#else
 constexpr uint32_t HW_TIMER2_CLK = 1000000;
-#endif
 
 /**
  * @brief Read current timer2 value
@@ -171,11 +150,7 @@ constexpr uint32_t HW_TIMER2_CLK = 1000000;
  */
 __forceinline uint32_t hw_timer2_read(void)
 {
-#ifdef FRC_TIMER_ENABLED
-	return REG_READ(FRC_TIMER_COUNT_REG(1));
-#else
 	return esp_timer_get_time();
-#endif
 }
 
 #define NOW() hw_timer2_read()
@@ -187,7 +162,3 @@ __forceinline uint32_t hw_timer2_read(void)
 void hw_timer_init(void);
 
 /** @} */
-
-#ifdef __cplusplus
-}
-#endif

@@ -37,5 +37,4 @@ void hw_timer1_attach_interrupt(hw_timer_source_type_t source_type, hw_timer_cal
 
 void hw_timer_init(void)
 {
-	ets_timer_init();
 }
