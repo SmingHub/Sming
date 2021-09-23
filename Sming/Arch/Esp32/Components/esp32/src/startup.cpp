@@ -36,7 +36,7 @@ namespace
 esp_event_handler_t wifiEventHandler;
 
 /*
- * Initalise NVS which IDF WiFi uses to storage configuration parameters.
+ * Initalise NVS which IDF WiFi uses to store configuration parameters.
  */
 void esp_init_nvs()
 {
