@@ -12,7 +12,7 @@ ENABLE_HOSTED ?=
 
 ifneq ($(ENABLE_HOSTED),)
 	COMPONENT_SRCDIRS += $(COMPONENT_PATH)/init/$(ENABLE_HOSTED) 
-	EXTRA_LDFLAGS := -Wl,-wrap,host_init
+	EXTRA_LDFLAGS := $(call Wrap,host_init)
 	COMPONENT_DEPENDS += SerialLib
 endif
 

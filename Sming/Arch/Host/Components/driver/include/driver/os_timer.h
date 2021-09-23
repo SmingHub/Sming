@@ -10,6 +10,12 @@
 
 #include <c_types.h>
 
+// Disarmed
+#define OS_TIMER_DEFAULT()                                                                                             \
+	{                                                                                                                  \
+		.timer_next = (os_timer_t*)-1,                                                                                 \
+	}
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -36,13 +42,23 @@ struct os_timer_t {
 	void* timer_arg;
 };
 
-void os_timer_arm_ticks(struct os_timer_t* ptimer, uint32_t ticks, bool repeat_flag);
+void os_timer_arm_ticks(os_timer_t* ptimer, uint32_t ticks, bool repeat_flag);
 
-void os_timer_arm(struct os_timer_t* ptimer, uint32_t time, bool repeat_flag);
-void os_timer_arm_us(struct os_timer_t* ptimer, uint32_t time, bool repeat_flag);
+void os_timer_arm(os_timer_t* ptimer, uint32_t time, bool repeat_flag);
+void os_timer_arm_us(os_timer_t* ptimer, uint32_t time, bool repeat_flag);
 
-void os_timer_disarm(struct os_timer_t* ptimer);
-void os_timer_setfn(struct os_timer_t* ptimer, os_timer_func_t* pfunction, void* parg);
+void os_timer_disarm(os_timer_t* ptimer);
+void os_timer_setfn(os_timer_t* ptimer, os_timer_func_t* pfunction, void* parg);
+
+static inline uint64_t os_timer_expire(const os_timer_t* ptimer)
+{
+	if(ptimer == nullptr || int(ptimer->timer_next) == -1) {
+		return 0;
+	}
+	return ptimer->timer_expire;
+}
+
+void os_timer_done(os_timer_t* ptimer);
 
 // Hook function to service timers
 void host_service_timers();

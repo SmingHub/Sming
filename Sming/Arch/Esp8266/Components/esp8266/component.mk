@@ -52,7 +52,7 @@ COMPONENT_DOXYGEN_INPUT := \
 	$(SDK_INCDIR)/pwm.h
 
 # Crash handler hooks this so debugger can be invoked
-EXTRA_LDFLAGS := -Wl,-wrap,system_restart_local
+EXTRA_LDFLAGS := $(call Wrap,system_restart_local)
 
 #
 LIBDIRS += $(SDK_LIBDIR)

@@ -16,6 +16,12 @@
 
 #include <esp_systemapi.h>
 
+// Disarmed
+#define OS_TIMER_DEFAULT()                                                                                             \
+	{                                                                                                                  \
+		.timer_next = (os_timer_t*)-1,                                                                                 \
+	}
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -36,6 +42,24 @@ extern "C" {
  * software timers. It can be used alongside the SDK `os_timer_arm_new()` function.
  */
 void os_timer_arm_ticks(os_timer_t* ptimer, uint32_t ticks, bool repeat_flag);
+
+static inline bool os_timer_is_armed(const os_timer_t* ptimer)
+{
+	return ptimer != nullptr && int(ptimer->timer_next) != -1;
+}
+
+static inline uint64_t os_timer_expire(const os_timer_t* ptimer)
+{
+	if(ptimer == nullptr || int(ptimer->timer_next) == -1) {
+		return 0;
+	}
+	return ptimer->timer_expire;
+}
+
+static inline void os_timer_done(os_timer_t* ptimer)
+{
+	ets_timer_disarm(ptimer);
+}
 
 /** @} */
 

@@ -15,36 +15,6 @@
 #include <esp_flash.h>
 #include <rom/cache.h>
 
-/*
- * Physical <-> Virtual address mapping is handled in `$IDF_COMPONENTS/spi_flash/flash_mmap.c`.
- *
- * See esp32 technical reference.
- */
-uint32_t flashmem_get_address(const void* memptr)
-{
-	auto vaddr = reinterpret_cast<uint32_t>(memptr);
-	if(vaddr < SOC_DROM_LOW || vaddr >= SOC_DROM_HIGH) {
-		return 0;
-	}
-
-	auto offset = vaddr - SOC_MMU_VADDR0_START_ADDR;
-	uint32_t page = SOC_MMU_DROM0_PAGES_START + (offset / SPI_FLASH_MMU_PAGE_SIZE);
-#if CONFIG_IDF_TARGET_ESP32 && !CONFIG_FREERTOS_UNICORE
-	uint32_t entry = DPORT_APP_FLASH_MMU_TABLE[page];
-#else
-	uint32_t entry = SOC_MMU_DPORT_PRO_FLASH_MMU_TABLE[page];
-#endif
-
-	if(entry == SOC_MMU_INVALID_ENTRY_VAL) {
-		debug_e("Invalid flash address %p (page %u, entry 0x%08x)", memptr, page, entry);
-		return 0;
-	}
-
-	entry &= SOC_MMU_ADDR_MASK;
-	uint32_t paddr = (entry * SPI_FLASH_MMU_PAGE_SIZE) + (vaddr % SPI_FLASH_MMU_PAGE_SIZE);
-	return paddr;
-}
-
 uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 {
 	esp_err_t r = spi_flash_write(toaddr, from, size);
