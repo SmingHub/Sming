@@ -17,7 +17,8 @@ export ESP8266_COMPONENTS
 COMPONENT_SRCDIRS := \
 	$(ARCH_CORE) $(call ListAllSubDirs,$(ARCH_CORE)) \
 	$(ARCH_SYS) \
-	$(ARCH_BASE)/Platform
+	$(ARCH_BASE)/Platform \
+	$(ARCH_BASE)/Services/Profiling
 
 COMPONENT_INCDIRS := \
 	$(ARCH_BASE) \

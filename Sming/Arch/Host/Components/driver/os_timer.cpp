@@ -86,6 +86,11 @@ void os_timer_setfn(struct os_timer_t* ptimer, os_timer_func_t* pfunction, void*
 	}
 }
 
+void os_timer_done(struct os_timer_t* ptimer)
+{
+	os_timer_disarm(ptimer);
+}
+
 // Called with mutex locked
 static os_timer_t* find_expired_timer()
 {

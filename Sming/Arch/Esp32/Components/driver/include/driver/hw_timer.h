@@ -10,22 +10,11 @@
 
 #pragma once
 
-#if defined(SUBARCH_ESP32)
-#define FRC_TIMER_ENABLED
-#endif
-
-#include <esp_systemapi.h>
-#ifdef FRC_TIMER_ENABLED
-#include <soc/frc_timer_reg.h>
-#else
-#include <esp_timer.h>
-#endif
+#include <esp_attr.h>
+#include <sming_attr.h>
+#include <cstdint>
 
 #define HW_TIMER_BASE_CLK APB_CLK_FREQ
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * @defgroup hw_timer Hardware Timer Driver
@@ -35,21 +24,28 @@ extern "C" {
 
 /*************************************
  *
- * FRC1 timer
- *
- * This is a 23-bit countdown timer
+ * Timer1
+ * 
+ * Used to implement HardwareTimer class.
  *
  *************************************/
+
+// Timer group/index to use: available on all ESP32 variants
+#define HW_TIMER1_GROUP TIMER_GROUP_0
+#define HW_TIMER1_INDEX TIMER_0
 
 /**
  * @brief Maximum timer interval in ticks
  * @note The corresponding time interval depends on the prescaler in use:
+ * 
+ * 		/1 - 26.84s
+ * 		/16 - 429.50s
+ * 		/256 - 6871.95s
  *
- * 		/1 - 0.1048s
- * 		/16 - 1.677s
- * 		/256 - 26.84s
+ * ESP32 supports a wide range of prescalers and uses 54-bit counter value.
+ * Limiting the range 31 bits avoids issues with overflows and moving to 64-bit calculations.
  */
-#define MAX_HW_TIMER1_INTERVAL 0x7fffff
+#define MAX_HW_TIMER1_INTERVAL 0x7fffffff
 
 /**
  * @brief Minimum hardware interval in microseconds
@@ -79,7 +75,7 @@ typedef enum {
 
 /**
  * @brief Attach an interrupt for the timer
- * @param source_type
+ * @param source_type Ignored, uses APB clock source
  * @param callback Callback function invoked via timer interrupt
  * @param arg Passed to callback function
  */
@@ -88,82 +84,42 @@ void IRAM_ATTR hw_timer1_attach_interrupt(hw_timer_source_type_t source_type, hw
 /**
  * @brief Enable the timer
  * @param div
- * @param intr_type
+ * @param intr_type Ignored, always level-triggered
  * @param auto_load
  */
-inline void IRAM_ATTR hw_timer1_enable(hw_timer_clkdiv_t div, hw_timer_intr_type_t intr_type, bool auto_load)
-{
-#ifdef FRC_TIMER_ENABLED
-	uint32_t ctrl = (div & 0x0C) | (intr_type & 0x01) | FRC_TIMER_ENABLE;
-	if(auto_load) {
-		ctrl |= FRC_TIMER_AUTOLOAD;
-	}
-
-	REG_WRITE(FRC_TIMER_CTRL_REG(0), ctrl);
-	//	TM1_EDGE_INT_ENABLE();
-	//	ETS_FRC1_INTR_ENABLE();
-#endif
-}
+void IRAM_ATTR hw_timer1_enable(hw_timer_clkdiv_t div, hw_timer_intr_type_t intr_type, bool auto_load);
 
 /**
  * @brief Set the timer interval
  * @param ticks
  */
-__forceinline void IRAM_ATTR hw_timer1_write(uint32_t ticks)
-{
-#ifdef FRC_TIMER_ENABLED
-	REG_WRITE(FRC_TIMER_LOAD_REG(0), ticks);
-#endif
-}
+void IRAM_ATTR hw_timer1_write(uint32_t ticks);
 
 /**
  * @brief Disable the timer
  */
-__forceinline void IRAM_ATTR hw_timer1_disable(void)
-{
-	//	TM1_EDGE_INT_DISABLE();
-	//	ETS_FRC1_INTR_DISABLE();
-}
+void IRAM_ATTR hw_timer1_disable(void);
 
 /**
  * @brief Detach interrupt from the timer
  */
-__forceinline void IRAM_ATTR hw_timer1_detach_interrupt(void)
-{
-	hw_timer1_disable();
-	//	ETS_FRC_TIMER1_NMI_INTR_ATTACH(NULL);
-	//	ETS_FRC_TIMER1_INTR_ATTACH(NULL, NULL);
-}
+void IRAM_ATTR hw_timer1_detach_interrupt(void);
 
 /**
  * @brief Get timer1 count
  * @retval uint32_t Current count value, counts from initial value down to 0
  */
-__forceinline uint32_t hw_timer1_read(void)
-{
-#ifdef FRC_TIMER_ENABLED
-	return REG_READ(FRC_TIMER_COUNT_REG(0));
-#else
-	return 0;
-#endif
-}
+uint32_t hw_timer1_read(void);
 
 /*************************************
  *
- * FRC2 timer
- *
- * This is a 32-bit count-up timer
- *
- * See idf components/esp32/esp_timer_esp32.c
+ * Timer2 uses the idf `esp_timer` component for software-based timers (os_timer.cpp).
  *
  *************************************/
 
-#ifdef FRC_TIMER_ENABLED
-constexpr uint32_t HW_TIMER2_CLKDIV = TIMER_CLKDIV_1;
-constexpr uint32_t HW_TIMER2_CLK = HW_TIMER_BASE_CLK >> HW_TIMER2_CLKDIV;
-#else
 constexpr uint32_t HW_TIMER2_CLK = 1000000;
-#endif
+
+extern "C" int64_t esp_timer_get_time(void);
 
 /**
  * @brief Read current timer2 value
@@ -171,11 +127,7 @@ constexpr uint32_t HW_TIMER2_CLK = 1000000;
  */
 __forceinline uint32_t hw_timer2_read(void)
 {
-#ifdef FRC_TIMER_ENABLED
-	return REG_READ(FRC_TIMER_COUNT_REG(1));
-#else
 	return esp_timer_get_time();
-#endif
 }
 
 #define NOW() hw_timer2_read()
@@ -187,7 +139,3 @@ __forceinline uint32_t hw_timer2_read(void)
 void hw_timer_init(void);
 
 /** @} */
-
-#ifdef __cplusplus
-}
-#endif

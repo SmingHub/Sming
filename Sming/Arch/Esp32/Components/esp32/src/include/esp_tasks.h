@@ -14,26 +14,13 @@ typedef struct {
 } os_event_t;
 
 enum {
-	USER_TASK_PRIO_0,
 	USER_TASK_PRIO_1,
-	USER_TASK_PRIO_2,
-	USER_TASK_PRIO_MAX,
 };
 
 typedef void (*os_task_t)(os_event_t* e);
 
 bool system_os_task(os_task_t task, uint8_t prio, os_event_t* queue, uint8_t qlen);
 bool system_os_post(uint8_t prio, os_signal_t sig, os_param_t par);
-
-// Setup default task queues
-void ets_init_tasks();
-
-// Hook function to process task queues
-void ets_service_tasks();
-
-typedef void (*host_task_callback_t)(uint32_t param);
-
-bool host_queue_callback(host_task_callback_t callback, uint32_t param);
 
 #ifdef __cplusplus
 }

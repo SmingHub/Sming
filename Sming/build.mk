@@ -238,6 +238,11 @@ CLIB_PREFIX := clib-
 ToUpper = $(shell echo "$1" | tr 'a-z' 'A-Z')
 ToLower = $(shell echo "$1" | tr 'A-Z' 'a-z')
 
+# Use with LDFLAGS to undefine and wrap a list of functions
+define Wrap
+$(foreach n,$1,-u $n -Wl,-wrap,$n)
+endef
+
 # Apply coding style to list of files using clang-format
 # $1 -> List of files
 define ClangFormat

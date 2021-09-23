@@ -11,6 +11,7 @@
 #include <Data/Stream/IFS/ArchiveStream.h>
 #include <Storage/ProgMem.h>
 #include <LittleFS.h>
+#include <Services/Profiling/TaskStat.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
@@ -351,6 +352,9 @@ void fstest()
 	listAttributes();
 }
 
+Profiling::TaskStat taskStat(Serial);
+Timer statTimer;
+
 } // namespace
 
 void init()
@@ -373,4 +377,7 @@ void init()
 	WifiAccessPoint.enable(false);
 
 	WifiEvents.onStationGotIP(gotIP);
+
+	statTimer.initializeMs<2000>(InterruptCallback([]() { taskStat.update(); }));
+	statTimer.start();
 }
