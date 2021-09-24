@@ -1,0 +1,9 @@
+menu "Basic IFS sample"
+    config ENABLE_FLASHSTRING_IMAGE
+        bool "Store filesystem image in a FlashString object instead of partition"
+
+    config HWCONFIG
+        string "Project hardware configuration"
+        default "basic_ifs_$(SMING_ARCH)" if ENABLE_FLASHSTRING_IMAGE
+        default "spiffs" if !ENABLE_FLASHSTRING_IMAGE
+endmenu

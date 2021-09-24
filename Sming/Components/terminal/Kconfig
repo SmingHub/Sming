@@ -1,0 +1,33 @@
+menu "Terminal"
+
+   config COM_PORT
+      string "Default port for device communications"
+      help
+         Default value depends on the development platform being used.
+      default "/dev/cuaU0" if ("$UNAME" = "FreeBSD")
+      default "/dev/tty.usbserial" if "$UNAME" = "MacOS"
+      default "/dev/ttyUSB0" if "$UNAME" = "Linux"
+      default "COM3" if "$UNAME" = "Windows"
+
+   config COM_SPEED_SERIAL
+      int "Default baud rate to use for serial communication within application"
+      default COM_SPEED
+
+   config COM_OPTS
+      string "Additional options to pass to the terminal"
+      default "--raw --encoding ascii --rts 0 --dtr 0"
+
+   config TERMINAL
+      string "Command line to use when running `make terminal`"
+      help
+         Redefine if you want to use a different terminal application
+      default "powershell.exe -Command \"python -m serial.tools.miniterm $(COM_OPTS) $(COM_PORT) $(COM_SPEED_SERIAL)\"" if $WSL_ROOT
+      default "$(PYTHON) -m serial.tools.miniterm $(COM_OPTS) $(COM_PORT) $(COM_SPEED_SERIAL)" if !$WSL_ROOT
+
+   config KILL_TERM
+      string "Command line to use to kill the running terminal process"
+      help
+         If the terminal never runs in the background and the warnings annoy you, just clear it
+      default "pkill -9 -f \"$(COM_PORT) $(COM_SPEED_SERIAL)\" || exit 0"
+
+endmenu

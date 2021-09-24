@@ -1,0 +1,22 @@
+menu "rBoot"
+    depends on SMING_ARCH = "Esp8266"
+
+    config RBOOT_RTC_ENABLED
+        bool "Enable extended boot information via RTC memory"
+
+    choice
+        prompt "GPIO boot behaviour"
+        default RBOOT_GPIO_DISABLED
+        config RBOOT_GPIO_DISABLED
+            bool "Disable GPIO features"
+        config RBOOT_GPIO_ENABLED
+            bool "Enable GPIO boot slot 2"
+            help
+                rBoot supports booting into a third slot upon explicit user request,
+                e.g. by pressing a button during reset/power up.
+                This is especially useful for implementing some sort of recovery mechanism.
+        config RBOOT_GPIO_SKIP_ENABLED
+            bool "Use GPIO to skip between boot roms"
+    endchoice
+
+endmenu

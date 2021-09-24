@@ -1,0 +1,113 @@
+#
+# For a description of the syntax of this configuration file,
+# see kconfig/kconfig-language.txt.
+#
+mainmenu "Sming Framework Configuration: $(SMING_ARCH) $(ESP_VARIANT)"
+
+    config SMING_ARCH
+        string
+        option env="SMING_ARCH"
+
+    menu "Sming"
+        choice
+            default SELECT_LOCALE_EN_GB
+            prompt "Date/Time country code"
+            help
+                Sming can format dates/time values based on a country code identified by this value.
+                This is provided as a #define symbol for your application to use.
+                See :source:`Sming/Core/SmingLocale.h` for further details.
+            config SELECT_LOCALE_EN_US
+                bool "English (US)"
+            config SELECT_LOCALE_EN_GB
+                bool "English (UK)"
+            config SELECT_LOCALE_EN_AU
+                bool "English (Australia)"
+            config SELECT_LOCALE_FR_FR
+                bool "Français"
+            config SELECT_LOCALE_DE_DE
+                bool "Deutsch"
+        endchoice
+
+        config LOCALE
+            int
+            default 1 if SELECT_LOCALE_EN_US
+            default 33 if SELECT_LOCALE_FR_FR
+            default 44 if SELECT_LOCALE_EN_GB
+            default 49 if SELECT_LOCALE_DE_DE
+            default 61 if SELECT_LOCALE_EN_AU
+
+        config COM_SPEED
+            int "Default baud rate for serial port"
+            default 115200
+            help
+                This will recompile your application to use the revised baud rate.
+                Note that this will change the default speed used for both flashing and serial comms.
+
+        config ENABLE_CMD_EXECUTOR
+            bool "Enable command executor functionality"
+            default y
+            help
+                This facilty requires documenting!
+
+        config TASK_QUEUE_LENGTH
+            int "Length of task queue"
+            default 10
+            depends on SMING_ARCH="Esp8266"
+
+        config STRING_OBJECT_SIZE
+            int "Size of a Wiring String object"
+            default 12
+            help
+                Change this to increase space for Small String Optimisation (SSO)
+
+        config DISABLE_NETWORK
+            bool "Build without networking support"
+            default n
+            select DISABLE_WIFI if DISABLE_NETWORK
+            help
+                Applications which do not require networking can set this flag to avoid building
+                or linking the core Network library.
+
+                This will reduce build times, application size and RAM usage.
+                Builds will not succeeded if network code has been inadvertently included.
+    endmenu
+
+    menu "Debug"
+        choice
+            default SELECT_DEBUG_INFO
+            prompt "Detail level for debug messages"
+            config SELECT_DEBUG_ERROR
+                bool "0 Errors only"
+            config SELECT_DEBUG_WARN
+                bool "1 Errors and warnings"
+            config SELECT_DEBUG_INFO
+                bool "2 Errors, warnings and Information"
+            config SELECT_DEBUG_DEBUG
+                bool "3 All debug messages"
+        endchoice
+
+        config DEBUG_VERBOSE_LEVEL
+            int
+            default 0 if SELECT_DEBUG_ERROR
+            default 1 if SELECT_DEBUG_WARN
+            default 2 if SELECT_DEBUG_INFO
+            default 3 if SELECT_DEBUG_DEBUG
+
+        config DEBUG_PRINT_FILENAME_AND_LINE
+            bool "Include the filename and line number in every line of debug output."
+            default n
+            help
+                This will require extra space on flash
+
+        config ENABLE_GDB
+            bool "Compile with support for serial debugging using GDB"
+
+        config ENABLE_SPI_DEBUG
+            bool "Enable SPI debug output"
+
+        config ENABLE_TASK_COUNT
+            bool "Enable use of System task counting to check for queue overflows"
+            depends on SMING_ARCH="Esp8266"
+    endmenu
+
+    source "$KCONFIG_COMPONENTS"

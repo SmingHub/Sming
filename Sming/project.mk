@@ -536,7 +536,7 @@ export HOST_PARAMETERS
 .PHONY: ide-vscode-update
 ide-vscode-update:
 	$(Q) SMING_HOME=$(SMING_HOME) OUT_BASE=$(OUT_BASE) \
-	$(PYTHON) $(SMING_HOME)/../Tools/vscode/setup.py
+	$(PYTHON) $(SMING_TOOLS)/vscode/setup.py
 
 ##@Testing
 
@@ -671,3 +671,32 @@ CACHED_VAR_NAMES := $(sort $(CACHED_VAR_NAMES) $(CONFIG_VARS) $(RELINK_VARS) $(C
 $(eval $(call WriteConfigCache,$(CONFIG_CACHE_FILE),CACHED_VAR_NAMES))
 $(eval $(call WriteCacheValues,$(CONFIG_DEBUG_FILE),$(sort $(DEBUG_VARS))))
 endif
+
+
+##@Configuration
+
+export UNAME
+export KCONFIG_COMPONENTS=$(OUT_BASE)/kconfig.in
+
+KCONFIG := $(SMING_HOME)/Kconfig
+KCONFIG_CONFIG := $(OUT_BASE)/kconfig.config
+
+KCONFIG_ENV := \
+	CONFIG_= \
+	KCONFIG=$(KCONFIG) \
+	KCONFIG_CONFIG=$(KCONFIG_CONFIG)
+
+KCONFIG_FILES = $(wildcard $(foreach c,$(filter-out Sming,$(COMPONENTS)),$(CMP_$c_PATH)/Kconfig))
+
+CFGTOOL_CMDLINE = $(KCONFIG_ENV) $(PYTHON) $(SMING_TOOLS)/cfgtool.py $(CONFIG_CACHE_FILE)
+
+.PHONY: build_kconfig_components
+build_kconfig_components:
+	@echo > $(KCONFIG_COMPONENTS)
+	@$(foreach f,$(KCONFIG_FILES),echo 'source "$f"' >> $(KCONFIG_COMPONENTS);)
+
+.PHONY: menuconfig
+menuconfig: build_kconfig_components ##Run option editor
+	$(Q) $(CFGTOOL_CMDLINE) --to-kconfig
+	$(Q) $(KCONFIG_ENV) $(PYTHON) -m menuconfig $(SMING_HOME)/Kconfig
+	$(Q) $(CFGTOOL_CMDLINE) --from-kconfig
