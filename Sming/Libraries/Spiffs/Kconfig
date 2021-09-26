@@ -1,0 +1,30 @@
+menu "SPIFFS"
+    config SPIFF_FILEDESC_COUNT
+    int "Number of file descriptors allocated"
+    default 7
+    help
+        This sets the maximum number of files which may be opened at once. 
+
+    config SPIFFS_OBJ_META_LEN
+    int "Maximum size of file metadata"
+    default 16
+    help
+        Maximum size of metadata which SPIFFS stores in each file index header (after the filename).
+        If this value is changed, existing SPIFFS images will not be readable.
+
+        The default value is the minimum necessary to support IFS extended file attribute information.
+
+        The first 16 bytes are used for system attributes (e.g. modified time), so setting this to, say, 64
+        leaves 48 bytes for user metadata. Each attribute has a 2-byte header (tag + size) so a single user
+        attribute can be stored of up to 46 bytes, or multiple tags up to this limit.
+
+        Note: LittleFS provides better support for user metadata.
+
+    config SPIFF_FILES
+        string "Path to source files for default spiffs volume"
+        default "files"
+        help
+            The SPIFFS image is built using files from this directory, which must exist or the build will fail.
+            If you set this to an empty value, then an empty filesystem will be created.
+
+endmenu

@@ -409,7 +409,7 @@ SpiffsMetaBuffer* FileSystem::initMetaBuffer(FileHandle file)
 SpiffsMetaBuffer* FileSystem::getMetaBuffer(FileHandle file)
 {
 	unsigned off = SPIFFS_FH_UNOFFS(handle(), file) - 1;
-	if(off >= FFS_MAX_FILEDESC) {
+	if(off >= SPIFF_FILEDESC_COUNT) {
 		debug_e("getMetaBuffer(%d) - bad file", file);
 		return nullptr;
 	}
