@@ -1,6 +1,7 @@
 #include <HostTests.h>
 #include <FlashString/TemplateStream.hpp>
 #include <Data/Stream/MemoryDataStream.h>
+#include <Data/Stream/LimitedMemoryStream.h>
 #include <Data/Stream/SectionTemplate.h>
 
 #ifdef ARCH_HOST
@@ -112,12 +113,62 @@ public:
 
 			check(tmpl, Resource::ut_template1_out1_rst);
 		}
+
+		auto addChar = [](String& s, char c, size_t count) {
+			auto len = s.length();
+			s.setLength(len + count);
+			memset(&s[len], c, count);
+		};
+
+		TEST_CASE("Fragmented read of variable [TMPL #1, #3, #4]")
+		{
+			constexpr size_t TEMPLATE_BUFFER_SIZE{100};
+			String input;
+			addChar(input, 'a', TEMPLATE_BUFFER_SIZE - 4);
+			input += _F("{varname}");
+			addChar(input, 'a', TEMPLATE_BUFFER_SIZE);
+			auto source = new LimitedMemoryStream(input.begin(), input.length(), input.length(), false);
+			TemplateStream tmpl(source);
+			PSTR_ARRAY(someValue, "Some value or other");
+			tmpl.setVar(F("varname"), someValue);
+
+			size_t outlen{0};
+			char output[TEMPLATE_BUFFER_SIZE * 3]{};
+			while(!tmpl.isFinished()) {
+				auto ptr = output + outlen;
+				size_t read1 = tmpl.readMemoryBlock(ptr, TEMPLATE_BUFFER_SIZE);
+				char tmp[read1];
+				memcpy(tmp, ptr, read1);
+				size_t read = tmpl.readMemoryBlock(ptr, TEMPLATE_BUFFER_SIZE);
+				CHECK_EQ(read, read1);
+				CHECK(memcmp(tmp, ptr, read) == 0);
+				if(read > 10) {
+					read -= 5;
+				}
+				tmpl.seek(read);
+				outlen += read;
+				ptr += read;
+			}
+
+			String expected;
+			addChar(expected, 'a', TEMPLATE_BUFFER_SIZE - 4);
+			expected += someValue;
+			addChar(expected, 'a', TEMPLATE_BUFFER_SIZE);
+
+			if(!expected.equals(output, outlen)) {
+				m_nputs(output, outlen);
+				m_puts("\r\n");
+				m_nputs(expected.c_str(), expected.length());
+				m_puts("\r\n");
+			}
+			REQUIRE(expected.equals(output, outlen));
+		}
 	}
 
 private:
 	void check(TemplateStream& tmpl, const FlashString& ref)
 	{
-		static constexpr size_t bufSize{512};
+		constexpr size_t bufSize{256};
 		char buf1[bufSize];
 		char buf2[bufSize];
 		FSTR::Stream refStream(ref);

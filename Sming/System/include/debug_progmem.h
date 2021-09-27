@@ -54,6 +54,8 @@ extern "C" {
 	do {                                                                                                               \
 	} while(0)
 
+extern uint32_t system_get_time();
+
 #if DEBUG_BUILD
 
 // http://stackoverflow.com/a/35441900
@@ -61,8 +63,6 @@ extern "C" {
 #define MACROCONCAT(x,y,z) MACROCAT2(x,y,z)
 #define MACROQUOT(x) #x
 #define MACROQUOTE(x) MACROQUOT(x)
-
-extern uint32_t system_get_time();
 
 //A static const char[] is defined having a unique name (log_ prefix, filename and line number)
 //This will be stored in the irom section(on flash) freeing up the RAM

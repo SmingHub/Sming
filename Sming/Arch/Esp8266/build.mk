@@ -4,6 +4,10 @@
 #
 ##############
 
+ifdef ESP_VARIANT
+override ESP_VARIANT :=
+endif
+
 CPPFLAGS			+= -DARCH_ESP8266
 CXXFLAGS			+= -fno-rtti -fno-exceptions -fno-threadsafe-statics
 
@@ -30,7 +34,6 @@ CONFIG_TOOLPREFIX	:= xtensa-lx106-elf-
 TOOLSPEC			:= $(XTENSA_TOOLS_ROOT)/$(CONFIG_TOOLPREFIX)
 
 # select which tools to use as assembler, compiler, librarian and linker
-DEBUG_VARS			+= GDB
 AS				:= $(TOOLSPEC)gcc
 CC				:= $(TOOLSPEC)gcc
 CXX				:= $(TOOLSPEC)g++

@@ -7,6 +7,7 @@
 {SECTION}{{!ifgt:$record:0}},
 {{!endif}}		{
 			"record": {{!as_int:$record}},
+			"id": "{{file_id}}",
 			"name": "{{name}}",
 			"modified": "{{modified}}",
 			"size": {{!as_int:size}},

@@ -35,6 +35,16 @@ public:
 		return mNext;
 	}
 
+	bool insertAfter(LinkedObject* object)
+	{
+		if(object == nullptr) {
+			return false;
+		}
+		mNext = object->mNext;
+		object->mNext = this;
+		return true;
+	}
+
 	bool operator==(const LinkedObject& other) const
 	{
 		return this == &other;
@@ -120,6 +130,11 @@ public:
 	ObjectType* getNext() const
 	{
 		return reinterpret_cast<ObjectType*>(this->next());
+	}
+
+	bool insertAfter(ObjectType* object)
+	{
+		return LinkedObject::insertAfter(object);
 	}
 
 	Iterator begin() const

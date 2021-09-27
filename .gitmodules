@@ -65,10 +65,6 @@
 	path = Sming/Components/rboot/rboot
 	url = https://github.com/mikee47/rboot
 	ignore = dirty
-[submodule "spiffs"]
-	path = Sming/Components/spiffs/spiffs
-	url = https://github.com/pellepl/spiffs.git
-	ignore = dirty
 [submodule "ws_parser"]
 	path = Sming/Components/ws_parser
 	url = https://github.com/charliesome/ws_parser.git
@@ -123,6 +119,10 @@
 [submodule "Host.lwip"]
 	path = Sming/Arch/Host/Components/lwip/lwip
 	url = https://github.com/lwip-tcpip/lwip
+	ignore = dirty
+[submodule "seriallib"]
+	path = Sming/Arch/Host/Components/SerialLib/seriallib
+	url = https://github.com/imabot2/serialib.git
 	ignore = dirty
 
 
@@ -194,10 +194,14 @@
 [submodule "Libraries.flatbuffers"]
 	path = Sming/Libraries/flatbuffers/src
 	url = https://github.com/google/flatbuffers.git
- 	ignore = dirty       
+ 	ignore = dirty
 [submodule "Libraries.GoogleCast"]
 	path = Sming/Libraries/GoogleCast
 	url = https://github.com/slaff/Sming-GoogleCast.git
+	ignore = dirty
+[submodule "Libraries.Graphics"]
+	path = Sming/Libraries/Graphics
+	url = https://github.com/mikee47/Sming-Graphics
 	ignore = dirty
 [submodule "Libraries.HardwareSPI"]
 	path = Sming/Libraries/HardwareSPI
@@ -218,6 +222,10 @@
 [submodule "Libraries.libsodium"]
 	path = Sming/Libraries/libsodium/libsodium
 	url = https://github.com/jedisct1/libsodium.git
+	ignore = dirty
+[submodule "Libraries.LittleFS"]
+	path = Sming/Libraries/LittleFS
+	url = https://github.com/mikee47/Sming-LittleFS
 	ignore = dirty
 [submodule "Libraries.MDNS"]
 	path = Sming/Libraries/MDNS
@@ -259,6 +267,10 @@
 	path = Sming/Libraries/SignalGenerator
 	url = https://github.com/mikee47/SignalGenerator
 	ignore = dirty
+[submodule "Libraries.simpleRPC"]
+	path = Sming/Libraries/simpleRPC/simpleRPC
+	url = https://github.com/jfjlaros/simpleRPC.git
+	ignore = dirty
 [submodule "Libraries.SmingTest"]
 	path = Sming/Libraries/SmingTest
 	url = https://github.com/mikee47/SmingTest
@@ -266,6 +278,10 @@
 [submodule "Libraries.SolarCalculator"]
 	path = Sming/Libraries/SolarCalculator
 	url = https://github.com/mikee47/SolarCalculator
+	ignore = dirty
+[submodule "spiffs"]
+	path = Sming/Libraries/Spiffs/spiffs
+	url = https://github.com/pellepl/spiffs.git
 	ignore = dirty
 [submodule "Libraries.SSDP"]
 	path = Sming/Libraries/SSDP
@@ -327,3 +343,4 @@
 # END OF .gitmodules
 #
 #################################################################################################
+

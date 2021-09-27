@@ -3,13 +3,11 @@ REM Esp32 install.cmd
 if "%IDF_PATH%"=="" goto :EOF
 if "%IDF_TOOLS_PATH%"=="" goto :EOF
 
-git clone -b release/v4.1 https://github.com/espressif/esp-idf.git %IDF_PATH%
+if "%IDF_REPO%"=="" set IDF_REPO="https://github.com/mikee47/esp-idf.git"
+if "%IDF_BRANCH%"=="" set IDF_BRANCH="sming/release/v4.3"
 
-REM Espressif downloads very slow, fetch from SmingTools
-mkdir %IDF_TOOLS_PATH%
-set ESPTOOLS=esp32-tools-windows-4.1.7z
-curl -LO %SMINGTOOLS%/%ESPTOOLS%
-7z -o%IDF_TOOLS_PATH%\dist x %ESPTOOLS% 
+git clone -b %IDF_BRANCH% %IDF_REPO% %IDF_PATH%
 
+REM Install IDF tools and packages
 python %IDF_PATH%\tools\idf_tools.py install
 python -m pip install -r %IDF_PATH%\requirements.txt

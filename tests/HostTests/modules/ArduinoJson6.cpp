@@ -84,8 +84,13 @@ public:
 
 		TEST_CASE("Json::serialize(doc, String), then save to file")
 		{
+			DEFINE_FSTR_LOCAL(expectedOutput,
+							  "{\"string1\":\"string value "
+							  "1\",\"number2\":12345,\"arr\":[\"FlashString-1\"],\"FlashString-2\":\"FlashString-1\"}")
 			String s;
-			REQUIRE(Json::serialize(doc, s) == 95);
+			auto sz = Json::serialize(doc, s);
+			REQUIRE_EQ(sz, 100U);
+			REQUIRE(expectedOutput == s);
 			REQUIRE(fileSetContent(test_json, s) == int(s.length()));
 		}
 

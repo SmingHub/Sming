@@ -44,15 +44,16 @@ install:
       # Esp32
       $env:IDF_PATH = Join-Path $env:CI_BUILD_DIR "opt/esp-idf"
       $env:IDF_TOOLS_PATH = Join-Path $env:CI_BUILD_DIR "opt/tools/esp32"
+      $env:IDF_BRANCH = "sming/dev/v4.3"
       # General
       $env:SMING_HOME = Join-Path $env:CI_BUILD_DIR "Sming"
 
   - cmd: |
-      set PATH=C:\Python39;C:\MinGW\msys\1.0\bin;C:\MinGW\bin;%PATH%
+      set PATH=C:\Python39;C:\Python39\Scripts;C:\MinGW\msys\1.0\bin;C:\MinGW\bin;%PATH%
       set PYTHON=C:\Python39\python
       set ESP32_PYTHON_PATH=C:\Python39
       Tools\ci\install.cmd
-      set PATH=C:\Python39\Scripts;C:\tools\doxygen;C:\tools\Graphviz\bin;%PATH%
+      set PATH=C:\tools\doxygen;C:\tools\Graphviz\bin;%PATH%
 
   - sh: |
       export PYTHON=$HOME/venv3.9/bin/python

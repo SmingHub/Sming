@@ -6,4 +6,5 @@ APP_NAME := utility
 ENABLE_MALLOC_COUNT := 0
 
 #
+DISABLE_WIFI := 1
 HOST_NETWORK_OPTIONS := --nonet

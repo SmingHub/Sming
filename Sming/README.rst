@@ -81,6 +81,37 @@ Localisation
    This is provided as a #define symbol for your application to use.
    See :source:`Sming/Core/SmingLocale.h` for further details.
 
+
+Networking
+~~~~~~~~~~
+
+.. envvar:: DISABLE_NETWORK
+
+   .. note::
+   
+   0 (Default)
+   1 - Remove core networking support
+
+   Applications which do not require networking can set this flag to avoid building
+   or linking the core :component:`Network` library.
+
+   This will reduce build times, application size and RAM usage.
+   Builds will not succeeded if network code has been inadvertently included.
+
+
+.. envvar:: DISABLE_WIFI
+
+   .. note::
+
+      EXPERIMENTAL
+
+   0 (Default)
+   1 - Exclude WiFi initialisation code
+
+   Keeps the core :component:`Network` library but excludes WiFi code.
+   Applications using ethernet can use this to reduce code size. See :sample:`Basic_Ethernet`.
+
+
 Components
 ----------
 

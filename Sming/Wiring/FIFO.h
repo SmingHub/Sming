@@ -39,6 +39,11 @@ public:
 		return numberOfElements;
 	}
 
+	bool empty() const
+	{
+		return numberOfElements == 0;
+	}
+
 	bool full() const
 	{
 		return (count() >= rawSize);

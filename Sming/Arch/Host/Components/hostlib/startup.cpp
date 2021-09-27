@@ -29,28 +29,37 @@
 #include <BitManipulations.h>
 #include <driver/os_timer.h>
 #include <esp_tasks.h>
-#include <host_lwip.h>
 #include <stdlib.h>
+#include "include/hostlib/init.h"
+#include "include/hostlib/emu.h"
+#include "include/hostlib/hostlib.h"
 #include "include/hostlib/CommandLine.h"
 #include <Storage.h>
 
 #include <Platform/System.h>
 #include <Platform/Timers.h>
 
-static int exitCode = 0;
-static bool done = false;
-
-extern void init();
+#ifndef DISABLE_NETWORK
+#include <host_lwip.h>
 extern void host_wifi_lwip_init_complete();
+static bool lwip_initialised;
+#endif
+
+static int exitCode;
+static bool done;
+static OneShotElapseTimer<NanoTime::Milliseconds> lwipServiceTimer;
+
 extern void host_init_bootloader();
 
 static void cleanup()
 {
 	hw_timer_cleanup();
 	host_flashmem_cleanup();
-	CUartServer::shutdown();
+	UartServer::shutdown();
 	sockets_finalise();
+#ifndef DISABLE_NETWORK
 	host_lwip_shutdown();
+#endif
 	host_debug_i("Goodbye!");
 }
 
@@ -104,6 +113,19 @@ static void pause(int secs)
 	}
 }
 
+void host_main_loop()
+{
+	host_service_tasks();
+	host_service_timers();
+#ifndef DISABLE_NETWORK
+	if(lwip_initialised && lwipServiceTimer.expired()) {
+		host_lwip_service();
+		lwipServiceTimer.start();
+	}
+#endif
+	system_soft_wdt_feed();
+}
+
 int main(int argc, char* argv[])
 {
 	trap_exceptions();
@@ -113,9 +135,11 @@ int main(int argc, char* argv[])
 		int exitpause;
 		bool initonly;
 		bool enable_network;
-		UartServerConfig uart;
+		UartServer::Config uart;
 		FlashmemConfig flash;
+#ifndef DISABLE_NETWORK
 		struct lwip_param lwip;
+#endif
 	} config = {
 		.pause = -1,
 		.exitpause = -1,
@@ -132,13 +156,16 @@ int main(int argc, char* argv[])
 				.createSize = 0,
 
 			},
+#ifndef DISABLE_NETWORK
 		.lwip =
 			{
 				.ifname = nullptr,
 				.ipaddr = nullptr,
 			},
+#endif
 	};
 
+	int uart_num{-1};
 	option_tag_t opt;
 	const char* arg;
 	while((opt = get_option(argc, argv, arg)) != opt_none) {
@@ -148,13 +175,38 @@ int main(int argc, char* argv[])
 			return 0;
 
 		case opt_uart:
-			bitSet(config.uart.enableMask, atoi(arg));
+			uart_num = atoi(arg);
+			if(uart_num < 0 || uart_num >= UART_COUNT) {
+				host_printf("UART %d number invalid\r\n", uart_num);
+				return 0;
+			}
+			bitSet(config.uart.enableMask, uart_num);
+			break;
+
+		case opt_device:
+		case opt_baud:
+			if(uart_num < 0) {
+				host_printf("--uart option missing\r\n");
+				return 0;
+			}
+			if(opt == opt_device) {
+				config.uart.deviceNames[uart_num] = arg;
+			} else if(opt == opt_baud) {
+				config.uart.baud[uart_num] = atoi(arg);
+			}
 			break;
 
 		case opt_portbase:
 			config.uart.portBase = atoi(arg);
 			break;
 
+#ifdef DISABLE_NETWORK
+		case opt_ifname:
+		case opt_ipaddr:
+		case opt_gateway:
+		case opt_netmask:
+			break;
+#else
 		case opt_ifname:
 			config.lwip.ifname = arg;
 			break;
@@ -170,6 +222,7 @@ int main(int argc, char* argv[])
 		case opt_netmask:
 			config.lwip.netmask = arg;
 			break;
+#endif
 
 		case opt_pause:
 			config.pause = arg ? atoi(arg) : 0;
@@ -199,7 +252,8 @@ int main(int argc, char* argv[])
 			host_debug_level = atoi(arg);
 			break;
 
-		default:;
+		case opt_none:
+			break;
 		}
 	}
 
@@ -228,9 +282,9 @@ int main(int argc, char* argv[])
 		host_init_tasks();
 
 		sockets_initialise();
-		CUartServer::startup(config.uart);
+		UartServer::startup(config.uart);
 
-		bool lwip_initialised = false;
+#ifndef DISABLE_NETWORK
 		if(config.enable_network) {
 			lwip_initialised = host_lwip_init(&config.lwip);
 			if(lwip_initialised) {
@@ -239,6 +293,7 @@ int main(int argc, char* argv[])
 		} else {
 			host_debug_i("Network initialisation skipped as requested");
 		}
+#endif
 
 		host_debug_i("If required, you may start terminal application(s) now");
 		pause(config.pause);
@@ -247,18 +302,13 @@ int main(int argc, char* argv[])
 
 		System.initialize();
 
-		init();
+		host_init();
 
-		OneShotElapseTimer<NanoTime::Milliseconds> lwipServiceTimer;
+#ifndef DISABLE_NETWORK
 		lwipServiceTimer.reset<LWIP_SERVICE_INTERVAL>();
+#endif
 		while(!done) {
-			host_service_tasks();
-			host_service_timers();
-			if(lwip_initialised && lwipServiceTimer.expired()) {
-				host_lwip_service();
-				lwipServiceTimer.start();
-			}
-			system_soft_wdt_feed();
+			host_main_loop();
 		}
 
 		host_debug_i(">> Normal Exit <<\n");

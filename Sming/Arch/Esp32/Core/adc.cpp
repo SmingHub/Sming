@@ -1,4 +1,5 @@
 #include <driver/adc.h>
+#include <soc/adc_periph.h>
 #include <esp_adc_cal.h>
 #include <debug_progmem.h>
 #include <Digital.h>
@@ -42,21 +43,23 @@ uint16_t analogRead(uint16_t pin)
 	constexpr adc_atten_t attenuation{ADC_ATTEN_DB_0};
 	esp_adc_cal_characteristics_t adcChars{};
 
+	auto adcWidth = adc_bits_width_t(ADC_WIDTH_MAX - 1);
+
 	// Configure
 	if(info.adc == ADC_UNIT_2) {
 		adc2_config_channel_atten(adc2_channel_t(info.channel), attenuation);
 	} else {
-		adc1_config_width(ADC_WIDTH_BIT_12);
+		adc1_config_width(adcWidth);
 		adc1_config_channel_atten(adc1_channel_t(info.channel), attenuation);
 	}
 
 	// Characterize
-	esp_adc_cal_characterize(info.adc, attenuation, ADC_WIDTH_BIT_12, DEFAULT_VREF, &adcChars);
+	esp_adc_cal_characterize(info.adc, attenuation, adcWidth, DEFAULT_VREF, &adcChars);
 
 	// Sample
 	if(info.adc == ADC_UNIT_2) {
 		int value{0};
-		esp_err_t r = adc2_get_raw(adc2_channel_t(info.channel), ADC_WIDTH_BIT_12, &value);
+		esp_err_t r = adc2_get_raw(adc2_channel_t(info.channel), adcWidth, &value);
 		if(r == ESP_OK) {
 			return value;
 		} else if(r == ESP_ERR_INVALID_STATE) {

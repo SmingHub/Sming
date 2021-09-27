@@ -1,4 +1,4 @@
-import argparse, os, partition, configparser, string
+import argparse, os, config, partition, configparser, string, threading
 from common import *
 from config import *
 import tkinter as tk
@@ -6,6 +6,30 @@ from tkinter import ttk, filedialog, messagebox, font
 from collections import OrderedDict
 
 app_name = 'Sming Hardware Profile Editor'
+
+# Fields not listed in schema and therefore not part of JSON configuration, but present in GUI
+virtual_fields = {
+    "name": {
+        "type": "string",
+        "title": "Name",
+        "description": "Name of object"
+    },
+    "unused_before": {
+        "type": "string",
+        "title": "Space before",
+        "description": "Unused space before partition"
+    },
+    "next": {
+        "type": "string",
+        "title": "Next",
+        "description": "Start of next partition"
+    },
+    "unused_after": {
+        "type": "string",
+        "title": "Space after",
+        "description": "Unused space after partition"
+    }
+}
 
 def read_property(obj, name):
     """Read an object property, preferring string representation
@@ -34,6 +58,47 @@ def load_config_vars(filename):
     parser.read_string(data)
     return parser['config']
 
+class ConfigVars(dict):
+    def __init__(self):
+        self.update(os.environ)
+        self.update(load_config_vars('config.mk'))
+        self.update(load_config_vars('debug.mk'))
+        # Can take a short while to resolve path variables, so use a background thread
+        # Don't need this information until user requests it
+        threading.Thread(target=self._resolvePathVars).start()
+
+    def getRelativePath(self, path):
+        try:
+            res = os.path.relpath(path)
+            return res.replace('\\', '/')
+        except Exception:
+            return path
+
+    def resolve_path(self, path):
+        tmp = str(path)
+        while True:
+            tmp = tmp.replace('(', '{')
+            tmp = tmp.replace(')', '}')
+            try:
+                new_path = string.Template(tmp).substitute(self)
+            except Exception as err:
+                # Return the value obtained thus far
+                return tmp
+            if new_path == tmp:
+                return new_path
+            tmp = new_path
+
+    def _resolvePathVars(self):
+        self.pathVars = {}
+        for k, v in self.items():
+            if v == '':
+                continue
+            path = self.resolve_path(v)
+            path = os.path.abspath(path)
+            if os.path.exists(path):
+                self.pathVars[k] = path
+
+configVars = ConfigVars()
 
 def checkProfilePath(filename):
     filename = os.path.realpath(filename)
@@ -64,42 +129,192 @@ def resolve_id(config, id):
     dev = config.devices.find_by_name(id)
     if dev is not None:
         return dev
-    part = config.map().find_by_name(id)
-    if part is not None:
-        return part
+    return config.map().find_by_name(id)
 
-def json_loads(s):
-    return json.loads(jsmin(s), object_pairs_hook=OrderedDict)
+def resolve_device(config, id):
+    obj = resolve_id(config, id)
+    if obj is None or isinstance(obj, storage.Device):
+        return obj
+    return obj.device
+
+def resolve_key(obj, key):
+    """Resolve dotted key, e.g. 'build.target' refers to 'target' property of 'build' object
+    """
+    keys = key.split('.')
+    while len(keys) > 1:
+        k = keys.pop(0)
+        if hasattr(obj, k):
+            obj = getattr(obj, k)
+        else:
+            obj = get_dict_value(obj, k, {})
+    return obj, keys[0]
+
 
 class Field:
-    """Manages widget and associated variable
+    """Manages widget(s) and associated variable
     """
-    def __init__(self, var, widget):
+    def __init__(self, name, schema, var, widget):
+        self.name = name
+        self.schema = schema
         self.var = var
         self.widget = widget
+        self.label = tk.Label(widget.master, text=schema.get('title', name))
+        self.scale = None
+        self.browse = None
+
+    def grid(self, row):
+        self.label.grid(row=row, column=0, sticky=tk.W)
+        cs = 3
+        if self.scale is not None:
+            self.scale.grid(row=row, column=2, columnspan=2, sticky=tk.E)
+            cs = 1
+        if self.browse is not None:
+            self.browse.grid(row=row, column=3, sticky=tk.E)
+            cs = 2
+        self.widget.grid(row=row, column=1, columnspan=cs, sticky=tk.EW)
+
+    def addBrowse(self, isFile):
+        self.browse = ttk.Button(self.widget.master, text='...', width=3,
+            style='Browse.TButton',
+            command=lambda *args: self.selectPath(isFile))
+        self.setPath(self.get_value())
+        def update(e):
+            self.setPath(self.var.get())
+            self.widget.focus()
+            self.widget.event_generate('<Down>')
+        self.widget.bind('<Return>', update)
+        self.widget.bind('<FocusOut>', update)
+
+    def selectPath(self, isFile):
+        if isFile:
+            path = filedialog.asksaveasfilename(
+                title="Select '%s'" % self.schema['title'],
+                initialdir=os.getcwd(),
+                confirmoverwrite=False)
+        else:
+            path = filedialog.askdirectory(
+                title="Select '%s'" % self.schema['title'],
+                initialdir=os.getcwd())
+        if len(path) != 0:
+            self.setPath(path)
+            self.var.set('')
+            self.widget.focus()
+            self.widget.event_generate('<Down>')
+
+    def setPath(self, path):
+        resolved_path = configVars.resolve_path(path)
+        if path == '' or '${' in path:
+            values = []
+        else:
+            path = os.path.abspath(resolved_path)
+            values = {path}
+            for k, p in configVars.pathVars.items():
+                if path == p or path.startswith(p + os.path.sep):
+                    v = '$(' + k + ')' + path[len(p):]
+                    v = v.replace('\\', '/')
+                    values.add(v)
+            try:
+                path = os.path.relpath(path).replace('\\', '/')
+                values.add(path)
+            except Exception:
+                None
+            values = list(values)
+            values.sort(key=lambda v: len(v))
+        self.widget.configure(values=values)
+        return path
+
+    def addScale(self, min, max, on_change):
+        """Add scale controls for address/size fields
+        """
+        scale = self.scale = tk.Scale(
+            self.widget.master,
+            orient = tk.HORIZONTAL,
+            from_ = min // self.align,
+            to = max // self.align,
+            bigincrement=16,
+            showvalue = False,
+            takefocus = True)
+        value = parse_int(self.get_value())
+        scale.set(value // self.align)
+        def change(event):
+            value = parse_int(self.get_value())
+            self.scale.set(value // self.align)
+        self.widget.bind('<Return>', change)
+        self.widget.bind('<FocusOut>', change)
+        self.update_scale_range()
+        scale.configure(command=lambda val: on_change(int(val) * self.align))
+        return scale
+
+    def update_scale_range(self):
+        min = self.scale.cget('from') * self.align
+        max = self.scale.cget('to') * self.align
+        self.widget.configure(foreground='black' if max > min else 'gray')
 
     def get_value(self):
         return str(self.var.get())
 
-    def is_disabled(self):
+    def set_value(self, value):
+        self.var.set(value)
+        if self.browse is not None:
+            self.setPath(value)
+
+    def get_scale(self):
+        return self.scale.get() * self.align
+
+    def set_scale(self, value):
+        self.scale.set(value // self.align)
+
+    def set_scale_min(self, value):
+        self.scale.configure(from_ = value // self.align)
+        self.update_scale_range()
+
+    def set_scale_max(self, value):
+        self.scale.configure(to = value // self.align)
+        self.update_scale_range()
+
+    def enable(self, state):
+        state_str = 'normal' if state else 'disabled'
+        self.widget.configure(state=state_str)
+        for c in [self.scale, self.browse]:
+            if c is not None:
+                c.configure(state=state_str)
+
+    def is_enabled(self):
         try:
-            return str(self.widget.cget('state')) == 'disabled'
+            return str(self.widget.cget('state')) != 'disabled'
         except Exception:
-            return False
+            return True
+
+    def show(self, state = True):
+        if state:
+            self.widget.grid()
+            for c in [self.label, self.scale, self.browse]:
+                if c is not None:
+                    c.grid()
+        else:
+            self.hide()
+
+    def hide(self):
+        self.widget.grid_remove()
+        for c in [self.label, self.scale, self.browse]:
+            if c is not None:
+                c.grid_remove()
+
+    def is_visible(self):
+        return len(self.widget.grid_info()) != 0
 
 
 class EditState(dict):
     """Manage details of Config/Device/Partition editing using dictionary of Field objects
     """
-    def __init__(self, editor, objectType, dictName, obj, enumDict):
+    def __init__(self, editor, objectType, dictName, obj):
         super().__init__(self)
         self.editor = editor
         self.objectType = objectType
         self.dictName = dictName
-        self.enumDict = enumDict
         self.obj = obj
         self.name = obj.name
-        self.schema = editor.schema[objectType]
+        self.schema = config.schema[objectType]
         self.allow_delete = False
         baseConfig = self.editor.getBaseConfig()
         optionBaseConfig = self.editor.getOptionBaseConfig()
@@ -140,6 +355,7 @@ class EditState(dict):
             label.pack()
 
         f = self.controlFrame = ttk.Frame(self.editor.editFrame)
+        f.grid_columnconfigure(2, weight=1) # 'scale' widget - see Field
         f.pack(side=tk.TOP)
         self.array = {} # dictionary for array element variables
         self.row = 0
@@ -147,9 +363,10 @@ class EditState(dict):
         if not 'name' in keys:
             self.addControl('name')
         for k in keys:
-            if k != 'devices' and k != 'partitions':
-                self.addControl(k)
-        f = ttk.Frame(self.editor.editFrame)
+            self.addControl(k)
+        if self.objectType == 'Partition':
+            self.updateBuildTargets()
+        f = ttk.Frame(self.editor.editFrame, padding=(0, 8))
         f.pack(side=tk.BOTTOM)
         btn = ttk.Button(f, text='Apply', command=lambda *args: self.apply())
         btn.grid(row=0, column=0)
@@ -158,14 +375,25 @@ class EditState(dict):
         if self.allow_delete:
             btn = ttk.Button(f, text='Delete', command=lambda *args: self.delete())
             btn.grid(row=0, column=2)
+        self.editor.sizeEdit()
+
 
     def addControl(self, fieldName):
+        if self.objectType == 'Partition' and fieldName == 'address':
+            self.addControl('unused_before')
+
         schema = self.get_property(fieldName)
         fieldType = schema.get('type')
+        if fieldType == 'object':
+            return
+        fieldFormat = schema.get('format')
         frame = self.controlFrame
         disabled = False
         if fieldName == 'name':
             value = self.name
+        elif '.' in fieldName:
+            o, k = resolve_key(self.obj, fieldName)
+            value = '' if o is None else o.get(k)
         else:
             value = self.obj_dict.get(fieldName, self.obj.dict().get(fieldName))
             if fieldName == 'device':
@@ -179,58 +407,175 @@ class EditState(dict):
                 critical(str(err))
         var = tk.StringVar(value=value)
 
+        values = schema.get('enum')
         if fieldType == 'boolean':
-            c = ttk.Checkbutton(frame, text=fieldName, variable=var)
-        else:
-            l = tk.Label(frame, text=fieldName)
-            l.grid(row=self.row, column=0, sticky=tk.W)
-            values = self.enumDict.get(fieldName, schema.get('enum'))
-            if values is None:
-                c = tk.Entry(frame, width=64, textvariable=var)
-            elif fieldType == 'array':
-                c = ttk.Frame(frame)
-                def array_changed(fieldName, key, var):
-                    values = set(json_loads(var.get()))
-                    if self.array[fieldName][key].get():
-                        values.add(key)
-                    else:
-                        values.discard(key)
-                    var.set(json.dumps(list(values)))
-                elements = self.array[fieldName] = {}
-                for k, v in values.items():
-                    elements[k] = tk.BooleanVar(value=k in getattr(self.obj, fieldName))
-                    btn = tk.Checkbutton(c, text = k + ': ' + v,
-                        command=lambda *args, fieldName=fieldName, key=k, var=var: array_changed(fieldName, key, var),
-                        variable=elements[k])
-                    btn.grid(sticky=tk.W)
-                    base = getattr(self.base_obj, fieldName)
-                    if base is not None and k in base:
-                        btn.configure(state='disabled')
+            c = ttk.Checkbutton(frame, variable=var)
+        elif fieldType == 'array':
+            c = ttk.Frame(frame, takefocus=False)
+            def array_changed(fieldName, key, var):
+                values = set(json_loads(var.get()))
+                if self.array[fieldName][key].get():
+                    values.add(key)
+                else:
+                    values.discard(key)
+                var.set(json.dumps(list(values)))
+            elements = self.array[fieldName] = {}
+            if self.objectType == 'Config' and fieldName == 'options':
+                optionlib = load_option_library()
+                values = optionlib.keys()
+                details = {k: v['description'] for k, v in optionlib.items()}
             else:
-                c = ttk.Combobox(frame, values=values, textvariable=var)
+                values = schema['items']['enum']
+                details = {}
+            for k in values:
+                elements[k] = tk.BooleanVar(value=k in getattr(self.obj, fieldName))
+                btn = tk.Checkbutton(c, text=k + ': ' + details.get(k, '?'),
+                    command=lambda *args, fieldName=fieldName, key=k, var=var: array_changed(fieldName, key, var),
+                    variable=elements[k])
+                btn.grid(sticky=tk.W)
+                base = getattr(self.base_obj, fieldName)
+                if base is not None and k in base:
+                    btn.configure(state='disabled')
+        elif values is None:
+            if fieldFormat == 'filename' or fieldFormat == 'dirname':
+                c = ttk.Combobox(frame, textvariable=var)
+            else:
+                c = tk.Entry(frame, width=32, textvariable=var)
+        else:
+            values.sort()
+            c = ttk.Combobox(frame, values=values, textvariable=var)
+            if self.objectType == 'Partition':
                 if fieldName == 'subtype':
                     def set_subtype_values():
                         t = self['type'].get_value()
-                        t = partition.TYPES[t]
-                        values = partition.SUBTYPES.get(t, [])
-                        c.configure(values=list(values))
+                        t = partition.TYPES.get(t)
+                        subtypes = list(partition.SUBTYPES.get(t, []))
+                        subtypes.sort()
+                        c.configure(values=subtypes)
                     c.configure(postcommand=set_subtype_values)
-        self[fieldName] = Field(var, c)
+                if fieldName == 'type' or fieldName == 'subtype' or fieldName == 'build.target':
+                    def update(e):
+                        self.updateBuildTargets()
+                    c.bind('<<ComboboxSelected>>', update)
+                    c.bind('<FocusOut>', update)
+                    c.bind('<Return>', update)
 
-        if fieldName == 'name':
-            # Name is read-only for inherited devices/partitions
-            if self.is_inherited:
-                disabled = self.is_inherited
+        field = self[fieldName] = Field(fieldName, schema, var, c)
+
+        if fieldFormat == 'filename':
+            field.addBrowse(True)
+        elif fieldFormat == 'dirname':
+            field.addBrowse(False)
+
+        # Help text in status bar
+        def setStatus(f):
+            title = f.schema.get('title', f.name)
+            desc = f.schema.get('description', None)
+            self.editor.status.set("%s: %s" % (title, desc))
+        c.bind('<FocusIn>', lambda event, f=field: setStatus(f))
+        c.bind('<FocusOut>', lambda event: self.editor.status.set(''))
+
+        # Manage address/size fields with scale controls and two additional virtual fields
+        if self.objectType == 'Partition':
+            part = self.obj
+            field.align = part.alignment(self.editor.config.arch)
+            min_address = part.address - part.unused_before
+            next_address = part.address + part.size + part.unused_after # max address +1
+            max_size = next_address - min_address
+            if fieldName == 'address':
+                def change(address):
+                    field.set_value(addr_format(address))
+                    f_size = self['size']
+                    f_size.set_scale_max(next_address - address)
+                    self['unused_before'].set_scale(address - min_address)
+                    self['next'].set_scale(address + f_size.get_scale())
+                field.addScale(part.address - part.unused_before, part.address + part.unused_after, change)
+            elif fieldName == 'size':
+                def change(size):
+                    field.set_value(size_format(size))
+                    f_address = self['address']
+                    f_address.set_scale_max(next_address - size)
+                    address = parse_int(f_address.get_value())
+                    f_unused_before = self['unused_before']
+                    f_unused_before.set_scale_max(max_size - size)
+                    f_next = self['next']
+                    f_next.set_scale_min(address + size - f_unused_before.get_scale())
+                    f_next.set_scale(address + size)
+                    f_unused_after = self['unused_after']
+                    f_unused_after.set_scale_max(max_size - size)
+                    f_unused_after.set_scale(next_address - address - size)
+                field.addScale(field.align, part.size + part.unused_after, change)
+            elif fieldName == 'unused_before':
+                value = size_format(part.unused_before)
+                field.set_value(value)
+                def change(unused_before):
+                    field.set_value(size_format(unused_before))
+                    self['unused_after'].set_scale(max_size - self['size'].get_scale() - unused_before)
+                field.addScale(0, part.unused_before + part.unused_after, change)
+            elif fieldName == 'next':
+                value = addr_format(part.address + part.size)
+                field.set_value(value)
+                def change(next):
+                    field.set_value(addr_format(next))
+                    size = self['size'].get_scale()
+                    self['unused_before'].set_scale(part.unused_before + next - size - part.address)
+                field.addScale(part.address + part.size - part.unused_before, next_address, change)
+            elif fieldName == 'unused_after':
+                value = size_format(part.unused_after)
+                field.set_value(value)
+                def change(unused_after):
+                    field.set_value(size_format(unused_after))
+                    size = self['size'].get_scale()
+                    address = next_address - unused_after - size
+                    self['address'].set_scale(address)
+                    self['unused_before'].set_scale(part.unused_before + address - part.address)
+                field.addScale(0, part.unused_before + part.unused_after, change)
+
+        # Name is read-only for inherited devices/partitions
+        if fieldName == 'name' and self.is_inherited:
+            disabled = True
         # Internal 'partitions' are generally not editable, but make an exception to allow
         # creation of new partitions (on an 'unused' type) or changing the partition table offset
-        if self.objectType == 'Partition' and self.is_inherited and self.obj.is_internal() and not self.obj.is_unused():
+        elif self.objectType == 'Partition' and self.is_inherited and self.obj.is_internal() and not self.obj.is_unused():
             if not (self.obj.is_internal(partition.INTERNAL_PARTITION_TABLE) and fieldName == 'address'):
                 disabled = True
         if disabled:
-            c.configure(state='disabled')
-        c.grid(row=self.row, column=1, sticky=tk.EW)
+            field.enable(False)
+        else:
+            c.bind('<Key-Escape>', lambda event: field.set_value(value))
+        field.grid(self.row)
         self.row += 1
-        return c
+
+        if self.objectType == 'Partition' and fieldName == 'size':
+            self.addControl('next')
+            self.addControl('unused_after')
+
+        return field
+
+
+    def updateBuildTargets(self):
+        t = self['type'].get_value()
+        subtype = self['subtype'].get_value()
+        builders = {}
+        for n, v in config.schema.builders.items():
+            if t == v['partition']['type'] and subtype == v['partition']['subtype']:
+                builders[n] = v
+        self['build.target'].widget.configure(values=list(builders.keys()))
+
+        for k, v in self.items():
+            if k.startswith('build.'):
+                v.hide()
+        if len(builders) == 0:
+            return
+        target = self['build.target']
+        target.show()
+        builder = builders.get(target.get_value())
+        if builder is None:
+            target.set_value('')
+            return
+        for k in builder['properties']:
+            self['build.' + k].show()
+        self.editor.sizeEdit()
 
     def apply(self):
         # Fetch base JSON for comparison
@@ -249,13 +594,17 @@ class EditState(dict):
         base = {} if base is None else base.dict()
         new_name = None
         try:
-            for k, f in self.items():
-                if f.is_disabled():
+            for fieldName, field in self.items():
+                if not field.is_enabled():
                     continue
-                value = f.get_value()
-                schema = self.get_property(k)
+                value = field.get_value()
+                schema = self.get_property(fieldName)
                 fieldType = schema.get('type')
-                if k == 'name' and json_dict is not None:
+                o, k = resolve_key(obj, fieldName)
+                if not field.is_visible():
+                    if k in o:
+                        del o[k]
+                elif fieldName == 'name' and json_dict is not None:
                     value = value.strip()
                     if value != self.name:
                         if value in self.editor.config.map():
@@ -265,23 +614,30 @@ class EditState(dict):
                         new_name = value
                         # If renaming a device, then all partitions must be updated
                         if self.objectType == 'Device':
-                            for n, p in json_config.get('partitions', {}).items():
+                            for p in json_config.get('partitions', {}).values():
                                 if p.get('device') == self.name:
                                     p['device'] = new_name
-                elif k == 'address' and self.objectType == 'Partition' and self.obj.is_internal(partition.INTERNAL_PARTITION_TABLE):
+                elif 'virtual' in field.schema:
+                    continue
+                elif fieldName == 'address' and self.objectType == 'Partition' and self.obj.is_internal(partition.INTERNAL_PARTITION_TABLE):
                     json_config['partition_table_offset'] = value
-                elif value == '' and k != 'filename': # TODO mark 'allow empty' values in schema somehow
-                    if k in obj:
-                        del obj[k]
-                elif fieldType == 'object' or fieldType == 'array':
-                    obj[k] = {} if value == '' else json_loads(value)
+                elif value == '' and fieldName != 'filename': # TODO mark 'allow empty' values in schema somehow
+                    if k in o:
+                        del o[k]
+                elif fieldType == 'array':
+                    o[k] = {} if value == '' else json_loads(value)
                 elif fieldType == 'boolean':
-                    obj[k] = (value != '0')
+                    o[k] = (value != '0')
                 elif value.isdigit() and 'integer' in fieldType:
-                    obj[k] = int(value)
+                    o[k] = int(value)
                 else:
-                    obj[k] = value
-                if k in base and obj.get(k) == base[k]:
+                    o[k] = value
+                obj_base, key_base = resolve_key(base, fieldName)
+                if key_base in obj_base and o.get(k) == obj_base[key_base]:
+                    del o[k]
+
+            for k in list(obj.keys()):
+                if obj[k] == {} or obj[k] == []:
                     del obj[k]
 
             if len(obj) == 0:
@@ -289,14 +645,12 @@ class EditState(dict):
                 if len(json_dict) == 0:
                     del json_config[self.dictName]
 
-
-            if self.editor.verify_config(json_config):
-                self.editor.set_json(json_config)
-                if new_name is not None:
-                    self.name = new_name
-                if self.objectType != 'Config':
-                    self.editor.selected = self.name
-                self.editor.reload()
+            self.editor.json = self.editor.verify_config(json_config)
+            if new_name is not None:
+                self.name = new_name
+            if self.objectType != 'Config':
+                self.editor.selected = self.name
+            self.editor.reload()
         except Exception as err:
             self.editor.user_error(err)
             raise err
@@ -321,10 +675,12 @@ class EditState(dict):
         self.editor.reload()
 
     def get_property(self, name):
-        if name == 'name':
-            return {'type': 'text'}
-        else:
-            return self.schema['properties'][name]
+        """Get field property from schema"""
+        prop = self.schema['properties'].get(name, None)
+        if prop is None:
+            prop = virtual_fields[name]
+            prop['virtual'] = True
+        return prop
 
     def nameChanged(self):
         return self.name != self['name'].get_value()
@@ -384,8 +740,7 @@ class TkMap(tk.Frame):
         super().__init__(parent)
         self.pack(fill=tk.BOTH)
         self.editor = editor
-        self.device = None
-        self.selected_id = None
+        self.selected = ''
         self.bytesPerPixel = 32
         self.maxPartitionDrawSize = 0x4000
         canvas = self.canvas = tk.Canvas(self, height=150, xscrollincrement=1)
@@ -422,12 +777,13 @@ class TkMap(tk.Frame):
 
         self.clear()
 
-        if self.device is None:
+        self.selected = self.editor.selected
+        device = self.device = resolve_device(self.editor.config, self.selected)
+        if device is None:
             return
 
-        device = self.device
         canvas = self.canvas
-        partitions = list(filter(lambda p: p.device == self.device, self.editor.config.map()))
+        partitions = list(filter(lambda p: p.device == device, self.editor.config.map()))
 
         # Minimum width (in pixels) to draw a partition
         minPartitionWidth = M
@@ -563,7 +919,7 @@ class TkMap(tk.Frame):
         canvas.config(scrollregion=(0, 0, self.scroll_width, 0))
 
         # Highlight the selected item (if any)
-        item = self.items.get(self.selected_id)
+        item = self.items.get(self.selected)
         if item is not None:
             self.canvas.itemconfigure(item, width=3)
 
@@ -601,23 +957,24 @@ class TkMap(tk.Frame):
         if not (shift or control):
             self.canvas.xview_scroll(delta, tk.UNITS)
 
-    def set_device(self, dev):
-        if self.device != dev:
-            self.device = dev
-            self.update()
-
     def select(self):
         id = self.editor.selected
-        if id == self.selected_id:
+        if id == self.selected:
             return
-        item = self.items.get(self.selected_id)
-        if item is not None:
-            self.canvas.itemconfigure(item, width=1)
+        dev = resolve_device(self.editor.config, id)
+        if dev != self.device:
+            self.selected = id
+            self.device = dev
+            self.update()
+        else:
+            item = self.items.get(self.selected)
+            if item is not None:
+                self.canvas.itemconfigure(item, width=1)
         item = self.items.get(id)
         if item is None:
             return
         self.canvas.itemconfigure(item, width=3)
-        self.selected_id = id
+        self.selected = id
         # Ensure item is visible
         pos = self.canvas.coords(item)
         id_x1 = pos[0] / self.scroll_width
@@ -750,15 +1107,7 @@ class TkTree(tk.Frame):
         if tree.exists(id) and tree.focus() != id:
             tree.focus(id)
             tree.selection_set(id)
-
-
-class Schema(dict):
-    def __init__(self, filename):
-        with open(filename) as f:
-            self.schema = json.load(f, object_pairs_hook=OrderedDict)
-
-    def __getitem__(self, name):
-        return self.schema['definitions'][name]
+            tree.see(id)
 
 
 class Editor:
@@ -767,14 +1116,12 @@ class Editor:
         self.main = root
         self.edit = None
         self.selected = ''
-        self.config_vars = load_config_vars('config.mk')
-        self.config_vars.update(load_config_vars('debug.mk'))
         self.initialise()
 
     def initialise(self):
         self.main.option_add('*tearOff', False)
-
-        self.schema = Schema(os.environ['HWCONFIG_SCHEMA'])
+        s = ttk.Style()
+        s.configure('Browse.TButton', padding=0)
 
         hwFilter = [('Hardware Profiles', '*' + HW_EXT)]
 
@@ -789,7 +1136,7 @@ class Editor:
                 title='Select profile ' + HW_EXT + ' file',
                 filetypes=hwFilter,
                 initialdir=os.getcwd())
-            if filename != '' and checkProfilePath(filename):
+            if len(filename) != 0 and checkProfilePath(filename):
                 self.loadConfig(filename)
 
         def fileSave():
@@ -799,29 +1146,29 @@ class Editor:
                 filetypes=hwFilter,
                 initialfile=filename,
                 initialdir=os.getcwd())
-            if filename != '' and checkProfilePath(filename):
+            if len(filename) != 0 and checkProfilePath(filename):
                 ext = os.path.splitext(filename)[1]
                 if ext != HW_EXT:
                     filename += HW_EXT
-                with open(filename, "w") as f:
-                    json.dump(self.json, f, indent=4)
+                json_save(self.json, filename)
 
         # Toolbar
         toolbar = ttk.Frame(self.main)
         toolbar.pack(side=tk.TOP, fill=tk.X)
-        btn = ttk.Button(toolbar, text="New", command=fileNew)
-        btn.grid(row=0, column=1)
-        btn = ttk.Button(toolbar, text="Open...", command=fileOpen)
-        btn.grid(row=0, column=2)
-        btn = ttk.Button(toolbar, text="Save...", command=fileSave)
-        btn.grid(row=0, column=3)
+        col = 0
+        def addButton(text, command):
+            btn = ttk.Button(toolbar, text=text, command=command)
+            nonlocal col
+            btn.grid(row=0, column=col)
+            col += 1
+        addButton('New', fileNew)
+        addButton('Open...', fileOpen)
+        addButton('Save...', fileSave)
         sep = ttk.Separator(toolbar, orient=tk.VERTICAL)
-        sep.grid(row=0, column=4, sticky=tk.NS)
-        btn = ttk.Button(toolbar, text='Edit Config', command=self.editConfig)
-        btn.grid(row=0, column=5)
-        btn = ttk.Button(toolbar, text='Add Device', command=self.addDevice)
-        btn.grid(row=0, column=6)
-
+        sep.grid(row=0, column=col, sticky=tk.NS)
+        col += 1
+        addButton('Edit Config', self.editConfig)
+        addButton('Add Device', self.addDevice)
 
         # Group main controls into areas which can be re-sized by the user
         pwin = ttk.PanedWindow(self.main, orient=tk.VERTICAL)
@@ -849,7 +1196,6 @@ class Editor:
         canvas['yscrollcommand'] = s.set
         def configure(event):
             canvas.config(scrollregion=(0, 0, 0, self.editFrame.winfo_height()))
-            canvas.config(width = self.editFrame.winfo_width())
         self.editFrame.bind('<Configure>', configure)
 
 
@@ -859,21 +1205,20 @@ class Editor:
         def apply(*args):
             try:
                 json_config = json_loads(self.jsonEditor.get('1.0', 'end'))
-                if self.verify_config(json_config):
-                    self.set_json(json_config)
-                    self.updateWindowTitle()
-                    self.reload()
+                self.json = self.verify_config(json_config)
+                self.updateWindowTitle()
+                self.reload()
             except Exception as err:
                 self.user_error(err)
         def undo(*args):
             self.jsonEditor.replace('1.0', 'end', to_json(self.json))
-        f = ttk.Frame(frame)
+        f = ttk.Frame(frame, padding=(0, 8))
         f.pack(anchor=tk.S, side=tk.BOTTOM)
-        btn = ttk.Button(f, text="Apply", command=apply)
+        btn = ttk.Button(f, text='Apply', command=apply)
         btn.grid(row=0, column=0)
-        btn = ttk.Button(f, text="Undo", command=undo)
+        btn = ttk.Button(f, text='Undo', command=undo)
         btn.grid(row=0, column=1)
-        self.jsonEditor = tk.Text(frame, height=14)
+        self.jsonEditor = tk.Text(frame, width=10, height=14)
         self.jsonEditor.pack(anchor=tk.N, side=tk.LEFT, expand=True, fill=tk.BOTH)
         s = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=self.jsonEditor.yview)
         s.pack(anchor=tk.NE, side=tk.RIGHT, fill=tk.Y)
@@ -885,6 +1230,11 @@ class Editor:
         status.pack(side=tk.BOTTOM, fill=tk.X)
 
         self.reset()
+
+    def sizeEdit(self):
+        self.main.update_idletasks()
+        w = self.editFrame.winfo_width()
+        self.editCanvas.config(width=w+8)
 
     def user_error(self, err):
         self.status.set(err)
@@ -903,19 +1253,18 @@ class Editor:
     def loadConfig(self, filename):
         self.reset()
         # If this is a core profile, don't edit it but create a new profile based on it
-        if filename.startswith(os.environ['SMING_HOME']):
+        dirname = os.path.dirname(filename)
+        smingHome = fixpath(configVars['SMING_HOME'])
+        if dirname == smingHome or dirname.startswith(smingHome + '/Arch/'):
             config_name = os.path.splitext(os.path.basename(filename))[0]
             self.json['base_config'] = config_name
         else:
-            with open(filename) as f:
-                json_config = json_loads(f.read())
+            self.json = json_load(filename)
 
         options = get_dict_value(self.json, 'options', [])
-        for opt in os.environ.get('HWCONFIG_OPTS', '').replace(' ', '').split():
+        for opt in configVars.get('HWCONFIG_OPTS', '').replace(' ', '').split():
             if not opt in options:
                 options.append(opt)
-
-        self.set_json(json_config)
 
         self.reload()
         self.updateWindowTitle()
@@ -930,38 +1279,37 @@ class Editor:
         self.main.title(self.config.arch + ' ' + name + ' - ' + app_name)
 
     def verify_config(self, json_config):
-        try:
-            Config.from_json(json_config).verify(False)
-            return True
-        except Exception as err:
-            self.user_error(err)
-            return False
-
-    def set_json(self, json_config):
-        # Keep output order consistent
-        self.json = {}
-        for k in self.schema['Config']['properties'].keys():
-            if k in json_config:
-                self.json[k] = json_config[k]
+        """Raises an exception if any problems are found in the configuration.
+        On success, returns a consistently-ordered JSON configuration.
+        """
+        cfg = Config.from_json(json_config)
+        cfg.verify(False)
+        res = OrderedDict()
+        for key in config.schema['Config']['properties'].keys():
+            if key in json_config:
+                value = json_config[key]
+                if key == 'devices':
+                    names = list(dev.name for dev in cfg.devices)
+                elif key == 'partitions':
+                    names = list(p.name for p in cfg.map())
+                else:
+                    res[key] = value
+                    continue
+                output = res[key] = OrderedDict()
+                for n in names:
+                    if n in value:
+                        output[n] = value[n]
+        return res
 
     def reset(self):
         self.tree.clear()
         self.map.clear()
         self.status.set('')
-        self.json = {"name": "New Profile"}
+        self.json = OrderedDict()
+        self.json['name'] = 'New Profile'
         self.json['base_config'] = 'standard'
         self.reload()
         self.updateWindowTitle()
-
-    def resolve_path(self, path):
-        tmp = str(path)
-        while True:
-            tmp = tmp.replace('(', '{')
-            tmp = tmp.replace(')', '}')
-            new_path = string.Template(tmp).substitute(self.config_vars)
-            if new_path == tmp:
-                return new_path
-            tmp = new_path
 
     class Used:
         def __init__(self):
@@ -973,7 +1321,7 @@ class Editor:
         used = self.Used()
         if part.filename != '':
             try:
-                used.path = self.resolve_path(part.filename)
+                used.path = configVars.resolve_path(part.filename)
                 if os.path.exists(used.path):
                     used.size = os.path.getsize(used.path)
                     used.text = size_frac_str(used.size)
@@ -984,9 +1332,6 @@ class Editor:
         return used
 
     def reload(self):
-        with open(find_config(self.json['base_config'])) as f:
-            self.json_base_config = json_loads(f.read())
-
         self.jsonEditor.replace('1.0', 'end', to_json(self.json))
         try:
             config = Config.from_json(self.json)
@@ -996,16 +1341,15 @@ class Editor:
 
         self.status.set('')
         self.config = config
+        self.json_base_config = json_load(find_config(self.json['base_config']))
 
+        if self.selected == '':
+            self.selected = get_id(self.config.devices[0])
         self.map.update()
         self.tree.update()
 
     def select(self, obj):
         self.selected = get_id(obj)
-        if isinstance(obj, partition.Entry):
-            self.map.set_device(obj.device)
-        else:
-            self.map.set_device(obj)
         self.map.select()
         self.tree.select()
 
@@ -1015,18 +1359,17 @@ class Editor:
     def editConfig(self):
         if self.is_editing(self.config):
             return
-        enumDict = {}
-        enumDict['base_config'] = list(get_config_list().keys())
-        optionlib = load_option_library()
-        options = {}
-        for k, v in optionlib.items():
-            options[k] = v['description']
-        enumDict['options'] = options
-        self.edit = EditState(self, 'Config', None, self.config, enumDict)
+        # If we're editing a new device, for example, cancel it
+        id = self.tree.tree.focus()
+        if id != self.selected:
+            obj = resolve_id(self.config, id)
+            if obj is not None:
+                self.select(obj)
+        self.edit = EditState(self, 'Config', None, self.config)
 
     def addDevice(self):
         dev = storage.Device('New device')
-        self.editDevice(dev)
+        self.edit = EditState(self, 'Device', 'devices', dev)
 
     def editDevice(self, dev):
         if isinstance(dev, str):
@@ -1034,9 +1377,7 @@ class Editor:
         if self.is_editing(dev):
             return
         self.select(dev)
-        enumDict = {}
-        enumDict['type'] = list((storage.TYPES).keys())
-        self.edit = EditState(self, 'Device', 'devices', dev, enumDict)
+        self.edit = EditState(self, 'Device', 'devices', dev)
 
     def editPartition(self, part):
         if isinstance(part, str):
@@ -1044,10 +1385,7 @@ class Editor:
         if self.is_editing(part):
             return
         self.select(part)
-        enumDict = {}
-        enumDict['type'] = list((partition.TYPES).keys() - ['storage', 'internal'])
-        enumDict['subtype'] = []
-        self.edit = EditState(self, 'Partition', 'partitions', part, enumDict)
+        self.edit = EditState(self, 'Partition', 'partitions', part)
 
 
 def main():

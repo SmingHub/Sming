@@ -32,10 +32,30 @@ public:
 	T peek() const;		  // get the next element without releasing it from the FILO
 	void flush();		  // reset to default state
 
+	bool empty() const
+	{
+		return numberOfElements == 0;
+	}
+
+	bool full() const
+	{
+		return numberOfElements >= rawSize;
+	}
+
 	// how many elements are currently in the FILO?
 	unsigned int count() const override
 	{
 		return numberOfElements;
+	}
+
+	const T& operator[](unsigned int index) const override
+	{
+		return raw[index]; /* unsafe */
+	}
+
+	T& operator[](unsigned int index) override
+	{
+		return raw[index]; /* unsafe */
 	}
 
 private:

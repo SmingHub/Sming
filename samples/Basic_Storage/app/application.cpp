@@ -17,7 +17,8 @@ void listDevices()
 		Serial.print(_F(", size = 0x"));
 		Serial.print(dev.getSize(), HEX);
 		Serial.print(_F(", ID = 0x"));
-		Serial.println(dev.getId(), HEX);
+		Serial.print(dev.getId(), HEX);
+		Serial.println();
 	}
 	Serial.println();
 }

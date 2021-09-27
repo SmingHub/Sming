@@ -70,6 +70,11 @@ public:
 		HOST_THREAD_DEBUG("Thread '%s' complete", name);
 	}
 
+	bool isCurrent() const
+	{
+		return pthread_equal(pthread_self(), m_thread) != 0;
+	}
+
 	/*
 	 * Called at the start of any code which affects framework variables.
 	 * Will block if any another thread is running in interrupt context.

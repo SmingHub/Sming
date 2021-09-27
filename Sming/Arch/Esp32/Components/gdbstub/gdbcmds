@@ -1,0 +1,5 @@
+# Enable this if you want to log all traffic between GDB and the stub
+#set remotelogfile gdb_rsp_logfile.txt
+
+# Display a welcome prompt
+echo \nWelcome to SMING!\nType 'c' (continue) to run application\n\n

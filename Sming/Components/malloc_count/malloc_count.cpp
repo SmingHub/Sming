@@ -275,7 +275,7 @@ extern "C" void mc_free(void* ptr)
 		dec_count(size);
 
 		if(size >= logThreshold) {
-			log("free(%p) -> %u (cur %u)", ptr, size, stats.current);
+			log("free(%p) -> %u (cur %u)", (char*)ptr + alignment, size, stats.current);
 		}
 	}
 
@@ -328,9 +328,10 @@ extern "C" void* mc_realloc(void* ptr, size_t size)
 
 	if(size >= logThreshold) {
 		if(newptr == ptr) {
-			log("realloc(%u -> %u) = %p (cur %u)", oldsize, size, newptr, stats.current);
+			log("realloc(%u -> %u) = %p (cur %u)", oldsize, size, (char*)newptr + alignment, stats.current);
 		} else {
-			log("realloc(%u -> %u) = %p -> %p (cur %u)", oldsize, size, ptr, newptr, stats.current);
+			log("realloc(%u -> %u) = %p -> %p (cur %u)", oldsize, size, (char*)ptr + alignment,
+				(char*)newptr + alignment, stats.current);
 		}
 	}
 

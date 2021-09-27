@@ -1,5 +1,15 @@
 // List of test modules to register
 
+// Architecture-specific test modules
+#ifdef ARCH_HOST
+#define ARCH_TEST_MAP(XX)                                                                                              \
+	XX(Hosted)                                                                                                         \
+	XX(HttpRequest)                                                                                                    \
+	XX(TcpClient)
+#else
+#define ARCH_TEST_MAP(XX)
+#endif
+
 #define TEST_MAP(XX)                                                                                                   \
 	XX(Libc)                                                                                                           \
 	XX(PreCache)                                                                                                       \
@@ -26,4 +36,4 @@
 	XX(Rational)                                                                                                       \
 	XX(Clocks)                                                                                                         \
 	XX(Timers)                                                                                                         \
-	XX(HttpRequest)
+	ARCH_TEST_MAP(XX)

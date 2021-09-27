@@ -289,8 +289,8 @@ void String::move(String& rhs)
 
 	auto rhs_len = rhs.length();
 	if(rhs.sso.set) {
-		// Switch to SSO if required
-		reserve(rhs_len);
+		// Switch to SSO if required (note: we don't rely on this succeeding)
+		(void)reserve(rhs_len);
 	}
 
 	// If we already have capacity, copy the data and free rhs buffers

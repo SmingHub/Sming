@@ -1,0 +1,9 @@
+{
+    "base_config": "basic_ifs",
+    "arch": "Esp32",
+    "partitions": {
+        "factory": {
+            "size": "960K"
+        }
+    }
+}

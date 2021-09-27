@@ -1,7 +1,7 @@
 Windows Installation
 ====================
 
-.. highlight:: powershell
+.. highlight:: batch
 
 This page describes how to install the required tools and obtain the current
 release version of Sming using the `Chocolatey <https://chocolatey.org>`__ package manager.
@@ -36,7 +36,7 @@ At the moment the Esp32 toolchain is not installed by default. If you want to in
    It is also inadvisable to continue running with elevated privileges.
 
 If you followed and executed carefully the steps above Sming should be installed and configured.
-You can scroll down to :ref:`Build Basic_Blink` to check the installation.
+You can scroll down to `Build Basic_Blink`_ to check the installation.
 
 Optional step: Switch to stable version
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -59,4 +59,15 @@ template <typename T> Iterator findPartition(T subType)
 	return Iterator(Partition::Type(T::partitionType), uint8_t(subType));
 }
 
+template <typename T> Storage::Partition findDefaultPartition(T subType)
+{
+	auto part = *Storage::findPartition(subType);
+	if(part) {
+		debug_i("[%s] Found '%s'", part.typeString().c_str(), part.name().c_str());
+	} else {
+		debug_e("[%s] No partition found", toString(subType).c_str());
+	}
+	return part;
+}
+
 } // namespace Storage

@@ -35,15 +35,22 @@ public:
 	 */
 	void attach(FileHandle file, size_t size);
 
-	bool open(const Stat& stat, OpenFlags openFlags = OpenFlag::Read);
-
-	/** @brief Open a file and attach this stream object to it
-	 *  @param fileName
+	/** @brief Open a file by path, and attach this stream object to it
+	 *  @param fileName Full path to file
 	 *  @param openFlags
 	 *  @retval bool true on success, false on error
 	 *  @note call getLastError() to determine cause of failure
 	 */
 	bool open(const String& fileName, IFS::OpenFlags openFlags = OpenFlag::Read);
+
+	/** @brief Open a file and attach this stream object to it
+	 *  @param dir Location of file
+	 *  @param fileName Name of file
+	 *  @param openFlags
+	 *  @retval bool true on success, false on error
+	 *  @note call getLastError() to determine cause of failure
+	 */
+	bool open(DirHandle dir, const String& name, OpenFlags openFlags = OpenFlag::Read);
 
 	/** @brief Close file
 	 */
@@ -61,6 +68,8 @@ public:
 		char c;
 		return readBytes(&c, 1) ? static_cast<unsigned char>(c) : -1;
 	}
+
+	using ReadWriteStream::readBytes;
 
 	size_t readBytes(char* buffer, size_t length) override;
 
@@ -137,6 +146,13 @@ public:
 	bool truncate()
 	{
 		return truncate(pos);
+	}
+
+	bool stat(Stat& s)
+	{
+		GET_FS(false)
+
+		return check(fs->fstat(handle, &s));
 	}
 
 private:

@@ -15,6 +15,10 @@ To achieve this do the following:
 
 1) Check the :ref:`hardware_config` especially ``flash_size`` setting.
 
+.. note::
+
+   If you're not sure what size the flash memory is on your device, run `make flashid` to check.
+
 2) Run ``flashinit``::
 
       cd $SMING_HOME/../samples/Basic_Blink
@@ -25,4 +29,8 @@ To achieve this do the following:
 
 3) Re-program your device::
 
-   make flash
+      make flash
+
+4) Verify flash data has been written successfully
+
+      make verifyflash

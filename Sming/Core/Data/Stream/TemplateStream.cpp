@@ -14,6 +14,7 @@ String TemplateStream::evaluate(char*& expr)
 {
 	auto end = strchr(expr, '}');
 	if(end == nullptr) {
+		expr += strlen(expr);
 		return nullptr;
 	}
 
@@ -30,7 +31,7 @@ String TemplateStream::getValue(const char* name)
 	if(!s && getValueCallback) {
 		s = getValueCallback(name);
 	}
-	debug_d("TemplateStream: value '%s' %sfound: \"%s\"", name, s ? "" : "NOT ", s.c_str());
+	debug_d("[TMPL] value '%s' %sfound: \"%s\"", name, s ? "" : "NOT ", s.c_str());
 	return s;
 }
 
@@ -52,9 +53,16 @@ uint16_t TemplateStream::readMemoryBlock(char* data, int bufSize)
 		return sendValue();
 	}
 
+	if(valueWaitSize != 0) {
+		debug_d("[TMPL] #1");
+		size_t res = std::min(uint16_t(bufSize), valueWaitSize);
+		return stream->readMemoryBlock(data, res);
+	}
+
 	const size_t tagDelimiterLength = 1 + doubleBraces;
 
 	if(size_t(bufSize) <= TEMPLATE_MAX_VAR_NAME_LEN + (2 * tagDelimiterLength)) {
+		debug_d("[TMPL] #2");
 		return 0;
 	}
 
@@ -68,12 +76,23 @@ uint16_t TemplateStream::readMemoryBlock(char* data, int bufSize)
 	if(datalen != 0) {
 		data[datalen] = '\0'; // Terminate buffer to mitigate overflow risk
 		auto tagStart = findStartTag(data);
-		auto lastTagFound = tagStart;
 		while(tagStart != nullptr) {
-			lastTagFound = tagStart;
-
 			char* curPos = tagStart + tagDelimiterLength;
 			value = evaluate(curPos);
+			size_t tailpos = curPos - data;
+			if(tailpos >= datalen) {
+				debug_d("[TMPL #3]");
+				// Incomplete variable name, end tag not found in buffer
+				unsigned newlen = tagStart - data;
+				if(newlen + TEMPLATE_MAX_VAR_NAME_LEN > datalen) {
+					// Return what we have so far, unless we're at the end of the input stream
+					if(datalen == size_t(bufSize - 1)) {
+						debug_d("[TMPL #4]");
+						datalen = newlen;
+						break;
+					}
+				}
+			}
 			if(doubleBraces) {
 				// Double end brace isn't necessary, but if present skip it
 				if(*curPos == '}') {
@@ -112,18 +131,6 @@ uint16_t TemplateStream::readMemoryBlock(char* data, int bufSize)
 			// return only plain text from template without our variable
 			memmove(data, start, valueWaitSize);
 			return valueWaitSize;
-		}
-
-		if(lastTagFound != nullptr) {
-			unsigned newlen = lastTagFound - data;
-			if(newlen + TEMPLATE_MAX_VAR_NAME_LEN > datalen) {
-				debug_d("TemplateStream: trim end to %u from %u", newlen, datalen);
-				// It can be a incomplete variable name - don't split it
-				// provided we're not at end of input stream
-				if(datalen == size_t(bufSize)) {
-					datalen = newlen;
-				}
-			}
 		}
 	}
 
@@ -167,7 +174,7 @@ int TemplateStream::seekFrom(int offset, SeekOrigin origin)
 
 	if(valueWaitSize != 0) {
 		if(size_t(offset) > valueWaitSize) {
-			debug_e("TemplateStream: offset > valueWaitSize");
+			debug_e("[TMPL] offset > valueWaitSize");
 			return -1;
 		}
 		valueWaitSize -= offset;

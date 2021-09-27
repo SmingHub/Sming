@@ -36,11 +36,23 @@ void set_pll(void)
 	}
 }
 
+static void init_flash_code()
+{
+	spi_flash_set_read_func(NULL);
+	// Variable resets to 0xff, must be 0 or Cache_Read_Enable_New hangs
+	uint32_t addr = (uint32_t)&Cache_Read_Enable_New;
+	addr -= 8;
+	uint32_t** varptr = (uint32_t**)addr;
+	**varptr = 0;
+}
+
 static void user_start(void)
 {
 	ets_isr_mask(0x3FE);			  // disable interrupts 1..9
 	sleep_reset_analog_rtcreg_8266(); // spoils the PLL!
 	set_pll();
+
+	init_flash_code();
 
 	memset(&_bss_start, 0, &_bss_end - &_bss_start);
 

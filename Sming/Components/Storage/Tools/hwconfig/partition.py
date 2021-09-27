@@ -99,6 +99,7 @@ SUBTYPES = {
         "fat": 0x81,
         "spiffs": 0x82,
         "fwfs": 0xf1,
+        "littlefs": 0xf2,
     },
     STORAGE_TYPE: storage.TYPES,
     INTERNAL_TYPE: {
@@ -127,8 +128,9 @@ def parse_subtype(ptype, value):
 
 class Table(list):
 
-    def __init__(self):
+    def __init__(self, devices):
         super().__init__(self)
+        self.devices = devices
 
     def parse_dict(self, data, devices):
         partnames = []
@@ -143,11 +145,9 @@ class Table(list):
             part.parse_dict(entry, devices)
 
     def sort(self):
-        # Ensure spiFlash partitions are first in the list
         def get_key(p):
-            key = p.device.name + p.address_str()
-            if p.device.name == 'spiFlash':
-                key = ' ' + key
+            idx = self.devices.index(p.device)
+            key = "%02x%08x" % (idx, p.address)
             return key
         super().sort(key=get_key)
 
@@ -167,9 +167,6 @@ class Table(list):
             res += "%-16s  %10s  %10s  %10s  %-8s  %-8s  %-16s  %s\n" \
                 % (p.device.name, p.address_str(), p.end_str(), p.size_str(), p.type_str(), p.subtype_str(), p.name, p.filename)
         return res
-
-    def offset_str(self):
-        return addr_format(self.offset)
 
     def buildVars(self):
         dict = {}
@@ -230,19 +227,17 @@ class Table(list):
                 return p
         return None
 
-    def verify(self, arch, spiFlash, secure):
+    def verify(self, config, secure):
         """Verify partition layout
         """
         # verify each partition individually
         for p in self:
-            p.verify(arch, secure)
+            p.verify(config.arch, secure)
 
-        if self.offset % FLASH_SECTOR_SIZE != 0:
-            raise InputError("Partition table offset not aligned to flash sector")
-
-        p = self.find_by_address(spiFlash, self.offset)
+        spiFlash = config.devices[0]
+        p = self.find_by_address(spiFlash, config.partition_table_offset)
         if p is None:
-            p = self.find_by_address(spiFlash, self.offset + PARTITION_TABLE_SIZE - 1)
+            p = self.find_by_address(spiFlash, config.partition_table_offset + PARTITION_TABLE_SIZE - 1)
         if not p is None:
             raise InputError("Partition table conflict with '%s'" % p.name)
 
@@ -259,10 +254,10 @@ class Table(list):
             raise InputError("Partition names must be unique")
 
         # check for overlaps
-        if arch == 'Esp32':
-            minPartitionAddress = self.offset + PARTITION_TABLE_SIZE
+        if config.arch == 'Esp32':
+            minPartitionAddress = config.partition_table_offset + PARTITION_TABLE_SIZE
         else:
-            minPartitionAddress = 0x00002000
+            minPartitionAddress = config.bootloader_size
         dev = None
         last = None
         for p in self:
@@ -365,7 +360,9 @@ class Entry(object):
         self.encrypted = False
         self.filename = ''
         self.build = None
-
+        # Set during map construction
+        self.unused_before = 0
+        self.unused_after = 0
 
     def parse_dict(self, data, devices):
         """Construct a partition object from JSON definition
@@ -399,7 +396,10 @@ class Entry(object):
             raise InputError("Error in partition entry '%s': %s" % (self.name, e))
 
     def resolve_expressions(self):
-        self.address = eval(str(self.address))
+        try:
+            self.address = eval(str(self.address))
+        except Exception:
+            self.address = parse_int(self.address)
 
     def dict(self):
         res = {}
@@ -486,7 +486,7 @@ class Entry(object):
         return "Part '%s' %s/%s @ 0x%x size 0x%x" % (self.name, self.type_str(), self.subtype_str(), self.address or -1, self.size or -1)
 
     def alignment(self, arch):
-        return ALIGNMENT[arch].get(self.type, 4)
+        return ALIGNMENT[arch].get(self.type, 0x1000)
 
     def verify(self, arch, secure):
         if self.type is None:
@@ -560,7 +560,7 @@ class Entry(object):
 class Map(Table):
     """Contiguous map of flash memory
     """
-    def __init__(self, table, devices):
+    def __init__(self, config):
         def add(table, device, name, address, size, subtype):
             entry = Entry(device, name, address, size, INTERNAL_TYPE, subtype)
             table.append(entry)
@@ -568,34 +568,41 @@ class Map(Table):
 
         def add_unused(table, device, address, last_end):
             if address > last_end + 1:
-                add(table, device, '(unused)', last_end + 1, address - last_end - 1, INTERNAL_UNUSED)
+                return add(table, device, '(unused)', last_end + 1, address - last_end - 1, INTERNAL_UNUSED)
+            return None
 
-        device = devices[0]
+        device = config.devices[0]
 
         # Take copy of source partitions and add internal ones to appear in the map
-        partitions = copy.copy(table)
-        if table.offset != 0:
-            add(partitions, device, 'Boot Sector', 0, min(table.offset, partitions[0].address), INTERNAL_BOOT_SECTOR)
-            add(partitions, device, 'Partition Table', table.offset, PARTITION_TABLE_SIZE, INTERNAL_PARTITION_TABLE)
+        partitions = copy.copy(config.partitions)
+        if config.partition_table_offset != 0:
+            add(partitions, device, 'Boot Sector', 0, config.bootloader_size, INTERNAL_BOOT_SECTOR)
+            add(partitions, device, 'Partition Table', config.partition_table_offset, PARTITION_TABLE_SIZE, INTERNAL_PARTITION_TABLE)
 
         # Devices with no defined partitions
         pdevs = set(p.device for p in partitions)
-        for dev in devices:
+        for dev in config.devices:
             if not dev in pdevs:
                 add_unused(partitions, dev, dev.size, -1)
 
         partitions.sort()
 
+        unused = None
         last = None
         for p in partitions:
             if last is not None:
+                start = p.address if p.device == last.device else last.device.size
+                unused = add_unused(self, device, start, last.end())
+                if unused is not None:
+                    last.unused_after = unused.size
                 if p.device != last.device:
-                    add_unused(self, device, last.device.size, last.end())
                     device = p.device
-                    add_unused(self, device, p.address, -1)
-                elif p.address > last.end() + 1:
-                    add_unused(self, device, p.address, last.end())
+                    unused = add_unused(self, device, p.address, -1)
             self.append(p)
+            if unused is not None:
+                p.unused_before = unused.size
             last = p
 
-        add_unused(self, device, device.size, last.end())
+        unused = add_unused(self, device, device.size, last.end())
+        if unused is not None:
+            p.unused_after = unused.size

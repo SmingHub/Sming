@@ -1,0 +1,1 @@
+HWCONFIG := standard

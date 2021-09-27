@@ -21,23 +21,6 @@ Followed by::
 Configuration variables
 -----------------------
 
-These are read-only debug variables:
-
-.. envvar:: SDK_INTERNAL
-
-   **READONLY** When compiled using the current (version 3+) Espressif SDK this value is set to 1.
-
-
-.. envvar:: SDK_LIBDIR
-
-   **READONLY** Path to the directory containing SDK archive libraries
-
-
-.. envvar:: SDK_INCDIR
-
-   **READONLY** Path to the directory containing SDK header files
-
-
 Option variables:
 
 .. envvar:: ESP_VARIANT
@@ -68,3 +51,22 @@ or if multiple versions are installed. By default, the most current version will
 
    Location of ESP-IDF python.
 
+
+Background
+----------
+
+An empty ESP IDF project is built which generates a set of libraries and headers
+which the framework can then be built against.
+
+The project is located in ``project/{ESP_VARIANT}`.
+
+The code for this project is copied from ``sdk/project``.
+
+The default configuration settings are obtained from ``sdk/config`` and written
+to ``project/{ESP_VARIANT}/sdkconfig.defaults``.
+
+When ``sdk-menuconfig`` is run, the ``project/{ESP_VARIANT}/sdkconfig`` is modified.
+This can be reset using ``make sdk-config-clean``.
+
+If custom settings are required for a project then place these in a separate file
+and set :envvar:`SDK_CUSTOM_CONFIG` to the location, relative to the project source root directory.

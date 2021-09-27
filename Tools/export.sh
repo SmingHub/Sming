@@ -18,7 +18,12 @@
 #
 
 if [ -z "$SMING_HOME" ]; then
-    export SMING_HOME=$(readlink -m $BASH_SOURCE/../../Sming)
+    if [ $(basename $SHELL) = "zsh" ]; then
+        _SOURCE=${(%):-%N}
+    else
+        _SOURCE=$BASH_SOURCE
+    fi
+    export SMING_HOME=$(readlink -m $_SOURCE/../../Sming)
 fi
 
 # Common

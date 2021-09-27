@@ -54,22 +54,24 @@ public:
 
 	__forceinline bool isArmed() const
 	{
-		return int(osTimer.timer_next) != -1;
+		return os_timer_expire(&osTimer) != 0;
 	}
 
 	TickType ticks() const
 	{
-		if(!isArmed()) {
+		uint64_t expiry = os_timer_expire(&osTimer);
+		if(expiry == 0) {
 			return 0;
 		}
 
-		auto remain = int(osTimer.timer_expire - Clock::ticks());
+		int remain = expiry - Clock::ticks();
 		return (remain > 0) ? remain : 0;
 	}
 
 	~OsTimerApi()
 	{
 		disarm();
+		os_timer_done(&osTimer);
 	}
 
 	__forceinline void IRAM_ATTR setCallback(TimerCallback callback, void* arg)
@@ -100,9 +102,7 @@ public:
 	}
 
 private:
-	os_timer_t osTimer = {
-		reinterpret_cast<os_timer_t*>(-1), // Disarmed
-	};
+	os_timer_t osTimer = OS_TIMER_DEFAULT();
 	TickType interval = 0;
 };
 

@@ -33,7 +33,34 @@ public:
 		return add(const_cast<LinkedObject*>(object));
 	}
 
+	bool insert(LinkedObject* object)
+	{
+		if(object == nullptr) {
+			return false;
+		}
+
+		object->mNext = mHead;
+		mHead = object;
+		return true;
+	}
+
+	bool insert(const LinkedObject* object)
+	{
+		return insert(const_cast<LinkedObject*>(object));
+	}
+
 	bool remove(LinkedObject* object);
+
+	LinkedObject* pop()
+	{
+		if(mHead == nullptr) {
+			return nullptr;
+		}
+		auto obj = mHead;
+		mHead = mHead->mNext;
+		obj->mNext = nullptr;
+		return obj;
+	}
 
 	void clear()
 	{
@@ -98,12 +125,34 @@ public:
 		return nullptr;
 	}
 
+	bool add(ObjectType* object)
+	{
+		return LinkedObjectList::add(object);
+	}
+
+	bool add(const ObjectType* object)
+	{
+		return LinkedObjectList::add(object);
+	}
+
+	bool insert(ObjectType* object)
+	{
+		return LinkedObjectList::insert(object);
+	}
+
+	bool insert(const ObjectType* object)
+	{
+		return LinkedObjectList::insert(object);
+	}
+
+	ObjectType* pop()
+	{
+		return reinterpret_cast<ObjectType*>(LinkedObjectList::pop());
+	}
+
 	size_t count() const
 	{
-		size_t n{0};
-		for(auto p = mHead; p != nullptr; ++n, p = p->next()) {
-		}
-		return n;
+		return std::count_if(begin(), end(), [](const ObjectType&) { return true; });
 	}
 
 	bool contains(const ObjectType& object) const
@@ -119,6 +168,10 @@ public:
 template <typename ObjectType> class OwnedLinkedObjectListTemplate : public LinkedObjectListTemplate<ObjectType>
 {
 public:
+	OwnedLinkedObjectListTemplate() = default;
+
+	OwnedLinkedObjectListTemplate(const OwnedLinkedObjectListTemplate& other) = delete;
+
 	~OwnedLinkedObjectListTemplate()
 	{
 		clear();

@@ -3,8 +3,6 @@
 
 #ifdef ARCH_HOST
 #include <Storage/FileDevice.h>
-#include <IFS/SPIFFS/FileSystem.h>
-using FileSystem = IFS::FileSystem;
 #endif
 
 class SpiffsTest : public TestGroup
@@ -83,13 +81,13 @@ public:
 	 */
 	void checkSpiffsGen()
 	{
-		FileSystem::Info info;
+		IFS::FileSystem::Info info;
 		int err = fileGetSystemInfo(info);
 		CHECK(err >= 0);
 		debug_i("fs attr = %s", toString(info.attr).c_str());
 
-		FileSystem* fsOld;
-		if(info.attr[FileSystem::Attribute::NoMeta]) {
+		IFS::FileSystem* fsOld;
+		if(info.attr[IFS::FileSystem::Attribute::NoMeta]) {
 			fsOld = mountSpiffsFromFile("old", "spiffsgen/spiff_rom_orig.bin");
 		} else {
 			fsOld = mountSpiffsFromFile("old", "spiffsgen/spiff_rom_meta.bin");
@@ -105,7 +103,7 @@ public:
 		delete Storage::findDevice("old");
 	}
 
-	FileSystem* mountSpiffsFromFile(const String& tag, const String& filename)
+	IFS::FileSystem* mountSpiffsFromFile(const String& tag, const String& filename)
 	{
 		auto& hfs = IFS::Host::getFileSystem();
 		auto f = hfs.open(filename, IFS::File::ReadOnly);
@@ -118,7 +116,7 @@ public:
 		auto part = dev->createPartition(tag, Storage::Partition::SubType::Data::spiffs, 0, dev->getSize(),
 										 Storage::Partition::Flag::readOnly);
 
-		auto fs = new IFS::SPIFFS::FileSystem(part);
+		auto fs = IFS::createSpiffsFilesystem(part);
 		int err = fs->mount();
 		if(err < 0) {
 			debug_e("SPIFFS mount '%s' failed: %s", tag.c_str(), fs->getErrorString(err).c_str());
@@ -128,7 +126,7 @@ public:
 		}
 
 		debug_i("Mounted '%s' as '%s'", filename.c_str(), tag.c_str());
-		return FileSystem::cast(fs);
+		return fs;
 	}
 
 	void readCheck(IFS::FileSystem* fsOld, IFS::FileSystem* fsNew)

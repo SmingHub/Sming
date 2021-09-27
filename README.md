@@ -10,7 +10,7 @@ It supports multiple architectures as ESP8266 for example.
 [![Sponsors](https://opencollective.com/Sming/sponsors/badge.svg)](#financial-contributions)
 [![Download](https://img.shields.io/badge/download-~1.7M-orange.svg)](https://github.com/SmingHub/Sming/releases/latest)
 [![Build](https://travis-ci.org/SmingHub/Sming.svg?branch=develop)](https://travis-ci.org/SmingHub/Sming)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a450c9b4df08406dba81456261304ace)](https://app.codacy.com/app/slaff2/SmingOfficial?utm_source=github.com&utm_medium=referral&utm_content=SmingHub/Sming&utm_campaign=Badge_Grade_Dashboard)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/23ff16f8d550440787125b0d25ba7ada)](https://www.codacy.com/gh/SmingHub/Sming/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=SmingHub/Sming&amp;utm_campaign=Badge_Grade)
 [![Coverity Badge](https://img.shields.io/coverity/scan/12007.svg)](https://scan.coverity.com/projects/sminghub-sming)
 
 If you like **Sming**, give it a star, or fork it and [contribute](#contribute)!
@@ -44,7 +44,7 @@ Table of Contents
          * [Connect to WiFi](#connect-to-wifi)
          * [Read DHT22 sensor](#read-dht22-sensor)
          * [HTTP Client](#http-client)
-         * [OTA Application Update Based on rBoot](#ota-application-update-based-on-rboot)
+         * [OTA Application Update](#ota-application-update)
          * [HTTP Server](#http-server)
          * [Email Client](#email-client)
       * [Live Debugging](#live-debugging)
@@ -110,14 +110,14 @@ Linux and Windows OSes with gcc compilers are supported. Clang is NOT supported.
 
 ### Architecture: ESP32 (Experimental)
 
-Supported SDK: ESP-IDF v4.1
+Supported SDK: ESP-IDF v4.3. See https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp32/README.html.
 
 
 ## Releases
 
 ### Stable
 
-- [Sming V4.3.0](https://github.com/SmingHub/Sming/releases/tag/4.3.0) - great new features, performance and stability improvements.
+- [Sming V4.4.0](https://github.com/SmingHub/Sming/releases/tag/4.4.0) - great new features, performance and stability improvements.
 
 
 ### Long Term Support (LTS)
@@ -161,7 +161,7 @@ And check some of the examples.
 - [Connect to WiFi](#connect-to-wifi)
 - [Read DHT22 sensor](#read-dht22-sensor)
 - [HTTP Client](#http-client)
-- [OTA Application Update Based on rBoot](#ota-application-update-based-on-rboot)
+- [OTA Application Update](#ota-application-update)
 - [HTTP Server](#http-server)
 - [Email Client](#email-client)
 
@@ -236,44 +236,31 @@ void onDataSent(HttpClient& client, bool successful)
 
 For more examples take a look at the [HttpClient](samples/HttpClient/app/application.cpp), [HttpClient_Instapush](samples/HttpClient_Instapush/app/application.cpp) and [HttpClient_ThingSpeak](samples/HttpClient_ThingSpeak/app/application.cpp) samples.
 
-### OTA Application Update Based on rBoot
+### OTA Application Update
 ```c++
-void OtaUpdate()
+void doUpgrade()
 {
-  uint8 slot;
-  rboot_config bootconf;
+  // need a clean object, otherwise if run before and failed will not run again
+  if(otaUpdater) {
+      delete otaUpdater;
+  }
+  otaUpdater = new Ota::Network::HttpUpgrader();
 
-  Serial.println("Updating...");
+  // select rom partition to flash
+  auto part = ota.getNextBootPartition();
 
-  // need a clean object, otherwise if run before and failed will not run again
-  if (otaUpdater) {
-    delete otaUpdater;
-  }
-
-  otaUpdater = new RbootHttpUpdater();
-
-  // select rom slot to flash
-  bootconf = rboot_get_config();
-  slot = bootconf.current_rom;
-  if (slot == 0) {
-    slot = 1;
-  }
-  else {
-    slot = 0;
-  }
-
-  // flash rom to position indicated in the rBoot config rom table
-  otaUpdater->addItem(bootconf.roms[slot], ROM_0_URL);
+  // The content located on ROM_0_URL will be stored to the new partition
+  otaUpdater->addItem(ROM_0_URL, part);
 
   // and/or set a callback (called on failure or success without switching requested)
-  otaUpdater->setCallback(OtaUpdate_CallBack);
+  otaUpdater->setCallback(upgradeCallback);
 
   // start update
   otaUpdater->start();
 }
 ```
 
-For a complete example take a look at the [Basic_rBoot](samples/Basic_rBoot/app/application.cpp) sample.
+For a complete example take a look at the [Basic_Ota](samples/Basic_Ota/app/application.cpp) sample.
 
 ### HTTP Server
 ```c++

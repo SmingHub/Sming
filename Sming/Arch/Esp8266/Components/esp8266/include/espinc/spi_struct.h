@@ -231,8 +231,38 @@ typedef struct {
         uint32_t val;
     } slave3;
     uint32_t data_buf[16];                                  /*data buffer*/
-    uint32_t reserved_80[30];
-    uint32_t ext2;
+    uint32_t reserved_80[28];
+    union {
+        // See spi_register.h, related to flash accesses ?
+        struct {
+            uint32_t t_pp_time: 12;
+            uint32_t reserved13: 4;
+            uint32_t t_pp_shift: 4;
+            uint32_t reserved20: 11;
+            uint32_t t_pp_ena: 1;
+        };
+        uint32_t val;
+    } ext0;
+    union {
+        // See spi_register.h, related to flash accesses ?
+        struct {
+            uint32_t t_erase_time: 12;
+            uint32_t reserved13: 4;
+            uint32_t t_erase_shift: 4;
+            uint32_t reserved20: 11;
+            uint32_t t_erase_ena: 1;
+        };
+        uint32_t val;
+    } ext1;
+    union {
+        // See spi_register.h, related to flash accesses ?
+        // See also RTOS SDK `Cache_Read_Disable_2` function
+        struct {
+            uint32_t st: 3;
+            uint32_t reserved3: 29;
+        };
+        uint32_t val;
+    } ext2;
     union {
         struct {
             uint32_t int_hold_ena: 2;                       /*This register is for two SPI masters to share the same cs clock and data signals. The bits of one SPI are set  if the other SPI is busy  the SPI will be hold. 1(3): hold at ,idle, phase 2: hold at ,prepare, phase.*/

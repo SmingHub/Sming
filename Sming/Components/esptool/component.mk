@@ -22,7 +22,7 @@ $(ESPTOOL): $(ESPTOOL_SUBMODULE)/.submodule
 ifeq ($(SMING_ARCH),Esp8266)
 ESP_CHIP := esp8266
 else ifeq ($(SMING_ARCH),Esp32)
-ESP_CHIP := esp32
+ESP_CHIP := $(ESP_VARIANT)
 else ifeq ($(MAKE_DOCS),)
 $(error esptool unsupported arch: $(SMING_ARCH))
 endif
@@ -43,12 +43,27 @@ endif
 
 comma := ,
 
+# Read flash manufacturer ID and determine actual size
+define ReadFlashID
+	$(info Reading Flash ID)
+	$(call ESPTOOL_EXECUTE,flash_id)
+endef
+
 # Write file contents to Flash
 # $1 -> List of `Offset=File` chunks
 define WriteFlash
 	$(if $1,\
 		$(info WriteFlash $1) \
 		$(call ESPTOOL_EXECUTE,write_flash -z $(flashimageoptions) $(subst =, ,$1)) \
+	)
+endef
+
+# Verify flash against file contents
+# $1 -> List of `Offset=File` chunks
+define VerifyFlash
+	$(if $1,\
+		$(info VerifyFlash $1) \
+		$(call ESPTOOL_EXECUTE,verify_flash $(flashimageoptions) $(subst =, ,$1)) \
 	)
 endef
 

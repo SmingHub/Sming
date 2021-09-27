@@ -42,7 +42,7 @@ public:
 
 	StreamType getStreamType() const override
 	{
-		return eSST_Memory;
+		return eSST_MemoryWritable;
 	}
 
 	/** @brief  Get a pointer to the current position
@@ -102,6 +102,16 @@ public:
 	{
 		size = 0;
 		readPos = 0;
+	}
+
+	size_t getSize() const
+	{
+		return size;
+	}
+
+	size_t getCapacity() const
+	{
+		return capacity;
 	}
 
 private:

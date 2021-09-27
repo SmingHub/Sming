@@ -187,8 +187,20 @@
 //}}
 
 //CACHE{{
-#define CACHE_FLASH_CTRL_REG            (0x3ff00000 + 0x0c)
-#define CACHE_READ_EN_BIT               BIT8
+#define CACHE_FLASH_CTRL_REG            (PERIPHS_DPORT_BASEADDR + 0x0c)
+#define CACHE_FLUSH_START_BIT           BIT0  // Clear then set to initiate cache flushing operation
+#define CACHE_EMPTY_FLAG_BIT            BIT1  // Set when cache has been cleared
+#define CACHE_READ_EN_BIT               BIT8  // Enable caching mechanism
+#define CACHE_MAP_SEGMENT_S             16    // Which starting segment on 2M boundary (0-3)
+#define CACHE_MAP_SEGMENT_MASK          0x3
+#define CACHE_MAP_2M                    BIT24 // Set to map 2M block, otherwise 1M
+#define CACHE_MAP_1M_HIGH               BIT25 // If CACHE_MAP_2M is clear determines which 1M block is mapped
+#define CACHE_1M_SIZE                   0x00100000
+#define CACHE_2M_SIZE                   0x00200000
+
+#define CACHE_IRAM_CTRL_REG             (PERIPHS_DPORT_BASEADDR + 0x24)
+#define CACHE_IRAM_EN_3                 BIT3 // Set to enable IRAM bank #3 at 0x40108000 (16K)
+#define CACHE_IRAM_EN_4                 BIT4 // Set to enable IRAM bank #4 at 0x4010C000 (16K)
 //}}
 
 #define DRAM_BASE                       (0x3FFE8000)

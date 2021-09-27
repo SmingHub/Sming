@@ -12,7 +12,7 @@
 #pragma once
 
 #include_next <esp_spi_flash.h>
-#include <esp32/rom/spi_flash.h>
+#include <rom/spi_flash.h>
 #include <esp_app_format.h>
 
 #ifdef __cplusplus
@@ -86,7 +86,11 @@ typedef struct {
  *  the internal flash memory size.
  *  @note The flash location is dependent on where rBoot has mapped the firmware.
  */
-uint32_t flashmem_get_address(const void* memptr);
+static inline uint32_t flashmem_get_address(const void* memptr)
+{
+	auto phys = spi_flash_cache2phys(memptr);
+	return (phys == SPI_FLASH_CACHE2PHYS_FAIL) ? 0 : phys;
+}
 
 /** @brief Write a block of data to flash
  *  @param from Buffer to obtain data from

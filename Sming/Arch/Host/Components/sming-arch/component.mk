@@ -17,7 +17,8 @@ export ESP8266_COMPONENTS
 COMPONENT_SRCDIRS := \
 	$(ARCH_CORE) $(call ListAllSubDirs,$(ARCH_CORE)) \
 	$(ARCH_SYS) \
-	$(ARCH_BASE)/Platform
+	$(ARCH_BASE)/Platform \
+	$(ARCH_BASE)/Services/Profiling
 
 COMPONENT_INCDIRS := \
 	$(ARCH_BASE) \
@@ -28,17 +29,14 @@ COMPONENT_INCDIRS := \
 COMPONENT_DEPENDS := \
 	driver \
 	esp_hal \
-	esp_wifi \
 	gdbstub \
 	heap \
 	hostlib \
 	libc \
-	lwip \
 	spi_flash \
 	vflash \
 	rboot
 
-# => Platform WiFi
-COMPONENT_VARS := \
-	ENABLE_WPS \
-	ENABLE_SMART_CONFIG
+ifneq ($(ENABLE_HOSTED),)
+	COMPONENT_DEPENDS += Hosted-Lib
+endif

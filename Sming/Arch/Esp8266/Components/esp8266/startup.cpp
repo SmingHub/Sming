@@ -39,6 +39,8 @@ extern "C" void user_init(void)
 
 	gdb_init();
 
+	Storage::initialize();
+
 	init(); // User code init
 }
 

@@ -34,7 +34,7 @@ void system_print_meminfo(void)
 #undef ADDR
 }
 
-bool system_os_post(uint8_t prio, os_signal_t sig, os_param_t par)
+bool IRAM_ATTR system_os_post(uint8_t prio, os_signal_t sig, os_param_t par)
 {
 	if(prio >= USER_TASK_PRIO_MAX) {
 		os_printf("err: post prio >= %u\n", USER_TASK_PRIO_MAX);

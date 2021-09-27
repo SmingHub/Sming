@@ -68,7 +68,7 @@ size_t CircularBuffer::room() const
 
 size_t CircularBuffer::write(uint8_t charToWrite)
 {
-	if(!room()) {
+	if(room() == 0) {
 		return 0;
 	}
 

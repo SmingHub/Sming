@@ -95,6 +95,11 @@ struct CpuCycleClock
 	{
 		return cpuFreq == eCF_160MHz;
 	}
+
+	static constexpr CpuFrequency cpuFrequency()
+	{
+		return cpuFreq;
+	}
 };
 
 #include_next <Platform/Clocks.h>

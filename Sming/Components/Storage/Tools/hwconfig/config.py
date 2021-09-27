@@ -3,7 +3,6 @@
 #
 
 import os, partition, storage, copy
-from rjsmin import jsmin
 from common import *
 from builtins import classmethod
 
@@ -11,7 +10,7 @@ HW_EXT = '.hw'
 
 def get_config_dirs():
     s = os.environ['HWCONFIG_DIRS']
-    dirs = s.replace('  ', ' ').split(' ')
+    dirs = s.strip().replace('  ', ' ').split(' ')
     return dirs
 
 def load_option_library():
@@ -20,9 +19,18 @@ def load_option_library():
     for d in dirs:
         filename = fixpath(d) + '/options.json'
         if os.path.exists(filename):
-            with open(filename) as f:
-                data = json.loads(jsmin(f.read()))
-                library.update(data)
+            data = json_load(filename)
+            library.update(data)
+    return library
+
+def load_build_library():
+    library = {}
+    s = os.environ['HWCONFIG_BUILDSPECS']
+    s = s.strip().replace('  ', ' ')
+    if len(s) != 0:
+        for f in s.split(' '):
+            data = json_load(fixpath(f))
+            library.update(data)
     return library
 
 def get_config_list():
@@ -43,10 +51,38 @@ def find_config(name):
             return path
     raise InputError("Config '%s' not found" % name)
 
+
+class Schema(dict):
+    def __init__(self, filename):
+        self.schema = json_load(filename)
+        # Config
+        properties = self['Config']['properties']
+        properties['base_config']['enum'] = list(get_config_list().keys())
+        # Device
+        properties = self['Device']['properties']
+        properties['type']['enum'] = list((storage.TYPES).keys())
+        # Partition
+        properties = self['Partition']['properties']
+        properties['type']['enum'] = list((partition.TYPES).keys() - ['storage', 'internal'])
+        properties['subtype']['enum'] = []
+        # Add defined build targets and all available build fields
+        self.builders = load_build_library()
+        tgt = properties['build.target'] = self['Build']['properties']['target']
+        tgt['enum'] = list(self.builders.keys())
+        for builder in self.builders.values():
+            for k, v in builder['properties'].items():
+                properties['build.' + k] = v
+
+    def __getitem__(self, name):
+        return self.schema['definitions'][name]
+
+
+schema = Schema(os.environ['HWCONFIG_SCHEMA'])
+
 class Config(object):
     def __init__(self):
-        self.partitions = partition.Table()
         self.devices = storage.List()
+        self.partitions = partition.Table(self.devices)
         self.depends = []
         self.options = []
         self.option_library = load_option_library()
@@ -82,8 +118,7 @@ class Config(object):
         """
         filename = find_config(name)
         self.depends.append(filename)
-        with open(filename) as f:
-            data = json.loads(jsmin(f.read()))
+        data = json_load(filename)
         self.parse_dict(data)
 
     def parse_options(self, options):
@@ -102,7 +137,7 @@ class Config(object):
             self.parse_dict(temp)
 
     def resolve_expressions(self):
-        self.partitions.offset = eval(str(self.partitions.offset))
+        self.partition_table_offset = eval(str(self.partition_table_offset))
         for p in self.partitions:
             p.resolve_expressions()
 
@@ -121,8 +156,10 @@ class Config(object):
         for k, v in data.items():
             if k == 'arch':
                 self.arch = v
+            elif k == 'bootloader_size':
+                self.bootloader_size = parse_int(v)
             elif k == 'partition_table_offset':
-                self.partitions.offset = v
+                self.partition_table_offset = v
             elif k == 'devices':
                 self.devices.parse_dict(v)
             elif k != 'name' and k != 'comment':
@@ -142,7 +179,8 @@ class Config(object):
             res['comment'] = self.comment
         res['arch'] = self.arch;
         res['options'] = self.options
-        res['partition_table_offset'] = self.partitions.offset_str()
+        res['bootloader_size'] = size_format(self.bootloader_size)
+        res['partition_table_offset'] = addr_format(self.partition_table_offset)
         res['devices'] = self.devices.dict()
         res['partitions'] = self.partitions.dict()
         return res
@@ -154,7 +192,7 @@ class Config(object):
         dict = {}
 
         dict['SMING_ARCH_HW'] = self.arch
-        dict['PARTITION_TABLE_OFFSET'] = self.partitions.offset_str()
+        dict['PARTITION_TABLE_OFFSET'] = addr_format(self.partition_table_offset)
         dict['PARTITION_TABLE_LENGTH'] = "0x%04x" % partition.MAX_PARTITION_LENGTH
         dict['SPIFLASH_PARTITION_NAMES'] = " ".join(p.name for p in filter(lambda p: p.device == self.devices[0], self.partitions))
         dict['HWCONFIG_DEPENDS'] = " ".join(self.depends)
@@ -167,17 +205,19 @@ class Config(object):
         return res
 
     def verify(self, secure):
+        if self.partition_table_offset % partition.FLASH_SECTOR_SIZE != 0:
+            raise InputError("Partition table offset not aligned to flash sector")
         self.devices.verify()
-        self.partitions.verify(self.arch, self.devices[0], secure)
+        self.partitions.verify(self, secure)
 
     def map(self):
-        return partition.Map(self.partitions, self.devices)
+        return partition.Map(self)
 
     @classmethod
     def from_binary(cls, b):
         res = Config()
         res.name = 'from binary'
         res.arch = os.environ.get('SMING_ARCH', 'Unknown')
-        res.partitions.offset = 0
+        res.partition_table_offset = 0
         res.partitions.parse_binary(b, res.devices)
         return res

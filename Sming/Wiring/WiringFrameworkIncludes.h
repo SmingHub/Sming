@@ -1,7 +1,7 @@
 /*
  * WiringFrameworkIncludes.h
  *
- *  Created on: 28 ÿíâ. 2015 ã.
+ *  Created on: 28 ï¿½ï¿½ï¿½. 2015 ï¿½.
  *      Author: Anakonda
  */
 
@@ -24,4 +24,7 @@
 #include "Stream.h"
 #include "Display.h"
 #include "WHashMap.h"
-#include "IpAddress.h"
+
+#ifndef DISABLE_NETWORK
+#include <IpAddress.h>
+#endif

@@ -1,0 +1,28 @@
+{
+    "user-build": {
+        "title": "SPIFFS filesystem support",
+        // Which partition type/subtype to match for this spec.
+        "partition": {
+            "type": "user",
+            "subtype": "1"
+        },
+        // Schema properties to show in editor
+        "properties": {
+            "parameter1": {
+                "type": "string",
+                "title": "Parameter 1",
+                "description": "First parameter"
+            },
+            "parameter2": {
+                "type": "string",
+                "title": "Parameter 2",
+                "description": "Second parameter, an enumerated type",
+                "enum": [
+                    "value1",
+                    "value2",
+                    "value3"
+                ]
+            }
+        }
+    }
+}

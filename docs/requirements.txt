@@ -8,3 +8,4 @@ sphinxcontrib-wavedrom
 sphinx-copybutton
 sphinxcontrib-seqdiag>=0.8.5
 jinja2>=2.11.3
+setuptools==57.5.0

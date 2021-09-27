@@ -30,24 +30,25 @@
 class SPIClass : public SPIBase
 {
 public:
-	bool begin() override
+	SPIClass()
 	{
-		return false;
 	}
+
+	SPIClass(const SPIClass&) = delete;
+	SPIClass& operator=(const SPIClass&) = delete;
+
+	bool begin() override;
 
 	void end() override
 	{
 	}
 
+	using SPIBase::beginTransaction;
 	using SPIBase::transfer;
-	void transfer(uint8_t* buffer, size_t numberBytes) override
-	{
-	}
+	void transfer(uint8_t* buffer, size_t numberBytes) override;
 
 protected:
-	void prepare(SPISettings& settings) override
-	{
-	}
+	void prepare(SPISettings& settings) override;
 };
 
 /** @brief  Global instance of SPI class */

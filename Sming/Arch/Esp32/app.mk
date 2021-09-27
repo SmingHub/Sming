@@ -13,14 +13,9 @@ LDFLAGS	+= \
 .PHONY: application
 application: $(TARGET_BIN)
 
-# $1 -> Linker script
-define LinkTarget
-	$(info $(notdir $(PROJECT_DIR)): Linking $@)
-	$(Q) $(LD) $(addprefix -L,$(LIBDIRS)) -T$1 $(LDFLAGS) -Wl,--start-group $(COMPONENTS_AR) $(addprefix -l,$(LIBS)) -Wl,--end-group -o $@
-endef
-
 $(TARGET_OUT): $(COMPONENTS_AR)
-	$(call LinkTarget,standalone.rom.ld)
+	$(info $(notdir $(PROJECT_DIR)): Linking $@)
+	$(Q) $(LD) $(addprefix -L,$(LIBDIRS)) $(LDFLAGS) -Wl,--start-group $(COMPONENTS_AR) $(addprefix -l,$(LIBS)) -Wl,--end-group -o $@
 
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
 
@@ -40,5 +35,10 @@ $(TARGET_OUT): $(COMPONENTS_AR)
 			  cat $(FW_MEMINFO_NEW); \
 			fi
 
+CHIP_REV_MIN := $(CONFIG_$(call ToUpper,$(ESP_VARIANT))_REV_MIN)
+ifeq ($(CHIP_REV_MIN),)
+CHIP_REV_MIN := 0
+endif
+
 $(TARGET_BIN): $(TARGET_OUT)
-	$(Q) $(ESPTOOL_CMDLINE) elf2image --min-rev 0 --elf-sha256-offset 0xb0 $(flashimageoptions) -o $@ $<
+	$(Q) $(ESPTOOL_CMDLINE) elf2image --min-rev $(CHIP_REV_MIN) --elf-sha256-offset 0xb0 $(flashimageoptions) -o $@ $<

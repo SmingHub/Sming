@@ -1,5 +1,5 @@
 language: python
-python: 3.8.6
+python: 3.9
 os: linux
 dist: focal
 env:
@@ -15,9 +15,7 @@ jobs:
     addons:
       apt:
         packages:
-        - clang-format-6.0
-        - gcc-multilib
-        - g++-multilib
+        - clang-format-8
         - doxygen
         - python3-sphinx
         - python3-pip
@@ -28,14 +26,6 @@ jobs:
         - jq
     env:
     - SMING_ARCH=Host
-
-  - stage: build
-    name: C++11
-    env:
-    - SMING_ARCH=Esp8266
-    - SDK_VERSION=3.0.1
-    - ESP_HOME=$TRAVIS_BUILD_DIR/opt/esp-alt-sdk
-
   - stage: build
     name: C++17
     env:

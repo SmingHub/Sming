@@ -10,6 +10,17 @@ override SMING_ARCH	:= Esp8266
 endif
 export SMING_ARCH
 
+# Paths for standard build tools
+DEBUG_VARS += \
+	AS \
+	CC \
+	CXX \
+	AR \
+	LD \
+	OBJCOPY \
+	OBJDUMP \
+	GDB
+
 DEBUG_VARS		+= SMING_RELEASE
 ifeq ($(SMING_RELEASE),1)
 	BUILD_TYPE	:= release
@@ -76,7 +87,7 @@ endif
 export SMING_HOME
 export COMPILE := gcc
 
-DEBUG_VARS		+= ARCH_BASE USER_LIBDIR OUT_BASE BUILD_BASE FW_BASE TOOLS_BASE
+DEBUG_VARS		+= ARCH_BASE
 
 ARCH_BASE		:= $(SMING_HOME)/Arch/$(SMING_ARCH)
 ARCH_SYS		= $(ARCH_BASE)/System
@@ -84,11 +95,6 @@ ARCH_CORE		= $(ARCH_BASE)/Core
 ARCH_TOOLS		= $(ARCH_BASE)/Tools
 ARCH_COMPONENTS	= $(ARCH_BASE)/Components
 
-OUT_BASE		:= out/$(SMING_ARCH)/$(BUILD_TYPE)
-BUILD_BASE		= $(OUT_BASE)/build
-FW_BASE			= $(OUT_BASE)/firmware
-TOOLS_BASE		= $(SMING_HOME)/$(OUT_BASE)/tools
-USER_LIBDIR		= $(SMING_HOME)/$(OUT_BASE)/lib
 
 # Git command
 DEBUG_VARS	+= GIT
@@ -183,8 +189,6 @@ endif
 
 include $(ARCH_BASE)/build.mk
 
-DEBUG_VARS += ESP_VARIANT
-
 # Detect compiler version
 DEBUG_VARS			+= GCC_VERSION
 GCC_VERSION			:= $(shell $(CC) -dumpversion)
@@ -212,8 +216,32 @@ $(info Instructions for upgrading your compiler can be found here: $(GCC_UPGRADE
 endif 
 endif
 
+DEBUG_VARS		+= USER_LIBDIR OUT_BASE BUILD_BASE FW_BASE TOOLS_BASE SMING_ARCH_FULL
+
+ifdef ESP_VARIANT
+SMING_ARCH_FULL := $(SMING_ARCH)/$(ESP_VARIANT)
+else
+SMING_ARCH_FULL	:= $(SMING_ARCH)
+endif
+
+OUT_BASE		:= out/$(SMING_ARCH_FULL)/$(BUILD_TYPE)
+BUILD_BASE		= $(OUT_BASE)/build
+FW_BASE			= $(OUT_BASE)/firmware
+TOOLS_BASE		= $(SMING_HOME)/$(OUT_BASE)/tools
+USER_LIBDIR		= $(SMING_HOME)/$(OUT_BASE)/lib
+
 # Component (user) libraries have a special prefix so linker script can identify them
 CLIB_PREFIX := clib-
+
+# Convert string to upper/lower case
+# 1 -> String
+ToUpper = $(shell echo "$1" | tr 'a-z' 'A-Z')
+ToLower = $(shell echo "$1" | tr 'A-Z' 'a-z')
+
+# Use with LDFLAGS to undefine and wrap a list of functions
+define Wrap
+$(foreach n,$1,-u $n -Wl,-wrap,$n)
+endef
 
 # Apply coding style to list of files using clang-format
 # $1 -> List of files

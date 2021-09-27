@@ -7,7 +7,14 @@ Simple Webserver demonstration using IFS.
 
 View the filesystem using a web browser.
 
-To see the data in a different format, add ``?format=XX``. Current supported formats are ``json``, ``text`` and ``html``.
+To see directory content in a different format, append ``?format=XX``, one of:
+
+- ``json``
+- ``text``
+- ``html``
+
+Use the format ``archive`` to retrieve an archive/backup of the directory tree as an FWFS image.
+
 
 Building
 --------

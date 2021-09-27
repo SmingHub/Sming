@@ -11,6 +11,11 @@ FLASH_INIT_DATA_VCC		= $(SDK_BASE)/bin/esp_init_data_vdd_default.bin
 
 CUSTOM_TARGETS			+= $(FLASH_INIT_DATA) $(FLASH_INIT_DATA_VCC)
 
+# => LWIP basic support required by SDK
+ifeq ($(DISABLE_WIFI),1)
+COMPONENT_DEPENDS	+= esp-lwip
+endif
+
 # => 'Internal' SDK - for SDK Version 3+ as submodule in Sming repository
 # SDK_BASE just needs to point into our repo as it's overridden with the correct submodule path
 # This provides backward-compatiblity, so $(SMING)/third-party/ESP8266_NONOS_SDK) still works
@@ -47,7 +52,7 @@ COMPONENT_DOXYGEN_INPUT := \
 	$(SDK_INCDIR)/pwm.h
 
 # Crash handler hooks this so debugger can be invoked
-EXTRA_LDFLAGS := -Wl,-wrap,system_restart_local
+EXTRA_LDFLAGS := $(call Wrap,system_restart_local)
 
 #
 LIBDIRS += $(SDK_LIBDIR)

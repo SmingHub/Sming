@@ -2,9 +2,25 @@
     "name": "Basic IFS sample",
     "base_config": "spiffs",
     "partitions": {
+        "lfs1": {
+            "address": "0x00100000",
+            "size": "2060K",
+            "type": "data",
+            "subtype": "littlefs",
+            "readonly": false,
+            "encrypted": false,
+            "filename": "$(FW_BASE)/lfs1.bin",
+            "build": {
+                "target": "lfs-build",
+                "config": "fsimage.fwfs"
+            }
+        },
+        "spiffs0": {
+            "address": "0x00303000"
+        },
         "fwfs1": {
-            "address": "0x280000",
-            "size": "0x60000",
+            "address": "0x00383000",
+            "size": "476K",
             "type": "data",
             "subtype": "fwfs",
             "filename": "out/fwfs1.bin",

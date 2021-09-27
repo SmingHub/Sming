@@ -2,8 +2,8 @@
     "name": "FTP Server Demo Volume",
     "id": "0x12345678",
     "source": {
-        "/": "${SMING_HOME}/../docs/source/framework/core/network",
-        "Network": "${SMING_HOME}/Core/Network"
+        "/": "${SMING_HOME}/../docs/source/framework",
+        "Network": "${SMING_HOME}/Components/Network"
     },
     "mountpoints": {},
     "rules": [

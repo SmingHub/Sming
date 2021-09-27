@@ -1,6 +1,6 @@
 #include <HostTests.h>
 
-#include <Network/WebHelpers/base64.h>
+#include <Data/WebHelpers/base64.h>
 
 class Base64Test : public TestGroup
 {
@@ -29,6 +29,44 @@ public:
 			String clear = base64_decode(hash);
 			debug_hex(INFO, "decode output", clear.c_str(), clear.length() + 1);
 			REQUIRE(clear == token);
+		}
+
+		TEST_CASE("Encode lengths")
+		{
+			// Verify that actual encoded size is no larger than estimated size
+			constexpr size_t inputSize{1024};
+			constexpr size_t outputSize{2048};
+			auto inbuf = new uint8_t[inputSize];
+			auto outbuf = new char[outputSize];
+			os_get_random(inbuf, inputSize);
+			for(unsigned i = 0; i < inputSize; ++i) {
+				auto minEncodeLen = base64_min_encode_len(i);
+				int len = base64_encode(i, inbuf, outputSize, outbuf);
+				CHECK(len >= int(i));
+				CHECK(size_t(len) <= minEncodeLen);
+			}
+			delete[] outbuf;
+			delete[] inbuf;
+		}
+
+		TEST_CASE("Decode lengths")
+		{
+			// Verify that actual decoded size is no larger than estimated size
+			constexpr size_t inputSize{2048};
+			constexpr size_t outputSize{1020};
+			auto inbuf = new char[inputSize];
+			auto outbuf = new uint8_t[outputSize];
+			os_get_random(reinterpret_cast<uint8_t*>(outbuf), outputSize);
+			size_t maxLen = base64_encode(outputSize, outbuf, inputSize, inbuf);
+			CHECK(maxLen < inputSize);
+			for(unsigned i = 0; i < maxLen; ++i) {
+				auto minDecodeLen = base64_min_decode_len(i);
+				int len = base64_decode(i, inbuf, outputSize, outbuf);
+				CHECK(len <= int(i));
+				CHECK(size_t(len) <= minDecodeLen);
+			}
+			delete[] outbuf;
+			delete[] inbuf;
 		}
 	}
 };

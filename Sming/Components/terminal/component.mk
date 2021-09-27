@@ -15,7 +15,7 @@ endif
 
 # Universal python terminal application
 CACHE_VARS		+= COM_OPTS KILL_TERM TERMINAL
-COM_OPTS		?= --raw --encoding ascii
+COM_OPTS		?= --raw --encoding ascii --rts 0 --dtr 0
 KILL_TERM		?= pkill -9 -f "$(COM_PORT) $(COM_SPEED_SERIAL)" || exit 0
 ifdef WSL_ROOT
 TERMINAL		?= powershell.exe -Command "python -m serial.tools.miniterm $(COM_OPTS) $(COM_PORT) $(COM_SPEED_SERIAL)"

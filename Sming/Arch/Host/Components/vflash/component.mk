@@ -24,6 +24,17 @@ define WriteFlash
 	$(if $1,$(Q) $(VFLASH) write-chunks $1)
 endef
 
+# Verify one or more chunks against flash content
+# $1 -> List of `Offset=File` chunks
+define VerifyFlash
+	@echo VerifyFlash not implemented for Host
+endef
+
+# Read flash manufacturer ID and determine actual size
+define ReadFlashID
+	$(info ReadFlashID: Flash backing file "$(FLASH_BIN)", size $(SPI_SIZE))
+endef
+
 # Read flash memory into file
 # $1 -> `Offset,Size` chunk
 # $2 -> Output filename

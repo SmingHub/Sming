@@ -21,10 +21,8 @@ void FileStream::attach(FileHandle file, size_t size)
 		return;
 	}
 
-	auto fs = getFileSystem();
-	if(fs == nullptr) {
-		return;
-	}
+	GET_FS()
+
 	handle = file;
 	this->size = size;
 	fs->lseek(handle, 0, SeekOrigin::Start);
@@ -33,30 +31,9 @@ void FileStream::attach(FileHandle file, size_t size)
 	debug_d("attached file: '%s' (%u bytes) #0x%08X", fileName().c_str(), size, this);
 }
 
-bool FileStream::open(const Stat& stat, OpenFlags openFlags)
-{
-	auto fs = getFileSystem();
-	if(fs == nullptr) {
-		return false;
-	}
-
-	lastError = FS_OK;
-
-	FileHandle file = fs->fopen(stat, openFlags);
-	if(!check(file)) {
-		return false;
-	}
-
-	attach(file, stat.size);
-	return true;
-}
-
 bool FileStream::open(const String& fileName, OpenFlags openFlags)
 {
-	auto fs = getFileSystem();
-	if(fs == nullptr) {
-		return false;
-	}
+	GET_FS(false)
 
 	lastError = FS_OK;
 
@@ -96,10 +73,7 @@ size_t FileStream::readBytes(char* buffer, size_t length)
 		return 0;
 	}
 
-	auto fs = getFileSystem();
-	if(fs == nullptr) {
-		return 0;
-	}
+	GET_FS(0)
 
 	int available = fs->read(handle, buffer, std::min(size - pos, length));
 	if(!check(available)) {
@@ -113,10 +87,7 @@ size_t FileStream::readBytes(char* buffer, size_t length)
 
 uint16_t FileStream::readMemoryBlock(char* data, int bufSize)
 {
-	auto fs = getFileSystem();
-	if(fs == nullptr) {
-		return 0;
-	}
+	GET_FS(0)
 
 	assert(bufSize >= 0);
 	size_t startPos = pos;
@@ -131,10 +102,7 @@ uint16_t FileStream::readMemoryBlock(char* data, int bufSize)
 
 size_t FileStream::write(const uint8_t* buffer, size_t size)
 {
-	auto fs = getFileSystem();
-	if(fs == nullptr) {
-		return 0;
-	}
+	GET_FS(0)
 
 	if(pos != this->size) {
 		int writePos = fs->lseek(handle, 0, SeekOrigin::End);
@@ -156,10 +124,7 @@ size_t FileStream::write(const uint8_t* buffer, size_t size)
 
 int FileStream::seekFrom(int offset, SeekOrigin origin)
 {
-	auto fs = getFileSystem();
-	if(fs == nullptr) {
-		return 0;
-	}
+	GET_FS(lastError)
 
 	// Cannot rely on return value from fileSeek - failure does not mean position hasn't changed
 	fs->lseek(handle, offset, origin);

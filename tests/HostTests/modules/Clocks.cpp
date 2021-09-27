@@ -23,12 +23,6 @@ public:
 
 	void execute() override
 	{
-		if(Clock::frequency() == 160000000) {
-			System.setCpuFrequency(eCF_160MHz);
-		} else {
-			System.setCpuFrequency(eCF_80MHz);
-		}
-
 		printLimits();
 
 		for(unsigned i = 0; i < 2000; ++i) {
@@ -67,10 +61,11 @@ public:
 
 		this->timeunit = unit;
 
-		noInterrupts();
-
+		//
 		valueIsTime = true;
-		this->value = value % (TimeSource::maxCalcTime() + 1);
+		this->value = value % TimeSource::maxCalcTime();
+
+		noInterrupts();
 		refCycles.start();
 		ref = timeToTicksRef();
 		refCycles.update();
@@ -78,6 +73,7 @@ public:
 		calcCycles.start();
 		calc = TimeSource::timeToTicks(this->value);
 		calcCycles.update();
+		interrupts();
 
 		if(calc != ref) {
 			calc = TimeSource::timeToTicks(this->value);
@@ -85,8 +81,11 @@ public:
 
 		compare();
 
+		//
 		valueIsTime = false;
-		this->value = value % (TimeSource::maxCalcTicks() + 1);
+		this->value = value % TimeSource::maxCalcTicks();
+
+		noInterrupts();
 		refCycles.start();
 		ref = ticksToTimeRef();
 		refCycles.update();
@@ -94,9 +93,8 @@ public:
 		calcCycles.start();
 		calc = TimeSource::ticksToTime(this->value);
 		calcCycles.update();
-		compare();
-
 		interrupts();
+		compare();
 	}
 
 	void printStats()
@@ -240,6 +238,23 @@ private:
 	CpuCycleTimes calcCycles;
 };
 
+template <class Clock, typename TimeType> class CpuClockTestTemplate : public ClockTestTemplate<Clock, TimeType>
+{
+public:
+	using ClockTestTemplate<Clock, TimeType>::ClockTestTemplate;
+
+	void execute() override
+	{
+		uint32_t curFreq = system_get_cpu_freq();
+		System.setCpuFrequency(Clock::cpuFrequency());
+
+		// delay(100);
+		debug_i("CPU freq: %u -> %u MHz", curFreq, system_get_cpu_freq());
+		ClockTestTemplate<Clock, TimeType>::execute();
+		System.setCpuFrequency(CpuCycleClockNormal::cpuFrequency());
+	}
+};
+
 /*
  * Why use a Polled timer? Comparison versus hand-coded loops.
  */
@@ -296,7 +311,7 @@ public:
 			Serial.print(" iterations, average loop time = ");
 			using namespace NanoTime;
 			constexpr auto nsTotal = convert<TIMEOUT_MS, Milliseconds, Nanoseconds>();
-			auto nsPerLoop = time(Nanoseconds, muldiv(nsTotal, 1U, loopCount));
+			auto nsPerLoop = time(Nanoseconds, muldiv(nsTotal, uint32_t(1), loopCount));
 			Serial.print(nsPerLoop.toString());
 			Serial.print(" (");
 			auto cycles = CpuCycleClockNormal::template timeToTicks<Nanoseconds>(uint32_t(nsPerLoop));
@@ -463,6 +478,9 @@ void REGISTER_TEST(Clocks)
 
 	registerGroup<ClockTestTemplate<Timer2Clock, uint32_t>>();
 
-	registerGroup<ClockTestTemplate<CpuCycleClockNormal, uint32_t>>();
-	registerGroup<ClockTestTemplate<CpuCycleClockFast, uint64_t>>();
+	if(CpuCycleClockSlow::cpuFrequency() != CpuCycleClockNormal::cpuFrequency()) {
+		registerGroup<CpuClockTestTemplate<CpuCycleClockSlow, uint32_t>>();
+	}
+	registerGroup<CpuClockTestTemplate<CpuCycleClockNormal, uint32_t>>();
+	registerGroup<CpuClockTestTemplate<CpuCycleClockFast, uint64_t>>();
 }

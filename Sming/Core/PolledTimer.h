@@ -188,6 +188,23 @@ public:
 		return this->template ticksToTime(elapsedTicks());
 	}
 
+	/**
+	 * @brief Get ticks remaining until expiry
+	 */
+	__forceinline TickType remainingTicks() const
+	{
+		auto ticks = elapsedTicks();
+		return (ticks < interval) ? interval - ticks : 0;
+	}
+
+	/**
+	 * @brief Get time remaining until expiry
+	 */
+	__forceinline NanoTime::Time<TimeType> remainingTime() const
+	{
+		return this->template ticksToTime(remainingTicks());
+	}
+
 	__forceinline bool canExpire() const
 	{
 		return !neverExpires;

@@ -1,3 +1,5 @@
+COMPONENT_DEPENDS := LittleFS
+
 # Empty SPIFFS partition please
 SPIFF_FILES :=
 
@@ -8,5 +10,5 @@ ifeq ($(ENABLE_FLASHSTRING_IMAGE),1)
 COMPONENT_CXXFLAGS += -DENABLE_FLASHSTRING_IMAGE=1
 HWCONFIG := spiffs
 else
-HWCONFIG := basic_ifs
+HWCONFIG := basic_ifs_$(SMING_ARCH)
 endif

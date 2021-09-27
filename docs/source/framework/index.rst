@@ -9,3 +9,5 @@ Framework
    platform/index
    services/index
    wiring/index
+
+- :component:`Network`

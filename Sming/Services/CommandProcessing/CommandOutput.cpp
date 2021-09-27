@@ -6,16 +6,9 @@
  */
 
 #include "CommandOutput.h"
-
-CommandOutput::CommandOutput(TcpClient* reqClient) : outputTcpClient(reqClient)
-{
-}
+#include <debug_progmem.h>
 
 CommandOutput::CommandOutput(Stream* reqStream) : outputStream(reqStream)
-{
-}
-
-CommandOutput::CommandOutput(WebsocketConnection* reqSocket) : outputSocket(reqSocket)
 {
 }
 
@@ -26,15 +19,15 @@ CommandOutput::~CommandOutput()
 
 size_t CommandOutput::write(uint8_t outChar)
 {
-	if(outputTcpClient) {
-		char outBuf[1] = {char(outChar)};
-		return outputTcpClient->write(outBuf, 1);
-	}
-
 	if(outputStream) {
 		return outputStream->write(outChar);
 	}
 
+#ifndef DISABLE_NETWORK
+	if(outputTcpClient) {
+		char outBuf[1] = {char(outChar)};
+		return outputTcpClient->write(outBuf, 1);
+	}
 	if(outputSocket) {
 		if(outChar == '\r') {
 			outputSocket->sendString(tempSocket);
@@ -45,6 +38,7 @@ size_t CommandOutput::write(uint8_t outChar)
 
 		return 1;
 	}
+#endif
 
 	return 0;
 }

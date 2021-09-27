@@ -1,11 +1,9 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # This file should be sourced after pulling in Sming repo, i.e:
 #
 #    . /opt/sming/Tools/install.sh
 #
-
-set -e
 
 [ "$0" = "$BASH_SOURCE" ]; sourced=$?
 
@@ -95,7 +93,12 @@ if [ -n "$APPVEYOR" ] || [ -n "$GITHUB_ACTION" ]; then
     $PKG_INSTALL \
         clang-format-8 \
         g++-9-multilib \
-        python3-setuptools
+        python3-setuptools \
+        fonts-ubuntu \
+        fonts-noto-mono \
+        xfonts-base \
+        fonts-urw-base35 \
+        fonts-droid-fallback
 
     sudo update-alternatives --set gcc /usr/bin/gcc-9
 
@@ -103,7 +106,7 @@ else
 
     case $DIST in
         debian)
-            sudo apt-get -y update
+            sudo apt-get -y update || echo "Update failed... Try to install anyway..."
             $PKG_INSTALL \
                 clang-format-8 \
                 cmake \
@@ -142,6 +145,8 @@ else
     sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 100
 
 fi
+
+set -e
 
 sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-8 100
 
