@@ -117,7 +117,7 @@ Supported SDK: ESP-IDF v4.3. See https://sming.readthedocs.io/en/latest/_inc/Smi
 
 ### Stable
 
-- [Sming V4.3.0](https://github.com/SmingHub/Sming/releases/tag/4.3.0) - great new features, performance and stability improvements.
+- [Sming V4.4.0](https://github.com/SmingHub/Sming/releases/tag/4.4.0) - great new features, performance and stability improvements.
 
 
 ### Long Term Support (LTS)
