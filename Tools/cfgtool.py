@@ -19,6 +19,25 @@ def load_config_vars(filename):
     return parser['config']
 
 
+def set_kconfig_value(symbol, v):
+    """Convert values from Sming format to Kconfig format.
+       Hidden variables are used to store choice selections and cannot be set directly.
+       Instead, locate the corresponding choice variable and set that.
+    """
+    if symbol.visibility == 2:
+        if symbol.type is kconfiglib.BOOL:
+            v = 'y' if v == '1' else 'n'
+        elif symbol.type == kconfiglib._T_INT:
+            v = 0 if v == '' else v
+        symbol.set_value(v)
+    else:
+        for sym, cond in symbol.defaults:
+            if type(cond) is tuple:
+                cond = cond[1]
+            if v == sym.name and cond.type is kconfiglib.BOOL:
+                cond.set_value('y')
+                break
+
 def main():
     parser = argparse.ArgumentParser(description='Sming configuration management tool')
     parser.add_argument('--to-kconfig', help="Convert Sming configuration to Kconfig format", action='store_true')
@@ -32,11 +51,8 @@ def main():
         src = load_config_vars(args.config_file)
         for k, v in src.items():
             c = conf.syms.get(k)
-            if not c:
-                continue
-            if c.type is kconfiglib.BOOL:
-                v = 'y' if v == '1' else 'n'
-            c.set_value(v)
+            if c:
+                set_kconfig_value(c, v)
         conf.write_config(os.environ['KCONFIG_CONFIG'])
     elif args.from_kconfig:
         conf.load_config(os.environ['KCONFIG_CONFIG'])
@@ -59,7 +75,7 @@ def main():
             f.write("\n")
             varnames = list(varnames)
             varnames.sort()
-            f.write("CACHED_VARE_NAMES := " + " ".join(varnames))
+            f.write("CACHED_VAR_NAMES := " + " ".join(varnames))
     else:
         raise RuntimeError("No command specified")
 
