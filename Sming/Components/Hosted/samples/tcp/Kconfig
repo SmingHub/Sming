@@ -1,0 +1,7 @@
+menu "Hosted TCP sample"
+    config CONNECT_TO_WIFI
+        bool "Connect to WiFi access point"
+        help
+            Make sure to provide WIFI_SSID and WIFI_PWD values
+
+endmenu
