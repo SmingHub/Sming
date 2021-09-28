@@ -127,7 +127,7 @@ public:
 			}
 
 			if(result == ParserResult::error) {
-				debug_e("Invalid header");
+				host_debug_e("Invalid header");
 				return false;
 			}
 		} while(true);

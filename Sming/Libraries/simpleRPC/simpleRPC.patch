@@ -63,3 +63,16 @@ index d51cdd1..abf1e7b 100644
  
  //! \defgroup write
  
+diff --git a/src/defs.h b/src/defs.h
+index 8d2ec2a..93edaf5 100644
+--- a/src/defs.h
++++ b/src/defs.h
+@@ -1,7 +1,7 @@
+ #ifndef SIMPLE_RPC_DEFS_H_
+ #define SIMPLE_RPC_DEFS_H_
+ 
+-#include <Arduino.h>
++#include <Stream.h>
+ 
+ #define _PROTOCOL "simpleRPC"
+ #define _VERSION "\3\0\0"
