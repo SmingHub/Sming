@@ -6,7 +6,7 @@
 #
 #
 
-import argparse, configparser, os, sys, kconfiglib
+import argparse, configparser, os, sys, platform, kconfiglib
 
 
 def load_config_vars(filename):
@@ -41,6 +41,22 @@ def set_kconfig_value(symbol, v):
                 cond.set_value('y')
                 break
 
+
+def fixpath(path):
+    """Paths in Windows can get a little weird"""
+    if len(path) > 2 and path[1] != ':' and platform.system() == 'Windows' and path[2] == '/':
+        return path[1] + ':' + path[2:]
+    return path
+
+
+def createComponentsFile():
+    fileList = os.environ['KCONFIG_FILES'].split()
+    compFile = os.environ['KCONFIG_COMPONENTS']
+    with open(compFile, "w") as f:
+        for s in fileList:
+            f.write('source "%s"\n' % fixpath(s))
+
+
 def main():
     parser = argparse.ArgumentParser(description='Sming configuration management tool')
     parser.add_argument('--to-kconfig', help="Convert Sming configuration to Kconfig format", action='store_true')
@@ -49,8 +65,10 @@ def main():
 
     args = parser.parse_args()
 
-    conf = kconfiglib.Kconfig(os.environ['KCONFIG'])
     if args.to_kconfig:
+        createComponentsFile()
+
+        conf = kconfiglib.Kconfig(os.environ['KCONFIG'])
         src = load_config_vars(args.config_file)
         for k, v in src.items():
             c = conf.syms.get(k)
@@ -58,6 +76,7 @@ def main():
                 set_kconfig_value(c, v)
         conf.write_config(os.environ['KCONFIG_CONFIG'])
     elif args.from_kconfig:
+        conf = kconfiglib.Kconfig(os.environ['KCONFIG'])
         conf.load_config(os.environ['KCONFIG_CONFIG'])
         dst = load_config_vars(args.config_file)
         varnames = set(dst.pop('CACHED_VAR_NAMES').split())

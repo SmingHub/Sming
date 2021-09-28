@@ -676,7 +676,10 @@ endif
 ##@Configuration
 
 export UNAME
-export KCONFIG_COMPONENTS=$(OUT_BASE)/kconfig.in
+# List of all Kconfig files
+export KCONFIG_FILES = $(wildcard $(foreach c,$(filter-out Sming,$(COMPONENTS)),$(CMP_$c_PATH)/Kconfig))
+# File containing list of component Kconfig file paths (created by cfgtool)
+export KCONFIG_COMPONENTS = $(OUT_BASE)/kconfig.in
 
 KCONFIG := $(SMING_HOME)/Kconfig
 KCONFIG_CONFIG := $(OUT_BASE)/kconfig.config
@@ -686,17 +689,10 @@ KCONFIG_ENV := \
 	KCONFIG=$(KCONFIG) \
 	KCONFIG_CONFIG=$(KCONFIG_CONFIG)
 
-KCONFIG_FILES = $(wildcard $(foreach c,$(filter-out Sming,$(COMPONENTS)),$(CMP_$c_PATH)/Kconfig))
-
 CFGTOOL_CMDLINE = $(KCONFIG_ENV) $(PYTHON) $(SMING_TOOLS)/cfgtool.py $(CONFIG_CACHE_FILE)
 
-.PHONY: build_kconfig_components
-build_kconfig_components:
-	@echo > $(KCONFIG_COMPONENTS)
-	@$(foreach f,$(KCONFIG_FILES),echo 'source "$f"' >> $(KCONFIG_COMPONENTS);)
-
 .PHONY: menuconfig
-menuconfig: build_kconfig_components ##Run option editor
+menuconfig: ##Run option editor
 	$(Q) $(CFGTOOL_CMDLINE) --to-kconfig
 	$(Q) $(KCONFIG_ENV) $(PYTHON) -m menuconfig $(SMING_HOME)/Kconfig
 	$(Q) $(CFGTOOL_CMDLINE) --from-kconfig
