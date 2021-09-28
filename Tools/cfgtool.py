@@ -21,8 +21,9 @@ def load_config_vars(filename):
 
 def set_kconfig_value(symbol, v):
     """Convert values from Sming format to Kconfig format.
-       Hidden variables are used to store choice selections and cannot be set directly.
-       Instead, locate the corresponding choice variable and set that.
+
+    Hidden variables are used to store choice selections and cannot be set directly.
+    Instead, locate the corresponding choice variable and set that.
     """
     if symbol.visibility == 2:
         if symbol.type is kconfiglib.BOOL:
@@ -32,8 +33,10 @@ def set_kconfig_value(symbol, v):
         symbol.set_value(v)
     else:
         for sym, cond in symbol.defaults:
-            if type(cond) is tuple:
+            if isinstance(cond, tuple):
                 cond = cond[1]
+            if not isinstance(cond, kconfiglib.Symbol):
+                continue
             if v == sym.name and cond.type is kconfiglib.BOOL:
                 cond.set_value('y')
                 break
