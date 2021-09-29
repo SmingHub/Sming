@@ -52,6 +52,9 @@ ALIGNMENT = {
     },
     "Host": {
         APP_TYPE: 0x1000,
+    },
+    "Rp2040": {
+        APP_TYPE: 0x1000,
     }
 }
 
@@ -576,7 +579,8 @@ class Map(Table):
         # Take copy of source partitions and add internal ones to appear in the map
         partitions = copy.copy(config.partitions)
         if config.partition_table_offset != 0:
-            add(partitions, device, 'Boot Sector', 0, config.bootloader_size, INTERNAL_BOOT_SECTOR)
+            if config.bootloader_size != 0:
+                add(partitions, device, 'Boot Sector', 0, config.bootloader_size, INTERNAL_BOOT_SECTOR)
             add(partitions, device, 'Partition Table', config.partition_table_offset, PARTITION_TABLE_SIZE, INTERNAL_PARTITION_TABLE)
 
         # Devices with no defined partitions

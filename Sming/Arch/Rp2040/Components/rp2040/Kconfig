@@ -1,0 +1,15 @@
+menu "RP2040 Core"
+    config PICO_BOARD
+        bool "Development board in use"
+        default pico
+        help
+            If using custom hardware, select ``none``.
+            List available boards with ``make board-list``.
+
+    config ENABLE_BOOTSEL
+        bool "Enable BOOTSEL"
+        default y if SMING_RELEASE
+        help
+            Monitor BOOTSEL button and restart in boot mode if pressed.
+            Avoids need to power-cycle the board to re-program.
+endmenu

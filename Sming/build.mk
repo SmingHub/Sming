@@ -17,6 +17,7 @@ DEBUG_VARS += \
 	CXX \
 	AR \
 	LD \
+	NM \
 	OBJCOPY \
 	OBJDUMP \
 	GDB

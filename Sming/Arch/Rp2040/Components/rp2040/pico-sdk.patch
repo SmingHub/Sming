@@ -1,0 +1,13 @@
+diff --git a/src/rp2_common/pico_platform/include/pico/platform.h b/src/rp2_common/pico_platform/include/pico/platform.h
+index c008b95..bf5a690 100644
+--- a/src/rp2_common/pico_platform/include/pico/platform.h
++++ b/src/rp2_common/pico_platform/include/pico/platform.h
+@@ -146,7 +146,7 @@ static inline void tight_loop_contents(void) {}
+  * \return a * b
+  */
+ __force_inline static int32_t __mul_instruction(int32_t a, int32_t b) {
+-    asm ("mul %0, %1" : "+l" (a) : "l" (b) : );
++    __asm__ ("mul %0, %1" : "+l" (a) : "l" (b) : );
+     return a;
+ }
+ 
