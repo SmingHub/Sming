@@ -132,11 +132,6 @@ void notify(smg_uart_t* uart, smg_uart_notify_code_t code)
 	}
 }
 
-__forceinline bool uart_isr_enabled(uint8_t nr)
-{
-	return bitRead(isrMask, nr);
-}
-
 /** @brief Determine if the given uart is a real uart or a virtual one
  */
 __forceinline bool is_physical(int uart_nr)
