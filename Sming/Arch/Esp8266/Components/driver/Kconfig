@@ -1,0 +1,22 @@
+menu "Drivers"
+    config USE_US_TIMER
+        bool "Enable microsecond precision for software timers (Timer2)"
+        help
+            The following functions depend on Timer2:
+            - NOW() return value, the Timer2 tick count
+            - Software timers
+            - System time
+
+            Software timers are driven by Timer2, which by default uses a /256 prescale
+            providing a resolution of 3.2us and a range of 1' 54".
+
+            Enabling this setting increases the resolution to 200ns but reduces the maximum
+            software timer to 7" 9.5s.
+
+    config ENABLE_CUSTOM_PWM
+        bool "Use the *New PWM* driver"
+        default y
+        help
+            New PWM is a drop-in replacement for the version provided in the Espressif SDK.
+
+endmenu

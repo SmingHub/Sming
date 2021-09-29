@@ -1,0 +1,37 @@
+menu "Hosted"
+    choice
+        depends on SMING_ARCH="Host"
+        default ENABLE_HOSTED_NONE
+        prompt "Hosted transport mechanism"
+        config ENABLE_HOSTED_NONE
+            bool "None"
+        config ENABLE_HOSTED_TCP
+            bool "TCP"
+        config ENABLE_HOSTED_SERIAL
+            bool "Serial"
+    endchoice
+
+    config ENABLE_HOSTED
+        string
+        default "" if ENABLE_HOSTED_NONE
+        default "tcp" if ENABLE_HOSTED_TCP
+        default "serial" if ENABLE_HOSTED_SERIAL
+
+    if ENABLE_HOSTED="tcp"
+        config HOSTED_SERVER_IP
+            depends on ENABLE_HOSTED="tcp"
+            string "Remote RPC server IP address"
+            default "192.168.13.1"
+    endif
+
+    if ENABLE_HOSTED="serial"
+        config HOSTED_COM_PORT
+            string "COM port connected to remote RPC server"
+            default "$(COM_PORT)"
+
+        config HOSTED_COM_SPEED
+            int "Baud rate for hosted COM port"
+            default 115200
+    endif
+
+endmenu

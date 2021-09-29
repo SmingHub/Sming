@@ -62,13 +62,6 @@ ifeq ($(DISABLE_WIFI),1)
 GLOBAL_CFLAGS += -DDISABLE_WIFI=1
 endif
 
-# WiFi settings may be provide via Environment variables
-CONFIG_VARS				+= WIFI_SSID WIFI_PWD
-ifdef WIFI_SSID
-	APP_CFLAGS			+= -DWIFI_SSID=\"$(WIFI_SSID)\"
-	APP_CFLAGS			+= -DWIFI_PWD=\"$(WIFI_PWD)\"
-endif
-
 # => LOCALE
 COMPONENT_VARS			+= LOCALE
 ifdef LOCALE

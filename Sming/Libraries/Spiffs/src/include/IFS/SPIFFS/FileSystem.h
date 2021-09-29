@@ -48,11 +48,6 @@ extern "C" {
 #include "../../../../spiffs/src/spiffs_nucleus.h"
 }
 
-/*
- * Maxmimum number of open files
- */
-#define FFS_MAX_FILEDESC 8
-
 namespace IFS
 {
 namespace SPIFFS
@@ -139,10 +134,10 @@ private:
 
 	Storage::Partition partition;
 	IProfiler* profiler{nullptr};
-	SpiffsMetaBuffer metaCache[FFS_MAX_FILEDESC];
+	SpiffsMetaBuffer metaCache[SPIFF_FILEDESC_COUNT];
 	spiffs fs;
 	uint16_t workBuffer[LOG_PAGE_SIZE];
-	spiffs_fd fileDescriptors[FFS_MAX_FILEDESC];
+	spiffs_fd fileDescriptors[SPIFF_FILEDESC_COUNT];
 	uint8_t cache[CACHE_SIZE];
 };
 

@@ -19,6 +19,13 @@ COMPONENT_DEPENDS := \
 	mqtt-codec \
 	libyuarel
 
+# WiFi settings may be provide via Environment variables
+CONFIG_VARS				+= WIFI_SSID WIFI_PWD
+ifdef WIFI_SSID
+	APP_CFLAGS			+= -DWIFI_SSID=\"$(WIFI_SSID)\"
+	APP_CFLAGS			+= -DWIFI_PWD=\"$(WIFI_PWD)\"
+endif
+
 # => WPS
 COMPONENT_VARS			+= ENABLE_WPS
 ifeq ($(ENABLE_WPS), 1)

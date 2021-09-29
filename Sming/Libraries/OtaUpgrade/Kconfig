@@ -1,0 +1,41 @@
+menu "OTA Upgrade"
+
+    config ENABLE_OTA_SIGNING
+        bool "Protect upgrade files using digital signature"
+        default y
+        help
+            If enabled (highly recommended), OTA upgrade files are protected against unauthorized modification by a digital signature.
+
+            You may disable signing in order to save some program memory if your communication channel already establishes a
+            comparable level of trust, e.g. TLS with a pinned certificate.
+
+    config OTA_ENABLE_ENCRYPTION
+        bool "Encrypt upgrade files"
+        help
+            This option helps to protect any confidential data embedded in your firmware, such as WiFi credentials, server certificates, etc.
+
+    config OTA_KEY
+        string "Path to secret encryption/signing key"
+        default "ota.key"
+
+    config ENABLE_OTA_DOWNGRADE
+        bool "Enable downgrade"
+        help
+            By default, BasicStream refuses to downgrade to an older firmware version to prevent an attacker from restoring already patched security vulnerabilities.
+
+            Downgrade protection must be combined with encryption or signing to be effective.
+
+    config OTA_UPLOAD_URL
+        string "URL used by the `make ota-upload` command"
+
+
+    config OTA_UPLOAD_NAME
+        string "Field name for upgrade file in HTTP POST request"
+        default "firmware"
+        help
+            This relates to the `name` attribute of the HTML input element
+            used with the `make ota-upload` command:
+
+                <input type="file" name="firmware" />
+
+endmenu

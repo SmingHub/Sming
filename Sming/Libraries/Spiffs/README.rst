@@ -20,8 +20,6 @@ A single SPIFFS partition is defined using :envvar:`HWCONFIG` ``=spiffs``, which
 
    .. envvar:: SPIFF_FILES
 
-   .. envvar:: SPIFF_FILES
-
       default: ``files``
 
       The SPIFFS image is built using files from this directory, which must exist or the build will fail.

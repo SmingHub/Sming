@@ -31,6 +31,8 @@ else
 endif
 export SMING_RELEASE
 
+SMING_TOOLS := $(realpath $(SMING_HOME)/../Tools)
+
 # Detect OS and build environment
 TOOL_EXT	:=
 DEBUG_VARS	+= UNAME

@@ -1,4 +1,4 @@
-Hosted RCP Server over Serial
+Hosted RPC Server over Serial
 =============================
 
 Overview

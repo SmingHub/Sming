@@ -1,0 +1,53 @@
+menu "Network"
+    depends on !DISABLE_NETWORK
+
+    config DISABLE_WIFI
+        bool "Build without WiFi support"
+        default n
+        help
+            Keeps the core Network library but excludes WiFi code.
+            Applications using ethernet can use this to reduce code size.
+
+    if !DISABLE_WIFI
+        config WIFI_SSID
+            string "Default WiFi SSID"
+            depends on !DISABLE_WIFI
+
+        config WIFI_PWD
+            string "Default WiFi Passphrase"
+            depends on !DISABLE_WIFI
+
+        if SMING_ARCH=Esp8266
+            config ENABLE_WPS
+                bool "Enable WiFi Protected Setup (WPS)"
+                help
+                    WPS is not enabled by default to preserve resources, and because
+                    there may be security implications which you should consider carefully.
+
+            config ENABLE_SMART_CONFIG
+                bool "Enable WiFi Smart Configuration API"
+                help
+                    See :sample:`Basic_SmartConfig` sample application.
+        endif
+    endif
+
+    config HTTP_SERVER_EXPOSE_NAME
+        bool "Add \"HttpServer/Sming\" to the SERVER field in response headers"
+        default y
+        help
+               If disabled, the SERVER field is omitted from all responses.
+
+    config HTTP_SERVER_EXPOSE_VERSION
+        bool "Include Sming version in HTTP server headers"
+        depends on HTTP_SERVER_EXPOSE_NAME
+        help
+            Adds the current Sming build version to the SERVER field in response headers.
+            For example, "Sming/4.0.0-rc2".
+
+    config ENABLE_CUSTOM_LWIP
+        int "LWIP version (0 for SDK, 1 or 2)"
+        range 0 2
+        default 1
+        depends on SMING_ARCH=Esp8266
+
+endmenu
