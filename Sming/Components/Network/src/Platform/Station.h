@@ -295,14 +295,6 @@ public:
 	 */
 	virtual bool wpsConfigStart(WPSConfigDelegate callback = nullptr) = 0;
 
-	/**	@brief	Start WiFi station by WPS method
-	 * 	@deprecated Use `wpsConfigStart()`
-	 */
-	bool beginWPSConfig() SMING_DEPRECATED
-	{
-		return wpsConfigStart(nullptr);
-	}
-
 	/**	@brief	Stop WiFi station WPS configuration
 	 */
 	virtual void wpsConfigStop() = 0;

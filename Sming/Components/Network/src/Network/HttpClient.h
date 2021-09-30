@@ -111,12 +111,6 @@ public:
 	 */
 	bool send(HttpRequest* request);
 
-	/** @deprecated Use `createRequest()` instead */
-	HttpRequest* request(const String& url) SMING_DEPRECATED
-	{
-		return createRequest(url);
-	}
-
 	/** @brief Helper function to create a new request on a URL
 	 *  @param url
 	 *  @retval HttpRequest*

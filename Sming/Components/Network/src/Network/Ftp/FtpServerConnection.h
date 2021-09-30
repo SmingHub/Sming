@@ -80,6 +80,4 @@ private:
 	FtpDataStream* dataConnection{nullptr};
 };
 
-typedef FtpServerConnection FTPServerConnection SMING_DEPRECATED; // @deprecated Use `FtpServerConnection` instead
-
 /** @} */

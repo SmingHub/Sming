@@ -72,15 +72,6 @@ public:
 	void addUser(const String& login, const String& pass, IFS::UserRole userRole = IFS::UserRole::Admin);
 	IFS::UserRole validateUser(const char* login, const char* pass) override;
 
-	/**
-	 * @brief Legacy user validation
-	 * @deprecated Use `validateUser()` instead
-	 */
-	bool checkUser(const String& login, const String& pass) SMING_DEPRECATED
-	{
-		return validateUser(login.c_str(), pass.c_str()) != IFS::UserRole::None;
-	}
-
 protected:
 	bool onCommand(String cmd, String data, FtpServerConnection& connection) override;
 
@@ -92,8 +83,3 @@ private:
 	using UserList = HashMap<String, User>;
 	UserList users;
 };
-
-/**
- * @deprecated Use `FtpServer` instead
- */
-typedef FtpServer FTPServer SMING_DEPRECATED;

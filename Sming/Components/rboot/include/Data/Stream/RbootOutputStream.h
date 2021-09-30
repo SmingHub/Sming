@@ -97,6 +97,3 @@ protected:
 protected:
 	virtual bool init();
 };
-
-/** @deprecated Use `RbootOutputStream` */
-typedef RbootOutputStream rBootOutputStream SMING_DEPRECATED;

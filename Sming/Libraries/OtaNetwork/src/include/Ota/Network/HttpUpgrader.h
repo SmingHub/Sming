@@ -120,15 +120,6 @@ public:
 	}
 
 	/**
-	 * @brief Allow reading items
-	 * @deprecated Access list directly using `getItems()`
-	 */
-	const Item& getItem(unsigned int index) const SMING_DEPRECATED
-	{
-		return items[index];
-	}
-
-	/**
 	 * @brief Allow read access to item list
 	 */
 	const ItemList& getItems() const

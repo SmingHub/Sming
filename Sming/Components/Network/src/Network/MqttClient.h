@@ -38,22 +38,10 @@ enum MqttClientState { eMCS_Ready = 0, eMCS_SendingData };
 
 #define MQTT_FLAG_RETAINED 1
 
-#ifndef MQTT_NO_COMPAT
-#define MQTT_MAX_BUFFER_SIZE MQTT_PAYLOAD_LENGTH ///< @deprecated
-#define MQTT_MSG_PUBREC MQTT_TYPE_PUBREC		 ///< @deprecated
-#endif
-
 class MqttClient;
 
 using MqttDelegate = Delegate<int(MqttClient& client, mqtt_message_t* message)>;
 using MqttRequestQueue = ObjectQueue<mqtt_message_t, MQTT_REQUEST_POOL_SIZE>;
-
-#ifndef MQTT_NO_COMPAT
-/** @deprecated Use MqttDelegate instead */
-using MqttStringSubscriptionCallback = Delegate<void(String topic, String message)>;
-/** @deprecated Use MqttDelegate instead */
-using MqttMessageDeliveredCallback = Delegate<void(uint16_t msgId, int type)>;
-#endif
 
 class MqttClient : protected TcpClient
 {
@@ -193,57 +181,6 @@ public:
 	using TcpClient::getRemoteIp;
 	using TcpClient::getRemotePort;
 
-#ifndef MQTT_NO_COMPAT
-	/**
-	 * @deprecated: Use setWill(const String& topic, const String& message,uint8_t flags) instead
-	 */
-	bool setWill(const String& topic, const String& message, int QoS, bool retained = false) SMING_DEPRECATED
-	{
-		uint8_t flags = (uint8_t)(retained + (QoS << 1));
-		return setWill(topic, message, flags);
-	}
-
-	/**
-	 * @removed
-	 * 		bool publish(String& topic, String& message, bool retained = false)
-	 * Use publish(const String& topic, const String& message, uint8_t flags = 0) instead.
-	 */
-
-	/**
-	 * @deprecated: Use publish(const String& topic, const String& message, uint8_t flags = 0) instead.
-	 * 			   If you want to have a callback that should be triggered on successful delivery of messages
-	 * 			   then use setEventHandler(MQTT_TYPE_PUBACK, youCallback) instead.
-	 */
-	bool publishWithQoS(const String& topic, const String& message, int QoS, bool retained = false,
-						MqttMessageDeliveredCallback onDelivery = nullptr) SMING_DEPRECATED
-	{
-		if(onDelivery) {
-			if(QoS == 1) {
-				setEventHandler(MQTT_TYPE_PUBACK, onPuback);
-				this->onDelivery = onDelivery;
-			} else if(QoS == 2) {
-				setEventHandler(MQTT_TYPE_PUBREC, onPuback);
-				this->onDelivery = onDelivery;
-			} else {
-				debug_w("No callback is set for QoS == 0");
-			}
-		}
-
-		uint8_t flags = (uint8_t)(retained + (QoS << 1));
-		return publish(topic, message, flags);
-	}
-
-	/**
-	 * @brief  Provide a function to be called when a message is received from the broker
-	 * @deprecated: Use setEventHandler(MQTT_TYPE_PUBLISH, MqttDelegate handler) instead.
-	*/
-	void setCallback(MqttStringSubscriptionCallback subscriptionCallback = nullptr) SMING_DEPRECATED
-	{
-		this->subscriptionCallback = subscriptionCallback;
-		setEventHandler(MQTT_TYPE_PUBLISH, onPublish);
-	}
-#endif
-
 protected:
 	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
 	void onFinished(TcpClientState finishState) override;
@@ -259,54 +196,6 @@ private:
 	static int staticOnDataEnd(void* user_data, mqtt_message_t* message);
 	static int staticOnMessageEnd(void* user_data, mqtt_message_t* message);
 	int onMessageEnd(mqtt_message_t* message);
-
-#ifndef MQTT_NO_COMPAT
-	/** @deprecated This method is only for compatibility with the previous release and will be removed soon. */
-	static int onPuback(MqttClient& client, mqtt_message_t* message)
-	{
-		if(!message) {
-			return 1;
-		}
-
-		if(client.onDelivery) {
-			uint16_t msgId = 0;
-			if(message->common.type == MQTT_TYPE_PUBACK) {
-				msgId = message->puback.message_id;
-			} else if(message->common.type == MQTT_TYPE_PUBREC) {
-				msgId = message->pubrec.message_id;
-			}
-
-			if(msgId) {
-				client.onDelivery(msgId, (int)message->common.type);
-			}
-		}
-
-		return 0;
-	}
-
-	/** @deprecated This method is only for compatibility with the previous release and will be removed soon. */
-	static int onPublish(MqttClient& client, mqtt_message_t* message)
-	{
-		if(message == nullptr) {
-			return -1;
-		}
-
-		if(message->common.length > MQTT_PAYLOAD_LENGTH) {
-			return -2;
-		}
-
-		if(client.subscriptionCallback) {
-			String topic = String((const char*)message->publish.topic_name.data, message->publish.topic_name.length);
-			String content;
-			if(message->publish.content.data) {
-				content.concat((const char*)message->publish.content.data, message->publish.content.length);
-			}
-			client.subscriptionCallback(topic, content);
-		}
-
-		return 0;
-	}
-#endif
 
 private:
 	Url url;
@@ -343,11 +232,6 @@ private:
 	*                   |
 	*				    --- set when connected ...
 	*/
-
-#ifndef MQTT_NO_COMPAT
-	SMING_DEPRECATED MqttMessageDeliveredCallback onDelivery = nullptr;				///< @deprecated
-	SMING_DEPRECATED MqttStringSubscriptionCallback subscriptionCallback = nullptr; ///< @deprecated
-#endif
 };
 
 /** @} */

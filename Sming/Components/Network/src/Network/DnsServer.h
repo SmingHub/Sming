@@ -98,7 +98,4 @@ private:
 	bool requestIncludesOnlyOneQuestion();
 };
 
-/** @deprecated Use `DnsServer` */
-typedef DnsServer DNSServer SMING_DEPRECATED;
-
 /** @} */

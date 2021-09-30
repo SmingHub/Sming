@@ -68,13 +68,3 @@ private:
 	char boundary[16]{};
 	bool footerSent{false};
 };
-
-/**
- * @deprecated Use `MultipartStream::BodyPart` instead
- */
-typedef MultipartStream::BodyPart HttpPartResult SMING_DEPRECATED;
-
-/**
- * @deprecated Use `MultipartStream::Producer` instead
- */
-typedef MultipartStream::Producer HttpPartProducerDelegate SMING_DEPRECATED;

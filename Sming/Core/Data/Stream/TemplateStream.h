@@ -166,8 +166,3 @@ private:
 	bool enableNextState : 1;
 	bool doubleBraces : 1;
 };
-
-/**
- * @deprecated Use `TemplateStream::Variables` instead
- */
-typedef TemplateStream::Variables TemplateVariables;

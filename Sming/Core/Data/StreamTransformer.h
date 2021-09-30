@@ -35,18 +35,6 @@ public:
 	{
 	}
 
-	/** @brief Constructor with external callback function
-	 *  @deprecated Create inherited class, override `transform()` method and use alternative constructor instead
-	 */
-	StreamTransformer(IDataSourceStream* stream, const StreamTransformerCallback& callback, size_t resultSize = 256,
-					  size_t blockSize = 64) SMING_DEPRECATED : transformCallback(callback),
-																sourceStream(stream),
-																result(new uint8_t[resultSize]),
-																resultSize(resultSize),
-																blockSize(blockSize)
-	{
-	}
-
 	~StreamTransformer()
 	{
 		delete[] result;
@@ -106,15 +94,7 @@ protected:
 	 * @retval size_t number of output bytes written
 	 * @note Called with `in = nullptr` and `inLength = 0` at end of input stream
 	 */
-	virtual size_t transform(const uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)
-	{
-		return (transformCallback == nullptr) ? 0 : transformCallback(in, inLength, out, outLength);
-	}
-
-	/** @brief Callback function to perform transformation
-	 *  @deprecated Create inherited class and override transform() method instead
-	 */
-	StreamTransformerCallback transformCallback = nullptr;
+	virtual size_t transform(const uint8_t* in, size_t inLength, uint8_t* out, size_t outLength) = 0;
 
 private:
 	void fillTempStream(char* buffer, size_t bufSize);

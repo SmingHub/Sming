@@ -22,9 +22,6 @@
  */
 using CommandFunctionDelegate = Delegate<void(String commandLine, CommandOutput* commandOutput)>;
 
-/** @deprecated Use `CommandFunctionDelegate` instead */
-typedef CommandFunctionDelegate commandFunctionDelegate SMING_DEPRECATED;
-
 /** @brief  Command delegate class */
 class CommandDelegate
 {

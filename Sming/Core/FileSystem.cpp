@@ -58,21 +58,6 @@ bool fwfs_mount(Storage::Partition partition)
 	return fileMountFileSystem(fs);
 }
 
-Vector<String> fileList()
-{
-	Vector<String> result;
-
-	DirHandle dir;
-	if(fileOpenDir(nullptr, dir) == FS_OK) {
-		FileNameStat stat;
-		while(fileReadDir(dir, stat) >= 0) {
-			result.add(stat.name.buffer);
-		}
-		fileCloseDir(dir);
-	}
-	return result;
-}
-
 IFS::IFileSystem::Type fileSystemType()
 {
 	if(SmingInternal::activeFileSystem == nullptr) {

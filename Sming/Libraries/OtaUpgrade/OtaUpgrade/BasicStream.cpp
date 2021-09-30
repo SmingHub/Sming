@@ -201,11 +201,6 @@ size_t BasicStream::write(const uint8_t* data, size_t size)
 	return origSize - size;
 }
 
-String BasicStream::errorToString(Error code)
-{
-	return toString(code);
-}
-
 } // namespace OtaUpgrade
 
 String toString(OtaUpgrade::BasicStream::Error code)

@@ -39,10 +39,4 @@ public:
 	}
 
 	using IFS::FileStream::attach;
-
-	/** @deprecated Use `open()` instead */
-	bool attach(const String& fileName, FileOpenFlags openFlags = File::ReadOnly) SMING_DEPRECATED
-	{
-		return open(fileName, openFlags);
-	}
 };

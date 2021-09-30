@@ -98,8 +98,3 @@ public:
 String toString(Certificate::RDN rdn);
 
 } // namespace Ssl
-
-/**
- * @deprecated Use `Ssl::Certificate` instead
- */
-typedef Ssl::Certificate SslCertificate SMING_DEPRECATED;
