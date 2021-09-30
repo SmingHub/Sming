@@ -127,7 +127,7 @@ void noPullup(uint16_t pin)
 		}                                                                                                              \
 	}
 
-unsigned long pulseIn(uint8_t pin, uint8_t state, unsigned long timeout)
+unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout)
 {
 	const uint32_t max_timeout_us = clockCyclesToMicroseconds(UINT_MAX);
 	if(timeout > max_timeout_us) {

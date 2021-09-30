@@ -90,7 +90,7 @@ public:
 			return true;
 		});
 
-		// RCP Client
+		// RPC Client
 
 		client.connect(WifiStation.getIP(), 4031);
 		Hosted::Transport::TcpClientStream stream(client, 1024);

@@ -59,7 +59,7 @@ Configuration
 
 .. envvar:: HOSTED_COM_PORT
 
-   Default: /dev/ttyUSB0 or the value of the environment variable COM_PORT if defined
+   Default: :envvar:`COM_PORT`
 
    Used only when ENABLE_HOSTED=serial is specified. Specifies which local communication port should be used to connect to the remote RPC server.
 

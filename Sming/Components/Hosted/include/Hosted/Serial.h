@@ -17,9 +17,10 @@
 #error "Hosted::Serial can be used only on the Host architecture!"
 #endif
 
+#include <SerialLib.h>
 #include <Stream.h>
 #include <WString.h>
-#include <SerialLib.h>
+#include <hostlib/hostmsg.h>
 
 namespace Hosted
 {
@@ -55,7 +56,7 @@ public:
 			return true;
 		}
 
-		debug_w("Hosted::Serial:begin error: %d", result);
+		host_debug_w("Hosted::Serial:begin error: %d", result);
 		return false;
 	}
 
