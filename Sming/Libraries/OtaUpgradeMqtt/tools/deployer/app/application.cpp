@@ -89,7 +89,7 @@ bool pack(const String& inputFileName, const String& outputFileName, size_t patc
 	}
 
 	HostFileStream output;
-	if(!output.open(outputFileName, eFO_CreateNewAlways | eFO_WriteOnly)) {
+	if(!output.open(outputFileName, File::CreateNewAlways | File::WriteOnly)) {
 		fileError(output, outputFileName, F("open output"));
 		return false;
 	}
