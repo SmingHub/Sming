@@ -7,6 +7,12 @@ COMPONENT_SRCDIRS := \
 	modules \
 	Arch/$(SMING_ARCH)
 
+ifneq ($(DISABLE_NETWORK),1)
+COMPONENT_SRCDIRS += \
+	modules/Network \
+	modules/Network/Arch/$(SMING_ARCH)
+endif
+
 ARDUINO_LIBRARIES := \
 	SmingTest \
 	ArduinoJson5 \
@@ -54,4 +60,4 @@ $(SPIFFSGEN_BIN):
 clean: resource-clean
 .PHONY: resource-clean
 resource-clean:
-	rm -f $(SPIFFSGEN_BIN)
+	$(Q) rm -f $(SPIFFSGEN_BIN)

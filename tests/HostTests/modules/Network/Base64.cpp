@@ -1,5 +1,7 @@
 #include <HostTests.h>
 
+#include <Data/Stream/MemoryDataStream.h>
+#include <Data/Stream/Base64OutputStream.h>
 #include <Data/WebHelpers/base64.h>
 
 class Base64Test : public TestGroup
@@ -10,6 +12,12 @@ public:
 	}
 
 	void execute() override
+	{
+		libTests();
+		streamTests();
+	}
+
+	void libTests()
 	{
 		String user("donkey");
 		String pass("kingpin");
@@ -67,6 +75,21 @@ public:
 			}
 			delete[] outbuf;
 			delete[] inbuf;
+		}
+	}
+
+	void streamTests()
+	{
+		TEST_CASE("Base64OutputStream / StreamTransformer")
+		{
+			auto src = new FSTR::Stream(Resource::image_png);
+			Base64OutputStream base64stream(src);
+			MemoryDataStream output;
+			output.copyFrom(&base64stream);
+			String s;
+			REQUIRE(output.moveString(s));
+			s = base64_decode(s);
+			REQUIRE(Resource::image_png == s);
 		}
 	}
 };
