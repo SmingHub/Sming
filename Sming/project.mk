@@ -109,10 +109,8 @@ DEBUG_VARS			+= TARGET_OUT_0
 CACHE_VARS			+= APP_NAME
 APP_NAME			?= app
 
-# Firmware memory layout info files
-FW_MEMINFO_NEW		:= $(FW_BASE)/fwMeminfo.new
-FW_MEMINFO_OLD		:= $(FW_BASE)/fwMeminfo.old
-FW_MEMINFO_SAVED	:= out/fwMeminfo
+# Firmware memory layout info file
+FW_MEMINFO			:= $(FW_BASE)/fwMeminfo.txt
 
 # List of Components we're going to parse, with duplicate libraries removed
 COMPONENTS			:= Sming
