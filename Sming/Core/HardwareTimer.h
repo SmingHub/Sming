@@ -153,9 +153,4 @@ using HardwareTimer1 = CallbackTimer<Timer1Api<clkdiv, mode>>;
  */
 using HardwareTimer = HardwareTimer1<>;
 
-/**
- * @deprecated Use HardwareTimer class instead
- */
-typedef HardwareTimer Hardware_Timer SMING_DEPRECATED;
-
 /** @} */

@@ -99,17 +99,6 @@ using HttpFiles = ObjectMap<String, ReadWriteStream>;
 String toString(HttpError err);
 
 /**
- * @brief Return a string name of the given error
- * @note This replaces the one in http_parser module which uses a load of RAM
- * @deprecated Use `toString(HttpError)`
- */
-inline String httpGetErrorName(HttpError err) SMING_DEPRECATED;
-inline String httpGetErrorName(HttpError err)
-{
-	return toString(err);
-}
-
-/**
  * @brief Return a descriptive string for the given error
  */
 String httpGetErrorDescription(HttpError err);

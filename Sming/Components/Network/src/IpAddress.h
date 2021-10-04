@@ -198,8 +198,5 @@ inline String toString(IpAddress address)
 	return address.toString();
 }
 
-/** @deprecated Use `IpAddress` instead. */
-typedef IpAddress IPAddress SMING_DEPRECATED;
-
 // Making this extern saves 100's of bytes; each usage otherwise incurs 4 bytes of BSS
 #define INADDR_NONE IpAddress()

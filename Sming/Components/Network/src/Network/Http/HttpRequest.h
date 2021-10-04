@@ -68,12 +68,6 @@ public:
 		return new HttpRequest(*this);
 	}
 
-	/** @deprecated Please use `clone()` instead */
-	HttpRequest& operator=(const HttpRequest& rhs) SMING_DEPRECATED
-	{
-		return *this;
-	}
-
 	~HttpRequest()
 	{
 		reset();
@@ -100,15 +94,6 @@ public:
 	HttpRequest* setHeader(const String& name, const String& value)
 	{
 		headers[name] = value;
-		return this;
-	}
-
-	/**
-	 * @deprecated Set postParams directly, i.e. `request.postParams = params`
-	 */
-	HttpRequest* setPostParameters(const HttpParams& params) SMING_DEPRECATED
-	{
-		postParams = params;
 		return this;
 	}
 
@@ -153,13 +138,6 @@ public:
 		return static_cast<const HttpParams&>(postParams)[name];
 	}
 
-	/** @deprecated Use `uri.Path` instead */
-	String getPath() SMING_DEPRECATED
-	{
-		return uri.Path;
-	}
-
-	/* @deprecated Use methods of `uri.Query` instead */
 	String getQueryParameter(const String& parameterName, const String& defaultValue = nullptr) const
 	{
 		return static_cast<const HttpParams&>(uri.Query)[parameterName] ?: defaultValue;

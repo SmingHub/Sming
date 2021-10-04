@@ -131,17 +131,6 @@ public:
 		return 0;
 	}
 
-	/**
-	 * @brief Return the total length of the stream
-	 * @retval int -1 is returned when the size cannot be determined
-	 *
-	 * @deprecated Use `available()` instead
-	 */
-	int length() SMING_DEPRECATED
-	{
-		return available();
-	}
-
 	/*
 	 * @brief Flushes the stream
 	 */

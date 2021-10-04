@@ -97,14 +97,14 @@ public:
 
 #ifdef ARCH_HOST
 			{
-				HostFileStream fs("test-src1.out", eFO_CreateNewAlways | eFO_WriteOnly);
+				HostFileStream fs("test-src1.out", File::CreateNewAlways | File::WriteOnly);
 				int res = fs.copyFrom(&tmpl);
 				debug_e("copyfrom(src) = %d", res);
 				tmpl.gotoSection(0);
 			}
 
 			{
-				HostFileStream fs("test-src2.out", eFO_CreateNewAlways | eFO_WriteOnly);
+				HostFileStream fs("test-src2.out", File::CreateNewAlways | File::WriteOnly);
 				int res = fs.copyFrom(&tmpl);
 				debug_e("copyfrom(src) = %d", res);
 				tmpl.gotoSection(0);

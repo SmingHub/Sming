@@ -78,56 +78,6 @@ public:
 		return &response;
 	}
 
-	// Backported for compatibility reasons
-
-	/**
-	 * @deprecated Use `getResponse()->code` instead
-	 */
-	int getResponseCode() const SMING_DEPRECATED
-	{
-		return int(response.code);
-	}
-
-	/**
-	 * @deprecated Use `getResponse()->headers[]` instead
-	 */
-	String getResponseHeader(const String& headerName, const String& defaultValue = nullptr) const SMING_DEPRECATED
-	{
-		return response.headers[headerName] ?: defaultValue;
-	}
-
-	/**
-	* @deprecated Use `getResponse()->headers` instead
-	*/
-	HttpHeaders& getResponseHeaders() SMING_DEPRECATED
-	{
-		return response.headers;
-	}
-
-	/**
-	* @deprecated Use `getResponse()->headers.getLastModifiedDate()` instead
-	*/
-	DateTime getLastModifiedDate() const SMING_DEPRECATED
-	{
-		return response.headers.getLastModifiedDate();
-	}
-
-	/**
-	 * @deprecated Use `getResponse()->headers.getServerDate()` instead
-	 */
-	DateTime getServerDate() const SMING_DEPRECATED
-	{
-		return response.headers.getServerDate();
-	}
-
-	/**
-	 * @deprecated Use `getResponse()->getBody()` instead
-	 */
-	String getResponseString() SMING_DEPRECATED
-	{
-		return response.getBody();
-	}
-
 protected:
 	/** @brief Called after all headers have been received and processed */
 	void resetHeaders();

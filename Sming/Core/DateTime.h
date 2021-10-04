@@ -132,18 +132,6 @@ public:
 	 */
 	bool fromHttpDate(const String& httpDate);
 
-	/** @brief  Parse a HTTP full date and set time and date
-	 *  @param  httpDate HTTP full date in RFC 1123 format, e.g. Sun, 06 Nov 1994 08:49:37 GMT
-	 *  @retval bool True on success
-	 *  @note   Also supports obsolete RFC 850 date format, e.g. Sunday, 06-Nov-94 08:49:37 GMT where 2 digit year represents range 1970-2069
-	 *  @note   GMT suffix is optional and is always assumed / ignored
-	 *  @deprecated Use `fromHttpDate()` instead
-	 */
-	bool parseHttpDate(const String& httpDate) SMING_DEPRECATED
-	{
-		return fromHttpDate(httpDate);
-	}
-
 	/** @brief  Check if time date object is initialised
 	 *  @retval True if object has no value. False if initialised.
 	 */
@@ -206,43 +194,7 @@ public:
 	static void fromUnixTime(time_t timep, uint8_t* psec, uint8_t* pmin, uint8_t* phour, uint8_t* pday, uint8_t* pwday,
 							 uint8_t* pmonth, uint16_t* pyear);
 
-	/** @deprecated Use unsigned version instead
-	 * 		`fromUnixTime(time_t, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint16_t*)` */
-	static void fromUnixTime(time_t timep, int8_t* psec, int8_t* pmin, int8_t* phour, int8_t* pday, int8_t* pwday,
-							 int8_t* pmonth, int16_t* pyear) SMING_DEPRECATED
-	{
-		fromUnixTime(timep, reinterpret_cast<uint8_t*>(psec), reinterpret_cast<uint8_t*>(pmin),
-					 reinterpret_cast<uint8_t*>(phour), reinterpret_cast<uint8_t*>(pday),
-					 reinterpret_cast<uint8_t*>(pwday), reinterpret_cast<uint8_t*>(pmonth),
-					 reinterpret_cast<uint16_t*>(pyear));
-	}
-
 	// functions to convert to and from time components (hrs, secs, days, years etc) to time_t
-	/** @brief  Convert from Unix time to individual time components
-	 *  @param  timep Unix time date value to convert
-	 *  @param  psec Pointer to integer to hold resulting seconds
-	 *  @param  pmin Pointer to integer to hold resulting minutes
-	 *  @param  phour Pointer to integer to hold resulting hour
-	 *  @param  pday Pointer to integer to hold resulting day of month
-	 *  @param  pwday Pointer to integer to hold resulting day of week
-	 *  @param  pmonth Pointer to integer to hold resulting month
-	 *  @param  pyear Pointer to integer to hold resulting year
-	 *  @note   This is a more compact version of the C library localtime function
-	 *  @note   Pass the Unix timedate value and pointers to existing integers. The integers are updated with the converted values
-	 *  @note   This static function  may be used without instantiating a DateTime object, e.g. DateTime::convertFromUnixTime(...);
-	 *  @note   32-bit Unix time has year 2036 issue.
-	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
-	 *  @note   All of the return values are optional, specify nullptr if not required
-	 *  @deprecated Use `fromUnixTime(time_t, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint16_t*)` instead
-	 */
-	static void convertFromUnixTime(time_t timep, int8_t* psec, int8_t* pmin, int8_t* phour, int8_t* pday,
-									int8_t* pwday, int8_t* pmonth, int16_t* pyear) SMING_DEPRECATED
-	{
-		fromUnixTime(timep, reinterpret_cast<uint8_t*>(psec), reinterpret_cast<uint8_t*>(pmin),
-					 reinterpret_cast<uint8_t*>(phour), reinterpret_cast<uint8_t*>(pday),
-					 reinterpret_cast<uint8_t*>(pwday), reinterpret_cast<uint8_t*>(pmonth),
-					 reinterpret_cast<uint16_t*>(pyear));
-	}
 
 	/** @brief  Convert from individual time components to Unix time
 	 *  @param  sec Seconds
@@ -257,25 +209,6 @@ public:
 	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
 	 */
 	static time_t toUnixTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year);
-
-	/** @brief  Convert from individual time components to Unix time
-	 *  @param  sec Seconds
-	 *  @param  min Minutes
-	 *  @param  hour Hours
-	 *  @param  day Days
-	 *  @param  month Month (0-11, Jan=0, Feb=1, ...Dec=11)
-	 *  @param  year Year (1901-2036), either full 4 digit year or 2 digits for 1970-2036
-	 *  @note   Seconds, minutes, hours and days may be any value, e.g. to calculate the value for 300 days since 1970 (epoch), set day=300
-	 *  @note   This static function  may be used without instantiating a DateTime object, e.g. time_t unixTime = DateTime::convertToUnixTime(...);
-	 *  @note   32-bit Unix time is valid between 1901-12-13 and 03:14:07 2038-01-19
-	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
-	 *  @deprecated Use 'toUnixTime()' instead
-	 */
-	static time_t convertToUnixTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month,
-									uint16_t year) SMING_DEPRECATED
-	{
-		return toUnixTime(sec, min, hour, day, month, year);
-	}
 
 	/** @brief  Create string formatted with time and date placeholders
 	 *  @param  formatString String including date and time formatting

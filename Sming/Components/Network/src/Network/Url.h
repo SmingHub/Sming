@@ -177,8 +177,6 @@ public:
 	String Fragment; ///< Without '#'
 };
 
-typedef Url URL SMING_DEPRECATED; ///< @deprecated Use `Url` instead
-
 inline String toString(const Url& url)
 {
 	return url.toString();

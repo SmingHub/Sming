@@ -76,36 +76,6 @@ public:
 		bodyParsers[toString(mimeType)] = parser;
 	}
 
-	/** @deprecated Use `paths.set()` instead */
-	void addPath(String path, const HttpPathDelegate& callback) SMING_DEPRECATED
-	{
-		paths.set(path, callback);
-	}
-
-	/** @deprecated Use `paths.set()` instead */
-	void addPath(const String& path, const HttpResourceDelegate& onRequestComplete) SMING_DEPRECATED
-	{
-		paths.set(path, onRequestComplete);
-	}
-
-	/** @deprecated Use `paths.set()` instead */
-	void addPath(const String& path, HttpResource* resource) SMING_DEPRECATED
-	{
-		paths.set(path, resource);
-	}
-
-	/** @deprecated Use `paths.setDefault()` instead */
-	void setDefaultHandler(const HttpPathDelegate& callback) SMING_DEPRECATED
-	{
-		paths.setDefault(callback);
-	}
-
-	/** @deprecated Use `paths.setDefault()` instead */
-	void setDefaultResource(HttpResource* resource) SMING_DEPRECATED
-	{
-		paths.setDefault(resource);
-	}
-
 public:
 	/** @brief Maps paths to resources which deal with incoming requests */
 	HttpResourceTree paths;

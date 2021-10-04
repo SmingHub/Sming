@@ -63,13 +63,3 @@ __forceinline String toString(const SessionId& id)
 }
 
 } // namespace Ssl
-
-/**
- * @deprecated Use Ssl::SessionId instead
- */
-typedef Ssl::SessionId SslSessionId SMING_DEPRECATED;
-
-/**
- * @deprecated Use Ssl::SessionId instead
- */
-typedef Ssl::SessionId SSLSessionId SMING_DEPRECATED;

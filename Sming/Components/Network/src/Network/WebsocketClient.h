@@ -90,14 +90,6 @@ public:
 		sslInitHandler = handler;
 	}
 
-	/** @brief  Disconnects websocket client from server
-	  * @deprecated Use `close()` instead
-	  */
-	void disconnect() SMING_DEPRECATED
-	{
-		close();
-	}
-
 protected:
 	int verifyKey(HttpConnection& connection, HttpResponse& response);
 

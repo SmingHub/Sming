@@ -66,12 +66,6 @@ public:
 
 	Error errorCode = Error::None; ///< Error code. Only relevant if `hasError()` returns `true`.
 
-	/** @brief Convert error code to string.
-	 * @see #errorCode
-	 * @deprecated Use `toString()` global function
-	 */
-	static String errorToString(Error code) SMING_DEPRECATED;
-
 	/** @brief Process chunk of upgrade file.
 	 * @param data Pointer to chunk of data.
 	 * @param size Size of chunk pointed to by \a data in bytes.

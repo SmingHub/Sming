@@ -38,13 +38,6 @@ COMPONENT_SRCDIRS		+= Services/CommandProcessing
 endif
 GLOBAL_CFLAGS			+= -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR)
 
-# => MQTT
-# Flags for compatability with old versions (most of them should disappear with the next major release)
-COMPONENT_VARS			+= MQTT_NO_COMPAT
-ifeq ($(MQTT_NO_COMPAT),1)
-	GLOBAL_CFLAGS		+= -DMQTT_NO_COMPAT=1
-endif
-
 #
 RELINK_VARS += DISABLE_NETWORK
 DISABLE_NETWORK ?= 0

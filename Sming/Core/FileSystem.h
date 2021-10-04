@@ -19,10 +19,8 @@
 #include <IFS/File.h>
 #include <IFS/Directory.h>
 #include <Spiffs.h>
-#include "WVector.h" ///< @deprecated see fileList()
 
 using file_t = IFS::FileHandle;
-typedef SeekOrigin SeekOriginFlags; ///< @deprecated Use `SeekOrigin` instead
 using FileHandle = IFS::FileHandle;
 using DirHandle = IFS::DirHandle;
 using FileOpenFlag = IFS::OpenFlag;
@@ -32,10 +30,6 @@ using FileAttributes = IFS::FileAttributes;
 using FileStat = IFS::Stat;
 using FileNameStat = IFS::NameStat;
 constexpr int FS_OK = IFS::FS_OK;
-
-constexpr SeekOrigin eSO_FileStart{SeekOrigin::Start};	///< @deprecated use SeekOrigin::Start
-constexpr SeekOrigin eSO_CurrentPos{SeekOrigin::Current}; ///< @deprecated use SeekOrigin::Current
-constexpr SeekOrigin eSO_FileEnd{SeekOrigin::End};		  ///< @deprecated use SeekOrigin::End
 
 namespace SmingInternal
 {
@@ -70,15 +64,6 @@ public:
 	{
 	}
 };
-
-// Various file flag combinations
-constexpr FileOpenFlags eFO_ReadOnly{File::ReadOnly};				///< @deprecated use File::ReadOnly
-constexpr FileOpenFlags eFO_WriteOnly{File::WriteOnly};				///< @deprecated use File::WriteOnly
-constexpr FileOpenFlags eFO_ReadWrite{File::ReadWrite};				///< @deprecated use File::ReadWrite
-constexpr FileOpenFlags eFO_CreateIfNotExist{File::Create};			///< @deprecated use File::Create
-constexpr FileOpenFlags eFO_Append{File::Append};					///< @deprecated use File::Append
-constexpr FileOpenFlags eFO_Truncate{File::Truncate};				///< @deprecated use File::Truncate
-constexpr FileOpenFlags eFO_CreateNewAlways{File::CreateNewAlways}; ///< @deprecated use File::CreateNewAlways
 
 /*
  * Boilerplate check for file function wrappers to catch undefined filesystem.
@@ -324,13 +309,6 @@ inline int fileRename(const String& oldName, const String& newName)
 {
 	return fileRename(oldName.c_str(), newName.c_str());
 }
-
-/** @brief  Get list of files on file system
- *  @retval Vector<String> Vector of strings.
-            Each string element contains the name of a file on the file system
-    @deprecated use `Directory` object (or fileOpenDir / fileReadDir / fileCloseDir)
- */
-Vector<String> fileList() SMING_DEPRECATED;
 
 /** @brief  Read content of a file
  *  @param  fileName Name of file to read from
