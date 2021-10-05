@@ -108,7 +108,6 @@ else
         debian)
             sudo apt-get -y update || echo "Update failed... Try to install anyway..."
             $PKG_INSTALL \
-                clang-format-8 \
                 cmake \
             	curl \
             	git \
@@ -120,6 +119,8 @@ else
             	python3-pip \
             	python3-setuptools \
                 wget
+
+            $PKG_INSTALL clang-format-8 || echo "Failed installing optional clang-format-8."
             ;;
 
         fedora)
