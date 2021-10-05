@@ -423,9 +423,8 @@ template <hw_timer_clkdiv_t clkdiv, typename TimeType> void testTimer1()
 		//		uint64_t refticks = timer1.timeToTicksRef(time);
 
 		auto check = [time, refticks](const char* tag, TimeType ticks) {
-			if(refticks != ticks) {
-				int64_t diff = int64_t(ticks) - int64_t(refticks);
-
+			int64_t diff = int64_t(ticks) - int64_t(refticks);
+			if(abs(diff) > 2) {
 				Serial.print("time = ");
 				Serial.print(time);
 				Serial.print(", refticks = ");
