@@ -108,7 +108,6 @@ else
         debian)
             sudo apt-get -y update || echo "Update failed... Try to install anyway..."
             $PKG_INSTALL \
-                clang-format-8 \
                 cmake \
             	curl \
             	git \
@@ -120,6 +119,8 @@ else
             	python3-pip \
             	python3-setuptools \
                 wget
+
+            $PKG_INSTALL clang-format-8 || printf "\nWARNING: Failed to install optional clang-format-8.\n\n"
             ;;
 
         fedora)
@@ -148,7 +149,9 @@ fi
 
 set -e
 
-sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-8 100
+if [ -f "/usr/bin/clang-format-8" ]; then
+    sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-8 100
+fi
 
 python3 -m pip install --upgrade pip -r $SMING_HOME/../Tools/requirements.txt
 
