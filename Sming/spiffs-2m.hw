@@ -1,0 +1,12 @@
+{
+	"name": "Single SPIFFS partition (2M flash)",
+	"base_config": "spiffs",
+	"options": [
+		"2m"
+	],
+	"partitions": {
+		"spiffs0": {
+			"address": "0x100000"
+		}
+	}
+}

@@ -1,4 +1,20 @@
 {
+    "1m": {
+        "description": "Set Flash size to 1MByte",
+        "devices": {
+            "spiFlash": {
+                "size": "1M"
+            }
+        }
+    },
+    "2m": {
+        "description": "Set Flash size to 2MByte",
+        "devices": {
+            "spiFlash": {
+                "size": "2M"
+            }
+        }
+    },
     "4m": {
         "description": "Set Flash size to 4MByte",
         "devices": {

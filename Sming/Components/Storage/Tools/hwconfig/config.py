@@ -122,11 +122,11 @@ class Config(object):
         self.parse_dict(data)
 
     def parse_options(self, options):
-        """Apply any specified options, each option is applied only once
+        """Apply any specified options
+        
+        Each option can be applied more than once to ensure overrides work as expected
         """
         for option in options:
-            if option in self.options:
-                continue
             self.options.append(option)
             data = self.option_library.get(option)
             if data is None:
