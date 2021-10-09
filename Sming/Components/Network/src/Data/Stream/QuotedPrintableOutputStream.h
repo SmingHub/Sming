@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "../StreamTransformer.h"
+#include <Data/StreamTransformer.h>
 
 /**
  * @brief   Read-only stream that transforms bytes of data into quoted printable data stream
