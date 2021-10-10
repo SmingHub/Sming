@@ -151,11 +151,6 @@ ifeq ($(ESP_VARIANT),esp32)
 SDK_ESP_WIFI_LIBS += rtc
 endif
 
-SDK_NEWLIB_LIBS := \
-	c \
-	m  \
-	stdc++
-
 ifdef IDF_TARGET_ARCH_RISCV
 SDK_TARGET_ARCH_LIBS := hal
 else
@@ -163,9 +158,7 @@ SDK_TARGET_ARCH_LIBS := hal xt_hal
 endif
 
 EXTRA_LIBS := \
-	gcc \
 	$(SDK_COMPONENTS) \
-	$(SDK_NEWLIB_LIBS) \
 	$(SDK_TARGET_ARCH_LIBS)
 
 ifneq ($(DISABLE_WIFI),1)

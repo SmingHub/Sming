@@ -26,6 +26,6 @@ MC_WRAP_FUNCS += \
 	strdup
 endif
 
-EXTRA_LDFLAGS := $(call Wrap,$(MC_WRAP_FUNCS))
+EXTRA_LDFLAGS := $(call UndefWrap,$(MC_WRAP_FUNCS))
 
 endif
