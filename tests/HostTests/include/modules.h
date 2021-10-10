@@ -17,6 +17,8 @@
 #endif
 
 #define TEST_MAP(XX)                                                                                                   \
+	XX(System)                                                                                                         \
+	XX(SpiFlash)                                                                                                       \
 	XX(Libc)                                                                                                           \
 	XX(PreCache)                                                                                                       \
 	XX(BitSet)                                                                                                         \
@@ -37,7 +39,6 @@
 	XX(ArduinoJson6)                                                                                                   \
 	XX(Storage)                                                                                                        \
 	XX(Files)                                                                                                          \
-	XX(SpiFlash)                                                                                                       \
 	XX(Spiffs)                                                                                                         \
 	XX(Rational)                                                                                                       \
 	XX(Clocks)                                                                                                         \
