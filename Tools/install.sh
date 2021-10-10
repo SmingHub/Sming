@@ -53,7 +53,7 @@ SMINGTOOLS=https://github.com/SmingHub/SmingTools/releases/download/1.0
 
 # Set default environment variables and WGET options
 if [ -z "$APPVEYOR" ]; then
-    source $(dirname $BASH_SOURCE)/export.sh
+    source $(dirname "$BASH_SOURCE")/export.sh
 
     # Ensure default path is writeable
     sudo mkdir -p /opt
@@ -153,11 +153,11 @@ if [ -f "/usr/bin/clang-format-8" ]; then
     sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-8 100
 fi
 
-python3 -m pip install --upgrade pip -r $SMING_HOME/../Tools/requirements.txt
+python3 -m pip install --upgrade pip -r "$SMING_HOME/../Tools/requirements.txt"
 
 
 install() {
-    source $SMING_HOME/Arch/$1/Tools/install.sh
+    source "$SMING_HOME/Arch/$1/Tools/install.sh"
 }
 
 if [ $inst_host -eq 1 ]; then
@@ -165,7 +165,7 @@ if [ $inst_host -eq 1 ]; then
 fi
 
 if [ $inst_doc -eq 1 ]; then
-    source $SMING_HOME/../docs/Tools/install.sh
+    source "$SMING_HOME/../docs/Tools/install.sh"
 fi
 
 if [ $inst_esp8266 -eq 1 ]; then
@@ -177,7 +177,7 @@ if [ $inst_esp32 -eq 1 ]; then
 fi
 
 if [ -z "$KEEP_DOWNLOADS" ]; then
-    rm -f $DOWNLOADS/*
+    rm -f "$DOWNLOADS/*"
 fi
 
 

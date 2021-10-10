@@ -64,6 +64,7 @@ int SpiffsMetaBuffer::enumxattr(AttributeEnumCallback callback, void* buffer, si
 		}
 	}
 
+#if SPIFFS_USER_METALEN
 	for(unsigned i = 0; i < SPIFFS_USER_METALEN;) {
 		uint8_t tagIndex = user[i++];
 		uint8_t tagSize = user[i++];
@@ -76,6 +77,7 @@ int SpiffsMetaBuffer::enumxattr(AttributeEnumCallback callback, void* buffer, si
 		}
 		i += tagSize;
 	}
+#endif
 
 	return count;
 }

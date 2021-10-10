@@ -1,3 +1,5 @@
+#!/bin/bash
+#
 # Esp32 install.sh
 
 if [ -n "$IDF_PATH" ] && [ -n "$IDF_TOOLS_PATH" ]; then

@@ -23,10 +23,9 @@ extern const uint64_t BuildTimestamp;
 
 DECLARE_FSTR_ARRAY(AppFlashRegionOffsets, uint32_t);
 
-BasicStream::Slot::Slot()
+// Lookup slot details from partition table
+BasicStream::Slot::Slot() : partition(OtaManager.getNextBootPartition())
 {
-	// Lookup slot details from partition table
-	partition = OtaManager.getNextBootPartition();
 }
 
 BasicStream::BasicStream()

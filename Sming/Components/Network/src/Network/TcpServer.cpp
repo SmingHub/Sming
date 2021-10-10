@@ -96,7 +96,7 @@ err_t TcpServer::onAccept(tcp_pcb* clientTcp, err_t err)
 	connections.add(client);
 	debug_d("Opening connection. Total connections: %d", connections.count());
 
-	onClient((TcpClient*)client);
+	onClient(reinterpret_cast<TcpClient*>(client));
 
 	return ERR_OK;
 }

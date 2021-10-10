@@ -21,9 +21,8 @@ size_t ReadWriteStream::copyFrom(IDataSourceStream* source, size_t size)
 	auto bufSize = std::min(size, maxBufferSize);
 	char buffer[bufSize];
 	size_t total = 0;
-	size_t count;
 	while(!source->isFinished()) {
-		count = source->readMemoryBlock(buffer, bufSize);
+		size_t count = source->readMemoryBlock(buffer, bufSize);
 		if(count == 0) {
 			continue;
 		}

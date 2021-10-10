@@ -2,14 +2,14 @@
 set -ex # exit with nonzero exit code if anything fails
 
 TAG=$1
-if [ -z $TAG ]; then
+if [ -z "$TAG" ]; then
 	printf "Usage:\n\t$0 <tag>\n";
 	exit 1;
 fi
 
 # [ Create archive of all submodules used in this release (pulled in during documentation build stage) ] 
-cd $CI_BUILD_DIR
-ALL_SUBMODULE_DIRS=$(find $SMING_HOME -name '.submodule' | xargs dirname | sed 's/^\(.*\)\/\(Sming\/.*\)$/\2/')
+cd "$CI_BUILD_DIR"
+ALL_SUBMODULE_DIRS=$(find "$SMING_HOME" -name '.submodule' | xargs dirname | sed 's/^\(.*\)\/\(Sming\/.*\)$/\2/')
 SUBMODULE_ARCHIVE=sming-submodules.tgz
 tar czf $SUBMODULE_ARCHIVE $ALL_SUBMODULE_DIRS
 
@@ -41,7 +41,7 @@ PACKAGES_TO_CHANGE="sming sming.source"
 
 for PACKAGE in $PACKAGES_TO_CHANGE;
 do
-  xmlstarlet ed --inplace -N "ns=http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd" -u "/ns:package/ns:metadata/ns:version"  -v "$TAG" packages/$PACKAGE/*.nuspec;
+  xmlstarlet ed --inplace -N "ns=http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd" -u "/ns:package/ns:metadata/ns:version"  -v "$TAG" "packages/$PACKAGE/*.nuspec";
 done
 
 git config user.email "appveyor@sminghub.local"

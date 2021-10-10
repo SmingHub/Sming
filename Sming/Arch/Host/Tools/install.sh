@@ -1,3 +1,5 @@
+#!/bin/bash
+#
 # Host install.sh
 
 # Required by deployment script
