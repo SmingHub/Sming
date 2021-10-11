@@ -209,7 +209,7 @@ void CUart::onNotify(smg_uart_t* uart, smg_uart_notify_code_t code)
 		break;
 
 	case UART_NOTIFY_AFTER_WRITE: {
-		if(uart != nullptr) {
+		if(this->uart != nullptr) {
 			// Kick the thread to send now
 			txsem.post();
 		} else {

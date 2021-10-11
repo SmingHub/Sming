@@ -44,7 +44,7 @@ public:
 	void attach_interrupt(hw_timer_source_type_t source_type, hw_timer_callback_t callback, void* arg)
 	{
 		stop();
-		source_type = source_type;
+		this->source_type = source_type;
 		this->callback.func = callback;
 		this->callback.arg = arg;
 	}
