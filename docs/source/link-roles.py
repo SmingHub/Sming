@@ -48,6 +48,7 @@ def setup(app):
     app.add_role('component-esp8266', doclink('/_inc/Sming/Arch/Esp8266/Components/{}/index'))
     app.add_role('component-esp32', doclink('/_inc/Sming/Arch/Esp32/Components/{}/index'))
     app.add_role('component-host', doclink('/_inc/Sming/Arch/Host/Components/{}/index'))
+    app.add_role('component-rp2040', doclink('/_inc/Sming/Arch/Rp2040/Components/{}/index'))
     app.add_role('library', doclink('/_inc/Sming/Libraries/{}/index'))
 
 # Insert a link to a file or issue in the repo

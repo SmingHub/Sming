@@ -44,6 +44,12 @@ These are the main variables you need to be aware of:
    -  **Host** builds a version of the library for native host debugging on
       Linux or Windows
 
+   -  **Rp2040** Supports Raspberry Pi RP2040-based boards.
+
+.. envvar:: ESP_VARIANT
+
+   Some architectures support families of SOCs with different capabilities.
+   Set this value to the specific variant being targeted.
 
 .. envvar:: SMING_CPP_STD
 
