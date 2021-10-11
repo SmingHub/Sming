@@ -68,6 +68,7 @@ protected:
 
 	// TCP methods
 	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
+	void onError(err_t err) override;
 
 	void onClosed() override;
 
