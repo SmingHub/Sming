@@ -2,23 +2,22 @@
  uart.cpp - esp32 UART HAL
  */
 
-#include <BitManipulations.h>
-
-#include <driver/uart.h>
-#include <driver/SerialBuffer.h>
-#include <soc/uart_periph.h>
-#include <soc/uart_channel.h>
-#include <esp_heap_caps.h>
-
-// These conflict with enumerated types defined in IDF - values are same though
+// #define typeof(x) std::remove_volatile<decltype(x)>::type
+#define typeof(x) decltype(x)
+// These conflict with enumerated types defined in IDF
+#define UART_PARITY_NONE IDF_UART_PARITY_NONE
+#define UART_PARITY_EVEN IDF_UART_PARITY_EVEN
+#define UART_PARITY_ODD IDF_UART_PARITY_ODD
+#include <hal/uart_ll.h>
 #undef UART_PARITY_NONE
 #undef UART_PARITY_EVEN
 #undef UART_PARITY_ODD
 
-// #define typeof(x) std::remove_volatile<decltype(x)>::type
-#define typeof(x) decltype(x)
-#include <hal/uart_ll.h>
+#include <driver/uart.h>
+#include <driver/SerialBuffer.h>
 #include <driver/periph_ctrl.h>
+#include <soc/uart_channel.h>
+#include <BitManipulations.h>
 
 namespace
 {
