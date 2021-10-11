@@ -61,6 +61,20 @@ void HttpClientConnection::reset()
 	HttpConnection::reset();
 }
 
+void HttpClientConnection::onError(err_t err)
+{
+	HttpConnection::onError(err);
+
+	auto request = waitingQueue.peek();
+
+	if(request != nullptr) {
+		auto callback = request->requestCompletedDelegate;
+		if(callback) {
+			callback(*this, false);
+		}
+	}
+}
+
 int HttpClientConnection::onMessageBegin(http_parser* parser)
 {
 	incomingRequest = executionQueue.peek();
