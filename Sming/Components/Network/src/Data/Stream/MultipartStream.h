@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include "MultiStream.h"
-#include "Network/Http/HttpHeaders.h"
+#include <Data/Stream/MultiStream.h>
+#include <Network/Http/HttpHeaders.h>
 
 /**
  * @brief Read-only stream for creating HTTP multi-part content

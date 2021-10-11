@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "../StreamTransformer.h"
+#include <Data/StreamTransformer.h>
 
 /**
  * @brief Read-only stream to obtain data using HTTP chunked encoding

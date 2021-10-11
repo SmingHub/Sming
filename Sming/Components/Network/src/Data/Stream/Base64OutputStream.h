@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include "../StreamTransformer.h"
-#include "libb64/cencode.h"
+#include <Core/Data/StreamTransformer.h>
+#include <libb64/cencode.h>
 
 /**
  * @brief    Read-only stream to emit base64-encoded content from source stream

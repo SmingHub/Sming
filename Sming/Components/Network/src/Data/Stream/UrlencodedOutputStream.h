@@ -13,7 +13,7 @@
 #pragma once
 
 #include <Data/Stream/MemoryDataStream.h>
-#include "Network/Http/HttpParams.h"
+#include <Network/Http/HttpParams.h>
 
 /**
  * @brief Represents key-value pairs as urlencoded string content
