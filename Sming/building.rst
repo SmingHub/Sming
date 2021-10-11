@@ -39,7 +39,7 @@ These are the main variables you need to be aware of:
    -  **Esp8266** The default if not specified. :envvar:`ESP_HOME` must also be
       provided to locate SDK & tools.
 
-   -  **Esp32** {todo}
+   -  **Esp32** Supports ESP32 architecture.
 
    -  **Host** builds a version of the library for native host debugging on
       Linux or Windows
@@ -634,6 +634,9 @@ never overwritten.
 
    Will be visible **ONLY** to C++ code within the component.
 
+.. envvar:: COMPONENT_CPPFLAGS
+
+   Will be visible to both C and C++ code within the component.
 
 .. important::
 

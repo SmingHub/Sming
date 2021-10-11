@@ -39,7 +39,7 @@ uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
 
 bool flashmem_erase_sector(uint32_t sector_id)
 {
-	debug_e("flashmem_erase_sector(0x%08x)", sector_id);
+	debug_d("flashmem_erase_sector(0x%08x)", sector_id);
 
 	return spi_flash_erase_sector(sector_id) == SPI_FLASH_RESULT_OK;
 }

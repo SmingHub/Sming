@@ -148,6 +148,11 @@ CPPFLAGS = \
 	-fdata-sections \
 	-ffunction-sections
 
+# Required to access peripheral registers using structs
+# e.g. `uint32_t value: 8` sitting at a byte or word boundary will be 'optimised' to
+# an 8-bit fetch/store instruction which will not work; it must be a full 32-bit access.
+CPPFLAGS += -fstrict-volatile-bitfields
+
 CPPFLAGS += \
 	-Wall \
 	-Wpointer-arith \
@@ -183,7 +188,10 @@ else
 	CPPFLAGS	+= -Os -g
 endif
 
-CXXFLAGS += -felide-constructors
+CXXFLAGS += \
+	-felide-constructors \
+	-fno-rtti \
+	-fno-exceptions
 
 ifneq ($(STRICT),1)
 	CXXFLAGS += -Wno-reorder
@@ -196,8 +204,9 @@ DEBUG_VARS			+= GCC_VERSION
 GCC_VERSION			:= $(shell $(CC) -dumpversion)
 
 # Use c11 by default. Every architecture can override it
-SMING_C_STD ?= c11
-CFLAGS	+= -std=$(SMING_C_STD)
+DEBUG_VARS			+= SMING_C_STD
+SMING_C_STD			?= c11
+CFLAGS				+= -std=$(SMING_C_STD)
 
 # Select C++17 if supported, defaulting to C++11 otherwise
 DEBUG_VARS			+= SMING_CXX_STD
@@ -240,8 +249,27 @@ CLIB_PREFIX := clib-
 ToUpper = $(shell echo "$1" | tr 'a-z' 'A-Z')
 ToLower = $(shell echo "$1" | tr 'A-Z' 'a-z')
 
-# Use with LDFLAGS to undefine and wrap a list of functions
+# Use with LDFLAGS to define a symbol alias
+# $1 -> List of alias=name pairs
+define DefSym
+$(foreach n,$1,-Wl,--defsym=$n)
+endef
+
+# Use with LDFLAGS to undefine a list of symbols
+# $1 -> List of symbols
+define Undef
+$(foreach n,$1,-u $n)
+endef
+
+# Use with LDFLAGS to wrap a list of symbols
+# $1 -> List of symbols
 define Wrap
+$(foreach n,$1,-Wl,-wrap,$n)
+endef
+
+# Use with LDFLAGS to undefine and wrap a list of symbols
+# $1 -> List of symbols
+define UndefWrap
 $(foreach n,$1,-u $n -Wl,-wrap,$n)
 endef
 

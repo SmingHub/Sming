@@ -56,10 +56,7 @@ size_t m_putc(char c);
  */
 size_t m_nputs(const char* str, size_t length);
 
-static inline size_t m_puts(const char* str)
-{
-	return m_nputs(str, strlen(str));
-}
+size_t m_puts(const char* str);
 
 #ifdef __cplusplus
 }
