@@ -1,4 +1,4 @@
-HWCONFIG := spiffs
+HWCONFIG := spiffs-2m
 
 CUSTOM_TARGETS	+= files/README.md
 

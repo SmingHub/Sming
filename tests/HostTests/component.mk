@@ -1,4 +1,9 @@
+ifeq ($(SMING_ARCH),Rp2040)
+HWCONFIG = host-tests-1m
+else
 HWCONFIG = host-tests
+endif
+
 DEBUG_VERBOSE_LEVEL = 2
 
 COMPONENT_INCDIRS := include

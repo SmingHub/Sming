@@ -22,7 +22,7 @@ for opt in "$@"; do
             inst_esp32=1
             ;;
 
-        host | doc | esp8266 | esp32)
+        host | doc | esp8266 | esp32 | rp2040)
             eval "inst_$opt=1"
             ;;
 
@@ -39,6 +39,7 @@ if [[ $err -eq 1 ]] || [ $# -eq 0 ]; then
     echo '   doc       Tools required to build documentation'
     echo '   esp8266   ESP8266 development tools'
     echo '   esp32     ESP32 development tools'
+    echo '   rp2040    RP2040 tools (Raspberry Pi Pico)'
     echo '   all       Install everything'
     echo
     if [ $sourced = 1 ]; then
@@ -174,6 +175,10 @@ fi
 
 if [ $inst_esp32 -eq 1 ]; then
     install Esp32
+fi
+
+if [ $inst_rp2040 -eq 1 ]; then
+    install Rp2040
 fi
 
 if [ -z "$KEEP_DOWNLOADS" ]; then

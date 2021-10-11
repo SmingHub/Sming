@@ -1,11 +1,9 @@
 {
     "name": "Basic Storage sample (2M)",
     "base_config": "basic_storage",
-    "devices": {
-        "spiFlash": {
-            "size": "2M"
-        }
-    },
+    "options": [
+        "2m"
+    ],
     "partitions": {
         "user0": {
             "address": "0x000fa000"

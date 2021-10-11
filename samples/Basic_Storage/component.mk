@@ -1,5 +1,5 @@
 # Use our custom hardware configuration
-HWCONFIG := basic_storage
+HWCONFIG := basic_storage-2m
 
 HOST_NETWORK_OPTIONS := --nonet
 

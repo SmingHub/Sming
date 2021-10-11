@@ -38,3 +38,6 @@ export ESP_HOME=${ESP_HOME:=$EQT_ROOT}
 export IDF_PATH=${IDF_PATH:=/opt/esp-idf}
 export IDF_TOOLS_PATH=${IDF_TOOLS_PATH:=/opt/esp32}
 export ESP32_PYTHON_PATH=${ESP32_PYTHON_PATH:=/usr/bin}
+
+# Rp2040
+export PICO_TOOLCHAIN_PATH=${PICO_TOOLCHAIN_PATH:=/opt/rp2040}
