@@ -8,8 +8,7 @@ from shutil import copyfile
 from pathlib import Path
 
 appPath = os.path.dirname(os.path.realpath(__file__))
-libPath = appPath + '/../common/'
-print(libPath)
+libPath = os.path.realpath(os.path.join(appPath, '..', 'common'))
 sys.path.append(libPath)
 
 from sming import *
