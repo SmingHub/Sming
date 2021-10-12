@@ -15,6 +15,7 @@ from sming import *
 def update_intellisense():
     dirs = []
     for d in env['COMPONENTS_EXTRA_INCDIR'].split():
+        d = check_path(d)
         if os.path.exists(d):
             dirs += [check_path(env.subst_path(d))]
 
