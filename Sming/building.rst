@@ -532,6 +532,11 @@ changed as required.
    Relative paths to dependent submodule directories for this Component.
    These will be fetched/patched automatically before building.
 
+   Default behaviour is to initialise submodules recursively.
+   To prevent this behaviour and initialise only the top-level submodule,
+   add a file to the parent directory with the same name as the submodule
+   and a ``.no-recursive`` extension.
+
 .. envvar:: COMPONENT_SRCDIRS
 
    Locations for source code relative to COMPONENT_PATH (defaults to “. src”)

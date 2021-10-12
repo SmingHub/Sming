@@ -438,12 +438,22 @@ define TryApplyPatch
 	fi
 endef
 
+# Fetch and patch a submodule
+# $1 -> submodule parent path
+# $2 -> submodule name
+define FetchAndPatch
+	$(info )
+	$(info Fetching submodule '$2' ...)
+	$(Q)	cd $1 && ( \
+				rm -rf $2; \
+				if [ -f "$2.no-recursive" ]; then OPTS=""; else OPTS="--recursive"; fi; \
+				$(GIT) submodule update --init --force $$OPTS $2 \
+			)
+	$(Q) $(call TryApplyPatch,$1/$2,$2.patch)
+endef
+
 # Update and patch submodule
 # Patch file is either in submodule parent directory itself or subdirectory .patches from there
 %/.submodule:
-	$(info )
-	$(info Fetching submodule '$*' ...)
-	$(Q) cd $(abspath $*/..) && (rm -rf $(*F); $(GIT) submodule update --init --force --recursive $(*F))
-	$(Q) $(call TryApplyPatch,$*,$(*F).patch)
+	$(call FetchAndPatch,$(abspath $*/..),$(*F))
 	$(Q) touch $@
-
