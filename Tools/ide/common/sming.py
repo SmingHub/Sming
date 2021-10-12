@@ -6,7 +6,7 @@
 import os, sys, json, shutil, configparser, string
 
 class Env(dict):
-    """ Cache build environment variables"""
+    """Cache build environment variables."""
 
     def __init__(self):
         self.update(os.environ)
@@ -34,8 +34,7 @@ class Env(dict):
         return path
 
     def resolve(self, path):
-        """Convert any embedded environment variables into real paths
-        """
+        """Convert any embedded environment variables into real paths."""
         tmp = str(path)
         while True:
             tmp = tmp.replace('(', '{')
@@ -60,13 +59,13 @@ env = Env()
 
 
 def fix_path(path):
-    """Fix path so it conforms to makefile specs"""
+    """Fix path so it conforms to makefile specs."""
     if path[1:3] == ':/':
         return '/' + path[0] + path[2:]
     return path
 
 def check_path(path):
-    """Fix path so it conforms to vscode specs"""
+    """Fix path so it conforms to vscode specs."""
     if sys.platform == 'win32':
         if path[:1] == '/':
             return path[1:2] + ':' + path[2:]
@@ -103,7 +102,7 @@ def save_json(data, filename):
         json.dump(data, f, indent=4)
 
 def load_template(name, dir = None):
-    if dir == None:
+    if dir is None:
         dir = os.path.dirname(__file__)
     filename = os.path.join(dir, 'template', name)
     return load_json(filename)
