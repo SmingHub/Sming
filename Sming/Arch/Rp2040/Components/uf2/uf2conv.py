@@ -49,8 +49,7 @@ def is_uf2(buf):
 
 
 def convert_from_uf2(buf):
-    """Return dictionary of addr=content blocks
-    """
+    """Return dictionary of addr=content blocks."""
     global familyid
     numblocks = len(buf) // UF2_BLOCK_SIZE
     if verbose:
@@ -236,8 +235,7 @@ def write_file(name, content):
 
 
 def upload_file(drive, content):
-    """Gives progress indication
-    """
+    """Gives progress indication."""
     blockSize = UF2_BLOCK_SIZE * 32
     blockCount = (len(content) + blockSize - 1 ) // blockSize
     offset = 0

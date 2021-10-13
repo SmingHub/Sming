@@ -60,7 +60,7 @@ static bool check_sys_clock_khz(uint32_t freq_khz, uint* vco_out, uint* postdiv1
 void system_init_clocks()
 {
 	uint vco_freq, post_div1, post_div2;
-	assert(check_sys_clock_khz(DEFAULT_CPU_FREQ / 1000U, &vco_freq, &post_div1, &post_div2));
+	check_sys_clock_khz(DEFAULT_CPU_FREQ / 1000U, &vco_freq, &post_div1, &post_div2);
 
 	// Switch to stable system clock before enabling PLL
 	clock_configure(clk_sys, CLOCKS_CLK_SYS_CTRL_SRC_VALUE_CLKSRC_CLK_SYS_AUX,

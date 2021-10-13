@@ -51,15 +51,12 @@ uint32_t sfdp_read_size()
 	// Check header byte for mandatory parameter table
 	// | ID | MinRev | MajRev | Length in words | ptr[2] | ptr[1] | ptr[0] | unused|
 	// ID must be 0 (JEDEC) for mandatory PTH
-	if(hdr[2] & 0xff != 0) {
+	if((hdr[2] & 0xff) != 0) {
 		debug_e("[SFDP] PTH ID invalid");
 		return 0;
 	}
 
 	uint32_t param_table_ptr = hdr[3] & 0xffffffu;
-
-	debug_i("[SFDP] param_table_ptr = 0x%08x", param_table_ptr);
-
 	uint32_t param[2];
 	flashmem_sfdp_read(param_table_ptr, &param, sizeof(param));
 
