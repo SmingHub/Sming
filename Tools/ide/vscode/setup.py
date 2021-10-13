@@ -10,7 +10,7 @@ libPath = appPath + '/../common/'
 print(libPath)
 sys.path.append(libPath)
 
-from sming import *
+from sming import check_path, env, find_object, find_tool, get_property, load_json, load_template, save_json
 
 def update_intellisense():
     dirs = []

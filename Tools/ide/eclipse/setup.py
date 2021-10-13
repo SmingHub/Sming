@@ -11,7 +11,7 @@ appPath = os.path.dirname(os.path.realpath(__file__))
 libPath = os.path.realpath(os.path.join(appPath, '..', 'common'))
 sys.path.append(libPath)
 
-from sming import *
+from sming import env
 
 def update_project_files():
     projectName = os.path.basename(os.getcwd())
