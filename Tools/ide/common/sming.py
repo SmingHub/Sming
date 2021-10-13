@@ -6,6 +6,7 @@
 import os, sys, json, shutil, configparser, string
 
 class Env(dict):
+
     """Cache build environment variables."""
 
     def __init__(self):
@@ -95,16 +96,16 @@ def load_json(filename, must_exist=True):
     return None
 
 def save_json(data, filename):
-    dir = os.path.dirname(filename)
-    if dir != '':
-        os.makedirs(dir, exist_ok=True)
+    folder = os.path.dirname(filename)
+    if folder != '':
+        os.makedirs(folder, exist_ok=True)
     with open(filename, 'w') as f:
         json.dump(data, f, indent=4)
 
-def load_template(name, dir = None):
-    if dir is None:
-        dir = os.path.dirname(__file__)
-    filename = os.path.join(dir, 'template', name)
+def load_template(name, folder = None):
+    if folder is None:
+        folder = os.path.dirname(__file__)
+    filename = os.path.join(folder, 'template', name)
     return load_json(filename)
 
 def find_object(data, name):
