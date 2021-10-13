@@ -534,7 +534,12 @@ export HOST_PARAMETERS
 .PHONY: ide-vscode-update
 ide-vscode-update:
 	$(Q) SMING_HOME=$(SMING_HOME) OUT_BASE=$(OUT_BASE) \
-	$(PYTHON) $(SMING_TOOLS)/vscode/setup.py
+	$(PYTHON) $(SMING_TOOLS)/ide/vscode/setup.py
+	
+.PHONY: ide-eclipse
+ide-eclipse:
+	$(Q) SMING_HOME=$(SMING_HOME) OUT_BASE=$(OUT_BASE) \
+	$(PYTHON) $(SMING_TOOLS)/ide/eclipse/setup.py
 
 ##@Testing
 
