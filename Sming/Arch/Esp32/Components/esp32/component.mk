@@ -36,6 +36,7 @@ LIBDIRS += \
 	$(addprefix $(SDK_COMPONENTS_PATH)/,$(SDK_LIBDIRS))
 
 SDK_INCDIRS := \
+	app_update/include \
 	bootloader_support/include \
 	bootloader_support/include_bootloader \
 	driver/$(ESP_VARIANT)/include \
