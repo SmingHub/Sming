@@ -15,4 +15,4 @@ $MAKE_PARALLEL ESP_VARIANT=esp32c3 $ESP32_PROJECTS
 $MAKE_PARALLEL ESP_VARIANT=esp32s3 $ESP32_PROJECTS
 
 # make sure that the Ota Library sample compiles for ESP32
-$MAKE_PARALLEL -C $SMING_HOME/Libraries/OtaUpgradeMqtt/samples/Upgrade
+$MAKE_PARALLEL -C "$SMING_HOME/Libraries/OtaUpgradeMqtt/samples/Upgrade"
