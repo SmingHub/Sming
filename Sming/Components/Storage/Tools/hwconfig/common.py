@@ -31,7 +31,7 @@ def fixpath(path):
 
 def parse_int(v, keywords=None):
     """Generic parser for integer fields.
-    
+
     int(x,0) with provision for k/m/K/M suffixes and 'keyword' value lookup.
     """
     if not isinstance(v, str):

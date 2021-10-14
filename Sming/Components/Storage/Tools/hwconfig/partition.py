@@ -553,6 +553,7 @@ class Entry(object):
 
 
 class Map(Table):
+
     """Contiguous map of flash memory."""
     def __init__(self, config):
         def add(table, device, name, address, size, subtype):

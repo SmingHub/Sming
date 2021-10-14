@@ -49,7 +49,7 @@ class List(list):
         return dict
 
     def __getitem__(self, item):
-        """Access entries by name or index"""
+        """Access entries by name or index."""
         if isinstance(item, str):
             d = self.find_by_name(item)
             if d is None:
@@ -68,6 +68,7 @@ class List(list):
             dev.verify()
 
 class Device(object):
+
     """Initialise a storage device."""
     def __init__(self, name, stype = 0, size = 0):
         self.name = name
