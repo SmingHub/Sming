@@ -8,10 +8,10 @@
  *
  ****/
 
-#include <user_config.h>
 #include "NetUtils.h"
 #include <Data/CStringArray.h>
 #include <WString.h>
+#include <debug_progmem.h>
 
 namespace
 {

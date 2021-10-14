@@ -10,6 +10,7 @@
 
 #include <Digital.h>
 #include "ESP8266EX.h"
+#include <eagle_soc.h>
 
 // Prototype declared in esp8266-peri.h
 const uint8_t esp8266_gpioToFn[16] = {0x34, 0x18, 0x38, 0x14, 0x3C, 0x40, 0x1C, 0x20,

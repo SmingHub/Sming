@@ -26,11 +26,12 @@
 
 #pragma once
 
-#include <user_config.h>
+#include <stdint.h>
 #include <sys/fcntl.h>
 #include <sys/stat.h>
 #include <sys/unistd.h>
 #include <sys/time.h>
+#include <stdio.h>
 
 /** @defgroup gdb_syscall GDB system call API
  *  @ingroup GDB

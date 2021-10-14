@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <user_config.h>
 #include <Stream.h>
 #include <WString.h>
 #include "SeekOrigin.h"

@@ -11,6 +11,7 @@
  ****/
 
 #include "Platform/OsMessageInterceptor.h"
+#include <esp_systemapi.h>
 
 extern void smg_uart_debug_putc(char);
 

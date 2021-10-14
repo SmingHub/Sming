@@ -1,7 +1,6 @@
 #pragma once
 
-#include <stdint.h>
-#include <stdbool.h>
+#include <c_types.h>
 
 #ifdef __cplusplus
 extern "C" {

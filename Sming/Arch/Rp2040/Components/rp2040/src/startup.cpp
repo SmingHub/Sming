@@ -8,7 +8,6 @@
  *
  */
 
-#include <user_config.h>
 #include "Platform/System.h"
 #include <driver/uart.h>
 #include <driver/hw_timer.h>

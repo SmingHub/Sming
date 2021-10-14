@@ -31,8 +31,6 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include <user_config.h>
-//#include <SmingCore.h>
 #include "RCSwitch.h"
 
 /* Format for protocol definitions:

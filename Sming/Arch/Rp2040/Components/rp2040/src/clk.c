@@ -4,6 +4,7 @@
 #include <hardware/pll.h>
 #include <esp_attr.h>
 #include <hardware/exception.h>
+#include <hardware/structs/systick.h>
 
 #define DEFAULT_CPU_FREQ (125 * MHZ)
 

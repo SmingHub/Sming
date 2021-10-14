@@ -11,6 +11,7 @@
 #include "Digital.h"
 #include "ESP8266EX.h"
 #include "Digital.h"
+#include <espinc/pin_mux_register.h>
 
 const EspDigitalPin EspDigitalPins[] = {
 	{0, PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0}, // FLASH

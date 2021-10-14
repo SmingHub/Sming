@@ -9,7 +9,8 @@
 #define SPIFFS_CONFIG_H_
 
 // ----------- 8< ------------
-#include <user_config.h>
+#include <c_types.h>
+#include <string.h>
 // ----------- >8 ------------
 
 // compile time switches
@@ -294,14 +295,12 @@
 // the logical block size (log_block_size), and the logical page size
 // (log_page_size)
 
-#ifdef ARCH_HOST
 typedef uint8_t u8_t;
 typedef int8_t s8_t;
 typedef uint16_t u16_t;
 typedef int16_t s16_t;
 typedef uint32_t u32_t;
 typedef int32_t s32_t;
-#endif
 
 // Block index type. Make sure the size of this type can hold
 // the highest number of all blocks - i.e. spiffs_file_system_size / log_block_size
