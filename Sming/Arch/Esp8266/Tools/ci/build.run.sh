@@ -1,3 +1,5 @@
+#!/bin/bash
+#
 # Esp8266 build.run.sh
 
 $MAKE_PARALLEL samples

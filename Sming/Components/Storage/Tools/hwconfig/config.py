@@ -93,8 +93,7 @@ class Config(object):
 
     @classmethod
     def from_name(cls, name):
-        """Create configuration given its name and resolve options
-        """
+        """Create configuration given its name and resolve options."""
         config = Config()
         config.load(name)
         options = os.environ.get('HWCONFIG_OPTS', '').replace(' ', '')
@@ -105,26 +104,26 @@ class Config(object):
         return config
 
     @classmethod
-    def from_json(cls, json, options = []):
+    def from_json(cls, json, options = None):
         config = Config()
         config.parse_dict(copy.deepcopy(json))
-        config.parse_options(options)
+        if options is not None:
+            config.parse_options(options)
         config.resolve_expressions()
         config.partitions.sort()
         return config
 
     def load(self, name):
-        """Load a configuration recursively
-        """
+        """Load a configuration recursively."""
         filename = find_config(name)
         self.depends.append(filename)
         data = json_load(filename)
         self.parse_dict(data)
 
     def parse_options(self, options):
-        """Apply any specified options
+        """Apply any specified options.
         
-        Each option can be applied more than once to ensure overrides work as expected
+        Each option can be applied more than once to ensure overrides work as expected.
         """
         for option in options:
             self.options.append(option)

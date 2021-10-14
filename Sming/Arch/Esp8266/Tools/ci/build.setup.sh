@@ -1,3 +1,5 @@
+#!/bin/bash
+#
 # Esp8266 build.setup.sh
 
 unset SPIFFY

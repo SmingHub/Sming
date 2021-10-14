@@ -207,7 +207,7 @@ private:
 	static err_t staticOnPoll(void* arg, tcp_pcb* tcp);
 	static void closeTcpConnection(tcp_pcb* tpcb);
 
-	inline void checkSelfFree()
+	void checkSelfFree()
 	{
 		if(tcp == nullptr && autoSelfDestruct) {
 			delete this;

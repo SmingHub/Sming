@@ -1,3 +1,5 @@
+#!/bin/bash
+#
 # Esp32 build.run.sh
 
 $MAKE_PARALLEL Basic_Blink Basic_WiFi HttpServer_ConfigNetwork DEBUG_VERBOSE_LEVEL=3 STRICT=1
