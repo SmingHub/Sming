@@ -41,7 +41,7 @@ PACKAGES_TO_CHANGE="sming sming.source"
 
 for PACKAGE in $PACKAGES_TO_CHANGE;
 do
-  xmlstarlet ed --inplace -N "ns=http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd" -u "/ns:package/ns:metadata/ns:version"  -v "$TAG" "packages/$PACKAGE/*.nuspec";
+  xmlstarlet ed --inplace -N "ns=http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd" -u "/ns:package/ns:metadata/ns:version"  -v "$TAG" "packages/$PACKAGE/$PACKAGE.nuspec";
 done
 
 git config user.email "appveyor@sminghub.local"
