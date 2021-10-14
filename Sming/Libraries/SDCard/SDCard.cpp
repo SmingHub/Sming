@@ -33,7 +33,6 @@ Descr: Low-level SDCard functions
 
 /-------------------------------------------------------------------------*/
 #include "SDCard.h"
-#include "fatfs/ff.h"
 #include "fatfs/diskio.h" /* Declarations of disk I/O functions */
 #include <Clock.h>
 #include <debug_progmem.h>
