@@ -121,8 +121,7 @@ class Config(object):
         self.parse_dict(data)
 
     def parse_options(self, options):
-        """
-        Apply any specified options.
+        """Apply any specified options.
         
         Each option can be applied more than once to ensure overrides work as expected.
         """
