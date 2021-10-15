@@ -45,7 +45,7 @@ version = release
 # so developers can more easily locate the appropriate reference documentation.
 #
 extensions = [
-    'm2r',
+    'm2r2',
     'breathe',
     'sphinxcontrib.seqdiag',
     'link-roles',
@@ -101,6 +101,10 @@ html_logo = "sming-logo.png"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+html_css_files = [
+    'custom.css',
+]
+
 html_extra_path = [
     '../api/html'
 ]
@@ -134,6 +138,3 @@ else:
 
 subprocess.call('make -C ../../Sming submodules SMING_ARCH=Host', shell=True)
 subprocess.call('make -C .. setup api API_VERSION="' + version + '"', shell=True)
-
-def setup(app):
-    app.add_stylesheet('custom.css')
