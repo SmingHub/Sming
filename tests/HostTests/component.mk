@@ -1,4 +1,9 @@
+ifeq ($(SMING_ARCH),Rp2040)
+HWCONFIG = host-tests-1m
+else
 HWCONFIG = host-tests
+endif
+
 DEBUG_VERBOSE_LEVEL = 2
 
 COMPONENT_INCDIRS := include
@@ -6,6 +11,12 @@ COMPONENT_SRCDIRS := \
 	app \
 	modules \
 	Arch/$(SMING_ARCH)
+
+ifneq ($(DISABLE_NETWORK),1)
+COMPONENT_SRCDIRS += \
+	modules/Network \
+	modules/Network/Arch/$(SMING_ARCH)
+endif
 
 ARDUINO_LIBRARIES := \
 	SmingTest \
@@ -54,4 +65,4 @@ $(SPIFFSGEN_BIN):
 clean: resource-clean
 .PHONY: resource-clean
 resource-clean:
-	rm -f $(SPIFFSGEN_BIN)
+	$(Q) rm -f $(SPIFFSGEN_BIN)

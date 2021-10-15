@@ -29,6 +29,9 @@ make list-config
 
 $MAKE_PARALLEL
 
+# HostTests should build and run on all architectures
+$MAKE_PARALLEL -C "$SMING_PROJECTS_DIR/tests/HostTests"
+
 # Run ARCH build/tests
 cd "$SMING_HOME"
 source "Arch/$SMING_ARCH/Tools/ci/build.run.sh"

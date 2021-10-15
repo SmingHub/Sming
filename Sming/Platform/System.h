@@ -65,12 +65,14 @@ public:
 };
 
 /**
- * @brief CPU Frequency
+ * @brief Common CPU frequencies
  */
 enum CpuFrequency {
-	eCF_80MHz = 80,   ///< CPU 80MHz
-	eCF_160MHz = 160, ///< CPU 160MHz
-	eCF_240MHz = 240, ///< CPU 240MHz
+	eCF_80MHz = 80,
+	eCF_125MHz = 125,
+	eCF_133MHz = 133,
+	eCF_160MHz = 160,
+	eCF_240MHz = 240,
 };
 
 /**
@@ -127,10 +129,11 @@ public:
 
 	/** @brief  Set the CPU frequency
      *  @param  freq Frequency to set CPU
+	 *  @retval bool true on success
      */
-	void setCpuFrequency(CpuFrequency freq)
+	bool setCpuFrequency(CpuFrequency freq)
 	{
-		system_update_cpu_freq(freq);
+		return system_update_cpu_freq(freq);
 	}
 
 	/** @brief  Get the CPU frequency

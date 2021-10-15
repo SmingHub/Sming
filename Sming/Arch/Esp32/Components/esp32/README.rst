@@ -21,13 +21,6 @@ Followed by::
 Configuration variables
 -----------------------
 
-Option variables:
-
-.. envvar:: ESP_VARIANT
-
-   Build for for esp32 or esp32s2 device
-
-
 The following variables may need to be changed if tools are installed in a different location,
 or if multiple versions are installed. By default, the most current version will be used.
 

@@ -49,7 +49,7 @@ void listSpiffsPartitions()
 
 void printPart(Storage::Partition part)
 {
-	size_t bufSize = std::min(4096U, part.size());
+	size_t bufSize = std::min(uint32_t(4096), part.size());
 	char buf[bufSize];
 	OneShotFastUs timer;
 	if(!part.read(0, buf, bufSize)) {

@@ -41,7 +41,8 @@
 //GPIO FUNCTIONS
 #define INPUT 0x00
 #define INPUT_PULLUP 0x02
-#define INPUT_PULLDOWN_16 0x04 // PULLDOWN only possible for pin16
+#define INPUT_PULLDOWN_16 0x04 // PULLDOWN only possible for pin16 on ESP8266
+#define INPUT_PULLDOWN 0x04
 #define OUTPUT 0x01
 #define OUTPUT_OPEN_DRAIN 0x03
 #define WAKEUP_PULLUP 0x05

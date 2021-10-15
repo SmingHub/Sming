@@ -8,6 +8,8 @@ Descr: Low-level SDCard functions
 #pragma once
 
 #include <SPIBase.h>
+#include "fatfs/ff.h"
+
 
 /**
  * @brief Intialise SD card interface

@@ -18,4 +18,4 @@ The links below will give you more information and step-by-step instructions.
    /arch/host/debugging/index
    /arch/esp8266/debugging/index
    /arch/esp32/debugging/index
-
+   /arch/rp2040/debugging/index

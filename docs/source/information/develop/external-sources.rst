@@ -113,7 +113,7 @@ Applications can use it by adding the name to their COMPONENT_DEPENDS or ARDUINO
 entries in component.mk as appropriate.
 
 Submodules contained within a Component must be declared by adding them to the
-COMPONENT_SUBMODULES entry in component.mk.
+:envvar:`COMPONENT_SUBMODULES` entry in component.mk.
 
 
 Moving submodules

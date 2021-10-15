@@ -71,7 +71,7 @@ All Components, Libraries and Samples must include a ``README.rst`` or ``README.
   - **References**: Is this based on or does it use existing code? Please include details.
   - **Datasheets**: If appropriate, please include links to manufacturer's or external development websites.
     Note that any submodules or dependencies are automatically documented: see :doc:`/_inc/Sming/building` for details,
-    specifically `COMPONENT_SUBMODULES` and `COMPONENT_DEPENDS`.
+    specifically :envvar:`COMPONENT_SUBMODULES` and :envvar:`COMPONENT_DEPENDS`.
 
 You should also try to include any other information which could be useful information for a new developer.
 The purpose of samples projects is to demonstrate specific features or libraries, so please ensure this is adequately described.

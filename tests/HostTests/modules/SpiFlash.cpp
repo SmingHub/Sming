@@ -70,8 +70,16 @@ public:
 
 	void execute() override
 	{
-		TEST_CASE("Query Bootloader Info")
+		TEST_CASE("Query flash info")
 		{
+			auto flash_id = spi_flash_get_id();
+			REQUIRE_NEQ(flash_id, 0);
+			debug_i("flash_id = 0x%08x", flash_id);
+
+			auto flash_size = flashmem_get_size_bytes();
+			REQUIRE_NEQ(flash_size, 0);
+			debug_i("flash_size = 0x%08x bytes, %u MBytes", flash_size, flash_size / 0x100000);
+
 			auto info = flashmem_get_info();
 			auto modeStr = modeToString(SPIFlashMode(info.mode));
 			auto speedStr = speedToString(SPIFlashSpeed(info.speed));

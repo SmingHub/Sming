@@ -1,0 +1,19 @@
+{
+	"name": "Standard config",
+	"comment": "Should work with any Rp2040 variant",
+	"arch": "Rp2040",
+	"bootloader_size": 0,
+	"partition_table_offset": "self.devices[0].size - 0x1000",
+	"options": [
+		"2m"
+	],
+	"partitions": {
+		"rom0": {
+			"address": 0,
+			"size": "0xC0000",
+			"type": "app",
+			"subtype": "factory",
+			"filename": "$(TARGET_BIN)"
+		}
+	}
+}

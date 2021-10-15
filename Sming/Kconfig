@@ -52,7 +52,7 @@ mainmenu "Sming Framework Configuration: $(SMING_ARCH) $(ESP_VARIANT)"
         config TASK_QUEUE_LENGTH
             int "Length of task queue"
             default 10
-            depends on SMING_ARCH="Esp8266" || SMING_ARCH="Host"
+            depends on SMING_ARCH="Esp8266" || SMING_ARCH="Host" || SMING_ARCH="Rp2040"
 
         config STRING_OBJECT_SIZE
             int "Size of a Wiring String object"

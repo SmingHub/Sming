@@ -17,7 +17,6 @@ COMPONENT_DEPENDS := \
 	esp8266 \
 	driver \
 	esptool \
-	fatfs \
 	gdbstub \
 	spi_flash
 

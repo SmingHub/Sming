@@ -17,6 +17,7 @@ CC		:= $(TOOLSPEC)gcc
 CXX		:= $(TOOLSPEC)g++
 AR		:= $(TOOLSPEC)ar
 LD		:= $(TOOLSPEC)g++
+NM		:= $(TOOLSPEC)nm
 OBJCOPY		:= $(TOOLSPEC)objcopy
 OBJDUMP		:= $(TOOLSPEC)objdump
 GDB		:= $(TOOLSPEC)gdb

@@ -1,5 +1,6 @@
 #include <HostTests.h>
 #include <Data/BitSet.h>
+#include <Data/CStringArray.h>
 
 #define FRUIT_ELEMENT_MAP(XX)                                                                                          \
 	XX(apple)                                                                                                          \

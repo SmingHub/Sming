@@ -7,14 +7,8 @@ ifeq ($(ENABLE_MALLOC_COUNT),1)
 COMPONENT_CXXFLAGS += -DENABLE_MALLOC_COUNT=1
 
 # Hook all the memory allocation functions we need to monitor heap activity
-MC_WRAP_FUNCS := \
-	malloc \
-	calloc \
-	realloc \
-	free
-
 ifeq ($(SMING_ARCH),Esp8266)
-MC_WRAP_FUNCS += \
+MC_WRAP_FUNCS := \
 	pvPortMalloc \
 	pvPortCalloc \
 	pvPortRealloc \
@@ -22,7 +16,11 @@ MC_WRAP_FUNCS += \
 	pvPortZallocIram \
 	vPortFree
 else
-MC_WRAP_FUNCS += \
+MC_WRAP_FUNCS := \
+	malloc \
+	calloc \
+	realloc \
+	free \
 	strdup
 endif
 

@@ -36,6 +36,7 @@ AR				:= $(TOOLSPEC)ar
 LD				:= $(TOOLSPEC)gcc
 OBJCOPY			 	:= $(TOOLSPEC)objcopy
 OBJDUMP			 	:= $(TOOLSPEC)objdump
+NM				:= $(TOOLSPEC)nm
 GDB				:= $(TOOLSPEC)gdb
 
 GCC_UPGRADE_URL := https://sming.readthedocs.io/en/latest/arch/esp8266/getting-started/eqt.html

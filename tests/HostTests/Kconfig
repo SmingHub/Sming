@@ -1,0 +1,13 @@
+menu "HostTests application"
+    config TEST_GROUP_INTERVAL
+        int "Time in milliseconds to pause after a test group has completed"
+        default 500
+
+    config RESTART_DELAY
+        int "Time in milliseconds to wait before re-starting all tests"
+        default 0 if $SMING_ARCH = Host
+        default 10000 if $SMING_ARCH != Host
+        help
+            Set to 0 to perform a system restart after all tests have completed
+
+endmenu

@@ -113,6 +113,20 @@
 
 
 #
+# `Rp2040` Components
+#
+
+[submodule "Rp2040.picotool"]
+	path = Sming/Arch/Rp2040/Components/picotool/picotool
+	url = https://github.com/mikee47/picotool
+	ignore = dirty
+
+[submodule "Rp2040.Sdk"]
+	path = Sming/Arch/Rp2040/Components/rp2040/pico-sdk
+	url = https://github.com/raspberrypi/pico-sdk
+	ignore = dirty
+
+#
 # `Host` Components
 #
 
