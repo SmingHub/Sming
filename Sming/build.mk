@@ -5,12 +5,46 @@ include $(SMING_HOME)/util.mk
 # Add debug variable names to DEBUG_VARS so they can be easily inspected via `make list-config`
 DEBUG_VARS		:=
 
+define SocFromPath
+$(patsubst %-soc.json,%,$(notdir $1))
+endef
+
+# Provide variable for each architecture listing available SOCs
+# $1 -> Architecture name
+define SetArchSocs
+ARCH_$1_SOC := $(sort $(call SocFromPath,$(wildcard $(SMING_HOME)/Arch/$1/*-soc.json)))
+$$(info $$(ARCH_$1_SOC))
+endef
+
+$(foreach a,$(call ListSubDirs,$(SMING_HOME)/Arch),$(eval $(call SetArchSocs,$(notdir $a))))
+
+# List of all soc configuration files
+export SOC_CONFIG_FILES = $(sort $(wildcard $(SMING_HOME)/Arch/*/*-soc.json))
+AVAILABLE_SOCS := $(patsubst %-soc.json,%,$(notdir $(SOC_CONFIG_FILES)))
+
 #
 DEBUG_VARS		+= SMING_HOME SMING_ARCH
 ifeq (,$(SMING_ARCH))
 override SMING_ARCH	:= Esp8266
 endif
 export SMING_ARCH
+
+#
+DEBUG_VARS		+= SMING_SOC
+ifeq (,$(SMING_SOC))
+override SMING_SOC := $(call ToLower,$(SMING_ARCH))
+else
+override SMING_SOC := $(call ToLower,$(SMING_SOC))
+override SMING_ARCH := $(notdir $(call dirx,$(filter %/$(SMING_SOC)-soc.json,$(SOC_CONFIG_FILES))))
+ifeq (,$(SMING_ARCH))
+$(info Available: $(AVAILABLE_SOCS))
+$(error Unknown SOC '$(SMING_SOC)')
+endif
+override ESP_VARIANT := $(SMING_SOC)
+endif
+
+# SOC config for currently selected variant
+export SOC_CONFIG_FILE := $(SMING_HOME)/Arch/$(SMING_ARCH)/$(SMING_SOC)-soc.json
 
 # Paths for standard build tools
 DEBUG_VARS += \

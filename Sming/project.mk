@@ -18,7 +18,11 @@ endif
 .NOTPARALLEL:
 
 .PHONY: all
-all: checkdirs submodules ##(default) Build all Component libraries
+all: checksoc checkdirs submodules ##(default) Build all Component libraries
+	$(MAKE) components application
+
+.PHONY: sample
+all: checksoc checkdirs submodules ##(default) Build all Component libraries
 	$(MAKE) components application
 
 # Load current build type from file
@@ -30,6 +34,7 @@ BUILD_SUBTYPE_FILE = out/$(SMING_ARCH)/build-subtype.mk
 
 #
 include $(SMING_HOME)/build.mk
+
 
 #
 # The build system supports several types of configuration variable. The name of the variable needs to be
@@ -152,6 +157,11 @@ APPCODE				:=
 # Python requirements.txt collected from components
 PYTHON_REQUIREMENTS := 
 
+# SOCs supported by project
+DEBUG_VARS += PROJECT_SOC
+PROJECT_SOC := $(AVAILABLE_SOCS)
+export PROJECT_SOC
+
 #
 # This macro sets the default component variables before including the (optional) component.mk file.
 #
@@ -165,6 +175,7 @@ $(if $2,,$(error Component '$1' not found))
 SUBMODULES				+= $(filter $2,$(ALL_SUBMODULES))
 CMP_$1_PATH				:= $2
 CMP_$1_LIBDIR			:= $4
+COMPONENT_SOC			:= *
 COMPONENT_LIBDIR		:= $$(CMP_$1_LIBDIR)
 COMPONENT_INCDIRS		:= include
 COMPONENT_NAME			:= $1
@@ -196,6 +207,11 @@ LIBS					+= $$(EXTRA_LIBS)
 CMP_$1_LDFLAGS			:= $$(EXTRA_LDFLAGS)
 LDFLAGS					+= $$(CMP_$1_LDFLAGS)
 endif
+CMP_$1_SOC				:= $$(filter $$(subst *,%,$$(COMPONENT_SOC)),$(AVAILABLE_SOCS))
+ifeq (,$$(CMP_$1_SOC))
+$$(error Unknown SOC: $$(COMPONENT_SOC))
+endif
+PROJECT_SOC				:= $$(filter $$(CMP_$1_SOC),$$(PROJECT_SOC))
 CMP_$1_PREREQUISITES	:= $$(COMPONENT_PREREQUISITES)
 CMP_$1_TARGETS			:= $$(COMPONENT_TARGETS)
 CMP_$1_BUILD_DIR		:= $$(COMPONENT_BUILD_DIR)
@@ -345,6 +361,13 @@ $(foreach v,$(EXPORT_VARS),$(eval export $v))
 
 
 ##@Building
+
+.PHONY: checksoc
+checksoc:
+ifeq (,$(findstring $(SMING_SOC),$(PROJECT_SOC)))
+	$(error Build failed, project only supports: $(PROJECT_SOC))
+endif
+
 
 COMPONENT_DIRS := $(foreach d,$(ALL_SEARCH_DIRS),$(wildcard $d/*))
 
@@ -704,3 +727,15 @@ menuconfig: ##Run option editor
 	$(Q) $(CFGTOOL_CMDLINE) --to-kconfig
 	$(Q) $(KCONFIG_ENV) $(PYTHON) -m menuconfig $(SMING_HOME)/Kconfig
 	$(Q) $(CFGTOOL_CMDLINE) --from-kconfig
+
+
+UNSUPPORTED_SOCS = $(filter-out $(PROJECT_SOC),$(AVAILABLE_SOCS))
+
+.PHONY: list-soc
+list-soc: ##List supported and available SOCs
+ifeq (,$(UNSUPPORTED_SOCS))
+	@echo "Project supports all SoCs: $(AVAILABLE_SOCS)"
+else
+	@echo "Project supports: $(PROJECT_SOC)"
+	@echo "Project does not support: $(UNSUPPORTED_SOCS)"
+endif
