@@ -60,7 +60,7 @@ def createComponentsFile():
 def main():
     parser = argparse.ArgumentParser(description='Sming configuration management tool')
     parser.add_argument('--to-kconfig', help="Convert Sming configuration to Kconfig format", action='store_true')
-    parser.add_argument('--from-kconfig', help="Convert Kconfig configration to Sming format", action='store_true')
+    parser.add_argument('--from-kconfig', help="Convert Kconfig configuration to Sming format", action='store_true')
     parser.add_argument('config_file', help='Source configuration file')
 
     args = parser.parse_args()
