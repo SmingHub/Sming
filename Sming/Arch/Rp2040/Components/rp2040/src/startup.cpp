@@ -16,7 +16,6 @@
 #include <gdb/gdb_hooks.h>
 #include <Storage.h>
 #include <hardware/structs/ioqspi.h>
-#include <hardware/structs/sio.h>
 #include <pico/bootrom.h>
 
 extern void init();
@@ -32,12 +31,9 @@ uint32_t last_bootsel_check;
 /*
  * Read state of BOOTSEL switch on GPIO 1 (QSPI CS #0).
  *
- * Simplified version of
  * https://github.com/raspberrypi/pico-examples/blob/master/picoboard/button/button.c
  *
- * We want this to run as fast as possible, so other than placing code in RAM we make
- * no concessions for interrupts (which must all be in RAM anyway) or the second core
- * (which is not yet implemented).
+ * TODO: Synchronise with second core if running code from flash.
  */
 bool __noinline IRAM_ATTR get_bootsel_button()
 {

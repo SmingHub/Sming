@@ -11,6 +11,9 @@ ifndef PICO_BOARD
 export PICO_BOARD=pico
 endif
 
+GLOBAL_CFLAGS += \
+	-DPICO_ON_DEVICE=1
+
 # Press BOOTSEL to reboot into programming mode
 COMPONENT_RELINK_VARS := ENABLE_BOOTSEL
 ifndef SMING_RELEASE
