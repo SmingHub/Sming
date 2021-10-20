@@ -117,7 +117,6 @@ SDK_COMPONENTS += \
 	esp_wifi \
 	esp_eth \
 	lwip \
-	mbedtls \
 	mbedcrypto \
 	esp_netif \
 	openssl
