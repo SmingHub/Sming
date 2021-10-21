@@ -65,6 +65,9 @@ fi
 TOOL_DIR=$(find $TOOL_BASE -type d -name 'cov-analysis*')
 export PATH=$TOOL_DIR/bin:$PATH
 
+# Clean-up
+make -C $SMING_HOME dist-clean
+
 # Build
 echo -e "\033[33;1mRunning Coverity Scan Analysis Tool...\033[0m"
 COV_BUILD_OPTIONS=""
