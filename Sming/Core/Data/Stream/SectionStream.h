@@ -13,6 +13,7 @@
 #pragma once
 
 #include "DataSourceStream.h"
+#include <memory>
 
 /**
  * @brief Presents each section within a source stream as a separate stream
@@ -26,8 +27,6 @@
 class SectionStream : public IDataSourceStream
 {
 public:
-	static constexpr uint8_t maxSections = 5;
-
 	struct Section {
 		uint32_t start; // Within stream
 		uint32_t size;
@@ -51,9 +50,15 @@ public:
 	 */
 	using NextRecord = Delegate<bool()>;
 
-	SectionStream(IDataSourceStream* source) : stream(source), startTag(F("{SECTION}")), endTag(F("{/SECTION}"))
+	SectionStream(IDataSourceStream* source, uint8_t maxSections = 5)
+		: SectionStream(source, maxSections, F("{SECTION}"), F("{/SECTION}"))
 	{
-		scanSource();
+	}
+
+	SectionStream(IDataSourceStream* source, uint8_t maxSections, const String& startTag, const String& endTag)
+		: stream(source), startTag(startTag), endTag(endTag)
+	{
+		scanSource(maxSections);
 	}
 
 	~SectionStream()
@@ -150,14 +155,14 @@ protected:
 	}
 
 private:
-	void scanSource();
+	void scanSource(uint8_t maxSections);
 
 	IDataSourceStream* stream{nullptr};
 	NextSection nextSectionCallback;
 	NextRecord nextRecordCallback;
 	String startTag;
 	String endTag;
-	Section sections[maxSections]{};
+	std::unique_ptr<Section[]> sections;
 	uint32_t readOffset{0};
 	uint32_t sectionOffset{0};
 	uint8_t sectionCount{0};

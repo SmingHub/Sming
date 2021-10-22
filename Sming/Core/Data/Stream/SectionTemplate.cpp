@@ -244,8 +244,8 @@ private:
 
 } // namespace
 
-SectionTemplate::SectionTemplate(IDataSourceStream* source)
-	: TemplateStream(&sectionStream, false), sectionStream(source)
+SectionTemplate::SectionTemplate(IDataSourceStream* source, uint8_t maxSections)
+	: TemplateStream(&sectionStream, false), sectionStream(source, maxSections)
 {
 	setFormatter(Format::standard);
 	sectionStream.onNextSection([this]() { seekFrom(0, SeekOrigin::Start); });

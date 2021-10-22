@@ -85,7 +85,7 @@ public:
 #undef XX
 	};
 
-	SectionTemplate(IDataSourceStream* source);
+	SectionTemplate(IDataSourceStream* source, uint8_t maxSections = 5);
 
 	/**
 	 * @brief Application callback to process additional fields
