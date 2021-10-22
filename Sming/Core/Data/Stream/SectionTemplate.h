@@ -28,6 +28,8 @@
  * Anything else is treated as a variable name.
  * Separator is :
  *
+ * Conditional if/else/endif statements may be nested.
+ *
  * @note Command tags are prefixed with 'Q' to allow use of reserved words
  * in the Command enumeration. This represents the ! prefix in actual use.
  */
@@ -42,8 +44,8 @@
 	   "{!pad:A:B:C} Copy of A padded to at least B characters with C (default is space). Use -ve B to left-pad. C")   \
 	XX(Qrepeat, "{!repeat:A:B} Repeat A, number of iterations is B")                                                   \
 	XX(Qkb, "{!kb:A} Convert A to KB")                                                                                 \
-	XX(Qifdef, "{!ifdef:A}block{/if} emit block if A is not zero-length")                                              \
-	XX(Qifndef, "{!ifdef:A}block{/if} emit block if A is zero-length")                                                 \
+	XX(Qifdef, "{!ifdef:A} emit block if A is not zero-length")                                                        \
+	XX(Qifndef, "{!ifdef:A} emit block if A is zero-length")                                                           \
 	XX(Qifeq, "{!ifeq:A:B} emit block if A == B")                                                                      \
 	XX(Qifneq, "{!ifneq:A:B} emit block if A != B")                                                                    \
 	XX(Qifgt, "{!ifgt:A:B} emit block if A > B")                                                                       \
@@ -55,7 +57,7 @@
 	XX(Qifnin, "{!ifin:A:B} emit block if A does not contain B")                                                       \
 	XX(Qelse, "{!else}")                                                                                               \
 	XX(Qendif, "{!endif}")                                                                                             \
-	XX(Qadd, "{!add:A:B} A - B")                                                                                       \
+	XX(Qadd, "{!add:A:B} A + B")                                                                                       \
 	XX(Qsub, "{!sub:A:B} A - B")                                                                                       \
 	XX(Qgoto, "{!goto:A} move to section A")                                                                           \
 	XX(Qcount, "{!count:A} emit number of records in section A")                                                       \

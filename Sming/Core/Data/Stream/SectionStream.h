@@ -18,11 +18,9 @@
 /**
  * @brief Presents each section within a source stream as a separate stream
  *
- * Sections are marked {!SECTION} ... {/SECTION}
+ * Sections are (by default) marked {!SECTION} ... {/SECTION}
  * This is typically used with templating but can be used with any stream type provided
  * the tags do not conflict with content.
- *
- * TODO: Allow tags to be changed.
  */
 class SectionStream : public IDataSourceStream
 {
@@ -50,11 +48,20 @@ public:
 	 */
 	using NextRecord = Delegate<bool()>;
 
+	/**
+	 * @brief Construct a section stream with default options
+	 */
 	SectionStream(IDataSourceStream* source, uint8_t maxSections = 5)
 		: SectionStream(source, maxSections, F("{SECTION}"), F("{/SECTION}"))
 	{
 	}
 
+	/**
+	 * @brief Construct a section stream
+	 * @param source Contains all section data, must support random seeking
+	 * @param startTag Unique text used to mark start of a section
+	 * @param endTag Marks end of a section
+	 */
 	SectionStream(IDataSourceStream* source, uint8_t maxSections, const String& startTag, const String& endTag)
 		: stream(source), startTag(startTag), endTag(endTag)
 	{
@@ -91,16 +98,27 @@ public:
 		return section ? section->recordIndex : -1;
 	}
 
+	/**
+	 * @brief Get number of sections in this stream
+	 */
 	size_t count() const
 	{
 		return sectionCount;
 	}
 
+	/**
+	 * @brief Get description of the current section
+	 * @retval Section* The section information, or nullptr if there is no current section
+	 */
 	const Section* getSection() const
 	{
 		return getSection(currentSectionIndex);
 	}
 
+	/**
+	 * @brief Get description for any section given its index
+	 * @retval Section* The section information, or nullptr if section was not found
+	 */
 	const Section* getSection(unsigned index) const
 	{
 		if(index < sectionCount) {
@@ -110,11 +128,17 @@ public:
 		}
 	}
 
+	/**
+	 * @brief Register a callback to be invoked when moving to a new section
+	 */
 	void onNextSection(NextSection callback)
 	{
 		nextSectionCallback = callback;
 	}
 
+	/**
+	 * @brief Register a callback to be invoked when moving to a new record
+	 */
 	void onNextRecord(NextRecord callback)
 	{
 		nextRecordCallback = callback;
@@ -125,6 +149,9 @@ public:
 	 */
 	bool gotoSection(uint8_t index);
 
+	/**
+	 * @brief Goto a new section after current tag has been processed
+	 */
 	bool setNewSection(int8_t index)
 	{
 		if(index < 0 || index >= sectionCount) {

@@ -26,6 +26,9 @@
  * @brief Stream which performs variable-value substitution on-the-fly
  *
  * Template uses {varname} style markers which are replaced as the stream is read.
+ * 
+ * Note: There must be no space after the opening brace.
+ * For example, `{ varname }` will be emitted as-is without modification.
  *
  * @ingroup stream
  */
