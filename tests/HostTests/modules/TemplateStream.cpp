@@ -16,6 +16,9 @@ DEFINE_FSTR_LOCAL(template1_2, "Stream containing value #1, value #2 and [value 
 DEFINE_FSTR_LOCAL(template2, "This text should {disable}not {var1} really {var2:hello} again {enable}be missing.")
 DEFINE_FSTR_LOCAL(template2_1, "This text should be missing.")
 
+DEFINE_FSTR_LOCAL(template3, "<html><head><title>{title}</title><style>td { padding: 0 10px; }")
+DEFINE_FSTR_LOCAL(template3_1, "<html><head><title>Document Title</title><style>td { padding: 0 10px; }")
+
 class TemplateStreamTest : public TestGroup
 {
 public:
@@ -75,6 +78,13 @@ public:
 			});
 
 			check(tmpl, template2_1);
+		}
+
+		TEST_CASE("template3.1 (PR #2400)")
+		{
+			FSTR::TemplateStream tmpl(template3);
+			tmpl.setVar("title", "Document Title");
+			check(tmpl, template3_1);
 		}
 
 		TEST_CASE("ut_template1")
