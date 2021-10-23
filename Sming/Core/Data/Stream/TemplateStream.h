@@ -27,8 +27,14 @@
  *
  * Template uses {varname} style markers which are replaced as the stream is read.
  * 
- * Note: There must be no space after the opening brace.
+ * Note: There must be no whitespace after the opening brace.
  * For example, `{ varname }` will be emitted as-is without modification.
+ *
+ * This allows inclusion of CSS fragments such as `td { padding: 0 10px; }` in HTML.
+ * 
+ * If necessary, use double-braces `{{varname}}` in templates and enable by calling `setDoubleBraces(true)`.
+ * 
+ * Invalid tags, such as `{"abc"}` will be ignored, so JSON templates do not require special treatment.
  *
  * @ingroup stream
  */

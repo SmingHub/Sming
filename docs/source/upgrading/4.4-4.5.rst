@@ -1,0 +1,16 @@
+From v4.4 to v4.5
+=================
+
+.. highlight:: c++
+
+Template Streams
+----------------
+
+The :cpp:class:`TemplateStream` class has been updated to improve tag recognition (:pull-request:`2400`).
+This means regular ``{varname}`` tags are sufficient for most purposes, including JSON templates.
+
+The :cpp:class:`IFS::JsonDirectoryTemplate` previously used double-brace tags such as ``{{varname}}``.
+It now uses regular tags by default, so if you use this class either:
+
+1. Add a call to :cpp:func:`TemplateStream::setDoubleBraces` in your code, or
+2. Update your templates to use single braces

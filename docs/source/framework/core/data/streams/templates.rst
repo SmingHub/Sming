@@ -22,10 +22,10 @@ You can find a simple demonstration of how this class is used in the
     This allows inclusion of CSS fragments such as ``td { padding: 0 10px; }`` in HTML
     without resorting to double-braces.
 
-    If necessary, use double-braces ``{{varname}}`` and enable
-    this by calling :cpp:func:`TemplateStream::setDoubleBraces` ``(true)``.
+    If necessary, use double-braces ``{{varname}}`` in your template and
+    call :cpp:func:`TemplateStream::setDoubleBraces` ``(true)``.
 
-    Invalid tags, such as ``{"abc"}`` will be skipped, so JSON templates do not require
+    Invalid tags, such as ``{"abc"}`` will be ignored, so JSON templates do not require
     special treatment.
 
 
