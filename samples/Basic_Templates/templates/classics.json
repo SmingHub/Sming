@@ -1,0 +1,26 @@
+
+Sample template to display records from 'classics.csv'
+https://corgis-edu.github.io/corgis/csv/classics/
+
+{SECTION}
+[
+  {
+    "comment": "Listing books published in {year_filter}"
+  },{/SECTION}
+
+{SECTION}
+  {
+    "title": "{bibliography.title}",
+    "author": "{bibliography.author.name}",
+    "published": {bibliography.publication.year},
+    "url": "{metadata.url}"
+  },{/SECTION}
+
+{SECTION}
+  {
+    "comment": "{!count:1} Records listed"
+  }
+]
+{/SECTION}
+
+We're all done.
