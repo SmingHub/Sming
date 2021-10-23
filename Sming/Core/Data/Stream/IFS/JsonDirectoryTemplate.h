@@ -25,7 +25,6 @@ class JsonDirectoryTemplate : public DirectoryTemplate
 public:
 	JsonDirectoryTemplate(IDataSourceStream* source, Directory* dir) : DirectoryTemplate(source, dir)
 	{
-		setDoubleBraces(true);
 		setFormatter(Format::json);
 	}
 };

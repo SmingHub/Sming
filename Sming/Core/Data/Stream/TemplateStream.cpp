@@ -72,7 +72,7 @@ uint16_t TemplateStream::readMemoryBlock(char* data, int bufSize)
 		}
 
 		char* p = buf;
-		while((p = strchr(p, '{')) != nullptr && p[1] == ' ') {
+		while((p = strchr(p, '{')) != nullptr && (p[1] <= ' ' || p[1] == '"')) {
 			++p;
 		}
 		return p;

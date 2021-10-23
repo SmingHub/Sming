@@ -19,6 +19,9 @@ DEFINE_FSTR_LOCAL(template2_1, "This text should be missing.")
 DEFINE_FSTR_LOCAL(template3, "<html><head><title>{title}</title><style>td { padding: 0 10px; }")
 DEFINE_FSTR_LOCAL(template3_1, "<html><head><title>Document Title</title><style>td { padding: 0 10px; }")
 
+DEFINE_FSTR_LOCAL(template4, "{\"value\":12,\"var1\":\"{var1}\"}")
+DEFINE_FSTR_LOCAL(template4_1, "{\"value\":12,\"var1\":\"quoted variable\"}")
+
 class TemplateStreamTest : public TestGroup
 {
 public:
@@ -41,7 +44,7 @@ public:
 				return nullptr;
 			});
 
-			check(tmpl, template1_1);
+			check(tmpl, template1, template1_1);
 		}
 
 		TEST_CASE("template1.2")
@@ -58,7 +61,7 @@ public:
 				return nullptr;
 			});
 
-			check(tmpl, template1_2);
+			check(tmpl, template1, template1_2);
 		}
 
 		TEST_CASE("template2.1")
@@ -77,14 +80,21 @@ public:
 				return nullptr;
 			});
 
-			check(tmpl, template2_1);
+			check(tmpl, template2, template2_1);
 		}
 
-		TEST_CASE("template3.1 (PR #2400)")
+		TEST_CASE("template3 (PR #2400 - HTML)")
 		{
 			FSTR::TemplateStream tmpl(template3);
 			tmpl.setVar("title", "Document Title");
-			check(tmpl, template3_1);
+			check(tmpl, template3, template3_1);
+		}
+
+		TEST_CASE("template4 (PR #2400 - JSON)")
+		{
+			FSTR::TemplateStream tmpl(template4);
+			tmpl.setVar("var1", "quoted variable");
+			check(tmpl, template4, template4_1);
 		}
 
 		TEST_CASE("ut_template1")
@@ -176,6 +186,20 @@ public:
 	}
 
 private:
+	void check(TemplateStream& stream, const FlashString& tmpl, const FlashString& ref)
+	{
+		constexpr size_t maxLen{256};
+		String s = stream.readString(maxLen);
+		Serial.print(_F("tmpl: "));
+		Serial.println(tmpl);
+		Serial.print(_F(" res: "));
+		Serial.println(s);
+		Serial.print(_F(" ref: "));
+		Serial.println(ref);
+		REQUIRE(ref == s);
+		return;
+	}
+
 	void check(TemplateStream& tmpl, const FlashString& ref)
 	{
 		constexpr size_t bufSize{256};

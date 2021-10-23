@@ -11,19 +11,23 @@ Basic Templating
 The :cpp:class:`TemplateStream` class is a stream which performs variable-value substitution using
 ``{varname}`` style markers, which are replaced as the stream is read.
 
-Content such as JSON requires double-braces ``{{varname}}`` and this behaviour must be
-explicitly enabled using :cpp:func:`TemplateStream::setDoubleBraces`.
-
 You can find a simple demonstration of how this class is used in the
 :sample:`HttpServer_Bootstrap` sample application.
 
 .. note::
 
-    There must be no space after the opening brace.
+    There must be no whitespace after the opening brace.
     For example, ``{ varname }`` will be emitted as-is without modification.
 
     This allows inclusion of CSS fragments such as ``td { padding: 0 10px; }`` in HTML
     without resorting to double-braces.
+
+    If necessary, use double-braces ``{{varname}}`` and enable
+    this by calling :cpp:func:`TemplateStream::setDoubleBraces` ``(true)``.
+
+    Invalid tags, such as ``{"abc"}`` will be skipped, so JSON templates do not require
+    special treatment.
+
 
 Variable values can be set using :cpp:func:`TemplateStream::setVar` or :cpp:func:`TemplateStream::setVars`.
 These are stored in a :cpp:class:`HashMap` which can be accessing directly via :cpp:func:`TemplateStream::variables`.
