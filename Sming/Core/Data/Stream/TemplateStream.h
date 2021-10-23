@@ -125,6 +125,11 @@ public:
 		enableNextState = enable;
 	}
 
+	/**
+	 * @brief Determine if stream output is active
+	 *
+	 * Used by SectionTemplate class when processing conditional tags.
+	 */
 	bool isOutputEnabled() const
 	{
 		return outputEnabled;
@@ -139,6 +144,18 @@ public:
 		doubleBraces = enable;
 	}
 
+	/**
+	 * @brief Evaluate a template expression
+	 * @param expr IN: First character after the opening brace(s)
+	 *             OUT: First character after the closing brace(s)
+	 * @retval String
+	 *
+	 * Called internally and an opening brace ("{" or "{{") has been found.
+	 * Default behaviour is to locate the closing brace(s) and interpret the
+	 * bounded text as a variable name, which is passsed to `getValue`.
+	 *
+	 * This method is overridden by SectionTemplate to support more complex expressions.
+	 */
 	virtual String evaluate(char*& expr);
 
 	/**

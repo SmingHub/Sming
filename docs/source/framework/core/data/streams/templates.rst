@@ -75,6 +75,7 @@ The header and footer are emitted exactly once, but the content section is repea
 The :cpp:class:`SectionStream` class is used internally so that all sections can be provided within a single file.
 
 Sections are (by default) marked ``{SECTION}`` ... ``{/SECTION}``.
+Everything outside of these markers is ignored, so can contain comments.
 
 
 Using SectionTemplate
