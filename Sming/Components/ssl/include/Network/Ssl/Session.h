@@ -14,6 +14,7 @@
 #include "KeyCertPair.h"
 #include "ValidatorList.h"
 #include <Platform/System.h>
+#include <memory>
 
 class TcpConnection;
 
@@ -121,7 +122,6 @@ public:
 	~Session()
 	{
 		close();
-		delete sessionId;
 	}
 
 	/**
@@ -130,7 +130,7 @@ public:
 	 */
 	const SessionId* getSessionId() const
 	{
-		return sessionId;
+		return sessionId.get();
 	}
 
 	/**
@@ -225,7 +225,7 @@ private:
 private:
 	Context* context = nullptr;
 	Connection* connection = nullptr;
-	SessionId* sessionId = nullptr;
+	std::unique_ptr<SessionId> sessionId;
 	CpuFrequency curFreq = CpuFrequency(0);
 };
 

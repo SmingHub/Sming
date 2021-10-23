@@ -16,6 +16,7 @@
 #include <Network/TcpClient.h>
 #include "TcpTransport.h"
 #include "TcpClientStream.h"
+#include <memory>
 
 namespace Hosted
 {
@@ -27,12 +28,7 @@ public:
 	TcpClientTransport(TcpClient& client)
 	{
 		client.setReceiveDelegate(TcpClientDataDelegate(&TcpClientTransport::process, this));
-		stream = new TcpClientStream(client);
-	}
-
-	~TcpClientTransport()
-	{
-		delete stream;
+		stream.reset(new TcpClientStream(client));
 	}
 
 protected:
@@ -46,7 +42,7 @@ protected:
 	}
 
 private:
-	TcpClientStream* stream = nullptr;
+	std::unique_ptr<TcpClientStream> stream;
 };
 
 } // namespace Transport

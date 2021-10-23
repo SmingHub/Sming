@@ -90,7 +90,7 @@ bool Session::onConnect(tcp_pcb* tcp)
 		return false;
 	}
 
-	if(sessionId != nullptr && sessionId->isValid()) {
+	if(sessionId && sessionId->isValid()) {
 		debug_d("-----BEGIN SSL SESSION PARAMETERS-----");
 		debug_d("SessionId: %s", toString(*sessionId).c_str());
 		debug_d("------END SSL SESSION PARAMETERS------");
@@ -202,8 +202,8 @@ void Session::handshakeComplete(bool success)
 	if(success) {
 		// If requested, take a copy of the session ID for later re-use
 		if(options.sessionResume) {
-			if(sessionId == nullptr) {
-				sessionId = new SessionId;
+			if(!sessionId) {
+				sessionId.reset(new SessionId);
 			}
 			*sessionId = connection->getSessionId();
 		}

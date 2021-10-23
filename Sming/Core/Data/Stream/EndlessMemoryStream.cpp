@@ -12,14 +12,13 @@
 
 bool EndlessMemoryStream::seek(int len)
 {
-	if(stream == nullptr) {
+	if(!stream) {
 		return false;
 	}
 
 	int res = stream->seek(len);
 	if(stream->isFinished()) {
-		delete stream;
-		stream = nullptr;
+		stream.reset();
 	}
 
 	return res;
@@ -27,8 +26,8 @@ bool EndlessMemoryStream::seek(int len)
 
 size_t EndlessMemoryStream::write(const uint8_t* buffer, size_t size)
 {
-	if(stream == nullptr) {
-		stream = new MemoryDataStream();
+	if(!stream) {
+		stream.reset(new MemoryDataStream());
 	}
 
 	return stream->write(buffer, size);
