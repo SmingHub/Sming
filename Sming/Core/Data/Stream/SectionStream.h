@@ -63,14 +63,10 @@ public:
 	 * @param endTag Marks end of a section
 	 */
 	SectionStream(IDataSourceStream* source, uint8_t maxSections, const String& startTag, const String& endTag)
-		: stream(source), startTag(startTag), endTag(endTag)
+		: startTag(startTag), endTag(endTag)
 	{
+		stream.reset(source);
 		scanSource(maxSections);
-	}
-
-	~SectionStream()
-	{
-		delete stream;
 	}
 
 	int available() override
@@ -184,7 +180,7 @@ protected:
 private:
 	void scanSource(uint8_t maxSections);
 
-	IDataSourceStream* stream{nullptr};
+	std::unique_ptr<IDataSourceStream> stream;
 	NextSection nextSectionCallback;
 	NextRecord nextRecordCallback;
 	String startTag;
