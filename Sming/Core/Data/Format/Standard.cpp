@@ -15,4 +15,28 @@
 namespace Format
 {
 Standard standard;
+
+void Standard::quote(String& value) const
+{
+	value.replace("\"", "\"\"");
+	char cQuote{'"'};
+	auto len = value.length();
+	value.setLength(len + 2);
+	memmove(&value[1], value.c_str(), len);
+	value[0] = cQuote;
+	value[len + 1] = cQuote;
 }
+
+void Standard::unQuote(String& value) const
+{
+	char quote = value[0];
+	if(quote == '"' || quote == '\'') {
+		auto len = value.length();
+		if(len > 1 && value[len - 1] == quote) {
+			value.remove(len - 1, 1);
+			value.remove(0, 1);
+		}
+	}
+}
+
+} // namespace Format
