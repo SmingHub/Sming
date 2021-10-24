@@ -41,13 +41,17 @@ size_t IDataSourceStream::readBytes(char* buffer, size_t length)
 
 String IDataSourceStream::readString(size_t maxLen)
 {
-	size_t avail = available();
-	size_t len = std::min(avail, maxLen);
-
 	String s;
-	if(s.setLength(len)) {
-		len = readBytes(s.begin(), len);
-		s.setLength(len);
+	size_t remain = maxLen;
+	while(remain != 0) {
+		char buffer[256];
+		size_t len = readBytes(buffer, remain);
+		if(len == 0) {
+			break;
+		}
+		s.concat(buffer, len);
+		remain -= len;
 	}
+
 	return s;
 }

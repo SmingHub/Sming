@@ -16,10 +16,12 @@
  * Scan through entire source stream to map location and size of sections.
  * Called once by constructor.
  */
-void SectionStream::scanSource()
+void SectionStream::scanSource(uint8_t maxSections)
 {
 	constexpr size_t bufSize{512};
 	char buffer[bufSize];
+
+	sections.reset(new Section[maxSections]{});
 
 	size_t offset{0};
 	while(sectionCount < maxSections && !stream->isFinished()) {

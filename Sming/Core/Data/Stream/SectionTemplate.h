@@ -28,6 +28,8 @@
  * Anything else is treated as a variable name.
  * Separator is :
  *
+ * Conditional if/else/endif statements may be nested.
+ *
  * @note Command tags are prefixed with 'Q' to allow use of reserved words
  * in the Command enumeration. This represents the ! prefix in actual use.
  */
@@ -42,8 +44,8 @@
 	   "{!pad:A:B:C} Copy of A padded to at least B characters with C (default is space). Use -ve B to left-pad. C")   \
 	XX(Qrepeat, "{!repeat:A:B} Repeat A, number of iterations is B")                                                   \
 	XX(Qkb, "{!kb:A} Convert A to KB")                                                                                 \
-	XX(Qifdef, "{!ifdef:A}block{/if} emit block if A is not zero-length")                                              \
-	XX(Qifndef, "{!ifdef:A}block{/if} emit block if A is zero-length")                                                 \
+	XX(Qifdef, "{!ifdef:A} emit block if A is not zero-length")                                                        \
+	XX(Qifndef, "{!ifdef:A} emit block if A is zero-length")                                                           \
 	XX(Qifeq, "{!ifeq:A:B} emit block if A == B")                                                                      \
 	XX(Qifneq, "{!ifneq:A:B} emit block if A != B")                                                                    \
 	XX(Qifgt, "{!ifgt:A:B} emit block if A > B")                                                                       \
@@ -55,7 +57,7 @@
 	XX(Qifnin, "{!ifin:A:B} emit block if A does not contain B")                                                       \
 	XX(Qelse, "{!else}")                                                                                               \
 	XX(Qendif, "{!endif}")                                                                                             \
-	XX(Qadd, "{!add:A:B} A - B")                                                                                       \
+	XX(Qadd, "{!add:A:B} A + B")                                                                                       \
 	XX(Qsub, "{!sub:A:B} A - B")                                                                                       \
 	XX(Qgoto, "{!goto:A} move to section A")                                                                           \
 	XX(Qcount, "{!count:A} emit number of records in section A")                                                       \
@@ -85,7 +87,7 @@ public:
 #undef XX
 	};
 
-	SectionTemplate(IDataSourceStream* source);
+	SectionTemplate(IDataSourceStream* source, uint8_t maxSections = 5);
 
 	/**
 	 * @brief Application callback to process additional fields
@@ -93,54 +95,99 @@ public:
 	 * @param name Field name, never null
 	 * @retval String The field value
 	 * @note Applications should call `escape()` if required before returning content.
-	 * Use `stream.state()` to determine the current section being processed.
 	 */
 	using GetValue = Delegate<String(const char* name)>;
 
 	using NextRecord = SectionStream::NextRecord;
 
+	/**
+	 * @brief Set a callback to be invoked
+	 *
+	 * Alternative to subclassing.
+	 */
 	void onGetValue(GetValue callback)
 	{
 		getValueCallback = callback;
 	}
 
+	/**
+	 * @brief Associate a text format with this template stream
+	 * @param formatter Provide formatter so we can call escape(), etc. as required
+	 */
 	void setFormatter(Formatter& formatter)
 	{
 		activeFormatter = &formatter;
 	}
 
+	/**
+	 * @brief Get the stream format
+	 * @retval Formatter& The formatter in effect. Default is :cpp:class:Format::Standard.
+	 */
 	Formatter& formatter() const
 	{
 		return *activeFormatter;
 	}
 
+	/**
+	 * @brief Get the MIME type associated with this template stream
+	 * @retval MimeType As defined by the formatter. Default is MIME_TEXT.
+	 */
 	MimeType getMimeType() const override
 	{
 		return activeFormatter->mimeType();
 	}
 
+	/**
+	 * @brief Access the underlying section stream
+	 * @retval SectionStream& Wraps source stream provided in constructor
+	 * 
+	 * Provided for debugging and other purposes.
+	 * Applications should not use this method.
+	 */
 	const SectionStream& stream() const
 	{
 		return sectionStream;
 	}
 
+	/**
+	 * @brief Get the index for the current section
+	 * @retval int Indices are 0-based, returns -1 if 'Before Start'
+	 */
 	int sectionIndex() const
 	{
 		return sectionStream.sectionIndex();
 	}
 
+	/**
+	 * @brief Get number of sections in source stream
+	 * @retval uint8_t Source is scanned in constructor so this is always valid
+	 */
 	uint8_t sectionCount() const
 	{
 		return sectionStream.count();
 	}
 
+	/**
+	 * @brief Get current record index
+	 * @retval int Indices are 0-based, returns -1 if 'Before Start'
+	 */
 	int recordIndex() const
 	{
 		return sectionStream.recordIndex();
 	}
 
+	/**
+	 * @brief Discard current output and change current section
+	 * @param uint8_t Index of section to move to
+	 * @retval bool true on success, false if section index invalid
+	 */
 	bool gotoSection(uint8_t index);
 
+	/**
+	 * @brief Set a callback to be invoked when a new record is required
+	 *
+	 * Can be used as alternative to subclassing.
+	 */
 	void onNextRecord(NextRecord callback)
 	{
 		nextRecordCallback = callback;

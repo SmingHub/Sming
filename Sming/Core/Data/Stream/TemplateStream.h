@@ -26,6 +26,15 @@
  * @brief Stream which performs variable-value substitution on-the-fly
  *
  * Template uses {varname} style markers which are replaced as the stream is read.
+ * 
+ * Note: There must be no whitespace after the opening brace.
+ * For example, `{ varname }` will be emitted as-is without modification.
+ *
+ * This allows inclusion of CSS fragments such as `td { padding: 0 10px; }` in HTML.
+ * 
+ * If necessary, use double-braces `{{varname}}` in templates and enable by calling `setDoubleBraces(true)`.
+ * 
+ * Invalid tags, such as `{"abc"}` will be ignored, so JSON templates do not require special treatment.
  *
  * @ingroup stream
  */
@@ -116,6 +125,11 @@ public:
 		enableNextState = enable;
 	}
 
+	/**
+	 * @brief Determine if stream output is active
+	 *
+	 * Used by SectionTemplate class when processing conditional tags.
+	 */
 	bool isOutputEnabled() const
 	{
 		return outputEnabled;
@@ -130,6 +144,18 @@ public:
 		doubleBraces = enable;
 	}
 
+	/**
+	 * @brief Evaluate a template expression
+	 * @param expr IN: First character after the opening brace(s)
+	 *             OUT: First character after the closing brace(s)
+	 * @retval String
+	 *
+	 * Called internally and an opening brace ("{" or "{{") has been found.
+	 * Default behaviour is to locate the closing brace(s) and interpret the
+	 * bounded text as a variable name, which is passsed to `getValue`.
+	 *
+	 * This method is overridden by SectionTemplate to support more complex expressions.
+	 */
 	virtual String evaluate(char*& expr);
 
 	/**
