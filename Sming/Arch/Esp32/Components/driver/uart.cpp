@@ -18,6 +18,7 @@
 #include <driver/periph_ctrl.h>
 #include <soc/uart_channel.h>
 #include <BitManipulations.h>
+#include <Data/Range.h>
 #include <esp_systemapi.h>
 
 namespace
@@ -425,7 +426,7 @@ void smg_uart_start_isr(smg_uart_t* uart)
 	dev->conf1.val = 0;
 
 	if(smg_uart_rx_enabled(uart)) {
-		uart_ll_set_rxfifo_full_thr(dev, 120);
+		uart_ll_set_rxfifo_full_thr(dev, RX_FIFO_FULL_THRESHOLD);
 		uart_ll_set_rx_tout(dev, 10);
 
 		/*
@@ -777,6 +778,46 @@ smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, s
 							 .rx_size = rx_size,
 							 .tx_size = tx_size};
 	return smg_uart_init_ex(cfg);
+}
+
+void smg_uart_set_config(smg_uart_t* uart, smg_uart_format_t config)
+{
+	uart = get_physical(uart);
+	if(uart == nullptr) {
+		return;
+	}
+	smg_uart_config_format_t fmt{.val = config};
+	auto dev = getDevice(uart->uart_nr);
+	uart_ll_set_data_bit_num(dev, uart_word_length_t(fmt.bits));
+	uart_ll_set_parity(dev, uart_parity_t(fmt.parity));
+	uart_ll_set_stop_bits(dev, uart_stop_bits_t(fmt.stop_bits));
+}
+
+bool smg_uart_intr_config(smg_uart_t* uart, const smg_uart_intr_config_t* config)
+{
+	uart = get_physical(uart);
+	if(uart == nullptr || config == nullptr) {
+		return false;
+	}
+
+	auto dev = getDevice(uart->uart_nr);
+	if(smg_uart_rx_enabled(uart)) {
+		uint8_t full_threshold;
+		if(uart->rx_buffer == nullptr) {
+			// Setting this to 0 results in lockup as the interrupt never clears
+			full_threshold = TRange(1, UART_RXFIFO_FULL_THRHD).clip(config->rxfifo_full_thresh);
+		} else {
+			full_threshold = RX_FIFO_FULL_THRESHOLD;
+		}
+		uart_ll_set_rxfifo_full_thr(dev, full_threshold);
+		uart_ll_set_rx_tout(dev, TRange(0, UART_RX_TOUT_THRHD).clip(config->rx_timeout_thresh));
+	}
+
+	if(smg_uart_tx_enabled(uart)) {
+		uart_ll_set_txfifo_empty_thr(dev, TRange(0, UART_TXFIFO_EMPTY_THRHD).clip(config->txfifo_empty_intr_thresh));
+	}
+
+	return true;
 }
 
 void smg_uart_swap(smg_uart_t* uart, int tx_pin)

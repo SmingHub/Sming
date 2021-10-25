@@ -49,6 +49,7 @@
 #include <espinc/uart_register.h>
 #include <driver/SerialBuffer.h>
 #include <esp_systemapi.h>
+#include <Data/Range.h>
 
 /*
  * Parameters relating to RX FIFO and buffer thresholds
@@ -489,7 +490,7 @@ void smg_uart_start_isr(smg_uart_t* uart)
 	uint32_t intena = 0;
 
 	if(smg_uart_rx_enabled(uart)) {
-		conf1 = (120 << UART_RXFIFO_FULL_THRHD_S) | (0x02 << UART_RX_TOUT_THRHD_S) | UART_RX_TOUT_EN;
+		conf1 = (RX_FIFO_FULL_THRESHOLD << UART_RXFIFO_FULL_THRHD_S) | (0x02 << UART_RX_TOUT_THRHD_S) | UART_RX_TOUT_EN;
 
 		/*
 		 * There is little benefit in generating interrupts on errors, instead these
@@ -866,6 +867,44 @@ smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, s
 		.tx_size = tx_size,
 	};
 	return smg_uart_init_ex(cfg);
+}
+
+void smg_uart_set_config(smg_uart_t* uart, smg_uart_format_t config)
+{
+	uart = get_physical(uart);
+	if(uart != nullptr) {
+		SET_PERI_REG_BITS(UART_CONF0(uart->uart_nr), 0xff, config, 0);
+	}
+}
+
+bool smg_uart_intr_config(smg_uart_t* uart, const smg_uart_intr_config_t* config)
+{
+	uart = get_physical(uart);
+	if(uart == nullptr || config == nullptr) {
+		return false;
+	}
+
+	uint32_t conf1{0};
+	if(smg_uart_rx_enabled(uart)) {
+		if(uart->rx_buffer == nullptr) {
+			// Setting this to 0 results in lockup as the interrupt never clears
+			uint8_t rxfifo_full_thresh = TRange(1, UART_RXFIFO_FULL_THRHD).clip(config->rxfifo_full_thresh);
+			conf1 |= rxfifo_full_thresh << UART_RXFIFO_FULL_THRHD_S;
+		} else {
+			conf1 |= RX_FIFO_FULL_THRESHOLD << UART_RXFIFO_FULL_THRHD_S;
+		}
+		uint8_t rx_timeout_thresh = TRange(0, UART_RX_TOUT_THRHD).clip(config->rx_timeout_thresh);
+		conf1 |= rx_timeout_thresh << UART_RX_TOUT_THRHD_S;
+		conf1 |= UART_RX_TOUT_EN;
+	}
+
+	if(smg_uart_tx_enabled(uart)) {
+		uint8_t txfifo_empty_intr_thresh = TRange(0, UART_TXFIFO_EMPTY_THRHD).clip(config->txfifo_empty_intr_thresh);
+		conf1 |= txfifo_empty_intr_thresh << UART_TXFIFO_EMPTY_THRHD_S;
+	}
+
+	WRITE_PERI_REG(UART_CONF1(uart->uart_nr), conf1);
+	return true;
 }
 
 void smg_uart_swap(smg_uart_t* uart, int tx_pin)

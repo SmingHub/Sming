@@ -687,19 +687,9 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 	smg_uart_detach(cfg.uart_nr);
 	smg_uart_set_baudrate(uart, cfg.baudrate);
 
-	auto dev = getDevice(cfg.uart_nr);
+	smg_uart_set_config(uart, cfg.config);
 
-	// Setup line control register
-	smg_uart_config_format_t fmt;
-	fmt.val = cfg.config;
-	uint32_t lcr{0};
-	lcr |= fmt.bits << UART_UARTLCR_H_WLEN_LSB; // data bits
-	if(fmt.stop_bits != UART_NB_STOP_BIT_1) {   // stop bits
-		lcr |= UART_UARTLCR_H_STP2_BITS;
-	}
-	lcr |= fmt.parity << UART_UARTLCR_H_PEN_LSB; // parity
-	lcr |= UART_UARTLCR_H_FEN_BITS;				 // Enable FIFOs
-	dev->lcr_h = lcr;
+	auto dev = getDevice(cfg.uart_nr);
 
 	// Enable the UART
 	if(uart->mode == UART_TX_ONLY) {
@@ -760,6 +750,34 @@ smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, s
 							 .rx_size = rx_size,
 							 .tx_size = tx_size};
 	return smg_uart_init_ex(cfg);
+}
+
+void smg_uart_set_config(smg_uart_t* uart, smg_uart_format_t config)
+{
+	if(uart == nullptr) {
+		return;
+	}
+
+	auto dev = getDevice(uart->uart_nr);
+
+	// Setup line control register
+	smg_uart_config_format_t fmt{.val = config};
+	uint32_t lcr{0};
+	lcr |= fmt.bits << UART_UARTLCR_H_WLEN_LSB; // data bits
+	if(fmt.stop_bits != UART_NB_STOP_BIT_1) {   // stop bits
+		lcr |= UART_UARTLCR_H_STP2_BITS;
+	}
+	lcr |= fmt.parity << UART_UARTLCR_H_PEN_LSB; // parity
+	lcr |= UART_UARTLCR_H_FEN_BITS;				 // Enable FIFOs
+	dev->lcr_h = lcr;
+}
+
+bool smg_uart_intr_config(smg_uart_t* uart, const smg_uart_intr_config_t* config)
+{
+	// Not supported
+	(void)uart;
+	(void)config;
+	return false;
 }
 
 void smg_uart_swap(smg_uart_t* uart, int tx_pin)

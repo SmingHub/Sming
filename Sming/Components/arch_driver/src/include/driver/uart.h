@@ -268,6 +268,32 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg);
 
 void smg_uart_uninit(smg_uart_t* uart);
 
+/**
+ * @brief Set the UART config
+ * @param uart
+ * @param config UART CONF0 register bits
+ */
+void smg_uart_set_config(smg_uart_t* uart, smg_uart_format_t config);
+
+/**
+ * @brief UART interrupt configuration parameters for smg_uart_intr_config function
+ *
+ * Threshold values are expressed in character times
+ */
+typedef struct {
+	uint8_t rx_timeout_thresh;
+	uint8_t txfifo_empty_intr_thresh;
+	uint8_t rxfifo_full_thresh; ///< Ignored if additional buffers are allocated
+} smg_uart_intr_config_t;
+
+/**
+  * @brief Configure interrupt thresholds
+  * @param uart
+  * @param config
+  * @retval bool true on success, false on error (bad parameter or unsupported)
+  */
+bool smg_uart_intr_config(smg_uart_t* uart, const smg_uart_intr_config_t* config);
+
 __forceinline int smg_uart_get_nr(smg_uart_t* uart)
 {
 	return uart ? uart->uart_nr : -1;
