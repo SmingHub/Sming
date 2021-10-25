@@ -19,6 +19,9 @@
 #define FLASHCMD_READ_SFDP 0x5a
 #define FLASHCMD_READ_JEDEC_ID 0x9f
 
+// Buffers need to be word aligned for flash access
+#define ATTR_ALIGNED __attribute__((aligned(4)))
+
 namespace
 {
 /*
@@ -233,14 +236,14 @@ uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 
 uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
 {
-	if(IS_ALIGNED(fromaddr) && IS_ALIGNED(size)) {
+	if(IS_ALIGNED(to) && IS_ALIGNED(fromaddr) && IS_ALIGNED(size)) {
 		return readAligned(to, fromaddr, size);
 	}
 
 	const uint32_t blksize = flashReadUnitSize;
 	const uint32_t blkmask = flashReadUnitSize - 1;
 
-	uint8_t tmpdata[flashBufferCount * blksize];
+	ATTR_ALIGNED uint8_t tmpdata[flashBufferCount * blksize];
 	auto pto = static_cast<uint8_t*>(to);
 	size_t remain = size;
 
