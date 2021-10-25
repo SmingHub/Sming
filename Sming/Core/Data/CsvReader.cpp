@@ -37,7 +37,6 @@ bool CsvReader::readRow()
 	bool escape{false};
 	bool quote{false};
 	char lc{'\0'};
-	unsigned readpos{0};
 	unsigned writepos{0};
 
 	while(true) {
@@ -60,7 +59,7 @@ bool CsvReader::readRow()
 			return true;
 		}
 		buflen = writepos + len;
-		readpos = writepos;
+		unsigned readpos = writepos;
 
 		for(; readpos < buflen; ++readpos) {
 			char c = buffer[readpos];
