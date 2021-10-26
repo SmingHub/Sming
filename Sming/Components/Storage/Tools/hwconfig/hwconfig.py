@@ -3,7 +3,7 @@
 # Sming hardware configuration tool
 #
 
-import common, argparse, os, partition
+import common, argparse, os, partition, json
 from common import *
 from config import Config
 from config import schema as config_schema
@@ -64,7 +64,10 @@ def handle_partgen(args, config, part):
 
 def handle_expr(args, config, part):
     # Evaluate expression against configuration data
-    return str(eval(args.expr)).encode()
+    res = eval(args.expr)
+    if isinstance(res, dict):
+        return json.dumps(res).encode()
+    return str(res).encode()
 
 
 def main():

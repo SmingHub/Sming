@@ -13,7 +13,12 @@
             "filename": "out/fwfs1.bin",
             "build": {
                 "target": "fwfs-build",
-                "config": "fsimage.fwfs"
+                "config": {
+                    "name": "Basic Templates demo volume",
+                    "source": {
+                        "/": "files"
+                    }
+                }
             },
             "readonly": true,
             "encrypted": false
