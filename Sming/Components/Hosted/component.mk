@@ -1,5 +1,6 @@
-COMPONENT_SRCDIRS := $(COMPONENT_PATH)/src
-COMPONENT_INCDIRS := $(COMPONENT_SRCDIRS) $(COMPONENT_PATH)/include 
+COMPONENT_SRCDIRS := src
+COMPONENT_INCDIRS := include
+COMPONENT_DOXYGEN_INPUT := include
 COMPONENT_DEPENDS := simpleRPC
 
 # Architecture of the device where the hosted service will be flashed
@@ -9,7 +10,7 @@ COMPONENT_VARS := ENABLE_HOSTED
 ENABLE_HOSTED ?=
 
 ifneq ($(ENABLE_HOSTED),)
-	COMPONENT_SRCDIRS += $(COMPONENT_PATH)/init/$(ENABLE_HOSTED) 
+	COMPONENT_SRCDIRS += init/$(ENABLE_HOSTED) 
 	EXTRA_LDFLAGS := $(call Wrap,host_init)
 	COMPONENT_DEPENDS += SerialLib
 endif

@@ -9,7 +9,7 @@ COMPONENT_INCDIRS := \
 
 COMPONENT_DOXYGEN_INPUT := \
 	src \
-	Arch/Esp32/Platform/include
+	Arch/Esp32/include
 
 COMPONENT_DEPENDS := \
 	ssl \
