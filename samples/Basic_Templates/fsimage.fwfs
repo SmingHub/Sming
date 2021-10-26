@@ -1,0 +1,6 @@
+{
+    "name": "Basic Templates demo volume",
+    "source": {
+        "/": "files"
+    }
+}

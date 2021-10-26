@@ -1,0 +1,29 @@
+
+Sample template to display records from 'classics.csv'
+https://corgis-edu.github.io/corgis/csv/classics/
+
+** HEADER **
+{SECTION}
+<!-- Books published in {year_filter} -->
+
+<?xml version="1.0" ?>
+<root>
+{/SECTION}
+
+
+** CONTENT **
+{SECTION}
+  <book>
+    <title>{bibliography.title}</title>
+    <author>{bibliography.author.name}</author>
+    <published>{bibliography.publication.year}</published>
+    <url>{metadata.url}</url>
+  </book>{/SECTION}
+
+
+** FOOTER **
+{SECTION}
+</root>
+
+<!-- {!count:1} Records listed -->
+{/SECTION}

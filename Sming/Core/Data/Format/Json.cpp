@@ -76,6 +76,8 @@ void Json::escape(String& value) const
 				c = '_';
 		}
 	}
+
+	value.replace("\"", "\\\"");
 }
 
 } // namespace Format

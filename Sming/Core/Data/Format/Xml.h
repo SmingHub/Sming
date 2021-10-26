@@ -4,34 +4,29 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * Standard.h
+ * Xml.h
  *
- * @author mikee47 <mike@sillyhouse.net> Nov 2020
+ * @author mikee47 <mike@sillyhouse.net> Oct 2021
  *
  ****/
 
 #pragma once
 
-#include "Formatter.h"
+#include "Standard.h"
 
 namespace Format
 {
-class Standard : public Formatter
+class Xml : public Standard
 {
 public:
-	void escape(String& value) const override
-	{
-	}
-
-	void quote(String& value) const override;
-	void unQuote(String& value) const override;
+	void escape(String& value) const override;
 
 	MimeType mimeType() const override
 	{
-		return MIME_TEXT;
+		return MIME_XML;
 	}
 };
 
-extern Standard standard;
+extern Xml xml;
 
 } // namespace Format

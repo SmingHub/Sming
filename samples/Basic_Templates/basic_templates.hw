@@ -1,0 +1,22 @@
+{
+    "name": "Basic Templates sample",
+    "base_config": "standard",
+    "options": [
+        "2m"
+    ],
+    "partitions": {
+        "fwfs1": {
+            "address": "0x00100000",
+            "size": "860K",
+            "type": "data",
+            "subtype": "fwfs",
+            "filename": "out/fwfs1.bin",
+            "build": {
+                "target": "fwfs-build",
+                "config": "fsimage.fwfs"
+            },
+            "readonly": true,
+            "encrypted": false
+        }
+    }
+}

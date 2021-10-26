@@ -159,6 +159,17 @@ public:
 	virtual String evaluate(char*& expr);
 
 	/**
+	 * @brief Evaluate an expression in-situ
+	 * @param expr Expression to evaluate
+	 * @retval String
+	 */
+	String eval(String expr)
+	{
+		char* p = expr.begin();
+		return evaluate(p);
+	}
+
+	/**
 	 * @brief Fetch a templated value
 	 * @param name The variable name
 	 * @retval String value, invalid to emit tag unprocessed

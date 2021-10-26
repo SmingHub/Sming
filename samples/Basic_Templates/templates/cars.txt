@@ -1,0 +1,27 @@
+#
+# Sample template to display records from 'cars.csv'
+# https://corgis-edu.github.io/corgis/csv/cars/
+#
+# File truncated to first 1000 records
+#
+
+{SECTION}
+Listing cars for "Make = {make_filter}"
+
+{!pad:"#":5} {!pad:"Make":12} {!pad:"Model":40} {!pad:"Engine Type":30}
+{!repeat:"-":5} {!repeat:"-":12} {!repeat:"-":40} {!repeat:"-":30}
+{/SECTION}
+
+# Data section follows
+
+{SECTION}{!ifeq:Identification.Make:make_filter}{!pad:{!add:$record:1}:5} {!pad:Identification.Make:12} {!pad:Identification.Model Year:40} {!pad:Engine Information.Engine Type:30}
+{!endif}{/SECTION}
+
+{SECTION}{!repeat:"-":10}
+{!count:1} records searched
+
+LISTING COMPLETE
+
+{/SECTION}
+
+# We're all done.
