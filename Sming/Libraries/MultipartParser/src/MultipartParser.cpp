@@ -91,8 +91,7 @@ int MultipartParser::partBegin(multipart_parser_t* p)
 {
 	GET_PARSER();
 
-	parser->headerName.setLength(0);
-	parser->headerValue.setLength(0);
+	parser->resetHeaders();
 	parser->stream = nullptr;
 
 	return 0;
@@ -102,24 +101,25 @@ int MultipartParser::readHeaderName(multipart_parser_t* p, const char* at, size_
 {
 	GET_PARSER();
 
-	if(parser->headerValue != String::empty) {
-		// process previous header
-		int result = parser->processHeader();
-		if(result != 0) {
-			return result;
-		}
-	}
-
-	parser->headerName.concat(at, length);
-
-	return 0;
+	return parser->headerBuilder.onHeaderField(at, length);
 }
 
-int MultipartParser::processHeader()
+int MultipartParser::readHeaderValue(multipart_parser_t* p, const char* at, size_t length)
 {
-	if(FS("Content-Disposition") == headerName) {
+	GET_PARSER();
+
+	return parser->headerBuilder.onHeaderValue(parser->incomingHeaders, at, length);
+}
+
+int MultipartParser::partHeadersComplete(multipart_parser_t* p)
+{
+	GET_PARSER();
+
+	auto& headers = parser->incomingHeaders;
+	if(headers.contains(HTTP_HEADER_CONTENT_DISPOSITION)) {
 		// Content-Disposition: form-data; name="image"; filename=".gitignore"
 		// Content-Disposition: form-data; name="data"
+		String headerValue = headers[HTTP_HEADER_CONTENT_DISPOSITION];
 		int startPos = headerValue.indexOf(FS("name="));
 		if(startPos < 0) {
 			debug_e("Invalid header content");
@@ -135,29 +135,10 @@ int MultipartParser::processHeader()
 			name = headerValue.substring(startPos, endPos - 1);
 		}
 		// get stream corresponding to field name
-		stream = request.files[name];
+		parser->stream = parser->request.files[name];
 	}
 
-	headerName.setLength(0);
-	headerValue.setLength(0);
-
 	return 0;
-}
-
-int MultipartParser::readHeaderValue(multipart_parser_t* p, const char* at, size_t length)
-{
-	GET_PARSER();
-
-	parser->headerValue.concat(at, length);
-
-	return 0;
-}
-
-int MultipartParser::partHeadersComplete(multipart_parser_t* p)
-{
-	GET_PARSER();
-
-	return parser->processHeader();
 }
 
 int MultipartParser::partData(multipart_parser_t* p, const char* at, size_t length)
@@ -178,6 +159,8 @@ int MultipartParser::partEnd(multipart_parser_t* p)
 {
 	GET_PARSER();
 
+	parser->resetHeaders();
+
 	return 0;
 }
 
@@ -186,4 +169,10 @@ int MultipartParser::bodyEnd(multipart_parser_t* p)
 	GET_PARSER();
 
 	return 0;
+}
+
+void MultipartParser::resetHeaders()
+{
+	headerBuilder.reset();
+	incomingHeaders.clear();
 }
