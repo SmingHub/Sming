@@ -31,26 +31,23 @@
 class TwoWire : public Stream
 {
 public:
+	using UserRequest = void (*)();
+	using UserReceive = void (*)(int len);
+
 	TwoWire();
 
-	void begin(int sda, int scl);
-	void pins(int sda, int scl);
+	void begin(uint8_t sda, uint8_t scl);
+	void pins(uint8_t sda, uint8_t scl);
 	void begin();
-	void begin(uint8_t);
-	void begin(int);
-	void setClock(uint32_t);
-	void setClockStretchLimit(uint32_t);
-	void beginTransmission(uint8_t);
-	void beginTransmission(int);
+	void setClock(uint32_t frequency);
+	void setClockStretchLimit(uint32_t limit);
+	void beginTransmission(uint8_t address);
 	uint8_t endTransmission();
-	uint8_t endTransmission(uint8_t);
+	uint8_t endTransmission(bool sendStop);
 	size_t requestFrom(uint8_t address, size_t size, bool sendStop);
 	uint8_t status();
 
-	uint8_t requestFrom(uint8_t, uint8_t);
-	uint8_t requestFrom(uint8_t, uint8_t, uint8_t);
-	uint8_t requestFrom(int, int);
-	uint8_t requestFrom(int, int, int);
+	uint8_t requestFrom(uint8_t address, uint8_t quantity);
 
 	size_t write(uint8_t) override;
 	size_t write(const uint8_t*, size_t) override;
@@ -59,46 +56,36 @@ public:
 	int peek() override;
 	void flush() override;
 
-	void onReceive(void (*)(int));
-	void onRequest(void (*)());
-
-	size_t write(unsigned long n)
+	void onReceive(UserReceive callbackk)
 	{
-		return write(uint8_t(n));
+		// user_onReceive = callback;
 	}
 
-	size_t write(long n)
+	void onRequest(UserRequest callback)
 	{
-		return write(uint8_t(n));
-	}
-
-	size_t write(unsigned int n)
-	{
-		return write(uint8_t(n));
-	}
-
-	size_t write(int n)
-	{
-		return write(uint8_t(n));
+		// user_onRequest = callback;
 	}
 
 	using Print::write;
 
 private:
-	static uint8_t rxBuffer[];
-	static uint8_t rxBufferIndex;
-	static uint8_t rxBufferLength;
+	uint8_t sda_pin{2};
+	uint8_t scl_pin{0};
 
-	static uint8_t txAddress;
-	static uint8_t txBuffer[];
-	static uint8_t txBufferIndex;
-	static uint8_t txBufferLength;
+	uint8_t rxBuffer[BUFFER_LENGTH];
+	uint8_t rxBufferIndex{0};
+	uint8_t rxBufferLength{0};
 
-	static uint8_t transmitting;
-	static void (*user_onRequest)();
-	static void (*user_onReceive)(int);
-	static void onRequestService();
-	static void onReceiveService(uint8_t*, int);
+	uint8_t txAddress{0};
+	uint8_t txBuffer[BUFFER_LENGTH];
+	uint8_t txBufferIndex{0};
+	uint8_t txBufferLength{0};
+
+	bool transmitting{false};
+	UserRequest user_onRequest{nullptr};
+	UserReceive user_onReceive{nullptr};
+	void onRequestService();
+	void onReceiveService(uint8_t*, int);
 };
 
 #if !defined(NO_GLOBAL_INSTANCES) && !defined(NO_GLOBAL_TWOWIRE)

@@ -30,67 +30,40 @@ extern "C" {
 #include "twi.h"
 #include "Wire.h"
 
-// Initialize Class Variables //////////////////////////////////////////////////
-
-uint8_t TwoWire::rxBuffer[BUFFER_LENGTH];
-uint8_t TwoWire::rxBufferIndex = 0;
-uint8_t TwoWire::rxBufferLength = 0;
-
-uint8_t TwoWire::txAddress = 0;
-uint8_t TwoWire::txBuffer[BUFFER_LENGTH];
-uint8_t TwoWire::txBufferIndex = 0;
-uint8_t TwoWire::txBufferLength = 0;
-
-uint8_t TwoWire::transmitting = 0;
-void (*TwoWire::user_onRequest)(void);
-void (*TwoWire::user_onReceive)(int);
-
-static int default_sda_pin = 2;
-static int default_scl_pin = 0;
-
-// Constructors ////////////////////////////////////////////////////////////////
+#if defined(ARCH_ESP8266) | defined(ARCH_HOST)
+#define DEFAULT_SDA_PIN 2
+#define DEFAULT_SCL_PIN 0
+#elif defined(ARCH_ESP32)
+#define DEFAULT_SDA_PIN 21
+#define DEFAULT_SCL_PIN 22
+#endif
 
 TwoWire::TwoWire()
 {
 }
 
-// Public Methods //////////////////////////////////////////////////////////////
-
-void TwoWire::begin(int sda, int scl)
+void TwoWire::begin(uint8_t sda, uint8_t scl)
 {
-	default_sda_pin = sda;
-	default_scl_pin = scl;
+	sda_pin = sda;
+	scl_pin = scl;
 	twi_init(sda, scl);
 	flush();
 }
 
-void TwoWire::pins(int sda, int scl)
+void TwoWire::pins(uint8_t sda, uint8_t scl)
 {
-	default_sda_pin = sda;
-	default_scl_pin = scl;
+	sda_pin = sda;
+	scl_pin = scl;
 }
 
-void TwoWire::begin(void)
+void TwoWire::begin()
 {
-	begin(default_sda_pin, default_scl_pin);
-}
-
-void TwoWire::begin(uint8_t address)
-{
-	// twi_setAddress(address);
-	// twi_attachSlaveTxEvent(onRequestService);
-	// twi_attachSlaveRxEvent(onReceiveService);
-	begin();
+	begin(sda_pin, scl_pin);
 }
 
 uint8_t TwoWire::status()
 {
 	return twi_status();
-}
-
-void TwoWire::begin(int address)
-{
-	begin((uint8_t)address);
 }
 
 void TwoWire::setClock(uint32_t frequency)
@@ -114,24 +87,9 @@ size_t TwoWire::requestFrom(uint8_t address, size_t size, bool sendStop)
 	return read;
 }
 
-uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity, uint8_t sendStop)
-{
-	return requestFrom(address, static_cast<size_t>(quantity), static_cast<bool>(sendStop));
-}
-
 uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity)
 {
 	return requestFrom(address, static_cast<size_t>(quantity), true);
-}
-
-uint8_t TwoWire::requestFrom(int address, int quantity)
-{
-	return requestFrom(static_cast<uint8_t>(address), static_cast<size_t>(quantity), true);
-}
-
-uint8_t TwoWire::requestFrom(int address, int quantity, int sendStop)
-{
-	return requestFrom(static_cast<uint8_t>(address), static_cast<size_t>(quantity), static_cast<bool>(sendStop));
 }
 
 void TwoWire::beginTransmission(uint8_t address)
@@ -142,12 +100,7 @@ void TwoWire::beginTransmission(uint8_t address)
 	txBufferLength = 0;
 }
 
-void TwoWire::beginTransmission(int address)
-{
-	beginTransmission((uint8_t)address);
-}
-
-uint8_t TwoWire::endTransmission(uint8_t sendStop)
+uint8_t TwoWire::endTransmission(bool sendStop)
 {
 	int8_t ret = twi_writeTo(txAddress, txBuffer, txBufferLength, sendStop);
 	txBufferIndex = 0;
@@ -156,7 +109,7 @@ uint8_t TwoWire::endTransmission(uint8_t sendStop)
 	return ret;
 }
 
-uint8_t TwoWire::endTransmission(void)
+uint8_t TwoWire::endTransmission()
 {
 	return endTransmission(true);
 }
@@ -190,13 +143,13 @@ size_t TwoWire::write(const uint8_t* data, size_t quantity)
 	return quantity;
 }
 
-int TwoWire::available(void)
+int TwoWire::available()
 {
 	int result = rxBufferLength - rxBufferIndex;
 	return result;
 }
 
-int TwoWire::read(void)
+int TwoWire::read()
 {
 	int value = -1;
 	if(rxBufferIndex < rxBufferLength) {
@@ -206,16 +159,12 @@ int TwoWire::read(void)
 	return value;
 }
 
-int TwoWire::peek(void)
+int TwoWire::peek()
 {
-	int value = -1;
-	if(rxBufferIndex < rxBufferLength) {
-		value = rxBuffer[rxBufferIndex];
-	}
-	return value;
+	return (rxBufferIndex < rxBufferLength) ? rxBuffer[rxBufferIndex] : -1;
 }
 
-void TwoWire::flush(void)
+void TwoWire::flush()
 {
 	rxBufferIndex = 0;
 	rxBufferLength = 0;
@@ -247,7 +196,7 @@ void TwoWire::onReceiveService(uint8_t* inBytes, int numBytes)
 	// user_onReceive(numBytes);
 }
 
-void TwoWire::onRequestService(void)
+void TwoWire::onRequestService()
 {
 	// // don't bother if user hasn't registered a callback
 	// if(!user_onRequest){
@@ -260,18 +209,6 @@ void TwoWire::onRequestService(void)
 	// // alert user program
 	// user_onRequest();
 }
-
-void TwoWire::onReceive(void (*function)(int))
-{
-	//user_onReceive = function;
-}
-
-void TwoWire::onRequest(void (*function)(void))
-{
-	//user_onRequest = function;
-}
-
-// Preinstantiate Objects //////////////////////////////////////////////////////
 
 #if !defined(NO_GLOBAL_INSTANCES) && !defined(NO_GLOBAL_TWOWIRE)
 TwoWire Wire;
