@@ -52,10 +52,6 @@
 #define TWI_CLOCK_STRETCH_MULTIPLIER 6
 #endif
 
-TwoWire::TwoWire()
-{
-}
-
 void TwoWire::begin(uint8_t sda, uint8_t scl)
 {
 	debug_d("[TWI] begin(%u, %u)", sda, scl);

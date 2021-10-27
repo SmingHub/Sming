@@ -48,7 +48,9 @@ public:
 	using UserRequest = void (*)();
 	using UserReceive = void (*)(int len);
 
-	TwoWire();
+	TwoWire() : Stream()
+	{
+	}
 
 	void begin(uint8_t sda, uint8_t scl);
 	void pins(uint8_t sda, uint8_t scl);
