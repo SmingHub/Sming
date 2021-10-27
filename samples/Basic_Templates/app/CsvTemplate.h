@@ -14,12 +14,16 @@ public:
 	{
 	}
 
+	// Return true if we have a new valid record, false if not
 	bool nextRecord() override
 	{
+		// Content section we fetch the next data record, if there is one
 		if(sectionIndex() == 1) {
 			return csv.next();
 		}
 
+		// This code emits the header and footer sections exactly once
+		// `recordIndex` starts at -1 (before first record)
 		return recordIndex() < 0;
 	}
 
