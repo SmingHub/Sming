@@ -30,6 +30,21 @@
 class TwoWire : public Stream
 {
 public:
+	enum Status {
+		I2C_OK = 0,
+		I2C_SCL_HELD_LOW = 1,
+		I2C_SCL_HELD_LOW_AFTER_READ = 2,
+		I2C_SDA_HELD_LOW = 3,
+		I2C_SDA_HELD_LOW_AFTER_INIT = 4,
+	};
+
+	enum Error {
+		I2C_ERR_SUCCESS = 0,
+		I2C_ERR_ADDR_NACK = 2,
+		I2C_ERR_DATA_NACK = 3,
+		I2C_ERR_LINE_BUSY = 4,
+	};
+
 	using UserRequest = void (*)();
 	using UserReceive = void (*)(int len);
 
@@ -42,10 +57,9 @@ public:
 	void setClock(uint32_t frequency);
 	void setClockStretchLimit(uint32_t limit);
 	void beginTransmission(uint8_t address);
-	uint8_t endTransmission();
-	uint8_t endTransmission(bool sendStop);
+	Error endTransmission(bool sendStop = true);
 	uint8_t requestFrom(uint8_t address, uint8_t size, bool sendStop = true);
-	uint8_t status();
+	Status status();
 
 	size_t write(uint8_t) override;
 	size_t write(const uint8_t*, size_t) override;
@@ -94,8 +108,8 @@ private:
 	bool twi_read_bit();
 	bool twi_write_byte(uint8_t byte);
 	uint8_t twi_read_byte(bool nack);
-	uint8_t twi_writeTo(uint8_t address, const uint8_t* buf, size_t len, bool sendStop);
-	uint8_t twi_readFrom(uint8_t address, uint8_t* buf, size_t len, bool sendStop);
+	Error twi_writeTo(uint8_t address, const uint8_t* buf, size_t len, bool sendStop);
+	Error twi_readFrom(uint8_t address, uint8_t* buf, size_t len, bool sendStop);
 };
 
 #if !defined(NO_GLOBAL_INSTANCES) && !defined(NO_GLOBAL_TWOWIRE)

@@ -26,6 +26,9 @@
 */
 
 #include "Wire.h"
+#include "Digital.h"
+#include <twi_arch.h>
+#include <Platform/System.h>
 
 #if defined(ARCH_ESP8266) | defined(ARCH_HOST)
 #define DEFAULT_SDA_PIN 2
@@ -33,13 +36,11 @@
 #elif defined(ARCH_ESP32)
 #define DEFAULT_SDA_PIN 21
 #define DEFAULT_SCL_PIN 22
+#elif defined(ARCH_RP2040)
+#include <pico.h>
+#define DEFAULT_SDA_PIN PICO_DEFAULT_I2C_SDA_PIN
+#define DEFAULT_SCL_PIN PICO_DEFAULT_I2C_SCL_PIN
 #endif
-
-#include "twi.h"
-#include "Digital.h"
-#include <twi_arch.h>
-#include <sming_attr.h>
-#include <Platform/System.h>
 
 #ifndef FCPU80
 #define FCPU80 80000000L
@@ -57,20 +58,10 @@ TwoWire::TwoWire()
 
 void TwoWire::begin(uint8_t sda, uint8_t scl)
 {
+	debug_d("[TWI] begin(%u, %u)", sda, scl);
+
 	twi_sda = sda;
 	twi_scl = scl;
-	begin();
-}
-
-void TwoWire::pins(uint8_t sda, uint8_t scl)
-{
-	twi_sda = sda;
-	twi_scl = scl;
-}
-
-void TwoWire::begin()
-{
-	debug_i("%s(%u, %u)", __FUNCTION__, twi_sda, twi_scl);
 	pinMode(twi_sda, INPUT_PULLUP);
 	pinMode(twi_scl, INPUT_PULLUP);
 	setClock(100000);
@@ -79,37 +70,55 @@ void TwoWire::begin()
 	flush();
 }
 
+void TwoWire::pins(uint8_t sda, uint8_t scl)
+{
+	debug_d("[TWI] pins(%u, %u)", sda, scl);
+
+	twi_sda = sda;
+	twi_scl = scl;
+}
+
+void TwoWire::begin()
+{
+	begin(DEFAULT_SDA_PIN, DEFAULT_SCL_PIN);
+}
+
 void TwoWire::end()
 {
-	debug_i("%s", __FUNCTION__);
+	debug_d("[TWI] end(%u, %u)", twi_sda, twi_scl);
 	pinMode(twi_sda, INPUT);
 	pinMode(twi_scl, INPUT);
 }
 
-uint8_t TwoWire::status()
+TwoWire::Status TwoWire::status()
 {
 	if(SCL_READ() == 0) {
-		return I2C_SCL_HELD_LOW; //SCL held low by another device, no procedure available to recover
+		// SCL held low by another device, no procedure available to recover
+		return I2C_SCL_HELD_LOW;
 	}
 
 	int clockCount = 20;
 
-	while(SDA_READ() == 0 && clockCount-- > 0) { //if SDA low, read the bits slaves have to sent to a max
+	// if SDA low, read the bits slaves have to sent to a max
+	while(SDA_READ() == 0 && clockCount-- > 0) {
 		twi_read_bit();
 		if(SCL_READ() == 0) {
-			return I2C_SCL_HELD_LOW_AFTER_READ; //I2C bus error. SCL held low beyond slave clock stretch time
+			// SCL held low beyond slave clock stretch time
+			return I2C_SCL_HELD_LOW_AFTER_READ;
 		}
 	}
 
 	if(SDA_READ() == 0) {
-		return I2C_SDA_HELD_LOW; //I2C bus error. SDA line held low by slave/another_master after n bits.
+		// SDA line held low by slave/another_master after n bits
+		return I2C_SDA_HELD_LOW;
 	}
 
 	if(!twi_write_start()) {
-		return I2C_SDA_HELD_LOW_AFTER_INIT; //line busy. SDA again held low by another device. 2nd master?
-	} else {
-		return I2C_OK; //all ok
+		// Line busy. SDA again held low by another device. 2nd master?
+		return I2C_SDA_HELD_LOW_AFTER_INIT;
 	}
+
+	return I2C_OK;
 }
 
 void TwoWire::setClock(uint32_t freq)
@@ -149,6 +158,10 @@ void TwoWire::setClockStretchLimit(uint32_t limit)
 
 uint8_t TwoWire::requestFrom(uint8_t address, uint8_t size, bool sendStop)
 {
+	if(size == 0) {
+		return 0;
+	}
+
 	if(size > BUFFER_LENGTH) {
 		size = BUFFER_LENGTH;
 	}
@@ -167,18 +180,13 @@ void TwoWire::beginTransmission(uint8_t address)
 	txBufferLength = 0;
 }
 
-uint8_t TwoWire::endTransmission(bool sendStop)
+TwoWire::Error TwoWire::endTransmission(bool sendStop)
 {
-	int8_t err = twi_writeTo(txAddress, txBuffer, txBufferLength, sendStop);
+	auto err = twi_writeTo(txAddress, txBuffer, txBufferLength, sendStop);
 	txBufferIndex = 0;
 	txBufferLength = 0;
 	transmitting = false;
 	return err;
-}
-
-uint8_t TwoWire::endTransmission()
-{
-	return endTransmission(true);
 }
 
 size_t TwoWire::write(uint8_t data)
@@ -213,8 +221,7 @@ size_t TwoWire::write(const uint8_t* data, size_t quantity)
 
 int TwoWire::available()
 {
-	int result = rxBufferLength - rxBufferIndex;
-	return result;
+	return rxBufferLength - rxBufferIndex;
 }
 
 int TwoWire::read()
@@ -278,7 +285,7 @@ void TwoWire::onRequestService()
 	// user_onRequest();
 }
 
-void IRAM_ATTR TwoWire::twi_delay(uint8_t v)
+void TwoWire::twi_delay(uint8_t v)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
@@ -350,40 +357,39 @@ bool TwoWire::twi_read_bit()
 
 bool TwoWire::twi_write_byte(uint8_t byte)
 {
-	for(unsigned bit = 0; bit < 8; bit++) {
-		twi_write_bit(byte & 0x80);
-		byte <<= 1;
+	for(uint8_t mask = 0x80; mask != 0; mask >>= 1) {
+		twi_write_bit(byte & mask);
 	}
 	return !twi_read_bit(); //NACK/ACK
 }
 
 uint8_t TwoWire::twi_read_byte(bool nack)
 {
-	uint8_t byte{0};
-	for(unsigned bit = 0; bit < 8; bit++) {
-		byte = (byte << 1) | twi_read_bit();
+	uint8_t res{0};
+	for(uint8_t mask = 0x80; mask != 0; mask >>= 1) {
+		res |= twi_read_bit() ? mask : 0;
 	}
 	twi_write_bit(nack);
-	return byte;
+	return res;
 }
 
-uint8_t TwoWire::twi_writeTo(uint8_t address, const uint8_t* buf, size_t len, bool sendStop)
+TwoWire::Error TwoWire::twi_writeTo(uint8_t address, const uint8_t* buf, size_t len, bool sendStop)
 {
 	if(!twi_write_start()) {
-		return 4; //line busy
+		return I2C_ERR_LINE_BUSY;
 	}
 	if(!twi_write_byte(((address << 1) | 0) & 0xFF)) {
 		if(sendStop) {
 			twi_write_stop();
 		}
-		return 2; //received NACK on transmit of address
+		return I2C_ERR_ADDR_NACK;
 	}
 	for(unsigned i = 0; i < len; i++) {
 		if(!twi_write_byte(buf[i])) {
 			if(sendStop) {
 				twi_write_stop();
 			}
-			return 3; //received NACK on transmit of data
+			return I2C_ERR_DATA_NACK;
 		}
 	}
 	if(sendStop) {
@@ -395,21 +401,21 @@ uint8_t TwoWire::twi_writeTo(uint8_t address, const uint8_t* buf, size_t len, bo
 		SCL_HIGH();
 		twi_delay(twi_dcount);
 	}
-	return 0;
+	return I2C_ERR_SUCCESS;
 }
 
-uint8_t TwoWire::twi_readFrom(uint8_t address, uint8_t* buf, size_t len, bool sendStop)
+TwoWire::Error TwoWire::twi_readFrom(uint8_t address, uint8_t* buf, size_t len, bool sendStop)
 {
 	if(!twi_write_start()) {
-		return 4; //line busy
+		return I2C_ERR_LINE_BUSY;
 	}
 	if(!twi_write_byte(((address << 1) | 1) & 0xFF)) {
 		if(sendStop) {
 			twi_write_stop();
 		}
-		return 2; //received NACK on transmit of address
+		return I2C_ERR_ADDR_NACK;
 	}
-	for(unsigned i = 0; i < (len - 1); i++) {
+	for(unsigned i = 0; i + 1 < len; i++) {
 		buf[i] = twi_read_byte(false);
 	}
 	buf[len - 1] = twi_read_byte(true);
@@ -422,7 +428,7 @@ uint8_t TwoWire::twi_readFrom(uint8_t address, uint8_t* buf, size_t len, bool se
 		SCL_HIGH();
 		twi_delay(twi_dcount);
 	}
-	return 0;
+	return I2C_ERR_SUCCESS;
 }
 
 #if !defined(NO_GLOBAL_INSTANCES) && !defined(NO_GLOBAL_TWOWIRE)
