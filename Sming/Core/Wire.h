@@ -23,8 +23,7 @@
 
 #pragma once
 
-#include <inttypes.h>
-#include "Stream.h"
+#include <Stream.h>
 
 #define BUFFER_LENGTH 32
 
@@ -39,15 +38,14 @@ public:
 	void begin(uint8_t sda, uint8_t scl);
 	void pins(uint8_t sda, uint8_t scl);
 	void begin();
+	void end();
 	void setClock(uint32_t frequency);
 	void setClockStretchLimit(uint32_t limit);
 	void beginTransmission(uint8_t address);
 	uint8_t endTransmission();
 	uint8_t endTransmission(bool sendStop);
-	size_t requestFrom(uint8_t address, size_t size, bool sendStop);
+	uint8_t requestFrom(uint8_t address, uint8_t size, bool sendStop = true);
 	uint8_t status();
-
-	uint8_t requestFrom(uint8_t address, uint8_t quantity);
 
 	size_t write(uint8_t) override;
 	size_t write(const uint8_t*, size_t) override;
@@ -69,8 +67,10 @@ public:
 	using Print::write;
 
 private:
-	uint8_t sda_pin{2};
-	uint8_t scl_pin{0};
+	uint8_t twi_sda{2};
+	uint8_t twi_scl{0};
+	uint8_t twi_dcount{18};
+	unsigned twi_clockStretchLimit{0};
 
 	uint8_t rxBuffer[BUFFER_LENGTH];
 	uint8_t rxBufferIndex{0};
@@ -86,6 +86,16 @@ private:
 	UserReceive user_onReceive{nullptr};
 	void onRequestService();
 	void onReceiveService(uint8_t*, int);
+
+	void twi_delay(uint8_t v);
+	bool twi_write_start();
+	bool twi_write_stop();
+	bool twi_write_bit(bool bit);
+	bool twi_read_bit();
+	bool twi_write_byte(uint8_t byte);
+	uint8_t twi_read_byte(bool nack);
+	uint8_t twi_writeTo(uint8_t address, const uint8_t* buf, size_t len, bool sendStop);
+	uint8_t twi_readFrom(uint8_t address, uint8_t* buf, size_t len, bool sendStop);
 };
 
 #if !defined(NO_GLOBAL_INSTANCES) && !defined(NO_GLOBAL_TWOWIRE)
