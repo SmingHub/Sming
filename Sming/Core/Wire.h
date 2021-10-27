@@ -25,11 +25,11 @@
 
 #include <Stream.h>
 
-#define BUFFER_LENGTH 32
-
 class TwoWire : public Stream
 {
 public:
+	static constexpr size_t BUFFER_LENGTH{32};
+
 	enum Status {
 		I2C_OK = 0,
 		I2C_SCL_HELD_LOW = 1,
@@ -86,12 +86,12 @@ private:
 	uint8_t twi_dcount{18};
 	unsigned twi_clockStretchLimit{0};
 
-	uint8_t rxBuffer[BUFFER_LENGTH];
+	uint8_t rxBuffer[BUFFER_LENGTH]{};
 	uint8_t rxBufferIndex{0};
 	uint8_t rxBufferLength{0};
 
 	uint8_t txAddress{0};
-	uint8_t txBuffer[BUFFER_LENGTH];
+	uint8_t txBuffer[BUFFER_LENGTH]{};
 	uint8_t txBufferIndex{0};
 	uint8_t txBufferLength{0};
 
