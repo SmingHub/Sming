@@ -130,8 +130,7 @@ from Jeremy Kerr <http://ozlabs.org/~jk/code/>.
 
 Written 2013-01-21, 2013-03-16, and 2014-09-10 by Timo Bingmann <tb@panthema.net>
 
-API Documentation
------------------
+## API Documentation
 
 .. doxygennamespace:: MallocCount
    :members:
