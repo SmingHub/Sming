@@ -19,3 +19,6 @@
 #define SCL_LOW() gpio_ll_output_enable(&GPIO, gpio_num_t(twi_scl))
 #define SCL_HIGH() gpio_ll_output_disable(&GPIO, gpio_num_t(twi_scl))
 #define SCL_READ() (gpio_ll_get_level(&GPIO, gpio_num_t(twi_scl)) != 0)
+
+#define DEFAULT_SDA_PIN 21
+#define DEFAULT_SCL_PIN 22

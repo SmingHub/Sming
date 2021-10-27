@@ -70,14 +70,16 @@ public:
 	int peek() override;
 	void flush() override;
 
-	void onReceive(UserReceive callbackk)
+	// Slave mode not currently implemented
+	void onReceive(UserReceive callback)
 	{
-		// user_onReceive = callback;
+		// userReceiveCallback = callback;
 	}
 
+	// Slave mode not currently implemented
 	void onRequest(UserRequest callback)
 	{
-		// user_onRequest = callback;
+		// userRequestCallback = callback;
 	}
 
 	using Print::write;
@@ -98,8 +100,8 @@ private:
 	uint8_t txBufferLength{0};
 
 	bool transmitting{false};
-	UserRequest user_onRequest{nullptr};
-	UserReceive user_onReceive{nullptr};
+	UserRequest userRequestCallback{nullptr};
+	UserReceive userReceiveCallback{nullptr};
 	void onRequestService();
 	void onReceiveService(uint8_t*, int);
 

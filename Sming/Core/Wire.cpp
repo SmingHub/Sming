@@ -30,18 +30,6 @@
 #include <twi_arch.h>
 #include <Platform/System.h>
 
-#if defined(ARCH_ESP8266) | defined(ARCH_HOST)
-#define DEFAULT_SDA_PIN 2
-#define DEFAULT_SCL_PIN 0
-#elif defined(ARCH_ESP32)
-#define DEFAULT_SDA_PIN 21
-#define DEFAULT_SCL_PIN 22
-#elif defined(ARCH_RP2040)
-#include <pico.h>
-#define DEFAULT_SDA_PIN PICO_DEFAULT_I2C_SDA_PIN
-#define DEFAULT_SCL_PIN PICO_DEFAULT_I2C_SCL_PIN
-#endif
-
 #ifndef FCPU80
 #define FCPU80 80000000L
 #endif
@@ -246,7 +234,7 @@ void TwoWire::flush()
 void TwoWire::onReceiveService(uint8_t* inBytes, int numBytes)
 {
 	// don't bother if user hasn't registered a callback
-	// if(!user_onReceive){
+	// if(!userReceiveCallback){
 	//   return;
 	// }
 	// // don't bother if rx buffer is in use by a master requestFrom() op
@@ -270,7 +258,7 @@ void TwoWire::onReceiveService(uint8_t* inBytes, int numBytes)
 void TwoWire::onRequestService()
 {
 	// // don't bother if user hasn't registered a callback
-	// if(!user_onRequest){
+	// if(!userRequestCallback){
 	//   return;
 	// }
 	// // reset tx buffer iterator vars
