@@ -8,6 +8,7 @@
 #pragma once
 
 #include <hardware/gpio.h>
+#include <pico.h>
 
 //Enable SDA (becomes output and since GPO is 0 for the pin, it will pull the line low)
 #define SDA_LOW() gpio_set_dir(twi_sda, true)
@@ -17,3 +18,6 @@
 #define SCL_LOW() gpio_set_dir(twi_scl, true)
 #define SCL_HIGH() gpio_set_dir(twi_scl, false)
 #define SCL_READ() gpio_get(twi_scl)
+
+#define DEFAULT_SDA_PIN PICO_DEFAULT_I2C_SDA_PIN
+#define DEFAULT_SCL_PIN PICO_DEFAULT_I2C_SCL_PIN
