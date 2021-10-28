@@ -1,6 +1,20 @@
-****************
 Using with CLion
 ****************
+
+.. note::
+
+   This information is no longer current.
+
+   However, if you are able to set up an external ``make`` project with CLion that should work.
+   
+   To get intelliense (or whatever the equivalent for CLion is) will require setting up a list of the correct #include paths.
+   For vscode we have a tool to handle that:
+
+   - run ``make ide-vscode`` from a sample project directory
+   - examine generated path list in ``.vscode/c_cpp_properties.json``
+
+   Something similar could be done for CLion perhaps?
+
 
 Developing with the Sming framework can also be done in CLion.
 
