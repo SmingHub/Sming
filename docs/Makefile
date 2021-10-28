@@ -116,6 +116,7 @@ DOXYGEN_PREDEFINED := \
 	ICACHE_FLASH= \
 	ICACHE_FLASH_ATTR= \
 	__forceinline= \
+	__attribute__((packed))= \
 	SMING_DEPRECATED= \
 	SMING_ARCH=$(SMING_ARCH) \
 	ARCH_HOST=1
