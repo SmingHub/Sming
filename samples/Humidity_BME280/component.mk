@@ -1,0 +1,1 @@
+ARDUINO_LIBRARIES := Adafruit_BME280_Library
