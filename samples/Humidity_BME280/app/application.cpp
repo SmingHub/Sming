@@ -33,20 +33,20 @@ const uint8_t SCL{5};
 
 void printValues()
 {
-	Serial.print("Temperature = ");
+	Serial.print(F("Temperature = "));
 	Serial.print(bme.readTemperature());
 	Serial.println(" °C");
 
-	Serial.print("Pressure = ");
+	Serial.print(F("Pressure = "));
 
 	Serial.print(bme.readPressure() / 100.0F);
 	Serial.println(" hPa");
 
-	Serial.print("Approx. Altitude = ");
+	Serial.print(F("Approx. Altitude = "));
 	Serial.print(bme.readAltitude(SEALEVELPRESSURE_HPA));
 	Serial.println(" m");
 
-	Serial.print("Humidity = ");
+	Serial.print(F("Humidity = "));
 	Serial.print(bme.readHumidity());
 	Serial.println(" %");
 
@@ -72,7 +72,7 @@ void init()
 		return;
 	}
 
-	Serial.println("-- Default Test --");
+	Serial.println(F("-- Default Test --"));
 
 	Serial.println();
 
