@@ -49,7 +49,7 @@ def handle_flashcheck(args, config, part):
             raise InputError("No partition contains address 0x%08x" % addr)
         if part.address != addr:
             raise InputError("Address 0x%08x is within partition '%s', not at start (0x%08x)" % (addr, part.name, part.address))
-        filesize = os.path.getsize(filename)
+        filesize = os.path.getsize(fixpath(filename))
         if filesize > part.size:
             raise InputError("File '%s' is 0x%08x bytes, too big for partition '%s' (0x%08x bytes)" % (os.path.basename(filename), filesize, part.name, part.size))
 
