@@ -1,5 +1,5 @@
-Windows WSL
-===========
+WSL
+===
 
 .. highlight:: batch
 

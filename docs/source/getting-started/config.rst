@@ -9,7 +9,7 @@ Environment variables
 Certain environment variables should be set globally so that command prompts
 and integrated development environments (IDEs) work correctly.
 
-You can find a list of these in ``Tools/export.sh``.
+You can find a list of these in :source:`Tools/export.sh`.
 
 For Linux and WSL2, append values to your ``~/.bashrc`` file::
 
@@ -29,7 +29,7 @@ For Linux and WSL2, append values to your ``~/.bashrc`` file::
 
 Another approach is to place these in a separate file, then add `source ~/.smingrc`.
 
-For Windows, you can either edit the globa variables graphically via control panel,
+For Windows, you can either edit the global variables graphically via control panel,
 or use the ``setx`` command:
 
 .. code-block:: cmd
