@@ -11,6 +11,8 @@ SMINGDIR := ..
 override SMING_HOME := $(SMINGDIR)/Sming
 override SMING_ARCH := Host
 
+include $(SMING_HOME)/util.mk
+
 # You can set these variables from the command line, and also from the environment for the first two.
 SPHINXOPTS		?=
 SPHINXBUILD		?= sphinx-build
@@ -28,30 +30,11 @@ MAKE_DOCS		:= 1
 # Documentation is copied into this directory so it gets pulled into build
 SOURCE_INCDIR	:= $(SOURCEDIR)/_inc
 
-#
-FixPath			= $1
-
-V ?= $(VERBOSE)
-ifeq ("$(V)","1")
-Q			:=
-vecho		:= @true
-else
-Q			:= @
-vecho		:= @echo
-endif
-
 # Define anything required to get all optional code included
 include defines.mk
 
 define Sphinx
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-endef
-
-# Display variable and list values, e.g. $(call PrintVariable,LIBS)
-# $1 -> Name of variable containing values
-define PrintVariable
-	$(info $1)
-	$(foreach item,$($1),$(info - $(item)))
 endef
 
 # $1 -> Directories to look for README and image files
@@ -86,13 +69,6 @@ html singlehtml latex:
 latexpdf: latex
 	@echo "Running LaTeX files through pdflatex..."
 	$(Q) $(MAKE) -C $(BUILDDIR)/latex all-pdf
-
-# List immediate sub-directories for a list of root directories
-# Results are sorted and without trailing path separator
-# $1 -> Root paths
-define ListSubDirs
-$(sort $(foreach d,$(dir $(wildcard $1/*/.)),$(d:/=)))
-endef
 
 # Non-component locations to copy docs from
 SOURCE_DIRS := \
@@ -263,7 +239,6 @@ setup: initdirs $(SOURCE_INCFILES) $(COMPONENT_INDEXFILES)
 ifeq ($V,1)
 	$(call PrintVariable,SOURCE_DIRS)
 	$(call PrintVariable,SOURCE_FILES)
-	$(call PrintVariable,COMPONENT_INCFILES)
 endif
 	$(if $(MISSING_README_DIRS),$(call PrintVariable,MISSING_README_DIRS))
 

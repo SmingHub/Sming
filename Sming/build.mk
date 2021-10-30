@@ -1,5 +1,7 @@
 # Build environment definitions
 
+include $(SMING_HOME)/util.mk
+
 # Add debug variable names to DEBUG_VARS so they can be easily inspected via `make list-config`
 DEBUG_VARS		:=
 
@@ -36,7 +38,7 @@ SMING_TOOLS := $(realpath $(SMING_HOME)/../Tools)
 
 # Detect OS and build environment
 TOOL_EXT	:=
-DEBUG_VARS	+= UNAME
+DEBUG_VARS	+= UNAME OS
 UNAME		:= $(shell uname -s)
 ifneq ($(filter MINGW32_NT%,$(UNAME)),)
 	UNAME		:= Windows
@@ -64,14 +66,6 @@ else ifeq ($(UNAME), Darwin)
  	#OS X
 else ifeq ($(UNAME), Freebsd)
  	#BSD
-endif
-
-# Convert Windows paths to POSIX paths
-DEBUG_VARS		+= OS
-ifeq ($(OS),Windows_NT)
-FixPath			= $(subst //,/,$(subst \,/,$(addprefix /,$(subst :,,$1))))
-else
-FixPath			= $1
 endif
 
 SMING_HOME		:= $(patsubst %/,%,$(call FixPath,$(SMING_HOME)))
@@ -132,15 +126,6 @@ ifndef PYTHON_VERSION_OK
 $(error Cannot find Python installation - check PATH or PYTHON environment variables)
 endif
 
-
-V ?= $(VERBOSE)
-ifeq ("$(V)","1")
-	Q			:=
-	vecho		:= @true
-else
-	Q			:= @
-	vecho		:= @echo
-endif
 
 # Common C/C++ flags passed to user libraries
 CPPFLAGS = \
@@ -245,11 +230,6 @@ USER_LIBDIR		= $(SMING_HOME)/$(OUT_BASE)/lib
 # Component (user) libraries have a special prefix so linker script can identify them
 CLIB_PREFIX := clib-
 
-# Convert string to upper/lower case
-# 1 -> String
-ToUpper = $(shell echo "$1" | tr 'a-z' 'A-Z')
-ToLower = $(shell echo "$1" | tr 'A-Z' 'a-z')
-
 # Use with LDFLAGS to define a symbol alias
 # $1 -> List of alias=name pairs
 define DefSym
@@ -283,96 +263,9 @@ define ClangFormat
 	done
 endef
 
-# Calculate a hash string for appending to library names, etc.
-# $1 -> Name of variable containing data to be hashed
-define CalculateVariantHash
-$(firstword $(shell echo -n $($1) | md5sum -t))
-endef
-
-# Fetch full path for submodules matching given pattern
-# Note that scanning .gitmodules is considerably quicker than using GIT
-# $1 -> Path to repo working directory
-# $2 -> Path pattern to match
-define ScanGitModules
-$(patsubst %,$(abspath $1/%),$(subst path = ,,$(shell grep -o 'path = $2' '$1/.gitmodules')))
-endef
-
 define ListSubmodules
 $(call ScanGitModules,$(SMING_HOME)/..,.*)
 endef
-
-# List immediate sub-directories for a list of root directories
-# Results are sorted and without trailing path separator
-# $1 -> Root paths
-define ListSubDirs
-$(foreach d,$(dir $(wildcard $1/*/.)),$(d:/=))
-endef
-
-# Check that $2 is a valid sub-directory of $1. Return empty string if not.
-# $1 -> Parent directory
-# $2 -> Sub-directory
-# During wildcard searches, paths with spaces cause recursion.
-define IsSubDir
-$(if $(subst $(1:/=),,$(2:/=)),$(findstring $(1:/=),$2),)
-endef
-
-# List sub-directories recursively for a single root directory
-# Results are sorted and without trailing path separator
-# Sub-directories with spaces are skipped
-# $1 -> Root path
-define ListAllSubDirsSingle
-$(foreach d,$(dir $(wildcard $1/*/.)),$(if $(call IsSubDir,$1,$d),$(d:/=) $(call ListAllSubDirs,$(d:/=))))
-endef
-
-# List sub-directories recursively for a list of root directories
-# Results are sorted and without trailing path separator
-# Sub-directories with spaces are skipped
-# $1 -> Root paths
-define ListAllSubDirs
-$(foreach d,$1,$(call ListAllSubDirsSingle,$d))
-endef
-
-# Recursively search list of directories for matching files
-# $1 -> Directories to scan
-# $2 -> Filename filter
-define ListAllFiles
-$(wildcard $(foreach d,$(call ListAllSubDirs,$1),$d/$2))
-endef
-
-
-# Display variable and list values, e.g. $(call PrintVariable,LIBS)
-# $1 -> Name of variable containing values
-# $2 -> (optional) tag to use instead of variable name
-define PrintVariable
-	$(info $(if $2,$2,$1):)
-	$(foreach item,$($1),$(info - $(item)))
-endef
-
-define PrintVariableSorted
-	$(info $(if $2,$2,$1):)
-	$(foreach item,$(sort $($1)),$(info - $(value item)))
-endef
-
-# Display list of variable references with their values e.g. $(call PrintVariableRefs,DEBUG_VARS)
-# $1 -> Name of variable containing list of variable names
-# $2 -> (optional) tag to use instead of variable name
-define PrintVariableRefs
-	$(info $(if $2,$2,$1):)
-	$(foreach item,$(sort $($1)),$(info - $(item) = $(value $(item))) )
-endef
-
-#
-# Get directory without trailing separator
-# $1 -> List of directories
-dirx = $(patsubst %/,%,$(dir $1))
-
-# Run a command in a new terminal window
-# $1 -> Command to execute
-ifeq ($(UNAME),Windows)
-DetachCommand = start $1
-else
-DetachCommand = gnome-terminal -- bash -c "sleep 1; $1"
-endif
 
 # Extract commented target information from makefiles and display
 define PrintHelp
@@ -382,13 +275,6 @@ define PrintHelp
 	@echo
 endef
 
-
-# Give relative or absolute source paths, convert them all to absolute
-# $1 -> source root directory
-# $2 -> file path(s)
-define AbsoluteSourcePath
-$(foreach f,$2,$(abspath $(if $(filter /%,$f),$f,$1/$f)))
-endef
 
 # Write config variables to a file
 # $1 -> Output filename
