@@ -73,16 +73,16 @@ def update_launch():
 
     config['miDebuggerPath'] = find_tool(env['GDB'])
     dbgargs = "-x ${env:SMING_HOME}/Arch/%s/Components/gdbstub/gdbcmds" % env['SMING_ARCH']
-    if env['SMING_ARCH'] == 'Esp8266':
-        if not env.isWsl():
-            dbgargs += " -b %s" % env['COM_SPEED_GDB']
-        config['miDebuggerServerAddress'] = env['COM_PORT_GDB']
-    elif env['SMING_ARCH'] == 'Host':
+    if env['SMING_ARCH'] == 'Host':
         args = []
         args += env['CLI_TARGET_OPTIONS'].split()
         args += ["--"]
         args += env['HOST_PARAMETERS'].split()
         config['args'] = args
+    else:
+        if not env.isWsl():
+            dbgargs += " -b %s" % env.resolve('${COM_SPEED_GDB}')
+        config['miDebuggerServerAddress'] = env.resolve('${COM_PORT_GDB}')
     config['miDebuggerArgs'] = dbgargs
     config['program'] = "${workspaceFolder}/" + env.resolve('${TARGET_OUT_0}')
 
