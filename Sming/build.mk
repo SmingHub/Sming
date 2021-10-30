@@ -366,6 +366,14 @@ endef
 # $1 -> List of directories
 dirx = $(patsubst %/,%,$(dir $1))
 
+# Run a command in a new terminal window
+# $1 -> Command to execute
+ifeq ($(UNAME),Windows)
+DetachCommand = start $1
+else
+DetachCommand = gnome-terminal -- bash -c "sleep 1; $1"
+endif
+
 # Extract commented target information from makefiles and display
 define PrintHelp
 	@echo

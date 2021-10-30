@@ -561,7 +561,7 @@ tcp-serial-redirect: ##Redirect COM port to TCP port
 ifdef WSL_ROOT
 	$(Q) cmd.exe /c start /MIN python3 $(WSL_ROOT)/$(TCP_SERIAL_REDIRECT)
 else
-	$(Q) gnome-terminal -- bash -c "$(PYTHON) $(TCP_SERIAL_REDIRECT)"
+	$(Q) $(call DetachCommand,$(PYTHON) $(TCP_SERIAL_REDIRECT))
 endif
 
 
