@@ -24,6 +24,7 @@
 #pragma once
 
 #include <Stream.h>
+#include <twi_arch.h>
 
 class TwoWire : public Stream
 {
@@ -85,8 +86,8 @@ public:
 	using Print::write;
 
 private:
-	uint8_t twi_sda{2};
-	uint8_t twi_scl{0};
+	uint8_t twi_sda{DEFAULT_SDA_PIN};
+	uint8_t twi_scl{DEFAULT_SCL_PIN};
 	uint8_t twi_dcount{18};
 	unsigned twi_clockStretchLimit{0};
 

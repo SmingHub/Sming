@@ -16,5 +16,5 @@
 #define SCL_HIGH()
 #define SCL_READ() 1
 
-#define DEFAULT_SDA_PIN 255
-#define DEFAULT_SCL_PIN 255
+#define DEFAULT_SDA_PIN 4
+#define DEFAULT_SCL_PIN 5

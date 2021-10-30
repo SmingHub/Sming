@@ -27,9 +27,9 @@
 Adafruit_BME280 bme;
 Timer procTimer;
 
-// You can change I2C pins here
-const uint8_t SDA{4};
-const uint8_t SCL{5};
+// Will use default pins for selected architecture. You can override values here
+// #define SDA 4
+// #define SCL 5
 
 void printValues()
 {
@@ -60,9 +60,12 @@ void init()
 
 	Serial.println(F("BME280 test"));
 
-	Wire.begin(SDA, SCL);
+#ifdef SDA
+	Wire.pins(SDA, SCL);
+#endif
+
 	if(!bme.begin()) {
-		Serial.println(F("Could not find a alid BME280 sensor, check wiring, address, sensor ID!"));
+		Serial.println(F("Could not find a valid BME280 sensor, check wiring, address, sensor ID!"));
 		Serial.print(F("SensorID was: 0x"));
 		Serial.println(bme.sensorID(), 16);
 		Serial.println(F("  ID of 0xFF probably means a bad address, a BMP 180 or BMP 085"));
