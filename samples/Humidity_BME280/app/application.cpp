@@ -64,7 +64,7 @@ void init()
 	Wire.pins(SDA, SCL);
 #endif
 
-	if(!bme.begin()) {
+	if(!bme.begin()) { // if(!bme.begin(0x76, &Wire)) { if you need a specific address
 		Serial.println(F("Could not find a valid BME280 sensor, check wiring, address, sensor ID!"));
 		Serial.print(F("SensorID was: 0x"));
 		Serial.println(bme.sensorID(), 16);
