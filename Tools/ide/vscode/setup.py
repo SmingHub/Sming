@@ -7,7 +7,6 @@ import os, sys
 
 appPath = os.path.dirname(os.path.realpath(__file__))
 libPath = appPath + '/../common/'
-print(libPath)
 sys.path.append(libPath)
 
 from sming import check_path, env, find_object, find_tool, get_property, load_json, load_template, save_json
