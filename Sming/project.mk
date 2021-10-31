@@ -78,11 +78,16 @@ DEBUG_VARS			+= GLOBAL_CFLAGS
 GLOBAL_CFLAGS = \
 	-DSMING_ARCH=$(SMING_ARCH) \
 	-DESP_VARIANT=$(ESP_VARIANT) \
-	-DSUBARCH_$(call ToUpper,$(ESP_VARIANT))=1 \
 	-DPROJECT_DIR=\"$(PROJECT_DIR)\" \
 	-DSMING_HOME=\"$(SMING_HOME)\" \
 	$(USER_CFLAGS)
 CPPFLAGS			+= $(GLOBAL_CFLAGS)
+
+ifneq (,$(ESP_VARIANT))
+DEBUG_VARS		+= SMING_SUBARCH
+SMING_SUBARCH	:= SUBARCH_$(call ToUpper,$(ESP_VARIANT))
+GLOBAL_CFLAGS	+= -D$(SMING_SUBARCH)=1
+endif
 
 # Targets to be added as dependencies of the application, built directly in this make instance
 CUSTOM_TARGETS			:=

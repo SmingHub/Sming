@@ -32,8 +32,11 @@ def update_intellisense():
     if config is None:
         config = load_template('intellisense/configuration.json', appPath)
         config['name'] = env['SMING_ARCH']
-        config['defines'].append('ARCH_%s=1' % env['SMING_ARCH'].upper())
         configurations.append(config)
+
+    args = env['APP_CFLAGS'].split() + env['GLOBAL_CFLAGS'].split()
+    args = [env.resolve(v) for v in args]
+    config['compilerArgs'] = [v for v in args if v != '']
 
     config['compilerPath'] = find_tool(env['CXX'])
     config['includePath'] = dirs
