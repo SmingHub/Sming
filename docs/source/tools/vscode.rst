@@ -6,9 +6,6 @@ Using with MS Visual Studio Code
 Microsoft `Visual Studio Code <https://code.visualstudio.com/>`__ is a free (as in
 "free beer") and Open Source code editor for Windows, Linux and Mac.
 
-For easier integration make sure you have both :envvar:`ESP_HOME` and
-:envvar:`SMING_HOME` exported in your working environment.
-
 
 Software involved
 -----------------
@@ -29,6 +26,9 @@ Installation
 
 Configuration
 -------------
+
+Please make sure you have critical environment variables set globally **before** starting vscode.
+See :doc:`getting-started/config` for details.
 
 One of the strengths of vscode is the use of well-documented configuration files.
 You can find comprehensive documentation for these online.
