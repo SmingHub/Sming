@@ -1,5 +1,8 @@
 {
     "name": "",
+    "browse": {
+        "limitSymbolsToIncludedHeaders": true
+    },
     "includePath": [],
     "defines": [],
     "compilerPath": "",
