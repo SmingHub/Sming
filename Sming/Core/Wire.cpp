@@ -56,7 +56,7 @@ void TwoWire::pins(uint8_t sda, uint8_t scl)
 
 void TwoWire::begin()
 {
-	debug_d("[TWI] begin(%u, %u)", sda, scl);
+	debug_d("[TWI] begin(%u, %u)", twi_sda, twi_scl);
 	pinMode(twi_sda, INPUT_PULLUP);
 	pinMode(twi_scl, INPUT_PULLUP);
 	setClock(100000);
