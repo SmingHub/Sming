@@ -1,8 +1,5 @@
 # Build environment definitions
 
-# Powershell does weird things to this variable
-override MAKE := $(patsubst $(CURDIR)/%,%,$(MAKE))
-
 include $(SMING_HOME)/util.mk
 
 # Add debug variable names to DEBUG_VARS so they can be easily inspected via `make list-config`
