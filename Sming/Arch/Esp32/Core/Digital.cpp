@@ -58,7 +58,8 @@ void pinMode(uint16_t pin, uint8_t mode)
 	}
 #endif
 
-	gpio_set_level(gpio, 0);
+	gpio_ll_set_level(&GPIO, gpio, 0);
+
 	gpio_ll_input_enable(&GPIO, gpio);
 	gpio_ll_pulldown_dis(&GPIO, gpio);
 
