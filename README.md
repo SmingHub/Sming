@@ -61,7 +61,10 @@ Please note Version 4 documentation is at [sming.readthedocs.io](https://sming.r
 * Fast and user friendly development.
 * Simple yet powerful hardware API wrappers.
 * Compatible with standard [Arduino Libraries](https://sming.readthedocs.io/en/latest/libraries.html) - use any popular hardware in few lines of code.
-* Built-in file system: [spiffs](https://github.com/pellepl/spiffs).
+* Installable file systems:
+[SPIFFS](https://sming.readthedocs.io/en/latest/_inc/Sming/Libraries/Spiffs/index.html),
+[LittleFS](https://sming.readthedocs.io/en/latest/_inc/Sming/Libraries/LittleFS/index.html) and
+[FWFS](https://sming.readthedocs.io/en/latest/_inc/Sming/Components/IFS/index.html)
 * Built-in powerful wireless modules.
 * Powerful asynchronous (async) network stack.
     * Async TCP and UDP stack based on [LWIP](http://savannah.nongnu.org/projects/lwip/).
@@ -77,7 +80,7 @@ Please note Version 4 documentation is at [sming.readthedocs.io](https://sming.r
     * Based on Espressif NONOS SDK. Officially suppored NON SDK version is >= 3.0.1.
     * Support for a [thin No-Wifi-SDK](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/esp_no_wifi/index.html). Helpful when a project does not require WiFi (or networking) and reduces code size and memory usage signficantly.
 * Linux/Windows features
-    * Sming has a [host emulator](https://sming.readthedocs.io/en/latest/arch/host/index.html) that allows libraries and sample applications to be compiled on a Linux/Windows host system and be tested before uploading them to an actual microcontroller.
+    * Sming has a [host emulator](https://sming.readthedocs.io/en/latest/arch/host/index.html) that allows libraries and sample applications to be developed and tested on a Linux/Windows host system before uploading them to an actual microcontroller.
 
 ## Compatibility
 
