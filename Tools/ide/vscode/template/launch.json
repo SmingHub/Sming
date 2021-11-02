@@ -5,22 +5,31 @@
             "name": "Esp8266 GDB",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/out/Esp8266/debug/build/app_0.out",
+            "program": "",
             "args": [],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": true,
-            "MIMode": "gdb",
-            "miDebuggerPath": "${env:ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-gdb",
-            "miDebuggerArgs": "-x ${env:SMING_HOME}/Arch/Esp8266/Components/gdbstub/gdbcmds -b 115200",
-            "miDebuggerServerAddress": "192.168.1.101:7778"
+            "MIMode": "gdb"
+        },
+        {
+            "name": "Esp32 GDB",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb"
         },
         {
             "name": "Host GDB",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/out/Host/debug/firmware/app",
+            "program": "",
             "args": [],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
@@ -33,9 +42,7 @@
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true
                 }
-            ],
-            "miDebuggerPath": "/usr/bin/gdb",
-            "miDebuggerArgs": "-x ${env:SMING_HOME}/Arch/Host/Components/gdbstub/gdbcmds"
+            ]
         }
     ]
 }

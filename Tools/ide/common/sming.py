@@ -73,6 +73,7 @@ def check_path(path):
     return path
 
 def find_tool(name):
+    name = check_path(name)
     if sys.platform == 'win32':
         if os.path.splitext(name)[1] != '.exe':
             name += '.exe'

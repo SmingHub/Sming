@@ -7,13 +7,12 @@ import os, sys
 
 appPath = os.path.dirname(os.path.realpath(__file__))
 libPath = appPath + '/../common/'
-print(libPath)
 sys.path.append(libPath)
 
 from sming import check_path, env, find_object, find_tool, get_property, load_json, load_template, save_json
 
 def update_intellisense():
-    dirs = []
+    dirs = [check_path(env['PROJECT_DIR']) + '/**']
     for d in env['COMPONENTS_EXTRA_INCDIR'].split():
         d = check_path(d)
         if os.path.exists(d):
@@ -35,6 +34,10 @@ def update_intellisense():
         config['name'] = env['SMING_ARCH']
         config['defines'].append('ARCH_%s=1' % env['SMING_ARCH'].upper())
         configurations.append(config)
+
+    args = env['APP_CFLAGS'].split() + env['GLOBAL_CFLAGS'].split()
+    args = [env.resolve(v) for v in args]
+    config['compilerArgs'] = [v for v in args if v != '']
 
     config['compilerPath'] = find_tool(env['CXX'])
     config['includePath'] = dirs
@@ -73,16 +76,16 @@ def update_launch():
 
     config['miDebuggerPath'] = find_tool(env['GDB'])
     dbgargs = "-x ${env:SMING_HOME}/Arch/%s/Components/gdbstub/gdbcmds" % env['SMING_ARCH']
-    if env['SMING_ARCH'] == 'Esp8266':
-        if not env.isWsl():
-            dbgargs += " -b %s" % env['COM_SPEED_GDB']
-        config['miDebuggerServerAddress'] = env['COM_PORT_GDB']
-    elif env['SMING_ARCH'] == 'Host':
+    if env['SMING_ARCH'] == 'Host':
         args = []
         args += env['CLI_TARGET_OPTIONS'].split()
         args += ["--"]
         args += env['HOST_PARAMETERS'].split()
         config['args'] = args
+    else:
+        if not env.isWsl():
+            dbgargs += " -b %s" % env.resolve('${COM_SPEED_GDB}')
+        config['miDebuggerServerAddress'] = env.resolve('${COM_PORT_GDB}')
     config['miDebuggerArgs'] = dbgargs
     config['program'] = "${workspaceFolder}/" + env.resolve('${TARGET_OUT_0}')
 

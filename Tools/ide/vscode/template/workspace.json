@@ -5,6 +5,7 @@
         }
     ],
     "settings": {
+        "terminal.integrated.defaultProfile.windows": "Command Prompt",
         "files.associations": {
             "*.hw": "jsonc",
             "*.fwfs": "jsonc",

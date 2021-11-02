@@ -21,17 +21,19 @@
             }
         },
         {
-            "label": "Full rebuild (no debugging0",
+            "label": "Full rebuild (no debugging)",
             "detail": "Rebuild application and all Components",
             "type": "shell",
-            "command": "make clean components-clean SMING_ARCH=${command:cpptools.activeConfigName} && make -j ENABLE_GDB=",
+            "command": "make -j ENABLE_GDB=",
+            "dependsOn": ["Full clean"],
             "problemMatcher": []
         },
         {
             "label": "Full rebuild (with debugging)",
             "detail": "Rebuild application and all Components",
             "type": "shell",
-            "command": "make clean components-clean SMING_ARCH=${command:cpptools.activeConfigName} && make -j ENABLE_GDB=1",
+            "command": "make -j ENABLE_GDB=1",
+            "dependsOn": ["Full clean"],
             "problemMatcher": []
         },
         {

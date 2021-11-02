@@ -104,4 +104,6 @@ Known issues / features
 -  ``make ide-vscode`` may overwrite parts of your configuration: be warned!
 -  When debugging for esp8266 output in the console is not formatted correctly.
    Lines appear with @ in front of them.
--  A debugging configuration is not currently provided for ESP32.
+-  You may find vscode uses powershell instead of cmd.exe to execute tasks.
+   Sming should work OK with either, but you can change this in the `sming.code-workspace` file
+   via the ``terminal.integrated.defaultProfile.windows`` setting.
