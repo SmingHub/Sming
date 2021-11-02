@@ -8,6 +8,8 @@ docs/source/_inc
 *.pyc
 
 # dev tools, editors, etc.
+.project
+.cproject
 language.settings.xml
 .settings
 nbproject
