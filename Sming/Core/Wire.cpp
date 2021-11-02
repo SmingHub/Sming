@@ -27,7 +27,6 @@
 
 #include "Wire.h"
 #include "Digital.h"
-#include <twi_arch.h>
 #include <Platform/System.h>
 
 #ifndef FCPU80
@@ -42,16 +41,9 @@
 
 void TwoWire::begin(uint8_t sda, uint8_t scl)
 {
-	debug_d("[TWI] begin(%u, %u)", sda, scl);
-
 	twi_sda = sda;
 	twi_scl = scl;
-	pinMode(twi_sda, INPUT_PULLUP);
-	pinMode(twi_scl, INPUT_PULLUP);
-	setClock(100000);
-	setClockStretchLimit(230); // default value is 230 uS
-
-	flush();
+	begin();
 }
 
 void TwoWire::pins(uint8_t sda, uint8_t scl)
@@ -64,7 +56,13 @@ void TwoWire::pins(uint8_t sda, uint8_t scl)
 
 void TwoWire::begin()
 {
-	begin(DEFAULT_SDA_PIN, DEFAULT_SCL_PIN);
+	debug_d("[TWI] begin(%u, %u)", twi_sda, twi_scl);
+	pinMode(twi_sda, INPUT_PULLUP);
+	pinMode(twi_scl, INPUT_PULLUP);
+	setClock(100000);
+	setClockStretchLimit(230); // default value is 230 uS
+
+	flush();
 }
 
 void TwoWire::end()

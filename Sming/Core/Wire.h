@@ -24,6 +24,7 @@
 #pragma once
 
 #include <Stream.h>
+#include <twi_arch.h>
 
 class TwoWire : public Stream
 {
@@ -52,16 +53,68 @@ public:
 	{
 	}
 
+	/**
+	 * @brief Initialise using selected pins
+	 */
 	void begin(uint8_t sda, uint8_t scl);
+
+	/**
+	 * @brief Switch to selected pins
+	 * 
+	 * If `begin()` has already been called then pins will change immediately,
+	 * otherwise will be used by next call to `begin()`.
+	 */
 	void pins(uint8_t sda, uint8_t scl);
+
+	/**
+	 * @brief Initialise using current pin values
+	 *
+	 * Default pins depend on selected architecture.
+	 */
 	void begin();
+
+	/**
+	 * @brief End TwoWire operation
+	 */
 	void end();
+
+	/**
+	 * @brief Set approximate clock frequency
+	 */
 	void setClock(uint32_t frequency);
+
+	/**
+	 * @brief Set approximate time in microseconds that clocks may be stretched by
+	 */
 	void setClockStretchLimit(uint32_t limit);
+
+	/**
+	 * @brief Signal start of transaction
+	 * @param address Device address
+	 */
 	void beginTransmission(uint8_t address);
+
+	/**
+	 * @brief Perform actual transaction with device
+	 * @param sendStop By default, send a stop condition
+	 */
 	Error endTransmission(bool sendStop = true);
+
+	/**
+	 * @brief Perform a complete 'read' transaction
+	 * @param address Device to talk to
+	 * @param size Number of bytes to receive
+	 * @param sendStop By default, send a stop condition
+	 */
 	uint8_t requestFrom(uint8_t address, uint8_t size, bool sendStop = true);
+
+	/**
+	 * @brief Query bus status
+	 * @retval Status Indicates whether bus is available
+	 */
 	Status status();
+
+	/* Stream methods */
 
 	size_t write(uint8_t) override;
 	size_t write(const uint8_t*, size_t) override;
@@ -69,6 +122,8 @@ public:
 	int read() override;
 	int peek() override;
 	void flush() override;
+
+	using Print::write;
 
 	// Slave mode not currently implemented
 	void onReceive(UserReceive callback)
@@ -82,11 +137,9 @@ public:
 		// userRequestCallback = callback;
 	}
 
-	using Print::write;
-
 private:
-	uint8_t twi_sda{2};
-	uint8_t twi_scl{0};
+	uint8_t twi_sda{DEFAULT_SDA_PIN};
+	uint8_t twi_scl{DEFAULT_SCL_PIN};
 	uint8_t twi_dcount{18};
 	unsigned twi_clockStretchLimit{0};
 
