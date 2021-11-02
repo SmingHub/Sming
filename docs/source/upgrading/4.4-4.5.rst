@@ -14,3 +14,11 @@ It now uses regular tags by default, so if you use this class either:
 
 1. Add a call to :cpp:func:`TemplateStream::setDoubleBraces` in your code, or
 2. Update your templates to use single braces
+
+
+Eclipse Project Files
+---------------------
+
+Starting with version 4.5.x we don't provide Eclipse meta files in our samples. 
+These can be generated using the ``ide-eclipse`` makefile target.
+For more information read the updated :doc:`/tools/eclipse`.
