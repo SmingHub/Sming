@@ -20,13 +20,12 @@ namespace Mqtt
 {
 bool StandardPayloadParser::switchRom(const UpdateState& updateState)
 {
+	auto after = OtaManager.getNextBootPartition();
 #if DEBUG_VERBOSE_LEVEL >= DBG
 	auto before = OtaManager.getBootPartition();
-#endif
-	auto after = OtaManager.getNextBootPartition();
-
 	debug_d("Swapping from %s @ 0x%08x to %s @ 0x%08x.\r\n", before.name().c_str(), before.address(),
 			after.name().c_str(), after.address());
+#endif
 
 	return OtaManager.setBootPartition(after);
 }
