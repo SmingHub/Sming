@@ -12,7 +12,7 @@ sys.path.append(libPath)
 from sming import check_path, env, find_object, find_tool, get_property, load_json, load_template, save_json
 
 def update_intellisense():
-    dirs = []
+    dirs = [check_path(env['PROJECT_DIR']) + '/**']
     for d in env['COMPONENTS_EXTRA_INCDIR'].split():
         d = check_path(d)
         if os.path.exists(d):
