@@ -19,19 +19,19 @@
 class PartCheckerStream : public ReadWriteStream
 {
 public:
-	using CheckerCallback = Delegate<bool(const HttpHeaders& headers, ReadWriteStream* stream, const String& fileName)>;
+	using CheckerCallback = Delegate<bool(const HttpHeaders& headers, ReadWriteStream* source, const String& fileName)>;
 
 	/**
 	 * @param callback
 	 * @param stream - The actual stream doing the work. The stream is owned and will be deleted here
 	 */
-	PartCheckerStream(CheckerCallback callback, ReadWriteStream* stream) : stream(stream), callback(callback)
+	PartCheckerStream(CheckerCallback callback, ReadWriteStream* source) : source(source), callback(callback)
 	{
 	}
 
 	~PartCheckerStream()
 	{
-		delete stream;
+		delete source;
 	}
 
 	bool checkHeaders(const HttpHeaders& headers)
@@ -46,7 +46,12 @@ public:
 			fileName = headerValue.substring(startPos, endPos);
 		}
 
-		return callback(headers, stream, fileName);
+		return callback(headers, source, fileName);
+	}
+
+	ReadWriteStream* getSource()
+	{
+		return source;
 	}
 
 	StreamType getStreamType() const override
@@ -56,20 +61,20 @@ public:
 
 	size_t write(const uint8_t* buffer, size_t size) override
 	{
-		return stream->write(buffer, size);
+		return source->write(buffer, size);
 	}
 
 	uint16_t readMemoryBlock(char* data, int bufSize) override
 	{
-		return stream->readMemoryBlock(data, bufSize);
+		return source->readMemoryBlock(data, bufSize);
 	}
 
 	bool isFinished() override
 	{
-		return stream->isFinished();
+		return source->isFinished();
 	}
 
 private:
-	ReadWriteStream* stream = nullptr;
+	ReadWriteStream* source = nullptr;
 	CheckerCallback callback;
 };

@@ -3,6 +3,7 @@
 #include <HttpMultipartResource.h>
 #include <PartCheckerStream.h>
 #include <Data/Stream/FileStream.h>
+#include <Data/Stream/LimitedWriteStream.h>
 #include <FlashString/Array.hpp>
 
 HttpServer server;
@@ -23,14 +24,28 @@ void onFile(HttpRequest& request, HttpResponse& response)
 
 int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
-	ReadWriteStream* file = request.files["firmware"];
+	response.code = HTTP_STATUS_BAD_REQUEST;
+	response.setContentType(MIME_HTML);
+
+	ReadWriteStream* stream = request.files["firmware"];
+	auto partCheckerStream = static_cast<PartCheckerStream*>(stream);
+	auto limitedWriteStream = static_cast<LimitedWriteStream*>(partCheckerStream->getSource());
+
+	String content;
 	if(uploadError.length() > 0) {
-		response.code = HTTP_STATUS_BAD_REQUEST;
-		response.setContentType(MIME_HTML);
-		String html = "<H2 color='#444'>" + uploadError + "</H2>";
-		response.headers[HTTP_HEADER_CONTENT_LENGTH] = html.length();
-		response.sendString(html);
+		content = uploadError;
 	}
+	else if(!limitedWriteStream->isSuccess()) {
+		content = F("File size is bigger than allowed!");
+	}
+	else {
+		response.code = HTTP_STATUS_OK;
+		content = F("All good");
+	}
+
+	String html = "<H2 color='#444'>" + content + "</H2>";
+	response.headers[HTTP_HEADER_CONTENT_LENGTH] = html.length();
+	response.sendString(html);
 
 	return 0;
 }
@@ -38,19 +53,8 @@ int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpRespons
 bool allowUpload(const HttpHeaders& headers, ReadWriteStream* stream, const String& fileName)
 {
 	if(fileName.length() > 0) {
-		// use the headers to check the file size
-		if(!headers.contains(HTTP_HEADER_CONTENT_LENGTH)) {
-			uploadError = "Unable to determine uploaded file length.";
-			return false;
-		}
-
-		size_t length = atoi(headers[HTTP_HEADER_CONTENT_LENGTH].c_str());
-		if(length > MAX_FILE_SIZE) {
-			uploadError = "File size is bigger than the allowed one.";
-			return false;
-		}
-
-		auto fileStream = static_cast<FileStream*>(stream);
+		auto limitedStream = static_cast<LimitedWriteStream*>(stream);
+		auto fileStream = static_cast<FileStream*>(limitedStream->getSource());
 		if(!fileStream->open(fileName, File::CreateNewAlways | File::WriteOnly)) {
 			uploadError = "Unable to save the remote file locally";
 			return false;
@@ -72,7 +76,10 @@ void fileUploadMapper(HttpFiles& files)
 	 *
 	 * If a field is not specified then its content will be discarded.
 	 */
-	files["firmware"] = new PartCheckerStream(allowUpload, new FileStream());
+
+	auto limitedFileStream = new LimitedWriteStream(MAX_FILE_SIZE, new FileStream());
+
+	files["firmware"] = new PartCheckerStream(allowUpload, limitedFileStream);
 }
 
 void startWebServer()
