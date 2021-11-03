@@ -12,28 +12,14 @@
 
 #pragma once
 
-#include <Data/Stream/ReadWriteStream.h>
+#include <Data/Stream/StreamWrapper.h>
 
-class LimitedWriteStream : public ReadWriteStream
+class LimitedWriteStream : public StreamWrapper
 {
 public:
-	LimitedWriteStream(size_t maxBytes, ReadWriteStream* source) : maxBytes(maxBytes), writePos(0), source(source)
+	LimitedWriteStream(size_t maxBytes, ReadWriteStream* source)
+		: maxBytes(maxBytes), writePos(0), StreamWrapper(source)
 	{
-	}
-
-	~LimitedWriteStream()
-	{
-		delete source;
-	}
-
-	StreamType getStreamType() const override
-	{
-		return source->getStreamType();
-	}
-
-	ReadWriteStream* getSource()
-	{
-		return source;
 	}
 
 	bool isSuccess()
@@ -64,5 +50,4 @@ public:
 private:
 	const size_t maxBytes;
 	size_t writePos;
-	ReadWriteStream* source;
 };

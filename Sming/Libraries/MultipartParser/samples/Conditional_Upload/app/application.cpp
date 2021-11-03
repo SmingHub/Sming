@@ -28,8 +28,7 @@ int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpRespons
 	response.setContentType(MIME_HTML);
 
 	ReadWriteStream* stream = request.files["firmware"];
-	auto partCheckerStream = static_cast<PartCheckerStream*>(stream);
-	auto limitedWriteStream = static_cast<LimitedWriteStream*>(partCheckerStream->getSource());
+	auto limitedWriteStream = static_cast<LimitedWriteStream*>(stream);
 
 	String content;
 	if(uploadError.length() > 0) {
@@ -50,20 +49,6 @@ int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpRespons
 	return 0;
 }
 
-bool allowUpload(const HttpHeaders& headers, ReadWriteStream* stream, const String& fileName)
-{
-	if(fileName.length() > 0) {
-		auto limitedStream = static_cast<LimitedWriteStream*>(stream);
-		auto fileStream = static_cast<FileStream*>(limitedStream->getSource());
-		if(!fileStream->open(fileName, File::CreateNewAlways | File::WriteOnly)) {
-			uploadError = "Unable to save the remote file locally";
-			return false;
-		}
-	}
-
-	return true;
-}
-
 void fileUploadMapper(HttpFiles& files)
 {
 	/*
@@ -77,9 +62,7 @@ void fileUploadMapper(HttpFiles& files)
 	 * If a field is not specified then its content will be discarded.
 	 */
 
-	auto limitedFileStream = new LimitedWriteStream(MAX_FILE_SIZE, new FileStream());
-
-	files["firmware"] = new PartCheckerStream(allowUpload, limitedFileStream);
+	files["firmware"] = new LimitedWriteStream(MAX_FILE_SIZE, new FileStream());
 }
 
 void startWebServer()

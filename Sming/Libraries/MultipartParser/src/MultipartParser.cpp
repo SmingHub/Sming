@@ -12,6 +12,7 @@
 
 #include "MultipartParser.h"
 #include <Network/Http/HttpBodyParser.h>
+#include <Data/Stream/IFS/FileStream.h>
 
 multipart_parser_settings_t MultipartParser::settings = {
 	.on_header_field = readHeaderName,
@@ -136,14 +137,40 @@ int MultipartParser::partHeadersComplete(multipart_parser_t* p)
 		}
 		// get stream corresponding to field name
 		parser->stream = parser->request.files[name];
-		if(parser->stream != nullptr && parser->stream->getStreamType() == eSST_HeaderChecker) {
-			PartCheckerStream* chekerStream = static_cast<PartCheckerStream*>(parser->stream);
-			if(!chekerStream->checkHeaders(headers)) {
-				parser->stream = nullptr;
+
+		// inject file name, if any
+		startPos = headerValue.indexOf(FS("filename="));
+		if(startPos < 0) {
+			goto END;
+		}
+
+		startPos += 10; // filename="
+		endPos = headerValue.indexOf('"', startPos);
+		if(endPos < 0) {
+			goto END;
+		}
+
+		String fileName = headerValue.substring(startPos, endPos);
+
+		// if the stream is of type FileStream and the name is not set
+		// then we can set the name and flags to create-write
+		auto stream = parser->stream;
+		if(stream != nullptr) {
+			if(stream->getStreamType() == eSST_Wrapper) {
+				auto wrapper = static_cast<StreamWrapper*>(stream);
+				stream = wrapper->getSource();
+			}
+
+			if(stream->getStreamType() == eSST_File) {
+				auto fileStream = static_cast<IFS::FileStream*>(stream);
+				if(fileStream->fileName().length() == 0) {
+					fileStream->open(fileName, File::CreateNewAlways | File::WriteOnly);
+				}
 			}
 		}
 	}
 
+END:
 	return 0;
 }
 
