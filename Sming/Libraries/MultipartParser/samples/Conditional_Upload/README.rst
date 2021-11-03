@@ -32,22 +32,13 @@ Usage instructions
 
 3. Connect your device via USB/Serial cable and run::
 
-      make flashconfig
-      
-   to clear any remains of the previous flash layout configuration, followed by::
-
       make flash
 
-   to install the example firmware. You need to do this only once. Subsequent 
-   updates can be performed wirelessly using the web interface.
+   to install the example firmware. 
 
-4. Point the browser to your ESP's IP address to open the firmware upgrade page.
+4. Point the browser to your device's IP address to open the firmware upgrade page.
 
-5. Select the upgrade file, which has been automatically created alongside step 2
-   from ``out/Esp8266/<build-type>/firmware/firmware.ota`` and hit the "Update" button.
+5. Select the upload file and hit the "Update" button.
    
-   After a few seconds, you should see a confirmation the the upgrade was successful.
-   The device now reboots into the upgraded firmware.
-   
-   If the upgrade is not successful, rebuild with debug output enabled and check the 
-   serial console for error messages.
+   If the file size isn't bigger than the MAX_FILE_SIZE defined in the application code 
+   you should see a confirmation that the upload was successful.

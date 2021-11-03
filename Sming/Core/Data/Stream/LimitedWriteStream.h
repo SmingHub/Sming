@@ -29,8 +29,9 @@ public:
 
 	size_t write(const uint8_t* buffer, size_t size) override
 	{
-		if(writePos + size > maxBytes) {
-			writePos += size; // store in writePos the request bytes for writing
+		writePos += size;
+		if(writePos > maxBytes) {
+			 // store in writePos the request bytes for writing
 			return size;
 		}
 

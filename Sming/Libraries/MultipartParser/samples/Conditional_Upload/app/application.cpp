@@ -9,6 +9,16 @@ HttpServer server;
 constexpr size_t MAX_FILE_SIZE = 1024; // Allowed size in bytes
 String uploadError;
 
+void onIndex(HttpRequest& request, HttpResponse& response)
+{
+	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
+	auto& vars = tmpl->variables();
+	vars["MAX_FILE_SIZE"] = String(MAX_FILE_SIZE);
+	response.sendNamedStream(tmpl); // this template object will be deleted automatically
+
+	response.setCache(86400, true); // It's important to use cache for better performance.
+}
+
 void onFile(HttpRequest& request, HttpResponse& response)
 {
 	String file = request.uri.getRelativePath();
@@ -34,6 +44,13 @@ int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpRespons
 	}
 	else if(!limitedWriteStream->isSuccess()) {
 		content = F("File size is bigger than allowed!");
+		/*
+		 * There is an incomplete file stored on the file system.
+		 * You can either leave it as it is and overwrite it the next time or
+		 * truncate it with the code below
+		 */
+		auto fileStream = static_cast<FileStream*>(limitedWriteStream->getSource());
+		fileStream->truncate();
 	}
 	else {
 		response.code = HTTP_STATUS_OK;
@@ -58,30 +75,24 @@ void fileUploadMapper(HttpFiles& files)
 	 * by which stream each form field will be consumed.
 	 *
 	 * If a field is not specified then its content will be discarded.
+	 *
 	 */
 
+
 	files["firmware"] = new LimitedWriteStream(MAX_FILE_SIZE, new FileStream());
+	/*
+	 * The line above defines that firmware should be stored as file stream on the file system
+	 * Since no name is provided in the FileStream constructor the name will be injected by the MultipartParser.
+	 * Using the LimitedWriteStream wrapper will guarantee that the file size is limited to max  MAX_FILE_SIZE bytes.
+	 */
 }
 
 void startWebServer()
 {
-	HttpServerSettings settings;
-	/* 
-	 * If an error is detected early in a request's message body (like an attempt to upload a firmware image for the 
-	 * wrong slot), the default behaviour of Sming's HTTP server is to send the error response as soon as possible and 
-	 * then close the connection.
-	 * However, some HTTP clients (most notably Firefox!) start listening for a response only after having transmitted 
-	 * the whole request. Such clients may miss the error response entirely and instead report to the user that the 
-	 * connection was closed unexpectedly. Disabling 'closeOnContentError' instructs the server to delay the error 
-	 * response until after the whole message body has been received. This allows all clients to receive the response 
-	 * and display the exact error message to the user, leading to an overall improved user experience.
-	 */
-	settings.closeOnContentError = false;
-	settings.keepAliveSeconds = 2; // default from HttpServer::HttpServer()
-	server.configure(settings);
 	server.setBodyParser(MIME_FORM_MULTIPART, formMultipartParser);
 
 	server.listen(80);
+	server.paths.set("/", onIndex);
 	server.paths.set("/upgrade", new HttpMultipartResource(fileUploadMapper, onUpload));
 	server.paths.setDefault(onFile);
 }
@@ -91,7 +102,7 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 
-	spiffs_mount(); // Mount file system, in order to work with files
+	spiffs_mount(); // Mount file system in order to work with files
 
 	WifiStation.enable(true);
 	//WifiStation.config(WIFI_SSID, WIFI_PWD);

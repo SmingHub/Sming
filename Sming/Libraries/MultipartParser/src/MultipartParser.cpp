@@ -152,6 +152,12 @@ int MultipartParser::partHeadersComplete(multipart_parser_t* p)
 		}
 
 		String fileName = headerValue.substring(startPos, endPos);
+		// sanitize the name -> remove any slashes and trailing dots
+		fileName.replace('/', '-');
+		fileName.trim('.');
+		if(fileName.length() == 0) {
+			goto END;
+		}
 
 		// if the stream is of type FileStream and the name is not set
 		// then we can set the name and flags to create-write
