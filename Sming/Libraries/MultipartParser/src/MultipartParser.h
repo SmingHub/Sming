@@ -16,7 +16,6 @@
 #include <Network/Http/HttpRequest.h>
 #include <Network/Http/HttpHeaderBuilder.h>
 #include <Data/Stream/ReadWriteStream.h>
-#include "PartCheckerStream.h"
 
 #include "../multipart-parser/multipart_parser.h"
 

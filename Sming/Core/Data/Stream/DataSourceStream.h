@@ -35,7 +35,6 @@ enum StreamType {
 	eSST_Chain,			 ///< A stream (chain) containing multiple streams
 	eSST_Transform,		 ///< A stream that is transforming the data
 	eSST_Wrapper,		 ///< A stream that is a wrapper around a source stream
-	eSST_HeaderChecker,  ///< A stream that receives HTTP headers in Stream::checkHeaders()
 	eSST_Unknown		 ///< Unknown data stream type
 };
 

@@ -13,6 +13,7 @@
 #include "MultipartParser.h"
 #include <Network/Http/HttpBodyParser.h>
 #include <Data/Stream/IFS/FileStream.h>
+#include <Data/Stream/StreamWrapper.h>
 
 multipart_parser_settings_t MultipartParser::settings = {
 	.on_header_field = readHeaderName,
