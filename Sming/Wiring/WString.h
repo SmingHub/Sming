@@ -793,6 +793,12 @@ public:
      */
 	void trim(void);
 
+	/**
+	 * @brief Remove all leading and trailing characters matching ch
+	 * @param ch character to be removed at the start or at the end
+	 */
+	void trim(char ch);
+
 	// parsing/conversion
 	long toInt(void) const;
 	float toFloat(void) const;

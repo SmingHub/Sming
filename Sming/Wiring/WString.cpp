@@ -951,6 +951,28 @@ void String::trim(void)
 	setlen(len);
 }
 
+void String::trim(char ch)
+{
+	auto len = length();
+	if(len == 0) {
+		return;
+	}
+	auto buf = buffer();
+	char* begin = buf;
+	while(*begin == ch) {
+		begin++;
+	}
+	char* end = buf + len - 1;
+	while(*end == ch && end >= begin) {
+		end--;
+	}
+	len = end + 1 - begin;
+	if(begin > buf) {
+		memmove(buf, begin, len);
+	}
+	setlen(len);
+}
+
 /*********************************************/
 /*  Parsing / Conversion                     */
 /*********************************************/
