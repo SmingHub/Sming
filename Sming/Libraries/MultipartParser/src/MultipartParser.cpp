@@ -136,6 +136,12 @@ int MultipartParser::partHeadersComplete(multipart_parser_t* p)
 		}
 		// get stream corresponding to field name
 		parser->stream = parser->request.files[name];
+		if(parser->stream != nullptr && parser->stream->getStreamType() == eSST_HeaderChecker) {
+			PartCheckerStream* chekerStream = static_cast<PartCheckerStream*>(parser->stream);
+			if(!chekerStream->checkHeaders(headers)) {
+				parser->stream = nullptr;
+			}
+		}
 	}
 
 	return 0;

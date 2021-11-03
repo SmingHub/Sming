@@ -34,6 +34,7 @@ enum StreamType {
 	eSST_User,			 ///< User defined data stream
 	eSST_Chain,			 ///< A stream (chain) containing multiple streams
 	eSST_Transform,		 ///< A stream that is transforming the data
+	eSST_HeaderChecker,  ///< A stream that receives HTTP headers in Stream::checkHeaders()
 	eSST_Unknown		 ///< Unknown data stream type
 };
 
