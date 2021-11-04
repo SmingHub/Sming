@@ -4,6 +4,7 @@
 #include <PartCheckerStream.h>
 #include <Data/Stream/FileStream.h>
 #include <Data/Stream/LimitedWriteStream.h>
+#include <PartCheckerStream.h>
 #include <FlashString/Array.hpp>
 
 HttpServer server;
@@ -18,7 +19,7 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 	vars["MAX_FILE_SIZE"] = String(MAX_FILE_SIZE);
 	response.sendNamedStream(tmpl); // this template object will be deleted automatically
 
-	response.setCache(86400, true); // It's important to use cache for better performance.
+	response.setCache(86400, true); // You can instruct the browser to cache the content for better performance.
 }
 
 void onFile(HttpRequest& request, HttpResponse& response)
@@ -34,29 +35,38 @@ void onFile(HttpRequest& request, HttpResponse& response)
 
 int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
-	response.code = HTTP_STATUS_BAD_REQUEST;
+	response.code = HTTP_STATUS_OK;
 	response.setContentType(MIME_HTML);
+	String content = F("All good");
 
 	ReadWriteStream* stream = request.files["firmware"];
-	auto limitedWriteStream = static_cast<LimitedWriteStream*>(stream);
 
-	String content;
-	if(uploadError.length() > 0) {
-		content = uploadError;
-	}
-	else if(!limitedWriteStream->isSuccess()) {
-		content = F("File size is bigger than allowed!");
-		/*
-		 * There is an incomplete file stored on the file system.
-		 * You can either leave it as it is and overwrite it the next time or
-		 * truncate it with the code below
-		 */
-		auto fileStream = static_cast<FileStream*>(limitedWriteStream->getSource());
-		fileStream->truncate();
+	if(stream != nullptr && stream->getStreamType() == eSST_HeaderChecker) {
+		auto checkerStream = static_cast<PartCheckerStream*>(stream);
+		if(!checkerStream->isSuccess()) {
+			response.code = HTTP_STATUS_BAD_REQUEST;
+			content = uploadError;
+		}
 	}
 	else {
-		response.code = HTTP_STATUS_OK;
-		content = F("All good");
+		auto limitedWriteStream = static_cast<LimitedWriteStream*>(stream);
+
+
+		if(uploadError.length() > 0) {
+			response.code = HTTP_STATUS_BAD_REQUEST;
+			content = uploadError;
+		}
+		else if(!limitedWriteStream->isSuccess()) {
+			content = F("File size is bigger than allowed!");
+			response.code = HTTP_STATUS_BAD_REQUEST;
+			/*
+			 * There is an incomplete file stored on the file system.
+			 * You can either leave it as it is and overwrite it the next time or
+			 * truncate it with the code below
+			 */
+			auto fileStream = static_cast<FileStream*>(limitedWriteStream->getSource());
+			fileStream->truncate();
+		}
 	}
 
 	String html = "<H2 color='#444'>" + content + "</H2>";
@@ -66,8 +76,44 @@ int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpRespons
 	return 0;
 }
 
+/**
+ * @brief This function is used to check if an upload file can be stored.
+ *
+ * @param headers - HTTP headers for the specific part
+ * @param source - the original stream used to store data
+ * @param elementName - the name of the part in the form
+ * @param fileName - file name. can be also empty string if not provided
+ *
+ * @retval bool false to reject the saving of the content
+ */
+bool allowPart(const HttpHeaders& headers, ReadWriteStream* stream, const String& elementName, const String& fileName)
+{
+	// below is an example how to check for the filename length before storing it
+	if(fileName.length() > 32) {
+		uploadError = "Filename too long!";
+		return false;
+	}
+
+	// If needed it is possible also to check if the file type is as expected
+	// The code below requires the uploaded file to be plain text.
+	if(headers[HTTP_HEADER_CONTENT_TYPE] != toString(MIME_TEXT)) {
+		uploadError = "Only text files allowed!";
+		return false;
+	}
+
+	// here is an example how to set the provided file name
+	if(fileName.length() > 0) {
+		auto fileStream = static_cast<FileStream*>(stream);
+		fileStream->open(fileName, File::CreateNewAlways | File::WriteOnly);
+	}
+
+	return true;
+}
+
 void fileUploadMapper(HttpFiles& files)
 {
+	uploadError = "";
+
 	/*
 	 * On a normal computer file uploads are usually using
 	 * temporary space on the hard disk or in memory to store the incoming data.
@@ -81,12 +127,20 @@ void fileUploadMapper(HttpFiles& files)
 	 */
 
 
-	files["firmware"] = new LimitedWriteStream(MAX_FILE_SIZE, new FileStream());
 	/*
-	 * The line above defines that firmware should be stored as file stream on the file system
+	 * The line below defines that firmware should be stored as file stream on the file system
 	 * Since no name is provided in the FileStream constructor the name will be injected by the MultipartParser.
 	 * Using the LimitedWriteStream wrapper will guarantee that the file size is limited to max  MAX_FILE_SIZE bytes.
 	 */
+	// files["firmware"] = new LimitedWriteStream(MAX_FILE_SIZE, new FileStream());
+
+
+	/**
+	 * Uncommend the line below for a more complex example.
+	 * This one uses PartCheckerStream and provides way to decide if the content should be stored
+	 * based on the allowPart callback.
+	 */
+	files["firmware"] = new PartCheckerStream(allowPart, new FileStream());
 }
 
 void startWebServer()

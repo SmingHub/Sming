@@ -172,6 +172,12 @@ int MultipartParser::partHeadersComplete(multipart_parser_t* p)
 				if(fileStream->fileName().length() == 0) {
 					fileStream->open(fileName, File::CreateNewAlways | File::WriteOnly);
 				}
+			} else if(stream->getStreamType() == eSST_HeaderChecker) {
+				auto checkerStream = static_cast<PartCheckerStream*>(stream);
+				if(!checkerStream->checkHeaders(headers, name, fileName)) {
+					// the stream will be freed later. For now mark it as not usable.
+					parser->stream = nullptr;
+				}
 			}
 		}
 	}

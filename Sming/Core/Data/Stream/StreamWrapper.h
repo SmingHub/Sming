@@ -17,7 +17,7 @@
 class StreamWrapper : public ReadWriteStream
 {
 public:
-	StreamWrapper(ReadWriteStream* source): source(source)
+	StreamWrapper(ReadWriteStream* source) : source(source)
 	{
 	}
 

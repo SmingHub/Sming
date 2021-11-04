@@ -31,7 +31,7 @@ public:
 	{
 		writePos += size;
 		if(writePos > maxBytes) {
-			 // store in writePos the request bytes for writing
+			// store in writePos the request bytes for writing
 			return size;
 		}
 

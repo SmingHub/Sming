@@ -19,7 +19,8 @@
 class PartCheckerStream : public StreamWrapper
 {
 public:
-	using CheckerCallback = Delegate<bool(const HttpHeaders& headers, ReadWriteStream* source, const String& fileName)>;
+	using CheckerCallback = Delegate<bool(const HttpHeaders& headers, ReadWriteStream* source,
+										  const String& elementName, const String& fileName)>;
 
 	/**
 	 * @param callback
@@ -29,19 +30,15 @@ public:
 	{
 	}
 
-	bool checkHeaders(const HttpHeaders& headers)
+	bool checkHeaders(const HttpHeaders& headers, const String& elementName, const String& fileName)
 	{
-		String headerValue = headers[HTTP_HEADER_CONTENT_DISPOSITION];
-		String fileName;
-		// Content-Disposition: form-data; name="image"; filename=".gitignore"
-		int startPos = headerValue.indexOf(FS("filename="));
-		if(startPos >= 0) {
-			startPos += 10; // filename="
-			int endPos = headerValue.indexOf('"', startPos);
-			fileName = headerValue.substring(startPos, endPos);
-		}
+		save = callback(headers, source, elementName, fileName);
+		return save;
+	}
 
-		return callback(headers, source, fileName);
+	bool isSuccess()
+	{
+		return save;
 	}
 
 	StreamType getStreamType() const override
@@ -51,6 +48,11 @@ public:
 
 	size_t write(const uint8_t* buffer, size_t size) override
 	{
+		if(!save) {
+			debug_d("Discarding %d bytes", size);
+			return size;
+		}
+
 		return source->write(buffer, size);
 	}
 
@@ -65,5 +67,6 @@ public:
 	}
 
 private:
+	bool save = true;
 	CheckerCallback callback;
 };
