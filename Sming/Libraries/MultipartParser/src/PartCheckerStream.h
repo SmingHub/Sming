@@ -19,8 +19,15 @@
 class PartCheckerStream : public StreamWrapper
 {
 public:
-	using CheckerCallback = Delegate<bool(const HttpHeaders& headers, ReadWriteStream* source,
-										  const String& elementName, const String& fileName)>;
+	struct FilePart {
+		String name;
+		String fileName;
+		String mime;
+		int length; // -1 if not available, >0 otherwise
+	};
+
+	using CheckerCallback =
+		Delegate<bool(const HttpHeaders& headers, ReadWriteStream* source, const FilePart& filePart)>;
 
 	/**
 	 * @param callback
@@ -30,9 +37,9 @@ public:
 	{
 	}
 
-	bool checkHeaders(const HttpHeaders& headers, const String& elementName, const String& fileName)
+	bool checkHeaders(const HttpHeaders& headers, const FilePart& part)
 	{
-		save = callback(headers, source, elementName, fileName);
+		save = callback(headers, source, part);
 		return save;
 	}
 

@@ -81,30 +81,29 @@ int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpRespons
  *
  * @param headers - HTTP headers for the specific part
  * @param source - the original stream used to store data
- * @param elementName - the name of the part in the form
- * @param fileName - file name. can be also empty string if not provided
+ * @param part
  *
  * @retval bool false to reject the saving of the content
  */
-bool allowPart(const HttpHeaders& headers, ReadWriteStream* stream, const String& elementName, const String& fileName)
+bool allowPart(const HttpHeaders& headers, ReadWriteStream* stream, const PartCheckerStream::FilePart& part)
 {
 	// below is an example how to check for the filename length before storing it
-	if(fileName.length() > 32) {
+	if(part.fileName.length() > 32) {
 		uploadError = "Filename too long!";
 		return false;
 	}
 
 	// If needed it is possible also to check if the file type is as expected
 	// The code below requires the uploaded file to be plain text.
-	if(headers[HTTP_HEADER_CONTENT_TYPE] != toString(MIME_TEXT)) {
+	if(part.mime != toString(MIME_TEXT)) {
 		uploadError = "Only text files allowed!";
 		return false;
 	}
 
 	// here is an example how to set the provided file name
-	if(fileName.length() > 0) {
+	if(part.fileName.length() > 0) {
 		auto fileStream = static_cast<FileStream*>(stream);
-		fileStream->open(fileName, File::CreateNewAlways | File::WriteOnly);
+		fileStream->open(part.fileName, File::CreateNewAlways | File::WriteOnly);
 	}
 
 	return true;
