@@ -1,8 +1,10 @@
 #include <SmingCore.h>
 #include <MultipartParser.h>
 #include <HttpMultipartResource.h>
+#include <PartCheckerStream.h>
 #include <Data/Stream/FileStream.h>
 #include <Data/Stream/LimitedWriteStream.h>
+#include <FlashString/Array.hpp>
 
 HttpServer server;
 
