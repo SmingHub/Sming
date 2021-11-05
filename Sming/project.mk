@@ -704,3 +704,10 @@ menuconfig: ##Run option editor
 	$(Q) $(CFGTOOL_CMDLINE) --to-kconfig
 	$(Q) $(KCONFIG_ENV) $(PYTHON) -m menuconfig $(SMING_HOME)/Kconfig
 	$(Q) $(CFGTOOL_CMDLINE) --from-kconfig
+	
+DEBUG_VARS += PROJECT_ARCH
+ifneq (,$(PROJECT_ARCH))
+ifeq ($(filter $(SMING_ARCH),$(PROJECT_ARCH)),)
+$(error "Unsupported architecture! Only $(PROJECT_ARCH) are supported")
+endif
+endif

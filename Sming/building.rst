@@ -61,6 +61,10 @@ These are the main variables you need to be aware of:
 
 These variables are available for application use:
 
+.. envvar:: PROJECT_ARCH
+   
+   List of supported architectures. Empty by default.
+
 .. envvar:: PROJECT_DIR
 
    Path to the project’s root source directory, without
