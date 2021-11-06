@@ -76,3 +76,15 @@ index 921030a..170dce3 100644
  
  #endif // Adafruit_SPIDevice_h
 -#endif // has SPI defined
+diff --git a/README.md b/README.md
+index 3fc8a1f..fba70bd 100644
+--- a/README.md
++++ b/README.md
+@@ -1,5 +1,6 @@
+-# Adafruit Bus IO Library [![Build Status](https://github.com/adafruit/Adafruit_BusIO/workflows/Arduino%20Library%20CI/badge.svg)](https://github.com/adafruit/Adafruit_BusIO/actions)
++# Adafruit Bus IO Library
+ 
++[![Build Status](https://github.com/adafruit/Adafruit_BusIO/workflows/Arduino%20Library%20CI/badge.svg)](https://github.com/adafruit/Adafruit_BusIO/actions)
+ 
+ This is a helper libary to abstract away I2C & SPI transactions and registers
+ 
