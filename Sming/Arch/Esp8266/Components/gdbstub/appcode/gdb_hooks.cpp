@@ -140,7 +140,7 @@ void dumpExceptionInfo()
 }
 
 // Main exception handler code
-static void __attribute__((noinline)) gdbstub_exception_handler_flash(UserFrame* frame)
+static void __noinline gdbstub_exception_handler_flash(UserFrame* frame)
 {
 	// Copy registers the Xtensa HAL did save to gdbstub_savedRegs
 	memcpy(&gdbstub_savedRegs, frame, 5 * 4);

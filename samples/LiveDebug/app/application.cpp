@@ -435,7 +435,7 @@ COMMAND_HANDLER(write0)
  * @param msg
  * @retval bool true if we want to report this
  */
-static bool __attribute__((noinline)) parseOsMessage(OsMessage& msg)
+static bool __noinline parseOsMessage(OsMessage& msg)
 {
 	m_printf(_F("[OS] %s\r\n"), msg.getBuffer());
 	if(msg.startsWith(_F("E:M "))) {
