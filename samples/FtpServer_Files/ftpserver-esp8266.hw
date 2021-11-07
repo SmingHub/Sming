@@ -1,0 +1,15 @@
+{
+    "name": "FTP Server sample",
+    "base_config": "ftpserver",
+    "partitions": {
+        "rom0": {
+            "size": "480K"
+        },
+        "spiffs0": {
+            "address": "0x80000"
+        },
+        "fwfs1": {
+            "address": "0xA0000"
+        }
+    }
+}

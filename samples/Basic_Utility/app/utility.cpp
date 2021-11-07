@@ -1,9 +1,5 @@
 #include <SmingCore.h>
-#ifdef ARCH_HOST
 #include <hostlib/CommandLine.h>
-#endif
-
-#ifdef ARCH_HOST
 
 namespace
 {
@@ -38,8 +34,6 @@ void testWebConstants()
 
 } // namespace
 
-#endif
-
 void init()
 {
 	// Hook up debug output
@@ -52,7 +46,6 @@ void init()
 	 */
 	m_printf("\n** Basic Host utility sample **\n");
 
-#ifdef ARCH_HOST
 	auto parameters = commandLine.getParameters();
 	if(parameters.count() == 0) {
 		m_printf("No command line parameters\n"
@@ -83,14 +76,4 @@ void init()
 	m_putc('\n');
 
 	System.restart();
-
-#else
-
-	Serial.println();
-	Serial.println(_F("** THIS IS A HOST-ONLY APPLICATION **"));
-	Serial.println();
-	Serial.println(_F("Please build with SMING_ARCH=Host"));
-	Serial.println();
-
-#endif
 }

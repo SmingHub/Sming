@@ -31,9 +31,11 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 
+#ifndef DISABLE_WIFI
 	// WIFI not needed for demo. So disabling WIFI.
 	WifiStation.enable(false);
 	WifiAccessPoint.enable(false);
+#endif
 
 	// Create components.
 	Wire.begin(SDA, SCL);

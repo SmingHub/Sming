@@ -1,3 +1,4 @@
+COMPONENT_SOC			:= esp8266 host
 COMPONENT_DOXYGEN_INPUT	:= rboot
 
 ifeq ($(SMING_ARCH),Esp8266)

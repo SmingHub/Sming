@@ -2,6 +2,9 @@
 ## Parameters configured here will override default and ENV values
 ## Uncomment and change examples:
 
+## If appropriate, declare which SOCs your project supports
+# COMPONENT_SOC :=
+
 ## Add your source directories here separated by space
 # COMPONENT_SRCDIRS := app
 # COMPONENT_SRCFILES :=

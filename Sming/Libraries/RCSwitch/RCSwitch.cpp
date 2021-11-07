@@ -673,7 +673,7 @@ static IRAM_ATTR __forceinline unsigned int diff(int A, int B) {
 bool RCSwitch::receiveProtocol(const int p, unsigned int changeCount) {
 
     Protocol pro;
-    ets_memcpy(&pro, &proto[p-1], sizeof(Protocol));
+    memcpy(&pro, &proto[p-1], sizeof(Protocol));
 
     unsigned long code = 0;
     const unsigned int delay = RCSwitch::timings[0] / pro.syncFactor.low;

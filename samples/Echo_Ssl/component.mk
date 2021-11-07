@@ -1,1 +1,2 @@
+COMPONENT_SOC := esp* host
 ENABLE_SSL = 1

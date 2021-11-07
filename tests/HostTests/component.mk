@@ -1,5 +1,6 @@
 ifeq ($(SMING_ARCH),Rp2040)
 HWCONFIG = host-tests-1m
+DISABLE_NETWORK := 1
 else
 HWCONFIG = host-tests
 endif

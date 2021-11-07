@@ -1,3 +1,4 @@
+COMPONENT_SOC := esp* host
 HWCONFIG := spiffs
 SPIFF_FILES = web/
 ARDUINO_LIBRARIES := MultipartParser OtaUpgrade

@@ -1,1 +1,2 @@
 ARDUINO_LIBRARIES := LiquidCrystal
+DISABLE_NETWORK := 1

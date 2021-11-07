@@ -1,3 +1,4 @@
+COMPONENT_SOC := host
 COMPONENT_DEPENDS := OtaUpgradeMqtt
 APP_NAME := deployer
 

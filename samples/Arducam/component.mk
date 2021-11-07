@@ -1,3 +1,4 @@
+COMPONENT_SOC := esp*
 ARDUINO_LIBRARIES := ArduCAM
 HWCONFIG = spiffs
 SPIFF_FILES = web/build

@@ -1,3 +1,4 @@
+DISABLE_NETWORK := 1
 HWCONFIG := spiffs-2m
 
 CUSTOM_TARGETS	+= files/README.md
