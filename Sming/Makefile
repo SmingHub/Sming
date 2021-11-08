@@ -113,7 +113,7 @@ samples: | $(SAMPLE_NAMES) ##Build all sample applications
 
 $(SAMPLE_NAMES):
 	@printf "\n\n** Building ${@F} **\n\n"
-	$(Q) $(MAKE) --no-print-directory -C $(SAMPLES_DIR)/$@ PIP_ARGS=-q python-requirements all
+	$(Q) $(MAKE) --no-print-directory -C $(SAMPLES_DIR)/$@ PIP_ARGS=-q python-requirements sample
 
 # Build component samples
 .PHONY: component-samples

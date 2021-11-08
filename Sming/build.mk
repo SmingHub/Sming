@@ -13,7 +13,6 @@ endef
 # $1 -> Architecture name
 define SetArchSocs
 ARCH_$1_SOC := $(sort $(call SocFromPath,$(wildcard $(SMING_HOME)/Arch/$1/*-soc.json)))
-$$(info $$(ARCH_$1_SOC))
 endef
 
 $(foreach a,$(call ListSubDirs,$(SMING_HOME)/Arch),$(eval $(call SetArchSocs,$(notdir $a))))

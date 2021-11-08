@@ -21,10 +21,6 @@ endif
 all: checksoc checkdirs submodules ##(default) Build all Component libraries
 	$(MAKE) components application
 
-.PHONY: sample
-all: checksoc checkdirs submodules ##(default) Build all Component libraries
-	$(MAKE) components application
-
 # Load current build type from file
 BUILD_TYPE_FILE	:= out/build-type.mk
 -include $(BUILD_TYPE_FILE)
@@ -170,6 +166,7 @@ export PROJECT_SOC
 # $3 -> Build directory
 # $4 -> Output library directory
 define ParseComponent
+ifneq (,$$(findstring $(SMING_SOC),$$(PROJECT_SOC)))
 $(if $V,$(info -- Parsing $1))
 $(if $2,,$(error Component '$1' not found))
 SUBMODULES				+= $(filter $2,$(ALL_SUBMODULES))
@@ -231,6 +228,7 @@ PARSED_COMPONENTS		+= $$(DEPENDENCIES)
 $$(call ParseComponentList,$$(DEPENDENCIES))
 endif
 endif # App
+endif # PROJECT_SOC
 endef # ParseComponent
 
 # Build a list of all available Components
@@ -361,6 +359,15 @@ $(foreach v,$(EXPORT_VARS),$(eval export $v))
 
 
 ##@Building
+
+.PHONY: sample
+ifeq (,$(findstring $(SMING_SOC),$(PROJECT_SOC)))
+sample:
+	$(info Not building: Sample doesn't support $(SMING_SOC))
+else
+sample: all
+endif
+
 
 .PHONY: checksoc
 checksoc:
