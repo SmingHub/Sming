@@ -48,6 +48,7 @@ void StreamTransformer::fillTempStream(char* buffer, size_t bufSize)
 		}
 
 		auto written = tempStream->write(result, outLength);
+		(void)written;
 		assert(written == outLength);
 
 		sourceStream->seek(chunkSize);
