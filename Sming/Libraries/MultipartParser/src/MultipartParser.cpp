@@ -156,7 +156,7 @@ int MultipartParser::partHeadersComplete(multipart_parser_t* p)
 	String fileName = headerValue.substring(startPos, endPos);
 	// sanitize the name -> remove any slashes and trailing dots
 	fileName.replace('/', '-');
-	fileName.trim('.');
+	fileName.trim(".");
 	if(fileName.length() == 0) {
 		return 0;
 	}
