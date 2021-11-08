@@ -219,7 +219,7 @@ bool parseCommands()
 			return false; // after packaging the application can be terminated
 		}
 	} else if(cmd == "deploy") {
-		if(checkParameterCount(2, 2)) {
+		if(checkParameterCount(3, 3)) {
 			return deploy(parameters[1].text, parameters[2].text);
 		}
 	} else {

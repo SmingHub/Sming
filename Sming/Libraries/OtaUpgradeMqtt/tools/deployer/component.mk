@@ -2,6 +2,7 @@ COMPONENT_DEPENDS := OtaUpgradeMqtt
 APP_NAME := deployer
 
 SMING_ARCH := Host
+ENABLE_SSL := Bearssl
 
 ##@Firmware Upgrade
 
