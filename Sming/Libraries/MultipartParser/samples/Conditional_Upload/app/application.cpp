@@ -69,7 +69,7 @@ int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpRespons
 		}
 	}
 
-	String html = "<H2 color='#444'>" + content + "</H2>";
+	String html = F("<H2 color='#444'>") + content + F("</H2>");
 	response.headers[HTTP_HEADER_CONTENT_LENGTH] = html.length();
 	response.sendString(html);
 
@@ -80,7 +80,7 @@ int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpRespons
  * @brief This function is used to check if an upload file can be stored.
  *
  * @param headers - HTTP headers for the specific part
- * @param source - the original stream used to store data
+ * @param stream - the original stream used to store data
  * @param part
  *
  * @retval bool false to reject the saving of the content
@@ -89,14 +89,14 @@ bool allowPart(const HttpHeaders& headers, ReadWriteStream* stream, const PartCh
 {
 	// below is an example how to check for the filename length before storing it
 	if(part.fileName.length() > 32) {
-		uploadError = "Filename too long!";
+		uploadError = F("Filename too long!");
 		return false;
 	}
 
 	// If needed it is possible also to check if the file type is as expected
 	// The code below requires the uploaded file to be plain text.
 	if(part.mime != toString(MIME_TEXT)) {
-		uploadError = "Only text files allowed!";
+		uploadError = F("Only text files allowed!");
 		return false;
 	}
 
@@ -111,7 +111,7 @@ bool allowPart(const HttpHeaders& headers, ReadWriteStream* stream, const PartCh
 
 void fileUploadMapper(HttpFiles& files)
 {
-	uploadError = "";
+	uploadError = nullptr; // Reset to 'no error'
 
 	/*
 	 * On a normal computer file uploads are usually using
@@ -125,21 +125,23 @@ void fileUploadMapper(HttpFiles& files)
 	 *
 	 */
 
+	/*
+	 * Create a stream to store uploaded content.
+	 * Since no name is provided in the constructor the name will be injected by the MultipartParser.
+	 */
+	auto fileStream = new FileStream;
 
 	/*
-	 * The line below defines that firmware should be stored as file stream on the file system
-	 * Since no name is provided in the FileStream constructor the name will be injected by the MultipartParser.
-	 * Using the LimitedWriteStream wrapper will guarantee that the file size is limited to max  MAX_FILE_SIZE bytes.
+	 * Using the LimitedWriteStream wrapper will guarantee that the file size is limited to MAX_FILE_SIZE bytes.
 	 */
-	// files["firmware"] = new LimitedWriteStream(MAX_FILE_SIZE, new FileStream());
-
+	// files["firmware"] = new LimitedWriteStream(fileStream, MAX_FILE_SIZE);
 
 	/**
-	 * Uncommend the line below for a more complex example.
+	 * Uncomment the line below for a more complex example.
 	 * This one uses PartCheckerStream and provides way to decide if the content should be stored
 	 * based on the allowPart callback.
 	 */
-	files["firmware"] = new PartCheckerStream(allowPart, new FileStream());
+	files["firmware"] = new PartCheckerStream(fileStream, allowPart);
 }
 
 void startWebServer()

@@ -12,7 +12,8 @@
 
 #pragma once
 
-#include "DataSourceStream.h"
+#include "ReadWriteStream.h"
+#include <memory>
 
 class StreamWrapper : public ReadWriteStream
 {
@@ -21,21 +22,26 @@ public:
 	{
 	}
 
-	virtual ~StreamWrapper()
-	{
-		delete source;
-	}
-
 	StreamType getStreamType() const override
 	{
 		return eSST_Wrapper;
 	}
 
-	ReadWriteStream* getSource()
+	uint16_t readMemoryBlock(char* data, int bufSize) override
 	{
-		return source;
+		return source ? source->readMemoryBlock(data, bufSize) : 0;
 	}
 
-protected:
-	ReadWriteStream* source;
+	ReadWriteStream* getSource() const
+	{
+		return source.get();
+	}
+
+	bool isFinished() override
+	{
+		return source ? source->isFinished() : true;
+	}
+
+private:
+	std::unique_ptr<ReadWriteStream> source;
 };
