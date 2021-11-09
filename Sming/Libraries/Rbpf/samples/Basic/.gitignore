@@ -1,0 +1,3 @@
+container/*.o
+container/*.bin
+blobs/
