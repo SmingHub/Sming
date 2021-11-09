@@ -542,7 +542,7 @@ ide-vscode-update:
 	$(PYTHON) $(SMING_TOOLS)/ide/vscode/setup.py
 	
 .PHONY: ide-eclipse
-ide-eclipse:
+ide-eclipse: ##Create Eclipse project configuration
 	$(Q) SMING_HOME=$(SMING_HOME) OUT_BASE=$(OUT_BASE) \
 	$(PYTHON) $(SMING_TOOLS)/ide/eclipse/setup.py
 
