@@ -43,7 +43,7 @@ int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpRespons
 
 	if(stream != nullptr && stream->getStreamType() == eSST_HeaderChecker) {
 		auto checkerStream = static_cast<PartCheckerStream*>(stream);
-		if(!checkerStream->isSuccess()) {
+		if(!checkerStream->isValid()) {
 			response.code = HTTP_STATUS_BAD_REQUEST;
 			content = uploadError;
 		}
@@ -56,7 +56,7 @@ int onUpload(HttpServerConnection& connection, HttpRequest& request, HttpRespons
 			response.code = HTTP_STATUS_BAD_REQUEST;
 			content = uploadError;
 		}
-		else if(!limitedWriteStream->isSuccess()) {
+		else if(!limitedWriteStream->isValid()) {
 			content = F("File size is bigger than allowed!");
 			response.code = HTTP_STATUS_BAD_REQUEST;
 			/*
