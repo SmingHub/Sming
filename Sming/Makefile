@@ -137,9 +137,9 @@ PHONY: tests
 tests: submodules ##Build and run all tests
 	$(Q) $(MAKE) --no-print-directory build-and-run-tests
 
-COMPLETED_SUFFIX := /.complete
 COMPONENT_TESTS = $(call dirx,$(wildcard $(foreach c,$(COMPONENT_SEARCH_DIRS),$c/*/test/component.mk)))
-TESTS_COMPLETED = $(addsuffix $(COMPLETED_SUFFIX),$(wildcard $(SMING_PROJECTS_DIR)/tests/* $(COMPONENT_TESTS)))
+TEST_PATHS = $(wildcard $(SMING_PROJECTS_DIR)/tests/* $(COMPONENT_TESTS))
+TESTS_COMPLETED = $(addsuffix /.$(SMING_SOC).complete,$(TEST_PATHS))
 
 PHONY: build-and-run-tests
 build-and-run-tests: $(TESTS_COMPLETED) ##Build and run all test applications
@@ -162,15 +162,10 @@ component-samples-clean: ##Clean all component samples
 	@echo Cleaning all component samples...
 	-$(Q) rm -rf $(dir $(COMPONENT_SAMPLE_TARGETS))
 
-CLEAN_TESTS := $(TESTS_COMPLETED:complete=clean)
 .PHONY: tests-clean
-tests-clean: $(wildcard $(CLEAN_TESTS)) ##Clean all test applications (all arch/build types)
-	-$(Q) rm -f $(TESTS_COMPLETED)
-
-.PHONY: $(CLEAN_TESTS)
-$(CLEAN_TESTS):
-	@echo Cleaning '$(@D)'
-	-$(Q) $(MAKE) -C $(@D) clean
+tests-clean: ##Clean all test applications
+	-$(Q) $(foreach p,$(TEST_PATHS),echo ">> $p"; $(MAKE) --no-print-directory -C $p clean;)
+	-$(Q) rm -f $(addsuffix /.*.completed,$(TEST_PATHS))
 
 
 ##@Tools
