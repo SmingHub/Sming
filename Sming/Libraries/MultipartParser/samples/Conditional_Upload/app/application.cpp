@@ -14,7 +14,7 @@ String uploadError;
 
 void onIndex(HttpRequest& request, HttpResponse& response)
 {
-	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
+	auto tmpl = new TemplateFileStream("index.html");
 	auto& vars = tmpl->variables();
 	vars["MAX_FILE_SIZE"] = String(MAX_FILE_SIZE);
 	response.sendNamedStream(tmpl); // this template object will be deleted automatically

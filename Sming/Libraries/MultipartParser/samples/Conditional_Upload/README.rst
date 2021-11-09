@@ -8,7 +8,7 @@ About HTTP server file upload
 -----------------------------
 
 The HTTP server coming with Sming is quite powerful but it is limited
-by the available resources of the underlining hardware.
+by available hardware resources.
 
 This sample demonstrates how to use the :library:`MultipartParser` library
 to enable file upload of the HTTP server. On a normal computer the file uploads

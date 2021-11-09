@@ -792,7 +792,7 @@ public:
      * @brief Remove all leading and trailing characters from the String
 	 * @param Set of characters to remove, defaults to whitespace set
      */
-	void trim(const char* set  = " \t\n\v\f\r");
+	void trim(const char* set = " \t\n\v\f\r");
 
 	// parsing/conversion
 	long toInt(void) const;

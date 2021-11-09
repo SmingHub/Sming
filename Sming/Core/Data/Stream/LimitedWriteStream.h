@@ -14,6 +14,11 @@
 
 #include <Data/Stream/StreamWrapper.h>
 
+/**
+ * @brief A stream wrapper class that limits the number of bytes that can be written.
+ *        Helpful when writing on a file system or memory should be limited to the available size of the media.
+ * @ingroup stream
+ */
 class LimitedWriteStream : public StreamWrapper
 {
 public:
@@ -26,11 +31,19 @@ public:
 		return writePos <= maxBytes;
 	}
 
+	/**	@brief  Writes characters from a buffer to output stream
+	 *
+	 * @param  buffer Pointer to character buffer
+	 * @param  size Quantity of characters to write
+	 *
+	 * @retval size_t Quantity of characters written to stream.
+	 * @note Surplus characters will be discarded.
+	 *
+	 */
 	size_t write(const uint8_t* buffer, size_t size) override
 	{
 		writePos += size;
 		if(writePos > maxBytes) {
-			// store in writePos the request bytes for writing
 			return size;
 		}
 

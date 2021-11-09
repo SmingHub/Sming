@@ -15,6 +15,10 @@
 #include "ReadWriteStream.h"
 #include <memory>
 
+/**
+ * @brief An abstract class that provides a wrapper around a stream
+ * @ingroup stream
+ */
 class StreamWrapper : public ReadWriteStream
 {
 public:
