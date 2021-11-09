@@ -116,82 +116,87 @@ int MultipartParser::partHeadersComplete(multipart_parser_t* p)
 {
 	GET_PARSER();
 
-	auto& headers = parser->incomingHeaders;
-	if(headers.contains(HTTP_HEADER_CONTENT_DISPOSITION)) {
-		// Content-Disposition: form-data; name="image"; filename=".gitignore"
-		// Content-Disposition: form-data; name="data"
-		String headerValue = headers[HTTP_HEADER_CONTENT_DISPOSITION];
-		int startPos = headerValue.indexOf(FS("name="));
-		if(startPos < 0) {
-			debug_e("Invalid header content");
-			return -1; // Invalid header content
+	auto& headers = static_cast<const HttpHeaders&>(parser->incomingHeaders);
+	String headerValue = headers[HTTP_HEADER_CONTENT_DISPOSITION];
+	if(!headerValue) {
+		return 0;
+	}
+
+	// Content-Disposition: form-data; name="image"; filename=".gitignore"
+	// Content-Disposition: form-data; name="data"
+	int startPos = headerValue.indexOf(F("name="));
+	if(startPos < 0) {
+		debug_e("Invalid header content");
+		return -1; // Invalid header content
+	}
+	startPos += 6; // name="
+	int endPos = headerValue.indexOf(';', startPos);
+
+	String name;
+	if(endPos < 0) {
+		name = headerValue.substring(startPos, headerValue.length() - 1);
+	} else {
+		name = headerValue.substring(startPos, endPos - 1);
+	}
+	// get stream corresponding to field name
+	parser->stream = parser->request.files[name];
+
+	// inject file name, if any
+	startPos = headerValue.indexOf(F("filename="));
+	if(startPos < 0) {
+		return 0;
+	}
+
+	startPos += 10; // filename="
+	endPos = headerValue.indexOf('"', startPos);
+	if(endPos < 0) {
+		return 0;
+	}
+
+	String fileName = headerValue.substring(startPos, endPos);
+	// sanitize the name -> remove any slashes and trailing dots
+	fileName.replace('/', '-');
+	fileName.trim(".");
+	if(fileName.length() == 0) {
+		return 0;
+	}
+
+	// if the stream is of type FileStream and the name is not set
+	// then we can set the name and flags to create-write
+	auto stream = parser->stream;
+	if(stream == nullptr) {
+		return 0;
+	}
+
+	if(stream->getStreamType() == eSST_Wrapper) {
+		auto wrapper = static_cast<StreamWrapper*>(stream);
+		stream = wrapper->getSource();
+	}
+
+	if(stream->getStreamType() == eSST_File) {
+		auto fileStream = static_cast<IFS::FileStream*>(stream);
+		if(fileStream->fileName().length() == 0) {
+			fileStream->open(fileName, File::CreateNewAlways | File::WriteOnly);
 		}
-		startPos += 6; // name="
-		int endPos = headerValue.indexOf(';', startPos);
+		return 0;
+	}
 
-		String name;
-		if(endPos < 0) {
-			name = headerValue.substring(startPos, headerValue.length() - 1);
-		} else {
-			name = headerValue.substring(startPos, endPos - 1);
-		}
-		// get stream corresponding to field name
-		parser->stream = parser->request.files[name];
+	if(stream->getStreamType() == eSST_HeaderChecker) {
+		String contentLength = headers[HTTP_HEADER_CONTENT_LENGTH];
+		PartCheckerStream::FilePart part = {
+			.name = name,
+			.fileName = fileName,
+			.mime = headers[HTTP_HEADER_CONTENT_TYPE],
+			.length = contentLength ? contentLength.toInt() : -1,
+		};
 
-		// inject file name, if any
-		startPos = headerValue.indexOf(FS("filename="));
-		if(startPos < 0) {
-			goto END;
-		}
-
-		startPos += 10; // filename="
-		endPos = headerValue.indexOf('"', startPos);
-		if(endPos < 0) {
-			goto END;
-		}
-
-		String fileName = headerValue.substring(startPos, endPos);
-		// sanitize the name -> remove any slashes and trailing dots
-		fileName.replace('/', '-');
-		fileName.trim('.');
-		if(fileName.length() == 0) {
-			goto END;
-		}
-
-		// if the stream is of type FileStream and the name is not set
-		// then we can set the name and flags to create-write
-		auto stream = parser->stream;
-		if(stream != nullptr) {
-			if(stream->getStreamType() == eSST_Wrapper) {
-				auto wrapper = static_cast<StreamWrapper*>(stream);
-				stream = wrapper->getSource();
-			}
-
-			if(stream->getStreamType() == eSST_File) {
-				auto fileStream = static_cast<IFS::FileStream*>(stream);
-				if(fileStream->fileName().length() == 0) {
-					fileStream->open(fileName, File::CreateNewAlways | File::WriteOnly);
-				}
-			} else if(stream->getStreamType() == eSST_HeaderChecker) {
-				PartCheckerStream::FilePart part = {
-					.name = name,
-					.fileName = fileName,
-					.mime = headers[HTTP_HEADER_CONTENT_TYPE],
-					.length = (headers.contains(HTTP_HEADER_CONTENT_LENGTH)
-								   ? atoi(headers[HTTP_HEADER_CONTENT_LENGTH].c_str())
-								   : -1),
-				};
-
-				auto checkerStream = static_cast<PartCheckerStream*>(stream);
-				if(!checkerStream->checkHeaders(headers, part)) {
-					// the stream will be freed later. For now mark it as not usable.
-					parser->stream = nullptr;
-				}
-			}
+		auto checkerStream = static_cast<PartCheckerStream*>(stream);
+		if(!checkerStream->checkHeaders(headers, part)) {
+			// the stream will be freed later. For now mark it as not usable.
+			parser->stream = nullptr;
 		}
 	}
 
-END:
 	return 0;
 }
 

@@ -33,17 +33,17 @@ public:
 	 * @param callback
 	 * @param stream - The actual stream doing the work. The stream is owned and will be deleted here
 	 */
-	PartCheckerStream(CheckerCallback callback, ReadWriteStream* source) : StreamWrapper(source), callback(callback)
+	PartCheckerStream(ReadWriteStream* source, CheckerCallback callback) : StreamWrapper(source), callback(callback)
 	{
 	}
 
 	bool checkHeaders(const HttpHeaders& headers, const FilePart& part)
 	{
-		save = callback(headers, source, part);
+		save = callback(headers, getSource(), part);
 		return save;
 	}
 
-	bool isSuccess()
+	bool isValid() const override
 	{
 		return save;
 	}
@@ -60,20 +60,20 @@ public:
 			return size;
 		}
 
-		return source->write(buffer, size);
+		return getSource()->write(buffer, size);
 	}
 
 	uint16_t readMemoryBlock(char* data, int bufSize) override
 	{
-		return source->readMemoryBlock(data, bufSize);
+		return getSource()->readMemoryBlock(data, bufSize);
 	}
 
 	bool isFinished() override
 	{
-		return source->isFinished();
+		return getSource()->isFinished();
 	}
 
 private:
-	bool save = true;
+	bool save{true};
 	CheckerCallback callback;
 };

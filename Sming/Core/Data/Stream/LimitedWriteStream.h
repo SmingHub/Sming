@@ -17,14 +17,13 @@
 class LimitedWriteStream : public StreamWrapper
 {
 public:
-	LimitedWriteStream(size_t maxBytes, ReadWriteStream* source)
-		: maxBytes(maxBytes), writePos(0), StreamWrapper(source)
+	LimitedWriteStream(ReadWriteStream* source, size_t maxBytes) : StreamWrapper(source), maxBytes(maxBytes)
 	{
 	}
 
-	bool isSuccess()
+	bool isValid()
 	{
-		return !(writePos > maxBytes);
+		return writePos <= maxBytes;
 	}
 
 	size_t write(const uint8_t* buffer, size_t size) override
@@ -35,20 +34,10 @@ public:
 			return size;
 		}
 
-		return source->write(buffer, size);
-	}
-
-	uint16_t readMemoryBlock(char* data, int bufSize) override
-	{
-		return source->readMemoryBlock(data, bufSize);
-	}
-
-	bool isFinished() override
-	{
-		return source->isFinished();
+		return getSource()->write(buffer, size);
 	}
 
 private:
 	const size_t maxBytes;
-	size_t writePos;
+	size_t writePos{0};
 };
