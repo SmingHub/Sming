@@ -7,21 +7,28 @@ docs/build
 docs/source/_inc
 *.pyc
 
-# dev tools, editors, etc.
+# Eclipse
 .project
 .cproject
 language.settings.xml
 .settings
-nbproject
-.*.swp
+.metadata
+
+# MS Visual Studio Code
 .vscode
 *.code-workspace
-GTAGS
-GRTAGS
-GPATH
 
 # Microsoft Visual SourceSafe files
 vssver2.scc
 
-.metadata
+# Other dev tools, editors, etc.
+nbproject
+.*.swp
+GTAGS
+GRTAGS
+GPATH
+
+# Tag files created by build system
 .submodule
+*.built
+*.completed
