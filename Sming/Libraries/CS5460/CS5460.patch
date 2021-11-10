@@ -1,5 +1,18 @@
+diff --git a/CS5460.cpp b/CS5460.cpp
+index ad1c446..09efc48 100644
+--- a/CS5460.cpp
++++ b/CS5460.cpp
+@@ -45,7 +45,7 @@ CS5460::CS5460(uint8_t _cs, uint8_t _reset, uint8_t _edir, uint8_t _eout):curren
+  */
+ void CS5460::init() const
+ {
+-	pinMode(MISO, INPUT_PULLUP);
++	//pinMode(SPI_MISO, INPUT_PULLUP);
+ 	select();
+ 	SPI.begin();
+ 	SPI.beginTransaction(SETTING);
 diff --git a/CS5460.h b/CS5460.h
-index 0fbbb5b..fe7ff1d 100644
+index 0fbbb5b..08d0d28 100644
 --- a/CS5460.h
 +++ b/CS5460.h
 @@ -1,7 +1,7 @@
