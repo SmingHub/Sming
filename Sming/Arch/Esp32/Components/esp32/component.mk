@@ -1,7 +1,5 @@
 SDK_COMPONENTS_PATH := $(IDF_PATH)/components
 
-# See build.mk for default ESP_VARIANT - determines toolchain
-
 COMPONENT_DEPENDS := libc
 
 COMPONENT_SRCDIRS := src

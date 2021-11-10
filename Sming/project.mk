@@ -78,17 +78,16 @@ CONFIG_VARS			+= USER_CFLAGS
 DEBUG_VARS			+= GLOBAL_CFLAGS
 GLOBAL_CFLAGS = \
 	-DSMING_ARCH=$(SMING_ARCH) \
-	-DESP_VARIANT=$(ESP_VARIANT) \
+	-DSMING_SOC=$(SMING_SOC) \
 	-DPROJECT_DIR=\"$(PROJECT_DIR)\" \
 	-DSMING_HOME=\"$(SMING_HOME)\" \
 	$(USER_CFLAGS)
 CPPFLAGS			+= $(GLOBAL_CFLAGS)
 
-ifneq (,$(ESP_VARIANT))
+# Provide a SUBARCH_xxxx value for code use, analogous to ARCH_xxx
 DEBUG_VARS		+= SMING_SUBARCH
-SMING_SUBARCH	:= SUBARCH_$(call ToUpper,$(ESP_VARIANT))
+SMING_SUBARCH	:= SUBARCH_$(call ToUpper,$(SMING_SOC))
 GLOBAL_CFLAGS	+= -D$(SMING_SUBARCH)=1
-endif
 
 # Targets to be added as dependencies of the application, built directly in this make instance
 CUSTOM_TARGETS			:=
@@ -690,8 +689,7 @@ $(shell	mkdir -p $(dir $1);
 endef
 
 # Update build type cache
-$(eval $(call WriteCacheValues,$(BUILD_TYPE_FILE),SMING_ARCH SMING_RELEASE STRICT))
-$(eval $(call WriteCacheValues,$(BUILD_SUBTYPE_FILE),ESP_VARIANT))
+$(eval $(call WriteCacheValues,$(BUILD_TYPE_FILE),SMING_SOC SMING_RELEASE STRICT))
 
 # Update config cache file
 # We store the list of variable names to ensure that any not actively in use don't get lost

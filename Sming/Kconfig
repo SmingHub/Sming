@@ -2,7 +2,7 @@
 # For a description of the syntax of this configuration file,
 # see kconfig/kconfig-language.txt.
 #
-mainmenu "Sming Framework Configuration: $(SMING_ARCH) $(ESP_VARIANT)"
+mainmenu "${SMING_SOC} Sming Framework Configuration"
 
     config SMING_ARCH
         string

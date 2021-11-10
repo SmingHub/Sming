@@ -4,8 +4,6 @@
 #
 ##############
 
-override ESP_VARIANT :=
-
 CPPFLAGS += \
 	-DARCH_RP2040 \
 	-march=armv6-m \

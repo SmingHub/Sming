@@ -76,8 +76,8 @@ If you want to revert to using the default SDK settings then issue the following
 You can also configure per-project custom settings via :envvar:`SDK_CUSTOM_CONFIG`.
 
 
-Processor variants
-------------------
+SoC variants
+------------
 
 Sming leverages the `ESP IDF HAL <https://docs.espressif.com/projects/esp-idf/en/v4.3/esp32/api-guides/hardware-abstraction.html>`__
 to support multiple processor variants.
@@ -92,7 +92,7 @@ This is still at an early stage of development however basic applications should
 You can change variants like this:
 
 ```
-make SMING_ARCH=Esp32 ESP_VARIANT=esp32c3
+make SMING_SOC=esp32c3
 ```
 
 Each variant uses a different build directory, e.g. ``out/Esp32/esp32c3/...`` to avoid conflicts.

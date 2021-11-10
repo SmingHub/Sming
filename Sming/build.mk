@@ -3,7 +3,7 @@
 include $(SMING_HOME)/util.mk
 
 # Add debug variable names to DEBUG_VARS so they can be easily inspected via `make list-config`
-DEBUG_VARS		:=
+DEBUG_VARS := SMING_HOME
 
 define SocFromPath
 $(patsubst %-soc.json,%,$(notdir $1))
@@ -21,26 +21,26 @@ $(foreach a,$(call ListSubDirs,$(SMING_HOME)/Arch),$(eval $(call SetArchSocs,$(n
 export SOC_CONFIG_FILES = $(sort $(wildcard $(SMING_HOME)/Arch/*/*-soc.json))
 AVAILABLE_SOCS := $(patsubst %-soc.json,%,$(notdir $(SOC_CONFIG_FILES)))
 
-#
-DEBUG_VARS		+= SMING_HOME SMING_ARCH
-ifeq (,$(SMING_ARCH))
-override SMING_ARCH	:= Esp8266
+# Resolve SMING_ARCH and SMING_SOC settings
+DEBUG_VARS += SMING_ARCH SMING_SOC
+# Allow Host override for building utilities
+ifeq ($(SMING_ARCH),Host)
+  override SMING_SOC := host
+else ifeq (,$(SMING_SOC))
+  ifeq (,$(SMING_ARCH))
+    override SMING_ARCH := Esp8266
+  endif
+  override SMING_SOC := $(call ToLower,$(SMING_ARCH))
+else
+  override SMING_SOC := $(call ToLower,$(SMING_SOC))
+  SMING_ARCH := $(notdir $(call dirx,$(filter %/$(SMING_SOC)-soc.json,$(SOC_CONFIG_FILES))))
+  ifeq (,$(SMING_ARCH))
+    $(info Available: $(AVAILABLE_SOCS))
+    $(error Unknown SOC '$(SMING_SOC)')
+  endif
 endif
 export SMING_ARCH
-
-#
-DEBUG_VARS		+= SMING_SOC
-ifeq (,$(SMING_SOC))
-override SMING_SOC := $(call ToLower,$(SMING_ARCH))
-else
-override SMING_SOC := $(call ToLower,$(SMING_SOC))
-override SMING_ARCH := $(notdir $(call dirx,$(filter %/$(SMING_SOC)-soc.json,$(SOC_CONFIG_FILES))))
-ifeq (,$(SMING_ARCH))
-$(info Available: $(AVAILABLE_SOCS))
-$(error Unknown SOC '$(SMING_SOC)')
-endif
-override ESP_VARIANT := $(SMING_SOC)
-endif
+export SMING_SOC
 
 # SOC config for currently selected variant
 export SOC_CONFIG_FILE := $(SMING_HOME)/Arch/$(SMING_ARCH)/$(SMING_SOC)-soc.json
@@ -248,10 +248,11 @@ endif
 
 DEBUG_VARS		+= USER_LIBDIR OUT_BASE BUILD_BASE FW_BASE TOOLS_BASE SMING_ARCH_FULL
 
-ifdef ESP_VARIANT
-SMING_ARCH_FULL := $(SMING_ARCH)/$(ESP_VARIANT)
-else
+# Architectures with multiple variants require an extra subdirectory
+ifeq (,$(word 2,$(ARCH_$(SMING_ARCH)_SOC)))
 SMING_ARCH_FULL	:= $(SMING_ARCH)
+else
+SMING_ARCH_FULL := $(SMING_ARCH)/$(SMING_SOC)
 endif
 
 OUT_BASE		:= out/$(SMING_ARCH_FULL)/$(BUILD_TYPE)

@@ -22,10 +22,8 @@ endif
 
 export IDF_TOOLS_PATH := $(call FixPath,$(IDF_TOOLS_PATH))
 
-ifndef ESP_VARIANT
-override ESP_VARIANT := esp32
-endif
-
+# ESP_VARIANT used internally for ESP32 only
+ESP_VARIANT := $(SMING_SOC)
 export ESP_VARIANT
 
 ifeq ($(ESP_VARIANT),esp32c3)
