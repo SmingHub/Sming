@@ -17,7 +17,7 @@ itself is event triggered and executes a small application to respond to the
 event.
 
 The virtual machine architecture is standardized in the Linux kernel, with the
-RIOT implementation following the ISA[ISA] defined for Linux.
+RIOT implementation following the [ISA](https://github.com/iovisor/bpf-docs/blob/master/eBPF.md) defined for Linux.
 
 ### Security
 
@@ -81,10 +81,6 @@ integer-based values between invocations. The key-value is accessible via calls.
 Every VM has its own key-value store and one global key-value store exists for
 sharing values between instances.
 
-
 ## See also
 
 [rBPF paper](https://hal.inria.fr/hal-03019639)
-
-
-[ISA]: https://github.com/iovisor/bpf-docs/blob/master/eBPF.md

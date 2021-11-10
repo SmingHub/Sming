@@ -43,8 +43,15 @@ The code itself, as visible in the `container/increment.c` source file is only a
 functions. It receives the argument and interprets it as a pointer to a 64 bit
 number. It increments the number and returns it.
 
-The source code of the Femto-Container application is in the `fc` subdirectory
-of the tutorial directory. Compiling the code is done with make::
+.. code:: c++
+
+	int increment(unsigned long* context)
+	{
+		return *context + 1;
+	}
+
+The source code of the Femto-Container application is in the `container` subdirectory. 
+Compiling the code is done with make::
 
 	make blobs
 
