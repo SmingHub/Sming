@@ -37,4 +37,8 @@ blobs-clean: $(CONTAINER_FOLDER) ##Cleans container blobs
 	$(Q) rm -rf $(BLOB_FOLDER)
 	$(Q) (cd $<; $(MAKE) --silent -f $(COMPONENT_PATH)/rbpf.inc.mk clean)
 	
+.PHONY: blobs-dump
+blobs-dump: $(CONTAINER_FOLDER) ##Show container application 
+	$(Q) (cd $<; $(MAKE) --silent -f $(COMPONENT_PATH)/rbpf.inc.mk dump)
+	
 CUSTOM_TARGETS += blobs

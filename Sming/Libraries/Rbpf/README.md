@@ -5,7 +5,7 @@ The rBPF subsystem provides a minimal virtual machine for microcontrollers.
 ## Introduction
 
 rBPF is a virtual machine based on the popular Linux BPF virtual machine. It is
-small and fast enough to host multiple instances on platforms targeted by RIOT.
+small and fast enough to host multiple instances on architectures targeted by Sming.
 
 By using the already standardized ISA, the toolchain for BPF can be reused to
 compile VM application for RIOT.

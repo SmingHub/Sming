@@ -44,3 +44,7 @@ $(RBPF_BINS): %.bin:%.o
 .PHONY: blobs
 blobs: $(RBPF_BINS)
 	$(XXD) -i $(notdir $<) | sed 's/^unsigned/const unsigned/g'> $(BLOB_FOLDER)/$(notdir $<).h
+	
+.PHONY: dump
+dump: $(RBPF_BINS)
+	$(RBPF_GENRBF) dump $< 
