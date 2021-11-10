@@ -1,4 +1,7 @@
-int increment(unsigned long* context)
+#include "increment.h"
+
+// Modified context is returned to caller
+int increment(increment_context_t* context)
 {
-	return *context + 1;
+	return context->value + 1;
 }

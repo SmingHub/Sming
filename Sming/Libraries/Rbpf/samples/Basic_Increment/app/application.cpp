@@ -21,11 +21,77 @@
 
 #include <bpf.h>
 #include <rbpf/containers.h>
+#include <increment.h>
+#include <int64/multiply.h>
 
 namespace
 {
 /* Pre-allocated stack for the virtual machine */
-static uint8_t stack[512] = {0};
+static uint8_t stack[512]{};
+
+using Container = FSTR::Array<uint8_t>;
+
+/**
+ * @brief Execute a container
+ * @param container Container code to execute
+ * @param ctx IN/OUT Passed to container
+ * @retval int64_t Result returned from container
+ */
+template <typename Context> int64_t execute(const Container& container, Context& ctx)
+{
+	LOAD_FSTR_ARRAY(appBinary, container);
+
+	/* Define the application */
+	bpf_t bpf = {
+		.application = appBinary,			   /* The increment.bin content */
+		.application_len = container.length(), /* Length of the application */
+		.stack = stack,						   /* Preallocated stack */
+		.stack_size = sizeof(stack),		   /* And the length */
+	};
+
+	bpf_setup(&bpf);
+	int64_t result{0};
+	int err = bpf_execute_ctx(&bpf, &ctx, sizeof(ctx), &result);
+	if(err != 0) {
+		debug_e("Error! VM call failed with %d", err);
+	}
+	return result;
+}
+
+void test_increment()
+{
+	Serial.println(F("Calling 'increment()' in VM"));
+	increment_context_t ctx{
+		.value = 0,
+	};
+	auto res = execute(rBPF::Container::increment, ctx);
+	Serial.print(_F("input "));
+	Serial.print(ctx.value);
+	Serial.print(_F(", result "));
+	Serial.print(res);
+	Serial.print(_F(", expected "));
+	Serial.println(ctx.value + 1);
+}
+
+void test_multiply()
+{
+	Serial.println(F("Calling 'multiply()' in VM"));
+	multiply_context_t ctx{
+		.input1 = 120000005,
+		.input2 = 120000023,
+	};
+	auto res = execute(rBPF::Container::int64_multiply, ctx);
+	Serial.print(_F("input ("));
+	Serial.print(ctx.input1);
+	Serial.print(", ");
+	Serial.print(ctx.input2);
+	Serial.print(_F("), output "));
+	Serial.print(ctx.output);
+	Serial.print(_F(", expected "));
+	Serial.print(int64_t(ctx.input1) * ctx.input2);
+	Serial.print(_F(", result "));
+	Serial.println(res);
+}
 
 } // namespace
 
@@ -39,27 +105,6 @@ void init()
 
 	Serial.println("All up, running the Femto-Container application now");
 
-	LOAD_FSTR_ARRAY(appBinary, rBPF::Container::increment);
-
-	/* Define the application */
-	bpf_t bpf = {
-		.application = appBinary,								/* The increment.bin content */
-		.application_len = rBPF::Container::increment.length(), /* Length of the application */
-		.stack = stack,											/* Preallocated stack */
-		.stack_size = sizeof(stack),							/* And the length */
-	};
-
-	/* Context value to pass to the VM */
-	uint64_t ctx = 0;
-	int64_t result = 0;
-
-	bpf_setup(&bpf);
-	int res = bpf_execute_ctx(&bpf, &ctx, sizeof(ctx), &result);
-
-	Serial.print(_F("Input to the VM: "));
-	Serial.println(ctx);
-	Serial.print(_F("Return code (expected 0): "));
-	Serial.println(res);
-	Serial.print(_F("Result of the VM: "));
-	Serial.println(result);
+	test_increment();
+	test_multiply();
 }
