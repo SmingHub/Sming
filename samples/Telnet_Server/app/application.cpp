@@ -16,22 +16,22 @@ void checkHeap()
 {
 	int currentHeap = system_get_free_heap_size();
 	if(currentHeap != savedHeap) {
-		Debug.printf("Heap change, current = %d\r\n", currentHeap);
+		Debug.printf(_F("Heap change, current = %u\r\n"), currentHeap);
 		savedHeap = currentHeap;
 	}
 }
 
 void applicationCommand(String commandLine, CommandOutput* commandOutput)
 {
-	commandOutput->printf("Hello from Telnet Example application\r\nYou entered : '");
-	commandOutput->printf(commandLine.c_str());
-	commandOutput->printf("'\r\n");
-	commandOutput->printf("Tokenized commandLine is : \r\n");
+	commandOutput->print(_F("Hello from Telnet Example application\r\nYou entered : '"));
+	commandOutput->print(commandLine.c_str());
+	commandOutput->println('\'');
+	commandOutput->println(_F("Tokenized commandLine is : "));
 
 	Vector<String> commandToken;
-	int numToken = splitString(commandLine, ' ', commandToken);
-	for(int i = 0; i < numToken; i++) {
-		commandOutput->printf("%d : %s\r\n", i, commandToken.at(i).c_str());
+	unsigned numToken = splitString(commandLine, ' ', commandToken);
+	for(unsigned i = 0; i < numToken; i++) {
+		commandOutput->printf(_F("%u : %s\r\n"), i, commandToken.at(i).c_str());
 	}
 }
 
@@ -40,19 +40,19 @@ void appheapCommand(String commandLine, CommandOutput* commandOutput)
 	Vector<String> commandToken;
 	int numToken = splitString(commandLine, ' ', commandToken);
 	if(numToken != 2) {
-		commandOutput->printf("Usage appheap on/off/now\r\n");
+		commandOutput->println(_F("Usage appheap on/off/now"));
 	} else if(commandToken[1] == "on") {
-		commandOutput->printf("Timer heap display started \r\n");
+		commandOutput->println(_F("Timer heap display started"));
 		savedHeap = 0;
 		memoryTimer.initializeMs(250, checkHeap).start();
 	} else if(commandToken[1] == "off") {
-		commandOutput->printf("Timer heap display stopped \r\n");
+		commandOutput->println(_F("Timer heap display stopped"));
 		savedHeap = 0;
 		memoryTimer.stop();
 	} else if(commandToken[1] == "now") {
-		commandOutput->printf("Heap current free = %d\r\n", system_get_free_heap_size());
+		commandOutput->printf(_F("Heap current free = %u\r\n"), system_get_free_heap_size());
 	} else {
-		commandOutput->printf("Usage appheap on/off/now\r\n");
+		commandOutput->println(_F("Usage appheap on/off/now"));
 	}
 }
 
@@ -65,8 +65,8 @@ bool tcpServerClientReceive(TcpClient& client, char* data, int size)
 {
 	debugf("Application DataCallback : %s, %d bytes \r\n", client.getRemoteIp().toString().c_str(), size);
 	debugf("Data : %s", data);
-	client.sendString("sendString data\r\n", false);
-	client.writeString("writeString data\r\n", 0);
+	client.sendString(F("sendString data\r\n"), false);
+	client.writeString(F("writeString data\r\n"), 0);
 	if(strcmp(data, "close") == 0) {
 		debugf("Closing client");
 		client.close();
@@ -86,18 +86,18 @@ void startServers()
 {
 	tcpServer.listen(8023);
 
-	Serial.println("\r\n=== TCP SERVER Port 8023 STARTED ===");
+	Serial.println(_F("\r\n=== TCP SERVER Port 8023 STARTED ==="));
 	Serial.println(WifiStation.getIP());
-	Serial.println("==============================\r\n");
+	Serial.println(_F("==============================\r\n"));
 
 	telnetServer.listen(23);
 
-	Serial.println("\r\n=== Telnet SERVER Port 23 STARTED ===");
+	Serial.println(_F("\r\n=== Telnet SERVER Port 23 STARTED ==="));
 	Serial.println(WifiStation.getIP());
-	Serial.println("==============================\r\n");
+	Serial.println(_F("==============================\r\n"));
 
-	commandHandler.registerCommand(CommandDelegate("application", "This command is defined by the application\r\n",
-												   "testGroup", applicationCommand));
+	commandHandler.registerCommand(CommandDelegate(
+		F("application"), F("This command is defined by the application\r\n"), F("testGroup"), applicationCommand));
 }
 
 void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
@@ -125,9 +125,9 @@ void init()
 	Debug.setDebug(Serial);
 	Debug.initCommand();
 	Debug.start();
-	Debug.printf("This is the debug output\r\n");
+	Debug.println(_F("This is the debug output"));
 	telnetServer.enableDebug(true); /* is default but here to show possibility */
-	commandHandler.registerCommand(
-		CommandDelegate("appheap", "Usage appheap on/off/now for heapdisplay\r\n", "testGroup", appheapCommand));
+	commandHandler.registerCommand(CommandDelegate(F("appheap"), F("Usage appheap on/off/now for heapdisplay\r\n"),
+												   F("testGroup"), appheapCommand));
 	memoryTimer.initializeMs(250, checkHeap).start();
 }
