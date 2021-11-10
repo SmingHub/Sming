@@ -20,7 +20,7 @@
 #include <SmingCore.h>
 
 #include <bpf.h>
-#include <rbpf/container/increment.h>
+#include <rbpf/containers.h>
 
 namespace
 {
