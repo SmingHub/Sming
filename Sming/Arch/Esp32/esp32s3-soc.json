@@ -1,4 +1,112 @@
 {
     "variant": "esp32s3",
-    "name": "ESP32-S3"
+    "name": "ESP32-S3",
+    "peripherals": {
+        "ADC": {
+            "sigmask": "ADC.+|sar_.+|ext_adc_start"
+        },
+        "CAM": {
+            "sigmask": "CAM.+"
+        },
+        "CLOCKS": {
+            "sigmask": "CLK_.+|XTAL_.+"
+        },
+        "DEDIC_GPIO": {
+            "sigmask": "pro_alonegpio.+|Core1_gpio.+"
+        },
+        "GPIO": {
+            "sigmask": "GPIO.+|RTC_GPIO.+"
+        },
+        "I2C[0-1]": {
+            "sigmask": "I2CEXT{idx}.+"
+        },
+        "I2S[0-1]": {
+            "sigmask": "I2S{idx}.+"
+        },
+        "JTAG": {
+            "sigmask": "MTCK|MTDI|MTDO|MTMS"
+        },
+        "LCD": {
+            "sigmask": "LCD_.+"
+        },
+        "LEDC": {
+            "sigmask": "ledc_.+"
+        },
+        "PCNT[0-1]": {
+            "sigmask": "pcnt_ctrl_ch{idx}.+|pcnt_sig_ch{idx}.+"
+        },
+        "MCPWM[0-1]": {
+            "sigmask": "pwm{idx}_.+"
+        },
+        "RMT": {
+            "sigmask": "rmt_.+"
+        },
+        "SDHOST": {
+            "sigmask": "sdhost.+"
+        },
+        "SIGMA_DELTA": {
+            "sigmask": "gpio_sd.+"
+        },
+        "SPI1": {
+            "sigmask": "SPI^\\d.+"
+        },
+        "SPI2": {
+            "sigmask": "FSPI.+"
+        },
+        "SPI3": {
+            "sigmask": "SPI3_.+"
+        },
+        "SUBSPI": {
+            "sigmask": "SUBSPI.+"
+        },
+        "TOUCH": {
+            "sigmask": "TOUCH.+"
+        },
+        "TWAI": {
+            "sigmask": "twai_.+"
+        },
+        "UART0": {
+            "sigmask": "U0.+",
+            "default": {
+                "TXD": [
+                    "U0TXD",
+                    43
+                ],
+                "RXD": [
+                    "U0RXD",
+                    44
+                ]
+            }
+        },
+        "UART1": {
+            "sigmask": "U1.+",
+            "default": {
+                "TXD": [
+                    "U1TXD_out",
+                    10
+                ],
+                "RXD": [
+                    "U1RXD_in",
+                    9
+                ]
+            }
+        },
+        "UART2": {
+            "sigmask": "U2.+",
+            "default": {
+                "TXD": [
+                    "U2TXD_out",
+                    17
+                ],
+                "RXD": [
+                    "U2RXD_in",
+                    16
+                ]
+            }
+        },
+        "USB": {
+            "sigmask": "usb_.+|USB_.+"
+        },
+        "WIFI": {}
+    }
 }

@@ -1,4 +1,7 @@
 {
     "variant": "host",
-    "name": "Host Emulator"
+    "name": "Host Emulator",
+    "peripherals": {
+        "WIFI": {}
+    }
 }

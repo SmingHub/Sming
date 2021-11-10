@@ -1,4 +1,51 @@
 {
     "variant": "esp8266",
-    "name": "ESP8266EX"
+    "name": "ESP8266EX",
+    "peripherals": {
+        "CLOCKS": {
+            "sigmask": "CLK.+"
+        },
+        "GPIO": {
+            "sigmask": "GPIO.+"
+        },
+        "JTAG": {
+            "sigmask": "MTCK|MTDI|MTDO|MTMS"
+        },
+        "UART0": {
+            "sigmask": "U0.+",
+            "default": {
+                "TXD": [
+                    "U0TXD",
+                    1
+                ],
+                "RXD": [
+                    "U0RXD",
+                    3
+                ]
+            }
+        },
+        "UART1": {
+            "sigmask": "U1.+",
+            "default": {
+                "TXD": [
+                    "U1TXD",
+                    2
+                ],
+                "RXD": null
+            }
+        },
+        "SDIO": {
+            "sigmask": "SD.+"
+        },
+        "SPI0": {
+            "sigmask": "SPI.+"
+        },
+        "SPI1": {
+            "sigmask": "HSPI.+"
+        },
+        "I2S": {
+            "sigmask": "I2S.+"
+        },
+        "WIFI": {}
+    }
 }

@@ -725,11 +725,12 @@ KCONFIG_ENV := \
 	KCONFIG_CONFIG=$(KCONFIG_CONFIG)
 
 CFGTOOL_CMDLINE = $(KCONFIG_ENV) $(PYTHON) $(SMING_TOOLS)/cfgtool.py $(CONFIG_CACHE_FILE)
+MENUCONFIG = MENUCONFIG_STYLE="separator=fg:white,bg:red" $(PYTHON) -m menuconfig
 
 .PHONY: menuconfig
 menuconfig: checksoc ##Run option editor
 	$(Q) $(CFGTOOL_CMDLINE) --to-kconfig
-	$(Q) $(KCONFIG_ENV) $(PYTHON) -m menuconfig $(SMING_HOME)/Kconfig
+	$(Q) $(KCONFIG_ENV) $(MENUCONFIG) $(SMING_HOME)/Kconfig
 	$(Q) $(CFGTOOL_CMDLINE) --from-kconfig
 
 .PHONY: list-soc
@@ -745,3 +746,17 @@ ifeq (,$(findstring $(SMING_SOC),$(PROJECT_SOC)))
 else
 	$(info - YES: $(SMING_SOC))
 endif
+
+BOARDTOOL_CMDLINE = $(PYTHON) $(SMING_TOOLS)/boardtool.py $(if $V,-v)
+
+.PHONY: list-default-pins
+list-default-pins: ##List default periperal pins
+	$(Q) $(BOARDTOOL_CMDLINE) list-default-pins
+
+PIN_MENU := $(abspath $(OUT_BASE)/../pin.menu)
+PIN_CONFIG := $(abspath $(OUT_BASE)/../pin.cfg)
+
+.PHONY: pinmenu
+pinmenu: checksoc ##Run pin editor
+	$(Q) $(BOARDTOOL_CMDLINE) generate-pinmenu > $(PIN_MENU)
+	$(Q) CONFIG_=SMG_ KCONFIG_CONFIG=$(PIN_CONFIG) $(MENUCONFIG) $(PIN_MENU)

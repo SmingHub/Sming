@@ -1,0 +1,300 @@
+[io_mux]
+gpio pad f0 f1 f2 f3 f4 f5 reset notes
+0 GPIO0 GPIO0 CLK_OUT1 GPIO0 - - EMAC_TX_CLK 3 R
+1 U0TXD U0TXD CLK_OUT3 GPIO1 - - EMAC_RXD2 3 -
+2 GPIO2 GPIO2 HSPIWP GPIO2 HS2_DATA0 SD_DATA0 - 2 R
+3 U0RXD U0RXD CLK_OUT2 GPIO3 - - - 3 -
+4 GPIO4 GPIO4 HSPIHD GPIO4 HS2_DATA1 SD_DATA1 EMAC_TX_ER 2 R
+5 GPIO5 GPIO5 VSPICS0 GPIO5 HS1_DATA6 - EMAC_RX_CLK 3 -
+6 SD_CLK SD_CLK SPICLK GPIO6 HS1_CLK U1CTS - 3 -
+7 SD_DATA_0 SD_DATA0 SPIQ GPIO7 HS1_DATA0 U2RTS - 3 -
+8 SD_DATA_1 SD_DATA1 SPID GPIO8 HS1_DATA1 U2CTS - 3 -
+9 SD_DATA_2 SD_DATA2 SPIHD GPIO9 HS1_DATA2 U1RXD - 3 -
+10 SD_DATA_3 SD_DATA3 SPIWP GPIO10 HS1_DATA3 U1TXD - 3 -
+11 SD_CMD SD_CMD SPICS0 GPIO11 HS1_CMD U1RTS - 3 -
+12 MTDI MTDI HSPIQ GPIO12 HS2_DATA2 SD_DATA2 EMAC_TXD3 2 R
+13 MTCK MTCK HSPID GPIO13 HS2_DATA3 SD_DATA3 EMAC_RX_ER 2 R
+14 MTMS MTMS HSPICLK GPIO14 HS2_CLK SD_CLK EMAC_TXD2 3 R
+15 MTDO MTDO HSPICS0 GPIO15 HS2_CMD SD_CMD EMAC_RXD3 3 R
+16 GPIO16 GPIO16 - GPIO16 HS1_DATA4 U2RXD EMAC_CLK_OUT 1 -
+17 GPIO17 GPIO17 - GPIO17 HS1_DATA5 U2TXD EMAC_CLK_180 1 -
+18 GPIO18 GPIO18 VSPICLK GPIO18 HS1_DATA7 - - 1 -
+19 GPIO19 GPIO19 VSPIQ GPIO19 U0CTS - EMAC_TXD0 1 -
+21 GPIO21 GPIO21 VSPIHD GPIO21 - - EMAC_TX_EN 1 -
+22 GPIO22 GPIO22 VSPIWP GPIO22 U0RTS - EMAC_TXD1 1 -
+23 GPIO23 GPIO23 VSPID GPIO23 HS1_STROBE - - 1 -
+25 GPIO25 GPIO25 - GPIO25 - - EMAC_RXD0 0 R
+26 GPIO26 GPIO26 - GPIO26 - - EMAC_RXD1 0 R
+27 GPIO27 GPIO27 - GPIO27 - - EMAC_RX_DV 0 R
+32 32K_XP GPIO32 - GPIO32 - - - 0 R
+33 32K_XN GPIO33 - GPIO33 - - - 0 R
+34 VDET_1 GPIO34 - GPIO34 - - - 0 R, I
+35 VDET_2 GPIO35 - GPIO35 - - - 0 R, I
+36 SENSOR_VP GPIO36 - GPIO36 - - - 0 R, I
+37 SENSOR_CAPP GPIO37 - GPIO37 - - - 0 R, I
+38 SENSOR_CAPN GPIO38 - GPIO38 - - - 0 R, I
+39 SENSOR_VN GPIO39 - GPIO39 - - - 0 R, I
+
+[rtc_mux]
+rtc gpio pad a0 a1 a2 f0 f1 notes
+0 36 SENSOR_VP ADC_H ADC1_CH0 - RTC_GPIO0 -
+1 37 SENSOR_CAPP ADC_H ADC1_CH1 - RTC_GPIO1 -
+2 38 SENSOR_CAPN ADC_H ADC1_CH2 - RTC_GPIO2 -
+3 39 SENSOR_VN ADC_H ADC1_CH3 - RTC_GPIO3 -
+4 34 VDET_1 - ADC1_CH6 - RTC_GPIO4 -
+5 35 VDET_2 - ADC1_CH7 - RTC_GPIO5 -
+6 25 GPIO25 DAC_1 ADC2_CH8 - RTC_GPIO6 -
+7 26 GPIO26 DAC_2 ADC2_CH9 - RTC_GPIO7 -
+8 33 32K_XN XTAL_32K_N ADC1_CH5 TOUCH8 RTC_GPIO8 -
+9 32 32K_XP XTAL_32K_P ADC1_CH4 TOUCH9 RTC_GPIO9 -
+10 4 GPIO4 - ADC2_CH0 TOUCH0 RTC_GPIO10 I2C_SCL ∗
+11 0 GPIO0 - ADC2_CH1 TOUCH1 RTC_GPIO11 I2C_SDA ∗
+12 2 GPIO2 - ADC2_CH2 TOUCH2 RTC_GPIO12 I2C_SCL ∗
+13 15 MTDO - ADC2_CH3 TOUCH3 RTC_GPIO13 I2C_SDA ∗
+14 13 MTCK - ADC2_CH4 TOUCH4 RTC_GPIO14 -
+15 12 MTDI - ADC2_CH5 TOUCH5 RTC_GPIO15 -
+16 14 MTMS - ADC2_CH6 TOUCH6 RTC_GPIO16 -
+17 27 GPIO27 - ADC2_CH7 TOUCH7 RTC_GPIO17 -
+
+[gpio_matrix]
+signal input default same output enable
+0 SPICLK_in 0 yes SPICLK_out SPICLK_oe
+1 SPIQ_in 0 yes SPIQ_out SPIQ_oe
+2 SPID_in 0 yes SPID_out SPID_oe
+3 SPIHD_in 0 yes SPIHD_out SPIHD_oe
+4 SPIWP_in 0 yes SPIWP_out SPIWP_oe
+5 SPICS0_in 0 yes SPICS0_out SPICS0_oe
+6 SPICS1_in 0 no SPICS1_out SPICS1_oe
+7 SPICS2_in 0 no SPICS2_out SPICS2_oe
+8 HSPICLK_in 0 yes HSPICLK_out HSPICLK_oe
+9 HSPIQ_in 0 yes HSPIQ_out HSPIQ_oe
+10 HSPID_in 0 yes HSPID_out HSPID_oe
+11 HSPICS0_in 0 yes HSPICS0_out HSPICS0_oe
+12 HSPIHD_in 0 yes HSPIHD_out HSPIHD_oe
+13 HSPIWP_in 0 yes HSPIWP_out HSPIWP_oe
+14 U0RXD_in 0 yes U0TXD_out 1’d1
+15 U0CTS_in 0 yes U0RTS_out 1’d1
+16 U0DSR_in 0 no U0DTR_out 1’d1
+17 U1RXD_in 0 yes U1TXD_out 1’d1
+18 U1CTS_in 0 yes U1RTS_out 1’d1
+23 I2S0O_BCK_in 0 no I2S0O_BCK_out 1’d1
+24 I2S1O_BCK_in 0 no I2S1O_BCK_out 1’d1
+25 I2S0O_WS_in 0 no I2S0O_WS_out 1’d1
+26 I2S1O_WS_in 0 no I2S1O_WS_out 1’d1
+27 I2S0I_BCK_in 0 no I2S0I_BCK_out 1’d1
+28 I2S0I_WS_in 0 no I2S0I_WS_out 1’d1
+29 I2CEXT0_SCL_in 1 no I2CEXT0_SCL_out 1’d1
+30 I2CEXT0_SDA_in 1 no I2CEXT0_SDA_out 1’d1
+31 pwm0_sync0_in 0 no sdio_tohost_int_out 1’d1
+32 pwm0_sync1_in 0 no pwm0_out0a 1’d1
+33 pwm0_sync2_in 0 no pwm0_out0b 1’d1
+34 pwm0_f0_in 0 no pwm0_out1a 1’d1
+35 pwm0_f1_in 0 no pwm0_out1b 1’d1
+36 pwm0_f2_in 0 no pwm0_out2a 1’d1
+37 - 0 no pwm0_out2b 1’d1
+39 pcnt_sig_ch0_in0 0 no - 1’d1
+40 pcnt_sig_ch1_in0 0 no - 1’d1
+41 pcnt_ctrl_ch0_in0 0 no - 1’d1
+42 pcnt_ctrl_ch1_in0 0 no - 1’d1
+43 pcnt_sig_ch0_in1 0 no - 1’d1
+44 pcnt_sig_ch1_in1 0 no - 1’d1
+45 pcnt_ctrl_ch0_in1 0 no - 1’d1
+46 pcnt_ctrl_ch1_in1 0 no - 1’d1
+47 pcnt_sig_ch0_in2 0 no - 1’d1
+48 pcnt_sig_ch1_in2 0 no - 1’d1
+49 pcnt_ctrl_ch0_in2 0 no - 1’d1
+50 pcnt_ctrl_ch1_in2 0 no - 1’d1
+51 pcnt_sig_ch0_in3 0 no - 1’d1
+52 pcnt_sig_ch1_in3 0 no - 1’d1
+53 pcnt_ctrl_ch0_in3 0 no - 1’d1
+54 pcnt_ctrl_ch1_in3 0 no - 1’d1
+55 pcnt_sig_ch0_in4 0 no - 1’d1
+56 pcnt_sig_ch1_in4 0 no - 1’d1
+57 pcnt_ctrl_ch0_in4 0 no - 1’d1
+58 pcnt_ctrl_ch1_in4 0 no - 1’d1
+61 HSPICS1_in 0 no HSPICS1_out HSPICS1_oe
+62 HSPICS2_in 0 no HSPICS2_out HSPICS2_oe
+63 VSPICLK_in 0 yes VSPICLK_out_mux VSPICLK_oe
+64 VSPIQ_in 0 yes VSPIQ_out VSPIQ_oe
+65 VSPID_in 0 yes VSPID_out VSPID_oe
+66 VSPIHD_in 0 yes VSPIHD_out VSPIHD_oe
+67 VSPIWP_in 0 yes VSPIWP_out VSPIWP_oe
+68 VSPICS0_in 0 yes VSPICS0_out VSPICS0_oe
+69 VSPICS1_in 0 no VSPICS1_out VSPICS1_oe
+70 VSPICS2_in 0 no VSPICS2_out VSPICS2_oe
+71 pcnt_sig_ch0_in5 0 no ledc_hs_sig_out0 1’d1
+72 pcnt_sig_ch1_in5 0 no ledc_hs_sig_out1 1’d1
+73 pcnt_ctrl_ch0_in5 0 no ledc_hs_sig_out2 1’d1
+74 pcnt_ctrl_ch1_in5 0 no ledc_hs_sig_out3 1’d1
+75 pcnt_sig_ch0_in6 0 no ledc_hs_sig_out4 1’d1
+76 pcnt_sig_ch1_in6 0 no ledc_hs_sig_out5 1’d1
+77 pcnt_ctrl_ch0_in6 0 no ledc_hs_sig_out6 1’d1
+78 pcnt_ctrl_ch1_in6 0 no ledc_hs_sig_out7 1’d1
+79 pcnt_sig_ch0_in7 0 no ledc_ls_sig_out0 1’d1
+80 pcnt_sig_ch1_in7 0 no ledc_ls_sig_out1 1’d1
+81 pcnt_ctrl_ch0_in7 0 no ledc_ls_sig_out2 1’d1
+82 pcnt_ctrl_ch1_in7 0 no ledc_ls_sig_out3 1’d1
+83 rmt_sig_in0 0 no ledc_ls_sig_out4 1’d1
+84 rmt_sig_in1 0 no ledc_ls_sig_out5 1’d1
+85 rmt_sig_in2 0 no ledc_ls_sig_out6 1’d1
+86 rmt_sig_in3 0 no ledc_ls_sig_out7 1’d1
+87 rmt_sig_in4 0 no rmt_sig_out0 1’d1
+88 rmt_sig_in5 0 no rmt_sig_out1 1’d1
+89 rmt_sig_in6 0 no rmt_sig_out2 1’d1
+90 rmt_sig_in7 0 no rmt_sig_out3 1’d1
+91 - - - rmt_sig_out4 1’d1
+92 - - - rmt_sig_out6 1’d1
+94 twai_rx 1 no rmt_sig_out7 1’d1
+95 I2CEXT1_SCL_in 1 no I2CEXT1_SCL_out 1’d1
+96 I2CEXT1_SDA_in 1 no I2CEXT1_SDA_out 1’d1
+97 host_card_detect_n_1 0 no host_ccmd_od_pullup_en_n 1’d1
+98 host_card_detect_n_2 0 no host_rst_n_1 1’d1
+99 host_card_write_prt_1 0 no host_rst_n_2 1’d1
+100 host_card_write_prt_2 0 no gpio_sd0_out 1’d1
+101 host_card_int_n_1 0 no gpio_sd1_out 1’d1
+102 host_card_int_n_2 0 no gpio_sd2_out 1’d1
+103 pwm1_sync0_in 0 no gpio_sd3_out 1’d1
+104 pwm1_sync1_in 0 no gpio_sd4_out 1’d1
+105 pwm1_sync2_in 0 no gpio_sd5_out 1’d1
+106 pwm1_f0_in 0 no gpio_sd6_out 1’d1
+107 pwm1_f1_in 0 no gpio_sd7_out 1’d1
+108 pwm1_f2_in 0 no pwm1_out0a 1’d1
+109 pwm0_cap0_in 0 no pwm1_out0b 1’d1
+110 pwm0_cap1_in 0 no pwm1_out1a 1’d1
+111 pwm0_cap2_in 0 no pwm1_out1b 1’d1
+112 pwm1_cap0_in 0 no pwm1_out2a 1’d1
+113 pwm1_cap1_in 0 no pwm1_out2b 1’d1
+114 pwm1_cap2_in 0 no pwm2_out1h 1’d1
+115 pwm2_flta 1 no pwm2_out1l 1’d1
+116 pwm2_fltb 1 no pwm2_out2h 1’d1
+117 pwm2_cap1_in 0 no pwm2_out2l 1’d1
+118 pwm2_cap2_in 0 no pwm2_out3h 1’d1
+119 pwm2_cap3_in 0 no pwm2_out3l 1’d1
+120 pwm3_flta 1 no pwm2_out4h 1’d1
+121 pwm3_fltb 1 no pwm2_out4l 1’d1
+122 pwm3_cap1_in 0 no - 1’d1
+123 pwm3_cap2_in 0 no twai_tx 1’d1
+124 pwm3_cap3_in 0 no twai_bus_off_on 1’d1
+125 - - - twai_clkout 1’d1
+140 I2S0I_DATA_in0 0 no I2S0O_DATA_out0 1’d1
+141 I2S0I_DATA_in1 0 no I2S0O_DATA_out1 1’d1
+142 I2S0I_DATA_in2 0 no I2S0O_DATA_out2 1’d1
+143 I2S0I_DATA_in3 0 no I2S0O_DATA_out3 1’d1
+144 I2S0I_DATA_in4 0 no I2S0O_DATA_out4 1’d1
+145 I2S0I_DATA_in5 0 no I2S0O_DATA_out5 1’d1
+146 I2S0I_DATA_in6 0 no I2S0O_DATA_out6 1’d1
+147 I2S0I_DATA_in7 0 no I2S0O_DATA_out7 1’d1
+148 I2S0I_DATA_in8 0 no I2S0O_DATA_out8 1’d1
+149 I2S0I_DATA_in9 0 no I2S0O_DATA_out9 1’d1
+150 I2S0I_DATA_in10 0 no I2S0O_DATA_out10 1’d1
+151 I2S0I_DATA_in11 0 no I2S0O_DATA_out11 1’d1
+152 I2S0I_DATA_in12 0 no I2S0O_DATA_out12 1’d1
+153 I2S0I_DATA_in13 0 no I2S0O_DATA_out13 1’d1
+154 I2S0I_DATA_in14 0 no I2S0O_DATA_out14 1’d1
+155 I2S0I_DATA_in15 0 no I2S0O_DATA_out15 1’d1
+156 - - - I2S0O_DATA_out16 1’d1
+157 - - - I2S0O_DATA_out17 1’d1
+158 - - - I2S0O_DATA_out18 1’d1
+159 - - - I2S0O_DATA_out19 1’d1
+160 - - - I2S0O_DATA_out20 1’d1
+161 - - - I2S0O_DATA_out21 1’d1
+162 - - - I2S0O_DATA_out22 1’d1
+163 - - - I2S0O_DATA_out23 1’d1
+164 I2S1I_BCK_in 0 no I2S1I_BCK_out 1’d1
+165 I2S1I_WS_in 0 no I2S1I_WS_out 1’d1
+166 I2S1I_DATA_in0 0 no I2S1O_DATA_out0 1’d1
+167 I2S1I_DATA_in1 0 no I2S1O_DATA_out1 1’d1
+168 I2S1I_DATA_in2 0 no I2S1O_DATA_out2 1’d1
+169 I2S1I_DATA_in3 0 no I2S1O_DATA_out3 1’d1
+170 I2S1I_DATA_in4 0 no I2S1O_DATA_out4 1’d1
+171 I2S1I_DATA_in5 0 no I2S1O_DATA_out5 1’d1
+172 I2S1I_DATA_in6 0 no I2S1O_DATA_out6 1’d1
+173 I2S1I_DATA_in7 0 no I2S1O_DATA_out7 1’d1
+174 I2S1I_DATA_in8 0 no I2S1O_DATA_out8 1’d1
+175 I2S1I_DATA_in9 0 no I2S1O_DATA_out9 1’d1
+121 pwm3_fltb 1 no pwm2_out4l 1’d1
+122 pwm3_cap1_in 0 no - 1’d1
+123 pwm3_cap2_in 0 no twai_tx 1’d1
+124 pwm3_cap3_in 0 no twai_bus_off_on 1’d1
+125 - - - twai_clkout 1’d1
+140 I2S0I_DATA_in0 0 no I2S0O_DATA_out0 1’d1
+141 I2S0I_DATA_in1 0 no I2S0O_DATA_out1 1’d1
+142 I2S0I_DATA_in2 0 no I2S0O_DATA_out2 1’d1
+143 I2S0I_DATA_in3 0 no I2S0O_DATA_out3 1’d1
+144 I2S0I_DATA_in4 0 no I2S0O_DATA_out4 1’d1
+145 I2S0I_DATA_in5 0 no I2S0O_DATA_out5 1’d1
+146 I2S0I_DATA_in6 0 no I2S0O_DATA_out6 1’d1
+147 I2S0I_DATA_in7 0 no I2S0O_DATA_out7 1’d1
+148 I2S0I_DATA_in8 0 no I2S0O_DATA_out8 1’d1
+149 I2S0I_DATA_in9 0 no I2S0O_DATA_out9 1’d1
+150 I2S0I_DATA_in10 0 no I2S0O_DATA_out10 1’d1
+151 I2S0I_DATA_in11 0 no I2S0O_DATA_out11 1’d1
+152 I2S0I_DATA_in12 0 no I2S0O_DATA_out12 1’d1
+153 I2S0I_DATA_in13 0 no I2S0O_DATA_out13 1’d1
+154 I2S0I_DATA_in14 0 no I2S0O_DATA_out14 1’d1
+155 I2S0I_DATA_in15 0 no I2S0O_DATA_out15 1’d1
+156 - - - I2S0O_DATA_out16 1’d1
+157 - - - I2S0O_DATA_out17 1’d1
+158 - - - I2S0O_DATA_out18 1’d1
+159 - - - I2S0O_DATA_out19 1’d1
+160 - - - I2S0O_DATA_out20 1’d1
+161 - - - I2S0O_DATA_out21 1’d1
+162 - - - I2S0O_DATA_out22 1’d1
+163 - - - I2S0O_DATA_out23 1’d1
+164 I2S1I_BCK_in 0 no I2S1I_BCK_out 1’d1
+165 I2S1I_WS_in 0 no I2S1I_WS_out 1’d1
+166 I2S1I_DATA_in0 0 no I2S1O_DATA_out0 1’d1
+167 I2S1I_DATA_in1 0 no I2S1O_DATA_out1 1’d1
+168 I2S1I_DATA_in2 0 no I2S1O_DATA_out2 1’d1
+169 I2S1I_DATA_in3 0 no I2S1O_DATA_out3 1’d1
+170 I2S1I_DATA_in4 0 no I2S1O_DATA_out4 1’d1
+171 I2S1I_DATA_in5 0 no I2S1O_DATA_out5 1’d1
+172 I2S1I_DATA_in6 0 no I2S1O_DATA_out6 1’d1
+173 I2S1I_DATA_in7 0 no I2S1O_DATA_out7 1’d1
+174 I2S1I_DATA_in8 0 no I2S1O_DATA_out8 1’d1
+175 I2S1I_DATA_in9 0 no I2S1O_DATA_out9 1’d1
+176 I2S1I_DATA_in10 0 no I2S1O_DATA_out10 1’d1
+177 I2S1I_DATA_in11 0 no I2S1O_DATA_out11 1’d1
+178 I2S1I_DATA_in12 0 no I2S1O_DATA_out12 1’d1
+179 I2S1I_DATA_in13 0 no I2S1O_DATA_out13 1’d1
+180 I2S1I_DATA_in14 0 no I2S1O_DATA_out14 1’d1
+181 I2S1I_DATA_in15 0 no I2S1O_DATA_out15 1’d1
+182 - - - I2S1O_DATA_out16 1’d1
+183 - - - I2S1O_DATA_out17 1’d1
+184 - - - I2S1O_DATA_out18 1’d1
+185 - - - I2S1O_DATA_out19 1’d1
+186 - - - I2S1O_DATA_out20 1’d1
+187 - - - I2S1O_DATA_out21 1’d1
+188 - - - I2S1O_DATA_out22 1’d1
+189 - - - I2S1O_DATA_out23 1’d1
+190 I2S0I_H_SYNC 0 no pwm3_out1h 1’d1
+191 I2S0I_V_SYNC 0 no pwm3_out1l 1’d1
+192 I2S0I_H_ENABLE 0 no pwm3_out2h 1’d1
+193 I2S1I_H_SYNC 0 no pwm3_out2l 1’d1
+194 I2S1I_V_SYNC 0 no pwm3_out3h 1’d1
+195 I2S1I_H_ENABLE 0 no pwm3_out3l 1’d1
+196 - - - pwm3_out4h 1’d1
+197 - - - pwm3_out4l 1’d1
+198 U2RXD_in 0 yes U2TXD_out 1’d1
+199 U2CTS_in 0 yes U2RTS_out 1’d1
+200 emac_mdc_i 0 no emac_mdc_o emac_mdc_oe
+201 emac_mdi_i 0 no emac_mdo_o emac_mdo_o_e
+202 emac_crs_i 0 no emac_crs_o emac_crs_oe
+203 emac_col_i 0 no emac_col_o emac_col_oe
+204 pcmfsync_in 0 no bt_audio0_irq 1’d1
+205 pcmclk_in 0 no bt_audio1_irq 1’d1
+206 pcmdin 0 no bt_audio2_irq 1’d1
+207 - - - ble_audio0_irq 1’d1
+208 - - - ble_audio1_irq 1’d1
+209 - - - ble_audio2_irq 1’d1
+210 - - - pcmfsync_out pcmfsync_en
+211 - - - pcmclk_out pcmclk_en
+212 - - - pcmdout pcmdout_en
+213 - - - ble_audio_sync0_p 1’d1
+214 - - - ble_audio_sync1_p 1’d1
+215 - - - ble_audio_sync2_p 1’d1
+224 - - - sig_in_func224 1’d1
+225 - - - sig_in_func225 1’d1
+226 - - - sig_in_func226 1’d1
+227 - - - sig_in_func227 1’d1
+228 - - - sig_in_func228 1’d1

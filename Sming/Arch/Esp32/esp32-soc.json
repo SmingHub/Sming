@@ -1,4 +1,125 @@
 {
     "variant": "esp32",
-    "name": "ESP32"
+    "name": "ESP32",
+    "peripherals": {
+        "ADC": {
+            "sigmask": "ADC.+"
+        },
+        "BLUETOOTH": {
+            "sigmask": "ble_.+|bt_.+"
+        },
+        "CLOCKS": {
+            "sigmask": "CLK_.+|XTAL_.+"
+        },
+        "DAC": {
+            "sigmask": "DAC.+"
+        },
+        "EMAC": {
+            "title": "Ethernet Media Access Controller",
+            "sigmask": "emac_.+|EMAC.+"
+        },
+        "GPIO": {
+            "sigmask": "GPIO.+|RTC_GPIO.+"
+        },
+        "I2C": {
+            "sigmask": "I2C.+"
+        },
+        "I2S[0-1]": {
+            "sigmask": "I2S{idx}.+"
+        },
+        "JTAG": {
+            "sigmask": "MTCK|MTDI|MTDO|MTMS"
+        },
+        "LEDC": {
+            "title": "LED PWM Controller",
+            "sigmask": "ledc_.+"
+        },
+        "PCM": {
+            "sigmask": "pcm.+"
+        },
+        "PCNT": {
+            "title": "Pulse Count Controller",
+            "sigmask": "pcnt_.+"
+        },
+        "MCPWM[0-1]": {
+            "title": "Motor Control PWM",
+            "sigmask": "pwm{idx}_.+"
+        },
+        "PWM[2-3]": {
+            "title": "Undocumented",
+            "sigmask": "pwm{idx}_.+"
+        },
+        "RMT": {
+            "title": "Remote Control Peripheral",
+            "sigmask": "rmt_.+"
+        },
+        "SDIO": {
+            "title": "SDIO Slave Controller",
+            "sigmask": "sdio_.+|SD_.+"
+        },
+        "SDHOST": {
+            "title": "SD/MMC Host Controller",
+            "sigmask": "host_.+|HS1_.+|HS2_.+"
+        },
+        "SPI1": {
+            "sigmask": "SPI.+"
+        },
+        "SPI2": {
+            "sigmask": "HSPI.+"
+        },
+        "SPI3": {
+            "sigmask": "VSPI.+"
+        },
+        "TOUCH": {
+            "sigmask": "TOUCH.+"
+        },
+        "UART0": {
+            "sigmask": "U0.+",
+            "default": {
+                "TXD": [
+                    "U0TXD",
+                    1
+                ],
+                "RXD": [
+                    "U0RXD",
+                    3
+                ]
+            }
+        },
+        "UART1": {
+            "sigmask": "U1.+",
+            "default": {
+                "TXD": [
+                    "U1TXD_out",
+                    18
+                ],
+                "RXD": [
+                    "U1RXD_in",
+                    19
+                ]
+            }
+        },
+        "UART2": {
+            "sigmask": "U2.+",
+            "default": {
+                "TXD": [
+                    "U2TXD",
+                    17
+                ],
+                "RXD": [
+                    "U2RXD",
+                    16
+                ]
+            }
+        },
+        "SIGMA_DELTA": {
+            "title": "8-channel Sigma-Delta modulator",
+            "sigmask": "gpio_sd.+"
+        },
+        "TWAI": {
+            "title": "Two-wire Automotive Interface",
+            "sigmask": "twai_.+"
+        },
+        "WIFI": {}
+    }
 }
