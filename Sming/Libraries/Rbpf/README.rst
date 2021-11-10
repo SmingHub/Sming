@@ -1,8 +1,10 @@
-# rBPF: Riot-style Berkeley Packet Filters
+rBPF: Riot-style Berkeley Packet Filters
+========================================
 
 The rBPF subsystem provides a minimal virtual machine for microcontrollers.
 
-## Introduction
+Introduction
+------------
 
 rBPF is a virtual machine based on the popular Linux BPF virtual machine. It is
 small and fast enough to host multiple instances on architectures targeted by Sming.
@@ -10,7 +12,8 @@ small and fast enough to host multiple instances on architectures targeted by Sm
 By using the already standardized ISA, the toolchain for BPF can be reused to
 compile VM application for RIOT.
 
-## Architecture
+Architecture
+------------
 
 The rBPF virtual machine is a small VM optimized for short running tasks. The VM
 itself is event triggered and executes a small application to respond to the
@@ -19,7 +22,8 @@ event.
 The virtual machine architecture is standardized in the Linux kernel, with the
 RIOT implementation following the [ISA](https://github.com/iovisor/bpf-docs/blob/master/eBPF.md) defined for Linux.
 
-### Security
+Security
+~~~~~~~~
 
 As a VM, the implementation must ensure that the influence from the application
 code to the host is strictly limited. This includes memory access and execution
@@ -36,20 +40,23 @@ The other protection mechanism is the in the branch and jump code. Here the
 checks ensure that the code remains within the execution address space of the
 loaded application.
 
-## Options
+Options
+-------
 
 Two core VM implementations are currently available, each with their own
 advantages and disadvantages. The first implementation is based on a switch-case
 statement to parse instructions. The second implementation is a computed
 jump table approach.
 
-### Switch-Case
+Switch-Case
+~~~~~~~~~~~
 
 The switch-case implementation parses each opcode using standard C switch and
 case statements. The implementation trades some speed for a smaller
 implementations.
 
-### Computed Jump Table
+Computed Jump Table
+~~~~~~~~~~~~~~~~~~~
 
 The computed jump table approach uses a GNU C extension to resolve each opcode
 number to a label and jump there with a `goto` instruction. It uses a
@@ -60,7 +67,8 @@ This implementation has some significant speed advantages, but the
 implementation is also larger than the switch-case statement as similar
 instructions are not deduplicated.
 
-## Interaction
+Interaction
+-----------
 
 Interaction to outside of the virtual machine from within happens via two
 mechanisms. First is the syscall mechanism. Second is the key-value store.
@@ -81,6 +89,8 @@ integer-based values between invocations. The key-value is accessible via calls.
 Every VM has its own key-value store and one global key-value store exists for
 sharing values between instances.
 
-## See also
+
+See also
+--------
 
 [rBPF paper](https://hal.inria.fr/hal-03019639)
