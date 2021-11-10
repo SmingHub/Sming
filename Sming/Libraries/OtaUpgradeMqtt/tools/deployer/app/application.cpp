@@ -124,7 +124,10 @@ bool deploy(const String& outputFileName, const String& url)
 	WifiEvents.onStationGotIP([url, output](IpAddress ip, IpAddress netmask, IpAddress gateway) {
 		Url mqttUrl(url);
 
-		mqtt.connect(mqttUrl, "sming");
+		mqtt.setCompleteDelegate([](TcpClient& client, bool successful) {
+			debug_d("Deployer completed: %d", successful);
+			System.restart(1000);
+		});
 		mqtt.setConnectedHandler([mqttUrl, output](MqttClient& client, mqtt_message_t* message) -> int {
 			if(message == nullptr) {
 				// invalid message received
@@ -150,6 +153,11 @@ bool deploy(const String& outputFileName, const String& url)
 
 			return 0;
 		});
+
+		if(!mqtt.connect(mqttUrl, "sming")) {
+			System.restart(1000);
+			return;
+		}
 	});
 
 	return true;

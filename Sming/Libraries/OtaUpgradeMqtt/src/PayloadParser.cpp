@@ -40,7 +40,7 @@ int PayloadParser::parse(MqttPayloadParserState& state, mqtt_message_t* message,
 			bool success = switchRom(*updateState);
 			if(success) {
 				debug_d("Switching was successful. Restarting...");
-				System.restart(100);
+				System.restart(1000);
 			} else {
 				debug_e("Switching failed!");
 			}
