@@ -34,19 +34,19 @@ void upgradeCallback(Ota::Network::HttpUpgrader& client, bool result)
 
 		auto part = ota.getNextBootPartition();
 		// set to boot new rom and then reboot
-		Serial.printf("Firmware updated, rebooting to %s @ ...\r\n", part.name().c_str());
+		Serial.printf(_F("Firmware updated, rebooting to %s @ ...\r\n"), part.name().c_str());
 		ota.setBootPartition(part);
 		System.restart();
 	} else {
 		ota.abort();
 		// fail
-		Serial.println("Firmware update failed!");
+		Serial.println(_F("Firmware update failed!"));
 	}
 }
 
 void doUpgrade()
 {
-	Serial.println("Updating...");
+	Serial.println(F("Updating..."));
 
 	// need a clean object, otherwise if run before and failed will not run again
 	if(otaUpdater) {
@@ -99,17 +99,17 @@ void doSwitch()
 
 void showInfo()
 {
-	Serial.printf("\r\nSDK: v%s\r\n", system_get_sdk_version());
-	Serial.printf("Free Heap: %d\r\n", system_get_free_heap_size());
-	Serial.printf("CPU Frequency: %d MHz\r\n", system_get_cpu_freq());
-	Serial.printf("System Chip ID: %x\r\n", system_get_chip_id());
-	Serial.printf("SPI Flash ID: %x\r\n", Storage::spiFlash->getId());
-	Serial.printf("SPI Flash Size: %x\r\n", Storage::spiFlash->getSize());
+	Serial.printf(_F("\r\nSDK: v%s\r\n"), system_get_sdk_version());
+	Serial.printf(_F("Free Heap: %lu\r\n"), system_get_free_heap_size());
+	Serial.printf(_F("CPU Frequency: %lu MHz\r\n"), system_get_cpu_freq());
+	Serial.printf(_F("System Chip ID: %lx\r\n"), system_get_chip_id());
+	Serial.printf(_F("SPI Flash ID: %lx\r\n"), Storage::spiFlash->getId());
+	Serial.printf(_F("SPI Flash Size: %ux\r\n"), Storage::spiFlash->getSize());
 
 	auto before = ota.getRunningPartition();
 	auto after = ota.getNextBootPartition();
 
-	Serial.printf(_F("Current %s @ 0x%08x, future %s @ 0x%08x\r\n"), before.name().c_str(), before.address(),
+	Serial.printf(_F("Current %s @ 0x%08lx, future %s @ 0x%0l8x\r\n"), before.name().c_str(), before.address(),
 				  after.name().c_str(), after.address());
 }
 
@@ -149,7 +149,7 @@ void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCh
 					Serial.println(dir.stat().name);
 				}
 			}
-			Serial.printf("filecount %d\r\n", dir.count());
+			Serial.printf(_F("filecount %u\r\n"), dir.count());
 		} else if(!strcmp(str, "cat")) {
 			Directory dir;
 			if(dir.open() && dir.next()) {
@@ -161,23 +161,23 @@ void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCh
 				Serial.copyFrom(&fs);
 				Serial.println();
 			} else {
-				Serial.println("Empty spiffs!");
+				Serial.println(F("Empty spiffs!"));
 			}
 		} else if(!strcmp(str, "info")) {
 			showInfo();
 		} else if(!strcmp(str, "help")) {
 			Serial.println();
-			Serial.println("available commands:");
-			Serial.println("  help - display this message");
-			Serial.println("  ip - show current ip address");
-			Serial.println("  connect - connect to wifi");
-			Serial.println("  restart - restart the device");
-			Serial.println("  switch - switch to the other rom and reboot");
-			Serial.println("  ota - perform ota update, switch rom and reboot");
-			Serial.println("  info - show device info");
+			Serial.println(F("available commands:"));
+			Serial.println(F("  help - display this message"));
+			Serial.println(F("  ip - show current ip address"));
+			Serial.println(F("  connect - connect to wifi"));
+			Serial.println(F("  restart - restart the device"));
+			Serial.println(F("  switch - switch to the other rom and reboot"));
+			Serial.println(F("  ota - perform ota update, switch rom and reboot"));
+			Serial.println(F("  info - show device info"));
 			if(spiffsPartition) {
-				Serial.println("  ls - list files in spiffs");
-				Serial.println("  cat - show first file in spiffs");
+				Serial.println(F("  ls - list files in spiffs"));
+				Serial.println(F("  cat - show first file in spiffs"));
 			}
 			Serial.println();
 		} else {
@@ -202,8 +202,8 @@ void init()
 
 	WifiAccessPoint.enable(false);
 
-	Serial.printf("\r\nCurrently running %s @ 0x%08x.\r\n", partition.name().c_str(), partition.address());
-	Serial.println("Type 'help' and press enter for instructions.");
+	Serial.printf(_F("\r\nCurrently running %s @ 0x%08lx.\r\n"), partition.name().c_str(), partition.address());
+	Serial.println(F("Type 'help' and press enter for instructions."));
 	Serial.println();
 
 	Serial.onDataReceived(serialCallBack);

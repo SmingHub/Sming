@@ -267,7 +267,7 @@ public:
 	 * @brief Obtain partition size
 	 * @retval uint32_t Size in bytes
 	 */
-	uint32_t size() const
+	size_t size() const
 	{
 		return mPart ? mPart->size : 0;
 	}
