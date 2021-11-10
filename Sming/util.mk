@@ -77,7 +77,7 @@ endef
 # $1 -> Directories to scan
 # $2 -> Filename filter
 define ListAllFiles
-$(wildcard $1/$2) $(wildcard $(foreach d,$(call ListAllSubDirs,$1),$d/$2))
+$(foreach d,$1 $(call ListAllSubDirs,$1),$(wildcard $(foreach f,$2,$d/$f)))
 endef
 
 
