@@ -789,9 +789,10 @@ public:
 	void toUpperCase(void);
 
 	/**
-     * @brief Remove all leading and trailing whitespace characters from the String
+     * @brief Remove all leading and trailing characters from the String
+	 * @param Set of characters to remove, defaults to whitespace set
      */
-	void trim(void);
+	void trim(const char* set = " \t\n\v\f\r");
 
 	// parsing/conversion
 	long toInt(void) const;

@@ -14,7 +14,9 @@
 
 #include <Network/Http/HttpCommon.h>
 #include <Network/Http/HttpRequest.h>
+#include <Network/Http/HttpHeaderBuilder.h>
 #include <Data/Stream/ReadWriteStream.h>
+#include "PartCheckerStream.h"
 
 #include "../multipart-parser/multipart_parser.h"
 
@@ -43,20 +45,18 @@ public:
 	}
 
 private:
-	MultipartParser(HttpRequest& request, const String& boundaryArg);
-
 	static multipart_parser_settings_t settings;
 
-	String headerName;  ///< Current header field name
-	String headerValue; ///< Current header field name
-
+	HttpHeaderBuilder headerBuilder;
+	HttpHeaders incomingHeaders; ///< Full set of incoming part headers
 	HttpRequest& request;
 
 	String boundary;
 	multipart_parser_t parserEngine;
 	ReadWriteStream* stream = nullptr;
 
-	int processHeader();
+	MultipartParser(HttpRequest& request, const String& boundaryArg);
+	void resetHeaders();
 };
 
 /** Body parser for content-type `form-data/multipart`

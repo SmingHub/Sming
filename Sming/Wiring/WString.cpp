@@ -929,7 +929,7 @@ void String::toUpperCase(void)
 	}
 }
 
-void String::trim(void)
+void String::trim(const char* set)
 {
 	auto len = length();
 	if(len == 0) {
@@ -937,11 +937,11 @@ void String::trim(void)
 	}
 	auto buf = buffer();
 	char* begin = buf;
-	while(isspace(*begin)) {
+	while(strchr(set, *begin)) {
 		begin++;
 	}
 	char* end = buf + len - 1;
-	while(isspace(*end) && end >= begin) {
+	while(strchr(set, *end) && end >= begin) {
 		end--;
 	}
 	len = end + 1 - begin;
