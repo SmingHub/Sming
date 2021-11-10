@@ -20,7 +20,7 @@
 #include <SmingCore.h>
 
 #include <bpf.h>
-#include <increment.bin.h>
+#include <rbpf/container/increment.h>
 
 namespace
 {
@@ -39,12 +39,14 @@ void init()
 
 	Serial.println("All up, running the Femto-Container application now");
 
+	LOAD_FSTR_ARRAY(appBinary, rBPF::Container::increment);
+
 	/* Define the application */
 	bpf_t bpf = {
-		.application = increment_bin,			  /* The increment.bin content */
-		.application_len = sizeof(increment_bin), /* Length of the application */
-		.stack = stack,							  /* Preallocated stack */
-		.stack_size = sizeof(stack),			  /* And the length */
+		.application = appBinary,								/* The increment.bin content */
+		.application_len = rBPF::Container::increment.length(), /* Length of the application */
+		.stack = stack,											/* Preallocated stack */
+		.stack_size = sizeof(stack),							/* And the length */
 	};
 
 	/* Context value to pass to the VM */
@@ -54,7 +56,10 @@ void init()
 	bpf_setup(&bpf);
 	int res = bpf_execute_ctx(&bpf, &ctx, sizeof(ctx), &result);
 
-	Serial.printf("Input to the VM: %ld\n", (unsigned long)ctx);
-	Serial.printf("Return code (expected 0): %d\n", res);
-	Serial.printf("Result of the VM: %ld\n", (unsigned long)result);
+	Serial.print(_F("Input to the VM: "));
+	Serial.println(ctx);
+	Serial.print(_F("Return code (expected 0): "));
+	Serial.println(res);
+	Serial.print(_F("Result of the VM: "));
+	Serial.println(result);
 }
