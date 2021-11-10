@@ -188,7 +188,6 @@ class RBF(object):
             # refers to an offset in a section
             section_name = elffile.get_section(symbol.entry.st_shndx).name
             offset = 0
-            pass
         elif symbol.entry.st_info.type == 'STT_OBJECT':
             section_name = elffile.get_section(symbol.entry.st_shndx).name
             offset = symbol.entry.st_value
