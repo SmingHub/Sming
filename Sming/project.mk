@@ -150,7 +150,7 @@ COMPONENTS_EXTRA_INCDIR	:=
 APPCODE				:=
 
 # Python requirements.txt collected from components
-PYTHON_REQUIREMENTS := 
+PYTHON_REQUIREMENTS := $(abspath $(SMING_HOME)/../Tools/requirements.txt)
 
 # SOCs supported by project
 DEBUG_VARS += PROJECT_SOC
