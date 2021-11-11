@@ -371,7 +371,7 @@ endif
 .PHONY: checksoc
 checksoc:
 ifeq (,$(findstring $(SMING_SOC),$(PROJECT_SOC)))
-	$(error Build failed, project only supports: $(PROJECT_SOC))
+	$(error Project only supports: $(PROJECT_SOC))
 endif
 
 
@@ -602,7 +602,7 @@ endif
 ##@Help
 
 .PHONY: list-config
-list-config: ##Print the contents of build variables
+list-config: checksoc ##Print the contents of build variables
 	$(info )
 	$(info ** Sming build configuration **)
 	$(info )
@@ -639,7 +639,7 @@ define PrintComponentInfo
 endef
 
 .PHONY: list-components
-list-components: ##Print details of all Components for this project
+list-components: checksoc ##Print details of all Components for this project
 	$(call PrintVariable,ALL_SEARCH_DIRS)
 	$(if $(V),$(call PrintVariable,ALL_COMPONENT_DIRS))
 	$(info Components:)
@@ -728,7 +728,7 @@ KCONFIG_ENV := \
 CFGTOOL_CMDLINE = $(KCONFIG_ENV) $(PYTHON) $(SMING_TOOLS)/cfgtool.py $(CONFIG_CACHE_FILE)
 
 .PHONY: menuconfig
-menuconfig: ##Run option editor
+menuconfig: checksoc ##Run option editor
 	$(Q) $(CFGTOOL_CMDLINE) --to-kconfig
 	$(Q) $(KCONFIG_ENV) $(PYTHON) -m menuconfig $(SMING_HOME)/Kconfig
 	$(Q) $(CFGTOOL_CMDLINE) --from-kconfig
