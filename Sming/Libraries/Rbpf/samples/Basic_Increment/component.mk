@@ -1,7 +1,5 @@
 COMPONENT_DEPENDS := Rbpf
+DISABLE_NETWORK := 1
+COMPONENT_INCDIRS := container
 
-COMPONENT_INCDIRS += blobs
-
-blobs/increment.bin.h: blobs
-
-CUSTOM_TARGETS += blobs/increment.bin.h
+# RBPF_CONTAINER_PATH := container

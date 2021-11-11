@@ -1,12 +1,22 @@
-COMPONENT_PATH := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+include $(SMING_HOME)/util.mk
 
-RBPF_SOURCES ?= $(wildcard $(CURDIR)/*.c)
-RBPF_GENRBF := $(COMPONENT_PATH)/tools/gen_rbf.py
+ifeq (,$(RBPF_BLOBDIR))
+$(error RBPF_BLOBDIR undefined)
+endif
+ifeq (,$(RBPF_INCDIR))
+$(error RBPF_INCDIR undefined)
+endif
 
-RBPF_BINS = $(RBPF_SOURCES:.c=.bin)
-RBPF_OBJS = $(RBPF_SOURCES:.c=.o)
+# Obtain blob file path
+# $1 -> source file(s)
+define BlobFile
+$(addprefix $(RBPF_BLOBDIR)/,$(patsubst %,%.bin,$(basename $1)))
+endef
 
-BLOB_FOLDER ?= ..
+# List of relative paths to source files
+RBPF_SOURCES	:= $(patsubst $(CURDIR)/%,%,$(call ListAllFiles,$(CURDIR),*.c *.cpp))
+# Header file for all defined containers
+RBPF_INCFILE	:= $(RBPF_INCDIR)/rbpf/containers.h
 
 LLC ?= llc
 CLANG ?= clang
@@ -14,37 +24,63 @@ XXD ?= xxd
 INC_FLAGS = -nostdinc -isystem `$(CLANG) -print-file-name=include`
 EXTRA_CFLAGS ?= -Os -emit-llvm
 
-RBPFINCLUDE =  -I$(RIOTBASE)/drivers/include \
-	       -I$(RIOTBASE)/core/include \
-	       -I$(RIOTBASE)/sys/include \
-	       #
-
 all: blobs
 
 .PHONY: clean
 
 clean:
-	rm -f $(RBPF_OBJS)
+	$(Q) rm -rf $(RBPF_BLOBDIR) $(RBPF_INCDIR)
 
 INC_FLAGS = -nostdinc -isystem `$(CLANG) -print-file-name=include`
 
-$(RBPF_OBJS):  %.o:%.c
-	$(CLANG) $(INC_FLAGS) \
-	        $(RBPFINCLUDE) \
-	        -Wno-unused-value -Wno-pointer-sign -g3\
-	        -Wno-compare-distinct-pointer-types \
-	        -Wno-gnu-variable-sized-type-not-at-end \
-	        -Wno-address-of-packed-member -Wno-tautological-compare \
-	        -Wno-unknown-warning-option \
-	        $(EXTRA_CFLAGS) -c $< -o -| $(LLC) -march=bpf -mcpu=v2 -filetype=obj -o $@
+# Generated build targets
+# $1 -> Source file
+# $2 -> Blob file
+define GenerateTarget
+$(2:.bin=.o): $1
+	$(Q) mkdir -p $$(@D)
+	$(Q) $$(CLANG) \
+		$$(INC_FLAGS) \
+		-Wno-unused-value -Wno-pointer-sign -g3\
+		-Wno-compare-distinct-pointer-types \
+		-Wno-gnu-variable-sized-type-not-at-end \
+		-Wno-address-of-packed-member -Wno-tautological-compare \
+		-Wno-unknown-warning-option \
+		$$(EXTRA_CFLAGS) -c $$< -o -| $$(LLC) -march=bpf -mcpu=v2 -filetype=obj -o $$@
+$2: $(2:.bin=.o)
+	$$(RBPF_GENRBF) generate $$< $$@
+endef
+$(foreach f,$(RBPF_SOURCES),$(eval $(call GenerateTarget,$f,$(call BlobFile,$f))))
 
-$(RBPF_BINS): %.bin:%.o
-	$(RBPF_GENRBF) generate $< $@
-	
+
+# Get name to use for blob symbol
+# $1 -> source file
+define GetSymbolName
+$(subst /,_,$(basename $1))
+endef
+
+# Generate code for header file
+# $1 -> source file
+define GenerateHeader
+@printf "IMPORT_FSTR_ARRAY($(call GetSymbolName,$1), uint8_t, \"$(call BlobFile,$1)\")\n" >> $@
+
+endef
+
+$(RBPF_INCFILE): $(call BlobFile,$(RBPF_SOURCES))
+	@mkdir -p $(@D)
+	@echo "#pragma once" > $@
+	@echo "#include <FlashString/Array.hpp>" >> $@
+	@echo "" >> $@
+	@echo "namespace rBPF {" >> $@
+	@echo "namespace Container {" >> $@
+	$(foreach f,$(RBPF_SOURCES),$(call GenerateHeader,$f))
+	@echo "} // namespace Container" >> $@
+	@echo "} // namespace rBPF" >> $@
+
+
 .PHONY: blobs
-blobs: $(RBPF_BINS)
-	$(XXD) -i $(notdir $<) | sed 's/^unsigned/const unsigned/g'> $(BLOB_FOLDER)/$(notdir $<).h
-	
+blobs: $(RBPF_INCFILE)
+
 .PHONY: dump
-dump: $(RBPF_BINS)
+dump: blobs
 	$(RBPF_GENRBF) dump $< 
