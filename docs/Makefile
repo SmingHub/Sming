@@ -150,11 +150,14 @@ endef
 # $2 -> path
 define ParseComponent
 $(if $V,$(info -- Parsing $2))
+ARCHLIST				:= $(subst /, ,$(patsubst $(SMING_HOME)/Arch/%,%,$2))
+ARCH_SOC				:= $$(ARCH_$$(firstword $$(ARCHLIST))_SOC)
 COMPONENT_SUBMODULES	:=
 COMPONENT_DOCFILES		:=
 COMPONENT_DOXYGEN_INPUT	:=
 COMPONENT_DOXYGEN_INCLUDE :=
 COMPONENT_DOXYGEN_PREDEFINED :=
+COMPONENT_SOC			:= $$(if $$(ARCH_SOC),$$(ARCH_SOC),*)
 # Process any component.mk file (optional)
 COMPONENT_RULE			:= __no_build__
 COMPONENT_NAME			:= $1
@@ -170,6 +173,7 @@ COMPONENT_BUILD_BASE	:= $(BUILD_BASE)/$1
 COMPONENT_BUILD_DIR		:= $(BUILD_BASE)/$1
 include defines.mk
 -include $2/component.mk
+CMP_$2_SOC				:= $$(filter $$(subst *,%,$$(COMPONENT_SOC)),$(AVAILABLE_SOCS))
 CMP_$2_VARS				:= $$(sort $$(COMPONENT_VARS))
 CMP_$2_LIBRARIES		:= $$(ARDUINO_LIBRARIES)
 CMP_$2_SUBMODULES		:= $$(COMPONENT_SUBMODULES)
@@ -188,7 +192,6 @@ DOXYGEN_PREDEFINED		+= $$(COMPONENT_DOXYGEN_PREDEFINED)
 COMPONENT_ENVVARS		:= $$(sort $$(COMPONENT_VARS) $$(CONFIG_VARS) $$(RELINK_VARS) $$(CACHE_VARS) $$(DEBUG_VARS))
 CMP_$2_ENVVARS			:= $$(COMPONENT_ENVVARS)
 
-CMP_$2_DEPENDS	:= $$(COMPONENT_DEPENDS)
 $$(foreach c,$$(COMPONENT_DEPENDS) $$(ARDUINO_LIBRARIES),$$(eval CMP_$$c_XREF += $2))
 
 # Resolve dependencies
@@ -200,11 +203,15 @@ FILTERED_DIRS := $$(filter $(dir $2)% $(SMING_HOME)/Components/%,$(COMPONENT_DIR
 else
 FILTERED_DIRS := $(COMPONENT_DIRS)
 endif
-CMP_$2_DEPEND_DIRS := \
-	$(if $(findstring /samples/,$2),/_inc/Sming) \
-	$$(foreach d,$$(call GetDocPath,$$(foreach c,$$(COMPONENT_DEPENDS),$$(filter %/$$c,$$(FILTERED_DIRS)))),$$d)
+CMP_$2_DEPENDS := \
+	$(if $(findstring /samples/,$2),$(SMING_HOME)) \
+	$$(foreach d,$$(foreach c,$$(COMPONENT_DEPENDS) $$(ARDUINO_LIBRARIES),$$(filter %/$$c,$$(FILTERED_DIRS))),$$d)
 
 CMP_$2_INDEX = $$(subst $$(NewLine),\n,$$(call GenIndex,$1,$2,$(patsubst $(SMINGDIR)/%,%,$2)))
+
+# Filter SOC dependencies
+CMP_$2_UNSUPPORTED_SOC = $$(foreach d,$$(CMP_$2_DEPENDS),$$(filter-out $$(CMP_$$d_SOC),$$(AVAILABLE_SOCS)))
+CMP_$2_SOC_DEPENDS = $$(filter-out $$(CMP_$2_UNSUPPORTED_SOC),$$(CMP_$2_SOC))
 
 $$(call GetIncPath,$$(COMPONENT_PATH))/index.rst: $$(CMP_$2_README) $$(call GetIncPath,$$(CMP_$2_FILES))
 ifeq ($V,1)

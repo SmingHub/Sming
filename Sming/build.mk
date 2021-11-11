@@ -5,22 +5,6 @@ include $(SMING_HOME)/util.mk
 # Add debug variable names to DEBUG_VARS so they can be easily inspected via `make list-config`
 DEBUG_VARS := SMING_HOME
 
-define SocFromPath
-$(patsubst %-soc.json,%,$(notdir $1))
-endef
-
-# Provide variable for each architecture listing available SOCs
-# $1 -> Architecture name
-define SetArchSocs
-ARCH_$1_SOC := $(sort $(call SocFromPath,$(wildcard $(SMING_HOME)/Arch/$1/*-soc.json)))
-endef
-
-$(foreach a,$(call ListSubDirs,$(SMING_HOME)/Arch),$(eval $(call SetArchSocs,$(notdir $a))))
-
-# List of all soc configuration files
-export SOC_CONFIG_FILES = $(sort $(wildcard $(SMING_HOME)/Arch/*/*-soc.json))
-AVAILABLE_SOCS := $(patsubst %-soc.json,%,$(notdir $(SOC_CONFIG_FILES)))
-
 # Resolve SMING_ARCH and SMING_SOC settings
 DEBUG_VARS += SMING_ARCH SMING_SOC
 # Allow Host override for building utilities

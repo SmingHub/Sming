@@ -16,11 +16,8 @@ References
 $(if $(findstring $3=,$(SUBMODULE_URLS)),
 * `Source Code <$(call GetSubmoduleURL,$3)>`__ (submodule, may be patched).,
 * :source:`Source Code <$3>`)
-$(foreach d,$(sort $(CMP_$2_DEPEND_DIRS)),
-* :doc:`$d/index` Component
-)
-$(foreach l,$(sort $(CMP_$2_LIBRARIES)),
-* :library:`$l` Library
+$(foreach d,$(sort $(CMP_$2_DEPENDS)),
+* :doc:`$(call GetDocPath,$d)/index`
 )
 
 $(if $(CMP_$1_XREF),
@@ -35,6 +32,12 @@ Environment Variables
 $(foreach v,$(CMP_$2_ENVVARS),
 * :envvar:`$v`
 ))
+
+SoC support
+-----------
+$(foreach s,$(CMP_$2_SOC_DEPENDS),
+- $s)
+
 
 $(foreach m,$(CMP_$2_SUBMODULES),
 Submodule: `$m <$(call GetSubmoduleURL,$3/$m)>`__
