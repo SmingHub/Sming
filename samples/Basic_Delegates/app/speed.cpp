@@ -23,7 +23,7 @@ static void printTime(const char* name, unsigned ticks)
 	Serial.printf("%s: %u cycles, %s\r\n", name, ticks, timer.ticksToTime(ticks).toString().c_str());
 }
 
-static void __attribute__((noinline)) evaluateCallback(const char* name, TestCallback callback, int testParam)
+static void __noinline evaluateCallback(const char* name, TestCallback callback, int testParam)
 {
 	timer.start();
 	for(unsigned i = 0; i < ITERATIONS; ++i) {
@@ -33,7 +33,7 @@ static void __attribute__((noinline)) evaluateCallback(const char* name, TestCal
 	printTime(name, ticks / ITERATIONS);
 }
 
-static void __attribute__((noinline)) evaluateDelegate(const char* name, TestDelegate delegate, int testParam)
+static void __noinline evaluateDelegate(const char* name, TestDelegate delegate, int testParam)
 {
 	timer.start();
 	for(unsigned i = 0; i < ITERATIONS; ++i) {

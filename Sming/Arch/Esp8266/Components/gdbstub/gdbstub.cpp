@@ -811,7 +811,7 @@ static void ATTR_GDBEXTERNFN emulLdSt()
 }
 
 // Main exception handler
-static void __attribute__((noinline)) gdbstub_handle_debug_exception_flash()
+static void __noinline gdbstub_handle_debug_exception_flash()
 {
 	debug_i(">> DBG 0x%02x, PC = %p", gdb_state.flags, gdbstub_savedRegs.pc);
 

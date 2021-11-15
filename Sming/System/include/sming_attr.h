@@ -10,7 +10,13 @@
 
 #pragma once
 
+#ifndef __forceinline
 #define __forceinline __attribute__((always_inline)) inline
+#endif
+
+#ifndef __noinline
+#define __noinline __attribute__((noinline))
+#endif
 
 // Weak attributes don't work for PE
 #ifdef __WIN32

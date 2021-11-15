@@ -267,7 +267,7 @@ public:
 
 	static constexpr unsigned TIMEOUT_MS = 100;
 
-	unsigned __attribute__((noinline)) millis_loop()
+	unsigned __noinline millis_loop()
 	{
 		unsigned loopCount = 0;
 		unsigned start = millis();
@@ -277,7 +277,7 @@ public:
 		return loopCount;
 	}
 
-	unsigned __attribute__((noinline)) micros_loop()
+	unsigned __noinline micros_loop()
 	{
 		unsigned loopCount = 0;
 		unsigned start = micros();
@@ -287,7 +287,7 @@ public:
 		return loopCount;
 	}
 
-	unsigned __attribute__((noinline)) polledTimer_loop()
+	unsigned __noinline polledTimer_loop()
 	{
 		unsigned loopCount = 0;
 		OneShotFastMs timer(TIMEOUT_MS);
