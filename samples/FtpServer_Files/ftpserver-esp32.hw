@@ -1,0 +1,9 @@
+{
+    "name": "FTP Server sample",
+    "base_config": "ftpserver",
+    "partitions": {
+        "factory": {
+            // "size": "384K"
+        }
+    }
+}

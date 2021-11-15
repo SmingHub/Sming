@@ -106,30 +106,46 @@ SMING_PROJECTS_DIR	?= $(abspath $(SMING_HOME)/..)
 SMING_PROJECTS_DIR	:= $(call FixPath, $(SMING_PROJECTS_DIR))
 SAMPLES_DIR			:= $(SMING_PROJECTS_DIR)/samples
 
-SAMPLE_NAMES		= $(shell ls -1 $(SAMPLES_DIR))
+# Marks sample as build complete for faster re-testing
+BUILT_SUFFIX		:= /.$(SMING_SOC).built
+SAMPLE_PATHS		= $(sort $(wildcard $(SAMPLES_DIR)/*))
+SAMPLES_BUILT		= $(addsuffix $(BUILT_SUFFIX),$(SAMPLE_PATHS))
+SAMPLE_NAMES		= $(notdir $(SAMPLE_PATHS))
 
-.PHONY: samples $(SAMPLE_NAMES)
-samples: | $(SAMPLE_NAMES) ##Build all sample applications
+.PHONY: samples
+samples: $(SAMPLES_BUILT) ##Build all sample applications
 
-$(SAMPLE_NAMES):
-	@printf "\n\n** Building ${@F} **\n\n"
-	$(Q) $(MAKE) --no-print-directory -C $(SAMPLES_DIR)/$@ PIP_ARGS=-q python-requirements all
+# Build any samples which haven't yet been marked
+$(SAMPLES_BUILT):
+	@printf "\n\n** Building $(notdir $(call dirx,$@)) **\n\n"
+	$(Q) $(MAKE) --no-print-directory -C $(@D) PIP_ARGS=-q python-requirements sample
+	$(Q) touch $@
+
+# Build/clean named samples
+# $1 -> Sample path
+define CreateSampleTargets
+.PHONY: $(notdir $1) $(notdir $1)-clean
+$(notdir $1): $1$(BUILT_SUFFIX)
+$(notdir $1)-clean:
+	-$(Q) cd $1 && $(MAKE) --no-print-directory -C$1 clean
+	-$(Q) rm -f $1$(BUILT_SUFFIX)
+endef
+$(foreach s,$(SAMPLE_PATHS),$(eval $(call CreateSampleTargets,$s)))
 
 # Build component samples
 .PHONY: component-samples
 component-samples: submodules ##Build all samples contained in components
 	$(Q) $(MAKE) --no-print-directory build-component-samples
 
-# Marks sample as build complete for faster re-testing
-BUILT_SUFFIX := /out/.built
-COMPONENT_SAMPLE_TARGETS = $(addsuffix $(BUILT_SUFFIX),$(wildcard $(foreach c,$(COMPONENT_SEARCH_DIRS),$c/*/samples/*)))
+COMPONENT_SAMPLE_PATHS = $(wildcard $(foreach c,$(COMPONENT_SEARCH_DIRS),$c/*/samples/*))
+COMPONENT_SAMPLES_BUILT = $(addsuffix $(BUILT_SUFFIX),$(COMPONENT_SAMPLE_PATHS))
 
 .PHONY: build-component-samples
-build-component-samples: $(COMPONENT_SAMPLE_TARGETS)
+build-component-samples: $(COMPONENT_SAMPLES_BUILT)
 
-$(COMPONENT_SAMPLE_TARGETS):
-	@printf "\n\n** Building $(notdir $(@:$(BUILT_SUFFIX)=)) **\n\n"
-	$(Q) $(MAKE) --no-print-directory -C $(@:$(BUILT_SUFFIX)=) PIP_ARGS=-q python-requirements all
+$(COMPONENT_SAMPLES_BUILT):
+	@printf "\n\n** Building $(notdir $(call dirx,$@)) **\n\n"
+	$(Q) $(MAKE) --no-print-directory -C $(@D) PIP_ARGS=-q python-requirements all
 	$(Q) touch $@
 
 
@@ -137,9 +153,9 @@ PHONY: tests
 tests: submodules ##Build and run all tests
 	$(Q) $(MAKE) --no-print-directory build-and-run-tests
 
-COMPLETED_SUFFIX := /.complete
 COMPONENT_TESTS = $(call dirx,$(wildcard $(foreach c,$(COMPONENT_SEARCH_DIRS),$c/*/test/component.mk)))
-TESTS_COMPLETED = $(addsuffix $(COMPLETED_SUFFIX),$(wildcard $(SMING_PROJECTS_DIR)/tests/* $(COMPONENT_TESTS)))
+TEST_PATHS = $(wildcard $(SMING_PROJECTS_DIR)/tests/* $(COMPONENT_TESTS))
+TESTS_COMPLETED = $(addsuffix /.$(SMING_SOC).complete,$(TEST_PATHS))
 
 PHONY: build-and-run-tests
 build-and-run-tests: $(TESTS_COMPLETED) ##Build and run all test applications
@@ -155,22 +171,17 @@ $(TESTS_COMPLETED):
 .PHONY: samples-clean
 samples-clean: ##Clean all sample applications (all arch/build types)
 	@echo Cleaning all samples...
-	-$(Q) cd $(SAMPLES_DIR) && rm -rf $(addsuffix /out,$(SAMPLE_NAMES))
+	-$(Q) rm -rf $(addsuffix /out,$(SAMPLE_PATHS)) $(addsuffix /.*.built,$(SAMPLE_PATHS))
 
 .PHONY: component-samples-clean
 component-samples-clean: ##Clean all component samples
 	@echo Cleaning all component samples...
 	-$(Q) rm -rf $(dir $(COMPONENT_SAMPLE_TARGETS))
 
-CLEAN_TESTS := $(TESTS_COMPLETED:complete=clean)
 .PHONY: tests-clean
-tests-clean: $(wildcard $(CLEAN_TESTS)) ##Clean all test applications (all arch/build types)
-	-$(Q) rm -f $(TESTS_COMPLETED)
-
-.PHONY: $(CLEAN_TESTS)
-$(CLEAN_TESTS):
-	@echo Cleaning '$(@D)'
-	-$(Q) $(MAKE) -C $(@D) clean
+tests-clean: ##Clean all test applications
+	-$(Q) $(foreach p,$(TEST_PATHS),echo ">> $p"; $(MAKE) --no-print-directory -C $p clean;)
+	-$(Q) rm -f $(addsuffix /.*.completed,$(TEST_PATHS))
 
 
 ##@Tools

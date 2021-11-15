@@ -46,10 +46,14 @@ These are the main variables you need to be aware of:
 
    -  **Rp2040** Supports Raspberry Pi RP2040-based boards.
 
-.. envvar:: ESP_VARIANT
+
+.. envvar:: SMING_SOC
 
    Some architectures support families of SOCs with different capabilities.
    Set this value to the specific variant being targeted.
+
+   Will automatically set SMING_ARCH to the appropriate value.
+
 
 .. envvar:: SMING_CPP_STD
 

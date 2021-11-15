@@ -121,3 +121,19 @@ DetachCommand = start $1
 else
 DetachCommand = gnome-terminal -- bash -c "sleep 1; $1"
 endif
+
+
+# List of all soc configuration files
+export SOC_CONFIG_FILES = $(sort $(wildcard $(SMING_HOME)/Arch/*/*-soc.json))
+AVAILABLE_SOCS := $(patsubst %-soc.json,%,$(notdir $(SOC_CONFIG_FILES)))
+
+define SocFromPath
+$(patsubst %-soc.json,%,$(notdir $1))
+endef
+
+# Provide variable for each architecture listing available SOCs
+# $1 -> Architecture name
+define SetArchSocs
+ARCH_$1_SOC := $(sort $(call SocFromPath,$(wildcard $(SMING_HOME)/Arch/$1/*-soc.json)))
+endef
+$(foreach a,$(call ListSubDirs,$(SMING_HOME)/Arch),$(eval $(call SetArchSocs,$(notdir $a))))

@@ -1,2 +1,3 @@
+COMPONENT_SOC := esp8266
 COMPONENT_DEPENDS := RingBufCPP
 COMPONENT_DOCFILES := ReleaseNotes.md .github/*

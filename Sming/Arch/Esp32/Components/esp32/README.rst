@@ -51,14 +51,14 @@ Background
 An empty ESP IDF project is built which generates a set of libraries and headers
 which the framework can then be built against.
 
-The project is located in ``project/{ESP_VARIANT}`.
+The project is located in ``project/{SMING_SOC}`.
 
 The code for this project is copied from ``sdk/project``.
 
 The default configuration settings are obtained from ``sdk/config`` and written
-to ``project/{ESP_VARIANT}/sdkconfig.defaults``.
+to ``project/{SMING_SOC}/sdkconfig.defaults``.
 
-When ``sdk-menuconfig`` is run, the ``project/{ESP_VARIANT}/sdkconfig`` is modified.
+When ``sdk-menuconfig`` is run, the ``project/{SMING_SOC}/sdkconfig`` is modified.
 This can be reset using ``make sdk-config-clean``.
 
 If custom settings are required for a project then place these in a separate file

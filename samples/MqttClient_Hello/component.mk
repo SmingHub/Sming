@@ -1,3 +1,4 @@
+COMPONENT_SOC := esp* host
 HWCONFIG := standard-4m
 
 ifdef MQTT_URL

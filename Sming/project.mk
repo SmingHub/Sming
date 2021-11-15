@@ -18,7 +18,7 @@ endif
 .NOTPARALLEL:
 
 .PHONY: all
-all: checkdirs submodules ##(default) Build all Component libraries
+all: checksoc checkdirs submodules ##(default) Build all Component libraries
 	$(MAKE) components application
 
 # Load current build type from file
@@ -30,6 +30,7 @@ BUILD_SUBTYPE_FILE = out/$(SMING_ARCH)/build-subtype.mk
 
 #
 include $(SMING_HOME)/build.mk
+
 
 #
 # The build system supports several types of configuration variable. The name of the variable needs to be
@@ -77,17 +78,16 @@ CONFIG_VARS			+= USER_CFLAGS
 DEBUG_VARS			+= GLOBAL_CFLAGS
 GLOBAL_CFLAGS = \
 	-DSMING_ARCH=$(SMING_ARCH) \
-	-DESP_VARIANT=$(ESP_VARIANT) \
+	-DSMING_SOC=$(SMING_SOC) \
 	-DPROJECT_DIR=\"$(PROJECT_DIR)\" \
 	-DSMING_HOME=\"$(SMING_HOME)\" \
 	$(USER_CFLAGS)
 CPPFLAGS			+= $(GLOBAL_CFLAGS)
 
-ifneq (,$(ESP_VARIANT))
+# Provide a SUBARCH_xxxx value for code use, analogous to ARCH_xxx
 DEBUG_VARS		+= SMING_SUBARCH
-SMING_SUBARCH	:= SUBARCH_$(call ToUpper,$(ESP_VARIANT))
+SMING_SUBARCH	:= SUBARCH_$(call ToUpper,$(SMING_SOC))
 GLOBAL_CFLAGS	+= -D$(SMING_SUBARCH)=1
-endif
 
 # Targets to be added as dependencies of the application, built directly in this make instance
 CUSTOM_TARGETS			:=
@@ -150,7 +150,12 @@ COMPONENTS_EXTRA_INCDIR	:=
 APPCODE				:=
 
 # Python requirements.txt collected from components
-PYTHON_REQUIREMENTS := 
+PYTHON_REQUIREMENTS := $(abspath $(SMING_HOME)/../Tools/requirements.txt)
+
+# SOCs supported by project
+DEBUG_VARS += PROJECT_SOC
+PROJECT_SOC := $(AVAILABLE_SOCS)
+export PROJECT_SOC
 
 #
 # This macro sets the default component variables before including the (optional) component.mk file.
@@ -160,11 +165,13 @@ PYTHON_REQUIREMENTS :=
 # $3 -> Build directory
 # $4 -> Output library directory
 define ParseComponent
+ifneq (,$$(findstring $(SMING_SOC),$$(PROJECT_SOC)))
 $(if $V,$(info -- Parsing $1))
 $(if $2,,$(error Component '$1' not found))
 SUBMODULES				+= $(filter $2,$(ALL_SUBMODULES))
 CMP_$1_PATH				:= $2
 CMP_$1_LIBDIR			:= $4
+COMPONENT_SOC			:= *
 COMPONENT_LIBDIR		:= $$(CMP_$1_LIBDIR)
 COMPONENT_INCDIRS		:= include
 COMPONENT_NAME			:= $1
@@ -196,6 +203,11 @@ LIBS					+= $$(EXTRA_LIBS)
 CMP_$1_LDFLAGS			:= $$(EXTRA_LDFLAGS)
 LDFLAGS					+= $$(CMP_$1_LDFLAGS)
 endif
+CMP_$1_SOC				:= $$(filter $$(subst *,%,$$(COMPONENT_SOC)),$(AVAILABLE_SOCS))
+ifeq (,$$(CMP_$1_SOC))
+$$(error Unknown SOC: $$(COMPONENT_SOC))
+endif
+PROJECT_SOC				:= $$(filter $$(CMP_$1_SOC),$$(PROJECT_SOC))
 CMP_$1_PREREQUISITES	:= $$(COMPONENT_PREREQUISITES)
 CMP_$1_TARGETS			:= $$(COMPONENT_TARGETS)
 CMP_$1_BUILD_DIR		:= $$(COMPONENT_BUILD_DIR)
@@ -215,6 +227,7 @@ PARSED_COMPONENTS		+= $$(DEPENDENCIES)
 $$(call ParseComponentList,$$(DEPENDENCIES))
 endif
 endif # App
+endif # PROJECT_SOC
 endef # ParseComponent
 
 # Build a list of all available Components
@@ -345,6 +358,22 @@ $(foreach v,$(EXPORT_VARS),$(eval export $v))
 
 
 ##@Building
+
+.PHONY: sample
+ifeq (,$(findstring $(SMING_SOC),$(PROJECT_SOC)))
+sample:
+	$(info Not building: Sample doesn't support $(SMING_SOC))
+else
+sample: all
+endif
+
+
+.PHONY: checksoc
+checksoc:
+ifeq (,$(findstring $(SMING_SOC),$(PROJECT_SOC)))
+	$(error Project only supports: $(PROJECT_SOC))
+endif
+
 
 COMPONENT_DIRS := $(foreach d,$(ALL_SEARCH_DIRS),$(wildcard $d/*))
 
@@ -573,7 +602,7 @@ endif
 ##@Help
 
 .PHONY: list-config
-list-config: ##Print the contents of build variables
+list-config: checksoc ##Print the contents of build variables
 	$(info )
 	$(info ** Sming build configuration **)
 	$(info )
@@ -610,7 +639,7 @@ define PrintComponentInfo
 endef
 
 .PHONY: list-components
-list-components: ##Print details of all Components for this project
+list-components: checksoc ##Print details of all Components for this project
 	$(call PrintVariable,ALL_SEARCH_DIRS)
 	$(if $(V),$(call PrintVariable,ALL_COMPONENT_DIRS))
 	$(info Components:)
@@ -660,8 +689,7 @@ $(shell	mkdir -p $(dir $1);
 endef
 
 # Update build type cache
-$(eval $(call WriteCacheValues,$(BUILD_TYPE_FILE),SMING_ARCH SMING_RELEASE STRICT))
-$(eval $(call WriteCacheValues,$(BUILD_SUBTYPE_FILE),ESP_VARIANT))
+$(eval $(call WriteCacheValues,$(BUILD_TYPE_FILE),SMING_SOC SMING_RELEASE STRICT))
 
 # Update config cache file
 # We store the list of variable names to ensure that any not actively in use don't get lost
@@ -700,7 +728,19 @@ KCONFIG_ENV := \
 CFGTOOL_CMDLINE = $(KCONFIG_ENV) $(PYTHON) $(SMING_TOOLS)/cfgtool.py $(CONFIG_CACHE_FILE)
 
 .PHONY: menuconfig
-menuconfig: ##Run option editor
+menuconfig: checksoc ##Run option editor
 	$(Q) $(CFGTOOL_CMDLINE) --to-kconfig
 	$(Q) $(KCONFIG_ENV) $(PYTHON) -m menuconfig $(SMING_HOME)/Kconfig
 	$(Q) $(CFGTOOL_CMDLINE) --from-kconfig
+
+
+UNSUPPORTED_SOCS = $(filter-out $(PROJECT_SOC),$(AVAILABLE_SOCS))
+
+.PHONY: list-soc
+list-soc: ##List supported and available SOCs
+ifeq (,$(UNSUPPORTED_SOCS))
+	@echo "Project supports all SoCs: $(AVAILABLE_SOCS)"
+else
+	@echo "Project supports: $(PROJECT_SOC)"
+	@echo "Project does not support: $(UNSUPPORTED_SOCS)"
+endif

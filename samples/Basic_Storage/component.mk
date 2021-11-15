@@ -1,5 +1,11 @@
+DISABLE_NETWORK := 1
+
 # Use our custom hardware configuration
+ifeq ($(SMING_ARCH),Esp32)
+HWCONFIG := basic_storage
+else
 HWCONFIG := basic_storage-2m
+endif
 
 HOST_NETWORK_OPTIONS := --nonet
 

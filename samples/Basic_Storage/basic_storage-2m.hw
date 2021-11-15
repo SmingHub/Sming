@@ -5,6 +5,9 @@
         "2m"
     ],
     "partitions": {
+        "rom0": {
+            "size": "512k"
+        },
         "user0": {
             "address": "0x000fa000"
         },

@@ -1,3 +1,4 @@
+COMPONENT_SOC := esp*
 COMPONENT_LIBNAME :=
 
 DEBUG_VARS				+= SPI_SPEED SPI_MODE SPI_SIZE
@@ -19,17 +20,9 @@ ESPTOOL_SUBMODULE		:= $(COMPONENT_PATH)/esptool
 
 $(ESPTOOL): $(ESPTOOL_SUBMODULE)/.submodule
 
-ifeq ($(SMING_ARCH),Esp8266)
-ESP_CHIP := esp8266
-else ifeq ($(SMING_ARCH),Esp32)
-ESP_CHIP := $(ESP_VARIANT)
-else ifeq ($(MAKE_DOCS),)
-$(error esptool unsupported arch: $(SMING_ARCH))
-endif
-
 ESPTOOL_CMDLINE := $(PYTHON) $(ESPTOOL) \
 	-p $(COM_PORT_ESPTOOL) -b $(COM_SPEED_ESPTOOL) \
-	--chip $(ESP_CHIP) --before default_reset --after hard_reset
+	--chip $(SMING_SOC) --before default_reset --after hard_reset
 
 #
 # USB serial ports are not available under WSL2,

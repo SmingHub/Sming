@@ -1,0 +1,1 @@
+COMPONENT_SOC := esp8266

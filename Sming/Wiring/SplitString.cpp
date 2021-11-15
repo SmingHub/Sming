@@ -11,7 +11,7 @@
 
 #include "SplitString.h"
 
-int splitString(String& what, char delim, Vector<int>& splits)
+unsigned splitString(String& what, char delim, Vector<int>& splits)
 {
 	what.trim();
 	splits.removeAllElements();
@@ -39,7 +39,7 @@ int splitString(String& what, char delim, Vector<int>& splits)
 	return splits.count();
 }
 
-int splitString(String& what, char delim, Vector<String>& splits)
+unsigned splitString(String& what, char delim, Vector<String>& splits)
 {
 	what.trim();
 	splits.removeAllElements();

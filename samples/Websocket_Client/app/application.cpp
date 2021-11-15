@@ -45,25 +45,26 @@ void wsMessageSent();
 
 void wsConnected(WebsocketConnection& wsConnection)
 {
-	Serial.printf(_F("Start sending messages every %u second(s)...\n"), MESSAGE_INTERVAL);
+	Serial.printf(_F("Start sending messages every %u second(s)...\r\n"), MESSAGE_INTERVAL);
 	msgTimer.initializeMs(MESSAGE_INTERVAL * 1000, wsMessageSent);
 	msgTimer.start();
 }
 
 void wsMessageReceived(WebsocketConnection& wsConnection, const String& message)
 {
-	Serial.printf(_F("WebSocket message received: %s\n"), message.c_str());
-	Serial.printf(_F("Free Heap: %d\n"), system_get_free_heap_size());
+	Serial.printf(_F("WebSocket message received: %s\r\n"), message.c_str());
+	Serial.printf(_F("Free Heap: %u\r\n"), system_get_free_heap_size());
 }
 
 void wsBinReceived(WebsocketConnection& wsConnection, uint8_t* data, size_t size)
 {
 	Serial.println(_F("WebSocket BINARY received"));
 	for(uint8_t i = 0; i < size; i++) {
-		Serial.printf("wsBin[%u] = 0x%02X\n", i, data[i]);
+		Serial.printf("wsBin[%u] = 0x%02X\r\n", i, data[i]);
 	}
 
-	Serial.printf("Free Heap: %d\n", system_get_free_heap_size());
+	Serial.print(_F("Free Heap: "));
+	Serial.println(system_get_free_heap_size());
 }
 
 void restart()
@@ -76,7 +77,7 @@ void restart()
 
 void wsDisconnected(WebsocketConnection& wsConnection)
 {
-	Serial.printf(_F("Restarting websocket client after %d seconds\n"), RESTART_PERIOD);
+	Serial.printf(_F("Restarting websocket client after %u seconds\r\n"), RESTART_PERIOD);
 	msgTimer.setCallback(restart);
 	msgTimer.setIntervalMs(RESTART_PERIOD * 1000);
 	msgTimer.startOnce();
@@ -107,7 +108,7 @@ void wsMessageSent()
 	buf[1] = msg_cnt++;
 	Serial.println(_F("Sending websocket binary buffer"));
 	for(uint8_t i = 0; i < 3; i++) {
-		Serial.printf("wsBin[%u] = 0x%02X\n", i, buf[i]);
+		Serial.printf("wsBin[%u] = 0x%02X\r\n", i, buf[i]);
 	}
 
 	wsClient.sendBinary(buf, 3);

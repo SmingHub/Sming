@@ -14,15 +14,11 @@
 
 #include "esp8266_peri.h"
 
-extern const unsigned int A0; // Single ESP8266EX analog input pin (TOUT) 10 bit, 0..1v
+constexpr uint8_t A0{17}; // Single ESP8266EX analog input pin (TOUT) 10 bit, 0..1v
 
 #define NOT_A_PIN 0
 #define NOT_A_PORT 0
 #define NOT_ON_TIMER 0
-
-#define PA 1
-#define PB 2
-#define PC 3
 
 #define GPIO_REG_TYPE uint32_t
 

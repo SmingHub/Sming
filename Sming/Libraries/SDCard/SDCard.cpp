@@ -70,7 +70,7 @@ bool SDCard_begin(uint8_t slaveSelect, uint32_t freqLimit)
 	}
 
 	// Note: Some SD cards struggle at 40MHz
-	settings.speed = std::min(freqLimit, 40000000U);
+	settings.speed = std::min(freqLimit, uint32_t(40000000));
 
 	if(!SDCardSPI->begin()) {
 		debug_e("SDCard SPI init failed");

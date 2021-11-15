@@ -1,7 +1,5 @@
 SDK_COMPONENTS_PATH := $(IDF_PATH)/components
 
-# See build.mk for default ESP_VARIANT - determines toolchain
-
 COMPONENT_DEPENDS := libc
 
 COMPONENT_SRCDIRS := src
@@ -248,6 +246,12 @@ CUSTOM_TARGETS += checksdk
 checksdk: $(SDK_PROJECT_PATH) $(SDKCONFIG_H) $(SDKCONFIG_MAKEFILE)
 	$(Q) $(NINJA) -C $(SDK_BUILD_BASE) bootloader app
 	$(Q) $(MAKE) --no-print-directory -C $(ESP32_COMPONENT_PATH) -f misc.mk copylibs
+
+.PHONY: reconfigure-sdk
+reconfigure-sdk:
+	$(Q) $(SDK_BUILD) reconfigure
+
+$(COMPONENT_NAME)-build: reconfigure-sdk
 
 $(SDKCONFIG_H) $(SDKCONFIG_MAKEFILE) $(SDK_COMPONENT_LIBS): $(SDK_PROJECT_PATH) $(SDK_CONFIG_DEFAULTS) | $(SDK_BUILD_BASE) $(SDK_COMPONENT_LIBDIR)
 	$(Q) $(SDK_BUILD) reconfigure

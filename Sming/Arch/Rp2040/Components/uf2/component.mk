@@ -1,3 +1,5 @@
+COMPONENT_LIBNAME :=
+
 COMPONENT_DOCFILES := \
 	uf2.md \
 	uf2conv.md
