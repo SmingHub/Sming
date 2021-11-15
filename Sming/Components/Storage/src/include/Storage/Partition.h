@@ -265,7 +265,7 @@ public:
 
 	/**
 	 * @brief Obtain partition size
-	 * @retval uint32_t Size in bytes
+	 * @retval size_t Size in bytes
 	 */
 	size_t size() const
 	{
