@@ -28,6 +28,7 @@ int HttpServerConnection::onMessageBegin(http_parser* parser)
 	response.reset();
 
 	// ... and Request
+	request.reset();
 	request.setMethod((const HttpMethod)parser->method);
 
 	// and temp data...
