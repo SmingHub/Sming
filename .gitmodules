@@ -277,6 +277,10 @@
 	path = Sming/Libraries/RapidXML
 	url = https://github.com/mikee47/Sming-RapidXML
 	ignore = dirty
+[submodule "Libraries.rbpf"]
+	path = Sming/Libraries/rbpf
+	url = https://github.com/slaff/Sming-rbpf.git
+	ignore = dirty
 [submodule "Libraries.RingBufCPP"]
 	path = Sming/Libraries/RingBufCPP
 	url = https://github.com/wizard97/Embedded_RingBuf_CPP.git
@@ -301,7 +305,7 @@
 	path = Sming/Libraries/SolarCalculator
 	url = https://github.com/mikee47/SolarCalculator
 	ignore = dirty
-[submodule "spiffs"]
+[submodule "Libraries.spiffs"]
 	path = Sming/Libraries/Spiffs/spiffs
 	url = https://github.com/pellepl/spiffs.git
 	ignore = dirty
