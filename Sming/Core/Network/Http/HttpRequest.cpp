@@ -64,6 +64,7 @@ void HttpRequest::reset()
 
 	postParams.clear();
 	files.clear();
+	headers.clear();
 }
 
 String HttpRequest::toString() const
