@@ -52,6 +52,8 @@
 	XX(flashsize, required_argument, "Change default flash size if file doesn't exist", "SIZE",                        \
 	   "Size of flash in bytes (e.g. 512K, 524288, 0x80000)", nullptr)                                                 \
 	XX(initonly, no_argument, "Initialise only, do not start Sming", nullptr, nullptr, nullptr)                        \
+	XX(loopcount, required_argument, "Run Sming loop a fixed number of times then exit", nullptr, nullptr,             \
+	   "Useful for running samples in CI\0")                                                                           \
 	XX(nonet, no_argument, "Skip network initialisation", nullptr, nullptr, nullptr)                                   \
 	XX(debug, required_argument, "Set debug verbosity", "LEVEL", "Maximum debug message level to print",               \
 	   "0 = errors only, 1 = +warnings, 2 = +info\0")
