@@ -11,15 +11,16 @@ inst_host=0
 inst_doc=0
 inst_esp8266=0
 inst_esp32=0
+inst_rp2040=0
 err=0
 
 for opt in "$@"; do
     case $opt in
         all)
             inst_host=1
-            inst_doc=1
             inst_esp8266=1
             inst_esp32=1
+            inst_rp2040=1
             ;;
 
         host | doc | esp8266 | esp32 | rp2040)
@@ -36,11 +37,11 @@ done
 if [[ $err -eq 1 ]] || [ $# -eq 0 ]; then
     echo 'Sming Installation options:'
     echo '   host      Host development tools'
-    echo '   doc       Tools required to build documentation'
     echo '   esp8266   ESP8266 development tools'
     echo '   esp32     ESP32 development tools'
     echo '   rp2040    RP2040 tools (Raspberry Pi Pico)'
-    echo '   all       Install everything'
+    echo '   all       Install all architectures'
+    echo '   doc       Tools required to build documentation'
     echo
     if [ $sourced = 1 ]; then
         return 1
