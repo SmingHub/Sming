@@ -59,6 +59,15 @@ public:
 
 	using ObjectMap::set;
 
+	template <class... Tail>
+	HttpResource* set(const String& path, HttpResource* resource, HttpResourcePlugin* plugin, Tail... plugins)
+	{
+		registerPlugin(plugin, plugins...);
+		set(path, resource);
+		resource->addPlugin(plugin, plugins...);
+		return resource;
+	}
+
 	/**
 	 * @brief Set a callback to handle the given path
 	 * @param path URL path
