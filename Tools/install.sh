@@ -159,6 +159,10 @@ python3 -m pip install --upgrade pip -r "$SMING_HOME/../Tools/requirements.txt"
 
 
 install() {
+    echo
+    echo
+    echo "** Installing $1 toolchain"
+    echo
     source "$SMING_HOME/Arch/$1/Tools/install.sh"
 }
 

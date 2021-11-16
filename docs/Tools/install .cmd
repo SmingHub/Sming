@@ -1,12 +1,11 @@
-REM Host install.cmd
+REM Docs install.cmd
 
 call :install "c:\tools\doxygen" doxygen-1.9.1.windows.bin.zip
 call :install "c:\tools" stable_windows_10_msbuild_Release_Win32_graphviz-2.46.1-win32.zip
+setx PATH C:\tools\doxygen;C:\tools\Graphviz\bin;%PATH%
 
 python -m pip install --upgrade pip wheel
-
 python -m pip install -r %SMING_HOME%/../docs/requirements.txt
-
 python -m pip uninstall -y xcffib
 
 goto :EOF
