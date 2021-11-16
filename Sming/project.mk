@@ -25,9 +25,6 @@ all: checksoc checkdirs submodules ##(default) Build all Component libraries
 BUILD_TYPE_FILE	:= out/build-type.mk
 -include $(BUILD_TYPE_FILE)
 
-BUILD_SUBTYPE_FILE = out/$(SMING_ARCH)/build-subtype.mk
--include $(BUILD_SUBTYPE_FILE)
-
 #
 include $(SMING_HOME)/build.mk
 
@@ -690,7 +687,9 @@ $(shell	mkdir -p $(dir $1);
 endef
 
 # Update build type cache
+ifndef MAKE_CLEAN
 $(eval $(call WriteCacheValues,$(BUILD_TYPE_FILE),SMING_SOC SMING_RELEASE STRICT))
+endif
 
 # Update config cache file
 # We store the list of variable names to ensure that any not actively in use don't get lost
@@ -704,6 +703,7 @@ endef
 
 # Update variable cache for all operations except cleaning
 ifndef MAKE_CLEAN
+$(info SAVE $(SMING_SOC))
 CACHED_VAR_NAMES := $(sort $(CACHED_VAR_NAMES) $(CONFIG_VARS) $(RELINK_VARS) $(CACHE_VARS))
 $(eval $(call WriteConfigCache,$(CONFIG_CACHE_FILE),CACHED_VAR_NAMES))
 $(eval $(call WriteCacheValues,$(CONFIG_DEBUG_FILE),$(sort $(DEBUG_VARS))))
@@ -734,14 +734,16 @@ menuconfig: checksoc ##Run option editor
 	$(Q) $(KCONFIG_ENV) $(PYTHON) -m menuconfig $(SMING_HOME)/Kconfig
 	$(Q) $(CFGTOOL_CMDLINE) --from-kconfig
 
-
-UNSUPPORTED_SOCS = $(filter-out $(PROJECT_SOC),$(AVAILABLE_SOCS))
-
 .PHONY: list-soc
 list-soc: ##List supported and available SOCs
-ifeq (,$(UNSUPPORTED_SOCS))
-	@echo "Project supports all SoCs: $(AVAILABLE_SOCS)"
+	@echo "Available SoCs: $(AVAILABLE_SOCS)"
+	@echo "Project support:"
+	@$(foreach s,$(AVAILABLE_SOCS),$(MAKE) --no-print-directory --silent MAKE_CLEAN=1 SMING_SOC=$s checksoc-print; )
+
+.PHONY: list-soc-check
+checksoc-print:
+ifeq (,$(findstring $(SMING_SOC),$(PROJECT_SOC)))
+	$(info - NO:  $(SMING_SOC))
 else
-	@echo "Project supports: $(PROJECT_SOC)"
-	@echo "Project does not support: $(UNSUPPORTED_SOCS)"
+	$(info - YES: $(SMING_SOC))
 endif
