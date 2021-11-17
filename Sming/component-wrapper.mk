@@ -153,7 +153,7 @@ endef
 # $1 -> source root directory
 # $2 -> file path(s)
 define ResolveObjPath
-$(foreach f,$2,$(patsubst $(SMING_HOME)/%,%,$(patsubst $1/%,%,$f)))
+$(foreach f,$2,$(patsubst /%,%,$(patsubst $(SMING_HOME)/%,%,$(patsubst $1/%,%,$f))))
 endef
 
 # All source files, absolute paths
