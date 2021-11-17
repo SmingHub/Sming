@@ -11,7 +11,7 @@ call Arch\%SMING_ARCH%\Tools\ci\build.setup.cmd || goto :error
 
 env
 
-set MAKE_PARALLEL=make -j2
+set MAKE_PARALLEL=make -j%NUMBER_OF_PROCESSORS%
 
 REM Move samples and tests into directory outside of the Sming repo.
 set SMING_PROJECTS_DIR=%CI_BUILD_DIR%\projects
