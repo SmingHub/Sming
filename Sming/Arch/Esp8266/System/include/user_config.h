@@ -1,8 +1,6 @@
 #ifndef __USER_CONFIG_H__
 #define __USER_CONFIG_H__
 
-// UART config
-#define SERIAL_BAUD_RATE COM_SPEED_SERIAL
 
 #include <esp_systemapi.h>
 
