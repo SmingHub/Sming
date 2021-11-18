@@ -16,6 +16,7 @@
  ****/
 
 #include "include/esp_spi_flash.h"
+#include <esp_systemapi.h>
 
 extern char _flash_code_end[];
 

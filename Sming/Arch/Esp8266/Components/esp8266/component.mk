@@ -38,18 +38,16 @@ $(FLASH_INIT_DATA_VCC): $(FLASH_INIT_DATA)
 	$(Q) cp $< $@
 	$(Q) $(PYTHON) $(PHY_TOOL) $@
 
-DEBUG_VARS				+= SDK_LIBDIR SDK_INCDIR
+DEBUG_VARS				+= SDK_LIBDIR
 SDK_LIBDIR				:= $(SDK_BASE)/lib
-SDK_INCDIR				:= $(SDK_BASE)/include
-COMPONENT_INCDIRS		:= include $(SDK_INCDIR)
+COMPONENT_INCDIRS		:= include
 
 export SDK_INTERNAL
 export SDK_LIBDIR
-export SDK_INCDIR
 
 COMPONENT_DOXYGEN_INPUT := \
-	$(SDK_INCDIR)/gpio.h \
-	$(SDK_INCDIR)/pwm.h
+	include/gpio.h \
+	include/pwm.h
 
 # Crash handler hooks this so debugger can be invoked
 EXTRA_LDFLAGS := $(call Wrap,system_restart_local)

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <user_config.h>
+#include <esp_systemapi.h>
 
 /* ==============================================
    Promiscous callback structures, see ESP manual
