@@ -22,16 +22,22 @@
  *
  */
 
-#ifndef _OS_TYPES_H_
-#define _OS_TYPES_H_
+#pragma once
 
+#include <c_types.h>
 #include "ets_sys.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define os_signal_t ETSSignal
-#define os_param_t  ETSParam
+#define os_param_t ETSParam
 #define os_event_t ETSEvent
 #define os_task_t ETSTask
-#define os_timer_t  ETSTimer
+#define os_timer_t ETSTimer
 #define os_timer_func_t ETSTimerFunc
 
+#ifdef __cplusplus
+}
 #endif

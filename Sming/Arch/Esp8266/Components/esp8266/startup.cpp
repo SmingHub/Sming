@@ -14,6 +14,7 @@
 #include <gdb/gdb_hooks.h>
 #include <esp_cplusplus.h>
 #include <Storage.h>
+#include <spi_flash.h>
 
 extern void init();
 

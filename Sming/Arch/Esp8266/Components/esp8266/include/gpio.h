@@ -22,33 +22,36 @@
  *
  */
 
-#ifndef _GPIO_H_
-#define _GPIO_H_
+#pragma once
 
-#define GPIO_PIN_ADDR(i) (GPIO_PIN0_ADDRESS + i*4)
+#include <c_types.h>
 
-#define GPIO_ID_IS_PIN_REGISTER(reg_id) \
-    ((reg_id >= GPIO_ID_PIN0) && (reg_id <= GPIO_ID_PIN(GPIO_PIN_COUNT-1)))
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#define GPIO_REGID_TO_PINIDX(reg_id) ((reg_id) - GPIO_ID_PIN0)
+#define GPIO_PIN_ADDR(i) (GPIO_PIN0_ADDRESS + i * 4)
+
+#define GPIO_ID_IS_PIN_REGISTER(reg_id) ((reg_id >= GPIO_ID_PIN0) && (reg_id <= GPIO_ID_PIN(GPIO_PIN_COUNT - 1)))
+
+#define GPIO_REGID_TO_PINIDX(reg_id) ((reg_id)-GPIO_ID_PIN0)
 
 typedef enum {
-    GPIO_PIN_INTR_DISABLE = 0,
-    GPIO_PIN_INTR_POSEDGE = 1,
-    GPIO_PIN_INTR_NEGEDGE = 2,
-    GPIO_PIN_INTR_ANYEDGE = 3,
-    GPIO_PIN_INTR_LOLEVEL = 4,
-    GPIO_PIN_INTR_HILEVEL = 5
+	GPIO_PIN_INTR_DISABLE = 0,
+	GPIO_PIN_INTR_POSEDGE = 1,
+	GPIO_PIN_INTR_NEGEDGE = 2,
+	GPIO_PIN_INTR_ANYEDGE = 3,
+	GPIO_PIN_INTR_LOLEVEL = 4,
+	GPIO_PIN_INTR_HILEVEL = 5
 } GPIO_INT_TYPE;
 
-#define GPIO_OUTPUT_SET(gpio_no, bit_value) \
-    gpio_output_set((bit_value)<<gpio_no, ((~(bit_value))&0x01)<<gpio_no, 1<<gpio_no,0)
-#define GPIO_DIS_OUTPUT(gpio_no) 	gpio_output_set(0,0,0, 1<<gpio_no)
-#define GPIO_INPUT_GET(gpio_no)     ((gpio_input_get()>>gpio_no)&BIT0)
+#define GPIO_OUTPUT_SET(gpio_no, bit_value)                                                                            \
+	gpio_output_set((bit_value) << gpio_no, ((~(bit_value)) & 0x01) << gpio_no, 1 << gpio_no, 0)
+#define GPIO_DIS_OUTPUT(gpio_no) gpio_output_set(0, 0, 0, 1 << gpio_no)
+#define GPIO_INPUT_GET(gpio_no) ((gpio_input_get() >> gpio_no) & BIT0)
 
 /* GPIO interrupt handler, registered through gpio_intr_handler_register */
-typedef void (* gpio_intr_handler_fn_t)(uint32 intr_mask, void *arg);
-
+typedef void (*gpio_intr_handler_fn_t)(uint32_t intr_mask, void* arg);
 
 /*
  * Initialize GPIO.  This includes reading the GPIO Configuration DataSet
@@ -67,15 +70,12 @@ void gpio_init(void);
  * writes is significant, calling code should divide a single call
  * into multiple calls.
  */
-void gpio_output_set(uint32 set_mask,
-                     uint32 clear_mask,
-                     uint32 enable_mask,
-                     uint32 disable_mask);
+void gpio_output_set(uint32_t set_mask, uint32_t clear_mask, uint32_t enable_mask, uint32_t disable_mask);
 
 /*
  * Sample the value of GPIO input pins and returns a bitmask.
  */
-uint32 gpio_input_get(void);
+uint32_t gpio_input_get(void);
 
 /*
  * Set the specified GPIO register to the specified value.
@@ -83,10 +83,10 @@ uint32 gpio_input_get(void);
  * expected to be used during normal operation.  It is intended
  * mainly for debug, or for unusual requirements.
  */
-void gpio_register_set(uint32 reg_id, uint32 value);
+void gpio_register_set(uint32_t reg_id, uint32_t value);
 
 /* Get the current value of the specified GPIO register. */
-uint32 gpio_register_get(uint32 reg_id);
+uint32_t gpio_register_get(uint32_t reg_id);
 
 /*
  * Register an application-specific interrupt handler for GPIO pin
@@ -99,21 +99,23 @@ uint32 gpio_register_get(uint32 reg_id);
  * application-specific handler may wish to use gpio_intr_pending
  * to check for any additional pending interrupts before it returns.
  */
-void gpio_intr_handler_register(gpio_intr_handler_fn_t fn, void *arg);
+void gpio_intr_handler_register(gpio_intr_handler_fn_t fn, void* arg);
 
 /* Determine which GPIO interrupts are pending. */
-uint32 gpio_intr_pending(void);
+uint32_t gpio_intr_pending(void);
 
 /*
  * Acknowledge GPIO interrupts.
  * Intended to be called from the gpio_intr_handler_fn.
  */
-void gpio_intr_ack(uint32 ack_mask);
+void gpio_intr_ack(uint32_t ack_mask);
 
-void gpio_pin_wakeup_enable(uint32 i, GPIO_INT_TYPE intr_state);
+void gpio_pin_wakeup_enable(uint32_t i, GPIO_INT_TYPE intr_state);
 
 void gpio_pin_wakeup_disable();
 
-void gpio_pin_intr_state_set(uint32 i, GPIO_INT_TYPE intr_state);
+void gpio_pin_intr_state_set(uint32_t i, GPIO_INT_TYPE intr_state);
 
-#endif // _GPIO_H_
+#ifdef __cplusplus
+}
+#endif

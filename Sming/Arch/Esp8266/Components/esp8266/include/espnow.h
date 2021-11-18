@@ -22,8 +22,13 @@
  *
  */
 
-#ifndef __ESPNOW_H__
-#define __ESPNOW_H__
+#pragma once
+
+#include <c_types.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 enum esp_now_role {
 	ESP_NOW_ROLE_IDLE = 0,
@@ -33,8 +38,8 @@ enum esp_now_role {
 	ESP_NOW_ROLE_MAX,
 };
 
-typedef void (*esp_now_recv_cb_t)(u8 *mac_addr, u8 *data, u8 len);
-typedef void (*esp_now_send_cb_t)(u8 *mac_addr, u8 status);
+typedef void (*esp_now_recv_cb_t)(uint8_t* mac_addr, uint8_t* data, uint8_t len);
+typedef void (*esp_now_send_cb_t)(uint8_t* mac_addr, uint8_t status);
 
 int esp_now_init(void);
 int esp_now_deinit(void);
@@ -45,29 +50,31 @@ int esp_now_unregister_send_cb(void);
 int esp_now_register_recv_cb(esp_now_recv_cb_t cb);
 int esp_now_unregister_recv_cb(void);
 
-int esp_now_send(u8 *da, u8 *data, int len);
+int esp_now_send(uint8_t* da, uint8_t* data, int len);
 
-int esp_now_add_peer(u8 *mac_addr, u8 role, u8 channel, u8 *key, u8 key_len);
-int esp_now_del_peer(u8 *mac_addr);
+int esp_now_add_peer(uint8_t* mac_addr, uint8_t role, uint8_t channel, uint8_t* key, uint8_t key_len);
+int esp_now_del_peer(uint8_t* mac_addr);
 
-int esp_now_set_self_role(u8 role);
+int esp_now_set_self_role(uint8_t role);
 int esp_now_get_self_role(void);
 
-int esp_now_set_peer_role(u8 *mac_addr, u8 role);
-int esp_now_get_peer_role(u8 *mac_addr);
+int esp_now_set_peer_role(uint8_t* mac_addr, uint8_t role);
+int esp_now_get_peer_role(uint8_t* mac_addr);
 
-int esp_now_set_peer_channel(u8 *mac_addr, u8 channel);
-int esp_now_get_peer_channel(u8 *mac_addr);
+int esp_now_set_peer_channel(uint8_t* mac_addr, uint8_t channel);
+int esp_now_get_peer_channel(uint8_t* mac_addr);
 
-int esp_now_set_peer_key(u8 *mac_addr, u8 *key, u8 key_len);
-int esp_now_get_peer_key(u8 *mac_addr, u8 *key, u8 *key_len);
+int esp_now_set_peer_key(uint8_t* mac_addr, uint8_t* key, uint8_t key_len);
+int esp_now_get_peer_key(uint8_t* mac_addr, uint8_t* key, uint8_t* key_len);
 
-u8 *esp_now_fetch_peer(bool restart);
+uint8_t* esp_now_fetch_peer(bool restart);
 
-int esp_now_is_peer_exist(u8 *mac_addr);
+int esp_now_is_peer_exist(uint8_t* mac_addr);
 
-int esp_now_get_cnt_info(u8 *all_cnt, u8 *encrypt_cnt);
+int esp_now_get_cnt_info(uint8_t* all_cnt, uint8_t* encrypt_cnt);
 
-int esp_now_set_kok(u8 *key, u8 len);
+int esp_now_set_kok(uint8_t* key, uint8_t len);
 
+#ifdef __cplusplus
+}
 #endif

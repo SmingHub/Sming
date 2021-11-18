@@ -22,21 +22,25 @@
  *
  */
 
-#ifndef __IP_ADDR_H__
-#define __IP_ADDR_H__
+#ifndef __LWIP_IP_ADDR_H__
+#define __LWIP_IP_ADDR_H__
 
-#include "c_types.h"
+#include <c_types.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 struct ip_addr {
-    uint32 addr;
+	uint32_t addr;
 };
 
 typedef struct ip_addr ip_addr_t;
 
 struct ip_info {
-    struct ip_addr ip;
-    struct ip_addr netmask;
-    struct ip_addr gw;
+	struct ip_addr ip;
+	struct ip_addr netmask;
+	struct ip_addr gw;
 };
 
 /**
@@ -47,18 +51,13 @@ struct ip_info {
  * @arg mask network identifier mask
  * @return !0 if the network identifiers of both address match
  */
-#define ip_addr_netcmp(addr1, addr2, mask) (((addr1)->addr & \
-        (mask)->addr) == \
-        ((addr2)->addr & \
-         (mask)->addr))
+#define ip_addr_netcmp(addr1, addr2, mask) (((addr1)->addr & (mask)->addr) == ((addr2)->addr & (mask)->addr))
 
 /** Set an IP address given by the four byte-parts.
     Little-endian version that prevents the use of htonl. */
-#define IP4_ADDR(ipaddr, a,b,c,d) \
-        (ipaddr)->addr = ((uint32)((d) & 0xff) << 24) | \
-                         ((uint32)((c) & 0xff) << 16) | \
-                         ((uint32)((b) & 0xff) << 8)  | \
-                          (uint32)((a) & 0xff)
+#define IP4_ADDR(ipaddr, a, b, c, d)                                                                                   \
+	(ipaddr)->addr = ((uint32_t)((d)&0xff) << 24) | ((uint32_t)((c)&0xff) << 16) | ((uint32_t)((b)&0xff) << 8) |       \
+					 (uint32_t)((a)&0xff)
 
 #define ip4_addr1(ipaddr) (((uint8*)(ipaddr))[0])
 #define ip4_addr2(ipaddr) (((uint8*)(ipaddr))[1])
@@ -70,18 +69,18 @@ struct ip_info {
 #define ip4_addr3_16(ipaddr) ((uint16)ip4_addr3(ipaddr))
 #define ip4_addr4_16(ipaddr) ((uint16)ip4_addr4(ipaddr))
 
-
 /** 255.255.255.255 */
-#define IPADDR_NONE         ((uint32)0xffffffffUL)
+#define IPADDR_NONE ((uint32_t)0xffffffffUL)
 /** 0.0.0.0 */
-#define IPADDR_ANY          ((uint32)0x00000000UL)
-uint32 ipaddr_addr(const char *cp);
+#define IPADDR_ANY ((uint32_t)0x00000000UL)
+uint32_t ipaddr_addr(const char* cp);
 
-#define IP2STR(ipaddr) ip4_addr1_16(ipaddr), \
-    ip4_addr2_16(ipaddr), \
-    ip4_addr3_16(ipaddr), \
-    ip4_addr4_16(ipaddr)
+#define IP2STR(ipaddr) ip4_addr1_16(ipaddr), ip4_addr2_16(ipaddr), ip4_addr3_16(ipaddr), ip4_addr4_16(ipaddr)
 
 #define IPSTR "%d.%d.%d.%d"
 
-#endif /* __IP_ADDR_H__ */
+#ifdef __cplusplus
+}
+#endif
+
+#endif // __LWIP_IP_ADDR_H__

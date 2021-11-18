@@ -5,23 +5,18 @@
  *      Author: peterfan
  */
 
-#ifndef AIRKISS_H_
-#define AIRKISS_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+typedef void* (*airkiss_memset_fn)(void* ptr, int value, unsigned int num);
+typedef void* (*airkiss_memcpy_fn)(void* dst, const void* src, unsigned int num);
+typedef int (*airkiss_memcmp_fn)(const void* ptr1, const void* ptr2, unsigned int num);
+typedef int (*airkiss_printf_fn)(const char* format, ...);
 
-typedef void* (*airkiss_memset_fn) (void* ptr, int value, unsigned int num);
-typedef void* (*airkiss_memcpy_fn) (void* dst, const void* src, unsigned int num);
-typedef int (*airkiss_memcmp_fn) (const void* ptr1, const void* ptr2, unsigned int num);
-typedef int (*airkiss_printf_fn) (const char* format, ...);
-
-
-
-typedef struct
-{
+typedef struct {
 	airkiss_memset_fn memset;
 	airkiss_memcpy_fn memcpy;
 	airkiss_memcmp_fn memcmp;
@@ -41,9 +36,7 @@ typedef struct
 
 const char* airkiss_version(void);
 
-
-typedef enum
-{
+typedef enum {
 	/* the length of the data buffer is lack*/
 	AIRKISS_LAN_ERR_OVERFLOW = -5,
 
@@ -68,12 +61,9 @@ typedef enum
 	/* Packet packaging complete */
 	AIRKISS_LAN_PAKE_READY = 2
 
-
 } airkiss_lan_ret_t;
 
-
-typedef enum
-{
+typedef enum {
 	AIRKISS_LAN_SSDP_REQ_CMD = 0x1,
 	AIRKISS_LAN_SSDP_RESP_CMD = 0x1001,
 	AIRKISS_LAN_SSDP_NOTIFY_CMD = 0x1002
@@ -94,7 +84,6 @@ typedef enum
 
 int airkiss_lan_recv(const void* body, unsigned short length, const airkiss_config_t* config);
 
-
 /**
   * @brief     Packaging the UDP packet to send.
   *
@@ -113,10 +102,10 @@ int airkiss_lan_recv(const void* body, unsigned short length, const airkiss_conf
   * @return    <0  : error code (reference airkiss_lan_ret_t)
   */
 
-int airkiss_lan_pack(airkiss_lan_cmdid_t ak_lan_cmdid, void* appid, void* deviceid, void* _datain, unsigned short inlength, void* _dataout, unsigned short* outlength, const airkiss_config_t* config);
+int airkiss_lan_pack(airkiss_lan_cmdid_t ak_lan_cmdid, void* appid, void* deviceid, void* _datain,
+					 unsigned short inlength, void* _dataout, unsigned short* outlength,
+					 const airkiss_config_t* config);
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* AIRKISS_H_ */

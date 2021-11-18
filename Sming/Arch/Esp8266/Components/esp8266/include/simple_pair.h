@@ -22,8 +22,13 @@
  *
  */
 
-#ifndef __SIMPLE_PAIR_H__
-#define __SIMPLE_PAIR_H__
+#pragma once
+
+#include <c_types.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef enum {
 	SP_ST_STA_FINISH = 0,
@@ -34,14 +39,13 @@ typedef enum {
 	SP_ST_WAIT_TIMEOUT,
 	SP_ST_SEND_ERROR,
 	SP_ST_KEY_INSTALL_ERR,
-	SP_ST_KEY_OVERLAP_ERR,  //means the same macaddr has two different keys 
+	SP_ST_KEY_OVERLAP_ERR, //means the same macaddr has two different keys
 	SP_ST_OP_ERROR,
 	SP_ST_UNKNOWN_ERROR,
 	SP_ST_MAX,
 } SP_ST_t;
 
-
-typedef void (*simple_pair_status_cb_t)(u8 *sa, u8 status);
+typedef void (*simple_pair_status_cb_t)(uint8_t* sa, uint8_t status);
 
 int register_simple_pair_status_cb(simple_pair_status_cb_t cb);
 void unregister_simple_pair_status_cb(void);
@@ -57,8 +61,9 @@ int simple_pair_sta_start_negotiate(void);
 int simple_pair_ap_start_negotiate(void);
 int simple_pair_ap_refuse_negotiate(void);
 
-int simple_pair_set_peer_ref(u8 *peer_mac, u8 *tmp_key, u8 *ex_key);
-int simple_pair_get_peer_ref(u8 *peer_mac, u8 *tmp_key, u8 *ex_key);
+int simple_pair_set_peer_ref(uint8_t* peer_mac, uint8_t* tmp_key, uint8_t* ex_key);
+int simple_pair_get_peer_ref(uint8_t* peer_mac, uint8_t* tmp_key, uint8_t* ex_key);
 
-
-#endif /* __SIMPLE_PAIR_H__ */
+#ifdef __cplusplus
+}
+#endif
