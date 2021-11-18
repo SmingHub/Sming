@@ -31,7 +31,7 @@
 #include "ip_addr.h"
 #endif
 
-#include "../ESP8266_NONOS_SDK/include/queue.h"
+#include <sdk/include/queue.h>
 
 #ifdef __cplusplus
 extern "C" {
