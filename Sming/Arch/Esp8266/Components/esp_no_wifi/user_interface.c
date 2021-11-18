@@ -1,4 +1,5 @@
 #include <esp_systemapi.h>
+#include <spi_flash.h>
 #include <eagle_soc.h>
 
 bool protect_flag;

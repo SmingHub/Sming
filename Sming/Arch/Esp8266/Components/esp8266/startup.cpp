@@ -44,29 +44,6 @@ extern "C" void user_init(void)
 	init(); // User code init
 }
 
-// For compatibility with SDK v1.1
-extern "C" void WEAK_ATTR user_rf_pre_init(void)
-{
-	// RTC startup fix, author pvvx
-    volatile uint32 * ptr_reg_rtc_ram = (volatile uint32 *)0x60001000;
-    if((ptr_reg_rtc_ram[24] >> 16) > 4) {
-        ptr_reg_rtc_ram[24] &= 0xFFFF;
-        ptr_reg_rtc_ram[30] &= 0;
-    }
-}
-
-extern "C" uint32 ICACHE_FLASH_ATTR  WEAK_ATTR user_rf_cal_sector_set(void)
-{
-	auto rfCal = *Storage::findPartition(Storage::Partition::SubType::Data::rfCal);
-	return rfCal.address();
-}
-
-#ifdef SDK_INTERNAL
-#include <version.h>
-#endif
-
-#if defined(ESP_SDK_VERSION_MAJOR) and ESP_SDK_VERSION_MAJOR>=3
-
 extern "C" void ICACHE_FLASH_ATTR WEAK_ATTR user_pre_init(void)
 {
 	Storage::initialize();
@@ -90,13 +67,8 @@ extern "C" void ICACHE_FLASH_ATTR WEAK_ATTR user_pre_init(void)
 			auto& part = partitions[i];
 			os_printf("partition[%u]: %u, 0x%08x, 0x%08x\n", i, part.type, part.addr, part.size);
 		}
-		if(sizeMap < FLASH_SIZE_8M_MAP_512_512) {
-			os_printf("** Note: SDK 3.0.1 requires spiFlash size >= 1M\n");
-		}
 		while(1) {
 			// Cannot proceed
 		};
 	}
 }
-
-#endif /* defined(ESP_SDK_VERSION_MAJOR) and ESP_SDK_VERSION_MAJOR>=3 */
