@@ -1,12 +1,6 @@
 
 # Esp8266 
-$env:UDK_ROOT = Join-Path $env:CI_BUILD_DIR "opt/esp-alt-sdk"
-$env:EQT_ROOT = Join-Path $env:CI_BUILD_DIR "opt/esp-quick-toolchain"
-if ($env:BUILD_COMPILER -eq "udk") {
-$env:ESP_HOME = $env:UDK_ROOT
-} else {
-$env:ESP_HOME = $env:EQT_ROOT
-}
+$env:ESP_HOME = Join-Path $env:CI_BUILD_DIR "opt/esp-quick-toolchain"
 
 # Esp32
 $env:IDF_PATH = Join-Path $env:CI_BUILD_DIR "opt/esp-idf"

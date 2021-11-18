@@ -14,11 +14,6 @@ environment:
 
     - SMING_ARCH: Esp8266
       INSTALL_OPTS: esp8266
-      BUILD_COMPILER: udk
-
-    - SMING_ARCH: Esp8266
-      INSTALL_OPTS: esp8266
-      BUILD_COMPILER: eqt
 
     - SMING_ARCH: Esp32
       SMING_SOC: esp32
