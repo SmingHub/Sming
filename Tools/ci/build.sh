@@ -2,7 +2,7 @@
 set -ex # exit with nonzero exit code if anything fails
 
 # Build times benefit from parallel building
-export MAKE_PARALLEL="make -j`nproc`"
+export MAKE_PARALLEL="make -j$(nproc)"
 
 cd "$SMING_HOME"
 source "Arch/$SMING_ARCH/Tools/ci/build.setup.sh"
