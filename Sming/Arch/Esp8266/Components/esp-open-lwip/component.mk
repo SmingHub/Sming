@@ -73,7 +73,7 @@ COMPONENT_INCDIRS		:= esp-open-lwip/include
 # Fussy about include paths so override default
 INCDIR := \
 	$(COMPONENT_PATH)/esp-open-lwip/include \
-	$(SDK_BASE)/include \
+	$(ARCH_COMPONENTS)/esp8266/include \
 	$(SMING_HOME)/System/include \
 	$(ARCH_SYS)/include \
 	$(ARCH_COMPONENTS)/libc/include \
