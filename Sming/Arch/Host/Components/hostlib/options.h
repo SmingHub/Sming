@@ -32,9 +32,9 @@
 	XX(uart, required_argument, "Enable UART server", "PORT", "Which UART number to enable",                           \
 	   "e.g. --uart=0 --uart=1 enable servers for UART0, UART1\0")                                                     \
 	XX(device, required_argument, "Set device for uart", "DEVICE", "Optionally map uart to device",                    \
-	   "e.g. --uart=0 --device=/dev/ttyUSB0")                                                                          \
+	   "e.g. --uart=0 --device=/dev/ttyUSB0\0")                                                                        \
 	XX(baud, required_argument, "Set baud rate for UART", "BAUD", "Requires --device argument",                        \
-	   "e.g. --uart=0 --device=/dev/ttyUSB0 --baud=115200")                                                            \
+	   "e.g. --uart=0 --device=/dev/ttyUSB0 --baud=115200\0")                                                          \
 	XX(portbase, required_argument, "Specify base port number for UART socket servers", "PORT", "IP port number",      \
 	   nullptr)                                                                                                        \
 	XX(ifname, required_argument, "Specify network interface", "NAME", "Network interface to use (e.g. tap0)",         \
@@ -52,6 +52,8 @@
 	XX(flashsize, required_argument, "Change default flash size if file doesn't exist", "SIZE",                        \
 	   "Size of flash in bytes (e.g. 512K, 524288, 0x80000)", nullptr)                                                 \
 	XX(initonly, no_argument, "Initialise only, do not start Sming", nullptr, nullptr, nullptr)                        \
+	XX(loopcount, required_argument, "Run Sming loop a fixed number of times then exit", nullptr, nullptr,             \
+	   "Useful for running samples in CI\0")                                                                           \
 	XX(nonet, no_argument, "Skip network initialisation", nullptr, nullptr, nullptr)                                   \
 	XX(debug, required_argument, "Set debug verbosity", "LEVEL", "Maximum debug message level to print",               \
 	   "0 = errors only, 1 = +warnings, 2 = +info\0")

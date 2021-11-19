@@ -261,7 +261,8 @@ endif
 CONFIG_DEBUG_FILE	:= $(OUT_BASE)/debug.mk
 
 # Append standard search directories to any defined by the application
-ALL_SEARCH_DIRS			:= $(call FixPath,$(abspath $(COMPONENT_SEARCH_DIRS)))
+COMPONENT_SEARCH_DIRS	:= $(call FixPath,$(COMPONENT_SEARCH_DIRS))
+ALL_SEARCH_DIRS			:= $(abspath $(COMPONENT_SEARCH_DIRS))
 COMPONENTS_EXTRA_INCDIR	+= $(ALL_SEARCH_DIRS)
 ALL_SEARCH_DIRS			+= $(ARCH_COMPONENTS) $(SMING_HOME)/Components $(SMING_HOME)/Libraries
 

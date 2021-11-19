@@ -103,7 +103,7 @@ docs: submodules ##Build the Sming documentation
 
 # For integration testing both samples and tests are moved outside of the repo.
 SMING_PROJECTS_DIR	?= $(abspath $(SMING_HOME)/..)
-SMING_PROJECTS_DIR	:= $(call FixPath, $(SMING_PROJECTS_DIR))
+SMING_PROJECTS_DIR	:= $(call FixPath,$(SMING_PROJECTS_DIR))
 SAMPLES_DIR			:= $(SMING_PROJECTS_DIR)/samples
 
 # Marks sample as build complete for faster re-testing
