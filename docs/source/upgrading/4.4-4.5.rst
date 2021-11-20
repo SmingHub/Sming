@@ -31,3 +31,11 @@ Sming now requires the :doc:`/arch/esp8266/eqt` for building.
 Support for the old legacy toolchains (ESP open SDK, UDK) have been dropped.
 
 They may still work but are no longer tested.
+
+
+user_config.h
+-------------
+
+This header file is part of the original ESP8266 SDK code and is now deprecated.
+Libraries should use only the necessary headers.
+Applications do not require it.
