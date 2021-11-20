@@ -12,11 +12,11 @@
 #include <driver/uart.h>
 #include <driver/hw_timer.h>
 #include <gdb/gdb_hooks.h>
-#include <esp_cplusplus.h>
 #include <Storage.h>
 #include <spi_flash.h>
 
 extern void init();
+extern void cpp_core_initialize();
 
 extern "C" void user_init(void)
 {
