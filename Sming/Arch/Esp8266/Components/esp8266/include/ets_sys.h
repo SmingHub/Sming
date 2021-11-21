@@ -54,8 +54,14 @@ typedef struct _ETSTIMER_ {
 	void* timer_arg;
 } ETSTimer;
 
+/* Watchdog */
+void ets_wdt_enable(void);
+void ets_wdt_disable(void);
+void wdt_feed(void);
+
 /* interrupt related */
 #define ETS_SDIO_INUM 1
+#define ETS_SLC_INUM 1
 #define ETS_SPI_INUM 2
 #define ETS_GPIO_INUM 4
 #define ETS_UART_INUM 5
@@ -82,6 +88,8 @@ void NmiTimSetFunc(void (*func)(void));
 
 #define ETS_SDIO_INTR_ATTACH(func, arg) ets_isr_attach(ETS_SDIO_INUM, (func), (void*)(arg))
 
+#define ETS_SLC_INTR_ATTACH(func, arg) ets_isr_attach(ETS_SLC_INUM, (func), (void*)(arg))
+
 #define ETS_GPIO_INTR_ATTACH(func, arg) ets_isr_attach(ETS_GPIO_INUM, (func), (void*)(arg))
 
 #define ETS_UART_INTR_ATTACH(func, arg) ets_isr_attach(ETS_UART_INUM, (func), (void*)(arg))
@@ -103,6 +111,10 @@ void NmiTimSetFunc(void (*func)(void));
 #define ETS_GPIO_INTR_ENABLE() ETS_INTR_ENABLE(ETS_GPIO_INUM)
 
 #define ETS_GPIO_INTR_DISABLE() ETS_INTR_DISABLE(ETS_GPIO_INUM)
+
+#define ETS_SLC_INTR_ENABLE() ETS_INTR_ENABLE(ETS_SLC_INUM)
+
+#define ETS_SLC_INTR_DISABLE() ETS_INTR_DISABLE(ETS_SLC_INUM)
 
 #define ETS_SPI_INTR_ENABLE() ETS_INTR_ENABLE(ETS_SPI_INUM)
 

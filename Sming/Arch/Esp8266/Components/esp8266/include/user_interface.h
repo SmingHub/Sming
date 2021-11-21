@@ -225,6 +225,14 @@ typedef struct _scaninfo {
 	uint8_t data_cnt;
 } scaninfo;
 
+typedef enum {
+	OK = 0,
+	FAIL,
+	PENDING,
+	BUSY,
+	CANCEL,
+} STATUS;
+
 typedef void (*scan_done_cb_t)(void* arg, STATUS status);
 
 typedef struct {

@@ -12,10 +12,6 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 // ESP SDK config
 #define LWIP_OPEN_SRC
 
@@ -37,7 +33,6 @@ extern "C" {
 #include <osapi.h>
 #include <gpio.h>
 #include <os_type.h>
-#include "esp_missing.h"
 #include <user_interface.h>
 #ifdef ENABLE_ESPCONN
 #include <espconn.h>
@@ -52,11 +47,6 @@ extern "C" {
 
 #define SYSTEM_ERROR(fmt, ...) debug_e("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 
-extern void ets_wdt_enable(void);
-extern void ets_wdt_disable(void);
-extern void wdt_feed(void);
-
-
 /** @brief  Disable interrupts
  *  @retval Current interrupt level
  *  @note Hardware timer is unaffected if operating in non-maskable mode
@@ -70,7 +60,3 @@ extern void wdt_feed(void);
 /** @brief Restore interrupts to level saved from previous noInterrupts() call
  */
 #define restoreInterrupts(level) XTOS_RESTORE_INTLEVEL(level)
-
-#ifdef __cplusplus
-}
-#endif
