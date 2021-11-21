@@ -11,8 +11,7 @@
 #ifndef _SYSTEM_INCLUDE_MEM_MANAGER_H_
 #define _SYSTEM_INCLUDE_MEM_MANAGER_H_
 
-//#include <c_types.h>
-#include <mem.h>
+#include <sdk/mem.h>
 
 /*------------------------��������------------------------*/
 

@@ -8,6 +8,12 @@
 #include "CommandHandler.h"
 #include "CommandDelegate.h"
 #include <SmingVersion.h>
+#include <debug_progmem.h>
+#include <esp_system.h>
+
+#ifndef DISABLE_NETWORK
+#include <lwip/init.h>
+#endif
 
 #ifndef LWIP_HASH_STR
 #define LWIP_HASH_STR ""

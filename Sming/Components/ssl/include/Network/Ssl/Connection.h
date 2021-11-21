@@ -17,6 +17,7 @@
 #include "InputBuffer.h"
 #include "CipherSuite.h"
 #include "Alert.h"
+#include <lwip/tcp.h>
 
 namespace Ssl
 {

@@ -48,6 +48,7 @@
 #include <driver/uart.h>
 #include <espinc/uart_register.h>
 #include <driver/SerialBuffer.h>
+#include <esp_systemapi.h>
 
 /*
  * Parameters relating to RX FIFO and buffer thresholds

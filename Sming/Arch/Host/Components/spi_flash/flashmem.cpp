@@ -22,6 +22,7 @@
 #include <string.h>
 #include <esp_spi_flash.h>
 #include <IFS/File.h>
+#include <hostlib/hostmsg.h>
 
 namespace
 {

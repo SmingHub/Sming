@@ -9,6 +9,7 @@
  ****/
 
 #include "MemoryDataStream.h"
+#include <debug_progmem.h>
 
 MemoryDataStream::MemoryDataStream(String&& string) noexcept
 {

@@ -11,6 +11,7 @@
  ****/
 
 #include "SectionStream.h"
+#include <debug_progmem.h>
 
 /*
  * Scan through entire source stream to map location and size of sections.

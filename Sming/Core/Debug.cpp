@@ -9,6 +9,7 @@
  ****/
 
 #include "Debug.h"
+#include <debug_progmem.h>
 
 DebugClass::DebugClass()
 {

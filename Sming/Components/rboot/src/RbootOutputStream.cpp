@@ -14,6 +14,7 @@
  */
 
 #include <Data/Stream/RbootOutputStream.h>
+#include <debug_progmem.h>
 
 bool RbootOutputStream::init()
 {

@@ -473,8 +473,6 @@ void smg_uart_wait_tx_empty(smg_uart_t* uart)
 
 	notify(uart, UART_NOTIFY_WAIT_TX);
 
-	system_soft_wdt_feed();
-
 	if(uart->tx_buffer != nullptr) {
 		while(!uart->tx_buffer->isEmpty()) {
 		}

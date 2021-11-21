@@ -2,7 +2,7 @@
 #include <hostlib/threads.h>
 #include <driver/hw_timer.h>
 #include <muldiv.h>
-#include <assert.h>
+#include <cassert>
 
 static os_timer_t* timer_list;
 static CMutex mutex;

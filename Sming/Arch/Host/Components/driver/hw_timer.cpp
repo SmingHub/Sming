@@ -15,7 +15,7 @@
 #include <sys/time.h>
 #include <errno.h>
 #include <hostlib/hostmsg.h>
-#include <assert.h>
+#include <cassert>
 #include <muldiv.h>
 #include <esp_system.h>
 

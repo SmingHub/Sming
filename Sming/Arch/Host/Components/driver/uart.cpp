@@ -28,6 +28,8 @@
 #include <driver/SerialBuffer.h>
 #include <BitManipulations.h>
 #include <Clock.h>
+#include <cstring>
+#include <esp_system.h>
 
 /*
  * Parameters relating to RX FIFO and buffer thresholds

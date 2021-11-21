@@ -10,8 +10,8 @@
 
 #include "StationImpl.h"
 #include "WifiEventsImpl.h"
-#include <lwip/netif.h>
 #include <lwip/dhcp.h>
+#include <esp_systemapi.h>
 
 StationImpl station;
 StationClass& WifiStation = station;

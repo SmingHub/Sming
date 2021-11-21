@@ -13,7 +13,8 @@
 #include "Url.h"
 #include "libyuarel/yuarel.h"
 #include <Data/WebHelpers/escape.h>
-#include "Print.h"
+#include <Print.h>
+#include <debug_progmem.h>
 
 /**
  * @brief Common URI scheme strings

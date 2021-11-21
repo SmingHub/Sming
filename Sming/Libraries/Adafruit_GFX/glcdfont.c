@@ -1,14 +1,7 @@
 #ifndef FONT5X7_H
 #define FONT5X7_H
 
-#if defined(__AVR__)
- #include <avr/io.h>
- #include <avr/pgmspace.h>
-#elif defined(__ESP8266_EX__)
- #include <WiringFrameworkDependencies.h>
-#elif !defined(PROGMEM)
- #define PROGMEM
-#endif
+#include <sys/pgmspace.h>
  
 // Standard ASCII 5x7 font
 

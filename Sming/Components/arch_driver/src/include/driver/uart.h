@@ -36,11 +36,13 @@
 
 #pragma once
 
+#include <c_types.h>
+#include <esp_attr.h>
+#include <sming_attr.h>
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
-
-#include <esp_systemapi.h>
 
 /**
  * @defgroup uart_driver UART Driver

@@ -13,14 +13,11 @@
 #pragma once
 
 // Default types
-#define __CORRECT_ISO_CPP_STDLIB_H_PROTO
 #include <limits.h>
 #include <c_types.h>
 #include <assert.h>
-
-
 #include <sming_attr.h>
-#include "esp_attr.h"
+#include <esp_attr.h>
 #include <espinc/pin_mux_register.h>
 #include <espinc/gpio_register.h>
 #include <espinc/timer_register.h>
@@ -28,10 +25,9 @@
 #include "esp_system.h"
 #include "esp_wifi.h"
 #include "sdk/mem.h"
-#include "m_printf.h"
-#include "debug_progmem.h"
-#include "stringutil.h"
-#include "xtensa/xtruntime.h"
+#include <debug_progmem.h>
+#include <stringutil.h>
+#include <xtensa/xtruntime.h>
 
 #define SYSTEM_ERROR(fmt, ...) debug_e("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 

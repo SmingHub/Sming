@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <Data/HexString.h>
 #include <FlashString/Array.hpp>
+#include <debug_progmem.h>
 
 extern "C" uint32 user_rf_cal_sector_set(void);
 

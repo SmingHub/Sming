@@ -47,7 +47,6 @@
 #include <espinc/i2s_register.h>
 #include <espinc/i2s_struct.h>
 #include <espinc/i2c_bbpll.h>
-#include <esp_systemapi.h>
 #include <Platform/Timers.h>
 
 #include <algorithm>

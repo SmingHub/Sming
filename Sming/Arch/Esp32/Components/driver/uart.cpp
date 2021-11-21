@@ -18,6 +18,7 @@
 #include <driver/periph_ctrl.h>
 #include <soc/uart_channel.h>
 #include <BitManipulations.h>
+#include <esp_systemapi.h>
 
 namespace
 {

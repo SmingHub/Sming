@@ -11,6 +11,7 @@
  ****/
 
 #include "CsvReader.h"
+#include <debug_progmem.h>
 
 void CsvReader::reset()
 {

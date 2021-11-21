@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <esp_systemapi.h>
+#include <esp_system.h>
 
 // Disarmed
 #define OS_TIMER_DEFAULT()                                                                                             \
