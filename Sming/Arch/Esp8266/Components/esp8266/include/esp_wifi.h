@@ -29,12 +29,7 @@
 #pragma once
 
 #include "os_type.h"
-#ifdef LWIP_OPEN_SRC
 #include "lwip/ip_addr.h"
-#else
-#include "ip_addr.h"
-#endif
-
 #include "../sdk/include/queue.h"
 #include "gpio.h"
 

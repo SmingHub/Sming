@@ -12,9 +12,6 @@
 
 #pragma once
 
-// ESP SDK config
-#define LWIP_OPEN_SRC
-
 // Default types
 #define __CORRECT_ISO_CPP_STDLIB_H_PROTO
 #include <limits.h>
