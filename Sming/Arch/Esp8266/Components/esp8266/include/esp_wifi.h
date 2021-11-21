@@ -249,6 +249,7 @@ enum dhcps_offer_option {
 
 uint8_t wifi_softap_get_station_num(void);
 struct station_info* wifi_softap_get_station_info(void);
+bool wifi_softap_set_station_info (uint8_t* mac, struct ip_addr*);
 void wifi_softap_free_station_info(void);
 
 bool wifi_softap_dhcps_start(void);

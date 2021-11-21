@@ -83,6 +83,7 @@ int ets_sprintf(char* str, const char* format, ...) __attribute__((format(printf
 int os_printf_plus(const char* format, ...) __attribute__((format(printf, 1, 2)));
 int ets_snprintf(char* str, unsigned int size, const char* format, ...) __attribute__((format(printf, 3, 4)));
 int ets_putc(int);
+int ets_write_char(int ch);
 
 #define os_sprintf_plus ets_sprintf
 #define os_sprintf(buf, fmt, ...) os_sprintf_plus(buf, fmt, ##__VA_ARGS__)

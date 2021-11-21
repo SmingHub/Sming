@@ -310,9 +310,6 @@ uint8_t system_get_os_print(void)
 	return os_print_enabled;
 }
 
-void ets_write_char(char ch);
-int ets_vprintf(void* routine, const char* format, va_list arg);
-
 int os_printf_plus(const char* format, ...)
 {
 	if(!os_print_enabled) {
