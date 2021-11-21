@@ -16,7 +16,6 @@
 
 #include <sming_attr.h>
 #include <esp_attr.h>
-#include "esp_libc.h"
 #include "esp_sleep.h"
 #include "esp_clk.h"
 #include "esp_tasks.h"

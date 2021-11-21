@@ -4,6 +4,7 @@
 #include <hardware/watchdog.h>
 #include <hardware/structs/watchdog.h>
 #include <pico/unique_id.h>
+#include <hardware/structs/rosc.h>
 
 namespace
 {

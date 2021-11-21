@@ -1,8 +1,6 @@
 
-#include "include/esp_libc.h"
+#include "include/esp_system.h"
 #include <hardware/structs/rosc.h>
-
-/* Misc */
 
 uint32_t os_random(void)
 {

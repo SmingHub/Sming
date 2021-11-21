@@ -11,6 +11,9 @@ void system_soft_wdt_stop(void);
 void system_soft_wdt_restart(void);
 void system_soft_wdt_feed(void);
 
+uint32_t os_random(void);
+int os_get_random(uint8_t* buf, size_t len);
+
 /* Arch/Esp8266/Components/spiffs/spiffs_sming.c */
 #define ETS_INTR_LOCK() ets_intr_lock()
 #define ETS_INTR_UNLOCK() ets_intr_unlock()

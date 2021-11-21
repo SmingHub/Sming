@@ -9,6 +9,9 @@ extern "C" {
 uint32_t system_get_time(void);
 void system_restart(void);
 
+uint32_t os_random(void);
+int os_get_random(uint8_t* buf, size_t len);
+
 void system_soft_wdt_stop(void);
 void system_soft_wdt_restart(void);
 void system_soft_wdt_feed(void);

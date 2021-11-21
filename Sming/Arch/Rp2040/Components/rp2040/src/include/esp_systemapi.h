@@ -18,7 +18,6 @@
 #include <esp_attr.h>
 #include <esp_tasks.h>
 #include <esp_clk.h>
-#include <esp_libc.h>
 #include <esp_sleep.h>
 #include "esp_system.h"
 #include <heap.h>
