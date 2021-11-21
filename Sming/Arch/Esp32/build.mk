@@ -143,6 +143,7 @@ CPPFLAGS += \
 	-MP \
 	$(EXTRA_CPPFLAGS) \
 	-DARCH_ESP32 \
+	-D__ESP32_EX__ \
 	-D__ets__ \
 	-D_GNU_SOURCE \
 	-DCONFIG_NONE_OS

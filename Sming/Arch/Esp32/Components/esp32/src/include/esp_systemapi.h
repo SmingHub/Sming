@@ -33,8 +33,6 @@
 #include <debug_progmem.h>
 #include <stringutil.h>
 
-#define __ESP32_EX__ // System definition ESP32 SOC
-
 #define SYSTEM_ERROR(fmt, ...) debug_e("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 
 /** @brief  Disable interrupts
