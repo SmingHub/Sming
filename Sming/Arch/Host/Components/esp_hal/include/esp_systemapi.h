@@ -54,5 +54,3 @@ __forceinline void restoreInterrupts(unsigned level)
 	(void)level;
 	interrupts();
 }
-
-#define BIT(nr) (1UL << (nr))

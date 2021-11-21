@@ -28,9 +28,6 @@ extern "C" {
 // Remove buggy espconn
 #define _NO_ESPCON_
 
-// And c_types
-#define _C_TYPES_H_
-
 #include <sming_attr.h>
 #include "esp_attr.h"
 #include <espinc/pin_mux_register.h>
@@ -52,8 +49,6 @@ extern "C" {
 #include "xtensa/xtruntime.h"
 
 #define __ESP8266_EX__ // System definition ESP8266 SOC
-
-#define LOCAL           static
 
 #define SYSTEM_ERROR(fmt, ...) debug_e("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 

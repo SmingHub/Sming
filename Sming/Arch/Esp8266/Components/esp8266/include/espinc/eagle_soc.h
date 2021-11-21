@@ -25,8 +25,7 @@
 #ifndef _EAGLE_SOC_H_
 #define _EAGLE_SOC_H_
 
-#include <stdint.h>
-#include <stddef.h>
+#include <c_types.h>
 
 /* IO definitions (access restrictions to peripheral registers) */
 
@@ -68,8 +67,6 @@
 #define BIT1    0x00000002
 #define BIT0    0x00000001
 //}}
-
-#define BIT(nr)     (1UL << (nr))
 
 #define REG_WRITE(_r, _v)       (*(volatile uint32_t *)(_r)) = (_v)
 #define REG_READ(_r)            (*(volatile uint32_t *)(_r))

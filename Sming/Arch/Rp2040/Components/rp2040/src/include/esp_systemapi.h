@@ -27,8 +27,6 @@
 #include "debug_progmem.h"
 #include "stringutil.h"
 
-#define BIT(nr) (1UL << (nr))
-
 #define SYSTEM_ERROR(fmt, ...) debug_e("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 
 extern void ets_wdt_enable(void);
