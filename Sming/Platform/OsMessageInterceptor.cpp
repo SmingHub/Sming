@@ -31,11 +31,17 @@ void OsMessageInterceptor::begin(OsMessageCallback callback)
 	this->callback = callback;
 	message.clear();
 	self = this;
+#if defined(ARCH_ESP8266) || defined(ARCH_ESP32)
 	ets_install_putc1(static_putc);
+#endif
+#if defined(ARCH_ESP8266)
 	system_set_os_print(true);
+#endif
 }
 
 void OsMessageInterceptor::end()
 {
+#if defined(ARCH_ESP8266) || defined(ARCH_ESP32)
 	ets_install_putc1(smg_uart_debug_putc);
+#endif
 }

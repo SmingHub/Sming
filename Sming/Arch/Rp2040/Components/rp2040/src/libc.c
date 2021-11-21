@@ -26,13 +26,3 @@ int os_get_random(uint8_t* buf, size_t len)
 	}
 	return 0;
 }
-
-void ets_install_putc1(void (*p)(char c))
-{
-	// Not implemented
-}
-
-void system_set_os_print(bool onoff)
-{
-	// Not implemented
-}
