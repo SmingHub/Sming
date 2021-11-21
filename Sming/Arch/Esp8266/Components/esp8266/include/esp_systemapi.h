@@ -33,8 +33,6 @@
 #include "stringutil.h"
 #include "xtensa/xtruntime.h"
 
-#define __ESP8266_EX__ // System definition ESP8266 SOC
-
 #define SYSTEM_ERROR(fmt, ...) debug_e("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 
 /** @brief  Disable interrupts

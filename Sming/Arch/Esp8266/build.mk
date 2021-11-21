@@ -46,7 +46,8 @@ CPPFLAGS += \
 	-D__ets__ \
 	-DICACHE_FLASH \
 	-DUSE_OPTIMIZE_PRINTF \
-	-DESP8266
+	-DESP8266 \
+	-D__ESP8266_EX__
 
 ifeq (,$(wildcard $(XTENSA_TOOLS_ROOT)))
 $(error ESP_HOME not set correctly: "$(ESP_HOME)")
