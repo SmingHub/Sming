@@ -29,11 +29,10 @@
 #include <espinc/pin_mux_register.h>
 #include <espinc/gpio_register.h>
 #include <espinc/timer_register.h>
-#include <ets_sys.h>
-#include <osapi.h>
-#include <gpio.h>
-#include <os_type.h>
-#include <user_interface.h>
+#include "gpio.h"
+#include "esp_system.h"
+#include "esp_wifi.h"
+#include "sdk/mem.h"
 #ifdef ENABLE_ESPCONN
 #include <espconn.h>
 #endif
