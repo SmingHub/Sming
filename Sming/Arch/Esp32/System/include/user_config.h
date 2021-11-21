@@ -12,6 +12,6 @@
 #include <stringconversion.h>
 
 // Network base API
-#include <espinc/lwip_includes.h>
+#include <lwip_includes.h>
 
 #endif

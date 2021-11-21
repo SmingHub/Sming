@@ -11,7 +11,7 @@
 #include "NtpClient.h"
 #include "Platform/Station.h"
 #include "SystemClock.h"
-#include <algorithm>
+#include <lwip_includes.h>
 
 NtpClient::NtpClient(const String& reqServer, unsigned reqIntervalSeconds, NtpTimeResultDelegate delegateFunction)
 {

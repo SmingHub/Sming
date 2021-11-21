@@ -18,6 +18,8 @@
 #include "DnsServer.h"
 #include "UdpConnection.h"
 #include "WString.h"
+#include <lwip_includes.h>
+#include <debug_progmem.h>
 
 bool DnsServer::start(uint16_t port, const String& domainName, const IpAddress& resolvedIP)
 {

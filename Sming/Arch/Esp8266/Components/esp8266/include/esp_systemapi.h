@@ -18,8 +18,6 @@
 #include <c_types.h>
 #include <assert.h>
 
-// Remove buggy espconn
-#define _NO_ESPCON_
 
 #include <sming_attr.h>
 #include "esp_attr.h"
@@ -30,10 +28,6 @@
 #include "esp_system.h"
 #include "esp_wifi.h"
 #include "sdk/mem.h"
-#ifdef ENABLE_ESPCONN
-#include <espconn.h>
-#endif
-
 #include "m_printf.h"
 #include "debug_progmem.h"
 #include "stringutil.h"
