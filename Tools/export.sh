@@ -31,9 +31,7 @@ fi
 export PYTHON=${PYTHON:=/usr/bin/python3}
 
 # Esp8266
-#export UDK_ROOT=${UDK_ROOT:=/opt/esp-open-sdk}
-export EQT_ROOT=${EQT_ROOT:=/opt/esp-quick-toolchain}
-export ESP_HOME=${ESP_HOME:=$EQT_ROOT}
+export ESP_HOME=${ESP_HOME:=/opt/esp-quick-toolchain}
 
 # Esp32
 export IDF_PATH=${IDF_PATH:=/opt/esp-idf}

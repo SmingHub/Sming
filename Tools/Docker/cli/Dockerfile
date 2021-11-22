@@ -9,9 +9,7 @@ ENV SMING_HOME /opt/Sming/Sming
 ENV PYTHON /usr/bin/python3
 
 # Esp8266
-#ENV UDK_ROOT /opt/esp-open-sdk
-ENV EQT_ROOT /opt/esp-quick-toolchain
-ENV ESP_HOME $EQT_ROOT
+ENV ESP_HOME /opt/esp-quick-toolchain
 
 # Esp32
 ENV IDF_PATH /opt/esp-idf

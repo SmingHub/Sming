@@ -28,11 +28,7 @@ make help
 make list-config
 
 REM HostTests should build and run on all architectures
-if "%BUILD_COMPILER%" == "udk" ( 
-    REM Skip old toolchain - there are issues
-) else (
-    %MAKE_PARALLEL% -C "%SMING_PROJECTS_DIR%/tests/HostTests"
-)
+%MAKE_PARALLEL% -C "%SMING_PROJECTS_DIR%/tests/HostTests"
 
 REM Start Arch-specific tests
 cd /d %SMING_HOME%
