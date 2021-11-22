@@ -1,3 +1,5 @@
+COMPONENT_SOC := esp* host
+
 COMPONENT_SRCDIRS := \
 	src \
 	$(call ListAllSubDirs,$(COMPONENT_PATH)/src) \
