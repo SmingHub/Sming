@@ -10,9 +10,9 @@ Sming uses ArduinoJson version 6 by default, so this sample demonstrates how to 
 This is how it was done:
 
 1. When including SmingCore.h, just use `#include <SmingCore.h>`.
-2. Remove the file `include/user_config.h`. Sming provides this by default, but if you have made changes
-   for your project then remove everything except your changes, but be sure to add `#include_next <user_config.h>` at the top.
-3. Remove any `#include <user_config.h>` statements from your files. This file is automatically included by Sming.
+2. Remove the file `include/user_config.h`: Sming does not require it. If you have made changes
+   for your project then move the changes into your project's ``component.mk`` file.
+3. Remove any `#include <user_config.h>` statements from your files.
 4. Rename `Makefile-user.mk` file to `component.mk`.
 5. Replace the file `Makefile` with the one from the `Basic_Blink` sample project. If you've ignored the instructions
    and modified the file (!) then you'll need to move those changes into your new `component.mk` file instead.
