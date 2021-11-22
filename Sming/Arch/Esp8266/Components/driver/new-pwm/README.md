@@ -7,9 +7,9 @@ If you like this project and want to support this and my other works, consider d
 
 The software PWM provided in the ESP8266 SDK from Espressif has several drawbacks:
 
-1. Duty cycle limited to 90% (at 1kHz PWM period)
-2. usable PWM period at most ~2KHz.
-3. Incomplete documentation
+1.  Duty cycle limited to 90% (at 1kHz PWM period)
+2.  usable PWM period at most ~2KHz.
+3.  Incomplete documentation
  
 This replacement allows duty cycles from 0% to 100%, with a stepsize of 200ns.
 This is 5000 steps for a 1kHz PWM, and 256 steps (8 bit of resolution) at 19kHz.
@@ -59,7 +59,8 @@ Example usage:
 
 **CAVEATS**
 
-- **To set 100% duty, the duty must be *equal* to the period**
-- **The code uses the TIMER1 interrupt. If you use e.g. the
-  softtimer, there is a conflict. You can use NM1 for the PWM
-  instead.**
+-  **To set 100% duty, the duty must be *equal* to the period**
+
+-  **The code uses the TIMER1 interrupt. If you use e.g. the
+   softtimer, there is a conflict. You can use NM1 for the PWM
+   instead.**

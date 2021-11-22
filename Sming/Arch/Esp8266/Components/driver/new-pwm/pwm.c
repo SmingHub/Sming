@@ -403,7 +403,7 @@ pwm_start(void)
 void ICACHE_FLASH_ATTR
 pwm_set_duty(uint32_t duty, uint8_t channel)
 {
-	if (channel > PWM_MAX_CHANNELS)
+	if (channel >= PWM_MAX_CHANNELS)
 		return;
 
 	if (duty > PWM_MAX_DUTY)
@@ -415,7 +415,7 @@ pwm_set_duty(uint32_t duty, uint8_t channel)
 uint32_t ICACHE_FLASH_ATTR
 pwm_get_duty(uint8_t channel)
 {
-	if (channel > PWM_MAX_CHANNELS)
+	if (channel >= PWM_MAX_CHANNELS)
 		return 0;
 	return pwm_duty[channel];
 }
