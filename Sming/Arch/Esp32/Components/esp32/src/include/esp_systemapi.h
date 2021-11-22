@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <sdkconfig.h>
+
 // Default types
 #include <limits.h>
 #include <assert.h>

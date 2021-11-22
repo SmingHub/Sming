@@ -75,6 +75,5 @@ INCDIR := \
 	$(COMPONENT_PATH)/esp-open-lwip/include \
 	$(ARCH_COMPONENTS)/esp8266/include \
 	$(SMING_HOME)/System/include \
-	$(ARCH_SYS)/include \
 	$(ARCH_COMPONENTS)/libc/include \
 	$(SMING_HOME)/Wiring 
