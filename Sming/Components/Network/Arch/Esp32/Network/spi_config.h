@@ -15,22 +15,22 @@
 #include <driver/gpio.h>
 #include "driver/spi_master.h"
 
-#if defined(SUBARCH_ESP32)
+#if defined(SOC_ESP32)
 #define DEFAULT_HOST SPI2_HOST
 #define DEFAULT_PIN_CS 22
 #define DEFAULT_PIN_INT 4
 #define DEFAULT_PIN_RESET 5
-#elif defined(SUBARCH_ESP32S2)
+#elif defined(SOC_ESP32S2)
 #define DEFAULT_HOST SPI2_HOST
 #define DEFAULT_PIN_CS 34
 #define DEFAULT_PIN_INT 19
 #define DEFAULT_PIN_RESET 18
-#elif defined(SUBARCH_ESP32C3)
+#elif defined(SOC_ESP32C3)
 #define DEFAULT_HOST SPI2_HOST
 #define DEFAULT_PIN_CS 10
 #define DEFAULT_PIN_INT 19
 #define DEFAULT_PIN_RESET 18
-#elif defined(SUBARCH_ESP32S3)
+#elif defined(SOC_ESP32S3)
 #define DEFAULT_HOST SPI2_HOST
 #define DEFAULT_PIN_CS 10
 #define DEFAULT_PIN_INT 19

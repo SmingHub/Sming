@@ -81,10 +81,9 @@ GLOBAL_CFLAGS = \
 	$(USER_CFLAGS)
 CPPFLAGS			+= $(GLOBAL_CFLAGS)
 
-# Provide a SUBARCH_xxxx value for code use, analogous to ARCH_xxx
-DEBUG_VARS		+= SMING_SUBARCH
-SMING_SUBARCH	:= SUBARCH_$(call ToUpper,$(SMING_SOC))
-GLOBAL_CFLAGS	+= -D$(SMING_SUBARCH)=1
+# Provide an SOC_xxxx value for code use, analogous to ARCH_xxx
+SMING_SOC_VAR	:= SOC_$(call ToUpper,$(SMING_SOC))
+GLOBAL_CFLAGS	+= -D$(SMING_SOC_VAR)=1
 
 # Targets to be added as dependencies of the application, built directly in this make instance
 CUSTOM_TARGETS			:=

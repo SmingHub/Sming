@@ -97,7 +97,7 @@ void spi_byte_order(SpiDevice& dev, uint8_t byte_order)
 #endif
 
 // No HAL definition for this
-#if SUBARCH_ESP32 || SUBARCH_ESP32S2
+#if SOC_ESP32 || SOC_ESP32S2
 	dev.user.rd_byte_order = (byte_order == MSBFIRST);
 	dev.user.wr_byte_order = (byte_order == MSBFIRST);
 #else
@@ -349,7 +349,7 @@ uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 	spi_ll_set_miso_bitlen(&dev, bits);
 
 	// copy data to W0
-#if SUBARCH_ESP32 || SUBARCH_ESP32S2
+#if SOC_ESP32 || SOC_ESP32S2
 	if(dev.user.wr_byte_order) {
 		dev.data_buf[0] = data << (32 - bits);
 	} else
@@ -362,7 +362,7 @@ uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 	spi_wait(dev);
 
 	auto res = dev.data_buf[0];
-#if SUBARCH_ESP32 || SUBARCH_ESP32S2
+#if SOC_ESP32 || SOC_ESP32S2
 	if(dev.user.rd_byte_order) {
 		res >>= (32 - bits);
 	}
@@ -382,7 +382,7 @@ uint8_t SPIClass::read8()
 	spi_wait(dev);
 
 	auto res = dev.data_buf[0];
-#if SUBARCH_ESP32 || SUBARCH_ESP32S2
+#if SOC_ESP32 || SOC_ESP32S2
 	if(dev.user.rd_byte_order) {
 		res >>= 24;
 	}
