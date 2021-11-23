@@ -3,14 +3,12 @@ IDF_TARGET ?= esp32
 
 COMPONENT_SRCDIRS := \
 	$(ARCH_CORE) $(call ListAllSubDirs,$(ARCH_CORE)) \
-	$(ARCH_SYS) \
 	$(ARCH_BASE)/Platform \
 	$(ARCH_BASE)/Services/Profiling
 
 COMPONENT_INCDIRS := \
 	$(ARCH_BASE) \
 	$(ARCH_CORE) \
-	$(ARCH_SYS)/include \
 	$(ARCH_COMPONENTS)
 
 COMPONENT_DEPENDS := \

@@ -18,6 +18,7 @@
 #include <driver/periph_ctrl.h>
 #include <soc/uart_channel.h>
 #include <BitManipulations.h>
+#include <esp_systemapi.h>
 
 namespace
 {
@@ -832,7 +833,6 @@ void smg_uart_debug_putc(char c)
 void smg_uart_set_debug(int uart_nr)
 {
 	s_uart_debug_nr = uart_nr;
-	system_set_os_print(uart_nr >= 0);
 	ets_install_putc1(smg_uart_debug_putc);
 	ets_install_putc2(nullptr);
 }

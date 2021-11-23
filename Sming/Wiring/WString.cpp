@@ -20,7 +20,7 @@
 #include <string.h>
 #include <stringutil.h>
 #include <stringconversion.h>
-#include <assert.h>
+#include <cassert>
 
 const String String::nullstr = nullptr;
 const String String::empty = "";

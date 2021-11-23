@@ -23,6 +23,7 @@
 #include <BitManipulations.h>
 #include <hostlib/keyb.h>
 #include <SerialLib.h>
+#include <cassert>
 
 namespace UartServer
 {

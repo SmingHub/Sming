@@ -15,7 +15,8 @@
 extern "C" {
 #endif
 
-#include <user_config.h>
+#include <esp_system.h>
+#include <sys/pgmspace.h>
 
 #define SPI_FLASH_SEC_SIZE 4096
 

@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include <user_config.h>
 #include "TcpClient.h"
 #include "TcpServer.h"
 #include "SystemClock.h"

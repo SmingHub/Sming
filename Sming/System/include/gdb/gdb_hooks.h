@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <user_config.h>
+#include <esp_systemapi.h>
 
 #ifdef __cplusplus
 extern "C" {

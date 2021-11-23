@@ -17,7 +17,6 @@
 #include <sming_attr.h>
 #include <esp_attr.h>
 #include "esp_clk.h"
-#include "esp_libc.h"
 #include "esp_tasks.h"
 #include <heap.h>
 #include "esp_system.h"
@@ -54,5 +53,3 @@ __forceinline void restoreInterrupts(unsigned level)
 	(void)level;
 	interrupts();
 }
-
-#define BIT(nr) (1UL << (nr))

@@ -8,12 +8,12 @@
  *
  ****/
 
-#include <sdkconfig.h>
 #include <esp_spi_flash.h>
 #include <soc/mmu.h>
 #include <esp_flash_partitions.h>
 #include <esp_flash.h>
 #include <rom/cache.h>
+#include <esp_systemapi.h>
 
 uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 {

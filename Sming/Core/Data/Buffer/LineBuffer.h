@@ -12,7 +12,8 @@
 
 #pragma once
 
-#include <user_config.h>
+#include <cstdint>
+#include <cstring>
 
 /**
  * @brief Class to enable buffering of a single line of text, with simple editing

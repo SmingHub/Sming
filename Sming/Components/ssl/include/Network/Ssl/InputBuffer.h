@@ -10,7 +10,9 @@
 
 #pragma once
 
-#include <user_config.h>
+#include <cstdlib>
+#include <cstdint>
+#include <lwip/pbuf.h>
 
 namespace Ssl
 {

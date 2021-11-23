@@ -11,6 +11,7 @@
 #include <Platform/IdfService.h>
 #include <esp_eth.h>
 #include <esp_event.h>
+#include <debug_progmem.h>
 
 namespace Ethernet
 {

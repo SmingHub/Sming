@@ -1,10 +1,7 @@
 #ifndef __USER_CONFIG_H__
 #define __USER_CONFIG_H__
 
-// UART config
-#define SERIAL_BAUD_RATE COM_SPEED_SERIAL
-
-#include <sdkconfig.h>
+#pragma GCC warning "Use of 'user_config.h' is deprecated - see https://sming.readthedocs.io/en/latest/upgrading/4.4-4.5.html"
 
 #include <esp_systemapi.h>
 
@@ -12,6 +9,8 @@
 #include <stringconversion.h>
 
 // Network base API
-#include <espinc/lwip_includes.h>
+#ifndef DISABLE_NETWORK
+#include <lwip_includes.h>
+#endif
 
 #endif

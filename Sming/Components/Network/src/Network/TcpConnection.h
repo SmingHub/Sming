@@ -17,6 +17,7 @@
 
 #include <Network/IpConnection.h>
 #include <Network/Ssl/Session.h>
+#include <lwip/tcp.h>
 
 #define NETWORK_DEBUG
 
@@ -29,7 +30,6 @@ enum TcpConnectionEvent {
 	eTCE_Poll,			//< Occurs on waiting
 };
 
-struct pbuf;
 class String;
 class IDataSourceStream;
 class TcpConnection;

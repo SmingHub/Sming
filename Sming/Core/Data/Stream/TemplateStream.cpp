@@ -9,6 +9,7 @@
  ****/
 
 #include "TemplateStream.h"
+#include <debug_progmem.h>
 
 String TemplateStream::evaluate(char*& expr)
 {

@@ -9,8 +9,8 @@
  ****/
 
 #include <Digital.h>
-#include <esp_systemapi.h>
-#define gpio_drive_cap_t uint32_t
+#include <climits>
+#include <esp_clk.h>
 #include <hal/gpio_ll.h>
 #include <driver/rtc_io.h>
 #if SOC_RTCIO_INPUT_OUTPUT_SUPPORTED

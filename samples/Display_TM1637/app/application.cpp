@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Libraries/TM1637/TM1637Display.h>
 

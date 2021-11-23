@@ -1,7 +1,6 @@
 #pragma once
 
-#include <user_config.h>
-#include "WString.h"
+#include <WString.h>
 
 /** @brief Obtain number of characters required to escape the given text
  *  @param s source text

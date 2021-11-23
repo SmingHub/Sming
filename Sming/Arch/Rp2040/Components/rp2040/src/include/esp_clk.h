@@ -1,8 +1,6 @@
 #pragma once
 
 #include <c_types.h>
-#include <sming_attr.h>
-#include <hardware/structs/systick.h>
 
 #ifdef __cplusplus
 extern "C" {

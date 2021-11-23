@@ -12,6 +12,7 @@ extern "C" {
 
 #include <os.h>
 
+uint32_t system_get_time(void);
 void system_restart(void);
 
 void system_soft_wdt_stop(void);

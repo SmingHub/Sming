@@ -10,4 +10,4 @@ ENABLE_CUSTOM_LWIP	:=
 # Enable optional Components
 ENABLE_CUSTOM_HEAP	:= 1
 ENABLE_SSL			:= 1
-SDK_BASE			:= $(SMING_HOME)
+

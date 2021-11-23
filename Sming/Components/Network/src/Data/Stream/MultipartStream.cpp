@@ -12,6 +12,7 @@
 
 #include <Data/Stream/MultipartStream.h>
 #include <Data/Stream/MemoryDataStream.h>
+#include <esp_system.h>
 
 IDataSourceStream* MultipartStream::getNextStream()
 {

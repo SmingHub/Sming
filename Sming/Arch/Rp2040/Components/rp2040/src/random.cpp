@@ -1,8 +1,6 @@
 
-#include "include/esp_libc.h"
+#include "include/esp_system.h"
 #include <hardware/structs/rosc.h>
-
-/* Misc */
 
 uint32_t os_random(void)
 {
@@ -25,14 +23,4 @@ int os_get_random(uint8_t* buf, size_t len)
 		*buf++ = res;
 	}
 	return 0;
-}
-
-void ets_install_putc1(void (*p)(char c))
-{
-	// Not implemented
-}
-
-void system_set_os_print(bool onoff)
-{
-	// Not implemented
 }

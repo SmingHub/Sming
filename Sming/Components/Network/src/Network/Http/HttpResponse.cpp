@@ -14,6 +14,7 @@
 #include <Data/WebConstants.h>
 #include "Data/Stream/MemoryDataStream.h"
 #include "Data/Stream/FileStream.h"
+#include <esp_systemapi.h>
 
 HttpResponse* HttpResponse::setCookie(const String& name, const String& value, bool append)
 {

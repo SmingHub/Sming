@@ -11,6 +11,7 @@
 #pragma once
 
 #include <Network/IpConnection.h>
+#include <lwip/udp.h>
 
 /** @defgroup   udp UDP
  *  @brief      Provides base for UDP clients or services

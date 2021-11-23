@@ -12,7 +12,9 @@
 
 #pragma once
 
-#include <esp_systemapi.h>
+#include <cstddef>
+#include <cstdint>
+#include <sming_attr.h>
 
 /** @brief FIFO buffer used for both receive and transmit data
  *  @note For receive operations, data is written via ISR and read via task

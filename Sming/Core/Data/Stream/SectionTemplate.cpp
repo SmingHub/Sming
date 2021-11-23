@@ -14,6 +14,7 @@
 #include "TemplateStream.h"
 #include <FlashString/Vector.hpp>
 #include "../WebConstants.h"
+#include <debug_progmem.h>
 
 namespace
 {

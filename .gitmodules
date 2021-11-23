@@ -91,16 +91,12 @@
 	path = Sming/Arch/Esp8266/Components/lwip2/lwip2
 	url = https://github.com/mikee47/esp82xx-nonos-linklayer.git
 	ignore = dirty
-[submodule "Esp8266.new-pwm"]
-	path = Sming/Arch/Esp8266/Components/driver/new-pwm
-	url = https://github.com/StefanBruens/ESP8266_new_pwm.git
-	ignore = dirty
 [submodule "Esp8266.umm_malloc"]
 	path = Sming/Arch/Esp8266/Components/heap/umm_malloc
 	url = https://github.com/rhempel/umm_malloc.git
 	ignore = dirty
 [submodule "Esp8266.Sdk"]
-	path = Sming/Arch/Esp8266/Components/esp8266/ESP8266_NONOS_SDK
+	path = Sming/Arch/Esp8266/Components/esp8266/sdk
 	url = https://github.com/espressif/ESP8266_NONOS_SDK.git
 	ignore = dirty
 

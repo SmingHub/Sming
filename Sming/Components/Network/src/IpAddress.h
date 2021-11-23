@@ -19,7 +19,8 @@
 
 #pragma once
 
-#include <user_config.h>
+#include <lwip/init.h>
+#include <lwip/ip_addr.h>
 #include "Printable.h"
 #include "WString.h"
 

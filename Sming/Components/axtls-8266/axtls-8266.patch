@@ -84,10 +84,10 @@ index dca7e5f..5f4ec51 100644
      {
 
 diff --git a/replacements/time.c b/replacements/time.c
-index 4972119..d3f0d1e 100644
+index 4972119..3e7e407 100644
 --- a/replacements/time.c
 +++ b/replacements/time.c
-@@ -16,6 +16,9 @@
+@@ -16,29 +16,25 @@
   *
   */
  
@@ -95,9 +95,11 @@ index 4972119..d3f0d1e 100644
 +#include <c_types.h>
 +
  #include <time.h>
- #include <sntp.h>
+-#include <sntp.h>
++#include <lwip/sntp.h>
  
-@@ -24,21 +27,14 @@ extern uint64_t system_mktime(uint32_t year, uint32_t mon, uint32_t day, uint32_
+ extern uint32_t system_get_time(void);
+ extern uint64_t system_mktime(uint32_t year, uint32_t mon, uint32_t day, uint32_t hour, uint32_t min, uint32_t sec);
  
  static int errno_var = 0;
  

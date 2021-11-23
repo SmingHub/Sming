@@ -15,6 +15,7 @@
 #include <hardware/structs/xip_ctrl.h>
 #include <hardware/structs/ssi.h>
 #include <hardware/regs/ssi.h>
+#include <debug_progmem.h>
 
 #define FLASHCMD_READ_SFDP 0x5a
 #define FLASHCMD_READ_JEDEC_ID 0x9f

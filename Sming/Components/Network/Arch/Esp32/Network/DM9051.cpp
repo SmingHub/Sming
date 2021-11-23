@@ -9,6 +9,7 @@
  ****/
 
 #include <Network/Ethernet/DM9051.h>
+#include <debug_progmem.h>
 #include "spi_config.h"
 
 namespace Ethernet

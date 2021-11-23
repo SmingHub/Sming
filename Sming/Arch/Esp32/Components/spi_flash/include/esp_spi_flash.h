@@ -19,8 +19,6 @@
 extern "C" {
 #endif
 
-#include <user_config.h>
-
 /**
  * @defgroup flash Flash Memory Support
  * @defgroup spi_flash SPI Flash API

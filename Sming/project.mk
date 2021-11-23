@@ -253,7 +253,7 @@ $(eval $(call ParseComponent,App,$(CURDIR),$(BUILD_BASE),$(abspath $(APP_LIBDIR)
 # Values may be overriden via command line to update the cache.
 # If file has become corrupted it will prevent cleaning, so make this conditional.
 CONFIG_CACHE_FILE	:= $(OUT_BASE)/config.mk
-ifndef MAKE_CLEAN
+ifeq (,$(filter config-clean dist-clean,$(MAKECMDGOALS)))
 -include $(CONFIG_CACHE_FILE)
 endif
 

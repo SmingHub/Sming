@@ -12,55 +12,24 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-// ESP SDK config
-#define LWIP_OPEN_SRC
-
 // Default types
-#define __CORRECT_ISO_CPP_STDLIB_H_PROTO
 #include <limits.h>
 #include <c_types.h>
 #include <assert.h>
-
-// Remove buggy espconn
-#define _NO_ESPCON_
-
-// And c_types
-#define _C_TYPES_H_
-
 #include <sming_attr.h>
-#include "esp_attr.h"
+#include <esp_attr.h>
 #include <espinc/pin_mux_register.h>
 #include <espinc/gpio_register.h>
 #include <espinc/timer_register.h>
-#include <ets_sys.h>
-#include <osapi.h>
-#include <gpio.h>
-#include <os_type.h>
-#include "esp_missing.h"
-#include <user_interface.h>
-#ifdef ENABLE_ESPCONN
-#include <espconn.h>
-#endif
-
-#include "m_printf.h"
-#include "debug_progmem.h"
-#include "stringutil.h"
-#include "xtensa/xtruntime.h"
-
-#define __ESP8266_EX__ // System definition ESP8266 SOC
-
-#define LOCAL           static
+#include "gpio.h"
+#include "esp_system.h"
+#include "esp_wifi.h"
+#include "sdk/mem.h"
+#include <debug_progmem.h>
+#include <stringutil.h>
+#include <xtensa/xtruntime.h>
 
 #define SYSTEM_ERROR(fmt, ...) debug_e("ERROR: " fmt "\r\n", ##__VA_ARGS__)
-
-extern void ets_wdt_enable(void);
-extern void ets_wdt_disable(void);
-extern void wdt_feed(void);
-
 
 /** @brief  Disable interrupts
  *  @retval Current interrupt level
@@ -75,7 +44,3 @@ extern void wdt_feed(void);
 /** @brief Restore interrupts to level saved from previous noInterrupts() call
  */
 #define restoreInterrupts(level) XTOS_RESTORE_INTLEVEL(level)
-
-#ifdef __cplusplus
-}
-#endif

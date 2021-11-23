@@ -1,5 +1,3 @@
-using namespace std;
-#include <user_config.h>
 #include <SmingCore.h>
 #include <Libraries/ITEADLIB_Arduino_Nextion/Nextion.h>
 

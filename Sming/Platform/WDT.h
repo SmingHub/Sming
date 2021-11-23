@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include <user_config.h>
 #include "System.h"
 
 /** @brief  Watchdog timer class

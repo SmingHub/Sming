@@ -15,9 +15,8 @@ ENABLE_ESPCONN		?= 0
 
 EXTRA_CFLAGS_LWIP  := \
 	-I$(SMING_HOME)/System/include \
-	-I$(ARCH_SYS)/include \
 	-I$(ARCH_COMPONENTS)/esp8266/include \
-	-I$(SMING_HOME)/Wiring
+	-I$(ARCH_COMPONENTS)/libc/include
 
 ifeq ($(ENABLE_LWIPDEBUG), 1)
 	EXTRA_CFLAGS_LWIP += -DLWIP_DEBUG

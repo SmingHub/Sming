@@ -10,6 +10,7 @@
 
 #include "UdpConnection.h"
 #include "WString.h"
+#include <debug_progmem.h>
 
 bool UdpConnection::initialize(udp_pcb* pcb)
 {

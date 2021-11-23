@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <espinc/i2c_bbpll.h>
 #include <esp_systemapi.h>
+#include <spi_flash.h>
 
 extern uint8_t _bss_start, _bss_end;
 extern struct rst_info rst_if;

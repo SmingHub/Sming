@@ -144,8 +144,8 @@ COMPONENT_SAMPLES_BUILT = $(addsuffix $(BUILT_SUFFIX),$(COMPONENT_SAMPLE_PATHS))
 build-component-samples: $(COMPONENT_SAMPLES_BUILT)
 
 $(COMPONENT_SAMPLES_BUILT):
-	@printf "\n\n** Building $(notdir $(call dirx,$@)) **\n\n"
-	$(Q) $(MAKE) --no-print-directory -C $(@D) PIP_ARGS=-q python-requirements all
+	@printf "\n\n** Building $(@D) **\n\n"
+	$(Q) $(MAKE) --no-print-directory -C $(@D) PIP_ARGS=-q python-requirements sample
 	$(Q) touch $@
 
 
@@ -176,7 +176,7 @@ samples-clean: ##Clean all sample applications (all arch/build types)
 .PHONY: component-samples-clean
 component-samples-clean: ##Clean all component samples
 	@echo Cleaning all component samples...
-	-$(Q) rm -rf $(dir $(COMPONENT_SAMPLE_TARGETS))
+	-$(Q) rm -rf $(addsuffix /out,$(COMPONENT_SAMPLE_PATHS)) $(addsuffix /.*.built,$(COMPONENT_SAMPLE_PATHS))
 
 .PHONY: tests-clean
 tests-clean: ##Clean all test applications

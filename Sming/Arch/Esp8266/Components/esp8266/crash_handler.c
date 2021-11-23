@@ -20,7 +20,6 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <user_config.h>
 #include "gdb/gdb_hooks.h"
 
 extern void __real_system_restart_local();

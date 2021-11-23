@@ -473,8 +473,6 @@ void smg_uart_wait_tx_empty(smg_uart_t* uart)
 
 	notify(uart, UART_NOTIFY_WAIT_TX);
 
-	system_soft_wdt_feed();
-
 	if(uart->tx_buffer != nullptr) {
 		while(!uart->tx_buffer->isEmpty()) {
 		}
@@ -818,18 +816,9 @@ bool smg_uart_set_pins(smg_uart_t* uart, int tx_pin, int rx_pin)
 	return true;
 }
 
-void smg_uart_debug_putc(char c)
-{
-	smg_uart_t* uart = smg_uart_get_uart(s_uart_debug_nr);
-	if(uart != nullptr) {
-		smg_uart_write_char(uart, c);
-	}
-}
-
 void smg_uart_set_debug(int uart_nr)
 {
 	s_uart_debug_nr = uart_nr;
-	system_set_os_print(uart_nr >= 0);
 }
 
 int smg_uart_get_debug()

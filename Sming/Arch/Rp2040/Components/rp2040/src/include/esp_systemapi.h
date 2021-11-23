@@ -18,7 +18,6 @@
 #include <esp_attr.h>
 #include <esp_tasks.h>
 #include <esp_clk.h>
-#include <esp_libc.h>
 #include <esp_sleep.h>
 #include "esp_system.h"
 #include <heap.h>
@@ -26,8 +25,6 @@
 #include "m_printf.h"
 #include "debug_progmem.h"
 #include "stringutil.h"
-
-#define BIT(nr) (1UL << (nr))
 
 #define SYSTEM_ERROR(fmt, ...) debug_e("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 
