@@ -98,6 +98,7 @@ class Peripheral(object):
         self.sigmask = re.compile(sigmask) if sigmask else None
         self.default = default
         self.signals = []
+        self.swap = None
 
     def help(self):
         """Obtain help text displayed in menus"""
@@ -244,6 +245,8 @@ class Config(object):
                         if not sig.peripheral is None:
                             raise RuntimeError(f"Attempted to assign signal {sig} to {per.name} but already assigned to {sig.peripheral.name}")
                         sig.peripheral = per
+                per.swap = periphdef.get('swap')
+
 
         # Create 'Other' peripheral to catch undefined signals
         per = Peripheral('Other', 'Signals not associated with any peripheral', '', '')
@@ -305,6 +308,15 @@ def generate_pinmenu(args):
              '    help'
         ]
         menu += [f'      {s}' for  s in per.help()]
+        if per.swap:
+            menu += [
+                f'  config PERIPH_{per.name}_SWAP_ENABLE',
+                f'    bool "Swap {per.name} signals"',
+                 '    default n',
+                f'    depends on PERIPH_{per.name}_ENABLE',
+                 '    help',
+                f'      {per.swap["help"]}'
+            ]
     menu += ['endmenu']
 
     menu += ['menu "Pin selections"']
@@ -316,13 +328,38 @@ def generate_pinmenu(args):
         ]
 
         for sig in pin.signals:
-            menu += [
-                f'    config PINSEL{int(n):02d}_{sig.name}',
-                f'      bool "{sig.name}"',
-                f'      depends on PERIPH_{sig.peripheral.name}_ENABLE',
-                 '      help',
-                f'        Peripheral "{sig.peripheral.name}", {", ".join(entry.group.name for entry in sig.entries)}'
-            ]
+            per = sig.peripheral
+            alt = None
+            if per.swap is not None:
+                for a, b in per.swap['pins'].items():
+                    if a == sig.name:
+                        alt = find(config.signals, b)
+                        break
+                    if b == sig.name:
+                        alt = find(config.signals, a)
+                        break
+
+            def addsig(sig, swap = None):
+                nonlocal menu
+                depends = f"PERIPH_{per.name}_ENABLE"
+                if swap is not None:
+                    depends += " &&"
+                    if not swap:
+                        depends += "!"
+                    depends += f"PERIPH_{per.name}_SWAP_ENABLE"
+                menu += [
+                    f'    config PINSEL{int(n):02d}_{sig.name}',
+                    f'      bool "{sig.name}"',
+                    f'      depends on {depends}',
+                    '      help',
+                    f'        Peripheral "{per.name}", {", ".join(entry.group.name for entry in sig.entries)}'
+                ]
+
+            if alt is None:
+                addsig(sig)
+            else:
+                addsig(sig, False)
+                addsig(alt, True)
 
         menu += ['  endchoice']
     menu += ['endmenu']
