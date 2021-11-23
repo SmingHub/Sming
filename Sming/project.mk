@@ -703,7 +703,6 @@ endef
 
 # Update variable cache for all operations except cleaning
 ifndef MAKE_CLEAN
-$(info SAVE $(SMING_SOC))
 CACHED_VAR_NAMES := $(sort $(CACHED_VAR_NAMES) $(CONFIG_VARS) $(RELINK_VARS) $(CACHE_VARS))
 $(eval $(call WriteConfigCache,$(CONFIG_CACHE_FILE),CACHED_VAR_NAMES))
 $(eval $(call WriteCacheValues,$(CONFIG_DEBUG_FILE),$(sort $(DEBUG_VARS))))
