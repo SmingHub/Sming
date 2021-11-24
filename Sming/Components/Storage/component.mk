@@ -7,7 +7,9 @@ COMPONENT_RELINK_VARS := PARTITION_TABLE_OFFSET
 CONFIG_VARS			+= HWCONFIG HWCONFIG_OPTS
 ifndef HWCONFIG
 override HWCONFIG	:= standard
+ifeq (,$(filter s,$(MAKEFLAGS)))
 $(info Using configuration '$(HWCONFIG)')
+endif
 endif
 
 # Directories to search for hardware config

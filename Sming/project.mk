@@ -25,9 +25,6 @@ all: checksoc checkdirs submodules ##(default) Build all Component libraries
 BUILD_TYPE_FILE	:= out/build-type.mk
 -include $(BUILD_TYPE_FILE)
 
-BUILD_SUBTYPE_FILE = out/$(SMING_ARCH)/build-subtype.mk
--include $(BUILD_SUBTYPE_FILE)
-
 #
 include $(SMING_HOME)/build.mk
 
@@ -84,10 +81,9 @@ GLOBAL_CFLAGS = \
 	$(USER_CFLAGS)
 CPPFLAGS			+= $(GLOBAL_CFLAGS)
 
-# Provide a SUBARCH_xxxx value for code use, analogous to ARCH_xxx
-DEBUG_VARS		+= SMING_SUBARCH
-SMING_SUBARCH	:= SUBARCH_$(call ToUpper,$(SMING_SOC))
-GLOBAL_CFLAGS	+= -D$(SMING_SUBARCH)=1
+# Provide an SOC_xxxx value for code use, analogous to ARCH_xxx
+SMING_SOC_VAR	:= SOC_$(call ToUpper,$(SMING_SOC))
+GLOBAL_CFLAGS	+= -D$(SMING_SOC_VAR)=1
 
 # Targets to be added as dependencies of the application, built directly in this make instance
 CUSTOM_TARGETS			:=
@@ -690,7 +686,9 @@ $(shell	mkdir -p $(dir $1);
 endef
 
 # Update build type cache
+ifndef MAKE_CLEAN
 $(eval $(call WriteCacheValues,$(BUILD_TYPE_FILE),SMING_SOC SMING_RELEASE STRICT))
+endif
 
 # Update config cache file
 # We store the list of variable names to ensure that any not actively in use don't get lost
@@ -734,14 +732,16 @@ menuconfig: checksoc ##Run option editor
 	$(Q) $(KCONFIG_ENV) $(PYTHON) -m menuconfig $(SMING_HOME)/Kconfig
 	$(Q) $(CFGTOOL_CMDLINE) --from-kconfig
 
-
-UNSUPPORTED_SOCS = $(filter-out $(PROJECT_SOC),$(AVAILABLE_SOCS))
-
 .PHONY: list-soc
 list-soc: ##List supported and available SOCs
-ifeq (,$(UNSUPPORTED_SOCS))
-	@echo "Project supports all SoCs: $(AVAILABLE_SOCS)"
+	@echo "Available SoCs: $(AVAILABLE_SOCS)"
+	@echo "Project support:"
+	@$(foreach s,$(AVAILABLE_SOCS),$(MAKE) --no-print-directory --silent MAKE_CLEAN=1 SMING_SOC=$s checksoc-print; )
+
+.PHONY: list-soc-check
+checksoc-print:
+ifeq (,$(findstring $(SMING_SOC),$(PROJECT_SOC)))
+	$(info - NO:  $(SMING_SOC))
 else
-	@echo "Project supports: $(PROJECT_SOC)"
-	@echo "Project does not support: $(UNSUPPORTED_SOCS)"
+	$(info - YES: $(SMING_SOC))
 endif

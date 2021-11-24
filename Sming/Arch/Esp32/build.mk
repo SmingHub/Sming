@@ -132,9 +132,6 @@ IDF_VER := $(shell echo "$(IDF_VER_T)"  | cut -c 1-31)
 # [ Sming specific flags ]
 DEBUG_VARS += IDF_PATH IDF_VER
 
-# IDF uses 'asm' keyword
-SMING_C_STD := gnu11
-
 # Common C/C++ flags
 CPPFLAGS += \
 	-DESP_PLATFORM \
@@ -146,7 +143,8 @@ CPPFLAGS += \
 	-D__ESP32_EX__ \
 	-D__ets__ \
 	-D_GNU_SOURCE \
-	-DCONFIG_NONE_OS
+	-DCONFIG_NONE_OS \
+	-Dasm=__asm__
 
 PROJECT_VER ?=
 export IDF_VER

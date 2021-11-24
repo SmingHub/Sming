@@ -240,7 +240,9 @@ export SDK_BUILD_BASE
 export SDK_COMPONENT_LIBDIR
 export SDK_COMPONENTS
 
-CUSTOM_TARGETS += checksdk
+ifndef MAKE_CLEAN
+.PHONY: checkdirs
+checkdirs: | checksdk	
 
 .PHONY: checksdk
 checksdk: $(SDK_PROJECT_PATH) $(SDKCONFIG_H) $(SDKCONFIG_MAKEFILE)
@@ -261,6 +263,7 @@ $(SDK_PROJECT_PATH):
 	$(Q) cp -r $(SDK_DEFAULT_PATH)/project/* $@
 
 $(SDK_COMPONENT_LIBS): checksdk
+endif
 
 SDK_CONFIG_FILES := \
 	common \
@@ -307,7 +310,3 @@ sdk-help: ##Get SDK build options
 .PHONY: sdk
 sdk: ##Pass options to IDF builder, e.g. `make sdk -- --help` or `make sdk menuconfig` 
 	$(Q) $(SDK_BUILD) $(filter-out sdk,$(MAKECMDGOALS))
-
-.PHONY: checkdirs   
-checkdirs: | checksdk	
-

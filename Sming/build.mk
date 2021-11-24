@@ -199,7 +199,9 @@ ifneq ($(STRICT),1)
 	CXXFLAGS += -Wno-reorder
 endif
 
+ifndef MAKE_CLEAN
 include $(ARCH_BASE)/build.mk
+endif
 
 # Detect compiler version
 DEBUG_VARS			+= GCC_VERSION
