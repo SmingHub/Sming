@@ -4,25 +4,25 @@ include $(SMING_HOME)/util.mk
 
 # Add debug variable names to DEBUG_VARS so they can be easily inspected via `make list-config`
 DEBUG_VARS := SMING_HOME
+SMING_HOME := $(patsubst %/,%,$(call FixPath,$(SMING_HOME)))
 
 # Resolve SMING_ARCH and SMING_SOC settings
 DEBUG_VARS += SMING_ARCH SMING_SOC
-# Allow Host override for building utilities
-ifeq ($(SMING_ARCH),Host)
-  override SMING_SOC := host
-else ifeq (,$(SMING_SOC))
-  ifeq (,$(SMING_ARCH))
-    override SMING_ARCH := Esp8266
-  endif
-  override SMING_SOC := $(call ToLower,$(SMING_ARCH))
-else
-  override SMING_SOC := $(call ToLower,$(SMING_SOC))
-  SMING_ARCH := $(notdir $(call dirx,$(filter %/$(SMING_SOC)-soc.json,$(SOC_CONFIG_FILES))))
-  ifeq (,$(SMING_ARCH))
-    $(info Available: $(AVAILABLE_SOCS))
-    $(error Unknown SOC '$(SMING_SOC)')
-  endif
+ifeq (,$(SMING_ARCH))
+	ifeq (,$(SMING_SOC))
+		SMING_ARCH := Esp8266
+		SMING_SOC := esp8266
+	else
+  		SMING_ARCH := $(notdir $(call dirx,$(filter %/$(SMING_SOC)-soc.json,$(SOC_CONFIG_FILES))))
+	endif
+else ifeq (,$(filter $(SMING_SOC),$(ARCH_$(SMING_ARCH)_SOC)))
+	SMING_SOC := $(firstword $(ARCH_$(SMING_ARCH)_SOC))
 endif
+
+ifeq (,$(wildcard $(SMING_HOME)/Arch/$(SMING_ARCH)/build.mk))
+$(error Arch '$(SMING_ARCH)' not found)
+endif
+
 export SMING_ARCH
 export SMING_SOC
 
@@ -83,12 +83,6 @@ else ifeq ($(UNAME), Darwin)
  	#OS X
 else ifeq ($(UNAME), Freebsd)
  	#BSD
-endif
-
-SMING_HOME		:= $(patsubst %/,%,$(call FixPath,$(SMING_HOME)))
-
-ifeq (,$(wildcard $(SMING_HOME)/Arch/$(SMING_ARCH)/build.mk))
-$(error Arch '$(SMING_ARCH)' not found)
 endif
 
 MAKECMDGOALS	?= all
