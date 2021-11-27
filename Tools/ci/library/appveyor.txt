@@ -21,7 +21,7 @@ environment:
 
 install:
   - ps: |
-      git clone -b $env:SMING_BRANCH --single-branch --depth 1 $env:SMING_REPO sming
+      Start-Process -FilePath git -ArgumentList "clone -b $env:SMING_BRANCH --single-branch --depth 1 $env:SMING_REPO sming" -Wait -NoNewWindow
       $env:CI_BUILD_DIR = $pwd.path
       $env:COMPONENT_SEARCH_DIRS = (resolve-path "$pwd/..").path
       $env:SMING_HOME = (resolve-path "$pwd/sming/Sming").path
