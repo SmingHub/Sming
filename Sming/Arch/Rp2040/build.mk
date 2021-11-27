@@ -11,7 +11,6 @@ CPPFLAGS += \
 	-mthumb
 
 CXXFLAGS += \
-	-fno-exceptions \
 	-fno-threadsafe-statics \
 	-fno-use-cxa-atexit
 

@@ -86,7 +86,8 @@ LIBDIRS += \
 	$(PICO_BUILD_DIR)
 
 EXTRA_LIBS += \
-	pico
+	pico \
+	m
 
 ifdef NINJA
 NINJA := $(call FixPath,$(NINJA))
