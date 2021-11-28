@@ -34,14 +34,14 @@ $(APP_NAMES):
 	$(info Building $@ for $(SMING_SOC))
 	$(info ===================== )
 	$(info )
-	$(Q) $(MAKE) -C $@ -r -R --no-print-directory sample
+	$(Q) $(MAKE) --no-print-directory -C $@ PIP_ARGS=-q python-requirements sample
 
 .PHONY: run-test
 run-test:
 ifeq (,$(wildcard test))
 	$(info No test directory found)
 else ifeq ($(SMING_ARCH),Host)
-	$(Q) $(MAKE) -C test -r -R --no-print-directory execute
+	$(Q) $(MAKE) --no-print-directory -C test execute
 endif
 
 clean:
