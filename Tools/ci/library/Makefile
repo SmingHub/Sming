@@ -28,18 +28,13 @@ apps: $(APP_NAMES)
 
 .PHONY: $(APP_NAMES)
 $(APP_NAMES):
-	$(info )
-	$(info )
-	$(info ===================== )
-	$(info Building $@ for $(SMING_SOC))
-	$(info ===================== )
-	$(info )
+	@printf "\n\n** Building $@ for $(SMING_SOC) **\n\n"
 	$(Q) $(MAKE) --no-print-directory -C $@ PIP_ARGS=-q python-requirements sample
 
 .PHONY: run-test
 run-test:
 ifeq (,$(wildcard test))
-	$(info No test directory found)
+	@printf "\n\n** No test directory found - skipping **\n\n"
 else ifeq ($(SMING_ARCH),Host)
 	$(Q) $(MAKE) --no-print-directory -C test execute
 endif
