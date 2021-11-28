@@ -8,16 +8,9 @@ environment:
 
   matrix:
     - SMING_ARCH: Host
-      INSTALL_OPTS: host
-
     - SMING_ARCH: Esp8266
-      INSTALL_OPTS: esp8266
-
     - SMING_ARCH: Esp32
-      INSTALL_OPTS: esp32
-
     - SMING_ARCH: Rp2040
-      INSTALL_OPTS: rp2040
 
 install:
   - ps: |
@@ -29,10 +22,10 @@ install:
       env
 
   - cmd: |
-      sming/Tools/ci/install.cmd %INSTALL_OPTS%
+      sming/Tools/ci/install.cmd %SMING_ARCH%
 
   - sh: |
-      . sming/Tools/ci/install.sh $INSTALL_OPTS
+      . sming/Tools/ci/install.sh ${SMING_ARCH,,}
 
 build_script:
   - sh: make -j$(nproc) -f $SMING_HOME/../Tools/ci/library/Makefile
