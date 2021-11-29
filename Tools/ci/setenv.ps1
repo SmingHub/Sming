@@ -19,7 +19,13 @@ $env:PICO_TOOLCHAIN_PATH = Join-Path $TOOLS_DIR "rp2040"
 $env:SMINGTOOLS = "https://github.com/SmingHub/SmingTools/releases/download/1.0"
 
 if ($IsWindows) {
-    $env:PATH = "C:\Python39;C:\Python39\Scripts;C:\MinGW\msys\1.0\bin;C:\MinGW\bin;" + $env:PATH
+    $env:PATH = "C:\Python39;C:\Python39\Scripts;C:\MinGW\msys\1.0\bin;C:\MinGW\bin;$env:PATH"
     $env:PYTHON = "C:\Python39\python"
     $env:ESP32_PYTHON_PATH = "C:\Python39"
+
+    $env:PATH = "$env:PROGRAMFILES\CMake\bin;$env:PATH"
+
+    if (Test-Path "$TOOLS_DIR" ) {
+        $env:NINJA = (get-childitem -path "$TOOLS_DIR" -recurse -include "ninja.exe" | select-object -first 1).FullName
+    }
 }
