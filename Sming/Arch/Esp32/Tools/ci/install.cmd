@@ -10,4 +10,5 @@ git clone -b %IDF_BRANCH% %IDF_REPO% %IDF_PATH%
 
 REM Install IDF tools and packages
 python %IDF_PATH%\tools\idf_tools.py install
+python -m pip install %SMINGTOOLS%/gevent-1.5.0-cp39-cp39-win_amd64.whl
 python -m pip install -r %IDF_PATH%\requirements.txt
