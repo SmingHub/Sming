@@ -195,7 +195,6 @@ endif
 
 ifndef MAKE_CLEAN
 include $(ARCH_BASE)/build.mk
-endif
 
 # Detect compiler version
 DEBUG_VARS			+= GCC_VERSION
@@ -223,6 +222,7 @@ $(warning ***** Please, upgrade your GCC compiler to version $(GCC_MIN_MAJOR_VER
 ifneq ($(GCC_UPGRADE_URL),)
 $(info Instructions for upgrading your compiler can be found here: $(GCC_UPGRADE_URL))
 endif 
+endif
 endif
 
 DEBUG_VARS		+= USER_LIBDIR OUT_BASE BUILD_BASE FW_BASE TOOLS_BASE SMING_ARCH_FULL
