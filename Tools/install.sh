@@ -155,7 +155,7 @@ if [ -f "/usr/bin/clang-format-8" ]; then
     sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-8 100
 fi
 
-python3 -m pip install --upgrade pip -r "$SMING_HOME/../Tools/requirements.txt"
+python3 -m pip install --upgrade pip protobuf -r "$SMING_HOME/../Tools/requirements.txt"
 
 
 install() {
