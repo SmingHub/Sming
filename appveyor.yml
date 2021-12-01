@@ -2,52 +2,43 @@ image:
 - Ubuntu2004
 - Visual Studio 2019
 
-platform: x86
-
 environment:
   SMING_SECRET:
     secure: rCs19uNvDR07w1d2pfwJIzewiEQ2zpKXdqFp5BqHQAA=
 
   matrix:
     - SMING_ARCH: Host
-      INSTALL_OPTS: host doc
+      INSTALL_OPTS: doc
 
     - SMING_ARCH: Esp8266
-      INSTALL_OPTS: esp8266
 
     - SMING_ARCH: Esp32
       SMING_SOC: esp32
-      INSTALL_OPTS: esp32
 
     - SMING_ARCH: Esp32
       SMING_SOC: esp32s2
-      INSTALL_OPTS: esp32
 
     - SMING_ARCH: Esp32
       SMING_SOC: esp32c3
-      INSTALL_OPTS: esp32
 
     - SMING_ARCH: Rp2040
-      INSTALL_OPTS: rp2040
 
 install:
   - ps: |
       # Set up environment variables for all environments and build types
-      $env:CI_BUILD_DIR = $env:APPVEYOR_BUILD_FOLDER
-      $env:CI_PROJECT_SLUG = $env:APPVEYOR_PROJECT_SLUG
       $env:CI_REPO_NAME = $env:APPVEYOR_REPO_NAME
       if ($env:APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME) {
         $env:CI_PULL_REQUEST = "true"
       }
-      $env:SMING_HOME = Join-Path $env:CI_BUILD_DIR "Sming"
       Tools/ci/setenv.ps1
 
   - cmd: |
-      Tools\ci\install.cmd %INSTALL_OPTS%
+      if "%APPVEYOR_BUILD_WORKER_CLOUD%"=="" Tools\ci\install.cmd %SMING_ARCH% %INSTALL_OPTS%
 
   - sh: |
-      . Tools/ci/install.sh $INSTALL_OPTS
-
+      if [ -z "$APPVEYOR_BUILD_WORKER_CLOUD" ]; then
+        . Tools/ci/install.sh ${SMING_ARCH,,} $INSTALL_OPTS
+      fi
 
 before_build:
   - sh: |
