@@ -2,6 +2,11 @@ REM
 REM Windows CI install script
 REM
 
+set DOWNLOADS=downloads
+mkdir %DOWNLOADS%
+
+set SMINGTOOLS="https://github.com/SmingHub/SmingTools/releases/download/1.0"
+
 echo.
 echo.
 echo ** Installing common python requirements
@@ -13,8 +18,8 @@ echo.
 echo ** Installing MinGW
 echo.
 rmdir /s /q c:\MinGW
-curl -Lo MinGW.7z %SMINGTOOLS%/MinGW-2020-10-19.7z
-7z -oC:\ x MinGW.7z
+curl -Lo %DOWNLOADS%\MinGW.7z %SMINGTOOLS%/MinGW-2020-10-19.7z
+7z -oC:\ x %DOWNLOADS%\MinGW.7z
 
 :install
 if "%1" == "" goto :EOF

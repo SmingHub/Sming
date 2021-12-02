@@ -15,9 +15,6 @@ $env:IDF_BRANCH = "sming/release/v4.3"
 # Rp2040
 $env:PICO_TOOLCHAIN_PATH = Join-Path $TOOLS_DIR "rp2040"
 
-# General
-$env:SMINGTOOLS = "https://github.com/SmingHub/SmingTools/releases/download/1.0"
-
 if ($IsWindows) {
     $env:PATH = "C:\MinGW\msys\1.0\bin;C:\MinGW\bin;$env:PATH"
 
