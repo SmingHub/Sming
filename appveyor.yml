@@ -37,7 +37,7 @@ install:
 
   - sh: |
       if [ -z "$APPVEYOR_BUILD_WORKER_CLOUD" ]; then
-        . Tools/ci/install.sh ${SMING_ARCH,,} $INSTALL_OPTS
+        . Tools/ci/install.sh ${SMING_ARCH,,} $INSTALL_OPTS fonts
       fi
 
 before_build:
