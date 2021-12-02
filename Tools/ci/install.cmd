@@ -7,6 +7,9 @@ mkdir %DOWNLOADS%
 
 set SMINGTOOLS="https://github.com/SmingHub/SmingTools/releases/download/1.0"
 
+REM Leave file endings alone
+git config --global --add core.autocrlf input
+
 echo.
 echo.
 echo ** Installing common python requirements
