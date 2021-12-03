@@ -8,8 +8,8 @@ $env:SMING_HOME = "$(pwd)/sming/Sming"
 . sming/Tools/ci/setenv.ps1
 
 if($IsWindows) {
-    choco install -y python3 --version 3.9
-    choco install -y cmake llvm
+    choco install -y --no-progress python3 --version 3.9
+    choco install -y --no-progress cmake llvm
     sming/Tools/ci/install.cmd all doc
 } else {
     $env:EXTRA_PACKAGES = "clang iproute2"

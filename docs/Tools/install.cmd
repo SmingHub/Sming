@@ -1,6 +1,6 @@
 REM Docs install.cmd
 
-choco install -y doxygen.install graphviz
+choco install -y --no-progress doxygen.install graphviz
 setx PATH "%PROGRAMFILES%\doxygen\bin;%PROGRAMFILES%\Graphviz\bin;%PATH%"
 
 python -m pip install --upgrade pip wheel
