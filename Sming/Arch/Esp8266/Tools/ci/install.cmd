@@ -5,5 +5,5 @@ goto :EOF
 
 :install
 mkdir %1
-curl -LO %SMINGTOOLS%/%2
-7z -o%1 x %2
+curl -Lo %DOWNLOADS%/%2 %SMINGTOOLS%/%2
+7z -o%1 x %DOWNLOADS%/%2

@@ -1,22 +1,6 @@
 FROM ubuntu
 
 # ------------------------------------------------------------------------------
-# Set Environment
-# ------------------------------------------------------------------------------
-
-# Common
-ENV SMING_HOME /opt/Sming/Sming
-ENV PYTHON /usr/bin/python3
-
-# Esp8266
-ENV ESP_HOME /opt/esp-quick-toolchain
-
-# Esp32
-ENV IDF_PATH /opt/esp-idf
-ENV IDF_TOOLS_PATH /opt/esp32
-ENV ESP32_PYTHON_PATH $PYTHON
-
-# ------------------------------------------------------------------------------
 # Pre-requisites
 # ------------------------------------------------------------------------------
 
@@ -32,10 +16,13 @@ RUN apt-get -y update \
 # Fetch Sming and install tools
 # ------------------------------------------------------------------------------
 
+ARG SMING_REPO=https://github.com/SmingHub/Sming
 ARG SMING_BRANCH=develop
-ARG SMING_REPO=SmingHub/Sming
 ARG INSTALL_ARGS=all
 
-RUN git clone -b $SMING_BRANCH -- https://github.com/$SMING_REPO $(readlink -m $SMING_HOME/..)
+RUN git clone $SMING_REPO -b $SMING_BRANCH /opt/sming
 
-RUN $SMING_HOME/../Tools/install.sh $INSTALL_ARGS
+WORKDIR "/opt/sming"
+
+RUN Tools/install.sh $INSTALL_ARGS
+RUN echo ". $(pwd)/Tools/export.sh" >> ~/.bashrc

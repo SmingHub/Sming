@@ -14,6 +14,8 @@ inst_esp32=0
 inst_rp2040=0
 err=0
 
+FONT_PACKAGES="fonts-ubuntu fonts-noto-mono xfonts-base fonts-urw-base35 fonts-droid-fallback"
+
 for opt in "$@"; do
     case $opt in
         all)
@@ -25,6 +27,10 @@ for opt in "$@"; do
 
         host | doc | esp8266 | esp32 | rp2040)
             eval "inst_$opt=1"
+            ;;
+
+        fonts)
+            EXTRA_PACKAGES+=" $FONT_PACKAGES"
             ;;
 
         *)
@@ -42,6 +48,7 @@ if [[ $err -eq 1 ]] || [ $# -eq 0 ]; then
     echo '   rp2040    RP2040 tools (Raspberry Pi Pico)'
     echo '   all       Install all architectures'
     echo '   doc       Tools required to build documentation'
+    echo '   fonts     Install fonts used by Graphics library (normally included with Ubuntu)'
     echo
     if [ $sourced = 1 ]; then
         return 1
@@ -96,11 +103,7 @@ if [ -n "$APPVEYOR" ] || [ -n "$GITHUB_ACTION" ]; then
         clang-format-8 \
         g++-9-multilib \
         python3-setuptools \
-        fonts-ubuntu \
-        fonts-noto-mono \
-        xfonts-base \
-        fonts-urw-base35 \
-        fonts-droid-fallback
+        $EXTRA_PACKAGES
 
     sudo update-alternatives --set gcc /usr/bin/gcc-9
 
@@ -120,7 +123,8 @@ else
             	python3 \
             	python3-pip \
             	python3-setuptools \
-                wget
+                wget \
+                $EXTRA_PACKAGES
 
             $PKG_INSTALL clang-format-8 || printf "\nWARNING: Failed to install optional clang-format-8.\n\n"
             ;;
@@ -155,7 +159,7 @@ if [ -f "/usr/bin/clang-format-8" ]; then
     sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-8 100
 fi
 
-python3 -m pip install --upgrade pip -r "$SMING_HOME/../Tools/requirements.txt"
+python3 -m pip install --upgrade pip protobuf -r "$SMING_HOME/../Tools/requirements.txt"
 
 
 install() {

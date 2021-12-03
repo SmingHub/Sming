@@ -200,10 +200,10 @@ Directory layout
 The main Sming repo. is laid out like this::
 
    |_ sming/
-      |_ .appveyor.yml              CI testing (Windows)
-      |_ .travis.yml                CI testing (Linux)
-      |_ .appveyor/                 CI scripts (Windows)
-      |_ .travis                    CI scripts (Linux)
+      |_ .appveyor.yml              CI testing
+      |_ .travis.yml                CI testing
+      |_ .readthedocs.yml           Documentation build
+      |_ lgtm.yml                   CI Static code analysis
       |_ docs/                      Sming documentation
       |_ samples/                   Samples to demonstrate specific Sming features or libraries
       |_ Sming/
@@ -252,6 +252,13 @@ The main Sming repo. is laid out like this::
       |     |_ ...
       |_ tests/                     Integration test applications
          |_ ...
+      |_ Tools/
+         |_ ci                      CI testing
+         |_ Docker
+         |_ ide                     IDE environment support tools
+         |_ Python                  Shared python scripts
+         |_ travis                  CI testing
+
 
 A typical Project looks like this::
 

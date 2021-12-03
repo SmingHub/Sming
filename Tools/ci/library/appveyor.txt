@@ -8,24 +8,33 @@ environment:
 
   matrix:
     - SMING_ARCH: Host
+
     - SMING_ARCH: Esp8266
+
     - SMING_ARCH: Esp32
+      SMING_SOC: esp32
+
+    - SMING_ARCH: Esp32
+      SMING_SOC: esp32s2
+
+    - SMING_ARCH: Esp32
+      SMING_SOC: esp32c3
+
     - SMING_ARCH: Rp2040
 
 install:
   - ps: |
-      Start-Process -FilePath git -ArgumentList "clone -b $env:SMING_BRANCH --single-branch --depth 1 $env:SMING_REPO sming" -Wait -NoNewWindow
-      $env:CI_BUILD_DIR = $pwd.path
+      Start-Process -FilePath git -ArgumentList "clone $env:SMING_REPO -b $env:SMING_BRANCH --depth 1 sming" -Wait -NoNewWindow
       $env:COMPONENT_SEARCH_DIRS = (resolve-path "$pwd/..").path
-      $env:SMING_HOME = (resolve-path "$pwd/sming/Sming").path
       sming/Tools/ci/setenv.ps1
-      env
 
   - cmd: |
-      sming/Tools/ci/install.cmd %SMING_ARCH%
+      if "%APPVEYOR_BUILD_WORKER_CLOUD%"=="" sming\Tools\ci\install.cmd %SMING_ARCH% %INSTALL_OPTS%
 
   - sh: |
-      . sming/Tools/ci/install.sh ${SMING_ARCH,,}
+      if [ -z "$APPVEYOR_BUILD_WORKER_CLOUD" ]; then
+        sming/Tools/ci/install.sh ${SMING_ARCH,,} $INSTALL_OPTS
+      fi
 
 build_script:
   - sh: make -j$(nproc) -f $SMING_HOME/../Tools/ci/library/Makefile

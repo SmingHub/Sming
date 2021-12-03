@@ -1,26 +1,33 @@
-# Don't bother with implicit checks
-.SUFFIXES:
+#
+# Build/test a library for either:
+#
+#    One SoC: Define SMING_SOC
+#    All SoCs for an architecture: Define SMING_ARCH
+#    All available SoCs: Neither SMING_SOC nor SMING_ARCH defined
+#
+#
 
+.SUFFIXES:
 .NOTPARALLEL:
 
 ifeq (,$(SMING_HOME))
 $(error SMING_HOME not set)
 endif
 
-ifeq (,$(SMING_ARCH))
-$(error SMING_ARCH not set)
-endif
-
 include $(SMING_HOME)/util.mk
 
 APP_NAMES := $(patsubst $(CURDIR)/%,%,$(call ListSubDirs,samples) $(wildcard test))
 
-ARCH_SOC := $(ARCH_$(SMING_ARCH)_SOC)
+ifneq (,$(SMING_SOC))
+all: $(SMING_SOC)
+else ifneq (,$(SMING_ARCH))
+all: $(ARCH_$(SMING_ARCH)_SOC)
+else
+all: $(AVAILABLE_SOCS)
+endif
 
-all: $(ARCH_SOC)
-
-.PHONY: $(ARCH_SOC)
-$(ARCH_SOC):
+.PHONY: $(AVAILABLE_SOCS)
+$(AVAILABLE_SOCS):
 	$(Q) $(MAKE) --no-print-directory -f $(firstword $(MAKEFILE_LIST)) SMING_SOC=$@ STRICT=1 apps run-test
 
 .PHONY: apps
