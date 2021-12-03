@@ -33,7 +33,7 @@ install:
 
   - sh: |
       if [ -z "$APPVEYOR_BUILD_WORKER_CLOUD" ]; then
-        sming/Tools/ci/install.sh ${SMING_ARCH,,} $INSTALL_OPTS
+        . sming/Tools/ci/install.sh ${SMING_ARCH,,} $INSTALL_OPTS
       fi
 
 build_script:
