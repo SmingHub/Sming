@@ -148,10 +148,17 @@ $(COMPONENT_SAMPLES_BUILT):
 	$(Q) $(MAKE) --no-print-directory -C $(@D) PIP_ARGS=-q python-requirements sample
 	$(Q) touch $@
 
+# This file is generated on failure during test phase
+export TEST_FAILURE_FILE := $(SMING_HOME)/.test-failure
 
 PHONY: tests
 tests: submodules ##Build and run all tests
+	$(Q) rm -rf $(TEST_FAILURE_FILE)
 	$(Q) $(MAKE) --no-print-directory build-and-run-tests
+	$(Q) if [ -f "$(TEST_FAILURE_FILE)" ]; then \
+		printf "\n\n** Tests failed **\n\n"; \
+		exit 2; \
+	fi
 
 COMPONENT_TESTS = $(call dirx,$(wildcard $(foreach c,$(COMPONENT_SEARCH_DIRS),$c/*/test/component.mk)))
 TEST_PATHS = $(wildcard $(SMING_PROJECTS_DIR)/tests/* $(COMPONENT_TESTS))
@@ -161,10 +168,11 @@ PHONY: build-and-run-tests
 build-and-run-tests: $(TESTS_COMPLETED) ##Build and run all test applications
 
 $(TESTS_COMPLETED):
-	@printf "\n\n** Building $(notdir $(@D)) **\n\n"
-	$(Q) $(MAKE) -C $(@D) execute
-	$(Q) touch $@
-
+	$(Q) \
+		export MODULE="$(patsubst $(SMING_PROJECTS_DIR)/tests/%,%,$(@D))" && \
+		printf "\n\n** Building $$MODULE **\n\n" && \
+		$(MAKE) -C $(@D) execute HOST_PARAMETERS="module=$(MODULE)" && \
+		touch $@
 
 ##@Cleaning
 
@@ -181,7 +189,7 @@ component-samples-clean: ##Clean all component samples
 .PHONY: tests-clean
 tests-clean: ##Clean all test applications
 	-$(Q) $(foreach p,$(TEST_PATHS),echo ">> $p"; $(MAKE) --no-print-directory -C $p clean;)
-	-$(Q) rm -f $(addsuffix /.*.complete,$(TEST_PATHS))
+	-$(Q) rm -f $(addsuffix /.*.complete,$(TEST_PATHS)) $(TEST_FAILURE_FILE)
 
 
 ##@Tools
