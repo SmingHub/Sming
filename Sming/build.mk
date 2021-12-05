@@ -9,18 +9,21 @@ SMING_HOME := $(patsubst %/,%,$(call FixPath,$(SMING_HOME)))
 # Resolve SMING_ARCH and SMING_SOC settings
 DEBUG_VARS += SMING_ARCH SMING_SOC
 ifeq (,$(SMING_ARCH))
-	ifeq (,$(SMING_SOC))
-		SMING_ARCH := Esp8266
-		SMING_SOC := esp8266
-	else
-  		SMING_ARCH := $(notdir $(call dirx,$(filter %/$(SMING_SOC)-soc.json,$(SOC_CONFIG_FILES))))
-	endif
+  ifeq (,$(SMING_SOC))
+    SMING_ARCH := Esp8266
+    SMING_SOC := esp8266
+  else
+    SMING_ARCH := $(notdir $(call dirx,$(filter %/$(SMING_SOC)-soc.json,$(SOC_CONFIG_FILES))))
+    ifeq (,$(SMING_ARCH))
+      $(error SOC '$(SMING_SOC)' not found)
+    endif
+  endif
 else ifeq (,$(filter $(SMING_SOC),$(ARCH_$(SMING_ARCH)_SOC)))
-	SMING_SOC := $(firstword $(ARCH_$(SMING_ARCH)_SOC))
+  SMING_SOC := $(firstword $(ARCH_$(SMING_ARCH)_SOC))
 endif
 
 ifeq (,$(wildcard $(SMING_HOME)/Arch/$(SMING_ARCH)/build.mk))
-$(error Arch '$(SMING_ARCH)' not found)
+  $(error Arch '$(SMING_ARCH)' not found)
 endif
 
 export SMING_ARCH
