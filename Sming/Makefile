@@ -181,7 +181,7 @@ component-samples-clean: ##Clean all component samples
 .PHONY: tests-clean
 tests-clean: ##Clean all test applications
 	-$(Q) $(foreach p,$(TEST_PATHS),echo ">> $p"; $(MAKE) --no-print-directory -C $p clean;)
-	-$(Q) rm -f $(addsuffix /.*.completed,$(TEST_PATHS))
+	-$(Q) rm -f $(addsuffix /.*.complete,$(TEST_PATHS))
 
 
 ##@Tools
