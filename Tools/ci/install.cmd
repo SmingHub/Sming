@@ -2,6 +2,8 @@ REM
 REM Windows CI install script
 REM
 
+if "%SMING_TOOLS_PREINSTALLED%" NEQ "" goto :EOF
+
 set DOWNLOADS=downloads
 mkdir %DOWNLOADS%
 
