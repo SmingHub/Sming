@@ -272,6 +272,10 @@ bool SPIClass::begin()
 	spi_ll_enable_miso(&dev, true);
 	spi_ll_set_half_duplex(&dev, false);
 
+	spi_ll_set_dummy(&dev, 0);
+	spi_ll_set_command_bitlen(&dev, 0);
+	spi_ll_set_addr_bitlen(&dev, 0);
+
 	// Not using any auto. chip selects
 	spi_ll_master_select_cs(&dev, -1);
 
