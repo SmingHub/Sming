@@ -16,4 +16,8 @@ if($IsWindows) {
     sming/Tools/install.sh all doc fonts
 }
 
+pushd "$env:IDF_PATH"
+git submodule update --init --recursive
+popd
+
 Remove-Item sming, downloads -Force -Recurse
