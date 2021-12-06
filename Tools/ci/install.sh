@@ -7,6 +7,7 @@
 #   CI_BUILD_DIR
 #   SMING_HOME
 #
+set -ex
 
 if [ -z "$SMING_TOOLS_PREINSTALLED" ]; then
 
