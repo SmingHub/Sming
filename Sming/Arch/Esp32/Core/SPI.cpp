@@ -57,8 +57,10 @@ __forceinline void spi_wait(SpiDevice& dev)
 /**
  * @brief Initiate an SPI user transaction
  */
-__forceinline void spi_send(SpiDevice& dev)
+__forceinline void spi_send(SpiDevice& dev, unsigned num_bits)
 {
+	spi_ll_set_mosi_bitlen(&dev, num_bits);
+	spi_ll_set_miso_bitlen(&dev, num_bits);
 	dev.cmd.usr = true;
 }
 
@@ -272,6 +274,10 @@ bool SPIClass::begin()
 	spi_ll_enable_miso(&dev, true);
 	spi_ll_set_half_duplex(&dev, false);
 
+	spi_ll_set_dummy(&dev, 0);
+	spi_ll_set_command_bitlen(&dev, 0);
+	spi_ll_set_addr_bitlen(&dev, 0);
+
 	// Not using any auto. chip selects
 	spi_ll_master_select_cs(&dev, -1);
 
@@ -345,9 +351,6 @@ uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 
 	spi_wait(dev);
 
-	spi_ll_set_mosi_bitlen(&dev, bits);
-	spi_ll_set_miso_bitlen(&dev, bits);
-
 	// copy data to W0
 #if SOC_ESP32 || SOC_ESP32S2
 	if(dev.user.wr_byte_order) {
@@ -358,7 +361,7 @@ uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 		dev.data_buf[0] = data;
 	}
 
-	spi_send(dev);
+	spi_send(dev, bits);
 	spi_wait(dev);
 
 	auto res = dev.data_buf[0];
@@ -378,7 +381,7 @@ uint8_t SPIClass::read8()
 
 	dev.data_buf[0] = 0x00;
 
-	spi_send(dev);
+	spi_send(dev, 8);
 	spi_wait(dev);
 
 	auto res = dev.data_buf[0];
@@ -414,11 +417,6 @@ void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 
 		spi_wait(dev);
 
-		// setup bit length
-		auto num_bits = bufLength * 8;
-		spi_ll_set_mosi_bitlen(&dev, num_bits);
-		spi_ll_set_miso_bitlen(&dev, num_bits);
-
 		// copy the registers starting from last index position
 		if(IS_ALIGNED(buffer)) {
 			memcpy((void*)dev.data_buf, &buffer[bufIndx], ALIGNUP4(bufLength));
@@ -428,7 +426,7 @@ void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 			memcpy((void*)dev.data_buf, wordBuffer, ALIGNUP4(bufLength));
 		}
 
-		spi_send(dev);
+		spi_send(dev, bufLength * 8);
 		spi_wait(dev);
 
 		// copy the registers starting from last index position
