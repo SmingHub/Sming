@@ -1,6 +1,14 @@
 #!/bin/bash
 set -ex # exit with nonzero exit code if anything fails
 
+# Build documentation job
+if [ "$BUILD_DOCS" = "true" ]; then
+    unset SMING_SECRET 
+
+    make -C "$SMING_HOME/../docs" html
+    exit 0
+fi
+
 # Build times benefit from parallel building
 export MAKE_PARALLEL="make -j$(nproc)"
 

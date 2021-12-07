@@ -3,6 +3,12 @@ REM Windows build script
 REM Don't leak this
 set SMING_SECRET=
 
+REM Build documentation job
+if "%BUILD_DOCS%"=="true" (
+    make -C %SMING_HOME%\..\docs html || goto :error
+    goto :EOF
+)
+
 subst z: %CI_BUILD_DIR%
 set SMING_HOME=z:\Sming
 
