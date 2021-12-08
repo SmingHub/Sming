@@ -126,7 +126,7 @@ uint16_t ArduCAMStream::readMemoryBlock(char* data, int bufSize) {
 
 bool ArduCAMStream::seek(int dist) {
 //	ACAM_DEBUG("ArduCAMStream::seek (%d)\n", dist);
-	// we do not allow negativ seeks
+	// we do not allow negative seeks
 	if (dist < 0)
 		return false;
 	// end we ignore forward seeks

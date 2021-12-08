@@ -132,7 +132,7 @@ Also, in situations where this coroutine is used by more than one other
 coroutines, the consistency is disturbed.
 
 What is needed is a structure for storing these variabled, which is passed to
-the routine seperately. This obviously breaks the modularity of the function,
+the routine separately. This obviously breaks the modularity of the function,
 since now the caller has to worry about and care for the internal state of the
 routine (the callee). This allows for a fast, multithreading-enabled
 implementation, which may (obviously) be wrapped in a C++ object for ease of

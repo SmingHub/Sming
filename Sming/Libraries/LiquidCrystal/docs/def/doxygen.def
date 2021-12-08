@@ -1004,7 +1004,7 @@ _EnD_oF_dEf_TeXt_;
     or the adequate backlight control constructor.
     @see setBacklightPin.
 
-    NOTE: The prefered methods to control the backlight are "backlight" and
+    NOTE: The preferred methods to control the backlight are "backlight" and
     "noBacklight".
 
     @param      0..255 - the value is very dependent on the LCD. However, 
@@ -6070,7 +6070,7 @@ _EnD_oF_dEf_TeXt_;
       define-mem-documentation = <<_EnD_oF_dEf_TeXt_
     @defined 
     @abstract   Backlight off constant declaration
-    @discussion Used in combination with the setBacklight to swith off the
+    @discussion Used in combination with the setBacklight to switch off the
  LCD backlight. @set setBacklight
 _EnD_oF_dEf_TeXt_;
     }; /* define-member */
@@ -6091,7 +6091,7 @@ _EnD_oF_dEf_TeXt_;
       define-mem-documentation = <<_EnD_oF_dEf_TeXt_
  @defined 
  @abstract   Backlight on constant declaration
- @discussion Used in combination with the setBacklight to swith on the
+ @discussion Used in combination with the setBacklight to switch on the
  LCD backlight. @set setBacklight
 _EnD_oF_dEf_TeXt_;
     }; /* define-member */
@@ -6732,7 +6732,7 @@ _EnD_oF_dEf_TeXt_;
  @abstract   waits for a given time in microseconds (compilation dependent).
  @discussion Waits for a given time defined in microseconds depending on
  the FAST_MODE define. If the FAST_MODE is defined the call will return
- inmediatelly.
+ immediately.
  @param      uSec[in] time in microseconds.
  @result     None
 _EnD_oF_dEf_TeXt_;

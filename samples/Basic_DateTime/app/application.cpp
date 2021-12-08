@@ -79,7 +79,7 @@ void onRx(Stream& source, char arrivedChar, unsigned short availableCharsCount)
 	case '\n':
 		Serial.println();
 		Serial.println();
-		Serial.print(_F("****Showing DateTime formating options for Unix timestamp: "));
+		Serial.print(_F("****Showing DateTime formatting options for Unix timestamp: "));
 		Serial.println(timestamp);
 		showTime(timestamp);
 		Serial.print(commandPrompt);

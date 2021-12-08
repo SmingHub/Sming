@@ -12,7 +12,7 @@ Summary
 Stream methods
 --------------
 
-The :c:func:`Stream::readBytes` has been virtualised and overriden for :cpp:class:`IDataSourceStream`
+The :c:func:`Stream::readBytes` has been virtualised and overridden for :cpp:class:`IDataSourceStream`
 descendents for more efficient operation, especially with ArduinoJson.
 For normal read operations where the stream position is to be updated, applications should use
 this method in preference to :c:func:`IDataSourceStream::readMemoryBlock`.

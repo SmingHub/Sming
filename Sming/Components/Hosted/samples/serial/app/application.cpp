@@ -1,5 +1,5 @@
 /*
- * This sample application demostrates RPC communication via the serial interface
+ * This sample application demonstrates RPC communication via the serial interface
  */
 #include <SmingCore.h>
 #include <simpleRPC.h>

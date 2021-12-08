@@ -18,7 +18,7 @@
  * An Ardunio port of:
  * http://www.tinkerer.eu/AVRLib/nRF24L01
  *
- * Significant changes to remove depencence on interupts and auto ack support.
+ * Significant changes to remove depencence on interrupts and auto ack support.
  *
  * Aaron Shrimpton <aaronds@gmail.com>
  *
@@ -187,7 +187,7 @@ void Nrf24l::send(uint8_t * value)
 			PTX = 0;
 			break;
 		}
-	}                  // Wait until last paket is send
+	}                  // Wait until last packet is send
 
 	ceLow();
 
@@ -216,7 +216,7 @@ bool Nrf24l::isSending() {
 		status = getStatus();
 	    	
 		/*
-		 *  if sending successful (TX_DS) or max retries exceded (MAX_RT).
+		 *  if sending successful (TX_DS) or max retries exceeded (MAX_RT).
 		 */
 
 		if((status & ((1 << TX_DS)  | (1 << MAX_RT)))){

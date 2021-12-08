@@ -13,7 +13,7 @@ Configuration variables
     default: pico
 
     Select development board in use.
-    List availlable boards with ``make list-boards``.
+    List available boards with ``make list-boards``.
 
     The SDK defines various useful bits of information in a board header file,
     such as the default LED pin, how much flash memory it has, etc.

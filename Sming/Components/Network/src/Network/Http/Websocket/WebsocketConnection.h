@@ -68,7 +68,7 @@ public:
 	/**
 	 * @brief Constructs a websocket connection on top of http client or server connection
 	 * @param connection the transport connection
-	 * @param isClientConnection true when the passed connection is an http client conneciton
+	 * @param isClientConnection true when the passed connection is an http client connection
 	 */
 	WebsocketConnection(HttpConnection* connection, bool isClientConnection = true);
 
@@ -266,7 +266,7 @@ public:
 	/**
 	 * @brief Sets the underlying (transport ) HTTP connection
 	 * @param connection the transport connection
-	 * @param isClientConnection true when the passed connection is an http client conneciton
+	 * @param isClientConnection true when the passed connection is an http client connection
 	 */
 	void setConnection(HttpConnection* connection, bool isClientConnection = true)
 	{

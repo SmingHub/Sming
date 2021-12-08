@@ -186,7 +186,7 @@ const struct sensor_reg MT9D111_QVGA_30fps[] PROGMEM=
     //Set minimum integration time to get a maximum of 15 fps at 45MHz
     {0xC6, 0xA20D        }, //AE_MAX_INDEX
     {0xC8, 0x0004        }, //AE_MAX_INDEX
-    // Configue all GPIO for output and set low to save power
+    // Configure all GPIO for output and set low to save power
     {0xC6, 0x9078        },
     {0xC8, 0x0000        },
     {0xC6, 0x9079        },

@@ -17,7 +17,7 @@ facilities to
 The code tool works by intercepting the standard `malloc()`, `free()`, etc
 functions. Thus **no changes** are necessary to the inspected source code.
 
-See <http://panthema.net/2013/malloc_count> for the current verison.
+See <http://panthema.net/2013/malloc_count> for the current version.
 
 ## Intercepting Heap Allocation Functions ##
 
@@ -57,7 +57,7 @@ more complex example of a memory profile.
 
 ## Downloads ##
 
-See <http://panthema.net/2013/malloc_count> for the current verison.
+See <http://panthema.net/2013/malloc_count> for the current version.
 
 The source code is published under the
 [MIT License (MIT)](http://opensource.org/licenses/MIT), which is also found in

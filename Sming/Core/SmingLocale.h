@@ -48,7 +48,7 @@
 
 #elif LOCALE == LOCALE_EN_AU
 
-// Austrailia is same as GB
+// Australia is same as GB
 
 #endif // LOCALE
 

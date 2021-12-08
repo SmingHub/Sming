@@ -93,7 +93,7 @@ inline IFS::FileSystem* getFileSystem()
  *  Typically the filing system implementation has helper functions which
  *  create and initialise the file system to a valid state. The last step
  *  is to call this function to make it active.
- *	Call this function with nullptr to inactivate the filing system.
+ *	Call this function with nullptr to deactivate the filing system.
  */
 void fileSetFileSystem(IFS::IFileSystem* fileSystem);
 

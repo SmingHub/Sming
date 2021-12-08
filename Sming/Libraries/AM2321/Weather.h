@@ -10,8 +10,8 @@ namespace weather {
 
 	// fast integer version with rounding
 	inline
-	int fahrenheitFast(int celcius) {
-		return (celcius * 18 + 5)/10 + 32;
+	int fahrenheitFast(int celsius) {
+		return (celsius * 18 + 5)/10 + 32;
 	}
 
 

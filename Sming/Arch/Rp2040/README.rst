@@ -81,7 +81,7 @@ These requirements are in addition to the standard Sming setup.
 
 The easiest way to get started is with the Sming installer - see :doc:`/getting-started/index`.
 
-Note: Windows is not currently included in the chocolatey respository.
+Note: Windows is not currently included in the chocolatey repository.
 The following instructions should help.
 
 Compiler/linker

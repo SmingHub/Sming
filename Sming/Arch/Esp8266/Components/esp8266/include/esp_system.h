@@ -195,7 +195,7 @@ typedef struct {
 } partition_item_t;
 
 /**
-  * @brief     regist partition table information, user MUST call it in user_pre_init()
+  * @brief     register partition table information, user MUST call it in user_pre_init()
   *
   * @param     partition_table: the partition table
   * @param     partition_num:   the partition number in partition table

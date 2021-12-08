@@ -1,5 +1,5 @@
 /*
-  RCSwitch - Arduino libary for remote control outlet switches
+  RCSwitch - Arduino library for remote control outlet switches
   Copyright (c) 2011 Suat Özgür.  All right reserved.
   
   Contributors:

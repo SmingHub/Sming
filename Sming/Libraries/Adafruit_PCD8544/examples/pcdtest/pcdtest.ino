@@ -103,7 +103,7 @@ void setup()   {
   delay(2000);
   display.clearDisplay();
 
-  // draw mulitple circles
+  // draw multiple circles
   testdrawcircle();
   display.display();
   delay(2000);

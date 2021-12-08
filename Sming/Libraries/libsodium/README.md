@@ -10,7 +10,7 @@ For further information, see libsodiums [documentation](https://libsodium.gitboo
 
 ## Build Details
 To build the library, Sming's standard component build process is used in favor of libsodium's original autotools based build process, which is not compatible with the xtensa-lx106-elf architecture. The list of source files, as well as compiler definitions, are hard-coded in component.mk according to the outcomes of (a hacked version of) the configure script.  
-All optimizations leveraging x86/ARM architecture-specific assembly intructions are disabled and **only C reference implementations are used** instead. This is true even when compiling for the "Host" architecture.
+All optimizations leveraging x86/ARM architecture-specific assembly instructions are disabled and **only C reference implementations are used** instead. This is true even when compiling for the "Host" architecture.
 As a side effect, **there is no need to invoke `sodium_init()` on application startup** (which would otherwise detect available CPU features and select optimal implementations accordingly). 
 
 ## Notes on Random Number Generation 

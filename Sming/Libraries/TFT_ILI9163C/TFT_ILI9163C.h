@@ -2,13 +2,13 @@
 	ILI9163C - A fast SPI driver for TFT that use Ilitek ILI9163C.
 	
 	Features:
-	- Very FAST!, expecially with Teensy 3.x where uses DMA SPI.
+	- Very FAST!, especially with Teensy 3.x where uses DMA SPI.
 	- It uses just 4 or 5 wires.
 	- Compatible at command level with Adafruit display series so it's easy to adapt existing code.
 	- It uses the standard Adafruit_GFX Library (you need to install). 
 	
 	Background:
-	I got one of those displays from a chinese ebay seller but unfortunatly I cannot get
+	I got one of those displays from a chinese ebay seller but unfortunately I cannot get
 	any working library so I decided to hack it. ILI9163C looks pretty similar to other 
 	display driver but it uses it's own commands so it's tricky to work with it unlsess you
 	carefully fight with his gigantic and not so clever datasheet.
@@ -147,8 +147,8 @@ http://www.ebay.com/itm/Replace-Nokia-5110-LCD-1-44-Red-Serial-128X128-SPI-Color
 This particular display has a design error! The controller has 3 pins to configure to constrain
 the memory and resolution to a fixed dimension (in that case 128x128) but they leaved those pins
 configured for 128x160 so there was several pixel memory addressing problems.
-I solved by setup several parameters that dinamically fix the resolution as needit so below
-the parameters for this diplay. If you have a strain or a correct display (can happen with chinese)
+I solved by setup several parameters that dynamically fix the resolution as needit so below
+the parameters for this display. If you have a strain or a correct display (can happen with chinese)
 you can copy those parameters and create setup for different displays.
 */
 	#define _TFTWIDTH  		128//the REAL W resolution of the TFT
@@ -223,7 +223,7 @@ Not tested!
 #define CMD_FRMCTR3 	0xB3//Frame Rate Control(In Partial mode/full colors)
 #define CMD_DINVCTR		0xB4//Display Inversion Control
 #define CMD_RGBBLK		0xB5//RGB Interface Blanking Porch setting
-#define CMD_DFUNCTR 	0xB6//Display Fuction set 5
+#define CMD_DFUNCTR 	0xB6//Display Function set 5
 #define CMD_SDRVDIR 	0xB7//Source Driver Direction Control
 #define CMD_GDRVDIR 	0xB8//Gate Driver Direction Control 
 

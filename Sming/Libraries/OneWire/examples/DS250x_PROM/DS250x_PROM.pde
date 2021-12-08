@@ -11,7 +11,7 @@ DS250x add-only programmable memory reader w/SKIP ROM.
  Sketch will only read the first page of memory(32bits) starting from the lower address(0000h), if more than 1 device is present, then use the sketch with search functions.
  Remember to put a 4.7K pullup resistor between pin 6 and +Vcc
  
- To change the range or ammount of data to read, simply change the data array size, LSB/MSB addresses and for loop iterations
+ To change the range or amount of data to read, simply change the data array size, LSB/MSB addresses and for loop iterations
  
  This example code is in the public domain and is provided AS-IS.
  
@@ -32,7 +32,7 @@ void loop() {
   byte i;                         // This is for the for loops
   boolean present;                // device present var
   byte data[32];                  // container for the data from device
-  byte leemem[3] = {              // array with the commands to initiate a read, DS250x devices expect 3 bytes to start a read: command,LSB&MSB adresses
+  byte leemem[3] = {              // array with the commands to initiate a read, DS250x devices expect 3 bytes to start a read: command,LSB&MSB addresses
     0xF0 , 0x00 , 0x00   };       // 0xF0 is the Read Data command, followed by 00h 00h as starting address(the beginning, 0000h)
   byte ccrc;                      // Variable to store the command CRC
   byte ccrc_calc;

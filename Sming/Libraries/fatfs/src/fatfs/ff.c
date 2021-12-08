@@ -625,7 +625,7 @@ FRESULT dec_lock (	/* Decrement object open counter */
 		if (!n) Files[i].fs = 0;	/* Delete the entry if open count gets zero */
 		res = FR_OK;
 	} else {
-		res = FR_INT_ERR;			/* Invalid index nunber */
+		res = FR_INT_ERR;			/* Invalid index number */
 	}
 	return res;
 }
@@ -1356,7 +1356,7 @@ void gen_numname (
 		seq = (UINT)sr;
 	}
 
-	/* itoa (hexdecimal) */
+	/* itoa (hexadecimal) */
 	i = 7;
 	do {
 		c = (seq % 16) + '0';
@@ -1769,7 +1769,7 @@ int pattern_matching (	/* Return value: 0:mismatched, 1:matched */
 				do {				/* Analyze the wildcard chars */
 					if (*pp++ == '?') nm++; else nx = 1;
 				} while (*pp == '?' || *pp == '*');
-				if (pattern_matching(pp, np, nm, nx)) return 1;	/* Test new branch (recurs upto number of wildcard blocks in the pattern) */
+				if (pattern_matching(pp, np, nm, nx)) return 1;	/* Test new branch (recurs up to number of wildcard blocks in the pattern) */
 				nc = *np; break;	/* Branch mismatched */
 			}
 			pc = get_achar(&pp);	/* Get a pattern char */
@@ -2037,7 +2037,7 @@ FRESULT follow_path (	/* FR_OK(0): successful, !=0: error code */
 					if (_FS_RPATH && (ns & NS_DOT)) {	/* If dot entry is not exist, */
 						dp->sclust = 0; dp->dir = 0;	/* it is the root directory and stay there */
 						if (!(ns & NS_LAST)) continue;	/* Continue to follow if not last segment */
-						res = FR_OK;					/* Ended at the root directroy. Function completed. */
+						res = FR_OK;					/* Ended at the root directory. Function completed. */
 					} else {							/* Could not find the object */
 						if (!(ns & NS_LAST)) res = FR_NO_PATH;	/* Adjust error code if not last segment */
 					}
@@ -2218,7 +2218,7 @@ FRESULT find_volume (	/* FR_OK(0): successful, !=0: any error occurred */
 			fmt = bsect ? check_fs(fs, bsect) : 2;	/* Check the partition */
 		} while (!LD2PT(vol) && fmt && ++i < 4);
 	}
-	if (fmt == 3) return FR_DISK_ERR;		/* An error occured in the disk I/O layer */
+	if (fmt == 3) return FR_DISK_ERR;		/* An error occurred in the disk I/O layer */
 	if (fmt) return FR_NO_FILESYSTEM;		/* No FAT volume is found */
 
 	/* An FAT volume is found. Following code initializes the file system object */
@@ -3184,7 +3184,7 @@ FRESULT f_opendir (
 		}
 		if (res == FR_NO_FILE) res = FR_NO_PATH;
 	}
-	if (res != FR_OK) dp->fs = 0;		/* Invalidate the directory object if function faild */
+	if (res != FR_OK) dp->fs = 0;		/* Invalidate the directory object if function failed */
 
 	LEAVE_FF(fs, res);
 }
@@ -3598,7 +3598,7 @@ FRESULT f_mkdir (
 					mem_set(dir, 0, SS(dj.fs));
 				}
 			}
-			if (res == FR_OK) res = dir_register(&dj);	/* Register the object to the directoy */
+			if (res == FR_OK) res = dir_register(&dj);	/* Register the object to the directory */
 			if (res != FR_OK) {
 				remove_chain(dj.fs, dcl);			/* Could not register, remove cluster chain */
 			} else {
@@ -4049,7 +4049,7 @@ FRESULT f_mkfs (
 	pdrv = LD2PD(vol);	/* Physical drive */
 	part = LD2PT(vol);	/* Partition (0:auto detect, 1-4:get from partition table)*/
 
-	/* Get disk statics */
+	/* Get disk statistics */
 	stat = disk_initialize(pdrv);
 	if (stat & STA_NOINIT) return FR_NOT_READY;
 	if (stat & STA_PROTECT) return FR_WRITE_PROTECTED;
@@ -4137,7 +4137,7 @@ FRESULT f_mkfs (
 		/* Update system ID in the partition table */
 		tbl = &fs->win[MBR_Table + (part - 1) * SZ_PTE];
 		tbl[4] = sys;
-		if (disk_write(pdrv, fs->win, 0, 1) != RES_OK)	/* Write it to teh MBR */
+		if (disk_write(pdrv, fs->win, 0, 1) != RES_OK)	/* Write it to the MBR */
 			return FR_DISK_ERR;
 		md = 0xF8;
 	} else {
@@ -4598,7 +4598,7 @@ int f_printf (
 		case 'D' :					/* Signed decimal */
 		case 'U' :					/* Unsigned decimal */
 			r = 10; break;
-		case 'X' :					/* Hexdecimal */
+		case 'X' :					/* Hexadecimal */
 			r = 16; break;
 		default:					/* Unknown type (pass-through) */
 			putc_bfd(&pb, c); continue;

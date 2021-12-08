@@ -86,7 +86,7 @@ Variables
 
    Local variables, instance variables, and class variables must also be written in lowerCamelCase.
    Variable names must not start with, end with or contain underscore (\_) or dollar sign ($) characters.
-   This is in constrast to some coding conventions which prefix all instance variables with underscore,
+   This is in contrast to some coding conventions which prefix all instance variables with underscore,
    however this is reserved by the C++ standard and can create problems.
 
    Variable names should be short yet meaningful. The choice of a variable name should be mnemonic — that is,

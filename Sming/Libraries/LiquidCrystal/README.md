@@ -8,7 +8,7 @@ Welcome to the *LCD Library* for **Arduino** and **Chipkit**. It is a derivate o
 its performance is almost 5 times faster and fully extendable if need be. 
 
 It supports most ``Hitachi HD44780`` based LCDs, or compatible, connected to any project using: 4, 8 
-wire parallel interface, I2C IO port expander (native I2C and bit bang) and Shift Regiter.
+wire parallel interface, I2C IO port expander (native I2C and bit bang) and Shift Register.
 
 It currently supports 4 types of connections:
 

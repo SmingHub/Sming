@@ -27,7 +27,7 @@ Timer printTimer;
 // NtpClient ntpClient ("my_ntp_server", myRequestInterval, onNtpReceive);
 
 // Option 3
-// Use this option if you want to start wit autorefresh and autosystemupdate
+// Use this option if you want to start with autorefresh and autosystemupdate
 // No further callback from ntpClient
 // NtpClient ntpClient("pool.ntp.org", 30);
 

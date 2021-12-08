@@ -3,7 +3,7 @@ Modified by: (github.com/)ADiea
 Project: Sming for ESP8266 - https://github.com/anakod/Sming
 License: MIT
 Date: 15.08.2015
-Descr: Example applicatin for radio module Si4432 aka RF22 driver
+Descr: Example application for radio module Si4432 aka RF22 driver
 Link: http://www.electrodragon.com/w/SI4432_433M-Wireless_Transceiver_Module_%281.5KM_Range,_Shield-Protected%29
 */
 

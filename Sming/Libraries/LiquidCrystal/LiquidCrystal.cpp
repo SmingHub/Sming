@@ -78,7 +78,7 @@ LiquidCrystal::LiquidCrystal(uint8_t rs,  uint8_t enable,
    init(LCD_4BIT, rs, 255, enable, d0, d1, d2, d3, 0, 0, 0, 0);
 }
 
-// Contructors with backlight control
+// Constructors with backlight control
 LiquidCrystal::LiquidCrystal(uint8_t rs, uint8_t enable,
                              uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
                              uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7,

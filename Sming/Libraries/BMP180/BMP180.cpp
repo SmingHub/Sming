@@ -126,7 +126,7 @@ float BMP180::CompensateTemperature(int uncompensatedTemperature)
     float fTemperature = temperature;
 	fTemperature /= 10.0;
 
-    // Record this data because it is required by the pressure algorithem.
+    // Record this data because it is required by the pressure algorithm.
     LastTemperatureData = param_b5;
     LastTemperatureTime = millis();
 

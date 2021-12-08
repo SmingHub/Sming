@@ -45,7 +45,7 @@ MCP::MCP(uint8_t address, uint8_t cs)
 	_csBitmask = (1 << _cs);
 	_address = address;
 	_rcmd = (OPCODER | (_address << 1)); //Read command for chip address
-	_wcmd = (OPCODEW | (_address << 1)); //Write command for chip addres
+	_wcmd = (OPCODEW | (_address << 1)); //Write command for chip address
 	_modeCache = 0xFFFF;                // Default I/O mode is all input, 0xFFFF
 	_outputCache = 0x0000;            // Default output state is all off, 0x0000
 	_pullupCache = 0x0000;           // Default pull-up state is all off, 0x0000

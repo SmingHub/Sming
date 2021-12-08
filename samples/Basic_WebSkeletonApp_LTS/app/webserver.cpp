@@ -20,7 +20,7 @@ void onConfiguration(HttpRequest& request, HttpResponse& response)
 		} else {
 			StaticJsonBuffer<ConfigJsonBufferSize> jsonBuffer;
 			JsonObject& root = jsonBuffer.parseObject(*request.getBodyStream());
-			root.prettyPrintTo(Serial); //Uncomment it for debuging
+			root.prettyPrintTo(Serial); //Uncomment it for debugging
 
 			if(root["StaSSID"].success()) // Settings
 			{

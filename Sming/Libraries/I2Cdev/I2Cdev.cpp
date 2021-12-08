@@ -1140,7 +1140,7 @@ uint16_t I2Cdev::readTimeout = I2CDEV_DEFAULT_READ_TIMEOUT;
         // send stop condition
         TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA) | _BV(TWINT) | _BV(TWSTO);
     
-        // wait for stop condition to be exectued on bus
+        // wait for stop condition to be executed on bus
         // TWINT is not set after a stop condition!
         while (TWCR & _BV(TWSTO)) {
             continue;

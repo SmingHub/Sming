@@ -70,7 +70,7 @@ void onTimer_readTemperatures()
 
 	//  Other goodies:
 	//
-	//  Heatindex is the percieved temperature taking humidity into account
+	//  Heatindex is the perceived temperature taking humidity into account
 	//  More: https://en.wikipedia.org/wiki/Heat_index
 	//
 	Serial.print("Heatindex: ");

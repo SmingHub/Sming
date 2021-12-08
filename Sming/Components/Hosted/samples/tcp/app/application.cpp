@@ -1,5 +1,5 @@
 /*
- * This sample application demostrates RPC communication via TCP.
+ * This sample application demonstrates RPC communication via TCP.
  * It will try to connect to create an existing Access Point (AP) or create to a new AP and start a TCP server.
  * The TCP server will listen on port 4031 for remote commands.
  */

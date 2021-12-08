@@ -61,7 +61,7 @@ public:
 	bool unregisterCommand(CommandDelegate reqDelegate);
 
 	/** @brief  Register default system commands
-	 *  @note   Adds the following system commmands to the command handler
+	 *  @note   Adds the following system commands to the command handler
 	 *          - status
 	 *          - echo
 	 *          - help
@@ -73,7 +73,7 @@ public:
 
 	/** @brief  Get the command delegate for a command
 	 *  @param  commandString Command to query
-	 *  @retval CommandDelegate The command delegate matchin the command
+	 *  @retval CommandDelegate The command delegate matching the command
 	 */
 	CommandDelegate getCommandDelegate(const String& commandString);
 

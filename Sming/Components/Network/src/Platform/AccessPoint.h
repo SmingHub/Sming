@@ -66,7 +66,7 @@ public:
      */
 	virtual IpAddress getIP() const = 0;
 
-	/** @brief  Set WiFi AP IP addres
+	/** @brief  Set WiFi AP IP address
      *  @param  address New IP address for WiFi AP
      *  @retval bool True on success
      */

@@ -835,7 +835,7 @@ class TkMap(tk.Frame):
         # So, fix a limit for the drawn size of each partition (in bytes)
         # Marker ticks will be drawn according to this scale
         drawsize = 0      # Equivalent size (in bytes) for the partition
-        x_device_end = 0  # Determines final x co-ordinate for end of device memory
+        x_device_end = 0  # Determines final x coordinate for end of device memory
 
         MIN_TICK_SPACING = 100
         def draw_tick(x, addr):
@@ -857,7 +857,7 @@ class TkMap(tk.Frame):
         self.items[get_id(self.device)] = device_item
 
         for p in partitions:
-            # Starting x co-ordinate for this partition depends on scale of previous partition
+            # Starting x coordinate for this partition depends on scale of previous partition
             r = copy.copy(r_prev)
             r.setHeight(ROW_HEIGHT)
             if part_prev is not None:

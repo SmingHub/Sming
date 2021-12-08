@@ -162,7 +162,7 @@ extern const uint8_t esp8266_gpioToFn[16];
 #define TCIS 8					 //Interrupt Status
 #define TCTE 7					 //Timer Enable
 #define TCAR 6					 //AutoReload (restart timer when condition is reached)
-#define TCPD 2					 //Prescale Devider (2bit) 0:1(12.5ns/tick), 1:16(0.2us/tick), 2/3:256(3.2us/tick)
+#define TCPD 2					 //Prescale Divider (2bit) 0:1(12.5ns/tick), 1:16(0.2us/tick), 2/3:256(3.2us/tick)
 #define TCIT 0					 //Interrupt Type 0:edge, 1:level
 
 //RTC Registers
@@ -270,7 +270,7 @@ extern const uint8_t esp8266_gpioToFn[16];
 #define UCRXI 19									   //Invert RX
 #define UCTXRST 18									   //Reset TX FIFO
 #define UCRXRST 17									   //Reset RX FIFO
-#define UCTXHFE 15									   //TX Harware Flow Enable
+#define UCTXHFE 15									   //TX Hardware Flow Enable
 #define UCLBE 14									   //LoopBack Enable
 #define UCBRK 8										   //Send Break on the TX line
 #define UCSWDTR 7									   //Set this bit to assert DTR
@@ -282,11 +282,11 @@ extern const uint8_t esp8266_gpioToFn[16];
 
 //UART CONF1 Registers Bits
 #define UCTOE 31									   //RX TimeOut Enable
-#define UCTOT 24									   //RX TimeOut Treshold (7bit)
-#define UCRXHFE 23									   //RX Harware Flow Enable
-#define UCRXHFT 16									   //RX Harware Flow Treshold (7bit)
-#define UCFET 8										   //TX FIFO Empty Treshold (7bit)
-#define UCFFT 0										   //RX FIFO Full Treshold (7bit)
+#define UCTOT 24									   //RX TimeOut Threshold (7bit)
+#define UCRXHFE 23									   //RX Hardware Flow Enable
+#define UCRXHFT 16									   //RX Hardware Flow Threshold (7bit)
+#define UCFET 8										   //TX FIFO Empty Threshold (7bit)
+#define UCFFT 0										   //RX FIFO Full Threshold (7bit)
 
 //SPI_READY
 #define SPIRDY ESP8266_DREG(0x0C)
@@ -367,7 +367,7 @@ extern const uint8_t esp8266_gpioToFn[16];
 #define SPI1E3 ESP8266_REG(0x1FC)
 #define SPI1W(p) ESP8266_REG(0x140 + ((p & 0xF) * 4))
 
-//SPI0, SPI1 & I2S Interupt Register
+//SPI0, SPI1 & I2S Interrupt Register
 #define SPIIR ESP8266_DREG(0x20)
 #define SPII0 4						//SPI0 Interrupt
 #define SPII1 7						//SPI1 Interrupt

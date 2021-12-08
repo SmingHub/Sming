@@ -40,7 +40,7 @@ void setup() {
   Mirf.init();
   
   /*
-   * Configure reciving address.
+   * Configure receiving address.
    */
    
   Mirf.setRADDR((byte *)"clie1");

@@ -74,7 +74,7 @@ bool tcpServerClientReceive(TcpClient& client, char* data, int size)
 	return true;
 }
 
-void tcpServerClientComplete(TcpClient& client, bool succesfull)
+void tcpServerClientComplete(TcpClient& client, bool successful)
 {
 	debugf("Application CompleteCallback : %s \r\n", client.getRemoteIp().toString().c_str());
 }

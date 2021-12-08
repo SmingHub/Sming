@@ -7,7 +7,7 @@
  * esp_crypto.h - ROM / SDK crypto functions
  *
  * There are a bunch of routines available in the ESP8266 ROM and SDK which could save space,
- * and also potentially improving performance since ROM routines dont't require cache RAM.
+ * and also potentially improving performance since ROM routines don't require cache RAM.
  *
  * This header file provides prototypes so they can be used without conflicting with other libraries.
  *

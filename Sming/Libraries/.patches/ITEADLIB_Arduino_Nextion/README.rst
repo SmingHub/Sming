@@ -6,12 +6,12 @@ Introduction
 
 Nextion Arduino library provides an easy-to-use way to manipulate
 Nextion serial displays. Users can use the libarry freely, either in
-commerical projects or open-source prjects, without any additional
+commercial projects or open-source prjects, without any additional
 condiitons.
 
 | For more information about the Nextion display project, please visit
   `the wiki。 <http://wiki.iteadstudio.com/Nextion_HMI_Solution>`__
-| The wiki provdies all the necessary technical documnets, quick start
+| The wiki provides all the necessary technical documnets, quick start
   guide, tutorials, demos, as well as some useful resources.
 
 To get your Nextion display, please visit
@@ -27,7 +27,7 @@ Latest version is unstable and a mass of change may be applied in a
 short time without any notification for users. Commonly, it is for
 developers of this library.
 
-**Release version is recommanded for you, unless you are one of
+**Release version is recommended for you, unless you are one of
 developers of this library.**
 
 **Release notes** is at
@@ -57,11 +57,11 @@ https://github.com/itead/ITEADLIB_Arduino_Nextion/releases.
 Documentation
 -------------
 
-Offline Documentation’s entry ``doc/Documentation/index.html`` shiped
+Offline Documentation’s entry ``doc/Documentation/index.html`` shipped
 with source code can be open in your browser such as Chrome, Firefox or
 any one you like.
 
-Suppported Mainboards
+Supported Mainboards
 ---------------------
 
 **All boards, which has one or more hardware serial, can be supported.**

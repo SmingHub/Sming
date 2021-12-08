@@ -308,7 +308,7 @@ Binary partition table
 ----------------------
 
 Sming uses the same binary partition table structure as ESP-IDF, located immediately after the boot sector.
-However, it is organised slighly differently to allow partitions to be registered for multiple storage devices.
+However, it is organised slightly differently to allow partitions to be registered for multiple storage devices.
 
 Entries are fixed 32-byte structures, :cpp:class:`Storage::esp_partition_info_t`, organised as follows:
 
@@ -355,7 +355,7 @@ It defines methods which should be used to read/write/erase the partition conten
 Each partition has an associated :cpp:class:`Storage::Device`.
 This is usually :cpp:var:`Storage::spiFlash` for the main flash device.
 
-Other devices must be registed via :cpp:func:`Storage::PartitionTable::registerStorageDevice`.
+Other devices must be registered via :cpp:func:`Storage::PartitionTable::registerStorageDevice`.
 
 You can query partition entries from a Storage object directly, for example::
 

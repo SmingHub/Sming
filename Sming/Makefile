@@ -2,7 +2,7 @@
 #
 # Created by Espressif
 # UDK modifications by CHERTS <sleuthhound@gmail.com>
-# Cross platform compatability by kireevco <dmitry@kireev.co>
+# Cross platform compatibility by kireevco <dmitry@kireev.co>
 # Multi-architecture support by mikee47 <mike@sillyhouse.net>
 #
 #############################################################

@@ -4,7 +4,7 @@
 
 int ledValue = LOW;
 
-// This example changes the state of the LED everytime the button is pushed
+// This example changes the state of the LED every time the button is pushed
 // Build the circuit indicated here: http://arduino.cc/en/Tutorial/Button
 
 
