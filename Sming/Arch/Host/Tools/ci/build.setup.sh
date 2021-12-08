@@ -26,4 +26,4 @@ set +e
 sudo ip tuntap add dev tap0 mode tap user $(whoami)
 sudo ip a a dev tap0 192.168.13.1/24
 sudo ip link set tap0 up
-sset -e
+set -e
