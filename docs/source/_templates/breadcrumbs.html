@@ -26,7 +26,7 @@
 {% endif %}
 
 {% if github_url is not defined %}
-{% set github_url = 'https://' + github_host|default('github.com') + '/' + github_user + '/' + github_repo + '/' + theme_vcs_pageview_mode|default('blob') + '/' + github_version + '/' + pagename %}
+{% set github_url = 'https://' + github_host|default('github.com') + '/' + github_user + '/' + github_repo + '/' + (theme_vcs_pageview_mode or 'blob') + '/' + github_version + '/' + pagename %}
 {% endif %}
 
 <li class="wy-breadcrumbs-aside">
