@@ -39,3 +39,77 @@ user_config.h
 This header file is part of the original ESP8266 SDK code and is now deprecated.
 Libraries should use only the necessary headers.
 Applications do not require it.
+
+Breaking Changes
+----------------
+
+Undeprecated :cpp:func:`HttpRequest::getQueryParameter()` and removed a lot of old deprecated code.
+
+- Removed WebsocketClient::disconnect(). Use :cpp:func:`WebsocketClient::close()` instead.
+- Removed TimerDelegateStdFunction. Use TimerDelegate instead.
+- Removed class URL. Use class :cpp:class:`Url` instead.
+- Removed TemplateVariables Use TemplateStream::Variables instead.
+- Removed StreamTransformer::transformCallback. Create inherited class and override transform() method instead.
+- Removed StreamTransformer::StreamTransformer (IDataSourceStream *stream, const StreamTransformerCallback &callback, size_t resultSize=256, size_t blockSize=64). Create inherited class, override transform() method and Use alternative constructor instead.
+- Removed SslValidatorCallback. Use Ssl::ValidatorCallback instead.
+- Removed SslSessionId and SSLSessionId. Use Ssl::SessionId instead.
+- Removed SslKeyCertPair and SSLKeyCertPair. Use Ssl::KeyCertPair instead.
+- Removed SslCertificate. Use Ssl::Certificate instead.
+- Removed SeekOriginFlags. Use SeekOrigin instead.
+- Removed eSO_FileStart. Use SeekOrigin::Start instead.
+- Removed eSO_CurrentPos. Use SeekOrigin::Current instead.
+- Removed eSO_FileEnd.  Use SeekOrigin::End instead.
+- Removed OtaUpgrade::BasicStream::errorToString. Use toString() global function.
+- Removed deprecated stuff in Mqtt. Removed MQTT_MAX_BUFFER_SIZE, MQTT_MSG_PUBREC, 
+- Removed MqttClient::publishWithQoS (const String &topic, const String &message, int QoS, bool retained=false, MqttMessageDeliveredCallback onDelivery=nullptr). 
+  Use publish(const String& topic, const String& message, uint8_t flags = 0) instead. 
+  If you want to have a callback that should be triggered on successful delivery of messages then Use   setEventHandler(MQTT_TYPE_PUBACK, youCallback) instead.
+- Removed MqttClient::setCallback (MqttStringSubscriptionCallback subscriptionCallback=nullptr). Use MqttClient::setEventHandler(MQTT_TYPE_PUBLISH, MqttDelegate handler) instead.
+- Removed MqttClient::setWill (const String &topic, const String &message, int QoS, bool retained=false). Use MqttClient::setWill(const String& topic, const String& message,uint8_t flags) instead.
+- Removed MqttMessageDeliveredCallback. Use MqttDelegate instead.
+- Removed MqttStringSubscriptionCallback. Use MqttDelegate instead.
+- Removed IDataSourceStream::length(). Use IDataSourceStream::available() instead.
+- Removed HttpServer::setDefaultResource (HttpResource *resource). Use paths.setDefault() instead.
+- Removed HttpServer::addPath (String path, const HttpPathDelegate &callback), HttpServer::addPath (const String &path, const HttpResourceDelegate &onRequestComplete) and HttpServer::addPath (const String &path, HttpResource *resource). Use paths.set() instead.
+- Removed HttpResponse::toString (const HttpResponse &res). Use HttpResponse::toString() method or toString(HttpResponse) function instead.
+- Removed HttpResponse::sendTemplate (IDataSourceStream *newTemplateInstance). Use sendNamedStream() instead.
+- Removed commandFunctionDelegate. Use CommandFunctionDelegate instead.
+- Removd DateTime::convertFromUnixTime (time_t timep, int8_t *psec, int8_t *pmin, int8_t *phour, int8_t *pday, int8_t *pwday, int8_t *pmonth, int16_t *pyear). 
+  Use fromUnixTime(time_t, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint16_t*) instead.
+- Removed DateTime::convertToUnixTime (uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year). Use 'toUnixTime()' instead.
+- Removed DateTime::fromUnixTime (time_t timep, int8_t *psec, int8_t *pmin, int8_t *phour, int8_t *pday, int8_t *pwday, int8_t *pmonth, int16_t *pyear). Use unsigned version instead fromUnixTime(time_t, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint8_t*, uint16_t*).
+- Removed DateTime::parseHttpDate (const String &httpDate). Use fromHttpDate() instead.
+- Removed DNSServer. Use :cpp:class:`DnsServer` instead.
+- Removed eFO_Append. Use :cpp:enum:`File::Append` instead.
+- Removed eFO_CreateIfNotExist. Use :cpp:enum:`File::Create` instead.
+- Removed eFO_CreateNewAlways. Use :cpp:enum:`File::CreateNewAlways` instead.
+- Removed eFO_ReadOnly. Use :cpp:enum:`File::ReadOnly` instead.
+- Removed eFO_ReadWrite. Use :cpp:enum:`File::ReadWrite` instead.
+- Removed eFO_Truncate. Use :cpp:enum:`File::Truncate` instead.
+- Removed eFO_WriteOnly. Use :cpp:enum:`File::WriteOnly` instead.
+- Removed eSO_CurrentPos. Use :cpp:enum:`SeekOrigin::Current` instead.
+- Removed eSO_FileEnd. Use :cpp:enum:`SeekOrigin::End` instead.
+- Removed eSO_FileStart. Use :cpp:enum:`SeekOrigin::Start` instead.
+- Removed fileList (). Use Directory object (or fileOpenDir / fileReadDir / fileCloseDir).
+- Removed FileStream::attach (const String &fileName, FileOpenFlags openFlags=File::ReadOnly). Use FileStream::open() instead.
+- Removed FTPServer. Use :cpp:class:`FtpServer` instead.
+- Removed FtpServer::checkUser (const String &login, const String &pass). Use FtpServer::validateUser() instead
+- Removed Hardware_Timer. Use :cpp:class:`HardwareTimer` class instead.
+- Removed HardwareSerial::setCallback (StreamDataReceivedDelegate dataReceivedDelegate). Use HardwareSerial::onDataReceived instead.
+- Removed HttpClient::request (const String &url). Use createRequest() instead.
+- Removed HttpConnection::getLastModifiedDate (). Use getResponse()->headers.getLastModifiedDate() instead.
+- Removed HttpConnection::getResponseCode (). Use getResponse()->code instead.
+- Removed HttpConnection::getResponseHeader (const String &headerName, const String &defaultValue=nullptr). Use getResponse()->headers[] instead.
+- Removed HttpConnection::getResponseHeaders (). Use getResponse()->headers instead. 
+- Removed HttpConnection::getResponseString (). Use getResponse()->getBody() instead.
+- Removed HttpConnection::getServerDate (). Use getResponse()->headers.getServerDate() instead.
+- Removed httpGetErrorName (HttpError err). Use toString(HttpError) instead.
+- Removed HttpPartProducerDelegate. Use MultipartStream::Producer instead.
+- Removed HttpPartResult. Use MultipartStream::BodyPart instead.
+- Removed HttpRequest::getPath (). Use uri.Path instead.
+- Removed HttpRequest::operator= (const HttpRequest &rhs). Use clone() instead.
+- Removed HttpRequest::setPostParameters (const HttpParams &params). Set postParams directly, i.e. request.postParams = params.
+- Removed HttpResponse::forbidden (). Use response.code = HTTP_STATUS_FORBIDDEN instead.
+- Removed HttpResponse::hasHeader (const String &name). Use headers.contains() instead.
+- Removed HttpResponse::notFound (). Use response.code = HTTP_STATUS_NOT_FOUND instead.
+- Removed HttpResponse::redirect (const String &location). Use headers[HTTP_HEADER_LOCATION] instead.
