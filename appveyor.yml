@@ -8,7 +8,6 @@ environment:
 
   matrix:
     - SMING_ARCH: Host
-      INSTALL_OPTS: doc
 
     - SMING_ARCH: Esp8266
 
@@ -23,6 +22,8 @@ environment:
 
     - SMING_ARCH: Rp2040
 
+    - BUILD_DOCS: true
+
 install:
   - ps: |
       # Set up environment variables for all environments and build types
@@ -33,12 +34,10 @@ install:
       Tools/ci/setenv.ps1
 
   - cmd: |
-      if "%APPVEYOR_BUILD_WORKER_CLOUD%"=="" Tools\ci\install.cmd %SMING_ARCH% %INSTALL_OPTS%
+      Tools\ci\install.cmd
 
   - sh: |
-      if [ -z "$APPVEYOR_BUILD_WORKER_CLOUD" ]; then
-        . Tools/ci/install.sh ${SMING_ARCH,,} $INSTALL_OPTS fonts
-      fi
+      . Tools/ci/install.sh
 
 before_build:
   - sh: |
@@ -54,7 +53,7 @@ build_script:
 
 after_build:
   - ps: |
-       if ($env:SMING_ARCH -eq "Host") {
+       if ($env:BUILD_DOCS) {
           $docFile = "sming-docs.zip"
           Compress-Archive -Path $env:CI_BUILD_DIR/docs/build/html -DestinationPath $docFile
           Push-AppveyorArtifact $docFile

@@ -1,6 +1,8 @@
 Sming Documentation
 ===================
 
+.. highlight:: bash
+
 This directory contains the build system for Sming's documentation.
 It is intended to be read online via `Read The Docs <https://sming.readthedocs.io>`__.
 
@@ -10,42 +12,13 @@ information is obtained from the various README files associated with the source
 Setup
 -----
 
-make
-~~~~
+Linux::
 
-Should already be available as part of Sming build system
+	../Tools/install.sh doc
 
-doxygen & graphviz
-~~~~~~~~~~~~~~~~~~
+Windows::
 
-.. highlight:: bash
-
-For Linux::
-
-	sudo apt install doxygen graphviz-dev
-
-For Windows, see:
-
-- **Doxygen** `www.doxygen.nl <http://www.doxygen.nl/>`__
-- **Graphviz** `graphviz.org <https://graphviz.org/>`__
-
-GraphViz is used by Doxygen (and Sphinx) to render graphs from .dot files.
-
-Python 3 + Sphinx
-~~~~~~~~~~~~~~~~~
-
-For Linux::
-
-	sudo apt install python3-sphinx python3-pip python3-setuptools python3-cairocffi
-
-For Windows, see `Sphinx Installation Guide <https://www.sphinx-doc.org/en/master/usage/installation.html>`__.
-
-Requirements
-~~~~~~~~~~~~
-
-Install other required packages::
-
-	pip3 install -r requirements.txt
+	..\Tools\install.cmd doc
 
 
 Building

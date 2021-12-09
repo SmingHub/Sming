@@ -60,19 +60,16 @@ fi
 # Sming repository for binary archives
 SMINGTOOLS=https://github.com/SmingHub/SmingTools/releases/download/1.0
 
-# Set default environment variables and WGET options
+# Set default environment variables
 if [ -z "$APPVEYOR" ]; then
     source $(dirname "$BASH_SOURCE")/export.sh
 
     # Ensure default path is writeable
     sudo mkdir -p /opt
     sudo chown $USER:$USER /opt
-
-    WGET="wget"
-else
-    # Don't clutter up logfiles for CI builds
-    WGET="wget --no-verbose"
 fi
+
+WGET="wget --no-verbose"
 
 # Installers put downloaded archives here
 DOWNLOADS="downloads"

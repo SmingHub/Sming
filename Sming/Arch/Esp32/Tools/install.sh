@@ -51,7 +51,7 @@ rm -f "$IDF_PATH"
 ln -s "$IDF_CLONE_PATH" "$IDF_PATH"
 
 # Install IDF tools and packages
-python3 "$IDF_PATH/tools/idf_tools.py" install
+python3 "$IDF_PATH/tools/idf_tools.py" --non-interactive install
 python3 -m pip install -r "$IDF_PATH/requirements.txt"
 
 if [ -z "$KEEP_DOWNLOADS" ]; then

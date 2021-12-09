@@ -19,6 +19,10 @@ $env:IDF_BRANCH = "sming/release/v4.3"
 # Rp2040
 $env:PICO_TOOLCHAIN_PATH = Join-Path $TOOLS_DIR "rp2040"
 
+if (Test-Path "$env:PICO_TOOLCHAIN_PATH" ) {
+    $env:SMING_TOOLS_PREINSTALLED = "true"
+}
+
 if ($IsWindows) {
     $env:PATH = "C:\MinGW\msys\1.0\bin;C:\MinGW\bin;$env:PATH"
 
