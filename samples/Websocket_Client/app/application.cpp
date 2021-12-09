@@ -6,7 +6,7 @@
  * It sents 25 messages then client connection is closed.
  * It reconnects and sends 25 messages and continues doing same.
  *
- * This demo shows connecton, closing , reconnection methods of
+ * This demo shows connection, closing , reconnection methods of
  * websocket client.
  */
 #include <SmingCore.h>

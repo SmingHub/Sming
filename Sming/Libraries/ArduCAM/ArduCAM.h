@@ -179,7 +179,7 @@
 #define CAM2LCD_MODE       		0x01
 #define LCD2MCU_MODE       		0x02
 
-#define ARDUCHIP_TIM       		0x03  //Timming control
+#define ARDUCHIP_TIM       		0x03  //Timing control
 #define HREF_LEVEL_MASK    		0x01  //0 = High active , 		1 = Low active
 #define VSYNC_LEVEL_MASK   		0x02  //0 = High active , 		1 = Low active
 #define LCD_BKEN_MASK      		0x04  //0 = Enable, 			1 = Disable

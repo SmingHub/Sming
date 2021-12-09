@@ -1160,7 +1160,7 @@ const char * MFRC522::GetStatusCodeName(byte code	///< One of the StatusCode enu
 	switch (code) {
 		case STATUS_OK:				return ("Success.");										break;
 		case STATUS_ERROR:			return ("Error in communication.");						break;
-		case STATUS_COLLISION:		return ("Collission detected.");							break;
+		case STATUS_COLLISION:		return ("Collision detected.");							break;
 		case STATUS_TIMEOUT:		return ("Timeout in communication.");						break;
 		case STATUS_NO_ROOM:		return ("A buffer is not big enough.");					break;
 		case STATUS_INTERNAL_ERROR:	return ("Internal error in the code. Should not happen.");	break;

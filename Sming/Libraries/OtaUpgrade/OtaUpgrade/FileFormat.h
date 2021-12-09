@@ -25,7 +25,7 @@ struct OtaFileHeader {
 	uint32_t magic; ///< File type identification, either #OTA_HEADER_MAGIC_SIGNED or #OTA_HEADER_MAGIC_NOT_SIGNED.
 	uint32_t buildTimestampLow;  ///< File creation timestamp, Milliseconds since 1900/01/01 (lower 32 bits)
 	uint32_t buildTimestampHigh; ///< File creation timestamp, Milliseconds since 1900/01/01 (lower 32 bits)
-	uint8_t romCount;			 ///< Number of ROM images in this filem, each preceeded with an #OTA_RomHeader.
+	uint8_t romCount;			 ///< Number of ROM images in this filem, each preceded with an #OTA_RomHeader.
 	uint8_t reserved[3];		 ///< Reserved bytes, must be zero for compatibility with future versions.
 };
 
