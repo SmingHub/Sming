@@ -188,7 +188,7 @@ static int freeMemory()
 
 static int readTemperature()
 {
-   ADMUX = 0xC7;                          // activate interal temperature sensor, 
+   ADMUX = 0xC7;                          // activate internal temperature sensor, 
                                           // using 2.56V ref. voltage
    ADCSRB |= _BV(MUX5);
    

@@ -154,7 +154,7 @@ void LiquidCrystal::send(uint8_t value, uint8_t mode)
 // setBacklightPin
 void LiquidCrystal::setBacklightPin ( uint8_t pin, t_backlighPol pol )
 {
-   pinMode ( pin, OUTPUT );       // Difine the backlight pin as output
+   pinMode ( pin, OUTPUT );       // Define the backlight pin as output
    _backlightPin = pin;
    _polarity = pol;
    setBacklight(BACKLIGHT_OFF);   // Set the backlight low by default

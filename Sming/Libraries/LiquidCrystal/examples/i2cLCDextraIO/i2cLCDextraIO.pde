@@ -134,7 +134,7 @@ static int freeMemory()
 
 static int readTemperature()
 {
-   ADMUX = 0xC8;                          // activate interal temperature sensor, 
+   ADMUX = 0xC8;                          // activate internal temperature sensor, 
                                           // using 1.1V ref. voltage
    ADCSRA |= _BV(ADSC);                   // start the conversion
    while (bit_is_set(ADCSRA, ADSC));      // ADSC is cleared when the conversion 

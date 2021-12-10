@@ -236,8 +236,8 @@ codespell: ##Check spelling
 	@echo Running codespell...
 	$(Q)cd $(SMING_HOME)/.. && \
 	codespell --check-filenames \
-		--skip $$(tr "\n" , < .codespell-skip) \
-		--ignore-words .codespell-ignore
+		--skip $$(tr "\n" , < Tools/spelling/skip.txt) \
+		--ignore-words Tools/spelling/ignore.txt
 
 
 ##@Help

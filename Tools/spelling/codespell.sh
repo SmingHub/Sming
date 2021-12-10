@@ -68,6 +68,6 @@ do
   git remote add my "$FORK_URL"
 
   git switch -c fix/spelling
-  git commit -a -m "Fixed small spelling mistakes."
+  git commit -a -m "Fix spelling mistakes"
   git push -u my fix/spelling
 done

@@ -77,7 +77,7 @@ Please note Version 4 documentation is at [sming.readthedocs.io](https://sming.r
     * [Crash handlers](https://sming.readthedocs.io/en/latest/information/debugging.html) for analyzing/handling system restarts due to fatal errors or WDT resets.
     * [PWM support](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/driver/index.html) based on [Stefan Bruens PWM](https://github.com/StefanBruens/ESP8266_new_pwm.git).
     * Optional [custom heap allocation](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/heap/index.html) based on [Umm Malloc](https://github.com/rhempel/umm_malloc.git).
-    * Based on Espressif NONOS SDK. Officially supported NON SDK version is >= 3.0.1.
+    * Based on Espressif NONOS SDK version 3.
     * Support for a [thin No-Wifi-SDK](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/esp_no_wifi/index.html). Helpful when a project does not require WiFi (or networking) and reduces code size and memory usage significantly.
 * Linux/Windows features
     * Sming has a [host emulator](https://sming.readthedocs.io/en/latest/arch/host/index.html) that allows libraries and sample applications to be developed and tested on a Linux/Windows host system before uploading them to an actual microcontroller.

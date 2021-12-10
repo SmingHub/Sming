@@ -18,11 +18,11 @@ jobs:
       run: |
          SMING_ARCH=Host make -C Sming submodules
          echo "[codespell]" > .codespellrc
-         echo "skip = $(tr "\n" , < .codespell-skip)" >> .codespellrc
+         echo "skip = $(tr "\n" , < Tools/spelling/skip.txt)" >> .codespellrc
     - name: Run codespell
       uses: codespell-project/actions-codespell@master
       with:
         skip: "" # Use resource script entry
-        ignore_words_file: ".codespell-ignore"
+        ignore_words_file: "Tools/spelling/ignore.txt"
         check_filenames: true
 #        only_warn: 1

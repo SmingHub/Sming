@@ -187,7 +187,7 @@ public:
     
     This method is abstract, a base implementation is available common to all LCD
     drivers. Should it not be compatible with some other LCD driver, a derived
-    implementation should be done on the driver specif class.
+    implementation should be done on the driver-specific class.
     
     @param      cols[in] the number of columns that the display has
     @param      rows[in] the number of rows that the display has

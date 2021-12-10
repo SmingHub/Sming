@@ -1,4 +1,5 @@
 *.csv
+*.patch
 *.svg
 */out
 ./Sming/Arch/Esp8266/Components/esp-lwip
