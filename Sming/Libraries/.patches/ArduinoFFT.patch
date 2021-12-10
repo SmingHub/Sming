@@ -1,31 +1,5 @@
-diff --git a/src/arduinoFFT.h b/src/arduinoFFT.h
-index c3c1a0b..8f7e2e4 100644
---- a/src/arduinoFFT.h
-+++ b/src/arduinoFFT.h
-@@ -75,7 +75,6 @@
- class arduinoFFT {
- public:
- 	/* Constructor */
--	arduinoFFT(void);
- 	arduinoFFT(double *vReal, double *vImag, uint16_t samples, double samplingFrequency);
- 	/* Destructor */
- 	~arduinoFFT(void);
-@@ -83,13 +82,7 @@ public:
- 	uint8_t Revision(void);
- 	uint8_t Exponent(uint16_t value);
- 
--	void ComplexToMagnitude(double *vReal, double *vImag, uint16_t samples);
--	void Compute(double *vReal, double *vImag, uint16_t samples, uint8_t dir);
--	void Compute(double *vReal, double *vImag, uint16_t samples, uint8_t power, uint8_t dir);
--	void DCRemoval(double *vData, uint16_t samples);
--	double MajorPeak(double *vD, uint16_t samples, double samplingFrequency);
- 	void MajorPeak(double *vD, uint16_t samples, double samplingFrequency, double *f, double *v);
--	void Windowing(double *vData, uint16_t samples, uint8_t windowType, uint8_t dir);
- 
- 	void ComplexToMagnitude();
- 	void Compute(uint8_t dir);
 diff --git a/src/arduinoFFT.cpp b/src/arduinoFFT.cpp
-index fb602a9..e038b41 100644
+index f1e6d61..8767a2a 100644
 --- a/src/arduinoFFT.cpp
 +++ b/src/arduinoFFT.cpp
 @@ -21,11 +21,6 @@
@@ -163,11 +137,12 @@ index fb602a9..e038b41 100644
 -
  void arduinoFFT::Windowing(uint8_t windowType, uint8_t dir)
  {// Weighing factors are computed once before multiple use of FFT
- // The weighing function is symetric; half the weighs are recorded
-@@ -285,63 +184,6 @@ void arduinoFFT::Windowing(uint8_t windowType, uint8_t dir)
+ // The weighing function is symmetric; half the weighs are recorded
+@@ -284,64 +183,6 @@ void arduinoFFT::Windowing(uint8_t windowType, uint8_t dir)
+ 	}
  }
  
- 
+-
 -void arduinoFFT::Windowing(double *vData, uint16_t samples, uint8_t windowType, uint8_t dir)
 -{// Weighing factors are computed once before multiple use of FFT
 -// The weighing function is symetric; half the weighs are recorded
@@ -228,7 +203,7 @@ index fb602a9..e038b41 100644
  double arduinoFFT::MajorPeak()
  {
  	double maxY = 0;
-@@ -391,58 +233,6 @@ void arduinoFFT::MajorPeak(double *f, double *v)
+@@ -391,58 +232,6 @@ void arduinoFFT::MajorPeak(double *f, double *v)
  	#endif
  }
  
@@ -287,7 +262,7 @@ index fb602a9..e038b41 100644
  double arduinoFFT::MajorPeakParabola()
  {
  	double maxY = 0;
-@@ -492,7 +282,6 @@ void arduinoFFT::Parabola(double x1, double y1, double x2, double y2, double x3,
+@@ -492,7 +281,6 @@ void arduinoFFT::Parabola(double x1, double y1, double x2, double y2, double x3,
  
  uint8_t arduinoFFT::Exponent(uint16_t value)
  {
@@ -295,3 +270,29 @@ index fb602a9..e038b41 100644
  	// Calculates the base 2 logarithm of a value
  	uint8_t result = 0;
  	while (((value >> result) & 1) != 1) result++;
+diff --git a/src/arduinoFFT.h b/src/arduinoFFT.h
+index 7883145..935ac3e 100644
+--- a/src/arduinoFFT.h
++++ b/src/arduinoFFT.h
+@@ -75,7 +75,6 @@
+ class arduinoFFT {
+ public:
+ 	/* Constructor */
+-	arduinoFFT(void);
+ 	arduinoFFT(double *vReal, double *vImag, uint16_t samples, double samplingFrequency);
+ 	/* Destructor */
+ 	~arduinoFFT(void);
+@@ -83,13 +82,7 @@ public:
+ 	uint8_t Revision(void);
+ 	uint8_t Exponent(uint16_t value);
+ 
+-	void ComplexToMagnitude(double *vReal, double *vImag, uint16_t samples);
+-	void Compute(double *vReal, double *vImag, uint16_t samples, uint8_t dir);
+-	void Compute(double *vReal, double *vImag, uint16_t samples, uint8_t power, uint8_t dir);
+-	void DCRemoval(double *vData, uint16_t samples);
+-	double MajorPeak(double *vD, uint16_t samples, double samplingFrequency);
+ 	void MajorPeak(double *vD, uint16_t samples, double samplingFrequency, double *f, double *v);
+-	void Windowing(double *vData, uint16_t samples, uint8_t windowType, uint8_t dir);
+ 
+ 	void ComplexToMagnitude();
+ 	void Compute(uint8_t dir);
