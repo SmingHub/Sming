@@ -51,7 +51,7 @@ Background
 An empty ESP IDF project is built which generates a set of libraries and headers
 which the framework can then be built against.
 
-The project is located in ``project/{SMING_SOC}`.
+The project is located in ``project/{SMING_SOC}``.
 
 The code for this project is copied from ``sdk/project``.
 

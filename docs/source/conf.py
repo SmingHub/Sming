@@ -19,6 +19,7 @@ from sphinx import roles, addnodes
 from sphinx.util.nodes import set_role_source_info, split_explicit_title
 # So our custom extensions can be found
 sys.path.insert(0, os.path.abspath('.'))
+from filemap import buildFileMap
 
 
 # -- Project information -----------------------------------------------------
@@ -117,6 +118,7 @@ html_context = {
     "github_repo": "Sming",
     "github_version": "develop",
     "conf_py_path": "/docs/source/", # Path in the checkout to the docs root
+    "page_urls": {},
 }
 
 ##
@@ -138,3 +140,5 @@ else:
 
 subprocess.call('make -C ../../Sming submodules SMING_ARCH=Host', shell=True)
 subprocess.call('make -C .. setup api API_VERSION="' + version + '"', shell=True)
+
+html_context['page_urls'] = buildFileMap(html_context)
