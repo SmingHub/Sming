@@ -15,15 +15,14 @@ jobs:
       with:
         submodules: false
     - name: Get submodules
-      env:
-        SMING_ARCH: Host
       run: |
-         export SMING_HOME=$(pwd)/Sming/
-         make -C $SMING_HOME submodules
+         SMING_ARCH=Host make -C Sming submodules
+         echo "[codespell]" > .codespellrc
+         echo "skip = $(tr "\n" , < .codespell-skip)" >> .codespellrc
     - name: Run codespell
       uses: codespell-project/actions-codespell@master
       with:
-        skip: ./Sming/Arch/Rp2040/Components/rp2040/pico-sdk/*,./Sming/Arch/Host/Components/lwip/*,./Sming/Arch/Esp8266/Components/lwip2/*,./Sming/Arch/Esp8266/Components/esp-lwip/*,./Sming/Arch/Esp8266/Components/heap/umm_malloc/*,./Sming/Arch/Host/Components/SerialLib/seriallib/*,./Sming/Arch/Esp8266/Components/esp-open-lwip/*,./tests/HostTests/resource/*,./Sming/Libraries/jerryscript/jsc/*,./Sming/Libraries/libsodium/*,./Sming/Components/axtls-8266/axtls-8266/*,./Sming/Components/bearssl-esp8266/bearssl/*,./Sming/Arch/Esp8266/Components/esp8266/sdk/*,./Sming/Components/http-parser/*,./Sming/Components/esptool/esptool/*,./Sming/Libraries/ArduinoJson6/ArduinoJson/*,./Sming/Libraries/ArduinoJson5/ArduinoJson/*,./Sming/Libraries/ITEADLIB_Arduino_Nextion/*,./Sming/Libraries/IR/*,./Sming/Libraries/flatbuffers/src/*,./Sming/Libraries/nanopb/nanopb/*,./Sming/Arch/Rp2040/Components/picotool/picotool/*,./Sming/Libraries/Arduino_TensorFlowLite/src/*,./Sming/Libraries/jerryscript/jerryscript/*,./Sming/Libraries/ArduinoFFT/*,./Sming/Libraries/LittleFS/littlefs/*,./Sming/Libraries/Spiffs/spiffs/*,./Sming/Libraries/Adafruit_SSD1306/*,./Sming/Components/rboot/rboot/*,./Sming/Libraries/Adafruit_SSD1306/*,jquery*.js,*.csv
-        ignore_words_list: Sming,ESP8266,esp8266,esp,dout,DOUT,ser,ans,esp32
+        skip: "" # Use resource script entry
+        ignore_words_file: ".codespell-ignore"
         check_filenames: true
 #        only_warn: 1

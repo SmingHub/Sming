@@ -231,6 +231,14 @@ CS_DEV_FILES	= $(filter $(abspath $(addprefix ../,$(shell git diff --name-only d
 cs-dev: ##Apply coding style to all files changed from current upstream develop branch
 	$(call ClangFormat,$(CS_DEV_FILES))
 
+.PHONY: codespell
+codespell: ##Check spelling
+	@echo Running codespell...
+	$(Q)cd $(SMING_HOME)/.. && \
+	codespell --check-filenames \
+		--skip $$(tr "\n" , < .codespell-skip) \
+		--ignore-words .codespell-ignore
+
 
 ##@Help
 
