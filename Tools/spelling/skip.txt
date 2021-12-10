@@ -36,3 +36,4 @@
 .git
 20K.txt
 jquery*.js
+styles.css
