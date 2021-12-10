@@ -236,7 +236,7 @@ void IRAM_ATTR uart_isr(smg_uart_instance_t* inst)
 			if(usis.rxfifo_ovf) {
 				uart_ll_disable_intr_mask(dev, UART_INTR_RXFIFO_OVF);
 			} else if(read == 0) {
-				uart_ll_ena_intr_mask(dev, UART_INTR_RXFIFO_FULL | UART_INTR_RXFIFO_TOUT);
+				uart_ll_disable_intr_mask(dev, UART_INTR_RXFIFO_FULL | UART_INTR_RXFIFO_TOUT);
 			}
 		}
 
