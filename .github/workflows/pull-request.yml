@@ -25,4 +25,4 @@ jobs:
         skip: "" # Use resource script entry
         ignore_words_file: "Tools/spelling/ignore.txt"
         check_filenames: true
-#        only_warn: 1
+        only_warn: 1
