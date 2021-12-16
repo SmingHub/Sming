@@ -49,10 +49,10 @@ Summary
       Based on `axTLS <http://axtls.sourceforge.net/>`__ and `BearSSL <https://www.bearssl.org/>`__.
    -  Over-The-Air (OTA) firmware upgrades via HTTP(S) and MQTT(S).
 
--  :library:`UPnP <Universal Plug and Play (UPnP)>`
+-  :library:`Universal Plug and Play (UPnP) <UPnP>`
    framework supports both standard and custom devices with full ControlPoint support.
 
-   -  Generates C++ code from standard UPnP XML schema.
+   -  Generates C++ code from standard :library:`UPnP XML schema <UPnP-Schema>`.
    -  Companion :library:`SSDP` library independently supports discovery on local network.
    -  :library:`GoogleCast` library allows control of ChromeCast devices or smart TVs supporting the GoogleCast protocol.
    -  :library:`HueEmulator` provides simple way to implement devices compatible with Amazon Alexa.
