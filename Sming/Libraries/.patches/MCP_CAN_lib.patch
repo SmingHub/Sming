@@ -2,31 +2,41 @@ diff --git a/README.md b/README.md
 index 8c2fb42..fbdf826 100644
 --- a/README.md
 +++ b/README.md
-@@ -1,3 +1,3 @@
+@@ -1,5 +1,5 @@
 -MCP_CAN Library for Arduino
 -==============
 +# MCP_CAN Library for Arduino
 +
  MCP_CAN library v1.5
-@@ -28,4 +28,4 @@ To wake up from CAN bus activity while in sleep mode enable the wake up interrup
+ This library is compatible with any shield or board that uses the MCP2515 or MCP25625 CAN protocol controller.
+ 
+@@ -26,15 +26,15 @@ User can enable and disable (default) One-Shot transmission mode from the sketch
+ 
+ To wake up from CAN bus activity while in sleep mode enable the wake up interrupt with setSleepWakeup(1). Passing 0 will disable the wakeup interrupt (default).
  
 -Installation
 -==============
 +## Installation
 +
  Copy this into the "[.../MySketches/]libraries/" folder and restart the Arduino editor.
-@@ -35,4 +35,4 @@ NOTE: If an older version of the library exists (e.g. CAN_BUS_Shield) be sure to
+ 
+ NOTE: If an older version of the library exists (e.g. CAN_BUS_Shield) be sure to remove it from the libraries folder or replace the files with those in this library to avoid conflicts.
+ 
  
 -Help and Support
 -==============
 +## Help and Support
 +
  This is primarily for non-bug related issues: Please start a *new thread* in an appropriate area at Seeedstudio forums or Arduino.cc forums and then send me (coryjfowler) a link through the PM system, my user name is the same as it is here.  I will receive an email about the PM and generally get to it with-in a week or less.  Keep in mind, I do this in my spare time.
+ 
+ 
 diff --git a/mcp_can.cpp b/mcp_can.cpp
-index d1815b5..605f285 100644
+index 2c01c7a..6464ebe 100644
 --- a/mcp_can.cpp
 +++ b/mcp_can.cpp
-@@ -233,4 +233,6 @@ INT8U MCP_CAN::mcp2515_configRate(const INT8U canSpeed, const INT8U canClock)
+@@ -231,8 +231,10 @@ INT8U MCP_CAN::mcp2515_requestNewMode(const INT8U newmode)
+ *********************************************************************************************************/
+ INT8U MCP_CAN::mcp2515_configRate(const INT8U canSpeed, const INT8U canClock)            
  {
 -    INT8U set, cfg1, cfg2, cfg3;
 -    set = 1;
@@ -34,4 +44,6 @@ index d1815b5..605f285 100644
 +    INT8U cfg1 = 0;
 +    INT8U cfg2 = 0;
 +    INT8U cfg3 = 0;
-     switch (canClock)
+     switch (canClock & MCP_CLOCK_SELECT)
+     {
+         case (MCP_8MHZ):
