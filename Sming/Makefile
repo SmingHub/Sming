@@ -232,12 +232,16 @@ cs-dev: ##Apply coding style to all files changed from current upstream develop 
 	$(call ClangFormat,$(CS_DEV_FILES))
 
 .PHONY: codespell
-codespell: ##Check spelling
+codespell: ##Check spelling (set CS_PARAM with additional command-line parameters)
 	@echo Running codespell...
 	$(Q)cd $(SMING_HOME)/.. && \
-	codespell --check-filenames \
+	codespell \
+		--check-filenames \
 		--skip $$(tr "\n" , < Tools/spelling/skip.txt) \
-		--ignore-words Tools/spelling/ignore.txt
+		--ignore-words Tools/spelling/ignore.txt \
+		--summary \
+		$(CS_PARAM)
+
 
 
 ##@Help
