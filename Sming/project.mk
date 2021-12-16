@@ -736,7 +736,7 @@ menuconfig: checksoc ##Run option editor
 list-soc: ##List supported and available SOCs
 	@echo "Available SoCs: $(AVAILABLE_SOCS)"
 	@echo "Project support:"
-	@$(foreach s,$(AVAILABLE_SOCS),$(MAKE) --no-print-directory --silent MAKE_CLEAN=1 SMING_SOC=$s checksoc-print; )
+	@$(foreach s,$(AVAILABLE_SOCS),$(MAKE) --no-print-directory --silent MAKE_CLEAN=1 SMING_ARCH= SMING_SOC=$s checksoc-print; )
 
 .PHONY: list-soc-check
 checksoc-print:

@@ -13,7 +13,7 @@ ifeq (,$(SMING_ARCH))
     SMING_ARCH := Esp8266
     SMING_SOC := esp8266
   else
-    SMING_ARCH := $(notdir $(call dirx,$(filter %/$(SMING_SOC)-soc.json,$(SOC_CONFIG_FILES))))
+    override SMING_ARCH := $(notdir $(call dirx,$(filter %/$(SMING_SOC)-soc.json,$(SOC_CONFIG_FILES))))
     ifeq (,$(SMING_ARCH))
       $(error SOC '$(SMING_SOC)' not found)
     endif
