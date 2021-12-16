@@ -27,6 +27,7 @@ install:
       Start-Process -FilePath git -ArgumentList "clone $env:SMING_REPO -b $env:SMING_BRANCH --depth 1 sming" -Wait -NoNewWindow
       $env:COMPONENT_SEARCH_DIRS = (resolve-path "$pwd/..").path
       sming/Tools/ci/setenv.ps1
+      make -C "$env:SMING_HOME" "fetch-$env:APPVEYOR_PROJECT_SLUG"
 
   - cmd: |
       if "%APPVEYOR_BUILD_WORKER_CLOUD%"=="" sming\Tools\ci\install.cmd %SMING_ARCH% %INSTALL_OPTS%
