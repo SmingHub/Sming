@@ -384,7 +384,7 @@ one of the following lists:
    firmware images re-generated if any of these variables are changed. For
    example, ``make RBOOT_ROM_0=new-rom-file`` rewrites the firmware image
    using the given filename. (Also, as the value is cached, if you then do
-   ``make flashapp`` that same iamge gets flashed.)
+   ``make flashapp`` that same image gets flashed.)
 
 .. envvar:: CACHE_VARS
 

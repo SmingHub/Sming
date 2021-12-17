@@ -763,7 +763,7 @@ public:
  * This library is designed to be...
  * @li Maximally compliant with the intended operation of the chip
  * @li Easy for beginners to use
- * @li Consumed with a public interface that's similiar to other Arduino standard libraries
+ * @li Consumed with a public interface that's similar to other Arduino standard libraries
  *
  * @section News News
  * 

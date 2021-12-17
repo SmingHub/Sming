@@ -15,7 +15,7 @@
  * Calculate the max duty as per the formulae give in ESP8266 SDK
  * Max Duty = (Period * 1000) / 45
  *
- * PWM can be generated on upto 8 pins (ie All pins except pin 16)
+ * PWM can be generated on up to 8 pins (ie All pins except pin 16)
  * Created on August 17, 2015, 2:27 PM
  *
  * See also ESP8266 Technical Reference, Chapter 12:

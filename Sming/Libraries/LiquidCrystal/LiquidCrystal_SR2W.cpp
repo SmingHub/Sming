@@ -102,7 +102,7 @@ void LiquidCrystal_SR2W::send(uint8_t value, uint8_t mode)
    
 	/*
 	 * Don't call waitUsec()
-	 * do our own delay optmization since this code is so fast it needs some added delay
+	 * do our own delay optimization since this code is so fast it needs some added delay
 	 * even on slower AVRs.
 	 */
 #if (F_CPU <= 16000000)

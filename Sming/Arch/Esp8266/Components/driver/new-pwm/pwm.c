@@ -239,7 +239,7 @@ _pwm_phases_prep(struct pwm_phase* pwm)
 	}
 	pwm[phases].ticks = pwm_period_ticks;
 
-	// bubble sort, lowest to hightest duty
+	// bubble sort, lowest to highest duty
 	n = 2;
 	while (n < phases) {
 		if (pwm[n].ticks < pwm[n - 1].ticks) {

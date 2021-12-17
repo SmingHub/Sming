@@ -363,7 +363,7 @@ public:
 	 * @brief  Set callback ISR for received data
 	 * @param  callback Function to handle received data
 	 * @param  param Set as return value for `uart_get_callback_param()`
-	 * @note callback is invoked directly from serial ISR and bypasses any registered delgates
+	 * @note callback is invoked directly from serial ISR and bypasses any registered delegates
 	 */
 	__forceinline void setUartCallback(smg_uart_callback_t callback, void* param = nullptr)
 	{

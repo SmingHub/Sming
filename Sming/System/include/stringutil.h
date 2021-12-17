@@ -21,10 +21,10 @@ extern "C" {
 
 #include "stddef.h"
 
-/** @brief Return pointer to occurence of substring in string. Case insensitive.
+/** @brief Return pointer to occurrence of substring in string. Case insensitive.
    * @param[in] pString string to work with
    * @param[in] pToken string to locate
-   * @retval const char* pointer to first occurence in of pToken in pString or NULL if not found
+   * @retval const char* pointer to first occurrence in of pToken in pString or NULL if not found
    */
 const char* strstri(const char* pString, const char* pToken);
 

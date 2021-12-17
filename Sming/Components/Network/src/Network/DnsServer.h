@@ -46,7 +46,7 @@ struct DnsHeader {
 	uint16_t ID;	  // identification number
 	char RD : 1;	  // recursion desired
 	char TC : 1;	  // truncated message
-	char AA : 1;	  // authoritive answer
+	char AA : 1;	  // authoritative answer
 	char OPCode : 4;  // message_type
 	char QR : 1;	  // query/response flag
 	char RCode : 4;   // response code

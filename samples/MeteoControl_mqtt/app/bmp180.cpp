@@ -23,7 +23,7 @@ void publishBMP()
 	if(!barometer.EnsureConnected()) {
 		Serial.println("Could not connect to BMP180");
 	} else {
-		// Retrive the current pressure in Pascals
+		// Retrieve the current pressure in Pascals
 		long currentPressure = barometer.GetPressure();
 		// convert pressure to mmHg
 		float BMPPress = currentPressure / 133.322;
@@ -34,7 +34,7 @@ void publishBMP()
 		Serial.println(" mmHg");
 		mqtt.publish(BMP_P, String(BMPPress));
 
-		// Retrive the current temperature in degrees celcius
+		// Retrieve the current temperature in degrees celsius
 		float BMPTemp = barometer.GetTemperature();
 
 		// Print out the Temperature

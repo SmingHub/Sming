@@ -244,7 +244,7 @@ public:
 	/**	@brief	Set WiFi station IP parameters
 	 *	@param	address IP address
 	 *	@param	netmask Network mask
-	 *	@param	gateway Default gatway
+	 *	@param	gateway Default gateway
 	 *	@retval	bool True on success
 	 */
 	virtual bool setIP(IpAddress address, IpAddress netmask, IpAddress gateway) = 0;

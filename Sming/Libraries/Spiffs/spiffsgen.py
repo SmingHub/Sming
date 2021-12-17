@@ -210,7 +210,7 @@ class SpiffsObjIndexPage(SpiffsPage):
         # Add padding before the object index page specific information
         img += b'\xFF' * self.build_config.OBJ_DATA_PAGE_HEADER_LEN_ALIGNED_PAD
 
-        # If this is the first object index page for the object, add filname, type
+        # If this is the first object index page for the object, add filename, type
         # and size information
         if self.span_ix == 0:
             img += struct.pack(SpiffsPage._endianness_dict[self.build_config.endianness] +

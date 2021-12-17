@@ -141,7 +141,7 @@ public:
 	}
 
 	/**
-	 * @brief Sends a quit command to the server and closes the TCP conneciton
+	 * @brief Sends a quit command to the server and closes the TCP connection
 	 */
 	void quit();
 

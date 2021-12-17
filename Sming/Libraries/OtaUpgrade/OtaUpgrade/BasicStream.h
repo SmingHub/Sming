@@ -50,7 +50,7 @@ public:
 	 * @brief Error code values
 	 */
 	enum class Error {
-		None,			  ///< No error occured thus far (default value of \c #errorCode if `hasError()` returns false)
+		None,			  ///< No error occurred thus far (default value of \c #errorCode if `hasError()` returns false)
 		InvalidFormat,	///< Invalid/unsupported upgrade file format
 		UnsupportedData,  ///< Some content of the upgrade file is not supported by this version of OtaUpgradeStream.
 		DecryptionFailed, ///< Decryption failed. Probably wrong decryption key.
@@ -61,7 +61,7 @@ public:
 		FlashWriteFailed,	///< Error while writing to Flash memory.
 		RomActivationFailed, ///< Error while activating updated ROM slot.
 		OutOfMemory,		 ///< Dynamic memory allocation failed
-		Internal,			 ///< An unexpected error occured.
+		Internal,			 ///< An unexpected error occurred.
 	};
 
 	Error errorCode = Error::None; ///< Error code. Only relevant if `hasError()` returns `true`.
@@ -69,7 +69,7 @@ public:
 	/** @brief Process chunk of upgrade file.
 	 * @param data Pointer to chunk of data.
 	 * @param size Size of chunk pointed to by \a data in bytes.
-	 * @return If less than \a size, an error occured. Check \c #errorCode for more details.
+	 * @return If less than \a size, an error occurred. Check \c #errorCode for more details.
 	 * @note Even if `write()` never returns less than \a size it is not guaranteed that the upgrade was successful.
 	 * 		 Always use `hasError()` to determine success.
 	 */

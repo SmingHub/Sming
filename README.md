@@ -1,9 +1,9 @@
 # Sming
-Sming is an asynchronous C/C++ framework with superb performance and multiple network features.
-Sming is [open source](LICENSE) and is tailored towards embedded devices.
-It supports multiple architectures as ESP8266 for example.
 
-[![ESP8266 C++ development framework](https://github.com/SmingHub/Sming/wiki/images/small/combine.png)](https://github.com/SmingHub/Sming/wiki/examples)
+Sming is an asynchronous embedded C/C++ framework with superb performance and multiple network features. 
+Sming is [open source](LICENSE), modular and supports [multiple architectures](https://sming.readthedocs.io/en/latest/features.html) including ESP8266 and ESP32.
+
+[![Examples](https://github.com/SmingHub/Sming/wiki/images/small/combine.png)](https://github.com/SmingHub/Sming/wiki/examples)
 
 [![Gitter (chat)](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/SmingHub/Sming?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Backers](https://opencollective.com/Sming/backers/badge.svg)](#financial-contributions)
@@ -18,103 +18,20 @@ If you like **Sming**, give it a star, or fork it and [contribute](#contribute)!
 [![GitHub stars](https://img.shields.io/github/stars/SmingHub/Sming.svg?style=social&label=Star)](https://github.com/SmingHub/Sming/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/SmingHub/Sming.svg?style=social&label=Fork)](https://github.com/SmingHub/Sming/network)
 
+## Getting Started
 
-Table of Contents
-=================
+Sming supports multiple architectures and has a [plethora of features](https://sming.readthedocs.io/en/latest/index.html#summary).
+Choose the architecture of your choice to [install the needed development software](https://sming.readthedocs.io/en/latest/getting-started).
 
-<!--ts-->
-   * [Sming](#sming)
-   * [Table of Contents](#table-of-contents)
-      * [Summary](#summary)
-      * [Compatibility](#compatibility)
-         * [GCC compiler &gt;= 8](#gcc-compiler--8)
-         * [Architecture: ESP8266](#architecture-esp8266)
-         * [Architecture: Host](#architecture-host)
-         * [Architecture: ESP32 (Experimental)](#architecture-esp32-experimental)
-      * [Releases](#releases)
-         * [Stable](#stable)
-         * [Long Term Support (LTS)](#long-term-support-lts)
-         * [Development](#development)
-      * [Getting Started](#getting-started)
-      * [Documentation](#documentation)
-      * [Examples](#examples)
-         * [Basic Blink](#basic-blink)
-         * [Simple GPIO Input/Output](#simple-gpio-inputoutput)
-         * [Start Serial Communication](#start-serial-communication)
-         * [Connect to WiFi](#connect-to-wifi)
-         * [Read DHT22 sensor](#read-dht22-sensor)
-         * [HTTP Client](#http-client)
-         * [OTA Application Update](#ota-application-update)
-         * [HTTP Server](#http-server)
-         * [Email Client](#email-client)
-      * [Live Debugging](#live-debugging)
-      * [Contribute](#contribute)
-         * [Financial contributions](#financial-contributions)
-            * [Backers and sponsors](#backers-and-sponsors)
-<!--te-->
+You can also try Sming without installing anything locally. We have an [interactive tutorial](https://www.katacoda.com/slaff/scenarios/sming-host-emulator) that can be run directly from your browser.
 
-Please note Version 4 documentation is at [sming.readthedocs.io](https://sming.readthedocs.io/).
+## Documentation
 
-## Summary
+The purpose of Sming is to simplify the creation of embedded applications. The documentation will help you get started in no time.
 
-* Superb performance and memory usage (Sming compiles to native firmware!).
-* Fast and user friendly development.
-* Simple yet powerful hardware API wrappers.
-* Compatible with standard [Arduino Libraries](https://sming.readthedocs.io/en/latest/libraries.html) - use any popular hardware in few lines of code.
-* Installable file systems:
-[SPIFFS](https://sming.readthedocs.io/en/latest/_inc/Sming/Libraries/Spiffs/index.html),
-[LittleFS](https://sming.readthedocs.io/en/latest/_inc/Sming/Libraries/LittleFS/index.html) and
-[FWFS](https://sming.readthedocs.io/en/latest/_inc/Sming/Components/IFS/index.html)
-* Built-in powerful wireless modules.
-* Powerful asynchronous (async) network stack.
-    * Async TCP and UDP stack based on [LWIP](http://savannah.nongnu.org/projects/lwip/).
-    * With clients supporting: HTTP, MQTT, WebSockets and SMTP.
-    * And servers for: DNS, FTP, HTTP(+ WebSockets), Telnet.
-    * With [SSL support](https://sming.readthedocs.io/en/latest/_inc/Sming/Components/ssl/index.html) for all network clients and servers. Based on [axTLS](http://axtls.sourceforge.net/) and [BearSSL](https://www.bearssl.org/).
-    * Over-The-Air(OTA) firmware upgrades via HTTP(S) and MQTT(S).
-* ESP8266 specific features.
-    * Integrated boot loader [rboot](https://sming.readthedocs.io/en/latest/_inc/Sming/Components/rboot/index.html) with support for 1MB ROMs, OTA firmware updating and ROM switching.
-    * [Crash handlers](https://sming.readthedocs.io/en/latest/information/debugging.html) for analyzing/handling system restarts due to fatal errors or WDT resets.
-    * [PWM support](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/driver/index.html) based on [Stefan Bruens PWM](https://github.com/StefanBruens/ESP8266_new_pwm.git).
-    * Optional [custom heap allocation](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/heap/index.html) based on [Umm Malloc](https://github.com/rhempel/umm_malloc.git).
-    * Based on Espressif NONOS SDK. Officially suppored NON SDK version is >= 3.0.1.
-    * Support for a [thin No-Wifi-SDK](https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp8266/Components/esp_no_wifi/index.html). Helpful when a project does not require WiFi (or networking) and reduces code size and memory usage signficantly.
-* Linux/Windows features
-    * Sming has a [host emulator](https://sming.readthedocs.io/en/latest/arch/host/index.html) that allows libraries and sample applications to be developed and tested on a Linux/Windows host system before uploading them to an actual microcontroller.
-
-## Compatibility
-
-
-### GCC compiler >= 8
-
-Your GCC compiler should be version 8 or newer! See the different architectures for details.
-Newer compilers
-
-- contain bugfixes
-- produce smaller and better code
-- have features which facilitate code quality, ease of use, etc.
-
-### Architecture: ESP8266
-
-OS/SDK | Linux | Mac OS X | Windows | FreeBSD-current |
--------|-------|----------|---------|-----------------|
-UDK (v1.5)    | n/a   | n/a      |   [![Build status](https://ci.appveyor.com/api/projects/status/5aj0oi0wyk4uij00/branch/develop?svg=true)](https://ci.appveyor.com/project/slaff/sming-sb483/branch/develop)      |     n/a         |
-esp-open-sdk (v1.5.x **, v2.0.0 **, v3.0.x) | :sunny:  | :sunny: | n/a | :sunny: |
-
-- OS = Operating System.
-- SDK = Software Development Kit.
-- n/a = The selected SDK is not available on that OS.
-- ** = not supported officially. Samples and library should compile and run but we recommend using version >= 3.0.3.
-
-### Architecture: Host
-
-Linux and Windows OSes with gcc compilers are supported. Clang is NOT supported.
-
-
-### Architecture: ESP32 (Experimental)
-
-Supported SDK: ESP-IDF v4.3. See https://sming.readthedocs.io/en/latest/_inc/Sming/Arch/Esp32/README.html.
-
+- [**Documentation for version 4.4.1**](https://sming.readthedocs.io/en/stable) - current stable version.
+- [Documentation for version 4.2.x](https://sming.readthedocs.io/en/4.2.0) - Long Term Support (LTS) version.
+- [Documentation for version 4.5.x](https://sming.readthedocs.io/en/latest) - latest development version.
 
 ## Releases
 
@@ -136,16 +53,6 @@ To follow the latest development you will need to clone our `develop` branch:
 git clone https://github.com/SmingHub/Sming.git
 ```
 
-
-## Getting Started
-
-Sming supports multiple architectures. Choose the architecture of your choice to [install the needed development software](https://sming.readthedocs.io/en/latest/getting-started) and toolchain(s).
-
-You can also try Sming without installing anything locally. We have an [interactive tutorial](https://www.katacoda.com/slaff/scenarios/sming-host-emulator) that can be run directly from your browser.
-
-## Documentation
-In addition to our [online documentation](https://sming.readthedocs.io/),
-you can also generate a complete documentation locally by following these [instructions](https://sming.readthedocs.io/en/latest/_inc/docs/README.html).
 
 
 ## Examples

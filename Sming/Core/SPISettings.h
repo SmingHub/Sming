@@ -108,7 +108,7 @@ public:
 #endif
 	}
 
-	// overload operator to check wheter the settings are equal
+	// overload operator to check whether the settings are equal
 	bool operator==(const SPISettings& other) const
 	{
 		return (speed == other.speed) && (byteOrder == other.byteOrder) && (dataMode == other.dataMode);

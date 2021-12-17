@@ -6,7 +6,7 @@ Documentation System
 Read the Docs and Sphinx
 ------------------------
 
-Online documention is managed via
+Online documentation is managed via
 `Read the Docs <https://docs.readthedocs.io/en/stable/index.html>`_,
 which uses `Sphinx <https://www.sphinx-doc.org>`_ as the documentation
 build system.

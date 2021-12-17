@@ -150,7 +150,7 @@ using AccessPointDisconnectDelegate = Delegate<void(MacAddress mac, uint16_t aid
  * @param rssi Signal strength
  * @param mac
  * @note Probe Requests are a low-level management frame which are used to determine
- * informaton about our Access Point, such as which authentication modes are supported.
+ * information about our Access Point, such as which authentication modes are supported.
  */
 using AccessPointProbeReqRecvedDelegate = Delegate<void(int rssi, MacAddress mac)>;
 

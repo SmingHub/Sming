@@ -49,7 +49,7 @@ void setup() {   // put your setup code here, to run once:
     OneTime_H_resolution_Mode2
     OneTime_L_resolution_Mode
     
-    The data sheet recommanded To use Continuous_H_resolution_Mode
+    The data sheet recommended To use Continuous_H_resolution_Mode
   */
 
   LightSensor.SetMode(Continuous_H_resolution_Mode);

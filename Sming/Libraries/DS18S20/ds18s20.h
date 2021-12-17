@@ -67,14 +67,14 @@ public:
 	*/
 	void UnRegisterCallback();             			//Unset conversion end function
 
-    /** @brief  Get the value of the last measurment from a sensor
+    /** @brief  Get the value of the last measurement from a sensor
     *   @param  Index of sensor to retrieve value from
     *   @return Temperature value in degrees Celsius or zero for invalid sensor index
     *   @note   Call IsValidTemperature() to check value is valid before calling this function
     */
 	float GetCelsius(uint8_t);
 
-    /** @brief  Get the value of the last measurment from a sensor
+    /** @brief  Get the value of the last measurement from a sensor
     *   @param  Index of sensor to retrieve value from
     *   @return Temperature value in degrees Fahrenheit or zero for invalid sensor index
     *   @note   Call IsValidTemperature() to check value is valid before calling this function

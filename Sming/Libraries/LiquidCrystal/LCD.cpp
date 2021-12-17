@@ -29,7 +29,7 @@
 //
 // @version API 1.1.0
 //
-// 2012.03.29 bperrybap - changed comparision to use LCD_5x8DOTS rather than 0
+// 2012.03.29 bperrybap - changed comparison to use LCD_5x8DOTS rather than 0
 // @author F. Malpartida - fmalpartida@gmail.com
 // ---------------------------------------------------------------------------
 #include <stdio.h>

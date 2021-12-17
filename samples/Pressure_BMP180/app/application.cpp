@@ -20,7 +20,7 @@ void init()
 
 	Serial.print("Start reading");
 
-	// Retrive the current pressure in Pascals.
+	// Retrieve the current pressure in Pascals.
 	long currentPressure = barometer.GetPressure();
 
 	// Print out the Pressure.
@@ -28,7 +28,7 @@ void init()
 	Serial.print(currentPressure);
 	Serial.print(" Pa");
 
-	// Retrive the current temperature in degrees celcius.
+	// Retrieve the current temperature in degrees celsius.
 	float currentTemperature = barometer.GetTemperature();
 
 	// Print out the Temperature

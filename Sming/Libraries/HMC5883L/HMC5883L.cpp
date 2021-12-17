@@ -56,7 +56,7 @@ HMC5883L::HMC5883L(uint8_t address) {
  * averaging, 15 Hz data output rate, normal measurement bias, a,d 1090 gain (in
  * terms of LSB/Gauss). Be sure to adjust any settings you need specifically
  * after initialization, especially the gain settings if you happen to be seeing
- * a lot of -4096 values (see the datasheet for mor information).
+ * a lot of -4096 values (see the datasheet for more information).
  */
 void HMC5883L::initialize() {
     // write CONFIG_A register
@@ -280,7 +280,7 @@ void HMC5883L::getHeading(int16_t *x, int16_t *y, int16_t *z) {
  */
 int16_t HMC5883L::getHeadingX() {
     // each axis read requires that ALL axis registers be read, even if only
-    // one is used; this was not done ineffiently in the code by accident
+    // one is used; this was not done inefficiently in the code by accident
     I2Cdev::readBytes(devAddr, HMC5883L_RA_DATAX_H, 6, buffer);
     if (mode == HMC5883L_MODE_SINGLE) I2Cdev::writeByte(devAddr, HMC5883L_RA_MODE, HMC5883L_MODE_SINGLE << (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1));
     return (((int16_t)buffer[0]) << 8) | buffer[1];
@@ -291,7 +291,7 @@ int16_t HMC5883L::getHeadingX() {
  */
 int16_t HMC5883L::getHeadingY() {
     // each axis read requires that ALL axis registers be read, even if only
-    // one is used; this was not done ineffiently in the code by accident
+    // one is used; this was not done inefficiently in the code by accident
     I2Cdev::readBytes(devAddr, HMC5883L_RA_DATAX_H, 6, buffer);
     if (mode == HMC5883L_MODE_SINGLE) I2Cdev::writeByte(devAddr, HMC5883L_RA_MODE, HMC5883L_MODE_SINGLE << (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1));
     return (((int16_t)buffer[4]) << 8) | buffer[5];
@@ -302,7 +302,7 @@ int16_t HMC5883L::getHeadingY() {
  */
 int16_t HMC5883L::getHeadingZ() {
     // each axis read requires that ALL axis registers be read, even if only
-    // one is used; this was not done ineffiently in the code by accident
+    // one is used; this was not done inefficiently in the code by accident
     I2Cdev::readBytes(devAddr, HMC5883L_RA_DATAX_H, 6, buffer);
     if (mode == HMC5883L_MODE_SINGLE) I2Cdev::writeByte(devAddr, HMC5883L_RA_MODE, HMC5883L_MODE_SINGLE << (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1));
     return (((int16_t)buffer[2]) << 8) | buffer[3];

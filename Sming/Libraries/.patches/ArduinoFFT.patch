@@ -163,7 +163,7 @@ index fb602a9..e038b41 100644
 -
  void arduinoFFT::Windowing(uint8_t windowType, uint8_t dir)
  {// Weighing factors are computed once before multiple use of FFT
- // The weighing function is symetric; half the weighs are recorded
+ // The weighing function is symmetric; half the weighs are recorded
 @@ -285,63 +184,6 @@ void arduinoFFT::Windowing(uint8_t windowType, uint8_t dir)
  }
  

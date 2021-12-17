@@ -1,7 +1,7 @@
 /**
- * An Mirf example which copies back the data it recives.
- * While wating the arduino goes to sleep and will be woken up
- * by the interupt pin of the mirf.
+ * An Mirf example which copies back the data it receives.
+ * While waiting the arduino goes to sleep and will be woken up
+ * by the interrupt pin of the mirf.
  * 
  * Warning: Due to the sleep mode the Serial output donsn't work.
  *
@@ -47,7 +47,7 @@ void setup(){
   Mirf.init();
   
   /*
-   * Configure reciving address.
+   * Configure receiving address.
    */
    
   Mirf.setRADDR((byte *)"serv1");
@@ -85,7 +85,7 @@ void loop(){
   byte data[Mirf.payload];
   
   /*
-   * If a packet has been recived.
+   * If a packet has been received.
    */
   if(!Mirf.isSending() && Mirf.dataReady()){
    

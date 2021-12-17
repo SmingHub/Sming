@@ -32,7 +32,7 @@
  * Common URL schemes (name, scheme, port)
  * 	name: 	Used for string identifier
  * 	scheme:	String to be used in a URL, normalised (i.e. lower case)
- * 	port: 	Offical default port definition for the scheme, 0 if not applicable
+ * 	port: 	Official default port definition for the scheme, 0 if not applicable
  */
 #define URI_SCHEME_MAP(XX)                                                                                             \
 	XX(HTTP, http, 80)                                                                                                 \

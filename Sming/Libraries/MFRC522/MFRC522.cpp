@@ -681,7 +681,7 @@ byte MFRC522::PICC_Select(	Uid *uid,			///< Pointer to Uid struct. Normally outp
 			}
 			
 			// Set bit adjustments
-			rxAlign = txLastBits;											// Having a seperate variable is overkill. But it makes the next line easier to read.
+			rxAlign = txLastBits;											// Having a separate variable is overkill. But it makes the next line easier to read.
 			PCD_WriteRegister(BitFramingReg, (rxAlign << 4) + txLastBits);	// RxAlign = BitFramingReg[6..4]. TxLastBits = BitFramingReg[2..0]
 			
 			// Transmit the buffer and receive the response.
@@ -934,7 +934,7 @@ byte MFRC522::MIFARE_Ultralight_Write(	byte page, 		///< The page (2-15) to writ
 		return STATUS_INVALID;
 	}
 	
-	// Build commmand buffer
+	// Build command buffer
 	byte cmdBuffer[6];
 	cmdBuffer[0] = PICC_CMD_UL_WRITE;
 	cmdBuffer[1] = page;
@@ -1160,7 +1160,7 @@ const char * MFRC522::GetStatusCodeName(byte code	///< One of the StatusCode enu
 	switch (code) {
 		case STATUS_OK:				return ("Success.");										break;
 		case STATUS_ERROR:			return ("Error in communication.");						break;
-		case STATUS_COLLISION:		return ("Collission detected.");							break;
+		case STATUS_COLLISION:		return ("Collision detected.");							break;
 		case STATUS_TIMEOUT:		return ("Timeout in communication.");						break;
 		case STATUS_NO_ROOM:		return ("A buffer is not big enough.");					break;
 		case STATUS_INTERNAL_ERROR:	return ("Internal error in the code. Should not happen.");	break;
@@ -1517,7 +1517,7 @@ void MFRC522::PICC_DumpMifareUltralightToSerial() {
 } // End PICC_DumpMifareUltralightToSerial()
 
 /**
- * Calculates the bit pattern needed for the specified access bits. In the [C1 C2 C3] tupples C1 is MSB (=4) and C3 is LSB (=1).
+ * Calculates the bit pattern needed for the specified access bits. In the [C1 C2 C3] tuples C1 is MSB (=4) and C3 is LSB (=1).
  */
 void MFRC522::MIFARE_SetAccessBits(	byte *accessBitBuffer,	///< Pointer to byte 6, 7 and 8 in the sector trailer. Bytes [0..2] will be set.
 									byte g0,				///< Access bits [C1 C2 C3] for block 0 (for sectors 0-31) or blocks 0-4 (for sectors 32-39)

@@ -1,4 +1,4 @@
-// This file is used as the main page (index.html) and to define elements of the API documentation such as groups that do not naturaly fit in to a source header file.
+// This file is used as the main page (index.html) and to define elements of the API documentation such as groups that do not naturally fit in to a source header file.
 
 /** @defgroup constants Sming constant values
  *  @brief  Constants and enumerated lists used by Sming functions

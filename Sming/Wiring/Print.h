@@ -275,8 +275,8 @@ public:
 	}
 
 	/** @brief  Prints a formatted c-string to output stream
-	  * @param  fmt Pointer to formated c-string to print
-	  * @param  "..." Parameters for placeholders within formated string
+	  * @param  fmt Pointer to formatted c-string to print
+	  * @param  "..." Parameters for placeholders within formatted string
 	  * @retval size_t Quantity of characters written to stream
 	  * @note   Use standard printf placeholders, e.g. %d for integer, %s for c-string, etc.
 	  */

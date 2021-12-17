@@ -12,7 +12,7 @@ https://www.youtube.com/watch?v=y5f-VNBxgEk&feature=youtu.be
 
 Features:
 	
-	- Very FAST!, expecially with Teensy 3.x where uses DMA SPI.
+	- Very FAST!, especially with Teensy 3.x where uses DMA SPI.
 	- It uses just 4 or 5 wires.
 	- Compatible at command level with Adafruit display series so it's easy to adapt existing code.
 	- It uses the standard Adafruit_GFX Library (you need to install). 
@@ -36,7 +36,7 @@ Pay Attention to connections!!!!:
 
 Background:
 	
-	I got one of those displays from a chinese ebay seller but unfortunatly I cannot get
+	I got one of those displays from a chinese ebay seller but unfortunately I cannot get
 	any working library so I decided to hack it. ILI9163C looks pretty similar to other 
 	display driver but it uses it's own commands so it's tricky to work with it unlsess you
 	carefully fight with his gigantic and not so clever datasheet.

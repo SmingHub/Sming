@@ -1,5 +1,5 @@
 diff --git a/README.md b/README.md
-index 291a1d0..8886c79 100644
+index 8c2fb42..fbdf826 100644
 --- a/README.md
 +++ b/README.md
 @@ -1,5 +1,5 @@
@@ -10,9 +10,9 @@ index 291a1d0..8886c79 100644
  MCP_CAN library v1.5
  This library is compatible with any shield or board that uses the MCP2515 or MCP25625 CAN protocol controller.
  
-@@ -24,15 +24,15 @@ Using the setMode() function the sketch can now put the protocol controller into
+@@ -26,15 +26,15 @@ User can enable and disable (default) One-Shot transmission mode from the sketch
  
- User can enable and disable (default) One-Shot transmission mode from the sketch using enOneShotTX() or disOneShotTX() respectively.
+ To wake up from CAN bus activity while in sleep mode enable the wake up interrupt with setSleepWakeup(1). Passing 0 will disable the wakeup interrupt (default).
  
 -Installation
 -==============
@@ -31,10 +31,10 @@ index 291a1d0..8886c79 100644
  
  
 diff --git a/mcp_can.cpp b/mcp_can.cpp
-index c160939..89eca5c 100644
+index 2c01c7a..6464ebe 100644
 --- a/mcp_can.cpp
 +++ b/mcp_can.cpp
-@@ -179,8 +179,10 @@ INT8U MCP_CAN::mcp2515_setCANCTRL_Mode(const INT8U newmode)
+@@ -231,8 +231,10 @@ INT8U MCP_CAN::mcp2515_requestNewMode(const INT8U newmode)
  *********************************************************************************************************/
  INT8U MCP_CAN::mcp2515_configRate(const INT8U canSpeed, const INT8U canClock)            
  {
@@ -44,6 +44,6 @@ index c160939..89eca5c 100644
 +    INT8U cfg1 = 0;
 +    INT8U cfg2 = 0;
 +    INT8U cfg3 = 0;
-     switch (canClock)
+     switch (canClock & MCP_CLOCK_SELECT)
      {
          case (MCP_8MHZ):

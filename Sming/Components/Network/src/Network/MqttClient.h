@@ -209,7 +209,7 @@ private:
 	MqttClientState state = eMCS_Ready;
 	MqttPayloadParserState payloadState = {};
 
-	// keep-alives and pings
+	// keep-alive and ping
 	uint16_t keepAlive = 60;
 	uint16_t pingRepeatTime = 20; ///< pingRepeatTime should be <= keepAlive
 	OneShotElapseTimer<NanoTime::Seconds> pingTimer;

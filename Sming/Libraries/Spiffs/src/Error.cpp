@@ -28,7 +28,7 @@ namespace IFS
 namespace SPIFFS
 {
 /*
- * @todo Return generic FSERR codes whereever possible by mapping from SPIFFS codes
+ * @todo Return generic FSERR codes wherever possible by mapping from SPIFFS codes
  */
 
 #define SPIFFS_ERROR_MAP(XX)                                                                                           \

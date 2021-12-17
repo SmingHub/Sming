@@ -324,7 +324,7 @@ void Adafruit_PCD8544::clearDisplay(void) {
 }
 
 /*
-// this doesnt touch the buffer, just clears the display RAM - might be handy
+// this doesn't touch the buffer, just clears the display RAM - might be handy
 void Adafruit_PCD8544::clearDisplay(void) {
   
   uint8_t p, c;

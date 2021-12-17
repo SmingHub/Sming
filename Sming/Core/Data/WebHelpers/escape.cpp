@@ -17,7 +17,7 @@ static unsigned safe_append(char* dest, size_t len, const char* str)
 	return len2;
 }
 
-/* return true if 2 characters are valid hexidecimal */
+/* return true if 2 characters are valid hexadecimal */
 static bool ishex(const char code[2])
 {
 	return isxdigit(code[0]) && isxdigit(code[1]);

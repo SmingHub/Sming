@@ -116,7 +116,7 @@ void showInfo()
 void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
 	/*
-	 This application starts the update right after a successful connecton.
+	 This application starts the update right after a successful connection.
 	 In a real-world application you should start the update procedure
 	 only when the chances of success are high enough.
 

@@ -12,7 +12,7 @@
 // @file i2CLCDextraIO.pde
 // Temperature logging to demonstrate the I2CLCDextraIO library.
 // 
-// @brief This application is a demostration file for the I2CLCDextraIO library
+// @brief This application is a demonstration file for the I2CLCDextraIO library
 // that reads a temperature from the internal ATMEGA328p temperature sensor
 // and displays it on the LCD. The application also demonstrates some of the
 // methods of the library, such as loading custom characters to the LCD,
@@ -106,7 +106,7 @@ const uint8_t charBitmap[][8] = {
 /*!
     @function
     @abstract   Return available RAM memory
-    @discussion This routine returns the ammount of RAM memory available after
+    @discussion This routine returns the amount of RAM memory available after
                 initialising the C runtime.
     @param      
     @result     Free RAM available.
@@ -134,7 +134,7 @@ static int freeMemory()
 
 static int readTemperature()
 {
-   ADMUX = 0xC8;                          // activate interal temperature sensor, 
+   ADMUX = 0xC8;                          // activate internal temperature sensor, 
                                           // using 1.1V ref. voltage
    ADCSRA |= _BV(ADSC);                   // start the conversion
    while (bit_is_set(ADCSRA, ADSC));      // ADSC is cleared when the conversion 

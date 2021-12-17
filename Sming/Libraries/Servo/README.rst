@@ -52,7 +52,7 @@ Servos typically use a 5V logic-level input but are usually fine with the 3.3v o
 
    However, remember to always insert a protection resistor of at least 200 ohms between the GPIO and
    the servo. This limits the current to <10mA if 5V is present on the line.
-   For 12V servos a 1K resistor will peform the same function.
+   For 12V servos a 1K resistor will perform the same function.
 
 
 Technical Explanation

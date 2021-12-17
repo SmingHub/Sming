@@ -46,7 +46,7 @@
  *
  * @author Nov 2019 mikee47 <mike@sillyhouse.net>
  *
- * Small String Optimisation (SSO). Based on the Arduino ESP8266 core implentation.
+ * Small String Optimisation (SSO). Based on the Arduino ESP8266 core implementation.
  * An empty String object now consumes 12 bytes (from 8) but provides an SSO capacity of 11 characters.
  * Capacity and length types changed to size_t, thus String is no longer restricted to 64K.
  *
@@ -310,7 +310,7 @@ public:
      *
      * Works with built-in types.
      * On failure, the string is left unchanged.
-     * If the argument is null or invalid, the concatenation is considered unsucessful.
+     * If the argument is null or invalid, the concatenation is considered unsuccessful.
      *
      * @{
      */
@@ -583,7 +583,7 @@ public:
      */
 	bool endsWith(const String& suffix) const;
 
-	// character acccess
+	// character access
 
 	/**
      * @brief Obtain the character at the given index

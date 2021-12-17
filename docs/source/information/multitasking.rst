@@ -27,7 +27,7 @@ FreeRTOS is perhaps the most well-known example of a pre-emptive embedded OS.
 Co-operative Multitasking
 -------------------------
 
-By constrast, *Co-operative Multitasking*, requires applications to 'play fair' and not hog the CPU.
+By contrast, *Co-operative Multitasking*, requires applications to 'play fair' and not hog the CPU.
 This means that whenever you get called to do some work, you must release control back to the system
 in a timely manner.
 

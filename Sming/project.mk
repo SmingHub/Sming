@@ -2,7 +2,7 @@
 #
 # Created by Espressif
 # UDK modifications by CHERTS <sleuthhound@gmail.com>
-# Cross platform compatability by kireevco <dmitry@kireev.co>
+# Cross platform compatibility by kireevco <dmitry@kireev.co>
 #
 # This makefile is invoked in the application's directory
 #
@@ -246,7 +246,7 @@ $(eval $(call ParseComponent,App,$(CURDIR),$(BUILD_BASE),$(abspath $(APP_LIBDIR)
 
 # Load cached configuration variables. On first run this file won't exist, so all values
 # will be as specified by defaults or in project's component.mk file.
-# Values may be overriden via command line to update the cache.
+# Values may be overridden via command line to update the cache.
 # If file has become corrupted it will prevent cleaning, so make this conditional.
 CONFIG_CACHE_FILE	:= $(OUT_BASE)/config.mk
 ifeq (,$(filter config-clean dist-clean,$(MAKECMDGOALS)))

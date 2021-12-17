@@ -56,12 +56,12 @@ the same offset inside their 1MB blocks, only a single rom is created.
 See :component:`rboot` for further details.
 
 -  If using a very small flash (e.g. 512k) there may be no room for a
-   spiffs fileystem, so use *HWCONFIG = standard*
+   spiffs filesystem, so use *HWCONFIG = standard*
 -  After building copy all the rom*.bin files to the root of your web
    server.
 
 If you want more than two roms you must be an advanced user and should
-be able to work out what to copy and edit to acheive this!
+be able to work out what to copy and edit to achieve this!
 
 Configuration
 -------------

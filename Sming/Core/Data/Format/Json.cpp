@@ -62,7 +62,7 @@ bool IsValidUtf8(const char* str, unsigned length)
  * operation otherwise.
  *
  * This can occur if filenames become corrupted, so here we just
- * subsitute an underscore _ for anything which fails to match UTF8.
+ * substitute an underscore _ for anything which fails to match UTF8.
  *
  * TODO: Perform ANSI -> UTF8 conversion?
  */

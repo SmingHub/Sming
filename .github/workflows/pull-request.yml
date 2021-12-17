@@ -1,0 +1,28 @@
+# Run whenever a PR is generated or updated.
+
+name: Pull Request Checks
+
+on:
+  pull_request:
+  
+jobs:
+  
+  code-spell:
+    name: Check spelling
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: false
+    - name: Get submodules
+      run: |
+         SMING_ARCH=Host make -C Sming submodules
+         echo "[codespell]" > .codespellrc
+         echo "skip = $(tr "\n" , < Tools/spelling/skip.txt)" >> .codespellrc
+    - name: Run codespell
+      uses: codespell-project/actions-codespell@master
+      with:
+        skip: "" # Use resource script entry
+        ignore_words_file: "Tools/spelling/ignore.txt"
+        check_filenames: true
+        only_warn: 1

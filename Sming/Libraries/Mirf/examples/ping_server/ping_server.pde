@@ -1,5 +1,5 @@
 /**
- * An Mirf example which copies back the data it recives.
+ * An Mirf example which copies back the data it receives.
  *
  * Pins:
  * Hardware SPI:
@@ -34,7 +34,7 @@ void setup(){
   Mirf.init();
   
   /*
-   * Configure reciving address.
+   * Configure receiving address.
    */
    
   Mirf.setRADDR((byte *)"serv1");
@@ -65,7 +65,7 @@ void loop(){
   byte data[Mirf.payload];
   
   /*
-   * If a packet has been recived.
+   * If a packet has been received.
    *
    * isSending also restores listening mode when it 
    * transitions from true to false.
@@ -94,9 +94,9 @@ void loop(){
     Mirf.send(data);
     
     /*
-     * Wait untill sending has finished
+     * Wait until sending has finished
      *
-     * NB: isSending returns the chip to receving after returning true.
+     * NB: isSending returns the chip to receiving after returning true.
      */
       
     Serial.println("Reply sent.");

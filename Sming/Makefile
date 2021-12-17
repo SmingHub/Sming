@@ -2,7 +2,7 @@
 #
 # Created by Espressif
 # UDK modifications by CHERTS <sleuthhound@gmail.com>
-# Cross platform compatability by kireevco <dmitry@kireev.co>
+# Cross platform compatibility by kireevco <dmitry@kireev.co>
 # Multi-architecture support by mikee47 <mike@sillyhouse.net>
 #
 #############################################################
@@ -230,6 +230,18 @@ CS_DEV_FILES	= $(filter $(abspath $(addprefix ../,$(shell git diff --name-only d
 .PHONY: cs-dev
 cs-dev: ##Apply coding style to all files changed from current upstream develop branch
 	$(call ClangFormat,$(CS_DEV_FILES))
+
+.PHONY: codespell
+codespell: ##Check spelling (set CS_PARAM with additional command-line parameters)
+	@echo Running codespell...
+	$(Q)cd $(SMING_HOME)/.. && \
+	codespell \
+		--check-filenames \
+		--skip $$(tr "\n" , < Tools/spelling/skip.txt) \
+		--ignore-words Tools/spelling/ignore.txt \
+		--summary \
+		$(CS_PARAM)
+
 
 
 ##@Help

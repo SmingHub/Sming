@@ -25,7 +25,7 @@ using CommandFunctionDelegate = Delegate<void(String commandLine, CommandOutput*
 /** @brief  Command delegate class */
 class CommandDelegate
 {
-	// Hashmap uses CommandDelegate() contructor when extending size
+	// Hashmap uses CommandDelegate() constructor when extending size
 	friend class HashMap<String, CommandDelegate>;
 
 public:

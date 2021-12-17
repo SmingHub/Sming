@@ -27,7 +27,7 @@ typedef struct {
 /**
   * @brief     Get airkiss lib version.
   *
-  * @attention The lenth of version is unknown
+  * @attention The length of version is unknown
   *
   * @param     null.
   *
@@ -93,7 +93,7 @@ int airkiss_lan_recv(const void* body, unsigned short length, const airkiss_conf
   * @param     void* appid : Vendor's Wechat public number id.
   * @param     void* deviceid : device model id.
   * @param     void* _datain : the data to be sent.
-  * @param     unsigned short inlength : the lenth of data to be sent.
+  * @param     unsigned short inlength : the length of data to be sent.
   * @param     void* _dataout : Data buffer addr.
   * @param     unsigned short* outlength : the size of data buffer.
   * @param     const airkiss_config_t* config : input struct airkiss_config_t

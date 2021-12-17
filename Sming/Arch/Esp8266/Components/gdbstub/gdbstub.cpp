@@ -532,7 +532,7 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 	 * Single-step instruction
 	 *
 	 * Single-stepping can go wrong if an interrupt is pending, especially when it is e.g. a task switch:
-	 * the ICOUNT register will overflow in the task switch code. That is why we disable interupts when
+	 * the ICOUNT register will overflow in the task switch code. That is why we disable interrupts when
 	 * doing single-instruction stepping.
 	 */
 	case 's':

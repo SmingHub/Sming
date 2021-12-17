@@ -144,7 +144,7 @@ Configuration
    A bit more difficult to read and write but allows for unlimited versions.
 
    If set to 0 the OTA upgrade mechanism and application will use one byte for the patch version which will limit it to 256 possible patch versions.
-   Useful for enumarating stable releases. Easier to write and read but limited to 256 versions only.
+   Useful for enumerating stable releases. Easier to write and read but limited to 256 versions only.
 
 .. envvar:: ENABLE_OTA_ADVANCED
 
