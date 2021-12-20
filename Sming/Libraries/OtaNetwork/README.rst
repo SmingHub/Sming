@@ -10,6 +10,7 @@ This architecture-agnostic component adds support for Over-The-Air upgrades.
 
 Usage
 -----
+
 1. Add ``COMPONENT_DEPENDS += Ota`` to your application componenent.mk file.
 2. Add these lines to your application::
 
@@ -32,7 +33,6 @@ After that you will have access to a global ``OtaManager`` instance that can be 
 
 4. If needed you can also create your own instance of the of OtaUpgrader as shown below::
 
-
       // Call when IP address has been obtained
       void onIp(IpAddress ip, IpAddress mask, IpAddress gateway)
       {
@@ -51,11 +51,11 @@ After that you will have access to a global ``OtaManager`` instance that can be 
          // ...
       }
 
-See the :sample:`Upgrade` sample application.
+See the :sample:`Basic_Ota` sample application.
 
 API Documentation
 -----------------
 
-.. doxygennamespace:: Ota
+.. doxygennamespace:: Ota::Network
    :members:
 

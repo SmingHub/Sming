@@ -15,18 +15,8 @@
 #include "Buffer/CircularBuffer.h"
 
 /**
- * @brief      Class that can be used to transform streams of data on the fly
- * @ingroup    stream data
- *
- *  @{
+ * @brief Class that can be used to transform streams of data on the fly
  */
-
-/**
- * @brief Callback specification for the stream transformers
- * @see See `StreamTransformer::transform()` method for details
- */
-using StreamTransformerCallback = Delegate<size_t(const uint8_t* in, size_t inLength, uint8_t* out, size_t outLength)>;
-
 class StreamTransformer : public IDataSourceStream
 {
 public:
@@ -105,5 +95,3 @@ private:
 	size_t resultSize;
 	size_t blockSize;
 };
-
-/** @} */

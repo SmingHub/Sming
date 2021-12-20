@@ -58,6 +58,9 @@ struct DnsHeader {
 	uint16_t ARCount; // number of resource entries
 };
 
+/**
+ * @brief DNS server class
+ */
 class DnsServer : public UdpConnection
 {
 public:
@@ -65,20 +68,34 @@ public:
 	{
 	}
 
+	/**
+	 * @brief Set error reply code
+	 */
 	void setErrorReplyCode(DnsReplyCode replyCode)
 	{
 		errorReplyCode = replyCode;
 	}
 
+	/**
+	 * @brief Set message Time-To-Live in seconds
+	 */
 	void setTTL(uint32_t ttl)
 	{
 		this->ttl = ttl;
 	}
 
-	// Returns true if successful, false if there are no sockets available
+	/**
+	 * @brief Start the DNS server
+	 * @param port
+	 * @param domainName
+	 * @param resolvedIP
+	 * @retval bool true if successful, false if there are no sockets available.
+	 */
 	bool start(uint16_t port, const String& domainName, const IpAddress& resolvedIP);
 
-	// stops the DNS server
+	/**
+	 * @brief Stop the DNS server
+	 */
 	void stop();
 
 protected:

@@ -1,6 +1,7 @@
 COMPONENT_SRCDIRS  := 
 COMPONENT_SRCFILES := src/PayloadParser.cpp src/StandardPayloadParser.cpp 
 COMPONENT_INCDIRS  := src/include
+COMPONENT_DOXYGEN_INPUT := src/include
 
 # If enabled (set to 1) then we can use all sophisticated mechanisms to upgrade the firmware using the ``OtaUpgrade`` library.
 COMPONENT_VARS := ENABLE_OTA_ADVANCED

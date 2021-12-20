@@ -16,6 +16,7 @@
 
 /**
  * @brief Xors original stream content with the specified mask
+ * @ingroup stream
  */
 class XorOutputStream : public IDataSourceStream
 {

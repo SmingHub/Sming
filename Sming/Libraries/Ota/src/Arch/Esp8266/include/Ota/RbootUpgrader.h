@@ -16,6 +16,9 @@
 
 namespace Ota
 {
+/**
+ * @brief ESP8266 rBoot OTA Upgrader implementation
+ */
 class RbootUpgrader : public UpgraderBase
 {
 public:

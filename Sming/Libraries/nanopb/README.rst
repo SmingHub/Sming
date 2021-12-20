@@ -6,7 +6,8 @@ Introduction
 
 This component adds support for `Nano Protocol-Buffer <https://github.com/nanopb/nanopb/>`_ implementation.
 
-   Nanopb is a small code-size `Protocol Buffers <https://developers.google.com/protocol-buffers>`_ implementation in ansi C. It is especially suitable for use in microcontrollers, but fits any memory restricted system.
+Nanopb is a small code-size `Protocol Buffers <https://developers.google.com/protocol-buffers>`_ implementation in ansi C.
+It is especially suitable for use in microcontrollers, but fits any memory restricted system.
 
 
 C file generation from Proto files

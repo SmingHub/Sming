@@ -33,7 +33,6 @@ using TelnetServerCommandDelegate = Delegate<void(TcpClient* client, char* data,
 class TelnetServer : public TcpServer
 {
 public:
-	//	void setCommandDelegate(TelnetServerCommandDelegate reqDelegate);
 	void enableDebug(bool reqStatus);
 	void enableCommand(bool reqStatus);
 

@@ -128,19 +128,34 @@ public:
 	}
 #endif
 
+	/**
+	 * @brief Get header field value
+	 * @param name Name of field
+	 * @retval const String& Value, will be invalid (i.e. if() == false) if field not present
+	 */
 	const String& getHeader(const String& name)
 	{
 		return static_cast<const HttpHeaders&>(headers)[name];
 	}
 
+	/**
+	 * @brief Get POST parameter value
+	 * @param name Name of parameter
+	 * @retval const String& Value, will be invalid (i.e. if() == false) if field not present
+	 */
 	const String& getPostParameter(const String& name)
 	{
 		return static_cast<const HttpParams&>(postParams)[name];
 	}
 
-	String getQueryParameter(const String& parameterName, const String& defaultValue = nullptr) const
+	/**
+	 * @brief Get parameter from query fields
+	 * @param name Name of parameter
+	 * @param defaultValue Optional default value to use if requested parameter not present
+	 */
+	String getQueryParameter(const String& name, const String& defaultValue = nullptr) const
 	{
-		return static_cast<const HttpParams&>(uri.Query)[parameterName] ?: defaultValue;
+		return static_cast<const HttpParams&>(uri.Query)[name] ?: defaultValue;
 	}
 
 	/**
@@ -173,16 +188,26 @@ public:
 	 * @name Set request body content
 	 * @{
 	 */
+
+	/// Set body from String object
 	HttpRequest* setBody(const String& body)
 	{
 		return setBody(reinterpret_cast<const uint8_t*>(body.c_str()), body.length());
 	}
 
+	/// Set body from String object using move semantics: body will be invalid on return
 	HttpRequest* setBody(String&& body) noexcept;
 
+	/// Set body using given stream object, and retain ownership
 	HttpRequest* setBody(IDataSourceStream* stream);
 
+	/**
+	 * @brief Set body content by copying binary data
+	 * @param rawData Data to copy
+	 * @param length Number of bytes to copy
+	 */
 	HttpRequest* setBody(const uint8_t* rawData, size_t length);
+
 	/** @} */
 
 	/**
@@ -256,15 +281,15 @@ public:
 	}
 
 public:
-	Url uri;
-	HttpMethod method = HTTP_GET;
-	HttpHeaders headers;
-	HttpParams postParams;
-	HttpFiles files;
+	Url uri;					  ///< Request URL
+	HttpMethod method = HTTP_GET; ///< Request method
+	HttpHeaders headers;		  ///< Request headers
+	HttpParams postParams;		  ///< POST parameters
+	HttpFiles files;			  ///< Attached files
 
-	int retries = 0; // how many times the request should be send again...
+	int retries = 0; ///< how many times the request should be send again...
 
-	void* args = nullptr; // Used to store data that should be valid during a single request
+	void* args = nullptr; ///< Used to store data that should be valid during a single request
 
 protected:
 	RequestHeadersCompletedDelegate headersCompletedDelegate;

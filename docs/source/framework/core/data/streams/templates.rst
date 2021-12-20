@@ -32,16 +32,16 @@ You can find a simple demonstration of how this class is used in the
 Variable values can be set using :cpp:func:`TemplateStream::setVar` or :cpp:func:`TemplateStream::setVars`.
 These are stored in a :cpp:class:`HashMap` which can be accessing directly via :cpp:func:`TemplateStream::variables`.
 
-To support for calculated values or external lookups an optional callback may
+To support calculated values and external lookups, an optional callback may
 be provided via :cpp:func:`TemplateStream::onGetValue`.
 This is invoked only if a variable is not found in the map.
 
-Another option is to use TemplateStream as a base class and override the :cpp:class:`TemplateStream::getValue` method.
+Another option is to use TemplateStream as a base class and override the :cpp:func:`TemplateStream::getValue` method.
 
 .. important::
 
     If required, text must be escaped appropriately for the output format.
-    For example, encoding reserved HTML characters can be handled using :cpp:class:`Format::Html::escape`.
+    For example, encoding reserved HTML characters can be handled using :cpp:func:`Format::Html::escape`.
 
 
 Advanced Templating
@@ -60,8 +60,8 @@ listing in multiple formats, using a different template for each format.
 The :sample:`Basic_Templates` sample illustrates a similar appraoch using data from CSV data files.
 
 If the output format requires escaping, create an instance of the appropriate :cpp:class:`Format::Formatter`
-and call :cpp:class:`SectionTemplate::setFormatter`.
-If providing custom values via callback, obtain the current formatter via :cpp:class:`SectionTemplate::formatter`
+and call :cpp:func:`SectionTemplate::setFormatter`.
+If providing custom values via callback, obtain the current formatter via :cpp:func:`SectionTemplate::formatter`
 class and call the ``escape`` method.
 Note that for performance reasons this is not done automatically as often variable values
 do not require escaping. User-provided values or filenames must always be properly escaped.
@@ -116,8 +116,8 @@ getValue
     .. important::
 
        If required, text must be escaped appropriately for the output format.
-       Use :cpp:class:`SectionTemplate::formatter` to obtain the current
-       For example, encoding reserved HTML characters can be handled using :cpp:class:`Format::Html::escape`.
+       Use :cpp:func:`SectionTemplate::formatter` to obtain the current
+       For example, encoding reserved HTML characters can be handled using :cpp:func:`Format::Html::escape`.
 
 
 Control language
@@ -175,7 +175,7 @@ This is the current command list:
 
 Here's an excerpt from the Basic_IFS sample, displaying information for a single file:
 
-.. highlight:: html
+.. code-block:: html
 
    {!iflt:$record:100} <!-- If $record < 100 -->
        <tr>

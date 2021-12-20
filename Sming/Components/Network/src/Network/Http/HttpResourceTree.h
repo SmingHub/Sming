@@ -21,7 +21,7 @@ using HttpPathDelegate = Delegate<void(HttpRequest& request, HttpResponse& respo
 
 /**
  * @brief Class to map URL paths to classes which handle them
- * @ingroup http
+ * @ingroup httpserver
  */
 class HttpResourceTree : public ObjectMap<String, HttpResource>
 {

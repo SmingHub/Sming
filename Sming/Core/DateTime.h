@@ -68,10 +68,12 @@ enum dtDays_t {
 
 /** @brief  Date and time class
  *
- *          Date and time functions mostly work with Unix time, the quantity of seconds since 00:00:00 1970-01-01.
- *          There is no support for leap seconds which are added (and in theory, removed) occasionally to compensate for earth rotation variation.
- *          This means that timespan calculation and free-running clocks may be inaccurate if they span leap seconds.
- *          To facilitate leap seconds, reference must be made to leap second table. This will not be done within the Sming framework and must be handled by application code if required.
+ * Date and time functions mostly work with Unix time, the quantity of seconds since 00:00:00 1970-01-01.
+ * There is no support for leap seconds which are added (and in theory, removed) occasionally to compensate for earth rotation variation.
+ * This means that timespan calculation and free-running clocks may be inaccurate if they span leap seconds.
+ * To facilitate leap seconds, reference must be made to leap second table.
+ * This will not be done within the Sming framework and must be handled by application code if required.
+ *
  *  @note   Sming uses 32-bit signed integer for its time_t data type which supports a range of +/-68 years. This means Sming is susceptible to Year 2038 problem.
  */
 class DateTime
