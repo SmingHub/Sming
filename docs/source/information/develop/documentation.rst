@@ -258,6 +258,34 @@ To refer to a sample application README::
 
    See the :sample:`Basic_Blink` sample for a simple introduction to Sming.
 
+Samples may be located in the main Sming :source:`samples`, but a growing number
+are located in a **samples** sub-directory of the associated Component or library.
+
+Another example::
+
+   Where is the :sample:`generic` sample?
+
+There are currently three libraries with a sample called 'generic'.
+Documents within the appropriate library will be matched correctly.
+
+The given target 'generic' is matched as follows:
+
+- Is the document contained in a Component or library?
+  - Yes: Look in the Component's **samples** sub-directory, if there is one
+- No match? Then check the main sming **samples** directory.
+- Still no match? Pick the first match from any other Component.
+- No match found? Text will appear unchanged in the output document.
+
+To refer to a sample in a specific Component, do this::
+
+   I'm looking for the :sample:`CS5460/generic` sample.
+   Where is :sample:`Generic CS5460 sample <CS5460/generic>` sample?
+
+Within main samples directory::
+
+   Is there a main :sample:`/generic` sample? Actually, no.
+   But there is a :sample:`/CanBus` sample!
+
 
 Source code
 ~~~~~~~~~~~

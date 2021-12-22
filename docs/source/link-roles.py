@@ -93,20 +93,48 @@ def SampleRole(typ, rawtext, text, lineno, inliner, options={}, content=[]):
     title = utils.unescape(title)
     target = utils.unescape(target)
 
-    sampleTarget = None
-
     env = inliner.document.settings.env
+    pageUrls = env.config.html_context['page_urls']
     docname = env.docname
 
-    path = getComponentPath(docname)
-    if path is not None:
-        path += f"/samples/{target}/index"
-        docpath = env.doc2path(path)
-        if os.path.exists(docpath):
-            sampleTarget = f"/{path}"
+    # Target can be "{sample name}" or "{component name}/{sample name}"
+    if target.startswith('/'):
+        expr = f"_inc/samples{target}/index.rst"
+    else:
+        segs = target.split('/')
+        if len(segs) == 2:
+            expr = f"/{segs[0]}/samples/{segs[1]}/index.rst"
+        else:
+            expr = f"/samples/{target}/index.rst"
 
+    # Search for all sample matches
+    pageList = list(filter(lambda page: page.endswith(expr), pageUrls))
+
+    logger.verbose(f">> :sample:`{target}` found {pageList}")
+
+    sampleTarget = None
+    if len(pageList) == 1:
+        # One match, use it
+        sampleTarget = pageList[0]
+    elif len(pageList) > 1:
+        # Multiple matches: we have some decisions to make
+        # If document page is in a Component then check that first
+        cmp = getComponentPath(docname)
+        if cmp is not None:
+            sampleTarget = next(filter(lambda page: page.startswith(cmp), pageList), None)
+        # Not found? Then check main samples directory
+        if sampleTarget is None:
+            sampleTarget = next(filter(lambda page: page.startswith('_inc/samples'), pageList), None)
+        # Still not found? Default to first match
+        if sampleTarget is None:
+            sampleTarget = pageList[0]
+
+    # No match found, leave target unchanged
     if sampleTarget is None:
-        sampleTarget = f"/_inc/samples/{target}/index"
+        sampleTarget = target
+    else:
+        # Absolute path required, without extension
+        sampleTarget = "/" + os.path.splitext(sampleTarget)[0]
 
     logger.verbose(f">> sample '{target}' -> '{sampleTarget}'")
 
@@ -141,22 +169,19 @@ def SourceRole():
     """Create hyperlink to source code, which may be in a submodule."""
 
     def role(name, rawtext, text, lineno, inliner, options={}, content=[]):
-        text_has_explicit_title, link_text, link = split_explicit_title(text)
-        # print(f">> SourceRole '{name}', '{text_has_explicit_title}', '{link_text}', '{link}'")
+        _, link_text, link = split_explicit_title(text)
 
         env = inliner.document.settings.env
-        map = env.config.html_context['root_urls']
-        paths = env.config.html_context['root_paths']
+        rootUrls = env.config.html_context['root_urls']
+        rootPaths = env.config.html_context['root_paths']
 
         def getRoot(srcpath):
-            url = map[""]
-            for p in paths:
-                if link.startswith(p):
-                    return map[p], link[len(p):]
+            path = next(filter(link.startswith, rootPaths), '')
+            return rootUrls[path], link[len(path):]
 
         if link.startswith('/'):
             # Absolute links are relative to Sming repo
-            linkUrl = map[''] + link
+            linkUrl = rootUrls[''] + link
         else:
             # Resolve link paths within Components
             path = getComponentPath(env.docname)
