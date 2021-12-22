@@ -141,4 +141,4 @@ else:
 subprocess.call('make -C ../../Sming submodules SMING_ARCH=Host', shell=True)
 subprocess.call('make -C .. setup api API_VERSION="' + version + '"', shell=True)
 
-html_context['page_urls'] = buildFileMap(html_context)
+buildFileMap(html_context)

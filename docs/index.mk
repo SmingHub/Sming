@@ -11,12 +11,10 @@ $(if $(filter %.rst,$(CMP_$2_README)),
 
 References
 ----------
-$(if $(findstring $3=,$(SUBMODULE_URLS)),
-* `Source Code <$(call GetSubmoduleURL,$3)>`__ (submodule, may be patched).,
-* :source:`Source Code <$3>`)
+
+* :source:`Source Code <$3>`
 $(foreach d,$(sort $(CMP_$2_DEPENDS)),
-* :doc:`$(call GetDocPath,$d)/index`
-)
+* :doc:`$(call GetDocPath,$d)/index`)
 
 $(if $(CMP_$1_XREF),
 Used by

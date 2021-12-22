@@ -32,17 +32,7 @@ def get_github_rev():
 
 
 def setup(app):
-    baseurl = os.path.splitext(run_cmd_get_output('git ls-remote --get-url'))[0]
-
-    sming_home = os.environ.get('SMING_HOME', None)
-    if sming_home:
-        smingdir = os.path.abspath(sming_home + '/..')
-        print('SMINGDIR = ' + smingdir)
-        basepath = 'file://' + smingdir
-    else:
-        basepath = baseurl + '/blob/' + get_github_rev()
-
-    app.add_role('source', autolink(basepath + '/{}'))
+    app.add_role('source', SourceRole())
     app.add_role('issue', autolink('Issue #{0} <' + github_url + '/issue/{0}>'))
     app.add_role('pull-request', autolink('Pull Request #{0} <' + github_url + '/pull/{0}>'))
 
@@ -145,3 +135,42 @@ def getComponentPath(path):
         return None
 
     return f"{a}{b}{c.split('/')[0]}"
+
+
+def SourceRole():
+    """Create hyperlink to source code, which may be in a submodule."""
+
+    def role(name, rawtext, text, lineno, inliner, options={}, content=[]):
+        text_has_explicit_title, link_text, link = split_explicit_title(text)
+        # print(f">> SourceRole '{name}', '{text_has_explicit_title}', '{link_text}', '{link}'")
+
+        env = inliner.document.settings.env
+        map = env.config.html_context['root_urls']
+        paths = env.config.html_context['root_paths']
+
+        def getRoot(srcpath):
+            url = map[""]
+            for p in paths:
+                if link.startswith(p):
+                    return map[p], link[len(p):]
+
+        if link.startswith('/'):
+            # Absolute links are relative to Sming repo
+            linkUrl = map[''] + link
+        else:
+            # Resolve link paths within Components
+            path = getComponentPath(env.docname)
+            if path is not None:
+                path = path[5:] # skip '_inc/'
+                if not link.startswith(path):
+                    # print(f">> {link} -> {path}/{link}")
+                    link = f"{path}/{link}"
+            linkUrl, linkPath = getRoot(link)
+            linkUrl = f"{linkUrl}/{linkPath}"
+
+        logger.verbose(f">> source '{link}' -> '{linkUrl}'")
+        node = nodes.reference(rawtext, link_text, refuri=linkUrl, **options)
+        return [node], []
+
+
+    return role
