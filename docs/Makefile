@@ -134,7 +134,7 @@ endif
 
 # $1 -> Path to a Component, sample or Library
 define GetComponentType
-$(if $(findstring /samples/,$1),Sample,$(if $(findstring /Libraries/,$1),Library,,Component))
+$(if $(findstring /samples/,$1),Sample,$(if $(findstring /Libraries/,$1),Library,Component))
 endef
 
 include index.mk
