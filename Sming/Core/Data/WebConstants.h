@@ -107,26 +107,39 @@ inline MimeType fromString(const String& str)
 	return fromString(str.c_str());
 }
 
-/** @brief Obtain MIME type value from file name or path, with extension
- *  @param fileName
- *  @param unknown Value to return if type cannot be determined
- *  @retval MimeType
+/**
+ * @name Obtain MIME type value from file name or path, with extension
+ * @{
+ */
+
+/**
+ * @param fileName As NUL-terminated string
+ * @param unknown Value to return if type cannot be determined
+ * @retval MimeType
  */
 MimeType fromFullFileName(const char* fileName, MimeType unknown);
 
+/**
+ * @param fileName As wiring String
+ */
 inline MimeType fromFullFileName(const String& fileName, MimeType unknown)
 {
 	return fromFullFileName(fileName.c_str(), unknown);
 }
 
-/** @name Obtain content type string from file name or path, with extension
- *  @param fileName
- *  @retval String
- *  @{
+/**
+ * @name Obtain content type string from file name or path, with extension
+ * @{
+ */
+
+/**
+ * @param fileName as NUL-terminated string
+ * @retval String
  */
 String fromFullFileName(const char* fileName);
 
-/** @brief Obtain content type string from file name or path, with extension
+/**
+ * @param fileName as wiring String
  */
 inline String fromFullFileName(const String& fileName)
 {

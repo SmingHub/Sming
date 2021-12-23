@@ -59,11 +59,14 @@ public:
 	 * @name Update hash over a given block of data
 	 * @{
 	 */
+
+	/// Data from Blob
 	HashContext& update(const Blob& blob)
 	{
 		return update(blob.data(), blob.size());
 	}
 
+	/// Data from flash object
 	HashContext& update(const FSTR::ObjectBase& obj)
 	{
 		uint8_t buf[256];
@@ -76,12 +79,18 @@ public:
 		return *this;
 	}
 
+	/**
+	 * @brief Pointer to data + size
+	 * @param data Data block
+	 * @param size Length of data in bytes
+	 */
 	HashContext& update(const void* data, size_t size)
 	{
 		engine.update(data, size);
 		return *this;
 	}
 
+	/// Data in ByteArray
 	template <size_t size_> HashContext& update(const ByteArray<size_>& array)
 	{
 		return update(array.data(), array.size());
