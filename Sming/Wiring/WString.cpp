@@ -860,14 +860,14 @@ bool String::replace(const char* find_buf, size_t find_len, const char* replace_
 		char* writeTo = buf;
 		while((foundAt = (char*)memmem(readFrom, end - readFrom, find_buf, find_len)) != nullptr) {
 			size_t n = foundAt - readFrom;
-			memcpy(writeTo, readFrom, n);
+			memmove(writeTo, readFrom, n);
 			writeTo += n;
 			memcpy(writeTo, replace_buf, replace_len);
 			writeTo += replace_len;
 			readFrom = foundAt + find_len;
 			len += diff;
 		}
-		memcpy(writeTo, readFrom, end - readFrom);
+		memmove(writeTo, readFrom, end - readFrom);
 		setlen(len);
 	} else {
 		size_t size = len; // compute size needed for result
@@ -883,7 +883,7 @@ bool String::replace(const char* find_buf, size_t find_len, const char* replace_
 		}
 		buf = buffer();
 		int index = len - 1;
-		while((index = lastIndexOf(find_buf, index, find_len)) >= 0) {
+		while(index >= 0 && (index = lastIndexOf(find_buf, index, find_len)) >= 0) {
 			readFrom = buf + index + find_len;
 			memmove(readFrom + diff, readFrom, len - (readFrom - buf));
 			len += diff;

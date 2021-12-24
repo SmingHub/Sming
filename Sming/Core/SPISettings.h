@@ -14,6 +14,9 @@
 #pragma once
 
 #include "Digital.h"
+#ifdef SPI_DEBUG
+#include <debug_progmem.h>
+#endif
 
 /** @ingroup base_spi
  *  @{

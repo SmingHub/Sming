@@ -18,15 +18,16 @@ WDTClass WDT;
 void WDTClass::enable(bool enableWatchDog)
 {
 	enabled = enableWatchDog;
-	if(System.isReady())
+	if(System.isReady()) {
 		internalApplyEnabled();
-	else
+	} else {
 		System.onReady(this);
+	}
 }
 
 void WDTClass::alive()
 {
-	system_soft_wdt_restart();
+	system_soft_wdt_feed();
 }
 
 void WDTClass::onSystemReady()
@@ -36,8 +37,9 @@ void WDTClass::onSystemReady()
 
 void WDTClass::internalApplyEnabled()
 {
-	if(enabled)
+	if(enabled) {
 		system_soft_wdt_restart();
-	else
+	} else {
 		system_soft_wdt_stop();
+	}
 }
