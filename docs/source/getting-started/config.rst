@@ -32,7 +32,7 @@ Another approach is to place these in a separate file, then add `source ~/.sming
 For Windows, you can either edit the global variables graphically via control panel,
 or use the ``setx`` command:
 
-.. code-block:: cmd
+.. code-block:: batch
 
    REM All architectures
    setx SMING_HOME "c:\tools\sming\Sming"

@@ -146,8 +146,8 @@ private:
 	void setStream(IDataSourceStream* stream);
 
 public:
-	HttpStatus code = HTTP_STATUS_OK; ///< The HTTP status response code
-	HttpHeaders headers;
+	HttpStatus code = HTTP_STATUS_OK;	///< The HTTP status response code
+	HttpHeaders headers;				 ///< Response headers
 	ReadWriteStream* buffer = nullptr;   ///< Internal stream for storing strings and receiving responses
 	IDataSourceStream* stream = nullptr; ///< The body stream
 };

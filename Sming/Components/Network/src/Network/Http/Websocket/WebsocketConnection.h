@@ -43,6 +43,9 @@ using WebsocketDelegate = Delegate<void(WebsocketConnection&)>;
 using WebsocketMessageDelegate = Delegate<void(WebsocketConnection&, const String&)>;
 using WebsocketBinaryDelegate = Delegate<void(WebsocketConnection&, uint8_t* data, size_t size)>;
 
+/**
+ * @brief Current state of Websocket connection
+ */
 enum WsConnectionState {
 	eWSCS_Ready,
 	eWSCS_Open,
@@ -153,7 +156,7 @@ public:
 	}
 
 	/**
-	 * @brief Closes a websocket connection (without closing the underlying http connection
+	 * @brief Closes a websocket connection (without closing the underlying http connection)
 	 */
 	void close();
 

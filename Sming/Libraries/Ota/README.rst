@@ -51,7 +51,7 @@ After that you will have access to a global ``OtaManager`` instance that can be 
          // ...
       }
 
-See the :sample:`Upgrade` sample application.
+See the :sample:`Basic_Ota` sample application.
 
 API Documentation
 -----------------

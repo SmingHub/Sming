@@ -28,7 +28,7 @@ Configuration
 -------------
 
 Please make sure you have critical environment variables set globally **before** starting vscode.
-See :doc:`getting-started/config` for details.
+See :doc:`/getting-started/config` for details.
 
 One of the strengths of vscode is the use of well-documented configuration files.
 You can find comprehensive documentation for these online.

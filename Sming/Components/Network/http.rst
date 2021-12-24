@@ -32,23 +32,10 @@ Build Variables
    Sets the DATE field in response headers.
 
 
-Support API
------------
+API Documentation
+-----------------
 
-.. doxygennamespace:: ContentType
+.. toctree::
+   :glob:
 
-
-Client API
-----------
-
-.. doxygengroup:: httpclient
-   :content-only:
-   :members:
-
-
-Server API
-----------
-
-.. doxygengroup:: httpserver
-   :content-only:
-   :members:
+   docs/http/*

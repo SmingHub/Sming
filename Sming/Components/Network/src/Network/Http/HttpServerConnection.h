@@ -18,7 +18,7 @@
 
 #include <functional>
 
-/** @ingroup   	http
+/** @ingroup   	httpserver
  *  @brief      Provides http server connection
  *  @{
  */

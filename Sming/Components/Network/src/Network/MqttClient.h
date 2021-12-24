@@ -91,12 +91,43 @@ public:
 	*/
 	bool connect(const Url& url, const String& uniqueClientName);
 
+	/**
+	 * @brief Publish a message
+	 * @param topic
+	 * @param message Message content as String
+	 * @param flags Optional flags
+	 * @retval bool
+	 */
 	bool publish(const String& topic, const String& message, uint8_t flags = 0);
+
+	/**
+	 * @brief Publish a message
+	 * @param topic
+	 * @param message Message content as read-only stream
+	 * @param flags Optional flags
+	 * @retval bool
+	 */
 	bool publish(const String& topic, IDataSourceStream* stream, uint8_t flags = 0);
 
+	/**
+	 * @brief Subscribe to a topic
+	 * @param topic
+	 * @retval bool
+	 */
 	bool subscribe(const String& topic);
+
+	/**
+	 * @brief Unsubscribe from a topic
+	 * @param topic
+	 * @retval bool
+	 */
 	bool unsubscribe(const String& topic);
 
+	/**
+	 * @brief Register a callback function to be invoked on incoming event notification
+	 * @param type Type of event to be notified of
+	 * @param handler The callback. Pass nullptr to cancel callback.
+	 */
 	void setEventHandler(mqtt_type_t type, MqttDelegate handler)
 	{
 		eventHandlers[type] = handler;

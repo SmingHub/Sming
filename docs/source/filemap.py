@@ -29,11 +29,13 @@ def urljoin(elements):
 
 
 def getRemotePath(srcdir):
-    return gitcmd(['rev-parse', '--show-prefix'], cwd=srcdir).strip()
+    path = gitcmd(['rev-parse', '--show-prefix'], cwd=srcdir).strip()
+    return path.rstrip('/')
 
 
 def getRemoteUrl(srcdir):
-    return gitcmd(['config', '--get', 'remote.origin.url'], cwd=srcdir).strip()
+    url = gitcmd(['config', '--get', 'remote.origin.url'], cwd=srcdir).strip()
+    return os.path.splitext(url)[0] # Remove .git if present
 
 
 def getRemoteCommit(srcdir):
@@ -42,6 +44,8 @@ def getRemoteCommit(srcdir):
 
 # Get map of directories to submodule URLs
 def buildFileMap(ctx):
+    rootmap = {}
+
     # index.rst files may be generated from README.md or README.rst
     def getSourceFilename(srcdir, filename):
         if filename != 'index.rst':
@@ -58,8 +62,11 @@ def buildFileMap(ctx):
         srcdir = os.path.join(SMINGDIR, srcpath)
         # print(f"srcdir = {srcdir}", file=sys.stderr)
         remotePath = getRemotePath(srcdir)
-        url = os.path.splitext(getRemoteUrl(srcdir))[0]
+        url = getRemoteUrl(srcdir)
         commit = getRemoteCommit(srcdir)
+        if remotePath:
+            srcpath = srcpath.rsplit(remotePath)[0].rstrip('/')
+        rootmap[srcpath] = urljoin([url, 'tree', commit])
         for f in filenames:
             s = urljoin([url, 'blob', commit, remotePath, getSourceFilename(srcdir, f)])
             filemap[f"{dirpath}/{f}"] = s
@@ -67,4 +74,9 @@ def buildFileMap(ctx):
     # for k, v in filemap.items():
     #     print(f"{k}: {v}", file=sys.stderr)
 
-    return filemap
+    # for k, v in rootmap.items():
+    #     print(f"{k}: {v}", file=sys.stderr)
+
+    ctx['page_urls'] = filemap
+    ctx['root_urls'] = rootmap
+    ctx['root_paths'] = sorted(rootmap.keys(), reverse=True)

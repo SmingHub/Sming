@@ -41,7 +41,14 @@
 class TemplateStream : public IDataSourceStream
 {
 public:
+	/**
+	 * @brief Maps variable names to values
+	 */
 	using Variables = HashMap<String, String>;
+
+	/**
+	 * @brief Callback type to return calculated or externally stored values
+	 */
 	using GetValueDelegate = Delegate<String(const char* name)>;
 
 	/** @brief Create a template stream

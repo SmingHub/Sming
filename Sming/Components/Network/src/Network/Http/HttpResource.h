@@ -28,7 +28,7 @@ using HttpResourceDelegate =
 
 /**
  * @brief Instances of this class are registered with an HttpServer for a specific URL
- * @ingroup http
+ * @ingroup httpserver
  */
 class HttpResource
 {

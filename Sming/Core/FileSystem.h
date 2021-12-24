@@ -89,7 +89,7 @@ inline IFS::FileSystem* getFileSystem()
 
 /** @brief Sets the currently active file system
  *  @param fileSystem
- *  @note Any existing filing system is freed first.
+ *  @note Any existing filing system is destroyed.
  *  Typically the filing system implementation has helper functions which
  *  create and initialise the file system to a valid state. The last step
  *  is to call this function to make it active.
@@ -526,23 +526,16 @@ inline int fileSetACL(FileHandle file, const IFS::ACL& acl)
 	return fileSystem->setacl(file, acl);
 }
 
-/** @name Set file attributes
+/** @brief Set file attributes
  *  @param filename
  *  @param attr
  *  @retval int Error code
- *  @{
  */
-inline int fileSetAttr(const char* filename, FileAttributes attr)
+template <typename T> int fileSetAttr(const T& filename, FileAttributes attr)
 {
 	CHECK_FS(setattr)
 	return fileSystem->setattr(filename, attr);
 }
-
-inline int fileSetAttr(const String& filename, FileAttributes attr)
-{
-	return fileSetAttr(filename.c_str(), attr);
-}
-/** @} */
 
 /** @brief Set access control information for file
  *  @param file handle to open file, must have write access

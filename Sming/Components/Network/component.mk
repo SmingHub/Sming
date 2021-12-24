@@ -13,6 +13,9 @@ COMPONENT_DOXYGEN_INPUT := \
 	src \
 	Arch/Esp32/include
 
+COMPONENT_DOCFILES := \
+	docs/http/*
+
 COMPONENT_DEPENDS := \
 	ssl \
 	http-parser \

@@ -55,3 +55,5 @@ API Documentation
 
 .. doxygenclass:: String
    :members:
+
+.. doxygentypedef:: FlashString

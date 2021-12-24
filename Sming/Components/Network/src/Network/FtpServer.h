@@ -62,8 +62,8 @@ private:
 	IFS::FileSystem* fileSystem;
 };
 
-/** @defgroup   ftpserver FTP server
- *  @ingroup    tcpserver
+/**
+ *  @ingroup    ftpserver
  *  @brief      Provides FTP server
  */
 class FtpServer : public CustomFtpServer

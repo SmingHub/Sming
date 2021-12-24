@@ -1,4 +1,4 @@
 COMPONENT_SRCDIRS := src
 COMPONENT_INCDIRS := src/include
 COMPONENT_DEPENDS := Ota Network
-
+COMPONENT_DOXYGEN_INPUT := src/include

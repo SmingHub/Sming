@@ -153,3 +153,10 @@ Configuration
    If set to 1 the library will work with OtaUpgradeStream which supports signature and encryption of the firmware data itself.
    See :library:`OtaUpgrade` for details. In the application the AdvancedPayloadParser can be used to do the MQTT message handling.
 
+
+API
+---
+
+.. toctree::
+
+   api
