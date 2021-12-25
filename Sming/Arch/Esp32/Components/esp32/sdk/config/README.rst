@@ -8,8 +8,8 @@ The following files are assembled, in order:
 
     common
     {BUILD_TYPE}
-    {ESP_VARIANT}.common
-    {ESP_VARIANT}.{BUILD_TYPE}
+    {SMING_SOC}.common
+    {SMING_SOC}.{BUILD_TYPE}
     {PROJECT_DIR}/{SDK_CUSTOM_CONFIG}
 
 Where:

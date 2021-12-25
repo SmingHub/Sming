@@ -16,15 +16,15 @@ we can compile the application using the following directives::
 
    make SMING_ARCH=Host ENABLE_HOSTED=tcp HOSTED_SERVER_IP=192.168.4.1
 
-`SMING_ARCH=Host` instructs the build system to build the application for the Host architecture.
-`ENABLE_HOSTED=tcp` instructs the host emulator to communication with the real microcontroller using TCP
-`HOSTED_SERVER_IP=192.168.4.1` instructs the host emulator to connect to IP `192.168.4.1`.
+- ``SMING_ARCH=Host`` instructs the build system to build the application for the Host architecture.
+- ``ENABLE_HOSTED=tcp`` instructs the host emulator to communicate with the real microcontroller using TCP.
+- ``HOSTED_SERVER_IP=192.168.4.1`` tells the host emulator where the server is running.
 
 We need to compile and flash also a special application on the desired microcontroller.
 This application will act as an RPC Server and will execute the commands from the host emulator on the microcontroller.
 
-In the sub-directory ``samples`` inside this directory you will find the sample applications that will turn your microcontroller into
-RCP server.
+In the ``samples`` directory you will find the sample applications that will turn your microcontroller into
+an RCP server.
 
 The compilation and flashing for ESP32, for example, can be done using the following commands::
 
@@ -39,17 +39,20 @@ Communication
 -------------
 At the moment the communication between an application running on the Host and the RCP server running on a microcontroller
 can be done using TCP or serial interface.
+
 The ``transport`` classes are located under ``include/Hosted/Transport``.
 
 Configuration
 -------------
+
 .. envvar:: ENABLE_HOSTED
 
    Default: empty (disabled)
 
    Enables the hosted component. Valid values for the moment are:
-   - tcp - for communication over TCP network.
-   - serial - for communication over serial interface
+   - ``tcp`` for communication over TCP network.
+   - ``serial`` for communication over serial interface
+
 
 .. envvar:: HOSTED_SERVER_IP
 
@@ -57,14 +60,23 @@ Configuration
 
    Used only when ENABLE_HOSTED=tcp is specified. Specifies the IP address of the remote RPC server.
 
+
 .. envvar:: HOSTED_COM_PORT
 
-   Default: /dev/ttyUSB0 or the value of the environment variable COM_PORT if defined
+   Default: :envvar:`COM_PORT`
 
    Used only when ENABLE_HOSTED=serial is specified. Specifies which local communication port should be used to connect to the remote RPC server.
+
 
 .. envvar:: HOSTED_COM_SPEED
 
    Default: 115200
 
    Used only when ENABLE_HOSTED=serial is specified. Specifies the communication baud rate.
+
+
+API Documentation
+-----------------
+
+.. doxygennamespace:: Hosted
+   :members:

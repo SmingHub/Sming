@@ -27,6 +27,7 @@ CUSTOM_BUILD		:=
 COMPONENT_TARGETS	:=
 EXTRA_OBJ		:=
 COMPONENT_CFLAGS	:=
+COMPONENT_CPPFLAGS	:=
 COMPONENT_CXXFLAGS	:=
 COMPONENT_VARS		:=
 COMPONENT_RELINK_VARS :=
@@ -106,6 +107,7 @@ endif
 ifeq (,$(CUSTOM_BUILD))
 
 CFLAGS		+= $(COMPONENT_CFLAGS)
+CPPFLAGS	+= $(COMPONENT_CPPFLAGS)
 CXXFLAGS	+= $(COMPONENT_CXXFLAGS)
 
 # GCC 10 escapes ':' in path names which breaks GNU make for Windows so filter them
@@ -151,7 +153,7 @@ endef
 # $1 -> source root directory
 # $2 -> file path(s)
 define ResolveObjPath
-$(foreach f,$2,$(patsubst $(SMING_HOME)/%,%,$(patsubst $1/%,%,$f)))
+$(foreach f,$2,$(patsubst /%,%,$(patsubst $(SMING_HOME)/%,%,$(patsubst $1/%,%,$f))))
 endef
 
 # All source files, absolute paths

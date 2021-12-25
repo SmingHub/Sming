@@ -17,6 +17,7 @@
 
 #include <Network/IpConnection.h>
 #include <Network/Ssl/Session.h>
+#include <lwip/tcp.h>
 
 #define NETWORK_DEBUG
 
@@ -29,7 +30,6 @@ enum TcpConnectionEvent {
 	eTCE_Poll,			//< Occurs on waiting
 };
 
-struct pbuf;
 class String;
 class IDataSourceStream;
 class TcpConnection;
@@ -58,7 +58,7 @@ public:
 	/** @brief Writes string data directly to the TCP buffer
 	 *  @param data null terminated string
 	 *  @param apiflags TCP_WRITE_FLAG_COPY, TCP_WRITE_FLAG_MORE
-	 *  @retval int negative on error, 0 when retry is needed or possitive on success
+	 *  @retval int negative on error, 0 when retry is needed or positive on success
 	 */
 	int writeString(const char* data, uint8_t apiflags = TCP_WRITE_FLAG_COPY)
 	{
@@ -68,7 +68,7 @@ public:
 	/** @brief Writes string data directly to the TCP buffer
 	 *  @param data
 	 *  @param apiflags TCP_WRITE_FLAG_COPY, TCP_WRITE_FLAG_MORE
-	 *  @retval int negative on error, 0 when retry is needed or possitive on success
+	 *  @retval int negative on error, 0 when retry is needed or positive on success
 	 */
 	int writeString(const String& data, uint8_t apiflags = TCP_WRITE_FLAG_COPY)
 	{
@@ -79,14 +79,14 @@ public:
 	 *  @param data
 	 *  @param len
 	 *  @param apiflags TCP_WRITE_FLAG_COPY, TCP_WRITE_FLAG_MORE
-	 *  @retval int negative on error, 0 when retry is needed or possitive on success
+	 *  @retval int negative on error, 0 when retry is needed or positive on success
 	 */
 	virtual int write(const char* data, int len, uint8_t apiflags = TCP_WRITE_FLAG_COPY);
 
 	/** @brief Writes stream data directly to the TCP buffer
 	 *  @param stream
 	 *  @param apiflags TCP_WRITE_FLAG_COPY, TCP_WRITE_FLAG_MORE
-	 *  @retval int negative on error, 0 when retry is needed or possitive on success
+	 *  @retval int negative on error, 0 when retry is needed or positive on success
 	 */
 	int write(IDataSourceStream* stream);
 
@@ -207,7 +207,7 @@ private:
 	static err_t staticOnPoll(void* arg, tcp_pcb* tcp);
 	static void closeTcpConnection(tcp_pcb* tpcb);
 
-	inline void checkSelfFree()
+	void checkSelfFree()
 	{
 		if(tcp == nullptr && autoSelfDestruct) {
 			delete this;

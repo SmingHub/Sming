@@ -2,23 +2,23 @@
  uart.cpp - esp32 UART HAL
  */
 
-#include <BitManipulations.h>
-
-#include <driver/uart.h>
-#include <driver/SerialBuffer.h>
-#include <soc/uart_periph.h>
-#include <soc/uart_channel.h>
-#include <esp_heap_caps.h>
-
-// These conflict with enumerated types defined in IDF - values are same though
+// #define typeof(x) std::remove_volatile<decltype(x)>::type
+#define typeof(x) decltype(x)
+// These conflict with enumerated types defined in IDF
+#define UART_PARITY_NONE IDF_UART_PARITY_NONE
+#define UART_PARITY_EVEN IDF_UART_PARITY_EVEN
+#define UART_PARITY_ODD IDF_UART_PARITY_ODD
+#include <hal/uart_ll.h>
 #undef UART_PARITY_NONE
 #undef UART_PARITY_EVEN
 #undef UART_PARITY_ODD
 
-// #define typeof(x) std::remove_volatile<decltype(x)>::type
-#define typeof(x) decltype(x)
-#include <hal/uart_ll.h>
+#include <driver/uart.h>
+#include <driver/SerialBuffer.h>
 #include <driver/periph_ctrl.h>
+#include <soc/uart_channel.h>
+#include <BitManipulations.h>
+#include <esp_systemapi.h>
 
 namespace
 {
@@ -50,17 +50,17 @@ struct smg_uart_pins_t {
 	uint8_t rx;
 };
 
-#ifdef SUBARCH_ESP32
+#ifdef SOC_ESP32
 #define UART0_PIN_DEFAULT UART_NUM_0_TXD_DIRECT_GPIO_NUM, UART_NUM_0_RXD_DIRECT_GPIO_NUM
 #define UART1_PIN_DEFAULT 18, 19 // Defaults conflict with flash
 #define UART2_PIN_DEFAULT UART_NUM_2_TXD_DIRECT_GPIO_NUM, UART_NUM_2_RXD_DIRECT_GPIO_NUM
-#elif defined(SUBARCH_ESP32C3)
+#elif defined(SOC_ESP32C3)
 #define UART0_PIN_DEFAULT 21, 20
 #define UART1_PIN_DEFAULT UART_NUM_1_TXD_DIRECT_GPIO_NUM, UART_NUM_1_RXD_DIRECT_GPIO_NUM
-#elif defined(SUBARCH_ESP32S2)
+#elif defined(SOC_ESP32S2)
 #define UART0_PIN_DEFAULT 43, 44
 #define UART1_PIN_DEFAULT UART_NUM_1_TXD_DIRECT_GPIO_NUM, UART_NUM_1_RXD_DIRECT_GPIO_NUM
-#elif defined(SUBARCH_ESP32S3)
+#elif defined(SOC_ESP32S3)
 #define UART0_PIN_DEFAULT 43, 44
 #define UART1_PIN_DEFAULT UART_NUM_1_TXD_DIRECT_GPIO_NUM, UART_NUM_1_RXD_DIRECT_GPIO_NUM
 #define UART2_PIN_DEFAULT UART_NUM_2_TXD_DIRECT_GPIO_NUM, UART_NUM_2_RXD_DIRECT_GPIO_NUM
@@ -130,11 +130,6 @@ void notify(smg_uart_t* uart, smg_uart_notify_code_t code)
 	if(callback != nullptr) {
 		callback(uart, code);
 	}
-}
-
-__forceinline bool uart_isr_enabled(uint8_t nr)
-{
-	return bitRead(isrMask, nr);
 }
 
 /** @brief Determine if the given uart is a real uart or a virtual one
@@ -241,7 +236,7 @@ void IRAM_ATTR uart_isr(smg_uart_instance_t* inst)
 			if(usis.rxfifo_ovf) {
 				uart_ll_disable_intr_mask(dev, UART_INTR_RXFIFO_OVF);
 			} else if(read == 0) {
-				uart_ll_ena_intr_mask(dev, UART_INTR_RXFIFO_FULL | UART_INTR_RXFIFO_TOUT);
+				uart_ll_disable_intr_mask(dev, UART_INTR_RXFIFO_FULL | UART_INTR_RXFIFO_TOUT);
 			}
 		}
 
@@ -838,7 +833,6 @@ void smg_uart_debug_putc(char c)
 void smg_uart_set_debug(int uart_nr)
 {
 	s_uart_debug_nr = uart_nr;
-	system_set_os_print(uart_nr >= 0);
 	ets_install_putc1(smg_uart_debug_putc);
 	ets_install_putc2(nullptr);
 }

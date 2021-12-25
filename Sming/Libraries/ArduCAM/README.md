@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This is a opensource library for taking high resolution still images and short video clip on Arduino based platforms using ArduCAM's camera moduels. <br>
+This is a opensource library for taking high resolution still images and short video clip on Arduino based platforms using ArduCAM's camera modules. <br>
 The camera breakout boards should work with ArduCAM shield before connecting to the Arduino boards. <br>
 ArduCAM mini series camera modules like Mini-2MP, Mini-5MP(Plus) can be connected to Arduino boards directly. <br>
 In addition to Arduino, the library can be ported to any hardware platforms as long as they have I2C and SPI interface based on this ArduCAM library. <br>
@@ -55,7 +55,7 @@ and the line `#define OV5642_CAM` then comment other lines. <br>
 
 ### 2. Choose correct CS pin for your camera
 Open one of the examples, wiring SPI and I2C interface especially CS pins to ArduCAM shield according to the examples.
-Hardware and software shuld be consistent to run the examples correctly.
+Hardware and software should be consistent to run the examples correctly.
 
 ### 3. Upload the examples
 In the example folder there are seven sub directories for different ArduCAM models and the host application. 

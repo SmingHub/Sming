@@ -43,6 +43,9 @@ using WebsocketDelegate = Delegate<void(WebsocketConnection&)>;
 using WebsocketMessageDelegate = Delegate<void(WebsocketConnection&, const String&)>;
 using WebsocketBinaryDelegate = Delegate<void(WebsocketConnection&, uint8_t* data, size_t size)>;
 
+/**
+ * @brief Current state of Websocket connection
+ */
 enum WsConnectionState {
 	eWSCS_Ready,
 	eWSCS_Open,
@@ -68,7 +71,7 @@ public:
 	/**
 	 * @brief Constructs a websocket connection on top of http client or server connection
 	 * @param connection the transport connection
-	 * @param isClientConnection true when the passed connection is an http client conneciton
+	 * @param isClientConnection true when the passed connection is an http client connection
 	 */
 	WebsocketConnection(HttpConnection* connection, bool isClientConnection = true);
 
@@ -153,7 +156,7 @@ public:
 	}
 
 	/**
-	 * @brief Closes a websocket connection (without closing the underlying http connection
+	 * @brief Closes a websocket connection (without closing the underlying http connection)
 	 */
 	void close();
 
@@ -266,7 +269,7 @@ public:
 	/**
 	 * @brief Sets the underlying (transport ) HTTP connection
 	 * @param connection the transport connection
-	 * @param isClientConnection true when the passed connection is an http client conneciton
+	 * @param isClientConnection true when the passed connection is an http client connection
 	 */
 	void setConnection(HttpConnection* connection, bool isClientConnection = true)
 	{

@@ -1,29 +1,3 @@
-diff --git a/include/user_config.h b/include/user_config.h
-index e69de29..d608ddf 100644
---- a/include/user_config.h
-+++ b/include/user_config.h
-@@ -0,0 +1,21 @@
-+#ifndef _USER_CONFIG_LWIP_
-+#define _USER_CONFIG_LWIP_
-+
-+#ifdef __cplusplus
-+extern "C" {
-+#endif
-+
-+#include "c_types.h"
-+typedef signed short        sint16_t;
-+
-+void ets_bzero(void *block, size_t size);
-+bool ets_post(uint32_t prio, ETSSignal sig, ETSParam par);
-+void ets_task(ETSTask task, uint32_t prio, ETSEvent * queue, uint8 qlen);
-+
-+void system_pp_recycle_rx_pkt(void *eb);
-+
-+#ifdef __cplusplus
-+}
-+#endif
-+
-+#endif /*_USER_CONFIG_LWIP_*/
 diff --git a/Makefile.open b/Makefile.open
 index 1bc584f..e4af916 100644
 --- a/Makefile.open
@@ -76,32 +50,22 @@ index 1bc584f..e4af916 100644
  $(LIB): $(OBJS)
  	$(AR) rcs $@ $^
 diff --git a/include/arch/cc.h b/include/arch/cc.h
-index ff03b30..4a2b4d9 100644
+index ff03b30..5089589 100644
 --- a/include/arch/cc.h
 +++ b/include/arch/cc.h
-@@ -38,14 +38,31 @@
- #include "c_types.h"
- #include "ets_sys.h"
- #include "osapi.h"
-+#include "mem.h"
-+#include <stdarg.h>
-+#include "FakePgmSpace.h"
+@@ -34,18 +34,17 @@
+ #ifndef __ARCH_CC_H__
+ #define __ARCH_CC_H__
+ 
+-//#include <string.h>
+-#include "c_types.h"
+-#include "ets_sys.h"
+-#include "osapi.h"
++#include <esp_system.h>
++#include <debug_progmem.h>
 +
  #define EFAULT 14
  
-+//Extra symbols to avoid implicit declaration warnings
-+extern void *ets_memset(void *s, int c, size_t n);
-+extern void *ets_memcpy(void *dest, const void *src, size_t n);
-+
-+extern int ets_strlen(const char *s);
-+extern int os_printf_plus(const char *format, ...)  __attribute__ ((format (printf, 1, 2)));
-+extern int ets_sprintf(char *str, const char *format, ...)  __attribute__ ((format (printf, 2, 3)));
-+//extern void ets_timer_arm_new(ETSTimer *ptimer, uint32_t milliseconds, bool repeat_flag, int isMstimer);
-+extern void ets_timer_disarm(ETSTimer *a);
-+extern void ets_timer_setfn(ETSTimer *t, ETSTimerFunc *pfunction, void *parg);
-+extern uint32 r_rand(void);
-+extern int ets_memcmp(const void *s1, const void *s2, size_t n);
-+
 +struct netif * eagle_lwip_getif(uint8 index);
 +
  //#define LWIP_PROVIDE_ERRNO
@@ -114,7 +78,7 @@ index ff03b30..4a2b4d9 100644
  #endif
  
  
-@@ -56,6 +73,7 @@ typedef signed     short   s16_t;
+@@ -56,6 +55,7 @@ typedef signed     short   s16_t;
  typedef unsigned   long    u32_t;
  typedef signed     long    s32_t;
  typedef unsigned long   mem_ptr_t;
@@ -122,7 +86,7 @@ index ff03b30..4a2b4d9 100644
  
  #define S16_F "d"
  #define U16_F "d"
-@@ -73,11 +91,12 @@ typedef unsigned long   mem_ptr_t;
+@@ -73,11 +73,9 @@ typedef unsigned long   mem_ptr_t;
  #define PACK_STRUCT_BEGIN
  #define PACK_STRUCT_END
  
@@ -131,11 +95,8 @@ index ff03b30..4a2b4d9 100644
  #ifdef LWIP_DEBUG
 -#define LWIP_PLATFORM_DIAG(x) os_printf x
 -#define LWIP_PLATFORM_ASSERT(x) ETS_ASSERT(x)
-+#include "debug_progmem.h"
-+
 +#define LWIP_PLATFORM_DIAG(x) debug_i x
 +#define LWIP_PLATFORM_ASSERT(x) m_printf("ASSERT: %s %s %d", (x), __FUNCTION__, __LINE__)
-+
  #else
  #define LWIP_PLATFORM_DIAG(x)
  #define LWIP_PLATFORM_ASSERT(x)
@@ -345,56 +306,124 @@ index c90adcd..f0c9dea 100644
  }
  #endif
 diff --git a/include/lwip/mem.h b/include/lwip/mem.h
-index af6e360..71b2178 100644
+index af6e360..b21ba7f 100644
 --- a/include/lwip/mem.h
 +++ b/include/lwip/mem.h
-@@ -52,19 +52,19 @@ typedef size_t mem_size_t;
-  */
- #ifndef MEMLEAK_DEBUG
- #ifndef mem_free
--#define mem_free vPortFree
-+#define mem_free(s) vPortFree(s, "", __LINE__)
- #endif
- #ifndef mem_malloc
--#define mem_malloc pvPortMalloc
-+#define mem_malloc(s) pvPortMalloc(s, "", __LINE__, false)
- #endif
- #ifndef mem_calloc
--#define mem_calloc pvPortCalloc
-+#define mem_calloc(l, s) ({void* ptr = (void*)pvPortMalloc((l) * (s), "", __LINE__,true);if(ptr){os_memset(ptr,0x0,(l) * (s));} ptr;})
- #endif
- #ifndef mem_realloc
--#define mem_realloc pvPortRealloc
-+#define mem_realloc(p, s)  pvPortRealloc(p, s, "", __LINE__)
- #endif
- #ifndef mem_zalloc
--#define mem_zalloc pvPortZalloc
-+#define mem_zalloc(s)      pvPortZalloc(s, "", __LINE__)
- #endif
- #else
- #ifndef mem_free
-@@ -75,7 +75,7 @@ do{\
- }while(0)
- #endif
- #ifndef mem_malloc
--#define mem_malloc(s) ({const char *file = mem_debug_file; pvPortMalloc(s, file, __LINE__);})
-+#define mem_malloc(s) ({const char *file = mem_debug_file; pvPortMalloc(s, file, __LINE__, false);})
- #endif
- #ifndef mem_calloc
- #define mem_calloc(s) ({const char *file = mem_debug_file; pvPortCalloc(s, file, __LINE__);})
-@@ -90,7 +90,11 @@ do{\
+@@ -33,16 +33,12 @@
+ #define __LWIP_MEM_H__
+ 
+ #include "lwip/opt.h"
+-//#include "mem_manager.h"
++#include <sdk/mem.h>
+ 
+ #ifdef __cplusplus
+ extern "C" {
  #endif
  
- #ifndef os_malloc
+-#if MEM_LIBC_MALLOC
+-
+-#include <stddef.h> /* for size_t */
+-
+ typedef size_t mem_size_t;
+ 
+ /* aliases for C library malloc() */
+@@ -50,91 +46,17 @@ typedef size_t mem_size_t;
+ /* in case C library malloc() needs extra protection,
+  * allow these defines to be overridden.
+  */
+-#ifndef MEMLEAK_DEBUG
+-#ifndef mem_free
+-#define mem_free vPortFree
+-#endif
+-#ifndef mem_malloc
+-#define mem_malloc pvPortMalloc
+-#endif
+-#ifndef mem_calloc
+-#define mem_calloc pvPortCalloc
+-#endif
+-#ifndef mem_realloc
+-#define mem_realloc pvPortRealloc
+-#endif
+-#ifndef mem_zalloc
+-#define mem_zalloc pvPortZalloc
+-#endif
+-#else
+-#ifndef mem_free
+-#define mem_free(s) \
+-do{\
+-	const char *file = mem_debug_file;\
+-    vPortFree(s, file, __LINE__);\
+-}while(0)
+-#endif
+-#ifndef mem_malloc
+-#define mem_malloc(s) ({const char *file = mem_debug_file; pvPortMalloc(s, file, __LINE__);})
+-#endif
+-#ifndef mem_calloc
+-#define mem_calloc(s) ({const char *file = mem_debug_file; pvPortCalloc(s, file, __LINE__);})
+-#endif
+-#ifndef mem_realloc
+-#define mem_realloc(p, s) ({const char *file = mem_debug_file; pvPortRealloc(p, s, file, __LINE__);})
+-#endif
+-#ifndef mem_zalloc
+-#define mem_zalloc(s) ({const char *file = mem_debug_file; pvPortZalloc(s, file, __LINE__);})
+-#endif
+-
+-#endif
+-
+-#ifndef os_malloc
 -#define os_malloc(s) mem_malloc((s))
-+#ifndef MEMLEAK_DEBUG
-+#define os_malloc(s) pvPortMalloc(s, "", __LINE__,true)
-+#else
-+#define os_malloc(s) ({const char *file = mem_debug_file; pvPortMalloc(s, file, __LINE__, true);})
-+#endif
+-#endif
+-#ifndef os_realloc
+-#define os_realloc(p, s) mem_realloc((p), (s))
+-#endif
+-#ifndef os_zalloc
+-#define os_zalloc(s) mem_zalloc((s))
+-#endif
+-#ifndef os_free
+-#define os_free(p) mem_free((p))
+-#endif
++#define mem_free(s) os_free(s)
++#define mem_malloc(s) os_malloc(s)
++#define mem_calloc(l, s) os_calloc(l, s)
++#define mem_realloc(p, s) os_realloc(p, s)
++#define mem_zalloc(s) os_zalloc(s)
+ 
+ /* Since there is no C library allocation function to shrink memory without
+    moving it, define this to nothing. */
+ #ifndef mem_trim
+ #define mem_trim(mem, size) (mem)
  #endif
- #ifndef os_realloc
- #define os_realloc(p, s) mem_realloc((p), (s))
+-#else /* MEM_LIBC_MALLOC */
+-
+-/* MEM_SIZE would have to be aligned, but using 64000 here instead of
+- * 65535 leaves some room for alignment...
+- */
+-#if MEM_SIZE > 64000l
+-typedef u32_t mem_size_t;
+-#define MEM_SIZE_F U32_F
+-#else
+-typedef u16_t mem_size_t;
+-#define MEM_SIZE_F U16_F
+-#endif /* MEM_SIZE > 64000 */
+-
+-#if MEM_USE_POOLS
+-/** mem_init is not used when using pools instead of a heap */
+-#define mem_init()
+-/** mem_trim is not used when using pools instead of a heap:
+-    we can't free part of a pool element and don't want to copy the rest */
+-#define mem_trim(mem, size) (mem)
+-#else /* MEM_USE_POOLS */
+-/* lwIP alternative malloc */
+-void  mem_init(void)ICACHE_FLASH_ATTR;
+-void *mem_trim(void *mem, mem_size_t size)ICACHE_FLASH_ATTR;
+-#endif /* MEM_USE_POOLS */
+-void *mem_malloc(mem_size_t size)ICACHE_FLASH_ATTR;
+-void *mem_calloc(mem_size_t count, mem_size_t size)ICACHE_FLASH_ATTR;
+-void  mem_free(void *mem)ICACHE_FLASH_ATTR;
+-#endif /* MEM_LIBC_MALLOC */
+ 
+ /** Calculate memory size for an aligned buffer - returns the next highest
+  * multiple of MEM_ALIGNMENT (e.g. LWIP_MEM_ALIGN_SIZE(3) and
 diff --git a/include/lwip/app/espconn.h b/include/lwip/app/espconn.h
 index ae9ed50..46420df 100644
 --- a/include/lwip/app/espconn.h
@@ -565,3 +594,14 @@ index 14e802e..61d36de 100644
  void sntp_init(void);
  void sntp_stop(void);
 
+diff --git a/espconn_dummy.c b/espconn_dummy.c
+index bbb126a..4cd8840 100644
+--- a/espconn_dummy.c
++++ b/espconn_dummy.c
+@@ -1,5 +1,3 @@
+-#include <c_types.h>
+-
+-void ICACHE_FLASH_ATTR espconn_init(void)
++void espconn_init(void)
+ {
+ }

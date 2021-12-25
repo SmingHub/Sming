@@ -19,7 +19,7 @@ For more information read ``Firmware packaging`` in the documentation of the :li
 
 Security
 --------
-Depending on :envvar:`ENABLE_SSL` a standard SSL/TLS can be enabled. This way
+Depending on :envvar:`ENABLE_SSL` a standard SSL/TLS can be enabled:
 
 1. The communication between the application and the server will be encrypted using standard SSL.
 
@@ -30,6 +30,8 @@ Depending on :envvar:`ENABLE_SSL` a standard SSL/TLS can be enabled. This way
 
 Configuration
 -------------
+
+If :envvar:`ENABLE_SSL` is enabled (highly recommended), OTA upgrade files will be transferred securely over TLS/SSL.
 
 .. envvar:: APP_ID
 
@@ -51,38 +53,15 @@ Configuration
    Contains the application patch version as integer. For stable versions you can use 0 until 255.
    For unstable versions the current timestamp can be used as a patch version.
 
-.. envvar:: ENABLE_OTA_VARINT_VERSION
-
-   Default: 1 (enabled)
-
-   If set to 1 the OTA upgrade mechanism and application will use a `varint <https://developers.google.com/protocol-buffers/docs/encoding#varints>`_
-   encoding for the patch version. Thus allowing unlimited number of patch versions. Useful for enumerating unstable/nightly releases.
-   A bit more difficult to read and write but allows for unlimited versions.
-
-   If set to 0 the OTA upgrade mechanism and application will use one byte for the patch version which will limit it to 256 possible patch versions.
-   Useful for enumarating stable releases. Easier to write and read but limited to 256 versions only.
-
-.. envvar:: ENABLE_OTA_ADVANCED
-
-   Default: 0 (disabled)
-
-   If set to 1 the library will work with OtaUpgradeStream which supports signature and encryption of the firmware data itself.
-   See :library:`OtaUpgrade` for details.
-
-.. envvar:: ENABLE_SSL
-
-   Default: unset (disable)
-
-   If set to 1 (highly recommended), OTA upgrade files will be trasnferred securely over TLS/SSL.
-
 .. envvar:: ENABLE_CLIENT_CERTIFICATE
 
    Default: 0 (disabled)
 
-   Used in combination with ``ENABLE_SSL``. Set to 1 if the remote server requires the application to authenticate via client certficate.
+   Used in combination with ``ENABLE_SSL``. Set to 1 if the remote server requires the application to authenticate via client certificate.
 
 .. envvar:: MQTT_URL
 
    Default: depends on  ``ENABLE_SSL`` and ``ENABLE_CLIENT_CERTIFICATE`` values
 
    Url containing the location of the firmware update MQTT server.
+

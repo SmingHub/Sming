@@ -14,21 +14,21 @@ Timer procTimer;
 
 void init()
 {
+	Serial.begin(SERIAL_BAUD_RATE);  // 115200 by default
+	Serial.systemDebugOutput(false); // Allow debug output to serial
+	Serial.println("<-= Sming start =->");
+
 	//SET higher CPU freq & disable wifi sleep
 	system_update_cpu_freq(SYS_CPU_160MHZ);
-	wifi_set_sleep_type(NONE_SLEEP_T);
 
-	inputchip.begin();
-	outputchip.begin();
-
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 #ifndef DISABLE_WIFI
+	wifi_set_sleep_type(NONE_SLEEP_T);
 	WifiStation.enable(false);
 	WifiAccessPoint.enable(false);
 #endif
 
-	Serial.systemDebugOutput(false); // Allow debug output to serial
-	Serial.println("<-= Sming start =->");
+	inputchip.begin();
+	outputchip.begin();
 
 	inputchip.pinMode(0xFFFF);	 // Use word-write mode to set all of the pins on inputchip to be inputs
 	inputchip.pullupMode(0xFFFF);  // Use word-write mode to Turn on the internal pull-up resistors.

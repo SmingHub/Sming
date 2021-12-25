@@ -15,18 +15,8 @@ Configuration
 
    Default: 0 (disabled)
 
-   If set to 1 the application will try to connect to a WIFI access point. Make sure to provide also the WIFI_SSID and WIFI_PWD values.
+   If set to 1 the application will try to connect to a WIFI access point.
+   Make sure to provide also the :envvar:`WIFI_SSID` and :envvar:`WIFI_PWD` values.
 
    If set to 0 the application will start an access point to which the Host application can connect.
 
-.. envvar:: WIFI_SSID
-
-   Default: PleaseEnterSSID
-
-   WIFI Access Point name. If you have enabled CONNECT_TO_WIFI then make sure to set also WIFI_SSID and WIFI_PWD values.
-
-.. envvar:: WIFI_PWD
-
-   Default: PleaseEnterPass
-
-   WIFI Access Point password. If you have enabled CONNECT_TO_WIFI then make sure to set also WIFI_SSID and WIFI_PWD values.

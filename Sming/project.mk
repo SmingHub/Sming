@@ -2,7 +2,7 @@
 #
 # Created by Espressif
 # UDK modifications by CHERTS <sleuthhound@gmail.com>
-# Cross platform compatability by kireevco <dmitry@kireev.co>
+# Cross platform compatibility by kireevco <dmitry@kireev.co>
 #
 # This makefile is invoked in the application's directory
 #
@@ -18,7 +18,7 @@ endif
 .NOTPARALLEL:
 
 .PHONY: all
-all: checkdirs submodules ##(default) Build all Component libraries
+all: checksoc checkdirs submodules ##(default) Build all Component libraries
 	$(MAKE) components application
 
 # Load current build type from file
@@ -30,6 +30,7 @@ BUILD_SUBTYPE_FILE = out/$(SMING_ARCH)/build-subtype.mk
 
 #
 include $(SMING_HOME)/build.mk
+
 
 #
 # The build system supports several types of configuration variable. The name of the variable needs to be
@@ -77,12 +78,15 @@ CONFIG_VARS			+= USER_CFLAGS
 DEBUG_VARS			+= GLOBAL_CFLAGS
 GLOBAL_CFLAGS = \
 	-DSMING_ARCH=$(SMING_ARCH) \
-	-DESP_VARIANT=$(ESP_VARIANT) \
-	-DSUBARCH_$(call ToUpper,$(ESP_VARIANT))=1 \
+	-DSMING_SOC=$(SMING_SOC) \
 	-DPROJECT_DIR=\"$(PROJECT_DIR)\" \
 	-DSMING_HOME=\"$(SMING_HOME)\" \
 	$(USER_CFLAGS)
 CPPFLAGS			+= $(GLOBAL_CFLAGS)
+
+# Provide an SOC_xxxx value for code use, analogous to ARCH_xxx
+SMING_SOC_VAR	:= SOC_$(call ToUpper,$(SMING_SOC))
+GLOBAL_CFLAGS	+= -D$(SMING_SOC_VAR)=1
 
 # Targets to be added as dependencies of the application, built directly in this make instance
 CUSTOM_TARGETS			:=
@@ -109,10 +113,8 @@ DEBUG_VARS			+= TARGET_OUT_0
 CACHE_VARS			+= APP_NAME
 APP_NAME			?= app
 
-# Firmware memory layout info files
-FW_MEMINFO_NEW		:= $(FW_BASE)/fwMeminfo.new
-FW_MEMINFO_OLD		:= $(FW_BASE)/fwMeminfo.old
-FW_MEMINFO_SAVED	:= out/fwMeminfo
+# Firmware memory layout info file
+FW_MEMINFO			:= $(FW_BASE)/fwMeminfo.txt
 
 # List of Components we're going to parse, with duplicate libraries removed
 COMPONENTS			:= Sming
@@ -147,7 +149,12 @@ COMPONENTS_EXTRA_INCDIR	:=
 APPCODE				:=
 
 # Python requirements.txt collected from components
-PYTHON_REQUIREMENTS := 
+PYTHON_REQUIREMENTS := $(abspath $(SMING_HOME)/../Tools/requirements.txt)
+
+# SOCs supported by project
+DEBUG_VARS += PROJECT_SOC
+PROJECT_SOC := $(AVAILABLE_SOCS)
+export PROJECT_SOC
 
 #
 # This macro sets the default component variables before including the (optional) component.mk file.
@@ -157,11 +164,13 @@ PYTHON_REQUIREMENTS :=
 # $3 -> Build directory
 # $4 -> Output library directory
 define ParseComponent
+ifneq (,$$(findstring $(SMING_SOC),$$(PROJECT_SOC)))
 $(if $V,$(info -- Parsing $1))
 $(if $2,,$(error Component '$1' not found))
 SUBMODULES				+= $(filter $2,$(ALL_SUBMODULES))
 CMP_$1_PATH				:= $2
 CMP_$1_LIBDIR			:= $4
+COMPONENT_SOC			:= *
 COMPONENT_LIBDIR		:= $$(CMP_$1_LIBDIR)
 COMPONENT_INCDIRS		:= include
 COMPONENT_NAME			:= $1
@@ -193,6 +202,11 @@ LIBS					+= $$(EXTRA_LIBS)
 CMP_$1_LDFLAGS			:= $$(EXTRA_LDFLAGS)
 LDFLAGS					+= $$(CMP_$1_LDFLAGS)
 endif
+CMP_$1_SOC				:= $$(filter $$(subst *,%,$$(COMPONENT_SOC)),$(AVAILABLE_SOCS))
+ifeq (,$$(CMP_$1_SOC))
+$$(error Unknown SOC: $$(COMPONENT_SOC))
+endif
+PROJECT_SOC				:= $$(filter $$(CMP_$1_SOC),$$(PROJECT_SOC))
 CMP_$1_PREREQUISITES	:= $$(COMPONENT_PREREQUISITES)
 CMP_$1_TARGETS			:= $$(COMPONENT_TARGETS)
 CMP_$1_BUILD_DIR		:= $$(COMPONENT_BUILD_DIR)
@@ -212,6 +226,7 @@ PARSED_COMPONENTS		+= $$(DEPENDENCIES)
 $$(call ParseComponentList,$$(DEPENDENCIES))
 endif
 endif # App
+endif # PROJECT_SOC
 endef # ParseComponent
 
 # Build a list of all available Components
@@ -234,10 +249,10 @@ $(eval $(call ParseComponent,App,$(CURDIR),$(BUILD_BASE),$(abspath $(APP_LIBDIR)
 
 # Load cached configuration variables. On first run this file won't exist, so all values
 # will be as specified by defaults or in project's component.mk file.
-# Values may be overriden via command line to update the cache.
+# Values may be overridden via command line to update the cache.
 # If file has become corrupted it will prevent cleaning, so make this conditional.
 CONFIG_CACHE_FILE	:= $(OUT_BASE)/config.mk
-ifndef MAKE_CLEAN
+ifeq (,$(filter config-clean dist-clean,$(MAKECMDGOALS)))
 -include $(CONFIG_CACHE_FILE)
 endif
 
@@ -245,7 +260,8 @@ endif
 CONFIG_DEBUG_FILE	:= $(OUT_BASE)/debug.mk
 
 # Append standard search directories to any defined by the application
-ALL_SEARCH_DIRS			:= $(call FixPath,$(abspath $(COMPONENT_SEARCH_DIRS)))
+COMPONENT_SEARCH_DIRS	:= $(call FixPath,$(COMPONENT_SEARCH_DIRS))
+ALL_SEARCH_DIRS			:= $(abspath $(COMPONENT_SEARCH_DIRS))
 COMPONENTS_EXTRA_INCDIR	+= $(ALL_SEARCH_DIRS)
 ALL_SEARCH_DIRS			+= $(ARCH_COMPONENTS) $(SMING_HOME)/Components $(SMING_HOME)/Libraries
 
@@ -342,6 +358,22 @@ $(foreach v,$(EXPORT_VARS),$(eval export $v))
 
 
 ##@Building
+
+.PHONY: sample
+ifeq (,$(findstring $(SMING_SOC),$(PROJECT_SOC)))
+sample:
+	$(info Not building: Sample doesn't support $(SMING_SOC))
+else
+sample: all
+endif
+
+
+.PHONY: checksoc
+checksoc:
+ifeq (,$(findstring $(SMING_SOC),$(PROJECT_SOC)))
+	$(error Project only supports: $(PROJECT_SOC))
+endif
+
 
 COMPONENT_DIRS := $(foreach d,$(ALL_SEARCH_DIRS),$(wildcard $d/*))
 
@@ -536,7 +568,12 @@ export HOST_PARAMETERS
 .PHONY: ide-vscode-update
 ide-vscode-update:
 	$(Q) SMING_HOME=$(SMING_HOME) OUT_BASE=$(OUT_BASE) \
-	$(PYTHON) $(SMING_HOME)/../Tools/vscode/setup.py
+	$(PYTHON) $(SMING_TOOLS)/ide/vscode/setup.py
+	
+.PHONY: ide-eclipse
+ide-eclipse: ##Create Eclipse project configuration
+	$(Q) SMING_HOME=$(SMING_HOME) OUT_BASE=$(OUT_BASE) \
+	$(PYTHON) $(SMING_TOOLS)/ide/eclipse/setup.py
 
 ##@Testing
 
@@ -558,14 +595,14 @@ tcp-serial-redirect: ##Redirect COM port to TCP port
 ifdef WSL_ROOT
 	$(Q) cmd.exe /c start /MIN python3 $(WSL_ROOT)/$(TCP_SERIAL_REDIRECT)
 else
-	$(Q) gnome-terminal -- bash -c "$(PYTHON) $(TCP_SERIAL_REDIRECT)"
+	$(Q) $(call DetachCommand,$(PYTHON) $(TCP_SERIAL_REDIRECT))
 endif
 
 
 ##@Help
 
 .PHONY: list-config
-list-config: ##Print the contents of build variables
+list-config: checksoc ##Print the contents of build variables
 	$(info )
 	$(info ** Sming build configuration **)
 	$(info )
@@ -602,7 +639,7 @@ define PrintComponentInfo
 endef
 
 .PHONY: list-components
-list-components: ##Print details of all Components for this project
+list-components: checksoc ##Print details of all Components for this project
 	$(call PrintVariable,ALL_SEARCH_DIRS)
 	$(if $(V),$(call PrintVariable,ALL_COMPONENT_DIRS))
 	$(info Components:)
@@ -652,8 +689,9 @@ $(shell	mkdir -p $(dir $1);
 endef
 
 # Update build type cache
-$(eval $(call WriteCacheValues,$(BUILD_TYPE_FILE),SMING_ARCH SMING_RELEASE STRICT))
-$(eval $(call WriteCacheValues,$(BUILD_SUBTYPE_FILE),ESP_VARIANT))
+ifndef MAKE_CLEAN
+$(eval $(call WriteCacheValues,$(BUILD_TYPE_FILE),SMING_SOC SMING_RELEASE STRICT))
+endif
 
 # Update config cache file
 # We store the list of variable names to ensure that any not actively in use don't get lost
@@ -670,4 +708,43 @@ ifndef MAKE_CLEAN
 CACHED_VAR_NAMES := $(sort $(CACHED_VAR_NAMES) $(CONFIG_VARS) $(RELINK_VARS) $(CACHE_VARS))
 $(eval $(call WriteConfigCache,$(CONFIG_CACHE_FILE),CACHED_VAR_NAMES))
 $(eval $(call WriteCacheValues,$(CONFIG_DEBUG_FILE),$(sort $(DEBUG_VARS))))
+endif
+
+
+##@Configuration
+
+export UNAME
+# List of all Kconfig files
+export KCONFIG_FILES = $(wildcard $(foreach c,$(filter-out Sming,$(COMPONENTS)),$(CMP_$c_PATH)/Kconfig))
+# File containing list of component Kconfig file paths (created by cfgtool)
+export KCONFIG_COMPONENTS = $(OUT_BASE)/kconfig.in
+
+KCONFIG := $(SMING_HOME)/Kconfig
+KCONFIG_CONFIG := $(OUT_BASE)/kconfig.config
+
+KCONFIG_ENV := \
+	CONFIG_= \
+	KCONFIG=$(KCONFIG) \
+	KCONFIG_CONFIG=$(KCONFIG_CONFIG)
+
+CFGTOOL_CMDLINE = $(KCONFIG_ENV) $(PYTHON) $(SMING_TOOLS)/cfgtool.py $(CONFIG_CACHE_FILE)
+
+.PHONY: menuconfig
+menuconfig: checksoc ##Run option editor
+	$(Q) $(CFGTOOL_CMDLINE) --to-kconfig
+	$(Q) $(KCONFIG_ENV) $(PYTHON) -m menuconfig $(SMING_HOME)/Kconfig
+	$(Q) $(CFGTOOL_CMDLINE) --from-kconfig
+
+.PHONY: list-soc
+list-soc: ##List supported and available SOCs
+	@echo "Available SoCs: $(AVAILABLE_SOCS)"
+	@echo "Project support:"
+	@$(foreach s,$(AVAILABLE_SOCS),$(MAKE) --no-print-directory --silent MAKE_CLEAN=1 SMING_ARCH= SMING_SOC=$s checksoc-print; )
+
+.PHONY: list-soc-check
+checksoc-print:
+ifeq (,$(findstring $(SMING_SOC),$(PROJECT_SOC)))
+	$(info - NO:  $(SMING_SOC))
+else
+	$(info - YES: $(SMING_SOC))
 endif

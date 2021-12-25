@@ -244,7 +244,7 @@ public:
 	/**	@brief	Set WiFi station IP parameters
 	 *	@param	address IP address
 	 *	@param	netmask Network mask
-	 *	@param	gateway Default gatway
+	 *	@param	gateway Default gateway
 	 *	@retval	bool True on success
 	 */
 	virtual bool setIP(IpAddress address, IpAddress netmask, IpAddress gateway) = 0;
@@ -294,14 +294,6 @@ public:
 	 *	@param	callback Function to call on WiFi WPS Events (Default: none)
 	 */
 	virtual bool wpsConfigStart(WPSConfigDelegate callback = nullptr) = 0;
-
-	/**	@brief	Start WiFi station by WPS method
-	 * 	@deprecated Use `wpsConfigStart()`
-	 */
-	bool beginWPSConfig() SMING_DEPRECATED
-	{
-		return wpsConfigStart(nullptr);
-	}
 
 	/**	@brief	Stop WiFi station WPS configuration
 	 */

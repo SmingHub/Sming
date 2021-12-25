@@ -20,6 +20,9 @@
 class CommandExecutor
 {
 public:
+	CommandExecutor(const CommandExecutor&) = delete;
+	CommandExecutor& operator=(const CommandExecutor&) = delete;
+
 #ifndef DISABLE_NETWORK
 	CommandExecutor(TcpClient* cmdClient);
 	CommandExecutor(WebsocketConnection* reqSocket);

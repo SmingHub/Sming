@@ -1,7 +1,7 @@
 /*
  * SI4432 library for Arduino - v0.1
  *
- * Please note that Library uses standart SS pin for NSEL pin on the chip. This is 53 for Mega, 10 for Uno.
+ * Please note that Library uses standard SS pin for NSEL pin on the chip. This is 53 for Mega, 10 for Uno.
  * NOTES:
  *
  * V0.1
@@ -196,7 +196,7 @@ bool Si4432::sendPacket(uint8_t length,
 		}
 	}
 
-	//timeout occured.
+	//timeout occurred.
 	debugf("TX timeout");
 
 	switchMode(Ready);
@@ -223,7 +223,7 @@ bool Si4432::waitForPacket(uint64_t waitMs) {
 		}
 
 	}
-	//timeout occured.
+	//timeout occurred.
 
 	debugf("RX timeout");
 
@@ -298,7 +298,7 @@ void Si4432::setBaudRate(uint16_t kbps) {
 	debugf("min Bandwidth value: %x ", minBandwidth);
 #endif
 	byte IFValue = 0xff;
-	//since the table is ordered (from low to high), just find the 'minimum bandwith which is greater than required'
+	//since the table is ordered (from low to high), just find the 'minimum bandwidth which is greater than required'
 	for (byte i = 0; i < 8; ++i) {
 		if (IFFilterTable[i][0] >= (minBandwidth * 10)) {
 			IFValue = IFFilterTable[i][1];
@@ -483,7 +483,7 @@ void Si4432::startListening() {
 bool Si4432::isPacketReceived() {
 
 	if ((_intPin != 0) && (digitalRead(_intPin) != 0)) {
-		return false; // if no interrupt occured, no packet received is assumed (since startListening will be called prior, this assumption is enough)
+		return false; // if no interrupt occurred, no packet received is assumed (since startListening will be called prior, this assumption is enough)
 	}
 	// check for package received status interrupt register
 	byte intStat = ReadRegister(REG_INT_STATUS1);
@@ -491,13 +491,13 @@ bool Si4432::isPacketReceived() {
 #if DEBUG_SI4432
 	byte intStat2 = ReadRegister(REG_INT_STATUS2);
 
-	if (intStat2 & 0x40) { //interrupt occured, check it && read the Interrupt Status1 register for 'preamble '
+	if (intStat2 & 0x40) { //interrupt occurred, check it && read the Interrupt Status1 register for 'preamble '
 
 		debugf("Valid Preamble detected -- %x", intStat2);
 
 	}
 
-	if (intStat2 & 0x80) { //interrupt occured, check it && read the Interrupt Status1 register for 'preamble '
+	if (intStat2 & 0x80) { //interrupt occurred, check it && read the Interrupt Status1 register for 'preamble '
 
 		debugf("SYNC WORD detected -- %x", intStat2);
 
@@ -506,7 +506,7 @@ bool Si4432::isPacketReceived() {
 	ReadRegister(REG_INT_STATUS2);
 #endif
 
-	if (intStat & 0x02) { //interrupt occured, check it && read the Interrupt Status1 register for 'valid packet'
+	if (intStat & 0x02) { //interrupt occurred, check it && read the Interrupt Status1 register for 'valid packet'
 		switchMode(Ready | TuneMode); // if packet came, get out of Rx mode till the packet is read out. Keep PLL on for fast reaction
 #if DEBUG_SI4432
 				debugf("Packet detected -- %x", intStat);

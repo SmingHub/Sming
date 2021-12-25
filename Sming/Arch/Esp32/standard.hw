@@ -27,7 +27,7 @@
 		},
 		"factory": {
 			"address": "0x010000",
-			"size": "0x180000",
+			"size": "0x0f0000",
 			"type": "app",
 			"subtype": "factory",
 			"filename": "$(TARGET_BIN)"

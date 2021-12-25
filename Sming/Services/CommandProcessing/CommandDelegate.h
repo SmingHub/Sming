@@ -22,13 +22,10 @@
  */
 using CommandFunctionDelegate = Delegate<void(String commandLine, CommandOutput* commandOutput)>;
 
-/** @deprecated Use `CommandFunctionDelegate` instead */
-typedef CommandFunctionDelegate commandFunctionDelegate SMING_DEPRECATED;
-
 /** @brief  Command delegate class */
 class CommandDelegate
 {
-	// Hashmap uses CommandDelegate() contructor when extending size
+	// Hashmap uses CommandDelegate() constructor when extending size
 	friend class HashMap<String, CommandDelegate>;
 
 public:

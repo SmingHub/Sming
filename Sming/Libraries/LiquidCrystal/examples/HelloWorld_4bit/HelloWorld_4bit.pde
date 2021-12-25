@@ -8,7 +8,7 @@
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2, BACKLIGH_PIN, POSITIVE );
 
 
-// Creat a set of new characters
+// Create a set of new characters
 byte smiley[8] = {
   0b00000,
   0b00000,

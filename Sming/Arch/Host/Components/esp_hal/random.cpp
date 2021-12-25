@@ -15,10 +15,10 @@
  *
  ****/
 
-#include "include/esp_libc.h"
+#include "include/esp_system.h"
 #include <chrono>
 #include <random>
-#include <assert.h>
+#include <cassert>
 
 // See https://codeforces.com/blog/entry/61587
 std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());

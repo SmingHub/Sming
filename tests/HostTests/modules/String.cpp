@@ -102,6 +102,13 @@ public:
 			REQUIRE(FS_Text4 == text);
 		}
 
+		TEST_CASE("replace, increase length with first char (Bug 24/10/2021)")
+		{
+			String s = F("abcdefa");
+			s.replace("a", "aa");
+			REQUIRE(F("aabcdefaa") == s);
+		}
+
 		TEST_CASE("content check (manual inspection)")
 		{
 			DEFINE_FSTR_LOCAL(test, "This is a some test data \1\2\3 Not all ASCII\0"

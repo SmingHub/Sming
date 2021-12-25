@@ -52,6 +52,9 @@ ALIGNMENT = {
     },
     "Host": {
         APP_TYPE: 0x1000,
+    },
+    "Rp2040": {
+        APP_TYPE: 0x1000,
     }
 }
 
@@ -129,6 +132,7 @@ def parse_subtype(ptype, value):
 class Table(list):
 
     def __init__(self, devices):
+        """Create table of partitions against list of registered devices."""
         super().__init__(self)
         self.devices = devices
 
@@ -180,8 +184,7 @@ class Table(list):
         return dict
 
     def __getitem__(self, item):
-        """Allow partition table access by name or index
-        """
+        """Allow partition table access by name or index."""
         if isinstance(item, str):
             p = self.find_by_name(item)
             if p is None:
@@ -190,8 +193,7 @@ class Table(list):
         return super().__getitem__(item)
 
     def find_by_type(self, ptype, subtype):
-        """Return a partition by type & subtype, returns None if not found
-        """
+        """Return a partition by type & subtype, returns None if not found."""
         # convert ptype & subtypes names (if supplied this way) to integer values
         try:
             ptype = TYPES[ptype]
@@ -228,8 +230,7 @@ class Table(list):
         return None
 
     def verify(self, config, secure):
-        """Verify partition layout
-        """
+        """Verify partition layout."""
         # verify each partition individually
         for p in self:
             p.verify(config.arch, secure)
@@ -276,8 +277,7 @@ class Table(list):
             last = p
 
     def parse_binary(self, b, devices):
-        """Construct partition table object from binary image
-        """
+        """Construct partition table object from binary image."""
         dev = None
         md5 = hashlib.md5()
         for o in range(0, len(b), PARTITION_ENTRY_SIZE):
@@ -309,8 +309,7 @@ class Table(list):
         raise InputError("Partition table is missing an end-of-table marker")
 
     def to_binary(self, devices):
-        """Create binary image of partition table
-        """
+        """Create binary image of partition table."""
         dev_count = 0
         dev = None
         result = b""
@@ -318,7 +317,7 @@ class Table(list):
             if e.device != dev:
                 if dev_count == 1:
                     result += MD5_PARTITION_BEGIN + hashlib.md5(result).digest()
-                    # esp32 bootloader will see this as end of partition table 
+                    # esp32 bootloader will see this as end of partition table
                     result += struct.pack(Entry.STRUCT_FORMAT,
                                 b"\xff\xff",
                                 0xff, 0xff,
@@ -365,8 +364,7 @@ class Entry(object):
         self.unused_after = 0
 
     def parse_dict(self, data, devices):
-        """Construct a partition object from JSON definition
-        """
+        """Construct a partition object from JSON definition."""
         try:
             # Sort out type information first
             v = data.pop('type', None)
@@ -426,7 +424,7 @@ class Entry(object):
         dict.pop('build', None)
         for k, v in dict.items():
             k = "PARTITION_%s_%s" % (self.name, k.upper())
-            res[k] = int(v) if type(v) is bool else v
+            res[k] = int(v) if isinstance(v, bool) else v
 
         return res
 
@@ -558,8 +556,8 @@ class Entry(object):
 
 
 class Map(Table):
-    """Contiguous map of flash memory
-    """
+
+    """Contiguous map of flash memory."""
     def __init__(self, config):
         def add(table, device, name, address, size, subtype):
             entry = Entry(device, name, address, size, INTERNAL_TYPE, subtype)
@@ -576,7 +574,8 @@ class Map(Table):
         # Take copy of source partitions and add internal ones to appear in the map
         partitions = copy.copy(config.partitions)
         if config.partition_table_offset != 0:
-            add(partitions, device, 'Boot Sector', 0, config.bootloader_size, INTERNAL_BOOT_SECTOR)
+            if config.bootloader_size != 0:
+                add(partitions, device, 'Boot Sector', 0, config.bootloader_size, INTERNAL_BOOT_SECTOR)
             add(partitions, device, 'Partition Table', config.partition_table_offset, PARTITION_TABLE_SIZE, INTERNAL_PARTITION_TABLE)
 
         # Devices with no defined partitions

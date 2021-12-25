@@ -1,7 +1,5 @@
 SDK_COMPONENTS_PATH := $(IDF_PATH)/components
 
-# See build.mk for default ESP_VARIANT - determines toolchain
-
 COMPONENT_DEPENDS := libc
 
 COMPONENT_SRCDIRS := src
@@ -24,15 +22,19 @@ SDK_LIBDIRS := \
 	$(ESP_VARIANT)/ld \
 	esp_rom/$(ESP_VARIANT)/ld
 
+ESP32_COMPONENT_PATH := $(COMPONENT_PATH)
+SDK_DEFAULT_PATH := $(ESP32_COMPONENT_PATH)/sdk
+
 LIBDIRS += \
 	$(SDK_COMPONENT_LIBDIR) \
 	$(SDK_BUILD_BASE)/esp-idf/mbedtls/mbedtls/library \
 	$(SDK_BUILD_BASE)/esp-idf/$(ESP_VARIANT) \
 	$(SDK_BUILD_BASE)/esp-idf/$(ESP_VARIANT)/ld \
-	$(COMPONENT_PATH)/ld \
+	$(ESP32_COMPONENT_PATH)/ld \
 	$(addprefix $(SDK_COMPONENTS_PATH)/,$(SDK_LIBDIRS))
 
 SDK_INCDIRS := \
+	app_update/include \
 	bootloader_support/include \
 	bootloader_support/include_bootloader \
 	driver/$(ESP_VARIANT)/include \
@@ -151,11 +153,6 @@ ifeq ($(ESP_VARIANT),esp32)
 SDK_ESP_WIFI_LIBS += rtc
 endif
 
-SDK_NEWLIB_LIBS := \
-	c \
-	m  \
-	stdc++
-
 ifdef IDF_TARGET_ARCH_RISCV
 SDK_TARGET_ARCH_LIBS := hal
 else
@@ -163,9 +160,7 @@ SDK_TARGET_ARCH_LIBS := hal xt_hal
 endif
 
 EXTRA_LIBS := \
-	gcc \
 	$(SDK_COMPONENTS) \
-	$(SDK_NEWLIB_LIBS) \
 	$(SDK_TARGET_ARCH_LIBS)
 
 ifneq ($(DISABLE_WIFI),1)
@@ -196,23 +191,18 @@ LDFLAGS_esp32s3 := \
 	$(call LinkerScript,rom.newlib-data) \
 	$(call LinkerScript,rom.spiflash)
 
+SDK_WRAP_SYMBOLS :=
+SDK_UNDEF_SYMBOLS :=
+
+$(foreach c,$(wildcard $(SDK_DEFAULT_PATH)/*.mk),$(eval include $c))
+
 EXTRA_LDFLAGS := \
-	-u esp_app_desc \
-	-u __cxa_guard_dummy -u __cxx_fatal_exception \
 	-T $(ESP_VARIANT)_out.ld \
-	-u ld_include_panic_highint_hdl \
 	$(call LinkerScript,project) \
 	$(call LinkerScript,peripherals) \
 	$(call LinkerScript,rom) \
 	$(call LinkerScript,rom.api) \
 	$(call LinkerScript,rom.libgcc) \
-	-u newlib_include_locks_impl \
-	-u newlib_include_heap_impl \
-	-u newlib_include_syscalls_impl \
-	-u pthread_include_pthread_impl \
-	-u pthread_include_pthread_cond_impl \
-	-u pthread_include_pthread_local_storage_impl \
-	-Wl,--undefined=uxTopUsedPriority \
 	$(call Wrap,\
 		esp_event_loop_create_default \
 		esp_event_handler_register \
@@ -221,10 +211,12 @@ EXTRA_LDFLAGS := \
 		esp_event_handler_instance_unregister \
 		esp_event_post \
 		esp_event_isr_post) \
-	$(LDFLAGS_$(ESP_VARIANT))
+	$(LDFLAGS_$(ESP_VARIANT)) \
+	$(call Undef,$(SDK_UNDEF_SYMBOLS)) \
+	$(call Wrap,$(SDK_WRAP_SYMBOLS))
 
-SDK_DEFAULT_PATH := $(COMPONENT_PATH)/sdk
-SDK_PROJECT_PATH := $(COMPONENT_PATH)/project/$(ESP_VARIANT)/$(BUILD_TYPE)
+
+SDK_PROJECT_PATH := $(ESP32_COMPONENT_PATH)/project/$(ESP_VARIANT)/$(BUILD_TYPE)
 SDK_CONFIG_DEFAULTS := $(SDK_PROJECT_PATH)/sdkconfig.defaults
 
 SDKCONFIG_MAKEFILE := $(SDK_PROJECT_PATH)/sdkconfig
@@ -248,12 +240,20 @@ export SDK_BUILD_BASE
 export SDK_COMPONENT_LIBDIR
 export SDK_COMPONENTS
 
-CUSTOM_TARGETS += checksdk
+ifndef MAKE_CLEAN
+.PHONY: checkdirs
+checkdirs: | checksdk	
 
 .PHONY: checksdk
 checksdk: $(SDK_PROJECT_PATH) $(SDKCONFIG_H) $(SDKCONFIG_MAKEFILE)
 	$(Q) $(NINJA) -C $(SDK_BUILD_BASE) bootloader app
-	$(Q) $(MAKE) --no-print-directory -C $(SDK_DEFAULT_PATH) -f misc.mk copylibs
+	$(Q) $(MAKE) --no-print-directory -C $(ESP32_COMPONENT_PATH) -f misc.mk copylibs
+
+.PHONY: reconfigure-sdk
+reconfigure-sdk:
+	$(Q) $(SDK_BUILD) reconfigure
+
+$(COMPONENT_NAME)-build: reconfigure-sdk
 
 $(SDKCONFIG_H) $(SDKCONFIG_MAKEFILE) $(SDK_COMPONENT_LIBS): $(SDK_PROJECT_PATH) $(SDK_CONFIG_DEFAULTS) | $(SDK_BUILD_BASE) $(SDK_COMPONENT_LIBDIR)
 	$(Q) $(SDK_BUILD) reconfigure
@@ -263,6 +263,7 @@ $(SDK_PROJECT_PATH):
 	$(Q) cp -r $(SDK_DEFAULT_PATH)/project/* $@
 
 $(SDK_COMPONENT_LIBS): checksdk
+endif
 
 SDK_CONFIG_FILES := \
 	common \
@@ -309,7 +310,3 @@ sdk-help: ##Get SDK build options
 .PHONY: sdk
 sdk: ##Pass options to IDF builder, e.g. `make sdk -- --help` or `make sdk menuconfig` 
 	$(Q) $(SDK_BUILD) $(filter-out sdk,$(MAKECMDGOALS))
-
-.PHONY: checkdirs   
-checkdirs: | checksdk	
-			            

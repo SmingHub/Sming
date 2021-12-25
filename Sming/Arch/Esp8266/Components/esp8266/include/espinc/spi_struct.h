@@ -104,7 +104,7 @@ typedef struct {
             uint32_t clkcnt_h:       6;                     /*In the master mode it must be floor((spi_clkcnt_n+1)/2-1). In the slave mode it must be 0.*/
             uint32_t clkcnt_n:       6;                     /*In the master mode it is the divider of spi_clk. So spi_clk frequency is system/(spi_clkdiv_pre+1)/(spi_clkcnt_n+1)*/
             uint32_t clkdiv_pre:    13;                     /*In the master mode it is pre-divider of spi_clk.*/
-            uint32_t clk_equ_sysclk: 1;                     /*In the master mode 1: spi_clk is eqaul to system 0: spi_clk is divided from system clock.*/
+            uint32_t clk_equ_sysclk: 1;                     /*In the master mode 1: spi_clk is equal to system 0: spi_clk is divided from system clock.*/
         };
         uint32_t val;
     } clock;

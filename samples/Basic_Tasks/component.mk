@@ -1,3 +1,4 @@
+COMPONENT_SOC := esp* host
 ARDUINO_LIBRARIES := ArduinoFFT SignalGenerator
 ENABLE_TASK_COUNT := 1
 

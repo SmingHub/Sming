@@ -269,29 +269,29 @@ public:
 		}
 	}
 
-	void __attribute__((noinline)) loadBuffer(const char* buffer, size_t length)
+	void __noinline loadBuffer(const char* buffer, size_t length)
 	{
 		TEST_ASSERT(Json::deserialize(doc, buffer, length));
 	}
 
-	void __attribute__((noinline)) loadFlashString()
+	void __noinline loadFlashString()
 	{
 		TEST_ASSERT(Json::deserialize(doc, Resource::test_json));
 	}
 
-	void __attribute__((noinline)) loadFlashStringViaStream(bool useFlashRead)
+	void __noinline loadFlashStringViaStream(bool useFlashRead)
 	{
 		FSTR::Stream stream(Resource::test_json, useFlashRead);
 		TEST_ASSERT(Json::deserialize(doc, stream));
 	}
 
-	void __attribute__((noinline)) loadStream(IDataSourceStream& stream)
+	void __noinline loadStream(IDataSourceStream& stream)
 	{
 		stream.seekFrom(0, SeekOrigin::Start);
 		TEST_ASSERT(Json::deserialize(doc, stream));
 	}
 
-	void __attribute__((noinline)) loadFile(const char* filename)
+	void __noinline loadFile(const char* filename)
 	{
 		FileStream fs(filename);
 		loadStream(fs);

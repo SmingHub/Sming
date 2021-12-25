@@ -9,6 +9,7 @@
  ****/
 
 #include "TemplateStream.h"
+#include <debug_progmem.h>
 
 String TemplateStream::evaluate(char*& expr)
 {
@@ -66,9 +67,16 @@ uint16_t TemplateStream::readMemoryBlock(char* data, int bufSize)
 		return 0;
 	}
 
-	auto findStartTag = [this](char* buf) {
-		auto p = doubleBraces ? strstr(buf, "{{") : strchr(buf, '{');
-		return static_cast<char*>(p);
+	auto findStartTag = [this](char* buf) -> char* {
+		if(doubleBraces) {
+			return strstr(buf, "{{");
+		}
+
+		char* p = buf;
+		while((p = strchr(p, '{')) != nullptr && (p[1] <= ' ' || p[1] == '"')) {
+			++p;
+		}
+		return p;
 	};
 
 	auto start = data;

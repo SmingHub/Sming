@@ -6,7 +6,7 @@ LiquidCrystal_SR lcd(8,7,TWO_WIRE);
 //                   | \-- Clock Pin
 //                   \---- Data/Enable Pin
 
-// Creat a set of new characters
+// Create a set of new characters
 byte armsUp[8] = {0b00100,0b01010,0b00100,0b10101,0b01110,0b00100,0b00100,0b01010};
 byte armsDown[8] = {0b00100,0b01010,0b00100,0b00100,0b01110,0b10101,0b00100,0b01010};
 

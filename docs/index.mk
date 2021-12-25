@@ -4,8 +4,6 @@
 # $2 -> Path
 # $3 -> Source path relative to working root directory (SMINGDIR)
 define GenIndex
-:custom_pagename: $(patsubst ../%,%,$(CMP_$2_README))
-
 $(if $(filter %.rst,$(CMP_$2_README)),
 .. include:: $(call GetIncludePath,$(CMP_$2_README)),
 .. mdinclude:: $(call GetMdIncludePath,$(CMP_$2_README))
@@ -13,15 +11,10 @@ $(if $(filter %.rst,$(CMP_$2_README)),
 
 References
 ----------
-$(if $(findstring $3=,$(SUBMODULE_URLS)),
-* `Source Code <$(call GetSubmoduleURL,$3)>`__ (submodule, may be patched).,
-* :source:`Source Code <$3>`)
-$(foreach d,$(sort $(CMP_$2_DEPEND_DIRS)),
-* :doc:`$d/index` Component
-)
-$(foreach l,$(sort $(CMP_$2_LIBRARIES)),
-* :library:`$l` Library
-)
+
+* :source:`Source Code <$3>`
+$(foreach d,$(sort $(CMP_$2_DEPENDS)),
+* :doc:`$(call GetDocPath,$d)/index`)
 
 $(if $(CMP_$1_XREF),
 Used by
@@ -35,6 +28,12 @@ Environment Variables
 $(foreach v,$(CMP_$2_ENVVARS),
 * :envvar:`$v`
 ))
+
+SoC support
+-----------
+$(foreach s,$(CMP_$2_SOC_DEPENDS),
+- $s)
+
 
 $(foreach m,$(CMP_$2_SUBMODULES),
 Submodule: `$m <$(call GetSubmoduleURL,$3/$m)>`__

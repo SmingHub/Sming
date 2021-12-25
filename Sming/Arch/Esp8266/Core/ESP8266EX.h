@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "user_config.h"
+#include <c_types.h>
 
 #define TOTAL_PINS 16
 #define NUM_DIGITAL_PINS TOTAL_PINS

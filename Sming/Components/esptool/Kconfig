@@ -1,0 +1,9 @@
+menu "esptool"
+   config COM_PORT_ESPTOOL
+      string "Port to use for flashing device"
+      default COM_PORT
+
+   config COM_SPEED_ESPTOOL
+      string "Baud rate to use for flashing device"
+      default COM_SPEED
+endmenu

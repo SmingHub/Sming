@@ -1,5 +1,5 @@
 /*
- * This sample application demostrates RPC communication via TCP.
+ * This sample application demonstrates RPC communication via TCP.
  * It will try to connect to create an existing Access Point (AP) or create to a new AP and start a TCP server.
  * The TCP server will listen on port 4031 for remote commands.
  */
@@ -58,7 +58,7 @@ void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 		return true;
 	});
 
-	Serial.printf("Running RCP server on: %s:%u", ip.toString().c_str(), port);
+	Serial.printf("Running RPC server on: %s:%u", ip.toString().c_str(), port);
 }
 
 } // namespace
@@ -75,7 +75,7 @@ void init()
 	WifiEvents.onStationGotIP(connectOk);
 #else
 	WifiAccessPoint.enable(true);
-	WifiAccessPoint.config(_F("RCP Server"), nullptr, AUTH_OPEN);
+	WifiAccessPoint.config(_F("RPC Server"), nullptr, AUTH_OPEN);
 	connectOk(WifiAccessPoint.getIP(), WifiAccessPoint.getNetworkMask(), WifiAccessPoint.getNetworkGateway());
 #endif
 }

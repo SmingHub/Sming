@@ -1,0 +1,7 @@
+# Build an appveyor Windows container image with Sming tools installed
+FROM appveyor/build-image:minimal-windowsservercore-ltsc2019
+ARG SMING_REPO=https://github.com/SmingHub/Sming
+ARG SMING_BRANCH=develop
+WORKDIR /tmp
+RUN git clone %SMING_REPO% --branch %SMING_BRANCH% --depth 1 sming && \
+    pwsh "sming/Tools/Docker/appveyor/setup.ps1"

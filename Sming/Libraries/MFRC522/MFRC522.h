@@ -74,7 +74,6 @@
  */
 #ifndef MFRC522_h
 #define MFRC522_h
-#include <user_config.h>
 #include <SmingCore.h>
 #include <SPI.h>
 
@@ -289,7 +288,7 @@ public:
 	enum StatusCode {
 		STATUS_OK				= 1,	// Success
 		STATUS_ERROR			= 2,	// Error in communication
-		STATUS_COLLISION		= 3,	// Collission detected
+		STATUS_COLLISION		= 3,	// Collision detected
 		STATUS_TIMEOUT			= 4,	// Timeout in communication.
 		STATUS_NO_ROOM			= 5,	// A buffer is not big enough.
 		STATUS_INTERNAL_ERROR	= 6,	// Internal error in the code. Should not happen ;-)

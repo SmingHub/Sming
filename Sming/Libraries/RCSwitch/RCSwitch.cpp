@@ -1,5 +1,5 @@
 /*
-  RCSwitch - Arduino libary for remote control outlet switches
+  RCSwitch - Arduino library for remote control outlet switches
   Copyright (c) 2011 Suat Özgür.  All right reserved.
   
   Contributors:
@@ -31,8 +31,6 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include <user_config.h>
-//#include <SmingCore.h>
 #include "RCSwitch.h"
 
 /* Format for protocol definitions:
@@ -673,7 +671,7 @@ static IRAM_ATTR __forceinline unsigned int diff(int A, int B) {
 bool RCSwitch::receiveProtocol(const int p, unsigned int changeCount) {
 
     Protocol pro;
-    ets_memcpy(&pro, &proto[p-1], sizeof(Protocol));
+    memcpy(&pro, &proto[p-1], sizeof(Protocol));
 
     unsigned long code = 0;
     const unsigned int delay = RCSwitch::timings[0] / pro.syncFactor.low;

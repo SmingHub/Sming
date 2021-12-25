@@ -26,7 +26,7 @@ Note that ``target`` refers to the application being debugged, and
 ``host`` the development system running the GDB program.
 
 Refer to the official
-`GDB documention <https://sourceware.org/gdb/current/onlinedocs/gdb/index.html>`__
+`GDB documentation <https://sourceware.org/gdb/current/onlinedocs/gdb/index.html>`__
 for further details.
 
 GDB

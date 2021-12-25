@@ -17,5 +17,6 @@
 #include "Format/Standard.h"
 #include "Format/Html.h"
 #include "Format/Json.h"
+#include "Format/Xml.h"
 
 using Formatter = Format::Formatter;

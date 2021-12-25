@@ -287,7 +287,7 @@ public:
 		Serial.println();
 	}
 
-	void __attribute__((noinline)) profile_setCallback()
+	void __noinline profile_setCallback()
 	{
 		auto func = [](void*) {};
 		times1.start();
@@ -295,21 +295,21 @@ public:
 		times1.update();
 	}
 
-	void __attribute__((noinline)) profile_setInterval()
+	void __noinline profile_setInterval()
 	{
 		times2.start();
 		api.setInterval(api.maxTicks());
 		times2.update();
 	}
 
-	void __attribute__((noinline)) profile_arm()
+	void __noinline profile_arm()
 	{
 		times3.start();
 		api.arm(false);
 		times3.update();
 	}
 
-	void __attribute__((noinline)) profile_disarm()
+	void __noinline profile_disarm()
 	{
 		times4.start();
 		api.disarm();
@@ -362,7 +362,7 @@ public:
 		Serial.println();
 	}
 
-	void __attribute__((noinline)) profile_setCallback()
+	void __noinline profile_setCallback()
 	{
 		auto func = [](void*) {};
 		times1.start();
@@ -370,42 +370,42 @@ public:
 		times1.update();
 	}
 
-	void __attribute__((noinline)) profile_setIntervalUs()
+	void __noinline profile_setIntervalUs()
 	{
 		times2a.start();
 		timer.setIntervalUs(1000000);
 		times2a.update();
 	}
 
-	void __attribute__((noinline)) profile_setIntervalUsT()
+	void __noinline profile_setIntervalUsT()
 	{
 		times2b.start();
 		timer.template setIntervalUs<1000000>();
 		times2b.update();
 	}
 
-	void __attribute__((noinline)) profile_setInterval()
+	void __noinline profile_setInterval()
 	{
 		times3a.start();
 		timer.setInterval(5000000);
 		times3a.update();
 	}
 
-	void __attribute__((noinline)) profile_setIntervalT()
+	void __noinline profile_setIntervalT()
 	{
 		times3b.start();
 		timer.template setInterval<5000000>();
 		times3b.update();
 	}
 
-	void __attribute__((noinline)) profile_start()
+	void __noinline profile_start()
 	{
 		times4.start();
 		timer.start();
 		times4.update();
 	}
 
-	void __attribute__((noinline)) profile_stop()
+	void __noinline profile_stop()
 	{
 		times5.start();
 		timer.stop();

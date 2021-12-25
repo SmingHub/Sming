@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <user_config.h>
 #include <Stream.h>
 #include <WString.h>
 #include "SeekOrigin.h"
@@ -34,6 +33,8 @@ enum StreamType {
 	eSST_User,			 ///< User defined data stream
 	eSST_Chain,			 ///< A stream (chain) containing multiple streams
 	eSST_Transform,		 ///< A stream that is transforming the data
+	eSST_Wrapper,		 ///< A stream that is a wrapper around a source stream
+	eSST_HeaderChecker,  ///< A stream that receives HTTP headers in Stream::checkHeaders()
 	eSST_Unknown		 ///< Unknown data stream type
 };
 
@@ -129,17 +130,6 @@ public:
 	{
 		(void)charToWrite;
 		return 0;
-	}
-
-	/**
-	 * @brief Return the total length of the stream
-	 * @retval int -1 is returned when the size cannot be determined
-	 *
-	 * @deprecated Use `available()` instead
-	 */
-	int length() SMING_DEPRECATED
-	{
-		return available();
 	}
 
 	/*

@@ -1,3 +1,4 @@
+COMPONENT_SOC := esp*
 COMPONENT_DEPENDS := OtaNetwork
 
 HWCONFIG := ota

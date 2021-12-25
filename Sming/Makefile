@@ -2,7 +2,7 @@
 #
 # Created by Espressif
 # UDK modifications by CHERTS <sleuthhound@gmail.com>
-# Cross platform compatability by kireevco <dmitry@kireev.co>
+# Cross platform compatibility by kireevco <dmitry@kireev.co>
 # Multi-architecture support by mikee47 <mike@sillyhouse.net>
 #
 #############################################################
@@ -103,74 +103,93 @@ docs: submodules ##Build the Sming documentation
 
 # For integration testing both samples and tests are moved outside of the repo.
 SMING_PROJECTS_DIR	?= $(abspath $(SMING_HOME)/..)
-SMING_PROJECTS_DIR	:= $(call FixPath, $(SMING_PROJECTS_DIR))
+SMING_PROJECTS_DIR	:= $(call FixPath,$(SMING_PROJECTS_DIR))
 SAMPLES_DIR			:= $(SMING_PROJECTS_DIR)/samples
 
-SAMPLE_NAMES		= $(shell ls -1 $(SAMPLES_DIR))
+# Marks sample as build complete for faster re-testing
+BUILT_SUFFIX		:= /.$(SMING_SOC).built
+SAMPLE_PATHS		= $(sort $(wildcard $(SAMPLES_DIR)/*))
+SAMPLES_BUILT		= $(addsuffix $(BUILT_SUFFIX),$(SAMPLE_PATHS))
+SAMPLE_NAMES		= $(notdir $(SAMPLE_PATHS))
 
-.PHONY: samples $(SAMPLE_NAMES)
-samples: | $(SAMPLE_NAMES) ##Build all sample applications
+.PHONY: samples
+samples: $(SAMPLES_BUILT) ##Build all sample applications
 
-$(SAMPLE_NAMES):
-	@printf "\n\n** Building ${@F} **\n\n"
-	$(Q) $(MAKE) --no-print-directory -C $(SAMPLES_DIR)/$@ PIP_ARGS=-q python-requirements all
+# Build any samples which haven't yet been marked
+$(SAMPLES_BUILT):
+	@printf "\n\n** Building $(notdir $(call dirx,$@)) **\n\n"
+	$(Q) $(MAKE) --no-print-directory -C $(@D) PIP_ARGS=-q python-requirements sample
+	$(Q) touch $@
+
+# Build/clean named samples
+# $1 -> Sample path
+define CreateSampleTargets
+.PHONY: $(notdir $1) $(notdir $1)-clean
+$(notdir $1): $1$(BUILT_SUFFIX)
+$(notdir $1)-clean:
+	-$(Q) cd $1 && $(MAKE) --no-print-directory -C$1 clean
+	-$(Q) rm -f $1$(BUILT_SUFFIX)
+endef
+$(foreach s,$(SAMPLE_PATHS),$(eval $(call CreateSampleTargets,$s)))
 
 # Build component samples
 .PHONY: component-samples
 component-samples: submodules ##Build all samples contained in components
 	$(Q) $(MAKE) --no-print-directory build-component-samples
 
-# Marks sample as build complete for faster re-testing
-BUILT_SUFFIX := /out/.built
-COMPONENT_SAMPLE_TARGETS = $(addsuffix $(BUILT_SUFFIX),$(wildcard $(foreach c,$(COMPONENT_SEARCH_DIRS),$c/*/samples/*)))
+COMPONENT_SAMPLE_PATHS = $(wildcard $(foreach c,$(COMPONENT_SEARCH_DIRS),$c/*/samples/*))
+COMPONENT_SAMPLES_BUILT = $(addsuffix $(BUILT_SUFFIX),$(COMPONENT_SAMPLE_PATHS))
 
 .PHONY: build-component-samples
-build-component-samples: $(COMPONENT_SAMPLE_TARGETS)
+build-component-samples: $(COMPONENT_SAMPLES_BUILT)
 
-$(COMPONENT_SAMPLE_TARGETS):
-	@printf "\n\n** Building $(notdir $(@:$(BUILT_SUFFIX)=)) **\n\n"
-	$(Q) $(MAKE) --no-print-directory -C $(@:$(BUILT_SUFFIX)=) PIP_ARGS=-q python-requirements all
+$(COMPONENT_SAMPLES_BUILT):
+	@printf "\n\n** Building $(@D) **\n\n"
+	$(Q) $(MAKE) --no-print-directory -C $(@D) PIP_ARGS=-q python-requirements sample
 	$(Q) touch $@
 
+# This file is generated on failure during test phase
+export TEST_FAILURE_FILE := $(SMING_HOME)/.test-failure
 
 PHONY: tests
 tests: submodules ##Build and run all tests
+	$(Q) rm -rf $(TEST_FAILURE_FILE)
 	$(Q) $(MAKE) --no-print-directory build-and-run-tests
+	$(Q) if [ -f "$(TEST_FAILURE_FILE)" ]; then \
+		printf "\n\n** Tests failed **\n\n"; \
+		exit 2; \
+	fi
 
-COMPLETED_SUFFIX := /.complete
 COMPONENT_TESTS = $(call dirx,$(wildcard $(foreach c,$(COMPONENT_SEARCH_DIRS),$c/*/test/component.mk)))
-TESTS_COMPLETED = $(addsuffix $(COMPLETED_SUFFIX),$(wildcard $(SMING_PROJECTS_DIR)/tests/* $(COMPONENT_TESTS)))
+TEST_PATHS = $(wildcard $(SMING_PROJECTS_DIR)/tests/* $(COMPONENT_TESTS))
+TESTS_COMPLETED = $(addsuffix /.$(SMING_SOC).complete,$(TEST_PATHS))
 
 PHONY: build-and-run-tests
 build-and-run-tests: $(TESTS_COMPLETED) ##Build and run all test applications
 
 $(TESTS_COMPLETED):
-	@printf "\n\n** Building $(notdir $(@D)) **\n\n"
-	$(Q) $(MAKE) -C $(@D) execute
-	$(Q) touch $@
-
+	$(Q) \
+		export MODULE="$(patsubst $(SMING_PROJECTS_DIR)/tests/%,%,$(@D))" && \
+		printf "\n\n** Building $$MODULE **\n\n" && \
+		$(MAKE) -C $(@D) execute HOST_PARAMETERS="module=$(MODULE)" && \
+		touch $@
 
 ##@Cleaning
 
 .PHONY: samples-clean
 samples-clean: ##Clean all sample applications (all arch/build types)
 	@echo Cleaning all samples...
-	-$(Q) cd $(SAMPLES_DIR) && rm -rf $(addsuffix /out,$(SAMPLE_NAMES))
+	-$(Q) rm -rf $(addsuffix /out,$(SAMPLE_PATHS)) $(addsuffix /.*.built,$(SAMPLE_PATHS))
 
 .PHONY: component-samples-clean
 component-samples-clean: ##Clean all component samples
 	@echo Cleaning all component samples...
-	-$(Q) rm -rf $(dir $(COMPONENT_SAMPLE_TARGETS))
+	-$(Q) rm -rf $(addsuffix /out,$(COMPONENT_SAMPLE_PATHS)) $(addsuffix /.*.built,$(COMPONENT_SAMPLE_PATHS))
 
-CLEAN_TESTS := $(TESTS_COMPLETED:complete=clean)
 .PHONY: tests-clean
-tests-clean: $(wildcard $(CLEAN_TESTS)) ##Clean all test applications (all arch/build types)
-	-$(Q) rm -f $(TESTS_COMPLETED)
-
-.PHONY: $(CLEAN_TESTS)
-$(CLEAN_TESTS):
-	@echo Cleaning '$(@D)'
-	-$(Q) $(MAKE) -C $(@D) clean
+tests-clean: ##Clean all test applications
+	-$(Q) $(foreach p,$(TEST_PATHS),echo ">> $p"; $(MAKE) --no-print-directory -C $p clean;)
+	-$(Q) rm -f $(addsuffix /.*.complete,$(TEST_PATHS)) $(TEST_FAILURE_FILE)
 
 
 ##@Tools
@@ -211,6 +230,18 @@ CS_DEV_FILES	= $(filter $(abspath $(addprefix ../,$(shell git diff --name-only d
 .PHONY: cs-dev
 cs-dev: ##Apply coding style to all files changed from current upstream develop branch
 	$(call ClangFormat,$(CS_DEV_FILES))
+
+.PHONY: codespell
+codespell: ##Check spelling (set CS_PARAM with additional command-line parameters)
+	@echo Running codespell...
+	$(Q)cd $(SMING_HOME)/.. && \
+	codespell \
+		--check-filenames \
+		--skip $$(tr "\n" , < Tools/spelling/skip.txt) \
+		--ignore-words Tools/spelling/ignore.txt \
+		--summary \
+		$(CS_PARAM)
+
 
 
 ##@Help

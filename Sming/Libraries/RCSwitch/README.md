@@ -30,7 +30,7 @@ or more devices with one of the supported chipsets:
 Find out what codes your remote is sending. Use your remote to control your
 Arduino.
 
-All you need is an Arduino, a 315/433MHz AM receiver (altough there is no
+All you need is an Arduino, a 315/433MHz AM receiver (although there is no
 instruction yet, yes it is possible to hack an existing device) and a remote
 hand set.
 

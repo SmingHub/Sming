@@ -29,7 +29,7 @@ public:
 
 	/**
 	 * @brief Prepares a partition for an upgrade.
-	 * 		  The preparation is bootloader and architecture dependant.
+	 * 		  The preparation is bootloader and architecture dependent.
 	 * @param partition
 	 * @param size
 	 *
@@ -47,7 +47,7 @@ public:
 	virtual size_t write(const uint8_t* buffer, size_t size) = 0;
 
 	/**
-	 * @brief Finilizes the partition upgrade.
+	 * @brief Finalizes the partition upgrade.
 	 */
 	virtual bool end() = 0;
 
@@ -60,7 +60,7 @@ public:
 	}
 
 	/**
-	 * @brief Sets the default parition from where the application will be booted on next restart.
+	 * @brief Sets the default partition from where the application will be booted on next restart.
 	 * @param partition
 	 * @param save  if true the change is persisted on the flash, otherwise it will be valid only for the next boot
 	 *
@@ -69,16 +69,16 @@ public:
 	virtual bool setBootPartition(Partition partition, bool save = true) = 0;
 
 	/**
-	 * @brief Gets information about the parition that is set as the default one to boot.
-	 * @note The returned parition can be different than the current running partition.
+	 * @brief Gets information about the partition that is set as the default one to boot.
+	 * @note The returned partition can be different than the current running partition.
 	 *
 	 * @retval partition
 	 */
 	virtual Partition getBootPartition() = 0;
 
 	/**
-	 * @brief Gets information about the parition from which the current application is running.
-	 * @note The returned parition can be different than the default boot partition.
+	 * @brief Gets information about the partition from which the current application is running.
+	 * @note The returned partition can be different than the default boot partition.
 	 *
 	 * @retval partition
 	 */

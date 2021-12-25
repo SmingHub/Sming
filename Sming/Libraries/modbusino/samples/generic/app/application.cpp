@@ -6,7 +6,7 @@
 uint16_t mbDataArray[ARRLEN] = {0, 0, 0};
 ModbusinoSlave mbSlave(MB_SLAVE_ADDR, mbDataArray, ARRLEN);
 
-HardwareSerial debugComPort(UART1);
+HardwareSerial debugComPort(UART_ID_1);
 
 void mbPrint()
 {

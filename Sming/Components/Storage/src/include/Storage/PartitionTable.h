@@ -25,6 +25,9 @@ public:
 	/**
 	 * @name Partition search
 	 * @{
+	 */
+
+	/**
 	 *
 	 * @brief Find partitions based on one or more parameters
 	 * @param type Partition type
@@ -36,6 +39,7 @@ public:
 		return Iterator(mDevice, type, subType);
 	}
 
+	/// C++ subtype definition provides partition type
 	template <typename T> Iterator find(T subType) const
 	{
 		return find(Partition::Type(T::partitionType), uint8_t(subType));

@@ -34,38 +34,6 @@ public:
 
 	bool sendString(String&& text) noexcept;
 
-	/**
-	 * @deprecated Use `headers.contains()` instead
-	 */
-	bool hasHeader(const String& name) SMING_DEPRECATED
-	{
-		return headers.contains(name);
-	}
-
-	/**
-	 * @deprecated Use `headers[HTTP_HEADER_LOCATION]` instead
-	 */
-	void redirect(const String& location) SMING_DEPRECATED
-	{
-		headers[HTTP_HEADER_LOCATION] = location;
-	}
-
-	/**
-	 * @deprecated Use `response.code = HTTP_STATUS_FORBIDDEN` instead
-	 */
-	void forbidden() SMING_DEPRECATED
-	{
-		code = HTTP_STATUS_FORBIDDEN;
-	}
-
-	/**
-	 * @deprecated Use `response.code = HTTP_STATUS_NOT_FOUND` instead
-	 */
-	void notFound() SMING_DEPRECATED
-	{
-		code = HTTP_STATUS_NOT_FOUND;
-	}
-
 	HttpResponse* setContentType(const String& type)
 	{
 		headers[HTTP_HEADER_CONTENT_TYPE] = type;
@@ -101,17 +69,6 @@ public:
 	 * @retval bool
 	 */
 	bool sendFile(const String& fileName, bool allowGzipFileCheck = true);
-
-	/**
-	 * @brief Parse and send template file
-	 * @param newTemplateInstance
-	 * @retval bool
-	 * @deprecated Use `sendNamedStream()` instead
-	 */
-	bool sendTemplate(IDataSourceStream* newTemplateInstance) SMING_DEPRECATED
-	{
-		return sendNamedStream(newTemplateInstance);
-	}
 
 	/**
 	 * @brief Parse and send stream, using the name to determine the content type
@@ -185,23 +142,12 @@ public:
 	 */
 	String toString() const;
 
-	/**
-	 * @brief Tries to present a readable version of the response
-	 * @param res
-	 * @retval String
-	 * @deprecated use `toString()` method or `toString(HttpResponse)` function
-	 */
-	static String toString(const HttpResponse& res) SMING_DEPRECATED
-	{
-		return res.toString();
-	}
-
 private:
 	void setStream(IDataSourceStream* stream);
 
 public:
-	HttpStatus code = HTTP_STATUS_OK; ///< The HTTP status response code
-	HttpHeaders headers;
+	HttpStatus code = HTTP_STATUS_OK;	///< The HTTP status response code
+	HttpHeaders headers;				 ///< Response headers
 	ReadWriteStream* buffer = nullptr;   ///< Internal stream for storing strings and receiving responses
 	IDataSourceStream* stream = nullptr; ///< The body stream
 };

@@ -15,3 +15,6 @@
 #define SCL_LOW() (GPES = (1 << twi_scl))
 #define SCL_HIGH() (GPEC = (1 << twi_scl))
 #define SCL_READ() ((GPI & (1 << twi_scl)) != 0)
+
+#define DEFAULT_SDA_PIN 2
+#define DEFAULT_SCL_PIN 0

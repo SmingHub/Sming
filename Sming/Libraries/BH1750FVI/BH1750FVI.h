@@ -2,7 +2,7 @@
 
 /* This library for Digital Light sensor BH1750FVI
 
- use I2C Communication protocal , SDA,SCL Are required 
+ use I2C Communication protocol , SDA,SCL Are required 
  
   to interface with this sensor
   

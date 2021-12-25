@@ -23,27 +23,8 @@ public:
 	{
 	}
 
-	void quote(String& value) const override
-	{
-		char cQuote{'"'};
-		auto len = value.length();
-		value.setLength(len + 2);
-		memmove(&value[1], value.c_str(), len);
-		value[0] = cQuote;
-		value[len + 1] = cQuote;
-	}
-
-	void unQuote(String& value) const override
-	{
-		char quote = value[0];
-		if(quote == '"' || quote == '\'') {
-			auto len = value.length();
-			if(len > 1 && value[len - 1] == quote) {
-				value.remove(len - 1, 1);
-				value.remove(0, 1);
-			}
-		}
-	}
+	void quote(String& value) const override;
+	void unQuote(String& value) const override;
 
 	MimeType mimeType() const override
 	{

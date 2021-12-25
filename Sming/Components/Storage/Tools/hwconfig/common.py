@@ -11,27 +11,28 @@ from rjsmin import jsmin
 quiet = False
 
 def status(msg):
-    """ Print status message to stderr """
+    """Print status message to stderr."""
     if not quiet:
         critical(msg)
 
 
 def critical(msg):
-    """ Print critical message to stderr """
+    """Print critical message to stderr."""
     sys.stderr.write(msg)
     sys.stderr.write('\n')
 
 
 def fixpath(path):
-    """ Paths in Windows can get a little weird """
+    """Paths in Windows can get a little weird """
     if len(path) > 2 and path[1] != ':' and platform.system() == 'Windows' and path[2] == '/':
         return path[1] + ':' + path[2:]
     return path
 
 
 def parse_int(v, keywords=None):
-    """Generic parser for integer fields - int(x,0) with provision for
-    k/m/K/M suffixes and 'keyword' value lookup.
+    """Generic parser for integer fields.
+
+    int(x,0) with provision for k/m/K/M suffixes and 'keyword' value lookup.
     """
     if not isinstance(v, str):
         return v
@@ -50,8 +51,7 @@ def parse_int(v, keywords=None):
 
 
 def stringnum(s):
-    """Return number if s contains only digits, otherwise return the string
-    """
+    """Return number if s contains only digits, otherwise return the string."""
     return int(s) if s.isdigit() else s
 
 

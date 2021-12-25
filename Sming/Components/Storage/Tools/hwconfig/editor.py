@@ -32,15 +32,13 @@ virtual_fields = {
 }
 
 def read_property(obj, name):
-    """Read an object property, preferring string representation
-    """
+    """Read an object property, preferring string representation."""
     value = getattr(obj, name + '_str', None)
     return getattr(obj, name, None) if value is None else value()
 
 
 def get_dict_value(dict, key, default):
-    """Read dictionary value, creating one if it doesn't exist
-    """
+    """Read dictionary value, creating one if it doesn't exist."""
     if not key in dict:
         dict[key] = default
     return dict[key]
@@ -66,13 +64,6 @@ class ConfigVars(dict):
         # Can take a short while to resolve path variables, so use a background thread
         # Don't need this information until user requests it
         threading.Thread(target=self._resolvePathVars).start()
-
-    def getRelativePath(self, path):
-        try:
-            res = os.path.relpath(path)
-            return res.replace('\\', '/')
-        except Exception:
-            return path
 
     def resolve_path(self, path):
         tmp = str(path)
@@ -112,16 +103,14 @@ def checkProfilePath(filename):
 
 
 def get_id(obj):
-    """Get string identifier for a device or partition object
-    """
+    """Get string identifier for a device or partition object."""
     if isinstance(obj, partition.Entry):
         if obj.is_unused():
             return obj.device.name + '/' + str(obj.address)
     return obj.name
 
 def resolve_id(config, id):
-    """Get corresponding device or partition object given the ID value provided from get_id
-    """
+    """Get corresponding device or partition object given the ID value provided from get_id."""
     elem = id.split('/')
     if len(elem) == 2:
         dev = config.devices.find_by_name(elem[0])
@@ -138,8 +127,7 @@ def resolve_device(config, id):
     return obj.device
 
 def resolve_key(obj, key):
-    """Resolve dotted key, e.g. 'build.target' refers to 'target' property of 'build' object
-    """
+    """Resolve dotted key, e.g. 'build.target' refers to 'target' property of 'build' object."""
     keys = key.split('.')
     while len(keys) > 1:
         k = keys.pop(0)
@@ -150,9 +138,33 @@ def resolve_key(obj, key):
     return obj, keys[0]
 
 
-class Field:
-    """Manages widget(s) and associated variable
+def verify_config(json_config):
+    """Raises an exception if any problems are found in the configuration.
+
+    On success, returns a consistently-ordered JSON configuration.
     """
+    cfg = Config.from_json(json_config)
+    cfg.verify(False)
+    res = OrderedDict()
+    for key in config.schema['Config']['properties'].keys():
+        if key in json_config:
+            value = json_config[key]
+            if key == 'devices':
+                names = list(dev.name for dev in cfg.devices)
+            elif key == 'partitions':
+                names = list(p.name for p in cfg.map())
+            else:
+                res[key] = value
+                continue
+            output = res[key] = OrderedDict()
+            for n in names:
+                if n in value:
+                    output[n] = value[n]
+    return res
+
+
+class Field:
+    """Manages widget(s) and associated variable."""
     def __init__(self, name, schema, var, widget):
         self.name = name
         self.schema = schema
@@ -219,13 +231,12 @@ class Field:
             except Exception:
                 None
             values = list(values)
-            values.sort(key=lambda v: len(v))
+            values.sort(key=len)
         self.widget.configure(values=values)
         return path
 
     def addScale(self, min, max, on_change):
-        """Add scale controls for address/size fields
-        """
+        """Add scale controls for address/size fields."""
         scale = self.scale = tk.Scale(
             self.widget.master,
             orient = tk.HORIZONTAL,
@@ -305,8 +316,7 @@ class Field:
 
 
 class EditState(dict):
-    """Manage details of Config/Device/Partition editing using dictionary of Field objects
-    """
+    """Manage details of Config/Device/Partition editing using dictionary of Field objects."""
     def __init__(self, editor, objectType, dictName, obj):
         super().__init__(self)
         self.editor = editor
@@ -645,7 +655,7 @@ class EditState(dict):
                 if len(json_dict) == 0:
                     del json_config[self.dictName]
 
-            self.editor.json = self.editor.verify_config(json_config)
+            self.editor.json = verify_config(json_config)
             if new_name is not None:
                 self.name = new_name
             if self.objectType != 'Config':
@@ -675,7 +685,7 @@ class EditState(dict):
         self.editor.reload()
 
     def get_property(self, name):
-        """Get field property from schema"""
+        """Get field property from schema."""
         prop = self.schema['properties'].get(name, None)
         if prop is None:
             prop = virtual_fields[name]
@@ -825,7 +835,7 @@ class TkMap(tk.Frame):
         # So, fix a limit for the drawn size of each partition (in bytes)
         # Marker ticks will be drawn according to this scale
         drawsize = 0      # Equivalent size (in bytes) for the partition
-        x_device_end = 0  # Determines final x co-ordinate for end of device memory
+        x_device_end = 0  # Determines final x coordinate for end of device memory
 
         MIN_TICK_SPACING = 100
         def draw_tick(x, addr):
@@ -847,7 +857,7 @@ class TkMap(tk.Frame):
         self.items[get_id(self.device)] = device_item
 
         for p in partitions:
-            # Starting x co-ordinate for this partition depends on scale of previous partition
+            # Starting x coordinate for this partition depends on scale of previous partition
             r = copy.copy(r_prev)
             r.setHeight(ROW_HEIGHT)
             if part_prev is not None:
@@ -1205,7 +1215,7 @@ class Editor:
         def apply(*args):
             try:
                 json_config = json_loads(self.jsonEditor.get('1.0', 'end'))
-                self.json = self.verify_config(json_config)
+                self.json = verify_config(json_config)
                 self.updateWindowTitle()
                 self.reload()
             except Exception as err:
@@ -1241,13 +1251,11 @@ class Editor:
         messagebox.showerror(type(err).__name__, err)
 
     def getBaseConfig(self):
-        """Load the base configuration
-        """
+        """Load the base configuration."""
         return Config.from_json(self.json_base_config)
- 
+
     def getOptionBaseConfig(self):
-        """Load the base configuration with currently selected options applied
-        """
+        """Load the base configuration with currently selected options applied."""
         return Config.from_json(self.json_base_config, self.json.get('options', []))
  
     def loadConfig(self, filename):
@@ -1278,29 +1286,6 @@ class Editor:
             name = '"' + name + '"'
         self.main.title(self.config.arch + ' ' + name + ' - ' + app_name)
 
-    def verify_config(self, json_config):
-        """Raises an exception if any problems are found in the configuration.
-        On success, returns a consistently-ordered JSON configuration.
-        """
-        cfg = Config.from_json(json_config)
-        cfg.verify(False)
-        res = OrderedDict()
-        for key in config.schema['Config']['properties'].keys():
-            if key in json_config:
-                value = json_config[key]
-                if key == 'devices':
-                    names = list(dev.name for dev in cfg.devices)
-                elif key == 'partitions':
-                    names = list(p.name for p in cfg.map())
-                else:
-                    res[key] = value
-                    continue
-                output = res[key] = OrderedDict()
-                for n in names:
-                    if n in value:
-                        output[n] = value[n]
-        return res
-
     def reset(self):
         self.tree.clear()
         self.map.clear()
@@ -1312,6 +1297,7 @@ class Editor:
         self.updateWindowTitle()
 
     class Used:
+        """Stores space used for a file referenced by partition."""
         def __init__(self):
             self.text = ''
             self.size = 0

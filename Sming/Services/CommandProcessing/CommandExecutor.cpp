@@ -7,6 +7,7 @@
 
 #include "CommandExecutor.h"
 #include "HardwareSerial.h"
+#include <debug_progmem.h>
 
 CommandExecutor::CommandExecutor()
 {

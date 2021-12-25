@@ -18,6 +18,9 @@ void echoContentBody(HttpRequest& request, HttpResponse& response)
 	auto body = request.getBody();
 	debug_d("Got content (after modifications): %s", body.c_str());
 
+	if(body.length() == 0) {
+		body = F("Echo");
+	}
 	response.headers[HTTP_HEADER_CONTENT_TYPE] = request.headers[HTTP_HEADER_CONTENT_TYPE];
 	response.sendString(body);
 }

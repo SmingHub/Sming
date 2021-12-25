@@ -10,6 +10,7 @@
  */
 
 #include "include/Ota/UpgradeOutputStream.h"
+#include <debug_progmem.h>
 
 namespace Ota
 {

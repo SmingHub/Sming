@@ -3,6 +3,12 @@ REM Windows build script
 REM Don't leak this
 set SMING_SECRET=
 
+REM Build documentation job
+if "%BUILD_DOCS%"=="true" (
+    make -C %SMING_HOME%\..\docs html || goto :error
+    goto :EOF
+)
+
 subst z: %CI_BUILD_DIR%
 set SMING_HOME=z:\Sming
 
@@ -11,7 +17,7 @@ call Arch\%SMING_ARCH%\Tools\ci\build.setup.cmd || goto :error
 
 env
 
-set MAKE_PARALLEL=make -j2
+set MAKE_PARALLEL=make -j%NUMBER_OF_PROCESSORS%
 
 REM Move samples and tests into directory outside of the Sming repo.
 set SMING_PROJECTS_DIR=%CI_BUILD_DIR%\projects
@@ -27,6 +33,10 @@ cd /d %SMING_PROJECTS_DIR%/samples/Basic_Blink
 make help
 make list-config
 
+REM HostTests should build and run on all architectures
+%MAKE_PARALLEL% -C "%SMING_PROJECTS_DIR%/tests/HostTests"
+
+REM Start Arch-specific tests
 cd /d %SMING_HOME%
 call Arch\%SMING_ARCH%\Tools\ci\build.run.cmd || goto :error
 goto :EOF

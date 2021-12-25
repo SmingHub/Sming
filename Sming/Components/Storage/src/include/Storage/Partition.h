@@ -161,19 +161,25 @@ public:
 
 	/**
 	 * @name Confirm partition is of the expected type
+	 * @{
+	 */
+
+	/**
+	 * @brief Strong C++ type value
 	 * @param type Expected partition type
 	 * @param subtype Expected partition sub-type
 	 * @retval bool true if type is OK, false if not.
 	 * Logs debug messages on failure.
-	 * @{
 	 */
 	bool verify(Type type, uint8_t subtype) const;
 
+	/// Weak 'type' value
 	bool verify(uint8_t type, uint8_t subtype) const
 	{
 		return verify(Type(type), subtype);
 	}
 
+	/// Derive type from subtype, expressed as strong C++ enum
 	template <typename T> bool verify(T subType) const
 	{
 		return verify(Type(T::partitionType), uint8_t(subType));
@@ -265,9 +271,9 @@ public:
 
 	/**
 	 * @brief Obtain partition size
-	 * @retval uint32_t Size in bytes
+	 * @retval size_t Size in bytes
 	 */
-	uint32_t size() const
+	size_t size() const
 	{
 		return mPart ? mPart->size : 0;
 	}

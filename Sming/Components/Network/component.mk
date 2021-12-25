@@ -1,3 +1,5 @@
+COMPONENT_SOC := esp* host
+
 COMPONENT_SRCDIRS := \
 	src \
 	$(call ListAllSubDirs,$(COMPONENT_PATH)/src) \
@@ -9,7 +11,10 @@ COMPONENT_INCDIRS := \
 
 COMPONENT_DOXYGEN_INPUT := \
 	src \
-	Arch/Esp32/Platform/include
+	Arch/Esp32/include
+
+COMPONENT_DOCFILES := \
+	docs/http/*
 
 COMPONENT_DEPENDS := \
 	ssl \
@@ -18,6 +23,13 @@ COMPONENT_DEPENDS := \
 	ws_parser \
 	mqtt-codec \
 	libyuarel
+
+# WiFi settings may be provide via Environment variables
+CONFIG_VARS				+= WIFI_SSID WIFI_PWD
+ifdef WIFI_SSID
+	APP_CFLAGS			+= -DWIFI_SSID=\"$(WIFI_SSID)\"
+	APP_CFLAGS			+= -DWIFI_PWD=\"$(WIFI_PWD)\"
+endif
 
 # => WPS
 COMPONENT_VARS			+= ENABLE_WPS
@@ -39,10 +51,6 @@ GLOBAL_CFLAGS			+= -DHTTP_SERVER_EXPOSE_NAME=$(HTTP_SERVER_EXPOSE_NAME)
 COMPONENT_VARS			+= HTTP_SERVER_EXPOSE_VERSION
 HTTP_SERVER_EXPOSE_VERSION ?= 0
 GLOBAL_CFLAGS			+= -DHTTP_SERVER_EXPOSE_VERSION=$(HTTP_SERVER_EXPOSE_VERSION)
-
-# => MQTT 
-COMPONENT_VARS			+= MQTT_NO_COMPAT
-MQTT_NO_COMPAT ?= 1
 
 # => LWIP
 COMPONENT_VARS			+= ENABLE_CUSTOM_LWIP

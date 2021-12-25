@@ -1,26 +1,25 @@
 {SECTION}
 {
-	{{!ifdef:parent}}"parent":"{{parent}}",
-	{{!endif}}"files": [
+{!ifdef:parent}"parent":"{parent}",
+{!endif}"files":[
 {/SECTION}
 
-{SECTION}{{!ifgt:$record:0}},
-{{!endif}}		{
-			"record": {{!as_int:$record}},
-			"id": "{{file_id}}",
-			"name": "{{name}}",
-			"modified": "{{modified}}",
-			"size": {{!as_int:size}},
-			"original_size": {{!as_int:original_size}},
-			"attr": "{{attr}}",
-			"access": "{{access}}",
-			"compression": "{{compression}}"
-		}{/SECTION}
+{SECTION}{!ifgt:$record:0},
+{!endif}{"record": {!as_int:$record},
+"id":"{file_id}",
+"name":"{name}",
+"modified":"{modified}",
+"size":{!as_int:size},
+"original_size":{!as_int:original_size},
+"attr":"{attr}",
+"access":"{access}",
+"compression":"{compression}"
+}{/SECTION}
 
 {SECTION}
-	],
-	"count": {{!as_int:{!count:1}}},
-	"total_size": {{!as_int:total_size}},
-	"last_error": "{{last_error}}"
+],
+"count":{!as_int:{!count:1}},
+"total_size":{!as_int:total_size},
+"last_error":"{last_error}"
 }
 {/SECTION}

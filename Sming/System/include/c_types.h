@@ -25,3 +25,16 @@ typedef uint64_t uint64;
 typedef uint64_t u64;
 typedef float real32;
 typedef double real64;
+
+#ifndef BIT
+#define BIT(nr) (1UL << (nr))
+#endif
+
+#ifndef TRUE
+#define TRUE            true
+#define FALSE           false
+#endif
+
+#ifndef LOCAL
+#define LOCAL static
+#endif

@@ -213,7 +213,7 @@ bool StationImpl::setIP(IpAddress address, IpAddress netmask, IpAddress gateway)
 	ipinfo.netmask = netmask;
 	ipinfo.gw = gateway;
 	if(wifi_set_ip_info(STATION_IF, &ipinfo)) {
-		debugf("Station IP succesfully updated");
+		debugf("Station IP successfully updated");
 	} else {
 		debugf("Station IP can't be updated");
 		enableDHCP(true);

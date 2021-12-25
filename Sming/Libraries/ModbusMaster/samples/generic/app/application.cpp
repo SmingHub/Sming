@@ -10,8 +10,8 @@
 Timer mbLoopTimer;
 
 ModbusMaster mbMaster;
-HardwareSerial modbusComPort(UART0);
-HardwareSerial debugComPort(UART1);
+HardwareSerial modbusComPort(UART_ID_0);
+HardwareSerial debugComPort(UART_ID_1);
 
 uint16_t globalSeconds = 0;
 

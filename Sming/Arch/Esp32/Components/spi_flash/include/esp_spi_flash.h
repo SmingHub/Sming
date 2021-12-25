@@ -19,8 +19,6 @@
 extern "C" {
 #endif
 
-#include <user_config.h>
-
 /**
  * @defgroup flash Flash Memory Support
  * @defgroup spi_flash SPI Flash API
@@ -151,9 +149,12 @@ uint32_t flashmem_find_sector(uint32_t address, uint32_t* pstart, uint32_t* pend
  */
 uint32_t flashmem_get_sector_of_address(uint32_t addr);
 
-/** @} */
-
+/*
+ * @brief Get unique 32-bit flash identification code
+ */
 uint32_t spi_flash_get_id(void);
+
+/** @} */
 
 #ifdef __cplusplus
 }

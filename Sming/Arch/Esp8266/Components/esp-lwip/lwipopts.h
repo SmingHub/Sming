@@ -178,7 +178,7 @@
  * MEMP_USE_CUSTOM_POOLS==1: whether to include a user file lwippools.h
  * that defines additional pools beyond the "standard" ones required
  * by lwIP. If you set this to 1, you must have lwippools.h in your 
- * inlude path somewhere. 
+ * include path somewhere. 
  */
 #ifndef MEMP_USE_CUSTOM_POOLS
 #define MEMP_USE_CUSTOM_POOLS           0
@@ -727,7 +727,7 @@
 #endif
 
 /**
- * Only allow SNMP write actions that are 'safe' (e.g. disabeling netifs is not
+ * Only allow SNMP write actions that are 'safe' (e.g. disabling netifs is not
  * a safe action and disabled when SNMP_SAFE_REQUESTS = 1).
  * Unsafe requests are disabled by default!
  */
@@ -1064,7 +1064,7 @@
 
 /**
  * PBUF_POOL_BUFSIZE: the size of each pbuf in the pbuf pool. The default is
- * designed to accomodate single full size TCP frame in one pbuf, including
+ * designed to accommodate single full size TCP frame in one pbuf, including
  * TCP_MSS, IP header, and link header.
  */
 #ifndef PBUF_POOL_BUFSIZE

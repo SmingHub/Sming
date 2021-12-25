@@ -1,8 +1,9 @@
 COMPONENT_SRCDIRS  := 
 COMPONENT_SRCFILES := src/PayloadParser.cpp src/StandardPayloadParser.cpp 
 COMPONENT_INCDIRS  := src/include
+COMPONENT_DOXYGEN_INPUT := src/include
 
-# If enabled (set to 1) then we can use all sofisticated mechanisms to upgrade the firmware using the ``OtaUpgrade`` library.
+# If enabled (set to 1) then we can use all sophisticated mechanisms to upgrade the firmware using the ``OtaUpgrade`` library.
 COMPONENT_VARS := ENABLE_OTA_ADVANCED
 ENABLE_OTA_ADVANCED ?= 0
 
@@ -28,7 +29,7 @@ $(OTA_DEPLOYMENT_TOOL):
 	$(Q) $(MAKE) -C $(OTA_TOOLS)/deployer SMING_ARCH=Host ENABLE_CUSTOM_LWIP=2
 
 
-# SDP = Sming Deployment Pakage
+# SDP = Sming Deployment Package
 OTA_PACKAGE_EXT =.sdp
 
 OTA_PATCH_VERSION ?= $(shell date +%s)

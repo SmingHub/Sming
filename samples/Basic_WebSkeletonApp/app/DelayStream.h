@@ -10,7 +10,7 @@
  * See sendFile() for further details.
  *
  * A more realistic example might be if we need to communicate with a slow Serial device, which
- * might take several seconds. This can be handled asychronously without affecting other system
+ * might take several seconds. This can be handled asynchronously without affecting other system
  * operations.
  */
 class DelayStream : public FileStream

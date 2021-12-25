@@ -1,0 +1,1 @@
+DISABLE_NETWORK := 1

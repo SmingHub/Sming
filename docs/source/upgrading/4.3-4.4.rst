@@ -18,7 +18,7 @@ Note that ``Network/WebHelpers/aw-sha1.h`` has been removed in favour of the :co
 Ethernet support has been added, currently only for the ESP32 embedded MAC.
 If WiFi is not used then the :envvar:`DISABLE_WIFI` setting can be used to reduce code size.
 
-The :envvar:`DISABLE_NETWORK` setting can be used to exclude all networking support for signficant code size reduction.
+The :envvar:`DISABLE_NETWORK` setting can be used to exclude all networking support for significant code size reduction.
 
 
 ESP32

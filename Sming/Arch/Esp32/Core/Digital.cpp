@@ -9,8 +9,8 @@
  ****/
 
 #include <Digital.h>
-#include <esp_systemapi.h>
-#define gpio_drive_cap_t uint32_t
+#include <climits>
+#include <esp_clk.h>
 #include <hal/gpio_ll.h>
 #include <driver/rtc_io.h>
 #if SOC_RTCIO_INPUT_OUTPUT_SUPPORTED
@@ -58,7 +58,8 @@ void pinMode(uint16_t pin, uint8_t mode)
 	}
 #endif
 
-	gpio_set_level(gpio, 0);
+	gpio_ll_set_level(&GPIO, gpio, 0);
+
 	gpio_ll_input_enable(&GPIO, gpio);
 	gpio_ll_pulldown_dis(&GPIO, gpio);
 
@@ -127,7 +128,7 @@ void noPullup(uint16_t pin)
 		}                                                                                                              \
 	}
 
-unsigned long pulseIn(uint8_t pin, uint8_t state, unsigned long timeout)
+unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout)
 {
 	const uint32_t max_timeout_us = clockCyclesToMicroseconds(UINT_MAX);
 	if(timeout > max_timeout_us) {

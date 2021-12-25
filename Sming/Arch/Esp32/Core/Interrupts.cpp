@@ -8,13 +8,12 @@
  *
  ****/
 
-#include <esp_systemapi.h>
 #include <Interrupts.h>
 #include <Digital.h>
 #include <Platform/System.h>
 #include <BitManipulations.h>
 #include <esp_intr_alloc.h>
-#include <driver/gpio.h>
+#include <hal/gpio_ll.h>
 
 #define gpio_drive_cap_t uint32_t
 #include <hal/gpio_ll.h>

@@ -18,7 +18,7 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	ftp.addUser("guest", nullptr, IFS::UserRole::Guest);
 	ftp.addUser("me", "123", IFS::UserRole::User);
 	ftp.addUser("admin", "1234", IFS::UserRole::Admin);
-	// You can also use special FTP comand: "fsformat" for clearing file system (for example from TotalCMD)
+	// You can also use special FTP command: "fsformat" for clearing file system (for example from TotalCMD)
 }
 
 // Will be called when WiFi station timeout was reached

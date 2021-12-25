@@ -3,11 +3,11 @@
 #include <esp_task_wdt.h>
 #include <sming_attr.h>
 
-extern "C" uint32_t system_get_time(void)
+extern "C" int64_t esp_system_get_time();
+
+uint32_t system_get_time(void)
 {
-	struct timeval tv;
-	gettimeofday(&tv, nullptr);
-	return tv.tv_sec * 1000000U + tv.tv_usec;
+	return esp_system_get_time();
 }
 
 struct rst_info* system_get_rst_info(void)

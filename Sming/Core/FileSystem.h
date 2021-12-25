@@ -19,10 +19,8 @@
 #include <IFS/File.h>
 #include <IFS/Directory.h>
 #include <Spiffs.h>
-#include "WVector.h" ///< @deprecated see fileList()
 
 using file_t = IFS::FileHandle;
-typedef SeekOrigin SeekOriginFlags; ///< @deprecated Use `SeekOrigin` instead
 using FileHandle = IFS::FileHandle;
 using DirHandle = IFS::DirHandle;
 using FileOpenFlag = IFS::OpenFlag;
@@ -32,10 +30,6 @@ using FileAttributes = IFS::FileAttributes;
 using FileStat = IFS::Stat;
 using FileNameStat = IFS::NameStat;
 constexpr int FS_OK = IFS::FS_OK;
-
-constexpr SeekOrigin eSO_FileStart{SeekOrigin::Start};	///< @deprecated use SeekOrigin::Start
-constexpr SeekOrigin eSO_CurrentPos{SeekOrigin::Current}; ///< @deprecated use SeekOrigin::Current
-constexpr SeekOrigin eSO_FileEnd{SeekOrigin::End};		  ///< @deprecated use SeekOrigin::End
 
 namespace SmingInternal
 {
@@ -71,15 +65,6 @@ public:
 	}
 };
 
-// Various file flag combinations
-constexpr FileOpenFlags eFO_ReadOnly{File::ReadOnly};				///< @deprecated use File::ReadOnly
-constexpr FileOpenFlags eFO_WriteOnly{File::WriteOnly};				///< @deprecated use File::WriteOnly
-constexpr FileOpenFlags eFO_ReadWrite{File::ReadWrite};				///< @deprecated use File::ReadWrite
-constexpr FileOpenFlags eFO_CreateIfNotExist{File::Create};			///< @deprecated use File::Create
-constexpr FileOpenFlags eFO_Append{File::Append};					///< @deprecated use File::Append
-constexpr FileOpenFlags eFO_Truncate{File::Truncate};				///< @deprecated use File::Truncate
-constexpr FileOpenFlags eFO_CreateNewAlways{File::CreateNewAlways}; ///< @deprecated use File::CreateNewAlways
-
 /*
  * Boilerplate check for file function wrappers to catch undefined filesystem.
  */
@@ -104,11 +89,11 @@ inline IFS::FileSystem* getFileSystem()
 
 /** @brief Sets the currently active file system
  *  @param fileSystem
- *  @note Any existing filing system is freed first.
+ *  @note Any existing filing system is destroyed.
  *  Typically the filing system implementation has helper functions which
  *  create and initialise the file system to a valid state. The last step
  *  is to call this function to make it active.
- *	Call this function with nullptr to inactivate the filing system.
+ *	Call this function with nullptr to deactivate the filing system.
  */
 void fileSetFileSystem(IFS::IFileSystem* fileSystem);
 
@@ -324,13 +309,6 @@ inline int fileRename(const String& oldName, const String& newName)
 {
 	return fileRename(oldName.c_str(), newName.c_str());
 }
-
-/** @brief  Get list of files on file system
- *  @retval Vector<String> Vector of strings.
-            Each string element contains the name of a file on the file system
-    @deprecated use `Directory` object (or fileOpenDir / fileReadDir / fileCloseDir)
- */
-Vector<String> fileList() SMING_DEPRECATED;
 
 /** @brief  Read content of a file
  *  @param  fileName Name of file to read from
@@ -548,23 +526,16 @@ inline int fileSetACL(FileHandle file, const IFS::ACL& acl)
 	return fileSystem->setacl(file, acl);
 }
 
-/** @name Set file attributes
+/** @brief Set file attributes
  *  @param filename
  *  @param attr
  *  @retval int Error code
- *  @{
  */
-inline int fileSetAttr(const char* filename, FileAttributes attr)
+template <typename T> int fileSetAttr(const T& filename, FileAttributes attr)
 {
 	CHECK_FS(setattr)
 	return fileSystem->setattr(filename, attr);
 }
-
-inline int fileSetAttr(const String& filename, FileAttributes attr)
-{
-	return fileSetAttr(filename.c_str(), attr);
-}
-/** @} */
 
 /** @brief Set access control information for file
  *  @param file handle to open file, must have write access

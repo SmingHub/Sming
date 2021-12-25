@@ -49,4 +49,3 @@ if __name__ == "__main__":
 
             pipe.stdin.write(line.encode('ascii'))
             pipe.stdin.flush()
-            

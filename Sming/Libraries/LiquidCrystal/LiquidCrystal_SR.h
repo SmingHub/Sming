@@ -39,7 +39,7 @@
 // 2 or 3 Pins required from the Arduino for Data, Clock and (optional) Enable
 // If not using Enable, the Data pin will be used for the enable signal.
 // 2 wire mode can be indicated by:
-// - ommitting the enable pin in constructor
+// - omitting the enable pin in constructor
 // - defining the same pin for Enable as for Data in constructor
 // - by using the token TWO_WIRE for the enable pin.
 //

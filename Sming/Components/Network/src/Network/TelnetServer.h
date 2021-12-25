@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include <user_config.h>
 #include "TcpClient.h"
 #include "TcpServer.h"
 #include "SystemClock.h"
@@ -34,7 +33,6 @@ using TelnetServerCommandDelegate = Delegate<void(TcpClient* client, char* data,
 class TelnetServer : public TcpServer
 {
 public:
-	//	void setCommandDelegate(TelnetServerCommandDelegate reqDelegate);
 	void enableDebug(bool reqStatus);
 	void enableCommand(bool reqStatus);
 

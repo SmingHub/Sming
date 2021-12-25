@@ -22,7 +22,7 @@
 // Constructor /////////////////////////////////////////////////////////////////
 // Function that handles the creation and setup of instances
 
-CapacitiveSensor::CapacitiveSensor(uint8_t sendPin, uint8_t receivePin)
+CapacitiveSensor::CapacitiveSensor(uint8_t sendPin, uint8_t receivePin): total(0)
 {
 	// initialize this instance's variables
 	// Serial.begin(9600);		// for debugging

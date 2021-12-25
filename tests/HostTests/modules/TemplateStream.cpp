@@ -3,6 +3,7 @@
 #include <Data/Stream/MemoryDataStream.h>
 #include <Data/Stream/LimitedMemoryStream.h>
 #include <Data/Stream/SectionTemplate.h>
+#include <Data/CsvReader.h>
 
 #ifdef ARCH_HOST
 #include <IFS/Host/FileSystem.h>
@@ -15,6 +16,18 @@ DEFINE_FSTR_LOCAL(template1_2, "Stream containing value #1, value #2 and [value 
 
 DEFINE_FSTR_LOCAL(template2, "This text should {disable}not {var1} really {var2:hello} again {enable}be missing.")
 DEFINE_FSTR_LOCAL(template2_1, "This text should be missing.")
+
+DEFINE_FSTR_LOCAL(template3, "<html><head><title>{title}</title><style>td { padding: 0 10px; }")
+DEFINE_FSTR_LOCAL(template3_1, "<html><head><title>Document Title</title><style>td { padding: 0 10px; }")
+
+DEFINE_FSTR_LOCAL(template4, "{\"value\":12,\"var1\":\"{var1}\"}")
+DEFINE_FSTR_LOCAL(template4_1, "{\"value\":12,\"var1\":\"quoted variable\"}")
+
+DEFINE_FSTR_LOCAL(
+	test1_csv, "\"field1\",field2,field3,\"field four\"\n"
+			   "Something \"awry\",\"datavalue 2\",\"where,are,\"\"the,bananas\",sausages abound,\"never surrender\"")
+DEFINE_FSTR_LOCAL(csv_headings, "field1;field2;field3;field four;")
+DEFINE_FSTR_LOCAL(csv_row1, "Something \"awry\";datavalue 2;where,are,\"the,bananas;sausages abound;never surrender;")
 
 class TemplateStreamTest : public TestGroup
 {
@@ -38,7 +51,7 @@ public:
 				return nullptr;
 			});
 
-			check(tmpl, template1_1);
+			check(tmpl, template1, template1_1);
 		}
 
 		TEST_CASE("template1.2")
@@ -55,7 +68,7 @@ public:
 				return nullptr;
 			});
 
-			check(tmpl, template1_2);
+			check(tmpl, template1, template1_2);
 		}
 
 		TEST_CASE("template2.1")
@@ -74,7 +87,21 @@ public:
 				return nullptr;
 			});
 
-			check(tmpl, template2_1);
+			check(tmpl, template2, template2_1);
+		}
+
+		TEST_CASE("template3 (PR #2400 - HTML)")
+		{
+			FSTR::TemplateStream tmpl(template3);
+			tmpl.setVar("title", "Document Title");
+			check(tmpl, template3, template3_1);
+		}
+
+		TEST_CASE("template4 (PR #2400 - JSON)")
+		{
+			FSTR::TemplateStream tmpl(template4);
+			tmpl.setVar("var1", "quoted variable");
+			check(tmpl, template4, template4_1);
 		}
 
 		TEST_CASE("ut_template1")
@@ -97,14 +124,14 @@ public:
 
 #ifdef ARCH_HOST
 			{
-				HostFileStream fs("test-src1.out", eFO_CreateNewAlways | eFO_WriteOnly);
+				HostFileStream fs("test-src1.out", File::CreateNewAlways | File::WriteOnly);
 				int res = fs.copyFrom(&tmpl);
 				debug_e("copyfrom(src) = %d", res);
 				tmpl.gotoSection(0);
 			}
 
 			{
-				HostFileStream fs("test-src2.out", eFO_CreateNewAlways | eFO_WriteOnly);
+				HostFileStream fs("test-src2.out", File::CreateNewAlways | File::WriteOnly);
 				int res = fs.copyFrom(&tmpl);
 				debug_e("copyfrom(src) = %d", res);
 				tmpl.gotoSection(0);
@@ -163,9 +190,43 @@ public:
 			}
 			REQUIRE(expected.equals(output, outlen));
 		}
+
+		TEST_CASE("CSV Reader")
+		{
+			auto str = [](const CStringArray cs) {
+				String s = reinterpret_cast<const String&>(cs);
+				s.replace('\0', ';');
+				return s;
+			};
+
+			CsvReader reader(new FSTR::Stream(test1_csv));
+			String headings = str(reader.getHeadings());
+			Serial.println(headings);
+			CHECK(reader.next());
+			String row1 = str(reader.getRow());
+			Serial.println(row1);
+			CHECK(!reader.next());
+
+			CHECK(csv_headings == headings);
+			CHECK(csv_row1 == row1);
+		}
 	}
 
 private:
+	void check(TemplateStream& stream, const FlashString& tmpl, const FlashString& ref)
+	{
+		constexpr size_t maxLen{256};
+		String s = stream.readString(maxLen);
+		Serial.print(_F("tmpl: "));
+		Serial.println(tmpl);
+		Serial.print(_F(" res: "));
+		Serial.println(s);
+		Serial.print(_F(" ref: "));
+		Serial.println(ref);
+		REQUIRE(ref == s);
+		return;
+	}
+
 	void check(TemplateStream& tmpl, const FlashString& ref)
 	{
 		constexpr size_t bufSize{256};

@@ -9,7 +9,7 @@
  ****/
 
 #include "Clock.h"
-#include <esp_systemapi.h>
+#include <esp_system.h>
 
 #define MAX_SAFE_DELAY 1000
 

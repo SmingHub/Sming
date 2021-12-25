@@ -11,6 +11,7 @@
 #include "include/Storage/SpiFlash.h"
 #include "include/Storage/partition_info.h"
 #include <esp_spi_flash.h>
+#include <debug_progmem.h>
 
 namespace Storage
 {

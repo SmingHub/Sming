@@ -222,7 +222,7 @@ uint8_t MCP23017::digitalRead(uint8_t pin) {
  * Opendrain will set the INT pin to value or open drain.
  * polarity will set LOW or HIGH on interrupt.
  * Default values after Power On Reset are: (false,flase, LOW)
- * If you are connecting the INTA/B pin to arduino 2/3, you should configure the interupt handling as FALLING with
+ * If you are connecting the INTA/B pin to arduino 2/3, you should configure the interrupt handling as FALLING with
  * the default configuration.
  */
 void MCP23017::setupInterrupts(uint8_t mirroring, uint8_t openDrain, uint8_t polarity){

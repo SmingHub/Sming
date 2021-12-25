@@ -1,0 +1,9 @@
+# Build an appveyor Linux container image with Sming tools installed
+FROM appveyor/build-image:minimal-ubuntu-20.04
+ARG SMING_REPO=https://github.com/SmingHub/Sming
+ARG SMING_BRANCH=develop
+WORKDIR /tmp
+RUN git clone ${SMING_REPO} --branch ${SMING_BRANCH} --depth 1 sming && \
+    pwsh "sming/Tools/Docker/appveyor/setup.ps1"
+USER appveyor
+CMD [ "/bin/bash", "/scripts/entrypoint.sh" ]

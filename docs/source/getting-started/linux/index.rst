@@ -49,7 +49,8 @@ Get a list of available options like this::
    /opt/sming/Tools/install.sh
 
 Install locations can be customised by setting environment variables before
-running the install. See ``/opt/sming/Tools/export.sh`` for details.
+running the install. Certain variables should also be set globally.
+See :doc:`/getting-started/config` for details.
 
 If you want to use the stable (release) branch::
 

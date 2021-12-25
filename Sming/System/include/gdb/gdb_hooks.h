@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <user_config.h>
+#include <esp_systemapi.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -57,8 +57,10 @@ void gdb_enable(bool state);
 #define gdb_do_break() __asm__("int $0x03")
 #elif defined(ARCH_ESP8266)
 #define gdb_do_break() __asm__("break 0,0")
-#else
+#elif defined(ARCH_ESP32)
 #define gdb_do_break() cpu_hal_break()
+#elif defined(ARCH_RP2040)
+#define gdb_do_break() __asm__("bkpt #0")
 #endif
 #else
 #define gdb_do_break()                                                                                                 \

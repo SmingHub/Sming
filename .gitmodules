@@ -91,16 +91,12 @@
 	path = Sming/Arch/Esp8266/Components/lwip2/lwip2
 	url = https://github.com/mikee47/esp82xx-nonos-linklayer.git
 	ignore = dirty
-[submodule "Esp8266.new-pwm"]
-	path = Sming/Arch/Esp8266/Components/driver/new-pwm
-	url = https://github.com/StefanBruens/ESP8266_new_pwm.git
-	ignore = dirty
 [submodule "Esp8266.umm_malloc"]
 	path = Sming/Arch/Esp8266/Components/heap/umm_malloc
 	url = https://github.com/rhempel/umm_malloc.git
 	ignore = dirty
 [submodule "Esp8266.Sdk"]
-	path = Sming/Arch/Esp8266/Components/esp8266/ESP8266_NONOS_SDK
+	path = Sming/Arch/Esp8266/Components/esp8266/sdk
 	url = https://github.com/espressif/ESP8266_NONOS_SDK.git
 	ignore = dirty
 
@@ -111,6 +107,20 @@
 
 ### NONE ###
 
+
+#
+# `Rp2040` Components
+#
+
+[submodule "Rp2040.picotool"]
+	path = Sming/Arch/Rp2040/Components/picotool/picotool
+	url = https://github.com/mikee47/picotool
+	ignore = dirty
+
+[submodule "Rp2040.Sdk"]
+	path = Sming/Arch/Rp2040/Components/rp2040/pico-sdk
+	url = https://github.com/raspberrypi/pico-sdk
+	ignore = dirty
 
 #
 # `Host` Components
@@ -142,6 +152,10 @@
 [submodule "Libraries.Adafruit_BME280_Library"]
 	path = Sming/Libraries/Adafruit_BME280_Library
 	url = https://github.com/adafruit/Adafruit_BME280_Library.git
+	ignore = dirty
+[submodule "Libraries.Adafruit_BusIO"]
+	path = Sming/Libraries/Adafruit_BusIO
+	url = https://github.com/adafruit/Adafruit_BusIO
 	ignore = dirty
 [submodule "Libraries.Adafruit_Sensor"]
 	path = Sming/Libraries/Adafruit_Sensor
@@ -211,6 +225,10 @@
 	path = Sming/Libraries/HueEmulator
 	url = https://github.com/mikee47/HueEmulator
 	ignore = dirty
+[submodule "Libraries.jerryscript"]
+	path = Sming/Libraries/jerryscript
+	url = https://github.com/slaff/Sming-jerryscript.git
+	ignore = dirty
 [submodule "Libraries.IR"]
 	path = Sming/Libraries/IR
 	url = https://github.com/markszabo/IRremoteESP8266.git
@@ -230,6 +248,10 @@
 [submodule "Libraries.MDNS"]
 	path = Sming/Libraries/MDNS
 	url = https://github.com/mikee47/Sming-MDNS
+	ignore = dirty
+[submodule "Libraries.MHZ19"]
+	path = Sming/Libraries/MHZ19
+	url = https://github.com/mikee47/Sming-MHZ19
 	ignore = dirty
 [submodule "Libraries.modbusino"]
 	path = Sming/Libraries/modbusino/modbusino
@@ -255,6 +277,10 @@
 	path = Sming/Libraries/RapidXML
 	url = https://github.com/mikee47/Sming-RapidXML
 	ignore = dirty
+[submodule "Libraries.rbpf"]
+	path = Sming/Libraries/rbpf
+	url = https://github.com/slaff/Sming-rbpf.git
+	ignore = dirty
 [submodule "Libraries.RingBufCPP"]
 	path = Sming/Libraries/RingBufCPP
 	url = https://github.com/wizard97/Embedded_RingBuf_CPP.git
@@ -268,7 +294,7 @@
 	url = https://github.com/mikee47/SignalGenerator
 	ignore = dirty
 [submodule "Libraries.simpleRPC"]
-	path = Sming/Libraries/simpleRPC/simpleRPC
+	path = Sming/Components/simpleRPC/simpleRPC
 	url = https://github.com/jfjlaros/simpleRPC.git
 	ignore = dirty
 [submodule "Libraries.SmingTest"]
@@ -279,7 +305,7 @@
 	path = Sming/Libraries/SolarCalculator
 	url = https://github.com/mikee47/SolarCalculator
 	ignore = dirty
-[submodule "spiffs"]
+[submodule "Libraries.spiffs"]
 	path = Sming/Libraries/Spiffs/spiffs
 	url = https://github.com/pellepl/spiffs.git
 	ignore = dirty

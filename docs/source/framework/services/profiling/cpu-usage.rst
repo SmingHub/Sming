@@ -26,7 +26,7 @@ Use like this::
    }
 
    
-See :sample:`RingTonePlayer` for a more detailed example.
+See :sample:`Basic_Tasks` for a more detailed example.
 
 CPU usage is calculated over an update period which begins with a call to :cpp:func:`Profiling::CpuUsage::reset`.
 The actual update period must be managed elsewhere, using a callback timer, web request

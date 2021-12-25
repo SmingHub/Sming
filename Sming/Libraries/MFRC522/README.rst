@@ -22,12 +22,12 @@ Development
 
 **Feature status: complete freeze**; no function or API change
 
-**Code status: paritial freeze**; just fixes/typos or documentation updates; *no* extentions for other boards; *no* new examples
+**Code status: partial freeze**; just fixes/typos or documentation updates; *no* extensions for other boards; *no* new examples
 
 **Maintenance status: sporadically**
 
 **Why no further development?**
-This library has a long history and is used in many projects. This projects often do not document what version they use. Commiting changes maybe brake those old project and lead to bad experience (for beginners) and support request. For those reasons the library is in freeze mode. You can still commit typo, documentation or bug fixes.
+This library has a long history and is used in many projects. This projects often do not document what version they use. Committing changes maybe brake those old project and lead to bad experience (for beginners) and support request. For those reasons the library is in freeze mode. You can still commit typo, documentation or bug fixes.
 
 
 .. _before buy:

@@ -14,6 +14,9 @@ COMPONENT_DEPENDS += \
 	lwip
 endif
 
+# Build a variant depending on network support
+COMPONENT_RELINK_VARS	:= DISABLE_NETWORK
+
 COMPONENT_INCDIRS		:= include
 COMPONENT_SRCDIRS		:= .
 COMPONENT_DOXYGEN_INPUT := include/hostlib

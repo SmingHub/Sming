@@ -103,8 +103,3 @@ private:
 };
 
 } // namespace Ssl
-
-/**
- * @deprecated Use `Ssl::ValidatorCallback` instead
- */
-typedef Ssl::ValidatorCallback SslValidatorCallback SMING_DEPRECATED;

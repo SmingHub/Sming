@@ -267,7 +267,7 @@ public:
 
 	static constexpr unsigned TIMEOUT_MS = 100;
 
-	unsigned __attribute__((noinline)) millis_loop()
+	unsigned __noinline millis_loop()
 	{
 		unsigned loopCount = 0;
 		unsigned start = millis();
@@ -277,7 +277,7 @@ public:
 		return loopCount;
 	}
 
-	unsigned __attribute__((noinline)) micros_loop()
+	unsigned __noinline micros_loop()
 	{
 		unsigned loopCount = 0;
 		unsigned start = micros();
@@ -287,7 +287,7 @@ public:
 		return loopCount;
 	}
 
-	unsigned __attribute__((noinline)) polledTimer_loop()
+	unsigned __noinline polledTimer_loop()
 	{
 		unsigned loopCount = 0;
 		OneShotFastMs timer(TIMEOUT_MS);
@@ -423,9 +423,8 @@ template <hw_timer_clkdiv_t clkdiv, typename TimeType> void testTimer1()
 		//		uint64_t refticks = timer1.timeToTicksRef(time);
 
 		auto check = [time, refticks](const char* tag, TimeType ticks) {
-			if(refticks != ticks) {
-				int64_t diff = int64_t(ticks) - int64_t(refticks);
-
+			int64_t diff = int64_t(ticks) - int64_t(refticks);
+			if(abs(diff) > 2) {
 				Serial.print("time = ");
 				Serial.print(time);
 				Serial.print(", refticks = ");

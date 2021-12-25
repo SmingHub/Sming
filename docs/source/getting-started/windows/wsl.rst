@@ -1,5 +1,5 @@
-Windows WSL
-===========
+WSL
+===
 
 .. highlight:: batch
 
@@ -8,9 +8,9 @@ This is because the current build system requires a Posix emulation layer (MinGW
 However, it does offer the simplest way to use Sming on a Windows PC and does not affect the quality
 or functionality of your applications.
 
-However, there are situations where it is highly desirable to build Sming in a Linux environment, such as:
+There are situations where it is highly desirable to build Sming in a Linux environment:
 
--  Making use of linux-only development tools, such as valgrind (dynamic bug detection system)
+-  Making use of linux-only development tools, e.g. valgrind (dynamic bug detection system)
 -  Integration building/testing prior to submitting a PR to the Sming repository
 -  Need/want faster builds
 
@@ -34,8 +34,7 @@ https://docs.microsoft.com/en-us/windows/wsl/
 -- including most command-line tools, utilities, and applications --
 directly on Windows, unmodified, without the overhead of a traditional virtual machine or dual-boot setup."
 
-There are currently two versions of WSL, dubbed WSL1 and WSL2.
-Either is fine, and you can switch between versions but WSL2 is recommended. 
+There are currently two versions of WSL: this documentation relates to **WSL2**.
 
 .. note::
 
@@ -45,7 +44,7 @@ Either is fine, and you can switch between versions but WSL2 is recommended.
 Installing WSL
 --------------
 
-See instructions here https://docs.microsoft.com/en-us/windows/wsl/install-win10#manual-installation-steps.
+See instructions here https://docs.microsoft.com/en-us/windows/wsl/install.
 
 Install an up-to-date Linux distribution from the Microsoft store, currently ``Ubuntu-20.04``.
 
@@ -80,16 +79,22 @@ Installing Sming
 
 Open a WSL command prompt and follow the instructions in :doc:`../linux/index`.
 
+Please note:
+
+- A native Windows python3 distribution is required to enable access to serial ports.
+- Ensure that python is available in the system path for both WSL2 and Windows.
+- Do not set the :envvar:`PYTHON` environment variable.
+
+This will ensure that the build system can run python scripts either in WSL2 or in Windows as necessary.
+
 
 Flashing devices
 ----------------
 
-WSL2 does not currently support access to USB serial devices, so the Sming build system incorporates a workaround
-which runs the appropriate application (esptool) directly under Windows (via powershell).
+WSL2 does not currently support access to USB serial devices, so the Sming build system runs
+the appropriate application directly under Windows using ``powershell.exe``.
 
-Therefore, use the normal Windows COM port name rather than the linux ones (such as /dev/ttyUSB0).
-
-For example::
+Therefore, use the normal Windows COM port name rather than the linux ones (such as /dev/ttyUSB0)::
 
    make flash COM_PORT=COM4
 

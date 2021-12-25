@@ -38,13 +38,6 @@ COMPONENT_SRCDIRS		+= Services/CommandProcessing
 endif
 GLOBAL_CFLAGS			+= -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR)
 
-# => MQTT
-# Flags for compatability with old versions (most of them should disappear with the next major release)
-COMPONENT_VARS			+= MQTT_NO_COMPAT
-ifeq ($(MQTT_NO_COMPAT),1)
-	GLOBAL_CFLAGS		+= -DMQTT_NO_COMPAT=1
-endif
-
 #
 RELINK_VARS += DISABLE_NETWORK
 DISABLE_NETWORK ?= 0
@@ -60,13 +53,6 @@ RELINK_VARS += DISABLE_WIFI
 DISABLE_WIFI ?= 0
 ifeq ($(DISABLE_WIFI),1)
 GLOBAL_CFLAGS += -DDISABLE_WIFI=1
-endif
-
-# WiFi settings may be provide via Environment variables
-CONFIG_VARS				+= WIFI_SSID WIFI_PWD
-ifdef WIFI_SSID
-	APP_CFLAGS			+= -DWIFI_SSID=\"$(WIFI_SSID)\"
-	APP_CFLAGS			+= -DWIFI_PWD=\"$(WIFI_PWD)\"
 endif
 
 # => LOCALE
@@ -108,7 +94,9 @@ COM_SPEED			?= 115200
 # Default COM port speed used in code
 CONFIG_VARS			+= COM_SPEED_SERIAL
 COM_SPEED_SERIAL	?= $(COM_SPEED)
-APP_CFLAGS			+= -DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL)
+APP_CFLAGS			+= \
+	-DCOM_SPEED_SERIAL=$(COM_SPEED_SERIAL) \
+	-DSERIAL_BAUD_RATE=$(COM_SPEED_SERIAL)
 
 # Task queue counter to check for overflows
 COMPONENT_VARS		+= ENABLE_TASK_COUNT

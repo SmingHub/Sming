@@ -231,6 +231,10 @@ size_t m_nputs(const char* str, size_t length)
 	return _puts_callback ? _puts_callback(str, length) : 0;
 }
 
+size_t m_puts(const char* str)
+{
+	return m_nputs(str, strlen(str));
+}
 
 void m_printHex(const char* tag, const void* data, size_t len, int addr, size_t bytesPerLine)
 {

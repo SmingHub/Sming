@@ -7,4 +7,5 @@ Details of Sming support for Integrated Development Environments (IDEs).
    :maxdepth: 1
 
    clion
+   eclipse
    vscode

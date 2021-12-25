@@ -8,9 +8,10 @@
  *
  ****/
 
-#include <user_config.h>
 #include <math.h>
-#include <stdlib.h>
+#include <cstdlib>
+#include <cstdint>
+#include <cstring>
 #include "stringconversion.h"
 #include "stringutil.h"
 

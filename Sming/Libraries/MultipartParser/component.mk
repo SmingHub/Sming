@@ -1,6 +1,7 @@
 COMPONENT_SRCDIRS := src
 COMPONENT_INCDIRS := src
 COMPONENT_DOXYGEN_INPUT := src
+COMPONENT_DEPENDS := Network
 
 COMPONENT_SUBMODULES	:= multipart-parser
 COMPONENT_SRCFILES		:= multipart-parser/multipart_parser.c

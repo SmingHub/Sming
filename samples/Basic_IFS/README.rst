@@ -19,9 +19,9 @@ Use the format ``archive`` to retrieve an archive/backup of the directory tree a
 Building
 --------
 
-By default, data is stored in a read-only FWFS (Firmware Filesytem) partition.
+By default, data is stored in a read-only FWFS (Firmware Filesystem) partition.
 
-This sample also demonstrates how to store the data in a :cpp:class:`FlashString` object::
+This sample also demonstrates how to store the data in a :cpp:type:`FlashString` object::
 
     make config-clean
     make ENABLE_FLASHSTRING_IMAGE=1

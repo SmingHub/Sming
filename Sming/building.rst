@@ -39,10 +39,20 @@ These are the main variables you need to be aware of:
    -  **Esp8266** The default if not specified. :envvar:`ESP_HOME` must also be
       provided to locate SDK & tools.
 
-   -  **Esp32** {todo}
+   -  **Esp32** Supports ESP32 architecture.
 
    -  **Host** builds a version of the library for native host debugging on
       Linux or Windows
+
+   -  **Rp2040** Supports Raspberry Pi RP2040-based boards.
+
+
+.. envvar:: SMING_SOC
+
+   Some architectures support families of SOCs with different capabilities.
+   Set this value to the specific variant being targeted.
+
+   Will automatically set SMING_ARCH to the appropriate value.
 
 
 .. envvar:: SMING_CPP_STD
@@ -190,10 +200,10 @@ Directory layout
 The main Sming repo. is laid out like this::
 
    |_ sming/
-      |_ .appveyor.yml              CI testing (Windows)
-      |_ .travis.yml                CI testing (Linux)
-      |_ .appveyor/                 CI scripts (Windows)
-      |_ .travis                    CI scripts (Linux)
+      |_ .appveyor.yml              CI testing
+      |_ .travis.yml                CI testing
+      |_ .readthedocs.yml           Documentation build
+      |_ lgtm.yml                   CI Static code analysis
       |_ docs/                      Sming documentation
       |_ samples/                   Samples to demonstrate specific Sming features or libraries
       |_ Sming/
@@ -242,6 +252,13 @@ The main Sming repo. is laid out like this::
       |     |_ ...
       |_ tests/                     Integration test applications
          |_ ...
+      |_ Tools/
+         |_ ci                      CI testing
+         |_ Docker
+         |_ ide                     IDE environment support tools
+         |_ Python                  Shared python scripts
+         |_ travis                  CI testing
+
 
 A typical Project looks like this::
 
@@ -367,7 +384,7 @@ one of the following lists:
    firmware images re-generated if any of these variables are changed. For
    example, ``make RBOOT_ROM_0=new-rom-file`` rewrites the firmware image
    using the given filename. (Also, as the value is cached, if you then do
-   ``make flashapp`` that same iamge gets flashed.)
+   ``make flashapp`` that same image gets flashed.)
 
 .. envvar:: CACHE_VARS
 
@@ -532,6 +549,11 @@ changed as required.
    Relative paths to dependent submodule directories for this Component.
    These will be fetched/patched automatically before building.
 
+   Default behaviour is to initialise submodules recursively.
+   To prevent this behaviour and initialise only the top-level submodule,
+   add a file to the parent directory with the same name as the submodule
+   and a ``.no-recursive`` extension.
+
 .. envvar:: COMPONENT_SRCDIRS
 
    Locations for source code relative to COMPONENT_PATH (defaults to “. src”)
@@ -634,6 +656,9 @@ never overwritten.
 
    Will be visible **ONLY** to C++ code within the component.
 
+.. envvar:: COMPONENT_CPPFLAGS
+
+   Will be visible to both C and C++ code within the component.
 
 .. important::
 

@@ -12,7 +12,7 @@ bootloader allows you to have more than one application on the esp8266,
 either completely different apps, or different version of the same app,
 which can be updated over the air.
 
-The example :sample:`Basic_rBoot` demonstrates the use of rBoot, but if you want
+The example :sample:`Basic_Ota` demonstrates the use of rBoot, but if you want
 to add it to an existing project this little tutorial will guide you.
 
 Need to know
@@ -108,5 +108,3 @@ products.
 A more lightweight solution is provided by :cpp:class:`RbootOutputStream`, which 
 is just a thin wrapper around rBoot's flash API, in combination with :cpp:class:`RbootHttpUpdater`,
 which pulls individual ROM image from an HTTP server.
-
-For details, refer to the `OtaUpdate()` function in the :sample:`Basic_rBoot` sample.

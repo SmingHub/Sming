@@ -394,7 +394,7 @@ void RF24::startListening(void)
   write_register(CONFIG, read_register(CONFIG) | _BV(PWR_UP) | _BV(PRIM_RX));
   write_register(REG_STATUS, _BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
 
-  // Restore the pipe0 adddress, if exists
+  // Restore the pipe0 address, if exists
   if (pipe0_reading_address)
     write_register(RX_ADDR_P0, reinterpret_cast<const uint8_t*>(&pipe0_reading_address), 5);
 

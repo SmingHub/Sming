@@ -1,12 +1,15 @@
 #include <HostTests.h>
 #include <FlashString/TemplateStream.hpp>
 #include <Data/Stream/MemoryDataStream.h>
-#include <Data/Stream/Base64OutputStream.h>
-#include <Data/Stream/ChunkedStream.h>
+#include <Data/Stream/LimitedMemoryStream.h>
 #include <Data/Stream/XorOutputStream.h>
 #include <Data/Stream/SharedMemoryStream.h>
 #include <Data/WebHelpers/base64.h>
 #include <malloc_count.h>
+
+#ifndef DISABLE_NETWORK
+#include <Data/Stream/ChunkedStream.h>
+#endif
 
 DEFINE_FSTR_LOCAL(template1, "Stream containing {var1}, {var2} and {var3}. {} {{}} {{12345")
 DEFINE_FSTR_LOCAL(template1_1, "Stream containing value #1, value #2 and {var3}. {} {{}} {{12345")
@@ -80,16 +83,19 @@ public:
 			REQUIRE(strlen(s.c_str()) == s.length());
 		}
 
-		TEST_CASE("Base64OutputStream / StreamTransformer")
+#ifndef DISABLE_NETWORK
+
+		TEST_CASE("ChunkedStream / StreamTransformer")
 		{
-			auto src = new FSTR::Stream(Resource::image_png);
-			Base64OutputStream base64stream(src);
+			DEFINE_FSTR_LOCAL(FS_INPUT, "Some test data");
+			DEFINE_FSTR_LOCAL(FS_OUTPUT, "e\r\nSome test data\r\n0\r\n\r\n");
+			ChunkedStream chunked(new FlashMemoryStream(FS_INPUT));
 			MemoryDataStream output;
-			output.copyFrom(&base64stream);
+			output.copyFrom(&chunked);
 			String s;
 			REQUIRE(output.moveString(s));
-			s = base64_decode(s);
-			REQUIRE(Resource::image_png == s);
+			m_printHex("OUTPUT", s.c_str(), s.length());
+			REQUIRE(FS_OUTPUT == s);
 		}
 
 		TEST_CASE("ChunkedStream / StreamTransformer")
@@ -132,6 +138,7 @@ public:
 			REQUIRE(mem.moveString(s));
 			REQUIRE(Resource::multipart_result == s);
 		}
+#endif
 
 		TEST_CASE("XorOutputStream")
 		{
@@ -191,7 +198,7 @@ public:
 			}
 
 			for(unsigned i = 0; i < list.count(); i++) {
-				size_t bufferSize = 5;
+				constexpr size_t bufferSize{5};
 				char buffer[bufferSize]{};
 				auto element = list[i];
 

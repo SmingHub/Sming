@@ -340,7 +340,7 @@ deserialize(JsonDocument& doc, TInput* input, SerializationFormat format = JSON_
  * @param input Where to get data from (see notes)
  * @param format Format of the data
  * @retval bool true on success, false on error
- * @note Supports stream pointers (Stream and inherited classses)
+ * @note Supports stream pointers (Stream and inherited classes)
  * This function can be safely used with null pointers
  */
 template <typename TStream>

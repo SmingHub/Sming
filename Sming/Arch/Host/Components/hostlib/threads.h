@@ -1,5 +1,5 @@
 /**
- * threads.h - C++ support for threads and related sychronisation primitives using pthread library
+ * threads.h - C++ support for threads and related synchronisation primitives using pthread library
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *

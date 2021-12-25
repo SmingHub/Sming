@@ -3,11 +3,11 @@
 
 // This code turns a LED on and incraments number displayed on the 7-segment display
 //  whenever either PB1 or PB2 is pressed. PB1 used the debounce library and PB2 does
-//  not. PB1 will cleanly increment the displayed value. PB2 will not alway increment
+//  not. PB1 will cleanly increment the displayed value. PB2 will not always increment
 //  the display because the switch is not debounced.
 //
 // The  bounce library also detects the rising or falling edge of the input.
-//  This is often called a one-shot and is usefull if you want something to only 
+//  This is often called a one-shot and is useful if you want something to only 
 //  happen once when a button is pressed or released. The risingEdge method is true
 //  for only one scan when the input goes from off-to-on. The fallingEdge method is
 //  true for only one scan when the input goes from on-to-off. Even if you are not

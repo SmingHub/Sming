@@ -1,0 +1,28 @@
+menu "SSL"
+	depends on !DISABLE_NETWORK
+
+	choice
+		default SELECT_SSL_NONE
+		prompt "SSL adapter"
+		config SELECT_SSL_NONE
+			bool "None"
+		config SELECT_SSL_DEFAULT
+			bool "Default (Axtls)"
+		config SELECT_SSL_AXTLS
+			bool "AXTLS"
+		config SELECT_SSL_BEARSSL
+			bool "Bear SSL"
+	endchoice
+
+	config ENABLE_SSL
+		string
+		default "0" if SELECT_SSL_NONE
+		default "1" if SELECT_SSL_DEFAULT
+		default "Axtls" if SELECT_SSL_AXTLS
+		default "Bearssl" if SELECT_SSL_BEARSSL
+
+	config SSL_DEBUG
+		depends on ENABLE_SSL != "0"
+		bool "Enable SSL debug"
+
+endmenu

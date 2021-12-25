@@ -1,0 +1,82 @@
+{
+    "version": "2.0.0",
+    "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+    },
+    "tasks": [
+        {
+            "label": "Build",
+            "detail": "Normal build",
+            "type": "shell",
+            "command": "make -j SMING_ARCH=${command:cpptools.activeConfigName}",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Full rebuild (no debugging)",
+            "detail": "Rebuild application and all Components",
+            "type": "shell",
+            "command": "make -j ENABLE_GDB=",
+            "dependsOn": ["Full clean"],
+            "problemMatcher": []
+        },
+        {
+            "label": "Full rebuild (with debugging)",
+            "detail": "Rebuild application and all Components",
+            "type": "shell",
+            "command": "make -j ENABLE_GDB=1",
+            "dependsOn": ["Full clean"],
+            "problemMatcher": []
+        },
+        {
+            "label": "flash",
+            "detail": "Write all partitions to device",
+            "type": "shell",
+            "command": "make flash SMING_ARCH=${command:cpptools.activeConfigName}",
+            "problemMatcher": []
+        },
+        {
+            "label": "run",
+            "detail": "Run application for Host",
+            "type": "shell",
+            "command": "make -j run SMING_ARCH=Host",
+            "problemMatcher": []
+        },
+        {
+            "label": "Flash and Run",
+            "detail": "Build, flash and run application for Host",
+            "type": "shell",
+            "command": "make -j flash run SMING_ARCH=Host",
+            "problemMatcher": []
+        },
+        {
+            "label": "clean",
+            "detail": "Clean just the application",
+            "type": "shell",
+            "command": "make clean SMING_ARCH=${command:cpptools.activeConfigName}",
+            "problemMatcher": []
+        },
+        {
+            "label": "Full clean",
+            "detail": "Clean application and all Components",
+            "type": "shell",
+            "command": "make clean components-clean SMING_ARCH=${command:cpptools.activeConfigName}",
+            "problemMatcher": []
+        },
+        {
+            "label": "Distribution Clean",
+            "detail": "Cleans application, all components and re-initialises all submodules",
+            "type": "shell",
+            "command": "make dist-clean",
+            "problemMatcher": []
+        }
+    ]
+}

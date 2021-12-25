@@ -45,25 +45,8 @@ endef
 
 $(TARGET_OUT_0): $(COMPONENTS_AR) $(LIBMAIN_DST)
 	$(call LinkTarget,$(RBOOT_LD_0))
-
-	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
-
-	$(Q)	if [ -f "$(FW_MEMINFO_NEW)" -a -f "$(FW_MEMINFO_OLD)" ]; then \
-				$(AWK) -F "|" ' \
-					FILENAME == "$(FW_MEMINFO_OLD)" { \
-						arr[$$1]=$$5 \
-					} \
-					FILENAME == "$(FW_MEMINFO_NEW)" { \
-					if (arr[$$1] != $$5) { \
-						printf "%s%s%+d%s", substr($$0, 1, length($$0) - 1)," (",$$5 - arr[$$1],")\n" \
-					} else { \
-						print $$0 \
-					} \
-				}' $(FW_MEMINFO_OLD) $(FW_MEMINFO_NEW); \
-			elif [ -f "$(FW_MEMINFO_NEW)" ]; then \
-			  cat $(FW_MEMINFO_NEW); \
-			fi
-
+	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO)
+	$(Q) cat $(FW_MEMINFO)
 
 $(TARGET_OUT_1): $(COMPONENTS_AR) $(LIBMAIN_DST)
 	$(call LinkTarget,$(RBOOT_LD_1))

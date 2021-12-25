@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Upload Demo</title>
+  </head>
+  <body>
+    <h1>Update Firmware</h1>
+    <p>
+      This sample demonstrates how to upload a file, get its filename and store the file on the device file system.<br>
+      The maximum allowed file size is {MAX_FILE_SIZE} bytes.
+    </p>
+    <p>
+      <form action="/upgrade" method="post" enctype="multipart/form-data">
+        <input type="file" name="firmware" /> <input type="submit" value="Upgrade"/>
+      </form>
+    </p>
+  </body>
+</html>

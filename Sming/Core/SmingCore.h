@@ -62,6 +62,4 @@
 
 #include "DateTime.h"
 
-#include "fatfs/ff.h"
-
 #include <Storage.h>

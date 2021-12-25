@@ -23,34 +23,98 @@
 
 #pragma once
 
-#include <inttypes.h>
-#include "Stream.h"
-
-#define BUFFER_LENGTH 32
+#include <Stream.h>
+#include <twi_arch.h>
 
 class TwoWire : public Stream
 {
 public:
-	TwoWire();
+	static constexpr size_t BUFFER_LENGTH{32};
 
-	void begin(int sda, int scl);
-	void pins(int sda, int scl);
+	enum Status {
+		I2C_OK = 0,
+		I2C_SCL_HELD_LOW = 1,
+		I2C_SCL_HELD_LOW_AFTER_READ = 2,
+		I2C_SDA_HELD_LOW = 3,
+		I2C_SDA_HELD_LOW_AFTER_INIT = 4,
+	};
+
+	enum Error {
+		I2C_ERR_SUCCESS = 0,
+		I2C_ERR_ADDR_NACK = 2,
+		I2C_ERR_DATA_NACK = 3,
+		I2C_ERR_LINE_BUSY = 4,
+	};
+
+	using UserRequest = void (*)();
+	using UserReceive = void (*)(int len);
+
+	TwoWire() : Stream()
+	{
+	}
+
+	/**
+	 * @brief Initialise using selected pins
+	 */
+	void begin(uint8_t sda, uint8_t scl);
+
+	/**
+	 * @brief Switch to selected pins
+	 * 
+	 * If `begin()` has already been called then pins will change immediately,
+	 * otherwise will be used by next call to `begin()`.
+	 */
+	void pins(uint8_t sda, uint8_t scl);
+
+	/**
+	 * @brief Initialise using current pin values
+	 *
+	 * Default pins depend on selected architecture.
+	 */
 	void begin();
-	void begin(uint8_t);
-	void begin(int);
-	void setClock(uint32_t);
-	void setClockStretchLimit(uint32_t);
-	void beginTransmission(uint8_t);
-	void beginTransmission(int);
-	uint8_t endTransmission();
-	uint8_t endTransmission(uint8_t);
-	size_t requestFrom(uint8_t address, size_t size, bool sendStop);
-	uint8_t status();
 
-	uint8_t requestFrom(uint8_t, uint8_t);
-	uint8_t requestFrom(uint8_t, uint8_t, uint8_t);
-	uint8_t requestFrom(int, int);
-	uint8_t requestFrom(int, int, int);
+	/**
+	 * @brief End TwoWire operation
+	 */
+	void end();
+
+	/**
+	 * @brief Set approximate clock frequency
+	 */
+	void setClock(uint32_t frequency);
+
+	/**
+	 * @brief Set approximate time in microseconds that clocks may be stretched by
+	 */
+	void setClockStretchLimit(uint32_t limit);
+
+	/**
+	 * @brief Signal start of transaction
+	 * @param address Device address
+	 */
+	void beginTransmission(uint8_t address);
+
+	/**
+	 * @brief Perform actual transaction with device
+	 * @param sendStop By default, send a stop condition
+	 */
+	Error endTransmission(bool sendStop = true);
+
+	/**
+	 * @brief Perform a complete 'read' transaction
+	 * @param address Device to talk to
+	 * @param size Number of bytes to receive
+	 * @param sendStop By default, send a stop condition
+	 */
+	uint8_t requestFrom(uint8_t address, uint8_t size, bool sendStop = true);
+
+	/**
+	 * @brief Query bus status
+	 * @retval Status Indicates whether bus is available
+	 */
+	Status status();
+
+	/* Stream methods */
 
 	size_t write(uint8_t) override;
 	size_t write(const uint8_t*, size_t) override;
@@ -59,46 +123,50 @@ public:
 	int peek() override;
 	void flush() override;
 
-	void onReceive(void (*)(int));
-	void onRequest(void (*)());
-
-	size_t write(unsigned long n)
-	{
-		return write(uint8_t(n));
-	}
-
-	size_t write(long n)
-	{
-		return write(uint8_t(n));
-	}
-
-	size_t write(unsigned int n)
-	{
-		return write(uint8_t(n));
-	}
-
-	size_t write(int n)
-	{
-		return write(uint8_t(n));
-	}
-
 	using Print::write;
 
+	// Slave mode not currently implemented
+	void onReceive(UserReceive callback)
+	{
+		// userReceiveCallback = callback;
+	}
+
+	// Slave mode not currently implemented
+	void onRequest(UserRequest callback)
+	{
+		// userRequestCallback = callback;
+	}
+
 private:
-	static uint8_t rxBuffer[];
-	static uint8_t rxBufferIndex;
-	static uint8_t rxBufferLength;
+	uint8_t twi_sda{DEFAULT_SDA_PIN};
+	uint8_t twi_scl{DEFAULT_SCL_PIN};
+	uint8_t twi_dcount{18};
+	unsigned twi_clockStretchLimit{0};
 
-	static uint8_t txAddress;
-	static uint8_t txBuffer[];
-	static uint8_t txBufferIndex;
-	static uint8_t txBufferLength;
+	uint8_t rxBuffer[BUFFER_LENGTH]{};
+	uint8_t rxBufferIndex{0};
+	uint8_t rxBufferLength{0};
 
-	static uint8_t transmitting;
-	static void (*user_onRequest)();
-	static void (*user_onReceive)(int);
-	static void onRequestService();
-	static void onReceiveService(uint8_t*, int);
+	uint8_t txAddress{0};
+	uint8_t txBuffer[BUFFER_LENGTH]{};
+	uint8_t txBufferIndex{0};
+	uint8_t txBufferLength{0};
+
+	bool transmitting{false};
+	UserRequest userRequestCallback{nullptr};
+	UserReceive userReceiveCallback{nullptr};
+	void onRequestService();
+	void onReceiveService(uint8_t*, int);
+
+	void twi_delay(uint8_t v);
+	bool twi_write_start();
+	bool twi_write_stop();
+	bool twi_write_bit(bool bit);
+	bool twi_read_bit();
+	bool twi_write_byte(uint8_t byte);
+	uint8_t twi_read_byte(bool nack);
+	Error twi_writeTo(uint8_t address, const uint8_t* buf, size_t len, bool sendStop);
+	Error twi_readFrom(uint8_t address, uint8_t* buf, size_t len, bool sendStop);
 };
 
 #if !defined(NO_GLOBAL_INSTANCES) && !defined(NO_GLOBAL_TWOWIRE)

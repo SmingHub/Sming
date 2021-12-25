@@ -44,7 +44,7 @@ void loop()
 {
   if(barometer.IsConnected)
   {
-    // Retrive the current pressure in Pascals.
+    // Retrieve the current pressure in Pascals.
     long currentPressure = barometer.GetPressure();
     
     // Print out the Pressure.
@@ -52,7 +52,7 @@ void loop()
     Serial.print(currentPressure);
     Serial.print(" Pa");
     
-    // Retrive the current altitude (in meters). Current Sea Level Pressure is required for this.
+    // Retrieve the current altitude (in meters). Current Sea Level Pressure is required for this.
     float altitude = barometer.GetAltitude(seaLevelPressure);
     
     // Print out the Altitude.
@@ -60,7 +60,7 @@ void loop()
     Serial.print(altitude);
     Serial.print(" m");
     
-    // Retrive the current temperature in degrees celcius.
+    // Retrieve the current temperature in degrees celsius.
     float currentTemperature = barometer.GetTemperature();
     
     // Print out the Temperature

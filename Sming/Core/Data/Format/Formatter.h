@@ -39,7 +39,7 @@ public:
 	virtual void unQuote(String& value) const = 0;
 
 	/**
-	 * @brief Correspdoning MIME type for this format
+	 * @brief Corresponding MIME type for this format
 	 * @note New types must be added to WebConstants.h
 	 */
 	virtual MimeType mimeType() const = 0;

@@ -21,7 +21,7 @@ struct esp_partition_info_t {
 	uint8_t subtype;				 ///< Sub-type for partition (interpretation dependent upon type)
 	uint32_t offset;				 ///< Start offset
 	uint32_t size;					 ///< Size of partition in bytes
-	Storage::Partition::Name name;   ///< Unique identifer for entry
+	Storage::Partition::Name name;   ///< Unique identifier for entry
 	Storage::Partition::Flags flags; ///< Various option flags
 };
 

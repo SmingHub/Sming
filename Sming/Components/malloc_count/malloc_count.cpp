@@ -42,30 +42,19 @@
 #include <esp_attr.h>
 
 // Names for the actual implementations
-#ifdef ARCH_HOST
-
-#define F_MALLOC malloc
-#define F_CALLOC calloc
-#define F_REALLOC realloc
-#define F_FREE free
-
-#elif defined(ARCH_ESP8266)
+#ifdef ARCH_ESP8266
 
 #define F_MALLOC pvPortMalloc
 #define F_CALLOC pvPortCalloc
 #define F_REALLOC pvPortRealloc
 #define F_FREE vPortFree
 
-#elif defined(ARCH_ESP32)
+#else
 
 #define F_MALLOC malloc
 #define F_CALLOC calloc
 #define F_REALLOC realloc
 #define F_FREE free
-
-#else
-
-#error Unsupported Architecture
 
 #endif
 
@@ -369,7 +358,7 @@ extern "C" void* WRAP(pvPortZalloc)(size_t) __attribute__((alias("mc_zalloc")));
 extern "C" void* WRAP(pvPortZallocIram)(size_t) __attribute__((alias("mc_zalloc")));
 extern "C" void WRAP(vPortFree)(void*) __attribute__((alias("mc_free")));
 
-#elif defined(ARCH_HOST) || defined(ARCH_ESP32)
+#else
 
 using namespace MallocCount;
 
@@ -424,10 +413,6 @@ extern "C" char* WRAP(strdup)(const char* s)
 	memcpy(dup, s, len);
 	return dup;
 }
-
-#else
-
-static_assert(false, "ARCH not supported");
 
 #endif
 

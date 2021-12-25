@@ -1,0 +1,20 @@
+menu "OTA Upgrade MQTT"
+
+    config ENABLE_OTA_VARINT_VERSION
+        bool "Enable 'varint' encoding for patch version"
+        default y
+        help
+            If enabled, the OTA upgrade mechanism and application will use a `varint <https://developers.google.com/protocol-buffers/docs/encoding#varints>`_
+            encoding for the patch version. Thus allowing unlimited number of patch versions. Useful for enumerating unstable/nightly releases.
+            A bit more difficult to read and write but allows for unlimited versions.
+
+            If disabled, the OTA upgrade mechanism and application will use one byte for the patch version which will limit it to 256 possible patch versions.
+            Useful for enumerating stable releases. Easier to write and read but limited to 256 versions only.
+
+    config ENABLE_OTA_ADVANCED
+        bool "Support firmware signing/encryption"
+        help
+           Enabling this option allows the library to work with OtaUpgradeStream which supports signature and encryption of the firmware data itself.
+           In the application the AdvancedPayloadParser can be used to do the MQTT message handling.
+
+endmenu

@@ -11,6 +11,7 @@
 #pragma once
 
 #include <Data/Stream/IFS/FileStream.h>
+#include <IFS/File.h>
 
 /**
   * @brief      Host File stream class

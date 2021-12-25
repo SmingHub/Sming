@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include <user_config.h>
+#include <stdint.h>
 
 /* ==============================================
-   Promiscous callback structures, see ESP manual
+   Promiscuous callback structures, see ESP manual
    ============================================== */
 struct RxControl {
 	signed rssi : 8;

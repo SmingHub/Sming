@@ -84,10 +84,10 @@ index dca7e5f..5f4ec51 100644
      {
 
 diff --git a/replacements/time.c b/replacements/time.c
-index 4972119..d3f0d1e 100644
+index 4972119..3e7e407 100644
 --- a/replacements/time.c
 +++ b/replacements/time.c
-@@ -16,6 +16,9 @@
+@@ -16,29 +16,25 @@
   *
   */
  
@@ -95,9 +95,11 @@ index 4972119..d3f0d1e 100644
 +#include <c_types.h>
 +
  #include <time.h>
- #include <sntp.h>
+-#include <sntp.h>
++#include <lwip/sntp.h>
  
-@@ -24,21 +27,14 @@ extern uint64_t system_mktime(uint32_t year, uint32_t mon, uint32_t day, uint32_
+ extern uint32_t system_get_time(void);
+ extern uint64_t system_mktime(uint32_t year, uint32_t mon, uint32_t day, uint32_t hour, uint32_t min, uint32_t sec);
  
  static int errno_var = 0;
  
@@ -508,7 +510,7 @@ index 6e41f40..8e4055b 100644
      /* decrypt using the key/iv */
 
 diff --git a/ssl/x509.c b/ssl/x509.c
-index a51b948..bd42b57 100644
+index a51b948..8e10d85 100644
 --- a/ssl/x509.c
 +++ b/ssl/x509.c
 @@ -109,76 +109,52 @@ int x509_new(const uint8_t *cert, int *len, X509_CTX **ctx)
@@ -613,7 +615,16 @@ index a51b948..bd42b57 100644
              break;
      }
  
-
+@@ -305,7 +281,7 @@ static int x509_v3_basic_constraints(const uint8_t *cert, int offset,
+     /* If the Sequence Length is greater than 3, it has more content than 
+     the basic_constraint_cA bool, so grab the pathLenConstraint */
+     if ((lenSeq>3) && (asn1_get_int(cert, &offset, 
+-            &x509_ctx->basic_constraint_pathLenConstraint) < 0))
++            (int32_t*)&x509_ctx->basic_constraint_pathLenConstraint) < 0))
+     {
+         ret = X509_NOT_OK;
+     }
+ 
 diff --git a/ssl/gen_cert.c b/ssl/gen_cert.c
 index 093ae9c..d611ab0 100644
 --- a/ssl/gen_cert.c
@@ -715,3 +726,16 @@ index da24d31..4de139b 100644
          int key_len, uint8_t *digest);
  void hmac_sha1_v(const uint8_t **msg, int* length, int count, const uint8_t *key, 
 
+diff --git a/ssl/asn1.c b/ssl/asn1.c
+index a08a618..273d08b 100644
+--- a/ssl/asn1.c
++++ b/ssl/asn1.c
+@@ -405,7 +405,7 @@ static int asn1_get_utc_time(const uint8_t *buf, int *offset, time_t *t)
+ int asn1_version(const uint8_t *cert, int *offset, int *val)
+ {
+     (*offset) += 2;        /* get past explicit tag */
+-    return asn1_get_int(cert, offset, val);
++    return asn1_get_int(cert, offset, (int32_t*)val);
+ }
+ 
+ /**

@@ -9,7 +9,7 @@
  ****/
 
 #include "FakePgmSpace.h"
-#include <esp_systemapi.h>
+#include <cassert>
 
 /*
  * We implement aligned versions of some system functions to be used strictly on

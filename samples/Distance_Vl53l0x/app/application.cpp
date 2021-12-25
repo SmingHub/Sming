@@ -31,16 +31,9 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 
-	// WIFI not needed for demo. So disabling WIFI.
-	WifiStation.enable(false);
-	WifiAccessPoint.enable(false);
-
-	// Create components.
 	Wire.begin(SDA, SCL);
 
-	lox.setLongRangeMode(true);
-
-	if(!lox.begin()) {
+	if(!lox.begin(VL53L0X_I2C_ADDR, false, &Wire, Adafruit_VL53L0X::VL53L0X_SENSE_LONG_RANGE)) {
 		Serial.println(F("Failed to boot VL53L0X"));
 		while(1) {
 		}

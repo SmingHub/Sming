@@ -72,6 +72,9 @@ public:
 
 	using HashMap::contains;
 
+	/**
+	 * @brief Determine if given header field is present
+	 */
 	bool contains(const String& name) const
 	{
 		return contains(fromString(name));

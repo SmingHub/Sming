@@ -8,9 +8,11 @@ Descr: Low-level SDCard functions
 #pragma once
 
 #include <SPIBase.h>
+#include <fatfs/ff.h>
+
 
 /**
- * @brief Intialise SD card interface
+ * @brief Initialise SD card interface
  * @param slaveSelect Pin to use for CS
  * @param freqLimit Maximum SPI clock speed
  * @retval bool true on success, false on error

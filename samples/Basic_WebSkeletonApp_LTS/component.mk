@@ -1,3 +1,5 @@
+COMPONENT_SOC := esp* host
+
 ## Local build configuration
 ## Parameters configured here will override default and ENV values.
 ## Uncomment and change examples:

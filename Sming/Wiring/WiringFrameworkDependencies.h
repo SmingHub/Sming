@@ -7,12 +7,11 @@
 
 #pragma once
 
-#include <user_config.h>
-
 #include <c_types.h>
 #include <cctype>
 #include <cmath>
 #include <cstring>
+#include <stringconversion.h>
 
 #include "WConstants.h"
 #include "BitManipulations.h"

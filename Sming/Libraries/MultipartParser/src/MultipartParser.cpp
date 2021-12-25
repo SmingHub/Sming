@@ -12,6 +12,7 @@
 
 #include "MultipartParser.h"
 #include <Network/Http/HttpBodyParser.h>
+#include <Data/Stream/IFS/FileStream.h>
 
 multipart_parser_settings_t MultipartParser::settings = {
 	.on_header_field = readHeaderName,
@@ -91,8 +92,7 @@ int MultipartParser::partBegin(multipart_parser_t* p)
 {
 	GET_PARSER();
 
-	parser->headerName.setLength(0);
-	parser->headerValue.setLength(0);
+	parser->resetHeaders();
 	parser->stream = nullptr;
 
 	return 0;
@@ -102,62 +102,102 @@ int MultipartParser::readHeaderName(multipart_parser_t* p, const char* at, size_
 {
 	GET_PARSER();
 
-	if(parser->headerValue != String::empty) {
-		// process previous header
-		int result = parser->processHeader();
-		if(result != 0) {
-			return result;
-		}
-	}
-
-	parser->headerName.concat(at, length);
-
-	return 0;
-}
-
-int MultipartParser::processHeader()
-{
-	if(FS("Content-Disposition") == headerName) {
-		// Content-Disposition: form-data; name="image"; filename=".gitignore"
-		// Content-Disposition: form-data; name="data"
-		int startPos = headerValue.indexOf(FS("name="));
-		if(startPos < 0) {
-			debug_e("Invalid header content");
-			return -1; // Invalid header content
-		}
-		startPos += 6; // name="
-		int endPos = headerValue.indexOf(';', startPos);
-
-		String name;
-		if(endPos < 0) {
-			name = headerValue.substring(startPos, headerValue.length() - 1);
-		} else {
-			name = headerValue.substring(startPos, endPos - 1);
-		}
-		// get stream corresponding to field name
-		stream = request.files[name];
-	}
-
-	headerName.setLength(0);
-	headerValue.setLength(0);
-
-	return 0;
+	return parser->headerBuilder.onHeaderField(at, length);
 }
 
 int MultipartParser::readHeaderValue(multipart_parser_t* p, const char* at, size_t length)
 {
 	GET_PARSER();
 
-	parser->headerValue.concat(at, length);
-
-	return 0;
+	return parser->headerBuilder.onHeaderValue(parser->incomingHeaders, at, length);
 }
 
 int MultipartParser::partHeadersComplete(multipart_parser_t* p)
 {
 	GET_PARSER();
 
-	return parser->processHeader();
+	auto& headers = static_cast<const HttpHeaders&>(parser->incomingHeaders);
+	String headerValue = headers[HTTP_HEADER_CONTENT_DISPOSITION];
+	if(!headerValue) {
+		return 0;
+	}
+
+	// Content-Disposition: form-data; name="image"; filename=".gitignore"
+	// Content-Disposition: form-data; name="data"
+	int startPos = headerValue.indexOf(F("name="));
+	if(startPos < 0) {
+		debug_e("Invalid header content");
+		return -1; // Invalid header content
+	}
+	startPos += 6; // name="
+	int endPos = headerValue.indexOf(';', startPos);
+
+	String name;
+	if(endPos < 0) {
+		name = headerValue.substring(startPos, headerValue.length() - 1);
+	} else {
+		name = headerValue.substring(startPos, endPos - 1);
+	}
+	// get stream corresponding to field name
+	parser->stream = parser->request.files[name];
+
+	// inject file name, if any
+	startPos = headerValue.indexOf(F("filename="));
+	if(startPos < 0) {
+		return 0;
+	}
+
+	startPos += 10; // filename="
+	endPos = headerValue.indexOf('"', startPos);
+	if(endPos < 0) {
+		return 0;
+	}
+
+	String fileName = headerValue.substring(startPos, endPos);
+	// sanitize the name -> remove any slashes and trailing dots
+	fileName.replace('/', '-');
+	fileName.trim(".");
+	if(fileName.length() == 0) {
+		return 0;
+	}
+
+	// if the stream is of type FileStream and the name is not set
+	// then we can set the name and flags to create-write
+	auto stream = parser->stream;
+	if(stream == nullptr) {
+		return 0;
+	}
+
+	if(stream->getStreamType() == eSST_Wrapper) {
+		auto wrapper = static_cast<StreamWrapper*>(stream);
+		stream = wrapper->getSource();
+	}
+
+	if(stream->getStreamType() == eSST_File) {
+		auto fileStream = static_cast<IFS::FileStream*>(stream);
+		if(fileStream->fileName().length() == 0) {
+			fileStream->open(fileName, File::CreateNewAlways | File::WriteOnly);
+		}
+		return 0;
+	}
+
+	if(stream->getStreamType() == eSST_HeaderChecker) {
+		String contentLength = headers[HTTP_HEADER_CONTENT_LENGTH];
+		PartCheckerStream::FilePart part = {
+			.name = name,
+			.fileName = fileName,
+			.mime = headers[HTTP_HEADER_CONTENT_TYPE],
+			.length = contentLength ? contentLength.toInt() : -1,
+		};
+
+		auto checkerStream = static_cast<PartCheckerStream*>(stream);
+		if(!checkerStream->checkHeaders(headers, part)) {
+			// the stream will be freed later. For now mark it as not usable.
+			parser->stream = nullptr;
+		}
+	}
+
+	return 0;
 }
 
 int MultipartParser::partData(multipart_parser_t* p, const char* at, size_t length)
@@ -178,6 +218,8 @@ int MultipartParser::partEnd(multipart_parser_t* p)
 {
 	GET_PARSER();
 
+	parser->resetHeaders();
+
 	return 0;
 }
 
@@ -186,4 +228,10 @@ int MultipartParser::bodyEnd(multipart_parser_t* p)
 	GET_PARSER();
 
 	return 0;
+}
+
+void MultipartParser::resetHeaders()
+{
+	headerBuilder.reset();
+	incomingHeaders.clear();
 }

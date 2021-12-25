@@ -1,3 +1,5 @@
+COMPONENT_SOC := esp* host
+
 #
 ifeq ($(ENABLE_MALLOC_COUNT),1)
 COMPONENT_DEPENDS	+= malloc_count

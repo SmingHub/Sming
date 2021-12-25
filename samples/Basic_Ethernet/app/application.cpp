@@ -2,8 +2,6 @@
 
 // #define USE_EMBEDDED ARCH_ESP32
 
-#ifdef ARCH_ESP32
-
 #if USE_EMBEDDED
 
 // The Embedded MAC
@@ -76,11 +74,3 @@ void init()
 	// Set a static IP
 	// ethernet.setIP(IpAddress("192.168.1.12"), IpAddress("255.255.255.0"), IpAddress("192.168.1.254"));
 }
-
-#else // ARCH_ESP32
-
-void init()
-{
-}
-
-#endif

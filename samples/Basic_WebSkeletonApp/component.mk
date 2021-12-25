@@ -1,3 +1,4 @@
+COMPONENT_SOC := esp*
 ARDUINO_LIBRARIES := ArduinoJson6
 HWCONFIG := spiffs
 

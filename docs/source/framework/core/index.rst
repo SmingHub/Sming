@@ -6,3 +6,5 @@ Core Framework
 
    pgmspace
    data/index
+   datetime
+   filesystem

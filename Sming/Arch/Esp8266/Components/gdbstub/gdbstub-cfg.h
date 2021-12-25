@@ -152,7 +152,7 @@
 #endif
 
 /**
- * Some commands are not required by GDB, so if neccessary can be disabled to save memory.
+ * Some commands are not required by GDB, so if necessary can be disabled to save memory.
  */
 // Read/write individual registers
 #ifndef GDBSTUB_CMDENABLE_P

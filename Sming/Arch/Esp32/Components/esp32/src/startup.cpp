@@ -36,7 +36,7 @@ namespace
 esp_event_handler_t wifiEventHandler;
 
 /*
- * Initalise NVS which IDF WiFi uses to store configuration parameters.
+ * Initialise NVS which IDF WiFi uses to store configuration parameters.
  */
 void esp_init_nvs()
 {
@@ -110,7 +110,7 @@ extern void sming_create_task(TaskFunction_t);
 
 extern "C" void app_main(void)
 {
-#if defined(SUBARCH_ESP32) && !CONFIG_FREERTOS_UNICORE
+#if defined(SOC_ESP32) && !CONFIG_FREERTOS_UNICORE
 	constexpr unsigned core_id{1};
 #else
 	constexpr unsigned core_id{0};

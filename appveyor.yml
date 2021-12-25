@@ -2,66 +2,42 @@ image:
 - Ubuntu2004
 - Visual Studio 2019
 
-platform: x86
-
 environment:
   SMING_SECRET:
     secure: rCs19uNvDR07w1d2pfwJIzewiEQ2zpKXdqFp5BqHQAA=
 
   matrix:
     - SMING_ARCH: Host
-      INSTALL_OPTS: host doc
 
     - SMING_ARCH: Esp8266
-      INSTALL_OPTS: esp8266
-      BUILD_COMPILER: udk
-
-    - SMING_ARCH: Esp8266
-      INSTALL_OPTS: esp8266
-      BUILD_COMPILER: eqt
 
     - SMING_ARCH: Esp32
-      INSTALL_OPTS: esp32
+      SMING_SOC: esp32
 
+    - SMING_ARCH: Esp32
+      SMING_SOC: esp32s2
+
+    - SMING_ARCH: Esp32
+      SMING_SOC: esp32c3
+
+    - SMING_ARCH: Rp2040
+
+    - BUILD_DOCS: true
 
 install:
   - ps: |
       # Set up environment variables for all environments and build types
-      $env:CI_BUILD_DIR = $env:APPVEYOR_BUILD_FOLDER
-      $env:CI_PROJECT_SLUG = $env:APPVEYOR_PROJECT_SLUG
       $env:CI_REPO_NAME = $env:APPVEYOR_REPO_NAME
       if ($env:APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME) {
         $env:CI_PULL_REQUEST = "true"
       }
-      # Esp8266 
-      $env:UDK_ROOT = Join-Path $env:CI_BUILD_DIR "opt/esp-alt-sdk"
-      $env:EQT_ROOT = Join-Path $env:CI_BUILD_DIR "opt/esp-quick-toolchain"
-      if ($env:BUILD_COMPILER -eq "udk") {
-        $env:ESP_HOME = $env:UDK_ROOT
-      } else {
-        $env:ESP_HOME = $env:EQT_ROOT
-      }
-      # Esp32
-      $env:IDF_PATH = Join-Path $env:CI_BUILD_DIR "opt/esp-idf"
-      $env:IDF_TOOLS_PATH = Join-Path $env:CI_BUILD_DIR "opt/tools/esp32"
-      $env:IDF_BRANCH = "sming/dev/v4.3"
-      # General
-      $env:SMING_HOME = Join-Path $env:CI_BUILD_DIR "Sming"
+      Tools/ci/setenv.ps1
 
   - cmd: |
-      set PATH=C:\Python39;C:\Python39\Scripts;C:\MinGW\msys\1.0\bin;C:\MinGW\bin;%PATH%
-      set PYTHON=C:\Python39\python
-      set ESP32_PYTHON_PATH=C:\Python39
       Tools\ci\install.cmd
-      set PATH=C:\tools\doxygen;C:\tools\Graphviz\bin;%PATH%
 
   - sh: |
-      export PYTHON=$HOME/venv3.9/bin/python
-      export ESP32_PYTHON_PATH=$HOME/venv3.9/bin
-      source $HOME/venv3.9/bin/activate
-      Tools/install.sh $INSTALL_OPTS
-      cd $CI_BUILD_DIR
-
+      . Tools/ci/install.sh
 
 before_build:
   - sh: |
@@ -77,7 +53,7 @@ build_script:
 
 after_build:
   - ps: |
-       if ($env:SMING_ARCH -eq "Host") {
+       if ($env:BUILD_DOCS) {
           $docFile = "sming-docs.zip"
           Compress-Archive -Path $env:CI_BUILD_DIR/docs/build/html -DestinationPath $docFile
           Push-AppveyorArtifact $docFile

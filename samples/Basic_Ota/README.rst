@@ -6,7 +6,7 @@ Basic Ota
 Introduction
 ------------
 
-This sample integrates :component:`Ota`, :component:`OtaNetwork` and Sming.
+This sample integrates :library:`Ota`, :library:`OtaNetwork` and Sming.
 It demonstrates dual rom booting, big flash support, OTA updates and dual spiffs filesystems.
 This sample should work on all supported architectures.
 
@@ -56,22 +56,15 @@ the same offset inside their 1MB blocks, only a single rom is created.
 See :component:`rboot` for further details.
 
 -  If using a very small flash (e.g. 512k) there may be no room for a
-   spiffs fileystem, so use *HWCONFIG = standard*
+   spiffs filesystem, so use *HWCONFIG = standard*
 -  After building copy all the rom*.bin files to the root of your web
    server.
 
 If you want more than two roms you must be an advanced user and should
-be able to work out what to copy and edit to acheive this!
+be able to work out what to copy and edit to achieve this!
 
 Configuration
 -------------
-.. envvar:: RBOOT_TWO_ROMS
-
-   Default: 1 (enabled)
-
-   Allows specifying two different URLs for ROM0 and ROM1.
-
-   If not set then only the URL defined in ROM_0_URL will be used.
 
 .. envvar:: ROM_0_URL
 

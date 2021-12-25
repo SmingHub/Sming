@@ -16,6 +16,9 @@
 
 namespace Ota
 {
+/**
+ * @brief ESP32 OTA Upgrader implementation
+ */
 class IdfUpgrader : public UpgraderBase
 {
 public:

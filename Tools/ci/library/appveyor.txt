@@ -1,0 +1,42 @@
+image:
+- Ubuntu2004
+- Visual Studio 2019
+
+environment:
+  SMING_REPO: https://github.com/SmingHub/Sming
+  SMING_BRANCH: develop
+
+  matrix:
+    - SMING_ARCH: Host
+
+    - SMING_ARCH: Esp8266
+
+    - SMING_ARCH: Esp32
+      SMING_SOC: esp32
+
+    - SMING_ARCH: Esp32
+      SMING_SOC: esp32s2
+
+    - SMING_ARCH: Esp32
+      SMING_SOC: esp32c3
+
+    - SMING_ARCH: Rp2040
+
+install:
+  - ps: |
+      Start-Process -FilePath git -ArgumentList "clone $env:SMING_REPO -b $env:SMING_BRANCH --depth 1 sming" -Wait -NoNewWindow
+      $env:COMPONENT_SEARCH_DIRS = (resolve-path "$pwd/..").path
+      sming/Tools/ci/setenv.ps1
+      make -C "$env:SMING_HOME" "fetch-$env:APPVEYOR_PROJECT_SLUG"
+
+  - cmd: |
+      if "%APPVEYOR_BUILD_WORKER_CLOUD%"=="" sming\Tools\ci\install.cmd %SMING_ARCH% %INSTALL_OPTS%
+
+  - sh: |
+      if [ -z "$APPVEYOR_BUILD_WORKER_CLOUD" ]; then
+        . sming/Tools/ci/install.sh ${SMING_ARCH,,} $INSTALL_OPTS
+      fi
+
+build_script:
+  - sh: make -j$(nproc) -f $SMING_HOME/../Tools/ci/library/Makefile
+  - cmd: make -j%NUMBER_OF_PROCESSORS% -f %SMING_HOME%/../Tools/ci/library/Makefile

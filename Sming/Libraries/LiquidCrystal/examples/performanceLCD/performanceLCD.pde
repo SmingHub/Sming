@@ -84,7 +84,7 @@ extern void *__brkval;
 /*!
  @defined    LCD_COLUMNS
  @abstract   LCD available columns
- @discussion Defines the number of colums that the LCD has, normal LCD ranges are (8, 16, 20).
+ @discussion Defines the number of columns that the LCD has, normal LCD ranges are (8, 16, 20).
  */
 #define LCD_COLUMNS    16
 
@@ -199,7 +199,7 @@ static t_benchMarks myBenchMarks[NUM_BENCHMARKS] =
 /*!
  @function   freeMemory
  @abstract   Return available RAM memory
- @discussion This routine returns the ammount of RAM memory available after
+ @discussion This routine returns the amount of RAM memory available after
  initialising the C runtime.
  @param      
  @return     Free RAM available, -1 for non AVR microcontrollers
@@ -282,7 +282,7 @@ static void LCDLoadCharacters ( int numChars )
              memory.
  @discussion Writes to all the positions of the LCD a fixed pattern from
              memory. For every line it writes, it positions the cursor.
-             The number of writen LCD accesses is: LCD_ROW * LCD_COLUMS + 2.
+             The number of written LCD accesses is: LCD_ROW * LCD_COLUMS + 2.
              It returns the cumulative time used by all the iterations.
  
  @param[in]  iterations: number of iterations the benchmark is executed before
@@ -320,9 +320,9 @@ long benchmark1 ( uint8_t iterations )
  @abstract   writes to the LCD a full set of characters loaded on the LCD
              memory one line pixel at the time
  @discussion Writes to all the positions of the LCD a fixed pattern from
-             memory each patern take 6 write operations to the LCD. For every  
-             character it writes it sets the cursor possition.
-             The number of writen LCD accesses is: LCD_ROW * LCD_COLUMS * 6.
+             memory each pattern take 6 write operations to the LCD. For every  
+             character it writes it sets the cursor position.
+             The number of written LCD accesses is: LCD_ROW * LCD_COLUMS * 6.
              It returns the cumulative time used by all the iterations.
  
  @param[in]  iterations: number of iterations the benchmark is executed before
@@ -363,7 +363,7 @@ long benchmark2 ( uint8_t iterations )
  @abstract   writes to the LCD a full set of characters from memory.
  @discussion Writes to all the positions of the LCD a fixed pattern from
              RAM. For every line it writes, it positions the cursor.
-             The number of writen LCD accesses is: LCD_ROW * LCD_COLUMS + 2.
+             The number of written LCD accesses is: LCD_ROW * LCD_COLUMS + 2.
              It returns the cumulative time used by all the iterations.
  
  @param[in]  iterations: number of iterations the benchmark is executed before
@@ -398,7 +398,7 @@ long benchmark3 ( uint8_t iterations )
  @abstract   writes to the LCD a full set of characters from memory.
  @discussion Writes to all the positions of the LCD a fixed pattern from
              flash. For every line it writes, it positions the cursor.
-             The number of writen LCD accesses is: LCD_ROW * LCD_COLUMS + 2.
+             The number of written LCD accesses is: LCD_ROW * LCD_COLUMS + 2.
              It returns the cumulative time used by all the iterations.
  
  @param[in]  iterations: number of iterations the benchmark is executed before

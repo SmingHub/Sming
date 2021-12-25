@@ -113,8 +113,8 @@ library, however Sming has some additions and differences.
       }
 
 Both :c:func:`DEFINE_PSTR` and :c:func:`PSTR_ARRAY` load a PSTR into a stack buffer, but using
-:c:func:`sizeof` on that buffer will return a larger value than the string itself because it's aligned.
-Calling :c:func:`sizeof` on the original flash data will get the right value.
+``sizeof`` on that buffer will return a larger value than the string itself because it's aligned.
+Calling ``sizeof`` on the original flash data will get the right value.
 If it's a regular nul-terminated string then :c:func:`strlen_P` will get the length, although it's
 time-consuming.
 

@@ -1,3 +1,5 @@
+#!/bin/bash
+#
 # Host build.run.sh
 
 SOURCE="${BASH_SOURCE[0]}"
@@ -9,9 +11,9 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
 if [[ $CHECK_SCA -eq 1 ]]; then
-	$DIR/coverity-scan.sh
+	"$DIR/coverity-scan.sh"
 else
-	$MAKE_PARALLEL Basic_Blink Basic_DateTime Basic_Delegates Basic_Interrupts Basic_ProgMem Basic_Serial Basic_Servo Basic_Ssl LiveDebug DEBUG_VERBOSE_LEVEL=3
+	$MAKE_PARALLEL samples DEBUG_VERBOSE_LEVEL=3
 fi
 
 # Build and run tests

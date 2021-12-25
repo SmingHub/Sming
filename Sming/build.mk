@@ -1,14 +1,48 @@
 # Build environment definitions
 
-# Add debug variable names to DEBUG_VARS so they can be easily inspected via `make list-config`
-DEBUG_VARS		:=
+include $(SMING_HOME)/util.mk
 
-#
-DEBUG_VARS		+= SMING_HOME SMING_ARCH
+# Add debug variable names to DEBUG_VARS so they can be easily inspected via `make list-config`
+DEBUG_VARS := SMING_HOME
+SMING_HOME := $(patsubst %/,%,$(call FixPath,$(SMING_HOME)))
+
+# Resolve SMING_ARCH and SMING_SOC settings
+DEBUG_VARS += SMING_ARCH SMING_SOC
 ifeq (,$(SMING_ARCH))
-override SMING_ARCH	:= Esp8266
+  ifeq (,$(SMING_SOC))
+    SMING_ARCH := Esp8266
+    SMING_SOC := esp8266
+  else
+    override SMING_ARCH := $(notdir $(call dirx,$(filter %/$(SMING_SOC)-soc.json,$(SOC_CONFIG_FILES))))
+    ifeq (,$(SMING_ARCH))
+      $(error SOC '$(SMING_SOC)' not found)
+    endif
+  endif
+else ifeq (,$(filter $(SMING_SOC),$(ARCH_$(SMING_ARCH)_SOC)))
+  SMING_SOC := $(firstword $(ARCH_$(SMING_ARCH)_SOC))
 endif
+
+ifeq (,$(wildcard $(SMING_HOME)/Arch/$(SMING_ARCH)/build.mk))
+  $(error Arch '$(SMING_ARCH)' not found)
+endif
+
 export SMING_ARCH
+export SMING_SOC
+
+# SOC config for currently selected variant
+export SOC_CONFIG_FILE := $(SMING_HOME)/Arch/$(SMING_ARCH)/$(SMING_SOC)-soc.json
+
+# Paths for standard build tools
+DEBUG_VARS += \
+	AS \
+	CC \
+	CXX \
+	AR \
+	LD \
+	NM \
+	OBJCOPY \
+	OBJDUMP \
+	GDB
 
 # Paths for standard build tools
 DEBUG_VARS += \
@@ -31,9 +65,11 @@ else
 endif
 export SMING_RELEASE
 
+SMING_TOOLS := $(realpath $(SMING_HOME)/../Tools)
+
 # Detect OS and build environment
 TOOL_EXT	:=
-DEBUG_VARS	+= UNAME
+DEBUG_VARS	+= UNAME OS
 UNAME		:= $(shell uname -s)
 ifneq ($(filter MINGW32_NT%,$(UNAME)),)
 	UNAME		:= Windows
@@ -63,20 +99,6 @@ else ifeq ($(UNAME), Freebsd)
  	#BSD
 endif
 
-# Convert Windows paths to POSIX paths
-DEBUG_VARS		+= OS
-ifeq ($(OS),Windows_NT)
-FixPath			= $(subst //,/,$(subst \,/,$(addprefix /,$(subst :,,$1))))
-else
-FixPath			= $1
-endif
-
-SMING_HOME		:= $(patsubst %/,%,$(call FixPath,$(SMING_HOME)))
-
-ifeq (,$(wildcard $(SMING_HOME)/Arch/$(SMING_ARCH)/build.mk))
-$(error Arch '$(SMING_ARCH)' not found)
-endif
-
 MAKECMDGOALS	?= all
 
 # Some components play nicer if they avoid doing stuff doing a cleanup
@@ -90,7 +112,6 @@ export COMPILE := gcc
 DEBUG_VARS		+= ARCH_BASE
 
 ARCH_BASE		:= $(SMING_HOME)/Arch/$(SMING_ARCH)
-ARCH_SYS		= $(ARCH_BASE)/System
 ARCH_CORE		= $(ARCH_BASE)/Core
 ARCH_TOOLS		= $(ARCH_BASE)/Tools
 ARCH_COMPONENTS	= $(ARCH_BASE)/Components
@@ -130,21 +151,17 @@ $(error Cannot find Python installation - check PATH or PYTHON environment varia
 endif
 
 
-V ?= $(VERBOSE)
-ifeq ("$(V)","1")
-	Q			:=
-	vecho		:= @true
-else
-	Q			:= @
-	vecho		:= @echo
-endif
-
 # Common C/C++ flags passed to user libraries
 CPPFLAGS = \
 	-Wl,-EL \
 	-finline-functions \
 	-fdata-sections \
 	-ffunction-sections
+
+# Required to access peripheral registers using structs
+# e.g. `uint32_t value: 8` sitting at a byte or word boundary will be 'optimised' to
+# an 8-bit fetch/store instruction which will not work; it must be a full 32-bit access.
+CPPFLAGS += -fstrict-volatile-bitfields
 
 CPPFLAGS += \
 	-Wall \
@@ -181,12 +198,16 @@ else
 	CPPFLAGS	+= -Os -g
 endif
 
-CXXFLAGS += -felide-constructors
+CXXFLAGS += \
+	-felide-constructors \
+	-fno-rtti \
+	-fno-exceptions
 
 ifneq ($(STRICT),1)
 	CXXFLAGS += -Wno-reorder
 endif
 
+ifndef MAKE_CLEAN
 include $(ARCH_BASE)/build.mk
 
 # Detect compiler version
@@ -194,8 +215,9 @@ DEBUG_VARS			+= GCC_VERSION
 GCC_VERSION			:= $(shell $(CC) -dumpversion)
 
 # Use c11 by default. Every architecture can override it
-SMING_C_STD ?= c11
-CFLAGS	+= -std=$(SMING_C_STD)
+DEBUG_VARS			+= SMING_C_STD
+SMING_C_STD			?= c11
+CFLAGS				+= -std=$(SMING_C_STD)
 
 # Select C++17 if supported, defaulting to C++11 otherwise
 DEBUG_VARS			+= SMING_CXX_STD
@@ -215,13 +237,15 @@ ifneq ($(GCC_UPGRADE_URL),)
 $(info Instructions for upgrading your compiler can be found here: $(GCC_UPGRADE_URL))
 endif 
 endif
+endif
 
 DEBUG_VARS		+= USER_LIBDIR OUT_BASE BUILD_BASE FW_BASE TOOLS_BASE SMING_ARCH_FULL
 
-ifdef ESP_VARIANT
-SMING_ARCH_FULL := $(SMING_ARCH)/$(ESP_VARIANT)
-else
+# Architectures with multiple variants require an extra subdirectory
+ifeq (,$(word 2,$(ARCH_$(SMING_ARCH)_SOC)))
 SMING_ARCH_FULL	:= $(SMING_ARCH)
+else
+SMING_ARCH_FULL := $(SMING_ARCH)/$(SMING_SOC)
 endif
 
 OUT_BASE		:= out/$(SMING_ARCH_FULL)/$(BUILD_TYPE)
@@ -233,13 +257,27 @@ USER_LIBDIR		= $(SMING_HOME)/$(OUT_BASE)/lib
 # Component (user) libraries have a special prefix so linker script can identify them
 CLIB_PREFIX := clib-
 
-# Convert string to upper/lower case
-# 1 -> String
-ToUpper = $(shell echo "$1" | tr 'a-z' 'A-Z')
-ToLower = $(shell echo "$1" | tr 'A-Z' 'a-z')
+# Use with LDFLAGS to define a symbol alias
+# $1 -> List of alias=name pairs
+define DefSym
+$(foreach n,$1,-Wl,--defsym=$n)
+endef
 
-# Use with LDFLAGS to undefine and wrap a list of functions
+# Use with LDFLAGS to undefine a list of symbols
+# $1 -> List of symbols
+define Undef
+$(foreach n,$1,-u $n)
+endef
+
+# Use with LDFLAGS to wrap a list of symbols
+# $1 -> List of symbols
 define Wrap
+$(foreach n,$1,-Wl,-wrap,$n)
+endef
+
+# Use with LDFLAGS to undefine and wrap a list of symbols
+# $1 -> List of symbols
+define UndefWrap
 $(foreach n,$1,-u $n -Wl,-wrap,$n)
 endef
 
@@ -252,123 +290,18 @@ define ClangFormat
 	done
 endef
 
-# Calculate a hash string for appending to library names, etc.
-# $1 -> Name of variable containing data to be hashed
-define CalculateVariantHash
-$(firstword $(shell echo -n $($1) | md5sum -t))
-endef
-
-# Fetch full path for submodules matching given pattern
-# Note that scanning .gitmodules is considerably quicker than using GIT
-# $1 -> Path to repo working directory
-# $2 -> Path pattern to match
-define ScanGitModules
-$(patsubst %,$(abspath $1/%),$(subst path = ,,$(shell grep -o 'path = $2' '$1/.gitmodules')))
-endef
-
 define ListSubmodules
 $(call ScanGitModules,$(SMING_HOME)/..,.*)
 endef
 
-# List immediate sub-directories for a list of root directories
-# Results are sorted and without trailing path separator
-# $1 -> Root paths
-define ListSubDirs
-$(foreach d,$(dir $(wildcard $1/*/.)),$(d:/=))
-endef
-
-# Check that $2 is a valid sub-directory of $1. Return empty string if not.
-# $1 -> Parent directory
-# $2 -> Sub-directory
-# During wildcard searches, paths with spaces cause recursion.
-define IsSubDir
-$(if $(subst $(1:/=),,$(2:/=)),$(findstring $(1:/=),$2),)
-endef
-
-# List sub-directories recursively for a single root directory
-# Results are sorted and without trailing path separator
-# Sub-directories with spaces are skipped
-# $1 -> Root path
-define ListAllSubDirsSingle
-$(foreach d,$(dir $(wildcard $1/*/.)),$(if $(call IsSubDir,$1,$d),$(d:/=) $(call ListAllSubDirs,$(d:/=))))
-endef
-
-# List sub-directories recursively for a list of root directories
-# Results are sorted and without trailing path separator
-# Sub-directories with spaces are skipped
-# $1 -> Root paths
-define ListAllSubDirs
-$(foreach d,$1,$(call ListAllSubDirsSingle,$d))
-endef
-
-# Recursively search list of directories for matching files
-# $1 -> Directories to scan
-# $2 -> Filename filter
-define ListAllFiles
-$(wildcard $(foreach d,$(call ListAllSubDirs,$1),$d/$2))
-endef
-
-
-# Display variable and list values, e.g. $(call PrintVariable,LIBS)
-# $1 -> Name of variable containing values
-# $2 -> (optional) tag to use instead of variable name
-define PrintVariable
-	$(info $(if $2,$2,$1):)
-	$(foreach item,$($1),$(info - $(item)))
-endef
-
-define PrintVariableSorted
-	$(info $(if $2,$2,$1):)
-	$(foreach item,$(sort $($1)),$(info - $(value item)))
-endef
-
-# Display list of variable references with their values e.g. $(call PrintVariableRefs,DEBUG_VARS)
-# $1 -> Name of variable containing list of variable names
-# $2 -> (optional) tag to use instead of variable name
-define PrintVariableRefs
-	$(info $(if $2,$2,$1):)
-	$(foreach item,$(sort $($1)),$(info - $(item) = $(value $(item))) )
-endef
-
-#
-# Get directory without trailing separator
-# $1 -> List of directories
-dirx = $(patsubst %/,%,$(dir $1))
-
 # Extract commented target information from makefiles and display
-# Based on code from https://suva.sh/posts/well-documented-makefiles/
 define PrintHelp
 	@echo
 	@echo Welcome to the Sming build system!
-	@$(AWK)	'BEGIN { \
-				FS = "(:.*##)|(##@)"; \
-				printf "Usage:\n  make \033[1;36m<target>\033[0m\n"; \
-			} /^##@/ { \
-				group = $$2; \
-				groups[group] = group; \
-			} /^[a-zA-Z0-9_-]+:.*?##/ { \
-				targets[$$1, group] = $$2; \
-			} \
-			END { \
-				for (g in groups) { \
-					printf "\n\033[1m%s\033[0m\n", g; \
-					for (t in targets) { \
-						split(t, sep, SUBSEP); \
-						if (sep[2] == g) \
-							printf "  \033[1;36m%-20s\033[0m %s\n", sep[1], targets[t] \
-					} \
-				} \
-			} ' $(foreach f,$(MAKEFILE_LIST),"$(f)")
+	@$(AWK) -f $(SMING_HOME)/help.awk $(foreach f,$(MAKEFILE_LIST),"$(f)")
 	@echo
 endef
 
-
-# Give relative or absolute source paths, convert them all to absolute
-# $1 -> source root directory
-# $2 -> file path(s)
-define AbsoluteSourcePath
-$(foreach f,$2,$(abspath $(if $(filter /%,$f),$f,$1/$f)))
-endef
 
 # Write config variables to a file
 # $1 -> Output filename
@@ -407,12 +340,22 @@ define TryApplyPatch
 	fi
 endef
 
+# Fetch and patch a submodule
+# $1 -> submodule parent path
+# $2 -> submodule name
+define FetchAndPatch
+	$(info )
+	$(info Fetching submodule '$2' ...)
+	$(Q)	cd $1 && ( \
+				rm -rf $2; \
+				if [ -f "$2.no-recursive" ]; then OPTS=""; else OPTS="--recursive"; fi; \
+				$(GIT) submodule update --init --force $$OPTS $2 \
+			)
+	$(Q) $(call TryApplyPatch,$1/$2,$2.patch)
+endef
+
 # Update and patch submodule
 # Patch file is either in submodule parent directory itself or subdirectory .patches from there
 %/.submodule:
-	$(info )
-	$(info Fetching submodule '$*' ...)
-	$(Q) cd $(abspath $*/..) && (rm -rf $(*F); $(GIT) submodule update --init --force --recursive $(*F))
-	$(Q) $(call TryApplyPatch,$*,$(*F).patch)
+	$(call FetchAndPatch,$(abspath $*/..),$(*F))
 	$(Q) touch $@
-

@@ -119,7 +119,7 @@ long Stream::parseInt(char skipChar)
 
 	do {
 		if(c == skipChar) {
-			// ignore this charactor
+			// ignore this character
 		} else if(c == '-') {
 			isNegative = true;
 		} else if(c >= '0' && c <= '9') {

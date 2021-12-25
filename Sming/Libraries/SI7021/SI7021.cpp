@@ -170,12 +170,12 @@ struct si7021_env SI7021::getHumidityAndTemperature() {
 
 // get temperature only
 struct si7021_olt SI7021::getTemperatureOlt() {
-    si7021_olt olt       = {0, 0};
-    olt.temperature      = getTemperature();
-    olt.error_crc        = 0;
-    if (olt.temperature == 99998){
-    	olt.error_crc    = 1;
+    si7021_olt old       = {0, 0};
+    old.temperature      = getTemperature();
+    old.error_crc        = 0;
+    if (old.temperature == 99998){
+    	old.error_crc    = 1;
     }
-    return olt;
+    return old;
 }
 

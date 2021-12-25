@@ -11,7 +11,7 @@ void DelayStream::sendFile()
 		fn = filename;
 	}
 
-	if(FileStream::open(fn, eFO_ReadOnly)) {
+	if(FileStream::open(fn, File::ReadOnly)) {
 		debug_i("opened '%s', %u bytes", fn.c_str(), FileStream::available());
 		response->setContentType(getMimeType());
 	} else {

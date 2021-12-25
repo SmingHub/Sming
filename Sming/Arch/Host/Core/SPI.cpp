@@ -1,5 +1,7 @@
 #include "SPI.h"
 
+SPIClass SPI;
+
 bool SPIClass::begin()
 {
 	return false;

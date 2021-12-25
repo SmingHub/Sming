@@ -9,6 +9,7 @@
  ****/
 
 #include "Station.h"
+#include <esp_systemapi.h>
 
 String toString(WpsStatus status)
 {

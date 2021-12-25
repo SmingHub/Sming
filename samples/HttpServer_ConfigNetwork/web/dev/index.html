@@ -39,14 +39,14 @@
           ConnectURL: '/ajax/connect',
           Connect: null,
           CurrentNetwork: null,
-          GetNetworks: function (reconect) {
+          GetNetworks: function (reconnect) {
               (function worker() {
                   $('#floatingCirclesG').show();
                   var ajax = $.ajax({
                       url: App.GetNetworksURL,
                       type: 'POST',
                       data: {
-                          'reconnect': reconect
+                          'reconnect': reconnect
                       },
                       success: function (data) {
                           App.SetNetworks(data.available, data.network);

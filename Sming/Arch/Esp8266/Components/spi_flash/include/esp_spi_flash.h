@@ -15,7 +15,8 @@
 extern "C" {
 #endif
 
-#include <user_config.h>
+#include <spi_flash.h>
+#include <esp_attr.h>
 
 /**
  * @defgroup flash Flash Memory Support
@@ -36,7 +37,7 @@ extern "C" {
 
 #define INTERNAL_FLASH_SECTOR_SIZE SPI_FLASH_SEC_SIZE
 #define INTERNAL_FLASH_SIZE ((FLASH_WORK_SEC_COUNT)*INTERNAL_FLASH_SECTOR_SIZE)
-#define INTERNAL_FLASH_START_ADDRESS FLASH_BASE
+#define INTERNAL_FLASH_START_ADDRESS 0x40200000
 
 typedef enum {
 	MODE_QIO = 0,

@@ -171,6 +171,7 @@ public:
 	OwnedLinkedObjectListTemplate() = default;
 
 	OwnedLinkedObjectListTemplate(const OwnedLinkedObjectListTemplate& other) = delete;
+	OwnedLinkedObjectListTemplate& operator=(const OwnedLinkedObjectListTemplate& other) = delete;
 
 	~OwnedLinkedObjectListTemplate()
 	{

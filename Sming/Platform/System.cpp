@@ -11,20 +11,25 @@
 #include "Platform/System.h"
 #include "Timer.h"
 
-#ifndef TASK_QUEUE_LENGTH
+SystemClass System;
+SystemState SystemClass::state = eSS_None;
+
+#ifdef ARCH_ESP32
+#undef TASK_QUEUE_LENGTH
+#define TASK_QUEUE_LENGTH 0
+#define taskQueue nullptr
+#else
+#ifdef TASK_QUEUE_LENGTH
+static_assert(TASK_QUEUE_LENGTH >= 8, "Task queue too small");
+#else
 /** @brief default number of tasks in global queue
  *  @note tasks are usually short-lived and executed very promptly, so a large queue is
  *  normally un-necessry. If queue overrun is suspected, check `SystemClass::getMaxTaskCount()`.
  */
 #define TASK_QUEUE_LENGTH 10
 #endif
-
-SystemClass System;
-
-SystemState SystemClass::state = eSS_None;
 os_event_t SystemClass::taskQueue[TASK_QUEUE_LENGTH];
-
-static_assert(TASK_QUEUE_LENGTH >= 8, "Task queue too small");
+#endif
 
 #ifdef ENABLE_TASK_COUNT
 volatile uint8_t SystemClass::taskCount;

@@ -72,7 +72,7 @@
 								Add live preview before JPEG capture.
 								Add play back photos one by one	after BMP capture.
 	2014/05/01  V3.1.1  by Lee  Minor changes to add support Arduino IDE for linux distributions.	
-	2014/09/30  V3.2.0  by Lee  Improvement on OV5642 camera dirver.			
+	2014/09/30  V3.2.0  by Lee  Improvement on OV5642 camera driver.			
 	2014/10/06  V3.3.0  by Lee  Add OV7660,OV7725 camera support.			
 	2015/02/27  V3.4.0  by Lee  Add the support for Arduino Yun board, update the latest UTFT library for ArduCAM.
 	2015/06/09  V3.4.1  by Lee	Minor changes and add some comments
@@ -179,7 +179,7 @@
 #define CAM2LCD_MODE       		0x01
 #define LCD2MCU_MODE       		0x02
 
-#define ARDUCHIP_TIM       		0x03  //Timming control
+#define ARDUCHIP_TIM       		0x03  //Timing control
 #define HREF_LEVEL_MASK    		0x01  //0 = High active , 		1 = Low active
 #define VSYNC_LEVEL_MASK   		0x02  //0 = High active , 		1 = Low active
 #define LCD_BKEN_MASK      		0x04  //0 = Enable, 			1 = Disable

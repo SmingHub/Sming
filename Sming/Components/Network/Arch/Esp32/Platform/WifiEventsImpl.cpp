@@ -14,6 +14,7 @@
 #include <Platform/Station.h>
 #include <esp_wifi.h>
 #include <esp_event.h>
+#include <debug_progmem.h>
 
 static WifiEventsImpl events;
 WifiEventsClass& WifiEvents = events;

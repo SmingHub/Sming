@@ -225,7 +225,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 <p><a class="el" href="class_l_c_d.html">LCD</a> initialization.  Initializes the <a class="el" href="class_l_c_d.html">LCD</a> to a given size (col, row). This methods initializes the <a class="el" href="class_l_c_d.html">LCD</a>, therefore, it MUST be called prior to using any other method from this class.</p>
-<p>This method is abstract, a base implementation is available common to all <a class="el" href="class_l_c_d.html">LCD</a> drivers. Should it not be compatible with some other <a class="el" href="class_l_c_d.html">LCD</a> driver, a derived implementation should be done on the driver specif class.</p>
+<p>This method is abstract, a base implementation is available common to all <a class="el" href="class_l_c_d.html">LCD</a> drivers. Should it not be compatible with some other <a class="el" href="class_l_c_d.html">LCD</a> driver, a derived implementation should be done on the driver-specific class.</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table class="params">
     <tr><td class="paramname">cols[in]</td><td>the number of columns that the display has </td></tr>
@@ -748,7 +748,7 @@ Protected Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Sets the pin to control the backlight.  Sets the pin in the device to control the backlight. The behaviour of this method is very dependent on the device. Some controllers support dimming some don't. Please read the actual header file for each individual device. The setBacklightPin method has to be called before setting the backlight or the adequate backlight control constructor. </p>
 <dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="class_l_c_d.html#a53f4ee9b39d9ab3d7ae4d9f8dedca3bc">setBacklightPin</a>.</dd></dl>
-<p>NOTE: The prefered methods to control the backlight are "backlight" and "noBacklight".</p>
+<p>NOTE: The preferred methods to control the backlight are "backlight" and "noBacklight".</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table class="params">
     <tr><td class="paramname">0..255</td><td>- the value is very dependent on the <a class="el" href="class_l_c_d.html">LCD</a>. However, BACKLIGHT_OFF will be interpreted as off and BACKLIGHT_ON will drive the backlight on. </td></tr>

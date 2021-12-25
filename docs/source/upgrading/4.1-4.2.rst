@@ -12,10 +12,10 @@ Summary
 Stream methods
 --------------
 
-The :c:func:`Stream::readBytes` has been virtualised and overriden for :cpp:class:`IDataSourceStream`
+The :cpp:func:`Stream::readBytes` has been virtualised and overridden for :cpp:class:`IDataSourceStream`
 descendents for more efficient operation, especially with ArduinoJson.
 For normal read operations where the stream position is to be updated, applications should use
-this method in preference to :c:func:`IDataSourceStream::readMemoryBlock`.
+this method in preference to :cpp:func:`IDataSourceStream::readMemoryBlock`.
 
 An addition method :cpp:func:`IDataSourceStream::moveString` has been added to support extracting
 the content of a memory-based stream into a String object without duplicating the data.
@@ -32,7 +32,7 @@ and also by file system functions. Mappings are::
    SeekOrigin::End instead of eSO_FileEnd
  
 These map to the standard C *SEEK_SET*, *SEEK_CUR* and *SEEK_END* but as SeekOrigin is strongly typed
-it offers compile-time checking, and has a `toString(SeekOrigin)` overload.
+it offers compile-time checking, and has a ``toString(SeekOrigin)`` overload.
 
 
 getBody methods
@@ -48,6 +48,6 @@ then an invalid String will be returned. In this situation you should use :cpp:f
 ContentType / MIME types
 ------------------------
 
-:cpp:func:`toString(MimeType)` has been moved out of the ``ContentType`` namespace,
+:cpp:func:`String toString(MimeType)` has been moved out of the ``ContentType`` namespace,
 so no longer requires the ``ContentType::`` qualifier.
 

@@ -21,7 +21,7 @@ using HttpPathDelegate = Delegate<void(HttpRequest& request, HttpResponse& respo
 
 /**
  * @brief Class to map URL paths to classes which handle them
- * @ingroup http
+ * @ingroup httpserver
  */
 class HttpResourceTree : public ObjectMap<String, HttpResource>
 {
@@ -58,6 +58,15 @@ public:
 	}
 
 	using ObjectMap::set;
+
+	template <class... Tail>
+	HttpResource* set(const String& path, HttpResource* resource, HttpResourcePlugin* plugin, Tail... plugins)
+	{
+		registerPlugin(plugin, plugins...);
+		set(path, resource);
+		resource->addPlugin(plugin, plugins...);
+		return resource;
+	}
 
 	/**
 	 * @brief Set a callback to handle the given path

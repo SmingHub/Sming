@@ -46,10 +46,7 @@ void onAjaxInput(HttpRequest& request, HttpResponse& response)
 	json[stringKey] = stringValue;
 
 	for(int i = 0; i < 11; i++) {
-		char buff[3];
-		itoa(i, buff, 10);
-		String desiredString = "sensor_";
-		desiredString += buff;
+		String desiredString = F("sensor_") + String(i);
 		json[desiredString] = desiredString;
 	}
 

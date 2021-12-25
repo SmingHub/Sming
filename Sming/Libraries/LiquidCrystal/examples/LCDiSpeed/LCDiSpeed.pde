@@ -15,7 +15,7 @@ static char dummyvar; // dummy declaration for STUPID IDE!!!!
  * It runs a Frames/Sec (FPS) test which writes a "frame" of each digit 0-9 to
  * the display.
  * A "frame" is a full display of characters.
- * It is created by positioning the cursor to the begining of each row
+ * It is created by positioning the cursor to the beginning of each row
  * and then writing a character to every position on the row, until the
  * entire display is filled.
  * The FPS test does a frame of 9's then 8's, .... down to 0's
@@ -206,7 +206,7 @@ char c;
 unsigned long stime, etime;
 
 	stime = micros();
-	for(c = '9'; c >= '0'; c--) // do not change this unless you change the FPS/ByteXfer calcuations as well
+	for(c = '9'; c >= '0'; c--) // do not change this unless you change the FPS/ByteXfer calculations as well
 	{
 		for(uint8_t i = 0; i < iter; i++)
 		{

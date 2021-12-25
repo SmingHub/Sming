@@ -10,6 +10,11 @@
 #include <Platform/Timers.h>
 #include <FlashString/Array.hpp>
 #include <FlashString/Vector.hpp>
+#include <cinttypes>
+
+#ifndef __INT32
+#define __INT32
+#endif
 
 // Note: contains nulls which won't display, but will be stored
 #define DEMO_TEST_TEXT "This is a flash string -\0Second -\0Third -\0Fourth."
@@ -147,8 +152,8 @@ void testFSTR(Print& out)
 	// Table entries may be accessed directly as they are word-aligned
 	out.println(_F("FSTR tables -"));
 	out.printf(_F(" fstr1 = '%s'\n"), String(table[0]).c_str());
-	out.printf(_F(" fstr1.length() = %u\n"), table[0].length());
-	out.printf(_F(" entries = %u\n"), table.length());
+	out.printf(_F(" fstr1.length() = %" PRIu32 "\n"), table[0].length());
+	out.printf(_F(" entries = %" PRIu32 "\n"), table.length());
 
 	out.println("< testFSTR() end\n");
 }
@@ -170,11 +175,11 @@ void testSpeed(Print& out)
 	for(unsigned i = 0; i < iterations; ++i)
 		tmp += sumBuffer(demoText, sizeof(demoText));
 	baseline = timer.elapsedTime();
-	out.printf("Elapsed: %u\n", baseline);
+	out.printf("Elapsed: %" PRIu32 "\n", baseline);
 
 #define END()                                                                                                          \
 	elapsed = timer.elapsedTime();                                                                                     \
-	out.printf("Elapsed: %u (baseline + %u)\n", elapsed, elapsed - baseline);
+	out.printf("Elapsed: %" PRIu32 " (baseline + %" PRIu32 ")\n", elapsed, elapsed - baseline);
 
 	_FPUTS("Load PSTR into stack buffer...");
 	timer.start();

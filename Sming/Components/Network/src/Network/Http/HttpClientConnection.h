@@ -19,7 +19,7 @@
 
 /**
  *  @brief      Provides http client connection
- *  @ingroup    http
+ *  @ingroup    httpclient
  *  @{
  */
 

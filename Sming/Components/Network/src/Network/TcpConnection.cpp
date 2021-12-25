@@ -10,10 +10,10 @@
 
 #include "TcpConnection.h"
 #include <Network/Ssl/Factory.h>
-
 #include <Data/Stream/DataSourceStream.h>
 #include "NetUtils.h"
 #include <WString.h>
+#include <lwip/dns.h>
 
 #define debug_tcp_e(fmt, ...) debug_e("TCP %p " fmt, this, ##__VA_ARGS__)
 #define debug_tcp_w(fmt, ...) debug_w("TCP %p " fmt, this, ##__VA_ARGS__)

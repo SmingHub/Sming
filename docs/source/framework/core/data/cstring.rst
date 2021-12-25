@@ -8,7 +8,7 @@ Introduction
 
 Whilst use of `char*` pointers is very common in Sming code, it is generally advisable to avoid pointers in C++ where possible.
 
-The STL provides class templates such as `unique_ptr` which deals with memory alllocation and de-allocation
+The STL provides class templates such as `unique_ptr` which deals with memory allocation and de-allocation
 to avoid issues with memory leaks.
 
 The `CString` class implements this on a `char[]` and adds some additional methods which are similar to the :cpp:class:`String` class.

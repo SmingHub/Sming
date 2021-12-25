@@ -134,6 +134,7 @@ int main(int argc, char* argv[])
 		int pause;
 		int exitpause;
 		bool initonly;
+		int loopcount;
 		bool enable_network;
 		UartServer::Config uart;
 		FlashmemConfig flash;
@@ -244,6 +245,10 @@ int main(int argc, char* argv[])
 			config.initonly = true;
 			break;
 
+		case opt_loopcount:
+			config.loopcount = atoi(arg);
+			break;
+
 		case opt_nonet:
 			config.enable_network = false;
 			break;
@@ -309,6 +314,14 @@ int main(int argc, char* argv[])
 #endif
 		while(!done) {
 			host_main_loop();
+			if(config.loopcount == 0) {
+				continue;
+			}
+			--config.loopcount;
+			if(config.loopcount == 0) {
+				host_debug_i("Reached requested loop count limit: exiting");
+				break;
+			}
 		}
 
 		host_debug_i(">> Normal Exit <<\n");

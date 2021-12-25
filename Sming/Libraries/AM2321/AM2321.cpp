@@ -35,7 +35,7 @@
 #define REG_AM2321_TEMPERATURE_LSB       0x03                //温度寄存器低位
 #define REG_AM2321_DEVICE_ID_BIT_24_31   0x0B                //32位设备ID高8位
 
-template<int I2CADDR, int COMMAND, int REGADDR, int REGCOUNT>
+template<uint8_t I2CADDR, uint8_t COMMAND, uint8_t REGADDR, uint8_t REGCOUNT>
 class DataReader {
 protected:
     enum { len = 32 };

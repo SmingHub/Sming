@@ -11,6 +11,8 @@ SMINGDIR := ..
 override SMING_HOME := $(SMINGDIR)/Sming
 override SMING_ARCH := Host
 
+include $(SMING_HOME)/util.mk
+
 # You can set these variables from the command line, and also from the environment for the first two.
 SPHINXOPTS		?=
 SPHINXBUILD		?= sphinx-build
@@ -28,30 +30,11 @@ MAKE_DOCS		:= 1
 # Documentation is copied into this directory so it gets pulled into build
 SOURCE_INCDIR	:= $(SOURCEDIR)/_inc
 
-#
-FixPath			= $1
-
-V ?= $(VERBOSE)
-ifeq ("$(V)","1")
-Q			:=
-vecho		:= @true
-else
-Q			:= @
-vecho		:= @echo
-endif
-
 # Define anything required to get all optional code included
 include defines.mk
 
 define Sphinx
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-endef
-
-# Display variable and list values, e.g. $(call PrintVariable,LIBS)
-# $1 -> Name of variable containing values
-define PrintVariable
-	$(info $1)
-	$(foreach item,$($1),$(info - $(item)))
 endef
 
 # $1 -> Directories to look for README and image files
@@ -87,13 +70,6 @@ latexpdf: latex
 	@echo "Running LaTeX files through pdflatex..."
 	$(Q) $(MAKE) -C $(BUILDDIR)/latex all-pdf
 
-# List immediate sub-directories for a list of root directories
-# Results are sorted and without trailing path separator
-# $1 -> Root paths
-define ListSubDirs
-$(sort $(foreach d,$(dir $(wildcard $1/*/.)),$(d:/=)))
-endef
-
 # Non-component locations to copy docs from
 SOURCE_DIRS := \
 	$(SMINGDIR)/docs \
@@ -116,6 +92,7 @@ DOXYGEN_PREDEFINED := \
 	ICACHE_FLASH= \
 	ICACHE_FLASH_ATTR= \
 	__forceinline= \
+	__attribute__((packed))= \
 	SMING_DEPRECATED= \
 	SMING_ARCH=$(SMING_ARCH) \
 	ARCH_HOST=1
@@ -136,7 +113,7 @@ COMPONENT_SAMPLES := $(wildcard $(addsuffix /samples/*/component.mk,$(COMPONENT_
 COMPONENT_DIRS += $(COMPONENT_SAMPLES:/component.mk=)
 
 # Fetch a list of URLs once rather than invoking shell each time we need a lookup
-SUBMODULE_URLS := $(shell awk '/path = .*/ { path = $$3 } /url = .*/ { printf "%s=%s ", path, $$3 } ' $(SMINGDIR)/.gitmodules)
+SUBMODULE_URLS := $(shell $(AWK) '/path = .*/ { path = $$3 } /url = .*/ { printf "%s=%s ", path, $$3 } ' $(SMINGDIR)/.gitmodules)
 
 # Lookup the URL for a submodule given its path
 # $1 -> path
@@ -157,7 +134,7 @@ endif
 
 # $1 -> Path to a Component, sample or Library
 define GetComponentType
-$(if $(findstring /samples/,$1),Sample,$(if $(findstring /Libraries/,$1),Library,,Component))
+$(if $(findstring /samples/,$1),Sample,$(if $(findstring /Libraries/,$1),Library,Component))
 endef
 
 include index.mk
@@ -173,11 +150,14 @@ endef
 # $2 -> path
 define ParseComponent
 $(if $V,$(info -- Parsing $2))
+ARCHLIST				:= $(subst /, ,$(patsubst $(SMING_HOME)/Arch/%,%,$2))
+ARCH_SOC				:= $$(ARCH_$$(firstword $$(ARCHLIST))_SOC)
 COMPONENT_SUBMODULES	:=
 COMPONENT_DOCFILES		:=
 COMPONENT_DOXYGEN_INPUT	:=
 COMPONENT_DOXYGEN_INCLUDE :=
 COMPONENT_DOXYGEN_PREDEFINED :=
+COMPONENT_SOC			:= $$(if $$(ARCH_SOC),$$(ARCH_SOC),*)
 # Process any component.mk file (optional)
 COMPONENT_RULE			:= __no_build__
 COMPONENT_NAME			:= $1
@@ -193,6 +173,7 @@ COMPONENT_BUILD_BASE	:= $(BUILD_BASE)/$1
 COMPONENT_BUILD_DIR		:= $(BUILD_BASE)/$1
 include defines.mk
 -include $2/component.mk
+CMP_$2_SOC				:= $$(filter $$(subst *,%,$$(COMPONENT_SOC)),$(AVAILABLE_SOCS))
 CMP_$2_VARS				:= $$(sort $$(COMPONENT_VARS))
 CMP_$2_LIBRARIES		:= $$(ARDUINO_LIBRARIES)
 CMP_$2_SUBMODULES		:= $$(COMPONENT_SUBMODULES)
@@ -211,7 +192,6 @@ DOXYGEN_PREDEFINED		+= $$(COMPONENT_DOXYGEN_PREDEFINED)
 COMPONENT_ENVVARS		:= $$(sort $$(COMPONENT_VARS) $$(CONFIG_VARS) $$(RELINK_VARS) $$(CACHE_VARS) $$(DEBUG_VARS))
 CMP_$2_ENVVARS			:= $$(COMPONENT_ENVVARS)
 
-CMP_$2_DEPENDS	:= $$(COMPONENT_DEPENDS)
 $$(foreach c,$$(COMPONENT_DEPENDS) $$(ARDUINO_LIBRARIES),$$(eval CMP_$$c_XREF += $2))
 
 # Resolve dependencies
@@ -223,11 +203,15 @@ FILTERED_DIRS := $$(filter $(dir $2)% $(SMING_HOME)/Components/%,$(COMPONENT_DIR
 else
 FILTERED_DIRS := $(COMPONENT_DIRS)
 endif
-CMP_$2_DEPEND_DIRS := \
-	$(if $(findstring /samples/,$2),/_inc/Sming) \
-	$$(foreach d,$$(call GetDocPath,$$(foreach c,$$(COMPONENT_DEPENDS),$$(filter %/$$c,$$(FILTERED_DIRS)))),$$d)
+CMP_$2_DEPENDS := \
+	$(if $(findstring /samples/,$2),$(SMING_HOME)) \
+	$$(foreach d,$$(foreach c,$$(COMPONENT_DEPENDS) $$(ARDUINO_LIBRARIES),$$(filter %/$$c,$$(FILTERED_DIRS))),$$d)
 
 CMP_$2_INDEX = $$(subst $$(NewLine),\n,$$(call GenIndex,$1,$2,$(patsubst $(SMINGDIR)/%,%,$2)))
+
+# Filter SOC dependencies
+CMP_$2_UNSUPPORTED_SOC = $$(foreach d,$$(CMP_$2_DEPENDS),$$(filter-out $$(CMP_$$d_SOC),$$(AVAILABLE_SOCS)))
+CMP_$2_SOC_DEPENDS = $$(filter-out $$(CMP_$2_UNSUPPORTED_SOC),$$(CMP_$2_SOC))
 
 $$(call GetIncPath,$$(COMPONENT_PATH))/index.rst: $$(CMP_$2_README) $$(call GetIncPath,$$(CMP_$2_FILES))
 ifeq ($V,1)
@@ -262,7 +246,6 @@ setup: initdirs $(SOURCE_INCFILES) $(COMPONENT_INDEXFILES)
 ifeq ($V,1)
 	$(call PrintVariable,SOURCE_DIRS)
 	$(call PrintVariable,SOURCE_FILES)
-	$(call PrintVariable,COMPONENT_INCFILES)
 endif
 	$(if $(MISSING_README_DIRS),$(call PrintVariable,MISSING_README_DIRS))
 

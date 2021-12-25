@@ -1,8 +1,5 @@
-OTA Upgrade over MQTT classes
-=============================
+API Documentation
+=================
 
-.. doxygentypedef:: OtaUpgrade::Mqtt
-
-.. doxygenclass:: OtaUpgrade::Mqtt::PayloadParser
-.. doxygenclass:: OtaUpgrade::Mqtt::RbootPayloadParser
-.. doxygenclass:: OtaUpgrade::Mqtt::AdvancedPayloadParser
+.. doxygennamespace:: OtaUpgrade::Mqtt
+   :members:

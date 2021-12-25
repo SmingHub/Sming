@@ -6,7 +6,7 @@ Documentation System
 Read the Docs and Sphinx
 ------------------------
 
-Online documention is managed via
+Online documentation is managed via
 `Read the Docs <https://docs.readthedocs.io/en/stable/index.html>`_,
 which uses `Sphinx <https://www.sphinx-doc.org>`_ as the documentation
 build system.
@@ -71,7 +71,7 @@ All Components, Libraries and Samples must include a ``README.rst`` or ``README.
   - **References**: Is this based on or does it use existing code? Please include details.
   - **Datasheets**: If appropriate, please include links to manufacturer's or external development websites.
     Note that any submodules or dependencies are automatically documented: see :doc:`/_inc/Sming/building` for details,
-    specifically `COMPONENT_SUBMODULES` and `COMPONENT_DEPENDS`.
+    specifically :envvar:`COMPONENT_SUBMODULES` and :envvar:`COMPONENT_DEPENDS`.
 
 You should also try to include any other information which could be useful information for a new developer.
 The purpose of samples projects is to demonstrate specific features or libraries, so please ensure this is adequately described.
@@ -212,16 +212,12 @@ component.mk file to direct doxygen parsing:
 Build (environment) variables
 -----------------------------
 
-These are defined in the README for the corresponding Component using:
-
-::
+These are defined in the README for the corresponding Component using::
 
    :envvar::`COM_SPEED`
    Determines default serial port speed
 
-You can refer to them like this:
-
-::
+You can refer to them like this::
 
    Change baud rate using the :envvar:`COM_SPEED` variable.
 
@@ -236,9 +232,7 @@ The documentation build system provides some custom roles for creating links.
 Components
 ~~~~~~~~~~
 
-Inserting a link to a Component page, using the title of that page by default:
-
-::
+Inserting a link to a Component page, using the title of that page by default::
 
    See :library:`Spiffs` for details of the flash filing system.
 
@@ -252,9 +246,7 @@ the README description.
 Libraries
 ~~~~~~~~~
 
-As for Components, refer to libraries like this:
-
-::
+As for Components, refer to libraries like this::
 
    Use the :library:`Adafruit_ST7735` library to do some fancy display stuff.
 
@@ -262,32 +254,64 @@ As for Components, refer to libraries like this:
 Sample applications
 ~~~~~~~~~~~~~~~~~~~
 
-To refer to a sample application README:
-
-::
+To refer to a sample application README::
 
    See the :sample:`Basic_Blink` sample for a simple introduction to Sming.
+
+Samples may be located in the main Sming :source:`samples`, but a growing number
+are located in a **samples** sub-directory of the associated Component or library.
+
+Another example::
+
+   Where is the :sample:`generic` sample?
+
+There are currently three libraries with a sample called 'generic'.
+Documents within the appropriate library will be matched correctly.
+
+The given target 'generic' is matched as follows:
+
+- Is the document contained in a Component or library?
+  - Yes: Look in the Component's **samples** sub-directory, if there is one
+- No match? Then check the main sming **samples** directory.
+- Still no match? Pick the first match from any other Component.
+- No match found? Text will appear unchanged in the output document.
+
+To refer to a sample in a specific Component, do this::
+
+   I'm looking for the :sample:`CS5460/generic` sample.
+   Where is :sample:`Generic CS5460 sample <CS5460/generic>` sample?
+
+Within main samples directory::
+
+   Is there a main :sample:`/generic` sample? Actually, no.
+   But there is a :sample:`/CanBus` sample!
 
 
 Source code
 ~~~~~~~~~~~
 
-To refer to source code use the path relative to the root working directory, for example:
+Use within the framework
+   Use the file or directory path relative to the root directory. For example::
 
-::
+      See :source:`Sming/Core/DateTime.h`
 
-   See :source:`Sming/Core/DateTime.h`
+   will create a hyperlink to the source file in the Sming repository on github.
 
-If the documentation is built locally, it will use the local file path, otherwise it will create
-a link to the source file on github.
+Use within a Component or library
+   The source link will be interpreted relative to the Component root directory.
+   You can find an example of this usage in the :library:`UPnP` README::
+
+      :source:`samples/Basic_UPnP/include/Wemo.h#L59-L91`
+
+   If you wish to refer to a source file elsewhere in Sming, prefix with '/'::
+
+      See :source:`/tests/HostTests/modules/Timers.cpp` for an example.
 
 
 Issues and Pull Requests
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you want to refer to discussions on github, insert links like this:
-
-::
+If you want to refer to discussions on github, insert links like this::
 
    See :pull-request:`787`
 
@@ -300,16 +324,12 @@ Eclipse
 You can find a good plugin editor for Eclipse by searching the
 marketplace for ``rest editor``. For example,
 http://resteditor.sourceforge.net/. A useful feature is dealing with
-heading underscores, just type this:
-
-::
+heading underscores, just type this::
 
    My Heading
    ==
 
-Then when you save the file it gets formatted like this:
-
-::
+Then when you save the file it gets formatted like this::
 
    My Heading
    ==========
@@ -323,7 +343,7 @@ Sphinx Extensions
 The documentation system is easily extended to support new features.
 This section summarises the extensions included.
 
-`m2r <https://github.com/miyakogi/m2r>`__
+`m2r2 <https://github.com/crossnox/m2r2>`__
       Provides support for markdown content.
 
 
@@ -338,3 +358,6 @@ This section summarises the extensions included.
 `sphinxcontrib.wavedrom <https://github.com/bavovanachte/sphinx-wavedrom>`__
    For implementing timing and other waveform diagrams within documents.
    See :library:`Servo` for an example.
+
+`sphinxcontrib.seqdiag <https://github.com/blockdiag/sphinxcontrib-seqdiag>`__
+   For embedding sequence diagrams, such as in the :doc:`/information/tasks` page.

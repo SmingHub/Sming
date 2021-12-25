@@ -532,7 +532,7 @@ static GdbResult ATTR_GDBEXTERNFN handleCommand(unsigned cmdLen)
 	 * Single-step instruction
 	 *
 	 * Single-stepping can go wrong if an interrupt is pending, especially when it is e.g. a task switch:
-	 * the ICOUNT register will overflow in the task switch code. That is why we disable interupts when
+	 * the ICOUNT register will overflow in the task switch code. That is why we disable interrupts when
 	 * doing single-instruction stepping.
 	 */
 	case 's':
@@ -811,7 +811,7 @@ static void ATTR_GDBEXTERNFN emulLdSt()
 }
 
 // Main exception handler
-static void __attribute__((noinline)) gdbstub_handle_debug_exception_flash()
+static void __noinline gdbstub_handle_debug_exception_flash()
 {
 	debug_i(">> DBG 0x%02x, PC = %p", gdb_state.flags, gdbstub_savedRegs.pc);
 

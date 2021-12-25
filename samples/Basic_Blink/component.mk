@@ -2,6 +2,12 @@
 ## Parameters configured here will override default and ENV values
 ## Uncomment and change examples:
 
+## If appropriate, declare which SOCs your project supports
+# COMPONENT_SOC :=
+
+## If project doesn't require networking, saves RAM and build time
+DISABLE_NETWORK := 1
+
 ## Add your source directories here separated by space
 # COMPONENT_SRCDIRS := app
 # COMPONENT_SRCFILES :=

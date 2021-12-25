@@ -48,7 +48,7 @@ namespace MCP23S17Registers {
 			static const uint8_t IPOLA = 0x02; // MCP23x17 Input Polarity Register
 			static const uint8_t IPOLB = 0x03; // 0 = Normal (default)(low reads as 0), 1 = Inverted (low reads as 1)
 
-			static const uint8_t GPINTENA = 0x04; // MCP23x17 Interrupt on Change Pin Assignements
+			static const uint8_t GPINTENA = 0x04; // MCP23x17 Interrupt on Change Pin Assignments
 			static const uint8_t GPINTENB = 0x05; // 0 = No Interrupt on Change (default), 1 = Interrupt on Change
 
 			static const uint8_t DEFVALA = 0x06; // MCP23x17 Default Compare Register for Interrupt on Change

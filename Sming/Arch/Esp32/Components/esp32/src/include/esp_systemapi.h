@@ -10,10 +10,7 @@
 
 #pragma once
 
-// ==== taken from ESP8266/ets_sys.h
-#define ETS_GPIO_INUM 4
-
-// ====
+#include <sdkconfig.h>
 
 // Default types
 #include <limits.h>
@@ -21,7 +18,6 @@
 
 #include <sming_attr.h>
 #include <esp_attr.h>
-#include "esp_libc.h"
 #include "esp_sleep.h"
 #include "esp_clk.h"
 #include "esp_tasks.h"
@@ -37,10 +33,6 @@
 #include <m_printf.h>
 #include <debug_progmem.h>
 #include <stringutil.h>
-
-#define __ESP32_EX__ // System definition ESP8266 SOC
-
-#define LOCAL static
 
 #define SYSTEM_ERROR(fmt, ...) debug_e("ERROR: " fmt "\r\n", ##__VA_ARGS__)
 

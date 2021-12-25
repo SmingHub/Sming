@@ -20,9 +20,6 @@
  * @{
  */
 
-/** @deprecated Use `TimerDelegate` */
-typedef std::function<void()> TimerDelegateStdFunction SMING_DEPRECATED;
-
 /**
  * @brief Class template implementing an extended OS Timer with 64-bit microsecond times and delegate callback support
  */

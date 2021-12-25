@@ -14,6 +14,7 @@
 #include "TemplateStream.h"
 #include <FlashString/Vector.hpp>
 #include "../WebConstants.h"
+#include <debug_progmem.h>
 
 namespace
 {
@@ -244,8 +245,8 @@ private:
 
 } // namespace
 
-SectionTemplate::SectionTemplate(IDataSourceStream* source)
-	: TemplateStream(&sectionStream, false), sectionStream(source)
+SectionTemplate::SectionTemplate(IDataSourceStream* source, uint8_t maxSections)
+	: TemplateStream(&sectionStream, false), sectionStream(source, maxSections)
 {
 	setFormatter(Format::standard);
 	sectionStream.onNextSection([this]() { seekFrom(0, SeekOrigin::Start); });
@@ -272,7 +273,7 @@ String SectionTemplate::closeTag()
 	enableOutput(enable);
 
 	if(conditionalLevel == 0 && newSection >= 0) {
-		debug_e("NewSection: %d", newSection);
+		debug_d("NewSection: %d", newSection);
 		sectionStream.setNewSection(newSection);
 		newSection = -1;
 	}
@@ -283,7 +284,7 @@ String SectionTemplate::closeTag()
 String SectionTemplate::elseTag()
 {
 	if(newSection >= 0) {
-		debug_e("NewSection: %d", newSection);
+		debug_d("NewSection: %d", newSection);
 		sectionStream.setNewSection(newSection);
 		newSection = -1;
 	}
@@ -457,7 +458,7 @@ String SectionTemplate::evaluate(char*& expr)
 			if(unsigned(n) >= sectionStream.count()) {
 				return nullptr;
 			}
-			debug_e("goto: %d, recordIndex = %d", n, recordIndex());
+			debug_d("goto: %d, recordIndex = %d", n, recordIndex());
 			newSection = n;
 		}
 		return "";

@@ -99,9 +99,8 @@ void showInfo()
 
 	int total = 0;
 	for(auto it = OtaManager.getBootPartitions(); it; ++it) {
-		auto part = *it;
-		debug_d("ROM %s: 0x%08x, SubType: %s", part.name().c_str(), part.address(),
-				toLongString(part.type(), part.subType()).c_str());
+		debug_d("ROM %s: 0x%08x, SubType: %s", it->name().c_str(), it->address(),
+				toLongString(it->type(), it->subType()).c_str());
 		total++;
 	}
 	debug_d("=======================");
@@ -117,7 +116,7 @@ void showInfo()
 void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
 	/*
-	 This application starts the update right after a successful connecton.
+	 This application starts the update right after a successful connection.
 	 In a real-world application you should start the update procedure
 	 only when the chances of success are high enough.
 
