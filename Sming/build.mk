@@ -44,17 +44,6 @@ DEBUG_VARS += \
 	OBJDUMP \
 	GDB
 
-# Paths for standard build tools
-DEBUG_VARS += \
-	AS \
-	CC \
-	CXX \
-	AR \
-	LD \
-	OBJCOPY \
-	OBJDUMP \
-	GDB
-
 DEBUG_VARS		+= SMING_RELEASE
 ifeq ($(SMING_RELEASE),1)
 	BUILD_TYPE	:= release

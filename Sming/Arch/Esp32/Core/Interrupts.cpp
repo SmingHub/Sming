@@ -15,9 +15,6 @@
 #include <esp_intr_alloc.h>
 #include <hal/gpio_ll.h>
 
-#define gpio_drive_cap_t uint32_t
-#include <hal/gpio_ll.h>
-
 constexpr unsigned MAX_INTERRUPTS = 40;
 
 static intr_handle_t interruptHandle = nullptr;

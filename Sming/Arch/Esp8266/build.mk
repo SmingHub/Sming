@@ -4,10 +4,6 @@
 #
 ##############
 
-ifdef ESP_VARIANT
-override ESP_VARIANT :=
-endif
-
 CPPFLAGS			+= -DARCH_ESP8266
 CXXFLAGS			+= -fno-threadsafe-statics
 

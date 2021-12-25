@@ -8,7 +8,6 @@
  *
  ****/
 
-#include <sdkconfig.h>
 #include <esp_spi_flash.h>
 #include <soc/mmu.h>
 #include <esp_flash_partitions.h>

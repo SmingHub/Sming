@@ -25,9 +25,6 @@ all: checksoc checkdirs submodules ##(default) Build all Component libraries
 BUILD_TYPE_FILE	:= out/build-type.mk
 -include $(BUILD_TYPE_FILE)
 
-BUILD_SUBTYPE_FILE = out/$(SMING_ARCH)/build-subtype.mk
--include $(BUILD_SUBTYPE_FILE)
-
 #
 include $(SMING_HOME)/build.mk
 

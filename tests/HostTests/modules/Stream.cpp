@@ -98,19 +98,6 @@ public:
 			REQUIRE(FS_OUTPUT == s);
 		}
 
-		TEST_CASE("ChunkedStream / StreamTransformer")
-		{
-			DEFINE_FSTR_LOCAL(FS_INPUT, "Some test data");
-			DEFINE_FSTR_LOCAL(FS_OUTPUT, "e\r\nSome test data\r\n0\r\n\r\n");
-			ChunkedStream chunked(new FlashMemoryStream(FS_INPUT));
-			MemoryDataStream output;
-			output.copyFrom(&chunked);
-			String s;
-			REQUIRE(output.moveString(s));
-			m_printHex("OUTPUT", s.c_str(), s.length());
-			REQUIRE(FS_OUTPUT == s);
-		}
-
 		TEST_CASE("MultipartStream / MultiStream")
 		{
 			unsigned itemIndex{0};

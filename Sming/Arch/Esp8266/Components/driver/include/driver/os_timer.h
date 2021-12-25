@@ -22,12 +22,6 @@
 		.timer_next = (os_timer_t*)-1,                                                                                 \
 	}
 
-// Disarmed
-#define OS_TIMER_DEFAULT()                                                                                             \
-	{                                                                                                                  \
-		.timer_next = (os_timer_t*)-1,                                                                                 \
-	}
-
 #ifdef __cplusplus
 extern "C" {
 #endif
