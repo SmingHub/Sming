@@ -14,13 +14,13 @@
 #include <esp_attr.h>
 #include <sming_attr.h>
 
-#define APB_CLK_FREQ 80000000U
-
-#define HW_TIMER_BASE_CLK APB_CLK_FREQ
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define APB_CLK_FREQ 80000000U
+
+#define HW_TIMER_BASE_CLK APB_CLK_FREQ
 
 /*************************************
  *
@@ -67,9 +67,9 @@ uint32_t hw_timer1_read(void);
  *************************************/
 
 #ifdef USE_US_TIMER
-constexpr uint32_t HW_TIMER2_CLK = HW_TIMER_BASE_CLK / 16;
+#define HW_TIMER2_CLK (HW_TIMER_BASE_CLK / 16)
 #else
-constexpr uint32_t HW_TIMER2_CLK = HW_TIMER_BASE_CLK / 256;
+#define HW_TIMER2_CLK (HW_TIMER_BASE_CLK / 256)
 #endif
 
 uint32_t hw_timer2_read(void);

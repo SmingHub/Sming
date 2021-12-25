@@ -12,7 +12,11 @@
 
 #include <esp_attr.h>
 #include <sming_attr.h>
-#include <cstdint>
+#include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define HW_TIMER_BASE_CLK APB_CLK_FREQ
 
@@ -117,9 +121,9 @@ uint32_t hw_timer1_read(void);
  *
  *************************************/
 
-constexpr uint32_t HW_TIMER2_CLK = 1000000;
+#define HW_TIMER2_CLK 1000000U
 
-extern "C" int64_t esp_timer_get_time(void);
+int64_t esp_timer_get_time(void);
 
 /**
  * @brief Read current timer2 value
@@ -139,3 +143,7 @@ __forceinline uint32_t hw_timer2_read(void)
 void hw_timer_init(void);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif

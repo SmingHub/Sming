@@ -13,6 +13,10 @@
 #include <esp_systemapi.h>
 #include <hardware/structs/timer.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define HW_TIMER_BASE_CLK 1000000U
 
 /**
@@ -44,7 +48,7 @@ __forceinline uint32_t IRAM_ATTR hw_timer_ticks()
 /**
  * @brief Maximum timer interval in ticks
  */
-#define MAX_HW_TIMER1_INTERVAL 0x7fffffff
+#define MAX_HW_TIMER1_INTERVAL 0x7fffffffU
 
 /**
  * @brief Minimum hardware interval in microseconds
@@ -81,7 +85,7 @@ struct hw_timer_private_t {
 	void* timer1_arg;
 };
 
-extern hw_timer_private_t hw_timer_private;
+extern struct hw_timer_private_t hw_timer_private;
 
 /**
  * @brief Attach an interrupt for the timer
@@ -142,7 +146,7 @@ __forceinline uint32_t hw_timer1_read()
  *
  *************************************/
 
-constexpr uint32_t HW_TIMER2_CLK = HW_TIMER_BASE_CLK;
+#define HW_TIMER2_CLK HW_TIMER_BASE_CLK
 
 /**
  * @brief Read current timer2 value
@@ -154,3 +158,7 @@ __forceinline uint32_t hw_timer2_read()
 }
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif

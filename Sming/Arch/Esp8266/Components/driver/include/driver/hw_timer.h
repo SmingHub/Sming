@@ -84,8 +84,8 @@ void IRAM_ATTR hw_timer1_attach_interrupt(hw_timer_source_type_t source_type, hw
  */
 inline void IRAM_ATTR hw_timer1_enable(hw_timer_clkdiv_t div, hw_timer_intr_type_t intr_type, bool auto_load)
 {
-	constexpr uint32_t FRC1_ENABLE_TIMER = BIT7;
-	constexpr uint32_t FRC1_AUTO_LOAD = BIT6;
+#define FRC1_ENABLE_TIMER BIT7
+#define FRC1_AUTO_LOAD BIT6
 
 	uint32_t ctrl = (div & 0x0C) | (intr_type & 0x01) | FRC1_ENABLE_TIMER;
 	if(auto_load) {
@@ -143,12 +143,12 @@ __forceinline uint32_t hw_timer1_read(void)
  *************************************/
 
 #ifdef USE_US_TIMER
-constexpr uint32_t HW_TIMER2_CLKDIV = TIMER_CLKDIV_16;
+#define HW_TIMER2_CLKDIV TIMER_CLKDIV_16
 #else
-constexpr uint32_t HW_TIMER2_CLKDIV = TIMER_CLKDIV_256;
+#define HW_TIMER2_CLKDIV TIMER_CLKDIV_256
 #endif
 
-constexpr uint32_t HW_TIMER2_CLK = HW_TIMER_BASE_CLK >> HW_TIMER2_CLKDIV;
+#define HW_TIMER2_CLK (HW_TIMER_BASE_CLK >> HW_TIMER2_CLKDIV)
 
 /**
  * @brief Read current timer2 value
