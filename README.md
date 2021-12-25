@@ -29,15 +29,15 @@ You can also try Sming without installing anything locally. We have an [interact
 
 The purpose of Sming is to simplify the creation of embedded applications. The documentation will help you get started in no time.
 
-- [**Documentation for version 4.4.1**](https://sming.readthedocs.io/en/stable) - current stable version.
-- [Documentation for version 4.2.x](https://sming.readthedocs.io/en/4.2.0) - Long Term Support (LTS) version.
-- [Documentation for version 4.5.x](https://sming.readthedocs.io/en/latest) - latest development version.
+- [**Documentation for version 4.5.0**](https://sming.readthedocs.io/en/stable) - current stable version.
+- [Documentation for version 4.2.x](https://sming.readthedocs.io/en/4.2.2) - Long Term Support (LTS) version.
+- [Documentation for latest](https://sming.readthedocs.io/en/latest) - development version.
 
 ## Releases
 
 ### Stable
 
-- [Sming V4.4.0](https://github.com/SmingHub/Sming/releases/tag/4.4.0) - great new features, performance and stability improvements.
+- [Sming V4.5.0](https://github.com/SmingHub/Sming/releases/tag/4.5.0) - great new features, performance and stability improvements.
 
 
 ### Long Term Support (LTS)
@@ -85,7 +85,7 @@ make # -- compiles the application
 make flash # -- tries to upload the application to your ESP8266 device.
 ```
 
-More information at **[Wiki Examples](https://github.com/SmingHub/Sming/wiki/examples)** page.
+More information at **[Sample Projects](https://sming.readthedocs.io/en/latest/samples.html)** page.
 
 ### Simple GPIO Input/Output
 ```c++
