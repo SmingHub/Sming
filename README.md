@@ -30,7 +30,7 @@ You can also try Sming without installing anything locally. We have an [interact
 The purpose of Sming is to simplify the creation of embedded applications. The documentation will help you get started in no time.
 
 - [**Documentation for version 4.5.0**](https://sming.readthedocs.io/en/stable) - current stable version.
-- [Documentation for version 4.2.x](https://sming.readthedocs.io/en/4.2.1) - Long Term Support (LTS) version.
+- [Documentation for version 4.2.x](https://sming.readthedocs.io/en/4.2.2) - Long Term Support (LTS) version.
 - [Documentation for latest](https://sming.readthedocs.io/en/latest) - development version.
 
 ## Releases
