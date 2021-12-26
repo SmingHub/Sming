@@ -1,0 +1,9 @@
+{
+    "name": "Host Tests for Esp32",
+    "base_config": "host-tests",
+    "partitions": {
+        "factory": {
+            "size": "1M"
+        }
+    }
+}
