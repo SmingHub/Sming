@@ -6,6 +6,7 @@
 
 #include <HostTests.h>
 #include <Platform/Timers.h>
+#include <HardwareTimer.h>
 
 template <class Clock, typename TimeType> class ClockTestTemplate : public TestGroup
 {
@@ -241,6 +242,20 @@ private:
 	bool verbose = false;
 	CpuCycleTimes refCycles;
 	CpuCycleTimes calcCycles;
+};
+
+template <hw_timer_clkdiv_t clkdiv>
+class Timer1ClockTestTemplate : public ClockTestTemplate<Timer1Clock<clkdiv>, uint32_t>
+{
+public:
+	void execute() override
+	{
+		// Configure the hardware to match selected clock divider
+		Timer1Api<clkdiv, eHWT_Maskable> timer;
+		timer.arm(false);
+
+		ClockTestTemplate<Timer1Clock<clkdiv>, uint32_t>::execute();
+	}
 };
 
 template <class Clock, typename TimeType> class CpuClockTestTemplate : public ClockTestTemplate<Clock, TimeType>
@@ -479,8 +494,8 @@ void REGISTER_TEST(Clocks)
 
 	registerGroup<TimerCalcTest>();
 
-	registerGroup<ClockTestTemplate<Timer1Clock<TIMER_CLKDIV_16>, uint32_t>>();
-	registerGroup<ClockTestTemplate<Timer1Clock<TIMER_CLKDIV_256>, uint32_t>>();
+	registerGroup<Timer1ClockTestTemplate<TIMER_CLKDIV_16>>();
+	registerGroup<Timer1ClockTestTemplate<TIMER_CLKDIV_256>>();
 
 	registerGroup<ClockTestTemplate<Timer2Clock, uint32_t>>();
 
