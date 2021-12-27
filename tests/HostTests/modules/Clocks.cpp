@@ -37,8 +37,8 @@ public:
 		TEST_CASE("vs. system time")
 		{
 			constexpr uint32_t duration{2000000};
-			auto startTicks = Clock::ticks();
 			auto startTime = system_get_time();
+			auto startTicks = Clock::ticks();
 			uint32_t time;
 			while((time = system_get_time()) < startTime + duration) {
 				//
@@ -48,7 +48,12 @@ public:
 			debug_w("System time elapsed: %u", time - startTime);
 			debug_w("%s ticks: %u", Clock::typeName(), endTicks - startTicks);
 			debug_w("Ratio: x %f", float(endTicks - startTicks) / (time - startTime));
-			debug_w("Apparent time: %u", uint32_t(Micros::ticksToTime(endTicks - startTicks)));
+			uint32_t us = Micros::ticksToTime(endTicks - startTicks);
+			debug_w("Apparent time: %u", us);
+			// Up-timers may report 0 if inactive
+			if(endTicks != 0 || startTicks != 0) {
+				REQUIRE(abs(int(us - duration)) < 500); // Allow some latitude
+			}
 		}
 	}
 
@@ -246,9 +251,11 @@ public:
 	void execute() override
 	{
 		uint32_t curFreq = system_get_cpu_freq();
-		System.setCpuFrequency(Clock::cpuFrequency());
+		if(!System.setCpuFrequency(Clock::cpuFrequency())) {
+			debug_e("Failed to set CPU frequency, skipping test");
+			return;
+		}
 
-		// delay(100);
 		debug_i("CPU freq: %u -> %u MHz", curFreq, system_get_cpu_freq());
 		ClockTestTemplate<Clock, TimeType>::execute();
 		System.setCpuFrequency(CpuCycleClockNormal::cpuFrequency());
