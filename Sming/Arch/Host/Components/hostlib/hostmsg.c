@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-#include "hostmsg.h"
+#include "include/hostlib/hostmsg.h"
 
 int host_debug_level = 2;
 

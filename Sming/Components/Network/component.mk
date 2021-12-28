@@ -1,5 +1,3 @@
-COMPONENT_SOC := esp* host
-
 COMPONENT_SRCDIRS := \
 	src \
 	$(call ListAllSubDirs,$(COMPONENT_PATH)/src) \
@@ -69,6 +67,11 @@ else ifeq ($(SMING_ARCH),Host)
 
 COMPONENT_DEPENDS += \
 	esp_wifi \
+	lwip
+
+else ifeq ($(SMING_ARCH),Rp2040)
+
+COMPONENT_DEPENDS += \
 	lwip
 
 endif

@@ -39,10 +39,17 @@ DEBUG_VARS += \
 	CXX \
 	AR \
 	LD \
+	NINJA \
 	NM \
 	OBJCOPY \
 	OBJDUMP \
 	GDB
+
+ifdef NINJA
+NINJA := $(call FixPath,$(NINJA))
+else
+NINJA := ninja
+endif
 
 DEBUG_VARS		+= SMING_RELEASE
 ifeq ($(SMING_RELEASE),1)

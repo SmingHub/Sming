@@ -1,5 +1,5 @@
 diff --git a/contrib/ports/unix/port/sys_arch.c b/contrib/ports/unix/port/sys_arch.c
-index 1b61f205..620133d9 100644
+index 9f7c8d3a..440469c6 100644
 --- a/contrib/ports/unix/port/sys_arch.c
 +++ b/contrib/ports/unix/port/sys_arch.c
 @@ -71,10 +71,12 @@
@@ -16,7 +16,7 @@ index 1b61f205..620133d9 100644
  }
  
  static void
-@@ -752,15 +754,3 @@ sys_arch_unprotect(sys_prot_t pval)
+@@ -757,15 +759,3 @@ sys_arch_unprotect(sys_prot_t pval)
  }
  #endif /* SYS_LIGHTWEIGHT_PROT */
  
@@ -32,6 +32,7 @@ index 1b61f205..620133d9 100644
 -  return select(1, &fds, NULL, NULL, &tv);
 -}
 -#endif /* !NO_SYS */
+
 diff --git a/contrib/ports/CMakeCommon.cmake b/contrib/ports/CMakeCommon.cmake
 index fccf0f31..0a6378c4 100644
 --- a/contrib/ports/CMakeCommon.cmake
@@ -105,7 +106,7 @@ index 84c1bcaf..f23dfa67 100644
  /* This is an example implementation for LWIP_PLATFORM_DIAG:
 
 diff --git a/contrib/ports/win32/pcapif.c b/contrib/ports/win32/pcapif.c
-index 36356ca5..895f2a2d 100644
+index 3066abd0..62097fee 100644
 --- a/contrib/ports/win32/pcapif.c
 +++ b/contrib/ports/win32/pcapif.c
 @@ -40,16 +40,7 @@
@@ -125,7 +126,7 @@ index 36356ca5..895f2a2d 100644
  
  #include "lwip/opt.h"
  
-@@ -477,7 +468,6 @@ pcap_reopen_adapter(struct pcapif_private *pa)
+@@ -490,7 +481,6 @@ pcap_reopen_adapter(struct pcapif_private *pa)
  static struct pcapif_private*
  pcapif_init_adapter(int adapter_num, void *arg)
  {
@@ -133,7 +134,7 @@ index 36356ca5..895f2a2d 100644
    int number_of_adapters;
    struct pcapif_private *pa;
    char errbuf[PCAP_ERRBUF_SIZE+1];
-@@ -539,6 +529,7 @@ pcapif_init_adapter(int adapter_num, void *arg)
+@@ -552,6 +542,7 @@ pcapif_init_adapter(int adapter_num, void *arg)
    }
  
  #ifndef PCAPIF_LIB_QUIET
@@ -141,3 +142,17 @@ index 36356ca5..895f2a2d 100644
    /* Scan the list printing every entry */
    for (d = alldevs, i = 0; d != NULL; d = d->next, i++) {
      char *desc = d->description;
+
+diff --git a/contrib/ports/win32/pcapif_helper.c b/contrib/ports/win32/pcapif_helper.c
+index bc6ca8d8..82e26d27 100644
+--- a/contrib/ports/win32/pcapif_helper.c
++++ b/contrib/ports/win32/pcapif_helper.c
+@@ -102,7 +102,7 @@ pcapifh_alloc_readonly_copy(void *data, size_t len)
+     lwip_win32_platform_diag("VirtualProtect failed: %d\n", GetLastError());
+     while(1);
+   }
+-  printf("pcapifh_alloc_readonly_copy(%d): 0x%08x\n", len, ret);
++  printf("pcapifh_alloc_readonly_copy(%d): %p\n", len, ret);
+   return ret;
+ }
+ 

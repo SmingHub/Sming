@@ -10,10 +10,12 @@
 
 #pragma once
 
-#ifdef ARCH_ESP8266
-#include "lwip/tcp_impl.h"
-#else
+#include <lwip/init.h>
+
+#if LWIP_VERSION_MAJOR == 2
 #include "lwip/priv/tcp_priv.h"
+#else
+#include "lwip/tcp_impl.h"
 #endif
 
 struct pbuf;

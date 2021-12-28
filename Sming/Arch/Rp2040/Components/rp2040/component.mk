@@ -89,11 +89,6 @@ EXTRA_LIBS += \
 	pico \
 	m
 
-ifdef NINJA
-NINJA := $(call FixPath,$(NINJA))
-else
-NINJA := ninja
-endif
 RP2040_CMAKE_OPTIONS := \
 	-G Ninja \
 	-DCMAKE_MAKE_PROGRAM=$(NINJA)

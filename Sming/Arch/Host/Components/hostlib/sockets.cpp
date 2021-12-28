@@ -18,7 +18,7 @@
  ****/
 
 #include "sockets.h"
-#include "hostmsg.h"
+#include "include/hostlib/hostmsg.h"
 #include <string.h>
 
 #ifndef __WIN32

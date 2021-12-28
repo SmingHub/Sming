@@ -57,6 +57,10 @@
 	path = Sming/Components/libyuarel
 	url = https://github.com/jacketizer/libyuarel.git
 	ignore = dirty
+[submodule "lwip"]
+	path = Sming/Components/lwip/lwip
+	url = https://github.com/lwip-tcpip/lwip
+	ignore = dirty
 [submodule "mqtt-codec"]
 	path = Sming/Components/mqtt-codec
 	url = https://github.com/slaff/mqtt-codec.git
@@ -126,10 +130,6 @@
 # `Host` Components
 #
 
-[submodule "Host.lwip"]
-	path = Sming/Arch/Host/Components/lwip/lwip
-	url = https://github.com/lwip-tcpip/lwip
-	ignore = dirty
 [submodule "seriallib"]
 	path = Sming/Arch/Host/Components/SerialLib/seriallib
 	url = https://github.com/imabot2/serialib.git

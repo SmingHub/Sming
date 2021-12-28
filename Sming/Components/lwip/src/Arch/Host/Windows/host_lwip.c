@@ -17,8 +17,8 @@
  *
  ****/
 
-#include "../host_lwip.h"
-#include "../../hostlib/hostmsg.h"
+#include "../include/host_lwip.h"
+#include <hostlib/hostmsg.h>
 
 #include "lwipcfg.h"
 #include <../pcapif.h>
