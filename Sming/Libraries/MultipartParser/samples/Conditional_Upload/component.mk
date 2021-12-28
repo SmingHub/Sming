@@ -1,4 +1,4 @@
-HWCONFIG := spiffs
+HWCONFIG := spiffs-2m
 SPIFF_FILES = web/
 ARDUINO_LIBRARIES := MultipartParser
 

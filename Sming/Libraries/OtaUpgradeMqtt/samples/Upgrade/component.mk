@@ -1,4 +1,5 @@
 ## User configurable settings
+COMPONENT_SOC = esp* host
 
 ## [Application id and version] ## 
 # Application id
