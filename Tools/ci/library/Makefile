@@ -36,6 +36,7 @@ apps: $(APP_NAMES)
 .PHONY: $(APP_NAMES)
 $(APP_NAMES):
 	@printf "\n\n** Building $@ for $(SMING_SOC) **\n\n"
+	$(Q) $(MAKE) --no-print-directory -C $@ submodules
 	$(Q) $(MAKE) --no-print-directory -C $@ PIP_ARGS=-q python-requirements sample
 
 .PHONY: run-test
