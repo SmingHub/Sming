@@ -111,7 +111,7 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true);
 
-	//	System.setCpuFrequency(eCF_160MHz);
+	// System.setCpuFrequency(CpuCycleClockFast::cpuFrequency());
 
 	Serial.print(_F("Available heap: "));
 	Serial.println(system_get_free_heap_size());

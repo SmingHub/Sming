@@ -117,7 +117,7 @@ void init()
 	Serial.setTxBufferSize(1024);
 
 	Serial.println("Init Basic Servo Sample");
-	System.setCpuFrequency(eCF_80MHz);
+	System.setCpuFrequency(CpuCycleClockNormal::cpuFrequency());
 
 #ifdef ARCH_HOST
 	setDigitalHooks(nullptr);
