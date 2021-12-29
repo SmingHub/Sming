@@ -37,10 +37,6 @@ install:
         . sming/Tools/ci/install.sh ${SMING_ARCH,,}
       fi
 
-  - ps: |
-      Start-Process -FilePath make -ArgumentList "-C $env:SMING_HOME fetch-$env:APPVEYOR_PROJECT_SLUG" -Wait -NoNewWindow
-
-
 build_script:
   - sh: make -j$(nproc) -f $CI_MAKEFILE
   - cmd: make -j%NUMBER_OF_PROCESSORS% -f %CI_MAKEFILE%

@@ -116,8 +116,9 @@ SAMPLE_NAMES		= $(notdir $(SAMPLE_PATHS))
 samples: $(SAMPLES_BUILT) ##Build all sample applications
 
 # Build any samples which haven't yet been marked
-$(SAMPLES_BUILT):
-	@printf "\n\n** Building $(notdir $(call dirx,$@)) **\n\n"
+%.built:
+	@printf "\n\n** Building $(@D) **\n\n"
+	$(Q) $(MAKE) --no-print-directory -C $(@D) submodules
 	$(Q) $(MAKE) --no-print-directory -C $(@D) PIP_ARGS=-q python-requirements sample
 	$(Q) touch $@
 
@@ -143,10 +144,6 @@ COMPONENT_SAMPLES_BUILT = $(addsuffix $(BUILT_SUFFIX),$(COMPONENT_SAMPLE_PATHS))
 .PHONY: build-component-samples
 build-component-samples: $(COMPONENT_SAMPLES_BUILT)
 
-$(COMPONENT_SAMPLES_BUILT):
-	@printf "\n\n** Building $(@D) **\n\n"
-	$(Q) $(MAKE) --no-print-directory -C $(@D) PIP_ARGS=-q python-requirements sample
-	$(Q) touch $@
 
 # This file is generated on failure during test phase
 export TEST_FAILURE_FILE := $(SMING_HOME)/.test-failure
