@@ -9,7 +9,7 @@
 ifeq ($(OS),Windows_NT)
 # Powershell does weird things to this variable, revert to default
 override MAKE	:= make
-FixPath			= $(subst //,/,$(subst \,/,/$(subst :,,$1)))
+FixPath			= $(if $(findstring :,$1),$(subst //,/,$(subst \,/,/$(subst :,,$1))),$(abspath $1))
 else
 FixPath			= $1
 endif
