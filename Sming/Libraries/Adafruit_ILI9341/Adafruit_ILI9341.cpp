@@ -102,7 +102,7 @@ void Adafruit_ILI9341::transmitCmd(uint8_t cmd)
 
 //Set communication using HW SPI Port
 void Adafruit_ILI9341::begin(void) {
-	SPI.SPIDefaultSettings = SPISettings(20000000, MSBFIRST, SPI_MODE0);
+	SPI.SPIDefaultSettings = SPISettings(24000000, MSBFIRST, SPI_MODE0);
 	SPI.begin();
 	TFT_DC_INIT;
 	TFT_RST_INIT;
