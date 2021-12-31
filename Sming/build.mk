@@ -10,8 +10,8 @@ SMING_HOME := $(patsubst %/,%,$(call FixPath,$(SMING_HOME)))
 DEBUG_VARS += SMING_ARCH SMING_SOC
 ifeq (,$(SMING_ARCH))
   ifeq (,$(SMING_SOC))
-    SMING_ARCH := Esp8266
-    SMING_SOC := esp8266
+    override SMING_ARCH := Esp8266
+    override SMING_SOC := esp8266
   else
     override SMING_ARCH := $(notdir $(call dirx,$(filter %/$(SMING_SOC)-soc.json,$(SOC_CONFIG_FILES))))
     ifeq (,$(SMING_ARCH))
@@ -19,7 +19,7 @@ ifeq (,$(SMING_ARCH))
     endif
   endif
 else ifeq (,$(filter $(SMING_SOC),$(ARCH_$(SMING_ARCH)_SOC)))
-  SMING_SOC := $(firstword $(ARCH_$(SMING_ARCH)_SOC))
+  override SMING_SOC := $(firstword $(ARCH_$(SMING_ARCH)_SOC))
 endif
 
 ifeq (,$(wildcard $(SMING_HOME)/Arch/$(SMING_ARCH)/build.mk))
