@@ -25,7 +25,7 @@
 //#define SPI_DEBUG  1
 
 // for compatibility when porting from Arduino
-#define SPI_HAS_TRANSACTION 0
+#define SPI_HAS_TRANSACTION 1
 
 static constexpr uint8_t SPI_PIN_DEFAULT{0xff};
 

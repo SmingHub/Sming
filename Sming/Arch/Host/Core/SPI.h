@@ -19,7 +19,7 @@
 //#define SPI_DEBUG  1
 
 // for compatibility when porting from Arduino
-#define SPI_HAS_TRANSACTION 0
+#define SPI_HAS_TRANSACTION 1
 
 /**
  * @brief  Hardware SPI object
