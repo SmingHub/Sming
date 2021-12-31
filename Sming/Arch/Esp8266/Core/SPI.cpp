@@ -84,29 +84,18 @@ void spi_mode(uint8_t mode)
 	}
 }
 
-/**
- * @brief	Setup the byte order for shifting data out of buffer
- *
- *  		Private method used by SPISetings
- *
- * 	@param	MSBFIRST	1
- * 	 		Data is sent out starting with Bit31 and down to Bit0
- * 	 		LSBFIRST	0
- * 	 		Data is sent out starting with the lowest BYTE, from MSB to LSB
- * 			0xABCDEFGH would be sent as 0xGHEFCDAB
- */
-void spi_byte_order(uint8_t byte_order)
+void spi_bit_order(uint8_t bit_order)
 {
 #ifdef SPI_DEBUG
-	debugf("SPIClass::spi_byte_order(byte_order %u)", byte_order);
+	debugf("SPIClass::spi_bit_order(bit_order %u)", bit_order);
 #endif
 
-	if(byte_order) {
-		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_WR_BYTE_ORDER);
-		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_RD_BYTE_ORDER);
+	if(bit_order == MSBFIRST) {
+		CLEAR_PERI_REG_MASK(SPI_CTRL(SPI_NO), SPI_WR_BIT_ORDER);
+		CLEAR_PERI_REG_MASK(SPI_CTRL(SPI_NO), SPI_RD_BIT_ORDER);
 	} else {
-		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_WR_BYTE_ORDER);
-		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_RD_BYTE_ORDER);
+		SET_PERI_REG_MASK(SPI_CTRL(SPI_NO), SPI_WR_BIT_ORDER);
+		SET_PERI_REG_MASK(SPI_CTRL(SPI_NO), SPI_RD_BIT_ORDER);
 	}
 }
 
@@ -228,7 +217,7 @@ bool SPIClass::begin()
 
 uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 {
-	uint32_t regvalue = READ_PERI_REG(SPI_USER(SPI_NO)) & (SPI_WR_BYTE_ORDER | SPI_RD_BYTE_ORDER | SPI_CK_OUT_EDGE);
+	uint32_t regvalue = READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_CK_OUT_EDGE;
 
 	spi_wait();
 
@@ -238,22 +227,12 @@ uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 	WRITE_PERI_REG(SPI_USER1(SPI_NO), (((bits - 1) & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S) |
 										  (((bits - 1) & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
 
-	// copy data to W0
-	if(READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_WR_BYTE_ORDER) {
-		WRITE_PERI_REG(SPI_W0(SPI_NO), data << (32 - bits));
-	} else {
-		WRITE_PERI_REG(SPI_W0(SPI_NO), data);
-	}
+	WRITE_PERI_REG(SPI_W0(SPI_NO), data);
 
 	spi_send();
 	spi_wait();
 
-	auto res = READ_PERI_REG(SPI_W0(SPI_NO));
-	if(READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_RD_BYTE_ORDER) {
-		res >>= (32 - bits);
-	}
-
-	return res;
+	return READ_PERI_REG(SPI_W0(SPI_NO));
 }
 
 uint8_t SPIClass::read8()
@@ -265,12 +244,7 @@ uint8_t SPIClass::read8()
 	spi_send();
 	spi_wait();
 
-	auto res = READ_PERI_REG(SPI_W0(SPI_NO));
-	if(READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_RD_BYTE_ORDER) {
-		res >>= 24;
-	}
-
-	return res;
+	return READ_PERI_REG(SPI_W0(SPI_NO));
 }
 
 void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
@@ -296,7 +270,7 @@ void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 		// compute the number of bits to clock
 		auto num_bits = bufLength * 8;
 
-		uint32_t regvalue = READ_PERI_REG(SPI_USER(SPI_NO)) & (SPI_WR_BYTE_ORDER | SPI_RD_BYTE_ORDER | SPI_CK_OUT_EDGE);
+		uint32_t regvalue = READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_CK_OUT_EDGE;
 
 		spi_wait();
 
@@ -337,8 +311,8 @@ void SPIClass::prepare(SPISettings& settings)
 	//  setup clock
 	spi_set_clock(settings.speed);
 
-	//	set byte order
-	spi_byte_order(settings.byteOrder);
+	//	set bit order
+	spi_bit_order(settings.bitOrder);
 
 	//	set spi mode
 	spi_mode(settings.dataMode);

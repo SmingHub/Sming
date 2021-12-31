@@ -84,28 +84,14 @@ void spi_mode(SpiDevice& dev, uint8_t mode)
 #endif
 }
 
-/**
- * @brief	Setup the byte order for shifting data out of buffer
- * @param	MSBFIRST	1
- * 	 		Data is sent out starting with Bit31 and down to Bit0
- * 	 		LSBFIRST	0
- * 	 		Data is sent out starting with the lowest BYTE, from MSB to LSB
- * 			0xABCDEFGH would be sent as 0xGHEFCDAB
- */
-void spi_byte_order(SpiDevice& dev, uint8_t byte_order)
+void spi_bit_order(SpiDevice& dev, uint8_t bit_order)
 {
 #ifdef SPI_DEBUG
-	debug_i("[SPI] spi_byte_order(byte_order %u)", byte_order);
+	debug_i("[SPI] spi_bit_order(bit_order %u)", bit_order);
 #endif
 
-// No HAL definition for this
-#if SOC_ESP32 || SOC_ESP32S2
-	dev.user.rd_byte_order = (byte_order == MSBFIRST);
-	dev.user.wr_byte_order = (byte_order == MSBFIRST);
-#else
-// No definition in datasheet for esp32-c3, perhaps it's just missing?
-#warning "SPI byte order unsupported"
-#endif
+	spi_ll_set_rx_lsbfirst(&dev, bit_order != MSBFIRST);
+	spi_ll_set_tx_lsbfirst(&dev, bit_order != MSBFIRST);
 }
 
 /**
@@ -351,26 +337,12 @@ uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 
 	spi_wait(dev);
 
-	// copy data to W0
-#if SOC_ESP32 || SOC_ESP32S2
-	if(dev.user.wr_byte_order) {
-		dev.data_buf[0] = data << (32 - bits);
-	} else
-#endif
-	{
-		dev.data_buf[0] = data;
-	}
+	dev.data_buf[0] = data;
 
 	spi_send(dev, bits);
 	spi_wait(dev);
 
-	auto res = dev.data_buf[0];
-#if SOC_ESP32 || SOC_ESP32S2
-	if(dev.user.rd_byte_order) {
-		res >>= (32 - bits);
-	}
-#endif
-	return res;
+	return dev.data_buf[0];
 }
 
 uint8_t SPIClass::read8()
@@ -379,18 +351,11 @@ uint8_t SPIClass::read8()
 
 	spi_wait(dev);
 
-	dev.data_buf[0] = 0x00;
-
+	dev.data_buf[0] = 0xFF;
 	spi_send(dev, 8);
 	spi_wait(dev);
 
-	auto res = dev.data_buf[0];
-#if SOC_ESP32 || SOC_ESP32S2
-	if(dev.user.rd_byte_order) {
-		res >>= 24;
-	}
-#endif
-	return res;
+	return dev.data_buf[0];
 }
 
 void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
@@ -446,6 +411,6 @@ void SPIClass::prepare(SPISettings& settings)
 	auto& dev = getDevice(busId);
 
 	spi_set_clock(dev, settings.speed);
-	spi_byte_order(dev, settings.byteOrder);
+	spi_bit_order(dev, settings.bitOrder);
 	spi_mode(dev, settings.dataMode);
 }

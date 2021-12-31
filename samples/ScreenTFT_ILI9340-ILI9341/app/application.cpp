@@ -8,16 +8,7 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-/*
-Pinout:
-MISO GPIO12
-MOSI GPIO13
-CLK GPIO14
-CS GPIO15
-DC GPIO5
-RST GPIO4
-*/
-
+// See library for pinout
 Adafruit_ILI9341 tft;
 
 Timer guiTimer;

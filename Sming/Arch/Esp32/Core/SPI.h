@@ -52,6 +52,8 @@ enum class SpiBus {
 	MAX = SOC_SPI_PERIPH_NUM,
 #ifdef SOC_ESP32C3
 	DEFAULT = SPI1,
+#elif defined(SOC_ESP32S2)
+	DEFAULT = SPI2,
 #else
 	DEFAULT = VSPI,
 #endif

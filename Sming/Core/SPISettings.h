@@ -83,16 +83,10 @@ public:
 	 *
 	 * @param 	speed: The maximum speed of communication. For a SPI chip rated up to sys clock speed.
 	 * For 20 MHz, use 20000000.
-	 * @param	byteOrder: MSBFIRST or LSBFIRST
+	 * @param	bitOrder: MSBFIRST or LSBFIRST
+	 * 			Determines how bits within each byte are sent on the wire.
+	 * 			Data is always sent LSB first (matches system endianness)
 	 * @param	dataMode : SPI_MODE0, SPI_MODE1, SPI_MODE2, or SPI_MODE3
-	 *
-	 * byteOrder's are:
-	 *
-	 * 		MSBFIRST 	Data is sent out starting with Bit31 and down to Bit0
-	 * 		LSBFIRST 	Data is sent out starting with the lowest BYTE, from MSB to LSB.
-	 *						0xABCDEFGH would be sent as 0xGHEFCDAB
-	 *
-	 * Data modes are:
 	 *
 	 *  		Mode		Clock Polarity (CPOL)	Clock Phase (CPHA)
 	 * 		SPI_MODE0		0					0
@@ -100,29 +94,29 @@ public:
 	 * 		SPI_MODE2		1					0
 	 * 		SPI_MODE3		1					1
 	 */
-	SPISettings(uint32_t speed, uint8_t byteOrder, uint8_t dataMode)
-		: speed(speed), byteOrder(byteOrder), dataMode(dataMode)
+	SPISettings(uint32_t speed, uint8_t bitOrder, uint8_t dataMode)
+		: speed(speed), bitOrder(bitOrder), dataMode(dataMode)
 	{
 #ifdef SPI_DEBUG
-		debugf("SPISettings(int %i, uint8 %u, uint8 %u)", speed, byteOrder, dataMode);
+		debugf("SPISettings(int %i, uint8 %u, uint8 %u)", speed, bitOrder, dataMode);
 #endif
 	}
 
 	// overload operator to check whether the settings are equal
 	bool operator==(const SPISettings& other) const
 	{
-		return (speed == other.speed) && (byteOrder == other.byteOrder) && (dataMode == other.dataMode);
+		return (speed == other.speed) && (bitOrder == other.bitOrder) && (dataMode == other.dataMode);
 	}
 
 	void print(const char* s)
 	{
 #ifdef SPI_DEBUG
-		debugf("->  %s -> SPISettings(%u, %u, %u)", s, speed.frequency, byteOrder, dataMode);
+		debugf("->  %s -> SPISettings(%u, %u, %u)", s, speed.frequency, bitOrder, dataMode);
 #endif
 	}
 
 	SPISpeed speed;
-	uint8_t byteOrder{MSBFIRST};
+	uint8_t bitOrder{MSBFIRST};
 	uint8_t dataMode{SPI_MODE0};
 };
 
