@@ -205,7 +205,8 @@ void checkSpeed(SPISpeed& speed)
 
 		// We have prescale and divisor values, now get regVal so we don't need to do this every time prepare() is called
 		decltype(spi_dev_t::clock) clk{{
-			.clkcnt_h = prediv.divisor - 1,
+			.clkcnt_l = prediv.divisor - 1,
+			.clkcnt_h = (prediv.divisor / 2) - 1,
 			.clkcnt_n = prediv.divisor - 1,
 			.clkdiv_pre = prediv.prescale - 1,
 		}};
