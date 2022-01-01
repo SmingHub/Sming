@@ -50,6 +50,13 @@ public:
 	using SPIBase::transfer;
 	void transfer(uint8_t* buffer, size_t numberBytes) override;
 
+	bool loopback(bool enable)
+	{
+		// Not supported
+		(void)enable;
+		return false;
+	}
+
 protected:
 	void prepare(SPISettings& settings) override;
 };

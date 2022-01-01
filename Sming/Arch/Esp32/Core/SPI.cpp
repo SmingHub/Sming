@@ -400,3 +400,10 @@ void SPIClass::prepare(SPISettings& settings)
 	dev.set_bit_order(settings.bitOrder);
 	dev.set_mode(settings.dataMode);
 }
+
+bool SPIClass::loopback(bool enable)
+{
+	GET_DEVICE(false);
+	gpio_matrix_in(enable ? pins.mosi : pins.miso, dev.info.spiq_in, false);
+	return true;
+}
