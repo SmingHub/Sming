@@ -59,6 +59,9 @@ public:
 
 protected:
 	void prepare(SPISettings& settings) override;
+
+private:
+	bool lsbFirst{false};
 };
 
 /** @brief  Global instance of SPI class */

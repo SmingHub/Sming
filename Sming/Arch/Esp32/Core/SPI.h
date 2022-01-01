@@ -104,8 +104,10 @@ public:
 protected:
 	void prepare(SPISettings& settings) override;
 
+private:
 	SpiBus busId;
 	SpiPins pins;
+	bool lsbFirst{false};
 };
 
 /** @brief  Global instance of SPI class */

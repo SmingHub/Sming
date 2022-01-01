@@ -273,11 +273,18 @@ uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 {
 	GET_DEVICE(0);
 
+	if(bits != 8 && !lsbFirst) {
+		data = __builtin_bswap32(data << (32 - bits));
+	}
 	dev.write(data);
 	dev.send(bits);
 	dev.wait();
 
-	return dev.read();
+	data = dev.read();
+	if(bits != 8 && !lsbFirst) {
+		data = __builtin_bswap32(data) >> (32 - bits);
+	}
+	return data;
 }
 
 uint8_t SPIClass::read8()
@@ -316,5 +323,6 @@ void SPIClass::prepare(SPISettings& settings)
 
 	dev.set_clock(settings.speed);
 	dev.set_bit_order(settings.bitOrder);
+	lsbFirst = (settings.bitOrder != MSBFIRST);
 	dev.set_mode(settings.dataMode);
 }
