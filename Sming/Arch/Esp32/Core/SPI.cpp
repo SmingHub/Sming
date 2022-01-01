@@ -23,14 +23,21 @@
 #include <hal/spi_ll.h>
 #include <hal/clk_gate_ll.h>
 #include <soc/rtc.h>
+#include <Data/BitSet.h>
 
-// define the static singleton
+#define GET_DEVICE(err)                                                                                                \
+	if(!busAssigned[busId]) {                                                                                          \
+		debug_e("[SPI] Not Ready");                                                                                    \
+		return err;                                                                                                    \
+	}                                                                                                                  \
+	SpiDevice dev{busId};
+
 SPIClass SPI;
-
-using SpiDevice = volatile spi_dev_t;
 
 namespace
 {
+constexpr size_t SPI_FIFO_SIZE{64};
+
 const SpiPins defaultPins[] = {
 	{6, 7, 8, SPI_PIN_DEFAULT},
 	{14, 12, 13, SPI_PIN_DEFAULT},
@@ -44,55 +51,105 @@ struct SpiPreDiv {
 	unsigned divisor;
 };
 
-/**
- * @brief Wait until SPI has finished any current transaction
- */
-__forceinline void spi_wait(SpiDevice& dev)
-{
-	while(dev.cmd.usr) {
-		//
+struct SpiDevice {
+	const spi_signal_conn_t& info;
+
+	SpiDevice(SpiBus busId) : info(spi_periph_signal[unsigned(busId) - 1])
+	{
 	}
-}
 
-/**
- * @brief Initiate an SPI user transaction
- */
-__forceinline void spi_send(SpiDevice& dev, unsigned num_bits)
-{
-	spi_ll_set_mosi_bitlen(&dev, num_bits);
-	spi_ll_set_miso_bitlen(&dev, num_bits);
-	dev.cmd.usr = true;
-}
+	void init()
+	{
+		periph_ll_enable_clk_clear_rst(info.module);
 
-/**
- * @brief	Configure SPI mode parameters for clock edge and clock polarity.
- * @param	device
- * @param	mode
- *
- * 	 		Mode		Clock Polarity (CPOL)	Clock Phase (CPHA)
- *			SPI_MODE0	0						0
- *			SPI_MODE1	0						1
- *			SPI_MODE2	1						0
- *			SPI_MODE3	1						1
- */
-void spi_mode(SpiDevice& dev, uint8_t mode)
-{
-	spi_ll_master_set_mode(&dev, mode);
+		// Initialise bus
+		spi_ll_master_init(info.hw);
+		spi_ll_clear_int_stat(info.hw);
+
+		//
+		spi_ll_enable_mosi(info.hw, true);
+		spi_ll_enable_miso(info.hw, false);
+		spi_ll_set_half_duplex(info.hw, false);
+
+		spi_ll_set_dummy(info.hw, 0);
+		spi_ll_set_command_bitlen(info.hw, 0);
+		spi_ll_set_addr_bitlen(info.hw, 0);
+
+		// Not using any auto. chip selects
+		spi_ll_master_select_cs(info.hw, -1);
+	}
+
+	void deinit()
+	{
+		periph_ll_disable_clk_set_rst(info.module);
+	}
+
+	void set_clock(SPISpeed& speed);
+
+	/**
+	 * @brief Wait until SPI has finished any current transaction
+	 */
+	void wait()
+	{
+		while(info.hw->cmd.usr) {
+			//
+		}
+	}
+
+	/**
+	 * @brief Initiate an SPI user transaction
+	 */
+	void send(unsigned num_bits)
+	{
+		spi_ll_set_mosi_bitlen(info.hw, num_bits);
+		info.hw->cmd.usr = true;
+	}
+
+	void set_mode(uint8_t mode)
+	{
+		spi_ll_master_set_mode(info.hw, mode);
 
 #ifdef SPI_DEBUG
-	debug_i("[SPI] spi_mode(mode %x) cpha %X, cpol %X)", mode, mode & 0x0F, mode & 0xF0);
+		debugf("[SPI] set_mode(mode %x) cpha %X, cpol %X)", mode, mode & 0x0F, mode & 0xF0);
 #endif
-}
+	}
 
-void spi_bit_order(SpiDevice& dev, uint8_t bit_order)
-{
+	void set_bit_order(uint8_t bit_order)
+	{
 #ifdef SPI_DEBUG
-	debug_i("[SPI] spi_bit_order(bit_order %u)", bit_order);
+		debugf("[SPI] set_bit_order(bit_order %u)", bit_order);
 #endif
 
-	spi_ll_set_rx_lsbfirst(&dev, bit_order != MSBFIRST);
-	spi_ll_set_tx_lsbfirst(&dev, bit_order != MSBFIRST);
-}
+		spi_ll_set_rx_lsbfirst(info.hw, bit_order != MSBFIRST);
+		spi_ll_set_tx_lsbfirst(info.hw, bit_order != MSBFIRST);
+	}
+
+	uint32_t read()
+	{
+		return info.hw->data_buf[0];
+	}
+
+	void write(uint32_t value)
+	{
+		info.hw->data_buf[0] = value;
+	}
+
+	void read(void* buffer, size_t length)
+	{
+		memcpy(buffer, (void*)info.hw->data_buf, length);
+	}
+
+	void write(const void* buffer, size_t length)
+	{
+		if(IS_ALIGNED(buffer)) {
+			memcpy((void*)info.hw->data_buf, buffer, ALIGNUP4(length));
+		} else {
+			uint32_t wordBuffer[SPI_FIFO_SIZE];
+			memcpy(wordBuffer, buffer, length);
+			memcpy((void*)info.hw->data_buf, wordBuffer, ALIGNUP4(length));
+		}
+	}
+};
 
 /**
  * @brief Calculate the closest prescale value for a given frequency and clock-divider
@@ -121,7 +178,7 @@ SpiPreDiv calculateSpeed(unsigned apbFreq, unsigned freq, unsigned div)
 	prediv.divisor = div;
 
 #ifdef SPI_DEBUG
-	debug_i("[SPI] calculateSpeed(freq %u, pre %u, div %u)", freq, pre, div);
+	debugf("[SPI] calculateSpeed(freq %u, pre %u, div %u)", freq, pre, div);
 #endif
 
 	return prediv;
@@ -167,8 +224,10 @@ void checkSpeed(SPISpeed& speed, unsigned apbFreq)
 		speed.regVal = reg.val;
 	}
 
-	debug_i("[SPI] APB freq = %u, pre = %u, div = %u, target freq = %u, actual = %u", apbFreq, prediv.prescale,
-			prediv.divisor, speed.frequency, prediv.freq);
+#ifdef SPI_DEBUG
+	debugf("[SPI] APB freq = %u, pre = %u, div = %u, target freq = %u, actual = %u", apbFreq, prediv.prescale,
+		   prediv.divisor, speed.frequency, prediv.freq);
+#endif
 }
 
 uint32_t getApbFrequency()
@@ -179,40 +238,21 @@ uint32_t getApbFrequency()
 	return (conf.freq_mhz >= 80) ? (80 * DIV_MHZ) : ((conf.source_freq_mhz * DIV_MHZ) / conf.div);
 }
 
-void spi_set_clock(SpiDevice& dev, SPISpeed& speed)
+void SpiDevice::set_clock(SPISpeed& speed)
 {
 	// Clock register value is never 0, so indicates it hasn't been calculated
 	if(speed.regVal == 0) {
 		checkSpeed(speed, getApbFrequency());
 	} else {
 #ifdef SPI_DEBUG
-		debug_i("[SPI] spi_set_clock(%u)", speed.frequency);
+		debugf("[SPI] spi_set_clock(%u)", speed.frequency);
 #endif
 	}
 
-	dev.clock.val = speed.regVal;
+	info.hw->clock.val = speed.regVal;
 }
 
-const spi_signal_conn_t& getBusInfo(SpiBus busId)
-{
-	return spi_periph_signal[unsigned(busId) - 1];
-}
-
-SpiDevice& getDevice(SpiBus busId)
-{
-	return *getBusInfo(busId).hw;
-}
-
-struct BusState {
-	bool assigned : 1;
-};
-
-BusState busState[SOC_SPI_PERIPH_NUM];
-
-BusState& getBusState(SpiBus busId)
-{
-	return busState[unsigned(busId) - 1];
-}
+BitSet<uint8_t, SpiBus, SOC_SPI_PERIPH_NUM + 1> busAssigned;
 
 } // namespace
 
@@ -223,7 +263,7 @@ bool SPIClass::setup(SpiBus busId, SpiPins pins)
 		return false;
 	}
 
-	if(getBusState(busId).assigned) {
+	if(busAssigned[busId]) {
 		debug_e("[SPI] Bus #%u already assigned", busId);
 		return false;
 	}
@@ -240,32 +280,15 @@ bool SPIClass::begin()
 		return false;
 	}
 
-	auto& state = getBusState(busId);
-	if(state.assigned) {
+	if(busAssigned[busId]) {
 		debug_e("[SPI] Bus #%u already assigned", busId);
 		return false;
 	}
 
-	auto& bus = getBusInfo(busId);
-	periph_ll_enable_clk_clear_rst(bus.module);
+	busAssigned += busId;
 
-	auto& dev = getDevice(busId);
-
-	// Initialise bus
-	spi_ll_master_init(&dev);
-	spi_ll_clear_int_stat(&dev);
-
-	//
-	spi_ll_enable_mosi(&dev, true);
-	spi_ll_enable_miso(&dev, true);
-	spi_ll_set_half_duplex(&dev, false);
-
-	spi_ll_set_dummy(&dev, 0);
-	spi_ll_set_command_bitlen(&dev, 0);
-	spi_ll_set_addr_bitlen(&dev, 0);
-
-	// Not using any auto. chip selects
-	spi_ll_master_select_cs(&dev, -1);
+	SpiDevice dev(busId);
+	dev.init();
 
 	auto& defPins = defaultPins[unsigned(busId) - 1];
 
@@ -274,23 +297,25 @@ bool SPIClass::begin()
 		pins.sck = defPins.sck;
 	}
 	pinMode(pins.sck, OUTPUT);
-	gpio_matrix_out(pins.sck, bus.spiclk_out, false, false);
+	gpio_matrix_out(pins.sck, dev.info.spiclk_out, false, false);
 
 	// MISO
 	if(pins.miso == SPI_PIN_DEFAULT) {
 		pins.miso = defPins.miso;
 	}
 	pinMode(pins.miso, INPUT);
-	gpio_matrix_in(pins.miso, bus.spiq_in, false);
+	gpio_matrix_in(pins.miso, dev.info.spiq_in, false);
 
 	// MOSI
 	if(pins.mosi == SPI_PIN_DEFAULT) {
 		pins.mosi = defPins.mosi;
 	}
 	pinMode(pins.mosi, OUTPUT);
-	gpio_matrix_out(pins.mosi, bus.spid_out, false, false);
+	gpio_matrix_out(pins.mosi, dev.info.spid_out, false, false);
 
-	debug_i("[SPI] SCK = %u, MISO = %u, MOSI = %u", pins.sck, pins.miso, pins.mosi);
+#ifdef SPI_DEBUG
+	debugf("[SPI] SCK = %u, MISO = %u, MOSI = %u", pins.sck, pins.miso, pins.mosi);
+#endif
 
 	// Clock
 
@@ -310,107 +335,62 @@ bool SPIClass::begin()
 	checkSpeed(SPIDefaultSettings.speed, getApbFrequency());
 	prepare(SPIDefaultSettings);
 
-	state.assigned = true;
 	return true;
 }
 
 void SPIClass::end()
 {
-	if(busId < SpiBus::MIN || busId > SpiBus::MAX) {
-		return;
-	}
+	GET_DEVICE();
 
-	auto& state = getBusState(busId);
-	if(!state.assigned) {
-		return;
-	}
-
-	auto& info = getBusInfo(busId);
-	periph_ll_disable_clk_set_rst(info.module);
-
-	state.assigned = false;
+	dev.deinit();
+	busAssigned -= busId;
 }
 
 uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 {
-	auto& dev = getDevice(busId);
+	GET_DEVICE(0);
 
-	spi_wait(dev);
-
-	dev.data_buf[0] = data;
-
-	spi_send(dev, bits);
-	spi_wait(dev);
-
-	return dev.data_buf[0];
+	dev.write(data);
+	dev.send(bits);
+	dev.wait();
+	return dev.read();
 }
 
 uint8_t SPIClass::read8()
 {
-	auto& dev = getDevice(busId);
+	GET_DEVICE(0);
 
-	spi_wait(dev);
+	dev.write(0xff);
+	dev.send(8);
+	dev.wait();
 
-	dev.data_buf[0] = 0xFF;
-	spi_send(dev, 8);
-	spi_wait(dev);
-
-	return dev.data_buf[0];
+	return dev.read();
 }
 
 void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 {
-	constexpr size_t BLOCKSIZE{64}; // the max length of the ESP SPI_W0 registers
+	GET_DEVICE();
 
-	auto& dev = getDevice(busId);
+	for(unsigned i = 0; i < numberBytes; i += SPI_FIFO_SIZE) {
+		auto blockLen = std::min(numberBytes - i, SPI_FIFO_SIZE);
 
-	unsigned bufIndx = 0;
-
-	unsigned blocks = ((numberBytes - 1) / BLOCKSIZE) + 1;
-#ifdef SPI_DEBUG
-	unsigned total = blocks;
-#endif
-
-	// loop number of blocks
-	while(blocks--) {
-		// get full BLOCKSIZE or number of remaining bytes
-		auto bufLength = std::min(numberBytes - bufIndx, BLOCKSIZE);
-
-#ifdef SPI_DEBUG
-		debug_i("[SPI] Write/Read Block %u total %u bytes", total - blocks, bufLength);
-#endif
-
-		spi_wait(dev);
-
-		// copy the registers starting from last index position
-		if(IS_ALIGNED(buffer)) {
-			memcpy((void*)dev.data_buf, &buffer[bufIndx], ALIGNUP4(bufLength));
-		} else {
-			uint32_t wordBuffer[BLOCKSIZE / 4];
-			memcpy(wordBuffer, &buffer[bufIndx], bufLength);
-			memcpy((void*)dev.data_buf, wordBuffer, ALIGNUP4(bufLength));
-		}
-
-		spi_send(dev, bufLength * 8);
-		spi_wait(dev);
-
-		// copy the registers starting from last index position
-		memcpy(&buffer[bufIndx], (void*)dev.data_buf, bufLength);
-
-		bufIndx += bufLength;
+		dev.write(&buffer[i], blockLen);
+		dev.send(blockLen * 8);
+		dev.wait();
+		dev.read(&buffer[i], blockLen);
 	}
 }
 
 void SPIClass::prepare(SPISettings& settings)
 {
 #ifdef SPI_DEBUG
-	debug_i("[SPI] prepare()");
+	debugf("[SPI] prepare()");
 	settings.print("settings");
 #endif
 
-	auto& dev = getDevice(busId);
+	GET_DEVICE();
 
-	spi_set_clock(dev, settings.speed);
-	spi_bit_order(dev, settings.bitOrder);
-	spi_mode(dev, settings.dataMode);
+	dev.set_clock(settings.speed);
+	dev.set_bit_order(settings.bitOrder);
+	dev.set_mode(settings.dataMode);
 }
