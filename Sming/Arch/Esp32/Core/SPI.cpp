@@ -51,7 +51,7 @@ const SpiPins defaultPins[SOC_SPI_PERIPH_NUM] = {
 struct SpiDevice {
 	const spi_signal_conn_t& info;
 
-	SpiDevice(SpiBus busId) : info(spi_periph_signal[unsigned(busId) - 1])
+	explicit SpiDevice(SpiBus busId) : info(spi_periph_signal[unsigned(busId) - 1])
 	{
 	}
 

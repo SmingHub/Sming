@@ -181,7 +181,6 @@ void checkSpeed(SPISpeed& speed)
 	if(speed.frequency >= APB_CLK_FREQ) {
 		// Use maximum speed
 		prediv.freq = APB_CLK_FREQ;
-		prediv.divisor = 0;
 		speed.regVal = SPI_CLK_EQU_SYSCLK;
 	} else {
 		prediv = calculateSpeed(speed.frequency, 2);
