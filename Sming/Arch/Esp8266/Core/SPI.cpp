@@ -18,12 +18,23 @@
 #include <esp_systemapi.h>
 #include "espinc/eagle_soc.h"
 #include "espinc/spi_register.h"
+#include "espinc/spi_struct.h"
 
-// define the static singleton
+#define GET_DEVICE(err)                                                                                                \
+	if(!busAssigned) {                                                                                                 \
+		debug_e("[SPI] Not Ready");                                                                                    \
+		return err;                                                                                                    \
+	}                                                                                                                  \
+	SpiDevice dev;
+
 SPIClass SPI;
 
 namespace
 {
+constexpr size_t SPI_FIFO_SIZE{64};
+
+bool busAssigned;
+
 // Used internally to calculate optimum SPI speed
 struct SpiPreDiv {
 	unsigned freq;
@@ -31,73 +42,90 @@ struct SpiPreDiv {
 	unsigned divisor;
 };
 
-/**
- * @brief Wait until HSPI has finished any current transaction
- */
-__forceinline void spi_wait()
-{
-	while(READ_PERI_REG(SPI_CMD(SPI_NO)) & SPI_USR) {
-		//
+struct SpiDevice {
+	volatile spi_dev_t* hw;
+
+	SpiDevice() : hw(&SPI1)
+	{
 	}
-}
 
-/**
- * @brief Initiate an HSPI user transaction
- */
-__forceinline void spi_send()
-{
-	SET_PERI_REG_MASK(SPI_CMD(SPI_NO), SPI_USR);
-}
+	void init()
+	{
+		hw->user.val = 0;
+		hw->user.usr_mosi = true;
+		hw->user.duplex = true;
+		hw->user.ck_i_edge = true;
+	}
 
-/**
- * @brief	Configure SPI mode parameters for clock edge and clock polarity.
- *
- *  		Private method used by SPISetings
- *
- * @param	SPI_MODE0 .. SPI_MODE4
- *
- * 	 		Mode		Clock Polarity (CPOL)	Clock Phase (CPHA)
- *			SPI_MODE0	0						0
- *			SPI_MODE1	0						1
- *			SPI_MODE2	1						0
- *			SPI_MODE3	1						1
- */
-void spi_mode(uint8_t mode)
-{
-	uint8_t spi_cpha = mode & 0x0F;
-	uint8_t spi_cpol = mode & 0xF0;
+	void set_clock(SPISpeed& speed);
+
+	/**
+	 * @brief Wait until SPI has finished any current transaction
+	 */
+	void wait()
+	{
+		while(hw->cmd.usr) {
+			//
+		}
+	}
+
+	/**
+	 * @brief Initiate an SPI user transaction
+	 */
+	void send(unsigned num_bits)
+	{
+		hw->user1.usr_mosi_bitlen = num_bits - 1;
+		hw->cmd.usr = true;
+	}
+
+	void set_mode(uint8_t mode)
+	{
+		uint8_t spi_cpha = mode & 0x0F;
+		uint8_t spi_cpol = mode & 0xF0;
 
 #ifdef SPI_DEBUG
-	debugf("SPIClass::spi_mode(mode %x) spi_cpha %X,spi_cpol %X)", mode, spi_cpha, spi_cpol);
+	debugf("[SPI] spi_mode(mode %x) spi_cpha %X,spi_cpol %X)", mode, spi_cpha, spi_cpol);
 #endif
 
-	if(spi_cpha == spi_cpol) {
-		CLEAR_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_CK_OUT_EDGE);
-	} else {
-		SET_PERI_REG_MASK(SPI_USER(SPI_NO), SPI_CK_OUT_EDGE);
+		hw->user.ck_out_edge = (spi_cpha != spi_cpol);
+		hw->pin.ck_idle_edge = spi_cpol;
 	}
 
-	if(spi_cpol) {
-		SET_PERI_REG_MASK(SPI_PIN(SPI_NO), SPI_IDLE_EDGE);
-	} else {
-		CLEAR_PERI_REG_MASK(SPI_PIN(SPI_NO), SPI_IDLE_EDGE);
-	}
-}
-
-void spi_bit_order(uint8_t bit_order)
-{
+	void set_bit_order(uint8_t bit_order)
+	{
 #ifdef SPI_DEBUG
-	debugf("SPIClass::spi_bit_order(bit_order %u)", bit_order);
+		debugf("[SPI] set_bit_order(bit_order %u)", bit_order);
 #endif
-
-	if(bit_order == MSBFIRST) {
-		CLEAR_PERI_REG_MASK(SPI_CTRL(SPI_NO), SPI_WR_BIT_ORDER);
-		CLEAR_PERI_REG_MASK(SPI_CTRL(SPI_NO), SPI_RD_BIT_ORDER);
-	} else {
-		SET_PERI_REG_MASK(SPI_CTRL(SPI_NO), SPI_WR_BIT_ORDER);
-		SET_PERI_REG_MASK(SPI_CTRL(SPI_NO), SPI_RD_BIT_ORDER);
+		hw->ctrl.rd_bit_order = (bit_order != MSBFIRST);
+		hw->ctrl.wr_bit_order = (bit_order != MSBFIRST);
 	}
-}
+
+	uint32_t read()
+	{
+		return hw->data_buf[0];
+	}
+
+	void write(uint32_t value)
+	{
+		hw->data_buf[0] = value;
+	}
+
+	void read(void* buffer, size_t length)
+	{
+		memcpy(buffer, (void*)hw->data_buf, length);
+	}
+
+	void write(const void* buffer, size_t length)
+	{
+		if(IS_ALIGNED(buffer)) {
+			memcpy((void*)hw->data_buf, buffer, ALIGNUP4(length));
+		} else {
+			uint32_t wordBuffer[SPI_FIFO_SIZE];
+			memcpy(wordBuffer, buffer, length);
+			memcpy((void*)hw->data_buf, wordBuffer, ALIGNUP4(length));
+		}
+	}
+};
 
 /**
  * @brief Calculate the closest prescale value for a given frequency and clock-divider
@@ -126,7 +154,7 @@ SpiPreDiv calculateSpeed(unsigned cpuFreq, unsigned freq, unsigned div)
 	prediv.divisor = div;
 
 #ifdef SPI_DEBUG
-	debugf("SPI calculateSpeed(uint freq %u, uint pre %u, uint div %u)", f, pre, div);
+	debugf("[SPI] calculateSpeed(uint freq %u, uint pre %u, uint div %u)", f, pre, div);
 #endif
 
 	return prediv;
@@ -147,7 +175,7 @@ void checkSpeed(SPISpeed& speed)
 {
 	unsigned cpuFreq = system_get_cpu_freq() * 1000000UL;
 #ifdef SPI_DEBUG
-	debugf("SPIClass::calculateSpeed() -> current cpu frequency %u", cpuFreq);
+	debugf("[SPI] calculateSpeed() -> current cpu frequency %u", cpuFreq);
 #endif
 
 	SpiPreDiv prediv;
@@ -170,20 +198,22 @@ void checkSpeed(SPISpeed& speed)
 		}
 
 		// We have prescale and divisor values, now get regVal so we don't need to do this every time prepare() is called
-		speed.regVal = (((prediv.prescale - 1) & SPI_CLKDIV_PRE) << SPI_CLKDIV_PRE_S) |
-					   (((prediv.divisor - 1) & SPI_CLKCNT_N) << SPI_CLKCNT_N_S) |
-					   (((prediv.divisor >> 1) & SPI_CLKCNT_H) << SPI_CLKCNT_H_S) |
-					   ((0 & SPI_CLKCNT_L) << SPI_CLKCNT_L_S);
+		decltype(spi_dev_t::clock) clk{{
+			.clkcnt_h = prediv.divisor - 1,
+			.clkcnt_n = prediv.divisor - 1,
+			.clkdiv_pre = prediv.prescale - 1,
+		}};
+		speed.regVal = clk.val;
 	}
 
-	//#ifdef SPI_DEBUG
-	debug_e("-> Using clock divider %u -> target freq %u -> result %u", prediv.divisor, speed.frequency, prediv.freq);
-	//#endif
+#ifdef SPI_DEBUG
+	debugf("[SPI] Using clock divider %u -> target freq %u -> result %u", prediv.divisor, speed.frequency, prediv.freq);
+#endif
 
 	speed.frequency = prediv.freq;
 }
 
-void spi_set_clock(SPISpeed& speed)
+void SpiDevice::set_clock(SPISpeed& speed)
 {
 	// Clock register value is never 0, so indicates it hasn't been calculated
 	if(speed.regVal == 0) {
@@ -192,17 +222,27 @@ void spi_set_clock(SPISpeed& speed)
 #ifdef SPI_DEBUG
 		unsigned prescale = (speed.regVal >> SPI_CLKDIV_PRE_S) + 1;
 		unsigned divisor = (speed.regVal >> SPI_CLKCNT_N_S) + 1;
-		debugf("spi_set_clock(prescaler %u, divisor %u) for target %u", prescale, divisor, speed.frequency);
+		debugf("[SPI] set_clock(prescaler %u, divisor %u) for target %u", prescale, divisor, speed.frequency);
 #endif
 	}
 
-	WRITE_PERI_REG(SPI_CLOCK(SPI_NO), speed.regVal);
+	hw->clock.val = speed.regVal;
 }
 
 } // namespace
 
 bool SPIClass::begin()
 {
+	if(busAssigned) {
+		debug_e("[SPI] Bus already assigned");
+		return false;
+	}
+
+	busAssigned = true;
+
+	SpiDevice dev;
+	dev.init();
+
 	CLEAR_PERI_REG_MASK(PERIPHS_IO_MUX, BIT9);
 
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U, 2); // HSPIQ MISO == GPIO12
@@ -215,105 +255,59 @@ bool SPIClass::begin()
 	return true;
 }
 
+void SPIClass::end()
+{
+	GET_DEVICE();
+
+	busAssigned = false;
+}
+
 uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 {
-	uint32_t regvalue = READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_CK_OUT_EDGE;
+	GET_DEVICE(0);
 
-	spi_wait();
+	dev.write(data);
+	dev.send(bits);
+	dev.wait();
 
-	regvalue |= SPI_USR_MOSI | SPI_DOUTDIN | SPI_CK_I_EDGE;
-	WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
-
-	WRITE_PERI_REG(SPI_USER1(SPI_NO), (((bits - 1) & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S) |
-										  (((bits - 1) & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
-
-	WRITE_PERI_REG(SPI_W0(SPI_NO), data);
-
-	spi_send();
-	spi_wait();
-
-	return READ_PERI_REG(SPI_W0(SPI_NO));
+	return dev.read();
 }
 
 uint8_t SPIClass::read8()
 {
-	spi_wait();
+	GET_DEVICE(0);
 
-	WRITE_PERI_REG(SPI_W0(SPI_NO), 0x00);
+	dev.write(0xff);
+	dev.send(8);
+	dev.wait();
 
-	spi_send();
-	spi_wait();
-
-	return READ_PERI_REG(SPI_W0(SPI_NO));
+	return dev.read();
 }
 
 void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 {
-#define BLOCKSIZE 64U // the max length of the ESP SPI_W0 registers
+	GET_DEVICE();
 
-	unsigned bufIndx = 0;
+	for(unsigned i = 0; i < numberBytes; i += SPI_FIFO_SIZE) {
+		auto blockLen = std::min(numberBytes - i, SPI_FIFO_SIZE);
 
-	unsigned blocks = ((numberBytes - 1) / BLOCKSIZE) + 1;
-#ifdef SPI_DEBUG
-	unsigned total = blocks;
-#endif
-
-	// loop number of blocks
-	while(blocks--) {
-		// get full BLOCKSIZE or number of remaining bytes
-		auto bufLength = std::min(numberBytes - bufIndx, BLOCKSIZE);
-
-#ifdef SPI_DEBUG
-		debugf("Write/Read Block %u total %u bytes", total - blocks, bufLength);
-#endif
-
-		// compute the number of bits to clock
-		auto num_bits = bufLength * 8;
-
-		uint32_t regvalue = READ_PERI_REG(SPI_USER(SPI_NO)) & SPI_CK_OUT_EDGE;
-
-		spi_wait();
-
-		regvalue |= SPI_USR_MOSI | SPI_DOUTDIN | SPI_CK_I_EDGE;
-		WRITE_PERI_REG(SPI_USER(SPI_NO), regvalue);
-
-		// setup bit length
-		WRITE_PERI_REG(SPI_USER1(SPI_NO), (((num_bits - 1) & SPI_USR_MOSI_BITLEN) << SPI_USR_MOSI_BITLEN_S) |
-											  (((num_bits - 1) & SPI_USR_MISO_BITLEN) << SPI_USR_MISO_BITLEN_S));
-
-		// copy the registers starting from last index position
-		if(IS_ALIGNED(buffer)) {
-			memcpy((void*)SPI_W0(SPI_NO), &buffer[bufIndx], ALIGNUP4(bufLength));
-		} else {
-			uint32_t wordBuffer[BLOCKSIZE / 4];
-			memcpy(wordBuffer, &buffer[bufIndx], bufLength);
-			memcpy((void*)SPI_W0(SPI_NO), wordBuffer, ALIGNUP4(bufLength));
-		}
-
-		spi_send();
-		spi_wait();
-
-		// copy the registers starting from last index position
-		memcpy(&buffer[bufIndx], (void*)SPI_W0(SPI_NO), bufLength);
-
-		// increment bufIndex
-		bufIndx += bufLength;
+		dev.write(&buffer[i], blockLen);
+		dev.send(blockLen * 8);
+		dev.wait();
+		dev.read(&buffer[i], blockLen);
 	}
 }
 
 void SPIClass::prepare(SPISettings& settings)
 {
 #ifdef SPI_DEBUG
-	debugf("SPIClass::prepare(SPISettings)");
+	debugf("[SPI] prepare()");
 	settings.print("settings");
 #endif
 
-	//  setup clock
-	spi_set_clock(settings.speed);
+	GET_DEVICE();
 
-	//	set bit order
-	spi_bit_order(settings.bitOrder);
-
-	//	set spi mode
-	spi_mode(settings.dataMode);
+	dev.set_clock(settings.speed);
+	dev.set_bit_order(settings.bitOrder);
+	dev.set_mode(settings.dataMode);
 }

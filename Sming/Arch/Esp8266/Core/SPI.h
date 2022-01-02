@@ -25,8 +25,6 @@
 // for compatibility when porting from Arduino
 #define SPI_HAS_TRANSACTION 1
 
-#define SPI_NO 1
-
 /**
  * @brief  Hardware SPI object
  * @addtogroup hw_spi
@@ -44,10 +42,7 @@ public:
 	SPIClass& operator=(const SPIClass&) = delete;
 
 	bool begin() override;
-
-	void end() override
-	{
-	}
+	void end() override;
 
 	uint8_t read8() override;
 	uint32_t transfer32(uint32_t val, uint8_t bits = 32) override;
