@@ -38,10 +38,14 @@ namespace
 {
 constexpr size_t SPI_FIFO_SIZE{64};
 
-const SpiPins defaultPins[] = {
-	{6, 7, 8, SPI_PIN_DEFAULT},
-	{14, 12, 13, SPI_PIN_DEFAULT},
-	{18, 19, 23, SPI_PIN_DEFAULT},
+#define DEFPIN(sig, bus) SPI##bus##_IOMUX_PIN_NUM_##sig
+
+const SpiPins defaultPins[SOC_SPI_PERIPH_NUM] = {
+	{DEFPIN(CLK, ), DEFPIN(MISO, ), DEFPIN(MOSI, ), SPI_PIN_DEFAULT},
+	{DEFPIN(CLK, 2), DEFPIN(MISO, 2), DEFPIN(MOSI, 2), SPI_PIN_DEFAULT},
+#if SOC_SPI_PERIPH_NUM >= 3
+	{DEFPIN(CLK, 3), DEFPIN(MISO, 3), DEFPIN(MOSI, 3), SPI_PIN_DEFAULT},
+#endif
 };
 
 // Used internally to calculate optimum SPI speed
@@ -296,32 +300,44 @@ bool SPIClass::begin()
 	SpiDevice dev(busId);
 	dev.init();
 
+	// Configure pins
 	auto& defPins = defaultPins[unsigned(busId) - 1];
-
-	// Clock pin
 	if(pins.sck == SPI_PIN_DEFAULT) {
 		pins.sck = defPins.sck;
 	}
-	pinMode(pins.sck, OUTPUT);
-	gpio_matrix_out(pins.sck, dev.info.spiclk_out, false, false);
-
-	// MISO
 	if(pins.miso == SPI_PIN_DEFAULT) {
 		pins.miso = defPins.miso;
 	}
-	pinMode(pins.miso, INPUT);
-	gpio_matrix_in(pins.miso, dev.info.spiq_in, false);
-
-	// MOSI
 	if(pins.mosi == SPI_PIN_DEFAULT) {
 		pins.mosi = defPins.mosi;
 	}
-	pinMode(pins.mosi, OUTPUT);
-	gpio_matrix_out(pins.mosi, dev.info.spid_out, false, false);
 
-#ifdef SPI_DEBUG
-	debugf("[SPI] SCK = %u, MISO = %u, MOSI = %u", pins.sck, pins.miso, pins.mosi);
-#endif
+	bool useIomux = (pins.sck == dev.info.spiclk_iomux_pin && pins.miso == dev.info.spiq_iomux_pin &&
+					 pins.mosi == dev.info.spid_iomux_pin);
+	if(useIomux) {
+		// Use IO Mux
+		gpio_iomux_in(pins.sck, dev.info.spiclk_in);
+		gpio_iomux_out(pins.sck, dev.info.func, false);
+
+		gpio_iomux_in(pins.miso, dev.info.spiq_in);
+		gpio_iomux_out(pins.miso, dev.info.func, false);
+
+		gpio_iomux_in(pins.mosi, dev.info.spid_in);
+		gpio_iomux_out(pins.mosi, dev.info.func, false);
+	} else {
+		// Use GPIO Mux
+		pinMode(pins.sck, OUTPUT);
+		gpio_matrix_out(pins.sck, dev.info.spiclk_out, false, false);
+
+		pinMode(pins.miso, INPUT);
+		gpio_matrix_in(pins.miso, dev.info.spiq_in, false);
+
+		pinMode(pins.mosi, OUTPUT);
+		gpio_matrix_out(pins.mosi, dev.info.spid_out, false, false);
+	}
+
+	debug_i("[SPI] Bus #%u using %sIO MUX: SCK %u, MISO %u, MOSI %u", busId, useIomux ? "" : "GP", pins.sck, pins.miso,
+			pins.mosi);
 
 	// Clock
 
