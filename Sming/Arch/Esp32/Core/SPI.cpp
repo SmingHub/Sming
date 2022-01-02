@@ -61,13 +61,15 @@ struct SpiDevice {
 
 		// Initialise bus
 		spi_ll_master_init(info.hw);
-		spi_ll_clear_int_stat(info.hw);
+		spi_ll_disable_int(info.hw);
+		spi_ll_set_mosi_delay(info.hw, 0, 0);
 
-		//
-		spi_ll_enable_mosi(info.hw, true);
-		spi_ll_enable_miso(info.hw, false);
+		// Configure full duplex - bi-directdional transfer in MOSI phase
 		spi_ll_set_half_duplex(info.hw, false);
+		spi_ll_enable_mosi(info.hw, true);
+		spi_ll_enable_miso(info.hw, true);
 
+		// We only use data phase, disable the others
 		spi_ll_set_dummy(info.hw, 0);
 		spi_ll_set_command_bitlen(info.hw, 0);
 		spi_ll_set_addr_bitlen(info.hw, 0);
@@ -99,7 +101,8 @@ struct SpiDevice {
 	void send(unsigned num_bits)
 	{
 		spi_ll_set_mosi_bitlen(info.hw, num_bits);
-		info.hw->cmd.usr = true;
+		spi_ll_set_miso_bitlen(info.hw, num_bits);
+		spi_ll_master_user_start(info.hw);
 	}
 
 	void set_mode(uint8_t mode)
