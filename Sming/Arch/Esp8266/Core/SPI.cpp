@@ -112,7 +112,13 @@ struct SpiDevice {
 
 	void read(void* buffer, size_t length)
 	{
-		memcpy(buffer, (void*)hw->data_buf, length);
+		if(IS_ALIGNED(buffer) && IS_ALIGNED(length)) {
+			memcpy(buffer, (void*)hw->data_buf, length);
+		} else {
+			uint32_t wordBuffer[SPI_FIFO_SIZE];
+			memcpy(wordBuffer, (void*)hw->data_buf, ALIGNUP4(length));
+			memcpy(buffer, wordBuffer, length);
+		}
 	}
 
 	void write(const void* buffer, size_t length)
