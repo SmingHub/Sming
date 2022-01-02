@@ -80,11 +80,11 @@ struct SpiDevice {
 
 	void set_mode(uint8_t mode)
 	{
-		uint8_t spi_cpha = mode & 0x0F;
-		uint8_t spi_cpol = mode & 0xF0;
+		bool spi_cpha = (mode & 0x0F) != 0;
+		bool spi_cpol = (mode & 0xF0) != 0;
 
 #ifdef SPI_DEBUG
-	debugf("[SPI] spi_mode(mode %x) spi_cpha %X,spi_cpol %X)", mode, spi_cpha, spi_cpol);
+		debugf("[SPI] spi_mode(mode %x) spi_cpha %X, spi_cpol %X)", mode, spi_cpha, spi_cpol);
 #endif
 
 		hw->user.ck_out_edge = (spi_cpha != spi_cpol);

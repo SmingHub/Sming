@@ -107,11 +107,11 @@ struct SpiDevice {
 
 	void set_mode(uint8_t mode)
 	{
-		spi_ll_master_set_mode(info.hw, mode);
-
 #ifdef SPI_DEBUG
 		debugf("[SPI] set_mode(mode %x) cpha %X, cpol %X)", mode, mode & 0x0F, mode & 0xF0);
 #endif
+		uint8_t mode_num = ((mode & 0x10) >> 3) | (mode & 0x01);
+		spi_ll_master_set_mode(info.hw, mode_num);
 	}
 
 	void set_bit_order(uint8_t bit_order)
