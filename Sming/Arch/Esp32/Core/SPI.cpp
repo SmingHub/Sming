@@ -48,13 +48,6 @@ const SpiPins defaultPins[SOC_SPI_PERIPH_NUM] = {
 #endif
 };
 
-// Used internally to calculate optimum SPI speed
-struct SpiPreDiv {
-	unsigned freq;
-	unsigned prescale;
-	unsigned divisor;
-};
-
 struct SpiDevice {
 	const spi_signal_conn_t& info;
 
@@ -161,105 +154,33 @@ struct SpiDevice {
 	}
 };
 
-/**
- * @brief Calculate the closest prescale value for a given frequency and clock-divider
- * @param apbFreq APB CPU frequency, in Hz
- * @param freq target SPI bus frequency, in Hz
- * @param div divisor value to use
- * @retval SpiPreDiv contains resulting frequency, prescaler and divisor values
- */
-SpiPreDiv calculateSpeed(unsigned apbFreq, unsigned freq, unsigned div)
-{
-	SpiPreDiv prediv;
-	unsigned pre = apbFreq / (freq * div);
-	if(pre == 0) {
-		pre = 1;
-	}
-	unsigned n = pre * div;
-	while(true) {
-		prediv.freq = apbFreq / n;
-		if(prediv.freq <= freq) {
-			break;
-		}
-		++pre;
-		n += div;
-	}
-	prediv.prescale = pre;
-	prediv.divisor = div;
-
-#ifdef SPI_DEBUG
-	debugf("[SPI] calculateSpeed(freq %u, pre %u, div %u)", freq, pre, div);
-#endif
-
-	return prediv;
-}
-
 /** @brief Check speed settings and perform any pre-calculation required
  *  @param speed IN: requested bus frequency, OUT: Modified settings with prescale values
- *  @note
- *  		The algorithm is testing with clock dividers 2,3 and 5 to find the best pre-divider
- *  		The resulting clock frequency is not 100% accurate but delivers result within 5%
- *
- *  		It is guaranteed that the frequency will not exceed the given target
  */
-void checkSpeed(SPISpeed& speed, unsigned apbFreq)
+void checkSpeed(SPISpeed& speed)
 {
-	SpiPreDiv prediv;
+	constexpr int duty_cycle{127};
+	spi_ll_clock_val_t clock_reg;
+	unsigned actual_freq = spi_ll_master_cal_clock(SPI_LL_PERIPH_CLK_FREQ, speed.frequency, duty_cycle, &clock_reg);
+	speed.regVal = clock_reg;
 
-	// If we're not running at max then need to determine appropriate prescale values
-	if(speed.frequency >= apbFreq) {
-		// Use maximum speed
-		prediv.freq = apbFreq;
-		prediv.prescale = 0;
-		prediv.divisor = 0;
-		speed.regVal = SPI_CLK_EQU_SYSCLK;
-	} else {
-		prediv = calculateSpeed(apbFreq, speed.frequency, 2);
-		if(prediv.freq != speed.frequency) {
-			// Use whichever divisor gives the highest frequency
-			SpiPreDiv pd3 = calculateSpeed(apbFreq, speed.frequency, 3);
-			SpiPreDiv pd5 = calculateSpeed(apbFreq, speed.frequency, 5);
-			if(pd3.freq > prediv.freq || pd5.freq > prediv.freq) {
-				prediv = (pd3.freq > pd5.freq) ? pd3 : pd5;
-			}
-		}
-
-		// We have prescale and divisor values, now get regVal so we don't need to do this every time prepare() is called
-		decltype(spi_dev_t::clock) reg{{
-			.clkcnt_l = 0,
-			.clkcnt_h = prediv.divisor / 2,
-			.clkcnt_n = prediv.divisor - 1,
-			.clkdiv_pre = prediv.prescale - 1,
-		}};
-		speed.regVal = reg.val;
-	}
-
-#ifdef SPI_DEBUG
-	debugf("[SPI] APB freq = %u, pre = %u, div = %u, target freq = %u, actual = %u", apbFreq, prediv.prescale,
-		   prediv.divisor, speed.frequency, prediv.freq);
-#endif
-}
-
-uint32_t getApbFrequency()
-{
-	constexpr uint32_t DIV_MHZ{1000000};
-	rtc_cpu_freq_config_t conf;
-	rtc_clk_cpu_freq_get_config(&conf);
-	return (conf.freq_mhz >= 80) ? (80 * DIV_MHZ) : ((conf.source_freq_mhz * DIV_MHZ) / conf.div);
+	// #ifdef SPI_DEBUG
+	debugf("[SPI] target freq = %u, actual = %u", speed.frequency, actual_freq);
+	// #endif
 }
 
 void SpiDevice::set_clock(SPISpeed& speed)
 {
 	// Clock register value is never 0, so indicates it hasn't been calculated
 	if(speed.regVal == 0) {
-		checkSpeed(speed, getApbFrequency());
+		checkSpeed(speed);
 	} else {
 #ifdef SPI_DEBUG
 		debugf("[SPI] spi_set_clock(%u)", speed.frequency);
 #endif
 	}
 
-	info.hw->clock.val = speed.regVal;
+	spi_ll_master_set_clock_by_reg(info.hw, &speed.regVal);
 }
 
 BitSet<uint8_t, SpiBus, SOC_SPI_PERIPH_NUM + 1> busAssigned;
@@ -339,22 +260,7 @@ bool SPIClass::begin()
 	debug_i("[SPI] Bus #%u using %sIO MUX: SCK %u, MISO %u, MOSI %u", busId, useIomux ? "" : "GP", pins.sck, pins.miso,
 			pins.mosi);
 
-	// Clock
-
-	// TODO: Framework needs to consider how to manage system clock changes
-	//	addApbChangeCallback(this, [](void* arg, apb_change_ev_t ev_type, uint32_t old_apb, uint32_t new_apb) {
-	//		auto cls = static_cast<SPIClass*>(arg);
-	//		auto& dev = cls->bus.dev;
-	//		if(ev_type == APB_BEFORE_CHANGE) {
-	//			while(dev.cmd.usr) {
-	//				//
-	//			}
-	//		} else {
-	//			setClock(cls->speed, new_apb);
-	//		}
-	//	});
-
-	checkSpeed(SPIDefaultSettings.speed, getApbFrequency());
+	checkSpeed(SPIDefaultSettings.speed);
 	prepare(SPIDefaultSettings);
 
 	return true;
