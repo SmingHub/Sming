@@ -20,6 +20,10 @@
 #include "espinc/spi_register.h"
 #include "espinc/spi_struct.h"
 
+// ESP8266 SPI hardware supports byte ordering so we don't need to do it in software
+#define BYTE_ORDER_SUPPORTED 1
+#define SPI_BYTESWAP(n) (n)
+
 #define GET_DEVICE(err)                                                                                                \
 	if(!busAssigned) {                                                                                                 \
 		debug_e("[SPI] Not Ready");                                                                                    \
@@ -97,9 +101,23 @@ struct SpiDevice {
 #ifdef SPI_DEBUG
 		debugf("[SPI] set_bit_order(bit_order %u)", bit_order);
 #endif
-		hw->ctrl.rd_bit_order = (bit_order != MSBFIRST);
-		hw->ctrl.wr_bit_order = (bit_order != MSBFIRST);
+		decltype(hw->ctrl) ctrl;
+		ctrl.val = hw->ctrl.val;
+		ctrl.rd_bit_order = (bit_order != MSBFIRST);
+		ctrl.wr_bit_order = (bit_order != MSBFIRST);
+		hw->ctrl.val = ctrl.val;
 	}
+
+#if BYTE_ORDER_SUPPORTED
+	void set_byte_order(uint8_t byte_order)
+	{
+		decltype(hw->user) user;
+		user.val = hw->user.val;
+		user.rd_byte_order = (byte_order == MSBFIRST);
+		user.wr_byte_order = (byte_order == MSBFIRST);
+		hw->user.val = user.val;
+	}
+#endif
 
 	uint32_t read()
 	{
@@ -247,7 +265,6 @@ bool SPIClass::begin()
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U, 2); // HSPID MOSI == GPIO13
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U, 2); // CLK		 == GPIO14
 
-	checkSpeed(SPIDefaultSettings.speed);
 	prepare(SPIDefaultSettings);
 
 	return true;
@@ -264,16 +281,16 @@ uint32_t SPIClass::transfer32(uint32_t data, uint8_t bits)
 {
 	GET_DEVICE(0);
 
-	if(bits != 8 && !lsbFirst) {
-		data = __builtin_bswap32(data << (32 - bits));
+	if(!lsbFirst) {
+		data = SPI_BYTESWAP(data << (32 - bits));
 	}
 	dev.write(data);
 	dev.send(bits);
 	dev.wait();
 
 	data = dev.read();
-	if(bits != 8 && !lsbFirst) {
-		data = __builtin_bswap32(data) >> (32 - bits);
+	if(!lsbFirst) {
+		data = SPI_BYTESWAP(data) >> (32 - bits);
 	}
 	return data;
 }
@@ -293,6 +310,13 @@ void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 {
 	GET_DEVICE();
 
+	// Always transfer LS byte first to match system byte order
+#if BYTE_ORDER_SUPPORTED
+	if(!lsbFirst) {
+		dev.set_byte_order(LSBFIRST);
+	}
+#endif
+
 	for(unsigned i = 0; i < numberBytes; i += SPI_FIFO_SIZE) {
 		auto blockLen = std::min(numberBytes - i, SPI_FIFO_SIZE);
 
@@ -301,6 +325,12 @@ void SPIClass::transfer(uint8_t* buffer, size_t numberBytes)
 		dev.wait();
 		dev.read(&buffer[i], blockLen);
 	}
+
+#if BYTE_ORDER_SUPPORTED
+	if(!lsbFirst) {
+		dev.set_byte_order(MSBFIRST);
+	}
+#endif
 }
 
 void SPIClass::prepare(SPISettings& settings)
@@ -312,8 +342,13 @@ void SPIClass::prepare(SPISettings& settings)
 
 	GET_DEVICE();
 
+	dev.set_mode(settings.dataMode);
 	dev.set_clock(settings.speed);
+
+	// Set both bit and byte order to optimise transfer32() performance
 	dev.set_bit_order(settings.bitOrder);
 	lsbFirst = (settings.bitOrder != MSBFIRST);
-	dev.set_mode(settings.dataMode);
+#if BYTE_ORDER_SUPPORTED
+	dev.set_byte_order(settings.bitOrder);
+#endif
 }
