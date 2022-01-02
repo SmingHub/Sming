@@ -135,21 +135,20 @@ struct SpiDevice {
 
 /**
  * @brief Calculate the closest prescale value for a given frequency and clock-divider
- * @param  cpuFreq current CPU frequency, in Hz
  * @param  freq target SPI bus frequency, in Hz
  * @param  div divisor value to use
  * @retval SpiPreDiv contains resulting frequency, prescaler and divisor values
  */
-SpiPreDiv calculateSpeed(unsigned cpuFreq, unsigned freq, unsigned div)
+SpiPreDiv calculateSpeed(unsigned freq, unsigned div)
 {
 	SpiPreDiv prediv;
-	unsigned pre = cpuFreq / (freq * div);
+	unsigned pre = APB_CLK_FREQ / (freq * div);
 	if(pre == 0) {
 		pre = 1;
 	}
 	unsigned n = pre * div;
 	while(true) {
-		prediv.freq = cpuFreq / n;
+		prediv.freq = APB_CLK_FREQ / n;
 		if(prediv.freq <= freq) {
 			break;
 		}
@@ -173,31 +172,23 @@ SpiPreDiv calculateSpeed(unsigned cpuFreq, unsigned freq, unsigned div)
  *  		The resulting clock frequency is not 100% accurate but delivers result within 5%
  *
  *  		It is guaranteed that the frequency will not exceed the given target
- *
- *  		Make sure that the ESP clock frequency is set before initializing the SPI bus.
- *  		Changes on the ESP clock are not recognised once initialized
  */
 void checkSpeed(SPISpeed& speed)
 {
-	unsigned cpuFreq = system_get_cpu_freq() * 1000000UL;
-#ifdef SPI_DEBUG
-	debugf("[SPI] calculateSpeed() -> current cpu frequency %u", cpuFreq);
-#endif
-
 	SpiPreDiv prediv;
 
 	// If we're not running at max then need to determine appropriate prescale values
-	if(speed.frequency >= cpuFreq) {
+	if(speed.frequency >= APB_CLK_FREQ) {
 		// Use maximum speed
-		prediv.freq = cpuFreq;
+		prediv.freq = APB_CLK_FREQ;
 		prediv.divisor = 0;
 		speed.regVal = SPI_CLK_EQU_SYSCLK;
 	} else {
-		prediv = calculateSpeed(cpuFreq, speed.frequency, 2);
+		prediv = calculateSpeed(speed.frequency, 2);
 		if(prediv.freq != speed.frequency) {
 			// Use whichever divisor gives the highest frequency
-			SpiPreDiv pd3 = calculateSpeed(cpuFreq, speed.frequency, 3);
-			SpiPreDiv pd5 = calculateSpeed(cpuFreq, speed.frequency, 5);
+			SpiPreDiv pd3 = calculateSpeed(speed.frequency, 3);
+			SpiPreDiv pd5 = calculateSpeed(speed.frequency, 5);
 			if(pd3.freq > prediv.freq || pd5.freq > prediv.freq) {
 				prediv = (pd3.freq > pd5.freq) ? pd3 : pd5;
 			}
