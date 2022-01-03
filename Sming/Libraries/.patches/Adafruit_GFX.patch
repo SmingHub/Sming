@@ -1,11 +1,65 @@
 diff --git a/Adafruit_SPITFT.cpp b/Adafruit_SPITFT.cpp
-index b78d5ce..28f55cf 100644
+index b78d5ce..d2d02b1 100644
 --- a/Adafruit_SPITFT.cpp
 +++ b/Adafruit_SPITFT.cpp
-@@ -1002,151 +1002,10 @@ void Adafruit_SPITFT::writePixels(uint16_t *colors, uint32_t len, bool block,
-   (void)block;
-   (void)bigEndian;
+@@ -35,6 +35,10 @@
  
+ #include "Adafruit_SPITFT.h"
+ 
++#ifdef ARCH_RP2040
++#include <hardware/spi.h>
++#endif
++
+ #if defined(__AVR__)
+ #if defined(__AVR_XMEGA__) // only tested with __AVR_ATmega4809__
+ #define AVR_WRITESPI(x)                                                        \
+@@ -234,23 +238,13 @@ Adafruit_SPITFT::Adafruit_SPITFT(uint16_t w, uint16_t h, int8_t cs, int8_t dc,
+              need to call subclass' begin() function, which in turn calls
+              this library's initSPI() function to initialize pins.
+ */
+-#if defined(ESP8266) // See notes below
+-Adafruit_SPITFT::Adafruit_SPITFT(uint16_t w, uint16_t h, int8_t cs, int8_t dc,
+-                                 int8_t rst)
+-    : Adafruit_GFX(w, h), connection(TFT_HARD_SPI), _rst(rst), _cs(cs),
+-      _dc(dc) {
+-  hwspi._spi = &SPI;
+-}
+-#else  // !ESP8266
+ Adafruit_SPITFT::Adafruit_SPITFT(uint16_t w, uint16_t h, int8_t cs, int8_t dc,
+                                  int8_t rst)
+     : Adafruit_SPITFT(w, h, &SPI, cs, dc, rst) {
+   // This just invokes the hardware SPI constructor below,
+   // passing the default SPI device (&SPI).
+ }
+-#endif // end !ESP8266
+ 
+-#if !defined(ESP8266)
+ // ESP8266 compiler freaks out at this constructor -- it can't disambiguate
+ // beteween the SPIClass pointer (argument #3) and a regular integer.
+ // Solution here it to just not offer this variant on the ESP8266. You can
+@@ -278,7 +272,7 @@ Adafruit_SPITFT::Adafruit_SPITFT(uint16_t w, uint16_t h, int8_t cs, int8_t dc,
+              GPIO manually. Do this BEFORE calling the display-specific
+              begin or init function. Unfortunate but unavoidable.
+ */
+-Adafruit_SPITFT::Adafruit_SPITFT(uint16_t w, uint16_t h, SPIClass *spiClass,
++Adafruit_SPITFT::Adafruit_SPITFT(uint16_t w, uint16_t h, SPIBase *spiClass,
+                                  int8_t cs, int8_t dc, int8_t rst)
+     : Adafruit_GFX(w, h), connection(TFT_HARD_SPI), _rst(rst), _cs(cs),
+       _dc(dc) {
+@@ -341,7 +335,6 @@ Adafruit_SPITFT::Adafruit_SPITFT(uint16_t w, uint16_t h, SPIClass *spiClass,
+ #endif // end !HAS_PORT_SET_CLR
+ #endif // end USE_FAST_PINIO
+ }
+-#endif // end !ESP8266
+ 
+ /*!
+     @brief   Adafruit_SPITFT constructor for parallel display connection.
+@@ -1000,154 +993,11 @@ void Adafruit_SPITFT::writePixels(uint16_t *colors, uint32_t len, bool block,
+ 
+   // avoid paramater-not-used complaints
+   (void)block;
+-  (void)bigEndian;
+-
 -#if defined(ESP32)
 -  if (connection == TFT_HARD_SPI) {
 -    if (!bigEndian) {
@@ -17,7 +71,7 @@ index b78d5ce..28f55cf 100644
 -  }
 -#elif defined(ARDUINO_NRF52_ADAFRUIT) &&                                       \
 -    defined(NRF52840_XXAA) // Adafruit nRF52 use SPIM3 DMA at 32Mhz
-   if (!bigEndian) {
+-  if (!bigEndian) {
 -    swapBytes(colors, len); // convert little-to-big endian for display
 -  }
 -  hwspi._spi->transfer(colors, NULL, 2 * len); // NULL RX to avoid overwrite
@@ -28,8 +82,8 @@ index b78d5ce..28f55cf 100644
 -  return;
 -#elif defined(ARDUINO_ARCH_RP2040)
 -  spi_inst_t *pi_spi = hwspi._spi == &SPI ? spi0 : spi1;
--
--  if (!bigEndian) {
+ 
+   if (!bigEndian) {
 -    // switch to 16-bit writes
 -    hw_write_masked(&spi_get_hw(pi_spi)->cr0, 15 << SPI_SSPCR0_DSS_LSB,
 -                    SPI_SSPCR0_DSS_BITS);
@@ -37,8 +91,7 @@ index b78d5ce..28f55cf 100644
 -    // switch back to 8-bit
 -    hw_write_masked(&spi_get_hw(pi_spi)->cr0, 7 << SPI_SSPCR0_DSS_LSB,
 -                    SPI_SSPCR0_DSS_BITS);
-+    hwspi._spi->writePixels(colors, len * 2); // Inbuilt endian-swap
-   } else {
+-  } else {
 -    spi_write_blocking(pi_spi, (uint8_t *)colors, len * 2);
 -  }
 -  return;
@@ -152,10 +205,42 @@ index b78d5ce..28f55cf 100644
 -    while (len--) {
 -      SPI_WRITE16(__builtin_bswap16(*colors++));
 -    }
-+    hwspi._spi->writeBytes((uint8_t *)colors, len * 2); // Issue bytes direct
++    swapBytes(colors, len);
    }
++  hwspi._spi->transfer(reinterpret_cast<uint8_t*>(colors), len * 2);
  }
  
+ /*!
+
+diff --git a/Adafruit_SPITFT.h b/Adafruit_SPITFT.h
+index 7f5d80f..9725e13 100644
+--- a/Adafruit_SPITFT.h
++++ b/Adafruit_SPITFT.h
+@@ -138,13 +138,11 @@ public:
+   Adafruit_SPITFT(uint16_t w, uint16_t h, int8_t cs, int8_t dc,
+                   int8_t rst = -1);
+ 
+-#if !defined(ESP8266) // See notes in .cpp
+   // Hardware SPI constructor using an arbitrary SPI peripheral: expects
+   // width & height (rotation 0), SPIClass pointer, 2 signal pins (cs, dc)
+   // and optional reset pin. cs is required but can be -1 if unused.
+-  Adafruit_SPITFT(uint16_t w, uint16_t h, SPIClass *spiClass, int8_t cs,
++  Adafruit_SPITFT(uint16_t w, uint16_t h, SPIBase *spiClass, int8_t cs,
+                   int8_t dc, int8_t rst = -1);
+-#endif // end !ESP8266
+ 
+   // Parallel constructor: expects width & height (rotation 0), flag
+   // indicating whether 16-bit (true) or 8-bit (false) interface, 3 signal
+@@ -403,7 +401,7 @@ protected:
+   union {
+ #endif
+     struct {          //   Values specific to HARDWARE SPI:
+-      SPIClass *_spi; ///< SPI class pointer
++      SPIBase *_spi; ///< SPI class pointer
+ #if defined(SPI_HAS_TRANSACTION)
+       SPISettings settings; ///< SPI transaction settings
+ #else
+
 diff --git a/glcdfont.c b/glcdfont.c
 index 535da3a..e6bcafd 100644
 --- a/glcdfont.c
@@ -168,4 +253,16 @@ index 535da3a..e6bcafd 100644
 +#elif !defined(PROGMEM)
  #define PROGMEM
  #endif
+ 
+diff --git a/README.md b/README.md
+index 6f36460..50b2fe0 100644
+--- a/README.md
++++ b/README.md
+@@ -1,4 +1,6 @@
+-# Adafruit GFX Library ![Build Status](https://github.com/adafruit/Adafruit-GFX-Library/workflows/Arduino%20Library%20CI/badge.svg)
++# Adafruit GFX Library
++
++![Build Status](https://github.com/adafruit/Adafruit-GFX-Library/workflows/Arduino%20Library%20CI/badge.svg)
+ 
+ This is the core graphics library for all our displays, providing a common set of graphics primitives (points, lines, circles, etc.). It needs to be paired with a hardware-specific library for each display device we carry (to handle the lower-level functions).
  
