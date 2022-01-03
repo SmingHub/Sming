@@ -40,12 +40,11 @@ const uint32_t SPI_SPEED_DEFAULT = 4000000UL;
  *  between bus devices
  */
 struct SPISpeed {
-	uint32_t frequency;
-	uint32_t regVal; ///< Cached clock register value
+	uint32_t frequency{0};
+	uint32_t regVal{0}; ///< Cached clock register value
 
-	SPISpeed(uint32_t freq = SPI_SPEED_DEFAULT)
+	SPISpeed(uint32_t freq = SPI_SPEED_DEFAULT) : frequency(freq)
 	{
-		setFrequency(freq);
 	}
 
 	SPISpeed& operator=(uint32_t freq)
@@ -61,8 +60,10 @@ struct SPISpeed {
 
 	void setFrequency(uint32_t freq)
 	{
-		frequency = freq;
-		regVal = 0;
+		if(freq != frequency) {
+			frequency = freq;
+			regVal = 0;
+		}
 	}
 };
 
