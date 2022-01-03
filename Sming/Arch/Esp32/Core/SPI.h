@@ -83,7 +83,7 @@ public:
 	 *
 	 * IMPORTANT: Must be called *before* begin().
 	 */
-	bool setup(SpiBus id, SpiPins pins);
+	bool setup(SpiBus id, SpiPins pins = {});
 
 	bool begin() override;
 	void end() override;

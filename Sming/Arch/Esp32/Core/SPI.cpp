@@ -38,13 +38,15 @@ namespace
 {
 constexpr size_t SPI_FIFO_SIZE{64};
 
-#define DEFPIN(sig, bus) SPI##bus##_IOMUX_PIN_NUM_##sig
+#define DEFPIN(bus, sig) bus##_IOMUX_PIN_NUM_##sig
 
-const SpiPins defaultPins[SOC_SPI_PERIPH_NUM] = {
-	{DEFPIN(CLK, ), DEFPIN(MISO, ), DEFPIN(MOSI, ), SPI_PIN_DEFAULT},
-	{DEFPIN(CLK, 2), DEFPIN(MISO, 2), DEFPIN(MOSI, 2), SPI_PIN_DEFAULT},
-#if SOC_SPI_PERIPH_NUM >= 3
-	{DEFPIN(CLK, 3), DEFPIN(MISO, 3), DEFPIN(MOSI, 3), SPI_PIN_DEFAULT},
+const SpiPins defaultPins[] = {
+	{DEFPIN(SPI, CLK), DEFPIN(SPI, MISO), DEFPIN(SPI, MOSI), SPI_PIN_DEFAULT},
+	{DEFPIN(SPI2, CLK), DEFPIN(SPI2, MISO), DEFPIN(SPI2, MOSI), SPI_PIN_DEFAULT},
+#ifdef SPI3_IOMUX_PIN_NUM_CLK
+	{DEFPIN(SPI3, CLK), DEFPIN(SPI3, MISO), DEFPIN(SPI3, MOSI), SPI_PIN_DEFAULT},
+#else
+	SpiPins{},
 #endif
 };
 
@@ -219,12 +221,7 @@ bool SPIClass::begin()
 		return false;
 	}
 
-	busAssigned += busId;
-
-	SpiDevice dev(busId);
-	dev.init();
-
-	// Configure pins
+	// Check pins
 	auto& defPins = defaultPins[unsigned(busId) - 1];
 	if(pins.sck == SPI_PIN_DEFAULT) {
 		pins.sck = defPins.sck;
@@ -235,6 +232,28 @@ bool SPIClass::begin()
 	if(pins.mosi == SPI_PIN_DEFAULT) {
 		pins.mosi = defPins.mosi;
 	}
+
+	bool pinsOk = true;
+	if(!GPIO_IS_VALID_OUTPUT_GPIO(pins.sck)) {
+		debug_e("[SPI] SCK invalid %u", pins.sck);
+		pinsOk = false;
+	}
+	if(!GPIO_IS_VALID_GPIO(pins.mosi)) {
+		debug_e("[SPI] SCK invalid %u", pins.mosi);
+		pinsOk = false;
+	}
+	if(!GPIO_IS_VALID_GPIO(pins.miso)) {
+		debug_e("[SPI] MISO invalid %u", pins.miso);
+		pinsOk = false;
+	}
+	if(!pinsOk) {
+		return false;
+	}
+
+	busAssigned += busId;
+
+	SpiDevice dev(busId);
+	dev.init();
 
 	bool useIomux = (pins.sck == dev.info.spiclk_iomux_pin && pins.miso == dev.info.spiq_iomux_pin &&
 					 pins.mosi == dev.info.spid_iomux_pin);
