@@ -1,4 +1,7 @@
 #include <HostTests.h>
+#include <SPISoft.h>
+
+// #define TEST_SOFTWARE_SPI
 
 #if defined(ARCH_ESP8266) || defined(ARCH_ESP32)
 
@@ -20,24 +23,33 @@ void printBin(const char* tag, uint32_t value)
 	m_puts("\r\n");
 }
 
+#ifdef TEST_SOFTWARE_SPI
+constexpr uint8_t ss_miso = 12;
+constexpr uint8_t ss_mosi = 13;
+constexpr uint8_t ss_sck = 14;
+
+SPISoft sspi1(ss_miso, ss_mosi, ss_sck, 0);
+#endif
+
 } // namespace
 
 class SpiTest : public TestGroup
 {
 public:
-	SpiTest() : TestGroup(_F("SPI"))
+	SpiTest()
+		: TestGroup(_F("SPI")),
+#ifdef TEST_SOFTWARE_SPI
+		  spi(sspi1)
+#else
+		  spi(SPI)
+#endif
 	{
 	}
 
 	void execute() override
 	{
-		// SPI.setup(SpiBus::SPI3);
-		SPI.begin();
-
-		for(uint8_t mode : {SPI_MODE1, SPI_MODE2, SPI_MODE3}) {
-			uint8_t mode_num = ((mode & 0x10) >> 3) | (mode & 0x01);
-			debug_i("MODE 0x%02x %u", mode, mode_num);
-		}
+		// spi.setup(SpiBus::SPI3);
+		spi.begin();
 
 		TEST_CASE("Bit Patterns")
 		{
@@ -76,12 +88,12 @@ public:
 		settings.dataMode = SPI_MODE0;
 		for(uint8_t bitOrder : {MSBFIRST, LSBFIRST}) {
 			settings.bitOrder = bitOrder;
-			SPI.beginTransaction(settings);
-			SPI.transfer32(0x00AA00AA);
-			SPI.transfer32(0x12345678);
+			spi.beginTransaction(settings);
+			spi.transfer32(0x00AA00AA);
+			spi.transfer32(0x12345678);
 			uint8_t data[]{0x12, 0x34, 0x56, 0x78, 0x9A};
-			SPI.transfer(data, ARRAY_SIZE(data));
-			SPI.endTransaction();
+			spi.transfer(data, ARRAY_SIZE(data));
+			spi.endTransaction();
 			delayMicroseconds(100);
 		}
 
@@ -89,16 +101,16 @@ public:
 		for(auto dataMode : {SPI_MODE0, SPI_MODE1, SPI_MODE2, SPI_MODE3}) {
 			settings.bitOrder = MSBFIRST;
 			settings.dataMode = dataMode;
-			SPI.beginTransaction(settings);
-			SPI.transfer32(0xAA, 13);
-			SPI.endTransaction();
+			spi.beginTransaction(settings);
+			spi.transfer32(0xAA, 13);
+			spi.endTransaction();
 			delayMicroseconds(100);
 		}
 
 		// Leave bus in mode 0
 		settings.dataMode = SPI_MODE0;
-		SPI.beginTransaction(settings);
-		SPI.endTransaction();
+		spi.beginTransaction(settings);
+		spi.endTransaction();
 
 		m_putc('.');
 
@@ -108,13 +120,13 @@ public:
 
 		timer.stop();
 		loopbackTests();
-		SPI.end();
+		spi.end();
 		complete();
 	}
 
 	void loopbackTests()
 	{
-		if(!SPI.loopback(true)) {
+		if(!spi.loopback(true)) {
 			debug_w("WARNING: SPI loopback not supported. Manual connection required.");
 			debug_w("ESP8266: Connect MISO (GPIO12/D6) <-> MOSI (GPIO13/D7)");
 			allowFailure = true;
@@ -127,13 +139,14 @@ public:
 		{
 			// Note: Single-bit transfers fail on esp32c3... so start at 2
 			for(auto bitOrder : {MSBFIRST, LSBFIRST}) {
+				settings.bitOrder = bitOrder;
 				for(auto bits : {2, 3, 7, 8, 9, 15, 16, 17, 19, 23, 24, 25, 29, 30, 31}) {
-					send(0, bits, bitOrder);
-					send(0xffffffff, bits, bitOrder);
-					send(0xaaaaaaaa, bits, bitOrder);
-					send(0x55555555, bits, bitOrder);
-					send(0x12345678, bits, bitOrder);
-					send(~0x12345678, bits, bitOrder);
+					send(0, bits);
+					send(0xffffffff, bits);
+					send(0xaaaaaaaa, bits);
+					send(0x55555555, bits);
+					send(0x12345678, bits);
+					send(~0x12345678, bits);
 				}
 			}
 		}
@@ -142,9 +155,10 @@ public:
 		{
 			DEFINE_FSTR_LOCAL(seq1, "This is a longer sequence but no more than 64 bytes");
 			for(auto bitOrder : {MSBFIRST, LSBFIRST}) {
+				settings.bitOrder = bitOrder;
 				for(unsigned offset = 0; offset < 4; ++offset) {
 					// Small packet, fits in FIFO
-					send(seq1, offset, bitOrder);
+					send(seq1, offset);
 
 					// Packet larger than FIFO
 					String seq2 = seq1;
@@ -152,26 +166,26 @@ public:
 					seq2 += seq2;
 					seq2 += seq2;
 					seq2 += seq2;
-					send(seq2, offset, bitOrder);
+					send(seq2, offset);
 				}
 			}
 		}
 	}
 
-	void send(uint32_t outValue, uint8_t bits, uint8_t bitOrder)
+	void send(uint32_t outValue, uint8_t bits)
 	{
-		settings.bitOrder = bitOrder;
-		SPI.beginTransaction(settings);
 		outValue &= BIT(bits) - 1;
 		Serial.print("TX 0x");
 		Serial.print(outValue, HEX);
 		Serial.print(", ");
 		Serial.print(bits);
 		Serial.print(" bits, ");
-		Serial.print(bitOrder == MSBFIRST ? 'M' : 'L');
+		Serial.print(settings.bitOrder == MSBFIRST ? 'M' : 'L');
 		Serial.println("SB first");
 		printBin(">", outValue);
-		uint32_t inValue = SPI.transfer32(outValue, bits);
+
+		spi.beginTransaction(settings);
+		uint32_t inValue = spi.transfer32(outValue, bits);
 		if(inValue != outValue) {
 			printBin("<", inValue);
 			Serial.print("RX 0x");
@@ -185,16 +199,16 @@ public:
 		REQUIRE(inValue == outValue);
 	}
 
-	void send(const String& outData, unsigned startOffset, uint8_t bitOrder)
+	void send(const String& outData, unsigned startOffset)
 	{
 		String inData = outData;
 		auto bufptr = reinterpret_cast<uint8_t*>(inData.begin() + startOffset);
 		auto length = inData.length() - startOffset;
 
-		settings.bitOrder = bitOrder;
-		SPI.beginTransaction(settings);
-		debug_i("TX %u bytes, startOffset %u, %cSB first", length, startOffset, bitOrder == MSBFIRST ? 'M' : 'L');
-		SPI.transfer(bufptr, length);
+		debug_i("TX %u bytes, startOffset %u, %cSB first", length, startOffset,
+				settings.bitOrder == MSBFIRST ? 'M' : 'L');
+		spi.beginTransaction(settings);
+		spi.transfer(bufptr, length);
 		auto outptr = outData.c_str() + startOffset;
 		if(memcmp(outptr, bufptr, length) != 0) {
 			length = std::min(length, 64U);
@@ -209,6 +223,7 @@ public:
 	}
 
 private:
+	SPIBase& spi;
 	Timer timer;
 	SPISettings settings;
 	unsigned loopCount{0};
