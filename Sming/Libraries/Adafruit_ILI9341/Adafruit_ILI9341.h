@@ -104,7 +104,7 @@
 #define ILI9341_GREENYELLOW 0xAFE5      /* 173, 255,  47 */
 #define ILI9341_PINK        0xF81F
 
-#define MAKEWORD(b1, b2, b3, b4) (uint32_t(b1) | ((b2) << 8) | ((b3) << 16) | ((b4) << 24))
+#define MAKEWORD(b1, b2, b3, b4) (uint32_t(b4) | ((b3) << 8) | ((b2) << 16) | ((b1) << 24))
 
 
 class Adafruit_ILI9341 : public Adafruit_GFX {
