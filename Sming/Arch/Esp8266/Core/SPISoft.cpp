@@ -13,18 +13,20 @@ Descr: Implement software SPI. To improve speed, GPIO16 is not supported(see Dig
 #define SPEED_VS_SIZE SIZE /* Your choice here, I choose SIZE */
 
 #define GP_IN(pin) ((GPIO_REG_READ(GPIO_IN_ADDRESS) >> (pin)) & 1)
-#define GP_OUT(pin, val)                                                                                               \
-	GPIO_REG_WRITE(((((val) != LOW) ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS)), ((uint16_t)1 << (pin)))
-#define SCK_PULSE                                                                                                      \
-	GP_OUT(mCLK, HIGH);                                                                                                \
-	fastDelay(m_delay);                                                                                                \
-	GP_OUT(mCLK, LOW);                                                                                                 \
-	fastDelay(m_delay);
+#define GP_OUT(pin, val) GPIO_REG_WRITE(((val) ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS), BIT(pin))
 
-static inline void IRAM_ATTR fastDelay(unsigned d)
+#define SCK_SETUP() GP_OUT(mCLK, !cksample)
+#define SCK_SAMPLE() GP_OUT(mCLK, cksample)
+#define SCK_IDLE() GP_OUT(mCLK, cpol)
+#define MOSI_WRITE(d) GP_OUT(mMOSI, d)
+#define MISO_READ() GP_IN(mMISO)
+
+static __forceinline void fastDelay(int d)
 {
-	while(d)
+	while(d > 0) {
+		__asm__ volatile("nop");
 		--d;
+	}
 }
 
 bool SPISoft::begin()
@@ -36,45 +38,102 @@ bool SPISoft::begin()
 	}
 
 	pinMode(mCLK, OUTPUT);
-	digitalWrite(mCLK, LOW);
 
 	pinMode(mMISO, INPUT);
 	digitalWrite(mMISO, HIGH);
 
 	pinMode(mMOSI, OUTPUT);
+
+	prepare(SPIDefaultSettings);
+
 	return true;
+}
+
+uint32_t SPISoft::transferWordLSB(uint32_t word, uint8_t bits)
+{
+	uint32_t res{0};
+	word <<= 32 - bits;
+	for(uint32_t mask = BIT(32 - bits); mask != 0; mask <<= 1) {
+		uint8_t d = (word & mask) ? 1 : 0;
+
+		if(d != cksample) {
+			GPIO_REG_WRITE((d ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS), BIT(mCLK) | BIT(mMOSI));
+		} else {
+			SCK_SETUP();
+			MOSI_WRITE(d);
+		}
+		fastDelay(m_delay);
+		res >>= 1;
+		SCK_SAMPLE();
+		res |= MISO_READ() << 31;
+		fastDelay(m_delay);
+	}
+
+	res >>= 32 - bits;
+	return res;
+}
+
+uint32_t SPISoft::transferWordMSB(uint32_t word, uint8_t bits)
+{
+	uint32_t res{0};
+	for(uint32_t mask = BIT(bits - 1); mask != 0; mask >>= 1) {
+		uint8_t d = (word & mask) ? 1 : 0;
+
+		if(d != cksample) {
+			GPIO_REG_WRITE((d ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS), BIT(mCLK) | BIT(mMOSI));
+		} else {
+			SCK_SETUP();
+			MOSI_WRITE(d);
+		}
+		fastDelay(m_delay);
+		res <<= 1;
+		SCK_SAMPLE();
+		res |= GP_IN(mMISO);
+		fastDelay(m_delay);
+	}
+
+	return res;
+}
+
+uint32_t SPISoft::transfer32(uint32_t val, uint8_t bits)
+{
+	if(lsbFirst) {
+		val = transferWordLSB(val, bits);
+	} else {
+		val = transferWordMSB(val, bits);
+	}
+
+	return val;
 }
 
 void SPISoft::transfer(uint8_t* buffer, uint32_t size)
 {
-	do {
-		uint8_t d = *buffer;
+	if(lsbFirst) {
+		while(size-- != 0) {
+			*buffer = transferWordLSB(*buffer, 8);
+			++buffer;
+		}
+	} else {
+		while(size-- != 0) {
+			*buffer = transferWordMSB(*buffer, 8);
+			++buffer;
+		}
+	}
+}
 
-		GP_OUT(mMOSI, d & 0x80);  /* bit7 */
-		uint8_t r = GP_IN(mMISO); //bit 7
-		SCK_PULSE
-		GP_OUT(mMOSI, d & 0x40);   /* bit6 */
-		r = r << 1 | GP_IN(mMISO); //bit 6
-		SCK_PULSE
-		GP_OUT(mMOSI, d & 0x20);   /* bit5 */
-		r = r << 1 | GP_IN(mMISO); //bit 5
-		SCK_PULSE
-		GP_OUT(mMOSI, d & 0x10);   /* bit4 */
-		r = r << 1 | GP_IN(mMISO); //bit 4
-		SCK_PULSE
-		GP_OUT(mMOSI, d & 0x08);   /* bit3 */
-		r = r << 1 | GP_IN(mMISO); //bit 3
-		SCK_PULSE
-		GP_OUT(mMOSI, d & 0x04);   /* bit2 */
-		r = r << 1 | GP_IN(mMISO); //bit 2
-		SCK_PULSE
-		GP_OUT(mMOSI, d & 0x02);   /* bit1 */
-		r = r << 1 | GP_IN(mMISO); //bit 1
-		SCK_PULSE
-		GP_OUT(mMOSI, d & 0x01);   /* bit0 */
-		r = r << 1 | GP_IN(mMISO); //bit 0
-		SCK_PULSE
+void SPISoft::prepare(SPISettings& settings)
+{
+	dataMode = settings.dataMode;
+	auto mode_num = SPISettings::getModeNum(dataMode);
+	cpol = (mode_num & 0x02) >> 1;
+	uint8_t cpha = mode_num & 0x01;
+	cksample = (cpol == cpha);
 
-		*buffer++ = r;
-	} while(--size);
+	lsbFirst = (settings.bitOrder != MSBFIRST);
+	SCK_SETUP();
+}
+
+void SPISoft::endTransaction()
+{
+	SCK_IDLE();
 }
