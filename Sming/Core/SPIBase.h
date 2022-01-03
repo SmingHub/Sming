@@ -106,7 +106,10 @@ public:
 	/**
 	 * @brief Send/receive one 16-bit word of data
 	 * @param val The word to send
-	 * @retval uint8_t The received word
+	 * @retval uint16_t The received word
+	 *
+	 * Word is transferred either MSB first (bit 15) or LSB first (bit 0)
+	 * depending on the currently applied bitOrder setting.
 	 */
 	uint16_t transfer16(uint16_t val)
 	{
@@ -116,13 +119,10 @@ public:
 	/**
 	 * @brief Send/receive a word of variable size
 	 * @param val Word to send
-	 * @param bits Number of bits to send
+	 * @param bits Size of word
 	 *
-	 * SPI transfer is based on a simultaneous send and receive:
-	 * the received data is returned in receivedVal (or receivedVal16).
-	 *
-	 * 		receivedVal = SPI.transfer(val)			: single byte
-	 * 		receivedVal16 = SPI.transfer16(val16)	: single short
+	 * Word is transferred either MSB first (bits-1) or LSB first (bit 0)
+	 * depending on the currently applied bitOrder setting.
 	 */
 	virtual uint32_t transfer32(uint32_t val, uint8_t bits = 32)
 	{
