@@ -140,6 +140,15 @@ public:
 	/** @} */
 
 	/**
+	 * @brief For testing, tie MISO <-> MOSI internally
+	 */
+	virtual bool loopback(bool enable)
+	{
+		(void)enable;
+		return false;
+	}
+
+	/**
 	 * @brief  Default settings used by the SPI bus
 	 * until reset by beginTransaction(SPISettings)
 	 *
