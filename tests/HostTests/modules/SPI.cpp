@@ -86,7 +86,7 @@ public:
 		}
 
 		delayMicroseconds(200);
-		for(uint8_t dataMode : {SPI_MODE0, SPI_MODE1, SPI_MODE2, SPI_MODE3}) {
+		for(auto dataMode : {SPI_MODE0, SPI_MODE1, SPI_MODE2, SPI_MODE3}) {
 			settings.bitOrder = MSBFIRST;
 			settings.dataMode = dataMode;
 			SPI.beginTransaction(settings);

@@ -78,10 +78,11 @@ struct SpiDevice {
 		hw->cmd.usr = true;
 	}
 
-	void set_mode(uint8_t mode)
+	void set_mode(SpiMode mode)
 	{
-		bool spi_cpha = (mode & 0x0F) != 0;
-		bool spi_cpol = (mode & 0xF0) != 0;
+		uint8_t mode_num = SPISettings::getModeNum(mode);
+		bool spi_cpha = (mode_num & 0x01) != 0;
+		bool spi_cpol = (mode_num & 0x02) != 0;
 
 #ifdef SPI_DEBUG
 		debugf("[SPI] spi_mode(mode %x) spi_cpha %X, spi_cpol %X)", mode, spi_cpha, spi_cpol);

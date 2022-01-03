@@ -14,6 +14,7 @@
 #pragma once
 
 #include "Digital.h"
+#include <sming_attr.h>
 #ifdef SPI_DEBUG
 #include <debug_progmem.h>
 #endif
@@ -28,10 +29,12 @@
 //	SPI_MODE2		1					0
 //	SPI_MODE3		1					1
 
-#define SPI_MODE0 0x00
-#define SPI_MODE1 0x0F
-#define SPI_MODE2 0xF0
-#define SPI_MODE3 0xFF
+enum SpiMode : uint8_t {
+	SPI_MODE0 = 0x00,
+	SPI_MODE1 = 0x0F,
+	SPI_MODE2 = 0xF0,
+	SPI_MODE3 = 0xFF,
+};
 
 const uint32_t SPI_SPEED_DEFAULT = 4000000UL;
 
@@ -95,12 +98,20 @@ public:
 	 * 		SPI_MODE2		1					0
 	 * 		SPI_MODE3		1					1
 	 */
-	SPISettings(uint32_t speed, uint8_t bitOrder, uint8_t dataMode)
+	SPISettings(uint32_t speed, uint8_t bitOrder, SpiMode dataMode)
 		: speed(speed), bitOrder(bitOrder), dataMode(dataMode)
 	{
 #ifdef SPI_DEBUG
 		debugf("SPISettings(int %i, uint8 %u, uint8 %u)", speed, bitOrder, dataMode);
 #endif
+	}
+
+	/*
+	 * Arduino libraries use non-typed dataMode
+	 */
+	SPISettings(uint32_t speed, uint8_t bitOrder, uint8_t dataMode)
+		: speed(speed), bitOrder(bitOrder), dataMode(SpiMode(dataMode))
+	{
 	}
 
 	// overload operator to check whether the settings are equal
@@ -116,9 +127,18 @@ public:
 #endif
 	}
 
+	/**
+	 * @brief Get number 0-3 corresponding to an SpiMode setting
+	 * @param mode Can be SpiMode or a number 0-3
+	 */
+	static uint8_t getModeNum(SpiMode mode)
+	{
+		return (mode <= 3) ? mode : ((mode & 0x10) >> 3) | (mode & 0x01);
+	}
+
 	SPISpeed speed;
 	uint8_t bitOrder{MSBFIRST};
-	uint8_t dataMode{SPI_MODE0};
+	SpiMode dataMode{SPI_MODE0};
 };
 
 /** @} */
