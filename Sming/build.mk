@@ -52,7 +52,7 @@ endif
 # Convert Windows paths to POSIX paths
 DEBUG_VARS		+= OS
 ifeq ($(OS),Windows_NT)
-FixPath			= $(subst //,/,$(subst \,/,$(addprefix /,$(subst :,,$1))))
+FixPath			= $(if $(findstring :,$1),$(subst //,/,$(subst \,/,/$(subst :,,$1))),$(abspath $1))
 else
 FixPath			= $1
 endif
