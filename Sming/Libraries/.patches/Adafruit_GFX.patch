@@ -1,0 +1,171 @@
+diff --git a/Adafruit_SPITFT.cpp b/Adafruit_SPITFT.cpp
+index b78d5ce..28f55cf 100644
+--- a/Adafruit_SPITFT.cpp
++++ b/Adafruit_SPITFT.cpp
+@@ -1002,151 +1002,10 @@ void Adafruit_SPITFT::writePixels(uint16_t *colors, uint32_t len, bool block,
+   (void)block;
+   (void)bigEndian;
+ 
+-#if defined(ESP32)
+-  if (connection == TFT_HARD_SPI) {
+-    if (!bigEndian) {
+-      hwspi._spi->writePixels(colors, len * 2); // Inbuilt endian-swap
+-    } else {
+-      hwspi._spi->writeBytes((uint8_t *)colors, len * 2); // Issue bytes direct
+-    }
+-    return;
+-  }
+-#elif defined(ARDUINO_NRF52_ADAFRUIT) &&                                       \
+-    defined(NRF52840_XXAA) // Adafruit nRF52 use SPIM3 DMA at 32Mhz
+   if (!bigEndian) {
+-    swapBytes(colors, len); // convert little-to-big endian for display
+-  }
+-  hwspi._spi->transfer(colors, NULL, 2 * len); // NULL RX to avoid overwrite
+-  if (!bigEndian) {
+-    swapBytes(colors, len); // big-to-little endian to restore pixel buffer
+-  }
+-
+-  return;
+-#elif defined(ARDUINO_ARCH_RP2040)
+-  spi_inst_t *pi_spi = hwspi._spi == &SPI ? spi0 : spi1;
+-
+-  if (!bigEndian) {
+-    // switch to 16-bit writes
+-    hw_write_masked(&spi_get_hw(pi_spi)->cr0, 15 << SPI_SSPCR0_DSS_LSB,
+-                    SPI_SSPCR0_DSS_BITS);
+-    spi_write16_blocking(pi_spi, colors, len);
+-    // switch back to 8-bit
+-    hw_write_masked(&spi_get_hw(pi_spi)->cr0, 7 << SPI_SSPCR0_DSS_LSB,
+-                    SPI_SSPCR0_DSS_BITS);
++    hwspi._spi->writePixels(colors, len * 2); // Inbuilt endian-swap
+   } else {
+-    spi_write_blocking(pi_spi, (uint8_t *)colors, len * 2);
+-  }
+-  return;
+-#elif defined(USE_SPI_DMA) &&                                                  \
+-    (defined(__SAMD51__) || defined(ARDUINO_SAMD_ZERO))
+-  if ((connection == TFT_HARD_SPI) || (connection == TFT_PARALLEL)) {
+-    int maxSpan = maxFillLen / 2; // One scanline max
+-    uint8_t pixelBufIdx = 0;      // Active pixel buffer number
+-#if defined(__SAMD51__)
+-    if (connection == TFT_PARALLEL) {
+-      // Switch WR pin to PWM or CCL
+-      pinPeripheral(tft8._wr, wrPeripheral);
+-    }
+-#endif // end __SAMD51__
+-    if (!bigEndian) { // Normal little-endian situation...
+-      while (len) {
+-        int count = (len < maxSpan) ? len : maxSpan;
+-
+-        // Because TFT and SAMD endianisms are different, must swap
+-        // bytes from the 'colors' array passed into a DMA working
+-        // buffer. This can take place while the prior DMA transfer
+-        // is in progress, hence the need for two pixelBufs.
+-        swapBytes(colors, count, pixelBuf[pixelBufIdx]);
+-        colors += count;
+-
+-        // The transfers themselves are relatively small, so we don't
+-        // need a long descriptor list. We just alternate between the
+-        // first two, sharing pixelBufIdx for that purpose.
+-        descriptor[pixelBufIdx].SRCADDR.reg =
+-            (uint32_t)pixelBuf[pixelBufIdx] + count * 2;
+-        descriptor[pixelBufIdx].BTCTRL.bit.SRCINC = 1;
+-        descriptor[pixelBufIdx].BTCNT.reg = count * 2;
+-        descriptor[pixelBufIdx].DESCADDR.reg = 0;
+-
+-        while (dma_busy)
+-          ; // Wait for prior line to finish
+-
+-        // Move new descriptor into place...
+-        memcpy(dptr, &descriptor[pixelBufIdx], sizeof(DmacDescriptor));
+-        dma_busy = true;
+-        dma.startJob(); // Trigger SPI DMA transfer
+-        if (connection == TFT_PARALLEL)
+-          dma.trigger();
+-        pixelBufIdx = 1 - pixelBufIdx; // Swap DMA pixel buffers
+-
+-        len -= count;
+-      }
+-    } else { // bigEndian == true
+-      // With big-endian pixel data, this can be handled as a single
+-      // DMA transfer using chained descriptors. Even full screen, this
+-      // needs only a relatively short descriptor list, each
+-      // transferring a max of 32,767 (not 32,768) pixels. The list
+-      // was allocated large enough to accommodate a full screen's
+-      // worth of data, so this won't run past the end of the list.
+-      int d, numDescriptors = (len + 32766) / 32767;
+-      for (d = 0; d < numDescriptors; d++) {
+-        int count = (len < 32767) ? len : 32767;
+-        descriptor[d].SRCADDR.reg = (uint32_t)colors + count * 2;
+-        descriptor[d].BTCTRL.bit.SRCINC = 1;
+-        descriptor[d].BTCNT.reg = count * 2;
+-        descriptor[d].DESCADDR.reg = (uint32_t)&descriptor[d + 1];
+-        len -= count;
+-        colors += count;
+-      }
+-      descriptor[d - 1].DESCADDR.reg = 0;
+-
+-      while (dma_busy)
+-        ; // Wait for prior transfer (if any) to finish
+-
+-      // Move first descriptor into place and start transfer...
+-      memcpy(dptr, &descriptor[0], sizeof(DmacDescriptor));
+-      dma_busy = true;
+-      dma.startJob(); // Trigger SPI DMA transfer
+-      if (connection == TFT_PARALLEL)
+-        dma.trigger();
+-    } // end bigEndian
+-
+-    lastFillColor = 0x0000; // pixelBuf has been sullied
+-    lastFillLen = 0;
+-    if (block) {
+-      while (dma_busy)
+-        ; // Wait for last line to complete
+-#if defined(__SAMD51__) || defined(ARDUINO_SAMD_ZERO)
+-      if (connection == TFT_HARD_SPI) {
+-        // See SAMD51/21 note in writeColor()
+-        hwspi._spi->setDataMode(hwspi._mode);
+-      } else {
+-        pinPeripheral(tft8._wr, PIO_OUTPUT); // Switch WR back to GPIO
+-      }
+-#endif // end __SAMD51__ || ARDUINO_SAMD_ZERO
+-    }
+-    return;
+-  }
+-#endif // end USE_SPI_DMA
+-
+-  // All other cases (bitbang SPI or non-DMA hard SPI or parallel),
+-  // use a loop with the normal 16-bit data write function:
+-
+-  if (!bigEndian) {
+-    while (len--) {
+-      SPI_WRITE16(*colors++);
+-    }
+-  } else {
+-    // Well this is awkward. SPI_WRITE16() was designed for little-endian
+-    // hosts and big-endian displays as that's nearly always the typical
+-    // case. If the bigEndian flag was set, data is already in display's
+-    // order...so each pixel needs byte-swapping before being issued.
+-    // Rather than having a separate big-endian SPI_WRITE16 (adding more
+-    // bloat), it's preferred if calling function is smart and only uses
+-    // bigEndian where DMA is supported. But we gotta handle this...
+-    while (len--) {
+-      SPI_WRITE16(__builtin_bswap16(*colors++));
+-    }
++    hwspi._spi->writeBytes((uint8_t *)colors, len * 2); // Issue bytes direct
+   }
+ }
+ 
+diff --git a/glcdfont.c b/glcdfont.c
+index 535da3a..e6bcafd 100644
+--- a/glcdfont.c
++++ b/glcdfont.c
+@@ -13,7 +13,7 @@
+ // PROGMEM is defefind for T4 to place data in specific memory section
+ #undef PROGMEM
+ #define PROGMEM
+-#else
++#elif !defined(PROGMEM)
+ #define PROGMEM
+ #endif
+ 
