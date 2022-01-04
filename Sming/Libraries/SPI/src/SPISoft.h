@@ -9,6 +9,13 @@ Descr: Implement software SPI for HW configs other than hardware SPI pins(GPIO 1
 
 #include "SPIBase.h"
 
+/**
+ * @brief Software-based SPI master
+ *
+ * Intended for ESP8266 due to limited I/O but will work on any architecture.
+ * 
+ * @addtogroup soft_spi
+ */
 class SPISoft : public SPIBase
 {
 public:
@@ -19,15 +26,15 @@ public:
 	{
 	}
 
+	SPISoft(uint8_t miso, uint8_t mosi, uint8_t sck, uint8_t delay = 0) : pins{sck, miso, mosi}, m_delay(delay)
+	{
+	}
+
+	SPISoft(const SpiPins& pins, uint8_t delay = 0) : pins(pins), m_delay(delay)
+	{
+	}
+
 	SPISoft(uint8_t delay) : m_delay(delay)
-	{
-	}
-
-	SPISoft(uint8_t miso, uint8_t mosi, uint8_t sck, uint8_t delay) : pins{sck, miso, mosi}, m_delay(delay)
-	{
-	}
-
-	SPISoft(const SpiPins& pins, uint8_t delay) : pins(pins), m_delay(delay)
 	{
 	}
 
@@ -50,11 +57,17 @@ public:
 	void transfer(uint8_t* buffer, size_t size) override;
 
 	/**
-	 * @brief Set microsecond delay for the SCK signal. Impacts SPI speed
-	*/
-	void setDelay(uint8_t dly)
+	 * @brief Set delay factor for the SCK signal. Impacts SPI speed.
+	 *
+	 * Requires code to be compiled with ENABLE_SPISOFT_DELAY=1.
+	 *
+	 * ESP8266 only: The delay will be automatically calculated for a requested
+	 * clock speed when `begin()` or `beginTransaction()` are called.
+	 * To use only the manually programmed delay, set the clock speed to zero.
+	 */
+	void setDelay(uint8_t delay)
 	{
-		m_delay = dly;
+		m_delay = delay;
 	}
 
 	bool loopback(bool enable) override;

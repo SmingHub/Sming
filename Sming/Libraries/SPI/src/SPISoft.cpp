@@ -7,6 +7,7 @@ Descr: Implement software SPI. To improve speed, GPIO16 is not supported(see Dig
 */
 #include "SPISoft.h"
 #include <esp_systemapi.h>
+#include <FlashString/Array.hpp>
 
 #define PIN_SCK_DEFAULT 14
 #define PIN_MISO_DEFAULT 12
@@ -50,6 +51,118 @@ __forceinline void fastDelay(int d)
 	(void)d;
 #endif
 }
+
+#if defined(ENABLE_SPISOFT_DELAY) && defined(ARCH_ESP8266)
+
+/*
+ * Matching small delay values to frequency reuires a lookup table as the relationship is non-linear.
+ * Given values are clock frequency in kHz, found by measurement.
+ *
+ * Two tables are required depending on currently selected CPU frequency.
+ */
+
+// clang-format off
+DEFINE_FSTR_ARRAY(table80, uint16_t,
+	1096,	// 0
+	1014,	// 1
+	941,	// 2
+	880,	// 3
+	825,	// 4
+	777,	// 5
+	734,	// 6
+	695,	// 7
+	625,	// 8
+	568,	// 9
+	520,	// 10
+)
+
+DEFINE_FSTR_ARRAY(table160, uint16_t,
+	1888,	// 0
+	1840,	// 1
+	1721,	// 2
+	1617,	// 3
+	1524,	// 4
+	1442,	// 5
+	1367,	// 6
+	1301,	// 7
+	1185,	// 8
+	1074,	// 9
+	994,	// 10
+)
+
+// clang-format on
+
+/*
+ * Delay values above 10 are calculated, directly proportional to inverse of frequency.
+ */
+
+struct CoEfficient {
+	int16_t m;
+	int16_t c;
+};
+
+constexpr int M{16}; // Scalar to keep multipler resolution
+
+constexpr CoEfficient coefficients[2]{
+	{int16_t(17 * M), 19},
+	{int16_t(8.1 * M), 19},
+};
+
+uint8_t checkSpeed(SPISpeed& speed)
+{
+	constexpr uint32_t minFreq{80000}; // Don't go lower than this
+
+	union SpeedConfig {
+		uint32_t val;
+		struct {
+			uint8_t cpuFreq;
+			uint8_t delay;
+		};
+	};
+
+	SpeedConfig cfg{speed.regVal};
+
+	// A change in CPU frequency or requested frequency will fail this check
+	auto cpuFreq = system_get_cpu_freq();
+	if(cfg.cpuFreq == cpuFreq) {
+		// Already calculated, done
+		return cfg.delay;
+	}
+
+	uint8_t delay{0};
+	uint16_t khz{0};
+	auto khzRequired = std::max(speed.frequency, minFreq) / 1000;
+	const FSTR::Array<uint16_t>& table = (cpuFreq <= 80) ? table80 : table160;
+	if(khzRequired >= table[table.length() - 1]) {
+		// Value is in table, match highest frequency not exceeding requested value
+		for(uint8_t i = 0; i < table.length(); ++i) {
+			khz = table[i];
+			if(khz <= khzRequired) {
+				delay = i;
+				break;
+			}
+		}
+	} else {
+		// Calculate the delay, and resulting clock frequency
+		auto coeff = coefficients[(cpuFreq <= 80) ? 0 : 1];
+		delay = M * ((100000 / khzRequired) - coeff.c) / coeff.m;
+#ifdef SPI_DEBUG
+		khz = 100000 / ((coeff.m * delay / M) + coeff.c);
+#endif
+	}
+
+	cfg.cpuFreq = cpuFreq;
+	cfg.delay = delay;
+	speed.regVal = cfg.val;
+
+#ifdef SPI_DEBUG
+	debugf("[SSPI] Using delay %u -> target freq %u -> result %u", delay, speed.frequency, khz * 1000);
+#endif
+
+	return cfg.delay;
+}
+
+#endif
 
 } // namespace
 
@@ -102,7 +215,7 @@ uint32_t SPISoft::transferWordLSB(uint32_t word, uint8_t bits)
 		res >>= 1;
 		SCK_SAMPLE();
 		res |= MISO_READ() << 31;
-		fastDelay(m_delay);
+		fastDelay(m_delay - 7);
 	}
 
 	res >>= 32 - bits;
@@ -129,7 +242,7 @@ uint32_t SPISoft::transferWordMSB(uint32_t word, uint8_t bits)
 		res <<= 1;
 		SCK_SAMPLE();
 		res |= MISO_READ();
-		fastDelay(m_delay);
+		fastDelay(m_delay - 7);
 	}
 
 	return res;
@@ -171,6 +284,13 @@ void SPISoft::prepare(SPISettings& settings)
 
 	lsbFirst = (settings.bitOrder != MSBFIRST);
 	SCK_SETUP();
+
+#if defined(ENABLE_SPISOFT_DELAY) && defined(ARCH_ESP8266)
+	// If user doesn't specify speed then don't override
+	if(settings.speed.frequency != 0) {
+		m_delay = checkSpeed(settings.speed);
+	}
+#endif
 }
 
 void SPISoft::endTransaction()

@@ -13,4 +13,7 @@ Bytes are now always sent LSB first, which corresponds with the system endiannes
 Bit order simply indicates how the bits within each byte are sent on the wire.
 This is predominantly MSB first, the default.
 
+The :cpp:class:`SPISoft` class has been upgraded to support bit ordering, transactions
+and includes automatic delay calculation for the ESP8266.
+
 See :issue:`1428`.
