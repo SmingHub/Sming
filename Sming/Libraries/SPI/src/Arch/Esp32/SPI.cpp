@@ -50,10 +50,10 @@ constexpr size_t SPI_FIFO_SIZE{64};
 #define DEFPIN(bus, sig) bus##_IOMUX_PIN_NUM_##sig
 
 const SpiPins defaultPins[] = {
-	{DEFPIN(SPI, CLK), DEFPIN(SPI, MISO), DEFPIN(SPI, MOSI), SPI_PIN_DEFAULT},
-	{DEFPIN(SPI2, CLK), DEFPIN(SPI2, MISO), DEFPIN(SPI2, MOSI), SPI_PIN_DEFAULT},
+	{DEFPIN(SPI, CLK), DEFPIN(SPI, MISO), DEFPIN(SPI, MOSI)},
+	{DEFPIN(SPI2, CLK), DEFPIN(SPI2, MISO), DEFPIN(SPI2, MOSI)},
 #ifdef SPI3_IOMUX_PIN_NUM_CLK
-	{DEFPIN(SPI3, CLK), DEFPIN(SPI3, MISO), DEFPIN(SPI3, MOSI), SPI_PIN_DEFAULT},
+	{DEFPIN(SPI3, CLK), DEFPIN(SPI3, MISO), DEFPIN(SPI3, MOSI)},
 #else
 	SpiPins{},
 #endif
@@ -190,9 +190,11 @@ void checkSpeed(SPISpeed& speed)
 	unsigned actual_freq = spi_ll_master_cal_clock(SPI_LL_PERIPH_CLK_FREQ, speed.frequency, duty_cycle, &clock_reg);
 	speed.regVal = clock_reg;
 
-	// #ifdef SPI_DEBUG
+#ifdef SPI_DEBUG
 	debugf("[SPI] target freq = %u, actual = %u", speed.frequency, actual_freq);
-	// #endif
+#else
+	(void)actual_freq;
+#endif
 }
 
 void SpiDevice::set_clock(SPISpeed& speed)

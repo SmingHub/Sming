@@ -14,13 +14,30 @@
 #pragma once
 
 #include "SPISettings.h"
-#include <stddef.h>
+#include <cstddef>
+
+// for compatibility when porting from Arduino
+#define SPI_HAS_TRANSACTION 1
 
 /**
  * @defgroup base_spi SPI support classes
  * @brief    Provides SPI support
  * @{
  */
+
+/**
+ * @brief SPI driver uses default pin assignment
+ */
+static constexpr uint8_t SPI_PIN_DEFAULT{0xff};
+
+/**
+ * @brief SPI pin connections
+ */
+struct SpiPins {
+	uint8_t sck{SPI_PIN_DEFAULT};
+	uint8_t miso{SPI_PIN_DEFAULT};
+	uint8_t mosi{SPI_PIN_DEFAULT};
+};
 
 /*
  * @brief Base class/interface for SPI implementations
@@ -142,11 +159,7 @@ public:
 	/**
 	 * @brief For testing, tie MISO <-> MOSI internally
 	 */
-	virtual bool loopback(bool enable)
-	{
-		(void)enable;
-		return false;
-	}
+	virtual bool loopback(bool enable) = 0;
 
 	/**
 	 * @brief  Default settings used by the SPI bus

@@ -8,17 +8,33 @@ Descr: Implement software SPI for HW configs other than hardware SPI pins(GPIO 1
 #pragma once
 
 #include "SPIBase.h"
-#include "SPISettings.h"
-
-// for compatibility when porting from Arduino
-#define SPI_HAS_TRANSACTION 1
 
 class SPISoft : public SPIBase
 {
 public:
-	SPISoft(uint8_t miso, uint8_t mosi, uint8_t sck, uint8_t delay)
-		: mMISO(miso), mMOSI(mosi), mCLK(sck), m_delay(delay)
+	/**
+	 * @brief Use same pins as hardware SPI by default
+	 */
+	SPISoft()
 	{
+	}
+
+	SPISoft(uint8_t delay) : m_delay(delay)
+	{
+	}
+
+	SPISoft(uint8_t miso, uint8_t mosi, uint8_t sck, uint8_t delay) : pins{sck, miso, mosi}, m_delay(delay)
+	{
+	}
+
+	SPISoft(const SpiPins& pins, uint8_t delay) : pins(pins), m_delay(delay)
+	{
+	}
+
+	bool setup(SpiPins pins)
+	{
+		this->pins = pins;
+		return true;
 	}
 
 	bool begin() override;
@@ -41,6 +57,8 @@ public:
 		m_delay = dly;
 	}
 
+	bool loopback(bool enable) override;
+
 protected:
 	void prepare(SPISettings& settings) override;
 
@@ -48,10 +66,8 @@ private:
 	uint32_t transferWordLSB(uint32_t word, uint8_t bits);
 	uint32_t transferWordMSB(uint32_t word, uint8_t bits);
 
-	uint8_t mMISO;
-	uint8_t mMOSI;
-	uint8_t mCLK;
-	uint8_t m_delay;
+	SpiPins pins;
+	uint8_t m_delay{0};
 	SpiMode dataMode{SPI_MODE0};
 	uint8_t cpol{0};
 	uint8_t cksample{0};

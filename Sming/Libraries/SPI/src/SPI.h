@@ -19,18 +19,12 @@
 
 #include "SPIBase.h"
 #include "SPISettings.h"
-
-//#define SPI_DEBUG  1
-
-// for compatibility when porting from Arduino
-#define SPI_HAS_TRANSACTION 1
+#include <spi_arch.h>
 
 /**
- * @brief  Hardware SPI object
+ * @brief  Hardware SPI class
  * @addtogroup hw_spi
- * @{
  */
-
 class SPIClass : public SPIBase
 {
 public:
@@ -41,6 +35,19 @@ public:
 	SPIClass(const SPIClass&) = delete;
 	SPIClass& operator=(const SPIClass&) = delete;
 
+	/**
+	 * @brief Alternative to defining bus and pin set in constructor.
+	 * Use this method to change global `SPI` instance setup.
+	 *
+	 * IMPORTANT: Must be called *before* begin().
+	 */
+	bool setup(SpiBus id, SpiPins pins = {});
+
+	bool setup(SpiPins pins)
+	{
+		return setup(SpiBus::DEFAULT, pins);
+	}
+
 	bool begin() override;
 	void end() override;
 
@@ -50,10 +57,16 @@ public:
 	using SPIBase::transfer;
 	void transfer(uint8_t* buffer, size_t numberBytes) override;
 
+	bool loopback(bool enable) override;
+
 protected:
 	void prepare(SPISettings& settings) override;
 
 private:
+#ifdef ARCH_ESP32
+	SpiBus busId{SpiBus::DEFAULT};
+	SpiPins pins;
+#endif
 	bool lsbFirst{false};
 };
 

@@ -178,7 +178,7 @@ SpiPreDiv calculateSpeed(unsigned freq, unsigned div)
 	prediv.divisor = div;
 
 #ifdef SPI_DEBUG
-	debugf("[SPI] calculateSpeed(uint freq %u, uint pre %u, uint div %u)", f, pre, div);
+	debugf("[SPI] calculateSpeed(freq %u, pre %u, div %u)", freq, pre, div);
 #endif
 
 	return prediv;
@@ -200,6 +200,9 @@ void checkSpeed(SPISpeed& speed)
 	if(speed.frequency >= APB_CLK_FREQ) {
 		// Use maximum speed
 		prediv.freq = APB_CLK_FREQ;
+#ifdef SPI_DEBUG
+		prediv.divisor = 0;
+#endif
 		speed.regVal = SPI_CLK_EQU_SYSCLK;
 	} else {
 		prediv = calculateSpeed(speed.frequency, 2);
@@ -246,6 +249,11 @@ void SpiDevice::set_clock(SPISpeed& speed)
 }
 
 } // namespace
+
+bool SPIClass::setup(SpiBus id, SpiPins pins)
+{
+	return (id == SpiBus::DEFAULT) && (pins.sck == 14) && (pins.miso == 12) && (pins.mosi == 13);
+}
 
 bool SPIClass::begin()
 {
@@ -351,4 +359,10 @@ void SPIClass::prepare(SPISettings& settings)
 #if BYTE_ORDER_SUPPORTED
 	dev.set_byte_order(settings.bitOrder);
 #endif
+}
+
+bool SPIClass::loopback(bool enable)
+{
+	(void)enable;
+	return false;
 }
