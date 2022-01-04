@@ -8,12 +8,11 @@ Descr: Implement software SPI. To improve speed, GPIO16 is not supported(see Dig
 #include "SPISoft.h"
 #include <esp_systemapi.h>
 
-#define SPEED 0			   /* You gain ~0.7 kBps (more for larger data chunks)*/
-#define SIZE 1			   /* You gain ~ 400B from the total 32K of cache RAM */
-#define SPEED_VS_SIZE SIZE /* Your choice here, I choose SIZE */
-
+namespace
+{
+#define GP_REG(n) ((n) ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS)
 #define GP_IN(pin) ((GPIO_REG_READ(GPIO_IN_ADDRESS) >> (pin)) & 1)
-#define GP_OUT(pin, val) GPIO_REG_WRITE(((val) ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS), BIT(pin))
+#define GP_OUT(pin, val) GPIO_REG_WRITE(GP_REG(val), BIT(pin))
 
 #define SCK_SETUP() GP_OUT(mCLK, !cksample)
 #define SCK_SAMPLE() GP_OUT(mCLK, cksample)
@@ -21,13 +20,15 @@ Descr: Implement software SPI. To improve speed, GPIO16 is not supported(see Dig
 #define MOSI_WRITE(d) GP_OUT(mMOSI, d)
 #define MISO_READ() GP_IN(mMISO)
 
-static __forceinline void fastDelay(int d)
+__forceinline void fastDelay(int d)
 {
 	while(d > 0) {
 		__asm__ volatile("nop");
 		--d;
 	}
 }
+
+} // namespace
 
 bool SPISoft::begin()
 {
@@ -56,8 +57,9 @@ uint32_t SPISoft::transferWordLSB(uint32_t word, uint8_t bits)
 	for(uint32_t mask = BIT(32 - bits); mask != 0; mask <<= 1) {
 		uint8_t d = (word & mask) ? 1 : 0;
 
+		// Setup edge, can set both SCK and MOSI together if they're the same value
 		if(d != cksample) {
-			GPIO_REG_WRITE((d ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS), BIT(mCLK) | BIT(mMOSI));
+			GPIO_REG_WRITE(GP_REG(d), BIT(mCLK) | BIT(mMOSI));
 		} else {
 			SCK_SETUP();
 			MOSI_WRITE(d);
@@ -76,11 +78,15 @@ uint32_t SPISoft::transferWordLSB(uint32_t word, uint8_t bits)
 uint32_t SPISoft::transferWordMSB(uint32_t word, uint8_t bits)
 {
 	uint32_t res{0};
-	for(uint32_t mask = BIT(bits - 1); mask != 0; mask >>= 1) {
-		uint8_t d = (word & mask) ? 1 : 0;
 
+	word <<= 32 - bits;
+	for(uint8_t i = 0; i < bits; ++i) {
+		uint8_t d = (word >> 31) & 0x01;
+		word <<= 1;
+
+		// Setup edge, can set both SCK and MOSI together if they're the same value
 		if(d != cksample) {
-			GPIO_REG_WRITE((d ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS), BIT(mCLK) | BIT(mMOSI));
+			GPIO_REG_WRITE(GP_REG(d), BIT(mCLK) | BIT(mMOSI));
 		} else {
 			SCK_SETUP();
 			MOSI_WRITE(d);
@@ -88,7 +94,7 @@ uint32_t SPISoft::transferWordMSB(uint32_t word, uint8_t bits)
 		fastDelay(m_delay);
 		res <<= 1;
 		SCK_SAMPLE();
-		res |= GP_IN(mMISO);
+		res |= MISO_READ();
 		fastDelay(m_delay);
 	}
 
@@ -106,7 +112,7 @@ uint32_t SPISoft::transfer32(uint32_t val, uint8_t bits)
 	return val;
 }
 
-void SPISoft::transfer(uint8_t* buffer, uint32_t size)
+void SPISoft::transfer(uint8_t* buffer, size_t size)
 {
 	if(lsbFirst) {
 		while(size-- != 0) {
