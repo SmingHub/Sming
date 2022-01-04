@@ -26,11 +26,7 @@ void printBin(const char* tag, uint32_t value)
 
 #ifdef TEST_SOFTWARE_SPI
 
-constexpr uint8_t ss_miso = 12;
-constexpr uint8_t ss_mosi = 13;
-constexpr uint8_t ss_sck = 14;
-
-SPISoft sspi1(ss_miso, ss_mosi, ss_sck, 0);
+SPISoft sspi1;
 SPIBase& spi = sspi1;
 
 #else
@@ -94,14 +90,12 @@ public:
 		settings.dataMode = SPI_MODE0;
 		for(uint8_t bitOrder : {MSBFIRST, LSBFIRST}) {
 			settings.bitOrder = bitOrder;
-			cycleTimes.start();
-			spi.beginTransaction(settings);
+			beginTrans();
 			spi.transfer32(0x00AA00AA);
 			spi.transfer32(0x12345678);
 			uint8_t data[]{0x12, 0x34, 0x56, 0x78, 0x9A};
 			spi.transfer(data, ARRAY_SIZE(data));
-			spi.endTransaction();
-			cycleTimes.update();
+			endTrans(13 * 8);
 			delayMicroseconds(100);
 		}
 
@@ -109,11 +103,9 @@ public:
 		for(auto dataMode : {SPI_MODE0, SPI_MODE1, SPI_MODE2, SPI_MODE3}) {
 			settings.bitOrder = MSBFIRST;
 			settings.dataMode = dataMode;
-			cycleTimes.start();
-			spi.beginTransaction(settings);
+			beginTrans();
 			spi.transfer32(0xAA, 13);
-			spi.endTransaction();
-			cycleTimes.update();
+			endTrans(13);
 			delayMicroseconds(100);
 		}
 
@@ -130,14 +122,13 @@ public:
 
 		timer.stop();
 		m_puts("\r\n");
+		printStats();
 
-		cycleTimes.printTo(Serial);
-
-		// loopbackTests();
-		spi.end();
-		complete();
+		loopbackTests();
 
 		System.setCpuFrequency(CpuCycleClockNormal::cpuFrequency());
+		spi.end();
+		complete();
 	}
 
 	void loopbackTests()
@@ -153,6 +144,8 @@ public:
 
 		TEST_CASE("32-bit values")
 		{
+			clearStats();
+
 			// Note: Single-bit transfers fail on esp32c3... so start at 2
 			for(auto bitOrder : {MSBFIRST, LSBFIRST}) {
 				settings.bitOrder = bitOrder;
@@ -165,10 +158,14 @@ public:
 					send(~0x12345678, bits);
 				}
 			}
+
+			printStats();
 		}
 
 		TEST_CASE("Byte sequences")
 		{
+			clearStats();
+
 			DEFINE_FSTR_LOCAL(seq1, "This is a longer sequence but no more than 64 bytes");
 			for(auto bitOrder : {MSBFIRST, LSBFIRST}) {
 				settings.bitOrder = bitOrder;
@@ -185,6 +182,8 @@ public:
 					send(seq2, offset);
 				}
 			}
+
+			printStats();
 		}
 	}
 
@@ -200,9 +199,10 @@ public:
 		Serial.println("SB first");
 		printBin(">", outValue);
 
+		beginTrans();
 		spi.beginTransaction(settings);
 		uint32_t inValue = spi.transfer32(outValue, bits);
-		spi.endTransaction();
+		endTrans(bits);
 
 		if(inValue != outValue) {
 			printBin("<", inValue);
@@ -226,9 +226,9 @@ public:
 		debug_i("TX %u bytes, startOffset %u, %cSB first", length, startOffset,
 				settings.bitOrder == MSBFIRST ? 'M' : 'L');
 
-		spi.beginTransaction(settings);
+		beginTrans();
 		spi.transfer(bufptr, length);
-		spi.endTransaction();
+		endTrans(length * 8);
 
 		auto outptr = outData.c_str() + startOffset;
 		if(memcmp(outptr, bufptr, length) != 0) {
@@ -244,8 +244,37 @@ public:
 	}
 
 private:
+	void clearStats()
+	{
+		cycleTimes.clear();
+		totalBitCount = 0;
+	}
+
+	__forceinline void beginTrans()
+	{
+		cycleTimes.start();
+		spi.beginTransaction(settings);
+	}
+
+	__forceinline void endTrans(size_t bitCount)
+	{
+		spi.endTransaction();
+		cycleTimes.update();
+		totalBitCount += bitCount;
+	}
+
+	void printStats()
+	{
+		Serial.println(cycleTimes);
+		unsigned kbps = 1e6 * totalBitCount / cycleTimes.getTotalTime();
+		Serial.print("Average bitrate: ");
+		Serial.print(kbps);
+		Serial.println(" kbit/s");
+	}
+
 	Timer timer;
 	MinMaxTimes<CycleTimer> cycleTimes;
+	size_t totalBitCount{0};
 	SPISettings settings;
 	unsigned loopCount{0};
 	bool allowFailure{false};
