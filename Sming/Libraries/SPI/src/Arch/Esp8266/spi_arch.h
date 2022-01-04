@@ -12,7 +12,6 @@
 
 /**
  * @brief Identifies bus selection
- * @addtogroup hw_spi
  *
  * @todo Add support for overlapped I/O using SPI0 pins.
  * Devices can be represented as SPI2, SPI3 and SPI4 as there are three CS available.

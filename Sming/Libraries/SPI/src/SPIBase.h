@@ -50,7 +50,7 @@ public:
 	}
 
 	/**
-	 * @brief Initialize the SPI bus by setting SCK, MOSI, and SS to outputs, pulling SCK and MOSI low, and SS high.
+	 * @brief Initialize the SPI bus by setting SCK and MOSI to outputs, pulling SCK and MOSI low.
 	 */
 	virtual bool begin() = 0;
 
@@ -80,17 +80,18 @@ public:
 	{
 	}
 
-	/** @brief Read one byte from SPI without setting up registers
-	 * 	@param	none
-	 * 	@retval	byte received
+	/**
+	 * @brief Read one byte from SPI without setting up registers
+	 * @param	none
+	 * @retval	byte received
 	 *
-	 * 	 used for performance tuning when doing continuous reads
-	 * 	 this method does not reset the registers , so make sure
-	 * 	 that a regular transfer(data) call was performed
+	 * Used for performance tuning when doing continuous reads
+	 * this method does not reset the registers, so make sure
+	 * that a regular transfer(data) call was performed
 	 *
-	 * 	 Note: this method is not found on the Arduino API
+	 * Note: this method is not found on the Arduino API
 	 *
-	 * 	 USE WITH CARE !!
+	 * USE WITH CARE !!
 	 *
 	 */
 	virtual uint8_t read8()
@@ -111,7 +112,7 @@ public:
 	 */
 
 	/**
-	 * @brief Send/receive one bytes of data
+	 * @brief Send/receive one byte of data
 	 * @param val The byte to send
 	 * @retval uint8_t The received byte
 	 */
@@ -158,6 +159,8 @@ public:
 
 	/**
 	 * @brief For testing, tie MISO <-> MOSI internally
+	 *
+	 * Note: Not included in std Arduino lib
 	 */
 	virtual bool loopback(bool enable) = 0;
 
@@ -165,7 +168,7 @@ public:
 	 * @brief  Default settings used by the SPI bus
 	 * until reset by beginTransaction(SPISettings)
 	 *
-	 * Note: not included in std Arduino lib
+	 * Note: Not included in std Arduino lib
 	 */
 	SPISettings SPIDefaultSettings;
 

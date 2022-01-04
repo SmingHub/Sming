@@ -11,7 +11,6 @@
 
 /**
  * @brief Identifies bus selection
- * @addtogroup hw_spi
  */
 enum class SpiBus {
 	INVALID = 0,

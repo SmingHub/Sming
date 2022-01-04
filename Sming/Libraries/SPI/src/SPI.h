@@ -11,10 +11,6 @@
  *
  */
 
-/** @defgroup hw_spi SPI Hardware support
- *  @brief    Provides hardware SPI support
- */
-
 #pragma once
 
 #include "SPIBase.h"
@@ -22,8 +18,13 @@
 #include <spi_arch.h>
 
 /**
+ * @defgroup hw_spi SPI Hardware support
+ * @brief    Provides hardware SPI support
+ * @{
+ */
+
+/**
  * @brief  Hardware SPI class
- * @addtogroup hw_spi
  */
 class SPIClass : public SPIBase
 {
@@ -72,3 +73,5 @@ private:
 
 /** @brief  Global instance of SPI class */
 extern SPIClass SPI;
+
+/** @} */

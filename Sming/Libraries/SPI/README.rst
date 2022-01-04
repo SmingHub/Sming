@@ -35,3 +35,19 @@ Build variables
    default: 0 (disabled)
 
    Enable to print additional debug messages.
+
+
+API Documentation
+-----------------
+
+.. doxygengroup:: base_spi
+   :content-only:
+   :members:
+
+.. doxygengroup:: hw_spi
+   :content-only:
+   :members:
+
+.. doxygengroup:: soft_spi
+   :content-only:
+   :members:
