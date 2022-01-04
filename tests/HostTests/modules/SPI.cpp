@@ -26,8 +26,7 @@ void printBin(const char* tag, uint32_t value)
 
 #ifdef TEST_SOFTWARE_SPI
 
-SPISoft sspi1;
-SPIBase& spi = sspi1;
+SPISoft spi(0);
 
 #else
 
@@ -54,9 +53,60 @@ public:
 		// spi.setup(SpiBus::SPI3);
 		spi.begin();
 
+#ifdef TEST_SOFTWARE_SPI
+		testSoftwareDelays();
+#else
+		testBitPatterns();
+#endif
+	}
+
+#ifdef TEST_SOFTWARE_SPI
+	void testSoftwareDelays()
+	{
+		TEST_CASE("Software SPI delay")
+		{
+			debug_w("Connect scope and measure");
+			settings.speed = 0;
+			constexpr unsigned duration{10};
+			constexpr unsigned loopInterval{250};
+			loopCount = 0;
+			delay = -1;
+			timer.initializeMs<loopInterval>([this]() {
+				if(loopCount-- == 0) {
+					Serial.println();
+
+					if(delay >= 150) {
+						timer.stop();
+						testBitPatterns();
+						return;
+					}
+
+					delay += (delay < 10) ? 1 : 5;
+					Serial.print("delay = ");
+					Serial.print(delay);
+					spi.setDelay(delay);
+					loopCount = duration * 1000 / loopInterval;
+				}
+
+				spi.beginTransaction(settings);
+				uint8_t data[]{0xAA, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x55};
+				spi.transfer(data, sizeof(data));
+				spi.endTransaction();
+
+				m_putc('.');
+			});
+			timer.start();
+			return pending();
+		}
+	}
+#endif
+
+	void testBitPatterns()
+	{
 		TEST_CASE("Bit Patterns")
 		{
 			debug_w("Connect scope and observe bit pattern");
+			clearStats();
 			constexpr unsigned duration{10};
 			constexpr unsigned loopInterval{250};
 			loopCount = duration * 1000 / loopInterval;
@@ -277,6 +327,7 @@ private:
 	size_t totalBitCount{0};
 	SPISettings settings;
 	unsigned loopCount{0};
+	int delay{0};
 	bool allowFailure{false};
 };
 
