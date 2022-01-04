@@ -1,4 +1,5 @@
 #include <HostTests.h>
+#include <Services/Profiling/MinMaxTimes.h>
 #include <SPISoft.h>
 
 // #define TEST_SOFTWARE_SPI
@@ -24,30 +25,36 @@ void printBin(const char* tag, uint32_t value)
 }
 
 #ifdef TEST_SOFTWARE_SPI
+
 constexpr uint8_t ss_miso = 12;
 constexpr uint8_t ss_mosi = 13;
 constexpr uint8_t ss_sck = 14;
 
 SPISoft sspi1(ss_miso, ss_mosi, ss_sck, 0);
+SPIBase& spi = sspi1;
+
+#else
+
+SPIBase& spi = SPI;
+
 #endif
+
+using CycleTimer = CpuCycleTimer;
+// using CycleTimer = CpuCycleTimerFast;
 
 } // namespace
 
 class SpiTest : public TestGroup
 {
 public:
-	SpiTest()
-		: TestGroup(_F("SPI")),
-#ifdef TEST_SOFTWARE_SPI
-		  spi(sspi1)
-#else
-		  spi(SPI)
-#endif
+	SpiTest() : TestGroup(F("SPI")), cycleTimes(F("Transaction Time"))
 	{
 	}
 
 	void execute() override
 	{
+		System.setCpuFrequency(CycleTimer::cpuFrequency());
+
 		// spi.setup(SpiBus::SPI3);
 		spi.begin();
 
@@ -84,16 +91,17 @@ public:
 	void bitPatterns()
 	{
 		settings.speed = 100000;
-		settings.bitOrder = MSBFIRST;
 		settings.dataMode = SPI_MODE0;
 		for(uint8_t bitOrder : {MSBFIRST, LSBFIRST}) {
 			settings.bitOrder = bitOrder;
+			cycleTimes.start();
 			spi.beginTransaction(settings);
 			spi.transfer32(0x00AA00AA);
 			spi.transfer32(0x12345678);
 			uint8_t data[]{0x12, 0x34, 0x56, 0x78, 0x9A};
 			spi.transfer(data, ARRAY_SIZE(data));
 			spi.endTransaction();
+			cycleTimes.update();
 			delayMicroseconds(100);
 		}
 
@@ -101,9 +109,11 @@ public:
 		for(auto dataMode : {SPI_MODE0, SPI_MODE1, SPI_MODE2, SPI_MODE3}) {
 			settings.bitOrder = MSBFIRST;
 			settings.dataMode = dataMode;
+			cycleTimes.start();
 			spi.beginTransaction(settings);
 			spi.transfer32(0xAA, 13);
 			spi.endTransaction();
+			cycleTimes.update();
 			delayMicroseconds(100);
 		}
 
@@ -119,9 +129,15 @@ public:
 		}
 
 		timer.stop();
-		loopbackTests();
+		m_puts("\r\n");
+
+		cycleTimes.printTo(Serial);
+
+		// loopbackTests();
 		spi.end();
 		complete();
+
+		System.setCpuFrequency(CpuCycleClockNormal::cpuFrequency());
 	}
 
 	void loopbackTests()
@@ -186,6 +202,8 @@ public:
 
 		spi.beginTransaction(settings);
 		uint32_t inValue = spi.transfer32(outValue, bits);
+		spi.endTransaction();
+
 		if(inValue != outValue) {
 			printBin("<", inValue);
 			Serial.print("RX 0x");
@@ -207,8 +225,11 @@ public:
 
 		debug_i("TX %u bytes, startOffset %u, %cSB first", length, startOffset,
 				settings.bitOrder == MSBFIRST ? 'M' : 'L');
+
 		spi.beginTransaction(settings);
 		spi.transfer(bufptr, length);
+		spi.endTransaction();
+
 		auto outptr = outData.c_str() + startOffset;
 		if(memcmp(outptr, bufptr, length) != 0) {
 			length = std::min(length, 64U);
@@ -223,8 +244,8 @@ public:
 	}
 
 private:
-	SPIBase& spi;
 	Timer timer;
+	MinMaxTimes<CycleTimer> cycleTimes;
 	SPISettings settings;
 	unsigned loopCount{0};
 	bool allowFailure{false};
