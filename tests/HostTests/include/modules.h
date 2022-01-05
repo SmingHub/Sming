@@ -17,7 +17,6 @@
 #endif
 
 #define TEST_MAP(XX)                                                                                                   \
-	XX(SPI)                                                                                                            \
 	XX(System)                                                                                                         \
 	XX(SpiFlash)                                                                                                       \
 	XX(Libc)                                                                                                           \

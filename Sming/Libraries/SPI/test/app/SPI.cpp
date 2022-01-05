@@ -1,10 +1,6 @@
-#include <HostTests.h>
+#include <SmingTest.h>
 #include <Services/Profiling/MinMaxTimes.h>
 #include <SPISoft.h>
-
-// #define TEST_SOFTWARE_SPI
-
-#if defined(ARCH_ESP8266) || defined(ARCH_ESP32)
 
 namespace
 {
@@ -24,7 +20,7 @@ void printBin(const char* tag, uint32_t value)
 	m_puts("\r\n");
 }
 
-#ifdef TEST_SOFTWARE_SPI
+#if SPISOFT_ENABLE
 
 SPISoft spi(0);
 
@@ -34,8 +30,11 @@ SPIBase& spi = SPI;
 
 #endif
 
+#if CPU_FAST
+using CycleTimer = CpuCycleTimerFast;
+#else
 using CycleTimer = CpuCycleTimer;
-// using CycleTimer = CpuCycleTimerFast;
+#endif
 
 } // namespace
 
@@ -44,6 +43,7 @@ class SpiTest : public TestGroup
 public:
 	SpiTest() : TestGroup(F("SPI")), cycleTimes(F("Transaction Time"))
 	{
+		debug_i("Testing %sware SPI", SPISOFT_ENABLE ? "Soft" : "Hard");
 	}
 
 	void execute() override
@@ -53,21 +53,38 @@ public:
 		// spi.setup(SpiBus::SPI3);
 		spi.begin();
 
-#ifdef TEST_SOFTWARE_SPI
+		settings.speed = 150e3;
+		spi.beginTransaction(settings);
+		settings.speed = 2e6;
+		spi.beginTransaction(settings);
+		settings.speed = 1e6;
+		spi.beginTransaction(settings);
+		settings.speed = 800e3;
+		spi.beginTransaction(settings);
+		settings.speed = 10000;
+		spi.beginTransaction(settings);
+		settings.speed = 30000;
+		spi.beginTransaction(settings);
+		settings.speed = 50000;
+		spi.beginTransaction(settings);
+		settings.speed = 1;
+		spi.beginTransaction(settings);
+
+#if SPISOFT_ENABLE && SPISOFT_CALIBRATE
 		testSoftwareDelays();
 #else
 		testBitPatterns();
 #endif
 	}
 
-#ifdef TEST_SOFTWARE_SPI
+#if SPISOFT_ENABLE && SPISOFT_CALIBRATE
 	void testSoftwareDelays()
 	{
 		TEST_CASE("Software SPI delay")
 		{
 			debug_w("Connect scope and measure");
 			settings.speed = 0;
-			constexpr unsigned duration{10};
+			constexpr unsigned duration{5};
 			constexpr unsigned loopInterval{250};
 			loopCount = 0;
 			delay = -1;
@@ -331,11 +348,11 @@ private:
 	bool allowFailure{false};
 };
 
-#endif
-
 void REGISTER_TEST(SPI)
 {
-#if defined(ARCH_ESP8266) || defined(ARCH_ESP32)
+#ifdef ARCH_HOST
+	debug_i("Host has nothing useful to do here...");
+#else
 	registerGroup<SpiTest>();
 #endif
 }
