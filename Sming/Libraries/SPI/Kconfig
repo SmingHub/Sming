@@ -1,0 +1,18 @@
+menu "SPI Library"
+    config SPISOFT_DELAY_VARIABLE
+        bool "Variable clock delay"
+        default N
+
+    config SPISOFT_DELAY_FIXED
+        int "Fixed clock delay"
+        default 0
+        range 0 10
+        depends on !SPISOFT_DELAY_VARIABLE
+        help
+            Inserts one CPU 'nop' instruction after every SCK transition
+
+    config ENABLE_SPI_DEBUG
+        bool "Enable SPI debug output"
+        default N
+
+endmenu
