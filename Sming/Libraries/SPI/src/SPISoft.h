@@ -36,12 +36,6 @@
 class SPISoft : public SPIBase
 {
 public:
-	static constexpr SpiPins defaultPins{
-		.sck = 14,
-		.miso = 12,
-		.mosi = 13,
-	};
-
 	/**
 	 * @name Constructors
 	 * @{
@@ -50,9 +44,7 @@ public:
 	/**
 	 * @brief Default constructor uses same pins as hardware SPI
 	 */
-	SPISoft() : SPIBase(defaultPins)
-	{
-	}
+	SPISoft();
 
 	/**
 	 * @brief Specify pins to use plus optional delay
@@ -73,9 +65,7 @@ public:
 	/**
 	 * @brief Use default pins but provide a delay
 	 */
-	SPISoft(uint8_t delay) : SPIBase(defaultPins), m_delay(delay)
-	{
-	}
+	SPISoft(uint8_t delay);
 
 	/** @} */
 

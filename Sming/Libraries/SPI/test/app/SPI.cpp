@@ -51,7 +51,9 @@ public:
 		System.setCpuFrequency(CycleTimer::cpuFrequency());
 
 		// spi.setup(SpiBus::SPI3);
-		spi.begin();
+		REQUIRE(spi.begin());
+
+		debug_w("Connected SCK %u, MISO %u, MOSI %u", spi.pins.sck, spi.pins.miso, spi.pins.mosi);
 
 		settings.speed = 150e3;
 		spi.beginTransaction(settings);

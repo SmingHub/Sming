@@ -248,6 +248,11 @@ bool SPIClass::begin()
 		return false;
 	}
 
+	if(pins.sck >= 32 || pins.miso >= 32 || pins.mosi >= 32) {
+		debug_e("[SPI] Only bank 0 pins supported");
+		return false;
+	}
+
 	// Check pins
 	auto& defPins = defaultPins[unsigned(busId) - 1];
 	if(pins.sck == SPI_PIN_DEFAULT) {

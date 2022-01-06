@@ -20,9 +20,13 @@
 #include <esp_systemapi.h>
 #include <spisoft_arch.h>
 
+#ifndef SPISOFT_ARCH_DELAY_FIXED
+#define SPISOFT_ARCH_DELAY_FIXED 0
+#endif
+
 #define FUNC_OPT __attribute__((optimize(3)))
 
-namespace
+namespace spisoft
 {
 #define SCK_SETUP() GP_OUT(pins.sck, ~cksample)
 #define SCK_SAMPLE() GP_OUT(pins.sck, cksample)
@@ -36,9 +40,9 @@ namespace
 #define SPISOFT_DELAY_FIXED 0
 #endif
 
-static_assert(SPISOFT_DELAY_FIXED >= 0 && SPISOFT_DELAY_FIXED <= 12, "SPISOFT_DELAY_FIXED invalid");
+static_assert(SPISOFT_DELAY_FIXED >= 0 && SPISOFT_DELAY_FIXED <= 20, "SPISOFT_DELAY_FIXED invalid");
 
-template <int n = SPISOFT_DELAY_FIXED> __forceinline void fixedDelay()
+template <int n = SPISOFT_DELAY_FIXED + SPISOFT_ARCH_DELAY_FIXED> __forceinline void fixedDelay()
 {
 	__asm__ volatile("nop" :::);
 	fixedDelay<n - 1>();
@@ -60,7 +64,17 @@ __forceinline void fastDelay(int d)
 #endif
 }
 
-} // namespace
+} // namespace spisoft
+
+using namespace spisoft;
+
+SPISoft::SPISoft() : SPIBase(spisoft::defaultPins)
+{
+}
+
+SPISoft::SPISoft(uint8_t delay) : SPIBase(spisoft::defaultPins), m_delay(delay)
+{
+}
 
 bool SPISoft::begin()
 {

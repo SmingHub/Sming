@@ -12,3 +12,13 @@
 
 #define GP_IN(pin) digitalRead(pin)
 #define GP_OUT(pin, val) digitalWrite(pin, (val)&1)
+
+namespace spisoft
+{
+constexpr SpiPins defaultPins{
+	.sck = 14,
+	.miso = 12,
+	.mosi = 13,
+};
+
+} // namespace spisoft

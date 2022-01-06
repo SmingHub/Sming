@@ -10,9 +10,23 @@
 
 #pragma once
 
-#define GP_IN(pin) ((GPIO_REG_READ(GPIO_IN_ADDRESS) >> (pin)) & 1)
-#define GP_OUT(pin, val) GPIO_REG_WRITE((GPIO_OUT_W1TC_ADDRESS >> ((val)&1)), BIT(pin))
+#include <fast_io.h>
+
+#define GP_IN(pin) GP_FAST_READ(pin, PERIPHS_GPIO_BASEADDR + GPIO_IN_ADDRESS)
+#define GP_OUT(pin, val)                                                                                               \
+	GP_FAST_WRITE(pin, val, PERIPHS_GPIO_BASEADDR + GPIO_OUT_W1TC_ADDRESS,                                             \
+				  PERIPHS_GPIO_BASEADDR + GPIO_OUT_W1TS_ADDRESS)
+
+namespace spisoft
+{
+constexpr SpiPins defaultPins{
+	.sck = 14,
+	.miso = 12,
+	.mosi = 13,
+};
 
 #ifdef SPISOFT_DELAY_VARIABLE
 uint8_t checkSpeed(SPISpeed& speed);
 #endif
+
+} // namespace spisoft

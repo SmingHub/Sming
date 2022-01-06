@@ -11,6 +11,18 @@
 #pragma once
 
 #include <hal/gpio_ll.h>
+#include <soc/spi_pins.h>
+#include <fast_io.h>
 
-#define GP_IN(pin) gpio_ll_get_level(&GPIO, gpio_num_t(pin))
-#define GP_OUT(pin, val) gpio_ll_set_level(&GPIO, gpio_num_t(pin), (val)&1)
+#define GP_IN(pin) GP_FAST_READ(pin, GPIO_IN_REG)
+#define GP_OUT(pin, val) GP_FAST_WRITE(pin, val, GPIO_OUT_W1TC_REG, GPIO_OUT_W1TS_REG)
+
+namespace spisoft
+{
+constexpr SpiPins defaultPins{
+	.sck = SPI2_IOMUX_PIN_NUM_CLK,
+	.miso = SPI2_IOMUX_PIN_NUM_MISO,
+	.mosi = SPI2_IOMUX_PIN_NUM_MOSI,
+};
+
+}
