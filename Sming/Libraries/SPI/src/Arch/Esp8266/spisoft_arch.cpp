@@ -23,8 +23,8 @@ namespace
  * Two tables are required depending on currently selected CPU frequency.
  */
 
-DEFINE_FSTR_ARRAY(table80, uint16_t, 1005, 1010, 1074, 1139, 1205, 1260, 1325, 1389)
-DEFINE_FSTR_ARRAY(table160, uint16_t, 568, 569, 605, 632, 668, 694, 730, 757)
+DEFINE_FSTR_ARRAY(table80, uint16_t, 737, 760, 823, 886, 948, 1011, 1073, 1135)
+DEFINE_FSTR_ARRAY(table160, uint16_t, 469, 470, 475, 511, 537, 573, 600, 636)
 
 /*
  * Longer delay values are calculated, these are linearly proportional to period.
@@ -38,8 +38,8 @@ struct CoEfficient {
 constexpr int M{16}; // Scalar to store values to one DP
 
 constexpr CoEfficient coefficients[2]{
-	{int16_t(124.5 * M), 463},
-	{int16_t(62.4 * M), 294},
+	{int16_t(124.9 * M), 224},
+	{int16_t(62.5 * M), 175},
 };
 
 } // namespace

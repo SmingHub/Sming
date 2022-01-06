@@ -36,11 +36,11 @@ namespace
 #define SPISOFT_DELAY_FIXED 0
 #endif
 
-static_assert(SPISOFT_DELAY_FIXED >= 0 && SPISOFT_DELAY_FIXED <= 10, "SPISOFT_DELAY_FIXED invalid");
+static_assert(SPISOFT_DELAY_FIXED >= 0 && SPISOFT_DELAY_FIXED <= 12, "SPISOFT_DELAY_FIXED invalid");
 
 template <int n = SPISOFT_DELAY_FIXED> __forceinline void fixedDelay()
 {
-	__asm__ volatile("nop");
+	__asm__ volatile("nop" :::);
 	fixedDelay<n - 1>();
 }
 
@@ -53,7 +53,7 @@ __forceinline void fastDelay(int d)
 	fixedDelay();
 #ifdef SPISOFT_DELAY_VARIABLE
 	while(d-- > 0) {
-		__asm__ volatile("nop");
+		__asm__ volatile("nop" :::);
 	}
 #else
 	(void)d;

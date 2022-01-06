@@ -6,7 +6,7 @@ menu "SPI Library"
     config SPISOFT_DELAY_FIXED
         int "Fixed clock delay"
         default 0
-        range 0 10
+        range 0 12
         depends on !SPISOFT_DELAY_VARIABLE
         help
             Inserts one CPU 'nop' instruction after every SCK transition

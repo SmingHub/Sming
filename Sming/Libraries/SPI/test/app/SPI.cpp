@@ -92,13 +92,19 @@ public:
 				if(loopCount-- == 0) {
 					Serial.println();
 
-					if(delay >= 150) {
+					if(delay >= 100) {
 						timer.stop();
 						testBitPatterns();
 						return;
 					}
 
-					delay += (delay < 10) ? 1 : 5;
+					if(delay >= 20) {
+						delay += 10;
+					} else if(delay < 12) {
+						++delay;
+					} else {
+						delay = 20;
+					}
 					Serial.print("delay = ");
 					Serial.print(delay);
 					spi.setDelay(delay);
