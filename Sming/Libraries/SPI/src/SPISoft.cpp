@@ -18,31 +18,12 @@
 
 #include "SPISoft.h"
 #include <esp_systemapi.h>
-#include <FlashString/Array.hpp>
+#include <spisoft_arch.h>
 
 #define FUNC_OPT __attribute__((optimize(3)))
 
 namespace
 {
-#ifdef ARCH_ESP8266
-
-#define GP_REG(val) (GPIO_OUT_W1TC_ADDRESS >> ((val)&1))
-#define GP_IN(pin) ((GPIO_REG_READ(GPIO_IN_ADDRESS) >> (pin)) & 1)
-#define GP_OUT(pin, val) GPIO_REG_WRITE(GP_REG(val), BIT(pin))
-#define SCK_MOSI_WRITE(val) GPIO_REG_WRITE(GP_REG(val), BIT(pins.sck) | BIT(pins.mosi))
-
-#else
-
-#define GP_IN(pin) digitalRead(pin)
-#define GP_OUT(pin, val) digitalWrite(pin, val & 1)
-#define SCK_MOSI_WRITE(val)                                                                                            \
-	do {                                                                                                               \
-		digitalWrite(pins.sck, val & 1);                                                                               \
-		digitalWrite(pins.mosi, val & 1);                                                                              \
-	} while(0)
-
-#endif
-
 #define SCK_SETUP() GP_OUT(pins.sck, ~cksample)
 #define SCK_SAMPLE() GP_OUT(pins.sck, cksample)
 #define SCK_IDLE() GP_OUT(pins.sck, cpol)
@@ -78,99 +59,6 @@ __forceinline void fastDelay(int d)
 	(void)d;
 #endif
 }
-
-#if defined(SPISOFT_DELAY_VARIABLE) && defined(ARCH_ESP8266)
-
-/*
- * Matching small delay values to frequency reuires a lookup table as the relationship is non-linear.
- * Given values are clock period in ns, found by measurement.
- *
- * Two tables are required depending on currently selected CPU frequency.
- */
-
-DEFINE_FSTR_ARRAY(table80, uint16_t, 1005, 1010, 1074, 1139, 1205, 1260, 1325, 1389)
-DEFINE_FSTR_ARRAY(table160, uint16_t, 568, 569, 605, 632, 668, 694, 730, 757)
-
-/*
- * Longer delay values are calculated, these are linearly proportional to period.
- */
-
-struct CoEfficient {
-	int16_t m;
-	int16_t c;
-};
-
-constexpr int M{16}; // Scalar to store values to one DP
-
-constexpr CoEfficient coefficients[2]{
-	{int16_t(124.5 * M), 463},
-	{int16_t(62.4 * M), 294},
-};
-
-uint8_t checkSpeed(SPISpeed& speed)
-{
-	constexpr int maxDelay{255};
-
-	union SpeedConfig {
-		uint32_t val;
-		struct {
-			uint8_t cpuFreq;
-			uint8_t delay;
-		};
-	};
-
-	SpeedConfig cfg{speed.regVal};
-
-	// A change in CPU frequency or requested frequency will fail this check
-	auto cpuFreq = system_get_cpu_freq();
-	if(cfg.cpuFreq == cpuFreq) {
-		// Already calculated, done
-		return cfg.delay;
-	}
-
-	constexpr int NS = 1000000000;
-
-	auto periodRequired = NS / speed.frequency;
-	const FSTR::Array<uint16_t>& table = (cpuFreq <= 80) ? table80 : table160;
-	int delay = table.length() - 1;
-	uint16_t period = table[delay];
-	if(period == periodRequired) {
-		// OK, entry matches
-	} else if(period > periodRequired) {
-		// Value is in table, match highest frequency not exceeding requested value
-		for(uint8_t i = 0; i < table.length(); ++i) {
-			period = table[i];
-			if(period >= periodRequired) {
-				delay = i;
-				break;
-			}
-		}
-	} else {
-		// Calculate the delay, and resulting clock frequency
-		auto coeff = coefficients[(cpuFreq <= 80) ? 0 : 1];
-		if(periodRequired == 0) {
-			delay = maxDelay;
-		} else {
-			delay = M * (periodRequired - coeff.c) / coeff.m;
-			delay = std::min(delay, maxDelay);
-		}
-#ifdef SPI_DEBUG
-		period = (coeff.m * delay / M) + coeff.c;
-#endif
-	}
-
-	cfg.cpuFreq = cpuFreq;
-	cfg.delay = delay;
-	speed.regVal = cfg.val;
-
-#ifdef SPI_DEBUG
-	debugf("[SSPI] Using delay %u -> target freq %u -> result %u", delay, speed.frequency, NS / period);
-#endif
-
-	return cfg.delay;
-}
-
-#endif
 
 } // namespace
 

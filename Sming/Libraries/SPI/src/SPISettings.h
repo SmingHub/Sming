@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "Digital.h"
+#include <Digital.h>
 #include <sming_attr.h>
 #ifdef SPI_DEBUG
 #include <debug_progmem.h>
