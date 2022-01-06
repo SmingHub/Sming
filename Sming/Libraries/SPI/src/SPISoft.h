@@ -36,6 +36,12 @@
 class SPISoft : public SPIBase
 {
 public:
+	static constexpr SpiPins defaultPins{
+		.sck = 14,
+		.miso = 12,
+		.mosi = 13,
+	};
+
 	/**
 	 * @name Constructors
 	 * @{
@@ -44,7 +50,7 @@ public:
 	/**
 	 * @brief Default constructor uses same pins as hardware SPI
 	 */
-	SPISoft()
+	SPISoft() : SPIBase(defaultPins)
 	{
 	}
 
@@ -53,21 +59,21 @@ public:
 	 *
 	 * Delay is ignored if code is not compiled with SPISOFT_DELAY < 0.
 	 */
-	SPISoft(uint8_t miso, uint8_t mosi, uint8_t sck, uint8_t delay = 0) : pins{sck, miso, mosi}, m_delay(delay)
+	SPISoft(uint8_t miso, uint8_t mosi, uint8_t sck, uint8_t delay = 0) : SPISoft({sck, miso, mosi}, delay)
 	{
 	}
 
 	/**
 	 * @brief Specify pins plus optional delay
 	 */
-	SPISoft(const SpiPins& pins, uint8_t delay = 0) : pins(pins), m_delay(delay)
+	SPISoft(const SpiPins& pins, uint8_t delay = 0) : SPIBase(pins), m_delay(delay)
 	{
 	}
 
 	/**
 	 * @brief Use default pins but provide a delay
 	 */
-	SPISoft(uint8_t delay) : m_delay(delay)
+	SPISoft(uint8_t delay) : SPIBase(defaultPins), m_delay(delay)
 	{
 	}
 
@@ -75,7 +81,7 @@ public:
 
 	bool setup(SpiPins pins)
 	{
-		this->pins = pins;
+		this->mPins = pins;
 		return true;
 	}
 
@@ -120,7 +126,6 @@ private:
 	uint32_t transferWordLSB(uint32_t word, uint8_t bits);
 	uint32_t transferWordMSB(uint32_t word, uint8_t bits);
 
-	SpiPins pins;
 	uint8_t m_delay{0};
 	SpiMode dataMode{SPI_MODE0};
 	uint8_t cpol{0};

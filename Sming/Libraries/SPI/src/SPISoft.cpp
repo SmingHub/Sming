@@ -22,10 +22,6 @@
 
 #define FUNC_OPT __attribute__((optimize(3)))
 
-#define PIN_SCK_DEFAULT 14
-#define PIN_MISO_DEFAULT 12
-#define PIN_MOSI_DEFAULT 13
-
 namespace
 {
 #ifdef ARCH_ESP8266
@@ -189,18 +185,18 @@ bool SPISoft::begin()
 #endif
 
 	if(pins.sck == SPI_PIN_DEFAULT) {
-		pins.sck = PIN_SCK_DEFAULT;
+		mPins.sck = defaultPins.sck;
 	}
 	pinMode(pins.sck, OUTPUT);
 
 	if(pins.miso == SPI_PIN_DEFAULT) {
-		pins.miso = PIN_MISO_DEFAULT;
+		mPins.miso = defaultPins.miso;
 	}
 	pinMode(pins.miso, INPUT);
 	digitalWrite(pins.miso, HIGH);
 
 	if(pins.mosi == SPI_PIN_DEFAULT) {
-		pins.mosi = PIN_MOSI_DEFAULT;
+		mPins.mosi = defaultPins.mosi;
 	}
 	pinMode(pins.mosi, OUTPUT);
 

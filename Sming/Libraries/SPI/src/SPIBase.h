@@ -37,6 +37,11 @@ struct SpiPins {
 	uint8_t sck{SPI_PIN_DEFAULT};
 	uint8_t miso{SPI_PIN_DEFAULT};
 	uint8_t mosi{SPI_PIN_DEFAULT};
+
+	bool operator==(const SpiPins& other) const
+	{
+		return sck == other.sck && miso == other.miso && mosi == other.mosi;
+	}
 };
 
 /*
@@ -45,6 +50,10 @@ struct SpiPins {
 class SPIBase
 {
 public:
+	SPIBase(const SpiPins& pins) : mPins(pins)
+	{
+	}
+
 	virtual ~SPIBase()
 	{
 	}
@@ -172,12 +181,16 @@ public:
 	 */
 	SPISettings SPIDefaultSettings;
 
+	const SpiPins& pins{mPins};
+
 protected:
 	/**
 	 * @brief Prepare/configure with settings
 	 * @param  settings include frequency, byte order and SPI mode
 	 */
 	virtual void prepare(SPISettings& settings) = 0;
+
+	SpiPins mPins;
 };
 
 /** @} */

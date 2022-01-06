@@ -215,6 +215,10 @@ BitSet<uint8_t, SpiBus, SOC_SPI_PERIPH_NUM + 1> busAssigned;
 
 } // namespace
 
+SPIClass::SPIClass() : SPIBase(defaultPins[unsigned(SpiBus::DEFAULT) - 1])
+{
+}
+
 bool SPIClass::setup(SpiBus busId, SpiPins pins)
 {
 	if(busId < SpiBus::MIN || busId > SpiBus::MAX) {
@@ -228,7 +232,7 @@ bool SPIClass::setup(SpiBus busId, SpiPins pins)
 	}
 
 	this->busId = busId;
-	this->pins = pins;
+	mPins = pins;
 	return true;
 }
 
@@ -247,13 +251,13 @@ bool SPIClass::begin()
 	// Check pins
 	auto& defPins = defaultPins[unsigned(busId) - 1];
 	if(pins.sck == SPI_PIN_DEFAULT) {
-		pins.sck = defPins.sck;
+		mPins.sck = defPins.sck;
 	}
 	if(pins.miso == SPI_PIN_DEFAULT) {
-		pins.miso = defPins.miso;
+		mPins.miso = defPins.miso;
 	}
 	if(pins.mosi == SPI_PIN_DEFAULT) {
-		pins.mosi = defPins.mosi;
+		mPins.mosi = defPins.mosi;
 	}
 
 	bool pinsOk = true;

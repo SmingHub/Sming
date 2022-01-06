@@ -202,7 +202,7 @@ public:
 	{
 		if(!spi.loopback(true)) {
 			debug_w("WARNING: SPI loopback not supported. Manual connection required.");
-			debug_w("ESP8266: Connect MISO (GPIO12/D6) <-> MOSI (GPIO13/D7)");
+			debug_w("Connect MISO (GPIO%u) <-> MOSI (GPIO%u)", spi.pins.miso, spi.pins.mosi);
 			allowFailure = true;
 		}
 

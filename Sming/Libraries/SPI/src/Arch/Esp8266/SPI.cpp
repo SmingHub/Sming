@@ -35,6 +35,11 @@ SPIClass SPI;
 
 namespace
 {
+constexpr SpiPins defaultPins{
+	.sck = 14,
+	.miso = 12,
+	.mosi = 13,
+};
 constexpr size_t SPI_FIFO_SIZE{64};
 
 bool busAssigned;
@@ -250,9 +255,13 @@ void SpiDevice::set_clock(SPISpeed& speed)
 
 } // namespace
 
+SPIClass::SPIClass() : SPIBase(defaultPins)
+{
+}
+
 bool SPIClass::setup(SpiBus id, SpiPins pins)
 {
-	return (id == SpiBus::DEFAULT) && (pins.sck == 14) && (pins.miso == 12) && (pins.mosi == 13);
+	return (id == SpiBus::DEFAULT) && pins == defaultPins;
 }
 
 bool SPIClass::begin()

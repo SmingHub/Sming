@@ -29,10 +29,7 @@
 class SPIClass : public SPIBase
 {
 public:
-	SPIClass()
-	{
-	}
-
+	SPIClass();
 	SPIClass(const SPIClass&) = delete;
 	SPIClass& operator=(const SPIClass&) = delete;
 
@@ -66,7 +63,6 @@ protected:
 private:
 #ifdef ARCH_ESP32
 	SpiBus busId{SpiBus::DEFAULT};
-	SpiPins pins;
 #endif
 	bool lsbFirst{false};
 };
