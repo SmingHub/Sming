@@ -190,6 +190,22 @@ protected:
 	 */
 	virtual void prepare(SPISettings& settings) = 0;
 
+	/**
+	 * @brief Assign any default pins
+	 */
+	void assignDefaultPins(const SpiPins& defPins)
+	{
+		if(pins.sck == SPI_PIN_DEFAULT) {
+			mPins.sck = defPins.sck;
+		}
+		if(pins.miso == SPI_PIN_DEFAULT) {
+			mPins.miso = defPins.miso;
+		}
+		if(pins.mosi == SPI_PIN_DEFAULT) {
+			mPins.mosi = defPins.mosi;
+		}
+	}
+
 	SpiPins mPins;
 };
 

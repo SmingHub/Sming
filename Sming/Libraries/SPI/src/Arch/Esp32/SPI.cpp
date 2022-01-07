@@ -47,15 +47,13 @@ namespace
 {
 constexpr size_t SPI_FIFO_SIZE{64};
 
-#define DEFPIN(bus, sig) bus##_IOMUX_PIN_NUM_##sig
-
-const SpiPins defaultPins[] = {
-	{DEFPIN(SPI, CLK), DEFPIN(SPI, MISO), DEFPIN(SPI, MOSI)},
-	{DEFPIN(SPI2, CLK), DEFPIN(SPI2, MISO), DEFPIN(SPI2, MOSI)},
+const SpiPins defaultPins[]{
+	{.sck = SPI_IOMUX_PIN_NUM_CLK, .miso = SPI_IOMUX_PIN_NUM_MISO, .mosi = SPI_IOMUX_PIN_NUM_MOSI},
+	{.sck = SPI2_IOMUX_PIN_NUM_CLK, .miso = SPI2_IOMUX_PIN_NUM_MISO, .mosi = SPI2_IOMUX_PIN_NUM_MOSI},
 #ifdef SPI3_IOMUX_PIN_NUM_CLK
-	{DEFPIN(SPI3, CLK), DEFPIN(SPI3, MISO), DEFPIN(SPI3, MOSI)},
+	{.sck = SPI3_IOMUX_PIN_NUM_CLK, .miso = SPI3_IOMUX_PIN_NUM_MISO, .mosi = SPI3_IOMUX_PIN_NUM_MOSI},
 #else
-	SpiPins{},
+	{.sck = SPI_PIN_DEFAULT, .miso = SPI_PIN_DEFAULT, .mosi = SPI_PIN_DEFAULT},
 #endif
 };
 
@@ -248,22 +246,7 @@ bool SPIClass::begin()
 		return false;
 	}
 
-	if(pins.sck >= 32 || pins.miso >= 32 || pins.mosi >= 32) {
-		debug_e("[SPI] Only bank 0 pins supported");
-		return false;
-	}
-
-	// Check pins
-	auto& defPins = defaultPins[unsigned(busId) - 1];
-	if(pins.sck == SPI_PIN_DEFAULT) {
-		mPins.sck = defPins.sck;
-	}
-	if(pins.miso == SPI_PIN_DEFAULT) {
-		mPins.miso = defPins.miso;
-	}
-	if(pins.mosi == SPI_PIN_DEFAULT) {
-		mPins.mosi = defPins.mosi;
-	}
+	assignDefaultPins(defaultPins[unsigned(busId) - 1]);
 
 	bool pinsOk = true;
 	if(!GPIO_IS_VALID_OUTPUT_GPIO(pins.sck)) {

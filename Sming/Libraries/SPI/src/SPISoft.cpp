@@ -78,28 +78,26 @@ SPISoft::SPISoft(uint8_t delay) : SPIBase(spisoft::defaultPins), m_delay(delay)
 
 bool SPISoft::begin()
 {
+	assignDefaultPins(defaultPins);
+
 #ifdef ARCH_ESP8266
 	if(16 == pins.miso || 16 == pins.mosi || 16 == pins.sck) {
 		/*To be able to use fast/simple GPIO read/write GPIO16 is not supported*/
-		debugf("SPISoft: GPIO 16 not supported\n");
+		debug_e("[SPISoft] GPIO 16 not supported\n");
+		return false;
+	}
+#elif defined(ARCH_ESP32)
+	if(pins.sck >= 32 || pins.miso >= 32 || pins.mosi >= 32) {
+		debug_e("[SPISoft] Only bank 0 pins supported");
 		return false;
 	}
 #endif
 
-	if(pins.sck == SPI_PIN_DEFAULT) {
-		mPins.sck = defaultPins.sck;
-	}
 	pinMode(pins.sck, OUTPUT);
 
-	if(pins.miso == SPI_PIN_DEFAULT) {
-		mPins.miso = defaultPins.miso;
-	}
 	pinMode(pins.miso, INPUT);
 	digitalWrite(pins.miso, HIGH);
 
-	if(pins.mosi == SPI_PIN_DEFAULT) {
-		mPins.mosi = defaultPins.mosi;
-	}
 	pinMode(pins.mosi, OUTPUT);
 
 	prepare(SPIDefaultSettings);
