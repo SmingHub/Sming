@@ -89,6 +89,21 @@ public:
 	{
 	}
 
+	void write(uint8_t data)
+	{
+		transfer(data);
+	}
+
+	void write16(uint16_t data)
+	{
+		transfer16(data);
+	}
+
+	void write32(uint32_t data)
+	{
+		transfer32(data);
+	}
+
 	/**
 	 * @brief Read one byte from SPI without setting up registers
 	 * @param	none
