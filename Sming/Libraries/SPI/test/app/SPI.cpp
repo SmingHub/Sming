@@ -221,10 +221,13 @@ public:
 		{
 			clearStats();
 
-			// Note: Single-bit transfers fail on esp32c3... so start at 2
+			/*
+			 * Note: Single-bit transfers fail on esp32c3, and RP2040 doesn't
+			 * support less than 4 bits. So start at 4.
+			 */
 			for(auto bitOrder : {MSBFIRST, LSBFIRST}) {
 				settings.bitOrder = bitOrder;
-				for(auto bits : {2, 3, 7, 8, 9, 15, 16, 17, 19, 23, 24, 25, 29, 30, 31}) {
+				for(auto bits : {4, 7, 8, 9, 15, 16, 17, 19, 23, 24, 25, 29, 30, 31}) {
 					send(0, bits);
 					send(0xffffffff, bits);
 					send(0xaaaaaaaa, bits);

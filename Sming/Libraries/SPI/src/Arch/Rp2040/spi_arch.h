@@ -10,6 +10,16 @@
 
 #pragma once
 
+static constexpr uint8_t SOC_SPI_PERIPH_NUM{2};
+
+/**
+ * @brief Identifies bus selection
+ */
 enum class SpiBus {
-	DEFAULT = 0,
+	INVALID = 0,
+	MIN = 1,
+	SPI1 = 1,
+	SPI2 = 2,
+	MAX = SOC_SPI_PERIPH_NUM,
+	DEFAULT = SPI1,
 };

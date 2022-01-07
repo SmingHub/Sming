@@ -61,8 +61,11 @@ protected:
 	void prepare(SPISettings& settings) override;
 
 private:
-#ifdef ARCH_ESP32
+#if defined(ARCH_ESP32) || defined(ARCH_RP2040)
 	SpiBus busId{SpiBus::DEFAULT};
+#endif
+#ifdef ARCH_RP2040
+	uint16_t cr0val{0};
 #endif
 	bool lsbFirst{false};
 };
