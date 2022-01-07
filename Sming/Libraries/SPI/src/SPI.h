@@ -57,14 +57,32 @@ public:
 
 	bool loopback(bool enable) override;
 
+#ifdef ARCH_HOST
+	/**
+	 * @brief Used for testing purposes only
+	 * @param c Value being read/written
+	 * @param bits Size of value in bits
+	 * @param read true for incoming value, false for outgoing
+	 */
+	using IoCallback = void (*)(uint16_t c, uint8_t bits, bool read);
+
+	/**
+	 * @brief Used for testing purposes only
+	 * Must be called *after* begin().
+	 *
+	 * Used to verify serialisation/de-searialisation bit ordering
+	 */
+	void setDebugIoCallback(IoCallback callback);
+#endif
+
 protected:
 	void prepare(SPISettings& settings) override;
 
 private:
-#if defined(ARCH_ESP32) || defined(ARCH_RP2040)
+#ifndef ARCH_ESP8266
 	SpiBus busId{SpiBus::DEFAULT};
 #endif
-#ifdef ARCH_RP2040
+#if defined(ARCH_RP2040) || defined(ARCH_HOST)
 	uint16_t cr0val{0};
 #endif
 	bool lsbFirst{false};

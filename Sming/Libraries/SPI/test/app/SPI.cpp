@@ -20,14 +20,21 @@ void printBin(const char* tag, uint32_t value)
 	m_puts("\r\n");
 }
 
+#ifdef ARCH_HOST
+void ioCallback(uint16_t c, uint8_t bits, bool read)
+{
+	char buf[40];
+	ultoa_wp(c, buf, 2, 32, '0');
+	m_puts(read ? "<< " : ">> ");
+	m_nputs(buf + 32 - bits, bits);
+	m_puts("\r\n");
+}
+#endif
+
 #if SPISOFT_ENABLE
-
 SPISoft spi(0);
-
 #else
-
 SPIBase& spi = SPI;
-
 #endif
 
 #if CPU_FAST
@@ -55,6 +62,10 @@ public:
 
 		debug_w("Connected SCK %u, MISO %u, MOSI %u", spi.pins.sck, spi.pins.miso, spi.pins.mosi);
 
+#ifdef ARCH_HOST
+		setDigitalHooks(nullptr);
+		loopbackTests();
+#else
 		settings.speed = 150e3;
 		spi.beginTransaction(settings);
 		settings.speed = 2e6;
@@ -76,6 +87,7 @@ public:
 		testSoftwareDelays();
 #else
 		testBitPatterns();
+#endif
 #endif
 	}
 
@@ -219,6 +231,9 @@ public:
 
 		TEST_CASE("32-bit values")
 		{
+#ifdef ARCH_HOST
+			SPI.setDebugIoCallback(ioCallback);
+#endif
 			clearStats();
 
 			/*
@@ -236,6 +251,9 @@ public:
 					send(~0x12345678, bits);
 				}
 			}
+#ifdef ARCH_HOST
+			SPI.setDebugIoCallback(nullptr);
+#endif
 
 			printStats();
 		}
@@ -361,9 +379,5 @@ private:
 
 void REGISTER_TEST(SPI)
 {
-#ifdef ARCH_HOST
-	debug_i("Host has nothing useful to do here...");
-#else
 	registerGroup<SpiTest>();
-#endif
 }
