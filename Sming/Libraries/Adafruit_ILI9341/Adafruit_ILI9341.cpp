@@ -62,7 +62,7 @@ void Adafruit_ILI9341::transmitCmdData(uint8_t cmd, uint8_t *data, uint8_t numDa
 void Adafruit_ILI9341::transmitData(uint16_t data)
 {
 	TFT_CS_ACTIVE;
-	SPI.transfer((uint8_t*)&data, 2);
+	SPI.transfer16(data);
 	TFT_CS_DEACTIVE;
 }
 
@@ -102,7 +102,7 @@ void Adafruit_ILI9341::transmitCmd(uint8_t cmd)
 
 //Set communication using HW SPI Port
 void Adafruit_ILI9341::begin(void) {
-	SPI.SPIDefaultSettings = SPISettings(20000000, LSBFIRST, SPI_MODE0);
+	SPI.SPIDefaultSettings = SPISettings(20000000, MSBFIRST, SPI_MODE0);
 	SPI.begin();
 	TFT_DC_INIT;
 	TFT_RST_INIT;
@@ -230,11 +230,11 @@ void Adafruit_ILI9341::drawPixel(int16_t x, int16_t y, uint16_t color) {
 
 	if((x < 0) ||(x >= _width) || (y < 0) || (y >= _height)) return;
 	setAddrWindow(x,y,x+1,y+1);
-	transmitData(SWAPBYTES(color));
+	transmitData(color);
 }
 
 void Adafruit_ILI9341::pushColor(uint16_t color) {
-	transmitData(SWAPBYTES(color));
+	transmitData(color);
 }
 
 
@@ -248,7 +248,7 @@ void Adafruit_ILI9341::drawFastVLine(int16_t x, int16_t y, int16_t h,
 		h = _height-y;
 
 	setAddrWindow(x, y, x, y+h-1);
-	transmitData(SWAPBYTES(color), h);
+	transmitData(color, h);
 }
 
 void Adafruit_ILI9341::drawFastHLine(int16_t x, int16_t y, int16_t w,
@@ -258,7 +258,7 @@ void Adafruit_ILI9341::drawFastHLine(int16_t x, int16_t y, int16_t w,
 	if((x >= _width) || (y >= _height)) return;
 	if((x+w-1) >= _width)  w = _width-x;
 	setAddrWindow(x, y, x+w-1, y);
-	transmitData(SWAPBYTES(color), w);
+	transmitData(color, w);
 }
 
 void Adafruit_ILI9341::fillScreen(uint16_t color) {
@@ -275,7 +275,7 @@ void Adafruit_ILI9341::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
 	if((y + h - 1) >= _height) h = _height - y;
 
 	setAddrWindow(x, y, x+w-1, y+h-1);
-	transmitData(SWAPBYTES(color), h*w);
+	transmitData(color, h*w);
 }
 
 
