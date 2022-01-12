@@ -103,8 +103,8 @@ void init()
 	// Run our method when station was connected to AP
 	WifiEvents.onStationGotIP(gotIP);
 
-	//Change CPU freq. to 160MHZ
-	System.setCpuFrequency(eCF_160MHz);
+	// Max. out CPU frequency
+	System.setCpuFrequency(CpuCycleClockFast::cpuFrequency());
 	Serial.print("New CPU frequency is:");
-	Serial.println((int)System.getCpuFrequency());
+	Serial.println(int(System.getCpuFrequency()));
 }

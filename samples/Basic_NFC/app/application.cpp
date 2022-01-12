@@ -5,7 +5,7 @@ Timer procTimer;
 static Timer nfcScanTimer;
 int helloCounter = 0;
 
-void ICACHE_FLASH_ATTR scanNfc(byte scanner);
+void scanNfc(byte scanner);
 
 #define SS_PIN 4 // D2
 
@@ -22,7 +22,7 @@ void sayHello()
 	}
 }
 //---------------------------------
-static void ICACHE_FLASH_ATTR dump_byte_array(byte* buffer, byte bufferSize)
+static void dump_byte_array(byte* buffer, byte bufferSize)
 {
 	String hexOut;
 	for(byte i = 0; i < bufferSize; i++) {
@@ -31,7 +31,7 @@ static void ICACHE_FLASH_ATTR dump_byte_array(byte* buffer, byte bufferSize)
 	debugf("%s", hexOut.c_str());
 }
 //---------------------------------
-void ICACHE_FLASH_ATTR scanNfc(byte scanner)
+void scanNfc(byte scanner)
 {
 	if(!mfrc522.PICC_IsNewCardPresent()) {
 		debugf("Scanning nfc Scanner:%d \r\n", scanner);

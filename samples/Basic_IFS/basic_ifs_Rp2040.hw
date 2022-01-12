@@ -1,0 +1,25 @@
+{
+    "name": "Rp2040 config",
+    "arch": "Rp2040",
+    "base_config": "basic_ifs",
+    "options": [
+        "2m"
+    ],
+    "partitions": {
+        "rom0": {
+            "size": "480K"
+        },
+        "lfs1": {
+            "size": "932K",
+            "address": "0x00078000"
+        },
+        "spiffs0": {
+            "address": "0x00161000",
+            "size": "376K"
+        },
+        "fwfs1": {
+            "address": "0x001bf000",
+            "size": "256K"
+        }
+    }
+}

@@ -35,6 +35,7 @@ Tested and working:
   Exception information not yet implemented.
 - System functions :cpp:func:`system_get_chip_id`, :cpp:func:`system_get_sdk_version`.
 - Partitions and file systems (except SD cards and FAT)
+- SPIClass tested with Radio_nRF24L01 sample only
 
 The following items are yet to be implemented:
 
@@ -42,8 +43,8 @@ USB
    Best to write a separate ``Sming-USB`` library (based on TinyUSB) to support the RP2040, ESP32-S2 & ESP32-S3 variants.
    Needs some thought about good integration into the framework.
    Arduino-Pico overrides ``HardwareSerial`` to support serial devices, we can do something similar.
-SPI
-   Nice for messing around with displays.
+HardwareSPI
+   To support DMA, etc.
 Analogue I/O
    Has 4 channels + temperature.
 PWM

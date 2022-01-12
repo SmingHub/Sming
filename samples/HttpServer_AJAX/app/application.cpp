@@ -60,7 +60,7 @@ void onAjaxInput(HttpRequest& request, HttpResponse& response)
 void onAjaxFrequency(HttpRequest& request, HttpResponse& response)
 {
 	int freq = request.getQueryParameter("value").toInt();
-	System.setCpuFrequency((CpuFrequency)freq);
+	System.setCpuFrequency(CpuFrequency(freq));
 
 	JsonObjectStream* stream = new JsonObjectStream();
 	JsonObject json = stream->getRoot();

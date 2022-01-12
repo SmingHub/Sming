@@ -16,12 +16,12 @@
  * CSN		GPIO5 (changeable)
  * GND      GND
  */
-#ifdef ARCH_ESP8266
-constexpr uint8_t RF24_CE_PIN{4};
-constexpr uint8_t RF24_CSN_PIN{5};
-#else
+#ifdef ARCH_ESP32
 constexpr uint8_t RF24_CE_PIN{19};
 constexpr uint8_t RF24_CSN_PIN{21};
+#else
+constexpr uint8_t RF24_CE_PIN{4};
+constexpr uint8_t RF24_CSN_PIN{5};
 #endif
 RF24 radio(RF24_CE_PIN, RF24_CSN_PIN);
 

@@ -1,4 +1,3 @@
-COMPONENT_SOC := esp* host
 COMPONENT_DEPENDS := LittleFS
 
 # Empty SPIFFS partition please
