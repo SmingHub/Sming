@@ -114,6 +114,7 @@ else
             	curl \
             	git \
             	make \
+                ninja-build \
                 unzip \
                 g++ \
             	g++-multilib \
@@ -137,6 +138,7 @@ else
                 glibc-devel.i686 \
                 libstdc++.i686 \
                 make \
+                ninja-build \
                 python3 \
                 python3-pip \
                 sed \
