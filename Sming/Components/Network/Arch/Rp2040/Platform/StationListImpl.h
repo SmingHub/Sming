@@ -38,7 +38,6 @@ private:
 			return 0;
 		}
 
-		// Note: ESP32 does not provide IP information
 		IpAddress ip() const override
 		{
 			return IpAddress{};
