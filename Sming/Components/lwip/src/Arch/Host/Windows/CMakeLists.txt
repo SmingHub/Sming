@@ -22,7 +22,6 @@ ExternalProject_Add(npcap
 
 set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DLWIP_DEBUG")
 
-set(LWIP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lwip)
 include(${LWIP_DIR}/contrib/ports/CMakeCommon.cmake)
 
 set (LWIP_INCLUDE_DIRS
@@ -30,6 +29,7 @@ set (LWIP_INCLUDE_DIRS
 	"${LWIP_DIR}/src/include"
 	"${LWIP_CONTRIB_DIR}/ports/win32/include"
 	"${PCAP_DIR}/Include"
+	"${HOSTLIB_INCDIR}"
 	"${CMAKE_CURRENT_SOURCE_DIR}/"
 )
 

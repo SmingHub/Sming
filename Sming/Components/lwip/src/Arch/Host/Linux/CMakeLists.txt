@@ -11,13 +11,13 @@ if (NOT CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT CMAKE_SYSTEM_NAME STREQUAL "G
 endif()
 
 set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DLWIP_DEBUG")
-set(LWIP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lwip)
 include(${LWIP_DIR}/contrib/ports/CMakeCommon.cmake)
 
 set (LWIP_INCLUDE_DIRS
     "${LWIP_DIR}/.."
     "${LWIP_DIR}/src/include"
     "${LWIP_CONTRIB_DIR}/ports/unix/port/include"
+    "${HOSTLIB_INCDIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/"
 )
 

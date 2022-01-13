@@ -37,7 +37,15 @@ Tested and working:
 - Partitions and file systems (except SD cards and FAT)
 - SPIClass tested with Radio_nRF24L01 sample only
 
-The following items are yet to be implemented:
+In progress:
+
+Networking
+   A skeleton WiFi/lwip2 support framework is provided sufficient to build samples with Networking enabled,
+   but it is currently non-functional.
+   The goal is to allow use of networking adapters such as Ethernet over SPI, similar to how ESP32.
+   USB offers the possibility of CDMA networking for mobile applications.
+
+Yet to be implemented:
 
 USB
    Best to write a separate ``Sming-USB`` library (based on TinyUSB) to support the RP2040, ESP32-S2 & ESP32-S3 variants.
@@ -58,10 +66,6 @@ Low-power modes
    Deep sleep / suspend / power-saving
 Dual-core support
    RP2040 is a dual-core processor!
-Networking
-   Applications must currently be built with :envvar:`DISABLE_NETWORK` =1.
-   RP2040 doesn't have WiFi but a network stack via ethernet adapter would be useful.
-   USB offers the possibility of CDMA networking for mobile applications.
 PIO (Programmable I/O)
    A killer feature for the RP2040.
    Uses range from simple glue logic to I2S, etc.
