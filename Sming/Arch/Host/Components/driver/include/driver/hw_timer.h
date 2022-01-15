@@ -79,9 +79,7 @@ inline uint32_t NOW()
 	return hw_timer2_read();
 }
 
-inline void hw_timer_init(void)
-{
-}
+void hw_timer_init(void);
 
 void hw_timer_cleanup();
 
