@@ -33,8 +33,6 @@ Building
 
 Build the framework and application as usual, specifying :envvar:`SMING_ARCH` =Host. For example::
 
-   cd $SMING_HOME
-   make SMING_ARCH=Host
    cd $SMING_HOME/../samples/Basic_Serial
    make SMING_ARCH=Host
 
