@@ -87,6 +87,13 @@ public:
 			REQUIRE(Resource::image_png == s);
 		}
 
+		TEST_CASE("readString (PR #2468)")
+		{
+			FSTR::Stream stream(FS_abstract);
+			String s = stream.readString(0x10000);
+			REQUIRE(s == FS_abstract);
+		}
+
 		TEST_CASE("ChunkedStream / StreamTransformer")
 		{
 			DEFINE_FSTR_LOCAL(FS_INPUT, "Some test data");
