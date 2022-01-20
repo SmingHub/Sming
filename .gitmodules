@@ -157,6 +157,10 @@
 	path = Sming/Libraries/Adafruit_BusIO
 	url = https://github.com/adafruit/Adafruit_BusIO
 	ignore = dirty
+[submodule "Libraries.Adafruit_ILI9341"]
+	path = Sming/Libraries/Adafruit_ILI9341
+	url = https://github.com/adafruit/Adafruit_ILI9341
+	ignore = dirty
 [submodule "Libraries.Adafruit_Sensor"]
 	path = Sming/Libraries/Adafruit_Sensor
 	url = https://github.com/adafruit/Adafruit_Sensor
