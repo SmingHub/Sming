@@ -1,0 +1,107 @@
+diff --git a/esp8266.c b/esp8266.cpp
+similarity index 100%
+rename from esp8266.c
+rename to esp8266.cpp
+
+diff --git a/esp.c b/esp.cpp
+similarity index 96%
+rename from esp.c
+rename to esp.cpp
+index c480a20..8077839 100644
+--- a/esp.c
++++ b/esp.cpp
+@@ -94,7 +94,7 @@ void espShow(uint8_t pin, uint8_t *pixels, uint32_t numBytes, boolean is800KHz)
+     for (size_t i = 0; i < ADAFRUIT_RMT_CHANNEL_MAX; i++) {
+         if (!rmt_reserved_channels[i]) {
+             rmt_reserved_channels[i] = true;
+-            channel = i;
++            channel = rmt_channel_t(i);
+             break;
+         }
+     }
+@@ -104,14 +104,14 @@ void espShow(uint8_t pin, uint8_t *pixels, uint32_t numBytes, boolean is800KHz)
+     }
+ 
+ #if defined(HAS_ESP_IDF_4)
+-    rmt_config_t config = RMT_DEFAULT_CONFIG_TX(pin, channel);
++    rmt_config_t config = RMT_DEFAULT_CONFIG_TX(gpio_num_t(pin), channel);
+     config.clk_div = 2;
+ #else
+     // Match default TX config from ESP-IDF version 3.4
+     rmt_config_t config = {
+         .rmt_mode = RMT_MODE_TX,
+         .channel = channel,
+-        .gpio_num = pin,
++        .gpio_num = gpio_num_t(pin),
+         .clk_div = 2,
+         .mem_block_num = 1,
+         .tx_config = {
+@@ -172,7 +172,7 @@ void espShow(uint8_t pin, uint8_t *pixels, uint32_t numBytes, boolean is800KHz)
+     rmt_driver_uninstall(config.channel);
+     rmt_reserved_channels[channel] = false;
+ 
+-    gpio_set_direction(pin, GPIO_MODE_OUTPUT);
++    gpio_set_direction(gpio_num_t(pin), GPIO_MODE_OUTPUT);
+ }
+ 
+ #endif
+
+diff --git a/Adafruit_NeoPixel.cpp b/Adafruit_NeoPixel.cpp
+index 44d9ca3..14870ec 100644
+--- a/Adafruit_NeoPixel.cpp
++++ b/Adafruit_NeoPixel.cpp
+@@ -227,14 +227,8 @@ void  Adafruit_NeoPixel::rp2040Show(uint8_t pin, uint8_t *pixels, uint32_t numBy
+ 
+ #endif
+ 
+-#if defined(ESP8266)
+-// ESP8266 show() is external to enforce ICACHE_RAM_ATTR execution
+-extern "C" IRAM_ATTR void espShow(uint16_t pin, uint8_t *pixels,
+-                                  uint32_t numBytes, uint8_t type);
+-#elif defined(ESP32)
+-extern "C" void espShow(uint16_t pin, uint8_t *pixels, uint32_t numBytes,
+-                        uint8_t type);
+-#endif // ESP8266
++extern void espShow(uint8_t pin, uint8_t *pixels, uint32_t numBytes,
++                        boolean type);
+ 
+ #if defined(K210)
+ #define KENDRYTE_K210 1
+
+diff --git a/README.md b/README.md
+index eff1337..ad50db0 100644
+--- a/README.md
++++ b/README.md
+@@ -1,4 +1,6 @@
+-# Adafruit NeoPixel Library [![Build Status](https://github.com/adafruit/Adafruit_NeoPixel/workflows/Arduino%20Library%20CI/badge.svg)](https://github.com/adafruit/Adafruit_NeoPixel/actions)[![Documentation](https://github.com/adafruit/ci-arduino/blob/master/assets/doxygen_badge.svg)](http://adafruit.github.io/Adafruit_NeoPixel/html/index.html)
++# Adafruit NeoPixel Library
++
++[![Build Status](https://github.com/adafruit/Adafruit_NeoPixel/workflows/Arduino%20Library%20CI/badge.svg)](https://github.com/adafruit/Adafruit_NeoPixel/actions)[![Documentation](https://github.com/adafruit/ci-arduino/blob/master/assets/doxygen_badge.svg)](http://adafruit.github.io/Adafruit_NeoPixel/html/index.html)
+ 
+ Arduino library for controlling single-wire-based LED pixels and strip such as the [Adafruit 60 LED/meter Digital LED strip][strip], the [Adafruit FLORA RGB Smart Pixel][flora], the [Adafruit Breadboard-friendly RGB Smart Pixel][pixel], the [Adafruit NeoPixel Stick][stick], and the [Adafruit NeoPixel Shield][shield].
+ 
+@@ -14,24 +16,6 @@ Compatibility notes: Port A is not supported on any AVR processors at this time
+ 
+ ---
+ 
+-## Installation
+-
+-### First Method
+-
+-![image](https://user-images.githubusercontent.com/36513474/68967967-3e37f480-0803-11ea-91d9-601848c306ee.png)
+-
+-1. In the Arduino IDE, navigate to Sketch > Include Library > Manage Libraries
+-1. Then the Library Manager will open and you will find a list of libraries that are already installed or ready for installation.
+-1. Then search for Neopixel strip using the search bar.
+-1. Click on the text area and then select the specific version and install it.
+-
+-### Second Method
+-
+-1. Navigate to the [Releases page](https://github.com/adafruit/Adafruit_NeoPixel/releases).
+-1. Download the latest release.
+-1. Extract the zip file
+-1. In the Arduino IDE, navigate to Sketch > Include Library > Add .ZIP Library
+-
+ ## Features
+ 
+ - ### Simple to use

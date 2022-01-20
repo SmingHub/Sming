@@ -165,6 +165,10 @@
 	path = Sming/Libraries/Adafruit_ILI9341
 	url = https://github.com/adafruit/Adafruit_ILI9341
 	ignore = dirty
+[submodule "Libraries.Adafruit_NeoPixel"]
+	path = Sming/Libraries/Adafruit_NeoPixel
+	url = https://github.com/adafruit/Adafruit_NeoPixel
+	ignore = dirty
 [submodule "Libraries.Adafruit_Sensor"]
 	path = Sming/Libraries/Adafruit_Sensor
 	url = https://github.com/adafruit/Adafruit_Sensor
