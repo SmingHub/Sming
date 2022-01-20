@@ -1,0 +1,2 @@
+COMPONENT_DEPENDS := Adafruit_GFX
+COMPONENT_SOC := $(filter-out host,$(AVAILABLE_SOCS))
