@@ -36,7 +36,7 @@ std::unique_ptr<CUart> servers[UART_COUNT];
 class KeyboardThread : public CThread
 {
 public:
-	KeyboardThread() : CThread("keyboard", 0)
+	KeyboardThread() : CThread("keyboard", 1)
 	{
 	}
 

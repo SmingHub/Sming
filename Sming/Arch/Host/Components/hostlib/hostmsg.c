@@ -18,6 +18,7 @@
  ****/
 
 #include <stdio.h>
+#include <unistd.h>
 #include <stdarg.h>
 #include <string.h>
 #include "include/hostlib/hostmsg.h"
@@ -72,10 +73,10 @@ void host_printfp(const char* fmt, const char* pretty_function, ...)
 
 size_t host_nputs(const char* str, size_t length)
 {
-	return fwrite(str, 1, length, stderr);
+	return write(STDERR_FILENO, str, length);
 }
 
 void host_puts(const char* str)
 {
-	fputs(str, stderr);
+	host_nputs(str, strlen(str));
 }

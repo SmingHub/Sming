@@ -57,6 +57,10 @@ void os_timer_disarm(struct os_timer_t* ptimer)
 {
 	assert(ptimer != nullptr);
 
+	if(int(ptimer->timer_next) == -1) {
+		return;
+	}
+
 	mutex.lock();
 	if(timer_list != nullptr) {
 		// Remove timer from list

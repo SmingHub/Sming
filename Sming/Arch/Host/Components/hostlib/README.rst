@@ -33,13 +33,16 @@ Ideally we'd use SCHED_FIFO to disable time-slicing and more closely resemble ho
 on a single-core CPU. However, this mode isn't supported in Windows, and Linux requires privileged
 access and can potentially crash the system. Best avoided, I think.
 
-All ESP code runs at a specific interrupt level, where 0 represents regular code. When an interrupt
+All ESP code runs at a specific interrupt level, where 0 represents regular code.
+Interrupts are triggered from a separate thread (a CThread instance) which calls :cpp:func:`
+When an interrupt
 occurs, the level is raised according to the priority of that interrupt. Until that code has finished,
 only interrupts of a higher priority will preempt it.
 
-The ``set_interrupt_level`` function is used to ensure that threads running at different interrupt
-levels do not pre-empty each other, as this would introduce problems that do not exist on real hardware.
-The main thread is also suspended during interrupt execution.
+Thread 'interrupt' code is sandwiched between calls to `interrupt_begin()` and `interrupt_end()`,
+which blocks interrupts from other threads at the same or lower level.
+The threads aren't suspended but will block if they call `interrupt_begin()`.
+However, the main thread (level 0) is halted to reflect normal interrupt behaviour.
 
 
 .. envvar:: LWIP_SERVICE_INTERVAL

@@ -13,11 +13,12 @@
 #include <driver/hw_timer.h>
 #include <hostlib/threads.h>
 #include <sys/time.h>
-#include <errno.h>
+#include <cerrno>
 #include <hostlib/hostmsg.h>
 #include <cassert>
 #include <muldiv.h>
 #include <esp_system.h>
+#include <memory>
 
 /* Timer 1 */
 
@@ -207,41 +208,49 @@ void* CTimerThread::thread_routine()
 	return nullptr;
 }
 
-static CTimerThread timer1("Timer1");
+static std::unique_ptr<CTimerThread> timer1;
+
+void hw_timer_init(void)
+{
+	timer1.reset(new CTimerThread("Timer1"));
+}
 
 void hw_timer_cleanup()
 {
-	timer1.terminate();
+	if(timer1) {
+		timer1->terminate();
+		timer1.reset();
+	}
 }
 
 void hw_timer1_attach_interrupt(hw_timer_source_type_t source_type, hw_timer_callback_t callback, void* arg)
 {
-	timer1.attach_interrupt(source_type, callback, arg);
+	timer1->attach_interrupt(source_type, callback, arg);
 }
 
 void hw_timer1_enable(hw_timer_clkdiv_t div, hw_timer_intr_type_t intr_type, bool auto_load)
 {
-	timer1.enable(div, intr_type, auto_load);
+	timer1->enable(div, intr_type, auto_load);
 }
 
 void hw_timer1_write(uint32_t ticks)
 {
-	timer1.write(ticks);
+	timer1->write(ticks);
 }
 
 void hw_timer1_disable()
 {
-	timer1.stop();
+	timer1->stop();
 }
 
 void hw_timer1_detach_interrupt()
 {
-	timer1.detach_interrupt();
+	timer1->detach_interrupt();
 }
 
 uint32_t hw_timer1_read()
 {
-	return timer1.read();
+	return timer1->read();
 }
 
 uint32_t hw_timer2_read()

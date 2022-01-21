@@ -2,6 +2,8 @@ EXTRA_LIBS		:= pthread
 
 ifeq ($(UNAME),Windows)
 	EXTRA_LIBS	+= wsock32
+else
+	EXTRA_LIBS	+= rt
 endif
 
 COMPONENT_DEPENDS := \
