@@ -69,6 +69,7 @@ void signal_handler(int sig)
 
 #endif
 
+bool isMainThread() __attribute__((unused));
 bool isMainThread()
 {
 	return pthread_equal(pthread_self(), mainThread);

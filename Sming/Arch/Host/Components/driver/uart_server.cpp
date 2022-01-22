@@ -65,7 +65,7 @@ void* KeyboardThread::thread_routine()
 	while(!done) {
 		int c = getkey();
 		if(c == KEY_NONE) {
-			sched_yield();
+			msleep(50);
 			continue;
 		}
 

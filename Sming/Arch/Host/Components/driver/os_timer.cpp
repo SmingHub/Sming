@@ -4,6 +4,8 @@
 #include <muldiv.h>
 #include <cassert>
 
+extern CSemaphore host_main_loop_semaphore;
+
 namespace
 {
 os_timer_t* timer_list;
@@ -30,32 +32,6 @@ void timer_insert(uint32_t expire, os_timer_t* ptimer)
 	ptimer->timer_expire = expire;
 }
 
-// Called with mutex locked
-os_timer_t* find_expired_timer()
-{
-	if(timer_list == nullptr) {
-		return nullptr;
-	}
-
-	auto ticks_now = hw_timer2_read();
-	auto t = timer_list;
-	if(int(t->timer_expire - ticks_now) > 0) {
-		// No timers due
-		return nullptr;
-	}
-
-	// Found an expired timer, so remove from queue
-	timer_list = t->timer_next;
-	t->timer_next = reinterpret_cast<os_timer_t*>(-1);
-
-	// Repeating timer?
-	if(t->timer_period != 0) {
-		timer_insert(t->timer_expire + t->timer_period, t);
-	}
-
-	return t;
-}
-
 } // namespace
 
 void os_timer_arm_ticks(os_timer_t* ptimer, uint32_t ticks, bool repeat_flag)
@@ -68,6 +44,7 @@ void os_timer_arm_ticks(os_timer_t* ptimer, uint32_t ticks, bool repeat_flag)
 	mutex.lock();
 	timer_insert(hw_timer2_read() + ticks, ptimer);
 	mutex.unlock();
+	host_main_loop_semaphore.post();
 }
 
 void os_timer_arm(struct os_timer_t* ptimer, uint32_t time, bool repeat_flag)
@@ -126,13 +103,35 @@ void os_timer_done(struct os_timer_t* ptimer)
 	os_timer_disarm(ptimer);
 }
 
-void host_service_timers()
+int host_service_timers()
 {
+	if(timer_list == nullptr) {
+		return -1;
+	}
+
+	auto ticks_now = hw_timer2_read();
+	auto t = timer_list;
+	int ticks = t->timer_expire - ticks_now;
+	if(ticks > 0) {
+		// Return milliseconds until timer due
+		using R = std::ratio<1000, HW_TIMER2_CLK>;
+		return muldiv<R::num, R::den>(unsigned(ticks));
+	}
+
 	mutex.lock();
-	auto t = find_expired_timer();
+	// Pop timer from queue
+	timer_list = t->timer_next;
+	t->timer_next = reinterpret_cast<os_timer_t*>(-1);
+	// Repeating timer?
+	if(t->timer_period != 0) {
+		timer_insert(t->timer_expire + t->timer_period, t);
+	}
 	mutex.unlock();
 
-	if(t != nullptr && t->timer_func != nullptr) {
+	if(t->timer_func != nullptr) {
 		t->timer_func(t->timer_arg);
 	}
+
+	// Call again soon as poss.
+	return 0;
 }

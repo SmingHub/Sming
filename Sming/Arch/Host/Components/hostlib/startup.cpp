@@ -40,15 +40,16 @@
 
 #ifndef DISABLE_NETWORK
 #include <host_lwip.h>
-extern void host_wifi_lwip_init_complete();
 #endif
 
+CSemaphore host_main_loop_semaphore;
+
+namespace
+{
 static int exitCode;
 static bool done;
 
-extern void host_init_bootloader();
-
-static void cleanup()
+void cleanup()
 {
 	hw_timer_cleanup();
 	host_flashmem_cleanup();
@@ -60,12 +61,15 @@ static void cleanup()
 	host_debug_i("Goodbye!");
 }
 
+} // namespace
+
 void host_exit(int code)
 {
 	static unsigned exit_count;
 
 	host_debug_i("returning %d", code);
 	exitCode = code;
+	host_main_loop_semaphore.post();
 	done = true;
 
 	if(exit_count++) {
@@ -110,11 +114,16 @@ static void pause(int secs)
 	}
 }
 
-void host_main_loop()
+/*
+ * When there is no work being done we should wait efficiently.
+ * Tasks and timers can be set from an interrupt (i.e. hardware thread),
+ * so they can kick a semaphore to wake us up.
+ */
+int host_main_loop()
 {
-	host_service_tasks();
-	host_service_timers();
 	system_soft_wdt_feed();
+	host_service_tasks();
+	return host_service_timers();
 }
 
 int main(int argc, char* argv[])
@@ -262,6 +271,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+	extern void host_init_bootloader();
 	host_init_bootloader();
 
 	atexit(cleanup);
@@ -283,6 +293,7 @@ int main(int argc, char* argv[])
 #ifndef DISABLE_NETWORK
 		if(config.enable_network) {
 			if(host_lwip_init(config.lwip)) {
+				extern void host_wifi_lwip_init_complete();
 				host_wifi_lwip_init_complete();
 			}
 		} else {
@@ -300,14 +311,17 @@ int main(int argc, char* argv[])
 		host_init();
 
 		while(!done) {
-			host_main_loop();
-			if(config.loopcount == 0) {
-				continue;
+			int due = host_main_loop();
+			if(config.loopcount != 0) {
+				--config.loopcount;
+				if(config.loopcount == 0) {
+					host_debug_i("Reached requested loop count limit: exiting");
+					break;
+				}
 			}
-			--config.loopcount;
-			if(config.loopcount == 0) {
-				host_debug_i("Reached requested loop count limit: exiting");
-				break;
+			constexpr int SCHED_WAIT{2};
+			if(due > SCHED_WAIT) {
+				host_main_loop_semaphore.timedwait((due - SCHED_WAIT) * 1000);
 			}
 		}
 

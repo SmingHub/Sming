@@ -85,7 +85,13 @@ bool system_os_post(uint8_t prio, os_signal_t sig, os_param_t par)
 		return false;
 	}
 
-	return task_queues[prio]->post(sig, par);
+	if(!task_queues[prio]->post(sig, par)) {
+		return false;
+	}
+
+	extern CSemaphore host_main_loop_semaphore;
+	host_main_loop_semaphore.post();
+	return true;
 }
 
 void host_init_tasks()

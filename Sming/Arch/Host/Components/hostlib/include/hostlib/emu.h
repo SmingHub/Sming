@@ -16,8 +16,9 @@ extern "C" {
 
 /**
  * @brief Executing this function will run once the main emulator loop.
+ * @retval int Milliseconds until next due timer, -1 if none
  */
-void host_main_loop();
+int host_main_loop();
 
 #ifdef __cplusplus
 }
