@@ -21,6 +21,7 @@
 #include <cstring>
 #include <cstdarg>
 #include <signal.h>
+#include <sys/time.h>
 
 CThread::List CThread::list;
 unsigned CThread::interrupt_mask;
@@ -116,6 +117,17 @@ void CMutex::unlock()
 {
 	CBasicMutex::unlock();
 	interrupt->unlock();
+}
+
+bool CSemaphore::timedwait(unsigned us)
+{
+	timeval tv;
+	gettimeofday(&tv, nullptr);
+	tv.tv_usec += us;
+	timespec to;
+	to.tv_sec = tv.tv_sec + tv.tv_usec / 1000000;
+	to.tv_nsec = (tv.tv_usec % 1000000) * 1000;
+	return timedwait(&to);
 }
 
 void CThread::startup()

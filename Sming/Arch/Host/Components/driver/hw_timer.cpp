@@ -12,7 +12,6 @@
 
 #include <driver/hw_timer.h>
 #include <hostlib/threads.h>
-#include <sys/time.h>
 #include <cerrno>
 #include <hostlib/hostmsg.h>
 #include <cassert>
@@ -159,13 +158,7 @@ void* CTimerThread::thread_routine()
 		 */
 		const unsigned SCHED_MIN = 1500;
 		if(interval > SCHED_MIN) {
-			timeval tv;
-			gettimeofday(&tv, nullptr);
-			tv.tv_usec += interval - SCHED_MIN;
-			timespec to;
-			to.tv_sec = tv.tv_sec + tv.tv_usec / 1000000;
-			to.tv_nsec = (tv.tv_usec % 1000000) * 1000;
-			if(sem.timedwait(&to)) {
+			if(sem.timedwait(interval - SCHED_MIN)) {
 				continue; // state changed
 			}
 			if(errno != ETIMEDOUT) {

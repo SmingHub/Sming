@@ -124,13 +124,7 @@ public:
 		return sem_timedwait(&m_sem, abs_timeout) == 0;
 	}
 
-	bool timedwait(unsigned ms)
-	{
-		timespec to;
-		to.tv_sec = ms / 1000;
-		to.tv_nsec = (ms % 1000) * 1000000;
-		return timedwait(&to);
-	}
+	bool timedwait(unsigned us);
 
 	int value() const
 	{

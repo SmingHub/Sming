@@ -351,7 +351,7 @@ void* CUartPort::thread_routine()
 		host_debug_i("Uart #%u socket open", uart_nr);
 
 		while(socket->active()) {
-			if(txsem.timedwait(IDLE_SLEEP_MS)) {
+			if(txsem.timedwait(IDLE_SLEEP_MS * 1000)) {
 				if(serviceWrite() < 0) {
 					break;
 				}
@@ -435,7 +435,7 @@ int CUartDevice::writeBytes(const void* data, size_t size)
 void* CUartDevice::thread_routine()
 {
 	while(!done) {
-		if(txsem.timedwait(IDLE_SLEEP_MS)) {
+		if(txsem.timedwait(IDLE_SLEEP_MS * 1000)) {
 			if(uart != nullptr && !device) {
 				device.reset(new SerialDevice);
 				char res = device->openDevice(deviceName, uart->baud_rate);
