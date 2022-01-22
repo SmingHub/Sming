@@ -3,11 +3,13 @@
 #
 
 ifeq ($(UNAME),Windows)
-	COMPONENT_INCDIRS	+= lwip/contrib/ports/win32/include
 	LWIP_ARCH_SRCDIR	:= $(LWIP_ARCH_SRCDIR)/Windows
+	COMPONENT_INCDIRS	+= \
+		lwip/contrib/ports/win32/include \
+		$(LWIP_ARCH_SRCDIR)/src/npcap/Include
 else
 	COMPONENT_INCDIRS	+= lwip/contrib/ports/unix/port/include
 	LWIP_ARCH_SRCDIR	:= $(LWIP_ARCH_SRCDIR)/Linux
 endif
 
-LWIP_CMAKE_OPTIONS		+= -DHOSTLIB_INCDIR=$(ARCH_COMPONENTS)/hostlib/include
+COMPONENT_SRCDIRS		+= $(LWIP_ARCH_SRCDIR)

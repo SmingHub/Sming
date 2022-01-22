@@ -28,6 +28,7 @@
 #include <driver/uart_server.h>
 #include <BitManipulations.h>
 #include <driver/os_timer.h>
+#include <driver/hw_timer.h>
 #include <esp_tasks.h>
 #include <stdlib.h>
 #include "include/hostlib/init.h"
@@ -35,19 +36,15 @@
 #include "include/hostlib/hostlib.h"
 #include "include/hostlib/CommandLine.h"
 #include <Storage.h>
-
 #include <Platform/System.h>
-#include <Platform/Timers.h>
 
 #ifndef DISABLE_NETWORK
 #include <host_lwip.h>
 extern void host_wifi_lwip_init_complete();
-static bool lwip_initialised;
 #endif
 
 static int exitCode;
 static bool done;
-static OneShotElapseTimer<NanoTime::Milliseconds> lwipServiceTimer;
 
 extern void host_init_bootloader();
 
@@ -117,12 +114,6 @@ void host_main_loop()
 {
 	host_service_tasks();
 	host_service_timers();
-#ifndef DISABLE_NETWORK
-	if(lwip_initialised && lwipServiceTimer.expired()) {
-		host_lwip_service();
-		lwipServiceTimer.start();
-	}
-#endif
 	system_soft_wdt_feed();
 }
 
@@ -291,8 +282,7 @@ int main(int argc, char* argv[])
 
 #ifndef DISABLE_NETWORK
 		if(config.enable_network) {
-			lwip_initialised = host_lwip_init(&config.lwip);
-			if(lwip_initialised) {
+			if(host_lwip_init(config.lwip)) {
 				host_wifi_lwip_init_complete();
 			}
 		} else {
@@ -309,9 +299,6 @@ int main(int argc, char* argv[])
 
 		host_init();
 
-#ifndef DISABLE_NETWORK
-		lwipServiceTimer.reset<LWIP_SERVICE_INTERVAL>();
-#endif
 		while(!done) {
 			host_main_loop();
 			if(config.loopcount == 0) {

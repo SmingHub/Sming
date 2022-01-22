@@ -1,5 +1,5 @@
 /**
- * npcap.h - Load NPCAP library dynamically
+ * host_lwip.h - Sming Host LWIP network support
  *
  * Copyright 2019 mikee47 <mike@sillyhouse.net>
  *
@@ -19,18 +19,31 @@
 
 #pragma once
 
-#include <stdbool.h>
+#include "include/host_lwip.h"
+#include <hostlib/hostmsg.h>
+#include <lwip/init.h>
+#include <lwip/ip_addr.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+struct lwip_net_config {
+	char ifname[128];
+	unsigned ifindex;
+	ip4_addr_t ipaddr;
+	ip4_addr_t netmask;
+	ip4_addr_t gw;
+};
+
+struct netif* lwip_arch_init(struct lwip_net_config& config);
+void lwip_arch_shutdown();
+
 /*
- * Load NPCAP library (actually called wpdand bind required functions
- *
- * If
+ * Poll the LWIP stack.
+ * Return true if data was processed, false otherwise.
  */
-bool npcap_init(void);
+bool lwip_arch_service();
 
 #ifdef __cplusplus
 }

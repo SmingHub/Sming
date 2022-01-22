@@ -29,14 +29,12 @@ set (LWIP_INCLUDE_DIRS
 	"${LWIP_DIR}/src/include"
 	"${LWIP_CONTRIB_DIR}/ports/win32/include"
 	"${PCAP_DIR}/Include"
-	"${HOSTLIB_INCDIR}"
 	"${CMAKE_CURRENT_SOURCE_DIR}/"
 )
 
 include(${LWIP_DIR}/src/Filelists.cmake)
 
 add_library(lwip
-	host_lwip.c
 	npcap.c
 	${LWIP_CONTRIB_DIR}/ports/win32/sys_arch.c
 	${LWIP_CONTRIB_DIR}/ports/win32/pcapif.c
@@ -51,7 +49,7 @@ add_library(lwip
 add_dependencies(lwip npcap)
 
 set_target_properties(lwip
-	PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${USER_LIBDIR} PREFIX "clib-" OUTPUT_NAME "${LWIP_LIBNAME}"
+	PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${USER_LIBDIR} OUTPUT_NAME "${LWIP_LIBNAME}"
 )
 
 target_compile_options(lwip PRIVATE ${LWIP_COMPILER_FLAGS} -m32 -Wno-strict-aliasing)

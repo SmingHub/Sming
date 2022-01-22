@@ -12,19 +12,15 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with SHEM.
+ * You should have received a copy of the GNU General Public License along with this library.
  * If not, see <https://www.gnu.org/licenses/>.
  *
  ****/
 
 #pragma once
 
-#include <stdint.h>
-#include <stdbool.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <cstdint>
+#include <cstdbool>
 
 struct lwip_param {
 	const char* ifname;  ///< Name of interface to use
@@ -33,10 +29,5 @@ struct lwip_param {
 	const char* netmask; ///< Network mask
 };
 
-bool host_lwip_init(const struct lwip_param* param);
-void host_lwip_service(void);
-void host_lwip_shutdown(void);
-
-#ifdef __cplusplus
-}
-#endif
+bool host_lwip_init(const struct lwip_param& param);
+void host_lwip_shutdown();
