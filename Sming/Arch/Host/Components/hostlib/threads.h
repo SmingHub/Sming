@@ -245,12 +245,12 @@ private:
 
 private:
 	pthread_t m_thread = {0};
-	const char* name;		  ///< Helps to identify purpose for debugging
-	unsigned interrupt_level; ///< Interrupt level associated with this thread
-	unsigned previous_mask{0};///< Used to restore previous interrupt mask when interrupt ends
-	unsigned suspended{0}; ///< Non-zero when thread interrupts are suspended
-	CBasicMutex suspendMutex; ///< Synchronises suspend
+	const char* name;		   ///< Helps to identify purpose for debugging
+	unsigned interrupt_level;  ///< Interrupt level associated with this thread
+	unsigned previous_mask{0}; ///< Used to restore previous interrupt mask when interrupt ends
+	unsigned suspended{0};	 ///< Non-zero when thread interrupts are suspended
+	CBasicMutex suspendMutex;  ///< Synchronises suspend
 	pthread_cond_t resumeCond = PTHREAD_COND_INITIALIZER; ///< Synchronnises resume
-	static List list; ///< All running threads
-	static unsigned interrupt_mask; ///< Current interrupt level
+	static List list;									  ///< All running threads
+	static unsigned interrupt_mask;						  ///< Current interrupt level
 };
