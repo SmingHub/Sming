@@ -4,10 +4,13 @@
 #include <muldiv.h>
 #include <cassert>
 
-static os_timer_t* timer_list;
-static CMutex mutex;
+namespace
+{
+os_timer_t* timer_list;
+CMutex mutex;
 
-static void timer_insert(uint32_t expire, os_timer_t* ptimer)
+// Called with mutex locked
+void timer_insert(uint32_t expire, os_timer_t* ptimer)
 {
 	os_timer_t* t_prev = nullptr;
 	auto t = timer_list;
@@ -26,6 +29,34 @@ static void timer_insert(uint32_t expire, os_timer_t* ptimer)
 	ptimer->timer_next = t;
 	ptimer->timer_expire = expire;
 }
+
+// Called with mutex locked
+os_timer_t* find_expired_timer()
+{
+	if(timer_list == nullptr) {
+		return nullptr;
+	}
+
+	auto ticks_now = hw_timer2_read();
+	auto t = timer_list;
+	if(int(t->timer_expire - ticks_now) > 0) {
+		// No timers due
+		return nullptr;
+	}
+
+	// Found an expired timer, so remove from queue
+	timer_list = t->timer_next;
+	t->timer_next = reinterpret_cast<os_timer_t*>(-1);
+
+	// Repeating timer?
+	if(t->timer_period != 0) {
+		timer_insert(t->timer_expire + t->timer_period, t);
+	}
+
+	return t;
+}
+
+} // namespace
 
 void os_timer_arm_ticks(os_timer_t* ptimer, uint32_t ticks, bool repeat_flag)
 {
@@ -93,32 +124,6 @@ void os_timer_setfn(struct os_timer_t* ptimer, os_timer_func_t* pfunction, void*
 void os_timer_done(struct os_timer_t* ptimer)
 {
 	os_timer_disarm(ptimer);
-}
-
-// Called with mutex locked
-static os_timer_t* find_expired_timer()
-{
-	if(timer_list == nullptr) {
-		return nullptr;
-	}
-
-	auto ticks_now = hw_timer2_read();
-	auto t = timer_list;
-	if(int(t->timer_expire - ticks_now) > 0) {
-		// No timers due
-		return nullptr;
-	}
-
-	// Found an expired timer, so remove from queue
-	timer_list = t->timer_next;
-	t->timer_next = reinterpret_cast<os_timer_t*>(-1);
-
-	// Repeating timer?
-	if(t->timer_period != 0) {
-		timer_insert(t->timer_expire + t->timer_period, t);
-	}
-
-	return t;
 }
 
 void host_service_timers()
