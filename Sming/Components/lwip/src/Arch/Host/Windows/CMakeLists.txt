@@ -6,20 +6,6 @@ set (BUILD_SHARED_LIBS OFF)
 set (CMAKE_C_STANDARD 11)
 set (CMAKE_C_STANDARD_REQUIRED ON)
 
-include (ExternalProject)
-
-set (PCAP_SRC npcap-sdk-1.05.zip)
-set (PCAP_DIR src/npcap)
-ExternalProject_Add(npcap
-	PREFIX ${CMAKE_CURRENT_SOURCE_DIR}
-	URL https://nmap.org/npcap/dist/${PCAP_SRC}
-	URL_HASH MD5=9af87ce508bee6a347be72b3e9adf777
-	PATCH_COMMAND patch -p1 -i ../../npcap.patch
-	CONFIGURE_COMMAND ""
-	BUILD_COMMAND ""
-	INSTALL_COMMAND ""
-)
-
 set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DLWIP_DEBUG")
 
 include(${LWIP_DIR}/contrib/ports/CMakeCommon.cmake)
@@ -28,7 +14,7 @@ set (LWIP_INCLUDE_DIRS
 	"${LWIP_DIR}/.."
 	"${LWIP_DIR}/src/include"
 	"${LWIP_CONTRIB_DIR}/ports/win32/include"
-	"${PCAP_DIR}/Include"
+	"${NPCAP_SRCDIR}/Include"
 	"${CMAKE_CURRENT_SOURCE_DIR}/"
 )
 
@@ -45,8 +31,6 @@ add_library(lwip
 	${lwipcore6_SRCS}
 	${lwipnetif_SRCS}
 )
-
-add_dependencies(lwip npcap)
 
 set_target_properties(lwip
 	PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${USER_LIBDIR} OUTPUT_NAME "${LWIP_LIBNAME}"
