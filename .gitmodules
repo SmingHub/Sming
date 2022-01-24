@@ -157,6 +157,22 @@
 	path = Sming/Libraries/Adafruit_BusIO
 	url = https://github.com/adafruit/Adafruit_BusIO
 	ignore = dirty
+[submodule "Libraries.Adafruit_GFX"]
+	path = Sming/Libraries/Adafruit_GFX
+	url = https://github.com/adafruit/Adafruit-GFX-Library
+	ignore = dirty
+[submodule "Libraries.Adafruit_ILI9341"]
+	path = Sming/Libraries/Adafruit_ILI9341
+	url = https://github.com/adafruit/Adafruit_ILI9341
+	ignore = dirty
+[submodule "Libraries.Adafruit_NeoPixel"]
+	path = Sming/Libraries/Adafruit_NeoPixel
+	url = https://github.com/adafruit/Adafruit_NeoPixel
+	ignore = dirty
+[submodule "Libraries.Adafruit_PCD8544"]
+	path = Sming/Libraries/Adafruit_PCD8544
+	url = https://github.com/adafruit/Adafruit-PCD8544-Nokia-5110-LCD-library
+	ignore = dirty
 [submodule "Libraries.Adafruit_Sensor"]
 	path = Sming/Libraries/Adafruit_Sensor
 	url = https://github.com/adafruit/Adafruit_Sensor

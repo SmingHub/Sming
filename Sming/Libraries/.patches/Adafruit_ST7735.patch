@@ -1,13 +1,13 @@
-diff --git a/Adafruit_ST7735.h b/Adafruit_ST7735.h
-index b1e85fd..b10d01c 100755
---- a/Adafruit_ST7735.h
-+++ b/Adafruit_ST7735.h
-@@ -26,7 +26,7 @@ as well as Adafruit raw 1.8" TFT display
+diff --git a/README.txt b/README.md
+similarity index 98%
+rename from README.txt
+rename to README.md
+index 7689d77..fc1dca5 100644
+--- a/README.txt
++++ b/README.md
+@@ -1,3 +1,5 @@
++# Adafruit ST7735 Display
++
+ This is a library for several Adafruit displays based on ST77* drivers.
  
- #include "Arduino.h"
- #include "Print.h"
--#include <Adafruit_GFX.h>
-+#include <Libraries/Adafruit_GFX/Adafruit_GFX.h>
- 
- #if defined(__AVR__) || defined(CORE_TEENSY)
-   #include <avr/pgmspace.h>
+   Works with the Adafruit 1.8" TFT Breakout w/SD card

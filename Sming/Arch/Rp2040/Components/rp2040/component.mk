@@ -38,6 +38,7 @@ SDK_INTERFACES := \
 	common/pico_bit_ops \
 	common/pico_divider \
 	common/pico_sync \
+	common/pico_time \
 	common/pico_util \
 	rp2040/hardware_regs \
 	rp2040/hardware_structs \
@@ -52,10 +53,12 @@ SDK_INTERFACES := \
 	rp2_common/hardware_exception \
 	rp2_common/hardware_flash \
 	rp2_common/hardware_irq \
+	rp2_common/hardware_pio \
 	rp2_common/hardware_resets \
 	rp2_common/hardware_rosc \
 	rp2_common/hardware_rtc \
 	rp2_common/hardware_pll \
+	rp2_common/hardware_spi \
 	rp2_common/hardware_vreg \
 	rp2_common/hardware_watchdog \
 	rp2_common/hardware_xosc \

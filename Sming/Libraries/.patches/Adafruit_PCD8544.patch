@@ -1,0 +1,12 @@
+diff --git a/README.md b/README.md
+index 85d6290..cb535ec 100644
+--- a/README.md
++++ b/README.md
+@@ -1,4 +1,6 @@
+-# Adafruit PCD8544 Nokia 5110 LCD Library [![Build Status](https://github.com/adafruit/Adafruit-PCD8544-Nokia-5110-LCD-library/workflows/Arduino%20Library%20CI/badge.svg)](https://github.com/adafruit/Adafruit-PCD8544-Nokia-5110-LCD-library/actions)[![Documentation](https://github.com/adafruit/ci-arduino/blob/master/assets/doxygen_badge.svg)](http://adafruit.github.io/Adafruit-PCD8544-Nokia-5110-LCD-library/html/index.html)
++# Adafruit PCD8544 Nokia 5110 LCD Library
++
++[![Build Status](https://github.com/adafruit/Adafruit-PCD8544-Nokia-5110-LCD-library/workflows/Arduino%20Library%20CI/badge.svg)](https://github.com/adafruit/Adafruit-PCD8544-Nokia-5110-LCD-library/actions)
+ 
+ This is a library for our Monochrome Nokia 5110 LCD Displays
+ 

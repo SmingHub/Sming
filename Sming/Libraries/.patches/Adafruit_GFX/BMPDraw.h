@@ -45,14 +45,14 @@ as well as Adafruit raw 1.8" TFT display
  *
  *		unsigned width()
  * 		unsigned height()
+ *      startWrite()
+ *      endWrite()
  * 		setAddrWindow(x1, y1, x2, y2)
- * 		pushColor(uint16_t rgb565)
+ * 		writePixels(uint16_t rgb565)
  *
  * Return types and parameters don't need to be exact.
  * Note that this would probably be more efficient using a virtual base class...
 */
-
-#define BUFFPIXEL 20
 
 template <class Adafruit_TFT> bool bmpDraw(Adafruit_TFT& tft, String fileName, uint8_t x, uint8_t y)
 {
@@ -64,8 +64,8 @@ template <class Adafruit_TFT> bool bmpDraw(Adafruit_TFT& tft, String fileName, u
 
 	uint32_t startTime = millis();
 
-	file_t handle = fileOpen(fileName.c_str(), File::ReadOnly);
-	if(handle < 0) {
+	File file;
+	if(!file.open(fileName)) {
 		debug_e("File wasn't found: %s", fileName.c_str());
 		return false;
 	}
@@ -74,21 +74,16 @@ template <class Adafruit_TFT> bool bmpDraw(Adafruit_TFT& tft, String fileName, u
 	// BMP data is stored little-endian, esp8266 is little-endian too.
 	// May need to reverse subscript order if porting elsewhere.
 
-	auto read16 = [handle]() -> uint16_t {
+	auto read16 = [&file]() -> uint16_t {
 		char bytes[2];
-		fileRead(handle, bytes, 2);
+		file.read(bytes, 2);
 		return (bytes[1] << 8) + bytes[0];
 	};
 
-	auto read32 = [handle]() -> uint32_t {
+	auto read32 = [&file]() -> uint32_t {
 		char bytes[4];
-		fileRead(handle, bytes, 4);
+		file.read(bytes, 4);
 		return (bytes[3] << 24) + (bytes[2] << 16) + (bytes[1] << 8) + bytes[0];
-	};
-
-	// Convert rgb values into RGB565 format
-	auto color565 = [](uint8_t r, uint8_t g, uint8_t b) -> uint16_t {
-		return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
 	};
 
 	// Parse BMP header
@@ -145,11 +140,44 @@ template <class Adafruit_TFT> bool bmpDraw(Adafruit_TFT& tft, String fileName, u
 		}
 
 		// Set TFT address window to clipped image bounds
-		tft.setAddrWindow(x, y, x + w - 1, y + h - 1);
+		tft.startWrite();
+		tft.setAddrWindow(x, y, w, h);
 
-		uint8_t sdbuffer[3 * BUFFPIXEL];	// pixel buffer (R+G+B per pixel)
-		uint8_t buffidx = sizeof(sdbuffer); // Current position in sdbuffer
-		for(int row = 0; row < h; row++) {  // For each scanline...
+		constexpr size_t BUFFPIXEL{20};
+		struct Buffer {
+			union {
+				uint8_t rgb[BUFFPIXEL][3];  // pixel buffer (R+G+B per pixel)
+				uint16_t colors[BUFFPIXEL]; // Resulting colours
+			};
+			uint8_t index{0};
+
+			// Convert rgb values into RGB565 format
+			static uint16_t color565(uint8_t r, uint8_t g, uint8_t b)
+			{
+				return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+			}
+
+			bool convertPixel()
+			{
+				uint16_t color = color565(rgb[index][2], rgb[index][1], rgb[index][0]);
+				colors[index] = __builtin_bswap16(color);
+				++index;
+				return index == BUFFPIXEL;
+			}
+		};
+		Buffer buf;
+		bool reload{true};
+
+		auto flushPixels = [&]() {
+			if(buf.index == 0) {
+				return;
+			}
+			tft.writePixels(buf.colors, buf.index, true, true);
+			buf.index = 0;
+		};
+
+		uint32_t filePos = file.tell();
+		for(int row = 0; row < h; row++) { // For each scanline...
 			/*
 			 * Seek to start of scan line.  It might seem inefficient to be doing this on
 			 * every line, but this method covers a lot of gritty details like cropping
@@ -164,29 +192,27 @@ template <class Adafruit_TFT> bool bmpDraw(Adafruit_TFT& tft, String fileName, u
 				// Bitmap is stored top-to-bottom
 				pos = bmpImageoffset + row * rowSize;
 			}
-			if(fileTell(handle) != int(pos)) {
-				fileSeek(handle, pos, SeekOrigin::Start);
-				buffidx = sizeof(sdbuffer); // Force buffer reload
+			if(filePos != pos) {
+				filePos = file.seek(pos, SeekOrigin::Start);
+				reload = true;
 			}
-			for(int col = 0; col < w; col++) { // For each pixel...
+			for(int col = 0; col < w; ++col) {
 				// Time to read more pixel data?
-				if(buffidx >= sizeof(sdbuffer)) { // Indeed
-					fileRead(handle, sdbuffer, sizeof(sdbuffer));
-					buffidx = 0; // Set index to beginning
+				if(reload) {
+					flushPixels();
+					filePos += file.read(buf.rgb, sizeof(buf.rgb));
+					reload = false;
 				}
+				reload = buf.convertPixel();
+			}
+		}
+		flushPixels();
+		tft.endWrite();
 
-				// Convert pixel from BMP to TFT format, push to display
-				uint8_t b = sdbuffer[buffidx++];
-				uint8_t g = sdbuffer[buffidx++];
-				uint8_t r = sdbuffer[buffidx++];
-				tft.pushColor(color565(r, g, b));
-			} // end pixel
-		}	 // end scanline
 		debug_i("Loaded in %d ms", millis() - startTime);
 		break;
 	}
 
-	fileClose(handle);
 	if(!goodBmp) {
 		debug_e("BMP format not recognized.");
 	}

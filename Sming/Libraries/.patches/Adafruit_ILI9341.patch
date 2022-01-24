@@ -1,0 +1,49 @@
+diff --git a/Adafruit_ILI9341.cpp b/Adafruit_ILI9341.cpp
+old mode 100755
+new mode 100644
+index c962765..91aedbc
+--- a/Adafruit_ILI9341.cpp
++++ b/Adafruit_ILI9341.cpp
+@@ -121,7 +121,7 @@ Adafruit_ILI9341::Adafruit_ILI9341(int8_t cs, int8_t dc, int8_t rst)
+     @param  rst       Reset pin # (optional, pass -1 if unused).
+ */
+ /**************************************************************************/
+-Adafruit_ILI9341::Adafruit_ILI9341(SPIClass *spiClass, int8_t dc, int8_t cs,
++Adafruit_ILI9341::Adafruit_ILI9341(SPIBase *spiClass, int8_t dc, int8_t cs,
+                                    int8_t rst)
+     : Adafruit_SPITFT(ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT, spiClass, cs, dc,
+                       rst) {}
+
+diff --git a/Adafruit_ILI9341.h b/Adafruit_ILI9341.h
+old mode 100755
+new mode 100644
+index 2d64ec7..573331b
+--- a/Adafruit_ILI9341.h
++++ b/Adafruit_ILI9341.h
+@@ -134,11 +134,12 @@ work with ILI9340)
+ 
+ class Adafruit_ILI9341 : public Adafruit_SPITFT {
+ public:
++  Adafruit_ILI9341(): Adafruit_ILI9341(TFT_CS_PIN, TFT_DC_PIN, TFT_RESET_PIN) { }
+   Adafruit_ILI9341(int8_t _CS, int8_t _DC, int8_t _MOSI, int8_t _SCLK,
+                    int8_t _RST = -1, int8_t _MISO = -1);
+   Adafruit_ILI9341(int8_t _CS, int8_t _DC, int8_t _RST = -1);
+ #if !defined(ESP8266)
+-  Adafruit_ILI9341(SPIClass *spiClass, int8_t dc, int8_t cs = -1,
++  Adafruit_ILI9341(SPIBase *spiClass, int8_t dc, int8_t cs = -1,
+                    int8_t rst = -1);
+ #endif // end !ESP8266
+   Adafruit_ILI9341(tftBusWidth busWidth, int8_t d0, int8_t wr, int8_t dc,
+
+diff --git a/README.md b/README.md
+index 2f62bcd..740a120 100644
+--- a/README.md
++++ b/README.md
+@@ -1,4 +1,6 @@
+-# Adafruit ILI9341 Arduino Library [![Build Status](https://github.com/adafruit/Adafruit_ILI9341/workflows/Arduino%20Library%20CI/badge.svg)](https://github.com/adafruit/Adafruit_ILI9341/actions)[![Documentation](https://github.com/adafruit/ci-arduino/blob/master/assets/doxygen_badge.svg)](http://adafruit.github.io/Adafruit_ILI9341/html/index.html)
++# Adafruit ILI9341 Arduino Library
++
++[![Build Status](https://github.com/adafruit/Adafruit_ILI9341/workflows/Arduino%20Library%20CI/badge.svg)](https://github.com/adafruit/Adafruit_ILI9341/actions)
+ 
+ This is a library for the Adafruit ILI9341 display products
+ 

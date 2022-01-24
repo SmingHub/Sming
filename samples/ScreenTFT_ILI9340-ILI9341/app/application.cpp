@@ -61,7 +61,7 @@ void basicGui()
 	}
 	p1 = 50;
 	r++;
-	guiTimer.initializeMs(1000, basicBMP).start(false);
+	guiTimer.initializeMs<1000>(basicBMP).start(false);
 }
 
 void init()
@@ -101,6 +101,6 @@ void init()
 	tft.println("M.Bozkurt");
 	delay(2000);
 	tft.fillScreen(0);
-	guiTimer.initializeMs(1000, basicGui).start(false);
+	guiTimer.initializeMs<1000>(basicGui).start(false);
 	//runTest();
 }
