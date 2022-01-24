@@ -46,7 +46,7 @@ endef
 # Results are sorted and without trailing path separator
 # $1 -> Root paths
 define ListSubDirs
-$(foreach d,$(dir $(wildcard $1/*/.)),$(d:/=))
+$(foreach d,$(dir $(wildcard $(addsuffix /*/.,$1))),$(d:/=))
 endef
 
 # Check that $2 is a valid sub-directory of $1. Return empty string if not.

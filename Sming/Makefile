@@ -61,7 +61,7 @@ submodules: $(ALL_SUBMODULES:=/.submodule) ##Fetch all third-party submodules (b
 
 # Build a list of available Components
 COMPONENT_SEARCH_DIRS	+= $(ARCH_COMPONENTS) Components Libraries
-ALL_COMPONENT_DIRS := $(sort $(foreach d,$(COMPONENT_SEARCH_DIRS),$(call ListSubDirs,$d)))
+ALL_COMPONENT_DIRS := $(sort $(call ListSubDirs,$(COMPONENT_SEARCH_DIRS)))
 
 # Generates a rule to fetch all submodules for a Component
 # $1 Component name
