@@ -14,7 +14,7 @@ public:
 	{
 		Serial.print(e.key());
 		Serial.print(" = ");
-		Serial.println(e.value());
+		Serial.println(*e);
 	}
 
 	template <typename Map> void print(const Map& map) const
@@ -37,8 +37,15 @@ public:
 			print(map);
 
 			for(auto e : map) {
-				e.value() += ": gobbed";
+				String s = *e;
+				e->length();
 			}
+
+			for(auto e : map) {
+				*e += ": gobbed";
+			}
+
+			REQUIRE_EQ(map["b"], "value(b): gobbed");
 
 			print(map);
 		}

@@ -70,6 +70,26 @@ public:
 			return *this;
 		}
 
+		Value& operator*()
+		{
+			return v;
+		}
+
+		const Value& operator*() const
+		{
+			return v;
+		}
+
+		Value* operator->()
+		{
+			return &v;
+		}
+
+		const Value* operator->() const
+		{
+			return &v;
+		}
+
 	private:
 		const K& k;
 		Value& v;
