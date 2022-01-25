@@ -254,3 +254,15 @@ private:
 	static List list;									  ///< All running threads
 	static unsigned interrupt_mask;						  ///< Current interrupt level
 };
+
+/*
+ * Called from main loop
+ * @param ms Time in milliseconds until next schedule timer event,
+ * negative if no timers have been scheduled.
+ */
+void host_thread_wait(int ms);
+
+/*
+ * Cancels wait, e.g. when new event is posted to queue
+ */
+void host_thread_kick();

@@ -89,8 +89,7 @@ bool system_os_post(uint8_t prio, os_signal_t sig, os_param_t par)
 		return false;
 	}
 
-	extern CSemaphore host_main_loop_semaphore;
-	host_main_loop_semaphore.post();
+	host_thread_kick();
 	return true;
 }
 

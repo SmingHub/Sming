@@ -4,8 +4,6 @@
 #include <muldiv.h>
 #include <cassert>
 
-extern CSemaphore host_main_loop_semaphore;
-
 namespace
 {
 os_timer_t* timer_list;
@@ -44,7 +42,11 @@ void os_timer_arm_ticks(os_timer_t* ptimer, uint32_t ticks, bool repeat_flag)
 	mutex.lock();
 	timer_insert(hw_timer2_read() + ticks, ptimer);
 	mutex.unlock();
-	host_main_loop_semaphore.post();
+
+	// Kick main thread (which services timers) if we're due next
+	if(timer_list == ptimer) {
+		host_thread_kick();
+	}
 }
 
 void os_timer_arm(struct os_timer_t* ptimer, uint32_t time, bool repeat_flag)

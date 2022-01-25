@@ -43,8 +43,6 @@
 #include <host_lwip.h>
 #endif
 
-CSemaphore host_main_loop_semaphore;
-
 namespace
 {
 static int exitCode;
@@ -70,7 +68,7 @@ void host_exit(int code)
 
 	host_debug_i("returning %d", code);
 	exitCode = code;
-	host_main_loop_semaphore.post();
+	host_thread_kick();
 	done = true;
 
 	if(exit_count++) {
@@ -299,10 +297,8 @@ int main(int argc, char* argv[])
 					break;
 				}
 			}
-			constexpr int SCHED_WAIT{2};
-			if(due > SCHED_WAIT) {
-				host_main_loop_semaphore.timedwait((due - SCHED_WAIT) * 1000);
-			}
+
+			host_thread_wait(due);
 		}
 
 		host_debug_i(">> Normal Exit <<\n");
