@@ -29,5 +29,14 @@ struct lwip_param {
 	const char* netmask; ///< Network mask
 };
 
+/*
+ * Called by startup code
+ */
 bool host_lwip_init(const struct lwip_param& param);
 void host_lwip_shutdown();
+
+/*
+ * Called from Network library
+ */
+using host_lwip_init_callback_t = void (*)();
+void host_lwip_on_init_complete(host_lwip_init_callback_t callback);

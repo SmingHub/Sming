@@ -275,10 +275,7 @@ int main(int argc, char* argv[])
 
 #ifndef DISABLE_NETWORK
 		if(config.enable_network) {
-			if(host_lwip_init(config.lwip)) {
-				extern void host_wifi_lwip_init_complete();
-				host_wifi_lwip_init_complete();
-			}
+			host_lwip_init(config.lwip);
 		} else {
 			host_debug_i("Network initialisation skipped as requested");
 		}

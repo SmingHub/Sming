@@ -24,6 +24,7 @@
 namespace
 {
 SimpleTimer lwipServiceTimer;
+host_lwip_init_callback_t init_callback;
 
 // Service stack more freqently when busy to ensure decent throughput
 constexpr unsigned activeInterval{2};
@@ -75,6 +76,10 @@ bool host_lwip_init(const struct lwip_param& param)
 				 nif->hwaddr[4], nif->hwaddr[5]);
 #endif
 
+	if(init_callback != nullptr) {
+		init_callback();
+	}
+
 	lwipServiceTimer.initializeMs(activeInterval, []() {
 		bool active = lwip_arch_service();
 		lwipServiceTimer.setIntervalMs(active ? activeInterval : inactiveInterval);
@@ -89,4 +94,9 @@ void host_lwip_shutdown()
 {
 	lwipServiceTimer.stop();
 	lwip_arch_shutdown();
+}
+
+void host_lwip_on_init_complete(host_lwip_init_callback_t callback)
+{
+	init_callback = callback;
 }
