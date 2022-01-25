@@ -24,6 +24,7 @@
 #include "threads.h"
 #include "except.h"
 #include "options.h"
+#include <host_rboot.h>
 #include <spi_flash/flashmem.h>
 #include <driver/uart_server.h>
 #include <BitManipulations.h>
@@ -254,7 +255,6 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	extern void host_init_bootloader();
 	host_init_bootloader();
 
 	atexit(cleanup);
