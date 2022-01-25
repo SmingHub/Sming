@@ -130,8 +130,21 @@ bool CSemaphore::timedwait(unsigned us)
 	return timedwait(&ts);
 }
 
-void CThread::startup()
+void CThread::startup(unsigned cpulimit)
 {
+	if(cpulimit != 0) {
+		cpu_set_t set;
+		CPU_ZERO(&set);
+		for(unsigned i = 0; i < cpulimit; ++i) {
+			CPU_SET(i, &set);
+		}
+		if(sched_setaffinity(getpid(), sizeof(set), &set) == 0) {
+			host_debug_i("Using max. %u CPUs", cpulimit);
+		} else {
+			host_debug_e("ERROR! Failed to set CPU affinity");
+		}
+	}
+
 	mainThread = pthread_self();
 	interrupt = new CBasicMutex;
 #ifndef __WIN32

@@ -130,41 +130,20 @@ int main(int argc, char* argv[])
 {
 	trap_exceptions();
 
-	static struct {
-		int pause;
-		int exitpause;
-		bool initonly;
+	struct Config {
+		int pause{-1};
+		int exitpause{-1};
 		int loopcount;
-		bool enable_network;
+		uint8_t cpulimit;
+		bool initonly;
+		bool enable_network{true};
 		UartServer::Config uart;
 		FlashmemConfig flash;
 #ifndef DISABLE_NETWORK
 		struct lwip_param lwip;
 #endif
-	} config = {
-		.pause = -1,
-		.exitpause = -1,
-		.initonly = false,
-		.enable_network = true,
-		.uart =
-			{
-				.enableMask = 0,
-				.portBase = 0,
-			},
-		.flash =
-			{
-				.filename = nullptr,
-				.createSize = 0,
-
-			},
-#ifndef DISABLE_NETWORK
-		.lwip =
-			{
-				.ifname = nullptr,
-				.ipaddr = nullptr,
-			},
-#endif
 	};
+	static Config config{};
 
 	int uart_num{-1};
 	option_tag_t opt;
@@ -257,6 +236,10 @@ int main(int argc, char* argv[])
 			host_debug_level = atoi(arg);
 			break;
 
+		case opt_cpulimit:
+			config.cpulimit = atoi(arg);
+			break;
+
 		case opt_none:
 			break;
 		}
@@ -281,7 +264,7 @@ int main(int argc, char* argv[])
 	} else {
 		Storage::initialize();
 
-		CThread::startup();
+		CThread::startup(config.cpulimit);
 
 		hw_timer_init();
 

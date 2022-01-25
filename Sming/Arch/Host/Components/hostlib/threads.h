@@ -146,7 +146,7 @@ public:
 	using List = LinkedObjectListTemplate<CThread>;
 	using OwnedList = OwnedLinkedObjectListTemplate<CThread>;
 
-	static void startup();
+	static void startup(unsigned cpulimit = 0);
 
 	/**
 	 * @brief Construct a new CThread object
