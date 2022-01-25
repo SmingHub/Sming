@@ -122,13 +122,12 @@ void CMutex::unlock()
 
 bool CSemaphore::timedwait(unsigned us)
 {
-	timeval tv;
-	gettimeofday(&tv, nullptr);
-	tv.tv_usec += us;
-	timespec to;
-	to.tv_sec = tv.tv_sec + tv.tv_usec / 1000000;
-	to.tv_nsec = (tv.tv_usec % 1000000) * 1000;
-	return timedwait(&to);
+	struct timespec ts;
+	clock_gettime(CLOCK_REALTIME, &ts);
+	uint64_t ns = ts.tv_nsec + uint64_t(us) * 1000;
+	ts.tv_sec += ns / 1000000000;
+	ts.tv_nsec = ns % 1000000000;
+	return timedwait(&ts);
 }
 
 void CThread::startup()
