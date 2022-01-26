@@ -11,11 +11,15 @@
 #include "AccessPointImpl.h"
 #include "StationListImpl.h"
 #include <esp_netif.h>
-#include <esp_wifi.h>
 #include <esp_system.h>
 
-static AccessPointImpl accessPoint;
-AccessPointClass& WifiAccessPoint = accessPoint;
+AccessPointClass& WifiAccessPoint{SmingInternal::Network::accessPoint};
+
+namespace SmingInternal
+{
+namespace Network
+{
+AccessPointImpl accessPoint;
 
 void AccessPointImpl::enable(bool enabled, bool save)
 {
@@ -193,3 +197,6 @@ std::unique_ptr<StationList> AccessPointImpl::getStations() const
 void AccessPointImpl::onSystemReady()
 {
 }
+
+} // namespace Network
+} // namespace SmingInternal

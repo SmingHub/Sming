@@ -11,16 +11,20 @@
  */
 
 #include "WifiEventsImpl.h"
-#include <Platform/Station.h>
-#include <esp_wifi.h>
+#include "StationImpl.h"
+#include "AccessPointImpl.h"
 #include <esp_event.h>
 #include <debug_progmem.h>
 
-static WifiEventsImpl events;
-WifiEventsClass& WifiEvents = events;
+WifiEventsClass& WifiEvents{SmingInternal::Network::events};
 
-StationConnectionStatus WifiEventsImpl::stationConnectionStatus = eSCS_Idle;
 extern void wifi_set_event_handler_cb(esp_event_handler_t eventHandler);
+
+namespace SmingInternal
+{
+namespace Network
+{
+WifiEventsImpl events;
 
 ip_addr_t ip(esp_ip4_addr_t ip)
 {
@@ -40,11 +44,12 @@ void WifiEventsImpl::WifiEventHandler(void* arg, esp_event_base_t base, int32_t 
 {
 	debugf("event %s|%d\n", base, id);
 
+	station.eventHandler(base, id, data);
+	accessPoint.eventHandler(base, id, data);
+
 	if(base == WIFI_EVENT) {
 		switch(id) {
 		case WIFI_EVENT_STA_START:
-			stationConnectionStatus = eSCS_Connecting;
-			esp_wifi_connect();
 			break;
 		case WIFI_EVENT_STA_CONNECTED: {
 			wifi_event_sta_connected_t* event = reinterpret_cast<wifi_event_sta_connected_t*>(data);
@@ -56,7 +61,6 @@ void WifiEventsImpl::WifiEventHandler(void* arg, esp_event_base_t base, int32_t 
 			break;
 		}
 		case WIFI_EVENT_STA_DISCONNECTED: {
-			stationConnectionStatus = eSCS_ConnectionFailed;
 			wifi_event_sta_disconnected_t* event = reinterpret_cast<wifi_event_sta_disconnected_t*>(data);
 			debugf("disconnect from ssid %s, reason %d\n", event->ssid, event->reason);
 			if(onSTADisconnect) {
@@ -117,7 +121,6 @@ void WifiEventsImpl::WifiEventHandler(void* arg, esp_event_base_t base, int32_t 
 	} else if(base == IP_EVENT) {
 		switch(id) {
 		case IP_EVENT_STA_GOT_IP: {
-			stationConnectionStatus = eSCS_GotIP;
 			ip_event_got_ip_t* event = reinterpret_cast<ip_event_got_ip_t*>(data);
 			debugf("ip:" IPSTR ",mask:" IPSTR ",gw:" IPSTR "\n", IP2STR(&event->ip_info.ip),
 				   IP2STR(&event->ip_info.netmask), IP2STR(&event->ip_info.gw));
@@ -139,3 +142,6 @@ void WifiEventsImpl::WifiEventHandler(void* arg, esp_event_base_t base, int32_t 
 		} // switch id
 	}
 }
+
+} // namespace Network
+} // namespace SmingInternal

@@ -14,14 +14,19 @@
 #include <Platform/Station.h>
 #include <esp_event.h>
 
+namespace SmingInternal
+{
+namespace Network
+{
 class WifiEventsImpl : public WifiEventsClass
 {
-public:
-	static StationConnectionStatus stationConnectionStatus;
-
 public:
 	WifiEventsImpl();
 
 private:
 	void WifiEventHandler(void* arg, esp_event_base_t base, int32_t id, void* data);
 };
+
+extern WifiEventsImpl events;
+} // namespace Network
+} // namespace SmingInternal

@@ -14,10 +14,21 @@
 #include <esp_wifi.h>
 #include <esp_netif.h>
 #include <esp_event.h>
+#include <nvs.h>
 
 #ifdef ENABLE_WPS
 #include <esp_wps.h>
+#endif
 
+StationClass& WifiStation{SmingInternal::Network::station};
+
+namespace SmingInternal
+{
+namespace Network
+{
+StationImpl station;
+
+#ifdef ENABLE_WPS
 /*
  * Information only required during WPS negotiation
  */
@@ -30,11 +41,26 @@ struct StationImpl::WpsConfig {
 	uint8_t credIndex;
 	bool ignoreDisconnects;
 };
-
 #endif
 
-static StationImpl station;
-StationClass& WifiStation = station;
+void setAutoConnect(bool enable)
+{
+	nvs_handle_t handle;
+	ESP_ERROR_CHECK(nvs_open("wifi", NVS_READWRITE, &handle));
+	nvs_set_u8(handle, "autoconnect", enable);
+	nvs_close(handle);
+}
+
+bool getAutoConnect()
+{
+	uint8_t enable{false};
+	nvs_handle_t handle;
+	if(nvs_open("wifi", NVS_READONLY, &handle) == ESP_OK) {
+		nvs_get_u8(handle, "autoconnect", &enable);
+		nvs_close(handle);
+	}
+	return enable;
+}
 
 class BssInfoImpl : public BssInfo
 {
@@ -49,6 +75,35 @@ public:
 		hidden = 0;
 	}
 };
+
+void StationImpl::eventHandler(esp_event_base_t base, int32_t id, void* data)
+{
+	if(base == WIFI_EVENT) {
+		switch(id) {
+		case WIFI_EVENT_STA_START:
+			if(getAutoConnect()) {
+				connectionStatus = eSCS_Connecting;
+				esp_wifi_connect();
+			}
+			break;
+		case WIFI_EVENT_STA_DISCONNECTED: {
+			connectionStatus = eSCS_ConnectionFailed;
+			break;
+		}
+		default:;
+		}
+	} else if(base == IP_EVENT) {
+		switch(id) {
+		case IP_EVENT_STA_GOT_IP:
+			connectionStatus = eSCS_GotIP;
+			break;
+		case IP_EVENT_STA_LOST_IP:
+			connectionStatus = eSCS_Connecting;
+			break;
+		default:;
+		}
+	}
+}
 
 void StationImpl::enable(bool enabled, bool save)
 {
@@ -89,6 +144,7 @@ void StationImpl::enable(bool enabled, bool save)
 	}
 	ESP_ERROR_CHECK(esp_wifi_set_storage(save ? WIFI_STORAGE_FLASH : WIFI_STORAGE_RAM));
 	ESP_ERROR_CHECK(esp_wifi_set_mode(mode));
+	ESP_ERROR_CHECK(esp_wifi_start());
 }
 
 bool StationImpl::isEnabled() const
@@ -114,6 +170,10 @@ bool StationImpl::config(const String& ssid, const String& password, bool autoCo
 
 	enable(true, save);
 
+	if(save) {
+		setAutoConnect(autoConnectOnStartup);
+	}
+
 	ESP_ERROR_CHECK(esp_wifi_set_storage(save ? WIFI_STORAGE_FLASH : WIFI_STORAGE_RAM));
 	ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &config));
 
@@ -123,7 +183,7 @@ bool StationImpl::config(const String& ssid, const String& password, bool autoCo
 bool StationImpl::connect()
 {
 	disconnect();
-	return esp_wifi_start() == ESP_OK;
+	return esp_wifi_connect() == ESP_OK;
 }
 
 bool StationImpl::disconnect()
@@ -290,7 +350,7 @@ String StationImpl::getPassword() const
 
 StationConnectionStatus StationImpl::getConnectionStatus() const
 {
-	return WifiEventsImpl::stationConnectionStatus;
+	return connectionStatus;
 }
 
 bool StationImpl::startScan(ScanCompletedDelegate scanCompleted)
@@ -373,7 +433,7 @@ void StationImpl::internalSmartConfig(smartconfig_event_t event_id, void* pdata)
 		break;
 	case SC_EVENT_SEND_ACK_DONE:
 		debugf("[SC] SEND_ACK_DONE");
-		event = (evt.type == SCT_None) ? SCE_LinkOver : SCE_Link;
+		event = SCE_LinkOver;
 		break;
 	case SC_EVENT_GOT_SSID_PSWD: {
 		debugf("[SC] GOT_SSID_PSWD");
@@ -387,7 +447,7 @@ void StationImpl::internalSmartConfig(smartconfig_event_t event_id, void* pdata)
 		evt.bssidSet = cfg->bssid_set;
 		evt.bssid = cfg->bssid;
 		evt.type = SmartConfigType(cfg->type);
-		event = SCE_Wait;
+		event = SCE_Link;
 		break;
 	}
 	default:
@@ -405,12 +465,16 @@ void StationImpl::internalSmartConfig(smartconfig_event_t event_id, void* pdata)
 		connect();
 		break;
 	case SC_EVENT_SEND_ACK_DONE:
-		if(evt.type == SCT_None) {
-			smartConfigStop();
-		}
+		smartConfigStop();
 		break;
 	default:;
 	}
+}
+
+void StationImpl::smartConfigEventHandler(void* arg, esp_event_base_t base, int32_t id, void* data)
+{
+	auto self = static_cast<StationImpl*>(arg);
+	return self->internalSmartConfig(smartconfig_event_t(id), data);
 }
 
 bool StationImpl::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback)
@@ -430,15 +494,12 @@ bool StationImpl::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate c
 	}
 
 	smartConfigCallback = callback;
-	auto eventHandler = [](void* arg, esp_event_base_t base, int32_t id, void* data) {
-		auto self = static_cast<StationImpl*>(arg);
-		self->internalSmartConfig(smartconfig_event_t(id), data);
-	};
-	ESP_ERROR_CHECK(esp_event_handler_register(SC_EVENT, ESP_EVENT_ANY_ID, eventHandler, this));
+	ESP_ERROR_CHECK(esp_event_handler_register(SC_EVENT, ESP_EVENT_ANY_ID, smartConfigEventHandler, this));
 
 	smartconfig_start_config_t cfg = SMARTCONFIG_START_CONFIG_DEFAULT();
 	if(esp_smartconfig_start(&cfg) != ESP_OK) {
 		debug_e("esp_smartconfig_start() failed");
+		esp_event_handler_unregister(SC_EVENT, ESP_EVENT_ANY_ID, smartConfigEventHandler);
 		smartConfigCallback = nullptr;
 		smartConfigEventInfo.reset();
 		return false;
@@ -449,6 +510,7 @@ bool StationImpl::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate c
 
 void StationImpl::smartConfigStop()
 {
+	esp_event_handler_unregister(SC_EVENT, ESP_EVENT_ANY_ID, smartConfigEventHandler);
 	esp_smartconfig_stop();
 	smartConfigCallback = nullptr;
 	smartConfigEventInfo.reset();
@@ -456,6 +518,7 @@ void StationImpl::smartConfigStop()
 
 extern "C" void __wrap_putchar(char c)
 {
+	m_putc('.');
 	m_putc(c);
 }
 
@@ -601,3 +664,6 @@ void StationImpl::wpsConfigStop()
 }
 
 #endif // ENABLE_WPS
+
+}; // namespace Network
+}; // namespace SmingInternal

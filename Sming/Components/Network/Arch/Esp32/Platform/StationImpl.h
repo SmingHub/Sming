@@ -21,6 +21,10 @@
 
 struct esp_netif_obj;
 
+namespace SmingInternal
+{
+namespace Network
+{
 class StationImpl : public StationClass, protected ISystemReadyHandler
 {
 public:
@@ -62,6 +66,9 @@ public:
 	void wpsConfigStop() override;
 #endif
 
+	// Called from WifiEventsImpl
+	void eventHandler(esp_event_base_t base, int32_t id, void* data);
+
 protected:
 	void onSystemReady() override;
 
@@ -79,9 +86,11 @@ private:
 #endif
 #ifdef ENABLE_SMART_CONFIG
 	void internalSmartConfig(smartconfig_event_t event, void* pdata);
+	static void smartConfigEventHandler(void* arg, esp_event_base_t base, int32_t id, void* data);
 #endif
 
 private:
+	StationConnectionStatus connectionStatus{eSCS_Idle};
 	bool runScan{false};
 #ifdef ENABLE_WPS
 	struct WpsConfig;
@@ -92,3 +101,8 @@ private:
 #endif
 	esp_netif_obj* stationNetworkInterface{nullptr};
 };
+
+extern StationImpl station;
+
+}; // namespace Network
+}; // namespace SmingInternal
