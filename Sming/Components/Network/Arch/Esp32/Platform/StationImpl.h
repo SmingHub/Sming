@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * StationImpl.h - Esp8266 WiFi Station
+ * StationImpl.h - Esp32 WiFi Station
  *
  ****/
 

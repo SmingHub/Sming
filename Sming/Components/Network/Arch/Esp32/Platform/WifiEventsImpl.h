@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * WifiEventsImpl.h - Esp8266 WiFi events
+ * WifiEventsImpl.h - Esp32 WiFi events
  *
  ****/
 

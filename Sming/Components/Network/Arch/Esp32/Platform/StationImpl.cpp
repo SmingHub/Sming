@@ -9,11 +9,6 @@
  ****/
 
 #include "StationImpl.h"
-#include "WifiEventsImpl.h"
-
-#include <esp_wifi.h>
-#include <esp_netif.h>
-#include <esp_event.h>
 #include <nvs.h>
 
 #ifdef ENABLE_WPS

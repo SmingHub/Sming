@@ -5,44 +5,13 @@
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
  * WifiEventsImpl.cpp
- *
- *  Created on: 19 февр. 2016 г.
- *      Author: shurik
  */
 
 #include "WifiEventsImpl.h"
 #include "StationImpl.h"
-#include "AccessPointImpl.h"
-#include <esp_event.h>
-#include <nvs_flash.h>
 #include <debug_progmem.h>
 
 WifiEventsClass& WifiEvents{SmingInternal::Network::events};
-
-void esp_network_initialise()
-{
-	/*
-	 * Initialise NVS which IDF WiFi uses to store configuration parameters.
-	 */
-	esp_err_t ret = nvs_flash_init();
-	if(ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-		ESP_ERROR_CHECK(nvs_flash_erase());
-		ret = nvs_flash_init();
-	}
-	ESP_ERROR_CHECK(ret);
-
-	/*
-	 * Initialise default WiFi stack
-	 */
-	esp_netif_init();
-	auto eventHandler = [](void* arg, esp_event_base_t base, int32_t id, void* data) -> void {
-		SmingInternal::Network::events.eventHandler(base, id, data);
-	};
-	ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, eventHandler, nullptr));
-	ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, eventHandler, nullptr));
-	wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-	ESP_ERROR_CHECK(esp_wifi_init(&cfg));
-}
 
 namespace SmingInternal
 {
@@ -58,11 +27,6 @@ ip_addr_t ip(esp_ip4_addr_t ip)
 
 void WifiEventsImpl::eventHandler(esp_event_base_t base, int32_t id, void* data)
 {
-	debugf("event %s|%d\n", base, id);
-
-	station.eventHandler(base, id, data);
-	accessPoint.eventHandler(base, id, data);
-
 	if(base == WIFI_EVENT) {
 		switch(id) {
 		case WIFI_EVENT_STA_START:

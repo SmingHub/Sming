@@ -10,8 +10,6 @@
 
 #include "AccessPointImpl.h"
 #include "StationListImpl.h"
-#include <esp_netif.h>
-#include <esp_system.h>
 
 AccessPointClass& WifiAccessPoint{SmingInternal::Network::accessPoint};
 
