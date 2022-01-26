@@ -15,6 +15,10 @@
 #include <esp_wps.h>
 #endif
 
+// Use same NVS namespace as other WiFi settings
+#define NVS_NAMESPACE "nvs.net80211"
+#define NVS_STA_AUTOCONNECT "sta.autoconnect"
+
 StationClass& WifiStation{SmingInternal::Network::station};
 
 namespace SmingInternal
@@ -41,8 +45,8 @@ struct StationImpl::WpsConfig {
 void setAutoConnect(bool enable)
 {
 	nvs_handle_t handle;
-	ESP_ERROR_CHECK(nvs_open("wifi", NVS_READWRITE, &handle));
-	nvs_set_u8(handle, "autoconnect", enable);
+	ESP_ERROR_CHECK(nvs_open(NVS_NAMESPACE, NVS_READWRITE, &handle));
+	nvs_set_u8(handle, NVS_STA_AUTOCONNECT, enable);
 	nvs_close(handle);
 }
 
@@ -50,8 +54,8 @@ bool getAutoConnect()
 {
 	uint8_t enable{false};
 	nvs_handle_t handle;
-	if(nvs_open("wifi", NVS_READONLY, &handle) == ESP_OK) {
-		nvs_get_u8(handle, "autoconnect", &enable);
+	if(nvs_open(NVS_NAMESPACE, NVS_READONLY, &handle) == ESP_OK) {
+		nvs_get_u8(handle, NVS_STA_AUTOCONNECT, &enable);
 		nvs_close(handle);
 	}
 	return enable;
