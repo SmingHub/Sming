@@ -21,10 +21,7 @@ namespace Network
 class WifiEventsImpl : public WifiEventsClass
 {
 public:
-	WifiEventsImpl();
-
-private:
-	void WifiEventHandler(void* arg, esp_event_base_t base, int32_t id, void* data);
+	void eventHandler(esp_event_base_t base, int32_t id, void* data);
 };
 
 extern WifiEventsImpl events;
