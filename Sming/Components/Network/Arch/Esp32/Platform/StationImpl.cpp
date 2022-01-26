@@ -527,12 +527,6 @@ void StationImpl::smartConfigStop()
 	smartConfigEventInfo.reset();
 }
 
-extern "C" void __wrap_putchar(char c)
-{
-	m_putc('.');
-	m_putc(c);
-}
-
 #endif // ENABLE_SMART_CONFIG
 
 #ifdef ENABLE_WPS
