@@ -415,7 +415,7 @@ void StationImpl::internalSmartConfig(smartconfig_event_t event_id, void* pdata)
 
 bool StationImpl::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback)
 {
-	if(smartConfigEventInfo != nullptr) {
+	if(smartConfigEventInfo) {
 		return false; // Already in progress
 	}
 
@@ -424,7 +424,7 @@ bool StationImpl::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate c
 		return false;
 	}
 
-	smartConfigEventInfo.reset(new SmartConfigEventInfo);
+	smartConfigEventInfo.reset(new SmartConfigEventInfo{});
 	if(!smartConfigEventInfo) {
 		return false;
 	}
@@ -452,6 +452,11 @@ void StationImpl::smartConfigStop()
 	esp_smartconfig_stop();
 	smartConfigCallback = nullptr;
 	smartConfigEventInfo.reset();
+}
+
+extern "C" void __wrap_putchar(char c)
+{
+	m_putc(c);
 }
 
 #endif // ENABLE_SMART_CONFIG
