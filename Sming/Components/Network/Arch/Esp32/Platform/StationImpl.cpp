@@ -78,9 +78,21 @@ public:
 void StationImpl::eventHandler(esp_event_base_t base, int32_t id, void* data)
 {
 	if(base == WIFI_EVENT) {
+		bool allowAutoConnect{true};
+#ifdef ENABLE_WPS
+		if(wpsConfig != nullptr) {
+			wpsEventHandler(id, data);
+			allowAutoConnect = false;
+		}
+#endif
+#ifdef ENABLE_SMART_CONFIG
+		if(smartConfigEventInfo) {
+			allowAutoConnect = false;
+		}
+#endif
 		switch(id) {
 		case WIFI_EVENT_STA_START:
-			if(getAutoConnect()) {
+			if(allowAutoConnect && getAutoConnect()) {
 				connectionStatus = eSCS_Connecting;
 				esp_wifi_connect();
 			}
@@ -525,12 +537,8 @@ extern "C" void __wrap_putchar(char c)
 
 #ifdef ENABLE_WPS
 
-void StationImpl::wpsEventHandler(esp_event_base_t event_base, int32_t event_id, void* event_data)
+void StationImpl::wpsEventHandler(int32_t event_id, void* event_data)
 {
-	if(wpsConfig == nullptr) {
-		return;
-	}
-
 	switch(event_id) {
 	case WIFI_EVENT_STA_DISCONNECTED:
 		debug_w("WIFI_EVENT_STA_DISCONNECTED");
@@ -636,8 +644,6 @@ bool StationImpl::wpsConfigStart(WPSConfigDelegate callback)
 
 	debug_d("[WPS] wpsConfigStart()");
 
-	ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, staticWpsEventHandler, this));
-
 	enable(true, false);
 
 	connect();
@@ -657,7 +663,6 @@ bool StationImpl::wpsCallback(WpsStatus status)
 void StationImpl::wpsConfigStop()
 {
 	ESP_ERROR_CHECK(esp_wifi_wps_disable());
-	ESP_ERROR_CHECK(esp_event_handler_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, staticWpsEventHandler));
 	delete wpsConfig;
 	wpsConfig = nullptr;
 }

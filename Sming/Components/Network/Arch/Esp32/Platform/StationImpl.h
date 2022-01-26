@@ -75,12 +75,7 @@ protected:
 private:
 	static void staticScanCompleted(wifi_event_sta_scan_done_t* event, uint8_t status);
 #ifdef ENABLE_WPS
-	static void staticWpsEventHandler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
-	{
-		auto self = static_cast<StationImpl*>(arg);
-		self->wpsEventHandler(event_base, event_id, event_data);
-	}
-	void wpsEventHandler(esp_event_base_t event_base, int32_t event_id, void* event_data);
+	void wpsEventHandler(int32_t event_id, void* event_data);
 	bool wpsCallback(WpsStatus status);
 	bool wpsConfigure(uint8_t credIndex);
 #endif
