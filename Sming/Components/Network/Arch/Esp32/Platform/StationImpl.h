@@ -16,6 +16,7 @@
 
 #ifdef ENABLE_SMART_CONFIG
 #include <esp_smartconfig.h>
+#include <memory>
 #endif
 
 struct esp_netif_obj;
@@ -77,7 +78,7 @@ private:
 	bool wpsConfigure(uint8_t credIndex);
 #endif
 #ifdef ENABLE_SMART_CONFIG
-	void internalSmartConfig(sc_status status, void* pdata);
+	void internalSmartConfig(smartconfig_event_t event, void* pdata);
 #endif
 
 private:
