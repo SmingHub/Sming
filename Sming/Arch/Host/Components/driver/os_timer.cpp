@@ -4,10 +4,13 @@
 #include <muldiv.h>
 #include <cassert>
 
-static os_timer_t* timer_list;
-static CMutex mutex;
+namespace
+{
+os_timer_t* timer_list;
+CMutex mutex;
 
-static void timer_insert(uint32_t expire, os_timer_t* ptimer)
+// Called with mutex locked
+void timer_insert(uint32_t expire, os_timer_t* ptimer)
 {
 	os_timer_t* t_prev = nullptr;
 	auto t = timer_list;
@@ -27,6 +30,8 @@ static void timer_insert(uint32_t expire, os_timer_t* ptimer)
 	ptimer->timer_expire = expire;
 }
 
+} // namespace
+
 void os_timer_arm_ticks(os_timer_t* ptimer, uint32_t ticks, bool repeat_flag)
 {
 	assert(ptimer != nullptr);
@@ -37,6 +42,11 @@ void os_timer_arm_ticks(os_timer_t* ptimer, uint32_t ticks, bool repeat_flag)
 	mutex.lock();
 	timer_insert(hw_timer2_read() + ticks, ptimer);
 	mutex.unlock();
+
+	// Kick main thread (which services timers) if we're due next
+	if(timer_list == ptimer) {
+		host_thread_kick();
+	}
 }
 
 void os_timer_arm(struct os_timer_t* ptimer, uint32_t time, bool repeat_flag)
@@ -95,39 +105,35 @@ void os_timer_done(struct os_timer_t* ptimer)
 	os_timer_disarm(ptimer);
 }
 
-// Called with mutex locked
-static os_timer_t* find_expired_timer()
+int host_service_timers()
 {
 	if(timer_list == nullptr) {
-		return nullptr;
+		return -1;
 	}
 
 	auto ticks_now = hw_timer2_read();
 	auto t = timer_list;
-	if(int(t->timer_expire - ticks_now) > 0) {
-		// No timers due
-		return nullptr;
+	int ticks = t->timer_expire - ticks_now;
+	if(ticks > 0) {
+		// Return milliseconds until timer due
+		using R = std::ratio<1000, HW_TIMER2_CLK>;
+		return muldiv<R::num, R::den>(unsigned(ticks));
 	}
 
-	// Found an expired timer, so remove from queue
+	mutex.lock();
+	// Pop timer from queue
 	timer_list = t->timer_next;
 	t->timer_next = reinterpret_cast<os_timer_t*>(-1);
-
 	// Repeating timer?
 	if(t->timer_period != 0) {
 		timer_insert(t->timer_expire + t->timer_period, t);
 	}
-
-	return t;
-}
-
-void host_service_timers()
-{
-	mutex.lock();
-	auto t = find_expired_timer();
 	mutex.unlock();
 
-	if(t != nullptr && t->timer_func != nullptr) {
+	if(t->timer_func != nullptr) {
 		t->timer_func(t->timer_arg);
 	}
+
+	// Call again soon as poss.
+	return 0;
 }

@@ -45,13 +45,6 @@ The threads aren't suspended but will block if they call `interrupt_begin()`.
 However, the main thread (level 0) is halted to reflect normal interrupt behaviour.
 
 
-.. envvar:: LWIP_SERVICE_INTERVAL
-
-   Default: 2ms
-
-   LWIP stack is serviced via polling, this determines the interval.
-
-
 .. envvar:: HOST_PARAMETERS
 
    Set this value to pass additional parameters to a Host application.

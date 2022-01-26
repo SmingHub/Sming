@@ -64,7 +64,7 @@ index fccf0f31..0a6378c4 100644
          if(LWIP_USE_SANITIZERS)
              list(APPEND LWIP_COMPILER_FLAGS_GNU_CLANG
 diff --git a/contrib/ports/win32/sys_arch.c b/contrib/ports/win32/sys_arch.c
-index 84c1bcaf..f23dfa67 100644
+index 61897e9d..e2eb7053 100644
 --- a/contrib/ports/win32/sys_arch.c
 +++ b/contrib/ports/win32/sys_arch.c
 @@ -38,6 +38,7 @@
@@ -75,7 +75,7 @@ index 84c1bcaf..f23dfa67 100644
  #ifdef _MSC_VER
  #pragma warning (pop)
  #endif
-@@ -732,28 +733,6 @@ sys_arch_netconn_sem_free(void)
+@@ -742,28 +743,6 @@ sys_arch_netconn_sem_free(void)
  
  #endif /* !NO_SYS */
  

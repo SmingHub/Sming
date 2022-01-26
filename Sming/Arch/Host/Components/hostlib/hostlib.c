@@ -31,7 +31,7 @@ int msleep(unsigned ms)
 
 size_t getHostAppDir(char* path, size_t bufSize)
 {
-	if(path == NULL ||bufSize == 0) {
+	if(path == NULL || bufSize == 0) {
 		return 0;
 	}
 

@@ -19,24 +19,32 @@
 
 #pragma once
 
-#include <cstdint>
-#include <cstdbool>
+#include "include/host_lwip.h"
+#include <hostlib/hostmsg.h>
+#include <lwip/init.h>
+#include <lwip/ip_addr.h>
 
-struct lwip_param {
-	const char* ifname;  ///< Name of interface to use
-	const char* ipaddr;  ///< Client IP address
-	const char* gateway; ///< Network gateway address
-	const char* netmask; ///< Network mask
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+struct lwip_net_config {
+	char ifname[128];
+	unsigned ifindex;
+	ip4_addr_t ipaddr;
+	ip4_addr_t netmask;
+	ip4_addr_t gw;
 };
 
-/*
- * Called by startup code
- */
-bool host_lwip_init(const struct lwip_param& param);
-void host_lwip_shutdown();
+struct netif* lwip_arch_init(struct lwip_net_config& config);
+void lwip_arch_shutdown();
 
 /*
- * Called from Network library
+ * Poll the LWIP stack.
+ * Return true if data was processed, false otherwise.
  */
-using host_lwip_init_callback_t = void (*)();
-void host_lwip_on_init_complete(host_lwip_init_callback_t callback);
+bool lwip_arch_service();
+
+#ifdef __cplusplus
+}
+#endif

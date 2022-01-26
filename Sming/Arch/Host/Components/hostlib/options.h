@@ -56,7 +56,8 @@
 	   "Useful for running samples in CI\0")                                                                           \
 	XX(nonet, no_argument, "Skip network initialisation", nullptr, nullptr, nullptr)                                   \
 	XX(debug, required_argument, "Set debug verbosity", "LEVEL", "Maximum debug message level to print",               \
-	   "0 = errors only, 1 = +warnings, 2 = +info\0")
+	   "0 = errors only, 1 = +warnings, 2 = +info\0")                                                                  \
+	XX(cpulimit, required_argument, "Set CPU limit", "COUNT", "0 = no limit", nullptr)
 
 enum option_tag_t {
 #define XX(tag, has_arg, desc, argname, arghelp, examples) opt_##tag,

@@ -17,7 +17,6 @@ set (LWIP_INCLUDE_DIRS
     "${LWIP_DIR}/.."
     "${LWIP_DIR}/src/include"
     "${LWIP_CONTRIB_DIR}/ports/unix/port/include"
-    "${HOSTLIB_INCDIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/"
 )
 
@@ -25,7 +24,6 @@ include(${LWIP_CONTRIB_DIR}/ports/unix/Filelists.cmake)
 include(${LWIP_DIR}/src/Filelists.cmake)
 
 add_library(lwip
-	host_lwip.c
     ${LWIP_DIR}/src/api/err.c
     ${lwipcore_SRCS}
     ${lwipcore4_SRCS}
@@ -36,7 +34,7 @@ add_library(lwip
 )
 
 set_target_properties(lwip
-	PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${USER_LIBDIR} PREFIX "clib-" OUTPUT_NAME "${LWIP_LIBNAME}"
+	PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${USER_LIBDIR} OUTPUT_NAME "${LWIP_LIBNAME}"
 )
 
 target_compile_options(lwip PRIVATE ${LWIP_COMPILER_FLAGS} -m32)

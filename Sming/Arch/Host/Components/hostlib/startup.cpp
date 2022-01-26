@@ -24,10 +24,12 @@
 #include "threads.h"
 #include "except.h"
 #include "options.h"
+#include <host_rboot.h>
 #include <spi_flash/flashmem.h>
 #include <driver/uart_server.h>
 #include <BitManipulations.h>
 #include <driver/os_timer.h>
+#include <driver/hw_timer.h>
 #include <esp_tasks.h>
 #include <stdlib.h>
 #include "include/hostlib/init.h"
@@ -35,23 +37,18 @@
 #include "include/hostlib/hostlib.h"
 #include "include/hostlib/CommandLine.h"
 #include <Storage.h>
-
 #include <Platform/System.h>
-#include <Platform/Timers.h>
 
 #ifndef DISABLE_NETWORK
 #include <host_lwip.h>
-extern void host_wifi_lwip_init_complete();
-static bool lwip_initialised;
 #endif
 
+namespace
+{
 static int exitCode;
 static bool done;
-static OneShotElapseTimer<NanoTime::Milliseconds> lwipServiceTimer;
 
-extern void host_init_bootloader();
-
-static void cleanup()
+void cleanup()
 {
 	hw_timer_cleanup();
 	host_flashmem_cleanup();
@@ -63,12 +60,15 @@ static void cleanup()
 	host_debug_i("Goodbye!");
 }
 
+} // namespace
+
 void host_exit(int code)
 {
 	static unsigned exit_count;
 
 	host_debug_i("returning %d", code);
 	exitCode = code;
+	host_thread_kick();
 	done = true;
 
 	if(exit_count++) {
@@ -113,58 +113,36 @@ static void pause(int secs)
 	}
 }
 
-void host_main_loop()
+/*
+ * When there is no work being done we should wait efficiently.
+ * Tasks and timers can be set from an interrupt (i.e. hardware thread),
+ * so they can kick a semaphore to wake us up.
+ */
+int host_main_loop()
 {
-	host_service_tasks();
-	host_service_timers();
-#ifndef DISABLE_NETWORK
-	if(lwip_initialised && lwipServiceTimer.expired()) {
-		host_lwip_service();
-		lwipServiceTimer.start();
-	}
-#endif
 	system_soft_wdt_feed();
+	host_service_tasks();
+	return host_service_timers();
 }
 
 int main(int argc, char* argv[])
 {
 	trap_exceptions();
 
-	static struct {
-		int pause;
-		int exitpause;
-		bool initonly;
+	struct Config {
+		int pause{-1};
+		int exitpause{-1};
 		int loopcount;
-		bool enable_network;
+		uint8_t cpulimit;
+		bool initonly;
+		bool enable_network{true};
 		UartServer::Config uart;
 		FlashmemConfig flash;
 #ifndef DISABLE_NETWORK
 		struct lwip_param lwip;
 #endif
-	} config = {
-		.pause = -1,
-		.exitpause = -1,
-		.initonly = false,
-		.enable_network = true,
-		.uart =
-			{
-				.enableMask = 0,
-				.portBase = 0,
-			},
-		.flash =
-			{
-				.filename = nullptr,
-				.createSize = 0,
-
-			},
-#ifndef DISABLE_NETWORK
-		.lwip =
-			{
-				.ifname = nullptr,
-				.ipaddr = nullptr,
-			},
-#endif
 	};
+	static Config config{};
 
 	int uart_num{-1};
 	option_tag_t opt;
@@ -257,6 +235,10 @@ int main(int argc, char* argv[])
 			host_debug_level = atoi(arg);
 			break;
 
+		case opt_cpulimit:
+			config.cpulimit = atoi(arg);
+			break;
+
 		case opt_none:
 			break;
 		}
@@ -280,7 +262,7 @@ int main(int argc, char* argv[])
 	} else {
 		Storage::initialize();
 
-		CThread::startup();
+		CThread::startup(config.cpulimit);
 
 		hw_timer_init();
 
@@ -291,10 +273,7 @@ int main(int argc, char* argv[])
 
 #ifndef DISABLE_NETWORK
 		if(config.enable_network) {
-			lwip_initialised = host_lwip_init(&config.lwip);
-			if(lwip_initialised) {
-				host_wifi_lwip_init_complete();
-			}
+			host_lwip_init(config.lwip);
 		} else {
 			host_debug_i("Network initialisation skipped as requested");
 		}
@@ -309,19 +288,17 @@ int main(int argc, char* argv[])
 
 		host_init();
 
-#ifndef DISABLE_NETWORK
-		lwipServiceTimer.reset<LWIP_SERVICE_INTERVAL>();
-#endif
 		while(!done) {
-			host_main_loop();
-			if(config.loopcount == 0) {
-				continue;
+			int due = host_main_loop();
+			if(config.loopcount != 0) {
+				--config.loopcount;
+				if(config.loopcount == 0) {
+					host_debug_i("Reached requested loop count limit: exiting");
+					break;
+				}
 			}
-			--config.loopcount;
-			if(config.loopcount == 0) {
-				host_debug_i("Reached requested loop count limit: exiting");
-				break;
-			}
+
+			host_thread_wait(due);
 		}
 
 		host_debug_i(">> Normal Exit <<\n");

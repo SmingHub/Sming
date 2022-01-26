@@ -21,17 +21,28 @@
 #include <cstring>
 #include <cstdarg>
 #include <signal.h>
+#include <sys/time.h>
 
 CThread::List CThread::list;
 unsigned CThread::interrupt_mask;
-CBasicMutex* interrupt;
 
 namespace
 {
 pthread_t mainThread;
+CBasicMutex* interrupt;
 
-#ifndef __WIN32
+#ifdef __WIN32
 
+/*
+ * pthread-win32 implements semaphores with a mutex.
+ * If it's locked when the main thread is suspended, calling sem_post() from another thread results in deadlock.
+ * Use a native Windows semaphore to avoid this issue.
+ */
+HANDLE host_thread_semaphore;
+
+#else
+
+CSemaphore host_thread_semaphore;
 volatile bool mainThreadSignalled;
 timer_t signalTimer;
 int pauseSignal;
@@ -68,6 +79,7 @@ void signal_handler(int sig)
 
 #endif
 
+bool isMainThread() __attribute__((unused));
 bool isMainThread()
 {
 	return pthread_equal(pthread_self(), mainThread);
@@ -118,11 +130,37 @@ void CMutex::unlock()
 	interrupt->unlock();
 }
 
-void CThread::startup()
+bool CSemaphore::timedwait(unsigned us)
 {
+	struct timespec ts;
+	clock_gettime(CLOCK_REALTIME, &ts);
+	uint64_t ns = ts.tv_nsec + uint64_t(us) * 1000;
+	ts.tv_sec += ns / 1000000000;
+	ts.tv_nsec = ns % 1000000000;
+	return timedwait(&ts);
+}
+
+void CThread::startup(unsigned cpulimit)
+{
+	if(cpulimit != 0) {
+		cpu_set_t set;
+		CPU_ZERO(&set);
+		for(unsigned i = 0; i < cpulimit; ++i) {
+			CPU_SET(i, &set);
+		}
+		if(sched_setaffinity(getpid(), sizeof(set), &set) == 0) {
+			host_debug_i("Using max. %u CPUs", cpulimit);
+		} else {
+			host_debug_e("ERROR! Failed to set CPU affinity");
+		}
+	}
+
 	mainThread = pthread_self();
 	interrupt = new CBasicMutex;
-#ifndef __WIN32
+
+#ifdef __WIN32
+	host_thread_semaphore = CreateSemaphore(nullptr, 0, 1024, nullptr);
+#else
 	pauseSignal = SIGRTMIN + 0;
 	resumeSignal = SIGRTMIN + 1;
 	signal(pauseSignal, signal_handler);
@@ -240,4 +278,30 @@ const char* CThread::getCurrentName()
 	}
 
 	return "";
+}
+
+void host_thread_wait(int ms)
+{
+	constexpr int SCHED_WAIT{2};
+	if(ms >= 0 && ms <= SCHED_WAIT) {
+		return;
+	}
+#ifdef __WIN32
+	WaitForSingleObject(host_thread_semaphore, (ms < 0) ? INFINITE : ms - SCHED_WAIT);
+#else
+	if(ms < 0) {
+		host_thread_semaphore.wait();
+	} else if(ms > SCHED_WAIT) {
+		host_thread_semaphore.timedwait((ms - SCHED_WAIT) * 1000);
+	}
+#endif
+}
+
+void host_thread_kick()
+{
+#ifdef __WIN32
+	ReleaseSemaphore(host_thread_semaphore, 1, nullptr);
+#else
+	host_thread_semaphore.post();
+#endif
 }
