@@ -26,7 +26,7 @@ ssize_t WRAP(_read_r)(struct _reent* r, int fd, void* dst, size_t size)
 	return -1;
 }
 
-size_t WRAP(putc)(char c)
+size_t WRAP(putchar)(char c)
 {
 	return m_putc(c);
 }

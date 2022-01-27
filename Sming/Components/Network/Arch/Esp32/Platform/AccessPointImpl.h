@@ -12,9 +12,14 @@
 
 #include <Platform/AccessPoint.h>
 #include <Platform/System.h>
+#include <esp_wifi.h>
 
 struct esp_netif_obj;
 
+namespace SmingInternal
+{
+namespace Network
+{
 class AccessPointImpl : public AccessPointClass, protected ISystemReadyHandler
 {
 public:
@@ -38,9 +43,19 @@ public:
 	String getPassword() const override;
 	std::unique_ptr<StationList> getStations() const override;
 
+	// Called from WifiEventsImpl
+	void eventHandler(esp_event_base_t base, int32_t id, void* data)
+	{
+	}
+
 protected:
 	void onSystemReady() override;
 
 private:
 	esp_netif_obj* apNetworkInterface{nullptr};
 };
+
+extern AccessPointImpl accessPoint;
+
+} // namespace Network
+} // namespace SmingInternal
