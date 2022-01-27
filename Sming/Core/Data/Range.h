@@ -13,6 +13,8 @@
 
 /**
  * @brief Manage a range of numbers between specified limits
+ *
+ * Values in the range meet the critera (min <= value <= max)
  */
 template <typename T> struct TRange {
 	T min{};
@@ -75,11 +77,25 @@ template <typename T> struct TRange {
 	{
 	}
 
+	/**
+	 * @brief Determine if range contains a value
+	 */
 	bool contains(T value)
 	{
 		return (value >= min) && (value <= max);
 	}
 
+	/**
+	 * @brief Clip values to within the range
+	 */
+	T clip(T value)
+	{
+		return (value < min) ? min : (value > max) ? max : value;
+	}
+
+	/**
+	 * @brief Return a random value within the range
+	 */
 	T random() const
 	{
 		auto value = os_random();
