@@ -1,27 +1,10 @@
 #include <SmingCore.h>
 #include <Storage/SysMem.h>
 #include <Storage/ProgMem.h>
+#include <Storage/Debug.h>
 #include <Platform/Timers.h>
 
 IMPORT_FSTR(FS_app, PROJECT_DIR "/app/application.cpp")
-
-void listDevices()
-{
-	Serial.println();
-	Serial.println(_F("Registered storage devices:"));
-	for(auto& dev : Storage::getDevices()) {
-		Serial.print("  name = '");
-		Serial.print(dev.getName());
-		Serial.print(_F("', type = "));
-		Serial.print(toString(dev.getType()));
-		Serial.print(_F(", size = 0x"));
-		Serial.print(dev.getSize(), HEX);
-		Serial.print(_F(", ID = 0x"));
-		Serial.print(dev.getId(), HEX);
-		Serial.println();
-	}
-	Serial.println();
-}
 
 void listSpiffsPartitions()
 {
@@ -83,7 +66,7 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true);
 
-	listDevices();
+	Storage::Debug::listDevices(Serial);
 
 	listSpiffsPartitions();
 
