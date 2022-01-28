@@ -119,6 +119,17 @@ bool fwfs_mount();
  */
 bool fwfs_mount(Storage::Partition partition);
 
+/**
+ * @brief Mount a backup archive
+ * @param filename Path to archive file
+ * @retval IFS::FileSystem* Mounted filesystem. Caller must delete when finished.
+ */
+inline IFS::FileSystem* fileMountArchive(const String& filename)
+{
+	auto fs = getFileSystem();
+	return fs ? IFS::mountArchive(*fs, filename) : nullptr;
+}
+
 /** @brief  Open file by path
  *  @param  path Full path to file
  *  @param  flags Mode to open file
