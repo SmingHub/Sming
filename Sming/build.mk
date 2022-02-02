@@ -281,9 +281,7 @@ endef
 # $1 -> List of files
 define ClangFormat
 	$(if $(V),$(info Applying coding style to $(words $1) files ...))
-	@for FILE in $1; do \
-		$(CLANG_FORMAT) -i -style=file $$FILE; \
-	done
+	$(foreach FILE,$1, $(shell clang-format -i -style=file $(FILE)))
 endef
 
 define ListSubmodules
