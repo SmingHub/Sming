@@ -189,6 +189,10 @@
 	path = Sming/Libraries/Adafruit_VL53L0X
 	url = https://github.com/adafruit/Adafruit_VL53L0X.git
 	ignore = dirty
+[submodule "Libraries.AnimatedGIF"]
+	path = Sming/Libraries/AnimatedGIF/AnimatedGIF/
+	url = https://github.com/bitbank2/AnimatedGIF.git
+	ignore = dirty
 [submodule "Libraries.ArduinoFFT"]
 	path = Sming/Libraries/ArduinoFFT
 	url = https://github.com/kosme/arduinoFFT.git
