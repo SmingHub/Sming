@@ -215,7 +215,7 @@ CS_SEARCH_DIRS	?= $(call ListAllSubDirs,$(CS_ROOT_DIRS))
 # Resultant set of directories whose contents to apply coding style to
 CS_DIRS			?= $(patsubst %/.cs,%,$(wildcard $(foreach d,$(CS_SEARCH_DIRS),$d/.cs)))
 # Files to apply coding style to
-CS_FILES		= $(if $(CS_DIRS),$(call rwildcard,$(CS_DIRS:=/*),%.cpp %.hpp %.h %.c),)
+CS_FILES		= $(if $(CS_DIRS),$(sort $(call rwildcard,$(CS_DIRS:=/*),%.cpp %.hpp %.h %.c)))
 
 .PHONY: cs
 cs: ##Apply coding style to all core files
