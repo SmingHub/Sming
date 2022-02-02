@@ -281,7 +281,12 @@ endef
 # $1 -> List of files
 define ClangFormat
 	$(if $(V),$(info Applying coding style to $(words $1) files ...))
-	$(foreach FILE,$1, $(shell clang-format -i -style=file $(FILE)))
+	$(call ClangFormatBatch,$(sort $1))
+endef
+
+define ClangFormatBatch
+	@$(CLANG_FORMAT) -i -style=file $(wordlist 1,20,$1)
+	$(if $(word 20,$1),$(call ClangFormatBatch,$(wordlist 20,1000000,$1)))
 endef
 
 define ListSubmodules
