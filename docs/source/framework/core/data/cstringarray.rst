@@ -132,6 +132,29 @@ For more complex operations::
    }
 
 
+Pushing and popping
+-------------------
+
+CStringArray can be used as a simple FIFO or stack using push/pop methods.
+Behaviour is similar to STL deque, except pop methods also return a value.
+
+STACK::
+
+   CStringArray csa;
+   csa.pushBack("first value");
+   csa.pushBack("second value");
+   String popStack = csa.popBack(); // "second value"
+
+FIFO::
+
+   CStringArray csa;
+   csa.pushBack("first value");
+   csa.pushBack("second value");
+   String deque = csa.popFront(); // "first value"
+
+Note that popping values does not perform any memory de-allocation.
+
+
 Comparison with Vector<String>
 ------------------------------
 

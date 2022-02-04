@@ -180,6 +180,39 @@ public:
 				std::swap(it1, it2);
 			}
 		}
+
+		TEST_CASE("push front")
+		{
+			CStringArray csa;
+			REQUIRE(csa.front() == nullptr);
+			REQUIRE(csa.pushFront("abc"));
+			REQUIRE_EQ(String(csa.front()), "abc");
+			REQUIRE(csa.pushFront("def"));
+			REQUIRE_EQ(String(csa.front()), "def");
+			REQUIRE_EQ(csa.count(), 2);
+			REQUIRE_EQ(csa.popFront(), "def");
+			REQUIRE_EQ(csa.count(), 1);
+			REQUIRE_EQ(csa.popFront(), "abc");
+			REQUIRE_EQ(csa.count(), 0);
+			REQUIRE(!csa.popFront());
+		}
+
+		TEST_CASE("push back")
+		{
+			CStringArray csa;
+			REQUIRE(csa.back() == nullptr);
+			REQUIRE(csa.pushBack("abc"));
+			REQUIRE(csa.pushBack("def"));
+			REQUIRE_EQ(csa.count(), 2);
+			REQUIRE_EQ(String(csa.back()), "def");
+			REQUIRE_EQ(csa.popBack(), "def");
+			REQUIRE_EQ(String(csa.back()), "abc");
+			REQUIRE_EQ(csa.count(), 1);
+			REQUIRE_EQ(csa.popBack(), "abc");
+			REQUIRE_EQ(csa.count(), 0);
+			REQUIRE(csa.back() == nullptr);
+			REQUIRE(!csa.popBack());
+		}
 	}
 };
 

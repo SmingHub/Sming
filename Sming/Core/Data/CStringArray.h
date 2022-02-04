@@ -191,6 +191,48 @@ public:
 		return getValue(index);
 	}
 
+	/**
+	 * @brief Get first value in array, null if empty
+	 */
+	const char* front() const
+	{
+		return cbuffer();
+	}
+
+	/**
+	 * @brief Insert item at start of array
+	 * @param str Item to insert
+	 * @retval bool false on memory error
+	 */
+	bool pushFront(const char* str);
+
+	/**
+	 * @brief Pop first item from array (at index 0)
+	 * @retval String null if array is empty
+	 */
+	String popFront();
+
+	/**
+	 * @brief Get last item in array, null if empty
+	 */
+	const char* back() const;
+
+	/**
+	 * @brief Add item to end of array
+	 * @param str Item to add
+	 * @retval bool false on memory error
+	 */
+	bool pushBack(const char* str)
+	{
+		return add(str);
+	}
+
+	/**
+	 * @brief Pop last item from array
+	 * @retval String null if array is empty
+	 */
+	String popBack();
+
 	/** @brief Empty the array
 	 */
 	void clear()
