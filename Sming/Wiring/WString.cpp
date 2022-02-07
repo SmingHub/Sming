@@ -909,7 +909,7 @@ void String::remove(size_t index, size_t count)
 	}
 	char* writeTo = buffer() + index;
 	len -= count;
-	memcpy(writeTo, writeTo + count, len - index);
+	memmove(writeTo, writeTo + count, len - index);
 	setlen(len);
 }
 
