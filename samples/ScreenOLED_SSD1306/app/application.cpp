@@ -1,5 +1,5 @@
 #include <SmingCore.h>
-#include <Libraries/Adafruit_SSD1306/Adafruit_SSD1306.h>
+#include <Adafruit_SSD1306.h>
 
 /*
  * Hardware SPI mode:
@@ -68,7 +68,7 @@ void init()
 	// by default, we'll generate the high voltage from the 3.3v line internally! (neat!)
 	// initialize with the I2C addr 0x3c (for the 128x64)
 	// bool:reset set to TRUE or FALSE depending on your display
-	display.begin(SSD1306_SWITCHCAPVCC, SSD1306_I2C_ADDRESS, false);
+	display.begin(SSD1306_SWITCHCAPVCC, 0x3c, false);
 	display.display();
 	DemoTimer.initializeMs(2000, Demo1).start();
 }
