@@ -9,8 +9,7 @@ Introduction
 Implements a UART driver to connect via TCP socket, allowing terminal emulation using telnet,
 or directly to local host serial device (e.g. /dev/ttyUSB0, COM4, etc.)
 
-By default, output to UART0 is sent to the console and keyboard input is written to the UART0 receive queue.
-If emulation is enabled on any ports then this behaviour is disabled.
+If not otherwise reassigned, UART0 output is sent to the console and keyboard input is written to the UART0 receive queue.
 
 
 Build variables
@@ -101,3 +100,7 @@ For Windows, substitute the appropriate device name, e.g. ``COM4`` instead of ``
 .. note::
 
    If necessary, add ``ENABLE_HOST_UARTID=`` to prevent telnet windows from being created.
+
+Console I/O may be assigned to a different port like this::
+
+   make run HOST_UART_OPTIONS="--uart=1 --device=console"

@@ -31,8 +31,10 @@
 	XX(help, no_argument, "Show help", nullptr, nullptr, nullptr)                                                      \
 	XX(uart, required_argument, "Enable UART server", "PORT", "Which UART number to enable",                           \
 	   "e.g. --uart=0 --uart=1 enable servers for UART0, UART1\0")                                                     \
-	XX(device, required_argument, "Set device for uart", "DEVICE", "Optionally map uart to device",                    \
-	   "e.g. --uart=0 --device=/dev/ttyUSB0\0")                                                                        \
+	XX(device, required_argument, "Set device for uart", "DEVICE",                                                     \
+	   "Optionally map uart to device. Use `console` to change printf target.",                                        \
+	   "e.g. --uart=0 --device=/dev/ttyUSB0\0"                                                                         \
+	   "     --uart=1 --device=console\0")                                                                             \
 	XX(baud, required_argument, "Set baud rate for UART", "BAUD", "Requires --device argument",                        \
 	   "e.g. --uart=0 --device=/dev/ttyUSB0 --baud=115200\0")                                                          \
 	XX(portbase, required_argument, "Specify base port number for UART socket servers", "PORT", "IP port number",      \

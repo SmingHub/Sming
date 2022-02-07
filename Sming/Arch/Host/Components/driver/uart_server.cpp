@@ -31,7 +31,6 @@ namespace
 {
 unsigned portBase{10000};
 std::unique_ptr<CUart> servers[UART_COUNT];
-} // namespace
 
 class KeyboardThread : public CThread
 {
@@ -93,9 +92,9 @@ void* KeyboardThread::thread_routine()
 	return nullptr;
 }
 
-static KeyboardThread* keyboardThread;
+KeyboardThread* keyboardThread;
 
-static void destroyKeyboardThread()
+void destroyKeyboardThread()
 {
 	if(keyboardThread == nullptr) {
 		return;
@@ -106,7 +105,7 @@ static void destroyKeyboardThread()
 	keyboardThread = nullptr;
 }
 
-static void onUart0Notify(smg_uart_t* uart, smg_uart_notify_code_t code)
+void uartConsoleNotify(smg_uart_t* uart, smg_uart_notify_code_t code)
 {
 	switch(code) {
 	case UART_NOTIFY_AFTER_WRITE: {
@@ -135,6 +134,8 @@ static void onUart0Notify(smg_uart_t* uart, smg_uart_notify_code_t code)
 	}
 }
 
+} // namespace
+
 void startup(const Config& config)
 {
 	if(config.portBase != 0) {
@@ -143,31 +144,43 @@ void startup(const Config& config)
 
 	auto notify = [](smg_uart_t* uart, smg_uart_notify_code_t code) {
 		auto& server = servers[uart->uart_nr];
-		if(server) {
+		if(server != nullptr) {
 			server->onNotify(uart, code);
 		} else if(code == UART_NOTIFY_AFTER_WRITE) {
 			uart->tx_buffer->clear();
 		}
 	};
 
+	bool consoleAssigned{false};
 	for(unsigned i = 0; i < UART_COUNT; ++i) {
 		smg_uart_set_notify(i, notify);
 		if(!bitRead(config.enableMask, i)) {
 			continue;
 		}
+		auto devname = config.deviceNames[i];
+		if(devname != nullptr && strcmp(devname, "console") == 0) {
+			if(consoleAssigned) {
+				host_debug_e("Console may not be assigned to multiple ports");
+				exit(1);
+			}
+			smg_uart_set_notify(i, uartConsoleNotify);
+			consoleAssigned = true;
+			continue;
+		}
+
 		auto& server = servers[i];
-		if(config.deviceNames[i] == nullptr) {
+		if(devname == nullptr) {
 			server.reset(new CUartPort(i));
 		} else {
-			server.reset(new CUartDevice(i, config.deviceNames[i], config.baud[i]));
+			server.reset(new CUartDevice(i, devname, config.baud[i]));
 		}
 		server->execute();
 	}
 
-	// If no ports have been enabled then redirect port 0 output to host console
-	if(config.enableMask == 0) {
+	// Redirect port 0 to console if not otherwise enabled
+	if(!bitRead(config.enableMask, 0) && !consoleAssigned) {
 		// Redirect the main serial port to console output
-		smg_uart_set_notify(UART0, onUart0Notify);
+		smg_uart_set_notify(UART0, uartConsoleNotify);
 	}
 }
 

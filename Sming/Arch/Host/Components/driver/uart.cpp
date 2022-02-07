@@ -357,6 +357,10 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 		return nullptr;
 	}
 
+	if(cfg.uart_nr >= UART_COUNT) {
+		return nullptr;
+	}
+
 	auto uart = new smg_uart_t;
 	if(uart == nullptr) {
 		return nullptr;
@@ -377,52 +381,19 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 	rxBufferSize += UART_RX_FIFO_SIZE;
 	txBufferSize += UART_TX_FIFO_SIZE;
 
-	switch(cfg.uart_nr) {
-	case UART0:
-	case UART2:
-		if(smg_uart_rx_enabled(uart) && !realloc_buffer(uart->rx_buffer, rxBufferSize)) {
-			delete uart;
-			return nullptr;
-		}
-
-		if(smg_uart_tx_enabled(uart) && !realloc_buffer(uart->tx_buffer, txBufferSize)) {
-			delete uart->rx_buffer;
-			delete uart;
-			return nullptr;
-		}
-
-		if(cfg.uart_nr == UART2) {
-			break;
-		}
-
-		// OK, buffers allocated so setup hardware
-		smg_uart_detach(cfg.uart_nr);
-
-		break;
-
-	case UART1:
-		// Note: uart_interrupt_handler does not support RX on UART 1
-		if(uart->mode == UART_RX_ONLY) {
-			delete uart;
-			return nullptr;
-		}
-		uart->mode = UART_TX_ONLY;
-
-		// Transmit buffer optional
-		if(!realloc_buffer(uart->tx_buffer, txBufferSize)) {
-			delete uart;
-			return nullptr;
-		}
-
-		// Setup hardware
-		smg_uart_detach(cfg.uart_nr);
-		break;
-
-	default:
-		// big fail!
+	if(smg_uart_rx_enabled(uart) && !realloc_buffer(uart->rx_buffer, rxBufferSize)) {
 		delete uart;
 		return nullptr;
 	}
+
+	if(smg_uart_tx_enabled(uart) && !realloc_buffer(uart->tx_buffer, txBufferSize)) {
+		delete uart->rx_buffer;
+		delete uart;
+		return nullptr;
+	}
+
+	// OK, buffers allocated so setup hardware
+	smg_uart_detach(cfg.uart_nr);
 
 	smg_uart_set_baudrate(uart, cfg.baudrate);
 	smg_uart_flush(uart);

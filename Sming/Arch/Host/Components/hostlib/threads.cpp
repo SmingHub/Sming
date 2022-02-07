@@ -223,13 +223,18 @@ void CThread::interrupt_begin()
 	assert(interrupt_level > interrupt_mask);
 
 	// Are we suspended by another thread?
-	suspendMutex.lock();
-	while(suspended != 0) {
-		suspendMutex.wait(resumeCond);
-	}
-	suspendMutex.unlock();
-
 	interrupt->lock();
+	while(suspended != 0) {
+		interrupt->unlock();
+
+		suspendMutex.lock();
+		while(suspended != 0) {
+			suspendMutex.wait(resumeCond);
+		}
+		suspendMutex.unlock();
+
+		interrupt->lock();
+	}
 
 	if(interrupt_mask == 0) {
 		suspend_main_thread();
