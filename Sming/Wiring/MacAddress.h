@@ -54,6 +54,13 @@ public:
 	}
 
 	/**
+	 * @brief Create a MAC address from valid string.
+	 * e.g. 01:02:03:04:05:06
+	 * Separators are optional.
+	 */
+	MacAddress(const String& s);
+
+	/**
 	 * @brief Get the octets of the MAC address.
 	 */
 	void getOctets(Octets& octets) const
