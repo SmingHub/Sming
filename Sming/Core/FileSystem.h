@@ -548,4 +548,24 @@ inline int fileSetTime(FileHandle file, time_t mtime)
 	return fileSystem->settime(file, mtime);
 }
 
+/** @brief Create a directory
+ *  @param path Path to directory
+ *  @retval int Error code
+ */
+template <typename T> int createDirectory(const T& path)
+{
+	CHECK_FS(mkdir);
+	return fileSystem->mkdir(path);
+}
+
+/** @brief Create a directory and all required parent directories
+ *  @param path Path to directory
+ *  @retval int Error code
+ */
+template <typename T> int createDirectories(const T& path)
+{
+	CHECK_FS(mkdir);
+	return fileSystem->makedirs(path);
+}
+
 /** @} */
