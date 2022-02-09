@@ -102,7 +102,9 @@ bool MemoryDataStream::moveString(String& s)
 	bool sizeOk = ensureCapacity(size + 1);
 
 	// If we couldn't reallocate for the NUL terminator, drop the last character
-	assert(s.setBuffer({buffer, capacity, sizeOk ? size : size - 1}));
+	bool res = s.setBuffer({buffer, capacity, sizeOk ? size : size - 1});
+	(void)res;
+	assert(res);
 
 	buffer = nullptr;
 	readPos = 0;
