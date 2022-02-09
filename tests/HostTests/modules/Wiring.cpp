@@ -2,6 +2,7 @@
 
 #include <WHashMap.h>
 #include <WVector.h>
+#include <MacAddress.h>
 
 class WiringTest : public TestGroup
 {
