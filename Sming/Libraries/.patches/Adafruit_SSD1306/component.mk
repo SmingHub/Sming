@@ -1,4 +1,8 @@
 COMPONENT_SOC := *
 COMPONENT_DEPENDS := Adafruit_GFX
-
 COMPONENT_INCDIRS := .
+
+ifeq ($(SMING_ARCH),Host)
+	# pretend to be ESP8266 build
+	COMPONENT_CPPFLAGS += -DESP8266
+endif
