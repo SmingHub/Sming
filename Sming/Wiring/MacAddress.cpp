@@ -50,15 +50,6 @@ MacAddress::MacAddress(const String& s)
 	memcpy(octets, res, sizeof(res));
 }
 
-uint8_t MacAddress::operator[](unsigned index) const
-{
-	if(index >= sizeof(octets)) {
-		abort();
-	}
-
-	return octets[index];
-}
-
 uint8_t& MacAddress::operator[](unsigned index)
 {
 	if(index >= sizeof(octets)) {

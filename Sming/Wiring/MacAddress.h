@@ -79,14 +79,17 @@ public:
 	/**
 	 * @brief Get the octet at the given index in the MAC address.
 	 * @param index The index.
-	 * @return The octet at the given index.
+	 * @retval const uint8_t& Read-only reference to the octet at the given index.
 	 */
-	uint8_t operator[](unsigned index) const;
+	const uint8_t& operator[](unsigned index) const
+	{
+		return const_cast<MacAddress*>(this)->operator[](index);
+	}
 
 	/**
 	 * @brief Get a reference to the octet at the given index in the MAC address.
 	 * @param index The index.
-	 * @return A reference to the octet at the given index.
+	 * @retval uint8_t& A writeable reference to the octet at the given index.
 	 */
 	uint8_t& operator[](unsigned index);
 
