@@ -94,7 +94,9 @@ void suspend_main_thread()
 #else
 
 	assert(!mainThreadSignalled);
-	assert(pthread_kill(mainThread, pauseSignal) == 0);
+	int err = pthread_kill(mainThread, pauseSignal);
+	(void)err;
+	assert(err == 0);
 	while(!mainThreadSignalled) {
 		sched_yield();
 	}
@@ -109,7 +111,9 @@ void resume_main_thread()
 	ResumeThread(pthread_getw32threadhandle_np(mainThread));
 #else
 	assert(mainThreadSignalled);
-	assert(pthread_kill(mainThread, resumeSignal) == 0);
+	int err = pthread_kill(mainThread, resumeSignal);
+	(void)err;
+	assert(err == 0);
 	while(mainThreadSignalled) {
 		sched_yield();
 	}

@@ -27,9 +27,13 @@ namespace
 {
 void main(void*)
 {
-	assert(esp_task_wdt_init(CONFIG_ESP_TASK_WDT_TIMEOUT_S, true) == ESP_OK);
-	assert(esp_task_wdt_add(NULL) == ESP_OK);
-	assert(esp_task_wdt_status(NULL) == ESP_OK);
+	auto err = esp_task_wdt_init(CONFIG_ESP_TASK_WDT_TIMEOUT_S, true);
+	(void)err;
+	assert(err == ESP_OK);
+	err = esp_task_wdt_add(nullptr);
+	assert(err == ESP_OK);
+	err = esp_task_wdt_status(nullptr);
+	assert(err == ESP_OK);
 
 	hw_timer_init();
 
