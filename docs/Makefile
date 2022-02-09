@@ -108,7 +108,7 @@ COMPONENT_ROOT_DIRS := \
 	$(SMINGDIR)/samples
 
 # All directories where a README file should/must exist, and where a component.mk file could exist
-COMPONENT_DIRS := $(SMING_HOME) $(foreach d,$(COMPONENT_ROOT_DIRS),$(call ListSubDirs,$d))
+COMPONENT_DIRS := $(SMING_HOME) $(call ListSubDirs,$(COMPONENT_ROOT_DIRS))
 COMPONENT_SAMPLES := $(wildcard $(addsuffix /samples/*/component.mk,$(COMPONENT_DIRS)))
 COMPONENT_DIRS += $(COMPONENT_SAMPLES:/component.mk=)
 
