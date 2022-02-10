@@ -254,8 +254,8 @@ struct smg_uart_config_t {
 	uint8_t rx_pin;
 	smg_uart_mode_t mode; ///< Whether to enable receive, transmit or both
 	uart_options_t options;
-	uint32_t baudrate; ///< Requested baudrate; actual baudrate may differ
-	uint32_t config;   ///< UART CONF0 register bits
+	uint32_t baudrate;		  ///< Requested baudrate; actual baudrate may differ
+	smg_uart_format_t config; ///< UART CONF0 register bits
 	size_t rx_size;
 	size_t tx_size;
 };

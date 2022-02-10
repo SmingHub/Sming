@@ -425,8 +425,8 @@ void smg_uart_uninit(smg_uart_t* uart)
 	delete uart;
 }
 
-smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin,
-						  size_t rx_size, size_t tx_size)
+smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, smg_uart_format_t config, smg_uart_mode_t mode,
+						  uint8_t tx_pin, size_t rx_size, size_t tx_size)
 {
 	smg_uart_config_t cfg = {
 		.uart_nr = uart_nr,

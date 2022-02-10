@@ -42,7 +42,7 @@ void HardwareSerial::begin(uint32_t baud, SerialConfig config, SerialMode mode, 
 		.mode = smg_uart_mode_t(mode),
 		.options = options,
 		.baudrate = baud,
-		.config = uint32_t(config),
+		.config = smg_uart_format_t(config),
 		.rx_size = rxSize,
 		.tx_size = txSize,
 	};
