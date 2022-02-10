@@ -2,6 +2,7 @@
 
 #include <WHashMap.h>
 #include <WVector.h>
+#include <MacAddress.h>
 
 class WiringTest : public TestGroup
 {
@@ -69,6 +70,21 @@ public:
 			for(auto& e : vector) {
 				Serial.println(e);
 			}
+		}
+
+		TEST_CASE("MacAddress")
+		{
+			const uint8_t refOctets[]{0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc};
+			const MacAddress ref{refOctets};
+			REQUIRE(memcmp(&ref[0], refOctets, 6) == 0);
+			REQUIRE(MacAddress("123456789abc") == ref);
+			REQUIRE(MacAddress("12:34:56:78:9A:bc") == ref);
+			REQUIRE(MacAddress("12.34:56:78:9a:Bc") == ref);
+			REQUIRE(MacAddress("12 34 56 78 9a bC") == ref);
+			REQUIRE(MacAddress("ffffffffffff") == MacAddress({0xff, 0xff, 0xff, 0xff, 0xff, 0xff}));
+			REQUIRE(!MacAddress("123456789abc."));
+			REQUIRE(!MacAddress(""));
+			REQUIRE(!MacAddress("fffffffgfffff"));
 		}
 	}
 };
