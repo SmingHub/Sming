@@ -514,6 +514,9 @@ void smg_uart_restore_interrupts();
 
 /** @} */
 
+// Internal routine
+bool smg_uart_realloc_buffer(SerialBuffer*& buffer, size_t new_size);
+
 #if defined(__cplusplus)
 } // extern "C"
 #endif
