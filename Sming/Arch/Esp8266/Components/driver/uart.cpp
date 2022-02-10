@@ -146,15 +146,17 @@ smg_uart_t* get_physical(smg_uart_t* uart)
 bool realloc_buffer(SerialBuffer*& buffer, size_t new_size)
 {
 	if(buffer != nullptr) {
+		size_t res = 0;
+		smg_uart_disable_interrupts();
 		if(new_size == 0) {
-			smg_uart_disable_interrupts();
 			delete buffer;
 			buffer = nullptr;
-			smg_uart_restore_interrupts();
-			return true;
+		} else {
+			res = buffer->resize(new_size);
 		}
+		smg_uart_restore_interrupts();
 
-		return buffer->resize(new_size) == new_size;
+		return res == new_size;
 	}
 
 	if(new_size == 0) {
