@@ -5,9 +5,8 @@
  */
 
 #include "TestProgmem.h"
-#include "FlashData.h"
-#include "Print.h"
 #include <Platform/Timers.h>
+#include "FlashData.h"
 #include <FlashString/Array.hpp>
 #include <FlashString/Vector.hpp>
 #include <cinttypes>
