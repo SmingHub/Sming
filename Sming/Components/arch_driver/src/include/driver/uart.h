@@ -104,9 +104,9 @@ static inline constexpr uint8_t SMG_UART_FORMAT(smg_uart_bits_t databits, smg_ua
 }
 
 /**
- * @brief Structure for easier decomposing of `config` value
+ * @brief Structure for easier decomposing of `format` value
  * 
- * Used by drivers to read config values
+ * Used by drivers to read format values
  */
 union smg_uart_config_format_t {
 	struct {
@@ -255,25 +255,25 @@ struct smg_uart_config_t {
 	smg_uart_mode_t mode; ///< Whether to enable receive, transmit or both
 	uart_options_t options;
 	uint32_t baudrate;		  ///< Requested baudrate; actual baudrate may differ
-	smg_uart_format_t config; ///< UART CONF0 register bits
+	smg_uart_format_t format; ///< UART CONF0 register bits
 	size_t rx_size;
 	size_t tx_size;
 };
 
 // @deprecated Use `smg_uart_init_ex()` instead
-smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin,
-						  size_t rx_size, size_t tx_size = 0);
+smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, smg_uart_format_t format, smg_uart_mode_t mode,
+						  uint8_t tx_pin, size_t rx_size, size_t tx_size = 0);
 
 smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg);
 
 void smg_uart_uninit(smg_uart_t* uart);
 
 /**
- * @brief Set the UART config
+ * @brief Set the UART data format
  * @param uart
- * @param config UART CONF0 register bits
+ * @param format UART CONF0 register bits
  */
-void smg_uart_set_config(smg_uart_t* uart, smg_uart_format_t config);
+void smg_uart_set_format(smg_uart_t* uart, smg_uart_format_t format);
 
 /**
  * @brief UART interrupt configuration parameters for smg_uart_intr_config function

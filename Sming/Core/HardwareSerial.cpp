@@ -28,7 +28,7 @@ HardwareSerial::~HardwareSerial()
 #endif
 }
 
-void HardwareSerial::begin(uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin, uint8_t rxPin)
+void HardwareSerial::begin(uint32_t baud, SerialFormat format, SerialMode mode, uint8_t txPin, uint8_t rxPin)
 {
 	end();
 
@@ -42,7 +42,7 @@ void HardwareSerial::begin(uint32_t baud, SerialConfig config, SerialMode mode, 
 		.mode = smg_uart_mode_t(mode),
 		.options = options,
 		.baudrate = baud,
-		.config = smg_uart_format_t(config),
+		.format = smg_uart_format_t(format),
 		.rx_size = rxSize,
 		.tx_size = txSize,
 	};

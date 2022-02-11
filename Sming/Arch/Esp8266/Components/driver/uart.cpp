@@ -708,7 +708,7 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 
 		CLEAR_PERI_REG_MASK(UART_SWAP_REG, UART_SWAP0);
 
-		WRITE_PERI_REG(UART_CONF0(UART0), cfg.config);
+		WRITE_PERI_REG(UART_CONF0(UART0), cfg.format);
 		break;
 
 	case UART1:
@@ -729,7 +729,7 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 		smg_uart_detach(cfg.uart_nr);
 		uart->tx_pin = 2;
 		uart1_pin_select(uart->tx_pin);
-		WRITE_PERI_REG(UART_CONF0(UART1), cfg.config);
+		WRITE_PERI_REG(UART_CONF0(UART1), cfg.format);
 		break;
 
 	default:
@@ -777,11 +777,11 @@ void smg_uart_uninit(smg_uart_t* uart)
 	delete uart;
 }
 
-void smg_uart_set_config(smg_uart_t* uart, smg_uart_format_t config)
+void smg_uart_set_format(smg_uart_t* uart, smg_uart_format_t format)
 {
 	uart = get_physical(uart);
 	if(uart != nullptr) {
-		SET_PERI_REG_BITS(UART_CONF0(uart->uart_nr), 0xff, config, 0);
+		SET_PERI_REG_BITS(UART_CONF0(uart->uart_nr), 0xff, format, 0);
 	}
 }
 

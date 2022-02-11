@@ -655,7 +655,7 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 	uart_ll_set_tx_idle_num(dev, 0);
 
 	// Bottom 8 bits identical to esp8266
-	dev->conf0.val = (dev->conf0.val & 0xFFFFFF00) | cfg.config;
+	dev->conf0.val = (dev->conf0.val & 0xFFFFFF00) | cfg.format;
 
 	smg_uart_set_baudrate(uart, cfg.baudrate);
 	smg_uart_flush(uart);
@@ -690,13 +690,13 @@ void smg_uart_uninit(smg_uart_t* uart)
 	delete uart;
 }
 
-void smg_uart_set_config(smg_uart_t* uart, smg_uart_format_t config)
+void smg_uart_set_format(smg_uart_t* uart, smg_uart_format_t format)
 {
 	uart = get_physical(uart);
 	if(uart == nullptr) {
 		return;
 	}
-	smg_uart_config_format_t fmt{.val = config};
+	smg_uart_config_format_t fmt{.val = format};
 	auto dev = getDevice(uart->uart_nr);
 	uart_ll_set_data_bit_num(dev, uart_word_length_t(fmt.bits));
 	uart_ll_set_parity(dev, uart_parity_t(fmt.parity));

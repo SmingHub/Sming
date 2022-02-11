@@ -39,7 +39,7 @@ bool smg_uart_realloc_buffer(SerialBuffer*& buffer, size_t new_size)
 	return false;
 }
 
-smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, smg_uart_format_t config, smg_uart_mode_t mode,
+smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, smg_uart_format_t format, smg_uart_mode_t mode,
 						  uint8_t tx_pin, size_t rx_size, size_t tx_size)
 {
 	smg_uart_config_t cfg = {
@@ -49,7 +49,7 @@ smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, smg_uart_format_t 
 		.mode = mode,
 		.options = _BV(UART_OPT_TXWAIT),
 		.baudrate = baudrate,
-		.config = config,
+		.format = format,
 		.rx_size = rx_size,
 		.tx_size = tx_size,
 	};

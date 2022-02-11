@@ -323,7 +323,7 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 	smg_uart_detach(cfg.uart_nr);
 
 	smg_uart_set_baudrate(uart, cfg.baudrate);
-	smg_uart_set_config(uart, cfg.config);
+	smg_uart_set_format(uart, cfg.format);
 	smg_uart_flush(uart);
 	uartInstances[cfg.uart_nr] = uart;
 	smg_uart_start_isr(uart);
@@ -352,11 +352,11 @@ void smg_uart_uninit(smg_uart_t* uart)
 	delete uart;
 }
 
-void smg_uart_set_config(smg_uart_t* uart, smg_uart_format_t config)
+void smg_uart_set_format(smg_uart_t* uart, smg_uart_format_t format)
 {
 	// Not implemented
 	(void)uart;
-	(void)config;
+	(void)format;
 }
 
 bool smg_uart_intr_config(smg_uart_t* uart, const smg_uart_intr_config_t* config)

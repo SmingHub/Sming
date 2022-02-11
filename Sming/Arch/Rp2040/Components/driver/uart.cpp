@@ -612,7 +612,7 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 	smg_uart_detach(cfg.uart_nr);
 	smg_uart_set_baudrate(uart, cfg.baudrate);
 
-	smg_uart_set_config(uart, cfg.config);
+	smg_uart_set_format(uart, cfg.format);
 
 	auto dev = getDevice(cfg.uart_nr);
 
@@ -662,7 +662,7 @@ void smg_uart_uninit(smg_uart_t* uart)
 	delete uart;
 }
 
-void smg_uart_set_config(smg_uart_t* uart, smg_uart_format_t config)
+void smg_uart_set_format(smg_uart_t* uart, smg_uart_format_t format)
 {
 	if(uart == nullptr) {
 		return;
@@ -671,7 +671,7 @@ void smg_uart_set_config(smg_uart_t* uart, smg_uart_format_t config)
 	auto dev = getDevice(uart->uart_nr);
 
 	// Setup line control register
-	smg_uart_config_format_t fmt{.val = config};
+	smg_uart_config_format_t fmt{.val = format};
 	uint32_t lcr{0};
 	lcr |= fmt.bits << UART_UARTLCR_H_WLEN_LSB; // data bits
 	if(fmt.stop_bits != UART_NB_STOP_BIT_1) {   // stop bits
