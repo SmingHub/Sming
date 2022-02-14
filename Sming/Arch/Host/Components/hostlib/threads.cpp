@@ -23,7 +23,6 @@
 #include <signal.h>
 #include <sys/time.h>
 
-CThread::List CThread::list;
 unsigned CThread::interrupt_mask;
 
 namespace
@@ -178,17 +177,11 @@ void CThread::startup(unsigned cpulimit)
 CThread::CThread(const char* name, unsigned interrupt_level) : name(name), interrupt_level(interrupt_level)
 {
 	assert(interrupt_level > 0);
-	interrupt->lock();
-	list.add(this);
-	interrupt->unlock();
 }
 
 CThread::~CThread()
 {
 	HOST_THREAD_DEBUG("Thread '%s' destroyed", name);
-	interrupt->lock();
-	list.remove(this);
-	interrupt->unlock();
 }
 
 void CThread::interrupt_lock()
@@ -238,18 +231,6 @@ void CThread::interrupt_end()
 	}
 
 	interrupt->unlock();
-}
-
-const char* CThread::getCurrentName()
-{
-	auto cur = pthread_self();
-	for(auto& t : list) {
-		if(t == cur) {
-			return t.name;
-		}
-	}
-
-	return "";
 }
 
 void host_thread_wait(int ms)

@@ -21,7 +21,6 @@
 
 #include "include/hostlib/hostlib.h"
 #include <hostlib/hostmsg.h>
-#include <Data/LinkedObjectList.h>
 #include <pthread.h>
 #include <semaphore.h>
 #include <cassert>
@@ -140,12 +139,9 @@ private:
 /**
  * @brief Class to manage separate execution thread for simulating hardware and interrupts.
  */
-class CThread : public LinkedObjectTemplate<CThread>
+class CThread
 {
 public:
-	using List = LinkedObjectListTemplate<CThread>;
-	using OwnedList = OwnedLinkedObjectListTemplate<CThread>;
-
 	static void startup(unsigned cpulimit = 0);
 
 	/**
@@ -235,11 +231,10 @@ private:
 
 private:
 	pthread_t m_thread = {0};
-	const char* name;		   ///< Helps to identify purpose for debugging
-	unsigned interrupt_level;  ///< Interrupt level associated with this thread
-	unsigned previous_mask{0}; ///< Used to restore previous interrupt mask when interrupt ends
-	static List list;									  ///< All running threads
-	static unsigned interrupt_mask;						  ///< Current interrupt level
+	const char* name;				///< Helps to identify purpose for debugging
+	unsigned interrupt_level;		///< Interrupt level associated with this thread
+	unsigned previous_mask{0};		///< Used to restore previous interrupt mask when interrupt ends
+	static unsigned interrupt_mask; ///< Current interrupt level
 };
 
 /*
