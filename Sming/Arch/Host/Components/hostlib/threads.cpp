@@ -203,25 +203,6 @@ void CThread::interrupt_unlock()
 	interrupt->unlock();
 }
 
-void CThread::suspend()
-{
-	assert(!isCurrent());
-	suspendMutex.lock();
-	++suspended;
-	suspendMutex.unlock();
-}
-
-void CThread::resume()
-{
-	assert(!isCurrent());
-	suspendMutex.lock();
-	--suspended;
-	if(suspended == 0) {
-		pthread_cond_signal(&resumeCond);
-	}
-	suspendMutex.unlock();
-}
-
 void CThread::interrupt_begin()
 {
 	assert(isCurrent());
@@ -233,27 +214,8 @@ void CThread::interrupt_begin()
 	}
 	assert(interrupt_level > interrupt_mask);
 
-	// Are we suspended by another thread?
-	while(suspended != 0) {
-		interrupt->unlock();
-
-		suspendMutex.lock();
-		while(suspended != 0) {
-			suspendMutex.wait(resumeCond);
-		}
-		suspendMutex.unlock();
-
-		interrupt->lock();
-	}
-
 	if(interrupt_mask == 0) {
 		suspend_main_thread();
-	}
-
-	for(auto& thread : list) {
-		if(&thread != this && thread.interrupt_level <= interrupt_level) {
-			thread.suspend();
-		}
 	}
 
 	previous_mask = interrupt_mask;
@@ -270,12 +232,6 @@ void CThread::interrupt_end()
 	interrupt->lock();
 
 	interrupt_mask = previous_mask;
-
-	for(auto& thread : list) {
-		if(&thread != this && thread.interrupt_level <= interrupt_level) {
-			thread.resume();
-		}
-	}
 
 	if(interrupt_mask == 0) {
 		resume_main_thread();
