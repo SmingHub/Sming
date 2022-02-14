@@ -30,6 +30,7 @@ namespace
 {
 pthread_t mainThread;
 CBasicMutex* interrupt;
+pthread_cond_t interruptCond = PTHREAD_COND_INITIALIZER;
 
 #ifdef __WIN32
 
@@ -224,10 +225,15 @@ void CThread::resume()
 void CThread::interrupt_begin()
 {
 	assert(isCurrent());
+
+	// Block until all equal or higher interrupt levels are done
+	interrupt->lock();
+	while(interrupt_level <= interrupt_mask) {
+		interrupt->wait(interruptCond);
+	}
 	assert(interrupt_level > interrupt_mask);
 
 	// Are we suspended by another thread?
-	interrupt->lock();
 	while(suspended != 0) {
 		interrupt->unlock();
 
@@ -254,6 +260,7 @@ void CThread::interrupt_begin()
 	interrupt_mask = interrupt_level;
 
 	interrupt->unlock();
+	pthread_cond_signal(&interruptCond);
 }
 
 void CThread::interrupt_end()
