@@ -23,13 +23,13 @@
 #include <signal.h>
 #include <sys/time.h>
 
-CThread::List CThread::list;
 unsigned CThread::interrupt_mask;
 
 namespace
 {
 pthread_t mainThread;
 CBasicMutex* interrupt;
+pthread_cond_t interruptCond = PTHREAD_COND_INITIALIZER;
 
 #ifdef __WIN32
 
@@ -177,17 +177,11 @@ void CThread::startup(unsigned cpulimit)
 CThread::CThread(const char* name, unsigned interrupt_level) : name(name), interrupt_level(interrupt_level)
 {
 	assert(interrupt_level > 0);
-	interrupt->lock();
-	list.add(this);
-	interrupt->unlock();
 }
 
 CThread::~CThread()
 {
 	HOST_THREAD_DEBUG("Thread '%s' destroyed", name);
-	interrupt->lock();
-	list.remove(this);
-	interrupt->unlock();
 }
 
 void CThread::interrupt_lock()
@@ -202,58 +196,26 @@ void CThread::interrupt_unlock()
 	interrupt->unlock();
 }
 
-void CThread::suspend()
-{
-	assert(!isCurrent());
-	suspendMutex.lock();
-	++suspended;
-	suspendMutex.unlock();
-}
-
-void CThread::resume()
-{
-	assert(!isCurrent());
-	suspendMutex.lock();
-	--suspended;
-	if(suspended == 0) {
-		pthread_cond_signal(&resumeCond);
-	}
-	suspendMutex.unlock();
-}
-
 void CThread::interrupt_begin()
 {
 	assert(isCurrent());
-	assert(interrupt_level > interrupt_mask);
 
-	// Are we suspended by another thread?
+	// Block until all equal or higher interrupt levels are done
 	interrupt->lock();
-	while(suspended != 0) {
-		interrupt->unlock();
-
-		suspendMutex.lock();
-		while(suspended != 0) {
-			suspendMutex.wait(resumeCond);
-		}
-		suspendMutex.unlock();
-
-		interrupt->lock();
+	while(interrupt_level <= interrupt_mask) {
+		interrupt->wait(interruptCond);
 	}
+	assert(interrupt_level > interrupt_mask);
 
 	if(interrupt_mask == 0) {
 		suspend_main_thread();
-	}
-
-	for(auto& thread : list) {
-		if(&thread != this && thread.interrupt_level <= interrupt_level) {
-			thread.suspend();
-		}
 	}
 
 	previous_mask = interrupt_mask;
 	interrupt_mask = interrupt_level;
 
 	interrupt->unlock();
+	pthread_cond_signal(&interruptCond);
 }
 
 void CThread::interrupt_end()
@@ -264,29 +226,11 @@ void CThread::interrupt_end()
 
 	interrupt_mask = previous_mask;
 
-	for(auto& thread : list) {
-		if(&thread != this && thread.interrupt_level <= interrupt_level) {
-			thread.resume();
-		}
-	}
-
 	if(interrupt_mask == 0) {
 		resume_main_thread();
 	}
 
 	interrupt->unlock();
-}
-
-const char* CThread::getCurrentName()
-{
-	auto cur = pthread_self();
-	for(auto& t : list) {
-		if(t == cur) {
-			return t.name;
-		}
-	}
-
-	return "";
 }
 
 void host_thread_wait(int ms)
