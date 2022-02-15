@@ -33,10 +33,5 @@ public:
 		open(fileName, openFlags);
 	}
 
-	FileStream(DirHandle dir, const String& name, FileOpenFlags openFlags = File::ReadOnly) : FileStream()
-	{
-		open(dir, name, openFlags);
-	}
-
 	using IFS::FileStream::attach;
 };
