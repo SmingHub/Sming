@@ -2,7 +2,6 @@
 #include <Storage/SysMem.h>
 #include <Storage/ProgMem.h>
 #include <Storage/Debug.h>
-#include <Platform/Timers.h>
 
 IMPORT_FSTR(FS_app, PROJECT_DIR "/app/application.cpp")
 

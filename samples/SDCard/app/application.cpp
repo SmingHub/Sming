@@ -7,7 +7,6 @@ Descr: SDCard/FAT file usage and write benchmark.
 */
 #include <SmingCore.h>
 #include <Libraries/SDCard/SDCard.h>
-#include <Platform/Timers.h>
 
 /*(!) Warning on some hardware versions (ESP07, maybe ESP12)
  * 		pins GPIO4 and GPIO5 are swapped !*/

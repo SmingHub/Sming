@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * JsonDirectoryTemplate.h
+ * Json.cpp
  *
  * @author mikee47 <mike@sillyhouse.net> Nov 2020
  *
