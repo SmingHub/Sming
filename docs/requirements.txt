@@ -3,6 +3,7 @@
 sphinx==4.2.0
 sphinx-rtd-theme==1.0.0
 m2r2==0.3.1
+MarkupSafe==2.0.1 # Version 2.1.0 is not yet compatible with jinja2
 mistune==0.8.4 # Version 2 not compatible with m2r2
 breathe==4.31.0
 sphinxcontrib-wavedrom
