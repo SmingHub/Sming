@@ -245,6 +245,10 @@
 	path = Sming/Libraries/jerryscript
 	url = https://github.com/slaff/Sming-jerryscript.git
 	ignore = dirty
+[submodule "Libraries.IOControl"]
+	path = Sming/Libraries/IOControl
+	url = https://github.com/mikee47/IOControl
+	ignore = dirty
 [submodule "Libraries.IR"]
 	path = Sming/Libraries/IR
 	url = https://github.com/markszabo/IRremoteESP8266.git
