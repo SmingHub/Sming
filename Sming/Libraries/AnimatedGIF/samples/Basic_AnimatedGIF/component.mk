@@ -2,3 +2,5 @@
 DISABLE_NETWORK := 1
 COMPONENT_DEPENDS := AnimatedGIF  Graphics
 
+COMPONENT_DOCFILES := files/frog.gif
+

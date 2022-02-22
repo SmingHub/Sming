@@ -11,4 +11,4 @@ Features
 - GIF files can be any length, (e.g. hundreds of megabytes)
 - Simple C++ class and callback design allows you to easily add GIF support to any application.
 - The C code doing the heavy lifting is completely portable and has no external dependencies.
-- Does not use dynamic memory (malloc/free/new/delete), so it's easy to build it for a minimal bare metal system.<
+- Does not use dynamic memory (malloc/free/new/delete), so it's easy to build it for a minimal bare metal system.
