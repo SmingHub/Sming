@@ -18,6 +18,8 @@ void init()
 	initDisplay();
 	tft.setOrientation(Graphics::Orientation::deg270);
 
-	task = new AnimatedGifTask(tft.createSurface(), (uint8_t*)gifData.data(), gifData.length(), true);
+	auto surface = tft.createSurface();
+	assert(surface != nullptr);
+	task = new AnimatedGifTask(*surface, gifData);
 	task->resume();
 }

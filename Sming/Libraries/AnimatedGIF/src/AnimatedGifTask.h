@@ -21,10 +21,15 @@
 #include <AnimatedGIF.h>
 #include <Graphics/Surface.h>
 
-class AnimatedGifTask: public Task
+class AnimatedGifTask : public Task
 {
 public:
-	AnimatedGifTask(Graphics::Surface* surface, uint8_t* data, size_t length, bool inFlash = true);
+	AnimatedGifTask(Graphics::Surface& surface, const void* data, size_t length, bool inFlash);
+
+	AnimatedGifTask(Graphics::Surface& surface, const FSTR::ObjectBase& data)
+		: AnimatedGifTask(surface, data.data(), data.length(), true)
+	{
+	}
 
 	~AnimatedGifTask()
 	{
@@ -36,5 +41,5 @@ protected:
 
 private:
 	AnimatedGIF gif;
-	Graphics::Surface* surface;
+	Graphics::Surface& surface;
 };

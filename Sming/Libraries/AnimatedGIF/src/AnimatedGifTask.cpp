@@ -1,15 +1,32 @@
+/****
+ * AnimatedGifTask.cpp
+ *
+ * This library is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, version 3 or later.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this library.
+ * If not, see <https://www.gnu.org/licenses/>.
+ *
+ * @author: Feb 2022 - Slavey Karadzhov <slaff@attachix.com>
+ *
+ ****/
+
 #include "AnimatedGifTask.h"
 
-void draw(GIFDRAW *pDraw)
+void draw(GIFDRAW* pDraw)
 {
-	auto surface = reinterpret_cast<Graphics::Surface*>(pDraw->pUser);
+	auto surface = static_cast<Graphics::Surface*>(pDraw->pUser);
 	if(surface == nullptr) {
 		return;
 	}
 
 	const auto& tftSize = surface->getSize();
 	const int DISPLAY_WIDTH = tftSize.w;
-	const int DISPLAY_HEIGHT = tftSize.w;
+	const int DISPLAY_HEIGHT = tftSize.h;
 
 	auto pixelFormat = surface->getPixelFormat();
 	auto bytesPerPixel = Graphics::getBytesPerPixel(pixelFormat);
@@ -102,17 +119,20 @@ void draw(GIFDRAW *pDraw)
 	}
 }
 
-AnimatedGifTask::AnimatedGifTask(Graphics::Surface* surface, uint8_t* data, size_t length, bool inFlash): surface(surface)
+AnimatedGifTask::AnimatedGifTask(Graphics::Surface& surface, const void* data, size_t length, bool inFlash)
+	: surface(surface)
 {
+	auto ptr = static_cast<uint8_t*>(const_cast<void*>(data));
 	if(inFlash) {
-		gif.openFLASH(data, length, draw);
-	}
-	else {
-		gif.open(data, length, draw);
+		gif.openFLASH(ptr, length, draw);
+	} else {
+		gif.open(ptr, length, draw);
 	}
 }
 
 void AnimatedGifTask::loop()
 {
-	gif.playFrame(true, nullptr, surface);
+	gif.playFrame(true, nullptr, &surface);
+	// To slow frames down or reduce load...
+	// sleep(100);
 }
