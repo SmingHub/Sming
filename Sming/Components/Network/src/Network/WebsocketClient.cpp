@@ -77,6 +77,7 @@ bool WebsocketClient::connect(const Url& url)
 int WebsocketClient::verifyKey(HttpConnection& connection, HttpResponse& response)
 {
 	if(!response.headers.contains(HTTP_HEADER_SEC_WEBSOCKET_ACCEPT)) {
+		debug_e("[WS] Websocket Accept missing from headers");
 		state = eWSCS_Closed;
 		return -2; // we don't have response.
 	}
