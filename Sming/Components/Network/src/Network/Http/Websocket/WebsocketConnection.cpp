@@ -26,12 +26,14 @@ WebsocketList WebsocketConnection::websocketList;
 /** @brief ws_parser function table
  * 	@note stored in flash memory; as it is word-aligned it can be accessed directly
  */
-const ws_parser_callbacks_t WebsocketConnection::parserSettings PROGMEM = {.on_data_begin = staticOnDataBegin,
-																		   .on_data_payload = staticOnDataPayload,
-																		   .on_data_end = staticOnDataEnd,
-																		   .on_control_begin = staticOnControlBegin,
-																		   .on_control_payload = staticOnControlPayload,
-																		   .on_control_end = staticOnControlEnd};
+const ws_parser_callbacks_t WebsocketConnection::parserSettings PROGMEM = {
+	.on_data_begin = staticOnDataBegin,
+	.on_data_payload = staticOnDataPayload,
+	.on_data_end = staticOnDataEnd,
+	.on_control_begin = staticOnControlBegin,
+	.on_control_payload = staticOnControlPayload,
+	.on_control_end = staticOnControlEnd,
+};
 
 /** @brief Boilerplate code for ws_parser callbacks
  *  @note Obtain connection object and check it
@@ -57,7 +59,7 @@ bool WebsocketConnection::bind(HttpRequest& request, HttpResponse& response)
 		return false;
 	}
 
-	state = eWSCS_Open;
+	state = State::Open;
 	String token = request.headers[HTTP_HEADER_SEC_WEBSOCKET_KEY];
 	token.trim();
 	token += WSSTR_SECRET;
@@ -257,7 +259,7 @@ bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, 
 		packet[i++] = (available >> 24) & 0xFF;
 		packet[i++] = (available >> 16) & 0xFF;
 		packet[i++] = (available >> 8) & 0xFF;
-		packet[i++] = (available)&0xFF;
+		packet[i++] = available & 0xFF;
 	}
 
 	if(useMask) {
@@ -296,8 +298,8 @@ void WebsocketConnection::close()
 {
 	debug_d("Terminating Websocket connection.");
 	websocketList.removeElement(this);
-	if(state != eWSCS_Closed) {
-		state = eWSCS_Closed;
+	if(state != State::Closed) {
+		state = State::Closed;
 		if(isClientConnection) {
 			send(nullptr, 0, WS_FRAME_CLOSE);
 		}

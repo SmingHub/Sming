@@ -20,7 +20,7 @@
 HttpConnection* WebsocketClient::getHttpConnection()
 {
 	auto connection = WebsocketConnection::getConnection();
-	if(connection == nullptr && state == eWSCS_Closed) {
+	if(connection == nullptr && state == State::Closed) {
 		connection = new HttpClientConnection();
 		setConnection(connection);
 	}
@@ -45,16 +45,11 @@ bool WebsocketClient::connect(const Url& url)
 	httpConnection->setSslInitHandler(sslInitHandler);
 	httpConnection->connect(uri.Host, uri.getPort(), useSsl);
 
-	state = eWSCS_Ready;
+	state = State::Ready;
 
 	// Generate the key
-	unsigned char keyStart[17] = {0};
-	char b64Key[25];
-	memset(b64Key, 0, sizeof(b64Key));
-
-	for(int i = 0; i < 16; ++i) {
-		keyStart[i] = 1 + os_random() % 255;
-	}
+	uint8_t keyStart[16];
+	os_get_random(keyStart, sizeof(keyStart));
 	key = base64_encode(keyStart, sizeof(keyStart));
 
 	HttpRequest* request = new HttpRequest(uri);
@@ -78,7 +73,7 @@ int WebsocketClient::verifyKey(HttpConnection& connection, HttpResponse& respons
 {
 	if(!response.headers.contains(HTTP_HEADER_SEC_WEBSOCKET_ACCEPT)) {
 		debug_e("[WS] Websocket Accept missing from headers");
-		state = eWSCS_Closed;
+		state = State::Closed;
 		return -2; // we don't have response.
 	}
 
@@ -89,14 +84,14 @@ int WebsocketClient::verifyKey(HttpConnection& connection, HttpResponse& respons
 	String base64hash = base64_encode(hash.data(), hash.size());
 	if(base64hash != serverHashedKey) {
 		debug_e("wscli key mismatch: %s | %s", serverHashedKey.c_str(), base64hash.c_str());
-		state = eWSCS_Closed;
+		state = State::Closed;
 		WebsocketConnection::getConnection()->setTimeOut(1);
 		return -3;
 	}
 
 	response.headers.clear();
 
-	state = eWSCS_Open;
+	state = State::Open;
 	connection.setTimeOut(USHRT_MAX);
 	activate();
 

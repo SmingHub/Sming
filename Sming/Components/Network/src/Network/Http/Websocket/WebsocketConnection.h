@@ -37,19 +37,10 @@ using WebsocketDelegate = Delegate<void(WebsocketConnection&)>;
 using WebsocketMessageDelegate = Delegate<void(WebsocketConnection&, const String&)>;
 using WebsocketBinaryDelegate = Delegate<void(WebsocketConnection&, uint8_t* data, size_t size)>;
 
-/**
- * @brief Current state of Websocket connection
- */
-enum WsConnectionState {
-	eWSCS_Ready,
-	eWSCS_Open,
-	eWSCS_Closed,
-};
-
 struct WsFrameInfo {
-	ws_frame_type_t type = WS_FRAME_TEXT;
-	char* payload = nullptr;
-	size_t payloadLength = 0;
+	ws_frame_type_t type{WS_FRAME_TEXT};
+	char* payload{nullptr};
+	size_t payloadLength{0};
 
 	WsFrameInfo() = default;
 
@@ -62,6 +53,15 @@ struct WsFrameInfo {
 class WebsocketConnection
 {
 public:
+	/**
+	 * @brief Current state of Websocket connection
+	 */
+	enum class State {
+		Ready,
+		Open,
+		Closed,
+	};
+
 	/**
 	 * @brief Constructs a websocket connection on top of http client or server connection
 	 * @param connection the transport connection
@@ -271,10 +271,10 @@ public:
 		this->isClientConnection = isClientConnection;
 	}
 
-	/** @brief  Gets the state of the websocket connection
-	  * @retval WsConnectionState
-	  */
-	WsConnectionState getState()
+	/**
+	 * @brief  Gets the state of the websocket connection
+	 */
+	State getState() const
 	{
 		return state;
 	}
@@ -297,18 +297,18 @@ protected:
 	bool processFrame(TcpClient& client, char* at, int size);
 
 protected:
-	WebsocketDelegate wsConnect = nullptr;
-	WebsocketMessageDelegate wsMessage = nullptr;
-	WebsocketBinaryDelegate wsBinary = nullptr;
-	WebsocketDelegate wsPong = nullptr;
-	WebsocketDelegate wsDisconnect = nullptr;
+	WebsocketDelegate wsConnect;
+	WebsocketMessageDelegate wsMessage;
+	WebsocketBinaryDelegate wsBinary;
+	WebsocketDelegate wsPong;
+	WebsocketDelegate wsDisconnect;
 
-	void* userData = nullptr;
+	void* userData{nullptr};
 
-	WsConnectionState state = eWSCS_Ready;
+	State state{};
 
 private:
-	ws_frame_type_t frameType = WS_FRAME_TEXT;
+	ws_frame_type_t frameType{WS_FRAME_TEXT};
 	WsFrameInfo controlFrame;
 
 	ws_parser_t parser;
@@ -316,10 +316,10 @@ private:
 
 	static WebsocketList websocketList;
 
-	bool isClientConnection = true;
+	bool isClientConnection{true};
 
-	HttpConnection* connection = nullptr;
-	bool activated = false;
+	HttpConnection* connection{nullptr};
+	bool activated{false};
 };
 
 /** @} */
