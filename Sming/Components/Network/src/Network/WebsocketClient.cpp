@@ -59,6 +59,12 @@ bool WebsocketClient::connect(const Url& url)
 	request->headers[HTTP_HEADER_SEC_WEBSOCKET_PROTOCOL] = F("chat");
 	request->headers[HTTP_HEADER_SEC_WEBSOCKET_VERSION] = String(WEBSOCKET_VERSION);
 	request->onHeadersComplete(RequestHeadersCompletedDelegate(&WebsocketClient::verifyKey, this));
+	request->onRequestComplete([this](HttpConnection& client, bool successful) -> int {
+		if(state != State::Open && wsDisconnect) {
+			wsDisconnect(*this);
+		}
+		return 0;
+	});
 
 	if(!httpConnection->send(request)) {
 		return false;
@@ -71,22 +77,24 @@ bool WebsocketClient::connect(const Url& url)
 
 int WebsocketClient::verifyKey(HttpConnection& connection, HttpResponse& response)
 {
+	bool verified{false};
+
 	if(!response.headers.contains(HTTP_HEADER_SEC_WEBSOCKET_ACCEPT)) {
 		debug_e("[WS] Websocket Accept missing from headers");
-		state = State::Closed;
-		return -2; // we don't have response.
+	} else {
+		String serverHashedKey = response.headers[HTTP_HEADER_SEC_WEBSOCKET_ACCEPT];
+		auto hash = Crypto::Sha1().calculate(key + WSSTR_SECRET);
+		String base64hash = base64_encode(hash.data(), hash.size());
+		verified = (base64hash == serverHashedKey);
+		if(!verified) {
+			debug_e("wscli key mismatch: %s | %s", serverHashedKey.c_str(), base64hash.c_str());
+		}
 	}
 
-	String serverHashedKey = response.headers[HTTP_HEADER_SEC_WEBSOCKET_ACCEPT];
-
-	String keyToHash = key + WSSTR_SECRET;
-	auto hash = Crypto::Sha1().calculate(keyToHash);
-	String base64hash = base64_encode(hash.data(), hash.size());
-	if(base64hash != serverHashedKey) {
-		debug_e("wscli key mismatch: %s | %s", serverHashedKey.c_str(), base64hash.c_str());
+	if(!verified) {
 		state = State::Closed;
 		WebsocketConnection::getConnection()->setTimeOut(1);
-		return -3;
+		return 0;
 	}
 
 	response.headers.clear();
