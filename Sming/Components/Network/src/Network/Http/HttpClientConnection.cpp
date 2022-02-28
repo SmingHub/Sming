@@ -61,11 +61,11 @@ void HttpClientConnection::reset()
 	HttpConnection::reset();
 }
 
-void HttpClientConnection::onError(err_t err)
+bool HttpClientConnection::onHttpError(HttpError error)
 {
-	HttpConnection::onError(err);
+	bool res = HttpConnection::onHttpError(error);
 
-	auto request = waitingQueue.peek();
+	auto request = executionQueue.peek();
 
 	if(request != nullptr) {
 		auto callback = request->requestCompletedDelegate;
@@ -73,6 +73,8 @@ void HttpClientConnection::onError(err_t err)
 			callback(*this, false);
 		}
 	}
+
+	return res;
 }
 
 int HttpClientConnection::onMessageBegin(http_parser* parser)

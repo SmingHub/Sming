@@ -59,6 +59,9 @@ public:
 	}
 
 protected:
+	// HttpConnection methods
+	bool onHttpError(HttpError error) override;
+
 	// HTTP parser methods
 
 	int onMessageBegin(http_parser* parser) override;
@@ -68,7 +71,6 @@ protected:
 
 	// TCP methods
 	void onReadyToSendData(TcpConnectionEvent sourceEvent) override;
-	void onError(err_t err) override;
 
 	void onClosed() override;
 
