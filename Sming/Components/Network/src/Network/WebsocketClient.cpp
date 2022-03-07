@@ -43,7 +43,9 @@ bool WebsocketClient::connect(const Url& url)
 	}
 
 	httpConnection->setSslInitHandler(sslInitHandler);
-	httpConnection->connect(uri.Host, uri.getPort(), useSsl);
+	if(!httpConnection->connect(uri.Host, uri.getPort(), useSsl)) {
+		return false;
+	}
 
 	state = State::Ready;
 
