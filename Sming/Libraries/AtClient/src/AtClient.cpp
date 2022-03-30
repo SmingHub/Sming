@@ -12,15 +12,13 @@
  ****/
 
 #include "AtClient.h"
-#include "Clock.h"
 
-#ifndef debugf
-#define debugf(fmt, ...)
-#endif
+#include <debug_progmem.h>
+#include <Clock.h>
 
-AtClient::AtClient(HardwareSerial* stream) : stream(stream)
+AtClient::AtClient(HardwareSerial& stream) : stream(stream)
 {
-	this->stream->onDataReceived(StreamDataReceivedDelegate(&AtClient::processor, this));
+	stream.onDataReceived(StreamDataReceivedDelegate(&AtClient::processor, this));
 }
 
 void AtClient::processor(Stream& source, char arrivedChar, uint16_t availableCharsCount)
@@ -29,7 +27,7 @@ void AtClient::processor(Stream& source, char arrivedChar, uint16_t availableCha
 		return;
 	}
 
-	if(state == eAtError) {
+	if(state == State::Error) {
 		// discard input at error state
 		return;
 	}
@@ -46,17 +44,17 @@ void AtClient::processor(Stream& source, char arrivedChar, uint16_t availableCha
 	}
 
 	commandTimer.stop();
-	debugf("Processing: %d ms, %s", millis(), currentCommand.text.substring(0, 20).c_str());
+	debug_d("Processing: %d ms, %s", millis(), currentCommand.text.substring(0, 20).c_str());
 
 	char response[availableCharsCount];
 	for(int i = 0; i < availableCharsCount; i++) {
-		response[i] = stream->read();
+		response[i] = stream.read();
 		if(response[i] == '\r' || response[i] == '\n') {
 			response[i] = '\0';
 		}
 	}
 
-	debugf("Got response: %s", response);
+	debug_d("Got response: %s", response);
 
 	String reply(response);
 	if(reply.indexOf(AT_REPLY_OK) + reply.indexOf(currentCommand.response2) == -2) {
@@ -67,7 +65,7 @@ void AtClient::processor(Stream& source, char arrivedChar, uint16_t availableCha
 		}
 
 		if(currentCommand.breakOnError) {
-			state = eAtError;
+			state = State::Error;
 			return;
 		}
 	}
@@ -83,7 +81,7 @@ void AtClient::processor(Stream& source, char arrivedChar, uint16_t availableCha
 
 void AtClient::send(const String& text, const String& altResponse, uint32_t timeoutMs, unsigned retries)
 {
-	AtCommand atCommand;
+	Command atCommand;
 	atCommand.text = text;
 	atCommand.response2 = altResponse;
 	atCommand.timeout = timeoutMs;
@@ -92,9 +90,9 @@ void AtClient::send(const String& text, const String& altResponse, uint32_t time
 	send(atCommand);
 }
 
-void AtClient::send(const String& text, AtReceiveCallback onReceive, uint32_t timeoutMs, unsigned retries)
+void AtClient::send(const String& text, ReceiveCallback onReceive, uint32_t timeoutMs, unsigned retries)
 {
-	AtCommand atCommand;
+	Command atCommand;
 	atCommand.text = text;
 	atCommand.onReceive = onReceive;
 	atCommand.timeout = timeoutMs;
@@ -103,9 +101,9 @@ void AtClient::send(const String& text, AtReceiveCallback onReceive, uint32_t ti
 	send(atCommand);
 }
 
-void AtClient::send(const String& text, AtCompleteCallback onComplete, uint32_t timeoutMs, unsigned retries)
+void AtClient::send(const String& text, CompleteCallback onComplete, uint32_t timeoutMs, unsigned retries)
 {
-	AtCommand atCommand;
+	Command atCommand;
 	atCommand.text = text;
 	atCommand.onComplete = onComplete;
 	atCommand.timeout = timeoutMs;
@@ -116,7 +114,7 @@ void AtClient::send(const String& text, AtCompleteCallback onComplete, uint32_t 
 
 // Low Level  Communication Functions
 
-void AtClient::send(AtCommand command)
+void AtClient::send(Command command)
 {
 	if(currentCommand.text.length()) {
 		queue.enqueue(command);
@@ -126,21 +124,21 @@ void AtClient::send(AtCommand command)
 	sendDirect(command);
 }
 
-void AtClient::sendDirect(AtCommand command)
+void AtClient::sendDirect(Command command)
 {
-	state = eAtRunning;
+	state = State::Running;
 	commandTimer.stop();
 	currentCommand = command;
-	stream->print(command.text);
-	debugf("Sent: timeout: %d, current %d ms, name: %s", currentCommand.timeout, millis(),
-		   command.text.substring(0, 20).c_str());
+	stream.print(command.text);
+	debug_d("Sent: timeout: %d, current %d ms, name: %s", currentCommand.timeout, millis(),
+			command.text.substring(0, 20).c_str());
 	commandTimer.initializeMs(currentCommand.timeout, TimerDelegate(&AtClient::ticker, this)).startOnce();
 }
 
 // Low Level Queue Functions
 void AtClient::resend()
 {
-	state = eAtOK;
+	state = State::OK;
 	if(currentCommand.text.length()) {
 		sendDirect(currentCommand);
 		return;
@@ -151,12 +149,12 @@ void AtClient::resend()
 
 void AtClient::next()
 {
-	if(state == eAtError) {
-		debugf("We are at error state! No next");
+	if(state == State::Error) {
+		debug_e("We are at error state! No next");
 		return;
 	}
 
-	state = eAtOK;
+	state = State::OK;
 	currentCommand.text = "";
 	if(queue.count() > 0) {
 		send(queue.dequeue());
@@ -165,22 +163,22 @@ void AtClient::next()
 
 void AtClient::ticker()
 {
-	debugf("Ticker =================> ");
+	debug_d("Ticker =================> ");
 	if(!currentCommand.text.length()) {
 		commandTimer.stop();
-		debugf("Error: Timeout without command?!");
+		debug_e("Error: Timeout without command?!");
 		return;
 	}
 
 	currentCommand.retries--;
-	debugf("Retries: %d", currentCommand.retries);
+	debug_d("Retries: %d", currentCommand.retries);
 	if(currentCommand.retries > 0) {
 		commandTimer.restart();
 		sendDirect(currentCommand);
 		return;
 	}
 
-	state = eAtError;
+	state = State::Error;
 
-	debugf("Timeout: %d ms, %s", millis(), currentCommand.text.c_str());
+	debug_d("Timeout: %d ms, %s", millis(), currentCommand.text.c_str());
 }
