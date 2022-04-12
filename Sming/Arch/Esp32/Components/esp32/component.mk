@@ -37,6 +37,29 @@ SDK_INCDIRS := \
 	app_update/include \
 	bootloader_support/include \
 	bootloader_support/include_bootloader \
+	bt/include/$(ESP_VARIANT)/include \
+	bt/common/api/include/api \
+	bt/common/btc/profile/esp/blufi/include  \
+	bt/common/btc/profile/esp/include  \
+	bt/common/osi/include	\
+	bt/host/nimble/nimble/nimble/include                     \
+	bt/host/nimble/nimble/nimble/host/include                \
+	bt/host/nimble/nimble/porting/nimble/include             \
+	bt/host/nimble/nimble/porting/npl/freertos/include       \
+	bt/host/nimble/nimble/nimble/host/services/ans/include   \
+	bt/host/nimble/nimble/nimble/host/services/bas/include   \
+	bt/host/nimble/nimble/nimble/host/services/dis/include   \
+	bt/host/nimble/nimble/nimble/host/services/gap/include   \
+	bt/host/nimble/nimble/nimble/host/services/gatt/include  \
+	bt/host/nimble/nimble/nimble/host/services/ias/include   \
+	bt/host/nimble/nimble/nimble/host/services/ipss/include  \
+	bt/host/nimble/nimble/nimble/host/services/lls/include   \
+	bt/host/nimble/nimble/nimble/host/services/tps/include   \
+	bt/host/nimble/nimble/nimble/host/util/include           \
+	bt/host/nimble/nimble/nimble/host/store/ram/include      \
+	bt/host/nimble/nimble/nimble/host/store/config/include   \
+	bt/host/nimble/esp-hci/include                           \
+	bt/host/nimble/port/include \
 	driver/$(ESP_VARIANT)/include \
 	driver/include \
 	esp_pm/include \
@@ -118,6 +141,7 @@ SDK_COMPONENTS := \
 
 ifneq ($(DISABLE_NETWORK),1)
 SDK_COMPONENTS += \
+	bt \
 	esp_wifi \
 	esp_eth \
 	lwip \
@@ -142,6 +166,7 @@ SDK_COMPONENTS += xtensa
 endif
 
 SDK_ESP_WIFI_LIBS := \
+	bt \
 	coexist \
 	core \
 	espnow \
