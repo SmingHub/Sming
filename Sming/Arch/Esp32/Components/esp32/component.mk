@@ -20,7 +20,8 @@ SDK_LIBDIRS := \
 	xtensa/$(ESP_VARIANT)/ \
 	hal/$(ESP_VARIANT)/ \
 	$(ESP_VARIANT)/ld \
-	esp_rom/$(ESP_VARIANT)/ld
+	esp_rom/$(ESP_VARIANT)/ld \
+	bt/controller/lib_esp32/$(ESP_VARIANT)/
 
 ESP32_COMPONENT_PATH := $(COMPONENT_PATH)
 SDK_DEFAULT_PATH := $(ESP32_COMPONENT_PATH)/sdk

@@ -18,7 +18,8 @@ COMPONENT_DEPENDS := \
 	heap \
 	esp32 \
 	gdbstub \
-	esptool
+	esptool \
+	bt
 
 # ELF and BIN files
 DEBUG_VARS		+= TARGET_BIN TARGET_OUT
