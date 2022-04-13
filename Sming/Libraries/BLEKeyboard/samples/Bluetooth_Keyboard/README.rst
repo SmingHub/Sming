@@ -1,18 +1,13 @@
-Basic Blink
-===========
+Bluetooth Keyboard
+==================
 
-Simple blink example to confirm that the basic build system is working with your system.
+This sample demonstrates how to turn an Esp32 device into external keyboard. 
+The "keyboard" and your PC will be communicating using Bluetooth Low Energy (BLE).
+The "keyboard" will write words, press Enter, press a media key and, if enabled in the sample code, Ctrl+Alt+Delete.
 
-We use Timer instead of a loop because we want to allow WiFi communications to work in the background.
-See :doc:`/information/multitasking`.
-
-The LED on many development boards is connected to GPIO2, so this is the default.
-
-If you get no response then check the documentation or schematic as your system
-may differ and change the LED_PIN definition accordingly.
-
-For example, the NodeMCU ESP-C3 kits have an RGB LED connected to GPIO 3, 4 & 5.
-
-
-.. image:: blink.jpg
-   :height: 192px
+Usage
+-----
+Once this sample is flashed and running on your ESP32 you can test it.
+Open a new text editor on your PC. Then search from your PC for new bluetooth devices. 
+A device named "Sming BLE Keyboard" should show up. Connect to it and focus/open you text editor window.
+Be fast. Soon enough a "Hello World" text will start to be "magically" typed inside your text editor.

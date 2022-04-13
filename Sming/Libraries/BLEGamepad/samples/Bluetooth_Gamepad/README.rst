@@ -1,18 +1,32 @@
-Basic Blink
-===========
+Bluetooth Gamepad
+=================
 
-Simple blink example to confirm that the basic build system is working with your system.
+Introduction
+------------
+This sample turns the ESP32 into a Bluetooth LE gamepad that presses buttons and moves axis
 
-We use Timer instead of a loop because we want to allow WiFi communications to work in the background.
-See :doc:`/information/multitasking`.
+Possible buttons are: BUTTON_1 through to BUTTON_16
+(16 buttons supported by default. Library can be configured to support up to 128)
 
-The LED on many development boards is connected to GPIO2, so this is the default.
+Possible DPAD/HAT switch position values are:
+DPAD_CENTERED, DPAD_UP, DPAD_UP_RIGHT, DPAD_RIGHT, DPAD_DOWN_RIGHT, DPAD_DOWN, DPAD_DOWN_LEFT, DPAD_LEFT, DPAD_UP_LEFT
+(or HAT_CENTERED, HAT_UP etc)
 
-If you get no response then check the documentation or schematic as your system
-may differ and change the LED_PIN definition accordingly.
+bleGamepad.setAxes takes the following int16_t parameters for the Left/Right Thumb X/Y, Left/Right Triggers plus slider1 and slider2, and hat switch position as above:
+(Left Thumb X, Left Thumb Y, Right Thumb X, Right Thumb Y, Left Trigger, Right Trigger, Hat switch position ^ (1 hat switch (dpad) supported by default. Library can be configured to support up to 4)
 
-For example, the NodeMCU ESP-C3 kits have an RGB LED connected to GPIO 3, 4 & 5.
+Library can also be configured to support up to 5 simulation controls (can be set with setSimulationControls)
+(rudder, throttle, accelerator, brake, steering), but they are not enabled by default.
 
 
-.. image:: blink.jpg
-   :height: 192px
+Testing
+-------
+
+You can use one of the following applications on your PC to test and see all buttons that were clicked.
+
+On Linux install ``jstest-gtk`` to test the ESP32 gamepad. Under Ubuntu this can be done by typing the following command::
+
+	sudo apt install jstest-gtk
+	
+On Windows use this `Windows test application <http://www.planetpointy.co.uk/joystick-test-application/>`__.
+ 

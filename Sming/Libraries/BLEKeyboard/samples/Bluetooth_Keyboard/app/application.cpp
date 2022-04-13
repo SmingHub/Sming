@@ -1,11 +1,9 @@
-/**
- * This example turns the ESP32 into a Bluetooth LE keyboard that writes words, presses Enter, presses a media key and then Ctrl+Alt+Delete
- */
-
 #include <SmingCore.h>
 #include <BleKeyboard.h>
 
-BleKeyboard bleKeyboard;
+namespace
+{
+BleKeyboard bleKeyboard("Sming BLE Keyboard");
 Timer procTimer;
 
 void loop()
@@ -37,6 +35,8 @@ void loop()
 	 bleKeyboard.releaseAll();
 	 */
 }
+
+} // namespace
 
 void init()
 {
