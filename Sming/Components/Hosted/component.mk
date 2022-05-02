@@ -13,6 +13,9 @@ ifneq ($(ENABLE_HOSTED),)
 	COMPONENT_SRCDIRS += init/$(ENABLE_HOSTED) 
 	EXTRA_LDFLAGS := $(call Wrap,host_init)
 	COMPONENT_DEPENDS += SerialLib
+	ifeq ($(ENABLE_HOSTED),tcp)
+		COMPONENT_DEPENDS += Network
+	endif
 endif
 
 COMPONENT_RELINK_VARS += HOSTED_SERVER_IP

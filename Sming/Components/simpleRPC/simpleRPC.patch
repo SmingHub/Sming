@@ -40,7 +40,7 @@ index 00f5eb1..f3a675d 100644
    rpcTypeOf(io, data);
    rpcPrint(io, ':');
 diff --git a/src/types.tcc b/src/types.tcc
-index 651fb38..8a7cfa5 100644
+index 651fb38..0d0d1bb 100644
 --- a/src/types.tcc
 +++ b/src/types.tcc
 @@ -3,7 +3,6 @@
@@ -51,6 +51,15 @@ index 651fb38..8a7cfa5 100644
  
  //! \defgroup types
  
+@@ -177,7 +176,7 @@ void rpcTypeOf(Stream& io, Vector<T>&) {
+  * \copydoc rpcTypeOf(Stream&, bool) */
+ template <class T>
+ void rpcTypeOf(Stream& io, T*) {
+-  T x;
++  T x{};
+ 
+   rpcPrint(io, '[');
+   rpcTypeOf(io, x);
 diff --git a/src/write.tcc b/src/write.tcc
 index d51cdd1..abf1e7b 100644
 --- a/src/write.tcc
