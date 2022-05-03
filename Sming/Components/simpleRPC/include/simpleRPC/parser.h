@@ -39,6 +39,7 @@ enum class ParserState {
 	type_end,
 	start_methods,
 	extract_method_start,
+	extract_method_signature,
 	extract_method_name,
 	extract_method,
 	extract_method_end,
@@ -52,6 +53,7 @@ struct ParserSettings {
 
 	SimpleMethod startMethods;
 	SimpleMethod startMethod;
+	CharMethod methodSignature;
 	CharMethod methodName;
 	SimpleMethod endMethod;
 	SimpleMethod endMethods;

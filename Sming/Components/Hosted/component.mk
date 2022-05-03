@@ -15,6 +15,8 @@ ifneq ($(ENABLE_HOSTED),)
 	COMPONENT_DEPENDS += SerialLib
 	ifeq ($(ENABLE_HOSTED),tcp)
 		COMPONENT_DEPENDS += Network
+		DISABLE_NETWORK := 0 
+		DISABLE_WIFI := 0
 	endif
 endif
 

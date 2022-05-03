@@ -107,6 +107,7 @@ public:
 		ParserSettings settings;
 		settings.startMethods = ParserSettings::SimpleMethod(&Client::startMethods, this);
 		settings.startMethod = ParserSettings::SimpleMethod(&Client::startMethod, this);
+		settings.methodSignature = ParserSettings::CharMethod(&Client::methodSignature, this);
 		settings.methodName = ParserSettings::CharMethod(&Client::methodName, this);
 		settings.endMethod = ParserSettings::SimpleMethod(&Client::endMethod, this);
 		settings.endMethods = ParserSettings::SimpleMethod(&Client::endMethods, this);
@@ -142,7 +143,8 @@ private:
 	bool fetchCommands{true};
 	RemoteCommands commands;
 	uint8_t methodPosition = 0;
-	String parsedCommand;
+	String name;
+	String signature;
 
 	void startMethods()
 	{
@@ -152,17 +154,26 @@ private:
 
 	void startMethod()
 	{
-		parsedCommand = "";
+		name = "";
+		signature = "";
+	}
+
+	void methodSignature(char ch)
+	{
+		signature += ch;
 	}
 
 	void methodName(char ch)
 	{
-		parsedCommand += ch;
+		name += ch;
 	}
 
 	void endMethod()
 	{
-		commands[parsedCommand] = methodPosition++;
+		if(!commands.contains(name) || signature == ":") {
+			commands[name] = methodPosition;
+		}
+		commands[name + "("+ signature +")"] = methodPosition++;
 	}
 
 	void endMethods()
