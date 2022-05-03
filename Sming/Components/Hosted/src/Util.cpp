@@ -4,12 +4,12 @@
 
 namespace Hosted
 {
-
 /**
  * Convert C type to format character
  * See: https://docs.python.org/3.5/library/struct.html#format-strings
  */
-char convertType(const String& type){
+char convertType(const String& type)
+{
 	if(type == "int") {
 		return 'i';
 	}
@@ -36,7 +36,7 @@ char convertType(const String& type){
 
 	// TODO: ... add all types...
 	if(type != "void") {
-		debug_w("Uknknown type: %s", type);
+		debug_w("Unknown type: %s", type);
 	}
 
 	// void and unknown
@@ -66,11 +66,11 @@ String convertFQN(const String& name)
 	converted = name.substring(spacePos + 1, openBracePosition) + "("; // name
 	char returnTypeChar = convertType(returnType);
 	if(returnTypeChar) {
-		converted  += returnTypeChar;
+		converted += returnTypeChar;
 	}
 
 	converted += ":";
-	for(size_t i=0; i< params.count(); i++) {
+	for(size_t i = 0; i < params.count(); i++) {
 		params[i].trim();
 		converted += " " + String(convertType(params[i]));
 	}
@@ -79,4 +79,4 @@ String convertFQN(const String& name)
 	return converted;
 }
 
-} // namespace
+} // namespace Hosted

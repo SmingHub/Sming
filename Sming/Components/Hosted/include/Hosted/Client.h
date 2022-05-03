@@ -173,7 +173,7 @@ private:
 		if(!commands.contains(name) || signature == ":") {
 			commands[name] = methodPosition;
 		}
-		commands[name + "("+ signature +")"] = methodPosition++;
+		commands[name + "(" + signature + ")"] = methodPosition++;
 	}
 
 	void endMethods()

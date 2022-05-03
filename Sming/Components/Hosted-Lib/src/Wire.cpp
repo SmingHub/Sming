@@ -146,4 +146,3 @@ void TwoWire::onRequestService()
 #if !defined(NO_GLOBAL_INSTANCES) && !defined(NO_GLOBAL_TWOWIRE)
 TwoWire Wire;
 #endif
-

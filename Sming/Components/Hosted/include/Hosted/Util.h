@@ -4,7 +4,6 @@
 
 namespace Hosted
 {
-
 /**
  * Convert C type to format character
  * See: https://docs.python.org/3.5/library/struct.html#format-strings
@@ -22,4 +21,4 @@ char convertType(const String& type);
  */
 String convertFQN(const String& name);
 
-} // namespace
+} // namespace Hosted
