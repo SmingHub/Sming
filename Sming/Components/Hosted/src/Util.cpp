@@ -61,7 +61,7 @@ String convertFQN(const String& name)
 	int closeBracePosition = name.indexOf(')');
 	Vector<String> params;
 	String arguments = name.substring(openBracePosition + 1, closeBracePosition);
-	int paramsCount = splitString(arguments, ',', params);
+	size_t paramsCount = splitString(arguments, ',', params);
 
 	converted = name.substring(spacePos + 1, openBracePosition) + '('; // name
 	char returnTypeChar = convertType(returnType);
@@ -70,7 +70,7 @@ String convertFQN(const String& name)
 	}
 
 	converted += ':';
-	for(size_t i = 0; i < params.count(); i++) {
+	for(size_t i = 0; i < paramsCount; i++) {
 		params[i].trim();
 		if(params[i].length() == 0) {
 			continue;
