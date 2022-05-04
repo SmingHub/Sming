@@ -11,6 +11,8 @@
  *
  ****/
 
+#if ENABLE_HOSTED_WIRE
+
 #include <Wire.h>
 #include <Hosted/Client.h>
 #include <Hosted/Util.h>
@@ -146,3 +148,5 @@ void TwoWire::onRequestService()
 #if !defined(NO_GLOBAL_INSTANCES) && !defined(NO_GLOBAL_TWOWIRE)
 TwoWire Wire;
 #endif
+
+#endif /* ENABLE_HOSTED_WIRE */
