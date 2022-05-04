@@ -23,7 +23,8 @@ namespace Transport
 class TcpClientStream : public Stream
 {
 public:
-	TcpClientStream(TcpClient& client, size_t cbufferSize = 1024) : cBuffer(cbufferSize), client(client)
+	TcpClientStream(TcpClient& client, size_t cbufferSize = 1024, size_t threshold = 400)
+		: cBuffer(cbufferSize), client(client), pendingBytes(0), threshold(threshold)
 	{
 		client.setReceiveDelegate(TcpClientDataDelegate(&TcpClientStream::store, this));
 	}
@@ -47,6 +48,11 @@ public:
 	size_t write(const uint8_t* buffer, size_t size) override
 	{
 		if(client.send(reinterpret_cast<const char*>(buffer), size)) {
+			pendingBytes += size;
+			if(pendingBytes > threshold) {
+				pendingBytes = 0;
+				client.commit();
+			}
 			return size;
 		}
 
@@ -81,6 +87,8 @@ public:
 private:
 	CircularBuffer cBuffer;
 	TcpClient& client;
+	size_t pendingBytes;
+	size_t threshold;
 
 	bool store(TcpClient& client, char* data, int size)
 	{
