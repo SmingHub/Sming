@@ -55,29 +55,30 @@ char convertType(const String& type)
 String convertFQN(const String& name)
 {
 	String converted;
-	int spacePos = name.indexOf(" ");
-	String returnType = name.substring(0, name.indexOf(" "));
-	int openBracePosition = name.indexOf("(");
-	int closeBracePosition = name.indexOf(")");
+	int spacePos = name.indexOf(' ');
+	String returnType = name.substring(0, spacePos);
+	int openBracePosition = name.indexOf('(');
+	int closeBracePosition = name.indexOf(')');
 	Vector<String> params;
 	String arguments = name.substring(openBracePosition + 1, closeBracePosition);
 	int paramsCount = splitString(arguments, ',', params);
 
-	converted = name.substring(spacePos + 1, openBracePosition) + "("; // name
+	converted = name.substring(spacePos + 1, openBracePosition) + '('; // name
 	char returnTypeChar = convertType(returnType);
 	if(returnTypeChar) {
 		converted += returnTypeChar;
 	}
 
-	converted += ":";
+	converted += ':';
 	for(size_t i = 0; i < params.count(); i++) {
 		params[i].trim();
-		if(params[i] == String::empty) {
+		if(params[i].length() == 0) {
 			continue;
 		}
-		converted += " " + String(convertType(params[i]));
+		converted += ' ';
+		converted += convertType(params[i]);
 	}
-	converted += ")";
+	converted += ')';
 
 	return converted;
 }
