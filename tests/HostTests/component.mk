@@ -55,7 +55,7 @@ else
 RESTART_DELAY ?= 10000
 endif
 endif
-APP_CFLAGS += -DRESTART_DELAY=$(RESTART_DELAY) -Wno-error=pmf-conversions
+APP_CFLAGS += -DRESTART_DELAY=$(RESTART_DELAY)
 
 .PHONY: execute
 execute: flash run

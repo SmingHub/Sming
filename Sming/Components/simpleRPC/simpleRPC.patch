@@ -1,5 +1,5 @@
 diff --git a/src/read.tcc b/src/read.tcc
-index 2e5810f..513d691 100644
+index 34b281f..d77a5a2 100644
 --- a/src/read.tcc
 +++ b/src/read.tcc
 @@ -3,7 +3,6 @@
@@ -10,8 +10,29 @@ index 2e5810f..513d691 100644
  
  //! \defgroup read
  
+diff --git a/src/rpcCall.tcc b/src/rpcCall.tcc
+index 408d81d..9338e78 100644
+--- a/src/rpcCall.tcc
++++ b/src/rpcCall.tcc
+@@ -111,6 +111,9 @@ void rpcCall(Stream& io, R (*f)(FArgs...)) {
+   _call(io, (void (*)(FArgs...))f, f);
+ }
+ 
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wpmf-conversions"
++
+ /*! \ingroup call
+  * Call a class method.
+  *
+@@ -125,4 +128,6 @@ void rpcCall(Stream& io, Tuple<C*, R (P::*)(FArgs...)> t) {
+   _call(io, (void (*)(FArgs...))t.tail.head, t);
+ }
+ 
++#pragma GCC diagnostic pop
++
+ #endif
 diff --git a/src/signature.tcc b/src/signature.tcc
-index 00f5eb1..f3a675d 100644
+index bc51111..fc0f0df 100644
 --- a/src/signature.tcc
 +++ b/src/signature.tcc
 @@ -25,7 +25,7 @@ void _parameterTypes(Stream& io, void (*f_)(H, Tail...)) {
@@ -23,7 +44,7 @@ index 00f5eb1..f3a675d 100644
  
    rpcPrint(io, ' ');
    rpcTypeOf(io, data);
-@@ -49,13 +49,13 @@ void _parameterTypes(Stream& io, void (*f_)(H&, Tail...)) {
+@@ -49,19 +49,22 @@ void _parameterTypes(Stream& io, void (*f_)(H&, Tail...)) {
   */
  template <class R, class... FArgs>
  void signature(Stream& io, R (*f)(FArgs...)) {
@@ -39,8 +60,43 @@ index 00f5eb1..f3a675d 100644
  
    rpcTypeOf(io, data);
    rpcPrint(io, ':');
+   _parameterTypes(io, (void (*)(FArgs...))f);
+ }
+ 
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wpmf-conversions"
++
+ /*! \ingroup signature
+  * \copydoc signature(Stream&, R (*)(FArgs...)) */
+ template <class R, class C, class... FArgs>
+@@ -69,6 +72,8 @@ void signature(Stream& io, R (C::*f)(FArgs...)) {
+   signature(io, (R (*)(FArgs...))f);
+ }
+ 
++#pragma GCC diagnostic pop
++
+ /*! \ingroup signature
+  * \copydoc signature(Stream&, R (*)(FArgs...)) */
+ template <class... FArgs>
+@@ -77,6 +82,9 @@ void signature(Stream& io, void (*f)(FArgs...)) {
+   _parameterTypes(io, f);
+ }
+ 
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wpmf-conversions"
++
+ /*! \ingroup signature
+  * \copydoc signature(Stream&, R (*)(FArgs...)) */
+ template <class C, class... FArgs>
+@@ -84,4 +92,6 @@ void signature(Stream& io, void (C::*f)(FArgs...)) {
+   signature(io, (void (*)(FArgs...))f);
+ }
+ 
++#pragma GCC diagnostic pop
++
+ #endif
 diff --git a/src/types.tcc b/src/types.tcc
-index 651fb38..0d0d1bb 100644
+index 05b3c67..7f11f63 100644
 --- a/src/types.tcc
 +++ b/src/types.tcc
 @@ -3,7 +3,6 @@
@@ -61,7 +117,7 @@ index 651fb38..0d0d1bb 100644
    rpcPrint(io, '[');
    rpcTypeOf(io, x);
 diff --git a/src/write.tcc b/src/write.tcc
-index d51cdd1..abf1e7b 100644
+index e702281..84e3db4 100644
 --- a/src/write.tcc
 +++ b/src/write.tcc
 @@ -3,7 +3,6 @@
