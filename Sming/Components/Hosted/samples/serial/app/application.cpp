@@ -19,12 +19,8 @@ void init()
 		// clang-format off
 		interface(stream,
 			/*
-			 * Below we are exporting the following remote commands:
-			 * - pinMode
-			 * - digitalRead
-			 * - digitalWrite
-			 * - pulseIn
-			 * You can add more commands here. For every command you should specify command and text description in the format below.
+			 * List of exported commands. More commands can be added.
+			 * For every command one should specify command and text description in the format below.
 			 * For more information read the SimpleRPC interface API: https://simplerpc.readthedocs.io/en/latest/api/interface.html
 			 */
 			pinMode, F("pinMode: Sets mode of digital pin. @pin: Pin number, @mode: Mode type."),

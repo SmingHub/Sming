@@ -24,6 +24,7 @@
 #include <simpleRPC/parser.h>
 #include <hostlib/emu.h>
 #include <hostlib/hostmsg.h>
+#include "Util.h"
 
 using namespace simpleRPC;
 
@@ -36,22 +37,34 @@ class Client
 public:
 	using RemoteCommands = HashMap<String, uint8_t>;
 
-	Client(Stream& stream) : stream(stream)
+	Client(Stream& stream, char methodEndsWith = ':') : stream(stream), methodEndsWith(methodEndsWith)
 	{
 	}
 
 	/**
 	 * @brief Method to send commands to the remote server
 	 * @param functionName
+	 * 		  Either the name or the name with the signature.
+	 * 		  Example: "digitalWrite" - will try to call the default digitalWrite function on the server
+	 *
+	 * 		  If the command is overloaded, one command name with two or more different signatures
+	 * 		  then the name has to be containing the full function signature.
+	 * 		  Example: "void digitalWrite(uint16_t, uint8_t)".
+	 * 		  The name with the signature MUST be the same as the one produced from
+	 * 		  __PRETTY_FUNCTION__ -> https://gcc.gnu.org/onlinedocs/gcc/Function-Names.html
+	 *
 	 * @param variable arguments
 	 *
-	 * @retval true on success
+	 * @retval true on success, false if the command is not available
 	 */
-	template <typename... Args> bool send(const char* functionName, Args... args)
+	template <typename... Args> bool send(const String& functionName, Args... args)
 	{
-		uint8_t functionId = getFunctionId(functionName);
+		int functionId = getFunctionId(functionName);
+		if(functionId == COMMAND_NOT_FOUND) {
+			return false;
+		}
 
-		rpcPrint(stream, functionId, args...);
+		rpcPrint(stream, uint8_t(functionId), args...);
 
 		return true;
 	}
@@ -79,10 +92,15 @@ public:
 	 * @param name command name to query
 	 * @retval -1 if not found. Otherwise the id of the function
 	 */
-	int getFunctionId(const char* name)
+	int getFunctionId(String name)
 	{
 		if(fetchCommands) {
 			getRemoteCommands();
+		}
+
+		if(name.indexOf('(') != -1 && name.indexOf(')') != -1) {
+			// most probably we have a name with a signature
+			name = convertFQN(name);
 		}
 
 		int id = commands.indexOf(name);
@@ -122,7 +140,7 @@ public:
 				continue;
 			}
 
-			ParserResult result = parse(settings, buffer, length);
+			ParserResult result = parse(settings, buffer, length, methodEndsWith);
 			if(result == ParserResult::finished) {
 				break;
 			}
@@ -132,6 +150,12 @@ public:
 				return false;
 			}
 		} while(true);
+
+		host_debug_i("Available commands:");
+
+		for(size_t i = 0; i < commands.count(); i++) {
+			host_debug_i("\t%s => %d", commands.keyAt(i).c_str(), commands.valueAt(i));
+		}
 
 		host_debug_i("Connected. Starting application");
 
@@ -145,6 +169,7 @@ private:
 	uint8_t methodPosition = 0;
 	String name;
 	String signature;
+	char methodEndsWith;
 
 	void startMethods()
 	{

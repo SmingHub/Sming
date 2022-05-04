@@ -72,6 +72,9 @@ String convertFQN(const String& name)
 	converted += ":";
 	for(size_t i = 0; i < params.count(); i++) {
 		params[i].trim();
+		if(params[i] == String::empty) {
+			continue;
+		}
 		converted += " " + String(convertType(params[i]));
 	}
 	converted += ")";
