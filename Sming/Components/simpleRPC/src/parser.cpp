@@ -33,7 +33,7 @@ namespace simpleRPC
 		state = NEW_STATE;                                                                                             \
 	}
 
-ParserResult parse(ParserSettings& settings, const char* buffer, size_t length)
+ParserResult parse(ParserSettings& settings, const char* buffer, size_t length, char nameEndsWith)
 {
 	auto& state = settings.state;
 	/*
@@ -145,7 +145,7 @@ ParserResult parse(ParserSettings& settings, const char* buffer, size_t length)
 				settings.startMethod();
 			}
 			state = ParserState::extract_method_signature;
-			break;
+			/* fall-through */
 		}
 		case ParserState::extract_method_signature: {
 			if(ch == ';') {
@@ -159,7 +159,7 @@ ParserResult parse(ParserSettings& settings, const char* buffer, size_t length)
 			break;
 		}
 		case ParserState::extract_method_name: {
-			if(ch == ':') {
+			if(ch == nameEndsWith) {
 				state = ParserState::extract_method_end;
 				break;
 			}

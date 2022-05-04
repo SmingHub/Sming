@@ -60,6 +60,6 @@ struct ParserSettings {
 	ParserState state = ParserState::ready;
 };
 
-ParserResult parse(ParserSettings& settings, const char* buffer, size_t length);
+ParserResult parse(ParserSettings& settings, const char* buffer, size_t length, char nameEndsWith = ':');
 
 } // namespace simpleRPC
