@@ -65,6 +65,7 @@ public:
 		}
 
 		rpcPrint(stream, uint8_t(functionId), args...);
+		stream.flush();
 
 		return true;
 	}
