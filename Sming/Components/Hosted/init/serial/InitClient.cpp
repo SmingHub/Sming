@@ -42,7 +42,7 @@ void __wrap_host_init()
 		msleep(50);
 	}
 
-	hostedClient = new Hosted::Client(hostedSerial);
+	hostedClient = new Hosted::Client(hostedSerial, '>');
 	hostedClient->getRemoteCommands();
 	init();
 }
