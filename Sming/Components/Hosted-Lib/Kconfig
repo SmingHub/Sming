@@ -1,0 +1,12 @@
+menu "Hosted-Lib"
+    depends on !ENABLE_HOSTED
+
+    config ENABLE_HOSTED_DIGITAL
+    	bool "Proxy Digital.h commands"
+    	default y
+    	
+    config ENABLE_HOSTED_WIRE
+    	bool "Proxy Wire.h commands"
+    	default y
+
+endmenu
