@@ -1,5 +1,0 @@
-COMPONENT_LIBNAME :=
-
-COMPONENT_DEPENDS := esp32
-
-EXTRA_LIBS		+= btdm_app

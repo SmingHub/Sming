@@ -1,5 +1,7 @@
 COMPONENT_SUBMODULES := esp-nimble-cpp
 COMPONENT_SOC := esp32*
 
+COMPONENT_DEPENDS := bluetooth 
+
 COMPONENT_SRCDIRS := esp-nimble-cpp/src
 COMPONENT_INCDIRS := $(COMPONENT_SRCDIRS)
