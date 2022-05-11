@@ -9,9 +9,6 @@ if "%BUILD_DOCS%"=="true" (
     goto :EOF
 )
 
-subst z: %CI_BUILD_DIR%
-set SMING_HOME=z:\Sming
-
 cd /d %SMING_HOME%
 call Arch\%SMING_ARCH%\Tools\ci\build.setup.cmd || goto :error
 
