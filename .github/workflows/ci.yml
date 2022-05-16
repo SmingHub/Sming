@@ -27,6 +27,9 @@ jobs:
         - arch: Esp32
           variant: esp32c3
           os: windows-latest
+        exclude:
+        - os: windows-latest
+          arch: Host
           
     continue-on-error: ${{ matrix.arch == 'Host' && matrix.os == 'windows-latest' }}
     
