@@ -1,0 +1,73 @@
+name: Coverity Scan
+
+on:
+  # Push to master MUST be evaluated
+  # Pushing to develop only on condition
+  push:
+    branches: [ master, develop ]
+  # Pull requests to master MUST be evaluated
+  pull_request:
+    branches: [ master ]
+  # Run the workflow once a month
+  schedule: 
+    - cron:  '30 1 1 * *'
+
+jobs:
+  scan:
+#    concurrency: 
+#      group: ${{ github.head_ref || github.run_id }}
+#      cancel-in-progress: true
+        
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Check if we are allowed to scan
+      env:
+        BRANCH: ${{github.ref_name}}
+      run: |
+        CHECK_SCA=0
+        if [[ "$BRANCH" == "master" ]]; then
+          CHECK_SCA=1;
+        elif [[ $BRANCH == "develop" ]]; then
+           if [[ "$GITHUB_EVENT_NAME" == "schedule" ]]; then
+            CHECK_SCA=1;
+           elif [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+             COMMIT_MSG=$(git log --format=%B -n 1)
+             if [[ "$COMMIT_MSG" == *"[scan:coverity]"* ]]; then
+                CHECK_SCA=1;
+             fi
+           fi
+        fi
+        
+        echo "CHECK_SCA=$CHECK_SCA" >> $GITHUB_ENV
+    - name: Setup SMING_HOME for Ubuntu
+      if: ${{ env.CHECK_SCA == 1 }}
+      run: |
+        echo "CI_BUILD_DIR=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+        echo "SMING_HOME=$GITHUB_WORKSPACE/Sming" >> $GITHUB_ENV
+        echo "SMING_ARCH=Host" >> $GITHUB_ENV
+    - name: Install Sming Framework on Ubuntu
+      if: ${{ env.CHECK_SCA == 1 }}
+      run:  |
+        ./Tools/install.sh $(echo "$SMING_ARCH" | tr '[:upper:]' '[:lower:]')
+    - name: Install Ninja
+      if: ${{ env.CHECK_SCA == 1 }}
+      uses: seanmiddleditch/gha-setup-ninja@master
+    - name: Run Coverity Scan
+      if: ${{ env.CHECK_SCA == 1 }}
+      env: 
+          COVERITY_SCAN_TOKEN: ${{secrets.COVERITY_SCAN_TOKEN}}
+      run: |
+        source $SMING_HOME/../Tools/export.sh
+        export MAKE_PARALLEL="make -j$(nproc)"
+        export COVERITY_SCAN_BUILD_COMMAND_PREPEND="cd $SMING_HOME"
+        cat > /tmp/secrets.sh
+        $SMING_HOME/Arch/Host/Tools/ci/coverity-scan.sh
+    - name: Archive scan log
+      if: ${{ env.CHECK_SCA == 1 }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverity-scan-report
+        path: Sming/cov-int/scm_log.txt

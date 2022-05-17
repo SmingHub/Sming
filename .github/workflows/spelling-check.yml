@@ -1,10 +1,9 @@
-# Run whenever a PR is generated or updated.
-
-name: Pull Request Checks
+name: Spelling Check
 
 on:
   pull_request:
-  
+    branches: [ develop ]
+
 jobs:
   
   code-spell:

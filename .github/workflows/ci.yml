@@ -1,0 +1,92 @@
+name: Continuous Integration (CI)
+
+on:
+  push:
+  
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [Esp8266, Host, Esp32, Rp2040]
+        variant: [""]
+        os: [ubuntu-latest, windows-latest]
+        include:
+        - arch: Esp32
+          variant: esp32s2
+          os: ubuntu-latest
+        - arch: Esp32
+          variant: esp32s2
+          os: windows-latest
+        - arch: Esp32
+          variant: esp32c3
+          os: ubuntu-latest
+        - arch: Esp32
+          variant: esp32c3
+          os: windows-latest
+        exclude:
+        - os: windows-latest
+          arch: Host
+          
+    continue-on-error: ${{ matrix.arch == 'Host' && matrix.os == 'windows-latest' }}
+    
+    concurrency: 
+      group: ${{ github.workflow }}-${{ github.ref }}-${{ toJson(matrix) }}
+      cancel-in-progress: true
+        
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Setup SMING_HOME for Ubuntu
+      if: ${{ matrix.os ==  'ubuntu-latest' }}
+      run: |
+        echo "CI_BUILD_DIR=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+        echo "SMING_HOME=$GITHUB_WORKSPACE/Sming" >> $GITHUB_ENV
+    - name: Setup SMING_HOME for Windows
+      if: ${{ matrix.os ==  'windows-latest' }}
+      run: |
+        echo ("CI_BUILD_DIR=" + $env:GITHUB_WORKSPACE) >> $env:GITHUB_ENV
+        $env:SMING_HOME = Join-Path $env:GITHUB_WORKSPACE "Sming"
+        echo ("SMING_HOME=" + $env:SMING_HOME) >> $env:GITHUB_ENV
+    - name: Install Sming Framework on Ubuntu
+      if: ${{ matrix.os ==  'ubuntu-latest' }}
+      env: 
+        SMING_ARCH: ${{matrix.arch}}
+        SMING_SOC: ${{matrix.variant}}
+      run:  |
+        ./Tools/install.sh $(echo "$SMING_ARCH" | tr '[:upper:]' '[:lower:]')
+    - name: Install Sming Framework on Windows   
+      if: ${{ matrix.os ==  'windows-latest' }}
+      env: 
+        SMING_ARCH: ${{matrix.arch}}
+        SMING_SOC: ${{matrix.variant}}
+      run: |
+         Tools/ci/setenv.ps1
+         Tools/install.cmd "$env:SMING_ARCH".ToLower()
+    - name: Install Ninja
+      uses: seanmiddleditch/gha-setup-ninja@master
+    - name: Build and Test for ${{matrix.arch}} on Ubuntu
+      env: 
+        SMING_ARCH: ${{matrix.arch}}
+        SMING_SOC: ${{matrix.variant}}
+        CLANG_FORMAT: clang-format-8
+      if: ${{ matrix.os ==  'ubuntu-latest' }}
+      run: |
+        source $SMING_HOME/../Tools/export.sh
+        $CLANG_FORMAT --version
+        ./Tools/ci/build.sh
+    - name: Build and Test for ${{matrix.arch}} on Windows
+      env: 
+        SMING_ARCH: ${{matrix.arch}}
+        SMING_SOC: ${{matrix.variant}}
+        PYTHON_PATH: C:\hostedtoolcache\windows\Python\3.9.12\x64\
+      if: ${{ matrix.os ==  'windows-latest' }}
+      run: |
+        Tools/ci/setenv.ps1
+        Tools/ci/build.cmd
+
