@@ -19,6 +19,10 @@ COMPONENT_DEPENDS := \
 	esp32 \
 	gdbstub \
 	esptool
+	
+ifeq ($(DISABLE_WIFI),1)
+	COMPONENT_DEPENDS += esp_coexist
+endif
 
 # ELF and BIN files
 DEBUG_VARS		+= TARGET_BIN TARGET_OUT
