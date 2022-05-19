@@ -142,6 +142,7 @@ SDK_COMPONENTS += xtensa
 endif
 
 SDK_ESP_WIFI_LIBS := \
+	coexist \
 	core \
 	espnow \
 	mesh \
@@ -161,7 +162,6 @@ SDK_TARGET_ARCH_LIBS := hal xt_hal
 endif
 
 EXTRA_LIBS := \
-	coexist \
 	$(SDK_COMPONENTS) \
 	$(SDK_TARGET_ARCH_LIBS)
 
