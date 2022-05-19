@@ -1,5 +1,8 @@
 COMPONENT_LIBNAME :=
 
+# TODO: Add later support for the other Esp32 variants
+COMPONENT_SOC := esp32
+
 COMPONENT_DEPENDS := esp32
 
 EXTRA_LIBS		+= \

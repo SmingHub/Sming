@@ -1,5 +1,6 @@
 COMPONENT_SUBMODULES := ESP32-BLE-Keyboard
-COMPONENT_SOC := esp32*
+# TODO: Add later support for the other Esp32 variants
+COMPONENT_SOC := esp32
 COMPONENT_DEPENDS := NimBLE
 
 COMPONENT_SRCDIRS := ESP32-BLE-Keyboard

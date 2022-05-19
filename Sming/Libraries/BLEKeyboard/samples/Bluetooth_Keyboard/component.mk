@@ -1,3 +1,1 @@
-COMPONENT_SOC := esp32*
-
 COMPONENT_DEPENDS := BLEKeyboard
