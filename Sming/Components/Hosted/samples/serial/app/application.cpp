@@ -35,8 +35,8 @@ void init()
 			pack(&Wire, &TwoWire::status), F("TwoWire::status> Get status."),
 			pack(&Wire, &TwoWire::end), F("TwoWire::end> Ends two-wire communication."),
 			pack(&Wire, &TwoWire::setClock), F("TwoWire::setClock> Sets clock frequency. @freq: clock frequency."),
-			pack(&Wire, &TwoWire::setClockStretchLimit), F("TwoWire::setClockStretchLimit> Sts clock strech limit. @limit: stretch limit."),
-			pack(&Wire, &TwoWire::requestFrom), F("TwoWire::requestFrom> Request from. @address: Address. @size: Size. @sendStop flag.  @retrun: uint8_t."),
+			pack(&Wire, &TwoWire::setClockStretchLimit), F("TwoWire::setClockStretchLimit> Sts clock stretch limit. @limit: stretch limit."),
+			pack(&Wire, &TwoWire::requestFrom), F("TwoWire::requestFrom> Request from. @address: Address. @size: Size. @sendStop flag.  @return: uint8_t."),
 			pack(&Wire, &TwoWire::beginTransmission), F("TwoWire::beginTransmission> Begin transmission. @address: Address."),
 			pack(&Wire, &TwoWire::endTransmission), F("TwoWire::endTransmission> End transmission. @sendStop: flag. @return: error code"),
 			// size_t TwoWire::write(uint8_t data)

@@ -14,7 +14,7 @@
 /**
  * @brief Manage a range of numbers between specified limits
  *
- * Values in the range meet the critera (min <= value <= max)
+ * Values in the range meet the criteria (min <= value <= max)
  */
 template <typename T> struct TRange {
 	T min{};
