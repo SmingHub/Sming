@@ -6,6 +6,7 @@
 
 CPPFLAGS += \
 	-DARCH_RP2040 \
+	-DARDUINO_ARCH_RP2040 \
 	-march=armv6-m \
 	-mcpu=cortex-m0plus \
 	-mthumb

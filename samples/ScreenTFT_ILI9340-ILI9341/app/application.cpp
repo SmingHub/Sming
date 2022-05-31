@@ -8,16 +8,7 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-/*
-Pinout:
-MISO GPIO12
-MOSI GPIO13
-CLK GPIO14
-CS GPIO15
-DC GPIO5
-RST GPIO4
-*/
-
+// See library for pinout
 Adafruit_ILI9341 tft;
 
 Timer guiTimer;
@@ -37,7 +28,7 @@ int satir = 6;
 
 String lists[] = {"a", "b", "c", "d", "e", "f"};
 
-void basicBPM()
+void basicBMP()
 {
 	tft.fillScreen(ILI9341_BLACK);			// Clear display
 	tft.setRotation(tft.getRotation() + 1); // Inc rotation 90 degrees
@@ -70,7 +61,7 @@ void basicGui()
 	}
 	p1 = 50;
 	r++;
-	guiTimer.initializeMs(1000, basicBPM).start(false);
+	guiTimer.initializeMs<1000>(basicBMP).start(false);
 }
 
 void init()
@@ -110,6 +101,6 @@ void init()
 	tft.println("M.Bozkurt");
 	delay(2000);
 	tft.fillScreen(0);
-	guiTimer.initializeMs(1000, basicGui).start(false);
+	guiTimer.initializeMs<1000>(basicGui).start(false);
 	//runTest();
 }

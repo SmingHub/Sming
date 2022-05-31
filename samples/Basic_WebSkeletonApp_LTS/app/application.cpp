@@ -14,8 +14,8 @@ void init()
 	Serial.systemDebugOutput(false);
 	Serial.commandProcessing(false);
 
-	//SET higher CPU freq & disable wifi sleep
-	system_update_cpu_freq(SYS_CPU_160MHZ);
+	// Set higher CPU freq & disable wifi sleep
+	System.setCpuFrequency(CpuCycleClockFast::cpuFrequency());
 	wifi_set_sleep_type(NONE_SLEEP_T);
 
 	ActiveConfig = loadConfig();

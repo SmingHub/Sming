@@ -58,13 +58,13 @@ class CommandExecutor;
 	XX(5E2) XX(6E2) XX(7E2) XX(8E2) XX(5O1) XX(6O1) XX(7O1) XX(8O1) XX(5O2) XX(6O2) XX(7O2) XX(8O2)
 // clang-format on
 
-enum class SerialConfig {
-#define XX(x) Cfg##x = UART_##x,
+enum class SerialFormat {
+#define XX(x) Fmt##x = UART_##x,
 	SERIAL_CONFIG_MAP(XX)
 #undef XX
 };
 
-#define XX(x) static constexpr SerialConfig SERIAL_##x{SerialConfig::Cfg##x};
+#define XX(x) static constexpr SerialFormat SERIAL_##x{SerialFormat::Fmt##x};
 SERIAL_CONFIG_MAP(XX)
 #undef XX
 
@@ -140,39 +140,39 @@ public:
 	/**
 	 * @brief Initialise and set its configuration.
 	 * @param baud Baud rate to use
-	 * @param config can be 5, 6, 7, 8 data bits, odd (O),
+	 * @param format can be 5, 6, 7, 8 data bits, odd (O),
 	 * 				 even (E), and no (N) parity, and 1 or 2 stop bits.
 	 * 		  		 To set the desired mode, call  Serial.begin(baudrate, SERIAL_8N1),
 	 * 		  		 Serial.begin(baudrate, SERIAL_6E2), etc.
 	 */
-	void begin(uint32_t baud, SerialConfig config)
+	void begin(uint32_t baud, SerialFormat format)
 	{
-		begin(baud, config, SERIAL_FULL, SERIAL_PIN_DEFAULT);
+		begin(baud, format, SERIAL_FULL, SERIAL_PIN_DEFAULT);
 	}
 
 	/**
 	 * @brief Initialise, set its configuration and mode.
 	 * @param baud Baud rate to use
-	 * @param config can be 5, 6, 7, 8 data bits, odd (O),
+	 * @param format can be 5, 6, 7, 8 data bits, odd (O),
 	 * 				 even (E), and no (N) parity, and 1 or 2 stop bits.
 	 * 		  		 To set the desired mode, call  Serial.begin(baudrate, SERIAL_8N1),
 	 * 		  		 Serial.begin(baudrate, SERIAL_6E2), etc.
 	 * @param mode specifies if the UART supports receiving (RX), transmitting (TX) or both (FULL) operations
 	 */
-	void begin(uint32_t baud, SerialConfig config, SerialMode mode)
+	void begin(uint32_t baud, SerialFormat format, SerialMode mode)
 	{
-		begin(baud, config, mode, 1);
+		begin(baud, format, mode, 1);
 	}
 
 	/**
 	 * @brief Initialise, set its configuration and mode.
 	 * @param baud Baud rate to use
-	 * @param config
+	 * @param format
 	 * @param mode
 	 * @param txPin Can specify alternate pin for TX
 	 * @param rxPin
 	 */
-	void begin(uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin, uint8_t rxPin = SERIAL_PIN_DEFAULT);
+	void begin(uint32_t baud, SerialFormat format, SerialMode mode, uint8_t txPin, uint8_t rxPin = SERIAL_PIN_DEFAULT);
 
 	/**
 	 * @brief De-inits the current UART if it is already used

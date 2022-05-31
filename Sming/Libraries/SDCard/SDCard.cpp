@@ -61,7 +61,6 @@ bool SDCard_begin(uint8_t slaveSelect, uint32_t freqLimit)
 
 	auto& settings = SDCardSPI->SPIDefaultSettings;
 
-	settings.byteOrder = LSBFIRST;
 	settings.dataMode = SPI_MODE0;
 
 	spiInitFreq = 1000000U;
@@ -347,7 +346,7 @@ DSTATUS disk_initialize(BYTE drv /* Physical drive nmuber (0) */
 		return RES_NOTRDY;
 	}
 
-	SPISettings initSettings(spiInitFreq, LSBFIRST, SPI_MODE0);
+	SPISettings initSettings(spiInitFreq, MSBFIRST, SPI_MODE0);
 	SDCardSPI->beginTransaction(initSettings);
 
 	dly_us(10000);

@@ -82,7 +82,9 @@ bool LimitedMemoryStream::moveString(String& s)
 		sizeOk = false;
 	}
 
-	assert(s.setBuffer({buffer, capacity, size - 1}));
+	bool res = s.setBuffer({buffer, capacity, size - 1});
+	(void)res;
+	assert(res);
 
 	owned = false;
 	buffer = nullptr;

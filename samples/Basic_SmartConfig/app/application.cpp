@@ -27,11 +27,18 @@ bool smartConfigCallback(SmartConfigEvent event, const SmartConfigEventInfo& inf
 	return false;
 }
 
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
+{
+	Serial.print("Connected: ");
+	Serial.println(ip);
+}
+
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Debug output to serial
 
+	WifiEvents.onStationGotIP(gotIP);
 	WifiAccessPoint.enable(false);
 	WifiStation.enable(true);
 	// automatic (acts as the sample callback above)

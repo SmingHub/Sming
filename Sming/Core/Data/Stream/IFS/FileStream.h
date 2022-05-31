@@ -43,15 +43,6 @@ public:
 	 */
 	bool open(const String& fileName, IFS::OpenFlags openFlags = OpenFlag::Read);
 
-	/** @brief Open a file and attach this stream object to it
-	 *  @param dir Location of file
-	 *  @param fileName Name of file
-	 *  @param openFlags
-	 *  @retval bool true on success, false on error
-	 *  @note call getLastError() to determine cause of failure
-	 */
-	bool open(DirHandle dir, const String& name, OpenFlags openFlags = OpenFlag::Read);
-
 	/** @brief Close file
 	 */
 	void close();

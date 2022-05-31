@@ -12,6 +12,7 @@
 #include "WifiEventsImpl.h"
 #include <lwip/dhcp.h>
 #include <esp_systemapi.h>
+#include <host_lwip.h>
 
 StationImpl station;
 StationClass& WifiStation = station;
@@ -57,12 +58,6 @@ static StationImpl::ApInfo apInfoList[] = {
 	},
 };
 
-// Called directly from startup code
-void host_wifi_lwip_init_complete(void)
-{
-	station.initialise(netif_default);
-}
-
 static int getRandomRssi()
 {
 	return int(os_random() % 50) - 90;
@@ -83,6 +78,7 @@ public:
 
 StationImpl::StationImpl() : currentAp(&apInfoList[0]), savedAp(&apInfoList[0])
 {
+	host_lwip_on_init_complete([]() { station.initialise(netif_default); });
 }
 
 void StationImpl::initialise(netif* nif)

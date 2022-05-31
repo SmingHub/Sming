@@ -13,6 +13,7 @@
 #include <Network/Ssl/Factory.h>
 #include <Network/TcpConnection.h>
 #include <Print.h>
+#include <Platform/Clocks.h>
 
 namespace Ssl
 {
@@ -111,9 +112,9 @@ void Session::beginHandshake()
 	debug_d("SSL: handshake start");
 #ifndef SSL_SLOW_CONNECT
 	curFreq = System.getCpuFrequency();
-	if(curFreq != eCF_160MHz) {
+	if(curFreq != CpuCycleClockFast::cpuFrequency()) {
 		debug_d("SSL: Switching to 160 MHz");
-		System.setCpuFrequency(eCF_160MHz); // For shorter waiting time, more power consumption.
+		System.setCpuFrequency(CpuCycleClockFast::cpuFrequency()); // For shorter waiting time, more power consumption.
 	}
 #endif
 }

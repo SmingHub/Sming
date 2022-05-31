@@ -57,6 +57,10 @@
 	path = Sming/Components/libyuarel
 	url = https://github.com/jacketizer/libyuarel.git
 	ignore = dirty
+[submodule "lwip"]
+	path = Sming/Components/lwip/lwip
+	url = https://github.com/lwip-tcpip/lwip
+	ignore = dirty
 [submodule "mqtt-codec"]
 	path = Sming/Components/mqtt-codec
 	url = https://github.com/slaff/mqtt-codec.git
@@ -126,10 +130,6 @@
 # `Host` Components
 #
 
-[submodule "Host.lwip"]
-	path = Sming/Arch/Host/Components/lwip/lwip
-	url = https://github.com/lwip-tcpip/lwip
-	ignore = dirty
 [submodule "seriallib"]
 	path = Sming/Arch/Host/Components/SerialLib/seriallib
 	url = https://github.com/imabot2/serialib.git
@@ -157,6 +157,22 @@
 	path = Sming/Libraries/Adafruit_BusIO
 	url = https://github.com/adafruit/Adafruit_BusIO
 	ignore = dirty
+[submodule "Libraries.Adafruit_GFX"]
+	path = Sming/Libraries/Adafruit_GFX
+	url = https://github.com/adafruit/Adafruit-GFX-Library
+	ignore = dirty
+[submodule "Libraries.Adafruit_ILI9341"]
+	path = Sming/Libraries/Adafruit_ILI9341
+	url = https://github.com/adafruit/Adafruit_ILI9341
+	ignore = dirty
+[submodule "Libraries.Adafruit_NeoPixel"]
+	path = Sming/Libraries/Adafruit_NeoPixel
+	url = https://github.com/adafruit/Adafruit_NeoPixel
+	ignore = dirty
+[submodule "Libraries.Adafruit_PCD8544"]
+	path = Sming/Libraries/Adafruit_PCD8544
+	url = https://github.com/adafruit/Adafruit-PCD8544-Nokia-5110-LCD-library
+	ignore = dirty
 [submodule "Libraries.Adafruit_Sensor"]
 	path = Sming/Libraries/Adafruit_Sensor
 	url = https://github.com/adafruit/Adafruit_Sensor
@@ -172,6 +188,10 @@
 [submodule "Libraries.Adafruit_VL53L0X"]
 	path = Sming/Libraries/Adafruit_VL53L0X
 	url = https://github.com/adafruit/Adafruit_VL53L0X.git
+	ignore = dirty
+[submodule "Libraries.AnimatedGIF"]
+	path = Sming/Libraries/AnimatedGIF/AnimatedGIF
+	url = https://github.com/bitbank2/AnimatedGIF.git
 	ignore = dirty
 [submodule "Libraries.ArduinoFFT"]
 	path = Sming/Libraries/ArduinoFFT
@@ -228,6 +248,10 @@
 [submodule "Libraries.jerryscript"]
 	path = Sming/Libraries/jerryscript
 	url = https://github.com/slaff/Sming-jerryscript.git
+	ignore = dirty
+[submodule "Libraries.IOControl"]
+	path = Sming/Libraries/IOControl
+	url = https://github.com/mikee47/IOControl
 	ignore = dirty
 [submodule "Libraries.IR"]
 	path = Sming/Libraries/IR

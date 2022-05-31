@@ -1,5 +1,6 @@
 #include <HostTests.h>
 #include <Storage.h>
+#include <Storage/Debug.h>
 
 class TestDevice : public Storage::Device
 {
@@ -64,23 +65,8 @@ public:
 	{
 		for(auto it = Storage::findPartition(); it; ++it) {
 			auto part = *it;
-
-			Serial.println();
-			Serial.print(_F("Device '"));
-			Serial.print(part.getDeviceName());
-			Serial.print(_F("', partition '"));
-			Serial.print(part.name());
-			Serial.print(_F("', type "));
-			Serial.print(int(part.type()));
-			Serial.print('/');
-			Serial.print(int(part.subType()));
-			Serial.print(" (");
-			Serial.print(part.longTypeString());
-			Serial.print(_F("), address 0x"));
-			Serial.print(part.address(), HEX);
-			Serial.print(_F(", size 0x"));
-			Serial.print(part.size(), HEX);
-			Serial.println();
+			Serial.print("* ");
+			Storage::Debug::printPartition(Serial, part);
 
 			testRead(part, 0xE0, 0x20, true);
 			testRead(part, 10, 20, true);

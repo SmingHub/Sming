@@ -5,7 +5,7 @@ COMPONENT_DEPENDS	:= lwip
 # Options to add for configuring host network behaviour
 CACHE_VARS				+= HOST_NETWORK_OPTIONS
 HOST_NETWORK_OPTIONS	?=
-CLI_TARGET_OPTIONS		+= $(HOST_NETWORK_OPTIONS)
+override CLI_TARGET_OPTIONS += $(HOST_NETWORK_OPTIONS)
 
 App-build: esp-wifi-check
 

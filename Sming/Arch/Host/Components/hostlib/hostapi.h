@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "hostmsg.h"
+#include "include/hostlib/hostmsg.h"
 
 #ifdef __cplusplus
 extern "C" {

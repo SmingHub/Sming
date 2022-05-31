@@ -1,0 +1,19 @@
+menu "SPI Library Tests"
+    config SPISOFT_ENABLE
+        bool "Test software SPI"
+        default Y
+        help
+            De-select to test hardware SPI
+
+    config SPISOFT_CALIBRATE
+        bool "Run software SPI calbration sequence"
+        default N
+        depends on SPISOFT_ENABLE
+        help
+            Set increasing delay values so resulting clock frequency may be noted
+
+    config CPU_FAST
+        bool "Use fast CPU clock"
+        default N
+
+endmenu

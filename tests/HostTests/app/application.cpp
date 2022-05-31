@@ -54,6 +54,7 @@ void init()
 	debug_e("WELCOME to SMING! Host Tests application running.");
 
 	spiffs_mount();
+	fileSystemFormat();
 
 	registerTests();
 

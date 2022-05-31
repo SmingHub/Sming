@@ -39,7 +39,7 @@ bool FileStream::open(const String& fileName, OpenFlags openFlags)
 
 	FileHandle file = fs->open(fileName, openFlags);
 	if(!check(file)) {
-		debug_w("File '%s' open error: %s", fileName.c_str(), fs->getErrorString(file).c_str());
+		debug_d("File '%s' open error: %s", fileName.c_str(), fs->getErrorString(file).c_str());
 		return false;
 	}
 

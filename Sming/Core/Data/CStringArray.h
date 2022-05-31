@@ -191,6 +191,48 @@ public:
 		return getValue(index);
 	}
 
+	/**
+	 * @brief Get first value in array, null if empty
+	 */
+	const char* front() const
+	{
+		return cbuffer();
+	}
+
+	/**
+	 * @brief Insert item at start of array
+	 * @param str Item to insert
+	 * @retval bool false on memory error
+	 */
+	bool pushFront(const char* str);
+
+	/**
+	 * @brief Pop first item from array (at index 0)
+	 * @retval String null if array is empty
+	 */
+	String popFront();
+
+	/**
+	 * @brief Get last item in array, null if empty
+	 */
+	const char* back() const;
+
+	/**
+	 * @brief Add item to end of array
+	 * @param str Item to add
+	 * @retval bool false on memory error
+	 */
+	bool pushBack(const char* str)
+	{
+		return add(str);
+	}
+
+	/**
+	 * @brief Pop last item from array
+	 * @retval String null if array is empty
+	 */
+	String popBack();
+
 	/** @brief Empty the array
 	 */
 	void clear()
@@ -215,13 +257,13 @@ public:
 		Iterator(const Iterator&) = default;
 
 		Iterator(const CStringArray* array, uint16_t offset, uint16_t index)
-			: array_(array), offset_(offset), index_(index)
+			: mArray(array), mOffset(offset), mIndex(index)
 		{
 		}
 
 		operator bool() const
 		{
-			return array_ != nullptr && offset_ < array_->length();
+			return mArray != nullptr && mOffset < mArray->length();
 		}
 
 		bool equals(const char* rhs) const
@@ -238,7 +280,7 @@ public:
 
 		bool operator==(const Iterator& rhs) const
 		{
-			return array_ == rhs.array_ && offset_ == rhs.offset_;
+			return mArray == rhs.mArray && mOffset == rhs.mOffset;
 		}
 
 		bool operator!=(const Iterator& rhs) const
@@ -278,11 +320,11 @@ public:
 
 		const char* str() const
 		{
-			if(array_ == nullptr) {
+			if(mArray == nullptr) {
 				return "";
 			}
 
-			return array_->c_str() + offset_;
+			return mArray->c_str() + mOffset;
 		}
 
 		const char* operator*() const
@@ -292,12 +334,12 @@ public:
 
 		uint16_t index() const
 		{
-			return index_;
+			return mIndex;
 		}
 
 		uint16_t offset() const
 		{
-			return offset_;
+			return mOffset;
 		}
 
 		Iterator& operator++()
@@ -316,17 +358,17 @@ public:
 		void next()
 		{
 			if(*this) {
-				offset_ += strlen(str()) + 1;
-				++index_;
+				mOffset += strlen(str()) + 1;
+				++mIndex;
 			}
 		}
 
 		using const_iterator = Iterator;
 
 	private:
-		const CStringArray* array_ = nullptr;
-		uint16_t offset_ = 0;
-		uint16_t index_ = 0;
+		const CStringArray* mArray = nullptr;
+		uint16_t mOffset = 0;
+		uint16_t mIndex = 0;
 	};
 
 	Iterator begin() const

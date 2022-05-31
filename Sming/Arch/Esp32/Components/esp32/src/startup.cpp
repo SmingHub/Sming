@@ -19,55 +19,21 @@
 #include <driver/uart.h>
 #include <Storage.h>
 
-#ifndef DISABLE_NETWORK
-#include <esp_netif.h>
-#ifndef DISABLE_WIFI
-#include <esp_wifi.h>
-#include <nvs_flash.h>
-#endif
-#endif
-
 extern void init();
 extern esp_event_loop_handle_t sming_create_event_loop();
+extern void esp_network_initialise();
 
 namespace
 {
-#ifndef DISABLE_WIFI
-esp_event_handler_t wifiEventHandler;
-
-/*
- * Initialise NVS which IDF WiFi uses to store configuration parameters.
- */
-void esp_init_nvs()
-{
-	esp_err_t ret = nvs_flash_init();
-	if(ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-		ESP_ERROR_CHECK(nvs_flash_erase());
-		ret = nvs_flash_init();
-	}
-	ESP_ERROR_CHECK(ret);
-}
-
-/*
- * Initialise default WiFi stack
- */
-void esp_init_wifi()
-{
-	esp_netif_init();
-	if(wifiEventHandler != nullptr) {
-		ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, wifiEventHandler, nullptr));
-		ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, wifiEventHandler, nullptr));
-	}
-	wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-	ESP_ERROR_CHECK(esp_wifi_init(&cfg));
-}
-#endif
-
 void main(void*)
 {
-	assert(esp_task_wdt_init(CONFIG_ESP_TASK_WDT_TIMEOUT_S, true) == ESP_OK);
-	assert(esp_task_wdt_add(NULL) == ESP_OK);
-	assert(esp_task_wdt_status(NULL) == ESP_OK);
+	auto err = esp_task_wdt_init(CONFIG_ESP_TASK_WDT_TIMEOUT_S, true);
+	(void)err;
+	assert(err == ESP_OK);
+	err = esp_task_wdt_add(nullptr);
+	assert(err == ESP_OK);
+	err = esp_task_wdt_status(nullptr);
+	assert(err == ESP_OK);
 
 	hw_timer_init();
 
@@ -77,8 +43,7 @@ void main(void*)
 	auto loop = sming_create_event_loop();
 
 #ifndef DISABLE_WIFI
-	esp_init_nvs();
-	esp_init_wifi();
+	esp_network_initialise();
 #endif
 
 	System.initialize();
@@ -93,18 +58,6 @@ void main(void*)
 }
 
 } // namespace
-
-/*
- * Called from WiFi event implementation constructor.
- * Cannot register directly as event queue hasn't been created yet.
- * NOTE: May only be called once.
- */
-void wifi_set_event_handler_cb(esp_event_handler_t eventHandler)
-{
-#ifndef DISABLE_WIFI
-	wifiEventHandler = eventHandler;
-#endif
-}
 
 extern void sming_create_task(TaskFunction_t);
 

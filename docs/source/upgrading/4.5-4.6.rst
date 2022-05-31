@@ -1,0 +1,19 @@
+From v4.5 to v4.6
+=================
+
+.. highlight:: c++
+
+SPI Byte/Bit ordering
+---------------------
+
+The :cpp:class:`SPISettings` class has been revised to be consistent with Arduino ESP8266, ESP32, RP2040, etc.
+which provide a **bitOrder** setting but not ``byteOrder``.
+
+Bytes are now always sent LSB first, which corresponds with the system endianness.
+Bit order simply indicates how the bits within each byte are sent on the wire.
+This is predominantly MSB first, the default.
+
+The :cpp:class:`SPISoft` class has been upgraded to support bit ordering, transactions
+and includes automatic delay calculation for the ESP8266.
+
+See :issue:`1428`.

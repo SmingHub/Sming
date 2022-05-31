@@ -81,6 +81,65 @@ const char* CStringArray::getValue(unsigned index) const
 	return nullptr;
 }
 
+bool CStringArray::pushFront(const char* str)
+{
+	if(str == nullptr) {
+		// Nothing to insert
+		return true;
+	}
+
+	auto str_len = strlen(str) + 1;
+	auto len = length();
+	if(!setLength(len + str_len)) {
+		return false;
+	}
+	char* ptr = String::begin();
+	memmove(ptr + str_len, ptr, str_len);
+	memcpy(ptr, str, str_len);
+	if(stringCount != 0) {
+		++stringCount;
+	}
+	return true;
+}
+
+String CStringArray::popFront()
+{
+	if(length() == 0) {
+		return nullptr;
+	}
+	auto p = c_str();
+	auto len = strlen(p);
+	String s(p, len);
+	remove(0, len + 1);
+	if(stringCount != 0) {
+		--stringCount;
+	}
+	return s;
+}
+
+const char* CStringArray::back() const
+{
+	size_t len = length();
+	if(len == 0) {
+		return nullptr;
+	}
+	return cbuffer() + lastIndexOf('\0', len - 2) + 1;
+}
+
+String CStringArray::popBack()
+{
+	auto backPtr = back();
+	if(backPtr == nullptr) {
+		return nullptr;
+	}
+	String s = backPtr;
+	setLength(backPtr - cbuffer());
+	if(stringCount != 0) {
+		--stringCount;
+	}
+	return s;
+}
+
 // Called when a string array is constructed or assigned
 void CStringArray::init()
 {

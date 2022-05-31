@@ -18,7 +18,7 @@
  ****/
 
 #include "options.h"
-#include "hostmsg.h"
+#include "include/hostlib/hostmsg.h"
 #include <getopt.h>
 #include <string.h>
 #include <stdlib.h>

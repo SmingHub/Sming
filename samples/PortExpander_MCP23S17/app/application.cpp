@@ -18,8 +18,8 @@ void init()
 	Serial.systemDebugOutput(false); // Allow debug output to serial
 	Serial.println("<-= Sming start =->");
 
-	//SET higher CPU freq & disable wifi sleep
-	system_update_cpu_freq(SYS_CPU_160MHZ);
+	// Set higher CPU freq & disable wifi sleep
+	System.setCpuFrequency(CpuCycleClockFast::cpuFrequency());
 
 #ifndef DISABLE_WIFI
 	wifi_set_sleep_type(NONE_SLEEP_T);

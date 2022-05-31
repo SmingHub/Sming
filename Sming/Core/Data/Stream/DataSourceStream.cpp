@@ -45,7 +45,7 @@ String IDataSourceStream::readString(size_t maxLen)
 	size_t remain = maxLen;
 	while(remain != 0) {
 		char buffer[256];
-		size_t len = readBytes(buffer, remain);
+		size_t len = readBytes(buffer, std::min(sizeof(buffer), remain));
 		if(len == 0) {
 			break;
 		}

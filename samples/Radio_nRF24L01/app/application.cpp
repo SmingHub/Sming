@@ -1,5 +1,4 @@
 #include <SmingCore.h>
-#include <Libraries/TFT_ILI9163C/TFT_ILI9163C.h>
 #include <Libraries/RF24/nRF24L01.h>
 #include <Libraries/RF24/RF24.h>
 
@@ -16,12 +15,12 @@
  * CSN		GPIO5 (changeable)
  * GND      GND
  */
-#ifdef ARCH_ESP8266
-constexpr uint8_t RF24_CE_PIN{4};
-constexpr uint8_t RF24_CSN_PIN{5};
-#else
+#ifdef ARCH_ESP32
 constexpr uint8_t RF24_CE_PIN{19};
 constexpr uint8_t RF24_CSN_PIN{21};
+#else
+constexpr uint8_t RF24_CE_PIN{4};
+constexpr uint8_t RF24_CSN_PIN{5};
 #endif
 RF24 radio(RF24_CE_PIN, RF24_CSN_PIN);
 

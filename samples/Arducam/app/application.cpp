@@ -11,7 +11,6 @@
 #include <Libraries/ArduCAM/ArduCAMStream.h>
 #include <Services/HexDump/HexDump.h>
 #include <Data/Stream/MultipartStream.h>
-#include <Platform/Timers.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID

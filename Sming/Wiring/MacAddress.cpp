@@ -23,13 +23,30 @@
 #include "MacAddress.h"
 #include <Data/HexString.h>
 
-uint8_t MacAddress::operator[](unsigned index) const
+MacAddress::MacAddress(const String& s)
 {
-	if(index >= sizeof(octets)) {
-		abort();
+	// Maximum length with 2 hex digits per octet plus optional separator
+	bool sep;
+	if(s.length() == 12) {
+		sep = false;
+	} else if(s.length() == 17) {
+		sep = true;
+	} else {
+		return;
 	}
-
-	return octets[index];
+	auto str = s.c_str();
+	Octets res{};
+	for(unsigned i = 0; i < 6; ++i) {
+		if(sep && i != 5 && strchr(_F(":-.,/ "), str[2]) == nullptr) {
+			return;
+		}
+		if(!isxdigit(str[0]) || !isxdigit(str[1])) {
+			return;
+		}
+		res[i] = (unhex(str[0]) << 4) | unhex(str[1]);
+		str += 2 + unsigned(sep);
+	}
+	memcpy(octets, res, sizeof(res));
 }
 
 uint8_t& MacAddress::operator[](unsigned index)

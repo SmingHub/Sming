@@ -1,2 +1,1 @@
-COMPONENT_SOC := esp* host
-HWCONFIG := spiffs
+HWCONFIG := spiffs-2m

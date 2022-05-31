@@ -382,7 +382,7 @@ bool ATTR_GDBINIT gdb_uart_init()
 		.mode = UART_FULL,
 		.options = _BV(UART_OPT_TXWAIT) | _BV(UART_OPT_CALLBACK_RAW),
 		.baudrate = SERIAL_BAUD_RATE,
-		.config = UART_8N1,
+		.format = UART_8N1,
 		.rx_size = 0,
 		.tx_size = 0,
 	};

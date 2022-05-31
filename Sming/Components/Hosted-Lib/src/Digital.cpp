@@ -11,6 +11,8 @@
  *
  ****/
 
+#if ENABLE_HOSTED_DIGITAL
+
 #include <Digital.h>
 #include <Hosted/Client.h>
 
@@ -37,3 +39,5 @@ unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout)
 	hostedClient->send(__func__, pin, state, timeout);
 	return hostedClient->wait<unsigned long>();
 }
+
+#endif /* ENABLE_HOSTED_DIGITAL */

@@ -1,6 +1,6 @@
 # Adafruit BME280 Library
 
-[![Build Status](https://github.com/adafruit/Adafruit_BME280_Library/workflows/Arduino%20Library%20CI/badge.svg)](https://github.com/adafruit/Adafruit_BME280_Library/actions)[![Documentation](https://github.com/adafruit/ci-arduino/blob/master/assets/doxygen_badge.svg)](http://adafruit.github.io/Adafruit_BME280_Library/html/index.html)
+[![Build Status](https://github.com/adafruit/Adafruit_BME280_Library/workflows/Arduino%20Library%20CI/badge.svg)](https://github.com/adafruit/Adafruit_BME280_Library/actions)
 
 <a href="http://www.adafruit.com/products/2652"><img src="https://raw.githubusercontent.com/adafruit/Adafruit_BME280_Library/master/assets/board.jpg" width="500"/></a>
 

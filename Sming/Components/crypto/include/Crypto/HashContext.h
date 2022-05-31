@@ -103,7 +103,7 @@ public:
 	 */
 	Hash getHash()
 	{
-		Hash hash;
+		Hash hash{};
 		engine.final(hash.data());
 		return hash;
 	}

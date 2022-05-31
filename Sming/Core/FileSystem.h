@@ -119,6 +119,17 @@ bool fwfs_mount();
  */
 bool fwfs_mount(Storage::Partition partition);
 
+/**
+ * @brief Mount a backup archive
+ * @param filename Path to archive file
+ * @retval IFS::FileSystem* Mounted filesystem. Caller must delete when finished.
+ */
+inline IFS::FileSystem* fileMountArchive(const String& filename)
+{
+	auto fs = getFileSystem();
+	return fs ? IFS::mountArchive(*fs, filename) : nullptr;
+}
+
 /** @brief  Open file by path
  *  @param  path Full path to file
  *  @param  flags Mode to open file
@@ -546,6 +557,26 @@ inline int fileSetTime(FileHandle file, time_t mtime)
 {
 	CHECK_FS(settime)
 	return fileSystem->settime(file, mtime);
+}
+
+/** @brief Create a directory
+ *  @param path Path to directory
+ *  @retval int Error code
+ */
+template <typename T> int createDirectory(const T& path)
+{
+	CHECK_FS(mkdir);
+	return fileSystem->mkdir(path);
+}
+
+/** @brief Create a directory and all required parent directories
+ *  @param path Path to directory
+ *  @retval int Error code
+ */
+template <typename T> int createDirectories(const T& path)
+{
+	CHECK_FS(mkdir);
+	return fileSystem->makedirs(path);
 }
 
 /** @} */

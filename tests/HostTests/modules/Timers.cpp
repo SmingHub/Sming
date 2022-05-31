@@ -82,7 +82,10 @@ public:
 			}
 
 			auto mem = MallocCount::getCurrent();
-			String s = statusTimer;
+			String s;
+			s += system_get_time();
+			s += " ";
+			s += statusTimer;
 			s += " fired, timercount = ";
 			s += activeTimerCount;
 			s += ", mem = ";

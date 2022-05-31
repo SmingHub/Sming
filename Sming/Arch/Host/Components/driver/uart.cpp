@@ -78,34 +78,6 @@ __forceinline bool smg_uart_isr_enabled(uint8_t nr)
 	return bitRead(isrMask, nr);
 }
 
-bool realloc_buffer(SerialBuffer*& buffer, size_t new_size)
-{
-	if(buffer != nullptr) {
-		if(new_size == 0) {
-			(void)smg_uart_disable_interrupts();
-			delete buffer;
-			buffer = nullptr;
-			smg_uart_restore_interrupts();
-			return true;
-		}
-
-		return buffer->resize(new_size) == new_size;
-	}
-
-	if(new_size == 0) {
-		return true;
-	}
-
-	auto new_buf = new SerialBuffer;
-	if(new_buf != nullptr && new_buf->resize(new_size) == new_size) {
-		buffer = new_buf;
-		return true;
-	}
-
-	delete new_buf;
-	return false;
-}
-
 } // namespace
 
 smg_uart_t* smg_uart_get_uart(uint8_t uart_nr)
@@ -139,51 +111,6 @@ void smg_uart_set_callback(smg_uart_t* uart, smg_uart_callback_t callback, void*
 		uart->param = param;
 		uart->callback = callback;
 	}
-}
-
-size_t smg_uart_resize_rx_buffer(smg_uart_t* uart, size_t new_size)
-{
-	if(smg_uart_rx_enabled(uart)) {
-		realloc_buffer(uart->rx_buffer, new_size);
-	}
-	return smg_uart_rx_buffer_size(uart);
-}
-
-size_t smg_uart_rx_buffer_size(smg_uart_t* uart)
-{
-	return uart != nullptr && uart->rx_buffer != nullptr ? uart->rx_buffer->getSize() : 0;
-}
-
-size_t smg_uart_resize_tx_buffer(smg_uart_t* uart, size_t new_size)
-{
-	if(smg_uart_tx_enabled(uart)) {
-		realloc_buffer(uart->tx_buffer, new_size);
-	}
-	return smg_uart_tx_buffer_size(uart);
-}
-
-size_t smg_uart_tx_buffer_size(smg_uart_t* uart)
-{
-	return uart != nullptr && uart->tx_buffer != nullptr ? uart->tx_buffer->getSize() : 0;
-}
-
-int smg_uart_peek_char(smg_uart_t* uart)
-{
-	return uart != nullptr && uart->rx_buffer ? uart->rx_buffer->peekChar() : -1;
-}
-
-int smg_uart_rx_find(smg_uart_t* uart, char c)
-{
-	if(uart == nullptr || uart->rx_buffer == nullptr) {
-		return -1;
-	}
-
-	return uart->rx_buffer->find(c);
-}
-
-int smg_uart_peek_last_char(smg_uart_t* uart)
-{
-	return uart != nullptr && uart->rx_buffer != nullptr ? uart->rx_buffer->peekLastChar() : -1;
 }
 
 size_t smg_uart_read(smg_uart_t* uart, void* buffer, size_t size)
@@ -357,6 +284,10 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 		return nullptr;
 	}
 
+	if(cfg.uart_nr >= UART_COUNT) {
+		return nullptr;
+	}
+
 	auto uart = new smg_uart_t;
 	if(uart == nullptr) {
 		return nullptr;
@@ -377,54 +308,22 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 	rxBufferSize += UART_RX_FIFO_SIZE;
 	txBufferSize += UART_TX_FIFO_SIZE;
 
-	switch(cfg.uart_nr) {
-	case UART0:
-	case UART2:
-		if(smg_uart_rx_enabled(uart) && !realloc_buffer(uart->rx_buffer, rxBufferSize)) {
-			delete uart;
-			return nullptr;
-		}
-
-		if(smg_uart_tx_enabled(uart) && !realloc_buffer(uart->tx_buffer, txBufferSize)) {
-			delete uart->rx_buffer;
-			delete uart;
-			return nullptr;
-		}
-
-		if(cfg.uart_nr == UART2) {
-			break;
-		}
-
-		// OK, buffers allocated so setup hardware
-		smg_uart_detach(cfg.uart_nr);
-
-		break;
-
-	case UART1:
-		// Note: uart_interrupt_handler does not support RX on UART 1
-		if(uart->mode == UART_RX_ONLY) {
-			delete uart;
-			return nullptr;
-		}
-		uart->mode = UART_TX_ONLY;
-
-		// Transmit buffer optional
-		if(!realloc_buffer(uart->tx_buffer, txBufferSize)) {
-			delete uart;
-			return nullptr;
-		}
-
-		// Setup hardware
-		smg_uart_detach(cfg.uart_nr);
-		break;
-
-	default:
-		// big fail!
+	if(smg_uart_rx_enabled(uart) && !smg_uart_realloc_buffer(uart->rx_buffer, rxBufferSize)) {
 		delete uart;
 		return nullptr;
 	}
 
+	if(smg_uart_tx_enabled(uart) && !smg_uart_realloc_buffer(uart->tx_buffer, txBufferSize)) {
+		delete uart->rx_buffer;
+		delete uart;
+		return nullptr;
+	}
+
+	// OK, buffers allocated so setup hardware
+	smg_uart_detach(cfg.uart_nr);
+
 	smg_uart_set_baudrate(uart, cfg.baudrate);
+	smg_uart_set_format(uart, cfg.format);
 	smg_uart_flush(uart);
 	uartInstances[cfg.uart_nr] = uart;
 	smg_uart_start_isr(uart);
@@ -453,21 +352,19 @@ void smg_uart_uninit(smg_uart_t* uart)
 	delete uart;
 }
 
-smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin,
-						  size_t rx_size, size_t tx_size)
+void smg_uart_set_format(smg_uart_t* uart, smg_uart_format_t format)
 {
-	smg_uart_config_t cfg = {
-		.uart_nr = uart_nr,
-		.tx_pin = tx_pin,
-		.rx_pin = UART_PIN_DEFAULT,
-		.mode = mode,
-		.options = _BV(UART_OPT_TXWAIT),
-		.baudrate = baudrate,
-		.config = config,
-		.rx_size = rx_size,
-		.tx_size = tx_size,
-	};
-	return smg_uart_init_ex(cfg);
+	// Not implemented
+	(void)uart;
+	(void)format;
+}
+
+bool smg_uart_intr_config(smg_uart_t* uart, const smg_uart_intr_config_t* config)
+{
+	// Not implemented
+	(void)uart;
+	(void)config;
+	return false;
 }
 
 void smg_uart_swap(smg_uart_t* uart, int tx_pin)

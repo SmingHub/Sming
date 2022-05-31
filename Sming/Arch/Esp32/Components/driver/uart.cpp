@@ -18,6 +18,7 @@
 #include <driver/periph_ctrl.h>
 #include <soc/uart_channel.h>
 #include <BitManipulations.h>
+#include <Data/Range.h>
 #include <esp_systemapi.h>
 
 namespace
@@ -149,36 +150,6 @@ __forceinline bool is_physical(smg_uart_t* uart)
 smg_uart_t* get_physical(smg_uart_t* uart)
 {
 	return uart;
-}
-
-bool realloc_buffer(SerialBuffer*& buffer, size_t new_size)
-{
-	if(buffer != nullptr) {
-		if(new_size == 0) {
-			smg_uart_disable_interrupts();
-			delete buffer;
-			buffer = nullptr;
-			smg_uart_restore_interrupts();
-			return true;
-		}
-
-		return buffer->resize(new_size) == new_size;
-	}
-
-	if(new_size == 0) {
-		return true;
-	}
-
-	// Avoid allocating in SPIRAM
-	auto mem = heap_caps_malloc(sizeof(SerialBuffer), MALLOC_CAP_DEFAULT | MALLOC_CAP_INTERNAL);
-	auto new_buf = new(mem) SerialBuffer;
-	if(new_buf != nullptr && new_buf->resize(new_size) == new_size) {
-		buffer = new_buf;
-		return true;
-	}
-
-	delete new_buf;
-	return false;
 }
 
 /** @brief UART interrupt service routine
@@ -315,51 +286,6 @@ void smg_uart_set_callback(smg_uart_t* uart, smg_uart_callback_t callback, void*
 	}
 }
 
-size_t smg_uart_resize_rx_buffer(smg_uart_t* uart, size_t new_size)
-{
-	if(smg_uart_rx_enabled(uart)) {
-		realloc_buffer(uart->rx_buffer, new_size);
-	}
-	return smg_uart_rx_buffer_size(uart);
-}
-
-size_t smg_uart_rx_buffer_size(smg_uart_t* uart)
-{
-	return uart != nullptr && uart->rx_buffer != nullptr ? uart->rx_buffer->getSize() : 0;
-}
-
-size_t smg_uart_resize_tx_buffer(smg_uart_t* uart, size_t new_size)
-{
-	if(smg_uart_tx_enabled(uart)) {
-		realloc_buffer(uart->tx_buffer, new_size);
-	}
-	return smg_uart_tx_buffer_size(uart);
-}
-
-size_t smg_uart_tx_buffer_size(smg_uart_t* uart)
-{
-	return uart != nullptr && uart->tx_buffer != nullptr ? uart->tx_buffer->getSize() : 0;
-}
-
-int smg_uart_peek_char(smg_uart_t* uart)
-{
-	return uart != nullptr && uart->rx_buffer ? uart->rx_buffer->peekChar() : -1;
-}
-
-int smg_uart_rx_find(smg_uart_t* uart, char c)
-{
-	if(uart == nullptr || uart->rx_buffer == nullptr) {
-		return -1;
-	}
-
-	return uart->rx_buffer->find(c);
-}
-
-int smg_uart_peek_last_char(smg_uart_t* uart)
-{
-	return uart != nullptr && uart->rx_buffer != nullptr ? uart->rx_buffer->peekLastChar() : -1;
-}
-
 size_t smg_uart_read(smg_uart_t* uart, void* buffer, size_t size)
 {
 	if(!smg_uart_rx_enabled(uart) || buffer == nullptr || size == 0) {
@@ -425,7 +351,7 @@ void smg_uart_start_isr(smg_uart_t* uart)
 	dev->conf1.val = 0;
 
 	if(smg_uart_rx_enabled(uart)) {
-		uart_ll_set_rxfifo_full_thr(dev, 120);
+		uart_ll_set_rxfifo_full_thr(dev, RX_FIFO_FULL_THRESHOLD);
 		uart_ll_set_rx_tout(dev, 10);
 
 		/*
@@ -686,7 +612,7 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 	auto txBufferSize = cfg.tx_size;
 
 	if(smg_uart_rx_enabled(uart)) {
-		if(!realloc_buffer(uart->rx_buffer, rxBufferSize)) {
+		if(!smg_uart_realloc_buffer(uart->rx_buffer, rxBufferSize)) {
 			delete uart;
 			return nullptr;
 		}
@@ -696,7 +622,7 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 	}
 
 	if(smg_uart_tx_enabled(uart)) {
-		if(!realloc_buffer(uart->tx_buffer, txBufferSize)) {
+		if(!smg_uart_realloc_buffer(uart->tx_buffer, txBufferSize)) {
 			delete uart->rx_buffer;
 			delete uart;
 			return nullptr;
@@ -729,7 +655,7 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 	uart_ll_set_tx_idle_num(dev, 0);
 
 	// Bottom 8 bits identical to esp8266
-	dev->conf0.val = (dev->conf0.val & 0xFFFFFF00) | cfg.config;
+	dev->conf0.val = (dev->conf0.val & 0xFFFFFF00) | cfg.format;
 
 	smg_uart_set_baudrate(uart, cfg.baudrate);
 	smg_uart_flush(uart);
@@ -764,19 +690,44 @@ void smg_uart_uninit(smg_uart_t* uart)
 	delete uart;
 }
 
-smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin,
-						  size_t rx_size, size_t tx_size)
+void smg_uart_set_format(smg_uart_t* uart, smg_uart_format_t format)
 {
-	smg_uart_config_t cfg = {.uart_nr = uart_nr,
-							 .tx_pin = tx_pin,
-							 .rx_pin = UART_PIN_DEFAULT,
-							 .mode = mode,
-							 .options = _BV(UART_OPT_TXWAIT),
-							 .baudrate = baudrate,
-							 .config = config,
-							 .rx_size = rx_size,
-							 .tx_size = tx_size};
-	return smg_uart_init_ex(cfg);
+	uart = get_physical(uart);
+	if(uart == nullptr) {
+		return;
+	}
+	smg_uart_config_format_t fmt{.val = format};
+	auto dev = getDevice(uart->uart_nr);
+	uart_ll_set_data_bit_num(dev, uart_word_length_t(fmt.bits));
+	uart_ll_set_parity(dev, uart_parity_t(fmt.parity));
+	uart_ll_set_stop_bits(dev, uart_stop_bits_t(fmt.stop_bits));
+}
+
+bool smg_uart_intr_config(smg_uart_t* uart, const smg_uart_intr_config_t* config)
+{
+	uart = get_physical(uart);
+	if(uart == nullptr || config == nullptr) {
+		return false;
+	}
+
+	auto dev = getDevice(uart->uart_nr);
+	if(smg_uart_rx_enabled(uart)) {
+		uint8_t full_threshold;
+		if(uart->rx_buffer == nullptr) {
+			// Setting this to 0 results in lockup as the interrupt never clears
+			full_threshold = TRange(1, UART_RXFIFO_FULL_THRHD).clip(config->rxfifo_full_thresh);
+		} else {
+			full_threshold = RX_FIFO_FULL_THRESHOLD;
+		}
+		uart_ll_set_rxfifo_full_thr(dev, full_threshold);
+		uart_ll_set_rx_tout(dev, TRange(0, UART_RX_TOUT_THRHD).clip(config->rx_timeout_thresh));
+	}
+
+	if(smg_uart_tx_enabled(uart)) {
+		uart_ll_set_txfifo_empty_thr(dev, TRange(0, UART_TXFIFO_EMPTY_THRHD).clip(config->txfifo_empty_intr_thresh));
+	}
+
+	return true;
 }
 
 void smg_uart_swap(smg_uart_t* uart, int tx_pin)

@@ -43,6 +43,7 @@ enum SmartConfigType {
 	SCT_EspTouch,		  ///< ESP Touch
 	SCT_AirKiss,		  ///< Air Kiss
 	SCT_EspTouch_AirKiss, ///< ESP Touch and Air Kiss
+	SCT_EspTouch_V2,	  ///< ESP Touch version 2
 };
 
 /// Smart configuration event

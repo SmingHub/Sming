@@ -1,4 +1,3 @@
-COMPONENT_SOC := esp* host
 ARDUINO_LIBRARIES := LiquidCrystal DHTesp ArduinoJson6
-HWCONFIG := spiffs
+HWCONFIG := spiffs-2m
 SPIFF_FILES = web

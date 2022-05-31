@@ -25,12 +25,29 @@ namespace Storage
 class PartitionStream : public ReadWriteStream
 {
 public:
-	PartitionStream(Partition partition, uint32_t offset, size_t size)
-		: partition(partition), startOffset(offset), size(size)
+	/**
+	 * @brief Access part of a partition using a stream
+	 * @param partition
+	 * @param offset Limit access to this starting offset
+	 * @param size Limit access to this number of bytes from starting offset
+	 * @param blockErase Set to true to erase blocks before writing
+	 *
+	 * If blockErase is false then region must be pre-erased before writing.
+	 */
+	PartitionStream(Partition partition, uint32_t offset, size_t size, bool blockErase = false)
+		: partition(partition), startOffset(offset), size(size), blockErase(blockErase)
 	{
 	}
 
-	PartitionStream(Partition partition) : partition(partition), startOffset(0), size(partition.size())
+	/**
+	 * @brief Access entire partition using stream
+	 * @param partition
+	 * @param blockErase Set to true to erase blocks before writing
+	 *
+	 * If blockErase is false then partition must be pre-erased before writing.
+	 */
+	PartitionStream(Partition partition, bool blockErase = false)
+		: partition(partition), startOffset{0}, size(partition.size()), blockErase(blockErase)
 	{
 	}
 
@@ -56,6 +73,8 @@ private:
 	size_t size;
 	uint32_t writePos{0};
 	uint32_t readPos{0};
+	uint32_t erasePos{0};
+	bool blockErase;
 };
 
 } // namespace Storage

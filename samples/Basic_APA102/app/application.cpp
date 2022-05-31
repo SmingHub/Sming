@@ -21,16 +21,13 @@
 
 #define NUM_LED 60 // number of LEDs on strip
 
-#define SPI_SCLK 14
-#define SPI_MOSI 13
-#define SPI_MISO 12
 #define SPI_CS 2
 
 Timer procTimer;
 
 // in this demo, the same ports for HW and SW SPI are used
 #ifdef _USE_SOFTSPI
-SPISoft sSPI(SPI_MISO, SPI_MOSI, SPI_SCLK, 200);
+SPISoft sSPI(1);
 APA102 LED(NUM_LED, sSPI); // APA102 constructor for software SPI, call with number of LEDs
 #else
 APA102 LED(NUM_LED); // APA102 constructor, call with number of LEDs
@@ -121,11 +118,6 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true);
-
-#ifndef DISABLE_WIFI
-	WifiAccessPoint.enable(false);
-	WifiStation.enable(false);
-#endif
 
 	/* configure SPI */
 	LED.begin(); // default 4MHz clk, CS on PIN_2

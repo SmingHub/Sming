@@ -9,7 +9,7 @@
 ifeq ($(OS),Windows_NT)
 # Powershell does weird things to this variable, revert to default
 override MAKE	:= make
-FixPath			= $(subst //,/,$(subst \,/,/$(subst :,,$1)))
+FixPath			= $(if $(findstring :,$1),$(subst //,/,$(subst \,/,/$(subst :,,$1))),$(abspath $1))
 else
 FixPath			= $1
 endif
@@ -46,7 +46,7 @@ endef
 # Results are sorted and without trailing path separator
 # $1 -> Root paths
 define ListSubDirs
-$(foreach d,$(dir $(wildcard $1/*/.)),$(d:/=))
+$(foreach d,$(dir $(wildcard $(addsuffix /*/.,$1))),$(d:/=))
 endef
 
 # Check that $2 is a valid sub-directory of $1. Return empty string if not.

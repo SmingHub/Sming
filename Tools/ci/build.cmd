@@ -9,9 +9,6 @@ if "%BUILD_DOCS%"=="true" (
     goto :EOF
 )
 
-subst z: %CI_BUILD_DIR%
-set SMING_HOME=z:\Sming
-
 cd /d %SMING_HOME%
 call Arch\%SMING_ARCH%\Tools\ci\build.setup.cmd || goto :error
 
@@ -33,8 +30,8 @@ cd /d %SMING_PROJECTS_DIR%/samples/Basic_Blink
 make help
 make list-config
 
-REM HostTests should build and run on all architectures
-%MAKE_PARALLEL% -C "%SMING_PROJECTS_DIR%/tests/HostTests"
+REM HostTests must build for all architectures
+%MAKE_PARALLEL% -C "%SMING_PROJECTS_DIR%/tests/HostTests" || goto :error
 
 REM Start Arch-specific tests
 cd /d %SMING_HOME%
