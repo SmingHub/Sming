@@ -42,8 +42,8 @@ void init()
 	spiffs_mount(); // Mount file system, in order to work with files
 #endif
 
-	//SET higher CPU freq & disable wifi sleep
-	//	system_update_cpu_freq(SYS_CPU_160MHZ);
+	// Set higher CPU freq & disable wifi sleep
+	// System.setCpuFrequency(CpuCycleClockFast::cpuFrequency());
 	wifi_set_sleep_type(NONE_SLEEP_T);
 
 	activeConfig = loadConfig();

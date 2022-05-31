@@ -9,6 +9,7 @@
  ****/
 
 #include "include/Storage/PartitionStream.h"
+#include <debug_progmem.h>
 
 namespace Storage
 {
@@ -46,15 +47,29 @@ int PartitionStream::seekFrom(int offset, SeekOrigin origin)
 size_t PartitionStream::write(const uint8_t* data, size_t length)
 {
 	auto len = std::min(size_t(size - writePos), length);
-	if(len != 0) {
-		if(!partition.write(startOffset + writePos, data, len)) {
-			len = 0;
-		} else {
-			writePos += len;
+	if(len == 0) {
+		return 0;
+	}
+
+	if(blockErase) {
+		auto endPos = writePos + len;
+		if(endPos > erasePos) {
+			size_t blockSize = partition.getBlockSize();
+			size_t eraseLen = endPos - erasePos + blockSize - 1;
+			eraseLen -= eraseLen % blockSize;
+			debug_d("[PS] erase(0x%08x, 0x%08x", startOffset + erasePos, eraseLen);
+			if(!partition.erase_range(startOffset + erasePos, eraseLen)) {
+				return 0;
+			}
+			erasePos += eraseLen;
 		}
 	}
 
-	// Return amount actually written
+	if(!partition.write(startOffset + writePos, data, len)) {
+		return 0;
+	}
+
+	writePos += len;
 	return len;
 }
 

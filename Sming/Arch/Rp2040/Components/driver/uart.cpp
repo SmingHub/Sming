@@ -95,32 +95,6 @@ __forceinline void uart_enable_isr(uint8_t nr)
 	irq_set_enabled(UART0_IRQ + nr, true);
 }
 
-bool realloc_buffer(SerialBuffer*& buffer, size_t new_size)
-{
-	if(buffer != nullptr) {
-		if(new_size == 0) {
-			delete buffer;
-			buffer = nullptr;
-			return true;
-		}
-
-		return buffer->resize(new_size) == new_size;
-	}
-
-	if(new_size == 0) {
-		return true;
-	}
-
-	auto new_buf = new SerialBuffer;
-	if(new_buf != nullptr && new_buf->resize(new_size) == new_size) {
-		buffer = new_buf;
-		return true;
-	}
-
-	delete new_buf;
-	return false;
-}
-
 void IRAM_ATTR handleInterrupt(smg_uart_t* uart, uart_dev_t* dev)
 {
 	auto mis = dev->mis;
@@ -279,55 +253,6 @@ void smg_uart_set_callback(smg_uart_t* uart, smg_uart_callback_t callback, void*
 		uart->param = param;
 		uart->callback = callback;
 	}
-}
-
-size_t smg_uart_resize_rx_buffer(smg_uart_t* uart, size_t new_size)
-{
-	if(smg_uart_rx_enabled(uart)) {
-		uart_disable_isr(uart->uart_nr);
-		realloc_buffer(uart->rx_buffer, new_size);
-		uart_enable_isr(uart->uart_nr);
-	}
-	return smg_uart_rx_buffer_size(uart);
-}
-
-size_t smg_uart_rx_buffer_size(smg_uart_t* uart)
-{
-	return uart != nullptr && uart->rx_buffer != nullptr ? uart->rx_buffer->getSize() : 0;
-}
-
-size_t smg_uart_resize_tx_buffer(smg_uart_t* uart, size_t new_size)
-{
-	if(smg_uart_tx_enabled(uart)) {
-		uart_disable_isr(uart->uart_nr);
-		realloc_buffer(uart->tx_buffer, new_size);
-		uart_enable_isr(uart->uart_nr);
-	}
-	return smg_uart_tx_buffer_size(uart);
-}
-
-size_t smg_uart_tx_buffer_size(smg_uart_t* uart)
-{
-	return uart != nullptr && uart->tx_buffer != nullptr ? uart->tx_buffer->getSize() : 0;
-}
-
-int smg_uart_peek_char(smg_uart_t* uart)
-{
-	return uart != nullptr && uart->rx_buffer ? uart->rx_buffer->peekChar() : -1;
-}
-
-int smg_uart_rx_find(smg_uart_t* uart, char c)
-{
-	if(uart == nullptr || uart->rx_buffer == nullptr) {
-		return -1;
-	}
-
-	return uart->rx_buffer->find(c);
-}
-
-int smg_uart_peek_last_char(smg_uart_t* uart)
-{
-	return uart != nullptr && uart->rx_buffer != nullptr ? uart->rx_buffer->peekLastChar() : -1;
 }
 
 size_t smg_uart_read(smg_uart_t* uart, void* buffer, size_t size)
@@ -659,7 +584,7 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 	auto txBufferSize = cfg.tx_size;
 
 	if(smg_uart_rx_enabled(uart)) {
-		if(!realloc_buffer(uart->rx_buffer, rxBufferSize)) {
+		if(!smg_uart_realloc_buffer(uart->rx_buffer, rxBufferSize)) {
 			delete uart;
 			return nullptr;
 		}
@@ -669,7 +594,7 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 	}
 
 	if(smg_uart_tx_enabled(uart)) {
-		if(!realloc_buffer(uart->tx_buffer, txBufferSize)) {
+		if(!smg_uart_realloc_buffer(uart->tx_buffer, txBufferSize)) {
 			delete uart->rx_buffer;
 			delete uart;
 			return nullptr;
@@ -687,19 +612,9 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 	smg_uart_detach(cfg.uart_nr);
 	smg_uart_set_baudrate(uart, cfg.baudrate);
 
-	auto dev = getDevice(cfg.uart_nr);
+	smg_uart_set_format(uart, cfg.format);
 
-	// Setup line control register
-	smg_uart_config_format_t fmt;
-	fmt.val = cfg.config;
-	uint32_t lcr{0};
-	lcr |= fmt.bits << UART_UARTLCR_H_WLEN_LSB; // data bits
-	if(fmt.stop_bits != UART_NB_STOP_BIT_1) {   // stop bits
-		lcr |= UART_UARTLCR_H_STP2_BITS;
-	}
-	lcr |= fmt.parity << UART_UARTLCR_H_PEN_LSB; // parity
-	lcr |= UART_UARTLCR_H_FEN_BITS;				 // Enable FIFOs
-	dev->lcr_h = lcr;
+	auto dev = getDevice(cfg.uart_nr);
 
 	// Enable the UART
 	if(uart->mode == UART_TX_ONLY) {
@@ -747,19 +662,32 @@ void smg_uart_uninit(smg_uart_t* uart)
 	delete uart;
 }
 
-smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin,
-						  size_t rx_size, size_t tx_size)
+void smg_uart_set_format(smg_uart_t* uart, smg_uart_format_t format)
 {
-	smg_uart_config_t cfg = {.uart_nr = uart_nr,
-							 .tx_pin = tx_pin,
-							 .rx_pin = UART_PIN_DEFAULT,
-							 .mode = mode,
-							 .options = _BV(UART_OPT_TXWAIT),
-							 .baudrate = baudrate,
-							 .config = config,
-							 .rx_size = rx_size,
-							 .tx_size = tx_size};
-	return smg_uart_init_ex(cfg);
+	if(uart == nullptr) {
+		return;
+	}
+
+	auto dev = getDevice(uart->uart_nr);
+
+	// Setup line control register
+	smg_uart_config_format_t fmt{.val = format};
+	uint32_t lcr{0};
+	lcr |= fmt.bits << UART_UARTLCR_H_WLEN_LSB; // data bits
+	if(fmt.stop_bits != UART_NB_STOP_BIT_1) {   // stop bits
+		lcr |= UART_UARTLCR_H_STP2_BITS;
+	}
+	lcr |= fmt.parity << UART_UARTLCR_H_PEN_LSB; // parity
+	lcr |= UART_UARTLCR_H_FEN_BITS;				 // Enable FIFOs
+	dev->lcr_h = lcr;
+}
+
+bool smg_uart_intr_config(smg_uart_t* uart, const smg_uart_intr_config_t* config)
+{
+	// Not supported
+	(void)uart;
+	(void)config;
+	return false;
 }
 
 void smg_uart_swap(smg_uart_t* uart, int tx_pin)

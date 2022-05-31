@@ -17,6 +17,7 @@ COMPONENT_DEPENDS := \
 	FlashString \
 	Spiffs \
 	IFS \
+	SPI \
 	terminal
 
 COMPONENT_DOXYGEN_PREDEFINED := \

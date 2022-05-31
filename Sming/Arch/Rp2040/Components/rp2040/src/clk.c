@@ -17,12 +17,12 @@ static void IRAM_ATTR systick_overflow_isr()
 
 uint32_t IRAM_ATTR esp_get_ccount()
 {
-	extern volatile uint32_t systick_overflow;
 	uint32_t ovf = systick_overflow;
 	if(ovf != systick_overflow) {
 		ovf = systick_overflow;
 	}
-	return systick_hw->cvr | (ovf << 24);
+	// CVR is a down-counter
+	return ((1 + ovf) << 24) - systick_hw->cvr;
 }
 
 /*! \brief Check if a given system clock frequency is valid/attainable

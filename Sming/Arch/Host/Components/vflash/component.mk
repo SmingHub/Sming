@@ -13,7 +13,7 @@ SPI_SIZE			= $(STORAGE_DEVICE_spiFlash_SIZE)
 # Options to add when running emulator
 CACHE_VARS			+= HOST_FLASH_OPTIONS
 HOST_FLASH_OPTIONS	?= --flashfile=$(FLASH_BIN) --flashsize=$(SPI_SIZE)
-CLI_TARGET_OPTIONS += $(HOST_FLASH_OPTIONS)
+override CLI_TARGET_OPTIONS += $(HOST_FLASH_OPTIONS)
 
 # Virtual flasher tool
 VFLASH := $(PYTHON) $(COMPONENT_PATH)/vflash.py $(FLASH_BIN) $(STORAGE_DEVICE_spiFlash_SIZE_BYTES)

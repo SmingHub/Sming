@@ -57,7 +57,7 @@ static void ready(IpAddress ip, IpAddress mask, IpAddress gateway)
 	tcpClient->connect(remoteIp, 4031);
 	stream = new Hosted::Transport::TcpClientStream(*tcpClient);
 
-	hostedClient = new Hosted::Client(*stream);
+	hostedClient = new Hosted::Client(*stream, '>');
 	hostedClient->getRemoteCommands();
 	init();
 }

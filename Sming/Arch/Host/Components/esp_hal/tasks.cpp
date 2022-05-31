@@ -3,6 +3,8 @@
 #include <stringutil.h>
 #include <hostlib/threads.h>
 
+namespace
+{
 class TaskQueue
 {
 public:
@@ -40,7 +42,7 @@ public:
 	}
 
 private:
-	CMutex mutex;
+	static CMutex mutex;
 	os_task_t callback;
 	os_event_t* events;
 	uint8_t read;
@@ -48,9 +50,12 @@ private:
 	uint8_t length;
 };
 
-static TaskQueue* task_queues[USER_TASK_PRIO_MAX + 1];
+CMutex TaskQueue::mutex;
+TaskQueue* task_queues[USER_TASK_PRIO_MAX + 1];
 
 const uint8_t HOST_TASK_PRIO = USER_TASK_PRIO_MAX;
+
+} // namespace
 
 bool system_os_task(os_task_t callback, uint8_t prio, os_event_t* events, uint8_t qlen)
 {
@@ -80,7 +85,12 @@ bool system_os_post(uint8_t prio, os_signal_t sig, os_param_t par)
 		return false;
 	}
 
-	return task_queues[prio]->post(sig, par);
+	if(!task_queues[prio]->post(sig, par)) {
+		return false;
+	}
+
+	host_thread_kick();
+	return true;
 }
 
 void host_init_tasks()

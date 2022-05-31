@@ -7,7 +7,6 @@ Descr: SDCard/FAT file usage and write benchmark.
 */
 #include <SmingCore.h>
 #include <Libraries/SDCard/SDCard.h>
-#include <Platform/Timers.h>
 
 /*(!) Warning on some hardware versions (ESP07, maybe ESP12)
  * 		pins GPIO4 and GPIO5 are swapped !*/
@@ -17,13 +16,11 @@ Descr: SDCard/FAT file usage and write benchmark.
 #define PIN_CARD_CK 14 /* Serial Clock */
 
 // Chip selects independent of SPI controller in use
-#ifdef ARCH_ESP8266
-// Cannot use GPIO15 as this affects boot mode
-#define PIN_CARD_SS 5 /* Slave Select */
-#elif defined(ARCH_ESP32)
+#ifdef ARCH_ESP32
 #define PIN_CARD_SS 21
 #else
-static_assert(false, "Unsupported arch.")
+// Esp8266 cannot use GPIO15 as this affects boot mode
+#define PIN_CARD_SS 5
 #endif
 
 /* Sets the max frequency of SPI (init is done at a lower speed than the main communication) */

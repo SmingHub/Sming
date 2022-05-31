@@ -9,7 +9,7 @@ Sming is [open source](LICENSE), modular and supports [multiple architectures](h
 [![Backers](https://opencollective.com/Sming/backers/badge.svg)](#financial-contributions)
 [![Sponsors](https://opencollective.com/Sming/sponsors/badge.svg)](#financial-contributions)
 [![Download](https://img.shields.io/badge/download-~1.7M-orange.svg)](https://github.com/SmingHub/Sming/releases/latest)
-[![Build](https://travis-ci.org/SmingHub/Sming.svg?branch=develop)](https://travis-ci.org/SmingHub/Sming)
+[![Build](https://github.com/SmingHub/Sming/actions/workflows/ci.yml/badge.svg)](https://github.com/SmingHub/Sming/actions/workflows/ci.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/23ff16f8d550440787125b0d25ba7ada)](https://www.codacy.com/gh/SmingHub/Sming/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=SmingHub/Sming&amp;utm_campaign=Badge_Grade)
 [![Coverity Badge](https://img.shields.io/coverity/scan/12007.svg)](https://scan.coverity.com/projects/sminghub-sming)
 
@@ -29,7 +29,7 @@ You can also try Sming without installing anything locally. We have an [interact
 
 The purpose of Sming is to simplify the creation of embedded applications. The documentation will help you get started in no time.
 
-- [**Documentation for version 4.5.0**](https://sming.readthedocs.io/en/stable) - current stable version.
+- [**Documentation for version 4.6.0**](https://sming.readthedocs.io/en/stable) - current stable version.
 - [Documentation for version 4.2.x](https://sming.readthedocs.io/en/4.2.2) - Long Term Support (LTS) version.
 - [Documentation for latest](https://sming.readthedocs.io/en/latest) - development version.
 
@@ -37,7 +37,7 @@ The purpose of Sming is to simplify the creation of embedded applications. The d
 
 ### Stable
 
-- [Sming V4.5.0](https://github.com/SmingHub/Sming/releases/tag/4.5.0) - great new features, performance and stability improvements.
+- [Sming V4.6.0](https://github.com/SmingHub/Sming/releases/tag/4.6.0) - great new features, performance and stability improvements.
 
 
 ### Long Term Support (LTS)

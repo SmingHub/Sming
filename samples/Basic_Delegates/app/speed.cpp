@@ -3,7 +3,6 @@
  */
 
 #include <SmingCore.h>
-#include <Platform/Timers.h>
 #include "callbacks.h"
 
 #ifdef ARCH_HOST

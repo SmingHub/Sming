@@ -43,6 +43,7 @@ SDK_INCDIRS := \
 	esp_rom/include/$(ESP_VARIANT) \
 	esp_rom/include \
 	$(ESP_VARIANT)/include \
+	esp_ringbuf/include \
 	esp_timer/include \
 	soc/include \
 	soc/$(ESP_VARIANT)/include \
@@ -101,6 +102,7 @@ SDK_COMPONENTS := \
 	esp_ipc \
 	esp_pm \
 	esp_rom \
+	esp_ringbuf \
 	esp_system \
 	esp_timer \
 	espcoredump \

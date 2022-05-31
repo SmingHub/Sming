@@ -53,7 +53,8 @@ COMPONENT_SRCFILES		:= \
 	lwip/core/ipv4/ip_frag.c \
 	lwip/netif/etharp.c \
 	\
-	lwip/app/dhcpserver.c
+	lwip/app/dhcpserver.c \
+	lwip/app/ping.c
 
 ifeq ($(ENABLE_ESPCONN),1)
 	COMPONENT_SRCFILES += \

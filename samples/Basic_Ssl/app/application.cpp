@@ -1,6 +1,5 @@
 #include <SmingCore.h>
 #include <CounterStream.h>
-#include <Platform/Timers.h>
 
 #ifdef ENABLE_MALLOC_COUNT
 #include <malloc_count.h>

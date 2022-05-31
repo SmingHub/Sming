@@ -104,9 +104,9 @@ static inline constexpr uint8_t SMG_UART_FORMAT(smg_uart_bits_t databits, smg_ua
 }
 
 /**
- * @brief Structure for easier decomposing of `config` value
+ * @brief Structure for easier decomposing of `format` value
  * 
- * Used by drivers to read config values
+ * Used by drivers to read format values
  */
 union smg_uart_config_format_t {
 	struct {
@@ -254,19 +254,45 @@ struct smg_uart_config_t {
 	uint8_t rx_pin;
 	smg_uart_mode_t mode; ///< Whether to enable receive, transmit or both
 	uart_options_t options;
-	uint32_t baudrate; ///< Requested baudrate; actual baudrate may differ
-	uint32_t config;   ///< UART CONF0 register bits
+	uint32_t baudrate;		  ///< Requested baudrate; actual baudrate may differ
+	smg_uart_format_t format; ///< UART CONF0 register bits
 	size_t rx_size;
 	size_t tx_size;
 };
 
 // @deprecated Use `smg_uart_init_ex()` instead
-smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, uint32_t config, smg_uart_mode_t mode, uint8_t tx_pin,
-						  size_t rx_size, size_t tx_size = 0);
+smg_uart_t* smg_uart_init(uint8_t uart_nr, uint32_t baudrate, smg_uart_format_t format, smg_uart_mode_t mode,
+						  uint8_t tx_pin, size_t rx_size, size_t tx_size = 0);
 
 smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg);
 
 void smg_uart_uninit(smg_uart_t* uart);
+
+/**
+ * @brief Set the UART data format
+ * @param uart
+ * @param format UART CONF0 register bits
+ */
+void smg_uart_set_format(smg_uart_t* uart, smg_uart_format_t format);
+
+/**
+ * @brief UART interrupt configuration parameters for smg_uart_intr_config function
+ *
+ * Threshold values are expressed in character times
+ */
+typedef struct {
+	uint8_t rx_timeout_thresh;
+	uint8_t txfifo_empty_intr_thresh;
+	uint8_t rxfifo_full_thresh; ///< Ignored if additional buffers are allocated
+} smg_uart_intr_config_t;
+
+/**
+  * @brief Configure interrupt thresholds
+  * @param uart
+  * @param config
+  * @retval bool true on success, false on error (bad parameter or unsupported)
+  */
+bool smg_uart_intr_config(smg_uart_t* uart, const smg_uart_intr_config_t* config);
 
 __forceinline int smg_uart_get_nr(smg_uart_t* uart)
 {
@@ -487,6 +513,9 @@ uint8_t smg_uart_disable_interrupts();
 void smg_uart_restore_interrupts();
 
 /** @} */
+
+// Internal routine
+bool smg_uart_realloc_buffer(SerialBuffer*& buffer, size_t new_size);
 
 #if defined(__cplusplus)
 } // extern "C"

@@ -10,8 +10,8 @@ SMING_HOME := $(patsubst %/,%,$(call FixPath,$(SMING_HOME)))
 DEBUG_VARS += SMING_ARCH SMING_SOC
 ifeq (,$(SMING_ARCH))
   ifeq (,$(SMING_SOC))
-    SMING_ARCH := Esp8266
-    SMING_SOC := esp8266
+    override SMING_ARCH := Esp8266
+    override SMING_SOC := esp8266
   else
     override SMING_ARCH := $(notdir $(call dirx,$(filter %/$(SMING_SOC)-soc.json,$(SOC_CONFIG_FILES))))
     ifeq (,$(SMING_ARCH))
@@ -19,7 +19,7 @@ ifeq (,$(SMING_ARCH))
     endif
   endif
 else ifeq (,$(filter $(SMING_SOC),$(ARCH_$(SMING_ARCH)_SOC)))
-  SMING_SOC := $(firstword $(ARCH_$(SMING_ARCH)_SOC))
+  override SMING_SOC := $(firstword $(ARCH_$(SMING_ARCH)_SOC))
 endif
 
 ifeq (,$(wildcard $(SMING_HOME)/Arch/$(SMING_ARCH)/build.mk))
@@ -39,10 +39,17 @@ DEBUG_VARS += \
 	CXX \
 	AR \
 	LD \
+	NINJA \
 	NM \
 	OBJCOPY \
 	OBJDUMP \
 	GDB
+
+ifdef NINJA
+NINJA := $(call FixPath,$(NINJA))
+else
+NINJA := ninja
+endif
 
 DEBUG_VARS		+= SMING_RELEASE
 ifeq ($(SMING_RELEASE),1)
@@ -274,9 +281,12 @@ endef
 # $1 -> List of files
 define ClangFormat
 	$(if $(V),$(info Applying coding style to $(words $1) files ...))
-	@for FILE in $1; do \
-		$(CLANG_FORMAT) -i -style=file $$FILE; \
-	done
+	$(call ClangFormatBatch,$1)
+endef
+
+define ClangFormatBatch
+	@$(CLANG_FORMAT) -i -style=file $(wordlist 1,20,$1)
+	$(if $(word 21,$1),$(call ClangFormatBatch,$(wordlist 21,1000000,$1)))
 endef
 
 define ListSubmodules

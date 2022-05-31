@@ -108,7 +108,7 @@ COMPONENT_ROOT_DIRS := \
 	$(SMINGDIR)/samples
 
 # All directories where a README file should/must exist, and where a component.mk file could exist
-COMPONENT_DIRS := $(SMING_HOME) $(foreach d,$(COMPONENT_ROOT_DIRS),$(call ListSubDirs,$d))
+COMPONENT_DIRS := $(SMING_HOME) $(call ListSubDirs,$(COMPONENT_ROOT_DIRS))
 COMPONENT_SAMPLES := $(wildcard $(addsuffix /samples/*/component.mk,$(COMPONENT_DIRS)))
 COMPONENT_DIRS += $(COMPONENT_SAMPLES:/component.mk=)
 
@@ -163,6 +163,7 @@ COMPONENT_RULE			:= __no_build__
 COMPONENT_NAME			:= $1
 COMPONENT_PATH			:= $2
 COMPONENT_VARS			:=
+COMPONENT_RELINK_VARS	:=
 CONFIG_VARS				:=
 RELINK_VARS				:=
 CACHE_VARS				:=
@@ -189,7 +190,7 @@ DOXYGEN_INPUT			+= $$(addprefix $2/,$$(COMPONENT_DOXYGEN_INPUT))
 DOXYGEN_INCLUDE_PATH	+= $$(addprefix $2/,$$(COMPONENT_DOXYGEN_INCLUDE))
 DOXYGEN_PREDEFINED		+= $$(COMPONENT_DOXYGEN_PREDEFINED)
 #
-COMPONENT_ENVVARS		:= $$(sort $$(COMPONENT_VARS) $$(CONFIG_VARS) $$(RELINK_VARS) $$(CACHE_VARS) $$(DEBUG_VARS))
+COMPONENT_ENVVARS		:= $$(sort $$(COMPONENT_VARS) $$(COMPONENT_RELINK_VARS) $$(CONFIG_VARS) $$(RELINK_VARS) $$(CACHE_VARS) $$(DEBUG_VARS))
 CMP_$2_ENVVARS			:= $$(COMPONENT_ENVVARS)
 
 $$(foreach c,$$(COMPONENT_DEPENDS) $$(ARDUINO_LIBRARIES),$$(eval CMP_$$c_XREF += $2))

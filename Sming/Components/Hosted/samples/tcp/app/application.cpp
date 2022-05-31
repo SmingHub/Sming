@@ -48,10 +48,10 @@ void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 			 * You can add more commands here. For every command you should specify command and text description in the format below.
 			 * For more information read the SimpleRPC interface API: https://simplerpc.readthedocs.io/en/latest/api/interface.html
 			 */
-			pinMode, F("pinMode: Sets mode of digital pin. @pin: Pin number, @mode: Mode type."),
-			digitalRead, F("digitalRead: Read digital pin. @pin: Pin number. @return: Pin value."),
-			digitalWrite, F("digitalWrite: Write to a digital pin. @pin: Pin number. @value: Pin value."),
-			pulseIn, F("pulseIn: Measure duration of pulse on pin. @pin: Pin number. @state:  State of pulse to measure. @timeout: Maximum duration of pulse. @return: Pulse duration in microseconds)")
+			pinMode, F("pinMode> Sets mode of digital pin. @pin: Pin number, @mode: Mode type."),
+			digitalRead, F("digitalRead> Read digital pin. @pin: Pin number. @return: Pin value."),
+			digitalWrite, F("digitalWrite> Write to a digital pin. @pin: Pin number. @value: Pin value."),
+			pulseIn, F("pulseIn> Measure duration of pulse on pin. @pin: Pin number. @state:  State of pulse to measure. @timeout: Maximum duration of pulse. @return: Pulse duration in microseconds)")
 		);
 		// clang-format on
 

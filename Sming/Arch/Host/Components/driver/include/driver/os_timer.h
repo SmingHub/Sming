@@ -60,8 +60,11 @@ static inline uint64_t os_timer_expire(const os_timer_t* ptimer)
 
 void os_timer_done(os_timer_t* ptimer);
 
-// Hook function to service timers
-void host_service_timers();
+/**
+ * @brief Hook function to service timers
+ * @retval int Milliseconds until next timer due, -1 if none
+ */
+int host_service_timers();
 
 #ifdef __cplusplus
 }

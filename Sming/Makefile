@@ -61,7 +61,7 @@ submodules: $(ALL_SUBMODULES:=/.submodule) ##Fetch all third-party submodules (b
 
 # Build a list of available Components
 COMPONENT_SEARCH_DIRS	+= $(ARCH_COMPONENTS) Components Libraries
-ALL_COMPONENT_DIRS := $(sort $(foreach d,$(COMPONENT_SEARCH_DIRS),$(call ListSubDirs,$d)))
+ALL_COMPONENT_DIRS := $(sort $(call ListSubDirs,$(COMPONENT_SEARCH_DIRS)))
 
 # Generates a rule to fetch all submodules for a Component
 # $1 Component name
@@ -116,8 +116,9 @@ SAMPLE_NAMES		= $(notdir $(SAMPLE_PATHS))
 samples: $(SAMPLES_BUILT) ##Build all sample applications
 
 # Build any samples which haven't yet been marked
-$(SAMPLES_BUILT):
-	@printf "\n\n** Building $(notdir $(call dirx,$@)) **\n\n"
+%.built:
+	@printf "\n\n** Building $(@D) **\n\n"
+	$(Q) $(MAKE) --no-print-directory -C $(@D) submodules
 	$(Q) $(MAKE) --no-print-directory -C $(@D) PIP_ARGS=-q python-requirements sample
 	$(Q) touch $@
 
@@ -143,10 +144,6 @@ COMPONENT_SAMPLES_BUILT = $(addsuffix $(BUILT_SUFFIX),$(COMPONENT_SAMPLE_PATHS))
 .PHONY: build-component-samples
 build-component-samples: $(COMPONENT_SAMPLES_BUILT)
 
-$(COMPONENT_SAMPLES_BUILT):
-	@printf "\n\n** Building $(@D) **\n\n"
-	$(Q) $(MAKE) --no-print-directory -C $(@D) PIP_ARGS=-q python-requirements sample
-	$(Q) touch $@
 
 # This file is generated on failure during test phase
 export TEST_FAILURE_FILE := $(SMING_HOME)/.test-failure
@@ -218,7 +215,7 @@ CS_SEARCH_DIRS	?= $(call ListAllSubDirs,$(CS_ROOT_DIRS))
 # Resultant set of directories whose contents to apply coding style to
 CS_DIRS			?= $(patsubst %/.cs,%,$(wildcard $(foreach d,$(CS_SEARCH_DIRS),$d/.cs)))
 # Files to apply coding style to
-CS_FILES		= $(if $(CS_DIRS),$(call rwildcard,$(CS_DIRS:=/*),%.cpp %.hpp %.h %.c),)
+CS_FILES		= $(if $(CS_DIRS),$(sort $(call rwildcard,$(CS_DIRS:=/*),%.cpp %.hpp %.h %.c)))
 
 .PHONY: cs
 cs: ##Apply coding style to all core files

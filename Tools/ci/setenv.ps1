@@ -26,9 +26,16 @@ if (Test-Path "$env:PICO_TOOLCHAIN_PATH" ) {
 if ($IsWindows) {
     $env:PATH = "C:\MinGW\msys\1.0\bin;C:\MinGW\bin;$env:PATH"
 
-    $env:PATH = "C:\Python39;C:\Python39\Scripts;$env:PATH"
-    $env:PYTHON = "C:\Python39\python"
-    $env:ESP32_PYTHON_PATH = "C:\Python39"
+    if ($null -eq $env:PYTHON_PATH) {
+        $env:PYTHON_PATH = "C:\Python39-x64"
+        if ( -not (Test-Path "$env:PYTHON_PATH") ) {
+            $env:PYTHON_PATH = "C:\Python39"
+        }
+    }
+
+    $env:PATH = "$env:PYTHON_PATH;$env:PYTHON_PATH\Scripts;$env:PATH"
+    $env:PYTHON = "$env:PYTHON_PATH\python"
+    $env:ESP32_PYTHON_PATH = "$env:PYTHON_PATH"
 
     $env:PATH = "$env:PROGRAMFILES\CMake\bin;$env:PATH"
 

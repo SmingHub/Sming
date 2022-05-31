@@ -33,8 +33,6 @@ Building
 
 Build the framework and application as usual, specifying :envvar:`SMING_ARCH` =Host. For example::
 
-   cd $SMING_HOME
-   make SMING_ARCH=Host
    cd $SMING_HOME/../samples/Basic_Serial
    make SMING_ARCH=Host
 
@@ -47,6 +45,18 @@ used to pass the appropriate options to the command line.
 
 To find out what options are in force, use ``make list-config``.
 
+
+Configuration
+-------------
+
+.. envvar:: CLI_TARGET_OPTIONS
+
+   Use this to add any custom options to the emulator command line. e.g.:
+
+      make run CLI_TARGET_OPTIONS=--help
+      make run CLI_TARGET_OPTIONS="--debug=0 --cpulimit=2"
+
+   Note: These settings are not 'sticky'
 
 Components
 ----------

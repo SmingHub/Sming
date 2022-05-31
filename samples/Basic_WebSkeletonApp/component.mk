@@ -1,6 +1,6 @@
 COMPONENT_SOC := esp*
 ARDUINO_LIBRARIES := ArduinoJson6
-HWCONFIG := spiffs
+HWCONFIG := spiffs-2m
 
 # Use to store files in a FlashString map object instead of SPIFFS
 CONFIG_VARS += ENABLE_FLASHSTRING_MAP

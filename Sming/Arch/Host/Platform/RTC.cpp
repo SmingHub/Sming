@@ -14,6 +14,11 @@
 
 RtcClass RTC;
 
+namespace
+{
+int timeDiff; // Difference between set time and system time
+}
+
 RtcClass::RtcClass()
 {
 }
@@ -30,7 +35,7 @@ uint32_t RtcClass::getRtcSeconds()
 {
 	struct timeval tv;
 	gettimeofday(&tv, nullptr);
-	return tv.tv_sec;
+	return tv.tv_sec + timeDiff;
 }
 
 bool RtcClass::setRtcNanoseconds(uint64_t nanoseconds)
@@ -40,5 +45,7 @@ bool RtcClass::setRtcNanoseconds(uint64_t nanoseconds)
 
 bool RtcClass::setRtcSeconds(uint32_t seconds)
 {
-	return false;
+	timeDiff = 0;
+	timeDiff = seconds - getRtcSeconds();
+	return true;
 }

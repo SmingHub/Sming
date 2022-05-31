@@ -227,7 +227,7 @@ endif # PROJECT_SOC
 endef # ParseComponent
 
 # Build a list of all available Components
-ALL_COMPONENT_DIRS = $(foreach d,$(ALL_SEARCH_DIRS),$(call ListSubDirs,$d))
+ALL_COMPONENT_DIRS = $(call ListSubDirs,$(ALL_SEARCH_DIRS))
 
 # Lookup Component directory from a name
 # $1 -> Component name

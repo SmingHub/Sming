@@ -91,11 +91,6 @@ struct CpuCycleClock
 		return esp_get_ccount();
 	}
 
-	static constexpr bool isFast()
-	{
-		return cpuFreq == eCF_160MHz;
-	}
-
 	static constexpr CpuFrequency cpuFrequency()
 	{
 		return cpuFreq;

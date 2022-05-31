@@ -83,6 +83,13 @@ public:
 			REQUIRE(strlen(s.c_str()) == s.length());
 		}
 
+		TEST_CASE("readString (PR #2468)")
+		{
+			FSTR::Stream stream(FS_abstract);
+			String s = stream.readString(0x10000);
+			REQUIRE(s == FS_abstract);
+		}
+
 #ifndef DISABLE_NETWORK
 
 		TEST_CASE("ChunkedStream / StreamTransformer")

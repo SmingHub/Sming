@@ -139,7 +139,7 @@ uint32_t readAligned(void* to, uint32_t fromaddr, uint32_t size)
 	 * Use the auxiliary bus slave for the DMA<-FIFO accesses, to avoid stalling
 	 * the DMA against general XIP traffic.
 	 */
-	constexpr unsigned dma_chan{0};
+	auto dma_chan = dma_claim_unused_channel(true);
 	dma_channel_config cfg = dma_channel_get_default_config(dma_chan);
 	channel_config_set_transfer_data_size(&cfg, dmaTransferSize);
 	channel_config_set_read_increment(&cfg, false);
@@ -153,6 +153,7 @@ uint32_t readAligned(void* to, uint32_t fromaddr, uint32_t size)
 	);
 
 	dma_channel_wait_for_finish_blocking(dma_chan);
+	dma_channel_unclaim(dma_chan);
 
 	return size;
 }

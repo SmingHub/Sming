@@ -12,7 +12,17 @@
 
 #include <esp_attr.h>
 #include <sming_attr.h>
-#include <cstdint>
+#include <stdint.h>
+
+#ifdef CONFIG_ESP_TIMER_IMPL_TG0_LAC
+#include <soc/timer_group_reg.h>
+#else
+#include <hal/systimer_ll.h>
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define HW_TIMER_BASE_CLK APB_CLK_FREQ
 
@@ -117,17 +127,34 @@ uint32_t hw_timer1_read(void);
  *
  *************************************/
 
-constexpr uint32_t HW_TIMER2_CLK = 1000000;
-
-extern "C" int64_t esp_timer_get_time(void);
+#if CONFIG_ESP_TIMER_IMPL_TG0_LAC
+#define HW_TIMER2_CLK 2000000U
+#define HW_TIMER2_INDEX 0
+#elif defined(CONFIG_IDF_TARGET_ESP32S2)
+#define HW_TIMER2_CLK 80000000U
+#define HW_TIMER2_INDEX
+#elif defined(CONFIG_IDF_TARGET_ESP32C3)
+#define HW_TIMER2_CLK 16000000U
+#define HW_TIMER2_INDEX 0
+#elif defined(CONFIG_IDF_TARGET_ESP32S3)
+#define HW_TIMER2_CLK 16000000U
+#define HW_TIMER2_INDEX 0
+#else
+_Static_assert(false, "ESP32 Unsupported timer");
+#endif
 
 /**
  * @brief Read current timer2 value
  * @retval uint32_t
  */
-__forceinline uint32_t hw_timer2_read(void)
+__forceinline static uint32_t hw_timer2_read(void)
 {
-	return esp_timer_get_time();
+#if CONFIG_ESP_TIMER_IMPL_TG0_LAC
+	return REG_READ(TIMG_LACTLO_REG(HW_TIMER2_INDEX));
+#else
+	systimer_ll_counter_snapshot(HW_TIMER2_INDEX);
+	return systimer_ll_get_counter_value_low(HW_TIMER2_INDEX);
+#endif
 }
 
 #define NOW() hw_timer2_read()
@@ -139,3 +166,7 @@ __forceinline uint32_t hw_timer2_read(void)
 void hw_timer_init(void);
 
 /** @} */
+
+#ifdef __cplusplus
+}
+#endif
