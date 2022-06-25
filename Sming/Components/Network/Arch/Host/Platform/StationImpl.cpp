@@ -164,7 +164,7 @@ bool StationImpl::config(const Config& cfg)
 		if(cfg.ssid == ap.ssid) {
 			if(ap.authMode != AUTH_OPEN) {
 				if(cfg.password != ap.pwd) {
-					debug_w("Bad password for '%s'", ssid.c_str());
+					debug_w("Bad password for '%s'", cfg.ssid.c_str());
 					return false;
 				}
 			}
@@ -295,7 +295,7 @@ String StationImpl::getSSID() const
 
 MacAddress StationImpl::getBSSID() const
 {
-	return MacAddress{0xff, 0xff, 0xff, 0x00, 0x01};
+	return MacAddress({0xff, 0xff, 0xff, 0x00, 0x01});
 }
 
 int8_t StationImpl::getRssi() const
