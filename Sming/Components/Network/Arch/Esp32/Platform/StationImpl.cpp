@@ -489,7 +489,7 @@ void StationImpl::internalSmartConfig(smartconfig_event_t event_id, void* pdata)
 
 	switch(event_id) {
 	case SC_EVENT_GOT_SSID_PSWD:
-		config(evt.ssid, evt.password, true, true);
+		StationClass::config(evt.ssid, evt.password, true, true);
 		connect();
 		break;
 	case SC_EVENT_SEND_ACK_DONE:

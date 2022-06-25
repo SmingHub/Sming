@@ -380,7 +380,7 @@ void StationImpl::internalSmartConfig(sc_status status, void* pdata)
 		case SC_STATUS_GETTING_SSID_PSWD:
 			break;
 		case SC_STATUS_LINK:
-			config(evt.ssid, evt.password, true, true);
+			StationClass::config(evt.ssid, evt.password, true, true);
 			connect();
 			break;
 		case SC_STATUS_LINK_OVER:
