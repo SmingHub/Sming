@@ -108,6 +108,17 @@ using WPSConfigDelegate = Delegate<bool(WpsStatus status)>;
 class StationClass
 {
 public:
+	/**
+	 * @brief Station configuration passed to config method
+	 */
+	struct Config {
+		String ssid;					  ///< Service Set to connect to (may be advertised by multiple access points)
+		String password;				  ///< Password (if required)
+		MacAddress bssid;				  ///< Set this to connect to a specific access point
+		bool autoConnectOnStartup = true; ///< Auto connect to this AP on system restart
+		bool save = true;				  ///< Store new settings in NV memory
+	};
+
 	virtual ~StationClass()
 	{
 	}
@@ -130,8 +141,24 @@ public:
 	 *	@param	autoConnectOnStartup True to auto connect. False for manual. (Default: True)
 	 *	@param  save True to save the SSID and password in Flash. False otherwise. (Default: True)
 	 */
-	virtual bool config(const String& ssid, const String& password, bool autoConnectOnStartup = true,
-						bool save = true) = 0;
+	virtual bool config(const Config& config) = 0;
+
+	/**	@brief	Configure WiFi station
+	 *	@param	ssid WiFi SSID
+	 *	@param	password WiFi password
+	 *	@param	autoConnectOnStartup True to auto connect. False for manual. (Default: True)
+	 *	@param  save True to save the SSID and password in Flash. False otherwise. (Default: True)
+	 */
+	bool config(const String& ssid, const String& password, bool autoConnectOnStartup = true, bool save = true)
+	{
+		Config cfg{
+			.ssid = ssid,
+			.password = password,
+			.autoConnectOnStartup = autoConnectOnStartup,
+			.save = save,
+		};
+		return config(cfg);
+	}
 
 	/**	@brief	Connect WiFi station to network
 	 */
@@ -250,10 +277,15 @@ public:
 	 */
 	virtual bool setIP(IpAddress address, IpAddress netmask, IpAddress gateway) = 0;
 
-	/**	@brief	Get WiFi station SSID
+	/**	@brief	Get WiFi station SSID (Service Set Identifier)
 	 *	@retval	String WiFi station SSID
 	 */
 	virtual String getSSID() const = 0;
+
+	/**	@brief	Get BSSID (Basic Service Set Identifier) for connected AP
+	 *	@retval	MacAddress Identifier of connected Access Point
+	 */
+	virtual MacAddress getBSSID() const = 0;
 
 	/**	@brief	Get WiFi station password
 	 *	@retval	String WiFi station password

@@ -51,13 +51,13 @@ bool StationImpl::isEnabled() const
 	return wifi_get_opmode() & STATION_MODE;
 }
 
-bool StationImpl::config(const String& ssid, const String& password, bool autoConnectOnStartup, bool save)
+bool StationImpl::config(const Config& cfg)
 {
 	station_config config = {0};
-	if(ssid.length() >= sizeof(config.ssid)) {
+	if(cfg.ssid.length() >= sizeof(config.ssid)) {
 		return false;
 	}
-	if(password.length() >= sizeof(config.password)) {
+	if(cfg.password.length() >= sizeof(config.password)) {
 		return false;
 	}
 
@@ -70,10 +70,10 @@ bool StationImpl::config(const String& ssid, const String& password, bool autoCo
 	bool setConfig;
 	if(wifi_station_get_config(&config)) {
 		// Determine if config has changed
-		setConfig =
-			strncmp(ssid.c_str(), reinterpret_cast<const char*>(config.ssid), sizeof(config.ssid)) != 0 ||
-			strncmp(password.c_str(), reinterpret_cast<const char*>(config.password), sizeof(config.password)) != 0 ||
-			config.bssid_set;
+		setConfig = strncmp(cfg.ssid.c_str(), reinterpret_cast<const char*>(config.ssid), sizeof(config.ssid)) != 0 ||
+					strncmp(cfg.password.c_str(), reinterpret_cast<const char*>(config.password),
+							sizeof(config.password)) != 0 ||
+					(config.bssid_set && cfg.bssid != config.bssid);
 	} else {
 		debugf("Can't read station configuration!");
 		setConfig = true;
@@ -83,13 +83,19 @@ bool StationImpl::config(const String& ssid, const String& password, bool autoCo
 	if(setConfig) {
 		memset(config.ssid, 0, sizeof(config.ssid));
 		memset(config.password, 0, sizeof(config.password));
-		config.bssid_set = false;
-		ssid.getBytes(config.ssid, sizeof(config.ssid));
-		password.getBytes(config.password, sizeof(config.password));
+		cfg.ssid.getBytes(config.ssid, sizeof(config.ssid));
+		cfg.password.getBytes(config.password, sizeof(config.password));
+
+		if(cfg.bssid) {
+			config.bssid_set = true;
+			cfg.bssid.getOctets(config.bssid);
+		} else {
+			config.bssid_set = false;
+		}
 
 		noInterrupts();
 
-		if(save) {
+		if(cfg.save) {
 			success = wifi_station_set_config(&config);
 		} else {
 			success = wifi_station_set_config_current(&config);
@@ -98,12 +104,12 @@ bool StationImpl::config(const String& ssid, const String& password, bool autoCo
 		interrupts();
 
 		if(success) {
-			debugf("Station configuration was updated to: %s", ssid.c_str());
+			debugf("Station configuration was updated to: %s", cfg.ssid.c_str());
 		} else {
 			debugf("Can't set station configuration!");
 		}
 	} else {
-		debugf("Station configuration is: %s", ssid.c_str());
+		debugf("Station configuration is: %s", cfg.ssid.c_str());
 		success = true;
 	}
 
@@ -115,7 +121,7 @@ bool StationImpl::config(const String& ssid, const String& password, bool autoCo
 	}
 
 	if(success) {
-		wifi_station_set_auto_connect(autoConnectOnStartup);
+		wifi_station_set_auto_connect(cfg.autoConnectOnStartup);
 	}
 
 	return success;
@@ -232,6 +238,16 @@ String StationImpl::getSSID() const
 	auto ssid = reinterpret_cast<const char*>(config.ssid);
 	debugf("SSID: '%s'", ssid);
 	return ssid;
+}
+
+MacAddress StationImpl::getBSSID() const
+{
+	station_config config = {0};
+	if(!wifi_station_get_config(&config)) {
+		debugf("Can't read station configuration!");
+		return MacAddress{};
+	}
+	return config.bssid;
 }
 
 int8_t StationImpl::getRssi() const

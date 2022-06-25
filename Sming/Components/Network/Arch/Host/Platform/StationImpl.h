@@ -36,7 +36,7 @@ public:
 	// StationClass
 	void enable(bool enabled, bool save) override;
 	bool isEnabled() const override;
-	bool config(const String& ssid, const String& password, bool autoConnectOnStartup, bool save) override;
+	bool config(const Config& cfg) override;
 	bool connect() override;
 	bool disconnect() override;
 	StationConnectionStatus getConnectionStatus() const override;
@@ -52,6 +52,7 @@ public:
 	IpAddress getNetworkBroadcast() const override;
 	bool setIP(IpAddress address, IpAddress netmask, IpAddress gateway) override;
 	String getSSID() const override;
+	MacAddress getBSSID() const override;
 	String getPassword() const override;
 	int8_t getRssi() const override;
 	uint8_t getChannel() const override;
