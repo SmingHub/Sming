@@ -165,27 +165,34 @@ bool StationImpl::isEnabled() const
 	return (mode == WIFI_MODE_STA) || (mode == WIFI_MODE_APSTA);
 }
 
-bool StationImpl::config(const String& ssid, const String& password, bool autoConnectOnStartup, bool save)
+bool StationImpl::config(const Config& cfg)
 {
 	wifi_config_t config{};
 
-	if(ssid.length() >= sizeof(config.sta.ssid)) {
+	if(cfg.ssid.length() >= sizeof(config.sta.ssid)) {
 		return false;
 	}
-	if(password.length() >= sizeof(config.sta.password)) {
+	if(cfg.password.length() >= sizeof(config.sta.password)) {
 		return false;
 	}
 
-	memcpy(config.sta.ssid, ssid.c_str(), ssid.length());
-	memcpy(config.sta.password, password.c_str(), password.length());
+	memcpy(config.sta.ssid, cfg.ssid.c_str(), cfg.ssid.length());
+	memcpy(config.sta.password, cfg.password.c_str(), cfg.password.length());
 
-	enable(true, save);
-
-	if(save) {
-		setAutoConnect(autoConnectOnStartup);
+	if(cfg.bssid) {
+		config.sta.bssid_set = true;
+		cfg.bssid.getOctets(config.sta.bssid);
+	} else {
+		config.sta.bssid_set = false;
 	}
 
-	ESP_ERROR_CHECK(esp_wifi_set_storage(save ? WIFI_STORAGE_FLASH : WIFI_STORAGE_RAM));
+	enable(true, cfg.save);
+
+	if(cfg.save) {
+		setAutoConnect(cfg.autoConnectOnStartup);
+	}
+
+	ESP_ERROR_CHECK(esp_wifi_set_storage(cfg.save ? WIFI_STORAGE_FLASH : WIFI_STORAGE_RAM));
 	ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &config));
 
 	return connect();
@@ -326,6 +333,16 @@ String StationImpl::getSSID() const
 	auto ssid = reinterpret_cast<const char*>(config.sta.ssid);
 	debug_d("SSID: '%s'", ssid);
 	return ssid;
+}
+
+MacAddress StationImpl::getBSSID() const
+{
+	wifi_config_t config{};
+	if(esp_wifi_get_config(WIFI_IF_STA, &config) != ESP_OK) {
+		debug_e("Can't read station configuration!");
+		return MacAddress{};
+	}
+	return config.sta.bssid;
 }
 
 int8_t StationImpl::getRssi() const
@@ -472,7 +489,7 @@ void StationImpl::internalSmartConfig(smartconfig_event_t event_id, void* pdata)
 
 	switch(event_id) {
 	case SC_EVENT_GOT_SSID_PSWD:
-		config(evt.ssid, evt.password, true, true);
+		StationClass::config(evt.ssid, evt.password, true, true);
 		connect();
 		break;
 	case SC_EVENT_SEND_ACK_DONE:
