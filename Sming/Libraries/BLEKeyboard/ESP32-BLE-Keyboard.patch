@@ -1,0 +1,16 @@
+diff --git a/BleKeyboard.cpp b/BleKeyboard.cpp
+index 0d043f4..3c2677c 100644
+--- a/BleKeyboard.cpp
++++ b/BleKeyboard.cpp
+@@ -539,8 +539,8 @@ void BleKeyboard::delay_ms(uint64_t ms) {
+   if(ms){
+     uint64_t e = (m + (ms * 1000));
+     if(m > e){ //overflow
+-        while(esp_timer_get_time() > e) { }
++        while(uint64_t(esp_timer_get_time()) > e) { }
+     }
+-    while(esp_timer_get_time() < e) {}
++    while(uint64_t(esp_timer_get_time()) < e) {}
+   }
+ }
+\ No newline at end of file

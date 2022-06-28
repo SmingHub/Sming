@@ -1,5 +1,4 @@
-Esp8266 WiFi
-============
+Esp32 WiFi
+==========
 
-All related libraries for WiFi support. Definitions are provided in the
-Espressif Non-OS SDK.
+All related libraries for WiFi support.

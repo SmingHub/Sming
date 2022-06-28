@@ -377,8 +377,18 @@
 #
 # Esp32 libraries
 #
-
-### NONE ###
+[submodule "Libraries.ESP32-BLE-Gamepad"]
+	path = Sming/Libraries/BLEGamepad/ESP32-BLE-Gamepad
+	url = https://github.com/lemmingDev/ESP32-BLE-Gamepad.git
+	ignore = dirty
+[submodule "Libraries.ESP32-BLE-Keyboard"]
+	path = Sming/Libraries/BLEKeyboard/ESP32-BLE-Keyboard
+	url = https://github.com/T-vK/ESP32-BLE-Keyboard.git
+	ignore = dirty
+[submodule "Libraries.esp-nimble-cpp"]
+	path = Sming/Libraries/NimBLE/esp-nimble-cpp
+	url = https://github.com/h2zero/esp-nimble-cpp.git
+	ignore = dirty
 
 
 #
