@@ -1,6 +1,4 @@
 COMPONENT_SUBMODULES := ESP32-BLE-Gamepad
-# TODO: Add later support for the other Esp32 variants
-COMPONENT_SOC := esp32
 COMPONENT_DEPENDS := NimBLE
 
 COMPONENT_SRCDIRS := ESP32-BLE-Gamepad

@@ -1,5 +1,5 @@
-#ifndef ESP32_BLE_CONNECTION_STATUS_H
-#define ESP32_BLE_CONNECTION_STATUS_H
+#pragma once
+
 #include "sdkconfig.h"
 #if defined(CONFIG_BT_ENABLED)
 
@@ -33,4 +33,3 @@ private:
 
 #endif // CONFIG_BT_NIMBLE_ROLE_PERIPHERAL
 #endif // CONFIG_BT_ENABLED
-#endif // ESP32_BLE_CONNECTION_STATUS_H
