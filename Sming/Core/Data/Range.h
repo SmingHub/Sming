@@ -8,6 +8,8 @@
  *
  ****/
 
+#pragma once
+
 #include <WString.h>
 #include <esp_systemapi.h>
 
