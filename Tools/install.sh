@@ -76,10 +76,10 @@ DOWNLOADS="downloads"
 mkdir -p $DOWNLOADS
 
 # Identify package installer for distribution
-if [ -n "$(grep debian /etc/os-release)" ]; then
+if [ -n "$(command -v apt)" ]; then
     DIST=debian
     PKG_INSTALL="sudo apt-get install -y"
-elif [ -n "$(grep fedora /etc/os-release)" ]; then
+elif [ -n "$(command -v dnf)" ]; then
     DIST=fedora
     PKG_INSTALL="sudo dnf install -y"
 else
