@@ -50,7 +50,7 @@ bool RbootUpgrader::setBootPartition(Partition partition, bool save)
 {
 	uint8_t slot = getSlotForPartition(partition);
 	if(!save) {
-#ifdef RBOOT_ENABLE_RTC
+#ifdef BOOT_RTC_ENABLED
 		return rboot_set_temp_rom(slot);
 #else
 		return false;
@@ -63,7 +63,7 @@ bool RbootUpgrader::setBootPartition(Partition partition, bool save)
 Partition RbootUpgrader::getRunningPartition()
 {
 	uint8_t slot = rboot_get_current_rom();
-#ifdef RBOOT_ENABLE_RTC
+#ifdef BOOT_RTC_ENABLED
 	rboot_rtc_data rtc;
 	if(rboot_get_rtc_data(&rtc) && rtc.last_mode == MODE_TEMP_ROM) {
 		slot = rtc.last_rom;

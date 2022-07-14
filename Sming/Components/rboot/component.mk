@@ -120,7 +120,7 @@ endif
 
 ifeq ($(RBOOT_RTC_ENABLED),1)
 	# enable the temporary switch to rom feature
-	APP_CFLAGS			+= -DBOOT_RTC_ENABLED
+	GLOBAL_CFLAGS			+= -DBOOT_RTC_ENABLED
 endif
 
 ifeq ($(RBOOT_GPIO_ENABLED),1)

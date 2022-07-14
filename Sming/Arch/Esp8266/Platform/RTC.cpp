@@ -14,7 +14,7 @@
 RtcClass RTC;
 
 #define RTC_MAGIC 0x55aaaa55
-#define RTC_DES_ADDR 64
+#define RTC_DES_ADDR 64 + 3 ///< rBoot may require 3 words at start
 #define NS_PER_SECOND 1000000000
 
 /** @brief  Structure to hold RTC data
