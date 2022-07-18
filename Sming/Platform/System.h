@@ -144,7 +144,9 @@ public:
 		return static_cast<CpuFrequency>(system_get_cpu_freq());
 	}
 
-	/** @brief  Enter deep sleep mode
+	/** @brief  Enter deep sleep mode. Hardware has to support deep-sleep wake up (XPD_DCDC connects to 
+     * EXT_RSTB with a 0-Ωresistor). Connecting a jumper between RST and GPIO 16 has the desired effect.
+     * Also worth adding a pinMode(16, WAKEUP_PULLUP); in init().
      *  @param  timeMilliseconds Quantity of milliseconds to remain in deep sleep mode
      *  @param  options Deep sleep options
      */
