@@ -144,11 +144,20 @@ public:
 		return static_cast<CpuFrequency>(system_get_cpu_freq());
 	}
 
-	/** @brief  Enter deep sleep mode. Hardware has to support deep-sleep wake up (XPD_DCDC connects to 
-     * EXT_RSTB with a 0-Ωresistor). Connecting a jumper between RST and GPIO 16 has the desired effect.
-     * Also worth adding a pinMode(16, WAKEUP_PULLUP); in init().
+	/** @brief  Enter deep sleep mode.
+	 *  Deep sleep turns off processor and keeps only the RTC memory active.
      *  @param  timeMilliseconds Quantity of milliseconds to remain in deep sleep mode
      *  @param  options Deep sleep options
+	 *
+	 *  @note Determine reset cause like this:
+	 *
+	 * 		auto info = system_get_rst_info();
+	 *  	if(info->reason == REASON_DEEP_SLEEP_AWAKE) {
+	 *    		// ...
+	 *  	}
+	 *
+	 * 	@note ESP8266: Ensure GPIO 16 (XPD_DCDC) is connected to RST (EXT_RSTB).
+	 *  and call pinMode(16, WAKEUP_PULLUP) to enable wakeup from deep sleep.
      */
 	bool deepSleep(uint32_t timeMilliseconds, DeepSleepOptions options = eDSO_RF_CAL_BY_INIT_DATA);
 
