@@ -15,7 +15,7 @@ enum sleep_type {
 
 typedef void (*fpm_wakeup_cb)(void);
 
-void system_deep_sleep(uint32_t time_in_us);
+bool system_deep_sleep(uint32_t time_in_us);
 bool system_deep_sleep_set_option(uint8_t option);
 
 /* Forced sleep */
