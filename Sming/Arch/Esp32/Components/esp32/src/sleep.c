@@ -1,14 +1,16 @@
-#include "include/esp_sleep.h"
+#include <esp_sleep.h>
 #include <rom/gpio.h>
 
 bool system_deep_sleep(uint32_t time_in_us)
 {
+	esp_deep_sleep(time_in_us);
 	return true;
 }
 
 bool system_deep_sleep_set_option(uint8_t option)
 {
-	return false;
+	(void)option; // Ignore
+	return true;
 }
 
 /* GPIO */

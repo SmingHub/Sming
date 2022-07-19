@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <driver/gpio.h>
+#include_next <esp_sleep.h>
 
 #ifdef __cplusplus
 extern "C" {
