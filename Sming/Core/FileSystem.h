@@ -29,6 +29,8 @@ using FileAttribute = IFS::FileAttribute;
 using FileAttributes = IFS::FileAttributes;
 using FileStat = IFS::Stat;
 using FileNameStat = IFS::NameStat;
+using File = IFS::File;
+using Directory = IFS::Directory;
 constexpr int FS_OK = IFS::FS_OK;
 
 namespace SmingInternal
@@ -44,26 +46,6 @@ namespace SmingInternal
 extern IFS::FileSystem* activeFileSystem;
 
 } // namespace SmingInternal
-
-class File : public IFS::File
-{
-public:
-	File() : IFS::File(SmingInternal::activeFileSystem)
-	{
-	}
-};
-
-/**
-  * @brief      Directory stream class
-  * @ingroup    stream data
- */
-class Directory : public IFS::Directory
-{
-public:
-	Directory() : IFS::Directory(SmingInternal::activeFileSystem)
-	{
-	}
-};
 
 /*
  * Boilerplate check for file function wrappers to catch undefined filesystem.

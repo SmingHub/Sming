@@ -20,9 +20,7 @@
 class FileStream : public IFS::FileStream
 {
 public:
-	FileStream() : IFS::FileStream(::getFileSystem())
-	{
-	}
+	using IFS::FileStream::FileStream;
 
 	/** @brief  Create a file stream
      *  @param  fileName Name of file to open
