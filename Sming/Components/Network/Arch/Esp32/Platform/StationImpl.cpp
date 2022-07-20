@@ -186,6 +186,10 @@ bool StationImpl::config(const Config& cfg)
 		config.sta.bssid_set = false;
 	}
 
+	// Find *all* APs for the requested SSID and pick the best one
+	config.sta.scan_method = WIFI_ALL_CHANNEL_SCAN;
+	config.sta.sort_method = WIFI_CONNECT_AP_BY_SIGNAL;
+
 	enable(true, cfg.save);
 
 	if(cfg.save) {

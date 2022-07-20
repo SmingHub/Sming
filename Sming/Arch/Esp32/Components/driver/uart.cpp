@@ -20,6 +20,7 @@
 #include <BitManipulations.h>
 #include <Data/Range.h>
 #include <esp_systemapi.h>
+#include <hal/gpio_ll.h>
 
 namespace
 {
@@ -757,14 +758,14 @@ bool smg_uart_set_pins(smg_uart_t* uart, int tx_pin, int rx_pin)
 	auto& conn = uart_periph_signal[uart->uart_nr];
 
 	if(tx_pin != UART_PIN_NO_CHANGE) {
-		PIN_FUNC_SELECT(GPIO_PIN_MUX_REG[tx_pin], PIN_FUNC_GPIO);
+		gpio_ll_iomux_func_sel(GPIO_PIN_MUX_REG[tx_pin], PIN_FUNC_GPIO);
 		gpio_set_level(gpio_num_t(tx_pin), true);
 		gpio_matrix_out(tx_pin, conn.tx_sig, false, false);
 		uart->tx_pin = tx_pin;
 	}
 
 	if(rx_pin != UART_PIN_NO_CHANGE) {
-		PIN_FUNC_SELECT(GPIO_PIN_MUX_REG[rx_pin], PIN_FUNC_GPIO);
+		gpio_ll_iomux_func_sel(GPIO_PIN_MUX_REG[rx_pin], PIN_FUNC_GPIO);
 		gpio_set_pull_mode(gpio_num_t(rx_pin), GPIO_PULLUP_ONLY);
 		gpio_set_direction(gpio_num_t(rx_pin), GPIO_MODE_INPUT);
 		gpio_matrix_in(rx_pin, conn.rx_sig, false);

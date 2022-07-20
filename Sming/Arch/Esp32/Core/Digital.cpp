@@ -82,7 +82,7 @@ void pinMode(uint16_t pin, uint8_t mode)
 		gpio_ll_pullup_dis(&GPIO, gpio);
 	}
 
-	PIN_FUNC_SELECT(GPIO_PIN_MUX_REG[pin], PIN_FUNC_GPIO);
+	gpio_ll_iomux_func_sel(GPIO_PIN_MUX_REG[pin], PIN_FUNC_GPIO);
 }
 
 //Detect if pin is input
