@@ -143,25 +143,19 @@ void IRAM_ATTR handleInterrupt(smg_uart_t* uart, uart_dev_t* dev)
 			}
 		}
 
-		// Unless we replenish TX FIFO, disable after handling interrupt
 		auto txfifo_empty = mis & UART_UARTMIS_TXMIS_BITS;
 		if(txfifo_empty) {
 			// Dump as much data as we can from buffer into the TX FIFO
 			if(uart->tx_buffer != nullptr) {
 				size_t avail = uart->tx_buffer->available();
+				if(avail != 0) {
+					// We're topping up TX FIFO so defer callback until next time
+					user_is &= ~UART_UARTMIS_TXMIS_BITS;
+				}
 				while(avail-- && !uart_txfifo_full(dev)) {
 					uint8_t c = uart->tx_buffer->readChar();
 					dev->dr = c;
 				}
-			}
-
-			// If TX FIFO remains empty then we must disable TX FIFO EMPTY interrupt to stop it recurring.
-			if(uart_txfifo_empty(dev)) {
-				// The interrupt gets re-enabled by uart_write()
-				hw_clear_bits(&dev->imsc, UART_UARTIMSC_TXIM_BITS);
-			} else {
-				// We've topped up TX FIFO so defer callback until next time
-				user_is &= ~UART_UARTMIS_TXMIS_BITS;
 			}
 		}
 	}
@@ -326,7 +320,8 @@ void smg_uart_start_isr(smg_uart_t* uart)
 		 * transfer direction and begin waiting for a response.
 		 */
 
-		// TX FIFO empty interrupt only gets enabled via uart_write function()
+		// Enable TX FIFO EMPTY interrupt (edge-trigger)
+		int_ena |= UART_UARTIMSC_TXIM_BITS;
 
 		// Trigger at <= 1/8 full
 		fifo_level_select |= 0 << UART_UARTIFLS_TXIFLSEL_LSB;
@@ -362,10 +357,7 @@ size_t smg_uart_write(smg_uart_t* uart, const void* buffer, size_t size)
 			while(written < size && !uart_txfifo_full(dev)) {
 				dev->dr = buf[written++];
 			}
-
-			// Enable TX FIFO EMPTY interrupt
 			dev->icr = UART_UARTMIS_TXMIS_BITS;
-			hw_set_bits(&dev->imsc, UART_UARTIMSC_TXIM_BITS);
 		}
 
 		// Write any remaining data into transmit buffer
@@ -486,10 +478,10 @@ void smg_uart_flush(smg_uart_t* uart, smg_uart_mode_t mode)
 
 	if(flushTx) {
 		// Prevent TX FIFO EMPTY interrupts - don't need them until uart_write is called again
-		hw_clear_bits(&dev->imsc, UART_UARTIMSC_TXIM_BITS);
 		while(!uart_txfifo_empty(dev)) {
 			//
 		}
+		dev->icr = UART_UARTICR_TXIC_BITS;
 	}
 
 	// If receive overflow occurred then these interrupts will be masked
