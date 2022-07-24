@@ -190,9 +190,9 @@ class Config(object):
                 if sig is None:
                     sig = Signal(e, sig_name, pin.type)
                     self.signals.append(sig)
-                elif not e in sig.entries:
+                elif e not in sig.entries:
                     sig.entries.append(e)
-                if not sig in pin.signals:
+                if sig not in pin.signals:
                     pin.signals.append(sig)
             p = re.compile("ff[0-9]+")
             for n in filter(p.match, group.fieldnames):
@@ -242,7 +242,7 @@ class Config(object):
                 for sig in self.signals:
                     if per.sigmask.match(sig.name):
                         per.signals.append(sig)
-                        if not sig.peripheral is None:
+                        if sig.peripheral is not None:
                             raise RuntimeError(f"Attempted to assign signal {sig} to {per.name} but already assigned to {sig.peripheral.name}")
                         sig.peripheral = per
                 per.swap = periphdef.get('swap')
@@ -304,17 +304,17 @@ def generate_pinmenu(args):
         menu += [
             f'  config PERIPH_{per.name}_ENABLE',
             f'    bool "{per.name}"',
-             '    default y',
-             '    help'
+            f'    default y',
+            f'    help'
         ]
         menu += [f'      {s}' for  s in per.help()]
         if per.swap:
             menu += [
                 f'  config PERIPH_{per.name}_SWAP_ENABLE',
                 f'    bool "Swap {per.name} signals"',
-                 '    default n',
+                f'    default n',
                 f'    depends on PERIPH_{per.name}_ENABLE',
-                 '    help',
+                f'    help',
                 f'      {per.swap["help"]}'
             ]
     menu += ['endmenu']
@@ -322,7 +322,7 @@ def generate_pinmenu(args):
     menu += ['menu "Pin selections"']
     for n, pin in config.pins.items():
         menu += [
-             '  choice',
+            f'  choice',
             f'    prompt "GP{pin.type} {n}"',
             f'    default PINSEL{int(n):02d}_{pin.signals[0]}'
         ]
@@ -351,7 +351,7 @@ def generate_pinmenu(args):
                     f'    config PINSEL{int(n):02d}_{sig.name}',
                     f'      bool "{sig.name}"',
                     f'      depends on {depends}',
-                    '      help',
+                    f'      help',
                     f'        Peripheral "{per.name}", {", ".join(entry.group.name for entry in sig.entries)}'
                 ]
 
@@ -364,8 +364,8 @@ def generate_pinmenu(args):
         menu += ['  endchoice']
     menu += ['endmenu']
 
-    for l in menu:
-        print(l)
+    for line in menu:
+        print(line)
 
 
 def list_default_pins(args):
@@ -380,10 +380,10 @@ def list_default_pins(args):
                 gpio = 0xff
             else:
                 sig, gpio = v
-                if not sig in per.signals:
+                if sig not in per.signals:
                     raise RuntimeError(f"Invalid signal '{sig}' for {per.name}")
                 pin = config.pins[gpio]
-                if not sig in pin.signals:
+                if sig not in pin.signals:
                     raise RuntimeError(f"Invalid signal '{sig}' for {pin.name}")
             print(f"#define SMG_PINDEF_{per.name}_{k} {gpio}")
         print('\n')
@@ -413,8 +413,4 @@ def main():
 
 
 if __name__ == '__main__':
-    # try:
-        main()
-    # except Exception as e:
-    #     print("** ERROR! %s" % e, file=sys.stderr)
-    #     sys.exit(2)
+    main()
