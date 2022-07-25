@@ -1,4 +1,77 @@
 {
     "variant": "esp32c3",
-    "name": "ESP32-C3"
+    "name": "ESP32-C3",
+    "peripherals": {
+        "ADC": {
+            "sigmask": "ADC.+|ext_adc_start"
+        },
+        "BLUETOOTH": {
+            "sigmask": "gpio_bt_.+"
+        },
+        "CLOCKS": {
+            "sigmask": "CLK_.+|XTAL_.+"
+        },
+        "GPIO": {
+            "sigmask": "GPIO.+"
+        },
+        "I2C": {
+            "sigmask": "I2C.+"
+        },
+        "I2S": {
+            "sigmask": "I2S.+"
+        },
+        "JTAG": {
+            "sigmask": "MTCK|MTDI|MTDO|MTMS"
+        },
+        "LEDC": {
+            "sigmask": "ledc_.+"
+        },
+        "RMT": {
+            "sigmask": "rmt_.+"
+        },
+        "SIGMA_DELTA": {
+            "sigmask": "gpio_sd.+"
+        },
+        "SPI1": {
+            "sigmask": "SPI.+"
+        },
+        "SPI2": {
+            "sigmask": "FSPI.+"
+        },
+        "TWAI": {
+            "sigmask": "twai_.+"
+        },
+        "UART0": {
+            "sigmask": "U0.+",
+            "default": {
+                "TXD": [
+                    "U0TXD",
+                    21
+                ],
+                "RXD": [
+                    "U0RXD",
+                    20
+                ]
+            }
+        },
+        "UART1": {
+            "sigmask": "U1.+",
+            "default": {
+                "TXD": [
+                    "U1TXD_out",
+                    10
+                ],
+                "RXD": [
+                    "U1RXD_in",
+                    9
+                ]
+            }
+        },
+        "USB_JTAG": {
+            "sigmask": "usb_jtag_.+"
+        },
+        "WIFI": {
+            "sigmask": "gpio_wlan_.+"
+        }
+    }
 }
