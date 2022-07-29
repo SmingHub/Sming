@@ -352,7 +352,7 @@ public:
 
 	bool operator==(const Partition& other) const
 	{
-		return this == &other;
+		return mDevice == other.mDevice && mPart == other.mPart;
 	}
 
 	bool operator==(const char* name) const
