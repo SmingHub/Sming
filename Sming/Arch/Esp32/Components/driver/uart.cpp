@@ -728,6 +728,9 @@ bool smg_uart_intr_config(smg_uart_t* uart, const smg_uart_intr_config_t* config
 		uart_ll_set_txfifo_empty_thr(dev, TRange(0, UART_TXFIFO_EMPTY_THRHD).clip(config->txfifo_empty_intr_thresh));
 	}
 
+	dev->int_clr.val = config->intr_mask;
+	dev->int_ena.val = (dev->int_ena.val & ~config->intr_mask) | config->intr_enable;
+
 	return true;
 }
 
