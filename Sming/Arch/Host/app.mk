@@ -30,12 +30,10 @@ $(TARGET_OUT_0): $(COMPONENTS_AR)
 	$(Q) cat $(FW_MEMINFO)
 
 ##@Tools
-.PHONY: valgrind
-valgrind: all ##Run the application under valgrind to detect memory issues. Requires `valgrind` to be installed on the host system.
-	$(Q) valgrind --track-origins=yes --leak-check=full \
-	$(foreach id,$(ENABLE_HOST_UARTID),echo '$(call RunHostTerminal,$(id))' >> $@;) \
-	$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS) -- $(HOST_PARAMETERS)
 
+.PHONY: valgrind
+valgrind:
+	$(Q) RUN_COMMAND_PREFIX="valgrind --track-origins=yes --leak-check=full" $(MAKE) run
 
 RUN_SCRIPT := $(FW_BASE)/run.sh
 
@@ -46,7 +44,7 @@ run: all $(RUN_SCRIPT) ##Run the application image
 $(RUN_SCRIPT)::
 	$(Q) echo '#!/bin/bash' > $@; \
 	$(foreach id,$(ENABLE_HOST_UARTID),echo '$(call RunHostTerminal,$(id))' >> $@;) \
-	echo '$(TARGET_OUT_0) $(CLI_TARGET_OPTIONS) -- $(HOST_PARAMETERS)' >> $@; \
+	echo '$(RUN_COMMAND_PREFIX) $(TARGET_OUT_0) $(CLI_TARGET_OPTIONS) -- $(HOST_PARAMETERS)' >> $@; \
 	chmod a+x $@
 
 ##@Flashing
