@@ -27,6 +27,7 @@ nbproject
 GTAGS
 GRTAGS
 GPATH
+.DS_Store
 
 # Tag files created by build system
 .submodule
