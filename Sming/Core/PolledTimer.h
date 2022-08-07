@@ -225,7 +225,7 @@ public:
 	}
 
 private:
-	bool IRAM_ATTR checkExpired(const TickType& ticks) const
+	__forceinline bool IRAM_ATTR checkExpired(const TickType& ticks) const
 	{
 		// canWait() is not checked here
 		// returns "can expire" and "time expired"
@@ -248,7 +248,7 @@ private:
 		return result;
 	}
 
-	bool IRAM_ATTR expiredOneShot()
+	__forceinline bool IRAM_ATTR expiredOneShot()
 	{
 		// Remain triggered until manually reset or cancelled
 		if(!canWait() || hasExpired) {
