@@ -2,8 +2,8 @@
 # list of Python packages used in documentation build
 sphinx==4.2.0
 sphinx-rtd-theme==1.0.0
-m2r2==0.3.1
-mistune==2.0.3 # Version 2 not compatible with m2r2
+m2r2==0.3.2
+# mistune==2.0.3 # Version 2 not compatible with m2r2
 breathe==4.31.0
 sphinxcontrib-wavedrom
 sphinx-copybutton
