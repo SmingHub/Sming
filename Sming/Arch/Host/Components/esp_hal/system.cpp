@@ -122,3 +122,15 @@ void xt_enable_interrupts()
 {
 	ets_intr_unlock();
 }
+
+/* RTC */
+
+bool system_rtc_mem_read(uint8_t src_addr, void* des_addr, uint16_t load_size)
+{
+	return false;
+}
+
+bool system_rtc_mem_write(uint8_t des_addr, const void* src_addr, uint16_t save_size)
+{
+	return false;
+}
