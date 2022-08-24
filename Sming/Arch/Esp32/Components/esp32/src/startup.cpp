@@ -53,7 +53,11 @@ void main(void*)
 	constexpr unsigned maxEventLoopInterval{1000 / portTICK_PERIOD_MS};
 	while(true) {
 		esp_task_wdt_reset();
+#ifdef CREATE_EVENT_TASK
+		vTaskDelay(100);
+#else
 		esp_event_loop_run(loop, maxEventLoopInterval);
+#endif
 	}
 }
 

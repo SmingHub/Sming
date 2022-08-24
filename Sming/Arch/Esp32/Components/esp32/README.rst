@@ -45,6 +45,21 @@ or if multiple versions are installed. By default, the most current version will
    Location of ESP-IDF python.
 
 
+.. envvar:: CREATE_EVENT_TASK
+
+   default: disabled
+
+   .. warning::
+
+      This setting is provided for debugging purposes ONLY.
+
+   Sming uses a custom event loop to ensure that timer and task callbacks are all executed in the same
+   thread context.
+
+   Sometimes this behaviour can cause issues with IDF code.
+   Setting this to 1 will create the event loop in a separate thread, which is standard IDF behaviour.
+
+
 Background
 ----------
 
