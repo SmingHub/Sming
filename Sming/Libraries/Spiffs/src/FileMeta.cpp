@@ -59,6 +59,7 @@ int SpiffsMetaBuffer::enumxattr(AttributeEnumCallback callback, void* buffer, si
 			continue;
 		}
 		e.set(tag, value, getAttributeSize(tag));
+		++count;
 		if(!callback(e)) {
 			return count;
 		}
@@ -72,6 +73,7 @@ int SpiffsMetaBuffer::enumxattr(AttributeEnumCallback callback, void* buffer, si
 			break;
 		}
 		e.set(AttributeTag(unsigned(AttributeTag::User) + tagIndex), &user[i], tagSize);
+		++count;
 		if(!callback(e)) {
 			break;
 		}
