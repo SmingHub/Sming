@@ -206,7 +206,7 @@ bool Partition::allowWrite()
 	return true;
 }
 
-bool Partition::read(size_t offset, void* dst, size_t size)
+bool Partition::read(uint32_t offset, void* dst, size_t size)
 {
 	if(!allowRead()) {
 		return false;
@@ -220,7 +220,7 @@ bool Partition::read(size_t offset, void* dst, size_t size)
 	return mDevice ? mDevice->read(addr, dst, size) : false;
 }
 
-bool Partition::write(size_t offset, const void* src, size_t size)
+bool Partition::write(uint32_t offset, const void* src, size_t size)
 {
 	if(!allowWrite()) {
 		return false;
@@ -234,7 +234,7 @@ bool Partition::write(size_t offset, const void* src, size_t size)
 	return mDevice ? mDevice->write(addr, src, size) : false;
 }
 
-bool Partition::erase_range(size_t offset, size_t size)
+bool Partition::erase_range(uint32_t offset, size_t size)
 {
 	if(!allowWrite()) {
 		return false;
