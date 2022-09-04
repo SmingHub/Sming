@@ -14,10 +14,10 @@ Ota::Network::HttpUpgrader* otaUpdater;
 Storage::Partition spiffsPartition;
 OtaUpgrader ota;
 
-Storage::Partition findSpiffsPartition(Storage::Partition partition)
+Storage::Partition findSpiffsPartition(Storage::Partition appPart)
 {
 	String name = F("spiffs");
-	name += ota.getSlot(partition);
+	name += ota.getSlot(appPart);
 	auto part = Storage::findPartition(name);
 	if(!part) {
 		debug_w("Partition '%s' not found", name.c_str());

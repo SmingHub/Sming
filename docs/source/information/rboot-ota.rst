@@ -77,9 +77,9 @@ To mount your SPIFFS at boot time add the following code to init:
 
 .. code-block:: c++
 
-   int slot = rboot_get_current_rom();
-   // Find the n'th SPIFFS partition
-   auto part = PartitionTable().find(Partition::SubType::Data::spiffs, slot);
+	String name = F("spiffs");
+	name += rboot_get_current_rom();
+	auto part = Storage::findPartition(name);
    if(part) {
       //debugf("trying to mount SPIFFS at %x, length %d", part.address(), part.size());
       spiffs_mount(part);
