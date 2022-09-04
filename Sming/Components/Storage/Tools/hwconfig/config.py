@@ -176,7 +176,7 @@ class Config(object):
         res['name'] = self.name
         if hasattr(self, 'comment'):
             res['comment'] = self.comment
-        res['arch'] = self.arch;
+        res['arch'] = self.arch
         res['options'] = self.options
         res['bootloader_size'] = size_format(self.bootloader_size)
         res['partition_table_offset'] = addr_format(self.partition_table_offset)
