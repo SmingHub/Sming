@@ -189,7 +189,7 @@ To customise the hardware configuration for a project, for example 'my_project':
 
    To rebuild these manually type::
 
-      make partbuild
+      make buildpart
 
    These will be removed when ``make clean`` is run, but you can also clean them separately thus::
 
