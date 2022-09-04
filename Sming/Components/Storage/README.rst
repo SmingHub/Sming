@@ -338,14 +338,13 @@ This is a C++ interface. Some examples::
    }
 
    // Enumerate all partitions
-   for(auto it = Storage::findPartition(); it; ++it) {
-      auto part = *it;
+   for(auto part: Storage::findPartition()) {
       debugf("Found '%s' at 0x%08x, size 0x%08x", part.name().c_str(), part.address(), part.size());
    }
 
    // Enumerate all SPIFFS partitions
-   for(auto it = Storage::findPartition(Partition::SubType::Data::spiffs; it; it++) {
-      debugf("Found '%s' at 0x%08x, size 0x%08x", it->name().c_str(), it->address(), it->size());
+   for(auto part: Storage::findPartition(Storage::Partition::SubType::Data::spiffs)) {
+      debugf("Found '%s' at 0x%08x, size 0x%08x", part.name().c_str(), part.address(), part.size());
    }
 
 

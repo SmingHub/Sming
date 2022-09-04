@@ -63,8 +63,7 @@ public:
 
 	void listPartitions()
 	{
-		for(auto it = Storage::findPartition(); it; ++it) {
-			auto part = *it;
+		for(auto part : Storage::findPartition()) {
 			Serial.print("* ");
 			Storage::Debug::printPartition(Serial, part);
 

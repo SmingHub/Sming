@@ -8,11 +8,11 @@ IMPORT_FSTR(FS_app, PROJECT_DIR "/app/application.cpp")
 void listSpiffsPartitions()
 {
 	Serial.println(_F("** Enumerate registered SPIFFS partitions"));
-	for(auto it = Storage::findPartition(Storage::Partition::SubType::Data::spiffs); it; ++it) {
+	for(auto part : Storage::findPartition(Storage::Partition::SubType::Data::spiffs)) {
 		Serial.print(F(">> Mounting '"));
-		Serial.print((*it).name());
+		Serial.print(part.name());
 		Serial.println("' ...");
-		bool ok = spiffs_mount(*it);
+		bool ok = spiffs_mount(part);
 		Serial.println(ok ? "OK, listing files:" : "Mount failed!");
 		if(ok) {
 			Directory dir;
