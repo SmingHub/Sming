@@ -66,6 +66,19 @@ public:
 			REQUIRE(isRomPtr(strstr));
 		}
 #endif
+
+		TEST_CASE("64-bit mprintf")
+		{
+			char buffer[256];
+			m_snprintf(buffer, sizeof(buffer), "%x", 0x12345678);
+			REQUIRE_EQ(String(buffer), "12345678");
+			m_snprintf(buffer, sizeof(buffer), "%u", 12345678);
+			REQUIRE_EQ(String(buffer), "12345678");
+			m_snprintf(buffer, sizeof(buffer), "%llx", 0x123456789ABCDEFULL);
+			REQUIRE_EQ(String(buffer), "123456789abcdef");
+			m_snprintf(buffer, sizeof(buffer), "%llu", 123456789123456789ULL);
+			REQUIRE_EQ(String(buffer), "123456789123456789");
+		}
 	}
 };
 
