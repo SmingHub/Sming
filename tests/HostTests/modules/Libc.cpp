@@ -76,6 +76,8 @@ public:
 			REQUIRE_EQ(String(buffer), "12345678");
 			m_snprintf(buffer, sizeof(buffer), "%llx", 0x123456789ABCDEFULL);
 			REQUIRE_EQ(String(buffer), "123456789abcdef");
+			m_snprintf(buffer, sizeof(buffer), "0x%016llX", 0x123456789ABCDEFULL);
+			REQUIRE_EQ(String(buffer), "0x0123456789ABCDEF");
 			m_snprintf(buffer, sizeof(buffer), "%llu", 123456789123456789ULL);
 			REQUIRE_EQ(String(buffer), "123456789123456789");
 		}
