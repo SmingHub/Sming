@@ -209,9 +209,9 @@ public:
 	 * @param size Size of data to be read, in bytes.
 	 * @retval bool true on success, false on error
 	 */
-	bool read(size_t offset, void* dst, size_t size);
+	bool read(uint32_t offset, void* dst, size_t size);
 
-	template <typename T> typename std::enable_if<std::is_pod<T>::value, bool>::type read(size_t offset, T& value)
+	template <typename T> typename std::enable_if<std::is_pod<T>::value, bool>::type read(uint32_t offset, T& value)
 	{
 		return read(offset, &value, sizeof(value));
 	}
@@ -224,7 +224,7 @@ public:
 	 * @retval bool true on success, false on error
 	 * @note Flash region must be erased first
 	 */
-	bool write(size_t offset, const void* src, size_t size);
+	bool write(uint32_t offset, const void* src, size_t size);
 
 	/**
 	 * @brief Erase part of the partition
@@ -233,7 +233,7 @@ public:
 	 * @retval bool true on success, false on error
 	 * @note Both offset and size must be aligned to flash sector size (4Kbytes)
 	 */
-	bool erase_range(size_t offset, size_t size);
+	bool erase_range(uint32_t offset, size_t size);
 
 	/**
 	 * @brief Obtain partition type

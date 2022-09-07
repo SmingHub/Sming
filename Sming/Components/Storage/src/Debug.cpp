@@ -26,9 +26,9 @@ void listPartitions(Print& out)
 {
 	out.println();
 	out.println(_F("Registered partitions:"));
-	for(auto it = Storage::findPartition(); it; ++it) {
+	for(auto part : Storage::findPartition()) {
 		out.print("- ");
-		printPartition(out, *it);
+		printPartition(out, part);
 	}
 	out.println();
 }

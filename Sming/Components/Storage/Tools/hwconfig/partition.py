@@ -395,6 +395,8 @@ class Entry(object):
 
     def resolve_expressions(self):
         try:
+            SMING_ARCH = os.environ['SMING_ARCH']
+            SMING_SOC = os.environ['SMING_SOC']
             self.address = eval(str(self.address))
         except Exception:
             self.address = parse_int(self.address)

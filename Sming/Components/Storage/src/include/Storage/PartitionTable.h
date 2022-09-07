@@ -81,12 +81,12 @@ public:
 
 	Iterator begin() const
 	{
-		return Iterator(mDevice, 0);
+		return Iterator(mDevice);
 	}
 
 	Iterator end() const
 	{
-		return Iterator(mDevice, mCount);
+		return Iterator(mDevice).end();
 	}
 
 	uint8_t count() const

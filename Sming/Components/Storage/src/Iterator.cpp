@@ -13,19 +13,8 @@
 
 namespace Storage
 {
-Iterator::Iterator(Device& device, uint8_t partitionIndex)
-	: mSearch{&device, Partition::Type::any, Partition::SubType::any}, mDevice(&device), mPos(partitionIndex)
-
+Iterator::Iterator(Partition::Type type, uint8_t subtype) : mSearch{nullptr, type, subtype}, mDevice(spiFlash)
 {
-	if(partitionIndex >= device.partitions().count()) {
-		mDevice = nullptr;
-		mPos = afterEnd;
-	}
-}
-
-Iterator::Iterator(Partition::Type type, uint8_t subtype) : mSearch{nullptr, type, subtype}
-{
-	mDevice = spiFlash;
 	next();
 }
 
@@ -46,9 +35,7 @@ bool Iterator::next()
 			return true;
 		}
 
-		mPos = afterEnd;
 		if(mSearch.device != nullptr) {
-			mDevice = nullptr;
 			break;
 		}
 
@@ -56,6 +43,8 @@ bool Iterator::next()
 		mPos = beforeStart;
 	}
 
+	mDevice = nullptr;
+	mPos = afterEnd;
 	return false;
 }
 
