@@ -37,10 +37,10 @@ nputs_callback_t m_setPuts(nputs_callback_t callback);
 extern "C" {
 #endif
 
-int m_vsnprintf(char* buf, size_t maxLen, const char* fmt, va_list args);
-int m_snprintf(char* buf, int length, const char* fmt, ...);
-int m_printf(char const*, ...);
-int m_vprintf(const char* format, va_list arg);
+int m_vsnprintf(char* buf, size_t maxLen, const char* fmt, va_list args) __attribute__((format(printf, 3, 0)));
+int m_snprintf(char* buf, int length, const char* fmt, ...) __attribute__((format(printf, 3, 4)));
+int m_printf(char const*, ...) __attribute__((format(printf, 1, 2)));
+int m_vprintf(const char* format, va_list arg) __attribute__((format(printf, 1, 0)));
 
 /** @brief output a single character
  *  @param c

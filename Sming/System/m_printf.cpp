@@ -28,6 +28,18 @@ static nputs_callback_t _puts_callback;
 #define is_digit(c) ((c) >= '0' && (c) <= '9')
 #define is_print(c) ((c) >= ' ' && (c) <= '~')
 
+static char to_upper(char c)
+{
+    return (c >= 'a' && c <= 'z') ? (c + 'A' - 'a') : c;
+}
+
+static void str_upper(char* s)
+{
+    for(; *s != '\0'; ++s) {
+        *s = to_upper(*s);
+    }
+}
+
 static int skip_atoi(const char **s)
 {
 	int i = 0;
@@ -125,6 +137,8 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
         int8_t  precision   = -1;
         int8_t  width       = 0;
         char    pad         = ' ';
+        uint8_t length      = 0;
+        bool    upcase      = false;
 
         while (char f = *fmt) {
             if (f == '-')           minus = 1;
@@ -152,8 +166,19 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
             if ( is_digit(*fmt) ) precision = skip_atoi(&fmt);
         }
 
-        //  ignore length
-        while (*fmt == 'l' || *fmt == 'h' || *fmt == 'L') fmt++;
+        // while (*fmt == 'l' || *fmt == 'h' || *fmt == 'L') fmt++;
+        
+        // process length
+        do {
+            if ( *fmt == 'l' ) {
+                ++length;
+                ++fmt;
+            } else if ( *fmt == 'h' || *fmt == 'L' ) {
+                ++fmt; // ignore
+            } else {
+                break;
+            }
+        } while(true);
 
         //  process type
         switch (char f = *fmt++) {
@@ -202,8 +227,12 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
                 break;
 
             case 'x':
+                ubase = 16;
+                break;
+
             case 'X':
                 ubase = 16;
+                upcase = true;
                 break;
 
             case 'u':
@@ -217,7 +246,16 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
         }
 
         //  format unsigned numbers
-        if (ubase) s = ultoa_wp(va_arg(args, unsigned int), tempNum, ubase, width, pad);
+        if (ubase != 0) {
+            if(length >= 2) {
+                s = ulltoa_wp(va_arg(args, uint64_t), tempNum, ubase, width, pad);
+            } else {
+                s = ultoa_wp(va_arg(args, uint32_t), tempNum, ubase, width, pad);
+            }
+            if (upcase) {
+                str_upper(tempNum);
+            }
+        }
 
         //  copy string to target
         while (*s) add(*s++);
