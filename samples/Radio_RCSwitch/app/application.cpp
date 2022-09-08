@@ -11,22 +11,17 @@ RCSwitch mySwitch = RCSwitch();
 void sendRF()
 {
 	mySwitch.send(5393, 24);
-	Serial.println("RF command successful sent");
+	Serial.println(_F("RF command successful sent"));
 }
 
 void receiveRF()
 {
 	if(mySwitch.available()) {
 		if(mySwitch.getReceivedValue() == 0) {
-			Serial.print("Unknown encoding");
+			Serial.print(_F("Unknown encoding"));
 		} else {
-			Serial.print("Received ");
-			Serial.print(mySwitch.getReceivedValue());
-			Serial.print(" / ");
-			Serial.print(mySwitch.getReceivedBitlength());
-			Serial.print("bit ");
-			Serial.print("Protocol: ");
-			Serial.println(mySwitch.getReceivedProtocol());
+			Serial << _F("Received ") << mySwitch.getReceivedValue() << " / " << mySwitch.getReceivedBitlength()
+				   << " bit, Protocol: " << mySwitch.getReceivedProtocol() << endl;
 		}
 
 		mySwitch.resetAvailable();

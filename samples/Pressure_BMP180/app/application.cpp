@@ -10,7 +10,7 @@ void init()
 	Wire.begin();
 
 	if(!barometer.EnsureConnected())
-		Serial.println("Could not connect to BMP180.");
+		Serial.println(_F("Could not connect to BMP180."));
 
 	// When we have connected, we reset the device to ensure a clean start.
 	//barometer.SoftReset();
@@ -18,24 +18,8 @@ void init()
 	barometer.Initialize();
 	barometer.PrintCalibrationData();
 
-	Serial.print("Start reading");
+	Serial.print(_F("Start reading"));
 
-	// Retrieve the current pressure in Pascals.
-	long currentPressure = barometer.GetPressure();
-
-	// Print out the Pressure.
-	Serial.print("Pressure: ");
-	Serial.print(currentPressure);
-	Serial.print(" Pa");
-
-	// Retrieve the current temperature in degrees celsius.
-	float currentTemperature = barometer.GetTemperature();
-
-	// Print out the Temperature
-	Serial.print("\tTemperature: ");
-	Serial.print(currentTemperature);
-	Serial.write(176);
-	Serial.print("C");
-
-	Serial.println(); // Start a new line.
+	Serial << _F("Pressure: ") << barometer.GetPressure() << " Pa" << _F("\tTemperature: ")
+		   << barometer.GetTemperature() << " °C" << endl;
 }

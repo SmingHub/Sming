@@ -30,19 +30,12 @@ Ethernet::W5500Service ethernet;
 
 static void ethernetEventHandler(Ethernet::Event event)
 {
-	Serial.print(toString(event));
-	Serial.print(_F(", MAC = "));
-	Serial.println(ethernet.getMacAddress().toString());
+	Serial << event << _F(", MAC = ") << ethernet.getMacAddress() << endl;
 }
 
 static void ethernetGotIp(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	Serial.print(_F("Connected! Ethernet IP "));
-	Serial.print(ip.toString());
-	Serial.print(_F(", netmask "));
-	Serial.print(netmask.toString());
-	Serial.print(_F(", gateway "));
-	Serial.println(gateway.toString());
+	Serial << _F("Connected! Ethernet IP ") << ip << _F(", netmask ") << netmask << _F(", gateway ") << gateway << endl;
 }
 
 void init()

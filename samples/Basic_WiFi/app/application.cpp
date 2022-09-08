@@ -15,12 +15,9 @@ void listNetworks(bool succeeded, BssList& list)
 	}
 
 	for(unsigned i = 0; i < list.count(); i++) {
-		Serial.print(_F("\tWiFi: "));
-		Serial.print(list[i].ssid);
-		Serial.print(", ");
-		Serial.print(list[i].getAuthorizationMethodName());
+		Serial << _F("\tWiFi: ") << list[i].ssid << ", " << list[i].getAuthorizationMethodName();
 		if(list[i].hidden) {
-			Serial.print(_F(" (hidden)"));
+			Serial << _F(" (hidden)");
 		}
 		Serial.println();
 	}
@@ -29,18 +26,15 @@ void listNetworks(bool succeeded, BssList& list)
 // Will be called when WiFi station was connected to AP
 void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
-	Serial.print(_F("I'm CONNECTED to "));
-	Serial.println(ip);
+	Serial << _F("I'm CONNECTED to ") << ip << endl;
 }
 
 // Will be called when WiFi station was disconnected
 void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	// The different reason codes can be found in user_interface.h. in your SDK.
-	Serial.print(_F("Disconnected from \""));
-	Serial.print(ssid);
-	Serial.print(_F("\", reason: "));
-	Serial.println(WifiEvents.getDisconnectReasonDesc(reason));
+	Serial << _F("Disconnected from \"") << ssid << _F("\", reason: ") << WifiEvents.getDisconnectReasonDesc(reason)
+		   << endl;
 
 	/*
 	 * Print available access points
@@ -62,10 +56,7 @@ void ready()
 	Serial.println(_F("READY!"));
 
 	if(WifiAccessPoint.isEnabled()) {
-		Serial.print(_F("AP. ip: "));
-		Serial.print(WifiAccessPoint.getIP());
-		Serial.print(_F(" mac: "));
-		Serial.println(WifiAccessPoint.getMacAddress());
+		Serial << _F("AP. ip: ") << WifiAccessPoint.getIP() << _F(" mac: ") << WifiAccessPoint.getMacAddress() << endl;
 	}
 }
 
@@ -92,10 +83,7 @@ void init()
 
 	// Optional: Print details of any incoming probe requests
 	WifiEvents.onAccessPointProbeReqRecved([](int rssi, MacAddress mac) {
-		Serial.print(_F("Probe request: RSSI = "));
-		Serial.print(rssi);
-		Serial.print(_F(", mac = "));
-		Serial.println(mac);
+		Serial << _F("Probe request: RSSI = ") << rssi << _F(", mac = ") << mac << endl;
 	});
 
 	// Set callback that should be triggered when we have assigned IP

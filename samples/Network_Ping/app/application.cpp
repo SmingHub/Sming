@@ -36,7 +36,7 @@ void onSent(void* arg, void* pdata)
 		return;
 	}
 
-	Serial.printf("Ping sent. Total failed attempts: %d.\n", failedAttempts);
+	Serial << _F("Ping sent. Total failed attempts: ") << failedAttempts << endl;
 	if(failedAttempts / response->total_count > MAX_FAILED_ATTEMTPS) {
 		debug_d("Scheduling system restart in %d seconds.", RESTART_DELAY_SECONDS);
 		// schedule restart
@@ -56,9 +56,8 @@ void onReceived(void* arg, void* pdata)
 		return;
 	}
 
-	Serial.printf("Ping received. Sequence: %d, Success: %d, Elapsed time: %d", response->seqno,
-				  response->ping_err == 0, response->total_time);
-	Serial.println();
+	Serial << _F("Ping received. Sequence: ") << response->seqno << _F(", Success: ") << (response->ping_err == 0)
+		   << _F(", Elapsed time: ") << response->total_time << endl;
 
 	if(response->ping_err) {
 		failedAttempts++;

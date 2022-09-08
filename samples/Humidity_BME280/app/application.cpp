@@ -33,23 +33,10 @@ Timer procTimer;
 
 void printValues()
 {
-	Serial.print(F("Temperature = "));
-	Serial.print(bme.readTemperature());
-	Serial.println(" °C");
-
-	Serial.print(F("Pressure = "));
-
-	Serial.print(bme.readPressure() / 100.0F);
-	Serial.println(" hPa");
-
-	Serial.print(F("Approx. Altitude = "));
-	Serial.print(bme.readAltitude(SEALEVELPRESSURE_HPA));
-	Serial.println(" m");
-
-	Serial.print(F("Humidity = "));
-	Serial.print(bme.readHumidity());
-	Serial.println(" %");
-
+	Serial << _F("Temperature = ") << bme.readTemperature() << " °C" << endl;
+	Serial << _F("Pressure = ") << bme.readPressure() / 100.0F << " hPa" << endl;
+	Serial << _F("Approx. Altitude = ") << bme.readAltitude(SEALEVELPRESSURE_HPA) << " m" << endl;
+	Serial << _F("Humidity = ") << bme.readHumidity() << " %" << endl;
 	Serial.println();
 }
 
@@ -58,26 +45,25 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable/disable debug output
 
-	Serial.println(F("BME280 test"));
+	Serial.println(_F("BME280 test"));
 
 #ifdef SDA
 	Wire.pins(SDA, SCL);
 #endif
 
 	if(!bme.begin()) { // if(!bme.begin(0x76, &Wire)) { if you need a specific address
-		Serial.println(F("Could not find a valid BME280 sensor, check wiring, address, sensor ID!"));
-		Serial.print(F("SensorID was: 0x"));
-		Serial.println(bme.sensorID(), 16);
-		Serial.println(F("  ID of 0xFF probably means a bad address, a BMP 180 or BMP 085"));
-		Serial.println(F("  ID of 0x56-0x58 represents a BMP 280,"));
-		Serial.println(F("  ID of 0x60 represents a BME 280."));
-		Serial.println(F("  ID of 0x61 represents a BME 680."));
+		Serial.println(_F("Could not find a valid BME280 sensor, check wiring, address, sensor ID!"));
+		Serial << _F("SensorID was: 0x") << String(bme.sensorID(), HEX) << endl;
+		Serial << _F("  ID of 0xFF probably means a bad address, a BMP 180 or BMP 085\r\n"
+					 "  ID of 0x56-0x58 represents a BMP 280,\r\n"
+					 "  ID of 0x60 represents a BME 280.\r\n"
+					 "  ID of 0x61 represents a BME 680.\r\n");
 		return;
 	}
 
-	Serial.println(F("-- Default Test --"));
+	Serial.println(_F("-- Default Test --"));
 
 	Serial.println();
 
-	procTimer.initializeMs(3000, printValues).start();
+	procTimer.initializeMs<3000>(printValues).start();
 }

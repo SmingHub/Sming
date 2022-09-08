@@ -48,36 +48,31 @@ void publishMessage()
 // Callback for messages, arrived from MQTT server
 int onMessagePublish(MqttClient& client, mqtt_message_t* message)
 {
-	Serial.print("Publish: ");
-	Serial.print(MqttBuffer(message->publish.topic_name));
-	Serial.print(":\r\n\t"); // Pretify alignment for printing
-	Serial.println(MqttBuffer(message->publish.content));
+	Serial << _F("Publish: ") << MqttBuffer(message->publish.topic_name) << ':' << endl;
+	Serial << '\t' << MqttBuffer(message->publish.content) << endl;
 	return 0;
 }
 
 int onMessageConnect(MqttClient& client, mqtt_message_t* message)
 {
-	Serial.print("Connect: ");
-	Serial.print(MqttBuffer(message->connect.protocol_name));
-	Serial.print(", client: ");
-	Serial.println(MqttBuffer(message->connect.client_id));
+	Serial << _F("Connect: ") << MqttBuffer(message->connect.protocol_name) << _F(", client: ")
+		   << MqttBuffer(message->connect.client_id) << endl;
 	return 0;
 }
 
 int onMessageDisconnect(MqttClient& client, mqtt_message_t* message)
 {
-	Serial.println("Disconnect");
+	Serial.println(_F("Disconnect"));
 	return 0;
 }
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	Serial.print("Connected: ");
-	Serial.println(ip);
+	Serial << _F("Connected: ") << ip << endl;
 	startMqttClient();
 	publishMessage(); // run once publishMessage
 
-	mqtt.subscribe("$aws/things/Basic_AWS/shadow/get");
+	mqtt.subscribe(F("$aws/things/Basic_AWS/shadow/get"));
 }
 
 } // namespace
@@ -87,7 +82,7 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true);
 
-	Serial.println("Hello");
+	Serial.println(_F("Hello"));
 
 	// initialization config
 	mqtt.setEventHandler(MQTT_TYPE_PUBLISH, onMessagePublish);

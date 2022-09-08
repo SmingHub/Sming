@@ -8,7 +8,7 @@
 void onDataCallback(Stream& stream, char arrivedChar, unsigned short availableCharsCount)
 {
 	// Note: we're using the global Serial here, but it may not be the same port as stream
-	Serial.printf(_F("Char: %d, Count: %d\r\n"), (uint8_t)arrivedChar, availableCharsCount);
+	Serial << "Char: " << uint8_t(arrivedChar) << ", Count: " << availableCharsCount << endl;
 }
 
 void echoCallback(Stream& stream, char arrivedChar, unsigned short availableCharsCount)
@@ -25,12 +25,8 @@ void SerialReadingDelegateDemo::begin(HardwareSerial& serial)
 
 void SerialReadingDelegateDemo::onData(Stream& stream, char arrivedChar, unsigned short availableCharsCount)
 {
-	serial->print(_F("Class Delegate Demo Time = "));
-	serial->print(micros());
-	serial->print(_F(" char = 0x"));
-	serial->print(arrivedChar, HEX); // char hex code
-	serial->print(_F(" available = "));
-	serial->println(availableCharsCount);
+	Serial << _F("Class Delegate Demo Time = ") << micros() << _F(" char = 0x") << String(arrivedChar, HEX, 2)
+		   << _F(" available = ") << availableCharsCount << endl;
 
 	// Error detection
 	unsigned status = serial->getStatus();

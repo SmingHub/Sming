@@ -41,7 +41,7 @@ void loopListen()
 			done = radio.read(&got_time, sizeof(unsigned long));
 
 			// Spew it
-			Serial.printf("Got payload %lu...", got_time);
+			Serial << _F("Got payload ") << got_time << "...";
 
 			// Forward this data packet to UDP/HTTP/MQTT here.
 			// Example:
@@ -58,7 +58,7 @@ void loopListen()
 
 		// Send the final one back.
 		radio.write(&got_time, sizeof(unsigned long));
-		Serial.println("Sent response.");
+		Serial.println(_F("Sent response."));
 
 		// Now, resume listening so we catch the next packets.
 		radio.startListening();
@@ -70,7 +70,7 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
-	Serial.println("start");
+	Serial.println(_F("start"));
 
 	//
 	// Setup and configure rf radio
@@ -105,8 +105,8 @@ void init()
 	// Dump the configuration of the rf unit for debugging
 	//
 	radio.printDetails();
-	Serial.println("Initialization completed.");
+	Serial.println(_F("Initialization completed."));
 
 	procTimer.initializeMs(10, loopListen).start();
-	Serial.println("Listening...");
+	Serial.println(_F("Listening..."));
 }

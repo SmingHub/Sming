@@ -44,8 +44,7 @@ void MyServoChannel::calcValue()
 
 	auto pin = getPin();
 	Serial.write(indent, pin);
-	Serial.print("GPIO");
-	Serial.print(pin);
+	Serial << "GPIO" << pin;
 
 #ifdef UPDATE_RAW
 
@@ -64,13 +63,10 @@ void MyServoChannel::calcValue()
 		value = 0; // overflow and restart linear ramp
 	}
 
-	Serial.print(" value = ");
-	Serial.print(value);
+	Serial << " value = " << value;
 
 	if(!setValue(value)) {
-		Serial.print(": setValue(");
-		Serial.print(value);
-		Serial.print(") failed!");
+		Serial << ": setValue(" << value << ") failed!";
 	}
 
 #else
@@ -81,13 +77,10 @@ void MyServoChannel::calcValue()
 		++degree;
 	}
 
-	Serial.print(" degree = ");
-	Serial.print(degree);
+	Serial << " degree = " << degree;
 
 	if(!setDegree(degree)) {
-		Serial.print(": setDegree(");
-		Serial.print(degree);
-		Serial.print(") failed!");
+		Serial << ": setDegree(" << degree << ") failed!";
 	}
 
 #endif

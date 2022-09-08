@@ -14,25 +14,25 @@ void handleGesture()
 	if(apds.isGestureAvailable()) {
 		switch(apds.readGesture()) {
 		case DIR_UP:
-			Serial.println("UP");
+			Serial.println(_F("UP"));
 			break;
 		case DIR_DOWN:
-			Serial.println("DOWN");
+			Serial.println(_F("DOWN"));
 			break;
 		case DIR_LEFT:
-			Serial.println("LEFT");
+			Serial.println(_F("LEFT"));
 			break;
 		case DIR_RIGHT:
-			Serial.println("RIGHT");
+			Serial.println(_F("RIGHT"));
 			break;
 		case DIR_NEAR:
-			Serial.println("NEAR");
+			Serial.println(_F("NEAR"));
 			break;
 		case DIR_FAR:
-			Serial.println("FAR");
+			Serial.println(_F("FAR"));
 			break;
 		default:
-			Serial.println("NONE");
+			Serial.println(_F("NONE"));
 		}
 	}
 }
@@ -55,23 +55,23 @@ void init()
 	WifiAccessPoint.enable(false);
 #endif
 
-	Serial.println();
-	Serial.println("--------------------------------");
-	Serial.println("SparkFun APDS-9960 - GestureTest");
-	Serial.println("--------------------------------");
+	Serial.print(_F("\r\n"
+					"--------------------------------\r\n"
+					"SparkFun APDS-9960 - GestureTest\r\n"
+					"--------------------------------\r\n"));
 
 	// Initialize APDS-9960 (configure I2C and initial values)
 	if(apds.init()) {
-		Serial.println("APDS-9960 initialization complete");
+		Serial.println(_F("APDS-9960 initialization complete"));
 	} else {
-		Serial.println("Something went wrong during APDS-9960 init!");
+		Serial.println(_F("Something went wrong during APDS-9960 init!"));
 	}
 
 	// Start running the APDS-9960 gesture sensor engine
 	if(apds.enableGestureSensor(true)) {
-		Serial.println("Gesture sensor is now running");
+		Serial.println(_F("Gesture sensor is now running"));
 	} else {
-		Serial.println("Something went wrong during gesture sensor init!");
+		Serial.println(_F("Something went wrong during gesture sensor init!"));
 	}
 
 	// Initialize interrupt service routine

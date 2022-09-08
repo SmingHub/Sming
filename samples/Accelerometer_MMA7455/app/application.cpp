@@ -12,12 +12,7 @@ void readSensor()
 	int8_t x = accel.readAxis('x');
 	int8_t y = accel.readAxis('y');
 	int8_t z = accel.readAxis('z');
-	Serial.print("Accelerometer data: ");
-	Serial.print(x);
-	Serial.print(", ");
-	Serial.print(y);
-	Serial.print(", ");
-	Serial.println(z);
+	Serial << _F("Accelerometer data: ") << x << ", " << y << ", " << z << endl;
 }
 
 void init()

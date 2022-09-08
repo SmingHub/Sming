@@ -30,11 +30,12 @@ void writeToFile(const String& filename, uint32_t totalBytes, uint32_t bytesPerR
 {
 	char* buf = new char[totalBytes];
 	if(buf == nullptr) {
-		Serial.println("Failed to allocate heap");
+		Serial.println(_F("Failed to allocate heap"));
 		return;
 	}
 
-	Serial.printf(_F("Write %u kBytes in %u Bytes increment:\r\n"), totalBytes / 1024, bytesPerRound);
+	Serial << _F("Write ") << totalBytes / 1024 << _F(" kBytes in ") << bytesPerRound << _F(" Bytes increment:")
+		   << endl;
 	for(unsigned i = 0; i < totalBytes; i++) {
 		buf[i] = (i % 10) + '0';
 	}
@@ -51,7 +52,7 @@ void writeToFile(const String& filename, uint32_t totalBytes, uint32_t bytesPerR
 			uint32_t bytesWritten = 0;
 			f_write(&file, buf + i, remainingBytes, &bytesWritten);
 			if(bytesWritten != remainingBytes) {
-				Serial.printf(_F("Only written %u bytes\r\n"), i + bytesWritten);
+				Serial << _F("Only written ") << i + bytesWritten << " bytes" << endl;
 				break;
 			}
 			i += bytesWritten;
@@ -62,10 +63,9 @@ void writeToFile(const String& filename, uint32_t totalBytes, uint32_t bytesPerR
 		//get the time at test end
 		unsigned elapsed = timer.elapsedTime();
 
-		Serial.print((i / 1024.0f) * 1000000.0f / elapsed);
-		Serial.println(_F(" kB/s"));
+		Serial << (i / 1024.0f) * 1000000.0f / elapsed << _F(" kB/s") << endl;
 	} else {
-		Serial.printf(_F("fopen FAIL: %u\r\n"), (unsigned int)fRes);
+		Serial << _F("fopen FAIL: ") << fRes << endl;
 	}
 
 	delete[] buf;
@@ -77,8 +77,7 @@ void stat_file(char* fname)
 	FRESULT fr = f_stat(fname, &fno);
 	switch(fr) {
 	case FR_OK: {
-		Serial.print(fno.fsize);
-		Serial.print('\t');
+		Serial << fno.fsize << '\t';
 
 		uint8_t size = 0;
 		if(fno.fattrib & AM_DIR) {
@@ -96,11 +95,11 @@ void stat_file(char* fname)
 			Serial.print('\t');
 		}
 
-		Serial.printf(_F("%u/%02u/%02u, %02u:%02u\t"), (fno.fdate >> 9) + 1980, (fno.fdate >> 5) & 15, fno.fdate & 31,
-					  fno.ftime >> 11, (fno.ftime >> 5) & 63);
-		Serial.printf(_F("%c%c%c%c%c\r\n"), (fno.fattrib & AM_DIR) ? 'D' : '-', (fno.fattrib & AM_RDO) ? 'R' : '-',
-					  (fno.fattrib & AM_HID) ? 'H' : '-', (fno.fattrib & AM_SYS) ? 'S' : '-',
-					  (fno.fattrib & AM_ARC) ? 'A' : '-');
+		Serial << (fno.fdate >> 9) + 1980 << '/' << String((fno.fdate >> 5) & 15, DEC, 2) << '/'
+			   << String(fno.fdate & 31, DEC, 2) << ", " << String(fno.ftime >> 11, DEC, 2) << ':'
+			   << String((fno.ftime >> 5) & 63, DEC, 2) << '\t' << ((fno.fattrib & AM_DIR) ? 'D' : '-')
+			   << ((fno.fattrib & AM_RDO) ? 'R' : '-') << ((fno.fattrib & AM_HID) ? 'H' : '-')
+			   << ((fno.fattrib & AM_SYS) ? 'S' : '-') << ((fno.fattrib & AM_ARC) ? 'A' : '-') << endl;
 		break;
 	}
 

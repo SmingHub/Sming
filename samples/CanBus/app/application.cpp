@@ -35,18 +35,18 @@ void init()
 
 	// init CAN0 bus, baudrate: 250k@16MHz
 	if(canBus0.begin(MCP_EXT, CAN_250KBPS, MCP_16MHZ) == CAN_OK) {
-		Serial.print("CAN0: Init OK!\r\n");
+		Serial.println(_F("CAN0: Init OK!"));
 		canBus0.setMode(MCP_NORMAL);
 	} else {
-		Serial.print("CAN0: Init Fail!!!\r\n");
+		Serial.println(_F("CAN0: Init Fail!!!"));
 	}
 
 	// init CAN1 bus, baudrate: 250k@16MHz
 	if(canBus1.begin(MCP_EXT, CAN_250KBPS, MCP_16MHZ) == CAN_OK) {
-		Serial.print("CAN1: Init OK!\r\n");
+		Serial.println(_F("CAN1: Init OK!"));
 		canBus1.setMode(MCP_NORMAL);
 	} else {
-		Serial.print("CAN1: Init Fail!!!\r\n");
+		Serial.println(_F("CAN1: Init Fail!!!"));
 	}
 
 	// Set SPI to run at 8MHz (16MHz / 2 = 8 MHz)

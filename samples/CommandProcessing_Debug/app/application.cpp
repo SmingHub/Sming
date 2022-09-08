@@ -42,29 +42,30 @@ int msgCount = 0;
 
 void wsConnected(WebsocketConnection& socket)
 {
-	Serial.printf("Socket connected\r\n");
+	Serial.println(_F("Socket connected"));
 }
 
 void wsMessageReceived(WebsocketConnection& socket, const String& message)
 {
-	Serial.printf("WebsocketConnection message received:\r\n%s\r\n", message.c_str());
+	Serial.println(_F("WebsocketConnection message received:"));
+	Serial.println(message);
 	String response = "Echo: " + message;
 	socket.sendString(response);
 }
 
 void wsBinaryReceived(WebsocketConnection& socket, uint8_t* data, size_t size)
 {
-	Serial.printf("Websocket binary data received, size: %d\r\n", size);
+	Serial << _F("Websocket binary data received, size: ") << size << endl;
 }
 
 void wsDisconnected(WebsocketConnection& socket)
 {
-	Serial.printf("Socket disconnected");
+	Serial.println(_F("Socket disconnected"));
 }
 
 void processApplicationCommands(String commandLine, CommandOutput* commandOutput)
 {
-	commandOutput->printf("This command is handle by the application\r\n");
+	commandOutput->println(_F("This command is handle by the application"));
 }
 
 void StartServers()
@@ -82,29 +83,29 @@ void StartServers()
 
 	server.paths.set("/ws", wsResource);
 
-	Serial.println("\r\n=== WEB SERVER STARTED ===");
+	Serial.println(_F("\r\n=== WEB SERVER STARTED ==="));
 	Serial.println(WifiStation.getIP());
-	Serial.println("==============================\r\n");
+	Serial.println(_F("==============================\r\n"));
 
 	// Start FTP server
 	ftp.listen(21);
 	ftp.addUser("me", "123"); // FTP account
 
-	Serial.println("\r\n=== FTP SERVER STARTED ===");
-	Serial.println("==============================\r\n");
+	Serial.println(_F("\r\n=== FTP SERVER STARTED ==="));
+	Serial.println(_F("==============================\r\n"));
 
 	telnet.listen(23);
 	telnet.enableDebug(true);
 
-	Serial.println("\r\n=== TelnetServer SERVER STARTED ===");
-	Serial.println("==============================\r\n");
+	Serial.println(_F("\r\n=== TelnetServer SERVER STARTED ==="));
+	Serial.println(_F("==============================\r\n"));
 }
 
 void startExampleApplicationCommand()
 {
 	exampleCommand.initCommand();
 	commandHandler.registerCommand(
-		CommandDelegate("example", "Example Command from Class", "Application", processApplicationCommands));
+		CommandDelegate(F("example"), F("Example Command from Class"), F("Application"), processApplicationCommands));
 }
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)

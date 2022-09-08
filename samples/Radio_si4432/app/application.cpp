@@ -37,18 +37,13 @@ void loopListen()
 	if(millis() - lastPingTime > PING_PERIOD_MS) {
 		lastPingTime = millis();
 
-		Serial.print("Ping -> ");
+		Serial.print(_F("Ping -> "));
 		if(!radio->sendPacket(strlen((const char*)ping), ping, true, PING_WAIT_PONG_MS, &len, payLoad)) {
 			Serial.println(" ERR!");
 		} else {
-			Serial.println(" SENT!");
-			Serial.print("SYNC RX (");
-			Serial.print(len, DEC);
-			Serial.print("): ");
-
-			for(byte i = 0; i < len; ++i) {
-				Serial.print((char)payLoad[i]);
-			}
+			Serial.println(_F(" SENT!"));
+			Serial << "SYNC RX (" << len << "): ";
+			Serial.write(payLoad, len);
 			Serial.println();
 		}
 	}
@@ -58,20 +53,15 @@ void loopListen()
 
 	if(pkg) {
 		radio->getPacketReceived(&len, payLoad);
-		Serial.print("ASYNC RX (");
-		Serial.print(len, DEC);
-		Serial.print("): ");
-
-		for(byte i = 0; i < len; ++i) {
-			Serial.print((char)payLoad[i]);
-		}
+		Serial << _F("ASYNC RX (") << len << "): ";
+		Serial.write(payLoad, len);
 		Serial.println();
 
-		Serial.print("Response -> ");
+		Serial.print(_F("Response -> "));
 		if(!radio->sendPacket(strlen((const char*)ack), ack)) {
-			Serial.println("ERR!");
+			Serial.println(_F("ERR!"));
 		} else {
-			Serial.println("SENT!");
+			Serial.println(_F("SENT!"));
 		}
 
 		radio->startListening(); // restart the listening.
@@ -84,35 +74,37 @@ void init()
 
 	Serial.systemDebugOutput(true); //Allow debug output to serial
 
-	Serial.print("\nRadio si4432 example - !!! see code for HW setup !!! \n\n");
+	Serial.println(_F("\nRadio si4432 example - !!! see code for HW setup !!! \n"));
 
 	pRadioSPI = new SPISoft(PIN_RADIO_DO, PIN_RADIO_DI, PIN_RADIO_CK, PIN_RADIO_SS);
 
-	if(pRadioSPI) {
+	if(pRadioSPI != nullptr) {
 		radio = new Si4432(pRadioSPI);
 	}
 
-	if(radio) {
-		delay(100);
+	if(radio == nullptr) {
+		Serial.println(_F("Error: Not enough heap."));
+		return;
+	}
 
-		//initialise radio with default settings
-		radio->init();
+	delay(100);
 
-		//explicitly set baudrate and channel
-		radio->setBaudRateFast(eBaud_38k4);
-		radio->setChannel(0);
+	//initialise radio with default settings
+	radio->init();
 
-		//dump the register configuration to console
-		radio->readAll();
+	//explicitly set baudrate and channel
+	radio->setBaudRateFast(eBaud_38k4);
+	radio->setChannel(0);
 
-		//start listening for incoming packets
-		Serial.println("Listening...");
-		radio->startListening();
+	//dump the register configuration to console
+	radio->readAll();
 
-		lastPingTime = millis();
+	//start listening for incoming packets
+	Serial.println("Listening...");
+	radio->startListening();
 
-		//start listen loop
-		procTimer.initializeMs(10, loopListen).start();
-	} else
-		Serial.print("Error not enough heap\n");
+	lastPingTime = millis();
+
+	//start listen loop
+	procTimer.initializeMs(10, loopListen).start();
 }

@@ -29,19 +29,19 @@ Timer DemoTimer;
 
 void Demo2()
 {
-	Serial.println("Display: some text");
+	Serial.println(_F("Display: some text"));
 	display.clearDisplay();
 	// text display tests
 	display.setTextSize(1);
 	display.setTextColor(WHITE);
 	display.setCursor(0, 0);
-	display.println("Sming Framework");
+	display.println(_F("Sming Framework"));
 	display.setTextColor(BLACK, WHITE); // 'inverted' text
 	display.setCursor(104, 7);
-	display.println("v1.0");
+	display.println(_F("v1.0"));
 	//----
 	display.setTextColor(WHITE);
-	display.println("Let's do smart things");
+	display.println(_F("Let's do smart things"));
 	display.setTextSize(3);
 	display.print("IoT");
 	display.display();
@@ -50,7 +50,7 @@ void Demo2()
 
 void Demo1()
 {
-	Serial.println("Display: circle");
+	Serial.println(_F("Display: circle"));
 	// Clear the buffer.
 	display.clearDisplay();
 	// draw a circle, 10 pixel radius
@@ -63,7 +63,7 @@ void Demo1()
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-	Serial.println("Display: start");
+	Serial.println(_F("Display: start"));
 
 	// by default, we'll generate the high voltage from the 3.3v line internally! (neat!)
 	// initialize with the I2C addr 0x3c (for the 128x64)

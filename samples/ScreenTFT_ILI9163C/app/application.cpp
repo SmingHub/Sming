@@ -18,7 +18,7 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
-	Serial.println("Display start");
+	Serial.println(_F("Display start"));
 	tft.begin();
 	tft.setRotation(2); // try yourself
 	tft.fillScreen();
@@ -30,12 +30,12 @@ void init()
 	tft.setTextSize(1);
 	tft.setTextColor(GREEN);
 	tft.setCursor(0, 0);
-	tft.println("Sming Framework");
+	tft.println(_F("Sming Framework"));
 	tft.setTextColor(BLACK, WHITE); // 'inverted' text
 	tft.setCursor(104, 7);
 	tft.println("v1.0");
 	tft.setTextColor(WHITE);
-	tft.println("Let's do smart things");
+	tft.println(_F("Let's do smart things"));
 	tft.setTextSize(3);
 	tft.setTextColor(BLUE);
 	tft.print("IoT");
