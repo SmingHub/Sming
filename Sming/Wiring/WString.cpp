@@ -923,6 +923,32 @@ void String::trim(const char* set)
 	setlen(len);
 }
 
+String& String::pad(int16_t minWidth, char c)
+{
+	size_t w = (minWidth < 0) ? -minWidth : minWidth;
+	auto len = length();
+	if(w <= len) {
+		return *this;
+	}
+
+	if(!reserve(std::max(w, len))) {
+		return *this;
+	}
+
+	setLength(w);
+	auto buf = buffer();
+	if(minWidth < 0) {
+		// Left-pad
+		memmove(buf + w - len, buf, len);
+		memset(buf, c, w - len);
+	} else {
+		// Right-pad
+		memset(buf + len, c, w - len);
+	}
+
+	return *this;
+}
+
 /*********************************************/
 /*  Parsing / Conversion                     */
 /*********************************************/

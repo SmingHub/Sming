@@ -806,6 +806,43 @@ public:
      */
 	void trim(const char* set = " \t\n\v\f\r");
 
+	/**
+	 * @name Pad string to a minimum length
+	 *
+	 * This is used, for example, when outputting tabular data.
+	 * The string is modified in-situ to minimise memory reallocations.
+	 *
+	 * Methods may be chained like this::
+	 *
+	 * 		Serial << String(value).padLeft(10, '.') << endl;
+	 *
+	 * @{
+	 */
+
+	/**
+	 * @brief Insert padding at start of string if length is less than given width
+	 */
+	String& padLeft(uint16_t minWidth, char c = ' ')
+	{
+		return pad(-minWidth, c);
+	}
+
+	/**
+	 * @brief Insert padding at end of string if length is less than given width
+	 */
+	String& padRight(uint16_t minWidth, char c = ' ')
+	{
+		return pad(minWidth, c);
+	}
+
+	/**
+	 * @brief Pad string if length is less than given width
+	 * @param width Left-padded if < 0, right-padded if > 0.
+	 */
+	String& pad(int16_t minWidth, char c = ' ');
+
+	/** @} */
+
 	// parsing/conversion
 	long toInt(void) const;
 	float toFloat(void) const;
