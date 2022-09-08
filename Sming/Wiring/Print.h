@@ -115,7 +115,7 @@ public:
 	  *
 	  * @{
 	  */
-	size_t print(unsigned long num, int base = DEC)
+	size_t print(unsigned long num, uint8_t base = DEC)
 	{
 		if(base == 0) {
 			return write(num);
@@ -124,28 +124,48 @@ public:
 		}
 	}
 
-	size_t print(const unsigned long long& num, int base = DEC)
+	template <typename... Args> size_t print(unsigned long num, Args... args)
 	{
-		return printNumber(num, base);
+		return printNumber(num, args...);
 	}
 
-	size_t print(long, int base = DEC);
-
-	size_t print(const long long&, int base = DEC);
-
-	size_t print(unsigned int num, int base = DEC)
+	template <typename... Args> size_t print(const unsigned long long& num, Args... args)
 	{
-		return print((unsigned long)num, base);
+		return printNumber(num, args...);
 	}
 
-	size_t print(unsigned char num, int base = DEC)
+	size_t print(long num, uint8_t base = DEC)
 	{
-		return print((unsigned long)num, base);
+		if(base == 0) {
+			return write(num);
+		} else {
+			return printNumber(num, base);
+		}
 	}
 
-	size_t print(int num, int base = DEC)
+	template <typename... Args> size_t print(long num, Args... args)
 	{
-		return print((long)num, base);
+		return printNumber(num, args...);
+	}
+
+	template <typename... Args> size_t print(const long long& num, Args... args)
+	{
+		return printNumber(num, args...);
+	}
+
+	template <typename... Args> size_t print(unsigned int num, Args... args)
+	{
+		return print((unsigned long)num, args...);
+	}
+
+	template <typename... Args> size_t print(unsigned char num, Args... args)
+	{
+		return print((unsigned long)num, args...);
+	}
+
+	template <typename... Args> size_t print(int num, Args... args)
+	{
+		return printNumber((long)num, args...);
 	}
 	/** @} */
 
@@ -203,8 +223,10 @@ public:
 
 private:
 	int write_error = 0;
-	size_t printNumber(unsigned long num, uint8_t base);
-	size_t printNumber(const unsigned long long& num, uint8_t base);
+	size_t printNumber(unsigned long num, uint8_t base = DEC, uint8_t width = 0, char pad = '0');
+	size_t printNumber(const unsigned long long& num, uint8_t base = DEC, uint8_t width = 0, char pad = '0');
+	size_t printNumber(long num, uint8_t base = DEC, uint8_t width = 0, char pad = '0');
+	size_t printNumber(const long long& num, uint8_t base = DEC, uint8_t width = 0, char pad = '0');
 	size_t printFloat(double num, uint8_t digits);
 
 protected:
