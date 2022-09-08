@@ -185,93 +185,12 @@ public:
 		return print("\r\n");
 	}
 
-	/** @brief  Prints a c-string to output stream, appending newline
-	  * @param  str c-string to print
+	/** @brief Print value plus newline to output stream
 	  * @retval size_t Quantity of characters written to stream
 	  */
-	size_t println(const char str[])
+	template <typename... Args> size_t println(const Args&... args)
 	{
-		return print(str) + println();
-	}
-
-	/** @brief  Prints a single character to output stream, appending newline
-	  * @param  c Character to print
-	  * @retval size_t Quantity of characters written to stream
-	  */
-	size_t println(char c)
-	{
-		return print(c) + println();
-	}
-
-	/** @name   Print an integral number to output stream, appending newline
-	  * @param  num Number to print
-	  * @param  base The base for output (Default: Decimal (base 10))
-	  * @retval size_t Quantity of characters written to stream
-	  *
-	  * @{
-	  */
-	size_t println(unsigned char num, int base = DEC)
-	{
-		return print(num, base) + println();
-	}
-
-	size_t println(unsigned int num, int base = DEC)
-	{
-		return print(num, base) + println();
-	}
-
-	size_t println(unsigned long num, int base = DEC)
-	{
-		return print(num, base) + println();
-	}
-
-	size_t println(const unsigned long long& num, int base = DEC)
-	{
-		return print(num, base) + println();
-	}
-
-	size_t println(int num, int base = DEC)
-	{
-		return print(num, base) + println();
-	}
-
-	size_t println(long num, int base = DEC)
-	{
-		return print(num, base) + println();
-	}
-
-	size_t println(const long long& num, int base = DEC)
-	{
-		return print(num, base) + println();
-	}
-	/** @} */
-
-	/** @brief  Print a floating-point number to output stream, appending newline
-	  * @param  num Number to print
-	  * @param  digits The decimal places to print (Default: 2, e.g. 21.35)
-	  * @retval size_t Quantity of characters written to stream
-	  */
-	size_t println(double num, int digits = 2)
-	{
-		return print(num, digits) + println();
-	}
-
-	/** @brief  Prints a Printable object to output stream, appending newline
-	  * @param  p Object to print
-	  * @retval size_t Quantity of characters written to stream
-	  */
-	size_t println(const Printable& p)
-	{
-		return print(p) + println();
-	}
-
-	/** @brief  Prints a String to output stream, appending newline
-	  * @param  s String to print
-	  * @retval size_t Quantity of characters written to stream
-	  */
-	size_t println(const String& s)
-	{
-		return print(s) + println();
+		return print(args...) + println();
 	}
 
 	/** @brief  Prints a formatted c-string to output stream
