@@ -246,6 +246,23 @@ protected:
 	}
 };
 
+template <typename T> Print& operator<<(Print& p, T value)
+{
+	p.print(value);
+	return p;
+}
+
+// Thanks to Arduino forum user Paul V. who suggested this
+// clever technique to allow for expressions like
+//   Serial << "Hello!" << endl;
+enum EndLineCode { endl };
+
+inline Print& operator<<(Print& p, EndLineCode)
+{
+	p.println();
+	return p;
+}
+
 /** @} */
 
 #endif // __cplusplus
