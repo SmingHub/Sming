@@ -191,13 +191,19 @@ public:
 	String(StringSumHelper&& rval) noexcept;
 #endif
 	explicit String(char c);
-	explicit String(unsigned char, unsigned char base = 10);
-	explicit String(int, unsigned char base = 10);
-	explicit String(unsigned int, unsigned char base = 10);
-	explicit String(long, unsigned char base = 10);
-	explicit String(long long, unsigned char base = 10);
-	explicit String(unsigned long, unsigned char base = 10);
-	explicit String(unsigned long long, unsigned char base = 10);
+	explicit String(unsigned char, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	explicit String(int num, unsigned char base = 10, unsigned char width = 0, char pad = '0')
+		: String(long(num), base, width, pad)
+	{
+	}
+	explicit String(unsigned int num, unsigned char base = 10, unsigned char width = 0, char pad = '0')
+		: String((unsigned long)(num), base, width, pad)
+	{
+	}
+	explicit String(long, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	explicit String(long long, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	explicit String(unsigned long, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	explicit String(unsigned long long, unsigned char base = 10, unsigned char width = 0, char pad = '0');
 	explicit String(float, unsigned char decimalPlaces = 2);
 	explicit String(double, unsigned char decimalPlaces = 2);
 	/** @} */

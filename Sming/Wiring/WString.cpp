@@ -48,52 +48,38 @@ String::String(char c) : String()
 		buffer()[0] = c;
 }
 
-String::String(unsigned char value, unsigned char base) : String()
+String::String(unsigned char value, unsigned char base, unsigned char width, char pad) : String()
 {
 	char buf[8 + 8 * sizeof(value)];
 	ultoa(value, buf, base);
 	*this = buf;
 }
 
-String::String(int value, unsigned char base) : String()
+String::String(long value, unsigned char base, unsigned char width, char pad) : String()
 {
 	char buf[8 + 8 * sizeof(value)];
-	itoa(value, buf, base);
+	ltoa_wp(value, buf, base, width, pad);
 	*this = buf;
 }
 
-String::String(unsigned int value, unsigned char base) : String()
+String::String(long long value, unsigned char base, unsigned char width, char pad) : String()
 {
 	char buf[8 + 8 * sizeof(value)];
-	ultoa(value, buf, base);
+	lltoa_wp(value, buf, base, width, pad);
 	*this = buf;
 }
 
-String::String(long value, unsigned char base) : String()
+String::String(unsigned long value, unsigned char base, unsigned char width, char pad) : String()
 {
 	char buf[8 + 8 * sizeof(value)];
-	ltoa(value, buf, base);
+	ultoa_wp(value, buf, base, width, pad);
 	*this = buf;
 }
 
-String::String(long long value, unsigned char base) : String()
+String::String(unsigned long long value, unsigned char base, unsigned char width, char pad) : String()
 {
 	char buf[8 + 8 * sizeof(value)];
-	lltoa(value, buf, base);
-	*this = buf;
-}
-
-String::String(unsigned long value, unsigned char base) : String()
-{
-	char buf[8 + 8 * sizeof(value)];
-	ultoa(value, buf, base);
-	*this = buf;
-}
-
-String::String(unsigned long long value, unsigned char base) : String()
-{
-	char buf[8 + 8 * sizeof(value)];
-	ulltoa(value, buf, base);
+	ulltoa_wp(value, buf, base, width, pad);
 	*this = buf;
 }
 
