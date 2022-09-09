@@ -197,6 +197,16 @@ public:
 		return write(s.c_str(), s.length());
 	}
 
+	/**
+	 * @brief enums can be printed as strings provided they have a `toString(E)` implementation.
+	 */
+	template <typename E>
+	typename std::enable_if<std::is_enum<E>::value && !std::is_convertible<E, int>::value, size_t>::type print(E value)
+	{
+		extern String toString(E e);
+		return print(toString(value));
+	}
+
 	/** @brief  Prints a newline to output stream
 	  * @retval size_t Quantity of characters written to stream
 	  */
