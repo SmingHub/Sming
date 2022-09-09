@@ -98,19 +98,19 @@ void showInfo()
 	Serial.printf(_F("System Chip ID: %x\r\n"), system_get_chip_id());
 
 	int total = 0;
-	for(auto it = OtaManager.getBootPartitions(); it; ++it) {
-		debug_d("ROM %s: 0x%08x, SubType: %s", it->name().c_str(), it->address(),
-				toLongString(it->type(), it->subType()).c_str());
+	for(auto part : OtaManager.getBootPartitions()) {
+		Serial.println(part);
 		total++;
 	}
-	debug_d("=======================");
-	debug_d("Bootable ROMs found: %d", total);
+	Serial.println(_F("======================="));
+	Serial << _F("Bootable ROMs found: ") << total << endl;
 
 	auto part = OtaManager.getRunningPartition();
 
-	Serial.printf(_F("\r\nCurrently running %s: 0x%08x. Application version: %s\r\n"), part.name().c_str(),
-				  part.address(), APP_VERSION);
-	Serial.println();
+	Serial << _F("\r\n"
+				 "Currently running ")
+		   << part.name() << ": 0x" << String(part.address(), HEX) << _F(". Application version: ") << APP_VERSION
+		   << endl;
 }
 
 void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)

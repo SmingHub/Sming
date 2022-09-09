@@ -22,6 +22,11 @@ public:
 	{
 	}
 
+	explicit operator bool() const
+	{
+		return mCount != 0;
+	}
+
 	/**
 	 * @name Partition search
 	 * @{

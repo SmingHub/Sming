@@ -26,6 +26,7 @@
  ****/
 #pragma once
 
+#include <Printable.h>
 #include <Data/BitSet.h>
 #include <Data/CString.h>
 #include <memory>
@@ -369,6 +370,8 @@ public:
 	 * @brief Obtain smallest allocation unit for erase operations
 	 */
 	size_t getBlockSize() const;
+
+	size_t printTo(Print& p) const;
 
 protected:
 	Device* mDevice{nullptr};

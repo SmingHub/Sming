@@ -64,8 +64,7 @@ public:
 	void listPartitions()
 	{
 		for(auto part : Storage::findPartition()) {
-			Serial.print("* ");
-			Storage::Debug::printPartition(Serial, part);
+			Serial << "* " << part << endl;
 
 			testRead(part, 0xE0, 0x20, true);
 			testRead(part, 10, 20, true);
