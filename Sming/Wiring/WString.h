@@ -331,13 +331,19 @@ public:
 	{
 		return concat(&c, 1);
 	}
-	bool concat(unsigned char num);
-	bool concat(int num);
-	bool concat(unsigned int num);
-	bool concat(long num);
-	bool concat(long long num);
-	bool concat(unsigned long num);
-	bool concat(unsigned long long num);
+	bool concat(unsigned char num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	bool concat(int num, unsigned char base = 10, unsigned char width = 0, char pad = '0')
+	{
+		return concat(long(num), base, width, pad);
+	}
+	bool concat(unsigned int num, unsigned char base = 10, unsigned char width = 0, char pad = '0')
+	{
+		return concat((unsigned long)(num), base, width, pad);
+	}
+	bool concat(long num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	bool concat(long long num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	bool concat(unsigned long num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	bool concat(unsigned long long num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
 	bool concat(float num);
 	bool concat(double num);
 	/** @} */

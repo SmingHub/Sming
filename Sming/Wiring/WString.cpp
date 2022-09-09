@@ -394,52 +394,38 @@ bool String::concat(const char* cstr)
 	return concat(cstr, strlen(cstr));
 }
 
-bool String::concat(unsigned char num)
+bool String::concat(unsigned char num, unsigned char base, unsigned char width, char pad)
 {
 	char buf[1 + 3 * sizeof(num)];
-	itoa(num, buf, 10);
+	ultoa_wp(num, buf, base, width, pad);
 	return concat(buf, strlen(buf));
 }
 
-bool String::concat(int num)
+bool String::concat(long num, unsigned char base, unsigned char width, char pad)
 {
 	char buf[8 + 3 * sizeof(num)];
-	itoa(num, buf, 10);
+	ltoa_wp(num, buf, base, width, pad);
 	return concat(buf, strlen(buf));
 }
 
-bool String::concat(unsigned int num)
+bool String::concat(long long num, unsigned char base, unsigned char width, char pad)
 {
 	char buf[8 + 3 * sizeof(num)];
-	ultoa(num, buf, 10);
+	lltoa_wp(num, buf, base, width, pad);
 	return concat(buf, strlen(buf));
 }
 
-bool String::concat(long num)
+bool String::concat(unsigned long num, unsigned char base, unsigned char width, char pad)
 {
 	char buf[8 + 3 * sizeof(num)];
-	ltoa(num, buf, 10);
+	ultoa_wp(num, buf, base, width, pad);
 	return concat(buf, strlen(buf));
 }
 
-bool String::concat(long long num)
+bool String::concat(unsigned long long num, unsigned char base, unsigned char width, char pad)
 {
 	char buf[8 + 3 * sizeof(num)];
-	lltoa(num, buf, 10);
-	return concat(buf, strlen(buf));
-}
-
-bool String::concat(unsigned long num)
-{
-	char buf[8 + 3 * sizeof(num)];
-	ultoa(num, buf, 10);
-	return concat(buf, strlen(buf));
-}
-
-bool String::concat(unsigned long long num)
-{
-	char buf[8 + 3 * sizeof(num)];
-	ulltoa(num, buf, 10);
+	ulltoa_wp(num, buf, base, width, pad);
 	return concat(buf, strlen(buf));
 }
 

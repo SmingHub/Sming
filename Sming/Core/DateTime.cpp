@@ -271,13 +271,6 @@ String DateTime::format(const char* sFormat)
 
 	String sReturn;
 
-	// Append a number to the return buffer, padding to a fixed number of digits
-	auto appendNumber = [&sReturn](unsigned number, unsigned digits, char padChar = '0') {
-		char buf[8];
-		ultoa_wp(number, buf, 10, digits, padChar);
-		sReturn.concat(buf, digits);
-	};
-
 	char c;
 	while((c = *sFormat++) != '\0') {
 		if(c != '%') {
@@ -298,10 +291,10 @@ String DateTime::format(const char* sFormat)
 			sReturn += Year;
 			break;
 		case 'y': // Year, last 2 digits as a decimal number [00..99]
-			appendNumber(Year % 100, 2);
+			sReturn.concat(Year % 100, DEC, 2);
 			break;
 		case 'C': // Year, first 2 digits as a decimal number [00..99]
-			appendNumber(Year / 100, 2);
+			sReturn.concat(Year / 100, DEC, 2);
 			break;
 		// Month (not implemented: Om)
 		case 'b': // Abbreviated month name, e.g. Oct (always English)
@@ -312,18 +305,18 @@ String DateTime::format(const char* sFormat)
 			sReturn += CStringArray(flashMonthNames)[Month];
 			break;
 		case 'm': // Month as a decimal number [01..12]
-			appendNumber(Month + 1, 2);
+			sReturn.concat(Month + 1, DEC, 2);
 			break;
 		// Week (not implemented: OU, OW, OV)
 		case 'U': // Week of the year as a decimal number (Sunday is the first day of the week) [00..53]
-			appendNumber(calcWeek(0), 2);
+			sReturn.concat(calcWeek(0), DEC, 2);
 			break;
 		case 'V': // ISO 8601 week number (01-53)
 			// !@todo Calculation of ISO 8601 week number is crude and frankly wrong but does anyone care?
-			appendNumber(calcWeek(1) + 1, 2);
+			sReturn.concat(calcWeek(1) + 1, DEC, 2);
 			break;
 		case 'W': // Week of the year as a decimal number (Monday is the first day of the week) [00..53]
-			appendNumber(calcWeek(1), 2);
+			sReturn.concat(calcWeek(1), DEC, 2);
 			break;
 		case 'x': // Locale preferred date format
 			sReturn += format(_F(LOCALE_DATE));
@@ -333,13 +326,13 @@ String DateTime::format(const char* sFormat)
 			break;
 		// Day of year/month (Not implemented: Od, Oe)
 		case 'j': // Day of the year as a decimal number [001..366]
-			appendNumber(DayofYear, 3);
+			sReturn.concat(DayofYear, DEC, 3);
 			break;
 		case 'd': // Day of the month as a decimal number [01..31]
-			appendNumber(Day, 2);
+			sReturn.concat(Day, DEC, 2);
 			break;
 		case 'e': // Day of the month as a decimal number [ 1,31]
-			appendNumber(Day, 2, ' ');
+			sReturn.concat(Day, DEC, 2, ' ');
 			break;
 		// Day of week (Not implemented: Ow, Ou)
 		case 'w': // Weekday as a decimal number with Sunday as 0 [0..6]
@@ -356,16 +349,16 @@ String DateTime::format(const char* sFormat)
 			break;
 		// Time (not implemented: OH, OI, OM, OS)
 		case 'H': // Hour as a decimal number, 24 hour clock [00..23]
-			appendNumber(Hour, 2);
+			sReturn.concat(Hour, DEC, 2);
 			break;
 		case 'I': // Hour as a decimal number, 12 hour clock [0..12]
-			appendNumber(Hour ? ((Hour > 12) ? Hour - 12 : Hour) : 12, 2);
+			sReturn.concat(Hour ? ((Hour > 12) ? Hour - 12 : Hour) : 12, DEC, 2);
 			break;
 		case 'M': // Minute as a decimal number [00..59]
-			appendNumber(Minute, 2);
+			sReturn.concat(Minute, DEC, 2);
 			break;
 		case 'S': // Second as a decimal number [00..61]
-			appendNumber(Second, 2);
+			sReturn.concat(Second, DEC, 2);
 			break;
 		// Other (not implemented: Ec, Ex, EX, z, Z)
 		case 'c': // Locale preferred date and time format, e.g. Tue Dec 11 08:48:32 2018
