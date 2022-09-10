@@ -2,6 +2,7 @@
 #include <sys/time.h>
 #include <esp_task_wdt.h>
 #include <sming_attr.h>
+#include <esp_ipc.h>
 
 extern "C" int64_t esp_system_get_time();
 
@@ -45,7 +46,15 @@ struct rst_info* system_get_rst_info(void)
 
 void system_restart(void)
 {
-	esp_restart();
+	/*
+	 * Internally, `esp_restart` calls `esp_wifi_stop`.
+	 * This must not be called in the context of the task which handles the main event queue.
+	 * i.e. The Sming main thread.
+	 * Doing so causes a deadlock and a task watchdog timeout.
+	 *
+	 * Delegating this call to any other task fixes the issue.
+	 */
+	esp_ipc_call(0, esp_ipc_func_t(esp_restart), nullptr);
 }
 
 /* Watchdog */
