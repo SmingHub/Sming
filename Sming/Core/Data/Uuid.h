@@ -51,15 +51,34 @@ struct Uuid {
 		decompose(s, len);
 	}
 
-	explicit Uuid(const String& s)
+	explicit Uuid(const String& s) : Uuid(s.c_str(), s.length())
 	{
-		decompose(s.c_str(), s.length());
+	}
+
+	explicit Uuid(const FlashString& s) : Uuid(String(s))
+	{
+	}
+
+	template <typename T> explicit Uuid(const T& guid)
+	{
+		static_assert(sizeof(T) == 16);
+		memcpy(this, &guid, sizeof(T));
 	}
 
 	explicit operator bool()
 	{
 		Uuid Null{};
 		return memcmp(this, &Null, sizeof(Null)) != 0;
+	}
+
+	bool operator==(const Uuid& other) const
+	{
+		return memcmp(this, &other, sizeof(Uuid)) == 0;
+	}
+
+	bool operator!=(const Uuid& other) const
+	{
+		return !operator==(other);
 	}
 
 	/**
@@ -100,6 +119,8 @@ struct Uuid {
 		return toString();
 	}
 };
+
+static_assert(sizeof(Uuid) == 16, "Bad Uuid");
 
 inline String toString(const Uuid& uuid)
 {
