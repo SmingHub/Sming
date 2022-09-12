@@ -157,7 +157,7 @@ ANALOGUE_READER(void)::onNotify(Notify code)
 		groupStartTicks = sampleTimer.ticks();
 		restartSampler = true;
 
-		Serial << _F("sampleIntervalTicks = ") << sampleIntervalTicks << endl;
+		Serial << F("sampleIntervalTicks = ") << sampleIntervalTicks << endl;
 		break;
 	default:;
 	}

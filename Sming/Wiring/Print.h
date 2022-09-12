@@ -246,7 +246,7 @@ protected:
 	}
 };
 
-template <typename T> Print& operator<<(Print& p, T value)
+template <typename T> Print& operator<<(Print& p, const T& value)
 {
 	p.print(value);
 	return p;
