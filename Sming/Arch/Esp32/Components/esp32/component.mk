@@ -8,7 +8,11 @@ COMPONENT_INCDIRS := src/include include
 # Applications can provide file with custom SDK configuration settings
 CACHE_VARS += SDK_CUSTOM_CONFIG
 
-COMPONENT_RELINK_VARS += DISABLE_NETWORK DISABLE_WIFI
+COMPONENT_RELINK_VARS += DISABLE_NETWORK DISABLE_WIFI CREATE_EVENT_TASK
+
+ifeq ($(CREATE_EVENT_TASK),1)
+COMPONENT_CPPFLAGS += -DCREATE_EVENT_TASK
+endif
 
 SDK_BUILD_BASE := $(COMPONENT_BUILD_BASE)/sdk
 SDK_COMPONENT_LIBDIR := $(COMPONENT_BUILD_BASE)/lib
@@ -50,6 +54,7 @@ SDK_INCDIRS := \
 	bootloader_support/include_bootloader \
 	driver/$(ESP_VARIANT)/include \
 	driver/include \
+	esp_ipc/include \
 	esp_pm/include \
 	esp_rom/include/$(ESP_VARIANT) \
 	esp_rom/include \

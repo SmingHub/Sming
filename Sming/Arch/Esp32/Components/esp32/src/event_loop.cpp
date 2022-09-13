@@ -12,6 +12,7 @@
  */
 
 #include <esp_event.h>
+#include <esp_task.h>
 
 namespace
 {
@@ -22,7 +23,11 @@ esp_event_loop_handle_t sming_create_event_loop()
 {
 	esp_event_loop_args_t loop_args = {
 		.queue_size = CONFIG_ESP_SYSTEM_EVENT_QUEUE_SIZE,
-		.task_name = nullptr,
+#ifdef CREATE_EVENT_TASK
+		.task_name = "sys_evt",
+		.task_priority = ESP_TASKD_EVENT_PRIO,
+		.task_stack_size = ESP_TASKD_EVENT_STACK,
+#endif
 	};
 
 	ESP_ERROR_CHECK(esp_event_loop_create(&loop_args, &sming_event_loop));
