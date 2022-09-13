@@ -35,7 +35,7 @@
  * @author mikee47 <mike@sillyhouse.net>
  * 	Sming integration
  */
-class MacAddress : public Printable
+class MacAddress
 {
 	// https://www.artima.com/cppsource/safebool.html
 	using bool_type = void (MacAddress::*)() const;
@@ -103,6 +103,11 @@ public:
 	 */
 	String toString(char sep = ':') const;
 
+	operator String() const
+	{
+		return toString();
+	}
+
 	/**
 	 * @brief Equality operator.
 	 */
@@ -146,11 +151,6 @@ public:
 	 * @note This does not uniquely identify the key
 	 */
 	uint32_t getHash() const;
-
-	size_t printTo(Print& p) const override
-	{
-		return p.print(toString());
-	}
 
 private:
 	Octets octets = {0};
