@@ -1,21 +1,12 @@
 /****
+ * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+ * Created 2015 by Skurydin Alexey
+ * http://github.com/SmingHub/Sming
+ * All files of the Sming Core are provided under the LGPL v3 license.
+ *
  * Uuid.h - Universal Unique Identifier
  *
- * See https://pubs.opengroup.org/onlinepubs/9629399/apdxa.htm.
- *
- * Copyright 2019 mikee47 <mike@sillyhouse.net>
- *
- * This file is part of the Sming SSDP Library
- *
- * This library is free software: you can redistribute it and/or modify it under the terms of the
- * GNU General Public License as published by the Free Software Foundation, version 3 or later.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with this library.
- * If not, see <https://www.gnu.org/licenses/>.
+ * @author mikee47 <mike@sillyhouse.net>
  *
  ****/
 
@@ -24,6 +15,14 @@
 #include <WString.h>
 #include <MacAddress.h>
 
+/**
+ * @brief Class for manipulating UUID (aka GUID) entities
+ * 
+ * UUID: Universally Unique IDentifier
+ * GUID: Globally Unique IDentifier
+ *
+ * See https://pubs.opengroup.org/onlinepubs/9629399/apdxa.htm.
+ */
 struct Uuid {
 	uint32_t time_low{0};				  // 0-3
 	uint16_t time_mid{0};				  // 4-5
@@ -86,6 +85,10 @@ struct Uuid {
 	 */
 	bool generate(MacAddress mac);
 
+	/**
+	 * @name Decompse string into UUID
+	 * @{
+	 */
 	bool decompose(const char* s, size_t len);
 
 	bool decompose(const char* s)
@@ -97,9 +100,14 @@ struct Uuid {
 	{
 		return decompose(s.c_str(), s.length());
 	}
+	/** @} */
 
 	/**
-	 * @note Get string representation of UUID
+	 * @name Get string representation of UUID
+	 * @{
+	 */
+
+	/**
 	 * @param uuid
 	 * @param buffer
 	 * @param bufSize Must be at least UUID_STRING_SIZE
@@ -118,6 +126,8 @@ struct Uuid {
 	{
 		return toString();
 	}
+
+	/** @} */
 };
 
 static_assert(sizeof(Uuid) == 16, "Bad Uuid");
