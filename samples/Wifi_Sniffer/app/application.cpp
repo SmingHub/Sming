@@ -17,7 +17,7 @@ static void printBeacon(const BeaconInfo& beacon)
 		Serial << _F("BEACON ERR: (") << beacon.err << ')' << endl;
 	} else {
 		Serial.printf(_F("BEACON: <=============== [%32s]  "), beacon.ssid);
-		Serial.print(makeHexString(beacon.bssid, sizeof(beacon.bssid)));
+		Serial.print(beacon.bssid);
 		Serial.printf(_F("   %2d"), beacon.channel);
 		Serial.printf(_F("   %4d\r\n"), beacon.rssi);
 	}
@@ -28,18 +28,14 @@ static void printClient(const ClientInfo& client)
 	if(client.err != 0) {
 		Serial << _F("CLIENT ERR: (") << client.err << ')' << endl;
 	} else {
-		Serial.print(_F("DEVICE: "));
-		Serial.print(makeHexString(client.station, sizeof(client.station)));
-		Serial.print(_F(" ==> "));
+		Serial << _F("DEVICE: ") << client.station << _F(" ==> ");
 
 		int ap = knownAPs.indexOf(client.bssid);
 		if(ap < 0) {
-			Serial.print(_F("   Unknown/Malformed packet, BSSID = "));
-			Serial.println(makeHexString(client.bssid, sizeof(client.bssid)));
+			Serial << _F("   Unknown/Malformed packet, BSSID = ") << client.bssid << endl;
 		} else {
 			Serial.printf(_F("[%32s]"), knownAPs[ap].ssid);
-			Serial.print(_F("  "));
-			Serial.print(makeHexString(client.ap, sizeof(client.ap)));
+			Serial << "  " << client.ap;
 			Serial.printf(_F("  %3i"), knownAPs[ap].channel);
 			Serial.printf(_F("   %4d\r\n"), client.rssi);
 		}

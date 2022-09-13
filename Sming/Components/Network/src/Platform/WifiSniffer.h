@@ -17,6 +17,7 @@
 #pragma once
 
 #include <Platform/System.h>
+#include <MacAddress.h>
 #include "WVector.h"
 
 /**	@defgroup wifi_sniffer WiFi Sniffer
@@ -31,7 +32,7 @@
  * @brief Decoded Wifi beacon (Access Point) information
  */
 struct BeaconInfo {
-	uint8_t bssid[ETH_MAC_LEN];
+	MacAddress bssid;
 	uint8_t ssid[33];
 	uint8_t ssid_len;
 	uint8_t channel;
@@ -44,9 +45,9 @@ struct BeaconInfo {
  * @brief Decoded Wifi client information
  */
 struct ClientInfo {
-	uint8_t bssid[ETH_MAC_LEN];
-	uint8_t station[ETH_MAC_LEN];
-	uint8_t ap[ETH_MAC_LEN];
+	MacAddress bssid;
+	MacAddress station;
+	MacAddress ap;
 	uint8_t channel;
 	int8_t err;
 	int8_t rssi;
@@ -59,10 +60,10 @@ struct ClientInfo {
 class BeaconInfoList : public Vector<BeaconInfo>
 {
 public:
-	int indexOf(const uint8_t bssid[])
+	int indexOf(const MacAddress& bssid)
 	{
 		for(unsigned i = 0; i < count(); ++i) {
-			if(memcmp(elementAt(i).bssid, bssid, ETH_MAC_LEN) == 0) {
+			if(elementAt(i).bssid == bssid) {
 				return i;
 			}
 		}
@@ -77,10 +78,10 @@ public:
 class ClientInfoList : public Vector<ClientInfo>
 {
 public:
-	int indexOf(const uint8_t station[])
+	int indexOf(const MacAddress& station)
 	{
 		for(unsigned i = 0; i < count(); ++i) {
-			if(memcmp(elementAt(i).station, station, ETH_MAC_LEN) == 0) {
+			if(elementAt(i).station == station) {
 				return i;
 			}
 		}

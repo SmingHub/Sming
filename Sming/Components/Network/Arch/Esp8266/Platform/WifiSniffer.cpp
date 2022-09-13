@@ -68,9 +68,9 @@ static void parseClientInfo(ClientInfo& ci, uint8_t* frame, uint16_t framelen, i
 		break;
 	}
 
-	memcpy(ci.station, station, ETH_MAC_LEN);
-	memcpy(ci.bssid, bssid, ETH_MAC_LEN);
-	memcpy(ci.ap, ap, ETH_MAC_LEN);
+	memcpy(&ci.station[0], station, ETH_MAC_LEN);
+	memcpy(&ci.bssid[0], bssid, ETH_MAC_LEN);
+	memcpy(&ci.ap[0], ap, ETH_MAC_LEN);
 
 	ci.seq_n = (frame[23] * 0xFF) + (frame[22] & 0xF0);
 }
@@ -121,7 +121,7 @@ static void parseBeaconInfo(BeaconInfo& bi, uint8_t* frame, uint16_t framelen, i
 
 	bi.capa[0] = frame[34];
 	bi.capa[1] = frame[35];
-	memcpy(bi.bssid, frame + 10, ETH_MAC_LEN);
+	memcpy(&bi.bssid[0], frame + 10, ETH_MAC_LEN);
 }
 
 void WifiSniffer::parseData(uint8_t* buf, uint16_t len)
@@ -147,7 +147,7 @@ void WifiSniffer::parseData(uint8_t* buf, uint16_t len)
 				ClientInfo ci;
 				parseClientInfo(ci, data->buf, 36, data->rx_ctrl.rssi, data->rx_ctrl.channel);
 				// Check BSSID and station don't match (why ?)
-				if(memcmp(ci.bssid, ci.station, ETH_MAC_LEN) != 0) {
+				if(ci.bssid != ci.station) {
 					clientCallback(ci);
 				}
 			}
