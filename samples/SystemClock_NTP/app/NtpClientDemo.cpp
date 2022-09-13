@@ -18,24 +18,17 @@ void NtpClientDemo::ntpResult(NtpClient& client, time_t ntpTime)
 	/*
 	 * Display the new time
 	 */
-	Serial.print("ntpClientDemo Callback: ntpTime = ");
-	Serial.print(ntpTime);
-	Serial.print(", ");
-	Serial.print(SystemClock.getSystemTimeString(eTZ_UTC));
-	Serial.print(" UTC, Local time = ");
-	Serial.print(SystemClock.getSystemTimeString(eTZ_Local));
-	Serial.print(" ");
-	Serial.println(tz.utcTimeTag(ntpTime));
+	Serial << _F("ntpClientDemo Callback: ntpTime = ") << ntpTime << ", " << SystemClock.getSystemTimeString(eTZ_UTC)
+		   << _F(" UTC, Local time = ") << SystemClock.getSystemTimeString(eTZ_Local) << ' ' << tz.utcTimeTag(ntpTime)
+		   << endl;
 
 	/*
 	 * Display times of next sunrise and sunset
 	 */
 	DateTime sunrise = getNextSunriseSet(true);
 	DateTime sunset = getNextSunriseSet(false);
-	Serial.print("Next sunrise at ");
-	Serial.print(sunrise.toShortTimeString());
-	Serial.print(", sunset at ");
-	Serial.println(sunset.toShortTimeString());
+	Serial << _F("Next sunrise at ") << sunrise.toShortTimeString() << _F(", sunset at ") << sunset.toShortTimeString()
+		   << endl;
 }
 
 /*

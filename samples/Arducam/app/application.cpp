@@ -77,10 +77,10 @@ void initCam()
 	myCAM.rdSensorReg8_8(OV2640_CHIPID_HIGH, &vid);
 	myCAM.rdSensorReg8_8(OV2640_CHIPID_LOW, &pid);
 	if((vid != 0x26) || (pid != 0x42)) {
-		Serial.println("Can't find OV2640 module!");
+		Serial.println(_F("Can't find OV2640 module!"));
 		Serial << "vid = [" << String(vid, HEX) << "], pid = [" << String(pid, HEX) << "]" << endl;
 	} else {
-		Serial.println("OV2640 detected");
+		Serial.println(_F("OV2640 detected"));
 	}
 
 	// initialize SPI:
@@ -94,15 +94,16 @@ void initCam()
 
 	uint8_t temp = myCAM.read_reg(ARDUCHIP_TEST1);
 	if(temp != 0x55) {
-		Serial.println("SPI interface Error!");
-		while(1)
-			;
+		Serial.println(_F("SPI interface Error!"));
+		while(1) {
+			// loop forever
+		}
 	} else {
-		Serial.println("SPI interface OK!");
+		Serial.println(_F("SPI interface OK!"));
 	}
 
 	// init CAM
-	Serial.println("Initialize the OV2640 module");
+	Serial.println(_F("Initialize the OV2640 module"));
 	myCAM.set_format(JPEG);
 	myCAM.InitCAM();
 }

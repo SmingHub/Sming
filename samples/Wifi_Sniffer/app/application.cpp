@@ -14,19 +14,19 @@ SimpleTimer timer;
 static void printBeacon(const BeaconInfo& beacon)
 {
 	if(beacon.err != 0) {
-		Serial.printf(_F("BEACON ERR: (%d)\n"), beacon.err);
+		Serial << _F("BEACON ERR: (") << beacon.err << ')' << endl;
 	} else {
 		Serial.printf(_F("BEACON: <=============== [%32s]  "), beacon.ssid);
 		Serial.print(makeHexString(beacon.bssid, sizeof(beacon.bssid)));
 		Serial.printf(_F("   %2d"), beacon.channel);
-		Serial.printf(_F("   %4d\n"), beacon.rssi);
+		Serial.printf(_F("   %4d\r\n"), beacon.rssi);
 	}
 }
 
 static void printClient(const ClientInfo& client)
 {
 	if(client.err != 0) {
-		Serial.printf(_F("CLIENT ERR: (%d)\n"), client.err);
+		Serial << _F("CLIENT ERR: (") << client.err << ')' << endl;
 	} else {
 		Serial.print(_F("DEVICE: "));
 		Serial.print(makeHexString(client.station, sizeof(client.station)));
@@ -41,21 +41,23 @@ static void printClient(const ClientInfo& client)
 			Serial.print(_F("  "));
 			Serial.print(makeHexString(client.ap, sizeof(client.ap)));
 			Serial.printf(_F("  %3i"), knownAPs[ap].channel);
-			Serial.printf(_F("   %4d\n"), client.rssi);
+			Serial.printf(_F("   %4d\r\n"), client.rssi);
 		}
 	}
 }
 
 static void printSummary()
 {
-	Serial.println("\n-------------------------------------------------------------------------------------\n");
+	Serial.println("\r\n"
+				   "-------------------------------------------------------------------------------------\r\n");
 	for(unsigned u = 0; u < knownClients.count(); u++) {
 		printClient(knownClients[u]);
 	}
 	for(unsigned u = 0; u < knownAPs.count(); u++) {
 		printBeacon(knownAPs[u]);
 	}
-	Serial.println("\n-------------------------------------------------------------------------------------\n");
+	Serial.println("\r\n"
+				   "-------------------------------------------------------------------------------------\r\n");
 }
 
 static void onBeacon(const BeaconInfo& beacon)
@@ -97,7 +99,9 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Debug output to serial
 
-	Serial.printf(_F("\n\nSDK version:%s\n"), system_get_sdk_version());
+	Serial << _F("\r\n\r\n"
+				 "SDK version:")
+		   << system_get_sdk_version() << endl;
 	Serial.println(_F("ESP8266 mini-sniff by Ray Burnette http://www.hackster.io/rayburne/projects"));
 	Serial.println(_F("Type:   /-------MAC------/-----WiFi Access Point SSID-----/  /----MAC---/  Chnl  RSSI"));
 

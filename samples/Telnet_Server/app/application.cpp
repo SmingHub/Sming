@@ -16,22 +16,21 @@ void checkHeap()
 {
 	int currentHeap = system_get_free_heap_size();
 	if(currentHeap != savedHeap) {
-		Debug.printf(_F("Heap change, current = %u\r\n"), currentHeap);
+		Debug << _F("Heap change, current = ") << currentHeap << endl;
 		savedHeap = currentHeap;
 	}
 }
 
 void applicationCommand(String commandLine, CommandOutput* commandOutput)
 {
-	commandOutput->print(_F("Hello from Telnet Example application\r\nYou entered : '"));
-	commandOutput->print(commandLine.c_str());
-	commandOutput->println('\'');
-	commandOutput->println(_F("Tokenized commandLine is : "));
+	*commandOutput << _F("Hello from Telnet Example application") << endl
+				   << _F("You entered : '") << commandLine << '\'' << endl
+				   << _F("Tokenized commandLine is : ") << endl;
 
 	Vector<String> commandToken;
 	unsigned numToken = splitString(commandLine, ' ', commandToken);
 	for(unsigned i = 0; i < numToken; i++) {
-		commandOutput->printf(_F("%u : %s\r\n"), i, commandToken.at(i).c_str());
+		*commandOutput << i << " : " << commandToken[i] << endl;
 	}
 }
 
@@ -50,7 +49,7 @@ void appheapCommand(String commandLine, CommandOutput* commandOutput)
 		savedHeap = 0;
 		memoryTimer.stop();
 	} else if(commandToken[1] == "now") {
-		commandOutput->printf(_F("Heap current free = %u\r\n"), system_get_free_heap_size());
+		*commandOutput << _F("Heap current free = ") << system_get_free_heap_size() << endl;
 	} else {
 		commandOutput->println(_F("Usage appheap on/off/now"));
 	}
@@ -86,15 +85,17 @@ void startServers()
 {
 	tcpServer.listen(8023);
 
-	Serial.println(_F("\r\n=== TCP SERVER Port 8023 STARTED ==="));
+	Serial.println(_F("\r\n"
+					  "=== TCP SERVER Port 8023 STARTED ==="));
 	Serial.println(WifiStation.getIP());
-	Serial.println(_F("==============================\r\n"));
+	Serial.println(_F("====================================\r\n"));
 
 	telnetServer.listen(23);
 
-	Serial.println(_F("\r\n=== Telnet SERVER Port 23 STARTED ==="));
+	Serial.println(_F("\r\n"
+					  "=== Telnet SERVER Port 23 STARTED ==="));
 	Serial.println(WifiStation.getIP());
-	Serial.println(_F("==============================\r\n"));
+	Serial.println(_F("=====================================\r\n"));
 
 	commandHandler.registerCommand(CommandDelegate(
 		F("application"), F("This command is defined by the application\r\n"), F("testGroup"), applicationCommand));
