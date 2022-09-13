@@ -57,20 +57,14 @@ void showTime(time_t timestamp)
 	Serial.println(dt.format("%%x Locale date: %x"));
 	Serial.println(dt.format("%%X Locale time: %X"));
 	//HTTP date
-	Serial.print("toHTTPDate: ");
-	Serial.println(dt.toHTTPDate());
+	Serial << "toHTTPDate: " << dt.toHTTPDate() << endl;
 	DateTime dt2;
 	dt2.fromHttpDate(dt.toHTTPDate());
-	Serial.print("fromHTTPDate: ");
-	Serial.println(dt2.toHTTPDate());
-	Serial.print("toFullDateTimeString: ");
-	Serial.println(dt.toFullDateTimeString());
-	Serial.print("toISO8601: ");
-	Serial.println(dt.toISO8601());
-	Serial.print("toShortDateString: ");
-	Serial.println(dt.toShortDateString());
-	Serial.print("toShortTimeString: ");
-	Serial.println(dt.toShortTimeString());
+	Serial << "fromHTTPDate: " << dt2.toHTTPDate() << endl;
+	Serial << "toFullDateTimeString: " << dt.toFullDateTimeString() << endl;
+	Serial << "toISO8601: " << dt.toISO8601() << endl;
+	Serial << "toShortDateString: " << dt.toShortDateString() << endl;
+	Serial << "toShortTimeString: " << dt.toShortTimeString() << endl;
 }
 
 void onRx(Stream& source, char arrivedChar, unsigned short availableCharsCount)
@@ -79,8 +73,7 @@ void onRx(Stream& source, char arrivedChar, unsigned short availableCharsCount)
 	case '\n':
 		Serial.println();
 		Serial.println();
-		Serial.print(_F("****Showing DateTime formatting options for Unix timestamp: "));
-		Serial.println(timestamp);
+		Serial << _F("****Showing DateTime formatting options for Unix timestamp: ") << timestamp << endl;
 		showTime(timestamp);
 		Serial.print(commandPrompt);
 		timestamp = 0;

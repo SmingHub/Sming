@@ -10,8 +10,7 @@ FtpServer ftp;
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	Serial.print("IP: ");
-	Serial.println(ip);
+	Serial << "IP: " << ip << endl;
 	// Start FTP server
 	ftp.listen(21);
 	// Add user accounts
@@ -24,7 +23,7 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 // Will be called when WiFi station timeout was reached
 void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
-	Serial.println("I'm NOT CONNECTED. Need help!!! :(");
+	Serial.println(_F("I'm NOT CONNECTED. Need help!!! :("));
 }
 
 void init()

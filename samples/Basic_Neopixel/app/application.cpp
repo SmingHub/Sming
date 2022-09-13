@@ -87,8 +87,7 @@ void TheaterChase()
 
 void StartDemo()
 {
-	Serial.print("NeoPixel Demo type: ");
-	Serial.println(StripDemoType);
+	Serial << _F("NeoPixel Demo type: ") << StripDemoType << endl;
 
 	StripDemoTimer.stop(); // next demo wait until this demo ends
 
@@ -142,15 +141,14 @@ void StartDemo()
 
 void got_IP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	Serial.print("IP: ");
-	Serial.println(ip);
-	//You can put here other job like web,tcp etc.
+	Serial << "IP: " << ip << endl;
+	// You can put here other job like web,tcp etc.
 }
 
 // Will be called when WiFi station loses connection
 void connect_Fail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
-	Serial.println("I'm NOT CONNECTED!");
+	Serial.println(_F("I'm NOT CONNECTED!"));
 }
 
 void init()
@@ -158,7 +156,7 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE);  // 115200 by default
 	Serial.systemDebugOutput(false); // Disable debug output to serial
 
-	Serial.print("NeoPixel demo .. start");
+	Serial.print(_F("NeoPixel demo .. start"));
 
 #ifndef DISABLE_WIFI
 	// Wifi could be used eg. for switching Neopixel from internet.

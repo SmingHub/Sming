@@ -15,14 +15,12 @@ int onDataSent(HttpConnection& client, bool successful)
 	Serial.println(successful ? _F("Success sent") : _F("Failed"));
 
 	String response = client.getResponse()->getBody();
-	Serial.print(_F("Server response: '"));
-	Serial.print(response);
-	Serial.println('\'');
+	Serial << _F("Server response: '") << response << '\'' << endl;
 	if(response.length() > 0) {
 		int intVal = response.toInt();
 
 		if(intVal == 0) {
-			Serial.println("Sensor value wasn't accepted. May be we need to wait a little?");
+			Serial.println(_F("Sensor value wasn't accepted. May be we need to wait a little?"));
 		}
 	}
 

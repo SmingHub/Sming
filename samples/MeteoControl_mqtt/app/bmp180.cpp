@@ -18,10 +18,10 @@ void publishBMP()
 	if(mqtt.getConnectionState() != eTCS_Connected)
 		startMqttClient(); // Auto reconnect
 
-	Serial.print("*********************************************");
-	Serial.println("Start reading BMP180 sensor");
+	Serial.print(_F("*********************************************"));
+	Serial.println(_F("Start reading BMP180 sensor"));
 	if(!barometer.EnsureConnected()) {
-		Serial.println("Could not connect to BMP180");
+		Serial.println(_F("Could not connect to BMP180"));
 	} else {
 		// Retrieve the current pressure in Pascals
 		long currentPressure = barometer.GetPressure();
@@ -29,21 +29,17 @@ void publishBMP()
 		float BMPPress = currentPressure / 133.322;
 
 		// Print out the Pressure
-		Serial.print("Pressure: ");
-		Serial.print(BMPPress);
-		Serial.println(" mmHg");
+		Serial << _F("Pressure: ") << BMPPress << _F(" mmHg") << endl;
 		mqtt.publish(BMP_P, String(BMPPress));
 
 		// Retrieve the current temperature in degrees celsius
 		float BMPTemp = barometer.GetTemperature();
 
 		// Print out the Temperature
-		Serial.print("Temperature: ");
-		Serial.print(BMPTemp);
-		Serial.println(" *C");
+		Serial << _F("Temperature: ") << BMPTemp << " °C" << endl;
 		mqtt.publish(BMP_T, String(BMPTemp));
-		Serial.println("BMP180 sensor read and transmitted to server");
-		Serial.println("*********************************************");
+		Serial.println(_F("BMP180 sensor read and transmitted to server\r\n"
+						  "********************************************"));
 	}
 }
 

@@ -42,8 +42,8 @@ void checkMQTTDisconnect(TcpClient& client, bool flag)
 
 int onMessageDelivered(MqttClient& client, mqtt_message_t* message)
 {
-	Serial.printf(_F("Message with id %d and QoS %d was delivered successfully.\n"), message->puback.message_id,
-				  message->puback.qos);
+	Serial << _F("Message with id ") << message->puback.message_id << _F(" and QoS ") << message->puback.qos
+		   << _F(" was delivered successfully.") << endl;
 	return 0;
 }
 
@@ -54,8 +54,7 @@ void publishMessage()
 		startMqttClient(); // Auto reconnect
 	}
 
-	Serial.print(_F("Let's publish message now. Memory free="));
-	Serial.println(system_get_free_heap_size());
+	Serial << _F("Let's publish message now. Memory free=") << system_get_free_heap_size() << endl;
 	mqtt.publish(F("main/frameworks/sming"), F("Hello friends, from Internet of things :)"));
 
 	mqtt.publish(F("important/frameworks/sming"), F("Request Return Delivery"),
@@ -65,10 +64,8 @@ void publishMessage()
 // Callback for messages, arrived from MQTT server
 int onMessageReceived(MqttClient& client, mqtt_message_t* message)
 {
-	Serial.print("Received: ");
-	Serial.print(MqttBuffer(message->publish.topic_name));
-	Serial.print(":\r\n\t"); // Pretify alignment for printing
-	Serial.println(MqttBuffer(message->publish.content));
+	Serial << _F("Received: ") << MqttBuffer(message->publish.topic_name) << ':' << endl;
+	Serial << '\t' << MqttBuffer(message->publish.content) << endl;
 	return 0;
 }
 
@@ -86,8 +83,7 @@ void startMqttClient()
 	mqtt.setEventHandler(MQTT_TYPE_PUBACK, onMessageDelivered);
 
 	mqtt.setConnectedHandler([](MqttClient& client, mqtt_message_t* message) {
-		Serial.print(_F("Connected to "));
-		Serial.println(client.getRemoteIp());
+		Serial << _F("Connected to ") << client.getRemoteIp() << endl;
 
 		// Start publishing message now
 		publishMessage();
@@ -109,8 +105,7 @@ void startMqttClient()
 
 	// 2. [Connect]
 	Url url(MQTT_URL);
-	Serial.print(_F("Connecting to "));
-	Serial.println(url);
+	Serial << _F("Connecting to ") << url << endl;
 	mqtt.connect(url, F("esp8266"));
 	mqtt.subscribe(F("main/status/#"));
 }

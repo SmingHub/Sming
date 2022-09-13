@@ -48,52 +48,38 @@ String::String(char c) : String()
 		buffer()[0] = c;
 }
 
-String::String(unsigned char value, unsigned char base) : String()
+String::String(unsigned char value, unsigned char base, unsigned char width, char pad) : String()
 {
 	char buf[8 + 8 * sizeof(value)];
 	ultoa(value, buf, base);
 	*this = buf;
 }
 
-String::String(int value, unsigned char base) : String()
+String::String(long value, unsigned char base, unsigned char width, char pad) : String()
 {
 	char buf[8 + 8 * sizeof(value)];
-	itoa(value, buf, base);
+	ltoa_wp(value, buf, base, width, pad);
 	*this = buf;
 }
 
-String::String(unsigned int value, unsigned char base) : String()
+String::String(long long value, unsigned char base, unsigned char width, char pad) : String()
 {
 	char buf[8 + 8 * sizeof(value)];
-	ultoa(value, buf, base);
+	lltoa_wp(value, buf, base, width, pad);
 	*this = buf;
 }
 
-String::String(long value, unsigned char base) : String()
+String::String(unsigned long value, unsigned char base, unsigned char width, char pad) : String()
 {
 	char buf[8 + 8 * sizeof(value)];
-	ltoa(value, buf, base);
+	ultoa_wp(value, buf, base, width, pad);
 	*this = buf;
 }
 
-String::String(long long value, unsigned char base) : String()
+String::String(unsigned long long value, unsigned char base, unsigned char width, char pad) : String()
 {
 	char buf[8 + 8 * sizeof(value)];
-	lltoa(value, buf, base);
-	*this = buf;
-}
-
-String::String(unsigned long value, unsigned char base) : String()
-{
-	char buf[8 + 8 * sizeof(value)];
-	ultoa(value, buf, base);
-	*this = buf;
-}
-
-String::String(unsigned long long value, unsigned char base) : String()
-{
-	char buf[8 + 8 * sizeof(value)];
-	ulltoa(value, buf, base);
+	ulltoa_wp(value, buf, base, width, pad);
 	*this = buf;
 }
 
@@ -408,52 +394,38 @@ bool String::concat(const char* cstr)
 	return concat(cstr, strlen(cstr));
 }
 
-bool String::concat(unsigned char num)
+bool String::concat(unsigned char num, unsigned char base, unsigned char width, char pad)
 {
 	char buf[1 + 3 * sizeof(num)];
-	itoa(num, buf, 10);
+	ultoa_wp(num, buf, base, width, pad);
 	return concat(buf, strlen(buf));
 }
 
-bool String::concat(int num)
+bool String::concat(long num, unsigned char base, unsigned char width, char pad)
 {
 	char buf[8 + 3 * sizeof(num)];
-	itoa(num, buf, 10);
+	ltoa_wp(num, buf, base, width, pad);
 	return concat(buf, strlen(buf));
 }
 
-bool String::concat(unsigned int num)
+bool String::concat(long long num, unsigned char base, unsigned char width, char pad)
 {
 	char buf[8 + 3 * sizeof(num)];
-	ultoa(num, buf, 10);
+	lltoa_wp(num, buf, base, width, pad);
 	return concat(buf, strlen(buf));
 }
 
-bool String::concat(long num)
+bool String::concat(unsigned long num, unsigned char base, unsigned char width, char pad)
 {
 	char buf[8 + 3 * sizeof(num)];
-	ltoa(num, buf, 10);
+	ultoa_wp(num, buf, base, width, pad);
 	return concat(buf, strlen(buf));
 }
 
-bool String::concat(long long num)
+bool String::concat(unsigned long long num, unsigned char base, unsigned char width, char pad)
 {
 	char buf[8 + 3 * sizeof(num)];
-	lltoa(num, buf, 10);
-	return concat(buf, strlen(buf));
-}
-
-bool String::concat(unsigned long num)
-{
-	char buf[8 + 3 * sizeof(num)];
-	ultoa(num, buf, 10);
-	return concat(buf, strlen(buf));
-}
-
-bool String::concat(unsigned long long num)
-{
-	char buf[8 + 3 * sizeof(num)];
-	ulltoa(num, buf, 10);
+	ulltoa_wp(num, buf, base, width, pad);
 	return concat(buf, strlen(buf));
 }
 
@@ -949,6 +921,32 @@ void String::trim(const char* set)
 		memmove(buf, begin, len);
 	}
 	setlen(len);
+}
+
+String& String::pad(int16_t minWidth, char c)
+{
+	size_t w = (minWidth < 0) ? -minWidth : minWidth;
+	auto len = length();
+	if(w <= len) {
+		return *this;
+	}
+
+	if(!reserve(std::max(w, len))) {
+		return *this;
+	}
+
+	setLength(w);
+	auto buf = buffer();
+	if(minWidth < 0) {
+		// Left-pad
+		memmove(buf + w - len, buf, len);
+		memset(buf, c, w - len);
+	} else {
+		// Right-pad
+		memset(buf + len, c, w - len);
+	}
+
+	return *this;
 }
 
 /*********************************************/

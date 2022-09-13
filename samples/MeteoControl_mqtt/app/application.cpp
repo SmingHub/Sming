@@ -14,17 +14,15 @@ void publishMessage() // uncomment timer in connectOk() if need publishMessage()
 	if(mqtt.getConnectionState() != eTCS_Connected)
 		startMqttClient(); // Auto reconnect
 
-	Serial.println("publish message");
+	Serial.println(_F("publish message"));
 	mqtt.publish(VER_TOPIC, "ver.1.2"); // or publishWithQoS
 }
 
 // Callback for messages, arrived from MQTT server
 int onMessageReceived(MqttClient& client, mqtt_message_t* message)
 {
-	Serial.print("Received: ");
-	Serial.print(MqttBuffer(message->publish.topic_name));
-	Serial.print(":\r\n\t"); // Pretify alignment for printing
-	Serial.println(MqttBuffer(message->publish.content));
+	Serial << _F("Received: ") << MqttBuffer(message->publish.topic_name) << ':' << endl;
+	Serial << '\t' << MqttBuffer(message->publish.content) << endl;
 	return 0;
 }
 
@@ -33,14 +31,13 @@ void startMqttClient()
 {
 	Url url(URI_SCHEME_MQTT, F(LOG), F(PASS), F(MQTT_SERVER), MQTT_PORT);
 	mqtt.connect(url, CLIENT);
-	Serial.println("Connected to MQTT server");
+	Serial.println(_F("Connected to MQTT server"));
 	mqtt.subscribe(SUB_TOPIC);
 }
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	Serial.print("Connected: ");
-	Serial.println(ip);
+	Serial << _F("Connected: ") << ip << endl;
 	startMqttClient();
 	publishMessage(); // run once publishMessage
 }

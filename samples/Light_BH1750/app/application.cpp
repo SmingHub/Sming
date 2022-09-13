@@ -25,9 +25,9 @@ void init()
 	Serial.systemDebugOutput(false); // Disable debug output to serial
 
 	if(LightSensor.begin() == 0)
-		Serial.println("LightSensor initialized");
+		Serial.println(_F("LightSensor initialized"));
 	else
-		Serial.println("LightSensor not available. May be wrong I2C address?");
+		Serial.println(_F("LightSensor not available. May be wrong I2C address?"));
 
 	/*
 	Set the Working Mode for this sensor

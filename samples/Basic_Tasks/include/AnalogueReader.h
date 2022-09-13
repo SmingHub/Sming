@@ -91,9 +91,7 @@ ANALOGUE_READER(void)::processSamples()
 		}
 		Serial.print(bands[i]);
 	}
-	Serial.print(" - ");
-	Serial.print(missedSamples);
-	Serial.println(" missed");
+	Serial << " - " << missedSamples << " missed" << endl;
 }
 
 ANALOGUE_READER(void)::loop()
@@ -115,12 +113,8 @@ ANALOGUE_READER(void)::loop()
 		missedSamples = 0;
 		restartSampler = false;
 
-		//		Serial.print("groupStartTicks = ");
-		//		Serial.print(groupStartTicks);
-		//		Serial.print(", now = ");
-		//		Serial.print(now);
-		//		Serial.print(", diff = ");
-		//		Serial.println(int(now - groupStartTicks));
+		// Serial << "groupStartTicks = " << groupStartTicks,
+		// 	" <<  now = " << now << ", diff = " << int(now - groupStartTicks) << endl;
 
 	} else if(int(nextSampleTicks - now) <= 0) {
 		unsigned index = (now - groupStartTicks) / sampleIntervalTicks;
@@ -163,8 +157,7 @@ ANALOGUE_READER(void)::onNotify(Notify code)
 		groupStartTicks = sampleTimer.ticks();
 		restartSampler = true;
 
-		Serial.print(_F("sampleIntervalTicks = "));
-		Serial.println(sampleIntervalTicks);
+		Serial << F("sampleIntervalTicks = ") << sampleIntervalTicks << endl;
 		break;
 	default:;
 	}

@@ -49,24 +49,17 @@ void scanBus()
 		WDT.alive(); // Second option: notify Watch Dog what you are alive (feed it)
 
 		if(error == 0) {
-			Serial.print("I2C device found at address 0x");
-			if(address < 16)
-				Serial.print("0");
-			Serial.print(address, HEX);
-			Serial.println("  !");
-
+			Serial << _F("I2C device found at address 0x") << String(address, HEX, 2) << "  !" << endl;
 			nDevices++;
 		} else if(error == 4) {
-			Serial.print("Unknown error at address 0x");
-			if(address < 16)
-				Serial.print("0");
-			Serial.println(address, HEX);
+			Serial << _F("Unknown error at address 0x") << String(address, HEX, 2) << endl;
 		}
 	}
-	if(nDevices == 0)
+	if(nDevices == 0) {
 		Serial.println("No I2C devices found\n");
-	else
+	} else {
 		Serial.println("done\n");
+	}
 }
 
 void init()

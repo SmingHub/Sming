@@ -19,7 +19,7 @@ static CpuCycleTimer timer;
 
 static void printTime(const char* name, unsigned ticks)
 {
-	Serial.printf("%s: %u cycles, %s\r\n", name, ticks, timer.ticksToTime(ticks).toString().c_str());
+	Serial << name << ": " << ticks << " cycles, " << timer.ticksToTime(ticks).toString() << endl;
 }
 
 static void __noinline evaluateCallback(const char* name, TestCallback callback, int testParam)
@@ -46,7 +46,7 @@ void evaluateSpeed()
 {
 	Serial.println();
 	Serial.println();
-	Serial.printf("Timings are in CPU cycles per loop, averaged over %u iterations\r\n", ITERATIONS);
+	Serial << _F("Timings are in CPU cycles per loop, averaged over ") << ITERATIONS << _F(" iterations") << endl;
 
 	int testParam = 123;
 

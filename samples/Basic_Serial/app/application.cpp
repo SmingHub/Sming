@@ -149,19 +149,15 @@ HardwareSerial Serial1(UART_ID_1);
 
 void sayHello()
 {
-	Serial.print(_F("Hello Sming! Let's do smart things."));
-	Serial.print(_F(" Time : "));
-	Serial.println(micros());
-	Serial.println();
-
-	Serial.printf(_F("This is Hello message %d \r\r\n"), ++helloCounter);
+	Serial << _F("Hello Sming! Let's do smart things. Time: ") << micros() << endl;
+	Serial << _F("This is Hello message ") << ++helloCounter << endl;
 }
 
 void testPrintf()
 {
-	Serial.print(_F("\r\n== PRINTF TEST START ==\r\n"));
+	Serial.println(_F("\r\n== PRINTF TEST START =="));
 
-	Serial.print(_F("\r\nFloat numbers display test: \r\n"));
+	Serial.println(_F("\r\nFloat numbers display test:"));
 
 	Serial.printf("Pi with 2 decimals: %.2f and with 4 decimals: %.4f \r\n", PI, PI);
 	Serial.printf("Pi without specifying precision(default 9): %f\r\n", PI);
@@ -217,19 +213,19 @@ void handleCommand(const String& command)
 		String filename = F("README.md");
 		FileStream* fileStream = new FileStream;
 		if(fileStream && fileStream->open(filename, File::ReadOnly)) {
-			Serial.printf(_F("Sending \"%s\" (%u bytes)\r\n"), filename.c_str(), fileStream->available());
+			Serial << _F("Sending \"") << filename << "\" (" << fileStream->available() << " bytes)" << endl;
 			auto demo = new SerialTransmitDemo(Serial1, fileStream);
 			demo->begin();
 		} else {
-			Serial.printf(_F("Failed to open file \"%s\"\r\n"), filename.c_str());
+			Serial << _F("Failed to open file \"") << filename << '"' << endl;
 			delete fileStream;
 		}
 	} else if(command.equalsIgnoreCase(_F("text"))) {
-		Serial.printf(_F("Sending flash data, %u bytes\r\n"), testFlashData.length());
+		Serial << _F("Sending flash data, ") << testFlashData.length() << " bytes" << endl;
 		auto demo = new SerialTransmitDemo(Serial, new FlashMemoryStream(testFlashData));
 		demo->begin();
 	} else {
-		Serial.printf(_F("I don't know what \"%s\" means! Try typing: cat\r\n"), command.c_str());
+		Serial << _F("I don't know what \"") << command << _F("\" means! Try typing: cat") << endl;
 	}
 }
 

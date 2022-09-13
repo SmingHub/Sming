@@ -78,8 +78,7 @@ void sslRequestInit(Ssl::Session& session, HttpRequest& request)
 
 void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
-	Serial.print(F("Connected. Got IP: "));
-	Serial.println(ip);
+	Serial << _F("Connected. Got IP: ") << ip << endl;
 
 	// [ GET request: The example below shows how to make HTTP requests ]
 

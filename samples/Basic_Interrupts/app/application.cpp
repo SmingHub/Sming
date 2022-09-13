@@ -7,22 +7,13 @@
 #define INT_PIN_B 4  // GPIO4
 #define TOGGLE_PIN 5 // GPIO5
 
-#define say(a) (Serial.print(a))
-#define newline() (Serial.println())
-
 static unsigned interruptToggleCount;
 
 void showInterruptToggleCount(uint32_t toggleCount)
 {
-	say("Toggle count hit ");
-	say(toggleCount);
-	say(", current value is ");
-	say(interruptToggleCount);
-	say("!");
-	newline();
-	say("Max tasks queued: ");
-	say(System.getMaxTaskCount());
-	newline();
+	Serial << _F("Toggle count hit ") << toggleCount << _F(", current value is ") << interruptToggleCount << '!'
+		   << endl;
+	Serial << _F("Max tasks queued: ") << System.getMaxTaskCount() << endl;
 }
 
 /** @brief Low-level interrupt handler
@@ -74,15 +65,10 @@ void IRAM_ATTR interruptHandler()
 void interruptDelegate()
 {
 	// For this example, we write some stuff out of the serial port.
-	say(micros());
-	say("   Pin changed, now   ");
-	say(digitalRead(INT_PIN_B));
-	newline();
+	Serial << micros() << _F("   Pin changed, now   ") << digitalRead(INT_PIN_B) << endl;
 
 	// Interrupt delegates work by queueing your callback routine, so let's just show you how many requests got queued
-	say("Max tasks queued: ");
-	say(System.getMaxTaskCount());
-	newline();
+	Serial << _F("Max tasks queued: ") << System.getMaxTaskCount() << endl;
 
 	/* OK, so you probably got a number which hit 255 pretty quickly! It stays there to indicate the task queue
 	 * overflowed, which happens because we're getting way more interrupts than we can process in a timely manner, so
@@ -95,21 +81,16 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 or 9600 by default
 
 	delay(3000);
-	say("======= Bring GPIO");
-	say(INT_PIN_A);
-	say(" low to trigger interrupt(s) =======");
-	newline();
+	Serial << _F("======= Bring GPIO") << INT_PIN_A << _F(" low to trigger interrupt(s) =======") << endl;
 
 	// Note we enable pullup on our test pin so it will stay high when not connected
 	attachInterrupt(INT_PIN_A, interruptHandler, CHANGE);
 	pinMode(INT_PIN_A, INPUT_PULLUP);
-	say("Interrupt A attached");
-	newline();
+	Serial.println(_F("Interrupt A attached"));
 
 	// For an interrupt delegate callback, we simply cast our function or method using InterruptDelegate()
 	pinMode(TOGGLE_PIN, OUTPUT);
 	attachInterrupt(INT_PIN_B, InterruptDelegate(interruptDelegate), CHANGE);
 	pinMode(INT_PIN_B, INPUT_PULLUP);
-	say("Interrupt B attached");
-	newline();
+	Serial.println(_F("Interrupt B attached"));
 }

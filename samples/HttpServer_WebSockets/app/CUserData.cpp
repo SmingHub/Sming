@@ -30,10 +30,7 @@ void CUserData::printMessage(WebsocketConnection& connection, const String& msg)
 	}
 
 	if(i < activeWebSockets.count()) {
-		Serial.print(F("Received msg on connection "));
-		Serial.print(i);
-		Serial.print(" :");
-		Serial.print(msg);
+		Serial << _F("Received msg on connection ") << i << ": " << msg;
 	}
 }
 
