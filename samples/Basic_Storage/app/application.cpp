@@ -9,9 +9,7 @@ void listSpiffsPartitions()
 {
 	Serial.println(_F("** Enumerate registered SPIFFS partitions"));
 	for(auto part : Storage::findPartition(Storage::Partition::SubType::Data::spiffs)) {
-		Serial.print(F(">> Mounting '"));
-		Serial.print(part.name());
-		Serial.println("' ...");
+		Serial << _F(">> Mounting '") << part.name() << "' ..." << endl;
 		bool ok = spiffs_mount(part);
 		Serial.println(ok ? "OK, listing files:" : "Mount failed!");
 		if(ok) {
@@ -22,9 +20,7 @@ void listSpiffsPartitions()
 					Serial.println(dir.stat().name);
 				}
 			}
-			Serial.print(dir.count());
-			Serial.println(F(" files found"));
-			Serial.println();
+			Serial << dir.count() << _F(" files found") << endl << endl;
 		}
 	}
 }
@@ -35,16 +31,16 @@ void printPart(Storage::Partition part)
 	char buf[bufSize];
 	OneShotFastUs timer;
 	if(!part.read(0, buf, bufSize)) {
-		debug_e("Error reading from partition '%s'", part.name().c_str());
+		Serial << _F("Error reading from partition '") << part.name() << "'" << endl;
 	} else {
 		auto elapsed = timer.elapsedTime();
 		String s = part.getDeviceName();
 		s += '/';
 		s += part.name();
 		m_printHex(s.c_str(), buf, std::min(128U, bufSize));
-		m_printf(_F("Elapsed: %s\r\n"), elapsed.toString().c_str());
+		Serial << _F("Elapsed: ") << elapsed.toString() << endl;
 		if(elapsed != 0) {
-			m_printf(_F("Speed:   %u KB/s\r\n\r\n"), 1000 * bufSize / elapsed);
+			Serial << _F("Speed:   ") << 1000 * bufSize / elapsed << " KB/s" << endl;
 		}
 	}
 	Serial.println();
@@ -54,7 +50,7 @@ void printPart(const String& partitionName)
 {
 	auto part = Storage::findPartition(partitionName);
 	if(!part) {
-		debug_e("Partition '%s' not found", partitionName.c_str());
+		Serial << _F("Partition '") << partitionName << _F("' not found") << endl;
 	} else {
 		printPart(part);
 	}
