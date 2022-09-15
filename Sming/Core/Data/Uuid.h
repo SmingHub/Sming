@@ -58,10 +58,13 @@ struct Uuid {
 	{
 	}
 
-	template <typename T> explicit Uuid(const T& guid)
+	explicit constexpr Uuid(uint32_t time_low, uint16_t time_mid, uint16_t time_hi_and_version,
+							uint8_t clock_seq_hi_and_reserved, uint8_t clock_seq_low, uint8_t n1, uint8_t n2,
+							uint8_t n3, uint8_t n4, uint8_t n5, uint8_t n6)
+		: time_low(time_low), time_mid(time_mid), time_hi_and_version(time_hi_and_version),
+		  clock_seq_hi_and_reserved(clock_seq_hi_and_reserved),
+		  clock_seq_low(clock_seq_low), node{n1, n2, n3, n4, n5, n6}
 	{
-		static_assert(sizeof(T) == 16);
-		memcpy(this, &guid, sizeof(T));
 	}
 
 	explicit operator bool()
