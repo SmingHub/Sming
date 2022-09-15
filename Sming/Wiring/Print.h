@@ -260,7 +260,14 @@ protected:
 	}
 };
 
-template <typename T> Print& operator<<(Print& p, const T& value)
+inline Print& operator<<(Print& p, const char value[])
+{
+	p.print(value);
+	return p;
+}
+
+template <typename T>
+typename std::enable_if<!std::is_array<T>::value, Print&>::type operator<<(Print& p, const T& value)
 {
 	p.print(value);
 	return p;
