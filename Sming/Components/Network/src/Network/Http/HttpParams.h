@@ -31,7 +31,7 @@
  * @ingroup http
  *
  */
-class HttpParams : public HashMap<String, String>, public Printable
+class HttpParams : public HashMap<String, String>
 {
 public:
 	HttpParams() = default;
@@ -69,7 +69,7 @@ public:
 	}
 
 	// Printable
-	size_t printTo(Print& p) const override;
+	size_t printTo(Print& p) const;
 
 	/**
 	 * @brief Printable output for debugging

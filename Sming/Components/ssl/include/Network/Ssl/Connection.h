@@ -33,7 +33,7 @@ class Context;
  * SSL Alerts are also reported via error codes and can be obtained
  * using a call to `getAlert()`.
  */
-class Connection : public Printable
+class Connection
 {
 public:
 	Connection(Context& context, tcp_pcb* tcp) : context(context), tcp(tcp)
@@ -99,7 +99,7 @@ public:
 	/**
 	 * @brief For debugging
 	 */
-	size_t printTo(Print& p) const override;
+	size_t printTo(Print& p) const;
 
 	int writeTcpData(uint8_t* data, size_t length);
 

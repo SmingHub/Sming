@@ -16,7 +16,7 @@
 /**
  * @brief Helper class to simplify printing and parsing message buffers
  */
-class MqttBuffer : public Printable
+class MqttBuffer
 {
 public:
 	MqttBuffer(const mqtt_buffer_t& buf) : buf(buf)
@@ -28,7 +28,7 @@ public:
 		return String(reinterpret_cast<const char*>(buf.data), buf.length);
 	}
 
-	size_t printTo(Print& p) const override
+	size_t printTo(Print& p) const
 	{
 		return p.write(buf.data, buf.length);
 	}

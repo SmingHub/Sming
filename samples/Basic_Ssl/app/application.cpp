@@ -46,7 +46,7 @@ int onDownload(HttpConnection& connection, bool success)
 
 	auto ssl = connection.getSsl();
 	if(ssl != nullptr) {
-		ssl->printTo(Serial);
+		Serial.print(*ssl);
 	}
 
 	Serial << _F("Time to connect and download page: ") << elapsed.toString() << endl;
