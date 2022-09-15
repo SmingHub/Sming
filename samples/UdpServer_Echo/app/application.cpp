@@ -17,8 +17,7 @@ void onReceive(UdpConnection& connection, char* data, int size, IpAddress remote
 	debugf("UDP Server callback from %s:%d, %d bytes", remoteIP.toString().c_str(), remotePort, size);
 
 	// We implement string mode server for example
-	Serial.print(">\t");
-	Serial.print(data);
+	Serial << ">\t" << data;
 
 	// Send echo to remote sender
 	String text = String("echo: ") + data;
@@ -29,11 +28,10 @@ void gotIP(IpAddress ip, IpAddress gateway, IpAddress netmask)
 {
 	udp.listen(EchoPort);
 
-	Serial.println("\r\n=== UDP SERVER STARTED ===");
-	Serial.print(WifiStation.getIP());
-	Serial.print(":");
-	Serial.println(EchoPort);
-	Serial.println("=============================\r\n");
+	Serial.println(_F("\r\n"
+					  "=== UDP SERVER STARTED ==="));
+	Serial << WifiStation.getIP() << ':' << EchoPort << endl;
+	Serial.println(_F("==========================\r\n"));
 }
 
 void init()

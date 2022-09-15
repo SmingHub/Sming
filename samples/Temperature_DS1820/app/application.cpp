@@ -1,8 +1,11 @@
 #include <SmingCore.h>
 #include <Libraries/DS18S20/ds18s20.h>
 
+#define I2C_PIN 4
+
 DS18S20 ReadTemp;
 Timer procTimer;
+
 //**********************************************************
 // DS18S20 example, reading
 // You can connect multiple sensors to a single port
@@ -21,43 +24,36 @@ void readData()
 {
 	if(!ReadTemp.MeasureStatus()) // the last measurement completed
 	{
-		if(ReadTemp.GetSensorsCount()) // is minimum 1 sensor detected ?
-			Serial.println("******************************************");
-		Serial.println(" Reding temperature DEMO");
-		for(uint8_t a = 0; a < ReadTemp.GetSensorsCount(); a++) // prints for all sensors
-		{
-			Serial.print(" T");
-			Serial.print(a + 1);
-			Serial.print(" = ");
-			if(ReadTemp.IsValidTemperature(a)) // temperature read correctly ?
-			{
-				Serial.print(ReadTemp.GetCelsius(a));
-				Serial.print(" Celsius, (");
-				Serial.print(ReadTemp.GetFahrenheit(a));
-				Serial.println(" Fahrenheit)");
-			} else
-				Serial.println("Temperature not valid");
-
-			Serial.print(" <Sensor id.");
-
-			uint64_t info = ReadTemp.GetSensorID(a) >> 32;
-			Serial.print((uint32_t)info, 16);
-			Serial.print((uint32_t)ReadTemp.GetSensorID(a), 16);
-			Serial.println(">");
+		auto sensorCount = ReadTemp.GetSensorsCount();
+		if(sensorCount > 0) {
+			Serial.println(_F("******************************************"));
 		}
-		Serial.println("******************************************");
+		Serial.println(_F(" Reading temperature DEMO"));
+		// prints for all sensors
+		for(unsigned a = 0; a < sensorCount; a++) {
+			Serial << " T" << a + 1 << " = ";
+			if(ReadTemp.IsValidTemperature(a)) {
+				Serial << ReadTemp.GetCelsius(a) << _F(" Celsius, (") << ReadTemp.GetFahrenheit(a) << _F(" Fahrenheit)")
+					   << endl;
+			} else {
+				Serial.println(_F("Temperature not valid"));
+			}
+
+			Serial << _F(" <Sensor id.") << String(ReadTemp.GetSensorID(a), HEX, 32) << '>' << endl;
+		}
+		Serial.println(_F("******************************************"));
 		ReadTemp.StartMeasure(); // next measure, result after 1.2 seconds * number of sensors
 	} else
-		Serial.println("No valid Measure so far! wait please");
+		Serial.println(_F("No valid Measure so far! wait please"));
 }
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-	Serial.systemDebugOutput(true); // Allow debug output to serial
+	Serial.begin(SERIAL_BAUD_RATE);
+	Serial.systemDebugOutput(true);
 
-	ReadTemp.Init(4);		 // select PIN It's required for one-wire initialization!
+	ReadTemp.Init(I2C_PIN);
 	ReadTemp.StartMeasure(); // first measure start,result after 1.2 seconds * number of sensors
 
-	procTimer.initializeMs(10000, readData).start(); // every 10 seconds
+	procTimer.initializeMs<10000>(readData).start();
 }

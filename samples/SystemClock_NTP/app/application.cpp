@@ -45,11 +45,8 @@ NtpClientDemo* demo;
 
 void onPrintSystemTime()
 {
-	Serial.print("Local Time: ");
-	Serial.print(SystemClock.getSystemTimeString(eTZ_Local));
-	Serial.print(" ");
-	Serial.print("UTC Time:   ");
-	Serial.println(SystemClock.getSystemTimeString(eTZ_UTC));
+	Serial << _F("Local Time: ") << SystemClock.getSystemTimeString(eTZ_Local) << _F(", UTC Time: ")
+		   << SystemClock.getSystemTimeString(eTZ_UTC) << endl;
 }
 
 // Called when time has been received by NtpClient (option 1 or 2)
@@ -59,8 +56,7 @@ void onNtpReceive(NtpClient& client, time_t timestamp)
 {
 	SystemClock.setTime(timestamp, eTZ_UTC);
 
-	Serial.print("Time synchronized: ");
-	Serial.println(SystemClock.getSystemTimeString());
+	Serial << _F("Time synchronized: ") << SystemClock.getSystemTimeString() << endl;
 }
 
 // Will be called when WiFi station timeout was reached
@@ -99,7 +95,7 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true); // Allow debug print to serial
-	Serial.println("Sming. Let's do smart things!");
+	Serial.println(_F("Sming. Let's do smart things!"));
 
 	// Station - WiFi client
 	WifiStation.enable(true);

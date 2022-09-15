@@ -17,6 +17,7 @@
 #pragma once
 
 #include <Platform/System.h>
+#include <MacAddress.h>
 #include "WVector.h"
 
 /**	@defgroup wifi_sniffer WiFi Sniffer
@@ -31,7 +32,7 @@
  * @brief Decoded Wifi beacon (Access Point) information
  */
 struct BeaconInfo {
-	uint8_t bssid[ETH_MAC_LEN];
+	MacAddress bssid;
 	uint8_t ssid[33];
 	uint8_t ssid_len;
 	uint8_t channel;
@@ -44,25 +45,22 @@ struct BeaconInfo {
  * @brief Decoded Wifi client information
  */
 struct ClientInfo {
-	uint8_t bssid[ETH_MAC_LEN];
-	uint8_t station[ETH_MAC_LEN];
-	uint8_t ap[ETH_MAC_LEN];
+	MacAddress bssid;
+	MacAddress station;
+	MacAddress ap;
 	uint8_t channel;
 	int8_t err;
 	int8_t rssi;
 	uint16_t seq_n;
 };
 
-/**
- * @brief For applications to use to manage list of unique beacons
- */
-class BeaconInfoList : public Vector<BeaconInfo>
+template <class T> class BeaconOrClientListTemplate : public Vector<T>
 {
 public:
-	int indexOf(const uint8_t bssid[])
+	int indexOf(const MacAddress& bssid)
 	{
-		for(unsigned i = 0; i < count(); ++i) {
-			if(memcmp(elementAt(i).bssid, bssid, ETH_MAC_LEN) == 0) {
+		for(unsigned i = 0; i < this->count(); ++i) {
+			if(this->elementAt(i).bssid == bssid) {
 				return i;
 			}
 		}
@@ -70,24 +68,16 @@ public:
 		return -1;
 	}
 };
+
+/**
+ * @brief For applications to use to manage list of unique beacons
+ */
+using BeaconInfoList = BeaconOrClientListTemplate<BeaconInfo>;
 
 /**
  * @brief For applications to use to manage list of unique clients
  */
-class ClientInfoList : public Vector<ClientInfo>
-{
-public:
-	int indexOf(const uint8_t station[])
-	{
-		for(unsigned i = 0; i < count(); ++i) {
-			if(memcmp(elementAt(i).station, station, ETH_MAC_LEN) == 0) {
-				return i;
-			}
-		}
-
-		return -1;
-	}
-};
+using ClientInfoList = BeaconOrClientListTemplate<ClientInfo>;
 
 using WifiSnifferCallback = Delegate<void(uint8_t* data, uint16_t length)>;
 using WifiBeaconCallback = Delegate<void(const BeaconInfo& beacon)>;

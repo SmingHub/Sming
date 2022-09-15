@@ -99,12 +99,12 @@ void test()
 
 		// speedTest(question);
 
-		checkLike(question, "_services._dns-sd._udp.local", true);
-		checkLike(question, "_dns-sd._udp.local", true);
-		checkLike(question, "_udp.local", true);
-		checkLike(question, "local", true);
+		checkLike(question, _F("_services._dns-sd._udp.local"), true);
+		checkLike(question, _F("_dns-sd._udp.local"), true);
+		checkLike(question, _F("_udp.local"), true);
+		checkLike(question, _F("local"), true);
 
-		checkParser("_some-service-or-other._http._tcp.sming.local");
+		checkParser(_F("_some-service-or-other._http._tcp.sming.local"));
 
 		// debug_i("(question == fstrServicesLocal): %u", question->getName() == fstrServicesLocal);
 		printMessage(Serial, query);
@@ -145,9 +145,9 @@ void onFile(HttpRequest& request, HttpResponse& response)
 {
 	String file = request.uri.getRelativePath();
 
-	if(file[0] == '.')
+	if(file[0] == '.') {
 		response.code = HTTP_STATUS_FORBIDDEN;
-	else {
+	} else {
 		response.setCache(86400, true); // It's important to use cache for better performance.
 		response.sendFile(file);
 	}
@@ -158,9 +158,10 @@ void startWebServer()
 	server.listen(80);
 	server.paths.set("/", onIndex);
 
-	Serial.println("\r\n=== WEB SERVER STARTED ===");
+	Serial.println(_F("\r\n"
+					  "=== WEB SERVER STARTED ==="));
 	Serial.println(WifiStation.getIP());
-	Serial.println("==============================\r\n");
+	Serial.println(_F("==========================\r\n"));
 }
 
 void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)

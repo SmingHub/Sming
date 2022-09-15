@@ -26,9 +26,9 @@ void onFile(HttpRequest& request, HttpResponse& response)
 {
 	String file = request.uri.getRelativePath();
 
-	if(file[0] == '.')
+	if(file[0] == '.') {
 		response.code = HTTP_STATUS_FORBIDDEN;
-	else {
+	} else {
 		response.setCache(86400, true); // It's important to use cache for better performance.
 		response.sendFile(file);
 	}
@@ -42,17 +42,17 @@ MultipartStream::BodyPart snapshotProducer()
 	result.stream = webcamStream;
 
 	result.headers = new HttpHeaders();
-	(*result.headers)["Content-Type"] = camera->getMimeType();
+	(*result.headers)[HTTP_HEADER_CONTENT_TYPE] = camera->getMimeType();
 
 	return result;
 }
 
 void onStream(HttpRequest& request, HttpResponse& response)
 {
-	Serial.printf("perform onCapture()\r\n");
+	Serial.println(_F("perform onCapture()"));
 
 	MultipartStream* stream = new MultipartStream(snapshotProducer);
-	response.sendDataStream(stream, String("multipart/x-mixed-replace; boundary=") + stream->getBoundary());
+	response.sendDataStream(stream, F("multipart/x-mixed-replace; boundary=") + stream->getBoundary());
 }
 
 void onFavicon(HttpRequest& request, HttpResponse& response)
@@ -65,10 +65,11 @@ void startWebServer()
 {
 	// Initialize the camera
 	Vector<String> images;
-	char buf[13] = {0};
 	for(unsigned int i = 1; i < 6; i++) {
-		sprintf(buf, "img%02d.jpeg", i);
-		images.add(buf);
+		String s = "img";
+		s.concat(i, DEC, 2);
+		s += ".jpeg";
+		images.add(s);
 	}
 	camera = new FakeCamera(images);
 	camera->init();
