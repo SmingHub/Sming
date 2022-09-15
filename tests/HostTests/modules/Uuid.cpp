@@ -5,13 +5,9 @@
 
 namespace
 {
-struct guid_t {
-	uint8_t b[16];
-};
+using guid_t = Uuid;
 
-#define DEFINE_GUID(name, a, b, c, d...)                                                                               \
-	static const guid_t name PROGMEM = {{(a)&0xff, ((a) >> 8) & 0xff, ((a) >> 16) & 0xff, ((a) >> 24) & 0xff,          \
-										 (b)&0xff, ((b) >> 8) & 0xff, (c)&0xff, ((c) >> 8) & 0xff, d}};
+#define DEFINE_GUID(name, a, b, c, d...) static constexpr guid_t name PROGMEM{a, b, c, d};
 
 DEFINE_GUID(PARTITION_SYSTEM_GUID, 0xc12a7328, 0xf81f, 0x11d2, 0xba, 0x4b, 0x00, 0xa0, 0xc9, 0x3e, 0xc9, 0x3b)
 #define PARTITION_SYSTEM_GUID_PSTR "c12a7328-f81f-11d2-ba4b-00a0c93ec93b"
@@ -33,7 +29,6 @@ public:
 			Uuid uuid;
 			uint8_t empty[16]{};
 			REQUIRE(memcmp(&uuid, empty, 16) == 0);
-			REQUIRE(uuid == Uuid(empty));
 		}
 
 		TEST_CASE("Struct")
