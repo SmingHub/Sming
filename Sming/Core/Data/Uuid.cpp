@@ -84,6 +84,10 @@ bool Uuid::decompose(const char* s, size_t len)
 
 size_t Uuid::toString(char* buffer, size_t bufSize) const
 {
+	if(isFlashPtr(this)) {
+		return Uuid(*this).toString(buffer, bufSize);
+	}
+
 	if(buffer == nullptr || bufSize < stringSize) {
 		return 0;
 	}

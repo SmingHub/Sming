@@ -53,7 +53,7 @@ public:
 		TEST_CASE("Printing")
 		{
 			MemoryDataStream str;
-			Uuid u1(PARTITION_SYSTEM_GUID);
+			const Uuid& u1(PARTITION_SYSTEM_GUID);
 			str << u1;
 			String s = str.readString(Uuid::stringSize);
 			REQUIRE_EQ(str.available(), 0);
