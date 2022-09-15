@@ -67,7 +67,7 @@ struct Uuid {
 	{
 	}
 
-	explicit operator bool()
+	explicit operator bool() const
 	{
 		Uuid Null{};
 		return memcmp(this, &Null, sizeof(Null)) != 0;
