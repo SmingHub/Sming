@@ -16,7 +16,10 @@
 #include <SystemClock.h>
 #include <stringconversion.h>
 
-extern "C" uint32_t os_random();
+extern "C" {
+uint32_t os_random();
+void os_get_random(void* buf, size_t n);
+}
 
 bool Uuid::generate(MacAddress mac)
 {
@@ -38,6 +41,15 @@ bool Uuid::generate(MacAddress mac)
 	mac.getOctets(node);
 
 	return SystemClock.isSet();
+}
+
+bool Uuid::generate()
+{
+	MacAddress::Octets mac;
+	os_get_random(mac, sizeof(mac));
+	// RFC4122 requires LSB of first octet to be 1
+	mac[0] |= 0x01;
+	return generate(mac);
 }
 
 bool Uuid::decompose(const char* s, size_t len)

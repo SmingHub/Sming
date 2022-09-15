@@ -84,9 +84,19 @@ struct Uuid {
 	}
 
 	/**
-	 * @note System clock must be set or this will not produce correct results.
+	 * @brief Generate a UUID using a MAC node address
+	 * @param mac Node address to use in generating the UUID, typically from WifiStation
+	 * @retval bool true if system clock time was used, false if substituted with random number
 	 */
 	bool generate(MacAddress mac);
+
+	/**
+	 * @brief Generate UUID using random number instead of MAC
+	 * @retval bool true if system clock time was used, false if substituted with random number
+	 *
+	 * Used where MAC address is not available or it is not desirable to expose it.
+	 */
+	bool generate();
 
 	/**
 	 * @name Decompse string into UUID
