@@ -226,7 +226,7 @@ public:
 	  */
 	size_t println()
 	{
-		return print("\r\n");
+		return write("\r\n", 2);
 	}
 
 	/** @brief Print value plus newline to output stream
