@@ -80,18 +80,18 @@ public:
 		headers[F("Vary")] = _F("Accept-Encoding");
 		headers[F("X-Fastly-Request-ID")] = _F("38ef411e0ec3bf681d29d8b4b51f3516d3ef9e03");
 		auto totalElapsed = timer.elapsedTime();
-		debugf("Set header values");
-		debugf("  Elapsed standard: %s, total: %s, heap used: %u", standardElapsed.toString().c_str(),
-			   totalElapsed.toString().c_str(), freeHeap - system_get_free_heap_size());
+		Serial.println(_F("Set header values"));
+		Serial << _F("  Elapsed standard: ") << standardElapsed.toString() << ", total: " << totalElapsed.toString()
+			   << ", heap used: " << freeHeap - system_get_free_heap_size() << endl;
 
 		// Query header value by field name
 		auto queryByEnum = [&](HttpHeaderFieldName name) {
-			debugf("  header[\"%s\"]: %s", headers.toString(name).c_str(), headers[name].c_str());
+			Serial << _F("  header[\"") << headers.toString(name) << "\"]: " << headers[name] << endl;
 		};
 		auto queryByString = [&](const String& name) {
-			debugf("  header[\"%s\"]: %s", name.c_str(), headers[name].c_str());
+			Serial << _F("  header[\"") << name << "\"]: " << headers[name] << endl;
 		};
-		debugf("Query header values");
+		Serial.println(_F("Query header values"));
 		timer.start();
 		queryByEnum(HTTP_HEADER_CONTENT_ENCODING);
 		queryByEnum(HTTP_HEADER_CONTENT_LENGTH);
@@ -106,15 +106,15 @@ public:
 		queryByString("Vary");
 		queryByString("X-Fastly-Request-ID");
 		totalElapsed = timer.elapsedTime();
-		debugf("  Elapsed standard: %u, total: %u", standardElapsed, totalElapsed);
-		debugf("  Elapsed standard: %s, total: %s", standardElapsed.toString().c_str(),
-			   totalElapsed.toString().c_str());
+		Serial << _F("  Elapsed standard: ") << standardElapsed << ", total: " << totalElapsed << endl;
+		Serial << _F("  Elapsed standard: ") << standardElapsed.toString() << ", total: " << totalElapsed.toString()
+			   << endl;
 
 		// Print header values - accessed by index
-		debugf("Printing %u headers", headers.count());
+		Serial << _F("Printing ") << headers.count() << _F(" headers") << endl;
 		timer.start();
 		printHeaders(headers);
-		debugf("  Elapsed: %s", timer.elapsedTime().toString().c_str());
+		Serial << _F("  Elapsed: ") << timer.elapsedTime().toString() << endl;
 
 		delete headersPtr;
 	}

@@ -52,6 +52,7 @@ public:
 		server->paths.setDefault([](HttpRequest& request, HttpResponse& response) {
 			auto path = request.uri.getRelativePath();
 			bool ok = response.sendFile(path);
+			(void)ok;
 			debug_i("Request from '%s' for '%s': %s", request.uri.Host.c_str(), path.c_str(), ok ? "OK" : "FAIL");
 		});
 

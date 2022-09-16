@@ -114,7 +114,7 @@ public:
 			tmp->initializeMs<1200>(
 				[](void* arg) {
 					auto self = static_cast<CallbackTimerTest*>(arg);
-					debugf("%s fired", String(self->timer64).c_str());
+					Serial << self->timer64 << _F(" fired") << endl;
 				},
 				this);
 			tmp->startOnce();
