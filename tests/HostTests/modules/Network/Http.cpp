@@ -24,11 +24,12 @@ public:
 #if DEBUG_VERBOSE_LEVEL == DBG
 		for(int i = 0; i < 100; ++i) {
 			auto err = HttpError(i);
-			debug_d("httpError(%d) = \"%s\", \"%s\"", i, toString(err).c_str(), httpGetErrorDescription(err).c_str());
+			Serial << _F("httpError(") << i << ") = \"" << err << "\", \"" << httpGetErrorDescription(err) << '"'
+				   << endl;
 		}
 
 		for(int i = 100; i < 550; ++i) {
-			debug_d("HTTP Status(%d) = \"%s\"", i, toString(HttpStatus(i)).c_str());
+			Serial << _F("HTTP Status(") << i << ") = \"" << HttpStatus(i) << '"' << endl;
 		}
 #endif
 
@@ -47,7 +48,7 @@ public:
 	static void printHeaders(const HttpHeaders& headers)
 	{
 #if DEBUG_VERBOSE_LEVEL == DBG
-		debugf("  count: %d", headers.count());
+		Serial << _F("  count: ") << headers.count() << endl;
 		for(unsigned i = 0; i < headers.count(); ++i) {
 			String s = headers[i];
 			m_printHex("  ", s.c_str(), s.length(), 0, 32);
@@ -57,7 +58,7 @@ public:
 
 	void profileHttpHeaders()
 	{
-		debugf("\nPROFILING");
+		Serial.println(_F("\r\nPROFILING"));
 
 		// Allocate everything on the heap so we can track memory usage
 		auto freeHeap = system_get_free_heap_size();

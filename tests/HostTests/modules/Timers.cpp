@@ -29,7 +29,7 @@ public:
 	{
 		System.queueCallback(
 			[](void* param) {
-				debugf("timer1 expired");
+				Serial.println(_F("timer1 expired"));
 				auto tmr = static_cast<HardwareTimerTest*>(param);
 				if(++tmr->count == 5) {
 					tmr->stop();
@@ -47,11 +47,7 @@ public:
 		checkCallbackTimer<SimpleTimer>();
 		checkCallbackTimer<Timer>();
 
-#define SHOW_SIZE(Type)                                                                                                \
-	{                                                                                                                  \
-		Serial.print("sizeof(" #Type ") = ");                                                                          \
-		Serial.println(sizeof(Type));                                                                                  \
-	}
+#define SHOW_SIZE(Type) Serial << _F("sizeof(" #Type ") = ") << sizeof(Type) << endl
 
 		SHOW_SIZE(os_timer_t);
 		SHOW_SIZE(OsTimerApi);
@@ -127,15 +123,13 @@ public:
 				Serial.println(longTimer.toString());
 				Serial.print("Elapsed ticks = ");
 				Serial.println(ticks - longStartTicks);
-				debugf("Finally done!");
+				Serial.println(_F("Finally done!"));
 			});
-			Serial.print("longTimer.maxTicks = ");
-			Serial.println(longTimer.maxTicks());
+			Serial << _F("longTimer.maxTicks = ") << longTimer.maxTicks() << endl;
 			longTimer.setIntervalMs<15000>();
 			longTimer.startOnce();
 			longStartTicks = Timer::Clock::ticks();
-			Serial.print("longTimer.start = ");
-			Serial.println(longStartTicks);
+			Serial << _F("longTimer.start = ") << longStartTicks << endl;
 			++activeTimerCount;
 			Serial.println(longTimer.toString());
 		}
@@ -155,12 +149,8 @@ public:
 		}
 
 		auto mem = MallocCount::getCurrent();
-		Serial.print("Timers allocated, memStart = ");
-		Serial.print(memStart);
-		Serial.print(", now mem = ");
-		Serial.print(mem);
-		Serial.print(", used = ");
-		Serial.println(mem - memStart);
+		Serial << _F("Timers allocated, memStart = ") << memStart << _F(", now mem = ") << mem << _F(", used = ")
+			   << mem - memStart << endl;
 
 		pending();
 	}
@@ -169,12 +159,8 @@ public:
 	{
 		TimerType timer;
 
-		Serial.print(timer);
-		Serial.print(", maxTicks = ");
-		Serial.print(TimerType::maxTicks());
-		Serial.print(", maxTime = ");
-		Serial.print(TimerType::Micros::MaxClockTime::value());
-		Serial.println();
+		Serial << timer << _F(", maxTicks = ") << TimerType::maxTicks() << _F(", maxTime = ")
+			   << TimerType::Micros::MaxClockTime::value() << endl;
 
 		//	CpuCycleTimer timer;
 		//	Serial.print(timer);
@@ -192,30 +178,15 @@ public:
 		//
 		const auto time = NanoTime::time(NanoTime::Microseconds, 5000); //500020107;
 		auto ticks = timer.usToTicks(time);
-		Serial.print("time = ");
-		Serial.print(time.toString());
-		Serial.print(", ticks = ");
-		Serial.print(ticks);
-		Serial.print(", ");
-		Serial.print(TimerType::Micros::ticksToTime(ticks).toString());
-		Serial.println();
+		Serial << _F("time = ") << time.toString() << _F(", ticks = ") << ticks << ", "
+			   << TimerType::Micros::ticksToTime(ticks).toString() << endl;
 
 		//
 		auto t1 = timer.micros().template timeConst<5000>();
 		t1.check();
-		Serial.print("t1 = ");
-		Serial.print(t1.toString());
-		Serial.print(", ");
-		Serial.print(t1.clock().toString());
-		Serial.print(", ticksPerUnit = ");
-		Serial.print(t1.ticksPerUnit());
-		Serial.print(", ticks = ");
-		Serial.print(t1.ticks());
-		Serial.print(", ");
-		Serial.print(t1.clockTime());
-		Serial.print(", ");
-		Serial.print(t1.clockValue());
-		Serial.println();
+		Serial << _F("t1 = ") << t1.toString() << ", " << t1.clock().toString()
+			   << ", ticksPerUnit = " << t1.ticksPerUnit() << ", ticks = " << t1.ticks() << ", " << t1.clockTime()
+			   << ", " << t1.clockValue() << endl;
 
 		//	ElapseTimer et;
 		//	timer.reset<500000000>();
@@ -235,15 +206,9 @@ public:
 
 		//		auto nanos = NanoTime::TicksConst<typename TimerType::Clock, timer.maxTicks() + 1>::as<NanoTime::NanoSeconds>();
 		//		auto nanos = Nanos::template ticksConst<timer.maxTicks() + 1>();
-		Serial.print("nanos = ");
-		Serial.print(nanos.template as<NanoTime::Nanoseconds>().toString());
-		Serial.println();
+		Serial << _F("nanos = ") << nanos.template as<NanoTime::Nanoseconds>().toString() << endl;
 
-		Serial.print("interval = ");
-		Serial.print(timer.getIntervalUs());
-		Serial.print("us, ticks = ");
-		Serial.print(timer.getInterval());
-		Serial.println();
+		Serial << _F("interval = ") << timer.getIntervalUs() << _F("us, ticks = ") << timer.getInterval() << endl;
 	}
 
 private:
@@ -355,12 +320,9 @@ public:
 		Serial.println(times4);
 		Serial.println(times5);
 
-		Serial.print("Combined set/start: ");
-		Serial.println(times2a.getAverage() + times4.getAverage());
-		Serial.print("Combined set/start, ticks: ");
-		Serial.println(times3a.getAverage() + times4.getAverage());
-		Serial.print("Combined set/start, templated: ");
-		Serial.println(times2b.getAverage() + times4.getAverage());
+		Serial << _F("Combined set/start: ") << times2a.getAverage() + times4.getAverage() << endl;
+		Serial << _F("Combined set/start, ticks: ") << times3a.getAverage() + times4.getAverage() << endl;
+		Serial << _F("Combined set/start, templated: ") << times2b.getAverage() + times4.getAverage() << endl;
 
 		Serial.println();
 	}
