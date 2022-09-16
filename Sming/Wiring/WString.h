@@ -346,6 +346,14 @@ public:
 	bool concat(unsigned long long num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
 	bool concat(float num);
 	bool concat(double num);
+
+	template <typename E>
+	constexpr typename std::enable_if<std::is_enum<E>::value && !std::is_convertible<E, int>::value, bool>::type
+	concat(E value)
+	{
+		extern String toString(E);
+		return concat(toString(value));
+	}
 	/** @} */
 
 	/**
@@ -371,55 +379,10 @@ public:
 		concat(cstr);
 		return (*this);
 	}
-	String& operator+=(char c)
+	template <typename T> String& operator+=(T value)
 	{
-		concat(c);
-		return (*this);
-	}
-	String& operator+=(unsigned char num)
-	{
-		concat(num);
-		return (*this);
-	}
-	String& operator+=(int num)
-	{
-		concat(num);
-		return (*this);
-	}
-	String& operator+=(unsigned int num)
-	{
-		concat(num);
-		return (*this);
-	}
-	String& operator+=(long num)
-	{
-		concat(num);
-		return (*this);
-	}
-	String& operator+=(long long num)
-	{
-		concat(num);
-		return (*this);
-	}
-	String& operator+=(unsigned long num)
-	{
-		concat(num);
-		return (*this);
-	}
-	String& operator+=(unsigned long long num)
-	{
-		concat(num);
-		return (*this);
-	}
-	String& operator+=(float num)
-	{
-		concat(num);
-		return (*this);
-	}
-	String& operator+=(double num)
-	{
-		concat(num);
-		return (*this);
+		concat(value);
+		return *this;
 	}
 	/** @} */
 
