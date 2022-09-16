@@ -17,6 +17,7 @@
 #include <limits>
 #include <type_traits>
 #include <WString.h>
+#include <Print.h>
 
 /**
  * @brief Manage a set of bit values using enumeration
@@ -364,6 +365,30 @@ public:
 	operator IfHelperType() const
 	{
 		return any() ? &BitSet::IfHelper : 0;
+	}
+
+	/**
+	 * @brief Class template to print the contents of a BitSet to a String
+	 * @note Requires an implementation of `toString(E)`
+	 */
+	size_t printTo(Print& p, const String& separator = ", ") const
+	{
+		extern String toString(E e);
+
+		size_t n{0};
+
+		for(unsigned i = 0; i < size(); ++i) {
+			auto e = E(i);
+			if(!test(e)) {
+				continue;
+			}
+			if(n != 0) {
+				n += p.print(separator);
+			}
+			n += p.print(e);
+		}
+
+		return n;
 	}
 
 private:
