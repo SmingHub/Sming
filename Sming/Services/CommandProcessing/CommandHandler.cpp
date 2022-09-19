@@ -22,12 +22,6 @@
 CommandHandler::CommandHandler()
 	: currentPrompt(F("Sming>")), currentWelcomeMessage(F("Welcome to the Sming CommandProcessing\r\n"))
 {
-	registeredCommands = new HashMap<String, CommandDelegate>;
-}
-
-CommandHandler::~CommandHandler()
-{
-	delete registeredCommands;
 }
 
 void CommandHandler::registerSystemCommands()
@@ -49,9 +43,9 @@ void CommandHandler::registerSystemCommands()
 
 CommandDelegate CommandHandler::getCommandDelegate(const String& commandString)
 {
-	if(registeredCommands->contains(commandString)) {
+	if(registeredCommands.contains(commandString)) {
 		debugf("Returning Delegate for %s \r\n", commandString.c_str());
-		return (*registeredCommands)[commandString];
+		return registeredCommands[commandString];
 	} else {
 		debugf("Command %s not recognized, returning NULL\r\n", commandString.c_str());
 		return CommandDelegate("", "", "", nullptr);
@@ -60,12 +54,12 @@ CommandDelegate CommandHandler::getCommandDelegate(const String& commandString)
 
 bool CommandHandler::registerCommand(CommandDelegate reqDelegate)
 {
-	if(registeredCommands->contains(reqDelegate.commandName)) {
+	if(registeredCommands.contains(reqDelegate.commandName)) {
 		// Command already registered, don't allow  duplicates
 		debugf("Commandhandler duplicate command %s", reqDelegate.commandName.c_str());
 		return false;
 	} else {
-		(*registeredCommands)[reqDelegate.commandName] = reqDelegate;
+		registeredCommands[reqDelegate.commandName] = reqDelegate;
 		debugf("Commandhandlercommand %s registered", reqDelegate.commandName.c_str());
 		return true;
 	}
@@ -73,11 +67,11 @@ bool CommandHandler::registerCommand(CommandDelegate reqDelegate)
 
 bool CommandHandler::unregisterCommand(CommandDelegate reqDelegate)
 {
-	if(!registeredCommands->contains(reqDelegate.commandName)) {
+	if(!registeredCommands.contains(reqDelegate.commandName)) {
 		// Command not registered, cannot remove
 		return false;
 	} else {
-		registeredCommands->remove(reqDelegate.commandName);
+		registeredCommands.remove(reqDelegate.commandName);
 		//		(*registeredCommands)[reqDelegate.commandName] = reqDelegate;
 		return true;
 	}
@@ -87,12 +81,12 @@ void CommandHandler::procesHelpCommand(String commandLine, CommandOutput* comman
 {
 	debugf("HelpCommand entered");
 	commandOutput->println(_F("Commands available are :"));
-	for(unsigned idx = 0; idx < registeredCommands->count(); idx++) {
-		commandOutput->print(registeredCommands->valueAt(idx).commandName);
+	for(unsigned idx = 0; idx < registeredCommands.count(); idx++) {
+		commandOutput->print(registeredCommands.valueAt(idx).commandName);
 		commandOutput->print(" | ");
-		commandOutput->print(registeredCommands->valueAt(idx).commandGroup);
+		commandOutput->print(registeredCommands.valueAt(idx).commandGroup);
 		commandOutput->print(" | ");
-		commandOutput->print(registeredCommands->valueAt(idx).commandHelp);
+		commandOutput->print(registeredCommands.valueAt(idx).commandHelp);
 		commandOutput->print("\r\n");
 	}
 }

@@ -43,7 +43,6 @@ public:
 	/** @brief  Instantiate a CommandHandler
 	*/
 	CommandHandler();
-	~CommandHandler();
 
 	CommandHandler(const CommandHandler&) = delete;
 
@@ -152,7 +151,7 @@ public:
 	//	int deleteGroup(String reqGroup);
 
 private:
-	HashMap<String, CommandDelegate>* registeredCommands;
+	HashMap<String, CommandDelegate> registeredCommands;
 	void procesHelpCommand(String commandLine, CommandOutput* commandOutput);
 	void procesStatusCommand(String commandLine, CommandOutput* commandOutput);
 	void procesEchoCommand(String commandLine, CommandOutput* commandOutput);
