@@ -33,7 +33,7 @@ memcpy_aligned
 --------------
 
 Once in flash memory, string data must be read into RAM before it can be used. Accessing the flash
-memory directly is awkard. If locations are not strictly accessed as 4-byte words the system will
+memory directly is awkward. If locations are not strictly accessed as 4-byte words the system will
 probably crash; I say 'probably' because sometimes it just behaves weirdly if the RAM address
 isn't aligned.
 
