@@ -81,7 +81,7 @@
 	XX(PROXY_AUTHENTICATE, "Proxy-Authenticate", Flag::Multi,                                                          \
 	   "Indicates proxy authentication scheme(s) and applicable parameters")
 
-enum class HttpHeaderFieldName {
+enum class HttpHeaderFieldName : uint8_t {
 	UNKNOWN = 0,
 #define XX(tag, str, flags, comment) tag,
 	HTTP_HEADER_FIELDNAME_MAP(XX)

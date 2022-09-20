@@ -50,7 +50,7 @@
 	XX(FORM_URL_ENCODED, "", "application/x-www-form-urlencoded")                                                      \
 	XX(FORM_MULTIPART, "", "multipart/form-data")
 
-enum class MimeType {
+enum class MimeType : uint8_t {
 #define XX(name, extensionStart, mime) name,
 	MIME_TYPE_MAP(XX)
 #undef XX
