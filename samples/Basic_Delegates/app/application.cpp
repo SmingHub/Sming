@@ -41,21 +41,21 @@ public:
 		taskTimer.initializeMs(taskInterval, b).start();
 	}
 
-	// This example shows how to use a lamda expression as a callback
-	void callLamda()
+	// This example shows how to use a lambda expression as a callback
+	void callLambda()
 	{
 		int foo = 123;
 		taskTimer
 			.initializeMs(
 				taskInterval,
-				[foo] // capture just foo by value (Note it would be bad to pass by reference as foo would be out of scope when the lamda function runs later)
+				[foo] // capture just foo by value (Note it would be bad to pass by reference as foo would be out of scope when the lambda function runs later)
 				()	// No parameters to the callback
 				-> void // Returns nothing
 				{
 					if(foo == 123) {
-						debugf("lamda Callback foo is 123");
+						debugf("lambda Callback foo is 123");
 					} else {
-						debugf("lamda Callback foo is not 123, crikey!");
+						debugf("lambda Callback foo is not 123, crikey!");
 					}
 				})
 			.start();
@@ -117,5 +117,5 @@ void init()
 	task4.callMemberFunction();
 
 	task5.setTimer(1800);
-	task5.callLamda();
+	task5.callLambda();
 }
