@@ -18,7 +18,7 @@ endif
 LIBSTDCPP_SRC = $(call FixPath,$(shell $(CC) -print-file-name=libstdc++.a))
 LIBSTDCPP_DST = $(USER_LIBDIR)/libstdc++.a
 
-$(LIBSTDCPP_DST): $(LIBSTDCPP_SRC)
+$(COMPONENT_RULE)$(LIBSTDCPP_DST): $(LIBSTDCPP_SRC)
 	$(info Prepare libstdc++)
 	$(Q) cp $< $@
 	$(Q) $(AR) d $@ pure.o
