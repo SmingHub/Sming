@@ -275,7 +275,10 @@ public:
     */
 	V& operator[](const K& key);
 
-	bool allocate(unsigned int newSize);
+	bool allocate(unsigned int newSize)
+	{
+		return keys.allocate(newSize, K{}) && values.allocate(newSize, nil);
+	}
 
 	/*
     || @description
@@ -286,7 +289,19 @@ public:
     ||
     || @return The index of the key, or -1 if key does not exist
     */
-	int indexOf(const K& key) const;
+	int indexOf(const K& key) const
+	{
+		for(unsigned i = 0; i < currentIndex; i++) {
+			if(cb_comparator) {
+				if(cb_comparator(key, keys[i])) {
+					return i;
+				}
+			} else if(key == keys[i]) {
+				return i;
+			}
+		}
+		return -1;
+	}
 
 	/*
     || @description
@@ -309,7 +324,17 @@ public:
      ||
      || @parameter index location to remove from this HashMap
      */
-	void removeAt(unsigned index);
+	void removeAt(unsigned index)
+	{
+		if(index >= currentIndex) {
+			return;
+		}
+
+		keys.remove(index);
+		values.remove(index);
+
+		currentIndex--;
+	}
 
 	/*
     || @description
@@ -326,9 +351,19 @@ public:
 		}
 	}
 
-	void clear();
+	void clear()
+	{
+		keys.clear();
+		values.clear();
+		currentIndex = 0;
+	}
 
-	void setMultiple(const HashMap<K, V>& map);
+	void setMultiple(const HashMap<K, V>& map)
+	{
+		for(auto e : map) {
+			(*this)[e.key()] = e.value();
+		}
+	}
 
 	void setNullValue(const V& nullv)
 	{
@@ -382,49 +417,4 @@ template <typename K, typename V> V& HashMap<K, V>::operator[](const K& key)
 	values[currentIndex] = nil;
 	currentIndex++;
 	return values[currentIndex - 1];
-}
-
-template <typename K, typename V> bool HashMap<K, V>::allocate(unsigned int newSize)
-{
-	return keys.allocate(newSize, K{}) && values.allocate(newSize, nil);
-}
-
-template <typename K, typename V> int HashMap<K, V>::indexOf(const K& key) const
-{
-	for(unsigned i = 0; i < currentIndex; i++) {
-		if(cb_comparator) {
-			if(cb_comparator(key, keys[i])) {
-				return i;
-			}
-		} else if(key == keys[i]) {
-			return i;
-		}
-	}
-	return -1;
-}
-
-template <typename K, typename V> void HashMap<K, V>::removeAt(unsigned index)
-{
-	if(index >= currentIndex) {
-		return;
-	}
-
-	keys.remove(index);
-	values.remove(index);
-
-	currentIndex--;
-}
-
-template <typename K, typename V> void HashMap<K, V>::clear()
-{
-	keys.clear();
-	values.clear();
-	currentIndex = 0;
-}
-
-template <typename K, typename V> void HashMap<K, V>::setMultiple(const HashMap<K, V>& map)
-{
-	for(auto e : map) {
-		(*this)[e.key()] = e.value();
-	}
 }
