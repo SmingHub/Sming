@@ -40,8 +40,6 @@
 template <typename K, typename V> class HashMap
 {
 public:
-	using Comparator = bool (*)(const K&, const K&);
-
 	template <bool is_const> struct BaseElement {
 	public:
 		using Value = typename std::conditional<is_const, const V, V>::type;
@@ -156,6 +154,16 @@ public:
 		Map& map;
 		unsigned index{0};
 	};
+
+	/**
+	 * @brief Compare two keys for equality
+	 */
+	using Comparator = bool (*)(const K&, const K&);
+
+	/**
+	 * @brief Return true if key1 < key2
+	 */
+	using SortCompare = bool (*)(const ElementConst& e1, const ElementConst& e2);
 
 	/*
     || @constructor
@@ -279,6 +287,11 @@ public:
 	{
 		return keys.allocate(newSize, K{}) && values.allocate(newSize, nil);
 	}
+
+	/**
+	 * @brief Sort map entries
+	 */
+	void sort(SortCompare compare);
 
 	/*
     || @description
@@ -417,4 +430,19 @@ template <typename K, typename V> V& HashMap<K, V>::operator[](const K& key)
 	values[currentIndex] = nil;
 	currentIndex++;
 	return values[currentIndex - 1];
+}
+
+template <typename K, typename V> void HashMap<K, V>::sort(SortCompare compare)
+{
+	auto n = count();
+	for(unsigned i = 0; i < n - 1; ++i) {
+		for(unsigned j = 0; j < n - i - 1; ++j) {
+			HashMap::ElementConst e1{keys[j + 1], values[j + 1]};
+			HashMap::ElementConst e2{keys[j], values[j]};
+			if(compare(e1, e2)) {
+				std::swap(keys[j], keys[j + 1]);
+				std::swap(values[j], values[j + 1]);
+			}
+		}
+	}
 }

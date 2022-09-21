@@ -59,12 +59,12 @@ public:
 		map[MIME_ICO] = os_random() % 0xffff;
 		map[MIME_GZIP] = os_random() % 0xffff;
 		map[MIME_ZIP] = os_random() % 0xffff;
-		Serial << "Heap " << MallocCount::getCurrent() - startMem << endl;
+		Serial << "fillMap heap " << MallocCount::getCurrent() - startMem << endl;
 	}
 
 	void execute() override
 	{
-		TEST_CASE("HashMap(String, String)")
+		TEST_CASE("HashMap<String, String>")
 		{
 			auto startMem = MallocCount::getCurrent();
 
@@ -92,21 +92,46 @@ public:
 			print(map);
 		}
 
-		TEST_CASE("HashMap(enum, size_t)")
+		TEST_CASE("HashMap<MimeType, size_t>")
 		{
-			HashMap<MimeType, uint16_t> map;
+			using TestMap = HashMap<MimeType, uint16_t>;
+			TestMap map;
 			fillMap(map);
 			print(map);
+
+			Serial.println();
+
+			using Func = Delegate<void(TestMap & map)>;
+			auto time = [this](const String& description, Func function) {
+				Serial << description << " ..." << endl;
+				TestMap map;
+				fillMap(map);
+				CpuCycleTimer timer;
+				function(map);
+				auto elapsed = timer.elapsedTime();
+				print(map);
+				Serial << "... took " << elapsed.toString() << endl << endl;
+			};
+
+			time("sort by key String", [](auto& map) {
+				map.sort([](const auto& e1, const auto& e2) { return toString(e1.key()) < toString(e2.key()); });
+			});
+
+			time("Sort by key numerically",
+				 [](auto& map) { map.sort([](const auto& e1, const auto& e2) { return e1.key() < e2.key(); }); });
+
+			time("Sort by value",
+				 [](auto& map) { map.sort([](const auto& e1, const auto& e2) { return e1.value() < e2.value(); }); });
 		}
 
-		TEST_CASE("std::map(enum, size_t)")
+		TEST_CASE("std::map<MimeType, size_t>")
 		{
 			std::map<MimeType, uint16_t> map;
 			fillMap(map);
 			print(map);
 		}
 
-		TEST_CASE("Vector(String)")
+		TEST_CASE("Vector<String>")
 		{
 			auto startMem = MallocCount::getCurrent();
 
@@ -131,7 +156,7 @@ public:
 			}
 		}
 
-		TEST_CASE("std::vector(String)")
+		TEST_CASE("std::vector<String>")
 		{
 			auto startMem = MallocCount::getCurrent();
 
