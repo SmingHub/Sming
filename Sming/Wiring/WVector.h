@@ -91,57 +91,155 @@ public:
 	};
 
 	// constructors
-	Vector(unsigned int initialCapacity = 10, unsigned int capacityIncrement = 10);
-	Vector(const Vector& rhv);
+	Vector(unsigned int initialCapacity = 10, unsigned int capacityIncrement = 10) : _increment(capacityIncrement)
+	{
+		_data.allocate(initialCapacity);
+	}
+
+	Vector(const Vector& rhv)
+	{
+		copyFrom(rhv);
+	}
 
 	// methods
-	unsigned int capacity() const;
-	bool contains(const Element& elem) const;
-	const Element& firstElement() const;
+	unsigned int capacity() const
+	{
+		return _data.size;
+	}
+
+	bool contains(const Element& elem) const
+	{
+		return indexOf(elem) >= 0;
+	}
+
+	const Element& firstElement() const
+	{
+		if(_size == 0) {
+			abort();
+		}
+
+		return _data[0];
+	}
+
 	int indexOf(const Element& elem) const;
-	bool isEmpty() const;
-	const Element& lastElement() const;
+
+	bool isEmpty() const
+	{
+		return _size == 0;
+	}
+
+	const Element& lastElement() const
+	{
+		if(_size == 0) {
+			abort();
+		}
+
+		return _data[_size - 1];
+	}
+
 	int lastIndexOf(const Element& elem) const;
+
 	unsigned int count() const override
 	{
 		return size();
 	}
-	unsigned int size() const;
+
+	unsigned int size() const
+	{
+		return _size;
+	}
+
 	void copyInto(Element* array) const;
+
 	bool add(const Element& obj)
 	{
 		return addElement(obj);
 	}
+
 	bool addElement(const Element& obj);
 	bool addElement(Element* objp);
+
 	void clear()
 	{
 		removeAllElements();
 	}
+
 	bool ensureCapacity(unsigned int minCapacity);
-	void removeAllElements();
-	bool removeElement(const Element& obj);
+
+	void removeAllElements()
+	{
+		_data.clear();
+		_size = 0;
+	}
+
+	bool removeElement(const Element& obj)
+	{
+		return removeElementAt(indexOf(obj));
+	}
+
+	/**
+	 * @brief Reduce or increase number of items
+	 * @retval true on success, false on memory reallocation failure
+	 *
+	 * If increasing number of items, new items will be set to current `nil` value.
+	 * If reducing number of items, old items will be deleted.
+	 */
 	bool setSize(unsigned int newSize);
-	void trimToSize();
-	const Element& elementAt(unsigned int index) const;
+
+	/**
+	 * @brief Reduce capacity to match current size
+	 */
+	void trimToSize()
+	{
+		if(_size < _data.size) {
+			_data.trim(_size, true);
+		}
+	}
+
+	const Element& elementAt(unsigned int index) const
+	{
+		if(index >= _size) {
+			abort();
+		}
+		return _data[index];
+	}
+
 	bool insertElementAt(const Element& obj, unsigned int index);
-	bool remove(unsigned int index);
+
+	bool remove(unsigned int index)
+	{
+		return removeElementAt(index);
+	}
+
 	bool removeElementAt(unsigned int index);
 	bool setElementAt(const Element& obj, unsigned int index);
+
 	const Element& get(unsigned int index) const
 	{
 		return elementAt(index);
 	}
 
-	const Element& operator[](unsigned int index) const override;
-	Element& operator[](unsigned int index) override;
+	const Element& operator[](unsigned int index) const override
+	{
+		return elementAt(index);
+	}
+
+	Element& operator[](unsigned int index) override
+	{
+		if(index >= _size) {
+			abort();
+		}
+		return _data[index];
+	}
 
 	const Vector<Element>& operator=(const Vector<Element>& rhv)
 	{
-		if(this != &rhv)
+		if(this != &rhv) {
 			copyFrom(rhv);
+		}
 		return *this;
 	}
+
 	const Vector<Element>& operator=(Vector<Element>&& other) noexcept // move assignment
 	{
 		clear();
@@ -180,22 +278,10 @@ protected:
 protected:
 	using ElementList = wiring_private::List<Element>;
 
-	unsigned int _size = 0;
-	unsigned int _increment;
+	unsigned int _size{0};
+	unsigned int _increment{0};
 	ElementList _data;
 };
-
-template <class Element> Vector<Element>::Vector(unsigned int initialCapacity, unsigned int capacityIncrement)
-{
-	_size = 0;
-	_data.allocate(initialCapacity);
-	_increment = capacityIncrement;
-}
-
-template <class Element> Vector<Element>::Vector(const Vector<Element>& rhv)
-{
-	copyFrom(rhv);
-}
 
 template <class Element> void Vector<Element>::copyFrom(const Vector<Element>& rhv)
 {
@@ -213,16 +299,6 @@ template <class Element> void Vector<Element>::copyFrom(const Vector<Element>& r
 	}
 }
 
-template <class Element> unsigned int Vector<Element>::capacity() const
-{
-	return _data.size;
-}
-
-template <class Element> bool Vector<Element>::contains(const Element& elem) const
-{
-	return indexOf(elem) >= 0;
-}
-
 template <class Element> void Vector<Element>::copyInto(Element* array) const
 {
 	if(array == nullptr) {
@@ -234,24 +310,6 @@ template <class Element> void Vector<Element>::copyInto(Element* array) const
 	}
 }
 
-template <class Element> const Element& Vector<Element>::elementAt(unsigned int index) const
-{
-	if(index >= _size) {
-		abort();
-	}
-	// add check for valid index
-	return _data[index];
-}
-
-template <class Element> const Element& Vector<Element>::firstElement() const
-{
-	if(_size == 0) {
-		abort();
-	}
-
-	return _data[0];
-}
-
 template <class Element> int Vector<Element>::indexOf(const Element& elem) const
 {
 	for(unsigned int i = 0; i < _size; i++) {
@@ -261,20 +319,6 @@ template <class Element> int Vector<Element>::indexOf(const Element& elem) const
 	}
 
 	return -1;
-}
-
-template <class Element> bool Vector<Element>::isEmpty() const
-{
-	return _size == 0;
-}
-
-template <class Element> const Element& Vector<Element>::lastElement() const
-{
-	if(_size == 0) {
-		abort();
-	}
-
-	return _data[_size - 1];
 }
 
 template <class Element> int Vector<Element>::lastIndexOf(const Element& elem) const
@@ -294,11 +338,6 @@ template <class Element> int Vector<Element>::lastIndexOf(const Element& elem) c
 	} while(i != 0);
 
 	return -1;
-}
-
-template <class Element> unsigned int Vector<Element>::size() const
-{
-	return _size;
 }
 
 template <class Element> bool Vector<Element>::addElement(const Element& obj)
@@ -350,22 +389,6 @@ template <class Element> bool Vector<Element>::insertElementAt(const Element& ob
 	return true;
 }
 
-template <class Element> const void Vector<Element>::remove(unsigned int index)
-{
-	removeElementAt(index);
-}
-
-template <class Element> void Vector<Element>::removeAllElements()
-{
-	_data.clear();
-	_size = 0;
-}
-
-template <class Element> bool Vector<Element>::removeElement(const Element& obj)
-{
-	return removeElementAt(indexOf(obj));
-}
-
 template <class Element> bool Vector<Element>::removeElementAt(unsigned int index)
 {
 	// check for valid index
@@ -397,30 +420,6 @@ template <class Element> bool Vector<Element>::setSize(unsigned int newSize)
 	_data.trim(newSize, false);
 	_size = std::min(_size, newSize);
 	return true;
-}
-
-template <class Element> void Vector<Element>::trimToSize()
-{
-	if(_size < _data.size) {
-		_data.trim(_size, true);
-	}
-}
-
-template <class Element> const Element& Vector<Element>::operator[](unsigned int index) const
-{
-	return elementAt(index);
-}
-
-template <class Element> Element& Vector<Element>::operator[](unsigned int index)
-{
-	// check for valid index
-	//static Element dummy_writable_element;
-	if(index >= _size) {
-		//dummy_writable_element = 0;
-		//return dummy_writable_element;
-		abort();
-	}
-	return _data[index];
 }
 
 template <class Element> void Vector<Element>::sort(Comparer compareFunction)
