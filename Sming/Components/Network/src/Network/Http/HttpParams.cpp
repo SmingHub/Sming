@@ -36,9 +36,7 @@ void HttpParams::parseQuery(char* query)
 		return;
 	}
 
-	allocate(paramCount);
-	if(keys == nullptr || values == nullptr) {
-		// Allocation failure
+	if(!allocate(paramCount)) {
 		return;
 	}
 
