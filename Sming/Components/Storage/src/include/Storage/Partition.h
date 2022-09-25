@@ -433,6 +433,11 @@ public:
 		return mPart ? mPart->name.equals(name) : false;
 	}
 
+	template <typename T> bool operator!=(const T& other) const
+	{
+		return !operator==(other);
+	}
+
 	/**
 	 * @brief Obtain smallest allocation unit for erase operations
 	 */
