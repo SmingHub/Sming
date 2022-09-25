@@ -54,7 +54,7 @@ inline Iterator findPartition(Partition::Type type = Partition::Type::any, uint8
 	return Iterator(type, subType);
 }
 
-template <typename T> Iterator findPartition(T subType)
+template <typename T> typename std::enable_if<std::is_enum<T>::value, Iterator>::type findPartition(T subType)
 {
 	return Iterator(Partition::Type(T::partitionType), uint8_t(subType));
 }
