@@ -126,8 +126,8 @@ public:
 		String path = "/path/to";
 		String query;
 
-		debugf("path = \"%s\"", path.c_str());
-		debugf("query = \"%s\"", query.c_str());
+		Serial << _F("path = \"") << path << '"' << endl;
+		Serial << _F("query = \"") << query << '"' << endl;
 
 		TEST_CASE("validity check")
 		{
@@ -142,14 +142,14 @@ public:
 		TEST_CASE("string + nullstr")
 		{
 			String s = path + query;
-			debugf("path + query = \"%s\"", s.c_str());
+			Serial << _F("path + query = \"") << s << '"' << endl;
 			REQUIRE(s == path);
 		}
 
 		TEST_CASE("nullstr + string")
 		{
 			String s = query + path;
-			debugf("query + path = \"%s\"", s.c_str());
+			Serial << _F("query + path = \"") << s << '"' << endl;
 			REQUIRE(s == path);
 		}
 	}

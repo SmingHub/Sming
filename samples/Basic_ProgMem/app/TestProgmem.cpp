@@ -49,9 +49,7 @@ void testPSTR(Print& out)
 
 	// Note that characters after first nul won't be shown ...
 	out.print("> demoPSTR1 (print char*): ");
-	out.print('"');
-	out.print(_FLOAD(demoPSTR1));
-	out.println('"');
+	out << '"' << _FLOAD(demoPSTR1) << '"' << endl;
 
 	// ... now they will: note buf will be aligned up to next dword boundary though
 	out.print("> demoPSTR1 (write): ");
@@ -67,9 +65,7 @@ void testPSTR(Print& out)
 	char buf2[100];
 	strncpy_P(buf2, externalPSTR1, sizeof(buf2));
 	buf2[sizeof(buf2) - 1] = '\0';
-	out.print('"');
-	out.print(buf2);
-	out.println('"');
+	out << '"' << buf2 << '"' << endl;
 
 	//
 	out.print("> PSTR_ARRAY: ");
@@ -130,8 +126,7 @@ void testFSTR(Print& out)
 		char data[5];
 	} demoArray1 PROGMEM = {{5}, {1, 2, 3, 4, 5}};
 	auto& arr = demoArray1.object.as<FSTR::Array<uint8_t>>();
-	arr.printTo(out);
-	out.println();
+	out << arr << endl;
 
 	// Test equality operators
 #define TEST(_test) out.printf(_F("%s: %s\n"), (_test) ? _F("PASS") : _F("FAIL"), _F(#_test));
@@ -150,11 +145,11 @@ void testFSTR(Print& out)
 
 	// Table entries may be accessed directly as they are word-aligned
 	out.println(_F("FSTR tables -"));
-	out.printf(_F(" fstr1 = '%s'\n"), String(table[0]).c_str());
-	out.printf(_F(" fstr1.length() = %" PRIu32 "\n"), table[0].length());
-	out.printf(_F(" entries = %" PRIu32 "\n"), table.length());
+	out << _F(" fstr1 = '") << table[0] << endl;
+	out << _F(" fstr1.length() = ") << table[0].length() << endl;
+	out << _F(" entries = ") << table.length() << endl;
 
-	out.println("< testFSTR() end\n");
+	out.println("< testFSTR() end\r\n");
 }
 
 /*
@@ -171,14 +166,15 @@ void testSpeed(Print& out)
 
 	_FPUTS("Baseline test, read string in RAM...");
 	timer.start();
-	for(unsigned i = 0; i < iterations; ++i)
+	for(unsigned i = 0; i < iterations; ++i) {
 		tmp += sumBuffer(demoText, sizeof(demoText));
+	}
 	baseline = timer.elapsedTime();
-	out.printf("Elapsed: %" PRIu32 "\n", baseline);
+	out << "Elapsed: " << baseline << endl;
 
 #define END()                                                                                                          \
 	elapsed = timer.elapsedTime();                                                                                     \
-	out.printf("Elapsed: %" PRIu32 " (baseline + %" PRIu32 ")\n", elapsed, elapsed - baseline);
+	out << "Elapsed: " << elapsed << " (baseline + " << elapsed - baseline << ')' << endl;
 
 	_FPUTS("Load PSTR into stack buffer...");
 	timer.start();

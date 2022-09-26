@@ -126,14 +126,14 @@ public:
 			{
 				HostFileStream fs("test-src1.out", File::CreateNewAlways | File::WriteOnly);
 				int res = fs.copyFrom(&tmpl);
-				debug_e("copyfrom(src) = %d", res);
+				Serial << _F("copyfrom(src) = ") << res << endl;
 				tmpl.gotoSection(0);
 			}
 
 			{
 				HostFileStream fs("test-src2.out", File::CreateNewAlways | File::WriteOnly);
 				int res = fs.copyFrom(&tmpl);
-				debug_e("copyfrom(src) = %d", res);
+				Serial << _F("copyfrom(src) = ") << res << endl;
 				tmpl.gotoSection(0);
 			}
 #endif

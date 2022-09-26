@@ -10,6 +10,7 @@
 #pragma once
 
 #include <WString.h>
+#include <Printable.h>
 #include <Data/LinkedObjectList.h>
 #include "PartitionTable.h"
 
@@ -138,6 +139,8 @@ public:
 	 * @retval bool true on success, false on error
 	 */
 	virtual bool erase_range(uint32_t address, size_t size) = 0;
+
+	size_t printTo(Print& p) const;
 
 protected:
 	PartitionTable mPartitions;

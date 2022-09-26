@@ -82,7 +82,7 @@ template <typename T> struct TRange {
 	/**
 	 * @brief Determine if range contains a value
 	 */
-	bool contains(T value)
+	bool contains(T value) const
 	{
 		return (value >= min) && (value <= max);
 	}
@@ -90,7 +90,7 @@ template <typename T> struct TRange {
 	/**
 	 * @brief Clip values to within the range
 	 */
-	T clip(T value)
+	T clip(T value) const
 	{
 		return (value < min) ? min : (value > max) ? max : value;
 	}
@@ -121,6 +121,11 @@ template <typename T> struct TRange {
 		s += ", ";
 		s += max;
 		return s;
+	}
+
+	operator String() const
+	{
+		return toString();
 	}
 };
 

@@ -12,6 +12,7 @@
 #include "include/Storage/Device.h"
 #include "include/Storage/partition_info.h"
 #include <FlashString/Vector.hpp>
+#include <Print.h>
 #include <debug_progmem.h>
 
 namespace
@@ -107,6 +108,17 @@ bool Device::loadPartitions(Device& source, uint32_t tableOffset)
 
 	// No partitions found
 	return false;
+}
+
+size_t Device::printTo(Print& p) const
+{
+	size_t n{0};
+	n += p.print(getName());
+	n += p.print(_F(": type "));
+	n += p.print(getType());
+	n += p.print(_F(", size 0x"));
+	n += p.print(getSize(), HEX);
+	return n;
 }
 
 } // namespace Storage

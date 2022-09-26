@@ -179,13 +179,27 @@ public:
 		return printFloat(num, digits);
 	}
 
+	/*
+	 * Helper class using SFINAE to identify *any* class with a `printTo` method, even if not a base of `Printable`.
+	 *
+	 * https://stackoverflow.com/a/257382
+	 */
+	template <typename T> class has_printTo
+	{
+		template <typename C> static uint8_t test(decltype(&C::printTo));
+		template <typename C> static uint32_t test(...);
+
+	public:
+		enum { value = (sizeof(test<T>(0)) == 1) };
+	};
+
 	/** @brief  Prints a Printable object to output stream
-	  * @param  p Object to print
+	  * @param  obj Object to print
 	  * @retval size_t Quantity of characters written to stream
 	  */
-	size_t print(const Printable& p)
+	template <typename T> typename std::enable_if<has_printTo<T>::value, size_t>::type print(const T& obj)
 	{
-		return p.printTo(*this);
+		return obj.printTo(*this);
 	}
 
 	/** @brief  Prints a String to output stream
@@ -212,7 +226,7 @@ public:
 	  */
 	size_t println()
 	{
-		return print("\r\n");
+		return write("\r\n", 2);
 	}
 
 	/** @brief Print value plus newline to output stream
@@ -246,7 +260,14 @@ protected:
 	}
 };
 
-template <typename T> Print& operator<<(Print& p, const T& value)
+inline Print& operator<<(Print& p, const char value[])
+{
+	p.print(value);
+	return p;
+}
+
+template <typename T>
+typename std::enable_if<!std::is_array<T>::value, Print&>::type operator<<(Print& p, const T& value)
 {
 	p.print(value);
 	return p;

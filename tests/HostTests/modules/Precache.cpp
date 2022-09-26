@@ -22,7 +22,7 @@ public:
 			sum += i;
 		}
 		IRAM_PRECACHE_END(hosttests_test);
-		debugf("Sum = %u", sum);
+		Serial << _F("Sum = ") << sum << endl;
 		REQUIRE(sum == 499500);
 	}
 };

@@ -11,6 +11,7 @@
 #include "include/Storage/Partition.h"
 #include "include/Storage/Device.h"
 #include <FlashString/Map.hpp>
+#include <Print.h>
 #include <debug_progmem.h>
 
 using namespace Storage;
@@ -246,6 +247,26 @@ bool Partition::erase_range(uint32_t offset, size_t size)
 	}
 
 	return mDevice ? mDevice->erase_range(addr, size) : false;
+}
+
+size_t Partition::printTo(Print& p) const
+{
+	size_t n{0};
+	if(*this) {
+		n += p.print(getDeviceName());
+		n += p.print('/');
+		n += p.print(name());
+		n += p.print(" (");
+		n += p.print(typeString());
+		n += p.print(" @ 0x");
+		n += p.print(address(), HEX);
+		n += p.print(_F(", size 0x"));
+		n += p.print(size(), HEX);
+		n += p.print(')');
+	} else {
+		n += p.print(_F("(none)"));
+	}
+	return n;
 }
 
 } // namespace Storage
