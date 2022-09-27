@@ -13,6 +13,43 @@
 namespace wiring_private
 {
 /**
+ * @brief List of scalar values
+ */
+template <typename T> struct ScalarList {
+	T* values{nullptr};
+	size_t size{0};
+
+	~ScalarList()
+	{
+		clear();
+	}
+
+	bool allocate(size_t newSize, const T& nil);
+
+	void clear()
+	{
+		free(values);
+		values = nullptr;
+		size = 0;
+	}
+
+	void remove(unsigned index)
+	{
+		memmove(&values[index], &values[index + 1], (size - index - 1) * sizeof(T));
+	}
+
+	T& operator[](unsigned index)
+	{
+		return values[index];
+	}
+
+	const T& operator[](unsigned index) const
+	{
+		return const_cast<ScalarList&>(*this)[index];
+	}
+};
+
+/**
  * @brief List of object pointers
  */
 template <typename T> struct ObjectList {
@@ -57,42 +94,22 @@ template <typename T> struct ObjectList {
 	}
 };
 
-/**
- * @brief List of scalar values
- */
-template <typename T> struct ScalarList {
-	T* values{nullptr};
-	size_t size{0};
-
-	~ScalarList()
-	{
-		clear();
+template <typename T> bool ScalarList<T>::allocate(size_t newSize, const T& nil)
+{
+	if(newSize <= size) {
+		return true;
 	}
 
-	bool allocate(size_t newSize, const T& nil);
-
-	void clear()
-	{
-		free(values);
-		values = nullptr;
-		size = 0;
+	auto newmem = realloc(values, sizeof(T) * newSize);
+	if(newmem == nullptr) {
+		return false;
 	}
 
-	void remove(unsigned index)
-	{
-		memmove(&values[index], &values[index + 1], (size - index - 1) * sizeof(T));
-	}
-
-	T& operator[](unsigned index)
-	{
-		return values[index];
-	}
-
-	const T& operator[](unsigned index) const
-	{
-		return const_cast<ScalarList&>(*this)[index];
-	}
-};
+	values = static_cast<T*>(newmem);
+	std::fill_n(&values[size], newSize - size, nil);
+	size = newSize;
+	return true;
+}
 
 template <typename T> bool ObjectList<T>::allocate(size_t newSize, ...)
 {
@@ -108,23 +125,6 @@ template <typename T> bool ObjectList<T>::allocate(size_t newSize, ...)
 	values = static_cast<T**>(newmem);
 	std::fill_n(&values[size], newSize - size, nullptr);
 
-	size = newSize;
-	return true;
-}
-
-template <typename T> bool ScalarList<T>::allocate(size_t newSize, const T& nil)
-{
-	if(newSize <= size) {
-		return true;
-	}
-
-	auto newmem = realloc(values, sizeof(T) * newSize);
-	if(newmem == nullptr) {
-		return false;
-	}
-
-	values = static_cast<T*>(newmem);
-	std::fill_n(&values[size], newSize - size, nil);
 	size = newSize;
 	return true;
 }
