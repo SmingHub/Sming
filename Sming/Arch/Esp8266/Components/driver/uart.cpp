@@ -772,6 +772,7 @@ void smg_uart_uninit(smg_uart_t* uart)
 		break;
 	}
 
+	uartInstances[uart->uart_nr] = nullptr;
 	delete uart->rx_buffer;
 	delete uart->tx_buffer;
 	delete uart;
