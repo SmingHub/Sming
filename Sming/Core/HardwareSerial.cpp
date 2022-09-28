@@ -28,12 +28,12 @@ HardwareSerial::~HardwareSerial()
 #endif
 }
 
-void HardwareSerial::begin(uint32_t baud, SerialFormat format, SerialMode mode, uint8_t txPin, uint8_t rxPin)
+bool HardwareSerial::begin(uint32_t baud, SerialFormat format, SerialMode mode, uint8_t txPin, uint8_t rxPin)
 {
 	end();
 
 	if(uartNr < 0) {
-		return;
+		return false;
 	}
 
 	smg_uart_config_t cfg = {
@@ -49,6 +49,8 @@ void HardwareSerial::begin(uint32_t baud, SerialFormat format, SerialMode mode, 
 	};
 	uart = smg_uart_init_ex(cfg);
 	updateUartCallback();
+
+	return uart != nullptr;
 }
 
 void HardwareSerial::end()
