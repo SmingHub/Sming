@@ -32,8 +32,9 @@ void HardwareSerial::begin(uint32_t baud, SerialFormat format, SerialMode mode, 
 {
 	end();
 
-	if(uartNr < 0)
+	if(uartNr < 0) {
 		return;
+	}
 
 	smg_uart_config_t cfg = {
 		.uart_nr = (uint8_t)uartNr,
@@ -54,10 +55,6 @@ void HardwareSerial::end()
 {
 	if(uart == nullptr) {
 		return;
-	}
-
-	if(smg_uart_get_debug() == uartNr) {
-		smg_uart_set_debug(UART_NO);
 	}
 
 	smg_uart_uninit(uart);
