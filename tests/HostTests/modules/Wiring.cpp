@@ -8,58 +8,47 @@
 #include <vector>
 #include <malloc_count.h>
 
+namespace
+{
+template <typename A, typename B> Print& operator<<(Print& p, const std::pair<A, B>& e)
+{
+	p << e.first << " = " << e.second;
+	return p;
+}
+
+template <typename T> void print(const T& list, const char* separator = "\r\n")
+{
+	for(auto e : list) {
+		Serial << e << separator;
+	}
+}
+
+template <typename T> void fillMap(T& map)
+{
+	auto startMem = MallocCount::getCurrent();
+	map[MIME_HTML] = os_random() % 0xffff;
+	map[MIME_TEXT] = os_random() % 0xffff;
+	map[MIME_JS] = os_random() % 0xffff;
+	map[MIME_CSS] = os_random() % 0xffff;
+	map[MIME_XML] = os_random() % 0xffff;
+	map[MIME_JSON] = os_random() % 0xffff;
+	map[MIME_JPEG] = os_random() % 0xffff;
+	map[MIME_GIF] = os_random() % 0xffff;
+	map[MIME_PNG] = os_random() % 0xffff;
+	map[MIME_SVG] = os_random() % 0xffff;
+	map[MIME_ICO] = os_random() % 0xffff;
+	map[MIME_GZIP] = os_random() % 0xffff;
+	map[MIME_ZIP] = os_random() % 0xffff;
+	Serial << "fillMap heap " << MallocCount::getCurrent() - startMem << endl;
+}
+
+} // namespace
+
 class WiringTest : public TestGroup
 {
 public:
 	WiringTest() : TestGroup(_F("Wiring"))
 	{
-	}
-
-	template <typename E> void println(const E& e) const
-	{
-		Serial.print(e.key());
-		Serial.print(" = ");
-		Serial.println(*e);
-	}
-
-	template <typename Map> void print(const Map& map) const
-	{
-		for(auto e : map) {
-			println(e);
-		}
-	}
-
-	template <typename A, typename B> void println(const std::pair<A, B>& e) const
-	{
-		Serial.print(e.first);
-		Serial.print(" = ");
-		Serial.println(e.second);
-	}
-
-	template <typename A, typename B> void print(const std::map<A, B>& map) const
-	{
-		for(auto e : map) {
-			println(e);
-		}
-	}
-
-	template <typename T> void fillMap(T& map)
-	{
-		auto startMem = MallocCount::getCurrent();
-		map[MIME_HTML] = os_random() % 0xffff;
-		map[MIME_TEXT] = os_random() % 0xffff;
-		map[MIME_JS] = os_random() % 0xffff;
-		map[MIME_CSS] = os_random() % 0xffff;
-		map[MIME_XML] = os_random() % 0xffff;
-		map[MIME_JSON] = os_random() % 0xffff;
-		map[MIME_JPEG] = os_random() % 0xffff;
-		map[MIME_GIF] = os_random() % 0xffff;
-		map[MIME_PNG] = os_random() % 0xffff;
-		map[MIME_SVG] = os_random() % 0xffff;
-		map[MIME_ICO] = os_random() % 0xffff;
-		map[MIME_GZIP] = os_random() % 0xffff;
-		map[MIME_ZIP] = os_random() % 0xffff;
-		Serial << "fillMap heap " << MallocCount::getCurrent() - startMem << endl;
 	}
 
 	void execute() override
@@ -79,12 +68,14 @@ public:
 			print(map);
 
 			for(auto e : map) {
-				String s = *e;
-				e->length();
+				REQUIRE(e->startsWith("value"));
 			}
 
 			for(auto e : map) {
 				*e += ": gobbed";
+			}
+			for(auto e : map) {
+				REQUIRE(e->endsWith("gobbed"));
 			}
 
 			REQUIRE_EQ(map["b"], "value(b): gobbed");
@@ -143,17 +134,49 @@ public:
 
 			Serial << "Heap " << MallocCount::getCurrent() - startMem << endl;
 
-			for(auto& e : vector) {
-				Serial.println(e);
-			}
+			print(vector);
 
 			for(auto& e : vector) {
 				e += ": gobbed";
 			}
-
 			for(auto& e : vector) {
-				Serial.println(e);
+				CHECK(e.length() == 16 && e.endsWith("gobbed"));
 			}
+
+			vector.setElementAt("potato", 1);
+			REQUIRE(vector[1] == "potato");
+			REQUIRE(vector.count() == 4);
+
+			vector[1] = "cabbage";
+			REQUIRE(vector[1] == "cabbage");
+			REQUIRE(vector.count() == 4);
+
+			REQUIRE(!vector.insertElementAt("radish", 5));
+			REQUIRE(vector.insertElementAt("radish", 4));
+			REQUIRE(vector[4] == "radish");
+
+			REQUIRE(vector.firstElement() == "value(a): gobbed");
+			REQUIRE(vector.lastElement() == "radish");
+
+			REQUIRE(vector.remove(2));
+			REQUIRE(vector[2] == "value(d): gobbed");
+
+			REQUIRE(vector.setSize(3));
+			REQUIRE_EQ(vector.count(), 3);
+			REQUIRE_EQ(vector.capacity(), 14);
+
+			vector.trimToSize();
+			REQUIRE_EQ(vector.capacity(), 3);
+
+			String arr[3];
+			vector.copyInto(arr);
+			for(unsigned i = 0; i < vector.count(); ++i) {
+				REQUIRE_EQ(vector[i], arr[i]);
+			}
+
+			REQUIRE(vector.addElement(new String("banana")));
+			REQUIRE_EQ(vector.count(), 4);
+			REQUIRE_EQ(vector.capacity(), 13);
 		}
 
 		TEST_CASE("std::vector<String>")
@@ -168,17 +191,84 @@ public:
 
 			Serial << "Heap " << MallocCount::getCurrent() - startMem << endl;
 
-			for(auto& e : vector) {
-				Serial.println(e);
-			}
+			print(vector);
 
 			for(auto& e : vector) {
 				e += ": gobbed";
 			}
 
-			for(auto& e : vector) {
-				Serial.println(e);
+			print(vector);
+		}
+
+		TEST_CASE("Vector<uint8_t>")
+		{
+			auto startMem = MallocCount::getCurrent();
+
+			Vector<uint8_t> vector(32);
+			for(unsigned i = 0; i < 32; ++i) {
+				vector.add(os_random());
 			}
+
+			Serial << "Heap " << MallocCount::getCurrent() - startMem << endl;
+
+			print(vector, ",");
+			Serial.println();
+
+			for(auto& e : vector) {
+				e += 12;
+			}
+
+			print(vector, ",");
+			Serial.println();
+
+			vector.setElementAt(0, 1);
+			REQUIRE(vector[1] == 0);
+			REQUIRE(vector.count() == 32);
+			REQUIRE(vector.capacity() == 32);
+
+			REQUIRE(!vector.insertElementAt(99, 35));
+			REQUIRE(vector.insertElementAt(99, 32));
+			REQUIRE(vector[32] == 99);
+			REQUIRE_EQ(vector.capacity(), 42);
+
+			REQUIRE(vector.setSize(3));
+			REQUIRE_EQ(vector.count(), 3);
+			REQUIRE_EQ(vector.capacity(), 42);
+
+			vector.trimToSize();
+			REQUIRE_EQ(vector.capacity(), 3);
+
+			uint8_t arr[3];
+			vector.copyInto(arr);
+			for(unsigned i = 0; i < vector.count(); ++i) {
+				REQUIRE_EQ(vector[i], arr[i]);
+			}
+		}
+
+		TEST_CASE("std::vector<uint8_t>")
+		{
+			auto startMem = MallocCount::getCurrent();
+
+			std::vector<uint8_t> vector;
+			for(unsigned i = 0; i < 32; ++i) {
+				vector.push_back(os_random());
+			}
+
+			Serial << "Heap " << MallocCount::getCurrent() - startMem << endl;
+
+			for(auto& e : vector) {
+				Serial << e << ", ";
+			}
+			Serial.println();
+
+			for(auto& e : vector) {
+				e += 12;
+			}
+
+			for(auto& e : vector) {
+				Serial << e << ", ";
+			}
+			Serial.println();
 		}
 
 		TEST_CASE("MacAddress")

@@ -32,6 +32,7 @@
 #include <iterator>
 #include <cstdlib>
 #include "WiringList.h"
+#include "Print.h"
 
 /**
  * @brief HashMap class template
@@ -87,6 +88,15 @@ public:
 		const Value* operator->() const
 		{
 			return &v;
+		}
+
+		size_t printTo(Print& p) const
+		{
+			size_t n{0};
+			n += p.print(k);
+			n += p.print(" = ");
+			n += p.print(v);
+			return n;
 		}
 
 	private:
@@ -285,7 +295,7 @@ public:
 
 	bool allocate(unsigned int newSize)
 	{
-		return keys.allocate(newSize, K{}) && values.allocate(newSize, nil);
+		return keys.allocate(newSize) && values.allocate(newSize);
 	}
 
 	/**

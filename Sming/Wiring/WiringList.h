@@ -13,51 +13,6 @@
 namespace wiring_private
 {
 /**
- * @brief List of object pointers
- */
-template <typename T> struct ObjectList {
-	T** values{nullptr};
-	size_t size{0};
-
-	~ObjectList()
-	{
-		clear();
-	}
-
-	bool allocate(size_t newSize, ...);
-
-	void clear()
-	{
-		while(size != 0) {
-			delete values[--size];
-		}
-		free(values);
-		values = nullptr;
-	}
-
-	void remove(unsigned index)
-	{
-		delete values[index];
-		memmove(&values[index], &values[index + 1], (size - index - 1) * sizeof(T*));
-		values[size - 1] = nullptr;
-	}
-
-	T& operator[](unsigned index)
-	{
-		auto& ptr = values[index];
-		if(ptr == nullptr) {
-			ptr = new T{};
-		}
-		return *ptr;
-	}
-
-	const T& operator[](unsigned index) const
-	{
-		return const_cast<ObjectList&>(*this)[index];
-	}
-};
-
-/**
  * @brief List of scalar values
  */
 template <typename T> struct ScalarList {
@@ -69,7 +24,7 @@ template <typename T> struct ScalarList {
 		clear();
 	}
 
-	bool allocate(size_t newSize, const T& nil);
+	bool allocate(size_t newSize);
 
 	void clear()
 	{
@@ -78,9 +33,31 @@ template <typename T> struct ScalarList {
 		size = 0;
 	}
 
+	bool insert(unsigned index, T value)
+	{
+		memmove(&values[index + 1], &values[index], size - index - 1);
+		values[index] = value;
+		return true;
+	}
+
 	void remove(unsigned index)
 	{
 		memmove(&values[index], &values[index + 1], (size - index - 1) * sizeof(T));
+	}
+
+	void trim(size_t newSize, bool reallocate)
+	{
+		if(!reallocate) {
+			return;
+		}
+
+		auto newmem = realloc(values, sizeof(T) * newSize);
+		if(newmem == nullptr) {
+			return;
+		}
+
+		values = static_cast<T*>(newmem);
+		size = newSize;
 	}
 
 	T& operator[](unsigned index)
@@ -94,25 +71,87 @@ template <typename T> struct ScalarList {
 	}
 };
 
-template <typename T> bool ObjectList<T>::allocate(size_t newSize, ...)
-{
-	if(newSize <= size) {
-		return true;
+/**
+ * @brief List of object pointers
+ */
+template <typename T> struct ObjectList : public ScalarList<T*> {
+	struct Element {
+		T*& value;
+
+		Element& operator=(T* v)
+		{
+			delete value;
+			value = v;
+			return *this;
+		}
+
+		template <typename U = T>
+		typename std::enable_if<std::is_copy_constructible<U>::value, Element&>::type operator=(const U& v)
+		{
+			delete value;
+			value = new U{v};
+			return *this;
+		}
+
+		operator T&()
+		{
+			return *value;
+		}
+	};
+
+	~ObjectList()
+	{
+		clear();
 	}
 
-	auto newmem = realloc(values, sizeof(T*) * newSize);
-	if(newmem == nullptr) {
-		return false;
+	bool allocate(size_t newSize);
+
+	void clear()
+	{
+		while(this->size != 0) {
+			delete this->values[--this->size];
+		}
+		ScalarList<T*>::clear();
 	}
 
-	values = static_cast<T**>(newmem);
-	std::fill_n(&values[size], newSize - size, nullptr);
+	bool insert(unsigned index, const T& value)
+	{
+		auto el = new T(value);
+		if(el == nullptr) {
+			return false;
+		}
+		return ScalarList<T*>::insert(index, el);
+	}
 
-	size = newSize;
-	return true;
-}
+	void remove(unsigned index)
+	{
+		delete this->values[index];
+		ScalarList<T*>::remove(index);
+		this->values[this->size - 1] = nullptr;
+	}
 
-template <typename T> bool ScalarList<T>::allocate(size_t newSize, const T& nil)
+	void trim(size_t newSize, bool reallocate)
+	{
+		for(unsigned i = this->size; i > newSize; --i) {
+			delete this->values[i - 1];
+			this->values[i - 1] = nullptr;
+		}
+
+		ScalarList<T*>::trim(newSize, reallocate);
+	}
+
+	Element operator[](unsigned index)
+	{
+		return Element{this->values[index]};
+	}
+
+	const T& operator[](unsigned index) const
+	{
+		return *this->values[index];
+	}
+};
+
+template <typename T> bool ScalarList<T>::allocate(size_t newSize)
 {
 	if(newSize <= size) {
 		return true;
@@ -124,8 +163,18 @@ template <typename T> bool ScalarList<T>::allocate(size_t newSize, const T& nil)
 	}
 
 	values = static_cast<T*>(newmem);
-	std::fill_n(&values[size], newSize - size, nil);
 	size = newSize;
+	return true;
+}
+
+template <typename T> bool ObjectList<T>::allocate(size_t newSize)
+{
+	auto curSize = this->size;
+	if(!ScalarList<T*>::allocate(newSize)) {
+		return false;
+	}
+
+	std::fill_n(&this->values[curSize], newSize - curSize, nullptr);
 	return true;
 }
 
