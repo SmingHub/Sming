@@ -100,8 +100,12 @@ template <typename T> struct TRange {
 	 */
 	T random() const
 	{
+		auto n = 1 + max - min;
+		if(n == 0) {
+			return 0;
+		}
 		auto value = os_random();
-		return min + value % (max - min);
+		return min + value % n;
 	}
 
 	Iterator begin() const
