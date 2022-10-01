@@ -56,11 +56,6 @@ public:
 		return getName() == name;
 	}
 
-	PartitionTable& partitions()
-	{
-		return mPartitions;
-	}
-
 	const PartitionTable& partitions() const
 	{
 		return mPartitions;

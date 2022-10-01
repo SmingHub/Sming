@@ -77,7 +77,7 @@ public:
 	/**
 	 * @brief Find the n'th OTA partition
 	 */
-	Partition findOta(uint8_t index)
+	Partition findOta(uint8_t index) const
 	{
 		using App = Partition::SubType::App;
 		auto subtype = App(uint8_t(App::ota0) + index);

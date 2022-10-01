@@ -335,15 +335,6 @@ public:
 	String getDeviceName() const;
 
 	/**
-	 * @brief Get storage device containing this partition
-	 * @retval Device* null if device isn't registered
-	 */
-	Device* getDevice() const
-	{
-		return mDevice;
-	}
-
-	/**
 	 * @brief Determine if given address contained within this partition
 	 */
 	bool contains(uint32_t addr) const
