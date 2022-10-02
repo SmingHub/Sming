@@ -24,7 +24,7 @@ public:
 
 	explicit operator bool() const
 	{
-		return mCount != 0;
+		return mEntries.isEmpty();
 	}
 
 	/**
@@ -94,28 +94,18 @@ public:
 		return Iterator(mDevice).end();
 	}
 
-	uint8_t count() const
-	{
-		return mCount;
-	}
-
 	Device& device() const
 	{
 		return mDevice;
 	}
 
-	Partition operator[](unsigned index) const
-	{
-		return (index < mCount) ? Partition(mDevice, mEntries.get()[index]) : Partition();
-	}
-
 protected:
 	friend Device;
+	friend Iterator;
 	void load(const esp_partition_info_t* entry, unsigned count);
 
 	Device& mDevice;
-	std::unique_ptr<Partition::Info[]> mEntries;
-	uint8_t mCount{0};
+	Partition::Info::OwnedList mEntries;
 };
 
 } // namespace Storage

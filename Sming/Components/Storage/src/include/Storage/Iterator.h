@@ -32,7 +32,7 @@ public:
 
 	explicit operator bool() const
 	{
-		return (mDevice != nullptr) && (mPos > beforeStart) && (mPos < afterEnd);
+		return mDevice && mInfo;
 	}
 
 	Iterator operator++(int)
@@ -50,7 +50,7 @@ public:
 
 	bool operator==(const Iterator& other) const
 	{
-		return (mDevice == other.mDevice) && (mPos == other.mPos);
+		return mInfo == other.mInfo;
 	}
 
 	bool operator!=(const Iterator& other) const
@@ -58,7 +58,10 @@ public:
 		return !operator==(other);
 	}
 
-	Partition operator*() const;
+	Partition operator*() const
+	{
+		return mDevice && mInfo ? Partition(*mDevice, *mInfo) : Partition{};
+	}
 
 	Iterator begin()
 	{
@@ -71,15 +74,11 @@ public:
 	}
 
 private:
-	static constexpr int8_t beforeStart{-1};
-	static constexpr int8_t afterEnd{0x7f};
-
-	Iterator() : mPos(afterEnd)
+	Iterator()
 	{
 	}
 
-	bool seek(uint8_t pos);
-	bool next();
+	void next();
 
 	struct Search {
 		Device* device;
@@ -88,7 +87,7 @@ private:
 	};
 	Search mSearch{};
 	Device* mDevice{nullptr};
-	int8_t mPos{beforeStart};
+	const Partition::Info* mInfo{nullptr};
 };
 
 } // namespace Storage

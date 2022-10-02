@@ -29,7 +29,7 @@
 #include <Printable.h>
 #include <Data/BitSet.h>
 #include <Data/CString.h>
-#include <memory>
+#include <Data/LinkedObjectList.h>
 #include <cassert>
 
 #define PARTITION_APP_SUBTYPE_MAP(XX)                                                                                  \
@@ -130,7 +130,9 @@ public:
 	/**
 	 * @brief Partition information
 	 */
-	struct Info {
+	struct Info : public LinkedObjectTemplate<Info> {
+		using OwnedList = OwnedLinkedObjectListTemplate<Info>;
+
 		CString name;
 		uint32_t offset{0};
 		uint32_t size{0};
@@ -145,6 +147,17 @@ public:
 		Info(const String& name, Type type, uint8_t subtype, uint32_t offset, uint32_t size, Flags flags)
 			: name(name), offset(offset), size(size), type(type), subtype(subtype), flags(flags)
 		{
+		}
+
+		template <typename T>
+		Info(const String& name, T subType, uint32_t offset, uint32_t size, Flags flags)
+			: Info(name, Type(T::partitionType), uint8_t(subType), offset, size, flags)
+		{
+		}
+
+		bool match(Type type, uint8_t subType) const
+		{
+			return (type == Type::any || type == this->type) && (subType == SubType::any || subType == this->subtype);
 		}
 	};
 
