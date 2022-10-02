@@ -113,8 +113,8 @@ public:
 		}
 		auto dev = new Storage::FileDevice(tag, hfs, f);
 		Storage::registerDevice(dev);
-		auto part = dev->createPartition(tag, Storage::Partition::SubType::Data::spiffs, 0, dev->getSize(),
-										 Storage::Partition::Flag::readOnly);
+		auto part = dev->partitions().add(tag, Storage::Partition::SubType::Data::spiffs, 0, dev->getSize(),
+										  Storage::Partition::Flag::readOnly);
 
 		auto fs = IFS::createSpiffsFilesystem(part);
 		int err = fs->mount();

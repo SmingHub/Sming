@@ -128,6 +128,24 @@ public:
 	using Flags = BitSet<uint32_t, Flag>;
 
 	/**
+	 * @brief Express both partition type and subtype together
+	 */
+	struct FullType {
+		Type type;
+		uint8_t subtype;
+
+		FullType(Type type, uint8_t subtype) : type(type), subtype(subtype)
+		{
+		}
+
+		template <typename T> FullType(T subType) : FullType(Type(T::partitionType), uint8_t(subType))
+		{
+		}
+
+		operator String() const;
+	};
+
+	/**
 	 * @brief Partition information
 	 */
 	struct Info : public LinkedObjectTemplate<Info> {
@@ -144,14 +162,8 @@ public:
 		{
 		}
 
-		Info(const String& name, Type type, uint8_t subtype, uint32_t offset, uint32_t size, Flags flags)
-			: name(name), offset(offset), size(size), type(type), subtype(subtype), flags(flags)
-		{
-		}
-
-		template <typename T>
-		Info(const String& name, T subType, uint32_t offset, uint32_t size, Flags flags)
-			: Info(name, Type(T::partitionType), uint8_t(subType), offset, size, flags)
+		Info(const String& name, FullType fullType, uint32_t offset, uint32_t size, Flags flags = 0)
+			: name(name), offset(offset), size(size), type(fullType.type), subtype(fullType.subtype), flags(flags)
 		{
 		}
 

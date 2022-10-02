@@ -1,0 +1,41 @@
+From v4.6 to v4.7
+=================
+
+.. highlight:: c++
+
+Storage Partition methods
+-------------------------
+
+The ``Storage::Partition::getDevice()`` method has been removed.
+This could be used to bypass protections offered by the partitioning API.
+
+
+Storage Device Partitions
+-------------------------
+
+The ``Storage::CustomDevice::createPartition()`` methods have been removed.
+    Instead, use partition table methods.
+
+    For example::
+
+        part = device->createPartition("archive", Storage::Partition::SubType::Data::fwfs, startOffset, size);
+
+    becomes::
+
+        part = device->partitions().add("archive", Storage::Partition::SubType::Data::fwfs, startOffset, size);
+
+    This also applies to derivatives :cpp:class:`Storage::SysMem` and :cpp:class:`Storage::ProgMem`.
+
+
+Creating custom partition types require use of :cpp:struct:`Storage::Partition::FullType`.
+
+    For example::
+
+        part = device->createPartitions("fs_app", Storage::Partition::Type::data, 100, startOffset, size);
+
+    becomes::
+
+        part = device->partitions().add("fs_app", {Storage::Partition::Type::data, 100}, startOffset, size);
+
+    Note how the ``type`` and ``subtype`` values are enclosed in braces (instantiating a ``FullType`` struct).
+    This avoids confusing the subtype value ``100`` with the start offset.

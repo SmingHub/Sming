@@ -80,19 +80,19 @@ void init()
 	Serial.println(_F("** Reading tests, repeat 3 times to show effect of caching (if any)"));
 
 	Serial.println(_F("** Reading SysMem device (flash)"));
-	part = Storage::sysMem.createPartition(F("fs_app"), FS_app, Storage::Partition::Type::data, 100);
+	part = Storage::sysMem.partitions().add(F("fs_app"), FS_app, {Storage::Partition::Type::data, 100});
 	printPart(part);
 	printPart(part);
 	printPart(part);
 
 	Serial.println(_F("** Reading SysMem device (RAM)"));
-	part = Storage::sysMem.createPartition(F("fs_app"), FS_app, Storage::Partition::Type::data, 100);
+	part = Storage::sysMem.partitions().add(F("fs_app"), FS_app, {Storage::Partition::Type::data, 100});
 	printPart(part);
 	printPart(part);
 	printPart(part);
 
 	Serial.println(_F("** Reading ProgMem device"));
-	part = Storage::progMem.createPartition(F("fs_app"), FS_app, Storage::Partition::Type::data, 100);
+	part = Storage::progMem.partitions().add(F("fs_app"), FS_app, {Storage::Partition::Type::data, 100});
 	printPart(part);
 	printPart(part);
 	printPart(part);

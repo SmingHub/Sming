@@ -23,12 +23,7 @@ void PartitionTable::load(const esp_partition_info_t* entry, unsigned count)
 		char name[Partition::nameSize + 1];
 		memcpy(name, e.name, Partition::nameSize);
 		name[Partition::nameSize] = '\0';
-		auto info = new Partition::Info{name, e.type, e.subtype, e.offset, e.size, e.flags};
-		if(!mEntries.add(info)) {
-			debug_e("Out of memory");
-			delete info;
-			break;
-		}
+		add(name, {e.type, e.subtype}, e.offset, e.size, e.flags);
 	}
 }
 

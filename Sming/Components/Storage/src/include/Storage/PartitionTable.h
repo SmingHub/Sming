@@ -44,10 +44,9 @@ public:
 		return Iterator(mDevice, type, subType);
 	}
 
-	/// C++ subtype definition provides partition type
-	template <typename T> Iterator find(T subType) const
+	Iterator find(Partition::FullType fullType) const
 	{
-		return find(Partition::Type(T::partitionType), uint8_t(subType));
+		return find(fullType.type, fullType.subtype);
 	}
 
 	/** @} */
@@ -102,7 +101,28 @@ public:
 protected:
 	friend Device;
 	friend Iterator;
+
 	void load(const esp_partition_info_t* entry, unsigned count);
+
+	/**
+	 * @brief Add new partition using given Info
+	 * @param info Must be allocated using `new`: Device will take ownership
+	 * @retval Partition Reference to the partition
+	 */
+	Partition add(const Partition::Info* info)
+	{
+		return mEntries.add(info) ? Partition(mDevice, *info) : Partition{};
+	}
+
+	template <typename... Args> Partition add(const String& name, Partition::FullType type, Args... args)
+	{
+		return add(new Partition::Info(name, type, args...));
+	}
+
+	void clear()
+	{
+		mEntries.clear();
+	}
 
 	Device& mDevice;
 	Partition::Info::OwnedList mEntries;

@@ -51,36 +51,31 @@ public:
 		return false;
 	}
 
-	using CustomDevice::createPartition;
-
-	/**
-	 * @brief Create partition for PROGMEM data access
-	 * @param name Name for partition
-	 * @param flashPtr PROGMEM pointer
-	 * @param size Size of PROGMEM data
-	 * @param type Partition type
-	 * @param subtype Partition sub-type
-	 * @retval Partition Invalid if data is not progmem
-	 */
-	Partition createPartition(const String& name, const void* flashPtr, size_t size, Partition::Type type,
-							  uint8_t subtype);
-
-	template <typename T> Partition createPartition(const String& name, const void* flashPtr, size_t size, T subType)
+	class ProgMemPartitionTable : public CustomPartitionTable
 	{
-		return createPartition(name, flashPtr, size, Partition::Type(T::partitionType), uint8_t(subType));
-	}
+	public:
+		/**
+		 * @brief Add partition entry for PROGMEM data access
+		 * @param name Name for partition
+		 * @param flashPtr PROGMEM pointer
+		 * @param size Size of PROGMEM data
+		 * @param type Partition type and subtype
+		 * @retval Partition Invalid if data is not progmem
+		 */
+		Partition add(const String& name, const void* flashPtr, size_t size, Partition::FullType type);
 
-	/**
-	 * @brief Create partition for FlashString data access
-	 */
-	Partition createPartition(const String& name, const FSTR::ObjectBase& fstr, Partition::Type type, uint8_t subtype)
-	{
-		return createPartition(name, fstr.data(), fstr.size(), type, subtype);
-	}
+		/**
+		 * @brief Add partition entry for FlashString data access
+		 */
+		Partition add(const String& name, const FSTR::ObjectBase& fstr, Partition::FullType type)
+		{
+			return add(name, fstr.data(), fstr.size(), type);
+		}
+	};
 
-	template <typename T> Partition createPartition(const String& name, const FSTR::ObjectBase& fstr, T subType)
+	ProgMemPartitionTable& partitions()
 	{
-		return createPartition(name, fstr, Partition::Type(T::partitionType), uint8_t(subType));
+		return static_cast<ProgMemPartitionTable&>(mPartitions);
 	}
 };
 

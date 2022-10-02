@@ -56,6 +56,9 @@ public:
 		return getName() == name;
 	}
 
+	/**
+	 * @brief Provide read-only access to partition table
+	 */
 	const PartitionTable& partitions() const
 	{
 		return mPartitions;

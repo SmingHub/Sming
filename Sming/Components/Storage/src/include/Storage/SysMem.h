@@ -70,16 +70,22 @@ public:
 		return true;
 	}
 
-	using CustomDevice::createPartition;
-
-	/**
-	 * @brief Create partition for FlashString data access
-	 */
-	Partition createPartition(const String& name, const FSTR::ObjectBase& fstr, Partition::Type type, uint8_t subtype);
-
-	template <typename T> Partition createPartition(const String& name, const FSTR::ObjectBase& fstr, T subType)
+	class SysMemPartitionTable : public CustomPartitionTable
 	{
-		return createPartition(name, fstr, Partition::Type(T::partitionType), uint8_t(subType));
+	public:
+		/**
+		 * @brief Add partition entry for FlashString data access
+		 */
+		Partition add(const String& name, const FSTR::ObjectBase& fstr, Partition::FullType type)
+		{
+			return CustomPartitionTable::add(name, type, reinterpret_cast<uint32_t>(fstr.data()), fstr.size(),
+											 Partition::Flag::readOnly);
+		}
+	};
+
+	SysMemPartitionTable& partitions()
+	{
+		return static_cast<SysMemPartitionTable&>(mPartitions);
 	}
 };
 
