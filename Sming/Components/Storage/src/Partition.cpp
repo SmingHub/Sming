@@ -123,6 +123,11 @@ String toLongString(Partition::Type type, uint8_t subType)
 
 namespace Storage
 {
+Partition::FullType::operator String() const
+{
+	return toString(type, subtype);
+}
+
 String Partition::typeString() const
 {
 	return toString(type(), subType());

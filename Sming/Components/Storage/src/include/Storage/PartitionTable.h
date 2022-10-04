@@ -24,7 +24,7 @@ public:
 
 	explicit operator bool() const
 	{
-		return mCount != 0;
+		return mEntries.isEmpty();
 	}
 
 	/**
@@ -44,10 +44,9 @@ public:
 		return Iterator(mDevice, type, subType);
 	}
 
-	/// C++ subtype definition provides partition type
-	template <typename T> Iterator find(T subType) const
+	Iterator find(Partition::FullType fullType) const
 	{
-		return find(Partition::Type(T::partitionType), uint8_t(subType));
+		return find(fullType.type, fullType.subtype);
 	}
 
 	/** @} */
@@ -94,28 +93,39 @@ public:
 		return Iterator(mDevice).end();
 	}
 
-	uint8_t count() const
-	{
-		return mCount;
-	}
-
 	Device& device() const
 	{
 		return mDevice;
 	}
 
-	Partition operator[](unsigned index) const
-	{
-		return (index < mCount) ? Partition(mDevice, mEntries.get()[index]) : Partition();
-	}
-
 protected:
 	friend Device;
+	friend Iterator;
+
 	void load(const esp_partition_info_t* entry, unsigned count);
 
+	/**
+	 * @brief Add new partition using given Info
+	 * @param info Must be allocated using `new`: Device will take ownership
+	 * @retval Partition Reference to the partition
+	 */
+	Partition add(const Partition::Info* info)
+	{
+		return mEntries.add(info) ? Partition(mDevice, *info) : Partition{};
+	}
+
+	template <typename... Args> Partition add(const String& name, Partition::FullType type, Args... args)
+	{
+		return add(new Partition::Info(name, type, args...));
+	}
+
+	void clear()
+	{
+		mEntries.clear();
+	}
+
 	Device& mDevice;
-	std::unique_ptr<Partition::Info[]> mEntries;
-	uint8_t mCount{0};
+	Partition::Info::OwnedList mEntries;
 };
 
 } // namespace Storage
