@@ -129,10 +129,11 @@ public:
 
 	/** @brief  Initialise the serial port
      *  @param  baud BAUD rate of the serial port (Default: 9600)
+	 *  @retval bool true on success
      */
-	void begin(uint32_t baud = 9600)
+	bool begin(uint32_t baud = 9600)
 	{
-		begin(baud, SERIAL_8N1, SERIAL_FULL, 1);
+		return begin(baud, SERIAL_8N1, SERIAL_FULL, 1);
 	}
 
 	/**
@@ -142,10 +143,11 @@ public:
 	 * 				 even (E), and no (N) parity, and 1 or 2 stop bits.
 	 * 		  		 To set the desired mode, call  Serial.begin(baudrate, SERIAL_8N1),
 	 * 		  		 Serial.begin(baudrate, SERIAL_6E2), etc.
+	 * @retval bool true on success
 	 */
-	void begin(uint32_t baud, SerialConfig config)
+	bool begin(uint32_t baud, SerialConfig config)
 	{
-		begin(baud, config, SERIAL_FULL, 1);
+		return begin(baud, config, SERIAL_FULL, 1);
 	}
 
 	/**
@@ -156,10 +158,11 @@ public:
 	 * 		  		 To set the desired mode, call  Serial.begin(baudrate, SERIAL_8N1),
 	 * 		  		 Serial.begin(baudrate, SERIAL_6E2), etc.
 	 * @param mode specifies if the UART supports receiving (RX), transmitting (TX) or both (FULL) operations
+	 * @retval bool true on success
 	 */
-	void begin(uint32_t baud, SerialConfig config, SerialMode mode)
+	bool begin(uint32_t baud, SerialConfig config, SerialMode mode)
 	{
-		begin(baud, config, mode, 1);
+		return begin(baud, config, mode, 1);
 	}
 
 	/**
@@ -169,8 +172,9 @@ public:
 	 * @param mode
 	 * @param txPin Can specify alternate pin for TX
 	 * @param rxPin
+	 * @retval bool true on success
 	 */
-	void begin(uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin, uint8_t rxPin = UART_PIN_DEFAULT);
+	bool begin(uint32_t baud, SerialConfig config, SerialMode mode, uint8_t txPin, uint8_t rxPin = UART_PIN_DEFAULT);
 
 	/**
 	 * @brief De-inits the current UART if it is already used
