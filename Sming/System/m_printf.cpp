@@ -215,7 +215,11 @@ int m_vsnprintf(char *buf, size_t maxLen, const char *fmt, va_list args)
 
             case 'd':
             case 'i':
-                s = ltoa_wp(va_arg(args, int), tempNum, 10, width, pad);
+                if(length >= 2) {
+                    s = lltoa_wp(va_arg(args, long long int), tempNum, 10, width, pad);
+                } else {
+                    s = ltoa_wp(va_arg(args, int), tempNum, 10, width, pad);
+                }
                 break;
 
             case 'f':
