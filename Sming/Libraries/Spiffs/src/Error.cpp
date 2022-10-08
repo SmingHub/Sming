@@ -42,7 +42,7 @@ namespace SPIFFS
 	XX(SPIFFS_ERR_NOT_FOUND, Error::NotFound)                                                                          \
 	XX(SPIFFS_ERR_END_OF_OBJECT, Error::SeekBounds)                                                                    \
 	XX(SPIFFS_ERR_DELETED, Error::InvalidHandle)                                                                       \
-	XX(SPIFFS_ERR_FILE_CLOSED, Error::InvalidHandle)                                                                   \
+	XX(SPIFFS_ERR_FILE_CLOSED, Error::FileNotOpen)                                                                     \
 	XX(SPIFFS_ERR_OUT_OF_FILE_DESCS, Error::OutOfFileDescs)                                                            \
 	XX(SPIFFS_ERR_BAD_DESCRIPTOR, Error::InvalidHandle)                                                                \
 	XX(SPIFFS_ERR_NOT_WRITABLE, Error::ReadOnly)                                                                       \

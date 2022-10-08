@@ -307,7 +307,7 @@ int FileSystem::close(FileHandle file)
 	CHECK_MOUNTED()
 
 	if(file < 0) {
-		return Error::FileNotOpen;
+		return Error::InvalidHandle;
 	}
 
 	int res = flushMeta(file);
