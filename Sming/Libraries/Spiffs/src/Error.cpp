@@ -21,6 +21,7 @@
  ****/
 
 #include "include/IFS/SPIFFS/Error.h"
+#include <IFS/Error.h>
 #include <FlashString/Map.hpp>
 
 namespace IFS
@@ -31,19 +32,41 @@ namespace SPIFFS
  * @todo Return generic FSERR codes wherever possible by mapping from SPIFFS codes
  */
 
+/*
+ * Translate common SPIFFS error codes into the standard one.
+ * This avoids the need to provide strings for these values.
+ */
+#define SPIFFS_ERROR_TRANSLATION_MAP(XX)                                                                               \
+	XX(SPIFFS_ERR_NOT_MOUNTED, Error::NotMounted)                                                                      \
+	XX(SPIFFS_ERR_FULL, Error::NoSpace)                                                                                \
+	XX(SPIFFS_ERR_NOT_FOUND, Error::NotFound)                                                                          \
+	XX(SPIFFS_ERR_END_OF_OBJECT, Error::SeekBounds)                                                                    \
+	XX(SPIFFS_ERR_DELETED, Error::InvalidHandle)                                                                       \
+	XX(SPIFFS_ERR_FILE_CLOSED, Error::FileNotOpen)                                                                     \
+	XX(SPIFFS_ERR_OUT_OF_FILE_DESCS, Error::OutOfFileDescs)                                                            \
+	XX(SPIFFS_ERR_BAD_DESCRIPTOR, Error::InvalidHandle)                                                                \
+	XX(SPIFFS_ERR_NOT_WRITABLE, Error::ReadOnly)                                                                       \
+	XX(SPIFFS_ERR_NOT_READABLE, Error::Denied)                                                                         \
+	XX(SPIFFS_ERR_CONFLICTING_NAME, Error::Exists)                                                                     \
+	XX(SPIFFS_ERR_NOT_CONFIGURED, Error::BadFileSystem)                                                                \
+	XX(SPIFFS_ERR_NOT_A_FS, Error::BadFileSystem)                                                                      \
+	XX(SPIFFS_ERR_MOUNTED, Error::Denied)                                                                              \
+	XX(SPIFFS_ERR_ERASE_FAIL, Error::EraseFailure)                                                                     \
+	XX(SPIFFS_ERR_FILE_EXISTS, Error::Exists)                                                                          \
+	XX(SPIFFS_ERR_RO_NOT_IMPL, Error::ReadOnly)                                                                        \
+	XX(SPIFFS_ERR_RO_ABORTED_OPERATION, Error::ReadOnly)                                                               \
+	XX(SPIFFS_ERR_PROBE_NOT_A_FS, Error::BadFileSystem)                                                                \
+	XX(SPIFFS_ERR_NAME_TOO_LONG, Error::NameTooLong)                                                                   \
+	XX(SPIFFS_ERR_SEEK_BOUNDS, Error::SeekBounds)
+
+/*
+ * All remaining SPIFFS error codes
+ */
 #define SPIFFS_ERROR_MAP(XX)                                                                                           \
-	XX(OK, 0)                                                                                                          \
-	XX(NOT_MOUNTED, -10000)                                                                                            \
-	XX(FULL, -10001)                                                                                                   \
-	XX(NOT_FOUND, -10002)                                                                                              \
-	XX(END_OF_OBJECT, -10003)                                                                                          \
-	XX(DELETED, -10004)                                                                                                \
 	XX(NOT_FINALIZED, -10005)                                                                                          \
 	XX(NOT_INDEX, -10006)                                                                                              \
 	XX(OUT_OF_FILE_DESCS, -10007)                                                                                      \
-	XX(FILE_CLOSED, -10008)                                                                                            \
 	XX(FILE_DELETED, -10009)                                                                                           \
-	XX(BAD_DESCRIPTOR, -10010)                                                                                         \
 	XX(IS_INDEX, -10011)                                                                                               \
 	XX(IS_FREE, -10012)                                                                                                \
 	XX(INDEX_SPAN_MISMATCH, -10013)                                                                                    \
@@ -54,41 +77,15 @@ namespace SPIFFS
 	XX(INDEX_FREE, -10018)                                                                                             \
 	XX(INDEX_LU, -10019)                                                                                               \
 	XX(INDEX_INVALID, -10020)                                                                                          \
-	XX(NOT_WRITABLE, -10021)                                                                                           \
-	XX(NOT_READABLE, -10022)                                                                                           \
-	XX(CONFLICTING_NAME, -10023)                                                                                       \
-	XX(NOT_CONFIGURED, -10024)                                                                                         \
-                                                                                                                       \
-	XX(NOT_A_FS, -10025)                                                                                               \
-	XX(MOUNTED, -10026)                                                                                                \
-	XX(ERASE_FAIL, -10027)                                                                                             \
 	XX(MAGIC_NOT_POSSIBLE, -10028)                                                                                     \
-                                                                                                                       \
 	XX(NO_DELETED_BLOCKS, -10029)                                                                                      \
-                                                                                                                       \
-	XX(FILE_EXISTS, -10030)                                                                                            \
-                                                                                                                       \
 	XX(NOT_A_FILE, -10031)                                                                                             \
-	XX(RO_NOT_IMPL, -10032)                                                                                            \
-	XX(RO_ABORTED_OPERATION, -10033)                                                                                   \
 	XX(PROBE_TOO_FEW_BLOCKS, -10034)                                                                                   \
-	XX(PROBE_NOT_A_FS, -10035)                                                                                         \
-	XX(NAME_TOO_LONG, -10036)                                                                                          \
-                                                                                                                       \
 	XX(IX_MAP_UNMAPPED, -10037)                                                                                        \
 	XX(IX_MAP_MAPPED, -10038)                                                                                          \
 	XX(IX_MAP_BAD_RANGE, -10039)                                                                                       \
-                                                                                                                       \
-	XX(SEEK_BOUNDS, -10040)                                                                                            \
-                                                                                                                       \
 	XX(INTERNAL, -10050)                                                                                               \
-                                                                                                                       \
 	XX(TEST, -10100)
-
-struct spiffs_error_t {
-	int32_t err;
-	PGM_P tag;
-};
 
 #define XX(tag, value) DEFINE_FSTR_LOCAL(str_##tag, #tag)
 SPIFFS_ERROR_MAP(XX)
@@ -97,6 +94,17 @@ SPIFFS_ERROR_MAP(XX)
 #define XX(tag, value) {value, &str_##tag},
 DEFINE_FSTR_MAP_LOCAL(errorMap, int, FlashString, SPIFFS_ERROR_MAP(XX))
 #undef XX
+
+int translateSpiffsError(int spiffs_error)
+{
+	switch(spiffs_error) {
+#define XX(err_spiffs, err_sys)                                                                                        \
+	case err_spiffs:                                                                                                   \
+		return err_sys;
+	default:
+		return Error::fromSystem(spiffs_error);
+	}
+}
 
 String spiffsErrorToStr(int err)
 {
