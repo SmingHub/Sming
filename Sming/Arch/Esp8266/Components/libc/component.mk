@@ -13,6 +13,8 @@ LIBDIRS					+= $(COMPONENT_PATH)/lib
 EXTRA_LIBS				+= microc microgcc setjmp
 endif
 
+ifndef MAKE_CLEAN
+
 # build customised libstdc++
 # https://github.com/esp8266/Arduino/blob/master/tools/sdk/lib/README.md
 LIBSTDCPP_SRC = $(call FixPath,$(shell $(CC) -print-file-name=libstdc++.a))
@@ -34,3 +36,5 @@ $(COMPONENT_RULE)$(LIBSTDCPP_DST): $(LIBSTDCPP_SRC)
 COMPONENT_TARGETS += $(LIBSTDCPP_DST)
 
 EXTRA_LIBS += stdc++
+
+endif
