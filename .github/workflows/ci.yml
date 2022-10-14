@@ -27,12 +27,7 @@ jobs:
         - arch: Esp32
           variant: esp32c3
           os: windows-latest
-        exclude:
-        - os: windows-latest
-          arch: Host
-          
-    continue-on-error: ${{ matrix.arch == 'Host' && matrix.os == 'windows-latest' }}
-    
+
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}-${{ toJson(matrix) }}
       cancel-in-progress: true
@@ -40,6 +35,9 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+    - name: Fix autocrlf setting
+      run: |
+        git config --global --add core.autocrlf input
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Setup SMING_HOME for Ubuntu
@@ -67,7 +65,7 @@ jobs:
         SMING_SOC: ${{matrix.variant}}
       run: |
          Tools/ci/setenv.ps1
-         Tools/install.cmd "$env:SMING_ARCH".ToLower()
+         Tools/ci/install.cmd
     - name: Install Ninja
       uses: seanmiddleditch/gha-setup-ninja@master
     - name: Build and Test for ${{matrix.arch}} on Ubuntu
