@@ -100,6 +100,7 @@ if [ -n "$APPVEYOR" ] || [ -n "$GITHUB_ACTION" ]; then
         clang-format-8 \
         g++-9-multilib \
         python3-setuptools \
+        ninja-build \
         $EXTRA_PACKAGES
 
     sudo update-alternatives --set gcc /usr/bin/gcc-9
