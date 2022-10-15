@@ -51,7 +51,7 @@ jobs:
     - name: Install Sming Framework on Ubuntu
       if: ${{ env.CHECK_SCA == 1 }}
       run:  |
-        ./Tools/install.sh $(echo "$SMING_ARCH" | tr '[:upper:]' '[:lower:]')
+        Tools/ci/install.sh
     - name: Run Coverity Scan
       if: ${{ env.CHECK_SCA == 1 }}
       env: 

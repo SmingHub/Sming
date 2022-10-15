@@ -56,8 +56,8 @@ jobs:
       env: 
         SMING_ARCH: ${{matrix.arch}}
         SMING_SOC: ${{matrix.variant}}
-      run:  |
-        ./Tools/install.sh $(echo "$SMING_ARCH" | tr '[:upper:]' '[:lower:]')
+      run: |
+        Tools/ci/install.sh
     - name: Install Sming Framework on Windows   
       if: ${{ matrix.os ==  'windows-latest' }}
       env: 
@@ -75,14 +75,13 @@ jobs:
       run: |
         source $SMING_HOME/../Tools/export.sh
         $CLANG_FORMAT --version
-        ./Tools/ci/build.sh
+        Tools/ci/build.sh
     - name: Build and Test for ${{matrix.arch}} on Windows
       env: 
         SMING_ARCH: ${{matrix.arch}}
         SMING_SOC: ${{matrix.variant}}
       if: ${{ matrix.os ==  'windows-latest' }}
       run: |
-        $env:PYTHON_PATH=$(python -c  "import sys, os.path; print(os.path.dirname(sys.executable))")
         Tools/ci/setenv.ps1
         Tools/ci/build.cmd
 

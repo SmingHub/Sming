@@ -12,9 +12,11 @@ set -ex
 if [ -z "$SMING_TOOLS_PREINSTALLED" ]; then
 
 # appveyor-specific
-export PYTHON=$HOME/venv3.9/bin/python
-export ESP32_PYTHON_PATH=$HOME/venv3.9/bin
-source "$HOME/venv3.9/bin/activate"
+if [ -n "$APPVEYOR" ]; then
+    export PYTHON=$HOME/venv3.9/bin/python
+    export ESP32_PYTHON_PATH=$HOME/venv3.9/bin
+    source "$HOME/venv3.9/bin/activate"
+fi
 
 if [ "$BUILD_DOCS" = "true" ]; then
     INSTALL_OPTS="doc"
