@@ -36,7 +36,7 @@ struct Uuid {
 	 */
 	static constexpr size_t stringSize = 36;
 
-	Uuid()
+	constexpr Uuid()
 	{
 	}
 
@@ -69,14 +69,10 @@ struct Uuid {
 
 	explicit operator bool() const
 	{
-		Uuid Null{};
-		return memcmp(this, &Null, sizeof(Null)) != 0;
+		return *this != Uuid{};
 	}
 
-	bool operator==(const Uuid& other) const
-	{
-		return memcmp(this, &other, sizeof(Uuid)) == 0;
-	}
+	bool operator==(const Uuid& other) const;
 
 	bool operator!=(const Uuid& other) const
 	{

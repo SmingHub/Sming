@@ -21,6 +21,17 @@ uint32_t os_random();
 void os_get_random(void* buf, size_t n);
 }
 
+bool Uuid::operator==(const Uuid& other) const
+{
+	// Ensure these are stricly compared as a set of words to avoid PROGMEM issues
+	struct S {
+		uint32_t a, b, c, d;
+	};
+	auto& s1 = reinterpret_cast<const S&>(*this);
+	auto& s2 = reinterpret_cast<const S&>(other);
+	return s1.a == s2.a && s1.b == s2.b && s1.c == s2.c && s1.d == s2.d;
+}
+
 bool Uuid::generate(MacAddress mac)
 {
 	uint8_t version = 1; // DCE version
