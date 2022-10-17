@@ -323,6 +323,7 @@ int FileSystem::close(FileHandle file)
 	if(err < 0) {
 		res = translateSpiffsError(err);
 	}
+	partition.sync();
 	return res;
 }
 
@@ -353,6 +354,7 @@ int FileSystem::flush(FileHandle file)
 	if(err < 0) {
 		res = translateSpiffsError(err);
 	}
+	partition.sync();
 	return res;
 }
 
@@ -571,6 +573,7 @@ int FileSystem::setxattr(const char* path, AttributeTag tag, const void* data, s
 		return FS_OK;
 	}
 	err = SPIFFS_update_meta(handle(), path, &smb);
+	partition.sync();
 	return translateSpiffsError(err);
 #else
 	return Error::NotSupported;
@@ -753,6 +756,7 @@ int FileSystem::rename(const char* oldpath, const char* newpath)
 	}
 
 	int err = SPIFFS_rename(handle(), oldpath, newpath);
+	partition.sync();
 	return translateSpiffsError(err);
 }
 
@@ -777,6 +781,7 @@ int FileSystem::remove(const char* path)
 	int err = SPIFFS_remove(handle(), path);
 	err = translateSpiffsError(err);
 	debug_ifserr(err, "remove('%s')", path);
+	partition.sync();
 	return err;
 }
 
