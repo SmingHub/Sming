@@ -31,6 +31,9 @@ if ($IsWindows) {
         if ( -not (Test-Path "$env:PYTHON_PATH") ) {
             $env:PYTHON_PATH = "C:\Python39"
         }
+        if ( -not (Test-Path "$env:PYTHON_PATH") ) {
+            $env:PYTHON_PATH = $(Get-Command python | Split-Path)
+        }
     }
 
     $env:PATH = "$env:PYTHON_PATH;$env:PYTHON_PATH\Scripts;$env:PATH"

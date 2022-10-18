@@ -27,39 +27,42 @@ jobs:
         - arch: Esp32
           variant: esp32c3
           os: windows-latest
-        exclude:
-        - os: windows-latest
-          arch: Host
-          
-    continue-on-error: ${{ matrix.arch == 'Host' && matrix.os == 'windows-latest' }}
-    
+
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}-${{ toJson(matrix) }}
       cancel-in-progress: true
-        
+
     runs-on: ${{ matrix.os }}
 
     steps:
+    - name: Fix autocrlf setting
+      run: |
+        git config --global --add core.autocrlf input
+
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
+
     - name: Setup SMING_HOME for Ubuntu
       if: ${{ matrix.os ==  'ubuntu-latest' }}
       run: |
         echo "CI_BUILD_DIR=$GITHUB_WORKSPACE" >> $GITHUB_ENV
         echo "SMING_HOME=$GITHUB_WORKSPACE/Sming" >> $GITHUB_ENV
+
     - name: Setup SMING_HOME for Windows
       if: ${{ matrix.os ==  'windows-latest' }}
       run: |
         echo ("CI_BUILD_DIR=" + $env:GITHUB_WORKSPACE) >> $env:GITHUB_ENV
         $env:SMING_HOME = Join-Path $env:GITHUB_WORKSPACE "Sming"
         echo ("SMING_HOME=" + $env:SMING_HOME) >> $env:GITHUB_ENV
+
     - name: Install Sming Framework on Ubuntu
       if: ${{ matrix.os ==  'ubuntu-latest' }}
-      env: 
+      env:
         SMING_ARCH: ${{matrix.arch}}
         SMING_SOC: ${{matrix.variant}}
-      run:  |
-        ./Tools/install.sh $(echo "$SMING_ARCH" | tr '[:upper:]' '[:lower:]')
+      run: |
+        Tools/ci/install.sh
+
     - name: Install Sming Framework on Windows   
       if: ${{ matrix.os ==  'windows-latest' }}
       env: 
@@ -67,26 +70,24 @@ jobs:
         SMING_SOC: ${{matrix.variant}}
       run: |
          Tools/ci/setenv.ps1
-         Tools/install.cmd "$env:SMING_ARCH".ToLower()
-    - name: Install Ninja
-      uses: seanmiddleditch/gha-setup-ninja@master
+         Tools/ci/install.cmd
+
     - name: Build and Test for ${{matrix.arch}} on Ubuntu
       env: 
         SMING_ARCH: ${{matrix.arch}}
         SMING_SOC: ${{matrix.variant}}
         CLANG_FORMAT: clang-format-8
-      if: ${{ matrix.os ==  'ubuntu-latest' }}
+      if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
         source $SMING_HOME/../Tools/export.sh
         $CLANG_FORMAT --version
-        ./Tools/ci/build.sh
+        Tools/ci/build.sh
+
     - name: Build and Test for ${{matrix.arch}} on Windows
       env: 
         SMING_ARCH: ${{matrix.arch}}
         SMING_SOC: ${{matrix.variant}}
-      if: ${{ matrix.os ==  'windows-latest' }}
+      if: ${{ matrix.os == 'windows-latest' }}
       run: |
-        $env:PYTHON_PATH=$(python -c  "import sys, os.path; print(os.path.dirname(sys.executable))")
         Tools/ci/setenv.ps1
         Tools/ci/build.cmd
-
