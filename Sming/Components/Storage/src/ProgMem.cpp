@@ -29,7 +29,7 @@ Partition ProgMem::ProgMemPartitionTable::add(const String& name, const void* fl
 		return Partition{};
 	}
 
-	return CustomPartitionTable::add(name, type, addr, size, Partition::Flag::readOnly);
+	return PartitionTable::add(name, type, addr, size, Partition::Flag::readOnly);
 }
 
 } // namespace Storage

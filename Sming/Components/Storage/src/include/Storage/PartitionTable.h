@@ -98,12 +98,6 @@ public:
 		return mDevice;
 	}
 
-protected:
-	friend Device;
-	friend Iterator;
-
-	void load(const esp_partition_info_t* entry, unsigned count);
-
 	/**
 	 * @brief Add new partition using given Info
 	 * @param info Must be allocated using `new`: Device will take ownership
@@ -123,6 +117,12 @@ protected:
 	{
 		mEntries.clear();
 	}
+
+protected:
+	friend Device;
+	friend Iterator;
+
+	void load(const esp_partition_info_t* entry, unsigned count);
 
 	Device& mDevice;
 	Partition::Info::OwnedList mEntries;

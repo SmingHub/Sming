@@ -9,14 +9,14 @@
  ****/
 #pragma once
 
-#include "CustomDevice.h"
+#include "Device.h"
 
 namespace Storage
 {
 /**
  * @brief Storage device to access PROGMEM using flash API
  */
-class ProgMem : public CustomDevice
+class ProgMem : public Device
 {
 public:
 	String getName() const override
@@ -51,7 +51,7 @@ public:
 		return false;
 	}
 
-	class ProgMemPartitionTable : public CustomPartitionTable
+	class ProgMemPartitionTable : public PartitionTable
 	{
 	public:
 		/**
@@ -73,7 +73,7 @@ public:
 		}
 	};
 
-	ProgMemPartitionTable& partitions()
+	ProgMemPartitionTable& editablePartitions()
 	{
 		return static_cast<ProgMemPartitionTable&>(mPartitions);
 	}

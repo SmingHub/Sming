@@ -65,6 +65,14 @@ public:
 	}
 
 	/**
+	 * @brief Provide full access to partition table
+	 */
+	PartitionTable& editablePartitions()
+	{
+		return mPartitions;
+	}
+
+	/**
 	 * @brief Load partition table entries
 	 * @tableOffset Location of partition table to read
 	 * @retval bool true on success, false on failure

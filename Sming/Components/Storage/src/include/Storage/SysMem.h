@@ -10,14 +10,14 @@
 
 #pragma once
 
-#include "CustomDevice.h"
+#include "Device.h"
 
 namespace Storage
 {
 /**
  * @brief Storage device to access system memory, e.g. RAM
  */
-class SysMem : public CustomDevice
+class SysMem : public Device
 {
 public:
 	String getName() const override
@@ -70,7 +70,7 @@ public:
 		return true;
 	}
 
-	class SysMemPartitionTable : public CustomPartitionTable
+	class SysMemPartitionTable : public PartitionTable
 	{
 	public:
 		/**
@@ -78,12 +78,12 @@ public:
 		 */
 		Partition add(const String& name, const FSTR::ObjectBase& fstr, Partition::FullType type)
 		{
-			return CustomPartitionTable::add(name, type, reinterpret_cast<uint32_t>(fstr.data()), fstr.size(),
-											 Partition::Flag::readOnly);
+			return PartitionTable::add(name, type, reinterpret_cast<uint32_t>(fstr.data()), fstr.size(),
+									   Partition::Flag::readOnly);
 		}
 	};
 
-	SysMemPartitionTable& partitions()
+	SysMemPartitionTable& editablePartitions()
 	{
 		return static_cast<SysMemPartitionTable&>(mPartitions);
 	}

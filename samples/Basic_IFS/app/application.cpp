@@ -139,7 +139,8 @@ bool initFileSystem()
 
 #ifdef ENABLE_FLASHSTRING_IMAGE
 	// Create a partition wrapping some flashstring data
-	auto part = Storage::progMem.partitions().add(F("fwfsMem"), fwfsImage, Storage::Partition::SubType::Data::fwfs);
+	auto part =
+		Storage::progMem.editablePartitions().add(F("fwfsMem"), fwfsImage, Storage::Partition::SubType::Data::fwfs);
 #else
 	auto part = Storage::findDefaultPartition(Storage::Partition::SubType::Data::fwfs);
 #endif
