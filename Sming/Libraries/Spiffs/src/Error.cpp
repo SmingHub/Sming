@@ -23,6 +23,7 @@
 #include "include/IFS/SPIFFS/Error.h"
 #include <IFS/Error.h>
 #include <FlashString/Map.hpp>
+#include "../spiffs/src/spiffs.h"
 
 namespace IFS
 {
@@ -101,6 +102,8 @@ int translateSpiffsError(int spiffs_error)
 #define XX(err_spiffs, err_sys)                                                                                        \
 	case err_spiffs:                                                                                                   \
 		return err_sys;
+		SPIFFS_ERROR_TRANSLATION_MAP(XX)
+#undef XX
 	default:
 		return Error::fromSystem(spiffs_error);
 	}
