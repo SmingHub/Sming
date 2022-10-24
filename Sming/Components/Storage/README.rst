@@ -332,19 +332,19 @@ This is a C++ interface. Some examples::
 
    Storage::Partition part = Storage::findPartition("spiffs0"); // Find by name
    if(part) {
-     debugf("Partition '%s' found", part.name().c_str());
+     Serial << part << endl;
    } else {
-     debugf("Partition NOT found");
+     Serial << "spiffs0 partition NOT Found" << endl;
    }
 
    // Enumerate all partitions
    for(auto part: Storage::findPartition()) {
-      debugf("Found '%s' at 0x%08x, size 0x%08x", part.name().c_str(), part.address(), part.size());
+     Serial << part << endl;
    }
 
    // Enumerate all SPIFFS partitions
    for(auto part: Storage::findPartition(Storage::Partition::SubType::Data::spiffs)) {
-      debugf("Found '%s' at 0x%08x, size 0x%08x", part.name().c_str(), part.address(), part.size());
+     Serial << part << endl;
    }
 
 
@@ -361,7 +361,7 @@ You can query partition entries from a Storage object directly, for example::
    #include <Storage/SpiFlash.h>
 
    for(auto part: Storage::spiFlash->partitions()) {
-      debugf("Found '%s' at 0x%08x, size 0x%08x", part.name().c_str(), part.address(), part.size());
+     Serial << part << endl;
    }
 
 
