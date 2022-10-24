@@ -16,6 +16,15 @@ void listPartitions(Print& out)
 	out.println();
 }
 
+void listPartitions(Print& out, const Device& device)
+{
+	out << device.getName() << _F(" partitions:") << endl;
+	for(auto part : device.partitions()) {
+		out << "- " << part << endl;
+	}
+	out.println();
+}
+
 void listDevices(Print& out, bool fullPartitionInfo)
 {
 	out.println();

@@ -254,24 +254,40 @@ bool Partition::erase_range(storage_size_t offset, storage_size_t size)
 	return mDevice->erase_range(addr, size);
 }
 
-size_t Partition::printTo(Print& p) const
+uint16_t Partition::getSectorSize() const
+{
+	return mDevice ? mDevice->getSectorSize() : Device::defaultSectorSize;
+}
+
+bool Partition::sync()
+{
+	return mDevice ? mDevice->sync() : false;
+}
+
+size_t Partition::Info::printTo(Print& p) const
 {
 	size_t n{0};
+	n += p.print(name.length() == 0 ? _F("(NO NAME)") : name.c_str());
+	n += p.print(", ");
+	n += p.print(fullType());
+	n += p.print(" @ 0x");
+	n += p.print(offset, HEX);
+	n += p.print(_F(", size 0x"));
+	n += p.print(size, HEX);
+	return n;
+}
+
+size_t Partition::printTo(Print& p) const
+{
 	if(*this) {
+		size_t n{0};
 		n += p.print(getDeviceName());
 		n += p.print('/');
-		n += p.print(name());
-		n += p.print(" (");
-		n += p.print(typeString());
-		n += p.print(" @ 0x");
-		n += p.print(address(), HEX);
-		n += p.print(_F(", size 0x"));
-		n += p.print(size(), HEX);
-		n += p.print(')');
-	} else {
-		n += p.print(_F("(none)"));
+		n += p.print(*mPart);
+		return n;
 	}
-	return n;
+
+	return p.print(_F("(none)"));
 }
 
 } // namespace Storage

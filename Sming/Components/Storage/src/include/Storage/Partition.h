@@ -74,6 +74,11 @@ class Device;
 class PartitionTable;
 struct esp_partition_info_t;
 
+namespace Disk
+{
+class DiskPart;
+}
+
 /**
  * @brief Represents a flash partition
  */
@@ -135,12 +140,36 @@ public:
 		Type type;
 		uint8_t subtype;
 
-		FullType(Type type, uint8_t subtype) : type(type), subtype(subtype)
+		constexpr FullType() : type(Type::invalid), subtype(SubType::invalid)
 		{
 		}
 
-		template <typename T> FullType(T subType) : FullType(Type(T::partitionType), uint8_t(subType))
+		constexpr FullType(Type type, uint8_t subtype) : type(type), subtype(subtype)
 		{
+		}
+
+		explicit operator bool() const
+		{
+			return type != Type::invalid && subtype != uint8_t(SubType::invalid);
+		}
+
+		template <typename T> constexpr FullType(T subType) : FullType(Type(T::partitionType), uint8_t(subType))
+		{
+		}
+
+		bool operator==(const FullType& other) const
+		{
+			return type == other.type && subtype == other.subtype;
+		}
+
+		bool operator!=(const FullType& other) const
+		{
+			return !operator==(other);
+		}
+
+		constexpr uint16_t value() const
+		{
+			return uint8_t(type) << 8 | subtype;
 		}
 
 		operator String() const;
@@ -149,7 +178,7 @@ public:
 	/**
 	 * @brief Partition information
 	 */
-	struct Info : public LinkedObjectTemplate<Info> {
+	struct Info : public LinkedObjectTemplate<Info>, public Printable {
 		using OwnedList = OwnedLinkedObjectListTemplate<Info>;
 
 		CString name;
@@ -168,10 +197,22 @@ public:
 		{
 		}
 
+		FullType fullType() const
+		{
+			return {type, subtype};
+		}
+
 		bool match(Type type, uint8_t subType) const
 		{
 			return (type == Type::any || type == this->type) && (subType == SubType::any || subType == this->subtype);
 		}
+
+		virtual const Disk::DiskPart* diskpart() const
+		{
+			return nullptr;
+		}
+
+		size_t printTo(Print& p) const override;
 	};
 
 	Partition()
@@ -277,6 +318,14 @@ public:
 	uint8_t subType() const
 	{
 		return mPart ? mPart->subtype : SubType::invalid;
+	}
+
+	/**
+	 * @brief Obtain both type and subtype
+	 */
+	FullType fullType() const
+	{
+		return mPart ? mPart->fullType() : FullType{};
 	}
 
 	/**
@@ -388,6 +437,34 @@ public:
 	 * @brief Obtain smallest allocation unit for erase operations
 	 */
 	size_t getBlockSize() const;
+
+	/**
+	 * @brief Get sector size for block-addressable devices
+	 * @see See `Storage::Device::getSectorSize`
+	 */
+	uint16_t getSectorSize() const;
+
+	/**
+	 * @brief Obtain total number of sectors in this partition
+	 */
+	storage_size_t getSectorCount() const
+	{
+		return size() / getSectorSize();
+	}
+
+	/**
+	 * @brief Flush any pending writes to the physical media
+	 * @see See `Storage::Device::sync`
+	 */
+	bool sync();
+
+	/**
+	 * @brief If this is a disk partition, return pointer to the additional information
+	 */
+	const Disk::DiskPart* diskpart() const
+	{
+		return mPart ? mPart->diskpart() : nullptr;
+	}
 
 	size_t printTo(Print& p) const;
 

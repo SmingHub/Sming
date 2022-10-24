@@ -393,6 +393,9 @@ you can take advantage of the partition API to manage them as follows:
    in your ``init()`` function (or elsewhere if more appropriate).
 
 
+See :library:`DiskStorage` for how devices such as SD flash cards are managed.
+
+
 API
 ---
 

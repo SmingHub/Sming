@@ -146,6 +146,41 @@ public:
 	 */
 	virtual bool erase_range(storage_size_t address, storage_size_t size) = 0;
 
+	/**
+	 * @brief Get sector size, the unit of allocation for block-access devices
+	 *
+	 * Override this method only if the device does not support standard 512-byte sector access.
+	 * For example, 'Advanced-Format' drives use 4096-byte sectors.
+	 */
+	virtual uint16_t getSectorSize() const
+	{
+		return defaultSectorSize;
+	}
+
+	/**
+	 * @brief Obtain total number of sectors on this device
+	 */
+	virtual storage_size_t getSectorCount() const
+	{
+		return getSize() / getSectorSize();
+	}
+
+	/**
+	 * @brief Flush any pending writes to the physical media
+	 * @retval bool Return false if sync operation failed.
+	 *
+	 * Devices with intermediate buffering should implement this method.
+	 */
+	virtual bool sync()
+	{
+		return true;
+	}
+
+	/**
+	 * @name Default sector size for block-based devices
+	 */
+	static constexpr uint16_t defaultSectorSize{512};
+
 	size_t printTo(Print& p) const;
 
 protected:
