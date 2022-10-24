@@ -229,6 +229,10 @@
 	path = Sming/Libraries/DiskStorage
 	url = https://github.com/mikee47/DiskStorage
 	ignore = dirty
+[submodule "Libraries.FatIFS"]
+	path = Sming/Libraries/FatIFS
+	url = https://github.com/mikee47/FatIFS
+	ignore = dirty
 [submodule "Libraries.flatbuffers"]
 	path = Sming/Libraries/flatbuffers/src
 	url = https://github.com/google/flatbuffers.git

@@ -19,6 +19,22 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
+#ifdef ENABLE_SDCARD
+#include <Storage/SD/Card.h>
+#include <IFS/FAT.h>
+
+// Chip selects independent of SPI controller in use
+#ifdef ARCH_ESP32
+#define PIN_CARD_CS 21
+#else
+// Esp8266 cannot use GPIO15 as this affects boot mode
+#define PIN_CARD_CS 5
+#endif
+
+#define SPI_FREQ_LIMIT 0 //2000000
+
+#endif
+
 namespace
 {
 #ifdef ENABLE_FLASHSTRING_IMAGE
@@ -193,6 +209,33 @@ bool initFileSystem()
 	} else {
 		delete spiffs;
 	}
+
+#ifdef ENABLE_SDCARD
+	auto card = new Storage::SD::Card("card1", SPI);
+	Storage::registerDevice(card);
+
+	// Buffering allows byte read/write
+	card.allocateBuffers(2);
+
+	if(card->begin(PIN_CARD_CS, SPI_FREQ_LIMIT)) {
+		Serial << "CSD" << endl << card->csd << endl;
+		Serial << "CID" << endl << card->cid;
+
+		auto part = *card->partitions().begin();
+		auto fatfs = IFS::createFatFilesystem(part);
+		if(fatfs != nullptr) {
+			if(fatfs->mount() == FS_OK) {
+				fs->setVolume(2, fatfs);
+			} else {
+				delete fatfs;
+				delete card;
+			}
+		}
+	} else {
+		delete card;
+	}
+
+#endif
 
 	debug_i("File system initialised");
 	return true;

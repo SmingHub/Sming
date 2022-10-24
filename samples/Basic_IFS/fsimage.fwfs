@@ -11,10 +11,11 @@
         "sming.png": "${SMING_HOME}/../docs/api-logo.png",
         "Data": "${SMING_HOME}/Core/Data"
     },
-    // Directories to mount other object stores
+    // Directories to mount other filesystems
     "mountpoints": {
         "littlefs": 0,
-        "spiffs": 1
+        "spiffs": 1,
+        "fat": 2
     },
     // Rules for file metadata. All rules are evaluated in sequence for every file
     "rules": [

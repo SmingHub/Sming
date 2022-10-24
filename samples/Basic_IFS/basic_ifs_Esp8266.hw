@@ -3,7 +3,7 @@
     "arch": "Esp8266",
     "partitions": {
         "rom0": {
-            "size": "480K"
+            "size": "600K"
         }
     }
 }

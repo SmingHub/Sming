@@ -102,6 +102,8 @@ if [ -n "$APPVEYOR" ] || [ -n "$GITHUB_ACTION" ]; then
         g++-9-multilib \
         python3-setuptools \
         ninja-build \
+        exfat-fuse \
+        exfat-utils \
         $EXTRA_PACKAGES
 
     sudo update-alternatives --set gcc /usr/bin/gcc-9
