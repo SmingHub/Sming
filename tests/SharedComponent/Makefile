@@ -63,7 +63,7 @@ $(REPO_DIR)/.git:
 # Add shared-test.repo as a submodule to the shared-test Component, but leave it un-initialised
 $(SHARED_COMPONENT_DIR)/.gitmodules: | $(SHARED_COMPONENT_DIR)/.git
 	$(Q) cd $(@D)/$(COMPONENT_NAME) && \
-	git submodule add $(CURDIR)/$(REPO_DIR) $(SUBMODULE_NAME) && \
+	git -c protocol.file.allow=always submodule add $(CURDIR)/$(REPO_DIR) $(SUBMODULE_NAME) && \
 	git submodule deinit -f $(SUBMODULE_NAME)
 
 $(SHARED_COMPONENT_DIR)/.git:
