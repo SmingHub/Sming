@@ -2,7 +2,7 @@
  * StreamDevice.h
  */
 
-#include "CustomDevice.h"
+#include "Device.h"
 #include <Data/Stream/DataSourceStream.h>
 
 namespace Storage
@@ -11,10 +11,10 @@ namespace Storage
  * @brief Read-only partition on a stream object
  * @note Writes not possible as streams always append data, cannot do random writes
  */
-class StreamDevice : public CustomDevice
+class StreamDevice : public Device
 {
 public:
-	StreamDevice(IDataSourceStream* stream, size_t size) : CustomDevice(nameOf(stream), size), mStream(stream)
+	StreamDevice(IDataSourceStream* stream, size_t size) : Device(nameOf(stream), size), mStream(stream)
 	{
 	}
 
