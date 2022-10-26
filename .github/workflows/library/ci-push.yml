@@ -1,0 +1,7 @@
+name: CI Push
+
+on: [push]
+
+jobs:
+  build:
+    uses: SmingHub/Sming/.github/workflows/library.yml@develop
