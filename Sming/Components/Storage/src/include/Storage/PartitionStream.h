@@ -34,7 +34,7 @@ public:
 	 *
 	 * If blockErase is false then region must be pre-erased before writing.
 	 */
-	PartitionStream(Partition partition, uint32_t offset, size_t size, bool blockErase = false)
+	PartitionStream(Partition partition, storage_size_t offset, size_t size, bool blockErase = false)
 		: partition(partition), startOffset(offset), size(size), blockErase(blockErase)
 	{
 	}
@@ -69,7 +69,7 @@ public:
 
 private:
 	Partition partition;
-	uint32_t startOffset;
+	storage_size_t startOffset;
 	size_t size;
 	uint32_t writePos{0};
 	uint32_t readPos{0};

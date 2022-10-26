@@ -31,6 +31,7 @@
 #include <Data/CString.h>
 #include <Data/LinkedObjectList.h>
 #include <cassert>
+#include "Types.h"
 
 #define PARTITION_APP_SUBTYPE_MAP(XX)                                                                                  \
 	XX(factory, 0x00, "Factory application")                                                                           \
@@ -152,8 +153,8 @@ public:
 		using OwnedList = OwnedLinkedObjectListTemplate<Info>;
 
 		CString name;
-		uint32_t offset{0};
-		uint32_t size{0};
+		storage_size_t offset{0};
+		storage_size_t size{0};
 		Type type{Type::invalid};
 		uint8_t subtype{SubType::invalid};
 		Flags flags;
@@ -162,7 +163,7 @@ public:
 		{
 		}
 
-		Info(const String& name, FullType fullType, uint32_t offset, uint32_t size, Flags flags = 0)
+		Info(const String& name, FullType fullType, storage_size_t offset, storage_size_t size, Flags flags = 0)
 			: name(name), offset(offset), size(size), type(fullType.type), subtype(fullType.subtype), flags(flags)
 		{
 		}
@@ -235,9 +236,10 @@ public:
 	 * @param size Size of data to be read, in bytes.
 	 * @retval bool true on success, false on error
 	 */
-	bool read(uint32_t offset, void* dst, size_t size);
+	bool read(storage_size_t offset, void* dst, size_t size);
 
-	template <typename T> typename std::enable_if<std::is_pod<T>::value, bool>::type read(uint32_t offset, T& value)
+	template <typename T>
+	typename std::enable_if<std::is_pod<T>::value, bool>::type read(storage_size_t offset, T& value)
 	{
 		return read(offset, &value, sizeof(value));
 	}
@@ -250,7 +252,7 @@ public:
 	 * @retval bool true on success, false on error
 	 * @note Flash region must be erased first
 	 */
-	bool write(uint32_t offset, const void* src, size_t size);
+	bool write(storage_size_t offset, const void* src, size_t size);
 
 	/**
 	 * @brief Erase part of the partition
@@ -259,7 +261,7 @@ public:
 	 * @retval bool true on success, false on error
 	 * @note Both offset and size must be aligned to flash sector size (4Kbytes)
 	 */
-	bool erase_range(uint32_t offset, size_t size);
+	bool erase_range(storage_size_t offset, storage_size_t size);
 
 	/**
 	 * @brief Obtain partition type
@@ -279,27 +281,27 @@ public:
 
 	/**
 	 * @brief Obtain partition starting address
-	 * @param uint32_t Device address
+	 * @retval storage_size_t Device address
 	 */
-	uint32_t address() const
+	storage_size_t address() const
 	{
 		return (mPart && mPart->type != Partition::Type::storage) ? mPart->offset : 0;
 	}
 
 	/**
 	 * @brief Obtain address of last byte in this this partition
-	 * @param uint32_t Device address
+	 * @retval storage_size_t Device address
 	 */
-	uint32_t lastAddress() const
+	storage_size_t lastAddress() const
 	{
 		return mPart ? (mPart->offset + mPart->size - 1) : 0;
 	}
 
 	/**
 	 * @brief Obtain partition size
-	 * @retval size_t Size in bytes
+	 * @retval storage_size_t Size in bytes
 	 */
-	size_t size() const
+	storage_size_t size() const
 	{
 		return mPart ? mPart->size : 0;
 	}
@@ -351,7 +353,7 @@ public:
 	 * @retval bool true on success, false on failure
 	 * Fails if the given offset/size combination is out of range, or the partition is undefined.
 	 */
-	bool getDeviceAddress(uint32_t& address, size_t size) const;
+	bool getDeviceAddress(storage_size_t& address, storage_size_t size) const;
 
 	/**
 	 * @brief Get name of storage device for this partition
@@ -362,7 +364,7 @@ public:
 	/**
 	 * @brief Determine if given address contained within this partition
 	 */
-	bool contains(uint32_t addr) const
+	bool contains(storage_size_t addr) const
 	{
 		return mPart ? (addr >= mPart->offset && addr <= lastAddress()) : false;
 	}

@@ -29,7 +29,7 @@ public:
 		return sizeof(uint32_t);
 	}
 
-	size_t getSize() const override
+	storage_size_t getSize() const override
 	{
 		return 0x80000000;
 	}
@@ -39,14 +39,14 @@ public:
 		return Type::flash;
 	}
 
-	bool read(uint32_t address, void* dst, size_t size) override;
+	bool read(storage_size_t address, void* dst, size_t size) override;
 
-	bool write(uint32_t address, const void* src, size_t size) override
+	bool write(storage_size_t address, const void* src, size_t size) override
 	{
 		return false;
 	}
 
-	bool erase_range(uint32_t address, size_t size) override
+	bool erase_range(storage_size_t address, storage_size_t size) override
 	{
 		return false;
 	}

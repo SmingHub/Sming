@@ -134,12 +134,20 @@ int FileSystem::mount()
 		return Error::BadPartition;
 	}
 
+	auto partSize = partition.size();
+#ifdef ENABLE_STORAGE_SIZE64
+	if(Storage::isSize64(partSize)) {
+		debug_e("[SPIFFS] Partition too large");
+		return Error::BadPartition;
+	}
+#endif
+
 	fs.user_data = this;
 	spiffs_config cfg{
 		.hal_read_f = f_read,
 		.hal_write_f = f_write,
 		.hal_erase_f = f_erase,
-		.phys_size = partition.size(),
+		.phys_size = uint32_t(partSize),
 		.phys_addr = 0,
 		.phys_erase_block = partition.getBlockSize(),
 		.log_block_size = logicalBlockSize,
@@ -324,13 +332,13 @@ int FileSystem::eof(FileHandle file)
 	return translateSpiffsError(res);
 }
 
-int32_t FileSystem::tell(FileHandle file)
+file_offset_t FileSystem::tell(FileHandle file)
 {
 	int res = SPIFFS_tell(handle(), file);
 	return translateSpiffsError(res);
 }
 
-int FileSystem::ftruncate(FileHandle file, size_t new_size)
+int FileSystem::ftruncate(FileHandle file, file_size_t new_size)
 {
 	int res = SPIFFS_ftruncate(handle(), file, new_size);
 	return translateSpiffsError(res);
@@ -372,7 +380,7 @@ int FileSystem::write(FileHandle file, const void* data, size_t size)
 	return res;
 }
 
-int FileSystem::lseek(FileHandle file, int offset, SeekOrigin origin)
+file_offset_t FileSystem::lseek(FileHandle file, file_offset_t offset, SeekOrigin origin)
 {
 	int res = SPIFFS_lseek(handle(), file, offset, int(origin));
 	if(res < 0) {

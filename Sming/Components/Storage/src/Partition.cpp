@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * Partition.cpp - Partition support for all architectures
+ * Partition.cpp
  *
  ****/
 
@@ -158,7 +158,7 @@ bool Partition::verify(Partition::Type type, uint8_t subtype) const
 	return true;
 }
 
-bool Partition::getDeviceAddress(uint32_t& address, size_t size) const
+bool Partition::getDeviceAddress(storage_size_t& address, storage_size_t size) const
 {
 	if(mDevice == nullptr || mPart == nullptr) {
 		debug_e("[Partition] Invalid");
@@ -166,7 +166,7 @@ bool Partition::getDeviceAddress(uint32_t& address, size_t size) const
 	}
 
 	if(address >= mPart->size || (address + size - 1) >= mPart->size) {
-		debug_e("[Partition] Invalid range, address: 0x%08x, size: 0x%08x", address, size);
+		debug_e("[Partition] Invalid range, address: 0x%08llx, size: 0x%08llx", uint64_t(address), uint64_t(size));
 		return false;
 	}
 
@@ -212,46 +212,46 @@ bool Partition::allowWrite()
 	return true;
 }
 
-bool Partition::read(uint32_t offset, void* dst, size_t size)
+bool Partition::read(storage_size_t offset, void* dst, size_t size)
 {
 	if(!allowRead()) {
 		return false;
 	}
 
-	uint32_t addr = offset;
+	auto addr = offset;
 	if(!getDeviceAddress(addr, size)) {
 		return false;
 	}
 
-	return mDevice ? mDevice->read(addr, dst, size) : false;
+	return mDevice->read(addr, dst, size);
 }
 
-bool Partition::write(uint32_t offset, const void* src, size_t size)
+bool Partition::write(storage_size_t offset, const void* src, size_t size)
 {
 	if(!allowWrite()) {
 		return false;
 	}
 
-	uint32_t addr = offset;
+	auto addr = offset;
 	if(!getDeviceAddress(addr, size)) {
 		return false;
 	}
 
-	return mDevice ? mDevice->write(addr, src, size) : false;
+	return mDevice->write(addr, src, size);
 }
 
-bool Partition::erase_range(uint32_t offset, size_t size)
+bool Partition::erase_range(storage_size_t offset, storage_size_t size)
 {
 	if(!allowWrite()) {
 		return false;
 	}
 
-	uint32_t addr = offset;
+	auto addr = offset;
 	if(!getDeviceAddress(addr, size)) {
 		return false;
 	}
 
-	return mDevice ? mDevice->erase_range(addr, size) : false;
+	return mDevice->erase_range(addr, size);
 }
 
 size_t Partition::printTo(Print& p) const
