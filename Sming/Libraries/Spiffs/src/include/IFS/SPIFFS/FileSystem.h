@@ -126,6 +126,7 @@ private:
 	static s32_t f_write(struct spiffs_t* spiffs, u32_t addr, u32_t size, u8_t* src);
 	static s32_t f_erase(struct spiffs_t* spiffs, u32_t addr, u32_t size);
 
+	static constexpr uint32_t MAX_PARTITION_SIZE{256 * 1024 * 1024};
 	static constexpr size_t CACHE_PAGES{8};
 	static constexpr size_t LOG_PAGE_SIZE{256};
 	static constexpr size_t MIN_BLOCKSIZE{256};

@@ -135,12 +135,10 @@ int FileSystem::mount()
 	}
 
 	auto partSize = partition.size();
-#ifdef ENABLE_STORAGE_SIZE64
-	if(Storage::isSize64(partSize)) {
+	if(partSize > MAX_PARTITION_SIZE) {
 		debug_e("[SPIFFS] Partition too large");
 		return Error::BadPartition;
 	}
-#endif
 
 	fs.user_data = this;
 	spiffs_config cfg{
