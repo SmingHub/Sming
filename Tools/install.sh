@@ -17,6 +17,7 @@ err=0
 FONT_PACKAGES="fonts-ubuntu fonts-noto-mono xfonts-base fonts-urw-base35 fonts-droid-fallback"
 
 for opt in "$@"; do
+    opt=$(echo "$opt" | tr '[:upper:]' '[:lower:]')
     case $opt in
         all)
             inst_host=1

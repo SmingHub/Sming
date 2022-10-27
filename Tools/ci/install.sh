@@ -24,6 +24,6 @@ else
     INSTALL_OPTS="fonts"
 fi
 
-"$SMING_HOME/../Tools/install.sh" ${SMING_ARCH,,} $INSTALL_OPTS
+"$SMING_HOME/../Tools/install.sh" $SMING_ARCH $INSTALL_OPTS
 
 fi
