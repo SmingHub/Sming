@@ -11,22 +11,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arch: [Esp8266, Host, Esp32, Rp2040]
-        variant: [""]
         os: [ubuntu-latest, windows-latest]
+        variant: [esp8266, host, esp32, esp32s2, esp32c3, rp2040]
         include:
-        - arch: Esp32
-          variant: esp32s2
-          os: ubuntu-latest
-        - arch: Esp32
-          variant: esp32s2
-          os: windows-latest
-        - arch: Esp32
-          variant: esp32c3
-          os: ubuntu-latest
-        - arch: Esp32
-          variant: esp32c3
-          os: windows-latest
+          - variant: esp8266
+            arch: Esp8266
+          - variant: host
+            arch: Host
+          - variant: esp32
+            arch: Esp32
+          - variant: esp32s2
+            arch: Esp32
+          - variant: esp32c3
+            arch: Esp32
+          - variant: rp2040
+            arch: Rp2040
 
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}-${{ toJson(matrix) }}
@@ -42,40 +41,27 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Setup SMING_HOME for Ubuntu
-      if: ${{ matrix.os ==  'ubuntu-latest' }}
+    - name: Configure environment
+      shell: pwsh
       run: |
-        echo "CI_BUILD_DIR=$GITHUB_WORKSPACE" >> $GITHUB_ENV
-        echo "SMING_HOME=$GITHUB_WORKSPACE/Sming" >> $GITHUB_ENV
+        "CI_BUILD_DIR=" + (Resolve-Path ".").path >> $env:GITHUB_ENV
+        "SMING_HOME=" + (Resolve-Path "Sming").path >> $env:GITHUB_ENV
+        "SMING_ARCH=${{ matrix.arch }}" >> $env:GITHUB_ENV
+        "SMING_SOC=${{ matrix.variant }}" >> $env:GITHUB_ENV
 
-    - name: Setup SMING_HOME for Windows
-      if: ${{ matrix.os ==  'windows-latest' }}
-      run: |
-        echo ("CI_BUILD_DIR=" + $env:GITHUB_WORKSPACE) >> $env:GITHUB_ENV
-        $env:SMING_HOME = Join-Path $env:GITHUB_WORKSPACE "Sming"
-        echo ("SMING_HOME=" + $env:SMING_HOME) >> $env:GITHUB_ENV
-
-    - name: Install Sming Framework on Ubuntu
+    - name: Install build tools for Ubuntu
       if: ${{ matrix.os ==  'ubuntu-latest' }}
-      env:
-        SMING_ARCH: ${{matrix.arch}}
-        SMING_SOC: ${{matrix.variant}}
       run: |
         Tools/ci/install.sh
 
-    - name: Install Sming Framework on Windows   
+    - name: Install build tools for Windows   
       if: ${{ matrix.os ==  'windows-latest' }}
-      env: 
-        SMING_ARCH: ${{matrix.arch}}
-        SMING_SOC: ${{matrix.variant}}
       run: |
-         Tools/ci/setenv.ps1
+         . Tools/ci/setenv.ps1
          Tools/ci/install.cmd
 
-    - name: Build and Test for ${{matrix.arch}} on Ubuntu
+    - name: Build and test for ${{matrix.arch}} on Ubuntu
       env: 
-        SMING_ARCH: ${{matrix.arch}}
-        SMING_SOC: ${{matrix.variant}}
         CLANG_FORMAT: clang-format-8
       if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
@@ -83,11 +69,8 @@ jobs:
         $CLANG_FORMAT --version
         Tools/ci/build.sh
 
-    - name: Build and Test for ${{matrix.arch}} on Windows
-      env: 
-        SMING_ARCH: ${{matrix.arch}}
-        SMING_SOC: ${{matrix.variant}}
+    - name: Build and test for ${{matrix.arch}} on Windows
       if: ${{ matrix.os == 'windows-latest' }}
       run: |
-        Tools/ci/setenv.ps1
+        . Tools/ci/setenv.ps1
         Tools/ci/build.cmd
