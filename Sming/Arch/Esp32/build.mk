@@ -100,8 +100,8 @@ endif
 DEBUG_VARS += NINJA
 NINJA := $(if $(ESP32_NINJA_PATH),$(ESP32_NINJA_PATH)/,)ninja
 
-space :=
-space +=
+empty:=
+space:= $(empty) $(empty)
 
 export PATH := $(subst $(space),:,$(IDF_PATH_LIST)):$(PATH)
 
