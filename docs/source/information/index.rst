@@ -9,6 +9,7 @@ Information
    events
    memory
    flash
+   storage
    strings
    interrupts
    tasks
