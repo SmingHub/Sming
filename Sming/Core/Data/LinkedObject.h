@@ -30,11 +30,6 @@ public:
 		return mNext;
 	}
 
-	LinkedObject* getNext() const
-	{
-		return mNext;
-	}
-
 	bool insertAfter(LinkedObject* object)
 	{
 		if(object == nullptr) {
@@ -84,7 +79,7 @@ public:
 
 		IteratorTemplate& operator++()
 		{
-			mObject = mObject->getNext();
+			this->mObject = static_cast<TPtr>(this->mObject->next());
 			return *this;
 		}
 
@@ -129,7 +124,7 @@ public:
 
 	ObjectType* getNext() const
 	{
-		return reinterpret_cast<ObjectType*>(this->next());
+		return static_cast<ObjectType*>(this->next());
 	}
 
 	bool insertAfter(ObjectType* object)

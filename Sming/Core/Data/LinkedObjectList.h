@@ -89,6 +89,12 @@ protected:
 template <typename ObjectType> class LinkedObjectListTemplate : public LinkedObjectList
 {
 public:
+	using Iterator =
+		typename LinkedObjectTemplate<ObjectType>::template IteratorTemplate<ObjectType, ObjectType*, ObjectType&>;
+	using ConstIterator =
+		typename LinkedObjectTemplate<ObjectType>::template IteratorTemplate<const ObjectType, const ObjectType*,
+																			 const ObjectType&>;
+
 	LinkedObjectListTemplate() = default;
 
 	LinkedObjectListTemplate(ObjectType* object) : LinkedObjectList(object)
@@ -105,22 +111,22 @@ public:
 		return reinterpret_cast<const ObjectType*>(mHead);
 	}
 
-	typename ObjectType::Iterator begin()
+	Iterator begin()
 	{
 		return head();
 	}
 
-	typename ObjectType::Iterator end()
+	Iterator end()
 	{
 		return nullptr;
 	}
 
-	typename ObjectType::ConstIterator begin() const
+	ConstIterator begin() const
 	{
 		return head();
 	}
 
-	typename ObjectType::ConstIterator end() const
+	ConstIterator end() const
 	{
 		return nullptr;
 	}
