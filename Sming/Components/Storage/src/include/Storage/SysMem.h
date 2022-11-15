@@ -30,7 +30,7 @@ public:
 		return sizeof(uint32_t);
 	}
 
-	size_t getSize() const override
+	storage_size_t getSize() const override
 	{
 		return 0x80000000;
 	}
@@ -40,7 +40,7 @@ public:
 		return Type::sysmem;
 	}
 
-	bool read(uint32_t address, void* buffer, size_t len) override
+	bool read(storage_size_t address, void* buffer, size_t len) override
 	{
 		if(isFlashPtr(reinterpret_cast<const void*>(address))) {
 			memcpy_P(buffer, reinterpret_cast<const void*>(address), len);
@@ -50,7 +50,7 @@ public:
 		return true;
 	}
 
-	bool write(uint32_t address, const void* data, size_t len) override
+	bool write(storage_size_t address, const void* data, size_t len) override
 	{
 		if(isFlashPtr(reinterpret_cast<const void*>(address))) {
 			return false;
@@ -60,7 +60,7 @@ public:
 		return true;
 	}
 
-	bool erase_range(uint32_t address, size_t len) override
+	bool erase_range(storage_size_t address, storage_size_t len) override
 	{
 		if(isFlashPtr(reinterpret_cast<const void*>(address))) {
 			return false;

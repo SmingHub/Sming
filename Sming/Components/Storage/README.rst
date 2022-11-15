@@ -304,6 +304,20 @@ Configuration
    Set this to adjust the hardware profile using option fragments. See :ref:`hwconfig_options`.
 
 
+.. envvar:: ENABLE_STORAGE_SIZE64
+
+   Build with ``ENABLE_STORAGE_SIZE64=1`` to enable support for storage devices of more than 4GB capacity.
+
+   Device and partition addresses and sizes use the :cpp:type:`storage_size_t` type, which by default is ``uint32_t``.
+   Setting this value changes it to ``uint64_t``.
+
+   When enabling this setting, care must be taken in code especially with ``printf`` style format strings such
+   as in debug statements. The safest way to handle both cases is like this::
+
+      debug_i("Partition size: %llu", uint64_t(part.size()));
+
+
+
 Binary partition table
 ----------------------
 
@@ -377,6 +391,9 @@ you can take advantage of the partition API to manage them as follows:
    which device these entries relate to.
 -  Create an instance of your custom device and make a call to :cpp:func:`Storage::registerDevice`
    in your ``init()`` function (or elsewhere if more appropriate).
+
+
+See :library:`DiskStorage` for how devices such as SD flash cards are managed.
 
 
 API

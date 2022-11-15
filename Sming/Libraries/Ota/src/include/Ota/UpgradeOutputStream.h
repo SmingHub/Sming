@@ -30,7 +30,7 @@ public:
 	 * @param partition
 	 */
 	UpgradeOutputStream(Partition partition, size_t maxLength = 0)
-		: partition(partition), maxLength(maxLength != 0 ? std::min(maxLength, partition.size()) : partition.size())
+		: partition(partition), maxLength(std::min(storage_size_t(maxLength ?: 0x1000000), partition.size()))
 	{
 	}
 

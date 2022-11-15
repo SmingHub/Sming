@@ -170,9 +170,9 @@ inline int fileRead(FileHandle file, void* data, size_t size)
  *  @param  file File handle
  *  @param  offset Quantity of bytes to move cursor
  *  @param  origin Position from where to move cursor
- *  @retval int Offset within file or negative error code
+ *  @retval file_offset_t Offset within file or negative error code
  */
-inline int fileSeek(FileHandle file, int offset, SeekOrigin origin)
+inline file_offset_t fileSeek(FileHandle file, file_offset_t offset, SeekOrigin origin)
 {
 	CHECK_FS(seek)
 	return fileSystem->lseek(file, offset, origin);
@@ -190,9 +190,9 @@ inline bool fileIsEOF(FileHandle file)
 
 /** @brief  Get position in file
  *  @param  file File handle
- *  @retval int32_t Read / write cursor position or error code
+ *  @retval file_offset_t Read / write cursor position or error code
  */
-inline int fileTell(FileHandle file)
+inline file_offset_t fileTell(FileHandle file)
 {
 	CHECK_FS(tell)
 	return fileSystem->tell(file);
@@ -243,9 +243,9 @@ template <typename TFileName, typename TContent> inline int fileSetContent(const
 
 /** @brief  Get size of file
  *  @param  fileName Name of file
- *  @retval uint32_t Size of file in bytes, 0 on error
+ *  @retval file_size_t Size of file in bytes, 0 on error
  */
-template <typename TFileName> inline uint32_t fileGetSize(const TFileName& fileName)
+template <typename TFileName> inline file_size_t fileGetSize(const TFileName& fileName)
 {
 	auto fileSystem = getFileSystem();
 	return fileSystem ? fileSystem->getSize(fileName) : 0;
@@ -258,7 +258,7 @@ template <typename TFileName> inline uint32_t fileGetSize(const TFileName& fileN
  *  @note In POSIX `ftruncate()` can also make the file bigger, however SPIFFS can only
  *  reduce the file size and will return an error if newSize > fileSize
  */
-inline int fileTruncate(FileHandle file, size_t newSize)
+inline int fileTruncate(FileHandle file, file_size_t newSize)
 {
 	CHECK_FS(truncate);
 	return fileSystem->ftruncate(file, newSize);
@@ -281,7 +281,7 @@ inline int fileTruncate(FileHandle file)
  *  @note In POSIX `truncate()` can also make the file bigger, however SPIFFS can only
  *  reduce the file size and will return an error if newSize > fileSize
  */
-template <typename TFileName> int fileTruncate(const TFileName& fileName, size_t newSize)
+template <typename TFileName> int fileTruncate(const TFileName& fileName, file_size_t newSize)
 {
 	CHECK_FS(truncate);
 	return fileSystem->truncate(fileName, newSize);

@@ -15,7 +15,7 @@ namespace Storage
 {
 ProgMem progMem;
 
-bool ProgMem::read(uint32_t address, void* dst, size_t size)
+bool ProgMem::read(storage_size_t address, void* dst, size_t size)
 {
 	size_t readCount = flashmem_read(dst, address, size);
 	return readCount == size;

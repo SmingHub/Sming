@@ -23,7 +23,7 @@ class SpiFlash : public Device
 public:
 	String getName() const override;
 	size_t getBlockSize() const override;
-	size_t getSize() const override;
+	storage_size_t getSize() const override;
 
 	Type getType() const override
 	{
@@ -32,9 +32,9 @@ public:
 
 	uint32_t getId() const override;
 
-	bool read(uint32_t address, void* dst, size_t size) override;
-	bool write(uint32_t address, const void* src, size_t size) override;
-	bool erase_range(uint32_t address, size_t size) override;
+	bool read(storage_size_t address, void* dst, size_t size) override;
+	bool write(storage_size_t address, const void* src, size_t size) override;
+	bool erase_range(storage_size_t address, storage_size_t size) override;
 };
 
 } // namespace Storage

@@ -84,10 +84,10 @@ public:
 	int close(FileHandle file) override;
 	int read(FileHandle file, void* data, size_t size) override;
 	int write(FileHandle file, const void* data, size_t size) override;
-	int lseek(FileHandle file, int offset, SeekOrigin origin) override;
+	file_offset_t lseek(FileHandle file, file_offset_t offset, SeekOrigin origin) override;
 	int eof(FileHandle file) override;
-	int32_t tell(FileHandle file) override;
-	int ftruncate(FileHandle file, size_t new_size) override;
+	file_offset_t tell(FileHandle file) override;
+	int ftruncate(FileHandle file, file_size_t new_size) override;
 	int flush(FileHandle file) override;
 	int rename(const char* oldpath, const char* newpath) override;
 	int remove(const char* path) override;
@@ -126,6 +126,7 @@ private:
 	static s32_t f_write(struct spiffs_t* spiffs, u32_t addr, u32_t size, u8_t* src);
 	static s32_t f_erase(struct spiffs_t* spiffs, u32_t addr, u32_t size);
 
+	static constexpr uint32_t MAX_PARTITION_SIZE{256 * 1024 * 1024};
 	static constexpr size_t CACHE_PAGES{8};
 	static constexpr size_t LOG_PAGE_SIZE{256};
 	static constexpr size_t MIN_BLOCKSIZE{256};

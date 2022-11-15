@@ -39,23 +39,23 @@ public:
 		return Type::stream;
 	}
 
-	bool read(uint32_t address, void* buffer, size_t len) override
+	bool read(storage_size_t address, void* buffer, size_t len) override
 	{
 		if(mStream == nullptr) {
 			return false;
 		}
-		if(mStream->seekFrom(address, SeekOrigin::Start) != int(address)) {
+		if(storage_size_t(mStream->seekFrom(address, SeekOrigin::Start)) != address) {
 			return false;
 		}
 		return mStream->readBytes(static_cast<char*>(buffer), len) == len;
 	}
 
-	bool write(uint32_t address, const void* data, size_t len) override
+	bool write(storage_size_t address, const void* data, size_t len) override
 	{
 		return false;
 	}
 
-	bool erase_range(uint32_t address, size_t len) override
+	bool erase_range(storage_size_t address, storage_size_t len) override
 	{
 		return false;
 	}

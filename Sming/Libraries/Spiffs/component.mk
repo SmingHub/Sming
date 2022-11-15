@@ -1,4 +1,5 @@
 ## SPIFFS library
+COMPONENT_DEPENDS		:= IFS
 COMPONENT_SUBMODULES	:= spiffs
 COMPONENT_SRCDIRS		:= src spiffs/src
 COMPONENT_INCDIRS		:= src/include

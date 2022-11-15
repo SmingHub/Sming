@@ -111,9 +111,9 @@ public:
 
 	/**
 	 * @brief Obtain addressable size of this device
-	 * @retval size_t Must be at least as large as the value declared in the partition table
+	 * @retval storage_size_t Must be at least as large as the value declared in the hardware configuration
 	 */
-	virtual size_t getSize() const = 0;
+	virtual storage_size_t getSize() const = 0;
 
 	/**
 	 * @brief Obtain device type
@@ -127,7 +127,7 @@ public:
 	 * @param size Size of data to be read, in bytes.
 	 * @retval bool true on success, false on error
 	 */
-	virtual bool read(uint32_t address, void* dst, size_t size) = 0;
+	virtual bool read(storage_size_t address, void* dst, size_t size) = 0;
 
 	/**
 	 * @brief Write data to the storage device
@@ -136,7 +136,7 @@ public:
 	 * @param size Size of data to be written, in bytes.
 	 * @retval bool true on success, false on error
 	 */
-	virtual bool write(uint32_t address, const void* src, size_t size) = 0;
+	virtual bool write(storage_size_t address, const void* src, size_t size) = 0;
 
 	/**
 	 * @brief Erase a region of storage in preparation for writing
@@ -144,7 +144,42 @@ public:
 	 * @param size Size of region to erase, in bytes
 	 * @retval bool true on success, false on error
 	 */
-	virtual bool erase_range(uint32_t address, size_t size) = 0;
+	virtual bool erase_range(storage_size_t address, storage_size_t size) = 0;
+
+	/**
+	 * @brief Get sector size, the unit of allocation for block-access devices
+	 *
+	 * Override this method only if the device does not support standard 512-byte sector access.
+	 * For example, 'Advanced-Format' drives use 4096-byte sectors.
+	 */
+	virtual uint16_t getSectorSize() const
+	{
+		return defaultSectorSize;
+	}
+
+	/**
+	 * @brief Obtain total number of sectors on this device
+	 */
+	virtual storage_size_t getSectorCount() const
+	{
+		return getSize() / getSectorSize();
+	}
+
+	/**
+	 * @brief Flush any pending writes to the physical media
+	 * @retval bool Return false if sync operation failed.
+	 *
+	 * Devices with intermediate buffering should implement this method.
+	 */
+	virtual bool sync()
+	{
+		return true;
+	}
+
+	/**
+	 * @name Default sector size for block-based devices
+	 */
+	static constexpr uint16_t defaultSectorSize{512};
 
 	size_t printTo(Print& p) const;
 

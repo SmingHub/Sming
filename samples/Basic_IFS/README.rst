@@ -29,3 +29,9 @@ This sample also demonstrates how to store the data in a :cpp:type:`FlashString`
 Because the data is linked into the program image this is only suitable for small filesystem images.
 This could be used to store default recovery data, especially with OTA updates because each program
 image is self-contained.
+
+To add support for SD Cards to this sample::
+
+    make ENABLE_SDCARD=1
+
+See :library:`FatIFS` for further details of SD Card and FAT filing system support.
