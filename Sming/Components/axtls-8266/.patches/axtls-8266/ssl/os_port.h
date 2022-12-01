@@ -86,7 +86,10 @@ extern void system_soft_wdt_feed(void);
 
 #define get_random(num_rand_bytes, rand_data) os_get_random(rand_data, num_rand_bytes)
 
-#define printf(fmt, ...) m_printf(_F(fmt), ##__VA_ARGS__)
+#define printf(fmt, ...)  m_printf(_F(fmt), ##__VA_ARGS__)
+#define puts(str)         m_puts(_F(str))
+#define putc(c)           m_putc(c)
+#define vprintf(fmt, ...) m_vprintf(fmt, ##__VA_ARGS__)
 
 #undef strcpy_P
 #define strcpy_P(a, str) strcpy(a, _F(str))
