@@ -99,7 +99,7 @@ public:
 	}
 
 	/**
-	 * @brief Get index of columnn given its name
+	 * @brief Get index of column given its name
 	 * @param name Column name to find
 	 * @retval int -1 if name is not found
 	 */
