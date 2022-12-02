@@ -23,7 +23,7 @@ void os_get_random(void* buf, size_t n);
 
 bool Uuid::operator==(const Uuid& other) const
 {
-	// Ensure these are stricly compared as a set of words to avoid PROGMEM issues
+	// Ensure these are strictly compared as a set of words to avoid PROGMEM issues
 	struct S {
 		uint32_t a, b, c, d;
 	};

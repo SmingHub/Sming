@@ -95,7 +95,7 @@ struct Uuid {
 	bool generate();
 
 	/**
-	 * @name Decompse string into UUID
+	 * @name Decompose string into UUID
 	 * @{
 	 */
 	bool decompose(const char* s, size_t len);

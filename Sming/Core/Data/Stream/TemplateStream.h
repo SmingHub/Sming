@@ -159,7 +159,7 @@ public:
 	 *
 	 * Called internally and an opening brace ("{" or "{{") has been found.
 	 * Default behaviour is to locate the closing brace(s) and interpret the
-	 * bounded text as a variable name, which is passsed to `getValue`.
+	 * bounded text as a variable name, which is passed to `getValue`.
 	 *
 	 * This method is overridden by SectionTemplate to support more complex expressions.
 	 */
