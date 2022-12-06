@@ -47,7 +47,7 @@ Library CI support
 Sming libraries may be separately built and tested whether or not they are included as part of
 the Sming repository (or a fork).
 
-There are two mechanisms avaiable.
+There are two mechanisms available.
 
 GitHub Actions
 ~~~~~~~~~~~~~~
