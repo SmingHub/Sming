@@ -134,7 +134,7 @@ endif
 ifneq (,$(filter $1/%.c,$(SOURCE_FILES)))
 $2%.o: $1/%.c $2%.c.d
 	$(vecho) "CC $$<"
-	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
+	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -DCUST_FILE_BASE=$$(subst $$(SMING_HOME)/,Sming,$$<) -c $$< -o $$@
 $2%.c.d: $1/%.c
 	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -MM -MT $2$$*.o $$< $(OUTPUT_DEPS)
 .PRECIOUS: $2%.c.d
@@ -142,7 +142,7 @@ endif
 ifneq (,$(filter $1/%.cpp,$(SOURCE_FILES)))
 $2%.o: $1/%.cpp $2%.cpp.d
 	$(vecho) "C+ $$<"
-	$(Q) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -c $$< -o $$@
+	$(Q) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -DCUST_FILE_BASE=$$(subst $$(SMING_HOME),Sming,$$<) -c $$< -o $$@
 $2%.cpp.d: $1/%.cpp
 	$(Q) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -MM -MT $2$$*.o $$< $(OUTPUT_DEPS)
 .PRECIOUS: $2%.cpp.d
