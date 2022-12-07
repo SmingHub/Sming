@@ -76,7 +76,7 @@ CONFIG_VARS				+= DEBUG_PRINT_FILENAME_AND_LINE
 DEBUG_PRINT_FILENAME_AND_LINE ?= 0
 GLOBAL_CFLAGS			+= -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
 # When rules are created make will see '$*' so substitute the filename
-GLOBAL_CFLAGS				+= -DCUST_FILE_BASE=$$*
+GLOBAL_CFLAGS				+= -DCUST_FILE_BASE=$$$$(subst $$(SMING_HOME)/,,$$$$<)
 
 # Default debug verbose level is INFO, where DEBUG=3 INFO=2 WARNING=1 ERROR=0
 CONFIG_VARS				+= DEBUG_VERBOSE_LEVEL
