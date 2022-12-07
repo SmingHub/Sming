@@ -24,5 +24,5 @@ Additional filing system implementations are provided in separate libraries:
 Note that when using bulk storage of more than about 4GB in size applications should be built with
 :cpp:envvar:`ENABLE_STORAGE_SIZE64` =1. This changes all sizes and offsets to 64-bit.
 
-If manipulating files greated than about 2GB (signed 32-bit value) then the :cpp:envvar:`ENABLE_FILE_SIZE64`
+If manipulating files greater than about 2GB (signed 32-bit value) then the :cpp:envvar:`ENABLE_FILE_SIZE64`
 setting should also be enabled.
