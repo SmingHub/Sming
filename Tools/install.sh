@@ -194,7 +194,7 @@ if [ $inst_rp2040 -eq 1 ]; then
 fi
 
 if [ -z "$KEEP_DOWNLOADS" ]; then
-    rm -f "$DOWNLOADS/*"
+    rm -rf "$DOWNLOADS/*"
 fi
 
 
