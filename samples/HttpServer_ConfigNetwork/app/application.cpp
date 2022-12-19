@@ -69,16 +69,16 @@ int onIpConfig(HttpServerConnection& connection, HttpRequest& request, HttpRespo
 
 void onFile(HttpRequest& request, HttpResponse& response)
 {
-	if(lastModified.length() > 0 && request.headers[HTTP_HEADER_IF_MODIFIED_SINCE].equals(lastModified)) {
+	if(lastModified.length() > 0 && request.headers[HTTP_HEADER_IF_MODIFIED_SINCE] == lastModified) {
 		response.code = HTTP_STATUS_NOT_MODIFIED;
 		return;
 	}
 
 	String file = request.uri.getRelativePath();
 
-	if(file[0] == '.')
+	if(file[0] == '.') {
 		response.code = HTTP_STATUS_FORBIDDEN;
-	else {
+	} else {
 		if(lastModified.length() > 0) {
 			response.headers[HTTP_HEADER_LAST_MODIFIED] = lastModified;
 		}
@@ -103,15 +103,16 @@ void onAjaxNetworkList(HttpRequest& request, HttpResponse& response)
 	}
 
 	JsonArray netlist = json.createNestedArray("available");
-	for(unsigned i = 0; i < networks.count(); i++) {
-		if(networks[i].hidden)
+	for(auto& nw : networks) {
+		if(nw.hidden) {
 			continue;
+		}
 		JsonObject item = netlist.createNestedObject();
-		item["id"] = (int)networks[i].getHashId();
+		item["id"] = nw.getHashId();
 		// Copy full string to JSON buffer memory
-		item["title"] = networks[i].ssid;
-		item["signal"] = networks[i].rssi;
-		item["encryption"] = networks[i].getAuthorizationMethodName();
+		item["title"] = nw.ssid;
+		item["signal"] = nw.rssi;
+		item["encryption"] = nw.getAuthorizationMethodName();
 	}
 
 	response.setAllowCrossDomainOrigin("*");
@@ -205,12 +206,18 @@ void startServers()
 
 void networkScanCompleted(bool succeeded, BssList& list)
 {
-	if(succeeded) {
-		for(unsigned i = 0; i < list.count(); i++)
-			if(!list[i].hidden && list[i].ssid.length() > 0)
-				networks.add(list[i]);
+	if(!succeeded) {
+		return;
 	}
-	networks.sort([](const BssInfo& a, const BssInfo& b) { return b.rssi - a.rssi; });
+
+	networks.clear();
+	for(auto& nw : list) {
+		if(!nw.hidden && nw.ssid.length() > 0) {
+			networks.add(nw);
+		}
+	}
+
+	networks.sort([](auto& a, auto& b) { return b.rssi - a.rssi; });
 }
 
 void init()
@@ -232,8 +239,9 @@ void init()
 
 	if(AppSettings.exist()) {
 		WifiStation.config(AppSettings.ssid, AppSettings.password);
-		if(!AppSettings.dhcp && !AppSettings.ip.isNull())
+		if(!AppSettings.dhcp && !AppSettings.ip.isNull()) {
 			WifiStation.setIP(AppSettings.ip, AppSettings.netmask, AppSettings.gateway);
+		}
 	}
 
 	WifiStation.startScan(networkScanCompleted);

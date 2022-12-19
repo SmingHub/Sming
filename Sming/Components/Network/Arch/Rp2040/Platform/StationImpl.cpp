@@ -23,7 +23,7 @@ bool StationImpl::isEnabled() const
 	return false;
 }
 
-bool StationImpl::config(const String& ssid, const String& password, bool autoConnectOnStartup, bool save)
+bool StationImpl::config(const Config& cfg)
 {
 	return false;
 }
@@ -94,6 +94,11 @@ bool StationImpl::setIP(IpAddress address, IpAddress netmask, IpAddress gateway)
 String StationImpl::getSSID() const
 {
 	return nullptr;
+}
+
+MacAddress StationImpl::getBSSID() const
+{
+	return {};
 }
 
 int8_t StationImpl::getRssi() const

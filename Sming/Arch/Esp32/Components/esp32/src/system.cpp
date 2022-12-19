@@ -2,6 +2,7 @@
 #include <sys/time.h>
 #include <esp_task_wdt.h>
 #include <sming_attr.h>
+#include <esp_ipc.h>
 
 extern "C" int64_t esp_system_get_time();
 
@@ -13,27 +14,47 @@ uint32_t system_get_time(void)
 struct rst_info* system_get_rst_info(void)
 {
 	static rst_info info{};
-	auto reason = esp_reset_reason();
-	switch(reason) {
-	case ESP_RST_INT_WDT:
-		info.reason = REASON_SOFT_WDT_RST;
-		break;
-	case ESP_RST_BROWNOUT:
-		info.reason = REASON_WDT_RST;
-		break;
-	case ESP_RST_SDIO:
-		info.reason = REASON_SOFT_RESTART;
-		break;
-	default:
-		info.reason = reason;
-	}
+
+	auto translateReason = [](uint8_t reason) -> uint8_t {
+		switch(reason) {
+		case ESP_RST_EXT:
+		case ESP_RST_BROWNOUT:
+			return REASON_EXT_SYS_RST;
+		case ESP_RST_PANIC:
+			return REASON_EXCEPTION_RST;
+		case ESP_RST_INT_WDT:
+			return REASON_SOFT_WDT_RST;
+		case ESP_RST_TASK_WDT:
+		case ESP_RST_WDT:
+			return REASON_WDT_RST;
+		case ESP_RST_DEEPSLEEP:
+			return REASON_DEEP_SLEEP_AWAKE;
+		case ESP_RST_SW:
+		case ESP_RST_SDIO:
+			return REASON_SOFT_RESTART;
+		case ESP_RST_UNKNOWN:
+		case ESP_RST_POWERON:
+		default:
+			return REASON_DEFAULT_RST;
+		}
+	};
+
+	info.reason = translateReason(esp_reset_reason());
 
 	return &info;
 }
 
 void system_restart(void)
 {
-	esp_restart();
+	/*
+	 * Internally, `esp_restart` calls `esp_wifi_stop`.
+	 * This must not be called in the context of the task which handles the main event queue.
+	 * i.e. The Sming main thread.
+	 * Doing so causes a deadlock and a task watchdog timeout.
+	 *
+	 * Delegating this call to any other task fixes the issue.
+	 */
+	esp_ipc_call(0, esp_ipc_func_t(esp_restart), nullptr);
 }
 
 /* Watchdog */

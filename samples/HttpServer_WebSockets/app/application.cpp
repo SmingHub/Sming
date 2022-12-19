@@ -47,7 +47,8 @@ void wsConnected(WebsocketConnection& socket)
 
 void wsMessageReceived(WebsocketConnection& socket, const String& message)
 {
-	Serial.printf("WebSocket message received:\r\n%s\r\n", message.c_str());
+	Serial.println(_F("WebSocket message received:"));
+	Serial.println(message);
 
 	if(message == _F("shutdown")) {
 		String message(F("The server is shutting down..."));
@@ -77,7 +78,7 @@ void wsMessageReceived(WebsocketConnection& socket, const String& message)
 
 void wsBinaryReceived(WebsocketConnection& socket, uint8_t* data, size_t size)
 {
-	Serial.printf(_F("Websocket binary data received, size: %d\r\n"), size);
+	Serial << _F("Websocket binary data received, size: ") << size << endl;
 }
 
 void wsDisconnected(WebsocketConnection& socket)
@@ -110,9 +111,10 @@ void startWebServer()
 
 	server.paths.set("/ws", wsResource);
 
-	Serial.println(F("\r\n=== WEB SERVER STARTED ==="));
+	Serial.println(_F("\r\n"
+					  "=== WEB SERVER STARTED ==="));
 	Serial.println(WifiStation.getIP());
-	Serial.println(F("==============================\r\n"));
+	Serial.println(_F("==========================\r\n"));
 }
 
 // Will be called when WiFi station becomes fully operational

@@ -137,7 +137,7 @@ uint16_t system_get_vdd33(void)
 	return phy_get_vdd33() & 0x3FF;
 }
 // Fetch enum `flash_size_map` value
-unsigned system_get_flash_size_map(void)
+enum flash_size_map system_get_flash_size_map(void)
 {
 	uint32_t hdr;
 	spi_flash_read(0, &hdr, sizeof(hdr));

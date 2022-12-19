@@ -78,16 +78,17 @@ void startWebServer()
 	server.paths.set("/ajax/frequency", onAjaxFrequency);
 	server.paths.setDefault(onFile);
 
-	Serial.println("\r\n=== WEB SERVER STARTED ===");
+	Serial.println(_F("\r\n"
+					  "=== WEB SERVER STARTED ==="));
 	Serial.println(WifiStation.getIP());
-	Serial.println("==============================\r\n");
+	Serial.println(_F("==========================\r\n"));
 }
 
 void startFTP()
 {
 	if(!fileExist("index.html"))
 		fileSetContent("index.html",
-					   "<h3>Please connect to FTP and upload files from folder 'web/build' (details in code)</h3>");
+					   F("<h3>Please connect to FTP and upload files from folder 'web/build' (details in code)</h3>"));
 
 	// Start FTP server
 	ftp.listen(21);

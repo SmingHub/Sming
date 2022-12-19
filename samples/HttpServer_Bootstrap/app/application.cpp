@@ -56,9 +56,10 @@ void startWebServer()
 	server.paths.set("/hello", onHello);
 	server.paths.setDefault(onFile);
 
-	Serial.println("\r\n=== WEB SERVER STARTED ===");
+	Serial.println(_F("\r\n"
+					  "=== WEB SERVER STARTED ==="));
 	Serial.println(WifiStation.getIP());
-	Serial.println("==============================\r\n");
+	Serial.println(_F("==========================\r\n"));
 }
 
 Timer downloadTimer;
@@ -66,9 +67,9 @@ HttpClient downloadClient;
 int dowfid = 0;
 void downloadContentFiles()
 {
-	downloadClient.downloadFile("http://simple.anakod.ru/templates/index.html");
-	downloadClient.downloadFile("http://simple.anakod.ru/templates/bootstrap.css.gz");
-	downloadClient.downloadFile("http://simple.anakod.ru/templates/jquery.js.gz",
+	downloadClient.downloadFile(F("http://simple.anakod.ru/templates/index.html"));
+	downloadClient.downloadFile(F("http://simple.anakod.ru/templates/bootstrap.css.gz"));
+	downloadClient.downloadFile(F("http://simple.anakod.ru/templates/jquery.js.gz"),
 								(RequestCompletedDelegate)([](HttpConnection& connection, bool success) -> int {
 									if(success) {
 										startWebServer();
@@ -105,6 +106,5 @@ void init()
 
 	// Max. out CPU frequency
 	System.setCpuFrequency(CpuCycleClockFast::cpuFrequency());
-	Serial.print("New CPU frequency is:");
-	Serial.println(int(System.getCpuFrequency()));
+	Serial << _F("New CPU frequency is ") << System.getCpuFrequency() << " MHz" << endl;
 }

@@ -158,30 +158,30 @@ bool StationImpl::isEnabled() const
 	return currentConfig.enabled;
 }
 
-bool StationImpl::config(const String& ssid, const String& password, bool autoConnectOnStartup, bool save)
+bool StationImpl::config(const Config& cfg)
 {
 	for(auto& ap : apInfoList) {
-		if(ssid == ap.ssid) {
+		if(cfg.ssid == ap.ssid) {
 			if(ap.authMode != AUTH_OPEN) {
-				if(password != ap.pwd) {
-					debug_w("Bad password for '%s'", ssid.c_str());
+				if(cfg.password != ap.pwd) {
+					debug_w("Bad password for '%s'", cfg.ssid.c_str());
 					return false;
 				}
 			}
 
 			currentAp = &ap;
-			if(save) {
+			if(cfg.save) {
 				savedAp = &ap;
 			}
 
-			debug_i("Connected to SSID '%s'", ssid.c_str());
+			debug_i("Connected to SSID '%s'", cfg.ssid.c_str());
 
-			autoConnect = autoConnectOnStartup;
+			autoConnect = cfg.autoConnectOnStartup;
 			return true;
 		}
 	}
 
-	debug_w("SSID '%s' not found", ssid.c_str());
+	debug_w("SSID '%s' not found", cfg.ssid.c_str());
 	return false;
 }
 
@@ -291,6 +291,11 @@ bool StationImpl::setIP(IpAddress address, IpAddress netmask, IpAddress gateway)
 String StationImpl::getSSID() const
 {
 	return currentAp ? currentAp->ssid : nullptr;
+}
+
+MacAddress StationImpl::getBSSID() const
+{
+	return MacAddress({0xff, 0xff, 0xff, 0x00, 0x01});
 }
 
 int8_t StationImpl::getRssi() const

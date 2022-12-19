@@ -22,7 +22,7 @@ public:
 		TEST_CASE("formUrlParser test")
 		{
 			auto testUrl = [this](const FlashString& urlText, const char* param) {
-				debugf("URL '%s'", String(urlText).c_str());
+				Serial << _F("URL \"") << urlText << '"' << endl;
 				Url url(urlText);
 				String query = url.Query;
 				const char* p = query.c_str();
@@ -36,7 +36,7 @@ public:
 				formUrlParser(request, nullptr, PARSE_DATAEND);
 				printParams(request.postParams);
 				String cid = request.getPostParameter("cid");
-				debugf("cid = %s", cid.c_str());
+				Serial << _F("cid = ") << cid << endl;
 				REQUIRE(cid == param);
 			};
 
@@ -50,8 +50,8 @@ public:
 		TEST_CASE("HttpRequest getQueryParameter()")
 		{
 			request.uri = FS_URL2;
-			debugf("URL = \"%s\"", request.uri.toString().c_str());
-			debugf("cid = %s", request.getQueryParameter("cid").c_str());
+			Serial << _F("URL = \"") << request.uri << '"' << endl;
+			Serial << _F("cid = ") << request.getQueryParameter("cid") << endl;
 		}
 
 		TEST_CASE("HttpRequest postParams test");
@@ -60,10 +60,10 @@ public:
 							  "param+1=Mary+had+a+little+lamb%2c&param+2=It%27s+fleece+was+very+red.&param+3=The+"
 							  "reason+for+this+was%2c+you+see&param+4=It+had+a+pickaxe+through+its+head.");
 			HttpParams params;
-			params["param 1"] = "Mary had a little lamb,";
-			params["param 2"] = "It's fleece was very red.";
-			params["param 3"] = "The reason for this was, you see";
-			params["param 4"] = "It had a pickaxe through its head.";
+			params["param 1"] = F("Mary had a little lamb,");
+			params["param 2"] = F("It's fleece was very red.");
+			params["param 3"] = F("The reason for this was, you see");
+			params["param 4"] = F("It had a pickaxe through its head.");
 			UrlencodedOutputStream stream(params);
 			char buffer[256];
 			unsigned n = 0;

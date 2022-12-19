@@ -115,7 +115,7 @@ public:
 	  *
 	  * @{
 	  */
-	size_t print(unsigned long num, int base = DEC)
+	size_t print(unsigned long num, uint8_t base = DEC)
 	{
 		if(base == 0) {
 			return write(num);
@@ -124,28 +124,48 @@ public:
 		}
 	}
 
-	size_t print(const unsigned long long& num, int base = DEC)
+	template <typename... Args> size_t print(unsigned long num, Args... args)
 	{
-		return printNumber(num, base);
+		return printNumber(num, args...);
 	}
 
-	size_t print(long, int base = DEC);
-
-	size_t print(const long long&, int base = DEC);
-
-	size_t print(unsigned int num, int base = DEC)
+	template <typename... Args> size_t print(const unsigned long long& num, Args... args)
 	{
-		return print((unsigned long)num, base);
+		return printNumber(num, args...);
 	}
 
-	size_t print(unsigned char num, int base = DEC)
+	size_t print(long num, uint8_t base = DEC)
 	{
-		return print((unsigned long)num, base);
+		if(base == 0) {
+			return write(num);
+		} else {
+			return printNumber(num, base);
+		}
 	}
 
-	size_t print(int num, int base = DEC)
+	template <typename... Args> size_t print(long num, Args... args)
 	{
-		return print((long)num, base);
+		return printNumber(num, args...);
+	}
+
+	template <typename... Args> size_t print(const long long& num, Args... args)
+	{
+		return printNumber(num, args...);
+	}
+
+	template <typename... Args> size_t print(unsigned int num, Args... args)
+	{
+		return print((unsigned long)num, args...);
+	}
+
+	template <typename... Args> size_t print(unsigned char num, Args... args)
+	{
+		return print((unsigned long)num, args...);
+	}
+
+	template <typename... Args> size_t print(int num, Args... args)
+	{
+		return printNumber((long)num, args...);
 	}
 	/** @} */
 
@@ -159,13 +179,27 @@ public:
 		return printFloat(num, digits);
 	}
 
+	/*
+	 * Helper class using SFINAE to identify *any* class with a `printTo` method, even if not a base of `Printable`.
+	 *
+	 * https://stackoverflow.com/a/257382
+	 */
+	template <typename T> class has_printTo
+	{
+		template <typename C> static uint8_t test(decltype(&C::printTo));
+		template <typename C> static uint32_t test(...);
+
+	public:
+		enum { value = (sizeof(test<T>(0)) == 1) };
+	};
+
 	/** @brief  Prints a Printable object to output stream
-	  * @param  p Object to print
+	  * @param  obj Object to print
 	  * @retval size_t Quantity of characters written to stream
 	  */
-	size_t print(const Printable& p)
+	template <typename T> typename std::enable_if<has_printTo<T>::value, size_t>::type print(const T& obj)
 	{
-		return p.printTo(*this);
+		return obj.printTo(*this);
 	}
 
 	/** @brief  Prints a String to output stream
@@ -177,101 +211,30 @@ public:
 		return write(s.c_str(), s.length());
 	}
 
+	/**
+	 * @brief enums can be printed as strings provided they have a `toString(E)` implementation.
+	 */
+	template <typename E>
+	typename std::enable_if<std::is_enum<E>::value && !std::is_convertible<E, int>::value, size_t>::type print(E value)
+	{
+		extern String toString(E e);
+		return print(toString(value));
+	}
+
 	/** @brief  Prints a newline to output stream
 	  * @retval size_t Quantity of characters written to stream
 	  */
 	size_t println()
 	{
-		return print("\r\n");
+		return write("\r\n", 2);
 	}
 
-	/** @brief  Prints a c-string to output stream, appending newline
-	  * @param  str c-string to print
+	/** @brief Print value plus newline to output stream
 	  * @retval size_t Quantity of characters written to stream
 	  */
-	size_t println(const char str[])
+	template <typename... Args> size_t println(const Args&... args)
 	{
-		return print(str) + println();
-	}
-
-	/** @brief  Prints a single character to output stream, appending newline
-	  * @param  c Character to print
-	  * @retval size_t Quantity of characters written to stream
-	  */
-	size_t println(char c)
-	{
-		return print(c) + println();
-	}
-
-	/** @name   Print an integral number to output stream, appending newline
-	  * @param  num Number to print
-	  * @param  base The base for output (Default: Decimal (base 10))
-	  * @retval size_t Quantity of characters written to stream
-	  *
-	  * @{
-	  */
-	size_t println(unsigned char num, int base = DEC)
-	{
-		return print(num, base) + println();
-	}
-
-	size_t println(unsigned int num, int base = DEC)
-	{
-		return print(num, base) + println();
-	}
-
-	size_t println(unsigned long num, int base = DEC)
-	{
-		return print(num, base) + println();
-	}
-
-	size_t println(const unsigned long long& num, int base = DEC)
-	{
-		return print(num, base) + println();
-	}
-
-	size_t println(int num, int base = DEC)
-	{
-		return print(num, base) + println();
-	}
-
-	size_t println(long num, int base = DEC)
-	{
-		return print(num, base) + println();
-	}
-
-	size_t println(const long long& num, int base = DEC)
-	{
-		return print(num, base) + println();
-	}
-	/** @} */
-
-	/** @brief  Print a floating-point number to output stream, appending newline
-	  * @param  num Number to print
-	  * @param  digits The decimal places to print (Default: 2, e.g. 21.35)
-	  * @retval size_t Quantity of characters written to stream
-	  */
-	size_t println(double num, int digits = 2)
-	{
-		return print(num, digits) + println();
-	}
-
-	/** @brief  Prints a Printable object to output stream, appending newline
-	  * @param  p Object to print
-	  * @retval size_t Quantity of characters written to stream
-	  */
-	size_t println(const Printable& p)
-	{
-		return print(p) + println();
-	}
-
-	/** @brief  Prints a String to output stream, appending newline
-	  * @param  s String to print
-	  * @retval size_t Quantity of characters written to stream
-	  */
-	size_t println(const String& s)
-	{
-		return print(s) + println();
+		return print(args...) + println();
 	}
 
 	/** @brief  Prints a formatted c-string to output stream
@@ -284,8 +247,10 @@ public:
 
 private:
 	int write_error = 0;
-	size_t printNumber(unsigned long num, uint8_t base);
-	size_t printNumber(const unsigned long long& num, uint8_t base);
+	size_t printNumber(unsigned long num, uint8_t base = DEC, uint8_t width = 0, char pad = '0');
+	size_t printNumber(const unsigned long long& num, uint8_t base = DEC, uint8_t width = 0, char pad = '0');
+	size_t printNumber(long num, uint8_t base = DEC, uint8_t width = 0, char pad = '0');
+	size_t printNumber(const long long& num, uint8_t base = DEC, uint8_t width = 0, char pad = '0');
 	size_t printFloat(double num, uint8_t digits);
 
 protected:
@@ -294,6 +259,30 @@ protected:
 		write_error = err;
 	}
 };
+
+inline Print& operator<<(Print& p, const char value[])
+{
+	p.print(value);
+	return p;
+}
+
+template <typename T>
+typename std::enable_if<!std::is_array<T>::value, Print&>::type operator<<(Print& p, const T& value)
+{
+	p.print(value);
+	return p;
+}
+
+// Thanks to Arduino forum user Paul V. who suggested this
+// clever technique to allow for expressions like
+//   Serial << "Hello!" << endl;
+enum EndLineCode { endl };
+
+inline Print& operator<<(Print& p, EndLineCode)
+{
+	p.println();
+	return p;
+}
 
 /** @} */
 

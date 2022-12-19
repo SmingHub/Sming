@@ -31,6 +31,8 @@
 #include <cstdint>
 #include <iterator>
 #include <cstdlib>
+#include "WiringList.h"
+#include "Print.h"
 
 /**
  * @brief HashMap class template
@@ -39,8 +41,6 @@
 template <typename K, typename V> class HashMap
 {
 public:
-	using Comparator = bool (*)(const K&, const K&);
-
 	template <bool is_const> struct BaseElement {
 	public:
 		using Value = typename std::conditional<is_const, const V, V>::type;
@@ -88,6 +88,15 @@ public:
 		const Value* operator->() const
 		{
 			return &v;
+		}
+
+		size_t printTo(Print& p) const
+		{
+			size_t n{0};
+			n += p.print(k);
+			n += p.print(" = ");
+			n += p.print(v);
+			return n;
 		}
 
 	private:
@@ -156,6 +165,16 @@ public:
 		unsigned index{0};
 	};
 
+	/**
+	 * @brief Compare two keys for equality
+	 */
+	using Comparator = bool (*)(const K&, const K&);
+
+	/**
+	 * @brief Return true if key1 < key2
+	 */
+	using SortCompare = bool (*)(const ElementConst& e1, const ElementConst& e2);
+
 	/*
     || @constructor
     || | Default constructor
@@ -174,11 +193,6 @@ public:
     */
 	HashMap(Comparator compare) : cb_comparator(compare)
 	{
-	}
-
-	~HashMap()
-	{
-		clear();
 	}
 
 	/*
@@ -207,7 +221,7 @@ public:
 		if(idx >= count()) {
 			abort();
 		}
-		return *keys[idx];
+		return keys[idx];
 	}
 
 	K& keyAt(unsigned int idx)
@@ -215,7 +229,7 @@ public:
 		if(idx >= count()) {
 			abort();
 		}
-		return *keys[idx];
+		return keys[idx];
 	}
 
 	/*
@@ -232,7 +246,7 @@ public:
 		if(idx >= count()) {
 			abort();
 		}
-		return *values[idx];
+		return values[idx];
 	}
 
 	V& valueAt(unsigned int idx)
@@ -240,7 +254,7 @@ public:
 		if(idx >= count()) {
 			abort();
 		}
-		return *values[idx];
+		return values[idx];
 	}
 
 	/*
@@ -263,7 +277,7 @@ public:
 	{
 		// Don't create non-existent values
 		auto i = indexOf(key);
-		return (i >= 0) ? *values[i] : nil;
+		return (i >= 0) ? values[i] : nil;
 	}
 
 	/*
@@ -279,7 +293,15 @@ public:
     */
 	V& operator[](const K& key);
 
-	void allocate(unsigned int newSize);
+	bool allocate(unsigned int newSize)
+	{
+		return keys.allocate(newSize) && values.allocate(newSize);
+	}
+
+	/**
+	 * @brief Sort map entries
+	 */
+	void sort(SortCompare compare);
 
 	/*
     || @description
@@ -290,7 +312,19 @@ public:
     ||
     || @return The index of the key, or -1 if key does not exist
     */
-	int indexOf(const K& key) const;
+	int indexOf(const K& key) const
+	{
+		for(unsigned i = 0; i < currentIndex; i++) {
+			if(cb_comparator) {
+				if(cb_comparator(key, keys[i])) {
+					return i;
+				}
+			} else if(key == keys[i]) {
+				return i;
+			}
+		}
+		return -1;
+	}
 
 	/*
     || @description
@@ -313,7 +347,17 @@ public:
      ||
      || @parameter index location to remove from this HashMap
      */
-	void removeAt(unsigned index);
+	void removeAt(unsigned index)
+	{
+		if(index >= currentIndex) {
+			return;
+		}
+
+		keys.remove(index);
+		values.remove(index);
+
+		currentIndex--;
+	}
 
 	/*
     || @description
@@ -330,9 +374,19 @@ public:
 		}
 	}
 
-	void clear();
+	void clear()
+	{
+		keys.clear();
+		values.clear();
+		currentIndex = 0;
+	}
 
-	void setMultiple(const HashMap<K, V>& map);
+	void setMultiple(const HashMap<K, V>& map)
+	{
+		for(auto e : map) {
+			(*this)[e.key()] = e.value();
+		}
+	}
 
 	void setNullValue(const V& nullv)
 	{
@@ -360,12 +414,14 @@ public:
 	}
 
 protected:
-	K** keys = nullptr;
-	V** values = nullptr;
-	V nil;
-	uint16_t currentIndex = 0;
-	uint16_t size = 0;
-	Comparator cb_comparator = nullptr;
+	using KeyList = wiring_private::List<K>;
+	using ValueList = wiring_private::List<V>;
+
+	KeyList keys;
+	ValueList values;
+	Comparator cb_comparator{nullptr};
+	unsigned currentIndex{0};
+	V nil{};
 
 private:
 	HashMap(const HashMap<K, V>& that);
@@ -375,92 +431,28 @@ template <typename K, typename V> V& HashMap<K, V>::operator[](const K& key)
 {
 	int i = indexOf(key);
 	if(i >= 0) {
-		return *values[i];
+		return values[i];
 	}
-	if(currentIndex >= size) {
-		allocate(currentIndex + 1);
+	if(currentIndex >= values.size) {
+		allocate(currentIndex + ((values.size < 16) ? 4 : 16));
 	}
-	*keys[currentIndex] = key;
-	*values[currentIndex] = nil;
+	keys[currentIndex] = key;
+	values[currentIndex] = nil;
 	currentIndex++;
-	return *values[currentIndex - 1];
+	return values[currentIndex - 1];
 }
 
-template <typename K, typename V> void HashMap<K, V>::allocate(unsigned int newSize)
+template <typename K, typename V> void HashMap<K, V>::sort(SortCompare compare)
 {
-	if(newSize <= size)
-		return;
-
-	K** nkeys = new K*[newSize];
-	V** nvalues = new V*[newSize];
-
-	if(keys != nullptr) {
-		for(unsigned i = 0; i < size; i++) {
-			nkeys[i] = keys[i];
-			nvalues[i] = values[i];
-		}
-
-		delete[] keys;
-		delete[] values;
-	}
-	for(unsigned i = size; i < newSize; i++) {
-		nkeys[i] = new K();
-		nvalues[i] = new V();
-	}
-
-	keys = nkeys;
-	values = nvalues;
-	size = newSize;
-}
-
-template <typename K, typename V> int HashMap<K, V>::indexOf(const K& key) const
-{
-	for(unsigned i = 0; i < currentIndex; i++) {
-		if(cb_comparator) {
-			if(cb_comparator(key, *keys[i])) {
-				return i;
-			}
-		} else {
-			if(key == *keys[i]) {
-				return i;
+	auto n = count();
+	for(unsigned i = 0; i < n - 1; ++i) {
+		for(unsigned j = 0; j < n - i - 1; ++j) {
+			HashMap::ElementConst e1{keys[j + 1], values[j + 1]};
+			HashMap::ElementConst e2{keys[j], values[j]};
+			if(compare(e1, e2)) {
+				std::swap(keys[j], keys[j + 1]);
+				std::swap(values[j], values[j + 1]);
 			}
 		}
-	}
-	return -1;
-}
-
-template <typename K, typename V> void HashMap<K, V>::removeAt(unsigned index)
-{
-	if(index >= currentIndex)
-		return;
-
-	for(unsigned i = index + 1; i < size; i++) {
-		*keys[i - 1] = *keys[i];
-		*values[i - 1] = *values[i];
-	}
-
-	currentIndex--;
-}
-
-template <typename K, typename V> void HashMap<K, V>::clear()
-{
-	if(keys != nullptr) {
-		for(unsigned i = 0; i < size; i++) {
-			delete keys[i];
-			delete values[i];
-		}
-		delete[] keys;
-		delete[] values;
-		keys = nullptr;
-		values = nullptr;
-	}
-	currentIndex = 0;
-	size = 0;
-}
-
-template <typename K, typename V> void HashMap<K, V>::setMultiple(const HashMap<K, V>& map)
-{
-	for(unsigned i = 0; i < map.count(); i++) {
-		(*this)[map.keyAt(i)] = *(map.values)[i];
 	}
 }

@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <driver/gpio.h>
+#include_next <esp_sleep.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,7 +14,7 @@ enum sleep_type {
 	MODEM_SLEEP_T,
 };
 
-void system_deep_sleep(uint32_t time_in_us);
+bool system_deep_sleep(uint32_t time_in_us);
 bool system_deep_sleep_set_option(uint8_t option);
 
 /* These aren't defined in the RTOS SDK */

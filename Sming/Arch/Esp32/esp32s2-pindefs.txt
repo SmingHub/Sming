@@ -1,0 +1,237 @@
+[io_mux]
+gpio pad f0 f1 f2 f3 f4 reset notes
+0 GPIO0 GPIO0 GPIO0 - - - 3 R
+1 GPIO1 GPIO1 GPIO1 - - - 1 R
+2 GPIO2 GPIO2 GPIO2 - - - 1 R
+3 GPIO3 GPIO3 GPIO3 - - - 0 R
+4 GPIO4 GPIO4 GPIO4 - - - 0 R
+5 GPIO5 GPIO5 GPIO5 - - - 0 R
+6 GPIO6 GPIO6 GPIO6 - - - 0 R
+7 GPIO7 GPIO7 GPIO7 - - - 0 R
+8 GPIO8 GPIO8 GPIO8 - SUBSPICS1 - 0 R
+9 GPIO9 GPIO9 GPIO9 - SUBSPIHD FSPIHD 1 R
+10 GPIO10 GPIO10 GPIO10 FSPIIO4 SUBSPICS0 FSPICS0 1 R
+11 GPIO11 GPIO11 GPIO11 FSPIIO5 SUBSPID FSPID 1 R
+12 GPIO12 GPIO12 GPIO12 FSPIIO6 SUBSPICLK FSPICLK 1 R
+13 GPIO13 GPIO13 GPIO13 FSPIIO7 SUBSPIQ FSPIQ 1 R
+14 GPIO14 GPIO14 GPIO14 FSPIDQS SUBSPIWP FSPIWP 1 R
+15 XTAL_32K_P XTAL_32K_P GPIO15 U0RTS - - 0 R
+16 XTAL_32K_N XTAL_32K_N GPIO16 U0CTS - - 0 R
+17 DAC_1 DAC_1 GPIO17 U1TXD - - 1 R
+18 DAC_2 DAC_2 GPIO18 U1RXD CLK_OUT3 - 1 R
+19 GPIO19 GPIO19 GPIO19 U1RTS CLK_OUT2 - 0 R
+20 GPIO20 GPIO20 GPIO20 U1CTS CLK_OUT1 - 0 R
+21 GPIO21 GPIO21 GPIO21 - - - 0 R
+26 SPICS1 SPICS1 GPIO26 - - - 3 -
+27 SPIHD SPIHD GPIO27 - - - 3 -
+28 SPIWP SPIWP GPIO28 - - - 3 -
+29 SPICS0 SPICS0 GPIO29 - - - 3 -
+30 SPICLK SPICLK GPIO30 - - - 3 -
+31 SPIQ SPIQ GPIO31 - - - 3 -
+32 SPID SPID GPIO32 - - - 3 -
+33 GPIO33 GPIO33 GPIO33 FSPIHD SUBSPIHD SPIIO4 1 -
+34 GPIO34 GPIO34 GPIO34 FSPICS0 SUBSPICS0 SPIIO5 1 -
+35 GPIO35 GPIO35 GPIO35 FSPID SUBSPID SPIIO6 1 -
+36 GPIO36 GPIO36 GPIO36 FSPICLK SUBSPICLK SPIIO7 1 -
+37 GPIO37 GPIO37 GPIO37 FSPIQ SUBSPIQ SPIDQS 1 -
+38 GPIO38 GPIO38 GPIO38 FSPIWP SUBSPIWP - 1 -
+39 MTCK MTCK GPIO39 CLK_OUT3 SUBSPICS1 - 1 -
+40 MTDO MTDO GPIO40 CLK_OUT2 - - 1 -
+41 MTDI MTDI GPIO41 CLK_OUT1 - - 1 -
+42 MTMS MTMS GPIO42 - - - 1 -
+43 U0TXD U0TXD GPIO43 CLK_OUT1 - - 3 -
+44 U0RXD U0RXD GPIO44 CLK_OUT2 - - 3 -
+45 GPIO45 GPIO45 GPIO45 - - - 2 -
+46 GPIO46 GPIO46 GPIO46 - - - 2 I
+
+[rtc_mux]
+# Table 
+rtc gpio a0 a1 f0 f1 f2 f3
+0 0 - - RTC_GPIO0 - - sar_i2c_scl_0
+1 1 TOUCH1 ADC1_CH0 RTC_GPIO1 - - sar_i2c_sda_0
+2 2 TOUCH2 ADC1_CH1 RTC_GPIO2 - - sar_i2c_scl_1
+3 3 TOUCH3 ADC1_CH2 RTC_GPIO3 - - sar_i2c_sda_1
+4 4 TOUCH4 ADC1_CH3 RTC_GPIO4 - - -
+5 5 TOUCH5 ADC1_CH4 RTC_GPIO5 - - -
+6 6 TOUCH6 ADC1_CH5 RTC_GPIO6 - - -
+7 7 TOUCH7 ADC1_CH6 RTC_GPIO7 - - -
+8 8 TOUCH8 ADC1_CH7 RTC_GPIO8 - - -
+9 9 TOUCH9 ADC1_CH8 RTC_GPIO9 - - -
+10 10 TOUCH10 ADC1_CH9 RTC_GPIO10 - - -
+11 11 TOUCH11 ADC2_CH0 RTC_GPIO11 - - -
+12 12 TOUCH12 ADC2_CH1 RTC_GPIO12 - - -
+13 13 TOUCH13 ADC2_CH2 RTC_GPIO13 - - -
+14 14 TOUCH14 ADC2_CH3 RTC_GPIO14 - - -
+15 15 XTAL_32K_P ADC2_CH4 RTC_GPIO15 - - -
+16 16 XTAL_32K_N ADC2_CH5 RTC_GPIO16 - - -
+17 17 DAC_1 ADC2_CH6 RTC_GPIO17 - - -
+18 18 DAC_2 ADC2_CH7 RTC_GPIO18 - - -
+19 19 USB_DM ADC2_CH8 RTC_GPIO19 - - -
+20 20 USB_DP ADC2_CH9 RTC_GPIO20 - - -
+21 21 - RTC_GPIO21 - - - -
+
+[gpio_matrix]
+signal input default direct_in output enable
+0 SPIQ_in 0 yes SPIQ_out SPIQ_oe
+1 SPID_in 0 yes SPID_out SPID_oe
+2 SPIHD_in 0 yes SPIHD_out SPIHD_oe
+3 SPIWP_in 0 yes SPIWP_out SPIWP_oe
+4 - - - SPICLK_out_mux SPICLK_oe
+5 - - - SPICS0_out SPICS0_oe
+6 - - - SPICS1_out SPICS1_oe
+7 SPID4_in 0 yes SPID4_out SPID4_oe
+8 SPID5_in 0 yes SPID5_out SPID5_oe
+9 SPID6_in 0 yes SPID6_out SPID6_oe
+10 SPID7_in 0 yes SPID7_out SPID7_oe
+11 SPIDQS_in 0 yes SPIDQS_out SPIDQS_oe
+14 U0RXD_in 0 yes U0TXD_out 1’d1
+15 U0CTS_in 0 yes U0RTS_out 1’d1
+16 U0DSR_in 0 no U0DTR_out 1’d1
+17 U1RXD_in 0 yes U1TXD_out 1’d1
+18 U1CTS_in 0 yes U1RTS_out 1’d1
+21 U1DSR_in 0 no U1DTR_out 1’d1
+23 I2S0O_BCK_in 0 no I2S0O_BCK_out 1’d1
+25 I2S0O_WS_in 0 no I2S0O_WS_out 1’d1
+27 I2S0I_BCK_in 0 no I2S0I_BCK_out 1’d1
+28 I2S0I_WS_in 0 no I2S0I_WS_out 1’d1
+29 I2CEXT0_SCL_in 1 no I2CEXT0_SCL_out I2CEXT0_SCL_oe
+30 I2CEXT0_SDA_in 1 no I2CEXT0_SDA_out I2CEXT0_SDA_oe
+39 pcnt_sig_ch0_in0 0 no gpio_wlan_prio 1’d1
+40 pcnt_sig_ch1_in0 0 no gpio_wlan_active 1’d1
+41 pcnt_ctrl_ch0_in0 0 no - 1’d1
+42 pcnt_ctrl_ch1_in0 0 no - 1’d1
+43 pcnt_sig_ch0_in1 0 no - 1’d1
+44 pcnt_sig_ch1_in1 0 no - 1’d1
+45 pcnt_ctrl_ch0_in1 0 no - 1’d1
+46 pcnt_ctrl_ch1_in1 0 no - 1’d1
+47 pcnt_sig_ch0_in2 0 no - 1’d1
+48 pcnt_sig_ch1_in2 0 no - 1’d1
+49 pcnt_ctrl_ch0_in2 0 no - 1’d1
+50 pcnt_ctrl_ch1_in2 0 no - 1’d1
+51 pcnt_sig_ch0_in3 0 no - 1’d1
+52 pcnt_sig_ch1_in3 0 no - 1’d1
+53 pcnt_ctrl_ch0_in3 0 no - 1’d1
+54 pcnt_ctrl_ch1_in3 0 no - 1’d1
+64 usb_otg_iddig_in 0 no - 1’d1
+65 usb_otg_avalid_in 0 no - 1’d1
+66 usb_srp_bvalid_in 0 no usb_otg_idpullup 1’d1
+67 usb_otg_vbusvalid_in 0 no usb_otg_dppulldown 1’d1
+68 usb_srp_sessend_in 0 no usb_otg_dmpulldown 1’d1
+69 - - - usb_otg_drvvbus 1’d1
+70 - - - usb_srp_chrgvbus 1’d1
+71 - - - usb_srp_dischrgvbus 1’d1
+72 SPI3_CLK_in 0 no SPI3_CLK_out_mux SPI3_CLK_oe
+73 SPI3_Q_in 0 no SPI3_Q_out SPI3_Q_oe
+74 SPI3_D_in 0 no SPI3_D_out SPI3_D_oe
+75 SPI3_HD_in 0 no SPI3_HD_out SPI3_HD_oe
+76 SPI3_CS0_in 0 no SPI3_CS0_out SPI3_CS0_oe
+77 - - - SPI3_CS1_out SPI3_CS1_oe
+78 - - - SPI3_CS2_out SPI3_CS2_oe
+79 - - - ledc_ls_sig_out0 1’d1
+80 - - - ledc_ls_sig_out1 1’d1
+81 - - - ledc_ls_sig_out2 1’d1
+82 - - - ledc_ls_sig_out3 1’d1
+83 rmt_sig_in0 0 no ledc_ls_sig_out4 1’d1
+84 rmt_sig_in1 0 no ledc_ls_sig_out5 1’d1
+85 rmt_sig_in2 0 no ledc_ls_sig_out6 1’d1
+86 rmt_sig_in3 0 no ledc_ls_sig_out7 1’d1
+87 - - - rmt_sig_out0 1’d1
+88 - - - rmt_sig_out1 1’d1
+89 - - - rmt_sig_out2 1’d1
+90 - - - rmt_sig_out3 1’d1
+95 I2CEXT1_SCL_in 1 no I2CEXT1_SCL_out I2CEXT1_SCL_oe
+96 I2CEXT1_SDA_in 1 no I2CEXT1_SDA_out I2CEXT1_SDA_oe
+100 - - - gpio_sd0_out 1’d1
+101 - - - gpio_sd1_out 1’d1
+102 - - - gpio_sd2_out 1’d1
+103 - - - gpio_sd3_out 1’d1
+104 - - - gpio_sd4_out 1’d1
+105 - - - gpio_sd5_out 1’d1
+106 - - - gpio_sd6_out 1’d1
+107 - - - gpio_sd7_out 1’d1
+108 FSPICLK_in 0 yes FSPICLK_out_mux FSPICLK_oe
+109 FSPIQ_in 0 yes FSPIQ_out FSPIQ_oe
+110 FSPID_in 0 yes FSPID_out FSPID_oe
+111 FSPIHD_in 0 yes FSPIHD_out FSPIHD_oe
+112 FSPIWP_in 0 yes FSPIWP_out FSPIWP_oe
+113 FSPIIO4_in 0 yes FSPIIO4_out FSPIIO4_oe
+114 FSPIIO5_in 0 yes FSPIIO5_out FSPIIO5_oe
+115 FSPIIO6_in 0 yes FSPIIO6_out FSPIIO6_oe
+116 FSPIIO7_in 0 yes FSPIIO7_out FSPIIO7_oe
+117 FSPICS0_in 0 yes FSPICS0_out FSPICS0_oe
+118 - - - FSPICS1_out FSPICS1_oe
+119 - - - FSPICS2_out FSPICS2_oe
+120 - - - FSPICS3_out FSPICS3_oe
+121 - - - FSPICS4_out FSPICS4_oe
+122 - - - FSPICS5_out FSPICS5_oe
+123 twai_rx 1 no twai_tx 1’d1
+124 - - - twai_bus_off_on 1’d1
+125 - - - twai_clkout 1’d1
+126 - - - SUBSPICLK_out_mux SUBSPICLK_oe
+127 SUBSPIQ_in 0 yes SUBSPIQ_out SUBSPIQ_oe
+128 SUBSPID_in 0 yes SUBSPID_out SUBSPID_oe
+129 SUBSPIHD_in 0 yes SUBSPIHD_out SUBSPIHD_oe
+130 SUBSPIWP_in 0 yes SUBSPIWP_out SUBSPIWP_oe
+131 - - - SUBSPICS0_out SUBSPICS0_oe
+132 - - - SUBSPICS1_out SUBSPICS1_oe
+133 - - - FSPIDQS_out FSPIDQS_oe
+134 - - - FSPI_HSYNC_out FSPI_HSYNC_oe
+135 - - - FSPI_VSYNC_out FSPI_VSYNC_oe
+136 - - - FSPI_DE_out FSPI_DE_oe
+137 - - - FSPICD_out FSPICD_oe
+139 - - - SPI3_CD_out SPI3_CD_oe
+140 - - - SPI3_DQS_out SPI3_DQS_oe
+143 I2S0I_DATA_in0 0 no I2S0O_DATA_out0 1’d1
+144 I2S0I_DATA_in1 0 no I2S0O_DATA_out1 1’d1
+145 I2S0I_DATA_in2 0 no I2S0O_DATA_out2 1’d1
+146 I2S0I_DATA_in3 0 no I2S0O_DATA_out3 1’d1
+147 I2S0I_DATA_in4 0 no I2S0O_DATA_out4 1’d1
+148 I2S0I_DATA_in5 0 no I2S0O_DATA_out5 1’d1
+149 I2S0I_DATA_in6 0 no I2S0O_DATA_out6 1’d1
+150 I2S0I_DATA_in7 0 no I2S0O_DATA_out7 1’d1
+151 I2S0I_DATA_in8 0 no I2S0O_DATA_out8 1’d1
+152 I2S0I_DATA_in9 0 no I2S0O_DATA_out9 1’d1
+153 I2S0I_DATA_in10 0 no I2S0O_DATA_out10 1’d1
+154 I2S0I_DATA_in11 0 no I2S0O_DATA_out11 1’d1
+155 I2S0I_DATA_in12 0 no I2S0O_DATA_out12 1’d1
+156 I2S0I_DATA_in13 0 no I2S0O_DATA_out13 1’d1
+157 I2S0I_DATA_in14 0 no I2S0O_DATA_out14 1’d1
+158 I2S0I_DATA_in15 0 no I2S0O_DATA_out15 1’d1
+159 - - - I2S0O_DATA_out16 1’d1
+160 - - - I2S0O_DATA_out17 1’d1
+161 - - - I2S0O_DATA_out18 1’d1
+162 - - - I2S0O_DATA_out19 1’d1
+163 - - - I2S0O_DATA_out20 1’d1
+164 - - - I2S0O_DATA_out21 1’d1
+165 - - - I2S0O_DATA_out22 1’d1
+166 - - - I2S0O_DATA_out23 1’d1
+167 SUBSPID4_in 0 yes SUBSPID4_out SUBSPID4_oe
+168 SUBSPID5_in 0 yes SUBSPID5_out SUBSPID5_oe
+169 SUBSPID6_in 0 yes SUBSPID6_out SUBSPID6_oe
+170 SUBSPID7_in 0 yes SUBSPID7_out SUBSPID7_oe
+171 SUBSPIDQS_in 0 yes SUBSPIDQS_out SUBSPIDQS_oe
+193 I2S0I_H_SYNC 0 no - 1’d1
+194 I2S0I_V_SYNC 0 no - 1’d1
+195 I2S0I_H_ENABLE 0 no - 1’d1
+215 - - - ant_sel0 1’d1
+216 - - - ant_sel1 1’d1
+217 - - - ant_sel2 1’d1
+218 - - - ant_sel3 1’d1
+219 - - - ant_sel4 1’d1
+220 - - - ant_sel5 1’d1
+221 - - - ant_sel6 1’d1
+222 - - - ant_sel7 1’d1
+223 sig_in_func_223 0 no sig_in_func223 1’d1
+224 sig_in_func_224 0 no sig_in_func224 1’d1
+225 sig_in_func_225 0 no sig_in_func225 1’d1
+226 sig_in_func_226 0 no sig_in_func226 1’d1
+227 sig_in_func_227 0 no sig_in_func227 1’d1
+235 pro_alonegpio_in0 0 no pro_alonegpio_out0 1’d1
+236 pro_alonegpio_in1 0 no pro_alonegpio_out1 1’d1
+237 pro_alonegpio_in2 0 no pro_alonegpio_out2 1’d1
+238 pro_alonegpio_in3 0 no pro_alonegpio_out3 1’d1
+239 pro_alonegpio_in4 0 no pro_alonegpio_out4 1’d1
+240 pro_alonegpio_in5 0 no pro_alonegpio_out5 1’d1
+241 pro_alonegpio_in6 0 no pro_alonegpio_out6 1’d1
+242 pro_alonegpio_in7 0 no pro_alonegpio_out7 1’d1
+251 - - - clk_i2s_mux 1’d1

@@ -26,10 +26,12 @@
  ****/
 #pragma once
 
+#include <Printable.h>
 #include <Data/BitSet.h>
 #include <Data/CString.h>
-#include <memory>
+#include <Data/LinkedObjectList.h>
 #include <cassert>
+#include "Types.h"
 
 #define PARTITION_APP_SUBTYPE_MAP(XX)                                                                                  \
 	XX(factory, 0x00, "Factory application")                                                                           \
@@ -71,6 +73,11 @@ namespace Storage
 class Device;
 class PartitionTable;
 struct esp_partition_info_t;
+
+namespace Disk
+{
+class DiskPart;
+}
 
 /**
  * @brief Represents a flash partition
@@ -127,12 +134,56 @@ public:
 	using Flags = BitSet<uint32_t, Flag>;
 
 	/**
+	 * @brief Express both partition type and subtype together
+	 */
+	struct FullType {
+		Type type;
+		uint8_t subtype;
+
+		constexpr FullType() : type(Type::invalid), subtype(SubType::invalid)
+		{
+		}
+
+		constexpr FullType(Type type, uint8_t subtype) : type(type), subtype(subtype)
+		{
+		}
+
+		explicit operator bool() const
+		{
+			return type != Type::invalid && subtype != uint8_t(SubType::invalid);
+		}
+
+		template <typename T> constexpr FullType(T subType) : FullType(Type(T::partitionType), uint8_t(subType))
+		{
+		}
+
+		bool operator==(const FullType& other) const
+		{
+			return type == other.type && subtype == other.subtype;
+		}
+
+		bool operator!=(const FullType& other) const
+		{
+			return !operator==(other);
+		}
+
+		constexpr uint16_t value() const
+		{
+			return uint8_t(type) << 8 | subtype;
+		}
+
+		operator String() const;
+	};
+
+	/**
 	 * @brief Partition information
 	 */
-	struct Info {
+	struct Info : public LinkedObjectTemplate<Info>, public Printable {
+		using OwnedList = OwnedLinkedObjectListTemplate<Info>;
+
 		CString name;
-		uint32_t offset{0};
-		uint32_t size{0};
+		storage_size_t offset{0};
+		storage_size_t size{0};
 		Type type{Type::invalid};
 		uint8_t subtype{SubType::invalid};
 		Flags flags;
@@ -141,10 +192,27 @@ public:
 		{
 		}
 
-		Info(const String& name, Type type, uint8_t subtype, uint32_t offset, uint32_t size, Flags flags)
-			: name(name), offset(offset), size(size), type(type), subtype(subtype), flags(flags)
+		Info(const String& name, FullType fullType, storage_size_t offset, storage_size_t size, Flags flags = 0)
+			: name(name), offset(offset), size(size), type(fullType.type), subtype(fullType.subtype), flags(flags)
 		{
 		}
+
+		FullType fullType() const
+		{
+			return {type, subtype};
+		}
+
+		bool match(Type type, uint8_t subType) const
+		{
+			return (type == Type::any || type == this->type) && (subType == SubType::any || subType == this->subtype);
+		}
+
+		virtual const Disk::DiskPart* diskpart() const
+		{
+			return nullptr;
+		}
+
+		size_t printTo(Print& p) const override;
 	};
 
 	Partition()
@@ -209,9 +277,10 @@ public:
 	 * @param size Size of data to be read, in bytes.
 	 * @retval bool true on success, false on error
 	 */
-	bool read(size_t offset, void* dst, size_t size);
+	bool read(storage_size_t offset, void* dst, size_t size);
 
-	template <typename T> typename std::enable_if<std::is_pod<T>::value, bool>::type read(size_t offset, T& value)
+	template <typename T>
+	typename std::enable_if<std::is_pod<T>::value, bool>::type read(storage_size_t offset, T& value)
 	{
 		return read(offset, &value, sizeof(value));
 	}
@@ -224,7 +293,7 @@ public:
 	 * @retval bool true on success, false on error
 	 * @note Flash region must be erased first
 	 */
-	bool write(size_t offset, const void* src, size_t size);
+	bool write(storage_size_t offset, const void* src, size_t size);
 
 	/**
 	 * @brief Erase part of the partition
@@ -233,7 +302,7 @@ public:
 	 * @retval bool true on success, false on error
 	 * @note Both offset and size must be aligned to flash sector size (4Kbytes)
 	 */
-	bool erase_range(size_t offset, size_t size);
+	bool erase_range(storage_size_t offset, storage_size_t size);
 
 	/**
 	 * @brief Obtain partition type
@@ -252,28 +321,36 @@ public:
 	}
 
 	/**
-	 * @brief Obtain partition starting address
-	 * @param uint32_t Device address
+	 * @brief Obtain both type and subtype
 	 */
-	uint32_t address() const
+	FullType fullType() const
+	{
+		return mPart ? mPart->fullType() : FullType{};
+	}
+
+	/**
+	 * @brief Obtain partition starting address
+	 * @retval storage_size_t Device address
+	 */
+	storage_size_t address() const
 	{
 		return (mPart && mPart->type != Partition::Type::storage) ? mPart->offset : 0;
 	}
 
 	/**
 	 * @brief Obtain address of last byte in this this partition
-	 * @param uint32_t Device address
+	 * @retval storage_size_t Device address
 	 */
-	uint32_t lastAddress() const
+	storage_size_t lastAddress() const
 	{
 		return mPart ? (mPart->offset + mPart->size - 1) : 0;
 	}
 
 	/**
 	 * @brief Obtain partition size
-	 * @retval size_t Size in bytes
+	 * @retval storage_size_t Size in bytes
 	 */
-	size_t size() const
+	storage_size_t size() const
 	{
 		return mPart ? mPart->size : 0;
 	}
@@ -325,7 +402,7 @@ public:
 	 * @retval bool true on success, false on failure
 	 * Fails if the given offset/size combination is out of range, or the partition is undefined.
 	 */
-	bool getDeviceAddress(uint32_t& address, size_t size) const;
+	bool getDeviceAddress(storage_size_t& address, storage_size_t size) const;
 
 	/**
 	 * @brief Get name of storage device for this partition
@@ -334,25 +411,16 @@ public:
 	String getDeviceName() const;
 
 	/**
-	 * @brief Get storage device containing this partition
-	 * @retval Device* null if device isn't registered
-	 */
-	Device* getDevice() const
-	{
-		return mDevice;
-	}
-
-	/**
 	 * @brief Determine if given address contained within this partition
 	 */
-	bool contains(uint32_t addr) const
+	bool contains(storage_size_t addr) const
 	{
 		return mPart ? (addr >= mPart->offset && addr <= lastAddress()) : false;
 	}
 
 	bool operator==(const Partition& other) const
 	{
-		return this == &other;
+		return mDevice == other.mDevice && mPart == other.mPart;
 	}
 
 	bool operator==(const char* name) const
@@ -365,10 +433,45 @@ public:
 		return mPart ? mPart->name.equals(name) : false;
 	}
 
+	template <typename T> bool operator!=(const T& other) const
+	{
+		return !operator==(other);
+	}
+
 	/**
 	 * @brief Obtain smallest allocation unit for erase operations
 	 */
 	size_t getBlockSize() const;
+
+	/**
+	 * @brief Get sector size for block-addressable devices
+	 * @see See `Storage::Device::getSectorSize`
+	 */
+	uint16_t getSectorSize() const;
+
+	/**
+	 * @brief Obtain total number of sectors in this partition
+	 */
+	storage_size_t getSectorCount() const
+	{
+		return size() / getSectorSize();
+	}
+
+	/**
+	 * @brief Flush any pending writes to the physical media
+	 * @see See `Storage::Device::sync`
+	 */
+	bool sync();
+
+	/**
+	 * @brief If this is a disk partition, return pointer to the additional information
+	 */
+	const Disk::DiskPart* diskpart() const
+	{
+		return mPart ? mPart->diskpart() : nullptr;
+	}
+
+	size_t printTo(Print& p) const;
 
 protected:
 	Device* mDevice{nullptr};

@@ -18,17 +18,12 @@ OneShotFastMs connectTimer;
 void printHeap()
 {
 	Serial.println(_F("Heap statistics"));
-	Serial.print(_F("  Free bytes:  "));
-	Serial.println(system_get_free_heap_size());
+	Serial << _F("  Free bytes:  ") << system_get_free_heap_size() << endl;
 #ifdef ENABLE_MALLOC_COUNT
-	Serial.print(_F("  Used:        "));
-	Serial.println(MallocCount::getCurrent());
-	Serial.print(_F("  Peak used:   "));
-	Serial.println(MallocCount::getPeak());
-	Serial.print(_F("  Allocations: "));
-	Serial.println(MallocCount::getAllocCount());
-	Serial.print(_F("  Total used:  "));
-	Serial.println(MallocCount::getTotal());
+	Serial << _F("  Used:        ") << MallocCount::getCurrent() << endl;
+	Serial << _F("  Peak used:   ") << MallocCount::getPeak() << endl;
+	Serial << _F("  Allocations: ") << MallocCount::getAllocCount() << endl;
+	Serial << _F("  Total used:  ") << MallocCount::getTotal() << endl;
 #endif
 }
 
@@ -36,20 +31,13 @@ int onDownload(HttpConnection& connection, bool success)
 {
 	auto elapsed = connectTimer.elapsedTime();
 
-	Serial.print(_F("Got response code: "));
 	auto status = connection.getResponse()->code;
-	Serial.print(unsigned(status));
-	Serial.print(" (");
-	Serial.print(toString(status));
-	Serial.print(_F("), success: "));
-	Serial.print(success);
+	Serial << _F("Got response code: ") << unsigned(status) << " (" << status << _F("), success: ") << success;
 
 	auto stream = connection.getResponse()->stream;
 	assert(stream != nullptr);
 
-	Serial.print(_F(", received "));
-	Serial.print(stream->available());
-	Serial.println(_F(" bytes"));
+	Serial << _F(", received ") << stream->available() << _F(" bytes") << endl;
 
 	auto& headers = connection.getResponse()->headers;
 	for(unsigned i = 0; i < headers.count(); ++i) {
@@ -58,11 +46,10 @@ int onDownload(HttpConnection& connection, bool success)
 
 	auto ssl = connection.getSsl();
 	if(ssl != nullptr) {
-		ssl->printTo(Serial);
+		Serial.print(*ssl);
 	}
 
-	Serial.print(_F("Time to connect and download page: "));
-	Serial.println(elapsed.toString());
+	Serial << _F("Time to connect and download page: ") << elapsed.toString() << endl;
 
 	return 0; // return 0 on success in your callbacks
 }
@@ -76,13 +63,13 @@ void grcSslInit(Ssl::Session& session, HttpRequest& request)
 
 	// Use the Gibson Research fingerprints web page as an example. Unlike Google, these fingerprints change very infrequently.
 	static const Ssl::Fingerprint::Cert::Sha1 sha1Fingerprint PROGMEM = {
-		0x7A, 0x85, 0x1C, 0xF0, 0xF6, 0x9F, 0xD0, 0xCC, 0xEA, 0xEA,
-		0x9A, 0x88, 0x01, 0x96, 0xBF, 0x79, 0x8C, 0xE1, 0xA8, 0x33,
+		0xC3, 0xFB, 0x91, 0x85, 0xCC, 0x6B, 0x4C, 0x7D, 0xE7, 0x18,
+		0xED, 0xD8, 0x00, 0xD2, 0x84, 0xE7, 0x6E, 0x97, 0x06, 0x07,
 	};
 
 	static const Ssl::Fingerprint::Cert::Sha256 certSha256Fingerprint PROGMEM = {
-		0xEC, 0xB2, 0x21, 0x7E, 0x43, 0xCC, 0x83, 0xE5, 0x5B, 0x35, 0x7F, 0x1A, 0xC2, 0x06, 0xE8, 0xBF,
-		0xB1, 0x5F, 0x5B, 0xC8, 0x13, 0x9F, 0x93, 0x37, 0x3C, 0xF4, 0x8E, 0x82, 0xEC, 0x81, 0x28, 0xDF,
+		0xC3, 0xFB, 0x91, 0x85, 0xCC, 0x6B, 0x4C, 0x7D, 0xE7, 0x18,
+		0xED, 0xD8, 0x00, 0xD2, 0x84, 0xE7, 0x6E, 0x97, 0x06, 0x07,
 	};
 
 	static const Ssl::Fingerprint::Pki::Sha256 publicKeyFingerprint PROGMEM = {

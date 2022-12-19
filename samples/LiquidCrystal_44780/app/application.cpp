@@ -16,7 +16,7 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
-	Serial.println("Initializing lcd via I2C (IIC/TWI) interface");
+	Serial.println(_F("Initializing lcd via I2C (IIC/TWI) interface"));
 
 	lcd.begin(16, 2); // initialize the lcd for 16 chars 2 lines, turn on backlight
 
@@ -32,7 +32,7 @@ void init()
 	//-------- Write characters on the display ------------------
 	// NOTE: Cursor Position: (CHAR, LINE) start at 0
 	lcd.setCursor(0, 0);
-	lcd.print("SMING: Let's do");
+	lcd.print(_F("SMING: Let's do"));
 	lcd.setCursor(0, 1);
-	lcd.print("smart things!");
+	lcd.print(_F("smart things!"));
 }

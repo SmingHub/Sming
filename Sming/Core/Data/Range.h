@@ -8,6 +8,8 @@
  *
  ****/
 
+#pragma once
+
 #include <WString.h>
 #include <esp_systemapi.h>
 
@@ -80,7 +82,7 @@ template <typename T> struct TRange {
 	/**
 	 * @brief Determine if range contains a value
 	 */
-	bool contains(T value)
+	bool contains(T value) const
 	{
 		return (value >= min) && (value <= max);
 	}
@@ -88,7 +90,7 @@ template <typename T> struct TRange {
 	/**
 	 * @brief Clip values to within the range
 	 */
-	T clip(T value)
+	T clip(T value) const
 	{
 		return (value < min) ? min : (value > max) ? max : value;
 	}
@@ -98,8 +100,12 @@ template <typename T> struct TRange {
 	 */
 	T random() const
 	{
+		auto n = 1 + max - min;
+		if(n == 0) {
+			return 0;
+		}
 		auto value = os_random();
-		return min + value % (max - min);
+		return min + value % n;
 	}
 
 	Iterator begin() const
@@ -119,6 +125,11 @@ template <typename T> struct TRange {
 		s += ", ";
 		s += max;
 		return s;
+	}
+
+	operator String() const
+	{
+		return toString();
 	}
 };
 

@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * Device.h - external storage device API
+ * Device.cpp
  *
  ****/
 
@@ -12,6 +12,7 @@
 #include "include/Storage/Device.h"
 #include "include/Storage/partition_info.h"
 #include <FlashString/Vector.hpp>
+#include <Print.h>
 #include <debug_progmem.h>
 
 namespace
@@ -88,8 +89,8 @@ bool Device::loadPartitions(Device& source, uint32_t tableOffset)
 					toString(Device::Type(entry->subtype)).c_str(), toString(getType()).c_str());
 		}
 		if(entry->size != getSize()) {
-			debug_w("[Device] '%s' size mismatch, 0x%08x in partition table but device reports 0x%08x",
-					getName().c_str(), entry->size, getSize());
+			debug_w("[Device] '%s' size mismatch, 0x%08x in partition table but device reports 0x%08llx",
+					getName().c_str(), entry->size, uint64_t(getSize()));
 		}
 
 		// Skip the storage entry, not required
@@ -107,6 +108,17 @@ bool Device::loadPartitions(Device& source, uint32_t tableOffset)
 
 	// No partitions found
 	return false;
+}
+
+size_t Device::printTo(Print& p) const
+{
+	size_t n{0};
+	n += p.print(getName());
+	n += p.print(_F(": type "));
+	n += p.print(getType());
+	n += p.print(_F(", size 0x"));
+	n += p.print(getSize(), HEX);
+	return n;
 }
 
 } // namespace Storage

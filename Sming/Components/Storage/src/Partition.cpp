@@ -4,13 +4,14 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * Partition.cpp - Partition support for all architectures
+ * Partition.cpp
  *
  ****/
 
 #include "include/Storage/Partition.h"
 #include "include/Storage/Device.h"
 #include <FlashString/Map.hpp>
+#include <Print.h>
 #include <debug_progmem.h>
 
 using namespace Storage;
@@ -122,6 +123,11 @@ String toLongString(Partition::Type type, uint8_t subType)
 
 namespace Storage
 {
+Partition::FullType::operator String() const
+{
+	return toString(type, subtype);
+}
+
 String Partition::typeString() const
 {
 	return toString(type(), subType());
@@ -152,7 +158,7 @@ bool Partition::verify(Partition::Type type, uint8_t subtype) const
 	return true;
 }
 
-bool Partition::getDeviceAddress(uint32_t& address, size_t size) const
+bool Partition::getDeviceAddress(storage_size_t& address, storage_size_t size) const
 {
 	if(mDevice == nullptr || mPart == nullptr) {
 		debug_e("[Partition] Invalid");
@@ -160,7 +166,7 @@ bool Partition::getDeviceAddress(uint32_t& address, size_t size) const
 	}
 
 	if(address >= mPart->size || (address + size - 1) >= mPart->size) {
-		debug_e("[Partition] Invalid range, address: 0x%08x, size: 0x%08x", address, size);
+		debug_e("[Partition] Invalid range, address: 0x%08llx, size: 0x%08llx", uint64_t(address), uint64_t(size));
 		return false;
 	}
 
@@ -206,46 +212,82 @@ bool Partition::allowWrite()
 	return true;
 }
 
-bool Partition::read(size_t offset, void* dst, size_t size)
+bool Partition::read(storage_size_t offset, void* dst, size_t size)
 {
 	if(!allowRead()) {
 		return false;
 	}
 
-	uint32_t addr = offset;
+	auto addr = offset;
 	if(!getDeviceAddress(addr, size)) {
 		return false;
 	}
 
-	return mDevice ? mDevice->read(addr, dst, size) : false;
+	return mDevice->read(addr, dst, size);
 }
 
-bool Partition::write(size_t offset, const void* src, size_t size)
+bool Partition::write(storage_size_t offset, const void* src, size_t size)
 {
 	if(!allowWrite()) {
 		return false;
 	}
 
-	uint32_t addr = offset;
+	auto addr = offset;
 	if(!getDeviceAddress(addr, size)) {
 		return false;
 	}
 
-	return mDevice ? mDevice->write(addr, src, size) : false;
+	return mDevice->write(addr, src, size);
 }
 
-bool Partition::erase_range(size_t offset, size_t size)
+bool Partition::erase_range(storage_size_t offset, storage_size_t size)
 {
 	if(!allowWrite()) {
 		return false;
 	}
 
-	uint32_t addr = offset;
+	auto addr = offset;
 	if(!getDeviceAddress(addr, size)) {
 		return false;
 	}
 
-	return mDevice ? mDevice->erase_range(addr, size) : false;
+	return mDevice->erase_range(addr, size);
+}
+
+uint16_t Partition::getSectorSize() const
+{
+	return mDevice ? mDevice->getSectorSize() : Device::defaultSectorSize;
+}
+
+bool Partition::sync()
+{
+	return mDevice ? mDevice->sync() : false;
+}
+
+size_t Partition::Info::printTo(Print& p) const
+{
+	size_t n{0};
+	n += p.print(name.length() == 0 ? _F("(NO NAME)") : name.c_str());
+	n += p.print(", ");
+	n += p.print(fullType());
+	n += p.print(" @ 0x");
+	n += p.print(offset, HEX);
+	n += p.print(_F(", size 0x"));
+	n += p.print(size, HEX);
+	return n;
+}
+
+size_t Partition::printTo(Print& p) const
+{
+	if(*this) {
+		size_t n{0};
+		n += p.print(getDeviceName());
+		n += p.print('/');
+		n += p.print(*mPart);
+		return n;
+	}
+
+	return p.print(_F("(none)"));
 }
 
 } // namespace Storage

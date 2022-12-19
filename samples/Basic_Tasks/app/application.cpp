@@ -43,17 +43,9 @@ void hwTimerDelegate(uint32_t count)
 	static ElapseTimer timer;
 	auto elapsed = timer.elapsedTime();
 
-	Serial.print(F("count = "));
-	Serial.print(count);
-	Serial.print(F(", hwTimerCount = "));
-	Serial.print(hwTimerCount);
-	Serial.print(F(", av. interval = "));
-	Serial.print(diff ? (elapsed / diff) : 0);
-	Serial.print(F(", maxTasks = "));
-	Serial.print(System.getMaxTaskCount());
-	Serial.print(F(", CPU usage = "));
-	Serial.print(cpuUsage.getUtilisation() / 100.0);
-	Serial.println(F("%%"));
+	Serial << _F("count = ") << count << _F(", hwTimerCount = ") << hwTimerCount << _F(", av. interval = ")
+		   << (diff ? (elapsed / diff) : 0) << _F(", maxTasks = ") << System.getMaxTaskCount() << _F(", CPU usage = ")
+		   << cpuUsage.getUtilisation() / 100.0 << '%' << endl;
 
 	cpuUsage.reset();
 
@@ -87,12 +79,7 @@ void onReady()
 		WifiStation.enable(true);
 		WifiAccessPoint.enable(false);
 		WifiEvents.onStationGotIP([](IpAddress ip, IpAddress netmask, IpAddress gateway) {
-			Serial.print(F("GOTIP - IP: "));
-			Serial.print(ip);
-			Serial.print(F(", mask: "));
-			Serial.print(netmask);
-			Serial.print(F(", gateway: "));
-			Serial.println(gateway);
+			Serial << _F("GOTIP - IP: ") << ip << _F(", mask: ") << netmask << _F(", gateway: ") << gateway << endl;
 		});
 
 #endif

@@ -189,7 +189,7 @@ To customise the hardware configuration for a project, for example 'my_project':
 
    To rebuild these manually type::
 
-      make partbuild
+      make buildpart
 
    These will be removed when ``make clean`` is run, but you can also clean them separately thus::
 
@@ -304,6 +304,20 @@ Configuration
    Set this to adjust the hardware profile using option fragments. See :ref:`hwconfig_options`.
 
 
+.. envvar:: ENABLE_STORAGE_SIZE64
+
+   Build with ``ENABLE_STORAGE_SIZE64=1`` to enable support for storage devices of more than 4GB capacity.
+
+   Device and partition addresses and sizes use the :cpp:type:`storage_size_t` type, which by default is ``uint32_t``.
+   Setting this value changes it to ``uint64_t``.
+
+   When enabling this setting, care must be taken in code especially with ``printf`` style format strings such
+   as in debug statements. The safest way to handle both cases is like this::
+
+      debug_i("Partition size: %llu", uint64_t(part.size()));
+
+
+
 Binary partition table
 ----------------------
 
@@ -332,20 +346,19 @@ This is a C++ interface. Some examples::
 
    Storage::Partition part = Storage::findPartition("spiffs0"); // Find by name
    if(part) {
-     debugf("Partition '%s' found", part.name().c_str());
+     Serial << part << endl;
    } else {
-     debugf("Partition NOT found");
+     Serial << "spiffs0 partition NOT Found" << endl;
    }
 
    // Enumerate all partitions
-   for(auto it = Storage::findPartition(); it; ++it) {
-      auto part = *it;
-      debugf("Found '%s' at 0x%08x, size 0x%08x", part.name().c_str(), part.address(), part.size());
+   for(auto part: Storage::findPartition()) {
+     Serial << part << endl;
    }
 
    // Enumerate all SPIFFS partitions
-   for(auto it = Storage::findPartition(Partition::SubType::Data::spiffs; it; it++) {
-      debugf("Found '%s' at 0x%08x, size 0x%08x", it->name().c_str(), it->address(), it->size());
+   for(auto part: Storage::findPartition(Storage::Partition::SubType::Data::spiffs)) {
+     Serial << part << endl;
    }
 
 
@@ -362,7 +375,7 @@ You can query partition entries from a Storage object directly, for example::
    #include <Storage/SpiFlash.h>
 
    for(auto part: Storage::spiFlash->partitions()) {
-      debugf("Found '%s' at 0x%08x, size 0x%08x", part.name().c_str(), part.address(), part.size());
+     Serial << part << endl;
    }
 
 
@@ -378,6 +391,9 @@ you can take advantage of the partition API to manage them as follows:
    which device these entries relate to.
 -  Create an instance of your custom device and make a call to :cpp:func:`Storage::registerDevice`
    in your ``init()`` function (or elsewhere if more appropriate).
+
+
+See :library:`DiskStorage` for how devices such as SD flash cards are managed.
 
 
 API

@@ -60,7 +60,7 @@ public:
 	}
 
 	/** @brief  Handle <i>system ready</i> events
-    */
+	 */
 	virtual void onSystemReady() = 0;
 };
 
@@ -112,8 +112,8 @@ public:
 	static bool initialize();
 
 	/** @brief  Check if system ready
-     *  @retval bool True if system initialisation is complete and system is now ready
-     */
+	 *  @retval bool True if system initialisation is complete and system is now ready
+	 */
 	bool isReady()
 	{
 		return state == eSS_Ready;
@@ -124,45 +124,56 @@ public:
 	 *  @note A delay is often required to allow network callback code to complete correctly.
 	 *  The restart is always deferred, either using the task queue (if deferMillis == 0)
 	 *  or using a timer. This method always returns immediately.
-     */
+	 */
 	void restart(unsigned deferMillis = 0);
 
 	/** @brief  Set the CPU frequency
-     *  @param  freq Frequency to set CPU
+	 *  @param  freq Frequency to set CPU
 	 *  @retval bool true on success
-     */
+	 */
 	bool setCpuFrequency(CpuFrequency freq)
 	{
 		return system_update_cpu_freq(freq);
 	}
 
 	/** @brief  Get the CPU frequency
-     *  @retval CpuFrequency The frequency of the CPU
-     */
+	 *  @retval CpuFrequency The frequency of the CPU
+	 */
 	CpuFrequency getCpuFrequency()
 	{
 		return static_cast<CpuFrequency>(system_get_cpu_freq());
 	}
 
-	/** @brief  Enter deep sleep mode
-     *  @param  timeMilliseconds Quantity of milliseconds to remain in deep sleep mode
-     *  @param  options Deep sleep options
-     */
+	/** @brief  Enter deep sleep mode.
+	 *  Deep sleep turns off processor and keeps only the RTC memory active.
+	 *  @param  timeMilliseconds Quantity of milliseconds to remain in deep sleep mode
+	 *  @param  options Deep sleep options
+	 *
+	 *  @note Determine reset cause like this:
+	 *
+	 * 		auto info = system_get_rst_info();
+	 *  	if(info->reason == REASON_DEEP_SLEEP_AWAKE) {
+	 *    		// ...
+	 *  	}
+	 *
+	 * 	@note ESP8266: Ensure GPIO 16 (XPD_DCDC) is connected to RST (EXT_RSTB).
+	 *  and call pinMode(16, WAKEUP_PULLUP) to enable wakeup from deep sleep.
+	 */
 	bool deepSleep(uint32_t timeMilliseconds, DeepSleepOptions options = eDSO_RF_CAL_BY_INIT_DATA);
 
 	/** @brief  Set handler for <i>system ready</i> event
-     *  @param  readyHandler Function to handle event
-     *  @note if system is ready, callback is executed immediately without deferral
-     */
+	 *  @param  readyHandler Function to handle event
+	 *  @note if system is ready, callback is executed immediately without deferral
+	 */
 	void onReady(SystemReadyDelegate readyHandler)
 	{
 		queueCallback(readyHandler);
 	}
 
 	/** @brief  Set handler for <i>system ready</i> event
-     *  @param  readyHandler Function to handle event
-     *  @note if system is ready, callback is executed immediately without deferral
-     */
+	 *  @param  readyHandler Function to handle event
+	 *  @note if system is ready, callback is executed immediately without deferral
+	 */
 	void onReady(ISystemReadyHandler* readyHandler)
 	{
 		if(readyHandler != nullptr) {

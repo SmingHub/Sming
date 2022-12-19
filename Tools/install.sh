@@ -17,6 +17,7 @@ err=0
 FONT_PACKAGES="fonts-ubuntu fonts-noto-mono xfonts-base fonts-urw-base35 fonts-droid-fallback"
 
 for opt in "$@"; do
+    opt=$(echo "$opt" | tr '[:upper:]' '[:lower:]')
     case $opt in
         all)
             inst_host=1
@@ -76,10 +77,10 @@ DOWNLOADS="downloads"
 mkdir -p $DOWNLOADS
 
 # Identify package installer for distribution
-if [ -n "$(grep debian /etc/os-release)" ]; then
+if [ -n "$(command -v apt)" ]; then
     DIST=debian
     PKG_INSTALL="sudo apt-get install -y"
-elif [ -n "$(grep fedora /etc/os-release)" ]; then
+elif [ -n "$(command -v dnf)" ]; then
     DIST=fedora
     PKG_INSTALL="sudo dnf install -y"
 else
@@ -100,6 +101,9 @@ if [ -n "$APPVEYOR" ] || [ -n "$GITHUB_ACTION" ]; then
         clang-format-8 \
         g++-9-multilib \
         python3-setuptools \
+        ninja-build \
+        exfat-fuse \
+        exfat-utils \
         $EXTRA_PACKAGES
 
     sudo update-alternatives --set gcc /usr/bin/gcc-9
@@ -190,7 +194,7 @@ if [ $inst_rp2040 -eq 1 ]; then
 fi
 
 if [ -z "$KEEP_DOWNLOADS" ]; then
-    rm -f "$DOWNLOADS/*"
+    rm -rf "$DOWNLOADS/*"
 fi
 
 

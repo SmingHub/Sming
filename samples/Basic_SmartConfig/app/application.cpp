@@ -29,8 +29,7 @@ bool smartConfigCallback(SmartConfigEvent event, const SmartConfigEventInfo& inf
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	Serial.print("Connected: ");
-	Serial.println(ip);
+	Serial << "Connected: " << ip << endl;
 }
 
 void init()

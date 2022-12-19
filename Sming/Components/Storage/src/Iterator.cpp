@@ -13,55 +13,28 @@
 
 namespace Storage
 {
-Iterator::Iterator(Device& device, uint8_t partitionIndex)
-	: mSearch{&device, Partition::Type::any, Partition::SubType::any}, mDevice(&device), mPos(partitionIndex)
-
+Iterator::Iterator(Partition::Type type, uint8_t subtype) : mSearch{nullptr, type, subtype}, mDevice(spiFlash)
 {
-	if(partitionIndex >= device.partitions().count()) {
-		mDevice = nullptr;
-		mPos = afterEnd;
-	}
-}
-
-Iterator::Iterator(Partition::Type type, uint8_t subtype) : mSearch{nullptr, type, subtype}
-{
-	mDevice = spiFlash;
 	next();
 }
 
-bool Iterator::next()
+void Iterator::next()
 {
 	while(mDevice != nullptr) {
-		while(uint8_t(++mPos) < mDevice->partitions().count()) {
-			auto entry = mDevice->partitions()[mPos];
-
-			if(mSearch.type != Partition::Type::any && mSearch.type != entry.type()) {
-				continue;
+		mInfo = mInfo ? mInfo->getNext() : mDevice->partitions().mEntries.head();
+		if(mInfo == nullptr) {
+			if(mSearch.device != nullptr) {
+				break;
 			}
-
-			if(mSearch.subType != Partition::SubType::any && mSearch.subType != entry.subType()) {
-				continue;
-			}
-
-			return true;
+			mDevice = mDevice->getNext();
+			mInfo = nullptr;
+			continue;
 		}
 
-		mPos = afterEnd;
-		if(mSearch.device != nullptr) {
-			mDevice = nullptr;
+		if(mInfo->match(mSearch.type, mSearch.subType)) {
 			break;
 		}
-
-		mDevice = mDevice->getNext();
-		mPos = beforeStart;
 	}
-
-	return false;
-}
-
-Partition Iterator::operator*() const
-{
-	return mDevice ? mDevice->partitions()[mPos] : Partition{};
 }
 
 } // namespace Storage

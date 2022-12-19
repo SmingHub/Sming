@@ -13,9 +13,8 @@ Timer procTimer;
 
 void capsense()
 {
-	long total = cs_0_2.capacitiveSensor(30); //Read sensor with 30 samples
-	Serial.print("Sense Value: ");
-	Serial.println(total); // print sensor output
+	long total = cs_0_2.capacitiveSensor(30);		//Read sensor with 30 samples
+	Serial << _F("Sense Value: ") << total << endl; // print sensor output
 }
 
 void init()

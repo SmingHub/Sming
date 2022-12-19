@@ -25,9 +25,6 @@ using CommandFunctionDelegate = Delegate<void(String commandLine, CommandOutput*
 /** @brief  Command delegate class */
 class CommandDelegate
 {
-	// Hashmap uses CommandDelegate() constructor when extending size
-	friend class HashMap<String, CommandDelegate>;
-
 public:
 	/** Instantiate a command delegate
 	*  @param  reqName Command name - the text a user types to invoke the command
@@ -35,16 +32,19 @@ public:
 	*  @param  reqGroup The command group to which this command belongs
 	*  @param  reqFunction Delegate that should be invoked (triggered) when the command is entered by a user
 	*/
-	CommandDelegate(String reqName, String reqHelp, String reqGroup, CommandFunctionDelegate reqFunction);
-	~CommandDelegate();
+	CommandDelegate(String reqName, String reqHelp, String reqGroup, CommandFunctionDelegate reqFunction)
+		: commandName(reqName), commandHelp(reqHelp), commandGroup(reqGroup), commandFunction(reqFunction)
+	{
+	}
+
+	CommandDelegate()
+	{
+	}
 
 	String commandName;						 ///< Command name
 	String commandHelp;						 ///< Command help
 	String commandGroup;					 ///< Command group
 	CommandFunctionDelegate commandFunction; ///< Command Delegate (function that is called when command is invoked)
-
-private:
-	CommandDelegate();
 };
 
 /** @} */

@@ -134,12 +134,18 @@ int FileSystem::mount()
 		return Error::BadPartition;
 	}
 
+	auto partSize = partition.size();
+	if(partSize > MAX_PARTITION_SIZE) {
+		debug_e("[SPIFFS] Partition too large");
+		return Error::BadPartition;
+	}
+
 	fs.user_data = this;
 	spiffs_config cfg{
 		.hal_read_f = f_read,
 		.hal_write_f = f_write,
 		.hal_erase_f = f_erase,
-		.phys_size = partition.size(),
+		.phys_size = uint32_t(partSize),
 		.phys_addr = 0,
 		.phys_erase_block = partition.getBlockSize(),
 		.log_block_size = logicalBlockSize,
@@ -173,7 +179,7 @@ int FileSystem::tryMount(spiffs_config& cfg)
 							nullptr);
 	if(err < 0) {
 		if(isSpiffsError(err)) {
-			err = Error::fromSystem(err);
+			err = translateSpiffsError(err);
 		}
 		debug_ifserr(err, "SPIFFS_mount()");
 	}
@@ -191,7 +197,7 @@ int FileSystem::format()
 	SPIFFS_unmount(handle());
 	int err = SPIFFS_format(handle());
 	if(err < 0) {
-		err = Error::fromSystem(err);
+		err = translateSpiffsError(err);
 		debug_ifserr(err, "format()");
 		return err;
 	}
@@ -209,7 +215,7 @@ int FileSystem::check()
 	};
 
 	int err = SPIFFS_check(handle());
-	return Error::fromSystem(err);
+	return translateSpiffsError(err);
 }
 
 int FileSystem::getinfo(Info& info)
@@ -273,7 +279,7 @@ FileHandle FileSystem::open(const char* path, OpenFlags flags)
 
 	auto file = SPIFFS_open(handle(), path, sflags, 0);
 	if(file < 0) {
-		int err = Error::fromSystem(file);
+		int err = translateSpiffsError(file);
 		debug_ifserr(err, "open('%s')", path);
 		return err;
 	}
@@ -292,7 +298,7 @@ FileHandle FileSystem::open(const char* path, OpenFlags flags)
 		int err = SPIFFS_ftruncate(handle(), file, 0);
 		if(err < 0) {
 			SPIFFS_close(handle(), file);
-			return Error::fromSystem(err);
+			return translateSpiffsError(err);
 		}
 
 		// Update modification timestamp
@@ -307,33 +313,34 @@ int FileSystem::close(FileHandle file)
 	CHECK_MOUNTED()
 
 	if(file < 0) {
-		return Error::FileNotOpen;
+		return Error::InvalidHandle;
 	}
 
 	int res = flushMeta(file);
 	int err = SPIFFS_close(handle(), file);
 	if(err < 0) {
-		res = Error::fromSystem(err);
+		res = translateSpiffsError(err);
 	}
+	partition.sync();
 	return res;
 }
 
 int FileSystem::eof(FileHandle file)
 {
 	int res = SPIFFS_eof(handle(), file);
-	return Error::fromSystem(res);
+	return translateSpiffsError(res);
 }
 
-int32_t FileSystem::tell(FileHandle file)
+file_offset_t FileSystem::tell(FileHandle file)
 {
 	int res = SPIFFS_tell(handle(), file);
-	return Error::fromSystem(res);
+	return translateSpiffsError(res);
 }
 
-int FileSystem::ftruncate(FileHandle file, size_t new_size)
+int FileSystem::ftruncate(FileHandle file, file_size_t new_size)
 {
 	int res = SPIFFS_ftruncate(handle(), file, new_size);
-	return Error::fromSystem(res);
+	return translateSpiffsError(res);
 }
 
 int FileSystem::flush(FileHandle file)
@@ -343,8 +350,9 @@ int FileSystem::flush(FileHandle file)
 	int res = flushMeta(file);
 	int err = SPIFFS_fflush(handle(), file);
 	if(err < 0) {
-		res = Error::fromSystem(err);
+		res = translateSpiffsError(err);
 	}
+	partition.sync();
 	return res;
 }
 
@@ -352,7 +360,7 @@ int FileSystem::read(FileHandle file, void* data, size_t size)
 {
 	int res = SPIFFS_read(handle(), file, data, size);
 	if(res < 0) {
-		int err = Error::fromSystem(res);
+		int err = translateSpiffsError(res);
 		debug_ifserr(err, "read()");
 		return err;
 	}
@@ -365,18 +373,18 @@ int FileSystem::write(FileHandle file, const void* data, size_t size)
 {
 	int res = SPIFFS_write(handle(), file, const_cast<void*>(data), size);
 	if(res < 0) {
-		return Error::fromSystem(res);
+		return translateSpiffsError(res);
 	}
 
 	touch(file);
 	return res;
 }
 
-int FileSystem::lseek(FileHandle file, int offset, SeekOrigin origin)
+file_offset_t FileSystem::lseek(FileHandle file, file_offset_t offset, SeekOrigin origin)
 {
 	int res = SPIFFS_lseek(handle(), file, offset, int(origin));
 	if(res < 0) {
-		int err = Error::fromSystem(res);
+		int err = translateSpiffsError(res);
 		debug_ifserr(err, "lseek()");
 		return err;
 	}
@@ -433,7 +441,7 @@ int FileSystem::flushMeta(FileHandle file)
 		smb->flags[SpiffsMetaBuffer::Flag::dirty] = false;
 		int err = SPIFFS_fupdate_meta(handle(), file, smb);
 		if(err < 0) {
-			err = Error::fromSystem(err);
+			err = translateSpiffsError(err);
 			debug_ifserr(err, "fupdate_meta()");
 			return err;
 		}
@@ -458,7 +466,7 @@ int FileSystem::stat(const char* path, Stat* stat)
 	spiffs_stat ss;
 	int err = SPIFFS_stat(handle(), path ?: "", &ss);
 	if(err < 0) {
-		return Error::fromSystem(err);
+		return translateSpiffsError(err);
 	}
 
 	if(stat != nullptr) {
@@ -485,7 +493,7 @@ int FileSystem::fstat(FileHandle file, Stat* stat)
 	spiffs_stat ss;
 	int err = SPIFFS_fstat(handle(), file, &ss);
 	if(err < 0) {
-		return Error::fromSystem(err);
+		return translateSpiffsError(err);
 	}
 
 	auto smb = getMetaBuffer(file);
@@ -551,7 +559,7 @@ int FileSystem::setxattr(const char* path, AttributeTag tag, const void* data, s
 	spiffs_stat ss;
 	int err = SPIFFS_stat(handle(), path ?: "", &ss);
 	if(err < 0) {
-		return Error::fromSystem(err);
+		return translateSpiffsError(err);
 	}
 	SpiffsMetaBuffer smb;
 	smb.assign(ss.meta);
@@ -563,7 +571,8 @@ int FileSystem::setxattr(const char* path, AttributeTag tag, const void* data, s
 		return FS_OK;
 	}
 	err = SPIFFS_update_meta(handle(), path, &smb);
-	return Error::fromSystem(err);
+	partition.sync();
+	return translateSpiffsError(err);
 #else
 	return Error::NotSupported;
 #endif
@@ -576,7 +585,7 @@ int FileSystem::getxattr(const char* path, AttributeTag tag, void* buffer, size_
 	spiffs_stat ss;
 	int err = SPIFFS_stat(handle(), path, &ss);
 	if(err < 0) {
-		return Error::fromSystem(err);
+		return translateSpiffsError(err);
 	}
 	SpiffsMetaBuffer smb;
 	smb.assign(ss.meta);
@@ -606,7 +615,7 @@ int FileSystem::opendir(const char* path, DirHandle& dir)
 
 	if(SPIFFS_opendir(handle(), nullptr, &d->d) == nullptr) {
 		int err = SPIFFS_errno(handle());
-		err = Error::fromSystem(err);
+		err = translateSpiffsError(err);
 		debug_ifserr(err, "opendir");
 		delete d;
 		return err;
@@ -630,7 +639,7 @@ int FileSystem::rewinddir(DirHandle dir)
 	d->directories.setLength(0);
 	if(SPIFFS_opendir(handle(), nullptr, &d->d) == nullptr) {
 		int err = SPIFFS_errno(handle());
-		return Error::fromSystem(err);
+		return translateSpiffsError(err);
 	}
 
 	return FS_OK;
@@ -648,7 +657,7 @@ int FileSystem::readdir(DirHandle dir, Stat& stat)
 				return Error::NoMoreFiles;
 			}
 
-			return Error::fromSystem(err);
+			return translateSpiffsError(err);
 		}
 
 		/* The volume doesn't contain directory objects, so at each level we need
@@ -729,7 +738,7 @@ int FileSystem::closedir(DirHandle dir)
 
 	int err = SPIFFS_closedir(&d->d);
 	delete d;
-	return Error::fromSystem(err);
+	return translateSpiffsError(err);
 }
 
 int FileSystem::mkdir(const char* path)
@@ -745,7 +754,8 @@ int FileSystem::rename(const char* oldpath, const char* newpath)
 	}
 
 	int err = SPIFFS_rename(handle(), oldpath, newpath);
-	return Error::fromSystem(err);
+	partition.sync();
+	return translateSpiffsError(err);
 }
 
 int FileSystem::remove(const char* path)
@@ -767,8 +777,9 @@ int FileSystem::remove(const char* path)
 	}
 
 	int err = SPIFFS_remove(handle(), path);
-	err = Error::fromSystem(err);
+	err = translateSpiffsError(err);
 	debug_ifserr(err, "remove('%s')", path);
+	partition.sync();
 	return err;
 }
 
@@ -786,7 +797,7 @@ int FileSystem::fremove(FileHandle file)
 	}
 
 	int err = SPIFFS_fremove(handle(), file);
-	return Error::fromSystem(err);
+	return translateSpiffsError(err);
 }
 
 int FileSystem::getFilePath(FileID fileid, NameBuffer& buffer)
@@ -805,7 +816,7 @@ int FileSystem::getFilePath(FileID fileid, NameBuffer& buffer)
 		}
 	}
 
-	return Error::fromSystem(err);
+	return translateSpiffsError(err);
 }
 
 } // namespace SPIFFS

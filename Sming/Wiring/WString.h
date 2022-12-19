@@ -191,13 +191,19 @@ public:
 	String(StringSumHelper&& rval) noexcept;
 #endif
 	explicit String(char c);
-	explicit String(unsigned char, unsigned char base = 10);
-	explicit String(int, unsigned char base = 10);
-	explicit String(unsigned int, unsigned char base = 10);
-	explicit String(long, unsigned char base = 10);
-	explicit String(long long, unsigned char base = 10);
-	explicit String(unsigned long, unsigned char base = 10);
-	explicit String(unsigned long long, unsigned char base = 10);
+	explicit String(unsigned char, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	explicit String(int num, unsigned char base = 10, unsigned char width = 0, char pad = '0')
+		: String(long(num), base, width, pad)
+	{
+	}
+	explicit String(unsigned int num, unsigned char base = 10, unsigned char width = 0, char pad = '0')
+		: String((unsigned long)(num), base, width, pad)
+	{
+	}
+	explicit String(long, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	explicit String(long long, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	explicit String(unsigned long, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	explicit String(unsigned long long, unsigned char base = 10, unsigned char width = 0, char pad = '0');
 	explicit String(float, unsigned char decimalPlaces = 2);
 	explicit String(double, unsigned char decimalPlaces = 2);
 	/** @} */
@@ -325,15 +331,29 @@ public:
 	{
 		return concat(&c, 1);
 	}
-	bool concat(unsigned char num);
-	bool concat(int num);
-	bool concat(unsigned int num);
-	bool concat(long num);
-	bool concat(long long num);
-	bool concat(unsigned long num);
-	bool concat(unsigned long long num);
+	bool concat(unsigned char num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	bool concat(int num, unsigned char base = 10, unsigned char width = 0, char pad = '0')
+	{
+		return concat(long(num), base, width, pad);
+	}
+	bool concat(unsigned int num, unsigned char base = 10, unsigned char width = 0, char pad = '0')
+	{
+		return concat((unsigned long)(num), base, width, pad);
+	}
+	bool concat(long num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	bool concat(long long num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	bool concat(unsigned long num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	bool concat(unsigned long long num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
 	bool concat(float num);
 	bool concat(double num);
+
+	template <typename E>
+	constexpr typename std::enable_if<std::is_enum<E>::value && !std::is_convertible<E, int>::value, bool>::type
+	concat(E value)
+	{
+		extern String toString(E);
+		return concat(toString(value));
+	}
 	/** @} */
 
 	/**
@@ -359,55 +379,10 @@ public:
 		concat(cstr);
 		return (*this);
 	}
-	String& operator+=(char c)
+	template <typename T> String& operator+=(T value)
 	{
-		concat(c);
-		return (*this);
-	}
-	String& operator+=(unsigned char num)
-	{
-		concat(num);
-		return (*this);
-	}
-	String& operator+=(int num)
-	{
-		concat(num);
-		return (*this);
-	}
-	String& operator+=(unsigned int num)
-	{
-		concat(num);
-		return (*this);
-	}
-	String& operator+=(long num)
-	{
-		concat(num);
-		return (*this);
-	}
-	String& operator+=(long long num)
-	{
-		concat(num);
-		return (*this);
-	}
-	String& operator+=(unsigned long num)
-	{
-		concat(num);
-		return (*this);
-	}
-	String& operator+=(unsigned long long num)
-	{
-		concat(num);
-		return (*this);
-	}
-	String& operator+=(float num)
-	{
-		concat(num);
-		return (*this);
-	}
-	String& operator+=(double num)
-	{
-		concat(num);
-		return (*this);
+		concat(value);
+		return *this;
 	}
 	/** @} */
 
@@ -793,6 +768,43 @@ public:
 	 * @param Set of characters to remove, defaults to whitespace set
      */
 	void trim(const char* set = " \t\n\v\f\r");
+
+	/**
+	 * @name Pad string to a minimum length
+	 *
+	 * This is used, for example, when outputting tabular data.
+	 * The string is modified in-situ to minimise memory reallocations.
+	 *
+	 * Methods may be chained like this::
+	 *
+	 * 		Serial << String(value).padLeft(10, '.') << endl;
+	 *
+	 * @{
+	 */
+
+	/**
+	 * @brief Insert padding at start of string if length is less than given width
+	 */
+	String& padLeft(uint16_t minWidth, char c = ' ')
+	{
+		return pad(-minWidth, c);
+	}
+
+	/**
+	 * @brief Insert padding at end of string if length is less than given width
+	 */
+	String& padRight(uint16_t minWidth, char c = ' ')
+	{
+		return pad(minWidth, c);
+	}
+
+	/**
+	 * @brief Pad string if length is less than given width
+	 * @param width Left-padded if < 0, right-padded if > 0.
+	 */
+	String& pad(int16_t minWidth, char c = ' ');
+
+	/** @} */
 
 	// parsing/conversion
 	long toInt(void) const;

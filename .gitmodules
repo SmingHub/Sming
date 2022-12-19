@@ -213,10 +213,6 @@
 	path = Sming/Libraries/CS5460/CS5460
 	url = https://github.com/xxzl0130/CS5460.git
 	ignore = dirty
-[submodule "Libraries.DIAL"]
-	path = Sming/Libraries/DIAL
-	url = https://github.com/slaff/Sming-DIAL.git
-	ignore = dirty
 [submodule "Libraries.DFRobotDFPlayerMini"]
 	path = Sming/Libraries/DFRobotDFPlayerMini
 	url = https://github.com/DFRobot/DFRobotDFPlayerMini.git
@@ -224,6 +220,18 @@
 [submodule "Libraries.DHTesp"]
 	path = Sming/Libraries/DHTesp
 	url = https://github.com/beegee-tokyo/DHTesp.git
+	ignore = dirty
+[submodule "Libraries.DIAL"]
+	path = Sming/Libraries/DIAL
+	url = https://github.com/slaff/Sming-DIAL.git
+	ignore = dirty
+[submodule "Libraries.DiskStorage"]
+	path = Sming/Libraries/DiskStorage
+	url = https://github.com/mikee47/DiskStorage
+	ignore = dirty
+[submodule "Libraries.FatIFS"]
+	path = Sming/Libraries/FatIFS
+	url = https://github.com/mikee47/FatIFS
 	ignore = dirty
 [submodule "Libraries.flatbuffers"]
 	path = Sming/Libraries/flatbuffers/src
@@ -313,6 +321,10 @@
 	path = Sming/Libraries/RingTone
 	url = https://github.com/mikee47/RingTone
 	ignore = dirty
+[submodule "Libraries.SdStorage"]
+	path = Sming/Libraries/SdStorage
+	url = https://github.com/mikee47/SdStorage
+	ignore = dirty
 [submodule "Libraries.SignalGenerator"]
 	path = Sming/Libraries/SignalGenerator
 	url = https://github.com/mikee47/SignalGenerator
@@ -377,8 +389,18 @@
 #
 # Esp32 libraries
 #
-
-### NONE ###
+[submodule "Libraries.ESP32-BLE-Gamepad"]
+	path = Sming/Libraries/BLEGamepad/ESP32-BLE-Gamepad
+	url = https://github.com/lemmingDev/ESP32-BLE-Gamepad.git
+	ignore = dirty
+[submodule "Libraries.ESP32-BLE-Keyboard"]
+	path = Sming/Libraries/BLEKeyboard/ESP32-BLE-Keyboard
+	url = https://github.com/T-vK/ESP32-BLE-Keyboard.git
+	ignore = dirty
+[submodule "Libraries.esp-nimble-cpp"]
+	path = Sming/Libraries/NimBLE/esp-nimble-cpp
+	url = https://github.com/h2zero/esp-nimble-cpp.git
+	ignore = dirty
 
 
 #

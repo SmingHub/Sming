@@ -136,7 +136,7 @@ void init()
 	// Настраиваем и включаем вывод в UART для дебага
 	Serial.begin(COM_SPEED_SERIAL);
 	Serial.systemDebugOutput(true);
-	Serial.println("Hello friendly world! :)");
+	Serial.println(_F("Hello friendly world! :)"));
 
 	// Disable AP
 	// Отключаем AP

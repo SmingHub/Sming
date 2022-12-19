@@ -24,7 +24,7 @@ def critical(msg):
 
 def fixpath(path):
     """Paths in Windows can get a little weird """
-    if len(path) > 2 and path[1] != ':' and platform.system() == 'Windows' and path[2] == '/':
+    if path[0] == '/' and platform.system() == 'Windows':
         return path[1] + ':' + path[2:]
     return path
 

@@ -8,11 +8,9 @@ IMPORT_FSTR(FS_app, PROJECT_DIR "/app/application.cpp")
 void listSpiffsPartitions()
 {
 	Serial.println(_F("** Enumerate registered SPIFFS partitions"));
-	for(auto it = Storage::findPartition(Storage::Partition::SubType::Data::spiffs); it; ++it) {
-		Serial.print(F(">> Mounting '"));
-		Serial.print((*it).name());
-		Serial.println("' ...");
-		bool ok = spiffs_mount(*it);
+	for(auto part : Storage::findPartition(Storage::Partition::SubType::Data::spiffs)) {
+		Serial << _F(">> Mounting '") << part.name() << "' ..." << endl;
+		bool ok = spiffs_mount(part);
 		Serial.println(ok ? "OK, listing files:" : "Mount failed!");
 		if(ok) {
 			Directory dir;
@@ -22,29 +20,27 @@ void listSpiffsPartitions()
 					Serial.println(dir.stat().name);
 				}
 			}
-			Serial.print(dir.count());
-			Serial.println(F(" files found"));
-			Serial.println();
+			Serial << dir.count() << _F(" files found") << endl << endl;
 		}
 	}
 }
 
 void printPart(Storage::Partition part)
 {
-	size_t bufSize = std::min(4096U, part.size());
+	size_t bufSize = std::min(storage_size_t(4096), part.size());
 	char buf[bufSize];
 	OneShotFastUs timer;
 	if(!part.read(0, buf, bufSize)) {
-		debug_e("Error reading from partition '%s'", part.name().c_str());
+		Serial << _F("Error reading from partition '") << part.name() << "'" << endl;
 	} else {
 		auto elapsed = timer.elapsedTime();
 		String s = part.getDeviceName();
 		s += '/';
 		s += part.name();
 		m_printHex(s.c_str(), buf, std::min(128U, bufSize));
-		m_printf(_F("Elapsed: %s\r\n"), elapsed.toString().c_str());
+		Serial << _F("Elapsed: ") << elapsed.toString() << endl;
 		if(elapsed != 0) {
-			m_printf(_F("Speed:   %u KB/s\r\n\r\n"), 1000 * bufSize / elapsed);
+			Serial << _F("Speed:   ") << 1000 * bufSize / elapsed << " KB/s" << endl;
 		}
 	}
 	Serial.println();
@@ -54,7 +50,7 @@ void printPart(const String& partitionName)
 {
 	auto part = Storage::findPartition(partitionName);
 	if(!part) {
-		debug_e("Partition '%s' not found", partitionName.c_str());
+		Serial << _F("Partition '") << partitionName << _F("' not found") << endl;
 	} else {
 		printPart(part);
 	}
@@ -84,19 +80,20 @@ void init()
 	Serial.println(_F("** Reading tests, repeat 3 times to show effect of caching (if any)"));
 
 	Serial.println(_F("** Reading SysMem device (flash)"));
-	part = Storage::sysMem.createPartition(F("fs_app"), FS_app, Storage::Partition::Type::data, 100);
+	part = Storage::sysMem.editablePartitions().add(F("fs_app FLASH"), FS_app, {Storage::Partition::Type::data, 100});
 	printPart(part);
 	printPart(part);
 	printPart(part);
 
 	Serial.println(_F("** Reading SysMem device (RAM)"));
-	part = Storage::sysMem.createPartition(F("fs_app"), FS_app, Storage::Partition::Type::data, 100);
+	part = Storage::sysMem.editablePartitions().add(F("fs_app RAM"), FS_app, {Storage::Partition::Type::data, 100});
 	printPart(part);
 	printPart(part);
 	printPart(part);
 
 	Serial.println(_F("** Reading ProgMem device"));
-	part = Storage::progMem.createPartition(F("fs_app"), FS_app, Storage::Partition::Type::data, 100);
+	part =
+		Storage::progMem.editablePartitions().add(F("fs_app PROGMEM"), FS_app, {Storage::Partition::Type::data, 100});
 	printPart(part);
 	printPart(part);
 	printPart(part);

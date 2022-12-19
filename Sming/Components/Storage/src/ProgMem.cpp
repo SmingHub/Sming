@@ -15,21 +15,21 @@ namespace Storage
 {
 ProgMem progMem;
 
-bool ProgMem::read(uint32_t address, void* dst, size_t size)
+bool ProgMem::read(storage_size_t address, void* dst, size_t size)
 {
 	size_t readCount = flashmem_read(dst, address, size);
 	return readCount == size;
 }
 
-Partition ProgMem::createPartition(const String& name, const void* flashPtr, size_t size, Partition::Type type,
-								   uint8_t subtype)
+Partition ProgMem::ProgMemPartitionTable::add(const String& name, const void* flashPtr, size_t size,
+											  Partition::FullType type)
 {
 	auto addr = flashmem_get_address(flashPtr);
 	if(addr == 0) {
 		return Partition{};
 	}
 
-	return createPartition(name, type, subtype, addr, size, Partition::Flag::readOnly);
+	return PartitionTable::add(name, type, addr, size, Partition::Flag::readOnly);
 }
 
 } // namespace Storage

@@ -9,6 +9,7 @@
  ****/
 
 #include <driver/hw_timer.h>
+#include <driver/periph_ctrl.h>
 #include <hal/timer_hal.h>
 #include <esp_intr_alloc.h>
 
@@ -36,11 +37,11 @@ void IRAM_ATTR timerIsr(void* arg)
 
 	timer_hal_clear_intr_status(&timer.hal);
 
-	if(timer.autoload) {
-		timer_hal_set_alarm_enable(&timer.hal, true);
-	} else {
+	if(!timer.autoload) {
 		timer_hal_set_counter_enable(&timer.hal, false);
 	}
+
+	timer_hal_set_alarm_enable(&timer.hal, true);
 }
 
 } // namespace
@@ -102,6 +103,7 @@ void hw_timer_init(void)
 {
 	timer.group = HW_TIMER1_GROUP;
 	timer.index = HW_TIMER1_INDEX;
+	periph_module_enable(timer_group_periph_signals.groups[timer.group].module);
 	timer_hal_init(&timer.hal, timer.group, timer.index);
 	timer_hal_set_counter_enable(&timer.hal, false);
 	timer_hal_set_alarm_enable(&timer.hal, true);

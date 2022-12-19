@@ -57,7 +57,7 @@ One such implementation is the :cpp:class:`IFS::DirectoryTemplate` class.
 The :sample:`Basic_IFS` sample demonstrates how it can be used to provide a formatted directory
 listing in multiple formats, using a different template for each format.
 
-The :sample:`Basic_Templates` sample illustrates a similar appraoch using data from CSV data files.
+The :sample:`Basic_Templates` sample illustrates a similar approach using data from CSV data files.
 
 If the output format requires escaping, create an instance of the appropriate :cpp:class:`Format::Formatter`
 and call :cpp:func:`SectionTemplate::setFormatter`.

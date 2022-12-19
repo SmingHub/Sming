@@ -159,7 +159,7 @@ void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCh
 void readFile(const char* filename, bool display)
 {
 	int file = gdbfs.open(filename, File::ReadOnly);
-	Serial.printf(_F("gdbfs.open(\"%s\") = %d\r\n"), filename, file);
+	Serial << _F("gdbfs.open(\"") << filename << "\") = " << file << endl;
 	if(file >= 0) {
 		OneShotFastMs timer;
 		char buf[256];
@@ -175,8 +175,9 @@ void readFile(const char* filename, bool display)
 			}
 		} while(len == sizeof(buf));
 		auto elapsed = timer.elapsedTime();
-		Serial.printf(_F("\r\ngdbfs.read() = %d, total = %u, elapsed = %s, av. %u bytes/sec\r\n"), len, total,
-					  elapsed.toString().c_str(), total == 0 ? 0 : 1000U * total / elapsed);
+		Serial.println();
+		Serial << _F("gdbfs.read() = ") << len << _F(", total = ") << total << _F(", elapsed = ") << elapsed.toString()
+			   << _F(", av. ") << (total == 0 ? 0 : 1000U * total / elapsed) << _F(" bytes/sec") << endl;
 
 		gdbfs.close(file);
 	}
@@ -202,7 +203,7 @@ void asyncReadCallback(const GdbSyscallInfo& info)
 	case eGDBSYS_open: {
 		int fd = info.result;
 		String filename(FPSTR(info.open.filename));
-		Serial.printf(_F("gdb_syscall_open(\"%s\") = %d\r\n"), filename.c_str(), fd);
+		Serial << _F("gdb_syscall_open(\"") << filename << "\") = " << fd << endl;
 		if(fd > 0) {
 			transfer.start = millis();
 			transfer.total = 0;
@@ -227,8 +228,8 @@ void asyncReadCallback(const GdbSyscallInfo& info)
 	case eGDBSYS_close: {
 		long elapsed = millis() - transfer.start;
 		long bps = (transfer.total == 0) ? 0 : 1000U * transfer.total / elapsed;
-		Serial.printf(_F("readFileAsync: total = %u, elapsed = %u ms, av. %u bytes/sec\r\n"), transfer.total, elapsed,
-					  bps);
+		Serial << _F("readFileAsync: total = ") << transfer.total << _F(", elapsed = ") << elapsed << _F(" ms, av. ")
+			   << bps << _F(" bytes/sec") << endl;
 		readConsole();
 	}
 
@@ -250,16 +251,14 @@ void fileStat(const char* filename)
 {
 	gdb_stat_t stat;
 	int res = gdb_syscall_stat(filename, &stat);
-	Serial.printf(_F("gdb_syscall_stat(\"%s\") returned %d\r\n"), filename, res);
+	Serial << _F("gdb_syscall_stat(\"") << filename << _F("\") returned ") << res << endl;
 	if(res != 0) {
 		return;
 	}
 
-#define PRT(x) Serial.printf(_F("  " #x " = %u\r\n"), stat.x)
-#define PRT_HEX(x) Serial.printf(_F("  " #x " = 0x%08x\r\n"), stat.x)
-#define PRT_TIME(x)                                                                                                    \
-	Serial.print(_F("  " #x " = "));                                                                                   \
-	Serial.println(DateTime(stat.x).toFullDateTimeString());
+#define PRT(x) Serial << _F("  " #x " = ") << stat.x << endl
+#define PRT_HEX(x) Serial << _F("  " #x " = 0x") << String(stat.x, HEX) << endl
+#define PRT_TIME(x) Serial << _F("  " #x " = ") << DateTime(stat.x).toFullDateTimeString() << endl
 
 	PRT(st_dev);
 	PRT(st_ino);
@@ -350,10 +349,10 @@ COMMAND_HANDLER(time)
 	gdb_timeval_t tv;
 	int res = gdb_syscall_gettimeofday(&tv, nullptr);
 	if(res < 0) {
-		Serial.printf(_F("gdb_syscall_gettimeofday() returned %d\r\n"), res);
+		Serial << _F("gdb_syscall_gettimeofday() returned ") << res << endl;
 	} else {
-		Serial.printf(_F("tv_sec = %u, tv_usec = %u, "), tv.tv_sec, uint32_t(tv.tv_usec));
-		Serial.println(DateTime(tv.tv_sec).toFullDateTimeString() + _F(" UTC"));
+		Serial << _F("tv_sec = ") << tv.tv_sec << _F(", tv_usec = ") << tv.tv_usec << ", "
+			   << DateTime(tv.tv_sec).toFullDateTimeString() << _F(" UTC") << endl;
 	}
 	return true;
 }
@@ -361,7 +360,7 @@ COMMAND_HANDLER(time)
 COMMAND_HANDLER(log)
 {
 	if(logFile.isValid()) {
-		Serial.printf(_F("Log file is open, size = %u bytes\r\n"), logFile.getPos());
+		Serial << _F("Log file is open, size = ") << logFile.getPos() << _F(" bytes") << endl;
 	} else {
 		Serial.println(_F("Log file not available"));
 	}
@@ -371,7 +370,7 @@ COMMAND_HANDLER(log)
 COMMAND_HANDLER(ls)
 {
 	int res = gdb_syscall_system(PSTR("ls -la"));
-	Serial.printf(_F("gdb_syscall_system() returned %d\r\n"), res);
+	Serial << _F("gdb_syscall_system() returned ") << res << endl;
 	return true;
 }
 
@@ -415,7 +414,7 @@ COMMAND_HANDLER(read0)
 					  "then enter `c` to continue"));
 	Serial.flush();
 	uint8_t value = *(uint8_t*)0;
-	Serial.printf("Value at address 0 = 0x%02x\r\n", value);
+	Serial << _F("Value at address 0 = 0x") << String(value, HEX, 2) << endl;
 	return true;
 }
 
@@ -426,7 +425,7 @@ COMMAND_HANDLER(write0)
 					  "then enter `c` to continue"));
 	Serial.flush();
 	*(uint8_t*)0 = 0;
-	Serial.println("...still running!");
+	Serial.println(_F("...still running!"));
 	return true;
 }
 
@@ -521,18 +520,11 @@ COMMAND_HANDLER(help)
 
 	auto print = [](const char* tag, const char* desc) {
 		const unsigned indent = 10;
-		Serial.print("  ");
-		String s(tag);
-		s.reserve(indent);
-		while(s.length() < indent) {
-			s += ' ';
-		}
-		Serial.print(s);
-		Serial.print(" : ");
+		Serial << "  " << String(tag).pad(indent) << " : ";
 
 		// Print multi-line descriptions in sections to maintain correct line indentation
-		s.setLength(2 + indent + 3);
-		memset(s.begin(), ' ', s.length());
+		String s;
+		s.pad(2 + indent + 3);
 
 		for(;;) {
 			auto end = strchr(desc, '\n');
@@ -561,9 +553,7 @@ COMMAND_HANDLER(help)
 bool handleCommand(const String& cmd)
 {
 	if(logFile.isValid()) {
-		logFile.print(_F("handleCommand('"));
-		logFile.print(cmd);
-		logFile.println(_F("')"));
+		logFile << _F("handleCommand('") << cmd << "')" << endl;
 	}
 
 #define XX(tag, desc)                                                                                                  \
@@ -573,7 +563,7 @@ bool handleCommand(const String& cmd)
 	COMMAND_MAP(XX)
 #undef XX
 
-	Serial.printf(_F("Unknown command '%s', try 'help'\r\n"), cmd.c_str());
+	Serial << _F("Unknown command '") << cmd << _F("', try 'help'") << endl;
 	return true;
 }
 
@@ -674,12 +664,8 @@ extern "C" void gdb_on_attach(bool attached)
 
 static void printTimerDetails()
 {
-	Serial.print(procTimer);
-	Serial.print(", maxTicks = ");
-	Serial.print(procTimer.maxTicks());
-	Serial.print(", maxTime = ");
-	Serial.print(procTimer.micros().ticksToTime(procTimer.maxTicks()).value());
-	Serial.println();
+	Serial << procTimer << ", maxTicks = " << procTimer.maxTicks()
+		   << ", maxTime = " << procTimer.micros().ticksToTime(procTimer.maxTicks()).value() << endl;
 }
 
 void GDB_IRAM_ATTR init()

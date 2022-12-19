@@ -19,7 +19,7 @@ namespace Profiling
 /**
  * @brief Class to track minimum and maximum values of a set of data, with average, total and count
  */
-template <typename T> class MinMax : public Printable
+template <typename T> class MinMax
 {
 public:
 	MinMax(const String& title) : title(title)
@@ -57,7 +57,7 @@ public:
 		return count;
 	}
 
-	size_t printTo(Print& p) const override;
+	size_t printTo(Print& p) const;
 
 private:
 	String title;

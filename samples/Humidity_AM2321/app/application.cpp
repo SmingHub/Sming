@@ -12,11 +12,7 @@ const int SDA = 4;
 
 void read()
 {
-	Serial.print(am2321.read());
-	Serial.print(",");
-	Serial.print(am2321.temperature / 10.0);
-	Serial.print(",");
-	Serial.println(am2321.humidity / 10.0);
+	Serial << am2321.read() << ',' << am2321.temperature / 10.0 << ',' << am2321.humidity / 10.0 << endl;
 }
 
 void init()

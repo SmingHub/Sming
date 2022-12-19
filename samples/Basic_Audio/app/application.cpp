@@ -54,11 +54,8 @@ static struct {
 		// Modify frequency to fit in exact number of samples
 		frequency = sampleRate / sampleCount;
 
-		Serial.print("Generating sine wave table @ ");
-		Serial.print(frequency);
-		Serial.print(" Hz, ");
-		Serial.print(sampleCount);
-		Serial.println(" samples");
+		Serial << _F("Generating sine wave table @ ") << frequency << _F(" Hz, ") << sampleCount << _F(" samples")
+			   << endl;
 
 		samples = new uint16_t[sampleCount];
 		if(samples == nullptr) {
@@ -202,8 +199,7 @@ static void initialiseI2S()
 #endif
 
 	auto realSampleRate = i2s_get_real_rate();
-	Serial.print(_F("I2S initialised, rate = "));
-	Serial.println(realSampleRate);
+	Serial << _F("I2S initialised, rate = ") << realSampleRate << endl;
 
 #ifndef GENERATE_FIXED_VALUES
 	/*

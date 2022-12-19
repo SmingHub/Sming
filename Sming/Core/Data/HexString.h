@@ -20,4 +20,4 @@
  *  @param separator optional character to put between hex-encoded bytes
  *  @retval String
  */
-String makeHexString(const uint8_t* data, unsigned length, char separator = '\0');
+String makeHexString(const void* data, unsigned length, char separator = '\0');

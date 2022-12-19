@@ -149,6 +149,7 @@ enum smg_uart_format_t {
 
 // Status values
 enum smg_uart_status_t {
+	UART_STATUS_TX_DONE = BIT(14), ///< All data transmitted (ESP32 only)
 	UART_STATUS_RXFIFO_TOUT = BIT(8),
 	UART_STATUS_BRK_DET = BIT(7),
 	UART_STATUS_CTS_CHG = BIT(6),
@@ -284,6 +285,9 @@ typedef struct {
 	uint8_t rx_timeout_thresh;
 	uint8_t txfifo_empty_intr_thresh;
 	uint8_t rxfifo_full_thresh; ///< Ignored if additional buffers are allocated
+	uint8_t reserved;
+	uint32_t intr_mask;   ///< Mask of smg_uart_status_t indicating which interrupt bits to change
+	uint32_t intr_enable; ///< State of interrupt bits
 } smg_uart_intr_config_t;
 
 /**

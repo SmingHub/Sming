@@ -72,8 +72,7 @@ public:
 
 		TEST_CASE("Operations")
 		{
-			Serial.print(_F("fixedBasket contains: "));
-			Serial.println(toString(fixedBasket));
+			Serial << _F("fixedBasket contains: ") << fixedBasket << endl;
 
 			FruitBasket basket;
 			REQUIRE(basket.value() == 0);
@@ -123,8 +122,7 @@ public:
 		{
 			using NumberSet = BitSet<uint32_t, uint8_t>;
 			NumberSet numbers = uint32_t(0x12345678);
-			Serial.print(_F("numbers = "));
-			Serial.println(toString(numbers));
+			Serial << _F("numbers = ") << numbers << endl;
 			REQUIRE(numbers.value() == 0x12345678U);
 
 			numbers = NumberSet{};

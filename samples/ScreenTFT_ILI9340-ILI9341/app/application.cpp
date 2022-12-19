@@ -76,10 +76,10 @@ void init()
 #endif
 
 	spiffs_mount();
-	Serial.println("FileSystem mounted.");
+	Serial.println(_F("FileSystem mounted."));
 
 	//	delay(2000);
-	Serial.println("Display start");
+	Serial.println(_F("Display start"));
 
 	// text display tests
 	tft.begin();
@@ -90,15 +90,15 @@ void init()
 	tft.setTextColor(ILI9341_GREEN);
 	tft.setCursor(0, 0);
 	tft.setCursor(60, 60);
-	tft.println("Sming  Framework");
+	tft.println(_F("Sming  Framework"));
 	tft.setTextColor(ILI9341_WHITE, ILI9341_BLACK); // text
 	tft.setCursor(60, 75);
 	tft.println("              v1.1");
 	tft.setTextColor(ILI9341_CYAN);
 	tft.setCursor(60, 90);
-	tft.println("ili9340-40C-41 ");
+	tft.println(_F("ili9340-40C-41 "));
 	tft.setCursor(60, 125);
-	tft.println("M.Bozkurt");
+	tft.println(_F("M.Bozkurt"));
 	delay(2000);
 	tft.fillScreen(0);
 	guiTimer.initializeMs<1000>(basicGui).start(false);

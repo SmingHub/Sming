@@ -33,6 +33,7 @@
 	XX(ObjectMap)                                                                                                      \
 	XX_NET(Base64)                                                                                                     \
 	XX(DateTime)                                                                                                       \
+	XX(Uuid)                                                                                                           \
 	XX_NET(Http)                                                                                                       \
 	XX_NET(Url)                                                                                                        \
 	XX(ArduinoJson5)                                                                                                   \

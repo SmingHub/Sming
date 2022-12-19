@@ -1,4 +1,92 @@
 {
     "variant": "esp32s2",
-    "name": "ESP32-S2"
+    "name": "ESP32-S2",
+    "peripherals": {
+        "ADC": {
+            "sigmask": "ADC.+|sar_.+"
+        },
+        "CLOCKS": {
+            "sigmask": "CLK_.+|XTAL_.+"
+        },
+        "DAC": {
+            "sigmask": "DAC.+"
+        },
+        "JTAG": {
+            "sigmask": "MTCK|MTDI|MTDO|MTMS"
+        },
+        "GPIO": {
+            "sigmask": "GPIO.+|RTC_GPIO.+"
+        },
+        "TOUCH": {
+            "sigmask": "{name}.+"
+        },
+        "DEDIC_GPIO": {
+            "sigmask": "pro_alonegpio.+"
+        },
+        "I2C[0-1]": {
+            "sigmask": "I2CEXT{idx}.+"
+        },
+        "I2S": {
+            "sigmask": "I2S.+|clk_i2s_mux"
+        },
+        "LEDC": {
+            "sigmask": "ledc_.+"
+        },
+        "PCNT[0-1]": {
+            "sigmask": "pcnt_ctrl_ch{idx}.+|pcnt_sig_ch{idx}.+"
+        },
+        "RMT": {
+            "sigmask": "rmt_.+"
+        },
+        "SIGMA_DELTA": {
+            "sigmask": "gpio_sd.+"
+        },
+        "SPI1": {
+            "sigmask": "SPI[^3]+"
+        },
+        "SPI2": {
+            "sigmask": "FSPI.+"
+        },
+        "SPI3": {
+            "sigmask": "SPI3_.+"
+        },
+        "SUBSPI": {
+            "sigmask": "SUBSPI.+"
+        },
+        "TWAI": {
+            "sigmask": "twai_.+"
+        },
+        "UART0": {
+            "sigmask": "U0.+",
+            "default": {
+                "TXD": [
+                    "U0TXD",
+                    43
+                ],
+                "RXD": [
+                    "U0RXD",
+                    44
+                ]
+            }
+        },
+        "UART1": {
+            "sigmask": "U1.+",
+            "default": {
+                "TXD": [
+                    "U1TXD_out",
+                    10
+                ],
+                "RXD": [
+                    "U1RXD_in",
+                    9
+                ]
+            }
+        },
+        "USB": {
+            "sigmask": "(usb_|USB).+"
+        },
+        "WIFI": {
+            "sigmask": "gpio_wlan_.+"
+        }
+    }
 }

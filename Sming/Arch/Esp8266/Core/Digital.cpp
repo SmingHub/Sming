@@ -13,6 +13,7 @@
 #include <espinc/eagle_soc.h>
 #include <espinc/gpio_register.h>
 #include <espinc/pin_mux_register.h>
+#include <Platform/Timers.h>
 
 // Prototype declared in esp8266-peri.h
 const uint8_t esp8266_gpioToFn[16] = {0x34, 0x18, 0x38, 0x14, 0x3C, 0x40, 0x1C, 0x20,
@@ -143,36 +144,34 @@ unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout)
 	// pulse width measuring loop and achieve finer resolution.  calling
 	// digitalRead() instead yields much coarser resolution.
 	uint32_t bit = digitalPinToBitMask(pin);
-	// uint8_t port = digitalPinToPort(pin); // Does nothing in Sming, comment-out to prevent compiler warning
 	uint32_t stateMask = (state ? bit : 0);
-	unsigned long width = 0; // keep initialization out of time critical area
 
-	// convert the timeout from microseconds to a number of times through
-	// the initial loop; it takes 16 clock cycles per iteration.
-	unsigned long numloops = 0;
-	unsigned long maxloops = microsecondsToClockCycles(timeout) / 16;
+	auto pinState = [&]() -> bool { return (*portInputRegister() & bit) == stateMask; };
+
+	OneShotFastUs timeoutTimer(timeout);
 
 	// wait for any previous pulse to end
-	while((*portInputRegister(port) & bit) == stateMask)
-		if(numloops++ == maxloops)
+	while(pinState()) {
+		if(timeoutTimer.expired()) {
 			return 0;
-
-	// wait for the pulse to start
-	while((*portInputRegister(port) & bit) != stateMask)
-		if(numloops++ == maxloops)
-			return 0;
-
-	// wait for the pulse to stop
-	while((*portInputRegister(port) & bit) == stateMask) {
-		if(numloops++ == maxloops)
-			return 0;
-		width++;
+		}
 	}
 
-	// convert the reading to microseconds. The loop has been determined
-	// to be 20 clock cycles long and have about 16 clocks between the edge
-	// and the start of the loop. There will be some error introduced by
-	// the interrupt handlers.
+	// wait for the pulse to start
+	while(!pinState()) {
+		if(timeoutTimer.expired()) {
+			return 0;
+		}
+	}
 
-	return clockCyclesToMicroseconds(width * 21 + 16);
+	CpuCycleTimer cycleTimer;
+
+	// wait for the pulse to stop
+	while(pinState()) {
+		if(timeoutTimer.expired()) {
+			return 0;
+		}
+	}
+
+	return cycleTimer.elapsedTime().as<NanoTime::Microseconds>();
 }

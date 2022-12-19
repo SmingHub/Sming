@@ -90,7 +90,9 @@ LIBDIRS += \
 
 EXTRA_LIBS += \
 	pico \
-	m
+	m \
+	stdc++ \
+	gcc
 
 RP2040_CMAKE_OPTIONS := \
 	-G Ninja \

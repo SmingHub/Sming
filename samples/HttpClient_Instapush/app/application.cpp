@@ -82,20 +82,20 @@ InstapushApplication pusher(APP_ID, APP_SECRET);
 // Publish our message
 void publishMessage()
 {
-	Serial.println("Push message now!");
+	Serial.println(_F("Push message now!"));
 	InstapushTrackers trackers;
-	trackers["title"] = "Sming Framework";
-	trackers["text"] = "New test was successfully launched";
+	trackers["title"] = F("Sming Framework");
+	trackers["text"] = F("New test was successfully launched");
 	pusher.notify("notify", trackers); // event name, trackers
 }
 
 // Will be called when WiFi station was connected to AP
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	Serial.println("I'm CONNECTED");
+	Serial << _F("I'm CONNECTED to ") << ip << endl;
 
 	// Start publishing loop
-	procTimer.initializeMs(10 * 1000, publishMessage).start(true); // every 20 seconds
+	procTimer.initializeMs<10 * 1000>(publishMessage).start();
 }
 
 void init()

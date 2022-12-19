@@ -17,6 +17,15 @@ namespace SmingInternal
 IFS::FileSystem* activeFileSystem;
 }
 
+namespace IFS
+{
+FileSystem* getDefaultFileSystem()
+{
+	return SmingInternal::activeFileSystem;
+}
+
+} // namespace IFS
+
 void fileSetFileSystem(IFS::IFileSystem* fileSystem)
 {
 	if(SmingInternal::activeFileSystem != fileSystem) {

@@ -77,10 +77,11 @@ void initCam()
 	myCAM.rdSensorReg8_8(OV2640_CHIPID_HIGH, &vid);
 	myCAM.rdSensorReg8_8(OV2640_CHIPID_LOW, &pid);
 	if((vid != 0x26) || (pid != 0x42)) {
-		Serial.println("Can't find OV2640 module!");
-		Serial.printf("vid = [%X]  pid = [%X]\n", vid, pid);
-	} else
-		Serial.println("OV2640 detected");
+		Serial.println(_F("Can't find OV2640 module!"));
+		Serial << "vid = [" << String(vid, HEX) << "], pid = [" << String(pid, HEX) << "]" << endl;
+	} else {
+		Serial.println(_F("OV2640 detected"));
+	}
 
 	// initialize SPI:
 	pinMode(CAM_CS, OUTPUT);
@@ -93,15 +94,16 @@ void initCam()
 
 	uint8_t temp = myCAM.read_reg(ARDUCHIP_TEST1);
 	if(temp != 0x55) {
-		Serial.println("SPI interface Error!");
-		while(1)
-			;
+		Serial.println(_F("SPI interface Error!"));
+		while(1) {
+			// loop forever
+		}
 	} else {
-		Serial.println("SPI interface OK!");
+		Serial.println(_F("SPI interface OK!"));
 	}
 
 	// init CAM
-	Serial.println("Initialize the OV2640 module");
+	Serial.println(_F("Initialize the OV2640 module"));
 	myCAM.set_format(JPEG);
 	myCAM.InitCAM();
 }
@@ -167,7 +169,7 @@ void onCapture(HttpRequest& request, HttpResponse& response)
 	// get the picture
 	OneShotFastMs timer;
 	startCapture();
-	Serial.printf("onCapture() startCapture() %s\r\n", timer.elapsedTime().toString().c_str());
+	Serial << _F("onCapture() startCapture() ") << timer.elapsedTime() << endl;
 
 	ArduCAMStream* stream = new ArduCAMStream(&myCAM);
 
@@ -178,7 +180,7 @@ void onCapture(HttpRequest& request, HttpResponse& response)
 		response.sendDataStream(stream, contentType);
 	}
 
-	Serial.printf("onCapture() process Stream %s\r\n", timer.elapsedTime().toString().c_str());
+	Serial << _F("onCapture() process Stream ") << timer.elapsedTime() << endl;
 }
 
 MultipartStream::BodyPart snapshotProducer()
@@ -190,22 +192,22 @@ MultipartStream::BodyPart snapshotProducer()
 	result.stream = camStream;
 
 	result.headers = new HttpHeaders();
-	(*result.headers)[HTTP_HEADER_CONTENT_TYPE] = "image/jpeg";
+	(*result.headers)[HTTP_HEADER_CONTENT_TYPE] = toString(MIME_JPEG);
 
 	return result;
 }
 
 void onStream(HttpRequest& request, HttpResponse& response)
 {
-	Serial.printf("perform onCapture()\r\n");
+	Serial.println(_F("perform onCapture()"));
 
 	// TODO: use request parameters to overwrite camera settings
 	// setupCamera(camSettings);
 	myCAM.clear_fifo_flag();
 	myCAM.write_reg(ARDUCHIP_FRAMES, 0x00);
 
-	MultipartStream* stream = new MultipartStream(snapshotProducer);
-	response.sendDataStream(stream, String("multipart/x-mixed-replace; boundary=") + stream->getBoundary());
+	auto stream = new MultipartStream(snapshotProducer);
+	response.sendDataStream(stream, F("multipart/x-mixed-replace; boundary=") + stream->getBoundary());
 }
 
 void onFavicon(HttpRequest& request, HttpResponse& response)
@@ -228,15 +230,15 @@ void StartServers()
 	server.paths.set("/favicon.ico", onFavicon);
 	server.paths.setDefault(onFile);
 
-	Serial.println("\r\n=== WEB SERVER STARTED ===");
+	Serial.println(_F("\r\n=== WEB SERVER STARTED ==="));
 	Serial.println(WifiStation.getIP());
-	Serial.println("==============================\r\n");
+	Serial.println(_F("==============================\r\n"));
 
 	telnet.listen(23);
 	telnet.enableDebug(true);
 
-	Serial.println("\r\n=== TelnetServer SERVER STARTED ===");
-	Serial.println("==============================\r\n");
+	Serial.println(_F("\r\n=== TelnetServer SERVER STARTED ==="));
+	Serial.println(_F("==============================\r\n"));
 }
 
 // Will be called when station is fully operational

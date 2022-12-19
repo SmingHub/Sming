@@ -1,3 +1,4 @@
 pyserial
 jsonschema
 kconfiglib
+natsort

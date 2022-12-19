@@ -43,8 +43,8 @@ void ArduCamCommand::processSetCommands(String commandLine, CommandOutput* comma
 	}
 	// handle command ->   set
 	else if(commandToken[1] == "help") {
-		commandOutput->printf("set img 	[bmp|jpeg]\r\n");
-		commandOutput->printf("set size [160|176|320|352|640|800|1024|1280|1600]\r\n");
+		*commandOutput << _F("set img 	[bmp|jpeg]") << endl;
+		*commandOutput << _F("set size [160|176|320|352|640|800|1024|1280|1600]") << endl;
 	}
 
 	// handle command ->   set
@@ -56,10 +56,11 @@ void ArduCamCommand::processSetCommands(String commandLine, CommandOutput* comma
 				set_format(BMP);
 			} else if(commandToken[2] == "jpg") {
 				set_format(JPEG);
-			} else
-				commandOutput->printf("invalid image format [%s]\r\n", commandToken[2].c_str());
+			} else {
+				*commandOutput << _F("invalid image format [") << commandToken[2] << ']' << endl;
+			}
 		} else {
-			commandOutput->printf("Syntax: set img [bmp|jpeg]\r\n");
+			*commandOutput << _F("Syntax: set img [bmp|jpeg]") << endl;
 		}
 		showSettings(commandOutput);
 	}
@@ -103,10 +104,10 @@ void ArduCamCommand::processSetCommands(String commandLine, CommandOutput* comma
 				myCAM->OV2640_set_JPEG_size(OV2640_1600x1200);
 				set_format(JPEG);
 			} else {
-				commandOutput->printf("invalid size definition[%s]\r\n", commandToken[2].c_str());
+				*commandOutput << _F("invalid size definition[") << commandToken[2] << ']' << endl;
 			}
 		} else {
-			commandOutput->printf("Syntax: set size [160|176|320|352|640|800|1024|1280|1600]\r\n");
+			*commandOutput << _F("Syntax: set size [160|176|320|352|640|800|1024|1280|1600]") << endl;
 		}
 		showSettings(commandOutput);
 	}

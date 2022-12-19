@@ -107,8 +107,7 @@ static void updateLED()
 			cnt = 0;
 		}
 
-		Serial.print("ping ");
-		Serial.println(cnt);
+		Serial << "ping " << cnt << endl;
 		LED.show(cnt); // show shifted LED buffer
 		break;
 	}

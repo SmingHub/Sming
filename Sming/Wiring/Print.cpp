@@ -38,29 +38,6 @@ size_t Print::write(const uint8_t* buffer, size_t size)
 	return n;
 }
 
-size_t Print::print(long num, int base)
-{
-	if(base == 0) {
-		return write(num);
-	}
-
-	if(base == 10 && num < 0) {
-		return print('-') + printNumber(static_cast<unsigned long>(-num), base);
-	}
-
-	return printNumber(static_cast<unsigned long>(num), base);
-}
-
-// Overload (signed long long)
-size_t Print::print(const long long& num, int base)
-{
-	if(base == 10 && num < 0) {
-		return print('-') + printNumber(static_cast<unsigned long long>(-num), base);
-	}
-
-	return printNumber(static_cast<unsigned long long>(num), base);
-}
-
 size_t Print::printf(const char* fmt, ...)
 {
 	size_t buffSize = INITIAL_PRINTF_BUFFSIZE;
@@ -83,17 +60,31 @@ size_t Print::printf(const char* fmt, ...)
 	}
 }
 
-size_t Print::printNumber(unsigned long num, uint8_t base)
+size_t Print::printNumber(unsigned long num, uint8_t base, uint8_t width, char pad)
 {
 	char buf[8 * sizeof(num) + 1]; // Assumes 8-bit chars plus zero byte.
-	ultoa(num, buf, base);
+	ultoa_wp(num, buf, base, width, pad);
 	return write(buf);
 }
 
-size_t Print::printNumber(const unsigned long long& num, uint8_t base)
+size_t Print::printNumber(const unsigned long long& num, uint8_t base, uint8_t width, char pad)
 {
 	char buf[8 * sizeof(num) + 1]; // Assumes 8-bit chars plus zero byte.
-	ulltoa(num, buf, base);
+	ulltoa_wp(num, buf, base, width, pad);
+	return write(buf);
+}
+
+size_t Print::printNumber(long num, uint8_t base, uint8_t width, char pad)
+{
+	char buf[8 * sizeof(num) + 1]; // Assumes 8-bit chars plus zero byte.
+	ltoa_wp(num, buf, base, width, pad);
+	return write(buf);
+}
+
+size_t Print::printNumber(const long long& num, uint8_t base, uint8_t width, char pad)
+{
+	char buf[8 * sizeof(num) + 1]; // Assumes 8-bit chars plus zero byte.
+	lltoa_wp(num, buf, base, width, pad);
 	return write(buf);
 }
 

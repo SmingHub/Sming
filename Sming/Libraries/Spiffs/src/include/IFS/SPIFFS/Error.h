@@ -33,6 +33,8 @@ inline bool isSpiffsError(int err)
 	return err <= -10000;
 }
 
+int translateSpiffsError(int spiffs_error);
+
 String spiffsErrorToStr(int err);
 } // namespace SPIFFS
 } // namespace IFS

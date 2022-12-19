@@ -9,14 +9,14 @@
  ****/
 #pragma once
 
-#include "CustomDevice.h"
+#include "Device.h"
 
 namespace Storage
 {
 /**
  * @brief Storage device to access PROGMEM using flash API
  */
-class ProgMem : public CustomDevice
+class ProgMem : public Device
 {
 public:
 	String getName() const override
@@ -29,7 +29,7 @@ public:
 		return sizeof(uint32_t);
 	}
 
-	size_t getSize() const override
+	storage_size_t getSize() const override
 	{
 		return 0x80000000;
 	}
@@ -39,48 +39,43 @@ public:
 		return Type::flash;
 	}
 
-	bool read(uint32_t address, void* dst, size_t size) override;
+	bool read(storage_size_t address, void* dst, size_t size) override;
 
-	bool write(uint32_t address, const void* src, size_t size) override
+	bool write(storage_size_t address, const void* src, size_t size) override
 	{
 		return false;
 	}
 
-	bool erase_range(uint32_t address, size_t size) override
+	bool erase_range(storage_size_t address, storage_size_t size) override
 	{
 		return false;
 	}
 
-	using CustomDevice::createPartition;
-
-	/**
-	 * @brief Create partition for PROGMEM data access
-	 * @param name Name for partition
-	 * @param flashPtr PROGMEM pointer
-	 * @param size Size of PROGMEM data
-	 * @param type Partition type
-	 * @param subtype Partition sub-type
-	 * @retval Partition Invalid if data is not progmem
-	 */
-	Partition createPartition(const String& name, const void* flashPtr, size_t size, Partition::Type type,
-							  uint8_t subtype);
-
-	template <typename T> Partition createPartition(const String& name, const void* flashPtr, size_t size, T subType)
+	class ProgMemPartitionTable : public PartitionTable
 	{
-		return createPartition(name, flashPtr, size, Partition::Type(T::partitionType), uint8_t(subType));
-	}
+	public:
+		/**
+		 * @brief Add partition entry for PROGMEM data access
+		 * @param name Name for partition
+		 * @param flashPtr PROGMEM pointer
+		 * @param size Size of PROGMEM data
+		 * @param type Partition type and subtype
+		 * @retval Partition Invalid if data is not progmem
+		 */
+		Partition add(const String& name, const void* flashPtr, size_t size, Partition::FullType type);
 
-	/**
-	 * @brief Create partition for FlashString data access
-	 */
-	Partition createPartition(const String& name, const FSTR::ObjectBase& fstr, Partition::Type type, uint8_t subtype)
-	{
-		return createPartition(name, fstr.data(), fstr.size(), type, subtype);
-	}
+		/**
+		 * @brief Add partition entry for FlashString data access
+		 */
+		Partition add(const String& name, const FSTR::ObjectBase& fstr, Partition::FullType type)
+		{
+			return add(name, fstr.data(), fstr.size(), type);
+		}
+	};
 
-	template <typename T> Partition createPartition(const String& name, const FSTR::ObjectBase& fstr, T subType)
+	ProgMemPartitionTable& editablePartitions()
 	{
-		return createPartition(name, fstr, Partition::Type(T::partitionType), uint8_t(subType));
+		return static_cast<ProgMemPartitionTable&>(mPartitions);
 	}
 };
 

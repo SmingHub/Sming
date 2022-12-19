@@ -24,11 +24,12 @@ public:
 #if DEBUG_VERBOSE_LEVEL == DBG
 		for(int i = 0; i < 100; ++i) {
 			auto err = HttpError(i);
-			debug_d("httpError(%d) = \"%s\", \"%s\"", i, toString(err).c_str(), httpGetErrorDescription(err).c_str());
+			Serial << _F("httpError(") << i << ") = \"" << err << "\", \"" << httpGetErrorDescription(err) << '"'
+				   << endl;
 		}
 
 		for(int i = 100; i < 550; ++i) {
-			debug_d("HTTP Status(%d) = \"%s\"", i, toString(HttpStatus(i)).c_str());
+			Serial << _F("HTTP Status(") << i << ") = \"" << HttpStatus(i) << '"' << endl;
 		}
 #endif
 
@@ -47,7 +48,7 @@ public:
 	static void printHeaders(const HttpHeaders& headers)
 	{
 #if DEBUG_VERBOSE_LEVEL == DBG
-		debugf("  count: %d", headers.count());
+		Serial << _F("  count: ") << headers.count() << endl;
 		for(unsigned i = 0; i < headers.count(); ++i) {
 			String s = headers[i];
 			m_printHex("  ", s.c_str(), s.length(), 0, 32);
@@ -57,7 +58,7 @@ public:
 
 	void profileHttpHeaders()
 	{
-		debugf("\nPROFILING");
+		Serial.println(_F("\r\nPROFILING"));
 
 		// Allocate everything on the heap so we can track memory usage
 		auto freeHeap = system_get_free_heap_size();
@@ -80,18 +81,18 @@ public:
 		headers[F("Vary")] = _F("Accept-Encoding");
 		headers[F("X-Fastly-Request-ID")] = _F("38ef411e0ec3bf681d29d8b4b51f3516d3ef9e03");
 		auto totalElapsed = timer.elapsedTime();
-		debugf("Set header values");
-		debugf("  Elapsed standard: %s, total: %s, heap used: %u", standardElapsed.toString().c_str(),
-			   totalElapsed.toString().c_str(), freeHeap - system_get_free_heap_size());
+		Serial.println(_F("Set header values"));
+		Serial << _F("  Elapsed standard: ") << standardElapsed.toString() << ", total: " << totalElapsed.toString()
+			   << ", heap used: " << freeHeap - system_get_free_heap_size() << endl;
 
 		// Query header value by field name
 		auto queryByEnum = [&](HttpHeaderFieldName name) {
-			debugf("  header[\"%s\"]: %s", headers.toString(name).c_str(), headers[name].c_str());
+			Serial << _F("  header[\"") << headers.toString(name) << "\"]: " << headers[name] << endl;
 		};
 		auto queryByString = [&](const String& name) {
-			debugf("  header[\"%s\"]: %s", name.c_str(), headers[name].c_str());
+			Serial << _F("  header[\"") << name << "\"]: " << headers[name] << endl;
 		};
-		debugf("Query header values");
+		Serial.println(_F("Query header values"));
 		timer.start();
 		queryByEnum(HTTP_HEADER_CONTENT_ENCODING);
 		queryByEnum(HTTP_HEADER_CONTENT_LENGTH);
@@ -106,15 +107,15 @@ public:
 		queryByString("Vary");
 		queryByString("X-Fastly-Request-ID");
 		totalElapsed = timer.elapsedTime();
-		debugf("  Elapsed standard: %u, total: %u", standardElapsed, totalElapsed);
-		debugf("  Elapsed standard: %s, total: %s", standardElapsed.toString().c_str(),
-			   totalElapsed.toString().c_str());
+		Serial << _F("  Elapsed standard: ") << standardElapsed << ", total: " << totalElapsed << endl;
+		Serial << _F("  Elapsed standard: ") << standardElapsed.toString() << ", total: " << totalElapsed.toString()
+			   << endl;
 
 		// Print header values - accessed by index
-		debugf("Printing %u headers", headers.count());
+		Serial << _F("Printing ") << headers.count() << _F(" headers") << endl;
 		timer.start();
 		printHeaders(headers);
-		debugf("  Elapsed: %s", timer.elapsedTime().toString().c_str());
+		Serial << _F("  Elapsed: ") << timer.elapsedTime().toString() << endl;
 
 		delete headersPtr;
 	}

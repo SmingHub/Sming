@@ -1,4 +1,8 @@
-COMPONENT_DEPENDS := LittleFS
+COMPONENT_DEPENDS := \
+	Spiffs \
+	LittleFS \
+	FatIFS \
+	SdStorage
 
 # Empty SPIFFS partition please
 SPIFF_FILES :=
@@ -11,4 +15,9 @@ COMPONENT_CXXFLAGS += -DENABLE_FLASHSTRING_IMAGE=1
 HWCONFIG := spiffs
 else
 HWCONFIG := basic_ifs_$(SMING_ARCH)
+endif
+
+CONFIG_VARS += ENABLE_SDCARD
+ifeq ($(ENABLE_SDCARD),1)
+COMPONENT_CXXFLAGS += -DENABLE_SDCARD
 endif

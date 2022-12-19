@@ -22,6 +22,11 @@ public:
 	{
 	}
 
+	explicit operator bool() const
+	{
+		return mEntries.isEmpty();
+	}
+
 	/**
 	 * @name Partition search
 	 * @{
@@ -39,10 +44,9 @@ public:
 		return Iterator(mDevice, type, subType);
 	}
 
-	/// C++ subtype definition provides partition type
-	template <typename T> Iterator find(T subType) const
+	Iterator find(Partition::FullType fullType) const
 	{
-		return find(Partition::Type(T::partitionType), uint8_t(subType));
+		return find(fullType.type, fullType.subtype);
 	}
 
 	/** @} */
@@ -72,7 +76,7 @@ public:
 	/**
 	 * @brief Find the n'th OTA partition
 	 */
-	Partition findOta(uint8_t index)
+	Partition findOta(uint8_t index) const
 	{
 		using App = Partition::SubType::App;
 		auto subtype = App(uint8_t(App::ota0) + index);
@@ -81,17 +85,12 @@ public:
 
 	Iterator begin() const
 	{
-		return Iterator(mDevice, 0);
+		return Iterator(mDevice);
 	}
 
 	Iterator end() const
 	{
-		return Iterator(mDevice, mCount);
-	}
-
-	uint8_t count() const
-	{
-		return mCount;
+		return Iterator(mDevice).end();
 	}
 
 	Device& device() const
@@ -99,18 +98,34 @@ public:
 		return mDevice;
 	}
 
-	Partition operator[](unsigned index) const
+	/**
+	 * @brief Add new partition using given Info
+	 * @param info Must be allocated using `new`: Device will take ownership
+	 * @retval Partition Reference to the partition
+	 */
+	Partition add(const Partition::Info* info)
 	{
-		return (index < mCount) ? Partition(mDevice, mEntries.get()[index]) : Partition();
+		return mEntries.add(info) ? Partition(mDevice, *info) : Partition{};
+	}
+
+	template <typename... Args> Partition add(const String& name, Partition::FullType type, Args... args)
+	{
+		return add(new Partition::Info(name, type, args...));
+	}
+
+	void clear()
+	{
+		mEntries.clear();
 	}
 
 protected:
 	friend Device;
+	friend Iterator;
+
 	void load(const esp_partition_info_t* entry, unsigned count);
 
 	Device& mDevice;
-	std::unique_ptr<Partition::Info[]> mEntries;
-	uint8_t mCount{0};
+	Partition::Info::OwnedList mEntries;
 };
 
 } // namespace Storage

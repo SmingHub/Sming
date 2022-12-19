@@ -8,7 +8,11 @@ COMPONENT_INCDIRS := src/include include
 # Applications can provide file with custom SDK configuration settings
 CACHE_VARS += SDK_CUSTOM_CONFIG
 
-COMPONENT_RELINK_VARS += DISABLE_NETWORK DISABLE_WIFI
+COMPONENT_RELINK_VARS += DISABLE_NETWORK DISABLE_WIFI CREATE_EVENT_TASK
+
+ifeq ($(CREATE_EVENT_TASK),1)
+COMPONENT_CPPFLAGS += -DCREATE_EVENT_TASK
+endif
 
 SDK_BUILD_BASE := $(COMPONENT_BUILD_BASE)/sdk
 SDK_COMPONENT_LIBDIR := $(COMPONENT_BUILD_BASE)/lib
@@ -17,10 +21,21 @@ SDKCONFIG_H := $(SDK_BUILD_BASE)/config/sdkconfig.h
 
 SDK_LIBDIRS := \
 	esp_wifi/lib/$(ESP_VARIANT) \
-	xtensa/$(ESP_VARIANT)/ \
-	hal/$(ESP_VARIANT)/ \
+	xtensa/$(ESP_VARIANT) \
+	hal/$(ESP_VARIANT) \
 	$(ESP_VARIANT)/ld \
 	esp_rom/$(ESP_VARIANT)/ld
+
+# BLUETOOTH
+ifeq ($(ESP_VARIANT),esp32)
+SDK_LIBDIRS += bt/controller/lib_esp32/$(ESP_VARIANT)
+ENABLE_BLUETOOTH := 1
+else ifneq (,$(findstring $(ESP_VARIANT),esp32c3 esp32s3))
+SDK_LIBDIRS += bt/controller/lib_esp32c3_family/$(ESP_VARIANT)
+ENABLE_BLUETOOTH := 1
+else
+ENABLE_BLUETOOTH := 0
+endif
 
 ESP32_COMPONENT_PATH := $(COMPONENT_PATH)
 SDK_DEFAULT_PATH := $(ESP32_COMPONENT_PATH)/sdk
@@ -39,6 +54,7 @@ SDK_INCDIRS := \
 	bootloader_support/include_bootloader \
 	driver/$(ESP_VARIANT)/include \
 	driver/include \
+	esp_ipc/include \
 	esp_pm/include \
 	esp_rom/include/$(ESP_VARIANT) \
 	esp_rom/include \
@@ -70,6 +86,33 @@ SDK_INCDIRS := \
 	esp_wifi/esp32/include \
 	lwip/include/apps/sntp \
 	wpa_supplicant/include/esp_supplicant
+
+ifeq ($(ENABLE_BLUETOOTH),1)
+SDK_INCDIRS += \
+	bt/include/$(ESP_VARIANT)/include \
+	bt/common/api/include/api \
+	bt/common/btc/profile/esp/blufi/include  \
+	bt/common/btc/profile/esp/include  \
+	bt/common/osi/include	\
+	bt/host/nimble/nimble/nimble/include                     \
+	bt/host/nimble/nimble/nimble/host/include                \
+	bt/host/nimble/nimble/porting/nimble/include             \
+	bt/host/nimble/nimble/porting/npl/freertos/include       \
+	bt/host/nimble/nimble/nimble/host/services/ans/include   \
+	bt/host/nimble/nimble/nimble/host/services/bas/include   \
+	bt/host/nimble/nimble/nimble/host/services/dis/include   \
+	bt/host/nimble/nimble/nimble/host/services/gap/include   \
+	bt/host/nimble/nimble/nimble/host/services/gatt/include  \
+	bt/host/nimble/nimble/nimble/host/services/ias/include   \
+	bt/host/nimble/nimble/nimble/host/services/ipss/include  \
+	bt/host/nimble/nimble/nimble/host/services/lls/include   \
+	bt/host/nimble/nimble/nimble/host/services/tps/include   \
+	bt/host/nimble/nimble/nimble/host/util/include           \
+	bt/host/nimble/nimble/nimble/host/store/ram/include      \
+	bt/host/nimble/nimble/nimble/host/store/config/include   \
+	bt/host/nimble/esp-hci/include                           \
+	bt/host/nimble/port/include
+endif
 
 ifdef IDF_TARGET_ARCH_RISCV
 SDK_INCDIRS += \
@@ -151,6 +194,13 @@ SDK_ESP_WIFI_LIBS := \
 	pp \
 	smartconfig
 
+ifeq ($(ENABLE_BLUETOOTH),1)
+SDK_ESP_BLUETOOTH_LIBS := bt btdm_app
+ifneq (,$(filter $(ESP_VARIANT),esp32c3 esp32s3))
+SDK_ESP_BLUETOOTH_LIBS += btbb
+endif
+endif
+
 ifeq ($(ESP_VARIANT),esp32)
 SDK_ESP_WIFI_LIBS += rtc
 endif
@@ -167,6 +217,11 @@ EXTRA_LIBS := \
 
 ifneq ($(DISABLE_WIFI),1)
 EXTRA_LIBS += $(SDK_ESP_WIFI_LIBS)
+
+ifeq ($(ENABLE_BLUETOOTH),1)
+EXTRA_LIBS += $(SDK_ESP_BLUETOOTH_LIBS)
+endif
+
 endif
 
 LinkerScript = -T $(ESP_VARIANT).$1.ld

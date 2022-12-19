@@ -1,0 +1,47 @@
+From v4.6 to v4.7
+=================
+
+.. highlight:: c++
+
+Storage Partition methods
+-------------------------
+
+The ``Storage::Partition::getDevice()`` method has been removed because
+it could be used to bypass protections offered by the partitioning API.
+
+
+Storage Device Partitions
+-------------------------
+
+The ``CustomDevice`` class has been removed as it is simpler and more flexible to instead use PartitionTable methods.
+
+The :cpp:func:`Storage::Device::partitions` method returns a read-only (const) :cpp:class:`Storage::PartitionTable` object
+for general use to avoid inadvertent modification.
+
+Use the :cpp:func:`Storage::Device::editablePartitions` method to make partition table changes.
+
+For example::
+
+    part = device->createPartition("archive", Storage::Partition::SubType::Data::fwfs, startOffset, size);
+
+becomes::
+
+    part = device->editablePartitions().add("archive", Storage::Partition::SubType::Data::fwfs, startOffset, size);
+
+
+
+Custom Partition Types
+----------------------
+
+Creating custom partition types now require use of :cpp:struct:`Storage::Partition::FullType`.
+
+For example::
+
+    part = device->createPartition("fs_app", Storage::Partition::Type::data, 100, startOffset, size);
+
+becomes::
+
+    part = device->editablePartitions().add("fs_app", {Storage::Partition::Type::data, 100}, startOffset, size);
+
+Note how the ``type`` and ``subtype`` values are enclosed in braces (instantiating a ``FullType`` struct).
+This avoids confusing the subtype value ``100`` with the start offset.

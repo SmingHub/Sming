@@ -16,7 +16,7 @@
 #define DMEM_ATTR __attribute__((section(".bss")))
 #define SHMEM_ATTR
 
-#define ICACHE_FLASH_SECTION ".irom0.text"
+#define ICACHE_FLASH_SECTION ".text"
 
 #undef ICACHE_FLASH_ATTR
 #define ICACHE_FLASH_ATTR                                                                                              \

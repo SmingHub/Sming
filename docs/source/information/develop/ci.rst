@@ -19,47 +19,92 @@ are supported on all architectures.
 It also provides a mechanism for logging test results.
 
 
-Appveyor
---------
+Github Actions
+--------------
 
-We use `appveyor <https://ci.appveyor.com>`__ to manage all test builds.
+We use Github Actions to manage all test builds.
 This service is free of charge for open-source projects.
 
-Note: We used to use `Travis <https://travis-ci.org>`__ but this is no longer free of charge.
+.. note::
 
-The build is controlled via the ``appveyor.yml`` file in the sming root directory.
+   Appveyor has been removed in favour of GitHub Actions.
+
+   We used to use `Travis <https://travis-ci.org>`__ but this is no longer free of charge.
+
 Sming performs the build and test logic is handled using scripts, which are intended to be easily
 portable to other CI services if necessary.
 Mostly batch scripts (.cmd) are used for Windows, and bash scripts (.sh) for GNU/Linux but
 where practical powershell core is used as this runs on either.
 
-
 .. note::
 
-   Appveyor also supports macOS but at present Sming doesn't perform CI builds on that platform.
-
-
-Configuration
-~~~~~~~~~~~~~
-
-Sming developers may use integration testing for their own projects, libraries or framework changes.
-
-Configure as follows:
-
--   Visit https://www.appveyor.com/ and create an account. It's usually easiest to sign up using the ``GitHub`` link.
--   Select ``Projects`` from the toolbar and click on ``New Project``. If there are no projects listed make sure
-    AppVeyor has been authorised as a GitHub App.
--   You can now click ``New Build`` to build the default branch.
-    This may not be what you require so visit the project settings page and configure as necessary.
-
-By default, pull requests are built automatically.
-
-The `Rolling builds <https://www.appveyor.com/docs/build-configuration/#rolling-builds>`__
-setting ensures that only the most recent commit to a branch is built, so should usually be enabled.
+   Sming doesn't perform CI builds for MacOS.
 
 
 Library CI support
 ------------------
+
+Sming libraries may be separately built and tested whether or not they are included as part of
+the Sming repository (or a fork).
+
+There are two mechanisms available.
+
+GitHub Actions
+~~~~~~~~~~~~~~
+
+The ``library.yml`` re-useable workflow is provided, which takes care of these tasks:
+
+- Checking in the library to test
+- Checking in the Sming framework
+- Installing build tools
+- Builds all applications within the library's ``samples`` directory, for all supported architectures
+- If a test application is provided then that should be located in a ``test`` directory.
+  This is built for all architectures, and also executed for Host.
+
+Builds are handled using :source:`Tools/ci/library/Makefile`.
+
+See also https://docs.github.com/en/actions/using-workflows/reusing-workflows.
+
+To use this in a project, add a suitable workflow to the ``.github/workflows`` directory.
+Templates are provided in the ``.github/workflows/library`` directory.
+
+Here is the basic ``push`` scenario:
+
+.. code-block:: yaml
+
+   name: CI Push
+   on: [push]
+   jobs:
+     build:
+       uses: SmingHub/Sming/.github/workflows/library.yml@develop
+       # Inputs are all optional, defaults are shown
+       with:
+         # Repository to fetch Sming from
+         sming_repo: 'https://github.com/SmingHub/Sming'
+         # Sming branch to run against
+         sming_branch: 'develop'
+         # Library alias
+         alias: ''
+
+The ``sming_repo`` and ``sming_branch`` inputs are provided if your library requires modifications
+to Sming which are not (yet) in the main repository.
+
+The ``alias`` input is required where the library repository name does not correspond with
+the working title.
+For example, the ``jerryscript`` library is in a repository called ``Sming-jerryscript``,
+so must be checked out using a different name.
+If Sming contains a library (or Component) with the same name then it will be overridden,
+with a warning ``Multiple matches found for Component 'jerryscript'`` in the build log.
+
+The ``ci-dispatch.yml`` example demonstrates manual triggering, which allows these inputs to be easily changed.
+See https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow.
+
+Note that the workflow must be available in the library's default branch, or it will
+not appear in the github web page.
+
+
+Appveyor
+~~~~~~~~
 
 Appveyor may be configured to test a Sming library separately. Steps to enable:
 

@@ -16,7 +16,7 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE);  // 115200 by default
 	Serial.systemDebugOutput(false); // Allow debug output to serial
-	Serial.println("<-= Sming start =->");
+	Serial.println(_F("<-= Sming start =->"));
 
 	// Set higher CPU freq & disable wifi sleep
 	System.setCpuFrequency(CpuCycleClockFast::cpuFrequency());

@@ -41,7 +41,7 @@ using ip4_addr_t = ip_addr_t;
  * @brief A class to make it easier to handle and pass around IP addresses
  * @ingroup wiring
  */
-class IpAddress : public Printable
+class IpAddress
 {
 private:
 	ip_addr_t address{0}; ///< IPv4 address
@@ -191,7 +191,7 @@ public:
 		return *this;
 	}
 
-	size_t printTo(Print& p) const override;
+	size_t printTo(Print& p) const;
 };
 
 inline String toString(IpAddress address)

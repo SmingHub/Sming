@@ -6,6 +6,15 @@
 		},
 		"rom1": {
 			"subtype": "ota_1"
+		},
+		"spiffs0": {
+			"size": "512K"
+		},
+		"spiffs1": {
+			"address": "0x380000 if SMING_ARCH == 'Esp32' else 0x280000",
+			"size": "512K",
+			"type": "data",
+			"subtype": "spiffs"
 		}
 	}
 }

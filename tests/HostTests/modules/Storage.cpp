@@ -15,7 +15,7 @@ public:
 		return sizeof(uint32_t);
 	}
 
-	size_t getSize() const override
+	storage_size_t getSize() const override
 	{
 		return 0x40000000;
 	}
@@ -25,7 +25,7 @@ public:
 		return Type::unknown;
 	}
 
-	bool read(uint32_t address, void* dst, size_t size) override
+	bool read(storage_size_t address, void* dst, size_t size) override
 	{
 		for(unsigned i = 0; i < size; ++i) {
 			static_cast<uint8_t*>(dst)[i] = address + i;
@@ -33,12 +33,12 @@ public:
 		return true;
 	}
 
-	bool write(uint32_t address, const void* src, size_t size) override
+	bool write(storage_size_t address, const void* src, size_t size) override
 	{
 		return false;
 	}
 
-	bool erase_range(uint32_t address, size_t size) override
+	bool erase_range(storage_size_t address, storage_size_t size) override
 	{
 		return false;
 	}
@@ -54,7 +54,7 @@ public:
 	void execute() override
 	{
 		auto dev = new TestDevice;
-		Storage::registerDevice(dev);
+		REQUIRE(Storage::registerDevice(dev));
 
 		listPartitions();
 
@@ -63,10 +63,8 @@ public:
 
 	void listPartitions()
 	{
-		for(auto it = Storage::findPartition(); it; ++it) {
-			auto part = *it;
-			Serial.print("* ");
-			Storage::Debug::printPartition(Serial, part);
+		for(auto part : Storage::findPartition()) {
+			Serial << "* " << part << endl;
 
 			testRead(part, 0xE0, 0x20, true);
 			testRead(part, 10, 20, true);

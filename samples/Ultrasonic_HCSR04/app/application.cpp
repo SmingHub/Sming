@@ -28,6 +28,7 @@ void measure()
 
 void init()
 {
+	Serial.begin(SERIAL_BAUD_RATE);
 	ultrasonic.begin(TRIG_PIN, ECHO_PIN);
 	procTimer.initializeMs(500, measure).start();
 }
