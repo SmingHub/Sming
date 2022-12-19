@@ -29,21 +29,14 @@ You can also try Sming without installing anything locally. We have an [interact
 
 The purpose of Sming is to simplify the creation of embedded applications. The documentation will help you get started in no time.
 
-- [**Documentation for version 4.6.0**](https://sming.readthedocs.io/en/stable) - current stable version.
-- [Documentation for version 4.2.x](https://sming.readthedocs.io/en/4.2.2) - Long Term Support (LTS) version.
+- [**Documentation for version 4.7.0**](https://sming.readthedocs.io/en/stable) - current stable version.
 - [Documentation for latest](https://sming.readthedocs.io/en/latest) - development version.
 
 ## Releases
 
 ### Stable
 
-- [Sming V4.6.0](https://github.com/SmingHub/Sming/releases/tag/4.6.0) - great new features, performance and stability improvements.
-
-
-### Long Term Support (LTS)
-
-- Sming V4.2.x is our LTS version which will be supported until the end of 2021.
-
+- [Sming V4.7.0](https://github.com/SmingHub/Sming/releases/tag/4.7.0) - great new features, performance and stability improvements.
 
 ### Development
 
@@ -52,7 +45,6 @@ To follow the latest development you will need to clone our `develop` branch:
 ```
 git clone https://github.com/SmingHub/Sming.git
 ```
-
 
 
 ## Examples
