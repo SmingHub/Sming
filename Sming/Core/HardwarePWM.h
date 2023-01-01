@@ -29,6 +29,9 @@
 
 #include <cstdint>
 #include <driver/pwm.h>
+#if SMING_SOC == Esp32
+	#include "hal/ledc_types.h"
+#endif
 
 #define PWM_BAD_CHANNEL 0xff ///< Invalid PWM channel
 
@@ -121,8 +124,21 @@ public:
 	/** @brief  This function is used to actually update the PWM.
 	 */
 	void update();
+	
+	#if SMING_ARCH == Esp32
+		uint32_t getFrequency(uint8_t pin);
+	#endif
 
 private:
+#if SMING_ARCH == Esp32
+	ledc_mode_t pinToGroup(uint8_t pin);
+	ledc_channel_t pinToChannel(uint8_t pin);
+	ledc_timer_t pinToTimer(uint8_t pin);
+	uint32_t periodToFrequency(uint32_t period);
+	uint32_t frequencyToPeriod(uint32_t freq);
+	uint32_t maxDuty(ledc_timer_bit_t bits);
+#endif
+
 	uint8_t channel_count;
 	uint8_t channels[PWM_CHANNEL_NUM_MAX];
 	uint32_t maxduty;
