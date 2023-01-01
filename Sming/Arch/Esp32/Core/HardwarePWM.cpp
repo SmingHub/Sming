@@ -33,6 +33,7 @@
  * |  | | h_timer 1 | --> |     |                 |   | | l_timer 1 | --> |     |                 | |
  * |  | +-----------+     |     |     +--------+  |   | +-----------+     |     |     +--------+  | |
  * |  |                   |     | --> | h_ch 3 |  |   |                   |     | --> | l_ch 3 |  | |
+ * |  |                   |     |     +--------+  |   |                   |     |     +--------+  | |
  * |  |                   | MUX |                 |   |                   | MUX |                 | |
  * |  |                   |     |     +--------+  |   |                   |     |     +--------+  | |
  * |  |                   |     | --> | h_ch 4 |  |   |                   |     | --> | l_ch 4 |  | |
@@ -108,6 +109,9 @@
  * functions are basically per pin, this needs to be an extension of the overal model, exposing at least timers. 
  * This, too, will require a compatible "basic" interface and an advanced interface that allows assiging pins (channels) 
  * to timers and the configuration of the timers themselves. 
+ * The esp_idf does not provide a way to read the bit width configured for a channel, but I think it'll be useful to be able
+ * to read back this value, not least to find the value for getMaxDuty() for a channel. It will either have to be stored in the
+ * module or maybe read from the hardware directly (LEDC_[HL]STIMERx_CONF_REG & 0x1f)
  * 
  * hardware technical reference: 
  * =============================
