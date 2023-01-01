@@ -7,10 +7,51 @@
  * HardwarePWM.cpp
  *
  * Original Author: https://github.com/hrsavla
+ * Esp32 version:   https://github.com/pljakobs
  *
- * This HardwarePWM library enables Sming framework user to use ESP SDK PWM API
- * Period of PWM is fixed to 1000us / Frequency = 1khz
- * Duty at 100% = 22222. Duty at 0% = 0
+ * This HardwarePWM library enables Sming framework uses to use the ESP32 ledc PWM api
+ * 
+ * the ESP32 PWM Hardware is much more powerful than the ESP8266, allowing wider PWM timers (up to 20 bit)
+ * as well as much higher PWM frequencies (up to 40MHz for a 1 Bit wide PWM)
+ * 
+ * Timer width for PWM:
+ * ====================
+ * esp32   SOC_LEDC_TIMER_BIT_WIDE_NUM  (20)
+ * esp32c3 SOC_LEDC_TIMER_BIT_WIDE_NUM  (14)
+ * esp32s2 SOC_LEDC_TIMER_BIT_WIDE_NUM  (14)
+ * esp32s3 SOC_LEDC_TIMER_BIT_WIDE_NUM  (14)
+ * 
+ * Number of Channels:
+ * ===================
+ * esp32   SOC_LEDC_CHANNEL_NUM         (8)
+ * esp32c3 SOC_LEDC_CHANNEL_NUM         (6)
+ * esp32s2 SOC_LEDC_CHANNEL_NUM         (8)
+ * esp32s3 SOC_LEDC_CHANNEL_NUM 		 8
+ *
+ * Some Architectures support a mode called HIGHSPEED_MODE which is essentially another full block of PWM hardware 
+ * that adds SOC_LEDC_CHANNEL_NUM channels. 
+ * Those Architectures have SOC_LEDC_SUPPORT_HS_MODE defined as 1.
+ * In esp-idf-4.3 that's currently only the esp32 SOC 
+ * 
+ * Supports highspeed mode:
+ * ========================
+ * esp32 SOC_LEDC_SUPPORT_HS_MODE	(1)
+ *
+ * ToDo: implement awareness of hs mode availablility
+ * 
+ * hardware technical reference: 
+ * =============================
+ * https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf#ledpwm
+ * 
+ * Overview of the whole ledc-system here: 
+ * https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/ledc.html
+ * 
+ * the ledc interface also exposes some advanced functions such as fades that are then done in hardware. 
+ * ToDo: implement a Sming interface for fades
+ * 
+
+
+
  * You can use function setPeriod() to change frequency/period.
  * Calculate the max duty as per the formulae give in ESP8266 SDK
  * Max Duty = (Period * 1000) / 45
