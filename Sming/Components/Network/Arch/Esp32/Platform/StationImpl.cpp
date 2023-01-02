@@ -127,7 +127,7 @@ void StationImpl::enable(bool enabled, bool save)
 		switch(mode) {
 		case WIFI_MODE_STA:
 		case WIFI_MODE_APSTA:
-			return; // No change required
+			break;
 		case WIFI_MODE_AP:
 			mode = WIFI_MODE_APSTA;
 			break;
@@ -155,7 +155,9 @@ void StationImpl::enable(bool enabled, bool save)
 	}
 	ESP_ERROR_CHECK(esp_wifi_set_storage(save ? WIFI_STORAGE_FLASH : WIFI_STORAGE_RAM));
 	ESP_ERROR_CHECK(esp_wifi_set_mode(mode));
-	ESP_ERROR_CHECK(esp_wifi_start());
+	if(enabled) {
+		ESP_ERROR_CHECK(esp_wifi_start());
+	}
 }
 
 bool StationImpl::isEnabled() const
