@@ -451,13 +451,13 @@ endif
 define GenerateComponentTargetRule
 ifeq (App,$1)
 $2: $1-build
-	$(Q) touch $$@
+	$(Q) touch -c "$$@"
 else ifeq (,$(wildcard $2))
 $2: $1-build
-	$(Q) touch $$@
+	$(Q) touch -c "$$@"
 else ifneq (,$(filter $1,$(FULL_COMPONENT_BUILD)))
 $2: $1-build
-	$(Q) touch $$@
+	$(Q) touch -c "$$@"
 endif
 endef
 
