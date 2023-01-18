@@ -222,7 +222,7 @@ bool StationImpl::isEnabledDHCP() const
 		return false;
 	}
 	esp_netif_dhcp_status_t status;
-	if(esp_netif_dhcps_get_status(stationNetworkInterface, &status) != ESP_OK) {
+	if(esp_netif_dhcpc_get_status(stationNetworkInterface, &status) != ESP_OK) {
 		return false;
 	}
 
