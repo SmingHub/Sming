@@ -180,15 +180,9 @@ def get_drives():
             if len(words) >= 3 and words[1] == "2" and words[2] == "FAT":
                 drives.append(words[0])
     else:
-        rootpath = "/media"
-        if sys.platform == "darwin":
-            rootpath = "/Volumes"
-        elif sys.platform == "linux":
-            tmp = rootpath + "/" + os.environ["USER"]
-            if os.path.isdir(tmp):
-                rootpath = tmp
-        for d in os.listdir(rootpath):
-            drives.append(os.path.join(rootpath, d))
+        r = subprocess.check_output(["findmnt", "-o", "TARGET", "-t", "vfat", "-ln"])
+        for dev in r.decode().split('\n'):
+            drives.append(dev)
 
     def has_info(d):
         try:
