@@ -131,7 +131,7 @@ uint32_t readAligned(void* to, uint32_t fromaddr, uint32_t size)
 		(void)xip_ctrl_hw->stream_fifo;
 	}
 
-	xip_ctrl_hw->stream_addr = flashaddr;
+	xip_ctrl_hw->stream_addr = XIP_NOCACHE_NOALLOC_BASE + fromaddr;
 	xip_ctrl_hw->stream_ctr = transfer_count;
 
 	/*
