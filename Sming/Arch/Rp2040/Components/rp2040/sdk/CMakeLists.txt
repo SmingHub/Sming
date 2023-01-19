@@ -73,4 +73,5 @@ target_link_libraries(pico
 	pico_standard_link
 	pico_unique_id
 	pico_audio_i2s
+	pico_cyw43_arch_lwip_poll
 )

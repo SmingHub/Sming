@@ -21,9 +21,17 @@ extern void init();
 extern void hw_timer_init();
 extern void system_init_timers();
 extern void system_service_timers();
+extern void rp2040_network_initialise();
+extern void rp2040_network_service();
 
 namespace
 {
+#ifdef PICO_DEFAULT_LED_PIN
+#define PICO_HDD_ACTIVITY_LED_PINMASK BIT(PICO_DEFAULT_LED_PIN)
+#else
+#define PICO_HDD_ACTIVITY_LED_PINMASK 0
+#endif
+
 #ifdef ENABLE_BOOTSEL
 uint32_t last_bootsel_check;
 
@@ -72,7 +80,7 @@ void check_bootsel()
 	last_bootsel_check = ticks;
 
 	if(get_bootsel_button()) {
-		reset_usb_boot(BIT(PICO_DEFAULT_LED_PIN), 0);
+		reset_usb_boot(PICO_HDD_ACTIVITY_LED_PINMASK, 0);
 	}
 }
 
@@ -110,12 +118,19 @@ extern "C" int main(void)
 
 	Storage::initialize();
 
+#ifndef DISABLE_NETWORK
+	rp2040_network_initialise();
+#endif
+
 	init(); // User code init
 
 	while(true) {
 		system_soft_wdt_feed();
 		system_service_tasks();
 		system_service_timers();
+#ifndef DISABLE_NETWORK
+		rp2040_network_service();
+#endif
 #ifdef ENABLE_BOOTSEL
 		check_bootsel();
 #endif

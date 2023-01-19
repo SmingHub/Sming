@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * WifiEventsImpl.h - Esp8266 WiFi events
+ * WifiEventsImpl.h
  *
  ****/
 
@@ -12,6 +12,14 @@
 
 #include <Platform/WifiEvents.h>
 #include <Platform/Station.h>
+#include <pico/cyw43_arch.h>
+
+namespace SmingInternal::Network
+{
+struct EventInfo {
+	cyw43_t& self;
+	const cyw43_async_event_t& ev;
+};
 
 class WifiEventsImpl : public WifiEventsClass
 {
@@ -20,4 +28,12 @@ public:
 
 public:
 	WifiEventsImpl();
+
+	void stationChanged(struct netif* netif);
+
+	void eventHandler(EventInfo& info);
 };
+
+extern WifiEventsImpl events;
+
+} // namespace SmingInternal::Network

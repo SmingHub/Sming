@@ -6,13 +6,23 @@ else
 export PICO_SDK_PATH := $(COMPONENT_PATH)/pico-sdk
 endif
 
-COMPONENT_RELINK_VARS += PICO_BOARD
 ifndef PICO_BOARD
+ifeq ($(DISABLE_WIFI),1)
 export PICO_BOARD=pico
+else
+export PICO_BOARD=pico_w
+endif
 endif
 
+COMPONENT_VARS := PICO_BOARD DISABLE_WIFI DISABLE_NETWORK
+
+PICO_SDK_VARS := PICO_BOARD=$(PICO_BOARD)
+PICO_SDK_LIBHASH := $(call CalculateVariantHash,PICO_SDK_VARS)
+
 GLOBAL_CFLAGS += \
-	-DPICO_ON_DEVICE=1
+	-DPICO_ON_DEVICE=1 \
+	-DCYW43_LWIP=1 \
+	-DPICO_CYW43_ARCH_POLL=1
 
 # Press BOOTSEL to reboot into programming mode
 COMPONENT_RELINK_VARS := ENABLE_BOOTSEL
@@ -42,6 +52,7 @@ SDK_INTERFACES := \
 	common/pico_util \
 	rp2040/hardware_regs \
 	rp2040/hardware_structs \
+	rp2_common/cyw43_driver \
 	rp2_common/hardware_gpio \
 	rp2_common/pico_platform \
 	rp2_common/hardware_base \
@@ -67,7 +78,8 @@ SDK_INTERFACES := \
 	rp2_common/pico_int64_ops \
 	rp2_common/pico_float \
 	rp2_common/pico_runtime \
-	rp2_common/pico_unique_id
+	rp2_common/pico_unique_id \
+	rp2_common/pico_cyw43_arch
 
 COMPONENT_INCDIRS := \
 	src/include \
@@ -77,7 +89,7 @@ COMPONENT_INCDIRS := \
 COMPONENT_SRCDIRS := src
 
 RP2040_COMPONENT_DIR := $(COMPONENT_PATH)
-PICO_BUILD_DIR	:= $(COMPONENT_BUILD_BASE)/sdk
+PICO_BUILD_DIR	:= $(COMPONENT_BUILD_BASE)/sdk-$(PICO_SDK_LIBHASH)
 PICO_BASE_DIR	:= $(PICO_BUILD_DIR)/generated/pico_base
 PICO_CONFIG		:= $(PICO_BASE_DIR)/pico/config_autogen.h
 PICO_LIB		:= $(PICO_BUILD_DIR)/libpico.a
@@ -101,11 +113,12 @@ RP2040_CMAKE_OPTIONS := \
 COMPONENT_PREREQUISITES := $(PICO_CONFIG)
 
 BOOTLOADER := $(PICO_BUILD_DIR)/pico-sdk/src/rp2_common/boot_stage2/bs2_default_padded_checksummed.S
+CYW43_FIRMWARE := $(PICO_SDK_PATH)/lib/cyw43-driver/firmware/43439A0-7.95.49.00.combined
 
 COMPONENT_TARGETS := \
 	$(PICO_LIB)
 
-$(PICO_CONFIG): $(PICO_BUILD_DIR)
+$(PICO_CONFIG): $(PICO_BUILD_DIR) $(PICO_SDK_PATH)/lib/cyw43-driver/.submodule $(PICO_SDK_PATH)/lib/lwip/.submodule
 	$(Q) cd $(PICO_BUILD_DIR) && $(CMAKE) $(RP2040_CMAKE_OPTIONS) $(RP2040_COMPONENT_DIR)/sdk
 
 $(COMPONENT_RULE)$(PICO_LIB):

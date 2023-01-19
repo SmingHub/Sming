@@ -71,7 +71,19 @@ COMPONENT_DEPENDS += \
 
 else ifeq ($(SMING_ARCH),Rp2040)
 
-COMPONENT_DEPENDS += \
-	lwip
+COMPONENT_RELINK_VARS += DISABLE_WIFI
+
+PICO_SDK_PATH := $(ARCH_COMPONENTS)/rp2040/pico-sdk
+
+COMPONENT_INCDIRS += \
+	$(ARCH_COMPONENTS)/rp2040/sdk
+
+ifneq ($(DISABLE_NETWORK),1)
+COMPONENT_INCDIRS += \
+	$(PICO_SDK_PATH)/lib/cyw43-driver \
+	$(PICO_SDK_PATH)/lib/cyw43-driver/src \
+	$(PICO_SDK_PATH)/lib/lwip/src/include \
+	$(PICO_SDK_PATH)/src/rp2_common/pico_lwip/include
+endif
 
 endif
