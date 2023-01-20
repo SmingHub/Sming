@@ -3,14 +3,19 @@
 #include <JsonObjectStream.h>
 #include <Data/Stream/TemplateFlashMemoryStream.h>
 
+namespace
+{
 HttpServer server;
 FtpServer ftp;
 
-BssList networks;
+HashMap<String, BssInfo> networks;
+
 String network, password;
 Timer connectionTimer;
 
 String lastModified;
+
+SimpleTimer scanTimer;
 
 // Instead of using a SPIFFS file, here we demonstrate usage of imported Flash Strings
 IMPORT_FSTR_LOCAL(flashSettings, PROJECT_DIR "/web/build/settings.html")
@@ -90,7 +95,7 @@ void onFile(HttpRequest& request, HttpResponse& response)
 
 void onAjaxNetworkList(HttpRequest& request, HttpResponse& response)
 {
-	JsonObjectStream* stream = new JsonObjectStream();
+	JsonObjectStream* stream = new JsonObjectStream(4096);
 	JsonObject json = stream->getRoot();
 
 	json["status"] = (bool)true;
@@ -103,16 +108,16 @@ void onAjaxNetworkList(HttpRequest& request, HttpResponse& response)
 	}
 
 	JsonArray netlist = json.createNestedArray("available");
-	for(auto& nw : networks) {
-		if(nw.hidden) {
+	for(auto nw : networks) {
+		if(nw->hidden) {
 			continue;
 		}
 		JsonObject item = netlist.createNestedObject();
-		item["id"] = nw.getHashId();
+		item["id"] = nw->getHashId();
 		// Copy full string to JSON buffer memory
-		item["title"] = nw.ssid;
-		item["signal"] = nw.rssi;
-		item["encryption"] = nw.getAuthorizationMethodName();
+		item["title"] = nw->ssid;
+		item["signal"] = nw->rssi;
+		item["encryption"] = nw->getAuthorizationMethodName();
 	}
 
 	response.setAllowCrossDomainOrigin("*");
@@ -204,21 +209,38 @@ void startServers()
 	startWebServer();
 }
 
+void scanNetworks();
+
 void networkScanCompleted(bool succeeded, BssList& list)
 {
-	if(!succeeded) {
-		return;
-	}
-
-	networks.clear();
-	for(auto& nw : list) {
-		if(!nw.hidden && nw.ssid.length() > 0) {
-			networks.add(nw);
+	if(succeeded) {
+		networks.clear();
+		for(auto& nw : list) {
+			if(nw.hidden || nw.ssid.length() == 0) {
+				continue;
+			}
+			int i = networks.indexOf(nw.ssid);
+			if(i < 0 || nw.rssi > networks.valueAt(i).rssi) {
+				networks[nw.ssid] = nw;
+			}
 		}
+
+		// networks.sort([](const auto& a, const auto& b) { return b.value().rssi < a.value().rssi; });
 	}
 
-	networks.sort([](auto& a, auto& b) { return b.rssi - a.rssi; });
+	scanTimer.initializeMs<30000>(scanNetworks);
+	scanTimer.startOnce();
 }
+
+void scanNetworks()
+{
+	if(!WifiStation.startScan(networkScanCompleted)) {
+		scanTimer.initializeMs<5000>(scanNetworks);
+		scanTimer.startOnce();
+	}
+}
+
+} // namespace
 
 void init()
 {
@@ -244,7 +266,7 @@ void init()
 		}
 	}
 
-	WifiStation.startScan(networkScanCompleted);
+	scanNetworks();
 
 	// Start AP for configuration
 	WifiAccessPoint.enable(true);
