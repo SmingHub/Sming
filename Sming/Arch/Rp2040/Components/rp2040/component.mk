@@ -113,16 +113,26 @@ RP2040_CMAKE_OPTIONS := \
 COMPONENT_PREREQUISITES := $(PICO_CONFIG)
 
 BOOTLOADER := $(PICO_BUILD_DIR)/pico-sdk/src/rp2_common/boot_stage2/bs2_default_padded_checksummed.S
+
 CYW43_FIRMWARE := $(PICO_SDK_PATH)/lib/cyw43-driver/firmware/43439A0-7.95.49.00.combined
+
+COMPONENT_RELINK_VARS += LINK_CYW43_FIRMWARE
+LINK_CYW43_FIRMWARE ?= 1
+ifeq ($(LINK_CYW43_FIRMWARE),1)
+COMPONENT_CPPFLAGS += -DCYW43_FIRMWARE=\"$(CYW43_FIRMWARE)\"
+endif
 
 COMPONENT_TARGETS := \
 	$(PICO_LIB)
 
-$(PICO_CONFIG): $(PICO_BUILD_DIR) $(PICO_SDK_PATH)/lib/cyw43-driver/.submodule $(PICO_SDK_PATH)/lib/lwip/.submodule
+$(PICO_CONFIG): $(PICO_BUILD_DIR) $(PICO_SDK_PATH)/lib/cyw43-driver.patch $(PICO_SDK_PATH)/lib/cyw43-driver/.submodule $(PICO_SDK_PATH)/lib/lwip/.submodule
 	$(Q) cd $(PICO_BUILD_DIR) && $(CMAKE) $(RP2040_CMAKE_OPTIONS) $(RP2040_COMPONENT_DIR)/sdk
 
 $(COMPONENT_RULE)$(PICO_LIB):
 	$(Q) cd $(@D) && $(NINJA)
+
+$(PICO_SDK_PATH)/lib/cyw43-driver.patch: $(RP2040_COMPONENT_DIR)/cyw43-driver.patch
+	cp $< $@
 
 ifdef COMPONENT_RULE
 $(PICO_BUILD_DIR):

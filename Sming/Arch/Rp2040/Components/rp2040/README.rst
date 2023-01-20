@@ -28,3 +28,16 @@ Configuration variables
 
     This setting is provided to make it easy to re-program RP2040 boards during development.
     When enabled, Sming monitors the BOOTSEL button and restartS in boot mode if pressed.
+
+
+.. envvar:: LINK_CYW43_FIRMWARE
+
+    default: 1
+
+    The Pico-W board requires a ~250K firmware BLOB which can be either linked into the application
+    image (the default).
+
+    The alternative is to place the firmware in a separate flash partition and thus reduce the size of
+    the application image. This avoids wasted application image space when using OTA:
+
+        make LINK_CYW43_FIRMWARE=0 HWCONFIG_OPT=cyw43_fw
