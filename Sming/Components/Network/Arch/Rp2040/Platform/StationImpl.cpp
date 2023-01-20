@@ -15,11 +15,15 @@
 
 #include <debug_progmem.h>
 
+#define SCAN_TIMEOUT_MS 30000
+
 StationClass& WifiStation{SmingInternal::Network::station};
 
 namespace SmingInternal::Network
 {
 BssList StationImpl::scanResults;
+SimpleTimer StationImpl::scanTimer;
+
 StationImpl station;
 
 void StationImpl::enable(bool enabled, bool save)
@@ -203,7 +207,7 @@ void StationImpl::eventHandler(EventInfo& info)
 	switch(info.ev.event_type) {
 	case CYW43_EV_ESCAN_RESULT:
 		if(info.self.wifi_scan_state == 1 && info.ev.status == CYW43_STATUS_SUCCESS) {
-			station.scanCompleted();
+			station.scanCompleted(true);
 		}
 		break;
 
@@ -220,17 +224,23 @@ void StationImpl::eventHandler(EventInfo& info)
 	}
 }
 
-void StationImpl::scanCompleted()
+void StationImpl::scanCompleted(bool result)
 {
+	debug_i("scanCompleted(), result %u", result);
+	scanTimer.stop();
 	if(scanCompletedCallback) {
-		scanCompletedCallback(true, scanResults);
-		scanResults.clear();
+		scanCompletedCallback(result, scanResults);
+		scanCompletedCallback = nullptr;
 	}
+	scanResults.clear();
 }
 
 bool StationImpl::startScan(ScanCompletedDelegate scanCompleted)
 {
-	debug_i("%s", __PRETTY_FUNCTION__);
+	if(scanCompletedCallback) {
+		debug_e("[STA] Scan in progress");
+		return false;
+	}
 
 	int link_status = cyw43_tcpip_link_status(&cyw43_state, CYW43_ITF_STA);
 	switch(link_status) {
@@ -246,16 +256,10 @@ bool StationImpl::startScan(ScanCompletedDelegate scanCompleted)
 		return false;
 	}
 
-	// if (cyw43_wifi_scan_active(&cyw43_state)) {
-	// 	return false;
-	// }
-
 	auto scan_result = [](void* env, const cyw43_ev_scan_result_t* result) -> int {
-		if(!result) {
+		if(!result || !station.scanCompletedCallback) {
 			return 0;
 		}
-
-		// debug_hex(INFO, "RES", result, sizeof(*result));
 
 		MacAddress bssid{result->bssid};
 		for(auto& r : scanResults) {
@@ -265,12 +269,16 @@ bool StationImpl::startScan(ScanCompletedDelegate scanCompleted)
 		}
 
 		auto r = new BssInfo{
-			.ssid = String(reinterpret_cast<const char*>(result->ssid), result->ssid_len),
 			.bssid = bssid,
 			.authorization = translateAuthMode(result->auth_mode),
 			.channel = uint8_t(result->channel),
 			.rssi = result->rssi,
 		};
+		if(result->ssid_len == 0 || result->ssid[0] == 0) {
+			r->hidden = true;
+		} else {
+			r->ssid.setString(reinterpret_cast<const char*>(result->ssid), result->ssid_len);
+		}
 		scanResults.addElement(r);
 		return 0;
 	};
@@ -281,6 +289,9 @@ bool StationImpl::startScan(ScanCompletedDelegate scanCompleted)
 		debug_e("startScan failed %d", err);
 		return false;
 	}
+
+	scanTimer.initializeMs<SCAN_TIMEOUT_MS>([]() { station.scanCompleted(false); });
+	scanTimer.startOnce();
 
 	return true;
 }

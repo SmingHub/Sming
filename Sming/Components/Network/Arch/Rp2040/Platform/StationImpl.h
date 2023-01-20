@@ -12,6 +12,7 @@
 
 #include <Platform/Station.h>
 #include <Platform/System.h>
+#include <SimpleTimer.h>
 #include <Data/CString.h>
 #include <memory>
 
@@ -67,9 +68,10 @@ protected:
 	void onSystemReady() override;
 
 private:
-	void scanCompleted();
+	void scanCompleted(bool result);
 
 	static BssList scanResults;
+	static SimpleTimer scanTimer;
 	Config cfg{};
 	CString hostname;
 	bool enabled{false};
