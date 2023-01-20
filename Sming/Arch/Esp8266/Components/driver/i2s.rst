@@ -1,5 +1,5 @@
-I2S: Inter-IC Serial communcations
-==================================
+I2S: Inter-IC Serial communications
+===================================
 
 Introduction
 ------------

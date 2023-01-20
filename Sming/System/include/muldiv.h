@@ -69,7 +69,7 @@ template <uint64_t num, uint64_t den, typename ValType> struct MuldivLimits {
 	}
 
 	/**
-	 * @brief Get the maximum value which can be used for a muldiv calcuation without overflowing
+	 * @brief Get the maximum value which can be used for a muldiv calculation without overflowing
 	 * @retval ValType Values greater than this will return `overflow()`
 	 */
 	static constexpr ValType maxValue()
