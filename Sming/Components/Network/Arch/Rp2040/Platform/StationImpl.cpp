@@ -43,10 +43,36 @@ bool StationImpl::isEnabled() const
 bool StationImpl::config(const Config& cfg)
 {
 	this->cfg = cfg;
-	return connect();
+	return enabled ? internalConnect() : true;
 }
 
 bool StationImpl::connect()
+{
+	if(cfg.ssid.length() == 0) {
+		return false;
+	}
+
+	int link_status = cyw43_tcpip_link_status(&cyw43_state, CYW43_ITF_STA);
+	debug_i("link_status %d", link_status);
+	switch(link_status) {
+	case CYW43_LINK_JOIN:
+		return true;
+	case CYW43_LINK_NOIP:
+		cyw43_cb_tcpip_set_link_up(&cyw43_state, CYW43_ITF_STA);
+		return true;
+	case CYW43_LINK_UP:
+		return true;
+	case CYW43_LINK_FAIL:
+	case CYW43_LINK_NONET:
+	case CYW43_LINK_BADAUTH:
+	case CYW43_LINK_DOWN:
+		return internalConnect();
+	default:
+		return false;
+	}
+}
+
+bool StationImpl::internalConnect()
 {
 	unsigned auth = cfg.password.length() ? CYW43_AUTH_WPA2_AES_PSK : CYW43_AUTH_OPEN;
 	// Note: `channel` is ignored if `bssid` is not set. Leave it at 0 and see what happens

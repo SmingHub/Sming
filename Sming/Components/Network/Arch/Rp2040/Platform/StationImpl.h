@@ -68,6 +68,7 @@ protected:
 	void onSystemReady() override;
 
 private:
+	bool internalConnect();
 	void scanCompleted(bool result);
 
 	static BssList scanResults;
