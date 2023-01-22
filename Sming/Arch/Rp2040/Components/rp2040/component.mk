@@ -6,12 +6,11 @@ else
 export PICO_SDK_PATH := $(COMPONENT_PATH)/pico-sdk
 endif
 
-ifndef PICO_BOARD
 ifeq ($(DISABLE_WIFI),1)
-export PICO_BOARD=pico
+export PICO_BOARD ?= pico
 else
-export PICO_BOARD=pico_w
-endif
+export PICO_BOARD ?= pico_w
+COMPONENT_DEPENDS += uzlib
 endif
 
 COMPONENT_VARS := PICO_BOARD DISABLE_WIFI DISABLE_NETWORK
@@ -114,7 +113,8 @@ COMPONENT_PREREQUISITES := $(PICO_CONFIG)
 
 BOOTLOADER := $(PICO_BUILD_DIR)/pico-sdk/src/rp2_common/boot_stage2/bs2_default_padded_checksummed.S
 
-CYW43_FIRMWARE := $(PICO_SDK_PATH)/lib/cyw43-driver/firmware/43439A0-7.95.49.00.combined
+DEBUG_VARS += CYW43_FIRMWARE
+CYW43_FIRMWARE := $(COMPONENT_BUILD_BASE)/cyw43-fw.gz
 
 COMPONENT_RELINK_VARS += LINK_CYW43_FIRMWARE
 LINK_CYW43_FIRMWARE ?= 1
@@ -123,7 +123,8 @@ COMPONENT_CPPFLAGS += -DCYW43_FIRMWARE=\"$(CYW43_FIRMWARE)\"
 endif
 
 COMPONENT_TARGETS := \
-	$(PICO_LIB)
+	$(PICO_LIB) \
+	$(CYW43_FIRMWARE)
 
 $(PICO_CONFIG): $(PICO_BUILD_DIR) $(PICO_SDK_PATH)/lib/cyw43-driver.patch $(PICO_SDK_PATH)/lib/cyw43-driver/.submodule $(PICO_SDK_PATH)/lib/lwip/.submodule
 	$(Q) cd $(PICO_BUILD_DIR) && $(CMAKE) $(RP2040_CMAKE_OPTIONS) $(RP2040_COMPONENT_DIR)/sdk
@@ -133,6 +134,11 @@ $(COMPONENT_RULE)$(PICO_LIB):
 
 $(PICO_SDK_PATH)/lib/cyw43-driver.patch: $(RP2040_COMPONENT_DIR)/cyw43-driver.patch
 	cp $< $@
+
+$(COMPONENT_RULE)$(CYW43_FIRMWARE):
+	@echo ">>> Creating CYW43 Firmware BLOB ..."
+	$(Q) cd "$(RP2040_COMPONENT_DIR)/firmware" && ./build.sh $@
+	@echo "Created $@"
 
 ifdef COMPONENT_RULE
 $(PICO_BUILD_DIR):
