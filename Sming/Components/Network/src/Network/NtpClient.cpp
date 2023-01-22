@@ -63,7 +63,7 @@ void NtpClient::requestTime()
 		// an ip address in dotted decimal form or if the host is found in dns cache.
 		// however I'm not sure if the dns cache is working since this never seems to
 		// be called for a host lookup other than an ip address.
-		// Doesn't really matter since the loockup will be fast anyways, the host
+		// Doesn't really matter since the lookup will be fast anyways, the host
 		// is most likely found in the dns cache of the next node the query is sent to.
 		internalRequestTime(resolvedIp);
 		break;
