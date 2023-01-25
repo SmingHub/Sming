@@ -1,5 +1,27 @@
+diff --git a/src/cyw43_ctrl.c b/src/cyw43_ctrl.c
+index 30f3d83..5329372 100644
+--- a/src/cyw43_ctrl.c
++++ b/src/cyw43_ctrl.c
+@@ -277,13 +277,17 @@ STATIC const char *const cyw43_async_event_name_table[89] = {
+     [CYW43_EV_SET_SSID] = "SET_SSID",
+     [CYW43_EV_JOIN] = "JOIN",
+     [CYW43_EV_AUTH] = "AUTH",
++    [CYW43_EV_AUTH_IND] = "AUTH_IND",
+     [CYW43_EV_DEAUTH_IND] = "DEAUTH_IND",
+     [CYW43_EV_ASSOC] = "ASSOC",
++    [CYW43_EV_ASSOC_IND] = "ASSOC_IND",
+     [CYW43_EV_DISASSOC] = "DISASSOC",
+     [CYW43_EV_DISASSOC_IND] = "DISASSOC_IND",
+     [CYW43_EV_LINK] = "LINK",
++    [CYW43_EV_PROBREQ_MSG] = "PROBREQ_MSG",
+     [CYW43_EV_PSK_SUP] = "PSK_SUP",
+     [CYW43_EV_ESCAN_RESULT] = "ESCAN_RESULT",
++    [CYW43_EV_P2P_PROBREQ_MSG] = "P2P_PROBREQ_MSG",
+     [CYW43_EV_CSA_COMPLETE_IND] = "CSA_COMPLETE_IND",
+     [CYW43_EV_ASSOC_REQ_IE] = "ASSOC_REQ_IE",
+     [CYW43_EV_ASSOC_RESP_IE] = "ASSOC_RESP_IE",
 diff --git a/src/cyw43_ll.c b/src/cyw43_ll.c
-index 4b495ac..566d4c8 100644
+index 4b495ac..7848655 100644
 --- a/src/cyw43_ll.c
 +++ b/src/cyw43_ll.c
 @@ -34,6 +34,7 @@
@@ -210,11 +232,41 @@ index 4b495ac..566d4c8 100644
      // Get and print CLM version
      memcpy(buf, "clmver\x00", 7);
      cyw43_do_ioctl(self, SDPCM_GET, WLC_GET_VAR, 128, buf, WWD_STA_INTERFACE);
+@@ -1883,8 +1852,8 @@ int cyw43_ll_wifi_on(cyw43_ll_t *self_in, uint32_t country) {
+     CLR_EV(buf, 19); // roam attempt occurred
+     CLR_EV(buf, 20); // tx fail
+     CLR_EV(buf, 40); // radio
+-    CLR_EV(buf, 44); // probe request
+     CLR_EV(buf, 54); // interface change
++    CLR_EV(buf, 67); // WAI stations event (whatever that is)
+     CLR_EV(buf, 71); // probe response
+     #undef CLR_EV
+     memcpy(buf, "bsscfg:event_msgs", 18);
 diff --git a/src/cyw43_ll.h b/src/cyw43_ll.h
-index e6405e7..29cdb20 100644
+index e6405e7..80da5fc 100644
 --- a/src/cyw43_ll.h
 +++ b/src/cyw43_ll.h
-@@ -291,6 +291,10 @@ void cyw43_cb_ensure_awake(void *cb_data);
+@@ -64,15 +64,19 @@
+ #define CYW43_EV_SET_SSID               (0)
+ #define CYW43_EV_JOIN                   (1)
+ #define CYW43_EV_AUTH                   (3)
++#define CYW43_EV_AUTH_IND               (4)
+ #define CYW43_EV_DEAUTH                 (5)
+ #define CYW43_EV_DEAUTH_IND             (6)
+ #define CYW43_EV_ASSOC                  (7)
++#define CYW43_EV_ASSOC_IND              (8)
+ #define CYW43_EV_DISASSOC               (11)
+ #define CYW43_EV_DISASSOC_IND           (12)
+ #define CYW43_EV_LINK                   (16)
+ #define CYW43_EV_PRUNE                  (23)
++#define CYW43_EV_PROBREQ_MSG            (44)
+ #define CYW43_EV_PSK_SUP                (46)
+ #define CYW43_EV_ESCAN_RESULT           (69)
++#define CYW43_EV_P2P_PROBREQ_MSG        (72)
+ #define CYW43_EV_CSA_COMPLETE_IND       (80)
+ #define CYW43_EV_ASSOC_REQ_IE           (87)
+ #define CYW43_EV_ASSOC_RESP_IE          (88)
+@@ -291,6 +295,10 @@ void cyw43_cb_ensure_awake(void *cb_data);
  void cyw43_cb_process_async_event(void *cb_data, const cyw43_async_event_t *ev);
  void cyw43_cb_process_ethernet(void *cb_data, int itf, size_t len, const uint8_t *buf);
  
