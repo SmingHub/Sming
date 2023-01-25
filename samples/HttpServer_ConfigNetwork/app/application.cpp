@@ -126,6 +126,7 @@ void onAjaxNetworkList(HttpRequest& request, HttpResponse& response)
 
 void makeConnection()
 {
+	debug_i(">> makeConnection()");
 	WifiStation.enable(true);
 	WifiStation.config(network, password);
 

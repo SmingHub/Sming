@@ -19,7 +19,7 @@
 #define MEM_LIBC_MALLOC             0
 #endif
 #define MEM_ALIGNMENT               4
-#define MEM_SIZE                    4000
+#define MEM_SIZE                    16000
 #define MEMP_NUM_TCP_SEG            32
 #define MEMP_NUM_ARP_QUEUE          10
 #define PBUF_POOL_SIZE              24
@@ -49,7 +49,7 @@
 #define LWIP_IGMP                   1
 #define LWIP_TCP_KEEPALIVE          1
 #define LWIP_NETIF_TX_SINGLE_PBUF   1
-#define DHCP_DOES_ARP_CHECK         0
+#define DHCP_DOES_ARP_CHECK         1
 #define LWIP_DHCP_DOES_ACD_CHECK    0
 
 #ifndef NDEBUG
