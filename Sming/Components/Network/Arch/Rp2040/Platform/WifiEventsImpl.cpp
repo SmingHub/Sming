@@ -16,7 +16,6 @@
 
 WifiEventsClass& WifiEvents{SmingInternal::Network::events};
 
-// #define WIFI_DEBUG_EVENT
 // #define WIFI_DEBUG_PROBE
 // #define WIFI_DEBUG_SCAN
 
@@ -25,7 +24,7 @@ namespace
 // Information Elements
 void print_eid(const uint8_t* data, size_t datalen)
 {
-#ifdef WIFI_DEBUG_EVENT
+#ifdef ENABLE_WIFI_DEBUG
 	for(unsigned i = 0; i < datalen;) {
 		auto id = data[i++];
 		auto len = data[i++];
@@ -73,10 +72,7 @@ void WifiEventsImpl::stationChanged(struct netif* netif)
 */
 void WifiEventsImpl::eventHandler(EventInfo& info)
 {
-	auto msg = reinterpret_cast<const whd_event_msg*>(&info.ev);
-	auto datalen = __builtin_bswap32(msg->datalen);
-
-#ifdef WIFI_DEBUG_EVENT
+#ifdef ENABLE_WIFI_DEBUG
 	bool debug{true};
 
 #ifndef WIFI_DEBUG_PROBE
@@ -89,28 +85,34 @@ void WifiEventsImpl::eventHandler(EventInfo& info)
 #endif
 
 	if(debug) {
-		debug_i("EV.version = 0x%04x", __builtin_bswap16(msg->version));
-		debug_i("EV.flags = %u", msg->flags);
-		debug_i("EV.event_type = %u", msg->event_type);
-		debug_i("EV.status = %u", msg->status);
-		debug_i("EV.reason = %u", msg->reason);
-		debug_i("EV.auth_type = %u", msg->auth_type);
-		debug_i("EV.datalen = %u", datalen);
-		debug_i("EV.addr = %s", MacAddress(msg->addr).toString().c_str());
-		debug_i("EV.ifname = %s", String(msg->ifname, 16).c_str());
-		debug_i("EV.ifidx = %u", msg->ifidx);
-		debug_i("EV.bsscfgidx = %u", msg->bsscfgidx);
-		// debug_hex(INFO, "DATA", msg->data, datalen);
+		debug_i("EV.version = 0x%04x", __builtin_bswap16(info.ev.version));
+		debug_i("EV.flags = %u", info.ev.flags);
+		debug_i("EV.event_type = %u", info.ev.event_type);
+		debug_i("EV.status = %u", info.ev.status);
+		debug_i("EV.reason = %u", info.ev.reason);
+		debug_i("EV.auth_type = %u", info.ev.auth_type);
+		debug_i("EV.datalen = %u", info.ev.datalen);
+		debug_i("EV.addr = %s", MacAddress(info.ev.addr).toString().c_str());
+		debug_i("EV.ifname = %s", String(info.ev.ifname, 16).c_str());
+		debug_i("EV.ifidx = %u", info.ev.ifidx);
+		debug_i("EV.bsscfgidx = %u", info.ev.bsscfgidx);
+		// debug_hex(INFO, "DATA", info.ev.data, info.ev.datalen);
 	}
 #endif
 
 	unsigned off{0};
 	int rssi{0};
-	MacAddress addr(msg->addr);
+	MacAddress addr(info.ev.addr);
 
 	switch(info.ev.event_type) {
+	case CYW43_EV_SET_SSID:
+#ifdef ENABLE_WIFI_DEBUG
+		debug_hex(INFO, "SSID", info.ev.data, info.ev.datalen);
+#endif
+		break;
+
 	case CYW43_EV_LINK:
-		if(info.ev.status == CYW43_STATUS_SUCCESS && info.ev.interface == CYW43_ITF_STA) {
+		if(info.ev.status == CYW43_STATUS_SUCCESS && info.ev.ifidx == CYW43_ITF_STA) {
 			auto callback = [](struct netif* netif) -> void { events.stationChanged(netif); };
 			netif_set_status_callback(&cyw43_state.netif[CYW43_ITF_STA], callback);
 			if(onSTAConnect) {
@@ -124,21 +126,20 @@ void WifiEventsImpl::eventHandler(EventInfo& info)
 		break;
 
 	case CYW43_EV_DISASSOC_IND:
-		if(info.ev.interface == CYW43_ITF_STA && onSTADisconnect) {
+		if(info.ev.ifidx == CYW43_ITF_STA && onSTADisconnect) {
 			String ssid = WifiStation.getSSID();
-			MacAddress bssid{info.ev.u.scan_result.bssid};
 			auto reason = WifiDisconnectReason(info.ev.reason);
-			System.queueCallback([ssid, bssid, reason]() {
+			System.queueCallback([ssid, addr, reason]() {
 				if(events.onSTADisconnect) {
-					events.onSTADisconnect(ssid, bssid, reason);
+					events.onSTADisconnect(ssid, addr, reason);
 				}
 			});
 		}
 		break;
 
 	case CYW43_EV_ASSOC_IND:
-		print_eid(msg->data, datalen);
-		if(info.ev.interface == CYW43_ITF_AP && onSOFTAPConnect) {
+		print_eid(info.ev.data, info.ev.datalen);
+		if(info.ev.ifidx == CYW43_ITF_AP && onSOFTAPConnect) {
 			System.queueCallback([addr]() {
 				if(events.onSOFTAPConnect) {
 					unsigned aid{0};
@@ -149,13 +150,24 @@ void WifiEventsImpl::eventHandler(EventInfo& info)
 		break;
 
 	case CYW43_EV_DEAUTH_IND:
-		if(info.ev.interface == CYW43_ITF_AP && msg->reason == CYW43_REASON_DISASSOC && onSOFTAPDisconnect) {
-			System.queueCallback([addr]() {
-				if(events.onSOFTAPDisconnect) {
-					unsigned aid{0};
-					events.onSOFTAPDisconnect(addr, aid);
-				}
-			});
+		if(info.ev.ifidx == CYW43_ITF_AP) {
+			if(info.ev.reason == CYW43_REASON_DISASSOC && onSOFTAPDisconnect) {
+				System.queueCallback([addr]() {
+					if(events.onSOFTAPDisconnect) {
+						unsigned aid{0};
+						events.onSOFTAPDisconnect(addr, aid);
+					}
+				});
+			}
+		} else if(info.ev.ifidx == CYW43_ITF_STA) {
+			if(onSTADisconnect) {
+				String ssid = WifiStation.getSSID();
+				System.queueCallback([ssid, addr]() {
+					if(events.onSTADisconnect) {
+						events.onSTADisconnect(ssid, addr, WIFI_DISCONNECT_REASON_AUTH_FAIL);
+					}
+				});
+			}
 		}
 		break;
 
@@ -172,7 +184,7 @@ void WifiEventsImpl::eventHandler(EventInfo& info)
 	}
 
 	case CYW43_EV_PROBREQ_MSG: {
-		auto m = reinterpret_cast<const struct hostap_ieee80211_mgmt*>(&msg->data[off]);
+		auto m = reinterpret_cast<const struct hostap_ieee80211_mgmt*>(&info.ev.data[off]);
 #ifdef WIFI_DEBUG_PROBE
 		debug_i("[PB] fc 0x%04x, dur 0x%04x, da %s, sa %s, bssid %s, seq 0x%04x", m->frame_control, m->duration,
 				MacAddress(m->da).toString().c_str(), MacAddress(m->sa).toString().c_str(),

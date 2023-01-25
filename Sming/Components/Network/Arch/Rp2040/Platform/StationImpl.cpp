@@ -28,7 +28,7 @@ StationImpl station;
 
 void StationImpl::enable(bool enabled, bool save)
 {
-	debug_i("%s", __PRETTY_FUNCTION__);
+	debug_d("%s", __PRETTY_FUNCTION__);
 	if(enabled != this->enabled) {
 		cyw43_wifi_set_up(&cyw43_state, CYW43_ITF_STA, enabled, cyw43_arch_get_country_code());
 		this->enabled = enabled;
@@ -53,7 +53,7 @@ bool StationImpl::connect()
 	}
 
 	int link_status = cyw43_tcpip_link_status(&cyw43_state, CYW43_ITF_STA);
-	debug_i("link_status %d", link_status);
+	debug_d("link_status %d", link_status);
 	switch(link_status) {
 	case CYW43_LINK_JOIN:
 		return true;
@@ -97,7 +97,7 @@ bool StationImpl::isEnabledDHCP() const
 
 void StationImpl::enableDHCP(bool enable)
 {
-	debug_i("%s NOT IMPLEMENTED", __PRETTY_FUNCTION__);
+	debug_w("%s NOT IMPLEMENTED", __PRETTY_FUNCTION__);
 }
 
 void StationImpl::setHostname(const String& hostname)
@@ -239,8 +239,7 @@ void StationImpl::eventHandler(EventInfo& info)
 
 	case CYW43_EV_SET_SSID:
 		if(info.ev.status == CYW43_STATUS_SUCCESS) {
-			// auto& r = info.ev.u.scan_result;
-			// memcpy(ssid, r.ssid, sizeof(ssid));
+			debug_d("[WiFi] Linked with '%s'", String((const char*)info.ev.data, info.ev.datalen).c_str());
 		}
 		break;
 
@@ -252,7 +251,7 @@ void StationImpl::eventHandler(EventInfo& info)
 
 void StationImpl::scanCompleted(bool result)
 {
-	debug_i("scanCompleted(), result %u", result);
+	debug_d("scanCompleted(), result %u", result);
 	scanTimer.stop();
 	if(scanCompletedCallback) {
 		scanCompletedCallback(result, scanResults);
@@ -324,7 +323,6 @@ bool StationImpl::startScan(ScanCompletedDelegate scanCompleted)
 
 void StationImpl::onSystemReady()
 {
-	debug_i("%s", __PRETTY_FUNCTION__);
 }
 
 #ifdef ENABLE_SMART_CONFIG

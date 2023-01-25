@@ -33,7 +33,7 @@ void rp2040_network_initialise()
 		return;
 	}
 
-#ifdef PICO_DEBUG
+#ifdef ENABLE_WIFI_DEBUG
 	cyw43_state.trace_flags = 0xff;
 #endif
 }
@@ -49,14 +49,19 @@ void rp2040_network_service()
 extern "C" void __wrap_cyw43_cb_process_async_event(cyw43_t* self, const cyw43_async_event_t* ev)
 {
 	using namespace SmingInternal::Network;
-	EventInfo info{*self, *ev};
-	if(ev->interface == CYW43_ITF_STA) {
+
+	auto& msg = *reinterpret_cast<const whd_event_msg*>(ev);
+	const_cast<whd_event_msg&>(msg).datalen = __builtin_bswap32(msg.datalen);
+
+	EventInfo info{*self, msg};
+	if(msg.ifidx == CYW43_ITF_STA) {
 		station.eventHandler(info);
-	}
-	if(ev->interface == CYW43_ITF_AP) {
+	} else if(msg.ifidx == CYW43_ITF_AP) {
 		accessPoint.eventHandler(info);
 	}
 	events.eventHandler(info);
+
+	const_cast<whd_event_msg&>(msg).datalen = __builtin_bswap32(msg.datalen);
 
 	extern void __real_cyw43_cb_process_async_event(void*, const void*);
 	__real_cyw43_cb_process_async_event(self, ev);
