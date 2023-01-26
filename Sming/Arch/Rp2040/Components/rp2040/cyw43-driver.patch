@@ -1,5 +1,5 @@
 diff --git a/src/cyw43_ll.c b/src/cyw43_ll.c
-index 4b495ac..58132a2 100644
+index 4b495ac..566d4c8 100644
 --- a/src/cyw43_ll.c
 +++ b/src/cyw43_ll.c
 @@ -34,6 +34,7 @@
@@ -199,6 +199,17 @@ index 4b495ac..58132a2 100644
      cyw43_write_iovar_u32(self, "bus:txglom", 0, WWD_STA_INTERFACE); // tx glomming off
      cyw43_write_iovar_u32(self, "apsta", 1, WWD_STA_INTERFACE); // apsta on
  
+@@ -1854,6 +1819,10 @@ int cyw43_ll_wifi_on(cyw43_ll_t *self_in, uint32_t country) {
+     cyw43_delay_ms(50);
+ 
+     #ifndef NDEBUG
++    // Get and print firmware version
++    memcpy(buf, "ver\x00", 4);
++    cyw43_do_ioctl(self, SDPCM_GET, WLC_GET_VAR, 128, buf, WWD_STA_INTERFACE);
++    CYW43_DEBUG("%s", buf);
+     // Get and print CLM version
+     memcpy(buf, "clmver\x00", 7);
+     cyw43_do_ioctl(self, SDPCM_GET, WLC_GET_VAR, 128, buf, WWD_STA_INTERFACE);
 diff --git a/src/cyw43_ll.h b/src/cyw43_ll.h
 index e6405e7..29cdb20 100644
 --- a/src/cyw43_ll.h

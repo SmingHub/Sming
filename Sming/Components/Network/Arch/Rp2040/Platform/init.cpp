@@ -33,7 +33,9 @@ void rp2040_network_initialise()
 		return;
 	}
 
+#ifdef PICO_DEBUG
 	cyw43_state.trace_flags = 0xff;
+#endif
 }
 
 void rp2040_network_service()

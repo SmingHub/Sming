@@ -5,7 +5,6 @@ set(PICO_COMPILER "pico_arm_gcc")
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_BUILD_TYPE RelWithDebInfo)
 
 include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 # include(pico_extras_import.cmake)

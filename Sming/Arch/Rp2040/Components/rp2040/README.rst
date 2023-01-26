@@ -45,3 +45,10 @@ Configuration variables
 
     This is not the default setting since the additional partition must be managed by the end application.
 
+
+.. envvar:: PICO_DEBUG
+
+    default: 0
+
+    Set to 1 to enable additional debug output from compiled Pico SDK library.
+    Shows things like WiFi firmware version.
