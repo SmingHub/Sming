@@ -21,3 +21,6 @@ CONFIG_VARS += ENABLE_SDCARD
 ifeq ($(ENABLE_SDCARD),1)
 COMPONENT_CXXFLAGS += -DENABLE_SDCARD
 endif
+
+# For Rp2040, put firmware into partition
+LINK_CYW43_FIRMWARE := 0

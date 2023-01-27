@@ -1,0 +1,3 @@
+COMPONENT_SUBMODULES := uzlib
+COMPONENT_INCDIRS := uzlib/src
+COMPONENT_SRCDIRS := uzlib/src
