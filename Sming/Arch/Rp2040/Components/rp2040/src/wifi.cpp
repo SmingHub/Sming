@@ -26,12 +26,12 @@ namespace {
 
 class Decompressor {
 public:
-	Decompressor(const FSTR::ObjectBase& data)
+	explicit Decompressor(const FSTR::ObjectBase& data)
 	{
 		stream.reset(new FlashMemoryStream(data));
 	}
 
-	Decompressor(Storage::Partition part)
+	explicit Decompressor(Storage::Partition part)
 	{
 		stream.reset(new Storage::PartitionStream(part));
 	}
@@ -78,7 +78,7 @@ private:
 	}
 
     struct uzlib_uncomp state{};
-	uint8_t src_buffer[BUFFER_SIZE];
+	uint8_t src_buffer[BUFFER_SIZE]{};
     uint8_t dict[DICT_SIZE];
 	std::unique_ptr<IDataSourceStream> stream;
 };

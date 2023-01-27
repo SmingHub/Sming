@@ -70,20 +70,9 @@
 #define MAKE_IP4(a, b, c, d) ((a) << 24 | (b) << 16 | (c) << 8 | (d))
 
 typedef struct {
-	uint8_t op;	// message opcode
-	uint8_t htype; // hardware address type
-	uint8_t hlen;  // hardware address length
-	uint8_t hops;
-	uint32_t xid;  // transaction id, chosen by client
-	uint16_t secs; // client seconds elapsed
-	uint16_t flags;
-	uint8_t ciaddr[4];	// client IP address
+	uint8_t op;			  // message opcode
 	uint8_t yiaddr[4];	// your IP address
-	uint8_t siaddr[4];	// next server IP address
-	uint8_t giaddr[4];	// relay agent IP address
 	uint8_t chaddr[16];   // client hardware address
-	uint8_t sname[64];	// server host name
-	uint8_t file[128];	// boot file name
 	uint8_t options[312]; // optional parameters, variable, starts with magic
 } dhcp_msg_t;
 
