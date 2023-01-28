@@ -368,7 +368,7 @@ endif
 .PHONY: checksoc
 checksoc:
 ifeq (,$(filter $(SMING_SOC),$(PROJECT_SOC)))
-	$(error Project only supports: $(PROJECT_SOC))
+	$(error Project doesn't support $(SMING_SOC): run `make list-soc` to see supported devices)
 endif
 
 
