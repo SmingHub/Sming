@@ -46,10 +46,12 @@ uint32_t RtcClass::getRtcSeconds()
 	checkInit();
 
 	datetime_t t;
-	rtc_get_datetime(&t);
+	if(!rtc_get_datetime(&t)) {
+		return 0;
+	}
 
 	DateTime dt;
-	dt.setTime(t.sec, t.min, t.hour, t.day, t.month, t.year);
+	dt.setTime(t.sec, t.min, t.hour, t.day, t.month - 1, t.year);
 
 	return time_t(dt);
 }
@@ -67,7 +69,7 @@ bool RtcClass::setRtcSeconds(uint32_t seconds)
 
 	datetime_t t = {
 		.year = int16_t(dt.Year),
-		.month = int8_t(dt.Month),
+		.month = int8_t(1 + dt.Month),
 		.day = int8_t(dt.Day),
 		.dotw = int8_t(dt.DayofWeek),
 		.hour = int8_t(dt.Hour),
