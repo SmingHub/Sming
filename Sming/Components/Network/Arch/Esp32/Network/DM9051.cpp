@@ -28,8 +28,10 @@ bool DM9051Service::begin(const Config& config)
 	esp_netif_config_t netif_cfg = ESP_NETIF_DEFAULT_ETH();
 	netif = esp_netif_new(&netif_cfg);
 
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(4, 4, 0)
 	// Set default handlers to process TCP/IP stuffs
 	CHECK_RET(esp_eth_set_default_handlers(netif));
+#endif
 
 	// And register our own event handlers
 	enableEventCallback(true);
@@ -69,7 +71,7 @@ bool DM9051Service::begin(const Config& config)
 
 	setMacAddress(MacAddress({0x02, 0x00, 0x00, 0x12, 0x34, 0x56}));
 
-	netif_glue = esp_eth_new_netif_glue(handle);
+	netif_glue = static_cast<void*>(esp_eth_new_netif_glue(handle));
 	CHECK_RET(esp_netif_attach(netif, netif_glue));
 	CHECK_RET(esp_eth_start(handle));
 

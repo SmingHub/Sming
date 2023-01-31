@@ -14,6 +14,9 @@ ifeq ($(CREATE_EVENT_TASK),1)
 COMPONENT_CPPFLAGS += -DCREATE_EVENT_TASK
 endif
 
+include $(IDF_PATH)/make/version.mk
+IDF_VERSION := $(IDF_VERSION_MAJOR).$(IDF_VERSION_MINOR)
+
 SDK_BUILD_BASE := $(COMPONENT_BUILD_BASE)/sdk
 SDK_COMPONENT_LIBDIR := $(COMPONENT_BUILD_BASE)/lib
 
@@ -21,9 +24,10 @@ SDKCONFIG_H := $(SDK_BUILD_BASE)/config/sdkconfig.h
 
 SDK_LIBDIRS := \
 	esp_wifi/lib/$(ESP_VARIANT) \
+	esp_phy/lib/$(ESP_VARIANT) \
 	xtensa/$(ESP_VARIANT) \
 	hal/$(ESP_VARIANT) \
-	$(ESP_VARIANT)/ld \
+	soc/$(ESP_VARIANT)/ld \
 	esp_rom/$(ESP_VARIANT)/ld
 
 # BLUETOOTH
@@ -45,7 +49,9 @@ LIBDIRS += \
 	$(SDK_BUILD_BASE)/esp-idf/mbedtls/mbedtls/library \
 	$(SDK_BUILD_BASE)/esp-idf/$(ESP_VARIANT) \
 	$(SDK_BUILD_BASE)/esp-idf/$(ESP_VARIANT)/ld \
+	$(SDK_BUILD_BASE)/esp-idf/esp_system/ld \
 	$(ESP32_COMPONENT_PATH)/ld \
+	$(SDK_COMPONENTS_PATH)/$(ESP_VARIANT)/ld \
 	$(addprefix $(SDK_COMPONENTS_PATH)/,$(SDK_LIBDIRS))
 
 SDK_INCDIRS := \
@@ -63,10 +69,13 @@ SDK_INCDIRS := \
 	esp_timer/include \
 	soc/include \
 	soc/$(ESP_VARIANT)/include \
+	soc/include/soc \
 	heap/include \
 	log/include \
 	nvs_flash/include \
 	freertos/include \
+	freertos/include/esp_additions \
+	freertos/include/esp_additions/freertos \
 	esp_event/include \
 	lwip/lwip/src/include \
 	lwip/port/esp32/include \
@@ -75,7 +84,9 @@ SDK_INCDIRS := \
 	wpa_supplicant/include \
 	wpa_supplicant/port/include \
 	esp_hw_support/include \
+	esp_hw_support/include/soc \
 	hal/include \
+	hal/platform_port/include \
 	hal/$(ESP_VARIANT)/include \
 	esp_system/include \
 	esp_common/include \
@@ -137,7 +148,6 @@ SDK_COMPONENTS := \
 	cxx \
 	driver \
 	efuse \
-	$(ESP_VARIANT) \
 	esp_common \
 	esp_event \
 	esp_gdbstub \
@@ -158,6 +168,12 @@ SDK_COMPONENTS := \
 	pthread \
 	soc \
 	spi_flash
+
+ifeq ($(IDF_VERSION),4.3)
+SDK_COMPONENTS += $(ESP_VARIANT)
+else
+SDK_COMPONENTS += esp_phy
+endif
 
 ifneq ($(DISABLE_NETWORK),1)
 SDK_COMPONENTS += \
@@ -254,8 +270,6 @@ SDK_UNDEF_SYMBOLS :=
 $(foreach c,$(wildcard $(SDK_DEFAULT_PATH)/*.mk),$(eval include $c))
 
 EXTRA_LDFLAGS := \
-	-T $(ESP_VARIANT)_out.ld \
-	$(call LinkerScript,project) \
 	$(call LinkerScript,peripherals) \
 	$(call LinkerScript,rom) \
 	$(call LinkerScript,rom.api) \
@@ -272,6 +286,15 @@ EXTRA_LDFLAGS := \
 	$(call Undef,$(SDK_UNDEF_SYMBOLS)) \
 	$(call Wrap,$(SDK_WRAP_SYMBOLS))
 
+ifeq ($(IDF_VERSION),4.3)
+EXTRA_LDFLAGS += \
+	-T $(ESP_VARIANT)_out.ld \
+	$(call LinkerScript,project)
+else
+EXTRA_LDFLAGS += \
+	-T memory.ld \
+	-T sections.ld
+endif
 
 SDK_PROJECT_PATH := $(ESP32_COMPONENT_PATH)/project/$(ESP_VARIANT)/$(BUILD_TYPE)
 SDK_CONFIG_DEFAULTS := $(SDK_PROJECT_PATH)/sdkconfig.defaults

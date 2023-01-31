@@ -29,8 +29,10 @@ bool EmbeddedEthernet::begin(const Config& config)
 	esp_netif_config_t cfg = ESP_NETIF_DEFAULT_ETH();
 	netif = esp_netif_new(&cfg);
 
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(4, 4, 0)
 	// Set default handlers to process TCP/IP stuffs
 	ESP_ERROR_CHECK(esp_eth_set_default_handlers(netif));
+#endif
 
 	// And register our own event handlers
 	enableEventCallback(true);
@@ -57,7 +59,7 @@ bool EmbeddedEthernet::begin(const Config& config)
 
 	esp_eth_config_t eth_config = ETH_DEFAULT_CONFIG(mac, phy);
 	ESP_ERROR_CHECK(esp_eth_driver_install(&eth_config, &handle));
-	netif_glue = esp_eth_new_netif_glue(handle);
+	netif_glue = static_cast<void*>(esp_eth_new_netif_glue(handle));
 	ESP_ERROR_CHECK(esp_netif_attach(netif, netif_glue));
 	ESP_ERROR_CHECK(esp_eth_start(handle));
 

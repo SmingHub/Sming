@@ -18,7 +18,6 @@
 #include <esp_systemapi.h>
 #undef FLAG_ATTR
 #define FLAG_ATTR(TYPE)
-#define typeof decltype
 #include <soc/spi_periph.h>
 #include <hal/spi_ll.h>
 #include <hal/clk_gate_ll.h>
