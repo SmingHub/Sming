@@ -161,7 +161,7 @@ export PROJECT_SOC
 # $3 -> Build directory
 # $4 -> Output library directory
 define ParseComponent
-ifneq (,$$(findstring $(SMING_SOC),$$(PROJECT_SOC)))
+ifneq (,$$(filter $(SMING_SOC),$$(PROJECT_SOC)))
 $(if $V,$(info -- Parsing $1))
 $(if $2,,$(error Component '$1' not found))
 SUBMODULES				+= $(filter $2,$(ALL_SUBMODULES))
@@ -357,7 +357,7 @@ $(foreach v,$(EXPORT_VARS),$(eval export $v))
 ##@Building
 
 .PHONY: sample
-ifeq (,$(findstring $(SMING_SOC),$(PROJECT_SOC)))
+ifeq (,$(filter $(SMING_SOC),$(PROJECT_SOC)))
 sample:
 	$(info Not building: Sample doesn't support $(SMING_SOC))
 else
@@ -367,8 +367,8 @@ endif
 
 .PHONY: checksoc
 checksoc:
-ifeq (,$(findstring $(SMING_SOC),$(PROJECT_SOC)))
-	$(error Project only supports: $(PROJECT_SOC))
+ifeq (,$(filter $(SMING_SOC),$(PROJECT_SOC)))
+	$(error Project doesn't support $(SMING_SOC): run `make list-soc` to see supported devices)
 endif
 
 
@@ -741,7 +741,7 @@ list-soc: ##List supported and available SOCs
 
 .PHONY: list-soc-check
 checksoc-print:
-ifeq (,$(findstring $(SMING_SOC),$(PROJECT_SOC)))
+ifeq (,$(filter $(SMING_SOC),$(PROJECT_SOC)))
 	$(info - NO:  $(SMING_SOC))
 else
 	$(info - YES: $(SMING_SOC))
