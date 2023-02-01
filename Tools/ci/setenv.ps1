@@ -14,7 +14,6 @@ $env:ESP_HOME = Join-Path $TOOLS_DIR "esp-quick-toolchain"
 # Esp32
 $env:IDF_PATH = Join-Path $TOOLS_DIR "esp-idf"
 $env:IDF_TOOLS_PATH = Join-Path $TOOLS_DIR "esp32"
-$env:IDF_BRANCH = "sming/release/v4.3"
 
 # Rp2040
 $env:PICO_TOOLCHAIN_PATH = Join-Path $TOOLS_DIR "rp2040"
