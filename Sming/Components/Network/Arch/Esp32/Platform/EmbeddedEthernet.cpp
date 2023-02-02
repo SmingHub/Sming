@@ -39,6 +39,7 @@ bool EmbeddedEthernet::begin(const Config& config)
 	enableGotIpCallback(true);
 
 	eth_mac_config_t mac_config = ETH_MAC_DEFAULT_CONFIG();
+#if ESP_IDF_VERSION_MAJOR < 5
 	if(config.smiMdcPin != PIN_DEFAULT) {
 		mac_config.smi_mdc_gpio_num = config.smiMdcPin;
 	}
@@ -46,6 +47,16 @@ bool EmbeddedEthernet::begin(const Config& config)
 		mac_config.smi_mdio_gpio_num = config.smiMdioPin;
 	}
 	mac = esp_eth_mac_new_esp32(&mac_config);
+#else
+	eth_esp32_emac_config_t emac_config = ETH_ESP32_EMAC_DEFAULT_CONFIG();
+	if(config.smiMdcPin != PIN_DEFAULT) {
+		emac_config.smi_mdc_gpio_num = config.smiMdcPin;
+	}
+	if(config.smiMdioPin != PIN_DEFAULT) {
+		emac_config.smi_mdio_gpio_num = config.smiMdioPin;
+	}
+	mac = esp_eth_mac_new_esp32(&emac_config, &mac_config);
+#endif
 	if(mac == nullptr) {
 		debug_e("[ETH] Failed to construct MAC");
 		return false;
