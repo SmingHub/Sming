@@ -42,8 +42,8 @@ extern "C" {
  *************************************/
 
 // Timer group/index to use: available on all ESP32 variants
-#define HW_TIMER1_GROUP TIMER_GROUP_0
-#define HW_TIMER1_INDEX TIMER_0
+#define HW_TIMER1_GROUP 0
+#define HW_TIMER1_INDEX 0
 
 /**
  * @brief Maximum timer interval in ticks
@@ -90,7 +90,7 @@ typedef enum {
  * @param callback Callback function invoked via timer interrupt
  * @param arg Passed to callback function
  */
-void IRAM_ATTR hw_timer1_attach_interrupt(hw_timer_source_type_t source_type, hw_timer_callback_t callback, void* arg);
+void hw_timer1_attach_interrupt(hw_timer_source_type_t source_type, hw_timer_callback_t callback, void* arg);
 
 /**
  * @brief Enable the timer
@@ -98,23 +98,23 @@ void IRAM_ATTR hw_timer1_attach_interrupt(hw_timer_source_type_t source_type, hw
  * @param intr_type Ignored, always level-triggered
  * @param auto_load
  */
-void IRAM_ATTR hw_timer1_enable(hw_timer_clkdiv_t div, hw_timer_intr_type_t intr_type, bool auto_load);
+void hw_timer1_enable(hw_timer_clkdiv_t div, hw_timer_intr_type_t intr_type, bool auto_load);
 
 /**
  * @brief Set the timer interval
  * @param ticks
  */
-void IRAM_ATTR hw_timer1_write(uint32_t ticks);
+void hw_timer1_write(uint32_t ticks);
 
 /**
  * @brief Disable the timer
  */
-void IRAM_ATTR hw_timer1_disable(void);
+void hw_timer1_disable(void);
 
 /**
  * @brief Detach interrupt from the timer
  */
-void IRAM_ATTR hw_timer1_detach_interrupt(void);
+void hw_timer1_detach_interrupt(void);
 
 /**
  * @brief Get timer1 count
