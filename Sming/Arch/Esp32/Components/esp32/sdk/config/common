@@ -56,3 +56,5 @@ CONFIG_ESP_SYSTEM_PANIC_GDBSTUB=y
 # Don't change provided flash configuration information
 CONFIG_ESPTOOLPY_FLASHSIZE_DETECT=n
 
+#' We'll handle WDT initialisation ourselves thankyouverymuch
+CONFIG_ESP_TASK_WDT_INIT=n

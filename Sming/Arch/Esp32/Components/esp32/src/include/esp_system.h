@@ -1,16 +1,20 @@
 #pragma once
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsign-compare"
-
-#include_next <esp_system.h>
-#include <ets_sys.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <os.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-compare"
+
+#include_next <esp_system.h>
+#include <rom/ets_sys.h>
+
+#if ESP_IDF_VERSION_MAJOR >= 5
+#include <esp_random.h>
+#endif
+
+#pragma GCC diagnostic pop
 
 uint32_t system_get_time(void);
 void system_restart(void);
@@ -50,8 +54,10 @@ const char* system_get_sdk_version(void);
 
 uint32_t system_get_chip_id(void);
 
+unsigned long os_random(void);
+
+int os_get_random(unsigned char* buf, size_t len);
+
 #ifdef __cplusplus
 }
 #endif
-
-#pragma GCC diagnostic pop

@@ -15,6 +15,7 @@ COMPONENT_CPPFLAGS += -DCREATE_EVENT_TASK
 endif
 
 IDF_VERSION := $(firstword $(subst -, ,$(IDF_VER)))
+IDF_VERSION_4 := $(filter v4%,$(IDF_VERSION))
 
 SDK_BUILD_BASE := $(COMPONENT_BUILD_BASE)/sdk
 SDK_COMPONENT_LIBDIR := $(COMPONENT_BUILD_BASE)/lib
@@ -59,7 +60,6 @@ SDK_INCDIRS := \
 	bootloader_support/include_bootloader \
 	driver/$(ESP_VARIANT)/include \
 	driver/include \
-	esp_ipc/include \
 	esp_pm/include \
 	esp_rom/include/$(ESP_VARIANT) \
 	esp_rom/include \
@@ -72,9 +72,6 @@ SDK_INCDIRS := \
 	heap/include \
 	log/include \
 	nvs_flash/include \
-	freertos/include \
-	freertos/include/esp_additions \
-	freertos/include/esp_additions/freertos \
 	esp_event/include \
 	lwip/lwip/src/include \
 	lwip/port/esp32/include \
@@ -89,13 +86,33 @@ SDK_INCDIRS := \
 	hal/$(ESP_VARIANT)/include \
 	esp_system/include \
 	esp_common/include \
-	esp_adc_cal/include \
 	esp_netif/include \
 	esp_eth/include \
 	esp_wifi/include \
 	esp_wifi/esp32/include \
 	lwip/include/apps/sntp \
 	wpa_supplicant/include/esp_supplicant
+
+ifdef IDF_VERSION_4
+SDK_INCDIRS += \
+	esp_adc_cal/include \
+	esp_ipc/include \
+	freertos/include \
+	freertos/include/esp_additions \
+	freertos/include/esp_additions/freertos
+FREERTOS_PORTABLE := freertos/port
+else
+SDK_INCDIRS += \
+	esp_adc/include \
+	esp_app_format/include \
+	esp_partition/include \
+	freertos/FreeRTOS-Kernel/include \
+	freertos/esp_additions/include \
+	freertos/esp_additions/include/freertos
+FREERTOS_PORTABLE := freertos/FreeRTOS-Kernel/portable
+endif
+
+
 
 ifeq ($(ENABLE_BLUETOOTH),1)
 SDK_INCDIRS += \
@@ -126,13 +143,13 @@ endif
 
 ifdef IDF_TARGET_ARCH_RISCV
 SDK_INCDIRS += \
-	freertos/port/riscv/include \
+	$(FREERTOS_PORTABLE)/riscv/include \
 	riscv/include
 else
 SDK_INCDIRS += \
 	xtensa/include \
 	xtensa/$(ESP_VARIANT)/include \
-	freertos/port/xtensa/include
+	$(FREERTOS_PORTABLE)/xtensa/include
 endif
 
 	 
@@ -151,7 +168,6 @@ SDK_COMPONENTS := \
 	esp_event \
 	esp_gdbstub \
 	esp_hw_support \
-	esp_ipc \
 	esp_pm \
 	esp_rom \
 	esp_ringbuf \
@@ -168,11 +184,24 @@ SDK_COMPONENTS := \
 	soc \
 	spi_flash
 
-ifeq ($(IDF_VERSION),v4.3)
+ifneq (,$(filter v4.3%,$(IDF_VERSION)))
 SDK_COMPONENTS += $(ESP_VARIANT)
 else
 SDK_COMPONENTS += esp_phy
 endif
+
+ifdef IDF_VERSION_4
+SDK_COMPONENTS += esp_ipc
+ifneq ($(ESP_VARIANT),esp32s3)
+SDK_COMPONENTS += esp_adc_cal
+endif
+else
+SDK_COMPONENTS += \
+	esp_adc \
+	esp_app_format \
+	esp_partition
+endif
+
 
 ifneq ($(DISABLE_NETWORK),1)
 SDK_COMPONENTS += \
@@ -180,17 +209,12 @@ SDK_COMPONENTS += \
 	esp_eth \
 	lwip \
 	mbedcrypto \
-	esp_netif \
-	openssl
+	esp_netif
 ifneq ($(DISABLE_WIFI),1)
 SDK_COMPONENTS += \
 	wifi_provisioning \
 	wpa_supplicant
 endif
-endif
-
-ifneq ($(ESP_VARIANT),esp32s3)
-SDK_COMPONENTS += esp_adc_cal
 endif
 
 ifdef IDF_TARGET_ARCH_RISCV
@@ -285,7 +309,7 @@ EXTRA_LDFLAGS := \
 	$(call Undef,$(SDK_UNDEF_SYMBOLS)) \
 	$(call Wrap,$(SDK_WRAP_SYMBOLS))
 
-ifeq ($(IDF_VERSION),v4.3)
+ifneq (,$(filter v4.3%,$(IDF_VERSION)))
 EXTRA_LDFLAGS += \
 	-T $(ESP_VARIANT)_out.ld \
 	$(call LinkerScript,project)

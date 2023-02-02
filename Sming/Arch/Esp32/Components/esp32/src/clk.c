@@ -56,5 +56,5 @@ bool system_update_cpu_freq(uint32_t freq)
 
 uint32_t system_get_cpu_freq(void)
 {
-	return esp_clk_cpu_freq() / MHZ;
+	return esp_clk_cpu_freq() / 1000000U;
 }
