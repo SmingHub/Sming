@@ -181,7 +181,7 @@ to the CYW43 chip (about 240KB) plus the CLM BLOB (< 1KB).
 .. note:
 
    CLM stands for ``Country Locale Matrix``. The data defines regulatory configuration (target power outputs).
-   Currently a 'global' setting is used to initialse WiFi, but there may be advantages in changing this to the
+   Currently a 'global' setting is used to initialise WiFi, but there may be advantages in changing this to the
    specific country where the device is being deployed.
 
 Sming contains patches which compresses this data (based on https://github.com/raspberrypi/pico-sdk/issues/909)
