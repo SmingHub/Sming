@@ -561,10 +561,15 @@ uint32_t smg_uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate)
 	auto dev = getDevice(uart_nr);
 
 	uart_ll_set_sclk(dev, UART_SCLK_APB);
-	uart_ll_set_baudrate(dev, baud_rate);
 
 	// Return the actual baud rate in use
+#if ESP_IDF_VERSION_MAJOR < 5
+	uart_ll_set_baudrate(dev, baud_rate);
 	return uart_ll_get_baudrate(dev);
+#else
+	uart_ll_set_baudrate(dev, baud_rate, APB_CLK_FREQ);
+	return uart_ll_get_baudrate(dev, APB_CLK_FREQ);
+#endif
 }
 
 uint32_t smg_uart_set_baudrate(smg_uart_t* uart, uint32_t baud_rate)
