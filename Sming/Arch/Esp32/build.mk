@@ -26,12 +26,10 @@ export IDF_TOOLS_PATH := $(call FixPath,$(IDF_TOOLS_PATH))
 ESP_VARIANT := $(SMING_SOC)
 export ESP_VARIANT
 
-ifeq ($(ESP_VARIANT),esp32c3)
-ESP32_COMPILER_PREFIX := riscv32-esp-elf
-IDF_TARGET_ARCH_RISCV := 1
-else
-ESP32_COMPILER_PREFIX := xtensa-$(ESP_VARIANT)-elf
-endif
+IDF_TOOL_INFO := $(shell $(PYTHON) $(ARCH_TOOLS)/idf_tools.py $(SMING_SOC))
+ESP32_COMPILER_PREFIX := $(word 1,$(IDF_TOOL_INFO))
+ESP32_COMPILER_VERSION := $(word 2,$(IDF_TOOL_INFO))
+IDF_TARGET_ARCH_RISCV := $(findstring riscv,$(ESP32_COMPILER_PREFIX))
 
 # $1 => Root directory
 # $2 => Sub-directory
@@ -42,8 +40,7 @@ endef
 DEBUG_VARS			+= ESP32_COMPILER_PATH ESP32_ULP_PATH ESP32_OPENOCD_PATH ESP32_PYTHON_PATH
 
 ifndef ESP32_COMPILER_PATH
-include $(IDF_PATH)/tools/toolchain_versions.mk
-ESP32_COMPILER_PATH	:= $(IDF_TOOLS_PATH)/tools/$(ESP32_COMPILER_PREFIX)/$(CURRENT_TOOLCHAIN_COMMIT_DESC)-$(CURRENT_TOOLCHAIN_GCC_VERSION)/$(ESP32_COMPILER_PREFIX)
+ESP32_COMPILER_PATH	:= $(IDF_TOOLS_PATH)/tools/$(ESP32_COMPILER_PREFIX)/$(ESP32_COMPILER_VERSION)/$(ESP32_COMPILER_PREFIX)
 endif
 
 ifndef ESP32_ULP_PATH
@@ -117,17 +114,8 @@ OBJDUMP		:= $(TOOLSPEC)-objdump
 GDB			:= $(TOOLSPEC)-gdb
 SIZE 		:= $(TOOLSPEC)-size
 
-# Get version variables
-include $(IDF_PATH)/make/version.mk
-include $(IDF_PATH)/make/ldgen.mk
-
-# If we have `version.txt` then prefer that for extracting IDF version
-ifeq ("$(wildcard ${IDF_PATH}/version.txt)","")
-IDF_VER_T := $(shell cd ${IDF_PATH} && git describe --always --tags --dirty)
-else
-IDF_VER_T := $(shell cat ${IDF_PATH}/version.txt)
-endif
-IDF_VER := $(shell echo "$(IDF_VER_T)"  | cut -c 1-31)
+# Extracting IDF version
+IDF_VER := $(shell (cd $$IDF_PATH && git describe --always --tags --dirty) | cut -c 1-31)
 
 # [ Sming specific flags ]
 DEBUG_VARS += IDF_PATH IDF_VER

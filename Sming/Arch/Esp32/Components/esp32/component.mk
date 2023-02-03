@@ -14,8 +14,7 @@ ifeq ($(CREATE_EVENT_TASK),1)
 COMPONENT_CPPFLAGS += -DCREATE_EVENT_TASK
 endif
 
-include $(IDF_PATH)/make/version.mk
-IDF_VERSION := $(IDF_VERSION_MAJOR).$(IDF_VERSION_MINOR)
+IDF_VERSION := $(firstword $(subst -, ,$(IDF_VER)))
 
 SDK_BUILD_BASE := $(COMPONENT_BUILD_BASE)/sdk
 SDK_COMPONENT_LIBDIR := $(COMPONENT_BUILD_BASE)/lib
@@ -169,7 +168,7 @@ SDK_COMPONENTS := \
 	soc \
 	spi_flash
 
-ifeq ($(IDF_VERSION),4.3)
+ifeq ($(IDF_VERSION),v4.3)
 SDK_COMPONENTS += $(ESP_VARIANT)
 else
 SDK_COMPONENTS += esp_phy
@@ -286,7 +285,7 @@ EXTRA_LDFLAGS := \
 	$(call Undef,$(SDK_UNDEF_SYMBOLS)) \
 	$(call Wrap,$(SDK_WRAP_SYMBOLS))
 
-ifeq ($(IDF_VERSION),4.3)
+ifeq ($(IDF_VERSION),v4.3)
 EXTRA_LDFLAGS += \
 	-T $(ESP_VARIANT)_out.ld \
 	$(call LinkerScript,project)
