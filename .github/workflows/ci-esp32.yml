@@ -1,4 +1,4 @@
-name: Continuous Integration (CI)
+name: Continuous Integration (CI) for Esp32
 
 on:
   push:
@@ -12,14 +12,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04, windows-latest]
-        variant: [esp8266, host, rp2040]
-        include:
-          - variant: esp8266
-            arch: Esp8266
-          - variant: host
-            arch: Host
-          - variant: rp2040
-            arch: Rp2040
+        variant: [esp32, esp32s2, esp32c3]
+        idf_version: ["4.3", "4.4", "5.0"]
 
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}-${{ toJson(matrix) }}
@@ -28,8 +22,9 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      SMING_ARCH: ${{ matrix.arch }}
+      SMING_ARCH: Esp32
       SMING_SOC: ${{ matrix.variant }}
+      INSTALL_IDF_VER: ${{ matrix.idf_version }}
 
     steps:
     - name: Fix autocrlf setting
@@ -46,7 +41,7 @@ jobs:
         "SMING_HOME=" + (Resolve-Path "Sming").path >> $env:GITHUB_ENV
 
     - name: Install build tools for Ubuntu
-      if: ${{ matrix.os == 'ubuntu-20.04' }}
+      if: ${{ matrix.os ==  'ubuntu-20.04' }}
       run: |
         Tools/ci/install.sh
 
@@ -56,16 +51,13 @@ jobs:
          . Tools/ci/setenv.ps1
          Tools/ci/install.cmd
 
-    - name: Build and test for ${{matrix.variant}} on Ubuntu
-      env: 
-        CLANG_FORMAT: clang-format-8
+    - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Ubuntu
       if: ${{ matrix.os == 'ubuntu-20.04' }}
       run: |
         source $SMING_HOME/../Tools/export.sh
-        $CLANG_FORMAT --version
         Tools/ci/build.sh
 
-    - name: Build and test for ${{matrix.variant}} on Windows
+    - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Windows
       if: ${{ matrix.os == 'windows-latest' }}
       run: |
         . Tools/ci/setenv.ps1
