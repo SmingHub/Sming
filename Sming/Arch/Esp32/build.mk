@@ -145,7 +145,8 @@ CPPFLAGS += \
 	-D__ets__ \
 	-D_GNU_SOURCE \
 	-DCONFIG_NONE_OS \
-	-Dasm=__asm__
+	-Dasm=__asm__ \
+	-Dtypeof=__typeof__
 
 PROJECT_VER ?=
 export IDF_VER

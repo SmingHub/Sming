@@ -13,6 +13,7 @@
 #include <esp_attr.h>
 #include <sming_attr.h>
 #include <stdint.h>
+#include <esp_idf_version.h>
 
 #ifdef CONFIG_ESP_TIMER_IMPL_TG0_LAC
 #include <soc/timer_group_reg.h>
@@ -129,18 +130,12 @@ uint32_t hw_timer1_read(void);
 
 #if CONFIG_ESP_TIMER_IMPL_TG0_LAC
 #define HW_TIMER2_CLK 2000000U
-#define HW_TIMER2_INDEX 0
 #elif defined(CONFIG_IDF_TARGET_ESP32S2)
 #define HW_TIMER2_CLK 80000000U
-#define HW_TIMER2_INDEX
 #elif defined(CONFIG_IDF_TARGET_ESP32C3)
 #define HW_TIMER2_CLK 16000000U
-#define HW_TIMER2_INDEX 0
-#elif defined(CONFIG_IDF_TARGET_ESP32S3)
-#define HW_TIMER2_CLK 16000000U
-#define HW_TIMER2_INDEX 0
 #else
-_Static_assert(false, "ESP32 Unsupported timer");
+#define HW_TIMER2_CLK (SYSTIMER_LL_TICKS_PER_US * 1000000U)
 #endif
 
 /**
@@ -150,10 +145,16 @@ _Static_assert(false, "ESP32 Unsupported timer");
 __forceinline static uint32_t hw_timer2_read(void)
 {
 #if CONFIG_ESP_TIMER_IMPL_TG0_LAC
-	return REG_READ(TIMG_LACTLO_REG(HW_TIMER2_INDEX));
+	return REG_READ(TIMG_LACTLO_REG(0));
+#elif ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 4, 0)
+	systimer_ll_counter_snapshot(&SYSTIMER, 0);
+	return systimer_ll_get_counter_value_low(&SYSTIMER, 0);
+#elif defined(CONFIG_IDF_TARGET_ESP32S2)
+	systimer_ll_counter_snapshot();
+	return systimer_ll_get_counter_value_low();
 #else
-	systimer_ll_counter_snapshot(HW_TIMER2_INDEX);
-	return systimer_ll_get_counter_value_low(HW_TIMER2_INDEX);
+	systimer_ll_counter_snapshot(0);
+	return systimer_ll_get_counter_value_low(0);
 #endif
 }
 

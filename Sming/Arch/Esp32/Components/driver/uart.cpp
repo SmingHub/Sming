@@ -2,8 +2,6 @@
  uart.cpp - esp32 UART HAL
  */
 
-// #define typeof(x) std::remove_volatile<decltype(x)>::type
-#define typeof(x) decltype(x)
 // These conflict with enumerated types defined in IDF
 #define UART_PARITY_NONE IDF_UART_PARITY_NONE
 #define UART_PARITY_EVEN IDF_UART_PARITY_EVEN
@@ -65,7 +63,7 @@ struct smg_uart_pins_t {
 #elif defined(SOC_ESP32S3)
 #define UART0_PIN_DEFAULT 43, 44
 #define UART1_PIN_DEFAULT UART_NUM_1_TXD_DIRECT_GPIO_NUM, UART_NUM_1_RXD_DIRECT_GPIO_NUM
-#define UART2_PIN_DEFAULT UART_NUM_2_TXD_DIRECT_GPIO_NUM, UART_NUM_2_RXD_DIRECT_GPIO_NUM
+#define UART2_PIN_DEFAULT 17, 16
 #else
 static_assert(false, "Must define default UART pins for selected ESP_VARIANT");
 #endif
@@ -763,7 +761,11 @@ bool smg_uart_set_pins(smg_uart_t* uart, int tx_pin, int rx_pin)
 	if(tx_pin != UART_PIN_NO_CHANGE) {
 		gpio_ll_iomux_func_sel(GPIO_PIN_MUX_REG[tx_pin], PIN_FUNC_GPIO);
 		gpio_set_level(gpio_num_t(tx_pin), true);
+#ifdef SOC_UART_TX_PIN_IDX
+		gpio_matrix_out(tx_pin, conn.pins[SOC_UART_TX_PIN_IDX].signal, false, false);
+#else
 		gpio_matrix_out(tx_pin, conn.tx_sig, false, false);
+#endif
 		uart->tx_pin = tx_pin;
 	}
 
@@ -771,7 +773,11 @@ bool smg_uart_set_pins(smg_uart_t* uart, int tx_pin, int rx_pin)
 		gpio_ll_iomux_func_sel(GPIO_PIN_MUX_REG[rx_pin], PIN_FUNC_GPIO);
 		gpio_set_pull_mode(gpio_num_t(rx_pin), GPIO_PULLUP_ONLY);
 		gpio_set_direction(gpio_num_t(rx_pin), GPIO_MODE_INPUT);
+#ifdef SOC_UART_RX_PIN_IDX
+		gpio_matrix_in(rx_pin, conn.pins[SOC_UART_RX_PIN_IDX].signal, false);
+#else
 		gpio_matrix_in(rx_pin, conn.rx_sig, false);
+#endif
 	}
 
 	return true;
