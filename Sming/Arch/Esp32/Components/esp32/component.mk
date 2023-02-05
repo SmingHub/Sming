@@ -17,6 +17,10 @@ endif
 IDF_VERSION := $(firstword $(subst -, ,$(IDF_VER)))
 IDF_VERSION_4 := $(filter v4%,$(IDF_VERSION))
 
+ifneq (,$(filter esp32s3-v4.3%,$(ESP_VARIANT)-$(IDF_VER)))
+$(error esp32s3 requires ESP IDF v4.4 or later)
+endif
+
 SDK_BUILD_BASE := $(COMPONENT_BUILD_BASE)/sdk
 SDK_COMPONENT_LIBDIR := $(COMPONENT_BUILD_BASE)/lib
 
@@ -192,10 +196,9 @@ SDK_COMPONENTS += esp_phy
 endif
 
 ifdef IDF_VERSION_4
-SDK_COMPONENTS += esp_ipc
-ifneq ($(ESP_VARIANT),esp32s3)
-SDK_COMPONENTS += esp_adc_cal
-endif
+SDK_COMPONENTS += \
+	esp_ipc \
+	esp_adc_cal
 else
 SDK_COMPONENTS += \
 	esp_adc \
@@ -276,7 +279,8 @@ LDFLAGS_esp32 := \
 LDFLAGS_esp32s2 := \
 	$(call LinkerScript,rom.newlib-funcs) \
 	$(call LinkerScript,rom.newlib-data) \
-	$(call LinkerScript,rom.spiflash)
+	$(call LinkerScript,rom.spiflash) \
+	$(call LinkerScript,rom.newlib-time) \
 
 LDFLAGS_esp32c3 := \
 	$(call LinkerScript,rom.newlib) \
@@ -284,9 +288,10 @@ LDFLAGS_esp32c3 := \
 	$(call LinkerScript,rom.eco3)
 
 LDFLAGS_esp32s3 := \
-	$(call LinkerScript,rom.newlib-funcs) \
-	$(call LinkerScript,rom.newlib-data) \
-	$(call LinkerScript,rom.spiflash)
+	$(call LinkerScript,rom.newlib) \
+	$(call LinkerScript,rom.version) \
+	$(call LinkerScript,rom.newlib-time)
+
 
 SDK_WRAP_SYMBOLS :=
 SDK_UNDEF_SYMBOLS :=

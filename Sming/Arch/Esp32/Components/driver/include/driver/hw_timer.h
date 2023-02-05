@@ -15,7 +15,7 @@
 #include <stdint.h>
 #include <esp_idf_version.h>
 
-#ifdef CONFIG_ESP_TIMER_IMPL_TG0_LAC
+#if CONFIG_ESP_TIMER_IMPL_TG0_LAC
 #include <soc/timer_group_reg.h>
 #else
 #include <hal/systimer_ll.h>
@@ -134,8 +134,8 @@ uint32_t hw_timer1_read(void);
 #define HW_TIMER2_CLK 80000000U
 #elif defined(CONFIG_IDF_TARGET_ESP32C3)
 #define HW_TIMER2_CLK 16000000U
-#else
-#define HW_TIMER2_CLK (SYSTIMER_LL_TICKS_PER_US * 1000000U)
+#elif defined(CONFIG_IDF_TARGET_ESP32S3)
+#define HW_TIMER2_CLK 16000000U
 #endif
 
 /**

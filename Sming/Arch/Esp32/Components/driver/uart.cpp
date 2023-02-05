@@ -22,6 +22,20 @@
 
 namespace
 {
+// Ensure global values correspond to hardware values (may break when new variants added)
+#define CHECK_STATUS_BIT(smg_name, idf_name)                                                                           \
+	static_assert(int(smg_name) == int(idf_name), "Esp32 value mismatch for " #smg_name);
+CHECK_STATUS_BIT(UART_STATUS_TX_DONE, UART_INTR_TX_DONE)
+CHECK_STATUS_BIT(UART_STATUS_RXFIFO_TOUT, UART_INTR_RXFIFO_TOUT)
+CHECK_STATUS_BIT(UART_STATUS_BRK_DET, UART_INTR_BRK_DET)
+CHECK_STATUS_BIT(UART_STATUS_CTS_CHG, UART_INTR_CTS_CHG)
+CHECK_STATUS_BIT(UART_STATUS_DSR_CHG, UART_INTR_DSR_CHG)
+CHECK_STATUS_BIT(UART_STATUS_RXFIFO_OVF, UART_INTR_RXFIFO_OVF)
+CHECK_STATUS_BIT(UART_STATUS_FRM_ERR, UART_INTR_FRAM_ERR)
+CHECK_STATUS_BIT(UART_STATUS_PARITY_ERR, UART_INTR_PARITY_ERR)
+CHECK_STATUS_BIT(UART_STATUS_TXFIFO_EMPTY, UART_INTR_TXFIFO_EMPTY)
+CHECK_STATUS_BIT(UART_STATUS_RXFIFO_FULL, UART_INTR_RXFIFO_FULL)
+
 /*
  * Parameters relating to RX FIFO and buffer thresholds
  *
@@ -163,11 +177,10 @@ void IRAM_ATTR uart_isr(smg_uart_instance_t* inst)
 	auto uart = inst->uart;
 	auto dev = getDevice(uart->uart_nr);
 
-	decltype(uart_dev_t::int_st) usis;
-	usis.val = dev->int_st.val;
+	auto usis = dev->int_st.val;
 
 	// If status is clear there's no interrupt to service on this UART
-	if(usis.val == 0) {
+	if(usis == 0) {
 		return;
 	}
 
@@ -177,7 +190,7 @@ void IRAM_ATTR uart_isr(smg_uart_instance_t* inst)
 	// Deal with the event, unless we're in raw mode
 	if(!bitRead(uart->options, UART_OPT_CALLBACK_RAW)) {
 		// Rx FIFO full or timeout
-		if(usis.rxfifo_full || usis.rxfifo_tout || usis.rxfifo_ovf) {
+		if(usis & (UART_INTR_RXFIFO_FULL | UART_INTR_RXFIFO_TOUT | UART_INTR_RXFIFO_OVF)) {
 			size_t read = 0;
 
 			// Read as much data as possible from the RX FIFO into buffer
@@ -195,7 +208,7 @@ void IRAM_ATTR uart_isr(smg_uart_instance_t* inst)
 
 				// Don't call back until buffer is (almost) full
 				if(space > uart->rx_headroom) {
-					status.rxfifo_full = false;
+					status &= ~UART_INTR_RXFIFO_FULL;
 				}
 			}
 
@@ -203,7 +216,7 @@ void IRAM_ATTR uart_isr(smg_uart_instance_t* inst)
 			 * If the FIFO is full and we didn't read any of the data then need to mask the interrupt out or it'll recur.
 			 * The interrupt gets re-enabled by a call to uart_read() or uart_flush()
 			 */
-			if(usis.rxfifo_ovf) {
+			if(usis & UART_INTR_RXFIFO_OVF) {
 				uart_ll_disable_intr_mask(dev, UART_INTR_RXFIFO_OVF);
 			} else if(read == 0) {
 				uart_ll_disable_intr_mask(dev, UART_INTR_RXFIFO_FULL | UART_INTR_RXFIFO_TOUT);
@@ -211,7 +224,7 @@ void IRAM_ATTR uart_isr(smg_uart_instance_t* inst)
 		}
 
 		// Unless we replenish TX FIFO, disable after handling interrupt
-		if(usis.txfifo_empty) {
+		if(usis & UART_INTR_TXFIFO_EMPTY) {
 			// Dump as much data as we can from buffer into the TX FIFO
 			if(uart->tx_buffer != nullptr) {
 				size_t space = uart_txfifo_free(dev);
@@ -230,20 +243,20 @@ void IRAM_ATTR uart_isr(smg_uart_instance_t* inst)
 				uart_ll_disable_intr_mask(dev, UART_INTR_TXFIFO_EMPTY);
 			} else {
 				// We've topped up TX FIFO so defer callback until next time
-				status.txfifo_empty = false;
+				status &= ~UART_INTR_TXFIFO_EMPTY;
 			}
 		}
 	}
 
 	// Keep a note of persistent flags - cleared via uart_get_status()
-	uart->status |= status.val;
+	uart->status |= status;
 
-	if(status.val != 0 && uart->callback != nullptr) {
-		uart->callback(uart, status.val);
+	if(status != 0 && uart->callback != nullptr) {
+		uart->callback(uart, status);
 	}
 
 	// Final step is to clear status flags
-	dev->int_clr.val = usis.val;
+	dev->int_clr.val = usis;
 }
 
 } // namespace
@@ -344,7 +357,7 @@ void smg_uart_start_isr(smg_uart_t* uart)
 		return;
 	}
 
-	decltype(uart_dev_t::int_ena) int_ena{};
+	uint32_t int_ena{0};
 
 	auto dev = getDevice(uart->uart_nr);
 	dev->conf1.val = 0;
@@ -358,10 +371,7 @@ void smg_uart_start_isr(smg_uart_t* uart)
 		 * should be cleared at the start of a transaction and checked at the end.
 		 * See uart_get_status().
 		 */
-		int_ena.rxfifo_full = true;
-		int_ena.rxfifo_tout = true;
-		int_ena.brk_det = true;
-		int_ena.rxfifo_ovf = true;
+		int_ena |= UART_INTR_RXFIFO_FULL | UART_INTR_RXFIFO_TOUT | UART_INTR_BRK_DET | UART_INTR_RXFIFO_OVF;
 	}
 
 	if(smg_uart_tx_enabled(uart)) {
@@ -378,7 +388,7 @@ void smg_uart_start_isr(smg_uart_t* uart)
 	}
 
 	dev->int_clr.val = 0x0007ffff;
-	dev->int_ena.val = int_ena.val;
+	dev->int_ena.val = int_ena;
 
 	smg_uart_disable_interrupts();
 	auto& inst = uartInstances[uart->uart_nr];
@@ -481,32 +491,25 @@ void smg_uart_set_break(smg_uart_t* uart, bool state)
 
 uint8_t smg_uart_get_status(smg_uart_t* uart)
 {
-	decltype(uart_dev_t::int_st) status{};
+	uint32_t status{0};
 	if(uart != nullptr) {
 		smg_uart_disable_interrupts();
 		// Get break/overflow flags from actual uart (physical or otherwise)
-		decltype(uart_dev_t::int_st) uart_status;
-		uart_status.val = uart->status;
-		status.brk_det = uart_status.brk_det;
-		status.rxfifo_ovf = uart_status.rxfifo_ovf;
+		status = uart->status & (UART_INTR_BRK_DET | UART_INTR_RXFIFO_OVF);
 		uart->status = 0;
 		// Read raw status register directly from real uart, masking out non-error bits
 		uart = get_physical(uart);
 		if(uart != nullptr) {
 			auto dev = getDevice(uart->uart_nr);
-			decltype(uart_dev_t::int_raw) int_raw;
-			int_raw.val = dev->int_raw.val;
-			status.brk_det |= int_raw.brk_det;
-			status.rxfifo_ovf |= int_raw.rxfifo_ovf;
-			status.frm_err |= int_raw.frm_err;
-			status.parity_err |= int_raw.parity_err;
+			status |= dev->int_raw.val &
+					  (UART_INTR_BRK_DET | UART_INTR_RXFIFO_OVF | UART_INTR_FRAM_ERR | UART_INTR_PARITY_ERR);
 			// Clear errors
-			dev->int_clr.val = status.val;
+			uart_ll_clr_intsts_mask(dev, status);
 		}
 		smg_uart_restore_interrupts();
 	}
 
-	return status.val;
+	return status;
 }
 
 void smg_uart_flush(smg_uart_t* uart, smg_uart_mode_t mode)
@@ -539,12 +542,7 @@ void smg_uart_flush(smg_uart_t* uart, smg_uart_mode_t mode)
 		// If receive overflow occurred then these interrupts will be masked
 		if(flushRx) {
 			uart_ll_rxfifo_rst(dev);
-
-			decltype(uart_dev_t::int_clr) int_clr;
-			int_clr.val = 0x0007ffff;
-			int_clr.txfifo_empty = false; // Leave this one
-			dev->int_clr.val = int_clr.val;
-
+			dev->int_clr.val = 0x0007ffff & ~UART_INTR_TXFIFO_EMPTY;
 			uart_ll_ena_intr_mask(dev, UART_INTR_RXFIFO_FULL | UART_INTR_RXFIFO_TOUT | UART_INTR_RXFIFO_OVF);
 		}
 	}
@@ -719,16 +717,17 @@ bool smg_uart_intr_config(smg_uart_t* uart, const smg_uart_intr_config_t* config
 		uint8_t full_threshold;
 		if(uart->rx_buffer == nullptr) {
 			// Setting this to 0 results in lockup as the interrupt never clears
-			full_threshold = TRange(1, UART_RXFIFO_FULL_THRHD).clip(config->rxfifo_full_thresh);
+			full_threshold = TRange(1U, unsigned(UART_RXFIFO_FULL_THRHD)).clip(config->rxfifo_full_thresh);
 		} else {
 			full_threshold = RX_FIFO_FULL_THRESHOLD;
 		}
 		uart_ll_set_rxfifo_full_thr(dev, full_threshold);
-		uart_ll_set_rx_tout(dev, TRange(0, UART_RX_TOUT_THRHD).clip(config->rx_timeout_thresh));
+		uart_ll_set_rx_tout(dev, TRange(0U, unsigned(UART_RX_TOUT_THRHD)).clip(config->rx_timeout_thresh));
 	}
 
 	if(smg_uart_tx_enabled(uart)) {
-		uart_ll_set_txfifo_empty_thr(dev, TRange(0, UART_TXFIFO_EMPTY_THRHD).clip(config->txfifo_empty_intr_thresh));
+		uart_ll_set_txfifo_empty_thr(
+			dev, TRange(0U, unsigned(UART_TXFIFO_EMPTY_THRHD)).clip(config->txfifo_empty_intr_thresh));
 	}
 
 	dev->int_clr.val = config->intr_mask;

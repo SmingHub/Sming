@@ -39,6 +39,7 @@ public:
 		timer_ll_set_counter_increase(dev, index, false);
 #else
 		timer_ll_set_count_direction(dev, index, GPTIMER_COUNT_DOWN);
+		timer_ll_set_clock_source(dev, index, GPTIMER_CLK_SRC_DEFAULT);
 #endif
 	}
 
