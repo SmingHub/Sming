@@ -305,9 +305,11 @@ def generate_pinmenu(args):
             f'  config PERIPH_{per.name}_ENABLE',
             f'    bool "{per.name}"',
             f'    default y',
-            f'    help'
         ]
-        menu += [f'      {s}' for  s in per.help()]
+        help = per.help()
+        if help:
+            menu += ['    help']
+            menu += [f'      {s}' for  s in help]
         if per.swap:
             menu += [
                 f'  config PERIPH_{per.name}_SWAP_ENABLE',
