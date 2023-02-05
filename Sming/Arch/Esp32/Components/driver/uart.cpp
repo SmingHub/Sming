@@ -78,6 +78,9 @@ struct smg_uart_pins_t {
 #define UART0_PIN_DEFAULT 43, 44
 #define UART1_PIN_DEFAULT UART_NUM_1_TXD_DIRECT_GPIO_NUM, UART_NUM_1_RXD_DIRECT_GPIO_NUM
 #define UART2_PIN_DEFAULT 17, 16
+#elif defined(SOC_ESP32C2)
+#define UART0_PIN_DEFAULT UART_NUM_0_TXD_DIRECT_GPIO_NUM, UART_NUM_0_RXD_DIRECT_GPIO_NUM
+#define UART1_PIN_DEFAULT 10, 9
 #else
 static_assert(false, "Must define default UART pins for selected ESP_VARIANT");
 #endif
@@ -558,13 +561,13 @@ uint32_t smg_uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate)
 
 	auto dev = getDevice(uart_nr);
 
-	uart_ll_set_sclk(dev, UART_SCLK_APB);
-
 	// Return the actual baud rate in use
 #if ESP_IDF_VERSION_MAJOR < 5
+	uart_ll_set_sclk(dev, UART_SCLK_APB);
 	uart_ll_set_baudrate(dev, baud_rate);
 	return uart_ll_get_baudrate(dev);
 #else
+	uart_ll_set_sclk(dev, UART_SCLK_DEFAULT);
 	uart_ll_set_baudrate(dev, baud_rate, APB_CLK_FREQ);
 	return uart_ll_get_baudrate(dev, APB_CLK_FREQ);
 #endif

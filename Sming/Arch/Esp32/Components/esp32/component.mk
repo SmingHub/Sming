@@ -21,6 +21,10 @@ ifneq (,$(filter esp32s3-v4.3%,$(ESP_VARIANT)-$(IDF_VER)))
 $(error esp32s3 requires ESP IDF v4.4 or later)
 endif
 
+ifneq (,$(filter esp32c2-v4%,$(ESP_VARIANT)-$(IDF_VER)))
+$(error esp32c2 requires ESP IDF v5.0 or later)
+endif
+
 SDK_BUILD_BASE := $(COMPONENT_BUILD_BASE)/sdk
 SDK_COMPONENT_LIBDIR := $(COMPONENT_BUILD_BASE)/lib
 
@@ -231,11 +235,14 @@ SDK_ESP_WIFI_LIBS := \
 	coexist \
 	core \
 	espnow \
-	mesh \
 	net80211 \
 	phy \
 	pp \
 	smartconfig
+
+ifneq ($(ESP_VARIANT),esp32c2)
+SDK_ESP_WIFI_LIBS += mesh
+endif
 
 ifeq ($(ENABLE_BLUETOOTH),1)
 SDK_ESP_BLUETOOTH_LIBS := bt btdm_app
@@ -292,6 +299,12 @@ LDFLAGS_esp32s3 := \
 	$(call LinkerScript,rom.version) \
 	$(call LinkerScript,rom.newlib-time)
 
+LDFLAGS_esp32c2 := \
+	$(call LinkerScript,rom.newlib) \
+	$(call LinkerScript,rom.version) \
+	$(call LinkerScript,rom.newlib-time) \
+	$(call LinkerScript,rom.heap) \
+	$(call LinkerScript,rom.mbedtls)
 
 SDK_WRAP_SYMBOLS :=
 SDK_UNDEF_SYMBOLS :=
@@ -303,6 +316,7 @@ EXTRA_LDFLAGS := \
 	$(call LinkerScript,rom) \
 	$(call LinkerScript,rom.api) \
 	$(call LinkerScript,rom.libgcc) \
+	$(call LinkerScript,rom.newlib-nano) \
 	$(call Wrap,\
 		esp_event_loop_create_default \
 		esp_event_handler_register \

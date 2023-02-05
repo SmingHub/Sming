@@ -12,11 +12,15 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04, windows-latest]
-        variant: [esp32, esp32s2, esp32c3, esp32s3]
+        variant: [esp32, esp32s2, esp32c3, esp32s3, esp32c2]
         idf_version: ["4.3", "4.4", "5.0"]
         exclude:
           - variant: esp32s3
             idf_version: "4.3"
+          - variant: esp32c2
+            idf_version: "4.3"
+          - variant: esp32c2
+            idf_version: "4.4"
 
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}-${{ toJson(matrix) }}

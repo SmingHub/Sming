@@ -1,0 +1,56 @@
+{
+    "variant": "esp32c2",
+    "name": "ESP32-C2",
+    "peripherals": {
+        "ADC": {
+            "sigmask": "ADC.+|ext_adc_start"
+        },
+        "CLOCKS": {
+            "sigmask": "CLK_.+"
+        },
+        "JTAG": {
+            "sigmask": "MTCK|MTDI|MTDO|MTMS"
+        },
+        "GPIO": {
+            "sigmask": "GPIO.+"
+        },
+        "I2C0": {
+            "sigmask": "I2CEXT0.+"
+        },
+        "LEDC": {
+            "sigmask": "ledc_.+"
+        },
+        "SPI1": {
+            "sigmask": "SPI[^3]+"
+        },
+        "SPI2": {
+            "sigmask": "FSPI.+"
+        },
+        "UART0": {
+            "sigmask": "U0.+",
+            "default": {
+                "TXD": [
+                    "U0TXD",
+                    43
+                ],
+                "RXD": [
+                    "U0RXD",
+                    44
+                ]
+            }
+        },
+        "UART1": {
+            "sigmask": "U1.+",
+            "default": {
+                "TXD": [
+                    "U1TXD_out",
+                    10
+                ],
+                "RXD": [
+                    "U1RXD_in",
+                    9
+                ]
+            }
+        }
+    }
+}

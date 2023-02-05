@@ -24,5 +24,11 @@ ifeq ($(CHIP_REV_MIN),)
 CHIP_REV_MIN := 0
 endif
 
+ifeq ($(SMING_SOC),esp32c2)
+ESPTOOL_EXTRA_ARGS := --flash-mmu-page-size $(CONFIG_MMU_PAGE_MODE)
+else
+ESPTOOL_EXTRA_ARGS :=
+endif
+
 $(TARGET_BIN): $(TARGET_OUT)
-	$(Q) $(ESPTOOL_CMDLINE) elf2image --min-rev $(CHIP_REV_MIN) --elf-sha256-offset 0xb0 $(flashimageoptions) -o $@ $<
+	$(Q) $(ESPTOOL_CMDLINE) elf2image --min-rev $(CHIP_REV_MIN) --elf-sha256-offset 0xb0 $(ESPTOOL_EXTRA_ARGS) $(flashimageoptions) -o $@ $<

@@ -136,6 +136,8 @@ uint32_t hw_timer1_read(void);
 #define HW_TIMER2_CLK 16000000U
 #elif defined(CONFIG_IDF_TARGET_ESP32S3)
 #define HW_TIMER2_CLK 16000000U
+#elif defined(CONFIG_IDF_TARGET_ESP32C2)
+#define HW_TIMER2_CLK 40000000U
 #endif
 
 /**

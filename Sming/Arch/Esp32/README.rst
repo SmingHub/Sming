@@ -88,6 +88,7 @@ This is still at an early stage of development however basic applications should
 - esp32s2
 - esp32c3
 - esp32s3
+- esp32c2
 
 You can change variants like this:
 

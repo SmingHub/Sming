@@ -2,15 +2,10 @@
 #include <esp_pm.h>
 #include <debug_progmem.h>
 
-#if CONFIG_IDF_TARGET_ESP32
-typedef esp_pm_config_esp32_t pm_config_t;
-#elif CONFIG_IDF_TARGET_ESP32C3
-typedef esp_pm_config_esp32c3_t pm_config_t;
-#elif CONFIG_IDF_TARGET_ESP32S2
-typedef esp_pm_config_esp32s2_t pm_config_t;
-#elif CONFIG_IDF_TARGET_ESP32S3
-typedef esp_pm_config_esp32s3_t pm_config_t;
-#endif
+#define EXPAND(a) a
+#define CONCAT3a(a, b, c) a##b##c
+#define CONCAT3(a, b, c) CONCAT3a(a, b, c)
+typedef CONCAT3(esp_pm_config_, SMING_SOC, _t) pm_config_t;
 
 int esp_clk_cpu_freq(void);
 
