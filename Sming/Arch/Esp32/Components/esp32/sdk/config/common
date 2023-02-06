@@ -52,3 +52,7 @@ CONFIG_MBEDTLS_CERTIFICATE_BUNDLE=n
 
 # Debugging
 CONFIG_ESP_SYSTEM_PANIC_GDBSTUB=y
+
+# Don't change provided flash configuration information
+CONFIG_ESPTOOLPY_FLASHSIZE_DETECT=n
+

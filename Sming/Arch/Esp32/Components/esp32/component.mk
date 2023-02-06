@@ -365,6 +365,10 @@ $(SDK_CONFIG_DEFAULTS): $(SDK_CUSTOM_CONFIG_PATH)
 	$(Q) $(foreach f,$(SDK_CONFIG_FILES),\
 		$(if $(wildcard $f),cat $f >> $@;) \
 	)
+	$(Q) printf "\n# ESPTOOL (bootloader) settings\n" >> $@
+	$(Q) echo "CONFIG_ESPTOOLPY_FLASHMODE_$(SPI_MODE)=y" >> $@
+	$(Q) echo "CONFIG_ESPTOOLPY_FLASHFREQ_$(SPI_SPEED)M=y" >> $@
+	$(Q) echo "CONFIG_ESPTOOLPY_FLASHSIZE_$(SPI_SIZE)B=y" >> $@
 
 ##@Configuration
 
