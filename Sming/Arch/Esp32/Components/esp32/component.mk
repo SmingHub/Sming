@@ -108,7 +108,8 @@ SDK_INCDIRS += \
 	esp_partition/include \
 	freertos/FreeRTOS-Kernel/include \
 	freertos/esp_additions/include \
-	freertos/esp_additions/include/freertos
+	freertos/esp_additions/include/freertos \
+	driver/deprecated
 FREERTOS_PORTABLE := freertos/FreeRTOS-Kernel/portable
 endif
 
