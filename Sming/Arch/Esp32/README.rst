@@ -101,6 +101,29 @@ Each variant uses a different build directory, e.g. ``out/Esp32/esp32c3/...`` to
 See :component-esp32:`esp32` for further details.
 
 
+IDF versions
+============
+
+Sming currently supports IDF versions 4.3, 4.4 and 5.0.
+
+The default installed IDF version is 4.4. This can be changed as follows::
+
+    INSTALL_IDF_VER=5.0 $SMING_HOME/../Tools/install.sh
+
+The installation script creates a soft-link in ``/opt/esp-idf`` pointing to the last version installed.
+Use the `IDF_PATH` environment variable or change the soft-link to select which one to use.
+
+After switching versions, run `make clean components-clean` before re-compiling.
+
+.. note::
+
+  Currently, switching from version 4.x to 5.0 or vice-versa requires an additional step
+  as they use different versions of the 'pyparsing' Python library.
+
+  If moving from IDF 4.x to 5.0:	`python -m pip install --upgrade pyparsing`
+  Moving from IDF 5.0 to 4.x: `python -m pip install pyparsing\<2.4`
+
+
 Components
 ----------
 
