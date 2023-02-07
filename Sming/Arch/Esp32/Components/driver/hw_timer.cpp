@@ -176,10 +176,10 @@ private:
 	timer_group_t group;
 	timer_idx_t index;
 	timg_dev_t* dev;
-	intr_handle_t isr_handle;
-	hw_timer_callback_t callback;
-	void* arg;
-	bool autoload;
+	intr_handle_t isr_handle{};
+	hw_timer_callback_t callback{nullptr};
+	void* arg{nullptr};
+	bool autoload{false};
 };
 
 TimerConfig timer(HW_TIMER1_GROUP, HW_TIMER1_INDEX);

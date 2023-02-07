@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, sys, argparse, json
+import os, argparse, json
 
 def get_tool_info(soc):
     path = os.path.expandvars('${IDF_PATH}/tools/tools.json')
