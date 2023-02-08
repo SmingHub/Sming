@@ -2,7 +2,10 @@
 #include <sys/time.h>
 #include <esp_task_wdt.h>
 #include <sming_attr.h>
-#include <esp_ipc.h>
+#include <string.h>
+#if ESP_IDF_VERSION_MAJOR >= 5
+#include <esp_mac.h>
+#endif
 
 extern "C" int64_t esp_system_get_time();
 

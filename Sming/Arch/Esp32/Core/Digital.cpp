@@ -103,7 +103,7 @@ void digitalWrite(uint16_t pin, uint8_t val)
 	gpio_ll_set_level(&GPIO, gpio_num_t(pin), val);
 }
 
-uint8_t IRAM_ATTR digitalRead(uint16_t pin)
+uint8_t digitalRead(uint16_t pin)
 {
 	return gpio_ll_get_level(&GPIO, gpio_num_t(pin));
 }

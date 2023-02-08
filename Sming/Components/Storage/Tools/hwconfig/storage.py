@@ -84,7 +84,8 @@ class Device(object):
             elif k == 'mode':
                 self.mode = v
             elif k == 'speed':
-                self.speed = v
+                SMING_SOC = os.environ['SMING_SOC']
+                self.speed = eval(str(v))
             else:
                 raise InputError("Unknown storage field '%s'" % k)
 

@@ -1,0 +1,163 @@
+[io_mux]
+gpio pad f0 f1 f2 f3 drv reset notes
+0 GPIO0 GPIO0 GPIO0 - - 2 0 R
+1 GPIO1 GPIO1 GPIO1 - - 2 0 R
+2 GPIO2 GPIO2 GPIO2 FSPIQ - 2 1 R
+3 GPIO3 GPIO3 GPIO3 - - 2 1 R
+4 MTMS MTMS GPIO4 FSPIHD - 2 1 R
+5 MTDI MTDI GPIO5 FSPIWP - 2 1 R
+6 MTCK MTCK GPIO6 FSPICLK - 2 1* -
+7 MTDO MTDO GPIO7 FSPID - 2 1 -
+8 GPIO8 GPIO8 GPIO8 - - 2 1 -
+9 GPIO9 GPIO9 GPIO9 - - 2 3 -
+10 GPIO10 GPIO10 GPIO10 FSPICS0 - 2 1 -
+11 VDD_SPI GPIO11 GPIO11 - - 2 0 S
+12 SPIHD SPIHD GPIO12 - - 2 3 S
+13 SPIWP SPIWP GPIO13 - - 2 3 S
+14 SPICS0 SPICS0 GPIO14 - - 2 3 S
+15 SPICLK SPICLK GPIO15 - - 2 3 S
+16 SPID SPID GPIO16 - - 2 3 S
+17 SPIQ SPIQ GPIO17 - - 2 3 S
+18 GPIO18 GPIO18 GPIO18 - - 2 0 -
+19 U0RXD U0RXD GPIO19 - - 2 3 -
+20 U0TXD U0TXD GPIO20 - - 2 4 -
+
+[rtc_mux]
+rtc gpio pad a0
+0 0 GPIO0 ADC1_CH0
+1 1 GPIO1 ADC1_CH1
+2 2 GPIO2 ADC1_CH2
+3 3 GPIO3 ADC1_CH3
+4 4 MTMS ADC1_CH4
+5 5 MTDI ADC2_CH0
+
+[gpio_matrix]
+signal input default direct_in output enable direct_out
+0 SPIQ_in 0 yes SPIQ_out SPIQ_oe yes
+1 SPID_in 0 yes SPID_out SPID_oe yes
+2 SPIHD_in 0 yes SPIHD_out SPIHD_oe yes
+3 SPIWP_in 0 yes SPIWP_out SPIWP_oe yes
+4 - - - SPICLK_out_mux SPICLK_oe yes
+5 - - - SPICS0_out SPICS0_oe yes
+6 U0RXD_in 0 yes U0TXD_out 1’d1 yes
+7 U0CTS_in 0 no U0RTS_out 1’d1 no
+8 U0DSR_in 0 no U0DTR_out 1’d1 no
+9 U1RXD_in 0 no U1TXD_out 1’d1 no
+10 U1CTS_in 0 no U1RTS_out 1’d1 no
+11 U1DSR_in 0 no U1DTR_out 1’d1 no
+12 - - - - - -
+13 - - - - - -
+14 - - - - - -
+15 - - - SPIQ_monitor 1’d1 no
+16 - - - SPID_monitor 1’d1 no
+17 - - - SPIHD_monitor 1’d1 no
+18 - - - SPIWP_monitor 1’d1 no
+19 - - - SPICS1_out SPICS1_oe no
+20 - - - - - -
+21 - - - - - -
+22 - - - - - -
+23 - - - - - -
+24 - - - - - -
+25 - - - - - -
+26 - - - - - -
+27 - - - - - -
+28 cpu_gpio_in0 0 no cpu_gpio_out0 cpu_gpio_out_oen0 no
+29 cpu_gpio_in1 0 no cpu_gpio_out1 cpu_gpio_out_oen1 no
+30 cpu_gpio_in2 0 no cpu_gpio_out2 cpu_gpio_out_oen2 no
+31 cpu_gpio_in3 0 no cpu_gpio_out3 cpu_gpio_out_oen3 no
+32 cpu_gpio_in4 0 no cpu_gpio_out4 cpu_gpio_out_oen4 no
+33 cpu_gpio_in5 0 no cpu_gpio_out5 cpu_gpio_out_oen5 no
+34 cpu_gpio_in6 0 no cpu_gpio_out6 cpu_gpio_out_oen6 no
+35 cpu_gpio_in7 0 no cpu_gpio_out7 cpu_gpio_out_oen7 no
+36 - - - - - -
+37 - - - - - -
+38 - - - - - -
+39 - - - - - -
+40 - - - - - -
+41 - - - - - -
+42 - - - - - -
+43 - - - - - -
+44 - - - - - -
+45 ext_adc_start 0 no ledc_ls_sig_out0 1’d1 no
+46 - - - ledc_ls_sig_out1 1’d1 no
+47 - - - ledc_ls_sig_out2 1’d1 no
+48 - - - ledc_ls_sig_out3 1’d1 no
+49 - - - ledc_ls_sig_out4 1’d1 no
+50 - - - ledc_ls_sig_out5 1’d1 no
+51 - - - - - -
+52 - - - - - -
+53 I2CEXT0_SCL_in 1 no I2CEXT0_SCL_out I2CEXT0_SCL_oe no
+54 I2CEXT0_SDA_in 1 no I2CEXT0_SDA_out I2CEXT0_SDA_oe no
+55 - - - - - -
+56 - - - - - -
+57 - - - - - -
+58 - - - - - -
+59 - - - - - -
+60 - - - - - -
+61 - - - - - -
+62 - - - - - -
+63 FSPICLK_in 0 yes FSPICLK_out_mux FSPICLK_oe yes
+64 FSPIQ_in 0 yes FSPIQ_out FSPIQ_oe yes
+65 FSPID_in 0 yes FSPID_out FSPID_oe yes
+66 FSPIHD_in 0 yes FSPIHD_out FSPIHD_oe yes
+67 FSPIWP_in 0 yes FSPIWP_out FSPIWP_oe yes
+68 FSPICS0_in 0 yes FSPICS0_out FSPICS0_oe yes
+69 - - - FSPICS1_out FSPICS1_oe no
+70 - - - FSPICS2_out FSPICS2_oe no
+71 - - - FSPICS3_out FSPICS3_oe no
+72 - - - FSPICS4_out FSPICS4_oe no
+73 - - - FSPICS5_out FSPICS5_oe no
+74 - - - - - -
+75 - - - - - -
+76 - - - - - -
+77 - - - - - -
+78 - - - - - -
+79 - - - - - -
+80 - - - - - -
+81 - - - - - -
+82 - - - - - -
+83 - - - - - -
+84 - - - - - -
+85 - - - - - -
+86 - - - - - -
+87 - - - - - -
+88 - - - - - -
+89 - - - ant_sel0 1’d1 no
+90 - - - ant_sel1 1’d1 no
+91 - - - ant_sel2 1’d1 no
+92 - - - ant_sel3 1’d1 no
+93 - - - ant_sel4 1’d1 no
+94 - - - ant_sel5 1’d1 no
+95 - - - ant_sel6 1’d1 no
+96 - - - ant_sel7 1’d1 no
+97 sig_in_func_97 0 no sig_in_func97 1’d1 no
+98 sig_in_func_98 0 no sig_in_func98 1’d1 no
+99 sig_in_func_99 0 no sig_in_func99 1’d1 no
+100 sig_in_func_100 0 no sig_in_func100 1’d1 no
+101 - - - - - -
+102 - - - - - -
+103 - - - - - -
+104 - - - - - -
+105 - - - - - -
+106 - - - - - -
+107 - - - - - -
+108 - - - - - -
+109 - - - - - -
+110 - - - - - -
+111 - - - - - -
+112 - - - - - -
+113 - - - - - -
+114 - - - - - -
+115 - - - - - -
+116 - - - - - -
+117 - - - - - -
+118 - - - - - -
+119 - - - - - -
+120 - - - - - -
+121 - - - - - -
+122 - - - - - -
+123 - - - CLK_OUT_out1 1’d1 no
+124 - - - CLK_OUT_out2 1’d1 no
+125 - -  - CLK_OUT_out3 1’d1 no
+126 - - - - - -
+127 - - - - - -

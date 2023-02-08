@@ -59,9 +59,14 @@ namespace Ethernet
 {
 PHY_IMPL(Ip101, ip101)
 PHY_IMPL(Rtl8201, rtl8201)
-PHY_IMPL(Lan8720, lan8720)
 PHY_IMPL(Dp83848, dp83848)
+#if ESP_IDF_VERSION_MAJOR < 5
+PHY_IMPL(Lan8720, lan8720)
 PHY_IMPL(Ksz8041, ksz8041)
+#else
+PHY_IMPL(Lan8720, lan87xx)
+PHY_IMPL(Ksz8041, ksz80xx)
+#endif
 
 // For internal use
 PHY_IMPL(W5500PhyFactory, w5500)

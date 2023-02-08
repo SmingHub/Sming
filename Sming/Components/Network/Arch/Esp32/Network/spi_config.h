@@ -35,6 +35,11 @@
 #define DEFAULT_PIN_CS 10
 #define DEFAULT_PIN_INT 19
 #define DEFAULT_PIN_RESET 18
+#elif defined(SOC_ESP32C2)
+#define DEFAULT_HOST SPI2_HOST
+#define DEFAULT_PIN_CS 10
+#define DEFAULT_PIN_INT 19
+#define DEFAULT_PIN_RESET 18
 #endif
 
 #define CHECK_RET(err)                                                                                                 \

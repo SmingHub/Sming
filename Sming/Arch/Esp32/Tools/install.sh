@@ -44,6 +44,7 @@ IDF_BRANCH="sming/release/v${INSTALL_IDF_VER}"
 if [ -d "$IDF_CLONE_PATH" ]; then
     printf "\n\n** Skipping ESP-IDF clone: '$IDF_CLONE_PATH' exists\n\n"
 else
+    echo "git clone -b $IDF_BRANCH $IDF_REPO $IDF_CLONE_PATH"
     git clone -b "$IDF_BRANCH" "$IDF_REPO" "$IDF_CLONE_PATH"
 fi
 
@@ -53,7 +54,12 @@ ln -s "$IDF_CLONE_PATH" "$IDF_PATH"
 
 # Install IDF tools and packages
 python3 "$IDF_PATH/tools/idf_tools.py" --non-interactive install
-python3 -m pip install -r "$IDF_PATH/requirements.txt"
+python3 "$IDF_PATH/tools/idf_tools.py" --non-interactive install-python-env
+IDF_REQUIREMENTS="$IDF_PATH/requirements.txt"
+if [ ! -f "$IDF_REQUIREMENTS" ]; then
+    IDF_REQUIREMENTS="$IDF_PATH/tools/requirements/requirements.core.txt"
+fi
+python3 -m pip install --no-input -r "$IDF_REQUIREMENTS"
 
 if [ -z "$KEEP_DOWNLOADS" ]; then
     rm -rf "$IDF_TOOLS_PATH/dist"

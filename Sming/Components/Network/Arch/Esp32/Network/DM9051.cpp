@@ -9,6 +9,7 @@
  ****/
 
 #include <Network/Ethernet/DM9051.h>
+#include <esp_netif.h>
 #include <debug_progmem.h>
 #include "spi_config.h"
 
@@ -50,10 +51,13 @@ bool DM9051Service::begin(const Config& config)
 		.spics_io_num = getPin(config.chipSelectPin, DEFAULT_PIN_CS),
 		.queue_size = 20,
 	};
+#if ESP_IDF_VERSION_MAJOR < 5
 	spi_device_handle_t spi_handle{nullptr};
 	CHECK_RET(spi_bus_add_device(spiHost, &devcfg, &spi_handle));
-
 	eth_dm9051_config_t dm9051_config = ETH_DM9051_DEFAULT_CONFIG(spi_handle);
+#else
+	eth_dm9051_config_t dm9051_config = ETH_DM9051_DEFAULT_CONFIG(spiHost, &devcfg);
+#endif
 	dm9051_config.int_gpio_num = getPin(config.interruptPin, DEFAULT_PIN_INT);
 	eth_mac_config_t mac_config = ETH_MAC_DEFAULT_CONFIG();
 	mac = esp_eth_mac_new_dm9051(&dm9051_config, &mac_config);
