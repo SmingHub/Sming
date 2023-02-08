@@ -300,6 +300,7 @@ uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
 bool flashmem_erase_sector(uint32_t sector_id)
 {
 	debug_d("flashmem_erase_sector(0x%08x)", sector_id);
+	system_soft_wdt_feed();
 	flash_range_erase(sector_id * FLASH_SECTOR_SIZE, FLASH_SECTOR_SIZE);
 	return true;
 }

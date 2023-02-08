@@ -18,8 +18,6 @@
 
 uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 {
-	esp_task_wdt_reset();
-
 	esp_err_t r = esp_flash_write(esp_flash_default_chip, from, toaddr, size);
 	if(r != ESP_OK) {
 		SYSTEM_ERROR("ERROR in flash_write: r=%d at %08X\n", r, toaddr);
@@ -31,8 +29,6 @@ uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 
 uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
 {
-	esp_task_wdt_reset();
-
 	esp_err_t r = esp_flash_read(esp_flash_default_chip, to, fromaddr, size);
 	if(r != ESP_OK) {
 		SYSTEM_ERROR("ERROR in flash_read: r=%d at %08X\n", r, fromaddr);
