@@ -84,8 +84,8 @@ bool TaskStat::update()
 
 	std::bitset<maxTasks> startMatched, endMatched;
 
-	PSTR_ARRAY(hdrfmt, "#   | Core | Prio | Run Time | % Time | Name");
-	PSTR_ARRAY(datfmt, "%-3u |   %c  | %4u | %8u |  %3u%%  | %s\r\n");
+	PSTR_ARRAY(hdrfmt, "#   | Core | Prio | Handle   | Run Time | % Time | Name");
+	PSTR_ARRAY(datfmt, "%-3u |   %c  | %4u | %08x | %8u |  %3u%%  | %s\r\n");
 	out.println();
 	out.println(hdrfmt);
 	// Match each task in startInfo.status to those in the endInfo.status
@@ -108,7 +108,7 @@ bool TaskStat::update()
 			coreId = status.xCoreID;
 #endif
 			out.printf(datfmt, status.xTaskNumber, (coreId == CONFIG_FREERTOS_NO_AFFINITY) ? '-' : ('0' + coreId),
-					   status.uxCurrentPriority, taskElapsedTime, percentageTime, status.pcTaskName);
+					   status.uxCurrentPriority, status.xHandle, taskElapsedTime, percentageTime, status.pcTaskName);
 		}
 	}
 
