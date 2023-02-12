@@ -79,8 +79,8 @@
  * esp32   SOC_LEDC_CHANNEL_NUM         (8)
  * esp32c3 SOC_LEDC_CHANNEL_NUM         (6)
  * esp32s2 SOC_LEDC_CHANNEL_NUM         (8)
- * esp32s3 SOC_LEDC_CHANNEL_NUM 		 8
- *
+ * esp32s3 SOC_LEDC_CHANNEL_NUM 		(8)
+ * 
  * Some SoSs support a mode called HIGHSPEED_MODE which is essentially another full block of PWM hardware 
  * that adds SOC_LEDC_CHANNEL_NUM channels. 
  * Those Architectures have SOC_LEDC_SUPPORT_HS_MODE defined as 1.
@@ -98,7 +98,8 @@
  * Also, it currently does not reflect the fact that different SOCs have a different number of channels per block
  * (specifically, the esp32c3 only has six channels and no highspeed mode). 
  * I will continue in two ways: 
- * - implement the "vanilla" Sming HardwarePWM interface that will hide the underlying architecture but allow up to 16 
+ * - implement the "vanilla" Sming HardwarePWM i
+ nterface that will hide the underlying architecture but allow up to 16 
  *   channels on an ESP32 
  * - implement overloads for the relevant functions that allow selecting hs mode where applicable. 
  * 
