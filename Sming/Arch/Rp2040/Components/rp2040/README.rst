@@ -28,3 +28,27 @@ Configuration variables
 
     This setting is provided to make it easy to re-program RP2040 boards during development.
     When enabled, Sming monitors the BOOTSEL button and restartS in boot mode if pressed.
+
+
+.. envvar:: LINK_CYW43_FIRMWARE
+
+    default: 1
+
+    The Pico-W board requires a ~140K (compressed) firmware BLOB which by default is linked into the application image.
+
+    This can be wasteful when using OTA as the firmware must be contained in all application images.
+
+    Setting this value to '0' will omit firmware from the image, and instead load it from a partition called 'cyw43_fw'.
+    This partition can be added to the standard map using the 'cyw43_fw' :envvar:`HWCONFIG_OPT` setting::
+
+        make LINK_CYW43_FIRMWARE=0 HWCONFIG_OPT=cyw43_fw
+
+    This is not the default setting since the additional partition must be managed by the end application.
+
+
+.. envvar:: PICO_DEBUG
+
+    default: 0
+
+    Set to 1 to enable additional debug output from compiled Pico SDK library.
+    Shows things like WiFi firmware version.

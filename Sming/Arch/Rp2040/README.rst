@@ -36,14 +36,7 @@ Tested and working:
 - System functions :cpp:func:`system_get_chip_id`, :cpp:func:`system_get_sdk_version`.
 - Partitions and file systems (except SD cards and FAT)
 - SPIClass tested with Radio_nRF24L01 sample only
-
-In progress:
-
-Networking
-   A skeleton WiFi/lwip2 support framework is provided sufficient to build samples with Networking enabled,
-   but it is currently non-functional.
-   The goal is to allow use of networking adapters such as Ethernet over SPI, similar to how ESP32.
-   USB offers the possibility of CDMA networking for mobile applications.
+- WiFi networking support for the Pico-W
 
 Yet to be implemented:
 
@@ -76,7 +69,9 @@ Crash/exception handling & serial debugging
 Multi-boot / OTA updates.
    If you run ``make map`` you'll see there is no bootloader!
    It's part of the firmware image at present.
-   Adding RP2040 support to rBoot would probably be simplest.
+   Adding RP2040 support to rBoot may work, however the Pico typically has only 2MByte flash which is quite restrictive.
+   It may also be necessary to compile images at different addresses as windowed XIP (eXecute In Place) flash accesses
+   do not appear to be supported.
 
 
 Requirements
@@ -165,6 +160,33 @@ The RP2040 can also be programmed via JTAG debugging but this requires additiona
 
    The RP2040 bootloader does not include support for reading flash memory via mass storage,
    so commands such as ``make verifyflash`` won't work at present.
+
+
+Networking
+----------
+
+The Pico-W variant includes an Infineon CYW43439 bluetooth/WiFi SoC.
+
+Raspberry Pi use the ... driver. The SDK also includes an LWIP implementation.
+
+The physical interface is SPI using a custom (PIO) implementation.
+This requires the use of GPIOxx which can no longer be accessed directly,
+but instead via xxxxx.
+
+The CYW43 chip is initialised (via `cyw43_ensure_up`) when application code
+makes the first call into the networking API, for example by enabling station
+or AP access. Part of the hardware configuration here is to download firmware
+to the CYW43 chip (about 240KB) plus the CLM BLOB (< 1KB).
+
+.. note:
+
+   CLM stands for ``Country Locale Matrix``. The data defines regulatory configuration (target power outputs).
+   Currently a 'global' setting is used to initialise WiFi, but there may be advantages in changing this to the
+   specific country where the device is being deployed.
+
+Sming contains patches which compresses this data (based on https://github.com/raspberrypi/pico-sdk/issues/909)
+to about 145KB.
+By default, it is linked into the application image, but can also be read from a separate partition.
 
 
 Source code

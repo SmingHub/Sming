@@ -23,7 +23,7 @@
 #include "esp_tasks.h"
 #include <heap.h>
 #include <esp_system.h>
-#include <rom/ets_sys.h>
+#include <os.h>
 #include <soc/soc.h>
 #include <driver/gpio.h>
 #include <driver/adc.h>
@@ -39,7 +39,7 @@
 /** @brief  Disable interrupts
  *  @retval Current interrupt level
  */
-#define noInterrupts() portENTER_CRITICAL_NESTED()
+#define noInterrupts() portSET_INTERRUPT_MASK_FROM_ISR()
 
 /** @brief  Enable interrupts
 */
@@ -47,4 +47,4 @@
 
 /** @brief Restore interrupts to level saved from previous noInterrupts() call
  */
-#define restoreInterrupts(state) portEXIT_CRITICAL_NESTED(state)
+#define restoreInterrupts(state) portCLEAR_INTERRUPT_MASK_FROM_ISR(state)

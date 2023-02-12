@@ -2,7 +2,10 @@
 #include <sys/time.h>
 #include <esp_task_wdt.h>
 #include <sming_attr.h>
-#include <esp_ipc.h>
+#include <string.h>
+#if ESP_IDF_VERSION_MAJOR >= 5
+#include <esp_mac.h>
+#endif
 
 extern "C" int64_t esp_system_get_time();
 
@@ -53,8 +56,18 @@ void system_restart(void)
 	 * Doing so causes a deadlock and a task watchdog timeout.
 	 *
 	 * Delegating this call to any other task fixes the issue.
+	 *
+	 * We can use the timer task to handle the call.
+	 * This method does not free the allocated timer resources but as the system
+	 * is restarting this doesn't matter.
 	 */
-	esp_ipc_call(0, esp_ipc_func_t(esp_restart), nullptr);
+	const esp_timer_create_args_t create_args = {
+		.callback = esp_timer_cb_t(esp_restart),
+		.dispatch_method = ESP_TIMER_TASK,
+	};
+	esp_timer_handle_t handle{nullptr};
+	esp_timer_create(&create_args, &handle);
+	esp_timer_start_once(handle, 100);
 }
 
 /* Watchdog */

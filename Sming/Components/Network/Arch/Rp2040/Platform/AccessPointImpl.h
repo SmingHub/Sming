@@ -4,15 +4,19 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * AccessPointImpl.h - Esp8266 WiFi Access Point
+ * AccessPointImpl.h
  *
  ****/
 
 #pragma once
 
 #include <Platform/AccessPoint.h>
+#include "WifiEventsImpl.h"
+#include "dhcpserver.h"
 #include <Platform/System.h>
 
+namespace SmingInternal::Network
+{
 class AccessPointImpl : public AccessPointClass, protected ISystemReadyHandler
 {
 public:
@@ -36,6 +40,19 @@ public:
 	String getPassword() const override;
 	std::unique_ptr<StationList> getStations() const override;
 
+	void eventHandler(EventInfo& info);
+
 protected:
 	void onSystemReady() override;
+
+private:
+	void dhcps_start();
+	void dhcps_stop();
+
+	dhcp_server_t dhcp_server{};
+	bool enabled{false};
 };
+
+extern AccessPointImpl accessPoint;
+
+} // namespace SmingInternal::Network

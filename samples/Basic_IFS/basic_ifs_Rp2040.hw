@@ -3,23 +3,24 @@
     "arch": "Rp2040",
     "base_config": "basic_ifs",
     "options": [
-        "2m"
+        "2m",
+        "cyw43_fw"
     ],
     "partitions": {
         "rom0": {
-            "size": "480K"
+            "size": "320K"
         },
         "lfs1": {
             "size": "932K",
-            "address": "0x00078000"
+            "address": "0x0006b000"
         },
         "spiffs0": {
-            "address": "0x00161000",
+            "address": "0x00154000",
             "size": "376K"
         },
         "fwfs1": {
-            "address": "0x001bf000",
-            "size": "256K"
+            "address": "0x001b2000",
+            "size": "164K"
         }
     }
 }

@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * StationImpl.h - Esp8266 WiFi Station
+ * StationImpl.h
  *
  ****/
 
@@ -12,6 +12,13 @@
 
 #include <Platform/Station.h>
 #include <Platform/System.h>
+#include <SimpleTimer.h>
+#include <Data/CString.h>
+#include <memory>
+
+namespace SmingInternal::Network
+{
+struct EventInfo;
 
 class StationImpl : public StationClass, protected ISystemReadyHandler
 {
@@ -55,6 +62,22 @@ public:
 	void wpsConfigStop() override;
 #endif
 
+	void eventHandler(EventInfo& info);
+
 protected:
 	void onSystemReady() override;
+
+private:
+	bool internalConnect();
+	void scanCompleted(bool result);
+
+	static BssList scanResults;
+	static SimpleTimer scanTimer;
+	Config cfg{};
+	CString hostname;
+	bool enabled{false};
 };
+
+extern StationImpl station;
+
+} // namespace SmingInternal::Network

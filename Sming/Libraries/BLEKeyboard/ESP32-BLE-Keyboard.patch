@@ -1,7 +1,34 @@
 diff --git a/BleKeyboard.cpp b/BleKeyboard.cpp
-index 0d043f4..3c2677c 100644
+index 0d043f4..d317e83 100644
 --- a/BleKeyboard.cpp
 +++ b/BleKeyboard.cpp
+@@ -499,7 +499,7 @@ size_t BleKeyboard::write(const uint8_t *buffer, size_t size) {
+ 	return n;
+ }
+ 
+-void BleKeyboard::onConnect(BLEServer* pServer) {
++void BleKeyboard::onConnect(BLEServer* pServer, BLEConnInfo& connInfo) {
+   this->connected = true;
+ 
+ #if !defined(USE_NIMBLE)
+@@ -513,7 +513,7 @@ void BleKeyboard::onConnect(BLEServer* pServer) {
+ 
+ }
+ 
+-void BleKeyboard::onDisconnect(BLEServer* pServer) {
++void BleKeyboard::onDisconnect(BLEServer* pServer, BLEConnInfo& connInfo, int reason) {
+   this->connected = false;
+ 
+ #if !defined(USE_NIMBLE)
+@@ -528,7 +528,7 @@ void BleKeyboard::onDisconnect(BLEServer* pServer) {
+ #endif // !USE_NIMBLE
+ }
+ 
+-void BleKeyboard::onWrite(BLECharacteristic* me) {
++void BleKeyboard::onWrite(BLECharacteristic* me, BLEConnInfo& connInfo) {
+   uint8_t* value = (uint8_t*)(me->getValue().c_str());
+   (void)value;
+   ESP_LOGI(LOG_TAG, "special keys: %d", *value);
 @@ -539,8 +539,8 @@ void BleKeyboard::delay_ms(uint64_t ms) {
    if(ms){
      uint64_t e = (m + (ms * 1000));
@@ -14,3 +41,28 @@ index 0d043f4..3c2677c 100644
    }
  }
 \ No newline at end of file
+diff --git a/BleKeyboard.h b/BleKeyboard.h
+index 0736a02..e72216d 100644
+--- a/BleKeyboard.h
++++ b/BleKeyboard.h
+@@ -11,6 +11,7 @@
+ #include "NimBLECharacteristic.h"
+ #include "NimBLEHIDDevice.h"
+ 
++#define BLEConnInfo                NimBLEConnInfo
+ #define BLEDevice                  NimBLEDevice
+ #define BLEServerCallbacks         NimBLEServerCallbacks
+ #define BLECharacteristicCallbacks NimBLECharacteristicCallbacks
+@@ -173,9 +174,9 @@ public:
+   void set_version(uint16_t version);
+ protected:
+   virtual void onStarted(BLEServer *pServer) { };
+-  virtual void onConnect(BLEServer* pServer) override;
+-  virtual void onDisconnect(BLEServer* pServer) override;
+-  virtual void onWrite(BLECharacteristic* me) override;
++  virtual void onConnect(BLEServer* pServer, BLEConnInfo& connInfo) override;
++  virtual void onDisconnect(BLEServer* pServer, BLEConnInfo& connInfo, int reason) override;
++  virtual void onWrite(BLECharacteristic* me, BLEConnInfo& connInfo) override;
+ 
+ };
+ 

@@ -17,3 +17,15 @@ Other networking libraries:
 - :component:`ssl`
 - :library:`UPnP`
 - :library:`UPnP-Schema`
+
+
+Configuration variables
+-----------------------
+
+.. envvar:: ENABLE_WIFI_DEBUG
+
+   default: 0 (disabled)
+
+   *RP2040 only*
+
+   Set to 1 to enable additional debugging output for processing WiFi events.

@@ -9,7 +9,7 @@
 			"type": "flash",
 			"size": "4M",
 			"mode": "dio",
-			"speed": 40
+			"speed": "60 if SMING_SOC=='esp32c2' else 40"
 		}
 	},
 	"partitions": {

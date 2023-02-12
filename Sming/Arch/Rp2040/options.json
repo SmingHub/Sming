@@ -1,0 +1,15 @@
+{
+    "cyw43_fw": {
+        "description": "Pico-W CYW43439 WiFi transceiver firmware",
+        "partitions": {
+            "cyw43_fw": {
+                "address": "self.device.size - 0x1000 - self.size",
+                "size": "0x24000",
+                "type": "data",
+                "subtype": "phy",
+                "readonly": true,
+                "filename": "$(CYW43_FIRMWARE)"
+            }
+        }
+    }
+}

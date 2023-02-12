@@ -16,13 +16,15 @@ void loop()
 	Serial.println("Press buttons 5 and 16. Move all enabled axes to max. Set DPAD (hat 1) to down right.");
 	bleGamepad.press(BUTTON_5);
 	bleGamepad.press(BUTTON_16);
-	bleGamepad.setAxes(32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767, DPAD_DOWN_RIGHT);
+	bleGamepad.setAxes(32767, 32767, 32767, 32767, 32767, 32767, 32767, 32767);
+	bleGamepad.setHat1(DPAD_DOWN_RIGHT);
 	// All axes, sliders, hats etc can also be set independently. See the IndividualAxes.ino example
 	delay(500);
 
 	Serial.println("Release button 5. Move all axes to min. Set DPAD (hat 1) to centred.");
 	bleGamepad.release(BUTTON_5);
-	bleGamepad.setAxes(-32767, -32767, -32767, -32767, -32767, -32767, -32767, -32767, DPAD_CENTERED);
+	bleGamepad.setAxes(-32767, -32767, -32767, -32767, -32767, -32767, -32767, -32767);
+	bleGamepad.setHat1(DPAD_CENTERED);
 	delay(500);
 }
 

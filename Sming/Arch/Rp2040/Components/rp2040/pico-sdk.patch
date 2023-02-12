@@ -1,13 +1,52 @@
+diff --git a/lib/cyw43-driver b/lib/cyw43-driver
+--- a/lib/cyw43-driver
++++ b/lib/cyw43-driver
+@@ -1 +1 @@
+-Subproject commit 2ab6ca93f9cd044bc6f35c1403b1284e4161294a
++Subproject commit 2ab6ca93f9cd044bc6f35c1403b1284e4161294a-dirty
+diff --git a/src/rp2_common/cyw43_driver/CMakeLists.txt b/src/rp2_common/cyw43_driver/CMakeLists.txt
+index 42e2a30..4128a30 100644
+--- a/src/rp2_common/cyw43_driver/CMakeLists.txt
++++ b/src/rp2_common/cyw43_driver/CMakeLists.txt
+@@ -71,7 +71,6 @@ if (EXISTS ${PICO_CYW43_DRIVER_PATH}/${CYW43_DRIVER_TEST_FILE})
+             )
+     target_link_libraries(cyw43_driver_picow INTERFACE
+             cyw43_driver_base
+-            pico_stdlib
+             hardware_pio
+             hardware_dma
+             hardware_exception
+diff --git a/src/rp2_common/cyw43_driver/cyw43_bus_pio_spi.c b/src/rp2_common/cyw43_driver/cyw43_bus_pio_spi.c
+index 21af77d..974472d 100644
+--- a/src/rp2_common/cyw43_driver/cyw43_bus_pio_spi.c
++++ b/src/rp2_common/cyw43_driver/cyw43_bus_pio_spi.c
+@@ -8,7 +8,6 @@
+ #include <string.h>
+ #include <stdio.h>
+ 
+-#include "pico/stdlib.h"
+ #include "hardware/gpio.h"
+ #include "hardware/pio.h"
+ #include "hardware/clocks.h"
 diff --git a/src/rp2_common/pico_platform/include/pico/platform.h b/src/rp2_common/pico_platform/include/pico/platform.h
-index 596b0db..0fb309f 100644
+index fab7f29..d7eed51 100644
 --- a/src/rp2_common/pico_platform/include/pico/platform.h
 +++ b/src/rp2_common/pico_platform/include/pico/platform.h
-@@ -357,7 +357,7 @@ static __force_inline void tight_loop_contents(void) {}
+@@ -362,7 +362,7 @@ static __force_inline void tight_loop_contents(void) {}
   * \return a * b
   */
  __force_inline static int32_t __mul_instruction(int32_t a, int32_t b) {
 -    asm ("mul %0, %1" : "+l" (a) : "l" (b) : );
 +    __asm__ ("mul %0, %1" : "+l" (a) : "l" (b) : );
      return a;
+ }
+ 
+@@ -398,7 +398,7 @@ __force_inline static int32_t __mul_instruction(int32_t a, int32_t b) {
+  */
+ static inline uint __get_current_exception(void) {
+     uint exception;
+-    asm ("mrs %0, ipsr" : "=l" (exception));
++    __asm ("mrs %0, ipsr" : "=l" (exception));
+     return exception;
  }
  

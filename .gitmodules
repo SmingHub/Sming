@@ -69,6 +69,10 @@
 	path = Sming/Components/rboot/rboot
 	url = https://github.com/mikee47/rboot
 	ignore = dirty
+[submodule "uzlib"]
+	path = Sming/Components/uzlib/uzlib
+	url = https://github.com/pfalcon/uzlib.git
+	ignore = dirty
 [submodule "ws_parser"]
 	path = Sming/Components/ws_parser
 	url = https://github.com/charliesome/ws_parser.git

@@ -109,7 +109,7 @@
 #define MEMP_NUM_UDP_PCB                4
 
 /**
- * MEMP_NUM_TCP_PCB: the number of simulatenously active TCP connections.
+ * MEMP_NUM_TCP_PCB: the number of simultaneously active TCP connections.
  * (requires the LWIP_TCP option)
  */
 #define MEMP_NUM_TCP_PCB                4
