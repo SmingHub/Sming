@@ -122,6 +122,9 @@ public:
 	 */
 	void update();
 	
+	/** @brief Get PWM Frequency
+	 *  @retval uint32_t Value of Frequency 
+	*/
 	uint32_t getFrequency(uint8_t pin);
 
 private:
