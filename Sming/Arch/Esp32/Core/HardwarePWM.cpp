@@ -127,6 +127,7 @@
 
 #include <HardwarePWM.h>
 #include <debug_progmem.h>
+#include <driver/periph_ctrl.h>
 #include <driver/ledc.h>
 #include <esp_err.h>
 #include <hal/ledc_types.h>
