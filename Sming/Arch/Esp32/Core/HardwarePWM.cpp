@@ -170,8 +170,6 @@ uint32_t maxDuty(ledc_timer_bit_t bits)
 
 HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_of_pins)
 {
-	ledc_timer_config_t ledc_timer;
-	ledc_channel_config_t ledc_channel;
 	debug_d("starting HardwarePWM init");
 	periph_module_enable(PERIPH_LEDC_MODULE);
 	if((no_of_pins == 0) || (no_of_pins > SOC_LEDC_CHANNEL_NUM)) {
@@ -190,11 +188,13 @@ HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_o
 		 *  which should not be an issue, though, since the values should be the same for all timers
 		 */
 		// The two groups (if available) are operating in different speed modes, hence speed mode is an alias for group or vice versa
-		ledc_timer.speed_mode = pinToGroup(i);
-		ledc_timer.timer_num = pinToTimer(i);
-		ledc_timer.duty_resolution = LEDC_TIMER_10_BIT;			// todo: make configurable later
-		ledc_timer.freq_hz = periodToFrequency(DEFAULT_PERIOD); // todo: make configurable later
-		ledc_timer.clk_cfg = LEDC_AUTO_CLK;
+		ledc_timer_config_t ledc_timer{
+			.speed_mode = pinToGroup(i),
+			.duty_resolution = LEDC_TIMER_10_BIT, // todo: make configurable later
+			.timer_num = pinToTimer(i),
+			.freq_hz = periodToFrequency(DEFAULT_PERIOD), // todo: make configurable later
+			.clk_cfg = LEDC_AUTO_CLK,
+		};
 
 		debug_d("ledc_timer.\r\n"
 				"\tspeed_mode: %i\r\n"
@@ -208,13 +208,15 @@ HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_o
 		/*
 		 * Prepare and then apply the LEDC PWM channel configuration
 		 */
-		ledc_channel.speed_mode = pinToGroup(i);
-		ledc_channel.channel = pinToChannel(i);
-		ledc_channel.timer_sel = pinToTimer(i);
-		ledc_channel.intr_type = LEDC_INTR_DISABLE;
-		ledc_channel.gpio_num = pins[i];
-		ledc_channel.duty = 0;
-		ledc_channel.hpoint = 0;
+		ledc_channel_config_t ledc_channel{
+			.gpio_num = pins[i],
+			.speed_mode = pinToGroup(i),
+			.channel = pinToChannel(i),
+			.intr_type = LEDC_INTR_DISABLE,
+			.timer_sel = pinToTimer(i),
+			.duty = 0,
+			.hpoint = 0,
+		};
 		debug_d("ledc_channel\n"
 				"\tspeed_mode: %i\r\n"
 				"\tchannel: %i\r\n"
