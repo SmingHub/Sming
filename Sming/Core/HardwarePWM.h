@@ -121,7 +121,7 @@ public:
 	/** @brief  This function is used to actually update the PWM.
 	 */
 	void update();
-	
+
 	/** @brief Get PWM Frequency
 	 *  @retval uint32_t Value of Frequency 
 	*/
