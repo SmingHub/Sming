@@ -138,8 +138,8 @@ void IRAM_ATTR handleInterrupt(smg_uart_t* uart, uart_dev_t* dev)
 			 */
 			if(rxfifo_ovf) {
 				hw_clear_bits(&dev->imsc, UART_UARTIMSC_OEIM_BITS);
-			} else if(read == 0) {
-				hw_set_bits(&dev->imsc, UART_UARTIMSC_RXIM_BITS | UART_UARTIMSC_RTIM_BITS);
+			} else if(!read) {
+				hw_clear_bits(&dev->imsc, UART_UARTIMSC_RXIM_BITS | UART_UARTIMSC_RTIM_BITS);
 			}
 		}
 
