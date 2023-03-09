@@ -54,7 +54,6 @@ SDK_INTERFACES := \
 	common/pico_util \
 	rp2040/hardware_regs \
 	rp2040/hardware_structs \
-	rp2_common/cyw43_driver \
 	rp2_common/hardware_gpio \
 	rp2_common/pico_platform \
 	rp2_common/hardware_base \
@@ -75,13 +74,16 @@ SDK_INTERFACES := \
 	rp2_common/hardware_vreg \
 	rp2_common/hardware_watchdog \
 	rp2_common/hardware_xosc \
+	rp2_common/pico_async_context \
 	rp2_common/pico_bootrom \
 	rp2_common/pico_double \
 	rp2_common/pico_int64_ops \
 	rp2_common/pico_float \
+	rp2_common/pico_rand \
 	rp2_common/pico_runtime \
 	rp2_common/pico_unique_id \
-	rp2_common/pico_cyw43_arch
+	rp2_common/pico_cyw43_arch \
+	rp2_common/pico_cyw43_driver
 
 COMPONENT_INCDIRS := \
 	src/include \

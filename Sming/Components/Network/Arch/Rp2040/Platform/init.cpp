@@ -40,10 +40,7 @@ void rp2040_network_initialise()
 
 void rp2040_network_service()
 {
-	if(cyw43_poll_required) {
-		cyw43_poll_required = false;
-		cyw43_poll();
-	}
+	cyw43_arch_poll();
 }
 
 extern "C" void __wrap_cyw43_cb_process_async_event(cyw43_t* self, const cyw43_async_event_t* ev)
