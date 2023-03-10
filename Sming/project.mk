@@ -241,9 +241,6 @@ define ParseComponentList
 $(foreach c,$1,$(eval $(call ParseComponent,$c,$(call FindComponentDir,$c),$(SMING_HOME)/$(BUILD_BASE),$(USER_LIBDIR))))
 endef
 
-# Must parse the Application Component first to get project dependencies
-$(eval $(call ParseComponent,App,$(CURDIR),$(BUILD_BASE),$(abspath $(APP_LIBDIR))))
-
 # Load cached configuration variables. On first run this file won't exist, so all values
 # will be as specified by defaults or in project's component.mk file.
 # Values may be overridden via command line to update the cache.
@@ -252,6 +249,9 @@ CONFIG_CACHE_FILE	:= $(OUT_BASE)/config.mk
 ifeq (,$(filter config-clean dist-clean,$(MAKECMDGOALS)))
 -include $(CONFIG_CACHE_FILE)
 endif
+
+# Must parse the Application Component first to get project dependencies
+$(eval $(call ParseComponent,App,$(CURDIR),$(BUILD_BASE),$(abspath $(APP_LIBDIR))))
 
 # Also export debug variables here for access by external tools (e.g. python)
 CONFIG_DEBUG_FILE	:= $(OUT_BASE)/debug.mk
