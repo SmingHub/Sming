@@ -215,7 +215,7 @@ bool initFileSystem()
 	Storage::registerDevice(card);
 
 	// Buffering allows byte read/write
-	card.allocateBuffers(2);
+	card->allocateBuffers(2);
 
 	if(card->begin(PIN_CARD_CS, SPI_FREQ_LIMIT)) {
 		Serial << "CSD" << endl << card->csd << endl;

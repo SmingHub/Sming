@@ -1,8 +1,6 @@
 COMPONENT_DEPENDS := \
 	Spiffs \
-	LittleFS \
-	FatIFS \
-	SdStorage
+	LittleFS
 
 # Empty SPIFFS partition please
 SPIFF_FILES :=
@@ -20,6 +18,7 @@ endif
 CONFIG_VARS += ENABLE_SDCARD
 ifeq ($(ENABLE_SDCARD),1)
 COMPONENT_CXXFLAGS += -DENABLE_SDCARD
+COMPONENT_DEPENDS += SdStorage FatIFS
 endif
 
 # For Rp2040, put firmware into partition
