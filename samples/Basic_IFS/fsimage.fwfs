@@ -15,7 +15,8 @@
     "mountpoints": {
         "littlefs": 0,
         "spiffs": 1,
-        "fat": 2
+        "sdcard": 2,
+        "usb": 3
     },
     // Rules for file metadata. All rules are evaluated in sequence for every file
     "rules": [
