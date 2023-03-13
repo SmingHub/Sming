@@ -535,7 +535,7 @@ fetch: ##Fetch Component or Library and display location
 CACHE_VARS += TRACE
 TRACE ?=
 .PHONY: decode-stacktrace
-decode-stacktrace: ##Open the stack trace decoder ready to paste dump text. Alteratively, use `make decode-stacktrace TRACE=/path/to/crash.stack`
+decode-stacktrace: ##Open the stack trace decoder ready to paste dump text. Alternatively, use `make decode-stacktrace TRACE=/path/to/crash.stack`
 	$(Q) if [ -z "$(TRACE)" ]; then \
 		echo "Decode stack trace: Paste stack trace here"; \
 	fi
@@ -750,7 +750,7 @@ endif
 BOARDTOOL_CMDLINE = $(PYTHON) $(SMING_TOOLS)/boardtool.py $(if $V,-v)
 
 .PHONY: list-default-pins
-list-default-pins: ##List default periperal pins
+list-default-pins: ##List default peripheral pins
 	$(Q) $(BOARDTOOL_CMDLINE) list-default-pins
 
 PIN_MENU := $(abspath $(OUT_BASE)/../pin.menu)

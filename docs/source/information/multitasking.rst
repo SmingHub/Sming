@@ -13,7 +13,7 @@ older systems which only have a single CPU.
 
 The OS does this using a mechanism called *Pre-emptive Multitasking*. As far as your program
 is concerned, it just runs without any apparent interruptions, but in reality it only gets
-a little 'slice' of time before the operating system forceably switches to a different program and
+a little 'slice' of time before the operating system forcibly switches to a different program and
 lets it run for another 'slice' of time. (Hence the term, *time slicing*.)
 
 With pre-emptive multitasking the operating system has to maintain state for every single
