@@ -3,7 +3,7 @@
 # Sming hardware configuration tool
 #
 
-import os, sys
+import os, sys, copy
 
 appPath = os.path.dirname(os.path.realpath(__file__))
 libPath = appPath + '/../common/'
@@ -96,9 +96,8 @@ def update_workspace():
     ws = load_json(filename, False)
     template = load_template('workspace.json', appPath)
     if ws is None:
-        ws = template.copy()
+        ws = copy.deepcopy(template)
     schemas = ws['settings']['json.schemas'] = []
-    # ws['settings']['json.schemas']
     for schema in template['settings']['json.schemas']:
         schema['url'] = env.resolve(schema['url'])
         schemas += [schema]
