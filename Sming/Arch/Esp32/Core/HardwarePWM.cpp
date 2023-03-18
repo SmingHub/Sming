@@ -113,6 +113,12 @@
  * to read back this value, not least to find the value for getMaxDuty() for a channel. It will either have to be stored in the
  * module or maybe read from the hardware directly (LEDC_[HL]STIMERx_CONF_REG & 0x1f)
  * 
+ * ToDo: implement an abstraction layer
+ * ====================================
+ * as it stands now, this impelmentation does not provide a function to synchronize all the PWM channels (HardwarePWM::update())
+ * It might be a good idea to provide an intermediary abstraction that handles all the low level PWM functions (such as flexible
+ * timer to channel assignments, hs/ls mode awareness, pwm bit width etc) and implements the update() function on that level.
+ * 
  * hardware technical reference: 
  * =============================
  * https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf#ledpwm
@@ -264,10 +270,14 @@ bool HardwarePWM::setDutyChan(uint8_t chan, uint32_t duty, bool update)
 		return false;
 	} else if(duty <= maxduty) {
 		ESP_ERROR_CHECK(ledc_set_duty(pinToGroup(chan), pinToChannel(chan), duty));
-		if(update) {
-			ESP_ERROR_CHECK(ledc_update_duty(pinToGroup(chan), pinToChannel(chan)));
-			//update();
-		}
+		/*
+		* ignoring the update flag in this release, ToDo: implement a synchronized update mechanism
+		* if(update) {
+		*	ESP_ERROR_CHECK(ledc_update_duty(pinToGroup(chan), pinToChannel(chan)));
+		*	//update();
+		* }
+		*/
+		ESP_ERROR_CHECK(ledc_update_duty(pinToGroup(chan), pinToChannel(chan)));
 		return true;
 	} else {
 		debug_d("Duty cycle value too high for current period.");
@@ -330,7 +340,7 @@ namespace{
 
 	uint32_t periodToFrequency(uint32_t period){
 		if(period == 0){
-			return -1;
+			return 0;
 		}else{
 			return (1000000 / period);
 		}
@@ -338,7 +348,7 @@ namespace{
 
 	uint32_t frequencyToPeriod(uint32_t freq){
 		if(freq == 0) {
-			return -1;
+			return 0;
 		} else {
 			return (1000000 / freq);
 		}
