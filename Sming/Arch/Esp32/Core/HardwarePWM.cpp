@@ -76,7 +76,7 @@
  * 
  * Number of Channels:
  * ===================
- * esp32   SOC_LEDC_CHANNEL_NUM         (8)
+ * esp32   SOC_LEDC_CHANNEL_NUM         16 (8?)
  * esp32c3 SOC_LEDC_CHANNEL_NUM         (6)
  * esp32s2 SOC_LEDC_CHANNEL_NUM         (8)
  * esp32s3 SOC_LEDC_CHANNEL_NUM 		 8
@@ -121,7 +121,8 @@
  * 
  * hardware technical reference: 
  * =============================
- * https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf#ledpwm
+ * ESP32:   https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf#ledpwm
+ * ESP32c3: https://www.espressif.com/sites/default/files/documentation/esp32-c3_technical_reference_manual_en.pdf#ledpwm
  * 
  * Overview of the whole ledc-system here: 
  * https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/ledc.html
@@ -150,8 +151,10 @@
 //#include <soc/soc_caps.h>
 #include "driver/ledc.h"
 #include "esp_err.h"
-#include "hal/ledc_types.h"
+//#include "hal/ledc_types.h"
+#include <hal/ledc_types.h>
 #include <HardwarePWM.h>
+#include "./singleton.h"
 
 namespace{
 	ledc_mode_t pinToGroup(uint8_t pin);
@@ -177,9 +180,9 @@ HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_o
 	}
 
 	uint32_t io_info[SOC_LEDC_CHANNEL_NUM][3];	  // pin information
-	uint32_t pwm_duty_init[SOC_LEDC_CHANNEL_NUM]; // pwm duty
+	//uint32_t pwm_duty_init[SOC_LEDC_CHANNEL_NUM]; // pwm duty
 	for(uint8_t i = 0; i < no_of_pins; i++) {
-		pwm_duty_init[i] = 0; // Start with zero output
+		//pwm_duty_init[i] = 0; // Start with zero output
 		channels[i] = pins[i];
 
 	/* 
