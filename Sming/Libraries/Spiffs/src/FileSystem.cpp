@@ -32,6 +32,11 @@ namespace SPIFFS
 		return Error::NotMounted;                                                                                      \
 	}
 
+#define CHECK_RES(res)                                                                                                 \
+	if((res) < 0) {                                                                                                    \
+		return translateSpiffsError(res);                                                                              \
+	}
+
 struct FileDir {
 	char path[SPIFFS_OBJ_NAME_LEN]; ///< Filter for readdir()
 	unsigned pathlen;
@@ -372,9 +377,7 @@ int FileSystem::read(FileHandle file, void* data, size_t size)
 int FileSystem::write(FileHandle file, const void* data, size_t size)
 {
 	int res = SPIFFS_write(handle(), file, const_cast<void*>(data), size);
-	if(res < 0) {
-		return translateSpiffsError(res);
-	}
+	CHECK_RES(res)
 
 	touch(file);
 	return res;
@@ -465,9 +468,7 @@ int FileSystem::stat(const char* path, Stat* stat)
 
 	spiffs_stat ss;
 	int err = SPIFFS_stat(handle(), path ?: "", &ss);
-	if(err < 0) {
-		return translateSpiffsError(err);
-	}
+	CHECK_RES(err)
 
 	if(stat != nullptr) {
 		*stat = Stat{};
@@ -492,9 +493,7 @@ int FileSystem::fstat(FileHandle file, Stat* stat)
 {
 	spiffs_stat ss;
 	int err = SPIFFS_fstat(handle(), file, &ss);
-	if(err < 0) {
-		return translateSpiffsError(err);
-	}
+	CHECK_RES(err)
 
 	auto smb = getMetaBuffer(file);
 	if(smb == nullptr) {
@@ -516,6 +515,75 @@ int FileSystem::fstat(FileHandle file, Stat* stat)
 	}
 
 	return FS_OK;
+}
+
+int FileSystem::fgetextents(FileHandle file, Storage::Partition* part, Extent* list, uint16_t extcount)
+{
+	CHECK_MOUNTED()
+
+	if(part) {
+		*part = partition;
+	}
+
+	// This implementation is based on the `spiffs_object_read` function in spiffs_nuceleus.c.
+
+	auto fs = handle();
+	auto fh = SPIFFS_FH_UNOFFS(fs, file);
+	spiffs_fd* fd;
+	int res = spiffs_fd_get(fs, fh, &fd);
+	CHECK_RES(res)
+	uint32_t fileSize = (fd->size == SPIFFS_UNDEFINED_LEN) ? 0 : fd->size;
+	uint32_t dataPageSize = SPIFFS_DATA_PAGE_SIZE(fs);
+	auto objix_pix = spiffs_page_ix(-1);
+	auto prev_objix_spix = spiffs_span_ix(-1);
+	unsigned extIndex{0};
+	uint32_t nextExtOffset{0};
+	spiffs_span_ix data_spix{0};
+	for(uint32_t offset = 0; offset < fileSize; ++data_spix, offset += dataPageSize) {
+		auto cur_objix_spix = SPIFFS_OBJ_IX_ENTRY_SPAN_IX(fs, data_spix);
+		if(prev_objix_spix != cur_objix_spix) {
+			// load current object index (header) page
+			if(cur_objix_spix == 0) {
+				objix_pix = fd->objix_hdr_pix;
+			} else {
+				res = spiffs_obj_lu_find_id_and_span(fs, fd->obj_id | SPIFFS_OBJ_ID_IX_FLAG, cur_objix_spix, 0,
+													 &objix_pix);
+				CHECK_RES(res);
+			}
+
+			res = _spiffs_rd(fs, SPIFFS_OP_T_OBJ_IX | SPIFFS_OP_C_READ, fd->file_nbr,
+							 SPIFFS_PAGE_TO_PADDR(fs, objix_pix), LOG_PAGE_SIZE, workBuffer);
+			CHECK_RES(res)
+
+			prev_objix_spix = cur_objix_spix;
+		}
+
+		spiffs_page_ix data_pix;
+		if(cur_objix_spix == 0) {
+			data_pix = ((spiffs_page_ix*)(workBuffer + sizeof(spiffs_page_object_ix_header)))[data_spix];
+		} else {
+			data_pix =
+				((spiffs_page_ix*)(workBuffer + sizeof(spiffs_page_object_ix)))[SPIFFS_OBJ_IX_ENTRY(fs, data_spix)];
+		}
+
+		Extent ext{
+			.offset = SPIFFS_PAGE_TO_PADDR(fs, data_pix) + sizeof(spiffs_page_header),
+			.length = std::min(dataPageSize, fileSize - offset),
+			.skip = uint16_t(LOG_PAGE_SIZE - dataPageSize),
+		};
+		if(ext.offset == nextExtOffset && ext.length == dataPageSize) {
+			--extIndex;
+			if(list) {
+				++list[extIndex].repeat;
+			}
+		} else if(list && extIndex < extcount) {
+			list[extIndex] = ext;
+		}
+		nextExtOffset = ext.offset + LOG_PAGE_SIZE;
+		++extIndex;
+	}
+
+	return extIndex;
 }
 
 int FileSystem::fsetxattr(FileHandle file, AttributeTag tag, const void* data, size_t size)
@@ -558,9 +626,7 @@ int FileSystem::setxattr(const char* path, AttributeTag tag, const void* data, s
 	FS_CHECK_PATH(path)
 	spiffs_stat ss;
 	int err = SPIFFS_stat(handle(), path ?: "", &ss);
-	if(err < 0) {
-		return translateSpiffsError(err);
-	}
+	CHECK_RES(err)
 	SpiffsMetaBuffer smb;
 	smb.assign(ss.meta);
 	err = smb.setxattr(tag, data, size);
@@ -584,9 +650,7 @@ int FileSystem::getxattr(const char* path, AttributeTag tag, void* buffer, size_
 	FS_CHECK_PATH(path)
 	spiffs_stat ss;
 	int err = SPIFFS_stat(handle(), path, &ss);
-	if(err < 0) {
-		return translateSpiffsError(err);
-	}
+	CHECK_RES(err)
 	SpiffsMetaBuffer smb;
 	smb.assign(ss.meta);
 	return smb.getxattr(tag, buffer, size);

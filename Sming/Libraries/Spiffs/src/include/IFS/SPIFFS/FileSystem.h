@@ -89,6 +89,7 @@ public:
 	file_offset_t tell(FileHandle file) override;
 	int ftruncate(FileHandle file, file_size_t new_size) override;
 	int flush(FileHandle file) override;
+	int fgetextents(FileHandle file, Storage::Partition* part, Extent* list, uint16_t extcount) override;
 	int rename(const char* oldpath, const char* newpath) override;
 	int remove(const char* path) override;
 	int fremove(FileHandle file) override;
@@ -137,7 +138,7 @@ private:
 	IProfiler* profiler{nullptr};
 	SpiffsMetaBuffer metaCache[SPIFF_FILEDESC_COUNT];
 	spiffs fs;
-	uint16_t workBuffer[LOG_PAGE_SIZE];
+	uint8_t workBuffer[LOG_PAGE_SIZE * 2];
 	spiffs_fd fileDescriptors[SPIFF_FILEDESC_COUNT];
 	uint8_t cache[CACHE_SIZE];
 };

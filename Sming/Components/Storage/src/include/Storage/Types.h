@@ -10,6 +10,8 @@
 #pragma once
 
 #include <cstdint>
+#include <limits>
+#include <algorithm>
 
 #ifdef ENABLE_STORAGE_SIZE64
 using storage_size_t = uint64_t;
