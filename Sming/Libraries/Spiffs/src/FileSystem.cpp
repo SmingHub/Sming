@@ -649,11 +649,12 @@ int FileSystem::readdir(DirHandle dir, Stat& stat)
 {
 	GET_FILEDIR()
 
+	SPIFFS_clearerr(handle());
 	spiffs_dirent e;
 	for(;;) {
 		if(SPIFFS_readdir(&d->d, &e) == nullptr) {
 			int err = SPIFFS_errno(handle());
-			if(err == SPIFFS_VIS_END) {
+			if(err == SPIFFS_OK) {
 				return Error::NoMoreFiles;
 			}
 
