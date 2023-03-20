@@ -2,51 +2,41 @@ diff --git a/lib/cyw43-driver b/lib/cyw43-driver
 --- a/lib/cyw43-driver
 +++ b/lib/cyw43-driver
 @@ -1 +1 @@
--Subproject commit 2ab6ca93f9cd044bc6f35c1403b1284e4161294a
-+Subproject commit 2ab6ca93f9cd044bc6f35c1403b1284e4161294a-dirty
-diff --git a/src/rp2_common/cyw43_driver/CMakeLists.txt b/src/rp2_common/cyw43_driver/CMakeLists.txt
-index 42e2a30..4128a30 100644
---- a/src/rp2_common/cyw43_driver/CMakeLists.txt
-+++ b/src/rp2_common/cyw43_driver/CMakeLists.txt
-@@ -71,7 +71,6 @@ if (EXISTS ${PICO_CYW43_DRIVER_PATH}/${CYW43_DRIVER_TEST_FILE})
-             )
-     target_link_libraries(cyw43_driver_picow INTERFACE
-             cyw43_driver_base
--            pico_stdlib
-             hardware_pio
-             hardware_dma
-             hardware_exception
-diff --git a/src/rp2_common/cyw43_driver/cyw43_bus_pio_spi.c b/src/rp2_common/cyw43_driver/cyw43_bus_pio_spi.c
-index 21af77d..974472d 100644
---- a/src/rp2_common/cyw43_driver/cyw43_bus_pio_spi.c
-+++ b/src/rp2_common/cyw43_driver/cyw43_bus_pio_spi.c
-@@ -8,7 +8,6 @@
- #include <string.h>
- #include <stdio.h>
+-Subproject commit 9bfca61173a94432839cd39210f1d1afdf602c42
++Subproject commit 9bfca61173a94432839cd39210f1d1afdf602c42-dirty
+diff --git a/src/rp2_common/hardware_base/include/hardware/address_mapped.h b/src/rp2_common/hardware_base/include/hardware/address_mapped.h
+index 8e92d8b..da5feac 100644
+--- a/src/rp2_common/hardware_base/include/hardware/address_mapped.h
++++ b/src/rp2_common/hardware_base/include/hardware/address_mapped.h
+@@ -105,12 +105,12 @@ __force_inline static uint32_t xip_alias_check_addr(const void *addr) {
+ #define xip_nocache_noalloc_alias_untyped(addr) ((void *)(XIP_NOCACHE_NOALLOC_BASE | xip_alias_check_addr(addr)))
  
--#include "pico/stdlib.h"
- #include "hardware/gpio.h"
- #include "hardware/pio.h"
- #include "hardware/clocks.h"
-diff --git a/src/rp2_common/pico_platform/include/pico/platform.h b/src/rp2_common/pico_platform/include/pico/platform.h
-index fab7f29..d7eed51 100644
---- a/src/rp2_common/pico_platform/include/pico/platform.h
-+++ b/src/rp2_common/pico_platform/include/pico/platform.h
-@@ -362,7 +362,7 @@ static __force_inline void tight_loop_contents(void) {}
-  * \return a * b
-  */
- __force_inline static int32_t __mul_instruction(int32_t a, int32_t b) {
--    asm ("mul %0, %1" : "+l" (a) : "l" (b) : );
-+    __asm__ ("mul %0, %1" : "+l" (a) : "l" (b) : );
-     return a;
- }
+ // Typed conversion alias pointer generation macros
+-#define hw_set_alias(p) ((typeof(p))hw_set_alias_untyped(p))
+-#define hw_clear_alias(p) ((typeof(p))hw_clear_alias_untyped(p))
+-#define hw_xor_alias(p) ((typeof(p))hw_xor_alias_untyped(p))
+-#define xip_noalloc_alias(p) ((typeof(p))xip_noalloc_alias_untyped(p))
+-#define xip_nocache_alias(p) ((typeof(p))xip_nocache_alias_untyped(p))
+-#define xip_nocache_noalloc_alias(p) ((typeof(p))xip_nocache_noalloc_alias_untyped(p))
++#define hw_set_alias(p) ((__typeof__(p))hw_set_alias_untyped(p))
++#define hw_clear_alias(p) ((__typeof__(p))hw_clear_alias_untyped(p))
++#define hw_xor_alias(p) ((__typeof__(p))hw_xor_alias_untyped(p))
++#define xip_noalloc_alias(p) ((__typeof__(p))xip_noalloc_alias_untyped(p))
++#define xip_nocache_alias(p) ((__typeof__(p))xip_nocache_alias_untyped(p))
++#define xip_nocache_noalloc_alias(p) ((__typeof__(p))xip_nocache_noalloc_alias_untyped(p))
  
-@@ -398,7 +398,7 @@ __force_inline static int32_t __mul_instruction(int32_t a, int32_t b) {
-  */
- static inline uint __get_current_exception(void) {
-     uint exception;
--    asm ("mrs %0, ipsr" : "=l" (exception));
-+    __asm ("mrs %0, ipsr" : "=l" (exception));
-     return exception;
- }
+ /*! \brief Atomically set the specified bits to 1 in a HW register
+  *  \ingroup hardware_base
+diff --git a/src/rp2_common/pico_standard_link/memmap_default.ld b/src/rp2_common/pico_standard_link/memmap_default.ld
+index 638e994..3fb53cd 100644
+--- a/src/rp2_common/pico_standard_link/memmap_default.ld
++++ b/src/rp2_common/pico_standard_link/memmap_default.ld
+@@ -231,7 +231,7 @@ SECTIONS
+     } > SCRATCH_Y
  
+     .flash_end : {
+-        PROVIDE(__flash_binary_end = .);
++        __flash_binary_end = .;
+     } > FLASH
+ 
+     /* stack limit is poorly named, but historically is maximum heap ptr */

@@ -35,6 +35,12 @@
 
 #endif
 
+#ifdef ENABLE_USB_STORAGE
+#include <USB.h>
+#include <IFS/FAT.h>
+USB::MSC::HostDevice usbStorage;
+#endif
+
 namespace
 {
 #ifdef ENABLE_FLASHSTRING_IMAGE
@@ -237,6 +243,69 @@ bool initFileSystem()
 
 #endif
 
+#ifdef ENABLE_USB_STORAGE
+	USB::begin();
+	USB::MSC::onMount([](auto inst) {
+		usbStorage.begin(inst);
+		usbStorage.enumerate([](auto& unit, const USB::MSC::Inquiry& inquiry) {
+#define OUT(name, value) Serial << String(name).padLeft(30) << ": " << value << endl;
+#define OUTR(name) OUT(#name, inquiry.resp.name)
+			Serial << _F("USB device '") << unit.getName() << _F("' mounted") << endl;
+			OUT("Vendor ID", inquiry.vendorId())
+			OUT("Product ID", inquiry.productId())
+			OUT("Product Revision", inquiry.productRev())
+			OUTR(peripheral_device_type)
+			OUTR(peripheral_qualifier)
+			OUTR(is_removable)
+			OUTR(version)
+			OUTR(response_data_format)
+			OUTR(hierarchical_support)
+			OUTR(normal_aca)
+			OUTR(additional_length)
+			OUTR(protect)
+			OUTR(third_party_copy)
+			OUTR(target_port_group_support)
+			OUTR(access_control_coordinator)
+			OUTR(scc_support)
+			OUTR(addr16)
+			OUTR(multi_port)
+			OUTR(enclosure_service)
+			OUTR(cmd_que)
+			OUTR(sync)
+			OUTR(wbus16)
+#undef OUTR
+#undef OUT
+
+			Storage::registerDevice(&unit);
+			unit.allocateBuffers(16);
+
+			for(auto part : unit.partitions()) {
+				Serial << part << endl;
+			}
+			auto part = *unit.partitions().begin();
+			auto fatfs = IFS::createFatFilesystem(part);
+			if(fatfs && fatfs->mount() == FS_OK) {
+				getFileSystem()->setVolume(3, fatfs);
+				Serial << F("FAT partition mounted") << endl;
+			} else {
+				Serial << F("FAT mount failed") << endl;
+				delete fatfs;
+			}
+
+			return false; // Ignore other LUNs
+		});
+
+		return &usbStorage;
+	});
+
+	USB::MSC::onUnmount([](USB::MSC::HostDevice& dev) {
+		if(dev == usbStorage) {
+			getFileSystem()->setVolume(3, nullptr);
+			Serial << _F("USB '") << dev.getName() << _F("' unmounted") << endl;
+		}
+	});
+#endif
+
 	debug_i("File system initialised");
 	return true;
 }
@@ -403,13 +472,11 @@ Timer statTimer;
 
 void init()
 {
-#if DEBUG_BUILD
 	Serial.begin(COM_SPEED_SERIAL);
 
 	Serial.systemDebugOutput(true);
 	debug_i("\n\n********************************************************\n"
 			"Hello\n");
-#endif
 
 	// Delay at startup so terminal gets time to start
 	auto timer = new AutoDeleteTimer;

@@ -373,9 +373,13 @@
 	path = Sming/Libraries/UPnP
 	url = https://github.com/mikee47/Sming-UPnP
 	ignore = dirty
-[submodule "Sming/Libraries/UPnP-Schema"]
+[submodule "Libraries.UPnP-Schema"]
 	path = Sming/Libraries/UPnP-Schema
 	url = https://github.com/mikee47/UPnP-Schema
+	ignore = dirty
+[submodule "Libraries.USB"]
+	path = Sming/Libraries/USB
+	url = https://github.com/mikee47/Sming-USB
 	ignore = dirty
 [submodule "Libraries.VT100"]
 	path = Sming/Libraries/VT100
