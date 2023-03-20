@@ -1,7 +1,7 @@
 Host Library
 ============
 
-This Components provides the core funcionality for the Host Emulator:
+This Components provides the core functionality for the Host Emulator:
 
 Sockets
 -------
