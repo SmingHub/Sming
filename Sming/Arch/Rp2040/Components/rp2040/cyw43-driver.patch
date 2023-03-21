@@ -21,7 +21,7 @@ index c6c2df6..753bfa8 100644
      [CYW43_EV_ASSOC_REQ_IE] = "ASSOC_REQ_IE",
      [CYW43_EV_ASSOC_RESP_IE] = "ASSOC_RESP_IE",
 diff --git a/src/cyw43_ll.c b/src/cyw43_ll.c
-index 7f4229b..107f371 100644
+index 7f4229b..f3bc641 100644
 --- a/src/cyw43_ll.c
 +++ b/src/cyw43_ll.c
 @@ -55,9 +55,6 @@ int sdio_transfer(uint32_t cmd, uint32_t arg, uint32_t *resp);
@@ -122,7 +122,7 @@ index 7f4229b..107f371 100644
 -        // print wifi firmware version info
 -        CYW43_DEBUG("%s\n", &b[fw_end - 3 - found]);
 -    }
-+    const uint32_t block_size = 16384;
++    const uint32_t block_size = CYW43_BUS_MAX_BLOCK_SIZE;
  
      #if VERIFY_FIRMWARE_DOWNLOAD
      uint32_t t_start = cyw43_hal_ticks_us();
