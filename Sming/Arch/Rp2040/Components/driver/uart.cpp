@@ -396,7 +396,7 @@ void smg_uart_wait_tx_empty(smg_uart_t* uart)
 	}
 
 	auto dev = getDevice(uart->uart_nr);
-	while((dev->fr & UART_UARTFR_TXFE_BITS) != 0) {
+	while((dev->fr & UART_UARTFR_BUSY_BITS) != 0) {
 	}
 }
 
