@@ -67,6 +67,7 @@ SDK_INTERFACES := \
 	rp2_common/hardware_flash \
 	rp2_common/hardware_irq \
 	rp2_common/hardware_pio \
+	rp2_common/hardware_pwm \
 	rp2_common/hardware_resets \
 	rp2_common/hardware_rosc \
 	rp2_common/hardware_rtc \
