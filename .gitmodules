@@ -237,6 +237,10 @@
 	path = Sming/Libraries/FatIFS
 	url = https://github.com/mikee47/FatIFS
 	ignore = dirty
+[submodule "Libraries.FlashIP"]
+	path = Sming/Libraries/FlashIP
+	url = https://github.com/mikee47/FlashIP
+	ignore = dirty
 [submodule "Libraries.flatbuffers"]
 	path = Sming/Libraries/flatbuffers/src
 	url = https://github.com/google/flatbuffers.git
