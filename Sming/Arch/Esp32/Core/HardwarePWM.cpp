@@ -182,8 +182,6 @@ HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_o
 		return;
 	}
 
-	uint32_t io_info[SOC_LEDC_CHANNEL_NUM][3];	// pin information
-	uint32_t pwm_duty_init[SOC_LEDC_CHANNEL_NUM]; // pwm duty
 	for(uint8_t i = 0; i < no_of_pins; i++) {
 		pwm_duty_init[i] = 0; // Start with zero output
 		channels[i] = pins[i];
