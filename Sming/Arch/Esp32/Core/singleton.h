@@ -47,7 +47,7 @@ public:
       */
 	ledc_timer_t getTimer()
 	{
-		return getLSTimer(LEDC_LOW_SPEED_MODE);
+		return getLSTimer();
 	};
 
 	/**
@@ -91,9 +91,10 @@ public:
       * @retval ledc_timer_t <the_timer>
       *         LEDC_TIMER_MAX if no more timers with the specified mode are available
       */
-	ledc_timer_t getTimer(const int mode) {
-        return getTimer((ledc_mode_t)mode);
-    };
+	ledc_timer_t getTimer(const int mode)
+	{
+		return getTimer((ledc_mode_t)mode);
+	};
 
 	/**
       * @brief free an unspecified timer
@@ -118,7 +119,7 @@ public:
       */
 	void freeTimer(const int timer)
 	{
-		freeLSTimer((ledc_timer_t) timer);
+		freeLSTimer((ledc_timer_t)timer);
 	};
 
 	/**
@@ -142,7 +143,7 @@ public:
       */
 	void freeLSTimer(const int timer)
 	{
-		freeTimer(LEDC_LOW_SPEED_MODE, (ledc_timer_t) timer);
+		freeTimer(LEDC_LOW_SPEED_MODE, (ledc_timer_t)timer);
 	};
 
 	/**
@@ -185,9 +186,10 @@ public:
       * @note if you are mixing low speed and high speed timers, this is the safest call to use
       * @retval none
       */
-	void freeTimer(const int mode, ledc_timer_t timer) {
-        freeTimer((ledc_mode_t)mode, timer);
-    };
+	void freeTimer(const int mode, ledc_timer_t timer)
+	{
+		freeTimer((ledc_mode_t)mode, timer);
+	};
 
 	/**
       * @brief free a timer
@@ -196,9 +198,10 @@ public:
       * @note if you are mixing low speed and high speed timers, this is the safest call to use
       * @retval none
       */
-	void freeTimer(ledc_mode_t mode, const int timer){
-        freeTimer(mode,(ledc_timer_t)timer);
-    };
+	void freeTimer(ledc_mode_t mode, const int timer)
+	{
+		freeTimer(mode, (ledc_timer_t)timer);
+	};
 
 	/**
       * @brief free a timer
@@ -207,9 +210,10 @@ public:
       * @note if you are mixing low speed and high speed timers, this is the safest call to use
       * @retval none
       */
-	void freeTimer(const int mode, const int timer){
-        void freeTimer((ledc_mode_t) mode, (ledc_timer_t) timer);
-    };
+	void freeTimer(const int mode, const int timer)
+	{
+		freeTimer((ledc_mode_t)mode, (ledc_timer_t)timer);
+	};
 
 protected:
 	Timer();
@@ -232,7 +236,7 @@ public:
       */
 	ledc_channel_t getChannel()
 	{
-		return getLSChannel(LEDC_LOW_SPEED_MODE);
+		return getLSChannel();
 	};
 
 	/**
@@ -276,9 +280,10 @@ public:
       * @retval ledc_channel_t <the_channel>, 
       *         LEDC_CHANNEL_MAX if no more channels with the specified mode are available
       */
-	ledc_channel_t getChannel(const int mode){
-        getChannel((ledc_mode_t) mode);
-    };
+	ledc_channel_t getChannel(const int mode)
+	{
+		return getChannel((ledc_mode_t)mode);
+	};
 
 	/**
       * @brief free an unspecified channel
@@ -303,7 +308,7 @@ public:
       */
 	void freeChannel(const int channel)
 	{
-		freeLSChannel((ledc_channel_t) channel);
+		freeLSChannel((ledc_channel_t)channel);
 	};
 
 	/**
@@ -327,7 +332,7 @@ public:
       */
 	void freeLSChannel(const int channel)
 	{
-		freeChannel(LEDC_LOW_SPEED_MODE, (ledc_channel_t) channel);
+		freeChannel(LEDC_LOW_SPEED_MODE, (ledc_channel_t)channel);
 	};
 
 	/**
@@ -351,7 +356,7 @@ public:
       */
 	void freeHSChannel(const int channel)
 	{
-		freeChannel(LEDC_HIGH_SPEED_MODE, (ledc_channel_t) channel);
+		freeChannel(LEDC_HIGH_SPEED_MODE, (ledc_channel_t)channel);
 	};
 
 	/**
@@ -370,9 +375,10 @@ public:
       * @note if you are mixing low speed and high speed channels, this is the safest call to use
       * @retval none
       */
-	void freeChannel(const int mode, ledc_channel_t channel){
-        freeChannel((ledc_mode_t ) mode, channel);
-    };
+	void freeChannel(const int mode, ledc_channel_t channel)
+	{
+		freeChannel((ledc_mode_t)mode, channel);
+	};
 
 	/**
       * @brief free a channel
@@ -383,7 +389,7 @@ public:
       */
 	void freeChannel(ledc_mode_t mode, const int channel)
 	{
-		freeChannel( mode, (ledc_chanel_t)channel);
+		freeChannel(mode, (ledc_channel_t)channel);
 	};
 
 	/**
@@ -395,7 +401,7 @@ public:
       */
 	void freeChannel(const int mode, const int channel)
 	{
-		freeChannel((ledc_mode_t)mode, (ledc_channel_t) channel);
+		freeChannel((ledc_mode_t)mode, (ledc_channel_t)channel);
 	};
 
 protected:
