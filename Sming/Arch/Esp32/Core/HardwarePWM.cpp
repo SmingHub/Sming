@@ -183,7 +183,6 @@ HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_o
 	}
 
 	for(uint8_t i = 0; i < no_of_pins; i++) {
-		pwm_duty_init[i] = 0; // Start with zero output
 		channels[i] = pins[i];
 
 		/* 
@@ -326,37 +325,3 @@ uint32_t HardwarePWM::getFrequency(uint8_t pin)
 	return ledc_get_freq(pinToGroup(pin), pinToTimer(pin));
 }
 
-namespace{
-	ledc_channel_t pinToChannel(uint8_t pin){
-		return (ledc_channel_t)(pin % 8);
-	}
-
-	ledc_mode_t pinToGroup(uint8_t pin){
-		return (ledc_mode_t) (pin / 8);
-	}
-
-	ledc_timer_t pinToTimer(uint8_t pin){
-		return (ledc_timer_t) ((pin /2) % 4);
-	}
-
-	uint32_t periodToFrequency(uint32_t period){
-		if(period == 0){
-			return 0;
-		}else{
-			return (1000000 / period);
-		}
-	}
-
-	uint32_t frequencyToPeriod(uint32_t freq){
-		if(freq == 0) {
-			return 0;
-		} else {
-			return (1000000 / freq);
-		}
-	}
-
-	uint32_t maxDuty(ledc_timer_bit_t bits){
-		return (1<<(uint32_t)bits) - 1; 
-	}
-
-}
