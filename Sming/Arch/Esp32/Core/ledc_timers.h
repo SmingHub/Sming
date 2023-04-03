@@ -6,6 +6,10 @@
 #include "singleton.h"
 #include <hal/ledc_types.h>
 
+#ifndef LEDC_CHANNEL_H
+#import "ledc_channel.h"
+#endif
+
 class ledc_timer {
     public:
         esp_err_t ledc_timer(ledc_mode_t mode, ledc_timer_bit_t duty_resolution, ledc_timer_bit_t bit_num, uint32_t freq, ledc_clk_cfg_t clk_cfg);
@@ -27,6 +31,6 @@ class ledc_timer {
     ledc_timer_config_t timer_conf;
     ledc_timer_t timer;
     uint32_t clock_divider;
-}
+};
 
 #endif

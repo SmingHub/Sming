@@ -10,7 +10,7 @@ ledc_timer::ledc_timer(ledc_mode_t mode, ledc_timer_bit_t duty_resolution, ledc_
         .freq_hz            =   freq,
         .clk_cfg            =   clk_cfg
     };
-    return ledc_timer_config(*timer_conf);
+    return ledc_timer_config(&timer_conf);
 }
 
 ledc_timer::~ledc_timer(void){

@@ -163,6 +163,9 @@ namespace{
 	uint32_t periodToFrequency(uint32_t period);
 	uint32_t frequencyToPeriod(uint32_t freq);
 	uint32_t maxDuty(ledc_timer_bit_t bits);
+
+	//ledc_channel_t getChannel(ledc_mode_t);
+	//ledc_timer_t getTimer(ledc_mode_t);
 } //namespace
 
 #define DEFAULT_RESOLUTION static_cast<ledc_timer_bit_t>(10)
