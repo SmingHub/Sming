@@ -1,11 +1,9 @@
+#pragma once
 #include <stdint.h>
-#ifndef LEDC_TYPES_H_
 #include <hal/ledc_types.h>
-#endif
 #define PWM_MAX_TIMER 8
 
-namespace HardwarePWM
-{
+     
 template <typename C> class Singleton
 {
 public:
@@ -60,7 +58,7 @@ public:
 	{
 		return getTimer(LEDC_LOW_SPEED_MODE);
 	};
-
+      #ifdef LEDC_HIGH_SPEED_MODE
 	/**
       * @brief get a high speed timer 
       * @param none
@@ -72,6 +70,32 @@ public:
 	{
 		return getTimer(LEDC_HIGH_SPEED_MODE);
 	};
+
+
+	/**
+      * @brief free a high speed timer
+      * @param ledc_timer_t <the_timer>
+      * @note using this to free a low speed mode timer will lead to unexpected effects 
+      *       because the seemingly freed timer might be re-used and thus re-configured later on 
+      * @retval none
+      */
+	void freeHSTimer(ledc_timer_t timer)
+	{
+		freeTimer(LEDC_HIGH_SPEED_MODE, timer);
+	};
+
+	/**
+      * @brief free a high speed timer
+      * @param const int <the_timer>
+      * @note using this to free a low speed mode timer will lead to unexpected effects 
+      *       because the seemingly freed timer might be re-used and thus re-configured later on 
+      * @retval none
+      */
+	void freeHSTimer(const int timer)
+	{
+		freeTimer(LEDC_HIGH_SPEED_MODE, timer);
+	};
+      #endif
 
 	/**
       * @brief get a timer of specified speed mode
@@ -144,30 +168,6 @@ public:
 	void freeLSTimer(const int timer)
 	{
 		freeTimer(LEDC_LOW_SPEED_MODE, (ledc_timer_t)timer);
-	};
-
-	/**
-      * @brief free a high speed timer
-      * @param ledc_timer_t <the_timer>
-      * @note using this to free a low speed mode timer will lead to unexpected effects 
-      *       because the seemingly freed timer might be re-used and thus re-configured later on 
-      * @retval none
-      */
-	void freeHSTimer(ledc_timer_t timer)
-	{
-		freeTimer(LEDC_HIGH_SPEED_MODE, timer);
-	};
-
-	/**
-      * @brief free a high speed timer
-      * @param const int <the_timer>
-      * @note using this to free a low speed mode timer will lead to unexpected effects 
-      *       because the seemingly freed timer might be re-used and thus re-configured later on 
-      * @retval none
-      */
-	void freeHSTimer(const int timer)
-	{
-		freeTimer(LEDC_HIGH_SPEED_MODE, timer);
 	};
 
 	/**
@@ -250,6 +250,7 @@ public:
 		return getChannel(LEDC_LOW_SPEED_MODE);
 	};
 
+      #ifdef LEDC_HIGH_SPEED_MODE
 	/**
       * @brief get a high speed channel
       * @param none
@@ -263,8 +264,34 @@ public:
 	};
 
 	/**
+      * @brief free a high speed channel
+      * @param ledc_channel_t <the_channel>
+      * @note using this to free a low speed channel will lead to unexpected effects 
+      *       because the seemingly freed channel might be re-used and thus re-configured later on 
+      * @retval none
+      */
+	void freeHSChannel(ledc_channel_t channel)
+	{
+		freeChannel(LEDC_HIGH_SPEED_MODE, channel);
+	};
+
+	/**
+      * @brief free a high speed channel
+      * @param const int <the_channel>
+      * @note using this to free a low speed channel will lead to unexpected effects 
+      *       because the seemingly freed channel might be re-used and thus re-configured later on 
+      * @retval none
+      */
+	void freeHSChannel(const int channel)
+	{
+		freeChannel(LEDC_HIGH_SPEED_MODE, (ledc_channel_t)channel);
+	};
+
+      #endif 
+
+	/**
       * @brief get a channel with a defined speed mode
-      * @param ledc_speedmode_t mode
+      * @param ledc_mode_t mode
       * @note you are not guaranteed that the SoC has high speed channels
       *       also, you are required to keep track of the speed mode of the channels yourself.
       * @retval ledc_channel_t <the_channel>, 
@@ -336,30 +363,6 @@ public:
 	};
 
 	/**
-      * @brief free a high speed channel
-      * @param ledc_channel_t <the_channel>
-      * @note using this to free a low speed channel will lead to unexpected effects 
-      *       because the seemingly freed channel might be re-used and thus re-configured later on 
-      * @retval none
-      */
-	void freeHSChannel(ledc_channel_t channel)
-	{
-		freeChannel(LEDC_HIGH_SPEED_MODE, channel);
-	};
-
-	/**
-      * @brief free a high speed channel
-      * @param const int <the_channel>
-      * @note using this to free a low speed channel will lead to unexpected effects 
-      *       because the seemingly freed channel might be re-used and thus re-configured later on 
-      * @retval none
-      */
-	void freeHSChannel(const int channel)
-	{
-		freeChannel(LEDC_HIGH_SPEED_MODE, (ledc_channel_t)channel);
-	};
-
-	/**
       * @brief free a channel
       * @param ledc_mode_t <the mode>
       * @param ledc_channel_t <the_channel>
@@ -410,10 +413,9 @@ public:
       * @note this is in no way thread safe.
       * @retval number of unassigned channels
       */
-      uint8_t getFreeChannels(ledc_speedmode_t mode);
+      uint8_t getFreeChannels(ledc_mode_t mode);
 
 protected:
 	Channel();
 	bool isUsed[LEDC_SPEED_MODE_MAX][LEDC_CHANNEL_MAX];
 };
-} //end namespace HardwarePWM

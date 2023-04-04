@@ -1,10 +1,5 @@
 #include "./singleton.h"
-/**
- * @namespace HardwarePWM - stuffing away my HardwarePWM specific functions in a separate Namespace
- * 
-*/
-namespace HardwarePWM
-{
+
 /**
      * @brief get a pwm timer
      * 
@@ -53,23 +48,22 @@ void Channel::freeChannel(ledc_mode_t mode, ledc_channel_t channel)
 	isUsed[(uint8_t)mode][(uint8_t)channel] = false;
 }
 
-uint8_t getFreeChannels(ledc_speedmode_t mode){
+uint8_t Channel::getFreeChannels(ledc_mode_t mode){
 	uint8_t count=0;
-	for(uit8_t i=0 i<(uint8_t)LEDC_CHANNEL_MAX;i++){
+	for(uint8_t i=0; i<(uint8_t)LEDC_CHANNEL_MAX;i++){
 		if(!isUsed[(uint8_t)mode][i]){
 			count++;
 		}
-		return count; 
 	}
+	return count; 
 }
 
 Channel::Channel()
 {
 	for(int i = 0; i < LEDC_CHANNEL_MAX; i++) {
-		isUsed[0][i] = false;
+		isUsed[LEDC_LOW_SPEED_MODE][i] = false;
 #ifdef SOC_LEDC_SUPPORT_HS_MODE
-		isUsed[1][i] = false;
+		isUsed[LEDC_HIGH_SPEED_MODE][i] = false;
 #endif
 	}
 }
-} // end namespace HardwarePWM

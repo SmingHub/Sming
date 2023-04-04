@@ -7,15 +7,15 @@
 #include <hal/ledc_types.h>
 
 #ifndef LEDC_TIMERS_H
-#import "ledc_timer.h"
+#include "ledc_timer.h"
 #endif
 
 class ledc_channel{
     public:
-        esp_err_t ledc_channel(ledc_speedmode_t mode, int gpio, ledc_timer_t timer, uint32_t duty, int hpoint);
-        esp_err_t ledc_channel(ledc_speedmode_t mode, ledc_timer_t timer, uint32_t duty);
-        esp_err_t ledc_channel(ledc_speedmode_t mode, ledc_timer_t timer);
-        esp_err_t ledc_channel(ledc_speedmode_t mode);
+        ledc_channel(ledc_mode_t mode, int gpio, ledc_timer_t timer, uint32_t duty, int hpoint);
+        ledc_channel(ledc_mode_t mode, ledc_timer_t timer, uint32_t duty);
+        ledc_channel(ledc_mode_t mode, ledc_timer_t timer);
+        ledc_channel(ledc_mode_t mode);
         ~ledc_channel();
 
         //esp_err_t channelConfig(const ledc_channel_config_t *ledc_conf);
@@ -25,10 +25,6 @@ class ledc_channel{
             return stop(0);
         };
         esp_err_t stop(uint32_t idle_level);
-        //esp_err_t setFreq(uint32_t freq);
-        //uint32_t getFreq(){
-            return channel_config.freq_hz;
-        };
         esp_err_t setDutyWithHpoint(uint32_t duty, uint32_t hpoint);
         esp_err_t setDuty(uint32_t duty);
         int getHpoint(){

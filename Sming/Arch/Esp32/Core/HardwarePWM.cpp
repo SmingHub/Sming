@@ -156,7 +156,7 @@
 #include <HardwarePWM.h>
 #include "./singleton.h"
 #include "ledc_channel.h"
-#include "ledc_timers.h"
+#include "ledc_timer.h"
 
 namespace{
 	ledc_mode_t pinToGroup(uint8_t pin);
@@ -177,12 +177,12 @@ HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_o
 {
 	//ledc_timer_config_t ledc_timer;
 	//ledc_channel_config_t ledc_channel;
-	ledc_speedmode_t mode;
-	if(SOC_LEDC_SUPPORT_HS_MODE){
-		mode=LEDC_HIGH_SPEED_MODE;
-	}else{
-		mode=LEDC_LOW_SPEED_MODE;
-	}
+	ledc_mode_t mode;
+	#ifdef LEDC_HIGH_SPEED_MODE
+		mode=LEDC_HIGH_SPEED_MODE
+	#else
+		mode=LEDC_LOW_SPEED_MODE
+	#endif
 
 	debug_d("starting HardwarePWM init");
 	periph_module_enable(PERIPH_LEDC_MODULE);
@@ -191,16 +191,19 @@ HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_o
 		return PWM_BAD_CHANNEL;
 	}
 	
-
-	if(Channel::instance()=>getFreeChannels(mode)<no_of_pins && mode==LEDC_HIGH_SPEED_MODE){ 
-		mode=LEDC_LOW_SPEED_MODE // if low speed mode is available, try it
+	#ifdef LEDC_HIGH_SPEED_MODE
 		if(Channel::instance()=>getFreeChannels(mode)<no_of_pins){
-			return PWM_BAD_CHANNEL;					// has tried high and low speed mode, not enough channels
-		}else if(!SOC_LEDC_SUPPORT_HS_MODE){
-			return PWM_BAD_CHANNEL;					// soc has no high speed mode, initial try was for low speed, not enough channels
+			return PWM_BAD_CHANNEL;
 		}
-	} 	
-	
+	#else
+		if(Channel::instance()=>getFreeChannels(mode)<no_of_pins){
+			mode=LEDC_LOW_SPEED_MODE // if low speed mode is available, try it
+			if(Channel::instance()=>getFreeChannels(mode)<no_of_pins){
+				return PWM_BAD_CHANNEL;					// has tried high and low speed mode, not enough channels	
+			}
+		}
+	#endif
+
 	ledc_timer timer = new ledc_timer(mode);
 	ledc_channel channel[no_of_pins];
 	for(uint8_t i=0;i<no_of_pins;i++){
