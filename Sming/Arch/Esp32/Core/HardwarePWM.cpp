@@ -155,6 +155,8 @@
 #include <hal/ledc_types.h>
 #include <HardwarePWM.h>
 #include "./singleton.h"
+#include "ledc_channel.h"
+#include "ledc_timers.h"
 
 namespace{
 	ledc_mode_t pinToGroup(uint8_t pin);
@@ -173,57 +175,38 @@ namespace{
 
 HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_of_pins)
 {
-	ledc_timer_config_t ledc_timer;
-	ledc_channel_config_t ledc_channel;
+	//ledc_timer_config_t ledc_timer;
+	//ledc_channel_config_t ledc_channel;
+	ledc_speedmode_t mode;
+	if(SOC_LEDC_SUPPORT_HS_MODE){
+		mode=LEDC_HIGH_SPEED_MODE;
+	}else{
+		mode=LEDC_LOW_SPEED_MODE;
+	}
+
 	debug_d("starting HardwarePWM init");
 	periph_module_enable(PERIPH_LEDC_MODULE);
 	if((no_of_pins == 0) || (no_of_pins > SOC_LEDC_CHANNEL_NUM))
 	{
-		return;
+		return PWM_BAD_CHANNEL;
+	}
+	
+
+	if(Channel::instance()=>getFreeChannels(mode)<no_of_pins && mode==LEDC_HIGH_SPEED_MODE){ 
+		mode=LEDC_LOW_SPEED_MODE // if low speed mode is available, try it
+		if(Channel::instance()=>getFreeChannels(mode)<no_of_pins){
+			return PWM_BAD_CHANNEL;					// has tried high and low speed mode, not enough channels
+		}else if(!SOC_LEDC_SUPPORT_HS_MODE){
+			return PWM_BAD_CHANNEL;					// soc has no high speed mode, initial try was for low speed, not enough channels
+		}
+	} 	
+	
+	ledc_timer timer = new ledc_timer(mode);
+	ledc_channel channel[no_of_pins];
+	for(uint8_t i=0;i<no_of_pins;i++){
+		channel[i]=new ledc_channel(mode, pins[i], timer.getTimerNumber, 0);
 	}
 
-	uint32_t io_info[SOC_LEDC_CHANNEL_NUM][3];	  // pin information
-	//uint32_t pwm_duty_init[SOC_LEDC_CHANNEL_NUM]; // pwm duty
-	for(uint8_t i = 0; i < no_of_pins; i++) {
-		//pwm_duty_init[i] = 0; // Start with zero output
-		channels[i] = pins[i];
-
-	/* 
-	/  Prepare and then apply the LEDC PWM timer configuration
-	/  this may cofigure the same timer more than once (in fact up to 8 times)
-	/  which should not be an issue, though, since the values should be the same for all timers
-	*/
-		ledc_timer.speed_mode = pinToGroup(i); // the two groups (if available) are operating in different speed modes, hence speed mode is an alias for group or vice versa
-		ledc_timer.timer_num = pinToTimer(i);
-		ledc_timer.duty_resolution = LEDC_TIMER_10_BIT;			// todo: make configurable later
-		ledc_timer.freq_hz = periodToFrequency(DEFAULT_PERIOD); // todo: make configurable later
-		ledc_timer.clk_cfg = LEDC_AUTO_CLK;
-
-		debug_d("ledc_timer.\n\tspeed_mode: %i\n\ttimer_num: %i\n\tduty_resolution: %i\n\tfreq: %i\n\tclk_cfg: "
-				"%i\n\n",
-				(uint32_t)ledc_timer.speed_mode, (uint32_t)ledc_timer.timer_num,
-				(uint32_t)ledc_timer.duty_resolution, (uint32_t)ledc_timer.freq_hz,
-				(uint32_t)ledc_timer.clk_cfg);
-		ESP_ERROR_CHECK(ledc_timer_config(&ledc_timer));
-
-		/*
-	/   Prepare and then apply the LEDC PWM channel configuration
-	*/
-		ledc_channel.speed_mode = pinToGroup(i);
-		ledc_channel.channel = pinToChannel(i);
-		ledc_channel.timer_sel = pinToTimer(i);
-		ledc_channel.intr_type = LEDC_INTR_DISABLE;
-		ledc_channel.gpio_num = pins[i];
-		ledc_channel.duty = 0; // Set duty to 0%
-		ledc_channel.hpoint = 0;
-		debug_d("ledc_channel\n\tspeed_mode: %i\n\tchannel: %i\n\ttimer_sel %i\n\tinr_type: %i\n\tgpio_num: "
-				"%i\n\tduty: %i\n\thpoint: %i\n\n",
-				pinToGroup(i), pinToChannel(i), pinToTimer(i), LEDC_INTR_DISABLE, pins[i], 0, 0);
-		ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
-		ledc_bind_channel_timer(pinToGroup(i), pinToChannel(i), pinToTimer(i));
-	}
-	maxduty = maxDuty(DEFAULT_RESOLUTION);
-	const int initial_period = DEFAULT_PERIOD;
 }
 
 HardwarePWM::~HardwarePWM()

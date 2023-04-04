@@ -75,4 +75,5 @@ ledc_channel::bindChannelTimer(ledc_timer_t timer){
     if(err==ESP_OK){
         channel_config.timer=timer;
     }
+
 }

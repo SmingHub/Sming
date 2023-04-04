@@ -404,6 +404,14 @@ public:
 		freeChannel((ledc_mode_t)mode, (ledc_channel_t)channel);
 	};
 
+	/**
+      * @brief return number of free channels in mode
+      * @param const int <the mode>
+      * @note this is in no way thread safe.
+      * @retval number of unassigned channels
+      */
+      uint8_t getFreeChannels(ledc_speedmode_t mode);
+
 protected:
 	Channel();
 	bool isUsed[LEDC_SPEED_MODE_MAX][LEDC_CHANNEL_MAX];

@@ -53,6 +53,16 @@ void Channel::freeChannel(ledc_mode_t mode, ledc_channel_t channel)
 	isUsed[(uint8_t)mode][(uint8_t)channel] = false;
 }
 
+uint8_t getFreeChannels(ledc_speedmode_t mode){
+	uint8_t count=0;
+	for(uit8_t i=0 i<(uint8_t)LEDC_CHANNEL_MAX;i++){
+		if(!isUsed[(uint8_t)mode][i]){
+			count++;
+		}
+		return count; 
+	}
+}
+
 Channel::Channel()
 {
 	for(int i = 0; i < LEDC_CHANNEL_MAX; i++) {

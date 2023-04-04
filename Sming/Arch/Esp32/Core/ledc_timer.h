@@ -1,5 +1,5 @@
-#ifndef LEDC_TIMERS_H
-#define LEDC_TIMERS_H
+#ifndef LEDC_TIMER_H
+#define LEDC_TIMER_H
 #include <debug_progmem.h>
 #include "driver/ledc.h"
 #include "esp_err.h"

@@ -1,6 +1,6 @@
-#ifndef LEDC_TIMERS_H
-#include "ledc_timers.h"
-#define LEDC_TIMERS_H
+#ifndef LEDC_TIMER_H
+#include "ledc_timer.h"
+#define LEDC_TIMER_H
 ledc_timer::ledc_timer(ledc_mode_t mode, ledc_timer_bit_t duty_resolution, ledc_timer_bit_t bit_num, uint32_t freq, ledc_clk_cfg_t clk_cfg){
     timer_conf={
         .speed_mode         =   mode,
