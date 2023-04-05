@@ -19,7 +19,7 @@ class ledc_channel{
         ~ledc_channel();
 
         //esp_err_t channelConfig(const ledc_channel_config_t *ledc_conf);
-        esp_err_t updateDuty();
+        esp_err_t updateDuty(void);
         esp_err_t setPin(int gpio_num);
         esp_err_t stop(){
             return stop(0);

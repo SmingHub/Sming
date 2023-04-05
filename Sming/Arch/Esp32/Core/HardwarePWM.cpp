@@ -152,7 +152,7 @@
 #include "esp_err.h"
 #include <hal/ledc_types.h>
 #include <HardwarePWM.h>
-#include "./singleton.h"
+#include "singleton.h"
 #include "ledc_channel.h"
 #include "ledc_timer.h"
 
@@ -169,7 +169,8 @@ namespace{
 } //namespace
 
 #define DEFAULT_RESOLUTION static_cast<ledc_timer_bit_t>(10)
-#define DEFAULT_PERIOD 200
+#define DEFAULT_FREQ 400000
+#define DEFAULT_CLOCK_SOURCE LEDC_AUTO_CLK
 
 HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_of_pins)
 {
@@ -186,26 +187,26 @@ HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_o
 	periph_module_enable(PERIPH_LEDC_MODULE);
 	if((no_of_pins == 0) || (no_of_pins > SOC_LEDC_CHANNEL_NUM))
 	{
-		return PWM_BAD_CHANNEL;
+		return;
 	}
 	
 	#ifdef LEDC_HIGH_SPEED_MODE
-		if(Channel::instance()=>getFreeChannels(mode)<no_of_pins){
-			return PWM_BAD_CHANNEL;
+		if(Channel::instance()->getFreeChannels(mode)<no_of_pins){
+			return;
 		}
 	#else
-		if(Channel::instance()=>getFreeChannels(mode)<no_of_pins){
-			mode=LEDC_LOW_SPEED_MODE // if low speed mode is available, try it
-			if(Channel::instance()=>getFreeChannels(mode)<no_of_pins){
-				return PWM_BAD_CHANNEL;					// has tried high and low speed mode, not enough channels	
+		if(Channel::instance()->getFreeChannels(mode)<no_of_pins){
+			mode=LEDC_LOW_SPEED_MODE; // if low speed mode is available, try it
+			if(Channel::instance()->getFreeChannels(mode)<no_of_pins){
+				return;					// has tried high and low speed mode, not enough channels	
 			}
 		}
 	#endif
 
-	ledc_timer timer = new ledc_timer(mode);
-	ledc_channel channel[no_of_pins];
+	ledc_timer* timer = new ledc_timer(mode, (ledc_timer_bit_t) DEFAULT_RESOLUTION, DEFAULT_FREQ, (ledc_clk_cfg_t) DEFAULT_CLOCK_SOURCE );
+	ledc_channel* channel[no_of_pins];
 	for(uint8_t i=0;i<no_of_pins;i++){
-		channel[i]=new ledc_channel(mode, pins[i], timer.getTimerNumber, 0);
+		channel[i]=new ledc_channel(mode, pins[i], timer->getTimerNumber(), 0);
 	}
 
 }

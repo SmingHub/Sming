@@ -21,11 +21,11 @@ ledc_channel::ledc_channel(ledc_mode_t mode, int gpio, ledc_timer_t timer, uint3
 }
 
 ledc_channel::ledc_channel(ledc_mode_t mode, int gpio, ledc_timer_t timer){
-    return ledc_channel(mode, gpio, timer, (uint32_t) 0, (int) 0);
+    ledc_channel(mode, gpio, timer, (uint32_t) 0, (int) 0);
 }
 
 ledc_channel::ledc_channel(ledc_mode_t mode, int gpio){
-    return ledc_channel(mode, gpio, Timer::instance()->getTimer(mode), (uint32_t) 0, (int) 0);
+    ledc_channel(mode, gpio, Timer::instance()->getTimer(mode), (uint32_t) 0, (int) 0);
 }
 
 ledc_channel::~ledc_channel(){
@@ -36,24 +36,24 @@ ledc_channel::channelConfig(const ledc_channel_config_t *ledc_conf){
 
 }
 */
-ledc_channel::updateDuty(){
-    return ledc_update_duty();
+esp_err_t ledc_channel::updateDuty(void){
+    return ledc_update_duty(channel_config.speed_mode, channel_config.channel);
 }
 
-ledc_channel::setPin(int gpio_num){
-    esp_err_t err = ledc_set_pin(gpio_num, channel_config.mode, channel_config.channel);
-    if(esp_err==ESP_OK){
+esp_err_t ledc_channel::setPin(int gpio_num){
+    esp_err_t err = ledc_set_pin(gpio_num, channel_config.speed_mode, channel_config.channel);
+    if(err==ESP_OK){
         channel_config.gpio_num=gpio_num;
     }
     return err;
 }
 
-ledc_channel::stop(uint32_t idle_level){
-    return ledc_stop(channel_config.mode, channel_config.channel, idle_level);
+esp_err_t ledc_channel::stop(uint32_t idle_level){
+    return ledc_stop(channel_config.speed_mode, channel_config.channel, idle_level);
 }
 
-ledc_channel::setDutyWithHpoint(uint32_t duty, uint32_t hpoint){
-    esp_err_t err = ledc_set_duty_with_hpoint(channel_config.mode, chanel_config.channel, duty, hpoint);
+esp_err_t ledc_channel::setDutyWithHpoint(uint32_t duty, uint32_t hpoint){
+    esp_err_t err = ledc_set_duty_with_hpoint(channel_config.speed_mode, channel_config.channel, duty, hpoint);
     if(err==ESP_OK){
         channel_config.duty=duty;
         channel_config.hpoint=hpoint;
@@ -61,19 +61,19 @@ ledc_channel::setDutyWithHpoint(uint32_t duty, uint32_t hpoint){
     return err;
 }
 
-ledc_channel::setDuty(uint32_t duty){
-    esp_err_t err=ledc_set_duty(channel_config.mode, channel_config.channel, duty);
+esp_err_t ledc_channel::setDuty(uint32_t duty){
+    esp_err_t err=ledc_set_duty(channel_config.speed_mode, channel_config.channel, duty);
     if(err==ESP_OK){
         channel_config.duty=duty;
     }
     return err;
 }
 
-ledc_channel::bindChannelTimer(ledc_timer_t timer){
-    esp_err_t err = ledc_bind_channel_timer(channel_config.mode, channel_config.channel, timer);
+esp_err_t ledc_channel::bindChannelTimer(ledc_timer_t timer){
+    esp_err_t err = ledc_bind_channel_timer(channel_config.speed_mode, channel_config.channel, timer);
     if(err==ESP_OK){
-        channel_config.timer=timer;
+        channel_config.timer_sel=timer;
     }
-
+    return err;
 }
 #endif

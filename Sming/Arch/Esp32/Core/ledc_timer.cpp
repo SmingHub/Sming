@@ -18,18 +18,18 @@ ledc_timer::~ledc_timer(void){
     Timer::instance()->freeTimer(timer_conf.speed_mode, timer_conf.timer_num);
 }
 
-esp_err_t ledc_timer::setTimer(uint32_t clock_divider, ledc_timer_bit_t duty_resolution, ledc_clk_cfg_t clk_cfg){
+esp_err_t ledc_timer::setTimer(uint32_t clock_divider, ledc_timer_bit_t duty_resolution, ledc_clk_src_t clk_src){
     esp_err_t err=ledc_timer_set(
         timer_conf.speed_mode,
         timer_conf.timer_num,
         clock_divider,
         duty_resolution,
-        clk_cfg
+        clk_src
     );
     if(err==ESP_OK){
         timer_conf.duty_resolution    = duty_resolution;
-        timer_conf.clk_cfg            = clk_src;
-        clock_divider=clock_div;
+        //timer_conf.clk_cfg            = clk_cfg;
+        clock_divider=clock_divider;
     }
     return err;
 }
@@ -63,7 +63,7 @@ ledc_timer::timerBindChannel(ledc_channel_t channel){
     if(err==ESP_OK)
 }
 */
-uint32_t ledc_timer::getTimerNumber(void){
+ledc_timer_t ledc_timer::getTimerNumber(void){
     return timer_conf.timer_num;
 }
 
@@ -75,7 +75,7 @@ ledc_timer_bit_t ledc_timer::getDutyResolution(void){
     return timer_conf.duty_resolution;
 }
 
-uint32_t getTimerFrequency(void){
+uint32_t ledc_timer::getTimerFrequency(void){
     return timer_conf.freq_hz;
 }
 
