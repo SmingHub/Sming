@@ -2,32 +2,32 @@
 #include "ledc_channel.h"
 ledc_channel::ledc_channel(ledc_mode_t mode, int gpio, ledc_timer_t timer, uint32_t duty, int hpoint){
     periph_module_enable(PERIPH_LEDC_MODULE);
-    channel_config={
-        .speed_mode         =   mode,
-        .gpio_num           =   gpio,
-        .channel            =   Channel::instance()->getChannel(mode),
-        .intr_type          =   LEDC_INTR_DISABLE,
-        .timer_sel          =   timer,
-        .duty               =   duty,
-        .hpoint             =   hpoint
-    }
+    channel_config.speed_mode   =   mode;
+    channel_config.gpio_num     =   gpio;
+    channel_config.channel      =   Channel::instance()->getChannel(mode);
+    channel_config.intr_type    =   LEDC_INTR_DISABLE;
+    channel_config.timer_sel    =   timer;
+    channel_config.duty         =   duty;
+    channel_config.hpoint       =   hpoint;
+    
     esp_err_t err=ledc_channel_config(&channel_config);
     if(err==ESP_OK){
         bindChannelTimer(timer);
     }
 }
 
-ledc_channel::ledc_channel(ledc_mode_t mode, ledc_timer_t timer, uint32_t duty){
-    return ledc_channel(mode, timer, duty, (int) 0);
+ledc_channel::ledc_channel(ledc_mode_t mode, int gpio, ledc_timer_t timer, uint32_t duty){
+    ledc_channel(mode, gpio, timer, duty, (int) 0);
 }
 
-ledc_channel::ledc_channel(ledc_mode_t mode, ledc_timer_t timer){
-    return ledc_channel(mode, timer, (uint32_t) 0, (int) 0);
+ledc_channel::ledc_channel(ledc_mode_t mode, int gpio, ledc_timer_t timer){
+    return ledc_channel(mode, gpio, timer, (uint32_t) 0, (int) 0);
 }
 
-ledc_channel::ledc_channel(ledc_mode_t mode){
-    return ledc_channel(mode, Timer::instance()->getTimer(mode), (uint32_t) 0, (int) 0);
+ledc_channel::ledc_channel(ledc_mode_t mode, int gpio){
+    return ledc_channel(mode, gpio, Timer::instance()->getTimer(mode), (uint32_t) 0, (int) 0);
 }
+
 ledc_channel::~ledc_channel(){
     stop((uint32_t)0);
 }

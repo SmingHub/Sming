@@ -145,13 +145,11 @@
  *
  */
 
-// orig #include <Clock.h>
-// orig #include "ESP8266EX.h"
+
 #include <debug_progmem.h>
 //#include <soc/soc_caps.h>
 #include "driver/ledc.h"
 #include "esp_err.h"
-//#include "hal/ledc_types.h"
 #include <hal/ledc_types.h>
 #include <HardwarePWM.h>
 #include "./singleton.h"
@@ -179,9 +177,9 @@ HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_o
 	//ledc_channel_config_t ledc_channel;
 	ledc_mode_t mode;
 	#ifdef LEDC_HIGH_SPEED_MODE
-		mode=LEDC_HIGH_SPEED_MODE
+		mode=LEDC_HIGH_SPEED_MODE;
 	#else
-		mode=LEDC_LOW_SPEED_MODE
+		mode=LEDC_LOW_SPEED_MODE;
 	#endif
 
 	debug_d("starting HardwarePWM init");

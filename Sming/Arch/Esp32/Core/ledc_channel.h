@@ -13,9 +13,9 @@
 class ledc_channel{
     public:
         ledc_channel(ledc_mode_t mode, int gpio, ledc_timer_t timer, uint32_t duty, int hpoint);
-        ledc_channel(ledc_mode_t mode, ledc_timer_t timer, uint32_t duty);
-        ledc_channel(ledc_mode_t mode, ledc_timer_t timer);
-        ledc_channel(ledc_mode_t mode);
+        ledc_channel(ledc_mode_t mode, int gpio, ledc_timer_t timer, uint32_t duty);
+        ledc_channel(ledc_mode_t mode, int gpio, ledc_timer_t timer);
+        ledc_channel(ledc_mode_t mode, int gpio);
         ~ledc_channel();
 
         //esp_err_t channelConfig(const ledc_channel_config_t *ledc_conf);

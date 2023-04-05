@@ -12,9 +12,9 @@
 
 class ledc_timer {
     public:
-        ledc_timer(ledc_mode_t mode, ledc_timer_bit_t duty_resolution, ledc_timer_bit_t bit_num, uint32_t freq, ledc_clk_cfg_t clk_cfg);
+        ledc_timer(ledc_mode_t mode, ledc_timer_bit_t duty_resolution, uint32_t freq, ledc_clk_cfg_t clk_cfg);
         ~ledc_timer(void);
-        esp_err_t setTimer(uint32_t clock_divider, uint32_t duty_resolution, ledc_clk_src_t clk_src);
+        esp_err_t setTimer(uint32_t clock_divider, ledc_timer_bit_t duty_resolution, ledc_clk_cfg_t clk_cfg);
         esp_err_t setTimerFrequency(uint32_t freq);
         esp_err_t timerReset(void);
         esp_err_t timerPause(void);
@@ -28,9 +28,9 @@ class ledc_timer {
         uint32_t getTimerFrequency(void);
         uint32_t getClockDivider(void);
     private:
-    ledc_timer_config_t timer_conf;
-    ledc_timer_t timer;
-    uint32_t clock_divider;
+        ledc_timer_config_t timer_conf;
+        ledc_timer_t timer;
+        uint32_t clock_divider;
 };
 
 #endif
