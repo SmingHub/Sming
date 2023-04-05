@@ -106,8 +106,8 @@
  * =====================================
  * the current HardwarePWM implementation does not care about the PWM timer bit width. To leverage the functionality 
  * of the ESP32 hardware, it's necessary to make this configurable. As the width is per timer and all the Sming defined
- * functions are basically per pin, this needs to be an extension of the overal model, exposing at least timers. 
- * This, too, will require a compatible "basic" interface and an advanced interface that allows assiging pins (channels) 
+ * functions are basically per pin, this needs to be an extension of the overall model, exposing at least timers. 
+ * This, too, will require a compatible "basic" interface and an advanced interface that allows assigning pins (channels) 
  * to timers and the configuration of the timers themselves. 
  * The esp_idf does not provide a way to read the bit width configured for a channel, but I think it'll be useful to be able
  * to read back this value, not least to find the value for getMaxDuty() for a channel. It will either have to be stored in the
@@ -115,7 +115,7 @@
  * 
  * ToDo: implement an abstraction layer
  * ====================================
- * as it stands now, this impelmentation does not provide a function to synchronize all the PWM channels (HardwarePWM::update())
+ * as it stands now, this implementation does not provide a function to synchronize all the PWM channels (HardwarePWM::update())
  * It might be a good idea to provide an intermediary abstraction that handles all the low level PWM functions (such as flexible
  * timer to channel assignments, hs/ls mode awareness, pwm bit width etc) and implements the update() function on that level.
  * 
@@ -187,7 +187,7 @@ HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_o
 
 		/* 
 		 *  Prepare and then apply the LEDC PWM timer configuration.
-		 *  This may cofigure the same timer more than once (in fact up to 8 times)
+		 *  This may configure the same timer more than once (in fact up to 8 times)
 		 *  which should not be an issue, though, since the values should be the same for all timers
 		 */
 		// The two groups (if available) are operating in different speed modes, hence speed mode is an alias for group or vice versa
@@ -310,4 +310,3 @@ uint32_t HardwarePWM::getFrequency(uint8_t pin)
 {
 	return ledc_get_freq(pinToGroup(pin), pinToTimer(pin));
 }
-
