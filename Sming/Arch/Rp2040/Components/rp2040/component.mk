@@ -54,6 +54,7 @@ SDK_INTERFACES := \
 	common/pico_util \
 	rp2040/hardware_regs \
 	rp2040/hardware_structs \
+	rp2_common/hardware_adc \
 	rp2_common/hardware_gpio \
 	rp2_common/pico_platform \
 	rp2_common/hardware_base \
