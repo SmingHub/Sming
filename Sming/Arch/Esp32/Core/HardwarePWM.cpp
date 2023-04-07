@@ -162,7 +162,6 @@ namespace{
 	ledc_timer_t pinToTimer(uint8_t pin);
 	uint32_t periodToFrequency(uint32_t period);
 	uint32_t frequencyToPeriod(uint32_t freq);
-	uint32_t maxDuty(ledc_timer_bit_t bits);
 
 	//ledc_channel_t getChannel(ledc_mode_t);
 	//ledc_timer_t getTimer(ledc_mode_t);
@@ -203,7 +202,7 @@ HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_o
 		}
 	#endif
 
-	ledc_timer* timer = new ledc_timer(mode, (ledc_timer_bit_t) DEFAULT_RESOLUTION, DEFAULT_FREQ, (ledc_clk_cfg_t) DEFAULT_CLOCK_SOURCE );
+	timer = new ledc_timer(mode, (ledc_timer_bit_t) DEFAULT_RESOLUTION, DEFAULT_FREQ, (ledc_clk_cfg_t) DEFAULT_CLOCK_SOURCE );
 	ledc_channel* channel[no_of_pins];
 	for(uint8_t i=0;i<no_of_pins;i++){
 		channel[i]=new ledc_channel(mode, pins[i], timer->getTimerNumber(), 0);
@@ -215,7 +214,7 @@ HardwarePWM::~HardwarePWM()
 {
 	for(uint8_t i = 0; i < channel_count; i++) {
 		//stop pwm for all pins and set idle level to 0.
-		ledc_stop(pinToGroup(i), pinToChannel(i), (uint32_t) 0);
+		channel[i]->stop();
 	}
 }
 
@@ -226,12 +225,12 @@ HardwarePWM::~HardwarePWM()
 uint8_t HardwarePWM::getChannel(uint8_t pin)
 {
 	for(uint8_t i = 0; i < channel_count; i++) {
-		if(channels[i] == pin) {
+		if(channel[i]->getPin()==pin) {
 			//debug_d("getChannel %d is %d", pin, i);
 			return i;
 		}
 	}
-	return -1;
+	return PWM_BAD_PIN;
 }
 
 /* Function Name: getDutyChan
@@ -243,9 +242,8 @@ uint32_t HardwarePWM::getDutyChan(uint8_t chan)
 	if(chan == PWM_BAD_CHANNEL) {
 		return 0;
 	} else {
-		return ledc_get_duty(pinToGroup(chan),pinToChannel(chan));		
+		return channel[chan]->getDuty();		
 	}
-		// esp32 defines the frequency / period per timer,  
 }
 
 /* Function Name: setDutyChan
@@ -260,14 +258,10 @@ bool HardwarePWM::setDutyChan(uint8_t chan, uint32_t duty, bool update)
 	if(chan == PWM_BAD_CHANNEL) {
 		return false;
 	} else if(duty <= maxduty) {
-		ESP_ERROR_CHECK(ledc_set_duty(pinToGroup(chan), pinToChannel(chan), duty));
-		/*
-		* ignoring the update flag in this release, ToDo: implement a synchronized update mechanism
-		* if(update) {
-		*	ESP_ERROR_CHECK(ledc_update_duty(pinToGroup(chan), pinToChannel(chan)));
-		*	//update();
-		* }
-		*/
+		channel[chan]->setDuty(duty);
+		if(update) {
+			channel[chan]->updateDuty();
+		}
 		ESP_ERROR_CHECK(ledc_update_duty(pinToGroup(chan), pinToChannel(chan)));
 		return true;
 	} else {
@@ -285,7 +279,7 @@ uint32_t HardwarePWM::getPeriod()
 {
 	// sming does not know how to handle different frequencies for channels, this will require an extended interface
 	// for now, just report the period for group 0 channel 0 
-	return frequencyToPeriod(ledc_get_freq(static_cast<ledc_mode_t>(0),static_cast<ledc_timer_t>(0)));
+	return frequencyToPeriod(frequencyToPeriod(timer->getTimerFrequency()));
 }
 
 /* Function Name: setPeriod
@@ -294,12 +288,7 @@ uint32_t HardwarePWM::getPeriod()
  */
 void HardwarePWM::setPeriod(uint32_t period)
 {
-	// setting the frequency globally, will add per timer functions later
-	// also, this can be done smarter 
-	for(uint8_t i = 0; i < channel_count; i++) {
-		ESP_ERROR_CHECK(ledc_set_freq(pinToGroup(i), pinToTimer(i), periodToFrequency(period)));
-	}
-	//sledc_update_duty();
+	timer->setTimerFrequency(periodToFrequency(period));
 	update();
 }
 
@@ -308,12 +297,14 @@ void HardwarePWM::setPeriod(uint32_t period)
  */
 void HardwarePWM::update()
 {
-	//ledc_update_duty();	
+	for(uint8_t i=0;i<channel_count;i++){
+		channel[i]->updateDuty();
+	}
 }
 
 uint32_t HardwarePWM::getFrequency(uint8_t pin)
 {
-	return ledc_get_freq(pinToGroup(pin), pinToTimer(pin));
+	return timer->getTimerFrequency();
 }
 
 namespace{
@@ -343,10 +334,6 @@ namespace{
 		} else {
 			return (1000000 / freq);
 		}
-	}
-
-	uint32_t maxDuty(ledc_timer_bit_t bits){
-		return (1<<(uint32_t)bits) - 1; 
 	}
 
 }
