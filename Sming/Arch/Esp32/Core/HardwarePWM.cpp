@@ -157,9 +157,6 @@
 #include "ledc_timer.h"
 
 namespace{
-	ledc_mode_t pinToGroup(uint8_t pin);
-	ledc_channel_t pinToChannel(uint8_t pin);
-	ledc_timer_t pinToTimer(uint8_t pin);
 	uint32_t periodToFrequency(uint32_t period);
 	uint32_t frequencyToPeriod(uint32_t freq);
 
@@ -189,21 +186,25 @@ HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_o
 		return;
 	}
 	
+	/* ToDo: this logic seems broken. What needs to happen:
+	 * if LEDC_HIGH_SPEED_MODE, we'll need to check both, HS and LS mode,
+	 * else only LS mode
+	 */
 	#ifdef LEDC_HIGH_SPEED_MODE
 		if(Channel::instance()->getFreeChannels(mode)<no_of_pins){
 			return;
 		}
 	#else
-		if(Channel::instance()->getFreeChannels(mode)<no_of_pins){
+		if(ledc_singleton::Channel::instance()->getFreeChannels(mode)<no_of_pins){
 			mode=LEDC_LOW_SPEED_MODE; // if low speed mode is available, try it
-			if(Channel::instance()->getFreeChannels(mode)<no_of_pins){
+			if(ledc_singleton::Channel::instance()->getFreeChannels(mode)<no_of_pins){
 				return;					// has tried high and low speed mode, not enough channels	
 			}
 		}
 	#endif
 
-	timer = new ledc_timer(mode, (ledc_timer_bit_t) DEFAULT_RESOLUTION, DEFAULT_FREQ, (ledc_clk_cfg_t) DEFAULT_CLOCK_SOURCE );
-	ledc_channel* channel[no_of_pins];
+	timer = new ledc_timer(mode, (ledc_timer_bit_t) DEFAULT_RESOLUTION, DEFAULT_FREQ, (ledc_clk_cfg_t) DEFAULT_CLOCK_SOURCE);
+	//ledc_channel* channel[no_of_pins];
 	for(uint8_t i=0;i<no_of_pins;i++){
 		channel[i]=new ledc_channel(mode, pins[i], timer->getTimerNumber(), 0);
 	}
@@ -262,7 +263,6 @@ bool HardwarePWM::setDutyChan(uint8_t chan, uint32_t duty, bool update)
 		if(update) {
 			channel[chan]->updateDuty();
 		}
-		ESP_ERROR_CHECK(ledc_update_duty(pinToGroup(chan), pinToChannel(chan)));
 		return true;
 	} else {
 		debug_d("Duty cycle value too high for current period.");
@@ -279,7 +279,7 @@ uint32_t HardwarePWM::getPeriod()
 {
 	// sming does not know how to handle different frequencies for channels, this will require an extended interface
 	// for now, just report the period for group 0 channel 0 
-	return frequencyToPeriod(frequencyToPeriod(timer->getTimerFrequency()));
+	return frequencyToPeriod(timer->getTimerFrequency());
 }
 
 /* Function Name: setPeriod
@@ -308,17 +308,6 @@ uint32_t HardwarePWM::getFrequency(uint8_t pin)
 }
 
 namespace{
-	ledc_channel_t pinToChannel(uint8_t pin){
-		return (ledc_channel_t)(pin % 8);
-	}
-
-	ledc_mode_t pinToGroup(uint8_t pin){
-		return (ledc_mode_t) (pin / 8);
-	}
-
-	ledc_timer_t pinToTimer(uint8_t pin){
-		return (ledc_timer_t) ((pin /2) % 4);
-	}
 
 	uint32_t periodToFrequency(uint32_t period){
 		if(period == 0){

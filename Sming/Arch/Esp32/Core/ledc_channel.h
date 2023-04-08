@@ -143,6 +143,14 @@ class ledc_channel{
         };
 
     /**
+     * @brief Get the assigned gpio Pin 
+     * 
+     * @return int the Pin
+     */
+        int getPin(){
+            return channel_config.gpio_num;
+        }
+    /**
      * @brief bind the channel object to an existing timer
      * 
      * @param timer 

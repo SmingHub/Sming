@@ -33,6 +33,11 @@
 #define PWM_BAD_CHANNEL 0xff ///< Invalid PWM channel
 #define PWM_BAD_PIN 	0xff ///< Invalid Pin / Pin is not attached to any channel
 
+#if SMING_ARCH==Esp32
+#include "../Arch/Esp32/Core/ledc_timer.h"
+#include "../Arch/Esp32/Core/ledc_channel.h"
+#endif
+
 /// Hardware pulse width modulation
 class HardwarePWM
 {
@@ -133,8 +138,10 @@ private:
 	uint8_t channels[PWM_CHANNEL_NUM_MAX];
 	uint32_t maxduty;
 
-	ledc_channel* channel[];
-	ledc_timer* timer[];
+	#if SMING_ARCH==Esp32
+	ledc_channel* channel[PWM_CHANNEL_NUM_MAX];
+	ledc_timer* timer;
+	#endif
 };
 
 /** @} */

@@ -1,10 +1,11 @@
 #ifndef LEDC_CHANNEL_H
 #include "ledc_channel.h"
+
 ledc_channel::ledc_channel(ledc_mode_t mode, int gpio, ledc_timer_t timer, uint32_t duty, int hpoint){
     periph_module_enable(PERIPH_LEDC_MODULE);
     channel_config.speed_mode   =   mode;
     channel_config.gpio_num     =   gpio;
-    channel_config.channel      =   Channel::instance()->getChannel(mode);
+    channel_config.channel      =   ledc_singleton::Channel::instance()->getChannel(mode);
     channel_config.intr_type    =   LEDC_INTR_DISABLE;
     channel_config.timer_sel    =   timer;
     channel_config.duty         =   duty;
@@ -13,6 +14,7 @@ ledc_channel::ledc_channel(ledc_mode_t mode, int gpio, ledc_timer_t timer, uint3
     esp_err_t err=ledc_channel_config(&channel_config);
     if(err==ESP_OK){
         bindChannelTimer(timer);
+        debug_d("configured channel %d pin %d to user timer %d", channel_config.channel, channel_config.gpio_num, timer->getTimerNum());
     }
 }
 
@@ -25,7 +27,7 @@ ledc_channel::ledc_channel(ledc_mode_t mode, int gpio, ledc_timer_t timer){
 }
 
 ledc_channel::ledc_channel(ledc_mode_t mode, int gpio){
-    ledc_channel(mode, gpio, Timer::instance()->getTimer(mode), (uint32_t) 0, (int) 0);
+    ledc_channel(mode, gpio, ledc_singleton::Timer::instance()->getTimer(mode), (uint32_t) 0, (int) 0);
 }
 
 ledc_channel::~ledc_channel(){

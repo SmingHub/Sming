@@ -7,6 +7,7 @@
      * 
     */
 
+namespace ledc_singleton{
 ledc_timer_t Timer::getTimer(ledc_mode_t mode)
 {
 	for(uint8_t i = 0; i < (uint8_t)LEDC_TIMER_MAX; i++) {
@@ -67,3 +68,4 @@ Channel::Channel()
 #endif
 	}
 }
+} //end namespace ledc_singleton
