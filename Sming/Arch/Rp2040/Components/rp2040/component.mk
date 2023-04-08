@@ -81,6 +81,7 @@ SDK_INTERFACES := \
 	rp2_common/pico_double \
 	rp2_common/pico_int64_ops \
 	rp2_common/pico_float \
+	rp2_common/pico_multicore \
 	rp2_common/pico_rand \
 	rp2_common/pico_runtime \
 	rp2_common/pico_unique_id \
