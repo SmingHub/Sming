@@ -3,7 +3,7 @@
 #include <hal/ledc_types.h>
 #define PWM_MAX_TIMER 8
 
-     
+namespace ledc_singleton{   
 template <typename C> class Singleton
 {
 public:
@@ -419,3 +419,4 @@ protected:
 	Channel();
 	bool isUsed[LEDC_SPEED_MODE_MAX][LEDC_CHANNEL_MAX];
 };
+} // end namespace ledc_singleton
