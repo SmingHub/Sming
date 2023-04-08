@@ -58,14 +58,7 @@
  * 
  * The nomenclature of timers in the high speed / low speed blocks is a bit misleading as the idf api 
  * speaks of "speed mode", which, to me, implies that this would be a mode configurable in a specific timer
- * while in reality, it does select a block of timers. I am considering re-naming that to "speed mode block"
- * in my interface impmenentation.
- * 
- * As an example, I would use
- * setTimerFrequency(speedModeBlock, timer, frequency);
- * 
- * ToDo: see, how this can be implemented to provide maximum overlap with the RP2040 pwm hardware so code does 
- * not become overly SoC specific.
+ * while in reality, it does select a block of timers.
  * 
  * Maximum Timer width for PWM:
  * ============================
@@ -79,7 +72,7 @@
  * esp32   SOC_LEDC_CHANNEL_NUM         (8)
  * esp32c3 SOC_LEDC_CHANNEL_NUM         (6)
  * esp32s2 SOC_LEDC_CHANNEL_NUM         (8)
- * esp32s3 SOC_LEDC_CHANNEL_NUM 		 8
+ * esp32s3 SOC_LEDC_CHANNEL_NUM 		(8)
  *
  * Some SoSs support a mode called HIGHSPEED_MODE which is essentially another full block of PWM hardware 
  * that adds SOC_LEDC_CHANNEL_NUM channels. 
@@ -89,35 +82,6 @@
  * Supports highspeed mode:
  * ========================
  * esp32 SOC_LEDC_SUPPORT_HS_MODE	(1)
- *
- * ToDo: implement awareness of hs mode availablility
- * ==================================================
- * currently, the code just uses a % 8 operation on the pin index to calculate whether to assign a pin to either
- * high speed or low speed pwm blocks. This doesn't make a whole lot of sense since it makes it impossible
- * for Sming devs to actually use the functionality behind it. 
- * Also, it currently does not reflect the fact that different SOCs have a different number of channels per block
- * (specifically, the esp32c3 only has six channels and no highspeed mode). 
- * I will continue in two ways: 
- * - implement the "vanilla" Sming HardwarePWM interface that will hide the underlying architecture but allow up to 16 
- *   channels on an ESP32 
- * - implement overloads for the relevant functions that allow selecting hs mode where applicable. 
- * 
- * ToDo: implement PWM bit width control
- * =====================================
- * the current HardwarePWM implementation does not care about the PWM timer bit width. To leverage the functionality 
- * of the ESP32 hardware, it's necessary to make this configurable. As the width is per timer and all the Sming defined
- * functions are basically per pin, this needs to be an extension of the overall model, exposing at least timers. 
- * This, too, will require a compatible "basic" interface and an advanced interface that allows assigning pins (channels) 
- * to timers and the configuration of the timers themselves. 
- * The esp_idf does not provide a way to read the bit width configured for a channel, but I think it'll be useful to be able
- * to read back this value, not least to find the value for getMaxDuty() for a channel. It will either have to be stored in the
- * module or maybe read from the hardware directly (LEDC_[HL]STIMERx_CONF_REG & 0x1f)
- * 
- * ToDo: implement an abstraction layer
- * ====================================
- * as it stands now, this implementation does not provide a function to synchronize all the PWM channels (HardwarePWM::update())
- * It might be a good idea to provide an intermediary abstraction that handles all the low level PWM functions (such as flexible
- * timer to channel assignments, hs/ls mode awareness, pwm bit width etc) and implements the update() function on that level.
  * 
  * hardware technical reference: 
  * =============================
