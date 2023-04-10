@@ -68,6 +68,7 @@ target_link_libraries(pico
 	pico_float
 	pico_int64_ops
 	pico_mem_ops
+	pico_multicore
 	pico_runtime
 	pico_standard_link
 	pico_unique_id

@@ -54,6 +54,7 @@ SDK_INTERFACES := \
 	common/pico_util \
 	rp2040/hardware_regs \
 	rp2040/hardware_structs \
+	rp2_common/hardware_adc \
 	rp2_common/hardware_gpio \
 	rp2_common/pico_platform \
 	rp2_common/hardware_base \
@@ -66,6 +67,7 @@ SDK_INTERFACES := \
 	rp2_common/hardware_flash \
 	rp2_common/hardware_irq \
 	rp2_common/hardware_pio \
+	rp2_common/hardware_pwm \
 	rp2_common/hardware_resets \
 	rp2_common/hardware_rosc \
 	rp2_common/hardware_rtc \
@@ -79,6 +81,7 @@ SDK_INTERFACES := \
 	rp2_common/pico_double \
 	rp2_common/pico_int64_ops \
 	rp2_common/pico_float \
+	rp2_common/pico_multicore \
 	rp2_common/pico_rand \
 	rp2_common/pico_runtime \
 	rp2_common/pico_unique_id \
