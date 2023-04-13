@@ -16,24 +16,15 @@ RtcClass RTC;
 
 #define NS_PER_SECOND 1000000000
 
-namespace
+void system_init_rtc()
 {
-bool initialised;
-
-void checkInit()
-{
-	if(initialised) {
-		return;
-	}
 	rtc_init();
-	initialised = true;
+	datetime_t t{.year = 1970, .month = 1, .day = 1};
+	rtc_set_datetime(&t);
 }
-
-} // namespace
 
 RtcClass::RtcClass()
 {
-	rtc_init();
 }
 
 uint64_t RtcClass::getRtcNanoseconds()
@@ -43,8 +34,6 @@ uint64_t RtcClass::getRtcNanoseconds()
 
 uint32_t RtcClass::getRtcSeconds()
 {
-	checkInit();
-
 	datetime_t t;
 	if(!rtc_get_datetime(&t)) {
 		return 0;
@@ -63,8 +52,6 @@ bool RtcClass::setRtcNanoseconds(uint64_t nanoseconds)
 
 bool RtcClass::setRtcSeconds(uint32_t seconds)
 {
-	checkInit();
-
 	DateTime dt{seconds};
 
 	datetime_t t = {
