@@ -12,7 +12,7 @@
 
 #pragma once
 
-const uint8_t A0{0}; // TODO main ADC input
+const uint8_t A0{26};
 
 #define NOT_A_PIN 0
 #define NOT_A_PORT 0
