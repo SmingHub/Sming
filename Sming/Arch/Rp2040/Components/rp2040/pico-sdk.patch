@@ -4,6 +4,28 @@ diff --git a/lib/cyw43-driver b/lib/cyw43-driver
 @@ -1 +1 @@
 -Subproject commit 9bfca61173a94432839cd39210f1d1afdf602c42
 +Subproject commit 9bfca61173a94432839cd39210f1d1afdf602c42-dirty
+diff --git a/src/common/pico_util/queue.c b/src/common/pico_util/queue.c
+index a5c8e18..c3b8a91 100644
+--- a/src/common/pico_util/queue.c
++++ b/src/common/pico_util/queue.c
+@@ -41,7 +41,7 @@ static inline uint16_t inc_index(queue_t *q, uint16_t index) {
+     return index;
+ }
+ 
+-static bool queue_add_internal(queue_t *q, const void *data, bool block) {
++static bool __not_in_flash_func(queue_add_internal)(queue_t *q, const void *data, bool block) {
+     do {
+         uint32_t save = spin_lock_blocking(q->core.spin_lock);
+         if (queue_get_level_unsafe(q) != q->element_count) {
+@@ -94,7 +94,7 @@ static bool queue_peek_internal(queue_t *q, void *data, bool block) {
+     } while (true);
+ }
+ 
+-bool queue_try_add(queue_t *q, const void *data) {
++bool __not_in_flash_func(queue_try_add)(queue_t *q, const void *data) {
+     return queue_add_internal(q, data, false);
+ }
+ 
 diff --git a/src/rp2_common/hardware_base/include/hardware/address_mapped.h b/src/rp2_common/hardware_base/include/hardware/address_mapped.h
 index 8e92d8b..da5feac 100644
 --- a/src/rp2_common/hardware_base/include/hardware/address_mapped.h
