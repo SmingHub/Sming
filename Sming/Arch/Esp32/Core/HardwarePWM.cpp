@@ -123,12 +123,12 @@ ledc_timer_t pinToTimer(uint8_t pin)
 
 uint32_t periodToFrequency(uint32_t period)
 {
-	return (period == 0) ? -1 : (1000000 / period);
+	return (period == 0) ? 0 : (1000000 / period);
 }
 
 uint32_t frequencyToPeriod(uint32_t freq)
 {
-	return (freq == 0) ? -1 : (1000000 / freq);
+	return (freq == 0) ? 0 : (1000000 / freq);
 }
 
 uint32_t maxDuty(ledc_timer_bit_t bits)
