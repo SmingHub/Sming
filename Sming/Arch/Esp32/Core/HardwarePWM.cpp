@@ -211,7 +211,6 @@ uint8_t HardwarePWM::getChannel(uint8_t pin)
 {
 	for(uint8_t i = 0; i < channel_count; i++) {
 		if(channels[i] == pin) {
-			// debug_d("getChannel %d is %d", pin, i);
 			return i;
 		}
 	}
@@ -243,7 +242,7 @@ bool HardwarePWM::setDutyChan(uint8_t chan, uint32_t duty, bool update)
 		return true;
 	}
 
-	debug_d("Duty cycle value too high for current period.");
+	debug_d("Duty cycle value too high for current period, max duty cycle is %d", maxduty);
 	return false;
 }
 
