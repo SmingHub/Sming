@@ -37,7 +37,7 @@ Example usage:
 	const uint32_t period = 5000; // * 200ns ^= 1 kHz
 
 	// PWM setup
-	uint32 io_info[PWM_CHANNELS][3] = {
+	uint32 ioInfo[PWM_CHANNELS][3] = {
 		// MUX, FUNC, PIN
 		{PERIPHS_IO_MUX_MTDI_U,  FUNC_GPIO12, 12},
 		{PERIPHS_IO_MUX_MTDO_U,  FUNC_GPIO15, 15},
@@ -47,9 +47,9 @@ Example usage:
 	};
 
 	// initial duty: all off
-	uint32 pwm_duty_init[PWM_CHANNELS] = {0, 0, 0, 0, 0};
+	uint32 pwmDutyInit[PWM_CHANNELS] = {0, 0, 0, 0, 0};
 
-	pwm_init(period, pwm_duty_init, PWM_CHANNELS, io_info);
+	pwm_init(period, pwmDutyInit, PWM_CHANNELS, ioInfo);
 	pwm_start();
 
 	// do something like this whenever you want to change duty

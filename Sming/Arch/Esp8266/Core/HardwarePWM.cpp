@@ -30,23 +30,23 @@
 
 #define PERIOD_TO_MAX_DUTY(x) (x * 25)
 
-HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_of_pins)
+HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t noOfPins) : channel_count(noOfPins)
 {
-	if(no_of_pins == 0) {
+	if(noOfPins == 0) {
 		return;
 	}
 
-	uint32_t io_info[PWM_CHANNEL_NUM_MAX][3];	// pin information
-	uint32_t pwm_duty_init[PWM_CHANNEL_NUM_MAX]; // pwm duty
-	for(uint8_t i = 0; i < no_of_pins; i++) {
-		io_info[i][0] = EspDigitalPins[pins[i]].mux;
-		io_info[i][1] = EspDigitalPins[pins[i]].gpioFunc;
-		io_info[i][2] = EspDigitalPins[pins[i]].id;
-		pwm_duty_init[i] = 0; // Start with zero output
+	uint32_t ioInfo[PWM_CHANNEL_NUM_MAX][3];   // pin information
+	uint32_t pwmDutyInit[PWM_CHANNEL_NUM_MAX]; // pwm duty
+	for(uint8_t i = 0; i < noOfPins; i++) {
+		ioInfo[i][0] = EspDigitalPins[pins[i]].mux;
+		ioInfo[i][1] = EspDigitalPins[pins[i]].gpioFunc;
+		ioInfo[i][2] = EspDigitalPins[pins[i]].id;
+		pwmDutyInit[i] = 0; // Start with zero output
 		channels[i] = pins[i];
 	}
 	const int initial_period = 1000;
-	pwm_init(initial_period, pwm_duty_init, no_of_pins, io_info);
+	pwm_init(initial_period, pwmDutyInit, noOfPins, ioInfo);
 	update();
 	maxduty = PERIOD_TO_MAX_DUTY(initial_period); // for period of 1000
 }
