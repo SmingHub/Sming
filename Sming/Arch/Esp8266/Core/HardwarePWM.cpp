@@ -23,31 +23,32 @@
  *
  */
 
+#include <HardwarePWM.h>
 #include <Clock.h>
 #include "ESP8266EX.h"
 #include <debug_progmem.h>
 
-#include <HardwarePWM.h>
-
 #define PERIOD_TO_MAX_DUTY(x) (x * 25)
 
-HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_of_pins)
+HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t noOfPins) : channel_count(noOfPins)
 {
-	if(no_of_pins > 0) {
-		uint32_t io_info[PWM_CHANNEL_NUM_MAX][3];	// pin information
-		uint32_t pwm_duty_init[PWM_CHANNEL_NUM_MAX]; // pwm duty
-		for(uint8_t i = 0; i < no_of_pins; i++) {
-			io_info[i][0] = EspDigitalPins[pins[i]].mux;
-			io_info[i][1] = EspDigitalPins[pins[i]].gpioFunc;
-			io_info[i][2] = EspDigitalPins[pins[i]].id;
-			pwm_duty_init[i] = 0; // Start with zero output
-			channels[i] = pins[i];
-		}
-		const int initial_period = 1000;
-		pwm_init(initial_period, pwm_duty_init, no_of_pins, io_info);
-		update();
-		maxduty = PERIOD_TO_MAX_DUTY(initial_period); // for period of 1000
+	if(noOfPins == 0) {
+		return;
 	}
+
+	uint32_t ioInfo[PWM_CHANNEL_NUM_MAX][3];   // pin information
+	uint32_t pwmDutyInit[PWM_CHANNEL_NUM_MAX]; // pwm duty
+	for(uint8_t i = 0; i < noOfPins; i++) {
+		ioInfo[i][0] = EspDigitalPins[pins[i]].mux;
+		ioInfo[i][1] = EspDigitalPins[pins[i]].gpioFunc;
+		ioInfo[i][2] = EspDigitalPins[pins[i]].id;
+		pwmDutyInit[i] = 0; // Start with zero output
+		channels[i] = pins[i];
+	}
+	const int initialPeriod = 1000;
+	pwm_init(initialPeriod, pwmDutyInit, noOfPins, ioInfo);
+	update();
+	maxduty = PERIOD_TO_MAX_DUTY(initialPeriod); // for period of 1000
 }
 
 HardwarePWM::~HardwarePWM()
@@ -55,72 +56,46 @@ HardwarePWM::~HardwarePWM()
 	// There is no function in the SDK to stop PWM output, yet.
 }
 
-/* Function Name: getChannel
- * Description: This function is used to get channel number for given pin
- * Parameters: pin - Esp8266 pin number
- */
 uint8_t HardwarePWM::getChannel(uint8_t pin)
 {
 	for(uint8_t i = 0; i < channel_count; i++) {
 		if(channels[i] == pin) {
-			//debugf("getChannel %d is %d", pin, i);
 			return i;
 		}
 	}
-	//debugf("getChannel: can't find pin %d", pin);
+
+	debug_d("getChannel: can't find pin %d", pin);
 	return PWM_BAD_CHANNEL;
 }
 
-/* Function Name: getDutyChan
- * Description: This function is used to get the duty cycle number for a given channel
- * Parameters: chan -Esp8266 channel number
- */
 uint32_t HardwarePWM::getDutyChan(uint8_t chan)
 {
-	if(chan == PWM_BAD_CHANNEL) {
-		return 0;
-	} else {
-		return pwm_get_duty(chan);
-	}
+	return (chan == PWM_BAD_CHANNEL) ? 0 : pwm_get_duty(chan);
 }
 
-/* Function Name: setDutyChan
- * Description: This function is used to set the pwm duty cycle for a given channel. If parameter 'update' is false
- *              then you have to call update() later to update duties.
- * Parameters: chan - channel number
- *             duty - duty cycle value
- *             update - update PWM output
- */
 bool HardwarePWM::setDutyChan(uint8_t chan, uint32_t duty, bool update)
 {
 	if(chan == PWM_BAD_CHANNEL) {
 		return false;
-	} else if(duty <= maxduty) {
+	}
+
+	if(duty <= maxduty) {
 		pwm_set_duty(duty, chan);
 		if(update) {
 			this->update();
 		}
 		return true;
-	} else {
-		debugf("Duty cycle value too high for current period.");
-		return false;
 	}
+
+	debug_e("Duty cycle value too high for current period. max duty is %d.",maxduty);
+	return false;
 }
 
-/* Function Name: getPeriod
- * Description: This function is used to get Period of PWM.
- *				Period / frequency will remain same for all pins.
- *
- */
 uint32_t HardwarePWM::getPeriod()
 {
 	return pwm_get_period();
 }
 
-/* Function Name: setPeriod
- * Description: This function is used to set Period of PWM.
- *				Period / frequency will remain same for all pins.
- */
 void HardwarePWM::setPeriod(uint32_t period)
 {
 	maxduty = PERIOD_TO_MAX_DUTY(period);
@@ -128,10 +103,14 @@ void HardwarePWM::setPeriod(uint32_t period)
 	update();
 }
 
-/* Function Name: update
- * Description: This function is used to actually update the PWM.
- */
 void HardwarePWM::update()
 {
 	pwm_start();
+}
+
+uint32_t HardwarePWM::getFrequency(uint8_t pin)
+{
+	(void)pin;
+	auto period = pwm_get_period();
+	return (period == 0) ? 0 : 1000000U / period;
 }

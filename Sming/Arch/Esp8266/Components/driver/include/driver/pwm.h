@@ -23,13 +23,13 @@ extern "C" {
  *
  * Example:
  *
- * 		uint32 io_info[][3] = {
+ * 		uint32 ioInfo[][3] = {
  * 			{PWM_0_OUT_IO_MUX, PWM_0_OUT_IO_FUNC, PWM_0_OUT_IO_NUM},
  * 			{PWM_1_OUT_IO_MUX, PWM_1_OUT_IO_FUNC, PWM_1_OUT_IO_NUM},
  * 			{PWM_2_OUT_IO_MUX, PWM_2_OUT_IO_FUNC, PWM_2_OUT_IO_NUM}
  *		};
  *
- *		pwm_init(light_param.pwm_period, light_param.pwm_duty, 3, io_info);
+ *		pwm_init(light_param.pwm_period, light_param.pwm_duty, 3, ioInfo);
  *
  */
 
