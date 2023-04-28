@@ -45,10 +45,10 @@ HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t noOfPins) : channel_count(noOfPi
 		pwmDutyInit[i] = 0; // Start with zero output
 		channels[i] = pins[i];
 	}
-	const int initial_period = 1000;
-	pwm_init(initial_period, pwmDutyInit, noOfPins, ioInfo);
+	const int initialPeriod = 1000;
+	pwm_init(initialPeriod, pwmDutyInit, noOfPins, ioInfo);
 	update();
-	maxduty = PERIOD_TO_MAX_DUTY(initial_period); // for period of 1000
+	maxduty = PERIOD_TO_MAX_DUTY(initialPeriod); // for period of 1000
 }
 
 HardwarePWM::~HardwarePWM()

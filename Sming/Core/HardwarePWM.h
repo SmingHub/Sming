@@ -123,6 +123,7 @@ public:
 	void update();
 
 	/** @brief Get PWM Frequency
+	 *  @param pin GPIO to get frequency for
 	 *  @retval uint32_t Value of Frequency 
 	*/
 	uint32_t getFrequency(uint8_t pin);
