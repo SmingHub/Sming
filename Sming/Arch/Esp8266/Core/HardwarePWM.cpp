@@ -87,7 +87,7 @@ bool HardwarePWM::setDutyChan(uint8_t chan, uint32_t duty, bool update)
 		return true;
 	}
 
-	debug_e("Duty cycle value too high for current period. max duty is %d.",maxduty);
+	debug_e("Duty cycle value too high for current period. max duty is %d.", maxduty);
 	return false;
 }
 
