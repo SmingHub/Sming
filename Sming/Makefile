@@ -209,7 +209,7 @@ endef
 # Files that should follow our coding standards
 
 # Root directories to search
-CS_ROOT_DIRS	?= $(abspath $(SMING_HOME)/..)
+CS_ROOT_DIRS	?= $(abspath $(SMING_HOME)/.. $(COMPONENT_SEARCH_DIRS))
 # List of single directories to search
 CS_SEARCH_DIRS	?= $(call ListAllSubDirs,$(CS_ROOT_DIRS))
 # Resultant set of directories whose contents to apply coding style to
