@@ -24,12 +24,12 @@ os_timer_t* timer_list;
 class CriticalLock
 {
 public:
-	CriticalLock()
+	__forceinline CriticalLock()
 	{
 		level = save_and_disable_interrupts();
 	}
 
-	~CriticalLock()
+	__forceinline ~CriticalLock()
 	{
 		restore_interrupts(level);
 	}
@@ -38,7 +38,7 @@ private:
 	uint32_t level;
 };
 
-static void IRAM_ATTR timer_insert(uint32_t expire, os_timer_t* ptimer)
+void IRAM_ATTR timer_insert(uint32_t expire, os_timer_t* ptimer)
 {
 	debug_tmr("insert %p %u", ptimer, expire);
 
