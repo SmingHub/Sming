@@ -117,6 +117,16 @@ else
 OUTPUT_DEPS := -MF $$@
 endif
 
+CLANG_TIDY_OPTS := \
+	-checks=-* \
+	-checks=cppcoreguidelines-* \
+	-checks=-cppcoreguidelines-avoid-c-arrays \
+	-checks=-cppcoreguidelines-pro-bounds-array-to-pointer-decay \
+	-checks=-clang-diagnostic-error
+
+CLANG_TIDY_WARN := \
+	no-invalid-constexpr
+
 # $1 -> absolute source directory, no trailing path separator
 # $2 -> relative output build directory, with trailing path separator
 define GenerateCompileTargets
@@ -132,6 +142,11 @@ $2%.o: $1/%.S
 	$(Q) $(AS) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
 endif
 ifneq (,$(filter $1/%.c,$(SOURCE_FILES)))
+ifeq ($(ENABLE_CLANG_TIDY),1)
+$2%.o: $1/%.c
+	$(vecho) "TIDY $$<"
+	$(Q) clang-tidy $$< $(CLANG_TIDY_OPTS) -- $(addprefix -I,$(INCDIR)) $$(filter-out -fstrict-volatile-bitfields,$(CPPFLAGS) $(CFLAGS)) $(addprefix -W,$(CLANG_TIDY_WARN))
+else
 $2%.o: $1/%.c $2%.c.d
 	$(vecho) "CC $$<"
 	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
@@ -139,13 +154,20 @@ $2%.c.d: $1/%.c
 	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -MM -MT $2$$*.o $$< $(OUTPUT_DEPS)
 .PRECIOUS: $2%.c.d
 endif
+endif
 ifneq (,$(filter $1/%.cpp,$(SOURCE_FILES)))
+ifeq ($(ENABLE_CLANG_TIDY),1)
+$2%.o: $1/%.cpp
+	$(vecho) "TIDY $$<"
+	$(Q) clang-tidy $$< $(CLANG_TIDY_OPTS) -- $(addprefix -I,$(INCDIR)) $$(filter-out -fstrict-volatile-bitfields,$(CPPFLAGS) $(CXXFLAGS)) $(addprefix -W,$(CLANG_TIDY_WARN))
+else
 $2%.o: $1/%.cpp $2%.cpp.d
 	$(vecho) "C+ $$<"
 	$(Q) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -c $$< -o $$@
 $2%.cpp.d: $1/%.cpp
 	$(Q) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -MM -MT $2$$*.o $$< $(OUTPUT_DEPS)
 .PRECIOUS: $2%.cpp.d
+endif
 endif
 endef
 
