@@ -30,7 +30,7 @@ public:
 #endif
 
 	CommandOutput(Stream* reqStream);
-	virtual ~CommandOutput();
+	~CommandOutput();
 
 	size_t write(uint8_t outChar);
 

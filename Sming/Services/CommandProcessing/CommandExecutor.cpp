@@ -16,7 +16,7 @@ CommandExecutor::CommandExecutor()
 
 CommandExecutor::CommandExecutor(Stream* reqStream) : CommandExecutor()
 {
-	commandOutput = new CommandOutput(reqStream);
+	commandOutput.reset(new CommandOutput(reqStream));
 	if(commandHandler.getVerboseMode() != SILENT) {
 		commandOutput->println(_F("Welcome to the Stream Command executor"));
 	}
@@ -25,7 +25,7 @@ CommandExecutor::CommandExecutor(Stream* reqStream) : CommandExecutor()
 #ifndef DISABLE_NETWORK
 CommandExecutor::CommandExecutor(TcpClient* cmdClient) : CommandExecutor()
 {
-	commandOutput = new CommandOutput(cmdClient);
+	commandOutput.reset(new CommandOutput(cmdClient));
 	if(commandHandler.getVerboseMode() != SILENT) {
 		commandOutput->println(_F("Welcome to the Tcp Command executor"));
 	}
@@ -33,17 +33,12 @@ CommandExecutor::CommandExecutor(TcpClient* cmdClient) : CommandExecutor()
 
 CommandExecutor::CommandExecutor(WebsocketConnection* reqSocket)
 {
-	commandOutput = new CommandOutput(reqSocket);
+	commandOutput.reset(new CommandOutput(reqSocket));
 	if(commandHandler.getVerboseMode() != SILENT) {
 		reqSocket->sendString(_F("Welcome to the Websocket Command Executor"));
 	}
 }
 #endif
-
-CommandExecutor::~CommandExecutor()
-{
-	delete commandOutput;
-}
 
 int CommandExecutor::executorReceive(char* recvData, int recvSize)
 {
@@ -117,7 +112,7 @@ void CommandExecutor::processCommandLine(const String& cmdString)
 			commandOutput->print(cmdCommand);
 			commandOutput->println('\'');
 		} else {
-			cmdDelegate.commandFunction(cmdString, commandOutput);
+			cmdDelegate.commandFunction(cmdString, commandOutput.get());
 		}
 	}
 

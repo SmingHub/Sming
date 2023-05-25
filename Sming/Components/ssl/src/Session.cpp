@@ -48,10 +48,10 @@ bool Session::onAccept(TcpConnection* client, tcp_pcb* tcp)
 		return false;
 	}
 
-	if(context == nullptr) {
+	if(!context) {
 		assert(factory != nullptr);
-		context = factory->createContext(*this);
-		if(context == nullptr) {
+		context.reset(factory->createContext(*this));
+		if(!context) {
 			return false;
 		}
 
@@ -73,14 +73,14 @@ bool Session::onConnect(tcp_pcb* tcp)
 {
 	debug_d("SSL %p: Starting connection...", this);
 
-	assert(connection == nullptr);
-	assert(context == nullptr);
+	assert(!connection);
+	assert(!context);
 
 	// Client Session
-	delete context;
+	context.reset();
 	assert(factory != nullptr);
-	context = factory->createContext(*this);
-	if(context == nullptr) {
+	context.reset(factory->createContext(*this));
+	if(!context) {
 		return false;
 	}
 
@@ -98,8 +98,8 @@ bool Session::onConnect(tcp_pcb* tcp)
 
 	beginHandshake();
 
-	connection = context->createClient(tcp);
-	if(connection == nullptr) {
+	connection.reset(context->createClient(tcp));
+	if(!connection) {
 		endHandshake();
 		return false;
 	}
@@ -134,11 +134,8 @@ void Session::close()
 {
 	debug_d("SSL %p: closing ...", this);
 
-	delete connection;
-	connection = nullptr;
-
-	delete context;
-	context = nullptr;
+	connection.reset();
+	context.reset();
 
 	hostName = nullptr;
 	maxBufferSize = MaxBufferSize::Default;
@@ -146,7 +143,7 @@ void Session::close()
 
 int Session::read(InputBuffer& input, uint8_t*& output)
 {
-	if(connection == nullptr) {
+	if(!connection) {
 		debug_w("SSL: no connection");
 		return -1;
 	}
@@ -165,7 +162,7 @@ int Session::read(InputBuffer& input, uint8_t*& output)
 
 int Session::write(const uint8_t* data, size_t length)
 {
-	if(connection == nullptr) {
+	if(!connection) {
 		debug_e("!! SSL Session connection is NULL");
 		return ERR_CONN;
 	}
@@ -181,7 +178,7 @@ int Session::write(const uint8_t* data, size_t length)
 
 bool Session::validateCertificate()
 {
-	if(connection == nullptr) {
+	if(!connection) {
 		debug_w("SSL: connection not set, assuming cert. is OK");
 		return true;
 	}
@@ -211,7 +208,7 @@ void Session::handshakeComplete(bool success)
 		debug_w("SSL Handshake failed");
 	}
 
-	if(options.freeKeyCertAfterHandshake && connection != nullptr) {
+	if(options.freeKeyCertAfterHandshake && connection) {
 		connection->freeCertificate();
 	}
 }
@@ -235,7 +232,7 @@ size_t Session::printTo(Print& p) const
 	n += p.println(keyCert.getCertificateLength());
 	n += p.print(_F("  Cert PK Length: "));
 	n += p.println(keyCert.getKeyLength());
-	if(connection != nullptr) {
+	if(connection) {
 		n += connection->printTo(p);
 	}
 

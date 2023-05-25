@@ -41,13 +41,13 @@ static constexpr unsigned statusIntervalMs = 5000;
 
 // One full sine-wave cycle
 static struct {
-	uint16_t* samples = nullptr;
+	std::unique_ptr<uint16_t[]> samples;
 	unsigned sampleCount = 0;
 	unsigned readPos = 0;
 
 	bool generate(float sampleRate, float frequency)
 	{
-		delete samples;
+		samples.reset();
 		readPos = 0;
 
 		sampleCount = round(sampleRate / frequency);
@@ -57,8 +57,8 @@ static struct {
 		Serial << _F("Generating sine wave table @ ") << frequency << _F(" Hz, ") << sampleCount << _F(" samples")
 			   << endl;
 
-		samples = new uint16_t[sampleCount];
-		if(samples == nullptr) {
+		samples.reset(new uint16_t[sampleCount]);
+		if(!samples) {
 			debug_e("Memory allocation failed");
 			return false;
 		}

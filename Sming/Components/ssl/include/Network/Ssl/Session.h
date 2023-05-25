@@ -147,8 +147,8 @@ public:
 	 */
 	void setConnection(Connection* connection)
 	{
-		assert(this->connection == nullptr);
-		this->connection = connection;
+		assert(!this->connection);
+		this->connection.reset(connection);
 	}
 
 	/**
@@ -157,7 +157,7 @@ public:
 	 */
 	Connection* getConnection()
 	{
-		return connection;
+		return connection.get();
 	}
 
 	/**
@@ -223,8 +223,8 @@ private:
 	void endHandshake();
 
 private:
-	Context* context = nullptr;
-	Connection* connection = nullptr;
+	std::unique_ptr<Context> context;
+	std::unique_ptr<Connection> connection;
 	std::unique_ptr<SessionId> sessionId;
 	CpuFrequency curFreq = CpuFrequency(0);
 };
