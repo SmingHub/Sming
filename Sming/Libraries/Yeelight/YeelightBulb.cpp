@@ -11,40 +11,34 @@
 #include <ArduinoJson6.h>
 #include "WCharacter.h"
 
+namespace
+{
+bool isNumeric(const String& str)
+{
+	for(auto c : str) {
+		if(!isDigit(c))
+			return false;
+	}
+	return true;
+}
+
+} // namespace
+
 YeelightBulb::~YeelightBulb()
 {
-	if (connection != nullptr)
-		delete connection;
-	connection = nullptr;
 }
 
 bool YeelightBulb::connect()
 {
-	if (connection != nullptr)
-	{
-		if (connection->isProcessing())
-			return true;
-
-		//connection->close();
-		delete connection;
+	if(connection && connection->isProcessing()) {
+		return true;
 	}
 
-	connection = new TcpClient(TcpClientDataDelegate(&YeelightBulb::onResponse, this));
+	connection.reset(new TcpClient(TcpClientDataDelegate(&YeelightBulb::onResponse, this)));
 
 	connection->setTimeOut(USHRT_MAX); // Stay connected forever
-	bool result = connection->connect(lamp, port);
-	//if (result) updateState();
-	return result;
-}
 
-bool isNumeric(String str)
-{
-  for (unsigned i = 0; i < str.length(); i++)
-  {
-	  if (!isDigit(str[i]))
-		  return false;
-  }
-  return true;
+	return connection->connect(lamp, port);
 }
 
 void YeelightBulb::sendCommand(const String& method, const Vector<String>& params)
@@ -55,12 +49,12 @@ void YeelightBulb::sendCommand(const String& method, const Vector<String>& param
 	doc["id"] = requestId++;
 	doc["method"] = method;
 	auto arr = doc.createNestedArray("params");
-	for (unsigned i = 0; i < params.count(); i++)
-	{
-		if (isNumeric(params[i]))
+	for(unsigned i = 0; i < params.count(); i++) {
+		if(isNumeric(params[i])) {
 			arr.add(params[i].toInt());
-		else
+		} else {
 			arr.add(params[i]);
+		}
 	}
 	String request = Json::serialize(doc);
 	request += "\r\n";
@@ -87,10 +81,11 @@ void YeelightBulb::off()
 
 void YeelightBulb::setState(bool isOn)
 {
-	if (isOn)
+	if(isOn) {
 		on();
-	else
+	} else {
 		off();
+	}
 }
 
 void YeelightBulb::updateState()
@@ -114,7 +109,7 @@ void YeelightBulb::setRGB(byte r, byte g, byte b)
 {
 	ensureOn();
 	Vector<String> params;
-	long val = (long)r*65536 + (long)g*256 + b;
+	uint32_t val = (r << 16) | (g << 8) | b;
 	params.add(String(val));
 	sendCommand("set_rgb", params);
 }
@@ -130,16 +125,18 @@ void YeelightBulb::setHSV(int hue, int sat)
 
 void YeelightBulb::ensureOn()
 {
-	if (state <= 0)
+	if(state <= 0) {
 		on();
+	}
 }
 
 void YeelightBulb::parsePower(const String& value)
 {
-	if (value == "on")
+	if(value == "on") {
 		state = eYBS_On;
-	else if (value == "off")
+	} else if(value == "off") {
 		state = eYBS_Off;
+	}
 
 	debugf("LED state: %s", value.c_str());
 }
@@ -150,19 +147,17 @@ bool YeelightBulb::onResponse(TcpClient& client, char* data, int size)
 	debugf("LED > %s", source.c_str());
 
 	unsigned p = 0;
-	while (p < source.length())
-	{
+	while(p < source.length()) {
 		int p2 = source.indexOf("\r\n", p);
-		if (p2 < 0)
+		if(p2 < 0) {
 			p2 = source.length();
+		}
 		String buf = source.substring(p, p2);
 		p = unsigned(p2) + 2;
 		DynamicJsonDocument doc(1024);
-		if(Json::deserialize(doc, buf))
-		{
+		if(Json::deserialize(doc, buf)) {
 			long id = doc["id"] | -1;
-			if (id == propsId)
-			{
+			if(id == propsId) {
 				JsonArray result = doc["result"];
 				const char* value = result[0];
 				if(value != nullptr) {
@@ -172,8 +167,7 @@ bool YeelightBulb::onResponse(TcpClient& client, char* data, int size)
 
 			const char* method = doc["method"];
 			debugf("LED method %s received", method);
-			if (strcmp(method,"props") == 0)
-			{
+			if(strcmp(method, "props") == 0) {
 				JsonObject result = doc["params"];
 				const char* value = result["power"];
 				if(value != nullptr) {
