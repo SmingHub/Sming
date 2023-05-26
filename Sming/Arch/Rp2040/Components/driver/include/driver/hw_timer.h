@@ -93,7 +93,7 @@ extern struct hw_timer_private_t hw_timer_private;
  * @param callback Callback function invoked via timer interrupt
  * @param arg Passed to callback function
  */
-void IRAM_ATTR hw_timer1_attach_interrupt(hw_timer_source_type_t source_type, hw_timer_callback_t callback, void* arg);
+void hw_timer1_attach_interrupt(hw_timer_source_type_t source_type, hw_timer_callback_t callback, void* arg);
 
 /**
  * @brief Detach interrupt from the timer
@@ -106,7 +106,7 @@ void hw_timer1_detach_interrupt();
  * @param intr_type
  * @param auto_load
  */
-void IRAM_ATTR hw_timer1_enable(hw_timer_clkdiv_t div, hw_timer_intr_type_t intr_type, bool auto_load);
+void hw_timer1_enable(hw_timer_clkdiv_t div, hw_timer_intr_type_t intr_type, bool auto_load);
 
 /**
  * @brief Set the timer interval and arm

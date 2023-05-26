@@ -30,7 +30,7 @@ void IRAM_ATTR timer1_isr()
 
 } // namespace
 
-void hw_timer1_attach_interrupt(hw_timer_source_type_t source_type, hw_timer_callback_t callback, void* arg)
+void IRAM_ATTR hw_timer1_attach_interrupt(hw_timer_source_type_t source_type, hw_timer_callback_t callback, void* arg)
 {
 	(void)source_type;
 	auto& p = hw_timer_private;
