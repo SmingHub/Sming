@@ -15,9 +15,15 @@ namespace Storage
 {
 class Device;
 
-class Iterator : public std::iterator<std::forward_iterator_tag, Partition>
+class Iterator
 {
 public:
+	using iterator_category = std::forward_iterator_tag;
+	using value_type = Partition;
+	using difference_type = std::ptrdiff_t;
+	using pointer = Partition*;
+	using reference = Partition&;
+
 	Iterator(Device& device) : mSearch{&device, Partition::Type::any, Partition::SubType::any}, mDevice(&device)
 	{
 		next();

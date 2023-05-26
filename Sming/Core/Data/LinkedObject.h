@@ -61,10 +61,15 @@ private:
 template <typename ObjectType> class LinkedObjectTemplate : public LinkedObject
 {
 public:
-	template <typename T, typename TPtr, typename TRef>
-	class IteratorTemplate : public std::iterator<std::forward_iterator_tag, T>
+	template <typename T, typename TPtr, typename TRef> class IteratorTemplate
 	{
 	public:
+		using iterator_category = std::forward_iterator_tag;
+		using value_type = T;
+		using difference_type = std::ptrdiff_t;
+		using pointer = T*;
+		using reference = T&;
+
 		IteratorTemplate(TPtr x) : mObject(x)
 		{
 		}
