@@ -33,7 +33,7 @@ size_t CommandOutput::write(uint8_t outChar)
 			outputSocket->sendString(tempSocket);
 			tempSocket = "";
 		} else {
-			tempSocket = tempSocket + String(char(outChar));
+			tempSocket += char(outChar);
 		}
 
 		return 1;

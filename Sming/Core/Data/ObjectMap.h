@@ -13,6 +13,7 @@
 #pragma once
 
 #include "WVector.h"
+#include <memory>
 
 /**
  * @brief Implementation of a HashMap for owned objects, i.e. anything created with new().
@@ -209,8 +210,7 @@ public:
 	{
 		int i = indexOf(key);
 		if(i >= 0) {
-			delete entries[i].value;
-			entries[i].value = value;
+			entries[i].value.reset(value);
 		} else {
 			entries.addElement(new Entry(key, value));
 		}
@@ -225,7 +225,7 @@ public:
 	V* find(const K& key) const
 	{
 		int index = indexOf(key);
-		return (index < 0) ? nullptr : entries[index].value;
+		return (index < 0) ? nullptr : entries[index].value.get();
 	}
 
 	/**
@@ -298,13 +298,12 @@ public:
 	 */
 	V* extractAt(unsigned index)
 	{
-		V* value = nullptr;
+		std::unique_ptr<V> value;
 		if(index < entries.count()) {
-			value = entries[index].value;
-			entries[index].value = nullptr;
+			entries[index].value.swap(value);
 			entries.remove(index);
 		}
-		return value;
+		return value.release();
 	}
 
 	/**
@@ -321,15 +320,11 @@ protected:
 	 */
 	struct Entry {
 		K key;
-		V* value = nullptr;
+		std::unique_ptr<V> value;
 
-		Entry(const K& key, V* value) : key(key), value(value)
+		Entry(const K& key, V* value) : key(key)
 		{
-		}
-
-		~Entry()
-		{
-			delete value;
+			this->value.reset(value);
 		}
 	};
 

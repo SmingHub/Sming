@@ -10,7 +10,7 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-Ota::Network::HttpUpgrader* otaUpdater;
+std::unique_ptr<Ota::Network::HttpUpgrader> otaUpdater;
 Storage::Partition spiffsPartition;
 OtaUpgrader ota;
 
@@ -49,10 +49,7 @@ void doUpgrade()
 	Serial.println(F("Updating..."));
 
 	// need a clean object, otherwise if run before and failed will not run again
-	if(otaUpdater) {
-		delete otaUpdater;
-	}
-	otaUpdater = new Ota::Network::HttpUpgrader();
+	otaUpdater.reset(new Ota::Network::HttpUpgrader);
 
 	// select rom slot to flash
 	auto part = ota.getNextBootPartition();

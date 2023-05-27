@@ -3,12 +3,14 @@
 
 #include <SmingCore.h>
 #include <Data/Stream/FlashMemoryStream.h>
+#include <memory>
 
 class SerialTransmitDemo
 {
 public:
-	SerialTransmitDemo(HardwareSerial& serial, IDataSourceStream* stream) : serial(serial), stream(stream)
+	SerialTransmitDemo(HardwareSerial& serial, IDataSourceStream* stream) : serial(serial)
 	{
+		this->stream.reset(stream);
 		serial.onTransmitComplete(TransmitCompleteDelegate(&SerialTransmitDemo::onTransmitComplete, this));
 	}
 
@@ -16,7 +18,6 @@ public:
 	{
 		// Disconnect callback from serial port
 		serial.onTransmitComplete(nullptr);
-		delete stream;
 	}
 
 	void begin()
@@ -35,7 +36,7 @@ protected:
 
 private:
 	HardwareSerial& serial;
-	IDataSourceStream* stream = nullptr;
+	std::unique_ptr<IDataSourceStream> stream;
 	const size_t chunkSize = 32;
 };
 

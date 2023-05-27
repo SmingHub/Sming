@@ -82,11 +82,7 @@ bool AccessPointImpl::config(const String& ssid, String password, AUTH_MODE mode
 			debugf("AP configuration was updated");
 		} else {
 			debugf("Set AP configuration in background");
-			if(runConfig != nullptr) {
-				delete runConfig;
-			}
-			runConfig = new softap_config();
-			memcpy(runConfig, &config, sizeof(softap_config));
+			runConfig.reset(new softap_config(config));
 		}
 	} else {
 		debugf("AP configuration loaded");
@@ -190,22 +186,23 @@ std::unique_ptr<StationList> AccessPointImpl::getStations() const
 
 void AccessPointImpl::onSystemReady()
 {
-	if(runConfig != nullptr) {
-		noInterrupts();
-		bool enabled = isEnabled();
-		enable(true, false);
-		wifi_softap_dhcps_stop();
-
-		if(!wifi_softap_set_config(runConfig)) {
-			debugf("Can't set AP config on system ready event!");
-		} else {
-			debugf("AP configuration was updated on system ready event");
-		}
-		delete runConfig;
-		runConfig = nullptr;
-
-		wifi_softap_dhcps_start();
-		enable(enabled, false);
-		interrupts();
+	if(!runConfig) {
+		return;
 	}
+
+	noInterrupts();
+	bool enabled = isEnabled();
+	enable(true, false);
+	wifi_softap_dhcps_stop();
+
+	if(!wifi_softap_set_config(runConfig.get())) {
+		debugf("Can't set AP config on system ready event!");
+	} else {
+		debugf("AP configuration was updated on system ready event");
+	}
+	runConfig.reset();
+
+	wifi_softap_dhcps_start();
+	enable(enabled, false);
+	interrupts();
 }

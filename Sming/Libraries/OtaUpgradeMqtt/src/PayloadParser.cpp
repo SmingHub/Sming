@@ -35,7 +35,7 @@ int PayloadParser::parse(MqttPayloadParserState& state, mqtt_message_t* message,
 	}
 
 	if(length == MQTT_PAYLOAD_PARSER_END) {
-		bool skip = (updateState->stream == nullptr);
+		bool skip = !updateState->stream;
 		if(!skip) {
 			bool success = switchRom(*updateState);
 			if(success) {
@@ -78,11 +78,11 @@ int PayloadParser::parse(MqttPayloadParserState& state, mqtt_message_t* message,
 		length -= offset;
 		buffer += offset;
 
-		updateState->stream = getStorageStream(message->common.length - offset);
+		updateState->stream.reset(getStorageStream(message->common.length - offset));
 	}
 
-	auto stream = updateState->stream;
-	if(stream == nullptr) {
+	auto& stream = updateState->stream;
+	if(!stream) {
 		return 0;
 	}
 

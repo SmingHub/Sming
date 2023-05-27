@@ -11,6 +11,7 @@
 #pragma once
 
 #include "MemoryDataStream.h"
+#include <memory>
 
 /**
  * @brief Memory stream that stores unlimited number of bytes.
@@ -24,11 +25,6 @@
 class EndlessMemoryStream : public ReadWriteStream
 {
 public:
-	~EndlessMemoryStream()
-	{
-		delete stream;
-	}
-
 	StreamType getStreamType() const override
 	{
 		return eSST_Memory;
@@ -54,5 +50,5 @@ public:
 	}
 
 private:
-	MemoryDataStream* stream = nullptr;
+	std::unique_ptr<MemoryDataStream> stream;
 };

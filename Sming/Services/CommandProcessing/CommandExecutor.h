@@ -10,6 +10,7 @@
 #include "CommandHandler.h"
 #include "CommandOutput.h"
 #include <Data/Buffer/LineBuffer.h>
+#include <memory>
 
 #ifndef DISABLE_NETWORK
 #include <Network/TcpClient.h>
@@ -28,7 +29,6 @@ public:
 	CommandExecutor(WebsocketConnection* reqSocket);
 #endif
 	CommandExecutor(Stream* reqStream);
-	~CommandExecutor();
 
 	int executorReceive(char* recvData, int recvSize);
 	int executorReceive(char recvChar);
@@ -39,5 +39,5 @@ private:
 	CommandExecutor();
 	void processCommandLine(const String& cmdString);
 	LineBuffer<MAX_COMMANDSIZE + 1> commandBuf;
-	CommandOutput* commandOutput = nullptr;
+	std::unique_ptr<CommandOutput> commandOutput;
 };

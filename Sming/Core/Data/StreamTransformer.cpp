@@ -21,7 +21,7 @@ uint16_t StreamTransformer::readMemoryBlock(char* data, int bufSize)
 	}
 
 	if(tempStream == nullptr) {
-		tempStream = new CircularBuffer(NETWORK_SEND_BUFFER_SIZE + 10);
+		tempStream.reset(new CircularBuffer(NETWORK_SEND_BUFFER_SIZE + 10));
 	}
 
 	// Use provided buffer as a temporary store for this operation
@@ -41,13 +41,13 @@ void StreamTransformer::fillTempStream(char* buffer, size_t bufSize)
 		}
 
 		saveState();
-		size_t outLength = transform(reinterpret_cast<const uint8_t*>(buffer), chunkSize, result, resultSize);
+		size_t outLength = transform(reinterpret_cast<const uint8_t*>(buffer), chunkSize, result.get(), resultSize);
 		if(outLength > room) {
 			restoreState();
 			return;
 		}
 
-		auto written = tempStream->write(result, outLength);
+		auto written = tempStream->write(result.get(), outLength);
 		(void)written;
 		assert(written == outLength);
 
@@ -55,8 +55,8 @@ void StreamTransformer::fillTempStream(char* buffer, size_t bufSize)
 	}
 
 	if(sourceStream->isFinished()) {
-		auto outLength = transform(nullptr, 0, result, resultSize);
-		auto written = tempStream->write(result, outLength);
+		auto outLength = transform(nullptr, 0, result.get(), resultSize);
+		auto written = tempStream->write(result.get(), outLength);
 		(void)written;
 		assert(written == outLength);
 	}

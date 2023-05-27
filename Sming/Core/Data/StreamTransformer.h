@@ -13,6 +13,7 @@
 #pragma once
 
 #include "Buffer/CircularBuffer.h"
+#include <memory>
 
 /**
  * @brief Class that can be used to transform streams of data on the fly
@@ -21,15 +22,10 @@ class StreamTransformer : public IDataSourceStream
 {
 public:
 	StreamTransformer(IDataSourceStream* stream, size_t resultSize = 256, size_t blockSize = 64)
-		: sourceStream(stream), result(new uint8_t[resultSize]), resultSize(resultSize), blockSize(blockSize)
+		: resultSize(resultSize), blockSize(blockSize)
 	{
-	}
-
-	~StreamTransformer()
-	{
-		delete[] result;
-		delete tempStream;
-		delete sourceStream;
+		sourceStream.reset(stream);
+		result.reset(new uint8_t[resultSize]);
 	}
 
 	//Use base class documentation
@@ -49,7 +45,7 @@ public:
 
 	bool isValid() const
 	{
-		return sourceStream != nullptr && sourceStream->isValid();
+		return sourceStream && sourceStream->isValid();
 	}
 
 	uint16_t readMemoryBlock(char* data, int bufSize) override;
@@ -60,7 +56,7 @@ public:
 
 	String getName() const override
 	{
-		return (sourceStream == nullptr) ? nullptr : sourceStream->getName();
+		return sourceStream ? sourceStream->getName() : String::nullstr;
 	}
 
 	/**
@@ -89,9 +85,9 @@ protected:
 private:
 	void fillTempStream(char* buffer, size_t bufSize);
 
-	IDataSourceStream* sourceStream{nullptr};
-	CircularBuffer* tempStream{nullptr};
-	uint8_t* result{nullptr};
+	std::unique_ptr<IDataSourceStream> sourceStream;
+	std::unique_ptr<CircularBuffer> tempStream;
+	std::unique_ptr<uint8_t[]> result;
 	size_t resultSize;
 	size_t blockSize;
 };

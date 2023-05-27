@@ -15,6 +15,7 @@
 #include <Platform/System.h>
 #include <Data/Stream/ReadWriteStream.h>
 #include <Network/Mqtt/MqttPayloadParser.h>
+#include <memory>
 
 namespace OtaUpgrade
 {
@@ -30,14 +31,9 @@ class PayloadParser
 {
 public:
 	struct UpdateState {
-		ReadWriteStream* stream{nullptr};
+		std::unique_ptr<ReadWriteStream> stream;
 		bool started{false};
 		size_t version{0};
-
-		~UpdateState()
-		{
-			delete stream;
-		}
 	};
 
 	/**

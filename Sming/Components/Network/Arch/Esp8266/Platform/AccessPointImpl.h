@@ -40,5 +40,5 @@ protected:
 	void onSystemReady() override;
 
 private:
-	softap_config* runConfig = nullptr;
+	std::unique_ptr<softap_config> runConfig;
 };

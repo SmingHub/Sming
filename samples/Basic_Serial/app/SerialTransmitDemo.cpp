@@ -6,7 +6,7 @@
 
 void SerialTransmitDemo::sendDataChunk()
 {
-	if(serial.copyFrom(stream, chunkSize) == 0) {
+	if(serial.copyFrom(stream.get(), chunkSize) == 0) {
 		Serial.println(_F("Finished sending stream to serial port"));
 
 		// All done, delete ourselves

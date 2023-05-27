@@ -16,6 +16,7 @@
 #include <Network/Ssl/Validator.h>
 #include "AxCertificate.h"
 #include "AxError.h"
+#include <memory>
 
 namespace Ssl
 {
@@ -26,7 +27,6 @@ public:
 
 	~AxConnection()
 	{
-		delete certificate;
 		// Typically sends out closing message
 		ssl_free(ssl);
 	}
@@ -60,17 +60,16 @@ public:
 
 	const Certificate* getCertificate() const override
 	{
-		if(certificate == nullptr && ssl->x509_ctx != nullptr) {
-			certificate = new AxCertificate(ssl);
+		if(!certificate && ssl->x509_ctx != nullptr) {
+			certificate.reset(new AxCertificate(ssl));
 		}
 
-		return certificate;
+		return certificate.get();
 	}
 
 	void freeCertificate() override
 	{
-		delete certificate;
-		certificate = nullptr;
+		certificate.reset();
 	}
 
 	int read(InputBuffer& input, uint8_t*& output) override;
@@ -93,7 +92,7 @@ public:
 
 private:
 	SSL* ssl{nullptr};
-	mutable AxCertificate* certificate{nullptr};
+	mutable std::unique_ptr<AxCertificate> certificate;
 	InputBuffer* input{nullptr};
 };
 

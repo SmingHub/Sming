@@ -27,15 +27,9 @@ public:
 		this->files = files;
 	}
 
-	~FakeCamera()
-	{
-		delete file;
-		file = nullptr;
-	}
-
 	const String getMimeType() const override
 	{
-		return "image/jpeg";
+		return toString(MIME_JPEG);
 	}
 
 	/**
@@ -66,14 +60,11 @@ public:
 		}
 
 		// go to the next picture.
-		delete file;
-		file = new FileStream(files[index++]);
+		auto& filename = files[index++];
 		if(index == files.count()) {
 			index = 0;
 		}
-		if(!file->isValid()) {
-			delete file;
-			file = nullptr;
+		if(!file.open(filename)) {
 			return false;
 		}
 		state = eWCS_HAS_PICTURE;
@@ -86,11 +77,7 @@ public:
 	 */
 	size_t getSize() override
 	{
-		if(file == nullptr) {
-			return 0;
-		}
-
-		return file->getSize();
+		return file.getSize();
 	}
 
 	/**
@@ -103,17 +90,13 @@ public:
 	 */
 	size_t read(char* buffer, size_t size, size_t offset = 0)
 	{
-		if(file == nullptr) {
-			return 0;
-		}
-
 		// get the current picture and read the desired data from it.
-		file->seekFrom(offset, SeekOrigin::Start);
-		return file->readMemoryBlock(buffer, size);
+		file.seekFrom(offset, SeekOrigin::Start);
+		return file.readMemoryBlock(buffer, size);
 	}
 
 private:
-	size_t index = 0;
-	FileStream* file = nullptr;
+	size_t index{0};
+	FileStream file;
 	Vector<String> files;
 };
