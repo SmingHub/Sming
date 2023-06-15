@@ -11,7 +11,12 @@
 
 #pragma once
 
+#include <esp_idf_version.h>
+#if ESP_IDF_VERSION_MAJOR < 5
 #include_next <esp_spi_flash.h>
+#else
+#include <spi_flash_mmap.h>
+#endif
 #include <rom/spi_flash.h>
 #include <esp_app_format.h>
 
@@ -25,8 +30,6 @@ extern "C" {
  * @ingroup flash
  * @{
  */
-
-#define SPI_FLASH_RESULT_OK 0
 
 /// Flash memory access must be aligned and in multiples of 4-byte words
 #define INTERNAL_FLASH_WRITE_UNIT_SIZE 4
@@ -51,10 +54,10 @@ typedef enum {
 } SPIFlashMode;
 
 typedef enum {
-	SPEED_40MHZ = ESP_IMAGE_SPI_SPEED_40M,
-	SPEED_26MHZ = ESP_IMAGE_SPI_SPEED_26M,
-	SPEED_20MHZ = ESP_IMAGE_SPI_SPEED_20M,
-	SPEED_80MHZ = ESP_IMAGE_SPI_SPEED_80M,
+	SPEED_40MHZ = 0,	// ESP_IMAGE_SPI_SPEED_40M
+	SPEED_26MHZ = 1,	// ESP_IMAGE_SPI_SPEED_26M
+	SPEED_20MHZ = 2,	// ESP_IMAGE_SPI_SPEED_20M
+	SPEED_80MHZ = 0x0f, // ESP_IMAGE_SPI_SPEED_80M
 } SPIFlashSpeed;
 
 typedef enum {

@@ -14,6 +14,17 @@ ifeq ($(CREATE_EVENT_TASK),1)
 COMPONENT_CPPFLAGS += -DCREATE_EVENT_TASK
 endif
 
+IDF_VERSION := $(firstword $(subst -, ,$(IDF_VER)))
+IDF_VERSION_4 := $(filter v4%,$(IDF_VERSION))
+
+ifneq (,$(filter esp32s3-v4.3%,$(ESP_VARIANT)-$(IDF_VER)))
+$(error esp32s3 requires ESP IDF v4.4 or later)
+endif
+
+ifneq (,$(filter esp32c2-v4%,$(ESP_VARIANT)-$(IDF_VER)))
+$(error esp32c2 requires ESP IDF v5.0 or later)
+endif
+
 SDK_BUILD_BASE := $(COMPONENT_BUILD_BASE)/sdk
 SDK_COMPONENT_LIBDIR := $(COMPONENT_BUILD_BASE)/lib
 
@@ -21,9 +32,10 @@ SDKCONFIG_H := $(SDK_BUILD_BASE)/config/sdkconfig.h
 
 SDK_LIBDIRS := \
 	esp_wifi/lib/$(ESP_VARIANT) \
+	esp_phy/lib/$(ESP_VARIANT) \
 	xtensa/$(ESP_VARIANT) \
 	hal/$(ESP_VARIANT) \
-	$(ESP_VARIANT)/ld \
+	soc/$(ESP_VARIANT)/ld \
 	esp_rom/$(ESP_VARIANT)/ld
 
 # BLUETOOTH
@@ -45,7 +57,9 @@ LIBDIRS += \
 	$(SDK_BUILD_BASE)/esp-idf/mbedtls/mbedtls/library \
 	$(SDK_BUILD_BASE)/esp-idf/$(ESP_VARIANT) \
 	$(SDK_BUILD_BASE)/esp-idf/$(ESP_VARIANT)/ld \
+	$(SDK_BUILD_BASE)/esp-idf/esp_system/ld \
 	$(ESP32_COMPONENT_PATH)/ld \
+	$(SDK_COMPONENTS_PATH)/$(ESP_VARIANT)/ld \
 	$(addprefix $(SDK_COMPONENTS_PATH)/,$(SDK_LIBDIRS))
 
 SDK_INCDIRS := \
@@ -54,7 +68,6 @@ SDK_INCDIRS := \
 	bootloader_support/include_bootloader \
 	driver/$(ESP_VARIANT)/include \
 	driver/include \
-	esp_ipc/include \
 	esp_pm/include \
 	esp_rom/include/$(ESP_VARIANT) \
 	esp_rom/include \
@@ -63,10 +76,10 @@ SDK_INCDIRS := \
 	esp_timer/include \
 	soc/include \
 	soc/$(ESP_VARIANT)/include \
+	soc/include/soc \
 	heap/include \
 	log/include \
 	nvs_flash/include \
-	freertos/include \
 	esp_event/include \
 	lwip/lwip/src/include \
 	lwip/port/esp32/include \
@@ -75,17 +88,40 @@ SDK_INCDIRS := \
 	wpa_supplicant/include \
 	wpa_supplicant/port/include \
 	esp_hw_support/include \
+	esp_hw_support/include/soc \
 	hal/include \
+	hal/platform_port/include \
 	hal/$(ESP_VARIANT)/include \
 	esp_system/include \
 	esp_common/include \
-	esp_adc_cal/include \
 	esp_netif/include \
 	esp_eth/include \
 	esp_wifi/include \
 	esp_wifi/esp32/include \
 	lwip/include/apps/sntp \
 	wpa_supplicant/include/esp_supplicant
+
+ifdef IDF_VERSION_4
+SDK_INCDIRS += \
+	esp_adc_cal/include \
+	esp_ipc/include \
+	freertos/include \
+	freertos/include/esp_additions \
+	freertos/include/esp_additions/freertos
+FREERTOS_PORTABLE := freertos/port
+else
+SDK_INCDIRS += \
+	esp_adc/include \
+	esp_app_format/include \
+	esp_partition/include \
+	freertos/FreeRTOS-Kernel/include \
+	freertos/esp_additions/include \
+	freertos/esp_additions/include/freertos \
+	driver/deprecated
+FREERTOS_PORTABLE := freertos/FreeRTOS-Kernel/portable
+endif
+
+
 
 ifeq ($(ENABLE_BLUETOOTH),1)
 SDK_INCDIRS += \
@@ -116,13 +152,13 @@ endif
 
 ifdef IDF_TARGET_ARCH_RISCV
 SDK_INCDIRS += \
-	freertos/port/riscv/include \
+	$(FREERTOS_PORTABLE)/riscv/include \
 	riscv/include
 else
 SDK_INCDIRS += \
 	xtensa/include \
 	xtensa/$(ESP_VARIANT)/include \
-	freertos/port/xtensa/include
+	$(FREERTOS_PORTABLE)/xtensa/include
 endif
 
 	 
@@ -137,12 +173,10 @@ SDK_COMPONENTS := \
 	cxx \
 	driver \
 	efuse \
-	$(ESP_VARIANT) \
 	esp_common \
 	esp_event \
 	esp_gdbstub \
 	esp_hw_support \
-	esp_ipc \
 	esp_pm \
 	esp_rom \
 	esp_ringbuf \
@@ -159,23 +193,36 @@ SDK_COMPONENTS := \
 	soc \
 	spi_flash
 
+ifneq (,$(filter v4.3%,$(IDF_VERSION)))
+SDK_COMPONENTS += $(ESP_VARIANT)
+else
+SDK_COMPONENTS += esp_phy
+endif
+
+ifdef IDF_VERSION_4
+SDK_COMPONENTS += \
+	esp_ipc \
+	esp_adc_cal
+else
+SDK_COMPONENTS += \
+	esp_adc \
+	esp_app_format \
+	esp_partition
+endif
+
+
 ifneq ($(DISABLE_NETWORK),1)
 SDK_COMPONENTS += \
 	esp_wifi \
 	esp_eth \
 	lwip \
 	mbedcrypto \
-	esp_netif \
-	openssl
+	esp_netif
 ifneq ($(DISABLE_WIFI),1)
 SDK_COMPONENTS += \
 	wifi_provisioning \
 	wpa_supplicant
 endif
-endif
-
-ifneq ($(ESP_VARIANT),esp32s3)
-SDK_COMPONENTS += esp_adc_cal
 endif
 
 ifdef IDF_TARGET_ARCH_RISCV
@@ -188,11 +235,14 @@ SDK_ESP_WIFI_LIBS := \
 	coexist \
 	core \
 	espnow \
-	mesh \
 	net80211 \
 	phy \
 	pp \
 	smartconfig
+
+ifneq ($(ESP_VARIANT),esp32c2)
+SDK_ESP_WIFI_LIBS += mesh
+endif
 
 ifeq ($(ENABLE_BLUETOOTH),1)
 SDK_ESP_BLUETOOTH_LIBS := bt btdm_app
@@ -236,7 +286,8 @@ LDFLAGS_esp32 := \
 LDFLAGS_esp32s2 := \
 	$(call LinkerScript,rom.newlib-funcs) \
 	$(call LinkerScript,rom.newlib-data) \
-	$(call LinkerScript,rom.spiflash)
+	$(call LinkerScript,rom.spiflash) \
+	$(call LinkerScript,rom.newlib-time) \
 
 LDFLAGS_esp32c3 := \
 	$(call LinkerScript,rom.newlib) \
@@ -244,9 +295,16 @@ LDFLAGS_esp32c3 := \
 	$(call LinkerScript,rom.eco3)
 
 LDFLAGS_esp32s3 := \
-	$(call LinkerScript,rom.newlib-funcs) \
-	$(call LinkerScript,rom.newlib-data) \
-	$(call LinkerScript,rom.spiflash)
+	$(call LinkerScript,rom.newlib) \
+	$(call LinkerScript,rom.version) \
+	$(call LinkerScript,rom.newlib-time)
+
+LDFLAGS_esp32c2 := \
+	$(call LinkerScript,rom.newlib) \
+	$(call LinkerScript,rom.version) \
+	$(call LinkerScript,rom.newlib-time) \
+	$(call LinkerScript,rom.heap) \
+	$(call LinkerScript,rom.mbedtls)
 
 SDK_WRAP_SYMBOLS :=
 SDK_UNDEF_SYMBOLS :=
@@ -254,12 +312,11 @@ SDK_UNDEF_SYMBOLS :=
 $(foreach c,$(wildcard $(SDK_DEFAULT_PATH)/*.mk),$(eval include $c))
 
 EXTRA_LDFLAGS := \
-	-T $(ESP_VARIANT)_out.ld \
-	$(call LinkerScript,project) \
 	$(call LinkerScript,peripherals) \
 	$(call LinkerScript,rom) \
 	$(call LinkerScript,rom.api) \
 	$(call LinkerScript,rom.libgcc) \
+	$(call LinkerScript,rom.newlib-nano) \
 	$(call Wrap,\
 		esp_event_loop_create_default \
 		esp_event_handler_register \
@@ -272,6 +329,15 @@ EXTRA_LDFLAGS := \
 	$(call Undef,$(SDK_UNDEF_SYMBOLS)) \
 	$(call Wrap,$(SDK_WRAP_SYMBOLS))
 
+ifneq (,$(filter v4.3%,$(IDF_VERSION)))
+EXTRA_LDFLAGS += \
+	-T $(ESP_VARIANT)_out.ld \
+	$(call LinkerScript,project)
+else
+EXTRA_LDFLAGS += \
+	-T memory.ld \
+	-T sections.ld
+endif
 
 SDK_PROJECT_PATH := $(ESP32_COMPONENT_PATH)/project/$(ESP_VARIANT)/$(BUILD_TYPE)
 SDK_CONFIG_DEFAULTS := $(SDK_PROJECT_PATH)/sdkconfig.defaults
@@ -342,6 +408,13 @@ $(SDK_CONFIG_DEFAULTS): $(SDK_CUSTOM_CONFIG_PATH)
 	$(Q) $(foreach f,$(SDK_CONFIG_FILES),\
 		$(if $(wildcard $f),cat $f >> $@;) \
 	)
+	$(Q) printf "\n# Auto-generated settings\n" >> $@
+	$(Q) echo "CONFIG_ESPTOOLPY_FLASHMODE_$(SPI_MODE)=y" >> $@
+	$(Q) echo "CONFIG_ESPTOOLPY_FLASHFREQ_$(SPI_SPEED)M=y" >> $@
+	$(Q) echo "CONFIG_ESPTOOLPY_FLASHSIZE_$(SPI_SIZE)B=y" >> $@
+ifeq ($(ENABLE_GDB), 1)
+	$(Q) echo "CONFIG_ESP_SYSTEM_PANIC_GDBSTUB=$(if $(ENABLE_GDB),y,n)" >> $@
+endif
 
 ##@Configuration
 

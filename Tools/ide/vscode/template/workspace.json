@@ -9,6 +9,7 @@
         "files.associations": {
             "*.hw": "jsonc",
             "*.fwfs": "jsonc",
+            "*.usbcfg": "jsonc",
             "optional": "cpp"
         },
         "json.schemas": [
@@ -23,6 +24,12 @@
                     "*.fwfs"
                 ],
                 "url": "file://${SMING_HOME}/Components/IFS/fsbuild/schema.json"
+            },
+            {
+                "fileMatch": [
+                    "*.usbcfg"
+                ],
+                "url": "file://${SMING_HOME}/Libraries/USB/schema.json"
             }
         ]
     }

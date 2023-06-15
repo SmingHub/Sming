@@ -33,9 +33,15 @@ template <typename Element> class Vector : public Countable<Element>
 public:
 	using Comparer = int (*)(const Element& lhs, const Element& rhs);
 
-	template <bool is_const> class Iterator : public std::iterator<std::random_access_iterator_tag, Element>
+	template <bool is_const> class Iterator
 	{
 	public:
+		using iterator_category = std::random_access_iterator_tag;
+		using value_type = Element;
+		using difference_type = std::ptrdiff_t;
+		using pointer = Element*;
+		using reference = Element&;
+
 		using V = typename std::conditional<is_const, const Vector, Vector>::type;
 		using E = typename std::conditional<is_const, const Element, Element>::type;
 

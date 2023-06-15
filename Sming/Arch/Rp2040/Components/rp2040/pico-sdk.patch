@@ -1,13 +1,64 @@
-diff --git a/src/rp2_common/pico_platform/include/pico/platform.h b/src/rp2_common/pico_platform/include/pico/platform.h
-index 596b0db..0fb309f 100644
---- a/src/rp2_common/pico_platform/include/pico/platform.h
-+++ b/src/rp2_common/pico_platform/include/pico/platform.h
-@@ -357,7 +357,7 @@ static __force_inline void tight_loop_contents(void) {}
-  * \return a * b
-  */
- __force_inline static int32_t __mul_instruction(int32_t a, int32_t b) {
--    asm ("mul %0, %1" : "+l" (a) : "l" (b) : );
-+    __asm__ ("mul %0, %1" : "+l" (a) : "l" (b) : );
-     return a;
+diff --git a/lib/cyw43-driver b/lib/cyw43-driver
+--- a/lib/cyw43-driver
++++ b/lib/cyw43-driver
+@@ -1 +1 @@
+-Subproject commit 9bfca61173a94432839cd39210f1d1afdf602c42
++Subproject commit 9bfca61173a94432839cd39210f1d1afdf602c42-dirty
+diff --git a/src/common/pico_util/queue.c b/src/common/pico_util/queue.c
+index a5c8e18..c3b8a91 100644
+--- a/src/common/pico_util/queue.c
++++ b/src/common/pico_util/queue.c
+@@ -41,7 +41,7 @@ static inline uint16_t inc_index(queue_t *q, uint16_t index) {
+     return index;
  }
  
+-static bool queue_add_internal(queue_t *q, const void *data, bool block) {
++static bool __not_in_flash_func(queue_add_internal)(queue_t *q, const void *data, bool block) {
+     do {
+         uint32_t save = spin_lock_blocking(q->core.spin_lock);
+         if (queue_get_level_unsafe(q) != q->element_count) {
+@@ -94,7 +94,7 @@ static bool queue_peek_internal(queue_t *q, void *data, bool block) {
+     } while (true);
+ }
+ 
+-bool queue_try_add(queue_t *q, const void *data) {
++bool __not_in_flash_func(queue_try_add)(queue_t *q, const void *data) {
+     return queue_add_internal(q, data, false);
+ }
+ 
+diff --git a/src/rp2_common/hardware_base/include/hardware/address_mapped.h b/src/rp2_common/hardware_base/include/hardware/address_mapped.h
+index 8e92d8b..da5feac 100644
+--- a/src/rp2_common/hardware_base/include/hardware/address_mapped.h
++++ b/src/rp2_common/hardware_base/include/hardware/address_mapped.h
+@@ -105,12 +105,12 @@ __force_inline static uint32_t xip_alias_check_addr(const void *addr) {
+ #define xip_nocache_noalloc_alias_untyped(addr) ((void *)(XIP_NOCACHE_NOALLOC_BASE | xip_alias_check_addr(addr)))
+ 
+ // Typed conversion alias pointer generation macros
+-#define hw_set_alias(p) ((typeof(p))hw_set_alias_untyped(p))
+-#define hw_clear_alias(p) ((typeof(p))hw_clear_alias_untyped(p))
+-#define hw_xor_alias(p) ((typeof(p))hw_xor_alias_untyped(p))
+-#define xip_noalloc_alias(p) ((typeof(p))xip_noalloc_alias_untyped(p))
+-#define xip_nocache_alias(p) ((typeof(p))xip_nocache_alias_untyped(p))
+-#define xip_nocache_noalloc_alias(p) ((typeof(p))xip_nocache_noalloc_alias_untyped(p))
++#define hw_set_alias(p) ((__typeof__(p))hw_set_alias_untyped(p))
++#define hw_clear_alias(p) ((__typeof__(p))hw_clear_alias_untyped(p))
++#define hw_xor_alias(p) ((__typeof__(p))hw_xor_alias_untyped(p))
++#define xip_noalloc_alias(p) ((__typeof__(p))xip_noalloc_alias_untyped(p))
++#define xip_nocache_alias(p) ((__typeof__(p))xip_nocache_alias_untyped(p))
++#define xip_nocache_noalloc_alias(p) ((__typeof__(p))xip_nocache_noalloc_alias_untyped(p))
+ 
+ /*! \brief Atomically set the specified bits to 1 in a HW register
+  *  \ingroup hardware_base
+diff --git a/src/rp2_common/pico_standard_link/memmap_default.ld b/src/rp2_common/pico_standard_link/memmap_default.ld
+index 638e994..3fb53cd 100644
+--- a/src/rp2_common/pico_standard_link/memmap_default.ld
++++ b/src/rp2_common/pico_standard_link/memmap_default.ld
+@@ -231,7 +231,7 @@ SECTIONS
+     } > SCRATCH_Y
+ 
+     .flash_end : {
+-        PROVIDE(__flash_binary_end = .);
++        __flash_binary_end = .;
+     } > FLASH
+ 
+     /* stack limit is poorly named, but historically is maximum heap ptr */

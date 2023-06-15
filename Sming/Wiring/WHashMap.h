@@ -107,10 +107,15 @@ public:
 	using Element = BaseElement<false>;
 	using ElementConst = BaseElement<true>;
 
-	template <bool is_const>
-	class Iterator : public std::iterator<std::random_access_iterator_tag, BaseElement<is_const>>
+	template <bool is_const> class Iterator
 	{
 	public:
+		using iterator_category = std::random_access_iterator_tag;
+		using value_type = BaseElement<is_const>;
+		using difference_type = std::ptrdiff_t;
+		using pointer = BaseElement<is_const>*;
+		using reference = BaseElement<is_const>&;
+
 		using Map = typename std::conditional<is_const, const HashMap, HashMap>::type;
 		using Value = typename std::conditional<is_const, const V, V>::type;
 
@@ -425,6 +430,7 @@ protected:
 
 private:
 	HashMap(const HashMap<K, V>& that);
+	HashMap& operator=(const HashMap& that);
 };
 
 template <typename K, typename V> V& HashMap<K, V>::operator[](const K& key)

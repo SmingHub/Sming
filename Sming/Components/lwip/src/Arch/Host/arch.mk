@@ -20,7 +20,7 @@ $(NPCAP_SRCDIR)/.ok:
 		mkdir -p $(@D) && \
 		cd $(@D) && \
 		powershell -Command "Set-Variable ProgressPreference SilentlyContinue; \
-			Invoke-WebRequest https://nmap.org/npcap/dist/$(PCAP_SRC) -OutFile $(PCAP_SRC); \
+			Invoke-WebRequest https://npcap.com/dist/$(PCAP_SRC) -OutFile $(PCAP_SRC); \
 			Expand-Archive $(PCAP_SRC) ." && \
 		$(call ApplyPatch,$(LWIP_ARCH_SRCDIR)/npcap.patch) && \
 		touch $@

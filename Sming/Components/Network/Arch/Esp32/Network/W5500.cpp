@@ -9,6 +9,7 @@
  ****/
 
 #include <Network/Ethernet/W5500.h>
+#include <esp_netif.h>
 #include <debug_progmem.h>
 #include "spi_config.h"
 
@@ -28,8 +29,10 @@ bool W5500Service::begin(const Config& config)
 	esp_netif_config_t netif_cfg = ESP_NETIF_DEFAULT_ETH();
 	netif = esp_netif_new(&netif_cfg);
 
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(4, 4, 0)
 	// Set default handlers to process TCP/IP stuffs
 	CHECK_RET(esp_eth_set_default_handlers(netif));
+#endif
 
 	// And register our own event handlers
 	enableEventCallback(true);
@@ -48,10 +51,13 @@ bool W5500Service::begin(const Config& config)
 		.spics_io_num = getPin(config.chipSelectPin, DEFAULT_PIN_CS),
 		.queue_size = 20,
 	};
+#if ESP_IDF_VERSION_MAJOR < 5
 	spi_device_handle_t spi_handle{nullptr};
 	CHECK_RET(spi_bus_add_device(spiHost, &devcfg, &spi_handle));
-
 	eth_w5500_config_t w5500_config = ETH_W5500_DEFAULT_CONFIG(spi_handle);
+#else
+	eth_w5500_config_t w5500_config = ETH_W5500_DEFAULT_CONFIG(spiHost, &devcfg);
+#endif
 	w5500_config.int_gpio_num = getPin(config.interruptPin, DEFAULT_PIN_INT);
 	eth_mac_config_t mac_config = ETH_MAC_DEFAULT_CONFIG();
 	mac = esp_eth_mac_new_w5500(&w5500_config, &mac_config);
@@ -69,7 +75,7 @@ bool W5500Service::begin(const Config& config)
 
 	setMacAddress(MacAddress({0x02, 0x00, 0x00, 0x12, 0x34, 0x56}));
 
-	netif_glue = esp_eth_new_netif_glue(handle);
+	netif_glue = static_cast<void*>(esp_eth_new_netif_glue(handle));
 	CHECK_RET(esp_netif_attach(netif, netif_glue));
 	CHECK_RET(esp_eth_start(handle));
 

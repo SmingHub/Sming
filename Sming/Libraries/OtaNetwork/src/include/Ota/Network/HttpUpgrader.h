@@ -35,25 +35,20 @@ public:
 
 	struct Item {
 		String url;
-		Partition partition;			  // << partition to write the data to
-		size_t size{0};					  // << actual size of written bytes
-		ReadWriteStream* stream{nullptr}; // (optional) output stream to use.
+		Partition partition;					 // << partition to write the data to
+		size_t size{0};							 // << actual size of written bytes
+		std::unique_ptr<ReadWriteStream> stream; // (optional) output stream to use.
 
 		Item(String url, Partition partition, ReadWriteStream* stream) : url(url), partition(partition), stream(stream)
 		{
 		}
 
-		~Item()
-		{
-			delete stream;
-		}
-
 		ReadWriteStream* getStream()
 		{
-			if(stream == nullptr) {
-				stream = new Ota::UpgradeOutputStream(partition);
+			if(!stream) {
+				stream.reset(new Ota::UpgradeOutputStream(partition));
 			}
-			return stream;
+			return stream.get();
 		}
 	};
 

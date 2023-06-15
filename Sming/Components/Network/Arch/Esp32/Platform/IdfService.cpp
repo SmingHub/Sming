@@ -10,8 +10,13 @@
 
 #include <Platform/IdfService.h>
 #include <esp_eth.h>
+#include <esp_netif.h>
 #include <esp_event.h>
 #include <debug_progmem.h>
+
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(4, 4, 0)
+using esp_eth_netif_glue_handle_t = void*;
+#endif
 
 namespace Ethernet
 {
@@ -22,9 +27,11 @@ void IdfService::end()
 	}
 
 	ESP_ERROR_CHECK(esp_eth_stop(handle));
-	ESP_ERROR_CHECK(esp_eth_del_netif_glue(netif_glue));
+	ESP_ERROR_CHECK(esp_eth_del_netif_glue(static_cast<esp_eth_netif_glue_handle_t>(netif_glue)));
 	netif_glue = nullptr;
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(4, 4, 0)
 	ESP_ERROR_CHECK(esp_eth_clear_default_handlers(netif));
+#endif
 
 	ESP_ERROR_CHECK(esp_eth_driver_uninstall(handle));
 	handle = nullptr;

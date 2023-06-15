@@ -35,3 +35,7 @@ To add support for SD Cards to this sample::
     make ENABLE_SDCARD=1
 
 See :library:`FatIFS` for further details of SD Card and FAT filing system support.
+
+To add support for a USB storage device::
+
+    make ENABLE_USB_STORAGE=1

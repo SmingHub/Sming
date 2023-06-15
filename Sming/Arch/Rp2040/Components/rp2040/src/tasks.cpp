@@ -1,55 +1,66 @@
 #include "include/esp_tasks_ll.h"
 #include <stringutil.h>
 #include <debug_progmem.h>
-#include <hardware/sync.h>
+#include <pico/util/queue.h>
+#include <sming_attr.h>
+
+namespace {
 
 class TaskQueue
 {
 public:
-	TaskQueue(os_task_t callback, os_event_t* events, uint8_t length)
+	static void init()
 	{
-		this->callback = callback;
-		this->events = events;
-		this->length = length;
-		read = count = 0;
+	 	spinlock = spin_lock_claim_unused(true);
 	}
 
-	bool IRAM_ATTR post(os_signal_t sig, os_param_t par)
+	TaskQueue(os_task_t callback, uint8_t length): callback(callback)
 	{
-		auto level = save_and_disable_interrupts();
+		queue_init_with_spinlock(&queue, sizeof(os_event_t), length, spinlock);
+	}
 
-		bool full = (count == length);
-		if(!full) {
-			events[(read + count) % length] = os_event_t{sig, par};
-			++count;
-		}
+	~TaskQueue()
+	{
+		queue_free(&queue);
+	}
 
-		restore_interrupts(level);
-		return !full;
+	bool __forceinline post(os_signal_t sig, os_param_t par)
+	{
+		os_event_t event {sig, par};
+		return queue_try_add(&queue, &event);
 	}
 
 	void process()
 	{
 		// Don't service any newly queued events
-		for(unsigned n = count; n != 0; --n) {
-			auto evt = events[read];
-			read = (read + 1) % length;
-			--count;
-			callback(&evt);
+		unsigned count = queue_get_level(&queue);
+		while(count--) {
+			os_event_t event;
+			if(queue_try_remove(&queue, &event)) {
+				callback(&event);
+			}
 		}
 	}
 
+	explicit operator bool() const
+	{
+		return callback && queue.data;
+	}
+
 private:
+	static uint8_t spinlock;
 	os_task_t callback;
-	os_event_t* events;
-	uint8_t read;
-	uint8_t count;
-	uint8_t length;
+	queue_t queue;
 };
 
-static TaskQueue* task_queues[USER_TASK_PRIO_MAX + 1];
+uint8_t TaskQueue::spinlock;
 
 const uint8_t SYSTEM_TASK_PRIO = USER_TASK_PRIO_MAX;
+const uint8_t SYSTEM_TASK_QUEUE_LENGTH = 8;
+
+TaskQueue* task_queues[SYSTEM_TASK_PRIO + 1];
+
+};
 
 bool system_os_task(os_task_t callback, os_task_priority_t prio, os_event_t* events, uint8_t qlen)
 {
@@ -63,8 +74,8 @@ bool system_os_task(os_task_t callback, os_task_priority_t prio, os_event_t* eve
 		return false;
 	}
 
-	queue = new TaskQueue(callback, events, qlen);
-	return queue != nullptr;
+	queue = new TaskQueue(callback, qlen);
+	return queue && *queue;
 }
 
 bool IRAM_ATTR system_os_post(os_task_priority_t prio, os_signal_t sig, os_param_t par)
@@ -82,7 +93,7 @@ bool IRAM_ATTR system_os_post(os_task_priority_t prio, os_signal_t sig, os_param
 
 void system_init_tasks()
 {
-	static os_event_t events[8];
+	TaskQueue::init();
 
 	auto systemTaskCallback = [](os_event_t* event) {
 		auto callback = system_task_callback_t(event->sig);
@@ -91,7 +102,7 @@ void system_init_tasks()
 		}
 	};
 
-	task_queues[SYSTEM_TASK_PRIO] = new TaskQueue(systemTaskCallback, events, ARRAY_SIZE(events));
+	task_queues[SYSTEM_TASK_PRIO] = new TaskQueue(systemTaskCallback, SYSTEM_TASK_QUEUE_LENGTH);
 }
 
 void system_service_tasks()

@@ -161,7 +161,7 @@ export PROJECT_SOC
 # $3 -> Build directory
 # $4 -> Output library directory
 define ParseComponent
-ifneq (,$$(findstring $(SMING_SOC),$$(PROJECT_SOC)))
+ifneq (,$$(filter $(SMING_SOC),$$(PROJECT_SOC)))
 $(if $V,$(info -- Parsing $1))
 $(if $2,,$(error Component '$1' not found))
 SUBMODULES				+= $(filter $2,$(ALL_SUBMODULES))
@@ -241,9 +241,6 @@ define ParseComponentList
 $(foreach c,$1,$(eval $(call ParseComponent,$c,$(call FindComponentDir,$c),$(SMING_HOME)/$(BUILD_BASE),$(USER_LIBDIR))))
 endef
 
-# Must parse the Application Component first to get project dependencies
-$(eval $(call ParseComponent,App,$(CURDIR),$(BUILD_BASE),$(abspath $(APP_LIBDIR))))
-
 # Load cached configuration variables. On first run this file won't exist, so all values
 # will be as specified by defaults or in project's component.mk file.
 # Values may be overridden via command line to update the cache.
@@ -252,6 +249,9 @@ CONFIG_CACHE_FILE	:= $(OUT_BASE)/config.mk
 ifeq (,$(filter config-clean dist-clean,$(MAKECMDGOALS)))
 -include $(CONFIG_CACHE_FILE)
 endif
+
+# Must parse the Application Component first to get project dependencies
+$(eval $(call ParseComponent,App,$(CURDIR),$(BUILD_BASE),$(abspath $(APP_LIBDIR))))
 
 # Also export debug variables here for access by external tools (e.g. python)
 CONFIG_DEBUG_FILE	:= $(OUT_BASE)/debug.mk
@@ -357,7 +357,7 @@ $(foreach v,$(EXPORT_VARS),$(eval export $v))
 ##@Building
 
 .PHONY: sample
-ifeq (,$(findstring $(SMING_SOC),$(PROJECT_SOC)))
+ifeq (,$(filter $(SMING_SOC),$(PROJECT_SOC)))
 sample:
 	$(info Not building: Sample doesn't support $(SMING_SOC))
 else
@@ -367,8 +367,8 @@ endif
 
 .PHONY: checksoc
 checksoc:
-ifeq (,$(findstring $(SMING_SOC),$(PROJECT_SOC)))
-	$(error Project only supports: $(PROJECT_SOC))
+ifeq (,$(filter $(SMING_SOC),$(PROJECT_SOC)))
+	$(error Project doesn't support $(SMING_SOC): run `make list-soc` to see supported devices)
 endif
 
 
@@ -451,13 +451,13 @@ endif
 define GenerateComponentTargetRule
 ifeq (App,$1)
 $2: $1-build
-	$(Q) touch $$@
+	$(Q) touch -c "$$@"
 else ifeq (,$(wildcard $2))
 $2: $1-build
-	$(Q) touch $$@
+	$(Q) touch -c "$$@"
 else ifneq (,$(filter $1,$(FULL_COMPONENT_BUILD)))
 $2: $1-build
-	$(Q) touch $$@
+	$(Q) touch -c "$$@"
 endif
 endef
 
@@ -535,7 +535,7 @@ fetch: ##Fetch Component or Library and display location
 CACHE_VARS += TRACE
 TRACE ?=
 .PHONY: decode-stacktrace
-decode-stacktrace: ##Open the stack trace decoder ready to paste dump text. Alteratively, use `make decode-stacktrace TRACE=/path/to/crash.stack`
+decode-stacktrace: ##Open the stack trace decoder ready to paste dump text. Alternatively, use `make decode-stacktrace TRACE=/path/to/crash.stack`
 	$(Q) if [ -z "$(TRACE)" ]; then \
 		echo "Decode stack trace: Paste stack trace here"; \
 	fi
@@ -741,7 +741,7 @@ list-soc: ##List supported and available SOCs
 
 .PHONY: list-soc-check
 checksoc-print:
-ifeq (,$(findstring $(SMING_SOC),$(PROJECT_SOC)))
+ifeq (,$(filter $(SMING_SOC),$(PROJECT_SOC)))
 	$(info - NO:  $(SMING_SOC))
 else
 	$(info - YES: $(SMING_SOC))
@@ -750,7 +750,7 @@ endif
 BOARDTOOL_CMDLINE = $(PYTHON) $(SMING_TOOLS)/boardtool.py $(if $V,-v)
 
 .PHONY: list-default-pins
-list-default-pins: ##List default periperal pins
+list-default-pins: ##List default peripheral pins
 	$(Q) $(BOARDTOOL_CMDLINE) list-default-pins
 
 PIN_MENU := $(abspath $(OUT_BASE)/../pin.menu)

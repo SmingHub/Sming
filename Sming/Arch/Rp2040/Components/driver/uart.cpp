@@ -138,8 +138,8 @@ void IRAM_ATTR handleInterrupt(smg_uart_t* uart, uart_dev_t* dev)
 			 */
 			if(rxfifo_ovf) {
 				hw_clear_bits(&dev->imsc, UART_UARTIMSC_OEIM_BITS);
-			} else if(read == 0) {
-				hw_set_bits(&dev->imsc, UART_UARTIMSC_RXIM_BITS | UART_UARTIMSC_RTIM_BITS);
+			} else if(!read) {
+				hw_clear_bits(&dev->imsc, UART_UARTIMSC_RXIM_BITS | UART_UARTIMSC_RTIM_BITS);
 			}
 		}
 
@@ -396,7 +396,7 @@ void smg_uart_wait_tx_empty(smg_uart_t* uart)
 	}
 
 	auto dev = getDevice(uart->uart_nr);
-	while((dev->fr & UART_UARTFR_TXFE_BITS) != 0) {
+	while((dev->fr & UART_UARTFR_BUSY_BITS) != 0) {
 	}
 }
 

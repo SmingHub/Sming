@@ -5,7 +5,6 @@ set(PICO_COMPILER "pico_arm_gcc")
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_BUILD_TYPE RelWithDebInfo)
 
 include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 # include(pico_extras_import.cmake)
@@ -30,6 +29,8 @@ target_compile_definitions(pico PUBLIC
 	PICO_PRINTF_ALWAYS_INCLUDED=1
 	PICO_FLASH_SIZE_BYTES=16777216
 	PICO_XOSC_STARTUP_DELAY_MULTIPLIER=64
+	PICO_DIVIDER_IN_RAM=1
+	PICO_MEM_IN_RAM=1
 )
 
 pico_set_program_name(pico "Sming")
@@ -69,8 +70,10 @@ target_link_libraries(pico
 	pico_float
 	pico_int64_ops
 	pico_mem_ops
+	pico_multicore
 	pico_runtime
 	pico_standard_link
 	pico_unique_id
 	pico_audio_i2s
+	pico_cyw43_arch_lwip_poll
 )

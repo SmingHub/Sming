@@ -6,16 +6,17 @@
  ****/
 #pragma once
 
-#include "WVector.h"
-#include "WString.h"
-#include "IpAddress.h"
+#include <WVector.h>
+#include <WString.h>
+#include <IpAddress.h>
+#include <memory>
+
 class TcpClient;
 
-enum YeelightBulbState
-{
+enum YeelightBulbState {
 	eYBS_Unknown = -1,
 	eYBS_Off = 0,
-	eYBS_On = 1
+	eYBS_On = 1,
 };
 
 /** @brief Yeelight wifi bulb controller class
@@ -46,7 +47,10 @@ public:
 	void updateState();
 	/** @brief Get current lamp state (should be called only after updateState)
 	 */
-	YeelightBulbState currentState() { return state; }
+	YeelightBulbState currentState()
+	{
+		return state;
+	}
 
 	void setBrightness(int percent);
 	void setRGB(byte r, byte g, byte b);
@@ -54,14 +58,14 @@ public:
 
 protected:
 	void ensureOn();
-	bool onResponse(TcpClient& client, char *data, int size);
+	bool onResponse(TcpClient& client, char* data, int size);
 	void parsePower(const String& resp);
 
 private:
 	IpAddress lamp;
 	uint16_t port = 55443;
 
-	TcpClient* connection = nullptr;
+	std::unique_ptr<TcpClient> connection;
 	long requestId = 0;
 	long propsId = 0;
 	YeelightBulbState state = eYBS_Unknown;

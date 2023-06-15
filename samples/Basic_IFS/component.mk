@@ -1,8 +1,6 @@
 COMPONENT_DEPENDS := \
 	Spiffs \
-	LittleFS \
-	FatIFS \
-	SdStorage
+	LittleFS
 
 # Empty SPIFFS partition please
 SPIFF_FILES :=
@@ -20,4 +18,17 @@ endif
 CONFIG_VARS += ENABLE_SDCARD
 ifeq ($(ENABLE_SDCARD),1)
 COMPONENT_CXXFLAGS += -DENABLE_SDCARD
+COMPONENT_DEPENDS += SdStorage FatIFS
+endif
+
+CONFIG_VARS += ENABLE_USB_STORAGE
+ifeq ($(ENABLE_USB_STORAGE),1)
+COMPONENT_CXXFLAGS += -DENABLE_USB_STORAGE
+COMPONENT_DEPENDS += USB
+USB_CONFIG := basic_ifs.usbcfg
+endif
+
+ifeq ($(SMING_ARCH),Rp2040)
+# For Rp2040, put firmware into partition
+LINK_CYW43_FIRMWARE := 0
 endif

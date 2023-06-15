@@ -18,7 +18,7 @@
 #include "WString.h"
 
 /**
- * @brief Class associated with an open websocket to handle communcations
+ * @brief Class associated with an open websocket to handle communications
  * @ingroup http
  */
 class WebsocketResource : public HttpResource

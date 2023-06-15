@@ -45,11 +45,13 @@ public:
 				//
 			}
 			auto endTicks = Clock::ticks();
+			// Handle both up and down counters
+			auto elapsedTicks = (endTicks >= startTicks) ? endTicks - startTicks : startTicks - endTicks;
 
 			debug_w("System time elapsed: %u", time - startTime);
-			debug_w("%s ticks: %u", Clock::typeName(), endTicks - startTicks);
-			debug_w("Ratio: x %f", float(endTicks - startTicks) / (time - startTime));
-			uint32_t us = Micros::ticksToTime(endTicks - startTicks);
+			debug_w("%s ticks: %u", Clock::typeName(), elapsedTicks);
+			debug_w("Ratio: x %f", float(elapsedTicks) / (time - startTime));
+			uint32_t us = Micros::ticksToTime(elapsedTicks);
 			debug_w("Apparent time: %u", us);
 			// Up-timers may report 0 if inactive
 			if(endTicks != 0 || startTicks != 0) {

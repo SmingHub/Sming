@@ -6,16 +6,28 @@ else
 export PICO_SDK_PATH := $(COMPONENT_PATH)/pico-sdk
 endif
 
-COMPONENT_RELINK_VARS += PICO_BOARD
-ifndef PICO_BOARD
-export PICO_BOARD=pico
+ifeq ($(DISABLE_WIFI),1)
+export PICO_BOARD ?= pico
+else
+export PICO_BOARD ?= pico_w
+COMPONENT_DEPENDS += uzlib
 endif
 
+COMPONENT_RELINK_VARS += PICO_DEBUG
+PICO_DEBUG ?= 0
+
+COMPONENT_VARS := PICO_BOARD DISABLE_WIFI DISABLE_NETWORK
+
+PICO_SDK_VARS := PICO_BOARD=$(PICO_BOARD)
+PICO_SDK_LIBHASH := $(call CalculateVariantHash,PICO_SDK_VARS)
+
 GLOBAL_CFLAGS += \
-	-DPICO_ON_DEVICE=1
+	-DPICO_ON_DEVICE=1 \
+	-DCYW43_LWIP=1 \
+	-DPICO_CYW43_ARCH_POLL=1
 
 # Press BOOTSEL to reboot into programming mode
-COMPONENT_RELINK_VARS := ENABLE_BOOTSEL
+COMPONENT_RELINK_VARS += ENABLE_BOOTSEL
 ifndef SMING_RELEASE
 ENABLE_BOOTSEL ?= 1
 endif
@@ -42,6 +54,7 @@ SDK_INTERFACES := \
 	common/pico_util \
 	rp2040/hardware_regs \
 	rp2040/hardware_structs \
+	rp2_common/hardware_adc \
 	rp2_common/hardware_gpio \
 	rp2_common/pico_platform \
 	rp2_common/hardware_base \
@@ -54,6 +67,7 @@ SDK_INTERFACES := \
 	rp2_common/hardware_flash \
 	rp2_common/hardware_irq \
 	rp2_common/hardware_pio \
+	rp2_common/hardware_pwm \
 	rp2_common/hardware_resets \
 	rp2_common/hardware_rosc \
 	rp2_common/hardware_rtc \
@@ -62,12 +76,17 @@ SDK_INTERFACES := \
 	rp2_common/hardware_vreg \
 	rp2_common/hardware_watchdog \
 	rp2_common/hardware_xosc \
+	rp2_common/pico_async_context \
 	rp2_common/pico_bootrom \
 	rp2_common/pico_double \
 	rp2_common/pico_int64_ops \
 	rp2_common/pico_float \
+	rp2_common/pico_multicore \
+	rp2_common/pico_rand \
 	rp2_common/pico_runtime \
-	rp2_common/pico_unique_id
+	rp2_common/pico_unique_id \
+	rp2_common/pico_cyw43_arch \
+	rp2_common/pico_cyw43_driver
 
 COMPONENT_INCDIRS := \
 	src/include \
@@ -77,7 +96,7 @@ COMPONENT_INCDIRS := \
 COMPONENT_SRCDIRS := src
 
 RP2040_COMPONENT_DIR := $(COMPONENT_PATH)
-PICO_BUILD_DIR	:= $(COMPONENT_BUILD_BASE)/sdk
+PICO_BUILD_DIR	:= $(COMPONENT_BUILD_BASE)/sdk-$(PICO_SDK_LIBHASH)
 PICO_BASE_DIR	:= $(PICO_BUILD_DIR)/generated/pico_base
 PICO_CONFIG		:= $(PICO_BASE_DIR)/pico/config_autogen.h
 PICO_LIB		:= $(PICO_BUILD_DIR)/libpico.a
@@ -96,20 +115,39 @@ EXTRA_LIBS += \
 
 RP2040_CMAKE_OPTIONS := \
 	-G Ninja \
-	-DCMAKE_MAKE_PROGRAM=$(NINJA)
+	-DCMAKE_MAKE_PROGRAM=$(NINJA) \
+	-DCMAKE_BUILD_TYPE=$(if $(subst 1,,$(PICO_DEBUG)),RelWithDebInfo,Debug)
 
 COMPONENT_PREREQUISITES := $(PICO_CONFIG)
 
 BOOTLOADER := $(PICO_BUILD_DIR)/pico-sdk/src/rp2_common/boot_stage2/bs2_default_padded_checksummed.S
 
-COMPONENT_TARGETS := \
-	$(PICO_LIB)
+DEBUG_VARS += CYW43_FIRMWARE
+CYW43_FIRMWARE := $(COMPONENT_BUILD_BASE)/cyw43-fw.gz
 
-$(PICO_CONFIG): $(PICO_BUILD_DIR)
+COMPONENT_RELINK_VARS += LINK_CYW43_FIRMWARE
+LINK_CYW43_FIRMWARE ?= 1
+ifeq ($(LINK_CYW43_FIRMWARE),1)
+COMPONENT_CPPFLAGS += -DCYW43_FIRMWARE=\"$(CYW43_FIRMWARE)\"
+endif
+
+COMPONENT_TARGETS := \
+	$(PICO_LIB) \
+	$(CYW43_FIRMWARE)
+
+$(PICO_CONFIG): $(PICO_BUILD_DIR) $(PICO_SDK_PATH)/lib/cyw43-driver.patch $(PICO_SDK_PATH)/lib/cyw43-driver/.submodule $(PICO_SDK_PATH)/lib/lwip/.submodule
 	$(Q) cd $(PICO_BUILD_DIR) && $(CMAKE) $(RP2040_CMAKE_OPTIONS) $(RP2040_COMPONENT_DIR)/sdk
 
 $(COMPONENT_RULE)$(PICO_LIB):
 	$(Q) cd $(@D) && $(NINJA)
+
+$(PICO_SDK_PATH)/lib/cyw43-driver.patch: $(RP2040_COMPONENT_DIR)/cyw43-driver.patch
+	cp $< $@
+
+$(COMPONENT_RULE)$(CYW43_FIRMWARE):
+	@echo ">>> Creating CYW43 Firmware BLOB ..."
+	$(Q) cd "$(RP2040_COMPONENT_DIR)/firmware" && ./build.sh $@
+	@echo "Created $@"
 
 ifdef COMPONENT_RULE
 $(PICO_BUILD_DIR):

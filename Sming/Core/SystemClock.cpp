@@ -46,7 +46,7 @@ String SystemClockClass::getSystemTimeString(TimeZone timeType) const
 
 bool SystemClockClass::setTimeZoneOffset(int seconds)
 {
-	if((unsigned)abs(seconds) < (12 * SECS_PER_HOUR)) {
+	if((unsigned)abs(seconds) <= (12 * SECS_PER_HOUR)) {
 		timeZoneOffsetSecs = seconds;
 		return true;
 	}

@@ -3,6 +3,7 @@
 #include <c_types.h>
 #include <hal/cpu_hal.h>
 #include <sming_attr.h>
+#include <esp_idf_version.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,7 +20,11 @@ uint32_t system_get_cpu_freq(void);
 
 __forceinline static uint32_t esp_get_ccount()
 {
+#if ESP_IDF_VERSION_MAJOR < 5
 	return cpu_hal_get_cycle_count();
+#else
+	return esp_cpu_get_cycle_count();
+#endif
 }
 
 #ifdef __cplusplus

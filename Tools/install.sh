@@ -110,8 +110,16 @@ if [ -n "$APPVEYOR" ] || [ -n "$GITHUB_ACTION" ]; then
 
 else
 
+    MACHINE_PACKAGES=""
     case $DIST in
         debian)
+            case $(uname -m) in
+                arm | aarch64)
+                    ;;
+                *)
+                    MACHINE_PACKAGES="g++-multilib"
+                    ;;
+            esac
             sudo apt-get -y update || echo "Update failed... Try to install anyway..."
             $PKG_INSTALL \
                 cmake \
@@ -121,17 +129,22 @@ else
                 ninja-build \
                 unzip \
                 g++ \
-            	g++-multilib \
             	python3 \
             	python3-pip \
             	python3-setuptools \
                 wget \
+                $MACHINE_PACKAGES \
                 $EXTRA_PACKAGES
 
             $PKG_INSTALL clang-format-8 || printf "\nWARNING: Failed to install optional clang-format-8.\n\n"
             ;;
 
         fedora)
+            case $(uname -m) in
+                x86_64)
+                    MACHINE_PACKAGES="glibc-devel.i686 libstdc++.i686"
+                    ;;
+            esac
             $PKG_INSTALL \
                 cmake \
                 gawk \
@@ -139,15 +152,14 @@ else
                 gcc-c++ \
                 gettext \
                 git \
-                glibc-devel.i686 \
-                libstdc++.i686 \
                 make \
                 ninja-build \
                 python3 \
                 python3-pip \
                 sed \
                 unzip \
-                wget
+                wget \
+                $MACHINE_PACKAGES
             ;;
 
     esac

@@ -410,7 +410,7 @@ protected:
 	bool started = false;	 ///< Timer is active, or has fired
 };
 
-template <typename TimerApi> IRAM_ATTR bool CallbackTimer<TimerApi>::start(bool repeating)
+template <typename TimerApi> bool CallbackTimer<TimerApi>::start(bool repeating)
 {
 	stop();
 	if(!callbackSet || !intervalSet) {

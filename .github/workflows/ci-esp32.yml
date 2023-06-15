@@ -1,0 +1,71 @@
+name: Continuous Integration (CI) for Esp32
+
+on:
+  push:
+  
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04, windows-latest]
+        variant: [esp32, esp32s2, esp32c3, esp32s3, esp32c2]
+        idf_version: ["4.3", "4.4", "5.0"]
+        exclude:
+          - variant: esp32s3
+            idf_version: "4.3"
+          - variant: esp32c2
+            idf_version: "4.3"
+          - variant: esp32c2
+            idf_version: "4.4"
+
+    concurrency: 
+      group: ${{ github.workflow }}-${{ github.ref }}-${{ toJson(matrix) }}
+      cancel-in-progress: true
+
+    runs-on: ${{ matrix.os }}
+
+    env:
+      SMING_ARCH: Esp32
+      SMING_SOC: ${{ matrix.variant }}
+      INSTALL_IDF_VER: ${{ matrix.idf_version }}
+
+    steps:
+    - name: Fix autocrlf setting
+      run: |
+        git config --global --add core.autocrlf input
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Configure environment
+      shell: pwsh
+      run: |
+        "CI_BUILD_DIR=" + (Resolve-Path ".").path >> $env:GITHUB_ENV
+        "SMING_HOME=" + (Resolve-Path "Sming").path >> $env:GITHUB_ENV
+
+    - name: Install build tools for Ubuntu
+      if: ${{ matrix.os ==  'ubuntu-20.04' }}
+      run: |
+        Tools/ci/install.sh
+
+    - name: Install build tools for Windows   
+      if: ${{ matrix.os == 'windows-latest' }}
+      run: |
+         . Tools/ci/setenv.ps1
+         Tools/ci/install.cmd
+
+    - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Ubuntu
+      if: ${{ matrix.os == 'ubuntu-20.04' }}
+      run: |
+        source $SMING_HOME/../Tools/export.sh
+        Tools/ci/build.sh
+
+    - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Windows
+      if: ${{ matrix.os == 'windows-latest' }}
+      run: |
+        . Tools/ci/setenv.ps1
+        Tools/ci/build.cmd

@@ -22,7 +22,7 @@ Tested and working:
 - CPU frequency adjustment :cpp:func:`system_get_cpu_freq`, :cpp:func:`system_update_cpu_freq`
 - Timers working: hardware, software and CPU cycle counter
 - Hardware serial ports (UART driver)
-- Task queue
+- Task queue (also supports queuing tasks from code running on core #1)
 - Flash memory routines
 - :cpp:func:`os_random` and :cpp:func:`os_get_random` implemented using ring oscillator.
   This is the best the hardware is capable of, but not crypto grade.
@@ -36,14 +36,10 @@ Tested and working:
 - System functions :cpp:func:`system_get_chip_id`, :cpp:func:`system_get_sdk_version`.
 - Partitions and file systems (except SD cards and FAT)
 - SPIClass tested with Radio_nRF24L01 sample only
+- WiFi networking support for the Pico-W
+- Standard analogue I/O via analogRead. More advanced hardware capabilities require use of the SDK directly.
+- Dual-core support. See below for details.
 
-In progress:
-
-Networking
-   A skeleton WiFi/lwip2 support framework is provided sufficient to build samples with Networking enabled,
-   but it is currently non-functional.
-   The goal is to allow use of networking adapters such as Ethernet over SPI, similar to how ESP32.
-   USB offers the possibility of CDMA networking for mobile applications.
 
 Yet to be implemented:
 
@@ -53,8 +49,6 @@ USB
    Arduino-Pico overrides ``HardwareSerial`` to support serial devices, we can do something similar.
 HardwareSPI
    To support DMA, etc.
-Analogue I/O
-   Has 4 channels + temperature.
 PWM
    Hardware can drive up to 16 outputs and measure input frequency/duty cycle.
 I2C
@@ -64,8 +58,6 @@ RTC
    (Setting and reading the time is implemented.)
 Low-power modes
    Deep sleep / suspend / power-saving
-Dual-core support
-   RP2040 is a dual-core processor!
 PIO (Programmable I/O)
    A killer feature for the RP2040.
    Uses range from simple glue logic to I2S, etc.
@@ -76,7 +68,9 @@ Crash/exception handling & serial debugging
 Multi-boot / OTA updates.
    If you run ``make map`` you'll see there is no bootloader!
    It's part of the firmware image at present.
-   Adding RP2040 support to rBoot would probably be simplest.
+   Adding RP2040 support to rBoot may work, however the Pico typically has only 2MByte flash which is quite restrictive.
+   It is also necessary to compile images at different addresses as there is no windowed XIP (eXecute In Place) capability.
+   See :library:`FlashIP` library for a basic method of OTA.
 
 
 Requirements
@@ -165,6 +159,68 @@ The RP2040 can also be programmed via JTAG debugging but this requires additiona
 
    The RP2040 bootloader does not include support for reading flash memory via mass storage,
    so commands such as ``make verifyflash`` won't work at present.
+
+
+Dual-core support
+-----------------
+
+Sming is a strictly non-threaded framework, and all code runs on core #0.
+The SDK *multicore* API may still be used to run code on core #1, but this requires some care to ensure smooth operation.
+
+The task queue (:cpp:func:`System::queueTask`, etc.) may be used to send messages to Sming from Core #1 code.
+
+Passing messages the other way, from Sming code to core #1, could be done using a separate SDK task queue.
+
+
+Flash access
+~~~~~~~~~~~~
+
+Core 1 code may run directly from flash memory (via XIP) without any special considerations.
+However, during flash erase/write operations (e.g. file writes) XIP is disabled.
+If core 1 code attempts to access flash during these periods the system will hard fault.
+
+.. note::
+
+   Floating-point support requires use of routines in flash memory.
+   Integer operations should all be safe to use.
+
+   If unexplained crashes are occuring then check the build output files (in out/Rp2040/debug/build)
+   or use a debugger to identify any errant code running from flash.
+
+A typical use for core #1 might be to perform processing of some kind, such as processing data sampled
+via analogue inputs. If all code is run from RAM then it can continue uninterrupted even during filing system
+operations.
+
+Alternatively some kind of synchronisation mechanism may be used to ensure that core 1 is suspended or running from RAM
+during any flash erase/write operations.
+
+
+
+Networking
+----------
+
+The Pico-W variant includes an Infineon CYW43439 bluetooth/WiFi SoC.
+
+Raspberry Pi use the ... driver. The SDK also includes an LWIP implementation.
+
+The physical interface is SPI using a custom (PIO) implementation.
+This requires the use of GPIOxx which can no longer be accessed directly,
+but instead via xxxxx.
+
+The CYW43 chip is initialised (via `cyw43_ensure_up`) when application code
+makes the first call into the networking API, for example by enabling station
+or AP access. Part of the hardware configuration here is to download firmware
+to the CYW43 chip (about 240KB) plus the CLM BLOB (< 1KB).
+
+.. note:
+
+   CLM stands for ``Country Locale Matrix``. The data defines regulatory configuration (target power outputs).
+   Currently a 'global' setting is used to initialise WiFi, but there may be advantages in changing this to the
+   specific country where the device is being deployed.
+
+Sming contains patches which compresses this data (based on https://github.com/raspberrypi/pico-sdk/issues/909)
+to about 145KB.
+By default, it is linked into the application image, but can also be read from a separate partition.
 
 
 Source code

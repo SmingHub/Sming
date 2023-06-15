@@ -17,20 +17,25 @@ class StationListImpl : public StationList
 public:
 	StationListImpl()
 	{
-		add(new Info{});
+		int num_sta{0};
+		MacAddress maclist[16];
+		cyw43_wifi_ap_get_stas(&cyw43_state, &num_sta, &maclist[0][0]);
+		for(int i = 0; i < num_sta; ++i) {
+			add(new Info{maclist[i]});
+		}
 	}
 
 private:
 	class Info : public StationInfo
 	{
 	public:
-		Info()
+		Info(MacAddress mac) : macaddr(mac)
 		{
 		}
 
 		MacAddress mac() const override
 		{
-			return MacAddress{};
+			return this->macaddr;
 		}
 
 		int8_t rssi() const override
@@ -42,5 +47,8 @@ private:
 		{
 			return IpAddress{};
 		}
+
+	private:
+		MacAddress macaddr;
 	};
 };

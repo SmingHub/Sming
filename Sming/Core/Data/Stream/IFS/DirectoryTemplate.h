@@ -49,13 +49,9 @@ public:
 #undef XX
 	};
 
-	DirectoryTemplate(IDataSourceStream* source, Directory* dir) : SectionTemplate(source), directory(dir)
+	DirectoryTemplate(IDataSourceStream* source, Directory* dir) : SectionTemplate(source)
 	{
-	}
-
-	~DirectoryTemplate()
-	{
-		delete directory;
+		directory.reset(dir);
 	}
 
 	Directory& dir()
@@ -76,7 +72,7 @@ protected:
 	String getValue(const char* name) override;
 
 private:
-	Directory* directory;
+	std::unique_ptr<Directory> directory;
 };
 
 } // namespace IFS

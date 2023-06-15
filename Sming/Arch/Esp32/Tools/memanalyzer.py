@@ -17,7 +17,7 @@ sys.path.insert(1, os.path.expandvars('${SMING_HOME}/Components/esptool/esptool'
 import esptool
 
 # Get expected memory sizes from loader tables
-loader = esptool._chip_to_rom_loader(os.environ['ESP_VARIANT'])
+loader = esptool.CHIP_DEFS[os.environ['ESP_VARIANT']]
 TOTAL_DRAM = sum(end - start for (start, end, n) in loader.MEMORY_MAP if n in ['DRAM'])
 TOTAL_IRAM = sum(end - start for (start, end, n) in loader.MEMORY_MAP if n in ['IRAM'])
 
