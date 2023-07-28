@@ -3221,7 +3221,6 @@ void MPU6050::setIntDMPEnabled(bool enabled)
 }
 
 // DMP_INT_STATUS
-
 bool MPU6050::getDMPInt5Status()
 {
 	I2Cdev::readBit(devAddr, MPU6050_RA_DMP_INT_STATUS, MPU6050_DMPINT_5_BIT, buffer);
