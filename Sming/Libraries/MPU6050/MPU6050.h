@@ -45,7 +45,7 @@ THE SOFTWARE.
 // http://forum.arduino.cc/index.php?&topic=141571.msg1062899#msg1062899s
 
 #undef pgm_read_byte
-#define pgm_read_byte(addr) (*(const unsigned char*)(addr))
+#define pgm_read_byte(addr) (*static_cast<const unsigned char*>(addr))
 
 //#define PROGMEM /* empty */
 //#define pgm_read_byte(x) (*(x))
@@ -831,7 +831,7 @@ public:
 
 private:
 	uint8_t devAddr;
-	uint8_t buffer[14];
+	uint8_t buffer[14] = {0};
 };
 
 #endif /* _MPU6050_H_ */

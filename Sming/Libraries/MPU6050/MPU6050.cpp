@@ -43,9 +43,8 @@ THE SOFTWARE.
 /** Default constructor, uses default I2C address.
  * @see MPU6050_DEFAULT_ADDRESS
  */
-MPU6050::MPU6050()
+MPU6050::MPU6050() : devAddr{MPU6050_DEFAULT_ADDRESS}
 {
-	devAddr = MPU6050_DEFAULT_ADDRESS;
 }
 
 /** Specific address constructor.
@@ -54,9 +53,8 @@ MPU6050::MPU6050()
  * @see MPU6050_ADDRESS_AD0_LOW
  * @see MPU6050_ADDRESS_AD0_HIGH
  */
-MPU6050::MPU6050(uint8_t address)
+MPU6050::MPU6050(uint8_t address) : devAddr{address}
 {
-	devAddr = address;
 }
 
 /** Power on and prepare for general usage.
@@ -3315,10 +3313,9 @@ void MPU6050::readMemoryBlock(uint8_t* data, uint16_t dataSize, uint8_t bank, ui
 {
 	setMemoryBank(bank);
 	setMemoryStartAddress(address);
-	uint8_t chunkSize;
 	for(uint16_t i = 0; i < dataSize;) {
 		// determine correct chunk size according to bank position and data size
-		chunkSize = MPU6050_DMP_MEMORY_CHUNK_SIZE;
+		uint8_t chunkSize = MPU6050_DMP_MEMORY_CHUNK_SIZE;
 
 		// make sure we don't go past the data size
 		if(i + chunkSize > dataSize)
@@ -3351,18 +3348,17 @@ bool MPU6050::writeMemoryBlock(const uint8_t* data, uint16_t dataSize, uint8_t b
 {
 	setMemoryBank(bank);
 	setMemoryStartAddress(address);
-	uint8_t chunkSize;
 	uint8_t* verifyBuffer = 0;
 	uint8_t* progBuffer = 0;
 	uint16_t i;
 	uint8_t j;
 	if(verify)
-		verifyBuffer = (uint8_t*)malloc(MPU6050_DMP_MEMORY_CHUNK_SIZE);
+		verifyBuffer = static_cast<uint8_t*>(malloc(MPU6050_DMP_MEMORY_CHUNK_SIZE));
 	if(useProgMem)
-		progBuffer = (uint8_t*)malloc(MPU6050_DMP_MEMORY_CHUNK_SIZE);
+		progBuffer = static_cast<uint8_t*>(malloc(MPU6050_DMP_MEMORY_CHUNK_SIZE));
 	for(i = 0; i < dataSize;) {
 		// determine correct chunk size according to bank position and data size
-		chunkSize = MPU6050_DMP_MEMORY_CHUNK_SIZE;
+		uint8_t chunkSize = MPU6050_DMP_MEMORY_CHUNK_SIZE;
 
 		// make sure we don't go past the data size
 		if(i + chunkSize > dataSize)
@@ -3378,7 +3374,7 @@ bool MPU6050::writeMemoryBlock(const uint8_t* data, uint16_t dataSize, uint8_t b
 				progBuffer[j] = pgm_read_byte(data + i + j);
 		} else {
 			// write the chunk of data as specified
-			progBuffer = (uint8_t*)data + i;
+			progBuffer = const_cast<uint8_t*>(data) + i;
 		}
 
 		I2Cdev::writeBytes(devAddr, MPU6050_RA_MEM_R_W, chunkSize, progBuffer);
@@ -3440,7 +3436,7 @@ bool MPU6050::writeDMPConfigurationSet(const uint8_t* data, uint16_t dataSize, b
 	uint8_t success, special;
 	uint16_t i, j;
 	if(useProgMem) {
-		progBuffer = (uint8_t*)malloc(8); // assume 8-byte blocks, realloc later if necessary
+		progBuffer = static_cast<uint8_t*>(malloc(8)); // assume 8-byte blocks, realloc later if necessary
 	}
 
 	// config set data is a long string of blocks with the following structure:
@@ -3468,11 +3464,11 @@ bool MPU6050::writeDMPConfigurationSet(const uint8_t* data, uint16_t dataSize, b
       Serial.println(length);*/
 			if(useProgMem) {
 				if(sizeof(progBuffer) < length)
-					progBuffer = (uint8_t*)realloc(progBuffer, length);
+					progBuffer = static_cast<uint8_t*>(realloc(progBuffer, length));
 				for(j = 0; j < length; j++)
 					progBuffer[j] = pgm_read_byte(data + i + j);
 			} else {
-				progBuffer = (uint8_t*)data + i;
+				progBuffer = const_cast<uint8_t*>(data) + i;
 			}
 			success = writeMemoryBlock(progBuffer, length, bank, offset, true);
 			i += length;
@@ -3596,7 +3592,6 @@ void MPU6050::PID(uint8_t ReadAddress, float kP, float kI, uint8_t Loops)
 	int16_t BitZero[3];
 	uint8_t shift = (SaveAddress == 0x77) ? 3 : 2;
 	float Error, PTerm, ITerm[3];
-	int16_t eSample;
 	uint32_t eSum;
 	for(int i = 0; i < 3; i++) {
 		I2Cdev::readWord(devAddr, SaveAddress + (i * shift),
@@ -3610,7 +3605,7 @@ void MPU6050::PID(uint8_t ReadAddress, float kP, float kI, uint8_t Loops)
 		}
 	}
 	for(int L = 0; L < Loops; L++) {
-		eSample = 0;
+		int16_t eSample{0};
 		for(int c = 0; c < 100; c++) { // 100 PI Calculations
 			eSum = 0;
 			for(int i = 0; i < 3; i++) {
