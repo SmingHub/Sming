@@ -1,11 +1,11 @@
 #include <Libraries/MPU6050/MPU6050.h>
 #include <SmingCore.h>
 
-constexpr float main_loop_interval = 0.02; // sec
-SimpleTimer main_loop_timer;
+constexpr float mainLoopInterval = 0.02; // sec
+SimpleTimer mainLoopTimer;
 MPU6050 mpu;
 
-void print_accel_gyro(int16_t ax, int16_t ay, int16_t az, int16_t gx, int16_t gy, int16_t gz)
+void printAccelGyro(int16_t ax, int16_t ay, int16_t az, int16_t gx, int16_t gy, int16_t gz)
 {
 	Serial.print("a/g:\t");
 	Serial.print(ax);
@@ -21,12 +21,12 @@ void print_accel_gyro(int16_t ax, int16_t ay, int16_t az, int16_t gx, int16_t gy
 	Serial.println(gz);
 }
 
-void main_loop()
+void mainLoop()
 {
 	int16_t ax, ay, az;
 	int16_t gx, gy, gz;
 	mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
-	print_accel_gyro(ax, ay, az, gx, gy, gz);
+	printAccelGyro(ax, ay, az, gx, gy, gz);
 }
 
 void init()
@@ -38,5 +38,5 @@ void init()
 	mpu.initialize();
 	Serial.println(mpu.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
 
-	main_loop_timer.initializeMs(static_cast<int>(main_loop_interval * 1000), main_loop).start();
+	mainLoopTimer.initializeMs(static_cast<int>(mainLoopInterval * 1000), mainLoop).start();
 }
