@@ -102,7 +102,7 @@ See :component-esp32:`esp32` for further details.
 
 
 IDF versions
-============
+------------
 
 Sming currently supports IDF versions 4.3, 4.4 and 5.0.
 
