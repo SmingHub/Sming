@@ -20,7 +20,6 @@ Summary
 -  Fast and user friendly development
 -  Integrated :doc:`host emulator <arch/host/index>` to assist with developing, testing and debugging
    libraries and applications on a PC before uploading them to an actual microcontroller.
-   Try it out online `here <https://www.katacoda.com/slaff/scenarios/sming-host-emulator>`__.
 -  Built-in powerful wireless modules
 -  Compatible with standard :doc:`libraries` - use popular hardware in few lines of code
 -  Simple yet powerful hardware API wrappers

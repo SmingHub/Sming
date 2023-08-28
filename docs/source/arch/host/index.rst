@@ -7,10 +7,6 @@ The latest versions of Sming allow most of components of the library and
 the sample applications to be compiled on a Linux/Windows host system
 and be tested before uploading them to the microcontroller.
 
-If you want to try it we have an
-`interactive tutorial <https://www.katacoda.com/slaff/scenarios/sming-host-emulator>`__
-that can be run directly from your browser.
-
 See :doc:`/getting-started/index` for installation details.
 
 The following sections provide more background detail.
