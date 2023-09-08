@@ -850,6 +850,7 @@ public:
 
 private:
 	// I2C helpers
+	uint8_t readBit(uint8_t regAddr, uint8_t bitNum);
 	uint8_t readBits(uint8_t regAddr, uint8_t bitStart, uint8_t length);
 	uint8_t readByte(uint8_t regAddr);
 
