@@ -35,8 +35,7 @@ THE SOFTWARE.
 ===============================================
 */
 
-#ifndef _MPU6050_H_
-#define _MPU6050_H_
+#pragma once
 
 #include <Libraries/I2Cdev/I2Cdev.h>
 
@@ -431,16 +430,36 @@ THE SOFTWARE.
 #define MPU6050_DMP_MEMORY_BANK_SIZE 256
 #define MPU6050_DMP_MEMORY_CHUNK_SIZE 16
 
-// note: DMP code memory blocks defined at end of header file
-
 class MPU6050
 {
 public:
-	MPU6050();
-	MPU6050(uint8_t address);
+	/** Default constructor, uses default I2C address.
+     * @see MPU6050_DEFAULT_ADDRESS
+     */
+	MPU6050() : devAddr{MPU6050_DEFAULT_ADDRESS}
+	{
+	}
+
+	/** Specific address constructor.
+     * @param address I2C address
+     * @see MPU6050_DEFAULT_ADDRESS
+     * @see MPU6050_ADDRESS_AD0_LOW
+     * @see MPU6050_ADDRESS_AD0_HIGH
+     */
+	MPU6050(uint8_t address) : devAddr{address}
+	{
+	}
 
 	void initialize();
-	bool testConnection();
+
+	/** Verify the I2C connection.
+     * Make sure the device is connected and responds as expected.
+     * @return True if connection is valid, false otherwise
+     */
+	bool testConnection()
+	{
+		return getDeviceID() == 0x34;
+	}
 
 	// AUX_VDDIO register
 	uint8_t getAuxVDDIOLevel();
@@ -829,9 +848,11 @@ public:
 	void CalibrateAccel(uint8_t Loops = 15); // Fine tune after setting offsets with less Loops.
 	void PID(uint8_t ReadAddress, float kP, float kI, uint8_t Loops); // Does the
 
+	// I2C helpers
+	uint8_t readBits(uint8_t regAddr, uint8_t bitStart, uint8_t length);
+	uint8_t readByte(uint8_t regAddr);
+
 private:
 	uint8_t devAddr;
 	uint8_t buffer[14] = {0};
 };
-
-#endif /* _MPU6050_H_ */
