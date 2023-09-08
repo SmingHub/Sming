@@ -23,7 +23,7 @@ If you like **Sming**, give it a star, or fork it and [contribute](#contribute)!
 Sming supports multiple architectures and has a [plethora of features](https://sming.readthedocs.io/en/latest/index.html#summary).
 Choose the architecture of your choice to [install the needed development software](https://sming.readthedocs.io/en/latest/getting-started).
 
-You can also try Sming without installing anything locally. We have an [interactive tutorial](https://www.katacoda.com/slaff/scenarios/sming-host-emulator) that can be run directly from your browser.
+You can also try Sming without installing anything locally. We have an [interactive tutorial](https://killercoda.com/slaff/scenario/sming-host-emulator) that can be run directly from your browser.
 
 ## Documentation
 
