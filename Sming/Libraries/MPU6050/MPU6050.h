@@ -848,11 +848,11 @@ public:
 	void CalibrateAccel(uint8_t Loops = 15); // Fine tune after setting offsets with less Loops.
 	void PID(uint8_t ReadAddress, float kP, float kI, uint8_t Loops); // Does the
 
+private:
 	// I2C helpers
 	uint8_t readBits(uint8_t regAddr, uint8_t bitStart, uint8_t length);
 	uint8_t readByte(uint8_t regAddr);
 
-private:
 	uint8_t devAddr;
 	uint8_t buffer[14] = {0};
 };

@@ -1055,8 +1055,9 @@ void MPU6050::setSlaveRegister(uint8_t num, uint8_t reg)
  */
 bool MPU6050::getSlaveEnabled(uint8_t num)
 {
-	if(num > 3)
-		return 0;
+	if(num > 3) {
+		return false;
+	}
 	I2Cdev::readBit(devAddr, MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_EN_BIT, buffer);
 	return buffer[0];
 }
@@ -1068,8 +1069,9 @@ bool MPU6050::getSlaveEnabled(uint8_t num)
  */
 void MPU6050::setSlaveEnabled(uint8_t num, bool enabled)
 {
-	if(num > 3)
+	if(num > 3) {
 		return;
+	}
 	I2Cdev::writeBit(devAddr, MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_EN_BIT, enabled);
 }
 /** Get word pair byte-swapping enabled for the specified slave (0-3).
@@ -1085,8 +1087,9 @@ void MPU6050::setSlaveEnabled(uint8_t num, bool enabled)
  */
 bool MPU6050::getSlaveWordByteSwap(uint8_t num)
 {
-	if(num > 3)
-		return 0;
+	if(num > 3) {
+		return false;
+	}
 	I2Cdev::readBit(devAddr, MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_BYTE_SW_BIT, buffer);
 	return buffer[0];
 }
@@ -1098,8 +1101,9 @@ bool MPU6050::getSlaveWordByteSwap(uint8_t num)
  */
 void MPU6050::setSlaveWordByteSwap(uint8_t num, bool enabled)
 {
-	if(num > 3)
+	if(num > 3) {
 		return;
+	}
 	I2Cdev::writeBit(devAddr, MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_BYTE_SW_BIT, enabled);
 }
 /** Get write mode for the specified slave (0-3).
@@ -1115,8 +1119,9 @@ void MPU6050::setSlaveWordByteSwap(uint8_t num, bool enabled)
  */
 bool MPU6050::getSlaveWriteMode(uint8_t num)
 {
-	if(num > 3)
-		return 0;
+	if(num > 3) {
+		return false;
+	}
 	I2Cdev::readBit(devAddr, MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_REG_DIS_BIT, buffer);
 	return buffer[0];
 }
@@ -1129,8 +1134,9 @@ bool MPU6050::getSlaveWriteMode(uint8_t num)
  */
 void MPU6050::setSlaveWriteMode(uint8_t num, bool mode)
 {
-	if(num > 3)
+	if(num > 3) {
 		return;
+	}
 	I2Cdev::writeBit(devAddr, MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_REG_DIS_BIT, mode);
 }
 /** Get word pair grouping order offset for the specified slave (0-3).
@@ -1146,8 +1152,9 @@ void MPU6050::setSlaveWriteMode(uint8_t num, bool mode)
  */
 bool MPU6050::getSlaveWordGroupOffset(uint8_t num)
 {
-	if(num > 3)
-		return 0;
+	if(num > 3) {
+		return false;
+	}
 	I2Cdev::readBit(devAddr, MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_GRP_BIT, buffer);
 	return buffer[0];
 }
@@ -1159,8 +1166,9 @@ bool MPU6050::getSlaveWordGroupOffset(uint8_t num)
  */
 void MPU6050::setSlaveWordGroupOffset(uint8_t num, bool enabled)
 {
-	if(num > 3)
+	if(num > 3) {
 		return;
+	}
 	I2Cdev::writeBit(devAddr, MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_GRP_BIT, enabled);
 }
 /** Get number of bytes to read for the specified slave (0-3).
@@ -1172,8 +1180,9 @@ void MPU6050::setSlaveWordGroupOffset(uint8_t num, bool enabled)
  */
 uint8_t MPU6050::getSlaveDataLength(uint8_t num)
 {
-	if(num > 3)
-		return 0;
+	if(num > 3) {
+		return false;
+	}
 	return readBits(MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_LEN_BIT, MPU6050_I2C_SLV_LEN_LENGTH);
 }
 /** Set number of bytes to read for the specified slave (0-3).
@@ -1184,8 +1193,9 @@ uint8_t MPU6050::getSlaveDataLength(uint8_t num)
  */
 void MPU6050::setSlaveDataLength(uint8_t num, uint8_t length)
 {
-	if(num > 3)
+	if(num > 3) {
 		return;
+	}
 	I2Cdev::writeBits(devAddr, MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_LEN_BIT, MPU6050_I2C_SLV_LEN_LENGTH,
 					  length);
 }
@@ -2280,8 +2290,9 @@ bool MPU6050::getZeroMotionDetected()
  */
 void MPU6050::setSlaveOutputByte(uint8_t num, uint8_t data)
 {
-	if(num > 3)
+	if(num > 3) {
 		return;
+	}
 	I2Cdev::writeByte(devAddr, MPU6050_RA_I2C_SLV0_DO + num, data);
 }
 
@@ -2332,8 +2343,9 @@ void MPU6050::setExternalShadowDelayEnabled(bool enabled)
 bool MPU6050::getSlaveDelayEnabled(uint8_t num)
 {
 	// MPU6050_DELAYCTRL_I2C_SLV4_DLY_EN_BIT is 4, SLV3 is 3, etc.
-	if(num > 4)
-		return 0;
+	if(num > 4) {
+		return false;
+	}
 	I2Cdev::readBit(devAddr, MPU6050_RA_I2C_MST_DELAY_CTRL, num, buffer);
 	return buffer[0];
 }
@@ -3586,13 +3598,15 @@ void MPU6050::PID(uint8_t ReadAddress, float kP, float kI, uint8_t Loops)
 uint8_t MPU6050::readBits(uint8_t regAddr, uint8_t bitStart, uint8_t length)
 {
 	uint8_t bits;
-	I2Cdev::readBits(devAddr, regAddr, bitStart, length, &bits);
+	const auto count = I2Cdev::readBits(devAddr, regAddr, bitStart, length, &bits);
+	(void)count;
 	return bits;
 }
 
 uint8_t MPU6050::readByte(uint8_t regAddr)
 {
 	uint8_t byte;
-	I2Cdev::readByte(devAddr, regAddr, &byte);
+	const auto count = I2Cdev::readByte(devAddr, regAddr, &byte);
+	(void)count;
 	return byte;
 }
