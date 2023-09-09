@@ -39,19 +39,6 @@ THE SOFTWARE.
 
 #include <Libraries/I2Cdev/I2Cdev.h>
 
-// supporting link:
-// http://forum.arduino.cc/index.php?&topic=143444.msg1079517#msg1079517 also:
-// http://forum.arduino.cc/index.php?&topic=141571.msg1062899#msg1062899s
-
-#undef pgm_read_byte
-#define pgm_read_byte(addr) (*static_cast<const unsigned char*>(addr))
-
-//#define PROGMEM /* empty */
-//#define pgm_read_byte(x) (*(x))
-//#define pgm_read_word(x) (*(x))
-//#define pgm_read_float(x) (*(x))
-//#define PSTR(STR) STR
-
 #define MPU6050_ADDRESS_AD0_LOW 0x68  // address pin low (GND), default for InvenSense evaluation board
 #define MPU6050_ADDRESS_AD0_HIGH 0x69 // address pin high (VCC)
 #define MPU6050_DEFAULT_ADDRESS MPU6050_ADDRESS_AD0_LOW

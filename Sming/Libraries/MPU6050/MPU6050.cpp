@@ -3275,9 +3275,6 @@ bool MPU6050::writeMemoryBlock(const uint8_t* data, uint16_t dataSize, uint8_t b
 					printf("%#04x", verifyBuffer[i + j]);
 				}
 				printf("\n");
-				// free(verifyBuffer);
-				// if (useProgMem) free(progBuffer);
-				// return false; // uh oh.
 			}
 		}
 
@@ -3331,12 +3328,6 @@ bool MPU6050::writeDMPConfigurationSet(const uint8_t* data, uint16_t dataSize, b
 		// write data or perform special action
 		if(length > 0) {
 			// regular block of data to write
-			/*Serial.print("Writing config block to bank ");
-      Serial.print(bank);
-      Serial.print(", offset ");
-      Serial.print(offset);
-      Serial.print(", length=");
-      Serial.println(length);*/
 			if(useProgMem) {
 				if(sizeof(progBuffer) < length)
 					progBuffer = static_cast<uint8_t*>(realloc(progBuffer, length));
@@ -3358,9 +3349,6 @@ bool MPU6050::writeDMPConfigurationSet(const uint8_t* data, uint16_t dataSize, b
 			} else {
 				special = data[i++];
 			}
-			/*Serial.print("Special command code ");
-      Serial.print(special, HEX);
-      Serial.println(" found...");*/
 			if(special == 0x01) {
 				// enable DMP-related interrupts
 
@@ -3506,7 +3494,6 @@ void MPU6050::PID(uint8_t ReadAddress, float kP, float kI, uint8_t Loops)
 				eSample++; // Successfully found offsets prepare to  advance
 			if((eSum < 100) && (c > 10) && (eSample >= 10))
 				break; // Advance to next Loop
-					   //            delay(1);
 		}
 		kP *= .75;
 		kI *= .75;
@@ -3522,6 +3509,7 @@ void MPU6050::PID(uint8_t ReadAddress, float kP, float kI, uint8_t Loops)
 	resetFIFO();
 	resetDMP();
 }
+
 uint8_t MPU6050::readBit(uint8_t regAddr, uint8_t bitNum)
 {
 	uint8_t bit;
