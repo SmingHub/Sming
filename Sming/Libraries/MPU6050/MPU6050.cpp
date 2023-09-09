@@ -40,6 +40,32 @@ THE SOFTWARE.
 
 #define I2C_NUM I2C_NUM_0
 
+inline int16_t concat(uint8_t bits_15_8, uint8_t bits_7_0)
+{
+	return (((int16_t)bits_15_8) << 8) | bits_7_0;
+}
+
+size_t MPU6050::Motion3::printTo(Print& p) const
+{
+	size_t n{0};
+	n += p.print(x);
+	n += p.print('\t');
+	n += p.print(y);
+	n += p.print('\t');
+	n += p.print(z);
+	return n;
+}
+
+size_t MPU6050::Motion6::printTo(Print& p) const
+{
+	size_t n{0};
+	n += p.print(_F("accel/gyro:\t"));
+	n += p.print(accel);
+	n += p.print('\t');
+	n += p.print(gyro);
+	return n;
+}
+
 /** Power on and prepare for general usage.
  * This will activate the device and take it out of sleep mode (which must be
  * done after start-up). This function also sets both the accelerometer and the
@@ -1847,49 +1873,25 @@ bool MPU6050::getIntDataReadyStatus()
 
 // ACCEL_*OUT_* registers
 
-/** Get raw 9-axis motion sensor readings (accel/gyro/compass).
- * FUNCTION NOT FULLY IMPLEMENTED YET.
- * @param ax 16-bit signed integer container for accelerometer X-axis value
- * @param ay 16-bit signed integer container for accelerometer Y-axis value
- * @param az 16-bit signed integer container for accelerometer Z-axis value
- * @param gx 16-bit signed integer container for gyroscope X-axis value
- * @param gy 16-bit signed integer container for gyroscope Y-axis value
- * @param gz 16-bit signed integer container for gyroscope Z-axis value
- * @param mx 16-bit signed integer container for magnetometer X-axis value
- * @param my 16-bit signed integer container for magnetometer Y-axis value
- * @param mz 16-bit signed integer container for magnetometer Z-axis value
- * @see getMotion6()
- * @see getAcceleration()
- * @see getRotation()
- * @see MPU6050_RA_ACCEL_XOUT_H
- */
-void MPU6050::getMotion9(int16_t* ax, int16_t* ay, int16_t* az, int16_t* gx, int16_t* gy, int16_t* gz, int16_t* mx,
-						 int16_t* my, int16_t* mz)
-{
-	getMotion6(ax, ay, az, gx, gy, gz);
-	// TODO: magnetometer integration
-}
 /** Get raw 6-axis motion sensor readings (accel/gyro).
  * Retrieves all currently available motion sensor values.
- * @param ax 16-bit signed integer container for accelerometer X-axis value
- * @param ay 16-bit signed integer container for accelerometer Y-axis value
- * @param az 16-bit signed integer container for accelerometer Z-axis value
- * @param gx 16-bit signed integer container for gyroscope X-axis value
- * @param gy 16-bit signed integer container for gyroscope Y-axis value
- * @param gz 16-bit signed integer container for gyroscope Z-axis value
+ * @return container for 3-axis accelerometer and 3-axis gyroscope values
  * @see getAcceleration()
  * @see getRotation()
  * @see MPU6050_RA_ACCEL_XOUT_H
  */
-void MPU6050::getMotion6(int16_t* ax, int16_t* ay, int16_t* az, int16_t* gx, int16_t* gy, int16_t* gz)
+MPU6050::Motion6 MPU6050::getMotion6()
 {
+	Motion6 motion6;
+	uint8_t buffer[14] = {0};
 	I2Cdev::readBytes(devAddr, MPU6050_RA_ACCEL_XOUT_H, 14, buffer);
-	*ax = (((int16_t)buffer[0]) << 8) | buffer[1];
-	*ay = (((int16_t)buffer[2]) << 8) | buffer[3];
-	*az = (((int16_t)buffer[4]) << 8) | buffer[5];
-	*gx = (((int16_t)buffer[8]) << 8) | buffer[9];
-	*gy = (((int16_t)buffer[10]) << 8) | buffer[11];
-	*gz = (((int16_t)buffer[12]) << 8) | buffer[13];
+	motion6.accel.x = concat(buffer[0], buffer[1]);
+	motion6.accel.y = concat(buffer[2], buffer[3]);
+	motion6.accel.z = concat(buffer[4], buffer[5]);
+	motion6.gyro.x = concat(buffer[8], buffer[9]);
+	motion6.gyro.y = concat(buffer[10], buffer[11]);
+	motion6.gyro.z = concat(buffer[12], buffer[13]);
+	return motion6;
 }
 /** Get 3-axis accelerometer readings.
  * These registers store the most recent accelerometer measurements.
@@ -1927,13 +1929,18 @@ void MPU6050::getMotion6(int16_t* ax, int16_t* ay, int16_t* az, int16_t* gx, int
  * @param z 16-bit signed integer container for Z-axis acceleration
  * @see MPU6050_RA_GYRO_XOUT_H
  */
-void MPU6050::getAcceleration(int16_t* x, int16_t* y, int16_t* z)
+
+MPU6050::Motion3 MPU6050::getAcceleration()
 {
+	Motion3 accel;
+	uint8_t buffer[6] = {0};
 	I2Cdev::readBytes(devAddr, MPU6050_RA_ACCEL_XOUT_H, 6, buffer);
-	*x = (((int16_t)buffer[0]) << 8) | buffer[1];
-	*y = (((int16_t)buffer[2]) << 8) | buffer[3];
-	*z = (((int16_t)buffer[4]) << 8) | buffer[5];
+	accel.x = concat(buffer[0], buffer[1]);
+	accel.y = concat(buffer[2], buffer[3]);
+	accel.z = concat(buffer[4], buffer[5]);
+	return accel;
 }
+
 /** Get X-axis accelerometer reading.
  * @return X-axis acceleration measurement in 16-bit 2's complement format
  * @see getMotion6()

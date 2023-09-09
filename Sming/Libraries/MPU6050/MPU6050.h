@@ -433,6 +433,18 @@ THE SOFTWARE.
 class MPU6050
 {
 public:
+	struct Motion3 {
+		int16_t x{};
+		int16_t y{};
+		int16_t z{};
+		size_t printTo(Print& p) const;
+	};
+
+	struct Motion6 {
+		Motion3 accel{};
+		Motion3 gyro{};
+		size_t printTo(Print& p) const;
+	};
 	/** Default constructor, uses default I2C address.
      * @see MPU6050_DEFAULT_ADDRESS
      */
@@ -640,9 +652,9 @@ public:
 	bool getIntDataReadyStatus();
 
 	// ACCEL_*OUT_* registers
-	void getMotion9(int16_t* ax, int16_t* ay, int16_t* az, int16_t* gx, int16_t* gy, int16_t* gz, int16_t* mx,
-					int16_t* my, int16_t* mz);
-	void getMotion6(int16_t* ax, int16_t* ay, int16_t* az, int16_t* gx, int16_t* gy, int16_t* gz);
+	Motion6 getMotion6();
+
+	Motion3 getAcceleration();
 	void getAcceleration(int16_t* x, int16_t* y, int16_t* z);
 	int16_t getAccelerationX();
 	int16_t getAccelerationY();

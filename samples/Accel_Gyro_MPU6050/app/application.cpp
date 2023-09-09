@@ -5,17 +5,10 @@ constexpr uint16_t mainLoopInterval = 20; // ms
 SimpleTimer mainLoopTimer;
 MPU6050 mpu;
 
-void printAccelGyro(int16_t ax, int16_t ay, int16_t az, int16_t gx, int16_t gy, int16_t gz)
-{
-	Serial << "a/g:\t" << ax << "\t" << ay << "\t" << az << "\t" << gx << "\t" << gy << "\t" << gz << endl;
-}
-
 void mainLoop()
 {
-	int16_t ax, ay, az;
-	int16_t gx, gy, gz;
-	mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
-	printAccelGyro(ax, ay, az, gx, gy, gz);
+	const MPU6050::Motion6 accelGyro = mpu.getMotion6();
+	Serial << accelGyro << endl;
 }
 
 void init()
