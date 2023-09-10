@@ -3247,8 +3247,9 @@ bool MPU6050::writeMemoryBlock(const uint8_t* data, uint16_t dataSize, uint8_t b
 
 		if(useProgMem) {
 			// write the chunk of data as specified
-			for(j = 0; j < chunkSize; j++)
+			for(j = 0; j < chunkSize; j++) {
 				progBuffer[j] = pgm_read_byte(data + i + j);
+			}
 		} else {
 			// write the chunk of data as specified
 			progBuffer = const_cast<uint8_t*>(data) + i;
@@ -3336,8 +3337,9 @@ bool MPU6050::writeDMPConfigurationSet(const uint8_t* data, uint16_t dataSize, b
 			if(useProgMem) {
 				if(sizeof(progBuffer) < length)
 					progBuffer = static_cast<uint8_t*>(realloc(progBuffer, length));
-				for(j = 0; j < length; j++)
+				for(j = 0; j < length; j++) {
 					progBuffer[j] = pgm_read_byte(data + i + j);
+				}
 			} else {
 				progBuffer = const_cast<uint8_t*>(data) + i;
 			}
