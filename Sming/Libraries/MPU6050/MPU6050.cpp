@@ -3151,10 +3151,12 @@ void MPU6050::resetDMP()
 void MPU6050::setMemoryBank(uint8_t bank, bool prefetchEnabled, bool userBank)
 {
 	bank &= 0x1F;
-	if(userBank)
+	if(userBank) {
 		bank |= 0x20;
-	if(prefetchEnabled)
+	}
+	if(prefetchEnabled) {
 		bank |= 0x40;
+	}
 	I2Cdev::writeByte(devAddr, MPU6050_RA_BANK_SEL, bank);
 }
 
@@ -3186,12 +3188,14 @@ void MPU6050::readMemoryBlock(uint8_t* data, uint16_t dataSize, uint8_t bank, ui
 		uint8_t chunkSize = MPU6050_DMP_MEMORY_CHUNK_SIZE;
 
 		// make sure we don't go past the data size
-		if(i + chunkSize > dataSize)
+		if(i + chunkSize > dataSize) {
 			chunkSize = dataSize - i;
+		}
 
 		// make sure this chunk doesn't go past the bank boundary (256 bytes)
-		if(chunkSize > 256 - address)
+		if(chunkSize > 256 - address) {
 			chunkSize = 256 - address;
+		}
 
 		// read the chunk of data as specified
 		I2Cdev::readBytes(devAddr, MPU6050_RA_MEM_R_W, chunkSize, data + i);
@@ -3204,8 +3208,9 @@ void MPU6050::readMemoryBlock(uint8_t* data, uint16_t dataSize, uint8_t bank, ui
 
 		// if we aren't done, update bank (if necessary) and address
 		if(i < dataSize) {
-			if(address == 0)
+			if(address == 0) {
 				bank++;
+			}
 			setMemoryBank(bank);
 			setMemoryStartAddress(address);
 		}
@@ -3220,21 +3225,25 @@ bool MPU6050::writeMemoryBlock(const uint8_t* data, uint16_t dataSize, uint8_t b
 	uint8_t* progBuffer = 0;
 	uint16_t i;
 	uint8_t j;
-	if(verify)
+	if(verify) {
 		verifyBuffer = static_cast<uint8_t*>(malloc(MPU6050_DMP_MEMORY_CHUNK_SIZE));
-	if(useProgMem)
+	}
+	if(useProgMem) {
 		progBuffer = static_cast<uint8_t*>(malloc(MPU6050_DMP_MEMORY_CHUNK_SIZE));
+	}
 	for(i = 0; i < dataSize;) {
 		// determine correct chunk size according to bank position and data size
 		uint8_t chunkSize = MPU6050_DMP_MEMORY_CHUNK_SIZE;
 
 		// make sure we don't go past the data size
-		if(i + chunkSize > dataSize)
+		if(i + chunkSize > dataSize) {
 			chunkSize = dataSize - i;
+		}
 
 		// make sure this chunk doesn't go past the bank boundary (256 bytes)
-		if(chunkSize > 256 - address)
+		if(chunkSize > 256 - address) {
 			chunkSize = 256 - address;
+		}
 
 		if(useProgMem) {
 			// write the chunk of data as specified
@@ -3279,16 +3288,19 @@ bool MPU6050::writeMemoryBlock(const uint8_t* data, uint16_t dataSize, uint8_t b
 
 		// if we aren't done, update bank (if necessary) and address
 		if(i < dataSize) {
-			if(address == 0)
+			if(address == 0) {
 				bank++;
+			}
 			setMemoryBank(bank);
 			setMemoryStartAddress(address);
 		}
 	}
-	if(verify)
+	if(verify) {
 		free(verifyBuffer);
-	if(useProgMem)
+	}
+	if(useProgMem) {
 		free(progBuffer);
+	}
 	return true;
 }
 bool MPU6050::writeProgMemoryBlock(const uint8_t* data, uint16_t dataSize, uint8_t bank, uint8_t address, bool verify)
@@ -3359,13 +3371,15 @@ bool MPU6050::writeDMPConfigurationSet(const uint8_t* data, uint16_t dataSize, b
 		}
 
 		if(!success) {
-			if(useProgMem)
+			if(useProgMem) {
 				free(progBuffer);
+			}
 			return false; // uh oh
 		}
 	}
-	if(useProgMem)
+	if(useProgMem) {
 		free(progBuffer);
+	}
 	return true;
 }
 bool MPU6050::writeProgDMPConfigurationSet(const uint8_t* data, uint16_t dataSize)
