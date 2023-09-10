@@ -642,7 +642,6 @@ public:
 	Motion6 getMotion6();
 
 	Motion3 getAcceleration();
-	void getAcceleration(int16_t* x, int16_t* y, int16_t* z);
 	int16_t getAccelerationX();
 	int16_t getAccelerationY();
 	int16_t getAccelerationZ();
@@ -651,10 +650,11 @@ public:
 	int16_t getTemperature();
 
 	// GYRO_*OUT_* registers
-	void getRotation(int16_t* x, int16_t* y, int16_t* z);
-	int16_t getRotationX();
-	int16_t getRotationY();
-	int16_t getRotationZ();
+	Motion3 getAngularRate();
+	int16_t getAngularRateX();
+	int16_t getAngularRateY();
+	int16_t getAngularRateZ();
+	int16_t getAngularRateZ2();
 
 	// EXT_SENS_DATA_* registers
 	uint8_t getExternalSensorByte(int position);
@@ -853,6 +853,31 @@ private:
 	uint8_t readBits(uint8_t regAddr, uint8_t bitStart, uint8_t length);
 	uint8_t readByte(uint8_t regAddr);
 
+	template <typename T> T readReg(uint8_t regAddr);
+
 	uint8_t devAddr;
-	uint8_t buffer[14] = {0};
 };
+
+template <typename T> T MPU6050::readReg(uint8_t regAddr)
+{
+	static_assert(std::is_fundamental<T>::value, "T must be an fundamental type.");
+
+	const auto sz = sizeof(T);
+	uint8_t buffer[sz] = {0};
+	//data follow big endien convention
+	I2Cdev::readBytes(devAddr, regAddr, sz, buffer);
+
+	T result{};
+	for(size_t i{0}; i < sz; ++i) {
+		result |= static_cast<T>(buffer[i]) << (8 * (sz - i - 1));
+	}
+	return result;
+}
+
+namespace detail
+{
+template <typename T = int16_t> inline T concat(uint8_t bits_15_8, uint8_t bits_7_0)
+{
+	return (static_cast<T>(bits_15_8) << 8) | bits_7_0;
+}
+} // namespace detail
