@@ -88,6 +88,14 @@ template <typename T> struct TRange {
 	}
 
 	/**
+	 * @brief Determine if range contains another range (subset)
+	 */
+	template <typename Q> bool contains(const TRange<Q>& value) const
+	{
+		return contains(value.min) && contains(value.max);
+	}
+
+	/**
 	 * @brief Clip values to within the range
 	 */
 	T clip(T value) const
