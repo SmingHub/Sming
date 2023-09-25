@@ -247,6 +247,15 @@ public:
 	unsigned count() const;
 
 	/**
+	 * @brief Get contents of array as delimited string
+	 * @param separator What to join elements with
+	 * @retval String
+	 *
+	 * e.g. CStringArray(F("a\0b\0c")).join() returns "a,b,c"
+	 */
+	String join(const String& separator = ",") const;
+
+	/**
 	 * @name Iterator support (forward only)
 	 * @{
 	 */
