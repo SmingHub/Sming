@@ -75,6 +75,13 @@ extern "C" {
 		&__pstr__[0];                                                                                                  \
 	}))
 
+#ifdef ARCH_HOST
+// Internal function to prevent 'dangling pointer' compiler warning
+extern char* smg_return_local(char* buf);
+#else
+#define smg_return_local(buf) (buf)
+#endif
+
 /**
  * @brief Declare and use a flash string inline.
  * @param str
@@ -84,7 +91,7 @@ extern "C" {
 	(__extension__({                                                                                                   \
 		DEFINE_PSTR_LOCAL(__pstr__, str);                                                                              \
 		LOAD_PSTR(buf, __pstr__);                                                                                      \
-		buf;                                                                                                           \
+		smg_return_local(buf);                                                                                         \
 	}))
 
 /**
