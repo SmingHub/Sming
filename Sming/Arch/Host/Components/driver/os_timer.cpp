@@ -93,11 +93,12 @@ void os_timer_disarm(struct os_timer_t* ptimer)
 
 void os_timer_setfn(struct os_timer_t* ptimer, os_timer_func_t* pfunction, void* parg)
 {
-	if(ptimer != nullptr) {
-		ptimer->timer_func = pfunction;
-		ptimer->timer_arg = parg;
-		ptimer->timer_next = reinterpret_cast<os_timer_t*>(-1);
+	if(ptimer == nullptr) {
+		return;
 	}
+	os_timer_disarm(ptimer);
+	ptimer->timer_func = pfunction;
+	ptimer->timer_arg = parg;
 }
 
 void os_timer_done(struct os_timer_t* ptimer)
