@@ -38,3 +38,10 @@ int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len)
 	auto tail2 = pgm_read_dword(reinterpret_cast<const uint8_t*>(ptr2) + len_aligned);
 	return memcmp(&tail1, &tail2, len - len_aligned);
 }
+
+#ifdef ARCH_HOST
+char* smg_return_local(char* buf)
+{
+	return buf;
+}
+#endif
