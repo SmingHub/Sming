@@ -184,7 +184,7 @@ If core 1 code attempts to access flash during these periods the system will har
    Floating-point support requires use of routines in flash memory.
    Integer operations should all be safe to use.
 
-   If unexplained crashes are occuring then check the build output files (in out/Rp2040/debug/build)
+   If unexplained crashes are occurring then check the build output files (in out/Rp2040/debug/build)
    or use a debugger to identify any errant code running from flash.
 
 A typical use for core #1 might be to perform processing of some kind, such as processing data sampled
