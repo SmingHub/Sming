@@ -207,7 +207,18 @@ public:
      *  @param  repeating True to restart timer when it triggers, false for one-shot (Default: true)
      *  @retval bool True if timer started
      */
-	IRAM_ATTR bool start(bool repeating = true);
+	__forceinline bool IRAM_ATTR start(bool repeating = true)
+	{
+		stop();
+		if(!callbackSet || !intervalSet) {
+			return false;
+		}
+
+		TimerApi::arm(repeating);
+		started = true;
+		this->repeating = repeating;
+		return true;
+	}
 
 	/** @brief  Start one-shot timer
 	 *  @retval bool True if timer started
@@ -409,18 +420,5 @@ protected:
 	bool repeating = false;   ///< Timer is auto-repeat
 	bool started = false;	 ///< Timer is active, or has fired
 };
-
-template <typename TimerApi> bool CallbackTimer<TimerApi>::start(bool repeating)
-{
-	stop();
-	if(!callbackSet || !intervalSet) {
-		return false;
-	}
-
-	TimerApi::arm(repeating);
-	started = true;
-	this->repeating = repeating;
-	return true;
-}
 
 /** @} */
