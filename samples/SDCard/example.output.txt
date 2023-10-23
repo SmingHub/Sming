@@ -45,7 +45,7 @@ Read: hello has 5 letters
 
 
 
-4. Write speed benchamark:
+4. Write speed benchmark:
 Write 1 kBytes in 1 Bytes increment: 23.17 kB/s
 Write 1 kBytes in 64 Bytes increment: 23.13 kB/s
 Write 1 kBytes in 128 Bytes increment: 23.09 kB/s

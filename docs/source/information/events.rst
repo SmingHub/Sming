@@ -75,7 +75,7 @@ such as if a timer expires.
 
 This can be a regular 'C' callback function, which you should use for handling interrupts.
 
-For regular application code, a :cpp:class:`Delegate` provides more flexbility and allows you to create
+For regular application code, a :cpp:class:`Delegate` provides more flexibility and allows you to create
 simpler, cleaner code. See `Delegation <https://en.wikipedia.org/wiki/Delegation_(object-oriented_programming)>`__
 for a bit of background.
 
