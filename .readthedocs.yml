@@ -5,6 +5,10 @@
 # Required
 version: 2
 
+# Required
+build:
+  os: ubuntu-20.04
+
 # Optionally build your docs in additional formats such as PDF and ePub
 formats:
   - htmlzip
