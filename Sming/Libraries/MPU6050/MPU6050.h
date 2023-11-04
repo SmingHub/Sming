@@ -1,10 +1,6 @@
-
 // Based on InvenSense MPU-6050 register map document rev. 2.0, 5/19/2011
-// (RM-MPU-6000A-00) 10/3/2011 by Jeff Rowberg <jeff@rowberg.net> Updates should
-// (hopefully) always be available at https://github.com/jrowberg/i2cdevlib
-//
-// Changelog:
-//     ... - ongoing debug release
+// (RM-MPU-6000A-00)
+// Based On https://github.com/jrowberg/i2cdevlib
 
 // NOTE: THIS IS ONLY A PARIAL RELEASE. THIS DEVICE CLASS IS CURRENTLY
 // UNDERGOING ACTIVE DEVELOPMENT AND IS STILL MISSING SOME IMPORTANT FEATURES.

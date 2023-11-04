@@ -11,3 +11,4 @@ Based on code from [jrowberg/i2cdevlib](https://github.com/jrowberg/i2cdevlib/tr
 -   MPU6050_6Axis_MotionApps20.h and MPU6050_9Axis_MotionApps41.h are not included due to deps to freeRTOS. helper_3dmath.h is also not included since it is only used in the above mentioned files.
 -   Removed map function in favor of the Sming built-in one.
 -   Adapted include path, coding style and applied clangformat
+-   Deleted Calibration and Memory Block related code for code quality reason
