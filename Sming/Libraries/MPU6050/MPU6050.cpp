@@ -37,9 +37,18 @@ THE SOFTWARE.
 
 #include "MPU6050.h"
 #include <string.h>
+#include <cassert>
 
 #define I2C_NUM I2C_NUM_0
 using detail::concat;
+
+namespace
+{
+//Slave 4’s characteristics differ greatly from those of Slaves 0-3.
+//Hence our API support only up to slave 3
+constexpr uint8_t MAX_SLAVE_ID{3};
+#define ASSERT_SLAVE_ID_VALID(slaveId) assert((slaveId <= MAX_SLAVE_ID))
+} // namespace
 
 size_t MPU6050::Motion3::printTo(Print& p) const
 {
@@ -109,117 +118,95 @@ uint8_t MPU6050::getGyroZSelfTestFactoryTrim()
 	return (z & 0x1F);
 }
 
-uint8_t MPU6050::getSlaveAddress(uint8_t num)
+uint8_t MPU6050::getSlaveAddress(SlaveId slaveId)
 {
-	if(num > 3) {
-		return 0;
-	}
-	return readByte(MPU6050_RA_I2C_SLV0_ADDR + num * 3);
+	ASSERT_SLAVE_ID_VALID(slaveId);
+	return readByte(MPU6050_RA_I2C_SLV0_ADDR + slaveId * 3);
 }
 
-void MPU6050::setSlaveAddress(uint8_t num, uint8_t address)
+void MPU6050::setSlaveAddress(SlaveId slaveId, uint8_t address)
 {
-	if(num > 3) {
-		return;
-	}
-	I2Cdev::writeByte(devAddr, MPU6050_RA_I2C_SLV0_ADDR + num * 3, address);
+	ASSERT_SLAVE_ID_VALID(slaveId);
+	I2Cdev::writeByte(devAddr, MPU6050_RA_I2C_SLV0_ADDR + slaveId * 3, address);
 }
 
-uint8_t MPU6050::getSlaveRegister(uint8_t num)
+uint8_t MPU6050::getSlaveRegister(SlaveId slaveId)
 {
-	if(num > 3) {
-		return 0;
-	}
-	return readByte(MPU6050_RA_I2C_SLV0_REG + num * 3);
+	ASSERT_SLAVE_ID_VALID(slaveId);
+	return readByte(MPU6050_RA_I2C_SLV0_REG + slaveId * 3);
 }
 
-void MPU6050::setSlaveRegister(uint8_t num, uint8_t reg)
+void MPU6050::setSlaveRegister(SlaveId slaveId, uint8_t reg)
 {
-	if(num > 3) {
-		return;
-	}
-	I2Cdev::writeByte(devAddr, MPU6050_RA_I2C_SLV0_REG + num * 3, reg);
+	ASSERT_SLAVE_ID_VALID(slaveId);
+	I2Cdev::writeByte(devAddr, MPU6050_RA_I2C_SLV0_REG + slaveId * 3, reg);
 }
 
-bool MPU6050::getSlaveEnabled(uint8_t num)
+bool MPU6050::getSlaveEnabled(SlaveId slaveId)
 {
-	if(num > 3) {
-		return false;
-	}
-	return readBit(MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_EN_BIT);
+	ASSERT_SLAVE_ID_VALID(slaveId);
+	return readBit(MPU6050_RA_I2C_SLV0_CTRL + slaveId * 3, MPU6050_I2C_SLV_EN_BIT);
 }
 
-void MPU6050::setSlaveEnabled(uint8_t num, bool enabled)
+void MPU6050::setSlaveEnabled(SlaveId slaveId, bool enabled)
 {
-	if(num > 3) {
-		return;
-	}
-	I2Cdev::writeBit(devAddr, MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_EN_BIT, enabled);
+	ASSERT_SLAVE_ID_VALID(slaveId);
+	I2Cdev::writeBit(devAddr, MPU6050_RA_I2C_SLV0_CTRL + slaveId * 3, MPU6050_I2C_SLV_EN_BIT, enabled);
 }
 
-bool MPU6050::getSlaveWordByteSwap(uint8_t num)
+bool MPU6050::getSlaveWordByteSwap(SlaveId slaveId)
 {
-	if(num > 3) {
-		return false;
-	}
-	return readBit(MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_BYTE_SW_BIT);
+	ASSERT_SLAVE_ID_VALID(slaveId);
+	return readBit(MPU6050_RA_I2C_SLV0_CTRL + slaveId * 3, MPU6050_I2C_SLV_BYTE_SW_BIT);
 }
 
-void MPU6050::setSlaveWordByteSwap(uint8_t num, bool enabled)
+void MPU6050::setSlaveWordByteSwap(SlaveId slaveId, bool enabled)
 {
-	if(num > 3) {
-		return;
-	}
-	I2Cdev::writeBit(devAddr, MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_BYTE_SW_BIT, enabled);
+	ASSERT_SLAVE_ID_VALID(slaveId);
+	I2Cdev::writeBit(devAddr, MPU6050_RA_I2C_SLV0_CTRL + slaveId * 3, MPU6050_I2C_SLV_BYTE_SW_BIT, enabled);
 }
 
-bool MPU6050::getSlaveWriteMode(uint8_t num)
+bool MPU6050::getSlaveWriteMode(SlaveId slaveId)
 {
-	if(num > 3) {
-		return false;
-	}
-	return readBit(MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_REG_DIS_BIT);
+	ASSERT_SLAVE_ID_VALID(slaveId);
+
+	return readBit(MPU6050_RA_I2C_SLV0_CTRL + slaveId * 3, MPU6050_I2C_SLV_REG_DIS_BIT);
 }
 
-void MPU6050::setSlaveWriteMode(uint8_t num, bool mode)
+void MPU6050::setSlaveWriteMode(SlaveId slaveId, bool mode)
 {
-	if(num > 3) {
-		return;
-	}
-	I2Cdev::writeBit(devAddr, MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_REG_DIS_BIT, mode);
+	ASSERT_SLAVE_ID_VALID(slaveId);
+
+	I2Cdev::writeBit(devAddr, MPU6050_RA_I2C_SLV0_CTRL + slaveId * 3, MPU6050_I2C_SLV_REG_DIS_BIT, mode);
 }
 
-bool MPU6050::getSlaveWordGroupOffset(uint8_t num)
+bool MPU6050::getSlaveWordGroupOffset(SlaveId slaveId)
 {
-	if(num > 3) {
-		return false;
-	}
-	return readBit(MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_GRP_BIT);
+	ASSERT_SLAVE_ID_VALID(slaveId);
+
+	return readBit(MPU6050_RA_I2C_SLV0_CTRL + slaveId * 3, MPU6050_I2C_SLV_GRP_BIT);
 }
 
-void MPU6050::setSlaveWordGroupOffset(uint8_t num, bool enabled)
+void MPU6050::setSlaveWordGroupOffset(SlaveId slaveId, bool enabled)
 {
-	if(num > 3) {
-		return;
-	}
-	I2Cdev::writeBit(devAddr, MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_GRP_BIT, enabled);
+	ASSERT_SLAVE_ID_VALID(slaveId);
+
+	I2Cdev::writeBit(devAddr, MPU6050_RA_I2C_SLV0_CTRL + slaveId * 3, MPU6050_I2C_SLV_GRP_BIT, enabled);
 }
 
-uint8_t MPU6050::getSlaveDataLength(uint8_t num)
+uint8_t MPU6050::getSlaveDataLength(SlaveId slaveId)
 {
-	if(num > 3) {
-		return false;
-	}
-	return readBits(MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_LEN_BIT, MPU6050_I2C_SLV_LEN_LENGTH);
+	ASSERT_SLAVE_ID_VALID(slaveId);
+
+	return readBits(MPU6050_RA_I2C_SLV0_CTRL + slaveId * 3, MPU6050_I2C_SLV_LEN_BIT, MPU6050_I2C_SLV_LEN_LENGTH);
 }
 
-void MPU6050::setSlaveDataLength(uint8_t num, uint8_t length)
+void MPU6050::setSlaveDataLength(SlaveId slaveId, uint8_t length)
 {
-	if(num > 3) {
-		return;
-	}
-	I2Cdev::writeBits(devAddr, MPU6050_RA_I2C_SLV0_CTRL + num * 3, MPU6050_I2C_SLV_LEN_BIT, MPU6050_I2C_SLV_LEN_LENGTH,
-					  length);
+	ASSERT_SLAVE_ID_VALID(slaveId);
+
+	I2Cdev::writeBits(devAddr, MPU6050_RA_I2C_SLV0_CTRL + slaveId * 3, MPU6050_I2C_SLV_LEN_BIT,
+					  MPU6050_I2C_SLV_LEN_LENGTH, length);
 }
 
 MPU6050::Motion6 MPU6050::getMotion6()
@@ -258,30 +245,17 @@ MPU6050::Motion3 MPU6050::getAngularRate()
 	return angularRate;
 }
 
-void MPU6050::setSlaveOutputByte(uint8_t num, uint8_t data)
+void MPU6050::setSlaveOutputByte(SlaveId slaveId, uint8_t data)
 {
-	if(num > 3) {
-		return;
-	}
-	I2Cdev::writeByte(devAddr, MPU6050_RA_I2C_SLV0_DO + num, data);
+	ASSERT_SLAVE_ID_VALID(slaveId);
+	I2Cdev::writeByte(devAddr, MPU6050_RA_I2C_SLV0_DO + slaveId, data);
 }
 
-bool MPU6050::getSlaveDelayEnabled(uint8_t num)
+bool MPU6050::getSlaveDelayEnabled(SlaveId slaveId)
 {
 	// MPU6050_DELAYCTRL_I2C_SLV4_DLY_EN_BIT is 4, SLV3 is 3, etc.
-	if(num > 4) {
-		return false;
-	}
-	return readBit(MPU6050_RA_I2C_MST_DELAY_CTRL, num);
-}
-
-void MPU6050::getFIFOBytes(uint8_t* data, uint8_t length)
-{
-	if(length > 0) {
-		I2Cdev::readBytes(devAddr, MPU6050_RA_FIFO_R_W, length, data);
-	} else {
-		*data = 0;
-	}
+	ASSERT_SLAVE_ID_VALID(slaveId);
+	return readBit(MPU6050_RA_I2C_MST_DELAY_CTRL, slaveId);
 }
 
 // XA_OFFS_* registers

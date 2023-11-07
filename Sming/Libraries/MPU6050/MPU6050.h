@@ -416,6 +416,8 @@
 class MPU6050
 {
 public:
+	using SlaveId = uint8_t; // (0 - 3)
+
 	struct Motion3 {
 		int16_t x{};
 		int16_t y{};
@@ -1355,18 +1357,18 @@ public:
      * Sample Rate or at the reduced rate is determined by the Delay Enable bits in
      * Register 103.
      *
-     * @param num Slave number (0-3)
+     * @param slaveId Slave ID (0-3)
      * @return Current address for specified slave
      * @see MPU6050_RA_I2C_SLV0_ADDR
      */
-	uint8_t getSlaveAddress(uint8_t num);
+	uint8_t getSlaveAddress(SlaveId slaveId);
 	/** Set the I2C address of the specified slave (0-3).
-     * @param num Slave number (0-3)
+     * @param slaveId Slave ID (0-3)
      * @param address New address for specified slave
      * @see getSlaveAddress()
      * @see MPU6050_RA_I2C_SLV0_ADDR
      */
-	void setSlaveAddress(uint8_t num, uint8_t address);
+	void setSlaveAddress(SlaveId slaveId, uint8_t address);
 
 	/** Get the active internal register for the specified slave (0-3).
      * Read/write operations for this slave will be done to whatever internal
@@ -1375,35 +1377,35 @@ public:
      * The MPU-6050 supports a total of five slaves, but Slave 4 has unique
      * characteristics, and so it has its own functions.
      *
-     * @param num Slave number (0-3)
+     * @param slaveId Slave ID (0-3)
      * @return Current active register for specified slave
      * @see MPU6050_RA_I2C_SLV0_REG
      */
-	uint8_t getSlaveRegister(uint8_t num);
+	uint8_t getSlaveRegister(SlaveId slaveId);
 
 	/** Set the active internal register for the specified slave (0-3).
-     * @param num Slave number (0-3)
+     * @param slaveId Slave ID (0-3)
      * @param reg New active register for specified slave
      * @see getSlaveRegister()
      * @see MPU6050_RA_I2C_SLV0_REG
      */
-	void setSlaveRegister(uint8_t num, uint8_t reg);
+	void setSlaveRegister(SlaveId slaveId, uint8_t reg);
 
 	/** Get the enabled value for the specified slave (0-3).
      * When set to 1, this bit enables Slave 0 for data transfer operations. When
      * cleared to 0, this bit disables Slave 0 from data transfer operations.
-     * @param num Slave number (0-3)
+     * @param slaveId Slave ID (0-3)
      * @return Current enabled value for specified slave
      * @see MPU6050_RA_I2C_SLV0_CTRL
      */
-	bool getSlaveEnabled(uint8_t num);
+	bool getSlaveEnabled(SlaveId slaveId);
 	/** Set the enabled value for the specified slave (0-3).
-     * @param num Slave number (0-3)
+     * @param slaveId Slave ID (0-3)
      * @param enabled New enabled value for specified slave
      * @see getSlaveEnabled()
      * @see MPU6050_RA_I2C_SLV0_CTRL
      */
-	void setSlaveEnabled(uint8_t num, bool enabled);
+	void setSlaveEnabled(SlaveId slaveId, bool enabled);
 
 	/** Get word pair byte-swapping enabled for the specified slave (0-3).
      * When set to 1, this bit enables byte swapping. When byte swapping is enabled,
@@ -1412,19 +1414,19 @@ public:
      * bytes transferred to and from Slave 0 will be written to EXT_SENS_DATA
      * registers in the order they were transferred.
      *
-     * @param num Slave number (0-3)
+     * @param slaveId Slave ID (0-3)
      * @return Current word pair byte-swapping enabled value for specified slave
      * @see MPU6050_RA_I2C_SLV0_CTRL
      */
-	bool getSlaveWordByteSwap(uint8_t num);
+	bool getSlaveWordByteSwap(SlaveId slaveId);
 
 	/** Set word pair byte-swapping enabled for the specified slave (0-3).
-     * @param num Slave number (0-3)
+     * @param slaveId Slave ID (0-3)
      * @param enabled New word pair byte-swapping enabled value for specified slave
      * @see getSlaveWordByteSwap()
      * @see MPU6050_RA_I2C_SLV0_CTRL
      */
-	void setSlaveWordByteSwap(uint8_t num, bool enabled);
+	void setSlaveWordByteSwap(SlaveId slaveId, bool enabled);
 
 	/** Get write mode for the specified slave (0-3).
      * When set to 1, the transaction will read or write data only. When cleared to
@@ -1432,20 +1434,20 @@ public:
      * data. This should equal 0 when specifying the register address within the
      * Slave device to/from which the ensuing data transaction will take place.
      *
-     * @param num Slave number (0-3)
+     * @param slaveId Slave ID (0-3)
      * @return Current write mode for specified slave (0 = register address + data,
      * 1 = data only)
      * @see MPU6050_RA_I2C_SLV0_CTRL
      */
-	bool getSlaveWriteMode(uint8_t num);
+	bool getSlaveWriteMode(SlaveId slaveId);
 	/** Set write mode for the specified slave (0-3).
-     * @param num Slave number (0-3)
+     * @param slaveId Slave ID (0-3)
      * @param mode New write mode for specified slave (0 = register address + data,
      * 1 = data only)
      * @see getSlaveWriteMode()
      * @see MPU6050_RA_I2C_SLV0_CTRL
      */
-	void setSlaveWriteMode(uint8_t num, bool mode);
+	void setSlaveWriteMode(SlaveId slaveId, bool mode);
 
 	/** Get word pair grouping order offset for the specified slave (0-3).
      * This sets specifies the grouping order of word pairs received from registers.
@@ -1454,36 +1456,36 @@ public:
      * from register addresses are paired 1 and 2, 3 and 4, etc. (odd, then even
      * register addresses) are paired to form a word.
      *
-     * @param num Slave number (0-3)
+     * @param slaveId Slave ID (0-3)
      * @return Current word pair grouping order offset for specified slave
      * @see MPU6050_RA_I2C_SLV0_CTRL
      */
-	bool getSlaveWordGroupOffset(uint8_t num);
+	bool getSlaveWordGroupOffset(SlaveId slaveId);
 
 	/** Set word pair grouping order offset for the specified slave (0-3).
-     * @param num Slave number (0-3)
+     * @param slaveId Slave ID (0-3)
      * @param enabled New word pair grouping order offset for specified slave
      * @see getSlaveWordGroupOffset()
      * @see MPU6050_RA_I2C_SLV0_CTRL
      */
-	void setSlaveWordGroupOffset(uint8_t num, bool enabled);
+	void setSlaveWordGroupOffset(SlaveId slaveId, bool enabled);
 
 	/** Get number of bytes to read for the specified slave (0-3).
      * Specifies the number of bytes transferred to and from Slave 0. Clearing this
      * bit to 0 is equivalent to disabling the register by writing 0 to I2C_SLV0_EN.
-     * @param num Slave number (0-3)
+     * @param slaveId Slave ID (0-3)
      * @return Number of bytes to read for specified slave
      * @see MPU6050_RA_I2C_SLV0_CTRL
      */
-	uint8_t getSlaveDataLength(uint8_t num);
+	uint8_t getSlaveDataLength(SlaveId slaveId);
 
 	/** Set number of bytes to read for the specified slave (0-3).
-     * @param num Slave number (0-3)
+     * @param slaveId Slave ID (0-3)
      * @param length Number of bytes to read for specified slave
      * @see getSlaveDataLength()
      * @see MPU6050_RA_I2C_SLV0_CTRL
      */
-	void setSlaveDataLength(uint8_t num, uint8_t length);
+	void setSlaveDataLength(SlaveId slaveId, uint8_t length);
 
 	// I2C_SLV* registers (Slave 4)
 
@@ -2484,11 +2486,11 @@ public:
      * This register holds the output data written into Slave when Slave is set to
      * write mode. For further information regarding Slave control, please
      * refer to Registers 37 to 39 and immediately following.
-     * @param num Slave number (0-3)
+     * @param slaveId Slave ID (0-3)
      * @param data Byte to write
      * @see MPU6050_RA_I2C_SLV0_DO
      */
-	void setSlaveOutputByte(uint8_t num, uint8_t data);
+	void setSlaveOutputByte(SlaveId slaveId, uint8_t data);
 
 	// I2C_MST_DELAY_CTRL register
 	/** Get external data shadow delay enabled status.
@@ -2528,22 +2530,22 @@ public:
      * For further information regarding the Sample Rate, please refer to
      * register 25.
      *
-     * @param num Slave number (0-4)
+     * @param slaveId Slave ID (0-4)
      * @return Current slave delay enabled status.
      * @see MPU6050_RA_I2C_MST_DELAY_CTRL
      * @see MPU6050_DELAYCTRL_I2C_SLV0_DLY_EN_BIT
      */
-	bool getSlaveDelayEnabled(uint8_t num);
+	bool getSlaveDelayEnabled(SlaveId slaveId);
 
 	/** Set slave delay enabled status.
-     * @param num Slave number (0-4)
+     * @param slaveId Slave ID (0-4)
      * @param enabled New slave delay enabled status.
      * @see MPU6050_RA_I2C_MST_DELAY_CTRL
      * @see MPU6050_DELAYCTRL_I2C_SLV0_DLY_EN_BIT
      */
-	void setSlaveDelayEnabled(uint8_t num, bool enabled)
+	void setSlaveDelayEnabled(SlaveId slaveId, bool enabled)
 	{
-		I2Cdev::writeBit(devAddr, MPU6050_RA_I2C_MST_DELAY_CTRL, num, enabled);
+		I2Cdev::writeBit(devAddr, MPU6050_RA_I2C_MST_DELAY_CTRL, slaveId, enabled);
 	}
 
 	// SIGNAL_PATH_RESET register
@@ -3136,7 +3138,10 @@ public:
 		I2Cdev::writeByte(devAddr, MPU6050_RA_FIFO_R_W, data);
 	}
 
-	void getFIFOBytes(uint8_t* data, uint8_t length);
+	void getFIFOBytes(uint8_t* data, uint8_t length)
+	{
+		I2Cdev::readBytes(devAddr, MPU6050_RA_FIFO_R_W, length, data);
+	}
 
 	// WHO_AM_I register
 
