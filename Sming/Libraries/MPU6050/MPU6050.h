@@ -2,7 +2,7 @@
 // (RM-MPU-6000A-00)
 // Based On https://github.com/jrowberg/i2cdevlib
 
-// NOTE: THIS IS ONLY A PARIAL RELEASE. THIS DEVICE CLASS IS CURRENTLY
+// NOTE: THIS IS ONLY A PARTIAL RELEASE. THIS DEVICE CLASS IS CURRENTLY
 // UNDERGOING ACTIVE DEVELOPMENT AND IS STILL MISSING SOME IMPORTANT FEATURES.
 // PLEASE KEEP THIS IN MIND IF YOU DECIDE TO USE THIS PARTICULAR CODE FOR
 // ANYTHING.
@@ -3427,7 +3427,7 @@ template <typename T> T MPU6050::readReg(uint8_t regAddr)
 
 	const auto sz = sizeof(T);
 	uint8_t buffer[sz] = {0};
-	//data follow big endien convention
+	//data follow big endian convention
 	I2Cdev::readBytes(devAddr, regAddr, sz, buffer);
 
 	T result{};
