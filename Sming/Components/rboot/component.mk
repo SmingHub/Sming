@@ -68,7 +68,7 @@ endif
 
 # determine number of roms to generate
 ifneq ($(RBOOT_ROM1_ADDR),)
-RBOOT_TWO_ROMS := $(shell $(AWK) 'BEGIN { print (ARGV[1] % (1024*1024)) != (ARGV[2] % (1024*1024))}' $(RBOOT_ROM0_ADDR) $(RBOOT_ROM1_ADDR))
+RBOOT_TWO_ROMS := $(shell $(AWK) 'BEGIN { print ((ARGV[1] % (1024*1024)) != (ARGV[2] % (1024*1024)))}' $(RBOOT_ROM0_ADDR) $(RBOOT_ROM1_ADDR))
 else
 RBOOT_TWO_ROMS := 0
 endif
