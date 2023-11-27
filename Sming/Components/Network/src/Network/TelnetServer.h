@@ -21,8 +21,8 @@
 
 #include "TcpClient.h"
 #include "TcpServer.h"
-#include "SystemClock.h"
-#include "Services/CommandProcessing/CommandExecutor.h"
+#include <SystemClock.h>
+#include <Services/CommandProcessing/Handler.h>
 
 #ifndef TELNETSERVER_MAX_COMMANDSIZE
 #define TELNETSERVER_MAX_COMMANDSIZE 64
@@ -33,7 +33,10 @@ using TelnetServerCommandDelegate = Delegate<void(TcpClient* client, char* data,
 class TelnetServer : public TcpServer
 {
 public:
-	void enableDebug(bool reqStatus);
+	void enableDebug(bool reqStatus) SMING_DEPRECATED
+	{
+	}
+
 	void enableCommand(bool reqStatus);
 
 private:
@@ -45,8 +48,7 @@ private:
 
 private:
 	TcpClient* curClient = nullptr;
-	CommandExecutor* commandExecutor = nullptr;
-	bool telnetDebug = true;
+	CommandProcessing::Handler* commandHandler = nullptr;
 	bool telnetCommand = true;
 };
 

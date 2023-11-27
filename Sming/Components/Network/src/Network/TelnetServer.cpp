@@ -12,30 +12,21 @@
  ****/
 
 #include "TelnetServer.h"
-#include "Debug.h"
-
-void TelnetServer::enableDebug(bool reqStatus)
-{
-	telnetDebug = reqStatus;
-	if(telnetDebug && curClient != nullptr) /* only setSetDebug when already connected */
-	{
-		Debug.setDebug(DebugPrintCharDelegate(&TelnetServer::wrchar, this));
-	} else {
-		Debug.setDebug(Serial);
-	}
-}
+#include "TcpClientStream.h"
 
 void TelnetServer::enableCommand(bool reqStatus)
 {
-#if ENABLE_CMD_EXECUTOR
-	if(reqStatus && curClient != nullptr && commandExecutor == nullptr) {
-		commandExecutor = new CommandExecutor(curClient);
+	if(!reqStatus && commandHandler != nullptr) {
+		delete commandHandler;
+		commandHandler = nullptr;
+		return;
 	}
-	if(!reqStatus && commandExecutor != nullptr) {
-		delete commandExecutor;
-		commandExecutor = nullptr;
+
+	if(reqStatus && curClient != nullptr && commandHandler == nullptr) {
+		commandHandler = new CommandProcessing::Handler();
+		commandHandler->setOutputStream(new TcpClientStream(*curClient));
 	}
-#endif
+
 	telnetCommand = reqStatus;
 }
 
@@ -52,26 +43,19 @@ void TelnetServer::onClient(TcpClient* client)
 	} else {
 		curClient = client;
 		curClient->setTimeOut(USHRT_MAX);
-		curClient->sendString("Welcome to Sming / ESP6266 Telnet\r\n");
+		curClient->sendString("Welcome to Sming Telnet\r\n");
 		if(telnetCommand) {
-#if ENABLE_CMD_EXECUTOR
-			commandExecutor = new CommandExecutor(client);
-#endif
+			commandHandler = new CommandProcessing::Handler();
+			commandHandler->setOutputStream(new TcpClientStream(*client));
 		}
-		if(telnetDebug) {
-			Debug.setDebug(DebugPrintCharDelegate(&TelnetServer::wrchar, this));
-		}
-		Debug.printf("This is debug after telnet start\r\n");
 	}
 }
 
 void TelnetServer::onClientComplete(TcpClient& client, bool successful)
 {
 	if(&client == curClient) {
-#if ENABLE_CMD_EXECUTOR
-		delete commandExecutor;
-		commandExecutor = nullptr;
-#endif
+		delete commandHandler;
+		commandHandler = nullptr;
 		curClient = nullptr;
 		debug_d("TelnetServer onClientComplete %s", client.getRemoteIp().toString().c_str());
 	} else {
@@ -80,7 +64,6 @@ void TelnetServer::onClientComplete(TcpClient& client, bool successful)
 
 	debug_d("TelnetServer onClientComplete %s", client.getRemoteIp().toString().c_str());
 	TcpServer::onClientComplete(client, successful);
-	Debug.setDebug(Serial);
 }
 
 void TelnetServer::wrchar(char c)
@@ -94,10 +77,8 @@ bool TelnetServer::onClientReceive(TcpClient& client, char* data, int size)
 {
 	debug_d("TelnetServer onClientReceive : %s, %d bytes \r\n", client.getRemoteIp().toString().c_str(), size);
 	debug_d("Data : %s", data);
-#if ENABLE_CMD_EXECUTOR
-	if(commandExecutor != nullptr) {
-		commandExecutor->executorReceive(data, size);
+	if(commandHandler != nullptr) {
+		commandHandler->process(data, size);
 	}
-#endif
 	return true;
 }

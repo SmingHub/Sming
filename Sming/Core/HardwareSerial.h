@@ -50,7 +50,7 @@ using StreamDataReceivedDelegate = Delegate<void(Stream& source, char arrivedCha
  */
 using TransmitCompleteDelegate = Delegate<void(HardwareSerial& serial)>;
 
-class CommandExecutor;
+//class CommandExecutor;
 
 // clang-format off
 #define SERIAL_CONFIG_MAP(XX) \
@@ -341,7 +341,7 @@ public:
 	 *  @note   Command processing provides a CLI to the system
 	 *  @see    commandHandler
 	 */
-	void commandProcessing(bool reqEnable);
+	void commandProcessing(bool reqEnable) SMING_DEPRECATED;
 
 	/** @brief  Set handler for received data
 	 *  @param  dataReceivedDelegate Function to handle received data
@@ -449,7 +449,7 @@ private:
 	int uartNr = UART_NO;
 	TransmitCompleteDelegate transmitComplete = nullptr; ///< Callback for transmit completion
 	StreamDataReceivedDelegate HWSDelegate = nullptr;	///< Callback for received data
-	CommandExecutor* commandExecutor = nullptr;			 ///< Callback for command execution (received data)
+//	CommandExecutor* commandExecutor = nullptr;			 ///< Callback for command execution (received data)
 	smg_uart_t* uart = nullptr;
 	uart_options_t options = _BV(UART_OPT_TXWAIT);
 	size_t txSize = DEFAULT_TX_BUFFER_SIZE;

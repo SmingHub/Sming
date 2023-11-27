@@ -19,7 +19,6 @@
 #include "TcpConnection.h"
 
 class TcpClient;
-class ReadWriteStream;
 class IpAddress;
 
 using TcpClientEventDelegate = Delegate<void(TcpClient& client, TcpConnectionEvent sourceEvent)>;

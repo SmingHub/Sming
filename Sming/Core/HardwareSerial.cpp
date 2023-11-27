@@ -16,16 +16,16 @@
 #include "m_printf.h"
 
 #if ENABLE_CMD_EXECUTOR
-#include <Services/CommandProcessing/CommandExecutor.h>
+#include <Services/CommandProcessing/Handler.h>
 #endif
 
 HardwareSerial Serial(UART_ID_0);
 
 HardwareSerial::~HardwareSerial()
 {
-#if ENABLE_CMD_EXECUTOR
-	delete commandExecutor;
-#endif
+//#if ENABLE_CMD_EXECUTOR
+//	delete commandExecutor;
+//#endif
 }
 
 bool HardwareSerial::begin(uint32_t baud, SerialFormat format, SerialMode mode, uint8_t txPin, uint8_t rxPin)
@@ -123,14 +123,14 @@ void HardwareSerial::invokeCallbacks()
 		if(HWSDelegate) {
 			HWSDelegate(*this, receivedChar, smg_uart_rx_available(uart));
 		}
-#if ENABLE_CMD_EXECUTOR
-		if(commandExecutor) {
-			int c;
-			while((c = smg_uart_read_char(uart)) >= 0) {
-				commandExecutor->executorReceive(c);
-			}
-		}
-#endif
+//#if ENABLE_CMD_EXECUTOR
+//		if(commandExecutor) {
+//			int c;
+//			while((c = smg_uart_read_char(uart)) >= 0) {
+//				commandExecutor->executorReceive(c);
+//			}
+//		}
+//#endif
 	}
 }
 
@@ -190,11 +190,11 @@ void HardwareSerial::staticCallbackHandler(smg_uart_t* uart, uint32_t status)
 bool HardwareSerial::updateUartCallback()
 {
 	uint16_t mask = 0;
-#if ENABLE_CMD_EXECUTOR
-	if(HWSDelegate || commandExecutor) {
-#else
+//#if ENABLE_CMD_EXECUTOR
+//	if(HWSDelegate || commandExecutor) {
+//#else
 	if(HWSDelegate) {
-#endif
+//#endif
 		mask |= UART_STATUS_RXFIFO_FULL | UART_STATUS_RXFIFO_TOUT | UART_STATUS_RXFIFO_OVF;
 	}
 
@@ -211,15 +211,15 @@ bool HardwareSerial::updateUartCallback()
 
 void HardwareSerial::commandProcessing(bool reqEnable)
 {
-#if ENABLE_CMD_EXECUTOR
-	if(reqEnable) {
-		if(!commandExecutor) {
-			commandExecutor = new CommandExecutor(this);
-		}
-	} else {
-		delete commandExecutor;
-		commandExecutor = nullptr;
-	}
-	updateUartCallback();
-#endif
+//#if ENABLE_CMD_EXECUTOR
+//	if(reqEnable) {
+//		if(!commandExecutor) {
+//			commandExecutor = new CommandExecutor(this);
+//		}
+//	} else {
+//		delete commandExecutor;
+//		commandExecutor = nullptr;
+//	}
+//	updateUartCallback();
+//#endif
 }
