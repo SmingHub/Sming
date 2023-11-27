@@ -1,6 +1,5 @@
 #include <SmingCore.h>
 #include <Services/CommandProcessing/Handler.h>
-#include <Network/TelnetServer.h>
 #include <Network/Http/Websocket/WebsocketResource.h>
 //#include <Debug.h>
 
@@ -17,7 +16,6 @@ namespace
 
 HttpServer server;
 FtpServer ftp;
-TelnetServer telnet;
 
 Timer msgTimer;
 
