@@ -84,26 +84,7 @@ void wsMessageReceived(WebsocketConnection& socket, const String& message)
 #if ENABLE_CMD_EXECUTOR
 void wsCommandReceived(WebsocketConnection& socket, const String& message)
 {
-	commandProcessing.process(message.c_str(), message.length());
-
-	Serial.println(_F("WebSocket message received:"));
-	Serial.println(message);
-
-	if(message == _F("shutdown")) {
-		String message(F("The server is shutting down..."));
-		socket.broadcast(message);
-
-		// Don't shutdown immediately, wait a bit to allow messages to propagate
-		auto timer = new SimpleTimer;
-		timer->initializeMs<1000>(
-			[](void* timer) {
-				delete static_cast<SimpleTimer*>(timer);
-				server.shutdown();
-			},
-			timer);
-		timer->startOnce();
-		return;
-	}
+	String response = commandProcessing.processNow(message.c_str(), message.length());
 
 	String response = F("Echo: ") + message;
 	socket.sendString(response);
@@ -114,7 +95,6 @@ void wsCommandReceived(WebsocketConnection& socket, const String& message)
 		user->printMessage(socket, message);
 	}
 }
-
 
 void processShutdownCommand(String commandLine, ReadWriteStream& commandOutput)
 {

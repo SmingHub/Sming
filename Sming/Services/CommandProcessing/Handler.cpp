@@ -46,6 +46,23 @@ size_t Handler::process(char recvChar)
 	return 1;
 }
 
+String Handler::processNow(const char* buffer, size_t size)
+{
+	if(outputStream != nullptr && outputStream->getStreamType() != eSST_MemoryWritable) {
+		debug_e("Cannot use this method when output stream is set");
+	}
+
+	size_t processed = process(buffer, size);
+	if(processed == size) {
+		String output;
+		if(outputStream->moveString(output)) {
+			return output;
+		}
+	}
+
+	return nullptr;
+}
+
 void Handler::processCommandLine(const String& cmdString)
 {
 	if(cmdString.length() == 0) {

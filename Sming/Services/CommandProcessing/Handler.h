@@ -105,10 +105,7 @@ public:
 		return retval;
 	}
 
-	String process(const String& data)
-	{
-
-	}
+	String processNow(const char* buffer, size_t size);
 
 	// Command registration/de-registration methods
 

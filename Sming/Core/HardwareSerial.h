@@ -116,7 +116,9 @@ public:
 	{
 	}
 
-	~HardwareSerial();
+	~HardwareSerial()
+	{
+	}
 
 	void setPort(int uartPort)
 	{
@@ -340,8 +342,12 @@ public:
 	 *  @param  reqEnable True to enable command processing
 	 *  @note   Command processing provides a CLI to the system
 	 *  @see    commandHandler
+	 *
+	 *  @deprecated include <Services/CommandProcessing/Utils.h> and use `CommandProcessing::enable(Handler, Serial)` instead.
 	 */
-	void commandProcessing(bool reqEnable) SMING_DEPRECATED;
+	void commandProcessing(bool reqEnable) SMING_DEPRECATED
+	{
+	}
 
 	/** @brief  Set handler for received data
 	 *  @param  dataReceivedDelegate Function to handle received data
