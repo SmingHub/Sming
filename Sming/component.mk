@@ -31,13 +31,8 @@ COMPONENT_DOXYGEN_INPUT := \
 	Wiring \
 	System
 
-# => Disable CommandExecutor functionality if not used and save some ROM and RAM
-COMPONENT_VARS			+= ENABLE_CMD_EXECUTOR
-ENABLE_CMD_EXECUTOR		?= 1
-ifeq ($(ENABLE_CMD_EXECUTOR),1)
-COMPONENT_SRCDIRS		+= Services/CommandProcessing
-endif
-GLOBAL_CFLAGS			+= -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR)
+# => CommandProcessing functionality 
+COMPONENT_SRCDIRS += Services/CommandProcessing
 
 #
 RELINK_VARS += DISABLE_NETWORK

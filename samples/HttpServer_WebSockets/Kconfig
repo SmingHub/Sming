@@ -1,0 +1,11 @@
+#
+# For a description of the syntax of this configuration file,
+# see kconfig/kconfig-language.txt.
+#
+mainmenu "Sample Configuration"
+
+    menu "Command Hanler"
+        config ENABLE_CMD_HANDLER
+            bool "Enable command handler functionality"
+            default y
+    endmenu

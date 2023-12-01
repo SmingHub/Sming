@@ -2,7 +2,7 @@
 #include <Network/Http/Websocket/WebsocketResource.h>
 #include "CUserData.h"
 
-#if ENABLE_CMD_EXECUTOR
+#if ENABLE_CMD_HANDLER
 #include <Services/CommandProcessing/Handler.h>
 CommandProcessing::Handler commandHandler;
 #endif
@@ -81,12 +81,10 @@ void wsMessageReceived(WebsocketConnection& socket, const String& message)
 	}
 }
 
-#if ENABLE_CMD_EXECUTOR
+#if ENABLE_CMD_HANDLER
 void wsCommandReceived(WebsocketConnection& socket, const String& message)
 {
-	String response = commandProcessing.processNow(message.c_str(), message.length());
-
-	String response = F("Echo: ") + message;
+	String response = commandHandler.processNow(message.c_str(), message.length());
 	socket.sendString(response);
 
 	//Normally you would use dynamic cast but just be careful not to convert to wrong object type!
@@ -140,7 +138,7 @@ void startWebServer()
 	auto wsResource = new WebsocketResource();
 	wsResource->setConnectionHandler(wsConnected);
 	wsResource->setMessageHandler(wsMessageReceived);
-#if ENABLE_CMD_EXECUTOR
+#if ENABLE_CMD_HANDLER
 	wsResource->setMessageHandler(wsCommandReceived);
 #endif
 
@@ -165,9 +163,9 @@ void init()
 {
 	spiffs_mount(); // Mount file system, in order to work with files
 
-#if ENABLE_CMD_EXECUTOR
+#if ENABLE_CMD_HANDLER
 	commandHandler.registerSystemCommands();
-	commandHanledr.registerCommand(CommandProcessing::Command("shutdown", "Shutdown Server Command", "Application", processShutdownCommand));
+	commandHandler.registerCommand(CommandProcessing::Command("shutdown", "Shutdown Server Command", "Application", processShutdownCommand));
 #endif
 
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
