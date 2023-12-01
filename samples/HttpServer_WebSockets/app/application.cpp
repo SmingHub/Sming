@@ -165,7 +165,8 @@ void init()
 
 #if ENABLE_CMD_HANDLER
 	commandHandler.registerSystemCommands();
-	commandHandler.registerCommand(CommandProcessing::Command("shutdown", "Shutdown Server Command", "Application", processShutdownCommand));
+	commandHandler.registerCommand(
+		CommandProcessing::Command("shutdown", "Shutdown Server Command", "Application", processShutdownCommand));
 #endif
 
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default

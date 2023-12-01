@@ -22,12 +22,10 @@
 
 namespace CommandProcessing
 {
-
-constexpr size_t MAX_COMMANDSIZE=64;
+constexpr size_t MAX_COMMANDSIZE = 64;
 
 /** @brief  Verbose mode
 */
-
 
 /** @brief  Command handler class */
 class Handler
@@ -40,13 +38,12 @@ public:
 		SILENT   ///< Silent mode
 	};
 
-
 	/**
 	 * @brief  Instantiate a CommandHandler
 	 */
 	Handler();
 
-	Handler(ReadWriteStream* stream, bool owned = true): outputStream(stream), ownedStream(owned)
+	Handler(ReadWriteStream* stream, bool owned = true) : outputStream(stream), ownedStream(owned)
 	{
 	}
 

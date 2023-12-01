@@ -5,7 +5,6 @@
 
 namespace CommandProcessing
 {
-
 void enable(Handler& commandHandler, HardwareSerial& serial)
 {
 	commandHandler.setOutputStream(&serial, false);

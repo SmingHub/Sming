@@ -11,7 +11,6 @@ CommandProcessing::Handler commandHandler;
 
 namespace
 {
-
 HttpServer server;
 FtpServer ftp;
 
@@ -59,5 +58,6 @@ void init()
 	CommandProcessing::enable(commandHandler, Serial);
 
 	commandHandler.registerSystemCommands();
-	commandHandler.registerCommand(CommandProcessing::Command("example", "Example Command", "Application", processExampleCommand));
+	commandHandler.registerCommand(
+		CommandProcessing::Command("example", "Example Command", "Application", processExampleCommand));
 }

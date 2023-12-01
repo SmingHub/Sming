@@ -13,9 +13,7 @@
 
 namespace CommandProcessing
 {
-
-Handler::Handler()
-	: currentPrompt(F("Sming>")), currentWelcomeMessage(F("Welcome to the Sming CommandProcessing\r\n"))
+Handler::Handler() : currentPrompt(F("Sming>")), currentWelcomeMessage(F("Welcome to the Sming CommandProcessing\r\n"))
 {
 }
 
@@ -99,17 +97,17 @@ void Handler::registerSystemCommands()
 {
 	String system = F("system");
 	registerCommand(Command(F("status"), F("Displays System Information"), system,
-									Command::Callback(&Handler::procesStatusCommand, this)));
+							Command::Callback(&Handler::procesStatusCommand, this)));
 	registerCommand(Command(F("echo"), F("Displays command entered"), system,
-									Command::Callback(&Handler::procesEchoCommand, this)));
+							Command::Callback(&Handler::procesEchoCommand, this)));
 	registerCommand(Command(F("help"), F("Displays all available commands"), system,
-									Command::Callback(&Handler::procesHelpCommand, this)));
+							Command::Callback(&Handler::procesHelpCommand, this)));
 	registerCommand(Command(F("debugon"), F("Set Serial debug on"), system,
-									Command::Callback(&Handler::procesDebugOnCommand, this)));
+							Command::Callback(&Handler::procesDebugOnCommand, this)));
 	registerCommand(Command(F("debugoff"), F("Set Serial debug off"), system,
-									Command::Callback(&Handler::procesDebugOffCommand, this)));
+							Command::Callback(&Handler::procesDebugOffCommand, this)));
 	registerCommand(Command(F("command"), F("Use verbose/silent/prompt as command options"), system,
-									Command::Callback(&Handler::processCommandOptions, this)));
+							Command::Callback(&Handler::processCommandOptions, this)));
 }
 
 Command Handler::getCommandDelegate(const String& commandString)
@@ -185,14 +183,14 @@ void Handler::procesEchoCommand(String commandLine, ReadWriteStream& outputStrea
 
 void Handler::procesDebugOnCommand(String commandLine, ReadWriteStream& outputStream)
 {
-//	Serial.systemDebugOutput(true);
-//	outputStream.println(_F("Debug set to : On"));
+	//	Serial.systemDebugOutput(true);
+	//	outputStream.println(_F("Debug set to : On"));
 }
 
 void Handler::procesDebugOffCommand(String commandLine, ReadWriteStream& outputStream)
 {
-//	Serial.systemDebugOutput(false);
-//	outputStream.println(_F("Debug set to : Off"));
+	//	Serial.systemDebugOutput(false);
+	//	outputStream.println(_F("Debug set to : Off"));
 }
 
 void Handler::processCommandOptions(String commandLine, ReadWriteStream& outputStream)

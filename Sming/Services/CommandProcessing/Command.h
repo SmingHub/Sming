@@ -15,7 +15,6 @@
 
 namespace CommandProcessing
 {
-
 /** @brief  Command delegate class */
 class Command
 {
@@ -27,7 +26,6 @@ public:
 	 *  @note   Can use standard print functions on commandOutput
 	 */
 	using Callback = Delegate<void(String commandLine, ReadWriteStream& commandOutput)>;
-
 
 	/** Instantiate a command delegate
 	*  @param  reqName Command name - the text a user types to invoke the command
@@ -44,10 +42,10 @@ public:
 	{
 	}
 
-	String name;						 ///< Command name
-	String description;						 ///< Command help
-	String group;					 ///< Command group
-	Callback callback; ///< Command Delegate (function that is called when command is invoked)
+	String name;		///< Command name
+	String description; ///< Command help
+	String group;		///< Command group
+	Callback callback;  ///< Command Delegate (function that is called when command is invoked)
 };
 
 } // namespace CommandProcessing

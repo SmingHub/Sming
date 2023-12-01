@@ -455,7 +455,6 @@ private:
 	int uartNr = UART_NO;
 	TransmitCompleteDelegate transmitComplete = nullptr; ///< Callback for transmit completion
 	StreamDataReceivedDelegate HWSDelegate = nullptr;	///< Callback for received data
-//	CommandExecutor* commandExecutor = nullptr;			 ///< Callback for command execution (received data)
 	smg_uart_t* uart = nullptr;
 	uart_options_t options = _BV(UART_OPT_TXWAIT);
 	size_t txSize = DEFAULT_TX_BUFFER_SIZE;
