@@ -1,5 +1,5 @@
 #include <SmingCore.h>
-#include <Services/CommandProcessing/Handler.h>
+#include <Services/CommandProcessing/Utils.h>
 #include <Network/Http/Websocket/WebsocketResource.h>
 //#include <Debug.h>
 
@@ -58,12 +58,7 @@ void init()
 	commandHandler.setVerboseMode(CommandProcessing::Handler::VerboseMode::VERBOSE);
 
 	// Register Input/Output streams
-	commandHandler.setOutputStream(&Serial, false);
-	Serial.onDataReceived([](Stream& source, char arrivedChar, uint16_t availableCharsCount) {
-		while(availableCharsCount--) {
-			commandHandler.process(source.read());
-		}
-	});
+	CommandProcessing::enable(commandHandler, Serial);
 
 	commandHandler.registerSystemCommands();
 	commandHandler.registerCommand(CommandProcessing::Command("example", "Example Command", "Application", processExampleCommand));

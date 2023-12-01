@@ -105,6 +105,11 @@ public:
 		return retval;
 	}
 
+	String process(const String& data)
+	{
+
+	}
+
 	// Command registration/de-registration methods
 
 	/** @brief  Add a new command to the command handler
