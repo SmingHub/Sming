@@ -10,7 +10,7 @@ Command handler provides a common command line interface (CLI). Command line mus
 CLI can be used with: 
 
 - Serial
-- Websockets
+- Network (Websockets, Telnet)
 
 and all communication protocols that are exchanging text data.
 
@@ -19,7 +19,8 @@ Commands can be added to and removed from the command handler. Each command will
 A welcome message may be shown when a user connects and end of line character may be defined. An automatic "help" display is available.
 
 For more examples take a look at the
-:sample:`CommandProcessing_Debug`
+:sample:`CommandProcessing`,
+:sample:`TelnetServer`
 and :sample:`HttpServer_WebSockets`
 samples.
 

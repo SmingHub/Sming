@@ -24,7 +24,7 @@ size_t Handler::process(char recvChar)
 	if(recvChar == 27) // ESC -> delete current commandLine
 	{
 		commandBuf.clear();
-		if(getVerboseMode() == VERBOSE) {
+		if(isVerbose()) {
 			output.println();
 			output.print(getCommandPrompt());
 		}
@@ -88,7 +88,7 @@ void Handler::processCommandLine(const String& cmdString)
 		}
 	}
 
-	if(getVerboseMode() == VERBOSE) {
+	if(isVerbose()) {
 		outputStream->print(getCommandPrompt());
 	}
 }
@@ -206,12 +206,12 @@ void Handler::processCommandOptions(String commandLine, ReadWriteStream& outputS
 			printUsage = true;
 		}
 		if(commandToken[1] == _F("verbose")) {
-			setVerboseMode(VERBOSE);
+			setVerbose(true);
 			outputStream.println(_F("Verbose mode selected"));
 			break;
 		}
 		if(commandToken[1] == _F("silent")) {
-			setVerboseMode(SILENT);
+			setVerbose(false);
 			outputStream.println(_F("Silent mode selected"));
 			break;
 		}

@@ -6,7 +6,7 @@
 #pragma once
 
 #include "WString.h"
-#include <Services/CommandProcessing/Handler.h>
+#include <CommandProcessing/Handler.h>
 #include <Libraries/ArduCAM/ArduCAM.h>
 
 class ArduCamCommand

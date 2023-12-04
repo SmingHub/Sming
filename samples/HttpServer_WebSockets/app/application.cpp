@@ -3,7 +3,7 @@
 #include "CUserData.h"
 
 #if ENABLE_CMD_HANDLER
-#include <Services/CommandProcessing/Handler.h>
+#include <CommandProcessing/Handler.h>
 CommandProcessing::Handler commandHandler;
 #endif
 

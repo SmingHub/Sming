@@ -1,20 +1,10 @@
 #include <SmingCore.h>
-#include <Services/CommandProcessing/Utils.h>
-
-// If you want, you can define WiFi settings globally in Eclipse Environment Variables
-#ifndef WIFI_SSID
-#define WIFI_SSID "PleaseEnterSSID" // Put your SSID and password here
-#define WIFI_PWD "PleaseEnterPass"
-#endif
+#include <CommandProcessing/Utils.h>
 
 CommandProcessing::Handler commandHandler;
 
 namespace
 {
-HttpServer server;
-FtpServer ftp;
-
-Timer msgTimer;
 
 bool exampleStatus = true;
 
@@ -52,7 +42,7 @@ void init()
 
 	// Set verbosity
 	Serial.systemDebugOutput(true); // Enable debug output to serial
-	commandHandler.setVerboseMode(CommandProcessing::Handler::VerboseMode::VERBOSE);
+	commandHandler.setVerbose(true);
 
 	// Register Input/Output streams
 	CommandProcessing::enable(commandHandler, Serial);

@@ -31,9 +31,6 @@ COMPONENT_DOXYGEN_INPUT := \
 	Wiring \
 	System
 
-# => CommandProcessing functionality 
-COMPONENT_SRCDIRS += Services/CommandProcessing
-
 #
 RELINK_VARS += DISABLE_NETWORK
 DISABLE_NETWORK ?= 0

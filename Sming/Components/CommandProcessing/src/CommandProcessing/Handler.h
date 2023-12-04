@@ -139,7 +139,7 @@ public:
 	/** @brief  Get the verbose mode
 	 *  @retval VerboseMode Verbose mode
 	 */
-	VerboseMode getVerboseMode()
+	bool isVerbose()
 	{
 		return verboseMode;
 	}
@@ -147,9 +147,9 @@ public:
 	/** @brief  Set the verbose mode
 	 *  @param  reqVerboseMode Verbose mode to set
 	 */
-	void setVerboseMode(VerboseMode reqVerboseMode)
+	void setVerbose(bool mode)
 	{
-		verboseMode = reqVerboseMode;
+		verboseMode = mode;
 	}
 
 	/** @brief  Get the command line prompt
@@ -216,7 +216,7 @@ private:
 #else
 	char currentEOL{'\r'};
 #endif
-	VerboseMode verboseMode{VERBOSE};
+	bool verboseMode{false};
 	bool localEcho{true};
 	String currentWelcomeMessage;
 

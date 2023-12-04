@@ -1,5 +1,5 @@
 #include <SmingCore.h>
-#include <Services/CommandProcessing/Utils.h>
+#include <CommandProcessing/Utils.h>
 
 //#include "CamSettings.h"
 #include <ArduCamCommand.h>
@@ -35,6 +35,9 @@
 #define CAM_MISO 12
 
 #define CAM_CS 16 // this pins are free to change
+
+namespace
+{
 
 HttpServer server;
 
@@ -225,7 +228,7 @@ void onFavicon(HttpRequest& request, HttpResponse& response)
  * telnet can be used to configure camera settings
  * using ArdCammCommand handler
  */
-void StartServers()
+void startServers()
 {
 	server.listen(80);
 	server.paths.set("/", onIndex);
@@ -247,7 +250,9 @@ void StartServers()
 // Will be called when station is fully operational
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	StartServers();
+	startServers();
+}
+
 }
 
 void init()
@@ -258,7 +263,7 @@ void init()
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 
 	// Process commands from serial
-	commandHandler.setVerboseMode(CommandProcessing::Handler::VerboseMode::VERBOSE);
+	commandHandler.setVerbose(true);
 	CommandProcessing::enable(commandHandler, Serial);
 
 	WifiStation.enable(true);
