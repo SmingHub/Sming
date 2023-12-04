@@ -1,6 +1,5 @@
 #include <SmingCore.h>
-#include <Network/TelnetServer.h>
-#include <Debug.h>
+#include <Services/CommandProcessing/Utils.h>
 
 //#include "CamSettings.h"
 #include <ArduCamCommand.h>
@@ -37,14 +36,13 @@
 
 #define CAM_CS 16 // this pins are free to change
 
-TelnetServer telnet;
 HttpServer server;
 
+CommandProcessing::Handler commandHandler;
+
 HexDump hdump;
-
 ArduCAM myCAM(OV2640, CAM_CS);
-
-ArduCamCommand arduCamCommand(&myCAM);
+ArduCamCommand arduCamCommand(myCAM, commandHandler);
 
 SPISettings spiSettings(20000000, MSBFIRST, SPI_MODE0);
 
@@ -55,6 +53,13 @@ void startApplicationCommand()
 {
 	arduCamCommand.initCommand();
 }
+
+bool processTelnetInput(TcpClient& client, char* data, int size)
+{
+	return client.sendString(commandHandler.processNow(data, size));
+}
+
+TcpServer telnetServer(processTelnetInput);
 
 /*
  * initCam()
@@ -143,11 +148,11 @@ void onCamSetup(HttpRequest& request, HttpResponse& response)
 	if(request.method == HTTP_POST) {
 		type = request.getPostParameter("type");
 		debugf("set type %s", type.c_str());
-		arduCamCommand.set_type(type);
+		arduCamCommand.setType(type);
 
 		size = request.getPostParameter("size");
 		debugf("set size %s", size.c_str());
-		arduCamCommand.set_size(size);
+		arduCamCommand.setSize(size);
 	}
 
 	response.sendString("OK");
@@ -234,9 +239,7 @@ void StartServers()
 	Serial.println(WifiStation.getIP());
 	Serial.println(_F("==============================\r\n"));
 
-	telnet.listen(23);
-	telnet.enableDebug(true);
-
+	telnetServer.listen(23);
 	Serial.println(_F("\r\n=== TelnetServer SERVER STARTED ==="));
 	Serial.println(_F("==============================\r\n"));
 }
@@ -252,12 +255,11 @@ void init()
 	spiffs_mount(); // Mount file system, in order to work with files
 
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-	Serial.systemDebugOutput(true); // Allow debug output to serial
-
-	Debug.setDebug(Serial);
-
 	Serial.systemDebugOutput(true); // Enable debug output to serial
-	Serial.commandProcessing(true);
+
+	// Process commands from serial
+	commandHandler.setVerboseMode(CommandProcessing::Handler::VerboseMode::VERBOSE);
+	CommandProcessing::enable(commandHandler, Serial);
 
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD);

@@ -47,7 +47,7 @@ public:
 	{
 	}
 
-	Handler(const Handler&) = delete;
+	Handler(const Handler& rhs) = delete;
 
 	~Handler()
 	{

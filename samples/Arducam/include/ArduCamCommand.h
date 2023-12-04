@@ -3,36 +3,33 @@
  *
  */
 
-#ifndef ARDUCAM_COMMAND_H_
-#define ARDUCAM_COMMAND_H_
+#pragma once
 
 #include "WString.h"
-#include <Services/CommandProcessing/CommandProcessingIncludes.h>
-#include <Services/CommandProcessing/CommandOutput.h>
+#include <Services/CommandProcessing/Handler.h>
 #include <Libraries/ArduCAM/ArduCAM.h>
 
 class ArduCamCommand
 {
 public:
-	ArduCamCommand(ArduCAM* CAM);
+	ArduCamCommand(ArduCAM& CAM, CommandProcessing::Handler& commandHandler);
 	virtual ~ArduCamCommand();
 	void initCommand();
 	const char* getContentType();
-	void set_size(String size);
-	void set_type(String type);
+	void setSize(String size);
+	void setType(String type);
 
 private:
 	bool status = true;
-	ArduCAM* myCAM;
+	ArduCAM myCAM;
+	CommandProcessing::Handler* commandHandler{nullptr};
 	uint8 imgType;
 	uint8 imgSize;
-	void processSetCommands(String commandLine, CommandOutput* commandOutput);
+	void processSetCommands(String commandLine, ReadWriteStream& commandOutput);
 
-	void set_format(uint8 type);
-	void showSettings(CommandOutput* commandOutput);
+	void setFormat(uint8 type);
+	void showSettings(ReadWriteStream& commandOutput);
 
 	const char* getImageType();
 	const char* getImageSize();
 };
-
-#endif /* SMINGCORE_DEBUG_H_ */
