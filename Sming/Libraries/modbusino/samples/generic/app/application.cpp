@@ -1,5 +1,4 @@
 #include <SmingCore.h>
-#include <Debug.h>
 #include <Modbusino.h>
 
 #define ARRLEN 3
@@ -17,8 +16,6 @@ void init()
 {
 	debugComPort.begin(SERIAL_BAUD_RATE, SERIAL_8N1, SERIAL_TX_ONLY);
 	debugComPort.systemDebugOutput(true);
-	Debug.setDebug(debugComPort);
-	Debug.start();
 	mbSlave.setup(SERIAL_BAUD_RATE);
 	mbSlave.setRxCallback(mbPrint);
 }
