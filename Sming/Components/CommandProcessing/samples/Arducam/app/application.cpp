@@ -38,7 +38,6 @@
 
 namespace
 {
-
 HttpServer server;
 
 CommandProcessing::Handler commandHandler;
@@ -253,7 +252,7 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	startServers();
 }
 
-}
+} // namespace
 
 void init()
 {

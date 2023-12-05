@@ -5,7 +5,6 @@ CommandProcessing::Handler commandHandler;
 
 namespace
 {
-
 bool exampleStatus = true;
 
 // Example Command

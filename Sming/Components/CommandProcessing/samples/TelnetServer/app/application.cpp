@@ -9,7 +9,6 @@
 
 namespace
 {
-
 CommandProcessing::Handler commandHandler;
 
 bool processTelnetInput(TcpClient& client, char* data, int size)
@@ -33,7 +32,8 @@ void processExampleCommand(String commandLine, ReadWriteStream& commandOutput)
 void initCommands()
 {
 	commandHandler.registerSystemCommands();
-	commandHandler.registerCommand(CommandProcessing::Command("example", "Example Command", "Application", processExampleCommand));
+	commandHandler.registerCommand(
+		CommandProcessing::Command("example", "Example Command", "Application", processExampleCommand));
 }
 
 TcpServer telnetServer(processTelnetInput);
@@ -47,7 +47,6 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 }
 
 } // namespace
-
 
 void init()
 {
