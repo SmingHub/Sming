@@ -31,13 +31,6 @@ constexpr size_t MAX_COMMANDSIZE = 64;
 class Handler
 {
 public:
-	/** @brief  Verbose mode
-	*/
-	enum VerboseMode {
-		VERBOSE, ///< Verbose mode
-		SILENT   ///< Silent mode
-	};
-
 	/**
 	 * @brief  Instantiate a CommandHandler
 	 */
