@@ -50,8 +50,6 @@ using StreamDataReceivedDelegate = Delegate<void(Stream& source, char arrivedCha
  */
 using TransmitCompleteDelegate = Delegate<void(HardwareSerial& serial)>;
 
-//class CommandExecutor;
-
 // clang-format off
 #define SERIAL_CONFIG_MAP(XX) \
 	XX(5N1) XX(6N1) XX(7N1) XX(8N1) XX(5N2) XX(6N2) XX(7N2) XX(8N2) XX(5E1) XX(6E1) XX(7E1) XX(8E1) \
