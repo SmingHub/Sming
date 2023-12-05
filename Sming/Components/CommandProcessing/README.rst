@@ -19,7 +19,7 @@ Commands can be added to and removed from the command handler. Each command will
 A welcome message may be shown when a user connects and end-of-line (EOL) character may be defined. An automatic "help" display is available.
 
 For more examples take a look at the
-:sample:`CommandProcessing`,
+:sample:`CommandLine`,
 :sample:`TelnetServer`
 and :sample:`HttpServer_WebSockets`
 samples.

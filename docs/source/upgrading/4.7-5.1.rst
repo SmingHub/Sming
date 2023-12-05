@@ -1,0 +1,63 @@
+From v4.7 to v5.1
+=================
+
+.. highlight:: c++
+
+Command Processing
+------------------
+
+The CommandProcessing service has been refactored and moved to a component.
+This means that the following classes ``CommandHandler``, ``CommandExecutor`` and ``CommandOutput`` are no longer available.
+
+
+Enabling
+~~~~~~~~
+
+The command processing component used to be enabled by setting the directive ``ENABLE_CMD_EXECUTOR`` to 1 in your ``component.mk`` file or during compilation.
+This has to be replaced with the directive ``COMPONENT_DEPENDS += CommandProcessing`` in your ``component.mk`` file.
+
+
+Including Header Files
+~~~~~~~~~~~~~~~~~~~~~~~
+
+To include the command processing headers in your C/C++ application we used to do the following
+
+For example::
+
+    #include <Services/CommandProcessing/CommandProcessingDependencies.h>
+
+becomes::
+
+    #include <CommandProcessing/Utils.h>
+
+
+Usage
+~~~~~
+
+There is no longer a global instance of commandHandler. This means that you will need to create one yourself when you need it. 
+This can be done using the code below::
+
+	CommandProcessing::CommandHandler commandHandler;
+	
+In order to register a command the old example code::
+
+	commandHandler.registerCommand(
+		CommandDelegate("example", "Example Command", "Application", processExampleCommand));
+	
+becomes::
+
+	commandHandler.registerCommand(
+		CommandProcessing::Command("example", "Example Command", "Application", processExampleCommand));
+		
+HardwareSerial no longer is dependent on CommandProcessing classes. And the following command will no longer work::
+
+	Serial.commandProcessing(true);
+	
+The line above has to be replaced with::
+
+	CommandProcessing::enable(commandProcessing, Serial);
+	
+See the modified samples 
+:sample:`CommandLine`,
+:sample:`TelnetServer`
+and :sample:`HttpServer_WebSockets` for details.

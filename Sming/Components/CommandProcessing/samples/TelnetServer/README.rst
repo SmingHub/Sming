@@ -1,4 +1,4 @@
-Arducam
-=======
+TelnetServer
+============
 
-A demonstration application for controlling ArduCAM camera modules via web or telnet interface.
+A demonstration of a telnet server built using ``CommandProcessing``.
