@@ -51,6 +51,13 @@ define WriteFlash
 	)
 endef
 
+define MergeFlash
+	$(if $1,\
+		$(info MergeFlash $1) \
+		$(call ESPTOOL_EXECUTE,merge_bin -o $2 $(flashimageoptions) $(subst =, ,$1)) \
+	)
+endef
+
 # Verify flash against file contents
 # $1 -> List of `Offset=File` chunks
 define VerifyFlash
