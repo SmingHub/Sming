@@ -3,7 +3,7 @@
 # Sming hardware configuration tool
 #
 
-import os, sys, copy
+import os, sys, copy, shutil
 
 appPath = os.path.dirname(os.path.realpath(__file__))
 libPath = appPath + '/../common/'
@@ -103,6 +103,27 @@ def update_workspace():
         schemas += [schema]
     save_json(ws, filename)
 
+def update_wokwi():
+    filename = '.vscode/extensions.json'
+    extensions = load_json(filename, False)
+    template = load_template('extensions.json', appPath)
+    if extensions is None:
+        extensions = template.copy()
+        save_json(extensions, filename)
+        return
+    
+    extensions["recommendations"] = extensions["recommendations"] + list(set(template["recommendations"]) - set(extensions["recommendations"]))
+    save_json(extensions, filename)
+
+    if not os.path.exists('diagram.json'):
+        diagrams_template = load_template('wokwi/diagram.json', appPath)
+        save_json(diagrams_template, 'diagram.json')
+
+    if not os.path.exists('wokwi.toml'):
+        source = open(appPath + '/template/wokwi/wokwi.toml', 'r').read()
+        source = env.resolve(source)
+        open('wokwi.toml', 'w+').write(source)
+    
 def main():
     if not env['SMING_HOME'] or not env['SMING_ARCH']:
         sys.exit(1)
@@ -113,9 +134,9 @@ def main():
     update_intellisense()
     update_tasks()
     update_launch()
+    if env.get('ENABLE_WOKWI'):
+        update_wokwi()
     update_workspace()
-
-
 
 if __name__ == '__main__':
     main()
