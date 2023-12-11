@@ -43,12 +43,6 @@ mainmenu "${SMING_SOC} Sming Framework Configuration"
                 This will recompile your application to use the revised baud rate.
                 Note that this will change the default speed used for both flashing and serial comms.
 
-        config ENABLE_CMD_EXECUTOR
-            bool "Enable command executor functionality"
-            default y
-            help
-                This facility requires documenting!
-
         config TASK_QUEUE_LENGTH
             int "Length of task queue"
             default 10

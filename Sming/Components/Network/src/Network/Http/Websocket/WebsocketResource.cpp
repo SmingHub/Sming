@@ -35,8 +35,6 @@ int WebsocketResource::checkHeaders(HttpServerConnection& connection, HttpReques
 	connection.userData = (void*)socket;
 	connection.setUpgradeCallback(HttpServerProtocolUpgradeCallback(&WebsocketConnection::onConnected, socket));
 
-	// TODO: Re-Enable Command Executor...
-
 	return 0;
 }
 

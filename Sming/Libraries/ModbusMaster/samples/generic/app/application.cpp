@@ -1,5 +1,4 @@
 #include <SmingCore.h>
-#include <Debug.h>
 #include <ModbusMaster.h>
 
 #define MODBUS_COM_SPEED 115200
@@ -104,11 +103,6 @@ void init()
 	debugComPort.begin(SERIAL_BAUD_RATE, SERIAL_8N1,
 				  SERIAL_TX_ONLY); // 115200 by default, GPIO1,GPIO3, see Serial.swap(), HardwareSerial
 	debugComPort.systemDebugOutput(true);
-
-	Debug.setDebug(debugComPort);
-	Debug.initCommand();
-	Debug.start();
-	Debug.printf("This is the debug output\r\n");
 
 	mbMaster.preTransmission(preTransmission);
 	mbMaster.postTransmission(postTransmission);
