@@ -27,8 +27,8 @@ From the root directory of your application, run the following command to consol
 
     make mergeflash SMING_ARCH=Esp32
 
-Example Usage
-=============
+Usage
+=====
 
 Basic_Blink
 -----------
@@ -43,7 +43,19 @@ Follow the commands below to get started::
 Once the compilation is complete, open the folder in VS Code, install the recommended extensions, and either open the ``diagram.json`` file or press F1 and type ``Wokwi``.
 From the options, choose to start the Wokwi simulator.
 
+Debugging
+=========
+
+Running the Basic_Blink sample in the simulator enables you to debug it directly in VS Code. 
+Set a breakpoint in the ``init`` function in the Basic_Blink ``app/application.cpp`` file. 
+Press F1 and select "Start Simulator and Wait for Debugger." In the Launch configurations, choose "Wokwi GDB" and click the play button. 
+This initiates a new debugging session, allowing you to debug the code running in the simulator.
+
+.. image:: wokwi-debug.jpg
+   :height: 192px
+
 Diagram Editor
 ==============
-The ``diagram.json`` file, which includes elements and their connections, can be edited on the Wokwi official website <https://wokwi.com/>__. 
+
+The ``diagram.json`` file, which includes elements and their connections, can be edited on the `Wokwi official website <https://wokwi.com/>`__. 
 You can add new elements such as extra LEDs or servos. Ensure to copy the modified contents of the diagram.json from the website to your local environment.

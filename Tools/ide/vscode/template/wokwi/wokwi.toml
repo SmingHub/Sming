@@ -2,3 +2,4 @@
 version=1
 firmware='${FW_BASE}/app-merged.bin'
 elf='${TARGET_OUT_0}'
+gdbServerPort=3333
