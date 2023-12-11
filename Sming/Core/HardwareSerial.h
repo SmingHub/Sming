@@ -114,10 +114,6 @@ public:
 	{
 	}
 
-	~HardwareSerial()
-	{
-	}
-
 	void setPort(int uartPort)
 	{
 		end();

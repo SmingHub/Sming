@@ -1,7 +1,6 @@
 #include <SmingCore.h>
 #include <CommandProcessing/Utils.h>
 
-//#include "CamSettings.h"
 #include <ArduCamCommand.h>
 
 #include <Libraries/ArduCAM/ArduCAM.h>
@@ -42,7 +41,6 @@ HttpServer server;
 
 CommandProcessing::Handler commandHandler;
 
-HexDump hdump;
 ArduCAM myCAM(OV2640, CAM_CS);
 ArduCamCommand arduCamCommand(myCAM, commandHandler);
 

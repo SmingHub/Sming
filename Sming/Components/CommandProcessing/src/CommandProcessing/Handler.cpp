@@ -96,18 +96,15 @@ void Handler::processCommandLine(const String& cmdString)
 void Handler::registerSystemCommands()
 {
 	String system = F("system");
-	registerCommand(Command(F("status"), F("Displays System Information"), system,
-							Command::Callback(&Handler::procesStatusCommand, this)));
-	registerCommand(Command(F("echo"), F("Displays command entered"), system,
-							Command::Callback(&Handler::procesEchoCommand, this)));
-	registerCommand(Command(F("help"), F("Displays all available commands"), system,
-							Command::Callback(&Handler::procesHelpCommand, this)));
-	registerCommand(Command(F("debugon"), F("Set Serial debug on"), system,
-							Command::Callback(&Handler::procesDebugOnCommand, this)));
-	registerCommand(Command(F("debugoff"), F("Set Serial debug off"), system,
-							Command::Callback(&Handler::procesDebugOffCommand, this)));
-	registerCommand(Command(F("command"), F("Use verbose/silent/prompt as command options"), system,
-							Command::Callback(&Handler::processCommandOptions, this)));
+	registerCommand({F("status"), F("Displays System Information"), system, {&Handler::procesStatusCommand, this}});
+	registerCommand({F("echo"), F("Displays command entered"), system, {&Handler::procesEchoCommand, this}});
+	registerCommand({F("help"), F("Displays all available commands"), system, {&Handler::procesHelpCommand, this}});
+	registerCommand({F("debugon"), F("Set Serial debug on"), system, {&Handler::procesDebugOnCommand, this}});
+	registerCommand({F("debugoff"), F("Set Serial debug off"), system, {&Handler::procesDebugOffCommand, this}});
+	registerCommand({F("command"),
+					 F("Use verbose/silent/prompt as command options"),
+					 system,
+					 {&Handler::processCommandOptions, this}});
 }
 
 Command Handler::getCommandDelegate(const String& commandString)
@@ -150,35 +147,24 @@ void Handler::procesHelpCommand(String commandLine, ReadWriteStream& outputStrea
 {
 	debug_d("HelpCommand entered");
 	outputStream.println(_F("Commands available are :"));
-	for(unsigned idx = 0; idx < registeredCommands.count(); idx++) {
-		outputStream.print(registeredCommands.valueAt(idx).name);
-		outputStream.print(" | ");
-		outputStream.print(registeredCommands.valueAt(idx).group);
-		outputStream.print(" | ");
-		outputStream.print(registeredCommands.valueAt(idx).description);
-		outputStream.print("\r\n");
+	for(auto cmd : registeredCommands) {
+		outputStream << cmd->name << " | " << cmd->group << " | " << cmd->description << endl;
 	}
 }
 
 void Handler::procesStatusCommand(String commandLine, ReadWriteStream& outputStream)
 {
 	debug_d("StatusCommand entered");
-	outputStream.println(_F("Sming Framework Version : " SMING_VERSION));
-	outputStream.print(_F("ESP SDK version : "));
-	outputStream.print(system_get_sdk_version());
-	outputStream.println();
-	outputStream.print(_F("Time = "));
-	outputStream.print(SystemClock.getSystemTimeString());
-	outputStream.println();
-	outputStream.printf(_F("System Start Reason : %d\r\n"), system_get_rst_info()->reason);
+	outputStream << _F("Sming Framework Version : " SMING_VERSION) << endl;
+	outputStream << _F("ESP SDK version : ") << system_get_sdk_version() << endl;
+	outputStream << _F("Time = ") << SystemClock.getSystemTimeString() << endl;
+	outputStream << _F("System Start Reason : ") << system_get_rst_info()->reason << endl;
 }
 
 void Handler::procesEchoCommand(String commandLine, ReadWriteStream& outputStream)
 {
 	debug_d("HelpCommand entered");
-	outputStream.print(_F("You entered : '"));
-	outputStream.print(commandLine);
-	outputStream.println('\'');
+	outputStream << _F("You entered : '") << commandLine << '\'' << endl;
 }
 
 void Handler::procesDebugOnCommand(String commandLine, ReadWriteStream& outputStream)
@@ -223,23 +209,19 @@ void Handler::processCommandOptions(String commandLine, ReadWriteStream& outputS
 			break;
 		}
 		setCommandPrompt(commandToken[2]);
-		outputStream.print(_F("Prompt set to : "));
-		outputStream.print(commandToken[2]);
-		outputStream.println();
+		outputStream << _F("Prompt set to : ") << commandToken[2] << endl;
 		break;
 	default:
 		errorCommand = true;
 	}
 	if(errorCommand) {
-		outputStream.print(_F("Unknown command : "));
-		outputStream.print(commandLine);
-		outputStream.println();
+		outputStream << _F("Unknown command : ") << commandLine << endl;
 	}
 	if(printUsage) {
-		outputStream.println(_F("command usage : \r\n"));
-		outputStream.println(_F("command verbose : Set verbose mode"));
-		outputStream.println(_F("command silent : Set silent mode"));
-		outputStream.println(_F("command prompt 'new prompt' : Set prompt to use"));
+		outputStream << _F("command usage :") << endl
+					 << _F("command verbose : Set verbose mode") << endl
+					 << _F("command silent : Set silent mode") << endl
+					 << _F("command prompt 'new prompt' : Set prompt to use") << endl;
 	}
 }
 

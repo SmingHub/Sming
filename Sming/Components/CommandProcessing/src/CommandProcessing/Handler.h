@@ -132,7 +132,7 @@ public:
 	/** @brief  Get the verbose mode
 	 *  @retval VerboseMode Verbose mode
 	 */
-	bool isVerbose()
+	bool isVerbose() const
 	{
 		return verboseMode;
 	}
@@ -150,7 +150,7 @@ public:
 	 *  @note   This is what is shown on the command line before user input
 	 *          Default is Sming>
 	 */
-	String getCommandPrompt()
+	const String& getCommandPrompt() const
 	{
 		return currentPrompt;
 	}
@@ -169,7 +169,7 @@ public:
 	 *  @retval char The EOL character
 	 *  @note   Only supports one EOL, unlike Windows
 	 */
-	char getCommandEOL()
+	char getCommandEOL() const
 	{
 		return currentEOL;
 	}
@@ -187,7 +187,7 @@ public:
 	 *  @retval String The welcome message that is shown when clients connect
 	 *  @note   Only if verbose mode is enabled
 	 */
-	String getCommandWelcomeMessage()
+	const String& getCommandWelcomeMessage() const
 	{
 		return currentWelcomeMessage;
 	}

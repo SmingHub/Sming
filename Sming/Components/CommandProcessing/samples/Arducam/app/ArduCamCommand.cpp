@@ -23,9 +23,9 @@ void ArduCamCommand::initCommand()
 void ArduCamCommand::showSettings(ReadWriteStream& commandOutput)
 {
 	// review settings
-	commandOutput.printf("ArduCam Settings:\n");
-	commandOutput.printf("    img Type: [%s]\n", getImageType());
-	commandOutput.printf("    img Size: [%s]\n", getImageSize());
+	commandOutput << _F("ArduCam Settings:") << endl
+				  << _F("    img Type: [") << getImageType() << ']' << endl
+				  << _F("    img Size: [") << getImageSize() << ']' << endl;
 };
 
 void ArduCamCommand::processSetCommands(String commandLine, ReadWriteStream& commandOutput)
@@ -61,7 +61,6 @@ void ArduCamCommand::processSetCommands(String commandLine, ReadWriteStream& com
 		showSettings(commandOutput);
 	}
 
-	// handle command ->   settings
 	else if(commandToken[1] == "size") {
 		if(numToken == 3) {
 			if(commandToken[2] == "160") {
@@ -109,7 +108,7 @@ void ArduCamCommand::processSetCommands(String commandLine, ReadWriteStream& com
 	}
 }
 
-void ArduCamCommand::setSize(String size)
+void ArduCamCommand::setSize(const String& size)
 {
 	if(size == "160x120") {
 		imgSize = OV2640_160x120;
@@ -151,26 +150,9 @@ void ArduCamCommand::setSize(String size)
 	}
 }
 
-void ArduCamCommand::setType(String type)
+void ArduCamCommand::setType(const String& type)
 {
-	if(type == "BMP") {
-		myCAM.set_format(BMP);
-		if(imgType != BMP) {
-			// reset the cam
-			myCAM.InitCAM();
-			imgType = BMP;
-			imgSize = OV2640_320x240;
-		}
-	} else {
-		myCAM.set_format(JPEG);
-		// reset the cam
-		if(imgType != JPEG) {
-			// reset the cam
-			myCAM.InitCAM();
-			myCAM.OV2640_set_JPEG_size(imgSize);
-			imgType = JPEG;
-		}
-	}
+	setFormat(type == "BMP" ? BMP : JPEG);
 }
 
 void ArduCamCommand::setFormat(uint8 type)

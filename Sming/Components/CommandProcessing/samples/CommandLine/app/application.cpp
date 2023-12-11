@@ -14,22 +14,22 @@ void processExampleCommand(String commandLine, ReadWriteStream& commandOutput)
 	Vector<String> commandToken;
 	int numToken = splitString(commandLine, ' ', commandToken);
 
+	// First token is "example"
 	if(numToken == 1) {
-		commandOutput.printf("Example Commands available : \r\n");
-		commandOutput.printf("on   : Set example status ON\r\n");
-		commandOutput.printf("off  : Set example status OFF\r\n");
-		commandOutput.printf("status : Show example status\r\n");
+		commandOutput << _F("Example Commands available :") << endl;
+		commandOutput << _F("on   : Set example status ON") << endl;
+		commandOutput << _F("off  : Set example status OFF") << endl;
+		commandOutput << _F("status : Show example status") << endl;
+	} else if(commandToken[1] == "on") {
+		exampleStatus = true;
+		commandOutput << _F("Status ON") << endl;
+	} else if(commandToken[1] == "off") {
+		exampleStatus = false;
+		commandOutput << _F("Status OFF") << endl;
+	} else if(commandToken[1] == "status") {
+		commandOutput << _F("Example Status is ") << (exampleStatus ? "ON" : "OFF") << endl;
 	} else {
-		if(commandToken[1] == "on") {
-			exampleStatus = true;
-			commandOutput.printf("Status ON\r\n");
-		} else if(commandToken[1] == "off") {
-			exampleStatus = false;
-			commandOutput.printf("Status OFF\r\n");
-		} else if(commandToken[1] == "status") {
-			String tempString = exampleStatus ? "ON" : "OFF";
-			commandOutput.printf("Example Status is %s\r\n", tempString.c_str());
-		};
+		commandOutput << _F("Bad command") << endl;
 	}
 }
 
