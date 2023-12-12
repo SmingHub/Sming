@@ -11,7 +11,7 @@ It is more suited to resource constrained devices than bluedroid and has now bee
 Using
 -----
 
-1. Add ``COMPONENT_DEPENDS += NimBLE`` to your application componenent.mk file.
+1. Add ``COMPONENT_DEPENDS += NimBLE`` to your application component.mk file.
 2. Add these lines to your application::
 
 	#include <NimBLEDevice.h>
