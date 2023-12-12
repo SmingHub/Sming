@@ -116,7 +116,7 @@ def update_workspace():
 def update_wokwi():
     filename = '.vscode/extensions.json'
     extensions = load_json(filename, False)
-    template = load_template('extensions.json', appPath)
+    template = load_template('wokwi/extensions.json', appPath)
     if extensions is None:
         extensions = template.copy()
         save_json(extensions, filename)
