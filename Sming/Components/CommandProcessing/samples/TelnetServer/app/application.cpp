@@ -52,10 +52,7 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
-
-	// Process commands from serial
 	commandHandler.setVerbose(true);
-	CommandProcessing::enable(commandHandler, Serial);
 
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
@@ -63,6 +60,6 @@ void init()
 
 	WifiEvents.onStationGotIP(gotIP);
 
-	// set command handlers for cam
+	// set command handlers
 	initCommands();
 }
