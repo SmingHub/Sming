@@ -133,6 +133,11 @@ else ifneq ($(SMING_ARCH),Host)
 	$(TERMINAL)
 endif
 
+.PHONY: mergeflash
+mergeflash: all ##Merge the boot loader and all defined partition images into a single flash file
+	$(Q) $(call CheckPartitionChunks,$(FLASH_PARTITION_CHUNKS))
+	$(call MergeFlash,$(FLASH_BOOT_CHUNKS) $(FLASH_MAP_CHUNK) $(FLASH_PARTITION_CHUNKS),$(FW_BASE)/app-merged.bin)
+
 .PHONY: verifyflash
 verifyflash: ##Read all flash sections and verify against source
 	$(Q) $(call CheckPartitionChunks,$(FLASH_PARTITION_CHUNKS))
