@@ -119,8 +119,8 @@ def update_wokwi():
     template = load_template('wokwi/extensions.json', appPath)
     if extensions is None:
         extensions = template.copy()
-        save_json(extensions, filename)
-        return
+    if not extensions.get("recommendations"):
+        extensions["recommendations"] = []
     extensions["recommendations"] = extensions["recommendations"] + list(set(template["recommendations"]) - set(extensions["recommendations"]))
     save_json(extensions, filename)
 
