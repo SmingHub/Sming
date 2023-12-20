@@ -1,5 +1,4 @@
 #include <SmingCore.h>
-#include <Debug.h>
 #include <CS5460.h>
 
 CS5460 powerMeter(PIN_NDEFINED, PIN_NDEFINED, PIN_NDEFINED, PIN_NDEFINED);
@@ -16,7 +15,6 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE, SERIAL_8N1,
 				 SERIAL_FULL); // 115200 by default, GPIO1,GPIO3, see Serial.swap(), HardwareSerial
 	Serial.systemDebugOutput(true);
-	Debug.setDebug(Serial);
 
 	powerMeter.init();
 	powerMeter.setCurrentGain(190.84); //0.25 / shunt (0.00131)

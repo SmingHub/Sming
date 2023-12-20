@@ -26,7 +26,7 @@ System commands can be activated using: -
 
 The additional parameter for websocket is used to allow multiple
 connections on one websocket server instance, both with or without
-command proceesing.
+command processing.
 
 When the websocket open request has query parameter ``"command=true"``
 command processing is enabled.

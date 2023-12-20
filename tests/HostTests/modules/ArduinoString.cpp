@@ -99,7 +99,7 @@ public:
 			REQUIRE(hello2 == "hello");
 		}
 
-		TEST_CASE("String concantenation", "[core][String]")
+		TEST_CASE("String concatenation", "[core][String]")
 		{
 			String str;
 			REQUIRE(str.length() == 0);

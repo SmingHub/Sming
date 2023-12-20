@@ -23,20 +23,20 @@ If you like **Sming**, give it a star, or fork it and [contribute](#contribute)!
 Sming supports multiple architectures and has a [plethora of features](https://sming.readthedocs.io/en/latest/index.html#summary).
 Choose the architecture of your choice to [install the needed development software](https://sming.readthedocs.io/en/latest/getting-started).
 
-You can also try Sming without installing anything locally. We have an [interactive tutorial](https://www.katacoda.com/slaff/scenarios/sming-host-emulator) that can be run directly from your browser.
+You can also try Sming without installing anything locally. We have an [interactive tutorial](https://killercoda.com/slaff/scenario/sming-host-emulator) that can be run directly from your browser.
 
 ## Documentation
 
 The purpose of Sming is to simplify the creation of embedded applications. The documentation will help you get started in no time.
 
-- [**Documentation for version 5.0.0**](https://sming.readthedocs.io/en/stable) - current stable version.
+- [**Documentation for version 5.1.0**](https://sming.readthedocs.io/en/stable) - current stable version.
 - [Documentation for latest](https://sming.readthedocs.io/en/latest) - development version.
 
 ## Releases
 
 ### Stable
 
-- [Sming V5.0.0](https://github.com/SmingHub/Sming/releases/tag/5.0.0) - great new features, performance and stability improvements.
+- [Sming V5.1.0](https://github.com/SmingHub/Sming/releases/tag/5.1.0) - great new features, performance and stability improvements.
 
 ### Development
 

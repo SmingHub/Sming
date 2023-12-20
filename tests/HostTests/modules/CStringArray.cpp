@@ -213,6 +213,25 @@ public:
 			REQUIRE(csa.back() == nullptr);
 			REQUIRE(!csa.popBack());
 		}
+
+		TEST_CASE("join")
+		{
+			CStringArray csa;
+			REQUIRE(!csa.join());
+
+			csa = "";
+			REQUIRE(csa.join() == "");
+
+			csa.add("a");
+			REQUIRE(csa.join() == "a");
+
+			csa.add("");
+			REQUIRE(csa.join() == "a,");
+
+			csa.add(F("test\0again"));
+			REQUIRE_EQ(csa.join("}+{"), "a}+{}+{test}+{again");
+			REQUIRE_EQ(csa.join(nullptr), "atestagain");
+		}
 	}
 };
 

@@ -168,3 +168,25 @@ unsigned CStringArray::count() const
 	}
 	return stringCount;
 }
+
+String CStringArray::join(const String& separator) const
+{
+	if(isNull()) {
+		return nullptr;
+	}
+	unsigned len = length();
+	if(len == 0) {
+		return "";
+	}
+	len -= count(); // NUL separators
+	len += separator.length() * (stringCount - 1);
+	String s;
+	s.reserve(len);
+	for(auto it = begin(); it != end(); ++it) {
+		if(it.index() != 0) {
+			s += separator;
+		}
+		s += *it;
+	}
+	return s;
+}

@@ -18,7 +18,7 @@ Choose your preferred development environment for how to install the needed deve
    docker/index
 
 You can also try Sming without installing anything locally.
-We have an  `interactive tutorial <https://www.katacoda.com/slaff/scenarios/sming-host-emulator>`__ that can be run directly from your browser.
+We have an  `interactive tutorial <https://killercoda.com/slaff/scenario/sming-host-emulator>`__ that can be run directly from your browser.
 
 
 .. toctree::

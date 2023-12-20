@@ -50,8 +50,6 @@ using StreamDataReceivedDelegate = Delegate<void(Stream& source, char arrivedCha
  */
 using TransmitCompleteDelegate = Delegate<void(HardwareSerial& serial)>;
 
-class CommandExecutor;
-
 // clang-format off
 #define SERIAL_CONFIG_MAP(XX) \
 	XX(5N1) XX(6N1) XX(7N1) XX(8N1) XX(5N2) XX(6N2) XX(7N2) XX(8N2) XX(5E1) XX(6E1) XX(7E1) XX(8E1) \
@@ -115,8 +113,6 @@ public:
 	HardwareSerial(int uartPort) : uartNr(uartPort)
 	{
 	}
-
-	~HardwareSerial();
 
 	void setPort(int uartPort)
 	{
@@ -340,8 +336,12 @@ public:
 	 *  @param  reqEnable True to enable command processing
 	 *  @note   Command processing provides a CLI to the system
 	 *  @see    commandHandler
+	 *
+	 *  @deprecated include <Services/CommandProcessing/Utils.h> and use `CommandProcessing::enable(Handler, Serial)` instead.
 	 */
-	void commandProcessing(bool reqEnable);
+	void commandProcessing(bool reqEnable) SMING_DEPRECATED
+	{
+	}
 
 	/** @brief  Set handler for received data
 	 *  @param  dataReceivedDelegate Function to handle received data
@@ -449,7 +449,6 @@ private:
 	int uartNr = UART_NO;
 	TransmitCompleteDelegate transmitComplete = nullptr; ///< Callback for transmit completion
 	StreamDataReceivedDelegate HWSDelegate = nullptr;	///< Callback for received data
-	CommandExecutor* commandExecutor = nullptr;			 ///< Callback for command execution (received data)
 	smg_uart_t* uart = nullptr;
 	uart_options_t options = _BV(UART_OPT_TXWAIT);
 	size_t txSize = DEFAULT_TX_BUFFER_SIZE;

@@ -295,7 +295,7 @@ void smg_uart_start_isr(smg_uart_t* uart)
 
 	if(smg_uart_rx_enabled(uart)) {
 		// Trigger at >= 7/8 full
-		fifo_level_select |= 5 << UART_UARTIFLS_RXIFLSEL_LSB;
+		fifo_level_select |= 4 << UART_UARTIFLS_RXIFLSEL_LSB;
 
 		/*
 		 * There is little benefit in generating interrupts on errors, instead these

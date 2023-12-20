@@ -104,6 +104,17 @@ public:
 		readPos = 0;
 	}
 
+	/**
+	 * @brief Clear stream and release allocated memory
+	 */
+	void reset()
+	{
+		clear();
+		free(buffer);
+		buffer = nullptr;
+		capacity = 0;
+	}
+
 	size_t getSize() const
 	{
 		return size;

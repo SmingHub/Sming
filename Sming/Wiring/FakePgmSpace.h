@@ -75,6 +75,9 @@ extern "C" {
 		&__pstr__[0];                                                                                                  \
 	}))
 
+#ifdef ARCH_HOST
+#define _F(str) (str)
+#else
 /**
  * @brief Declare and use a flash string inline.
  * @param str
@@ -86,6 +89,8 @@ extern "C" {
 		LOAD_PSTR(buf, __pstr__);                                                                                      \
 		buf;                                                                                                           \
 	}))
+
+#endif
 
 /**
  * @brief copy memory aligned to word boundaries

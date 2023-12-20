@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Wokwi GDB",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerServerAddress": "localhost:3333"
+        }
+    ]
+}

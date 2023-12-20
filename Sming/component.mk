@@ -31,14 +31,6 @@ COMPONENT_DOXYGEN_INPUT := \
 	Wiring \
 	System
 
-# => Disable CommandExecutor functionality if not used and save some ROM and RAM
-COMPONENT_VARS			+= ENABLE_CMD_EXECUTOR
-ENABLE_CMD_EXECUTOR		?= 1
-ifeq ($(ENABLE_CMD_EXECUTOR),1)
-COMPONENT_SRCDIRS		+= Services/CommandProcessing
-endif
-GLOBAL_CFLAGS			+= -DENABLE_CMD_EXECUTOR=$(ENABLE_CMD_EXECUTOR)
-
 #
 RELINK_VARS += DISABLE_NETWORK
 DISABLE_NETWORK ?= 0
@@ -140,6 +132,11 @@ ifeq ($(ENABLE_GDB), 1)
 else ifneq ($(SMING_ARCH),Host)
 	$(TERMINAL)
 endif
+
+.PHONY: mergeflash
+mergeflash: all ##Merge the boot loader and all defined partition images into a single flash file
+	$(Q) $(call CheckPartitionChunks,$(FLASH_PARTITION_CHUNKS))
+	$(call MergeFlash,$(FLASH_BOOT_CHUNKS) $(FLASH_MAP_CHUNK) $(FLASH_PARTITION_CHUNKS),$(FW_BASE)/app-merged.bin)
 
 .PHONY: verifyflash
 verifyflash: ##Read all flash sections and verify against source

@@ -42,7 +42,7 @@ protected:
 	TcpConnection* createClient(tcp_pcb* clientTcp) override;
 
 	/**
-	 * @brief Handle an incomding command
+	 * @brief Handle an incoming command
 	 * @param cmd The command identifier, e.g. LIST
 	 * @param data Any command arguments
 	 * @param connection The associated TCP connection to receive any response

@@ -7,3 +7,4 @@ Experimental Stuff
 
    httpserver-ssl
    signed-ota
+   wokwi

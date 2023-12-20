@@ -137,7 +137,7 @@ private:
 	Storage::Partition partition;
 	IProfiler* profiler{nullptr};
 	SpiffsMetaBuffer metaCache[SPIFF_FILEDESC_COUNT];
-	spiffs fs;
+	spiffs fs{};
 	uint8_t workBuffer[LOG_PAGE_SIZE * 2];
 	spiffs_fd fileDescriptors[SPIFF_FILEDESC_COUNT];
 	uint8_t cache[CACHE_SIZE];
