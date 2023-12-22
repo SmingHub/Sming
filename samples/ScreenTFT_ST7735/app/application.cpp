@@ -12,14 +12,14 @@
  * DC       (DC)          GPIO0
  * CS       (CS)          GPIO2
  */
-#define TFT_SCLK 14
-#define TFT_MOSI 13
-#define TFT_RST 16
-#define TFT_DC 0
-#define TFT_CS 2
+#define TFT_SCLK 18
+#define TFT_MOSI 23
+#define TFT_RST 32
+#define TFT_DC 33
+#define TFT_CS 5
 
-//Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
-Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
+Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
+//Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
 Timer DemoScreenTimer;
 float p = 3.1415926;

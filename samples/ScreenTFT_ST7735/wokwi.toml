@@ -1,0 +1,5 @@
+[wokwi]
+version=1
+firmware='out/Esp32/esp32/debug/firmware/app-merged.bin'
+elf='out/Esp32/esp32/debug/build/app.out'
+gdbServerPort=3333

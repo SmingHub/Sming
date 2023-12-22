@@ -1,0 +1,30 @@
+{
+    "version": 1,
+    "author": "Pedro Malo",
+    "editor": "wokwi",
+    "parts": [
+      { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 224.1, "left": 103.57, "attrs": {} },
+      {
+        "type": "wokwi-ili9341",
+        "id": "lcd1",
+        "top": 178.2,
+        "left": 356.9,
+        "rotate": 90,
+        "attrs": {}
+      }
+    ],
+    "connections": [
+      [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+      [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+      [ "lcd1:SCK", "esp:D18", "green", [ "v-0.01", "h-86.4", "v-39.8" ] ],
+      [ "lcd1:MOSI", "esp:D23", "green", [ "h-57.6", "v-87.91" ] ],
+      [ "lcd1:RST", "esp:D32", "green", [ "h-38.4", "v-124.8", "h-172.8", "v104.3" ] ],
+      [ "lcd1:D/C", "esp:D33", "green", [ "h-19.2", "v-124.8", "h-220.8", "v104.2" ] ],
+      [ "lcd1:CS", "esp:D5", "green", [ "h-57.6", "v9.6", "h-44.73" ] ],
+      [ "lcd1:MISO", "esp:D19", "green", [ "h-67.2", "v-48", "h9.61", "v-20.51" ] ],
+      [ "lcd1:GND", "esp:GND.1", "black", [ "h-48", "v75.5" ] ],
+      [ "lcd1:LED", "esp:VIN", "red", [ "h-28.8", "v-134.41", "h-201.6", "v161.8" ] ],
+      [ "lcd1:VCC", "esp:VIN", "red", [ "h-9.6", "v-76.8", "h-220.8", "v171.4" ] ]
+    ],
+    "dependencies": {}
+  }
