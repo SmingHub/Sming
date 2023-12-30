@@ -28,12 +28,12 @@ Build variables
 Requirements
 ------------
 
-In order to be able to compile for the ESP32 architecture you should have ESP-IDF v4.3 installed.
-Some slight changes are required to enable code to compile correctly for C++,
-so a fork has been created here https://github.com/mikee47/esp-idf/tree/sming/release/v4.3
-which you may clone.
+Sming requires a slightly modified version of the Espressif SDK.
+You can find the SDK here https://github.com/mikee47/esp-idf/tree/sming/release/v5.2.
+See `idf_versions`_ below for further details.
 
-The Sming installers do all this for you - see :doc:`/getting-started/index`.
+Using the Sming installation scripts are the recommended way to install these SDK versions.
+See :doc:`/getting-started/index`.
 
 You can find further details in the `ESP-IDF documentation <https://docs.espressif.com/projects/esp-idf/en/v4.3/get-started/index.html#installation-step-by-step>`__.
 
@@ -101,14 +101,16 @@ Each variant uses a different build directory, e.g. ``out/Esp32/esp32c3/...`` to
 See :component-esp32:`esp32` for further details.
 
 
+.. _idf_versions:
+
 IDF versions
 ------------
 
-Sming currently supports IDF versions 4.3, 4.4 and 5.0.
+Sming currently supports IDF versions 4.3, 4.4, 5.0 and 5.2.
 
 The default installed IDF version is 4.4. This can be changed as follows::
 
-    INSTALL_IDF_VER=5.0 $SMING_HOME/../Tools/install.sh esp32
+    INSTALL_IDF_VER=5.2 $SMING_HOME/../Tools/install.sh esp32
 
 The installation script creates a soft-link in ``/opt/esp-idf`` pointing to the last version installed.
 Use the `IDF_PATH` environment variable or change the soft-link to select which one to use.

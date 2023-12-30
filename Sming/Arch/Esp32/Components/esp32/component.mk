@@ -14,6 +14,8 @@ ifeq ($(CREATE_EVENT_TASK),1)
 COMPONENT_CPPFLAGS += -DCREATE_EVENT_TASK
 endif
 
+GLOBAL_CFLAGS += -DSOC_XTAL_FREQ_MHZ=CONFIG_XTAL_FREQ
+
 IDF_VERSION := $(firstword $(subst -, ,$(IDF_VER)))
 IDF_VERSION_4 := $(filter v4%,$(IDF_VERSION))
 
@@ -32,6 +34,7 @@ SDKCONFIG_H := $(SDK_BUILD_BASE)/config/sdkconfig.h
 
 SDK_LIBDIRS := \
 	esp_wifi/lib/$(ESP_VARIANT) \
+	esp_coex/lib/$(ESP_VARIANT) \
 	esp_phy/lib/$(ESP_VARIANT) \
 	xtensa/$(ESP_VARIANT) \
 	hal/$(ESP_VARIANT) \
@@ -68,6 +71,9 @@ SDK_INCDIRS := \
 	bootloader_support/include_bootloader \
 	driver/$(ESP_VARIANT)/include \
 	driver/include \
+	driver/gpio/include \
+	driver/ledc/include \
+	driver/spi/include \
 	esp_pm/include \
 	esp_rom/include/$(ESP_VARIANT) \
 	esp_rom/include \
@@ -83,6 +89,9 @@ SDK_INCDIRS := \
 	esp_event/include \
 	lwip/lwip/src/include \
 	lwip/port/esp32/include \
+	lwip/port/include \
+	lwip/port/freertos/include \
+	lwip/port/esp32xx/include \
 	newlib/platform_include \
 	spi_flash/include \
 	wpa_supplicant/include \
@@ -99,7 +108,8 @@ SDK_INCDIRS := \
 	esp_wifi/include \
 	esp_wifi/esp32/include \
 	lwip/include/apps/sntp \
-	wpa_supplicant/include/esp_supplicant
+	wpa_supplicant/include/esp_supplicant \
+	esp_bootloader_format/include
 
 ifdef IDF_VERSION_4
 SDK_INCDIRS += \
@@ -112,11 +122,14 @@ FREERTOS_PORTABLE := freertos/port
 else
 SDK_INCDIRS += \
 	esp_adc/include \
+	esp_adc/$(ESP_VARIANT)/include \
 	esp_app_format/include \
 	esp_partition/include \
 	freertos/FreeRTOS-Kernel/include \
 	freertos/esp_additions/include \
 	freertos/esp_additions/include/freertos \
+	freertos/config/include \
+	freertos/config/include/freertos \
 	driver/deprecated
 FREERTOS_PORTABLE := freertos/FreeRTOS-Kernel/portable
 endif
@@ -146,6 +159,7 @@ SDK_INCDIRS += \
 	bt/host/nimble/nimble/nimble/host/util/include           \
 	bt/host/nimble/nimble/nimble/host/store/ram/include      \
 	bt/host/nimble/nimble/nimble/host/store/config/include   \
+	bt/host/nimble/nimble/nimble/transport/include           \
 	bt/host/nimble/esp-hci/include                           \
 	bt/host/nimble/port/include
 endif
@@ -153,12 +167,18 @@ endif
 ifdef IDF_TARGET_ARCH_RISCV
 SDK_INCDIRS += \
 	$(FREERTOS_PORTABLE)/riscv/include \
+	$(FREERTOS_PORTABLE)/riscv/include/freertos \
+	freertos/config/riscv \
+	freertos/config/riscv/include \
 	riscv/include
 else
 SDK_INCDIRS += \
 	xtensa/include \
 	xtensa/$(ESP_VARIANT)/include \
-	$(FREERTOS_PORTABLE)/xtensa/include
+	$(FREERTOS_PORTABLE)/xtensa/include \
+	$(FREERTOS_PORTABLE)/xtensa/include/freertos \
+	freertos/config/xtensa \
+	freertos/config/xtensa/include
 endif
 
 	 
@@ -208,6 +228,12 @@ SDK_COMPONENTS += \
 	esp_adc \
 	esp_app_format \
 	esp_partition
+endif
+
+ifeq (v5.2,$(IDF_VERSION))
+SDK_COMPONENTS += \
+	esp_mm \
+	esp_coex
 endif
 
 
@@ -302,9 +328,13 @@ LDFLAGS_esp32s3 := \
 LDFLAGS_esp32c2 := \
 	$(call LinkerScript,rom.newlib) \
 	$(call LinkerScript,rom.version) \
-	$(call LinkerScript,rom.newlib-time) \
 	$(call LinkerScript,rom.heap) \
 	$(call LinkerScript,rom.mbedtls)
+
+ifneq (v5.2,$(IDF_VERSION))
+LDFLAGS_esp32c2 += \
+	$(call LinkerScript,rom.newlib-time)
+endif
 
 SDK_WRAP_SYMBOLS :=
 SDK_UNDEF_SYMBOLS :=
