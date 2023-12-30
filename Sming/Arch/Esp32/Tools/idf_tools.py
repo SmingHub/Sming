@@ -10,18 +10,17 @@ def get_tool_info(soc):
     compiler_prefix = None
     compiler_version = None
     for tool in tools_info['tools']:
-        if soc in tool['supported_targets']:
-            desc = tool['description']
-            if desc.startswith('Toolchain'):
-                compiler_prefix = tool['name']
-                compiler_version = tool['versions'][0]['name']
-                break
-    print(f"{compiler_prefix} {compiler_version}")
-
-    # ESP32_COMPILER_PREFIX=compiler_prefix
-    # IDF_TARGET_ARCH_RISCV=is_riscv
-
-
+        if tool.get('install') != 'always':
+            continue
+        if soc not in tool['supported_targets']:
+            continue
+        desc = tool['description']
+        if not desc.startswith('Toolchain'):
+            continue
+        tool_name = tool['name']
+        tool_version = tool['versions'][0]['name']
+        break
+    print(f"{tool_name} {tool_version}")
 
 
 if __name__ == '__main__':

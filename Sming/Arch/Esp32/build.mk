@@ -10,6 +10,12 @@ endif
 
 export IDF_PATH := $(call FixPath,$(IDF_PATH))
 
+# Extract IDF version
+ifndef IDF_VER
+IDF_VER := $(shell (cd $$IDF_PATH && git describe --always --tags --dirty) | cut -c 1-31)
+endif
+IDF_VERSION := $(firstword $(subst -, ,$(IDF_VER)))
+
 # By default, downloaded tools will be installed under $HOME/.espressif directory
 # (%USERPROFILE%/.espressif on Windows). This path can be modified by setting
 # IDF_TOOLS_PATH variable prior to running this tool.
@@ -27,40 +33,43 @@ ESP_VARIANT := $(SMING_SOC)
 export ESP_VARIANT
 
 IDF_TOOL_INFO := $(shell $(PYTHON) $(ARCH_TOOLS)/idf_tools.py $(SMING_SOC))
-ESP32_COMPILER_PREFIX := $(word 1,$(IDF_TOOL_INFO))
+ESP32_TOOLSET_PREFIX := $(word 1,$(IDF_TOOL_INFO))
 ESP32_COMPILER_VERSION := $(word 2,$(IDF_TOOL_INFO))
+ifeq (xtensa-esp-elf,$(ESP32_TOOLSET_PREFIX))
+ESP32_COMPILER_PREFIX := xtensa-$(ESP_VARIANT)-elf
+else
+ESP32_COMPILER_PREFIX := $(ESP32_TOOLSET_PREFIX)
 IDF_TARGET_ARCH_RISCV := $(findstring riscv,$(ESP32_COMPILER_PREFIX))
+endif
 
-# $1 => Root directory
-# $2 => Sub-directory
+# $1 => Tool sub-path/name
 define FindTool
-$(lastword $(sort $(wildcard $(IDF_TOOLS_PATH)/$1/*))$2)
+$(lastword $(sort $(wildcard $(IDF_TOOLS_PATH)/$1*)))
 endef
 
 DEBUG_VARS			+= ESP32_COMPILER_PATH ESP32_ULP_PATH ESP32_OPENOCD_PATH ESP32_PYTHON_PATH
 
 ifndef ESP32_COMPILER_PATH
-ESP32_COMPILER_PATH	:= $(IDF_TOOLS_PATH)/tools/$(ESP32_COMPILER_PREFIX)/$(ESP32_COMPILER_VERSION)/$(ESP32_COMPILER_PREFIX)
+ESP32_COMPILER_PATH	:= $(IDF_TOOLS_PATH)/tools/$(ESP32_TOOLSET_PREFIX)/$(ESP32_COMPILER_VERSION)/$(ESP32_TOOLSET_PREFIX)
 endif
 
 ifndef ESP32_ULP_PATH
-ESP32_ULP_PATH		:= $(call FindTool,tools/$(ESP_VARIANT)ulp-elf)
+ESP32_ULP_PATH		:= $(call FindTool,tools/$(ESP_VARIANT)ulp-elf/)
 endif
 
 ifndef ESP32_OPENOCD_PATH
-ESP32_OPENOCD_PATH	:= $(call FindTool,tools/openocd-esp32)
+ESP32_OPENOCD_PATH	:= $(call FindTool,tools/openocd-esp32/)
 endif
 
 ifndef ESP32_PYTHON_PATH
-ESP32_PYTHON_PATH	:= $(call FindTool,python_env)
-ifneq (,$(wildcard $(ESP32_PYTHON_PATH)/bin))
-ESP32_PYTHON_PATH := $(ESP32_PYTHON_PATH)/bin
-else ifneq (,$(wildcard $(ESP32_PYTHON_PATH)/Scripts))
-ESP32_PYTHON_PATH := $(ESP32_PYTHON_PATH)/Scripts
+ESP32_PYTHON_PATH := $(call FindTool,python_env/idf$(subst v,,$(IDF_VERSION)))
+ifndef ESP32_PYTHON_PATH
+ESP32_PYTHON_PATH := $(dir $(PYTHON))
+else ifeq ($(UNAME),Windows)
+ESP32_PYTHON := $(ESP32_PYTHON_PATH)/Scripts/python
 else
-$(error Failed to find ESP32 Python installation)
+ESP32_PYTHON := $(ESP32_PYTHON_PATH)/bin/python
 endif
-ESP32_PYTHON = $(ESP32_PYTHON_PATH)/python
 endif
 
 # Required by v4.2 SDK
@@ -80,7 +89,7 @@ IDF_PATH_LIST := \
 ifeq ($(UNAME),Windows)
 DEBUG_VARS += ESP32_NINJA_PATH
 ifndef ESP32_NINJA_PATH
-ESP32_NINJA_PATH	:= $(call FindTool,tools/ninja)
+ESP32_NINJA_PATH	:= $(call FindTool,tools/ninja/)
 endif
 ifeq (,$(wildcard $(ESP32_NINJA_PATH)/ninja.exe))
 $(error Failed to find NINJA)
@@ -89,7 +98,7 @@ IDF_PATH_LIST += $(ESP32_NINJA_PATH)
 
 DEBUG_VARS += ESP32_IDFEXE_PATH
 ifndef ESP32_IDFEXE_PATH
-ESP32_IDFEXE_PATH := $(call FindTool,tools/idf-exe)
+ESP32_IDFEXE_PATH := $(call FindTool,tools/idf-exe/)
 endif
 IDF_PATH_LIST += $(ESP32_IDFEXE_PATH)
 endif
@@ -113,9 +122,6 @@ OBJCOPY		:= $(TOOLSPEC)-objcopy
 OBJDUMP		:= $(TOOLSPEC)-objdump
 GDB			:= $(TOOLSPEC)-gdb
 SIZE 		:= $(TOOLSPEC)-size
-
-# Extracting IDF version
-IDF_VER := $(shell (cd $$IDF_PATH && git describe --always --tags --dirty) | cut -c 1-31)
 
 # [ Sming specific flags ]
 DEBUG_VARS += IDF_PATH IDF_VER

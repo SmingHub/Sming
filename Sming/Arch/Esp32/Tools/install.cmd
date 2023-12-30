@@ -16,4 +16,9 @@ set IDF_REQUIREMENTS="%IDF_PATH%\requirements.txt"
 if not exist "%IDF_REQUIREMENTS%" set IDF_REQUIREMENTS="%IDF_PATH%\tools\requirements\requirements.core.txt"
 python -m pip install -r "%IDF_REQUIREMENTS%"
 
-if "%INSTALL_IDF_VER%"=="5.0" python "%IDF_PATH%\tools\idf_tools.py" --non-interactive install-python-env
+if "%INSTALL_IDF_VER%" == "5.0" goto :install_python
+if "%INSTALL_IDF_VER%" == "5.2" goto :install_python
+goto :EOF
+
+:install_python
+python "%IDF_PATH%\tools\idf_tools.py" --non-interactive install-python-env

@@ -16,7 +16,6 @@ endif
 
 GLOBAL_CFLAGS += -DSOC_XTAL_FREQ_MHZ=CONFIG_XTAL_FREQ
 
-IDF_VERSION := $(firstword $(subst -, ,$(IDF_VER)))
 IDF_VERSION_4 := $(filter v4%,$(IDF_VERSION))
 
 ifneq (,$(filter esp32s3-v4.3%,$(ESP_VARIANT)-$(IDF_VER)))
