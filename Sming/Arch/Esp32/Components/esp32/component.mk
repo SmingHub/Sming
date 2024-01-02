@@ -183,7 +183,8 @@ SDK_INCDIRS += \
 	$(FREERTOS_PORTABLE)/xtensa/include \
 	$(FREERTOS_PORTABLE)/xtensa/include/freertos \
 	freertos/config/xtensa \
-	freertos/config/xtensa/include
+	freertos/config/xtensa/include \
+	xtensa/deprecated_include
 endif
 
 	 
