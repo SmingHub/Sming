@@ -137,8 +137,13 @@ endif
 
 
 ifeq ($(ENABLE_BLUETOOTH),1)
+ifeq (esp32s3-v5.2,$(ESP_VARIANT)-$(IDF_VERSION))
+ESP_BT_VARIANT := esp32c3
+else
+ESP_BT_VARIANT := $(ESP_VARIANT)
+endif
 SDK_INCDIRS += \
-	bt/include/$(ESP_VARIANT)/include \
+	bt/include/$(ESP_BT_VARIANT)/include \
 	bt/common/api/include/api \
 	bt/common/btc/profile/esp/blufi/include  \
 	bt/common/btc/profile/esp/include  \
