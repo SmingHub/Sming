@@ -14,9 +14,21 @@ ifeq ($(CREATE_EVENT_TASK),1)
 COMPONENT_CPPFLAGS += -DCREATE_EVENT_TASK
 endif
 
-GLOBAL_CFLAGS += -DSOC_XTAL_FREQ_MHZ=CONFIG_XTAL_FREQ
-
-IDF_VERSION_4 := $(filter v4%,$(IDF_VERSION))
+ifneq (,$(filter v4.%,$(IDF_VERSION)))
+IDF_VERSION_4x := 1
+ifneq (,$(filter v4.3%,$(IDF_VERSION)))
+IDF_VERSION_43 := 1
+else ifneq (,$(filter v4.4%,$(IDF_VERSION)))
+IDF_VERSION_44 := 1
+endif
+else ifneq (,$(filter v5.%,$(IDF_VERSION)))
+IDF_VERSION_5x := 1
+endif
+ifneq (,$(filter v5.0%,$(IDF_VERSION)))
+IDF_VERSION_50 := 1
+else ifneq (,$(filter v5.2%,$(IDF_VERSION)))
+IDF_VERSION_52 := 1
+endif
 
 ifneq (,$(filter esp32s3-v4.3%,$(ESP_VARIANT)-$(IDF_VER)))
 $(error esp32s3 requires ESP IDF v4.4 or later)
@@ -54,6 +66,12 @@ endif
 ESP32_COMPONENT_PATH := $(COMPONENT_PATH)
 SDK_DEFAULT_PATH := $(ESP32_COMPONENT_PATH)/sdk
 
+ifdef IDF_VERSION_52
+GLOBAL_CFLAGS += \
+	-DSOC_XTAL_FREQ_MHZ=CONFIG_XTAL_FREQ \
+	-DSOC_MMU_PAGE_SIZE=CONFIG_MMU_PAGE_SIZE
+endif
+
 LIBDIRS += \
 	$(SDK_COMPONENT_LIBDIR) \
 	$(SDK_BUILD_BASE)/esp-idf/mbedtls/mbedtls/library \
@@ -67,16 +85,10 @@ LIBDIRS += \
 SDK_INCDIRS := \
 	app_update/include \
 	bootloader_support/include \
-	bootloader_support/include_bootloader \
-	driver/$(ESP_VARIANT)/include \
 	driver/include \
-	driver/gpio/include \
-	driver/ledc/include \
-	driver/spi/include \
 	esp_pm/include \
 	esp_rom/include/$(ESP_VARIANT) \
 	esp_rom/include \
-	$(ESP_VARIANT)/include \
 	esp_ringbuf/include \
 	esp_timer/include \
 	soc/include \
@@ -87,10 +99,6 @@ SDK_INCDIRS := \
 	nvs_flash/include \
 	esp_event/include \
 	lwip/lwip/src/include \
-	lwip/port/esp32/include \
-	lwip/port/include \
-	lwip/port/freertos/include \
-	lwip/port/esp32xx/include \
 	newlib/platform_include \
 	spi_flash/include \
 	wpa_supplicant/include \
@@ -98,20 +106,37 @@ SDK_INCDIRS := \
 	esp_hw_support/include \
 	esp_hw_support/include/soc \
 	hal/include \
-	hal/platform_port/include \
 	hal/$(ESP_VARIANT)/include \
 	esp_system/include \
 	esp_common/include \
 	esp_netif/include \
 	esp_eth/include \
 	esp_wifi/include \
-	esp_wifi/esp32/include \
-	lwip/include/apps/sntp \
-	wpa_supplicant/include/esp_supplicant \
-	esp_bootloader_format/include
+	lwip/include/apps/sntp
 
-ifdef IDF_VERSION_4
+ifdef IDF_VERSION_4x
 SDK_INCDIRS += \
+	$(ESP_VARIANT)/include
+endif
+
+ifdef IDF_VERSION_43
+SDK_INCDIRS += \
+	esp_wifi/esp32/include \
+	wpa_supplicant/include/esp_supplicant
+else
+SDK_INCDIRS += \
+	hal/platform_port/include
+endif
+
+ifndef IDF_VERSION_52
+SDK_INCDIRS += \
+	driver/$(ESP_VARIANT)/include \
+	lwip/port/esp32/include
+endif
+
+ifdef IDF_VERSION_4x
+SDK_INCDIRS += \
+	bootloader_support/include_bootloader \
 	esp_adc_cal/include \
 	esp_ipc/include \
 	freertos/include \
@@ -121,19 +146,27 @@ FREERTOS_PORTABLE := freertos/port
 else
 SDK_INCDIRS += \
 	esp_adc/include \
-	esp_adc/$(ESP_VARIANT)/include \
 	esp_app_format/include \
 	esp_partition/include \
 	freertos/FreeRTOS-Kernel/include \
 	freertos/esp_additions/include \
 	freertos/esp_additions/include/freertos \
-	freertos/config/include \
-	freertos/config/include/freertos \
 	driver/deprecated
 FREERTOS_PORTABLE := freertos/FreeRTOS-Kernel/portable
+ifeq (v5.2,$(IDF_VERSION))
+SDK_INCDIRS += \
+	driver/gpio/include \
+	driver/ledc/include \
+	driver/spi/include \
+	lwip/port/include \
+	lwip/port/freertos/include \
+	lwip/port/esp32xx/include \
+	esp_bootloader_format/include \
+	esp_adc/$(ESP_VARIANT)/include \
+	freertos/config/include \
+	freertos/config/include/freertos
 endif
-
-
+endif
 
 ifeq ($(ENABLE_BLUETOOTH),1)
 ifeq (esp32s3-v5.2,$(ESP_VARIANT)-$(IDF_VERSION))
@@ -163,9 +196,12 @@ SDK_INCDIRS += \
 	bt/host/nimble/nimble/nimble/host/util/include           \
 	bt/host/nimble/nimble/nimble/host/store/ram/include      \
 	bt/host/nimble/nimble/nimble/host/store/config/include   \
-	bt/host/nimble/nimble/nimble/transport/include           \
 	bt/host/nimble/esp-hci/include                           \
 	bt/host/nimble/port/include
+ifdef IDF_VERSION_52
+SDK_INCDIRS += \
+	bt/host/nimble/nimble/nimble/transport/include
+endif
 endif
 
 ifdef IDF_TARGET_ARCH_RISCV
@@ -180,10 +216,13 @@ SDK_INCDIRS += \
 	xtensa/include \
 	xtensa/$(ESP_VARIANT)/include \
 	$(FREERTOS_PORTABLE)/xtensa/include \
-	$(FREERTOS_PORTABLE)/xtensa/include/freertos \
+	$(FREERTOS_PORTABLE)/xtensa/include/freertos
+ifdef IDF_VERSION_52
+SDK_INCDIRS += \
 	freertos/config/xtensa \
 	freertos/config/xtensa/include \
 	xtensa/deprecated_include
+endif
 endif
 
 	 
@@ -218,13 +257,13 @@ SDK_COMPONENTS := \
 	soc \
 	spi_flash
 
-ifneq (,$(filter v4.3%,$(IDF_VERSION)))
+ifdef IDF_VERSION_43
 SDK_COMPONENTS += $(ESP_VARIANT)
 else
 SDK_COMPONENTS += esp_phy
 endif
 
-ifdef IDF_VERSION_4
+ifdef IDF_VERSION_4x
 SDK_COMPONENTS += \
 	esp_ipc \
 	esp_adc_cal
@@ -364,7 +403,7 @@ EXTRA_LDFLAGS := \
 	$(call Undef,$(SDK_UNDEF_SYMBOLS)) \
 	$(call Wrap,$(SDK_WRAP_SYMBOLS))
 
-ifneq (,$(filter v4.3%,$(IDF_VERSION)))
+ifdef IDF_VERSION_43
 EXTRA_LDFLAGS += \
 	-T $(ESP_VARIANT)_out.ld \
 	$(call LinkerScript,project)
@@ -475,3 +514,8 @@ sdk-help: ##Get SDK build options
 .PHONY: sdk
 sdk: ##Pass options to IDF builder, e.g. `make sdk -- --help` or `make sdk menuconfig` 
 	$(Q) $(SDK_BUILD) $(filter-out sdk,$(MAKECMDGOALS))
+
+
+.PHONY: check-incdirs
+check-incdirs: ##Check IDF include paths and report any not found in this SDK version
+	$(Q) $(foreach d,$(SDK_INCDIRS),$(if $(wildcard $(SDK_COMPONENTS_PATH)/$d),,$(info $d)))
