@@ -53,5 +53,8 @@ CONFIG_MBEDTLS_CERTIFICATE_BUNDLE=n
 # Don't change provided flash configuration information
 CONFIG_ESPTOOLPY_FLASHSIZE_DETECT=n
 
-#' We'll handle WDT initialisation ourselves thankyouverymuch
+# We'll handle WDT initialisation ourselves thankyouverymuch
 CONFIG_ESP_TASK_WDT_INIT=n
+
+# Issues with dual-core CPU, see #2653
+CONFIG_FREERTOS_UNICORE=y
