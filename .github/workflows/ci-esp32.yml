@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, windows-latest]
+        os: [ubuntu-latest, windows-latest]
         variant: [esp32, esp32s2, esp32c3, esp32s3, esp32c2]
         idf_version: ["4.3", "4.4", "5.0", "5.2"]
         exclude:
@@ -48,7 +48,7 @@ jobs:
         "SMING_HOME=" + (Resolve-Path "Sming").path >> $env:GITHUB_ENV
 
     - name: Install build tools for Ubuntu
-      if: ${{ matrix.os ==  'ubuntu-20.04' }}
+      if: ${{ matrix.os ==  'ubuntu-latest' }}
       run: |
         Tools/ci/install.sh
 
@@ -59,7 +59,7 @@ jobs:
          Tools/ci/install.cmd
 
     - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Ubuntu
-      if: ${{ matrix.os == 'ubuntu-20.04' }}
+      if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
         source $SMING_HOME/../Tools/export.sh
         Tools/ci/build.sh
