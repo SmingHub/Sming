@@ -41,6 +41,12 @@ ESP32_COMPILER_PREFIX := xtensa-$(ESP_VARIANT)-elf
 else
 ESP32_COMPILER_PREFIX := riscv32-esp-elf
 IDF_TARGET_ARCH_RISCV := 1
+# This is important as no hardware FPU is available on these SOCs
+ifeq ($(IDF_VERSION),v5.2)
+ESP32_RISCV_ARCH := rv32imc_zicsr_zifencei
+else
+ESP32_RISCV_ARCH := rv32imc
+endif
 endif
 
 # $1 => Tool sub-path/name
@@ -153,7 +159,10 @@ export PROJECT_VER
 # Flags which control code generation and dependency generation, both for C and C++
 CPPFLAGS += -Wno-frame-address
 
-ifndef IDF_TARGET_ARCH_RISCV
+ifdef IDF_TARGET_ARCH_RISCV
+CPPFLAGS += \
+	-march=$(ESP32_RISCV_ARCH)
+else
 CPPFLAGS += \
 	-mlongcalls \
 	-mtext-section-literals
