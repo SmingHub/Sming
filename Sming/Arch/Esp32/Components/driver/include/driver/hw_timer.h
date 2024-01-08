@@ -147,6 +147,7 @@ uint32_t hw_timer1_read(void);
 __forceinline static uint32_t hw_timer2_read(void)
 {
 #if CONFIG_ESP_TIMER_IMPL_TG0_LAC
+	REG_WRITE(TIMG_LACTUPDATE_REG(0), 1);
 	return REG_READ(TIMG_LACTLO_REG(0));
 #elif ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 4, 0)
 	systimer_ll_counter_snapshot(&SYSTIMER, 0);

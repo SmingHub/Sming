@@ -81,7 +81,7 @@ public:
 			String s;
 			s += system_get_time();
 			s += " ";
-			s += statusTimer;
+			s += String(statusTimer);
 			s += " fired, timercount = ";
 			s += activeTimerCount;
 			s += ", mem = ";

@@ -62,7 +62,8 @@ public:
 #else
 		int source = timer_group_periph_signals.groups[group].timer_irq_id[index];
 #endif
-		esp_intr_alloc_intrstatus(source, ESP_INTR_FLAG_IRAM, status_reg, mask, timerIsr, this, &isr_handle);
+		esp_intr_alloc_intrstatus(source, ESP_INTR_FLAG_IRAM | ESP_INTR_FLAG_INTRDISABLED, status_reg, mask, timerIsr,
+								  this, &isr_handle);
 		clear_intr_status();
 		enable_intr(true);
 	}

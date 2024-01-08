@@ -3,7 +3,7 @@
     "base_config": "host-tests",
     "partitions": {
         "factory": {
-            "size": "1M"
+            "size": "1600K"
         }
     }
 }
