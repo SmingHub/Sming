@@ -33,13 +33,14 @@ ESP_VARIANT := $(SMING_SOC)
 export ESP_VARIANT
 
 IDF_TOOL_INFO := $(shell $(PYTHON) $(ARCH_TOOLS)/idf_tools.py $(SMING_SOC))
-ESP32_TOOLSET_PREFIX := $(word 1,$(IDF_TOOL_INFO))
-ESP32_COMPILER_VERSION := $(word 2,$(IDF_TOOL_INFO))
-ifeq (xtensa-esp-elf,$(ESP32_TOOLSET_PREFIX))
+ESP32_GCC_PATH := $(word 1,$(IDF_TOOL_INFO))
+ESP32_GDB_PATH := $(word 2,$(IDF_TOOL_INFO))
+ESP32_COMPILER_PATH := $(IDF_TOOLS_PATH)/tools/$(ESP32_GCC_PATH)
+ifneq (,$(filter xtensa%,$(ESP32_GCC_PATH)))
 ESP32_COMPILER_PREFIX := xtensa-$(ESP_VARIANT)-elf
 else
-ESP32_COMPILER_PREFIX := $(ESP32_TOOLSET_PREFIX)
-IDF_TARGET_ARCH_RISCV := $(findstring riscv,$(ESP32_COMPILER_PREFIX))
+ESP32_COMPILER_PREFIX := riscv32-esp-elf
+IDF_TARGET_ARCH_RISCV := 1
 endif
 
 # $1 => Tool sub-path/name
@@ -48,10 +49,6 @@ $(lastword $(sort $(wildcard $(IDF_TOOLS_PATH)/$1*)))
 endef
 
 DEBUG_VARS			+= ESP32_COMPILER_PATH ESP32_ULP_PATH ESP32_OPENOCD_PATH ESP32_PYTHON_PATH
-
-ifndef ESP32_COMPILER_PATH
-ESP32_COMPILER_PATH	:= $(IDF_TOOLS_PATH)/tools/$(ESP32_TOOLSET_PREFIX)/$(ESP32_COMPILER_VERSION)/$(ESP32_TOOLSET_PREFIX)
-endif
 
 ifndef ESP32_ULP_PATH
 ESP32_ULP_PATH		:= $(call FindTool,tools/$(ESP_VARIANT)ulp-elf/)
@@ -78,7 +75,7 @@ export IDF_PYTHON_ENV_PATH=$(ESP32_PYTHON_PATH)
 # Add ESP-IDF tools to PATH
 IDF_PATH_LIST := \
 	$(IDF_PATH)/tools \
-	$(ESP32_COMPILER_PATH)/bin \
+	$(ESP32_COMPILER_PATH) \
 	$(ESP32_ULP_PATH)/$(ESP_VARIANT)ulp-elf-binutils/bin \
 	$(ESP32_OPENOCD_PATH)/openocd-esp32/bin \
 	$(ESP32_PYTHON_PATH)/bin \
@@ -111,7 +108,7 @@ space:= $(empty) $(empty)
 
 export PATH := $(subst $(space),:,$(IDF_PATH_LIST)):$(PATH)
 
-TOOLSPEC 	:= $(ESP32_COMPILER_PATH)/bin/$(ESP32_COMPILER_PREFIX)
+TOOLSPEC 	:= $(ESP32_COMPILER_PATH)/$(ESP32_COMPILER_PREFIX)
 AS			:= $(TOOLSPEC)-gcc
 CC			:= $(TOOLSPEC)-gcc
 CXX			:= $(TOOLSPEC)-g++
@@ -120,8 +117,14 @@ LD			:= $(TOOLSPEC)-gcc
 NM			:= $(TOOLSPEC)-nm
 OBJCOPY		:= $(TOOLSPEC)-objcopy
 OBJDUMP		:= $(TOOLSPEC)-objdump
-GDB			:= $(TOOLSPEC)-gdb
 SIZE 		:= $(TOOLSPEC)-size
+
+ifeq (None,$(ESP32_GDB_PATH))
+GDB			:= $(TOOLSPEC)-gdb
+else
+GDB			:= $(IDF_TOOLS_PATH)/tools/$(ESP32_GDB_PATH)/$(ESP32_COMPILER_PREFIX)-gdb
+endif
+
 
 # [ Sming specific flags ]
 DEBUG_VARS += IDF_PATH IDF_VER
