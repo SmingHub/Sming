@@ -143,7 +143,9 @@ public:
 		timer_ll_get_counter_value(dev, index, &val);
 		return val;
 #else
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 2, 0)
 		timer_ll_trigger_soft_capture(dev, index);
+#endif
 		return timer_ll_get_counter_value(dev, index);
 #endif
 	}
