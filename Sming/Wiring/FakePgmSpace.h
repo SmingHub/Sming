@@ -75,9 +75,7 @@ extern "C" {
 		&__pstr__[0];                                                                                                  \
 	}))
 
-#ifdef ARCH_HOST
-#define _F(str) (str)
-#else
+#ifdef ARCH_ESP8266
 /**
  * @brief Declare and use a flash string inline.
  * @param str
@@ -89,7 +87,8 @@ extern "C" {
 		LOAD_PSTR(buf, __pstr__);                                                                                      \
 		buf;                                                                                                           \
 	}))
-
+#else
+#define _F(str) (str)
 #endif
 
 /**
