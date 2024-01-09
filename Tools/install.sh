@@ -101,14 +101,12 @@ if [ -n "$APPVEYOR" ] || [ -n "$GITHUB_ACTION" ]; then
     sudo apt-get -y update
     $PKG_INSTALL \
         clang-format-8 \
-        g++-9-multilib \
+        g++-multilib \
         python3-setuptools \
         ninja-build \
         linux-modules-extra-azure \
         exfatprogs \
         $EXTRA_PACKAGES
-
-    sudo update-alternatives --set gcc /usr/bin/gcc-9
 
 else
 
