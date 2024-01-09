@@ -9,6 +9,12 @@ LDFLAGS	+= \
 	-nostdlib \
 	-Wl,-static
 
+ifdef IDF_TARGET_ARCH_RISCV
+	LDFLAGS += \
+		-nostartfiles \
+		-march=$(ESP32_RISCV_ARCH) \
+		--specs=nosys.specs
+endif
 
 .PHONY: application
 application: $(TARGET_BIN)
