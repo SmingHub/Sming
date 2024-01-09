@@ -15,6 +15,7 @@
 #include <driver/SerialBuffer.h>
 #include <driver/periph_ctrl.h>
 #include <soc/uart_channel.h>
+#include <soc/uart_periph.h>
 #include <BitManipulations.h>
 #include <Data/Range.h>
 #include <esp_systemapi.h>
@@ -567,7 +568,11 @@ uint32_t smg_uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate)
 	uart_ll_set_baudrate(dev, baud_rate);
 	return uart_ll_get_baudrate(dev);
 #else
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 2, 0)
 	uart_ll_set_sclk(dev, UART_SCLK_DEFAULT);
+#else
+	uart_ll_set_sclk(dev, soc_module_clk_t(UART_SCLK_DEFAULT));
+#endif
 	uart_ll_set_baudrate(dev, baud_rate, APB_CLK_FREQ);
 	return uart_ll_get_baudrate(dev, APB_CLK_FREQ);
 #endif

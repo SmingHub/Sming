@@ -30,8 +30,11 @@ cd /d %SMING_PROJECTS_DIR%/samples/Basic_Blink
 make help
 make list-config
 
+if "%SMING_ARCH%" == "Esp32" set TEST_FLAGS="DISABLE_NETWORK=1"
+
 REM HostTests must build for all architectures
-%MAKE_PARALLEL% -C "%SMING_PROJECTS_DIR%/tests/HostTests" || goto :error
+REM Building Bear SSL library causes memory issues with CI builds in Windows, so avoid for now
+%MAKE_PARALLEL% -C "%SMING_PROJECTS_DIR%/tests/HostTests" %TEST_FLAGS% || goto :error
 
 REM Start Arch-specific tests
 cd /d %SMING_HOME%

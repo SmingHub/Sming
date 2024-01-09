@@ -25,7 +25,7 @@
 	XX(String)                                                                                                         \
 	XX(ArduinoString)                                                                                                  \
 	XX(Wiring)                                                                                                         \
-	XX(Crypto)                                                                                                         \
+	XX_NET(Crypto)                                                                                                     \
 	XX(CStringArray)                                                                                                   \
 	XX(Stream)                                                                                                         \
 	XX(TemplateStream)                                                                                                 \

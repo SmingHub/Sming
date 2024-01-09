@@ -2,10 +2,12 @@
 #include <esp_pm.h>
 #include <debug_progmem.h>
 
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 2, 0)
 #define EXPAND(a) a
 #define CONCAT3a(a, b, c) a##b##c
 #define CONCAT3(a, b, c) CONCAT3a(a, b, c)
-typedef CONCAT3(esp_pm_config_, SMING_SOC, _t) pm_config_t;
+typedef CONCAT3(esp_pm_config_, SMING_SOC, _t) esp_pm_config_t;
+#endif
 
 int esp_clk_cpu_freq(void);
 
@@ -13,7 +15,7 @@ static esp_pm_lock_handle_t handle;
 
 bool system_update_cpu_freq(uint32_t freq)
 {
-	pm_config_t config = {};
+	esp_pm_config_t config = {};
 	esp_err_t err = esp_pm_get_configuration(&config);
 	if(err != ESP_OK) {
 		debug_e("[PM] Failed to read PM config %u", err);

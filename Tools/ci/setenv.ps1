@@ -37,7 +37,6 @@ if ($IsWindows) {
 
     $env:PATH = "$env:PYTHON_PATH;$env:PYTHON_PATH\Scripts;$env:PATH"
     $env:PYTHON = "$env:PYTHON_PATH\python"
-    $env:ESP32_PYTHON_PATH = "$env:PYTHON_PATH"
 
     $env:PATH = "$env:PROGRAMFILES\CMake\bin;$env:PATH"
 

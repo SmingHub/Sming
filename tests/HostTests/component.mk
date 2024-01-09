@@ -14,12 +14,6 @@ COMPONENT_SRCDIRS := \
 	modules \
 	Arch/$(SMING_ARCH)
 
-ifneq ($(DISABLE_NETWORK),1)
-COMPONENT_SRCDIRS += \
-	modules/Network \
-	modules/Network/Arch/$(SMING_ARCH)
-endif
-
 ARDUINO_LIBRARIES := \
 	SmingTest \
 	ArduinoJson5 \
@@ -30,9 +24,16 @@ ifeq ($(SMING_ARCH),Host)
 endif
 
 COMPONENT_DEPENDS := \
-	malloc_count \
+	malloc_count
+
+ifneq ($(DISABLE_NETWORK),1)
+COMPONENT_SRCDIRS += \
+	modules/Network \
+	modules/Network/Arch/$(SMING_ARCH)
+COMPONENT_DEPENDS += \
 	axtls-8266 \
 	bearssl-esp8266
+endif
 
 ifeq ($(UNAME),Windows)
 # Network tests run on Linux only
