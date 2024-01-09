@@ -1,6 +1,7 @@
 #include <esp_systemapi.h>
 #include <spi_flash.h>
 #include <eagle_soc.h>
+#include <esp8266_peri.h>
 
 bool protect_flag;
 bool timer2_ms_flag;
@@ -336,4 +337,16 @@ int os_printf_plus(const char* format, ...)
 	va_end(args);
 
 	return n;
+}
+
+const char* system_get_sdk_version()
+{
+	extern char SDK_VERSION[];
+	return SDK_VERSION;
+}
+
+uint32_t system_get_chip_id()
+{
+	// from chip_id() method in esptool.py
+	return (MAC0 >> 24) | ((MAC1 & 0x00ffffff) << 8);
 }

@@ -23,6 +23,7 @@ EXTRA_OBJ := extra.o
 $(COMPONENT_RULE)$(EXTRA_OBJ): sdk/user_interface.o
 	$(Q) $(OBJCOPY) \
 		-j *UND* \
+		-j .sdk.version.* \
 		$(addprefix -j .text.,$(NOWIFI_SYMS)) \
 		$(foreach f,$(NOWIFI_SYMS),--rename-section .text.$f=.iram.text) \
 		$< $@
@@ -40,7 +41,10 @@ endef
 LIBMAIN_COMMANDS += $(NOWIFI_LIBMAIN_COMMANDS)
 
 LIBDIRS += $(COMPONENT_PATH)
-EXTRA_LDFLAGS := -Tno.wifi.ld -u call_user_start_local
+EXTRA_LDFLAGS := \
+	-Tno.wifi.ld \
+	-u call_user_start_local \
+	-u SDK_VERSION
 
 ##
 
