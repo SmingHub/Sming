@@ -96,6 +96,8 @@ fi
 
 if [ -n "$APPVEYOR" ] || [ -n "$GITHUB_ACTION" ]; then
 
+    # Provide repo. for clang-format-8 on Ubuntu 22.04
+    sudo apt-add-repository -y 'deb http://mirrors.kernel.org/ubuntu focal main universe'
     sudo apt-get -y update
     $PKG_INSTALL \
         clang-format-8 \
