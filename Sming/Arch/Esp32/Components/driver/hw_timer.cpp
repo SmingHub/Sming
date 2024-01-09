@@ -143,6 +143,7 @@ public:
 		timer_ll_get_counter_value(dev, index, &val);
 		return val;
 #else
+		timer_ll_trigger_soft_capture(dev, index);
 		return timer_ll_get_counter_value(dev, index);
 #endif
 	}
@@ -214,7 +215,7 @@ void IRAM_ATTR hw_timer1_disable(void)
 	timer.enable_counter(false);
 }
 
-uint32_t hw_timer1_read(void)
+uint32_t IRAM_ATTR hw_timer1_read(void)
 {
 	return timer.get_counter_value();
 }
