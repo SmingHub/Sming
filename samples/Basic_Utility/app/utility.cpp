@@ -28,7 +28,7 @@ void testWebConstants()
 			contentType = "(NOT FOUND)";
 		}
 		MimeType mimeType = ContentType::fromString(contentType);
-		m_printf("  %u %s: %s (#%u)\n", i, ext, contentType.c_str(), mimeType);
+		m_printf("  %u %s: %s (#%u)\n", i, ext, contentType.c_str(), unsigned(mimeType));
 	}
 }
 
@@ -53,8 +53,8 @@ void init()
 				 "  make run HOST_PARAMETERS='command=%s'\n",
 				 String(Command::testWebConstants).c_str());
 	} else {
-		m_printf("Command-line parameters:\n", parameters.count());
-		for(int i = 0; i < parameters.count(); ++i) {
+		m_printf("Command-line parameters: %u\n", parameters.count());
+		for(unsigned i = 0; i < parameters.count(); ++i) {
 			auto param = parameters[i];
 			m_printf("  %u: text =  '%s'\n", i, param.text);
 			m_printf("     name  = '%s'\n", param.getName().c_str());

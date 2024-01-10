@@ -142,13 +142,13 @@ public:
     // Perform a 1-Wire reset cycle. Returns 1 if a device responds
     // with a presence pulse.  Returns 0 if there is no device or the
     // bus is shorted or otherwise held low for more than 250uS
-    uint8_t reset(void);
+    uint8_t reset();
 
     // Issue a 1-Wire rom select command, you do the reset first.
     void select(const uint8_t rom[8]);
 
     // Issue a 1-Wire rom skip command, to address all on bus.
-    void skip(void);
+    void skip();
 
     // Write a byte. If 'power' is one then the wire is held high at
     // the end for parasitically powered devices. You are responsible
@@ -159,7 +159,7 @@ public:
     void write_bytes(const uint8_t *buf, uint16_t count, bool power = 0);
 
     // Read a byte.
-    uint8_t read(void);
+    uint8_t read();
 
     void read_bytes(uint8_t *buf, uint16_t count);
 
@@ -168,14 +168,14 @@ public:
     void write_bit(uint8_t v);
 
     // Read a bit.
-    uint8_t read_bit(void);
+    uint8_t read_bit();
 
     // Stop forcing power onto the bus. You only need to do this if
     // you used the 'power' flag to write() or used a write_bit() call
     // and aren't about to do another read or write. You would rather
     // not leave this powered if you don't have to, just in case
     // someone shorts your bus.
-    void depower(void);
+    void depower();
 
 #if ONEWIRE_SEARCH
     // Clear the search state so that if will start from the beginning again.
