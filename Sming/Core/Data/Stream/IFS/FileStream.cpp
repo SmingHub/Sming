@@ -10,8 +10,6 @@
 
 #include "FileStream.h"
 
-#define ETAG_SIZE 16
-
 namespace IFS
 {
 void FileStream::attach(FileHandle file, size_t size)
@@ -172,10 +170,27 @@ String FileStream::id() const
 		return nullptr;
 	}
 
-	char buf[ETAG_SIZE];
-	m_snprintf(buf, ETAG_SIZE, _F("00f-%x-%x0-%x"), stat.id, stat.size, stat.name.length);
+	/*
+		Jan 2024. How ETAGs are generated is not specified. Previous implementation was like this:
 
-	return String(buf);
+			m_snprintf(buf, ETAG_SIZE, _F("00f-%x-%x0-%x"), stat.id, stat.size, stat.name.length);
+
+		Issues are:
+			- on some architectures compiler warns about differing types %x vs arguments
+			- name can change without length being affected; if name changes then file lookup would fail anyway
+			- modification timestamp is a good metric, should be incorporated
+	*/
+	String id;
+	id += "00f-";
+	id += String(stat.id, HEX);
+	id += '-';
+	id += String(stat.size, HEX);
+	id += '-';
+	id += String(stat.mtime, HEX);
+	id += '-';
+	id += String(stat.name.length, HEX);
+
+	return id;
 }
 
 bool FileStream::truncate(size_t newSize)
