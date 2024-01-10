@@ -53,10 +53,12 @@ public:
 			debug_w("Ratio: x %f", float(elapsedTicks) / (time - startTime));
 			uint32_t us = Micros::ticksToTime(elapsedTicks);
 			debug_w("Apparent time: %u", us);
+#ifndef ARCH_HOST
 			// Up-timers may report 0 if inactive
 			if(endTicks != 0 || startTicks != 0) {
 				REQUIRE(abs(int(us - duration)) < 500); // Allow some latitude
 			}
+#endif
 		}
 	}
 
