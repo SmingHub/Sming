@@ -88,6 +88,7 @@ public:
 		{
 			fileSetContent(testFileName, testContent);
 			FileStream fs(testFileName);
+			Serial << testFileName << " ID: " << fs.id() << endl;
 			res = fs.truncate(100);
 			pos = fs.getPos();
 			size = fs.getSize();
