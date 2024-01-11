@@ -43,7 +43,7 @@ public:
 		server->setKeepAlive(USHRT_MAX); // disable connection timeout
 
 		// Tcp Client
-		bool connected = client.connect(WifiStation.getIP(), port);
+		SMING_UNUSED bool connected = client.connect(WifiStation.getIP(), port);
 		debug_d("Connected: %d", connected);
 
 		TEST_CASE("TcpClient::send stream")

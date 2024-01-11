@@ -71,7 +71,7 @@ void test()
 
 	auto submit = [&](const String& name, ResourceType type) {
 		Query query;
-		auto question = query.addQuestion(name, type);
+		query.addQuestion(name, type);
 		printMessage(Serial, query);
 		responder.onMessage(query);
 	};

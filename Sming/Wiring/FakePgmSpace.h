@@ -60,7 +60,13 @@ extern "C" {
 		m_printf(__localF, ##__VA_ARGS__);                                                                             \
 	}))
 
-#define printf_P printf_P_stack
+#ifdef ARCH_ESP8266
+// ESP8266 requires byte-aligned flash accesses for format string...
+#define printf_P(fmt, ...) printf_P_stack(fmt, ##__VA_ARGS__)
+#else
+// ... but other architectures do not
+#define printf_P(fmt, ...) m_printf(fmt, ##__VA_ARGS__)
+#endif
 
 /**
  * @brief Define and use a counted flash string inline

@@ -21,7 +21,7 @@ CUserData userGeorge("George", "I like SMING");
 void onIndex(HttpRequest& request, HttpResponse& response)
 {
 	auto tmpl = new TemplateFileStream(F("index.html"));
-	auto& vars = tmpl->variables();
+	//auto& vars = tmpl->variables();
 	//vars["counter"] = String(counter);
 	response.sendNamedStream(tmpl); // this template object will be deleted automatically
 }

@@ -217,6 +217,8 @@ protected:
 	void onFinished(TcpClientState finishState) override;
 
 private:
+	using TcpClient::connect; // Keep compiler happy but prevent access to base method by clients
+
 	// TCP methods
 	virtual bool onTcpReceive(TcpClient& client, char* data, int size);
 

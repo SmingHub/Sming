@@ -17,7 +17,7 @@ const int countInputs = sizeof(inputs) / sizeof(inputs[0]);
 void onIndex(HttpRequest& request, HttpResponse& response)
 {
 	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
-	auto& vars = tmpl->variables();
+	//auto& vars = tmpl->variables();
 	//vars["counter"] = String(counter);
 	response.sendNamedStream(tmpl); // this template object will be deleted automatically
 }

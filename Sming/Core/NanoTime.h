@@ -107,14 +107,8 @@ constexpr BasicRatio32 unitTicks[UnitMax + 1] = {
  * @brief Class template to define tick std::ratio type
  * @tparam unit
  * @retval std::ratio Ticks per second
- * @note This would be preferable:
- * `template <Unit unit> using UnitTickRatio = std::ratio<unitTicks[unit].num, unitTicks[unit].den>;`
- * But GCC 4.8 doesn't like it (lvalue required as unary '&' operand)
  */
-template <Unit unit> struct UnitTickRatio {
-	static constexpr uint64_t num = unitTicks[unit].num;
-	static constexpr uint64_t den = unitTicks[unit].den;
-};
+template <Unit unit> using UnitTickRatio = std::ratio<unitTicks[unit].num, unitTicks[unit].den>;
 
 // Forward declarations
 template <class Clock_, Unit unit_, uint64_t time_> struct TimeConst;
