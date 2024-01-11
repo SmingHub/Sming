@@ -12,9 +12,12 @@ export IDF_PATH := $(call FixPath,$(IDF_PATH))
 
 # Extract IDF version
 ifndef IDF_VER
+# e.g. v5.2-beta1-265-g405b8b5512 or v5.0.5-173-g9d6770dfbb
 IDF_VER := $(shell (cd $$IDF_PATH && git describe --always --tags --dirty) | cut -c 1-31)
 endif
-IDF_VERSION := $(firstword $(subst -, ,$(IDF_VER)))
+# Now just vmajor.minor
+IDF_VERSION := $(subst ., ,$(firstword $(subst -, ,$(IDF_VER))))
+IDF_VERSION := $(firstword $(IDF_VERSION)).$(word 2,$(IDF_VERSION))
 
 # By default, downloaded tools will be installed under $HOME/.espressif directory
 # (%USERPROFILE%/.espressif on Windows). This path can be modified by setting
