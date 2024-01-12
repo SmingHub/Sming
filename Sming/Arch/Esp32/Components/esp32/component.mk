@@ -169,7 +169,7 @@ endif
 endif
 
 ifeq ($(ENABLE_BLUETOOTH),1)
-ifeq (esp32s3-1,$(ESP_VARIANT)-$(IDF_VERSION_5x))
+ifeq (esp32s3,$(ESP_VARIANT))
 ESP_BT_VARIANT := esp32c3
 else
 ESP_BT_VARIANT := $(ESP_VARIANT)
