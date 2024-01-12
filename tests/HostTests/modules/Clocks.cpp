@@ -252,10 +252,15 @@ template <hw_timer_clkdiv_t clkdiv>
 class Timer1ClockTestTemplate : public ClockTestTemplate<Timer1Clock<clkdiv>, uint32_t>
 {
 public:
+	static void IRAM_ATTR callback(void*)
+	{
+	}
+
 	void execute() override
 	{
 		// Configure the hardware to match selected clock divider
 		Timer1Api<clkdiv, eHWT_Maskable> timer;
+		timer.setCallback(callback, nullptr);
 		timer.arm(false);
 
 		ClockTestTemplate<Timer1Clock<clkdiv>, uint32_t>::execute();
