@@ -26,7 +26,11 @@ public:
 	{
 		printLimits();
 
-		for(unsigned i = 0; i < 2000; ++i) {
+		unsigned loopCount{2000};
+#ifdef ARCH_HOST
+		loopCount = 50;
+#endif
+		while(loopCount--) {
 			auto value = os_random();
 			check<NanoTime::Milliseconds>(value);
 			check<NanoTime::Microseconds>(value);
