@@ -37,21 +37,30 @@ public:
 
 		TEST_CASE("vs. system time")
 		{
+			// Determine whether this is an up or down-counter
+			auto startTicks = Clock::ticks();
+			os_delay_us(100);
+			auto endTicks = Clock::ticks();
+			bool isDownCounter = (endTicks < startTicks);
+			debug_w("%s is %s counter", Clock::typeName(), isDownCounter ? "DOWN" : "UP");
+
 			// Run for a second or two and check timer ticks correspond approximately with system clock
 			constexpr uint64_t maxDuration = Clock::maxTicks().template as<NanoTime::Microseconds>() - 5000ULL;
 			constexpr uint32_t duration = std::min(2000000ULL, maxDuration);
 			auto startTime = system_get_time();
-			auto startTicks = Clock::ticks();
+			startTicks = Clock::ticks();
 			uint32_t time;
-			while((time = system_get_time()) < startTime + duration) {
+			while((time = system_get_time()) - startTime < duration) {
 				//
 			}
-			auto endTicks = Clock::ticks();
-			// Handle both up and down counters
-			auto elapsedTicks = (endTicks >= startTicks) ? endTicks - startTicks : startTicks - endTicks;
+			endTicks = Clock::ticks();
+			if(isDownCounter) {
+				std::swap(startTicks, endTicks);
+			}
+			uint32_t elapsedTicks = (endTicks - startTicks) % (Clock::maxTicks() + 1);
 
 			debug_w("System time elapsed: %u", time - startTime);
-			debug_w("%s ticks: %u", Clock::typeName(), elapsedTicks);
+			debug_w("Ticks: %u (%u - %u)", elapsedTicks, startTicks, endTicks);
 			debug_w("Ratio: x %f", float(elapsedTicks) / (time - startTime));
 			uint32_t us = Micros::ticksToTime(elapsedTicks);
 			debug_w("Apparent time: %u", us);
