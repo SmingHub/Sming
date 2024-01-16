@@ -1,5 +1,5 @@
 diff --git a/Adafruit_SPITFT.cpp b/Adafruit_SPITFT.cpp
-index b78d5ce..d2d02b1 100644
+index b78d5ce..f919595 100644
 --- a/Adafruit_SPITFT.cpp
 +++ b/Adafruit_SPITFT.cpp
 @@ -35,6 +35,10 @@
@@ -59,7 +59,7 @@ index b78d5ce..d2d02b1 100644
    // avoid paramater-not-used complaints
    (void)block;
 -  (void)bigEndian;
--
+ 
 -#if defined(ESP32)
 -  if (connection == TFT_HARD_SPI) {
 -    if (!bigEndian) {
@@ -71,7 +71,7 @@ index b78d5ce..d2d02b1 100644
 -  }
 -#elif defined(ARDUINO_NRF52_ADAFRUIT) &&                                       \
 -    defined(NRF52840_XXAA) // Adafruit nRF52 use SPIM3 DMA at 32Mhz
--  if (!bigEndian) {
+   if (!bigEndian) {
 -    swapBytes(colors, len); // convert little-to-big endian for display
 -  }
 -  hwspi._spi->transfer(colors, NULL, 2 * len); // NULL RX to avoid overwrite
@@ -82,8 +82,8 @@ index b78d5ce..d2d02b1 100644
 -  return;
 -#elif defined(ARDUINO_ARCH_RP2040)
 -  spi_inst_t *pi_spi = hwspi._spi == &SPI ? spi0 : spi1;
- 
-   if (!bigEndian) {
+-
+-  if (!bigEndian) {
 -    // switch to 16-bit writes
 -    hw_write_masked(&spi_get_hw(pi_spi)->cr0, 15 << SPI_SSPCR0_DSS_LSB,
 -                    SPI_SSPCR0_DSS_BITS);
@@ -211,6 +211,157 @@ index b78d5ce..d2d02b1 100644
  }
  
  /*!
+@@ -1184,150 +1034,6 @@ void Adafruit_SPITFT::writeColor(uint16_t color, uint32_t len) {
+ 
+   uint8_t hi = color >> 8, lo = color;
+ 
+-#if defined(ESP32) // ESP32 has a special SPI pixel-writing function...
+-  if (connection == TFT_HARD_SPI) {
+-#define SPI_MAX_PIXELS_AT_ONCE 32
+-#define TMPBUF_LONGWORDS (SPI_MAX_PIXELS_AT_ONCE + 1) / 2
+-#define TMPBUF_PIXELS (TMPBUF_LONGWORDS * 2)
+-    static uint32_t temp[TMPBUF_LONGWORDS];
+-    uint32_t c32 = color * 0x00010001;
+-    uint16_t bufLen = (len < TMPBUF_PIXELS) ? len : TMPBUF_PIXELS, xferLen,
+-             fillLen;
+-    // Fill temp buffer 32 bits at a time
+-    fillLen = (bufLen + 1) / 2; // Round up to next 32-bit boundary
+-    for (uint32_t t = 0; t < fillLen; t++) {
+-      temp[t] = c32;
+-    }
+-    // Issue pixels in blocks from temp buffer
+-    while (len) {                              // While pixels remain
+-      xferLen = (bufLen < len) ? bufLen : len; // How many this pass?
+-      writePixels((uint16_t *)temp, xferLen);
+-      len -= xferLen;
+-    }
+-    return;
+-  }
+-#elif defined(ARDUINO_NRF52_ADAFRUIT) &&                                       \
+-    defined(NRF52840_XXAA) // Adafruit nRF52840 use SPIM3 DMA at 32Mhz
+-  // at most 2 scan lines
+-  uint32_t const pixbufcount = min(len, ((uint32_t)2 * width()));
+-  uint16_t *pixbuf = (uint16_t *)rtos_malloc(2 * pixbufcount);
+-
+-  // use SPI3 DMA if we could allocate buffer, else fall back to writing each
+-  // pixel loop below
+-  if (pixbuf) {
+-    uint16_t const swap_color = __builtin_bswap16(color);
+-
+-    // fill buffer with color
+-    for (uint32_t i = 0; i < pixbufcount; i++) {
+-      pixbuf[i] = swap_color;
+-    }
+-
+-    while (len) {
+-      uint32_t const count = min(len, pixbufcount);
+-      writePixels(pixbuf, count, true, true);
+-      len -= count;
+-    }
+-
+-    rtos_free(pixbuf);
+-    return;
+-  }
+-#else                      // !ESP32
+-#if defined(USE_SPI_DMA) && (defined(__SAMD51__) || defined(ARDUINO_SAMD_ZERO))
+-  if (((connection == TFT_HARD_SPI) || (connection == TFT_PARALLEL)) &&
+-      (len >= 16)) { // Don't bother with DMA on short pixel runs
+-    int i, d, numDescriptors;
+-    if (hi == lo) { // If high & low bytes are same...
+-      onePixelBuf = color;
+-      // Can do this with a relatively short descriptor list,
+-      // each transferring a max of 32,767 (not 32,768) pixels.
+-      // This won't run off the end of the allocated descriptor list,
+-      // since we're using much larger chunks per descriptor here.
+-      numDescriptors = (len + 32766) / 32767;
+-      for (d = 0; d < numDescriptors; d++) {
+-        int count = (len < 32767) ? len : 32767;
+-        descriptor[d].SRCADDR.reg = (uint32_t)&onePixelBuf;
+-        descriptor[d].BTCTRL.bit.SRCINC = 0;
+-        descriptor[d].BTCNT.reg = count * 2;
+-        descriptor[d].DESCADDR.reg = (uint32_t)&descriptor[d + 1];
+-        len -= count;
+-      }
+-      descriptor[d - 1].DESCADDR.reg = 0;
+-    } else {
+-      // If high and low bytes are distinct, it's necessary to fill
+-      // a buffer with pixel data (swapping high and low bytes because
+-      // TFT and SAMD are different endianisms) and create a longer
+-      // descriptor list pointing repeatedly to this data. We can do
+-      // this slightly faster working 2 pixels (32 bits) at a time.
+-      uint32_t *pixelPtr = (uint32_t *)pixelBuf[0],
+-               twoPixels = __builtin_bswap16(color) * 0x00010001;
+-      // We can avoid some or all of the buffer-filling if the color
+-      // is the same as last time...
+-      if (color == lastFillColor) {
+-        // If length is longer than prior instance, fill only the
+-        // additional pixels in the buffer and update lastFillLen.
+-        if (len > lastFillLen) {
+-          int fillStart = lastFillLen / 2,
+-              fillEnd = (((len < maxFillLen) ? len : maxFillLen) + 1) / 2;
+-          for (i = fillStart; i < fillEnd; i++)
+-            pixelPtr[i] = twoPixels;
+-          lastFillLen = fillEnd * 2;
+-        } // else do nothing, don't set pixels or change lastFillLen
+-      } else {
+-        int fillEnd = (((len < maxFillLen) ? len : maxFillLen) + 1) / 2;
+-        for (i = 0; i < fillEnd; i++)
+-          pixelPtr[i] = twoPixels;
+-        lastFillLen = fillEnd * 2;
+-        lastFillColor = color;
+-      }
+-
+-      numDescriptors = (len + maxFillLen - 1) / maxFillLen;
+-      for (d = 0; d < numDescriptors; d++) {
+-        int pixels = (len < maxFillLen) ? len : maxFillLen, bytes = pixels * 2;
+-        descriptor[d].SRCADDR.reg = (uint32_t)pixelPtr + bytes;
+-        descriptor[d].BTCTRL.bit.SRCINC = 1;
+-        descriptor[d].BTCNT.reg = bytes;
+-        descriptor[d].DESCADDR.reg = (uint32_t)&descriptor[d + 1];
+-        len -= pixels;
+-      }
+-      descriptor[d - 1].DESCADDR.reg = 0;
+-    }
+-    memcpy(dptr, &descriptor[0], sizeof(DmacDescriptor));
+-#if defined(__SAMD51__)
+-    if (connection == TFT_PARALLEL) {
+-      // Switch WR pin to PWM or CCL
+-      pinPeripheral(tft8._wr, wrPeripheral);
+-    }
+-#endif // end __SAMD51__
+-
+-    dma_busy = true;
+-    dma.startJob();
+-    if (connection == TFT_PARALLEL)
+-      dma.trigger();
+-    while (dma_busy)
+-      ; // Wait for completion
+-      // Unfortunately blocking is necessary. An earlier version returned
+-      // immediately and checked dma_busy on startWrite() instead, but it
+-      // turns out to be MUCH slower on many graphics operations (as when
+-      // drawing lines, pixel-by-pixel), perhaps because it's a volatile
+-      // type and doesn't cache. Working on this.
+-#if defined(__SAMD51__) || defined(ARDUINO_SAMD_ZERO)
+-    if (connection == TFT_HARD_SPI) {
+-      // SAMD51: SPI DMA seems to leave the SPI peripheral in a freaky
+-      // state on completion. Workaround is to explicitly set it back...
+-      // (5/17/2019: apparently SAMD21 too, in certain cases, observed
+-      // with ST7789 display.)
+-      hwspi._spi->setDataMode(hwspi._mode);
+-    } else {
+-      pinPeripheral(tft8._wr, PIO_OUTPUT); // Switch WR back to GPIO
+-    }
+-#endif // end __SAMD51__
+-    return;
+-  }
+-#endif // end USE_SPI_DMA
+-#endif // end !ESP32
+-
+-  // All other cases (non-DMA hard SPI, bitbang SPI, parallel)...
+-
+   if (connection == TFT_HARD_SPI) {
+ #if defined(ESP8266)
+     do {
 
 diff --git a/Adafruit_SPITFT.h b/Adafruit_SPITFT.h
 index 7f5d80f..9725e13 100644
