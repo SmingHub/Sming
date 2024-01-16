@@ -141,11 +141,10 @@ private:
 template <hw_timer_clkdiv_t clkdiv, HardwareTimerMode mode> uint8_t Timer1Api<clkdiv, mode>::state;
 template <hw_timer_clkdiv_t clkdiv, HardwareTimerMode mode> uint32_t Timer1Api<clkdiv, mode>::interval;
 
-template <hw_timer_clkdiv_t clkdiv = TIMER_CLKDIV_16, HardwareTimerMode mode = eHWT_NonMaskable>
-
 /**
  * @brief Hardware Timer class template with selectable divider and interrupt mode
  */
+template <hw_timer_clkdiv_t clkdiv = TIMER_CLKDIV_16, HardwareTimerMode mode = eHWT_NonMaskable>
 using HardwareTimer1 = CallbackTimer<Timer1Api<clkdiv, mode>>;
 
 /**

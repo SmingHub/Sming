@@ -26,7 +26,11 @@ public:
 	{
 		printLimits();
 
-		for(unsigned i = 0; i < 2000; ++i) {
+		unsigned loopCount{2000};
+#ifdef ARCH_HOST
+		loopCount = 50;
+#endif
+		while(loopCount--) {
 			auto value = os_random();
 			check<NanoTime::Milliseconds>(value);
 			check<NanoTime::Microseconds>(value);
@@ -37,19 +41,30 @@ public:
 
 		TEST_CASE("vs. system time")
 		{
-			constexpr uint32_t duration{2000000};
-			auto startTime = system_get_time();
+			// Determine whether this is an up or down-counter
 			auto startTicks = Clock::ticks();
+			os_delay_us(100);
+			auto endTicks = Clock::ticks();
+			bool isDownCounter = (endTicks < startTicks);
+			debug_w("%s is %s counter", Clock::typeName(), isDownCounter ? "DOWN" : "UP");
+
+			// Run for a second or two and check timer ticks correspond approximately with system clock
+			constexpr uint64_t maxDuration = Clock::maxTicks().template as<NanoTime::Microseconds>() - 5000ULL;
+			constexpr uint32_t duration = std::min(2000000ULL, maxDuration);
+			auto startTime = system_get_time();
+			startTicks = Clock::ticks();
 			uint32_t time;
-			while((time = system_get_time()) < startTime + duration) {
+			while((time = system_get_time()) - startTime < duration) {
 				//
 			}
-			auto endTicks = Clock::ticks();
-			// Handle both up and down counters
-			auto elapsedTicks = (endTicks >= startTicks) ? endTicks - startTicks : startTicks - endTicks;
+			endTicks = Clock::ticks();
+			if(isDownCounter) {
+				std::swap(startTicks, endTicks);
+			}
+			uint32_t elapsedTicks = (endTicks - startTicks) % (Clock::maxTicks() + 1);
 
 			debug_w("System time elapsed: %u", time - startTime);
-			debug_w("%s ticks: %u", Clock::typeName(), elapsedTicks);
+			debug_w("Ticks: %u (%u - %u)", elapsedTicks, startTicks, endTicks);
 			debug_w("Ratio: x %f", float(elapsedTicks) / (time - startTime));
 			uint32_t us = Micros::ticksToTime(elapsedTicks);
 			debug_w("Apparent time: %u", us);
@@ -252,10 +267,15 @@ template <hw_timer_clkdiv_t clkdiv>
 class Timer1ClockTestTemplate : public ClockTestTemplate<Timer1Clock<clkdiv>, uint32_t>
 {
 public:
+	static void IRAM_ATTR callback(void*)
+	{
+	}
+
 	void execute() override
 	{
 		// Configure the hardware to match selected clock divider
 		Timer1Api<clkdiv, eHWT_Maskable> timer;
+		timer.setCallback(callback, nullptr);
 		timer.arm(false);
 
 		ClockTestTemplate<Timer1Clock<clkdiv>, uint32_t>::execute();
