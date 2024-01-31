@@ -29,10 +29,12 @@ public:
 	{
 		System.queueCallback(
 			[](void* param) {
-				Serial.println(_F("timer1 expired"));
-				auto tmr = static_cast<HardwareTimerTest*>(param);
-				if(++tmr->count == 5) {
-					tmr->stop();
+				auto self = static_cast<CallbackTimerTest*>(param);
+				++self->timer1.count;
+				Serial << self->timer1.count << _F(" timer1 expired") << endl;
+				if(self->timer1.count == 5) {
+					self->timer1.stop();
+					self->timer1complete();
 				}
 			},
 			arg);
@@ -58,9 +60,15 @@ public:
 		SHOW_SIZE(Timer1TestApi);
 		SHOW_SIZE(HardwareTimerTest);
 
-		timer1.initializeMs<500>(timer1Callback, &timer1);
+		timer1.initializeMs<500>(timer1Callback, this);
 		timer1.start();
 
+		Serial << _F("Waiting for timer1 callback test to complete") << endl;
+		pending();
+	}
+
+	void timer1complete()
+	{
 		statusTimer.initializeMs<1000>([this]() {
 			bool done = false;
 			++statusTimerCount;
