@@ -52,7 +52,7 @@ There are two mechanisms available.
 GitHub Actions
 ~~~~~~~~~~~~~~
 
-The ``library.yml`` re-useable workflow is provided, which takes care of these tasks:
+The ``library.yml`` reusable workflow is provided, which takes care of these tasks:
 
 - Checking in the library to test
 - Checking in the Sming framework
