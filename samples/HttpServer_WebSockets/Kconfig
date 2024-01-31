@@ -4,7 +4,7 @@
 #
 mainmenu "Sample Configuration"
 
-    menu "Command Hanler"
+    menu "Command Handler"
         config ENABLE_CMD_HANDLER
             bool "Enable command handler functionality"
             default y

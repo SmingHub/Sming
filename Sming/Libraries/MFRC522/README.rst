@@ -255,7 +255,7 @@ Troubleshooting
   #. Check your pin settings/variables in the code, see `Pin Layout`_ .
   #. Check your pin header soldering. Maybe you have cold solder joints.
   #. Check voltage. Most breakouts work with 3.3V.
-  #. SPI only works with 3.3V, most breakouts seem 5V tollerant, but try a level shifter.
+  #. SPI only works with 3.3V, most breakouts seem 5V tolerant, but try a level shifter.
   #. SPI does not like long connections. Try shorter connections.
   #. SPI does not like prototyping boards. Try soldered connections.
   #. According to reports #101, #126 and #131, there may be a problem with the soldering on the MFRC522 breakout. You could fix this on your own.

@@ -286,7 +286,7 @@ Component
 ---------
 
 The purpose of a Component is to encapsulate related elements for
-selective inclusion in a project, for easy sharing and re-use:
+selective inclusion in a project, for easy sharing and reuse:
 
 -  **Shared Library** with associated header files
 -  **App Code** Source files to be compiled directly into the user’s
