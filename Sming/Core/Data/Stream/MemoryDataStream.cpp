@@ -56,7 +56,7 @@ size_t MemoryDataStream::write(const uint8_t* data, size_t len)
 
 	// If reallocation fails, write as much as possible in any remaining space
 	if(!ensureCapacity(size + len)) {
-		len = capacity - size;
+		return 0;
 	}
 
 	memcpy(buffer + size, data, len);
