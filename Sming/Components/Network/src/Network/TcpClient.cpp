@@ -49,10 +49,12 @@ bool TcpClient::send(const char* data, uint16_t len, bool forceCloseAfterSent)
 		memoryStream = new MemoryDataStream();
 	}
 
-	if(memoryStream->write(data, len) != len) {
+	if(!memoryStream->ensureCapacity(memoryStream->getSize() + len)) {
 		debug_e("TcpClient::send ERROR: Unable to store %d bytes in buffer", len);
 		return false;
 	}
+
+	memoryStream->write(data, len);
 
 	return send(memoryStream, forceCloseAfterSent);
 }
