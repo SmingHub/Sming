@@ -43,12 +43,12 @@ public:
 		{
 		}
 
-		ReadWriteStream* getStream()
+		ReadWriteStream* releaseStream()
 		{
 			if(!stream) {
-				stream.reset(new Ota::UpgradeOutputStream(partition));
+				return new Ota::UpgradeOutputStream(partition);
 			}
-			return stream.get();
+			return stream.release();
 		}
 	};
 
