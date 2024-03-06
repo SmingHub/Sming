@@ -522,7 +522,7 @@ bool StationImpl::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate c
 		return false;
 	}
 
-	smartConfigEventInfo.reset(new SmartConfigEventInfo{});
+	smartConfigEventInfo = std::make_unique<SmartConfigEventInfo>();
 	if(!smartConfigEventInfo) {
 		return false;
 	}

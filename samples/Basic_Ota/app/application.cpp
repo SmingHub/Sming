@@ -49,7 +49,7 @@ void doUpgrade()
 	Serial.println(F("Updating..."));
 
 	// need a clean object, otherwise if run before and failed will not run again
-	otaUpdater.reset(new Ota::Network::HttpUpgrader);
+	otaUpdater = std::make_unique<Ota::Network::HttpUpgrader>();
 
 	// select rom slot to flash
 	auto part = ota.getNextBootPartition();

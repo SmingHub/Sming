@@ -34,7 +34,7 @@ bool YeelightBulb::connect()
 		return true;
 	}
 
-	connection.reset(new TcpClient(TcpClientDataDelegate(&YeelightBulb::onResponse, this)));
+	connection = std::make_unique<TcpClient>(TcpClientDataDelegate(&YeelightBulb::onResponse, this));
 
 	connection->setTimeOut(USHRT_MAX); // Stay connected forever
 

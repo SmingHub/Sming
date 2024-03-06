@@ -200,7 +200,7 @@ void Session::handshakeComplete(bool success)
 		// If requested, take a copy of the session ID for later re-use
 		if(options.sessionResume) {
 			if(!sessionId) {
-				sessionId.reset(new SessionId);
+				sessionId = std::make_unique<SessionId>();
 			}
 			*sessionId = connection->getSessionId();
 		}

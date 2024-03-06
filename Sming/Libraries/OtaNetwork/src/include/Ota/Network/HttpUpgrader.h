@@ -46,7 +46,7 @@ public:
 		ReadWriteStream* getStream()
 		{
 			if(!stream) {
-				stream.reset(new Ota::UpgradeOutputStream(partition));
+				stream = std::make_unique<Ota::UpgradeOutputStream>(partition);
 			}
 			return stream.get();
 		}

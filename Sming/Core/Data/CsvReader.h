@@ -47,10 +47,9 @@ public:
 	 */
 	CsvReader(IDataSourceStream* source, char fieldSeparator = ',', const CStringArray& headings = nullptr,
 			  size_t maxLineLength = 2048)
-		: fieldSeparator(fieldSeparator), userHeadingsProvided(headings), maxLineLength(maxLineLength),
+		: source(source), fieldSeparator(fieldSeparator), userHeadingsProvided(headings), maxLineLength(maxLineLength),
 		  headings(headings)
 	{
-		this->source.reset(source);
 		reset();
 	}
 

@@ -69,8 +69,8 @@ void BrClientConnection::startCert(uint32_t length)
 		return;
 	}
 
-	certificate.reset(new BrCertificate);
-	x509Decoder.reset(new X509Decoder(&certificate->subject, &certificate->issuer));
+	certificate = std::make_unique<BrCertificate>();
+	x509Decoder = std::make_unique<X509Decoder>(&certificate->subject, &certificate->issuer);
 
 	auto& types = context.session.validators.fingerprintTypes;
 	resetHash(certSha1Context, types.contains(Fingerprint::Type::CertSha1));

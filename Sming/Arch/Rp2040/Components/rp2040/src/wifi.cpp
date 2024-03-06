@@ -26,14 +26,12 @@ namespace {
 
 class Decompressor {
 public:
-	explicit Decompressor(const FSTR::ObjectBase& data)
+	explicit Decompressor(const FSTR::ObjectBase& data) : stream(new FlashMemoryStream(data))
 	{
-		stream.reset(new FlashMemoryStream(data));
 	}
 
-	explicit Decompressor(Storage::Partition part)
+	explicit Decompressor(Storage::Partition part) : stream(new Storage::PartitionStream(part))
 	{
-		stream.reset(new Storage::PartitionStream(part));
 	}
 
 	bool init()
@@ -90,13 +88,13 @@ std::unique_ptr<Decompressor> decompressor;
 int cyw43_storage_init()
 {
 #ifdef CYW43_FIRMWARE
-	decompressor.reset(new Decompressor(cyw43_firmware));
+	decompressor = std::make_unique<Decompressor>(cyw43_firmware);
 #else
 	auto part = Storage::findPartition("cyw43_fw");
 	if(!part) {
 		debug_e("Failed to find CYW43 firmware partition");
 	} else {
-		decompressor.reset(new Decompressor(part));
+		decompressor = std::make_unique<Decompressor>(part);
 	}
 #endif
 

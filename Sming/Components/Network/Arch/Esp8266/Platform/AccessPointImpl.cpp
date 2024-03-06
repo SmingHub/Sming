@@ -82,7 +82,7 @@ bool AccessPointImpl::config(const String& ssid, String password, AUTH_MODE mode
 			debugf("AP configuration was updated");
 		} else {
 			debugf("Set AP configuration in background");
-			runConfig.reset(new softap_config(config));
+			runConfig = std::make_unique<softap_config>(config);
 		}
 	} else {
 		debugf("AP configuration loaded");

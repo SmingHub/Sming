@@ -170,9 +170,9 @@ void startup(const Config& config)
 
 		auto& server = servers[i];
 		if(devname == nullptr) {
-			server.reset(new CUartPort(i));
+			server = std::make_unique<CUartPort>(i);
 		} else {
-			server.reset(new CUartDevice(i, devname, config.baud[i]));
+			server = std::make_unique<CUartDevice>(i, devname, config.baud[i]);
 		}
 		server->execute();
 	}
@@ -450,7 +450,7 @@ void* CUartDevice::thread_routine()
 	while(!done) {
 		if(txsem.timedwait(IDLE_SLEEP_MS * 1000)) {
 			if(uart != nullptr && !device) {
-				device.reset(new SerialDevice);
+				device = std::make_unique<SerialDevice>();
 				char res = device->openDevice(deviceName, uart->baud_rate);
 				if(res != 1) {
 					host_debug_e("UART%u error %d opening serial device '%s'", uart_nr, res, deviceName);
