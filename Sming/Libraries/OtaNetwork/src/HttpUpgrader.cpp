@@ -32,7 +32,7 @@ void HttpUpgrader::start()
 		}
 
 		request->setMethod(HTTP_GET);
-		request->setResponseStream(it.releaseStream());
+		request->setResponseStream(it.getStream());
 
 		if(i == items.count() - 1) {
 			request->onRequestComplete(RequestCompletedDelegate(&HttpUpgrader::updateComplete, this));
