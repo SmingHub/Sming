@@ -106,7 +106,7 @@ int BrConnection::init(size_t bufferSize, bool bidi)
 		bufferSize += MAX_OUT_OVERHEAD;
 	}
 	debug_i("Using buffer size of %u bytes", bufferSize);
-	buffer.reset(new uint8_t[bufferSize]);
+	buffer = std::make_unique<uint8_t[]>(bufferSize);
 	if(!buffer) {
 		debug_e("Buffer allocation failed");
 		return -BR_ERR_BAD_PARAM;

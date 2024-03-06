@@ -20,8 +20,8 @@ uint16_t StreamTransformer::readMemoryBlock(char* data, int bufSize)
 		return 0;
 	}
 
-	if(tempStream == nullptr) {
-		tempStream.reset(new CircularBuffer(NETWORK_SEND_BUFFER_SIZE + 10));
+	if(!tempStream) {
+		tempStream = std::make_unique<CircularBuffer>(NETWORK_SEND_BUFFER_SIZE + 10);
 	}
 
 	// Use provided buffer as a temporary store for this operation
