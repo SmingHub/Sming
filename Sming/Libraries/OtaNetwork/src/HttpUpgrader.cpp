@@ -49,17 +49,19 @@ void HttpUpgrader::start()
 
 int HttpUpgrader::itemComplete(HttpConnection& client, bool success)
 {
+	auto& it = items[currentItem];
+
 	if(!success) {
+		it.stream.release(); // Owned by HttpRequest
 		updateFailed();
 		return -1;
 	}
 
-	auto& it = items[currentItem];
 	debug_d("Finished: URL: %s, Offset: 0x%X, Length: %u", it.url.c_str(), it.partition.address(),
 			it.stream->available());
 
 	it.size = it.stream->available();
-	it.stream = nullptr; // the actual deletion will happen outside of this class
+	it.stream.release(); // the actual deletion will happen outside of this class
 	currentItem++;
 
 	return 0;
