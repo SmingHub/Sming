@@ -79,11 +79,6 @@ int HttpUpgrader::updateComplete(HttpConnection& client, bool success)
 		debug_d(" - item: %u, addr: 0x%X, url: %s", i, items[i].partition.address(), items[i].url.c_str());
 	}
 
-	if(!success) {
-		updateFailed();
-		return -1;
-	}
-
 	if(updateDelegate) {
 		updateDelegate(*this, true);
 	}
