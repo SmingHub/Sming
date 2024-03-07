@@ -2,6 +2,9 @@
 	"name": "Two ROM slots with single SPIFFS",
 	"base_config": "spiffs",
 	"partitions": {
+		"rom0": {
+			"subtype": "ota_0"
+		},
 		"rom1": {
 			"address": "0x108000",
 			"size": "992K",
