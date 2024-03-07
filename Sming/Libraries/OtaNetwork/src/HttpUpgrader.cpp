@@ -22,6 +22,10 @@ void HttpUpgrader::start()
 
 void HttpUpgrader::fetchNextItem()
 {
+	if(currentItem >= items.count()) {
+		return;
+	}
+
 	auto& it = items[currentItem];
 	debug_d("Download file:\r\n"
 			"    (%u) %s -> %s @ 0x%X",
