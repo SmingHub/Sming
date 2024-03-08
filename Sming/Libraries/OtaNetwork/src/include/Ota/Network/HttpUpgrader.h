@@ -124,10 +124,11 @@ public:
 
 protected:
 	void applyUpdate();
-	void updateFailed();
+	void downloadFailed();
+	void downloadComplete();
+	void fetchNextItem();
 
-	virtual int itemComplete(HttpConnection& client, bool success);
-	virtual int updateComplete(HttpConnection& client, bool success);
+	int itemComplete(HttpConnection& client, bool success);
 
 protected:
 	ItemList items;

@@ -17,33 +17,37 @@ namespace Network
 {
 void HttpUpgrader::start()
 {
-	for(unsigned i = 0; i < items.count(); i++) {
-		auto& it = items[i];
-		debug_d("Download file:\r\n"
-				"    (%u) %s -> %s @ 0x%X",
-				currentItem, it.url.c_str(), it.partition.name().c_str(), it.partition.address());
+	fetchNextItem();
+}
 
-		HttpRequest* request;
-		if(baseRequest != nullptr) {
-			request = baseRequest->clone();
-			request->setURL(it.url);
-		} else {
-			request = new HttpRequest(it.url);
-		}
+void HttpUpgrader::fetchNextItem()
+{
+	if(currentItem >= items.count()) {
+		return;
+	}
 
-		request->setMethod(HTTP_GET);
-		request->setResponseStream(it.getStream());
+	auto& it = items[currentItem];
+	debug_d("Download file:\r\n"
+			"    (%u) %s -> %s @ 0x%X",
+			currentItem, it.url.c_str(), it.partition.name().c_str(), it.partition.address());
 
-		if(i == items.count() - 1) {
-			request->onRequestComplete(RequestCompletedDelegate(&HttpUpgrader::updateComplete, this));
-		} else {
-			request->onRequestComplete(RequestCompletedDelegate(&HttpUpgrader::itemComplete, this));
-		}
+	HttpRequest* request;
+	if(baseRequest != nullptr) {
+		request = baseRequest->clone();
+		request->setURL(it.url);
+	} else {
+		request = new HttpRequest(it.url);
+	}
 
-		if(!send(request)) {
-			debug_e("ERROR: Rejected sending new request.");
-			break;
-		}
+	request->setMethod(HTTP_GET);
+	request->setResponseStream(it.getStream());
+
+	request->onRequestComplete(RequestCompletedDelegate(&HttpUpgrader::itemComplete, this));
+
+	if(!send(request)) {
+		debug_e("ERROR: Rejected sending new request.");
+		it.stream.release();
+		downloadFailed();
 	}
 }
 
@@ -52,43 +56,44 @@ int HttpUpgrader::itemComplete(HttpConnection& client, bool success)
 	auto& it = items[currentItem];
 
 	if(!success) {
-		it.stream.release(); // Owned by HttpRequest
-		updateFailed();
+		it.stream.release();
+		downloadFailed();
 		return -1;
 	}
 
-	debug_d("Finished: URL: %s, Offset: 0x%X, Length: %u", it.url.c_str(), it.partition.address(),
-			it.stream->available());
-
 	it.size = it.stream->available();
+	debug_d("Finished: URL: %s, Offset: 0x%X, Length: %u", it.url.c_str(), it.partition.address(), it.size);
+
 	it.stream.release(); // the actual deletion will happen outside of this class
 	currentItem++;
+
+	if(currentItem < items.count()) {
+		fetchNextItem();
+	} else {
+		downloadComplete();
+	}
 
 	return 0;
 }
 
-int HttpUpgrader::updateComplete(HttpConnection& client, bool success)
+void HttpUpgrader::downloadComplete()
 {
-	int hasError = itemComplete(client, success);
-	if(hasError != 0) {
-		return hasError;
-	}
-
+#if DEBUG_VERBOSE_LEVEL >= DBG
 	debug_d("\r\nFirmware download finished!");
 	for(unsigned i = 0; i < items.count(); i++) {
-		debug_d(" - item: %u, addr: 0x%X, url: %s", i, items[i].partition.address(), items[i].url.c_str());
+		auto& it = items[i];
+		debug_d(" - item: %u, addr: 0x%X, size: 0x%X, url: %s", i, it.partition.address(), it.size, it.url.c_str());
 	}
+#endif
 
 	if(updateDelegate) {
 		updateDelegate(*this, true);
 	}
 
 	applyUpdate();
-
-	return 0;
 }
 
-void HttpUpgrader::updateFailed()
+void HttpUpgrader::downloadFailed()
 {
 	debug_e("\r\nFirmware download failed..");
 	if(updateDelegate) {
