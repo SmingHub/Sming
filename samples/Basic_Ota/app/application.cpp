@@ -67,7 +67,7 @@ void doUpgrade()
 	auto spiffsPart = findSpiffsPartition(part);
 	if(spiffsPart) {
 		// use user supplied values (defaults for 4mb flash in hardware config)
-		otaUpdater->addItem(SPIFFS_URL, spiffsPart, new Storage::PartitionStream(spiffsPart));
+		otaUpdater->addItem(SPIFFS_URL, spiffsPart, new Storage::PartitionStream(spiffsPart, true));
 	}
 
 	// request switch and reboot on success
