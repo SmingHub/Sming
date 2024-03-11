@@ -54,6 +54,16 @@ void doUpgrade()
 	// select rom slot to flash
 	auto part = ota.getNextBootPartition();
 
+	/*
+	 * Applications should always include a sanity check to ensure partitions being updated are
+	 * not in use. This should always included the application partition but should also consider
+	 * filing system partitions, etc. which may be actively in use.
+	 */
+	if(part == ota.getRunningPartition()) {
+		Serial << F("May be running in temporary mode. Please reboot and try again.") << endl;
+		return;
+	}
+
 #ifndef RBOOT_TWO_ROMS
 	// flash rom to position indicated in the rBoot config rom table
 	otaUpdater->addItem(ROM_0_URL, part);
