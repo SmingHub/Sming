@@ -15,6 +15,12 @@
 
 namespace Storage
 {
+enum class Mode {
+	ReadOnly,
+	Write,		///< Write but do not erase, region should be pre-erased
+	BlockErase, ///< Erase blocks as required before writing
+};
+
 /**
  * @brief Stream operating directory on a Storage partition
  *
@@ -30,24 +36,22 @@ public:
 	 * @param partition
 	 * @param offset Limit access to this starting offset
 	 * @param size Limit access to this number of bytes from starting offset
-	 * @param blockErase Set to true to erase blocks before writing
-	 *
-	 * If blockErase is false then region must be pre-erased before writing.
+	 * @param mode
 	 */
-	PartitionStream(Partition partition, storage_size_t offset, size_t size, bool blockErase = false)
-		: partition(partition), startOffset(offset), size(size), blockErase(blockErase)
+	PartitionStream(Partition partition, storage_size_t offset, size_t size, Mode mode = Mode::ReadOnly)
+		: partition(partition), startOffset(offset), size(size), mode(mode)
 	{
 	}
 
 	/**
 	 * @brief Access entire partition using stream
 	 * @param partition
-	 * @param blockErase Set to true to erase blocks before writing
+	 * @param mode
 	 *
 	 * If blockErase is false then partition must be pre-erased before writing.
 	 */
-	PartitionStream(Partition partition, bool blockErase = false)
-		: partition(partition), startOffset{0}, size(partition.size()), blockErase(blockErase)
+	PartitionStream(Partition partition, Mode mode = Mode::ReadOnly)
+		: partition(partition), startOffset{0}, size(partition.size()), mode(mode)
 	{
 	}
 
@@ -74,7 +78,7 @@ private:
 	uint32_t writePos{0};
 	uint32_t readPos{0};
 	uint32_t erasePos{0};
-	bool blockErase;
+	Mode mode;
 };
 
 } // namespace Storage
