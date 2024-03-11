@@ -24,7 +24,7 @@ public:
 
 	explicit operator bool() const
 	{
-		return mEntries.isEmpty();
+		return !mEntries.isEmpty();
 	}
 
 	/**

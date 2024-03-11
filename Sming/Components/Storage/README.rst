@@ -91,6 +91,7 @@ When planning OTA updates please check that the displayed partition map correspo
 For example, the partition table requires a free sector so must not overlap other partitions.
 
 Your OTA update process must include a step to write the partition table to the correct location.
+See :doc:`ota-migration`.
 
 It is not necessary to update the bootloader. See :component:`rboot` for further information.
 
