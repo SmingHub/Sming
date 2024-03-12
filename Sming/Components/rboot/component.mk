@@ -108,6 +108,7 @@ APP_CFLAGS				+= -DRBOOT_INTEGRATION
 export RBOOT_BUILD_BASE	:= $(abspath $(COMPONENT_BUILD_DIR))
 export RBOOT_FW_BASE	:= $(abspath $(FW_BASE))
 export ESPTOOL2
+export RBOOT_BIG_FLASH
 
 # multiple roms per 1mb block?
 ifeq ($(RBOOT_TWO_ROMS),1)
