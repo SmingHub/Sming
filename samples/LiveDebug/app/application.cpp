@@ -96,9 +96,7 @@ void showPrompt()
 
 void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCharsCount)
 {
-	static unsigned commandLength;
-	const unsigned MAX_COMMAND_LENGTH = 16;
-	static char commandBuffer[MAX_COMMAND_LENGTH + 1];
+	static LineBuffer<MAX_COMMAND_LENGTH> commandBuffer;
 
 	// Error detection
 	unsigned status = Serial.getStatus();
@@ -118,38 +116,24 @@ void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCh
 		}
 		// Discard what is likely to be garbage
 		Serial.clear(SERIAL_RX_ONLY);
-		commandLength = 0;
+		commandBuffer.clear();
 		showPrompt();
 		return;
 	}
 
-	int c;
-	while((c = Serial.read()) >= 0) {
-		switch(c) {
-		case '\b': // delete (backspace)
-		case 0x7f: // xterm ctrl-?
-			if(commandLength > 0) {
-				--commandLength;
-				Serial.print(_F("\b \b"));
-			}
-			break;
-		case '\r':
-		case '\n':
-			if(commandLength > 0) {
-				Serial.println();
-				String cmd(commandBuffer, commandLength);
-				commandLength = 0;
-				Serial.clear(SERIAL_RX_ONLY);
-				handleCommand(cmd);
-			}
-			showPrompt();
-			break;
-		default:
-			if(c >= 0x20 && c <= 0x7f && commandLength < MAX_COMMAND_LENGTH) {
-				commandBuffer[commandLength++] = c;
-				Serial.print(char(c));
-			}
+	switch(commandBuffer.process(source, Serial)) {
+	case commandBuffer.Action::clear:
+		showPrompt();
+		break;
+	case commandBuffer.Action::submit: {
+		if(commandBuffer) {
+			handleCommand(String(commandBuffer));
+			commandBuffer.clear();
 		}
+		showPrompt();
+	}
+	default:
+		break;
 	}
 }
 
