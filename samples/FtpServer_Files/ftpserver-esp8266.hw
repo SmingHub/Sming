@@ -1,5 +1,5 @@
 {
-    "name": "FTP Server sample",
+    "name": "FTP Server sample (ESP8266)",
     "base_config": "ftpserver",
     "partitions": {
         "rom0": {

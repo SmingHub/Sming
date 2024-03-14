@@ -1,4 +1,5 @@
 {
+    "name": "Basic IFS (HOST)",
     "base_config": "basic_ifs",
     "arch": "Host",
     "partitions": {
