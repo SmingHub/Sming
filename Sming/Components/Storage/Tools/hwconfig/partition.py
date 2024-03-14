@@ -414,7 +414,7 @@ class Entry(object):
                 res[k] = stringnum(self.type_str())
             elif k == 'subtype':
                 res[k] = stringnum(self.subtype_str())
-            elif v is not None and k != 'name':
+            elif v is not None and k not in ['name', 'unused_before', 'unused_after']:
                 res[k] = v
         return res
 
