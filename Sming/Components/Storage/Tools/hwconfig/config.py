@@ -87,6 +87,8 @@ class Config(object):
         self.options = []
         self.option_library = load_option_library()
         self.base_config = None
+        self.name = ''
+        self.comment = ''
 
     def __str__(self):
         return "'%s' for %s" % (self.name, self.arch)
@@ -119,6 +121,8 @@ class Config(object):
         self.depends.append(filename)
         data = json_load(filename)
         self.parse_dict(data)
+        self.name = data.get('name', '')
+        self.comment = data.get('comment', '')
 
     def parse_options(self, options):
         """Apply any specified options.
@@ -163,9 +167,6 @@ class Config(object):
                 self.devices.parse_dict(v)
             elif k != 'name' and k != 'comment':
                 raise InputError("Unknown config key '%s'" % k)
-
-        self.name = data.get('name', '')
-        self.comment = data.get('comment', '')
 
         if not partitions is None:
             self.partitions.parse_dict(partitions, self.devices)
