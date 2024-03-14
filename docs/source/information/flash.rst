@@ -21,16 +21,15 @@ A typical layout for a 4MByte device might look like this:
    (hex)    (if any)          (KB)   (if applicable)            
    =======  ===============   ====   =========================  ===================================================            
    000000                     1      rboot.bin                  Boot loader            
-   001000                     4                                 rBoot configuration
-   002000                     4                                 Partition table
-   003000                     4      esp_init_data_default.bin  PHY configuration data
-   004000                     12     blank.bin                  System parameter area
-   006000                     4      blank.bin                  RF Calibration data (Initialised to FFh)
-   006000                     4                                 Reserved
-   008000   ROM_0_ADDR               rom0.bin                   First ROM image            
-   100000   RBOOT_SPIFFS_0
-   208000   ROM_1_ADDR               rom1.bin                   Second ROM image            
+   001000                     4                                 rBoot configuration            
+   002000   ROM_0_ADDR               rom0.bin                   First ROM image            
+   102000   ROM_1_ADDR               rom1.bin                   Second ROM image            
+   200000   RBOOT_SPIFFS_0
    300000   RBOOT_SPIFFS_1
+   3FA000                     4                                 Partition table
+   3FB000                     4      blank.bin                  RF Calibration data (Initialised to FFh)
+   3FC000                     4      esp_init_data_default.bin  PHY configuration data            
+   3FD000                     12     blank.bin                  System parameter area
    =======  ===============   ====   =========================  ===================================================            
    
 

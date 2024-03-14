@@ -46,12 +46,16 @@ int PartitionStream::seekFrom(int offset, SeekOrigin origin)
 
 size_t PartitionStream::write(const uint8_t* data, size_t length)
 {
+	if(mode < Mode::Write) {
+		return 0;
+	}
+
 	auto len = std::min(size_t(size - writePos), length);
 	if(len == 0) {
 		return 0;
 	}
 
-	if(blockErase) {
+	if(mode == Mode::BlockErase) {
 		auto endPos = writePos + len;
 		if(endPos > erasePos) {
 			size_t blockSize = partition.getBlockSize();

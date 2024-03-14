@@ -1,0 +1,13 @@
+From v5.1 to v5.2
+=================
+
+.. highlight:: c++
+
+**Breaking change**
+
+The :cpp:class:`Storage::PartitionStream` constructors with ``blockErase`` parameter have been deprecated.
+The intended default behaviour is read-only, however previously this also allowed writing without block erase.
+This can result in corrupted flash contents where the flash has not been explicitly erased beforehand.
+
+The new constructors instead use a :cpp:enum:`Storage::Mode` so behaviour is more explicit.
+The default is read-only and writes will now be failed.

@@ -104,7 +104,7 @@ To enable slot 2, set these values:
                "address": "0x100000",
                "size": "512K",
                "type": "app",
-               "subtype": "ota_1"
+               "subtype": "ota_2"
             }
          }
       }
