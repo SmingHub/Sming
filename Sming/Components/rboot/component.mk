@@ -220,4 +220,13 @@ $(RBOOT_ROM_1_BIN): $(TARGET_OUT_1)
 
 endif
 
+
+##@Flashing
+
+.PHONY: bootinfo
+bootinfo: ##Show bootloader information
+	$(info $(RBOOT_BIN):)
+	$(Q) $(ESPTOOL_CMDLINE) image_info -v2 $(RBOOT_BIN)
+
+
 endif # RBOOT_EMULATION

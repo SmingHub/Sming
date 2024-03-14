@@ -38,3 +38,11 @@ endif
 
 $(TARGET_BIN): $(TARGET_OUT)
 	$(Q) $(ESPTOOL_CMDLINE) elf2image --min-rev $(CHIP_REV_MIN) --elf-sha256-offset 0xb0 $(ESPTOOL_EXTRA_ARGS) $(flashimageoptions) -o $@ $<
+
+
+##@Flashing
+
+.PHONY: bootinfo
+bootinfo: $(FLASH_BOOT_LOADER) ##Show bootloader information
+	$(info $(FLASH_BOOT_LOADER):)
+	$(Q) $(ESPTOOL_CMDLINE) image_info -v2 $(FLASH_BOOT_LOADER)
