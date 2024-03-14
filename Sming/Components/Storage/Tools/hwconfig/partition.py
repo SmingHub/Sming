@@ -583,7 +583,7 @@ class Map(Table):
         # Devices with no defined partitions
         pdevs = set(p.device for p in partitions)
         for dev in config.devices:
-            if not dev in pdevs:
+            if dev not in pdevs:
                 add_unused(partitions, dev, dev.size, -1)
 
         partitions.sort()

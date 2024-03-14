@@ -168,7 +168,7 @@ class Config(object):
             elif k != 'name' and k != 'comment':
                 raise InputError("Unknown config key '%s'" % k)
 
-        if not partitions is None:
+        if partitions:
             self.partitions.parse_dict(partitions, self.devices)
 
     def dict(self):

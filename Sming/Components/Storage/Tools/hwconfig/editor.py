@@ -39,7 +39,7 @@ def read_property(obj, name):
 
 def get_dict_value(dict, key, default):
     """Read dictionary value, creating one if it doesn't exist."""
-    if not key in dict:
+    if key not in dict:
         dict[key] = default
     return dict[key]
 
@@ -370,7 +370,7 @@ class EditState(dict):
         self.array = {} # dictionary for array element variables
         self.row = 0
         keys = self.schema['properties'].keys()
-        if not 'name' in keys:
+        if 'name' not in keys:
             self.addControl('name')
         for k in keys:
             self.addControl(k)
@@ -1279,7 +1279,7 @@ class Editor:
 
         options = get_dict_value(self.json, 'options', [])
         for opt in configVars.get('HWCONFIG_OPTS', '').replace(' ', '').split():
-            if not opt in options:
+            if opt not in options:
                 options.append(opt)
 
         self.reload()
