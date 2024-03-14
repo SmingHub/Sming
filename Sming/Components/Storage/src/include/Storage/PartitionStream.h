@@ -36,7 +36,40 @@ public:
 	 * @param partition
 	 * @param offset Limit access to this starting offset
 	 * @param size Limit access to this number of bytes from starting offset
+	 * @param blockErase Set to true to erase blocks before writing
+	 *
+	 * If blockErase is false then region must be pre-erased before writing.
+	 *
+	 * @deprecated Use `mode` parameter instead of `blockErase`
+	 */
+	SMING_DEPRECATED PartitionStream(Partition partition, storage_size_t offset, size_t size, bool blockErase)
+		: PartitionStream(partition, offset, size, blockErase ? Mode::BlockErase : Mode::ReadOnly)
+	{
+	}
+
+	/**
+	 * @brief Access entire partition using stream
+	 * @param partition
+	 * @param blockErase Set to true to erase blocks before writing
+	 *
+	 * If blockErase is false then partition must be pre-erased before writing.
+	 *
+	 * @deprecated Use `mode` parameter instead of `blockErase`
+	 */
+	SMING_DEPRECATED PartitionStream(Partition partition, bool blockErase)
+		: PartitionStream(partition, blockErase ? Mode::BlockErase : Mode::ReadOnly)
+	{
+	}
+
+	/**
+	 * @brief Access part of a partition using a stream
+	 * @param partition
+	 * @param offset Limit access to this starting offset
+	 * @param size Limit access to this number of bytes from starting offset
 	 * @param mode
+	 * @note When writing in Mode::BlockErase, block erasure is only performed at the
+	 * start of each block. Therefore if `offset` is not a block boundary then the corresponding
+	 * block will *not* be erased first.
 	 */
 	PartitionStream(Partition partition, storage_size_t offset, size_t size, Mode mode = Mode::ReadOnly)
 		: partition(partition), startOffset(offset), size(size), mode(mode)
