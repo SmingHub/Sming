@@ -39,7 +39,12 @@ jobs:
         git config --global --add core.autocrlf input
 
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+
+    - name: Setup python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.idf_version == '4.3' && '3.8' || '3.12' }}
 
     - name: Configure environment
       shell: pwsh
