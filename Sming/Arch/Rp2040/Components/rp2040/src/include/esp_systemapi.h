@@ -32,7 +32,6 @@ extern void ets_wdt_enable(void);
 extern void ets_wdt_disable(void);
 extern void wdt_feed(void);
 
-
 /** @brief  Disable interrupts
  *  @retval Current interrupt level
  *  @note Hardware timer is unaffected if operating in non-maskable mode

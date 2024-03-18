@@ -57,7 +57,7 @@ static struct {
 		Serial << _F("Generating sine wave table @ ") << frequency << _F(" Hz, ") << sampleCount << _F(" samples")
 			   << endl;
 
-		samples.reset(new uint16_t[sampleCount]);
+		samples = std::make_unique<uint16_t[]>(sampleCount);
 		if(!samples) {
 			debug_e("Memory allocation failed");
 			return false;

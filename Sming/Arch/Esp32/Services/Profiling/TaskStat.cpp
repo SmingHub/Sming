@@ -27,7 +27,7 @@ struct TaskStat::Info {
 TaskStat::TaskStat(Print& out) : out(out)
 {
 #if CONFIG_FREERTOS_USE_TRACE_FACILITY && CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS
-	taskInfo.reset(new Info[2]);
+	taskInfo = std::make_unique<Info[]>(2);
 #endif
 }
 

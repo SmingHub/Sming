@@ -205,7 +205,7 @@ static std::unique_ptr<CTimerThread> timer1;
 
 void hw_timer_init(void)
 {
-	timer1.reset(new CTimerThread("Timer1"));
+	timer1 = std::make_unique<CTimerThread>("Timer1");
 }
 
 void hw_timer_cleanup()

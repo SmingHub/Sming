@@ -37,15 +37,14 @@ public:
 		std::unique_ptr<RbootOutputStream> stream; // (optional) output stream to use.
 
 		Item(String url, uint32_t targetOffset, size_t size, RbootOutputStream* stream)
-			: url(url), targetOffset(targetOffset), size(size)
+			: url(url), targetOffset(targetOffset), size(size), stream(stream)
 		{
-			this->stream.reset(stream);
 		}
 
 		RbootOutputStream* getStream()
 		{
 			if(!stream) {
-				stream.reset(new RbootOutputStream(targetOffset, size));
+				stream = std::make_unique<RbootOutputStream>(targetOffset, size);
 			}
 			return stream.get();
 		}

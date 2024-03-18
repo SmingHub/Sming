@@ -25,10 +25,9 @@ namespace Transport
 class TcpClientTransport : public TcpTransport
 {
 public:
-	TcpClientTransport(TcpClient& client)
+	TcpClientTransport(TcpClient& client) : stream(new TcpClientStream(client))
 	{
 		client.setReceiveDelegate(TcpClientDataDelegate(&TcpClientTransport::process, this));
-		stream.reset(new TcpClientStream(client));
 	}
 
 protected:

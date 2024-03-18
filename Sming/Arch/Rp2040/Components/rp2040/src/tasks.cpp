@@ -4,17 +4,17 @@
 #include <pico/util/queue.h>
 #include <sming_attr.h>
 
-namespace {
-
+namespace
+{
 class TaskQueue
 {
 public:
 	static void init()
 	{
-	 	spinlock = spin_lock_claim_unused(true);
+		spinlock = spin_lock_claim_unused(true);
 	}
 
-	TaskQueue(os_task_t callback, uint8_t length): callback(callback)
+	TaskQueue(os_task_t callback, uint8_t length) : callback(callback)
 	{
 		queue_init_with_spinlock(&queue, sizeof(os_event_t), length, spinlock);
 	}
@@ -26,7 +26,7 @@ public:
 
 	bool __forceinline post(os_signal_t sig, os_param_t par)
 	{
-		os_event_t event {sig, par};
+		os_event_t event{sig, par};
 		return queue_try_add(&queue, &event);
 	}
 
@@ -60,7 +60,7 @@ const uint8_t SYSTEM_TASK_QUEUE_LENGTH = 8;
 
 TaskQueue* task_queues[SYSTEM_TASK_PRIO + 1];
 
-};
+}; // namespace
 
 bool system_os_task(os_task_t callback, os_task_priority_t prio, os_event_t* events, uint8_t qlen)
 {
