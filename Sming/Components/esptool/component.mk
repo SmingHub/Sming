@@ -86,3 +86,11 @@ endef
 define EraseFlash
 	$(call ESPTOOL_EXECUTE,erase_flash)
 endef
+
+
+##@Flashing
+
+.PHONY: esptool
+esptool: ##Pass options to esptool, e.g. `make esptool -- --help` or `make esptool image_info` 
+	$(Q) $(ESPTOOL_CMDLINE) $(filter-out $@,$(MAKECMDGOALS))
+
