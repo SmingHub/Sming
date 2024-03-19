@@ -1,5 +1,10 @@
 {
     "host": {
-        "msc": 1
+        "hub": {
+            "port-count": 4
+        },
+        "msc": {
+            "maxlun": 4
+        }
     }
 }
