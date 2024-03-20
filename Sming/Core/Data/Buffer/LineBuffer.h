@@ -14,6 +14,8 @@
 
 #include <cstdint>
 #include <cstring>
+#include <WString.h>
+#include <Print.h>
 
 /**
  * @brief Class to enable buffering of a single line of text, with simple editing
@@ -38,6 +40,20 @@ public:
 	void clear()
 	{
 		length = 0;
+	}
+
+	explicit operator bool() const
+	{
+		return length != 0;
+	}
+
+	/**
+	 * @brief Copy buffer contents into a String
+	 * @retval String
+	 */
+	explicit operator String() const
+	{
+		return String(buffer, length);
 	}
 
 	/**
@@ -75,6 +91,11 @@ public:
 	 * @retval bool true if character was removed, false if buffer is empty
 	 */
 	bool backspace();
+
+	size_t printTo(Print& p) const
+	{
+		return p.write(buffer, length);
+	}
 
 private:
 	char* buffer;

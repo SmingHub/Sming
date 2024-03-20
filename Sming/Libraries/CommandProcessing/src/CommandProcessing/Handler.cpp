@@ -29,9 +29,8 @@ size_t Handler::process(char recvChar)
 			output.print(getCommandPrompt());
 		}
 	} else if(recvChar == getCommandEOL()) {
-		String command(commandBuf.getBuffer(), commandBuf.getLength());
+		processCommandLine(String(commandBuf));
 		commandBuf.clear();
-		processCommandLine(command);
 	} else if(recvChar == '\b' || recvChar == 0x7f) {
 		if(commandBuf.backspace()) {
 			output.print(_F("\b \b"));
