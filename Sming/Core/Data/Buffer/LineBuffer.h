@@ -15,7 +15,7 @@
 #include <cstdint>
 #include <cstring>
 #include <WString.h>
-#include <Print.h>
+#include <Data/Stream/ReadWriteStream.h>
 
 /**
  * @brief Class to enable buffering of a single line of text, with simple editing
@@ -27,6 +27,33 @@ public:
 	LineBufferBase(char* buffer, uint16_t size) : buffer(buffer), size(size)
 	{
 	}
+
+	/**
+	 * @brief Returned from `processKey` method directing caller
+	 */
+	enum class Action {
+		none,	  ///< Do nothing, ignore the key
+		clear,	 ///< Line is cleared: typically perform a carriage return
+		echo,	  ///< Key should be echoed
+		backspace, ///< Perform backspace edit, e.g. output "\b \b"
+		submit,	///< User hit return, process line and clear it
+	};
+
+	/**
+	 * @brief Process all available data from `input`
+	 * @param input Source of keystrokes
+	 * @param output The output stream (e.g. Serial) for echoing
+	 * @retval Action: none, clear or submit
+	 */
+	Action process(Stream& input, ReadWriteStream& output);
+
+	/**
+	 * @brief Process a keypress in a consistent manner for console editing
+	 * @param key The keypress value
+	 * @param output The output stream (e.g. Serial) for echoing, if required
+	 * @retval Action
+	 */
+	Action processKey(char key, ReadWriteStream* output = nullptr);
 
 	/**
 	 * @brief Add a character to the buffer
@@ -53,7 +80,7 @@ public:
 	 */
 	explicit operator String() const
 	{
-		return String(buffer, length);
+		return length ? String(buffer, length) : nullptr;
 	}
 
 	/**
@@ -100,7 +127,8 @@ public:
 private:
 	char* buffer;
 	uint16_t size;
-	uint16_t length{0}; ///< Number of characters stored
+	uint16_t length{0};		///< Number of characters stored
+	char previousKey{'\0'}; ///< For processing CR/LF
 };
 
 /**
