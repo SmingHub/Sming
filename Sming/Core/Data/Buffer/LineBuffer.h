@@ -19,9 +19,13 @@
  * @brief Class to enable buffering of a single line of text, with simple editing
  * @note We define this as a template class for simplicity, no need for separate buffer memory management
  */
-template <uint16_t BUFSIZE> class LineBuffer
+class LineBufferBase
 {
 public:
+	LineBufferBase(char* buffer, uint16_t size) : buffer(buffer), size(size)
+	{
+	}
+
 	/**
 	 * @brief Add a character to the buffer
 	 * @retval char Character added to buffer, '\0' if ignored, '\n' if line is complete
@@ -73,43 +77,22 @@ public:
 	bool backspace();
 
 private:
-	char buffer[BUFSIZE] = {'\0'}; ///< The text buffer
-	uint16_t length = 0;		   ///< Number of characters stored
+	char* buffer;
+	uint16_t size;
+	uint16_t length{0}; ///< Number of characters stored
 };
 
-template <uint16_t BUFSIZE> char LineBuffer<BUFSIZE>::addChar(char c)
+/**
+ * @brief Class to enable buffering of a single line of text, with simple editing
+ * @note We define this as a template class for simplicity, no need for separate buffer memory management
+ */
+template <uint16_t BUFSIZE> class LineBuffer : public LineBufferBase
 {
-	if(c == '\n' || c == '\r') {
-		return '\n';
+public:
+	LineBuffer() : LineBufferBase(buffer, BUFSIZE)
+	{
 	}
 
-	if(c >= 0x20 && c < 0x7f && length < (BUFSIZE - 1)) {
-		buffer[length++] = c;
-		buffer[length] = '\0';
-		return c;
-	}
-
-	return '\0';
-}
-
-template <uint16_t BUFSIZE> bool LineBuffer<BUFSIZE>::backspace()
-{
-	if(length == 0) {
-		return false;
-	} else {
-		--length;
-		buffer[length] = '\0';
-		return true;
-	}
-}
-
-template <uint16_t BUFSIZE> bool LineBuffer<BUFSIZE>::startsWith(const char* text) const
-{
-	auto len = strlen(text);
-	return memcmp(buffer, text, len) == 0;
-}
-
-template <uint16_t BUFSIZE> bool LineBuffer<BUFSIZE>::contains(const char* text) const
-{
-	return strstr(buffer, text) != nullptr;
-}
+private:
+	char buffer[BUFSIZE]{};
+};
