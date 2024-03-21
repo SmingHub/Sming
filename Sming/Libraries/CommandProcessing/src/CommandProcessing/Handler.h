@@ -58,7 +58,7 @@ public:
 	 */
 	void setOutputStream(ReadWriteStream* stream, bool owned = true)
 	{
-		if(outputStream != nullptr && ownedStream) {
+		if(ownedStream) {
 			delete outputStream;
 		}
 
@@ -125,7 +125,7 @@ public:
 
 	/** @brief  Get the command delegate for a command
 	 *  @param  commandString Command to query
-	 *  @retval CommandDelegate The command delegate matching the command
+	 *  @retval Command The command delegate matching the command
 	 */
 	Command getCommandDelegate(const String& commandString);
 
@@ -217,11 +217,11 @@ private:
 	bool ownedStream = true;
 	LineBuffer<MAX_COMMANDSIZE + 1> commandBuf;
 
-	void procesHelpCommand(String commandLine, ReadWriteStream& outputStream);
-	void procesStatusCommand(String commandLine, ReadWriteStream& outputStream);
-	void procesEchoCommand(String commandLine, ReadWriteStream& outputStream);
-	void procesDebugOnCommand(String commandLine, ReadWriteStream& outputStream);
-	void procesDebugOffCommand(String commandLine, ReadWriteStream& outputStream);
+	void processHelpCommand(String commandLine, ReadWriteStream& outputStream);
+	void processStatusCommand(String commandLine, ReadWriteStream& outputStream);
+	void processEchoCommand(String commandLine, ReadWriteStream& outputStream);
+	void processDebugOnCommand(String commandLine, ReadWriteStream& outputStream);
+	void processDebugOffCommand(String commandLine, ReadWriteStream& outputStream);
 	void processCommandOptions(String commandLine, ReadWriteStream& outputStream);
 
 	void processCommandLine(const String& cmdString);
