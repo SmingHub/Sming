@@ -58,7 +58,7 @@ public:
 	 */
 	void setOutputStream(ReadWriteStream* stream, bool owned = true)
 	{
-		if(outputStream != nullptr && ownedStream) {
+		if(ownedStream) {
 			delete outputStream;
 		}
 
