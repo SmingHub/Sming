@@ -125,7 +125,7 @@ public:
 
 	/** @brief  Get the command delegate for a command
 	 *  @param  commandString Command to query
-	 *  @retval CommandDelegate The command delegate matching the command
+	 *  @retval Command The command delegate matching the command
 	 */
 	Command getCommandDelegate(const String& commandString);
 
