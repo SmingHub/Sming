@@ -96,11 +96,11 @@ void Handler::processCommandLine(const String& cmdString)
 void Handler::registerSystemCommands()
 {
 	String system = F("system");
-	registerCommand({F("status"), F("Displays System Information"), system, {&Handler::procesStatusCommand, this}});
-	registerCommand({F("echo"), F("Displays command entered"), system, {&Handler::procesEchoCommand, this}});
-	registerCommand({F("help"), F("Displays all available commands"), system, {&Handler::procesHelpCommand, this}});
-	registerCommand({F("debugon"), F("Set Serial debug on"), system, {&Handler::procesDebugOnCommand, this}});
-	registerCommand({F("debugoff"), F("Set Serial debug off"), system, {&Handler::procesDebugOffCommand, this}});
+	registerCommand({F("status"), F("Displays System Information"), system, {&Handler::processStatusCommand, this}});
+	registerCommand({F("echo"), F("Displays command entered"), system, {&Handler::processEchoCommand, this}});
+	registerCommand({F("help"), F("Displays all available commands"), system, {&Handler::processHelpCommand, this}});
+	registerCommand({F("debugon"), F("Set Serial debug on"), system, {&Handler::processDebugOnCommand, this}});
+	registerCommand({F("debugoff"), F("Set Serial debug off"), system, {&Handler::processDebugOffCommand, this}});
 	registerCommand({F("command"),
 					 F("Use verbose/silent/prompt as command options"),
 					 system,
@@ -143,7 +143,7 @@ bool Handler::unregisterCommand(Command reqDelegate)
 	}
 }
 
-void Handler::procesHelpCommand(String commandLine, ReadWriteStream& outputStream)
+void Handler::processHelpCommand(String commandLine, ReadWriteStream& outputStream)
 {
 	debug_d("HelpCommand entered");
 	outputStream.println(_F("Commands available are :"));
@@ -152,7 +152,7 @@ void Handler::procesHelpCommand(String commandLine, ReadWriteStream& outputStrea
 	}
 }
 
-void Handler::procesStatusCommand(String commandLine, ReadWriteStream& outputStream)
+void Handler::processStatusCommand(String commandLine, ReadWriteStream& outputStream)
 {
 	debug_d("StatusCommand entered");
 	outputStream << _F("Sming Framework Version : " SMING_VERSION) << endl;
@@ -161,19 +161,19 @@ void Handler::procesStatusCommand(String commandLine, ReadWriteStream& outputStr
 	outputStream << _F("System Start Reason : ") << system_get_rst_info()->reason << endl;
 }
 
-void Handler::procesEchoCommand(String commandLine, ReadWriteStream& outputStream)
+void Handler::processEchoCommand(String commandLine, ReadWriteStream& outputStream)
 {
 	debug_d("HelpCommand entered");
 	outputStream << _F("You entered : '") << commandLine << '\'' << endl;
 }
 
-void Handler::procesDebugOnCommand(String commandLine, ReadWriteStream& outputStream)
+void Handler::processDebugOnCommand(String commandLine, ReadWriteStream& outputStream)
 {
 	//	Serial.systemDebugOutput(true);
 	//	outputStream.println(_F("Debug set to : On"));
 }
 
-void Handler::procesDebugOffCommand(String commandLine, ReadWriteStream& outputStream)
+void Handler::processDebugOffCommand(String commandLine, ReadWriteStream& outputStream)
 {
 	//	Serial.systemDebugOutput(false);
 	//	outputStream.println(_F("Debug set to : Off"));
