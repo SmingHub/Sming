@@ -113,7 +113,7 @@ public:
 		return _data.size;
 	}
 
-	bool contains(const Element& elem) const
+	template <typename T> bool contains(const T& elem) const
 	{
 		return indexOf(elem) >= 0;
 	}
@@ -127,7 +127,7 @@ public:
 		return _data[0];
 	}
 
-	int indexOf(const Element& elem) const;
+	template <typename T> int indexOf(const T& elem) const;
 
 	bool isEmpty() const
 	{
@@ -143,7 +143,7 @@ public:
 		return _data[_size - 1];
 	}
 
-	int lastIndexOf(const Element& elem) const;
+	template <typename T> int lastIndexOf(const T& elem) const;
 
 	unsigned int count() const override
 	{
@@ -178,9 +178,9 @@ public:
 		_size = 0;
 	}
 
-	bool removeElement(const Element& obj)
+	template <typename T> bool removeElement(const T& elem)
 	{
-		return removeElementAt(indexOf(obj));
+		return removeElementAt(indexOf(elem));
 	}
 
 	/**
@@ -316,7 +316,7 @@ template <class Element> void Vector<Element>::copyInto(Element* array) const
 	}
 }
 
-template <class Element> int Vector<Element>::indexOf(const Element& elem) const
+template <class Element> template <typename T> int Vector<Element>::indexOf(const T& elem) const
 {
 	for(unsigned int i = 0; i < _size; i++) {
 		if(_data[i] == elem) {
@@ -327,7 +327,7 @@ template <class Element> int Vector<Element>::indexOf(const Element& elem) const
 	return -1;
 }
 
-template <class Element> int Vector<Element>::lastIndexOf(const Element& elem) const
+template <class Element> template <typename T> int Vector<Element>::lastIndexOf(const T& elem) const
 {
 	// check for empty vector
 	if(_size == 0) {
