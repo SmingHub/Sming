@@ -11,6 +11,25 @@
 #include "HttpHeaders.h"
 #include <debug_progmem.h>
 
+String HttpHeaders::HeaderConst::getFieldName() const
+{
+	return fields.toString(key());
+}
+
+size_t HttpHeaders::HeaderConst::printTo(Print& p) const
+{
+	size_t n{0};
+	n += p.print(getFieldName());
+	n += p.print(" = ");
+	n += p.print(value());
+	return n;
+}
+
+HttpHeaders::HeaderConst::operator String() const
+{
+	return fields.toString(key(), value());
+}
+
 const String& HttpHeaders::operator[](const String& name) const
 {
 	auto field = fromString(name);
@@ -40,9 +59,7 @@ bool HttpHeaders::append(const HttpHeaderFieldName& name, const String& value)
 
 void HttpHeaders::setMultiple(const HttpHeaders& headers)
 {
-	for(unsigned i = 0; i < headers.count(); i++) {
-		HttpHeaderFieldName fieldName = headers.keyAt(i);
-		auto fieldNameString = headers.toString(fieldName);
-		operator[](fieldNameString) = headers.valueAt(i);
+	for(auto hdr : headers) {
+		operator[](hdr.getFieldName()) = hdr.value();
 	}
 }

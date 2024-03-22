@@ -40,8 +40,8 @@ int onDownload(HttpConnection& connection, bool success)
 	Serial << _F(", received ") << stream->available() << _F(" bytes") << endl;
 
 	auto& headers = connection.getResponse()->headers;
-	for(unsigned i = 0; i < headers.count(); ++i) {
-		Serial.print(headers[i]);
+	for(auto hdr : headers) {
+		Serial.print(hdr);
 	}
 
 	auto ssl = connection.getSsl();

@@ -312,8 +312,8 @@ void HttpServerConnection::sendResponseHeaders(HttpResponse* response)
 		response->headers[HTTP_HEADER_DATE] = DateTime(SystemClock.now(eTZ_UTC)).toHTTPDate();
 	}
 
-	for(unsigned i = 0; i < response->headers.count(); i++) {
-		sendString(response->headers[i]);
+	for(auto hdr : response->headers) {
+		sendString(hdr);
 	}
 	sendString("\r\n");
 }
