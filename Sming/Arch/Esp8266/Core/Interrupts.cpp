@@ -31,14 +31,14 @@ static void interruptDelegateCallback(uint32_t interruptNumber)
  *  @param  intr_mask Interrupt mask
  *  @param  arg pointer to array of arguments
  */
-static void IRAM_ATTR interruptHandler(uint32 intr_mask, void* arg)
+static void IRAM_ATTR interruptHandler(uint32_t intr_mask, void* arg)
 {
 	bool processed;
 
 	do {
-		uint32 gpioStatus = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
+		uint32_t gpioStatus = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
 		processed = false;
-		for(uint8 i = 0; i < MAX_INTERRUPTS; i++) {
+		for(uint8_t i = 0; i < MAX_INTERRUPTS; i++) {
 			if(!bitRead(gpioStatus, i)) {
 				continue;
 			}

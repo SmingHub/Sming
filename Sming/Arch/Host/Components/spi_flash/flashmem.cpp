@@ -141,7 +141,7 @@ uint8_t flashmem_get_size_type()
 	return flashmem_get_info().size;
 }
 
-uint32 spi_flash_get_id(void)
+uint32_t spi_flash_get_id(void)
 {
 	return 0xFA1E0008;
 }

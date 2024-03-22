@@ -46,7 +46,7 @@ void wifi_fpm_auto_sleep_set_in_null_mode(uint8_t req)
 
 /* GPIO */
 
-void wifi_enable_gpio_wakeup(uint32 i, GPIO_INT_TYPE intr_status)
+void wifi_enable_gpio_wakeup(uint32_t i, GPIO_INT_TYPE intr_status)
 {
 }
 

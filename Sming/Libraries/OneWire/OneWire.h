@@ -137,7 +137,7 @@ public:
     OneWire(uint8_t pin);
 
     void begin();
-    void begin(uint8 pinOneWire);
+    void begin(uint8_t pinOneWire);
 
     // Perform a 1-Wire reset cycle. Returns 1 if a device responds
     // with a presence pulse.  Returns 0 if there is no device or the

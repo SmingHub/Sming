@@ -104,7 +104,7 @@ void digitalWrite(uint16_t pin, uint8_t val)
 		if(pin != 16)
 			GPIO_REG_WRITE((((val != LOW) ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS)), (1 << pin));
 		else
-			WRITE_PERI_REG(RTC_GPIO_OUT, (READ_PERI_REG(RTC_GPIO_OUT) & (uint32)0xfffffffe) | (uint32)(val & 1));
+			WRITE_PERI_REG(RTC_GPIO_OUT, (READ_PERI_REG(RTC_GPIO_OUT) & (uint32_t)0xfffffffe) | (uint32_t)(val & 1));
 
 		//GPIO_OUTPUT_SET(pin, (val ? 0xFF : 00));
 	}
@@ -115,7 +115,7 @@ uint8_t digitalRead(uint16_t pin)
 	if(pin != 16)
 		return ((GPIO_REG_READ(GPIO_IN_ADDRESS) >> pin) & 1);
 	else
-		return (uint8)(READ_PERI_REG(RTC_GPIO_IN_DATA) & 1);
+		return (uint8_t)(READ_PERI_REG(RTC_GPIO_IN_DATA) & 1);
 
 	//return  GPIO_INPUT_GET(pin);
 }

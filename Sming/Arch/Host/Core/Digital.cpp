@@ -13,7 +13,7 @@
 
 // Wemos D1 mini has pin 16
 #define PIN_MAX 16
-static uint8 pinModes[PIN_MAX + 1];
+static uint8_t pinModes[PIN_MAX + 1];
 
 DigitalHooks defaultHooks;
 static DigitalHooks* activeHooks = &defaultHooks;

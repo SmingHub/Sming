@@ -73,8 +73,8 @@ typedef void (*ets_isr_t)(void*);
 void ets_intr_lock(void);
 void ets_intr_unlock(void);
 void ets_isr_attach(int i, ets_isr_t func, void* arg);
-void ets_isr_mask(uint32 mask);
-void ets_isr_unmask(uint32 unmask);
+void ets_isr_mask(uint32_t mask);
+void ets_isr_unmask(uint32_t unmask);
 
 void NmiTimSetFunc(void (*func)(void));
 

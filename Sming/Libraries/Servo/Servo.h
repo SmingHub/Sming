@@ -78,13 +78,13 @@ private:
 
 private:
 	ServoChannel* channels[maxChannels] = {0};
-	unsigned channelCount = 0;   ///< Number of active channels
-	HardwareTimer hardwareTimer; ///< Handles generation of output signals
-	Frame frames[2];			 ///< Contains the active and next frames
-	uint8 activeFrameIndex = 0;  ///< Frame being used by ISR
-	uint8 activeSlot = 0;		 ///< Slot being output by ISR
-	uint8_t nextFrameIndex = 0;  ///< Frame to use when active frame has completed
-	SimpleTimer updateTimer;	 ///< If necessary, updates are pended
+	unsigned channelCount = 0;	///< Number of active channels
+	HardwareTimer hardwareTimer;  ///< Handles generation of output signals
+	Frame frames[2];			  ///< Contains the active and next frames
+	uint8_t activeFrameIndex = 0; ///< Frame being used by ISR
+	uint8_t activeSlot = 0;		  ///< Slot being output by ISR
+	uint8_t nextFrameIndex = 0;   ///< Frame to use when active frame has completed
+	SimpleTimer updateTimer;	  ///< If necessary, updates are pended
 };
 
 extern Servo servo; ///< global instance of the servo object
