@@ -68,13 +68,16 @@ void HttpClient::cleanInactive()
 {
 	debug_d("Total connections: %d", httpConnectionPool.count());
 
-	for(size_t i = 0; i < httpConnectionPool.count(); i++) {
+	size_t i = 0;
+	while(i < httpConnectionPool.count()) {
 		auto connection = httpConnectionPool.valueAt(i);
 
 		if(connection->getConnectionState() > eTCS_Connecting && !connection->isActive()) {
 			debug_d("Removing stale connection: State: %d, Active: %d, Finished: %d", connection->getConnectionState(),
 					connection->isActive(), connection->isFinished());
 			httpConnectionPool.removeAt(i);
+		} else {
+			++i;
 		}
 	}
 }
