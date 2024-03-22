@@ -50,9 +50,9 @@ public:
 		DynamicJsonDocument root(1024);
 		root["event"] = event;
 		JsonObject trackers = root.createNestedObject("trackers");
-		for(unsigned i = 0; i < trackersInfo.count(); i++) {
-			debugf("%s: %s", trackersInfo.keyAt(i).c_str(), trackersInfo.valueAt(i).c_str());
-			trackers[trackersInfo.keyAt(i)] = trackersInfo[trackersInfo.keyAt(i)];
+		for(auto info : trackersInfo) {
+			debugf("%s: %s", info.key().c_str(), info.value().c_str());
+			trackers[info.key()] = info.value();
 		}
 
 		auto stream = new MemoryDataStream;

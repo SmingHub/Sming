@@ -292,9 +292,9 @@ void WebsocketConnection::broadcast(const char* message, size_t length, ws_frame
 	memcpy(copy, message, length);
 	std::shared_ptr<const char> data(copy, [](const char* ptr) { delete[] ptr; });
 
-	for(unsigned i = 0; i < websocketList.count(); i++) {
+	for(auto skt : websocketList) {
 		auto stream = new SharedMemoryStream<const char>(data, length);
-		websocketList[i]->send(stream, type);
+		skt->send(stream, type);
 	}
 }
 

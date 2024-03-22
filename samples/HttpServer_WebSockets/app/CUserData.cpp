@@ -10,14 +10,14 @@ void CUserData::addSession(WebsocketConnection& connection)
 
 void CUserData::removeSession(WebsocketConnection& connection)
 {
-	for(unsigned i = 0; i < activeWebSockets.count(); i++) {
-		if(connection == *(activeWebSockets[i])) {
-			activeWebSockets[i]->setUserData(nullptr);
-			activeWebSockets.remove(i);
-			Serial.println(F("Removed user session"));
-			return;
-		}
+	int i = activeWebSockets.indexOf(&connection);
+	if(i < 0) {
+		return;
 	}
+
+	activeWebSockets[i]->setUserData(nullptr);
+	activeWebSockets.remove(i);
+	Serial.println(F("Removed user session"));
 }
 
 void CUserData::printMessage(WebsocketConnection& connection, const String& msg)
@@ -36,8 +36,8 @@ void CUserData::printMessage(WebsocketConnection& connection, const String& msg)
 
 void CUserData::logOut()
 {
-	for(unsigned i = 0; i < activeWebSockets.count(); i++) {
-		activeWebSockets[i]->setUserData(nullptr);
+	for(auto skt : activeWebSockets) {
+		skt->setUserData(nullptr);
 	}
 
 	activeWebSockets.removeAllElements();

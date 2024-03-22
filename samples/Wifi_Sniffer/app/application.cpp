@@ -60,11 +60,11 @@ static void printSummary()
 {
 	Serial.println("\r\n"
 				   "-------------------------------------------------------------------------------------\r\n");
-	for(unsigned u = 0; u < knownClients.count(); u++) {
-		printClient(knownClients[u]);
+	for(auto& client : knownClients) {
+		printClient(client);
 	}
-	for(unsigned u = 0; u < knownAPs.count(); u++) {
-		printBeacon(knownAPs[u]);
+	for(auto& ap : knownAPs) {
+		printBeacon(ap);
 	}
 	Serial.println("\r\n"
 				   "-------------------------------------------------------------------------------------\r\n");

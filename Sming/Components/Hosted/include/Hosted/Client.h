@@ -154,8 +154,8 @@ public:
 
 		host_debug_i("Available commands:");
 
-		for(size_t i = 0; i < commands.count(); i++) {
-			host_debug_i("\t%s => %d", commands.keyAt(i).c_str(), commands.valueAt(i));
+		for(auto cmd : commands) {
+			host_debug_i("\t%s => %d", cmd.key().c_str(), cmd.value());
 		}
 
 		host_debug_i("Connected. Starting application");
