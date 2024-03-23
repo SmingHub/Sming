@@ -68,7 +68,7 @@ public:
 		}
 	}
 
-	using TcpClient::send;
+	using HttpConnection::send;
 
 	void setUpgradeCallback(HttpServerProtocolUpgradeCallback callback)
 	{
@@ -86,6 +86,11 @@ public:
 	}
 
 protected:
+	bool send(HttpRequest* request) override
+	{
+		return HttpConnection::send(request);
+	}
+
 	// HTTP parser methods
 
 	int onMessageBegin(http_parser* parser) override;

@@ -337,7 +337,7 @@ public:
 	// Functions for manipulating the MFRC522
 	/////////////////////////////////////////////////////////////////////////////////////
 	void PCD_Init();
-	void ICACHE_FLASH_ATTR setControlPins(byte csPin,byte pdPin);
+	void setControlPins(byte csPin,byte pdPin);
 	void PCD_Reset();
 	void PCD_AntennaOn();
 	void PCD_AntennaOff();
