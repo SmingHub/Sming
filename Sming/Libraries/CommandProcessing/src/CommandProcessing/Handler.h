@@ -203,7 +203,6 @@ private:
 	Vector<Command> registeredCommands;
 	String currentPrompt;
 	bool verboseMode{false};
-	bool localEcho{true};
 	String currentWelcomeMessage;
 
 	ReadWriteStream* outputStream{nullptr};

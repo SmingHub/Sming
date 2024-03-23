@@ -40,12 +40,12 @@ size_t Handler::process(char recvChar)
 		}
 		break;
 	case Action::backspace:
-		if(localEcho) {
+		if(isVerbose()) {
 			output.print("\b \b");
 		}
 		break;
 	case Action::echo:
-		if(localEcho) {
+		if(isVerbose()) {
 			output.print(recvChar);
 		}
 		break;
