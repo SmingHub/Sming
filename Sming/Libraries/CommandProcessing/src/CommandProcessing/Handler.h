@@ -17,15 +17,11 @@
 #include <Data/Stream/ReadWriteStream.h>
 #include <Data/Stream/MemoryDataStream.h>
 #include <Data/Buffer/LineBuffer.h>
-#include <memory>
 #include "Command.h"
 
 namespace CommandProcessing
 {
 constexpr size_t MAX_COMMANDSIZE = 64;
-
-/** @brief  Verbose mode
-*/
 
 /** @brief  Command handler class */
 class Handler
@@ -100,17 +96,17 @@ public:
 	// Command registration/de-registration methods
 
 	/** @brief  Add a new command to the command handler
-	 *  @param  reqDelegate Command delegate to register
+	 *  @param  command Command to register
 	 *  @retval bool True on success
 	 *  @note   If command already exists, it will not be replaced and function will fail.
                 Call unregisterCommand first if you want to replace a command.
 	 */
-	bool registerCommand(Command reqDelegate);
+	bool registerCommand(const Command& command);
 
 	/** @brief  Remove a command from the command handler
-	 *  @brief  reqDelegate Delegate to remove from command handler
+	 *  @brief  cmd Item to remove from command handler
 	 */
-	bool unregisterCommand(Command reqDelegate);
+	bool unregisterCommand(const Command& command);
 
 	/** @brief  Register default system commands
 	 *  @note   Adds the following system commands to the command handler
@@ -123,11 +119,11 @@ public:
 	 */
 	void registerSystemCommands();
 
-	/** @brief  Get the command delegate for a command
-	 *  @param  commandString Command to query
-	 *  @retval Command The command delegate matching the command
+	/** @brief  Find command object
+	 *  @param  commandName Command to query
+	 *  @retval Command The command object matching the command
 	 */
-	Command getCommandDelegate(const String& commandString);
+	Command getCommand(const String& name) const;
 
 	/** @brief  Get the verbose mode
 	 *  @retval VerboseMode Verbose mode
@@ -138,7 +134,7 @@ public:
 	}
 
 	/** @brief  Set the verbose mode
-	 *  @param  reqVerboseMode Verbose mode to set
+	 *  @param  mode Verbose mode to set
 	 */
 	void setVerbose(bool mode)
 	{
@@ -156,13 +152,13 @@ public:
 	}
 
 	/** @brief  Set the command line prompt
-	 *  @param  reqPrompt The command line prompt
+	 *  @param  prompt The command line prompt
 	 *  @note   This is what is shown on the command line before user input
 	 *          Default is Sming>
 	 */
-	void setCommandPrompt(const String& reqPrompt)
+	void setCommandPrompt(const String& prompt)
 	{
-		currentPrompt = reqPrompt;
+		currentPrompt = prompt;
 	}
 
 	/** @brief  Get the end of line character
@@ -175,12 +171,12 @@ public:
 	}
 
 	/** @brief  Set the end of line character
-	 *  @param  reqEOL The EOL character
+	 *  @param  eol The EOL character
 	 *  @note   Only supports one EOL, unlike Windows
 	 */
-	void setCommandEOL(char reqEOL)
+	void setCommandEOL(char eol)
 	{
-		currentEOL = reqEOL;
+		currentEOL = eol;
 	}
 
 	/** @brief  Get the welcome message
@@ -193,12 +189,12 @@ public:
 	}
 
 	/** @brief  Set the welcome message
-	 *  @param  reqWelcomeMessage The welcome message that is shown when clients connect
+	 *  @param  message The welcome message that is shown when clients connect
 	 *  @note   Only if verbose mode is enabled
 	 */
-	void setCommandWelcomeMessage(const String& reqWelcomeMessage)
+	void setCommandWelcomeMessage(const String& message)
 	{
-		currentWelcomeMessage = reqWelcomeMessage;
+		currentWelcomeMessage = message;
 	}
 
 private:
@@ -215,7 +211,7 @@ private:
 
 	ReadWriteStream* outputStream{nullptr};
 	bool ownedStream = true;
-	LineBuffer<MAX_COMMANDSIZE + 1> commandBuf;
+	LineBuffer<MAX_COMMANDSIZE> commandBuf;
 
 	void processHelpCommand(String commandLine, ReadWriteStream& outputStream);
 	void processStatusCommand(String commandLine, ReadWriteStream& outputStream);

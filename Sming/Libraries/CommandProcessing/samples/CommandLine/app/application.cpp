@@ -47,6 +47,5 @@ void init()
 	CommandProcessing::enable(commandHandler, Serial);
 
 	commandHandler.registerSystemCommands();
-	commandHandler.registerCommand(
-		CommandProcessing::Command("example", "Example Command", "Application", processExampleCommand));
+	commandHandler.registerCommand({F("example"), F("Example Command"), F("Application"), processExampleCommand});
 }

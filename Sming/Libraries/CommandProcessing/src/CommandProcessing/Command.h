@@ -28,18 +28,23 @@ public:
 	using Callback = Delegate<void(String commandLine, ReadWriteStream& commandOutput)>;
 
 	/** Instantiate a command delegate
-	*  @param  reqName Command name - the text a user types to invoke the command
-	*  @param  reqHelp Help message shown by CLI "help" command
-	*  @param  reqGroup The command group to which this command belongs
-	*  @param  reqFunction Delegate that should be invoked (triggered) when the command is entered by a user
+	*  @param  name Command name - the text a user types to invoke the command
+	*  @param  help Help message shown by CLI "help" command
+	*  @param  group The command group to which this command belongs
+	*  @param  callback Delegate that should be invoked (triggered) when the command is entered by a user
 	*/
-	Command(String reqName, String reqHelp, String reqGroup, Callback reqFunction)
-		: name(reqName), description(reqHelp), group(reqGroup), callback(reqFunction)
+	Command(String name, String help, String group, Callback callback)
+		: name(name), description(help), group(group), callback(callback)
 	{
 	}
 
 	Command()
 	{
+	}
+
+	explicit operator bool() const
+	{
+		return name;
 	}
 
 	String name;		///< Command name

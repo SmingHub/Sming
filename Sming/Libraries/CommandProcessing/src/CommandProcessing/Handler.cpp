@@ -65,25 +65,24 @@ void Handler::processCommandLine(const String& cmdString)
 	if(cmdString.length() == 0) {
 		outputStream->println();
 	} else {
-		debug_d("Received full Command line, size = %u,cmd = %s", cmdString.length(), cmdString.c_str());
-		String cmdCommand;
+		debug_d("Received full Command line, size = %u, cmd = '%s'", cmdString.length(), cmdString.c_str());
+		String name;
 		int cmdLen = cmdString.indexOf(' ');
 		if(cmdLen < 0) {
-			cmdCommand = cmdString;
+			name = cmdString;
 		} else {
-			cmdCommand = cmdString.substring(0, cmdLen);
+			name = cmdString.substring(0, cmdLen);
 		}
 
-		debug_d("CommandExecutor : executing command %s", cmdCommand.c_str());
+		debug_d("CommandExecutor : executing command '%s'", name.c_str());
 
-		Command cmdDelegate = getCommandDelegate(cmdCommand);
-
-		if(!cmdDelegate.callback) {
-			outputStream->print(_F("Command not found, cmd = '"));
-			outputStream->print(cmdCommand);
-			outputStream->println('\'');
+		Command cmd = getCommand(name);
+		if(!cmd) {
+			*outputStream << _F("Command '") << name << _F("' not found.") << endl;
+		} else if(cmd.callback) {
+			cmd.callback(cmdString, *outputStream);
 		} else {
-			cmdDelegate.callback(cmdString, *outputStream);
+			*outputStream << _F("Command '") << name << _F("' has no callback.") << endl;
 		}
 	}
 
@@ -106,40 +105,41 @@ void Handler::registerSystemCommands()
 					 {&Handler::processCommandOptions, this}});
 }
 
-Command Handler::getCommandDelegate(const String& commandString)
+Command Handler::getCommand(const String& name) const
 {
-	if(registeredCommands.contains(commandString)) {
-		debug_d("Returning Delegate for %s \r\n", commandString.c_str());
-		return registeredCommands[commandString];
+	auto& cmd = registeredCommands[name];
+	if(cmd) {
+		debug_d("[CH] Returning Delegate for '%s'", name.c_str());
 	} else {
-		debug_d("Command %s not recognized, returning NULL\r\n", commandString.c_str());
-		return Command("", "", "", nullptr);
+		debug_d("[CH] Command %s not recognized", name.c_str());
 	}
+	return cmd;
 }
 
-bool Handler::registerCommand(Command reqDelegate)
+bool Handler::registerCommand(const Command& command)
 {
-	if(registeredCommands.contains(reqDelegate.name)) {
+	int i = registeredCommands.indexOf(command.name);
+	if(i >= 0) {
 		// Command already registered, don't allow  duplicates
-		debug_d("Commandhandler duplicate command %s", reqDelegate.name.c_str());
+		debug_d("[CH] Duplicate command %s", command.name.c_str());
 		return false;
-	} else {
-		registeredCommands[reqDelegate.name] = reqDelegate;
-		debug_d("Commandhandlercommand %s registered", reqDelegate.name.c_str());
-		return true;
 	}
+
+	registeredCommands[command.name] = command;
+	debug_d("[CH] Command '%s' registered", command.name.c_str());
+	return true;
 }
 
-bool Handler::unregisterCommand(Command reqDelegate)
+bool Handler::unregisterCommand(const Command& command)
 {
-	if(!registeredCommands.contains(reqDelegate.name)) {
+	int i = registeredCommands.indexOf(command.name);
+	if(i < 0) {
 		// Command not registered, cannot remove
 		return false;
-	} else {
-		registeredCommands.remove(reqDelegate.name);
-		//		(*registeredCommands)[reqDelegate.commandName] = reqDelegate;
-		return true;
 	}
+
+	registeredCommands.removeAt(i);
+	return true;
 }
 
 void Handler::processHelpCommand(String commandLine, ReadWriteStream& outputStream)
