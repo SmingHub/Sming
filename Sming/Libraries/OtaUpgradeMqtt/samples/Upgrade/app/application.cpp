@@ -92,10 +92,10 @@ void otaUpdate()
 
 void showInfo()
 {
-	Serial.printf(_F("\r\nSDK: v%s\r\n"), system_get_sdk_version());
-	Serial.printf(_F("Free Heap: %d\r\n"), system_get_free_heap_size());
-	Serial.printf(_F("CPU Frequency: %d MHz\r\n"), system_get_cpu_freq());
-	Serial.printf(_F("System Chip ID: %x\r\n"), system_get_chip_id());
+	Serial << endl << _F("SDK: v") << system_get_sdk_version() << endl;
+	Serial << _F("Free Heap: ") << system_get_free_heap_size() << endl;
+	Serial << _F("CPU Frequency: ") << system_get_cpu_freq() << _F(" MHz") << endl;
+	Serial << _F("System Chip ID: ") << String(system_get_chip_id(), HEX, 8) << endl;
 
 	int total = 0;
 	for(auto part : OtaManager.getBootPartitions()) {
