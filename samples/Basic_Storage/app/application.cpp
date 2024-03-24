@@ -12,16 +12,18 @@ void listSpiffsPartitions()
 		Serial << _F(">> Mounting '") << part.name() << "' ..." << endl;
 		bool ok = spiffs_mount(part);
 		Serial.println(ok ? "OK, listing files:" : "Mount failed!");
-		if(ok) {
-			Directory dir;
-			if(dir.open()) {
-				while(dir.next()) {
-					Serial.print("  ");
-					Serial.println(dir.stat().name);
-				}
-			}
-			Serial << dir.count() << _F(" files found") << endl << endl;
+		if(!ok) {
+			continue;
 		}
+
+		Directory dir;
+		if(dir.open()) {
+			while(dir.next()) {
+				Serial.print("  ");
+				Serial.println(dir.stat().name);
+			}
+		}
+		Serial << dir.count() << _F(" files found") << endl << endl;
 	}
 }
 

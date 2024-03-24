@@ -161,24 +161,26 @@ bool StationImpl::isEnabled() const
 bool StationImpl::config(const Config& cfg)
 {
 	for(auto& ap : apInfoList) {
-		if(cfg.ssid == ap.ssid) {
-			if(ap.authMode != AUTH_OPEN) {
-				if(cfg.password != ap.pwd) {
-					debug_w("Bad password for '%s'", cfg.ssid.c_str());
-					return false;
-				}
-			}
-
-			currentAp = &ap;
-			if(cfg.save) {
-				savedAp = &ap;
-			}
-
-			debug_i("Connected to SSID '%s'", cfg.ssid.c_str());
-
-			autoConnect = cfg.autoConnectOnStartup;
-			return true;
+		if(cfg.ssid != ap.ssid) {
+			continue;
 		}
+
+		if(ap.authMode != AUTH_OPEN) {
+			if(cfg.password != ap.pwd) {
+				debug_w("Bad password for '%s'", cfg.ssid.c_str());
+				return false;
+			}
+		}
+
+		currentAp = &ap;
+		if(cfg.save) {
+			savedAp = &ap;
+		}
+
+		debug_i("Connected to SSID '%s'", cfg.ssid.c_str());
+
+		autoConnect = cfg.autoConnectOnStartup;
+		return true;
 	}
 
 	debug_w("SSID '%s' not found", cfg.ssid.c_str());
