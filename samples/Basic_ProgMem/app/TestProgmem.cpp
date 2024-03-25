@@ -49,7 +49,10 @@ void testPSTR(Print& out)
 
 	// Note that characters after first nul won't be shown ...
 	out.print("> demoPSTR1 (print char*): ");
-	out << '"' << _FLOAD(demoPSTR1) << '"' << endl;
+	{
+		LOAD_PSTR(s, demoPSTR1)
+		out << '"' << s << '"' << endl;
+	}
 
 	// ... now they will: note buf will be aligned up to next dword boundary though
 	out.print("> demoPSTR1 (write): ");
@@ -131,7 +134,10 @@ void testFSTR(Print& out)
 	// Test equality operators
 #define TEST(_test) out.printf(_F("%s: %s\n"), (_test) ? _F("PASS") : _F("FAIL"), _F(#_test));
 	TEST(demoFSTR1 == demoFSTR2)
-	TEST(demoFSTR1 != _FLOAD(demoPSTR1))
+	{
+		LOAD_PSTR(s, demoPSTR1);
+		TEST(demoFSTR1 != s)
+	}
 	TEST(String(demoFSTR1) == demoFSTR2)
 	TEST(demoFSTR1 == String(demoFSTR2))
 #undef TEST

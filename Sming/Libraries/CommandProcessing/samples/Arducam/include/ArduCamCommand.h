@@ -23,11 +23,12 @@ private:
 	bool status = true;
 	ArduCAM myCAM;
 	CommandProcessing::Handler* commandHandler{nullptr};
-	uint8 imgType;
-	uint8 imgSize;
+	uint8_t imgType;
+	uint8_t imgSize;
+
 	void processSetCommands(String commandLine, ReadWriteStream& commandOutput);
 
-	void setFormat(uint8 type);
+	void setFormat(uint8_t type);
 	void showSettings(ReadWriteStream& commandOutput);
 
 	const char* getImageType();

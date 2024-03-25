@@ -137,7 +137,7 @@ int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len);
  * @brief Declare a global reference to a PSTR instance
  * @param name
  */
-#define DECLARE_PSTR(name) extern const char name[] PROGMEM;
+#define DECLARE_PSTR(name) extern const char name[];
 
 /**
  * @brief Create a local (stack) buffer called `name` and load it with flash data.

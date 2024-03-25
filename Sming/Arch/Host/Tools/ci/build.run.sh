@@ -14,6 +14,7 @@ if [[ $CHECK_SCA -eq 1 ]]; then
 	"$DIR/coverity-scan.sh"
 else
 	$MAKE_PARALLEL samples DEBUG_VERBOSE_LEVEL=3
+	$MAKE_PARALLEL component-samples DEBUG_VERBOSE_LEVEL=3
 fi
 
 # Build and run tests

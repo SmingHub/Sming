@@ -57,7 +57,7 @@ void os_delay_us(uint32_t us);
 
 const char* system_get_sdk_version(void);
 
-uint32 system_get_chip_id(void);
+uint32_t system_get_chip_id(void);
 
 bool system_rtc_mem_read(uint8_t src_addr, void* des_addr, uint16_t load_size);
 bool system_rtc_mem_write(uint8_t des_addr, const void* src_addr, uint16_t save_size);

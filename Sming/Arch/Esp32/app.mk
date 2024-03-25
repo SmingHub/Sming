@@ -9,6 +9,11 @@ LDFLAGS	+= \
 	-nostdlib \
 	-Wl,-static
 
+ifeq ($(IDF_VERSION),v5.2)
+LDFLAGS += \
+	-Wl,--no-warn-rwx-segments
+endif
+
 ifdef IDF_TARGET_ARCH_RISCV
 	LDFLAGS += \
 		-nostartfiles \

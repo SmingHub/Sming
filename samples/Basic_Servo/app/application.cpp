@@ -31,8 +31,8 @@ protected:
 
 private:
 	Timer timer;
-	uint16 centerdelay = 0;
-	uint32 value = 0;
+	uint16_t centerdelay = 0;
+	uint32_t value = 0;
 	int degree = 0;
 };
 

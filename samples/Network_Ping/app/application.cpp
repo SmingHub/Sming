@@ -20,7 +20,7 @@ constexpr uint8_t RESTART_DELAY_SECONDS = 2;
 
 Timer procTimer;
 
-void ping(uint32 ip);
+void ping(uint32_t ip);
 
 void pingTask()
 {

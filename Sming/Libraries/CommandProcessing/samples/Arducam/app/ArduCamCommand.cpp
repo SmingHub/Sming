@@ -4,7 +4,7 @@
 #include <Libraries/ArduCAM/ov2640_regs.h>
 
 ArduCamCommand::ArduCamCommand(ArduCAM& CAM, CommandProcessing::Handler& commandHandler)
-	: myCAM(CAM), commandHandler(&commandHandler), imgSize(OV2640_320x240), imgType(JPEG)
+	: myCAM(CAM), commandHandler(&commandHandler), imgType(JPEG), imgSize(OV2640_320x240)
 {
 	debug_d("ArduCamCommand Instantiating");
 }
@@ -155,7 +155,7 @@ void ArduCamCommand::setType(const String& type)
 	setFormat(type == "BMP" ? BMP : JPEG);
 }
 
-void ArduCamCommand::setFormat(uint8 type)
+void ArduCamCommand::setFormat(uint8_t type)
 {
 	if(type == BMP) {
 		myCAM.set_format(BMP);

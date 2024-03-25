@@ -30,8 +30,7 @@ void MFRC522::setSPIConfig() {
 } // End setSPIConfig()
 
 
-void ICACHE_FLASH_ATTR
- MFRC522::setControlPins(byte csPin,byte pdPin) {
+void MFRC522::setControlPins(byte csPin,byte pdPin) {
 	_chipSelectPin = csPin;
 	_resetPowerDownPin = pdPin;
 

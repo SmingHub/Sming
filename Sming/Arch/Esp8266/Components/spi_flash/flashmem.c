@@ -267,7 +267,7 @@ uint32_t flashmem_write_internal( const void *from, uint32_t toaddr, uint32_t si
 {
   assert(IS_ALIGNED(from) && IS_ALIGNED(toaddr) && IS_ALIGNED(size));
 
-  SpiFlashOpResult r = spi_flash_write(toaddr, (uint32*)from, size);
+  SpiFlashOpResult r = spi_flash_write(toaddr, (uint32_t*)from, size);
   if(SPI_FLASH_RESULT_OK == r)
     return size;
   else{
@@ -280,7 +280,7 @@ uint32_t flashmem_read_internal( void *to, uint32_t fromaddr, uint32_t size )
 {
   assert(IS_ALIGNED(to) && IS_ALIGNED(fromaddr) && IS_ALIGNED(size));
 
-  SpiFlashOpResult r = spi_flash_read(fromaddr, (uint32*)to, size);
+  SpiFlashOpResult r = spi_flash_read(fromaddr, (uint32_t*)to, size);
   if(SPI_FLASH_RESULT_OK == r)
     return size;
   else{

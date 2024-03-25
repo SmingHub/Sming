@@ -96,7 +96,7 @@ const char* system_get_sdk_version(void)
 	return version_string;
 }
 
-uint32 system_get_chip_id(void)
+uint32_t system_get_chip_id(void)
 {
 	return 0xC001BEAF;
 }

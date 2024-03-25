@@ -58,7 +58,11 @@ void gdb_enable(bool state);
 #elif defined(ARCH_ESP8266)
 #define gdb_do_break() __asm__("break 0,0")
 #elif defined(ARCH_ESP32)
+#if ESP_IDF_VERSION_MAJOR < 5
 #define gdb_do_break() cpu_hal_break()
+#else
+#define gdb_do_break() esp_cpu_dbgr_break()
+#endif
 #elif defined(ARCH_RP2040)
 #define gdb_do_break() __asm__("bkpt #0")
 #endif

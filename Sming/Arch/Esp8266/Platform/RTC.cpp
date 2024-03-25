@@ -67,8 +67,8 @@ bool RtcClass::setRtcSeconds(uint32_t seconds)
 
 void updateTime(RtcData& data)
 {
-	uint32 rtc_cycles;
-	uint32 cal, cal1, cal2;
+	uint32_t rtc_cycles;
+	uint32_t cal, cal1, cal2;
 	cal1 = system_rtc_clock_cali_proc();
 	__asm__ __volatile__("memw" : : : "memory"); // Just for fun
 	cal2 = system_rtc_clock_cali_proc();

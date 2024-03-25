@@ -156,7 +156,7 @@ public:
 
 	void testMakeHexString()
 	{
-		uint8 hwaddr[] = {0xaa, 0xbb, 0xcc, 0xdd, 0x12, 0x55, 0x00};
+		uint8_t hwaddr[] = {0xaa, 0xbb, 0xcc, 0xdd, 0x12, 0x55, 0x00};
 		REQUIRE(makeHexString(nullptr, 6) == String::empty);
 		REQUIRE(makeHexString(hwaddr, 0) == String::empty);
 		REQUIRE(makeHexString(hwaddr, 6) == F("aabbccdd1255"));

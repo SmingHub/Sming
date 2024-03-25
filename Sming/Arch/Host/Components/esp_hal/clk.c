@@ -23,7 +23,7 @@ static uint32_t get_ccount(uint64_t nanos)
 	return ccount;
 }
 
-bool system_update_cpu_freq(uint8 freq)
+bool system_update_cpu_freq(uint8_t freq)
 {
 	if(freq == cpu_frequency) {
 		return true;
@@ -46,7 +46,7 @@ uint8_t ets_get_cpu_frequency(void)
 	return cpu_frequency;
 }
 
-uint8 system_get_cpu_freq(void)
+uint8_t system_get_cpu_freq(void)
 {
 	return ets_get_cpu_frequency();
 }

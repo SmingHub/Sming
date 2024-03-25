@@ -30,7 +30,7 @@ public:
 
 void StationImpl::enable(bool enabled, bool save)
 {
-	uint8 mode;
+	uint8_t mode;
 	if(save) {
 		mode = wifi_get_opmode_default() & ~STATION_MODE;
 	} else {

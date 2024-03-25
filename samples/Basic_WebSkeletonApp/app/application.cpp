@@ -36,7 +36,6 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true);
-	Serial.commandProcessing(false);
 
 #ifndef ENABLE_FLASHSTRING_MAP
 	spiffs_mount(); // Mount file system, in order to work with files
