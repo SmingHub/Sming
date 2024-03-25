@@ -120,7 +120,7 @@ Set ``Project URL slug``
 
     For example, testing the ``Sming-jerryscript`` library requires this value to be set to ``jerryscript``
     to match the Sming library name.
-    Build logs should then report a warning ``Multiple matches found for Component 'jerryscript'.
+    Build logs should then report a warning ``Multiple matches found for Component 'jerryscript'``.
 
 Set sming fork/branch
     By default builds use the main Sming ``develop`` branch.

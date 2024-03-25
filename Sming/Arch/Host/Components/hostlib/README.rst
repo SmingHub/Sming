@@ -17,7 +17,7 @@ the :cpp:class:`CommandLine`.
 Startup
 -------
 
-Initialises :component-host:`spi_flash`, Uart server (in :component-host:`driver`) and :component-host:`lwip`
+Initialises :component-host:`spi_flash`, Uart server (in :component-host:`driver`) and :component:`lwip`
 networking, then enters the main task loop. This loop services LWIP plus the task and timer queues
 (implemented in :component-host:`esp_hal`).
 The ``Ctrl+C`` keypress is trapped to provide an orderly exit. If the system has become stuck in a loop or is otherwise
