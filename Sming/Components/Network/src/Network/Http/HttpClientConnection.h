@@ -59,6 +59,9 @@ public:
 	}
 
 protected:
+	// HttpConnection methods
+	bool onHttpError(HttpError error) override;
+
 	// HTTP parser methods
 
 	int onMessageBegin(http_parser* parser) override;
