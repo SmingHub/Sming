@@ -1,13 +1,13 @@
 # Requirements file for pip
 # list of Python packages used in documentation build
-sphinx==4.2.0
-sphinx-rtd-theme==1.0.0
-m2r2==0.3.2
+sphinx==7.2.6
+sphinx-rtd-theme
+m2r2
 # mistune==2.0.3 # Version 2 not compatible with m2r2
-breathe==4.31.0
+breathe
 sphinxcontrib-wavedrom
 sphinx-copybutton
-sphinxcontrib-seqdiag==2.0.0
+sphinxcontrib-seqdiag
 jinja2>=3.0.3
 setuptools>=57.5.0
-funcparserlib==1.0.0a0
+funcparserlib
