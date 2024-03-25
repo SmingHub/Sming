@@ -18,11 +18,11 @@ jobs:
 #      group: ${{ github.head_ref || github.run_id }}
 #      cancel-in-progress: true
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Check if we are allowed to scan
       env:
         BRANCH: ${{github.ref_name}}
