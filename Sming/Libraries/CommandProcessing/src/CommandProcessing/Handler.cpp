@@ -21,24 +21,36 @@ size_t Handler::process(char recvChar)
 {
 	auto& output = getOutputStream();
 
-	if(recvChar == 27) // ESC -> delete current commandLine
-	{
-		commandBuf.clear();
+	using Action = LineBufferBase::Action;
+	switch(commandBuf.processKey(recvChar)) {
+	case Action::clear:
 		if(isVerbose()) {
 			output.println();
 			output.print(getCommandPrompt());
 		}
-	} else if(recvChar == getCommandEOL()) {
+		break;
+	case Action::submit:
+		if(isVerbose()) {
+			output.println();
+		}
 		processCommandLine(String(commandBuf));
 		commandBuf.clear();
-	} else if(recvChar == '\b' || recvChar == 0x7f) {
-		if(commandBuf.backspace()) {
-			output.print(_F("\b \b"));
+		if(isVerbose()) {
+			outputStream->print(getCommandPrompt());
 		}
-	} else {
-		if(commandBuf.addChar(recvChar) && localEcho) {
+		break;
+	case Action::backspace:
+		if(localEcho) {
+			output.print("\b \b");
+		}
+		break;
+	case Action::echo:
+		if(localEcho) {
 			output.print(recvChar);
 		}
+		break;
+	case Action::none:
+		break;
 	}
 	return 1;
 }
@@ -63,31 +75,27 @@ String Handler::processNow(const char* buffer, size_t size)
 void Handler::processCommandLine(const String& cmdString)
 {
 	if(cmdString.length() == 0) {
-		outputStream->println();
-	} else {
-		debug_d("Received full Command line, size = %u, cmd = '%s'", cmdString.length(), cmdString.c_str());
-		String name;
-		int cmdLen = cmdString.indexOf(' ');
-		if(cmdLen < 0) {
-			name = cmdString;
-		} else {
-			name = cmdString.substring(0, cmdLen);
-		}
-
-		debug_d("CommandExecutor : executing command '%s'", name.c_str());
-
-		Command cmd = getCommand(name);
-		if(!cmd) {
-			*outputStream << _F("Command '") << name << _F("' not found.") << endl;
-		} else if(cmd.callback) {
-			cmd.callback(cmdString, *outputStream);
-		} else {
-			*outputStream << _F("Command '") << name << _F("' has no callback.") << endl;
-		}
+		return;
 	}
 
-	if(isVerbose()) {
-		outputStream->print(getCommandPrompt());
+	debug_d("Received full Command line, size = %u, cmd = '%s'", cmdString.length(), cmdString.c_str());
+	String name;
+	int cmdLen = cmdString.indexOf(' ');
+	if(cmdLen < 0) {
+		name = cmdString;
+	} else {
+		name = cmdString.substring(0, cmdLen);
+	}
+
+	debug_d("CommandExecutor : executing command '%s'", name.c_str());
+
+	Command cmd = getCommand(name);
+	if(!cmd) {
+		*outputStream << _F("Command '") << name << _F("' not found.") << endl;
+	} else if(cmd.callback) {
+		cmd.callback(cmdString, *outputStream);
+	} else {
+		*outputStream << _F("Command '") << name << _F("' has no callback.") << endl;
 	}
 }
 
@@ -187,6 +195,9 @@ void Handler::processCommandOptions(String commandLine, ReadWriteStream& outputS
 	bool printUsage = false;
 
 	switch(numToken) {
+	case 1:
+		printUsage = true;
+		break;
 	case 2:
 		if(commandToken[1] == _F("help")) {
 			printUsage = true;

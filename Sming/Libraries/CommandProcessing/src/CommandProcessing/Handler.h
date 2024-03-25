@@ -164,19 +164,21 @@ public:
 	/** @brief  Get the end of line character
 	 *  @retval char The EOL character
 	 *  @note   Only supports one EOL, unlike Windows
+	 *  @deprecated Not required
 	 */
-	char getCommandEOL() const
+	char getCommandEOL() const SMING_DEPRECATED
 	{
-		return currentEOL;
+		return '\n';
 	}
 
 	/** @brief  Set the end of line character
 	 *  @param  eol The EOL character
 	 *  @note   Only supports one EOL, unlike Windows
+	 *  @deprecated Not required
 	 */
-	void setCommandEOL(char eol)
+	void setCommandEOL(char eol) SMING_DEPRECATED
 	{
-		currentEOL = eol;
+		(void)eol;
 	}
 
 	/** @brief  Get the welcome message
@@ -200,11 +202,6 @@ public:
 private:
 	Vector<Command> registeredCommands;
 	String currentPrompt;
-#ifdef ARCH_HOST
-	char currentEOL{'\n'};
-#else
-	char currentEOL{'\r'};
-#endif
 	bool verboseMode{false};
 	bool localEcho{true};
 	String currentWelcomeMessage;
