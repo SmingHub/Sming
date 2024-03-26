@@ -47,8 +47,6 @@ struct CommandDef {
 	 */
 	using Callback = Delegate<void(String commandLine, ReadWriteStream& commandOutput)>;
 
-#ifdef CMDPROC_FLASHSTRINGS
-
 	operator bool() const
 	{
 		return strings;
@@ -61,27 +59,17 @@ struct CommandDef {
 
 	String get(StringIndex index) const
 	{
+#ifdef CMDPROC_FLASHSTRINGS
 		return strings ? CStringArray(*strings)[unsigned(index)] : nullptr;
-	}
-
-	const FlashString* strings{};
-
 #else
-
-	operator bool() const
-	{
-		return name;
+		return strings[unsigned(index)];
+#endif
 	}
 
-	bool operator==(const String& name) const
-	{
-		return name == this->name;
-	}
-
-	String name;
-	String help;
-	String group;
-
+#ifdef CMDPROC_FLASHSTRINGS
+	const FlashString* strings{};
+#else
+	CStringArray strings;
 #endif
 
 	Callback callback;
@@ -99,10 +87,6 @@ public:
 	Command(const FlashString& strings, Command::Callback callback) : Command({&strings, callback})
 	{
 	}
-
-	Command(const CommandDef& def) : CommandDef(def), name{*this}, help{*this}, group{*this}
-	{
-	}
 #else
 	/** Instantiate a command delegate using set of wiring Strings
 	 *  @param  name Command name - the text a user types to invoke the command
@@ -110,30 +94,20 @@ public:
 	 *  @param  group The command group to which this command belongs
 	 *  @param  callback Delegate that should be invoked (triggered) when the command is entered by a user
 	 */
-	Command(String name, String help, String group, Callback callback) : CommandDef{name, help, group, callback}
+	Command(const String& name, const String& help, const String& group, Callback callback)
+		: Command({nullptr, callback})
 	{
-	}
-
-	Command(const CommandDef& def) : CommandDef(def)
-	{
+		strings.reserve(name.length() + help.length() + group.length() + 3);
+		strings += name;
+		strings += help;
+		strings += group;
 	}
 #endif
 
-	/**
-	 * @brief Invoke registered callback
-	 * @retval bool false if no callback registered
-	 */
-	bool operator()(String commandLine, ReadWriteStream& commandOutput) const
+	Command(const CommandDef& def) : CommandDef(def), name{*this}, help{*this}, group{*this}
 	{
-		if(!callback) {
-			return false;
-		}
-
-		callback(commandLine, commandOutput);
-		return true;
 	}
 
-#ifdef CMDPROC_FLASHSTRINGS
 	/**
 	 * @brief Helper class for accessing individual strings
 	 */
@@ -149,7 +123,6 @@ public:
 	const StringAccessor<StringIndex::name> name;
 	const StringAccessor<StringIndex::help> help;
 	const StringAccessor<StringIndex::group> group;
-#endif
 };
 
 } // namespace CommandProcessing
