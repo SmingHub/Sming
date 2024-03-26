@@ -107,13 +107,14 @@ void Handler::registerSystemCommands()
 
 Command Handler::getCommand(const String& name) const
 {
-	auto& cmd = registeredCommands[name];
-	if(cmd) {
+	int i = registeredCommands.indexOf(name);
+	if(i >= 0) {
 		debug_d("[CH] Returning Delegate for '%s'", name.c_str());
-	} else {
-		debug_d("[CH] Command %s not recognized", name.c_str());
+		return registeredCommands[i];
 	}
-	return cmd;
+
+	debug_d("[CH] Command %s not recognized", name.c_str());
+	return Command();
 }
 
 bool Handler::registerCommand(const Command& command)
@@ -125,7 +126,7 @@ bool Handler::registerCommand(const Command& command)
 		return false;
 	}
 
-	registeredCommands[command.name] = command;
+	registeredCommands.add(command);
 	debug_d("[CH] Command '%s' registered", command.name.c_str());
 	return true;
 }
@@ -138,7 +139,7 @@ bool Handler::unregisterCommand(const Command& command)
 		return false;
 	}
 
-	registeredCommands.removeAt(i);
+	registeredCommands.remove(i);
 	return true;
 }
 
@@ -146,8 +147,8 @@ void Handler::processHelpCommand(String commandLine, ReadWriteStream& outputStre
 {
 	debug_d("HelpCommand entered");
 	outputStream.println(_F("Commands available are :"));
-	for(auto cmd : registeredCommands) {
-		outputStream << cmd->name << " | " << cmd->group << " | " << cmd->help << endl;
+	for(auto& cmd : registeredCommands) {
+		outputStream << cmd.name << " | " << cmd.group << " | " << cmd.help << endl;
 	}
 }
 

@@ -47,6 +47,11 @@ public:
 		return name;
 	}
 
+	bool operator==(const String& name) const
+	{
+		return name == this->name;
+	}
+
 	String name;
 	String help;
 	String group;

@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <WHashMap.h>
+#include <WVector.h>
 #include <Data/Stream/ReadWriteStream.h>
 #include <Data/Stream/MemoryDataStream.h>
 #include <Data/Buffer/LineBuffer.h>
@@ -198,7 +198,7 @@ public:
 	}
 
 private:
-	HashMap<String, Command> registeredCommands;
+	Vector<Command> registeredCommands;
 	String currentPrompt;
 #ifdef ARCH_HOST
 	char currentEOL{'\n'};
