@@ -147,7 +147,7 @@ void Handler::processHelpCommand(String commandLine, ReadWriteStream& outputStre
 	debug_d("HelpCommand entered");
 	outputStream.println(_F("Commands available are :"));
 	for(auto cmd : registeredCommands) {
-		outputStream << cmd->name << " | " << cmd->group << " | " << cmd->description << endl;
+		outputStream << cmd->name << " | " << cmd->group << " | " << cmd->help << endl;
 	}
 }
 

@@ -34,7 +34,7 @@ public:
 	*  @param  callback Delegate that should be invoked (triggered) when the command is entered by a user
 	*/
 	Command(String name, String help, String group, Callback callback)
-		: name(name), description(help), group(group), callback(callback)
+		: name(name), help(help), group(group), callback(callback)
 	{
 	}
 
@@ -47,10 +47,10 @@ public:
 		return name;
 	}
 
-	String name;		///< Command name
-	String description; ///< Command help
-	String group;		///< Command group
-	Callback callback;  ///< Command Delegate (function that is called when command is invoked)
+	String name;
+	String help;
+	String group;
+	Callback callback; ///< Command Delegate (function that is called when command is invoked)
 };
 
 } // namespace CommandProcessing
