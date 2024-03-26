@@ -44,14 +44,27 @@ Using
       
       void processShutdownCommand(String commandLine, ReadWriteStream& commandOutput)
       {
-      	// ...
+        // ...
       }
 
       void init()
       {
         commandHandler.registerSystemCommands();
-		commandHandler.registerCommand(CommandProcessing::Command("shutdown", "Shutdown Server Command", "Application", processShutdownCommand));
+        commandHandler.registerCommand({CMDP_STRINGS("shutdown", "Shutdown Server Command", "Application"), processShutdownCommand});
       }
+
+.. envvar:: CMDPROC_FLASHSTRINGS
+
+   default: undefined (RAM strings)
+   1: Store strings in flash memory
+
+   Command ``name``, ``help`` and ``group`` strings default to RAM.
+   This maintains backward compatibility with existing applications which may define commands like this::
+
+     commandHandler.registerCommand({"shutdown", "Shutdown Server Command", "Application", processShutdownCommand});
+
+   To save RAM, update your code to use the ``CMDP_STRINGS`` macro and build with ``CMDPROC_FLASHSTRINGS=1``.
+
 
 API Documentation
 -----------------

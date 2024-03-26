@@ -16,8 +16,7 @@ ArduCamCommand::~ArduCamCommand()
 void ArduCamCommand::initCommand()
 {
 	commandHandler->registerCommand(
-		CommandProcessing::Command("set", "ArduCAM config commands", "Application",
-								   CommandProcessing::Command::Callback(&ArduCamCommand::processSetCommands, this)));
+		{CMDP_STRINGS("set", "ArduCAM config commands", "Application"), {&ArduCamCommand::processSetCommands, this}});
 }
 
 void ArduCamCommand::showSettings(ReadWriteStream& commandOutput)

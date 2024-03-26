@@ -101,15 +101,16 @@ void Handler::processCommandLine(const String& cmdString)
 
 void Handler::registerSystemCommands()
 {
-	String system = F("system");
-	registerCommand({F("status"), F("Displays System Information"), system, {&Handler::processStatusCommand, this}});
-	registerCommand({F("echo"), F("Displays command entered"), system, {&Handler::processEchoCommand, this}});
-	registerCommand({F("help"), F("Displays all available commands"), system, {&Handler::processHelpCommand, this}});
-	registerCommand({F("debugon"), F("Set Serial debug on"), system, {&Handler::processDebugOnCommand, this}});
-	registerCommand({F("debugoff"), F("Set Serial debug off"), system, {&Handler::processDebugOffCommand, this}});
-	registerCommand({F("command"),
-					 F("Use verbose/silent/prompt as command options"),
-					 system,
+	registerCommand(
+		{CMDP_STRINGS("status", "Displays System Information", "system"), {&Handler::processStatusCommand, this}});
+	registerCommand({CMDP_STRINGS("echo", "Displays command entered", "system"), {&Handler::processEchoCommand, this}});
+	registerCommand(
+		{CMDP_STRINGS("help", "Displays all available commands", "system"), {&Handler::processHelpCommand, this}});
+	registerCommand(
+		{CMDP_STRINGS("debugon", "Set Serial debug on", "system"), {&Handler::processDebugOnCommand, this}});
+	registerCommand(
+		{CMDP_STRINGS("debugoff", "Set Serial debug off", "system"), {&Handler::processDebugOffCommand, this}});
+	registerCommand({CMDP_STRINGS("command", "Use verbose/silent/prompt as command options", "system"),
 					 {&Handler::processCommandOptions, this}});
 }
 
@@ -122,20 +123,21 @@ Command Handler::getCommand(const String& name) const
 	}
 
 	debug_d("[CH] Command %s not recognized", name.c_str());
-	return Command();
+	return CommandDef{};
 }
 
 bool Handler::registerCommand(const Command& command)
 {
-	int i = registeredCommands.indexOf(command.name);
+	String name = command.name;
+	int i = registeredCommands.indexOf(name);
 	if(i >= 0) {
 		// Command already registered, don't allow  duplicates
-		debug_d("[CH] Duplicate command %s", command.name.c_str());
+		debug_d("[CH] Duplicate command %s", name.c_str());
 		return false;
 	}
 
 	registeredCommands.add(command);
-	debug_d("[CH] Command '%s' registered", command.name.c_str());
+	debug_d("[CH] Command '%s' registered", name.c_str());
 	return true;
 }
 
@@ -155,7 +157,7 @@ void Handler::processHelpCommand(String commandLine, ReadWriteStream& outputStre
 {
 	debug_d("HelpCommand entered");
 	outputStream.println(_F("Commands available are :"));
-	for(auto& cmd : registeredCommands) {
+	for(Command cmd : registeredCommands) {
 		outputStream << cmd.name << " | " << cmd.group << " | " << cmd.help << endl;
 	}
 }

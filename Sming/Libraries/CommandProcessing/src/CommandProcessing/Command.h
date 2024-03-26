@@ -12,13 +12,33 @@
 
 #include <Delegate.h>
 #include <Data/Stream/ReadWriteStream.h>
+#include <Data/CStringArray.h>
+
+#ifdef CMDPROC_FLASHSTRINGS
+/**
+ * @brief Command strings stored in single flash block for space-efficiency
+ * @tparam name Command name - the text a user types to invoke the command
+ * @tparam help Help message shown by CLI "help" command
+ * @tparam group The command group to which this command belongs
+ */
+#define CMDP_STRINGS(name, help, group) FS(name "\0" help "\0" group "\0")
+#else
+#define CMDP_STRINGS(name, help, group) F(name), F(help), F(group)
+#endif
 
 namespace CommandProcessing
 {
-/** @brief  Command delegate class */
-class Command
-{
-public:
+// Order matches CMDP_STRINGS
+enum class StringIndex {
+	name,
+	help,
+	group,
+};
+
+/**
+ * @brief Command definition stored by handler
+ */
+struct CommandDef {
 	/** @brief  Command delegate function
 	 *  @param  commandLine Command line entered by user at CLI, including command and parameters
 	 *  @param  commandOutput Pointer to the CLI print stream
@@ -27,22 +47,28 @@ public:
 	 */
 	using Callback = Delegate<void(String commandLine, ReadWriteStream& commandOutput)>;
 
-	/** Instantiate a command delegate
-	*  @param  name Command name - the text a user types to invoke the command
-	*  @param  help Help message shown by CLI "help" command
-	*  @param  group The command group to which this command belongs
-	*  @param  callback Delegate that should be invoked (triggered) when the command is entered by a user
-	*/
-	Command(String name, String help, String group, Callback callback)
-		: name(name), help(help), group(group), callback(callback)
+#ifdef CMDPROC_FLASHSTRINGS
+
+	operator bool() const
 	{
+		return strings;
 	}
 
-	Command()
+	bool operator==(const String& name) const
 	{
+		return name == get(StringIndex::name);
 	}
 
-	explicit operator bool() const
+	String get(StringIndex index) const
+	{
+		return strings ? CStringArray(*strings)[unsigned(index)] : nullptr;
+	}
+
+	const FlashString* strings{};
+
+#else
+
+	operator bool() const
 	{
 		return name;
 	}
@@ -55,7 +81,75 @@ public:
 	String name;
 	String help;
 	String group;
-	Callback callback; ///< Command Delegate (function that is called when command is invoked)
+
+#endif
+
+	Callback callback;
+};
+
+/** @brief  Command delegate class */
+class Command : public CommandDef
+{
+public:
+#ifdef CMDPROC_FLASHSTRINGS
+	/** Instantiate a command delegate using block of flash strings
+	 *  @param  strings Block of strings produced by `CMDP_STRINGS` macro
+	 *  @param  callback Delegate that should be invoked (triggered) when the command is entered by a user
+	 */
+	Command(const FlashString& strings, Command::Callback callback) : Command({&strings, callback})
+	{
+	}
+
+	Command(const CommandDef& def) : CommandDef(def), name{*this}, help{*this}, group{*this}
+	{
+	}
+#else
+	/** Instantiate a command delegate using set of wiring Strings
+	 *  @param  name Command name - the text a user types to invoke the command
+	 *  @param  help Help message shown by CLI "help" command
+	 *  @param  group The command group to which this command belongs
+	 *  @param  callback Delegate that should be invoked (triggered) when the command is entered by a user
+	 */
+	Command(String name, String help, String group, Callback callback) : CommandDef{name, help, group, callback}
+	{
+	}
+
+	Command(const CommandDef& def) : CommandDef(def)
+	{
+	}
+#endif
+
+	/**
+	 * @brief Invoke registered callback
+	 * @retval bool false if no callback registered
+	 */
+	bool operator()(String commandLine, ReadWriteStream& commandOutput) const
+	{
+		if(!callback) {
+			return false;
+		}
+
+		callback(commandLine, commandOutput);
+		return true;
+	}
+
+#ifdef CMDPROC_FLASHSTRINGS
+	/**
+	 * @brief Helper class for accessing individual strings
+	 */
+	template <StringIndex index> struct StringAccessor {
+		operator String() const
+		{
+			return def.get(index);
+		}
+
+		const CommandDef& def;
+	};
+
+	const StringAccessor<StringIndex::name> name;
+	const StringAccessor<StringIndex::help> help;
+	const StringAccessor<StringIndex::group> group;
+#endif
 };
 
 } // namespace CommandProcessing

@@ -200,7 +200,7 @@ public:
 	}
 
 private:
-	Vector<Command> registeredCommands;
+	Vector<CommandDef> registeredCommands;
 	String currentPrompt;
 	bool verboseMode{false};
 	String currentWelcomeMessage;

@@ -32,8 +32,7 @@ void processExampleCommand(String commandLine, ReadWriteStream& commandOutput)
 void initCommands()
 {
 	commandHandler.registerSystemCommands();
-	commandHandler.registerCommand(
-		CommandProcessing::Command("example", "Example Command", "Application", processExampleCommand));
+	commandHandler.registerCommand({CMDP_STRINGS("example", "Example Command", "Application"), processExampleCommand});
 }
 
 TcpServer telnetServer(processTelnetInput);
