@@ -49,8 +49,8 @@ public:
 	{
 #if DEBUG_VERBOSE_LEVEL == DBG
 		Serial << _F("  count: ") << headers.count() << endl;
-		for(unsigned i = 0; i < headers.count(); ++i) {
-			String s = headers[i];
+		for(auto hdr : headers) {
+			String s = hdr;
 			m_printHex("  ", s.c_str(), s.length(), 0, 32);
 		}
 #endif

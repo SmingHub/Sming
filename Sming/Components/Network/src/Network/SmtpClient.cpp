@@ -306,8 +306,8 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 		mail->stream = mStream;
 	}
 
-	for(unsigned i = 0; i < mail->headers.count(); i++) {
-		sendString(mail->headers[i]);
+	for(auto hdr : mail->headers) {
+		sendString(hdr);
 	}
 	sendString("\r\n");
 }

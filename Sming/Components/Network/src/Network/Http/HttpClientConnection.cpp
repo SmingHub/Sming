@@ -367,9 +367,9 @@ void HttpClientConnection::sendRequestHeaders(HttpRequest* request)
 		request->headers[HTTP_HEADER_TRANSFER_ENCODING] = _F("chunked");
 	}
 
-	for(unsigned i = 0; i < request->headers.count(); i++) {
+	for(auto hdr : request->headers) {
 		// TODO: add name and/or value escaping (implement in HttpHeaders)
-		sendString(request->headers[i]);
+		sendString(hdr);
 	}
 	sendString("\r\n");
 }

@@ -14,9 +14,9 @@ void listNetworks(bool succeeded, BssList& list)
 		return;
 	}
 
-	for(unsigned i = 0; i < list.count(); i++) {
-		Serial << _F("\tWiFi: ") << list[i].ssid << ", " << list[i].getAuthorizationMethodName();
-		if(list[i].hidden) {
+	for(auto& bss : list) {
+		Serial << _F("\tWiFi: ") << bss.ssid << ", " << bss.getAuthorizationMethodName();
+		if(bss.hidden) {
 			Serial << _F(" (hidden)");
 		}
 		Serial.println();

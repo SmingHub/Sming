@@ -49,11 +49,11 @@ void YeelightBulb::sendCommand(const String& method, const Vector<String>& param
 	doc["id"] = requestId++;
 	doc["method"] = method;
 	auto arr = doc.createNestedArray("params");
-	for(unsigned i = 0; i < params.count(); i++) {
-		if(isNumeric(params[i])) {
-			arr.add(params[i].toInt());
+	for(auto& param : params) {
+		if(isNumeric(param)) {
+			arr.add(param.toInt());
 		} else {
-			arr.add(params[i]);
+			arr.add(param);
 		}
 	}
 	String request = Json::serialize(doc);

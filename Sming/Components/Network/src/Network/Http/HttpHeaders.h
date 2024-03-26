@@ -34,11 +34,59 @@
 class HttpHeaders : public HttpHeaderFields, private HashMap<HttpHeaderFieldName, String>
 {
 public:
+	class HeaderConst : public BaseElement<true>
+	{
+	public:
+		HeaderConst(const HttpHeaderFields& fields, const HttpHeaderFieldName& key, const String& value)
+			: BaseElement(key, value), fields(fields)
+		{
+		}
+
+		String getFieldName() const;
+		operator String() const;
+		size_t printTo(Print& p) const;
+
+	private:
+		const HttpHeaderFields& fields;
+	};
+
+	class Iterator : public HashMap::Iterator<true>
+	{
+	public:
+		Iterator(const HttpHeaders& headers, unsigned index)
+			: HashMap::Iterator<true>::Iterator(headers, index), fields(headers)
+		{
+		}
+
+		HeaderConst operator*()
+		{
+			return HeaderConst(fields, map.keyAt(index), map.valueAt(index));
+		}
+
+		HeaderConst operator*() const
+		{
+			return HeaderConst(fields, map.keyAt(index), map.valueAt(index));
+		}
+
+	private:
+		const HttpHeaderFields& fields;
+	};
+
 	HttpHeaders() = default;
 
 	HttpHeaders(const HttpHeaders& headers)
 	{
 		*this = headers;
+	}
+
+	Iterator begin() const
+	{
+		return Iterator(*this, 0);
+	}
+
+	Iterator end() const
+	{
+		return Iterator(*this, count());
 	}
 
 	using HashMap::operator[];
@@ -68,6 +116,11 @@ public:
 	String operator[](unsigned index) const
 	{
 		return toString(keyAt(index), valueAt(index));
+	}
+
+	template <bool is_const> String operator[](const BaseElement<is_const>& elem) const
+	{
+		return toString(elem.key(), elem.value());
 	}
 
 	using HashMap::contains;
