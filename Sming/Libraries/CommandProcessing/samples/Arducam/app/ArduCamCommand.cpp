@@ -4,18 +4,14 @@
 #include <Libraries/ArduCAM/ov2640_regs.h>
 
 ArduCamCommand::ArduCamCommand(ArduCAM& CAM, CommandProcessing::Handler& commandHandler)
-	: myCAM(CAM), commandHandler(&commandHandler), imgType(JPEG), imgSize(OV2640_320x240)
+	: myCAM(CAM), commandHandler(commandHandler), imgType(JPEG), imgSize(OV2640_320x240)
 {
 	debug_d("ArduCamCommand Instantiating");
 }
 
-ArduCamCommand::~ArduCamCommand()
-{
-}
-
 void ArduCamCommand::initCommand()
 {
-	commandHandler->registerCommand(
+	commandHandler.registerCommand(
 		{CMDP_STRINGS("set", "ArduCAM config commands", "Application"), {&ArduCamCommand::processSetCommands, this}});
 }
 
