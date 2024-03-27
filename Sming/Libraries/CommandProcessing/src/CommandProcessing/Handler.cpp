@@ -13,32 +13,50 @@
 
 namespace CommandProcessing
 {
-Handler::Handler() : currentPrompt(F("Sming>")), currentWelcomeMessage(F("Welcome to the Sming CommandProcessing\r\n"))
+String Handler::getCommandPrompt() const
 {
+	return prompt ?: F("Sming>");
+}
+
+String Handler::getCommandWelcomeMessage() const
+{
+	return welcomeMessage ?: F("Welcome to Sming Command Processing\r\n");
 }
 
 size_t Handler::process(char recvChar)
 {
 	auto& output = getOutputStream();
 
-	if(recvChar == 27) // ESC -> delete current commandLine
-	{
-		commandBuf.clear();
+	using Action = LineBufferBase::Action;
+	switch(commandBuf.processKey(recvChar)) {
+	case Action::clear:
 		if(isVerbose()) {
 			output.println();
 			output.print(getCommandPrompt());
 		}
-	} else if(recvChar == getCommandEOL()) {
+		break;
+	case Action::submit:
+		if(isVerbose()) {
+			output.println();
+		}
 		processCommandLine(String(commandBuf));
 		commandBuf.clear();
-	} else if(recvChar == '\b' || recvChar == 0x7f) {
-		if(commandBuf.backspace()) {
-			output.print(_F("\b \b"));
+		if(isVerbose()) {
+			outputStream->print(getCommandPrompt());
 		}
-	} else {
-		if(commandBuf.addChar(recvChar) && localEcho) {
+		break;
+	case Action::backspace:
+		if(isVerbose()) {
+			output.print("\b \b");
+		}
+		break;
+	case Action::echo:
+		if(isVerbose()) {
 			output.print(recvChar);
 		}
+		break;
+	case Action::none:
+		break;
 	}
 	return 1;
 }
@@ -63,91 +81,90 @@ String Handler::processNow(const char* buffer, size_t size)
 void Handler::processCommandLine(const String& cmdString)
 {
 	if(cmdString.length() == 0) {
-		outputStream->println();
-	} else {
-		debug_d("Received full Command line, size = %u,cmd = %s", cmdString.length(), cmdString.c_str());
-		String cmdCommand;
-		int cmdLen = cmdString.indexOf(' ');
-		if(cmdLen < 0) {
-			cmdCommand = cmdString;
-		} else {
-			cmdCommand = cmdString.substring(0, cmdLen);
-		}
-
-		debug_d("CommandExecutor : executing command %s", cmdCommand.c_str());
-
-		Command cmdDelegate = getCommandDelegate(cmdCommand);
-
-		if(!cmdDelegate.callback) {
-			outputStream->print(_F("Command not found, cmd = '"));
-			outputStream->print(cmdCommand);
-			outputStream->println('\'');
-		} else {
-			cmdDelegate.callback(cmdString, *outputStream);
-		}
+		return;
 	}
 
-	if(isVerbose()) {
-		outputStream->print(getCommandPrompt());
+	debug_d("Received full Command line, size = %u, cmd = '%s'", cmdString.length(), cmdString.c_str());
+	String name;
+	int cmdLen = cmdString.indexOf(' ');
+	if(cmdLen < 0) {
+		name = cmdString;
+	} else {
+		name = cmdString.substring(0, cmdLen);
+	}
+
+	debug_d("CommandExecutor : executing command '%s'", name.c_str());
+
+	Command cmd = getCommand(name);
+	if(!cmd) {
+		*outputStream << _F("Command '") << name << _F("' not found.") << endl;
+	} else if(cmd.callback) {
+		cmd.callback(cmdString, *outputStream);
+	} else {
+		*outputStream << _F("Command '") << name << _F("' has no callback.") << endl;
 	}
 }
 
 void Handler::registerSystemCommands()
 {
-	String system = F("system");
-	registerCommand({F("status"), F("Displays System Information"), system, {&Handler::processStatusCommand, this}});
-	registerCommand({F("echo"), F("Displays command entered"), system, {&Handler::processEchoCommand, this}});
-	registerCommand({F("help"), F("Displays all available commands"), system, {&Handler::processHelpCommand, this}});
-	registerCommand({F("debugon"), F("Set Serial debug on"), system, {&Handler::processDebugOnCommand, this}});
-	registerCommand({F("debugoff"), F("Set Serial debug off"), system, {&Handler::processDebugOffCommand, this}});
-	registerCommand({F("command"),
-					 F("Use verbose/silent/prompt as command options"),
-					 system,
+	registerCommand(
+		{CMDP_STRINGS("status", "Displays System Information", "system"), {&Handler::processStatusCommand, this}});
+	registerCommand({CMDP_STRINGS("echo", "Displays command entered", "system"), {&Handler::processEchoCommand, this}});
+	registerCommand(
+		{CMDP_STRINGS("help", "Displays all available commands", "system"), {&Handler::processHelpCommand, this}});
+	registerCommand(
+		{CMDP_STRINGS("debugon", "Set Serial debug on", "system"), {&Handler::processDebugOnCommand, this}});
+	registerCommand(
+		{CMDP_STRINGS("debugoff", "Set Serial debug off", "system"), {&Handler::processDebugOffCommand, this}});
+	registerCommand({CMDP_STRINGS("command", "Use verbose/silent/prompt as command options", "system"),
 					 {&Handler::processCommandOptions, this}});
 }
 
-Command Handler::getCommandDelegate(const String& commandString)
+Command Handler::getCommand(const String& name) const
 {
-	if(registeredCommands.contains(commandString)) {
-		debug_d("Returning Delegate for %s \r\n", commandString.c_str());
-		return registeredCommands[commandString];
-	} else {
-		debug_d("Command %s not recognized, returning NULL\r\n", commandString.c_str());
-		return Command("", "", "", nullptr);
+	int i = registeredCommands.indexOf(name);
+	if(i >= 0) {
+		debug_d("[CH] Returning Delegate for '%s'", name.c_str());
+		return registeredCommands[i];
 	}
+
+	debug_d("[CH] Command %s not recognized", name.c_str());
+	return CommandDef{};
 }
 
-bool Handler::registerCommand(Command reqDelegate)
+bool Handler::registerCommand(const Command& command)
 {
-	if(registeredCommands.contains(reqDelegate.name)) {
+	String name = command.name;
+	int i = registeredCommands.indexOf(name);
+	if(i >= 0) {
 		// Command already registered, don't allow  duplicates
-		debug_d("Commandhandler duplicate command %s", reqDelegate.name.c_str());
+		debug_d("[CH] Duplicate command %s", name.c_str());
 		return false;
-	} else {
-		registeredCommands[reqDelegate.name] = reqDelegate;
-		debug_d("Commandhandlercommand %s registered", reqDelegate.name.c_str());
-		return true;
 	}
+
+	registeredCommands.add(command);
+	debug_d("[CH] Command '%s' registered", name.c_str());
+	return true;
 }
 
-bool Handler::unregisterCommand(Command reqDelegate)
+bool Handler::unregisterCommand(const Command& command)
 {
-	if(!registeredCommands.contains(reqDelegate.name)) {
+	int i = registeredCommands.indexOf(command.name);
+	if(i < 0) {
 		// Command not registered, cannot remove
 		return false;
-	} else {
-		registeredCommands.remove(reqDelegate.name);
-		//		(*registeredCommands)[reqDelegate.commandName] = reqDelegate;
-		return true;
 	}
+
+	registeredCommands.remove(i);
+	return true;
 }
 
 void Handler::processHelpCommand(String commandLine, ReadWriteStream& outputStream)
 {
 	debug_d("HelpCommand entered");
 	outputStream.println(_F("Commands available are :"));
-	for(auto cmd : registeredCommands) {
-		outputStream << cmd->name << " | " << cmd->group << " | " << cmd->description << endl;
+	for(Command cmd : registeredCommands) {
+		outputStream << cmd.name << " | " << cmd.group << " | " << cmd.help << endl;
 	}
 }
 
@@ -186,6 +203,9 @@ void Handler::processCommandOptions(String commandLine, ReadWriteStream& outputS
 	bool printUsage = false;
 
 	switch(numToken) {
+	case 1:
+		printUsage = true;
+		break;
 	case 2:
 		if(commandToken[1] == _F("help")) {
 			printUsage = true;

@@ -13,16 +13,14 @@ class ArduCamCommand
 {
 public:
 	ArduCamCommand(ArduCAM& CAM, CommandProcessing::Handler& commandHandler);
-	virtual ~ArduCamCommand();
 	void initCommand();
 	const char* getContentType();
 	void setSize(const String& size);
 	void setType(const String& type);
 
 private:
-	bool status = true;
 	ArduCAM myCAM;
-	CommandProcessing::Handler* commandHandler{nullptr};
+	CommandProcessing::Handler& commandHandler;
 	uint8_t imgType;
 	uint8_t imgSize;
 

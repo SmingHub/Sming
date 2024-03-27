@@ -13,19 +13,15 @@
 
 #pragma once
 
-#include <WHashMap.h>
+#include <WVector.h>
 #include <Data/Stream/ReadWriteStream.h>
 #include <Data/Stream/MemoryDataStream.h>
 #include <Data/Buffer/LineBuffer.h>
-#include <memory>
 #include "Command.h"
 
 namespace CommandProcessing
 {
 constexpr size_t MAX_COMMANDSIZE = 64;
-
-/** @brief  Verbose mode
-*/
 
 /** @brief  Command handler class */
 class Handler
@@ -34,7 +30,9 @@ public:
 	/**
 	 * @brief  Instantiate a CommandHandler
 	 */
-	Handler();
+	Handler()
+	{
+	}
 
 	Handler(ReadWriteStream* stream, bool owned = true) : outputStream(stream), ownedStream(owned)
 	{
@@ -95,22 +93,29 @@ public:
 		return retval;
 	}
 
+	/**
+	 * @brief Process command input and return response text
+	 * @param buffer Command input
+	 * @param size Number of characters to process
+	 * @retval String Response text
+	 * @note  Do not use this method if `setOutputStream` has been called
+	 */
 	String processNow(const char* buffer, size_t size);
 
 	// Command registration/de-registration methods
 
 	/** @brief  Add a new command to the command handler
-	 *  @param  reqDelegate Command delegate to register
+	 *  @param  command Command to register
 	 *  @retval bool True on success
 	 *  @note   If command already exists, it will not be replaced and function will fail.
                 Call unregisterCommand first if you want to replace a command.
 	 */
-	bool registerCommand(Command reqDelegate);
+	bool registerCommand(const Command& command);
 
 	/** @brief  Remove a command from the command handler
-	 *  @brief  reqDelegate Delegate to remove from command handler
+	 *  @param  command Item to remove from command handler
 	 */
-	bool unregisterCommand(Command reqDelegate);
+	bool unregisterCommand(const Command& command);
 
 	/** @brief  Register default system commands
 	 *  @note   Adds the following system commands to the command handler
@@ -123,14 +128,14 @@ public:
 	 */
 	void registerSystemCommands();
 
-	/** @brief  Get the command delegate for a command
-	 *  @param  commandString Command to query
-	 *  @retval Command The command delegate matching the command
+	/** @brief  Find command object
+	 *  @param  name Command to query
+	 *  @retval Command The command object matching the command
 	 */
-	Command getCommandDelegate(const String& commandString);
+	Command getCommand(const String& name) const;
 
 	/** @brief  Get the verbose mode
-	 *  @retval VerboseMode Verbose mode
+	 *  @retval bool Verbose mode
 	 */
 	bool isVerbose() const
 	{
@@ -138,7 +143,7 @@ public:
 	}
 
 	/** @brief  Set the verbose mode
-	 *  @param  reqVerboseMode Verbose mode to set
+	 *  @param  mode Verbose mode to set
 	 */
 	void setVerbose(bool mode)
 	{
@@ -150,72 +155,63 @@ public:
 	 *  @note   This is what is shown on the command line before user input
 	 *          Default is Sming>
 	 */
-	const String& getCommandPrompt() const
-	{
-		return currentPrompt;
-	}
+	String getCommandPrompt() const;
 
 	/** @brief  Set the command line prompt
-	 *  @param  reqPrompt The command line prompt
+	 *  @param  prompt The command line prompt, nullptr to reset to default
 	 *  @note   This is what is shown on the command line before user input
 	 *          Default is Sming>
 	 */
-	void setCommandPrompt(const String& reqPrompt)
+	void setCommandPrompt(const String& prompt)
 	{
-		currentPrompt = reqPrompt;
+		this->prompt = prompt;
 	}
 
 	/** @brief  Get the end of line character
 	 *  @retval char The EOL character
 	 *  @note   Only supports one EOL, unlike Windows
+	 *  @deprecated Not required
 	 */
-	char getCommandEOL() const
+	char getCommandEOL() const SMING_DEPRECATED
 	{
-		return currentEOL;
+		return '\n';
 	}
 
 	/** @brief  Set the end of line character
-	 *  @param  reqEOL The EOL character
+	 *  @param  eol The EOL character
 	 *  @note   Only supports one EOL, unlike Windows
+	 *  @deprecated Not required
 	 */
-	void setCommandEOL(char reqEOL)
+	void setCommandEOL(char eol) SMING_DEPRECATED
 	{
-		currentEOL = reqEOL;
+		(void)eol;
 	}
 
 	/** @brief  Get the welcome message
-	 *  @retval String The welcome message that is shown when clients connect
-	 *  @note   Only if verbose mode is enabled
+	 *  @retval String The welcome message that should be shown when clients connect
+	 *  @note   For use by application
 	 */
-	const String& getCommandWelcomeMessage() const
-	{
-		return currentWelcomeMessage;
-	}
+	String getCommandWelcomeMessage() const;
 
 	/** @brief  Set the welcome message
-	 *  @param  reqWelcomeMessage The welcome message that is shown when clients connect
-	 *  @note   Only if verbose mode is enabled
+	 *  @param  message The welcome message that should be shown when clients connect
+	 *  @note   For use by application
+	 *          Pass nullptr to revert to default message.
 	 */
-	void setCommandWelcomeMessage(const String& reqWelcomeMessage)
+	void setCommandWelcomeMessage(const String& message)
 	{
-		currentWelcomeMessage = reqWelcomeMessage;
+		welcomeMessage = message;
 	}
 
 private:
-	HashMap<String, Command> registeredCommands;
-	String currentPrompt;
-#ifdef ARCH_HOST
-	char currentEOL{'\n'};
-#else
-	char currentEOL{'\r'};
-#endif
+	Vector<CommandDef> registeredCommands;
+	String prompt;
 	bool verboseMode{false};
-	bool localEcho{true};
-	String currentWelcomeMessage;
+	String welcomeMessage;
 
 	ReadWriteStream* outputStream{nullptr};
 	bool ownedStream = true;
-	LineBuffer<MAX_COMMANDSIZE + 1> commandBuf;
+	LineBuffer<MAX_COMMANDSIZE> commandBuf;
 
 	void processHelpCommand(String commandLine, ReadWriteStream& outputStream);
 	void processStatusCommand(String commandLine, ReadWriteStream& outputStream);
