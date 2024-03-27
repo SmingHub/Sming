@@ -30,7 +30,9 @@ public:
 	/**
 	 * @brief  Instantiate a CommandHandler
 	 */
-	Handler();
+	Handler()
+	{
+	}
 
 	Handler(ReadWriteStream* stream, bool owned = true) : outputStream(stream), ownedStream(owned)
 	{
@@ -153,19 +155,16 @@ public:
 	 *  @note   This is what is shown on the command line before user input
 	 *          Default is Sming>
 	 */
-	const String& getCommandPrompt() const
-	{
-		return currentPrompt;
-	}
+	String getCommandPrompt() const;
 
 	/** @brief  Set the command line prompt
-	 *  @param  prompt The command line prompt
+	 *  @param  prompt The command line prompt, nullptr to reset to default
 	 *  @note   This is what is shown on the command line before user input
 	 *          Default is Sming>
 	 */
 	void setCommandPrompt(const String& prompt)
 	{
-		currentPrompt = prompt;
+		this->prompt = prompt;
 	}
 
 	/** @brief  Get the end of line character
@@ -189,28 +188,26 @@ public:
 	}
 
 	/** @brief  Get the welcome message
-	 *  @retval String The welcome message that is shown when clients connect
-	 *  @note   Only if verbose mode is enabled
+	 *  @retval String The welcome message that should be shown when clients connect
+	 *  @note   For use by application
 	 */
-	const String& getCommandWelcomeMessage() const
-	{
-		return currentWelcomeMessage;
-	}
+	String getCommandWelcomeMessage() const;
 
 	/** @brief  Set the welcome message
-	 *  @param  message The welcome message that is shown when clients connect
-	 *  @note   Only if verbose mode is enabled
+	 *  @param  message The welcome message that should be shown when clients connect
+	 *  @note   For use by application
+	 *          Pass nullptr to revert to default message.
 	 */
 	void setCommandWelcomeMessage(const String& message)
 	{
-		currentWelcomeMessage = message;
+		welcomeMessage = message;
 	}
 
 private:
 	Vector<CommandDef> registeredCommands;
-	String currentPrompt;
+	String prompt;
 	bool verboseMode{false};
-	String currentWelcomeMessage;
+	String welcomeMessage;
 
 	ReadWriteStream* outputStream{nullptr};
 	bool ownedStream = true;

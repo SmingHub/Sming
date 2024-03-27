@@ -13,8 +13,14 @@
 
 namespace CommandProcessing
 {
-Handler::Handler() : currentPrompt(F("Sming>")), currentWelcomeMessage(F("Welcome to the Sming CommandProcessing\r\n"))
+String Handler::getCommandPrompt() const
 {
+	return prompt ?: F("Sming>");
+}
+
+String Handler::getCommandWelcomeMessage() const
+{
+	return welcomeMessage ?: F("Welcome to the Sming CommandProcessing\r\n");
 }
 
 size_t Handler::process(char recvChar)
