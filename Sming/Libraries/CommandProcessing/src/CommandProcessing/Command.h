@@ -76,9 +76,11 @@ struct CommandDef {
 };
 
 /** @brief  Command delegate class */
-class Command : public CommandDef
+class Command : private CommandDef
 {
 public:
+	friend class Handler;
+
 #ifdef CMDPROC_FLASHSTRINGS
 	/** Instantiate a command delegate using block of flash strings
 	 *  @param  strings Block of strings produced by `CMDP_STRINGS` macro
