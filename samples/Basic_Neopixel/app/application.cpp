@@ -173,5 +173,5 @@ void init()
 
 	strip.begin(); //init port
 
-	StripDemoTimer.initializeMs(1000, StartDemo).start(); //start demo
+	StripDemoTimer.initializeMs<1000>(StartDemo).start(); //start demo
 }

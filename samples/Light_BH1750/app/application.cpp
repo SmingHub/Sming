@@ -36,5 +36,5 @@ void init()
 	LightSensor.setMode(BH1750_Continuous_H_resolution_Mode);
 
 	// Start reading loop
-	procTimer.initializeMs(300, readLight).start();
+	procTimer.initializeMs<300>(readLight).start();
 }

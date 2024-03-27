@@ -62,7 +62,7 @@ void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reas
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	// Start send data loop
-	procTimer.initializeMs(25 * 1000, sendData).start(); // every 25 seconds
+	procTimer.initializeMs<25 * 1000>(sendData).start(); // every 25 seconds
 }
 
 void init()

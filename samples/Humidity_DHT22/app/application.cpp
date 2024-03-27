@@ -15,7 +15,7 @@ void init()
 	Serial.systemDebugOutput(true); // Allow debug output to serial
 
 	dht.setup(WORK_PIN, DHTesp::DHT22);
-	readTemperatureProcTimer.initializeMs(5 * 1000, onTimer_readTemperatures).start(); // every so often.
+	readTemperatureProcTimer.initializeMs<5 * 1000>(onTimer_readTemperatures).start(); // every so often.
 
 	Serial.println(_F("\r\n"
 					  "DHT improved lib"));

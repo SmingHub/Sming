@@ -69,5 +69,5 @@ void init()
 
 	debugf("PWM output set on all 8 Pins. Kindly check...");
 	debugf("Now Pin 2 will go from 0 to VCC to 0 in cycles.");
-	procTimer.initializeMs(100, doPWM).start();
+	procTimer.initializeMs<100>(doPWM).start();
 }

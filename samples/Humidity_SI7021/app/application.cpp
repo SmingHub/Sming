@@ -58,6 +58,6 @@ void init()
 	Serial.print(_F("Start I2c"));
 	Wire.pins(I2C_SDA, I2C_SCL); // SDA, SCL
 	Wire.begin();
-	procTimer_ht.initializeMs(10000, si_read_ht).start();
-	procTimer_olt.initializeMs(15000, si_read_olt).start();
+	procTimer_ht.initializeMs<10000>(si_read_ht).start();
+	procTimer_olt.initializeMs<15000>(si_read_olt).start();
 }

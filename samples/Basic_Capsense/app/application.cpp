@@ -19,5 +19,5 @@ void capsense()
 
 void init()
 {
-	procTimer.initializeMs(100, capsense).start();
+	procTimer.initializeMs<100>(capsense).start();
 }

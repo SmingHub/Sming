@@ -61,7 +61,7 @@ void init()
 	WifiEvents.onStationDisconnect(connectFail);
 	WifiEvents.onStationGotIP(gotIP);
 
-	procTimer.initializeMs(5000, process).start();
+	procTimer.initializeMs<5000>(process).start();
 	process();
 }
 
@@ -103,7 +103,7 @@ void process()
 	StrRH = String(h, 0);
 
 	if(!displayTimer.isStarted())
-		displayTimer.initializeMs(1000, showValues).start();
+		displayTimer.initializeMs<1000>(showValues).start();
 }
 
 void connectOk(const String& SSID, MacAddress bssid, uint8_t channel)
@@ -201,5 +201,5 @@ void startWebClock()
 {
 	lastClockUpdate = 0;
 	clockRefresher.stop();
-	clockRefresher.initializeMs(500, refreshClockTime).start();
+	clockRefresher.initializeMs<500>(refreshClockTime).start();
 }

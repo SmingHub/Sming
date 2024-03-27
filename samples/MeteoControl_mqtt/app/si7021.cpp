@@ -42,7 +42,7 @@ void publishSI()
 
 void SIinit()
 {
-	publishSITimer.initializeMs(TIMER * 1000, publishSI).start(); // start publish SI sensor data
+	publishSITimer.initializeMs<TIMER * 1000>(publishSI).start(); // start publish SI sensor data
 }
 
 #endif /* INCLUDE_SI7021_H_ */

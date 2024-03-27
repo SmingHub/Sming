@@ -31,7 +31,7 @@
 #define SI_H "testing/status/SI7021/Humidity"
 #define VER_TOPIC "testing/firmware/version"
 
-int TIMER = 20; // every N* seconds send to mqtt server
+constexpr int TIMER = 20; // every N* seconds send to mqtt server
 
 // Forward declarations
 void startMqttClient();

@@ -28,7 +28,7 @@ void init()
 	}
 
 	// Start reading loop
-	procTimer.initializeMs(100, readCompass).start();
+	procTimer.initializeMs<100>(readCompass).start();
 }
 
 void readCompass()

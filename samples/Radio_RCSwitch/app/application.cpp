@@ -41,6 +41,6 @@ void init()
 	// Optional set protocol (default is 1, will work for most outlets)
 	// mySwitch.setProtocol(2);
 
-	sendTimer.initializeMs(1000, sendRF).start();
-	receiveTimer.initializeMs(20, receiveRF).start();
+	sendTimer.initializeMs<1000>(sendRF).start();
+	receiveTimer.initializeMs<20>(receiveRF).start();
 }

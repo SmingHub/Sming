@@ -54,5 +54,5 @@ void init()
 	pinMode(GPIO_LED, OUTPUT);
 	nexInit();
 	b0.attachPop(b0PopCallback, &b0);
-	timerNextion.initializeMs(100, loopNextion).start();
+	timerNextion.initializeMs<100>(loopNextion).start();
 }

@@ -44,7 +44,7 @@ void sendNewMessage();
 void wsConnected(WebsocketConnection& wsConnection)
 {
 	Serial << _F("Start sending messages every ") << MESSAGE_INTERVAL << _F(" second(s)...") << endl;
-	msgTimer.initializeMs(MESSAGE_INTERVAL * 1000, sendNewMessage);
+	msgTimer.initializeMs<MESSAGE_INTERVAL * 1000>(sendNewMessage);
 	msgTimer.startOnce();
 }
 
@@ -72,7 +72,7 @@ void restart()
 void wsDisconnected(WebsocketConnection& wsConnection)
 {
 	Serial << _F("Restarting websocket client after ") << RESTART_PERIOD << _F(" seconds") << endl;
-	msgTimer.initializeMs(RESTART_PERIOD * 1000, restart);
+	msgTimer.initializeMs<RESTART_PERIOD * 1000>(restart);
 	msgTimer.startOnce();
 }
 

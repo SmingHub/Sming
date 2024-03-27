@@ -106,5 +106,5 @@ void init()
 	lastPingTime = millis();
 
 	//start listen loop
-	procTimer.initializeMs(10, loopListen).start();
+	procTimer.initializeMs<10>(loopListen).start();
 }

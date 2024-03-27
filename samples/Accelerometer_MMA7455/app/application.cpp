@@ -29,5 +29,5 @@ void init()
 	accel.initSensitivity(MMA_7455_2G_MODE);
 
 	// Start reading loop
-	procTimer.initializeMs(300, readSensor).start();
+	procTimer.initializeMs<300>(readSensor).start();
 }

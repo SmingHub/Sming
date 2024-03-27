@@ -35,7 +35,7 @@ void init()
 	inputchip.inputInvert(0x0000); // Use word-write mode to invert the inputs so that logic 0 is read as HIGH
 	outputchip.pinMode(0x0000);	// Use word-write mode to Set all of the pins on outputchip to be outputs
 
-	procTimer.initializeMs(200, loop).start();
+	procTimer.initializeMs<200>(loop).start();
 }
 
 void loop()

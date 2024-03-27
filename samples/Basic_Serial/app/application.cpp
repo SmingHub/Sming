@@ -312,7 +312,7 @@ void init()
 
 	debugf("(DEBUG) message printed on UART1"); // You should see the debug message in UART1 only.
 
-	procTimer.initializeMs(2000, sayHello).start();
+	procTimer.initializeMs<2000>(sayHello).start();
 
 	testPrintf();
 

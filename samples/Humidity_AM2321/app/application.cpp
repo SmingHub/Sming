@@ -32,5 +32,5 @@ void init()
 	am2321.begin(); // REQUIRED. Call it after choosing I2C pins.
 	Serial.println(am2321.uid());
 
-	procTimer.initializeMs(3000, read).start();
+	procTimer.initializeMs<3000>(read).start();
 }

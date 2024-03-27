@@ -31,7 +31,7 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 
 	// Connection to Yeelight Bulb will be established on any first action:
 	bulb.updateState(); // Read actual bulb state
-	procTimer.initializeMs(5000, blink).start();
+	procTimer.initializeMs<5000>(blink).start();
 }
 
 void init()

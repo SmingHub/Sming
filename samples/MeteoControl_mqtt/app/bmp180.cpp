@@ -52,7 +52,7 @@ void BMPinit()
 	barometer.Initialize();
 	barometer.PrintCalibrationData();
 
-	publishBMPTimer.initializeMs(TIMER * 3000, publishBMP).start(); // start publish BMP180 sensor data
+	publishBMPTimer.initializeMs<TIMER * 3000>(publishBMP).start(); // start publish BMP180 sensor data
 }
 
 #endif /* INCLUDE_BMP180_H_ */

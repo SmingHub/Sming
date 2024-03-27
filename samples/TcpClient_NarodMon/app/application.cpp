@@ -123,7 +123,7 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	// Call the sendData function by timer, every 6 minutes
 	// вызываем по таймеру функцию sendData
-	procTimer.initializeMs(SENDDATA_INTERVAL * 1000, sendData).start(); // каждые 6 минут
+	procTimer.initializeMs<SENDDATA_INTERVAL * 1000>(sendData).start(); // каждые 6 минут
 
 	// Send immediately on startup
 	// ну и заодно сразу после запуска вызываем, чтобы не ждать 6 минут первый раз

@@ -57,5 +57,5 @@ void init()
 
 	System.onReady(startWebServer);
 
-	counterTimer.initializeMs(1000, counterLoop).start();
+	counterTimer.initializeMs<1000>(counterLoop).start();
 }

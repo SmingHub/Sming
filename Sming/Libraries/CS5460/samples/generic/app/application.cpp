@@ -26,5 +26,5 @@ void init()
 	powerMeter.writeRegister(CONFIG_REGISTER, conf);
 	powerMeter.startMultiConvert();
 
-	printVoltageTimer.initializeMs(1000, printVoltage).start();
+	printVoltageTimer.initializeMs<1000>(printVoltage).start();
 }

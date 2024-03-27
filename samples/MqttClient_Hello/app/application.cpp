@@ -37,7 +37,7 @@ void checkMQTTDisconnect(TcpClient& client, bool flag)
 	}
 
 	// Restart connection attempt after few seconds
-	procTimer.initializeMs(2 * 1000, startMqttClient).start(); // every 2 seconds
+	procTimer.initializeMs<2 * 1000>(startMqttClient).start(); // every 2 seconds
 }
 
 int onMessageDelivered(MqttClient& client, mqtt_message_t* message)
@@ -88,7 +88,7 @@ void startMqttClient()
 		// Start publishing message now
 		publishMessage();
 		// and schedule a timer to send messages every 5 seconds
-		procTimer.initializeMs(5 * 1000, publishMessage).start();
+		procTimer.initializeMs<5 * 1000>(publishMessage).start();
 		return 0;
 	});
 

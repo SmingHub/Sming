@@ -55,5 +55,5 @@ void init()
 	canBus0.sendMsgBuf(0x1000000, 1, 8, txBuf0);
 	canBus1.sendMsgBuf(0x1000001, 1, 8, txBuf1);
 
-	loopTimer.initializeMs(1000, loop).start();
+	loopTimer.initializeMs<1000>(loop).start();
 }

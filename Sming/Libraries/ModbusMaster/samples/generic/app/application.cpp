@@ -109,5 +109,5 @@ void init()
 	mbMaster.logReceive(mbLogReceive);
 	mbMaster.logTransmit(mbLogTransmit);
 
-	mbLoopTimer.initializeMs(1000, mbLoop).start();
+	mbLoopTimer.initializeMs<1000>(mbLoop).start();
 }

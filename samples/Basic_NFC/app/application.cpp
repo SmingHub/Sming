@@ -58,12 +58,12 @@ void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 
-	procTimer.initializeMs(2000, sayHello).start();
+	procTimer.initializeMs<2000>(sayHello).start();
 
 	//----- NFC
 	MFRC522 mfrc522(SS_PIN, SS_PIN);
 	SPI.begin();
 	mfrc522.PCD_Init(); // Init MFRC522
 
-	//nfcScanTimer.initializeMs(50, scanNfc).startOnce();
+	//nfcScanTimer.initializeMs<50>(scanNfc).startOnce();
 }

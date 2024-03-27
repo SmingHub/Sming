@@ -75,5 +75,5 @@ void init()
 	//Wire.pins(14, 12); // SDA, SCL
 
 	Wire.begin();
-	procTimer.initializeMs(3000, scanBus).start();
+	procTimer.initializeMs<3000>(scanBus).start();
 }

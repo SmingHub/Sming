@@ -160,7 +160,7 @@ void onAjaxConnect(HttpRequest& request, HttpResponse& response)
 			password = curPass;
 			debugf("CONNECT TO: %s %s", network.c_str(), password.c_str());
 			json["connected"] = false;
-			connectionTimer.initializeMs(1200, makeConnection).startOnce();
+			connectionTimer.initializeMs<1200>(makeConnection).startOnce();
 		} else {
 			json["connected"] = WifiStation.isConnected();
 			debugf("Network already selected. Current status: %s", WifiStation.getConnectionStatusName().c_str());

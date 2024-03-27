@@ -36,6 +36,6 @@ void init()
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.println("Setting up...");
 	irrecv.enableIRIn(); // Start the receiver
-	irTimer.initializeMs(200, receiveIR).start();
+	irTimer.initializeMs<200>(receiveIR).start();
 	Serial.println("Ready...");
 }

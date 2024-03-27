@@ -57,7 +57,7 @@ void Demo1()
 	display.fillCircle(display.width() / 2, display.height() / 2, 10, WHITE);
 	display.display();
 	DemoTimer.stop();
-	DemoTimer.initializeMs(2000, Demo2).start();
+	DemoTimer.initializeMs<2000>(Demo2).start();
 }
 
 void init()
@@ -70,5 +70,5 @@ void init()
 	// bool:reset set to TRUE or FALSE depending on your display
 	display.begin(SSD1306_SWITCHCAPVCC, 0x3c, false);
 	display.display();
-	DemoTimer.initializeMs(2000, Demo1).start();
+	DemoTimer.initializeMs<2000>(Demo1).start();
 }

@@ -107,6 +107,6 @@ void init()
 	radio.printDetails();
 	Serial.println(_F("Initialization completed."));
 
-	procTimer.initializeMs(10, loopListen).start();
+	procTimer.initializeMs<10>(loopListen).start();
 	Serial.println(_F("Listening..."));
 }
