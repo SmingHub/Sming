@@ -91,6 +91,13 @@ public:
 		return retval;
 	}
 
+	/**
+	 * @brief Process command input and return response text
+	 * @param buffer Command input
+	 * @param size Number of characters to process
+	 * @retval String Response text
+	 * @note  Do not use this method if `setOutputStream` has been called
+	 */
 	String processNow(const char* buffer, size_t size);
 
 	// Command registration/de-registration methods
@@ -104,7 +111,7 @@ public:
 	bool registerCommand(const Command& command);
 
 	/** @brief  Remove a command from the command handler
-	 *  @brief  cmd Item to remove from command handler
+	 *  @param  command Item to remove from command handler
 	 */
 	bool unregisterCommand(const Command& command);
 
@@ -120,13 +127,13 @@ public:
 	void registerSystemCommands();
 
 	/** @brief  Find command object
-	 *  @param  commandName Command to query
+	 *  @param  name Command to query
 	 *  @retval Command The command object matching the command
 	 */
 	Command getCommand(const String& name) const;
 
 	/** @brief  Get the verbose mode
-	 *  @retval VerboseMode Verbose mode
+	 *  @retval bool Verbose mode
 	 */
 	bool isVerbose() const
 	{
