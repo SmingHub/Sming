@@ -20,7 +20,7 @@ String Handler::getCommandPrompt() const
 
 String Handler::getCommandWelcomeMessage() const
 {
-	return welcomeMessage ?: F("Welcome to the Sming CommandProcessing\r\n");
+	return welcomeMessage ?: F("Welcome to Sming Command Processing\r\n");
 }
 
 size_t Handler::process(char recvChar)
