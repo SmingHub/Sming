@@ -194,6 +194,9 @@ bool WebsocketConnection::send(const char* message, size_t length, ws_frame_type
 
 bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, bool useMask, bool isFin)
 {
+	// Ensure source gets destroyed if we return prematurely
+	std::unique_ptr<IDataSourceStream> sourceRef(source);
+
 	if(source == nullptr) {
 		return false;
 	}
@@ -274,16 +277,20 @@ bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, 
 		}
 
 		auto xorStream = new XorOutputStream(source, maskKey, sizeof(maskKey));
-		source = xorStream;
+		if(xorStream == nullptr) {
+			return false;
+		}
+		sourceRef.release();
+		sourceRef.reset(xorStream);
 	}
 
 	// send the header
 	if(!connection->send(reinterpret_cast<const char*>(packet), packetLength)) {
-		delete source;
 		return false;
 	}
 
-	return connection->send(source);
+	// Pass stream to connection
+	return connection->send(sourceRef.release());
 }
 
 void WebsocketConnection::broadcast(const char* message, size_t length, ws_frame_type_t type)
