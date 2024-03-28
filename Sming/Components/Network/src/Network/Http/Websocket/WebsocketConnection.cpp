@@ -9,13 +9,11 @@
  ****/
 
 #include "WebsocketConnection.h"
-#include <BitManipulations.h>
 #include <Crypto/Sha1.h>
 #include <Data/WebHelpers/base64.h>
 #include <Data/Stream/MemoryDataStream.h>
 #include <Data/Stream/XorOutputStream.h>
 #include <Data/Stream/SharedMemoryStream.h>
-#include <memory>
 
 DEFINE_FSTR(WSSTR_CONNECTION, "connection")
 DEFINE_FSTR(WSSTR_UPGRADE, "upgrade")
@@ -201,81 +199,58 @@ bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, 
 	std::unique_ptr<IDataSourceStream> sourceRef(source);
 
 	if(source == nullptr) {
+		debug_w("[WS] No source");
 		return false;
 	}
 
 	if(connection == nullptr) {
+		debug_w("[WS] No connection");
 		return false;
 	}
 
 	if(!activated) {
-		debug_e("WS Connection is not activated yet!");
+		debug_e("[WS] Not activated");
 		return false;
 	}
 
 	int available = source->available();
 	if(available < 0) {
-		debug_e("Streams without known size are not supported");
+		debug_e("[WS] Unknown stream size");
 		return false;
 	}
 
-	debug_d("Sending: %d bytes, Type: %d\n", available, type);
+	debug_d("Sending: %d bytes, Type: %d", available, type);
 
-	size_t packetLength = 2;
-	uint16_t lengthValue = available;
-
-	// calculate message length ....
-	if(available <= 125) {
-		lengthValue = available;
-	} else if(available < 65536) {
-		lengthValue = 126;
-		packetLength += 2;
-	} else {
-		lengthValue = 127;
-		packetLength += 8;
-	}
-
-	if(useMask) {
-		packetLength += 4; // we use mask with size 4 bytes
-	}
-
-	uint8_t packet[packetLength]{};
-
-	int i = 0;
-	// byte 0
+	// Construct packet
+	uint8_t packet[16]{};
+	unsigned len = 0;
 	if(isFin) {
-		packet[i] |= bit(7); // set Fin
+		packet[len] |= _BV(7); // set Fin
 	}
-	packet[i++] |= (uint8_t)type; // set opcode
-	// byte 1
+	packet[len++] |= type; // set opcode
 	if(useMask) {
-		packet[i] |= bit(7); // set mask
+		packet[len] |= _BV(7); // set mask
 	}
-
 	// length
-	if(lengthValue < 126) {
-		packet[i++] |= lengthValue;
-	} else if(lengthValue == 126) {
-		packet[i++] |= 126;
-		packet[i++] = (available >> 8) & 0xFF;
-		packet[i++] = available & 0xFF;
-	} else if(lengthValue == 127) {
-		packet[i++] |= 127;
-		packet[i++] = 0;
-		packet[i++] = 0;
-		packet[i++] = 0;
-		packet[i++] = 0;
-		packet[i++] = (available >> 24) & 0xFF;
-		packet[i++] = (available >> 16) & 0xFF;
-		packet[i++] = (available >> 8) & 0xFF;
-		packet[i++] = (available)&0xFF;
+	if(available <= 125) {
+		packet[len++] |= available;
+	} else if(available <= 0xffff) {
+		packet[len++] |= 126;
+		packet[len++] = available >> 8;
+		packet[len++] = available;
+	} else {
+		packet[len++] |= 127;
+		len += 4; // All 0
+		packet[len++] = available >> 24;
+		packet[len++] = available >> 16;
+		packet[len++] = available >> 8;
+		packet[len++] = available;
 	}
-
 	if(useMask) {
 		uint8_t maskKey[4];
 		os_get_random(maskKey, sizeof(maskKey));
-		memcpy(&packet[i], maskKey, sizeof(maskKey));
-		i += sizeof(maskKey);
+		memcpy(&packet[len], maskKey, sizeof(maskKey));
+		len += sizeof(maskKey);
 
 		auto xorStream = new XorOutputStream(source, maskKey, sizeof(maskKey));
 		if(xorStream == nullptr) {
@@ -286,7 +261,7 @@ bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, 
 	}
 
 	// send the header
-	if(!connection->send(reinterpret_cast<const char*>(packet), packetLength)) {
+	if(!connection->send(reinterpret_cast<const char*>(packet), len)) {
 		return false;
 	}
 
