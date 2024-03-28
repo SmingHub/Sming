@@ -28,8 +28,9 @@ public:
 	 * @param maskLenth
 	 */
 	XorOutputStream(IDataSourceStream* stream, uint8_t* mask, size_t maskLength)
-		: stream(stream), mask(mask), maskLength(maskLength)
+		: stream(stream), mask(new uint8_t[maskLength]), maskLength(maskLength)
 	{
+		memcpy(this->mask, mask, maskLength);
 	}
 
 	StreamType getStreamType() const override

@@ -9,13 +9,11 @@
  ****/
 
 #include "WebsocketConnection.h"
-#include <BitManipulations.h>
 #include <Crypto/Sha1.h>
 #include <Data/WebHelpers/base64.h>
 #include <Data/Stream/MemoryDataStream.h>
 #include <Data/Stream/XorOutputStream.h>
 #include <Data/Stream/SharedMemoryStream.h>
-#include <memory>
 
 DEFINE_FSTR(WSSTR_CONNECTION, "connection")
 DEFINE_FSTR(WSSTR_UPGRADE, "upgrade")
@@ -32,12 +30,14 @@ WebsocketList WebsocketConnection::websocketList;
 /** @brief ws_parser function table
  * 	@note stored in flash memory; as it is word-aligned it can be accessed directly
  */
-const ws_parser_callbacks_t WebsocketConnection::parserSettings PROGMEM = {.on_data_begin = staticOnDataBegin,
-																		   .on_data_payload = staticOnDataPayload,
-																		   .on_data_end = staticOnDataEnd,
-																		   .on_control_begin = staticOnControlBegin,
-																		   .on_control_payload = staticOnControlPayload,
-																		   .on_control_end = staticOnControlEnd};
+const ws_parser_callbacks_t WebsocketConnection::parserSettings PROGMEM{
+	.on_data_begin = staticOnDataBegin,
+	.on_data_payload = staticOnDataPayload,
+	.on_data_end = staticOnDataEnd,
+	.on_control_begin = staticOnControlBegin,
+	.on_control_payload = staticOnControlPayload,
+	.on_control_end = staticOnControlEnd,
+};
 
 /** @brief Boilerplate code for ws_parser callbacks
  *  @note Obtain connection object and check it
@@ -186,6 +186,7 @@ bool WebsocketConnection::send(const char* message, size_t length, ws_frame_type
 	size_t written = stream->write(message, length);
 	if(written != length) {
 		debug_e("Unable to store data in memory buffer");
+		delete stream;
 		return false;
 	}
 
@@ -194,96 +195,78 @@ bool WebsocketConnection::send(const char* message, size_t length, ws_frame_type
 
 bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, bool useMask, bool isFin)
 {
+	// Ensure source gets destroyed if we return prematurely
+	std::unique_ptr<IDataSourceStream> sourceRef(source);
+
 	if(source == nullptr) {
+		debug_w("[WS] No source");
 		return false;
 	}
 
 	if(connection == nullptr) {
+		debug_w("[WS] No connection");
 		return false;
 	}
 
 	if(!activated) {
-		debug_e("WS Connection is not activated yet!");
+		debug_e("[WS] Not activated");
 		return false;
 	}
 
 	int available = source->available();
-	if(available < 1) {
-		debug_e("Streams without known size are not supported");
+	if(available < 0) {
+		debug_e("[WS] Unknown stream size");
 		return false;
 	}
 
-	debug_d("Sending: %d bytes, Type: %d\n", available, type);
+	debug_d("Sending: %d bytes, Type: %d", available, type);
 
-	size_t packetLength = 2;
-	uint16_t lengthValue = available;
-
-	// calculate message length ....
-	if(available <= 125) {
-		lengthValue = available;
-	} else if(available < 65536) {
-		lengthValue = 126;
-		packetLength += 2;
-	} else {
-		lengthValue = 127;
-		packetLength += 8;
-	}
-
-	if(useMask) {
-		packetLength += 4; // we use mask with size 4 bytes
-	}
-
-	uint8_t packet[packetLength];
-	memset(packet, 0, packetLength);
-
-	int i = 0;
-	// byte 0
+	// Construct packet
+	uint8_t packet[16]{};
+	unsigned len = 0;
 	if(isFin) {
-		packet[i] |= bit(7); // set Fin
+		packet[len] |= _BV(7); // set Fin
 	}
-	packet[i++] |= (uint8_t)type; // set opcode
-	// byte 1
+	packet[len++] |= type; // set opcode
 	if(useMask) {
-		packet[i] |= bit(7); // set mask
+		packet[len] |= _BV(7); // set mask
 	}
-
 	// length
-	if(lengthValue < 126) {
-		packet[i++] |= lengthValue;
-	} else if(lengthValue == 126) {
-		packet[i++] |= 126;
-		packet[i++] = (available >> 8) & 0xFF;
-		packet[i++] = available & 0xFF;
-	} else if(lengthValue == 127) {
-		packet[i++] |= 127;
-		packet[i++] = 0;
-		packet[i++] = 0;
-		packet[i++] = 0;
-		packet[i++] = 0;
-		packet[i++] = (available >> 24) & 0xFF;
-		packet[i++] = (available >> 16) & 0xFF;
-		packet[i++] = (available >> 8) & 0xFF;
-		packet[i++] = (available)&0xFF;
+	if(available <= 125) {
+		packet[len++] |= available;
+	} else if(available <= 0xffff) {
+		packet[len++] |= 126;
+		packet[len++] = available >> 8;
+		packet[len++] = available;
+	} else {
+		packet[len++] |= 127;
+		len += 4; // All 0
+		packet[len++] = available >> 24;
+		packet[len++] = available >> 16;
+		packet[len++] = available >> 8;
+		packet[len++] = available;
 	}
-
 	if(useMask) {
-		uint8_t maskKey[4] = {0x00, 0x00, 0x00, 0x00};
-		for(uint8_t x = 0; x < sizeof(maskKey); x++) {
-			maskKey[x] = (char)os_random();
-			packet[i++] = maskKey[x];
-		}
+		uint8_t maskKey[4];
+		os_get_random(maskKey, sizeof(maskKey));
+		memcpy(&packet[len], maskKey, sizeof(maskKey));
+		len += sizeof(maskKey);
 
 		auto xorStream = new XorOutputStream(source, maskKey, sizeof(maskKey));
-		source = xorStream;
+		if(xorStream == nullptr) {
+			return false;
+		}
+		sourceRef.release();
+		sourceRef.reset(xorStream);
 	}
 
 	// send the header
-	if(!connection->send(reinterpret_cast<const char*>(packet), packetLength)) {
-		delete source;
+	if(!connection->send(reinterpret_cast<const char*>(packet), len)) {
 		return false;
 	}
 
-	return connection->send(source);
+	// Pass stream to connection
+	return connection->send(sourceRef.release());
 }
 
 void WebsocketConnection::broadcast(const char* message, size_t length, ws_frame_type_t type)
@@ -305,7 +288,8 @@ void WebsocketConnection::close()
 	if(state != eWSCS_Closed) {
 		state = eWSCS_Closed;
 		if(isClientConnection) {
-			send(nullptr, 0, WS_FRAME_CLOSE);
+			uint16_t status = htons(1000);
+			send(reinterpret_cast<char*>(&status), sizeof(status), WS_FRAME_CLOSE);
 		}
 		activated = false;
 		if(wsDisconnect) {
@@ -314,7 +298,7 @@ void WebsocketConnection::close()
 	}
 
 	if(connection) {
-		connection->setTimeOut(1);
+		connection->setTimeOut(2);
 		connection = nullptr;
 	}
 }

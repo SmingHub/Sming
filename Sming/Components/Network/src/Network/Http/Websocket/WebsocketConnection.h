@@ -109,14 +109,14 @@ public:
 
 	/**
 	 * @brief Sends websocket message from a stream
-	 * @param stream
+	 * @param source The stream to send - we get ownership of the stream
 	 * @param type
 	 * @param useMask MUST be true for client connections
 	 * @param isFin true if this is the final frame
 	 *
 	 * @retval bool true on success
 	 */
-	bool send(IDataSourceStream* stream, ws_frame_type_t type = WS_FRAME_TEXT, bool useMask = false, bool isFin = true);
+	bool send(IDataSourceStream* source, ws_frame_type_t type = WS_FRAME_TEXT, bool useMask = false, bool isFin = true);
 
 	/**
 	 * @brief Broadcasts a message to all active websocket connections

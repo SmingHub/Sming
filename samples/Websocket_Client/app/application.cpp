@@ -20,9 +20,10 @@
 //Uncomment next line to enable websocket binary transfer test
 //#define WS_BINARY
 
+namespace
+{
 WebsocketClient wsClient;
 Timer msgTimer;
-Timer restartTimer;
 
 // Number of messages to send
 const unsigned MESSAGES_TO_SEND = 10;
@@ -35,11 +36,7 @@ const unsigned RESTART_PERIOD = 20;
 
 unsigned msg_cnt = 0;
 
-#ifdef ENABLE_SSL
-DEFINE_FSTR_LOCAL(ws_Url, "wss://echo.websocket.org");
-#else
-DEFINE_FSTR_LOCAL(ws_Url, "ws://echo.websocket.org");
-#endif /* ENABLE_SSL */
+DEFINE_FSTR_LOCAL(ws_Url, WS_URL);
 
 void wsMessageSent();
 
@@ -77,8 +74,7 @@ void restart()
 void wsDisconnected(WebsocketConnection& wsConnection)
 {
 	Serial << _F("Restarting websocket client after ") << RESTART_PERIOD << _F(" seconds") << endl;
-	msgTimer.setCallback(restart);
-	msgTimer.setIntervalMs(RESTART_PERIOD * 1000);
+	msgTimer.initializeMs(RESTART_PERIOD * 1000, restart);
 	msgTimer.startOnce();
 }
 
@@ -132,6 +128,8 @@ void STADisconnect(const String& ssid, MacAddress bssid, WifiDisconnectReason re
 	Serial << _F("DISCONNECT - SSID: ") << ssid << _F(", REASON: ") << WifiEvents.getDisconnectReasonDesc(reason)
 		   << endl;
 }
+
+} // namespace
 
 void init()
 {
