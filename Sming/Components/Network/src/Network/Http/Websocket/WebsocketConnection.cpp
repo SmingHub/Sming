@@ -186,6 +186,7 @@ bool WebsocketConnection::send(const char* message, size_t length, ws_frame_type
 	size_t written = stream->write(message, length);
 	if(written != length) {
 		debug_e("Unable to store data in memory buffer");
+		delete stream;
 		return false;
 	}
 
