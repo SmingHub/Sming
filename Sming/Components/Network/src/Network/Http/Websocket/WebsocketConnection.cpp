@@ -278,7 +278,11 @@ bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, 
 		}
 
 		auto xorStream = new XorOutputStream(source, maskKey, sizeof(maskKey));
-		source = xorStream;
+		if(xorStream == nullptr) {
+			return false;
+		}
+		sourceRef.release();
+		sourceRef.reset(xorStream);
 	}
 
 	// send the header
