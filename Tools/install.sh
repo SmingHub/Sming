@@ -104,7 +104,7 @@ if [ -n "$APPVEYOR" ] || [ -n "$GITHUB_ACTION" ]; then
         g++-multilib \
         python3-setuptools \
         ninja-build \
-        linux-modules-extra-azure \
+        linux-modules-extra-$(uname -r) \
         exfatprogs \
         $EXTRA_PACKAGES
 
