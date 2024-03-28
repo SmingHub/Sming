@@ -20,12 +20,13 @@
 //Uncomment next line to enable websocket binary transfer test
 //#define WS_BINARY
 
+namespace
+{
 WebsocketClient wsClient;
 Timer msgTimer;
-Timer restartTimer;
 
 // Number of messages to send
-const unsigned MESSAGES_TO_SEND = 10;
+const unsigned MESSAGES_TO_SEND = 5;
 
 // Interval (in seconds) between sending of messages
 const unsigned MESSAGE_INTERVAL = 1;
@@ -33,21 +34,18 @@ const unsigned MESSAGE_INTERVAL = 1;
 // Time (in seconds) to wait before restarting client and sending another group of messages
 const unsigned RESTART_PERIOD = 20;
 
-unsigned msg_cnt = 0;
+unsigned messageCount;
+bool sendBinary;
 
-#ifdef ENABLE_SSL
-DEFINE_FSTR_LOCAL(ws_Url, "wss://echo.websocket.org");
-#else
-DEFINE_FSTR_LOCAL(ws_Url, "ws://echo.websocket.org");
-#endif /* ENABLE_SSL */
+DEFINE_FSTR_LOCAL(ws_Url, WS_URL);
 
-void wsMessageSent();
+void sendNewMessage();
 
 void wsConnected(WebsocketConnection& wsConnection)
 {
 	Serial << _F("Start sending messages every ") << MESSAGE_INTERVAL << _F(" second(s)...") << endl;
-	msgTimer.initializeMs(MESSAGE_INTERVAL * 1000, wsMessageSent);
-	msgTimer.start();
+	msgTimer.initializeMs(MESSAGE_INTERVAL * 1000, sendNewMessage);
+	msgTimer.startOnce();
 }
 
 void wsMessageReceived(WebsocketConnection& wsConnection, const String& message)
@@ -58,11 +56,7 @@ void wsMessageReceived(WebsocketConnection& wsConnection, const String& message)
 
 void wsBinReceived(WebsocketConnection& wsConnection, uint8_t* data, size_t size)
 {
-	Serial.println(_F("WebSocket BINARY received"));
-	for(uint8_t i = 0; i < size; i++) {
-		Serial << "wsBin[" << i << "] = 0x" << String(data[i], HEX, 2) << endl;
-	}
-
+	m_printHex(_F("WebSocket BINARY received"), data, size);
 	Serial << _F("Free Heap: ") << system_get_free_heap_size() << endl;
 }
 
@@ -70,47 +64,50 @@ void restart()
 {
 	Serial.println(_F("restart..."));
 
-	msg_cnt = 0;
+	messageCount = 0;
+	sendBinary = false;
 	wsClient.connect(String(ws_Url));
 }
 
 void wsDisconnected(WebsocketConnection& wsConnection)
 {
 	Serial << _F("Restarting websocket client after ") << RESTART_PERIOD << _F(" seconds") << endl;
-	msgTimer.setCallback(restart);
-	msgTimer.setIntervalMs(RESTART_PERIOD * 1000);
+	msgTimer.initializeMs(RESTART_PERIOD * 1000, restart);
 	msgTimer.startOnce();
 }
 
-void wsMessageSent()
+void sendNewMessage()
 {
 	if(!WifiStation.isConnected()) {
 		// Check if Esp8266 is connected to router
 		return;
 	}
 
-	if(msg_cnt > MESSAGES_TO_SEND) {
-		Serial.println(_F("End Websocket client session"));
-		msgTimer.stop();
-		wsClient.close(); // clean disconnect.
+	if(messageCount >= MESSAGES_TO_SEND) {
+		if(sendBinary) {
+			Serial.println(_F("End Websocket client session"));
+			wsClient.close(); // clean disconnect.
+			return;
+		}
 
-		return;
+		messageCount = 0;
+		sendBinary = true;
 	}
 
-#ifndef WS_BINARY
-	String message = F("Hello ") + String(msg_cnt++);
-	Serial << _F("Sending websocket message: ") << message << endl;
-	wsClient.sendString(message);
-#else
-	uint8_t buf[] = {0xF0, 0x00, 0xF0};
-	buf[1] = msg_cnt++;
-	Serial.println(_F("Sending websocket binary buffer"));
-	for(uint8_t i = 0; i < 3; i++) {
-		Serial << "wsBin[" << i << "] = 0x" << String(buf[i], HEX, 2) << endl;
+	if(sendBinary) {
+		uint8_t buf[10];
+		os_get_random(buf, sizeof(buf));
+		buf[1] = messageCount;
+		m_printHex(_F("Sending websocket binary"), buf, sizeof(buf));
+		wsClient.sendBinary(buf, sizeof(buf));
+	} else {
+		String message = F("Hello ") + String(messageCount);
+		Serial << _F("Sending websocket message: ") << message << endl;
+		wsClient.sendString(message);
 	}
 
-	wsClient.sendBinary(buf, 3);
-#endif
+	++messageCount;
+	msgTimer.startOnce();
 }
 
 void STAGotIP(IpAddress ip, IpAddress mask, IpAddress gateway)
@@ -132,6 +129,8 @@ void STADisconnect(const String& ssid, MacAddress bssid, WifiDisconnectReason re
 	Serial << _F("DISCONNECT - SSID: ") << ssid << _F(", REASON: ") << WifiEvents.getDisconnectReasonDesc(reason)
 		   << endl;
 }
+
+} // namespace
 
 void init()
 {
