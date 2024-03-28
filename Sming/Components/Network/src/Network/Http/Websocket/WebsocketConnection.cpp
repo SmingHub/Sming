@@ -313,7 +313,8 @@ void WebsocketConnection::close()
 	if(state != eWSCS_Closed) {
 		state = eWSCS_Closed;
 		if(isClientConnection) {
-			send(nullptr, 0, WS_FRAME_CLOSE);
+			uint16_t status = htons(1000);
+			send(reinterpret_cast<char*>(&status), sizeof(status), WS_FRAME_CLOSE);
 		}
 		activated = false;
 		if(wsDisconnect) {
@@ -322,7 +323,7 @@ void WebsocketConnection::close()
 	}
 
 	if(connection) {
-		connection->setTimeOut(1);
+		connection->setTimeOut(2);
 		connection = nullptr;
 	}
 }
