@@ -212,7 +212,7 @@ bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, 
 	}
 
 	int available = source->available();
-	if(available < 1) {
+	if(available < 0) {
 		debug_e("Streams without known size are not supported");
 		return false;
 	}
