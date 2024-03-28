@@ -48,14 +48,9 @@ bool WebsocketClient::connect(const Url& url)
 	state = eWSCS_Ready;
 
 	// Generate the key
-	unsigned char keyStart[17] = {0};
-	char b64Key[25];
-	memset(b64Key, 0, sizeof(b64Key));
-
-	for(int i = 0; i < 16; ++i) {
-		keyStart[i] = 1 + os_random() % 255;
-	}
-	key = base64_encode(keyStart, sizeof(keyStart));
+	unsigned char keyData[16];
+	os_get_random(keyData, sizeof(keyData));
+	key = base64_encode(keyData, sizeof(keyData));
 
 	HttpRequest* request = new HttpRequest(uri);
 	request->headers[HTTP_HEADER_UPGRADE] = WSSTR_WEBSOCKET;
