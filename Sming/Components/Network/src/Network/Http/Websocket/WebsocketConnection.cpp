@@ -291,7 +291,7 @@ void WebsocketConnection::broadcast(const char* message, size_t length, ws_frame
 
 void WebsocketConnection::close()
 {
-	debug_d("Terminating Websocket connection.");
+	debug_d("WS: Terminating connection %p", connection);
 	websocketList.removeElement(this);
 	if(state != eWSCS_Closed) {
 		state = eWSCS_Closed;
@@ -307,6 +307,7 @@ void WebsocketConnection::close()
 
 	if(connection) {
 		connection->setTimeOut(2);
+		connection->setAutoSelfDestruct(true);
 		connection = nullptr;
 	}
 }
