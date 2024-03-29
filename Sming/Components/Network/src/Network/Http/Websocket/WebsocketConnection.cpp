@@ -237,8 +237,7 @@ bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, 
 		packetLength += 4; // we use mask with size 4 bytes
 	}
 
-	uint8_t packet[packetLength];
-	memset(packet, 0, packetLength);
+	uint8_t packet[packetLength]{};
 
 	int i = 0;
 	// byte 0
@@ -271,11 +270,10 @@ bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, 
 	}
 
 	if(useMask) {
-		uint8_t maskKey[4] = {0x00, 0x00, 0x00, 0x00};
-		for(uint8_t x = 0; x < sizeof(maskKey); x++) {
-			maskKey[x] = (char)os_random();
-			packet[i++] = maskKey[x];
-		}
+		uint8_t maskKey[4];
+		os_get_random(maskKey, sizeof(maskKey));
+		memcpy(&packet[i], maskKey, sizeof(maskKey));
+		i += sizeof(maskKey);
 
 		auto xorStream = new XorOutputStream(source, maskKey, sizeof(maskKey));
 		if(xorStream == nullptr) {
