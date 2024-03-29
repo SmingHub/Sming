@@ -73,7 +73,7 @@ public:
 	 * @param connection the transport connection
 	 * @param isClientConnection true when the passed connection is an http client connection
 	 */
-	WebsocketConnection(HttpConnection* connection, bool isClientConnection = true);
+	WebsocketConnection(HttpConnection* connection = nullptr, bool isClientConnection = true);
 
 	virtual ~WebsocketConnection()
 	{
@@ -271,11 +271,7 @@ public:
 	 * @param connection the transport connection
 	 * @param isClientConnection true when the passed connection is an http client connection
 	 */
-	void setConnection(HttpConnection* connection, bool isClientConnection = true)
-	{
-		this->connection = connection;
-		this->isClientConnection = isClientConnection;
-	}
+	void setConnection(HttpConnection* connection, bool isClientConnection = true);
 
 	/** @brief  Gets the state of the websocket connection
 	  * @retval WsConnectionState
@@ -311,7 +307,7 @@ protected:
 
 	void* userData = nullptr;
 
-	WsConnectionState state = eWSCS_Ready;
+	WsConnectionState state;
 
 private:
 	ws_frame_type_t frameType = WS_FRAME_TEXT;
@@ -322,9 +318,8 @@ private:
 
 	static WebsocketList websocketList;
 
-	bool isClientConnection = true;
-
 	HttpConnection* connection = nullptr;
+	bool isClientConnection;
 	bool activated = false;
 };
 

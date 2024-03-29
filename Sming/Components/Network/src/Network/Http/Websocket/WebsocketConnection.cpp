@@ -55,6 +55,14 @@ WebsocketConnection::WebsocketConnection(HttpConnection* connection, bool isClie
 	ws_parser_init(&parser);
 }
 
+void WebsocketConnection::setConnection(HttpConnection* connection, bool isClientConnection)
+{
+	assert(this->connection == nullptr);
+	this->connection = connection;
+	this->isClientConnection = isClientConnection;
+	this->state = connection ? eWSCS_Ready : eWSCS_Closed;
+}
+
 bool WebsocketConnection::bind(HttpRequest& request, HttpResponse& response)
 {
 	String version = request.headers[HTTP_HEADER_SEC_WEBSOCKET_VERSION];
