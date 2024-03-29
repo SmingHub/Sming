@@ -9,13 +9,11 @@
  ****/
 
 #include "WebsocketConnection.h"
-#include <BitManipulations.h>
 #include <Crypto/Sha1.h>
 #include <Data/WebHelpers/base64.h>
 #include <Data/Stream/MemoryDataStream.h>
 #include <Data/Stream/XorOutputStream.h>
 #include <Data/Stream/SharedMemoryStream.h>
-#include <memory>
 
 DEFINE_FSTR(WSSTR_CONNECTION, "connection")
 DEFINE_FSTR(WSSTR_UPGRADE, "upgrade")
@@ -32,12 +30,14 @@ WebsocketList WebsocketConnection::websocketList;
 /** @brief ws_parser function table
  * 	@note stored in flash memory; as it is word-aligned it can be accessed directly
  */
-const ws_parser_callbacks_t WebsocketConnection::parserSettings PROGMEM = {.on_data_begin = staticOnDataBegin,
-																		   .on_data_payload = staticOnDataPayload,
-																		   .on_data_end = staticOnDataEnd,
-																		   .on_control_begin = staticOnControlBegin,
-																		   .on_control_payload = staticOnControlPayload,
-																		   .on_control_end = staticOnControlEnd};
+const ws_parser_callbacks_t WebsocketConnection::parserSettings PROGMEM{
+	.on_data_begin = staticOnDataBegin,
+	.on_data_payload = staticOnDataPayload,
+	.on_data_end = staticOnDataEnd,
+	.on_control_begin = staticOnControlBegin,
+	.on_control_payload = staticOnControlPayload,
+	.on_control_end = staticOnControlEnd,
+};
 
 /** @brief Boilerplate code for ws_parser callbacks
  *  @note Obtain connection object and check it
@@ -199,25 +199,27 @@ bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, 
 	std::unique_ptr<IDataSourceStream> sourceRef(source);
 
 	if(source == nullptr) {
+		debug_w("WS: No source");
 		return false;
 	}
 
 	if(connection == nullptr) {
+		debug_w("WS: No connection");
 		return false;
 	}
 
 	if(!activated) {
-		debug_e("WS Connection is not activated yet!");
+		debug_e("WS: Not activated");
 		return false;
 	}
 
 	int available = source->available();
 	if(available < 0) {
-		debug_e("Streams without known size are not supported");
+		debug_e("WS: Unknown stream size");
 		return false;
 	}
 
-	debug_d("Sending: %d bytes, Type: %d\n", available, type);
+	debug_d("WS: Sending %d bytes, type %d", available, type);
 
 	// Construct packet
 	uint8_t packet[16]{};

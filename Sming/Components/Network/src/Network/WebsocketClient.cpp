@@ -82,9 +82,9 @@ int WebsocketClient::verifyKey(HttpConnection& connection, HttpResponse& respons
 	auto hash = Crypto::Sha1().calculate(keyToHash);
 	String base64hash = base64_encode(hash.data(), hash.size());
 	if(base64hash != serverHashedKey) {
-		debug_e("wscli key mismatch: %s | %s", serverHashedKey.c_str(), base64hash.c_str());
+		debug_e("WS: key mismatch: %s | %s", serverHashedKey.c_str(), base64hash.c_str());
 		state = eWSCS_Closed;
-		WebsocketConnection::getConnection()->setTimeOut(1);
+		connection.setTimeOut(1);
 		return -3;
 	}
 
