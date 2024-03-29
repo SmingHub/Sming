@@ -17,11 +17,25 @@
 #include "Http/HttpHeaders.h"
 #include <Data/WebHelpers/base64.h>
 
+class WebsocketClientConnection : public HttpClientConnection
+{
+protected:
+	// Prevent HttpClientConnection from resetting our receive delegate set by activate() call
+	err_t onConnected(err_t err) override
+	{
+		if(err == ERR_OK) {
+			state = eHCS_Ready;
+		}
+
+		return HttpConnection::onConnected(err);
+	}
+};
+
 HttpConnection* WebsocketClient::getHttpConnection()
 {
 	auto connection = WebsocketConnection::getConnection();
 	if(connection == nullptr && state == eWSCS_Closed) {
-		connection = new HttpClientConnection();
+		connection = new WebsocketClientConnection();
 		setConnection(connection);
 	}
 
