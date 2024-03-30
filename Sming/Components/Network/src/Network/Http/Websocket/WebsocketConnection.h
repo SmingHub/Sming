@@ -56,13 +56,6 @@ struct WsFrameInfo {
 	ws_frame_type_t type = WS_FRAME_TEXT;
 	char* payload = nullptr;
 	size_t payloadLength = 0;
-
-	WsFrameInfo() = default;
-
-	WsFrameInfo(ws_frame_type_t type, char* payload, size_t payloadLength)
-		: type(type), payload(payload), payloadLength(payloadLength)
-	{
-	}
 };
 
 class WebsocketConnection

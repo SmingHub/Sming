@@ -132,10 +132,21 @@ int WebsocketConnection::staticOnDataPayload(void* userData, const char* at, siz
 {
 	GET_CONNECTION();
 
-	if(connection->frameType == WS_FRAME_TEXT && connection->wsMessage) {
-		connection->wsMessage(*connection, String(at, length));
-	} else if(connection->frameType == WS_FRAME_BINARY && connection->wsBinary) {
-		connection->wsBinary(*connection, reinterpret_cast<uint8_t*>(const_cast<char*>(at)), length);
+	switch(connection->frameType) {
+	case WS_FRAME_TEXT:
+		if(connection->wsMessage) {
+			connection->wsMessage(*connection, String(at, length));
+		}
+		break;
+	case WS_FRAME_BINARY:
+		if(connection->wsBinary) {
+			connection->wsBinary(*connection, reinterpret_cast<uint8_t*>(const_cast<char*>(at)), length);
+		}
+		break;
+	case WS_FRAME_CLOSE:
+	case WS_FRAME_PING:
+	case WS_FRAME_PONG:
+		break;
 	}
 
 	return WS_OK;
@@ -150,11 +161,7 @@ int WebsocketConnection::staticOnControlBegin(void* userData, ws_frame_type_t ty
 {
 	GET_CONNECTION();
 
-	connection->controlFrame = WsFrameInfo(type, nullptr, 0);
-
-	if(type == WS_FRAME_CLOSE) {
-		connection->close();
-	}
+	connection->controlFrame = WsFrameInfo{type};
 
 	return WS_OK;
 }
@@ -173,13 +180,26 @@ int WebsocketConnection::staticOnControlEnd(void* userData)
 {
 	GET_CONNECTION();
 
-	if(connection->controlFrame.type == WS_FRAME_PING) {
+	switch(connection->controlFrame.type) {
+	case WS_FRAME_PING:
 		connection->send(connection->controlFrame.payload, connection->controlFrame.payloadLength, WS_FRAME_PONG);
+		break;
+	case WS_FRAME_PONG:
+		if(connection->wsPong) {
+			connection->wsPong(*connection);
+		}
+		break;
+
+	case WS_FRAME_CLOSE:
+		debug_hex(DBG, "WS: CLOSE", connection->controlFrame.payload, connection->controlFrame.payloadLength);
+		connection->close();
+		break;
+
+	case WS_FRAME_TEXT:
+	case WS_FRAME_BINARY:
+		break;
 	}
 
-	if(connection->controlFrame.type == WS_FRAME_PONG && connection->wsPong) {
-		connection->wsPong(*connection);
-	}
 	return WS_OK;
 }
 
