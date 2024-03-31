@@ -1,5 +1,5 @@
 diff --git a/http_parser.h b/http_parser.h
-index df88252..5935bcf 100644
+index df88252..b346c33 100644
 --- a/http_parser.h
 +++ b/http_parser.h
 @@ -153,7 +153,7 @@ typedef int (*http_cb) (http_parser*);
@@ -39,8 +39,24 @@ index df88252..5935bcf 100644
  struct http_parser {
    /** PRIVATE **/
    unsigned int type : 2;         /* enum http_parser_type */
+@@ -411,15 +407,6 @@ int http_should_keep_alive(const http_parser *parser);
+ /* Returns a string version of the HTTP method. */
+ const char *http_method_str(enum http_method m);
+ 
+-/* Returns a string version of the HTTP status code. */
+-const char *http_status_str(enum http_status s);
+-
+-/* Return a string name of the given error */
+-const char *http_errno_name(enum http_errno err);
+-
+-/* Return a string description of the given error */
+-const char *http_errno_description(enum http_errno err);
+-
+ /* Initialize all http_parser_url members to 0 */
+ void http_parser_url_init(struct http_parser_url *u);
+ 
 diff --git a/http_parser.c b/http_parser.c
-index 95ff42f..beaf1f7 100644
+index 95ff42f..dbaadc2 100644
 --- a/http_parser.c
 +++ b/http_parser.c
 @@ -20,11 +20,19 @@
@@ -65,7 +81,23 @@ index 95ff42f..beaf1f7 100644
  static uint32_t max_header_size = HTTP_MAX_HEADER_SIZE;
  
  #ifndef ULLONG_MAX
-@@ -186,7 +194,7 @@ static const char *method_strings[] =
+@@ -171,9 +179,13 @@ do {                                                                 \
+ #define CLOSE "close"
+ 
+ 
+-static const char *method_strings[] =
++#define XX(num, name, string) static const char method_string_##name[] PROGMEM_PSTR = #string;
++  HTTP_METHOD_MAP(XX)
++#undef XX
++
++static const char *method_strings[] PROGMEM_PSTR =
+   {
+-#define XX(num, name, string) #string,
++#define XX(num, name, string) method_string_##name,
+   HTTP_METHOD_MAP(XX)
+ #undef XX
+   };
+@@ -186,7 +198,7 @@ static const char *method_strings[] =
   *                    | "/" | "[" | "]" | "?" | "="
   *                    | "{" | "}" | SP | HT
   */
@@ -74,7 +106,7 @@ index 95ff42f..beaf1f7 100644
  /*   0 nul    1 soh    2 stx    3 etx    4 eot    5 enq    6 ack    7 bel  */
          0,       0,       0,       0,       0,       0,       0,       0,
  /*   8 bs     9 ht    10 nl    11 vt    12 np    13 cr    14 so    15 si   */
-@@ -220,19 +228,10 @@ static const char tokens[256] = {
+@@ -220,19 +232,10 @@ static const char tokens[256] = {
  /* 120  x   121  y   122  z   123  {   124  |   125  }   126  ~   127 del */
         'x',     'y',     'z',      0,      '|',      0,      '~',       0 };
  
@@ -98,7 +130,7 @@ index 95ff42f..beaf1f7 100644
  #if HTTP_PARSER_STRICT
  # define T(v) 0
  #else
-@@ -428,14 +427,14 @@ enum http_host_state
+@@ -428,14 +431,14 @@ enum http_host_state
    (c) == ';' || (c) == ':' || (c) == '&' || (c) == '=' || (c) == '+' || \
    (c) == '$' || (c) == ',')
  
@@ -115,7 +147,7 @@ index 95ff42f..beaf1f7 100644
  #define IS_URL_CHAR(c)                                                         \
    (BIT_AT(normal_url_char, (unsigned char)c) || ((c) & 0x80))
  #define IS_HOST_CHAR(c)                                                        \
-@@ -467,16 +466,6 @@ do {                                                                 \
+@@ -467,16 +470,6 @@ do {                                                                 \
  #endif
  
  
@@ -132,7 +164,7 @@ index 95ff42f..beaf1f7 100644
  int http_message_needs_eof(const http_parser *parser);
  
  /* Our URL parser.
-@@ -758,7 +747,7 @@ reexecute:
+@@ -758,7 +751,7 @@ reexecute:
            }
  
            parser->type = HTTP_REQUEST;
@@ -141,7 +173,7 @@ index 95ff42f..beaf1f7 100644
            parser->index = 2;
            UPDATE_STATE(s_req_method);
          }
-@@ -938,23 +927,23 @@ reexecute:
+@@ -938,23 +931,23 @@ reexecute:
          parser->method = (enum http_method) 0;
          parser->index = 1;
          switch (ch) {
@@ -180,7 +212,18 @@ index 95ff42f..beaf1f7 100644
            default:
              SET_ERRNO(HPE_INVALID_METHOD);
              goto error;
-@@ -983,8 +972,8 @@ reexecute:
+@@ -975,16 +968,17 @@ reexecute:
+         }
+ 
+         matcher = method_strings[parser->method];
+-        if (ch == ' ' && matcher[parser->index] == '\0') {
++        char matcher_char = pgm_read_byte(&matcher[parser->index]);
++        if (ch == ' ' && matcher_char == '\0') {
+           UPDATE_STATE(s_req_spaces_before_url);
+-        } else if (ch == matcher[parser->index]) {
++        } else if (ch == matcher_char) {
+           ; /* nada */
+         } else if ((ch >= 'A' && ch <= 'Z') || ch == '-') {
  
            switch (parser->method << 16 | parser->index << 8 | ch) {
  #define XX(meth, pos, ch, new_meth) \
@@ -191,7 +234,7 @@ index 95ff42f..beaf1f7 100644
  
              XX(POST,      1, 'U', PUT)
              XX(POST,      1, 'A', PATCH)
-@@ -1024,7 +1013,7 @@ reexecute:
+@@ -1024,7 +1018,7 @@ reexecute:
          if (ch == ' ') break;
  
          MARK(url);
@@ -200,7 +243,7 @@ index 95ff42f..beaf1f7 100644
            UPDATE_STATE(s_req_server_start);
          }
  
-@@ -1100,7 +1089,7 @@ reexecute:
+@@ -1100,7 +1094,7 @@ reexecute:
              UPDATE_STATE(s_req_http_H);
              break;
            case 'I':
@@ -209,7 +252,7 @@ index 95ff42f..beaf1f7 100644
                UPDATE_STATE(s_req_http_I);
                break;
              }
-@@ -1826,7 +1815,7 @@ reexecute:
+@@ -1826,7 +1820,7 @@ reexecute:
            parser->upgrade =
                (parser->type == HTTP_REQUEST || parser->status_code == 101);
          } else {
@@ -218,7 +261,7 @@ index 95ff42f..beaf1f7 100644
          }
  
          /* Here we call the headers_complete callback. This is somewhat
-@@ -1874,7 +1863,7 @@ reexecute:
+@@ -1874,7 +1868,7 @@ reexecute:
  
          hasBody = parser->flags & F_CHUNKED ||
            (parser->content_length > 0 && parser->content_length != ULLONG_MAX);
@@ -227,7 +270,7 @@ index 95ff42f..beaf1f7 100644
                                  (parser->flags & F_SKIPBODY) || !hasBody)) {
            /* Exit, the rest of the message is in a different protocol. */
            UPDATE_STATE(NEW_MESSAGE());
-@@ -1991,7 +1980,7 @@ reexecute:
+@@ -1991,7 +1985,7 @@ reexecute:
          assert(nread == 1);
          assert(parser->flags & F_CHUNKED);
  
@@ -236,7 +279,7 @@ index 95ff42f..beaf1f7 100644
          if (UNLIKELY(unhex_val == -1)) {
            SET_ERRNO(HPE_INVALID_CHUNK_SIZE);
            goto error;
-@@ -2013,7 +2002,7 @@ reexecute:
+@@ -2013,7 +2007,7 @@ reexecute:
            break;
          }
  
@@ -245,16 +288,27 @@ index 95ff42f..beaf1f7 100644
  
          if (unhex_val == -1) {
            if (ch == ';' || ch == ' ') {
-@@ -2207,7 +2196,7 @@ const char *
- http_status_str (enum http_status s)
+@@ -2200,18 +2194,7 @@ http_should_keep_alive (const http_parser *parser)
+ const char *
+ http_method_str (enum http_method m)
  {
-   switch (s) {
+-  return ELEM_AT(method_strings, m, "<unknown>");
+-}
+-
+-const char *
+-http_status_str (enum http_status s)
+-{
+-  switch (s) {
 -#define XX(num, name, string) case HTTP_STATUS_##name: return #string;
-+#define XX(num, name, string) case HTTP_STATUS_CODE_##name: return #string;
-     HTTP_STATUS_MAP(XX)
- #undef XX
-     default: return "<unknown>";
-@@ -2231,18 +2220,6 @@ http_parser_settings_init(http_parser_settings *settings)
+-    HTTP_STATUS_MAP(XX)
+-#undef XX
+-    default: return "<unknown>";
+-  }
++  return ELEM_AT(method_strings, m, PSTR("<unknown>"));
+ }
+ 
+ void
+@@ -2231,18 +2214,6 @@ http_parser_settings_init(http_parser_settings *settings)
    memset(settings, 0, sizeof(*settings));
  }
  
