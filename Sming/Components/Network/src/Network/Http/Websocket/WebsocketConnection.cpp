@@ -319,7 +319,9 @@ void WebsocketConnection::close()
 	websocketList.removeElement(this);
 	if(state != eWSCS_Closed) {
 		state = eWSCS_Closed;
-		if(isClientConnection) {
+		if(controlFrame.type == WS_FRAME_CLOSE) {
+			send(controlFrame.payload, controlFrame.payloadLength, WS_FRAME_CLOSE);
+		} else {
 			uint16_t status = htons(1000);
 			send(reinterpret_cast<char*>(&status), sizeof(status), WS_FRAME_CLOSE);
 		}
