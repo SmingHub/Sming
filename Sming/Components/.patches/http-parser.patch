@@ -56,7 +56,7 @@ index df88252..b346c33 100644
  void http_parser_url_init(struct http_parser_url *u);
  
 diff --git a/http_parser.c b/http_parser.c
-index 95ff42f..dbaadc2 100644
+index 95ff42f..27db72e 100644
 --- a/http_parser.c
 +++ b/http_parser.c
 @@ -20,11 +20,19 @@
@@ -81,11 +81,31 @@ index 95ff42f..dbaadc2 100644
  static uint32_t max_header_size = HTTP_MAX_HEADER_SIZE;
  
  #ifndef ULLONG_MAX
-@@ -171,9 +179,13 @@ do {                                                                 \
+@@ -160,7 +168,6 @@ do {                                                                 \
+   }                                                                  \
+ } while (0)
+ 
+-
+ #define PROXY_CONNECTION "proxy-connection"
+ #define CONNECTION "connection"
+ #define CONTENT_LENGTH "content-length"
+@@ -170,10 +177,25 @@ do {                                                                 \
+ #define KEEP_ALIVE "keep-alive"
  #define CLOSE "close"
  
++static const char STR_PROXY_CONNECTION[] PROGMEM_PSTR = "proxy-connection";
++static const char STR_CONNECTION[] PROGMEM_PSTR = "connection";
++static const char STR_CONTENT_LENGTH[] PROGMEM_PSTR = "content-length";
++static const char STR_TRANSFER_ENCODING[] PROGMEM_PSTR = "transfer-encoding";
++static const char STR_UPGRADE[] PROGMEM_PSTR = "upgrade";
++static const char STR_CHUNKED[] PROGMEM_PSTR = "chunked";
++static const char STR_KEEP_ALIVE[] PROGMEM_PSTR = "keep-alive";
++static const char STR_CLOSE[] PROGMEM_PSTR = "close";
  
 -static const char *method_strings[] =
++#define get_pstr_char(name, index) (char)pgm_read_byte(&STR_##name[index])
++
++
 +#define XX(num, name, string) static const char method_string_##name[] PROGMEM_PSTR = #string;
 +  HTTP_METHOD_MAP(XX)
 +#undef XX
@@ -97,7 +117,7 @@ index 95ff42f..dbaadc2 100644
    HTTP_METHOD_MAP(XX)
  #undef XX
    };
-@@ -186,7 +198,7 @@ static const char *method_strings[] =
+@@ -186,7 +208,7 @@ static const char *method_strings[] =
   *                    | "/" | "[" | "]" | "?" | "="
   *                    | "{" | "}" | SP | HT
   */
@@ -106,7 +126,7 @@ index 95ff42f..dbaadc2 100644
  /*   0 nul    1 soh    2 stx    3 etx    4 eot    5 enq    6 ack    7 bel  */
          0,       0,       0,       0,       0,       0,       0,       0,
  /*   8 bs     9 ht    10 nl    11 vt    12 np    13 cr    14 so    15 si   */
-@@ -220,19 +232,10 @@ static const char tokens[256] = {
+@@ -220,19 +242,10 @@ static const char tokens[256] = {
  /* 120  x   121  y   122  z   123  {   124  |   125  }   126  ~   127 del */
         'x',     'y',     'z',      0,      '|',      0,      '~',       0 };
  
@@ -130,7 +150,7 @@ index 95ff42f..dbaadc2 100644
  #if HTTP_PARSER_STRICT
  # define T(v) 0
  #else
-@@ -428,14 +431,14 @@ enum http_host_state
+@@ -428,14 +441,14 @@ enum http_host_state
    (c) == ';' || (c) == ':' || (c) == '&' || (c) == '=' || (c) == '+' || \
    (c) == '$' || (c) == ',')
  
@@ -147,7 +167,7 @@ index 95ff42f..dbaadc2 100644
  #define IS_URL_CHAR(c)                                                         \
    (BIT_AT(normal_url_char, (unsigned char)c) || ((c) & 0x80))
  #define IS_HOST_CHAR(c)                                                        \
-@@ -467,16 +470,6 @@ do {                                                                 \
+@@ -467,16 +480,6 @@ do {                                                                 \
  #endif
  
  
@@ -164,7 +184,7 @@ index 95ff42f..dbaadc2 100644
  int http_message_needs_eof(const http_parser *parser);
  
  /* Our URL parser.
-@@ -758,7 +751,7 @@ reexecute:
+@@ -758,7 +761,7 @@ reexecute:
            }
  
            parser->type = HTTP_REQUEST;
@@ -173,7 +193,7 @@ index 95ff42f..dbaadc2 100644
            parser->index = 2;
            UPDATE_STATE(s_req_method);
          }
-@@ -938,23 +931,23 @@ reexecute:
+@@ -938,23 +941,23 @@ reexecute:
          parser->method = (enum http_method) 0;
          parser->index = 1;
          switch (ch) {
@@ -212,7 +232,7 @@ index 95ff42f..dbaadc2 100644
            default:
              SET_ERRNO(HPE_INVALID_METHOD);
              goto error;
-@@ -975,16 +968,17 @@ reexecute:
+@@ -975,16 +978,17 @@ reexecute:
          }
  
          matcher = method_strings[parser->method];
@@ -234,7 +254,7 @@ index 95ff42f..dbaadc2 100644
  
              XX(POST,      1, 'U', PUT)
              XX(POST,      1, 'A', PATCH)
-@@ -1024,7 +1018,7 @@ reexecute:
+@@ -1024,7 +1028,7 @@ reexecute:
          if (ch == ' ') break;
  
          MARK(url);
@@ -243,7 +263,7 @@ index 95ff42f..dbaadc2 100644
            UPDATE_STATE(s_req_server_start);
          }
  
-@@ -1100,7 +1094,7 @@ reexecute:
+@@ -1100,7 +1104,7 @@ reexecute:
              UPDATE_STATE(s_req_http_H);
              break;
            case 'I':
@@ -252,7 +272,88 @@ index 95ff42f..dbaadc2 100644
                UPDATE_STATE(s_req_http_I);
                break;
              }
-@@ -1826,7 +1820,7 @@ reexecute:
+@@ -1301,7 +1305,7 @@ reexecute:
+             case h_matching_connection:
+               parser->index++;
+               if (parser->index > sizeof(CONNECTION)-1
+-                  || c != CONNECTION[parser->index]) {
++                  || c != get_pstr_char(CONNECTION, parser->index)) {
+                 parser->header_state = h_general;
+               } else if (parser->index == sizeof(CONNECTION)-2) {
+                 parser->header_state = h_connection;
+@@ -1313,7 +1317,7 @@ reexecute:
+             case h_matching_proxy_connection:
+               parser->index++;
+               if (parser->index > sizeof(PROXY_CONNECTION)-1
+-                  || c != PROXY_CONNECTION[parser->index]) {
++                  || c != get_pstr_char(PROXY_CONNECTION, parser->index)) {
+                 parser->header_state = h_general;
+               } else if (parser->index == sizeof(PROXY_CONNECTION)-2) {
+                 parser->header_state = h_connection;
+@@ -1325,7 +1329,7 @@ reexecute:
+             case h_matching_content_length:
+               parser->index++;
+               if (parser->index > sizeof(CONTENT_LENGTH)-1
+-                  || c != CONTENT_LENGTH[parser->index]) {
++                  || c != get_pstr_char(CONTENT_LENGTH, parser->index)) {
+                 parser->header_state = h_general;
+               } else if (parser->index == sizeof(CONTENT_LENGTH)-2) {
+                 parser->header_state = h_content_length;
+@@ -1337,7 +1341,7 @@ reexecute:
+             case h_matching_transfer_encoding:
+               parser->index++;
+               if (parser->index > sizeof(TRANSFER_ENCODING)-1
+-                  || c != TRANSFER_ENCODING[parser->index]) {
++                  || c != get_pstr_char(TRANSFER_ENCODING, parser->index)) {
+                 parser->header_state = h_general;
+               } else if (parser->index == sizeof(TRANSFER_ENCODING)-2) {
+                 parser->header_state = h_transfer_encoding;
+@@ -1350,7 +1354,7 @@ reexecute:
+             case h_matching_upgrade:
+               parser->index++;
+               if (parser->index > sizeof(UPGRADE)-1
+-                  || c != UPGRADE[parser->index]) {
++                  || c != get_pstr_char(UPGRADE, parser->index)) {
+                 parser->header_state = h_general;
+               } else if (parser->index == sizeof(UPGRADE)-2) {
+                 parser->header_state = h_upgrade;
+@@ -1595,7 +1599,7 @@ reexecute:
+             case h_matching_transfer_encoding_chunked:
+               parser->index++;
+               if (parser->index > sizeof(CHUNKED)-1
+-                  || c != CHUNKED[parser->index]) {
++                  || c != get_pstr_char(CHUNKED, parser->index)) {
+                 h_state = h_matching_transfer_encoding_token;
+               } else if (parser->index == sizeof(CHUNKED)-2) {
+                 h_state = h_transfer_encoding_chunked;
+@@ -1631,7 +1635,7 @@ reexecute:
+             case h_matching_connection_keep_alive:
+               parser->index++;
+               if (parser->index > sizeof(KEEP_ALIVE)-1
+-                  || c != KEEP_ALIVE[parser->index]) {
++                  || c != get_pstr_char(KEEP_ALIVE, parser->index)) {
+                 h_state = h_matching_connection_token;
+               } else if (parser->index == sizeof(KEEP_ALIVE)-2) {
+                 h_state = h_connection_keep_alive;
+@@ -1641,7 +1645,7 @@ reexecute:
+             /* looking for 'Connection: close' */
+             case h_matching_connection_close:
+               parser->index++;
+-              if (parser->index > sizeof(CLOSE)-1 || c != CLOSE[parser->index]) {
++              if (parser->index > sizeof(CLOSE)-1 || c != get_pstr_char(CLOSE, parser->index)) {
+                 h_state = h_matching_connection_token;
+               } else if (parser->index == sizeof(CLOSE)-2) {
+                 h_state = h_connection_close;
+@@ -1652,7 +1656,7 @@ reexecute:
+             case h_matching_connection_upgrade:
+               parser->index++;
+               if (parser->index > sizeof(UPGRADE) - 1 ||
+-                  c != UPGRADE[parser->index]) {
++                  c != get_pstr_char(UPGRADE, parser->index)) {
+                 h_state = h_matching_connection_token;
+               } else if (parser->index == sizeof(UPGRADE)-2) {
+                 h_state = h_connection_upgrade;
+@@ -1826,7 +1830,7 @@ reexecute:
            parser->upgrade =
                (parser->type == HTTP_REQUEST || parser->status_code == 101);
          } else {
@@ -261,7 +362,7 @@ index 95ff42f..dbaadc2 100644
          }
  
          /* Here we call the headers_complete callback. This is somewhat
-@@ -1874,7 +1868,7 @@ reexecute:
+@@ -1874,7 +1878,7 @@ reexecute:
  
          hasBody = parser->flags & F_CHUNKED ||
            (parser->content_length > 0 && parser->content_length != ULLONG_MAX);
@@ -270,7 +371,7 @@ index 95ff42f..dbaadc2 100644
                                  (parser->flags & F_SKIPBODY) || !hasBody)) {
            /* Exit, the rest of the message is in a different protocol. */
            UPDATE_STATE(NEW_MESSAGE());
-@@ -1991,7 +1985,7 @@ reexecute:
+@@ -1991,7 +1995,7 @@ reexecute:
          assert(nread == 1);
          assert(parser->flags & F_CHUNKED);
  
@@ -279,7 +380,7 @@ index 95ff42f..dbaadc2 100644
          if (UNLIKELY(unhex_val == -1)) {
            SET_ERRNO(HPE_INVALID_CHUNK_SIZE);
            goto error;
-@@ -2013,7 +2007,7 @@ reexecute:
+@@ -2013,7 +2017,7 @@ reexecute:
            break;
          }
  
@@ -288,7 +389,7 @@ index 95ff42f..dbaadc2 100644
  
          if (unhex_val == -1) {
            if (ch == ';' || ch == ' ') {
-@@ -2200,18 +2194,7 @@ http_should_keep_alive (const http_parser *parser)
+@@ -2200,18 +2204,7 @@ http_should_keep_alive (const http_parser *parser)
  const char *
  http_method_str (enum http_method m)
  {
@@ -308,7 +409,7 @@ index 95ff42f..dbaadc2 100644
  }
  
  void
-@@ -2231,18 +2214,6 @@ http_parser_settings_init(http_parser_settings *settings)
+@@ -2231,18 +2224,6 @@ http_parser_settings_init(http_parser_settings *settings)
    memset(settings, 0, sizeof(*settings));
  }
  
