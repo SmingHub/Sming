@@ -1,8 +1,8 @@
 diff --git a/http_parser.h b/http_parser.h
-index df88252..b346c33 100644
+index 3772b39..a1f4d38 100644
 --- a/http_parser.h
 +++ b/http_parser.h
-@@ -153,7 +153,7 @@ typedef int (*http_cb) (http_parser*);
+@@ -155,7 +155,7 @@ typedef int (*http_cb) (http_parser*);
  
  enum http_status
    {
@@ -11,7 +11,7 @@ index df88252..b346c33 100644
    HTTP_STATUS_MAP(XX)
  #undef XX
    };
-@@ -206,7 +206,7 @@ enum http_status
+@@ -208,7 +208,7 @@ enum http_status
  
  enum http_method
    {
@@ -20,7 +20,7 @@ index df88252..b346c33 100644
    HTTP_METHOD_MAP(XX)
  #undef XX
    };
-@@ -282,17 +282,13 @@ enum flags
+@@ -283,17 +283,13 @@ enum flags
  
  
  /* Define HPE_* values for each errno value above */
@@ -39,7 +39,7 @@ index df88252..b346c33 100644
  struct http_parser {
    /** PRIVATE **/
    unsigned int type : 2;         /* enum http_parser_type */
-@@ -411,15 +407,6 @@ int http_should_keep_alive(const http_parser *parser);
+@@ -417,15 +413,6 @@ int http_should_keep_alive(const http_parser *parser);
  /* Returns a string version of the HTTP method. */
  const char *http_method_str(enum http_method m);
  
@@ -56,7 +56,7 @@ index df88252..b346c33 100644
  void http_parser_url_init(struct http_parser_url *u);
  
 diff --git a/http_parser.c b/http_parser.c
-index 95ff42f..27db72e 100644
+index 9be003e..e6b0051 100644
 --- a/http_parser.c
 +++ b/http_parser.c
 @@ -20,11 +20,19 @@
@@ -184,7 +184,7 @@ index 95ff42f..27db72e 100644
  int http_message_needs_eof(const http_parser *parser);
  
  /* Our URL parser.
-@@ -758,7 +761,7 @@ reexecute:
+@@ -760,7 +763,7 @@ reexecute:
            }
  
            parser->type = HTTP_REQUEST;
@@ -193,7 +193,7 @@ index 95ff42f..27db72e 100644
            parser->index = 2;
            UPDATE_STATE(s_req_method);
          }
-@@ -938,23 +941,23 @@ reexecute:
+@@ -940,23 +943,23 @@ reexecute:
          parser->method = (enum http_method) 0;
          parser->index = 1;
          switch (ch) {
@@ -232,7 +232,7 @@ index 95ff42f..27db72e 100644
            default:
              SET_ERRNO(HPE_INVALID_METHOD);
              goto error;
-@@ -975,16 +978,17 @@ reexecute:
+@@ -977,16 +980,17 @@ reexecute:
          }
  
          matcher = method_strings[parser->method];
@@ -254,7 +254,7 @@ index 95ff42f..27db72e 100644
  
              XX(POST,      1, 'U', PUT)
              XX(POST,      1, 'A', PATCH)
-@@ -1024,7 +1028,7 @@ reexecute:
+@@ -1026,7 +1030,7 @@ reexecute:
          if (ch == ' ') break;
  
          MARK(url);
@@ -263,7 +263,7 @@ index 95ff42f..27db72e 100644
            UPDATE_STATE(s_req_server_start);
          }
  
-@@ -1100,7 +1104,7 @@ reexecute:
+@@ -1102,7 +1106,7 @@ reexecute:
              UPDATE_STATE(s_req_http_H);
              break;
            case 'I':
@@ -272,7 +272,7 @@ index 95ff42f..27db72e 100644
                UPDATE_STATE(s_req_http_I);
                break;
              }
-@@ -1301,7 +1305,7 @@ reexecute:
+@@ -1303,7 +1307,7 @@ reexecute:
              case h_matching_connection:
                parser->index++;
                if (parser->index > sizeof(CONNECTION)-1
@@ -281,7 +281,7 @@ index 95ff42f..27db72e 100644
                  parser->header_state = h_general;
                } else if (parser->index == sizeof(CONNECTION)-2) {
                  parser->header_state = h_connection;
-@@ -1313,7 +1317,7 @@ reexecute:
+@@ -1315,7 +1319,7 @@ reexecute:
              case h_matching_proxy_connection:
                parser->index++;
                if (parser->index > sizeof(PROXY_CONNECTION)-1
@@ -290,7 +290,7 @@ index 95ff42f..27db72e 100644
                  parser->header_state = h_general;
                } else if (parser->index == sizeof(PROXY_CONNECTION)-2) {
                  parser->header_state = h_connection;
-@@ -1325,7 +1329,7 @@ reexecute:
+@@ -1327,7 +1331,7 @@ reexecute:
              case h_matching_content_length:
                parser->index++;
                if (parser->index > sizeof(CONTENT_LENGTH)-1
@@ -299,7 +299,7 @@ index 95ff42f..27db72e 100644
                  parser->header_state = h_general;
                } else if (parser->index == sizeof(CONTENT_LENGTH)-2) {
                  parser->header_state = h_content_length;
-@@ -1337,7 +1341,7 @@ reexecute:
+@@ -1339,7 +1343,7 @@ reexecute:
              case h_matching_transfer_encoding:
                parser->index++;
                if (parser->index > sizeof(TRANSFER_ENCODING)-1
@@ -308,7 +308,7 @@ index 95ff42f..27db72e 100644
                  parser->header_state = h_general;
                } else if (parser->index == sizeof(TRANSFER_ENCODING)-2) {
                  parser->header_state = h_transfer_encoding;
-@@ -1350,7 +1354,7 @@ reexecute:
+@@ -1352,7 +1356,7 @@ reexecute:
              case h_matching_upgrade:
                parser->index++;
                if (parser->index > sizeof(UPGRADE)-1
@@ -317,7 +317,7 @@ index 95ff42f..27db72e 100644
                  parser->header_state = h_general;
                } else if (parser->index == sizeof(UPGRADE)-2) {
                  parser->header_state = h_upgrade;
-@@ -1595,7 +1599,7 @@ reexecute:
+@@ -1597,7 +1601,7 @@ reexecute:
              case h_matching_transfer_encoding_chunked:
                parser->index++;
                if (parser->index > sizeof(CHUNKED)-1
@@ -326,7 +326,7 @@ index 95ff42f..27db72e 100644
                  h_state = h_matching_transfer_encoding_token;
                } else if (parser->index == sizeof(CHUNKED)-2) {
                  h_state = h_transfer_encoding_chunked;
-@@ -1631,7 +1635,7 @@ reexecute:
+@@ -1633,7 +1637,7 @@ reexecute:
              case h_matching_connection_keep_alive:
                parser->index++;
                if (parser->index > sizeof(KEEP_ALIVE)-1
@@ -335,7 +335,7 @@ index 95ff42f..27db72e 100644
                  h_state = h_matching_connection_token;
                } else if (parser->index == sizeof(KEEP_ALIVE)-2) {
                  h_state = h_connection_keep_alive;
-@@ -1641,7 +1645,7 @@ reexecute:
+@@ -1643,7 +1647,7 @@ reexecute:
              /* looking for 'Connection: close' */
              case h_matching_connection_close:
                parser->index++;
@@ -344,7 +344,7 @@ index 95ff42f..27db72e 100644
                  h_state = h_matching_connection_token;
                } else if (parser->index == sizeof(CLOSE)-2) {
                  h_state = h_connection_close;
-@@ -1652,7 +1656,7 @@ reexecute:
+@@ -1654,7 +1658,7 @@ reexecute:
              case h_matching_connection_upgrade:
                parser->index++;
                if (parser->index > sizeof(UPGRADE) - 1 ||
@@ -353,7 +353,7 @@ index 95ff42f..27db72e 100644
                  h_state = h_matching_connection_token;
                } else if (parser->index == sizeof(UPGRADE)-2) {
                  h_state = h_connection_upgrade;
-@@ -1826,7 +1830,7 @@ reexecute:
+@@ -1833,7 +1837,7 @@ reexecute:
            parser->upgrade =
                (parser->type == HTTP_REQUEST || parser->status_code == 101);
          } else {
@@ -362,7 +362,7 @@ index 95ff42f..27db72e 100644
          }
  
          /* Here we call the headers_complete callback. This is somewhat
-@@ -1874,7 +1878,7 @@ reexecute:
+@@ -1881,7 +1885,7 @@ reexecute:
  
          hasBody = parser->flags & F_CHUNKED ||
            (parser->content_length > 0 && parser->content_length != ULLONG_MAX);
@@ -371,7 +371,7 @@ index 95ff42f..27db72e 100644
                                  (parser->flags & F_SKIPBODY) || !hasBody)) {
            /* Exit, the rest of the message is in a different protocol. */
            UPDATE_STATE(NEW_MESSAGE());
-@@ -1991,7 +1995,7 @@ reexecute:
+@@ -1998,7 +2002,7 @@ reexecute:
          assert(nread == 1);
          assert(parser->flags & F_CHUNKED);
  
@@ -380,7 +380,7 @@ index 95ff42f..27db72e 100644
          if (UNLIKELY(unhex_val == -1)) {
            SET_ERRNO(HPE_INVALID_CHUNK_SIZE);
            goto error;
-@@ -2013,7 +2017,7 @@ reexecute:
+@@ -2020,7 +2024,7 @@ reexecute:
            break;
          }
  
@@ -389,7 +389,7 @@ index 95ff42f..27db72e 100644
  
          if (unhex_val == -1) {
            if (ch == ';' || ch == ' ') {
-@@ -2200,18 +2204,7 @@ http_should_keep_alive (const http_parser *parser)
+@@ -2207,18 +2211,7 @@ http_should_keep_alive (const http_parser *parser)
  const char *
  http_method_str (enum http_method m)
  {
@@ -409,7 +409,7 @@ index 95ff42f..27db72e 100644
  }
  
  void
-@@ -2231,18 +2224,6 @@ http_parser_settings_init(http_parser_settings *settings)
+@@ -2238,18 +2231,6 @@ http_parser_settings_init(http_parser_settings *settings)
    memset(settings, 0, sizeof(*settings));
  }
  
