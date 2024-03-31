@@ -9,19 +9,42 @@
  ****/
 
 #include <Digital.h>
-#include "ESP8266EX.h"
 #include <espinc/eagle_soc.h>
 #include <espinc/gpio_register.h>
 #include <espinc/pin_mux_register.h>
 #include <Platform/Timers.h>
 
+#define TOTAL_PINS 16
+
+#define PINMUX_OFFSET(addr) uint8_t((addr)-PERIPHS_IO_MUX)
+
+// Used for pullup/noPullup
+extern const uint8_t esp8266_pinmuxOffset[] = {
+	PINMUX_OFFSET(PERIPHS_IO_MUX_GPIO0_U),	// 0 FLASH
+	PINMUX_OFFSET(PERIPHS_IO_MUX_U0TXD_U),	// 1 TXD0
+	PINMUX_OFFSET(PERIPHS_IO_MUX_GPIO2_U),	// 2 TXD1
+	PINMUX_OFFSET(PERIPHS_IO_MUX_U0RXD_U),	// 3 RXD0
+	PINMUX_OFFSET(PERIPHS_IO_MUX_GPIO4_U),	// 4
+	PINMUX_OFFSET(PERIPHS_IO_MUX_GPIO5_U),	// 5
+	PINMUX_OFFSET(PERIPHS_IO_MUX_SD_CLK_U),   // 6 SD_CLK_U
+	PINMUX_OFFSET(PERIPHS_IO_MUX_SD_DATA0_U), // 7 SD_DATA0_U
+	PINMUX_OFFSET(PERIPHS_IO_MUX_SD_DATA1_U), // 8 SD_DATA1_U
+	PINMUX_OFFSET(PERIPHS_IO_MUX_SD_DATA2_U), // 9
+	PINMUX_OFFSET(PERIPHS_IO_MUX_SD_DATA3_U), // 10
+	PINMUX_OFFSET(PERIPHS_IO_MUX_SD_CMD_U),   // 11 SD_CMD_U
+	PINMUX_OFFSET(PERIPHS_IO_MUX_MTDI_U),	 // 12 HSPIQ
+	PINMUX_OFFSET(PERIPHS_IO_MUX_MTCK_U),	 // 13 HSPID
+	PINMUX_OFFSET(PERIPHS_IO_MUX_MTMS_U),	 // 14 HSPICLK
+	PINMUX_OFFSET(PERIPHS_IO_MUX_MTDO_U),	 // 15 HSPICS
+};
+
 // Prototype declared in esp8266-peri.h
-const uint8_t esp8266_gpioToFn[16] = {0x34, 0x18, 0x38, 0x14, 0x3C, 0x40, 0x1C, 0x20,
-									  0x24, 0x28, 0x2C, 0x30, 0x04, 0x08, 0x0C, 0x10};
+const uint8_t esp8266_gpioToFn[TOTAL_PINS] = {0x34, 0x18, 0x38, 0x14, 0x3C, 0x40, 0x1C, 0x20,
+											  0x24, 0x28, 0x2C, 0x30, 0x04, 0x08, 0x0C, 0x10};
 
 void pinMode(uint16_t pin, uint8_t mode)
 {
-	if(pin < 16) {
+	if(pin < TOTAL_PINS) {
 		if(mode == SPECIAL) {
 			GPC(pin) = (GPC(pin) &
 						(0xF << GPCI)); //SOURCE(GPIO) | DRIVER(NORMAL) | INT_TYPE(UNCHANGED) | WAKEUP_ENABLE(DISABLED)
@@ -100,38 +123,32 @@ void digitalWrite(uint16_t pin, uint8_t val)
 			pullup(pin);
 		else
 			noPullup(pin);
-	} else {
-		if(pin != 16)
-			GPIO_REG_WRITE((((val != LOW) ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS)), (1 << pin));
-		else
-			WRITE_PERI_REG(RTC_GPIO_OUT, (READ_PERI_REG(RTC_GPIO_OUT) & (uint32_t)0xfffffffe) | (uint32_t)(val & 1));
-
-		//GPIO_OUTPUT_SET(pin, (val ? 0xFF : 00));
-	}
+	} else if(pin != 16)
+		GPIO_REG_WRITE((((val != LOW) ? GPIO_OUT_W1TS_ADDRESS : GPIO_OUT_W1TC_ADDRESS)), (1 << pin));
+	else
+		WRITE_PERI_REG(RTC_GPIO_OUT, (READ_PERI_REG(RTC_GPIO_OUT) & (uint32_t)0xfffffffe) | (uint32_t)(val & 1));
 }
 
 uint8_t digitalRead(uint16_t pin)
 {
-	if(pin != 16)
+	if(pin != 16) {
 		return ((GPIO_REG_READ(GPIO_IN_ADDRESS) >> pin) & 1);
-	else
-		return (uint8_t)(READ_PERI_REG(RTC_GPIO_IN_DATA) & 1);
-
-	//return  GPIO_INPUT_GET(pin);
+	}
+	return (uint8_t)(READ_PERI_REG(RTC_GPIO_IN_DATA) & 1);
 }
 
 void pullup(uint16_t pin)
 {
-	if(pin >= 16)
-		return;
-	PIN_PULLUP_EN((EspDigitalPins[pin].mux));
+	if(pin < TOTAL_PINS) {
+		PIN_PULLUP_EN(PERIPHS_IO_MUX + esp8266_pinmuxOffset[pin]);
+	}
 }
 
 void noPullup(uint16_t pin)
 {
-	if(pin >= 16)
-		return;
-	PIN_PULLUP_DIS((EspDigitalPins[pin].mux));
+	if(pin < TOTAL_PINS) {
+		PIN_PULLUP_DIS(PERIPHS_IO_MUX + esp8266_pinmuxOffset[pin]);
+	}
 }
 
 /* Measures the length (in microseconds) of a pulse on the pin; state is HIGH
