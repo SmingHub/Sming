@@ -44,9 +44,14 @@ bool TcpClient::send(const char* data, uint16_t len, bool forceCloseAfterSent)
 		return false;
 	}
 
+	std::unique_ptr<MemoryDataStream> newStream;
 	auto memoryStream = static_cast<MemoryDataStream*>(stream);
 	if(memoryStream == nullptr || memoryStream->getStreamType() != eSST_MemoryWritable) {
-		memoryStream = new MemoryDataStream();
+		newStream = std::make_unique<MemoryDataStream>();
+		if(!newStream) {
+			return false;
+		}
+		memoryStream = newStream.get();
 	}
 
 	if(!memoryStream->ensureCapacity(memoryStream->getSize() + len)) {
@@ -56,11 +61,17 @@ bool TcpClient::send(const char* data, uint16_t len, bool forceCloseAfterSent)
 
 	memoryStream->write(data, len);
 
+	(void)newStream.release();
 	return send(memoryStream, forceCloseAfterSent);
 }
 
 bool TcpClient::send(IDataSourceStream* source, bool forceCloseAfterSent)
 {
+	std::unique_ptr<IDataSourceStream> sourceRef;
+	if(stream != source) {
+		sourceRef.reset(source);
+	}
+
 	if(state != eTCS_Connecting && state != eTCS_Connected) {
 		return false;
 	}
@@ -76,35 +87,31 @@ bool TcpClient::send(IDataSourceStream* source, bool forceCloseAfterSent)
 			auto chainStream = static_cast<StreamChain*>(stream);
 			if(!chainStream->attachStream(source)) {
 				debug_w("Unable to attach source to existing stream chain!");
-				delete source;
 				return false;
 			}
 		} else {
 			debug_d("Creating stream chain ...");
-			auto chainStream = new StreamChain();
-			if(chainStream == nullptr) {
-				delete source;
+			auto chainStream = std::make_unique<StreamChain>();
+			if(!chainStream) {
 				debug_w("Unable to create stream chain!");
 				return false;
 			}
 
 			if(!chainStream->attachStream(stream)) {
-				delete source;
-				delete chainStream;
 				debug_w("Unable to attach stream to new chain!");
 				return false;
 			}
 
 			if(!chainStream->attachStream(source)) {
-				delete source;
-				delete chainStream;
 				debug_w("Unable to attach source to new chain!");
 				return false;
 			}
 
-			stream = chainStream;
+			stream = chainStream.release();
 		}
 	}
+
+	(void)sourceRef.release();
 
 	int length = source->available();
 	if(length > 0) {
