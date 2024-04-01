@@ -1,10 +1,15 @@
 #include <SmingCore.h>
-
 #include "configuration.h"
+#include "webserver.h"
 
-bool serverStarted = false;
-HttpServer server;
 extern String StrT, StrRH; // Sensors string values
+
+namespace
+{
+HttpServer server;
+HttpClient downloadClient;
+bool serverStarted = false;
+int dowfid = 0;
 
 void onIndex(HttpRequest& request, HttpResponse& response)
 {
@@ -92,23 +97,44 @@ void onApiSensors(HttpRequest& request, HttpResponse& response)
 void onApiOutput(HttpRequest& request, HttpResponse& response)
 {
 	int val = request.getQueryParameter("control", "-1").toInt();
-	if(val == 0 || val == 1)
+	if(val == 0 || val == 1) {
 		digitalWrite(CONTROL_PIN, val == 1);
-	else
+	} else {
 		val = -1;
+	}
 
 	JsonObjectStream* stream = new JsonObjectStream();
 	JsonObject json = stream->getRoot();
-	json["status"] = val != -1;
-	if(val == -1)
+	json["status"] = val >= 0;
+	if(val < 0)
 		json["error"] = "Wrong control parameter value, please use: ?control=0|1";
 	response.sendDataStream(stream, MIME_JSON);
 }
 
+} // namespace
+
+void downloadContentFiles()
+{
+	debugf("DownloadContentFiles");
+
+	downloadClient.downloadFile(F("http://simple.anakod.ru/templates/MeteoControl/MeteoControl.html"), "index.html");
+	downloadClient.downloadFile(F("http://simple.anakod.ru/templates/MeteoControl/MeteoConfig.html"), "config.html");
+	downloadClient.downloadFile(F("http://simple.anakod.ru/templates/MeteoControl/MeteoAPI.html"), "api.html");
+	downloadClient.downloadFile(F("http://simple.anakod.ru/templates/bootstrap.css.gz"));
+	downloadClient.downloadFile(F("http://simple.anakod.ru/templates/jquery.js.gz"),
+								[](HttpConnection& connection, bool success) -> int {
+									if(success) {
+										startWebServer();
+									}
+									return 0;
+								});
+}
+
 void startWebServer()
 {
-	if(serverStarted)
+	if(serverStarted) {
 		return;
+	}
 
 	server.listen(80);
 	server.paths.set("/", onIndex);
@@ -123,25 +149,4 @@ void startWebServer()
 		debugf("STA: %s", WifiStation.getIP().toString().c_str());
 	if(WifiAccessPoint.isEnabled())
 		debugf("AP: %s", WifiAccessPoint.getIP().toString().c_str());
-}
-
-/// FileSystem Initialization ///
-
-HttpClient downloadClient;
-int dowfid = 0;
-void downloadContentFiles()
-{
-	debugf("DownloadContentFiles");
-
-	downloadClient.downloadFile("http://simple.anakod.ru/templates/MeteoControl/MeteoControl.html", "index.html");
-	downloadClient.downloadFile("http://simple.anakod.ru/templates/MeteoControl/MeteoConfig.html", "config.html");
-	downloadClient.downloadFile("http://simple.anakod.ru/templates/MeteoControl/MeteoAPI.html", "api.html");
-	downloadClient.downloadFile("http://simple.anakod.ru/templates/bootstrap.css.gz");
-	downloadClient.downloadFile("http://simple.anakod.ru/templates/jquery.js.gz",
-								(RequestCompletedDelegate)([](HttpConnection& connection, bool success) -> int {
-									if(success) {
-										startWebServer();
-									}
-									return 0;
-								}));
 }

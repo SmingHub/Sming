@@ -18,6 +18,8 @@
 #define SH1106_128_64  // larger one
 */
 
+namespace
+{
 // For spi oled module
 // Adafruit_SSD1306 display(0, 16, 2);
 
@@ -25,7 +27,7 @@
 // Default I2C pins 0 (SCL) and 2 (SDA). Pin 4 - optional reset
 Adafruit_SSD1306 display(-1); // reset Pin required but later ignored if set to False
 
-Timer DemoTimer;
+SimpleTimer demoTimer;
 
 void Demo2()
 {
@@ -45,7 +47,6 @@ void Demo2()
 	display.setTextSize(3);
 	display.print("IoT");
 	display.display();
-	DemoTimer.stop(); // Finish demo
 }
 
 void Demo1()
@@ -56,9 +57,12 @@ void Demo1()
 	// draw a circle, 10 pixel radius
 	display.fillCircle(display.width() / 2, display.height() / 2, 10, WHITE);
 	display.display();
-	DemoTimer.stop();
-	DemoTimer.initializeMs<2000>(Demo2).start();
+
+	demoTimer.setCallback(Demo2);
+	demoTimer.startOnce();
 }
+
+} // namespace
 
 void init()
 {
@@ -70,5 +74,6 @@ void init()
 	// bool:reset set to TRUE or FALSE depending on your display
 	display.begin(SSD1306_SWITCHCAPVCC, 0x3c, false);
 	display.display();
-	DemoTimer.initializeMs<2000>(Demo1).start();
+
+	demoTimer.initializeMs<2000>(Demo1).startOnce();
 }

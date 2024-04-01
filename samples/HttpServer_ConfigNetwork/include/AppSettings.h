@@ -5,11 +5,10 @@
  *      Author: Anakod
  */
 
-#include <SmingCore.h>
-#include <ArduinoJson.h>
+#pragma once
 
-#ifndef INCLUDE_APPSETTINGS_H_
-#define INCLUDE_APPSETTINGS_H_
+#include <WString.h>
+#include <ArduinoJson.h>
 
 #define APP_SETTINGS_FILE ".settings.conf" // leading point for security reasons :)
 
@@ -61,7 +60,3 @@ struct ApplicationSettingsStorage {
 		return fileExist(APP_SETTINGS_FILE);
 	}
 };
-
-static ApplicationSettingsStorage AppSettings;
-
-#endif /* INCLUDE_APPSETTINGS_H_ */

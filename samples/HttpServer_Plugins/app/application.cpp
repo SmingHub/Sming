@@ -55,8 +55,8 @@ void startWebServer()
 	 *
 	 * make sure to replace the IP address with the IP address of your HttpServer
 	*/
-	server->paths.set("/ip-n-auth", echoContentBody,
-					  new ResourceIpAuth(IpAddress("192.168.13.0"), IpAddress("255.255.255.0")), pluginBasicAuth);
+	server->paths.set("/ip-n-auth", echoContentBody, new ResourceIpAuth(F("192.168.13.0"), F("255.255.255.0")),
+					  pluginBasicAuth);
 
 	/*
 	 * This content coming to this resource is modified on the fly
@@ -70,16 +70,18 @@ void startWebServer()
 	 */
 	server->paths.set("/test", echoContentBody, new ContentDecoder());
 
-	Serial.println(F("\r\n=== WEB SERVER STARTED ==="));
-	Serial.println(WifiStation.getIP());
-	Serial.println(F("==============================\r\n"));
+	Serial << endl
+		   << _F("=== WEB SERVER STARTED ===") << endl
+		   << WifiStation.getIP() << endl
+		   << _F("==============================") << endl
+		   << endl;
 }
 
 // Will be called when WiFi station becomes fully operational
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	startWebServer();
-	debug_i("free heap = %u", system_get_free_heap_size());
+	Serial << _F("Free heap = ") << system_get_free_heap_size() << endl;
 }
 
 } // namespace

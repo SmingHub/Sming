@@ -23,7 +23,7 @@
 namespace
 {
 WebsocketClient wsClient;
-Timer msgTimer;
+SimpleTimer msgTimer;
 
 // Number of messages to send
 const unsigned MESSAGES_TO_SEND = 5;

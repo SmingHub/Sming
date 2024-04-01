@@ -1,24 +1,30 @@
 #include <SmingCore.h>
 
+namespace
+{
 bool smartConfigCallback(SmartConfigEvent event, const SmartConfigEventInfo& info)
 {
 	switch(event) {
 	case SCE_Wait:
-		debugf("SCE_Wait\n");
+		Serial.println(_F("SCE_Wait"));
 		break;
+
 	case SCE_FindChannel:
-		debugf("SCE_FindChannel\n");
+		Serial.println(_F("SCE_FindChannel"));
 		break;
+
 	case SCE_GettingSsid:
-		debugf("SCE_GettingSsid, type = %d\n", info.type);
+		Serial << _F("SCE_GettingSsid, type = ") << info.type << endl;
 		break;
+
 	case SCE_Link:
-		debugf("SCE_Link\n");
+		Serial.println(_F("SCE_Link"));
 		WifiStation.config(info.ssid, info.password);
 		WifiStation.connect();
 		break;
+
 	case SCE_LinkOver:
-		debugf("SCE_LinkOver\n");
+		Serial.println(_F("SCE_LinkOver"));
 		WifiStation.smartConfigStop();
 		break;
 	}
@@ -29,8 +35,10 @@ bool smartConfigCallback(SmartConfigEvent event, const SmartConfigEventInfo& inf
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	Serial << "Connected: " << ip << endl;
+	Serial << _F("Connected: ") << ip << endl;
 }
+
+} // namespace
 
 void init()
 {
@@ -40,8 +48,9 @@ void init()
 	WifiEvents.onStationGotIP(gotIP);
 	WifiAccessPoint.enable(false);
 	WifiStation.enable(true);
+
 	// automatic (acts as the sample callback above)
-	//WifiStation.smartConfigStart(SCT_EspTouch);
+	// WifiStation.smartConfigStart(SCT_EspTouch);
 	// manual, use callback above
 	WifiStation.smartConfigStart(SCT_EspTouch, smartConfigCallback);
 }

@@ -1,6 +1,8 @@
 #include <SmingCore.h>
 #include <Libraries/BH1750FVI/BH1750FVI.h>
 
+namespace
+{
 /*
 Set the Address pin state to change I2C address:
 BH1750FVI_ADDRESS_LOW	"0x23" - usually by default
@@ -8,7 +10,7 @@ BH1750FVI_ADDRESS_HIGH	"0x5C"
 */
 BH1750FVI LightSensor(BH1750FVI_ADDRESS_LOW);
 
-Timer procTimer;
+SimpleTimer procTimer;
 
 void readLight()
 {
@@ -19,15 +21,19 @@ void readLight()
 	Serial.println(" lux");
 }
 
+} // namespace
+
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE);  // 115200 by default
 	Serial.systemDebugOutput(false); // Disable debug output to serial
 
-	if(LightSensor.begin() == 0)
-		Serial.println(_F("LightSensor initialized"));
-	else
+	if(LightSensor.begin() != 0) {
 		Serial.println(_F("LightSensor not available. May be wrong I2C address?"));
+		return;
+	}
+
+	Serial.println(_F("LightSensor initialized"));
 
 	/*
 	Set the Working Mode for this sensor

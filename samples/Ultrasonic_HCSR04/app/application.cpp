@@ -14,8 +14,10 @@
 #define TRIG_PIN 2
 #define ECHO_PIN 5
 
-Timer procTimer;
-Ultrasonic ultrasonic = Ultrasonic();
+namespace
+{
+SimpleTimer procTimer;
+Ultrasonic ultrasonic;
 
 void measure()
 {
@@ -25,6 +27,8 @@ void measure()
 	// print the distance
 	Serial.println(dist);
 }
+
+} // namespace
 
 void init()
 {

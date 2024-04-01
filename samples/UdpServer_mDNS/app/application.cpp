@@ -11,8 +11,8 @@
 // Our device will be reachable via "sming.local"
 DEFINE_FSTR_LOCAL(hostName, "sming");
 
-HttpServer server;
-
+namespace
+{
 class MyHttpService : public mDNS::Service
 {
 public:
@@ -28,37 +28,9 @@ public:
 	}
 };
 
-static mDNS::Responder responder;
-static MyHttpService myHttpService;
-
-void speedTest(mDNS::Question* question)
-{
-	using namespace mDNS;
-
-	OneShotFastUs timer;
-	unsigned count{0};
-	for(unsigned i = 0; i < 10000; ++i) {
-		if(question->getName() == fstrServicesLocal) {
-			++count;
-		}
-		if(question->getName().equalsIgnoreCase("Haggis basher")) {
-			++count;
-		}
-	}
-	debug_i("(question == fstrServicesLocal): %u, %s", count, timer.elapsedTime().toString().c_str());
-
-	timer.start();
-	count = 0;
-	for(unsigned i = 0; i < 10000; ++i) {
-		if(String(question->getName()).equalsIgnoreCase(fstrServicesLocal)) {
-			++count;
-		}
-		if(String(question->getName()).equalsIgnoreCase("Haggis basher")) {
-			++count;
-		}
-	}
-	debug_i("(question == fstrServicesLocal): %u, %s", count, timer.elapsedTime().toString().c_str());
-}
+HttpServer server;
+mDNS::Responder responder;
+MyHttpService myHttpService;
 
 void test()
 {
@@ -96,8 +68,6 @@ void test()
 	{
 		Query query;
 		auto question = query.addQuestion(fstrServicesLocal, ResourceType::PTR);
-
-		// speedTest(question);
 
 		checkLike(question, _F("_services._dns-sd._udp.local"), true);
 		checkLike(question, _F("_dns-sd._udp.local"), true);
@@ -141,18 +111,6 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 	response.sendFile("index.html");
 }
 
-void onFile(HttpRequest& request, HttpResponse& response)
-{
-	String file = request.uri.getRelativePath();
-
-	if(file[0] == '.') {
-		response.code = HTTP_STATUS_FORBIDDEN;
-	} else {
-		response.setCache(86400, true); // It's important to use cache for better performance.
-		response.sendFile(file);
-	}
-}
-
 void startWebServer()
 {
 	server.listen(80);
@@ -179,6 +137,8 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	startWebServer();
 	startmDNS(); // Start mDNS "Advertise" of your hostname "test.local" for this example
 }
+
+} // namespace
 
 void init()
 {

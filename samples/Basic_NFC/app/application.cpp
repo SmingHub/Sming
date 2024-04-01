@@ -1,69 +1,56 @@
 #include <SmingCore.h>
 #include <Libraries/MFRC522/MFRC522.h>
 
-Timer procTimer;
-static Timer nfcScanTimer;
-int helloCounter = 0;
-
-void scanNfc(byte scanner);
-
 #define SS_PIN 4 // D2
 
-MFRC522 mfrc522(SS_PIN, SS_PIN); // Create MFRC522 instance
-byte ss_pin[] = {4, 15};
+namespace
+{
+SimpleTimer procTimer;
+
+MFRC522 mfrc522(SS_PIN, SS_PIN);
+
+// List of pins where NFC devices may be connected
+const uint8_t ss_pin[]{4, 15};
+
+void scanNfc(uint8_t scanner);
 
 void sayHello()
 {
-	for(int pinNdx = 0; pinNdx < 2; pinNdx++) {
-		byte pin = ss_pin[pinNdx];
+	for(auto pin : ss_pin) {
 		mfrc522.setControlPins(pin, pin);
-		mfrc522.PCD_Init(); // Init MFRC522
+		mfrc522.PCD_Init();
 		scanNfc(pin);
 	}
 }
-//---------------------------------
-static void dump_byte_array(byte* buffer, byte bufferSize)
-{
-	String hexOut;
-	for(byte i = 0; i < bufferSize; i++) {
-		hexOut += String(buffer[i], HEX);
-	}
-	debugf("%s", hexOut.c_str());
-}
-//---------------------------------
-void scanNfc(byte scanner)
+
+void scanNfc(uint8_t scannerPin)
 {
 	if(!mfrc522.PICC_IsNewCardPresent()) {
-		debugf("Scanning nfc Scanner:%d \r\n", scanner);
+		Serial << _F("Scanning NFC pin #") << scannerPin << _F(" not present") << endl;
 		return;
 	}
-	if(!mfrc522.PICC_ReadCardSerial()) { // Select one of the cards
-		debugf("Selecting card failed...");
 
+	// Select one of the cards
+	if(!mfrc522.PICC_ReadCardSerial()) {
+		Serial << _F("Selecting card #") << scannerPin << _F(" failed...") << endl;
 	} else {
 		// Show some details of the PICC (that is: the tag/card)
-		debugf("Card UID on scanner:%d:", scanner);
-		dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
-		debugf();
+		Serial << _F("Card UID on scanner: ") << scannerPin << endl;
+		m_printHex("UID", mfrc522.uid.uidByte, mfrc522.uid.size);
 	}
+
 	mfrc522.PICC_HaltA();
+
 	// Stop encryption on PCD
 	mfrc522.PCD_StopCrypto1();
-	mfrc522.PCD_Init(); // Init MFRC522
-
-	//nfcScanTimer.restart();
+	mfrc522.PCD_Init();
 }
+
+} // namespace
 
 void init()
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.begin(SERIAL_BAUD_RATE);
 
 	procTimer.initializeMs<2000>(sayHello).start();
-
-	//----- NFC
-	MFRC522 mfrc522(SS_PIN, SS_PIN);
-	SPI.begin();
-	mfrc522.PCD_Init(); // Init MFRC522
-
-	//nfcScanTimer.initializeMs<50>(scanNfc).startOnce();
 }

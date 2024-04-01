@@ -29,22 +29,22 @@
 
 #include <SmingCore.h>
 
-Timer procTimer;
+namespace
+{
+SimpleTimer procTimer;
+}
 
 void scanBus()
 {
-	byte error, address;
-	int nDevices;
-
 	Serial.println("Scanning...");
 
-	nDevices = 0;
-	for(address = 1; address < 127; address++) {
+	unsigned nDevices{0};
+	for(uint8_t address = 1; address < 127; address++) {
 		// The i2c_scanner uses the return value of
 		// the Write.endTransmisstion to see if
 		// a device did acknowledge to the address.
 		Wire.beginTransmission(address);
-		error = Wire.endTransmission();
+		auto error = Wire.endTransmission();
 
 		WDT.alive(); // Second option: notify Watch Dog what you are alive (feed it)
 
@@ -55,11 +55,8 @@ void scanBus()
 			Serial << _F("Unknown error at address 0x") << String(address, HEX, 2) << endl;
 		}
 	}
-	if(nDevices == 0) {
-		Serial.println("No I2C devices found\n");
-	} else {
-		Serial.println("done\n");
-	}
+
+	Serial << nDevices << _F(" I2C devices found.") << endl << endl;
 }
 
 void init()

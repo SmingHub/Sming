@@ -1,13 +1,14 @@
 #include <SmingCore.h>
 #include <Network/Mqtt/MqttBuffer.h>
-
 #include "configuration.h" // application configuration
 
-#include "bmp180.cpp" // bmp180 configuration
-#include "si7021.cpp" // htu21d configuration
+extern void BMPinit();
+extern void SIinit();
 
-Timer publishTimer;
+MqttClient mqtt;
 
+namespace
+{
 // Publish our message
 void publishMessage() // uncomment timer in connectOk() if need publishMessage() loop
 {
@@ -26,20 +27,21 @@ int onMessageReceived(MqttClient& client, mqtt_message_t* message)
 	return 0;
 }
 
-// Run MQTT client
+void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
+{
+	Serial << _F("Connected: ") << ip << endl;
+	startMqttClient();
+	publishMessage(); // run once publishMessage
+}
+
+} // namespace
+
 void startMqttClient()
 {
 	Url url(URI_SCHEME_MQTT, F(LOG), F(PASS), F(MQTT_SERVER), MQTT_PORT);
 	mqtt.connect(url, CLIENT);
 	Serial.println(_F("Connected to MQTT server"));
 	mqtt.subscribe(SUB_TOPIC);
-}
-
-void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
-{
-	Serial << _F("Connected: ") << ip << endl;
-	startMqttClient();
-	publishMessage(); // run once publishMessage
 }
 
 void init()

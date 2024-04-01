@@ -18,7 +18,7 @@ constexpr uint8_t MAX_FAILED_ATTEMTPS = 5;
 constexpr uint8_t PING_INTERVAL_SECONDS = 10;
 constexpr uint8_t RESTART_DELAY_SECONDS = 2;
 
-Timer procTimer;
+SimpleTimer procTimer;
 
 void ping(uint32_t ip);
 

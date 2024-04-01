@@ -1,7 +1,6 @@
-#ifndef INCLUDE_CONFIGURATION_H_
-#define INCLUDE_CONFIGURATION_H_
+#pragma once
 
-#include <SmingCore.h>
+#include <Network/MqttClient.h>
 
 //////////////////////////// Wi-Fi config ///////////////////////////////////////
 #ifndef WIFI_SSID
@@ -33,11 +32,12 @@
 
 constexpr int TIMER = 20; // every N* seconds send to mqtt server
 
-// Forward declarations
+enum TriggerType {
+	eTT_None = 0,
+	eTT_Temperature,
+	eTT_Humidity,
+};
+
 void startMqttClient();
 
-MqttClient mqtt;
-
-enum TriggerType { eTT_None = 0, eTT_Temperature, eTT_Humidity };
-
-#endif /* INCLUDE_CONFIGURATION_H_ */
+extern MqttClient mqtt;

@@ -6,7 +6,7 @@
 #define LED_PIN 2 // GPIO2
 #endif
 
-Timer procTimer;
+SimpleTimer procTimer;
 bool state = true;
 
 void blink()

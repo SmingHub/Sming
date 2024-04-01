@@ -1,5 +1,4 @@
 #include <SmingCore.h>
-
 #include <Wire.h>
 #include <Libraries/DS3232RTC/DS3232RTC.h>
 
@@ -9,38 +8,43 @@
 #define WIFI_PWD "ENTER_YOUR_PASSWORD"
 #endif
 
+namespace
+{
 // Change as required
 static constexpr uint8_t SDA_PIN{4};
 static constexpr uint8_t SCL_PIN{5};
 
 void onNtpReceive(NtpClient& client, time_t timestamp);
 
-Timer printTimer;
-
 NtpClient ntpClient(onNtpReceive);
+SimpleTimer printTimer;
 
 void onPrintSystemTime()
 {
 	DateTime rtcNow = DSRTC.get();
 	Serial.println(_F("Current time"));
-	Serial << _F("  System(LOCAL TZ): ") << SystemClock.getSystemTimeString() << endl;
-	Serial << _F("  UTC(UTC TZ): ") << SystemClock.getSystemTimeString(eTZ_UTC) << endl;
-	Serial << _F("  DSRTC(UTC TZ): ") << rtcNow.toFullDateTimeString() << endl;
+	Serial << _F("  System (LOCAL TZ): ") << SystemClock.getSystemTimeString() << endl;
+	Serial << _F("  UTC (UTC TZ): ") << SystemClock.getSystemTimeString(eTZ_UTC) << endl;
+	Serial << _F("  DSRTC (UTC TZ): ") << rtcNow.toFullDateTimeString() << endl;
 }
 
 void onNtpReceive(NtpClient& client, time_t timestamp)
 {
-	SystemClock.setTime(timestamp, eTZ_UTC); //System timezone is LOCAL so to set it from UTC we specify TZ
-	DSRTC.set(timestamp);					 //DSRTC timezone is UTC so we need TZ-correct DSRTC.get()
+	// Both System and DSRTC timezones are UTC
+	SystemClock.setTime(timestamp, eTZ_UTC);
+	DSRTC.set(timestamp);
+	// Display LOCAL time
 	Serial << _F("Time synchronized: ") << SystemClock.getSystemTimeString() << endl;
 }
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	debug_i("Got IP %s", ip.toString().c_str());
+	Serial << _F("Got IP ") << ip << endl;
 
 	ntpClient.requestTime();
 }
+
+} // namespace
 
 void init()
 {

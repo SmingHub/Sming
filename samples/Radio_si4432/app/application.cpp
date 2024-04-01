@@ -18,27 +18,29 @@ Link: http://www.electrodragon.com/w/SI4432_433M-Wireless_Transceiver_Module_%28
 #define PIN_RADIO_CK 15 /* Serial Clock */
 #define PIN_RADIO_SS 13 /* Slave Select */
 
-Timer procTimer;
-Si4432* radio = nullptr;
-SPISoft* pRadioSPI = nullptr;
+namespace
+{
+SimpleTimer procTimer;
+SPISoft radioSPI(PIN_RADIO_DO, PIN_RADIO_DI, PIN_RADIO_CK, PIN_RADIO_SS);
+Si4432 radio(&radioSPI);
 
 #define PING_PERIOD_MS 2000
 #define PING_WAIT_PONG_MS 100
-unsigned long lastPingTime;
+
+PeriodicFastMs pingTimer;
 
 void loopListen()
 {
-	const byte* ack = (const byte*)"OK"; //{ 0x01, 0x3, 0x11, 0x13 };
-	const byte* ping = (const byte*)"PING";
+	const char* ack = "OK"; //{ 0x01, 0x3, 0x11, 0x13 };
+	const char* ping = "PING";
 	byte payLoad[64] = {0};
 	byte len = 0;
 
 	//1. Ping from time to time, and wait for incoming response
-	if(millis() - lastPingTime > PING_PERIOD_MS) {
-		lastPingTime = millis();
-
+	if(pingTimer.expired()) {
 		Serial.print(_F("Ping -> "));
-		if(!radio->sendPacket(strlen((const char*)ping), ping, true, PING_WAIT_PONG_MS, &len, payLoad)) {
+		if(!radio.sendPacket(strlen(ping), reinterpret_cast<const uint8_t*>(ping), true, PING_WAIT_PONG_MS, &len,
+							 payLoad)) {
 			Serial.println(" ERR!");
 		} else {
 			Serial.println(_F(" SENT!"));
@@ -49,62 +51,55 @@ void loopListen()
 	}
 
 	//2. Listen for any other incoming packet
-	bool pkg = radio->isPacketReceived();
+	bool pkg = radio.isPacketReceived();
 
 	if(pkg) {
-		radio->getPacketReceived(&len, payLoad);
+		radio.getPacketReceived(&len, payLoad);
 		Serial << _F("ASYNC RX (") << len << "): ";
 		Serial.write(payLoad, len);
 		Serial.println();
 
 		Serial.print(_F("Response -> "));
-		if(!radio->sendPacket(strlen((const char*)ack), ack)) {
+		if(!radio.sendPacket(strlen(ack), reinterpret_cast<const uint8_t*>(ack))) {
 			Serial.println(_F("ERR!"));
 		} else {
 			Serial.println(_F("SENT!"));
 		}
 
-		radio->startListening(); // restart the listening.
+		radio.startListening(); // restart the listening.
 	}
 }
 
+} // namespace
+
 void init()
 {
+#ifdef ARCH_HOST
+	setDigitalHooks(nullptr);
+#endif
+
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 
 	Serial.systemDebugOutput(true); //Allow debug output to serial
 
-	Serial.println(_F("\nRadio si4432 example - !!! see code for HW setup !!! \n"));
+	Serial.println(_F("\r\nRadio si4432 example - !!! see code for HW setup !!!\r\n"));
 
-	pRadioSPI = new SPISoft(PIN_RADIO_DO, PIN_RADIO_DI, PIN_RADIO_CK, PIN_RADIO_SS);
+	// initialise radio with default settings
+	radio.init();
 
-	if(pRadioSPI != nullptr) {
-		radio = new Si4432(pRadioSPI);
-	}
+	// explicitly set baudrate and channel
+	radio.setBaudRateFast(eBaud_38k4);
+	radio.setChannel(0);
 
-	if(radio == nullptr) {
-		Serial.println(_F("Error: Not enough heap."));
-		return;
-	}
+	// dump the register configuration to console
+	radio.readAll();
 
-	delay(100);
-
-	//initialise radio with default settings
-	radio->init();
-
-	//explicitly set baudrate and channel
-	radio->setBaudRateFast(eBaud_38k4);
-	radio->setChannel(0);
-
-	//dump the register configuration to console
-	radio->readAll();
-
-	//start listening for incoming packets
+	// start listening for incoming packets
 	Serial.println("Listening...");
-	radio->startListening();
+	radio.startListening();
 
-	lastPingTime = millis();
+	pingTimer.reset(PING_PERIOD_MS);
 
-	//start listen loop
+	// start listen loop
 	procTimer.initializeMs<10>(loopListen).start();
 }

@@ -4,24 +4,10 @@
 //#define WORK_PIN 14 // GPIO14
 #define WORK_PIN 2
 
-DHTesp dht;
-
-Timer readTemperatureProcTimer;
-void onTimer_readTemperatures();
-
-void init()
+namespace
 {
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-	Serial.systemDebugOutput(true); // Allow debug output to serial
-
-	dht.setup(WORK_PIN, DHTesp::DHT22);
-	readTemperatureProcTimer.initializeMs<5 * 1000>(onTimer_readTemperatures).start(); // every so often.
-
-	Serial.println(_F("\r\n"
-					  "DHT improved lib"));
-	Serial << _F("TickCount=") << RTC.getRtcNanoseconds() / 1000000
-		   << _F("; Need to wait 1 second for the sensor to boot up") << endl;
-}
+DHTesp dht;
+SimpleTimer readTemperatureProcTimer;
 
 void onTimer_readTemperatures()
 {
@@ -107,10 +93,25 @@ void onTimer_readTemperatures()
 		Serial.print(_F("Cold And Dry"));
 		break;
 	default:
-		Serial.print(_F("Unknown:"));
-		Serial.print(cf);
+		Serial << _F("Unknown:") << cf;
 		break;
 	}
 
 	Serial.println(')');
+}
+
+} // namespace
+
+void init()
+{
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.systemDebugOutput(true); // Allow debug output to serial
+
+	dht.setup(WORK_PIN, DHTesp::DHT22);
+	readTemperatureProcTimer.initializeMs<5 * 1000>(onTimer_readTemperatures).start(); // every so often.
+
+	Serial << endl
+		   << _F("DHT improved lib") << endl
+		   << _F("TickCount=") << RTC.getRtcNanoseconds() / 1000000
+		   << _F("; Need to wait 1 second for the sensor to boot up") << endl;
 }

@@ -3,9 +3,11 @@
 #include <Libraries/MCP_CAN_lib/mcp_can.h>
 #include <SPI.h>
 
-unsigned long rxId = 0;
-uint8_t len = 0;
-uint8_t rxBuf[8] = {0};
+namespace
+{
+unsigned long rxId;
+uint8_t len;
+uint8_t rxBuf[8];
 
 uint8_t txBuf0[] = {0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55};
 uint8_t txBuf1[] = {0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA};
@@ -13,7 +15,7 @@ uint8_t txBuf1[] = {0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA};
 MCP_CAN canBus0(10); // CAN0 interface using CS on digital pin 10
 MCP_CAN canBus1(9);  // CAN1 interface using CS on digital pin 9
 
-Timer loopTimer;
+SimpleTimer loopTimer;
 
 SPISettings spiSettings{8000000, MSBFIRST, SPI_MODE3};
 
@@ -28,6 +30,8 @@ void loop()
 		canBus0.sendMsgBuf(rxId, 1, len, rxBuf); // Immediately send message out CAN0 interface
 	}
 }
+
+} // namespace
 
 void init()
 {

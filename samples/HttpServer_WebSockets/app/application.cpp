@@ -2,7 +2,7 @@
 #include <Network/Http/Websocket/WebsocketResource.h>
 #include "CUserData.h"
 
-#if ENABLE_CMD_HANDLER
+#ifdef ENABLE_CMD_HANDLER
 #include <CommandProcessing/Handler.h>
 CommandProcessing::Handler commandHandler;
 #endif
@@ -13,10 +13,12 @@ CommandProcessing::Handler commandHandler;
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
+namespace
+{
 HttpServer server;
-unsigned totalActiveSockets = 0;
+unsigned totalActiveSockets;
 
-CUserData userGeorge("George", "I like SMING");
+CUserData userGeorge;
 
 void onIndex(HttpRequest& request, HttpResponse& response)
 {
@@ -36,6 +38,14 @@ void onFile(HttpRequest& request, HttpResponse& response)
 		response.setCache(86400, true); // It's important to use cache for better performance.
 		response.sendFile(file);
 	}
+}
+
+void shutdownServer()
+{
+	// Don't shutdown immediately, wait a bit to allow messages to propagate
+	auto timer = new AutoDeleteTimer;
+	timer->initializeMs<1000>([&]() { server.shutdown(); });
+	timer->startOnce();
 }
 
 void wsConnected(WebsocketConnection& socket)
@@ -58,37 +68,29 @@ void wsMessageReceived(WebsocketConnection& socket, const String& message)
 	if(message == _F("shutdown")) {
 		String message(F("The server is shutting down..."));
 		socket.broadcast(message);
-
-		// Don't shutdown immediately, wait a bit to allow messages to propagate
-		auto timer = new SimpleTimer;
-		timer->initializeMs<1000>(
-			[](void* timer) {
-				delete static_cast<SimpleTimer*>(timer);
-				server.shutdown();
-			},
-			timer);
-		timer->startOnce();
+		shutdownServer();
 		return;
 	}
 
 	String response = F("Echo: ") + message;
 	socket.sendString(response);
 
-	//Normally you would use dynamic cast but just be careful not to convert to wrong object type!
-	auto user = reinterpret_cast<CUserData*>(socket.getUserData());
+	// Normally you would use dynamic cast but just be careful not to convert to wrong object type!
+	auto user = static_cast<CUserData*>(socket.getUserData());
 	if(user != nullptr) {
 		user->printMessage(socket, message);
 	}
 }
 
-#if ENABLE_CMD_HANDLER
+#ifdef ENABLE_CMD_HANDLER
 void wsCommandReceived(WebsocketConnection& socket, const String& message)
 {
+	debug_i("%s(%s)", __FUNCTION__, message.c_str());
 	String response = commandHandler.processNow(message.c_str(), message.length());
 	socket.sendString(response);
 
-	//Normally you would use dynamic cast but just be careful not to convert to wrong object type!
-	auto user = reinterpret_cast<CUserData*>(socket.getUserData());
+	// Normally you would use dynamic cast but just be careful not to convert to wrong object type!
+	auto user = static_cast<CUserData*>(socket.getUserData());
 	if(user != nullptr) {
 		user->printMessage(socket, message);
 	}
@@ -96,15 +98,7 @@ void wsCommandReceived(WebsocketConnection& socket, const String& message)
 
 void processShutdownCommand(String commandLine, ReadWriteStream& commandOutput)
 {
-	// Don't shutdown immediately, wait a bit to allow messages to propagate
-	auto timer = new SimpleTimer;
-	timer->initializeMs<1000>(
-		[](void* timer) {
-			delete static_cast<SimpleTimer*>(timer);
-			server.shutdown();
-		},
-		timer);
-	timer->startOnce();
+	shutdownServer();
 }
 #endif
 
@@ -117,8 +111,8 @@ void wsDisconnected(WebsocketConnection& socket)
 {
 	totalActiveSockets--;
 
-	//Normally you would use dynamic cast but just be careful not to convert to wrong object type!
-	auto user = reinterpret_cast<CUserData*>(socket.getUserData());
+	// Normally you would use dynamic cast but just be careful not to convert to wrong object type!
+	auto user = static_cast<CUserData*>(socket.getUserData());
 	if(user != nullptr) {
 		user->removeSession(socket);
 	}
@@ -138,7 +132,7 @@ void startWebServer()
 	auto wsResource = new WebsocketResource();
 	wsResource->setConnectionHandler(wsConnected);
 	wsResource->setMessageHandler(wsMessageReceived);
-#if ENABLE_CMD_HANDLER
+#ifdef ENABLE_CMD_HANDLER
 	wsResource->setMessageHandler(wsCommandReceived);
 #endif
 
@@ -159,21 +153,25 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	startWebServer();
 }
 
+} // namespace
+
 void init()
 {
 	spiffs_mount(); // Mount file system, in order to work with files
 
-#if ENABLE_CMD_HANDLER
+#ifdef ENABLE_CMD_HANDLER
 	commandHandler.registerSystemCommands();
 	commandHandler.registerCommand(
 		{CMDP_STRINGS("shutdown", "Shutdown Server Command", "Application"), processShutdownCommand});
 #endif
 
+	userGeorge = CUserData{F("George"), F("I like SMING")};
+
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true); // Enable debug output to serial
 
 	WifiStation.enable(true);
-	WifiStation.config(WIFI_SSID, WIFI_PWD);
+	WifiStation.config(F(WIFI_SSID), F(WIFI_PWD));
 	WifiAccessPoint.enable(false);
 
 	// Run our method when station was connected to AP

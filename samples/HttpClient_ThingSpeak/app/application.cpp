@@ -6,8 +6,10 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-Timer procTimer;
-int sensorValue = 0;
+namespace
+{
+SimpleTimer procTimer;
+int sensorValue;
 HttpClient thingSpeak;
 
 int onDataSent(HttpConnection& client, bool successful)
@@ -40,8 +42,8 @@ void sendData()
 	 */
 	Url url;
 	url.Scheme = URI_SCHEME_HTTP;
-	url.Host = "api.thingspeak.com";
-	url.Path = "/update";
+	url.Host = F("api.thingspeak.com");
+	url.Path = F("/update");
 	url.Query["key"] = F("7XXUJWCWYTMXKN3L");
 	url.Query["field1"] = String(sensorValue);
 	thingSpeak.downloadString(url, onDataSent);
@@ -64,6 +66,8 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	// Start send data loop
 	procTimer.initializeMs<25 * 1000>(sendData).start(); // every 25 seconds
 }
+
+} // namespace
 
 void init()
 {

@@ -3,8 +3,10 @@
 
 #define I2C_PIN 4
 
+namespace
+{
 DS18S20 ReadTemp;
-Timer procTimer;
+SimpleTimer procTimer;
 
 //**********************************************************
 // DS18S20 example, reading
@@ -22,30 +24,34 @@ Timer procTimer;
 //***********************************************************
 void readData()
 {
-	if(!ReadTemp.MeasureStatus()) // the last measurement completed
-	{
-		auto sensorCount = ReadTemp.GetSensorsCount();
-		if(sensorCount > 0) {
-			Serial.println(_F("******************************************"));
-		}
-		Serial.println(_F(" Reading temperature DEMO"));
-		// prints for all sensors
-		for(unsigned a = 0; a < sensorCount; a++) {
-			Serial << " T" << a + 1 << " = ";
-			if(ReadTemp.IsValidTemperature(a)) {
-				Serial << ReadTemp.GetCelsius(a) << _F(" Celsius, (") << ReadTemp.GetFahrenheit(a) << _F(" Fahrenheit)")
-					   << endl;
-			} else {
-				Serial.println(_F("Temperature not valid"));
-			}
-
-			Serial << _F(" <Sensor id.") << String(ReadTemp.GetSensorID(a), HEX, 32) << '>' << endl;
-		}
-		Serial.println(_F("******************************************"));
-		ReadTemp.StartMeasure(); // next measure, result after 1.2 seconds * number of sensors
-	} else
+	if(ReadTemp.MeasureStatus()) {
 		Serial.println(_F("No valid Measure so far! wait please"));
+		return;
+	}
+
+	// the last measurement completed
+	auto sensorCount = ReadTemp.GetSensorsCount();
+	if(sensorCount > 0) {
+		Serial.println(_F("******************************************"));
+	}
+	Serial.println(_F(" Reading temperature DEMO"));
+	// prints for all sensors
+	for(unsigned a = 0; a < sensorCount; a++) {
+		Serial << " T" << a + 1 << " = ";
+		if(ReadTemp.IsValidTemperature(a)) {
+			Serial << ReadTemp.GetCelsius(a) << _F(" Celsius, (") << ReadTemp.GetFahrenheit(a) << _F(" Fahrenheit)")
+				   << endl;
+		} else {
+			Serial.println(_F("Temperature not valid"));
+		}
+
+		Serial << _F(" <Sensor id.") << String(ReadTemp.GetSensorID(a), HEX, 32) << '>' << endl;
+	}
+	Serial.println(_F("******************************************"));
+	ReadTemp.StartMeasure(); // next measure, result after 1.2 seconds * number of sensors
 }
+
+} // namespace
 
 void init()
 {

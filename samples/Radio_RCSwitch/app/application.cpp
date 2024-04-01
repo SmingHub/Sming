@@ -3,10 +3,11 @@
 
 #define LED_PIN 2 // GPIO2
 
-Timer sendTimer;
-Timer receiveTimer;
-
-RCSwitch mySwitch = RCSwitch();
+namespace
+{
+SimpleTimer sendTimer;
+SimpleTimer receiveTimer;
+RCSwitch mySwitch;
 
 void sendRF()
 {
@@ -16,17 +17,21 @@ void sendRF()
 
 void receiveRF()
 {
-	if(mySwitch.available()) {
-		if(mySwitch.getReceivedValue() == 0) {
-			Serial.print(_F("Unknown encoding"));
-		} else {
-			Serial << _F("Received ") << mySwitch.getReceivedValue() << " / " << mySwitch.getReceivedBitlength()
-				   << " bit, Protocol: " << mySwitch.getReceivedProtocol() << endl;
-		}
-
-		mySwitch.resetAvailable();
+	if(mySwitch.available() == 0) {
+		return;
 	}
+
+	if(mySwitch.getReceivedValue() == 0) {
+		Serial.println(_F("Unknown encoding"));
+	} else {
+		Serial << _F("Received ") << mySwitch.getReceivedValue() << " / " << mySwitch.getReceivedBitlength()
+			   << " bit, Protocol: " << mySwitch.getReceivedProtocol() << endl;
+	}
+
+	mySwitch.resetAvailable();
 }
+
+} // namespace
 
 void init()
 {

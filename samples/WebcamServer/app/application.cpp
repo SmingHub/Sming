@@ -10,8 +10,10 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
+namespace
+{
 HttpServer server;
-FakeCamera* camera = nullptr;
+FakeCamera* camera;
 
 /*
  * default http handler to check if server is up and running
@@ -81,6 +83,8 @@ void startWebServer()
 	server.paths.set("/favicon.ico", onFavicon);
 	server.paths.setDefault(onFile);
 }
+
+} // namespace
 
 void init()
 {
