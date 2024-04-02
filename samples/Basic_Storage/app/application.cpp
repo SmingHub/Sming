@@ -3,6 +3,9 @@
 #include <Storage/ProgMem.h>
 #include <Storage/Debug.h>
 
+namespace
+{
+// Use this source file as contents of our test partitions
 IMPORT_FSTR(FS_app, PROJECT_DIR "/app/application.cpp")
 
 void listSpiffsPartitions()
@@ -19,8 +22,7 @@ void listSpiffsPartitions()
 		Directory dir;
 		if(dir.open()) {
 			while(dir.next()) {
-				Serial.print("  ");
-				Serial.println(dir.stat().name);
+				Serial << "  " << dir.stat().name << endl;
 			}
 		}
 		Serial << dir.count() << _F(" files found") << endl << endl;
@@ -58,6 +60,8 @@ void printPart(const String& partitionName)
 	}
 }
 
+} // namespace
+
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE);
@@ -88,7 +92,11 @@ void init()
 	printPart(part);
 
 	Serial.println(_F("** Reading SysMem device (RAM)"));
-	part = Storage::sysMem.editablePartitions().add(F("fs_app RAM"), FS_app, {Storage::Partition::Type::data, 100});
+	const size_t bufferSize{4096};
+	auto buffer = std::make_unique<char[]>(bufferSize);
+	FS_app.readFlash(0, buffer.get(), bufferSize);
+	part = Storage::sysMem.editablePartitions().add(F("fs_app RAM"), {Storage::Partition::Type::data, 100},
+													storage_size_t(buffer.get()), bufferSize);
 	printPart(part);
 	printPart(part);
 	printPart(part);

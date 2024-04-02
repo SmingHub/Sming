@@ -73,6 +73,8 @@ public:
 	class SysMemPartitionTable : public PartitionTable
 	{
 	public:
+		using PartitionTable::add;
+
 		/**
 		 * @brief Add partition entry for FlashString data access
 		 */
