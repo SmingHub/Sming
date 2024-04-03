@@ -1,16 +1,17 @@
 diff --git a/ws_parser.c b/ws_parser.c
-index d43adbe..beeb611 100644
+index d43adbe..17040e3 100644
 --- a/ws_parser.c
 +++ b/ws_parser.c
-@@ -3,6 +3,7 @@
+@@ -3,6 +3,8 @@
  #endif
  
  #include "ws_parser.h"
 +#include <string.h>
++#include <sys/pgmspace.h>
  
  enum {
      S_OPCODE = 0,
-@@ -27,6 +28,7 @@ enum {
+@@ -27,6 +29,7 @@ enum {
  void
  ws_parser_init(ws_parser_t* parser)
  {
@@ -18,7 +19,7 @@ index d43adbe..beeb611 100644
      parser->state = S_OPCODE;
      parser->fragment = 0;
  }
-@@ -247,7 +249,8 @@ ws_parser_execute(
+@@ -247,7 +250,8 @@ ws_parser_execute(
                  }
  
                  if(parser->mask_flag) {
@@ -28,3 +29,12 @@ index d43adbe..beeb611 100644
                          buff[i] ^= parser->mask[parser->mask_pos++];
                      }
                  }
+@@ -302,7 +306,7 @@ ws_parser_execute(
+ const char*
+ ws_parser_error(int rc)
+ {
+-    #define XX(name, code) if(rc == code) return #name;
++    #define XX(name, code) if(rc == code) return PSTR(#name);
+     WS_PARSER_ERROR_CODES(XX)
+     #undef XX
+ 

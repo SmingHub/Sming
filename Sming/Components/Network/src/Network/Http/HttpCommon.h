@@ -121,7 +121,8 @@ inline String httpGetStatusText(unsigned code)
  */
 inline String toString(HttpMethod method)
 {
-	return http_method_str(http_method(method));
+	auto fstr = reinterpret_cast<flash_string_t>(http_method_str(http_method(method)));
+	return String(fstr);
 }
 
 /** @} */
