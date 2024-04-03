@@ -354,16 +354,16 @@ void Si4432::BurstWrite(Registers startReg, const byte value[], uint8_t length) 
 //	_spi->enable();
 	_spi->beginTransaction(_spi->SPIDefaultSettings);
 	delayMicroseconds(1);
-//	_spi->send(&regVal, 1);
-	_spi->transfer(&regVal, 1);
+	_spi->transfer(regVal);
 
 #if DEBUG_VERBOSE_SI4432
 		debugf("Writing: %x | %x ... %x (%d bytes)", (regVal != 0xFF ? (regVal) & 0x7F : 0x7F),
 				value[0], value[length-1], length);
 #endif
 
-//	_spi->send(value, length);
-	_spi->transfer((uint8 *)value, length);
+	uint8_t buffer[length];
+	memcpy(buffer, value, length);
+	_spi->transfer(buffer, length);
 
 //	_spi->disable();
 	_spi->endTransaction();
@@ -376,13 +376,11 @@ void Si4432::BurstRead(Registers startReg, byte value[], uint8_t length) {
 //	_spi->enable();
 	_spi->beginTransaction(_spi->SPIDefaultSettings);
 	delayMicroseconds(1);
-//	_spi->send(&regVal, 1);
-	_spi->transfer(&regVal, 1);
+	_spi->transfer(regVal);
 
 //	_spi->setMOSI(HIGH); /* Send 0xFF */
-	_spi->transfer((uint8 *)0xFF, 1);
-//	_spi->recv(value, length);
-	_spi->transfer((uint8 *)value, length);
+	_spi->transfer(0xff);
+	_spi->transfer(value, length);
 
 #if DEBUG_VERBOSE_SI4432
 		debugf("Reading: %x  | %x..%x (%d bytes)", (regVal != 0x7F ? (regVal) & 0x7F : 0x7F),
