@@ -31,11 +31,7 @@
 class WebsocketClient : protected WebsocketConnection
 {
 public:
-	WebsocketClient() : WebsocketConnection(new HttpClientConnection)
-	{
-	}
-
-	WebsocketClient(HttpConnection* connection) : WebsocketConnection(connection)
+	WebsocketClient(HttpConnection* connection = nullptr) : WebsocketConnection(connection)
 	{
 	}
 

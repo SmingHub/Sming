@@ -17,11 +17,25 @@
 #include "Http/HttpHeaders.h"
 #include <Data/WebHelpers/base64.h>
 
+class WebsocketClientConnection : public HttpClientConnection
+{
+protected:
+	// Prevent HttpClientConnection from resetting our receive delegate set by activate() call
+	err_t onConnected(err_t err) override
+	{
+		if(err == ERR_OK) {
+			state = eHCS_Ready;
+		}
+
+		return HttpConnection::onConnected(err);
+	}
+};
+
 HttpConnection* WebsocketClient::getHttpConnection()
 {
 	auto connection = WebsocketConnection::getConnection();
 	if(connection == nullptr && state == eWSCS_Closed) {
-		connection = new HttpClientConnection();
+		connection = new WebsocketClientConnection();
 		setConnection(connection);
 	}
 
@@ -48,14 +62,9 @@ bool WebsocketClient::connect(const Url& url)
 	state = eWSCS_Ready;
 
 	// Generate the key
-	unsigned char keyStart[17] = {0};
-	char b64Key[25];
-	memset(b64Key, 0, sizeof(b64Key));
-
-	for(int i = 0; i < 16; ++i) {
-		keyStart[i] = 1 + os_random() % 255;
-	}
-	key = base64_encode(keyStart, sizeof(keyStart));
+	unsigned char keyData[16];
+	os_get_random(keyData, sizeof(keyData));
+	key = base64_encode(keyData, sizeof(keyData));
 
 	HttpRequest* request = new HttpRequest(uri);
 	request->headers[HTTP_HEADER_UPGRADE] = WSSTR_WEBSOCKET;
@@ -87,9 +96,9 @@ int WebsocketClient::verifyKey(HttpConnection& connection, HttpResponse& respons
 	auto hash = Crypto::Sha1().calculate(keyToHash);
 	String base64hash = base64_encode(hash.data(), hash.size());
 	if(base64hash != serverHashedKey) {
-		debug_e("wscli key mismatch: %s | %s", serverHashedKey.c_str(), base64hash.c_str());
+		debug_e("WS: key mismatch: %s | %s", serverHashedKey.c_str(), base64hash.c_str());
 		state = eWSCS_Closed;
-		WebsocketConnection::getConnection()->setTimeOut(1);
+		connection.setTimeOut(1);
 		return -3;
 	}
 
