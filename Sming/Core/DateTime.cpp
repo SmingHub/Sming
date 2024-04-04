@@ -23,22 +23,18 @@ union FourDigitName {
 	char c[4];
 	uint32_t value;
 
+	// Compare without case-sensitivity
 	bool operator==(const FourDigitName& name) const
 	{
-		return value == name.value;
+		constexpr uint32_t caseMask{~0x20202020U};
+		return ((value ^ name.value) & caseMask) == 0;
 	}
 };
 
-const FourDigitName isoDayNames[7] PROGMEM = {
-	{'S', 'u', 'n', '\0'}, {'M', 'o', 'n', '\0'}, {'T', 'u', 'e', '\0'}, {'W', 'e', 'd', '\0'},
-	{'T', 'h', 'u', '\0'}, {'F', 'r', 'i', '\0'}, {'S', 'a', 't', '\0'},
-};
+const FourDigitName isoDayNames[7] PROGMEM = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
-const FourDigitName isoMonthNames[12] PROGMEM = {
-	{'J', 'a', 'n', '\0'}, {'F', 'e', 'b', '\0'}, {'M', 'a', 'r', '\0'}, {'A', 'p', 'r', '\0'},
-	{'M', 'a', 'y', '\0'}, {'J', 'u', 'n', '\0'}, {'J', 'u', 'l', '\0'}, {'A', 'u', 'g', '\0'},
-	{'S', 'e', 'p', '\0'}, {'O', 'c', 't', '\0'}, {'N', 'o', 'v', '\0'}, {'D', 'e', 'c', '\0'},
-};
+const FourDigitName isoMonthNames[12] PROGMEM = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+												 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
 /*
  * @brief Match a day or month name against a list of values and set the required value
@@ -47,6 +43,8 @@ const FourDigitName isoMonthNames[12] PROGMEM = {
  * @isoNames Array of values
  * @nameCount Number of names in array
  * @retval bool false on failure
+ *
+ * Names are compared without case-sensitivity
  */
 bool matchName(const char* ptr, uint8_t& value, const FourDigitName isoNames[], unsigned nameCount)
 {
