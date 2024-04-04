@@ -13,8 +13,10 @@
 
 #define LEAP_YEAR(year) ((year % 4) == 0)
 
-DEFINE_FSTR_LOCAL(flashMonthNames, LOCALE_MONTH_NAMES);
-DEFINE_FSTR_LOCAL(flashDayNames, LOCALE_DAY_NAMES);
+namespace
+{
+DEFINE_FSTR(flashMonthNames, LOCALE_MONTH_NAMES);
+DEFINE_FSTR(flashDayNames, LOCALE_DAY_NAMES);
 
 /* We can more efficiently compare text of 4 character length by comparing as words */
 union FourDigitName {
@@ -27,12 +29,12 @@ union FourDigitName {
 	}
 };
 
-static const FourDigitName isoDayNames[7] PROGMEM = {
+const FourDigitName isoDayNames[7] PROGMEM = {
 	{'S', 'u', 'n', '\0'}, {'M', 'o', 'n', '\0'}, {'T', 'u', 'e', '\0'}, {'W', 'e', 'd', '\0'},
 	{'T', 'h', 'u', '\0'}, {'F', 'r', 'i', '\0'}, {'S', 'a', 't', '\0'},
 };
 
-static const FourDigitName isoMonthNames[12] PROGMEM = {
+const FourDigitName isoMonthNames[12] PROGMEM = {
 	{'J', 'a', 'n', '\0'}, {'F', 'e', 'b', '\0'}, {'M', 'a', 'r', '\0'}, {'A', 'p', 'r', '\0'},
 	{'M', 'a', 'y', '\0'}, {'J', 'u', 'n', '\0'}, {'J', 'u', 'l', '\0'}, {'A', 'u', 'g', '\0'},
 	{'S', 'e', 'p', '\0'}, {'O', 'c', 't', '\0'}, {'N', 'o', 'v', '\0'}, {'D', 'e', 'c', '\0'},
@@ -43,11 +45,13 @@ static const FourDigitName isoMonthNames[12] PROGMEM = {
  *  @param year
  *  @retval uint8_t number of days in the month
  */
-static uint8_t getMonthDays(uint8_t month, uint8_t year)
+uint8_t getMonthDays(uint8_t month, uint8_t year)
 {
 	static const uint8_t monthDays[] PROGMEM = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 	return (month == 1 && LEAP_YEAR(year)) ? 29 : pgm_read_byte(&monthDays[month]);
 }
+
+} // namespace
 
 //******************************************************************************
 //* DateTime Public Methods
