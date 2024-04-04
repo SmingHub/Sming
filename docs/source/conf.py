@@ -48,7 +48,7 @@ version = release
 extensions = [
     'm2r2',
     'breathe',
-    'sphinxcontrib.seqdiag',
+    'sphinx.ext.graphviz',
     'link-roles',
     'sphinxcontrib.wavedrom',
     'sphinx_copybutton',
