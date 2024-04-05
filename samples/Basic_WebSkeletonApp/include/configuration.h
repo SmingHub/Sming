@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SmingCore.h>
+#include <WString.h>
 
 const char THERM_CONFIG_FILE[] = ".therm.conf"; // leading point for security reasons :)
 
@@ -8,16 +8,9 @@ const char THERM_CONFIG_FILE[] = ".therm.conf"; // leading point for security re
 const uint8_t ConfigJsonBufferSize = 200;
 
 struct ThermConfig {
-	ThermConfig()
-	{
-		StaEnable = 1; //Enable WIFI Client
-	}
-
 	String StaSSID;
 	String StaPassword;
-	uint8_t StaEnable;
-
-	// ThermControl settings
+	bool StaEnable{true}; // Enable WIFI Client
 };
 
 ThermConfig loadConfig();

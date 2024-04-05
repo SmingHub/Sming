@@ -54,6 +54,8 @@ IMPORT_FSTR(listing_json, PROJECT_DIR "/resource/listing.json")
 HttpServer server;
 FtpServer ftp;
 int requestCount;
+Profiling::TaskStat taskStat(Serial);
+SimpleTimer statTimer;
 
 /*
  * Handle any custom fields here
@@ -465,9 +467,6 @@ void fstest()
 	listAttributes();
 }
 
-Profiling::TaskStat taskStat(Serial);
-Timer statTimer;
-
 } // namespace
 
 void init()
@@ -489,6 +488,6 @@ void init()
 
 	WifiEvents.onStationGotIP(gotIP);
 
-	statTimer.initializeMs<2000>(InterruptCallback([]() { taskStat.update(); }));
+	statTimer.initializeMs<2000>([]() { taskStat.update(); });
 	statTimer.start();
 }

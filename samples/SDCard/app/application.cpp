@@ -26,6 +26,8 @@ Descr: SDCard/FAT file usage and write benchmark.
 /* Sets the max frequency of SPI (init is done at a lower speed than the main communication) */
 #define SPI_FREQ_LIMIT 2000000
 
+namespace
+{
 void writeToFile(const String& filename, uint32_t totalBytes, uint32_t bytesPerRound)
 {
 	char* buf = new char[totalBytes];
@@ -201,8 +203,16 @@ bool speedTest(unsigned num)
 	};
 
 	static const Test tests[] PROGMEM{
-		{1024, 1},	{1024, 64},  {1024, 128},  {1024, 512},  {1024, 1024},
-		{4096, 1024}, {8192, 512}, {8192, 1024}, {8192, 8192},
+		{1024, 1},	//
+		{1024, 64},   //
+		{1024, 128},  //
+		{1024, 512},  //
+		{1024, 1024}, //
+		{4096, 1024}, //
+		{8192, 512},  //
+		{8192, 1024}, //
+		{8192, 8192}, //
+
 	};
 
 	if(num >= ARRAY_SIZE(tests)) {
@@ -262,6 +272,8 @@ void runTest(uint32_t state = 0)
 	Serial.println();
 	System.queueCallback(runTest, state + 1);
 }
+
+} // namespace
 
 void init()
 {

@@ -50,6 +50,11 @@ void SerialReadingDelegateDemo::onData(Stream& stream, char arrivedChar, unsigne
 
 	numCallback++;
 
+	/*
+	 * A more functional serial command-line interface can be implemented using the `LineBuffer` class.
+	 * See `Basic_DateTime` sample application for a demonstration.
+	 */
+
 	if(arrivedChar == '\n') // Lets show data!
 	{
 		serial->println(_F("<New line received>"));

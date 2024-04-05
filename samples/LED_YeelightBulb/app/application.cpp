@@ -7,11 +7,13 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
+namespace
+{
 // Enter your bulb IP here:
 YeelightBulb bulb(IpAddress("192.168.1.100"));
 
-Timer procTimer;
-bool state = false;
+SimpleTimer procTimer;
+bool state;
 
 void blink()
 {
@@ -27,12 +29,14 @@ void blink()
 // Will be called when WiFi station was connected to AP
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	debugf("I'm CONNECTED");
+	Serial << _F("I'm CONNECTED, IP ") << ip << endl;
 
 	// Connection to Yeelight Bulb will be established on any first action:
 	bulb.updateState(); // Read actual bulb state
-	procTimer.initializeMs(5000, blink).start();
+	procTimer.initializeMs<5000>(blink).start();
 }
+
+} // namespace
 
 void init()
 {

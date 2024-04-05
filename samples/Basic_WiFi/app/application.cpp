@@ -6,6 +6,8 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
+namespace
+{
 // Will be called when WiFi station network scan was completed
 void listNetworks(bool succeeded, BssList& list)
 {
@@ -59,6 +61,8 @@ void ready()
 		Serial << _F("AP. ip: ") << WifiAccessPoint.getIP() << _F(" mac: ") << WifiAccessPoint.getMacAddress() << endl;
 	}
 }
+
+} // namespace
 
 void init()
 {

@@ -1,8 +1,10 @@
-#include <tytherm.h>
 #include <JsonObjectStream.h>
 #include <FlashString/Map.hpp>
 #include <FlashString/Stream.hpp>
 #include "DelayStream.h"
+#include <configuration.h>
+
+extern unsigned long counter; // Kind of heartbeat counter
 
 namespace
 {
@@ -40,20 +42,20 @@ void sendFile(const String& fileName, HttpServerConnection& connection)
 	auto response = connection.getResponse();
 
 	String compressed = fileName + ".gz";
-	auto v = fileMap[compressed];
-	if(v) {
+	auto content = fileMap[compressed];
+	if(content) {
 		response->headers[HTTP_HEADER_CONTENT_ENCODING] = _F("gzip");
 	} else {
-		v = fileMap[fileName];
-		if(!v) {
+		content = fileMap[fileName];
+		if(!content) {
 			debug_w("File '%s' not found", fileName.c_str());
 			response->code = HTTP_STATUS_NOT_FOUND;
 			return;
 		}
 	}
 
-	debug_i("found %s in fileMap", String(v.key()).c_str());
-	auto stream = new FSTR::Stream(v.content());
+	debug_i("found %s in fileMap", String(content.key()).c_str());
+	auto stream = new FSTR::Stream(content.content());
 	response->sendDataStream(stream, ContentType::fromFullFileName(fileName));
 
 	// Use client caching for better performance.

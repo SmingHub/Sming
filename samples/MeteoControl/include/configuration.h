@@ -1,5 +1,4 @@
-#ifndef INCLUDE_CONFIGURATION_H_
-#define INCLUDE_CONFIGURATION_H_
+#pragma once
 
 #include <SmingCore.h>
 #include <JsonObjectStream.h>
@@ -20,7 +19,11 @@
 
 #define METEO_CONFIG_FILE ".meteo.conf" // leading point for security reasons :)
 
-enum TriggerType { eTT_None = 0, eTT_Temperature, eTT_Humidity };
+enum TriggerType {
+	eTT_None = 0,
+	eTT_Temperature,
+	eTT_Humidity,
+};
 
 struct MeteoConfig {
 	MeteoConfig()
@@ -50,5 +53,3 @@ void saveConfig(MeteoConfig& cfg);
 extern void startWebClock();
 
 extern MeteoConfig ActiveConfig;
-
-#endif /* INCLUDE_CONFIGURATION_H_ */

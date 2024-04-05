@@ -23,7 +23,9 @@
 
 #define SPI_CS 2
 
-Timer procTimer;
+namespace
+{
+SimpleTimer procTimer;
 
 // in this demo, the same ports for HW and SW SPI are used
 #ifdef _USE_SOFTSPI
@@ -34,12 +36,12 @@ APA102 LED(NUM_LED); // APA102 constructor, call with number of LEDs
 					 //APA102 LED(NUM_LED, SPI);
 #endif
 
-static SPISettings SPI_1MHZ = SPISettings(1000000, MSBFIRST, SPI_MODE3);
-static SPISettings SPI_2MHZ = SPISettings(2000000, MSBFIRST, SPI_MODE3);
+SPISettings SPI_1MHZ{1000000, MSBFIRST, SPI_MODE3};
+SPISettings SPI_2MHZ{2000000, MSBFIRST, SPI_MODE3};
 
 /* color wheel function:
  * (simple) three 120° shifted colors -> color transitions r-g-b-r */
-static col_t colorWheel(uint16_t step, uint16_t numStep)
+col_t colorWheel(uint16_t step, uint16_t numStep)
 {
 	col_t col = {0};
 	col.br = 10;
@@ -63,10 +65,10 @@ static col_t colorWheel(uint16_t step, uint16_t numStep)
 	return col;
 }
 
-static void updateLED()
+void updateLED()
 {
-	static unsigned state = 0;
-	static unsigned cnt = 0;
+	static unsigned state;
+	static unsigned cnt;
 
 	switch(state++) {
 	case 0:
@@ -112,6 +114,8 @@ static void updateLED()
 		break;
 	}
 }
+
+} // namespace
 
 void init()
 {

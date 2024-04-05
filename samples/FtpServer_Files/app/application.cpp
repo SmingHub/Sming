@@ -6,11 +6,13 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
+namespace
+{
 FtpServer ftp;
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	Serial << "IP: " << ip << endl;
+	Serial << _F("Got IP ") << ip << endl;
 	// Start FTP server
 	ftp.listen(21);
 	// Add user accounts
@@ -25,6 +27,8 @@ void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reas
 {
 	Serial.println(_F("I'm NOT CONNECTED. Need help!!! :("));
 }
+
+} // namespace
 
 void init()
 {

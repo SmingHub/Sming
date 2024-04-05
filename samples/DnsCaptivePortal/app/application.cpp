@@ -1,14 +1,16 @@
 #include <SmingCore.h>
 
+#define DNS_PORT 53
+
+namespace
+{
 DnsServer dnsServer;
 HttpServer server;
-
-#define DNS_PORT 53
 
 void onIndex(HttpRequest& request, HttpResponse& response)
 {
 	response.setContentType(MIME_HTML);
-	response.sendString("SMING captive portal");
+	response.sendString(F("SMING captive portal"));
 }
 
 void startWebServer()
@@ -25,6 +27,8 @@ void startServers()
 	startWebServer();
 }
 
+} // namespace
+
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
@@ -33,7 +37,7 @@ void init()
 	// Start AP
 	WifiStation.enable(false);
 	WifiAccessPoint.enable(true);
-	WifiAccessPoint.config("DNSCaptive Portal", "", AUTH_OPEN);
+	WifiAccessPoint.config(F("DNSCaptive Portal"), nullptr, AUTH_OPEN);
 
 	System.onReady(startServers);
 }

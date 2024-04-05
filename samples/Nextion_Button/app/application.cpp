@@ -1,9 +1,6 @@
 #include <SmingCore.h>
 #include <Libraries/ITEADLIB_Arduino_Nextion/Nextion.h>
 
-#include <string>
-#include <string.h>
-
 #define GPIO_LED 2
 
 // See this example in action: https://youtu.be/lHk6fqDBHyI
@@ -22,22 +19,22 @@
 // Note: I always unplugged the ESP8266 from USB (connecting with computer)
 //       while fiddling with the connections between ESP8266 and Nextion display.
 
-NexButton b0 = NexButton(0, 1, "b0");
-NexText t0 = NexText(0, 2, "g0");
-
+namespace
+{
+NexButton b0(0, 1, "b0");
+NexText t0(0, 2, "g0");
 NexTouch* nex_listen_list[] = {&b0, NULL};
-
-Timer timerNextion;
+SimpleTimer timerNextion;
 
 void loopNextion()
 {
 	nexLoop(nex_listen_list);
 }
 
-bool ledState = true;
-
 void b0PopCallback(void* ptr)
 {
+	static bool ledState = true;
+
 	digitalWrite(GPIO_LED, ledState);
 	// state == false => on
 	// state == true  => off
@@ -49,10 +46,12 @@ void b0PopCallback(void* ptr)
 	ledState = !ledState;
 }
 
+} // namespace
+
 void init()
 {
 	pinMode(GPIO_LED, OUTPUT);
 	nexInit();
 	b0.attachPop(b0PopCallback, &b0);
-	timerNextion.initializeMs(100, loopNextion).start();
+	timerNextion.initializeMs<100>(loopNextion).start();
 }

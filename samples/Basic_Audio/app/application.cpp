@@ -19,6 +19,8 @@
 // If using an external DAC, set this to 0 - you'll probably need to change other settings as well
 #define ENABLE_DELTA_SIGMA
 
+namespace
+{
 // Set this to 0 to output fixed values for easier checking on a scope or signal analyzer
 //#define GENERATE_FIXED_VALUES
 constexpr i2s_sample_t fixedSampleValue = {0xF55F0AA0};
@@ -30,17 +32,17 @@ constexpr unsigned targetSampleRate = 44100;
 constexpr float sineWaveFrequency = 440;
 
 // Measure time taken to fill the I2S DMA buffers
-static Profiling::MicroTimes fillTime("Fill Time");
+Profiling::MicroTimes fillTime("Fill Time");
 
 // Measure time taken between I2S callback (interrupt) and our task callback getting executed
-static Profiling::MicroTimes callbackLatency("Callback latency");
+Profiling::MicroTimes callbackLatency("Callback latency");
 
 // Report status periodically
-static SimpleTimer statusTimer;
-static constexpr unsigned statusIntervalMs = 5000;
+SimpleTimer statusTimer;
+constexpr unsigned statusIntervalMs = 5000;
 
 // One full sine-wave cycle
-static struct {
+struct SineWaveTable {
 	std::unique_ptr<uint16_t[]> samples;
 	unsigned sampleCount = 0;
 	unsigned readPos = 0;
@@ -81,7 +83,24 @@ static struct {
 		}
 		return value;
 	}
-} sineWaveTable;
+};
+
+SineWaveTable sineWaveTable;
+
+#ifdef GENERATE_FIXED_VALUES
+
+void writeFixedValues()
+{
+	i2s_buffer_info_t info;
+	while(i2s_dma_write(&info, UINT_MAX)) {
+		memset(info.samples, 0, info.size);
+		//		for(unsigned i = 0; i < info.size / sizeof(i2s_sample_t); ++i) {
+		//			info.samples[i] = fixedSampleValue;
+		//		}
+	}
+}
+
+#else
 
 /*
  * Outputs a 172.266Hz sine wave (256 samples at 44100 samples/sec)
@@ -105,16 +124,7 @@ void writeSine()
 	}
 }
 
-void writeFixedValues()
-{
-	i2s_buffer_info_t info;
-	while(i2s_dma_write(&info, UINT_MAX)) {
-		memset(info.samples, 0, info.size);
-		//		for(unsigned i = 0; i < info.size / sizeof(i2s_sample_t); ++i) {
-		//			info.samples[i] = fixedSampleValue;
-		//		}
-	}
-}
+#endif // GENERATE_FIXED_VALUES
 
 void fillBuffers()
 {
@@ -128,7 +138,7 @@ void fillBuffers()
 	fillTime.update();
 }
 
-static void checkReceive()
+void checkReceive()
 {
 	unsigned total = 0;
 	i2s_buffer_info_t info;
@@ -154,7 +164,7 @@ void IRAM_ATTR i2sCallback(void* param, i2s_event_type_t event)
 	}
 }
 
-static void initialiseI2S()
+void initialiseI2S()
 {
 	i2s_config_t config;
 	memset(&config, 0, sizeof(config));
@@ -230,6 +240,8 @@ static void initialiseI2S()
 	// and away we go
 	i2s_start();
 }
+
+} // namespace
 
 void init()
 {

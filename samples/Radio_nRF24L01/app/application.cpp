@@ -5,6 +5,8 @@
 // Use this server with standard RF24 client example "pingpair"
 // https://github.com/maniacbug/RF24/tree/master/examples/pingpair
 
+namespace
+{
 /*
  **** NRF24L01 pins connection: ****
  * VCC		3.3v
@@ -27,7 +29,7 @@ RF24 radio(RF24_CE_PIN, RF24_CSN_PIN);
 // Radio pipe addresses for the 2 nodes to communicate.
 const uint64_t pipes[2] = {0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL};
 
-Timer procTimer;
+SimpleTimer procTimer;
 
 void loopListen()
 {
@@ -64,6 +66,8 @@ void loopListen()
 		radio.startListening();
 	}
 }
+
+} // namespace
 
 void init()
 {
@@ -107,6 +111,6 @@ void init()
 	radio.printDetails();
 	Serial.println(_F("Initialization completed."));
 
-	procTimer.initializeMs(10, loopListen).start();
+	procTimer.initializeMs<10>(loopListen).start();
 	Serial.println(_F("Listening..."));
 }

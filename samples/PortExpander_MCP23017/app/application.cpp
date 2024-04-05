@@ -1,18 +1,23 @@
 #include <SmingCore.h>
 #include <Libraries/MCP23017/MCP23017.h>
 
+namespace
+{
 MCP23017 mcp;
-volatile bool awakenByInterrupt = false;
+volatile bool awakenByInterrupt;
 byte mcpPinA = 0;
 byte interruptPin = 15;
 
-void interruptCallback()
+void interruptDelegate()
 {
 	awakenByInterrupt = true;
-	Serial.println("Interrupt Called");
-	while(!(mcp.digitalRead(mcpPinA)))
-		;
+	Serial.println(_F("Interrupt Called"));
+	while(!mcp.digitalRead(mcpPinA)) {
+		//
+	}
 }
+
+} // namespace
 
 void init()
 {
@@ -36,5 +41,5 @@ void init()
 	mcp.pinMode(mcpPinA, INPUT);
 	mcp.pullUp(mcpPinA, HIGH);
 	mcp.setupInterruptPin(mcpPinA, FALLING);
-	attachInterrupt(interruptPin, InterruptDelegate(interruptCallback), FALLING);
+	attachInterrupt(interruptPin, InterruptDelegate(interruptDelegate), FALLING);
 }

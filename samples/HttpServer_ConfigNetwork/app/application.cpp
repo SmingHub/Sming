@@ -5,17 +5,24 @@
 
 namespace
 {
+ApplicationSettingsStorage AppSettings;
+
 HttpServer server;
 FtpServer ftp;
 
 HashMap<String, BssInfo> networks;
 
-String network, password;
-Timer connectionTimer;
+String network;
+String password;
+SimpleTimer connectionTimer;
 
 String lastModified;
 
 SimpleTimer scanTimer;
+
+DEFINE_FSTR(DEFAULT_IP, "192.168.1.77")
+DEFINE_FSTR(DEFAULT_NETMASK, "255.255.255.0")
+DEFINE_FSTR(DEFAULT_GATEWAY, "192.168.1.1")
 
 // Instead of using a SPIFFS file, here we demonstrate usage of imported Flash Strings
 IMPORT_FSTR_LOCAL(flashSettings, PROJECT_DIR "/web/build/settings.html")
@@ -31,7 +38,7 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 int onIpConfig(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
 {
 	if(request.method == HTTP_POST) {
-		debugf("Request coming from IP: %s", connection.getRemoteIp().toString().c_str());
+		Serial << _F("Request coming from IP: ") << connection.getRemoteIp() << endl;
 		// If desired you can also limit the access based on remote IP. Example below:
 		//		if(IpAddress("192.168.4.23") != connection.getRemoteIp()) {
 		//			return 1; // error
@@ -41,7 +48,7 @@ int onIpConfig(HttpServerConnection& connection, HttpRequest& request, HttpRespo
 		AppSettings.ip = request.getPostParameter("ip");
 		AppSettings.netmask = request.getPostParameter("netmask");
 		AppSettings.gateway = request.getPostParameter("gateway");
-		debugf("Updating IP settings: %d", AppSettings.ip.isNull());
+		Serial << _F("Updating IP settings: ") << AppSettings.ip.isNull() << endl;
 		AppSettings.save();
 	}
 
@@ -54,18 +61,13 @@ int onIpConfig(HttpServerConnection& connection, HttpRequest& request, HttpRespo
 	auto& vars = tmpl->variables();
 
 	bool dhcp = WifiStation.isEnabledDHCP();
-	vars["dhcpon"] = dhcp ? "checked='checked'" : "";
-	vars["dhcpoff"] = !dhcp ? "checked='checked'" : "";
+	vars["dhcpon"] = dhcp ? _F("checked='checked'") : "";
+	vars["dhcpoff"] = !dhcp ? _F("checked='checked'") : "";
 
-	if(!WifiStation.getIP().isNull()) {
-		vars["ip"] = WifiStation.getIP().toString();
-		vars["netmask"] = WifiStation.getNetworkMask().toString();
-		vars["gateway"] = WifiStation.getNetworkGateway().toString();
-	} else {
-		vars["ip"] = "192.168.1.77";
-		vars["netmask"] = "255.255.255.0";
-		vars["gateway"] = "192.168.1.1";
-	}
+	auto set = !WifiStation.getIP().isNull();
+	vars["ip"] = set ? WifiStation.getIP().toString() : DEFAULT_IP;
+	vars["netmask"] = set ? WifiStation.getNetworkMask().toString() : DEFAULT_NETMASK;
+	vars["gateway"] = set ? WifiStation.getNetworkGateway().toString() : DEFAULT_GATEWAY;
 
 	response.sendNamedStream(tmpl); // will be automatically deleted
 
@@ -160,7 +162,7 @@ void onAjaxConnect(HttpRequest& request, HttpResponse& response)
 			password = curPass;
 			debugf("CONNECT TO: %s %s", network.c_str(), password.c_str());
 			json["connected"] = false;
-			connectionTimer.initializeMs(1200, makeConnection).startOnce();
+			connectionTimer.initializeMs<1200>(makeConnection).startOnce();
 		} else {
 			json["connected"] = WifiStation.isConnected();
 			debugf("Network already selected. Current status: %s", WifiStation.getConnectionStatusName().c_str());
@@ -186,9 +188,9 @@ void startWebServer()
 	server.listen(80);
 #endif
 	server.paths.set("/", onIndex);
-	server.paths.set("/ipconfig", onIpConfig);
-	server.paths.set("/ajax/get-networks", onAjaxNetworkList);
-	server.paths.set("/ajax/connect", onAjaxConnect);
+	server.paths.set(F("/ipconfig"), onIpConfig);
+	server.paths.set(F("/ajax/get-networks"), onAjaxNetworkList);
+	server.paths.set(F("/ajax/connect"), onAjaxConnect);
 	server.paths.setDefault(onFile);
 }
 
@@ -196,7 +198,7 @@ void startFTP()
 {
 	if(!fileExist("index.html"))
 		fileSetContent("index.html",
-					   "<h3>Please connect to FTP and upload files from folder 'web/build' (details in code)</h3>");
+					   F("<h3>Please connect to FTP and upload files from folder 'web/build' (details in code)</h3>"));
 
 	// Start FTP server
 	ftp.listen(21);

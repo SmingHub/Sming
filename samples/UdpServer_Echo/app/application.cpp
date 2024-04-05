@@ -6,7 +6,9 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-void onReceive(UdpConnection& connection, char* data, int size, IpAddress remoteIP, uint16_t remotePort); // Declaration
+namespace
+{
+void onReceive(UdpConnection& connection, char* data, int size, IpAddress remoteIP, uint16_t remotePort);
 
 // UDP server
 const uint16_t EchoPort = 1234;
@@ -20,7 +22,7 @@ void onReceive(UdpConnection& connection, char* data, int size, IpAddress remote
 	Serial << ">\t" << data;
 
 	// Send echo to remote sender
-	String text = String("echo: ") + data;
+	String text = F("echo: ") + data;
 	udp.sendStringTo(remoteIP, remotePort, text);
 }
 
@@ -33,6 +35,8 @@ void gotIP(IpAddress ip, IpAddress gateway, IpAddress netmask)
 	Serial << WifiStation.getIP() << ':' << EchoPort << endl;
 	Serial.println(_F("==========================\r\n"));
 }
+
+} // namespace
 
 void init()
 {

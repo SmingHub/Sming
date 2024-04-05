@@ -7,17 +7,24 @@
 // clock speed on the ESP means we need a higher charge current than arduino ??
 // Further investigation required.
 
-CapacitiveSensor cs_0_2 = CapacitiveSensor(0, 2); //Send pin 0, Receive Pin 2.
+#define PIN_SEND 0
+#define PIN_RECEIVE 2
+#define SAMPLES_TO_READ 30
 
-Timer procTimer;
+namespace
+{
+CapacitiveSensor cs_0_2(PIN_SEND, PIN_RECEIVE);
+SimpleTimer procTimer;
 
 void capsense()
 {
-	long total = cs_0_2.capacitiveSensor(30);		//Read sensor with 30 samples
-	Serial << _F("Sense Value: ") << total << endl; // print sensor output
+	long total = cs_0_2.capacitiveSensor(SAMPLES_TO_READ);
+	Serial << _F("Sense Value: ") << total << endl;
 }
+
+} // namespace
 
 void init()
 {
-	procTimer.initializeMs(100, capsense).start();
+	procTimer.initializeMs<100>(capsense).start();
 }

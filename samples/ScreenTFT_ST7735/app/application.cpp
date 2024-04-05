@@ -18,14 +18,12 @@
 #define TFT_DC 0
 #define TFT_CS 2
 
-//Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
-Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
+namespace
+{
+//Adafruit_ST7735 tft(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
+Adafruit_ST7735 tft(TFT_CS, TFT_DC, TFT_RST);
 
-Timer DemoScreenTimer;
-float p = 3.1415926;
-uint32_t startTime;
-
-void testdrawtext(const char text[], uint16_t color)
+void testdrawtext(const String& text, uint16_t color)
 {
 	tft.setCursor(0, 0);
 	tft.setTextColor(color);
@@ -61,7 +59,7 @@ void tftPrintTest2()
 	tft.println("Hello Sming!");
 	tft.setTextSize(1);
 	tft.setTextColor(ST7735_GREEN);
-	tft.print(p, 6);
+	tft.print(PI, 6);
 	tft.println(" Want pi?");
 	tft.println(" ");
 	tft.print(8675309, HEX); // print 8,675,309 out in HEX!
@@ -226,122 +224,155 @@ void mediabuttons()
 
 void screen13()
 {
-	startTime = millis();
-	debugf("screen13: bmpDraw rotaton %d ms", millis() - startTime);
 	tft.fillScreen(ST7735_BLACK);			// Clear display
 	tft.setRotation(tft.getRotation() + 1); // Inc rotation 90 degrees
-	for(uint8_t i = 0; i < 4; i++)			// Draw 4 parrots
+	for(uint8_t i = 0; i < 4; i++) {		// Draw 4 parrots
 		bmpDraw(tft, "sming.bmp", tft.width() / 4 * i, tft.height() / 4 * i);
+	}
 }
 
 void screen12()
 {
-	startTime = millis();
 	bmpDraw(tft, "sming.bmp", 0, 0);
-	debugf("screen12: bmpDraw %d ms", millis() - startTime);
-	//	DemoScreenTimer.initializeMs(2000, screen13).start(false);
 }
 
 void screen11()
 {
-	startTime = millis();
 	mediabuttons();
-	debugf("screen11: mediabuttons %d ms", millis() - startTime);
-	DemoScreenTimer.initializeMs(1000, screen12).start(false);
 }
 
 void screen10()
 {
-	startTime = millis();
 	testtriangles();
-	debugf("screen10: testtriangles %d ms", millis() - startTime);
-	DemoScreenTimer.initializeMs(1000, screen11).start(false);
 }
 
 void screen9()
 {
-	startTime = millis();
 	testroundrects();
-	debugf("screen9: testroundrects %d ms", millis() - startTime);
-	DemoScreenTimer.initializeMs(1000, screen10).start(false);
 }
 
 void screen8()
 {
-	startTime = millis();
 	tft.fillScreen(ST7735_BLACK);
 	testfillcircles(10, ST7735_BLUE);
 	testdrawcircles(10, ST7735_WHITE);
-	debugf("screen8: testfillcircles %d ms", millis() - startTime);
-	DemoScreenTimer.initializeMs(1000, screen9).start(false);
 }
 
 void screen7()
 {
-	startTime = millis();
 	testfillrects(ST7735_YELLOW, ST7735_MAGENTA);
-	debugf("screen7: testfillrects %d ms", millis() - startTime);
-	DemoScreenTimer.initializeMs(1000, screen8).start(false);
 }
 
 void screen6()
 {
-	startTime = millis();
 	testdrawrects(ST7735_GREEN);
-	debugf("screen6: testdrawrects %d ms", millis() - startTime);
-	DemoScreenTimer.initializeMs(1000, screen7).start(false);
 }
 
 void screen5()
 {
-	startTime = millis();
 	// optimized lines
 	testfastlines(ST7735_RED, ST7735_BLUE);
-	debugf("screen5: testfastlines %d ms", millis() - startTime);
-	DemoScreenTimer.initializeMs(1000, screen6).start(false);
 }
 
 void screen4()
 {
-	startTime = millis();
 	// line draw test
 	testlines(ST7735_YELLOW);
-	debugf("screen4: testlines %d ms", millis() - startTime);
-	DemoScreenTimer.initializeMs(1000, screen5).start(false);
 }
 
 void screen3()
 {
-	startTime = millis();
 	tftPrintTest2();
-	debugf("screen3: tftPrintTest2 %d ms", millis() - startTime);
-	DemoScreenTimer.initializeMs(1000, screen4).start(false);
 }
 
 void screen2()
 {
-	startTime = millis();
 	tftPrintTest1();
-	debugf("screen2: tftPrintTest1 %d ms", millis() - startTime);
-	DemoScreenTimer.initializeMs(1000, screen3).start(false);
 }
 
 void screen1()
 {
-	startTime = millis();
 	// large block of text
 	tft.fillScreen(ST7735_BLACK);
-	testdrawtext("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur adipiscing ante sed nibh "
-				 "tincidunt feugiat. Maecenas enim massa, fringilla sed malesuada et, malesuada sit amet turpis. Sed "
-				 "porttitor neque ut ante pretium vitae malesuada nunc bibendum. Nullam aliquet ultrices massa eu "
-				 "hendrerit. Ut sed nisi lorem. In vestibulum purus a tortor imperdiet posuere. ",
-				 ST7735_WHITE);
-	debugf("screen1: testdrawtext %d ms", millis() - startTime);
-	DemoScreenTimer.initializeMs(1000, screen2).start(false);
+	DEFINE_FSTR_LOCAL(
+		largeTextBlock,
+		"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur adipiscing ante sed nibh "
+		"tincidunt feugiat. Maecenas enim massa, fringilla sed malesuada et, malesuada sit amet turpis. Sed "
+		"porttitor neque ut ante pretium vitae malesuada nunc bibendum. Nullam aliquet ultrices massa eu "
+		"hendrerit. Ut sed nisi lorem. In vestibulum purus a tortor imperdiet posuere. ")
+	testdrawtext(largeTextBlock, ST7735_WHITE);
 }
+
+void initialise()
+{
+	// Use this initializer if you're using a 1.8" TFT
+	// tft.initR(INITR_BLACKTAB);   // initialize a ST7735S chip, black tab
+
+	// Use this initializer (uncomment) if you're using a 1.44" TFT
+	tft.initR(INITR_144GREENTAB); // initialize a ST7735S chip, black tab
+
+	tft.fillScreen(ST7735_BLACK);
+}
+
+#define SCREEN_FUNCTION_MAP(XX)                                                                                        \
+	XX(initialise, "Initialise")                                                                                       \
+	XX(screen1, "testdrawtext")                                                                                        \
+	XX(screen2, "tftPrintTest1")                                                                                       \
+	XX(screen3, "tftPrintTest2")                                                                                       \
+	XX(screen4, "testlines")                                                                                           \
+	XX(screen5, "testfastlines")                                                                                       \
+	XX(screen6, "testdrawrects")                                                                                       \
+	XX(screen7, "testfillrects")                                                                                       \
+	XX(screen8, "testfillcircles")                                                                                     \
+	XX(screen9, "testroundrects")                                                                                      \
+	XX(screen10, "testtriangles")                                                                                      \
+	XX(screen11, "mediabuttons")                                                                                       \
+	XX(screen12, "bmpDraw")                                                                                            \
+	XX(screen13, "bmpDraw rotation")
+
+#define XX(function, title) DEFINE_FSTR(function##_title, #function ": " title)
+SCREEN_FUNCTION_MAP(XX)
+#undef XX
+
+struct DemoScreen {
+	InterruptCallback function;
+	const FlashString& title;
+};
+
+const DemoScreen screenList[] PROGMEM{
+#define XX(name, title) {name, name##_title},
+	SCREEN_FUNCTION_MAP(XX)
+#undef XX
+};
+
+SimpleTimer demoScreenTimer;
+auto screen = std::begin(screenList);
+
+void nextScreen()
+{
+	OneShotFastMs elapseTimer;
+	screen->function();
+	auto elapsed = elapseTimer.elapsedTime();
+
+	Serial << screen->title << " in " << elapsed << "ms" << endl;
+
+	++screen;
+	if(screen != std::end(screenList)) {
+		demoScreenTimer.startOnce();
+		return;
+	}
+
+	Serial.println(_F("All screens displayed"));
+}
+
+} // namespace
 
 void init()
 {
+#ifdef ARCH_HOST
+	setDigitalHooks(nullptr);
+#endif
+
 	spiffs_mount(); // Mount file system, in order to work with files
 
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
@@ -353,19 +384,7 @@ void init()
 	WifiAccessPoint.enable(false);
 #endif
 
-	debugf("Display start");
-	startTime = millis();
-
-	// Use this initializer if you're using a 1.8" TFT
-	// tft.initR(INITR_BLACKTAB);   // initialize a ST7735S chip, black tab
-
-	// Use this initializer (uncomment) if you're using a 1.44" TFT
-	tft.initR(INITR_144GREENTAB); // initialize a ST7735S chip, black tab
-
-	tft.fillScreen(ST7735_BLACK);
-	startTime = millis() - startTime;
-
-	debugf("Initialized in %d ms\n", startTime);
-
-	DemoScreenTimer.initializeMs(500, screen1).start(false);
+	Serial.println(_F("Initialise display"));
+	demoScreenTimer.initializeMs<500>(nextScreen);
+	nextScreen();
 }

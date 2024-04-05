@@ -3,11 +3,11 @@
 
 // For more information read: https://code.google.com/p/mma-7455-arduino-library/
 MMA_7455 accel;
-Timer procTimer;
+SimpleTimer procTimer;
 
 void readSensor()
 {
-	Serial.println("Reading..");
+	Serial.println(_F("Reading.."));
 
 	int8_t x = accel.readAxis('x');
 	int8_t y = accel.readAxis('y');
@@ -29,5 +29,5 @@ void init()
 	accel.initSensitivity(MMA_7455_2G_MODE);
 
 	// Start reading loop
-	procTimer.initializeMs(300, readSensor).start();
+	procTimer.initializeMs<300>(readSensor).start();
 }

@@ -34,7 +34,7 @@ bool processTelnetInput(TcpClient& client, char* data, int size)
 		char c = *data++;
 		if(skip) {
 			--skip;
-		} else if(c == '\xff') {
+		} else if(c == TC_ESC) {
 			skip = 2;
 		} else {
 			commandHandler.process(c);

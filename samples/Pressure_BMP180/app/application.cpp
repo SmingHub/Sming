@@ -2,6 +2,7 @@
 #include <Libraries/BMP180/BMP180.h>
 
 BMP180 barometer;
+
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default

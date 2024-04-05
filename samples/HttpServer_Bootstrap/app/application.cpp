@@ -8,8 +8,11 @@
 
 #define LED_PIN 0 // GPIO number
 
+namespace
+{
 HttpServer server;
 int counter = 0;
+HttpClient downloadClient;
 
 void onIndex(HttpRequest& request, HttpResponse& response)
 {
@@ -56,26 +59,24 @@ void startWebServer()
 	server.paths.set("/hello", onHello);
 	server.paths.setDefault(onFile);
 
-	Serial.println(_F("\r\n"
-					  "=== WEB SERVER STARTED ==="));
-	Serial.println(WifiStation.getIP());
-	Serial.println(_F("==========================\r\n"));
+	Serial << endl
+		   << _F("=== WEB SERVER STARTED ===") << endl
+		   << WifiStation.getIP() << endl
+		   << _F("==========================") << endl
+		   << endl;
 }
 
-Timer downloadTimer;
-HttpClient downloadClient;
-int dowfid = 0;
 void downloadContentFiles()
 {
 	downloadClient.downloadFile(F("http://simple.anakod.ru/templates/index.html"));
 	downloadClient.downloadFile(F("http://simple.anakod.ru/templates/bootstrap.css.gz"));
 	downloadClient.downloadFile(F("http://simple.anakod.ru/templates/jquery.js.gz"),
-								(RequestCompletedDelegate)([](HttpConnection& connection, bool success) -> int {
+								[](HttpConnection& connection, bool success) -> int {
 									if(success) {
 										startWebServer();
 									}
 									return 0;
-								}));
+								});
 }
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
@@ -88,14 +89,16 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	}
 }
 
+} // namespace
+
 void init()
 {
+	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+	Serial.systemDebugOutput(true); // Enable debug output to serial
+
 	spiffs_mount(); // Mount file system, in order to work with files
 
 	pinMode(LED_PIN, OUTPUT);
-
-	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-	Serial.systemDebugOutput(true); // Enable debug output to serial
 
 	WifiStation.enable(true);
 	WifiStation.config(WIFI_SSID, WIFI_PWD);

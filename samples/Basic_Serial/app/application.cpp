@@ -5,6 +5,8 @@
 #include "SerialReadingDelegateDemo.h"
 #include "SerialTransmitDemo.h"
 
+namespace
+{
 struct SerialPins {
 	uint8_t tx;
 	uint8_t rx;
@@ -128,9 +130,9 @@ DEFINE_FSTR(testFlashData, "The following are the graphical (non-control) charac
 						   "\r\n"
 						   "END OF TEXT\r\n");
 
-Timer procTimer;
+SimpleTimer procTimer;
 SerialReadingDelegateDemo delegateDemoClass;
-int helloCounter = 0;
+int helloCounter;
 
 /**
  * Serial1 uses UART1, TX pin is GPIO2.
@@ -229,6 +231,8 @@ void handleCommand(const String& command)
 	}
 }
 
+} // namespace
+
 void init()
 {
 	/*
@@ -312,7 +316,7 @@ void init()
 
 	debugf("(DEBUG) message printed on UART1"); // You should see the debug message in UART1 only.
 
-	procTimer.initializeMs(2000, sayHello).start();
+	procTimer.initializeMs<2000>(sayHello).start();
 
 	testPrintf();
 

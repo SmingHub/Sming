@@ -40,5 +40,5 @@ void init()
 	// Auto reporting is enabled by default.
 	// Use bleGamepad.setAutoReport(false); to disable auto reporting, and then use bleGamepad.sendReport(); as needed
 
-	procTimer.initializeMs(500, loop).start();
+	procTimer.initializeMs<500>(loop).start();
 }

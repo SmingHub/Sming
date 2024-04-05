@@ -10,13 +10,14 @@
 #define IR_RECV_PIN 12 // GPIO12
 #define IR_SEND_PIN 5  // GPIO5
 
-Timer irTimer;
+namespace
+{
+SimpleTimer irTimer;
 IRrecv irrecv(IR_RECV_PIN);
 IRsend irsend(IR_SEND_PIN);
 
 void receiveIR()
 {
-	irTimer.stop();
 	decode_results dresults;
 	dresults.decode_type = UNUSED;
 	if(irrecv.decode(&dresults)) {
@@ -28,14 +29,19 @@ void receiveIR()
 		Serial.println("Send IR Code");
 		irsend.send(dresults.decode_type, dresults.value, dresults.bits);
 	}
-	irTimer.start();
+	irTimer.startOnce();
 }
+
+} // namespace
 
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+
 	Serial.println("Setting up...");
+
 	irrecv.enableIRIn(); // Start the receiver
-	irTimer.initializeMs(200, receiveIR).start();
+	irTimer.initializeMs<200>(receiveIR).startOnce();
+
 	Serial.println("Ready...");
 }

@@ -8,6 +8,8 @@
 
 #define LED_PIN 2 // Note: LED is attached to UART1 TX output
 
+namespace
+{
 // Max length of debug command
 const unsigned MAX_COMMAND_LENGTH = 64;
 
@@ -49,18 +51,15 @@ Timer procTimer;
 #define CALLBACK_ATTR GDB_IRAM_ATTR
 #endif
 
-// See blink()
-bool ledState = true;
-
 // A simple log file stored on the host
-static GdbFileStream logFile;
+GdbFileStream logFile;
 #define LOG_FILENAME "testlog.txt"
 
 // Handles messages from SDK
-static OsMessageInterceptor osMessageInterceptor;
+OsMessageInterceptor osMessageInterceptor;
 
 // Supports `consoleOff` command to prevent re-enabling when debugger is attached
-bool consoleOffRequested = false;
+bool consoleOffRequested;
 
 //
 IFS::Gdb::FileSystem gdbfs;
@@ -75,8 +74,10 @@ void readConsole();
 */
 void CALLBACK_ATTR blink()
 {
-	digitalWrite(LED_PIN, ledState);
+	static bool ledState;
+
 	ledState = !ledState;
+	digitalWrite(LED_PIN, ledState);
 }
 
 void showPrompt()
@@ -418,7 +419,7 @@ COMMAND_HANDLER(write0)
  * @param msg
  * @retval bool true if we want to report this
  */
-static bool __noinline parseOsMessage(OsMessage& msg)
+bool __noinline parseOsMessage(OsMessage& msg)
 {
 	m_printf(_F("[OS] %s\r\n"), msg.getBuffer());
 	if(msg.startsWith(_F("E:M "))) {
@@ -436,7 +437,7 @@ static bool __noinline parseOsMessage(OsMessage& msg)
  * @brief Called when the OS outputs a debug message using os_printf, etc.
  * @param msg The message
  */
-static void onOsMessage(OsMessage& msg)
+void onOsMessage(OsMessage& msg)
 {
 	// Note: We do the check in a separate function to avoid messing up the stack pointer
 	if(parseOsMessage(msg)) {
@@ -622,6 +623,14 @@ void readConsole()
 	}));
 }
 
+void printTimerDetails()
+{
+	Serial << procTimer << ", maxTicks = " << procTimer.maxTicks()
+		   << ", maxTime = " << procTimer.micros().ticksToTime(procTimer.maxTicks()).value() << endl;
+}
+
+} // namespace
+
 extern "C" void gdb_on_attach(bool attached)
 {
 	debug_i("GdbAttach(%d)", attached);
@@ -644,12 +653,6 @@ extern "C" void gdb_on_attach(bool attached)
 		// Note: GDB is already detached so underlying call to gdb_syscall_close() will fail silently
 		logFile.close();
 	}
-}
-
-static void printTimerDetails()
-{
-	Serial << procTimer << ", maxTicks = " << procTimer.maxTicks()
-		   << ", maxTime = " << procTimer.micros().ticksToTime(procTimer.maxTicks()).value() << endl;
 }
 
 void GDB_IRAM_ATTR init()
