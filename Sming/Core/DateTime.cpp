@@ -117,14 +117,21 @@ bool DateTime::fromHttpDate(const String& httpDate)
 	// Parse and return a decimal number and update ptr to the first non-numeric character after it
 	auto parseNumber = [&ptr]() { return strtol(ptr, const_cast<char**>(&ptr), 10); };
 
+	auto skipWhitespace = [&ptr]() -> void {
+		while(isspace(*ptr)) {
+			++ptr;
+		}
+	};
+
+	skipWhitespace();
 	if(!isdigit(*ptr)) {
 		if(!matchName(ptr, DayofWeek, isoDayNames, 7)) {
 			return false; // Invalid day of week
 		}
-		if(ptr[0] == ',' && ptr[1] == ' ') {
-			// Accept "Sun, ", etc.
+		if(ptr[0] == ',') {
+			// Accept "Sun,", etc.
 			ptr += 2;
-		} else if(strncmp(ptr, "day, ", 5) == 0) {
+		} else if(strncmp(ptr, "day,", 4) == 0) {
 			// Accept "Sunday, ", etc
 			ptr += 5;
 		} else {
@@ -132,24 +139,31 @@ bool DateTime::fromHttpDate(const String& httpDate)
 		}
 	}
 
+	skipWhitespace();
 	Day = parseNumber();
-	if(*ptr != ' ' && *ptr != '-') {
+	if(*ptr != '-' && !isspace(*ptr)) {
 		return false;
 	}
 	++ptr;
 
+	// Should we check DayOfWeek against calculation from date?
+	// We could just ignore the DOW...
+	skipWhitespace();
 	if(!matchName(ptr, Month, isoMonthNames, 12)) {
 		return false; // Invalid month
 	}
-	if(*ptr != ' ' && *ptr != '-') {
+	if(*ptr != '-') {
 		// Skip over any other characters: assume that the full month name has been provided
-		ptr = strchr(ptr, ' ');
-		if(!ptr) {
+		while(*ptr != '\0' && !isspace(*ptr)) {
+			++ptr;
+		}
+		if(*ptr == '\0') {
 			return false;
 		}
 	}
 	++ptr;
 
+	skipWhitespace();
 	Year = parseNumber();
 	if(*ptr++ != ' ') {
 		return false;
@@ -160,16 +174,15 @@ bool DateTime::fromHttpDate(const String& httpDate)
 		Year += 1900;
 	}
 
+	skipWhitespace();
 	Hour = parseNumber();
 	if(*ptr++ != ':') {
 		return false;
 	}
-
 	Minute = parseNumber();
 	if(*ptr++ != ':') {
 		return false;
 	}
-
 	Second = parseNumber();
 
 	if(*ptr != '\0' && strcmp(ptr, " GMT") != 0) {
