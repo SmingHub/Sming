@@ -54,12 +54,13 @@ const FourDigitName isoMonthNames[12] PROGMEM = {"Jan", "Feb", "Mar", "Apr", "Ma
  *
  * Names are compared without case-sensitivity
  */
-bool matchName(const char* ptr, uint8_t& value, const FourDigitName isoNames[], unsigned nameCount)
+bool matchName(const char*& ptr, uint8_t& value, const FourDigitName isoNames[], unsigned nameCount)
 {
 	FourDigitName name{ptr[0], ptr[1], ptr[2]};
 	for(unsigned i = 0; i < nameCount; ++i) {
 		if(isoNames[i] == name) {
 			value = i;
+			ptr += 3;
 			return true;
 		}
 	}
@@ -111,11 +112,6 @@ bool DateTime::isNull() const
 
 bool DateTime::fromHttpDate(const String& httpDate)
 {
-	int first = httpDate.indexOf(',');
-	if(first < 0 || httpDate.length() - first < 20) {
-		return false;
-	}
-	first += 2; // Skip ", "
 	auto ptr = httpDate.c_str();
 
 	// Parse and return a decimal number and update ptr to the first non-numeric character after it
@@ -124,26 +120,38 @@ bool DateTime::fromHttpDate(const String& httpDate)
 	if(!matchName(ptr, DayofWeek, isoDayNames, 7)) {
 		return false; // Invalid day of week
 	}
-
-	ptr += first;
-
-	Day = parseNumber();
-	if(*ptr == '\0') {
+	if(ptr[0] == ',' && ptr[1] == ' ') {
+		// Accept "Sun, ", etc.
+		ptr += 2;
+	} else if(strncmp(ptr, "day, ", 5) == 0) {
+		// Accept "Sunday, ", etc
+		ptr += 5;
+	} else {
 		return false;
 	}
-	ptr++;
 
-	// Decode the month name
+	Day = parseNumber();
+	if(*ptr != ' ' && *ptr != '-') {
+		return false;
+	}
+	++ptr;
+
 	if(!matchName(ptr, Month, isoMonthNames, 12)) {
 		return false; // Invalid month
 	}
-	ptr += 4; // Skip space as well as month
+	if(*ptr != ' ' && *ptr != '-') {
+		// Skip over any other characters: assume that the full month name has been provided
+		ptr = strchr(ptr, ' ');
+		if(!ptr) {
+			return false;
+		}
+	}
+	++ptr;
 
 	Year = parseNumber();
-	if(*ptr == '\0') {
+	if(*ptr++ != ' ') {
 		return false;
 	}
-
 	if(Year < 70) {
 		Year += 2000;
 	} else if(Year < 100) {
@@ -151,18 +159,21 @@ bool DateTime::fromHttpDate(const String& httpDate)
 	}
 
 	Hour = parseNumber();
-	if(*ptr != ':') {
+	if(*ptr++ != ':') {
 		return false;
 	}
 
-	ptr++;
 	Minute = parseNumber();
-	if(*ptr != ':') {
+	if(*ptr++ != ':') {
 		return false;
 	}
 
-	ptr++;
 	Second = parseNumber();
+
+	if(*ptr != '\0' && strcmp(ptr, " GMT") != 0) {
+		return false;
+	}
+
 	Milliseconds = 0;
 	calcDayOfYear();
 
