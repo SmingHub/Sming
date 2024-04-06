@@ -117,17 +117,19 @@ bool DateTime::fromHttpDate(const String& httpDate)
 	// Parse and return a decimal number and update ptr to the first non-numeric character after it
 	auto parseNumber = [&ptr]() { return strtol(ptr, const_cast<char**>(&ptr), 10); };
 
-	if(!matchName(ptr, DayofWeek, isoDayNames, 7)) {
-		return false; // Invalid day of week
-	}
-	if(ptr[0] == ',' && ptr[1] == ' ') {
-		// Accept "Sun, ", etc.
-		ptr += 2;
-	} else if(strncmp(ptr, "day, ", 5) == 0) {
-		// Accept "Sunday, ", etc
-		ptr += 5;
-	} else {
-		return false;
+	if(!isdigit(*ptr)) {
+		if(!matchName(ptr, DayofWeek, isoDayNames, 7)) {
+			return false; // Invalid day of week
+		}
+		if(ptr[0] == ',' && ptr[1] == ' ') {
+			// Accept "Sun, ", etc.
+			ptr += 2;
+		} else if(strncmp(ptr, "day, ", 5) == 0) {
+			// Accept "Sunday, ", etc
+			ptr += 5;
+		} else {
+			return false;
+		}
 	}
 
 	Day = parseNumber();
