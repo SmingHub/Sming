@@ -40,6 +40,26 @@ const FourDigitName isoMonthNames[12] PROGMEM = {
 	{'S', 'e', 'p', '\0'}, {'O', 'c', 't', '\0'}, {'N', 'o', 'v', '\0'}, {'D', 'e', 'c', '\0'},
 };
 
+/*
+ * @brief Match a day or month name against a list of values and set the required value
+ * @param ptr Current string position
+ * @param value On success, contains index of matched string
+ * @isoNames Array of values
+ * @nameCount Number of names in array
+ * @retval bool false on failure
+ */
+bool matchName(const char* ptr, uint8_t& value, const FourDigitName isoNames[], unsigned nameCount)
+{
+	FourDigitName name{ptr[0], ptr[1], ptr[2]};
+	for(unsigned i = 0; i < nameCount; ++i) {
+		if(isoNames[i] == name) {
+			value = i;
+			return true;
+		}
+	}
+	return false;
+}
+
 /** @brief Get the number of days in a month, taking leap years into account
  *  @param month 0=jan
  *  @param year
@@ -82,19 +102,7 @@ bool DateTime::fromHttpDate(const String& httpDate)
 	// Parse and return a decimal number and update ptr to the first non-numeric character after it
 	auto parseNumber = [&ptr]() { return strtol(ptr, const_cast<char**>(&ptr), 10); };
 
-	// Match a day or month name against a list of values and set the required value; return false on failure
-	auto matchName = [&ptr](uint8_t& value, const FourDigitName isoNames[], unsigned nameCount) {
-		FourDigitName name = {ptr[0], ptr[1], ptr[2], '\0'};
-		for(unsigned i = 0; i < nameCount; ++i) {
-			if(isoNames[i] == name) {
-				value = i;
-				return true;
-			}
-		}
-		return false;
-	};
-
-	if(!matchName(DayofWeek, isoDayNames, 7)) {
+	if(!matchName(ptr, DayofWeek, isoDayNames, 7)) {
 		return false; // Invalid day of week
 	}
 
@@ -107,7 +115,7 @@ bool DateTime::fromHttpDate(const String& httpDate)
 	ptr++;
 
 	// Decode the month name
-	if(!matchName(Month, isoMonthNames, 12)) {
+	if(!matchName(ptr, Month, isoMonthNames, 12)) {
 		return false; // Invalid month
 	}
 	ptr += 4; // Skip space as well as month
