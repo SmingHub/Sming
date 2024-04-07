@@ -9,7 +9,17 @@
 
 #include "DateTime.h"
 #include "Data/CStringArray.h"
-#include <stringconversion.h>
+
+#ifdef ARCH_ESP32
+#include <esp_idf_version.h>
+#endif
+
+#if defined(__WIN32) || (defined(ARCH_ESP32) && ESP_IDF_VERSION_MAJOR < 5)
+static_assert(sizeof(time_t) != 8, "Great! Now supports 64-bit - please update code");
+#warning "**Y2038** time_t is only 32-bits in this build configuration"
+#else
+static_assert(sizeof(time_t) == 8, "Expecting 64-bit time_t");
+#endif
 
 #define LEAP_YEAR(year) ((year % 4) == 0)
 

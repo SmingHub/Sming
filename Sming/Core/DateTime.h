@@ -73,8 +73,15 @@ enum dtDays_t {
  * This means that timespan calculation and free-running clocks may be inaccurate if they span leap seconds.
  * To facilitate leap seconds, reference must be made to leap second table.
  * This will not be done within the Sming framework and must be handled by application code if required.
+ * @see https://www.eecis.udel.edu/~mills/leap.html
  *
- *  @note   Sming uses 32-bit signed integer for its time_t data type which supports a range of +/-68 years. This means Sming is susceptible to Year 2038 problem.
+ * @note time_t is a signed 64-bit value for all architectures **except** Windows Host and esp32 ESP-IDF 4.x.
+ *
+ * 32-bit signed values support a range of +/-68 years; the Unix epoch is midnight 1 Jan 1970, so overflows at about 3am on 19 Jan 2038.
+ * The value is signed which allows dates prior to 1970 to be represented.
+ *
+ * An unsigned 32-bit value can be used to store dates provided they are after 1970.
+ * These are good until February 2106.
  */
 class DateTime
 {
@@ -141,7 +148,7 @@ public:
 
 	/** @brief  Get Unix time
 	 *  @retval time_t Unix time, quantity of seconds since 00:00:00 1970-01-01
-	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
+	 *  @note   Unix time does not account for leap seconds.
 	 */
 	time_t toUnixTime();
 
@@ -190,7 +197,7 @@ public:
 	 *  @note   Pass the Unix timedate value and pointers to existing integers. The integers are updated with the converted values
 	 *  @note   This static function  may be used without instantiating a DateTime object, e.g. DateTime::convertFromUnixTime(...);
 	 *  @note   32-bit Unix time has year 2036 issue.
-	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
+	 *  @note   Unix time does not account for leap seconds.
 	 *  @note   All of the return values are optional, specify nullptr if not required
 	 */
 	static void fromUnixTime(time_t timep, uint8_t* psec, uint8_t* pmin, uint8_t* phour, uint8_t* pday, uint8_t* pwday,
@@ -208,7 +215,7 @@ public:
 	 *  @note   Seconds, minutes, hours and days may be any value, e.g. to calculate the value for 300 days since 1970 (epoch), set day=300
 	 *  @note   This static function  may be used without instantiating a DateTime object, e.g. time_t unixTime = DateTime::convertToUnixTime(...);
 	 *  @note   32-bit Unix time is valid between 1901-12-13 and 03:14:07 2038-01-19
-	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
+	 *  @note   Unix time does not account for leap seconds.
 	 */
 	static time_t toUnixTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year);
 
