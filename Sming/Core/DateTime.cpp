@@ -21,8 +21,6 @@ static_assert(sizeof(time_t) != 8, "Great! Now supports 64-bit - please update c
 static_assert(sizeof(time_t) == 8, "Expecting 64-bit time_t");
 #endif
 
-#define LEAP_YEAR(year) ((year % 4) == 0)
-
 namespace
 {
 DEFINE_FSTR(flashMonthNames, LOCALE_MONTH_NAMES);
@@ -68,6 +66,16 @@ bool matchName(const char* ptr, uint8_t& value, const FourDigitName isoNames[], 
 	return false;
 }
 
+bool isLeapCentury(uint16_t year)
+{
+	return year % 100 != 0 || year % 400 == 0;
+}
+
+bool isLeapYear(uint16_t year)
+{
+	return year % 4 == 0 && isLeapCentury(year);
+}
+
 /** @brief Get the number of days in a month, taking leap years into account
  *  @param month 0=jan
  *  @param year
@@ -76,7 +84,7 @@ bool matchName(const char* ptr, uint8_t& value, const FourDigitName isoNames[], 
 uint8_t getMonthDays(uint8_t month, uint8_t year)
 {
 	static const uint8_t monthDays[] PROGMEM = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-	return (month == 1 && LEAP_YEAR(year)) ? 29 : pgm_read_byte(&monthDays[month]);
+	return (month == 1 && isLeapYear(year)) ? 29 : pgm_read_byte(&monthDays[month]);
 }
 
 } // namespace
@@ -224,14 +232,14 @@ void DateTime::fromUnixTime(time_t timep, uint8_t* psec, uint8_t* pmin, uint8_t*
 
 	unsigned year = 70;
 	unsigned long days = 0;
-	while((days += (LEAP_YEAR(year) ? 366 : 365)) <= epoch) {
+	while((days += (isLeapYear(year) ? 366 : 365)) <= epoch) {
 		year++;
 	}
 	if(pyear != nullptr) {
 		*pyear = year + 1900; // *pyear is returned as years from 1900
 	}
 
-	days -= LEAP_YEAR(year) ? 366 : 365;
+	days -= isLeapYear(year) ? 366 : 365;
 	epoch -= days; // now it is days in this year, starting at 0
 	// *pdayofyear=epoch;  // days since jan 1 this year
 
@@ -266,7 +274,7 @@ time_t DateTime::toUnixTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day,
 
 	// add extra days for leap years
 	for(unsigned i = 1970; i < year; i++) {
-		if(LEAP_YEAR(i)) {
+		if(isLeapYear(i)) {
 			seconds += SECS_PER_DAY;
 		}
 	}
@@ -430,7 +438,7 @@ void DateTime::calcDayOfYear()
 			DayofYear += 30;
 			break;
 		case 1: // Feb
-			DayofYear += LEAP_YEAR(Year) ? 29 : 28;
+			DayofYear += isLeapYear(Year) ? 29 : 28;
 			break;
 		default:
 			DayofYear += 31;
