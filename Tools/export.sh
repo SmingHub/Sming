@@ -28,7 +28,7 @@ if [ -z "$SMING_HOME" ]; then
 fi
 
 # Common
-export PYTHON=${PYTHON:=/usr/bin/python3}
+export PYTHON=${PYTHON:=$(which python3)}
 
 # Esp8266
 export ESP_HOME=${ESP_HOME:=/opt/esp-quick-toolchain}
