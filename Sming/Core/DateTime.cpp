@@ -99,7 +99,15 @@ uint8_t getMonthDays(uint8_t month, uint16_t year)
 
 void DateTime::setTime(time_t time)
 {
-	fromUnixTime(time, &Second, &Minute, &Hour, &Day, &DayofWeek, &Month, &Year);
+	struct tm t;
+	gmtime_r(&time, &t);
+	Year = t.tm_year + 1900;
+	Month = t.tm_mon;
+	Day = t.tm_mday;
+	DayofWeek = t.tm_wday;
+	Hour = t.tm_hour;
+	Minute = t.tm_min;
+	Second = t.tm_sec;
 	Milliseconds = 0;
 	calcDayOfYear();
 }
@@ -321,54 +329,29 @@ void DateTime::addMilliseconds(long add)
 void DateTime::fromUnixTime(time_t timep, uint8_t* psec, uint8_t* pmin, uint8_t* phour, uint8_t* pday, uint8_t* pwday,
 							uint8_t* pmonth, uint16_t* pyear)
 {
-	// convert the given time_t to time components
-	// this is a more compact version of the C library localtime function
+	struct tm t;
+	gmtime_r(&timep, &t);
 
-	unsigned long epoch = timep;
-	if(psec != nullptr) {
-		*psec = epoch % 60;
+	if(psec) {
+		*psec = t.tm_sec;
 	}
-	epoch /= 60; // now it is minutes
-	if(pmin != nullptr) {
-		*pmin = epoch % 60;
+	if(pmin) {
+		*pmin = t.tm_min;
 	}
-	epoch /= 60; // now it is hours
-	if(phour != nullptr) {
-		*phour = epoch % 24;
+	if(phour) {
+		*phour = t.tm_hour;
 	}
-	epoch /= 24; // now it is days
-	if(pwday != nullptr) {
-		*pwday = (epoch + 4) % 7;
+	if(pwday) {
+		*pwday = t.tm_wday;
 	}
-
-	unsigned year = 70;
-	unsigned long days = 0;
-	while((days += (isLeapYear(year) ? 366 : 365)) <= epoch) {
-		year++;
+	if(pyear) {
+		*pyear = t.tm_year + 1900;
 	}
-	if(pyear != nullptr) {
-		*pyear = year + 1900; // *pyear is returned as years from 1900
+	if(pmonth) {
+		*pmonth = t.tm_mon;
 	}
-
-	days -= isLeapYear(year) ? 366 : 365;
-	epoch -= days; // now it is days in this year, starting at 0
-	// *pdayofyear=epoch;  // days since jan 1 this year
-
-	uint8_t month;
-	for(month = dtJanuary; month <= dtDecember; month++) {
-		uint8_t monthDays = getMonthDays(month, year);
-		if(epoch >= monthDays) {
-			epoch -= monthDays;
-		} else {
-			break;
-		}
-	}
-
-	if(pmonth != nullptr) {
-		*pmonth = month; // jan is month 0
-	}
-	if(pday != nullptr) {
-		*pday = epoch + 1; // day of month
+	if(pday) {
+		*pday = t.tm_mday;
 	}
 }
 
