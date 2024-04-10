@@ -29,7 +29,7 @@ public:
 	APA102(uint16_t n);
 
 	/**
-	 * @brief Iniitialise for given number of LEDs on specific SPI device
+	 * @brief Initialise for given number of LEDs on specific SPI device
 	 */
 	APA102(uint16_t n, SPIBase& spiRef);
 
