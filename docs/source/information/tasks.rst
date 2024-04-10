@@ -17,31 +17,7 @@ The BasicTask class
 This class uses the task queue plus a timer to provide an easy way to write a background task.
 All you need to is define a *loop()* function which does the work. The task has three states:
 
-.. graphviz::
-   :caption: Task states
-   :align: center
-
-   digraph "task-states" {
-      activation = none
-      node_width = 80
-      node_height = 60
-      edge_length = 160
-      span_height = 5
-      default_shape = roundedbox
-      default_fontsize = 12
-
-      SUSPENDED [label = "suspended"]
-      RUNNING [label = "running"]
-      SLEEPING [label = "sleeping"]
-
-      SUSPENDED -> RUNNING [label = "resume()"]
-      SUSPENDED -> SLEEPING [label = "sleep()"]
-      RUNNING -> SLEEPING [label = "sleep()"]
-      RUNNING -> SUSPENDED [label = "suspend()"]
-      SLEEPING -> RUNNING [label = "resume()"]
-      SLEEPING -> RUNNING [label = "timer expired"]
-      SLEEPING -> SUSPENDED [label = "suspend()"]
-   }
+.. image:: tasks.png
 
 To see this in operation, have a look at the :sample:`Basic_Tasks` sample.
 
