@@ -161,39 +161,39 @@ public:
 	/** @brief  Check if time date object is initialised
 	 *  @retval True if object has no value. False if initialised.
 	 */
-	bool isNull();
+	bool isNull() const;
 
 	/** @brief  Get Unix time
 	 *  @retval time_t Unix time, quantity of seconds since 00:00:00 1970-01-01
 	 *  @note   Unix time does not account for leap seconds.
 	 */
-	time_t toUnixTime();
+	time_t toUnixTime() const;
 
 	/** @brief  Get human readable date
 	 *  @retval String Date in requested format, e.g. DD.MM.YYYY
 	 */
-	String toShortDateString();
+	String toShortDateString() const;
 
 	/** @brief  Get human readable time
 	 *  @param  includeSeconds True to include seconds (Default: false)
 	 *  @retval String Time in format hh:mm or hh:mm:ss
 	 */
-	String toShortTimeString(bool includeSeconds = false);
+	String toShortTimeString(bool includeSeconds = false) const;
 
 	/** @brief  Get human readable date and time
 	 *  @retval String Date and time in format DD.MM.YYYY hh:mm:ss
 	 */
-	String toFullDateTimeString();
+	String toFullDateTimeString() const;
 
 	/** @brief  Get human readable date and time
 	 *  @retval String Date and time in format YYYY-MM-DDThh:mm:ssZ
 	 */
-	String toISO8601();
+	String toISO8601() const;
 
 	/** @brief  Get human readable date and time
 	 *  @retval String Date and time in format DDD, DD MMM YYYY hh:mm:ss GMT
 	 */
-	String toHTTPDate();
+	String toHTTPDate() const;
 
 	/** @brief  Add time to date time object
 	 *  @param  add Quantity of milliseconds to add to object
@@ -279,21 +279,22 @@ public:
 	 *  | %%Y   | Year as a decimal number (range 1970 to ...) |  |
 	 *  | %%    | Percent sign |  |
 	 */
-	String format(const char* formatString);
+	String format(const char* formatString) const;
 
 	/** @brief  Create string formatted with time and date placeholders
 	 *  @param  formatString String including date and time formatting
 	 *  @retval String Formatted string
 	 *  @note see format(const char*) for parameter details
 	 */
-	String format(const String& formatString)
+	String format(const String& formatString) const
 	{
 		return format(formatString.c_str());
 	}
 
 private:
-	void calcDayOfYear();				// Helper function calculates day of year
-	uint8_t calcWeek(uint8_t firstDay); //Helper function calculates week number based on firstDay of week
+	// Helper methods
+	void calcDayOfYear();					  // Calculate day of year
+	uint8_t calcWeek(uint8_t firstDay) const; // Calculate week number based on firstDay of week
 
 public:
 	uint8_t Hour = 0;		   ///< Hour (0-23)

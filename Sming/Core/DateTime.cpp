@@ -103,7 +103,7 @@ void DateTime::setTime(time_t time)
 	calcDayOfYear();
 }
 
-bool DateTime::isNull()
+bool DateTime::isNull() const
 {
 	return Second == 0 && Minute == 0 && Hour == 0 && Day == 0 && Month == 0 && Year == 0 && DayofWeek == 0 &&
 		   Milliseconds == 0;
@@ -169,32 +169,32 @@ bool DateTime::fromHttpDate(const String& httpDate)
 	return true;
 }
 
-time_t DateTime::toUnixTime()
+time_t DateTime::toUnixTime() const
 {
 	return toUnixTime(Second + (Milliseconds / 1000), Minute, Hour, Day, Month, Year);
 }
 
-String DateTime::toShortDateString()
+String DateTime::toShortDateString() const
 {
 	return format(_F("%d.%m.%Y"));
 }
 
-String DateTime::toShortTimeString(bool includeSeconds)
+String DateTime::toShortTimeString(bool includeSeconds) const
 {
 	return format(includeSeconds ? _F("%T") : _F("%r"));
 }
 
-String DateTime::toFullDateTimeString()
+String DateTime::toFullDateTimeString() const
 {
 	return format(_F("%x %T"));
 }
 
-String DateTime::toISO8601()
+String DateTime::toISO8601() const
 {
 	return format(_F("%FT%TZ"));
 }
 
-String DateTime::toHTTPDate()
+String DateTime::toHTTPDate() const
 {
 	return format(_F("%a, %d %b %Y %T GMT"));
 }
@@ -298,7 +298,7 @@ time_t DateTime::toUnixTime(int sec, int min, int hour, int day, uint8_t month, 
 	return seconds;
 }
 
-String DateTime::format(const char* sFormat)
+String DateTime::format(const char* sFormat) const
 {
 	if(sFormat == nullptr) {
 		return nullptr;
@@ -454,7 +454,7 @@ void DateTime::calcDayOfYear()
 	DayofYear += Day;
 }
 
-uint8_t DateTime::calcWeek(uint8_t firstDay)
+uint8_t DateTime::calcWeek(uint8_t firstDay) const
 {
 	int16_t startOfWeek = DayofYear - DayofWeek + firstDay;
 	int8_t firstDayofWeek = startOfWeek % 7;
