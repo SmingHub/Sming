@@ -17,7 +17,7 @@ This library simplifies the communication with such devices.
 Usage
 -----
 
-1. Add ``COMPONENT_DEPENDS += AtClient`` to your application componenent.mk file.
+1. Add ``COMPONENT_DEPENDS += AtClient`` to your application component.mk file.
 2. Add these lines to your application::
 
 	#include <AtClient.h>
