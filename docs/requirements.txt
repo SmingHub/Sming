@@ -6,7 +6,6 @@ m2r2==0.3.3.post2
 breathe==4.35.0
 sphinxcontrib-wavedrom
 sphinx-copybutton
-sphinxcontrib-seqdiag
 jinja2>=3.0.3
 setuptools>=57.5.0
-pillow==9.5.0 # V10 breaks seqdiag
+pillow
