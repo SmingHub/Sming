@@ -169,6 +169,88 @@ bool DateTime::fromHttpDate(const String& httpDate)
 	return true;
 }
 
+bool DateTime::fromISO8601(const String& datetime)
+{
+	auto ptr = datetime.c_str();
+	bool notDigit{false};
+
+	// Parse and return a decimal number of the given length and update ptr to the first non-numeric character after it
+	auto parseNumber = [&](unsigned digitCount) -> unsigned {
+		unsigned value{0};
+		while(digitCount--) {
+			char c = *ptr;
+			if(!isdigit(c)) {
+				notDigit = true;
+				break;
+			}
+			value = (value * 10) + c - '0';
+			++ptr;
+		}
+		return value;
+	};
+
+	auto skip = [&](char c) -> bool {
+		if(*ptr != c) {
+			return false;
+		}
+
+		++ptr;
+		return true;
+	};
+
+	bool haveTime = skip('T') || ptr[2] == ':';
+
+	if(haveTime) {
+		Year = 1970;
+		Month = dtJanuary;
+		Day = 1;
+	} else {
+		Year = parseNumber(4);
+		skip('-');
+		Month = parseNumber(2) - 1;
+		skip('-');
+		if(*ptr == '\0' || isspace(*ptr)) {
+			Day = 1;
+		} else {
+			Day = parseNumber(2);
+		}
+		if(notDigit) {
+			return false;
+		}
+		haveTime = skip('T');
+	}
+
+	Hour = parseNumber(2);
+	skip(':');
+	Minute = parseNumber(2);
+	skip(':');
+	Milliseconds = 0;
+	if(*ptr == '\0') {
+		Second = 0;
+	} else {
+		Second = parseNumber(2);
+		if(*ptr == '.') {
+			++ptr;
+			Milliseconds = parseNumber(3);
+			// Discard any microsecond digits
+			while(isdigit(*ptr)) {
+				++ptr;
+			}
+		}
+	}
+	if(haveTime && notDigit) {
+		return false;
+	}
+
+	if(*ptr != '\0') {
+		return false;
+	}
+
+	calcDayOfYear();
+
+	return true;
+}
+
 time_t DateTime::toUnixTime() const
 {
 	return toUnixTime(Second + (Milliseconds / 1000), Minute, Hour, Day, Month, Year);

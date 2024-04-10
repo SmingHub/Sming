@@ -11,7 +11,7 @@ namespace
 {
 DEFINE_FSTR_LOCAL(commandPrompt, "Enter Unix timestamp: ");
 
-void showTime(DateTime dt)
+void showTime(const DateTime& dt)
 {
 	auto printFormat = [&dt](const String& fmt, const String& msg) -> void {
 		Serial << fmt << ' ' << msg << ": " << dt.format(fmt) << endl;
@@ -85,10 +85,9 @@ void onRx(Stream& source, char arrivedChar, unsigned short availableCharsCount)
 		String s(buffer);
 		buffer.clear();
 		char* p;
-		time_t timestamp = strtoul(s.c_str(), &p, 0);
+		time_t timestamp = strtoll(s.c_str(), &p, 0);
 		if(p == s.end()) {
-			Serial << endl
-				   << _F("****Showing DateTime formatting options for Unix timestamp: ") << uint32_t(timestamp) << endl;
+			Serial << endl << _F("****Showing DateTime formatting options for Unix timestamp: ") << timestamp << endl;
 			showTime(timestamp);
 			break;
 		}
@@ -100,7 +99,13 @@ void onRx(Stream& source, char arrivedChar, unsigned short availableCharsCount)
 			break;
 		}
 
-		Serial << endl << _F("Please enter a valid numeric timestamp, or HTTP time string!") << endl;
+		if(dt.fromISO8601(s)) {
+			Serial << endl << _F("****Showing DateTime formatting options for ISO8601 date/time: ") << s << endl;
+			showTime(dt);
+			break;
+		}
+
+		Serial << endl << _F("Please enter a valid numeric timestamp, HTTP or ISO8601 date/time string!") << endl;
 		break;
 	}
 

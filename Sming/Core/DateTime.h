@@ -158,6 +158,29 @@ public:
 	 */
 	bool fromHttpDate(const String& httpDate);
 
+	/** @brief  Parse an ISO8601 date/time string
+	 *  @param  datetime Date and optional time in ISO8601 format, e.g. "1994-11-06", "1994-11-06T08:49:37". Separators are optional.
+	 *  @retval bool True on success
+	 *  @see See https://en.wikipedia.org/wiki/ISO_8601
+	 *
+	 * `Basic format` doesn't include separators, whereas `Extended format` does.
+	 *
+	 * Acceptable date formats:
+	 *
+	 * 	YYYY-MM-DD or YYYYMMDD
+	 * 	YYYY-MM (but not YYYYMM)
+	 *
+	 * Acceptable time formats:
+	 *
+	 * 	Thh:mm:ss.sss or Thhmmss.sss
+	 * 	Thh:mm:ss or Thhmmss
+	 * 	Thh:mm.mmm or Thhmm.mmm
+	 * 	Thh:mm or Thhmm
+	 * 	Thh.hhh
+	 * 	Thh
+	 */
+	bool fromISO8601(const String& datetime);
+
 	/** @brief  Check if time date object is initialised
 	 *  @retval True if object has no value. False if initialised.
 	 */
