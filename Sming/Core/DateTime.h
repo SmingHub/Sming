@@ -57,13 +57,30 @@
 /** @brief  Days of week
 */
 enum dtDays_t {
-	dtSunday,	///< Sunday
-	dtMonday,	///< Monday
-	dtTuesday,   ///< Tuesday
-	dtWednesday, ///< Wednesday
-	dtThursday,  ///< Thursday
-	dtFriday,	///< Friday
-	dtSaturday   ///< Saturday
+	dtSunday,
+	dtMonday,
+	dtTuesday,
+	dtWednesday,
+	dtThursday,
+	dtFriday,
+	dtSaturday,
+};
+
+/** @brief  Months
+*/
+enum dtMonth_t {
+	dtJanuary,
+	dtFebruary,
+	dtMarch,
+	dtApril,
+	dtMay,
+	dtJune,
+	dtJuly,
+	dtAugust,
+	dtSeptember,
+	dtOctober,
+	dtNovember,
+	dtDecember,
 };
 
 /** @brief  Date and time class

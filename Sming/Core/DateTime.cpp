@@ -244,7 +244,7 @@ void DateTime::fromUnixTime(time_t timep, uint8_t* psec, uint8_t* pmin, uint8_t*
 	// *pdayofyear=epoch;  // days since jan 1 this year
 
 	uint8_t month;
-	for(month = 0; month < 12; month++) {
+	for(month = dtJanuary; month <= dtDecember; month++) {
 		uint8_t monthDays = getMonthDays(month, year);
 		if(epoch >= monthDays) {
 			epoch -= monthDays;
@@ -279,8 +279,8 @@ time_t DateTime::toUnixTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day,
 		}
 	}
 	// add days for this year
-	for(unsigned i = 0; i < month; i++) {
-		seconds += SECS_PER_DAY * getMonthDays(i, year);
+	for(unsigned m = dtJanuary; m < month; ++m) {
+		seconds += SECS_PER_DAY * getMonthDays(m, year);
 	}
 
 	seconds += (day - 1) * SECS_PER_DAY;
@@ -429,15 +429,15 @@ String DateTime::format(const char* sFormat)
 void DateTime::calcDayOfYear()
 {
 	DayofYear = 0;
-	for(auto i = 0; i < Month; ++i) {
-		switch(i) {
-		case 8:  // Sep
-		case 3:  // Apr
-		case 5:  // Jun
-		case 10: // Nov
+	for(unsigned m = dtJanuary; m < Month; ++m) {
+		switch(m) {
+		case dtSeptember:
+		case dtApril:
+		case dtJune:
+		case dtNovember:
 			DayofYear += 30;
 			break;
-		case 1: // Feb
+		case dtFebruary:
 			DayofYear += isLeapYear(Year) ? 29 : 28;
 			break;
 		default:
