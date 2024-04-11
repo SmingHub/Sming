@@ -1,0 +1,76 @@
+
+/*
+    * DateTime test data
+    *
+    * File generated Thu Apr 11 14:30:36 2024
+    *
+    */
+
+// clang-format off
+
+namespace
+{
+struct TestDate {
+    const FlashString* stringToParse;
+    const FlashString* expectedString;
+    int64_t unixTimestamp;
+    uint16_t milliseconds;
+};
+
+#define VALID_HTTP_DATE_MAP(XX) \
+  XX(DT_1, "Sun, 06 Nov 1994 08:49:37 GMT", "Sun, 06 Nov 1994 08:49:37 GMT", 0x2ebc98a1LL, 0) \
+  XX(DT_2, "Sunday, 06 Nov 1994 08:49:37 GMT", "Sun, 06 Nov 1994 08:49:37 GMT", 0x2ebc98a1LL, 0) \
+  XX(DT_3, "Sunday, 06-Nov-94 08:49:37 GMT", "Sun, 06 Nov 1994 08:49:37 GMT", 0x2ebc98a1LL, 0) \
+  XX(DT_4, "Mon, 07 November 1994 00:00:00", "Mon, 07 Nov 1994 00:00:00 GMT", 0x2ebd6e00LL, 0) \
+  XX(DT_5, "  1   JAN\t \r\n \t2000    23:59:59", "Sat, 01 Jan 2000 23:59:59 GMT", 0x386e94ffLL, 0)
+
+#define VALID_ISO_DATETIME_MAP(XX) \
+  XX(DT_6, "2024-01-31", "2024-01-31T00:00:00Z", 0x65b98d80LL, 0) \
+  XX(DT_7, "20240131", "2024-01-31T00:00:00Z", 0x65b98d80LL, 0) \
+  XX(DT_8, "2024-01", "2024-01-01T00:00:00Z", 0x65920080LL, 0) \
+  XX(DT_9, "1901-12-13T20:45:53", "1901-12-13T20:45:53Z", -0x7fffffffLL, 0) \
+  XX(DT_10, "1901-12-13T20:45:52", "1901-12-13T20:45:52Z", -0x80000000LL, 0) \
+  XX(DT_11, "1970-01-01T00:00:00", "1970-01-01T00:00:00Z", 0x0LL, 0) \
+  XX(DT_12, "2038-01-19T03:14:07", "2038-01-19T03:14:07Z", 0x7fffffffLL, 0) \
+  XX(DT_13, "1950-01-01", "1950-01-01T00:00:00Z", -0x259e9d80LL, 0) \
+  XX(DT_14, "2024-04-08T12:33:17", "2024-04-08T12:33:17Z", 0x6613e40dLL, 0) \
+  XX(DT_15, "2024-04-09T12:33:16", "2024-04-09T12:33:16Z", 0x6615358cLL, 0)
+
+#define VALID_ISO_DATETIME64_MAP(XX) \
+  XX(DT_16, "2038-01-19T03:14:08", "2038-01-19T03:14:08Z", 0x80000000LL, 0) \
+  XX(DT_17, "2099-12-31T23:59:59", "2099-12-31T23:59:59Z", 0xf48656ffLL, 0) \
+  XX(DT_18, "2105-12-31T23:59:59", "2105-12-31T23:59:59Z", 0xffcedd7fLL, 0) \
+  XX(DT_19, "2106-02-07T06:28:15", "2106-02-07T06:28:15Z", 0xffffffffLL, 0) \
+  XX(DT_20, "2106-02-07T06:28:15", "2106-02-07T06:28:15Z", 0xffffffffLL, 0) \
+  XX(DT_21, "2106-02-07T06:28:16", "2106-02-07T06:28:16Z", 0x100000000LL, 0) \
+  XX(DT_22, "1901-12-13T20:45:52", "1901-12-13T20:45:52Z", -0x80000000LL, 0)
+
+#define VALID_ISO_TIME_MAP(XX) \
+  XX(DT_23, "T18:47:12.123", "18:47:12.123", 0x10830LL, 123) \
+  XX(DT_24, "T18:47:12.123456", "18:47:12.123", 0x10830LL, 123) \
+  XX(DT_25, "T12:34:12", "12:34:12", 0xb0c4LL, 0) \
+  XX(DT_26, "T23:59:59", "23:59:59", 0x1517fLL, 0) \
+  XX(DT_27, "12:34", "12:34:00", 0xb0b8LL, 0) \
+  XX(DT_28, "T2359", "23:59:00", 0x15144LL, 0)
+
+
+#define XX(tag, str, str2, ...) \
+    DEFINE_FSTR_LOCAL(STR1_##tag, str) \
+    DEFINE_FSTR_LOCAL(STR2_##tag, str2)
+  VALID_HTTP_DATE_MAP(XX)
+  VALID_ISO_DATETIME_MAP(XX)
+  VALID_ISO_DATETIME64_MAP(XX)
+  VALID_ISO_TIME_MAP(XX)
+
+#undef XX
+
+#define XX(tag, str, str2, ...) {&STR1_##tag, &STR2_##tag, ##__VA_ARGS__},
+DEFINE_FSTR_ARRAY(VALID_HTTP_DATE, TestDate, VALID_HTTP_DATE_MAP(XX))
+DEFINE_FSTR_ARRAY(VALID_ISO_DATETIME, TestDate, VALID_ISO_DATETIME_MAP(XX))
+DEFINE_FSTR_ARRAY(VALID_ISO_DATETIME64, TestDate, VALID_ISO_DATETIME64_MAP(XX))
+DEFINE_FSTR_ARRAY(VALID_ISO_TIME, TestDate, VALID_ISO_TIME_MAP(XX))
+
+#undef XX
+
+} // namespace
+
