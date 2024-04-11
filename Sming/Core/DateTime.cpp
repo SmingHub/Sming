@@ -502,8 +502,12 @@ String DateTime::format(const char* sFormat) const
 		case 'R': // Short time (HH:MM)
 			sReturn += format(_F("%H:%M"));
 			break;
-		case 'T': // ISO 8601 time format (HH:MM:SS)
+		case 'T': // ISO 8601 time format (HH:MM:SS{.mmm})
 			sReturn += format(_F("%H:%M:%S"));
+			if(Milliseconds != 0) {
+				sReturn += '.';
+				sReturn.concat(Milliseconds, DEC, 3);
+			}
 			break;
 		case 'p': // Meridiem [AM,PM]
 			sReturn += (Hour < 12) ? "AM" : "PM";
