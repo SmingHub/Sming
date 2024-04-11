@@ -81,10 +81,13 @@ bool isLeapYear(uint16_t year)
  *  @param year
  *  @retval uint8_t number of days in the month
  */
-uint8_t getMonthDays(uint8_t month, uint8_t year)
+uint8_t getMonthDays(uint8_t month, uint16_t year)
 {
-	static const uint8_t monthDays[] PROGMEM = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-	return (month == 1 && isLeapYear(year)) ? 29 : pgm_read_byte(&monthDays[month]);
+	if(month == dtFebruary) {
+		return isLeapYear(year) ? 29 : 28;
+	}
+	const uint32_t monthDays = 0b101011010101;
+	return 30 + ((monthDays >> month) & 0x01);
 }
 
 } // namespace
@@ -263,21 +266,25 @@ void DateTime::fromUnixTime(time_t timep, uint8_t* psec, uint8_t* pmin, uint8_t*
 
 time_t DateTime::toUnixTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year)
 {
-	// converts time components to time_t
-	// note year argument is full four digit year (or digits since 2000), i.e.1975, (year 8 is 2008)
-
 	if(year < 69) {
 		year += 2000;
 	}
+
 	// seconds from 1970 till 1 jan 00:00:00 this year
-	time_t seconds = (year - 1970) * (SECS_PER_DAY * 365);
+	auto seconds = time_t(year - 1970) * (SECS_PER_DAY * 365);
 
 	// add extra days for leap years
-	for(unsigned i = 1970; i < year; i++) {
-		if(isLeapYear(i)) {
+	for(unsigned y = 1972; y < year; y += 4) {
+		if(isLeapYear(y)) {
 			seconds += SECS_PER_DAY;
 		}
 	}
+	for(unsigned y = 1968; y >= year; y -= 4) {
+		if(isLeapYear(y)) {
+			seconds -= SECS_PER_DAY;
+		}
+	}
+
 	// add days for this year
 	for(unsigned m = dtJanuary; m < month; ++m) {
 		seconds += SECS_PER_DAY * getMonthDays(m, year);

@@ -227,11 +227,11 @@ public:
 	 *  @param  min Minutes
 	 *  @param  hour Hours
 	 *  @param  day Days
-	 *  @param  month Month (0-11, Jan=0, Feb=1, ...Dec=11)
-	 *  @param  year Year (1901-2036), either full 4 digit year or 2 digits for 1970-2036
+	 *  @param  month Month (0-11, Jan=0, Feb=1, ...Dec=11), or enum (dtJanuary, ...)
+	 *  @param  year Year, either full 4 digit year or 2 digits for 2000-2068
+	 *  @retval time_t Number of seconds since unix epoch (Midnight, Jan 1 1970)
 	 *  @note   Seconds, minutes, hours and days may be any value, e.g. to calculate the value for 300 days since 1970 (epoch), set day=300
-	 *  @note   This static function  may be used without instantiating a DateTime object, e.g. time_t unixTime = DateTime::convertToUnixTime(...);
-	 *  @note   32-bit Unix time is valid between 1901-12-13 and 03:14:07 2038-01-19
+	 *  @note   This static function  may be used without instantiating a DateTime object, e.g. `time_t unixTime = DateTime::toUnixTime(...);`
 	 *  @note   Unix time does not account for leap seconds.
 	 */
 	static time_t toUnixTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year);
