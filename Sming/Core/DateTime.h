@@ -234,7 +234,7 @@ public:
 	 *  @note   This static function  may be used without instantiating a DateTime object, e.g. `time_t unixTime = DateTime::toUnixTime(...);`
 	 *  @note   Unix time does not account for leap seconds.
 	 */
-	static time_t toUnixTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year);
+	static time_t toUnixTime(int sec, int min, int hour, int day, uint8_t month, uint16_t year);
 
 	/** @brief  Create string formatted with time and date placeholders
 	 *  @param  formatString String including date and time formatting

@@ -264,7 +264,7 @@ void DateTime::fromUnixTime(time_t timep, uint8_t* psec, uint8_t* pmin, uint8_t*
 	}
 }
 
-time_t DateTime::toUnixTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year)
+time_t DateTime::toUnixTime(int sec, int min, int hour, int day, uint8_t month, uint16_t year)
 {
 	if(year < 69) {
 		year += 2000;
@@ -290,9 +290,9 @@ time_t DateTime::toUnixTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day,
 		seconds += SECS_PER_DAY * getMonthDays(m, year);
 	}
 
-	seconds += (day - 1) * SECS_PER_DAY;
-	seconds += hour * SECS_PER_HOUR;
-	seconds += min * SECS_PER_MIN;
+	seconds += time_t(day - 1) * SECS_PER_DAY;
+	seconds += time_t(hour) * SECS_PER_HOUR;
+	seconds += time_t(min) * SECS_PER_MIN;
 	seconds += sec;
 
 	return seconds;
