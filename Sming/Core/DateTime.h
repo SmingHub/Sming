@@ -21,7 +21,6 @@
 #include "SmingLocale.h"
 #include <sming_attr.h>
 
-/*==============================================================================*/
 /* Useful Constants */
 #define SECS_PER_MIN (60UL)
 #define SECS_PER_HOUR (3600UL)
@@ -31,40 +30,90 @@
 #define SECS_PER_YEAR (SECS_PER_WEEK * 52L)
 #define SECS_YR_2000 (946681200UL)
 
-/* Useful Macros for getting elapsed time */
-/** Get just seconds part of given Unix time */
-#define numberOfSeconds(_time_) (_time_ % SECS_PER_MIN)
-/** Get just minutes part of given Unix time */
-#define numberOfMinutes(_time_) ((_time_ / SECS_PER_MIN) % SECS_PER_MIN)
-/** Get just hours part of given Unix time */
-#define numberOfHours(_time_) ((_time_ % SECS_PER_DAY) / SECS_PER_HOUR)
-/** Get day of week from given Unix time */
-#define dayOfWeek(_time_) ((_time_ / SECS_PER_DAY + 4) % DAYS_PER_WEEK) // 0 = Sunday
-/** Get elapsed days since 1970-01-01 from given Unix time */
-#define elapsedDays(_time_) (_time_ / SECS_PER_DAY) // this is number of days since Jan 1 1970
-/** Get quantity of seconds since midnight from given Unix time */
-#define elapsedSecsToday(_time_) (_time_ % SECS_PER_DAY) // the number of seconds since last midnight
-/** Get Unix time of midnight at start of day from given Unix time */
-#define previousMidnight(_time_) ((_time_ / SECS_PER_DAY) * SECS_PER_DAY) // time at the start of the given day
-/** Get Unix time of midnight at end of day from given just Unix time */
-#define nextMidnight(_time_) (previousMidnight(_time_) + SECS_PER_DAY) // time at the end of the given day
-/** Get quantity of seconds since midnight at start of previous Sunday from given Unix time */
-#define elapsedSecsThisWeek(_time_) (elapsedSecsToday(_time_) + (dayOfWeek(_time_) * SECS_PER_DAY))
-
-// todo add date math macros
-/*============================================================================*/
-
 /** @brief  Days of week
 */
 enum dtDays_t {
-	dtSunday,	///< Sunday
-	dtMonday,	///< Monday
-	dtTuesday,   ///< Tuesday
-	dtWednesday, ///< Wednesday
-	dtThursday,  ///< Thursday
-	dtFriday,	///< Friday
-	dtSaturday   ///< Saturday
+	dtSunday,
+	dtMonday,
+	dtTuesday,
+	dtWednesday,
+	dtThursday,
+	dtFriday,
+	dtSaturday,
 };
+
+/** @brief  Months
+*/
+enum dtMonth_t {
+	dtJanuary,
+	dtFebruary,
+	dtMarch,
+	dtApril,
+	dtMay,
+	dtJune,
+	dtJuly,
+	dtAugust,
+	dtSeptember,
+	dtOctober,
+	dtNovember,
+	dtDecember,
+};
+
+/* Useful functions for getting elapsed time */
+
+/** Get just seconds part of given Unix time */
+inline constexpr uint8_t numberOfSeconds(time_t time)
+{
+	return time % SECS_PER_MIN;
+}
+
+/** Get just minutes part of given Unix time */
+inline constexpr uint8_t numberOfMinutes(time_t time)
+{
+	return (time / SECS_PER_MIN) % SECS_PER_MIN;
+}
+
+/** Get just hours part of given Unix time */
+inline constexpr uint8_t numberOfHours(time_t time)
+{
+	return (time % SECS_PER_DAY) / SECS_PER_HOUR;
+}
+
+/** Get day of week from given Unix time */
+inline constexpr dtDays_t dayOfWeek(time_t time)
+{
+	return dtDays_t((time / SECS_PER_DAY + 4) % DAYS_PER_WEEK);
+}
+
+/** Get elapsed days since 1970-01-01 from given Unix time */
+inline constexpr uint8_t elapsedDays(time_t time)
+{
+	return time / SECS_PER_DAY;
+}
+
+/** Get quantity of seconds since midnight from given Unix time */
+inline constexpr unsigned elapsedSecsToday(time_t time)
+{
+	return time % SECS_PER_DAY;
+}
+
+/** Get Unix time of midnight at start of day from given Unix time */
+inline constexpr time_t previousMidnight(time_t time)
+{
+	return (time / SECS_PER_DAY) * SECS_PER_DAY;
+}
+
+/** Get Unix time of midnight at end of day from given just Unix time */
+inline constexpr time_t nextMidnight(time_t time)
+{
+	return previousMidnight(time) + SECS_PER_DAY;
+}
+
+/** Get quantity of seconds since midnight at start of previous Sunday from given Unix time */
+inline constexpr unsigned elapsedSecsThisWeek(time_t time)
+{
+	return elapsedSecsToday(time) + dayOfWeek(time) * SECS_PER_DAY;
+}
 
 /** @brief  Date and time class
  *
@@ -73,8 +122,15 @@ enum dtDays_t {
  * This means that timespan calculation and free-running clocks may be inaccurate if they span leap seconds.
  * To facilitate leap seconds, reference must be made to leap second table.
  * This will not be done within the Sming framework and must be handled by application code if required.
+ * @see https://www.eecis.udel.edu/~mills/leap.html
  *
- *  @note   Sming uses 32-bit signed integer for its time_t data type which supports a range of +/-68 years. This means Sming is susceptible to Year 2038 problem.
+ * @note time_t is a signed 64-bit value for all architectures **except** Windows Host and esp32 ESP-IDF 4.x.
+ *
+ * 32-bit signed values support a range of +/-68 years; the Unix epoch is midnight 1 Jan 1970, so overflows at about 3am on 19 Jan 2038.
+ * The value is signed which allows dates prior to 1970 to be represented.
+ *
+ * An unsigned 32-bit value can be used to store dates provided they are after 1970.
+ * These are good until February 2106.
  */
 class DateTime
 {
@@ -134,42 +190,65 @@ public:
 	 */
 	bool fromHttpDate(const String& httpDate);
 
+	/** @brief  Parse an ISO8601 date/time string
+	 *  @param  datetime Date and optional time in ISO8601 format, e.g. "1994-11-06", "1994-11-06T08:49:37". Separators are optional.
+	 *  @retval bool True on success
+	 *  @see See https://en.wikipedia.org/wiki/ISO_8601
+	 *
+	 * `Basic format` doesn't include separators, whereas `Extended format` does.
+	 *
+	 * Acceptable date formats:
+	 *
+	 * 	YYYY-MM-DD or YYYYMMDD
+	 * 	YYYY-MM (but not YYYYMM)
+	 *
+	 * Acceptable time formats:
+	 *
+	 * 	Thh:mm:ss.sss or Thhmmss.sss
+	 * 	Thh:mm:ss or Thhmmss
+	 * 	Thh:mm.mmm or Thhmm.mmm
+	 * 	Thh:mm or Thhmm
+	 * 	Thh.hhh
+	 * 	Thh
+	 */
+	bool fromISO8601(const String& datetime);
+
 	/** @brief  Check if time date object is initialised
 	 *  @retval True if object has no value. False if initialised.
 	 */
-	bool isNull();
+	bool isNull() const;
 
 	/** @brief  Get Unix time
 	 *  @retval time_t Unix time, quantity of seconds since 00:00:00 1970-01-01
-	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
+	 *  @note   Unix time does not account for leap seconds.
 	 */
-	time_t toUnixTime();
+	time_t toUnixTime() const;
 
 	/** @brief  Get human readable date
 	 *  @retval String Date in requested format, e.g. DD.MM.YYYY
 	 */
-	String toShortDateString();
+	String toShortDateString() const;
 
 	/** @brief  Get human readable time
 	 *  @param  includeSeconds True to include seconds (Default: false)
 	 *  @retval String Time in format hh:mm or hh:mm:ss
 	 */
-	String toShortTimeString(bool includeSeconds = false);
+	String toShortTimeString(bool includeSeconds = false) const;
 
 	/** @brief  Get human readable date and time
 	 *  @retval String Date and time in format DD.MM.YYYY hh:mm:ss
 	 */
-	String toFullDateTimeString();
+	String toFullDateTimeString() const;
 
 	/** @brief  Get human readable date and time
 	 *  @retval String Date and time in format YYYY-MM-DDThh:mm:ssZ
 	 */
-	String toISO8601();
+	String toISO8601() const;
 
 	/** @brief  Get human readable date and time
 	 *  @retval String Date and time in format DDD, DD MMM YYYY hh:mm:ss GMT
 	 */
-	String toHTTPDate();
+	String toHTTPDate() const;
 
 	/** @brief  Add time to date time object
 	 *  @param  add Quantity of milliseconds to add to object
@@ -190,7 +269,7 @@ public:
 	 *  @note   Pass the Unix timedate value and pointers to existing integers. The integers are updated with the converted values
 	 *  @note   This static function  may be used without instantiating a DateTime object, e.g. DateTime::convertFromUnixTime(...);
 	 *  @note   32-bit Unix time has year 2036 issue.
-	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
+	 *  @note   Unix time does not account for leap seconds.
 	 *  @note   All of the return values are optional, specify nullptr if not required
 	 */
 	static void fromUnixTime(time_t timep, uint8_t* psec, uint8_t* pmin, uint8_t* phour, uint8_t* pday, uint8_t* pwday,
@@ -203,14 +282,14 @@ public:
 	 *  @param  min Minutes
 	 *  @param  hour Hours
 	 *  @param  day Days
-	 *  @param  month Month (0-11, Jan=0, Feb=1, ...Dec=11)
-	 *  @param  year Year (1901-2036), either full 4 digit year or 2 digits for 1970-2036
+	 *  @param  month Month (0-11, Jan=0, Feb=1, ...Dec=11), or enum (dtJanuary, ...)
+	 *  @param  year Year, either full 4 digit year or 2 digits for 2000-2068
+	 *  @retval time_t Number of seconds since unix epoch (Midnight, Jan 1 1970)
 	 *  @note   Seconds, minutes, hours and days may be any value, e.g. to calculate the value for 300 days since 1970 (epoch), set day=300
-	 *  @note   This static function  may be used without instantiating a DateTime object, e.g. time_t unixTime = DateTime::convertToUnixTime(...);
-	 *  @note   32-bit Unix time is valid between 1901-12-13 and 03:14:07 2038-01-19
-	 *  @note   Unix time does not account for leap seconds. To convert Unix time to UTC requires reference to a leap second table.
+	 *  @note   This static function  may be used without instantiating a DateTime object, e.g. `time_t unixTime = DateTime::toUnixTime(...);`
+	 *  @note   Unix time does not account for leap seconds.
 	 */
-	static time_t toUnixTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year);
+	static time_t toUnixTime(int sec, int min, int hour, int day, uint8_t month, uint16_t year);
 
 	/** @brief  Create string formatted with time and date placeholders
 	 *  @param  formatString String including date and time formatting
@@ -255,21 +334,30 @@ public:
 	 *  | %%Y   | Year as a decimal number (range 1970 to ...) |  |
 	 *  | %%    | Percent sign |  |
 	 */
-	String format(const char* formatString);
+	String format(const char* formatString) const;
 
 	/** @brief  Create string formatted with time and date placeholders
 	 *  @param  formatString String including date and time formatting
 	 *  @retval String Formatted string
 	 *  @note see format(const char*) for parameter details
 	 */
-	String format(const String& formatString)
+	String format(const String& formatString) const
 	{
 		return format(formatString.c_str());
 	}
 
+	static bool isLeapYear(uint16_t year);
+	static uint8_t getMonthDays(uint8_t month, uint16_t year);
+	static String getLocaleDayName(uint8_t day);
+	static String getLocaleMonthName(uint8_t month);
+	static String getIsoDayName(uint8_t day);
+	static String getIsoMonthName(uint8_t month);
+	static uint16_t getDaysInYear(uint16_t year);
+
 private:
-	void calcDayOfYear();				// Helper function calculates day of year
-	uint8_t calcWeek(uint8_t firstDay); //Helper function calculates week number based on firstDay of week
+	// Helper methods
+	void calcDayOfYear();					  // Calculate day of year
+	uint8_t calcWeek(uint8_t firstDay) const; // Calculate week number based on firstDay of week
 
 public:
 	uint8_t Hour = 0;		   ///< Hour (0-23)

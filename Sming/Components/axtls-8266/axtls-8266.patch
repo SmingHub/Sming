@@ -220,7 +220,7 @@ index 53509d0..25c568d 100644
  #endif
  
 diff --git a/replacements/time.c b/replacements/time.c
-index 4972119..3e7e407 100644
+index 4972119..d39481c 100644
 --- a/replacements/time.c
 +++ b/replacements/time.c
 @@ -16,29 +16,25 @@
@@ -286,7 +286,7 @@ index 4972119..3e7e407 100644
  {
      sntp_stop();
  
-@@ -93,22 +89,24 @@ void configTime(int timezone, int daylightOffset_sec, const char* server1, const
+@@ -93,22 +89,16 @@ void configTime(int timezone, int daylightOffset_sec, const char* server1, const
      sntp_init();
  }
  
@@ -302,21 +302,20 @@ index 4972119..3e7e407 100644
      return 0;
  }
  
- // seconds since 1970
+-// seconds since 1970
 -time_t mktime(struct tm *t)
-+time_t WEAK_ATTR mktime(struct tm *t)
- {
-     // system_mktime expects month in range 1..12
-     #define START_MONTH 1
-     return DIFF1900TO1970 + system_mktime(t->tm_year, t->tm_mon + START_MONTH, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
- }
- 
+-{
+-    // system_mktime expects month in range 1..12
+-    #define START_MONTH 1
+-    return DIFF1900TO1970 + system_mktime(t->tm_year, t->tm_mon + START_MONTH, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
+-}
+-
 -time_t time(time_t * t)
 +time_t WEAK_ATTR time(time_t * t)
  {
      time_t seconds = sntp_get_current_timestamp();
      if (t)
-@@ -118,30 +116,32 @@ time_t time(time_t * t)
+@@ -118,30 +108,32 @@ time_t time(time_t * t)
      return seconds;
  }
  

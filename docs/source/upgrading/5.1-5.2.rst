@@ -3,7 +3,7 @@ From v5.1 to v5.2
 
 .. highlight:: c++
 
-**Breaking change**
+**PartitionStream: Breaking change**
 
 The :cpp:class:`Storage::PartitionStream` constructors with ``blockErase`` parameter have been deprecated.
 The intended default behaviour is read-only, however previously this also allowed writing without block erase.
@@ -11,3 +11,33 @@ This can result in corrupted flash contents where the flash has not been explici
 
 The new constructors instead use a :cpp:enum:`Storage::Mode` so behaviour is more explicit.
 The default is read-only and writes will now be failed.
+
+
+**64-bit time_t**
+
+There is some variability in whether `time_t` is 32 or 64 bits. See issue #2758.
+
+This is dependent on the toolchain and accompanying C library.
+
+32-bits:
+
+- Esp32 IDF 4.x
+- Windows Host (using mingw)
+- Linux host builds prior to Sming v5.2
+
+Range of time_t:
+
+    -0x80000000: 1901-12-13 20:45:52
+    0x00000000: 1970-01-01 00:00:00
+    0x7fffffff: 2038-01-19 03:14:07
+
+All others use 64-bit values.
+
+For reference, C library source code can be found here https://sourceware.org/git/?p=newlib-cygwin.git;a=blob;f=newlib/libc/
+
+Rp2040 builds with standard ARM toolkit so probably accommodated by the standard repo.
+
+Espressif toolchains use forks:
+
+esp8266: https://github.com/earlephilhower/newlib-xtensa/blob/xtensa-4_0_0-lock-arduino/newlib/libc/
+esp32: https://github.com/espressif/newlib-esp32/blob/esp-4.3.0/newlib/libc/

@@ -9,58 +9,111 @@
 
 #include "DateTime.h"
 #include "Data/CStringArray.h"
-#include <stringconversion.h>
 
-#define LEAP_YEAR(year) ((year % 4) == 0)
+#ifdef ARCH_ESP32
+#include <esp_idf_version.h>
+#endif
 
-DEFINE_FSTR_LOCAL(flashMonthNames, LOCALE_MONTH_NAMES);
-DEFINE_FSTR_LOCAL(flashDayNames, LOCALE_DAY_NAMES);
+#if defined(__WIN32) || (defined(ARCH_ESP32) && ESP_IDF_VERSION_MAJOR < 5)
+static_assert(sizeof(time_t) != 8, "Great! Now supports 64-bit - please update code");
+#warning "**Y2038** time_t is only 32-bits in this build configuration"
+#else
+static_assert(sizeof(time_t) == 8, "Expecting 64-bit time_t");
+#endif
+
+namespace
+{
+DEFINE_FSTR(localeMonthNames, LOCALE_MONTH_NAMES);
+DEFINE_FSTR(localeDayNames, LOCALE_DAY_NAMES);
 
 /* We can more efficiently compare text of 4 character length by comparing as words */
 union FourDigitName {
 	char c[4];
 	uint32_t value;
 
+	// Compare without case-sensitivity
 	bool operator==(const FourDigitName& name) const
 	{
-		return value == name.value;
+		constexpr uint32_t caseMask{~0x20202020U};
+		return ((value ^ name.value) & caseMask) == 0;
+	}
+
+	explicit operator String() const
+	{
+		return String(c, 4);
 	}
 };
 
-static const FourDigitName isoDayNames[7] PROGMEM = {
-	{'S', 'u', 'n', '\0'}, {'M', 'o', 'n', '\0'}, {'T', 'u', 'e', '\0'}, {'W', 'e', 'd', '\0'},
-	{'T', 'h', 'u', '\0'}, {'F', 'r', 'i', '\0'}, {'S', 'a', 't', '\0'},
-};
+const FourDigitName isoDayNames[7] PROGMEM = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
-static const FourDigitName isoMonthNames[12] PROGMEM = {
-	{'J', 'a', 'n', '\0'}, {'F', 'e', 'b', '\0'}, {'M', 'a', 'r', '\0'}, {'A', 'p', 'r', '\0'},
-	{'M', 'a', 'y', '\0'}, {'J', 'u', 'n', '\0'}, {'J', 'u', 'l', '\0'}, {'A', 'u', 'g', '\0'},
-	{'S', 'e', 'p', '\0'}, {'O', 'c', 't', '\0'}, {'N', 'o', 'v', '\0'}, {'D', 'e', 'c', '\0'},
-};
+const FourDigitName isoMonthNames[12] PROGMEM = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+												 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+/*
+ * @brief Match a day or month name against a list of values and set the required value
+ * @param ptr Current string position
+ * @param value On success, contains index of matched string
+ * @isoNames Array of values
+ * @nameCount Number of names in array
+ * @retval bool false on failure
+ *
+ * Names are compared without case-sensitivity
+ */
+bool matchName(const char*& ptr, uint8_t& value, const FourDigitName isoNames[], unsigned nameCount)
+{
+	FourDigitName name{ptr[0], ptr[1], ptr[2]};
+	for(unsigned i = 0; i < nameCount; ++i) {
+		if(isoNames[i] == name) {
+			value = i;
+			ptr += 3;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool isLeapCentury(uint16_t year)
+{
+	return year % 100 != 0 || year % 400 == 0;
+}
+
+} // namespace
+
+bool DateTime::isLeapYear(uint16_t year)
+{
+	return year % 4 == 0 && isLeapCentury(year);
+}
 
 /** @brief Get the number of days in a month, taking leap years into account
  *  @param month 0=jan
  *  @param year
  *  @retval uint8_t number of days in the month
  */
-static uint8_t getMonthDays(uint8_t month, uint8_t year)
+uint8_t DateTime::getMonthDays(uint8_t month, uint16_t year)
 {
-	static const uint8_t monthDays[] PROGMEM = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-	return (month == 1 && LEAP_YEAR(year)) ? 29 : pgm_read_byte(&monthDays[month]);
+	if(month == dtFebruary) {
+		return isLeapYear(year) ? 29 : 28;
+	}
+	const uint32_t monthDays = 0b101011010101;
+	return 30 + ((monthDays >> month) & 0x01);
 }
-
-//******************************************************************************
-//* DateTime Public Methods
-//******************************************************************************
 
 void DateTime::setTime(time_t time)
 {
-	fromUnixTime(time, &Second, &Minute, &Hour, &Day, &DayofWeek, &Month, &Year);
+	struct tm t;
+	gmtime_r(&time, &t);
+	Year = t.tm_year + 1900;
+	Month = t.tm_mon;
+	Day = t.tm_mday;
+	DayofWeek = t.tm_wday;
+	Hour = t.tm_hour;
+	Minute = t.tm_min;
+	Second = t.tm_sec;
 	Milliseconds = 0;
 	calcDayOfYear();
 }
 
-bool DateTime::isNull()
+bool DateTime::isNull() const
 {
 	return Second == 0 && Minute == 0 && Hour == 0 && Day == 0 && Month == 0 && Year == 0 && DayofWeek == 0 &&
 		   Milliseconds == 0;
@@ -68,102 +121,197 @@ bool DateTime::isNull()
 
 bool DateTime::fromHttpDate(const String& httpDate)
 {
-	int first = httpDate.indexOf(',');
-	if(first < 0 || httpDate.length() - first < 20) {
-		return false;
-	}
-	first += 2; // Skip ", "
 	auto ptr = httpDate.c_str();
 
 	// Parse and return a decimal number and update ptr to the first non-numeric character after it
 	auto parseNumber = [&ptr]() { return strtol(ptr, const_cast<char**>(&ptr), 10); };
 
-	// Match a day or month name against a list of values and set the required value; return false on failure
-	auto matchName = [&ptr](uint8_t& value, const FourDigitName isoNames[], unsigned nameCount) {
-		FourDigitName name = {ptr[0], ptr[1], ptr[2], '\0'};
-		for(unsigned i = 0; i < nameCount; ++i) {
-			if(isoNames[i] == name) {
-				value = i;
-				return true;
-			}
+	auto skipWhitespace = [&ptr]() -> void {
+		while(isspace(*ptr)) {
+			++ptr;
 		}
-		return false;
 	};
 
-	if(!matchName(DayofWeek, isoDayNames, 7)) {
-		return false; // Invalid day of week
+	skipWhitespace();
+	if(!isdigit(*ptr)) {
+		if(!matchName(ptr, DayofWeek, isoDayNames, 7)) {
+			return false; // Invalid day of week
+		}
+		if(ptr[0] == ',') {
+			// Accept "Sun,", etc.
+			ptr += 2;
+		} else if(strncmp(ptr, "day,", 4) == 0) {
+			// Accept "Sunday, ", etc
+			ptr += 5;
+		} else {
+			return false;
+		}
 	}
 
-	ptr += first;
-
+	skipWhitespace();
 	Day = parseNumber();
-	if(*ptr == '\0') {
+	if(*ptr != '-' && !isspace(*ptr)) {
 		return false;
 	}
-	ptr++;
+	++ptr;
 
-	// Decode the month name
-	if(!matchName(Month, isoMonthNames, 12)) {
+	// Should we check DayOfWeek against calculation from date?
+	// We could just ignore the DOW...
+	skipWhitespace();
+	if(!matchName(ptr, Month, isoMonthNames, 12)) {
 		return false; // Invalid month
 	}
-	ptr += 4; // Skip space as well as month
+	if(*ptr != '-') {
+		// Skip over any other characters: assume that the full month name has been provided
+		while(*ptr != '\0' && !isspace(*ptr)) {
+			++ptr;
+		}
+		if(*ptr == '\0') {
+			return false;
+		}
+	}
+	++ptr;
 
+	skipWhitespace();
 	Year = parseNumber();
-	if(*ptr == '\0') {
+	if(*ptr++ != ' ') {
 		return false;
 	}
-
 	if(Year < 70) {
 		Year += 2000;
 	} else if(Year < 100) {
 		Year += 1900;
 	}
 
+	skipWhitespace();
 	Hour = parseNumber();
-	if(*ptr != ':') {
+	if(*ptr++ != ':') {
 		return false;
 	}
-
-	ptr++;
 	Minute = parseNumber();
-	if(*ptr != ':') {
+	if(*ptr++ != ':') {
+		return false;
+	}
+	Second = parseNumber();
+
+	if(*ptr != '\0' && strcmp(ptr, " GMT") != 0) {
 		return false;
 	}
 
-	ptr++;
-	Second = parseNumber();
 	Milliseconds = 0;
 	calcDayOfYear();
 
 	return true;
 }
 
-time_t DateTime::toUnixTime()
+bool DateTime::fromISO8601(const String& datetime)
+{
+	auto ptr = datetime.c_str();
+	bool notDigit{false};
+
+	// Parse and return a decimal number of the given length and update ptr to the first non-numeric character after it
+	auto parseNumber = [&](unsigned digitCount) -> unsigned {
+		unsigned value{0};
+		while(digitCount--) {
+			char c = *ptr;
+			if(!isdigit(c)) {
+				notDigit = true;
+				break;
+			}
+			value = (value * 10) + c - '0';
+			++ptr;
+		}
+		return value;
+	};
+
+	auto skip = [&](char c) -> bool {
+		if(*ptr != c) {
+			return false;
+		}
+
+		++ptr;
+		return true;
+	};
+
+	bool haveTime = skip('T') || ptr[2] == ':';
+
+	if(haveTime) {
+		Year = 1970;
+		Month = dtJanuary;
+		Day = 1;
+	} else {
+		Year = parseNumber(4);
+		skip('-');
+		Month = parseNumber(2) - 1;
+		skip('-');
+		if(*ptr == '\0' || isspace(*ptr)) {
+			Day = 1;
+		} else {
+			Day = parseNumber(2);
+		}
+		if(notDigit) {
+			return false;
+		}
+		haveTime = skip('T');
+	}
+
+	Hour = parseNumber(2);
+	skip(':');
+	Minute = parseNumber(2);
+	skip(':');
+	Milliseconds = 0;
+	if(*ptr == '\0') {
+		Second = 0;
+	} else {
+		Second = parseNumber(2);
+		if(*ptr == '.') {
+			++ptr;
+			Milliseconds = parseNumber(3);
+			// Discard any microsecond digits
+			while(isdigit(*ptr)) {
+				++ptr;
+			}
+		}
+	}
+	if(haveTime && notDigit) {
+		return false;
+	}
+
+	if(*ptr != '\0') {
+		return false;
+	}
+
+	calcDayOfYear();
+
+	return true;
+}
+
+time_t DateTime::toUnixTime() const
 {
 	return toUnixTime(Second + (Milliseconds / 1000), Minute, Hour, Day, Month, Year);
 }
 
-String DateTime::toShortDateString()
+String DateTime::toShortDateString() const
 {
 	return format(_F("%d.%m.%Y"));
 }
 
-String DateTime::toShortTimeString(bool includeSeconds)
+String DateTime::toShortTimeString(bool includeSeconds) const
 {
 	return format(includeSeconds ? _F("%T") : _F("%r"));
 }
 
-String DateTime::toFullDateTimeString()
+String DateTime::toFullDateTimeString() const
 {
 	return format(_F("%x %T"));
 }
 
-String DateTime::toISO8601()
+String DateTime::toISO8601() const
 {
 	return format(_F("%FT%TZ"));
 }
 
-String DateTime::toHTTPDate()
+String DateTime::toHTTPDate() const
 {
 	return format(_F("%a, %d %b %Y %T GMT"));
 }
@@ -182,88 +330,67 @@ void DateTime::addMilliseconds(long add)
 void DateTime::fromUnixTime(time_t timep, uint8_t* psec, uint8_t* pmin, uint8_t* phour, uint8_t* pday, uint8_t* pwday,
 							uint8_t* pmonth, uint16_t* pyear)
 {
-	// convert the given time_t to time components
-	// this is a more compact version of the C library localtime function
+	struct tm t;
+	gmtime_r(&timep, &t);
 
-	unsigned long epoch = timep;
-	if(psec != nullptr) {
-		*psec = epoch % 60;
+	if(psec) {
+		*psec = t.tm_sec;
 	}
-	epoch /= 60; // now it is minutes
-	if(pmin != nullptr) {
-		*pmin = epoch % 60;
+	if(pmin) {
+		*pmin = t.tm_min;
 	}
-	epoch /= 60; // now it is hours
-	if(phour != nullptr) {
-		*phour = epoch % 24;
+	if(phour) {
+		*phour = t.tm_hour;
 	}
-	epoch /= 24; // now it is days
-	if(pwday != nullptr) {
-		*pwday = (epoch + 4) % 7;
+	if(pwday) {
+		*pwday = t.tm_wday;
 	}
-
-	unsigned year = 70;
-	unsigned long days = 0;
-	while((days += (LEAP_YEAR(year) ? 366 : 365)) <= epoch) {
-		year++;
+	if(pyear) {
+		*pyear = t.tm_year + 1900;
 	}
-	if(pyear != nullptr) {
-		*pyear = year + 1900; // *pyear is returned as years from 1900
+	if(pmonth) {
+		*pmonth = t.tm_mon;
 	}
-
-	days -= LEAP_YEAR(year) ? 366 : 365;
-	epoch -= days; // now it is days in this year, starting at 0
-	// *pdayofyear=epoch;  // days since jan 1 this year
-
-	uint8_t month;
-	for(month = 0; month < 12; month++) {
-		uint8_t monthDays = getMonthDays(month, year);
-		if(epoch >= monthDays) {
-			epoch -= monthDays;
-		} else {
-			break;
-		}
-	}
-
-	if(pmonth != nullptr) {
-		*pmonth = month; // jan is month 0
-	}
-	if(pday != nullptr) {
-		*pday = epoch + 1; // day of month
+	if(pday) {
+		*pday = t.tm_mday;
 	}
 }
 
-time_t DateTime::toUnixTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year)
+time_t DateTime::toUnixTime(int sec, int min, int hour, int day, uint8_t month, uint16_t year)
 {
-	// converts time components to time_t
-	// note year argument is full four digit year (or digits since 2000), i.e.1975, (year 8 is 2008)
-
 	if(year < 69) {
 		year += 2000;
 	}
+
 	// seconds from 1970 till 1 jan 00:00:00 this year
-	time_t seconds = (year - 1970) * (SECS_PER_DAY * 365);
+	auto seconds = time_t(year - 1970) * (SECS_PER_DAY * 365);
 
 	// add extra days for leap years
-	for(unsigned i = 1970; i < year; i++) {
-		if(LEAP_YEAR(i)) {
+	for(unsigned y = 1972; y < year; y += 4) {
+		if(isLeapCentury(y)) {
 			seconds += SECS_PER_DAY;
 		}
 	}
-	// add days for this year
-	for(unsigned i = 0; i < month; i++) {
-		seconds += SECS_PER_DAY * getMonthDays(i, year);
+	for(unsigned y = 1968; y >= year; y -= 4) {
+		if(isLeapCentury(y)) {
+			seconds -= SECS_PER_DAY;
+		}
 	}
 
-	seconds += (day - 1) * SECS_PER_DAY;
-	seconds += hour * SECS_PER_HOUR;
-	seconds += min * SECS_PER_MIN;
+	// add days for this year
+	for(unsigned m = dtJanuary; m < month; ++m) {
+		seconds += SECS_PER_DAY * getMonthDays(m, year);
+	}
+
+	seconds += time_t(day - 1) * SECS_PER_DAY;
+	seconds += time_t(hour) * SECS_PER_HOUR;
+	seconds += time_t(min) * SECS_PER_MIN;
 	seconds += sec;
 
 	return seconds;
 }
 
-String DateTime::format(const char* sFormat)
+String DateTime::format(const char* sFormat) const
 {
 	if(sFormat == nullptr) {
 		return nullptr;
@@ -299,10 +426,10 @@ String DateTime::format(const char* sFormat)
 		// Month (not implemented: Om)
 		case 'b': // Abbreviated month name, e.g. Oct (always English)
 		case 'h': // Synonym of b
-			sReturn.concat(CStringArray(flashMonthNames)[Month], 3);
+			sReturn.concat(CStringArray(localeMonthNames)[Month], 3);
 			break;
 		case 'B': // Full month name, e.g. October (always English)
-			sReturn += CStringArray(flashMonthNames)[Month];
+			sReturn += CStringArray(localeMonthNames)[Month];
 			break;
 		case 'm': // Month as a decimal number [01..12]
 			sReturn.concat(Month + 1, DEC, 2);
@@ -339,10 +466,10 @@ String DateTime::format(const char* sFormat)
 			sReturn += char('0' + DayofWeek);
 			break;
 		case 'a': // Abbreviated weekday name, e.g. Fri
-			sReturn.concat(CStringArray(flashDayNames)[DayofWeek], 3);
+			sReturn.concat(CStringArray(localeDayNames)[DayofWeek], 3);
 			break;
 		case 'A': // Full weekday name, e.g. Friday
-			sReturn += CStringArray(flashDayNames)[DayofWeek];
+			sReturn += CStringArray(localeDayNames)[DayofWeek];
 			break;
 		case 'u': // Weekday as a decimal number, where Monday is 1 (ISO 8601 format) [1..7]
 			sReturn += (DayofWeek == 0) ? '7' : char('0' + DayofWeek);
@@ -376,8 +503,12 @@ String DateTime::format(const char* sFormat)
 		case 'R': // Short time (HH:MM)
 			sReturn += format(_F("%H:%M"));
 			break;
-		case 'T': // ISO 8601 time format (HH:MM:SS)
+		case 'T': // ISO 8601 time format (HH:MM:SS{.mmm})
 			sReturn += format(_F("%H:%M:%S"));
+			if(Milliseconds != 0) {
+				sReturn += '.';
+				sReturn.concat(Milliseconds, DEC, 3);
+			}
 			break;
 		case 'p': // Meridiem [AM,PM]
 			sReturn += (Hour < 12) ? "AM" : "PM";
@@ -401,16 +532,16 @@ String DateTime::format(const char* sFormat)
 void DateTime::calcDayOfYear()
 {
 	DayofYear = 0;
-	for(auto i = 0; i < Month; ++i) {
-		switch(i) {
-		case 8:  // Sep
-		case 3:  // Apr
-		case 5:  // Jun
-		case 10: // Nov
+	for(unsigned m = dtJanuary; m < Month; ++m) {
+		switch(m) {
+		case dtSeptember:
+		case dtApril:
+		case dtJune:
+		case dtNovember:
 			DayofYear += 30;
 			break;
-		case 1: // Feb
-			DayofYear += LEAP_YEAR(Year) ? 29 : 28;
+		case dtFebruary:
+			DayofYear += isLeapYear(Year) ? 29 : 28;
 			break;
 		default:
 			DayofYear += 31;
@@ -419,7 +550,7 @@ void DateTime::calcDayOfYear()
 	DayofYear += Day;
 }
 
-uint8_t DateTime::calcWeek(uint8_t firstDay)
+uint8_t DateTime::calcWeek(uint8_t firstDay) const
 {
 	int16_t startOfWeek = DayofYear - DayofWeek + firstDay;
 	int8_t firstDayofWeek = startOfWeek % 7;
@@ -427,4 +558,37 @@ uint8_t DateTime::calcWeek(uint8_t firstDay)
 		firstDayofWeek += 7;
 	}
 	return (startOfWeek + 7 - firstDayofWeek) / 7;
+}
+
+String DateTime::getLocaleDayName(uint8_t day)
+{
+	return CStringArray(localeDayNames)[day];
+}
+
+String DateTime::getLocaleMonthName(uint8_t month)
+{
+	return CStringArray(localeMonthNames)[month];
+}
+
+String DateTime::getIsoDayName(uint8_t day)
+{
+	if(day > dtSaturday) {
+		return nullptr;
+	}
+	auto name = isoDayNames[day];
+	return String(name);
+}
+
+String DateTime::getIsoMonthName(uint8_t month)
+{
+	if(month > dtDecember) {
+		return nullptr;
+	}
+	auto name = isoMonthNames[month];
+	return String(name);
+}
+
+uint16_t DateTime::getDaysInYear(uint16_t year)
+{
+	return isLeapYear(year) ? 366 : 365;
 }
