@@ -23,8 +23,8 @@ static_assert(sizeof(time_t) == 8, "Expecting 64-bit time_t");
 
 namespace
 {
-DEFINE_FSTR(flashMonthNames, LOCALE_MONTH_NAMES);
-DEFINE_FSTR(flashDayNames, LOCALE_DAY_NAMES);
+DEFINE_FSTR(localeMonthNames, LOCALE_MONTH_NAMES);
+DEFINE_FSTR(localeDayNames, LOCALE_DAY_NAMES);
 
 /* We can more efficiently compare text of 4 character length by comparing as words */
 union FourDigitName {
@@ -36,6 +36,11 @@ union FourDigitName {
 	{
 		constexpr uint32_t caseMask{~0x20202020U};
 		return ((value ^ name.value) & caseMask) == 0;
+	}
+
+	explicit operator String() const
+	{
+		return String(c, 4);
 	}
 };
 
@@ -72,7 +77,9 @@ bool isLeapCentury(uint16_t year)
 	return year % 100 != 0 || year % 400 == 0;
 }
 
-bool isLeapYear(uint16_t year)
+} // namespace
+
+bool DateTime::isLeapYear(uint16_t year)
 {
 	return year % 4 == 0 && isLeapCentury(year);
 }
@@ -82,7 +89,7 @@ bool isLeapYear(uint16_t year)
  *  @param year
  *  @retval uint8_t number of days in the month
  */
-uint8_t getMonthDays(uint8_t month, uint16_t year)
+uint8_t DateTime::getMonthDays(uint8_t month, uint16_t year)
 {
 	if(month == dtFebruary) {
 		return isLeapYear(year) ? 29 : 28;
@@ -90,12 +97,6 @@ uint8_t getMonthDays(uint8_t month, uint16_t year)
 	const uint32_t monthDays = 0b101011010101;
 	return 30 + ((monthDays >> month) & 0x01);
 }
-
-} // namespace
-
-//******************************************************************************
-//* DateTime Public Methods
-//******************************************************************************
 
 void DateTime::setTime(time_t time)
 {
@@ -366,12 +367,12 @@ time_t DateTime::toUnixTime(int sec, int min, int hour, int day, uint8_t month, 
 
 	// add extra days for leap years
 	for(unsigned y = 1972; y < year; y += 4) {
-		if(isLeapYear(y)) {
+		if(isLeapCentury(y)) {
 			seconds += SECS_PER_DAY;
 		}
 	}
 	for(unsigned y = 1968; y >= year; y -= 4) {
-		if(isLeapYear(y)) {
+		if(isLeapCentury(y)) {
 			seconds -= SECS_PER_DAY;
 		}
 	}
@@ -425,10 +426,10 @@ String DateTime::format(const char* sFormat) const
 		// Month (not implemented: Om)
 		case 'b': // Abbreviated month name, e.g. Oct (always English)
 		case 'h': // Synonym of b
-			sReturn.concat(CStringArray(flashMonthNames)[Month], 3);
+			sReturn.concat(CStringArray(localeMonthNames)[Month], 3);
 			break;
 		case 'B': // Full month name, e.g. October (always English)
-			sReturn += CStringArray(flashMonthNames)[Month];
+			sReturn += CStringArray(localeMonthNames)[Month];
 			break;
 		case 'm': // Month as a decimal number [01..12]
 			sReturn.concat(Month + 1, DEC, 2);
@@ -465,10 +466,10 @@ String DateTime::format(const char* sFormat) const
 			sReturn += char('0' + DayofWeek);
 			break;
 		case 'a': // Abbreviated weekday name, e.g. Fri
-			sReturn.concat(CStringArray(flashDayNames)[DayofWeek], 3);
+			sReturn.concat(CStringArray(localeDayNames)[DayofWeek], 3);
 			break;
 		case 'A': // Full weekday name, e.g. Friday
-			sReturn += CStringArray(flashDayNames)[DayofWeek];
+			sReturn += CStringArray(localeDayNames)[DayofWeek];
 			break;
 		case 'u': // Weekday as a decimal number, where Monday is 1 (ISO 8601 format) [1..7]
 			sReturn += (DayofWeek == 0) ? '7' : char('0' + DayofWeek);
@@ -557,4 +558,37 @@ uint8_t DateTime::calcWeek(uint8_t firstDay) const
 		firstDayofWeek += 7;
 	}
 	return (startOfWeek + 7 - firstDayofWeek) / 7;
+}
+
+String DateTime::getLocaleDayName(uint8_t day)
+{
+	return CStringArray(localeDayNames)[day];
+}
+
+String DateTime::getLocaleMonthName(uint8_t month)
+{
+	return CStringArray(localeMonthNames)[month];
+}
+
+String DateTime::getIsoDayName(uint8_t day)
+{
+	if(day > dtSaturday) {
+		return nullptr;
+	}
+	auto name = isoDayNames[day];
+	return String(name);
+}
+
+String DateTime::getIsoMonthName(uint8_t month)
+{
+	if(month > dtDecember) {
+		return nullptr;
+	}
+	auto name = isoMonthNames[month];
+	return String(name);
+}
+
+uint16_t DateTime::getDaysInYear(uint16_t year)
+{
+	return isLeapYear(year) ? 366 : 365;
 }

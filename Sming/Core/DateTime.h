@@ -314,6 +314,14 @@ public:
 		return format(formatString.c_str());
 	}
 
+	static bool isLeapYear(uint16_t year);
+	static uint8_t getMonthDays(uint8_t month, uint16_t year);
+	static String getLocaleDayName(uint8_t day);
+	static String getLocaleMonthName(uint8_t month);
+	static String getIsoDayName(uint8_t day);
+	static String getIsoMonthName(uint8_t month);
+	static uint16_t getDaysInYear(uint16_t year);
+
 private:
 	// Helper methods
 	void calcDayOfYear();					  // Calculate day of year

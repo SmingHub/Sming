@@ -48,6 +48,45 @@ public:
 				checkSetTime(VALID_ISO_DATETIME64);
 			}
 		}
+
+		TEST_CASE("setTime speed check")
+		{
+			OneShotFastUs timer;
+			unsigned count = checkSetTime(VALID_HTTP_DATE);
+			count += checkSetTime(VALID_ISO_DATETIME);
+			auto elapsed = timer.elapsedTime();
+			Serial << "Checked " << count << " dates in " << elapsed.toString() << ", " << elapsed / count
+				   << " per date" << endl;
+		}
+
+		TEST_CASE("getMonthDays")
+		{
+			for(auto year : {1980, 1981}) {
+				unsigned yearDays{0};
+				for(unsigned month = dtJanuary; month <= dtDecember; ++month) {
+					auto days = DateTime::getMonthDays(month, year);
+					yearDays += days;
+					Serial << DateTime::getIsoMonthName(month) << ' ' << year << " : " << days << endl;
+				}
+				REQUIRE_EQ(yearDays, DateTime::getDaysInYear(year));
+			}
+		}
+
+		TEST_CASE("getDayName")
+		{
+			for(unsigned day = dtSunday; day <= dtSaturday; ++day) {
+				Serial << day << ": " << DateTime::getIsoDayName(day) << ", " << DateTime::getLocaleDayName(day)
+					   << endl;
+			}
+		}
+
+		TEST_CASE("getMonthName")
+		{
+			for(unsigned month = dtJanuary; month <= dtDecember; ++month) {
+				Serial << month << ": " << DateTime::getIsoMonthName(month) << ", "
+					   << DateTime::getLocaleMonthName(month) << endl;
+			}
+		}
 	}
 
 	void checkHttpDates(const FSTR::Array<TestDate>& dates)
@@ -91,14 +130,20 @@ public:
 		}
 	}
 
-	void checkSetTime(const FSTR::Array<TestDate>& dates)
+	// Return number of dates checked
+	unsigned checkSetTime(const FSTR::Array<TestDate>& dates, bool silent = false)
 	{
+		unsigned checkCount{0};
+
 		for(auto date : dates) {
 			const DateTime refDate(date.unixTimestamp);
 
-			Serial << "RefDate " << refDate.toFullDateTimeString() << endl;
+			if(!silent) {
+				Serial << "RefDate " << refDate.toFullDateTimeString() << endl;
+			}
 
 			auto check = [&](int secOffset, int minOffset, int hourOffset, int dayOffset) {
+				++checkCount;
 				const int sec = secOffset + refDate.Second;
 				const int min = minOffset + refDate.Minute;
 				const int hour = hourOffset + refDate.Hour;
@@ -128,6 +173,8 @@ public:
 				check(0, 0, 0, offset);
 			}
 		};
+
+		return checkCount;
 	}
 };
 
