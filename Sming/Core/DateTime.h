@@ -21,7 +21,6 @@
 #include "SmingLocale.h"
 #include <sming_attr.h>
 
-/*==============================================================================*/
 /* Useful Constants */
 #define SECS_PER_MIN (60UL)
 #define SECS_PER_HOUR (3600UL)
@@ -30,29 +29,6 @@
 #define SECS_PER_WEEK (SECS_PER_DAY * DAYS_PER_WEEK)
 #define SECS_PER_YEAR (SECS_PER_WEEK * 52L)
 #define SECS_YR_2000 (946681200UL)
-
-/* Useful Macros for getting elapsed time */
-/** Get just seconds part of given Unix time */
-#define numberOfSeconds(_time_) (_time_ % SECS_PER_MIN)
-/** Get just minutes part of given Unix time */
-#define numberOfMinutes(_time_) ((_time_ / SECS_PER_MIN) % SECS_PER_MIN)
-/** Get just hours part of given Unix time */
-#define numberOfHours(_time_) ((_time_ % SECS_PER_DAY) / SECS_PER_HOUR)
-/** Get day of week from given Unix time */
-#define dayOfWeek(_time_) ((_time_ / SECS_PER_DAY + 4) % DAYS_PER_WEEK) // 0 = Sunday
-/** Get elapsed days since 1970-01-01 from given Unix time */
-#define elapsedDays(_time_) (_time_ / SECS_PER_DAY) // this is number of days since Jan 1 1970
-/** Get quantity of seconds since midnight from given Unix time */
-#define elapsedSecsToday(_time_) (_time_ % SECS_PER_DAY) // the number of seconds since last midnight
-/** Get Unix time of midnight at start of day from given Unix time */
-#define previousMidnight(_time_) ((_time_ / SECS_PER_DAY) * SECS_PER_DAY) // time at the start of the given day
-/** Get Unix time of midnight at end of day from given just Unix time */
-#define nextMidnight(_time_) (previousMidnight(_time_) + SECS_PER_DAY) // time at the end of the given day
-/** Get quantity of seconds since midnight at start of previous Sunday from given Unix time */
-#define elapsedSecsThisWeek(_time_) (elapsedSecsToday(_time_) + (dayOfWeek(_time_) * SECS_PER_DAY))
-
-// todo add date math macros
-/*============================================================================*/
 
 /** @brief  Days of week
 */
@@ -82,6 +58,62 @@ enum dtMonth_t {
 	dtNovember,
 	dtDecember,
 };
+
+/* Useful functions for getting elapsed time */
+
+/** Get just seconds part of given Unix time */
+inline constexpr uint8_t numberOfSeconds(time_t time)
+{
+	return time % SECS_PER_MIN;
+}
+
+/** Get just minutes part of given Unix time */
+inline constexpr uint8_t numberOfMinutes(time_t time)
+{
+	return (time / SECS_PER_MIN) % SECS_PER_MIN;
+}
+
+/** Get just hours part of given Unix time */
+inline constexpr uint8_t numberOfHours(time_t time)
+{
+	return (time % SECS_PER_DAY) / SECS_PER_HOUR;
+}
+
+/** Get day of week from given Unix time */
+inline constexpr dtDays_t dayOfWeek(time_t time)
+{
+	return dtDays_t((time / SECS_PER_DAY + 4) % DAYS_PER_WEEK);
+}
+
+/** Get elapsed days since 1970-01-01 from given Unix time */
+inline constexpr uint8_t elapsedDays(time_t time)
+{
+	return time / SECS_PER_DAY;
+}
+
+/** Get quantity of seconds since midnight from given Unix time */
+inline constexpr unsigned elapsedSecsToday(time_t time)
+{
+	return time % SECS_PER_DAY;
+}
+
+/** Get Unix time of midnight at start of day from given Unix time */
+inline constexpr time_t previousMidnight(time_t time)
+{
+	return (time / SECS_PER_DAY) * SECS_PER_DAY;
+}
+
+/** Get Unix time of midnight at end of day from given just Unix time */
+inline constexpr time_t nextMidnight(time_t time)
+{
+	return previousMidnight(time) + SECS_PER_DAY;
+}
+
+/** Get quantity of seconds since midnight at start of previous Sunday from given Unix time */
+inline constexpr unsigned elapsedSecsThisWeek(time_t time)
+{
+	return elapsedSecsToday(time) + dayOfWeek(time) * SECS_PER_DAY;
+}
 
 /** @brief  Date and time class
  *
