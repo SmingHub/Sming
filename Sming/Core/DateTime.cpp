@@ -531,23 +531,11 @@ String DateTime::format(const char* sFormat) const
 
 void DateTime::calcDayOfYear()
 {
-	DayofYear = 0;
+	uint16_t prevMonthDays{0};
 	for(unsigned m = dtJanuary; m < Month; ++m) {
-		switch(m) {
-		case dtSeptember:
-		case dtApril:
-		case dtJune:
-		case dtNovember:
-			DayofYear += 30;
-			break;
-		case dtFebruary:
-			DayofYear += isLeapYear(Year) ? 29 : 28;
-			break;
-		default:
-			DayofYear += 31;
-		}
+		prevMonthDays += getMonthDays(m, Year);
 	}
-	DayofYear += Day;
+	DayofYear = prevMonthDays + Day;
 }
 
 uint8_t DateTime::calcWeek(uint8_t firstDay) const
