@@ -360,15 +360,15 @@ private:
 	uint8_t calcWeek(uint8_t firstDay) const; // Calculate week number based on firstDay of week
 
 public:
+	uint16_t Year = 0;		   ///< Full Year number
+	uint16_t DayofYear = 0;	///< Day of year (0-365)
+	uint8_t DayofWeek = 0;	 ///< Day of week (0-6 Sunday is day 0)
+	uint8_t Month = 0;		   ///< Month (0-11 Jan is month 0)
+	uint8_t Day = 0;		   ///< Day of month (1-31)
 	uint8_t Hour = 0;		   ///< Hour (0-23)
 	uint8_t Minute = 0;		   ///< Minute (0-59)
 	uint8_t Second = 0;		   ///< Second (0-59)
 	uint16_t Milliseconds = 0; ///< Milliseconds (0-999)
-	uint8_t Day = 0;		   ///< Day of month (1-31)
-	uint8_t DayofWeek = 0;	 ///< Day of week (0-6 Sunday is day 0)
-	uint16_t DayofYear = 0;	///< Day of year (0-365)
-	uint8_t Month = 0;		   ///< Month (0-11 Jan is month 0)
-	uint16_t Year = 0;		   ///< Full Year number
 };
 
 /** @} */
