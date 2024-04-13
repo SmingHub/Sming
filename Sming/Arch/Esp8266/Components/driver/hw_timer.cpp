@@ -51,6 +51,33 @@ void hw_timer1_attach_interrupt(hw_timer_source_type_t source_type, hw_timer_cal
 	}
 }
 
+void IRAM_ATTR hw_timer1_detach_interrupt(void)
+{
+	hw_timer1_disable();
+
+	/*
+	 * This macro calls SDK `NmiTimSetFunc` which doesn't actually disable NMI (a known bug).
+	 * If we subsequently enable FRC interrupts, the timer won't work so we need to properly
+	 * disable NMI manually.
+	 *
+	 * The NmiTimSetFunc code looks like this:
+	 *
+	 * 		uint32_t value = REG_READ(NMI_INT_ENABLE_REG);
+	 * 		value &= ~0x1f;
+	 * 		value |= 0x0f;
+	 * 		REG_WRITE(NMI_INT_ENABLE_REG, value);
+	 *
+	 * Note that there is no published documentation for this register.
+	 * Clearing it to zero appears to work but may have unintended side-effects.
+	 */
+	ETS_FRC_TIMER1_NMI_INTR_ATTACH(NULL);
+	auto value = REG_READ(NMI_INT_ENABLE_REG);
+	REG_WRITE(NMI_INT_ENABLE_REG, value & ~0x1f);
+
+	// FRC interrupts
+	ETS_FRC_TIMER1_INTR_ATTACH(NULL, NULL);
+}
+
 void hw_timer_init(void)
 {
 	constexpr uint32_t FRC2_ENABLE_TIMER = BIT7;

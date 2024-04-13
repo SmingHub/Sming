@@ -123,13 +123,7 @@ __forceinline void IRAM_ATTR hw_timer1_disable(void)
 /**
  * @brief Detach interrupt from the timer
  */
-__forceinline void IRAM_ATTR hw_timer1_detach_interrupt(void)
-{
-	hw_timer1_disable();
-	ETS_FRC_TIMER1_NMI_INTR_ATTACH(NULL);
-	REG_WRITE(NMI_INT_ENABLE_REG, 0);
-	ETS_FRC_TIMER1_INTR_ATTACH(NULL, NULL);
-}
+void hw_timer1_detach_interrupt(void);
 
 /**
  * @brief Get timer1 count
