@@ -50,7 +50,10 @@ int LimitedMemoryStream::seekFrom(int offset, SeekOrigin origin)
 size_t LimitedMemoryStream::write(const uint8_t* data, size_t size)
 {
 	if(buffer == nullptr) {
-		buffer = new char[capacity];
+		buffer = static_cast<char*>(malloc(capacity));
+		if(buffer == nullptr) {
+			return 0;
+		}
 		owned = true;
 	}
 
