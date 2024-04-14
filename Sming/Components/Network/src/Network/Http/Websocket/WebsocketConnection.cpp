@@ -301,10 +301,10 @@ void WebsocketConnection::broadcast(const char* message, size_t length, ws_frame
 {
 	char* copy = new char[length];
 	memcpy(copy, message, length);
-	std::shared_ptr<const char> data(copy, [](const char* ptr) { delete[] ptr; });
+	std::shared_ptr<const char[]> data(copy);
 
 	for(auto skt : websocketList) {
-		auto stream = new SharedMemoryStream<const char>(data, length);
+		auto stream = new SharedMemoryStream<const char[]>(data, length);
 		skt->send(stream, type);
 	}
 }

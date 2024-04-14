@@ -171,8 +171,8 @@ public:
 
 		{
 			// STL may perform one-time memory allocation for mutexes, etc.
-			std::shared_ptr<const char> data(new char[18]);
-			SharedMemoryStream<const char>(data, 18);
+			std::shared_ptr<const char[]> data(new char[18]);
+			SharedMemoryStream stream(data, 18);
 		}
 
 		auto memStart = MallocCount::getCurrent();
@@ -182,13 +182,13 @@ public:
 		{
 			char* message = new char[18];
 			memcpy(message, "Wonderful data...", 18);
-			std::shared_ptr<const char> data(message, [&message](const char* p) { delete[] p; });
+			std::shared_ptr<const char[]> data(message);
 
 			debug_d("RefCount: %d", data.use_count());
 
-			Vector<SharedMemoryStream<const char>*> list;
+			Vector<SharedMemoryStream<const char[]>*> list;
 			for(unsigned i = 0; i < 4; i++) {
-				list.addElement(new SharedMemoryStream<const char>(data, strlen(message)));
+				list.addElement(new SharedMemoryStream<const char[]>(data, strlen(message)));
 			}
 
 			for(unsigned i = 0; i < list.count(); i++) {
