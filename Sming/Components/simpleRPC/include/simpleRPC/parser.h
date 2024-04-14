@@ -14,6 +14,7 @@
 #pragma once
 
 #include <Delegate.h>
+#include <WString.h>
 
 namespace simpleRPC
 {
@@ -61,5 +62,7 @@ struct ParserSettings {
 };
 
 ParserResult parse(ParserSettings& settings, const char* buffer, size_t length, char nameEndsWith = ':');
+
+String toString(ParserResult result);
 
 } // namespace simpleRPC

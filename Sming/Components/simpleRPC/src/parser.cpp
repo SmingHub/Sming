@@ -202,4 +202,18 @@ ERROR:
 	return ParserResult::more;
 }
 
+String toString(ParserResult result)
+{
+	using namespace simpleRPC;
+	switch(result) {
+	case ParserResult::finished:
+		return F("finished");
+	case ParserResult::more:
+		return F("more");
+	case ParserResult::error:
+		return F("error");
+	}
+	return nullptr;
+}
+
 } // namespace simpleRPC
