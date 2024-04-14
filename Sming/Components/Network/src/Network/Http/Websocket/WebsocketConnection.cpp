@@ -299,9 +299,11 @@ bool WebsocketConnection::send(IDataSourceStream* source, ws_frame_type_t type, 
 
 void WebsocketConnection::broadcast(const char* message, size_t length, ws_frame_type_t type)
 {
-	char* copy = new char[length];
-	memcpy(copy, message, length);
-	std::shared_ptr<const char[]> data(copy);
+	std::shared_ptr<char[]> data(new char[length]);
+	if(!data) {
+		return;
+	}
+	memcpy(data.get(), message, length);
 
 	for(auto skt : websocketList) {
 		auto stream = new SharedMemoryStream<const char[]>(data, length);
