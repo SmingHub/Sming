@@ -26,9 +26,9 @@ template <typename T> class SharedMemoryStream : public IDataSourceStream
 public:
 	/** @brief Constructor for use with pre-existing buffer
 	 *  @param buffer
-	 *  @param capacity Size of buffer in elements
+	 *  @param size Size of buffer in elements
 	 */
-	SharedMemoryStream(std::shared_ptr<T>(buffer), size_t size) : buffer(buffer), capacity(size * sizeof(T))
+	SharedMemoryStream(std::shared_ptr<T>(buffer), size_t size) : buffer(buffer), capacity(size * sizeof(buffer[0]))
 	{
 	}
 

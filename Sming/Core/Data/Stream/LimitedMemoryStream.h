@@ -44,7 +44,7 @@ public:
 	~LimitedMemoryStream()
 	{
 		if(owned) {
-			delete[] buffer;
+			free(buffer);
 		}
 	}
 
