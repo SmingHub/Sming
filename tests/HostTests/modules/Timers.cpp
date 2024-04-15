@@ -75,9 +75,6 @@ public:
 				statusTimer.stop();
 				Serial.print("statusTimer stopped: ");
 				Serial.println(statusTimer);
-
-				// Release any allocated delegate memory
-				timer64.setCallback(TimerDelegate(nullptr));
 				done = true;
 			}
 
@@ -105,17 +102,6 @@ public:
 		statusTimer.start();
 
 		Serial.println(statusTimer);
-
-		{
-			auto tmp = new Timer;
-			tmp->initializeMs<1200>(
-				[](void* arg) {
-					auto self = static_cast<CallbackTimerTest*>(arg);
-					debugf("%s fired", String(self->timer64).c_str());
-				},
-				this);
-			tmp->startOnce();
-		}
 
 		if(1) {
 			longTimer.setCallback([this]() {
@@ -246,7 +232,6 @@ public:
 private:
 	Timer statusTimer;
 	unsigned statusTimerCount = 0;
-	Timer timer64;
 	HardwareTimerTest timer1;
 	Timer longTimer;
 	uint32_t longStartTicks = 0;
