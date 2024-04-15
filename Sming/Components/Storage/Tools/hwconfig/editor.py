@@ -39,7 +39,7 @@ def read_property(obj, name):
 
 def get_dict_value(dict, key, default):
     """Read dictionary value, creating one if it doesn't exist."""
-    if not key in dict:
+    if key not in dict:
         dict[key] = default
     return dict[key]
 
@@ -370,7 +370,7 @@ class EditState(dict):
         self.array = {} # dictionary for array element variables
         self.row = 0
         keys = self.schema['properties'].keys()
-        if not 'name' in keys:
+        if 'name' not in keys:
             self.addControl('name')
         for k in keys:
             self.addControl(k)
@@ -1150,16 +1150,23 @@ class Editor:
                 self.loadConfig(filename)
 
         def fileSave():
-            filename = self.json['name']
+            filename = self._filename
+            if not filename:
+                filename = self.json.get('name')
+            if not filename:
+                filename = get_basename_no_ext(filename)
             filename = filedialog.asksaveasfilename(
                 title='Save profile to file',
                 filetypes=hwFilter,
                 initialfile=filename,
                 initialdir=os.getcwd())
-            if len(filename) != 0 and checkProfilePath(filename):
+            if filename and checkProfilePath(filename):
                 ext = os.path.splitext(filename)[1]
                 if ext != HW_EXT:
                     filename += HW_EXT
+                if not self.json.get('name'):
+                    self.json['name'] = get_basename_no_ext(filename)
+                    self.reload()
                 json_save(self.json, filename)
 
         # Toolbar
@@ -1268,10 +1275,11 @@ class Editor:
             self.json['base_config'] = config_name
         else:
             self.json = json_load(filename)
+        self._filename = os.path.basename(filename)
 
         options = get_dict_value(self.json, 'options', [])
         for opt in configVars.get('HWCONFIG_OPTS', '').replace(' ', '').split():
-            if not opt in options:
+            if opt not in options:
                 options.append(opt)
 
         self.reload()
@@ -1280,7 +1288,7 @@ class Editor:
 
     def updateWindowTitle(self):
         name = self.json.get('name', None)
-        if name is None:
+        if not name:
             name = '(new)'
         else:
             name = '"' + name + '"'
@@ -1290,8 +1298,9 @@ class Editor:
         self.tree.clear()
         self.map.clear()
         self.status.set('')
+        self._filename = ''
         self.json = OrderedDict()
-        self.json['name'] = 'New Profile'
+        self.json['name'] = ''
         self.json['base_config'] = 'standard'
         self.reload()
         self.updateWindowTitle()

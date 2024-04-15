@@ -109,6 +109,9 @@ def json_save(data, filename):
 def to_json(obj):
     return json.dumps(obj, indent=4)
 
+def get_basename_no_ext(filename):
+    basename = os.path.basename(filename)
+    return os.path.splitext(basename)[0]
 
 def lookup_keyword(t, keywords):
     for k, v in keywords.items():
