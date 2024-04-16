@@ -26,6 +26,12 @@ ifeq (,$(wildcard $(SMING_HOME)/Arch/$(SMING_ARCH)/build.mk))
   $(error Arch '$(SMING_ARCH)' not found)
 endif
 
+ifdef CLANG_TIDY
+ifneq (Host,$(SMING_ARCH))
+  $(error CLANG_TIDY supported only for Host architecture.)
+endif
+endif
+
 export SMING_ARCH
 export SMING_SOC
 

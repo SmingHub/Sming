@@ -117,15 +117,12 @@ else
 OUTPUT_DEPS := -MF $$@
 endif
 
-CLANG_TIDY_OPTS := \
-	-checks=-* \
-	-checks=cppcoreguidelines-* \
-	-checks=-cppcoreguidelines-avoid-c-arrays \
-	-checks=-cppcoreguidelines-pro-bounds-array-to-pointer-decay \
-	-checks=-clang-diagnostic-error
+# Additional flags to pass to clang
+CLANG_FLAG_EXTRA ?=
 
-CLANG_TIDY_WARN := \
-	no-invalid-constexpr
+# Flags which clang doesn't recognise
+CLANG_FLAG_UNKNOWN := \
+	-fstrict-volatile-bitfields
 
 # $1 -> absolute source directory, no trailing path separator
 # $2 -> relative output build directory, with trailing path separator
@@ -142,10 +139,10 @@ $2%.o: $1/%.S
 	$(Q) $(AS) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
 endif
 ifneq (,$(filter $1/%.c,$(SOURCE_FILES)))
-ifeq ($(ENABLE_CLANG_TIDY),1)
+ifdef CLANG_TIDY
 $2%.o: $1/%.c
 	$(vecho) "TIDY $$<"
-	$(Q) clang-tidy $$< $(CLANG_TIDY_OPTS) -- $(addprefix -I,$(INCDIR)) $$(filter-out -fstrict-volatile-bitfields,$(CPPFLAGS) $(CFLAGS)) $(addprefix -W,$(CLANG_TIDY_WARN))
+	$(Q) $(CLANG_TIDY) $$< -- $(addprefix -I,$(INCDIR)) $$(filter-out $(CLANG_FLAG_UNKNOWN),$(CPPFLAGS) $(CFLAGS)) $(CLANG_FLAG_EXTRA)
 else
 $2%.o: $1/%.c $2%.c.d
 	$(vecho) "CC $$<"
@@ -156,10 +153,10 @@ $2%.c.d: $1/%.c
 endif
 endif
 ifneq (,$(filter $1/%.cpp,$(SOURCE_FILES)))
-ifeq ($(ENABLE_CLANG_TIDY),1)
+ifdef CLANG_TIDY
 $2%.o: $1/%.cpp
 	$(vecho) "TIDY $$<"
-	$(Q) clang-tidy $$< $(CLANG_TIDY_OPTS) -- $(addprefix -I,$(INCDIR)) $$(filter-out -fstrict-volatile-bitfields,$(CPPFLAGS) $(CXXFLAGS)) $(addprefix -W,$(CLANG_TIDY_WARN))
+	$(Q) $(CLANG_TIDY) $$< -- $(addprefix -I,$(INCDIR)) $$(filter-out $(CLANG_FLAG_UNKNOWN),$(CPPFLAGS) $(CXXFLAGS)) $(CLANG_FLAG_EXTRA)
 else
 $2%.o: $1/%.cpp $2%.cpp.d
 	$(vecho) "C+ $$<"
@@ -199,10 +196,12 @@ include $(wildcard $(ABS_BUILD_DIRS:=/*.cpp.d))
 
 # Provide a target unless Component is custom built, in which case the component.mk will have defined this already
 $(COMPONENT_LIBPATH): build.ar
+ifndef CLANG_TIDY
 	$(vecho) "AR $@"
 	$(Q) test ! -f $@ || rm $@
 	$(Q) $(AR) -M < build.ar
 	$(Q) mv $(notdir $(COMPONENT_LIBPATH)) $(COMPONENT_LIBPATH)
+endif
 
 define addmod
 	@echo ADDMOD $2 >> $1
