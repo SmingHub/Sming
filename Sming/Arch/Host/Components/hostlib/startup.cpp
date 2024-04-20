@@ -32,7 +32,6 @@
 #include <driver/hw_timer.h>
 #include <esp_tasks.h>
 #include <stdlib.h>
-#include "include/hostlib/init.h"
 #include "include/hostlib/emu.h"
 #include "include/hostlib/hostlib.h"
 #include "include/hostlib/CommandLine.h"
@@ -42,6 +41,8 @@
 #ifndef DISABLE_NETWORK
 #include <host_lwip.h>
 #endif
+
+extern void init();
 
 namespace
 {
@@ -286,7 +287,7 @@ int main(int argc, char* argv[])
 
 		System.initialize();
 
-		host_init();
+		init();
 
 		while(!done) {
 			int due = host_main_loop();

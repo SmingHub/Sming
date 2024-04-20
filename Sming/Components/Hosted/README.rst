@@ -6,8 +6,10 @@ HostEd
 The hosted component allows Sming's host emulator to run parts of the commands on an actual microcontroller.
 The communication is done via `simplePRC <https://simplerpc.readthedocs.io/>`_ and the microcontroller has to be flashed with a special application.
 
+
 Overview
 --------
+
 Sming's host emulator allows easier debugging and development of embedded applications. This component named "Hosted" extends the host emulator
 and facilitates testing functionality that only a real microcontroller can provide as for example digital I/O operations or SPI operations.
 
@@ -24,7 +26,7 @@ We need to compile and flash also a special application on the desired microcont
 This application will act as an RPC Server and will execute the commands from the host emulator on the microcontroller.
 
 In the ``samples`` directory you will find the sample applications that will turn your microcontroller into
-an RCP server.
+an RPC server.
 
 The compilation and flashing for ESP32, for example, can be done using the following commands::
 
@@ -33,7 +35,8 @@ The compilation and flashing for ESP32, for example, can be done using the follo
    make flash
 
 If you replace ``SMING_ARCH=Esp32`` with ``SMING_ARCH=Esp8266`` then the hosted application will be compiled and flashed on a ESP8266 microcontroller.
-Make sure to replace the values of  WIFI_SSID and WIFI_PWD with the actual name and password for the Access Point (AP).
+Make sure to replace the values of WIFI_SSID and WIFI_PWD with the actual name and password for the Access Point (AP).
+
 
 Communication
 -------------
@@ -41,6 +44,7 @@ At the moment the communication between an application running on the Host and t
 can be done using TCP or serial interface.
 
 The ``transport`` classes are located under ``include/Hosted/Transport``.
+
 
 Configuration
 -------------

@@ -18,15 +18,11 @@
 #include "TcpTransport.h"
 #include "TcpClientStream.h"
 
-namespace Hosted
-{
-namespace Transport
+namespace Hosted::Transport
 {
 class TcpServerTransport : public TcpTransport
 {
 public:
-	using ClientMap = ObjectMap<TcpClient*, TcpClientStream>;
-
 	TcpServerTransport(TcpServer& server)
 	{
 		server.setClientReceiveHandler(TcpClientDataDelegate(&TcpServerTransport::process, this));
@@ -52,9 +48,9 @@ protected:
 	}
 
 private:
+	using ClientMap = ObjectMap<TcpClient*, TcpClientStream>;
+
 	ClientMap map;
 };
 
-} // namespace Transport
-
-} // namespace Hosted
+} // namespace Hosted::Transport
