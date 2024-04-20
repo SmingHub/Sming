@@ -42,41 +42,72 @@ private:
 
 TheWire theWire;
 
-class HostedTest : public TestGroup
+class TestParseHandler : public ParserCallbacks
 {
 public:
 	using RemoteCommands = HashMap<String, uint8_t>;
 
+	RemoteCommands commands;
+	uint8_t methodPosition = 0;
+	String parsedCommand;
+
+	void startMethods() override
+	{
+		methodPosition = 0;
+		commands.clear();
+	}
+
+	void startMethod() override
+	{
+		parsedCommand = "";
+	}
+
+	void methodSignature(char c) override
+	{
+	}
+
+	void methodName(char ch) override
+	{
+		parsedCommand += ch;
+	}
+
+	void endMethod() override
+	{
+		commands[parsedCommand] = methodPosition++;
+	}
+
+	void endMethods() override
+	{
+	}
+};
+
+class HostedTest : public TestGroup
+{
+public:
 	HostedTest() : TestGroup("Hosted")
 	{
 	}
 
 	void execute() override
 	{
-		char packet[]{"simpleRPC\0" // protocol identifier
-					  "\3\0\0"		// version
-					  "<I\0"		// little-endian
-					  ": H B;pinMode: Sets mode of digital pin. @pin: Pin number, @mode: Mode type.\0"
-					  "B: H;digitalRead: Read digital pin. @pin: Pin number. @return: Pin value.\0"
-					  ": H B;digitalWrite: Write to a digital pin. @pin: Pin number. @value: Pin value.\0"
-					  "\0"};
-
-		ParserSettings settings{
-			.startMethods = ParserSettings::SimpleMethod(&HostedTest::startMethods, this),
-			.startMethod = ParserSettings::SimpleMethod(&HostedTest::startMethod, this),
-			.methodName = ParserSettings::CharMethod(&HostedTest::methodName, this),
-			.endMethod = ParserSettings::SimpleMethod(&HostedTest::endMethod, this),
-			.endMethods = ParserSettings::SimpleMethod(&HostedTest::endMethods, this),
-			.state = ParserState::ready,
-		};
-
 		TEST_CASE("simpleRPC::parse()")
 		{
+			char packet[]{"simpleRPC\0" // protocol identifier
+						  "\3\0\0"		// version
+						  "<I\0"		// little-endian
+						  ": H B;pinMode: Sets mode of digital pin. @pin: Pin number, @mode: Mode type.\0"
+						  "B: H;digitalRead: Read digital pin. @pin: Pin number. @return: Pin value.\0"
+						  ": H B;digitalWrite: Write to a digital pin. @pin: Pin number. @value: Pin value.\0"
+						  "\0"};
+
+			TestParseHandler handler;
+			ParserSettings settings{handler};
+
 			REQUIRE_EQ(parse(settings, packet, sizeof(packet)), ParserResult::finished);
-			REQUIRE_EQ(commands.count(), 3);
-			REQUIRE_EQ(commands["digitalWrite"], 2);
-			REQUIRE_NEQ(commands["pinMode"], 2);
-			REQUIRE_EQ(commands["pinMode"], 0);
+			REQUIRE_EQ(handler.commands.count(), 3);
+			REQUIRE_EQ(handler.commands["digitalWrite"], 2);
+			REQUIRE_NEQ(handler.commands["pinMode"], 2);
+			REQUIRE_EQ(handler.commands["pinMode"], 0);
 		}
 
 		if(!WifiStation.isConnected()) {
@@ -148,36 +179,6 @@ public:
 		}
 
 		server->shutdown();
-	}
-
-private:
-	RemoteCommands commands;
-	uint8_t methodPosition = 0;
-	String parsedCommand;
-
-	void startMethods()
-	{
-		methodPosition = 0;
-		commands.clear();
-	}
-
-	void startMethod()
-	{
-		parsedCommand = "";
-	}
-
-	void methodName(char ch)
-	{
-		parsedCommand += ch;
-	}
-
-	void endMethod()
-	{
-		commands[parsedCommand] = methodPosition++;
-	}
-
-	void endMethods()
-	{
 	}
 };
 

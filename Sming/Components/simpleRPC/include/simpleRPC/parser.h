@@ -48,16 +48,23 @@ enum class ParserState {
 	finished
 };
 
-struct ParserSettings {
-	using SimpleMethod = Delegate<void(void)>;
-	using CharMethod = Delegate<void(char)>;
+class ParserCallbacks
+{
+public:
+	virtual ~ParserCallbacks()
+	{
+	}
 
-	SimpleMethod startMethods;
-	SimpleMethod startMethod;
-	CharMethod methodSignature;
-	CharMethod methodName;
-	SimpleMethod endMethod;
-	SimpleMethod endMethods;
+	virtual void startMethods() = 0;
+	virtual void startMethod() = 0;
+	virtual void methodSignature(char c) = 0;
+	virtual void methodName(char c) = 0;
+	virtual void endMethod() = 0;
+	virtual void endMethods() = 0;
+};
+
+struct ParserSettings {
+	ParserCallbacks& callbacks;
 	ParserState state = ParserState::ready;
 };
 
