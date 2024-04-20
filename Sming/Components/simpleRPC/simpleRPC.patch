@@ -1,48 +1,41 @@
 diff --git a/src/defs.h b/src/defs.h
-index c5b9ccf..9b2367d 100644
+index 54347e9..b977b19 100644
 --- a/src/defs.h
 +++ b/src/defs.h
-@@ -1,6 +1,6 @@
+@@ -1,6 +1,8 @@
  #pragma once
  
 -#include <Arduino.h>
 +#include <Stream.h>
++#include <algorithm>
++using std::min;
  
- #define _PROTOCOL "simpleRPC"
- #define _VERSION "\3\0\0"
-diff --git a/src/read.tcc b/src/read.tcc
-index b32699e..3f03cde 100644
---- a/src/read.tcc
-+++ b/src/read.tcc
-@@ -2,7 +2,6 @@
+ char const PROTOCOL_[] {"simpleRPC"};
+ char const VERSION_[] {"\x03\x00\x00"};
+diff --git a/src/simpleRPC.h b/src/simpleRPC.h
+index dea278c..da3394e 100644
+--- a/src/simpleRPC.h
++++ b/src/simpleRPC.h
+@@ -1,6 +1,10 @@
+ #pragma once
  
- #include "defs.h"
- #include "tuple.tcc"
--#include "vector.tcc"
++namespace simpleRPC
++{
+ #include "interface.tcc"
  
- //! \defgroup read
+ // I/O plugins.
+ #include "plugins/half_duplex/stream.h"
++
++} // namespace simpleRPC
+diff --git a/src/vector.tcc b/src/vector.tcc
+index 49e1d27..a2d6352 100644
+--- a/src/vector.tcc
++++ b/src/vector.tcc
+@@ -1,7 +1,5 @@
+ #pragma once
  
-diff --git a/src/types.tcc b/src/types.tcc
-index b0de8d9..aca5f07 100644
---- a/src/types.tcc
-+++ b/src/types.tcc
-@@ -2,7 +2,6 @@
+-#include <Arduino.h>
+-
  
- #include "print.tcc"
- #include "tuple.tcc"
--#include "vector.tcc"
- 
- //! \defgroup types
- 
-diff --git a/src/write.tcc b/src/write.tcc
-index 1f018c4..727f81f 100644
---- a/src/write.tcc
-+++ b/src/write.tcc
-@@ -2,7 +2,6 @@
- 
- #include "print.tcc"
- #include "tuple.tcc"
--#include "vector.tcc"
- 
- //! \defgroup write
- 
+ template <class T>
+ void swap_(T& a, T& b) noexcept {

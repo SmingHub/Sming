@@ -108,10 +108,10 @@ public:
 					plusCommand, "plusCommand> Sum two numbers. @a: number one. @b: number two.",
 					/* class methods */
 					// uint8_t TwoWire::begin(uint8_t sda, uint8_t scl)
-					pack(&theWire, (uint8_t(TheWire::*)(uint8_t,uint8_t))&TheWire::begin), "TheWire::begin> Starts two-wire communication. @sda: Data pin. @scl: Clock pin.",
+					makeTuple(&theWire, static_cast<uint8_t(TheWire::*)(uint8_t,uint8_t)>(&TheWire::begin)), "TheWire::begin> Starts two-wire communication. @sda: Data pin. @scl: Clock pin.",
 					// void TheWire::begin()
-					pack(&theWire, (void(TheWire::*)())&TheWire::begin), "TheWire::begin> Starts two-wire communication.",
-					pack(&theWire, (uint8_t(TheWire::*)())&TheWire::getCalled), "TheWire::getCalled> Gets times called. @return: Result."
+					makeTuple(&theWire, static_cast<void(TheWire::*)()>(&TheWire::begin)), "TheWire::begin> Starts two-wire communication.",
+					makeTuple(&theWire, &TheWire::getCalled), "TheWire::getCalled> Gets times called. @return: Result."
 				);
 			// clang-format on
 

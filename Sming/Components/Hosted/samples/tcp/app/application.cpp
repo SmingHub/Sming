@@ -38,7 +38,7 @@ void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 	transport = new TcpServerTransport(*server);
 	transport->onData([](Stream& stream) {
 		// clang-format off
-		interface(stream,
+		simpleRPC::interface(stream,
 			/*
 			 * Below we are exporting the following remote commands:
 			 * - pinMode
