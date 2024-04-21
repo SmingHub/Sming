@@ -113,12 +113,12 @@ public:
 		assign(fd, addr);
 	}
 
-	virtual ~CSocket()
+	~CSocket()
 	{
 		close();
 	}
 
-	virtual void close();
+	void close();
 
 	bool setblocking(bool block);
 	bool bind(const CSockAddr& sa);
@@ -217,7 +217,12 @@ public:
 	{
 	}
 
-	void close() override
+	virtual ~CServerSocket()
+	{
+		close();
+	}
+
+	void close()
 	{
 		m_clients.closeall();
 		CSocket::close();
