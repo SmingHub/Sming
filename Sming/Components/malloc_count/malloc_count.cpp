@@ -195,7 +195,7 @@ void setAllocLimit(size_t maxBytes)
 /* user function to supply a memory profile callback */
 void setCallback(Callback callback)
 {
-	userCallback = callback;
+	userCallback = std::move(callback);
 }
 
 #ifdef ENABLE_MALLOC_COUNT
@@ -367,7 +367,7 @@ void* operator new(size_t size)
 	return mc_malloc(size);
 }
 
-void* operator new(size_t size, const std::nothrow_t&)
+void* operator new(size_t size, const std::nothrow_t&) noexcept
 {
 	return mc_malloc(size);
 }
@@ -377,7 +377,7 @@ void* operator new[](size_t size)
 	return mc_malloc(size);
 }
 
-void* operator new[](size_t size, const std::nothrow_t&)
+void* operator new[](size_t size, const std::nothrow_t&) noexcept
 {
 	return mc_malloc(size);
 }

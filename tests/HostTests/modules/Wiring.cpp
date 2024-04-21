@@ -18,7 +18,7 @@ template <typename A, typename B> Print& operator<<(Print& p, const std::pair<A,
 
 template <typename T> void print(const T& list, const char* separator = "\r\n")
 {
-	for(auto e : list) {
+	for(const auto& e : list) {
 		Serial << e << separator;
 	}
 }
@@ -93,7 +93,7 @@ public:
 			Serial.println();
 
 			using Func = Delegate<void(TestMap & map)>;
-			auto time = [this](const String& description, Func function) {
+			auto time = [](const String& description, const Func& function) {
 				Serial << description << " ..." << endl;
 				TestMap map;
 				fillMap(map);

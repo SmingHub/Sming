@@ -24,7 +24,7 @@ public:
 	{
 	}
 
-	void execute()
+	void execute() override
 	{
 		TEST_CASE("String::trim", "[core][String]")
 		{

@@ -44,7 +44,7 @@ void* FileMeta::getAttributePtr(AttributeTag tag)
 	}
 }
 
-int SpiffsMetaBuffer::enumxattr(AttributeEnumCallback callback, void* buffer, size_t bufsize)
+int SpiffsMetaBuffer::enumxattr(const AttributeEnumCallback& callback, void* buffer, size_t bufsize)
 {
 	size_t count{0};
 	AttributeEnum e{buffer, bufsize};

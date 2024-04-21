@@ -109,7 +109,7 @@ public:
 			SectionTemplate tmpl(new FlashMemoryStream(Resource::ut_template1_in_rst));
 			REQUIRE(tmpl.sectionCount() == 1);
 			tmpl.setDoubleBraces(true);
-			tmpl.onGetValue([&tmpl](const char* name) -> String {
+			tmpl.onGetValue([](const char* name) -> String {
 				debug_e("getValue(%s)", name);
 				if(FS("emit_contents") == name) {
 					return "1";
@@ -174,7 +174,6 @@ public:
 				}
 				tmpl.seek(read);
 				outlen += read;
-				ptr += read;
 			}
 
 			String expected;
@@ -193,7 +192,7 @@ public:
 
 		TEST_CASE("CSV Reader")
 		{
-			auto str = [](const CStringArray cs) {
+			auto str = [](const CStringArray& cs) {
 				String s = reinterpret_cast<const String&>(cs);
 				s.replace('\0', ';');
 				return s;

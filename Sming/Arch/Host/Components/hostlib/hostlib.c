@@ -35,14 +35,12 @@ size_t getHostAppDir(char* path, size_t bufSize)
 		return 0;
 	}
 
-	size_t len;
-	char sep;
 #ifdef __WIN32
-	len = GetModuleFileName(NULL, path, bufSize);
-	sep = '\\';
+	size_t len = GetModuleFileName(NULL, path, bufSize);
+	char sep = '\\';
 #else
-	len = readlink("/proc/self/exe", path, bufSize - 1);
-	sep = '/';
+	size_t len = readlink("/proc/self/exe", path, bufSize - 1);
+	char sep = '/';
 #endif
 	path[len] = '\0';
 	char* p = strrchr(path, sep);

@@ -58,7 +58,7 @@ private:
 		struct sockaddr sa;
 		struct sockaddr_in in4;  // AF_INET
 		struct sockaddr_in6 in6; // AF_INET6
-	} m_addr;
+	} m_addr{};
 
 public:
 	CSockAddr()
@@ -213,7 +213,7 @@ private:
 class CServerSocket : public CSocket
 {
 public:
-	CServerSocket(int type = SOCK_STREAM) : CSocket(type), m_max_connections(1)
+	CServerSocket(int type = SOCK_STREAM) : CSocket(type)
 	{
 	}
 
@@ -240,6 +240,6 @@ protected:
 	}
 
 private:
-	unsigned m_max_connections;
+	unsigned m_max_connections{1};
 	CSocketList m_clients;
 };

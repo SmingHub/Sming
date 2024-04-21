@@ -50,6 +50,11 @@ public:
 	{
 	}
 
+	Device(const Device&) = delete;
+	Device(Device&&) = delete;
+	Device& operator=(const Device&) = delete;
+	Device& operator=(Device&&) = delete;
+
 	~Device();
 
 	bool operator==(const String& name) const

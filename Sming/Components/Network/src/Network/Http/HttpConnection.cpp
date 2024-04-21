@@ -206,8 +206,7 @@ bool HttpConnection::isActive()
 		return false;
 	}
 
-	struct tcp_pcb* pcb;
-	for(pcb = tcp_active_pcbs; pcb != nullptr; pcb = pcb->next) {
+	for(auto pcb = tcp_active_pcbs; pcb != nullptr; pcb = pcb->next) {
 		if(tcp == pcb) {
 			return true;
 		}

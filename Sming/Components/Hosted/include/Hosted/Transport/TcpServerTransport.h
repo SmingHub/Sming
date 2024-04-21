@@ -37,7 +37,6 @@ protected:
 		if(stream == nullptr) {
 			map[key] = stream = new TcpClientStream(client);
 			client.setReceiveDelegate(TcpClientDataDelegate(&TcpServerTransport::process, this));
-			stream = map[key];
 		}
 
 		if(!stream->push(reinterpret_cast<const uint8_t*>(data), size)) {

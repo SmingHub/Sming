@@ -64,14 +64,12 @@ public:
 		ip_addr_set_ip4_u32(&this->address, address);
 	}
 
-	IpAddress(ip_addr_t& addr)
+	IpAddress(ip_addr_t& addr) : address(addr)
 	{
-		address = addr;
 	}
 
-	IpAddress(const ip_addr_t& addr)
+	IpAddress(const ip_addr_t& addr) : address(addr)
 	{
-		address = addr;
 	}
 
 #if LWIP_VERSION_MAJOR == 2 && LWIP_IPV6

@@ -43,7 +43,7 @@ public:
 		return -1;
 	}
 
-	bool isValid() const
+	bool isValid() const override
 	{
 		return sourceStream && sourceStream->isValid();
 	}

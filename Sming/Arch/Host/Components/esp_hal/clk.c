@@ -11,16 +11,13 @@ static uint32_t base_ccount;
  */
 static uint32_t get_ccount(uint64_t nanos)
 {
-	uint32_t ccount;
 	if(base_nanos == 0) {
 		base_nanos = nanos;
 		base_ccount = nanos / cpu_frequency;
-		ccount = base_ccount;
-	} else {
-		ccount = base_ccount + cpu_frequency * ((nanos - base_nanos) / 1000);
+		return base_ccount;
 	}
 
-	return ccount;
+	return base_ccount + cpu_frequency * ((nanos - base_nanos) / 1000);
 }
 
 bool system_update_cpu_freq(uint8_t freq)

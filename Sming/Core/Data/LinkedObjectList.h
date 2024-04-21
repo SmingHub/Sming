@@ -103,12 +103,12 @@ public:
 
 	ObjectType* head()
 	{
-		return reinterpret_cast<ObjectType*>(mHead);
+		return static_cast<ObjectType*>(mHead);
 	}
 
 	const ObjectType* head() const
 	{
-		return reinterpret_cast<const ObjectType*>(mHead);
+		return static_cast<const ObjectType*>(mHead);
 	}
 
 	Iterator begin()
@@ -153,7 +153,7 @@ public:
 
 	ObjectType* pop()
 	{
-		return reinterpret_cast<ObjectType*>(LinkedObjectList::pop());
+		return static_cast<ObjectType*>(LinkedObjectList::pop());
 	}
 
 	size_t count() const

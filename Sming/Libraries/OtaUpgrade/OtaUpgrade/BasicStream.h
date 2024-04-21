@@ -88,10 +88,12 @@ public:
 	{
 		return 0;
 	}
-	virtual int available() override
+
+	int available() override
 	{
 		return 0;
 	}
+
 	bool isFinished() override
 	{
 		return true;

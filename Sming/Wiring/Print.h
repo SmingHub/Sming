@@ -36,9 +36,19 @@
 class Print
 {
 public:
+	Print()
+	{
+	}
+
+	Print(const Print&) = delete;
+	Print(Print&&) = delete;
+
 	virtual ~Print()
 	{
 	}
+
+	Print& operator=(const Print&) = delete;
+	Print& operator=(Print&&) = delete;
 
 	/** @brief  Gets last error
     	@retval int Error number of last write error
@@ -87,7 +97,7 @@ public:
 	  */
 	size_t write(const char* buffer, size_t size)
 	{
-		return write((const uint8_t*)buffer, size);
+		return write(reinterpret_cast<const uint8_t*>(buffer), size);
 	}
 
 	/** @brief  Prints a single character to output stream

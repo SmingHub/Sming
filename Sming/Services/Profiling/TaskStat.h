@@ -52,8 +52,10 @@ private:
 	static constexpr size_t maxTasks{32};
 	struct Info;
 	std::unique_ptr<Info[]> taskInfo;
+#ifdef ARCH_ESP32
 	uint8_t startIndex{0};
 	uint8_t endIndex{0};
+#endif
 };
 
 } // namespace Profiling

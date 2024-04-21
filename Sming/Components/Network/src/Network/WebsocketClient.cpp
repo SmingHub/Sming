@@ -27,6 +27,7 @@ protected:
 			state = eHCS_Ready;
 		}
 
+		// IMPORTANT: Skip HttpClientConnection implementation
 		return HttpConnection::onConnected(err);
 	}
 };

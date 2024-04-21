@@ -131,7 +131,7 @@ public:
 private:
 	uint8_t channel_count;
 	uint8_t channels[PWM_CHANNEL_NUM_MAX];
-	uint32_t maxduty;
+	uint32_t maxduty{0};
 };
 
 /** @} */

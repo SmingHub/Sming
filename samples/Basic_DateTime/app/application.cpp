@@ -77,8 +77,9 @@ void onRx(Stream& source, char arrivedChar, unsigned short availableCharsCount)
 {
 	static LineBuffer<32> buffer;
 
+	using Action = LineBufferBase::Action;
 	switch(buffer.process(source, Serial)) {
-	case buffer.Action::submit: {
+	case Action::submit: {
 		if(!buffer) {
 			break;
 		}
@@ -109,7 +110,7 @@ void onRx(Stream& source, char arrivedChar, unsigned short availableCharsCount)
 		break;
 	}
 
-	case buffer.Action::clear:
+	case Action::clear:
 		break;
 
 	default:;

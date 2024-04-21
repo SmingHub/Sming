@@ -19,22 +19,22 @@ public:
 
 	NanoTime::Time<uint32_t> getMinTime() const
 	{
-		return this->template ticksToTime(getMin());
+		return this->ticksToTime(getMin());
 	}
 
 	NanoTime::Time<uint32_t> getMaxTime() const
 	{
-		return this->template ticksToTime(getMax());
+		return this->ticksToTime(getMax());
 	}
 
 	NanoTime::Time<uint32_t> getAverageTime() const
 	{
-		return this->template ticksToTime(getAverage());
+		return this->ticksToTime(getAverage());
 	}
 
 	NanoTime::Time<uint32_t> getTotalTime() const
 	{
-		return this->template ticksToTime(getTotal());
+		return this->ticksToTime(getTotal());
 	}
 
 	size_t printTo(Print& p) const

@@ -136,7 +136,8 @@ void CMutex::unlock()
 
 bool CSemaphore::timedwait(unsigned us)
 {
-	struct timespec ts;
+	struct timespec ts {
+	};
 	clock_gettime(CLOCK_REALTIME, &ts);
 	uint64_t ns = ts.tv_nsec + uint64_t(us) * 1000;
 	ts.tv_sec += ns / 1000000000;

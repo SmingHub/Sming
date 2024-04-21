@@ -44,10 +44,10 @@ union FourDigitName {
 	}
 };
 
-const FourDigitName isoDayNames[7] PROGMEM = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+const FourDigitName isoDayNames[7] PROGMEM{{"Sun"}, {"Mon"}, {"Tue"}, {"Wed"}, {"Thu"}, {"Fri"}, {"Sat"}};
 
-const FourDigitName isoMonthNames[12] PROGMEM = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-												 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+const FourDigitName isoMonthNames[12] PROGMEM{{"Jan"}, {"Feb"}, {"Mar"}, {"Apr"}, {"May"}, {"Jun"},
+											  {"Jul"}, {"Aug"}, {"Sep"}, {"Oct"}, {"Nov"}, {"Dec"}};
 
 /*
  * @brief Match a day or month name against a list of values and set the required value
@@ -61,7 +61,7 @@ const FourDigitName isoMonthNames[12] PROGMEM = {"Jan", "Feb", "Mar", "Apr", "Ma
  */
 bool matchName(const char*& ptr, uint8_t& value, const FourDigitName isoNames[], unsigned nameCount)
 {
-	FourDigitName name{ptr[0], ptr[1], ptr[2]};
+	FourDigitName name{{ptr[0], ptr[1], ptr[2]}};
 	for(unsigned i = 0; i < nameCount; ++i) {
 		if(isoNames[i] == name) {
 			value = i;

@@ -228,7 +228,7 @@ public:
 	{
 	}
 
-	void execute()
+	void execute() override
 	{
 		api.setInterval(api.maxTicks());
 
@@ -292,7 +292,7 @@ public:
 	{
 	}
 
-	void execute()
+	void execute() override
 	{
 		Serial.println(timer);
 

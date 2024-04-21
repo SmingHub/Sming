@@ -133,7 +133,7 @@ public:
 	}
 
 private:
-	sem_t m_sem;
+	sem_t m_sem{};
 };
 
 /**

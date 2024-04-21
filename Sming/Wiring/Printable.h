@@ -42,6 +42,15 @@ class Print;
 class Printable
 {
 public:
+	Printable()
+	{
+	}
+
+	Printable(const Printable&) = delete;
+	Printable(Printable&&) = delete;
+	Printable& operator=(const Printable&) = delete;
+	Printable& operator=(Printable&&) = delete;
+
 	virtual ~Printable()
 	{
 	}

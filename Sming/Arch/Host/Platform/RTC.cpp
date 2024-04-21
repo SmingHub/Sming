@@ -25,7 +25,8 @@ RtcClass::RtcClass()
 
 uint64_t RtcClass::getRtcNanoseconds()
 {
-	struct timeval tv;
+	struct timeval tv {
+	};
 	gettimeofday(&tv, nullptr);
 	uint64_t usecs = (tv.tv_sec * 1000000ULL) + (uint32_t)tv.tv_usec;
 	return usecs * 1000;
@@ -33,7 +34,8 @@ uint64_t RtcClass::getRtcNanoseconds()
 
 uint32_t RtcClass::getRtcSeconds()
 {
-	struct timeval tv;
+	struct timeval tv {
+	};
 	gettimeofday(&tv, nullptr);
 	return tv.tv_sec + timeDiff;
 }

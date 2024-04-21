@@ -34,8 +34,8 @@ bool Uuid::operator==(const Uuid& other) const
 
 bool Uuid::generate(MacAddress mac)
 {
-	uint8_t version = 1; // DCE version
-	uint8_t variant = 2; // DCE variant
+	const uint8_t version = 1; // DCE version
+	const uint8_t variant = 2; // DCE variant
 	uint16_t clock_seq = os_random();
 	uint32_t time;
 	if(SystemClock.isSet()) {
