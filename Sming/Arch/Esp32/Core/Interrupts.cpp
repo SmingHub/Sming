@@ -89,7 +89,7 @@ void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, GPIO_INT_T
 		return; // WTF o_O
 	}
 	gpioInterruptsList[pin] = nullptr;
-	delegateFunctionList[pin] = delegateFunction;
+	delegateFunctionList[pin] = std::move(delegateFunction);
 	attachInterruptHandler(pin, type);
 }
 

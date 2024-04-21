@@ -51,7 +51,7 @@ static int skip_atoi(const char **s)
 nputs_callback_t m_setPuts(nputs_callback_t callback)
 {
 	nputs_callback_t previousCallback = _puts_callback;
-	_puts_callback = callback;
+	_puts_callback = std::move(callback);
 	return previousCallback;
 }
 
