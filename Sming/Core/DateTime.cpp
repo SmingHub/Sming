@@ -18,7 +18,7 @@
 static_assert(sizeof(time_t) != 8, "Great! Now supports 64-bit - please update code");
 #warning "**Y2038** time_t is only 32-bits in this build configuration"
 #else
-static_assert(sizeof(time_t) == 8, "Expecting 64-bit time_t");
+static_assert(sizeof(time_t) == 8, "Expecting 64-bit time_t - please use GCC 10 or later");
 #endif
 
 namespace
