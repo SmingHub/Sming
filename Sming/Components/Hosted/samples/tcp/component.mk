@@ -4,7 +4,7 @@ ENABLE_HOSTED :=
 
 # If set the application should connect to a WIFI access point
 # otherwise it will set its own access point
-COMPONENT_RELINK_VARS := CONNECT_TO_WIFI
+CONFIG_VARS := CONNECT_TO_WIFI
 CONNECT_TO_WIFI ?= 0
 
 APP_CFLAGS = -DCONNECT_TO_WIFI=$(CONNECT_TO_WIFI)  

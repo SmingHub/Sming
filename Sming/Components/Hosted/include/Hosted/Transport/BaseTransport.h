@@ -16,9 +16,7 @@
 #include <Stream.h>
 #include <Delegate.h>
 
-namespace Hosted
-{
-namespace Transport
+namespace Hosted::Transport
 {
 class BaseTransport
 {
@@ -38,6 +36,4 @@ protected:
 	DataHandler handler;
 };
 
-} // namespace Transport
-
-} // namespace Hosted
+} // namespace Hosted::Transport

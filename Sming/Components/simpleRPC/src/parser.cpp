@@ -36,9 +36,11 @@ namespace simpleRPC
 ParserResult parse(ParserSettings& settings, const char* buffer, size_t length, char nameEndsWith)
 {
 	auto& state = settings.state;
+	auto& callbacks = settings.callbacks;
+
 	/*
- * See: https://simplerpc.readthedocs.io/en/latest/protocol.html#
-00000000  ff                                                 .
+     * See: https://simplerpc.readthedocs.io/en/latest/protocol.html#
+    00000000  ff                                                 .
     00000000  73                                                 s
     00000001  69                                                 i
     00000002  6d                                                 m
@@ -73,7 +75,7 @@ ParserResult parse(ParserSettings& settings, const char* buffer, size_t length, 
     000000E1  65 72 2e 20 40 76 61 6c  75 65 3a 20 50 69 6e 20   er. @val ue: Pin
     000000F1  76 61 6c 75 65 2e 00                               value..
                                    00                                   .
-*/
+    */
 	bool hasError = false;
 	for(const char* p = buffer; p != buffer + length; p++) {
 		char ch = *p;
@@ -129,9 +131,7 @@ ParserResult parse(ParserSettings& settings, const char* buffer, size_t length, 
 				goto ERROR;
 			}
 
-			if(settings.startMethods) {
-				settings.startMethods();
-			}
+			callbacks.startMethods();
 			state = ParserState::extract_method_start;
 			break;
 		}
@@ -141,9 +141,7 @@ ParserResult parse(ParserSettings& settings, const char* buffer, size_t length, 
 				goto REENTER;
 			}
 
-			if(settings.startMethod) {
-				settings.startMethod();
-			}
+			callbacks.startMethod();
 			state = ParserState::extract_method_signature;
 			/* fall-through */
 		}
@@ -153,9 +151,7 @@ ParserResult parse(ParserSettings& settings, const char* buffer, size_t length, 
 				break;
 			}
 
-			if(settings.methodSignature) {
-				settings.methodSignature(ch);
-			}
+			callbacks.methodSignature(ch);
 			break;
 		}
 		case ParserState::extract_method_name: {
@@ -164,23 +160,17 @@ ParserResult parse(ParserSettings& settings, const char* buffer, size_t length, 
 				break;
 			}
 
-			if(settings.methodName) {
-				settings.methodName(ch);
-			}
+			callbacks.methodName(ch);
 			break;
 		}
 		case ParserState::extract_method_end: {
 			SKIP_UNTIL('\0', ParserState::extract_method_start);
 
-			if(settings.endMethod) {
-				settings.endMethod();
-			}
+			callbacks.endMethod();
 			break;
 		}
 		case ParserState::end_methods: {
-			if(settings.endMethods) {
-				settings.endMethods();
-			}
+			callbacks.endMethods();
 			state = ParserState::finished;
 			/* fall through */
 		}
@@ -195,11 +185,21 @@ ParserResult parse(ParserSettings& settings, const char* buffer, size_t length, 
 	} // end for
 
 ERROR:
-	if(hasError) {
-		return ParserResult::error;
-	}
+	return hasError ? ParserResult::error : ParserResult::more;
+}
 
-	return ParserResult::more;
+String toString(ParserResult result)
+{
+	using namespace simpleRPC;
+	switch(result) {
+	case ParserResult::finished:
+		return F("finished");
+	case ParserResult::more:
+		return F("more");
+	case ParserResult::error:
+		return F("error");
+	}
+	return nullptr;
 }
 
 } // namespace simpleRPC

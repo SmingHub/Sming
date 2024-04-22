@@ -18,14 +18,12 @@
 #include "TcpClientStream.h"
 #include <memory>
 
-namespace Hosted
-{
-namespace Transport
+namespace Hosted::Transport
 {
 class TcpClientTransport : public TcpTransport
 {
 public:
-	TcpClientTransport(TcpClient& client) : stream(new TcpClientStream(client))
+	TcpClientTransport(TcpClient& client) : stream(std::make_unique<TcpClientStream>(client))
 	{
 		client.setReceiveDelegate(TcpClientDataDelegate(&TcpClientTransport::process, this));
 	}
@@ -44,6 +42,4 @@ private:
 	std::unique_ptr<TcpClientStream> stream;
 };
 
-} // namespace Transport
-
-} // namespace Hosted
+} // namespace Hosted::Transport

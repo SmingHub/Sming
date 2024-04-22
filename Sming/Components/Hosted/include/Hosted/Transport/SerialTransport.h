@@ -16,9 +16,7 @@
 #include <HardwareSerial.h>
 #include "BaseTransport.h"
 
-namespace Hosted
-{
-namespace Transport
+namespace Hosted::Transport
 {
 class SerialTransport : public BaseTransport
 {
@@ -35,6 +33,4 @@ private:
 	}
 };
 
-} // namespace Transport
-
-} // namespace Hosted
+} // namespace Hosted::Transport

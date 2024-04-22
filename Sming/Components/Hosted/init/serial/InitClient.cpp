@@ -22,27 +22,25 @@
 #define HOSTED_COM_SPEED 115200
 #endif
 
-Hosted::Client* hostedClient{nullptr};
+Hosted::Client* hostedClient;
 
-extern void init();
+extern "C" void __real__Z4initv();
 
-extern "C" {
-void __real_host_init();
-void __wrap_host_init();
+namespace
+{
+Hosted::Serial hostedSerial(HOSTED_COM_PORT);
 }
 
-Hosted::Serial hostedSerial(HOSTED_COM_PORT);
-
-void __wrap_host_init()
+extern "C" void __wrap__Z4initv()
 {
 	host_printf("Connecting to: %s ...\r\n", HOSTED_COM_PORT);
 
-	bool serialReady = false;
-	while(!(serialReady = hostedSerial.begin(HOSTED_COM_SPEED))) {
+	while(!hostedSerial.begin(HOSTED_COM_SPEED)) {
 		msleep(50);
 	}
 
 	hostedClient = new Hosted::Client(hostedSerial, '>');
 	hostedClient->getRemoteCommands();
-	init();
+
+	__real__Z4initv();
 }
