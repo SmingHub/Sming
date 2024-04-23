@@ -9,8 +9,7 @@
 
 namespace
 {
-#pragma GCC diagnostic ignored "-Wunused-function"
-void onNtpReceive(NtpClient& client, time_t timestamp);
+[[maybe_unused]] void onNtpReceive(NtpClient& client, time_t timestamp);
 
 SimpleTimer printTimer;
 
