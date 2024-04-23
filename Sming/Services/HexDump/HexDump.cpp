@@ -7,16 +7,6 @@
 
 #include "HexDump.h"
 
-HexDump::HexDump()
-{
-	addr = 0;
-}
-
-HexDump::~HexDump()
-{
-	// TODO Auto-generated destructor stub
-}
-
 void HexDump::print(unsigned char* data, int len)
 {
 	Serial.printf("Data: (%d Bytes)\n", len);

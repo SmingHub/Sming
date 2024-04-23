@@ -135,6 +135,7 @@ using flash_string_t = const __FlashStringHelper*;
  */
 class String
 {
+protected:
 	// use a function pointer to allow for "if (s)" without the
 	// complications of an operator bool(). for more information, see:
 	// http://www.artima.com/cppsource/safebool.html
@@ -191,19 +192,19 @@ public:
 	String(StringSumHelper&& rval) noexcept;
 #endif
 	explicit String(char c);
-	explicit String(unsigned char, unsigned char base = 10, unsigned char width = 0, char pad = '0');
-	explicit String(int num, unsigned char base = 10, unsigned char width = 0, char pad = '0')
+	explicit String(unsigned char, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
+	explicit String(int num, unsigned char base = DEC, unsigned char width = 0, char pad = '0')
 		: String(long(num), base, width, pad)
 	{
 	}
-	explicit String(unsigned int num, unsigned char base = 10, unsigned char width = 0, char pad = '0')
+	explicit String(unsigned int num, unsigned char base = DEC, unsigned char width = 0, char pad = '0')
 		: String((unsigned long)(num), base, width, pad)
 	{
 	}
-	explicit String(long, unsigned char base = 10, unsigned char width = 0, char pad = '0');
-	explicit String(long long, unsigned char base = 10, unsigned char width = 0, char pad = '0');
-	explicit String(unsigned long, unsigned char base = 10, unsigned char width = 0, char pad = '0');
-	explicit String(unsigned long long, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	explicit String(long, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
+	explicit String(long long, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
+	explicit String(unsigned long, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
+	explicit String(unsigned long long, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
 	explicit String(float, unsigned char decimalPlaces = 2);
 	explicit String(double, unsigned char decimalPlaces = 2);
 	/** @} */
@@ -331,19 +332,19 @@ public:
 	{
 		return concat(&c, 1);
 	}
-	bool concat(unsigned char num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
-	bool concat(int num, unsigned char base = 10, unsigned char width = 0, char pad = '0')
+	bool concat(unsigned char num, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
+	bool concat(int num, unsigned char base = DEC, unsigned char width = 0, char pad = '0')
 	{
 		return concat(long(num), base, width, pad);
 	}
-	bool concat(unsigned int num, unsigned char base = 10, unsigned char width = 0, char pad = '0')
+	bool concat(unsigned int num, unsigned char base = DEC, unsigned char width = 0, char pad = '0')
 	{
 		return concat((unsigned long)(num), base, width, pad);
 	}
-	bool concat(long num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
-	bool concat(long long num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
-	bool concat(unsigned long num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
-	bool concat(unsigned long long num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	bool concat(long num, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
+	bool concat(long long num, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
+	bool concat(unsigned long num, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
+	bool concat(unsigned long long num, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
 	bool concat(float num);
 	bool concat(double num);
 
@@ -606,7 +607,7 @@ public:
      */
 	void toCharArray(char* buf, size_t bufsize, size_t index = 0) const
 	{
-		getBytes((unsigned char*)buf, bufsize, index);
+		getBytes(reinterpret_cast<unsigned char*>(buf), bufsize, index);
 	}
 
 	/**
@@ -787,7 +788,7 @@ public:
 	 */
 	String& padLeft(uint16_t minWidth, char c = ' ')
 	{
-		return pad(-minWidth, c);
+		return pad(int16_t(-minWidth), c);
 	}
 
 	/**
@@ -795,7 +796,7 @@ public:
 	 */
 	String& padRight(uint16_t minWidth, char c = ' ')
 	{
-		return pad(minWidth, c);
+		return pad(int16_t(minWidth), c);
 	}
 
 	/**

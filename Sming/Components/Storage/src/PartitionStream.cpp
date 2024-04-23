@@ -41,7 +41,7 @@ int PartitionStream::seekFrom(int offset, SeekOrigin origin)
 	}
 
 	readPos = newPos;
-	return readPos;
+	return int(readPos);
 }
 
 size_t PartitionStream::write(const uint8_t* data, size_t length)

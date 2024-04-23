@@ -223,9 +223,18 @@ public:
 	{
 	}
 
+	Partition(Partition&& other) = default;
+
 	Partition(Device& device, const Info& info) : mDevice(&device), mPart(&info)
 	{
 	}
+
+	~Partition()
+	{
+	}
+
+	Partition& operator=(const Partition& other) = default;
+	Partition& operator=(Partition&& other) = default;
 
 	/**
 	 * @name Confirm partition is of the expected type

@@ -31,9 +31,8 @@ TestFile testFiles[]{
 class HttpRequestTest : public TestGroup
 {
 public:
-	HttpRequestTest() : TestGroup(_F("HTTP"))
+	HttpRequestTest() : TestGroup(_F("HTTP")), server(new HttpServer)
 	{
-		server = new HttpServer;
 	}
 
 	void execute() override

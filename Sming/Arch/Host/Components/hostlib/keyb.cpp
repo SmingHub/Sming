@@ -34,9 +34,14 @@
 #include <fcntl.h>
 #include <termios.h>
 
-static bool g_orig_values_saved, g_values_changed;
-static struct termios g_orig_attr;
-static int g_orig_flags;
+namespace
+{
+bool g_orig_values_saved;
+bool g_values_changed;
+struct termios g_orig_attr;
+int g_orig_flags;
+
+} // namespace
 
 #endif
 
@@ -62,9 +67,9 @@ public:
 	int add(int c);
 
 private:
-	char m_esc;
-	char m_buffer[32];
-	unsigned m_count;
+	char m_esc{};
+	char m_buffer[32]{};
+	unsigned m_count{};
 
 	void push(char c)
 	{
@@ -228,14 +233,16 @@ int CKeycode::add(int c)
 void keyb_restore()
 {
 #ifndef __WIN32
-	if(g_values_changed) {
-		static struct termios attr = g_orig_attr;
-		attr.c_lflag |= ICANON | ECHO;
-		tcsetattr(STDIN_FILENO, TCSANOW, &attr);
-
-		(void)fcntl(0, F_SETFL, g_orig_flags);
-		g_values_changed = false;
+	if(!g_values_changed) {
+		return;
 	}
+
+	static struct termios attr = g_orig_attr;
+	attr.c_lflag |= ICANON | ECHO;
+	tcsetattr(STDIN_FILENO, TCSANOW, &attr);
+
+	(void)fcntl(0, F_SETFL, g_orig_flags);
+	g_values_changed = false;
 #endif
 }
 
@@ -271,14 +278,16 @@ int getch()
 int getkey()
 {
 	static CKeycode kc;
-	int c;
+	int c = 0;
 	for(;;) {
 		c = getch();
-		if(c == KEY_NONE)
+		if(c == KEY_NONE) {
 			break;
+		}
 		c = kc.add(c);
-		if(c != KEY_NONE)
+		if(c != KEY_NONE) {
 			break;
+		}
 	}
 	return c;
 }

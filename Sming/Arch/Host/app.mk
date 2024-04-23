@@ -25,11 +25,15 @@ endif
 application: $(TARGET_OUT_0)
 
 $(TARGET_OUT_0): $(COMPONENTS_AR)
+ifdef CLANG_TIDY
+	$(info Skipping link step for clang-tidy)
+else
 	$(info $(notdir $(PROJECT_DIR)): Linking $@)
 	$(Q) $(LD) $(addprefix -L,$(LIBDIRS)) $(LDFLAGS) -Wl,--start-group $(COMPONENTS_AR) $(addprefix -l,$(LIBS)) -Wl,--end-group -o $@
 	$(Q) $(call WriteFirmwareConfigFile,$@)
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO)
 	$(Q) cat $(FW_MEMINFO)
+endif
 
 ##@Tools
 

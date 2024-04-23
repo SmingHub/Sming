@@ -47,7 +47,7 @@ struct Handler {
 	void setDelegate(InterruptDelegate delegate)
 	{
 		reset();
-		this->delegate = new InterruptDelegate(delegate);
+		this->delegate = new InterruptDelegate(std::move(delegate));
 		type = Type::delegate;
 	}
 };
@@ -95,7 +95,7 @@ void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, GPIO_INT_T
 	CHECK_PIN(pin)
 
 	auto& handler = handlers[pin];
-	handler.setDelegate(delegateFunction);
+	handler.setDelegate(std::move(delegateFunction));
 	attachInterruptHandler(pin, type);
 }
 

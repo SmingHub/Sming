@@ -138,7 +138,7 @@ private:
 
 template <class TimerClass> void OsTimer64Api<TimerClass>::setInterval(TickType interval)
 {
-	constexpr auto maxTicks = osTimer.maxTicks();
+	constexpr auto maxTicks = OsTimerApi::maxTicks();
 	if(interval > maxTicks) {
 		// interval too large, calculate a good divider
 		uint32_t div = (interval / (maxTicks + 1)) + 1; // integer division, intended

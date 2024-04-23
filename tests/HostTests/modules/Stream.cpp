@@ -108,7 +108,7 @@ public:
 		TEST_CASE("MultipartStream / MultiStream")
 		{
 			unsigned itemIndex{0};
-			constexpr const FlashString* items[]{
+			const FlashString* items[]{
 				&template1, &template1_1, &template1_2, &template2, &template2_1,
 			};
 			MultipartStream multi([&]() -> MultipartStream::BodyPart {

@@ -19,6 +19,15 @@
 template <typename T> class Countable
 {
 public:
+	Countable()
+	{
+	}
+
+	Countable(const Countable&) = delete;
+	Countable(Countable&&) = delete;
+	Countable& operator=(const Countable&) = delete;
+	Countable& operator=(Countable&&) = delete;
+
 	virtual ~Countable()
 	{
 	}

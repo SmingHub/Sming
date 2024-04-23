@@ -16,6 +16,11 @@
  * If not, see <https://www.gnu.org/licenses/>.
  *
  ****/
+
+// Use implementations defined in <netinet/in.h>
+#define lwip_htonl nthol
+#define lwip_htons htons
+
 #include "../lwip_arch.h"
 #include <hostlib/hostmsg.h>
 #include <lwip/timeouts.h>
@@ -40,7 +45,8 @@ void getMacAddress(const char* ifname, uint8_t hwaddr[6])
 		return;
 	}
 
-	struct ifreq ifr = {0};
+	struct ifreq ifr {
+	};
 	ifr.ifr_addr.sa_family = AF_INET;
 	strncpy(ifr.ifr_name, ifname, IFNAMSIZ);
 	ifr.ifr_name[IFNAMSIZ - 1] = '\0';

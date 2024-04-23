@@ -85,7 +85,7 @@ void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, GPIO_INT_T
 __forceinline void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, uint8_t mode)
 {
 	GPIO_INT_TYPE type = ConvertArduinoInterruptMode(mode);
-	attachInterrupt(pin, delegateFunction, type);
+	attachInterrupt(pin, std::move(delegateFunction), type);
 }
 
 /** @brief  Enable interrupts on GPIO pin

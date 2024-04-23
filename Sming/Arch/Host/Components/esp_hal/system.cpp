@@ -27,7 +27,7 @@ static uint64_t initTime()
 	timeref.startTicks = os_get_nanoseconds();
 #endif
 
-	timeval tv;
+	timeval tv{};
 	gettimeofday(&tv, nullptr);
 	return (1000000ULL * tv.tv_sec) + tv.tv_usec;
 }
@@ -41,7 +41,7 @@ uint64_t os_get_nanoseconds()
 	QueryPerformanceCounter(&count);
 	return timeref.countsPerNanosecond * uint64_t(count.QuadPart - timeref.startCount.QuadPart);
 #else
-	timespec ts;
+	timespec ts{};
 	clock_gettime(CLOCK_MONOTONIC, &ts);
 	return (1000000000ULL * ts.tv_sec) + ts.tv_nsec - timeref.startTicks;
 #endif

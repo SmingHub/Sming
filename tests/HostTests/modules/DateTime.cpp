@@ -55,8 +55,11 @@ public:
 			unsigned count = checkSetTime(VALID_HTTP_DATE);
 			count += checkSetTime(VALID_ISO_DATETIME);
 			auto elapsed = timer.elapsedTime();
-			Serial << "Checked " << count << " dates in " << elapsed.toString() << ", " << elapsed / count
-				   << " per date" << endl;
+			Serial << "Checked " << count << " dates in " << elapsed.toString();
+			if(count != 0) {
+				Serial << ", " << elapsed / count << " per date";
+			}
+			Serial << endl;
 		}
 
 		TEST_CASE("getMonthDays")

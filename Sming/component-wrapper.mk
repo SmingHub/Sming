@@ -117,6 +117,13 @@ else
 OUTPUT_DEPS := -MF $$@
 endif
 
+# Additional flags to pass to clang
+CLANG_FLAG_EXTRA ?=
+
+# Flags which clang doesn't recognise
+CLANG_FLAG_UNKNOWN := \
+	-fstrict-volatile-bitfields
+
 # $1 -> absolute source directory, no trailing path separator
 # $2 -> relative output build directory, with trailing path separator
 define GenerateCompileTargets
@@ -132,6 +139,11 @@ $2%.o: $1/%.S
 	$(Q) $(AS) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
 endif
 ifneq (,$(filter $1/%.c,$(SOURCE_FILES)))
+ifdef CLANG_TIDY
+$2%.o: $1/%.c
+	$(vecho) "TIDY $$<"
+	$(Q) $(CLANG_TIDY) $$< -- $(addprefix -I,$(INCDIR)) $$(filter-out $(CLANG_FLAG_UNKNOWN),$(CPPFLAGS) $(CFLAGS)) $(CLANG_FLAG_EXTRA)
+else
 $2%.o: $1/%.c $2%.c.d
 	$(vecho) "CC $$<"
 	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
@@ -139,13 +151,20 @@ $2%.c.d: $1/%.c
 	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -MM -MT $2$$*.o $$< $(OUTPUT_DEPS)
 .PRECIOUS: $2%.c.d
 endif
+endif
 ifneq (,$(filter $1/%.cpp,$(SOURCE_FILES)))
+ifdef CLANG_TIDY
+$2%.o: $1/%.cpp
+	$(vecho) "TIDY $$<"
+	$(Q) $(CLANG_TIDY) $$< -- $(addprefix -I,$(INCDIR)) $$(filter-out $(CLANG_FLAG_UNKNOWN),$(CPPFLAGS) $(CXXFLAGS)) $(CLANG_FLAG_EXTRA)
+else
 $2%.o: $1/%.cpp $2%.cpp.d
 	$(vecho) "C+ $$<"
 	$(Q) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -c $$< -o $$@
 $2%.cpp.d: $1/%.cpp
 	$(Q) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -MM -MT $2$$*.o $$< $(OUTPUT_DEPS)
 .PRECIOUS: $2%.cpp.d
+endif
 endif
 endef
 
@@ -177,10 +196,12 @@ include $(wildcard $(ABS_BUILD_DIRS:=/*.cpp.d))
 
 # Provide a target unless Component is custom built, in which case the component.mk will have defined this already
 $(COMPONENT_LIBPATH): build.ar
+ifndef CLANG_TIDY
 	$(vecho) "AR $@"
 	$(Q) test ! -f $@ || rm $@
 	$(Q) $(AR) -M < build.ar
 	$(Q) mv $(notdir $(COMPONENT_LIBPATH)) $(COMPONENT_LIBPATH)
+endif
 
 define addmod
 	@echo ADDMOD $2 >> $1

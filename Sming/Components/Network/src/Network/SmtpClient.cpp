@@ -365,15 +365,16 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 			code[codeLength++] = currentByte;
 			ADVANCE;
 			continue;
-		} else if(codeLength == 3) {
+		}
+
+		if(codeLength == 3) {
 			code[codeLength] = '\0';
 			if(currentByte != ' ' && currentByte != '-') {
 				// the code must be followed by space or minus
 				return 0;
 			}
 
-			char* tmp;
-			codeValue = strtol(code, &tmp, 10);
+			codeValue = strtol(code, nullptr, 10);
 			isLastLine = (currentByte == ' ');
 			codeLength++;
 			ADVANCE;

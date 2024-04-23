@@ -51,13 +51,13 @@ String DirectoryTemplate::getValue(const char* name)
 		return statValid ? String(s.id) : nullptr;
 
 	case Field::name:
-		if(statValid) {
-			value.setString(s.name.buffer, s.name.length);
-			formatter().escape(value);
-			return value;
-		} else {
+		if(!statValid) {
 			return nullptr;
 		}
+
+		value.setString(s.name.buffer, s.name.length);
+		formatter().escape(value);
+		return value;
 
 	case Field::modified:
 		return statValid ? DateTime(s.mtime).toISO8601() : nullptr;

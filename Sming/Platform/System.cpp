@@ -100,7 +100,7 @@ bool SystemClass::queueCallback(TaskDelegate callback)
 
 	// @todo consider failing immediately if called from interrupt context
 
-	auto delegate = new TaskDelegate(callback);
+	auto delegate = new TaskDelegate(std::move(callback));
 	if(delegate == nullptr) {
 		return false;
 	}

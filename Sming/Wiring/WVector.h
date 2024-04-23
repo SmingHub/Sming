@@ -46,8 +46,15 @@ public:
 		using E = typename std::conditional<is_const, const Element, Element>::type;
 
 		Iterator(const Iterator&) = default;
+		Iterator(Iterator&&) = default;
+		Iterator& operator=(const Iterator&) = default;
+		Iterator& operator=(Iterator&&) = default;
 
 		Iterator(V& vector, unsigned index) : vector(vector), index(index)
+		{
+		}
+
+		~Iterator()
 		{
 		}
 
@@ -96,7 +103,6 @@ public:
 		unsigned index{0};
 	};
 
-	// constructors
 	Vector(unsigned int initialCapacity = 10, unsigned int capacityIncrement = 10) : _increment(capacityIncrement)
 	{
 		_data.allocate(initialCapacity);
@@ -105,6 +111,12 @@ public:
 	Vector(const Vector& rhv)
 	{
 		copyFrom(rhv);
+	}
+
+	Vector(Vector&&) = delete;
+
+	~Vector()
+	{
 	}
 
 	// methods
@@ -238,7 +250,7 @@ public:
 		return _data[index];
 	}
 
-	const Vector<Element>& operator=(const Vector<Element>& rhv)
+	Vector<Element>& operator=(const Vector<Element>& rhv)
 	{
 		if(this != &rhv) {
 			copyFrom(rhv);
@@ -246,7 +258,7 @@ public:
 		return *this;
 	}
 
-	const Vector<Element>& operator=(Vector<Element>&& other) noexcept // move assignment
+	Vector<Element>& operator=(Vector<Element>&& other) noexcept // move assignment
 	{
 		clear();
 		_increment = 0;
@@ -320,7 +332,7 @@ template <class Element> template <typename T> int Vector<Element>::indexOf(cons
 {
 	for(unsigned int i = 0; i < _size; i++) {
 		if(_data[i] == elem) {
-			return i;
+			return int(i);
 		}
 	}
 
@@ -339,7 +351,7 @@ template <class Element> template <typename T> int Vector<Element>::lastIndexOf(
 	do {
 		i--;
 		if(_data[i] == elem) {
-			return i;
+			return int(i);
 		}
 	} while(i != 0);
 
@@ -436,7 +448,7 @@ template <class Element> void Vector<Element>::sort(Comparer compareFunction)
 		Element& keyRef = _data[j];
 		// Smaller values move up
 		int i;
-		for(i = j - 1; (i >= 0) && compareFunction(_data[i], keyRef) > 0; i--) {
+		for(i = int(j) - 1; (i >= 0) && compareFunction(_data[i], keyRef) > 0; i--) {
 			_data.values[i + 1] = _data.values[i];
 		}
 		// Put key into its proper location

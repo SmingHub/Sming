@@ -16,46 +16,48 @@ public:
 		DEFINE_FSTR_LOCAL(testFileName, "test.txt");
 
 		int res, pos, size;
-		FileHandle file{-1};
 
-		TEST_CASE("Initial position and size")
 		{
-			res = fileSetContent(testFileName, testContent);
-			debug_i("fileSetContent() returned %d", res);
-			REQUIRE(size_t(res) == testContent.length());
-			file = fileOpen(testFileName, File::ReadWrite);
-			size = fileSeek(file, 0, SeekOrigin::End);
-			pos = fileSeek(file, 100, SeekOrigin::Start);
-			debug_i("pos = %d, size = %d", pos, size);
-			REQUIRE(pos == 100);
-			REQUIRE(size_t(size) == testContent.length());
-		}
+			FileHandle file{-1};
 
-		TEST_CASE("Reduce file sizes")
-		{
-			res = fileTruncate(file, 555);
-			pos = fileTell(file);
-			size = fileSeek(file, 0, SeekOrigin::End);
-			debug_i("res = %d, pos = %d, size = %d", res, pos, size);
-			REQUIRE(res == 0);
-			REQUIRE(pos == 100);
-			REQUIRE(size == 555);
-		}
+			TEST_CASE("Initial position and size")
+			{
+				res = fileSetContent(testFileName, testContent);
+				debug_i("fileSetContent() returned %d", res);
+				REQUIRE(size_t(res) == testContent.length());
+				file = fileOpen(testFileName, File::ReadWrite);
+				size = fileSeek(file, 0, SeekOrigin::End);
+				pos = fileSeek(file, 100, SeekOrigin::Start);
+				debug_i("pos = %d, size = %d", pos, size);
+				REQUIRE(pos == 100);
+				REQUIRE(size_t(size) == testContent.length());
+			}
 
-		TEST_CASE("Increase file size")
-		{
-			res = fileTruncate(file, 12345);
-			size = fileSeek(file, 0, SeekOrigin::End);
-			debug_i("res = %d, size = %d", res, size);
-			REQUIRE(res < 0);
-			REQUIRE(size == 555);
-		}
+			TEST_CASE("Reduce file sizes")
+			{
+				res = fileTruncate(file, 555);
+				pos = fileTell(file);
+				size = fileSeek(file, 0, SeekOrigin::End);
+				debug_i("res = %d, pos = %d, size = %d", res, pos, size);
+				REQUIRE(res == 0);
+				REQUIRE(pos == 100);
+				REQUIRE(size == 555);
+			}
 
-		TEST_CASE("Close file")
-		{
-			fileClose(file);
-			REQUIRE(fileTell(file) < 0);
-			file = -1;
+			TEST_CASE("Increase file size")
+			{
+				res = fileTruncate(file, 12345);
+				size = fileSeek(file, 0, SeekOrigin::End);
+				debug_i("res = %d, size = %d", res, size);
+				REQUIRE(res < 0);
+				REQUIRE(size == 555);
+			}
+
+			TEST_CASE("Close file")
+			{
+				fileClose(file);
+				REQUIRE(fileTell(file) < 0);
+			}
 		}
 
 		TEST_CASE("fileGetSize")

@@ -17,13 +17,12 @@ namespace Storage
 void PartitionTable::load(const esp_partition_info_t* entry, unsigned count)
 {
 	mEntries.clear();
-	for(unsigned i = 0; i < count; ++i) {
-		auto& e = entry[i];
+	for(; count != 0; --count, ++entry) {
 		// name may not be zero-terminated
 		char name[Partition::nameSize + 1];
-		memcpy(name, e.name, Partition::nameSize);
+		memcpy(name, entry->name, Partition::nameSize);
 		name[Partition::nameSize] = '\0';
-		add(name, {e.type, e.subtype}, e.offset, e.size, e.flags);
+		add(name, {entry->type, entry->subtype}, entry->offset, entry->size, entry->flags);
 	}
 }
 

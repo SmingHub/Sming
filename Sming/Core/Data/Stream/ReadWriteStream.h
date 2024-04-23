@@ -34,7 +34,7 @@ public:
      *  uses this as the core output method so descendants are required
      *  to implement it
      */
-	virtual size_t write(const uint8_t* buffer, size_t size) = 0;
+	size_t write(const uint8_t* buffer, size_t size) override = 0;
 
 	/** @brief  Copy data from a source stream
      *  @param  source Stream to read data from

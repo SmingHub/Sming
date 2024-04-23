@@ -217,7 +217,7 @@ private:
 	String elseTag();
 
 	SectionStream sectionStream;
-	Formatter* activeFormatter;
+	Formatter* activeFormatter{&Format::standard};
 	GetValue getValueCallback;
 	NextRecord nextRecordCallback;
 	BitSet32 conditionalFlags; // Enable state for each level

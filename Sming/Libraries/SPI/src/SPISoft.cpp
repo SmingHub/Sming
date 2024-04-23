@@ -24,7 +24,11 @@
 #define SPISOFT_ARCH_DELAY_FIXED 0
 #endif
 
+#ifdef __clang__
+#define FUNC_OPT
+#else
 #define FUNC_OPT __attribute__((optimize(3)))
+#endif
 
 namespace spisoft
 {

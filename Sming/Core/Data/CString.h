@@ -33,6 +33,8 @@ public:
 		assign(src.get());
 	}
 
+	CString(CString&& other) = default;
+
 	CString(const String& src)
 	{
 		assign(src);
@@ -42,6 +44,8 @@ public:
 	{
 		assign(src);
 	}
+
+	~CString() = default;
 
 	void assign(const String& src)
 	{
@@ -73,6 +77,8 @@ public:
 		assign(src.get());
 		return *this;
 	}
+
+	CString& operator=(CString&& src) = default;
 
 	CString& operator=(const String& src)
 	{

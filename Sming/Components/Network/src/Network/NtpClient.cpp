@@ -14,12 +14,12 @@
 #include <lwip_includes.h>
 
 NtpClient::NtpClient(const String& reqServer, unsigned reqIntervalSeconds, NtpTimeResultDelegate delegateFunction)
+	: delegateCompleted(delegateFunction)
 {
 	// Setup timer, but don't start it
 	timer.setCallback(TimerDelegate(&NtpClient::requestTime, this));
 
 	this->server = reqServer ?: NTP_DEFAULT_SERVER;
-	this->delegateCompleted = delegateFunction;
 	if(!delegateFunction) {
 		autoUpdateSystemClock = true;
 	}

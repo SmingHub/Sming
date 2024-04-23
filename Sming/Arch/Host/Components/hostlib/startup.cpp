@@ -86,7 +86,7 @@ static size_t parse_flash_size(const char* str)
 	if(str == nullptr) {
 		return 0;
 	}
-	char* tail;
+	char* tail = nullptr;
 	long res = strtol(str, &tail, 0);
 	if(res < 0) {
 		return 0;
@@ -133,21 +133,22 @@ int main(int argc, char* argv[])
 	struct Config {
 		int pause{-1};
 		int exitpause{-1};
-		int loopcount;
-		uint8_t cpulimit;
-		bool initonly;
+		int loopcount{};
+		uint8_t cpulimit{};
+		bool initonly{};
 		bool enable_network{true};
-		UartServer::Config uart;
-		FlashmemConfig flash;
+		UartServer::Config uart{};
+		FlashmemConfig flash{};
 #ifndef DISABLE_NETWORK
-		struct lwip_param lwip;
+		struct lwip_param lwip {
+		};
 #endif
 	};
 	static Config config{};
 
 	int uart_num{-1};
 	option_tag_t opt;
-	const char* arg;
+	const char* arg = nullptr;
 	while((opt = get_option(argc, argv, arg)) != opt_none) {
 		switch(opt) {
 		case opt_help:
