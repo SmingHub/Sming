@@ -58,18 +58,23 @@ public:
 	String getSystemTimeString(TimeZone timeType = eTZ_Local) const;
 
 	/** @brief  Sets the local time zone offset
-     *  @param  seconds Offset from UTC of local time zone in seconds (-720 < offset < +720)
-     *  @retval bool true on success, false if value out of range
+     *  @param  seconds Offset from UTC of local time zone in seconds
+	 *  @see    See `setTimeZone()`.
      */
-	bool setTimeZoneOffset(int seconds);
+	void setTimeZoneOffset(int seconds)
+	{
+		timeZoneOffsetSecs = seconds / SECS_PER_MIN;
+	}
 
 	/** @brief Set the local time zone offset in hours
-     *  @param localTimezoneOffset Offset from UTC of local time zone in hours (-12.0 < offset < +12.0)
+     *  @param localTimezoneOffset Offset from UTC of local time zone in hours
      *  @retval bool true on success, false if value out of range
+	 *  @note Values for local standard time may exceed +/- 12
+	 *  For example, Pacific/Kiritimati has a 14-hour offset (in 2024).
 	 */
-	bool setTimeZone(float localTimezoneOffset)
+	void setTimeZone(float localTimezoneOffset)
 	{
-		return setTimeZoneOffset(localTimezoneOffset * SECS_PER_HOUR);
+		setTimeZoneOffset(localTimezoneOffset * SECS_PER_HOUR);
 	}
 
 	/** @brief Get the current time zone offset
