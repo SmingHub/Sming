@@ -68,10 +68,6 @@
  */
 using FlashString = FSTR::String;
 
-#ifndef __GXX_EXPERIMENTAL_CXX0X__
-#define __GXX_EXPERIMENTAL_CXX0X__
-#endif
-
 // When compiling programs with this class, the following gcc parameters
 // dramatically increase performance and memory (RAM) efficiency, typically
 // with little or no increase in code size.
@@ -184,13 +180,11 @@ public:
 		setString(pstr);
 	}
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
 	String(String&& rval) noexcept : String()
 	{
 		move(rval);
 	}
 	String(StringSumHelper&& rval) noexcept;
-#endif
 	explicit String(char c);
 	explicit String(unsigned char, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
 	explicit String(int num, unsigned char base = DEC, unsigned char width = 0, char pad = '0')
@@ -300,7 +294,6 @@ public:
      *
      * @{
      */
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
 	String& operator=(String&& rval) noexcept
 	{
 		if(this != &rval)
@@ -308,7 +301,6 @@ public:
 		return *this;
 	}
 	String& operator=(StringSumHelper&& rval) noexcept;
-#endif
 	/** @} */
 
 	/**
@@ -882,9 +874,7 @@ protected:
 	// copy and move
 	String& copy(const char* cstr, size_t length);
 	String& copy(flash_string_t pstr, size_t length);
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
 	void move(String& rhs);
-#endif
 };
 
 /** @} */

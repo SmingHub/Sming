@@ -35,12 +35,10 @@ String::String(const char* cstr) : String()
 		copy(cstr, strlen(cstr));
 }
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
 String::String(StringSumHelper&& rval) noexcept : String()
 {
 	move(rval);
 }
-#endif
 
 String::String(char c) : String()
 {
@@ -265,7 +263,6 @@ String& String::copy(flash_string_t pstr, size_t length)
 	return *this;
 }
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
 void String::move(String& rhs)
 {
 	if(rhs.isNull()) {
@@ -300,7 +297,6 @@ void String::move(String& rhs)
 	rhs.ptr.capacity = 0;
 	rhs.ptr.len = 0;
 }
-#endif
 
 String& String::operator=(const String& rhs)
 {
@@ -316,7 +312,6 @@ String& String::operator=(const String& rhs)
 	return *this;
 }
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
 String& String::operator=(StringSumHelper&& rval) noexcept
 {
 	if(this != &rval) {
@@ -324,7 +319,6 @@ String& String::operator=(StringSumHelper&& rval) noexcept
 	}
 	return *this;
 }
-#endif
 
 String& String::operator=(const char* cstr)
 {
