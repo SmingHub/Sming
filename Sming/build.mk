@@ -158,7 +158,8 @@ CPPFLAGS = \
 	-Wl,-EL \
 	-finline-functions \
 	-fdata-sections \
-	-ffunction-sections
+	-ffunction-sections \
+	-D_POSIX_C_SOURCE=200809L
 
 # Required to access peripheral registers using structs
 # e.g. `uint32_t value: 8` sitting at a byte or word boundary will be 'optimised' to

@@ -19,10 +19,6 @@
 
 #pragma once
 
-// Required for sleep(), probably others
-#undef _POSIX_C_SOURCE
-#define _POSIX_C_SOURCE 200112L
-
 #ifdef __WIN32
 // Prevent early inclusion of winsock.h
 #include <winsock2.h>
