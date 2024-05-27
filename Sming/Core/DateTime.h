@@ -118,6 +118,8 @@ inline constexpr unsigned elapsedSecsThisWeek(time_t time)
 
 /** @brief  Date and time class
  *
+ * This class contains a 'broken-down' date and time into its individual year, month, etc. components.
+ *
  * Date and time functions mostly work with Unix time, the quantity of seconds since 00:00:00 1970-01-01.
  * There is no support for leap seconds which are added (and in theory, removed) occasionally to compensate for earth rotation variation.
  * This means that timespan calculation and free-running clocks may be inaccurate if they span leap seconds.
@@ -216,31 +218,43 @@ public:
 	 */
 	void setTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year)
 	{
-		Second = sec;
-		Minute = min;
-		Hour = hour;
-		Day = day;
-		Month = month;
-		Year = year;
-		Milliseconds = 0;
-		calcDayOfYear();
+		setTime(toUnixTime(sec, min, hour, day, month, year));
 	}
 
 	/** @brief  Parse a HTTP full date and set time and date
 	 *  @param  httpDate HTTP full date in RFC 1123 format, e.g. Sun, 06 Nov 1994 08:49:37 GMT
 	 *  @retval bool True on success
-	 *  @note   Also supports obsolete RFC 850 date format, e.g. Sunday, 06-Nov-94 08:49:37 GMT where 2 digit year represents range 1970-2069
-	 *  @note   GMT suffix is optional and is always assumed / ignored
+	 *  @see    See `fromHttpDate(const String& time_t&)`
 	 */
 	bool fromHttpDate(const String& httpDate);
 
+	/** @brief  Parse a HTTP full date string and return the time_t value
+	 *  @param  httpDate HTTP full date in RFC 1123 format, e.g. Sun, 06 Nov 1994 08:49:37 GMT
+	 *  @param  time On success, contains the decoded value
+	 *  @retval bool True on success
+	 *  @note   Also supports obsolete RFC 850 date format, e.g. Sunday, 06-Nov-94 08:49:37 GMT where 2 digit year represents range 1970-2069
+	 *  @note   GMT suffix is optional and is always assumed / ignored
+	 */
+	static bool fromHttpDate(const String& httpDate, time_t& time);
+
 	/** @brief  Parse an ISO8601 date/time string
 	 *  @param  datetime Date and optional time in ISO8601 format, e.g. "1994-11-06", "1994-11-06T08:49:37". Separators are optional.
-	 *  @param  zone If provided, returns offset component of time
+	 *  @param  zone If provided, on success the `offsetMins` field will contain the time offset (0 for GMT) and the
+	 * 			decoded DateTime will be 'local'. If zone is null then the decoded datetime will be UTC.
+	 *  @retval bool True on success. On failure, value of DateTime is unchanged.
+	 *  @see    See `fromISO8601(const String&, time_t&, uint16_t&, int16_t&)`
+	 */
+	bool fromISO8601(const String& datetime, ZoneInfo* zone = nullptr);
+
+	/** @brief  Parse an ISO8601 date/time string and return discrete components
+	 *  @param  datetime Date and optional time in ISO8601 format, e.g. "1994-11-06", "1994-11-06T08:49:37". Separators are optional.
+	 *  @param  time The time_t component
+	 *  @param  milliseconds Additional milliseconds value
+	 *  @param  offsetMins Any offset specified in the time
 	 *  @retval bool True on success
-	 *  @see See https://en.wikipedia.org/wiki/ISO_8601
+	 *  @see    See https://en.wikipedia.org/wiki/ISO_8601
 	 *
-	 * `Basic format` doesn't include separators, whereas `Extended format` does.
+	 * `Basic format` doesn't include separators, whereas `Extended format` does. Both are supported.
 	 *
 	 * Acceptable date formats:
 	 *
@@ -262,11 +276,8 @@ public:
 	 * 	<time>±hh:mm
 	 * 	<time>±hhmm
 	 * 	<time>±hh
-	 *
-	 * If `zone` parameter is provided then the offset will be stored there.
-	 * Otherwise, the offset is subtracted from the time to produce UTC.
 	 */
-	bool fromISO8601(const String& datetime, ZoneInfo* zone = nullptr);
+	static bool fromISO8601(const String& datetime, time_t& time, uint16_t& milliseconds, int16_t& offsetMins);
 
 	/** @brief  Check if time date object is initialised
 	 *  @retval True if object has no value. False if initialised.
@@ -310,6 +321,7 @@ public:
 
 	/** @brief  Add time to date time object
 	 *  @param  add Quantity of milliseconds to add to object
+	 *  @note   This operation is computationally expensive, requiring conversion to and from time_t.
 	 */
 	void addMilliseconds(long add);
 
@@ -322,10 +334,8 @@ public:
 	 *  @param  pwday Pointer to integer to hold resulting day of week
 	 *  @param  pmonth Pointer to integer to hold resulting month
 	 *  @param  pyear Pointer to integer to hold resulting year
-	 *  @note   This is a more compact version of the C library localtime function
 	 *  @note   Pass the Unix timedate value and pointers to existing integers. The integers are updated with the converted values
 	 *  @note   This static function  may be used without instantiating a DateTime object, e.g. DateTime::convertFromUnixTime(...);
-	 *  @note   32-bit Unix time has year 2036 issue.
 	 *  @note   Unix time does not account for leap seconds.
 	 *  @note   All of the return values are optional, specify nullptr if not required
 	 */
@@ -423,8 +433,10 @@ public:
 
 private:
 	// Helper methods
-	void calcDayOfYear();					  // Calculate day of year
-	uint8_t calcWeek(uint8_t firstDay) const; // Calculate week number based on firstDay of week
+	void calcDayOfYear();
+
+	// Calculate week number based on firstDay of week
+	uint8_t getWeekOfYear(dtDays_t firstDay) const;
 
 public:
 	uint16_t Year = 0;		   ///< Full Year number

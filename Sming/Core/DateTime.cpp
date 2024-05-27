@@ -155,7 +155,7 @@ bool DateTime::isNull() const
 		   Milliseconds == 0;
 }
 
-bool DateTime::fromHttpDate(const String& httpDate)
+bool DateTime::fromHttpDate(const String& httpDate, time_t& time)
 {
 	auto ptr = httpDate.c_str();
 
@@ -170,7 +170,9 @@ bool DateTime::fromHttpDate(const String& httpDate)
 
 	skipWhitespace();
 	if(!isdigit(*ptr)) {
-		if(!matchName(ptr, DayofWeek, isoDayNames, 7)) {
+		// Don't actually use this value
+		uint8_t weekday;
+		if(!matchName(ptr, weekday, isoDayNames, 7)) {
 			return false; // Invalid day of week
 		}
 		if(ptr[0] == ',') {
@@ -185,7 +187,7 @@ bool DateTime::fromHttpDate(const String& httpDate)
 	}
 
 	skipWhitespace();
-	Day = parseNumber();
+	uint8_t day = parseNumber();
 	if(*ptr != '-' && !isspace(*ptr)) {
 		return false;
 	}
@@ -194,7 +196,8 @@ bool DateTime::fromHttpDate(const String& httpDate)
 	// Should we check DayOfWeek against calculation from date?
 	// We could just ignore the DOW...
 	skipWhitespace();
-	if(!matchName(ptr, Month, isoMonthNames, 12)) {
+	uint8_t month;
+	if(!matchName(ptr, month, isoMonthNames, 12)) {
 		return false; // Invalid month
 	}
 	if(*ptr != '-') {
@@ -209,38 +212,47 @@ bool DateTime::fromHttpDate(const String& httpDate)
 	++ptr;
 
 	skipWhitespace();
-	Year = parseNumber();
+	uint16_t year = parseNumber();
 	if(*ptr++ != ' ') {
 		return false;
 	}
-	if(Year < 70) {
-		Year += 2000;
-	} else if(Year < 100) {
-		Year += 1900;
+	if(year < 70) {
+		year += 2000;
+	} else if(year < 100) {
+		year += 1900;
 	}
 
 	skipWhitespace();
-	Hour = parseNumber();
+	uint8_t hour = parseNumber();
 	if(*ptr++ != ':') {
 		return false;
 	}
-	Minute = parseNumber();
+	uint8_t minute = parseNumber();
 	if(*ptr++ != ':') {
 		return false;
 	}
-	Second = parseNumber();
+	uint8_t second = parseNumber();
 
 	if(*ptr != '\0' && strcmp(ptr, " GMT") != 0) {
 		return false;
 	}
 
-	Milliseconds = 0;
-	calcDayOfYear();
+	time = toUnixTime(second, minute, hour, day, month, year);
 
 	return true;
 }
 
-bool DateTime::fromISO8601(const String& datetime, ZoneInfo* zone)
+bool DateTime::fromHttpDate(const String& httpDate)
+{
+	time_t time;
+	if(!fromHttpDate(httpDate, time)) {
+		return false;
+	}
+	setTime(time);
+	return true;
+}
+
+bool DateTime::fromISO8601(const String& datetime, time_t& time, uint16_t& milliseconds, int16_t& offsetMins)
 {
 	auto ptr = datetime.c_str();
 	bool notDigit{false};
@@ -271,19 +283,22 @@ bool DateTime::fromISO8601(const String& datetime, ZoneInfo* zone)
 
 	bool haveTime = skip('T') || ptr[2] == ':';
 
+	uint16_t year;
+	uint8_t month;
+	uint8_t day;
 	if(haveTime) {
-		Year = 1970;
-		Month = dtJanuary;
-		Day = 1;
+		year = 1970;
+		month = dtJanuary;
+		day = 1;
 	} else {
-		Year = parseNumber(4);
+		year = parseNumber(4);
 		skip('-');
-		Month = parseNumber(2) - 1;
+		month = parseNumber(2) - 1;
 		skip('-');
 		if(*ptr == '\0' || isspace(*ptr)) {
-			Day = 1;
+			day = 1;
 		} else {
-			Day = parseNumber(2);
+			day = parseNumber(2);
 		}
 		if(notDigit) {
 			return false;
@@ -291,18 +306,19 @@ bool DateTime::fromISO8601(const String& datetime, ZoneInfo* zone)
 		haveTime = skip('T');
 	}
 
-	Hour = parseNumber(2);
+	uint8_t hour = parseNumber(2);
 	skip(':');
-	Minute = parseNumber(2);
+	uint8_t minute = parseNumber(2);
 	skip(':');
-	Milliseconds = 0;
+	milliseconds = 0;
+	uint8_t second;
 	if(*ptr == '\0') {
-		Second = 0;
+		second = 0;
 	} else {
-		Second = parseNumber(2);
+		second = parseNumber(2);
 		if(*ptr == '.') {
 			++ptr;
-			Milliseconds = parseNumber(3);
+			milliseconds = parseNumber(3);
 			// Discard any microsecond digits
 			while(isdigit(*ptr)) {
 				++ptr;
@@ -310,7 +326,7 @@ bool DateTime::fromISO8601(const String& datetime, ZoneInfo* zone)
 		}
 	}
 
-	int16_t offsetMins{0};
+	offsetMins = 0;
 
 	if(haveTime) {
 		if(notDigit) {
@@ -336,18 +352,29 @@ bool DateTime::fromISO8601(const String& datetime, ZoneInfo* zone)
 		return false;
 	}
 
+	// Full recalculation ensures offset applied and day of week calculated
+	time = toUnixTime(second, minute, hour, day, month, year);
+
+	return true;
+}
+
+bool DateTime::fromISO8601(const String& datetime, ZoneInfo* zone)
+{
+	time_t time;
+	uint16_t milliseconds;
+	int16_t offsetMins;
+	if(!fromISO8601(datetime, time, milliseconds, offsetMins)) {
+		return false;
+	}
+
 	if(zone) {
-		*zone = ZoneInfo{.offsetMins = offsetMins};
-	}
-
-	if(offsetMins == 0 || zone) {
-		// No offset to apply
-		calcDayOfYear();
+		zone->offsetMins = offsetMins;
 	} else {
-		// Full recalculation required to correctly apply offset
-		setTime(toUnixTime() - int(offsetMins) * int(SECS_PER_MIN));
+		time -= int(offsetMins) * SECS_PER_MIN;
 	}
 
+	setTime(time);
+	Milliseconds = milliseconds;
 	return true;
 }
 
@@ -518,14 +545,14 @@ String DateTime::format(const char* sFormat, const ZoneInfo* zone) const
 			break;
 		// Week (not implemented: OU, OW, OV)
 		case 'U': // Week of the year as a decimal number (Sunday is the first day of the week) [00..53]
-			sReturn.concat(calcWeek(0), DEC, 2);
+			sReturn.concat(getWeekOfYear(dtSunday), DEC, 2);
 			break;
 		case 'V': // ISO 8601 week number (01-53)
 			// !@todo Calculation of ISO 8601 week number is crude and frankly wrong but does anyone care?
-			sReturn.concat(calcWeek(1) + 1, DEC, 2);
+			sReturn.concat(getWeekOfYear(dtMonday) + 1, DEC, 2);
 			break;
 		case 'W': // Week of the year as a decimal number (Monday is the first day of the week) [00..53]
-			sReturn.concat(calcWeek(1), DEC, 2);
+			sReturn.concat(getWeekOfYear(dtMonday), DEC, 2);
 			break;
 		case 'x': // Locale preferred date format
 			sReturn += format(_F(LOCALE_DATE));
@@ -620,14 +647,14 @@ void DateTime::calcDayOfYear()
 	DayofYear = prevMonthDays + Day;
 }
 
-uint8_t DateTime::calcWeek(uint8_t firstDay) const
+uint8_t DateTime::getWeekOfYear(dtDays_t firstDay) const
 {
 	int16_t startOfWeek = DayofYear - DayofWeek + firstDay;
-	int8_t firstDayofWeek = startOfWeek % 7;
+	int8_t firstDayofWeek = startOfWeek % DAYS_PER_WEEK;
 	if(firstDayofWeek < 0) {
 		firstDayofWeek += 7;
 	}
-	return (startOfWeek + 7 - firstDayofWeek) / 7;
+	return (startOfWeek + 7 - firstDayofWeek) / DAYS_PER_WEEK;
 }
 
 String DateTime::getLocaleDayName(uint8_t day)
