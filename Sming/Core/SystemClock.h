@@ -53,7 +53,6 @@ public:
 	/** @brief  Get current time as a string
      *  @param  timeType Time zone to present time as, i.e. return local or UTC time
      *  @retval String Current time in format: `dd.mm.yy hh:mm:ss`
-     *  @note   Date separator may be changed by adding `#define DT_DATE_SEPARATOR "/"` to source code
      */
 	String getSystemTimeString(TimeZone timeType = eTZ_Local) const;
 
