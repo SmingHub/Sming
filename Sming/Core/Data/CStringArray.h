@@ -71,16 +71,15 @@ public:
 		init();
 	}
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
 	CStringArray(String&& rval) noexcept : String(std::move(rval))
 	{
 		init();
 	}
+
 	CStringArray(StringSumHelper&& rval) noexcept : String(std::move(rval))
 	{
 		init();
 	}
-#endif
 	/** @} */
 
 	CStringArray& operator=(const char* cstr)

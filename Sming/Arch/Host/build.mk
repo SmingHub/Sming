@@ -22,7 +22,6 @@ GCC_UPGRADE_URL := https://sming.readthedocs.io/en/latest/arch/host/host-emulato
 
 CPPFLAGS += \
 	-m32 \
-	-Wno-deprecated-declarations \
 	-D_FILE_OFFSET_BITS=64 \
 	-D_TIME_BITS=64
 
