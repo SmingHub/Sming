@@ -81,6 +81,40 @@ bool isLeapCentury(uint16_t year)
 
 } // namespace
 
+DateTime::ZoneInfo::Tag DateTime::ZoneInfo::Tag::fromString(const char* s)
+{
+	return s ? fromString(s, strlen(s)) : Tag{};
+}
+
+DateTime::ZoneInfo::Tag DateTime::ZoneInfo::Tag::fromString(const char* s, size_t len)
+{
+	Tag tag{};
+	if(s && len) {
+		len = std::min(maxSize, len);
+		memcpy(tag.value, s, len);
+		tag.value[len] = '\0';
+	}
+	return tag;
+}
+
+String DateTime::ZoneInfo::getOffsetString(char sep) const
+{
+	String s;
+	auto mins = offsetMins;
+	if(mins < 0) {
+		s += '-';
+		mins = -mins;
+	} else {
+		s += '+';
+	}
+	s.concat(mins / MINS_PER_HOUR, DEC, 2);
+	if(sep) {
+		s += sep;
+	}
+	s.concat(mins % MINS_PER_HOUR, DEC, 2);
+	return s;
+}
+
 bool DateTime::isLeapYear(uint16_t year)
 {
 	return year % 4 == 0 && isLeapCentury(year);
@@ -206,7 +240,7 @@ bool DateTime::fromHttpDate(const String& httpDate)
 	return true;
 }
 
-bool DateTime::fromISO8601(const String& datetime)
+bool DateTime::fromISO8601(const String& datetime, ZoneInfo* zone)
 {
 	auto ptr = datetime.c_str();
 	bool notDigit{false};
@@ -275,15 +309,44 @@ bool DateTime::fromISO8601(const String& datetime)
 			}
 		}
 	}
-	if(haveTime && notDigit) {
-		return false;
+
+	int16_t offsetMins{0};
+
+	if(haveTime) {
+		if(notDigit) {
+			return false;
+		}
+		int sign = 0;
+		if(skip('-')) {
+			sign = -1;
+		} else if(skip('+')) {
+			sign = 1;
+		} else {
+			skip('Z');
+		}
+		if(sign) {
+			auto hour = parseNumber(2);
+			skip(':');
+			auto min = parseNumber(2);
+			offsetMins = sign * (int(hour) * MINS_PER_HOUR + int(min));
+		}
 	}
 
 	if(*ptr != '\0') {
 		return false;
 	}
 
-	calcDayOfYear();
+	if(zone) {
+		*zone = ZoneInfo{.offsetMins = offsetMins};
+	}
+
+	if(offsetMins == 0 || zone) {
+		// No offset to apply
+		calcDayOfYear();
+	} else {
+		// Full recalculation required to correctly apply offset
+		setTime(toUnixTime() - int(offsetMins) * int(SECS_PER_MIN));
+	}
 
 	return true;
 }
@@ -308,9 +371,9 @@ String DateTime::toFullDateTimeString() const
 	return format(_F("%x %T"));
 }
 
-String DateTime::toISO8601() const
+String DateTime::toISO8601(const ZoneInfo* zone) const
 {
-	return format(_F("%FT%TZ"));
+	return format(zone ? _F("%FT%T%:z") : _F("%FT%TZ"), zone);
 }
 
 String DateTime::toHTTPDate() const
@@ -392,7 +455,7 @@ time_t DateTime::toUnixTime(int sec, int min, int hour, int day, uint8_t month, 
 	return seconds;
 }
 
-String DateTime::format(const char* sFormat) const
+String DateTime::format(const char* sFormat, const ZoneInfo* zone) const
 {
 	if(sFormat == nullptr) {
 		return nullptr;
@@ -414,7 +477,24 @@ String DateTime::format(const char* sFormat) const
 		}
 
 		c = *sFormat++;
+		char timesep{'\0'};
+		if(c == ':') {
+			timesep = c;
+			c = *sFormat++;
+		}
 		switch(c) {
+		// Timezone offset from UTC with or without ':' separator
+		case 'z':
+			if(zone) {
+				sReturn += zone->getOffsetString(timesep);
+			}
+			break;
+		// Timezone tag
+		case 'Z':
+			if(zone) {
+				sReturn += zone->tag;
+			}
+			break;
 		// Year (not implemented: EY, Oy, Ey, EC, G, g)
 		case 'Y': // Full year as a decimal number, e.g. 2018
 			sReturn += Year;

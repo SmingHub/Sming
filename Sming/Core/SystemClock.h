@@ -63,7 +63,7 @@ public:
      */
 	void setTimeZoneOffset(int seconds)
 	{
-		timeZoneOffsetSecs = seconds / SECS_PER_MIN;
+		zoneInfo.offsetMins = seconds / SECS_PER_MIN;
 	}
 
 	/** @brief Set the local time zone offset in hours
@@ -77,12 +77,28 @@ public:
 		setTimeZoneOffset(localTimezoneOffset * SECS_PER_HOUR);
 	}
 
+	/** @brief Set current time zone information
+     *  @param zoneInfo Contains offset plus string  formatting information
+	 */
+	void setTimeZone(const DateTime::ZoneInfo& zoneInfo)
+	{
+		this->zoneInfo = zoneInfo;
+	}
+
+	/** @brief Get current time zone information
+     *  @retval ZoneInfo
+	 */
+	const DateTime::ZoneInfo& getTimeZone() const
+	{
+		return zoneInfo;
+	}
+
 	/** @brief Get the current time zone offset
 	 *  @retval int Offset in seconds from UTC
 	 */
 	int getTimeZoneOffset() const
 	{
-		return timeZoneOffsetSecs;
+		return zoneInfo.offsetSecs();
 	}
 
 	/** @brief Determine if `setTime()` has been called yet
@@ -93,8 +109,17 @@ public:
 		return timeSet;
 	}
 
+	/**
+	 * @brief Set/clear a callback which is invoked whenever local time is queried.
+	 * @note This callback is *only* invoked when `now()` is called.
+	 */
+	void onCheckTimeZoneOffset(CheckTimeZoneOffset callback)
+	{
+		checkTimeZoneOffset = callback;
+	}
+
 private:
-	int timeZoneOffsetSecs = 0;
+	DateTime::ZoneInfo zoneInfo;
 	bool timeSet = false;
 };
 

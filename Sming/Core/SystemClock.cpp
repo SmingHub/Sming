@@ -9,6 +9,7 @@
  ****/
 
 #include "SystemClock.h"
+#include "ZonedTime.h"
 #include <Platform/RTC.h>
 #include <debug_progmem.h>
 
@@ -19,7 +20,7 @@ time_t SystemClockClass::now(TimeZone timeType) const
 	uint32_t systemTime = RTC.getRtcSeconds();
 
 	if(timeType == eTZ_Local) {
-		systemTime += timeZoneOffsetSecs;
+		systemTime += zoneInfo.offsetSecs();
 	}
 
 	return systemTime;
@@ -28,7 +29,7 @@ time_t SystemClockClass::now(TimeZone timeType) const
 bool SystemClockClass::setTime(time_t time, TimeZone timeType)
 {
 	if(timeType == eTZ_Local) {
-		time -= timeZoneOffsetSecs;
+		time -= zoneInfo.offsetSecs();
 	}
 
 	timeSet = RTC.setRtcSeconds(time);
@@ -40,12 +41,13 @@ bool SystemClockClass::setTime(time_t time, TimeZone timeType)
 
 String SystemClockClass::getSystemTimeString(TimeZone timeType) const
 {
-	DateTime dt(now(timeType));
-	return dt.toFullDateTimeString();
-}
+	time_t systemTime = RTC.getRtcSeconds();
 
-bool SystemClockClass::setTimeZoneOffset(int seconds)
-{
-	timeZoneOffsetSecs = seconds;
-	return true;
+	if(timeType == eTZ_UTC) {
+		DateTime dt(systemTime);
+		return dt.toFullDateTimeString();
+	}
+
+	ZonedTime time(systemTime, zoneInfo);
+	return time.toString();
 }
