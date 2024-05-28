@@ -13,6 +13,9 @@ ifeq ($(UNAME),Windows)
 	COMPONENT_PREREQUISITES += $(NPCAP_SRCDIR)/.ok
 	PCAP_SRC := npcap-sdk-1.05.zip
 
+	# PCAP_URL := https://npcap.com/dist/
+	PCAP_URL := https://github.com/SmingHub/SmingTools/releases/download/1.0/
+
 $(NPCAP_SRCDIR)/.ok:
 	@echo Fetching npcap...
 	$(Q) \
@@ -20,7 +23,7 @@ $(NPCAP_SRCDIR)/.ok:
 		mkdir -p $(@D) && \
 		cd $(@D) && \
 		powershell -Command "Set-Variable ProgressPreference SilentlyContinue; \
-			Invoke-WebRequest https://npcap.com/dist/$(PCAP_SRC) -OutFile $(PCAP_SRC); \
+			Invoke-WebRequest $(PCAP_URL)$(PCAP_SRC) -OutFile $(PCAP_SRC); \
 			Expand-Archive $(PCAP_SRC) ." && \
 		$(call ApplyPatch,$(LWIP_ARCH_SRCDIR)/npcap.patch) && \
 		touch $@
