@@ -2,40 +2,71 @@
 #include <SystemClock.h>
 #include <HardwareSerial.h>
 #include <SolarCalculator.h>
+#include <Timezone.h>
+#include <tzdata.h>
 
-namespace
+namespace MyZone
 {
+using namespace TZ;
 /*
  * For handling local/UTC time conversions
  * This is for the UK, amend as required
  */
-const TimeChangeRule dstStart{"BST", Last, Sun, Mar, 1, 60};
-const TimeChangeRule stdStart{"GMT", Last, Sun, Oct, 2, 0};
-Timezone tz(dstStart, stdStart);
+const Rule dstStart{"BST", Last, Sun, Mar, 1, 60};
+const Rule stdStart{"GMT", Last, Sun, Oct, 2, 0};
+
+// Posix rule string
+DEFINE_FSTR_LOCAL(tzstr, "GMT0BST,M3.5.0/1,M10.5.0")
+
+// Sunrise/sunset requires co-ordinates
+SolarRef solarRef = {51.4769, 0.0005}; // Greenwich, London
+
+} // namespace MyZone
+
+namespace
+{
+// We can initialise timezone in various ways
+// Timezone tz = Timezone::fromPosix(MyZone::tzstr);
+// Timezone tz(MyZone::dstStart, MyZone::stdStart);
+Timezone tz = TZ::Europe::London();
 
 /*
  * We use the y/m/d from local time for sunrise/sunset calculations, and the solar calculator
  * returns the time from midnight in UTC for that day. We therefore need to adjust this
  * to account for timezone and daylight savings.
  */
-time_t getNextSunriseSet(bool isSunrise)
+ZonedTime getNextSunriseSet(bool isSunrise)
 {
-	auto timeNow = SystemClock.now(eTZ_Local);
-	DateTime dt(timeNow);
+	auto utcNow = SystemClock.now(eTZ_UTC);
+	DateTime dt(tz.toLocal(utcNow));
 	dt.Hour = 0;
 	dt.Minute = 0;
 	dt.Second = 0;
-	SolarCalculator calc;
+	SolarCalculator calc(MyZone::solarRef);
 	int offset_secs = SECS_PER_MIN * calc.sunRiseSet(isSunrise, dt.Year, dt.Month + 1, dt.Day);
 
-	time_t t = tz.toLocal(dt + offset_secs);
+	time_t utcNext = dt + offset_secs;
 
 	// If time has already passed, then make it tomorrow
-	if(t < timeNow) {
-		t = tz.toLocal(dt + offset_secs + SECS_PER_DAY);
+	if(utcNext < utcNow) {
+		utcNext += SECS_PER_DAY;
 	}
 
-	return t;
+	return tz.makeZoned(utcNext);
+}
+
+void checkTimeZoneOffset(time_t systemTime)
+{
+	static ZonedTime nextChange{TZ::invalidTime};
+
+	if(nextChange == TZ::invalidTime) {
+		nextChange = tz.makeZoned(systemTime);
+	} else if(systemTime < nextChange) {
+		return;
+	}
+
+	SystemClock.setTimeZone(nextChange.getZoneInfo());
+	nextChange = tz.getNextChange(systemTime);
 }
 
 } // namespace
@@ -46,9 +77,10 @@ void NtpClientDemo::ntpResult(NtpClient& client, time_t ntpTime)
 	 * Update the system clock and calculate the correct time offset,
 	 * accounting for time zone and daylight savings.
 	 */
-	auto localTime = tz.toLocal(ntpTime);
 	SystemClock.setTime(ntpTime, eTZ_UTC);
-	SystemClock.setTimeZoneOffset(localTime - ntpTime);
+
+	// Now we've set the clock, we can determine the initial active timezone and maintain the offset
+	SystemClock.onCheckTimeZoneOffset([this](time_t systemTime) { checkTimeZoneOffset(systemTime); });
 
 	/*
 	 * Display the new time
@@ -60,8 +92,29 @@ void NtpClientDemo::ntpResult(NtpClient& client, time_t ntpTime)
 	/*
 	 * Display times of next sunrise and sunset
 	 */
-	DateTime sunrise = getNextSunriseSet(true);
-	DateTime sunset = getNextSunriseSet(false);
-	Serial << _F("Next sunrise at ") << sunrise.toShortTimeString() << _F(", sunset at ") << sunset.toShortTimeString()
-		   << endl;
+	ZonedTime sunrise = getNextSunriseSet(true);
+	ZonedTime sunset = getNextSunriseSet(false);
+	Serial << _F("Next sunrise ") << sunrise.toString() << _F(", sunset ") << sunset.toString() << endl;
+
+	/*
+	 * Display points at which daylight savings changes.
+	 */
+	if(!tz.hasDaylightSavings()) {
+		Serial << _F("Selected timezone has no daylight savings.") << endl;
+		return;
+	}
+
+	DateTime dt(ntpTime);
+
+	Serial << _F("In ") << dt.Year << _F(", daylight savings:") << endl;
+	ZonedTime dst = tz.getTransition(dt.Year, true);
+	ZonedTime transition = tz.makeZoned(dst, true);
+	Serial << _F("  Starts: ") << transition.toString() << " (" << dst.toUtc().toString() << ")" << endl;
+
+	ZonedTime std = tz.getTransition(dt.Year, false);
+	transition = tz.makeZoned(std, true);
+	Serial << _F("    Ends: ") << transition.toString() << " (" << std.toUtc().toString() << ")" << endl;
+
+	ZonedTime nextChange = tz.getNextChange(ntpTime);
+	Serial << _F("Next change to ") << nextChange.tag() << _F(" on ") << nextChange.toUtc().toString() << endl;
 }

@@ -1,8 +1,6 @@
 #pragma once
 
 #include <Network/NtpClient.h>
-#include <SystemClock.h>
-#include <Timezone.h>
 
 class NtpClientDemo
 {
