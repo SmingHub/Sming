@@ -22,13 +22,14 @@
 #include <sming_attr.h>
 
 /* Useful Constants */
-#define SECS_PER_MIN (60UL)
-#define SECS_PER_HOUR (3600UL)
-#define SECS_PER_DAY (SECS_PER_HOUR * 24L)
-#define DAYS_PER_WEEK (7L)
+#define SECS_PER_MIN 60
+#define SECS_PER_HOUR 3600
+#define SECS_PER_DAY (SECS_PER_HOUR * 24)
+#define MINS_PER_HOUR 60
+#define DAYS_PER_WEEK 7
 #define SECS_PER_WEEK (SECS_PER_DAY * DAYS_PER_WEEK)
-#define SECS_PER_YEAR (SECS_PER_WEEK * 52L)
-#define SECS_YR_2000 (946681200UL)
+#define SECS_PER_YEAR (SECS_PER_WEEK * 52)
+#define SECS_YR_2000 946681200
 
 /** @brief  Days of week
 */
