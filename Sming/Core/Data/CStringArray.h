@@ -89,6 +89,14 @@ public:
 		return *this;
 	}
 
+	/**
+	 * @brief Give up underlying String object to caller so it can be manipulated
+	 */
+	String release()
+	{
+		return std::move(*this);
+	}
+
 	/** @brief Append a new string (or array of strings) to the end of the array
 	 *  @param str
 	 *  @param length Length of new string in array (default is length of str)

@@ -24,6 +24,7 @@ public:
 									"b\0"
 									"c\0"
 									"d\0");
+		DEFINE_FSTR_LOCAL(FS_BasicJoined, "a,b,c,d")
 
 		TEST_CASE("Empty construction")
 		{
@@ -231,6 +232,31 @@ public:
 			csa.add(F("test\0again"));
 			REQUIRE_EQ(csa.join("}+{"), "a}+{}+{test}+{again");
 			REQUIRE_EQ(csa.join(nullptr), "atestagain");
+
+			csa = FS_Basic;
+			REQUIRE_EQ(csa.join(), FS_BasicJoined);
+		}
+
+		TEST_CASE("release")
+		{
+			CStringArray csa(FS_Basic);
+			csa += FS_Basic; // Allocate > SSO
+			Serial << csa.join() << endl;
+			auto cstrWant = csa.c_str();
+			String s = csa.release();
+			REQUIRE(!csa);
+			REQUIRE(s.c_str() == cstrWant);
+
+			REQUIRE(s == String(FS_Basic) + FS_Basic);
+
+			csa = std::move(s);
+			REQUIRE(csa == String(FS_Basic) + FS_Basic);
+
+			String js;
+			js += FS_BasicJoined;
+			js += ',';
+			js += FS_BasicJoined;
+			REQUIRE(csa.join() == js);
 		}
 	}
 };
