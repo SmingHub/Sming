@@ -15,6 +15,7 @@ public:
 		nonTemplateTest();
 
 		testString();
+		testMove();
 		testMakeHexString();
 	}
 
@@ -154,17 +155,62 @@ public:
 		}
 	}
 
+	void testMove()
+	{
+		DEFINE_FSTR_LOCAL(shortText, "Not long")
+		DEFINE_FSTR_LOCAL(longText, "Greater than SSO buffer length")
+
+		TEST_CASE("Move into unassigned string")
+		{
+			// Normal move
+			String s1 = longText;
+			String s2 = std::move(s1);
+			REQUIRE(!s1);
+			REQUIRE(s2.length() == longText.length());
+		}
+
+		TEST_CASE("Move between allocated strings of same length")
+		{
+			String s1 = longText;
+			auto cstrWant = s1.c_str();
+			String s2 = std::move(s1);
+			REQUIRE(s2.c_str() == cstrWant);
+		}
+
+		TEST_CASE("Move to allocated string of shorter length")
+		{
+			String s1 = longText;
+			String s2 = shortText;
+			auto cstrWant = s1.c_str();
+			s2 = std::move(s1);
+			REQUIRE(s2.c_str() == cstrWant);
+		}
+
+		TEST_CASE("Move to allocated string of longer length")
+		{
+			String s1 = longText;
+			String s2;
+			auto cstrWant = s1.c_str();
+			s1 = ""; // Buffer remains allocated
+			s2 = std::move(s1);
+			REQUIRE(s2.c_str() == cstrWant);
+		}
+	}
+
 	void testMakeHexString()
 	{
-		uint8_t hwaddr[] = {0xaa, 0xbb, 0xcc, 0xdd, 0x12, 0x55, 0x00};
-		REQUIRE(makeHexString(nullptr, 6) == String::empty);
-		REQUIRE(makeHexString(hwaddr, 0) == String::empty);
-		REQUIRE(makeHexString(hwaddr, 6) == F("aabbccdd1255"));
-		REQUIRE(makeHexString(hwaddr, 6, ':') == F("aa:bb:cc:dd:12:55"));
-		REQUIRE(makeHexString(hwaddr, 7) == F("aabbccdd125500"));
-		REQUIRE(makeHexString(hwaddr, 7, ':') == F("aa:bb:cc:dd:12:55:00"));
-		REQUIRE(makeHexString(hwaddr, 1, ':') == F("aa"));
-		REQUIRE(makeHexString(hwaddr, 0, ':') == String::empty);
+		TEST_CASE("makeHexString")
+		{
+			uint8_t hwaddr[] = {0xaa, 0xbb, 0xcc, 0xdd, 0x12, 0x55, 0x00};
+			REQUIRE(makeHexString(nullptr, 6) == String::empty);
+			REQUIRE(makeHexString(hwaddr, 0) == String::empty);
+			REQUIRE(makeHexString(hwaddr, 6) == F("aabbccdd1255"));
+			REQUIRE(makeHexString(hwaddr, 6, ':') == F("aa:bb:cc:dd:12:55"));
+			REQUIRE(makeHexString(hwaddr, 7) == F("aabbccdd125500"));
+			REQUIRE(makeHexString(hwaddr, 7, ':') == F("aa:bb:cc:dd:12:55:00"));
+			REQUIRE(makeHexString(hwaddr, 1, ':') == F("aa"));
+			REQUIRE(makeHexString(hwaddr, 0, ':') == String::empty);
+		}
 	}
 };
 

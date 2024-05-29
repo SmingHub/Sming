@@ -276,15 +276,13 @@ void String::move(String& rhs)
 		(void)reserve(rhs_len);
 	}
 
-	// If we already have capacity, copy the data and free rhs buffers
-	if(capacity() >= rhs_len) {
+	// If we have more capacity than the target, copy the data and free rhs buffers
+	if(rhs.sso.set || capacity() > rhs.capacity()) {
 		memmove(buffer(), rhs.buffer(), rhs_len);
 		setlen(rhs_len);
 		rhs.invalidate();
 		return;
 	}
-
-	assert(!rhs.sso.set);
 
 	// We don't have enough space so perform a pointer swap
 	if(!sso.set) {
