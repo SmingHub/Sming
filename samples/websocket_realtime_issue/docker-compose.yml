@@ -1,0 +1,26 @@
+sming-cli:
+
+  build: .
+
+# Uncomment the lines below if you want to use the source code in your host computer
+#  volumes:
+#    - ../../Sming/:/workspace/Sming/
+
+  ports:
+    - "10080:80"
+
+# Modify the line below if you serial adapter is mapped to a different port
+  devices:
+    #- "/dev/ttyACM0:/dev/ttyUSB0"
+    - "/dev/sdb1:/dev/sdb1"
+    - "/dev/ttyACM0:/dev/ttyUSB0"
+
+  volumes:
+    - .:/BalanceEsp
+    - /etc/group:/etc/group:ro
+    - /etc/passwd:/etc/passwd:ro
+    - /etc/shadow:/etc/shadow:ro
+
+  privileged: true
+
+  working_dir: /BalanceEsp
