@@ -20,6 +20,9 @@ time_t SystemClockClass::now(TimeZone timeType) const
 	uint32_t systemTime = RTC.getRtcSeconds();
 
 	if(timeType == eTZ_Local) {
+		if(checkTimeZoneOffset) {
+			checkTimeZoneOffset(systemTime);
+		}
 		systemTime += zoneInfo.offsetSecs();
 	}
 
@@ -41,7 +44,10 @@ bool SystemClockClass::setTime(time_t time, TimeZone timeType)
 
 String SystemClockClass::getSystemTimeString(TimeZone timeType) const
 {
-	time_t systemTime = RTC.getRtcSeconds();
+	time_t systemTime = now(eTZ_UTC);
+	if(checkTimeZoneOffset) {
+		checkTimeZoneOffset(systemTime);
+	}
 
 	if(timeType == eTZ_UTC) {
 		DateTime dt(systemTime);

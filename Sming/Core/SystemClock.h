@@ -34,6 +34,23 @@ enum TimeZone {
 class SystemClockClass
 {
 public:
+	/**
+	 * @brief Optional callback which can be used to automate handling of timezone changes
+	 * @param systemTime The current system time
+	 *
+	 * Although the timezone offset only changes twice a year, when it does change the
+	 * corresponding offset should be updated promptly.
+	 *
+	 * `setTimeZoneOffset()` is typically called when updating via real-time clock chip or NTP,
+	 * but this can still leave a considerable gap during which the local time will be wrong.
+	 *
+	 * The callback should check the provided systemTime and determine if the time zone offset
+	 * requires changing and, if so, call `setTimeZoneOffset()`.
+	 * One way to make this efficient is to cache the `time_t` value for the *next* change,
+	 * rather than attemtpting to compute the offset on every call.
+	 */
+	using CheckTimeZoneOffset = Delegate<void(time_t systemTime)>;
+
 	/** @brief  Get the current date and time
      *  @param  timeType Time zone to use (UTC / local)
      *  @retval DateTime Current date and time
@@ -118,6 +135,7 @@ public:
 	}
 
 private:
+	CheckTimeZoneOffset checkTimeZoneOffset;
 	DateTime::ZoneInfo zoneInfo;
 	bool timeSet = false;
 };
