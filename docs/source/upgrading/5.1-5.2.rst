@@ -41,3 +41,9 @@ Espressif toolchains use forks:
 
 esp8266: https://github.com/earlephilhower/newlib-xtensa/blob/xtensa-4_0_0-lock-arduino/newlib/libc/
 esp32: https://github.com/espressif/newlib-esp32/blob/esp-4.3.0/newlib/libc/
+
+
+**Esp32 IDF**
+
+The installation scripts now install IDF version 5.2 by default.
+See :ref:`idf_versions` for further details.
