@@ -49,12 +49,36 @@ Change it like this::
 
 .. note::
    If you change these settings and want them applied to Sming, not just your project, then you'll
-   need to recompile all components like this:
-
-   ::
+   need to recompile all components like this::
 
       make components-clean
       make DEBUG_VERBOSE_LEVEL=3
+
+
+.. envvar:: STRICT
+
+   * default: undefined (standard warnings, treat as errors)
+   * 1: Enable all warnings but do not treat as errors
+
+   By default, Sming builds code with a few warnings disabled:
+
+   - sign-compare: Comparison between signed and unsigned values could produce an incorrect result when the signed value is converted to unsigned.
+   - parentheses: Parentheses are omitted in certain contexts.
+   - unused-variable: A local or static variable is unused aside from its declaration.
+   - unused-but-set-variable: A local variable is assigned to, but otherwise unused.
+   - strict-aliasing: Casts which can violate alignment rules.
+
+   These can be indicative of problematic code rather than errors.
+   Because new compiler releases can increase the level of checking, this set may also need to change
+   but it is kept minimal. See ``Sming/build.mk`` for the actual settings.
+   See https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html for further details
+   about all compiler settings.
+   See also :doc:`/information/develop/clang-tools`.
+
+   Any remaining warnings will be treated as errors and compilation will be halted.
+
+   It is a good idea to check your codebase with ``STRICT=1`` which enables **all** warnings.
+   However, it does not treat them as errors because of the above which could be false-positives.
 
 
 Release builds

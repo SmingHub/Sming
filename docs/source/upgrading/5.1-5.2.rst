@@ -27,6 +27,9 @@ This is dependent on the toolchain and accompanying C library.
 - Windows Host (using mingw)
 - Linux host builds prior to Sming v5.2
 
+Building for these will generate a warning ``**Y2038** time_t is only 32-bits in this build configuration``.
+If you cannot upgrade then build with :envvar:`STRICT` set to 1.
+
 Range of time_t:
 
 ===========     ===================
