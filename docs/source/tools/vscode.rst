@@ -13,6 +13,17 @@ Software involved
 -  `Visual Studio Code <https://code.visualstudio.com/>`__
 -  `C/C++ extension <https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools>`__
 
+.. note::
+
+   Linux users may prefer `VSCodium <https://vscodium.com/>`__ which does not contain telemetry or tracking.
+
+   Standard C/C++ language support is available via the `cpptools <https://github.com/microsoft/vscode-cpptools>`__
+   extension which is not available in the vscodium repositories.
+
+   Visit https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools and go to ``Version History``
+   to download the .vsix file. Open the ``Extensions`` pane in vscodium and drag the file there to install,
+   or run ``codium --install-extension NAME-OF-FILE.vsix``.
+
 
 Installation
 ------------
@@ -68,6 +79,22 @@ To debug your application, follow these steps:
 .. figure:: vscode2.png
 
    VS Code debug selection
+
+
+Editor window titles
+--------------------
+
+As Sming is a multi-architecture framework there are lots of files with the same name.
+By default editor window titles contain only the filename, but in vscode this can be changed
+to something more useful, like including the parent directory name.
+
+Open user settings JSON (via F1 hotkey) and add this to the config:
+
+.. code-block:: json
+
+    "workbench.editor.customLabels.patterns": {
+        "**/*.*": "${dirname}/${filename}.${extname}"
+    }
 
 
 Manual configuration changes
