@@ -176,7 +176,7 @@ def get_drives():
                                      "get", "DeviceID,", "VolumeName,",
                                      "FileSystem,", "DriveType"])
         for line in r.decode().split('\n'):
-            words = re.split('\s+', line)
+            words = re.split(r'\s+', line)
             if len(words) >= 3 and words[1] == "2" and words[2] == "FAT":
                 drives.append(words[0])
     else:
