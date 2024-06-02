@@ -1,9 +1,8 @@
 REM Esp8266 install.cmd
 
-call :install "%ESP_HOME%" x86_64-w64-mingw32.xtensa-lx106-elf-e6a192b.201211.zip
-goto :EOF
+set EQT_REPO=https://github.com/earlephilhower/esp-quick-toolchain/releases/download/3.2.0-gcc10.3
+set EQT_TOOLCHAIN=x86_64-w64-mingw32.xtensa-lx106-elf-c791b74.230224.zip
 
-:install
-mkdir %1
-curl -Lo %DOWNLOADS%/%2 %SMINGTOOLS%/%2
-7z -o%1 x %DOWNLOADS%/%2
+mkdir %ESP_HOME%
+curl -Lo %DOWNLOADS%/%EQT_TOOLCHAIN% %EQT_REPO%/%EQT_TOOLCHAIN%
+7z -o%ESP_HOME% x %DOWNLOADS%/%EQT_TOOLCHAIN%
