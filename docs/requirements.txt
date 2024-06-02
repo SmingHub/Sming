@@ -1,6 +1,6 @@
 # Requirements file for pip
 # list of Python packages used in documentation build
-sphinx==7.2.6
+sphinx==7.3.7
 sphinx-rtd-theme==2.0.0
 m2r2==0.3.3.post2
 breathe==4.35.0
