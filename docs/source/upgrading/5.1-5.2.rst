@@ -43,7 +43,14 @@ esp8266: https://github.com/earlephilhower/newlib-xtensa/blob/xtensa-4_0_0-lock-
 esp32: https://github.com/espressif/newlib-esp32/blob/esp-4.3.0/newlib/libc/
 
 
-**Esp32 IDF**
+**Toolchain versions updated**
 
-The installation scripts now install IDF version 5.2 by default.
-See :ref:`idf_versions` for further details.
+Esp8266
+    The installer has been updated to use the latest toolchain (Feb 23), gcc 10.3.
+
+Esp32 IDF
+    The installation scripts now install IDF version 5.2 by default.
+    See :ref:`idf_versions` for further details.
+
+RP2040
+    The installer has been updated to use the latest toolchain (Oct 23), gcc 13.2.

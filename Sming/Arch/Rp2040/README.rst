@@ -85,20 +85,29 @@ The following instructions should help.
 
 Compiler/linker
    The RP2040 contains two ARM Cortex-M0+ cores. Tools for all platforms can be downloaded from the
-   `ARM developer website <https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads>`__.
+   `ARM developer website <https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads>`__.
 
    Unzip the archive to a suitable location (e.g. ``/opt/rp2040`` or ``c:\tools\rp2040``) and set :envvar:`PICO_TOOLCHAIN_PATH` accordingly.
 
    .. note::
 
-      At time of writing the Ubuntu repositories contain an older version of this toolchain.
-      It also does not contain GDB, but can be installed separately:
+      The Sming installer script can do this for you ``Tools/install.sh rp2040``
 
+   You can alternatively use the toolchains provided in your GNU/Linux distribution.
+
+   Ubuntu
+      ::
          sudo apt install gcc-arm-none-eabi gdb-multiarch
 
-      To use gdb-multiarch you'll need to do this:
+      To use gdb-multiarch you'll need to do this::
 
          make gdb GDB=gdb-multiarch
+
+   Fedora
+      ::
+         sudo dnf install arm-none-eabi-gcc-cs-c++ arm-none-eabi-newlib
+
+      The standard GDB appears to work OK.
 
 Ninja
    This is used to build the RP2040 SDK code:
