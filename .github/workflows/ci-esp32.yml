@@ -21,6 +21,10 @@ jobs:
             idf_version: "4.3"
           - variant: esp32c2
             idf_version: "4.4"
+          - idf_version: "4.3"
+            os: windows-latest
+          - idf_version: "5.0"
+            os: windows-latest
 
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}-${{ toJson(matrix) }}
