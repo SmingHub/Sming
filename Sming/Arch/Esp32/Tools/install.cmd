@@ -4,7 +4,7 @@ if "%IDF_PATH%"=="" goto :EOF
 if "%IDF_TOOLS_PATH%"=="" goto :EOF
 
 if "%IDF_REPO%"=="" set IDF_REPO="https://github.com/mikee47/esp-idf.git"
-if "%INSTALL_IDF_VER%"=="" set INSTALL_IDF_VER=4.4
+if "%INSTALL_IDF_VER%"=="" set INSTALL_IDF_VER=5.2
 set IDF_BRANCH="sming/release/v%INSTALL_IDF_VER%"
 
 git clone -b %IDF_BRANCH% %IDF_REPO% %IDF_PATH%

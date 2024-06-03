@@ -36,7 +36,7 @@ if [ ! -L "$IDF_PATH" ] && [ -d "$IDF_PATH" ]; then
     mv "$IDF_PATH" "$IDF_PATH-old"
 fi
 
-INSTALL_IDF_VER="${INSTALL_IDF_VER:=4.4}"
+INSTALL_IDF_VER="${INSTALL_IDF_VER:=5.2}"
 IDF_CLONE_PATH="$(readlink -m "$IDF_PATH/..")/esp-idf-${INSTALL_IDF_VER}"
 IDF_REPO="${IDF_REPO:=https://github.com/mikee47/esp-idf.git}"
 IDF_BRANCH="sming/release/v${INSTALL_IDF_VER}"

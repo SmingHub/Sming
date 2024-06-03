@@ -6,6 +6,7 @@
 
 # linker flags used to generate the main object file
 LDFLAGS	+= \
+	-Wl,--no-warn-rwx-segments \
 	-Wl,--build-id=none \
 	--specs=nosys.specs \
 	-mcpu=cortex-m0plus \

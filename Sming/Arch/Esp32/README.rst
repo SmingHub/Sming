@@ -108,9 +108,9 @@ IDF versions
 
 Sming currently supports IDF versions 4.3, 4.4, 5.0 and 5.2.
 
-The default installed IDF version is 4.4. This can be changed as follows::
+The default installed IDF version is 5.2. This can be changed as follows::
 
-    INSTALL_IDF_VER=5.2 $SMING_HOME/../Tools/install.sh esp32
+    INSTALL_IDF_VER=4.4 $SMING_HOME/../Tools/install.sh esp32
 
 The installation script creates a soft-link in ``/opt/esp-idf`` pointing to the last version installed.
 Use the `IDF_PATH` environment variable or change the soft-link to select which one to use.
