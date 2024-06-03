@@ -10,12 +10,14 @@ The intended default behaviour is read-only, however previously this also allowe
 This can result in corrupted flash contents where the flash has not been explicitly erased beforehand.
 
 The new constructors instead use a :cpp:enum:`Storage::Mode` so behaviour is more explicit.
-The default is read-only and writes will now be failed.
+The default is read-only and writes will now be failed. For example::
+
+    Storage::PartitionStream stream(myPartition, Storage::Mode::BlockErase);
 
 
 **64-bit time_t**
 
-There is some variability in whether `time_t` is 32 or 64 bits. See issue #2758.
+There is some variability in whether `time_t` is 32 or 64 bits. See :issue:`2758`.
 
 This is dependent on the toolchain and accompanying C library.
 
@@ -27,9 +29,13 @@ This is dependent on the toolchain and accompanying C library.
 
 Range of time_t:
 
-    -0x80000000: 1901-12-13 20:45:52
-    0x00000000: 1970-01-01 00:00:00
-    0x7fffffff: 2038-01-19 03:14:07
+===========     ===================
+value           Timestamp
+===========     ===================
+-0x80000000     1901-12-13 20:45:52
+0x00000000      1970-01-01 00:00:00
+0x7fffffff      2038-01-19 03:14:07
+===========     ===================
 
 All others use 64-bit values.
 
@@ -39,8 +45,8 @@ Rp2040 builds with standard ARM toolkit so probably accommodated by the standard
 
 Espressif toolchains use forks:
 
-esp8266: https://github.com/earlephilhower/newlib-xtensa/blob/xtensa-4_0_0-lock-arduino/newlib/libc/
-esp32: https://github.com/espressif/newlib-esp32/blob/esp-4.3.0/newlib/libc/
+- esp8266: https://github.com/earlephilhower/newlib-xtensa/blob/xtensa-4_0_0-lock-arduino/newlib/libc/
+- esp32: https://github.com/espressif/newlib-esp32/blob/esp-4.3.0/newlib/libc/
 
 
 **Toolchain versions updated**
