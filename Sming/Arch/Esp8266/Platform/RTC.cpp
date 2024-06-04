@@ -10,6 +10,7 @@
 
 #include <Platform/RTC.h>
 #include <esp_systemapi.h>
+#include <sys/time.h>
 
 RtcClass RTC;
 
@@ -97,9 +98,29 @@ void loadTime(RtcData& data)
 
 	// Initialise the time struct
 	if(data.magic != RTC_MAGIC) {
-		debugf("rtc time init...");
+		debug_d("rtc time init...");
 		data.magic = RTC_MAGIC;
 		data.time = 0;
 		data.cycles = 0;
 	}
+}
+
+extern "C" int _gettimeofday_r(struct _reent*, struct timeval* tp, void*)
+{
+	if(tp) {
+		// ensureBootTimeIsSet();
+		uint32_t micros = RTC.getRtcNanoseconds() / 1000LL;
+		tp->tv_sec = micros / 1000;
+		tp->tv_usec = micros % 1000;
+	}
+	return 0;
+}
+
+extern "C" time_t time(time_t* t)
+{
+	time_t seconds = RTC.getRtcSeconds();
+	if(t) {
+		*t = seconds;
+	}
+	return seconds;
 }
