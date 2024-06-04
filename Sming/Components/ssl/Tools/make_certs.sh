@@ -176,7 +176,5 @@ openssl pkcs12 -export -in x509_1024.pem -inkey key_1024.pem -keypbe PBE-SHA1-RC
 cat ca_x509.pem >> x509_device.pem
 
 # set default key/cert for use in the server
-xxd -i x509_1024.cer | sed -e \
-        "s/x509_1024_cer/default_certificate/" > "$SSL_INCLUDE_DIR/cert.h"
-xxd -i key_1024 | sed -e \
-        "s/key_1024/default_private_key/" > "$SSL_INCLUDE_DIR/private_key.h"
+xxd -n default_certificate -i x509_1024.cer | sed -e "s/\[\]/\[\] PROGMEM/" > "$SSL_INCLUDE_DIR/cert.h"
+xxd -n default_private_key -i key_1024  | sed -e "s/\[\]/\[\] PROGMEM/" > "$SSL_INCLUDE_DIR/private_key.h"

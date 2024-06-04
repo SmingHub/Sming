@@ -20,7 +20,7 @@ If you need an X509 certificate and private key::
 
 This will use openssl to generate binary certificate and key information in ``out/ssl``
 and create ``include/ssl/cert.h`` and ``include/ssl/private_key.h``.
-See :sample:`MqttClient_Hello` and :sample:`SmtpClient` for how these are used in code.
+See :sample:`MqttClient_Hello` for example code.
 
 An alternative to generating header files is to use the binary certificate files directly.
 See :sample:`Basic_AWS` for an example of this approach.
