@@ -11,6 +11,20 @@ Sming supports multiple SSL implementations, currently with adapters for:
 If you want to use SSL then take a look at the :sample:`Basic_Ssl` sample for creating SSL clients,
 and :sample:`HttpServer_ConfigNetwork` for SSL servers.
 
+Certificates
+------------
+
+If you need an X509 certificate and private key::
+
+   make generate-cert
+
+This will use openssl to generate binary certificate and key information in ``out/ssl``
+and create ``include/ssl/cert.h`` and ``include/ssl/private_key.h``.
+See :sample:`MqttClient_Hello` and :sample:`SmtpClient` for how these are used in code.
+
+An alternative to generating header files is to use the binary certificate files directly.
+See :sample:`Basic_AWS` for an example of this approach.
+
 
 Configuration Variables
 -----------------------

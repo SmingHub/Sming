@@ -41,12 +41,14 @@ ifeq ($(ENABLE_SSL),0)
 else
 	$(info Using $(ENABLE_SSL) SSL implementation)
 
-# Application
-CUSTOM_TARGETS			+= include/ssl/private_key.h
+##@Tools
+
+.PHONY: generate_cert
+generate_cert: include/ssl/private_key.h ##Generate X509 certificate and private key files in include/ssl
 
 SSL_TOOLS_PATH			:= $(COMPONENT_PATH)/Tools
 SSL_INCLUDE_DIR			:= $(PROJECT_DIR)/include/ssl
-OUT_SSL                         := out/ssl/
+OUT_SSL                 := out/ssl/
 SSL_CERT_DIR			:= $(OUT_SSL)/cert
 
 include/ssl/private_key.h:
