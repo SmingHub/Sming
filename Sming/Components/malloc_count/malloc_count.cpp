@@ -349,6 +349,8 @@ extern "C" void* WRAP(calloc)(size_t, size_t) __attribute__((alias("mc_calloc"))
 extern "C" void* WRAP(realloc)(void*, size_t) __attribute__((alias("mc_realloc")));
 extern "C" void WRAP(free)(void*) __attribute__((alias("mc_free")));
 
+using namespace MallocCount;
+
 #ifdef ARCH_ESP8266
 
 extern "C" void* WRAP(pvPortMalloc)(size_t) __attribute__((alias("mc_malloc")));
@@ -359,8 +361,6 @@ extern "C" void* WRAP(pvPortZallocIram)(size_t) __attribute__((alias("mc_zalloc"
 extern "C" void WRAP(vPortFree)(void*) __attribute__((alias("mc_free")));
 
 #else
-
-using namespace MallocCount;
 
 void* operator new(size_t size)
 {
@@ -406,14 +406,14 @@ void operator delete[](void* ptr, size_t)
 
 #endif
 
+#endif // ESP8266
+
 extern "C" char* WRAP(strdup)(const char* s)
 {
 	auto len = strlen(s) + 1;
-	auto dup = (char*)malloc(len);
+	auto dup = (char*)mc_malloc(len);
 	memcpy(dup, s, len);
 	return dup;
 }
-
-#endif
 
 #endif // ENABLE_MALLOC_COUNT
