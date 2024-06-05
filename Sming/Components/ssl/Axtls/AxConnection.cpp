@@ -34,14 +34,14 @@ int AxConnection::write(const uint8_t* data, size_t length)
 
 	int available = tcp_sndbuf(tcp);
 	if(available < required) {
-		debug_i("SSL: Required: %d, Available: %d", required, available);
+		debug_i("[SSL] Required: %d, Available: %d", required, available);
 		return SSL_NOT_OK;
 	}
 
 	int written = ssl_write(ssl, data, length);
-	debug_d("SSL: Write len: %d, Written: %d", length, written);
+	debug_d("[SSL] Write len: %d, Written: %d", length, written);
 	if(written < 0) {
-		debug_e("SSL: Write Error: %d", written);
+		debug_e("[SSL] Write Error: %d", written);
 	}
 
 	return written;

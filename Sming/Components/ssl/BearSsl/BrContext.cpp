@@ -23,7 +23,7 @@ Connection* BrContext::createClient(tcp_pcb* tcp)
 	if(connection != nullptr) {
 		int res = connection->init();
 		if(res < 0) {
-			debug_e("Connection init failed: %s", connection->getErrorString(res).c_str());
+			debug_e("[SSL] Connection init failed: %s", connection->getErrorString(res).c_str());
 			delete connection;
 			connection = nullptr;
 		}
@@ -37,7 +37,7 @@ Connection* BrContext::createServer(tcp_pcb* tcp)
 	if(connection != nullptr) {
 		int res = connection->init();
 		if(res < 0) {
-			debug_e("Connection init failed: %s", connection->getErrorString(res).c_str());
+			debug_e("[SSL] Connection init failed: %s", connection->getErrorString(res).c_str());
 			delete connection;
 			connection = nullptr;
 		}

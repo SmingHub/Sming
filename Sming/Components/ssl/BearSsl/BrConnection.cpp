@@ -119,12 +119,12 @@ int BrConnection::init(size_t bufferSize, bool bidi)
 void BrConnection::setCipherSuites(const CipherSuites::Array* cipherSuites)
 {
 	if(cipherSuites == nullptr) {
-		debug_w("Cipher suites not configured, defaulting to basic");
+		debug_w("[SSL] Cipher suites not configured, defaulting to basic");
 		cipherSuites = &CipherSuites::basic;
 	}
 	auto count = cipherSuites->length();
 	if(count > BR_MAX_CIPHER_SUITES) {
-		debug_w("Too many cipher suites, truncating %u -> %u entries", count, BR_MAX_CIPHER_SUITES);
+		debug_w("[SSL] Too many cipher suites, truncating %u -> %u entries", count, BR_MAX_CIPHER_SUITES);
 		count = BR_MAX_CIPHER_SUITES;
 	}
 	LOAD_FSTR_ARRAY(suites, *cipherSuites);
@@ -146,7 +146,7 @@ int BrConnection::read(InputBuffer& input, uint8_t*& output)
 
 	size_t len = 0;
 	output = br_ssl_engine_recvapp_buf(engine, &len);
-	debug_hex(DBG, "READ", output, len, 0);
+	debug_hex(DBG, "[SSL] READ", output, len, 0);
 	br_ssl_engine_recvapp_ack(engine, len);
 	return len;
 }
@@ -168,12 +168,12 @@ int BrConnection::write(const uint8_t* data, size_t length)
 	size_t available;
 	auto buf = br_ssl_engine_sendapp_buf(engine, &available);
 	if(available == 0) {
-		debug_w("SSL: Send buffer full");
+		debug_w("[SSL] Send buffer full");
 		return 0;
 	}
 
 	if(available < length) {
-		debug_i("SSL: Required: %d, Available: %u", length, available);
+		debug_i("[SSL] Required: %d, Available: %u", length, available);
 		length = available;
 	}
 
@@ -200,7 +200,7 @@ int BrConnection::runUntil(InputBuffer& input, unsigned target)
 
 		if(state & BR_SSL_CLOSED) {
 			int err = getLastError();
-			debug_w("SSL CLOSED, last error = %d (%s), heap free = %u", err, getErrorString(err).c_str(),
+			debug_w("[SSL] CLOSED, last error = %d (%s), heap free = %u", err, getErrorString(err).c_str(),
 					system_get_free_heap_size());
 			return err;
 		}
@@ -208,7 +208,7 @@ int BrConnection::runUntil(InputBuffer& input, unsigned target)
 		if(!handshakeDone && (state & BR_SSL_SENDAPP)) {
 			handshakeDone = true;
 			context.session.handshakeComplete(true);
-			debug_i("Negotiated MFLN: %u", br_ssl_engine_get_mfln_negotiated(engine));
+			debug_i("[SSL] Negotiated MFLN: %u", br_ssl_engine_get_mfln_negotiated(engine));
 			continue;
 		}
 
@@ -224,7 +224,7 @@ int BrConnection::runUntil(InputBuffer& input, unsigned target)
 				return 0;
 			}
 			if(wlen < 0) {
-				debug_w("SSL SHUTDOWN");
+				debug_w("[SSL] SHUTDOWN");
 				/*
 				 * If we received a close_notify and we
 				 * still send something, then we have our
@@ -251,7 +251,7 @@ int BrConnection::runUntil(InputBuffer& input, unsigned target)
 
 		// Conflict: Application data hasn't been read
 		if(state & BR_SSL_RECVAPP) {
-			debug_e("SSL: Protocol Error");
+			debug_e("[SSL] Protocol Error");
 			return BR_ERR_BAD_STATE;
 		}
 
@@ -263,7 +263,7 @@ int BrConnection::runUntil(InputBuffer& input, unsigned target)
 				return state;
 			}
 
-			debug_hex(DBG, "READ", buf, len, 0);
+			debug_hex(DBG, "[SSL] READ", buf, len, 0);
 			br_ssl_engine_recvrec_ack(engine, len);
 
 			continue;
