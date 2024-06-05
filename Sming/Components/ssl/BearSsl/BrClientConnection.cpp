@@ -107,7 +107,11 @@ void BrClientConnection::endCert()
 
 bool BrClientConnection::endChain()
 {
-	return context.session.validateCertificate();
+	auto& session = context.session;
+	if(!session.options.verifyLater && session.validators.isEmpty()) {
+		return false;
+	}
+	return session.validateCertificate();
 }
 
 } // namespace Ssl
