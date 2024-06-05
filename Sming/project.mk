@@ -589,7 +589,7 @@ TCP_SERIAL_REDIRECT = $(SMING_HOME)/../Tools/tcp_serial_redirect.py $(COM_PORT) 
 .PHONY: tcp-serial-redirect
 tcp-serial-redirect: ##Redirect COM port to TCP port
 	$(info Starting serial redirector)
-ifdef WSL_ROOT
+ifeq ($(WSL_COMPORT_POWERSHELL),1)
 	$(Q) cmd.exe /c start /MIN python3 $(WSL_ROOT)/$(TCP_SERIAL_REDIRECT)
 else
 	$(Q) $(call DetachCommand,$(PYTHON) $(TCP_SERIAL_REDIRECT))

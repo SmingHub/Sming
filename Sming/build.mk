@@ -94,6 +94,8 @@ else ifeq ($(UNAME), Linux)
  	ifdef WSL_DISTRO_NAME
         DEBUG_VARS += WSL_ROOT
         WSL_ROOT := //wsl$$/$(WSL_DISTRO_NAME)
+		# If serial device is available, use it directly, otherwise via powershell
+		WSL_COMPORT_POWERSHELL = $(if $(wildcard $(COM_PORT)),,1)
  	endif
 else ifeq ($(UNAME), Darwin)
  	#OS X
