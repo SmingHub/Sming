@@ -1,20 +1,14 @@
 {
 	"name": "Host Tests profile",
 	"base_config": "spiffs",
-	"devices": {
-		"testDevice": {
-			"type": "spiram",
-			"size": "0x40000000"
-		}
-	},
 	"partitions": {
 		"spiffs0": {
 			"size": "0x10000",
 			"filename": ""
 		},
-		"fwfs0": {
+		"fwfs_httprequest": {
 			"address": "0x220000",
-			"size": "0x40000",
+			"size": "0x20000",
 			"type": "data",
 			"subtype": "fwfs",
 			"filename": "$(FW_BASE)/fwfs0.bin",
@@ -22,32 +16,6 @@
 				"target": "fwfs-build",
 				"config": "fwfs0.json"
 			}
-		},
-		"external1": {
-			"device": "testDevice",
-			"address": 0,
-			"size": "4M",
-			"type": "data",
-			"subtype": "spiffs",
-			"filename": "$(FW_BASE)/test-spiffs.bin",
-			"build": {
-				"target": "spiffsgen",
-				"files": "resource"
-			}
-		},
-		"external2": {
-			"device": "testDevice",
-			"address": "0x600000",
-			"size": "240K",
-			"type": "data",
-			"subtype": 37
-		},
-		"external3": {
-			"device": "testDevice",
-			"address": "0x800000",
-			"size": "240M",
-			"type": "data",
-			"subtype": "nvs"
 		}
 	}
 }

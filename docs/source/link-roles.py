@@ -33,7 +33,7 @@ def get_github_rev():
 
 def setup(app):
     app.add_role('source', SourceRole())
-    app.add_role('issue', autolink('Issue #{0} <' + github_url + '/issue/{0}>'))
+    app.add_role('issue', autolink('Issue #{0} <' + github_url + '/issues/{0}>'))
     app.add_role('pull-request', autolink('Pull Request #{0} <' + github_url + '/pull/{0}>'))
 
     app.add_role('sample', SampleRole)

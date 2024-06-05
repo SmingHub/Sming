@@ -42,10 +42,7 @@ public:
 			return;
 		}
 
-		auto fs = IFS::createFirmwareFilesystem(*Storage::findPartition(Storage::Partition::SubType::Data::fwfs));
-		CHECK(fs != nullptr);
-		CHECK(fs->mount() == FS_OK);
-		fileSetFileSystem(fs);
+		REQUIRE(fwfs_mount(Storage::findPartition("fwfs_httprequest")));
 
 		server->listen(80);
 		server->paths.setDefault([](HttpRequest& request, HttpResponse& response) {

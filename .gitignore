@@ -1,11 +1,8 @@
 # generated binaries
 out
 
-# generated documentation
-docs/api
-docs/build
-docs/source/_inc
-*.pyc
+# Python cache
+__pycache__
 
 # Eclipse
 .project
