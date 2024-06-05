@@ -43,8 +43,8 @@ else
 
 ##@Tools
 
-.PHONY: generate_cert
-generate_cert: include/ssl/private_key.h ##Generate X509 certificate and private key files in include/ssl
+.PHONY: generate-cert
+generate-cert: include/ssl/private_key.h ##Generate X509 certificate and private key files in include/ssl
 
 SSL_TOOLS_PATH			:= $(COMPONENT_PATH)/Tools
 SSL_INCLUDE_DIR			:= $(PROJECT_DIR)/include/ssl

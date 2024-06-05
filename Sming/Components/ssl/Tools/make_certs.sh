@@ -144,7 +144,7 @@ date -s "$DATE_NOW"
 touch x509_bad_before.pem
 fi
 openssl x509 -req -in x509_512.req -out x509_bad_after.pem \
-            -sha1 -CAcreateserial -days -365 \
+            -sha1 -CAcreateserial -days -1 \
             -CA ca_x509.pem -CAkey ca_key.pem
 
 # some cleanup
