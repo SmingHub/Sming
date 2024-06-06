@@ -128,9 +128,9 @@ flash: all kill_term ##Write the boot loader and all defined partition images
 	$(Q) $(call CheckPartitionChunks,$(FLASH_PARTITION_CHUNKS))
 	$(call WriteFlash,$(FLASH_BOOT_CHUNKS) $(FLASH_MAP_CHUNK) $(FLASH_PARTITION_CHUNKS))
 ifeq ($(ENABLE_GDB), 1)
-	$(GDB_CMDLINE)
+	$(MAKE) gdb
 else ifneq ($(SMING_ARCH),Host)
-	$(TERMINAL)
+	$(MAKE) terminal
 endif
 
 .PHONY: mergeflash

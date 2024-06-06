@@ -33,6 +33,7 @@ Options
 .. envvar:: TERMINAL
 
    Command line to use when running ``make terminal``.
+   This is normally empty (undefined) which causes the default python terminal application to run.
    Redefine if you want to use a different terminal application.
 
 .. envvar:: KILL_TERM
