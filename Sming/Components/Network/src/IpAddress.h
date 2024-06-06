@@ -20,15 +20,13 @@
 #pragma once
 
 #include <lwip/init.h>
-#include <lwip/ip_addr.h>
+#include <ipv4_addr.h>
 #include "Printable.h"
 #include "WString.h"
 
 #if LWIP_VERSION_MAJOR == 2
 #define LWIP_IP_ADDR_T const ip_addr_t
 #else
-using ip_addr_t = struct ip_addr;
-using ip4_addr_t = ip_addr_t;
 #define IP_ADDR4(IP, A, B, C, D) IP4_ADDR(IP, A, B, C, D)
 #define ip_addr_set_ip4_u32(IP, U32) ip4_addr_set_u32(IP, U32)
 #define ip_addr_get_ip4_u32(IP) ip4_addr_get_u32(IP)
@@ -154,7 +152,7 @@ public:
 	// Overloaded index operator to allow getting and setting individual octets of the address
 	uint8_t operator[](int index) const
 	{
-		if(unsigned(index) >= sizeof(ip4_addr_t)) {
+		if(unsigned(index) >= sizeof(address)) {
 			abort();
 		}
 
@@ -163,7 +161,7 @@ public:
 
 	uint8_t& operator[](int index)
 	{
-		if(unsigned(index) >= sizeof(ip4_addr_t)) {
+		if(unsigned(index) >= sizeof(address)) {
 			abort();
 		}
 

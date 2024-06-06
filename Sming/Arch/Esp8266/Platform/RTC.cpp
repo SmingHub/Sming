@@ -11,12 +11,13 @@
 #include <Platform/RTC.h>
 #include <esp_systemapi.h>
 #include <sys/time.h>
+#include <errno.h>
 
 RtcClass RTC;
 
 #define RTC_MAGIC 0x55aaaa55
 #define RTC_DES_ADDR 64 + 3 ///< rBoot may require 3 words at start
-#define NS_PER_SECOND 1000000000
+#define NS_PER_SECOND 1'000'000'000
 
 /** @brief  Structure to hold RTC data
  *  @addtogroup structures
@@ -105,10 +106,33 @@ void loadTime(RtcData& data)
 	}
 }
 
+extern "C" int settimeofday(const struct timeval* tv, const struct timezone* tz)
+{
+	// os_printf_plus("** settimeofday(%p, %p), secs = %u\r\n", tv, tz, tv ? unsigned(tv->tv_sec) : 0);
+
+	// Received from lwip2 SNTP
+	const uint32_t LWIP2_SNTP_MAGIC = 0xfeedC0de;
+
+	if(reinterpret_cast<uint32_t>(tz) == LWIP2_SNTP_MAGIC) {
+		tz = nullptr;
+	}
+
+	if(tz || !tv) {
+		// tz is obsolete (cf. man settimeofday)
+		return EINVAL;
+	}
+
+	// lwip2 calls this during static initialisation, before RTC is initialised, so ignore value 0
+	if(tv->tv_sec) {
+		uint64_t ns = uint64_t(tv->tv_sec) * NS_PER_SECOND + tv->tv_usec * 1000;
+		RTC.setRtcNanoseconds(ns);
+	}
+	return 0;
+}
+
 extern "C" int _gettimeofday_r(struct _reent*, struct timeval* tp, void*)
 {
 	if(tp) {
-		// ensureBootTimeIsSet();
 		uint32_t micros = RTC.getRtcNanoseconds() / 1000LL;
 		tp->tv_sec = micros / 1000;
 		tp->tv_usec = micros % 1000;
