@@ -82,8 +82,17 @@ constexpr size_t alignment{16}; /* bytes (>= 2*sizeof(size_t)) */
 /* a sentinel value prefixed to each allocation */
 constexpr size_t sentinel{0xDEADC0DE};
 
-/* Macro to get pointer to sentinel */
-#define GET_SENTINEL(ptr) (size_t*)((char*)ptr - sizeof(size_t))
+/* Add an offset to a pointer return that as a pointer cast to required type */
+template <typename T = void*> T offsetPointer(void* ptr, intptr_t offset)
+{
+	return reinterpret_cast<T>(reinterpret_cast<intptr_t>(ptr) + offset);
+}
+
+/* Get pointer to sentinel */
+size_t* getSentinel(void* ptr)
+{
+	return offsetPointer<size_t*>(ptr, -sizeof(size_t));
+}
 
 /* output */
 #define PPREFIX "MC## "
@@ -224,9 +233,9 @@ extern "C" void* mc_malloc(size_t size)
 	}
 
 	/* prepend allocation size and check sentinel */
-	*(size_t*)ret = size;
-	ret = (char*)ret + alignment;
-	*GET_SENTINEL(ret) = sentinel;
+	*static_cast<size_t*>(ret) = size;
+	ret = offsetPointer(ret, alignment);
+	*getSentinel(ret) = sentinel;
 
 	inc_count(size);
 	if(size >= logThreshold) {
@@ -252,19 +261,19 @@ extern "C" void mc_free(void* ptr)
 		return;
 	}
 
-	size_t* p_sentinel = GET_SENTINEL(ptr);
+	size_t* p_sentinel = getSentinel(ptr);
 	if(*p_sentinel != sentinel) {
 		log("free(%p) has no sentinel !!! memory corruption?", ptr);
 		// ... or memory not allocated by our malloc()
 	} else {
 		*p_sentinel = 0; // Clear sentinel to avoid false-positives
-		ptr = (char*)ptr - alignment;
+		ptr = offsetPointer(ptr, -alignment);
 
-		size_t size = *(size_t*)ptr;
+		size_t size = *static_cast<size_t*>(ptr);
 		dec_count(size);
 
 		if(size >= logThreshold) {
-			log("free(%p) -> %u (cur %u)", (char*)ptr + alignment, size, stats.current);
+			log("free(%p) -> %u (cur %u)", offsetPointer(ptr, alignment), size, stats.current);
 		}
 	}
 
@@ -289,7 +298,7 @@ extern "C" void* mc_realloc(void* ptr, size_t size)
 		return mc_malloc(size);
 	}
 
-	if(*GET_SENTINEL(ptr) != sentinel) {
+	if(*getSentinel(ptr) != sentinel) {
 		log("free(%p) has no sentinel !!! memory corruption?", ptr);
 		// ... or memory not allocated by our malloc()
 		return REAL(F_REALLOC)(ptr, size);
@@ -301,9 +310,9 @@ extern "C" void* mc_realloc(void* ptr, size_t size)
 		return nullptr;
 	}
 
-	ptr = (char*)ptr - alignment;
+	ptr = offsetPointer(ptr, -alignment);
 
-	size_t oldsize = *(size_t*)ptr;
+	size_t oldsize = *static_cast<size_t*>(ptr);
 
 	void* newptr = REAL(F_REALLOC)(ptr, alignment + size);
 
@@ -317,16 +326,16 @@ extern "C" void* mc_realloc(void* ptr, size_t size)
 
 	if(size >= logThreshold) {
 		if(newptr == ptr) {
-			log("realloc(%u -> %u) = %p (cur %u)", oldsize, size, (char*)newptr + alignment, stats.current);
+			log("realloc(%u -> %u) = %p (cur %u)", oldsize, size, offsetPointer(newptr, alignment), stats.current);
 		} else {
-			log("realloc(%u -> %u) = %p -> %p (cur %u)", oldsize, size, (char*)ptr + alignment,
-				(char*)newptr + alignment, stats.current);
+			log("realloc(%u -> %u) = %p -> %p (cur %u)", oldsize, size, offsetPointer(ptr, alignment),
+				offsetPointer(newptr, alignment), stats.current);
 		}
 	}
 
-	*(size_t*)newptr = size;
+	*static_cast<size_t*>(newptr) = size;
 
-	return (char*)newptr + alignment;
+	return offsetPointer(newptr, alignment);
 }
 
 static __attribute__((destructor)) void finish()
@@ -411,7 +420,7 @@ void operator delete[](void* ptr, size_t)
 extern "C" char* WRAP(strdup)(const char* s)
 {
 	auto len = strlen(s) + 1;
-	auto dup = (char*)mc_malloc(len);
+	auto dup = static_cast<char*>(mc_malloc(len));
 	memcpy(dup, s, len);
 	return dup;
 }
