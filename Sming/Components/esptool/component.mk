@@ -28,7 +28,7 @@ ESPTOOL_CMDLINE := $(PYTHON) $(ESPTOOL) \
 # USB serial ports are not available under WSL2,
 # but we can use powershell with the regular Windows COM port
 # $1 -> Arguments
-ifdef WSL_ROOT
+ifeq ($(WSL_COMPORT_POWERSHELL),1)
 ESPTOOL_EXECUTE = powershell.exe -Command "$(ESPTOOL_CMDLINE) $1"
 else
 ESPTOOL_EXECUTE = $(ESPTOOL_CMDLINE) $1
