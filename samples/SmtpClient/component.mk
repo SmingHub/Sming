@@ -1,2 +1,2 @@
 HWCONFIG := spiffs-2m
-ENABLE_SSL		?= 1
+ENABLE_SSL ?= 1

@@ -9,6 +9,7 @@
  ****/
 
 #include <Platform/RTC.h>
+#include <sys/time.h>
 
 // #include <ESP_VARIANT/clk.h>
 extern "C" uint64_t esp_clk_rtc_time(void);
@@ -45,5 +46,10 @@ bool RtcClass::setRtcNanoseconds(uint64_t nanoseconds)
 
 bool RtcClass::setRtcSeconds(uint32_t seconds)
 {
+	struct timeval tv {
+		seconds
+	};
+	settimeofday(&tv, nullptr);
+
 	return setRtcNanoseconds(uint64_t(seconds) * NS_PER_SECOND);
 }

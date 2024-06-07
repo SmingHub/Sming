@@ -59,7 +59,7 @@ private:
 	// Callback on the first byte of any certificate
 	static void start_chain(const br_x509_class** ctx, const char* server_name)
 	{
-		debug_i("start_chain: %s", server_name);
+		debug_i("[SSL] start_chain: %s", server_name);
 		GET_SELF();
 		self->certificateCount = 0;
 		self->handler.startChain(server_name);
@@ -68,7 +68,7 @@ private:
 	// Callback for each certificate present in the chain
 	static void start_cert(const br_x509_class** ctx, uint32_t length)
 	{
-		debug_i("start_cert: %u", length);
+		debug_i("[SSL] start_cert: %u", length);
 		GET_SELF();
 		self->startCert(length);
 	}
@@ -81,15 +81,15 @@ private:
 	// Callback for each byte stream in the chain
 	static void append(const br_x509_class** ctx, const unsigned char* buf, size_t len)
 	{
-		debug_i("append: %u", len);
+		debug_i("[SSL] X509 append: %u", len);
 		GET_SELF();
 		self->handler.appendCertData(buf, len);
-		debug_hex(DBG, "CERT", buf, len, 0);
+		debug_hex(DBG, "[SSL] CERT", buf, len, 0);
 	}
 
 	static void end_cert(const br_x509_class** ctx)
 	{
-		debug_i("end_cert");
+		debug_i("[SSL] end_cert");
 		GET_SELF();
 		self->handler.endCert();
 		++self->certificateCount;
@@ -98,7 +98,7 @@ private:
 	// Complete chain has been parsed, return 0 on validation success
 	static unsigned end_chain(const br_x509_class** ctx)
 	{
-		debug_i("end_chain");
+		debug_i("[SSL] end_chain");
 		GET_SELF();
 		return self->endChain();
 	}
@@ -106,7 +106,7 @@ private:
 	unsigned endChain()
 	{
 		if(certificateCount == 0) {
-			debug_w("No certificate processed");
+			debug_w("[SSL] No certificate processed");
 			return BR_ERR_X509_EMPTY_CHAIN;
 		}
 

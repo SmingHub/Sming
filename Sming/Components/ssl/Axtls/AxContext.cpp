@@ -44,19 +44,19 @@ bool AxContext::init()
 #if DEBUG_VERBOSE_LEVEL == DBG
 	options |= SSL_DISPLAY_BYTES;
 #endif
-	debug_d("SSL: Show debug data ...");
+	debug_d("[SSL] Show debug data ...");
 #endif
 
 	context = ssl_ctx_new(options, session.cacheSize);
 	if(context == nullptr) {
-		debug_e("SSL: Unable to allocate context");
+		debug_e("[SSL] Unable to allocate context");
 		return false;
 	}
 
 	auto keyCert = session.keyCert;
 
 	if(!keyCert.isValid()) {
-		debug_w("Ignoring invalid keyCert");
+		debug_w("[SSL] Ignoring invalid keyCert");
 		return true;
 	}
 
@@ -66,12 +66,12 @@ bool AxContext::init()
 	};
 
 	if(!load(SSL_OBJ_RSA_KEY, keyCert.getKey(), keyCert.getKeyLength(), keyCert.getKeyPassword())) {
-		debug_e("SSL: Error loading key");
+		debug_e("[SSL] Error %d loading key", lastError);
 		return false;
 	}
 
 	if(!load(SSL_OBJ_X509_CERT, keyCert.getCertificate(), keyCert.getCertificateLength(), nullptr)) {
-		debug_e("SSL: Error loading certificate");
+		debug_e("[SSL] Error %d loading certificate", lastError);
 		return false;
 	}
 

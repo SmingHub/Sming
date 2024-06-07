@@ -21,14 +21,14 @@ bool KeyCertPair::assign(const uint8_t* newKey, unsigned newKeyLength, const uin
 		if(!key.setLength(newKeyLength)) {
 			return false;
 		}
-		memcpy(key.begin(), newKey, newKeyLength);
+		memcpy_P(key.begin(), newKey, newKeyLength);
 	}
 
 	if(newCertificateLength != 0 && newCertificate != nullptr) {
 		if(!certificate.setLength(newCertificateLength)) {
 			return false;
 		}
-		memcpy(certificate.begin(), newCertificate, newCertificateLength);
+		memcpy_P(certificate.begin(), newCertificate, newCertificateLength);
 	}
 
 	return setPassword(newKeyPassword);
@@ -36,13 +36,13 @@ bool KeyCertPair::assign(const uint8_t* newKey, unsigned newKeyLength, const uin
 
 bool KeyCertPair::setPassword(const char* newKeyPassword)
 {
-	unsigned passwordLength = (newKeyPassword == nullptr) ? 0 : strlen(newKeyPassword);
+	unsigned passwordLength = (newKeyPassword == nullptr) ? 0 : strlen_P(newKeyPassword);
 	if(passwordLength == 0) {
 		keyPassword = nullptr;
 		return true;
 	}
 
-	keyPassword.setString(newKeyPassword, passwordLength);
+	keyPassword.setString(flash_string_t(newKeyPassword), passwordLength);
 	return keyPassword;
 }
 

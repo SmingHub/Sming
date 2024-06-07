@@ -27,6 +27,7 @@ public:
 
 	~AxConnection()
 	{
+		certificate.reset();
 		// Typically sends out closing message
 		ssl_free(ssl);
 	}

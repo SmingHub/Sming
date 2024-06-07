@@ -63,3 +63,15 @@ Esp32 IDF
 
 RP2040
     The installer has been updated to use the latest toolchain (Oct 23), gcc 13.2.
+
+
+**Bearssl client certificate validation**
+
+Using ENABLE_SSL=Bearssl in a client application, no verification on the server certificate is performed.
+This is a potential security issue.
+
+Attempting the same thing with Axtls results in an ``X509_VFY_ERROR_NO_TRUSTED_CERT`` error.
+Applications must explicitly call :cpp:func:`HttpRequest::onSslInit` and set the ``verifyLater`` flag.
+This extra step ensures that security checks are not unintentionally bypassed.
+
+The same behaviour is now presented when using Bearssl, and will now fail with ``X509_NOT_TRUSTED``.

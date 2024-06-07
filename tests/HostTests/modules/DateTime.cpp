@@ -90,6 +90,34 @@ public:
 					   << DateTime::getLocaleMonthName(month) << endl;
 			}
 		}
+
+		TEST_CASE("time() sync")
+		{
+			auto curTime = SystemClock.now(eTZ_UTC);
+			DateTime dt;
+			dt.fromISO8601(F("2024-01-01T13:57Z"));
+			time_t newTime = dt;
+			Serial << _F("curTime ") << curTime << _F(", newTime ") << newTime << _F(" ...") << endl;
+			SystemClock.setTime(newTime, eTZ_UTC);
+			auto timer = new AutoDeleteTimer;
+			const auto delay = 2000;
+			timer->initializeMs<delay>([newTime, this]() {
+				auto sysClockTime = SystemClock.now(eTZ_UTC);
+				auto ctime = ::time(nullptr);
+				auto diff = sysClockTime - ctime;
+				auto timeDelay = sysClockTime - newTime;
+				Serial << _F("sysClockTime ") << sysClockTime << _F(", delay ") << timeDelay << endl;
+				Serial << _F("time() ") << ctime << _F(", diff ") << diff << endl;
+				REQUIRE(abs(1000 * timeDelay - delay) <= 1000);
+#ifndef ARCH_HOST
+				// Can't check time() on host
+				REQUIRE(abs(diff) < 2);
+#endif
+				complete();
+			});
+			timer->startOnce();
+			pending();
+		}
 	}
 
 	void checkHttpDates(const FSTR::Array<TestDate>& dates)
