@@ -1,0 +1,134 @@
+diff --git a/glue-lwip/arch/cc.h b/glue-lwip/arch/cc.h
+index 0b73cba..fff12b0 100644
+--- a/glue-lwip/arch/cc.h
++++ b/glue-lwip/arch/cc.h
+@@ -56,8 +56,6 @@ void sntp_set_system_time (uint32_t t);
+ #endif
+ #endif // defined(LWIP_BUILD)
+ 
+-#include "mem.h" // useful for os_malloc used in esp-arduino's mDNS
+-
+ #include "glue.h" // include assembly locking macro used below
+ typedef uint32_t sys_prot_t;
+ #define SYS_ARCH_DECL_PROTECT(lev) sys_prot_t lev
+diff --git a/glue-lwip/esp-dhcpserver.c b/glue-lwip/esp-dhcpserver.c
+index 6ac8a41..cd1faf0 100644
+--- a/glue-lwip/esp-dhcpserver.c
++++ b/glue-lwip/esp-dhcpserver.c
+@@ -12,7 +12,7 @@
+ #include "lwip/apps-esp/dhcpserver.h"
+ 
+ #include "user_interface.h"
+-#include "mem.h"
++#include <sdk/mem.h>
+ 
+ #include "glue.h"
+ #include "lwip-helper.h"
+diff --git a/glue/esp-missing.h b/glue/esp-missing.h
+index b9fea2a..63bbb45 100644
+--- a/glue/esp-missing.h
++++ b/glue/esp-missing.h
+@@ -12,18 +12,15 @@ uint32_t r_rand (void);
+ 
+ // TODO: Patch these in from SDK
+ 
+-#if ARDUINO
+-void* pvPortZalloc (size_t, const char*, int);
+-void* pvPortMalloc (size_t xWantedSize, const char* file, int line) __attribute__((malloc, alloc_size(1)));
+-void vPortFree (void *ptr, const char* file, int line);
+-#else
+-void *pvPortZalloc (size_t sz, const char *, unsigned);
+-void *pvPortMalloc (size_t sz, const char *, unsigned) __attribute__((malloc, alloc_size(1)));
+-void vPortFree (void *p, const char *, unsigned);
+-#endif
++#include <sdk/mem.h>
++
++#define ets_post system_os_post
++#define ets_task system_os_task
+ 
+ struct netif* eagle_lwip_getif (int netif_index);
+ 
++#if 0
++
+ void ets_intr_lock (void);
+ void ets_intr_unlock (void);
+ 
+@@ -61,3 +58,5 @@ struct ip_info;
+ #define os_memcpy	ets_memcpy
+ 
+ #endif
++
++#endif
+diff --git a/glue/gluedebug.h b/glue/gluedebug.h
+index 9358878..905e41e 100644
+--- a/glue/gluedebug.h
++++ b/glue/gluedebug.h
+@@ -10,10 +10,10 @@
+ // because it is shared by both sides of glue
+ 
+ #define UNDEBUG		1	// 0 or 1 (1: uassert removed = saves flash)
+-#define UDEBUG		0	// 0 or 1 (glue debug)
++#define UDEBUG		ULWIPDEBUG	// 0 or 1 (glue debug)
+ #define UDUMP		0	// 0 or 1 (glue: dump packet)
+ 
+-#define ULWIPDEBUG	0	// 0 or 1 (trigger lwip debug)
++// #define ULWIPDEBUG	0	// 0 or 1 (trigger lwip debug)
+ #define ULWIPASSERT	0	// 0 or 1 (trigger lwip self-check, 0 saves flash)
+ 
+ #if ARDUINO
+@@ -58,7 +58,7 @@ extern void (*phy_capture) (int netif_idx, const char* data, size_t len, int out
+ 
+ #include <osapi.h> // os_printf* definitions + ICACHE_RODATA_ATTR
+ 
+-#if defined(ARDUINO)
++#if 0
+ // os_printf() does not understand ("%hhx",0x12345678) => "78") and prints 'h' instead
+ // now hacking/using ::printf() from updated and patched esp-quick-toolchain-by-Earle
+ #include <stdio.h>
+diff --git a/makefiles/Makefile.glue b/makefiles/Makefile.glue
+index 366d849..3fe3a6c 100644
+--- a/makefiles/Makefile.glue
++++ b/makefiles/Makefile.glue
+@@ -3,6 +3,7 @@
+ 
+ GLUE_LWIP = lwip-git.c
+ GLUE_LWIP += esp-ping.c
++GLUE_LWIP += esp-dhcpserver.c
+ ifneq ($(target),arduino)
+ GLUE_LWIP += esp-dhcpserver.c
+ GLUE_LWIP += esp-time.c
+@@ -14,7 +15,7 @@ OBJ = \
+ 	$(patsubst %.c,$(BUILD)/%.o,$(wildcard glue/*.c)) \
+ 	$(patsubst %.c,$(BUILD)/glue-lwip/%.o,$(GLUE_LWIP)) \
+ 
+-BUILD_INCLUDES = -I$(BUILD) -Iglue -Iglue-lwip -Iglue-lwip/$(target) -Ilwip2-src/src/include -I$(SDK)/include
++BUILD_INCLUDES = -I$(BUILD) -Iglue -Iglue-lwip -Iglue-lwip/$(target) -Ilwip2-src/src/include $(CFLAGS_EXTRA)
+ 
+ include makefiles/Makefile.defs
+ include makefiles/Makefile.rules
+diff --git a/makefiles/Makefile.glue-esp b/makefiles/Makefile.glue-esp
+index 8b756ff..ea414b1 100644
+--- a/makefiles/Makefile.glue-esp
++++ b/makefiles/Makefile.glue-esp
+@@ -6,7 +6,7 @@ ifeq ($(LWIP_ESP),)
+ $(error LWIP_ESP must point to espressif sdk lwip/include)
+ endif
+ 
+-BUILD_INCLUDES = -I$(BUILD) -I$(SDK)/include -I$(LWIP_ESP) -Iglue
++BUILD_INCLUDES = -I$(BUILD) $(CFLAGS_EXTRA) -I$(LWIP_ESP) -Iglue
+ BUILD_FLAGS += -DLWIP14GLUE
+ 
+ include makefiles/Makefile.defs
+diff --git a/makefiles/Makefile.lwip2 b/makefiles/Makefile.lwip2
+index 6a4ccbd..01133ec 100644
+--- a/makefiles/Makefile.lwip2
++++ b/makefiles/Makefile.lwip2
+@@ -13,7 +13,7 @@ OBJ = \
+ #	$(subst ../../lwip2-contrib-src/,contrib/, \
+ #		$(patsubst %.c,$(BUILD)/%.o,$(wildcard ../../lwip2-contrib-src/apps/ping/*.c)))
+ 
+-BUILD_INCLUDES = -I$(BUILD) -I$(SDK)/include -Iinclude -I../../glue -I../../glue-lwip -I../../glue-lwip/$(target)
++BUILD_INCLUDES = -I$(BUILD) $(CFLAGS_EXTRA) -Iinclude -I../../glue -I../../glue-lwip -I../../glue-lwip/$(target)
+ #BUILD_INCLUDES += -I../../lwip2-contrib-src/apps/ping
+ 
+ all: $(LWIP_LIB)
