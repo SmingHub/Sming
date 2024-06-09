@@ -1,6 +1,6 @@
 #include <SmingCore.h>
 
-#include <Libraries/SparkFun_APDS9960/SparkFun_APDS9960.h>
+#include <SparkFun_APDS9960.h>
 
 namespace
 {
