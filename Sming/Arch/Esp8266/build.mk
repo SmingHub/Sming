@@ -53,8 +53,5 @@ ifeq (,$(wildcard $(XTENSA_TOOLS_ROOT)))
 $(error ESP_HOME not set correctly: "$(ESP_HOME)")
 endif
 
-# Identifies which library we're building with
-USE_NEWLIB = $(GCC_VERSION_COMPATIBLE)
-
 # => Tools
 MEMANALYZER = $(PYTHON) $(ARCH_TOOLS)/memanalyzer.py $(OBJDUMP)$(TOOL_EXT)
