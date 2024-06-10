@@ -235,7 +235,8 @@ template <typename TFileName> inline int fileSetContent(const TFileName& fileNam
 	return fileSystem->setContent(fileName, content, length);
 }
 
-template <typename TFileName, typename TContent> inline int fileSetContent(const TFileName& fileName, TContent content)
+template <typename TFileName, typename TContent>
+inline int fileSetContent(const TFileName& fileName, const TContent& content)
 {
 	CHECK_FS(setContent)
 	return fileSystem->setContent(fileName, content);
