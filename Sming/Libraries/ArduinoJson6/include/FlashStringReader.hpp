@@ -6,33 +6,15 @@
 
 #pragma once
 
-namespace ARDUINOJSON_NAMESPACE
-{
-template <> struct Reader<FlashString, void> {
-	explicit Reader(const FlashString& str) : str(str)
+#include <FlashString/String.hpp>
+#include <ArduinoJson/Deserialization/Readers/FlashReader.hpp>
+
+ARDUINOJSON_BEGIN_PRIVATE_NAMESPACE
+
+template <> struct Reader<const FSTR::String, void> : public BoundedReader<const __FlashStringHelper*, void> {
+	explicit Reader(const FSTR::String& str) : BoundedReader(str.data(), str.length())
 	{
 	}
-
-	int read()
-	{
-		if(index >= str.length()) {
-			return -1;
-		}
-		unsigned char c = str[index];
-		++index;
-		return c;
-	}
-
-	size_t readBytes(char* buffer, size_t length)
-	{
-		auto count = str.read(index, buffer, length);
-		index += count;
-		return count;
-	}
-
-private:
-	const FlashString& str;
-	unsigned index = 0;
 };
 
-} // namespace ARDUINOJSON_NAMESPACE
+ARDUINOJSON_END_PRIVATE_NAMESPACE

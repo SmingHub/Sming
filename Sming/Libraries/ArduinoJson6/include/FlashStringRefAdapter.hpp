@@ -6,67 +6,23 @@
 
 #pragma once
 
-#include <ArduinoJson/Strings/IsWriteableString.hpp>
+#include <FlashString/String.hpp>
+#include <ArduinoJson/Strings/Adapters/FlashString.hpp>
 
-namespace ARDUINOJSON_NAMESPACE
-{
-class FlashStringRefAdapter
-{
-public:
-	explicit FlashStringRefAdapter(const FlashString& str) : str(str)
+ARDUINOJSON_BEGIN_PRIVATE_NAMESPACE
+
+template <> struct StringAdapter<FSTR::String> {
+	typedef FlashString AdaptedString;
+
+	static AdaptedString adapt(const FSTR::String& str)
 	{
+		return FlashString(str.data(), str.length());
 	}
-
-	bool equals(const char* expected) const
-	{
-		return str.equals(expected);
-	}
-
-	bool isNull() const
-	{
-		return str.isNull();
-	}
-
-	char* save(MemoryPool* pool) const
-	{
-		size_t n = str.size();
-		char* dup = pool->allocFrozenString(n);
-		if(dup) {
-			str.read(0, dup, n);
-		}
-		return dup;
-	}
-
-	const char* data() const
-	{
-		// Cannot access directly using a char*
-		return nullptr;
-	}
-
-	size_t size() const
-	{
-		return str.length();
-	}
-
-	bool isStatic() const
-	{
-		// Whilst  our value won't change, it cannot be accessed using a regular char*
-		return false;
-	}
-
-private:
-	const FlashString& str;
 };
 
-inline FlashStringRefAdapter adaptString(const FlashString& str)
+inline CompareResult compare(JsonVariantConst lhs, const FSTR::String& rhs)
 {
-	return FlashStringRefAdapter(str);
+	return compare(lhs, String(rhs));
 }
 
-template <> struct IsString<FlashString> : true_type {
-};
-
-template <> struct IsWriteableString<FlashString> : false_type {
-};
-
-} // namespace ARDUINOJSON_NAMESPACE
+ARDUINOJSON_END_PRIVATE_NAMESPACE
