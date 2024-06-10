@@ -398,7 +398,7 @@ COMMAND_HANDLER(read0)
 					  "At GDB prompt, enter `set $pc = $pc + 3` to skip offending instruction,\r\n"
 					  "then enter `c` to continue"));
 	Serial.flush();
-	uint8_t value = *(uint8_t*)0;
+	uint8_t value = *(volatile uint8_t*)0;
 	Serial << _F("Value at address 0 = 0x") << String(value, HEX, 2) << endl;
 	return true;
 }
@@ -409,7 +409,7 @@ COMMAND_HANDLER(write0)
 					  "At GDB prompt, enter `set $pc = $pc + 3` to skip offending instruction,\r\n"
 					  "then enter `c` to continue"));
 	Serial.flush();
-	*(uint8_t*)0 = 0;
+	*(volatile uint8_t*)0 = 0;
 	Serial.println(_F("...still running!"));
 	return true;
 }

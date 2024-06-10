@@ -88,7 +88,7 @@ public:
 	 *
 	 * @retval bytes successfully read and stored in the buffer
 	 */
-	size_t read(char* buffer, size_t size, size_t offset = 0)
+	size_t read(char* buffer, size_t size, size_t offset = 0) override
 	{
 		// get the current picture and read the desired data from it.
 		file.seekFrom(offset, SeekOrigin::Start);

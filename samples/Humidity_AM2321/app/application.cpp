@@ -6,7 +6,6 @@ namespace
 AM2321 am2321;
 
 SimpleTimer procTimer;
-bool state = true;
 
 // You can change I2C pins here:
 const int SCL = 5;

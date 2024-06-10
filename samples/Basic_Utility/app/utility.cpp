@@ -6,10 +6,6 @@ auto& output = Host::standardOutput;
 
 namespace
 {
-#define XX(name, ext, mime) ext "\0"
-DEFINE_FSTR_LOCAL(fstr_ext, "htm\0" MIME_TYPE_MAP(XX))
-#undef XX
-
 namespace Command
 {
 DEFINE_FSTR(testWebConstants, "testWebConstants")

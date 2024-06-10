@@ -27,8 +27,10 @@ DEFINE_FSTR(DEFAULT_GATEWAY, "192.168.1.1")
 // Instead of using a SPIFFS file, here we demonstrate usage of imported Flash Strings
 IMPORT_FSTR_LOCAL(flashSettings, PROJECT_DIR "/web/build/settings.html")
 
+#ifdef ENABLE_SSL
 IMPORT_FSTR_LOCAL(serverKey, PROJECT_DIR "/cert/key_1024");
 IMPORT_FSTR_LOCAL(serverCert, PROJECT_DIR "/cert/x509_1024.cer");
+#endif
 
 void onIndex(HttpRequest& request, HttpResponse& response)
 {
