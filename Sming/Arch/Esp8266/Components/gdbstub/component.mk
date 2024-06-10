@@ -41,7 +41,5 @@ ifeq ($(GDB_UART_SWAP),1)
 APP_CFLAGS			+= -DGDB_UART_SWAP=1
 endif
 
-#
-ifeq ($(USE_NEWLIB),1)
+# All supported compiler versions now use unpatched GDB
 APP_CFLAGS			+= -DGDBSTUB_GDB_PATCHED=0
-endif
