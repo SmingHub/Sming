@@ -1,0 +1,48 @@
+diff --git a/src/ArduinoJson/Document/JsonDocument.hpp b/src/ArduinoJson/Document/JsonDocument.hpp
+index 39c1536f..1b129120 100644
+--- a/src/ArduinoJson/Document/JsonDocument.hpp
++++ b/src/ArduinoJson/Document/JsonDocument.hpp
+@@ -181,6 +181,11 @@ class JsonDocument : public detail::VariantOperators<const JsonDocument&> {
+     return {*this, key};
+   }
+ 
++  inline detail::MemberProxy<JsonDocument&, ::String>
++    operator[](const FSTR::String& key) {
++    return {*this, ::String(key)};
++  }
++
+   // Gets or sets a root object's member.
+   // https://arduinojson.org/v6/api/jsondocument/subscript/
+   template <typename TChar>
+diff --git a/src/ArduinoJson/Object/JsonObject.hpp b/src/ArduinoJson/Object/JsonObject.hpp
+index 7cdc1c76..2e006b1e 100644
+--- a/src/ArduinoJson/Object/JsonObject.hpp
++++ b/src/ArduinoJson/Object/JsonObject.hpp
+@@ -115,6 +115,11 @@ class JsonObject : public detail::VariantOperators<JsonObject> {
+     return {*this, key};
+   }
+ 
++  inline detail::MemberProxy<JsonObject, ::String>
++    operator[](const FSTR::String& key) const {
++    return {*this, ::String(key)};
++  }
++
+   // Gets or sets the member with specified key.
+   // https://arduinojson.org/v6/api/jsonobject/subscript/
+   template <typename TChar>
+diff --git a/src/ArduinoJson/Variant/VariantRefBase.hpp b/src/ArduinoJson/Variant/VariantRefBase.hpp
+index 2afdda6a..6b48e102 100644
+--- a/src/ArduinoJson/Variant/VariantRefBase.hpp
++++ b/src/ArduinoJson/Variant/VariantRefBase.hpp
+@@ -244,6 +244,11 @@ class VariantRefBase : public VariantTag {
+                                   MemberProxy<TDerived, TChar*>>::type
+   operator[](TChar* key) const;
+ 
++  inline MemberProxy<TDerived, ::String>
++  operator[](const FSTR::String& key) const {
++    return MemberProxy<TDerived, ::String>(derived(), ::String(key));
++  }
++
+   // Creates an array and adds it to the object.
+   // https://arduinojson.org/v6/api/jsonvariant/createnestedarray/
+   template <typename TString>
