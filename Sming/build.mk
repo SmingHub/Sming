@@ -30,6 +30,7 @@ ifdef CLANG_TIDY
 ifneq (Host,$(SMING_ARCH))
   $(error CLANG_TIDY supported only for Host architecture.)
 endif
+USE_CLANG := 1
 endif
 
 export SMING_ARCH
@@ -157,18 +158,10 @@ endif
 
 # Common C/C++ flags passed to user libraries
 CPPFLAGS = \
-	-Wl,-EL \
 	-finline-functions \
 	-fdata-sections \
 	-ffunction-sections \
-	-D_POSIX_C_SOURCE=200809L
-
-# Required to access peripheral registers using structs
-# e.g. `uint32_t value: 8` sitting at a byte or word boundary will be 'optimised' to
-# an 8-bit fetch/store instruction which will not work; it must be a full 32-bit access.
-CPPFLAGS += -fstrict-volatile-bitfields
-
-CPPFLAGS += \
+	-D_POSIX_C_SOURCE=200809L \
 	-Wall \
 	-Wpointer-arith \
 	-Wno-comment \
@@ -216,9 +209,41 @@ include $(ARCH_BASE)/build.mk
 
 ifndef MAKE_CLEAN
 
-# Detect compiler version
-DEBUG_VARS			+= GCC_VERSION
-GCC_VERSION			:= $(shell $(CC) -dumpversion)
+# Detect compiler version and name
+DEBUG_VARS				+= COMPILER_VERSION_FULL COMPILER_VERSION COMPILER_NAME
+COMPILER_VERSION_FULL	:= $(shell $(CC) -v 2>&1 | $(AWK) -F " version " '/ version /{ a=$$1; gsub(/ +/, "-", a); print a, $$2}')
+COMPILER_NAME			:= $(word 1,$(COMPILER_VERSION_FULL))
+COMPILER_VERSION		:= $(word 2,$(COMPILER_VERSION_FULL))
+
+ifndef USE_CLANG
+# Required to access peripheral registers using structs
+# e.g. `uint32_t value: 8` sitting at a byte or word boundary will be 'optimised' to
+# an 8-bit fetch/store instruction which will not work; it must be a full 32-bit access.
+ifeq ($(COMPILER_NAME),gcc)
+CPPFLAGS += -fstrict-volatile-bitfields
+COMPILER_VERSION_MIN := 8
+else
+ifeq (,$(findstring clang,$(COMPILER_NAME)))
+$(error Compiler '$(COMPILER_VERSION_FULL)' not recognised. Please install GCC tools.)
+endif
+COMPILER_VERSION_MIN := 15
+ifndef COMPILER_NOTICE_PRINTED
+$(info Note: Building with $(COMPILER_NAME) $(COMPILER_VERSION).)
+COMPILER_NOTICE_PRINTED := 1
+endif
+USE_CLANG := 1
+endif
+endif
+
+ifdef USE_CLANG
+CPPFLAGS += \
+	-Wno-vla-extension \
+	-Wno-unused-private-field \
+	-Wno-bitfield-constant-conversion \
+	-Wno-unknown-pragmas \
+	-Wno-initializer-overrides
+endif
+
 
 # Use c11 by default. Every architecture can override it
 DEBUG_VARS			+= SMING_C_STD
@@ -227,21 +252,17 @@ CFLAGS				+= -std=$(SMING_C_STD)
 
 # Select C++17 if supported, defaulting to C++11 otherwise
 DEBUG_VARS			+= SMING_CXX_STD
-ifeq ($(GCC_VERSION),4.8.5)
-SMING_CXX_STD		?= c++11
-else
 SMING_CXX_STD		?= c++17
-endif
 CXXFLAGS			+= -std=$(SMING_CXX_STD)
 
-GCC_MIN_MAJOR_VERSION := 8
-GCC_VERSION_COMPATIBLE := $(shell expr $$(echo $(GCC_VERSION) | cut -f1 -d.) \>= $(GCC_MIN_MAJOR_VERSION))
+COMPILER_VERSION_MAJOR := $(firstword $(subst ., ,$(COMPILER_VERSION)))
+COMPILER_VERSION_COMPATIBLE := $(shell expr $(COMPILER_VERSION_MAJOR) \>= $(COMPILER_VERSION_MIN))
 
-ifeq ($(GCC_VERSION_COMPATIBLE),0)
+ifeq ($(COMPILER_VERSION_COMPATIBLE),0)
 ifneq ($(GCC_UPGRADE_URL),)
 $(info Instructions for upgrading your compiler can be found here: $(GCC_UPGRADE_URL))
 endif
-$(error Please, upgrade your GCC compiler to version $(GCC_MIN_MAJOR_VERSION) or newer.)
+$(error Please upgrade your compiler to $(COMPILER_NAME) $(COMPILER_VERSION_MIN) or newer)
 endif
 endif
 

@@ -25,6 +25,9 @@ Ensure you are using relatively recent compilers, with 32-bit libraries availabl
 For Linux, you may require the ``gcc-multilib`` and ``g++-multilib``
 packages to build 32-bit executables on a 64-bit OS.
 
+MacOS comes pre-installed with ``Apple Clang`` as the standard toolchain.
+This should be sufficient to build Sming in Host mode.
+
 For Windows, make sure your ``MinGW`` distro is up to date.
 See :doc:`/getting-started/windows/index` for further details.
 
@@ -57,6 +60,16 @@ Configuration
       make run CLI_TARGET_OPTIONS="--debug=0 --cpulimit=2"
 
    Note: These settings are not 'sticky'
+
+
+.. envvar:: CLANG_BUILD
+
+   0: Use GCC (default)
+   1: Use standard ``clang``
+   N: Use specific installed version, ``clang-N``
+
+   Note: This setting is not 'sticky'
+
 
 Components
 ----------

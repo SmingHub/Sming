@@ -8,6 +8,25 @@ CPPFLAGS	+= -DARCH_HOST
 
 TOOLSPEC 	:=
 
+ifndef CLANG_BUILD
+override CLANG_BUILD := 0
+endif
+
+ifneq ($(CLANG_BUILD),0)
+ifeq ($(CLANG_BUILD),1)
+CLANG_VER :=
+else
+CLANG_VER := -$(CLANG_BUILD)
+endif
+AS		:= $(TOOLSPEC)clang$(CLANG_VER)
+CC		:= $(TOOLSPEC)clang$(CLANG_VER)
+CXX		:= $(TOOLSPEC)clang++$(CLANG_VER)
+AR		:= $(TOOLSPEC)ar
+LD		:= $(TOOLSPEC)clang++$(CLANG_VER)
+NM		:= $(TOOLSPEC)nm
+OBJCOPY		:= $(TOOLSPEC)objcopy
+OBJDUMP		:= $(TOOLSPEC)objdump
+else
 AS		:= $(TOOLSPEC)gcc
 CC		:= $(TOOLSPEC)gcc
 CXX		:= $(TOOLSPEC)g++
@@ -16,6 +35,8 @@ LD		:= $(TOOLSPEC)g++
 NM		:= $(TOOLSPEC)nm
 OBJCOPY		:= $(TOOLSPEC)objcopy
 OBJDUMP		:= $(TOOLSPEC)objdump
+endif
+
 GDB		:= $(TOOLSPEC)gdb
 
 GCC_UPGRADE_URL := https://sming.readthedocs.io/en/latest/arch/host/host-emulator.html\#c-c-32-bit-compiler-and-libraries

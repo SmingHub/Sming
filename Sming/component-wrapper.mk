@@ -120,10 +120,6 @@ endif
 # Additional flags to pass to clang
 CLANG_FLAG_EXTRA ?=
 
-# Flags which clang doesn't recognise
-CLANG_FLAG_UNKNOWN := \
-	-fstrict-volatile-bitfields
-
 # $1 -> absolute source directory, no trailing path separator
 # $2 -> relative output build directory, with trailing path separator
 define GenerateCompileTargets
@@ -142,7 +138,7 @@ ifneq (,$(filter $1/%.c,$(SOURCE_FILES)))
 ifdef CLANG_TIDY
 $2%.o: $1/%.c
 	$(vecho) "TIDY $$<"
-	$(Q) $(CLANG_TIDY) $$< -- $(addprefix -I,$(INCDIR)) $$(filter-out $(CLANG_FLAG_UNKNOWN),$(CPPFLAGS) $(CFLAGS)) $(CLANG_FLAG_EXTRA)
+	$(Q) $(CLANG_TIDY) $$< -- $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) $(CLANG_FLAG_EXTRA)
 else
 $2%.o: $1/%.c $2%.c.d
 	$(vecho) "CC $$<"
@@ -156,7 +152,7 @@ ifneq (,$(filter $1/%.cpp,$(SOURCE_FILES)))
 ifdef CLANG_TIDY
 $2%.o: $1/%.cpp
 	$(vecho) "TIDY $$<"
-	$(Q) $(CLANG_TIDY) $$< -- $(addprefix -I,$(INCDIR)) $$(filter-out $(CLANG_FLAG_UNKNOWN),$(CPPFLAGS) $(CXXFLAGS)) $(CLANG_FLAG_EXTRA)
+	$(Q) $(CLANG_TIDY) $$< -- $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) $(CLANG_FLAG_EXTRA)
 else
 $2%.o: $1/%.cpp $2%.cpp.d
 	$(vecho) "C+ $$<"
