@@ -123,10 +123,10 @@ void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCh
 	}
 
 	switch(commandBuffer.process(source, Serial)) {
-	case commandBuffer.Action::clear:
+	case LineBufferBase::Action::clear:
 		showPrompt();
 		break;
-	case commandBuffer.Action::submit: {
+	case LineBufferBase::Action::submit: {
 		if(commandBuffer) {
 			handleCommand(String(commandBuffer));
 			commandBuffer.clear();

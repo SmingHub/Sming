@@ -218,14 +218,14 @@ void handleCommand(const String& str)
 void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCharsCount)
 {
 	switch(commandBuffer.process(stream, Serial)) {
-	case commandBuffer.Action::submit:
+	case LineBufferBase::Action::submit:
 		if(commandBuffer) {
 			handleCommand(String(commandBuffer));
 			commandBuffer.clear();
 		}
 		showPrompt();
 		break;
-	case commandBuffer.Action::clear:
+	case LineBufferBase::Action::clear:
 		showPrompt();
 		break;
 	default:;
