@@ -1,5 +1,5 @@
 diff --git a/lib/serialib.cpp b/lib/serialib.cpp
-index 8dbe52f..dc25811 100644
+index 8dbe52f..e8a8eee 100644
 --- a/lib/serialib.cpp
 +++ b/lib/serialib.cpp
 @@ -135,7 +135,7 @@ char serialib::openDevice(const char *Device,const unsigned int Bauds)
@@ -11,6 +11,24 @@ index 8dbe52f..dc25811 100644
      }
      // 8 bit data
      dcbSerialParams.ByteSize=8;
+@@ -169,7 +169,7 @@ char serialib::openDevice(const char *Device,const unsigned int Bauds)
+ 
+ 
+     // Open device
+-    fd = open(Device, O_RDWR | O_NOCTTY | O_NDELAY);
++    fd = open(Device, O_RDWR | O_NOCTTY | O_NONBLOCK);
+     // If the device is not open, return -1
+     if (fd == -1) return -2;
+     // Open the device in nonblocking mode
+@@ -179,7 +179,7 @@ char serialib::openDevice(const char *Device,const unsigned int Bauds)
+     // Get the current options of the port
+     tcgetattr(fd, &options);
+     // Clear all the options
+-    bzero(&options, sizeof(options));
++    memset(&options, 0, sizeof(options));
+ 
+     // Prepare speed (Bauds)
+     speed_t         Speed;
 @@ -609,7 +609,7 @@ int serialib::available()
      // Device errors
      DWORD commErrors;
