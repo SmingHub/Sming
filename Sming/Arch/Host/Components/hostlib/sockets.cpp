@@ -27,6 +27,24 @@
 #include <poll.h>
 #endif
 
+namespace
+{
+/*
+ * There's no guarantee which version of strerror_r got linked,
+ * so use overloaded helper function to get correct result.
+ */
+[[maybe_unused]] const char* get_error_string(char* retval, char*)
+{
+	return retval;
+}
+
+[[maybe_unused]] const char* get_error_string(int, char* buffer)
+{
+	return buffer;
+}
+
+} // namespace
+
 void sockets_initialise()
 {
 #ifdef __WIN32
@@ -127,14 +145,12 @@ std::string socket_strerror()
 	int ErrorCode = WSAGetLastError();
 	FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr,
 				   ErrorCode, 0, buf, sizeof(buf), nullptr);
+	return buf[0] ? buf : std::string("Error #" + std::to_string(ErrorCode));
 #else
 	int ErrorCode = errno;
-	char* res = strerror_r(ErrorCode, buf, sizeof(buf));
-	if(res == nullptr) {
-		strcpy(buf, "Unknown");
-	}
+	auto r = strerror_r(ErrorCode, buf, sizeof(buf));
+	return get_error_string(r, buf);
 #endif
-	return buf[0] ? buf : std::string("Error #" + std::to_string(ErrorCode));
 }
 
 bool CSocket::create()
