@@ -75,3 +75,19 @@ Applications must explicitly call :cpp:func:`HttpRequest::onSslInit` and set the
 This extra step ensures that security checks are not unintentionally bypassed.
 
 The same behaviour is now presented when using Bearssl, and will now fail with ``X509_NOT_TRUSTED``.
+
+
+**FlashString copy support removed**
+
+The :library:`FlashString` previously supported copies (references) like this::
+
+   FlashString emptyString;
+   FlashString stringCopy(FS("Inline string"));
+
+   DEFINE_FSTR_DATA_LOCAL(flashHelloData, "Hello");
+   auto myCopy = flashHelloData;
+
+These will now fail to compile.
+Copy construction and assignment has been explicitly deleted so avoid unintentional side-effects.
+
+Objects should always be passed by reference.
