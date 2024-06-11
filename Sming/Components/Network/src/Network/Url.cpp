@@ -86,6 +86,8 @@ String Url::toString() const
 			result += ':';
 			result += Password;
 		}
+
+		result += '@';
 	}
 
 	result += getHostWithPort();
