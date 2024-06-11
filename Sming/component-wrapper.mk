@@ -195,8 +195,13 @@ $(COMPONENT_LIBPATH): build.ar
 ifndef CLANG_TIDY
 	$(vecho) "AR $@"
 	$(Q) test ! -f $@ || rm $@
+# Apple linker doesn't support scripting, everything must be on command line
+ifeq ($(UNAME)$(SMING_ARCH),DarwinHost)
+	$(Q) $(AR) -q $(@F) $$(<build.ar)
+else
 	$(Q) $(AR) -M < build.ar
-	$(Q) mv $(notdir $(COMPONENT_LIBPATH)) $(COMPONENT_LIBPATH)
+endif
+	$(Q) mv $(@F) $@
 endif
 
 define addmod
@@ -205,11 +210,15 @@ define addmod
 endef
 
 build.ar: $(OBJ) $(EXTRA_OBJ)
+ifeq ($(UNAME)$(SMING_ARCH),DarwinHost)
+	@echo "$^" > $@
+else
 	@echo CREATE $(notdir $(COMPONENT_LIBPATH)) > $@
-	$(foreach o,$(OBJ) $(EXTRA_OBJ),$(call addmod,$@,$o))
+	$(foreach o,$^,$(call addmod,$@,$o))
 	@echo SAVE >> $@
 	@echo END >> $@
 
+endif
 
 endif # ifeq (,$(CUSTOM_BUILD))
 endif # ifneq (,$(COMPONENT_LIBNAME))
