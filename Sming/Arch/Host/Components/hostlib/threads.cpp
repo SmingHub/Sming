@@ -22,6 +22,7 @@
 #include <cstdarg>
 #include <signal.h>
 #include <sys/time.h>
+#include <errno.h>
 
 unsigned CThread::interrupt_mask;
 
@@ -44,9 +45,12 @@ HANDLE host_thread_semaphore;
 
 CSemaphore host_thread_semaphore;
 volatile bool mainThreadSignalled;
-timer_t signalTimer;
 int pauseSignal;
 int resumeSignal;
+
+#ifndef __APPLE__
+timer_t signalTimer;
+#endif
 
 void signal_handler(int sig)
 {
@@ -61,6 +65,11 @@ void signal_handler(int sig)
 		 * - timer_settime() as for alarm() but with smaller interval
 		 *
 		 */
+#ifdef __APPLE__
+		while(mainThreadSignalled) {
+			sched_yield();
+		}
+#else
 		struct timespec ts = {0, long(0.1e9)};
 		struct itimerspec its = {ts, ts};
 		timer_settime(signalTimer, 0, &its, nullptr);
@@ -69,6 +78,7 @@ void signal_handler(int sig)
 		}
 		its = {};
 		timer_settime(signalTimer, 0, &its, nullptr);
+#endif
 	} else if(sig == resumeSignal) {
 		mainThreadSignalled = false;
 	} else if(sig == SIGALRM) {
@@ -79,8 +89,7 @@ void signal_handler(int sig)
 
 #endif
 
-bool isMainThread() __attribute__((unused));
-bool isMainThread()
+[[maybe_unused]] bool isMainThread()
 {
 	return pthread_equal(pthread_self(), mainThread);
 }
@@ -136,17 +145,27 @@ void CMutex::unlock()
 
 bool CSemaphore::timedwait(unsigned us)
 {
+#ifdef __APPLE__
+	dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, us * 1000);
+	if(dispatch_semaphore_wait(m_sem, time) == 0) {
+		return true;
+	}
+	errno = ETIMEDOUT;
+	return false;
+#else
 	struct timespec ts {
 	};
 	clock_gettime(CLOCK_REALTIME, &ts);
 	uint64_t ns = ts.tv_nsec + uint64_t(us) * 1000;
 	ts.tv_sec += ns / 1000000000;
 	ts.tv_nsec = ns % 1000000000;
-	return timedwait(&ts);
+	return sem_timedwait(&m_sem, &ts) == 0;
+#endif
 }
 
 void CThread::startup(unsigned cpulimit)
 {
+#ifndef __APPLE__
 	if(cpulimit != 0) {
 		cpu_set_t set;
 		CPU_ZERO(&set);
@@ -159,12 +178,19 @@ void CThread::startup(unsigned cpulimit)
 			host_debug_e("ERROR! Failed to set CPU affinity");
 		}
 	}
+#endif
 
 	mainThread = pthread_self();
 	interrupt = new CBasicMutex;
 
 #ifdef __WIN32
 	host_thread_semaphore = CreateSemaphore(nullptr, 0, 1024, nullptr);
+#elif defined(__APPLE__)
+	pauseSignal = SIGUSR1;
+	resumeSignal = SIGUSR2;
+	signal(pauseSignal, signal_handler);
+	signal(resumeSignal, signal_handler);
+	signal(SIGALRM, signal_handler);
 #else
 	pauseSignal = SIGRTMIN + 0;
 	resumeSignal = SIGRTMIN + 1;
