@@ -390,8 +390,13 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 			RETURN_ON_ERROR(SMTP_CODE_SERVICE_READY);
 
 			if(!useSsl && (options & SMTP_OPT_STARTTLS)) {
-				useSsl = true;
-				TcpConnection::internalOnConnected(ERR_OK);
+				if(!TcpConnection::sslCreateSession()) {
+					bitClear(options, SMTP_OPT_STARTTLS);
+				} else {
+					TcpConnection::ssl->hostName = url.Host;
+					useSsl = true;
+					TcpConnection::internalOnConnected(ERR_OK);
+				}
 			}
 
 			sendString(F("EHLO ") + url.Host + "\r\n");
