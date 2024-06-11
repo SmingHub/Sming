@@ -38,6 +38,15 @@ public:
 	String subject;
 	String cc;
 
+	~MailMessage()
+	{
+		delete stream;
+		for(auto attachment: attachments) {
+			delete attachment.headers;
+			delete attachment.stream;
+		}
+	}
+
 	/**
 	 * @brief Set a header value
 	 * @param name
