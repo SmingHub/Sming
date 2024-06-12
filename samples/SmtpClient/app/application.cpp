@@ -24,7 +24,7 @@ int onServerError(SmtpClient& client, int code, char* status)
 {
 	debugf("Status: %s", status);
 
-	return 0; // return non-zero value to abort the connection
+	return -1; // return non-zero value to abort the connection
 }
 
 int onMailSent(SmtpClient& client, int code, char* status)

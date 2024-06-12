@@ -423,6 +423,29 @@ err_t TcpConnection::internalOnConnected(err_t err)
 	return res;
 }
 
+bool TcpConnection::enableSsl(const String& hostName)
+{
+	if(tcp == nullptr) {
+		return false;
+	}
+
+	if(tcp->state != ESTABLISHED) {
+		return false;
+	}
+
+	if(!sslCreateSession()) {
+		return false;
+	}
+
+	if(hostName) {
+		ssl->hostName = hostName;
+	}
+
+	useSsl = true;
+	useSsl = (internalOnConnected(ERR_OK) == ERR_OK);
+	return useSsl;
+}
+
 err_t TcpConnection::internalOnReceive(pbuf* p, err_t err)
 {
 	sleep = 0;

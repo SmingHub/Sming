@@ -41,7 +41,7 @@ public:
 	~MailMessage()
 	{
 		delete stream;
-		for(auto attachment: attachments) {
+		for(auto attachment : attachments) {
 			delete attachment.headers;
 			delete attachment.stream;
 		}

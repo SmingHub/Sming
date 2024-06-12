@@ -22,6 +22,7 @@
 #include <Data/Stream/Base64OutputStream.h>
 #include <Data/HexString.h>
 #include <Crypto/Md5.h>
+#include <Network/Ssl/Factory.h>
 
 #define ADVANCE                                                                                                        \
 	{                                                                                                                  \
@@ -390,12 +391,14 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 			RETURN_ON_ERROR(SMTP_CODE_SERVICE_READY);
 
 			if(!useSsl && (options & SMTP_OPT_STARTTLS)) {
-				if(!TcpConnection::sslCreateSession()) {
-					bitClear(options, SMTP_OPT_STARTTLS);
-				} else {
-					TcpConnection::ssl->hostName = url.Host;
-					useSsl = true;
-					TcpConnection::internalOnConnected(ERR_OK);
+				if(!enableSsl(url.Host)) {
+					/*
+					 * Excerpt from RFC 3207: If,
+					 * after having issued the STARTTLS command, the client finds out that
+					 * some failure prevents it from actually starting a TLS handshake, then
+					 * it SHOULD abort the connection.
+					 */
+					return 0;
 				}
 			}
 
@@ -425,8 +428,16 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 			if(isLastLine) {
 				state = eSMTP_Ready;
 				if(!useSsl && (options & SMTP_OPT_STARTTLS)) {
-					state = eSMTP_StartTLS;
-				} else if(url.User && authMethods.count()) {
+					if(Ssl::factory != nullptr) {
+						state = eSMTP_StartTLS;
+						break;
+					}
+
+					bitClear(options, SMTP_OPT_STARTTLS);
+					debug_w("[SMTP] SSL required, no factory. Continue plain-text communication.");
+				}
+
+				if(url.User && authMethods.count()) {
 					state = eSMTP_SendAuth;
 				}
 			}

@@ -154,6 +154,13 @@ public:
 		return ssl;
 	}
 
+	/**
+	 * @brief Enables Secure Socket Layer on the current connection
+	 * @param hostName
+	 * @retval true on success, false otherwise
+	 */
+	bool enableSsl(const String& hostName = nullptr);
+
 protected:
 	void initialize(tcp_pcb* pcb);
 	bool internalConnect(IpAddress addr, uint16_t port);
