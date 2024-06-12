@@ -1,5 +1,5 @@
 diff --git a/Adafruit_SPITFT.cpp b/Adafruit_SPITFT.cpp
-index b78d5ce..f919595 100644
+index eeffce7..94e07f1 100644
 --- a/Adafruit_SPITFT.cpp
 +++ b/Adafruit_SPITFT.cpp
 @@ -35,6 +35,10 @@
@@ -211,7 +211,7 @@ index b78d5ce..f919595 100644
  }
  
  /*!
-@@ -1184,150 +1034,6 @@ void Adafruit_SPITFT::writeColor(uint16_t color, uint32_t len) {
+@@ -1197,150 +1047,6 @@ void Adafruit_SPITFT::writeColor(uint16_t color, uint32_t len) {
  
    uint8_t hi = color >> 8, lo = color;
  
@@ -364,7 +364,7 @@ index b78d5ce..f919595 100644
      do {
 
 diff --git a/Adafruit_SPITFT.h b/Adafruit_SPITFT.h
-index 7f5d80f..9725e13 100644
+index 8064a74..5c119ad 100644
 --- a/Adafruit_SPITFT.h
 +++ b/Adafruit_SPITFT.h
 @@ -138,13 +138,11 @@ public:
@@ -382,7 +382,7 @@ index 7f5d80f..9725e13 100644
  
    // Parallel constructor: expects width & height (rotation 0), flag
    // indicating whether 16-bit (true) or 8-bit (false) interface, 3 signal
-@@ -403,7 +401,7 @@ protected:
+@@ -404,7 +402,7 @@ protected:
    union {
  #endif
      struct {          //   Values specific to HARDWARE SPI:
