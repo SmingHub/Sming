@@ -437,9 +437,7 @@ bool TcpConnection::enableSsl(const String& hostName)
 		return false;
 	}
 
-	if(hostName) {
-		ssl->hostName = hostName;
-	}
+	ssl->hostName = hostName;
 
 	useSsl = true;
 	useSsl = (internalOnConnected(ERR_OK) == ERR_OK);
