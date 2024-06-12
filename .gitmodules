@@ -349,6 +349,10 @@
 	path = Sming/Libraries/SolarCalculator
 	url = https://github.com/mikee47/SolarCalculator
 	ignore = dirty
+[submodule "Libraries.SparkFun_APDS9960"]
+	path = Sming/Libraries/SparkFun_APDS9960
+	url = https://github.com/sparkfun/SparkFun_APDS-9960_Sensor_Arduino_Library
+	ignore = dirty
 [submodule "Libraries.spiffs"]
 	path = Sming/Libraries/Spiffs/spiffs
 	url = https://github.com/pellepl/spiffs.git
