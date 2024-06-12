@@ -9,17 +9,13 @@
 
 namespace
 {
-// For testing purposes, try a few different URL formats
-DEFINE_FSTR(MQTT_URL1, "mqtt://test.mosquitto.org:1883")
-DEFINE_FSTR(MQTT_URL2, "mqtts://test.mosquitto.org:8883") // (Need ENABLE_SSL)
-DEFINE_FSTR(MQTT_URL3, "mqtt://frank:fiddle@192.168.100.107:1883")
-
 #ifdef ENABLE_SSL
 #include <ssl/private_key.h>
 #include <ssl/cert.h>
-#define MQTT_URL MQTT_URL2
+DEFINE_FSTR(MQTT_URL, "mqtts://test.mosquitto.org:8883")
 #else
-#define MQTT_URL MQTT_URL1
+DEFINE_FSTR(MQTT_URL, "mqtt://test.mosquitto.org:1883")
+// DEFINE_FSTR(MQTT_URL, "mqtt://frank:fiddle@192.168.100.107:1883")
 #endif
 
 // Forward declarations

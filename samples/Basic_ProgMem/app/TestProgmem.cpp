@@ -167,50 +167,54 @@ void testSpeed(Print& out)
 
 	out.printf("Speed tests, %u iterations, times in microseconds\n", iterations);
 	ElapseTimer timer;
-	unsigned tmp = 0;
 	uint32_t baseline, elapsed;
 
 	_FPUTS("Baseline test, read string in RAM...");
+	unsigned sum = 0;
 	timer.start();
 	for(unsigned i = 0; i < iterations; ++i) {
-		tmp += sumBuffer(demoText, sizeof(demoText));
+		sum += sumBuffer(demoText, sizeof(demoText));
 	}
 	baseline = timer.elapsedTime();
-	out << "Elapsed: " << baseline << endl;
+	out << "Elapsed: " << baseline << ", sum " << sum << endl;
 
 #define END()                                                                                                          \
 	elapsed = timer.elapsedTime();                                                                                     \
-	out << "Elapsed: " << elapsed << " (baseline + " << elapsed - baseline << ')' << endl;
+	out << "Elapsed: " << elapsed << " (baseline + " << elapsed - baseline << "), sum " << sum << endl;
 
 	_FPUTS("Load PSTR into stack buffer...");
+	sum = 0;
 	timer.start();
 	for(unsigned i = 0; i < iterations; ++i) {
 		LOAD_PSTR(buf, demoPSTR1);
-		tmp += sumBuffer(buf, sizeof(buf));
+		sum += sumBuffer(buf, sizeof(buf));
 	}
 	END()
 
 	_FPUTS("Load PSTR into String...");
+	sum = 0;
 	timer.start();
 	for(unsigned i = 0; i < iterations; ++i) {
 		String s(demoFSTR1.data());
-		tmp += sumBuffer(s.c_str(), s.length() + 1);
+		sum += sumBuffer(s.c_str(), s.length() + 1);
 	}
 	END()
 
 	_FPUTS("Load FlashString into stack buffer...");
+	sum = 0;
 	timer.start();
 	for(unsigned i = 0; i < iterations; ++i) {
 		LOAD_FSTR(buf, demoFSTR1);
-		tmp += sumBuffer(buf, sizeof(buf));
+		sum += sumBuffer(buf, sizeof(buf));
 	}
 	END()
 
 	_FPUTS("Load FlashString into String...");
+	sum = 0;
 	timer.start();
 	for(unsigned i = 0; i < iterations; ++i) {
 		String s(demoFSTR1);
-		tmp += sumBuffer(s.c_str(), s.length() + 1);
+		sum += sumBuffer(s.c_str(), s.length() + 1);
 	}
 	END()
 }

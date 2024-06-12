@@ -76,7 +76,7 @@ struct esp_partition_info_t;
 
 namespace Disk
 {
-class DiskPart;
+struct DiskPart;
 }
 
 /**

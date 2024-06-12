@@ -182,6 +182,8 @@ protected:
 	void sendMailHeaders(MailMessage* mail);
 	bool sendMailBody(MailMessage* mail);
 
+	using TcpClient::connect;
+
 private:
 	Url url;
 	Vector<String> authMethods;

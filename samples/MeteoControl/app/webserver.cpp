@@ -8,8 +8,7 @@ namespace
 {
 HttpServer server;
 HttpClient downloadClient;
-bool serverStarted = false;
-int dowfid = 0;
+bool serverStarted;
 
 void onIndex(HttpRequest& request, HttpResponse& response)
 {

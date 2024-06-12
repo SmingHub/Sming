@@ -26,7 +26,7 @@ public:
 	{
 	}
 
-	bool isValid()
+	bool isValid() const override
 	{
 		return writePos <= maxBytes;
 	}

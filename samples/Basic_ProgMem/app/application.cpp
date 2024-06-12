@@ -16,7 +16,6 @@ const uint8_t demoRam[] = {1, 2, 3, 4, 5};
 const PROGMEM uint8_t demoPgm[] = {1, 2, 3, 4, 5};
 
 const PROGMEM char demoString[] = "Demo";
-const PROGMEM char demoString2[] = "Demo";
 const PROGMEM char demoFormat[] = "Demo %d";
 
 const PROGMEM uint8_t bytes[] = {1, 2, 3, 4, 5, 6, 7, 8};
