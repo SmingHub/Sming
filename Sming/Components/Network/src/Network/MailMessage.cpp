@@ -48,13 +48,11 @@ MailMessage& MailMessage::setBody(String&& body, MimeType mime) noexcept
 
 MailMessage& MailMessage::setBody(IDataSourceStream* stream, MimeType mime)
 {
-	if(this->stream != nullptr) {
+	if(this->stream) {
 		debug_e("MailMessage::setBody: Discarding already set stream!");
-		delete this->stream;
-		this->stream = nullptr;
 	}
 
-	this->stream = stream;
+	this->stream.reset(stream);
 	headers[HTTP_HEADER_CONTENT_TYPE] = toString(mime);
 
 	return *this;

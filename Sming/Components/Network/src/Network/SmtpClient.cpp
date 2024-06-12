@@ -289,7 +289,7 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 
 	if(!mail->headers.contains(HTTP_HEADER_CONTENT_TRANSFER_ENCODING)) {
 		mail->headers[HTTP_HEADER_CONTENT_TRANSFER_ENCODING] = _F("quoted-printable");
-		mail->stream = new QuotedPrintableOutputStream(mail->stream);
+		mail->stream.reset(new QuotedPrintableOutputStream(mail->stream.release()));
 	}
 
 	if(!mail->attachments.isEmpty()) {
@@ -298,13 +298,13 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 		text.headers = new HttpHeaders();
 		(*text.headers)[HTTP_HEADER_CONTENT_TYPE] = mail->headers[HTTP_HEADER_CONTENT_TYPE];
 		(*text.headers)[HTTP_HEADER_CONTENT_TRANSFER_ENCODING] = mail->headers[HTTP_HEADER_CONTENT_TRANSFER_ENCODING];
-		text.stream = mail->stream;
+		text.stream = mail->stream.release();
 
 		mail->attachments.insertElementAt(text, 0);
 
 		mail->headers.remove(HTTP_HEADER_CONTENT_TRANSFER_ENCODING);
 		mail->headers[HTTP_HEADER_CONTENT_TYPE] = F("multipart/mixed; boundary=") + mStream->getBoundary();
-		mail->stream = mStream;
+		mail->stream.reset(mStream);
 	}
 
 	for(auto hdr : mail->headers) {
@@ -320,8 +320,7 @@ bool SmtpClient::sendMailBody(MailMessage* mail)
 	}
 
 	delete stream;
-	stream = mail->stream; // avoid intermediate buffers
-	mail->stream = nullptr;
+	stream = mail->stream.release(); // avoid intermediate buffers
 
 	return false;
 }
