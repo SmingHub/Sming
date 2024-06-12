@@ -13,11 +13,16 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         variant: [esp8266, host, rp2040]
+        toolchain: [gcc]
         include:
           - variant: esp8266
             arch: Esp8266
           - variant: host
             arch: Host
+          - os: ubuntu-latest
+            variant: host
+            arch: Host
+            toolchain: clang
           - variant: rp2040
             arch: Rp2040
 
@@ -30,6 +35,7 @@ jobs:
     env:
       SMING_ARCH: ${{ matrix.arch }}
       SMING_SOC: ${{ matrix.variant }}
+      CLANG_BUILD: ${{ matrix.toolchain == 'clang' && '15' || '0' }}
 
     steps:
     - name: Fix autocrlf setting

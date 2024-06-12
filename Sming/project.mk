@@ -100,6 +100,7 @@ LIBS				:= $(EXTRA_LIBS)
 
 # Common linker flags
 LDFLAGS = \
+	-Wl,-EL \
 	-Wl,--gc-sections \
 	-Wl,-Map=$(basename $@).map
 
