@@ -289,7 +289,7 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 
 	if(!mail->headers.contains(HTTP_HEADER_CONTENT_TRANSFER_ENCODING)) {
 		mail->headers[HTTP_HEADER_CONTENT_TRANSFER_ENCODING] = _F("quoted-printable");
-		mail->stream.reset(new QuotedPrintableOutputStream(mail->stream.release()));
+		mail->stream = std::make_unique<QuotedPrintableOutputStream>(mail->stream.release());
 	}
 
 	if(!mail->attachments.isEmpty()) {
