@@ -234,7 +234,7 @@ ifeq (,$(findstring clang,$(COMPILER_NAME)))
 $(shell LANG=C $(CC) -v)
 $(error Compiler '$(COMPILER_VERSION_FULL)' not recognised. Please install GCC tools.)
 endif
-COMPILER_VERSION_MIN := 15
+COMPILER_VERSION_MIN := 14
 ifndef COMPILER_NOTICE_PRINTED
 $(info Note: Building with $(COMPILER_NAME) $(COMPILER_VERSION).)
 COMPILER_NOTICE_PRINTED := 1
