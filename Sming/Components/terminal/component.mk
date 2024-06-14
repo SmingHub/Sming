@@ -4,7 +4,7 @@ COMPONENT_LIBNAME :=
 CACHE_VARS		+= COM_PORT
 ifeq ($(UNAME),FreeBSD)
 COM_PORT		?= /dev/cuaU0
-else ifeq ($(UNAME),MacOS)
+else ifeq ($(UNAME),Darwin)
 COM_PORT		?= /dev/tty.usbserial
 else ifeq ($(UNAME),Linux)
 COM_PORT		?= /dev/ttyUSB0
