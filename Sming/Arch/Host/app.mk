@@ -24,12 +24,27 @@ endif
 .PHONY: application
 application: $(TARGET_OUT_0)
 
+COMMA=,
+WL=-Wl,
+
+ifeq ($(UNAME),Darwin)
+LDFLAGS_FILTERED = $(filter-out $(addprefix $(WL),-EL --gc-sections -wrap%),$(LDFLAGS))
+LDFLAGS2 = $(patsubst $(WL)-Map=%,$(WL)-map$(COMMA)%,$(LDFLAGS_FILTERED)) \
+	$(WL)-w \
+	$(WL)-undefined,suppress \
+	$(WL)-flat_namespace
+else
+LDSTARTGROUP := $(WL)--start-group
+LDENDGROUP := $(WL)--end-group
+LDFLAGS2 = $(LDFLAGS)
+endif
+
 $(TARGET_OUT_0): $(COMPONENTS_AR)
 ifdef CLANG_TIDY
 	$(info Skipping link step for clang-tidy)
 else
 	$(info $(notdir $(PROJECT_DIR)): Linking $@)
-	$(Q) $(LD) $(addprefix -L,$(LIBDIRS)) $(LDFLAGS) -Wl,--start-group $(COMPONENTS_AR) $(addprefix -l,$(LIBS)) -Wl,--end-group -o $@
+	$(Q) $(LD) $(addprefix -L,$(LIBDIRS)) $(LDFLAGS2) $(LDSTARTGROUP) $(COMPONENTS_AR) $(addprefix -l,$(LIBS)) $(LDENDGROUP) -o $@
 	$(Q) $(call WriteFirmwareConfigFile,$@)
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO)
 	$(Q) cat $(FW_MEMINFO)

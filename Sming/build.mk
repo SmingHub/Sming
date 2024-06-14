@@ -294,9 +294,11 @@ CLIB_PREFIX := clib-
 
 # Use with LDFLAGS to define a symbol alias
 # $1 -> List of alias=name pairs
-define DefSym
-$(foreach n,$1,-Wl,--defsym=$n)
-endef
+ifeq ($(UNAME)$(SMING_ARCH),DarwinHost)
+DefSym = $(foreach n,$1,-Wl,-alias,_$(word 2,$(subst =, ,$n)),_$(word 1,$(subst =, ,$n)))
+else
+DefSym = $(foreach n,$1,-Wl,--defsym=$n)
+endif
 
 # Use with LDFLAGS to undefine a list of symbols
 # $1 -> List of symbols
