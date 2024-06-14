@@ -38,6 +38,14 @@ public:
 	String subject;
 	String cc;
 
+	~MailMessage()
+	{
+		for(auto& attachment : attachments) {
+			delete attachment.headers;
+			delete attachment.stream;
+		}
+	}
+
 	/**
 	 * @brief Set a header value
 	 * @param name
@@ -106,7 +114,7 @@ public:
 	MailMessage& addAttachment(IDataSourceStream* stream, const String& mime, const String& filename = "");
 
 private:
-	IDataSourceStream* stream = nullptr;
+	std::unique_ptr<IDataSourceStream> stream = nullptr;
 	HttpHeaders headers;
 	Vector<MultipartStream::BodyPart> attachments;
 };
