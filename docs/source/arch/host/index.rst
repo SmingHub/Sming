@@ -130,8 +130,9 @@ Networking
 
 Support is provided via TAP network interface (a virtual network layer
 operating at the ethernet frame level). A TAP interface must be created
-first, and requires root privilege. You can use the
-``Sming/Arch/Host/Tools/setup-network-linux.sh``. Here is the manual approach::
+first, and requires root privilege.
+
+For Linux, uou can use ``Sming/Arch/Host/Tools/setup-network-linux.sh``. Here is the manual approach::
 
    sudo ip tuntap add dev tap0 mode tap user `whoami`
    sudo ip a a dev tap0 192.168.13.1/24
@@ -155,6 +156,19 @@ select the first ``tap`` interface found. To override this, use the
 You can list available network interfaces thus::
 
    ip link
+
+
+For MacOS, networking support first requires installation of a kernel extension
+using ``Sming/Arch/Host/Tools/setup-network-macos.sh``.
+On first run, you will need to confirm security then reboot the system.
+On rebooting, run the script again.
+
+The ``tap0`` network interface is created dynamically when ``/dev/tap0`` is opened.
+At present, you must run the application with elevated permissions::
+
+   sudo out/Host/debug/firmware/app
+
+
 
 Troubleshooting
 ---------------

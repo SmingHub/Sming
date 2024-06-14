@@ -6,10 +6,6 @@ set (BUILD_SHARED_LIBS OFF)
 set (CMAKE_C_STANDARD 11)
 set (CMAKE_C_STANDARD_REQUIRED ON)
 
-if (NOT CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT CMAKE_SYSTEM_NAME STREQUAL "GNU")
-    message(FATAL_ERROR "Lwip shared library is only working on Linux or the Hurd")
-endif()
-
 set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DLWIP_DEBUG")
 include(${LWIP_DIR}/contrib/ports/CMakeCommon.cmake)
 
