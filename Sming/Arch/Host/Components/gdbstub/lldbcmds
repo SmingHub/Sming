@@ -1,0 +1,5 @@
+# Used for interrupt emulation
+process handle -p true -s false -n false SIGUSR1 SIGUSR2
+
+# Display a welcome prompt
+script print("\nWelcome to SMING!\nType 'r' to run application\n\n")
