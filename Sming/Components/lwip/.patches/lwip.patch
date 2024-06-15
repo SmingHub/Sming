@@ -1,8 +1,8 @@
 diff --git a/contrib/ports/unix/port/sys_arch.c b/contrib/ports/unix/port/sys_arch.c
-index 9f7c8d3a..440469c6 100644
+index 1e094e80..618a203d 100644
 --- a/contrib/ports/unix/port/sys_arch.c
 +++ b/contrib/ports/unix/port/sys_arch.c
-@@ -71,10 +71,12 @@
+@@ -76,10 +76,12 @@ static pthread_key_t sys_thread_sem_key;
  /* Return code for an interrupted timed wait */
  #define SYS_ARCH_INTR 0xfffffffeUL
  
@@ -16,7 +16,7 @@ index 9f7c8d3a..440469c6 100644
  }
  
  static void
-@@ -757,15 +759,3 @@ sys_arch_unprotect(sys_prot_t pval)
+@@ -826,15 +828,3 @@ sys_arch_unprotect(sys_prot_t pval)
  }
  #endif /* SYS_LIGHTWEIGHT_PROT */
  
@@ -32,9 +32,8 @@ index 9f7c8d3a..440469c6 100644
 -  return select(1, &fds, NULL, NULL, &tv);
 -}
 -#endif /* !NO_SYS */
-
 diff --git a/contrib/ports/CMakeCommon.cmake b/contrib/ports/CMakeCommon.cmake
-index fccf0f31..0a6378c4 100644
+index a56b59cb..2e30f1b7 100644
 --- a/contrib/ports/CMakeCommon.cmake
 +++ b/contrib/ports/CMakeCommon.cmake
 @@ -65,25 +65,12 @@ set(LWIP_COMPILER_FLAGS_GNU_CLANG
@@ -64,7 +63,7 @@ index fccf0f31..0a6378c4 100644
          if(LWIP_USE_SANITIZERS)
              list(APPEND LWIP_COMPILER_FLAGS_GNU_CLANG
 diff --git a/contrib/ports/win32/sys_arch.c b/contrib/ports/win32/sys_arch.c
-index 61897e9d..e2eb7053 100644
+index 84f5775e..f4078838 100644
 --- a/contrib/ports/win32/sys_arch.c
 +++ b/contrib/ports/win32/sys_arch.c
 @@ -38,6 +38,7 @@
@@ -104,9 +103,8 @@ index 61897e9d..e2eb7053 100644
  #include <stdarg.h>
  
  /* This is an example implementation for LWIP_PLATFORM_DIAG:
-
 diff --git a/contrib/ports/win32/pcapif.c b/contrib/ports/win32/pcapif.c
-index 3066abd0..62097fee 100644
+index 6bf58f02..e8f26ac7 100644
 --- a/contrib/ports/win32/pcapif.c
 +++ b/contrib/ports/win32/pcapif.c
 @@ -40,16 +40,7 @@
@@ -142,17 +140,3 @@ index 3066abd0..62097fee 100644
    /* Scan the list printing every entry */
    for (d = alldevs, i = 0; d != NULL; d = d->next, i++) {
      char *desc = d->description;
-
-diff --git a/contrib/ports/win32/pcapif_helper.c b/contrib/ports/win32/pcapif_helper.c
-index bc6ca8d8..82e26d27 100644
---- a/contrib/ports/win32/pcapif_helper.c
-+++ b/contrib/ports/win32/pcapif_helper.c
-@@ -102,7 +102,7 @@ pcapifh_alloc_readonly_copy(void *data, size_t len)
-     lwip_win32_platform_diag("VirtualProtect failed: %d\n", GetLastError());
-     while(1);
-   }
--  printf("pcapifh_alloc_readonly_copy(%d): 0x%08x\n", len, ret);
-+  printf("pcapifh_alloc_readonly_copy(%d): %p\n", len, ret);
-   return ret;
- }
- 
