@@ -11,11 +11,9 @@ CXXFLAGS			+= -fno-threadsafe-statics
 DEBUG_VARS			+= ESP_HOME
 
 ifeq ($(UNAME),Windows)
-ESP_HOME			?= c:/Espressif
-else ifeq ($(UNAME),FreeBSD)
-ESP_HOME			?= /usr/local/esp8266/esp-open-sdk
+ESP_HOME			?= c:/tools/esp-quick-toolchain
 else
-ESP_HOME			?= /opt/esp-open-sdk
+ESP_HOME			?= /opt/esp-quick-toolchain
 endif
 export ESP_HOME		:= $(call FixPath,$(ESP_HOME))
 
