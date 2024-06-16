@@ -112,7 +112,7 @@ CXXFLAGS	+= $(COMPONENT_CXXFLAGS)
 
 # GCC 10 escapes ':' in path names which breaks GNU make for Windows so filter them
 ifeq ($(UNAME),Windows)
-OUTPUT_DEPS := | sed "s/\\\\:/:/g" > $$@
+OUTPUT_DEPS := | $(SED) "s/\\\\:/:/g" > $$@
 else
 OUTPUT_DEPS := -MF $$@
 endif
