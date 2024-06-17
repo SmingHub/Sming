@@ -30,7 +30,7 @@ uint32_t SpiFlash::getId() const
 
 size_t SpiFlash::getBlockSize() const
 {
-	return SPI_FLASH_SEC_SIZE;
+	return INTERNAL_FLASH_SECTOR_SIZE;
 }
 
 storage_size_t SpiFlash::getSize() const
@@ -52,13 +52,13 @@ bool SpiFlash::write(storage_size_t address, const void* src, size_t size)
 
 bool SpiFlash::erase_range(storage_size_t address, storage_size_t size)
 {
-	if(address % SPI_FLASH_SEC_SIZE != 0 || size % SPI_FLASH_SEC_SIZE != 0) {
+	if(address % INTERNAL_FLASH_SECTOR_SIZE != 0 || size % INTERNAL_FLASH_SECTOR_SIZE != 0) {
 		debug_e("[Partition] erase address/size misaligned: 0x%08x / 0x%08x", address, size);
 		return false;
 	}
 
-	auto sec = address / SPI_FLASH_SEC_SIZE;
-	auto end = (address + size) / SPI_FLASH_SEC_SIZE;
+	auto sec = address / INTERNAL_FLASH_SECTOR_SIZE;
+	auto end = (address + size) / INTERNAL_FLASH_SECTOR_SIZE;
 	while(sec < end) {
 		if(!flashmem_erase_sector(sec)) {
 			return false;

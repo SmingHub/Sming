@@ -15,7 +15,7 @@
  *
  ****/
 
-#include "include/esp_spi_flash.h"
+#include <esp_spi_flash.h>
 #include <esp_systemapi.h>
 
 extern char _flash_code_end[];
@@ -194,11 +194,23 @@ bool flashmem_erase_sector(uint32_t sector_id)
 
 SPIFlashInfo flashmem_get_info()
 {
-    SPIFlashInfo spi_flash_info STORE_ATTR;
-    if(flashmem_read_internal(&spi_flash_info, 0x00000000, sizeof(spi_flash_info)) == 0) {
-    	memset(&spi_flash_info, 0, sizeof(spi_flash_info));
-    }
-    return spi_flash_info;
+	struct {
+		uint8_t unknown0;
+		uint8_t unknown1;
+		uint8_t mode : 8;  ///< SPIFlashMode
+		uint8_t speed : 4; ///< SPIFlashSpeed
+		uint8_t size : 4;  ///< SPIFlashSize
+	} raw_info;
+	if(flashmem_read_internal(&raw_info, 0x00000000, sizeof(raw_info)) == 0) {
+		SPIFlashInfo nil = {};
+		return nil;
+	}
+	SPIFlashInfo info = {
+		.mode = raw_info.mode,
+		.speed = raw_info.speed,
+		.size = raw_info.size,
+	};
+	return info;
 }
 
 uint8_t flashmem_get_size_type()
@@ -239,30 +251,6 @@ uint32_t flashmem_get_size_bytes()
     return flash_size;
 }
 
-uint16_t flashmem_get_size_sectors()
-{
-    return flashmem_get_size_bytes() / SPI_FLASH_SEC_SIZE;
-}
-
-uint32_t flashmem_find_sector(uint32_t address, uint32_t *pstart, uint32_t *pend)
-{
-  // All the sectors in the flash have the same size, so just align the address
-  uint32_t sect_id = address / INTERNAL_FLASH_SECTOR_SIZE;
-
-  if( pstart )
-    *pstart = sect_id * INTERNAL_FLASH_SECTOR_SIZE;
-  if( pend )
-    *pend = ( sect_id + 1 ) * INTERNAL_FLASH_SECTOR_SIZE - 1;
-  return sect_id;
-}
-
-uint32_t flashmem_get_sector_of_address( uint32_t addr )
-{
-  return flashmem_find_sector( addr, NULL, NULL );
-}
-
-/////////////////////////////////////////////////////
-
 uint32_t flashmem_write_internal( const void *from, uint32_t toaddr, uint32_t size )
 {
   assert(IS_ALIGNED(from) && IS_ALIGNED(toaddr) && IS_ALIGNED(size));
@@ -287,12 +275,4 @@ uint32_t flashmem_read_internal( void *to, uint32_t fromaddr, uint32_t size )
 	SYSTEM_ERROR( "ERROR in flash_read: r=%d at %08X\n", ( int )r, ( unsigned )fromaddr );
     return 0;
   }
-}
-
-uint32_t flashmem_get_first_free_block_address()
-{
-  // Round the total used flash size to the closest flash block address
-  uint32_t end;
-  flashmem_find_sector( ( uint32_t )_flash_code_end - INTERNAL_FLASH_START_ADDRESS - 1, NULL, &end);
-  return end + 1;
 }

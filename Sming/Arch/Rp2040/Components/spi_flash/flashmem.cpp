@@ -368,34 +368,19 @@ uint32_t flashmem_get_size_bytes()
 	return 1U << size_bytes;
 }
 
-uint16_t flashmem_get_size_sectors()
-{
-	return flashmem_get_size_bytes() / FLASH_SECTOR_SIZE;
-}
-
-uint32_t flashmem_find_sector(uint32_t address, uint32_t* pstart, uint32_t* pend)
-{
-	// All the sectors in the flash have the same size, so just align the address
-	uint32_t sect_id = address / FLASH_SECTOR_SIZE;
-
-	if(pstart != nullptr) {
-		*pstart = sect_id * FLASH_SECTOR_SIZE;
-	}
-	if(pend != nullptr) {
-		*pend = (sect_id + 1) * FLASH_SECTOR_SIZE - 1;
-	}
-	return sect_id;
-}
-
-uint32_t flashmem_get_sector_of_address(uint32_t addr)
-{
-	return flashmem_find_sector(addr, NULL, NULL);
-}
-
 uint32_t spi_flash_get_id(void)
 {
 	initFlashInfo();
 	return flash_id;
+}
+
+uint32_t flashmem_get_address(const void* memptr)
+{
+	auto addr = uint32_t(memptr);
+	if(addr < XIP_BASE || addr >= XIP_NOALLOC_BASE) {
+		return 0;
+	}
+	return addr - XIP_BASE;
 }
 
 void flashmem_sfdp_read(uint32_t addr, void* buffer, size_t count)

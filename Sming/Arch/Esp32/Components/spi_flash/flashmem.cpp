@@ -71,26 +71,10 @@ uint32_t flashmem_get_size_bytes()
 	return g_rom_flashchip.chip_size;
 }
 
-uint16_t flashmem_get_size_sectors()
+uint32_t flashmem_get_address(const void* memptr)
 {
-	return flashmem_get_size_bytes() / SPI_FLASH_SEC_SIZE;
-}
-
-uint32_t flashmem_find_sector(uint32_t address, uint32_t* pstart, uint32_t* pend)
-{
-	// All the sectors in the flash have the same size, so just align the address
-	uint32_t sect_id = address / INTERNAL_FLASH_SECTOR_SIZE;
-
-	if(pstart)
-		*pstart = sect_id * INTERNAL_FLASH_SECTOR_SIZE;
-	if(pend)
-		*pend = (sect_id + 1) * INTERNAL_FLASH_SECTOR_SIZE - 1;
-	return sect_id;
-}
-
-uint32_t flashmem_get_sector_of_address(uint32_t addr)
-{
-	return flashmem_find_sector(addr, NULL, NULL);
+	auto phys = spi_flash_cache2phys(memptr);
+	return (phys == SPI_FLASH_CACHE2PHYS_FAIL) ? 0 : phys;
 }
 
 uint32_t spi_flash_get_id(void)
