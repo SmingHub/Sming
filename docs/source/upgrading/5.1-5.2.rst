@@ -3,6 +3,12 @@ From v5.1 to v5.2
 
 .. highlight:: c++
 
+
+**Deprecated: ESP32 IDF version 4.3 and 4.4**
+
+The older 4.3 and 4.4 versions of the ESP32 IDF are deprecated and support for them will be removed in the future.
+The installation scripts now install IDF version 5.2 by default. See :ref:`idf_versions` for further details.
+
 **PartitionStream: Breaking change**
 
 The :cpp:class:`Storage::PartitionStream` constructors with ``blockErase`` parameter have been deprecated.
