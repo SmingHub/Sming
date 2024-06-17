@@ -40,7 +40,7 @@ static inline uint32_t min(uint32_t a, uint32_t b)
 	return (a < b) ? a : b;
 }
 
-uint32_t flashmem_get_address(const void* memptr)
+flash_addr_t flashmem_get_address(const void* memptr)
 {
 	uint32_t addr = (uint32_t)memptr - INTERNAL_FLASH_START_ADDRESS;
 	// Determine which 1MB memory bank is mapped
@@ -54,7 +54,7 @@ uint32_t flashmem_get_address(const void* memptr)
 	return addr;
 }
 
-uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
+uint32_t flashmem_write(const void* from, flash_addr_t toaddr, uint32_t size)
 {
 	if(IS_ALIGNED(from) && IS_ALIGNED(toaddr) && IS_ALIGNED(size))
 		return flashmem_write_internal(from, toaddr, size);
@@ -126,7 +126,7 @@ uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 	return size;
 }
 
-uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
+uint32_t flashmem_read(void* to, flash_addr_t fromaddr, uint32_t size)
 {
 	if(IS_ALIGNED(to) && IS_ALIGNED(fromaddr) && IS_ALIGNED(size))
 		return flashmem_read_internal(to, fromaddr, size);
@@ -186,7 +186,7 @@ uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
 	return size;
 }
 
-bool flashmem_erase_sector(uint32_t sector_id)
+bool flashmem_erase_sector(flash_sector_t sector_id)
 {
 	WDT_FEED();
 	return spi_flash_erase_sector(sector_id) == SPI_FLASH_RESULT_OK;
@@ -218,7 +218,7 @@ SPIFlashSize flashmem_get_size_type()
     return flashmem_get_info().size;
 }
 
-uint32_t flashmem_get_size_bytes()
+flash_addr_t flashmem_get_size_bytes()
 {
     uint32_t flash_size = 0;
     switch (flashmem_get_info().size)

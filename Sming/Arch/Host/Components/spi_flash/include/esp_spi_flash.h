@@ -50,7 +50,7 @@ typedef enum {
  *  @retval uint32_t Number of bytes actually written
  *  @note All parameters MUST be aligned to 4-byte word boundaries, **including** the RAM pointer
  */
-uint32_t flashmem_write_internal(const void* from, uint32_t toaddr, uint32_t size);
+uint32_t flashmem_write_internal(const void* from, uintptr_t toaddr, uint32_t size);
 
 /** @brief Read from flash memory
  *  @param to Buffer to store data - MUST be word-aligned
@@ -59,7 +59,7 @@ uint32_t flashmem_write_internal(const void* from, uint32_t toaddr, uint32_t siz
  *  @retval uint32_t Number of bytes actually read
  *  @note All parameters MUST be aligned to 4-byte word boundaries, **including** the RAM pointer
  */
-uint32_t flashmem_read_internal(void* to, uint32_t fromaddr, uint32_t size);
+uint32_t flashmem_read_internal(void* to, uintptr_t fromaddr, uint32_t size);
 
 #ifdef __cplusplus
 }

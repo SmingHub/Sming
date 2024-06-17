@@ -15,6 +15,10 @@
 #include <sming_attr.h>
 #include <stdint.h>
 
+// Platform-safe typedefs for flash access, including emulation
+typedef uintptr_t flash_addr_t;
+typedef uint32_t flash_sector_t;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -75,12 +79,12 @@ typedef struct {
 
 /** @brief Obtain the flash memory address for a memory pointer
  *  @param memptr
- *  @retval uint32_t Offset from start of flash memory
+ *  @retval flash_addr_t Offset from start of flash memory
  *  @note If memptr is not in valid flash memory it will return an offset which exceeds
  *  the internal flash memory size.
  *  @note The flash location is dependent on where rBoot has mapped the firmware.
  */
-uint32_t flashmem_get_address(const void* memptr);
+flash_addr_t flashmem_get_address(const void* memptr);
 
 /** @brief Write a block of data to flash
  *  @param from Buffer to obtain data from
@@ -89,7 +93,7 @@ uint32_t flashmem_get_address(const void* memptr);
  *  @retval uint32_t Number of bytes written
  *  @note None of the parameters need to be aligned
  */
-uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size);
+uint32_t flashmem_write(const void* from, flash_addr_t toaddr, uint32_t size);
 
 /** @brief Read a block of data from flash
  *  @param to Buffer to store data
@@ -98,13 +102,13 @@ uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size);
  *  @retval uint32_t Number of bytes written
  *  @note none of the parameters need to be aligned
  */
-uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size);
+uint32_t flashmem_read(void* to, flash_addr_t fromaddr, uint32_t size);
 
 /** @brief Erase a single flash sector
  *  @param sector_id the sector to erase
  *  @retval true on success
  */
-bool flashmem_erase_sector(uint16_t sector_id);
+bool flashmem_erase_sector(flash_sector_t sector_id);
 
 /** @brief Get flash memory information block
  *  @retval SPIFlashInfo Information block
@@ -117,29 +121,29 @@ SPIFlashInfo flashmem_get_info(void);
 SPIFlashSize flashmem_get_size_type(void);
 
 /** @brief get the total flash memory size
- *  @retval uint32_t Size in bytes
+ *  @retval flash_addr_t Size in bytes
  */
-uint32_t flashmem_get_size_bytes(void);
+flash_addr_t flashmem_get_size_bytes(void);
 
 /** @brief Get the total number of flash sectors
  *  @retval uint16_t Sector count
  */
-uint16_t flashmem_get_size_sectors(void);
+flash_sector_t flashmem_get_size_sectors(void);
 
 /** @brief Helper function: find the flash sector in which an address resides
  *  @param address
  *  @param pstart OUT/OPTIONAL: Start of sector containing the given address
  *  @param pend OUT/OPTIONAL: Last address in sector
- *  @retval uint16_t Sector number for the given address
+ *  @retval flash_sector_t Sector number for the given address
  *  @note Optional parameters may be null
  */
-uint16_t flashmem_find_sector(uint32_t address, uint32_t* pstart, uint32_t* pend);
+flash_sector_t flashmem_find_sector(flash_addr_t address, flash_addr_t* pstart, flash_addr_t* pend);
 
 /** @brief Get sector number containing the given address
  *  @param addr
- *  @retval uint16_t sector number
+ *  @retval flash_sector_t sector number
  */
-uint16_t flashmem_get_sector_of_address(uint32_t addr);
+flash_sector_t flashmem_get_sector_of_address(flash_addr_t addr);
 
 /*
  * @brief Returns the address of the first free block on flash

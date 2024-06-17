@@ -160,7 +160,7 @@ uint32_t readAligned(void* to, uint32_t fromaddr, uint32_t size)
 
 } // namespace
 
-uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
+uint32_t flashmem_write(const void* from, flash_addr_t toaddr, uint32_t size)
 {
 	const uint32_t blksize = FLASH_PAGE_SIZE;
 	const uint32_t blkmask = FLASH_PAGE_SIZE - 1;
@@ -236,7 +236,7 @@ uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 	return size;
 }
 
-uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
+uint32_t flashmem_read(void* to, flash_addr_t fromaddr, uint32_t size)
 {
 	if(IS_ALIGNED(to) && IS_ALIGNED(fromaddr) && IS_ALIGNED(size)) {
 		return readAligned(to, fromaddr, size);
@@ -297,7 +297,7 @@ uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
 	return size;
 }
 
-bool flashmem_erase_sector(uint32_t sector_id)
+bool flashmem_erase_sector(flash_sector_t sector_id)
 {
 	debug_d("flashmem_erase_sector(0x%08x)", sector_id);
 	system_soft_wdt_feed();
@@ -350,7 +350,7 @@ SPIFlashSize flashmem_get_size_type()
 	}
 }
 
-uint32_t flashmem_get_size_bytes()
+flash_addr_t flashmem_get_size_bytes()
 {
 	initFlashInfo();
 
@@ -374,7 +374,7 @@ uint32_t spi_flash_get_id(void)
 	return flash_id;
 }
 
-uint32_t flashmem_get_address(const void* memptr)
+flash_addr_t flashmem_get_address(const void* memptr)
 {
 	auto addr = uint32_t(memptr);
 	if(addr < XIP_BASE || addr >= XIP_NOALLOC_BASE) {

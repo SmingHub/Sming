@@ -16,7 +16,7 @@
 #include <rom/cache.h>
 #include <esp_systemapi.h>
 
-uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
+uint32_t flashmem_write(const void* from, flash_addr_t toaddr, uint32_t size)
 {
 	esp_err_t r = esp_flash_write(esp_flash_default_chip, from, toaddr, size);
 	if(r != ESP_OK) {
@@ -27,7 +27,7 @@ uint32_t flashmem_write(const void* from, uint32_t toaddr, uint32_t size)
 	return size;
 }
 
-uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
+uint32_t flashmem_read(void* to, flash_addr_t fromaddr, uint32_t size)
 {
 	esp_err_t r = esp_flash_read(esp_flash_default_chip, to, fromaddr, size);
 	if(r != ESP_OK) {
@@ -38,7 +38,7 @@ uint32_t flashmem_read(void* to, uint32_t fromaddr, uint32_t size)
 	return size;
 }
 
-bool flashmem_erase_sector(uint32_t sector_id)
+bool flashmem_erase_sector(flash_sector_t sector_id)
 {
 	esp_task_wdt_reset();
 
@@ -66,12 +66,12 @@ SPIFlashSize flashmem_get_size_type()
 	return flashmem_get_info().size;
 }
 
-uint32_t flashmem_get_size_bytes()
+flash_addr_t flashmem_get_size_bytes()
 {
 	return g_rom_flashchip.chip_size;
 }
 
-uint32_t flashmem_get_address(const void* memptr)
+flash_addr_t flashmem_get_address(const void* memptr)
 {
 	auto phys = spi_flash_cache2phys(memptr);
 	return (phys == SPI_FLASH_CACHE2PHYS_FAIL) ? 0 : phys;
