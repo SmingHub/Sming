@@ -135,7 +135,7 @@ public:
 	 * @brief Append numbers, etc. to the array
 	 * @param value char, int, float, etc. as supported by String
 	 */
-	template <typename T> CStringArray& operator+=(T value)
+	template <typename T> CStringArray& operator+=(const T& value)
 	{
 		add(String(value));
 		return *this;
