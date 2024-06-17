@@ -330,7 +330,7 @@ SPIFlashInfo flashmem_get_info()
 	return info;
 }
 
-uint8_t flashmem_get_size_type()
+SPIFlashSize flashmem_get_size_type()
 {
 	initFlashInfo();
 
