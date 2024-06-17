@@ -89,8 +89,8 @@ void StationImpl::initialise(netif* nif)
 	}
 
 	auto netif_callback = [](netif* nif) {
-		host_queue_callback([](uint32_t param) { station.statusCallback(reinterpret_cast<netif*>(param)); },
-							uint32_t(nif));
+		host_queue_callback([](os_param_t param) { station.statusCallback(reinterpret_cast<netif*>(param)); },
+							os_param_t(nif));
 	};
 
 	netif_set_status_callback(nif, netif_callback);
@@ -328,7 +328,7 @@ bool StationImpl::startScan(ScanCompletedDelegate scanCompleted)
 	}
 
 	host_queue_callback(
-		[](uint32_t param) {
+		[](os_param_t param) {
 			auto self = reinterpret_cast<StationImpl*>(param);
 			BssList list;
 			for(const auto& info : apInfoList) {
@@ -336,7 +336,7 @@ bool StationImpl::startScan(ScanCompletedDelegate scanCompleted)
 			}
 			self->scanCompletedCallback(true, list);
 		},
-		uint32_t(this));
+		os_param_t(this));
 
 	return true;
 }

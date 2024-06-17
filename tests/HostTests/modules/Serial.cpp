@@ -41,7 +41,7 @@ public:
 			String compareBuffer;
 			String readBuffer;
 			for(unsigned i = 0; i < 10; ++i) {
-				m_printf("txfree = %u\n", txbuf.getFreeSpace());
+				Serial << _F("txfree = ") << txbuf.getFreeSpace() << endl;
 				for(char c = 'a'; c <= 'z'; ++c) {
 					if(txbuf.getFreeSpace() < 10) {
 						readBuffer += read();

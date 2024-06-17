@@ -25,7 +25,8 @@ size_t ChunkedStream::transform(const uint8_t* source, size_t sourceLength, uint
 	}
 
 	// Header
-	unsigned offset = m_snprintf(reinterpret_cast<char*>(target), targetLength, "%X\r\n", sourceLength);
+	unsigned offset =
+		m_snprintf(reinterpret_cast<char*>(target), targetLength, "%X\r\n", static_cast<unsigned>(sourceLength));
 
 	// Content
 	memcpy(target + offset, source, sourceLength);

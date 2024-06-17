@@ -50,7 +50,7 @@ public:
 
 			// Run for a second or two and check timer ticks correspond approximately with system clock
 			constexpr uint64_t maxDuration = Clock::maxTicks().template as<NanoTime::Microseconds>() - 5000ULL;
-			constexpr uint32_t duration = std::min(2000000ULL, maxDuration);
+			constexpr uint32_t duration = std::min(uint64_t(2000000ULL), maxDuration);
 			auto startTime = system_get_time();
 			startTicks = Clock::ticks();
 			uint32_t time;

@@ -80,7 +80,7 @@ public:
 		 */
 		Partition add(const String& name, const FSTR::ObjectBase& fstr, Partition::FullType type)
 		{
-			return PartitionTable::add(name, type, reinterpret_cast<uint32_t>(fstr.data()), fstr.size(),
+			return PartitionTable::add(name, type, reinterpret_cast<storage_size_t>(fstr.data()), fstr.size(),
 									   Partition::Flag::readOnly);
 		}
 	};

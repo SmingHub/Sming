@@ -114,7 +114,7 @@ void host_service_tasks()
 	}
 }
 
-bool host_queue_callback(host_task_callback_t callback, uint32_t param)
+bool host_queue_callback(host_task_callback_t callback, os_param_t param)
 {
 	return task_queues[HOST_TASK_PRIO]->post(os_signal_t(callback), param);
 }

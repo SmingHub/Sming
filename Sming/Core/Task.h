@@ -164,12 +164,12 @@ private:
 		}
 
 		scheduled = System.queueCallback(
-			[](uint32_t param) {
+			[](void* param) {
 				auto task = reinterpret_cast<Task*>(param);
 				task->scheduled = false;
 				task->service();
 			},
-			uint32_t(this));
+			this);
 
 		return scheduled;
 	}
