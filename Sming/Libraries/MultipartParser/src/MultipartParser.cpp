@@ -187,7 +187,7 @@ int MultipartParser::partHeadersComplete(multipart_parser_t* p)
 			.name = name,
 			.fileName = fileName,
 			.mime = headers[HTTP_HEADER_CONTENT_TYPE],
-			.length = contentLength ? contentLength.toInt() : -1,
+			.length = contentLength ? int(contentLength.toInt()) : -1,
 		};
 
 		auto checkerStream = static_cast<PartCheckerStream*>(stream);

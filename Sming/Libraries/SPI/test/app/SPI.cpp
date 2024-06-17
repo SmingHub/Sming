@@ -317,7 +317,7 @@ public:
 	{
 		String inData = outData;
 		auto bufptr = reinterpret_cast<uint8_t*>(inData.begin() + startOffset);
-		auto length = inData.length() - startOffset;
+		unsigned length = inData.length() - startOffset;
 
 		debug_i("TX %u bytes, startOffset %u, %cSB first", length, startOffset,
 				settings.bitOrder == MSBFIRST ? 'M' : 'L');

@@ -41,7 +41,7 @@ void printPart(Storage::Partition part)
 		String s = part.getDeviceName();
 		s += '/';
 		s += part.name();
-		m_printHex(s.c_str(), buf, std::min(128U, bufSize));
+		m_printHex(s.c_str(), buf, std::min(size_t(128U), bufSize));
 		Serial << _F("Elapsed: ") << elapsed.toString() << endl;
 		if(elapsed != 0) {
 			Serial << _F("Speed:   ") << 1000 * bufSize / elapsed << " KB/s" << endl;
