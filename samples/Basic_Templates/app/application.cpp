@@ -1,7 +1,6 @@
 #include <SmingCore.h>
 #include <Data/Stream/SectionTemplate.h>
 #include <FlashString/Stream.hpp>
-#include <Data/CsvReader.h>
 #include "CsvTemplate.h"
 
 namespace
@@ -51,7 +50,7 @@ void printCars()
 void printClassics(const FlashString& templateSource, Format::Formatter& formatter)
 {
 	// The CSV data source
-	CsvReader csv(new FileStream(Filename::classics_csv));
+	CSV::Reader csv(new FileStream(Filename::classics_csv));
 
 	// Use a regular SectionTemplate class to process the template
 	SectionTemplate tmpl(new FSTR::Stream(templateSource));

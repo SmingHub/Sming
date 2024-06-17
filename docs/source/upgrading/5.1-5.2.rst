@@ -91,3 +91,13 @@ These will now fail to compile.
 Copy construction and assignment has been explicitly deleted so avoid unintentional side-effects.
 
 Objects should always be passed by reference.
+
+
+**CsvReader library**
+
+The :cpp:type:`CsvReader` class has been moved out of ``Core/Data`` and into :library:`CsvReader`
+which has additional capabilities. Changes to existing code:
+
+- Add ``CsvReader`` to your project's :cpp:envvar:`COMPONENT_DEPENDS`
+- Change ``#include <Data/CsvReader>`` to ``#include <CSV/Reader.h>``
+- Change ``CsvReader`` class to :cpp:class:`CSV::Reader`

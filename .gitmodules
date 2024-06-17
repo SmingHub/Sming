@@ -217,6 +217,10 @@
 	path = Sming/Libraries/CS5460/CS5460
 	url = https://github.com/xxzl0130/CS5460.git
 	ignore = dirty
+[submodule "Libraries.CsvReader"]
+	path = Sming/Libraries/CsvReader
+	url = https://github.com/mikee47/CsvReader
+	ignore = dirty
 [submodule "Libraries.DFRobotDFPlayerMini"]
 	path = Sming/Libraries/DFRobotDFPlayerMini
 	url = https://github.com/DFRobot/DFRobotDFPlayerMini.git
