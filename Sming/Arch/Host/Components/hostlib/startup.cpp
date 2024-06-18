@@ -246,6 +246,8 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	m_setPuts(&host_nputs);
+
 	host_debug_i("\nWelcome to the Sming Host emulator\n\n");
 
 	auto i = get_first_non_option();
@@ -309,7 +311,7 @@ int main(int argc, char* argv[])
 	pause(config.exitpause);
 
 	// Avoid issues with debug statements whilst running exit handlers
-	m_setPuts(nullptr);
+	m_setPuts(&host_nputs);
 
 	return exitCode;
 }
