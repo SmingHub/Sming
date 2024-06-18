@@ -46,9 +46,9 @@ void SystemClass::taskHandler(os_event_t* event)
 	--taskCount;
 	restoreInterrupts(level);
 #endif
-	auto callback = reinterpret_cast<TaskCallback32>(event->sig);
+	auto callback = reinterpret_cast<TaskCallback>(event->sig);
 	if(callback != nullptr) {
-		callback(event->par);
+		callback(reinterpret_cast<void*>(event->par));
 	}
 }
 
@@ -74,7 +74,7 @@ bool SystemClass::initialize()
 	return true;
 }
 
-bool SystemClass::queueCallback(TaskCallback32 callback, uint32_t param)
+bool SystemClass::queueCallback(TaskCallback callback, void* param)
 {
 	if(callback == nullptr) {
 		return false;
@@ -89,7 +89,8 @@ bool SystemClass::queueCallback(TaskCallback32 callback, uint32_t param)
 	restoreInterrupts(level);
 #endif
 
-	return system_os_post(USER_TASK_PRIO_1, reinterpret_cast<os_signal_t>(callback), param);
+	return system_os_post(USER_TASK_PRIO_1, reinterpret_cast<os_signal_t>(callback),
+						  reinterpret_cast<os_param_t>(param));
 }
 
 bool SystemClass::queueCallback(TaskDelegate callback)

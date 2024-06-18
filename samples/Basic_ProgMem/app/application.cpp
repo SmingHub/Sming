@@ -119,6 +119,6 @@ void init()
 	Serial.println("> 0x3FFE8000 ~ 0x3FFFBFFF - User data RAM, 80kb. Available to applications.");
 	Serial.println("> 0x40200000 ~ ...        - SPI Flash.");
 
-	Serial << "> demoRam array address: 0x" << String(uint32_t(demoRam), HEX) << " is in the RAM" << endl;
-	Serial << "> demoPgm array address: 0x" << String(uint32_t(demoPgm), HEX) << " is in the Flash" << endl;
+	Serial << "> demoRam array address: 0x" << String(uintptr_t(demoRam), HEX) << " is in the RAM" << endl;
+	Serial << "> demoPgm array address: 0x" << String(uintptr_t(demoPgm), HEX) << " is in the Flash" << endl;
 }

@@ -89,7 +89,7 @@ Connection* AxContext::createClient(tcp_pcb* tcp)
 	auto id = session.getSessionId();
 	auto connection = new AxConnection(*this, tcp);
 	auto client =
-		ssl_client_new(context, int(connection), id ? id->getValue() : nullptr, id ? id->getLength() : 0, ssl_ext);
+		ssl_client_new(context, intptr_t(connection), id ? id->getValue() : nullptr, id ? id->getLength() : 0, ssl_ext);
 	if(client == nullptr) {
 		ssl_ext_free(ssl_ext);
 		delete connection;
@@ -105,7 +105,7 @@ Connection* AxContext::createServer(tcp_pcb* tcp)
 	assert(context != nullptr);
 
 	auto connection = new AxConnection(*this, tcp);
-	auto server = ssl_server_new(context, int(connection));
+	auto server = ssl_server_new(context, intptr_t(connection));
 	if(server == nullptr) {
 		delete connection;
 		return nullptr;
