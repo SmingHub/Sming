@@ -200,8 +200,9 @@ Directory layout
 The main Sming repo. is laid out like this::
 
    |_ sming/
-      |_ .appveyor.yml              CI testing
-      |_ .travis.yml                CI testing
+      |_ .github.yml                CI testing
+      |_ .clang-format.yml          Spec for clang-format tool
+      |_ .clang-tidy.yml            Spec for clang-tidy tool
       |_ .readthedocs.yml           Documentation build
       |_ lgtm.yml                   CI Static code analysis
       |_ docs/                      Sming documentation
@@ -231,7 +232,11 @@ The main Sming repo. is laid out like this::
       |  |_ Components/             Framework support code, not to be used directly by applications
       |  |_ Core/                   Main framework core
       |  |_ Libraries/              Arduino Libraries
+      |  |  |_ .patches             Patch information applied when pulling in library submodules
       |  |  |_ ...
+      |  |  |  |_ README.rst        Mandatory README file (can be README.md)
+      |  |  |  |_ samples/          Optional library sample applications
+      |  |  |  |_ test/             Optional CI test application
       |  |_ out/                    All generated shared files are written here
       |  |  |_ Esp8266/             The Arch
       |  |  |  |_ debug/            The build type
@@ -248,16 +253,20 @@ The main Sming repo. is laid out like this::
       |  |  |_ ...
       |  |_ System/                 Common framework low-level system code
       |  |  |_ include/
-      |  |_ Wiring/
+      |  |_ Wiring/                 Arduino wiring framework classes (ish)
       |     |_ ...
-      |_ tests/                     Integration test applications
+      |_ tests/                     Primary integration test applications
          |_ ...
       |_ Tools/
          |_ ci                      CI testing
          |_ Docker
          |_ ide                     IDE environment support tools
          |_ Python                  Shared python scripts
+         |_ spelling                Framework spell-checking tools
          |_ travis                  CI testing
+         |_ install.cmd             Windows install script
+         |_ install.sh              Linux install script
+         |_ export.sh               Configure default environment variables
 
 
 A typical Project looks like this::
