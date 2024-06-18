@@ -131,9 +131,9 @@ public:
 			REQUIRE(str == "cleanclean");
 			// non-decimal negative #s should be as if they were unsigned
 			str = String((int)-100, 16);
-			REQUIRE(str == "ffffff9c");
+			REQUIRE_EQ(str, sizeof(long) == 4 ? "ffffff9c" : "ffffffffffffff9c");
 			str = String((long)-101, 16);
-			REQUIRE(str == "ffffff9b");
+			REQUIRE_EQ(str, sizeof(long) == 4 ? "ffffff9b" : "ffffffffffffff9b");
 			str = String((int)-100, 10);
 			REQUIRE(str == "-100");
 			str = String((long)-100, 10);

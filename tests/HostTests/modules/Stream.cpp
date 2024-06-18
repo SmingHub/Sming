@@ -11,12 +11,14 @@
 #include <Data/Stream/ChunkedStream.h>
 #endif
 
+#ifndef DISABLE_NETWORK
 DEFINE_FSTR_LOCAL(template1, "Stream containing {var1}, {var2} and {var3}. {} {{}} {{12345")
 DEFINE_FSTR_LOCAL(template1_1, "Stream containing value #1, value #2 and {var3}. {} {{}} {{12345")
 DEFINE_FSTR_LOCAL(template1_2, "Stream containing value #1, value #2 and [value #3]. {} {{}} {{12345")
 
 DEFINE_FSTR_LOCAL(template2, "This text should {disable}not {var1} really {var2:hello} again {enable}be missing.")
 DEFINE_FSTR_LOCAL(template2_1, "This text should be missing.")
+#endif
 
 class StreamTest : public TestGroup
 {

@@ -17,7 +17,7 @@ Step 1. Add these lines to your application componenent.mk file::
 
 Step 2. Add these lines to your application::
 
-   #include <flatbuffers/flatbuffers>
+   #include <flatbuffers/flatbuffers.h>
 
 Or directly use the header file generated from the `flatc` compiler.
 

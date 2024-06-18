@@ -182,7 +182,7 @@ public:
 		removeAllElements();
 	}
 
-	bool ensureCapacity(unsigned int minCapacity);
+	bool ensureCapacity(size_t minCapacity);
 
 	void removeAllElements()
 	{
@@ -376,7 +376,7 @@ template <class Element> bool Vector<Element>::addElement(Element* objp)
 	return true;
 }
 
-template <class Element> bool Vector<Element>::ensureCapacity(unsigned int minCapacity)
+template <class Element> bool Vector<Element>::ensureCapacity(size_t minCapacity)
 {
 	if(_data.size >= minCapacity) {
 		return true;

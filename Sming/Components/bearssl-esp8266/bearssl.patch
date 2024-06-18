@@ -1,3 +1,15 @@
+diff --git a/src/ec/ec_p256_m62.c b/src/ec/ec_p256_m62.c
+index a431790..324486f 100644
+--- a/src/ec/ec_p256_m62.c
++++ b/src/ec/ec_p256_m62.c
+@@ -81,6 +81,7 @@ api_xoff(int curve, size_t *len)
+  * In particular, such a value is less than twice the modulus p.
+  */
+ 
++#undef BIT
+ #define BIT(n)   ((uint64_t)1 << (n))
+ #define MASK48   (BIT(48) - BIT(0))
+ #define MASK52   (BIT(52) - BIT(0))
 diff --git a/src/inner.h b/src/inner.h
 index 0a62d9c..e94b7cd 100644
 --- a/src/inner.h
