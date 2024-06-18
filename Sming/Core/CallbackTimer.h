@@ -44,7 +44,7 @@ template <typename ApiDef> struct CallbackTimerApi {
 		String s;
 		s += typeName();
 		s += '@';
-		s += String(uint32_t(this), HEX);
+		s += String(uintptr_t(this), HEX);
 		return s;
 	}
 

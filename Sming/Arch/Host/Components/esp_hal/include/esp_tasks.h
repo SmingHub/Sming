@@ -6,8 +6,8 @@
 extern "C" {
 #endif
 
-typedef uint32_t os_signal_t;
-typedef uint32_t os_param_t;
+typedef uintptr_t os_signal_t;
+typedef uintptr_t os_param_t;
 
 typedef struct {
 	os_signal_t sig;
@@ -32,9 +32,9 @@ void host_init_tasks();
 // Hook function to process task queues
 void host_service_tasks();
 
-typedef void (*host_task_callback_t)(uint32_t param);
+typedef void (*host_task_callback_t)(os_param_t param);
 
-bool host_queue_callback(host_task_callback_t callback, uint32_t param);
+bool host_queue_callback(host_task_callback_t callback, os_param_t param);
 
 #ifdef __cplusplus
 }

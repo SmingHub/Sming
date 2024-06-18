@@ -111,3 +111,13 @@ The following macro definitions have been removed for esp8266:
 
 These related to the fixed system paramter block at the end of flash memory.
 With partitions this is relocatable so any code which depends on these will be wrong.
+
+
+**CsvReader library**
+
+The :cpp:type:`CsvReader` class has been moved out of ``Core/Data`` and into :library:`CsvReader`
+which has additional capabilities. Changes to existing code:
+
+- Add ``CsvReader`` to your project's :cpp:envvar:`COMPONENT_DEPENDS`
+- Change ``#include <Data/CsvReader>`` to ``#include <CSV/Reader.h>``
+- Change ``CsvReader`` class to :cpp:class:`CSV::Reader`

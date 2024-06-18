@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Data/CsvReader.h>
+#include <CSV/Reader.h>
 #include <Data/Stream/SectionTemplate.h>
 
 /**
@@ -35,5 +35,5 @@ protected:
 	}
 
 private:
-	CsvReader csv;
+	CSV::Reader csv;
 };

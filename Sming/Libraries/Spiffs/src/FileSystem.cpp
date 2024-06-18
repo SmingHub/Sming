@@ -152,7 +152,7 @@ int FileSystem::mount()
 		.hal_erase_f = f_erase,
 		.phys_size = uint32_t(partSize),
 		.phys_addr = 0,
-		.phys_erase_block = partition.getBlockSize(),
+		.phys_erase_block = uint32_t(partition.getBlockSize()),
 		.log_block_size = logicalBlockSize,
 		.log_page_size = LOG_PAGE_SIZE,
 	};

@@ -31,7 +31,7 @@ extern "C" {
 /**
  * @brief determines if the given value is aligned to a word (4-byte) boundary
  */
-#define IS_ALIGNED(_x) (((uint32_t)(_x)&3) == 0)
+#define IS_ALIGNED(_x) (((uintptr_t)(_x)&3) == 0)
 
 /**
  * @brief Align a size up to the nearest word boundary

@@ -36,7 +36,7 @@ public:
 		size_t size;							   // << max allowed size
 		std::unique_ptr<RbootOutputStream> stream; // (optional) output stream to use.
 
-		Item(String url, uint32_t targetOffset, size_t size, RbootOutputStream* stream)
+		Item(String url, size_t targetOffset, size_t size, RbootOutputStream* stream)
 			: url(url), targetOffset(targetOffset), size(size), stream(stream)
 		{
 		}
@@ -99,7 +99,8 @@ public:
 			return false;
 		}
 
-		return items.addNew(new Item{firmwareFileUrl, stream->getStartAddress(), stream->getMaxLength(), stream});
+		return items.addNew(
+			new Item{firmwareFileUrl, uint32_t(stream->getStartAddress()), stream->getMaxLength(), stream});
 	}
 
 	void start();

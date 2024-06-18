@@ -3,7 +3,12 @@
 	"arch": "Host",
 	"bootloader_size": "0x2000",
 	"partition_table_offset": "0x2000",
-	"options": ["4m"],
+	"devices": {
+		"spiFlash": {
+			"type": "flash",
+			"size": "4M"
+		}
+	},
 	"partitions": {
 		"rom0": {
 			"address": "0x008000",
