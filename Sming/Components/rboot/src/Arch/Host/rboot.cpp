@@ -13,7 +13,7 @@
 #include <hostlib/hostmsg.h>
 #include <WString.h>
 
-static uint32_t SPIRead(uint32_t addr, void* outptr, uint32_t len)
+static uint32_t SPIRead(flash_addr_t addr, void* outptr, uint32_t len)
 {
 	return (flashmem_read(outptr, addr, len) == len) ? 0 : 1;
 }

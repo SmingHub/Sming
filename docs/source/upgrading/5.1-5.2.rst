@@ -93,6 +93,26 @@ Copy construction and assignment has been explicitly deleted so avoid unintentio
 Objects should always be passed by reference.
 
 
+**spi_flash functions**
+
+Several definitions have been deprecated/removed as they serve no purpose since partitions introduced.
+
+``flashmem_get_first_free_block_address()``
+
+``flashmem_get_info()`` returns a common ``SPIFlashInfo`` structure for all architectures.
+Esp8266 previously had a structure definition with two ``unknown`` fields as this directly represented
+the contents of the first 16 bytes of flash. These have been removed and the structure unpacked.
+
+The following macro definitions have been removed for esp8266:
+
+- ``SYS_PARAM_SEC_COUNT``
+- ``FLASH_WORK_SEC_COUNT``
+- ``INTERNAL_FLASH_SIZE``
+
+These related to the fixed system paramter block at the end of flash memory.
+With partitions this is relocatable so any code which depends on these will be wrong.
+
+
 **CsvReader library**
 
 The :cpp:type:`CsvReader` class has been moved out of ``Core/Data`` and into :library:`CsvReader`
