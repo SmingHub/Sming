@@ -211,7 +211,7 @@ ifndef MAKE_CLEAN
 
 # Detect compiler version and name
 DEBUG_VARS				+= COMPILER_VERSION_FULL COMPILER_VERSION COMPILER_NAME
-COMPILER_VERSION_FULL	:= $(shell $(CC) -v 2>&1 | $(AWK) -F " version " '/ version /{ a=$$1; gsub(/ +/, "-", a); print a, $$2}')
+COMPILER_VERSION_FULL	:= $(shell LANG=C $(CC) -v 2>&1 | $(AWK) -F " version " '/ version /{ a=$$1; gsub(/ +/, "-", a); print a, $$2}')
 COMPILER_NAME			:= $(word 1,$(COMPILER_VERSION_FULL))
 COMPILER_VERSION		:= $(word 2,$(COMPILER_VERSION_FULL))
 
@@ -224,6 +224,7 @@ CPPFLAGS += -fstrict-volatile-bitfields
 COMPILER_VERSION_MIN := 8
 else
 ifeq (,$(findstring clang,$(COMPILER_NAME)))
+$(shell LANG=C $(CC) -v)
 $(error Compiler '$(COMPILER_VERSION_FULL)' not recognised. Please install GCC tools.)
 endif
 COMPILER_VERSION_MIN := 15
