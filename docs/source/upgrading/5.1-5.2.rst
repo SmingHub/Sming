@@ -109,7 +109,7 @@ The following macro definitions have been removed for esp8266:
 - ``FLASH_WORK_SEC_COUNT``
 - ``INTERNAL_FLASH_SIZE``
 
-These related to the fixed system paramter block at the end of flash memory.
+These related to the fixed system parameter block at the end of flash memory.
 With partitions this is relocatable so any code which depends on these will be wrong.
 
 

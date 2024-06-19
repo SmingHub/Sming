@@ -91,7 +91,7 @@ void onBeacon(const BeaconInfo& beacon)
 void onClient(const ClientInfo& client)
 {
 	if(knownClients.indexOf(client.station) >= 0) {
-		// Allready listed
+		// Already listed
 		return;
 	}
 
