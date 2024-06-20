@@ -71,6 +71,13 @@ Configuration
    Note: This setting is not 'sticky'
 
 
+.. envvar:: BUILD64
+
+   default: undefined
+
+   Set to 1 to build in native 64-bit mode.
+
+
 Components
 ----------
 
