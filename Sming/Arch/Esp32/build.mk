@@ -19,14 +19,12 @@ endif
 IDF_VERSION := $(subst ., ,$(firstword $(subst -, ,$(IDF_VER))))
 IDF_VERSION := $(firstword $(IDF_VERSION)).$(word 2,$(IDF_VERSION))
 
-# By default, downloaded tools will be installed under $HOME/.espressif directory
-# (%USERPROFILE%/.espressif on Windows). This path can be modified by setting
-# IDF_TOOLS_PATH variable prior to running this tool.
+# Use default paths from standard install scripts.
 DEBUG_VARS += IDF_TOOLS_PATH
 ifeq ($(UNAME),Windows)
-IDF_TOOLS_PATH ?= $(USERPROFILE)/.espressif
+IDF_TOOLS_PATH ?= C:/tools/esp32
 else
-IDF_TOOLS_PATH ?= $(HOME)/.espressif
+IDF_TOOLS_PATH ?= /opt/esp32
 endif
 
 export IDF_TOOLS_PATH := $(call FixPath,$(IDF_TOOLS_PATH))
