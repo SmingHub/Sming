@@ -12,8 +12,8 @@ using namespace TZ;
  * For handling local/UTC time conversions
  * This is for the UK, amend as required
  */
-const Rule dstStart{"BST", Last, Sun, Mar, 1, 60};
-const Rule stdStart{"GMT", Last, Sun, Oct, 2, 0};
+const Rule dstStart{{"BST"}, Last, Sun, Mar, 1, 60};
+const Rule stdStart{{"GMT"}, Last, Sun, Oct, 2, 0};
 
 // Posix rule string
 DEFINE_FSTR_LOCAL(tzstr, "GMT0BST,M3.5.0/1,M10.5.0")
@@ -80,7 +80,7 @@ void NtpClientDemo::ntpResult(NtpClient& client, time_t ntpTime)
 	SystemClock.setTime(ntpTime, eTZ_UTC);
 
 	// Now we've set the clock, we can determine the initial active timezone and maintain the offset
-	SystemClock.onCheckTimeZoneOffset([this](time_t systemTime) { checkTimeZoneOffset(systemTime); });
+	SystemClock.onCheckTimeZoneOffset([](time_t systemTime) { checkTimeZoneOffset(systemTime); });
 
 	/*
 	 * Display the new time
