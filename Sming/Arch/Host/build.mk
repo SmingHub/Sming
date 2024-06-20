@@ -41,8 +41,11 @@ GDB		:= $(TOOLSPEC)gdb
 
 GCC_UPGRADE_URL := https://sming.readthedocs.io/en/latest/arch/host/host-emulator.html\#c-c-32-bit-compiler-and-libraries
 
+ifneq ($(BUILD64),1)
+CPPFLAGS += -m32
+endif
+
 CPPFLAGS += \
-	-m32 \
 	-D_FILE_OFFSET_BITS=64 \
 	-D_TIME_BITS=64
 

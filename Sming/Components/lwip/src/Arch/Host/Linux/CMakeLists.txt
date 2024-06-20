@@ -37,6 +37,6 @@ set_target_properties(lwip
 	PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${USER_LIBDIR} OUTPUT_NAME "${LWIP_LIBNAME}"
 )
 
-target_compile_options(lwip PRIVATE ${LWIP_COMPILER_FLAGS} -m32)
+target_compile_options(lwip PRIVATE ${LWIP_COMPILER_FLAGS} ${BUILD_MODE})
 target_compile_definitions(lwip PRIVATE ${LWIP_DEFINITIONS} ${LWIP_MBEDTLS_DEFINITIONS})
 target_include_directories(lwip PRIVATE ${LWIP_INCLUDE_DIRS} ${LWIP_MBEDTLS_INCLUDE_DIRS})

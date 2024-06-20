@@ -5,9 +5,9 @@
 ###
 
 # linker flags used to generate the main object file
-LDFLAGS += \
-	-m32
-
+ifneq ($(BUILD64),1)
+LDFLAGS += -m32
+endif
 
 # Executable
 TARGET_OUT_0			:= $(FW_BASE)/$(APP_NAME)$(TOOL_EXT)

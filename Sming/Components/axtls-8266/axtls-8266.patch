@@ -731,7 +731,7 @@ index 5bd2394..5363d22 100644
      if (memcmp(mac, orig_mac, SHA1_SIZE))
      {
 diff --git a/ssl/tls1.c b/ssl/tls1.c
-index 8f0fbfb..b2dcddd 100644
+index 8f0fbfb..f099e2c 100644
 --- a/ssl/tls1.c
 +++ b/ssl/tls1.c
 @@ -85,7 +85,7 @@ static const cipher_info_t cipher_info[NUM_PROTOCOLS] =
@@ -914,6 +914,15 @@ index 8f0fbfb..b2dcddd 100644
  #endif
              ret = SSL_ERROR_NOT_SUPPORTED;
              goto error; /* not an error - just get out of here */
+@@ -1432,7 +1436,7 @@ int basic_read(SSL *ssl, uint8_t **in_data)
+         /* is the allocated buffer large enough to handle all the data? if not, increase its size*/
+         if (ssl->need_bytes > ssl->max_plain_length+RT_EXTRA-BM_RECORD_OFFSET)
+         {
+-            printf("ssl->need_bytes=%d > %d\r\n", ssl->need_bytes, ssl->max_plain_length+RT_EXTRA-BM_RECORD_OFFSET);
++            printf("ssl->need_bytes=%u > %u\r\n", ssl->need_bytes, (unsigned)ssl->max_plain_length+RT_EXTRA-BM_RECORD_OFFSET);
+             ret = increase_bm_data_size(ssl, ssl->need_bytes + BM_RECORD_OFFSET - RT_EXTRA);
+             if (ret != SSL_OK)
+             {
 @@ -1562,7 +1566,7 @@ int increase_bm_data_size(SSL *ssl, size_t size)
      required = (required < RT_MAX_PLAIN_LENGTH) ? required : RT_MAX_PLAIN_LENGTH;
      uint8_t* new_bm_all_data = (uint8_t*) realloc(ssl->bm_all_data, required + RT_EXTRA);

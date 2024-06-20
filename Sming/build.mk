@@ -140,6 +140,13 @@ DEBUG_VARS += AWK
 # invokes an awk compatibility mode. It has no effect on other awk implementations.
 AWK ?= POSIXLY_CORRECT= awk
 
+DEBUG_VARS += SED
+ifeq ($(UNAME),Darwin)
+SED ?= gsed
+else
+SED ?= sed
+endif
+
 # Python command
 DEBUG_VARS += PYTHON
 ifdef PYTHON

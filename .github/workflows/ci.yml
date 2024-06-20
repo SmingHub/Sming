@@ -23,6 +23,10 @@ jobs:
             variant: host
             arch: Host
             toolchain: clang
+          - os: ubuntu-latest
+            variant: host
+            arch: Host
+            toolchain: gcc64
           - variant: rp2040
             arch: Rp2040
 
@@ -36,6 +40,7 @@ jobs:
       SMING_ARCH: ${{ matrix.arch }}
       SMING_SOC: ${{ matrix.variant }}
       CLANG_BUILD: ${{ matrix.toolchain == 'clang' && '15' || '0' }}
+      BUILD64: ${{ matrix.toolchain == 'gcc64' && 1 || 0 }}
 
     steps:
     - name: Fix autocrlf setting

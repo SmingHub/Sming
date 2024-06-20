@@ -804,7 +804,8 @@ public:
 	float toFloat(void) const;
 
 	/// Max chars. (excluding NUL terminator) we can store in SSO mode
-	static constexpr size_t SSO_CAPACITY = STRING_OBJECT_SIZE - 2;
+	static constexpr size_t SSO_SIZE = std::max(size_t(STRING_OBJECT_SIZE), sizeof(char*) * 3);
+	static constexpr size_t SSO_CAPACITY = SSO_SIZE - 2;
 
 protected:
 	/// Used when contents allocated on heap
@@ -824,10 +825,10 @@ protected:
 		SsoBuf sso;
 	};
 
-	static_assert(STRING_OBJECT_SIZE == sizeof(SsoBuf), "SSO Buffer alignment problem");
-	static_assert(STRING_OBJECT_SIZE >= sizeof(PtrBuf), "STRING_OBJECT_SIZE too small");
-	static_assert(STRING_OBJECT_SIZE <= 128, "STRING_OBJECT_SIZE too large (max. 128)");
-	static_assert(STRING_OBJECT_SIZE % 4 == 0, "STRING_OBJECT_SIZE must be a multiple of 4");
+	static_assert(SSO_SIZE == sizeof(SsoBuf), "SSO Buffer alignment problem");
+	static_assert(SSO_SIZE >= sizeof(PtrBuf), "STRING_OBJECT_SIZE too small");
+	static_assert(SSO_SIZE <= 128, "STRING_OBJECT_SIZE too large (max. 128)");
+	static_assert(SSO_SIZE % 4 == 0, "STRING_OBJECT_SIZE must be a multiple of 4");
 
 protected:
 	// Free any heap memory and set to non-SSO mode; isNull() will return true
