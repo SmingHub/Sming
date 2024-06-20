@@ -43,6 +43,7 @@ GCC_UPGRADE_URL := https://sming.readthedocs.io/en/latest/arch/host/host-emulato
 
 ifeq ($(UNAME),Darwin)
 BUILD64 := 1
+CPPFLAGS += -D_DARWIN_C_SOURCE=1
 endif
 
 ifneq ($(BUILD64),1)
