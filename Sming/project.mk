@@ -19,7 +19,7 @@ endif
 
 .PHONY: all
 all: checksoc checkdirs submodules ##(default) Build all Component libraries
-	$(MAKE) components application
+	$(Q) $(MAKE) components application
 
 # Load current build type from file
 BUILD_TYPE_FILE	:= out/build-type.mk
