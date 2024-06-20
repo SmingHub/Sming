@@ -9,6 +9,7 @@
  ****/
 
 #include "SystemClock.h"
+#include "ZonedTime.h"
 #include <Platform/RTC.h>
 #include <debug_progmem.h>
 
@@ -19,7 +20,10 @@ time_t SystemClockClass::now(TimeZone timeType) const
 	uint32_t systemTime = RTC.getRtcSeconds();
 
 	if(timeType == eTZ_Local) {
-		systemTime += timeZoneOffsetSecs;
+		if(checkTimeZoneOffset) {
+			checkTimeZoneOffset(systemTime);
+		}
+		systemTime += zoneInfo.offsetSecs();
 	}
 
 	return systemTime;
@@ -28,7 +32,7 @@ time_t SystemClockClass::now(TimeZone timeType) const
 bool SystemClockClass::setTime(time_t time, TimeZone timeType)
 {
 	if(timeType == eTZ_Local) {
-		time -= timeZoneOffsetSecs;
+		time -= zoneInfo.offsetSecs();
 	}
 
 	timeSet = RTC.setRtcSeconds(time);
@@ -40,15 +44,16 @@ bool SystemClockClass::setTime(time_t time, TimeZone timeType)
 
 String SystemClockClass::getSystemTimeString(TimeZone timeType) const
 {
-	DateTime dt(now(timeType));
-	return dt.toFullDateTimeString();
-}
-
-bool SystemClockClass::setTimeZoneOffset(int seconds)
-{
-	if((unsigned)abs(seconds) <= (12 * SECS_PER_HOUR)) {
-		timeZoneOffsetSecs = seconds;
-		return true;
+	time_t systemTime = now(eTZ_UTC);
+	if(checkTimeZoneOffset) {
+		checkTimeZoneOffset(systemTime);
 	}
-	return false;
+
+	if(timeType == eTZ_UTC) {
+		DateTime dt(systemTime);
+		return dt.toFullDateTimeString();
+	}
+
+	ZonedTime time(systemTime, zoneInfo);
+	return time.toString();
 }

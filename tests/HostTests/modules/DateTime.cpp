@@ -37,8 +37,25 @@ public:
 			}
 		}
 
-		// dt = testDate;
-		// debug_d("\"%s\"", dt.toFullDateTimeString().c_str());
+		TEST_CASE("fromISO8601 with offset")
+		{
+			auto check = [&](const String& strWithOffset, const String& strUtc, time_t time, int offsetMins) {
+				DateTime dt;
+				// Without zone, offset is applied to time
+				CHECK(dt.fromISO8601(strWithOffset));
+				REQUIRE_EQ(dt.toUnixTime(), time);
+				REQUIRE_EQ(dt.toISO8601(), strUtc);
+				// With zone, get local time plus offset
+				DateTime::ZoneInfo zoneInfo;
+				CHECK(dt.fromISO8601(strWithOffset, &zoneInfo));
+				REQUIRE_EQ(dt.toUnixTime(), time + (offsetMins * 60));
+				REQUIRE_EQ(zoneInfo.offsetMins, offsetMins);
+				REQUIRE_EQ(dt.toISO8601(&zoneInfo), strWithOffset);
+			};
+
+			check(F("2024-05-22T06:28:15+12:45"), F("2024-05-21T17:43:15Z"), 1716313395, 12 * 60 + 45);
+			check(F("2024-05-22T06:28:15-23:45"), F("2024-05-23T06:13:15Z"), 1716444795, -(23 * 60 + 45));
+		}
 
 		TEST_CASE("setTime")
 		{
