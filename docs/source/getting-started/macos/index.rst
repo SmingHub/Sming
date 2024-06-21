@@ -74,8 +74,6 @@ Open with a text editor the ``.profile`` file in your home directory, and add th
    export ESP_HOME=/opt/esp-quick-toolchain
    export SMING_HOME=opt/Sming/Sming
 
-Make sure to replace ``<your-favourite-development-folder>`` in the
-command above with the actual directory on your local disk.
 
 (Optional step)
 ~~~~~~~~~~~~~~~

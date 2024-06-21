@@ -132,7 +132,7 @@ Support is provided via TAP network interface (a virtual network layer
 operating at the ethernet frame level). A TAP interface must be created
 first, and requires root privilege.
 
-For Linux, uou can use ``Sming/Arch/Host/Tools/setup-network-linux.sh``. Here is the manual approach::
+For Linux, you can use ``Sming/Arch/Host/Tools/setup-network-linux.sh``. Here is the manual approach::
 
    sudo ip tuntap add dev tap0 mode tap user `whoami`
    sudo ip a a dev tap0 192.168.13.1/24
