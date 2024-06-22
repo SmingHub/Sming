@@ -74,6 +74,12 @@ bool WebsocketClient::connect(const Url& url)
 	request->headers[HTTP_HEADER_SEC_WEBSOCKET_PROTOCOL] = F("chat");
 	request->headers[HTTP_HEADER_SEC_WEBSOCKET_VERSION] = String(WEBSOCKET_VERSION);
 	request->onHeadersComplete(RequestHeadersCompletedDelegate(&WebsocketClient::verifyKey, this));
+	request->onRequestComplete([this](HttpConnection& client, bool successful) -> int {
+		if(state != eWSCS_Open && wsDisconnect) {
+			wsDisconnect(*this);
+		}
+		return 0;
+	});
 
 	if(!httpConnection->send(request)) {
 		return false;
