@@ -9,8 +9,7 @@
  ****/
 
 #include "MqttClient.h"
-
-#include "Data/Stream/DataSourceStream.h"
+#include <Data/Stream/DataSourceStream.h>
 
 const mqtt_parser_callbacks_t MqttClient::callbacks PROGMEM = {
 	.on_message_begin = staticOnMessageBegin,

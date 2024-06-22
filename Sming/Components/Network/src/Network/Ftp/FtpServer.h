@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "TcpServer.h"
-#include "WHashMap.h"
+#include "../TcpServer.h"
+#include <WHashMap.h>
 #include <FileSystem.h>
 
 class FtpServerConnection;

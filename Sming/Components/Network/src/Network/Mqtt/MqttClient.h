@@ -10,17 +10,17 @@
 
 #pragma once
 
-#include "TcpClient.h"
-#include "Url.h"
+#include "../TcpClient.h"
+#include "../Url.h"
 #include <BitManipulations.h>
 #include <WString.h>
 #include <WHashMap.h>
 #include <Data/ObjectQueue.h>
 #include <Platform/Timers.h>
-#include "Mqtt/MqttPayloadParser.h"
-#include "mqtt-codec/src/message.h"
-#include "mqtt-codec/src/serialiser.h"
-#include "mqtt-codec/src/parser.h"
+#include "MqttPayloadParser.h"
+#include <mqtt-codec/src/message.h>
+#include <mqtt-codec/src/serialiser.h>
+#include <mqtt-codec/src/parser.h>
 
 /** @defgroup   mqttclient MQTT client
  *  @brief      Provides MQTT client

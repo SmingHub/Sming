@@ -18,11 +18,11 @@
 
 #pragma once
 
-#include "TcpServer.h"
-#include "WString.h"
-#include "Http/HttpResourceTree.h"
-#include "Http/HttpServerConnection.h"
-#include "Http/HttpBodyParser.h"
+#include "../TcpServer.h"
+#include <WString.h>
+#include "HttpResourceTree.h"
+#include "HttpServerConnection.h"
+#include "HttpBodyParser.h"
 
 struct HttpServerSettings {
 	uint16_t maxActiveConnections = 10; ///< maximum number of concurrent requests..

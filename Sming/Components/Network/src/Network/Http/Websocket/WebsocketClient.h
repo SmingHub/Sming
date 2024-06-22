@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "Http/HttpClientConnection.h"
-#include "Http/Websocket/WebsocketConnection.h"
+#include "../HttpClientConnection.h"
+#include "WebsocketConnection.h"
 
 /** @defgroup   wsclient Websocket client
  *  @brief      Provides Websocket client

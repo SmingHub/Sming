@@ -18,11 +18,11 @@
 
 #pragma once
 
-#include "TcpClient.h"
-#include "Http/HttpCommon.h"
-#include "Http/HttpRequest.h"
-#include "Http/HttpClientConnection.h"
-#include "Data/Stream/LimitedMemoryStream.h"
+#include "../TcpClient.h"
+#include "HttpCommon.h"
+#include "HttpRequest.h"
+#include "HttpClientConnection.h"
+#include <Data/Stream/LimitedMemoryStream.h>
 #include <SimpleTimer.h>
 
 class HttpClient
