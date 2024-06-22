@@ -98,7 +98,7 @@ endif
 
 # Websocket Server
 CACHE_VARS			+= WSSERVER_PORT
-WSSERVER_PORT		?= 9999
+WSSERVER_PORT		?= 8000
 .PHONY: wsserver
 wsserver: ##Launch a simple python Websocket echo server for testing client applications
 	$(info Starting Websocket server for TESTING)
