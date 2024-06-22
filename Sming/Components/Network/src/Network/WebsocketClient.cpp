@@ -23,12 +23,26 @@ protected:
 	// Prevent HttpClientConnection from resetting our receive delegate set by activate() call
 	err_t onConnected(err_t err) override
 	{
+debug_i("%s CONNECTED", __PRETTY_FUNCTION__);
+
 		if(err == ERR_OK) {
 			state = eHCS_Ready;
 		}
 
 		// IMPORTANT: Skip HttpClientConnection implementation
 		return HttpConnection::onConnected(err);
+	}
+
+	void onClosed() override
+	{
+debug_i("%s CLOSED", __PRETTY_FUNCTION__);
+HttpClientConnection::onClosed();
+	}
+
+	void onError(err_t err) override
+	{
+debug_i("%s ERROR %d", __PRETTY_FUNCTION__, err);
+HttpClientConnection::onError(err);
 	}
 };
 
@@ -45,15 +59,18 @@ HttpConnection* WebsocketClient::getHttpConnection()
 
 bool WebsocketClient::connect(const Url& url)
 {
+debug_i("%s CONNECT", __PRETTY_FUNCTION__);
 	uri = url;
 	bool useSsl = (uri.Scheme == URI_SCHEME_WEBSOCKET_SECURE);
 
 	HttpConnection* httpConnection = getHttpConnection();
 	if(httpConnection == nullptr) {
+debug_i("%s NO CONNECTION", __PRETTY_FUNCTION__);
 		return false;
 	}
 
 	if(httpConnection->isProcessing()) {
+debug_i("%s PROCESSING", __PRETTY_FUNCTION__);
 		return false;
 	}
 
@@ -75,6 +92,7 @@ bool WebsocketClient::connect(const Url& url)
 	request->headers[HTTP_HEADER_SEC_WEBSOCKET_VERSION] = String(WEBSOCKET_VERSION);
 	request->onHeadersComplete(RequestHeadersCompletedDelegate(&WebsocketClient::verifyKey, this));
 	request->onRequestComplete([this](HttpConnection& client, bool successful) -> int {
+		debug_w("XXXXX successful %u", successful);
 		if(state != eWSCS_Open && wsDisconnect) {
 			wsDisconnect(*this);
 		}
@@ -82,16 +100,21 @@ bool WebsocketClient::connect(const Url& url)
 	});
 
 	if(!httpConnection->send(request)) {
+debug_i("%s SEND", __PRETTY_FUNCTION__);
 		return false;
 	}
 
 	WebsocketConnection::setUserData(this);
+
+debug_i("%s CONNECTING", __PRETTY_FUNCTION__);
 
 	return true;
 }
 
 int WebsocketClient::verifyKey(HttpConnection& connection, HttpResponse& response)
 {
+debug_i("%s", __PRETTY_FUNCTION__);
+
 	if(!response.headers.contains(HTTP_HEADER_SEC_WEBSOCKET_ACCEPT)) {
 		debug_e("[WS] Websocket Accept missing from headers");
 		state = eWSCS_Closed;
