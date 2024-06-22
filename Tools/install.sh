@@ -19,7 +19,7 @@ FONT_PACKAGES=(\
     fonts-noto-mono \
     xfonts-base \
     fonts-urw-base35 \
-    fonts-droid-fallback\
+    fonts-droid-fallback \
     )
 
 EXTRA_PACKAGES=()
@@ -44,7 +44,11 @@ for opt in "$@"; do
             ;;
 
         optional)
-            OPTIONAL_PACKAGES+=(clang-format-8)
+            OPTIONAL_PACKAGES+=(\
+                clang-format-8 \
+                "linux-modules-extra-$(uname -r)" \
+                exfatprogs \
+            )
             ;;
 
         *)
@@ -105,108 +109,79 @@ fi
 
 # Common install
 
-if [ -n "$GITHUB_ACTIONS" ]; then
-
-    case $DIST in
-        debian)
-            if [ ${#OPTIONAL_PACKAGES[@]} ]; then
-                # Provide repo. for clang-format-8 on Ubuntu 22.04
-                sudo apt-add-repository -y 'deb http://mirrors.kernel.org/ubuntu focal main universe'
-            fi
-            sudo apt-get -y update
-            $PKG_INSTALL \
-                g++-multilib \
-                python3-setuptools \
-                ninja-build \
-                "linux-modules-extra-$(uname -r)" \
-                exfatprogs \
-                "${EXTRA_PACKAGES[@]}" \
-                "${OPTIONAL_PACKAGES[@]}"
-            ;;
-
-        darwin)
-            $PKG_INSTALL \
-                binutils \
-                coreutils \
-                gnu-sed \
-                ninja
-            ;;
-
+MACHINE_PACKAGES=()
+case $DIST in
+    debian)
+        case $(uname -m) in
+            arm | aarch64)
+                ;;
+            *)
+                MACHINE_PACKAGES+=(g++-multilib)
+                ;;
         esac
+        if [ ${#OPTIONAL_PACKAGES[@]} ]; then
+            # Provide repo. for clang-format-8 on Ubuntu 22.04
+            sudo apt-add-repository -y 'deb http://mirrors.kernel.org/ubuntu focal main universe'
+        fi
+        sudo apt-get -y update || echo "Update failed... Try to install anyway..."
+        $PKG_INSTALL \
+            cmake \
+            curl \
+            git \
+            make \
+            ninja-build \
+            unzip \
+            g++ \
+            python3 \
+            python3-pip \
+            python3-setuptools \
+            wget \
+            "${MACHINE_PACKAGES[@]}" \
+            "${EXTRA_PACKAGES[@]}"
 
-else
+        if [ -n "$OPTIONAL_PACKAGES" ]; then
+            $PKG_INSTALL "${OPTIONAL_PACKAGES[@]}" || printf "\nWARNING: Failed to install optional %s.\n\n" "$OPTIONAL_PACKAGES"
+        fi
+        ;;
 
-    MACHINE_PACKAGES=()
-    case $DIST in
-        debian)
-            case $(uname -m) in
-                arm | aarch64)
-                    ;;
-                *)
-                    MACHINE_PACKAGES+=(g++-multilib)
-                    ;;
-            esac
-            sudo apt-get -y update || echo "Update failed... Try to install anyway..."
-            $PKG_INSTALL \
-                cmake \
-            	curl \
-            	git \
-            	make \
-                ninja-build \
-                unzip \
-                g++ \
-            	python3 \
-            	python3-pip \
-            	python3-setuptools \
-                wget \
-                "${MACHINE_PACKAGES[@]}" \
-                "${EXTRA_PACKAGES[@]}"
+    fedora)
+        case $(uname -m) in
+            x86_64)
+                MACHINE_PACKAGES=(\
+                    glibc-devel.i686 \
+                    libstdc++.i686 \
+                    )
+                ;;
+        esac
+        $PKG_INSTALL \
+            cmake \
+            gawk \
+            gcc \
+            gcc-c++ \
+            gettext \
+            git \
+            make \
+            ninja-build \
+            python3 \
+            python3-pip \
+            sed \
+            unzip \
+            wget \
+            "${MACHINE_PACKAGES[@]}"
+        ;;
 
-            if [ -n "$OPTIONAL_PACKAGES" ]; then
-                $PKG_INSTALL "${OPTIONAL_PACKAGES[@]}" || printf "\nWARNING: Failed to install optional %s.\n\n" "$OPTIONAL_PACKAGES"
-            fi
-            ;;
+    darwin)
+        $PKG_INSTALL \
+            binutils \
+            coreutils \
+            gnu-sed \
+            ninja
+        ;;
 
-        fedora)
-            case $(uname -m) in
-                x86_64)
-                    MACHINE_PACKAGES=(\
-                        glibc-devel.i686 \
-                        libstdc++.i686 \
-                        )
-                    ;;
-            esac
-            $PKG_INSTALL \
-                cmake \
-                gawk \
-                gcc \
-                gcc-c++ \
-                gettext \
-                git \
-                make \
-                ninja-build \
-                python3 \
-                python3-pip \
-                sed \
-                unzip \
-                wget \
-                "${MACHINE_PACKAGES[@]}"
-            ;;
+esac
 
-        darwin)
-            $PKG_INSTALL \
-                binutils \
-                coreutils \
-                gnu-sed \
-                ninja
-            ;;
-
-    esac
-
-    if [ "$DIST" != "darwin" ]; then
-        sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 100
-    fi
-
+if [ "$DIST" != "darwin" ]; then
+    sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 100
 fi
 
 set -e
