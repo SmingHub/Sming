@@ -51,6 +51,16 @@ Url& Url::operator=(String urlString)
 	return *this;
 }
 
+String Url::getScheme() const
+{
+	if(Scheme.length() == 0) {
+		return URI_SCHEME_DEFAULT;
+	}
+	String s = Scheme;
+	s.toLowerCase();
+	return s;
+}
+
 int Url::getDefaultPort(const String& scheme)
 {
 #define XX(name, str, port)                                                                                            \
@@ -75,10 +85,7 @@ String Url::getHostWithPort() const
 
 String Url::toString() const
 {
-	String result = Scheme;
-	if(result.length() == 0) {
-		result = URI_SCHEME_DEFAULT;
-	}
+	String result = getScheme();
 	result += _F("://");
 	if(User.length() != 0) {
 		result += User;
