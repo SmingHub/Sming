@@ -172,6 +172,20 @@ public:
 	 */
 	void debugPrintTo(Print& p) const;
 
+	/**
+	 * @brief Get a query parameter
+	 * @param name Name of parameter
+	 * @param defaultValue Optional default value to use if requested parameter not present
+	 * @retval String&
+	 *
+	 * Accessing `Query` directly risks adding the value if it doesn't exist.
+	 * This method is `const` so is guaranteed read-only.
+	 */
+	const String& getQueryParameter(const String& name, const String& defaultValue = nullptr) const
+	{
+		return Query[name] ?: defaultValue;
+	}
+
 public:
 	String Scheme; ///< without ":" and "//"
 	String User;

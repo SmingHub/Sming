@@ -155,7 +155,7 @@ public:
 	 */
 	String getQueryParameter(const String& name, const String& defaultValue = nullptr) const
 	{
-		return static_cast<const HttpParams&>(uri.Query)[name] ?: defaultValue;
+		return uri.getQueryParameter(name, defaultValue);
 	}
 
 	/**

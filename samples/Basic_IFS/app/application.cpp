@@ -78,7 +78,7 @@ void onFile(HttpRequest& request, HttpResponse& response)
 	++requestCount;
 
 	String file = request.uri.getRelativePath();
-	String fmt = request.uri.Query["format"];
+	String fmt = request.uri.getQueryParameter("format");
 
 	if(dirExist(file)) {
 		if(fmt.equalsIgnoreCase("archive")) {
