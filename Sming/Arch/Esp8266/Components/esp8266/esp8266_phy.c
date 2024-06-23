@@ -20,13 +20,11 @@
 
 #ifdef ENABLE_CUSTOM_PHY
 
-#include <user_config.h>
+#include <esp_attr.h>
+#include <sys/pgmspace.h>
+#include <string.h>
 
-#ifndef ICACHE_RAM_ATTR
-#define ICACHE_RAM_ATTR __attribute__((section(".iram.text")))
-#endif
-
-static const uint8_t ICACHE_FLASH_ATTR phyInitData[128] =
+static const uint8_t phyInitData[128] PROGMEM =
 {
     [0] = 5,  // Reserved, do not change
     [1] = 0,  // Reserved, do not change
