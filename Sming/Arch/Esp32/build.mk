@@ -84,11 +84,7 @@ IDF_PATH_LIST := \
 	$(IDF_PATH)/tools \
 	$(ESP32_COMPILER_PATH) \
 	$(ESP32_ULP_PATH)/$(ESP_VARIANT)ulp-elf-binutils/bin \
-	$(ESP32_OPENOCD_PATH)/openocd-esp32/bin \
-	$(ESP32_PYTHON_PATH)/bin \
-	$(IDF_PATH)/components/esptool_py/esptool \
-	$(IDF_PATH)/components/espcoredump \
-	$(IDF_PATH)/components/partition_table
+	$(ESP32_OPENOCD_PATH)/openocd-esp32/bin
 
 ifeq ($(UNAME),Windows)
 DEBUG_VARS += ESP32_NINJA_PATH
