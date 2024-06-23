@@ -123,6 +123,8 @@ public:
 			REQUIRE(!uri.Scheme);
 			REQUIRE_EQ(uri.Port, 0);
 			REQUIRE_EQ(uri.getPort(), 80);
+			uri.Scheme = "HTTP";
+			REQUIRE_EQ(uri.toString(), FS_url);
 		}
 	}
 

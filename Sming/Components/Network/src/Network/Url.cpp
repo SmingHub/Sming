@@ -85,10 +85,7 @@ String Url::getHostWithPort() const
 
 String Url::toString() const
 {
-	String result = Scheme;
-	if(result.length() == 0) {
-		result = URI_SCHEME_DEFAULT;
-	}
+	String result = getScheme();
 	result += _F("://");
 	if(User.length() != 0) {
 		result += User;
