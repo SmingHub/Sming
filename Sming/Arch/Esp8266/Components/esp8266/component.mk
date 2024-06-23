@@ -14,11 +14,11 @@ COMPONENT_DEPENDS	+= esp-lwip
 endif
 
 
-COMPONENT_VARS += ENABLE_CUSTOM_PHY
+COMPONENT_RELINK_VARS += ENABLE_CUSTOM_PHY
 ENABLE_CUSTOM_PHY ?= 0
 ifeq ($(ENABLE_CUSTOM_PHY),1)
-	CFLAGS += -DENABLE_CUSTOM_PHY=1
-	LDFLAGS += -Wl,-wrap,register_chipv6_phy -u custom_register_chipv6_phy -u get_adc_mode
+	COMPONENT_CXXFLAGS += -DENABLE_CUSTOM_PHY=1
+	LDFLAGS += $(call Wrap,register_chipv6_phy)
 endif
 
 
