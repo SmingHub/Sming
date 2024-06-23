@@ -26,7 +26,7 @@
 
 static const uint8_t phyInitData[128] PROGMEM = {
 	[0] = 5,	// Reserved, do not change
-	[1] = 0,	// Reserved, do not change
+	[1] = 8,	// Version
 	[2] = 4,	// Reserved, do not change
 	[3] = 2,	// Reserved, do not change
 	[4] = 5,	// Reserved, do not change
