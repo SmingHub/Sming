@@ -8,3 +8,27 @@ support code.
 
 Sming uses libraries from the ESP8266 NON-OS SDK version 3, imported as a submodule.
 The header and linker files are provided by this Component.
+
+
+.. envvar:: ENABLE_CUSTOM_PHY
+
+   Default: undefined (off)
+
+   The ``phy_init`` partition contains data which the ESP8266 SDK uses to initialise WiFi hardware at startup.
+
+   You may want to change settings for a certain ROM on the device without changing it for all ROMs on the device.
+   To do this, build with ``ENABLE_CUSTOM_PHY=1`` and add code to your application::
+
+      #include <esp_phy.h>
+
+      void customPhyInit(PhyInitData data)
+      {
+         // Use methods of `data` to modify as required
+      	data.set_vdd33_const(0xff);
+      }
+
+   See :cpp:struct:`PhyInitData` for further details.
+
+
+.. doxygenstruct:: PhyInitData
+    :members:

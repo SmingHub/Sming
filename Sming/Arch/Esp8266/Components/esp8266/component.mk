@@ -38,7 +38,8 @@ export SDK_LIBDIR
 
 COMPONENT_DOXYGEN_INPUT := \
 	include/gpio.h \
-	include/pwm.h
+	include/pwm.h \
+	include/esp_phy.h
 
 # Crash handler hooks this so debugger can be invoked
 EXTRA_LDFLAGS := $(call Wrap,system_restart_local)

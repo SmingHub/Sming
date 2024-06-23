@@ -3,22 +3,6 @@ Sming (Esp8266)
 
 This Component builds a library containing architecture-specific code, and defines dependencies for Sming to build for the Esp8266.
 
-SDK 3.0+
---------
-
-Sming uses the Espressif Non-OS SDK version 3.0. It is pulled in automatically during builds.
-Previous SDK versions are not supported.
-
-Custom PHY data
----------------
-
-.. envvar:: ENABLE_CUSTOM_PHY
-
-   Default: undefined (off)
-
-   Set to 1 to enable programatical control over the initial Wifi PHY data.
-
-
 No-WiFi build
 -------------
 
