@@ -121,6 +121,12 @@ public:
 		return toString();
 	}
 
+	/**
+	 * @brief Get the applicable scheme, using the default if not specified
+	 * The returned string is always lowercase.
+	 */
+	String getScheme() const;
+
 	/** @brief Obtain the default port for a given scheme
 	 *  @retval int 0 if scheme is not recognised or has no standard port defined
 	 */
@@ -132,7 +138,7 @@ public:
 	 */
 	int getPort() const
 	{
-		return Port ?: getDefaultPort(Scheme);
+		return Port ?: getDefaultPort(getScheme());
 	}
 
 	/** @brief Get hostname+port part of URL string

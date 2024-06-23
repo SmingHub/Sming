@@ -51,6 +51,16 @@ Url& Url::operator=(String urlString)
 	return *this;
 }
 
+String Url::getScheme() const
+{
+	if(!Scheme) {
+		return URI_SCHEME_DEFAULT;
+	}
+	String s = Scheme;
+	s.toLowerCase();
+	return s;
+}
+
 int Url::getDefaultPort(const String& scheme)
 {
 #define XX(name, str, port)                                                                                            \
