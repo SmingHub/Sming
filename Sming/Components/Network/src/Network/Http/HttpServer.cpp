@@ -11,8 +11,6 @@
  ****/
 
 #include "HttpServer.h"
-#include "TcpClient.h"
-#include "WString.h"
 
 void HttpServer::configure(const HttpServerSettings& settings)
 {

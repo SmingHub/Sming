@@ -9,7 +9,7 @@
  ****/
 
 #include "FtpServer.h"
-#include "Ftp/FtpServerConnection.h"
+#include "FtpServerConnection.h"
 
 TcpConnection* CustomFtpServer::createClient(tcp_pcb* clientTcp)
 {

@@ -14,7 +14,7 @@
  ****/
 
 #include "WebsocketClient.h"
-#include "Http/HttpHeaders.h"
+#include "../HttpHeaders.h"
 #include <Data/WebHelpers/base64.h>
 
 class WebsocketClientConnection : public HttpClientConnection

@@ -11,7 +11,7 @@
  ****/
 
 #include "HttpClient.h"
-#include "Data/Stream/FileStream.h"
+#include <Data/Stream/FileStream.h>
 
 HttpClient::HttpConnectionPool HttpClient::httpConnectionPool;
 SimpleTimer HttpClient::cleanUpTimer;
