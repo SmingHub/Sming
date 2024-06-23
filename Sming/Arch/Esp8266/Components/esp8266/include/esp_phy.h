@@ -30,37 +30,99 @@
 struct PhyInitData {
 	uint8_t* data; // [128]
 
+	/**
+	 * @brief version
+	 */
+	uint8_t get_version() const
+	{
+		return data[1];
+	}
+
 	/*
 	[26] = 225, // spur_freq_cfg, spur_freq=spur_freq_cfg/spur_freq_cfg_div
 	[27] = 10,	// spur_freq_cfg_div
 	// each bit for 1 channel, 1 to select the spur_freq if in band, else 40
 	[28] = 0xff, // spur_freq_en_h
 	[29] = 0xff, // spur_freq_en_l
-
-	[34] = 78, // target_power_qdb_0, target power is 78/4=19.5dbm
-	[35] = 74, // target_power_qdb_1, target power is 74/4=18.5dbm
-	[36] = 70, // target_power_qdb_2, target power is 70/4=17.5dbm
-	[37] = 64, // target_power_qdb_3, target power is 64/4=16dbm
-	[38] = 60, // target_power_qdb_4, target power is 60/4=15dbm
-	[39] = 56, // target_power_qdb_5, target power is 56/4=14dbm
-
-	[40] = 0, // target_power_index_mcs0
-	[41] = 0, // target_power_index_mcs1
-	[42] = 1, // target_power_index_mcs2
-	[43] = 1, // target_power_index_mcs3
-	[44] = 2, // target_power_index_mcs4
-	[45] = 3, // target_power_index_mcs5
-	[46] = 4, // target_power_index_mcs6
-	[47] = 5, // target_power_index_mcs7
 */
+
 	/**
-	 * @brief crystal_26m_en
+	 * @brief Configure the maximum TX powers for channels 1, 11, 13 and 14.
+	 * @param chan1 Limit for channel 1
+	 * @param chan11 Limit for channel 11
+	 * @param chan13 Limit for channel 13
+	 * @param chan14 Limit for channel 14
+	 *
+	 * Valid range [0:5].
+	 */
+	void set_power_limits(uint8_t chan1, uint8_t chan11, uint8_t chan13, uint8_t chan14)
+	{
+		data[78] = 2; // Enable bytes 30-33 to set maximum TX power
+		data[30] = chan1;
+		data[31] = chan11;
+		data[32] = chan13;
+		data[33] = chan14;
+	}
+
+	/**
+	 * @brief Disable power limits on channels 1, 11, 13 and 14
+	 * @note Devices will no longer comply with certfications and may cause unwanted RF interference.
+	 */
+	void disable_power_limits()
+	{
+		data[78] = 0; // disable bytes 30-33
+	}
+
+	/**
+	 * @brief txpwr_dqb
+	 *
+	 * TX power can be switched between six levels.
+	 * Level 0 represents the maximum TX power, level 5 the minimum.
+	 *
+	 * target_power_qdb_0, target power is 78/4=19.5dbm
+	 * target_power_qdb_1, target power is 74/4=18.5dbm
+	 * target_power_qdb_2, target power is 70/4=17.5dbm
+	 * target_power_qdb_3, target power is 64/4=16dbm
+	 * target_power_qdb_4, target power is 60/4=15dbm
+	 * target_power_qdb_5, target power is 56/4=14dbm
+	 */
+	void set_txpwr_dqb(uint8_t level, uint8_t value)
+	{
+		if(level < 6) {
+			data[34 + level] = value;
+		}
+	}
+
+	/**
+	 * @brief txpwr_index
+	 *
+	 * Select target power level for specific data rate according to Modulation Coding Scheme (MCS).
+	 * The defaults are:
+	 *
+	 * MCS0: qdb_0	1 Mbit/s, 2 Mbit/s, 5.5 Mbit/s, 11 Mbit/s, 6 Mbit/s, 9 Mbit/s)
+	 * MCS1: qdb_0	12 Mbit/s)
+	 * MCS2: qdb_1	18 Mbit/s)
+	 * MCS3: qdb_1	24 Mbit/s
+	 * MCS4: qdb_2	36 Mbit/s
+	 * MCS5: qdb_3	48 Mbit/s
+	 * MCS6: qdb_4	54 Mbit/s
+	 * MCS7: qdb_5
+	 */
+	void set_txpwr(uint8_t mcs_index, uint8_t txpwr_qdb)
+	{
+		if(mcs_index < 8 && txpwr_qdb < 6) {
+			data[40 + mcs_index] = txpwr_qdb;
+		}
+	}
+
+	/**
+	 * @brief crystal_sel
 	 *
 	 * 0: 40MHz
 	 * 1: 26MHz
 	 * 2: 24MHz
 	 */
-	void set_crystal_26m_en(uint8_t value = 1)
+	void set_crystal_sel(uint8_t value = 1)
 	{
 		data[48] = value;
 	}
@@ -293,14 +355,16 @@ struct PhyInitData {
 	}
 
 	/**
-	 * @brief rf_cal_use_flash
+	 * @brief RF_calibration
+	 *
+	 * To ensure better RF performance, it is recommend to set RF_calibration to 3, otherwise the RF performance may become poor.
 	 *
 	 * 0: RF init no RF CAL, using all RF CAL data in flash, it takes about 2ms for RF init
 	 * 1: RF init only do TX power control CAL, others using RF CAL data in flash, it takes about 20ms for RF init
 	 * 2: RF init no RF CAL, using all RF CAL data in flash, it takes about 2ms for RF init  (same as 0?!)
 	 * 3: RF init do all RF CAL, it takes about 200ms for RF init
 	 */
-	void set_rf_cal_use_flash(uint8_t value = 1)
+	void set_rf_calibration(uint8_t value = 1)
 	{
 		data[114] = value;
 	}
