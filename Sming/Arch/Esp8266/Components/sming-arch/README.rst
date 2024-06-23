@@ -8,6 +8,9 @@ SDK 3.0+
 
 Default: OFF. In order to use SDK 3.0.0 or newer please follow the instructions here :component-esp8266:`esp8266`.
 
+- **SDK 3.0.+**: (default: OFF) In order to use SDK 3.0+ you should set one environment variable before (re)compiling Sming AND applications based on it.  The variable is SDK_BASE and it should point to `$SMING_HOME/third-party/ESP8266_NONOS_SDK`.
+- **Custom Phy data**: (default OFF) Allows programatical control over the initial physical data. This feature can be enabled by recompiling the Sming library and application with `ENABLE_CUSTOM_PHY=1`.
+
 No-WiFi build
 -------------
 

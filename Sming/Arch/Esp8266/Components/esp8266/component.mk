@@ -13,6 +13,15 @@ ifeq ($(DISABLE_WIFI),1)
 COMPONENT_DEPENDS	+= esp-lwip
 endif
 
+
+COMPONENT_VARS += ENABLE_CUSTOM_PHY
+ENABLE_CUSTOM_PHY ?= 0
+ifeq ($(ENABLE_CUSTOM_PHY),1)
+	CFLAGS += -DENABLE_CUSTOM_PHY=1
+	LDFLAGS += -Wl,-wrap,register_chipv6_phy -u custom_register_chipv6_phy -u get_adc_mode
+endif
+
+
 $(FLASH_INIT_DATA): $(SDK_BASE)/.submodule
 	$(Q) cp -f $(@D)/esp_init_data_default_v08.bin $@
 
