@@ -87,6 +87,8 @@ class TableFormatter:
 
 
 def scan_log(filename: str):
+    BUILD_PREFIX = 'Building /home/runner/'
+    IGNORE_PREFIX = ['projects/', 'work/Sming/Sming/Sming/']
     state = State.searching
     table = Table(os.path.basename(filename))
     target = None
@@ -97,10 +99,15 @@ def scan_log(filename: str):
         dtstr, _, line = line.strip().partition(' ')
         if not dtstr:
             continue
-        _, sep, c = line.partition('** Building ')
-        if sep:
-            target, _, _ = c.partition(' ')
-            target = target.removeprefix('/home/runner/projects/')
+        if state == State.searching:
+            if not line.startswith(BUILD_PREFIX):
+                continue
+            if 'clib-App' not in line:
+                continue
+            c = line[len(BUILD_PREFIX):]
+            for prefix in IGNORE_PREFIX:
+                c = c.removeprefix(prefix)
+            target, _, _ = c.partition('/out/')
             row = {
                 'target': target
             }
@@ -121,7 +128,8 @@ def scan_log(filename: str):
             elif ' : ' in line:
                 k, v = line.split(':')
             else:
-                table.append(row)
+                if len(row) > 1: # Not just target (discard host builds)
+                    table.append(row)
                 row = None
                 state = State.searching
                 continue
