@@ -6,10 +6,18 @@ This Component builds a library containing architecture-specific code, and defin
 SDK 3.0+
 --------
 
-Default: OFF. In order to use SDK 3.0.0 or newer please follow the instructions here :component-esp8266:`esp8266`.
+Sming uses the Espressif Non-OS SDK version 3.0. It is pulled in automatically during builds.
+Previous SDK versions are not supported.
 
-- **SDK 3.0.+**: (default: OFF) In order to use SDK 3.0+ you should set one environment variable before (re)compiling Sming AND applications based on it.  The variable is SDK_BASE and it should point to `$SMING_HOME/third-party/ESP8266_NONOS_SDK`.
-- **Custom Phy data**: (default OFF) Allows programatical control over the initial physical data. This feature can be enabled by recompiling the Sming library and application with `ENABLE_CUSTOM_PHY=1`.
+Custom PHY data
+---------------
+
+.. envvar:: ENABLE_CUSTOM_PHY
+
+   Default: undefined (off)
+
+   Set to 1 to enable programatical control over the initial Wifi PHY data.
+
 
 No-WiFi build
 -------------
