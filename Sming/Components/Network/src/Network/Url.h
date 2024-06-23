@@ -166,6 +166,14 @@ public:
 	 */
 	void debugPrintTo(Print& p) const;
 
+	/**
+	 * @brief Get a query parameter without risk of modification
+	 */
+	const String& getQueryParam(const String& name, const String& defaultValue = nullptr) const
+	{
+		return Query[name] ?: defaultValue;
+	}
+
 public:
 	String Scheme; ///< without ":" and "//"
 	String User;
