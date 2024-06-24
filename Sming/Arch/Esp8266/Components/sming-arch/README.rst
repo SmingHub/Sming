@@ -3,11 +3,6 @@ Sming (Esp8266)
 
 This Component builds a library containing architecture-specific code, and defines dependencies for Sming to build for the Esp8266.
 
-SDK 3.0+
---------
-
-Default: OFF. In order to use SDK 3.0.0 or newer please follow the instructions here :component-esp8266:`esp8266`.
-
 No-WiFi build
 -------------
 
