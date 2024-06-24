@@ -76,6 +76,7 @@ Configuration
    default: undefined
 
    Set to 1 to build in native 64-bit mode.
+   On MacOS builds are 64-bit only. Default for other systems is 32-bit.
 
 
 Components

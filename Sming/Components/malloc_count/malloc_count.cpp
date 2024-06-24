@@ -75,6 +75,8 @@ namespace
 bool logEnabled{false};
 size_t logThreshold{256};
 
+#ifdef ENABLE_MALLOC_COUNT
+
 /* to each allocation additional data is added for bookkeeping. due to
  * alignment requirements, we can optionally add more than just one integer. */
 constexpr size_t alignment{16}; /* bytes (>= 2*sizeof(size_t)) */
@@ -101,6 +103,8 @@ size_t* getSentinel(void* ptr)
 	if(logEnabled) {                                                                                                   \
 		debug_i(PPREFIX fmt, ##__VA_ARGS__);                                                                           \
 	}
+
+#endif
 
 /*****************************************/
 /* run-time memory allocation statistics */

@@ -3,90 +3,68 @@ Mac-OS Installation
 
 .. highlight:: bash
 
-Pre-requisites
---------------
 
-*(You might already have it)*
+Quick Install
+-------------
 
-Xcode command line tools
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-::
+1. Install command-line development tools::
 
    xcode-select --install
 
-Homebrew
-~~~~~~~~
+2. Check if ``homebrew`` is installed::
 
-::
+      brew
 
-   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+   If not, install it::
+
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+   Check https://brew.sh/ if there's any issues here.
+
+3. Prepare installation directory
+
+   Let's use /opt as the main directory for tools and Sming.
+
+   Regular users may not have access to */opt*, so do this::
+
+      sudo chown $USER /opt
+
+   (alternatively, use a different directory).
+
+4. Fetch the Sming repository::
+
+      git clone https://github.com/SmingHub/Sming /opt/sming
+
+   If using a directory other than ``/opt`` then you'll need to edit ``sming/Tools/export.sh`` before proceeding.
+
+5. Run the installer::
+
+      source /opt/sming/Tools/install.sh all
+
+   If you want to save disk space then you can select which tools to install.
+   Get a list of available options like this::
+
+      /opt/sming/Tools/install.sh
+
+
+Vscode
+------
+
+See https://code.visualstudio.com/.
+
 
 Eclipse
-~~~~~~~
+-------
 
 *(Optional)*::
 
    brew install Caskroom/cask/eclipse-cpp
 
-Build tools
------------
 
-Required for the makefile build system::
+.. note::
 
-   brew install binutils coreutils automake wget gawk libtool gettext gperf grep
-   export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
+   The following information may be out of date.
 
-Install gnu-sed and make sure that it is the default ``sed`` command line application::
-
-   brew install gnu-sed --with-default-names
-
-If you have already installed ``gnu-sed`` but it is not the default one,
-then make sure to uninstall it and install it again with the correct options::
-
-   brew uninstall gnu-sed
-   brew install gnu-sed --with-default-names
-
-ESP8266 Toolchain
------------------
-
-We pull this in from the `SmingTools <https://github.com/SmingHub/SmingTools/releases>`__ repository::
-
-   cd ~/
-   export ESP_HOME=/opt/esp-quick-toolchain
-   curl -LO https://github.com/SmingHub/SmingTools/releases/download/1.0/x86_64-apple-darwin14.xtensa-lx106-elf-e6a192b.201211.tar.gz
-   sudo mkdir -p $ESP_HOME
-   sudo tar -zxf x86_64-apple-darwin14.xtensa-lx106-elf-e6a192b.201211.tar.gz -C $ESP_HOME
-   sudo chmod -R 775 $ESP_HOME
-
-You can also build it yourself
-`with Homebrew <https://github.com/pfalcon/esp-open-sdk#macos>`__ or
-`with MacPorts <http://www.esp8266.com/wiki/doku.php?id=setup-osx-compiler-esp8266>`__.
-
-Get Sming Core
---------------
-
-Clone from the `Sming <https://github.com/SmingHub/Sming>`__ repository::
-
-   cd <your-favourite-development-folder>/
-   git clone https://github.com/SmingHub/Sming.git
-   cd Sming
-
-.. warning::
-
-   Do NOT use the --recursive option for the command above.
-   Our build mechanism will take care to get the third-party sources and patch them, if needed.
-
-You will get a copy of our `develop` branch which is intended for developers.
-It is the one where all new cool (unstable) features are landing.
-
-If you want to use our stable branch then use the master branch::
-
-   git checkout origin/master
-
-Finally, set the :envvar:`SMING_HOME` environment variable to point to <your-favourite-development-folder>/Sming/Sming::
-
-   export SMING_HOME=`pwd`
 
 Environment Variables
 ---------------------
@@ -94,10 +72,8 @@ Environment Variables
 Open with a text editor the ``.profile`` file in your home directory, and add these lines::
 
    export ESP_HOME=/opt/esp-quick-toolchain
-   export SMING_HOME=<your-favourite-development-folder>/Sming/Sming
+   export SMING_HOME=/opt/Sming/Sming
 
-Make sure to replace ``<your-favourite-development-folder>`` in the
-command above with the actual directory on your local disk.
 
 (Optional step)
 ~~~~~~~~~~~~~~~

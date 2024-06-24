@@ -5,17 +5,16 @@
 if [ -n "$IDF_PATH" ] && [ -n "$IDF_TOOLS_PATH" ]; then
 
 PACKAGES=(\
-    bison \
-    ccache \
-    dfu-util \
-    flex \
-    gperf \
-    ninja-build \
+    dfu-util
     )
 
 case $DIST in
     debian)
         PACKAGES+=(\
+            bison \
+            ccache \
+            flex \
+            gperf \
             libffi-dev \
             libssl-dev \
             )
@@ -23,12 +22,20 @@ case $DIST in
 
     fedora)
         PACKAGES+=(\
+            bison \
+            ccache \
+            flex \
+            gperf \
             libffi-devel \
             )
         ;;
+
+    darwin)
+        ;;
+
 esac
 
-$PKG_INSTALL ${PACKAGES[*]}
+$PKG_INSTALL "${PACKAGES[@]}"
 
 # If directory exists and isn't a symlink then rename it
 if [ ! -L "$IDF_PATH" ] && [ -d "$IDF_PATH" ]; then
@@ -37,23 +44,29 @@ if [ ! -L "$IDF_PATH" ] && [ -d "$IDF_PATH" ]; then
 fi
 
 INSTALL_IDF_VER="${INSTALL_IDF_VER:=5.2}"
-IDF_CLONE_PATH="$(readlink -m "$IDF_PATH/..")/esp-idf-${INSTALL_IDF_VER}"
+IDF_CLONE_PATH="$IDF_PATH/../esp-idf-${INSTALL_IDF_VER}"
 IDF_REPO="${IDF_REPO:=https://github.com/mikee47/esp-idf.git}"
 IDF_BRANCH="sming/release/v${INSTALL_IDF_VER}"
 
 if [ -d "$IDF_CLONE_PATH" ]; then
-    printf "\n\n** Skipping ESP-IDF clone: '$IDF_CLONE_PATH' exists\n\n"
+    printf "\n\n** Skipping ESP-IDF clone: '%s' exists\n\n" "$IDF_CLONE_PATH"
 else
     echo "git clone -b $IDF_BRANCH $IDF_REPO $IDF_CLONE_PATH"
     git clone -b "$IDF_BRANCH" "$IDF_REPO" "$IDF_CLONE_PATH"
 fi
+IDF_CLONE_PATH=$(realpath "$IDF_CLONE_PATH")
 
 # Create link to clone
-rm -f "$IDF_PATH"
+rm -rf "$IDF_PATH"
 ln -s "$IDF_CLONE_PATH" "$IDF_PATH"
 
 # Install IDF tools and packages
 python3 "$IDF_PATH/tools/idf_tools.py" --non-interactive install
+if [ -n "$VIRTUAL_ENV" ]; then
+    unset VIRTUAL_ENV
+    unset VIRTUAL_ENV_PROMPT
+    export PATH="${PATH/$VIRTUAL_ENV\/bin:/}"
+fi
 python3 "$IDF_PATH/tools/idf_tools.py" --non-interactive install-python-env
 
 if [ -z "$KEEP_DOWNLOADS" ]; then

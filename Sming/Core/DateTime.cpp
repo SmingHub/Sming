@@ -17,7 +17,7 @@
 #if defined(__WIN32) || (defined(ARCH_ESP32) && ESP_IDF_VERSION_MAJOR < 5)
 static_assert(sizeof(time_t) != 8, "Great! Now supports 64-bit - please update code");
 #warning "**Y2038** time_t is only 32-bits in this build configuration"
-#elif defined(ARCH_HOST) && __TIMESIZE != 64 && !defined(__USE_TIME_BITS64)
+#elif defined(ARCH_HOST) && __TIMESIZE != 64 && !defined(__USE_TIME_BITS64) && !defined(__APPLE__)
 #warning "**Y2038** Expecting 64-bit time_t - please use GCC 10 or later"
 #else
 static_assert(sizeof(time_t) == 8, "Expecting 64-bit time_t - please use GCC 10 or later");

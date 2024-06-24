@@ -103,13 +103,22 @@ CRYPTO_FUNC_INIT(sha512)
 	ctx->count = 0;
 }
 
-CRYPTO_FUNC_UPDATE(sha512) __attribute__((alias("crypto_sha384_update")));
+CRYPTO_FUNC_UPDATE(sha512)
+{
+	crypto_sha384_update(ctx, input, length);
+}
 
 CRYPTO_FUNC_FINAL(sha512)
 {
 	sha2big_final(ctx, digest, false);
 }
 
-CRYPTO_FUNC_GET_STATE(sha512) __attribute__((alias("crypto_sha384_get_state")));
+CRYPTO_FUNC_GET_STATE(sha512)
+{
+	return crypto_sha384_get_state(ctx, state);
+}
 
-CRYPTO_FUNC_SET_STATE(sha512) __attribute__((alias("crypto_sha384_set_state")));
+CRYPTO_FUNC_SET_STATE(sha512)
+{
+	crypto_sha384_set_state(ctx, state, count);
+}

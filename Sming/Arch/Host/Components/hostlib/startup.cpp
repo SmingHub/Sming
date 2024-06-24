@@ -254,6 +254,7 @@ int main(int argc, char* argv[])
 	commandLine.parse(argc - i, &argv[i]);
 
 	if(!host_flashmem_init(config.flash)) {
+		host_debug_e("Flash init failed\n");
 		return 1;
 	}
 

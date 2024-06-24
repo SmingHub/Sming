@@ -3,7 +3,12 @@ Debugging on Host
 
 Required tools and hardware
 ---------------------------
-A GNU C/C++ debugger is the only requirement for the Host architecture.
+
+For ``MacOS``, GDB can be installed via ``brew`` but it requires code-signing.
+This is not a trivial procedure and ``lldb`` is recommended.
+This is installed with the standard xcode development tools.
+
+For other development platforms a GNU C/C++ debugger is required.
 Make sure that you have the following executable in your PATH::
 
     gdb
@@ -37,9 +42,8 @@ You can recompile Sming with the following directives to debug better Sming and 
 Application
 ~~~~~~~~~~~
 
-To use, (re)compile your application with the ENABLE_GDB option and
-flash it to the board. For this example we will use the :sample:`LiveDebug`
-sample application::
+To use, (re)compile your application with the ENABLE_GDB option.
+For this example we will use the :sample:`LiveDebug` sample application::
 
    cd $SMING_HOME/../samples/LiveDebug
    make clean
@@ -48,6 +52,10 @@ sample application::
 The next step is to start the debugger. This can be done with the command below::
 
    make gdb
+
+For ``MacOS``, use lldb::
+
+   make lldb
 
 After that a new interactive debugging session will be started::
 
@@ -73,6 +81,8 @@ You can pause the program execution by pressing `Ctrl-C`.  And work further usin
 
 GDB commands
 ------------
+
+For ``MacOS``, please refer to https://lldb.llvm.org/index.html for LLDB usage instructions.
 
 There are multiple commands supported in GDB and we will mention only some of them.
 
