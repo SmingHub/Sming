@@ -72,7 +72,7 @@ Environment Variables
 Open with a text editor the ``.profile`` file in your home directory, and add these lines::
 
    export ESP_HOME=/opt/esp-quick-toolchain
-   export SMING_HOME=opt/Sming/Sming
+   export SMING_HOME=/opt/Sming/Sming
 
 
 (Optional step)
