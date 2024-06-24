@@ -20,7 +20,7 @@ jobs:
          approvers: slaff
     - name: Install xmlstarlet
       if: ${{ github.ref_type == 'tag' }}
-      run: sudo apt-get install -y xmlstarlet
+      run: sudo apt-get install -y jq xmlstarlet
     - name: Build docs
       if: ${{ github.ref_type == 'tag' }}
       run: |
