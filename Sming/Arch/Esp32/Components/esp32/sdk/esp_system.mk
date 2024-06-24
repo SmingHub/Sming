@@ -16,3 +16,6 @@ endif
 # linker will ignore panic_highint_hdl.S as it has no other files depending on any
 # symbols in it.
 SDK_UNDEF_SYMBOLS += ld_include_panic_highint_hdl
+
+# IDF 5.2
+SDK_WRAP_SYMBOLS += esp_newlib_init_global_stdio
