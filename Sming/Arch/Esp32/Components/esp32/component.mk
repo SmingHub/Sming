@@ -66,6 +66,15 @@ endif
 ESP32_COMPONENT_PATH := $(COMPONENT_PATH)
 SDK_DEFAULT_PATH := $(ESP32_COMPONENT_PATH)/sdk
 
+SDK_PROJECT_PATH := $(ESP32_COMPONENT_PATH)/project/$(ESP_VARIANT)/$(BUILD_TYPE)
+SDK_CONFIG_DEFAULTS := $(SDK_PROJECT_PATH)/sdkconfig.defaults
+
+SDKCONFIG_MAKEFILE := $(SDK_PROJECT_PATH)/sdkconfig
+ifeq ($(MAKE_DOCS),)
+-include $(SDKCONFIG_MAKEFILE)
+endif
+export SDKCONFIG_MAKEFILE  # sub-makes (like bootloader) will reuse this path
+
 ifdef IDF_VERSION_52
 GLOBAL_CFLAGS += \
 	-DSOC_XTAL_FREQ_MHZ=CONFIG_XTAL_FREQ \
@@ -412,15 +421,6 @@ EXTRA_LDFLAGS += \
 	-T memory.ld \
 	-T sections.ld
 endif
-
-SDK_PROJECT_PATH := $(ESP32_COMPONENT_PATH)/project/$(ESP_VARIANT)/$(BUILD_TYPE)
-SDK_CONFIG_DEFAULTS := $(SDK_PROJECT_PATH)/sdkconfig.defaults
-
-SDKCONFIG_MAKEFILE := $(SDK_PROJECT_PATH)/sdkconfig
-ifeq ($(MAKE_DOCS),)
--include $(SDKCONFIG_MAKEFILE)
-endif
-export SDKCONFIG_MAKEFILE  # sub-makes (like bootloader) will reuse this path
 
 FLASH_BOOT_LOADER       := $(SDK_BUILD_BASE)/bootloader/bootloader.bin
 FLASH_BOOT_CHUNKS		:= $(CONFIG_BOOTLOADER_OFFSET_IN_FLASH)=$(FLASH_BOOT_LOADER)
