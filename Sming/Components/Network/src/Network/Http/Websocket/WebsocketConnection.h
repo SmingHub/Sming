@@ -25,14 +25,8 @@ extern "C" {
 
 #define WEBSOCKET_VERSION 13 // 1.3
 
-DECLARE_FSTR(WSSTR_CONNECTION)
 DECLARE_FSTR(WSSTR_UPGRADE)
 DECLARE_FSTR(WSSTR_WEBSOCKET)
-DECLARE_FSTR(WSSTR_HOST)
-DECLARE_FSTR(WSSTR_ORIGIN)
-DECLARE_FSTR(WSSTR_KEY)
-DECLARE_FSTR(WSSTR_PROTOCOL)
-DECLARE_FSTR(WSSTR_VERSION)
 DECLARE_FSTR(WSSTR_SECRET)
 
 class WebsocketConnection;
@@ -292,11 +286,11 @@ protected:
 	bool processFrame(TcpClient& client, char* at, int size);
 
 protected:
-	WebsocketDelegate wsConnect = nullptr;
-	WebsocketMessageDelegate wsMessage = nullptr;
-	WebsocketBinaryDelegate wsBinary = nullptr;
-	WebsocketDelegate wsPong = nullptr;
-	WebsocketDelegate wsDisconnect = nullptr;
+	WebsocketDelegate wsConnect;
+	WebsocketMessageDelegate wsMessage;
+	WebsocketBinaryDelegate wsBinary;
+	WebsocketDelegate wsPong;
+	WebsocketDelegate wsDisconnect;
 
 	void* userData = nullptr;
 
