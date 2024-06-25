@@ -9,7 +9,8 @@ CPPFLAGS += \
 	-DARDUINO_ARCH_RP2040 \
 	-march=armv6-m \
 	-mcpu=cortex-m0plus \
-	-mthumb
+	-mthumb \
+	-nostdlib
 
 CXXFLAGS += \
 	-fno-threadsafe-statics \
@@ -42,9 +43,6 @@ NM				:= $(TOOLSPEC)nm
 OBJCOPY		 	:= $(TOOLSPEC)objcopy
 OBJDUMP		 	:= $(TOOLSPEC)objdump
 GDB				:= gdb
-
-CPPFLAGS += \
-	-nostdlib
 
 # => Tools
 MEMANALYZER = $(PYTHON) $(ARCH_TOOLS)/memanalyzer.py $(OBJDUMP)$(TOOL_EXT)
