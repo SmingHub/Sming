@@ -276,6 +276,7 @@ public:
 		// Configure the hardware to match selected clock divider
 		Timer1Api<clkdiv, eHWT_Maskable> timer;
 		timer.setCallback(callback, nullptr);
+		timer.setInterval(timer.maxTicks());
 		timer.arm(false);
 
 		ClockTestTemplate<Timer1Clock<clkdiv>, uint32_t>::execute();
