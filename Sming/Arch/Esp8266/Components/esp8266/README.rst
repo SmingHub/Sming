@@ -10,6 +10,9 @@ Sming uses libraries from the ESP8266 NON-OS SDK version 3, imported as a submod
 The header and linker files are provided by this Component.
 
 
+Configuration variables
+-----------------------
+
 .. envvar:: ENABLE_CUSTOM_PHY
 
    Default: undefined (off)
@@ -29,6 +32,23 @@ The header and linker files are provided by this Component.
 
    See :cpp:struct:`PhyInitData` for further details.
 
+
+.. envvar:: FLASH_INIT_DATA
+
+   Read-only. This is the path to the default PHY data written to the ``phy_init`` partition.
+   It is provided by the SDK.
+
+
+.. envvar:: FLASH_INIT_DATA_VCC
+
+   Read-only. This is the path to a modified version of the default PHY data selected
+   by the ``vdd`` hardware configuration option. See :doc:`/information/tips-n-tricks`.
+
+   The modification is equivalent to calling :cpp:func:`PhyInitData::set_vdd33_const` with ``0xff``.
+
+
+API reference
+-------------
 
 .. doxygenstruct:: PhyInitData
     :members:
