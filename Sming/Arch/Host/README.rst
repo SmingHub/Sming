@@ -7,7 +7,7 @@ Summary
 -------
 
 Allows Sming applications to be built as an executable to run on the
-development host (Windows or Linux).
+development host (Windows, Linux or MacOS).
 
 This is a source-level emulator for developing and testing new framework
 code prior to flashing a real device.
@@ -21,12 +21,13 @@ Requirements
 ``CMake`` is required to build LWIP
 
 Ensure you are using relatively recent compilers, with 32-bit libraries available.
-
 For Linux, you may require the ``gcc-multilib`` and ``g++-multilib``
 packages to build 32-bit executables on a 64-bit OS.
+Alternatively set :envvar:`BUILD64` to 1 to build in native 64-bit mode.
 
 MacOS comes pre-installed with ``Apple Clang`` as the standard toolchain.
 This should be sufficient to build Sming in Host mode.
+Note that MacOS does not support 32-bit applications so the emulator will build in 64-bit mode.
 
 For Windows, make sure your ``MinGW`` distro is up to date.
 See :doc:`/getting-started/windows/index` for further details.

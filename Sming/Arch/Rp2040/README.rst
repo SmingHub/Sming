@@ -39,18 +39,14 @@ Tested and working:
 - WiFi networking support for the Pico-W
 - Standard analogue I/O via analogRead. More advanced hardware capabilities require use of the SDK directly.
 - Dual-core support. See below for details.
-
+- USB supported using the :library:`USB` library, both host and device modes.
+- HardwareSPI via :library:`HardwareSPI` for fully asynchronous SPI communications (host mode only).
 
 Yet to be implemented:
 
-USB
-   Best to write a separate ``Sming-USB`` library (based on TinyUSB) to support the RP2040, ESP32-S2 & ESP32-S3 variants.
-   Needs some thought about good integration into the framework.
-   Arduino-Pico overrides ``HardwareSerial`` to support serial devices, we can do something similar.
-HardwareSPI
-   To support DMA, etc.
 PWM
    Hardware can drive up to 16 outputs and measure input frequency/duty cycle.
+   The native API is quite straightforward to use and makes best use of the hardware.
 I2C
    Has hardware support
 RTC
@@ -79,6 +75,7 @@ Requirements
 These requirements are in addition to the standard Sming setup.
 
 The easiest way to get started is with the Sming installer - see :doc:`/getting-started/index`.
+For Linux and MacOS just run ``Tools/install.sh rp2040``.
 
 Note: Windows is not currently included in the chocolatey repository.
 The following instructions should help.
@@ -89,14 +86,12 @@ Compiler/linker
 
    Unzip the archive to a suitable location (e.g. ``/opt/rp2040`` or ``c:\tools\rp2040``) and set :envvar:`PICO_TOOLCHAIN_PATH` accordingly.
 
-   .. note::
-
-      The Sming installer script can do this for you ``Tools/install.sh rp2040``
-
    You can alternatively use the toolchains provided in your GNU/Linux distribution.
 
    Ubuntu
+
       ::
+
          sudo apt install gcc-arm-none-eabi gdb-multiarch
 
       To use gdb-multiarch you'll need to do this::
@@ -104,13 +99,16 @@ Compiler/linker
          make gdb GDB=gdb-multiarch
 
    Fedora
+
       ::
+
          sudo dnf install arm-none-eabi-gcc-cs-c++ arm-none-eabi-newlib
 
       The standard GDB appears to work OK.
 
 Ninja
-   This is used to build the RP2040 SDK code:
+
+   This is used to build the RP2040 SDK code::
 
       sudo apt install ninja-build
 
