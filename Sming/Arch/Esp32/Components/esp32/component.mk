@@ -350,14 +350,12 @@ LDFLAGS_esp32 := \
 	$(call LinkerScript,rom.newlib-funcs) \
 	$(call LinkerScript,rom.newlib-data) \
 	$(call LinkerScript,rom.syscalls) \
-	$(call LinkerScript,rom.newlib-time) \
 	$(call LinkerScript,rom.eco3)
 
 LDFLAGS_esp32s2 := \
 	$(call LinkerScript,rom.newlib-funcs) \
 	$(call LinkerScript,rom.newlib-data) \
-	$(call LinkerScript,rom.spiflash) \
-	$(call LinkerScript,rom.newlib-time) \
+	$(call LinkerScript,rom.spiflash)
 
 LDFLAGS_esp32c3 := \
 	$(call LinkerScript,rom.newlib) \
@@ -366,19 +364,13 @@ LDFLAGS_esp32c3 := \
 
 LDFLAGS_esp32s3 := \
 	$(call LinkerScript,rom.newlib) \
-	$(call LinkerScript,rom.version) \
-	$(call LinkerScript,rom.newlib-time)
+	$(call LinkerScript,rom.version)
 
 LDFLAGS_esp32c2 := \
 	$(call LinkerScript,rom.newlib) \
 	$(call LinkerScript,rom.version) \
 	$(call LinkerScript,rom.heap) \
 	$(call LinkerScript,rom.mbedtls)
-
-ifneq (v5.2,$(IDF_VERSION))
-LDFLAGS_esp32c2 += \
-	$(call LinkerScript,rom.newlib-time)
-endif
 
 SDK_WRAP_SYMBOLS :=
 SDK_UNDEF_SYMBOLS :=
