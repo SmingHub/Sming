@@ -9,6 +9,10 @@ ifneq ($(BUILD64),1)
 LDFLAGS += -m32
 endif
 
+ifeq ($(ENABLE_SANITIZERS),1)
+LDFLAGS += $(foreach s,$(SANITIZERS),-fsanitize=$s)
+endif
+
 # Executable
 TARGET_OUT_0			:= $(FW_BASE)/$(APP_NAME)$(TOOL_EXT)
 

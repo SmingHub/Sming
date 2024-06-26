@@ -52,14 +52,18 @@ To find out what options are in force, use ``make list-config``.
 Configuration
 -------------
 
+.. note::
+
+   The following settings are for debugging purposes and are not 'sticky'.
+   Where used, they should generally be defined globally using ``export``.
+
+
 .. envvar:: CLI_TARGET_OPTIONS
 
    Use this to add any custom options to the emulator command line. e.g.:
 
       make run CLI_TARGET_OPTIONS=--help
       make run CLI_TARGET_OPTIONS="--debug=0 --cpulimit=2"
-
-   Note: These settings are not 'sticky'
 
 
 .. envvar:: CLANG_BUILD
@@ -68,8 +72,6 @@ Configuration
    1: Use standard ``clang``
    N: Use specific installed version, ``clang-N``
 
-   Note: This setting is not 'sticky'
-
 
 .. envvar:: BUILD64
 
@@ -77,6 +79,33 @@ Configuration
 
    Set to 1 to build in native 64-bit mode.
    On MacOS builds are 64-bit only. Default for other systems is 32-bit.
+
+
+.. envvar:: ENABLE_SANITIZERS
+
+   default: 0 (off)
+
+   Enable this option to build with lots of runtime checking.
+
+   This provides some of the capabilities of valgrind but by instrumenting
+   the code when it is compiled, rather than patching at runtime.
+
+   It also links in some additional runtime support libraries.
+
+   Run a full rebuild after changing this setting (or :envvar:`SANITIZERS`)::
+
+       make clean components-clean
+       make
+
+   .. note::
+
+      If using :envvar:`CLANG_BUILD` then all runtime libraries should already be available.
+      For GCC you will also need to install ``libasan`` and ``libubsan``.
+
+
+.. envvar:: SANITIZERS
+
+   Selects which sanitizers are used. See :envvar:`ENABLE_SANITIZERS`.
 
 
 Components
