@@ -204,8 +204,9 @@ int CKeycode::add(int c)
 			ret = 0x0300 | m_buffer[0];
 		else if(m_count == 2)
 			ret = ((m_buffer[0] & 0x0f) << 8) | m_buffer[1];
-		else
-			; //!! Unexpected
+		else {
+			//!! Unexpected
+		}
 
 		reset();
 		break;
