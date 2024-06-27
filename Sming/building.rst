@@ -46,6 +46,13 @@ These are the main variables you need to be aware of:
 
    -  **Rp2040** Supports Raspberry Pi RP2040-based boards.
 
+   Exactly **one** of the following macros is defined for code use:
+
+      .. c:macro:: ARCH_ESP8266
+      .. c:macro:: ARCH_RP2040
+      .. c:macro:: ARCH_ESP32
+      .. c:macro:: ARCH_HOST
+
 
 .. envvar:: SMING_SOC
 
@@ -53,6 +60,10 @@ These are the main variables you need to be aware of:
    Set this value to the specific variant being targeted.
 
    Will automatically set SMING_ARCH to the appropriate value.
+
+   A corresponding macro is defined for code use, such as:
+
+      .. c:macro:: SOC_ESP32S2
 
 
 .. envvar:: SMING_CPP_STD
