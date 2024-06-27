@@ -182,7 +182,12 @@ CPPFLAGS = \
 BUILD_VARS += STRICT
 STRICT ?= 0
 export STRICT
-ifneq ($(STRICT),1)
+ifeq ($(STRICT),1)
+CPPFLAGS += \
+	-Wimplicit-fallthrough \
+	-Wunused-parameter \
+	-Wunused-but-set-parameter
+else
 CPPFLAGS += \
 	-Werror \
 	-Wno-sign-compare \
