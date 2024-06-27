@@ -404,7 +404,13 @@ one of the following lists:
 .. envvar:: DEBUG_VARS
 
    These are generally for information only, and are not cached
-   (except for :envvar:`SMING_ARCH` and :envvar:`SMING_RELEASE`).
+   (except for :envvar:`SMING_SOC` and :envvar:`SMING_RELEASE`).
+
+
+.. envvar:: BUILD_VARS
+
+   These are optional user-provided build variables.
+   They are cached in ``out/build-type.mk`` so apply to all architectures.
 
 
 Note that the lists not prefixed ``COMPONENT_xx`` are global and so should only
