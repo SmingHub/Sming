@@ -54,6 +54,22 @@ CPPFLAGS += \
 	-D_FILE_OFFSET_BITS=64 \
 	-D_TIME_BITS=64
 
+# Sanitizers
+DEBUG_VARS += ENABLE_SANITIZERS SANITIZERS
+ENABLE_SANITIZERS ?= 0
+SANITIZERS ?= \
+	address \
+	pointer-compare \
+	pointer-subtract \
+	leak \
+	undefined
+ifeq ($(ENABLE_SANITIZERS),1)
+CPPFLAGS += \
+	-fstack-protector-all \
+	-fsanitize-address-use-after-scope \
+	$(foreach s,$(SANITIZERS),-fsanitize=$s)
+endif
+
 # => Tools
 MEMANALYZER = size
 
