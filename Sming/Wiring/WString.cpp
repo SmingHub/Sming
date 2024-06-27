@@ -49,7 +49,7 @@ String::String(char c) : String()
 String::String(unsigned char value, unsigned char base, unsigned char width, char pad) : String()
 {
 	char buf[8 + 8 * sizeof(value)];
-	ultoa(value, buf, base);
+	ultoa_wp(value, buf, base, width, pad);
 	*this = buf;
 }
 
