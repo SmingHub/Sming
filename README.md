@@ -1,6 +1,6 @@
 # Sming
 
-Sming is an asynchronous embedded C/C++ framework with superb performance and multiple network features. 
+Sming is an asynchronous embedded C++ framework with superb performance and multiple network features.
 Sming is [open source](LICENSE), modular and supports [multiple architectures](https://sming.readthedocs.io/en/latest/features.html) including ESP8266, ESP32 and RP2040.
 
 [![Examples](https://github.com/SmingHub/Sming/wiki/images/small/combine.png)](https://github.com/SmingHub/Sming/wiki/examples)
@@ -42,20 +42,21 @@ The purpose of Sming is to simplify the creation of embedded applications. The d
 
 To follow the latest development you will need to clone our `develop` branch:
 
-```
+```bash
 git clone https://github.com/SmingHub/Sming.git
 ```
 
 
 ## Examples
-The examples are a great way to learn the API and brush up your C/C++ knowledge.
-Once you have completed the installation of the development tools, you can get the latest source code.
 
-```
+The examples are a great way to learn the API and brush up your C++ knowledge.
+Once you have completed the installation of the development tools, you can get the latest source code:
+
+```bash
 git clone https://github.com/SmingHub/Sming.git
 ```
 
-And check some of the examples.
+And check some of the examples:
 
 - [Basic Blink](#basic-blink)
 - [Simple GPIO input/output](#simple-gpio-inputoutput)
@@ -68,9 +69,10 @@ And check some of the examples.
 - [Email Client](#email-client)
 
 ### Basic Blink
+
 Blinking is something like the "Hello World" example for the embedded world. You can check it using the commands below:
 
-```
+```bash
 cd Sming/samples
 cd Basic_Blink
 make # -- compiles the application
@@ -80,6 +82,7 @@ make flash # -- tries to upload the application to your ESP8266 device.
 More information at **[Sample Projects](https://sming.readthedocs.io/en/latest/samples.html)** page.
 
 ### Simple GPIO Input/Output
+
 ```c++
 #define LED_PIN 2 // GPIO2
 ...
@@ -90,18 +93,21 @@ digitalWrite(LED_PIN, HIGH);
 For a complete example take a look at the [Basic_Blink](samples/Basic_Blink/app/application.cpp) sample.
 
 ### Start Serial Communication
+
 ```c++
 Serial.begin(9600);
 Serial.println("Hello Sming! Let's do smart things.");
 ```
 
 ### Connect to WiFi
+
 ```c++
 WifiStation.enable(true);
 WifiStation.config("LOCAL-NETWORK", "123456789087"); // Put your SSID and password here
 ```
 
 ### Read DHT22 sensor
+
 ```c++
 #include <Libraries/DHTesp/DHTesp.h> // This is just a popular Arduino library!
 
@@ -120,6 +126,7 @@ void init()
 Take a look at the code of the [Humidity_DHT22](samples/Humidity_DHT22/app/application.cpp) sample.
 
 ### HTTP Client
+
 ```c++
 HttpClient thingSpeak;
 ...
@@ -139,6 +146,7 @@ void onDataSent(HttpClient& client, bool successful)
 For more examples take a look at the [HttpClient](samples/HttpClient/app/application.cpp), [HttpClient_Instapush](samples/HttpClient_Instapush/app/application.cpp) and [HttpClient_ThingSpeak](samples/HttpClient_ThingSpeak/app/application.cpp) samples.
 
 ### OTA Application Update
+
 ```c++
 void doUpgrade()
 {
@@ -165,6 +173,7 @@ void doUpgrade()
 For a complete example take a look at the [Basic_Ota](samples/Basic_Ota/app/application.cpp) sample.
 
 ### HTTP Server
+
 ```c++
 server.listen(80);
 server.paths.set("/", onIndex);
@@ -200,6 +209,7 @@ void onFile(HttpRequest &request, HttpResponse &response)
 For more examples take a look at the [HttpServer_ConfigNetwork](samples/HttpServer_ConfigNetwork/app/application.cpp), [HttpServer_Bootstrap](samples/HttpServer_Bootstrap/app/application.cpp), [HttpServer_WebSockets](samples/HttpServer_WebSockets/app/application.cpp) and [HttpServer_AJAX](samples/HttpServer_AJAX/app/application.cpp) samples.
 
 ### Email Client
+
 ```c++
 SmtpClient emailClient;
 
@@ -237,10 +247,11 @@ int onMailSent(SmtpClient& client, int code, char* status)
 See the [SmtpClient sample](samples/SmtpClient/app/application.cpp) for details.
 
 ## Live Debugging
+
 Applications based on Sming Framework that are flashed and running on an ESP8266 device can be debugged using interactive debuggers.
 In order to debug an application it has to be re-compiled with the ENABLE_GDB=1 directive. And then flashed on the device. As shown below:
 
-```
+```bash
 cd $SMING_HOME/../samples/LiveDebug
 make clean
 make ENABLE_GDB=1
@@ -248,7 +259,8 @@ make flashapp # <-- this will update only the application firmware.
 ```
 
 Once the debuggable application is flashed on the device the developers have to run GDB. The easiest way to run the command-line GDB is to execute the following command:
-```
+
+```bash
 make gdb
 ```
 
@@ -260,7 +272,8 @@ See [LiveDebug sample](samples/LiveDebug/) for details.
 
 ## Contribute
 
-You can contribute to Sming by
+You can contribute to Sming by:
+
 - Providing Pull Requests with new features, bug fixes, new ideas, etc. See [Contributing](https://smingdev.readthedocs.io/en/latest/contribute/index.html) for details.
 - Testing our latest source code and reporting issues.
 - Supporting us financially to acquire hardware for testing and implementing or out of gratitude
@@ -276,8 +289,10 @@ In addition to that anyone who is helping this project can file an expense. If t
 #### Backers and sponsors
 
 Thank you to all the people who have backed Sming
-<a href="https://opencollective.com/Sming#backers" target="_blank"><img src="https://opencollective.com/Sming/backers.svg?width=890"></a>
+<a href="https://opencollective.com/Sming#backers" target="_blank">
+<img src="https://opencollective.com/Sming/backers.svg?width=890" alt="backer"></a>
 
 or sponsored it.
 
-<a href="https://opencollective.com/Sming/sponsor/0/website" target="_blank"><img src="https://opencollective.com/Sming/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/Sming/sponsor/0/website" target="_blank">
+<img src="https://opencollective.com/Sming/sponsor/0/avatar.svg" alt="sponsor"></a>

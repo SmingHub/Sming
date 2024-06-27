@@ -39,7 +39,7 @@ following these :doc:`instructions </_inc/docs/README>`.
 Examples
 --------
 
-The examples are a great way to learn the API and brush up your C/C++ knowledge.
+The examples are a great way to learn the API and brush up your C++ knowledge.
 
 -  `Basic Blink <#basic-blink>`__
 -  `Simple GPIO input/output <#simple-gpio-inputoutput>`__
