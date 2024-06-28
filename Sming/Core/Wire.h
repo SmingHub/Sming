@@ -155,8 +155,6 @@ private:
 	bool transmitting{false};
 	UserRequest userRequestCallback{nullptr};
 	UserReceive userReceiveCallback{nullptr};
-	void onRequestService();
-	void onReceiveService(uint8_t*, int);
 
 	void twi_delay(uint8_t v);
 	bool twi_write_start();
