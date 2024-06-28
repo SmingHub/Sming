@@ -23,6 +23,8 @@ int* __errno(void)
 
 void __assert_func(const char* file, int line, const char* func, const char* what)
 {
+	(void)file;
+	(void)what;
 	SYSTEM_ERROR("ASSERT: %s %d", func, line);
 	gdb_do_break();
 	while(1) {

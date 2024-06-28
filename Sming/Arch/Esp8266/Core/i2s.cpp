@@ -155,7 +155,7 @@ bool i2s_read_sample(int16_t* left, int16_t* right, bool blocking)
 	return true;
 }
 
-static void IRAM_ATTR i2s_callback(void* param, i2s_event_type_t event)
+static void IRAM_ATTR i2s_callback([[maybe_unused]] void* param, i2s_event_type_t event)
 {
 	switch(event) {
 	case I2S_EVENT_TX_DONE:

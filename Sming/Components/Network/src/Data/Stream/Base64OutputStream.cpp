@@ -21,7 +21,7 @@ Base64OutputStream::Base64OutputStream(IDataSourceStream* stream, size_t resultS
 	base64_init_encodestate(&state, CHARS_PER_LINE);
 }
 
-size_t Base64OutputStream::transform(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength)
+size_t Base64OutputStream::transform(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t)
 {
 	if(sourceLength == 0) {
 		return base64_encode_blockend(reinterpret_cast<char*>(target), &state);

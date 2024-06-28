@@ -30,7 +30,7 @@ void esp_network_initialise()
 	 * Initialise default WiFi stack
 	 */
 	esp_netif_init();
-	auto eventHandler = [](void* arg, esp_event_base_t base, int32_t id, void* data) -> void {
+	auto eventHandler = [](void*, esp_event_base_t base, int32_t id, void* data) -> void {
 		using namespace SmingInternal::Network;
 		debugf("event %s|%d\n", base, id);
 		station.eventHandler(base, id, data);

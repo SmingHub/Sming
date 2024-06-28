@@ -120,7 +120,7 @@ public:
 		return (speed == other.speed) && (bitOrder == other.bitOrder) && (dataMode == other.dataMode);
 	}
 
-	void print(const char* s)
+	void print([[maybe_unused]] const char* s)
 	{
 #ifdef SPI_DEBUG
 		debugf("->  %s -> SPISettings(%u, %u, %u)", s, speed.frequency, bitOrder, dataMode);

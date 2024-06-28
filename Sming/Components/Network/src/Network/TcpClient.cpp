@@ -241,7 +241,7 @@ void TcpClient::onClosed()
 	state = eTCS_Ready;
 }
 
-void TcpClient::onFinished(TcpClientState finishState)
+void TcpClient::onFinished(TcpClientState)
 {
 	freeStreams();
 

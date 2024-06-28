@@ -163,7 +163,7 @@ bool CSemaphore::timedwait(unsigned us)
 #endif
 }
 
-void CThread::startup(unsigned cpulimit)
+void CThread::startup([[maybe_unused]] unsigned cpulimit)
 {
 #ifndef __APPLE__
 	if(cpulimit != 0) {

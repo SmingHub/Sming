@@ -70,7 +70,7 @@ public:
 		url.Path = String('/') + file.name;
 
 		auto req = new HttpRequest(url);
-		req->onRequestComplete([this, file](HttpConnection& connection, bool success) -> int {
+		req->onRequestComplete([this, file](HttpConnection& connection, bool) -> int {
 			auto response = connection.getResponse();
 			debug_i("Client received '%s'", connection.getRequest()->uri.toString().c_str());
 			Serial.print(response->toString());

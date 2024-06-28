@@ -100,7 +100,7 @@ void WebsocketConnection::activate()
 	connection->setReceiveDelegate(TcpClientDataDelegate(&WebsocketConnection::processFrame, this));
 }
 
-bool WebsocketConnection::processFrame(TcpClient& client, char* at, int size)
+bool WebsocketConnection::processFrame(TcpClient&, char* at, int size)
 {
 	int rc = ws_parser_execute(&parser, &parserSettings, this, at, size);
 	if(rc != WS_OK) {
@@ -146,7 +146,7 @@ int WebsocketConnection::staticOnDataPayload(void* userData, const char* at, siz
 	return WS_OK;
 }
 
-int WebsocketConnection::staticOnDataEnd(void* userData)
+int WebsocketConnection::staticOnDataEnd(void*)
 {
 	return WS_OK;
 }

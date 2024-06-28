@@ -124,7 +124,7 @@ void startCapture()
  * default http handler to check if server is up and running
  */
 
-void onIndex(HttpRequest& request, HttpResponse& response)
+void onIndex(HttpRequest&, HttpResponse& response)
 {
 	response.sendFile(_F("index.html"));
 }
@@ -162,7 +162,7 @@ void onCamSetup(HttpRequest& request, HttpResponse& response)
  * http request to capture and send an image from the camera
  * uses actual setting set by ArdCammCommand Handler
  */
-void onCapture(HttpRequest& request, HttpResponse& response)
+void onCapture(HttpRequest&, HttpResponse& response)
 {
 	Serial.printf("perform onCapture()\r\n");
 
@@ -202,7 +202,7 @@ MultipartStream::BodyPart snapshotProducer()
 	return result;
 }
 
-void onStream(HttpRequest& request, HttpResponse& response)
+void onStream(HttpRequest&, HttpResponse& response)
 {
 	Serial.println(_F("perform onCapture()"));
 
@@ -215,7 +215,7 @@ void onStream(HttpRequest& request, HttpResponse& response)
 	response.sendDataStream(stream, F("multipart/x-mixed-replace; boundary=") + stream->getBoundary());
 }
 
-void onFavicon(HttpRequest& request, HttpResponse& response)
+void onFavicon(HttpRequest&, HttpResponse& response)
 {
 	response.code = HTTP_STATUS_NOT_FOUND;
 }

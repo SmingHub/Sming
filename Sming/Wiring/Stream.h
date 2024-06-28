@@ -133,7 +133,7 @@ public:
 	 * @param c Character to search for
 	 * @retval int -1 if not found 0 or positive number otherwise
 	 */
-	virtual int indexOf(char c)
+	virtual int indexOf(char)
 	{
 		return -1;
 	}

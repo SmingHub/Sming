@@ -48,7 +48,8 @@ protected:
 	 * @param connection The associated TCP connection to receive any response
 	 * @retval bool true if command handled and response sent
 	 */
-	virtual bool onCommand(String cmd, String data, FtpServerConnection& connection)
+	virtual bool onCommand([[maybe_unused]] String cmd, [[maybe_unused]] String data,
+						   [[maybe_unused]] FtpServerConnection& connection)
 	{
 		return false;
 	}

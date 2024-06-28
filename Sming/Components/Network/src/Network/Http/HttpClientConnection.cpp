@@ -61,7 +61,7 @@ void HttpClientConnection::reset()
 	HttpConnection::reset();
 }
 
-int HttpClientConnection::onMessageBegin(http_parser* parser)
+int HttpClientConnection::onMessageBegin(http_parser*)
 {
 	incomingRequest = executionQueue.peek();
 	if(incomingRequest == nullptr) {

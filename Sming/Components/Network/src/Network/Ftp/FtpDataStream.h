@@ -75,7 +75,7 @@ public:
 		}
 	}
 
-	virtual void transferData(TcpConnectionEvent sourceEvent)
+	virtual void transferData(TcpConnectionEvent)
 	{
 	}
 

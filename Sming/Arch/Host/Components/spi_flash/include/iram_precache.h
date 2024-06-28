@@ -10,6 +10,8 @@ extern "C" {
 
 static inline void iram_precache(void* addr, uint32_t bytes)
 {
+    (void)addr;
+    (void)bytes;
 }
 
 #ifdef __cplusplus

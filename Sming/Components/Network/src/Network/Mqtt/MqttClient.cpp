@@ -101,7 +101,7 @@ MqttClient::~MqttClient()
 	clearMessage(incomingMessage);
 }
 
-bool MqttClient::onTcpReceive(TcpClient& client, char* data, int size)
+bool MqttClient::onTcpReceive(TcpClient&, char* data, int size)
 {
 	pingTimer.start();
 	int rc = mqtt_parser_execute(&parser, &incomingMessage, (uint8_t*)data, (size_t)size);
@@ -113,7 +113,7 @@ bool MqttClient::onTcpReceive(TcpClient& client, char* data, int size)
 	return true;
 }
 
-int MqttClient::staticOnMessageBegin(void* userData, mqtt_message_t* message)
+int MqttClient::staticOnMessageBegin(void*, mqtt_message_t*)
 {
 	// At that moment the message contains the type and its common length
 	return 0;

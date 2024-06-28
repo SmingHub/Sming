@@ -96,10 +96,9 @@ protected:
 	virtual int onMessageBegin(http_parser* parser) = 0;
 
 	/** @brief Called when the URL path is known
-	 * 	@param uri
 	 * 	@retval int 0 on success, non-0 on error
 	 */
-	virtual int onPath(const Url& uri)
+	virtual int onPath(const Url&)
 	{
 		return 0;
 	}
@@ -111,17 +110,17 @@ protected:
 	virtual int onHeadersComplete(const HttpHeaders& headers) = 0;
 
 #ifndef COMPACT_MODE
-	virtual int onStatus(http_parser* parser)
+	virtual int onStatus(http_parser*)
 	{
 		return 0;
 	}
 
-	virtual int onChunkHeader(http_parser* parser)
+	virtual int onChunkHeader(http_parser*)
 	{
 		return 0;
 	}
 
-	virtual int onChunkComplete(http_parser* parser)
+	virtual int onChunkComplete(http_parser*)
 	{
 		return 0;
 	}
@@ -145,7 +144,7 @@ protected:
 	 * 	@param parser
 	 * 	@retval bool true on success
 	 */
-	virtual bool onProtocolUpgrade(http_parser* parser)
+	virtual bool onProtocolUpgrade([[maybe_unused]] http_parser* parser)
 	{
 		return true;
 	}

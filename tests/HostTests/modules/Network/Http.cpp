@@ -45,7 +45,7 @@ public:
 		}
 	}
 
-	static void printHeaders(const HttpHeaders& headers)
+	static void printHeaders([[maybe_unused]] const HttpHeaders& headers)
 	{
 #if DEBUG_VERBOSE_LEVEL == DBG
 		Serial << _F("  count: ") << headers.count() << endl;

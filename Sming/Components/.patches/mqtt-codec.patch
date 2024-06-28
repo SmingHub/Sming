@@ -12,3 +12,23 @@ index dc8888d..8900b32 100644
  #endif
  
  #ifndef MQTT_MALLOC
+diff --git a/src/serialiser.c b/src/serialiser.c
+index 1fc595b..da15ea0 100644
+--- a/src/serialiser.c
++++ b/src/serialiser.c
+@@ -58,6 +58,7 @@ void mqtt_serialiser_init(mqtt_serialiser_t* serialiser) {
+ }
+ 
+ size_t mqtt_serialiser_size(mqtt_serialiser_t* serialiser, mqtt_message_t* message) {
++  (void)serialiser;
+   size_t len = 0;
+ 
+   switch(message->common.type) {
+@@ -197,6 +198,7 @@ size_t mqtt_serialiser_size(mqtt_serialiser_t* serialiser, mqtt_message_t* messa
+ 
+ mqtt_serialiser_rc_t mqtt_serialiser_write(mqtt_serialiser_t* serialiser, mqtt_message_t* message, uint8_t* buffer,
+                                            size_t len) {
++  (void)len;
+   if(serialiser == NULL || message == NULL || buffer == NULL) {
+     return MQTT_SERIALISER_RC_ERROR;
+   }

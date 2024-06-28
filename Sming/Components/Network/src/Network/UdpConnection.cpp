@@ -107,7 +107,7 @@ void UdpConnection::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort
 	}
 }
 
-void UdpConnection::staticOnReceive(void* arg, struct udp_pcb* pcb, struct pbuf* p, LWIP_IP_ADDR_T* addr, u16_t port)
+void UdpConnection::staticOnReceive(void* arg, struct udp_pcb*, struct pbuf* p, LWIP_IP_ADDR_T* addr, u16_t port)
 {
 	auto conn = static_cast<UdpConnection*>(arg);
 	if(conn != nullptr) {
@@ -117,7 +117,7 @@ void UdpConnection::staticOnReceive(void* arg, struct udp_pcb* pcb, struct pbuf*
 	pbuf_free(p);
 }
 
-bool UdpConnection::setMulticast(IpAddress ip)
+bool UdpConnection::setMulticast([[maybe_unused]] IpAddress ip)
 {
 #if LWIP_MULTICAST_TX_OPTIONS
 	if(udp == nullptr) {
@@ -131,7 +131,7 @@ bool UdpConnection::setMulticast(IpAddress ip)
 	return false;
 }
 
-bool UdpConnection::setMulticastTtl(size_t ttl)
+bool UdpConnection::setMulticastTtl([[maybe_unused]] size_t ttl)
 {
 #if LWIP_MULTICAST_TX_OPTIONS
 	if(udp == nullptr) {

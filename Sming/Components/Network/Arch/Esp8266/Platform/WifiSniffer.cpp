@@ -23,7 +23,7 @@ static const uint8_t broadcast1[3] = {0x01, 0x00, 0x5e};
 static const uint8_t broadcast2[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 static const uint8_t broadcast3[3] = {0x33, 0x33, 0x00};
 
-static void parseClientInfo(ClientInfo& ci, uint8_t* frame, uint16_t framelen, int rssi, unsigned channel)
+static void parseClientInfo(ClientInfo& ci, uint8_t* frame, int rssi, unsigned channel)
 {
 	ci.channel = channel;
 	ci.err = 0;
@@ -145,7 +145,7 @@ void WifiSniffer::parseData(uint8_t* buf, uint16_t len)
 		if(data->buf[0] == 0x08 || data->buf[0] == 0x88) {
 			if(clientCallback) {
 				ClientInfo ci;
-				parseClientInfo(ci, data->buf, 36, data->rx_ctrl.rssi, data->rx_ctrl.channel);
+				parseClientInfo(ci, data->buf, data->rx_ctrl.rssi, data->rx_ctrl.channel);
 				// Check BSSID and station don't match (why ?)
 				if(ci.bssid != ci.station) {
 					clientCallback(ci);

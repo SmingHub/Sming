@@ -281,7 +281,7 @@ bool StationImpl::startScan(ScanCompletedDelegate scanCompleted)
 		return false;
 	}
 
-	auto scan_result = [](void* env, const cyw43_ev_scan_result_t* result) -> int {
+	auto scan_result = []([[maybe_unused]] void* env, const cyw43_ev_scan_result_t* result) -> int {
 		if(!result || !station.scanCompletedCallback) {
 			return 0;
 		}

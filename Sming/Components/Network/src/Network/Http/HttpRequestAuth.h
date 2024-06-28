@@ -25,7 +25,7 @@ public:
 
 	virtual void setRequest(HttpRequest* request) = 0;
 
-	virtual void setResponse(HttpResponse* response)
+	virtual void setResponse(HttpResponse*)
 	{
 	}
 };

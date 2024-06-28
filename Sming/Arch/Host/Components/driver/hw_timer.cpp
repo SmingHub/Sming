@@ -56,7 +56,7 @@ public:
 		callback.arg = nullptr;
 	}
 
-	void enable(hw_timer_clkdiv_t div, hw_timer_intr_type_t intr_type, bool auto_load)
+	void enable(hw_timer_clkdiv_t div, hw_timer_intr_type_t, bool auto_load)
 	{
 		stop();
 		switch(div) {

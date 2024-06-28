@@ -126,13 +126,13 @@ public:
 	using Print::write;
 
 	// Slave mode not currently implemented
-	void onReceive(UserReceive callback)
+	void onReceive([[maybe_unused]] UserReceive callback)
 	{
 		// userReceiveCallback = callback;
 	}
 
 	// Slave mode not currently implemented
-	void onRequest(UserRequest callback)
+	void onRequest([[maybe_unused]] UserRequest callback)
 	{
 		// userRequestCallback = callback;
 	}

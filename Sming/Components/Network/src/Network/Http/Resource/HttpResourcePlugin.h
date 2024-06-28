@@ -30,27 +30,29 @@ protected:
 
 	virtual int getPriority() const = 0;
 
-	virtual bool urlComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
+	virtual bool urlComplete(HttpServerConnection&, HttpRequest&, HttpResponse&)
 	{
 		return true;
 	}
 
-	virtual bool headersComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
+	virtual bool headersComplete(HttpServerConnection&, HttpRequest&, HttpResponse&)
 	{
 		return true;
 	}
 
-	virtual bool upgradeReceived(HttpServerConnection& connection, HttpRequest&, char* data, size_t length)
+	virtual bool upgradeReceived(HttpServerConnection&, HttpRequest&, [[maybe_unused]] char* data,
+								 [[maybe_unused]] size_t length)
 	{
 		return true;
 	}
 
-	virtual bool bodyReceived(HttpServerConnection& connection, HttpRequest& request, char*& data, size_t& length)
+	virtual bool bodyReceived(HttpServerConnection&, HttpRequest&, [[maybe_unused]] char*& data,
+							  [[maybe_unused]] size_t& length)
 	{
 		return true;
 	}
 
-	virtual bool requestComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
+	virtual bool requestComplete(HttpServerConnection&, HttpRequest&, HttpResponse&)
 	{
 		return true;
 	}

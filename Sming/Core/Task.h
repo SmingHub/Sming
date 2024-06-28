@@ -139,7 +139,7 @@ protected:
 	/**
 	 * @brief Called immediately before calling to loop() to indicate a state change
 	 */
-	virtual void onNotify(Notify code)
+	virtual void onNotify([[maybe_unused]] Notify code)
 	{
 	}
 

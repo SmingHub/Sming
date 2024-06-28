@@ -96,6 +96,8 @@ public:
 	 */
 	virtual int seekFrom(int offset, SeekOrigin origin)
 	{
+		(void)offset;
+		(void)origin;
 		return -1;
 	}
 

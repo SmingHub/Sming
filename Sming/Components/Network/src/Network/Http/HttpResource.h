@@ -40,7 +40,7 @@ public:
 	/**
 	 * @brief Takes care to cleanup the connection
 	 */
-	virtual void shutdown(HttpServerConnection& connection)
+	virtual void shutdown(HttpServerConnection&)
 	{
 	}
 

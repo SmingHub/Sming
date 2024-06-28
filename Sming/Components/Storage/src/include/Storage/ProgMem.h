@@ -41,12 +41,12 @@ public:
 
 	bool read(storage_size_t address, void* dst, size_t size) override;
 
-	bool write(storage_size_t address, const void* src, size_t size) override
+	bool write(storage_size_t, const void*, size_t) override
 	{
 		return false;
 	}
 
-	bool erase_range(storage_size_t address, storage_size_t size) override
+	bool erase_range(storage_size_t, storage_size_t) override
 	{
 		return false;
 	}

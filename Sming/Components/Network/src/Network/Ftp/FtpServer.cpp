@@ -29,7 +29,7 @@ IFS::UserRole FtpServer::validateUser(const char* login, const char* pass)
 	return (user.password == pass) ? user.role : IFS::UserRole::None;
 }
 
-bool FtpServer::onCommand(String cmd, String data, FtpServerConnection& connection)
+bool FtpServer::onCommand(String cmd, [[maybe_unused]] String data, FtpServerConnection& connection)
 {
 	if(cmd == _F("FSFORMAT")) {
 		auto fs = connection.getFileSystem();

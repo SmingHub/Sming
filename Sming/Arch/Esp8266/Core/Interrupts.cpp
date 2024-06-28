@@ -31,7 +31,7 @@ static void interruptDelegateCallback(uint32_t interruptNumber)
  *  @param  intr_mask Interrupt mask
  *  @param  arg pointer to array of arguments
  */
-static void IRAM_ATTR interruptHandler(uint32_t intr_mask, void* arg)
+static void IRAM_ATTR interruptHandler([[maybe_unused]] uint32_t intr_mask, [[maybe_unused]] void* arg)
 {
 	bool processed;
 

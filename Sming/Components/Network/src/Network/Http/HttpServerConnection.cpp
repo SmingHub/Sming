@@ -57,7 +57,7 @@ int HttpServerConnection::onPath(const Url& uri)
 	return resource ? resource->handleUrl(*this, request, response) : 0;
 }
 
-int HttpServerConnection::onMessageComplete(http_parser* parser)
+int HttpServerConnection::onMessageComplete(http_parser*)
 {
 	// we are finished with this request
 	int hasError = 0;

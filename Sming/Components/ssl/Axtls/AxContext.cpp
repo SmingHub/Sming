@@ -116,7 +116,7 @@ Connection* AxContext::createServer(tcp_pcb* tcp)
 }
 
 // Required by axtls-8266
-extern "C" int ax_get_file(const char* filename, uint8_t** buf)
+extern "C" int ax_get_file(const char*, uint8_t** buf)
 {
 	*buf = 0;
 	return 0;
