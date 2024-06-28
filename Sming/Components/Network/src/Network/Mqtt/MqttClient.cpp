@@ -400,6 +400,7 @@ void MqttClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		}
 
 		state = eMCS_SendingData;
+		[[fallthrough]];
 	}
 
 	case eMCS_SendingData:

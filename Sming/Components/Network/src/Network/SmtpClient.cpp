@@ -199,6 +199,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 
 		state = eSMTP_SendMail;
 	}
+		[[fallthrough]];
 
 	case eSMTP_SendMail: {
 		sendString(F("MAIL FROM:") + outgoingMail->from + "\r\n");
@@ -230,17 +231,20 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 
 		state = eSMTP_SendingHeaders;
 	}
+		[[fallthrough]];
 
 	case eSMTP_SendingHeaders: {
 		WAIT_FOR_STREAM(stream);
 
 		state = eSMTP_StartBody;
 	}
+		[[fallthrough]];
 
 	case eSMTP_StartBody: {
 		sendMailBody(outgoingMail);
 		state = eSMTP_SendingBody;
 	}
+		[[fallthrough]];
 
 	case eSMTP_SendingBody: {
 		WAIT_FOR_STREAM(stream);

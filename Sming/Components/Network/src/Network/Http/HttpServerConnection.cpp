@@ -210,6 +210,7 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		}
 		sendResponseHeaders(&response);
 		state = eHCS_SendingHeaders;
+		[[fallthrough]];
 	}
 
 	case eHCS_SendingHeaders: {
@@ -218,6 +219,7 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		}
 
 		state = eHCS_StartBody;
+		[[fallthrough]];
 	}
 
 	case eHCS_StartBody:
@@ -229,6 +231,7 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		delete stream;
 		stream = nullptr;
 		state = eHCS_Sent;
+		[[fallthrough]];
 	}
 
 	case eHCS_Sent: {
