@@ -23,12 +23,15 @@
 #include "esp_tasks.h"
 #include <heap.h>
 #include <esp_system.h>
-#include <os.h>
 #include <soc/soc.h>
 #include <driver/gpio.h>
 #include <driver/adc.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#include <os.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/portmacro.h>
+#pragma GCC diagnostic pop
 
 #include <m_printf.h>
 #include <debug_progmem.h>

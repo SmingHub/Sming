@@ -19,7 +19,7 @@ bool system_update_cpu_freq(uint32_t freq)
 	esp_err_t err = esp_pm_get_configuration(&config);
 	if(err != ESP_OK) {
 		debug_e("[PM] Failed to read PM config %u", err);
-	} else if(config.max_freq_mhz == freq) {
+	} else if((unsigned)config.max_freq_mhz == freq) {
 		return true;
 	}
 

@@ -10,9 +10,9 @@ os_task_t taskCallback;
 
 } // namespace
 
-bool system_os_task(os_task_t callback, uint8_t prio, os_event_t* events, uint8_t qlen)
+bool system_os_task(os_task_t callback, uint8_t prio, os_event_t*, uint8_t)
 {
-	auto handler = [](void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
+	auto handler = [](void*, esp_event_base_t, int32_t event_id, void* event_data) {
 		assert(taskCallback != nullptr);
 
 		os_event_t ev{os_signal_t(event_id), 0};

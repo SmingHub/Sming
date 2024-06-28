@@ -19,8 +19,11 @@
 #undef FLAG_ATTR
 #define FLAG_ATTR(TYPE)
 #include <soc/spi_periph.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <hal/spi_ll.h>
 #include <hal/clk_gate_ll.h>
+#pragma GCC diagnostic pop
 #include <soc/rtc.h>
 #include <Data/BitSet.h>
 

@@ -10,7 +10,10 @@
 
 #include <driver/hw_timer.h>
 #include <driver/periph_ctrl.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <hal/timer_ll.h>
+#pragma GCC diagnostic pop
 #include <esp_intr_alloc.h>
 #include <soc/timer_periph.h>
 
@@ -43,7 +46,7 @@ public:
 #endif
 	}
 
-	void IRAM_ATTR attach_interrupt(hw_timer_source_type_t source_type, hw_timer_callback_t callback, void* arg)
+	void IRAM_ATTR attach_interrupt(hw_timer_source_type_t, hw_timer_callback_t callback, void* arg)
 	{
 		if(isr_handle != nullptr) {
 			detach_interrupt();
