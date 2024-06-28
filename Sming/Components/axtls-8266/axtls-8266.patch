@@ -250,6 +250,36 @@ index 1082733..097302a 100644
          W[t] |= ctx->Message_Block[t * 4 + 1] << 16;
          W[t] |= ctx->Message_Block[t * 4 + 2] << 8;
          W[t] |= ctx->Message_Block[t * 4 + 3];
+diff --git a/crypto/sha256.c b/crypto/sha256.c
+index ba1ac95..abfde8f 100644
+--- a/crypto/sha256.c
++++ b/crypto/sha256.c
+@@ -216,10 +216,10 @@ void SHA256_Update(SHA256_CTX *ctx, const uint8_t * msg, int len)
+     ctx->total[0] += len;
+     ctx->total[0] &= 0xFFFFFFFF;
+ 
+-    if (ctx->total[0] < len)
++    if ((int)ctx->total[0] < len)
+         ctx->total[1]++;
+ 
+-    if (left && len >= fill)
++    if (left && len >= (int)fill)
+     {
+         memcpy((void *) (ctx->buffer + left), (void *)msg, fill);
+         SHA256_Process(ctx->buffer, ctx);
+diff --git a/crypto/sha512.c b/crypto/sha512.c
+index f92b80a..4d37cec 100644
+--- a/crypto/sha512.c
++++ b/crypto/sha512.c
+@@ -160,7 +160,7 @@ void SHA512_Update(SHA512_CTX *ctx, const uint8_t * msg, int len)
+     while (len > 0)
+     {
+         // The buffer can hold at most 128 bytes
+-        size_t n = MIN(len, 128 - ctx->size);
++        size_t n = MIN((size_t)len, 128 - ctx->size);
+  
+         // Copy the data to the buffer
+         memcpy(ctx->w_buf.buffer + ctx->size, msg, n);
 diff --git a/replacements/time.c b/replacements/time.c
 index 4972119..1447711 100644
 --- a/replacements/time.c

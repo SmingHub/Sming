@@ -1,3 +1,25 @@
+diff --git a/src/parser.c b/src/parser.c
+index 6feef41..a2ef901 100644
+--- a/src/parser.c
++++ b/src/parser.c
+@@ -507,7 +507,7 @@ static mqtt_parser_rc_t mqtt_parser_process(mqtt_parser_t* parser, mqtt_message_
+           return MQTT_PARSER_RC_INCOMPLETE;
+         }
+ 
+-        size_t consume = available < parser->needs ? available : parser->needs;
++        size_t consume = ((size_t)available < parser->needs) ? (size_t)available : parser->needs;
+ 
+         int rc =
+             parser->callbacks->on_data_payload(parser->data, message, (const char*)(data + parser->nread), consume);
+@@ -605,7 +605,7 @@ mqtt_parser_rc_t mqtt_parser_execute(mqtt_parser_t* parser, mqtt_message_t* mess
+       return MQTT_PARSER_RC_ERROR;
+     }
+ 
+-    for(int x = 0; x < overflow; x++) {
++    for(size_t x = 0; x < overflow; x++) {
+       parser->stored[x] = data[parser->nread];
+       parser->nread += 1;
+     }
 diff --git a/src/platform.h b/src/platform.h
 index dc8888d..8900b32 100644
 --- a/src/platform.h

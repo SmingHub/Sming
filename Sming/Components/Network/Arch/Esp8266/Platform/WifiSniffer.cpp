@@ -92,10 +92,6 @@ static void parseBeaconInfo(BeaconInfo& bi, uint8_t* frame, uint16_t framelen, i
 					memset(bi.ssid, '\0', sizeof(bi.ssid));
 					break;
 				}
-				if(bi.ssid_len < 0) {
-					bi.err = -1;
-					break;
-				}
 				if(bi.ssid_len > 32) {
 					bi.err = -2;
 					break;
