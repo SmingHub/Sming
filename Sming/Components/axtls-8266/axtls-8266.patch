@@ -219,6 +219,19 @@ index 53509d0..25c568d 100644
  }
  #endif
  
+diff --git a/crypto/sha1.c b/crypto/sha1.c
+index 1082733..097302a 100644
+--- a/crypto/sha1.c
++++ b/crypto/sha1.c
+@@ -121,7 +121,7 @@ static void SHA1ProcessMessageBlock(SHA1_CTX *ctx)
+      */
+     for  (t = 0; t < 16; t++)
+     {
+-        W[t] = ctx->Message_Block[t * 4] << 24;
++        W[t] = (uint32_t)ctx->Message_Block[t * 4] << 24;
+         W[t] |= ctx->Message_Block[t * 4 + 1] << 16;
+         W[t] |= ctx->Message_Block[t * 4 + 2] << 8;
+         W[t] |= ctx->Message_Block[t * 4 + 3];
 diff --git a/replacements/time.c b/replacements/time.c
 index 4972119..1447711 100644
 --- a/replacements/time.c
