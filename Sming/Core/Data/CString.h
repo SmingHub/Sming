@@ -28,9 +28,8 @@ class CString : public std::unique_ptr<char[]>
 public:
 	CString() = default;
 
-	CString(const CString& src)
+	CString(const CString& src) : CString(src.get())
 	{
-		assign(src.get());
 	}
 
 	CString(CString&& other) = default;
