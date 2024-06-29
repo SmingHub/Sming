@@ -42,7 +42,7 @@ uint32_t RtcClass::getRtcSeconds()
 
 bool RtcClass::setRtcNanoseconds(uint64_t nanoseconds)
 {
-	return false;
+	return setRtcSeconds(nanoseconds / 1'000'000'000ULL);
 }
 
 bool RtcClass::setRtcSeconds(uint32_t seconds)

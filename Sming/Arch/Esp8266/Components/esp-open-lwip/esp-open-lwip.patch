@@ -490,7 +490,7 @@ index 77ef471..0e4936a 100644
  static const char mem_debug_file[] ICACHE_RODATA_ATTR = __FILE__;
  #endif
 diff --git a/lwip/core/dhcp.c b/lwip/core/dhcp.c
-index 342543e..92ad15b 100644
+index 342543e..cd7d0c3 100644
 --- a/lwip/core/dhcp.c
 +++ b/lwip/core/dhcp.c
 @@ -137,6 +137,9 @@ u8_t  dhcp_rx_options_given[DHCP_OPTION_IDX_MAX];
@@ -503,6 +503,15 @@ index 342543e..92ad15b 100644
  
  /* DHCP client state machine functions */
  static err_t dhcp_discover(struct netif *netif);
+@@ -586,7 +589,7 @@ dhcp_handle_ack(struct netif *netif)
+ #if LWIP_DNS
+   /* DNS servers */
+   n = 0;
+-  while(dhcp_option_given(dhcp, DHCP_OPTION_IDX_DNS_SERVER + n) && (n < DNS_MAX_SERVERS)) {
++  while((n < DNS_MAX_SERVERS) && dhcp_option_given(dhcp, DHCP_OPTION_IDX_DNS_SERVER + n)) {
+     ip_addr_t dns_addr;
+     ip4_addr_set_u32(&dns_addr, htonl(dhcp_get_option_value(dhcp, DHCP_OPTION_IDX_DNS_SERVER + n)));
+     dns_setserver(n, &dns_addr);
 diff --git a/lwip/core/ipv4/ip_addr.c b/lwip/core/ipv4/ip_addr.c
 index 81db807..dd6964e 100644
 --- a/lwip/core/ipv4/ip_addr.c

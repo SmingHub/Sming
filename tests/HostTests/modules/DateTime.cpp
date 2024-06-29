@@ -139,7 +139,7 @@ public:
 
 	void checkHttpDates(const FSTR::Array<TestDate>& dates)
 	{
-		for(auto date : VALID_HTTP_DATE) {
+		for(auto date : dates) {
 			DateTime dt;
 			String s(*date.stringToParse);
 			Serial << s << endl;

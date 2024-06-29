@@ -204,10 +204,7 @@ public:
 	/**
 	 * @brief Queue a deferred callback with no callback parameter
 	 */
-	__forceinline static bool IRAM_ATTR queueCallback(InterruptCallback callback)
-	{
-		return queueCallback(reinterpret_cast<TaskCallback>(callback));
-	}
+	static bool IRAM_ATTR queueCallback(InterruptCallback callback);
 
 	/**
 	 * @brief Queue a deferred Delegate callback
