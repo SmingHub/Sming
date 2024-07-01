@@ -51,8 +51,11 @@ IDF_BRANCH="sming/release/v${INSTALL_IDF_VER}"
 if [ -d "$IDF_CLONE_PATH" ]; then
     printf "\n\n** Skipping ESP-IDF clone: '%s' exists\n\n" "$IDF_CLONE_PATH"
 else
+    if [ -n "$CI_BUILD_DIR" ]; then
+        IDF_INSTALL_OPTIONS="--depth 1 --recurse-submodules --shallow-submodules"
+    fi
     echo "git clone -b $IDF_BRANCH $IDF_REPO $IDF_CLONE_PATH"
-    git clone -b "$IDF_BRANCH" "$IDF_REPO" "$IDF_CLONE_PATH"
+    git clone -b "$IDF_BRANCH" "$IDF_REPO" "$IDF_CLONE_PATH" $IDF_INSTALL_OPTIONS
 fi
 
 # Create link to clone

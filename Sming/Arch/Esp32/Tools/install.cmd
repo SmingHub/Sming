@@ -9,7 +9,10 @@ if "%IDF_REPO%"=="" set IDF_REPO="https://github.com/mikee47/esp-idf.git"
 if "%INSTALL_IDF_VER%"=="" set INSTALL_IDF_VER=5.2
 set IDF_BRANCH="sming/release/v%INSTALL_IDF_VER%"
 
-git clone -b %IDF_BRANCH% %IDF_REPO% %IDF_PATH%
+if "%CI_BUILD_DIR%" NEQ "" (
+    set IDF_INSTALL_OPTIONS=--depth 1 --recurse-submodules --shallow-submodules
+)
+git clone -b %IDF_BRANCH% %IDF_REPO% %IDF_PATH% %IDF_INSTALL_OPTIONS%
 
 :setup
 
