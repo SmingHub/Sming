@@ -1,8 +1,8 @@
 diff --git a/BleGamepad.cpp b/BleGamepad.cpp
-index 212e6d7..f7fc502 100644
+index 4df4796..e0cbf0c 100644
 --- a/BleGamepad.cpp
 +++ b/BleGamepad.cpp
-@@ -834,8 +834,7 @@ void BleGamepad::release(uint8_t b)
+@@ -843,8 +843,7 @@ void BleGamepad::release(uint8_t b)
  
  uint8_t BleGamepad::specialButtonBitPosition(uint8_t b)
  {
@@ -12,3 +12,113 @@ index 212e6d7..f7fc502 100644
      uint8_t bit = 0;
      for (int i = 0; i < b; i++)
      {
+diff --git a/BleGamepad.h b/BleGamepad.h
+index ab17740..28752e5 100644
+--- a/BleGamepad.h
++++ b/BleGamepad.h
+@@ -107,7 +107,7 @@ public:
+     std::string deviceName;
+ 
+ protected:
+-    virtual void onStarted(NimBLEServer *pServer){};
++    virtual void onStarted(NimBLEServer *){};
+ };
+ 
+ #endif // CONFIG_BT_NIMBLE_ROLE_PERIPHERAL
+diff --git a/BleConnectionStatus.cpp b/BleConnectionStatus.cpp
+index 5d11694..f2fa751 100644
+--- a/BleConnectionStatus.cpp
++++ b/BleConnectionStatus.cpp
+@@ -4,13 +4,13 @@ BleConnectionStatus::BleConnectionStatus(void)
+ {
+ }
+ 
+-void BleConnectionStatus::onConnect(NimBLEServer *pServer, ble_gap_conn_desc* desc)
++void BleConnectionStatus::onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo)
+ {
+-    pServer->updateConnParams(desc->conn_handle, 6, 7, 0, 600);
+-    this->connected = true;
++	pServer->updateConnParams(connInfo.getConnHandle(), 6, 7, 0, 600);
++	this->connected = true;
+ }
+ 
+-void BleConnectionStatus::onDisconnect(NimBLEServer *pServer)
++void BleConnectionStatus::onDisconnect(NimBLEServer*, NimBLEConnInfo&, int)
+ {
+-    this->connected = false;
++	this->connected = false;
+ }
+diff --git a/BleConnectionStatus.h b/BleConnectionStatus.h
+index 15997f4..b99fd6f 100644
+--- a/BleConnectionStatus.h
++++ b/BleConnectionStatus.h
+@@ -14,8 +14,8 @@ class BleConnectionStatus : public NimBLEServerCallbacks
+ public:
+     BleConnectionStatus(void);
+     bool connected = false;
+-    void onConnect(NimBLEServer *pServer, ble_gap_conn_desc* desc);
+-    void onDisconnect(NimBLEServer *pServer);
++    void onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo) override;
++    void onDisconnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, int reason) override;
+     NimBLECharacteristic *inputGamepad;
+ };
+ 
+diff --git a/BleGamepadConfiguration.cpp b/BleGamepadConfiguration.cpp
+index 87f50ee..5004ee6 100644
+--- a/BleGamepadConfiguration.cpp
++++ b/BleGamepadConfiguration.cpp
+@@ -114,11 +114,11 @@ bool BleGamepadConfiguration::getIncludeAccelerator() { return _whichSimulationC
+ bool BleGamepadConfiguration::getIncludeBrake() { return _whichSimulationControls[BRAKE]; }
+ bool BleGamepadConfiguration::getIncludeSteering() { return _whichSimulationControls[STEERING]; }
+ const bool *BleGamepadConfiguration::getWhichSimulationControls() const { return _whichSimulationControls; }
+-char *BleGamepadConfiguration::getModelNumber(){ return _modelNumber; }
+-char *BleGamepadConfiguration::getSoftwareRevision(){ return _softwareRevision; }
+-char *BleGamepadConfiguration::getSerialNumber(){ return _serialNumber; }
+-char *BleGamepadConfiguration::getFirmwareRevision(){ return _firmwareRevision; }
+-char *BleGamepadConfiguration::getHardwareRevision(){ return _hardwareRevision; }
++const char *BleGamepadConfiguration::getModelNumber(){ return _modelNumber; }
++const char *BleGamepadConfiguration::getSoftwareRevision(){ return _softwareRevision; }
++const char *BleGamepadConfiguration::getSerialNumber(){ return _serialNumber; }
++const char *BleGamepadConfiguration::getFirmwareRevision(){ return _firmwareRevision; }
++const char *BleGamepadConfiguration::getHardwareRevision(){ return _hardwareRevision; }
+ 
+ void BleGamepadConfiguration::setWhichSpecialButtons(bool start, bool select, bool menu, bool home, bool back, bool volumeInc, bool volumeDec, bool volumeMute)
+ {
+diff --git a/BleGamepadConfiguration.h b/BleGamepadConfiguration.h
+index 598543f..daf4d03 100644
+--- a/BleGamepadConfiguration.h
++++ b/BleGamepadConfiguration.h
+@@ -217,11 +217,11 @@ private:
+     int16_t _axesMax;
+     int16_t _simulationMin;
+     int16_t _simulationMax;
+-    char *_modelNumber;
+-    char *_softwareRevision;
+-    char *_serialNumber;
+-    char *_firmwareRevision;
+-    char *_hardwareRevision;
++    const char *_modelNumber;
++    const char *_softwareRevision;
++    const char *_serialNumber;
++    const char *_firmwareRevision;
++    const char *_hardwareRevision;
+ 
+ public:
+     BleGamepadConfiguration();
+@@ -267,11 +267,11 @@ public:
+     int16_t getAxesMax();
+     int16_t getSimulationMin();
+     int16_t getSimulationMax();
+-    char *getModelNumber();
+-    char *getSoftwareRevision();
+-    char *getSerialNumber();
+-    char *getFirmwareRevision();
+-    char *getHardwareRevision();
++    const char *getModelNumber();
++    const char *getSoftwareRevision();
++    const char *getSerialNumber();
++    const char *getFirmwareRevision();
++    const char *getHardwareRevision();
+ 
+     void setControllerType(uint8_t controllerType);
+     void setAutoReport(bool value);
