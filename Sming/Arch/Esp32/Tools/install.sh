@@ -44,7 +44,7 @@ if [ ! -L "$IDF_PATH" ] && [ -d "$IDF_PATH" ]; then
 fi
 
 INSTALL_IDF_VER="${INSTALL_IDF_VER:=5.2}"
-IDF_CLONE_PATH="$(dirname $IDF_PATH)/esp-idf-${INSTALL_IDF_VER}"
+IDF_CLONE_PATH="$(dirname "$IDF_PATH")/esp-idf-${INSTALL_IDF_VER}"
 IDF_REPO="${IDF_REPO:=https://github.com/mikee47/esp-idf.git}"
 IDF_BRANCH="sming/release/v${INSTALL_IDF_VER}"
 
@@ -59,7 +59,7 @@ else
 fi
 
 # Create link to clone
-rm -rf "$IDF_PATH"
+rm -f "$IDF_PATH"
 ln -s "$IDF_CLONE_PATH" "$IDF_PATH"
 
 # Install IDF tools and packages
