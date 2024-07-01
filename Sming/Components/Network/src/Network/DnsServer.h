@@ -64,10 +64,6 @@ struct DnsHeader {
 class DnsServer : public UdpConnection
 {
 public:
-	DnsServer()
-	{
-	}
-
 	/**
 	 * @brief Set error reply code
 	 */
@@ -96,23 +92,21 @@ public:
 	/**
 	 * @brief Stop the DNS server
 	 */
-	void stop();
+	void stop()
+	{
+		close();
+	}
 
 protected:
 	void onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort) override;
+	size_t processQuestion(char* buffer, size_t requestLen);
 
 private:
 	uint16_t port = 0;
 	String domainName;
 	IpAddress resolvedIP;
-	char* buffer = nullptr;
-	DnsHeader* dnsHeader = nullptr;
 	uint32_t ttl = 60;
 	DnsReplyCode errorReplyCode = DnsReplyCode::NonExistentDomain;
-
-	static void downcaseAndRemoveWwwPrefix(String& domainName);
-	String getDomainNameWithoutWwwPrefix();
-	bool requestIncludesOnlyOneQuestion();
 };
 
 /** @} */
