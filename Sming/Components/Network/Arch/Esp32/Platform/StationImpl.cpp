@@ -75,7 +75,7 @@ public:
 	}
 };
 
-void StationImpl::eventHandler(esp_event_base_t base, int32_t id, void* data)
+void StationImpl::eventHandler(esp_event_base_t base, int32_t id, [[maybe_unused]] void* data)
 {
 	if(base == WIFI_EVENT) {
 		bool allowAutoConnect{true};
@@ -394,18 +394,16 @@ bool StationImpl::startScan(ScanCompletedDelegate scanCompleted)
 		return false;
 	}
 
-	auto eventHandler = [](void* arg, esp_event_base_t base, int32_t id, void* data) {
+	auto eventHandler = [](void* arg, esp_event_base_t, int32_t id, void* data) {
 		wifi_event_sta_scan_done_t* event = reinterpret_cast<wifi_event_sta_scan_done_t*>(data);
 		staticScanCompleted(event, event->status);
 	};
 
-	ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_SCAN_DONE, eventHandler, NULL));
-	if(esp_wifi_scan_start(NULL, false) != ESP_OK) {
-		auto connectHandler = [](void* arg, esp_event_base_t base, int32_t id, void* data) {
-			esp_wifi_scan_start(NULL, false);
-		};
+	ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_SCAN_DONE, eventHandler, nullptr));
+	if(esp_wifi_scan_start(nullptr, false) != ESP_OK) {
+		auto connectHandler = [](void*, esp_event_base_t, int32_t, void*) { esp_wifi_scan_start(nullptr, false); };
 
-		ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_CONNECTED, connectHandler, NULL));
+		ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_CONNECTED, connectHandler, nullptr));
 
 		debug_e("startScan failed");
 	}
@@ -505,7 +503,7 @@ void StationImpl::internalSmartConfig(smartconfig_event_t event_id, void* pdata)
 	}
 }
 
-void StationImpl::smartConfigEventHandler(void* arg, esp_event_base_t base, int32_t id, void* data)
+void StationImpl::smartConfigEventHandler(void* arg, esp_event_base_t, int32_t id, void* data)
 {
 	auto self = static_cast<StationImpl*>(arg);
 	return self->internalSmartConfig(smartconfig_event_t(id), data);

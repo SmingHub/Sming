@@ -17,9 +17,21 @@ endif
 
 .NOTPARALLEL:
 
+ifneq ($(ENABLE_SANITIZERS),1)
+APPTARGET := application
+endif
+
 .PHONY: all
 all: checksoc checkdirs submodules ##(default) Build all Component libraries
-	$(Q) $(MAKE) components application
+	$(Q) $(MAKE) components $(APPTARGET)
+
+.PHONY: link_sanitizer
+ifeq ($(SMING_ARCH),Host)
+link_sanitizer: application
+else
+link_sanitizer:
+	@printf "\033[40;1;31mModules compiled, skipping link step as ENABLE_SANITIZERS=1.\033[0m\n"
+endif
 
 # Load current build type from file
 BUILD_TYPE_FILE	:= out/build-type.mk
@@ -351,7 +363,7 @@ export GLOBAL_CFLAGS
 export CONFIG_VARS
 
 # Export all config variables
-EXPORT_VARS := $(sort $(CONFIG_VARS) $(CACHE_VARS) $(RELINK_VARS))
+EXPORT_VARS := $(sort $(CONFIG_VARS) $(CACHE_VARS) $(RELINK_VARS) $(BUILD_VARS))
 $(foreach v,$(EXPORT_VARS),$(eval export $v))
 
 
@@ -480,6 +492,12 @@ $(BUILD_BASE) $(FW_BASE) $(TOOLS_BASE) $(APP_LIBDIR) $(USER_LIBDIR):
 
 # Targets to be built before anything else (e.g. source code generators)
 PREREQUISITES := $(foreach c,$(COMPONENTS),$(CMP_$c_PREREQUISITES))
+
+ifneq ($(SMING_ARCH),Host)
+ifeq ($(ENABLE_SANITIZERS),1)
+CUSTOM_TARGETS := link_sanitizer
+endif
+endif
 
 # Build all Component (user) libraries
 .PHONY: components
@@ -615,6 +633,7 @@ list-config: checksoc ##Print the contents of build variables
 	$(call PrintVariableRefs,CACHE_VARS)
 	$(call PrintVariableRefs,RELINK_VARS)
 	$(call PrintVariableRefs,DEBUG_VARS)
+	$(call PrintVariableRefs,BUILD_VARS)
 	$(info )
 	$(info )
 
@@ -688,7 +707,7 @@ endef
 
 # Update build type cache
 ifndef MAKE_CLEAN
-$(eval $(call WriteCacheValues,$(BUILD_TYPE_FILE),SMING_SOC SMING_RELEASE STRICT))
+$(eval $(call WriteCacheValues,$(BUILD_TYPE_FILE),SMING_SOC SMING_RELEASE $(BUILD_VARS)))
 endif
 
 # Update config cache file

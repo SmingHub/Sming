@@ -107,44 +107,6 @@ void TwoWire::flush()
 	hostedClient->send(__PRETTY_FUNCTION__);
 }
 
-void TwoWire::onReceiveService(uint8_t* inBytes, int numBytes)
-{
-	// don't bother if user hasn't registered a callback
-	// if(!userReceiveCallback){
-	//   return;
-	// }
-	// // don't bother if rx buffer is in use by a master requestFrom() op
-	// // i know this drops data, but it allows for slight stupidity
-	// // meaning, they may not have read all the master requestFrom() data yet
-	// if(rxBufferIndex < rxBufferLength){
-	//   return;
-	// }
-	// // copy twi rx buffer into local read buffer
-	// // this enables new reads to happen in parallel
-	// for(uint8_t i = 0; i < numBytes; ++i){
-	//   rxBuffer[i] = inBytes[i];
-	// }
-	// // set rx iterator vars
-	// rxBufferIndex = 0;
-	// rxBufferLength = numBytes;
-	// // alert user program
-	// user_onReceive(numBytes);
-}
-
-void TwoWire::onRequestService()
-{
-	// // don't bother if user hasn't registered a callback
-	// if(!userRequestCallback){
-	//   return;
-	// }
-	// // reset tx buffer iterator vars
-	// // !!! this will kill any pending pre-master sendTo() activity
-	// txBufferIndex = 0;
-	// txBufferLength = 0;
-	// // alert user program
-	// user_onRequest();
-}
-
 #if !defined(NO_GLOBAL_INSTANCES) && !defined(NO_GLOBAL_TWOWIRE)
 TwoWire Wire;
 #endif

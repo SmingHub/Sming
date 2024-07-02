@@ -20,7 +20,7 @@ void clientConnected(TcpClient* client)
 	}
 }
 
-void clientComplete(TcpClient& client, bool successful)
+void clientComplete(TcpClient&, bool)
 {
 	Serial << _F("Client disconnected") << endl;
 }

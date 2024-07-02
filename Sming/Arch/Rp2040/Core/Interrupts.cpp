@@ -69,7 +69,7 @@ void interruptDelegateCallback(uint32_t gpio)
 	}
 }
 
-void IRAM_ATTR interruptHandler(uint gpio, uint32_t events)
+void IRAM_ATTR interruptHandler(uint gpio, [[maybe_unused]] uint32_t events)
 {
 	auto& handler = handlers[gpio];
 	if(handler.type == Handler::Type::interrupt) {

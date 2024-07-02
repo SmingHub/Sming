@@ -36,9 +36,9 @@ class HttpParams : public HashMap<String, String>
 public:
 	HttpParams() = default;
 
-	HttpParams(const HttpParams& params)
+	HttpParams(const HttpParams& params) : HttpParams()
 	{
-		*this = params;
+		setMultiple(params);
 	}
 
 	HttpParams(String query)

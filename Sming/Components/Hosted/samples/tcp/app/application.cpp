@@ -25,7 +25,7 @@ TcpServer* server;
 TcpServerTransport* transport;
 
 // Will be called when WiFi station was connected to AP
-void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
+void connectOk(IpAddress ip, IpAddress, IpAddress)
 {
 	if(server != nullptr) {
 		return;

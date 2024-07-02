@@ -159,7 +159,7 @@ bool Handler::unregisterCommand(const Command& command)
 	return true;
 }
 
-void Handler::processHelpCommand(String commandLine, ReadWriteStream& outputStream)
+void Handler::processHelpCommand(String, ReadWriteStream& outputStream)
 {
 	debug_d("HelpCommand entered");
 	outputStream.println(_F("Commands available are :"));
@@ -168,7 +168,7 @@ void Handler::processHelpCommand(String commandLine, ReadWriteStream& outputStre
 	}
 }
 
-void Handler::processStatusCommand(String commandLine, ReadWriteStream& outputStream)
+void Handler::processStatusCommand(String, ReadWriteStream& outputStream)
 {
 	debug_d("StatusCommand entered");
 	outputStream << _F("Sming Framework Version : " SMING_VERSION) << endl;

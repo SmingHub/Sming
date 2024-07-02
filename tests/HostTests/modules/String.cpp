@@ -19,7 +19,7 @@ public:
 		testMakeHexString();
 	}
 
-	template <typename T> void templateTest(T x)
+	template <typename T> void templateTest(T)
 	{
 #ifndef ARCH_HOST
 		auto pstr = PSTR("This PSTR should get moved out of RAM, filtered by __pstr__ in symbol name.");

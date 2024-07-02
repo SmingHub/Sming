@@ -21,7 +21,7 @@ typedef struct
 {
 	base64_encodestep step;
 	char result;
-	int stepcount;
+	unsigned stepcount;
 	unsigned steps_per_line; ///< Non-zero to limit encoded line lengths
 } base64_encodestate;
 

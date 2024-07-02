@@ -99,7 +99,7 @@ protected:
 	int onBody(const char* at, size_t length) override;
 	int onMessageComplete(http_parser* parser) override;
 
-	bool onProtocolUpgrade(http_parser* parser) override
+	bool onProtocolUpgrade(http_parser*) override
 	{
 		if(upgradeCallback) {
 			return upgradeCallback();

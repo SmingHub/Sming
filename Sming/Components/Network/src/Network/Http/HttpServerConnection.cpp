@@ -29,7 +29,7 @@ int HttpServerConnection::onMessageBegin(http_parser* parser)
 
 	// ... and Request
 	request.reset();
-	request.setMethod((const HttpMethod)parser->method);
+	request.setMethod(HttpMethod(parser->method));
 
 	// and temp data...
 	reset();
@@ -57,7 +57,7 @@ int HttpServerConnection::onPath(const Url& uri)
 	return resource ? resource->handleUrl(*this, request, response) : 0;
 }
 
-int HttpServerConnection::onMessageComplete(http_parser* parser)
+int HttpServerConnection::onMessageComplete(http_parser*)
 {
 	// we are finished with this request
 	int hasError = 0;
@@ -210,6 +210,7 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		}
 		sendResponseHeaders(&response);
 		state = eHCS_SendingHeaders;
+		[[fallthrough]];
 	}
 
 	case eHCS_SendingHeaders: {
@@ -218,6 +219,7 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		}
 
 		state = eHCS_StartBody;
+		[[fallthrough]];
 	}
 
 	case eHCS_StartBody:
@@ -229,6 +231,7 @@ void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
 		delete stream;
 		stream = nullptr;
 		state = eHCS_Sent;
+		[[fallthrough]];
 	}
 
 	case eHCS_Sent: {

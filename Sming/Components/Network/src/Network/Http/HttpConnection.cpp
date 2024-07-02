@@ -84,7 +84,7 @@ int HttpConnection::staticOnPath(http_parser* parser, const char* at, size_t len
 }
 
 #ifndef COMPACT_MODE
-int HttpConnection::staticOnStatus(http_parser* parser, const char* at, size_t length)
+int HttpConnection::staticOnStatus(http_parser* parser, const char*, size_t)
 {
 	GET_CONNECTION()
 
@@ -169,7 +169,7 @@ bool HttpConnection::onHttpError(HttpError error)
 	return false;
 }
 
-bool HttpConnection::onTcpReceive(TcpClient& client, char* data, int size)
+bool HttpConnection::onTcpReceive(TcpClient&, char* data, int size)
 {
 	if(HTTP_PARSER_ERRNO(&parser) != HPE_OK) {
 		// if the parser is in error state then just ignore the incoming data.
@@ -187,7 +187,8 @@ bool HttpConnection::onTcpReceive(TcpClient& client, char* data, int size)
 
 	if(parser.upgrade) {
 		return onProtocolUpgrade(&parser);
-	} else if(parsedBytes != size) {
+	}
+	if(parsedBytes != size) {
 		return false;
 	}
 

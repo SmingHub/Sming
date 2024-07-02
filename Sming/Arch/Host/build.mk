@@ -8,6 +8,7 @@ CPPFLAGS	+= -DARCH_HOST
 
 TOOLSPEC 	:=
 
+BUILD_VARS += CLANG_BUILD
 ifndef CLANG_BUILD
 override CLANG_BUILD := 0
 endif
@@ -41,6 +42,7 @@ GDB		:= $(TOOLSPEC)gdb
 
 GCC_UPGRADE_URL := https://sming.readthedocs.io/en/latest/arch/host/host-emulator.html\#c-c-32-bit-compiler-and-libraries
 
+BUILD_VARS += BUILD64
 ifeq ($(UNAME),Darwin)
 BUILD64 := 1
 CPPFLAGS += -D_DARWIN_C_SOURCE=1
@@ -53,22 +55,6 @@ endif
 CPPFLAGS += \
 	-D_FILE_OFFSET_BITS=64 \
 	-D_TIME_BITS=64
-
-# Sanitizers
-DEBUG_VARS += ENABLE_SANITIZERS SANITIZERS
-ENABLE_SANITIZERS ?= 0
-SANITIZERS ?= \
-	address \
-	pointer-compare \
-	pointer-subtract \
-	leak \
-	undefined
-ifeq ($(ENABLE_SANITIZERS),1)
-CPPFLAGS += \
-	-fstack-protector-all \
-	-fsanitize-address-use-after-scope \
-	$(foreach s,$(SANITIZERS),-fsanitize=$s)
-endif
 
 # => Tools
 MEMANALYZER = size

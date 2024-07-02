@@ -29,7 +29,7 @@ Storage::Partition findSpiffsPartition(Storage::Partition appPart)
 	return part;
 }
 
-void upgradeCallback(Ota::Network::HttpUpgrader& client, bool result)
+void upgradeCallback(Ota::Network::HttpUpgrader&, bool result)
 {
 	Serial.println(_F("In callback..."));
 	if(result == true) {
@@ -215,7 +215,7 @@ void handleCommand(const String& str)
 	Serial << _F("unknown command: ") << str << endl;
 }
 
-void serialCallBack(Stream& stream, char arrivedChar, unsigned short availableCharsCount)
+void serialCallBack(Stream& stream, char, uint16_t)
 {
 	switch(commandBuffer.process(stream, Serial)) {
 	case LineBufferBase::Action::submit:

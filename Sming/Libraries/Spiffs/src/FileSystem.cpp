@@ -213,7 +213,8 @@ int FileSystem::format()
 
 int FileSystem::check()
 {
-	fs.check_cb_f = [](spiffs* fs, spiffs_check_type type, spiffs_check_report report, u32_t arg1, u32_t arg2) {
+	fs.check_cb_f = [](spiffs*, [[maybe_unused]] spiffs_check_type type, [[maybe_unused]] spiffs_check_report report,
+					   [[maybe_unused]] u32_t arg1, [[maybe_unused]] u32_t arg2) {
 		if(report > SPIFFS_CHECK_PROGRESS) {
 			debug_d("SPIFFS check %d, %d, %u, %u", type, report, arg1, arg2);
 		}

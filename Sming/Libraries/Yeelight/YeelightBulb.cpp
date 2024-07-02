@@ -141,7 +141,7 @@ void YeelightBulb::parsePower(const String& value)
 	debugf("LED state: %s", value.c_str());
 }
 
-bool YeelightBulb::onResponse(TcpClient& client, char* data, int size)
+bool YeelightBulb::onResponse(TcpClient&, char* data, int size)
 {
 	String source(data, size);
 	debugf("LED > %s", source.c_str());

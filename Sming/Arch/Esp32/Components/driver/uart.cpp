@@ -744,7 +744,7 @@ bool smg_uart_intr_config(smg_uart_t* uart, const smg_uart_intr_config_t* config
 	return true;
 }
 
-void smg_uart_swap(smg_uart_t* uart, int tx_pin)
+void smg_uart_swap(smg_uart_t*, int)
 {
 	// Not implemented
 }

@@ -63,7 +63,7 @@ int BrClientConnection::init()
 	return startHandshake();
 }
 
-void BrClientConnection::startCert(uint32_t length)
+void BrClientConnection::startCert(uint32_t)
 {
 	if(x509.count() != 0) {
 		return;

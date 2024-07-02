@@ -21,7 +21,7 @@ public:
 	}
 
 private:
-	int requestComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
+	int requestComplete(HttpServerConnection&, HttpRequest& request, HttpResponse& response)
 	{
 		callback(request, response);
 		return 0;

@@ -140,7 +140,7 @@ err_t TcpConnection::onReceive(pbuf* buf)
 	return ERR_OK;
 }
 
-err_t TcpConnection::onSent(uint16_t len)
+err_t TcpConnection::onSent([[maybe_unused]] uint16_t len)
 {
 	debug_tcp_d("sent: %u", len);
 
@@ -184,7 +184,7 @@ err_t TcpConnection::onConnected(err_t err)
 	return ERR_OK;
 }
 
-void TcpConnection::onError(err_t err)
+void TcpConnection::onError([[maybe_unused]] err_t err)
 {
 	if(ssl != nullptr) {
 		ssl->close();
@@ -308,9 +308,9 @@ void TcpConnection::initialize(tcp_pcb* pcb)
 	tcp_nagle_disable(tcp);
 	tcp_arg(tcp, this);
 
-	tcp_sent(tcp, [](void* arg, tcp_pcb* tcp, uint16_t len) -> err_t {
+	tcp_sent(tcp, [](void* arg, tcp_pcb*, uint16_t len) -> err_t {
 		auto con = static_cast<TcpConnection*>(arg);
-		return (con == nullptr) ? ERR_OK : con->internalOnSent(len);
+		return (con == nullptr) ? err_t(ERR_OK) : con->internalOnSent(len);
 	});
 
 	tcp_recv(tcp, [](void* arg, tcp_pcb* tcp, pbuf* p, err_t err) -> err_t {
@@ -558,7 +558,7 @@ void TcpConnection::internalOnError(err_t err)
 	debug_tcp_ext("<error");
 }
 
-void TcpConnection::internalOnDnsResponse(const char* name, LWIP_IP_ADDR_T* ipaddr, int port)
+void TcpConnection::internalOnDnsResponse([[maybe_unused]] const char* name, LWIP_IP_ADDR_T* ipaddr, int port)
 {
 	if(ipaddr != nullptr) {
 		IpAddress ip = *ipaddr;

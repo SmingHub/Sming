@@ -82,5 +82,7 @@ int _write_r(struct _reent* r, int file, char* ptr, int len)
 
 int _isatty_r(struct _reent* r, int fd)
 {
+	(void)r;
+	(void)fd;
 	return 0;
 }

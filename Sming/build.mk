@@ -2,6 +2,9 @@
 
 include $(SMING_HOME)/util.mk
 
+# Cached build variables
+BUILD_VARS :=
+
 # Add debug variable names to DEBUG_VARS so they can be easily inspected via `make list-config`
 DEBUG_VARS := SMING_HOME
 SMING_HOME := $(patsubst %/,%,$(call FixPath,$(SMING_HOME)))
@@ -26,6 +29,7 @@ ifeq (,$(wildcard $(SMING_HOME)/Arch/$(SMING_ARCH)/build.mk))
   $(error Arch '$(SMING_ARCH)' not found)
 endif
 
+BUILD_VARS += CLANG_TIDY
 ifdef CLANG_TIDY
 ifneq (Host,$(SMING_ARCH))
   $(error CLANG_TIDY supported only for Host architecture.)
@@ -175,10 +179,15 @@ CPPFLAGS = \
 	-DARDUINO=106
 
 # If STRICT is enabled, show all warnings but don't treat as errors
-DEBUG_VARS += STRICT
+BUILD_VARS += STRICT
 STRICT ?= 0
 export STRICT
-ifneq ($(STRICT),1)
+ifeq ($(STRICT),1)
+CPPFLAGS += \
+	-Wimplicit-fallthrough \
+	-Wunused-parameter \
+	-Wunused-but-set-parameter
+else
 CPPFLAGS += \
 	-Werror \
 	-Wno-sign-compare \
@@ -252,6 +261,21 @@ CPPFLAGS += \
 	-Wno-initializer-overrides
 endif
 
+# Sanitizers
+BUILD_VARS += ENABLE_SANITIZERS SANITIZERS
+ENABLE_SANITIZERS ?= 0
+SANITIZERS ?= \
+	address \
+	pointer-compare \
+	pointer-subtract \
+	leak \
+	undefined
+ifeq ($(ENABLE_SANITIZERS),1)
+CPPFLAGS += \
+	-fstack-protector-all \
+	-fsanitize-address-use-after-scope \
+	$(foreach s,$(SANITIZERS),-fsanitize=$s)
+endif
 
 # Use c11 by default. Every architecture can override it
 DEBUG_VARS			+= SMING_C_STD

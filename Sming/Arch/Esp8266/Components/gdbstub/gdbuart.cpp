@@ -271,7 +271,7 @@ static void IRAM_ATTR doCtrlBreak()
 	}
 }
 
-static void IRAM_ATTR gdb_uart_callback(smg_uart_t* uart, uint32_t status)
+static void IRAM_ATTR gdb_uart_callback(smg_uart_t*, uint32_t status)
 {
 #if GDBSTUB_ENABLE_UART2
 	user_uart_status = status;

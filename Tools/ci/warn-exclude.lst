@@ -1,0 +1,7 @@
+esp-idf/.*
+Libraries/Adafruit_VL53L0X/.*
+Libraries/Arduino_TensorFlowLite/.*
+Libraries/jerryscript/jerryscript/.*
+Libraries/NimBLE/esp-nimble-cpp/.*
+samples/.*\[-Wunused-parameter\]
+.*\.c.*\[-Wimplicit-fallthrough\]

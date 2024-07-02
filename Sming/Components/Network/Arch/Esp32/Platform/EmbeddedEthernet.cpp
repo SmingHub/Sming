@@ -16,7 +16,7 @@
 
 using namespace Ethernet;
 
-bool EmbeddedEthernet::begin(const Config& config)
+bool EmbeddedEthernet::begin([[maybe_unused]] const Config& config)
 {
 #if !CONFIG_ETH_USE_ESP32_EMAC
 
