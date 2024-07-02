@@ -37,7 +37,7 @@ Fetch and scan the most recent build::
 
       python3 scanlog.py last-build.txt --fetch
 
-This will download all CI runs from the most recent worflow into ``last-build.txt``, then parse it.
+This will download all CI runs from the most recent workflow into ``last-build.txt``, then parse it.
 If the file already exists, downloading will be skipped.
 Output is to console and can be redirected to a file if required.
 

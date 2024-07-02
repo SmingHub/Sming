@@ -171,7 +171,7 @@ def scan_log(filename: str) -> Log:
     sys.stderr.write(f'Scanning {filename}\n')
 
     logfile = open(filename, 'rb')
-    for line_index, line in enumerate(logfile):
+    for line in logfile:
         line = line.decode('utf-8-sig').strip()
         # Replace typographical quotes with normal ones to ensure equivalence
         line = re.sub(r"‘|’", "'", line)
@@ -240,7 +240,7 @@ def scan_log(filename: str) -> Log:
 
     finish_job()
 
-    sys.stderr.write(f'\r\033[K')
+    sys.stderr.write('\r\033[K')
     log.jobs.sort(key=lambda job: job.name)
 
     return log
@@ -327,10 +327,10 @@ def fetch_logs(filename: str, repo: str = None, branch: str = None):
     with open(filename, 'w') as f:
         sys.stderr.write(f'Creating {filename}...\n')
         for job in joblist:
-            id = job['databaseId']
-            sys.stderr.write(f'Fetching {id}: "{job["displayTitle"]}" - {job["headBranch"]} - {job["name"]} - {job["conclusion"]}\n')
+            job_id = job['databaseId']
+            sys.stderr.write(f'Fetching {job_id}: "{job["displayTitle"]}" - {job["headBranch"]} - {job["name"]} - {job["conclusion"]}\n')
             try:
-                args = get_args('view') + ['--log', str(id)]
+                args = get_args('view') + ['--log', str(job_id)]
                 r = subprocess.run(args, stdout=f, encoding='utf-8')
                 r.check_returncode()
             except:
@@ -338,33 +338,7 @@ def fetch_logs(filename: str, repo: str = None, branch: str = None):
                 raise
 
 
-def main():
-    parser = argparse.ArgumentParser(description='Sming CI log parser')
-    parser.add_argument('filename', help='Log filename to read/write')
-    parser.add_argument('-f', '--fetch', action='store_true', help='Fetch most recent CI runs from repo')
-    parser.add_argument('-R', '--repo', help='Override default repo for fetch')
-    parser.add_argument('-b', '--branch', help='Specify branch to fetch')
-    parser.add_argument('-c', '--compare', help='Second log to compare')
-    parser.add_argument('-w', '--warnings', action='store_true', help='Summarise warnings')
-    parser.add_argument('-x', '--exclude', help='File containing source locations to exclude')
-
-    args = parser.parse_args()
-
-    if args.fetch:
-        fetch_logs(args.filename, repo=args.repo, branch=args.branch)
-
-    log1 = scan_log(args.filename)
-    if args.compare is None:
-        if args.warnings:
-            print_warnings(log1, args.exclude)
-        else:
-            for job in log1.jobs:
-                print(job.caption)
-                print_table(job.table)
-        return
-
-    log2 = scan_log(args.compare)
-
+def print_diff(log1: Log, log2: Log):
     for job1 in log1.jobs:
         job_printed = False
         try:
@@ -411,6 +385,35 @@ def main():
     if table2.rows:
         print(f'** Targets not in {job1.name}')
         print_table(table2)
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Sming CI log parser')
+    parser.add_argument('filename', help='Log filename to read/write')
+    parser.add_argument('-f', '--fetch', action='store_true', help='Fetch most recent CI runs from repo')
+    parser.add_argument('-R', '--repo', help='Override default repo for fetch')
+    parser.add_argument('-b', '--branch', help='Specify branch to fetch')
+    parser.add_argument('-c', '--compare', help='Second log to compare')
+    parser.add_argument('-w', '--warnings', action='store_true', help='Summarise warnings')
+    parser.add_argument('-x', '--exclude', help='File containing source locations to exclude')
+
+    args = parser.parse_args()
+
+    if args.fetch:
+        fetch_logs(args.filename, repo=args.repo, branch=args.branch)
+
+    log1 = scan_log(args.filename)
+    if args.compare is None:
+        if args.warnings:
+            print_warnings(log1, args.exclude)
+        else:
+            for job in log1.jobs:
+                print(job.caption)
+                print_table(job.table)
+        return
+
+    log2 = scan_log(args.compare)
+    print_diff(log1, log2)
 
 
 if __name__ == "__main__":
