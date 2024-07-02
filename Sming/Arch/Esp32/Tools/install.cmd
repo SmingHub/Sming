@@ -21,6 +21,10 @@ python "%IDF_PATH%\tools\idf_tools.py" --non-interactive install
 python -m pip install %SMINGTOOLS%/gevent-1.5.0-cp39-cp39-win_amd64.whl
 python3 "%IDF_PATH%\tools\idf_tools.py" --non-interactive install-python-env
 
+if "%CI_BUILD_DIR%" NEQ "" (
+    del /q "%IDF_TOOLS_PATH%\dist\*"
+)
+
 if "%INSTALL_IDF_VER%" == "5.0" goto :install_python
 if "%INSTALL_IDF_VER%" == "5.2" goto :install_python
 goto :EOF
