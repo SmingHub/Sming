@@ -111,20 +111,14 @@ jobs:
       run: |
         sudo chown $USER /opt
 
-    - name: Cache ESP-IDF
+    - name: Cache ESP-IDF and build tools
       if: ${{ matrix.arch == 'Esp32' }}
       uses: actions/cache@v4
       with:
-        path: /opt/esp-idf-${{ env.INSTALL_IDF_VER }}
-        key: idf-${{ env.INSTALL_IDF_VER }}
-        enableCrossOsArchive: true
-
-    - name: Cache IDF build tools
-      if: ${{ matrix.arch == 'Esp32' }}
-      uses: actions/cache@v4
-      with:
-        path: /opt/esp32
-        key: ${{ matrix.os }}-esp32-${{ env.INSTALL_IDF_VER }}
+        path: |
+          /opt/esp-idf-${{ env.INSTALL_IDF_VER }}
+          /opt/esp32
+        key: ${{ matrix.os }}-idf-${{ env.INSTALL_IDF_VER }}
 
     - name: Install build tools for Ubuntu / MacOS
       if: ${{ matrix.os != 'windows-latest' }}
