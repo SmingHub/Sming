@@ -124,18 +124,20 @@ class PathPrefix:
         '/d/a/Sming/Sming/Sming/',
         'd:/a/Sming/Sming/projects/',
         'd:/a/Sming/Sming/Sming/',
-        'c:/tools/',
     ]
-    re_prefix = re.compile('|'.join(f'^{s}' for s in IGNORE_PREFIX), re.IGNORECASE)
+    re_remove = re.compile('|'.join(f'^{s}' for s in IGNORE_PREFIX), re.IGNORECASE)
+    re_subst = re.compile(r'^d:/opt/esp-idf-\d.\d', re.IGNORECASE)
 
     @staticmethod
-    def remove(line: str) -> str:
-        return PathPrefix.re_prefix.sub('', line)
+    def normalise(line: str) -> str:
+        s = PathPrefix.re_remove.sub('', line)
+        s = PathPrefix.re_subst.sub('esp-idf', s)
+        return s
 
 
 def normalise_path(line: str) -> str:
     line = line.replace('\\', '/')
-    line = PathPrefix.remove(line)
+    line = PathPrefix.normalise(line)
     return os.path.normpath(line)
 
 
