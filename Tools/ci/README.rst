@@ -55,10 +55,28 @@ To explicitly specify the repository to fetch from::
 
 To list all source locations with warnings::
 
-      python3 scanlog.py last-build.txt -w
+      python3 scanlog.py last-build.txt -w -m
+
+Note: The 'm' flag merges warnings from all jobs. Omitting this shows warnings for each job separately.
 
 To filter out warnings::
 
-      python3 scanlog.py last-build.txt -w --exclude warn-exclude.lst
+      python3 scanlog.py last-build.txt -w -m --exclude warn-exclude.lst
 
 The named exclusion file contains a list of regular expressions to match against.
+
+
+vscode
+------
+
+The warnings output using the scanlog tool can be used as hyperlinks in vscode:
+
+- Select a project, e.g. ``tests/HostTests`` and run ``make ide-vscode``
+- Open the resulting workspace in vscode
+- Add the ``sming`` folder to the project
+- Open an integrated terminal and dump the warnings as shown above.
+  Or, redirect them into a file and ``cat`` it.
+
+The file locations act as links to the source.
+Note that this isn't perfect. For example, esp-idf paths are not resolved to the specific version in use.
+Listing warnings for each job can be helpful as it shows which IDF version was used.

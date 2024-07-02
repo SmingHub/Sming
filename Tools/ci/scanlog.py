@@ -254,24 +254,23 @@ def print_table(table: Table):
     print()
 
 
-def print_warnings(log: Log, exclude_file: str):
-    exclude = None
-    if exclude_file is not None:
-        with open(exclude_file, 'r') as f:
-            s = '|'.join(line.strip() for line in f)
-            exclude = re.compile(s, re.IGNORECASE)
-
+def merge_warnings(log: Log) -> dict[str, set]:
     warnings = {}
     total_warning_count = 0
     for job in log.jobs:
         total_warning_count += job.warning_count
         for location, details in job.warnings.items():
-            location_warnings = warnings.setdefault(location, {})
-            for det in details:
-                x = location_warnings.setdefault(det, [])
-                x.append(job.name)
+            location_warnings = warnings.setdefault(location, set())
+            location_warnings |= details
+    return warnings
 
-    print(f'{total_warning_count} warnings found in {len(warnings)} unique locations.')
+
+def print_warnings(warnings: dict[str, set], exclude_file: str):
+    exclude = None
+    if exclude_file is not None:
+        with open(exclude_file, 'r') as f:
+            s = '|'.join(line.strip() for line in f)
+            exclude = re.compile(s, re.IGNORECASE)
 
     exclude_count = 0
     if exclude:
@@ -286,7 +285,8 @@ def print_warnings(log: Log, exclude_file: str):
                 warnings[location] = filtered_details
             else:
                 exclude_count += 1
-        print(f'{exclude_count} locations excluded.')
+
+    print(f'Listing {len(warnings)} locations, {exclude_count} excluded.')
 
     loc_width = min(2 + max(len(loc) for loc in warnings), 80)
     loc_pad = ''.ljust(loc_width)
@@ -299,6 +299,7 @@ def print_warnings(log: Log, exclude_file: str):
         for det in sorted(warnings[location]):
             print(f'\t{locstr}{det}')
             locstr = loc_pad
+    print()
 
 
 def fetch_logs(filename: str, repo: str = None, branch: str = None):
@@ -398,6 +399,7 @@ def main():
     parser.add_argument('-c', '--compare', help='Second log to compare')
     parser.add_argument('-w', '--warnings', action='store_true', help='Summarise warnings')
     parser.add_argument('-x', '--exclude', help='File containing source locations to exclude')
+    parser.add_argument('-m', '--merge', action='store_true', help='Merge warnings from all jobs')
 
     args = parser.parse_args()
 
@@ -407,7 +409,14 @@ def main():
     log1 = scan_log(args.filename)
     if args.compare is None:
         if args.warnings:
-            print_warnings(log1, args.exclude)
+            if args.merge:
+                print(f'Total warnings: {sum(job.warning_count for job in log1.jobs)} from {len(log1.jobs)} jobs.')
+                warnings = merge_warnings(log1)
+                print_warnings(warnings, args.exclude)
+            else:
+                for i, job in enumerate(log1.jobs):
+                    print(f'Job #{i+1}: {job.name} - {job.warning_count} warnings')
+                    print_warnings(job.warnings, args.exclude)
         else:
             for job in log1.jobs:
                 print(job.caption)
