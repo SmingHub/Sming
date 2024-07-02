@@ -32,7 +32,7 @@ jobs:
           - os: windows-latest
             idf_version: "5.0"
 
-    concurrency: 
+    concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-${{ toJson(matrix) }}
       cancel-in-progress: true
 
@@ -62,8 +62,26 @@ jobs:
         "CI_BUILD_DIR=" + (Resolve-Path ".").path >> $env:GITHUB_ENV
         "SMING_HOME=" + (Resolve-Path "Sming").path >> $env:GITHUB_ENV
 
+    - name: Fix permissions
+      if: ${{ matrix.os != 'windows-latest' }}
+      run: |
+        sudo chown $USER /opt
+
+    - name: Cache ESP-IDF
+      uses: actions/cache@v4
+      with:
+        path: /opt/esp-idf-${{ matrix.idf_version }}
+        key: idf-${{ matrix.idf_version }}
+        enableCrossOsArchive: true
+
+    - name: Cache build tools
+      uses: actions/cache@v4
+      with:
+        path: /opt/esp32
+        key: ${{ matrix.os }}-esp32-${{ matrix.idf_version }}
+
     - name: Install build tools for Ubuntu
-      if: ${{ matrix.os ==  'ubuntu-latest' }}
+      if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
         Tools/ci/install.sh
 

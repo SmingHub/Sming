@@ -1,9 +1,4 @@
-if($IsWindows) {
-    $TOOLS_DIR = "C:\tools"
-} else {
-    $TOOLS_DIR = "/opt"
-    sudo chown appveyor:appveyor /opt
-}
+$TOOLS_DIR = "D:/opt"
 
 $env:CI_BUILD_DIR = (Resolve-Path "$PSScriptRoot/../..").Path
 $env:SMING_HOME = Join-Path $env:CI_BUILD_DIR "Sming"
@@ -12,7 +7,7 @@ $env:SMING_HOME = Join-Path $env:CI_BUILD_DIR "Sming"
 $env:ESP_HOME = Join-Path $TOOLS_DIR "esp-quick-toolchain"
 
 # Esp32
-$env:IDF_PATH = Join-Path $TOOLS_DIR "esp-idf"
+$env:IDF_PATH = Join-Path $TOOLS_DIR "esp-idf-$env:INSTALL_IDF_VER"
 $env:IDF_TOOLS_PATH = Join-Path $TOOLS_DIR "esp32"
 
 # Rp2040

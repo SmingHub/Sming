@@ -44,20 +44,22 @@ if [ ! -L "$IDF_PATH" ] && [ -d "$IDF_PATH" ]; then
 fi
 
 INSTALL_IDF_VER="${INSTALL_IDF_VER:=5.2}"
-IDF_CLONE_PATH="$IDF_PATH/../esp-idf-${INSTALL_IDF_VER}"
+IDF_CLONE_PATH="$(dirname "$IDF_PATH")/esp-idf-${INSTALL_IDF_VER}"
 IDF_REPO="${IDF_REPO:=https://github.com/mikee47/esp-idf.git}"
 IDF_BRANCH="sming/release/v${INSTALL_IDF_VER}"
 
 if [ -d "$IDF_CLONE_PATH" ]; then
     printf "\n\n** Skipping ESP-IDF clone: '%s' exists\n\n" "$IDF_CLONE_PATH"
 else
+    if [ -n "$CI_BUILD_DIR" ]; then
+        IDF_INSTALL_OPTIONS="--depth 1 --recurse-submodules --shallow-submodules"
+    fi
     echo "git clone -b $IDF_BRANCH $IDF_REPO $IDF_CLONE_PATH"
-    git clone -b "$IDF_BRANCH" "$IDF_REPO" "$IDF_CLONE_PATH"
+    git clone -b "$IDF_BRANCH" "$IDF_REPO" "$IDF_CLONE_PATH" $IDF_INSTALL_OPTIONS
 fi
-IDF_CLONE_PATH=$(realpath "$IDF_CLONE_PATH")
 
 # Create link to clone
-rm -rf "$IDF_PATH"
+rm -f "$IDF_PATH"
 ln -s "$IDF_CLONE_PATH" "$IDF_PATH"
 
 # Install IDF tools and packages
