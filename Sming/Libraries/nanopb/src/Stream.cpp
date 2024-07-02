@@ -24,7 +24,7 @@ bool InputStream::decode(const pb_msgdesc_t* fields, void* dest_struct)
 	is.callback = [](pb_istream_t* stream, pb_byte_t* buf, size_t count) -> bool {
 		auto self = static_cast<InputStream*>(stream->state);
 		assert(self != nullptr);
-		size_t read = self->stream.readBytes(reinterpret_cast<char*>(buf), count);
+		self->stream.readBytes(reinterpret_cast<char*>(buf), count);
 		return true;
 	};
 	is.state = this;
