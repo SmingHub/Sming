@@ -80,13 +80,8 @@ jobs:
         path: /opt/esp32
         key: ${{ matrix.os }}-esp32-${{ matrix.idf_version }}
 
-    - name: Install build tools for Ubuntu
-      if: ${{ matrix.os == 'ubuntu-latest' }}
-      run: |
-        Tools/ci/install.sh
-
-    - name: Install build tools for MacOS
-      if: ${{ matrix.os == 'macos-latest' }}
+    - name: Install build tools for Ubuntu / MacOS
+      if: ${{ matrix.os != 'windows-latest' }}
       run: |
         Tools/ci/install.sh
 
@@ -96,14 +91,8 @@ jobs:
          . Tools/ci/setenv.ps1
          Tools/ci/install.cmd
 
-    - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Ubuntu
-      if: ${{ matrix.os == 'ubuntu-latest' }}
-      run: |
-        source $SMING_HOME/../Tools/export.sh
-        Tools/ci/build.sh
-
-    - name: Build and test for ${{matrix.variant}} on MacOS
-      if: ${{ matrix.os == 'macos-latest' }}
+    - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Ubuntu / MacOS
+      if: ${{ matrix.os != 'windows-latest' }}
       run: |
         source $SMING_HOME/../Tools/export.sh
         Tools/ci/build.sh
