@@ -26,7 +26,6 @@ import sys
 import re
 import subprocess
 import json
-from enum import Enum
 
 class Table:
     COL_SEP = '  '
@@ -91,16 +90,25 @@ class TableFormatter:
 
 
 class Job:
-    def __init__(self, log: "Log", name: str):
-        self.log = log
+    # Second figure in warning lines not reliable, remove it
+    WARNING_SPLIT = re.compile(r':(\d+): ?(\d+: )?(warning: )')
+
+    def __init__(self, name: str):
         self.name = name
         self.table: Table = Table()
         self.warnings: dict[str, str] = {} # De-duplicated warnings
         self.warning_count: int = 0 # Includes duplicates
 
-    @property
-    def caption(self):
-        return f'{self.log.name}: {self.name}'
+    def parse_warning(self, line: str):
+        self.warning_count += 1
+        s = line.removeprefix('from ')
+        x = Job.WARNING_SPLIT.split(line)
+        if len(x) == 5:
+            location, warning = Path.normalise(f'{x[0]}:{x[1]}'), x[4]
+        else:
+            location, warning = '?', s
+        lines = self.warnings.setdefault(location, set())
+        lines.add(warning)
 
 
 class Log:
@@ -109,7 +117,7 @@ class Log:
         self.jobs: list[Job] = []
 
 
-class PathPrefix:
+class Path:
     # Paths vary by platform, so normalise them
     IGNORE_PREFIX = [
         # Linux
@@ -125,127 +133,105 @@ class PathPrefix:
         'd:/a/Sming/Sming/projects/',
         'd:/a/Sming/Sming/Sming/',
     ]
-    re_remove = re.compile('|'.join(f'^{s}' for s in IGNORE_PREFIX), re.IGNORECASE)
-    re_subst = re.compile(r'^d:/opt/esp-idf-\d.\d', re.IGNORECASE)
+    REMOVE = re.compile('|'.join(f'^{s}' for s in IGNORE_PREFIX), re.IGNORECASE)
+    SUBST = re.compile(r'^d:/opt/esp-idf-\d.\d', re.IGNORECASE)
 
     @staticmethod
     def normalise(line: str) -> str:
-        s = PathPrefix.re_remove.sub('', line)
-        s = PathPrefix.re_subst.sub('esp-idf', s)
-        return s
+        s = line.replace('\\', '/')
+        s = Path.REMOVE.sub('', s)
+        s = Path.SUBST.sub('esp-idf', s)
+        return os.path.normpath(s)
 
 
-def normalise_path(line: str) -> str:
-    line = line.replace('\\', '/')
-    line = PathPrefix.normalise(line)
-    return os.path.normpath(line)
+class Parser:
+    JOB_LINE = re.compile(r'build \((.+?)\)\t(Build and test .+)\t(.+)')
+    BUILD_LINE = re.compile(r'Building (.*)/out/.*/clib-App.*')
 
+    def __init__(self):
+        self.log = None
+        self.job = None
+        self.state = None
+        self.target = None
+        self._link_line = None
+        self.row = None
 
-def scan_log(filename: str) -> Log:
-    class State(Enum):
-        searching = 1
-        building = 2
-        linking = 3
-    BUILD_PREFIX = 'Building '
-    log = Log(filename)
-    job = None
-    warnings = {}
-    state = State.searching
-    target = None
-    row = None
+    def scan(self, filename: str):
+        sys.stderr.write(f'Scanning {filename}\n')
 
-    def finish_job():
-        if job is None:
-            return
+        self.log = Log(filename)
+        with open(filename, 'rb') as logfile:
+            for line_index, line in enumerate(logfile):
+                try:
+                    self.parse_line(line)
+                except Exception as e:
+                    e.add_note(f'Parsing line {line_index+1}')
+                    raise e
 
-        nonlocal row
-        if row is not None:
-            job.table.append(row)
-            row = None
+        sys.stderr.write('\r\033[K')
+        self.log.jobs.sort(key=lambda job: job.name)
+        return self.log
 
-        nonlocal warnings
-        job.warnings = warnings
-        warnings = {}
-
-    # Second figure in warning lines not reliable, remove it
-    warning_split = re.compile(r':(\d+): ?(\d+: )?(warning: )')
-
-    sys.stderr.write(f'Scanning {filename}\n')
-
-    logfile = open(filename, 'rb')
-    for line in logfile:
+    def parse_line(self, line: str):
         line = line.decode('utf-8-sig').strip()
         # Replace typographical quotes with normal ones to ensure equivalence
         line = re.sub(r"‘|’", "'", line)
         job_name = None
-        if not line[:4].isdigit(): # Not a date
-            if not line.startswith('build'):
-                continue
-            job_name, _, line = line.partition('\t')
-            job_name = re.search(r'\((.+?)\)', job_name)[1]
-            step, _, line = line.partition('\t')
-            if not step.startswith('Build and test'):
-                continue
-            if job and job.name != job_name:
-                finish_job()
-                sys.stderr.write(f'\r{job.name} ...\033[K')
-                job = None
-        if job is None:
-            job = Job(log, job_name)
-            log.jobs.append(job)
-            state = State.searching
+        if not line[:4].isdigit():
+            # Not a date: assume line is from GH CLI logfile, looking for valid build line
+            m = Parser.JOB_LINE.match(line)
+            if not m:
+                return
+            job_name, _, line = m[1], m[2], m[3]
+            if self.job and self.job.name != job_name:
+                if self.row:
+                    self.job.table.append(self.row)
+                    self.row = None
+                self.job = None
+        if self.job is None:
+            sys.stderr.write(f'\r{job_name} ...\033[K')
+            self.job = Job(job_name)
+            self.log.jobs.append(self.job)
+            self.state = self._searching
         dtstr, _, line = line.partition(' ')
         if not dtstr:
-            continue
+            return
         if ': warning:' in line:
-            job.warning_count += 1
-            s = line.removeprefix('from ')
-            x = warning_split.split(line)
-            if len(x) == 5:
-                s = normalise_path(f'{x[0]}:{x[1]}')
-                lines = warnings.setdefault(s, set())
-                lines.add(x[4])
-            else:
-                warnings.setdefault(s, set())
-            continue
-        if state == State.searching:
-            if not line.startswith(BUILD_PREFIX):
-                continue
-            if 'clib-App' not in line:
-                continue
-            c = normalise_path(line[len(BUILD_PREFIX):])
-            target, _, _ = c.partition('/out/')
-            state = State.building
-            continue
-        if state == State.building:
-            if line.startswith(f'{os.path.basename(target)}: Linking'):
-                state = State.linking
-                row = None
-                continue
-        if state == State.linking:
-            if row is None:
-                if line.startswith('----'):
-                    row = {'target': target}
-                continue
-            if '|' in line:
-                cols = line.split('|')
-                k, v = cols[0], cols[4]
-            elif ' : ' in line:
-                k, v = line.split(':')
-            else:
-                job.table.append(row)
-                row = None
-                state = State.searching
-                continue
-            k, v = k.strip(), v.strip()
-            row[k] = v
+            self.job.parse_warning(line)
+            return
+        self.state(line)
 
-    finish_job()
+    def _searching(self, line: str):
+        '''Searching for `Building ... clib_App ... after which comes the memory usage summary'''
+        match = Parser.BUILD_LINE.match(line)
+        if match:
+            self.target = Path.normalise(match[1])
+            self._link_line = f'{os.path.basename(self.target)}: Linking'
+            self.state = self._building
 
-    sys.stderr.write('\r\033[K')
-    log.jobs.sort(key=lambda job: job.name)
+    def _building(self, line: str):
+        if line.startswith(self._link_line):
+            self.state = self._linking
+            self.row = None
 
-    return log
+    def _linking(self, line: str):
+        if self.row is None:
+            if line.startswith('----'):
+                self.row = {'target': self.target}
+            return
+        if '|' in line:
+            cols = line.split('|')
+            k, v = cols[0], cols[4]
+        elif ' : ' in line:
+            k, v = line.split(':')
+        else:
+            self.job.table.append(self.row)
+            self.row = self.target = None
+            self.state = self._searching
+            return
+        k, v = k.strip(), v.strip()
+        self.row[k] = v
+
 
 
 def print_table(table: Table):
@@ -268,7 +254,7 @@ def merge_warnings(log: Log) -> dict[str, set]:
 def print_warnings(warnings: dict[str, set], exclude_file: str):
     exclude = None
     if exclude_file is not None:
-        with open(exclude_file, 'r') as f:
+        with open(exclude_file, 'r', encoding='utf-8') as f:
             s = '|'.join(line.strip() for line in f)
             exclude = re.compile(s, re.IGNORECASE)
 
@@ -315,8 +301,7 @@ def fetch_logs(filename: str, repo: str = None, branch: str = None):
     if branch:
         args.append(f'-b={branch}')
     args.append('--json=displayTitle,headBranch,number,name,databaseId,headSha,conclusion')
-    r = subprocess.run(args, capture_output=True, encoding='utf-8')
-    r.check_returncode()
+    r = subprocess.run(args, capture_output=True, encoding='utf-8', check=True)
     data = json.loads(r.stdout)
 
     joblist = []
@@ -327,15 +312,14 @@ def fetch_logs(filename: str, repo: str = None, branch: str = None):
             break
         joblist.append(job)
 
-    with open(filename, 'w') as f:
+    with open(filename, 'w', encoding='utf-8') as f:
         sys.stderr.write(f'Creating {filename}...\n')
         for job in joblist:
             job_id = job['databaseId']
             sys.stderr.write(f'Fetching {job_id}: "{job["displayTitle"]}" - {job["headBranch"]} - {job["name"]} - {job["conclusion"]}\n')
             try:
                 args = get_args('view') + ['--log', str(job_id)]
-                r = subprocess.run(args, stdout=f, encoding='utf-8')
-                r.check_returncode()
+                r = subprocess.run(args, stdout=f, encoding='utf-8', check=True)
             except:
                 os.unlink(filename)
                 raise
@@ -355,7 +339,7 @@ def print_diff(log1: Log, log2: Log):
             target = row1[0]
             i = table2.find_row(target)
             if i < 0:
-                print(f'** {target} NOT found in {table2.caption}')
+                print(f'** {target} NOT found in {log2.name} - {job2.name}')
                 continue
             row2 = table2.rows.pop(i)
             if row2 == row1:
@@ -363,11 +347,11 @@ def print_diff(log1: Log, log2: Log):
 
             diff_table = Table()
 
-            data = {'log': job1.log.name}
+            data = {'log': log1.name}
             for k, v in zip(table1.headings[1:], row1[1:]):
                 data[k] = v
             diff_table.append(data)
-            data = {'log': job2.log.name}
+            data = {'log': log2.name}
             for k, v in zip(table2.headings[1:], row2[1:]):
                 data[k] = v
             diff_table.append(data)
@@ -386,7 +370,7 @@ def print_diff(log1: Log, log2: Log):
             print_table(diff_table)
 
     if table2.rows:
-        print(f'** Targets not in {job1.name}')
+        print(f'** Targets not in {log1.name}')
         print_table(table2)
 
 
@@ -406,7 +390,7 @@ def main():
     if args.fetch:
         fetch_logs(args.filename, repo=args.repo, branch=args.branch)
 
-    log1 = scan_log(args.filename)
+    log1 = Parser().scan(args.filename)
     if args.compare is None:
         if args.warnings:
             if args.merge:
@@ -419,11 +403,11 @@ def main():
                     print_warnings(job.warnings, args.exclude)
         else:
             for job in log1.jobs:
-                print(job.caption)
+                print(job.name)
                 print_table(job.table)
         return
 
-    log2 = scan_log(args.compare)
+    log2 = Parser().scan(args.compare)
     print_diff(log1, log2)
 
 
