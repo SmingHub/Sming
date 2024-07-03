@@ -3,13 +3,10 @@
 #include <Print.h>
 #include "Partition.h"
 
-namespace Storage
-{
-namespace Debug
+namespace Storage::Debug
 {
 void listPartitions(Print& out);
 void listPartitions(Print& out, const Device& device);
 void listDevices(Print& out, bool fullPartitionInfo = true);
 
-} // namespace Debug
-} // namespace Storage
+} // namespace Storage::Debug

@@ -23,9 +23,7 @@
 #include "include/IFS/SPIFFS/Error.h"
 #include <IFS/Util.h>
 
-namespace IFS
-{
-namespace SPIFFS
+namespace IFS::SPIFFS
 {
 #define CHECK_MOUNTED()                                                                                                \
 	if(!SPIFFS_mounted(handle())) {                                                                                    \
@@ -885,5 +883,4 @@ int FileSystem::getFilePath(FileID fileid, NameBuffer& buffer)
 	return translateSpiffsError(err);
 }
 
-} // namespace SPIFFS
-} // namespace IFS
+} // namespace IFS::SPIFFS

@@ -14,9 +14,7 @@
 #include <stringutil.h>
 #include <sming_attr.h>
 
-namespace Crypto
-{
-namespace Internal
+namespace Crypto::Internal
 {
 /*
  * Common operations
@@ -134,5 +132,4 @@ template <typename T> void clean(T& t)
 	}
 }
 
-} // namespace Internal
-} // namespace Crypto
+} // namespace Crypto::Internal
