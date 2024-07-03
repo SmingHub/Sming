@@ -1,5 +1,5 @@
 #include <driver/adc.h>
-#include <string.h>
+#include <cstring>
 #include <esp_system.h>
 
 uint16_t system_adc_read(void)

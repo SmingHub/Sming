@@ -1,5 +1,5 @@
 #include <gdb/gdb_syscall.h>
-#include <errno.h>
+#include <cerrno>
 
 int gdb_syscall(const GdbSyscallInfo&)
 {

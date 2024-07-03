@@ -31,7 +31,7 @@
 #include <driver/os_timer.h>
 #include <driver/hw_timer.h>
 #include <esp_tasks.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include "include/hostlib/emu.h"
 #include "include/hostlib/hostlib.h"
 #include "include/hostlib/CommandLine.h"

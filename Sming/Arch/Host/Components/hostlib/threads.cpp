@@ -20,9 +20,9 @@
 #include "threads.h"
 #include <cstring>
 #include <cstdarg>
-#include <signal.h>
+#include <csignal>
 #include <sys/time.h>
-#include <errno.h>
+#include <cerrno>
 
 unsigned CThread::interrupt_mask;
 

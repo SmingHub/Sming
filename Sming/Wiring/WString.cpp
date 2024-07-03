@@ -17,7 +17,7 @@
 */
 
 #include "WString.h"
-#include <string.h>
+#include <cstring>
 #include <stringutil.h>
 #include <stringconversion.h>
 #include <cassert>
