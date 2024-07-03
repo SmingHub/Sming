@@ -71,7 +71,7 @@ jobs:
     env:
       SMING_ARCH: ${{ matrix.arch }}
       SMING_SOC: ${{ matrix.variant }}
-      INSTALL_IDF_VER: ${{ matrix.idf_version }}
+      INSTALL_IDF_VER: ${{ matrix.idf_version || '5.2' }}
       CLANG_BUILD: ${{ matrix.toolchain == 'clang' && '15' || '0' }}
       BUILD64: ${{ matrix.toolchain == 'gcc64' && 1 || 0 }}
 
@@ -101,37 +101,41 @@ jobs:
     - name: Configure environment
       shell: pwsh
       run: |
+        "CI_BUILD_DIR=" + (Resolve-Path ".").path >> $env:GITHUB_ENV
         "SMING_HOME=" + (Resolve-Path "../../sming/Sming").path >> $env:GITHUB_ENV
         "COMPONENT_SEARCH_DIRS=" + (Resolve-Path "..").path >> $env:GITHUB_ENV
         "CI_MAKEFILE=" + (Resolve-Path "../../sming/Tools/ci/library/Makefile") >> $env:GITHUB_ENV
 
-    - name: Install build tools for Ubuntu
-      if: ${{ matrix.os ==  'ubuntu-latest' }}
+    - name: Fix permissions
+      if: ${{ matrix.os != 'windows-latest' }}
       run: |
-        $SMING_HOME/../Tools/ci/install.sh
+        sudo chown $USER /opt
 
-    - name: Install build tools for MacOS
-      if: ${{ matrix.os == 'macos-latest' }}
+    - name: Cache ESP-IDF and build tools
+      if: ${{ matrix.arch == 'Esp32' }}
+      uses: actions/cache@v4
+      with:
+        path: |
+          /opt/esp-idf-${{ env.INSTALL_IDF_VER }}
+          /opt/esp32
+        key: ${{ matrix.os }}-idf-${{ env.INSTALL_IDF_VER }}
+
+    - name: Install build tools for Ubuntu / MacOS
+      if: ${{ matrix.os != 'windows-latest' }}
       run: |
         $SMING_HOME/../Tools/ci/install.sh
 
     - name: Install build tools for Windows   
-      if: ${{ matrix.os ==  'windows-latest' }}
+      if: ${{ matrix.os == 'windows-latest' }}
       run: |
         cd $env:SMING_HOME/..
         . Tools/ci/setenv.ps1
         Tools/ci/install.cmd
 
-    - name: Build and Test for ${{matrix.arch}} on Ubuntu
+    - name: Build and Test for ${{matrix.arch}} on Ubuntu / MacOS
       env:
         CLANG_FORMAT: clang-format-8
-      if: ${{ matrix.os == 'ubuntu-latest' }}
-      run: |
-        source $SMING_HOME/../Tools/export.sh
-        make -j$(nproc) -f $CI_MAKEFILE
-
-    - name: Build and test for ${{matrix.variant}} on MacOS
-      if: ${{ matrix.os == 'macos-latest' }}
+      if: ${{ matrix.os != 'windows-latest' }}
       run: |
         source $SMING_HOME/../Tools/export.sh
         make -j$(nproc) -f $CI_MAKEFILE

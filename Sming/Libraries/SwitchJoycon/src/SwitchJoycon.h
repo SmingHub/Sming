@@ -121,7 +121,7 @@ public:
 	void resetButtons();
 
 protected:
-	virtual void onStarted(NimBLEServer* pServer){};
+	virtual void onStarted(NimBLEServer*){};
 
 private:
 	bool started{false};

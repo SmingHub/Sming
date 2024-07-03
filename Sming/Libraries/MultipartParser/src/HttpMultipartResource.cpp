@@ -12,7 +12,7 @@
 
 #include "HttpMultipartResource.h"
 
-int HttpMultipartResource::setFileMap(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
+int HttpMultipartResource::setFileMap(HttpServerConnection&, HttpRequest& request, HttpResponse& response)
 {
 	String contentType = request.headers[HTTP_HEADER_CONTENT_TYPE];
 	String mimeType = toString(MIME_FORM_MULTIPART);
@@ -23,8 +23,4 @@ int HttpMultipartResource::setFileMap(HttpServerConnection& connection, HttpRequ
 	mapper(request.files);
 
 	return 0;
-}
-
-void HttpMultipartResource::shutdown(HttpServerConnection& connection)
-{
 }

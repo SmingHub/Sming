@@ -67,26 +67,16 @@ jobs:
       run: |
         sudo chown $USER /opt
 
-    - name: Cache ESP-IDF
+    - name: Cache ESP-IDF and build tools
       uses: actions/cache@v4
       with:
-        path: /opt/esp-idf-${{ matrix.idf_version }}
-        key: idf-${{ matrix.idf_version }}
-        enableCrossOsArchive: true
+        path: |
+          /opt/esp-idf-${{ matrix.idf_version }}
+          /opt/esp32
+        key: ${{ matrix.os }}-idf-${{ matrix.idf_version }}
 
-    - name: Cache build tools
-      uses: actions/cache@v4
-      with:
-        path: /opt/esp32
-        key: ${{ matrix.os }}-esp32-${{ matrix.idf_version }}
-
-    - name: Install build tools for Ubuntu
-      if: ${{ matrix.os == 'ubuntu-latest' }}
-      run: |
-        Tools/ci/install.sh
-
-    - name: Install build tools for MacOS
-      if: ${{ matrix.os == 'macos-latest' }}
+    - name: Install build tools for Ubuntu / MacOS
+      if: ${{ matrix.os != 'windows-latest' }}
       run: |
         Tools/ci/install.sh
 
@@ -96,14 +86,8 @@ jobs:
          . Tools/ci/setenv.ps1
          Tools/ci/install.cmd
 
-    - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Ubuntu
-      if: ${{ matrix.os == 'ubuntu-latest' }}
-      run: |
-        source $SMING_HOME/../Tools/export.sh
-        Tools/ci/build.sh
-
-    - name: Build and test for ${{matrix.variant}} on MacOS
-      if: ${{ matrix.os == 'macos-latest' }}
+    - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Ubuntu / MacOS
+      if: ${{ matrix.os != 'windows-latest' }}
       run: |
         source $SMING_HOME/../Tools/export.sh
         Tools/ci/build.sh
