@@ -183,9 +183,7 @@ public:
 
 	/** @brief  Instantiate an uninitialised date and time object
 	 */
-	DateTime()
-	{
-	}
+	DateTime() = default;
 
 	/** @brief  Instantiate a date and time object from a Unix timestamp
 	 *  @param  time Unix time to assign to object

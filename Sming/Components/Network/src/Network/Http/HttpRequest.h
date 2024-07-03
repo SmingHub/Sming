@@ -39,9 +39,7 @@ class HttpRequest
 	friend class HttpServerConnection;
 
 public:
-	HttpRequest()
-	{
-	}
+	HttpRequest() = default;
 
 	HttpRequest(const Url& uri) : uri(uri)
 	{

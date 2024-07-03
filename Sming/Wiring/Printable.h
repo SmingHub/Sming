@@ -42,18 +42,14 @@ class Print;
 class Printable
 {
 public:
-	Printable()
-	{
-	}
+	Printable() = default;
 
 	Printable(const Printable&) = delete;
 	Printable(Printable&&) = delete;
 	Printable& operator=(const Printable&) = delete;
 	Printable& operator=(Printable&&) = delete;
 
-	virtual ~Printable()
-	{
-	}
+	virtual ~Printable() = default;
 
 	virtual size_t printTo(Print& p) const = 0;
 };

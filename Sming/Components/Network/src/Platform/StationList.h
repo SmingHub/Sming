@@ -36,9 +36,7 @@ public:
 class StationList : public OwnedLinkedObjectListTemplate<StationInfo>
 {
 public:
-	virtual ~StationList()
-	{
-	}
+	virtual ~StationList() = default;
 };
 
 /** @} */

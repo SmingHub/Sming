@@ -185,9 +185,7 @@ public:
     || | Default constructor
     || #
     */
-	HashMap()
-	{
-	}
+	HashMap() = default;
 
 	/*
     || @constructor

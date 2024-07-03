@@ -23,9 +23,7 @@ class BaseTransport
 public:
 	using DataHandler = Delegate<bool(Stream&)>;
 
-	virtual ~BaseTransport()
-	{
-	}
+	virtual ~BaseTransport() = default;
 
 	void onData(DataHandler handler)
 	{

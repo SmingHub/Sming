@@ -25,9 +25,7 @@
 template <typename T, int rawSize> class ObjectQueue : public FIFO<T*, rawSize>
 {
 public:
-	virtual ~ObjectQueue()
-	{
-	}
+	virtual ~ObjectQueue() = default;
 
 	T* peek() const
 	{

@@ -18,9 +18,7 @@
 class LinkedObjectList
 {
 public:
-	LinkedObjectList()
-	{
-	}
+	LinkedObjectList() = default;
 
 	LinkedObjectList(LinkedObject* object) : mHead(object)
 	{

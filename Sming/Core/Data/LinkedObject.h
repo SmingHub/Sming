@@ -21,9 +21,7 @@
 class LinkedObject
 {
 public:
-	virtual ~LinkedObject()
-	{
-	}
+	virtual ~LinkedObject() = default;
 
 	virtual LinkedObject* next() const
 	{

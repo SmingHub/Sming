@@ -30,9 +30,7 @@ public:
 	{
 	}
 
-	virtual ~ServoChannel()
-	{
-	}
+	virtual ~ServoChannel() = default;
 
 	/** @brief  attach servo channel to a unused pin
      *  @param  pin GPIO to use; pin will be set to output

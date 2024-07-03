@@ -23,9 +23,7 @@ namespace Ssl
 class Factory
 {
 public:
-	virtual ~Factory()
-	{
-	}
+	virtual ~Factory() = default;
 
 	/**
 	 * @brief Create SSL context that can be used to create new client or server connections

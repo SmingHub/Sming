@@ -33,9 +33,7 @@ template <typename ApiDef> struct CallbackTimerApi {
 		return ApiDef::typeName();
 	}
 
-	CallbackTimerApi()
-	{
-	}
+	CallbackTimerApi() = default;
 
 	CallbackTimerApi(const CallbackTimerApi&) = delete;
 

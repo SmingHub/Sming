@@ -21,9 +21,7 @@ template <typename T> struct ScalarList {
 	T* values{nullptr};
 	size_t size{0};
 
-	ScalarList()
-	{
-	}
+	ScalarList() = default;
 
 	ScalarList(const ScalarList&) = delete;
 	ScalarList(ScalarList&&) = default;

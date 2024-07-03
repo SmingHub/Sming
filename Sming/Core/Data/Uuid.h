@@ -36,9 +36,7 @@ struct Uuid {
 	 */
 	static constexpr size_t stringSize = 36;
 
-	constexpr Uuid()
-	{
-	}
+	constexpr Uuid() = default;
 
 	explicit Uuid(const char* s)
 	{

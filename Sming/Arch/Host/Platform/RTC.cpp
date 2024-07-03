@@ -19,9 +19,7 @@ namespace
 int timeDiff; // Difference between set time and system time
 }
 
-RtcClass::RtcClass()
-{
-}
+RtcClass::RtcClass() = default;
 
 uint64_t RtcClass::getRtcNanoseconds()
 {

@@ -66,9 +66,7 @@ public:
 			MAX
 	};
 
-	virtual ~Certificate()
-	{
-	}
+	virtual ~Certificate() = default;
 
 	/**
 	 * @brief Obtain certificate fingerprint
