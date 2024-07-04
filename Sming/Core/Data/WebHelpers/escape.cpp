@@ -1,9 +1,9 @@
 /* escape.c - encode/decode URI and HTML style escapes. */
 /* PUBLIC DOMAIN - Jon Mayo - Aug 20, 2007 */
 #include "escape.h"
-#include <stdlib.h>
+#include <cstdlib>
 #include <c_types.h>
-#include <ctype.h>
+#include <cctype>
 
 // Append str to dest with checks
 static unsigned safe_append(char* dest, size_t len, const char* str)

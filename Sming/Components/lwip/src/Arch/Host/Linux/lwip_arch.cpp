@@ -26,7 +26,7 @@
 #include <lwip/timeouts.h>
 #include <cstring>
 #include <ifaddrs.h>
-#include <errno.h>
+#include <cerrno>
 #include <net/if.h>
 #include <netinet/in.h>
 #include <sys/ioctl.h>

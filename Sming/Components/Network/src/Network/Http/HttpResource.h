@@ -33,9 +33,7 @@ using HttpResourceDelegate =
 class HttpResource
 {
 public:
-	virtual ~HttpResource()
-	{
-	}
+	virtual ~HttpResource() = default;
 
 	/**
 	 * @brief Takes care to cleanup the connection

@@ -54,9 +54,7 @@ public:
 		{
 		}
 
-		~Iterator()
-		{
-		}
+		~Iterator() = default;
 
 		Iterator& operator++()
 		{
@@ -115,9 +113,7 @@ public:
 
 	Vector(Vector&&) = delete;
 
-	~Vector()
-	{
-	}
+	~Vector() = default;
 
 	// methods
 	unsigned int capacity() const

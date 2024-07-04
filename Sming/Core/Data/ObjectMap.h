@@ -48,9 +48,7 @@
 template <typename K, typename V> class ObjectMap
 {
 public:
-	ObjectMap()
-	{
-	}
+	ObjectMap() = default;
 
 	~ObjectMap()
 	{

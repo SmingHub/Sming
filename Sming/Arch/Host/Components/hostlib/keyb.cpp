@@ -19,9 +19,9 @@
 
 #include "keyb.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cctype>
 
 #ifdef __WIN32
 

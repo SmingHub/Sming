@@ -35,9 +35,7 @@ public:
 	 * 		1. Delete all instances of HttpClient
 	 * 		2. Call the static method HttpClient::cleanup();
 	*/
-	virtual ~HttpClient()
-	{
-	}
+	virtual ~HttpClient() = default;
 
 	/* High-Level Methods */
 

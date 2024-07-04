@@ -278,9 +278,7 @@ protected:
 	friend OsTimer64Api<AutoDeleteTimer>;
 
 	// Ensures object may only be created on the heap
-	~AutoDeleteTimer()
-	{
-	}
+	~AutoDeleteTimer() = default;
 
 	void expired()
 	{

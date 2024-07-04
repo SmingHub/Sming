@@ -58,7 +58,7 @@
 
 #include "WConstants.h"
 #include <cstddef>
-#include <string.h>
+#include <cstring>
 #include <sming_attr.h>
 
 #include <FlashString/String.hpp>

@@ -19,7 +19,7 @@
 
 #include <hostlib/hostlib.h>
 #include "flashmem.h"
-#include <string.h>
+#include <cstring>
 #include <esp_spi_flash.h>
 #include <IFS/File.h>
 #include <hostlib/hostmsg.h>

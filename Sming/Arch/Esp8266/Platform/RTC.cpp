@@ -11,7 +11,7 @@
 #include <Platform/RTC.h>
 #include <esp_systemapi.h>
 #include <sys/time.h>
-#include <errno.h>
+#include <cerrno>
 
 RtcClass RTC;
 

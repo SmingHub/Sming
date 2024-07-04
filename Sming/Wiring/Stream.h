@@ -37,9 +37,7 @@ public:
 	virtual int read() = 0;
 	virtual void flush() = 0;
 
-	Stream()
-	{
-	}
+	Stream() = default;
 
 	// parsing methods
 

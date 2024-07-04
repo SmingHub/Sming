@@ -51,9 +51,7 @@ enum class ParserState {
 class ParserCallbacks
 {
 public:
-	virtual ~ParserCallbacks()
-	{
-	}
+	virtual ~ParserCallbacks() = default;
 
 	virtual void startMethods() = 0;
 	virtual void startMethod() = 0;

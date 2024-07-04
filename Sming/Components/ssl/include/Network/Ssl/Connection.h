@@ -41,9 +41,7 @@ public:
 		assert(tcp != nullptr);
 	}
 
-	virtual ~Connection()
-	{
-	}
+	virtual ~Connection() = default;
 
 	/**
 	 * @brief Checks if the handshake has finished

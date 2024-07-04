@@ -24,9 +24,7 @@ uint64_t clockOffset;
 
 } // namespace
 
-RtcClass::RtcClass()
-{
-}
+RtcClass::RtcClass() = default;
 
 uint64_t RtcClass::getRtcNanoseconds()
 {

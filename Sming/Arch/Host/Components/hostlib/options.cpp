@@ -20,8 +20,8 @@
 #include "options.h"
 #include "include/hostlib/hostmsg.h"
 #include <getopt.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdlib>
 
 struct option_help_t {
 	const char* brief;

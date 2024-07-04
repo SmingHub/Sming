@@ -54,9 +54,7 @@ public:
 	{
 	}
 
-	virtual ~SPIBase()
-	{
-	}
+	virtual ~SPIBase() = default;
 
 	/**
 	 * @brief Initialize the SPI bus by setting SCK and MOSI to outputs, pulling SCK and MOSI low.

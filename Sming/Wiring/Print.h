@@ -36,16 +36,12 @@
 class Print
 {
 public:
-	Print()
-	{
-	}
+	Print() = default;
 
 	Print(const Print&) = delete;
 	Print(Print&&) = delete;
 
-	virtual ~Print()
-	{
-	}
+	virtual ~Print() = default;
 
 	Print& operator=(const Print&) = delete;
 	Print& operator=(Print&&) = delete;

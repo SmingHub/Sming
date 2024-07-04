@@ -14,9 +14,9 @@
  */
 
 #include "stringutil.h"
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
 
 const char* strstri(const char* pString, const char* pToken)
 {

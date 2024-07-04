@@ -22,9 +22,7 @@
 #include "include/IFS/SPIFFS/FileMeta.h"
 #include <IFS/Error.h>
 
-namespace IFS
-{
-namespace SPIFFS
+namespace IFS::SPIFFS
 {
 void* FileMeta::getAttributePtr(AttributeTag tag)
 {
@@ -224,5 +222,4 @@ int SpiffsMetaBuffer::setUserAttribute(unsigned userTag, const void* data, size_
 	return Error::BufferTooSmall;
 }
 
-} // namespace SPIFFS
-} // namespace IFS
+} // namespace IFS::SPIFFS

@@ -2,9 +2,7 @@
 #include "include/Storage.h"
 #include "include/Storage/SpiFlash.h"
 
-namespace Storage
-{
-namespace Debug
+namespace Storage::Debug
 {
 void listPartitions(Print& out)
 {
@@ -49,5 +47,4 @@ void listDevices(Print& out, bool fullPartitionInfo)
 	out.println();
 }
 
-} // namespace Debug
-} // namespace Storage
+} // namespace Storage::Debug

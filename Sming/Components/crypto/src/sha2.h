@@ -22,11 +22,7 @@
 #include "stdhash.h"
 #include "../include/Crypto/HashApi/sha2.h"
 
-namespace Crypto
-{
-namespace Internal
-{
-namespace sha2
+namespace Crypto::Internal::sha2
 {
 template <typename T> __forceinline T CH(T x, T y, T z)
 {
@@ -160,6 +156,4 @@ __forceinline void process(T state[], const uint8_t block[], const T k[])
 	state[7] += h;
 }
 
-} // namespace sha2
-} // namespace Internal
-} // namespace Crypto
+} // namespace Crypto::Internal::sha2

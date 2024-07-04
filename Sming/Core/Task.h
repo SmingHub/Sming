@@ -53,9 +53,7 @@ public:
 		Waking,
 	};
 
-	virtual ~Task()
-	{
-	}
+	virtual ~Task() = default;
 
 	/**
 	 * @brief Call to set task running

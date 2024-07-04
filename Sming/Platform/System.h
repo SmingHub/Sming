@@ -55,9 +55,7 @@ using SystemReadyDelegate = TaskDelegate;
 class ISystemReadyHandler
 {
 public:
-	virtual ~ISystemReadyHandler()
-	{
-	}
+	virtual ~ISystemReadyHandler() = default;
 
 	/** @brief  Handle <i>system ready</i> events
 	 */
@@ -100,9 +98,7 @@ enum SystemState {
 class SystemClass
 {
 public:
-	SystemClass()
-	{
-	}
+	SystemClass() = default;
 
 	/** @brief System initialisation
 	 *  @retval bool true on success

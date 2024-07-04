@@ -23,9 +23,7 @@
 
 #include <IFS/Attribute.h>
 
-namespace IFS
-{
-namespace SPIFFS
+namespace IFS::SPIFFS
 {
 /**
  * @brief Content of SPIFFS metadata area
@@ -121,5 +119,4 @@ struct SpiffsMetaBuffer {
 	int setUserAttribute(unsigned userTag, const void* data, size_t size);
 };
 
-} // namespace SPIFFS
-} // namespace IFS
+} // namespace IFS::SPIFFS
