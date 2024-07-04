@@ -21,6 +21,16 @@
 #include <esp_systemapi.h>
 #include <hal/gpio_ll.h>
 
+#if UART_ID_SERIAL_USB_JTAG
+#include "hal/usb_serial_jtag_ll.h"
+#include "hal/usb_fsls_phy_ll.h"
+#if !SOC_RCC_IS_INDEPENDENT
+#define USJ_RCC_ATOMIC() PERIPH_RCC_ATOMIC()
+#else
+#define USJ_RCC_ATOMIC()
+#endif
+#endif
+
 namespace
 {
 // Ensure global values correspond to hardware values (may break when new variants added)
@@ -162,15 +172,110 @@ __forceinline bool is_physical(smg_uart_t* uart)
 	return uart != nullptr && is_physical(uart->uart_nr);
 }
 
-/** @brief If given a virtual uart, obtain the related physical one
+/** @brief Determine if the given uart is a standard UART
  */
-smg_uart_t* get_physical(smg_uart_t* uart)
+__forceinline bool is_standard_uart(int uart_nr)
 {
-	return uart;
+	return (uart_nr >= 0) && (uart_nr < SOC_UART_NUM);
 }
 
-/** @brief UART interrupt service routine
- *  @note both UARTS share the same ISR, although UART1 only supports transmit
+__forceinline bool is_standard_uart(smg_uart_t* uart)
+{
+	return uart != nullptr && is_standard_uart(uart->uart_nr);
+}
+
+/** @brief If given a virtual uart, obtain the related physical standard uart
+ */
+smg_uart_t* get_standard_uart(smg_uart_t* uart)
+{
+	return is_standard_uart(uart) ? uart : nullptr;
+}
+
+#if UART_ID_SERIAL_USB_JTAG
+
+/**
+ * @brief Determine if the given uart is USB Serial JTAG
+ */
+__forceinline bool is_usb_serial_jtag(int uart_nr)
+{
+	return UART_ID_SERIAL_USB_JTAG && uart_nr == UART_ID_SERIAL_USB_JTAG;
+}
+
+__forceinline bool is_usb_serial_jtag(smg_uart_t* uart)
+{
+	return uart != nullptr && is_usb_serial_jtag(uart->uart_nr);
+}
+
+void IRAM_ATTR usb_serial_jtag_isr(smg_uart_instance_t* inst)
+{
+	if(inst == nullptr || inst->uart == nullptr) {
+		return;
+	}
+
+	auto uart = inst->uart;
+	// Value passed to user callback
+	uint32_t status{0};
+
+	uint32_t usbjtag_intr_status = usb_serial_jtag_ll_get_intsts_mask();
+
+	if(usbjtag_intr_status & USB_SERIAL_JTAG_INTR_SERIAL_IN_EMPTY) {
+		status |= UART_INTR_TXFIFO_EMPTY;
+		// Check if hardware fifo is available for writing
+		if(!usb_serial_jtag_ll_txfifo_writable()) {
+			usb_serial_jtag_ll_clr_intsts_mask(USB_SERIAL_JTAG_INTR_SERIAL_IN_EMPTY);
+		} else {
+			usb_serial_jtag_ll_disable_intr_mask(USB_SERIAL_JTAG_INTR_SERIAL_IN_EMPTY);
+
+			if(uart->tx_buffer != nullptr) {
+				void* queued_buff;
+				size_t queued_size = uart->tx_buffer->getReadData(queued_buff);
+
+				usb_serial_jtag_ll_clr_intsts_mask(USB_SERIAL_JTAG_INTR_SERIAL_IN_EMPTY);
+
+				if(queued_size != 0) {
+					size_t sent_size = usb_serial_jtag_ll_write_txfifo(static_cast<uint8_t*>(queued_buff), queued_size);
+					uart->tx_buffer->skipRead(sent_size);
+					usb_serial_jtag_ll_txfifo_flush();
+					usb_serial_jtag_ll_ena_intr_mask(USB_SERIAL_JTAG_INTR_SERIAL_IN_EMPTY);
+				}
+			}
+		}
+	}
+
+	if(usbjtag_intr_status & USB_SERIAL_JTAG_INTR_SERIAL_OUT_RECV_PKT) {
+		// Read hardware FIFO into ring buffer
+		usb_serial_jtag_ll_clr_intsts_mask(USB_SERIAL_JTAG_INTR_SERIAL_OUT_RECV_PKT);
+		uint8_t rx_data_buf[USB_SERIAL_JTAG_PACKET_SZ_BYTES];
+		size_t space = uart->rx_buffer->getFreeSpace();
+		size_t to_read = std::min(space, size_t(USB_SERIAL_JTAG_PACKET_SZ_BYTES));
+		size_t read = usb_serial_jtag_ll_read_rxfifo(rx_data_buf, to_read);
+		space -= read;
+		auto ptr = rx_data_buf;
+		while(read-- != 0) {
+			uart->rx_buffer->writeChar(*ptr++);
+		}
+
+		// Only invoke user callback when buffer is (almost) full
+		if(space <= uart->rx_headroom) {
+			status |= UART_INTR_RXFIFO_FULL;
+		} else {
+			// No hardware timeout available, we'd need to implement one
+			status |= UART_INTR_RXFIFO_TOUT;
+		}
+	}
+
+	// Keep a note of persistent flags - cleared via uart_get_status()
+	uart->status |= status;
+
+	if(status != 0 && uart->callback != nullptr) {
+		uart->callback(uart, status);
+	}
+}
+
+#endif
+
+/*
+ * Standard UART interrupt service routine
  */
 void IRAM_ATTR uart_isr(smg_uart_instance_t* inst)
 {
@@ -321,7 +426,7 @@ size_t smg_uart_read(smg_uart_t* uart, void* buffer, size_t size)
 	}
 
 	// Top up from hardware FIFO
-	if(is_physical(uart)) {
+	if(is_standard_uart(uart)) {
 		auto dev = getDevice(uart->uart_nr);
 		auto len = std::min(uint32_t(size - read), uart_ll_get_rxfifo_len(dev));
 		uart_ll_read_rxfifo(dev, &buf[read], len);
@@ -331,6 +436,12 @@ size_t smg_uart_read(smg_uart_t* uart, void* buffer, size_t size)
 		uart_ll_clr_intsts_mask(dev, UART_INTR_RXFIFO_FULL | UART_INTR_RXFIFO_TOUT | UART_INTR_RXFIFO_OVF);
 		uart_ll_ena_intr_mask(dev, UART_INTR_RXFIFO_FULL | UART_INTR_RXFIFO_TOUT | UART_INTR_RXFIFO_OVF);
 	}
+#if UART_ID_SERIAL_USB_JTAG
+	else if(is_usb_serial_jtag(uart)) {
+		auto len = usb_serial_jtag_ll_read_rxfifo(&buf[read], size - read);
+		read += len;
+	}
+#endif
 
 	return read;
 }
@@ -343,8 +454,11 @@ size_t smg_uart_rx_available(smg_uart_t* uart)
 
 	smg_uart_disable_interrupts();
 
-	auto dev = getDevice(uart->uart_nr);
-	size_t avail = is_physical(uart) ? uart_ll_get_rxfifo_len(dev) : 0;
+	size_t avail = 0;
+	if(is_standard_uart(uart)) {
+		auto dev = getDevice(uart->uart_nr);
+		avail = uart_ll_get_rxfifo_len(dev);
+	}
 
 	if(uart->rx_buffer != nullptr) {
 		avail += uart->rx_buffer->available();
@@ -361,25 +475,40 @@ void smg_uart_start_isr(smg_uart_t* uart)
 		return;
 	}
 
-	uint32_t int_ena{0};
+	int interrupt_source;
+	intr_handler_t interrupt_handler;
 
-	auto dev = getDevice(uart->uart_nr);
-	dev->conf1.val = 0;
+#if UART_ID_SERIAL_USB_JTAG
+	if(is_usb_serial_jtag(uart)) {
+		usb_serial_jtag_ll_clr_intsts_mask(USB_SERIAL_JTAG_INTR_SERIAL_IN_EMPTY |
+										   USB_SERIAL_JTAG_INTR_SERIAL_OUT_RECV_PKT);
+		usb_serial_jtag_ll_ena_intr_mask(USB_SERIAL_JTAG_INTR_SERIAL_IN_EMPTY |
+										 USB_SERIAL_JTAG_INTR_SERIAL_OUT_RECV_PKT);
 
-	if(smg_uart_rx_enabled(uart)) {
-		uart_ll_set_rxfifo_full_thr(dev, RX_FIFO_FULL_THRESHOLD);
-		uart_ll_set_rx_tout(dev, 10);
+		interrupt_source = ETS_USB_SERIAL_JTAG_INTR_SOURCE;
+		interrupt_handler = reinterpret_cast<intr_handler_t>(usb_serial_jtag_isr);
+	} else
+#endif
+	{
+		uint32_t int_ena{0};
 
-		/*
+		auto dev = getDevice(uart->uart_nr);
+		dev->conf1.val = 0;
+
+		if(smg_uart_rx_enabled(uart)) {
+			uart_ll_set_rxfifo_full_thr(dev, RX_FIFO_FULL_THRESHOLD);
+			uart_ll_set_rx_tout(dev, 10);
+
+			/*
 		 * There is little benefit in generating interrupts on errors, instead these
 		 * should be cleared at the start of a transaction and checked at the end.
 		 * See uart_get_status().
 		 */
-		int_ena |= UART_INTR_RXFIFO_FULL | UART_INTR_RXFIFO_TOUT | UART_INTR_BRK_DET | UART_INTR_RXFIFO_OVF;
-	}
+			int_ena |= UART_INTR_RXFIFO_FULL | UART_INTR_RXFIFO_TOUT | UART_INTR_BRK_DET | UART_INTR_RXFIFO_OVF;
+		}
 
-	if(smg_uart_tx_enabled(uart)) {
-		/*
+		if(smg_uart_tx_enabled(uart)) {
+			/*
 		 * We can interrupt when TX FIFO is empty; at 1Mbit that gives us 800 CPU
 		 * cycles before the last character has actually gone over the wire. Even if
 		 * a gap occurs it is unlike to cause any problems. It also makes the callback
@@ -387,17 +516,20 @@ void smg_uart_start_isr(smg_uart_t* uart)
 		 * transfer direction and begin waiting for a response.
 		 */
 
-		// TX FIFO empty interrupt only gets enabled via uart_write function()
-		uart_ll_set_txfifo_empty_thr(dev, 10);
-	}
+			// TX FIFO empty interrupt only gets enabled via uart_write function()
+			uart_ll_set_txfifo_empty_thr(dev, 10);
+		}
 
-	dev->int_clr.val = 0x0007ffff;
-	dev->int_ena.val = int_ena;
+		dev->int_clr.val = 0x0007ffff;
+		dev->int_ena.val = int_ena;
+
+		interrupt_source = uart_periph_signal[uart->uart_nr].irq;
+		interrupt_handler = reinterpret_cast<intr_handler_t>(uart_isr);
+	}
 
 	smg_uart_disable_interrupts();
 	auto& inst = uartInstances[uart->uart_nr];
-	auto& conn = uart_periph_signal[uart->uart_nr];
-	esp_intr_alloc(conn.irq, ESP_INTR_FLAG_IRAM, intr_handler_t(uart_isr), &inst, &inst.handle);
+	esp_intr_alloc(interrupt_source, ESP_INTR_FLAG_IRAM, interrupt_handler, &inst, &inst.handle);
 	smg_uart_restore_interrupts();
 	bitSet(isrMask, uart->uart_nr);
 }
@@ -412,12 +544,10 @@ size_t smg_uart_write(smg_uart_t* uart, const void* buffer, size_t size)
 
 	auto buf = static_cast<const uint8_t*>(buffer);
 
-	bool isPhysical = is_physical(uart);
-
 	while(written < size) {
-		if(isPhysical) {
-			// If TX buffer not in use or it's empty then write directly to hardware FIFO
-			if(uart->tx_buffer == nullptr || uart->tx_buffer->isEmpty()) {
+		// If TX buffer not in use or it's empty then write directly to hardware FIFO
+		if(uart->tx_buffer == nullptr || uart->tx_buffer->isEmpty()) {
+			if(is_standard_uart(uart)) {
 				auto dev = getDevice(uart->uart_nr);
 				auto len = std::min(size - written, uart_txfifo_free(dev));
 				uart_ll_write_txfifo(dev, &buf[written], len);
@@ -426,6 +556,16 @@ size_t smg_uart_write(smg_uart_t* uart, const void* buffer, size_t size)
 				uart_ll_clr_intsts_mask(dev, UART_INTR_TXFIFO_EMPTY);
 				uart_ll_ena_intr_mask(dev, UART_INTR_TXFIFO_EMPTY);
 			}
+#if UART_ID_SERIAL_USB_JTAG
+			else if(is_usb_serial_jtag(uart)) {
+				usb_serial_jtag_ll_clr_intsts_mask(USB_SERIAL_JTAG_INTR_SERIAL_IN_EMPTY);
+				auto len = usb_serial_jtag_ll_write_txfifo(&buf[written], size - written);
+				written += len;
+				usb_serial_jtag_ll_txfifo_flush();
+				// Enable TX FIFO EMPTY interrupt
+				usb_serial_jtag_ll_ena_intr_mask(USB_SERIAL_JTAG_INTR_SERIAL_IN_EMPTY);
+			}
+#endif
 		}
 
 		// Write any remaining data into transmit buffer
@@ -453,7 +593,11 @@ size_t smg_uart_tx_free(smg_uart_t* uart)
 
 	smg_uart_disable_interrupts();
 
-	size_t space = is_physical(uart) ? uart_txfifo_free(getDevice(uart->uart_nr)) : 0;
+	size_t space = 0;
+	if(is_standard_uart(uart)) {
+		auto dev = getDevice(uart->uart_nr);
+		space = uart_txfifo_free(dev);
+	}
 	if(uart->tx_buffer != nullptr) {
 		space += uart->tx_buffer->getFreeSpace();
 	}
@@ -477,16 +621,24 @@ void smg_uart_wait_tx_empty(smg_uart_t* uart)
 		}
 	}
 
-	if(is_physical(uart)) {
+	if(is_standard_uart(uart)) {
 		auto dev = getDevice(uart->uart_nr);
-		while(uart_txfifo_count(dev) != 0)
+		while(uart_txfifo_count(dev) != 0) {
 			system_soft_wdt_feed();
+		}
 	}
+#if UART_ID_SERIAL_USB_JTAG
+	else if(is_usb_serial_jtag(uart)) {
+		while(!usb_serial_jtag_ll_txfifo_writable()) {
+			system_soft_wdt_feed();
+		}
+	}
+#endif
 }
 
 void smg_uart_set_break(smg_uart_t* uart, bool state)
 {
-	uart = get_physical(uart);
+	uart = get_standard_uart(uart);
 	if(uart != nullptr) {
 		auto dev = getDevice(uart->uart_nr);
 		dev->conf0.txd_brk = state;
@@ -502,7 +654,7 @@ uint8_t smg_uart_get_status(smg_uart_t* uart)
 		status = uart->status & (UART_INTR_BRK_DET | UART_INTR_RXFIFO_OVF);
 		uart->status = 0;
 		// Read raw status register directly from real uart, masking out non-error bits
-		uart = get_physical(uart);
+		uart = get_standard_uart(uart);
 		if(uart != nullptr) {
 			auto dev = getDevice(uart->uart_nr);
 			status |= dev->int_raw.val &
@@ -534,7 +686,7 @@ void smg_uart_flush(smg_uart_t* uart, smg_uart_mode_t mode)
 		uart->tx_buffer->clear();
 	}
 
-	if(is_physical(uart)) {
+	if(is_standard_uart(uart)) {
 		auto dev = getDevice(uart->uart_nr);
 
 		if(flushTx) {
@@ -556,7 +708,7 @@ void smg_uart_flush(smg_uart_t* uart, smg_uart_mode_t mode)
 
 uint32_t smg_uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate)
 {
-	if(!is_physical(uart_nr) || baud_rate == 0) {
+	if(!is_standard_uart(uart_nr) || baud_rate == 0) {
 		return 0;
 	}
 
@@ -580,7 +732,7 @@ uint32_t smg_uart_set_baudrate_reg(int uart_nr, uint32_t baud_rate)
 
 uint32_t smg_uart_set_baudrate(smg_uart_t* uart, uint32_t baud_rate)
 {
-	uart = get_physical(uart);
+	uart = get_standard_uart(uart);
 	if(uart == nullptr) {
 		return 0;
 	}
@@ -593,7 +745,7 @@ uint32_t smg_uart_set_baudrate(smg_uart_t* uart, uint32_t baud_rate)
 
 uint32_t smg_uart_get_baudrate(smg_uart_t* uart)
 {
-	uart = get_physical(uart);
+	uart = get_standard_uart(uart);
 	return (uart == nullptr) ? 0 : uart->baud_rate;
 }
 
@@ -646,26 +798,41 @@ smg_uart_t* smg_uart_init_ex(const smg_uart_config_t& cfg)
 	smg_uart_detach(cfg.uart_nr);
 	smg_uart_set_pins(uart, tx_pin, rx_pin);
 
-	auto& conn = uart_periph_signal[cfg.uart_nr];
+	if(is_standard_uart(uart)) {
+		auto& conn = uart_periph_signal[cfg.uart_nr];
 
-	periph_module_enable(conn.module);
+		periph_module_enable(conn.module);
 
-	auto dev = getDevice(cfg.uart_nr);
+		auto dev = getDevice(cfg.uart_nr);
 
 // Workaround for ESP32C3: enable core reset before enabling uart module clock to prevent uart output garbage value.
 #if SOC_UART_REQUIRE_CORE_RESET
-	uart_ll_set_reset_core(dev, true);
-	periph_module_reset(conn.module);
-	uart_ll_set_reset_core(dev, false);
+		uart_ll_set_reset_core(dev, true);
+		periph_module_reset(conn.module);
+		uart_ll_set_reset_core(dev, false);
 #else
-	periph_module_reset(conn.module);
+		periph_module_reset(conn.module);
 #endif
 
-	uart_ll_set_mode(dev, UART_MODE_UART);
-	uart_ll_set_tx_idle_num(dev, 0);
+		uart_ll_set_mode(dev, UART_MODE_UART);
+		uart_ll_set_tx_idle_num(dev, 0);
 
-	// Bottom 8 bits identical to esp8266
-	dev->conf0.val = (dev->conf0.val & 0xFFFFFF00) | cfg.format;
+		// Bottom 8 bits identical to esp8266
+		dev->conf0.val = (dev->conf0.val & 0xFFFFFF00) | cfg.format;
+	}
+#if UART_ID_SERIAL_USB_JTAG
+	else if(is_usb_serial_jtag(uart)) {
+		USJ_RCC_ATOMIC()
+		{
+			usb_serial_jtag_ll_enable_bus_clock(true);
+		}
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 2, 0)
+		usb_fsls_phy_ll_int_jtag_enable(&USB_SERIAL_JTAG);
+#else
+		usb_phy_ll_int_jtag_enable(&USB_SERIAL_JTAG);
+#endif
+	}
+#endif
 
 	smg_uart_set_baudrate(uart, cfg.baudrate);
 	smg_uart_flush(uart);
@@ -702,7 +869,7 @@ void smg_uart_uninit(smg_uart_t* uart)
 
 void smg_uart_set_format(smg_uart_t* uart, smg_uart_format_t format)
 {
-	uart = get_physical(uart);
+	uart = get_standard_uart(uart);
 	if(uart == nullptr) {
 		return;
 	}
@@ -715,7 +882,7 @@ void smg_uart_set_format(smg_uart_t* uart, smg_uart_format_t format)
 
 bool smg_uart_intr_config(smg_uart_t* uart, const smg_uart_intr_config_t* config)
 {
-	uart = get_physical(uart);
+	uart = get_standard_uart(uart);
 	if(uart == nullptr || config == nullptr) {
 		return false;
 	}
@@ -830,17 +997,26 @@ void smg_uart_detach(int uart_nr)
 		bitClear(isrMask, uart_nr);
 	}
 
-	auto dev = getDevice(uart_nr);
-	dev->conf1.val = 0;
-	dev->int_clr.val = 0x0007ffff;
-	dev->int_ena.val = 0;
+	if(is_standard_uart(uart_nr)) {
+		auto dev = getDevice(uart_nr);
+		dev->conf1.val = 0;
+		dev->int_clr.val = 0x0007ffff;
+		dev->int_ena.val = 0;
+	}
+#if UART_ID_SERIAL_USB_JTAG
+	else if(is_usb_serial_jtag(uart_nr)) {
+		// NB. Don't disable module clock or usb_pad_enable since the "USJ stdout might still depends on it" ?
+		usb_serial_jtag_ll_disable_intr_mask(USB_SERIAL_JTAG_INTR_SERIAL_IN_EMPTY |
+											 USB_SERIAL_JTAG_INTR_SERIAL_OUT_RECV_PKT);
+	}
+#endif
 	smg_uart_restore_interrupts();
 }
 
 void smg_uart_detach_all()
 {
 	smg_uart_disable_interrupts();
-	for(unsigned uart_nr = 0; uart_nr < UART_PHYSICAL_COUNT; ++uart_nr) {
+	for(unsigned uart_nr = 0; uart_nr < SOC_UART_NUM; ++uart_nr) {
 		if(bitRead(isrMask, uart_nr)) {
 			auto& inst = uartInstances[uart_nr];
 			esp_intr_free(inst.handle);
