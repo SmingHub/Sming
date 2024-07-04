@@ -77,8 +77,10 @@ Change it like this::
 
    Any remaining warnings will be treated as errors and compilation will be halted.
 
-   It is a good idea to check your codebase with ``STRICT=1`` which enables **all** warnings.
-   However, it does not treat them as errors because of the above which could be false-positives.
+   It is a good idea to check your codebase with ``STRICT=1`` which enables **all** warnings,
+   plus a few additional ones such as ``unused-parameter``.
+
+   When enabled, warnings are not treated as errors.
 
 
 Build caching
