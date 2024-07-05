@@ -81,6 +81,20 @@ Change it like this::
    However, it does not treat them as errors because of the above which could be false-positives.
 
 
+Build caching
+~~~~~~~~~~~~~
+
+.. envvar:: ENABLE_CCACHE
+
+   Default: 0 (disabled)
+
+   Set to 1 to run (most) compilation through `ccache <https://ccache.dev/>`__.
+   This speeds up re-compilation of code considerably at the expense of disk space
+   and slightly extended initial compilation.
+
+   This setting was introduced mainly for CI builds as relatively little changes between runs.
+
+
 Release builds
 ~~~~~~~~~~~~~~
 

@@ -120,6 +120,10 @@ endif
 # Additional flags to pass to clang
 CLANG_FLAG_EXTRA ?=
 
+ifneq ($(ENABLE_CCACHE),1)
+CCACHE :=
+endif
+
 # $1 -> absolute source directory, no trailing path separator
 # $2 -> relative output build directory, with trailing path separator
 define GenerateCompileTargets
@@ -127,12 +131,12 @@ BUILD_DIRS += $2
 ifneq (,$(filter $1/%.s,$(SOURCE_FILES)))
 $2%.o: $1/%.s
 	$(vecho) "AS $$<"
-	$(Q) $(AS) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
+	$(Q) $(CCACHE) $(AS) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
 endif
 ifneq (,$(filter $1/%.S,$(SOURCE_FILES)))
 $2%.o: $1/%.S
 	$(vecho) "AS $$<"
-	$(Q) $(AS) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
+	$(Q) $(CCACHE) $(AS) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
 endif
 ifneq (,$(filter $1/%.c,$(SOURCE_FILES)))
 ifdef CLANG_TIDY
@@ -142,9 +146,9 @@ $2%.o: $1/%.c
 else
 $2%.o: $1/%.c $2%.c.d
 	$(vecho) "CC $$<"
-	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
+	$(Q) $(CCACHE) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
 $2%.c.d: $1/%.c
-	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -MM -MT $2$$*.o $$< $(OUTPUT_DEPS)
+	$(Q) $(CCACHE) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -MM -MT $2$$*.o $$< $(OUTPUT_DEPS)
 .PRECIOUS: $2%.c.d
 endif
 endif
@@ -156,9 +160,9 @@ $2%.o: $1/%.cpp
 else
 $2%.o: $1/%.cpp $2%.cpp.d
 	$(vecho) "C+ $$<"
-	$(Q) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -c $$< -o $$@
+	$(Q) $(CCACHE) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -c $$< -o $$@
 $2%.cpp.d: $1/%.cpp
-	$(Q) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -MM -MT $2$$*.o $$< $(OUTPUT_DEPS)
+	$(Q) $(CCACHE) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -MM -MT $2$$*.o $$< $(OUTPUT_DEPS)
 .PRECIOUS: $2%.cpp.d
 endif
 endif

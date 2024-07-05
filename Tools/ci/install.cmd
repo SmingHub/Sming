@@ -8,6 +8,4 @@ if "%BUILD_DOCS%" == "true" (
     set INSTALL_OPTS=doc
 )
 
-choco install ninja
-
 %SMING_HOME%\..\Tools\install.cmd %SMING_ARCH% %INSTALL_OPTS%

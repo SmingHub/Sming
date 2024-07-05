@@ -18,6 +18,8 @@ echo ** Installing common python requirements
 echo.
 python -m pip install --upgrade pip -r %SMING_HOME%\..\Tools\requirements.txt
 
+choco install ninja ccache
+
 echo.
 echo.
 echo ** Installing MinGW

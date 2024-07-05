@@ -125,6 +125,7 @@ case $DIST in
         fi
         sudo apt-get -y update || echo "Update failed... Try to install anyway..."
         $PKG_INSTALL \
+            ccache \
             cmake \
             curl \
             git \
@@ -154,6 +155,7 @@ case $DIST in
                 ;;
         esac
         $PKG_INSTALL \
+            ccache \
             cmake \
             gawk \
             gcc \
@@ -172,6 +174,7 @@ case $DIST in
 
     darwin)
         $PKG_INSTALL \
+            ccache \
             binutils \
             coreutils \
             gnu-sed \
