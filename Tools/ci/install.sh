@@ -11,15 +11,14 @@ set -ex
 
 if [ -z "$SMING_TOOLS_PREINSTALLED" ]; then
 
-if [ "$BUILD_DOCS" = "true" ]; then
-    INSTALL_OPTS="doc"
-else
-    INSTALL_OPTS="fonts optional"
+INSTALL_OPTS=(fonts)
+if [ "$SMING_ARCH" = "Host" ]; then
+    INSTALL_OPTS+=(optional)
 fi
 
 # Ensure default path is writeable
 sudo chown "$USER" /opt
 
-"$SMING_HOME/../Tools/install.sh" $SMING_ARCH $INSTALL_OPTS
+"$SMING_HOME/../Tools/install.sh" "$SMING_ARCH" "${INSTALL_OPTS[@]}"
 
 fi
