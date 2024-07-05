@@ -42,6 +42,7 @@ jobs:
       SMING_ARCH: Esp32
       SMING_SOC: ${{ matrix.variant }}
       INSTALL_IDF_VER: ${{ matrix.idf_version }}
+      ENABLE_CCACHE: 1
 
     steps:
     - name: Fix autocrlf setting
@@ -85,6 +86,11 @@ jobs:
       run: |
          . Tools/ci/setenv.ps1
          Tools/ci/install.cmd
+
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ${{ matrix.os }}-${{ matrix.variant }}-${{ matrix.idf_version }}
 
     - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Ubuntu / MacOS
       if: ${{ matrix.os != 'windows-latest' }}

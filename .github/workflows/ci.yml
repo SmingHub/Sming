@@ -41,6 +41,7 @@ jobs:
       SMING_SOC: ${{ matrix.variant }}
       CLANG_BUILD: ${{ matrix.toolchain == 'clang' && '15' || '0' }}
       BUILD64: ${{ matrix.toolchain == 'gcc64' && 1 || 0 }}
+      ENABLE_CCACHE: 1
 
     steps:
     - name: Fix autocrlf setting
@@ -71,6 +72,11 @@ jobs:
       run: |
          . Tools/ci/setenv.ps1
          Tools/ci/install.cmd
+
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ${{ matrix.os }}-${{ matrix.toolchain }}-${{ matrix.variant }}
 
     - name: Build and test for ${{matrix.variant}} on Ubuntu / MacOS
       env:
