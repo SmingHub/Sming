@@ -19,6 +19,9 @@ fi
 # Ensure default path is writeable
 sudo chown "$USER" /opt
 
-"$SMING_HOME/../Tools/install.sh" "$SMING_ARCH" "${INSTALL_OPTS[@]}"
+"$CI_BUILD_DIR/Tools/install.sh" "$SMING_ARCH" "${INSTALL_OPTS[@]}"
 
 fi
+
+source "$CI_BUILD_DIR/Tools/export.sh"
+python "$CI_BUILD_DIR/Tools/ci/clean-tools.py" clean --delete

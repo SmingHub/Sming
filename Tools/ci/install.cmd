@@ -8,4 +8,6 @@ if "%BUILD_DOCS%" == "true" (
     set INSTALL_OPTS=doc
 )
 
-%SMING_HOME%\..\Tools\install.cmd %SMING_ARCH% %INSTALL_OPTS%
+call %CI_BUILD_DIR%\Tools\install.cmd %SMING_ARCH% %INSTALL_OPTS%
+
+python "%CI_BUILD_DIR%\Tools\ci\clean-tools.py" clean --delete
