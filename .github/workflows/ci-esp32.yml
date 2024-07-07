@@ -13,22 +13,18 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         variant: [esp32, esp32s2, esp32c3, esp32s3, esp32c2]
-        idf_version: ["4.3", "4.4", "5.0", "5.2"]
+        idf_version: ["4.4", "5.0", "5.2"]
+        include:
+          - os: ubuntu-latest
+            variant: esp32
+            idf_version: "4.3"
         exclude:
-          - variant: esp32s3
-            idf_version: "4.3"
-          - variant: esp32c2
-            idf_version: "4.3"
           - variant: esp32c2
             idf_version: "4.4"
-          - os: macos-latest
-            idf_version: "4.3"
           - os: macos-latest
             idf_version: "4.4"
           - os: macos-latest
             idf_version: "5.0"
-          - os: windows-latest
-            idf_version: "4.3"
           - os: windows-latest
             idf_version: "5.0"
 
