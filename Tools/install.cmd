@@ -20,6 +20,8 @@ python -m pip install --upgrade pip -r %SMING_HOME%\..\Tools\requirements.txt
 
 choco install ninja ccache
 
+if exist "C:\MinGW\bin" goto :mingw_installed
+
 echo.
 echo.
 echo ** Installing MinGW
@@ -28,7 +30,15 @@ rmdir /s /q c:\MinGW
 curl -Lo %DOWNLOADS%\MinGW.7z %SMINGTOOLS%/MinGW-2020-10-19.7z
 7z -oC:\ x %DOWNLOADS%\MinGW.7z
 
+goto :install
+
+:mingw_installed
+echo.
+echo ** MinGW found, not re-installing
+echo.
+
 :install
+
 if "%1" == "" goto :EOF
 if "%1" == "all" (
     call :install Host Esp8266 Esp32 Rp2040
