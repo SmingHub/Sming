@@ -130,6 +130,10 @@ ARCH_COMPONENTS	= $(ARCH_BASE)/Components
 DEBUG_VARS	+= GIT
 GIT ?= git
 
+# ccache
+DEBUG_VARS += CCACHE
+CCACHE ?= ccache
+
 # CMake command
 DEBUG_VARS	+= CMAKE
 CMAKE ?= cmake
@@ -220,6 +224,10 @@ CXXFLAGS += \
 ifneq ($(STRICT),1)
 	CXXFLAGS += -Wno-reorder
 endif
+
+# ccache can speed up re-builds considerably
+BUILD_VARS += ENABLE_CCACHE
+ENABLE_CCACHE ?= 0
 
 include $(ARCH_BASE)/build.mk
 

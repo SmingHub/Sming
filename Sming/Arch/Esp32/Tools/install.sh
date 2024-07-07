@@ -12,7 +12,6 @@ case $DIST in
     debian)
         PACKAGES+=(\
             bison \
-            ccache \
             flex \
             gperf \
             libffi-dev \
@@ -23,7 +22,6 @@ case $DIST in
     fedora)
         PACKAGES+=(\
             bison \
-            ccache \
             flex \
             gperf \
             libffi-devel \

@@ -103,6 +103,10 @@ endif
 IDF_PATH_LIST += $(ESP32_IDFEXE_PATH)
 endif
 
+ifeq ($(ENABLE_CCACHE),1)
+export IDF_CCACHE_ENABLE := 1
+endif
+
 DEBUG_VARS += NINJA
 NINJA := $(if $(ESP32_NINJA_PATH),$(ESP32_NINJA_PATH)/,)ninja
 
