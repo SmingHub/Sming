@@ -110,18 +110,12 @@ CFLAGS		+= $(COMPONENT_CFLAGS)
 CPPFLAGS	+= $(COMPONENT_CPPFLAGS)
 CXXFLAGS	+= $(COMPONENT_CXXFLAGS)
 
-# GCC 10 escapes ':' in path names which breaks GNU make for Windows so filter them
-ifeq ($(UNAME),Windows)
-OUTPUT_DEPS := | $(SED) "s/\\\\:/:/g" > $$@
-else
-OUTPUT_DEPS := -MF $$@
-endif
-
 # Additional flags to pass to clang
 CLANG_FLAG_EXTRA ?=
 
 ifneq ($(ENABLE_CCACHE),1)
 CCACHE :=
+export CCACHE_DISABLE=1
 endif
 
 # $1 -> absolute source directory, no trailing path separator
@@ -144,12 +138,10 @@ $2%.o: $1/%.c
 	$(vecho) "TIDY $$<"
 	$(Q) $(CLANG_TIDY) $$< -- $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) $(CLANG_FLAG_EXTRA)
 else
-$2%.o: $1/%.c $2%.c.d
+$2%.o: $1/%.c
 	$(vecho) "CC $$<"
-	$(Q) $(CCACHE) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
-$2%.c.d: $1/%.c
-	$(Q) $(CCACHE) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -MM -MT $2$$*.o $$< $(OUTPUT_DEPS)
-.PRECIOUS: $2%.c.d
+	$(Q) $(CCACHE) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@ -MMD -MF $${@:.o=.c.d}
+-include $2%.c.d
 endif
 endif
 ifneq (,$(filter $1/%.cpp,$(SOURCE_FILES)))
@@ -158,12 +150,10 @@ $2%.o: $1/%.cpp
 	$(vecho) "TIDY $$<"
 	$(Q) $(CLANG_TIDY) $$< -- $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) $(CLANG_FLAG_EXTRA)
 else
-$2%.o: $1/%.cpp $2%.cpp.d
+$2%.o: $1/%.cpp
 	$(vecho) "C+ $$<"
-	$(Q) $(CCACHE) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -c $$< -o $$@
-$2%.cpp.d: $1/%.cpp
-	$(Q) $(CCACHE) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -MM -MT $2$$*.o $$< $(OUTPUT_DEPS)
-.PRECIOUS: $2%.cpp.d
+	$(Q) $(CCACHE) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -c $$< -o $$@ -MMD -MF $${@:.o=.cpp.d}
+-include $2%.cpp.d
 endif
 endif
 endef
