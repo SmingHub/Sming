@@ -132,6 +132,7 @@ void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCh
 			commandBuffer.clear();
 		}
 		showPrompt();
+		break;
 	}
 	default:
 		break;
@@ -216,6 +217,7 @@ void asyncReadCallback(const GdbSyscallInfo& info)
 		Serial << _F("readFileAsync: total = ") << transfer.total << _F(", elapsed = ") << elapsed << _F(" ms, av. ")
 			   << bps << _F(" bytes/sec") << endl;
 		readConsole();
+		break;
 	}
 
 	default:;
