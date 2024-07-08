@@ -60,6 +60,10 @@ fi
 rm -f "$IDF_PATH"
 ln -s "$IDF_CLONE_PATH" "$IDF_PATH"
 
+
+# Skip installation for CI if already present
+if [ -z "$CI_BUILD_DIR" ] || [ ! -d "$IDF_TOOLS_PATH/tools" ]; then
+
 # Install IDF tools and packages
 python3 "$IDF_PATH/tools/idf_tools.py" --non-interactive install
 if [ -n "$VIRTUAL_ENV" ]; then
@@ -72,5 +76,7 @@ python3 "$IDF_PATH/tools/idf_tools.py" --non-interactive install-python-env
 if [ -z "$KEEP_DOWNLOADS" ]; then
     rm -rf "$IDF_TOOLS_PATH/dist"
 fi
+
+fi # CI install
 
 fi
