@@ -230,33 +230,6 @@ Configuration
    On MacOS builds are 64-bit only. Default for other systems is 32-bit.
 
 
-.. envvar:: ENABLE_SANITIZERS
-
-   default: 0 (off)
-
-   Enable this option to build with lots of runtime checking.
-
-   This provides some of the capabilities of valgrind but by instrumenting
-   the code when it is compiled, rather than patching at runtime.
-
-   It also links in some additional runtime support libraries.
-
-   Run a full rebuild after changing this setting (or :envvar:`SANITIZERS`)::
-
-       make clean components-clean
-       make
-
-   .. note::
-
-      If using :envvar:`CLANG_BUILD` then all runtime libraries should already be available.
-      For GCC you will also need to install ``libasan`` and ``libubsan``.
-
-
-.. envvar:: SANITIZERS
-
-   Selects which sanitizers are used. See :envvar:`ENABLE_SANITIZERS`.
-
-
 Components
 ----------
 

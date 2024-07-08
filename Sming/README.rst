@@ -97,6 +97,36 @@ Build caching
    This setting was introduced mainly for CI builds as relatively little changes between runs.
 
 
+.. envvar:: ENABLE_SANITIZERS
+
+   default: 0 (off)
+
+   Enable this option to build with lots of runtime checking.
+
+   This provides some of the capabilities of valgrind but by instrumenting
+   the code when it is compiled, rather than patching at runtime.
+
+   It also links in some additional runtime support libraries.
+
+   Run a full rebuild after changing this setting (or :envvar:`SANITIZERS`)::
+
+       make clean components-clean
+       make
+
+   .. note::
+
+      Applications cannot link when this setting is enabled as sanitizer runtime libraries
+      are not currently available for embedded toolchains.
+
+      With Host builds using :envvar:`CLANG_BUILD`, all runtime libraries should already be available.
+      For GCC you will also need to install ``libasan`` and ``libubsan``.
+
+
+.. envvar:: SANITIZERS
+
+   Selects which sanitizers are used. See :envvar:`ENABLE_SANITIZERS`.
+
+
 Release builds
 ~~~~~~~~~~~~~~
 
