@@ -8,9 +8,9 @@ The first thing that you need to do is to make sure that you have a
 clean source code. And second if the sample is still not compiling you
 have to provide us with more information.
 
-Let’s start with the first part: “Clean Source Code State”. If you are
+Let's start with the first part: "Clean Source Code State". If you are
 familiar with ``git`` you can run ``git status`` to get more
-information. Sometimes this won’t be enough therefore we recommend you
+information. Sometimes this won't be enough therefore we recommend you
 the following steps ( They are working on Linux with bash shell. If you
 have another OS and shell you should adjust them accordingly).
 
@@ -26,8 +26,8 @@ should be completely different than the Sming directory that you are
 using on a daily basis. Also it points the SMING_HOME variable to the
 new temporary directory with the clean source code.
 
-Now let’s go to the second step: “Compile a sample and report issues, if
-any”. We will use the Basic_Ssl sample. Before we compile a sample we
+Now let's go to the second step: "Compile a sample and report issues, if
+any". We will use the Basic_Ssl sample. Before we compile a sample we
 need to compile the Sming library. This can be done calling the
 following commands:
 

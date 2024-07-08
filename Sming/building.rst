@@ -11,12 +11,12 @@ modifying the build system.
 
 A Sming project is built from a set of static libraries (object
 archives). Typically the application code is one library, built from the
-user’s source code, whilst the other libraries are common to all
+user's source code, whilst the other libraries are common to all
 projects and stored in a separate, shared location.
 
 Until recently Sming itself has always been built as one large library,
 but this is now broken into a number of discrete Component libraries.
-The concept is borrowed from Espressif’s ESP-IDF build system and whilst
+The concept is borrowed from Espressif's ESP-IDF build system and whilst
 there are some similarities the two systems are completely independent.
 
 Building applications
@@ -78,7 +78,7 @@ These variables are available for application use:
 
 .. envvar:: PROJECT_DIR
 
-   Path to the project’s root source directory, without
+   Path to the project's root source directory, without
    trailing path separator. This variable is available within makefiles,
    but is also provided as a #defined C string to allow references to
    source files within application code, such as with the ``IMPORT_FSTR``
@@ -99,7 +99,7 @@ Instead of ``Makefile-user.mk`` a project should provide a ``component.mk``. To 
 3. Delete ``Makefile-user.mk``
 4. If the project uses any Arduino libraries, set the :envvar:`ARDUINO_LIBRARIES` variable
 
-**Targets** You can add your own targets to component.mk as usual. It’s
+**Targets** You can add your own targets to component.mk as usual. It's
 a good idea to add a comment for the target, like this::
 
    ##@Building
@@ -131,7 +131,7 @@ Building
 You should normally work from the project directory. Examples:
 
 -  Type ``make`` to build the project and any required Components. To
-   speed things up, use parallel building, e.g. ``make -j5`` will
+   speed things up, use parallel building, e.g. ``make -j5`` will
    build using a maximum of 5 concurrent jobs. The optimum value for
    this is usually (CPU CORES + 1). Using ``make -j`` will use unlimited
    jobs, but can cause problems in virtual environments.
@@ -143,7 +143,7 @@ To switch to a different build architecture, for example:
 
 -  Type ``make SMING_ARCH=Host`` to build the project for the host emulator
 -  Type ``make flash`` to copy any SPIFFS image (if enabled) to the
-   virtual flash, and run the application. (Note that you don’t need to
+   virtual flash, and run the application. (Note that you don't need to
    set SMING_ARCH again, the value is cached.)
 
 To inspect the current build configuration, type ``make list-config``.
@@ -158,12 +158,12 @@ or create your own. See :ref:`hardware_config`.
 Configuration variables
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Configuration variables should be set in the project’s component.mk
+Configuration variables should be set in the project's component.mk
 file. If appropriate, they can also be set as environment variables.
 
 During development, the easiest way to change variables is on the
 ``make`` command line. These are cached so persist between make
-sessions, and will override any values set in your project’s
+sessions, and will override any values set in your project's
 ``component.mk`` file. For example:
 
 -  Type ``make SPIFF_BIN=test-rom`` to build the project and (if
@@ -183,7 +183,7 @@ release/debug). For example:
 Type ``make config-clean`` to clear all caches and revert to defaults.
 
 For reference, a copy of all configuration variables are stored in a file with
-each firmware image created in the ‘firmware’ directory.
+each firmware image created in the 'firmware' directory.
 
 Component repositories
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -309,7 +309,7 @@ The purpose of a Component is to encapsulate related elements for
 selective inclusion in a project, for easy sharing and reuse:
 
 -  **Shared Library** with associated header files
--  **App Code** Source files to be compiled directly into the user’s
+-  **App Code** Source files to be compiled directly into the user's
    project
 -  **Header files** without any associated source or library
 -  **Build targets** to perform specific actions, such as flashing
@@ -362,6 +362,8 @@ There are several types of config variable:
 +-------------+-------------+-------------+-------------+-------------+
 | CACHE       | Y           | N           | N           | N           |
 +-------------+-------------+-------------+-------------+-------------+
+| BUILD       | Y           | N           | N           | N           |
++-------------+-------------+-------------+-------------+-------------+
 | DEBUG       | N           | N           | N           | N           |
 +-------------+-------------+-------------+-------------+-------------+
 
@@ -375,7 +377,7 @@ one of the following lists:
 .. envvar:: CONFIG_VARS
 
    The Application library derives its variant from these
-   variables. Use this type if the Component doesn’t require a rebuild, but
+   variables. Use this type if the Component doesn't require a rebuild, but
    the application does.
 
 .. envvar:: COMPONENT_VARS
@@ -400,7 +402,7 @@ one of the following lists:
 
 .. envvar:: RELINK_VARS
 
-   Code isn’t re-compiled, but libraries are re-linked and
+   Code isn't re-compiled, but libraries are re-linked and
    firmware images re-generated if any of these variables are changed. For
    example, ``make RBOOT_ROM_0=new-rom-file`` rewrites the firmware image
    using the given filename. (Also, as the value is cached, if you then do
@@ -420,8 +422,7 @@ one of the following lists:
 
 .. envvar:: BUILD_VARS
 
-   These are optional user-provided configuration variables.
-   They are cached in ``out/build-type.mk`` so apply to all architectures.
+   These are cached in ``out/build-type.mk`` and apply to all architectures.
 
 
 Note that the lists not prefixed ``COMPONENT_xx`` are global and so should only
@@ -460,7 +461,7 @@ are pulled in, as follows:
    that the submodule is present and correct.
 
 The patch file must have the same name as the submodule, with a .patch
-extension. It can be located in the submodule’s parent directory::
+extension. It can be located in the submodule's parent directory::
 
    |_ Components/
       |_ heap/
@@ -485,7 +486,7 @@ be placed in a ``../.patches`` directory::
 This example includes additional files for the submodule. There are some
 advantages to this approach:
 
-1. Don’t need to modify or create .patch
+1. Don't need to modify or create .patch
 2. Changes to the file are easier to follow than in a .patch
 3. **IMPORTANT** Adding a component.mk file in this manner allows the
    build system to resolve dependencies before any submodules are fetched.
@@ -546,8 +547,8 @@ changed as required.
    By default, the library has the same name as the Component but can be
    changed if required. Note that this will be used as the stem for any variants.
 
-   Set ``COMPONENT_LIBNAME :=`` if the Component doesn’t create a library.
-   If you don’t do this, a default library will be built but will be empty if
+   Set ``COMPONENT_LIBNAME :=`` if the Component doesn't create a library.
+   If you don't do this, a default library will be built but will be empty if
    no source files are found.
 
 .. envvar:: COMPONENT_TARGETS
@@ -582,7 +583,7 @@ changed as required.
 
 .. envvar:: COMPONENT_SRCDIRS
 
-   Locations for source code relative to COMPONENT_PATH (defaults to “. src”)
+   Locations for source code relative to COMPONENT_PATH (defaults to ". src")
 
 .. envvar:: COMPONENT_SRCFILES
 
@@ -697,7 +698,7 @@ never overwritten.
 
       GDB_CMDLINE = trap '' INT; $(GDB) -x $(COMPONENT_PATH)/gdbcmds -b $(COM_SPEED_GDB) -ex "target remote $(COM_PORT_GDB)"
 
-   That won’t work! By the time ``GDB_CMDLINE`` gets expanded,
+   That won't work! By the time ``GDB_CMDLINE`` gets expanded,
    ``COMPONENT_PATH`` could contain anything. We need ``GDB_CMDLINE`` to be
    expanded only when used, so the solution is to take a simple copy of
    ``COMPONENT_PATH`` and use it instead, like this::
@@ -744,15 +745,15 @@ clean and easy to follow.
 
 Components can be rebuilt and cleaned individually. For example:
 
--  ``make spiffs-build`` runs the Component ‘make’ for spiffs, which contains the SPIFFS library.
+-  ``make spiffs-build`` runs the Component 'make' for spiffs, which contains the SPIFFS library.
 -  ``make spiffs-clean`` removes all intermediate build files for the Component
 -  ``make spiffs-rebuild`` cleans and then re-builds the Component
 
 By default, a regular ``make`` performs an incremental build on the
 application, which invokes a separate (recursive) make for the ``App``
 Component. All other Components only get built if any of their targets
-don’t exist (e.g. variant library not yet built). This makes application
-building faster and less ‘busy’, which is generally preferable for
+don't exist (e.g. variant library not yet built). This makes application
+building faster and less 'busy', which is generally preferable for
 regular application development. For Component development this
 behaviour can be changed using the ``FULL_COMPONENT_BUILD`` variable
 (which is cached). Examples:
@@ -777,7 +778,7 @@ other targets, customise the ``component.mk`` file as follows:
 It is important that the rule uses the provided values for
 ``COMPONENT_LIBNAME``, ``COMPONENT_LIBPATH`` and ``COMPONENT_LIBDIR`` so
 that variant building, cleaning, etc. work correctly. See below under
-‘Building’, and the Host ``lwip`` Component for an example.
+'Building', and the Host ``lwip`` Component for an example.
 
 Components are built using a make instance with the current directory
 set to the build output directory, not the source directory. If any
@@ -810,13 +811,13 @@ e.g. \ ``make axtls-8266-clean`` will fail unless you also specify
 ``ENABLE_SSL=1``.
 
 **Empty libraries** Components without any source code produce an empty
-library. This is because, for simplicity, we don’t want to add a
+library. This is because, for simplicity, we don't want to add a
 component.mk to every Arduino library.
 
 **Empty Component directories** Every sub-directory in the
 ``COMPONENT_SEARCH_DIRS`` is interpreted as a Component. For example,
 ``spiffs`` was moved out of Arch/Esp8266/Components but if an empty
-directory called ‘spiffs’ still remains then it will be picked up
+directory called 'spiffs' still remains then it will be picked up
 instead of the main one. These sorts of issues can be checked using
 ``make list-components`` to ensure the correct Component path has been
 selected.

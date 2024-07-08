@@ -19,9 +19,9 @@ Doxygen allows you to customize the HTML output by modifying a master HTML heade
 
 `doxygen -w html header.html footer.html customdoxygen.css`
 
-Modifying these files alone is not enough to get good Twitter Bootstrap integration. Bootstrap requires that certain classes be applied within the HTML. For example, a Bootstrap “table” needs to have a class called “table” in order to apply the Bootstrap table formatting. We just need to augment the default HTML with these Bootstrap classes. To do this, we use the provided doxy-boot.js javascript file.
+Modifying these files alone is not enough to get good Twitter Bootstrap integration. Bootstrap requires that certain classes be applied within the HTML. For example, a Bootstrap "table" needs to have a class called "table" in order to apply the Bootstrap table formatting. We just need to augment the default HTML with these Bootstrap classes. To do this, we use the provided doxy-boot.js javascript file.
 
-Also, you can augment doxygen’s default stylesheet with a customdoxygen.css stylesheet. This is where you would place any custom styling such as sticky footers.
+Also, you can augment doxygen's default stylesheet with a customdoxygen.css stylesheet. This is where you would place any custom styling such as sticky footers.
 
 # How to Integrate
 

@@ -35,7 +35,7 @@ FEATURES
    estimation fast recovery/fast retransmit and sending SACKs
 -  raw/native API for enhanced performance
 -  Optional Berkeley-like socket API
--  TLS: optional layered TCP (“altcp”) for nearly transparent TLS for
+-  TLS: optional layered TCP ("altcp") for nearly transparent TLS for
    any TCP-based protocol (ported to mbedTLS) (see changelog for more
    info)
 -  PPPoS and PPPoE (Point-to-point protocol over Serial/Ethernet)
@@ -68,11 +68,11 @@ additions to the stack to further increase its usefulness.
 
 Development of lwIP is hosted on Savannah, a central point for software
 development, maintenance and distribution. Everyone can help improve
-lwIP by use of Savannah’s interface, Git and the mailing list. A core
+lwIP by use of Savannah's interface, Git and the mailing list. A core
 team of developers will commit changes to the Git source tree.
 
-The lwIP TCP/IP stack is maintained in the ‘lwip’ Git module and
-contributions (such as platform ports) are in the ‘contrib’ Git module.
+The lwIP TCP/IP stack is maintained in the 'lwip' Git module and
+contributions (such as platform ports) are in the 'contrib' Git module.
 
 See doc/savannah.txt for details on Git server access for users and
 developers.
@@ -105,7 +105,7 @@ maintained as it should be.
 
 lwIP was originally written by Adam Dunkels: http://dunkels.com/adam/
 
-Reading Adam’s papers, the files in docs/, browsing the source code
+Reading Adam's papers, the files in docs/, browsing the source code
 documentation and browsing the mailing list archives is a good way to
 become familiar with the design of lwIP.
 

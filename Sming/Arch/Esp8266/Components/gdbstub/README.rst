@@ -18,7 +18,7 @@ function is called, it will claim UART0 so your application will be
 unable to use it directly. Therefore, the default port for ``Serial``
 is changed to ``UART2``.
 
-UART2 is a ‘virtual’ serial port to enable serial communications to work
+UART2 is a 'virtual' serial port to enable serial communications to work
 correctly when GDB-enabled. Read/write calls and serial callbacks are
 handled via gdbstub. Baud rate changes affect UART0 directly.
 
@@ -38,7 +38,7 @@ to ``gdbstub``.
 -  Linux: A version of this should be available in
    ``$ESP_HOME/xtensa-lx106-elf/bin/xtensa-lx106-elf-gdb``
 
--  Windows: At time of writing, UDK doesn’t provide a GDB application
+-  Windows: At time of writing, UDK doesn't provide a GDB application
    - Download and run the executable installer at `SysProgs <http://gnutoolchains.com/esp8266/>`__
 
    - Copy the
@@ -52,7 +52,7 @@ Usage
 
 -  Configure gdbstub by editing ``gdbstub-cfg.h`` as required. You
    can also configure the options by setting ::envvar:`USER_CFLAGS` in
-   your project’s ``component.mk`` file. e.g
+   your project's ``component.mk`` file. e.g
    ``USER_CFLAGS=-DGDBSTUB_BREAK_ON_INIT=0``.
 -  Optional: Add ``gdb_do_break()`` statements to your application.
 -  Run ``make clean``, then ``make ENABLE_GDB=1 flash`` to build and
@@ -185,17 +185,17 @@ Known Issues and Limitations
      data while the debugger has stopped the CPU, it is bound to crash.
      This will happen mostly when working with UDP and/or ICMP;
      TCP-connections in general will not send much more data when the
-     other side doesn’t send any ACKs.
+     other side doesn't send any ACKs.
    - Solution: In such situations avoid pausing the debugger for
      extended periods
 
-- Software breakpoints/watchpoints (‘break’ and ‘watch’) don’t work on flash code
+- Software breakpoints/watchpoints ('break' and 'watch') don't work on flash code
    - Cause: GDB handles these by replacing code with a debugging
      instruction, therefore the code must be in RAM.
-   - Solution: Use hardware breakpoint (‘hbreak’) or use
+   - Solution: Use hardware breakpoint ('hbreak') or use
      :c:macro:`GDB_IRAM_ATTR` for code which requires testing
 
-- If hardware breakpoint is set, single-stepping won’t work unless code is in RAM.
+- If hardware breakpoint is set, single-stepping won't work unless code is in RAM.
    - Cause: GDB reverts to software breakpoints if no hardware
      breakpoints are available
    - Solution: Delete hardware breakpoint before single-stepping
@@ -206,12 +206,12 @@ Known Issues and Limitations
    - Solution: Use the timer in non-maskable mode, or enable
      :c:macro:`GDBSTUB_PAUSE_HARDWARE_TIMER` option
 
-- If gdbstub isn’t initialised then UART2 won’t work, though initialisation will succeed
+- If gdbstub isn't initialised then UART2 won't work, though initialisation will succeed
    - Cause: By design, uart callbacks can be registered for UART2
      at any time, before or after initialisation
    - Solution: Not really an issue, just something to be aware of
 
-- Error reported, “packet reply is too long”
+- Error reported, "packet reply is too long"
    - Cause: Mismatch between GDB version and stub code
    - Solution: Set :c:macro:`GDBSTUB_GDB_PATCHED` =1 or use an
      unpatched version of GDB
@@ -225,13 +225,13 @@ Known Issues and Limitations
      ``$(SMING_HOME)/system/gdb_syscall.h``, and :sample:`LiveDebug`
      sample.
 
-- No apparent way to have second ‘console’ (windows terminology) separate from GDB interface
+- No apparent way to have second 'console' (windows terminology) separate from GDB interface
    - Cause: Unknown
    - Solution: Is this possible with remote targets?
 
-- GDB (in Windows) doesn’t respond at all to Ctrl+C
+- GDB (in Windows) doesn't respond at all to Ctrl+C
    - Cause: Unknown
-   - Solution: Press Ctrl+Break to ‘hard kill’ GDB. You'll probably
+   - Solution: Press Ctrl+Break to 'hard kill' GDB. You'll probably
      need to do the next step as well to get it back
 
 - When GDB is running under windows, appears to hang when target reset or restarted
@@ -244,7 +244,7 @@ Known Issues and Limitations
       - quit terminal
       - run GDB again ``make gdb``
 
-- Debug messages don’t appear in Eclipse
+- Debug messages don't appear in Eclipse
    - Cause: Unknown
    - Solution: Use command-line GDB, or a better visual debugger
 

@@ -24,7 +24,7 @@ architectures, such as the Host Emulator, and in the future the ESP32.
 The ``Sming/Arch`` directory should never be accessed directly: it
 contains specific files for the target architecture, and may provide
 different header file versions to the main ones. Instead, consider these
-directories to be your ‘root’ include directories:
+directories to be your 'root' include directories:
 
 ::
 
@@ -64,7 +64,7 @@ user_include.h
 --------------
 
 This file is generally #included ahead of everything else so that common
-architecture-specific definitions are available. Unless you’ve made
+architecture-specific definitions are available. Unless you've made
 changes to the file, it is not required and you should delete it: Sming
 provides a default which will be used.
 

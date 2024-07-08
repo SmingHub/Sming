@@ -56,7 +56,7 @@ Further documentation about the :doc:`/samples` is available too.
 Basic Blink
 ~~~~~~~~~~~
 
-Blinking is something like the “Hello World” example for the embedded
+Blinking is something like the "Hello World" example for the embedded
 world. You can check it using the commands below:
 
 .. code-block:: bash

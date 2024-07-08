@@ -35,7 +35,7 @@ Building
 ========
 
 -  The default rBoot options are perfect for a 4MB flash, so if this is what you
-   have (e.g. an esp-12) you don’t need to do anything else. Otherwise
+   have (e.g. an esp-12) you don't need to do anything else. Otherwise
    see information below about configuration.
 -  Run ``make`` as normal, rBoot and your app ROM will both be built for you.
 -  Running ``make flash`` will flash rBoot and the first ROM slot.

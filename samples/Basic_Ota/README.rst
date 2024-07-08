@@ -14,7 +14,7 @@ Esp8266
 ~~~~~~~
 On Esp8266 we use rBoot as bootloader.
 When using rBoot big flash support with multiple 1MB slots only one rom
-image needs to be created. If you don’t want to use big flash support
+image needs to be created. If you don't want to use big flash support
 (e.g. for a device with smaller flash) see the separate instructions
 below. You can easily take the ota files and add them to your own
 project to add OTA support.

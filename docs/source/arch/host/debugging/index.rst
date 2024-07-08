@@ -171,7 +171,7 @@ Here is how this can be done:
 
   - Select *File* -> *New* -> *Project* -> *C/C++* -> *Makefile Project with Existing Code*
   - Point Eclipse to the location of the LiveDebug sample
-  - Import the Sming Framework (if you haven’t done it yet)
+  - Import the Sming Framework (if you haven't done it yet)
 
 .. figure:: debugging-1.png
    :alt: Import Project

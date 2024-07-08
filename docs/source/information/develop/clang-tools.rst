@@ -6,7 +6,7 @@ is a tool that implements automatic source code formatting.
 It can be used to automatically enforce the layout rules for Sming.
 
 `clang-tidy <https://clang.llvm.org/extra/clang-tidy/>`__
-is a C++ “linter” tool to assist with diagnosing and fixing typical programming errors
+is a C++ "linter" tool to assist with diagnosing and fixing typical programming errors
 including portability/readability issues, bug-prone code constructs,
 interface misuse, or bugs that can be deduced via static analysis.
 
@@ -59,7 +59,7 @@ in the `ClangFormat documentation <https://clang.llvm.org/docs/ClangFormat.html>
 
 For the Eclipse IDE we recommend installing
 the `CppStyle plugin <https://github.com/wangzw/CppStyle>`__. You can
-configure your IDE to auto-format the code on “Save” using the
+configure your IDE to auto-format the code on "Save" using the
 recommended coding style and/or format according to our coding style
 rules using Ctrl-Shift-F (for formatting of whole file or selection of
 lines). Read

@@ -21,7 +21,7 @@ smtp2go conveniently provides a free account.
 Create an account here: https://www.smtp2go.com/setupguide/arduino/ .
 
 It needs some configuration: \* the name of the SMTP server, eg
-“mail.smtp2go.com” \* a username and password \* the name and email of
+"mail.smtp2go.com" \* a username and password \* the name and email of
 the person from whom the email will be sent \* the name and email of the
 person to send the email to
 
