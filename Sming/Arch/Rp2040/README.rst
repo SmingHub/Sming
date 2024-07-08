@@ -270,8 +270,8 @@ https://github.com/raspberrypi/pico-playground
    Further examples using the pico-extras libraries.
 
 
-Build variables
----------------
+Configuration Variables
+-----------------------
 
 .. envvar:: PICO_TOOLCHAIN_PATH
 

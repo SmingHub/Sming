@@ -6,8 +6,8 @@ Sming Esp32 Architecture
 Support building Sming for the Esp32 architecture.
 
 
-Build variables
----------------
+Configuration Variables
+-----------------------
 
 .. envvar:: IDF_PATH
 

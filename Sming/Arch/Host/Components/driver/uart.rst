@@ -12,8 +12,8 @@ or directly to local host serial device (e.g. /dev/ttyUSB0, COM4, etc.)
 If not otherwise reassigned, UART0 output is sent to the console and keyboard input is written to the UART0 receive queue.
 
 
-Build variables
----------------
+Configuration Variables
+-----------------------
 
 .. envvar:: ENABLE_HOST_UARTID
 

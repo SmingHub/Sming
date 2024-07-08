@@ -182,7 +182,7 @@ release/debug). For example:
 
 Type ``make config-clean`` to clear all caches and revert to defaults.
 
-For reference, a copy of all build variables are stored in a file with
+For reference, a copy of all configuration variables are stored in a file with
 each firmware image created in the ‘firmware’ directory.
 
 Component repositories
@@ -420,7 +420,7 @@ one of the following lists:
 
 .. envvar:: BUILD_VARS
 
-   These are optional user-provided build variables.
+   These are optional user-provided configuration variables.
    They are cached in ``out/build-type.mk`` so apply to all architectures.
 
 
@@ -737,7 +737,7 @@ usually necessary to specify a limit for the number of jobs, especially
 on virtual machines. There is usually no point in using a figure greater
 than (CPU cores + 1). The CI builds use ``-j3``.
 
-Note that ``Makefile-app.mk`` enforces sequential building to ensure
+Note that ``project.mk`` enforces sequential building to ensure
 submodules are fetched and patched correctly. This also ensures that
 only one Component is built at a time which keeps the build logs quite
 clean and easy to follow.

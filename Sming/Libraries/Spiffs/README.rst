@@ -3,7 +3,7 @@ SPIFFS IFS Library
 
 This Component provides SPIFFS filesystem support for all architectures.
 
-A single SPIFFS partition is defined using :envvar:`HWCONFIG` ``=spiffs``, which supports these build variables:
+A single SPIFFS partition is defined using :envvar:`HWCONFIG` ``=spiffs``, which supports these configuration variables:
 
    .. envvar:: DISABLE_SPIFFS
 

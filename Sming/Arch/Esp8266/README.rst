@@ -5,8 +5,8 @@ Support building Sming for the Esp8266 architecture.
 
 See also :doc:`/arch/esp8266/getting-started/eqt`.
 
-Build variables
----------------
+Configuration Variables
+-----------------------
 
 .. envvar:: ESP_HOME
 
