@@ -62,7 +62,7 @@ jobs:
           - os: macos-latest
             idf_version: "4.4"
 
-    concurrency: 
+    concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-${{ toJson(matrix) }}
       cancel-in-progress: true
 
@@ -89,7 +89,7 @@ jobs:
         python-version: "3.12"
 
     - name: Create library alias
-      if: ${{ inputs.alias }}
+      if: inputs.alias
       shell: pwsh
       run: |
         New-Item -ItemType SymbolicLink -Path "../${{ inputs.alias }}" -Target (Resolve-Path ".").path
@@ -107,12 +107,12 @@ jobs:
         "CI_MAKEFILE=" + (Resolve-Path "../../sming/Tools/ci/library/Makefile") >> $env:GITHUB_ENV
 
     - name: Fix permissions
-      if: ${{ matrix.os != 'windows-latest' }}
+      if: matrix.os != 'windows-latest'
       run: |
         sudo chown $USER /opt
 
     - name: Cache ESP-IDF and build tools
-      if: ${{ matrix.arch == 'Esp32' }}
+      if: matrix.arch == 'Esp32'
       uses: actions/cache@v4
       with:
         path: |
@@ -121,12 +121,12 @@ jobs:
         key: ${{ matrix.os }}-idf-${{ env.INSTALL_IDF_VER }}
 
     - name: Install build tools for Ubuntu / MacOS
-      if: ${{ matrix.os != 'windows-latest' }}
+      if: matrix.os != 'windows-latest'
       run: |
         $SMING_HOME/../Tools/ci/install.sh
 
-    - name: Install build tools for Windows   
-      if: ${{ matrix.os == 'windows-latest' }}
+    - name: Install build tools for Windows
+      if: matrix.os == 'windows-latest'
       run: |
         cd $env:SMING_HOME/..
         . Tools/ci/setenv.ps1
@@ -135,13 +135,13 @@ jobs:
     - name: Build and Test for ${{matrix.arch}} on Ubuntu / MacOS
       env:
         CLANG_FORMAT: clang-format-8
-      if: ${{ matrix.os != 'windows-latest' }}
+      if: matrix.os != 'windows-latest'
       run: |
         source $SMING_HOME/../Tools/export.sh
         make -j$(nproc) -f $CI_MAKEFILE
 
     - name: Build and Test for ${{matrix.arch}} on Windows
-      if: ${{ matrix.os == 'windows-latest' }}
+      if: matrix.os == 'windows-latest'
       run: |
         . "$env:SMING_HOME/../Tools/ci/setenv.ps1"
         make -j $env:NUMBER_OF_PROCESSORS -f $env:CI_MAKEFILE

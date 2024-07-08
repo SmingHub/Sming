@@ -63,12 +63,12 @@ jobs:
         "SMING_HOME=" + (Resolve-Path "Sming").path >> $env:GITHUB_ENV
 
     - name: Install build tools for Ubuntu / MacOS
-      if: ${{ matrix.os != 'windows-latest' }}
+      if: matrix.os != 'windows-latest'
       run: |
         Tools/ci/install.sh
 
     - name: Install build tools for Windows   
-      if: ${{ matrix.os == 'windows-latest' }}
+      if: matrix.os == 'windows-latest'
       run: |
          . Tools/ci/setenv.ps1
          Tools/ci/install.cmd
@@ -81,13 +81,13 @@ jobs:
     - name: Build and test for ${{matrix.variant}} on Ubuntu / MacOS
       env:
         CLANG_FORMAT: clang-format-8
-      if: ${{ matrix.os != 'windows-latest' }}
+      if: matrix.os != 'windows-latest'
       run: |
         source $SMING_HOME/../Tools/export.sh
         Tools/ci/build.sh
 
     - name: Build and test for ${{matrix.variant}} on Windows
-      if: ${{ matrix.os == 'windows-latest' }}
+      if: matrix.os == 'windows-latest'
       run: |
         . Tools/ci/setenv.ps1
         Tools/ci/build.cmd
