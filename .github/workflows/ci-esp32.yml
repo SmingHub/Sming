@@ -73,6 +73,12 @@ jobs:
           /opt/esp32
         key: ${{ matrix.os }}-idf-${{ matrix.idf_version }}
 
+    - name: Compiler Cache
+      uses: actions/cache@v4
+      with:
+        path: .ccache
+        key: ${{ matrix.os }}-ccache-${{ matrix.variant }}-${{ matrix.idf_version }}
+
     - name: Install build tools for Ubuntu / MacOS
       if: matrix.os != 'windows-latest'
       run: |
@@ -83,11 +89,6 @@ jobs:
       run: |
          . Tools/ci/setenv.ps1
          Tools/ci/install.cmd
-
-    - name: ccache
-      uses: hendrikmuhs/ccache-action@v1.2
-      with:
-        key: ${{ matrix.os }}-${{ matrix.variant }}-${{ matrix.idf_version }}
 
     - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Ubuntu / MacOS
       if: matrix.os != 'windows-latest'
@@ -100,3 +101,6 @@ jobs:
       run: |
         . Tools/ci/setenv.ps1
         Tools/ci/build.cmd
+
+    - name: Compiler Cache stats
+      run: ccache -sv
