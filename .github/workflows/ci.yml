@@ -2,7 +2,9 @@ name: Continuous Integration (CI)
 
 on:
   push:
-  
+
+  workflow_dispatch:
+
   pull_request:
     branches: [ develop ]
 
@@ -30,7 +32,7 @@ jobs:
           - variant: rp2040
             arch: Rp2040
 
-    concurrency: 
+    concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-${{ toJson(matrix) }}
       cancel-in-progress: true
 
@@ -73,7 +75,7 @@ jobs:
       run: |
         Tools/ci/install.sh
 
-    - name: Install build tools for Windows   
+    - name: Install build tools for Windows
       if: matrix.os == 'windows-latest'
       run: |
          . Tools/ci/setenv.ps1
