@@ -27,9 +27,6 @@ fi
 ccache --set-config cache_dir="$CI_BUILD_DIR/.ccache"
 ccache --set-config max_size=500M
 ccache -z
-if [ "$(uname)" == "Darwin" ]; then
-    ccache --set-config compiler_check=content
-fi
 
 # Clean up tools installation
 source "$CI_BUILD_DIR/Tools/export.sh"
