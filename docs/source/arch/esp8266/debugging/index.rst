@@ -20,7 +20,7 @@ Framework
 ~~~~~~~~~
 
 If you want to debug inside of the Sming Framework make sure to
-(re)compile it with :envvar:`ENABLE_GDB` =1 directive::
+(re)compile it with :envvar:`ENABLE_GDB=1 <ENABLE_GDB>` directive::
 
    cd $SMING_HOME
    make dist-clean

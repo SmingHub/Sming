@@ -321,12 +321,14 @@ are built as Components. Note that the application is also built as a
 Component library, but the source directory defaults to ``app`` instead
 of ``src``.
 
-Components are referred to simply by name, defined by the directory in
-which it is stored. The Component itself is located by looking in all
-the directories listed by ``COMPONENT_SEARCH_DIRS``, which contains a
-list of repositories. (Every sub-directory of a repository is considered
-to be a Component.) If there are Components with the same name in
-different search directories, the first one found will be used.
+.. envvar:: COMPONENT_SEARCH_DIRS
+
+   Components are referred to simply by name, defined by the directory in
+   which it is stored. The Component itself is located by looking in all
+   the directories listed by :envvar:`COMPONENT_SEARCH_DIRS`, which contains a
+   list of repositories. (Every sub-directory of a repository is considered
+   to be a Component.) If there are Components with the same name in
+   different search directories, the first one found will be used.
 
 Components are customised by providing an optional ``component.mk``
 file.
@@ -785,37 +787,32 @@ set to the build output directory, not the source directory. If any
 custom building is done then these variables must be obeyed to ensure
 variants, etc. work as expected:
 
-``COMPONENT_LIBNAME`` as provided by component.mk, defaults to component
-name, e.g. \ ``Sming`` ``COMPONENT_LIBHASH`` hash of the component
-variables used to create unique library names,
-e.g. \ ``13cd2ddef79fda79dae1644a33bf48bb`` ``COMPONENT_VARIANT`` name
-of the library to be built, including hash.
-e.g. \ ``Sming-13cd2ddef79fda79dae1644a33bf48bb`` ``COMPONENT_LIBDIR``
-directory where any generated libraries must be output,
-e.g. \ ``/home/user/sming/Sming/out/Esp8266/debug/lib/``
-``COMPONENT_LIBPATH`` full path to the library to be created,
-e.g. \ ``/home/user/sming/Sming/out/Esp8266/debug/lib/clib-Sming-13cd2ddef79fda79dae1644a33bf48bb.a``
-``COMPONENT_BUILDDIR`` where to write intermediate object files,
-e.g. \ ``/home/user/sming/Sming/out/Esp8266/debug/build/Sming/Sming-13cd2ddef79fda79dae1644a33bf48bb``
+- :envvar:`COMPONENT_LIBNAME` as provided by component.mk, defaults to component name, e.g. ``Sming``
+- :envvar:`COMPONENT_LIBHASH` hash of the component variables used to create unique library names, e.g. ``13cd2ddef79fda79dae1644a33bf48bb``
+- :envvar:`COMPONENT_VARIANT` name of the library to be built, including hash. e.g. ``Sming-13cd2ddef79fda79dae1644a33bf48bb``
+- :envvar:`COMPONENT_LIBDIR` directory where any generated libraries must be output, e.g. ``/home/user/sming/Sming/out/Esp8266/debug/lib/``
+- :envvar:`COMPONENT_LIBPATH` full path to the library to be created, e.g. ``/home/user/sming/Sming/out/Esp8266/debug/lib/clib-Sming-13cd2ddef79fda79dae1644a33bf48bb.a``
+- :envvar:`COMPONENT_BUILDDIR` where to write intermediate object files, e.g. ``/home/user/sming/Sming/out/Esp8266/debug/build/Sming/Sming-13cd2ddef79fda79dae1644a33bf48bb``
 
 Porting existing libraries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-to be completed
+See :doc:`/develop/components.rst` for a guide on creating Sming Components.
+
 
 Known Issues
 ------------
 
 **Cleaning** Components are not cleaned unless defined.
-e.g. \ ``make axtls-8266-clean`` will fail unless you also specify
-``ENABLE_SSL=1``.
+e.g. ``make axtls-8266-clean`` will fail unless you also specify :envvar:`ENABLE_SSL=1 <ENABLE_SSL>`.
 
-**Empty libraries** Components without any source code produce an empty
-library. This is because, for simplicity, we don't want to add a
-component.mk to every Arduino library.
+**Empty libraries** Components without any source code produce an empty library.
+This is because, for simplicity, we don't want to add a component.mk to every Arduino library.
+Usually this doesn't cause any problems but the MacOS archive tool throws an error.
+It is therefore recommended to add :envvar:`set COMPONENT_LIBNAME= <COMPONENT_LIBNAME>` to the component.mk file.
 
 **Empty Component directories** Every sub-directory in the
-``COMPONENT_SEARCH_DIRS`` is interpreted as a Component. For example,
+:envvar:`COMPONENT_SEARCH_DIRS` is interpreted as a Component. For example,
 ``spiffs`` was moved out of Arch/Esp8266/Components but if an empty
 directory called 'spiffs' still remains then it will be picked up
 instead of the main one. These sorts of issues can be checked using

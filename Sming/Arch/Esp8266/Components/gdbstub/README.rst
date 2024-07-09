@@ -166,7 +166,7 @@ example reading input from the GDB command prompt. See the
 :sample:`LiveDebug` sample for a demonstration.
 
 Note that system calls are disabled in the default configuration, so set
-:c:macro:`GDBSTUB_ENABLE_SYSCALL` =1 to use this feature with your
+:c:macro:`GDBSTUB_ENABLE_SYSCALL=1 <GDBSTUB_ENABLE_SYSCALL>` to use this feature with your
 application.
 
 Known Issues and Limitations
@@ -213,7 +213,7 @@ Known Issues and Limitations
 
 - Error reported, "packet reply is too long"
    - Cause: Mismatch between GDB version and stub code
-   - Solution: Set :c:macro:`GDBSTUB_GDB_PATCHED` =1 or use an
+   - Solution: Set :c:macro:`GDBSTUB_GDB_PATCHED=1 <GDBSTUB_GDB_PATCHED>` or use an
      unpatched version of GDB
 
 - Whilst GDB is attached, input cannot be passed to application

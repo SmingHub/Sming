@@ -9,7 +9,7 @@ Compilation
 In Sming the SSL support is not enabled by default.
 
 In order to enable it you should compile your project with the
-:envvar:`ENABLE_SSL` =1 directive. This can be done using the following command::
+:envvar:`ENABLE_SSL=1 <ENABLE_SSL>` directive::
 
    make ENABLE_SSL=1
 
@@ -19,7 +19,7 @@ Debug Information
 -----------------
 
 If you want to see more debug information during compile type you should
-add the directive :envvar:`SSL_DEBUG` =1, like this::
+enable :envvar:`SSL_DEBUG`, like this::
 
    make ENABLE_SSL=1 SSL_DEBUG=1
 

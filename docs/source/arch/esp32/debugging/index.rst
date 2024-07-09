@@ -92,7 +92,7 @@ Compilation directives
 ~~~~~~~~~~~~~~~~~~~~~~
 
 If you want to debug your application and the Sming Framework code make sure to
-(re)compile it with :envvar:`ENABLE_GDB` =1 directive::
+(re)compile it with :envvar:`ENABLE_GDB=1 <ENABLE_GDB>` directive::
 
    cd $SMING_HOME/../samples/Basic_Blink
    make clean components-clean

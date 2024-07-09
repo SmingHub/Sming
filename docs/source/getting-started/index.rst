@@ -253,7 +253,7 @@ Live Debugging
 
 Applications based on Sming Framework that are flashed and running on an
 ESP8266 device can be debugged using interactive debuggers. In order to
-debug an application it has to be re-compiled with the ENABLE_GDB=1
+debug an application it has to be re-compiled with the :envvar:`ENABLE_GDB=1 <ENABLE_GDB>`
 directive. And then flashed on the device. As shown below:
 
 .. code-block:: bash
