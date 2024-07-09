@@ -38,6 +38,7 @@ jobs:
       SMING_ARCH: Esp32
       SMING_SOC: ${{ matrix.variant }}
       INSTALL_IDF_VER: ${{ matrix.idf_version }}
+      IDF_SKIP_CHECK_SUBMODULES: 1
       ENABLE_CCACHE: 1
 
     steps:
