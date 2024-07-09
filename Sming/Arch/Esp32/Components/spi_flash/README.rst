@@ -1,4 +1,4 @@
-Esp8266 SPI Flash Support
+Esp32 SPI Flash Support
 =========================
 
 Provides functions for access to flash memory.
