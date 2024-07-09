@@ -1,0 +1,25 @@
+name: Cache clean
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cleanup
+        run: |
+          gh extension install actions/gh-actions-cache
+
+          echo "Fetching list of cache keys"
+          cacheKeys=$(gh actions-cache list -R $REPO -L 100 | grep -v develop | cut -f 1 )
+
+          echo "Deleting caches..."
+          set +e
+          for cacheKey in $cacheKeys; do
+            gh actions-cache delete "$cacheKey" -R "$REPO" --confirm
+          done
+          echo "Done"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}

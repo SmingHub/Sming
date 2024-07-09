@@ -1,8 +1,69 @@
-CI logs
-=======
+Continuous Integration testing
+==============================
 
-Overview
---------
+Github actions
+--------------
+
+See ``.github/workflows``.
+
+Cache clean
+      Dispatch workflow to remove caches for pull requests, but leave those for the default (develop) branch intact.
+
+Cache rebuild
+      Dispatch workflow to rebuild the esp32 idf/tool caches.
+      By default, cleans only idf/esp32 caches but has option to perform full clean.
+
+CodeQL
+      Performs code quality analysis when develop branch is updated.
+
+Continuous Integration (CI)
+      Tests for all architectures except esp32. Run for every pull request and merge to develop.
+
+Continuous Integration (CI) for Esp32
+      Tests for esp32 architecture. Requires a separate workflow as matrix becomes too complex otherwise.
+
+Continuous Integration (CI) for Library
+      Used indirectly by library workflows for testing. See workflows/library.
+
+Coverity Scan
+      Code quality analyser. Does instrumented build then uploads database to coverity servers for analysis.
+
+Release
+      Run manually during release phase only.
+
+Spelling Check
+      Run for all pull requests and merge to develop.
+
+
+Esp32 IDF and tools cleaning
+----------------------------
+
+Because the IDF and associated tools are large and relatively time-consuming to install, these are cached.
+There's so much bloat that it doesn't take much to fill the 10GB github cache allocation.
+
+So after installing the tools - before it gets cached - the `clean-tools.py` script gets run.
+This tool contains a list of filters (regular expressions) which match various paths.
+Candidates for removal were identified by inspection using the Gnome disk usage analyzer.
+Some other stuff (like test code and examples) are fairly safe candidates to remove as well.
+
+To evaluate how much would be removed run this command (it's safe)::
+
+      python clean-tools.py scan
+
+To perform 'dry-run' of a clean operation, without actually deleteing anything::
+
+      python clean-tools.py clean
+
+To actually delete stuff requires a confirmation flag::
+
+      python clean-tools.py clean --delete
+
+Note that some unused submodules are cleaned, but by default the IDF pulls them back in again!
+To prevent this behaviour, set `IDF_SKIP_CHECK_SUBMODULES=1`.
+
+
+CI logs
+-------
 
 Analysing CI logs is important for several reasons:
 
@@ -23,7 +84,7 @@ The log files related to a run and therefore only two are required (the main bui
 
 
 Setup
------
+~~~~~
 
 The github CLI client must be installed and authenticated with the Sming repo (or fork).
 
@@ -31,7 +92,7 @@ See https://docs.github.com/en/github-cli/github-cli/quickstart.
 
 
 Usage
------
+~~~~~
 
 Fetch and scan the most recent build::
 
@@ -67,7 +128,7 @@ The named exclusion file contains a list of regular expressions to match against
 
 
 vscode
-------
+~~~~~
 
 The warnings output using the scanlog tool can be used as hyperlinks in vscode:
 
