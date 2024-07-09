@@ -35,7 +35,7 @@ Building
 ========
 
 -  The default rBoot options are perfect for a 4MB flash, so if this is what you
-   have (e.g. an esp-12) you don't need to do anything else. Otherwise
+   have (e.g. an esp-12) you don't need to do anything else. Otherwise
    see information below about configuration.
 -  Run ``make`` as normal, rBoot and your app ROM will both be built for you.
 -  Running ``make flash`` will flash rBoot and the first ROM slot.
@@ -67,7 +67,7 @@ ROM in which you can put your SPIFFS. This is the behaviour when you
 set ``HWCONFIG = spiffs`` in your project's component.mk file.
 
 If you have a smaller flash the SPIFFS will have to share the 1MB block with the ROM.
-For example, the first part of each 1MB block may contain the ROM, and the second part
+For example, the first part of each 1MB block may contain the ROM, and the second part
 the SPIFFS (but does *not* have to be split equally in half). So for the 4MB example
 you could put the SPIFFS for your first ROM at flash address at 0x100000
 and the SPIFFS for your second ROM at 0x300000; in each case that is the

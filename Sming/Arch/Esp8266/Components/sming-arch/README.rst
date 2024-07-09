@@ -30,11 +30,11 @@ controlled by the :envvar:`ENABLE_CUSTOM_LWIP` setting.
    1 (default)
       Use custom compiled :component-esp8266:`esp-open-lwip` stack.
       Compared with the Espressif stack, this uses less RAM but
-      consumes FLASH (program) memory. All espconn\_* functions are turned off by default, so if you require these add
+      consumes FLASH (program) memory. All ``espconn_*`` functions are turned off by default, so if you require these add
       the :envvar:`ENABLE_ESPCONN=1 <ENABLE_ESPCONN>` directive.
       The :sample:`Basic_SmartConfig` example sets this in its ``component.mk`` file.
    2
-      Use :component-esp8266:`lwip2` stack. This does not have support for espconn\_* functions.
+      Use :component-esp8266:`lwip2` stack. This does not have support for ``espconn_*`` functions.
 
 .. envvar:: ENABLE_LWIP_DEBUG
 

@@ -156,14 +156,14 @@ OTA application update
      // select rom partition to flash
      auto part = ota.getNextBootPartition();
 
-     // The content located on ROM_0_URL will be stored to the new partition
-     otaUpdater->addItem(ROM_0_URL, part);
+     // The content located on ROM_0_URL will be stored to the new partition
+     otaUpdater->addItem(ROM_0_URL, part);
 
-     // and/or set a callback (called on failure or success without switching requested)
-     otaUpdater->setCallback(upgradeCallback);
+     // and/or set a callback (called on failure or success without switching requested)
+     otaUpdater->setCallback(upgradeCallback);
 
-     // start update
-     otaUpdater->start();
+     // start update
+     otaUpdater->start();
    }
 
 For a complete example take a look at the :sample:`Basic_Ota` sample.

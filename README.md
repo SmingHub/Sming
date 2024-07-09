@@ -110,10 +110,10 @@ DHTesp dht;
 
 void init()
 {
-  dht.setup(DHT_PIN, DHTesp::DHT22);
+  dht.setup(DHT_PIN, DHTesp::DHT22);
 
-  float h = dht.getHumidity();
-  float t = dht.getTemperature();
+  float h = dht.getHumidity();
+  float t = dht.getTemperature();
 }
 ```
 
@@ -127,12 +127,12 @@ thingSpeak.downloadString("http://api.thingspeak.com/update?key=XXXXXXX&field1="
 
 void onDataSent(HttpClient& client, bool successful)
 {
-  if (successful) {
-    Serial.println("Successful!");
-  }
-  else {
-    Serial.println("Failed");
-  }
+  if (successful) {
+    Serial.println("Successful!");
+  }
+  else {
+    Serial.println("Failed");
+  }
 }
 ```
 
@@ -151,14 +151,14 @@ void doUpgrade()
   // select rom partition to flash
   auto part = ota.getNextBootPartition();
 
-  // The content located on ROM_0_URL will be stored to the new partition
-  otaUpdater->addItem(ROM_0_URL, part);
+  // The content located on ROM_0_URL will be stored to the new partition
+  otaUpdater->addItem(ROM_0_URL, part);
 
-  // and/or set a callback (called on failure or success without switching requested)
-  otaUpdater->setCallback(upgradeCallback);
+  // and/or set a callback (called on failure or success without switching requested)
+  otaUpdater->setCallback(upgradeCallback);
 
-  // start update
-  otaUpdater->start();
+  // start update
+  otaUpdater->start();
 }
 ```
 
@@ -178,22 +178,22 @@ Serial.println(WifiStation.getIP());
 
 void onIndex(HttpRequest &request, HttpResponse &response)
 {
-  TemplateFileStream *tmpl = new TemplateFileStream("index.html");
-  auto &vars = tmpl->variables();
-  vars["counter"] = String(counter);
-  vars["IP"] = WifiStation.getIP().toString();
-  vars["MAC"] = WifiStation.getMAC();
-  response.sendTemplate(tmpl);
+  TemplateFileStream *tmpl = new TemplateFileStream("index.html");
+  auto &vars = tmpl->variables();
+  vars["counter"] = String(counter);
+  vars["IP"] = WifiStation.getIP().toString();
+  vars["MAC"] = WifiStation.getMAC();
+  response.sendTemplate(tmpl);
 }
 
 void onFile(HttpRequest &request, HttpResponse &response)
 {
-  String file = request.getPath();
-  if (file[0] == '/')
-    file = file.substring(1);
+  String file = request.getPath();
+  if (file[0] == '/')
+    file = file.substring(1);
 
-  response.setCache(86400, true);
-  response.sendFile(file);
+  response.setCache(86400, true);
+  response.sendFile(file);
 }
 ```
 
@@ -221,15 +221,15 @@ emailClient.send(mail);
 
 int onMailSent(SmtpClient& client, int code, char* status)
 {
-    MailMessage* mail = client.getCurrentMessage();
+    MailMessage* mail = client.getCurrentMessage();
 
-    ...
+    ...
 
-    if(!client.countPending()) {
-        client.quit();
-    }
+    if(!client.countPending()) {
+        client.quit();
+    }
 
-    return 0;
+    return 0;
 }
 
 ```

@@ -7,7 +7,7 @@ developers of the framework, not users of the framework.
 Sming API documentation is created using javadoc style comments within
 the source code. Comments are added to header files and doxygen is used
 to create HTML documentation. API documentation is organised as a set of
-*modules*, each of which represents a logical topic, e.g. Date and Time.
+*modules*, each of which represents a logical topic, e.g. Date and Time.
 
 The API documentation covers the core Sming framework and relevant parts
 of the ESP SDK (where this is required to use the framework). The API

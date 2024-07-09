@@ -22,7 +22,7 @@ Developing with the Sming framework can also be done in CLion.
 2. Create ``app`` folder and add ``application.cpp`` there
 3. Edit ``CMakeLists.txt``
 
-## Edit CMakeLists.txt
+## Edit CMakeLists.txt
 
 ::
 

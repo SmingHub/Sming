@@ -754,7 +754,7 @@ Components can be rebuilt and cleaned individually. For example:
 By default, a regular ``make`` performs an incremental build on the
 application, which invokes a separate (recursive) make for the ``App``
 Component. All other Components only get built if any of their targets
-don't exist (e.g. variant library not yet built). This makes application
+don't exist (e.g. variant library not yet built). This makes application
 building faster and less 'busy', which is generally preferable for
 regular application development. For Component development this
 behaviour can be changed using the ``FULL_COMPONENT_BUILD`` variable

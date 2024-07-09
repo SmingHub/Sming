@@ -39,7 +39,7 @@ FEATURES
    any TCP-based protocol (ported to mbedTLS) (see changelog for more
    info)
 -  PPPoS and PPPoE (Point-to-point protocol over Serial/Ethernet)
--  DNS (Domain name resolver incl. mDNS)
+-  DNS (Domain name resolver incl. mDNS)
 -  6LoWPAN (via IEEE 802.15.4, BLE or ZEP)
 
 APPLICATIONS

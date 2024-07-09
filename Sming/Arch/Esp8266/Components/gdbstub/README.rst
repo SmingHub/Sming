@@ -146,8 +146,7 @@ Eclipse
 Windows:
 
 -  Ensure ``Use external console for inferior`` is checked.
--  In connection settings, specify COM port like with leading /,
-   e.g. \ ``/COM4``
+-  In connection settings, specify COM port like with leading /, e.g. ``/COM4``
 
 Problems connecting?
 
@@ -218,7 +217,7 @@ Known Issues and Limitations
 
 - Whilst GDB is attached, input cannot be passed to application
    - Cause: GDB buffers keystrokes and replays them only when the
-     target is interrupted (e.g. via ctrl+C), rather than passing them
+     target is interrupted (e.g. via ctrl+C), rather than passing them
      via serial connection.
    - Solution: Application may use gdb_syscall interface to
      communicate with debugger. See
