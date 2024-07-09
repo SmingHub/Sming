@@ -33,6 +33,13 @@ goto :setup
 
 :setup
 
+REM Skip installation for CI if already present
+if "%CI_BUILD_DIR%" NEQ "" (
+    if exist "%IDF_TOOLS_PATH%\tools" (
+        goto :EOF
+    )
+)
+
 REM Install IDF tools and packages
 python "%IDF_PATH%\tools\idf_tools.py" --non-interactive install
 python -m pip install %SMINGTOOLS%/gevent-1.5.0-cp39-cp39-win_amd64.whl

@@ -2,7 +2,9 @@ name: Continuous Integration (CI) for Esp32
 
 on:
   push:
-  
+
+  workflow_dispatch:
+
   pull_request:
     branches: [ develop ]
 
@@ -38,6 +40,7 @@ jobs:
       SMING_ARCH: Esp32
       SMING_SOC: ${{ matrix.variant }}
       INSTALL_IDF_VER: ${{ matrix.idf_version }}
+      IDF_SKIP_CHECK_SUBMODULES: 1
       ENABLE_CCACHE: 1
 
     steps:
@@ -60,7 +63,7 @@ jobs:
         "SMING_HOME=" + (Resolve-Path "Sming").path >> $env:GITHUB_ENV
 
     - name: Fix permissions
-      if: ${{ matrix.os != 'windows-latest' }}
+      if: matrix.os != 'windows-latest'
       run: |
         sudo chown $USER /opt
 
@@ -72,30 +75,34 @@ jobs:
           /opt/esp32
         key: ${{ matrix.os }}-idf-${{ matrix.idf_version }}
 
+    - name: Compiler Cache
+      uses: actions/cache@v4
+      with:
+        path: .ccache
+        key: ${{ matrix.os }}-ccache-${{ matrix.variant }}-${{ matrix.idf_version }}
+
     - name: Install build tools for Ubuntu / MacOS
-      if: ${{ matrix.os != 'windows-latest' }}
+      if: matrix.os != 'windows-latest'
       run: |
         Tools/ci/install.sh
 
-    - name: Install build tools for Windows   
-      if: ${{ matrix.os == 'windows-latest' }}
+    - name: Install build tools for Windows
+      if: matrix.os == 'windows-latest'
       run: |
          . Tools/ci/setenv.ps1
          Tools/ci/install.cmd
 
-    - name: ccache
-      uses: hendrikmuhs/ccache-action@v1.2
-      with:
-        key: ${{ matrix.os }}-${{ matrix.variant }}-${{ matrix.idf_version }}
-
     - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Ubuntu / MacOS
-      if: ${{ matrix.os != 'windows-latest' }}
+      if: matrix.os != 'windows-latest'
       run: |
         source $SMING_HOME/../Tools/export.sh
         Tools/ci/build.sh
 
     - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Windows
-      if: ${{ matrix.os == 'windows-latest' }}
+      if: matrix.os == 'windows-latest'
       run: |
         . Tools/ci/setenv.ps1
         Tools/ci/build.cmd
+
+    - name: Compiler Cache stats
+      run: ccache -sv

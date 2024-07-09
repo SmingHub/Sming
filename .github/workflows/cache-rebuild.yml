@@ -1,0 +1,97 @@
+name: Cache rebuild
+
+on:
+  workflow_dispatch:
+    inputs:
+      clean_all:
+        description: 'Clean all caches, not just esp32 ones'
+        default: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cleanup
+        id: cleanup
+        run: |
+          gh extension install actions/gh-actions-cache
+
+          echo "Fetching list of cache keys"
+          if [ -z "$CLEAN_ALL" ]; then
+            cacheKeys=$(gh actions-cache list -R "$REPO" -L 100 | cut -f 1 )
+          else
+            cacheKeys=$(gh actions-cache list -R "$REPO" -L 100 | grep -w "idf\|esp32" | cut -f 1 )
+          fi
+
+          echo "Deleting caches..."
+          set +e
+          for cacheKey in $cacheKeys; do
+            gh actions-cache delete "$cacheKey" -R "$REPO" --confirm
+          done
+          echo "Done"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          CLEAN_ALL: ${{ inputs.clean_all }}
+
+  build:
+    needs: cleanup
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        idf_version: ["4.4", "5.2"]
+        include:
+          - os: ubuntu-latest
+            idf_version: "4.3"
+          - os: ubuntu-latest
+            idf_version: "5.0"
+        exclude:
+          - os: macos-latest
+            idf_version: "4.4"
+
+    runs-on: ${{ matrix.os }}
+
+    env:
+      SMING_ARCH: Esp32
+      SMING_SOC: esp32
+      INSTALL_IDF_VER: ${{ matrix.idf_version }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.idf_version == '4.3' && '3.8' || '3.12' }}
+
+    - name: Configure environment
+      shell: pwsh
+      run: |
+        "CI_BUILD_DIR=" + (Resolve-Path ".").path >> $env:GITHUB_ENV
+        "SMING_HOME=" + (Resolve-Path "Sming").path >> $env:GITHUB_ENV
+
+    - name: Fix permissions
+      if: matrix.os != 'windows-latest'
+      run: |
+        sudo chown $USER /opt
+
+    - name: Install build tools for Ubuntu / MacOS
+      if: matrix.os != 'windows-latest'
+      run: |
+        Tools/ci/install.sh
+
+    - name: Install build tools for Windows
+      if: matrix.os == 'windows-latest'
+      run: |
+         . Tools/ci/setenv.ps1
+         Tools/ci/install.cmd
+
+    - name: Cache ESP-IDF and build tools
+      uses: actions/cache/save@v4
+      with:
+        path: |
+          /opt/esp-idf-${{ matrix.idf_version }}
+          /opt/esp32
+        key: ${{ matrix.os }}-idf-${{ matrix.idf_version }}
