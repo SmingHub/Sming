@@ -187,8 +187,6 @@ Networking
 
 .. envvar:: DISABLE_NETWORK
 
-   .. note::
-   
    0 (Default)
    1 - Remove core networking support
 

@@ -2,7 +2,7 @@ Arch Driver
 ===========
 
 This is an internal Component to pull together common headers and code used at a low-level by
-more than once Arch.
+more than one Arch.
 
 This is to:
 
