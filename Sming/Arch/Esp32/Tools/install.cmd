@@ -42,7 +42,6 @@ if "%CI_BUILD_DIR%" NEQ "" (
 
 REM Install IDF tools and packages
 python "%IDF_PATH%\tools\idf_tools.py" --non-interactive install
-python -m pip install %SMINGTOOLS%/gevent-1.5.0-cp39-cp39-win_amd64.whl
 python3 "%IDF_PATH%\tools\idf_tools.py" --non-interactive install-python-env
 
 if "%CI_BUILD_DIR%" NEQ "" (
