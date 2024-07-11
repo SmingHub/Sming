@@ -1,8 +1,5 @@
 $TOOLS_DIR = "D:/opt"
 
-$env:CI_BUILD_DIR = (Resolve-Path "$PSScriptRoot/../..").Path
-$env:SMING_HOME = Join-Path $env:CI_BUILD_DIR "Sming"
-
 # Esp8266 
 $env:ESP_HOME = Join-Path $TOOLS_DIR "esp-quick-toolchain"
 
