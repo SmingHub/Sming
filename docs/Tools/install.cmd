@@ -2,7 +2,7 @@ REM Docs install.cmd
 
 where /q doxygen
 if errorlevel 1 (
-    choco install -y --no-progress doxygen.install graphviz
+    choco install -y --no-progress doxygen.install graphviz gtk-runtime
 )
 
 python -m pip install --upgrade pip wheel
