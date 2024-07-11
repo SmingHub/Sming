@@ -74,6 +74,7 @@ jobs:
       INSTALL_IDF_VER: ${{ matrix.idf_version || '5.2' }}
       CLANG_BUILD: ${{ matrix.toolchain == 'clang' && '15' || '0' }}
       BUILD64: ${{ matrix.toolchain == 'gcc64' && 1 || 0 }}
+      ENABLE_CCACHE: 1
 
     steps:
     - name: Fix autocrlf setting
@@ -120,6 +121,12 @@ jobs:
           /opt/esp32
         key: ${{ matrix.os }}-idf-${{ env.INSTALL_IDF_VER }}
 
+    - name: Compiler Cache
+      uses: actions/cache@v4
+      with:
+        path: .ccache
+        key: ${{ matrix.os }}-ccache-${{ matrix.variant }}-${{ matrix.arch == 'Esp32' && env.INSTALL_IDF_VER || '' }}
+
     - name: Install build tools for Ubuntu / MacOS
       if: matrix.os != 'windows-latest'
       run: |
@@ -145,3 +152,6 @@ jobs:
       run: |
         . "$env:SMING_HOME/../Tools/ci/setenv.ps1"
         make -j $env:NUMBER_OF_PROCESSORS -f $env:CI_MAKEFILE
+
+    - name: Compiler Cache stats
+      run: ccache -sv

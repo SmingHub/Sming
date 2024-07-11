@@ -19,15 +19,17 @@ fi
 # Ensure default path is writeable
 sudo chown "$USER" /opt
 
-"$CI_BUILD_DIR/Tools/install.sh" "$SMING_ARCH" "${INSTALL_OPTS[@]}"
+"$SMING_HOME/../Tools/install.sh" "$SMING_ARCH" "${INSTALL_OPTS[@]}"
 
 fi
 
 # Configure ccache
-ccache --set-config cache_dir="$CI_BUILD_DIR/.ccache"
-ccache --set-config max_size=500M
-ccache -z
+if [ "$ENABLE_CCACHE" == "1" ]; then
+    ccache --set-config cache_dir="$CI_BUILD_DIR/.ccache"
+    ccache --set-config max_size=500M
+    ccache -z
+fi
 
 # Clean up tools installation
-source "$CI_BUILD_DIR/Tools/export.sh"
-python "$CI_BUILD_DIR/Tools/ci/clean-tools.py" clean --delete
+source "$SMING_HOME/../Tools/export.sh"
+python "$SMING_HOME/../Tools/ci/clean-tools.py" clean --delete
