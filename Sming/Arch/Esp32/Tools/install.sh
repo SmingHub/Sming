@@ -65,7 +65,7 @@ ln -s "$IDF_CLONE_PATH" "$IDF_PATH"
 if [ -z "$CI_BUILD_DIR" ] || [ ! -d "$IDF_TOOLS_PATH/tools" ]; then
 
 # Install IDF tools and packages
-python3 "$IDF_PATH/tools/idf_tools.py" --non-interactive install
+python3 "$IDF_PATH/tools/idf_tools.py" --non-interactive install "*elf*"
 if [ -n "$VIRTUAL_ENV" ]; then
     unset VIRTUAL_ENV
     unset VIRTUAL_ENV_PROMPT

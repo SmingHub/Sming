@@ -86,29 +86,9 @@ IDF_PATH_LIST := \
 	$(ESP32_ULP_PATH)/$(ESP_VARIANT)ulp-elf-binutils/bin \
 	$(ESP32_OPENOCD_PATH)/openocd-esp32/bin
 
-ifeq ($(UNAME),Windows)
-DEBUG_VARS += ESP32_NINJA_PATH
-ifndef ESP32_NINJA_PATH
-ESP32_NINJA_PATH	:= $(call FindTool,tools/ninja/)
-endif
-ifeq (,$(wildcard $(ESP32_NINJA_PATH)/ninja.exe))
-$(error Failed to find NINJA)
-endif
-IDF_PATH_LIST += $(ESP32_NINJA_PATH)
-
-DEBUG_VARS += ESP32_IDFEXE_PATH
-ifndef ESP32_IDFEXE_PATH
-ESP32_IDFEXE_PATH := $(call FindTool,tools/idf-exe/)
-endif
-IDF_PATH_LIST += $(ESP32_IDFEXE_PATH)
-endif
-
 ifeq ($(ENABLE_CCACHE),1)
 export IDF_CCACHE_ENABLE := 1
 endif
-
-DEBUG_VARS += NINJA
-NINJA := $(if $(ESP32_NINJA_PATH),$(ESP32_NINJA_PATH)/,)ninja
 
 empty:=
 space:= $(empty) $(empty)
