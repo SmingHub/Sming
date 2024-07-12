@@ -83,8 +83,8 @@ jobs:
     - name: Install build tools for Windows
       if: matrix.os == 'windows-latest'
       run: |
-         . Tools/ci/setenv.ps1
-         Tools/ci/install.cmd
+        . Tools/ci/setenv.ps1
+        Tools/ci/install.cmd
 
     - name: Compiler Cache
       uses: actions/cache@v4
@@ -95,7 +95,7 @@ jobs:
     - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Ubuntu / MacOS
       if: matrix.os != 'windows-latest'
       run: |
-        source $SMING_HOME/../Tools/export.sh
+        . Tools/export.sh
         Tools/ci/build.sh
 
     - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Windows
