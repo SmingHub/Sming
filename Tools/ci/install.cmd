@@ -15,12 +15,5 @@ if "%BUILD_DOCS%" == "true" (
 
 call %SMING_HOME%\..\Tools\install.cmd %SMING_ARCH% %INSTALL_OPTS%
 
-REM Configure ccache
-if "%ENABLE_CCACHE%"=="1" (
-    ccache --set-config cache_dir="%CI_BUILD_DIR%\.ccache"
-    ccache --set-config max_size=500M
-    ccache -z
-)
-
 REM Clean up tools installation
 python "%SMING_HOME%\..\Tools\ci\clean-tools.py" clean --delete

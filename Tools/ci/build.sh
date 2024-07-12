@@ -9,6 +9,13 @@ if [ "$BUILD_DOCS" = "true" ]; then
     exit 0
 fi
 
+# Configure ccache
+if [ "$ENABLE_CCACHE" == "1" ]; then
+    ccache --set-config cache_dir="$CI_BUILD_DIR/.ccache"
+    ccache --set-config max_size=500M
+    ccache -z
+fi
+
 # Build times benefit from parallel building
 export MAKE_PARALLEL="make -j$(nproc)"
 

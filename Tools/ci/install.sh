@@ -23,13 +23,6 @@ sudo chown "$USER" /opt
 
 fi
 
-# Configure ccache
-if [ "$ENABLE_CCACHE" == "1" ]; then
-    ccache --set-config cache_dir="$CI_BUILD_DIR/.ccache"
-    ccache --set-config max_size=500M
-    ccache -z
-fi
-
 # Clean up tools installation
 source "$SMING_HOME/../Tools/export.sh"
 python "$SMING_HOME/../Tools/ci/clean-tools.py" clean --delete
