@@ -5,9 +5,11 @@ if "%IDF_TOOLS_PATH%"=="" goto :undefined
 
 if "%INSTALL_IDF_VER%"=="" set INSTALL_IDF_VER=5.2
 
-for %%I in (%IDF_PATH%) do set IDF_CLONE_PATH=%%~dpIesp-idf-%INSTALL_IDF_VER%
+echo.
+echo ** Installing Esp32 IDF version %INSTALL_IDF_VER%
+echo.
 
-echo "IDF_CLONE_PATH: %IDF_CLONE_PATH%"
+for %%I in (%IDF_PATH%) do set IDF_CLONE_PATH=%%~dpIesp-idf-%INSTALL_IDF_VER%
 
 if exist "%IDF_CLONE_PATH%" goto :cloned
 
@@ -32,7 +34,7 @@ goto :EOF
 
 :cloned
 echo.
-echo ** Skipping ESP-IDF clone: '%IDF_PATH%' exists
+echo ** Skipping ESP-IDF clone: '%IDF_CLONE_PATH%' exists
 echo.
 goto :setup
 
