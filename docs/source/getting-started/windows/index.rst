@@ -19,13 +19,14 @@ See also:
 Quick Install
 -------------
 
-Open an *administrative* **cmd.exe** command prompt and paste the text from the box below and press enter::
+1. Install Sming with essential tools
+
+Open an *administrative* **cmd.exe** command prompt and navigate to a directory of your choosing.
+The Sming framework will be cloned into a subdirectory named ``sming``.
+
+Paste the following text press enter::
 
    curl -LO https://raw.githubusercontent.com/SmingHub/Sming/develop/Tools/choco-install.cmd && choco-install.cmd
-
-At the moment the Esp32 toolchain is not installed by default. If you want to install it run the following command::
-
-   choco install -y sming.esp32
 
 .. important::
 
@@ -35,79 +36,50 @@ At the moment the Esp32 toolchain is not installed by default. If you want to in
 
    It is also inadvisable to continue running with elevated privileges.
 
+
+2. Install toolchains
+
+   To install toolchains for all supported architectures, type this command::
+
+      sming\tools\install all
+
+   If you want to save disk space (and installation time) then you can select which tools to install.
+   Get a list of available options like this::
+
+      sming\tools\install
+
+
+3. Set environment variables
+
+   This command must be run every time a new command shell is opened::
+
+      sming\tools\export
+
+   This sets important environment variables such as ``SMING_HOME``, but **only** for the current session.
+
+   To persist these via the Windows registry::
+
+      sming\tools\export -persist
+
+   This means they do not need to be set every time a command prompt is opened, and will be seen by
+   integrated development environments such as Eclipse or VSCode without any further configuration.
+
+
 If you followed and executed carefully the steps above Sming should be installed and configured.
 You can scroll down to `Build Basic_Blink`_ to check the installation.
-
-Optional step: Switch to stable version
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The installer uses the latest **develop** branch. This one contains great new features and bugfixes but can be ``unstable`` at times.
-
-Switching to our ``stable`` release will guarantee you that Sming's code will not change so often.
-On the downside you will have to wait for all new shiny features and bugfixes.
-
-If you really want to use the latest ``stable`` release you can type the command below::
-
-      cd %SMING_HOME%
-      git checkout master
-      git pull
 
 
 Optional step: Re-installation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In case something is broken, this will perform a forced re-install of all packages::
+The installer scripts do not overwrite existing installations.
+If something is broken or you want to upgrade, delete the appropriate directory before running the installation.
 
-   rmdir /s /q c:\tools\sming
-   choco install sming -y -f -x
+For example, to reinstall the ESP8266 toolchain::
 
-Packages
---------
-
-You can find the installer sources at https://github.com/slaff/chocolatey-packages.
-Packages are as follows:
-
-git
-   `GIT <https://git-scm.com/>`__ CLI client.
-
-   Please configure after installation to leave line-endings intact or else patching will fail::
-
-      git config --global core.autocrlf input
-
-python
-   `Python <https://www.python.org/>`__ version 3.
-
-cmake
-   `CMake <https://cmake.org/>`__.
-
-   Required to build some Components, also for Host mode.
-
-mingw
-   `MinGW <http://www.mingw.org/>`__ 32-bit.
-
-   The installer updates the system ``PATH`` but please check by running::
-
-      where make.exe
-
-   The output should show only one result::
-
-      "C:\MinGW\msys\1.0\bin\make.exe"
-
-esp8266-eqt
-   `ESP Quick Toolchain <https://github.com/earlephilhower/esp-quick-toolchain/>`__.
-
-   Sets a system-wide :envvar:`ESP_HOME` variable.
-
-sming.esp32
-   Sming-compatible version of ESP-IDF and tools.
-
-sming.core
-   Latest stable version of `Sming <https://github.com/SmingHub/Sming/tree/master>`__.
-
-   Sets a system-wide :envvar:`SMING_HOME` environment variable.
-
-Note that setting `SMING_HOME` and `ESP_HOME` as system-wide variables means they do
-not need to be set every time a command prompt is opened, and will be seen by eclipse
-without any further configuration.
+   cd c:\tools
+   rmdir /s esp-quick-toolchain
+   sming\tools\install
 
 
 Build Basic_Blink
@@ -115,14 +87,23 @@ Build Basic_Blink
 
 To check the installation, open a command prompt and type these commands::
 
-   cd %SMING_HOME%\..\samples\Basic_Blink
+   cd c:\tools\sming
+   tools\export
+   cd samples\Basic_Blink
    make
 
 The project should build without error.
+
+If you want to try out the Host emulator, do this::
+
+   make -j SMING_ARCH=Host
+
+For build options::
+
+   make help
 
 
 Next steps
 ----------
 
 Proceed to :doc:`../config`.
-
