@@ -31,7 +31,7 @@ try {
     $userpathArray = ($userpath -split ";").where({ "" -ne $_ })
     $dirstoinsertArray = ($dirstoinsert -split ";")
 
-    Write-Host "Checking system PATH..."
+    echo "Checking system PATH..."
 
     # Check if we need to update path
     $needupdate = $false
@@ -42,7 +42,7 @@ try {
         }
     }
     if (! $needupdate) {
-        Write-Host "No changes to system PATH required"
+        echo "No changes to system PATH required"
         return
     }
 
@@ -53,17 +53,17 @@ try {
             continue
         }
         if (contains $userpathArray $dir) {
-            Write-Host "WARNING: '$dir' in user path"
+            echo "WARNING: '$dir' in user path"
         }
         $newsyspathArray += $dir
     }
 
-    Write-Host "Updating system PATH"
+    echo "Updating system PATH"
     $newsyspath = ($newsyspathArray -join ";")
-    Write-Host "  From: $syspath"
-    Write-Host "  To:   $newsyspath"
+    echo "  From: $syspath"
+    echo "  To:   $newsyspath"
     [Environment]::SetEnvironmentVariable("PATH", $newsyspath, [EnvironmentVariableTarget]::Machine)
-    Write-Host "System PATH updated"
+    echo "System PATH updated"
 }
 catch {
     $_
