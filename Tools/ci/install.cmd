@@ -13,14 +13,19 @@ if "%BUILD_DOCS%" == "true" (
     set INSTALL_OPTS=doc
 )
 
-call %SMING_HOME%\..\Tools\install.cmd %SMING_ARCH% %INSTALL_OPTS%
+REM Python and CMake are preconfigured
+choco install ninja ccache -y --no-progress || goto :error
 
-REM Configure ccache
-if "%ENABLE_CCACHE%"=="1" (
-    ccache --set-config cache_dir="%CI_BUILD_DIR%\.ccache"
-    ccache --set-config max_size=500M
-    ccache -z
-)
+call %~dp0..\mingw-install.cmd || goto :error
+
+call %~dp0..\install.cmd %SMING_ARCH% %INSTALL_OPTS% || goto :error
 
 REM Clean up tools installation
-python "%SMING_HOME%\..\Tools\ci\clean-tools.py" clean --delete
+python "%~dp0clean-tools.py" clean --delete
+
+goto :EOF
+
+
+:error
+echo Failed with error #%errorlevel%.
+exit /b %errorlevel%

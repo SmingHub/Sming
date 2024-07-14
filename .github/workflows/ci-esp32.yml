@@ -75,12 +75,6 @@ jobs:
           /opt/esp32
         key: ${{ matrix.os }}-idf-${{ matrix.idf_version }}
 
-    - name: Compiler Cache
-      uses: actions/cache@v4
-      with:
-        path: .ccache
-        key: ${{ matrix.os }}-ccache-${{ matrix.variant }}-${{ matrix.idf_version }}
-
     - name: Install build tools for Ubuntu / MacOS
       if: matrix.os != 'windows-latest'
       run: |
@@ -89,13 +83,19 @@ jobs:
     - name: Install build tools for Windows
       if: matrix.os == 'windows-latest'
       run: |
-         . Tools/ci/setenv.ps1
-         Tools/ci/install.cmd
+        . Tools/ci/setenv.ps1
+        Tools/ci/install.cmd
+
+    - name: Compiler Cache
+      uses: actions/cache@v4
+      with:
+        path: .ccache
+        key: ${{ matrix.os }}-ccache-${{ matrix.variant }}-${{ matrix.idf_version }}
 
     - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Ubuntu / MacOS
       if: matrix.os != 'windows-latest'
       run: |
-        source $SMING_HOME/../Tools/export.sh
+        . Tools/export.sh
         Tools/ci/build.sh
 
     - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Windows

@@ -3,6 +3,10 @@ REM Rp2040 install.cmd
 if "%PICO_TOOLCHAIN_PATH%"=="" goto :undefined
 if exist "%PICO_TOOLCHAIN_PATH%/arm-none-eabi" goto :installed
 
+echo.
+echo ** Installing Rp2040 toolchain
+echo.
+
 set TOOLCHAIN_VERSION=13.2.rel1
 set TOOLCHAIN_BASE_URL=https://developer.arm.com/-/media/Files/downloads/gnu
 set TOOLCHAIN_NAME=arm-gnu-toolchain-%TOOLCHAIN_VERSION%-mingw-w64-i686-arm-none-eabi

@@ -64,12 +64,6 @@ jobs:
         "CI_BUILD_DIR=" + (Resolve-Path ".").path >> $env:GITHUB_ENV
         "SMING_HOME=" + (Resolve-Path "Sming").path >> $env:GITHUB_ENV
 
-    - name: Compiler Cache
-      uses: actions/cache@v4
-      with:
-        path: .ccache
-        key: ${{ matrix.os }}-ccache-${{ matrix.toolchain }}-${{ matrix.variant }}
-
     - name: Install build tools for Ubuntu / MacOS
       if: matrix.os != 'windows-latest'
       run: |
@@ -78,15 +72,21 @@ jobs:
     - name: Install build tools for Windows
       if: matrix.os == 'windows-latest'
       run: |
-         . Tools/ci/setenv.ps1
-         Tools/ci/install.cmd
+        . Tools/ci/setenv.ps1
+        Tools/ci/install.cmd
+
+    - name: Compiler Cache
+      uses: actions/cache@v4
+      with:
+        path: .ccache
+        key: ${{ matrix.os }}-ccache-${{ matrix.toolchain }}-${{ matrix.variant }}
 
     - name: Build and test for ${{matrix.variant}} on Ubuntu / MacOS
       env:
         CLANG_FORMAT: clang-format-8
       if: matrix.os != 'windows-latest'
       run: |
-        source $SMING_HOME/../Tools/export.sh
+        . Tools/export.sh
         Tools/ci/build.sh
 
     - name: Build and test for ${{matrix.variant}} on Windows
