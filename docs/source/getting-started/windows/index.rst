@@ -77,9 +77,8 @@ If something is broken or you want to upgrade, delete the appropriate directory 
 
 For example, to reinstall the ESP8266 toolchain::
 
-   cd c:\tools
-   rmdir /s esp-quick-toolchain
-   sming\tools\install
+   rmdir /s c:\tools\esp-quick-toolchain
+   %SMING_HOME%\..\tools\install
 
 
 Build Basic_Blink
