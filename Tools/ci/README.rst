@@ -70,7 +70,7 @@ To evaluate how much would be removed run this command (it's safe)::
 
       python clean-tools.py scan
 
-To perform 'dry-run' of a clean operation, without actually deleteing anything::
+To perform 'dry-run' of a clean operation, without actually deleting anything::
 
       python clean-tools.py clean
 
