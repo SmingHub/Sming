@@ -54,7 +54,7 @@ figure out the issue::
    make ENABLE_SSL=1 V=1
 
 Make sure to append that output too to your bug report. Tell the Sming
-developers also what is your SDK (esp-open-sdk, esp-alt-sdk, …) and
+developers also what is your SDK (esp-open-sdk, esp-alt-sdk, ...) and
 version, operating system & version, git version, make & version, so
 that the developers can reproduce your problem.
 

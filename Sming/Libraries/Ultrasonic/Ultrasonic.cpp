@@ -88,9 +88,9 @@ uint16_t Ultrasonic::rangeInch()
  * Calculate temperature in Celsius biasing on known base dist/temp
  *
  * c = sqrt(X*R*T), where:
- * ñ - speed of sound, m/s
+ * c - speed of sound, m/s
  * X - adiabatic index (is about 1.4 for air under normal conditions of pressure and temperature)
- * R - gas constant (for air approximately 8.3145 J/mol·K, ~286.9 J/kg·K)
+ * R - gas constant (for air approximately 8.3145 J/mol/K, ~286.9 J/kg/K)
  * T - the absolute temperature in kelvin
  *
  * @param baseDist	base calibration distance in cm

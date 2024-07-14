@@ -156,14 +156,14 @@ u32_t            tcp_update_rcv_ann_wnd(struct tcp_pcb *pcb)ICACHE_FLASH_ATTR;
 #endif
 PACK_STRUCT_BEGIN
 struct tcp_hdr {
-  PACK_STRUCT_FIELD(u16_t src);				//Դ�˿�
-  PACK_STRUCT_FIELD(u16_t dest);				//Ŀ�Ķ˿�
-  PACK_STRUCT_FIELD(u32_t seqno);			//���
-  PACK_STRUCT_FIELD(u32_t ackno);			//Ӧ�����
-  PACK_STRUCT_FIELD(u16_t _hdrlen_rsvd_flags);//�ײ�����+����λ+��־λ
-  PACK_STRUCT_FIELD(u16_t wnd);				//���ڴ�С
-  PACK_STRUCT_FIELD(u16_t chksum);			//У���
-  PACK_STRUCT_FIELD(u16_t urgp);				//����ָ��
+  PACK_STRUCT_FIELD(u16_t src);
+  PACK_STRUCT_FIELD(u16_t dest);
+  PACK_STRUCT_FIELD(u32_t seqno);
+  PACK_STRUCT_FIELD(u32_t ackno);
+  PACK_STRUCT_FIELD(u16_t _hdrlen_rsvd_flags);
+  PACK_STRUCT_FIELD(u16_t wnd);
+  PACK_STRUCT_FIELD(u16_t chksum);
+  PACK_STRUCT_FIELD(u16_t urgp);
 } PACK_STRUCT_STRUCT;
 PACK_STRUCT_END
 #ifdef PACK_STRUCT_USE_INCLUDES
