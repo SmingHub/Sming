@@ -45,18 +45,21 @@ goto :setup
 if exist "%IDF_PATH%" rmdir /q %IDF_PATH%
 mklink /j %IDF_PATH% %IDF_CLONE_PATH%
 
-if "%CI_BUILD_DIR%"=="" (
-set IDF_TOOL_PACKAGES=*openocd*
-) else (
-    REM Skip installation for CI if already present
+REM Install IDF tools and packages (unless CI has restored from cache)
+if "%CI_BUILD_DIR%" NEQ "" (
     if exist "%IDF_TOOLS_PATH%\tools" (
+        echo Skipping IDF tools installation, "%IDF_TOOLS_PATH%\tools" exists
         goto :EOF
     )
 )
 
-REM Install IDF tools and packages
-python "%IDF_PATH%\tools\idf_tools.py" --non-interactive install install "*elf*" %IDF_TOOL_PACKAGES%
-python "%IDF_PATH%\tools\idf_tools.py" --non-interactive install-python-env
+REM Be specific about which tools we want to install for each IDF version
+tr '\n' ' ' < "%~dp0idf_tools-%INSTALL_IDF_VER%.lst" > toolver.txt || goto :EOF
+for /f "tokens=*" %%x in (toolver.txt) do set IDF_TOOL_PACKAGES=%%x
+del toolver.txt
+echo Install: %IDF_TOOL_PACKAGES%
+python "%IDF_PATH%\tools\idf_tools.py" --non-interactive install %IDF_TOOL_PACKAGES% || goto :EOF
+python "%IDF_PATH%\tools\idf_tools.py" --non-interactive install-python-env || goto :EOF
 
 if "%CI_BUILD_DIR%" NEQ "" (
     del /q "%IDF_TOOLS_PATH%\dist\*"
