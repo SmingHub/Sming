@@ -20,10 +20,9 @@ ARC = r'([^/]+)\.a'
 # These filters are matched from the **start** of the path so there's an implicit .* at the end
 FILTERS = {
     IDF_TOOLS_PATH: [
-        # Leave versioned directory to avoid re-installation
-        r'.*esp-elf-gdb/.*/.*esp-elf-gdb/',
-        r'esp32ulp-elf/.*/esp32ulp-elf/',
-        r'openocd-esp32/.*/openocd-esp32/',
+        r'tools/.*esp-elf-gdb/',
+        r'tools/esp32ulp-elf/',
+        r'tools/openocd-esp32/',
         # Libraries not required by Sming
         # r'.*/riscv32-esp-elf/lib/{ARC}',
         r'.*/riscv32-esp-elf/lib/rv32i_.*',
