@@ -40,18 +40,3 @@ controlled by the :envvar:`ENABLE_CUSTOM_LWIP` setting.
 
    By default, some debug information will be printed for critical errors and situations.
    Set this to 1 to enable printing of all debug information.
-
-
-Interactive debugging on the device
------------------------------------
-
-.. envvar:: ENABLE_GDB
-
-   In order to be able to debug live directly on the ESP8266 microcontroller you
-   should re-compile your application with ``ENABLE_GDB=1`` directive.
-
-   undefined (default)
-      Compile normally
-   1
-      Compile with debugging support provided by :component-esp8266:`gdbstub`.
-      See also the :sample:`LiveDebug` sample.

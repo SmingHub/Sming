@@ -9,11 +9,10 @@ This is a rewrite of gdbstub based on the
 
 To use the GNU Debugger (GDB) with Sming requires your application to
 include some code (``gdbstub``) which communicates via the serial port.
-On the ESP8266 only UART0 may be used for this as UART1 is
-transmit-only.
+On the ESP8266 only UART0 may be used for this as UART1 is transmit-only.
 
-The gdbstub code will only be built if you specify :envvar:`ENABLE_GDB`
-=1 when compiling your application. At startup, before your init()
+The gdbstub code will only be built if you specify :envvar:`ENABLE_GDB=1 <ENABLE_GDB>`
+when compiling your application. At startup, before your init()
 function is called, it will claim UART0 so your application will be
 unable to use it directly. Therefore, the default port for ``Serial``
 is changed to ``UART2``.
@@ -29,23 +28,6 @@ Refer to the official
 `GDB documentation <https://sourceware.org/gdb/current/onlinedocs/gdb/index.html>`__
 for further details.
 
-GDB
----
-
-This is the application which runs on your development system and talks
-to ``gdbstub``.
-
--  Linux: A version of this should be available in
-   ``$ESP_HOME/xtensa-lx106-elf/bin/xtensa-lx106-elf-gdb``
-
--  Windows: At time of writing, UDK doesn't provide a GDB application
-   - Download and run the executable installer at `SysProgs <http://gnutoolchains.com/esp8266/>`__
-
-   - Copy the
-     ``C:\SysGCC\esp8266\opt\xtensa-lx106-elf\bin\xtensa-lx106-elf-gdb.exe``
-     to a suitable location.
-
--  Mac: ?
 
 Usage
 -----
@@ -91,6 +73,8 @@ To run manually, see the following variables which you can inspect using ``make 
 .. envvar:: GDB
 
    Path to the GDB executable being used.
+   This is the application which runs on your development system and talks to ``gdbstub``.
+   It is provided in the standard toolchain.
 
 
 .. _useful-gdb-commands:

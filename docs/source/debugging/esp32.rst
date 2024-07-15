@@ -8,14 +8,14 @@ If an exception occurs in debug builds then a prompt will be printed to the seri
 such as ``Entering gdb stub``.
 
 As with the ESP8266, if such an exception occurs you can stop the serial debug terminal and type ``make gdb``.
+See also :envvar:`ENABLE_GDB`.
+
+
+JTAG debugging
+--------------
 
 More advanced debugging is available via JTAG if you have the appropriate tools.
-
-See https://docs.espressif.com/projects/esp-idf/en/release-v4.3/esp32/api-guides/fatal-errors.html for further details.
-
-
-Required tools and hardware
----------------------------
+See https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/jtag-debugging/index.html.
 
 A debugger and a JTAG hardware are required.
 The debugger is part of the provided toolchain.
@@ -239,80 +239,3 @@ Or watch the following short video
 
 .. image:: https://img.youtube.com/vi/hVwSX_7Ey8c/3.jpg
    :target: https://www.youtube.com/watch?v=hVwSX_7Ey8c
-
-Debugging with visual debuggers like Eclipse CDT
-------------------------------------------------
-
-A good visualization helps us understand things faster. What we can do
-is use `Eclipse CDT <https://eclipse.org/cdt/downloads.php>`__ and its
-debugging plugins to do remote debugging as we did from the command
-line.
-
-Here is how this can be done:
-
-- Start Eclipse CDT and import the :sample:`Basic_Blink` sample:
-
-  - Select *File* -> *New* -> *Project* -> *C/C++* -> *Makefile Project with Existing Code*
-  - Point Eclipse to the location of the Basic_Blink sample
-  - Import the Sming Framework (if you haven't done it yet)
-
-.. figure:: debugging-1.png
-   :alt: Import Project
-
-   Import Project
-
-Once the two projects are in Eclipse, set the *Basic_Blink* project to
-reference the *Sming* project.
-
-Now create a new *Remote Debugging* Configuration:
-
-- Select *Run* -> *Debug Configurations* -> *C/C++ Remote Application*
-- Right-click and create a new *C/C++ Remote Application*
-- In the *Main* tab set, set:
-
-  - *Project*: *Basic_Build*
-  - *C/C++ Application*: *out/build/Esp8266/Debug/app.out*
-  - disable for now the *auto* build
-
-.. figure:: debugging-2.png
-   :alt: Remote Debugging Session
-
-   Remote Debugging Session
-
-Then go to the Debugger tab and point the GDB debugger to your
-Xtensa-gdb binary. (Type ``make list-config`` and look for :envvar:`GDB`.)
-
-.. figure:: debugging-3.png
-   :alt: Remote Debugging Session
-
-   Remote Debugging Session
-
-Make sure to load also *GDB command file*. The file is called ``gdbinit``, and you may wish to place
-a copy of the file somewhere else, especially if you intend to modify it.
-You can see the file here :source:`Sming/Arch/Esp32/Tools/gdbinit`.
-
-Finally we should configure the remote connection. Go to the
-*Debugger* -> *Connection* tab and set:
-
-- type: *TCP*
-- host: localhost
-- port: 3333
-
-.. figure:: debugging-4.png
-   :alt: Set remote connection
-
-   Set remote connection
-
-We are now ready for debugging. Press the *Debug* button. (In the
-screenshot above the Debug button is in the bottom-right corner.) After
-some seconds your debugging session should be up and running and you can
-enjoy live debugging.
-
-.. figure:: eclipse.png
-   :alt: Live Debugging Session
-
-   Live Debugging Session
-
-You will be able to see the current variables and their values. You
-should be able to go step by step, go inside of functions, add
-breakpoints to code in RAM or add breakpoints to code that was in FLASH.

@@ -247,34 +247,3 @@ Email client
    }
 
 See the :sample:`SmtpClient` sample for details.
-
-Live Debugging
-~~~~~~~~~~~~~~
-
-Applications based on Sming Framework that are flashed and running on an
-ESP8266 device can be debugged using interactive debuggers. In order to
-debug an application it has to be re-compiled with the :envvar:`ENABLE_GDB=1 <ENABLE_GDB>`
-directive. And then flashed on the device. As shown below:
-
-.. code-block:: bash
-
-   cd $SMING_HOME/../samples/LiveDebug
-   make clean
-   make ENABLE_GDB=1
-   make flashapp # <-- this will update only the application firmware.
-
-Once the debuggable application is flashed on the device the developers
-have to run GDB. The easiest way to run the command-line GDB is to
-execute the following command:
-
-.. code-block:: bash
-
-   make gdb
-
-Developers using Eclipse CDT can have debugging sessions like the one
-below:
-
-.. :image:: /information/debugging/eclipse.png
-
-See :sample:`LiveDebug` sample for details.
-

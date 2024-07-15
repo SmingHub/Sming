@@ -83,6 +83,36 @@ Change it like this::
    When enabled, warnings are not treated as errors.
 
 
+.. envvar:: ENABLE_GDB
+
+   undefined (default)
+      Compile normally
+   1
+      Compile with debugging support.
+
+      In order to be able to debug live directly on the microcontroller you
+      should re-compile your application with this setting enabled (set to 1).
+
+      This setting reduces optimisation levels and ensures full symbolic debugging information is available.
+      However, because this affects the code produced it can mask some types of bug which only present in regular or release builds.
+      For this reason, when :envvar:`ENABLE_GDB` is changed only the application is recompiled automatically
+      to ensure that the necessary GDB stub code is linked to enable communication with the debugger.
+
+      If you need to debug only a specific Component, rebuild **just** that component like this::
+
+         make ssl-clean
+         make ENABLE_GDB=1
+
+      The application code and ``ssl`` Component will now have debugging information, but everything else will remain unchanged.
+      To rebuild the entire framework::
+
+         make clean components-clean
+         make ENABLE_GDB=1
+
+      Note also that gdb can always be used to examine the source disassembly without requiring connection
+      to an actual device.
+
+
 Build caching
 ~~~~~~~~~~~~~
 
