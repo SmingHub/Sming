@@ -91,3 +91,7 @@ This flexibility comes at a cost, however:
 These are the main reasons why you should not use Delegates in an interrupt context.
 
 See :pull-request:`1734` for some further details about the relative speeds.
+
+
+.. doxygenclass:: Delegate
+   :members:
