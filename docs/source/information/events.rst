@@ -65,7 +65,7 @@ Both techniques have advantages and disadvantages, and interrupts are certainly 
 Bear in mind that every time an interrupt occurs the CPU has to stop executing your regular
 program, save any critical registers then jump to the interrupt service routine to run your
 code. All this takes time, so if the input changes very fast and very frequently then it can consume
-a lot of CPU and make the system very sluggish (or even crash it).
+a lot of CPU and make the system very sluggish (or even crash it). See :doc:`information/interrupts`.
 
 Callbacks
 ---------

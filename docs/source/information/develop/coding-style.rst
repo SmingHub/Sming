@@ -354,8 +354,10 @@ Rationale: They're not necessary
 Common issues
 -------------
 
-Some notes on commonly occurring issues::
+Some notes on commonly occurring issues.
+Note that in practice `std::unique_ptr<char[]>` would be appropriate.
 
+::
 
    /**
      * @brief Basic example class

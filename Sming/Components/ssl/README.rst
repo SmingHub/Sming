@@ -74,6 +74,7 @@ The final code can be something like::
 
 This is also demonstrated for secure MQTT in the :sample:`MqttClient_Hello` sample.
 
+.. _ssl_security:
 
 Security Considerations
 =======================

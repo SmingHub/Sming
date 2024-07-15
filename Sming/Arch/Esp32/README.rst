@@ -11,8 +11,16 @@ Configuration Variables
 
 .. envvar:: IDF_PATH
 
-   This contains the base directory for the ESP-IDF toolchain used to build the framework. This variable is required and must be set accordingly.
+   Required. The full path to the ESP-IDF framework.
 
+   The standard location for this is ``/opt/esp-idf`` or ``C:\tools\esp-idf``,
+   which is a link to the versioned directory such as ``/opt/esp-idf-5.2``.
+   You can switch between installed versions by changing the link,
+   or by changing IDF_PATH.
+
+.. envvar:: IDF_TOOLS_PATH
+
+   Required. The full path to the Esp32 tools directory, such as ``/opt/esp32``.
 
 .. envvar:: SDK_CUSTOM_CONFIG
 
