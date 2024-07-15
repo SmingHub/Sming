@@ -61,22 +61,24 @@ rm -f "$IDF_PATH"
 ln -s "$IDF_CLONE_PATH" "$IDF_PATH"
 
 
-# Skip installation for CI if already present
-if [ -z "$CI_BUILD_DIR" ] || [ ! -d "$IDF_TOOLS_PATH/tools" ]; then
+# Install IDF tools and packages (unless CI has restored from cache)
+if [ -n "$CI_BUILD_DIR" ] && [ -d "$IDF_TOOLS_PATH/tools" ]; then
+    printf "\n\n** Skipping IDF tools installation: '%s/tools' exists\n\n" "$IDF_TOOLS_PATH"
+else
+    # Be specific about which tools we want to install for each IDF version
+    IDF_TOOL_PACKAGES=$(tr '\n' ' ' < "$SMING_HOME/Arch/Esp32/Tools/idf_tools-${INSTALL_IDF_VER}.lst")
+    echo "Install: $IDF_TOOL_PACKAGES"
+    python3 "$IDF_PATH/tools/idf_tools.py" --non-interactive install $IDF_TOOL_PACKAGES
+    if [ -n "$VIRTUAL_ENV" ]; then
+        unset VIRTUAL_ENV
+        unset VIRTUAL_ENV_PROMPT
+        export PATH="${PATH/$VIRTUAL_ENV\/bin:/}"
+    fi
+    python3 "$IDF_PATH/tools/idf_tools.py" --non-interactive install-python-env
 
-# Install IDF tools and packages
-python3 "$IDF_PATH/tools/idf_tools.py" --non-interactive install "*elf*"
-if [ -n "$VIRTUAL_ENV" ]; then
-    unset VIRTUAL_ENV
-    unset VIRTUAL_ENV_PROMPT
-    export PATH="${PATH/$VIRTUAL_ENV\/bin:/}"
+    if [ -z "$KEEP_DOWNLOADS" ]; then
+        rm -rf "$IDF_TOOLS_PATH/dist"
+    fi
 fi
-python3 "$IDF_PATH/tools/idf_tools.py" --non-interactive install-python-env
-
-if [ -z "$KEEP_DOWNLOADS" ]; then
-    rm -rf "$IDF_TOOLS_PATH/dist"
-fi
-
-fi # CI install
 
 fi

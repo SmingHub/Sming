@@ -7,11 +7,31 @@ Github actions
 See ``.github/workflows``.
 
 Cache clean
-      Dispatch workflow to remove caches for pull requests, but leave those for the default (develop) branch intact.
+      Dispatch workflow as convenient way to clean action cache. Cleaning levels are:
 
-Cache rebuild
-      Dispatch workflow to rebuild the esp32 idf/tool caches.
-      By default, cleans only idf/esp32 caches but has option to perform full clean.
+      - pull-requests
+            Any items created by pull requests, excludes anything in develop branch.
+            Normally pull requests will make use of caches present in the develop branch, but if there isn't one it will create its own. This becomes redundant when merged to develop.
+
+            Such caches should be expired automatically, but this option can be used to remove them.
+
+      - ccache
+            All ccache items. Use if pull requests are taking too long to build.
+
+      - idf-tools
+            All IDF tool. Use before merging to develop if IDF toolchains have been updated.
+
+      - ccache+idf
+            All ccache and IDF tool caches.
+
+      Note that cleaning can always be done locally using ``gh``::
+
+            gh cache list # For fork
+            gh cache list -R SmingHub/Sming
+            gh cache delete --all -R SmingHub/Sming
+
+      etc.
+
 
 CodeQL
       Performs code quality analysis when develop branch is updated.
