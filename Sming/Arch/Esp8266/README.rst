@@ -5,7 +5,7 @@ Support building Sming for the Esp8266 architecture.
 
 This is the SOC for which Sming was originally developed,
 so many of the low-level API calls reflect those in the
-`SDK </_inc/Sming/Arch/Esp8266/Components/esp8266/README>`.
+:doc:`SDK </_inc/Sming/Arch/Esp8266/Components/esp8266/README>`.
 These include functions such as
 :c:func:`system_get_free_heap_size`,
 :c:func:`system_update_cpu_freq`,
