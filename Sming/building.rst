@@ -75,8 +75,8 @@ These are the main variables you need to be aware of:
 
    The build standard applied for the framework.
 
-   This defaults to C++17 if the toolchain supports it (GCC 5+), C++11 otherwise.
-   You can override to use other standards, such as ``c++2a`` for experimental C++20 support.
+   C++17 is the minimum required standard.
+   You can override to use other standards, such as ``c++20``.
 
 
 These variables are available for application use:

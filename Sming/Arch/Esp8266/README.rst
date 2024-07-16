@@ -57,6 +57,31 @@ Weak hardware peripheral support
    hardware support for interfaces such as I2C and PWM is lacking and these must
    be implemented in software.
 
+.. _esp_quick_toolchain:
+
+ESP Quick Toolchain
+-------------------
+
+In Sming 4.0.1 support was added for the `ESP Quick Toolchain <https://github.com/earlephilhower/esp-quick-toolchain>`__.
+This is the required toolchain for compiling Sming for the Esp8266.
+
+At time of writing the current release is 
+`3.0.0-newlib4.0.0-gnu20 <https://github.com/earlephilhower/esp-quick-toolchain/releases/tag/3.0.0-newlib4.0.0-gnu20>`__
+for `GCC 10.2 <https://www.gnu.org/software/gcc/gcc-10>`__.
+
+The toolchain is consistent across development platforms which also use the
+standard C/C++ `NewLib <https://github.com/earlephilhower/newlib-xtensa>`__
+runtime libraries.
+
+
+Installation
+------------
+
+The easiest way to get started is with the Sming installer - see :doc:`/getting-started/index`.
+
+- Linux and MacOS: ``Tools/install.sh esp8266``.
+- Windows: ``Tools\install esp8266``.
+
 
 Configuration Variables
 -----------------------
@@ -64,7 +89,12 @@ Configuration Variables
 .. envvar:: ESP_HOME
 
    This contains the base directory for the toolchain used to build the framework.
-   See also :doc:`/arch/esp8266/getting-started/eqt`.
+   See :ref:`esp_quick_toolchain`.
+
+   The Sming installer extracts the toolchain to:
+
+   - ``/opt/esp-quick-toolchain`` for linux and MadOS
+   - ``C:\tools\esp-quick-toolchain`` for Windows
 
 
 Components
