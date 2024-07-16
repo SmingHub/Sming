@@ -28,7 +28,7 @@ samples.
 Using
 -----
 
-1. Add these lines to your application componenent.mk file::
+1. Add these lines to your application component.mk file::
 
        COMPONENT_DEPENDS += CommandProcessing
 

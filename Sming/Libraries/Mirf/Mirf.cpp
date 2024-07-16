@@ -18,7 +18,7 @@
  * An Ardunio port of:
  * http://www.tinkerer.eu/AVRLib/nRF24L01
  *
- * Significant changes to remove depencence on interrupts and auto ack support.
+ * Significant changes to remove dependence on interrupts and auto ack support.
  *
  * Aaron Shrimpton <aaronds@gmail.com>
  *

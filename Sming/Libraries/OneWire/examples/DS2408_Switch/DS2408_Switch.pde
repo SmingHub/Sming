@@ -3,7 +3,7 @@
 /*
  * DS2408 8-Channel Addressable Switch
  *
- * Writte by Glenn Trewitt, glenn at trewitt dot org
+ * Written by Glenn Trewitt, glenn at trewitt dot org
  *
  * Some notes about the DS2408:
  *   - Unlike most input/output ports, the DS2408 doesn't have mode bits to

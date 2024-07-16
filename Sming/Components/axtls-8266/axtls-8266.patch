@@ -1287,7 +1287,7 @@ index 8f0fbfb..330f459 100644
  
          case SSL_ALERT_RECORD_OVERFLOW:
 -            printf("record overlow");
-+        	puts("record overlow");
++        	puts("record overflow");
              break;
  
          case SSL_ALERT_HANDSHAKE_FAILURE:

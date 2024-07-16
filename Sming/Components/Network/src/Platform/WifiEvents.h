@@ -31,7 +31,7 @@
  * @brief Common set of reason codes to IEEE 802.11-2007
  * @note Codes at 200+ are non-standard, defined by Espressif.
  *
- * Some acronymns used here - see the full standard for more precise definitions.
+ * Some acronyms used here - see the full standard for more precise definitions.
  *	- SSID: Service Set Identifier (the visible name given to an Access Point)
  *	- BSSID: Basic Service Set Identifier (a MAC address physically identifying the AP)
  *	- IE: Information Element (standard piece of information carried within WiFi packets)

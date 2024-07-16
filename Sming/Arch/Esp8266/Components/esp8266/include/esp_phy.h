@@ -211,7 +211,7 @@ struct PhyInitData {
 	 * 	This option is to share crystal clock for BT
 	 * @param value The state of Crystal during sleeping:
 	 * 	- 0: Off
-	 * 	- 1: Forceably On
+	 * 	- 1: Forcibly On
 	 * 	- 2: Automatically On according to XPD_DCDC
 	 * 	- 3: Automatically On according to GPIO2
 	 */
@@ -270,7 +270,7 @@ struct PhyInitData {
 
 	/**
 	 * @brief Set attenuation of BB gain
-	 * @param value Attentuation in 0.25dB steps. Max valve is 24 (-6dB):
+	 * @param value Attenuation in 0.25dB steps. Max valve is 24 (-6dB):
 	 * - 0: 0dB
 	 * - 1: -0.25dB
 	 * - 2: -0.5dB

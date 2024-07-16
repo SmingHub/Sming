@@ -148,7 +148,7 @@ flash_sector_t flashmem_get_sector_of_address(flash_addr_t addr);
 /*
  * @brief Returns the address of the first free block on flash
  * @retval  uint32_t The actual address on flash
- * @deprectated Partition tables make this function obsolete.
+ * @deprecated Partition tables make this function obsolete.
  */
 inline uint32_t SMING_DEPRECATED flashmem_get_first_free_block_address(void)
 {
