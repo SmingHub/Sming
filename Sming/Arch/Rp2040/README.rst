@@ -190,9 +190,9 @@ Networking
 
 The Pico-W variant includes an Infineon CYW43439 bluetooth/WiFi SoC.
 Raspberry Pi makes use of the
-`CYW43xx WiFi/BT SoC driver <https://github.com/georgerobotics/cyw43-driver>`
+`CYW43xx WiFi/BT SoC driver <https://github.com/georgerobotics/cyw43-driver>`__
 driver under
-`special license <https://github.com/georgerobotics/cyw43-driver/blob/main/LICENSE.RP>`.
+`special license <https://github.com/georgerobotics/cyw43-driver/blob/main/LICENSE.RP>`__.
 The SDK also includes an LWIP2 implementation.
 
 The physical interface is SPI using a custom (PIO) implementation.
