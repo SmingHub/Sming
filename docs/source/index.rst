@@ -22,7 +22,7 @@ Summary
 -------
 -  Superb performance and memory usage: Sming compiles to native firmware!
 -  Fast and user-friendly C++ development
--  Integrated :doc:`host emulator <arch/host/index>` to assist with developing, testing and debugging
+-  Integrated :doc:`host emulator </_inc/Sming/Arch/Host/README>` to assist with developing, testing and debugging
    libraries and applications on a PC. It even includes networking support!
    Try it out online `here <https://killercoda.com/slaff/scenario/sming-host-emulator>`__.
 -  Built-in powerful wireless modules
