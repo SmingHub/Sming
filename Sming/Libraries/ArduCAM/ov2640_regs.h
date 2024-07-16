@@ -625,7 +625,7 @@ const struct sensor_reg OV2640_640x480_JPEG[] PROGMEM =
 {
 	{0xff, 0x01},
 	{0x11, 0x01},
-	{0x12, 0x00}, // Bit[6:4]: Resolution selection//0x02为彩条
+	{0x12, 0x00}, // Bit[6:4]: Resolution selection//0x02 for color bars
 	{0x17, 0x11}, // HREFST[10:3]
 	{0x18, 0x75}, // HREFEND[10:3]
 	{0x32, 0x36}, // Bit[5:3]: HREFEND[2:0]; Bit[2:0]: HREFST[2:0]
@@ -673,7 +673,7 @@ const struct sensor_reg OV2640_800x600_JPEG[] PROGMEM =
 {
 	{0xff, 0x01},
 	{0x11, 0x01},
-	{0x12, 0x00}, // Bit[6:4]: Resolution selection//0x02为彩条
+	{0x12, 0x00}, // Bit[6:4]: Resolution selection//0x02 for color bars
 	{0x17, 0x11}, // HREFST[10:3]
 	{0x18, 0x75}, // HREFEND[10:3]
 	{0x32, 0x36}, // Bit[5:3]: HREFEND[2:0]; Bit[2:0]: HREFST[2:0]
@@ -721,7 +721,7 @@ const struct sensor_reg OV2640_1024x768_JPEG[] PROGMEM =
 {
 	{0xff, 0x01},
 	{0x11, 0x01},
-	{0x12, 0x00}, // Bit[6:4]: Resolution selection//0x02为彩条
+	{0x12, 0x00}, // Bit[6:4]: Resolution selection//0x02 for color bars
 	{0x17, 0x11}, // HREFST[10:3]
 	{0x18, 0x75}, // HREFEND[10:3]
 	{0x32, 0x36}, // Bit[5:3]: HREFEND[2:0]; Bit[2:0]: HREFST[2:0]
@@ -768,7 +768,7 @@ const struct sensor_reg OV2640_1280x1024_JPEG[] PROGMEM =
 {
 	{0xff, 0x01},
 	{0x11, 0x01},
-	{0x12, 0x00}, // Bit[6:4]: Resolution selection//0x02为彩条
+	{0x12, 0x00}, // Bit[6:4]: Resolution selection//0x02 for color bars
 	{0x17, 0x11}, // HREFST[10:3]
 	{0x18, 0x75}, // HREFEND[10:3]
 	{0x32, 0x36}, // Bit[5:3]: HREFEND[2:0]; Bit[2:0]: HREFST[2:0]
@@ -816,7 +816,7 @@ const struct sensor_reg OV2640_1600x1200_JPEG[] PROGMEM =
 {
 	{0xff, 0x01},
 	{0x11, 0x01},
-	{0x12, 0x00}, // Bit[6:4]: Resolution selection//0x02为彩条
+	{0x12, 0x00}, // Bit[6:4]: Resolution selection//0x02 for color bars
 	{0x17, 0x11}, // HREFST[10:3]
 	{0x18, 0x75}, // HREFEND[10:3]
 	{0x32, 0x36}, // Bit[5:3]: HREFEND[2:0]; Bit[2:0]: HREFST[2:0]

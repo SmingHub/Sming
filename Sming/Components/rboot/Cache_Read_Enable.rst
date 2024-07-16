@@ -3,7 +3,7 @@ ESP8266 Cache_Read_Enable
 
 12th June 2015 Richard
 
-Since I haven’t seen this documented anywhere, here is my attempt to explain the Cache_Read_Enable function.
+Since I haven't seen this documented anywhere, here is my attempt to explain the Cache_Read_Enable function.
 Valid values and what they do (at a register level) are from decompiling the code.
 The outcome of those values is based on my own experimentation so my descriptions and explanations
 may be silly but they currently fit the observed results.
@@ -18,7 +18,7 @@ Valid values for odd_even
 Function of odd_even
    0 – allows access to even numbered mb
    1 – allow access to odd numbered mb
-   other – appears to do the same as 1, there must be a difference but I haven’t worked out what it is
+   other – appears to do the same as 1, there must be a difference but I haven't worked out what it is
 
 Valid values for mb_count
    0-7 – set bits 16, 17 & 18 of control register 0x3FF0000C
@@ -35,7 +35,7 @@ Valid values for no_idea
    1 – sets bit 26 of 0x3FF0000C and sets bits 3 & 4 of 0x3FF00024
 
 Function of no_idea
-   The clue is in the name, I can’t work out what this does from my experiments, but the SDK always sets this to 1.
+   The clue is in the name, I can't work out what this does from my experiments, but the SDK always sets this to 1.
 
 
 **Source: https://richard.burtons.org/2015/06/12/esp8266-cache_read_enable/**

@@ -13,7 +13,7 @@
 
 #include <sdk/mem.h>
 
-/*------------------------��������------------------------*/
+/*------------------------------------------------*/
 
 #define MPU_WRAPPERS_INCLUDED_FROM_API_FILE
 #ifndef IOT_SIP_MODE
@@ -71,7 +71,7 @@ static const unsigned short heapSTRUCT_SIZE	= ( sizeof( xBlockLink ) + portBYTE_
 //static size_t xFreeBytesRemaining = ( ( size_t ) configADJUSTED_HEAP_SIZE ) & ( ( size_t ) ~portBYTE_ALIGNMENT_MASK );
 
 
-/*------------------------��������-----------------------------------*/
+/*-----------------------------------------------------------*/
 
 //static void prvInsertBlockIntoFreeList( xBlockLink *pxBlockToInsert ) ;//ICACHE_FLASH_ATTR;
 

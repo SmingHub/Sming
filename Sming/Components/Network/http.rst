@@ -3,8 +3,8 @@ HTTP: HyperText Transfer Protocol
 
 https://en.m.wikipedia.org/wiki/Hypertext_Transfer_Protocol
 
-Build Variables
----------------
+Configuration Variables
+-----------------------
 
 
 .. envvar:: HTTP_SERVER_EXPOSE_NAME

@@ -17,10 +17,10 @@
  *
  * Note from GDB manual:
  *
- * 		At a minimum, a stub is required to support the ‘g’ and ‘G’ commands for register access,
- * 		and the ‘m’ and ‘M’ commands for memory access. Stubs that only control single-threaded
- * 		targets can implement run control with the ‘c’ (continue), and ‘s’ (step) commands. Stubs
- * 		that support multi-threading targets should support the ‘vCont’ command. All other commands
+ * 		At a minimum, a stub is required to support the 'g' and 'G' commands for register access,
+ * 		and the 'm' and 'M' commands for memory access. Stubs that only control single-threaded
+ * 		targets can implement run control with the 'c' (continue), and 's' (step) commands. Stubs
+ * 		that support multi-threading targets should support the 'vCont' command. All other commands
  * 		are optional.
  *
 *********************************************************************************/

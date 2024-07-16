@@ -12,8 +12,8 @@ or directly to local host serial device (e.g. /dev/ttyUSB0, COM4, etc.)
 If not otherwise reassigned, UART0 output is sent to the console and keyboard input is written to the UART0 receive queue.
 
 
-Build variables
----------------
+Configuration Variables
+-----------------------
 
 .. envvar:: ENABLE_HOST_UARTID
 
@@ -63,14 +63,14 @@ Now start a telnet session for each serial port, in separate command windows::
 
 In the application window, press Enter. This behaviour is enabled by the
 ``pause`` option, which stops the emulator after initialisation so
-telnet can connect to it. Without ``pause`` you’ll lose any serial
+telnet can connect to it. Without ``pause`` you'll lose any serial
 output at startup.)
 
 .. note::
 
    For Windows users, ``putty`` is a good alternative to telnet. It also
    has options for things like carriage-return/linefeed translation
-   (“\\n” -> “\\r\\n`”). Run using::
+   ("\\n" -> "\\r\\n"). Run using::
    
       putty telnet://localhost:10000
    

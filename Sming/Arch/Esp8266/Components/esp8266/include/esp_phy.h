@@ -211,7 +211,7 @@ struct PhyInitData {
 	 * 	This option is to share crystal clock for BT
 	 * @param value The state of Crystal during sleeping:
 	 * 	- 0: Off
-	 * 	- 1: Forceably On
+	 * 	- 1: Forcibly On
 	 * 	- 2: Automatically On according to XPD_DCDC
 	 * 	- 3: Automatically On according to GPIO2
 	 */
@@ -270,7 +270,7 @@ struct PhyInitData {
 
 	/**
 	 * @brief Set attenuation of BB gain
-	 * @param value Attentuation in 0.25dB steps. Max valve is 24 (-6dB):
+	 * @param value Attenuation in 0.25dB steps. Max valve is 24 (-6dB):
 	 * - 0: 0dB
 	 * - 1: -0.25dB
 	 * - 2: -0.5dB
@@ -319,7 +319,8 @@ struct PhyInitData {
 	 * - analogRead function: `system_adc_read()`
 	 *		- Only available when wire TOUT pin 17 to external circuitry, Input Voltage Range restricted to 0 ~ 1.0V.
 	 * 		- For this function the vdd33_const must be set as real power voltage of VDD3P3 pin 3 and 4
-	 * 		- The range of operating voltage of ESP8266 is 1.8V ~ 3.6V，the unit of vdd33_const is 0.1V, so effective value range of vdd33_const is [18, 36].
+	 * 		- The range of operating voltage of ESP8266 is 1.8V ~ 3.6V,
+	 * 		  the unit of vdd33_const is 0.1V, so effective value range of vdd33_const is [18, 36].
 	 * - getVcc function: `system_get_vdd33()`
 	 *		- Only available when TOUT pin 17 is suspended (floating), this function measure the power voltage of VDD3P3 pin 3 and 4
 	 *		- For this function the vdd33_const must be set to 255 (0xFF).

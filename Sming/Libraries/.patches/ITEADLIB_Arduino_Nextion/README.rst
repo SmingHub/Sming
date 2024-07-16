@@ -10,7 +10,7 @@ commercial projects or open-source prjects, without any additional
 condiitons.
 
 | For more information about the Nextion display project, please visit
-  `the wiki。 <http://wiki.iteadstudio.com/Nextion_HMI_Solution>`__
+  `the wiki <http://wiki.iteadstudio.com/Nextion_HMI_Solution>`__
 | The wiki provides all the necessary technical documnets, quick start
   guide, tutorials, demos, as well as some useful resources.
 
@@ -57,7 +57,7 @@ https://github.com/itead/ITEADLIB_Arduino_Nextion/releases.
 Documentation
 -------------
 
-Offline Documentation’s entry ``doc/Documentation/index.html`` shipped
+Offline Documentation's entry ``doc/Documentation/index.html`` shipped
 with source code can be open in your browser such as Chrome, Firefox or
 any one you like.
 

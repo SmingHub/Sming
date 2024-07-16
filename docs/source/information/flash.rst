@@ -8,13 +8,15 @@ Introduction
 
 ESP8266 flash memory sizes vary from 512Kbytes on the ESP-01 up to 4Mbytes on the ESP12F.
 Up to 16MBytes are supported for custom designs.
+Rp2040 has similar support, and the Esp32 has enhanced VMM (Virtual Memory Management) hardware.
 
 Sming version 4.3 introduced partition tables to support multiple architectures,
 different hardware variants and custom flash layouts without restriction.
+It is binary compatible with the Esp32 IDF partition tables but with a consistent API across all architectures.
 
 See :ref:`hardware_config` for details.
 
-A typical layout for a 4MByte device might look like this:
+A typical layout for a 4MByte Esp8266 device might look like this:
 
    =======  ===============   ====   =========================  ===================================================                                
    Address  Config variable   Size   Source filename            Description            
@@ -51,13 +53,14 @@ A typical layout for a 4MByte device might look like this:
    3FC000                     4      esp_init_data_default.bin  PHY configuration data            
    3FD000                     12     blank.bin                  System parameter area
    =======  ===============   ====   =========================  ===================================================            
-   
+
+The actual layout in use can be seen by running ``make map``.
 
 
 Speed and caching
 -----------------
 
-Flash memory on the ESP8266 is accessed via an external SPI bus, so reading it takes about 12x
+Flash memory is accessed via an external SPI bus, so reading it takes about 12x
 longer than reading from internal RAM. To mitigate this, some of the internal RAM is used to
 cache data. Part of this is managed in hardware, which means if the data required is already in
 the cache then there is no difference in speed. In general, then, frequently accessed data is read

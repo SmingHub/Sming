@@ -99,7 +99,7 @@ Paths and locations
 You can put Sming anywhere convenient.
 The ``tools\export.cmd`` script will ensure that ``SMING_HOME`` is set correctly.
 
-Please observe the following precautions::
+Please observe the following precautions:
 
 There must be **no spaces** in the path
    GNU make cannot handle spaces.

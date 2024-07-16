@@ -122,7 +122,7 @@ class SpiffsObjLuPage(SpiffsPage):
         self.obj_ids = list()
 
     def _calc_magic(self, blocks_lim):
-        # Calculate the magic value mirrorring computation done by the macro SPIFFS_MAGIC defined in
+        # Calculate the magic value mirroring computation done by the macro SPIFFS_MAGIC defined in
         # spiffs_nucleus.h
         magic = 0x20140529 ^ self.build_config.page_size
         if self.build_config.use_magic_len:

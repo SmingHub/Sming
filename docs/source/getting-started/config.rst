@@ -22,33 +22,17 @@ For Linux and WSL2, append values to your ``~/.bashrc`` file::
    # Esp32
    export IDF_PATH=/opt/esp-idf
    export IDF_TOOLS_PATH=/opt/esp32
-   export ESP32_PYTHON_PATH=/usr/bin
 
    # Rp2040
    export PICO_TOOLCHAIN_PATH=/opt/rp2040
 
 Another approach is to place these in a separate file, then add `source ~/.smingrc`.
 
-For Windows, you can either edit the global variables graphically via control panel,
-or use the ``setx`` command:
+For Windows, you can use the provided script::
 
 .. code-block:: batch
 
-   REM All architectures
-   setx SMING_HOME "c:\tools\sming\Sming"
-
-   REM Esp8266
-   setx ESP_HOME "c:\tools\esp-quick-toolchain"
-
-   REM Esp32
-   setx IDF_PATH "c:\tools\esp-idf"
-   setx IDF_TOOLS_PATH "c:\tools\esp32"
-   setx ESP32_PYTHON_PATH "c:\Python39"
-
-   REM Rp2040
-   setx PICO_TOOLCHAIN_PATH "c:\tools\rp2040"
-
-In both cases values will only take effect in new sessions so close/reopen command prompts or IDEs.
+   %SMING_HOME%\..\Tools\export -persist
 
 Note that project-specific settings should NOT be configured globally.
 Please use the project's ``component.mk`` file for that purpose.

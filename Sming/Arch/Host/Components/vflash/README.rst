@@ -6,8 +6,8 @@ Flash memory access is emulated using :component-host:`spi_flash`.
 This Component implements make targets to operate on the flash backing file in a similar way to flashing a real device.
 
 
-Build Variables
----------------
+Configuration Variables
+-----------------------
 
 The following options are interpreted and used to provide command-line parameters to the emulator executable:
 

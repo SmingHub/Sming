@@ -67,7 +67,7 @@ void otaUpdate()
 
 #if ENABLE_OTA_ADVANCED
 	/*
-	 * The advanced parser suppors all firmware upgrades supported by the `OtaUpgrade` library.
+	 * The advanced parser supports all firmware upgrades supported by the `OtaUpgrade` library.
 	 * `OtaUpgrade` library provides firmware signing, firmware encryption and so on.
 	 */
 	auto parser = new OtaUpgrade::Mqtt::AdvancedPayloadParser(APP_VERSION_PATCH);

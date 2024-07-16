@@ -26,7 +26,7 @@ namespace
 SimpleTimer lwipServiceTimer;
 host_lwip_init_callback_t init_callback;
 
-// Service stack more freqently when busy to ensure decent throughput
+// Service stack more frequently when busy to ensure decent throughput
 constexpr unsigned activeInterval{2};
 constexpr unsigned inactiveInterval{100};
 

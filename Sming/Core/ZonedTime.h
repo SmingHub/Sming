@@ -125,7 +125,7 @@ public:
 	}
 
 	/**
-	 * @brief Set the default format for dispaying zoned times
+	 * @brief Set the default format for displaying zoned times
 	 */
 	static void setDefaultFormat(const String& format)
 	{

@@ -27,13 +27,13 @@
 #include "AM2321.h"
 #include <Wire.h>
 
-#define I2C_ADDR_AM2321                 (0xB8 >> 1)          //AM2321温湿度计I2C地址
-#define PARAM_AM2321_READ                0x03                //读寄存器命令
-#define REG_AM2321_HUMIDITY_MSB          0x00                //湿度寄存器高位
-#define REG_AM2321_HUMIDITY_LSB          0x01                //湿度寄存器低位
-#define REG_AM2321_TEMPERATURE_MSB       0x02                //温度寄存器高位
-#define REG_AM2321_TEMPERATURE_LSB       0x03                //温度寄存器低位
-#define REG_AM2321_DEVICE_ID_BIT_24_31   0x0B                //32位设备ID高8位
+#define I2C_ADDR_AM2321                 (0xB8 >> 1)          // AM2321 Thermohygrometer I2C address
+#define PARAM_AM2321_READ                0x03                // Read register command
+#define REG_AM2321_HUMIDITY_MSB          0x00                // Humidity register MSB
+#define REG_AM2321_HUMIDITY_LSB          0x01                // Humidity register LSB
+#define REG_AM2321_TEMPERATURE_MSB       0x02                // Temperature register MSB
+#define REG_AM2321_TEMPERATURE_LSB       0x03                // Temperature register LSB
+#define REG_AM2321_DEVICE_ID_BIT_24_31   0x0B                // The 32-bit device ID is high 8 bits
 
 template<uint8_t I2CADDR, uint8_t COMMAND, uint8_t REGADDR, uint8_t REGCOUNT>
 class DataReader {

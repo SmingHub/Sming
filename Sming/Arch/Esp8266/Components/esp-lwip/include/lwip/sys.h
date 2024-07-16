@@ -165,7 +165,7 @@ void sys_msleep(u32_t ms); /* only has a (close to) 1 jiffy resolution. */
 
 /** Create a new mbox of specified size
  * @param mbox pointer to the mbox to create
- * @param size (miminum) number of messages in this mbox
+ * @param size (minimum) number of messages in this mbox
  * @return ERR_OK if successful, another err_t otherwise */
 err_t sys_mbox_new(sys_mbox_t *mbox, int size);
 /** Post a message to an mbox - may not fail

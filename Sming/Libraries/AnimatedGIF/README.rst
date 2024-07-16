@@ -23,7 +23,7 @@ Features
 Using
 ----- 
 
-1. Add ``COMPONENT_DEPENDS += AnimatedGIF`` to your application componenent.mk file.
+1. Add ``COMPONENT_DEPENDS += AnimatedGIF`` to your application component.mk file.
 2. Add these lines to your application::
 
 	#include <AnimatedGifTask.h>

@@ -1,6 +1,8 @@
 Memory
 ======
 
+This section refers to the ESP8266 but is applicable to all device architectures.
+
 Map
 ---
 
@@ -10,7 +12,7 @@ You can find a map for the ESP8266 memory layout in the `Wiki <https://github.co
 Memory Types
 ------------
 
-The ESP8266 has several types of memory, and it is important to have a basic apprecation of what they
+There are several types of memory, and it is important to have a basic apprecation of what they
 are and how they're used.
 
 DRAM
@@ -68,29 +70,35 @@ directly from Flash memory on hardware reset.
 BIOS
 ~~~~
 
-The ESP8266 and ESP32 are far more complex, and most of the low-level initialisation
-happens in the ROM code. The ROM essentially contains the systems BIOS, with various
+Most of the low-level initialisation happens in the ROM code.
+The ROM essentially contains the systems BIOS, with various
 low-level routines which may be used instead of accessing hardware directly. It is
 also responsible for setting up memory caching.
 
 Runtime libraries
 ~~~~~~~~~~~~~~~~~
 
-Control is passed to runtime libraries provided by Espressif, stored in Flash memory.
-Both ROM and runtime code are closed-source and not generally available for inspection,
+For Espressif devices, control is passed to the SDK runtime libraries, stored in Flash memory.
+The ROM and some runtime code are closed-source and not generally available for inspection,
 though disassemblies do exist.
 
 Boot loader
 ~~~~~~~~~~~
 
-The first point we really see what's going on is in the bootloader (rBoot).
+The first point we really see what's going on is in the bootloader.
+
+This is :component:`rboot` for the Esp8266; the Esp32 bootloader is part of the SDK.
 The bootloader identifies the correct program image (as there can be more than one),
-loads the starting portion into IRAM and jumps there. It also configures the caching
-mechanism so that the correct program image is  loaded.
-You can find more details about this in the :component:`rboot` documentation.
+
+The Rp2040 bootloader is more basic as it only supports booting one image.
+
+In all cases, the bootloader loads the starting portion of the program image into IRAM and jumps there.
+It also configures the caching mechanism so that the correct program image is loaded.
 
 Memory initialisation
 ~~~~~~~~~~~~~~~~~~~~~
+
+This is done by startup code in the SDK before passing control to Sming.
 
 Code is copied from flash into IRAM, and *const* data copied into DRAM.
 Also static and global variable values are initialised from tables stored in flash.
@@ -99,7 +107,29 @@ Static and global variables without an initialised value are initialised to 0.
 Sming initialisation
 ~~~~~~~~~~~~~~~~~~~~
 
-{todo}.
+This varies between architectures but involves the following general tasks:
+
+Initialize hardware
+   e.g. system clocks, timers, RTC
+
+Invoke C++ initializers
+   static/global constructors get called.
+   We only need to do this for the Esp8266, the SDK handles it for other architectures.
+
+Load partition table
+   Reads partition information from flash into RAM.
+   - ESP32: we get called from the SDK which does this independently
+   - Esp8266: we need to tell SDK about various partitions
+   - Rp2040: the SDK no concept of partition tables
+
+Initialise networking
+   If enabled.
+
+Invoke the application's ``init`` function
+
+Enter the main run loop
+   Interaction with SDK to ensure that registered software timers and queued tasks
+   are executed, and the watchdog timer serviced.
 
 
 .. toctree::

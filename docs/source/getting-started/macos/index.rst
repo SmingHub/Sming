@@ -9,7 +9,7 @@ Quick Install
 
 1. Install command-line development tools::
 
-   xcode-select --install
+      xcode-select --install
 
 2. Check if ``homebrew`` is installed::
 

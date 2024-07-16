@@ -7,8 +7,8 @@ The ESP8266 can manage a minimum of about 70ns between bit edges, with a maximum
 about 1.8 MBit/s at normal CPU clock frequency or 2.5 MHz if CPU clock set to fast.
 
 
-Build variables
----------------
+Configuration Variables
+-----------------------
 
 .. envvar:: SPISOFT_DELAY_VARIABLE
 

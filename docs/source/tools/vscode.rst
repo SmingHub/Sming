@@ -125,7 +125,7 @@ Known issues / features
 -----------------------
 
 -  The vscode configuration files are only updated when you manually run ``make ide-vscode``.
-   If you update change critical build variables or add/remove Components to your project,
+   If you change critical configuration variables or add/remove Components to your project,
    you may need to run it again to update them.
 -  When running ``make ide-vscode``, comments in the configuration files will be discarded.
 -  ``make ide-vscode`` may overwrite parts of your configuration: be warned!

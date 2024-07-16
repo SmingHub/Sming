@@ -18,7 +18,7 @@ const Rule stdStart{{"GMT"}, Last, Sun, Oct, 2, 0};
 // Posix rule string
 DEFINE_FSTR_LOCAL(tzstr, "GMT0BST,M3.5.0/1,M10.5.0")
 
-// Sunrise/sunset requires co-ordinates
+// Sunrise/sunset requires coordinates
 SolarRef solarRef = {51.4769, 0.0005}; // Greenwich, London
 
 } // namespace MyZone

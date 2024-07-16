@@ -13,6 +13,5 @@ Information
    strings
    interrupts
    tasks
-   debugging
    rboot-ota
    tips-n-tricks

@@ -143,15 +143,15 @@ struct netif {
   ip_addr_t gw;
 
   /** This function is called by the network device driver
-   *  to pass a packet up the TCP/IP stack. 向IP层输入数据包*/
+   *  to pass a packet up the TCP/IP stack. */
   netif_input_fn input;
   /** This function is called by the IP module when it wants
    *  to send a packet on the interface. This function typically
-   *  first resolves the hardware address, then sends the packet. 发送IP数据包*/
+   *  first resolves the hardware address, then sends the packet. */
   netif_output_fn output;
   /** This function is called by the ARP module when it wants
    *  to send a packet on the interface. This function outputs
-   *  the pbuf as-is on the link medium. 底层数据包发送*/
+   *  the pbuf as-is on the link medium. */
   netif_linkoutput_fn linkoutput;
 #if LWIP_NETIF_STATUS_CALLBACK
   /** This function is called when the netif state is set to up or down
@@ -164,7 +164,7 @@ struct netif {
   netif_status_callback_fn link_callback;
 #endif /* LWIP_NETIF_LINK_CALLBACK */
   /** This field can be set by the device driver and could point
-   *  to state information for the device. 自由设置字段，比如指向底层设备相关信息*/
+   *  to state information for the device. */
   void *state;
 #if LWIP_DHCP
   /** the DHCP client state information for this netif */
@@ -178,17 +178,17 @@ struct netif {
   /* the hostname for this netif, NULL is a valid value */
   char*  hostname;
 #endif /* LWIP_NETIF_HOSTNAME */
-  /** maximum transfer unit (in bytes) 该接口允许的最大数据包长度，多是1500*/
+  /** maximum transfer unit (in bytes) 1500*/
   u16_t mtu;
-  /** number of bytes used in hwaddr该接口物理地址长度 */
+  /** number of bytes used in hwaddr */
   u8_t hwaddr_len;
-  /** link level hardware address of this interface 该接口物理地址*/
+  /** link level hardware address of this interface */
   u8_t hwaddr[NETIF_MAX_HWADDR_LEN];
-  /** flags (see NETIF_FLAG_ above) 该接口状态、属性字段*/
+  /** flags (see NETIF_FLAG_ above) */
   u8_t flags;
-  /** descriptive abbreviation 该接口的名字*/
+  /** descriptive abbreviation */
   char name[2];
-  /** number of this interface 该接口的编号*/
+  /** number of this interface */
   u8_t num;
 #if LWIP_SNMP
   /** link type (from "snmp_ifType" enum from snmp.h) */
@@ -216,9 +216,9 @@ struct netif {
   u8_t *addr_hint;
 #endif /* LWIP_NETIF_HWADDRHINT */
 #if ENABLE_LOOPBACK
-  /* List of packets to be queued for ourselves. 指向发送给自己的数据包的pbuf*/
-  struct pbuf *loop_first;//第一个
-  struct pbuf *loop_last;//最后一个
+  /* List of packets to be queued for ourselves. */
+  struct pbuf *loop_first;
+  struct pbuf *loop_last;
 #if LWIP_LOOPBACK_MAX_PBUFS
   u16_t loop_cnt_current;
 #endif /* LWIP_LOOPBACK_MAX_PBUFS */

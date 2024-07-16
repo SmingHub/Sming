@@ -10,8 +10,8 @@ Uses LWIP version 2 to enable networking for Sming running on a Windows or Linux
 
    Network support is enabled by default. If you don't need it, use the ``--nonet`` command-line option.
 
-Build Variables
----------------
+Configuration Variables
+-----------------------
 
 .. envvar:: ENABLE_LWIPDEBUG
 

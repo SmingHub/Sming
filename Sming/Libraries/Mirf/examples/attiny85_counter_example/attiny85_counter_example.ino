@@ -55,7 +55,7 @@ void setup() {
   Mirf.payload = sizeof(unsigned long);
   
   /*
-   * Write channel and payload config then power up reciver.
+   * Write channel and payload config then power up receiver.
    */
    
   /*

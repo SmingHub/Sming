@@ -90,10 +90,10 @@ But the files are big and this is a problem not just because it is slow.
 The watchdog does not like things to take a long time, and you will
 almost certainly end up with a timeout.
 
-When a browser asks for a file it doesn’t mind receiving a compressed
-version using gzip. (Note that you need to add “Content-Encoding/gzip”
+When a browser asks for a file it doesn't mind receiving a compressed
+version using gzip. (Note that you need to add "Content-Encoding/gzip"
 to the header in the response from the server). Using gzip vastly
-reduces the sizes of files and it’s well worth doing.
+reduces the sizes of files and it's well worth doing.
 
 Another size optimisation for CSS files is to remove unused CSS (UNCSS)
 - I recommend against this as it was too aggressive at removing stuff I

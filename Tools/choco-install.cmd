@@ -8,7 +8,7 @@ echo.
 echo Welcome to Sming bootstrap installer
 echo.
 
-REM Check we have administrative priviledge
+REM Check we have administrative privilege
 net session >nul 2>&1
 if errorlevel 1 (
     echo Opening an administrative command prompt to continue installation...
@@ -45,7 +45,7 @@ git clone https://github.com/SmingHub/Sming sming || goto :EOF
 REM Fix ownership - we'd prefer to just clone as a regular user but that requires impersonation. Don't go there.
 icacls sming /setowner %USERNAME% /T /C /L /Q
 
-REM Install MinGW: Fine to leave this with admin priviledge as it should be considered read-only
+REM Install MinGW: Fine to leave this with admin privilege as it should be considered read-only
 call sming\tools\mingw-install.cmd
 if errorlevel 1 goto :EOF
 

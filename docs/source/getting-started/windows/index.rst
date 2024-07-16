@@ -3,18 +3,18 @@ Windows Installation
 
 .. highlight:: batch
 
-This page describes how to install the required tools and obtain the current
-release version of Sming using the `Chocolatey <https://chocolatey.org>`__ package manager.
+This page describes how to install the Sming framework and required tools for Windows.
+See :doc:`manual` for details of what gets installed.
 
-See also:
+Sming requires GNU make and associated tools which are not well-supported by Windows,
+so requires MinGW.
+You may have a better experience using the :doc:`Windows Subsystem for Linux <wsl>`.
 
 .. toctree::
-   :titlesonly:
-   :maxdepth: 1
+   :hidden:
+   :glob:
 
-   manual
-   wsl
-
+   *
 
 Quick Install
 -------------
@@ -27,6 +27,13 @@ The Sming framework will be cloned into a subdirectory named ``sming``.
 Paste the following text press enter::
 
    curl -LO https://raw.githubusercontent.com/SmingHub/Sming/develop/Tools/choco-install.cmd && choco-install.cmd
+
+This will install the `Chocolatey <https://chocolatey.org>`__ package manager on your system,
+then use it to install the required tools such as `GIT <https://git-scm.com/>`.
+The Sming framework is then installed 
+
+We will make use of the `Chocolatey <https://chocolatey.org>`__ package manager to install these,
+if not already present on your system.
 
 .. important::
 
