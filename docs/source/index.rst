@@ -65,18 +65,6 @@ Summary
    -  :library:`GoogleCast` library allows control of ChromeCast devices or smart TVs supporting the GoogleCast protocol.
    -  :library:`HueEmulator` provides simple way to implement devices compatible with Amazon Alexa.
 
--  ESP8266 features
-
-   -  Integrated boot loader :component:`rboot` with support for 1MB ROMs, OTA firmware updating and ROM switching.
-   -  :doc:`Crash handlers <debugging/index>` for analyzing/handling system restarts due to fatal errors or WDT resets.
-   -  :component-esp8266:`PWM support <driver>` based on `Stefan Bruens PWM <https://github.com/StefanBruens/ESP8266_new_pwm.git>`__.
-   -  Optional :component-esp8266:`custom heap allocation <heap>` based on `Umm Malloc <https://github.com/rhempel/umm_malloc.git>`__.
-   -  Based on :component-esp8266:`Espressif NONOS SDK Version 3 <esp8266>`.
-
--  ESP32 features
-
-   - Based on :component-esp32:`ESP IDF SDK <esp32>`
-
 
 .. toctree::
    :caption: Contents:

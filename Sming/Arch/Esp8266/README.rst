@@ -17,6 +17,20 @@ The Esp8266 is the device which popularised 32-bit microcontrollers
 with integrated WiFi capability, the so-called
 `System on a chip <https://en.wikipedia.org/wiki/System_on_a_chip>`__ (SoC).
 
+
+Features
+--------
+
+-  Integrated boot loader :component:`rboot` with support for 1MB ROMs, OTA firmware updating and ROM switching.
+-  :doc:`Crash handlers <debugging/index>` for analyzing/handling system restarts due to fatal errors or WDT resets.
+-  :component-esp8266:`PWM support <driver>` based on `Stefan Bruens PWM <https://github.com/StefanBruens/ESP8266_new_pwm.git>`__.
+-  Optional :component-esp8266:`custom heap allocation <heap>` based on `Umm Malloc <https://github.com/rhempel/umm_malloc.git>`__.
+-  Based on :component-esp8266:`Espressif NONOS SDK Version 3 <esp8266>`.
+
+
+Characteristics
+---------------
+
 Compared with more recent offerings such as the
 :doc:`ESP32 </_inc/Sming/Arch/Esp32/README>` and
 :doc:`RP2040 </_inc/Sming/Arch/Rp2040/README>`,
