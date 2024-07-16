@@ -19,8 +19,3 @@ elif [ -n "$PICO_TOOLCHAIN_PATH" ]; then
     tar -xf "$DOWNLOADS/$TOOLCHAIN_FILE" -C "$PICO_TOOLCHAIN_PATH" --totals #--transform='s|^/*||'
     mv "$PICO_TOOLCHAIN_PATH/"*/* "$PICO_TOOLCHAIN_PATH"
 fi
-
-# https://developer.arm.com/-/media/Files/downloads/gnu/
-# 13.2.rel1/
-# binrel/
-# arm-gnu-toolchain-13.2.rel1-darwin-x86_64-arm-none-eabi.tar.xz
