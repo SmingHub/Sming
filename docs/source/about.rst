@@ -18,7 +18,7 @@ Arduino
 
 Arduino is an open-source electronics platform based on easy-to-use hardware and software.
 Sming is provided with a curated set of :doc:`/libraries`, including many standard Arduino-style ones.
-Lost of popular hardware can be used in a few lines of code.
+Many popular hardware devices can be used in a few lines of code.
 
 
 ESP8266
