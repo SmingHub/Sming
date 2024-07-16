@@ -8,12 +8,11 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <spi_flash.h>
-#include <esp_attr.h>
 
 #define INTERNAL_FLASH_SECTOR_SIZE 4096
 #define INTERNAL_FLASH_START_ADDRESS 0x40200000
