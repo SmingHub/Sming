@@ -290,7 +290,7 @@ DEBUG_VARS			+= SMING_C_STD
 SMING_C_STD			?= c11
 CFLAGS				+= -std=$(SMING_C_STD)
 
-# Select C++17 if supported, defaulting to C++11 otherwise
+# C++17 is minimum required standard
 DEBUG_VARS			+= SMING_CXX_STD
 SMING_CXX_STD		?= c++17
 CXXFLAGS			+= -std=$(SMING_CXX_STD)
@@ -299,10 +299,9 @@ COMPILER_VERSION_MAJOR := $(firstword $(subst ., ,$(COMPILER_VERSION)))
 COMPILER_VERSION_COMPATIBLE := $(shell expr $(COMPILER_VERSION_MAJOR) \>= $(COMPILER_VERSION_MIN))
 
 ifeq ($(COMPILER_VERSION_COMPATIBLE),0)
-ifneq ($(GCC_UPGRADE_URL),)
-$(info Instructions for upgrading your compiler can be found here: $(GCC_UPGRADE_URL))
-endif
-$(error Please upgrade your compiler to $(COMPILER_NAME) $(COMPILER_VERSION_MIN) or newer)
+$(info Please upgrade your compiler to $(COMPILER_NAME) $(COMPILER_VERSION_MIN) or newer)
+$(info See https://sming.readthedocs.io/en/latest/getting-started/index.html)
+$(error .)
 endif
 endif
 

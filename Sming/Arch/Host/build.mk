@@ -40,8 +40,6 @@ endif
 
 GDB		:= $(TOOLSPEC)gdb
 
-GCC_UPGRADE_URL := https://sming.readthedocs.io/en/latest/arch/host/host-emulator.html\#c-c-32-bit-compiler-and-libraries
-
 BUILD_VARS += BUILD64
 ifeq ($(UNAME),Darwin)
 BUILD64 := 1
