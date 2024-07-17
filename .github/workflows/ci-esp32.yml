@@ -44,6 +44,8 @@ jobs:
       INSTALL_IDF_VER: ${{ matrix.idf_version }}
       IDF_SKIP_CHECK_SUBMODULES: 1
       ENABLE_CCACHE: 1
+      CCACHE_DIR: ${{ github.workspace }}/.ccache
+      CCACHE_MAXSIZE: 500M
 
     steps:
     - name: Fix autocrlf setting
@@ -86,18 +88,20 @@ jobs:
       id: ccache
       uses: actions/cache/restore@v4
       with:
-        path: .ccache
+        path: ${{ env.CCACHE_DIR }}
         key: ${{ matrix.os }}-ccache-${{ matrix.variant }}-${{ matrix.idf_version }}
 
     - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Ubuntu / MacOS
       if: matrix.os != 'windows-latest'
       run: |
+        ccache -z
         . Tools/export.sh
         Tools/ci/build.sh
 
     - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Windows
       if: matrix.os == 'windows-latest'
       run: |
+        ccache -z
         . Tools/ci/setenv.ps1
         Tools/ci/build.cmd
 
@@ -117,5 +121,5 @@ jobs:
       if: github.ref_name == github.event.repository.default_branch || !steps.ccache.outputs.cache-hit
       uses: actions/cache/save@v4
       with:
-        path: .ccache
+        path: ${{ env.CCACHE_DIR }}
         key: ${{ steps.ccache.outputs.cache-primary-key }}

@@ -76,6 +76,8 @@ jobs:
       CLANG_BUILD: ${{ matrix.toolchain == 'clang' && '15' || '0' }}
       BUILD64: ${{ matrix.toolchain == 'gcc64' && 1 || 0 }}
       ENABLE_CCACHE: 1
+      CCACHE_DIR: ${{ github.workspace }}/.ccache
+      CCACHE_MAXSIZE: 500M
 
     steps:
     - name: Fix autocrlf setting
@@ -137,7 +139,7 @@ jobs:
       id: ccache
       uses: actions/cache/restore@v4
       with:
-        path: .ccache
+        path: ${{ env.CCACHE_DIR }}
         key: ${{ matrix.os }}-ccache-${{ matrix.toolchain }}-${{ matrix.variant }}-${{ matrix.arch == 'Esp32' && env.INSTALL_IDF_VER || '' }}
 
     - name: Build and Test for ${{matrix.arch}} on Ubuntu / MacOS
@@ -145,12 +147,14 @@ jobs:
         CLANG_FORMAT: clang-format-8
       if: matrix.os != 'windows-latest'
       run: |
-        source $SMING_HOME/../Tools/export.sh
+        ccache -z
+        . $SMING_HOME/../Tools/export.sh
         make -j$(nproc) -f $CI_MAKEFILE
 
     - name: Build and Test for ${{matrix.arch}} on Windows
       if: matrix.os == 'windows-latest'
       run: |
+        ccache -z
         . "$env:SMING_HOME/../Tools/ci/setenv.ps1"
         make -j $env:NUMBER_OF_PROCESSORS -f $env:CI_MAKEFILE
 
@@ -170,5 +174,5 @@ jobs:
       if: github.ref_name == github.event.repository.default_branch || !steps.ccache.outputs.cache-hit
       uses: actions/cache/save@v4
       with:
-        path: .ccache
+        path: ${{ env.CCACHE_DIR }}
         key: ${{ steps.ccache.outputs.cache-primary-key }}
