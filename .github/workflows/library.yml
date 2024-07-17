@@ -158,7 +158,7 @@ jobs:
       run: ccache -sv
 
     - name: Delete Previous Compiler Cache
-      if: ${{ steps.ccache.outputs.cache-hit }}
+      if: github.ref_name == github.event.repository.default_branch && steps.ccache.outputs.cache-hit
       continue-on-error: true
       run: |
         gh extension install actions/gh-actions-cache
