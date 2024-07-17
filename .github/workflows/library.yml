@@ -159,7 +159,9 @@ jobs:
         make -j $env:NUMBER_OF_PROCESSORS -f $env:CI_MAKEFILE
 
     - name: Compiler Cache stats
-      run: ccache -sv
+      run: |
+        ccache --evict-older-than 14400s
+        ccache -sv
 
     - name: Delete Previous Compiler Cache
       if: github.ref_name == github.event.repository.default_branch && steps.ccache.outputs.cache-hit
