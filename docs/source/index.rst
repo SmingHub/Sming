@@ -22,7 +22,7 @@ Summary
 -------
 -  Superb performance and memory usage: Sming compiles to native firmware!
 -  Fast and user-friendly C++ development
--  Integrated :doc:`host emulator <arch/host/index>` to assist with developing, testing and debugging
+-  Integrated :doc:`host emulator </_inc/Sming/Arch/Host/README>` to assist with developing, testing and debugging
    libraries and applications on a PC. It even includes networking support!
    Try it out online `here <https://killercoda.com/slaff/scenario/sming-host-emulator>`__.
 -  Built-in powerful wireless modules
@@ -64,18 +64,6 @@ Summary
    -  Companion :library:`SSDP` library independently supports discovery on local network.
    -  :library:`GoogleCast` library allows control of ChromeCast devices or smart TVs supporting the GoogleCast protocol.
    -  :library:`HueEmulator` provides simple way to implement devices compatible with Amazon Alexa.
-
--  ESP8266 features
-
-   -  Integrated boot loader :component:`rboot` with support for 1MB ROMs, OTA firmware updating and ROM switching.
-   -  :doc:`Crash handlers <debugging/index>` for analyzing/handling system restarts due to fatal errors or WDT resets.
-   -  :component-esp8266:`PWM support <driver>` based on `Stefan Bruens PWM <https://github.com/StefanBruens/ESP8266_new_pwm.git>`__.
-   -  Optional :component-esp8266:`custom heap allocation <heap>` based on `Umm Malloc <https://github.com/rhempel/umm_malloc.git>`__.
-   -  Based on :component-esp8266:`Espressif NONOS SDK Version 3 <esp8266>`.
-
--  ESP32 features
-
-   - Based on :component-esp32:`ESP IDF SDK <esp32>`
 
 
 .. toctree::

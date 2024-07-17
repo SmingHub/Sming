@@ -8,7 +8,7 @@ Sming is an open-source asynchronous C++ embedded framework with networking supp
 and is designed to be reliable, responsive and modular.
 
 The project was started in 2015 for the Esp8266 and has since been adapted to other devices,
-including a :doc:`host emulator <arch/host/index>` for advanced development and debugging.
+including a :doc:`host emulator </_inc/Sming/Arch/Host/README>` for advanced development and debugging.
 
 The framework is actively developed and has an extensive suite of integration tests.
 
