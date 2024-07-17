@@ -37,6 +37,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
+      CI_BUILD_DIR: ${{ github.workspace }}
+      SMING_HOME: ${{ github.workspace }}/Sming
       SMING_ARCH: Esp32
       SMING_SOC: ${{ matrix.variant }}
       INSTALL_IDF_VER: ${{ matrix.idf_version }}
@@ -55,12 +57,6 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.idf_version == '4.3' && '3.8' || '3.12' }}
-
-    - name: Configure environment
-      shell: pwsh
-      run: |
-        "CI_BUILD_DIR=" + (Resolve-Path ".").path >> $env:GITHUB_ENV
-        "SMING_HOME=" + (Resolve-Path "Sming").path >> $env:GITHUB_ENV
 
     - name: Fix permissions
       if: matrix.os != 'windows-latest'

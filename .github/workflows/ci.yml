@@ -39,6 +39,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
+      CI_BUILD_DIR: ${{ github.workspace }}
+      SMING_HOME: ${{ github.workspace }}/Sming
       SMING_ARCH: ${{ matrix.arch }}
       SMING_SOC: ${{ matrix.variant }}
       CLANG_BUILD: ${{ matrix.toolchain == 'clang' && '15' || '0' }}
@@ -57,12 +59,6 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: "3.12"
-
-    - name: Configure environment
-      shell: pwsh
-      run: |
-        "CI_BUILD_DIR=" + (Resolve-Path ".").path >> $env:GITHUB_ENV
-        "SMING_HOME=" + (Resolve-Path "Sming").path >> $env:GITHUB_ENV
 
     - name: Install build tools for Ubuntu / MacOS
       if: matrix.os != 'windows-latest'

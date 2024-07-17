@@ -69,6 +69,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
+      CI_BUILD_DIR: ${{ github.workspace }}
       SMING_ARCH: ${{ matrix.arch }}
       SMING_SOC: ${{ matrix.variant }}
       INSTALL_IDF_VER: ${{ matrix.idf_version || '5.2' }}
@@ -102,7 +103,6 @@ jobs:
     - name: Configure environment
       shell: pwsh
       run: |
-        "CI_BUILD_DIR=" + (Resolve-Path ".").path >> $env:GITHUB_ENV
         "SMING_HOME=" + (Resolve-Path "../../sming/Sming").path >> $env:GITHUB_ENV
         "COMPONENT_SEARCH_DIRS=" + (Resolve-Path "..").path >> $env:GITHUB_ENV
         "CI_MAKEFILE=" + (Resolve-Path "../../sming/Tools/ci/library/Makefile") >> $env:GITHUB_ENV
