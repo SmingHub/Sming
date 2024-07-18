@@ -4,9 +4,9 @@ From v5.1 to v5.2
 .. highlight:: c++
 
 
-**Deprecated: ESP32 IDF version 4.3 and 4.4**
+**Deprecated: ESP32 IDF version 4.3, 4.4 and 5.0**
 
-The older 4.3 and 4.4 versions of the ESP32 IDF are deprecated and support for them will be removed in the future.
+The older 4.3, 4.4 and 5.0 versions of the ESP32 IDF are deprecated and support for them will be removed in the future.
 The installation scripts now install IDF version 5.2 by default. See :ref:`idf_versions` for further details.
 
 **PartitionStream: Breaking change**
@@ -115,7 +115,7 @@ The following macro definitions have been removed for esp8266:
 - ``FLASH_WORK_SEC_COUNT``
 - ``INTERNAL_FLASH_SIZE``
 
-These related to the fixed system paramter block at the end of flash memory.
+These related to the fixed system parameter block at the end of flash memory.
 With partitions this is relocatable so any code which depends on these will be wrong.
 
 
