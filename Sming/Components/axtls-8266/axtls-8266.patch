@@ -1,5 +1,5 @@
 diff --git a/crypto/bigint.c b/crypto/bigint.c
-index d90b093..9eebb72 100644
+index d90b093..9ddad77 100644
 --- a/crypto/bigint.c
 +++ b/crypto/bigint.c
 @@ -180,7 +180,7 @@ void bi_permanent(bigint *bi)
@@ -29,7 +29,15 @@ index d90b093..9eebb72 100644
                  "- double-freed bigint?\n");
  #endif
          abort();
-@@ -688,11 +688,11 @@ void bi_print(const char *label, bigint *x)
+@@ -508,6 +508,7 @@ bigint *bi_divide(BI_CTX *ctx, bigint *u, bigint *v, int is_mod)
+  */
+ static bigint *bi_int_divide(BI_CTX *ctx, bigint *biR, comp denom)
+ {
++    (void)ctx;
+     int i = biR->size - 1;
+     long_comp r = 0;
+ 
+@@ -688,11 +689,11 @@ void bi_print(const char *label, bigint *x)
          {
              comp mask = 0x0f << (j*4);
              comp num = (x->comps[i] & mask) >> (j*4);
@@ -43,7 +51,7 @@ index d90b093..9eebb72 100644
  }
  #endif
  
-@@ -1098,7 +1098,7 @@ static bigint *alloc(BI_CTX *ctx, int size)
+@@ -1098,7 +1099,7 @@ static bigint *alloc(BI_CTX *ctx, int size)
          if (biR->refs != 0)
          {
  #ifdef CONFIG_SSL_FULL_MODE
@@ -52,7 +60,7 @@ index d90b093..9eebb72 100644
  #endif
              abort();    /* create a stack trace from a core dump */
          }
-@@ -1174,13 +1174,13 @@ static void check(const bigint *bi)
+@@ -1174,13 +1175,13 @@ static void check(const bigint *bi)
  {
      if (bi->refs <= 0)
      {
@@ -95,7 +103,7 @@ index da24d31..4de139b 100644
          int key_len, uint8_t *digest);
  void hmac_sha1_v(const uint8_t **msg, int* length, int count, const uint8_t *key, 
 diff --git a/crypto/crypto_misc.c b/crypto/crypto_misc.c
-index dca7e5f..b028750 100644
+index dca7e5f..6198b9f 100644
 --- a/crypto/crypto_misc.c
 +++ b/crypto/crypto_misc.c
 @@ -44,7 +44,6 @@
@@ -106,7 +114,17 @@ index dca7e5f..b028750 100644
  #endif
  
  #if defined(CONFIG_USE_DEV_URANDOM)
-@@ -157,62 +156,6 @@ EXP_FUNC void STDCALL RNG_terminate(void)
+@@ -142,6 +141,9 @@ EXP_FUNC void STDCALL RNG_custom_init(const uint8_t *seed_buf, int size)
+ 
+     for (i = 0; i < ENTROPY_POOL_SIZE && i < size; i++)
+         entropy_pool[i] ^= seed_buf[i];
++#else
++    (void)seed_buf;
++    (void)size;
+ #endif
+ }
+ 
+@@ -157,62 +159,6 @@ EXP_FUNC void STDCALL RNG_terminate(void)
  #endif
  }
  
@@ -169,7 +187,7 @@ index dca7e5f..b028750 100644
  /**
   * Set a series of bytes with a random number. Individual bytes are not zero.
   */
-@@ -257,17 +200,17 @@ static void print_hex(uint8_t hex)
+@@ -257,17 +203,17 @@ static void print_hex(uint8_t hex)
      printf("%02x ", hex);
      if (++column == 8)
      {
@@ -190,7 +208,7 @@ index dca7e5f..b028750 100644
      }
  }
  
-@@ -374,7 +317,7 @@ EXP_FUNC int STDCALL base64_decode(const char *in, int len,
+@@ -374,7 +320,7 @@ EXP_FUNC int STDCALL base64_decode(const char *in, int len,
  error:
  #ifdef CONFIG_SSL_FULL_MODE
      if (ret < 0)
@@ -219,146 +237,81 @@ index 53509d0..25c568d 100644
  }
  #endif
  
+diff --git a/crypto/sha1.c b/crypto/sha1.c
+index 1082733..097302a 100644
+--- a/crypto/sha1.c
++++ b/crypto/sha1.c
+@@ -121,7 +121,7 @@ static void SHA1ProcessMessageBlock(SHA1_CTX *ctx)
+      */
+     for  (t = 0; t < 16; t++)
+     {
+-        W[t] = ctx->Message_Block[t * 4] << 24;
++        W[t] = (uint32_t)ctx->Message_Block[t * 4] << 24;
+         W[t] |= ctx->Message_Block[t * 4 + 1] << 16;
+         W[t] |= ctx->Message_Block[t * 4 + 2] << 8;
+         W[t] |= ctx->Message_Block[t * 4 + 3];
+diff --git a/crypto/sha256.c b/crypto/sha256.c
+index ba1ac95..abfde8f 100644
+--- a/crypto/sha256.c
++++ b/crypto/sha256.c
+@@ -216,10 +216,10 @@ void SHA256_Update(SHA256_CTX *ctx, const uint8_t * msg, int len)
+     ctx->total[0] += len;
+     ctx->total[0] &= 0xFFFFFFFF;
+ 
+-    if (ctx->total[0] < len)
++    if ((int)ctx->total[0] < len)
+         ctx->total[1]++;
+ 
+-    if (left && len >= fill)
++    if (left && len >= (int)fill)
+     {
+         memcpy((void *) (ctx->buffer + left), (void *)msg, fill);
+         SHA256_Process(ctx->buffer, ctx);
+diff --git a/crypto/sha512.c b/crypto/sha512.c
+index f92b80a..4d37cec 100644
+--- a/crypto/sha512.c
++++ b/crypto/sha512.c
+@@ -160,7 +160,7 @@ void SHA512_Update(SHA512_CTX *ctx, const uint8_t * msg, int len)
+     while (len > 0)
+     {
+         // The buffer can hold at most 128 bytes
+-        size_t n = MIN(len, 128 - ctx->size);
++        size_t n = MIN((size_t)len, 128 - ctx->size);
+  
+         // Copy the data to the buffer
+         memcpy(ctx->w_buf.buffer + ctx->size, msg, n);
 diff --git a/replacements/time.c b/replacements/time.c
-index 4972119..3e7e407 100644
+index 4972119..1447711 100644
 --- a/replacements/time.c
 +++ b/replacements/time.c
-@@ -16,29 +16,25 @@
+@@ -16,6 +16,8 @@
   *
   */
  
-+#define _C_TYPES_H_
-+#include <c_types.h>
++#if 0
 +
  #include <time.h>
--#include <sntp.h>
-+#include <lwip/sntp.h>
+ #include <sntp.h>
  
- extern uint32_t system_get_time(void);
- extern uint64_t system_mktime(uint32_t year, uint32_t mon, uint32_t day, uint32_t hour, uint32_t min, uint32_t sec);
- 
- static int errno_var = 0;
- 
--int* __errno(void) {
-+// These functions are implemented in Espressif SDK versions 2 and later (libmain.a) so we weaken them to avoid linker problems
-+#define WEAK_ATTR __attribute__((weak))
+@@ -145,3 +147,5 @@ int gettimeofday(struct timeval *tp, void *tzp)
+     }
+     return 0;
+ }
 +
-+int* WEAK_ATTR __errno(void) {
-     // DEBUGV("__errno is called last error: %d (not current)\n", errno_var);
-     return &errno_var;
- }
- 
--unsigned long millis(void)
--{
--	return system_get_time() / 1000UL;
--}
--
--unsigned long micros(void)
--{
--	return system_get_time();
--}
--
- #ifndef _TIMEVAL_DEFINED
- #define _TIMEVAL_DEFINED
- struct timeval {
-@@ -60,12 +56,12 @@ static time_t s_bootTime = 0;
- // calculate offset used in gettimeofday
- static void ensureBootTimeIsSet()
- {
--    if (!s_bootTime)
-+    if (s_bootTime == 0)
-     {
-         time_t now = sntp_get_current_timestamp();
--        if (now)
-+        if (now != 0)
-         {
--            s_bootTime =  now - millis() / 1000;
-+            s_bootTime =  now - (system_get_time() / 1000000);
-         }
-     }
- }
-@@ -79,7 +75,7 @@ static void setServer(int id, const char* name_or_ip)
-     }
- }
- 
--void configTime(int timezone, int daylightOffset_sec, const char* server1, const char* server2, const char* server3)
-+void WEAK_ATTR configTime(int timezone, int daylightOffset_sec, const char* server1, const char* server2, const char* server3)
- {
-     sntp_stop();
- 
-@@ -93,22 +89,24 @@ void configTime(int timezone, int daylightOffset_sec, const char* server1, const
-     sntp_init();
- }
- 
--int clock_gettime(clockid_t unused, struct timespec *tp)
-+int WEAK_ATTR clock_gettime(clockid_t unused, struct timespec *tp)
- {
--    tp->tv_sec  = millis() / 1000;
--    tp->tv_nsec = micros() * 1000;
-+    unsigned long us = system_get_time();
-+    tp->tv_sec  = us / 1000000UL;
-+    us %= 1000000UL;
-+    tp->tv_nsec = us * 1000;
-     return 0;
- }
- 
- // seconds since 1970
--time_t mktime(struct tm *t)
-+time_t WEAK_ATTR mktime(struct tm *t)
- {
-     // system_mktime expects month in range 1..12
-     #define START_MONTH 1
-     return DIFF1900TO1970 + system_mktime(t->tm_year, t->tm_mon + START_MONTH, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
- }
- 
--time_t time(time_t * t)
-+time_t WEAK_ATTR time(time_t * t)
- {
-     time_t seconds = sntp_get_current_timestamp();
-     if (t)
-@@ -118,30 +116,32 @@ time_t time(time_t * t)
-     return seconds;
- }
- 
--char* asctime(const struct tm *t)
-+char* WEAK_ATTR asctime(const struct tm *t)
- {
-     return sntp_asctime(t);
- }
- 
--struct tm* localtime(const time_t *clock)
-+struct tm* WEAK_ATTR localtime(const time_t *clock)
- {
-     return sntp_localtime(clock);
- }
- 
--char* ctime(const time_t *t)
-+char* WEAK_ATTR ctime(const time_t *t)
- {
-     struct tm* p_tm = localtime(t);
-     char* result = asctime(p_tm);
-     return result;
- }
- 
--int gettimeofday(struct timeval *tp, void *tzp)
-+int WEAK_ATTR gettimeofday(struct timeval *tp, void *tzp)
- {
-     if (tp)
-     {
-         ensureBootTimeIsSet();
--        tp->tv_sec  = (s_bootTime + millis()) / 1000;
--        tp->tv_usec = micros() * 1000;
-+        unsigned long us = system_get_time();
-+        tp->tv_sec  = s_bootTime + (us / 1000000UL);
-+        us %= 1000000UL;
-+        tp->tv_usec = us * 1000UL;
-     }
-     return 0;
- }
++#endif
 diff --git a/ssl/asn1.c b/ssl/asn1.c
-index a08a618..3c64064 100644
+index a08a618..9487bb3 100644
 --- a/ssl/asn1.c
 +++ b/ssl/asn1.c
+@@ -183,7 +183,7 @@ int asn1_get_int(const uint8_t *buf, int *offset, int32_t *val)
+     int i;
+ 
+     if ((len = asn1_next_obj(buf, offset, ASN1_INTEGER)) < 0 || 
+-                len > sizeof(int32_t))
++                (size_t)len > sizeof(int32_t))
+     {
+         res = X509_NOT_OK;
+         goto end_int;
 @@ -271,7 +271,7 @@ int asn1_get_private_key(const uint8_t *buf, int len, RSA_CTX **rsa_ctx)
      if (buf[0] != ASN1_SEQUENCE) /* basic sanity check */
      {
@@ -437,10 +390,18 @@ index 093ae9c..d611ab0 100644
  error:
      return ret;
 diff --git a/ssl/loader.c b/ssl/loader.c
-index 6e41f40..874e5fd 100644
+index 6e41f40..5544434 100644
 --- a/ssl/loader.c
 +++ b/ssl/loader.c
-@@ -155,7 +155,7 @@ static int do_obj(SSL_CTX *ssl_ctx, int obj_type,
+@@ -126,6 +126,7 @@ EXP_FUNC int STDCALL ssl_obj_memory_load(SSL_CTX *ssl_ctx, int mem_type,
+ static int do_obj(SSL_CTX *ssl_ctx, int obj_type, 
+                     SSLObjLoader *ssl_obj, const char *password)
+ {
++    (void)password;
+     int ret = SSL_OK;
+ 
+     switch (obj_type)
+@@ -155,7 +156,7 @@ static int do_obj(SSL_CTX *ssl_ctx, int obj_type,
  #endif
          default:
  #ifdef CONFIG_SSL_FULL_MODE
@@ -449,7 +410,7 @@ index 6e41f40..874e5fd 100644
  #endif
              ret = SSL_ERROR_NOT_SUPPORTED;
              break;
-@@ -222,14 +222,14 @@ static int pem_decrypt(const char *where, const char *end,
+@@ -222,14 +223,14 @@ static int pem_decrypt(const char *where, const char *end,
      char *start = NULL;
      uint8_t iv[IV_SIZE];
      int i, pem_size;
@@ -466,7 +427,7 @@ index 6e41f40..874e5fd 100644
  #endif
          goto error;
      }
-@@ -246,7 +246,7 @@ static int pem_decrypt(const char *where, const char *end,
+@@ -246,7 +247,7 @@ static int pem_decrypt(const char *where, const char *end,
      else 
      {
  #ifdef CONFIG_SSL_FULL_MODE
@@ -475,7 +436,7 @@ index 6e41f40..874e5fd 100644
  #endif
          goto error;
      }
-@@ -269,18 +269,18 @@ static int pem_decrypt(const char *where, const char *end,
+@@ -269,18 +270,18 @@ static int pem_decrypt(const char *where, const char *end,
          goto error;
  
      /* work out the key */
@@ -503,7 +464,7 @@ index 6e41f40..874e5fd 100644
      }
  
      /* decrypt using the key/iv */
-@@ -481,7 +481,7 @@ error:
+@@ -481,7 +482,7 @@ error:
  #ifdef CONFIG_SSL_FULL_MODE
      if (ret)
      {
@@ -848,7 +809,7 @@ index 5bd2394..5363d22 100644
      if (memcmp(mac, orig_mac, SHA1_SIZE))
      {
 diff --git a/ssl/tls1.c b/ssl/tls1.c
-index 8f0fbfb..b2dcddd 100644
+index 8f0fbfb..330f459 100644
 --- a/ssl/tls1.c
 +++ b/ssl/tls1.c
 @@ -85,7 +85,7 @@ static const cipher_info_t cipher_info[NUM_PROTOCOLS] =
@@ -887,7 +848,17 @@ index 8f0fbfb..b2dcddd 100644
          (crypt_func)AES_cbc_encrypt,    /* encrypt */
          (crypt_func)AES_cbc_decrypt     /* decrypt */
      }
-@@ -843,15 +843,15 @@ void add_packet(SSL *ssl, const uint8_t *pkt, int len)
+@@ -334,7 +334,8 @@ EXP_FUNC int STDCALL ssl_read(SSL *ssl, uint8_t **in_data)
+  */
+ EXP_FUNC int STDCALL ssl_write(SSL *ssl, const uint8_t *out_data, int out_len)
+ {
+-    int n = out_len, nw, i, tot = 0;
++    int n = out_len, i, tot = 0;
++    size_t nw;
+     /* maximum size of a TLS packet is around 16kB, so fragment */
+ 
+     do 
+@@ -843,15 +844,15 @@ void add_packet(SSL *ssl, const uint8_t *pkt, int len)
      // TLS1.2+
      if (ssl->version >= SSL_PROTOCOL_VERSION_TLS1_2 || ssl->version == 0) 
      {
@@ -906,7 +877,7 @@ index 8f0fbfb..b2dcddd 100644
      }
  }
  
-@@ -864,9 +864,9 @@ static void p_hash_md5(const uint8_t *sec, int sec_len,
+@@ -864,9 +865,9 @@ static void p_hash_md5(const uint8_t *sec, int sec_len,
      uint8_t a1[MD5_SIZE+77];
  
      /* A(1) */
@@ -918,7 +889,7 @@ index 8f0fbfb..b2dcddd 100644
  
      while (olen > MD5_SIZE)
      {
-@@ -875,11 +875,11 @@ static void p_hash_md5(const uint8_t *sec, int sec_len,
+@@ -875,11 +876,11 @@ static void p_hash_md5(const uint8_t *sec, int sec_len,
          olen -= MD5_SIZE;
  
          /* A(N) */
@@ -932,7 +903,7 @@ index 8f0fbfb..b2dcddd 100644
      }
  }
  
-@@ -892,9 +892,9 @@ static void p_hash_sha1(const uint8_t *sec, int sec_len,
+@@ -892,9 +893,9 @@ static void p_hash_sha1(const uint8_t *sec, int sec_len,
      uint8_t a1[SHA1_SIZE+77];
  
      /* A(1) */
@@ -944,7 +915,7 @@ index 8f0fbfb..b2dcddd 100644
  
      while (olen > SHA1_SIZE)
      {
-@@ -903,11 +903,11 @@ static void p_hash_sha1(const uint8_t *sec, int sec_len,
+@@ -903,11 +904,11 @@ static void p_hash_sha1(const uint8_t *sec, int sec_len,
          olen -= SHA1_SIZE;
  
          /* A(N) */
@@ -958,7 +929,7 @@ index 8f0fbfb..b2dcddd 100644
      }
  }
  
-@@ -920,9 +920,9 @@ static void p_hash_sha256(const uint8_t *sec, int sec_len,
+@@ -920,9 +921,9 @@ static void p_hash_sha256(const uint8_t *sec, int sec_len,
      uint8_t a1[SHA256_SIZE+77];
  
      /* A(1) */
@@ -970,7 +941,7 @@ index 8f0fbfb..b2dcddd 100644
  
      while (olen > SHA256_SIZE)
      {
-@@ -931,11 +931,11 @@ static void p_hash_sha256(const uint8_t *sec, int sec_len,
+@@ -931,11 +932,11 @@ static void p_hash_sha256(const uint8_t *sec, int sec_len,
          olen -= SHA256_SIZE;
  
          // A(N)
@@ -984,7 +955,7 @@ index 8f0fbfb..b2dcddd 100644
      }
  }
  
-@@ -1023,20 +1023,20 @@ int finished_digest(SSL *ssl, const char *label, uint8_t *digest)
+@@ -1023,20 +1024,20 @@ int finished_digest(SSL *ssl, const char *label, uint8_t *digest)
  
      if (ssl->version >= SSL_PROTOCOL_VERSION_TLS1_2) // TLS1.2+
      {
@@ -1011,7 +982,7 @@ index 8f0fbfb..b2dcddd 100644
          q += SHA1_SIZE;
          dgst_len = (int)(q-mac_buf);
      }
-@@ -1368,6 +1368,10 @@ int basic_read(SSL *ssl, uint8_t **in_data)
+@@ -1368,6 +1369,10 @@ int basic_read(SSL *ssl, uint8_t **in_data)
      int read_len, is_client = IS_SET_SSL_FLAG(SSL_IS_CLIENT);
      uint8_t *buf = ssl->bm_data;
  
@@ -1022,7 +993,7 @@ index 8f0fbfb..b2dcddd 100644
      if (IS_SET_SSL_FLAG(SSL_SENT_CLOSE_NOTIFY))
          return SSL_CLOSE_NOTIFY;
  
-@@ -1411,7 +1415,7 @@ int basic_read(SSL *ssl, uint8_t **in_data)
+@@ -1411,7 +1416,7 @@ int basic_read(SSL *ssl, uint8_t **in_data)
          if ((buf[0] & 0x80) && buf[2] == 1)
          {
  #ifdef CONFIG_SSL_FULL_MODE
@@ -1031,7 +1002,16 @@ index 8f0fbfb..b2dcddd 100644
  #endif
              ret = SSL_ERROR_NOT_SUPPORTED;
              goto error; /* not an error - just get out of here */
-@@ -1562,7 +1566,7 @@ int increase_bm_data_size(SSL *ssl, size_t size)
+@@ -1432,7 +1437,7 @@ int basic_read(SSL *ssl, uint8_t **in_data)
+         /* is the allocated buffer large enough to handle all the data? if not, increase its size*/
+         if (ssl->need_bytes > ssl->max_plain_length+RT_EXTRA-BM_RECORD_OFFSET)
+         {
+-            printf("ssl->need_bytes=%d > %d\r\n", ssl->need_bytes, ssl->max_plain_length+RT_EXTRA-BM_RECORD_OFFSET);
++            printf("ssl->need_bytes=%u > %u\r\n", ssl->need_bytes, (unsigned)ssl->max_plain_length+RT_EXTRA-BM_RECORD_OFFSET);
+             ret = increase_bm_data_size(ssl, ssl->need_bytes + BM_RECORD_OFFSET - RT_EXTRA);
+             if (ret != SSL_OK)
+             {
+@@ -1562,7 +1567,7 @@ int increase_bm_data_size(SSL *ssl, size_t size)
      required = (required < RT_MAX_PLAIN_LENGTH) ? required : RT_MAX_PLAIN_LENGTH;
      uint8_t* new_bm_all_data = (uint8_t*) realloc(ssl->bm_all_data, required + RT_EXTRA);
      if (!new_bm_all_data) {
@@ -1040,7 +1020,15 @@ index 8f0fbfb..b2dcddd 100644
          ssl->hs_status = SSL_ERROR_DEAD;
          return SSL_ERROR_CONN_LOST;
      }
-@@ -1845,9 +1849,9 @@ void disposable_new(SSL *ssl)
+@@ -1765,6 +1770,7 @@ int send_alert(SSL *ssl, int error_code)
+  */
+ int process_finished(SSL *ssl, uint8_t *buf, int hs_len)
+ {
++    (void)hs_len;
+     int ret = SSL_OK;
+     int is_client = IS_SET_SSL_FLAG(SSL_IS_CLIENT);
+     int resume = IS_SET_SSL_FLAG(SSL_SESSION_RESUME);
+@@ -1845,9 +1851,9 @@ void disposable_new(SSL *ssl)
      if (ssl->dc == NULL)
      {
          ssl->dc = (DISPOSABLE_CTX *)calloc(1, sizeof(DISPOSABLE_CTX));
@@ -1053,7 +1041,7 @@ index 8f0fbfb..b2dcddd 100644
      }
  }
  
-@@ -2248,15 +2252,15 @@ EXP_FUNC int STDCALL ssl_match_fingerprint(const SSL *ssl, const uint8_t* fp)
+@@ -2248,15 +2254,15 @@ EXP_FUNC int STDCALL ssl_match_fingerprint(const SSL *ssl, const uint8_t* fp)
          return 1;
      int res = memcmp(ssl->x509_ctx->fingerprint, fp, SHA1_SIZE);
      if (res != 0) {
@@ -1072,7 +1060,7 @@ index 8f0fbfb..b2dcddd 100644
      }
      return res;
  }
-@@ -2267,15 +2271,15 @@ EXP_FUNC int STDCALL ssl_match_spki_sha256(const SSL *ssl, const uint8_t* hash)
+@@ -2267,15 +2273,15 @@ EXP_FUNC int STDCALL ssl_match_spki_sha256(const SSL *ssl, const uint8_t* hash)
          return 1;
      int res = memcmp(ssl->x509_ctx->spki_sha256, hash, SHA256_SIZE);
      if (res != 0) {
@@ -1091,7 +1079,7 @@ index 8f0fbfb..b2dcddd 100644
      }
      return res;
  }
-@@ -2294,55 +2298,55 @@ void DISPLAY_STATE(SSL *ssl, int is_send, uint8_t state, int not_ok)
+@@ -2294,55 +2300,55 @@ void DISPLAY_STATE(SSL *ssl, int is_send, uint8_t state, int not_ok)
      if (!IS_SET_SSL_FLAG(SSL_DISPLAY_STATES))
          return;
  
@@ -1162,7 +1150,16 @@ index 8f0fbfb..b2dcddd 100644
              break;
      }
  }
-@@ -2389,7 +2393,7 @@ EXP_FUNC void STDCALL ssl_display_error(int error_code)
+@@ -2372,7 +2378,7 @@ void DISPLAY_BYTES(SSL *ssl, const char *format,
+ 
+     va_start(ap, size);
+     char fmt_ram[64];
+-    int len = strlen_P(format) + 1;
++    size_t len = strlen_P(format) + 1;
+     if (len > sizeof(fmt_ram)) len = sizeof(fmt_ram);
+     memcpy_P(fmt_ram, format, len);
+     fmt_ram[sizeof(fmt_ram)-1] = 0;
+@@ -2389,7 +2395,7 @@ EXP_FUNC void STDCALL ssl_display_error(int error_code)
      if (error_code == SSL_OK)
          return;
  
@@ -1171,7 +1168,7 @@ index 8f0fbfb..b2dcddd 100644
  
      /* X509 error? */
      if (error_code < SSL_X509_OFFSET)
-@@ -2409,67 +2413,67 @@ EXP_FUNC void STDCALL ssl_display_error(int error_code)
+@@ -2409,67 +2415,67 @@ EXP_FUNC void STDCALL ssl_display_error(int error_code)
      switch (error_code)
      {
          case SSL_ERROR_DEAD:
@@ -1255,7 +1252,7 @@ index 8f0fbfb..b2dcddd 100644
              break;
  
          default:
-@@ -2477,7 +2481,7 @@ EXP_FUNC void STDCALL ssl_display_error(int error_code)
+@@ -2477,7 +2483,7 @@ EXP_FUNC void STDCALL ssl_display_error(int error_code)
              break;
      }
  
@@ -1264,7 +1261,7 @@ index 8f0fbfb..b2dcddd 100644
  }
  
  /**
-@@ -2488,68 +2492,68 @@ void DISPLAY_ALERT(SSL *ssl, int alert)
+@@ -2488,68 +2494,68 @@ void DISPLAY_ALERT(SSL *ssl, int alert)
      if (!IS_SET_SSL_FLAG(SSL_DISPLAY_STATES))
          return;
  
@@ -1290,7 +1287,7 @@ index 8f0fbfb..b2dcddd 100644
  
          case SSL_ALERT_RECORD_OVERFLOW:
 -            printf("record overlow");
-+        	puts("record overlow");
++        	puts("record overflow");
              break;
  
          case SSL_ALERT_HANDSHAKE_FAILURE:
@@ -1349,7 +1346,7 @@ index 8f0fbfb..b2dcddd 100644
              break;
  
          default:
-@@ -2557,7 +2561,7 @@ void DISPLAY_ALERT(SSL *ssl, int alert)
+@@ -2557,7 +2563,7 @@ void DISPLAY_ALERT(SSL *ssl, int alert)
              break;
      }
  
@@ -1358,7 +1355,7 @@ index 8f0fbfb..b2dcddd 100644
  }
  
  #endif /* CONFIG_SSL_FULL_MODE */
-@@ -2584,7 +2588,7 @@ EXP_FUNC void STDCALL ssl_display_error(int error_code) {}
+@@ -2584,7 +2590,7 @@ EXP_FUNC void STDCALL ssl_display_error(int error_code) {}
  EXP_FUNC SSL * STDCALL ssl_client_new(SSL_CTX *ssl_ctx, int client_fd, const
          uint8_t *session_id, uint8_t sess_id_size)
  {
@@ -1367,7 +1364,7 @@ index 8f0fbfb..b2dcddd 100644
      return NULL;
  }
  #endif
-@@ -2592,20 +2596,20 @@ EXP_FUNC SSL * STDCALL ssl_client_new(SSL_CTX *ssl_ctx, int client_fd, const
+@@ -2592,20 +2598,20 @@ EXP_FUNC SSL * STDCALL ssl_client_new(SSL_CTX *ssl_ctx, int client_fd, const
  #if !defined(CONFIG_SSL_CERT_VERIFICATION)
  EXP_FUNC int STDCALL ssl_verify_cert(const SSL *ssl)
  {

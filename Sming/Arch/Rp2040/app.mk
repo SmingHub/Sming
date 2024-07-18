@@ -11,6 +11,10 @@ LDFLAGS	+= \
 	-mcpu=cortex-m0plus \
 	-mthumb
 
+ifneq ($(COMPILER_VERSION_MAJOR),10)
+LDFLAGS += -Wl,--no-warn-rwx-segments
+endif
+
 TARGET_DIS = $(TARGET_OUT:.out=.dis)
 TARGET_SYM = $(TARGET_OUT:.out=.sym)
 

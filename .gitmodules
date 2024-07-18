@@ -97,7 +97,7 @@
 	ignore = dirty
 [submodule "Esp8266.lwip2"]
 	path = Sming/Arch/Esp8266/Components/lwip2/lwip2
-	url = https://github.com/mikee47/esp82xx-nonos-linklayer.git
+	url = https://github.com/d-a-v/esp82xx-nonos-linklayer.git
 	ignore = dirty
 [submodule "Esp8266.umm_malloc"]
 	path = Sming/Arch/Esp8266/Components/heap/umm_malloc
@@ -216,6 +216,10 @@
 [submodule "Libraries.CS5460"]
 	path = Sming/Libraries/CS5460/CS5460
 	url = https://github.com/xxzl0130/CS5460.git
+	ignore = dirty
+[submodule "Libraries.CsvReader"]
+	path = Sming/Libraries/CsvReader
+	url = https://github.com/mikee47/CsvReader
 	ignore = dirty
 [submodule "Libraries.DFRobotDFPlayerMini"]
 	path = Sming/Libraries/DFRobotDFPlayerMini
@@ -348,6 +352,10 @@
 [submodule "Libraries.SolarCalculator"]
 	path = Sming/Libraries/SolarCalculator
 	url = https://github.com/mikee47/SolarCalculator
+	ignore = dirty
+[submodule "Libraries.SparkFun_APDS9960"]
+	path = Sming/Libraries/SparkFun_APDS9960
+	url = https://github.com/sparkfun/SparkFun_APDS-9960_Sensor_Arduino_Library
 	ignore = dirty
 [submodule "Libraries.spiffs"]
 	path = Sming/Libraries/Spiffs/spiffs

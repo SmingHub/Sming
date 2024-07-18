@@ -63,7 +63,7 @@ protected:
 class DummyOutputStream : public OutputStream
 {
 protected:
-	bool write(const pb_byte_t* buf, size_t count) override
+	bool write(const pb_byte_t*, size_t) override
 	{
 		return true;
 	}

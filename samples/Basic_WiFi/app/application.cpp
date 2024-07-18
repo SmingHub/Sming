@@ -6,6 +6,8 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
+namespace
+{
 // Will be called when WiFi station network scan was completed
 void listNetworks(bool succeeded, BssList& list)
 {
@@ -14,9 +16,9 @@ void listNetworks(bool succeeded, BssList& list)
 		return;
 	}
 
-	for(unsigned i = 0; i < list.count(); i++) {
-		Serial << _F("\tWiFi: ") << list[i].ssid << ", " << list[i].getAuthorizationMethodName();
-		if(list[i].hidden) {
+	for(auto& bss : list) {
+		Serial << _F("\tWiFi: ") << bss.ssid << ", " << bss.getAuthorizationMethodName();
+		if(bss.hidden) {
 			Serial << _F(" (hidden)");
 		}
 		Serial.println();
@@ -59,6 +61,8 @@ void ready()
 		Serial << _F("AP. ip: ") << WifiAccessPoint.getIP() << _F(" mac: ") << WifiAccessPoint.getMacAddress() << endl;
 	}
 }
+
+} // namespace
 
 void init()
 {

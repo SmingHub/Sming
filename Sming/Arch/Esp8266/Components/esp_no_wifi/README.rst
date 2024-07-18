@@ -24,6 +24,12 @@ The SDKnoWiFi implements the startup code and some system functions but contains
 which is provided by the SDK and in other parts of the Sming framework. We need to provide
 replacement functions to interoperate correctly with the remaining SDK code.
 
+Advantages
+----------
+
+- Reduces code image size when networking/WiFi is not required
+- Eliminates need for SDK-specific partitions (rf_cal, phy_init, sys_param)
+
 Process
 -------
 

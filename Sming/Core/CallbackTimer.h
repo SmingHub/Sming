@@ -33,12 +33,16 @@ template <typename ApiDef> struct CallbackTimerApi {
 		return ApiDef::typeName();
 	}
 
+	CallbackTimerApi() = default;
+
+	CallbackTimerApi(const CallbackTimerApi&) = delete;
+
 	String name() const
 	{
 		String s;
 		s += typeName();
 		s += '@';
-		s += String(uint32_t(this), HEX);
+		s += String(uintptr_t(this), HEX);
 		return s;
 	}
 
@@ -50,7 +54,6 @@ template <typename ApiDef> struct CallbackTimerApi {
 		s += static_cast<const ApiDef*>(this)->getInterval();
 		s += ", ticks = ";
 		s += static_cast<const ApiDef*>(this)->ticks();
-		//		s += ApiDef::Clock::ticks();
 		return s;
 	}
 

@@ -58,7 +58,7 @@
 
 #include "WConstants.h"
 #include <cstddef>
-#include <string.h>
+#include <cstring>
 #include <sming_attr.h>
 
 #include <FlashString/String.hpp>
@@ -67,10 +67,6 @@
  * @brief Read-only String class stored in flash memory
  */
 using FlashString = FSTR::String;
-
-#ifndef __GXX_EXPERIMENTAL_CXX0X__
-#define __GXX_EXPERIMENTAL_CXX0X__
-#endif
 
 // When compiling programs with this class, the following gcc parameters
 // dramatically increase performance and memory (RAM) efficiency, typically
@@ -135,6 +131,7 @@ using flash_string_t = const __FlashStringHelper*;
  */
 class String
 {
+protected:
 	// use a function pointer to allow for "if (s)" without the
 	// complications of an operator bool(). for more information, see:
 	// http://www.artima.com/cppsource/safebool.html
@@ -183,27 +180,25 @@ public:
 		setString(pstr);
 	}
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
 	String(String&& rval) noexcept : String()
 	{
 		move(rval);
 	}
 	String(StringSumHelper&& rval) noexcept;
-#endif
 	explicit String(char c);
-	explicit String(unsigned char, unsigned char base = 10, unsigned char width = 0, char pad = '0');
-	explicit String(int num, unsigned char base = 10, unsigned char width = 0, char pad = '0')
+	explicit String(unsigned char, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
+	explicit String(int num, unsigned char base = DEC, unsigned char width = 0, char pad = '0')
 		: String(long(num), base, width, pad)
 	{
 	}
-	explicit String(unsigned int num, unsigned char base = 10, unsigned char width = 0, char pad = '0')
+	explicit String(unsigned int num, unsigned char base = DEC, unsigned char width = 0, char pad = '0')
 		: String((unsigned long)(num), base, width, pad)
 	{
 	}
-	explicit String(long, unsigned char base = 10, unsigned char width = 0, char pad = '0');
-	explicit String(long long, unsigned char base = 10, unsigned char width = 0, char pad = '0');
-	explicit String(unsigned long, unsigned char base = 10, unsigned char width = 0, char pad = '0');
-	explicit String(unsigned long long, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	explicit String(long, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
+	explicit String(long long, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
+	explicit String(unsigned long, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
+	explicit String(unsigned long long, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
 	explicit String(float, unsigned char decimalPlaces = 2);
 	explicit String(double, unsigned char decimalPlaces = 2);
 	/** @} */
@@ -299,7 +294,6 @@ public:
      *
      * @{
      */
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
 	String& operator=(String&& rval) noexcept
 	{
 		if(this != &rval)
@@ -307,7 +301,6 @@ public:
 		return *this;
 	}
 	String& operator=(StringSumHelper&& rval) noexcept;
-#endif
 	/** @} */
 
 	/**
@@ -331,19 +324,19 @@ public:
 	{
 		return concat(&c, 1);
 	}
-	bool concat(unsigned char num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
-	bool concat(int num, unsigned char base = 10, unsigned char width = 0, char pad = '0')
+	bool concat(unsigned char num, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
+	bool concat(int num, unsigned char base = DEC, unsigned char width = 0, char pad = '0')
 	{
 		return concat(long(num), base, width, pad);
 	}
-	bool concat(unsigned int num, unsigned char base = 10, unsigned char width = 0, char pad = '0')
+	bool concat(unsigned int num, unsigned char base = DEC, unsigned char width = 0, char pad = '0')
 	{
 		return concat((unsigned long)(num), base, width, pad);
 	}
-	bool concat(long num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
-	bool concat(long long num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
-	bool concat(unsigned long num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
-	bool concat(unsigned long long num, unsigned char base = 10, unsigned char width = 0, char pad = '0');
+	bool concat(long num, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
+	bool concat(long long num, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
+	bool concat(unsigned long num, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
+	bool concat(unsigned long long num, unsigned char base = DEC, unsigned char width = 0, char pad = '0');
 	bool concat(float num);
 	bool concat(double num);
 
@@ -606,7 +599,7 @@ public:
      */
 	void toCharArray(char* buf, size_t bufsize, size_t index = 0) const
 	{
-		getBytes((unsigned char*)buf, bufsize, index);
+		getBytes(reinterpret_cast<unsigned char*>(buf), bufsize, index);
 	}
 
 	/**
@@ -787,7 +780,7 @@ public:
 	 */
 	String& padLeft(uint16_t minWidth, char c = ' ')
 	{
-		return pad(-minWidth, c);
+		return pad(int16_t(-minWidth), c);
 	}
 
 	/**
@@ -795,7 +788,7 @@ public:
 	 */
 	String& padRight(uint16_t minWidth, char c = ' ')
 	{
-		return pad(minWidth, c);
+		return pad(int16_t(minWidth), c);
 	}
 
 	/**
@@ -811,7 +804,8 @@ public:
 	float toFloat(void) const;
 
 	/// Max chars. (excluding NUL terminator) we can store in SSO mode
-	static constexpr size_t SSO_CAPACITY = STRING_OBJECT_SIZE - 2;
+	static constexpr size_t SSO_SIZE = std::max(size_t(STRING_OBJECT_SIZE), sizeof(char*) * 3);
+	static constexpr size_t SSO_CAPACITY = SSO_SIZE - 2;
 
 protected:
 	/// Used when contents allocated on heap
@@ -831,10 +825,10 @@ protected:
 		SsoBuf sso;
 	};
 
-	static_assert(STRING_OBJECT_SIZE == sizeof(SsoBuf), "SSO Buffer alignment problem");
-	static_assert(STRING_OBJECT_SIZE >= sizeof(PtrBuf), "STRING_OBJECT_SIZE too small");
-	static_assert(STRING_OBJECT_SIZE <= 128, "STRING_OBJECT_SIZE too large (max. 128)");
-	static_assert(STRING_OBJECT_SIZE % 4 == 0, "STRING_OBJECT_SIZE must be a multiple of 4");
+	static_assert(SSO_SIZE == sizeof(SsoBuf), "SSO Buffer alignment problem");
+	static_assert(SSO_SIZE >= sizeof(PtrBuf), "STRING_OBJECT_SIZE too small");
+	static_assert(SSO_SIZE <= 128, "STRING_OBJECT_SIZE too large (max. 128)");
+	static_assert(SSO_SIZE % 4 == 0, "STRING_OBJECT_SIZE must be a multiple of 4");
 
 protected:
 	// Free any heap memory and set to non-SSO mode; isNull() will return true
@@ -881,9 +875,7 @@ protected:
 	// copy and move
 	String& copy(const char* cstr, size_t length);
 	String& copy(flash_string_t pstr, size_t length);
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
 	void move(String& rhs);
-#endif
 };
 
 /** @} */

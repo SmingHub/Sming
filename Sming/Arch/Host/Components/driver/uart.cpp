@@ -73,11 +73,6 @@ void notify(smg_uart_t* uart, smg_uart_notify_code_t code)
 	}
 }
 
-__forceinline bool smg_uart_isr_enabled(uint8_t nr)
-{
-	return bitRead(isrMask, nr);
-}
-
 } // namespace
 
 smg_uart_t* smg_uart_get_uart(uint8_t uart_nr)

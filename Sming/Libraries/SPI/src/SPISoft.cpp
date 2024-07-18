@@ -24,7 +24,11 @@
 #define SPISOFT_ARCH_DELAY_FIXED 0
 #endif
 
+#ifdef __clang__
+#define FUNC_OPT
+#else
 #define FUNC_OPT __attribute__((optimize(3)))
+#endif
 
 namespace spisoft
 {
@@ -139,12 +143,15 @@ uint32_t FUNC_OPT SPISoft::transferWordLSB(uint32_t word, uint8_t bits)
 	case 4:
 		res = transferByteLSB(word) << 24;
 		word >>= 8;
+		[[fallthrough]];
 	case 3:
 		res = (res >> 8) | transferByteLSB(word) << 24;
 		word >>= 8;
+		[[fallthrough]];
 	case 2:
 		res = (res >> 8) | transferByteLSB(word) << 24;
 		word >>= 8;
+		[[fallthrough]];
 	case 1:
 		res = (res >> 8) | transferByteLSB(word) << 24;
 		word >>= 8;
@@ -194,10 +201,13 @@ uint32_t FUNC_OPT SPISoft::transferWordMSB(uint32_t word, uint8_t bits)
 	switch(bit / 8) {
 	case 4:
 		res = transferByteMSB(word >> 24);
+		[[fallthrough]];
 	case 3:
 		res = (res << 8) | transferByteMSB(word >> 16);
+		[[fallthrough]];
 	case 2:
 		res = (res << 8) | transferByteMSB(word >> 8);
+		[[fallthrough]];
 	case 1:
 		res = (res << 8) | transferByteMSB(word);
 	}

@@ -23,9 +23,7 @@
 
 #include <IFS/Attribute.h>
 
-namespace IFS
-{
-namespace SPIFFS
+namespace IFS::SPIFFS
 {
 /**
  * @brief Content of SPIFFS metadata area
@@ -114,12 +112,11 @@ struct SpiffsMetaBuffer {
 		}
 	}
 
-	int enumxattr(AttributeEnumCallback callback, void* buffer, size_t bufsize);
+	int enumxattr(const AttributeEnumCallback& callback, void* buffer, size_t bufsize);
 	int getxattr(AttributeTag tag, void* buffer, size_t size);
 	int setxattr(AttributeTag tag, const void* data, size_t size);
 	int getUserAttribute(unsigned userTag, void* buffer, size_t size);
 	int setUserAttribute(unsigned userTag, const void* data, size_t size);
 };
 
-} // namespace SPIFFS
-} // namespace IFS
+} // namespace IFS::SPIFFS

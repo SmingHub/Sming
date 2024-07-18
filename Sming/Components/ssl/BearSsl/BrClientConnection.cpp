@@ -63,14 +63,14 @@ int BrClientConnection::init()
 	return startHandshake();
 }
 
-void BrClientConnection::startCert(uint32_t length)
+void BrClientConnection::startCert(uint32_t)
 {
 	if(x509.count() != 0) {
 		return;
 	}
 
-	certificate.reset(new BrCertificate);
-	x509Decoder.reset(new X509Decoder(&certificate->subject, &certificate->issuer));
+	certificate = std::make_unique<BrCertificate>();
+	x509Decoder = std::make_unique<X509Decoder>(&certificate->subject, &certificate->issuer);
 
 	auto& types = context.session.validators.fingerprintTypes;
 	resetHash(certSha1Context, types.contains(Fingerprint::Type::CertSha1));
@@ -107,7 +107,11 @@ void BrClientConnection::endCert()
 
 bool BrClientConnection::endChain()
 {
-	return context.session.validateCertificate();
+	auto& session = context.session;
+	if(!session.options.verifyLater && session.validators.isEmpty()) {
+		return false;
+	}
+	return session.validateCertificate();
 }
 
 } // namespace Ssl

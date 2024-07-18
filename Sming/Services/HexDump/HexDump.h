@@ -12,8 +12,7 @@
 class HexDump
 {
 public:
-	HexDump();
-	virtual ~HexDump();
+	virtual ~HexDump() = default;
 
 	void print(unsigned char* data, int len);
 	void resetAddr();

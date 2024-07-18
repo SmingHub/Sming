@@ -9,7 +9,7 @@ DEBUG_VARS += UF2CONV_PY
 UF2CONV_PY := $(COMPONENT_PATH)/uf2conv.py
 
 
-# Invoke uf2conf utility
+# Invoke uf2conv utility
 # $1 -> Parameters
 ifdef WSL_ROOT
 Uf2Conv = powershell.exe -Command "$(PYTHON) $(UF2CONV_PY) $(if $V,--verbose) $1"

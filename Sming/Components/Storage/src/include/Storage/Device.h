@@ -40,6 +40,7 @@ public:
 	 * @brief Storage type
 	 */
 	enum class Type : uint8_t {
+		partitionType = uint8_t(Partition::Type::storage),
 #define XX(type, value, desc) type = value,
 		STORAGE_TYPE_MAP(XX)
 #undef XX
@@ -48,6 +49,11 @@ public:
 	Device() : mPartitions(*this)
 	{
 	}
+
+	Device(const Device&) = delete;
+	Device(Device&&) = delete;
+	Device& operator=(const Device&) = delete;
+	Device& operator=(Device&&) = delete;
 
 	~Device();
 

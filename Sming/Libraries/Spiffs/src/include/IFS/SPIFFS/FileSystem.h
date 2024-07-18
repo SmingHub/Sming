@@ -48,9 +48,7 @@ extern "C" {
 #include "../../../../spiffs/src/spiffs_nucleus.h"
 }
 
-namespace IFS
-{
-namespace SPIFFS
+namespace IFS::SPIFFS
 {
 /*
  * Wraps SPIFFS
@@ -143,5 +141,4 @@ private:
 	uint8_t cache[CACHE_SIZE];
 };
 
-} // namespace SPIFFS
-} // namespace IFS
+} // namespace IFS::SPIFFS

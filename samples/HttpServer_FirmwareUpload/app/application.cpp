@@ -2,8 +2,15 @@
 #include <MultipartParser.h>
 #include <HttpMultipartResource.h>
 #include <OtaUpgradeStream.h>
-#include <FlashString/Array.hpp>
 
+// If you want, you can define WiFi settings globally in Eclipse Environment Variables
+#ifndef WIFI_SSID
+#define WIFI_SSID "PleaseEnterSSID" // Put your SSID and password here
+#define WIFI_PWD "PleaseEnterPass"
+#endif
+
+namespace
+{
 HttpServer server;
 
 void onFile(HttpRequest& request, HttpResponse& response)
@@ -83,6 +90,8 @@ void startWebServer()
 	server.paths.setDefault(onFile);
 }
 
+} // namespace
+
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
@@ -91,8 +100,8 @@ void init()
 	spiffs_mount(); // Mount file system, in order to work with files
 
 	WifiStation.enable(true);
-	//WifiStation.config(WIFI_SSID, WIFI_PWD);
-	//WifiStation.enableDHCP(true);
+	WifiStation.config(WIFI_SSID, WIFI_PWD);
+	// WifiStation.enableDHCP(true);
 
 	// Run WEB server on system ready
 	System.onReady(startWebServer);

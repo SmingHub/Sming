@@ -8,6 +8,26 @@ CPPFLAGS	+= -DARCH_HOST
 
 TOOLSPEC 	:=
 
+BUILD_VARS += CLANG_BUILD
+ifndef CLANG_BUILD
+override CLANG_BUILD := 0
+endif
+
+ifneq ($(CLANG_BUILD),0)
+ifeq ($(CLANG_BUILD),1)
+CLANG_VER :=
+else
+CLANG_VER := -$(CLANG_BUILD)
+endif
+AS		:= $(TOOLSPEC)clang$(CLANG_VER)
+CC		:= $(TOOLSPEC)clang$(CLANG_VER)
+CXX		:= $(TOOLSPEC)clang++$(CLANG_VER)
+AR		:= $(TOOLSPEC)ar
+LD		:= $(TOOLSPEC)clang++$(CLANG_VER)
+NM		:= $(TOOLSPEC)nm
+OBJCOPY		:= $(TOOLSPEC)objcopy
+OBJDUMP		:= $(TOOLSPEC)objdump
+else
 AS		:= $(TOOLSPEC)gcc
 CC		:= $(TOOLSPEC)gcc
 CXX		:= $(TOOLSPEC)g++
@@ -16,14 +36,23 @@ LD		:= $(TOOLSPEC)g++
 NM		:= $(TOOLSPEC)nm
 OBJCOPY		:= $(TOOLSPEC)objcopy
 OBJDUMP		:= $(TOOLSPEC)objdump
+endif
+
 GDB		:= $(TOOLSPEC)gdb
 
-GCC_UPGRADE_URL := https://sming.readthedocs.io/en/latest/arch/host/host-emulator.html\#c-c-32-bit-compiler-and-libraries
+BUILD_VARS += BUILD64
+ifeq ($(UNAME),Darwin)
+BUILD64 := 1
+CPPFLAGS += -D_DARWIN_C_SOURCE=1
+endif
+
+ifneq ($(BUILD64),1)
+CPPFLAGS += -m32
+endif
 
 CPPFLAGS += \
-	-m32 \
-	-Wno-deprecated-declarations \
-	-D_FILE_OFFSET_BITS=64
+	-D_FILE_OFFSET_BITS=64 \
+	-D_TIME_BITS=64
 
 # => Tools
 MEMANALYZER = size

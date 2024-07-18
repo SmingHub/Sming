@@ -8,7 +8,7 @@
  *
  ****/
 
-#include <math.h>
+#include <cmath>
 #include <cstdlib>
 #include <cstdint>
 #include <cstring>
@@ -124,9 +124,9 @@ char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigit
 	if (outputBuffer == nullptr)
 		return nullptr;
 
-	if (isnan(floatVar))
+	if (std::isnan(floatVar))
 		strcpy(outputBuffer, "NaN");
-	else if (isinf(floatVar))
+	else if (std::isinf(floatVar))
 		strcpy(outputBuffer, "Inf");
 	else if (floatVar > 4294967040.0)  // constant determined empirically
 		strcpy(outputBuffer, "OVF");

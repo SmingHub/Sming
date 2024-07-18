@@ -1,6 +1,5 @@
 #include <SmingCore.h>
-#include <ArduinoJson.h>
-#include <Data/Stream/MemoryDataStream.h>
+#include <JsonObjectStream.h>
 
 /*** Direct PUSH notifications on your mobile phone!
  *
@@ -14,29 +13,27 @@
  * 3. Update Application ID and Application Secret below:
  */
 
-#define APP_ID "55719abba4c48a802c881205"
-#define APP_SECRET "5300adbe3f906938950fc0cdbc301986"
-
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
 #ifndef WIFI_SSID
 #define WIFI_SSID "PleaseEnterSSID" // Put your SSID and password here
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-class InstapushTrackers : public HashMap<String, String>
+namespace
 {
-};
+DEFINE_FSTR(APP_ID, "55719abba4c48a802c881205")
+DEFINE_FSTR(APP_SECRET, "5300adbe3f906938950fc0cdbc301986")
+
+using InstapushTrackers = HashMap<String, String>;
 
 class InstapushApplication : protected HttpClient
 {
 public:
-	InstapushApplication(String appId, String appSecret)
+	InstapushApplication(const String& appId, const String& appSecret) : app(appId), secret(appSecret)
 	{
-		app = appId;
-		secret = appSecret;
 	}
 
-	void notify(String event, InstapushTrackers& trackersInfo)
+	void notify(const String& event, InstapushTrackers& trackersInfo)
 	{
 		debugf("preparing request");
 
@@ -47,16 +44,15 @@ public:
 		requestHeaders[F("x-instapush-appid")] = app;
 		requestHeaders[F("x-instapush-appsecret")] = secret;
 
-		DynamicJsonDocument root(1024);
+		auto stream = new JsonObjectStream(1024);
+		auto root = stream->getRoot();
 		root["event"] = event;
 		JsonObject trackers = root.createNestedObject("trackers");
-		for(unsigned i = 0; i < trackersInfo.count(); i++) {
-			debugf("%s: %s", trackersInfo.keyAt(i).c_str(), trackersInfo.valueAt(i).c_str());
-			trackers[trackersInfo.keyAt(i)] = trackersInfo[trackersInfo.keyAt(i)];
+		for(auto info : trackersInfo) {
+			debugf("%s: %s", info.key().c_str(), info.value().c_str());
+			trackers[info.key()] = info.value();
 		}
 
-		auto stream = new MemoryDataStream;
-		Json::serialize(root, stream);
 		request->setBody(stream);
 		request->onRequestComplete(RequestCompletedDelegate(&InstapushApplication::processed, this));
 
@@ -73,10 +69,10 @@ public:
 private:
 	String app;
 	String secret;
-	const char* url = "http://api.instapush.im/v1/post";
+	DEFINE_FSTR_LOCAL(url, "http://api.instapush.im/v1/post");
 };
 
-Timer procTimer;
+SimpleTimer procTimer;
 InstapushApplication pusher(APP_ID, APP_SECRET);
 
 // Publish our message
@@ -97,6 +93,8 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	// Start publishing loop
 	procTimer.initializeMs<10 * 1000>(publishMessage).start();
 }
+
+} // namespace
 
 void init()
 {

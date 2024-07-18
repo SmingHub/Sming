@@ -25,6 +25,9 @@
 extern void __real_system_restart_local();
 
 extern void __custom_crash_callback( struct rst_info * rst_info, uint32_t stack, uint32_t stack_end ) {
+    (void)rst_info;
+    (void)stack;
+    (void)stack_end;
 }
 
 extern void custom_crash_callback( struct rst_info * rst_info, uint32_t stack, uint32_t stack_end ) __attribute__ ((weak, alias("__custom_crash_callback")));

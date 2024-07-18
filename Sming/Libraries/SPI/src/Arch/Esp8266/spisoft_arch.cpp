@@ -17,7 +17,7 @@
 namespace
 {
 /*
- * Matching small delay values to frequency reuires a lookup table as the relationship is non-linear.
+ * Matching small delay values to frequency requires a lookup table as the relationship is non-linear.
  * Given values are clock period in ns, found by measurement.
  *
  * Two tables are required depending on currently selected CPU frequency.

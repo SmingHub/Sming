@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <algorithm>
+
 namespace wiring_private
 {
 /**
@@ -18,6 +20,13 @@ namespace wiring_private
 template <typename T> struct ScalarList {
 	T* values{nullptr};
 	size_t size{0};
+
+	ScalarList() = default;
+
+	ScalarList(const ScalarList&) = delete;
+	ScalarList(ScalarList&&) = default;
+	ScalarList& operator=(const ScalarList&) = delete;
+	ScalarList& operator=(ScalarList&&) = default;
 
 	~ScalarList()
 	{
@@ -67,7 +76,7 @@ template <typename T> struct ScalarList {
 
 	const T& operator[](unsigned index) const
 	{
-		return const_cast<ScalarList&>(*this)[index];
+		return values[index];
 	}
 };
 
@@ -98,6 +107,12 @@ template <typename T> struct ObjectList : public ScalarList<T*> {
 			return *value;
 		}
 	};
+
+	ObjectList() = default;
+	ObjectList(const ObjectList&) = delete;
+	ObjectList(ObjectList&&) = default;
+	ObjectList& operator=(const ObjectList&) = delete;
+	ObjectList& operator=(ObjectList&&) = default;
 
 	~ObjectList()
 	{

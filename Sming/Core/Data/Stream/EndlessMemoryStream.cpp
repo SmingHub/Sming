@@ -27,7 +27,7 @@ bool EndlessMemoryStream::seek(int len)
 size_t EndlessMemoryStream::write(const uint8_t* buffer, size_t size)
 {
 	if(!stream) {
-		stream.reset(new MemoryDataStream());
+		stream = std::make_unique<MemoryDataStream>();
 	}
 
 	return stream->write(buffer, size);

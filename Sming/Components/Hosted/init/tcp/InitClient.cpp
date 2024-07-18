@@ -11,11 +11,12 @@
  *
  ****/
 
-#include <SmingCore.h>
+#include <Platform/WifiEvents.h>
+#include <Platform/Station.h>
 #include <Hosted/Client.h>
 #include <Hosted/Transport/TcpClientStream.h>
 
-Hosted::Client* hostedClient{nullptr};
+Hosted::Client* hostedClient;
 
 #ifndef WIFI_SSID
 #define WIFI_SSID "PleaseEnterSSID" // Put your SSID and password here
@@ -30,19 +31,14 @@ Hosted::Client* hostedClient{nullptr};
 #define REMOTE_IP STRINGIFY(HOSTED_SERVER_IP)
 #endif
 
-extern "C" {
-void __real_host_init();
-void __wrap_host_init();
-}
-
-extern void init();
+extern "C" void __real__Z4initv();
 
 namespace
 {
-TcpClient* tcpClient = nullptr;
-Hosted::Transport::TcpClientStream* stream = nullptr;
+TcpClient* tcpClient;
+Hosted::Transport::TcpClientStream* stream;
 
-static void ready(IpAddress ip, IpAddress mask, IpAddress gateway)
+void ready(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
 	if(hostedClient != nullptr) {
 		return;
@@ -59,12 +55,13 @@ static void ready(IpAddress ip, IpAddress mask, IpAddress gateway)
 
 	hostedClient = new Hosted::Client(*stream, '>');
 	hostedClient->getRemoteCommands();
-	init();
+
+	__real__Z4initv();
 }
 
 } // namespace
 
-void __wrap_host_init()
+extern "C" void __wrap__Z4initv()
 {
 	WifiEvents.onStationGotIP(ready);
 	WifiStation.enable(true);

@@ -6,7 +6,7 @@
 #define LED_PIN 2 // GPIO2
 #endif
 
-Timer procTimer;
+SimpleTimer procTimer;
 bool state = true;
 
 void blink()
@@ -18,5 +18,5 @@ void blink()
 void init()
 {
 	pinMode(LED_PIN, OUTPUT);
-	procTimer.initializeMs(1000, blink).start();
+	procTimer.initializeMs<1000>(blink).start();
 }

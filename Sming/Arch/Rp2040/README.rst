@@ -7,17 +7,16 @@ Support building Sming for the `Raspberry Pi RP2040 SOC
 <https://www.raspberrypi.org/documentation/microcontrollers/raspberry-pi-pico.html>`__.
 
 Testing so far has been limited to the Rasperry Pi Pico, but there are lots of other boards available.
-Configure this using the :envvar:`PICO_BOARD` setting. The default is ``pico``.
+Configure this using the :envvar:`PICO_BOARD` setting. The default is ``pico`` (or ``pico_w`` if networking is enabled).
 You can find the `full list here <https://github.com/raspberrypi/pico-sdk/tree/master/src/boards/include/boards>`__.
 
 Special mention to the arduino-pico project https://github.com/earlephilhower/arduino-pico.
 Lots of helpful stuff in there!
 
-.. note::
+Features
+--------
 
-   This architecture should be considered experimental at present.
-
-Tested and working:
+The following features are tested and working:
 
 - CPU frequency adjustment :cpp:func:`system_get_cpu_freq`, :cpp:func:`system_update_cpu_freq`
 - Timers working: hardware, software and CPU cycle counter
@@ -36,21 +35,17 @@ Tested and working:
 - System functions :cpp:func:`system_get_chip_id`, :cpp:func:`system_get_sdk_version`.
 - Partitions and file systems (except SD cards and FAT)
 - SPIClass tested with Radio_nRF24L01 sample only
-- WiFi networking support for the Pico-W
+- `WiFi networking <Networking>`_ support for the Pico-W
 - Standard analogue I/O via analogRead. More advanced hardware capabilities require use of the SDK directly.
-- Dual-core support. See below for details.
+- `Dual-core support`_
+- USB supported using the :library:`USB` library, both host and device modes.
+- HardwareSPI via :library:`HardwareSPI` for fully asynchronous SPI communications (host mode only).
 
+Not yet implemented:
 
-Yet to be implemented:
-
-USB
-   Best to write a separate ``Sming-USB`` library (based on TinyUSB) to support the RP2040, ESP32-S2 & ESP32-S3 variants.
-   Needs some thought about good integration into the framework.
-   Arduino-Pico overrides ``HardwareSerial`` to support serial devices, we can do something similar.
-HardwareSPI
-   To support DMA, etc.
 PWM
    Hardware can drive up to 16 outputs and measure input frequency/duty cycle.
+   The native API is quite straightforward to use and makes best use of the hardware.
 I2C
    Has hardware support
 RTC
@@ -71,46 +66,40 @@ Multi-boot / OTA updates.
    Adding RP2040 support to rBoot may work, however the Pico typically has only 2MByte flash which is quite restrictive.
    It is also necessary to compile images at different addresses as there is no windowed XIP (eXecute In Place) capability.
    See :library:`FlashIP` library for a basic method of OTA.
+Bluetooth
+   The SDK supports this but has not yet been integrated into Sming.
 
 
-Requirements
+Installation
 ------------
-
-These requirements are in addition to the standard Sming setup.
 
 The easiest way to get started is with the Sming installer - see :doc:`/getting-started/index`.
 
-Note: Windows is not currently included in the chocolatey repository.
-The following instructions should help.
+- Linux and MacOS: ``Tools/install.sh rp2040``.
+- Windows: ``Tools\install rp2040``.
 
-Compiler/linker
-   The RP2040 contains two ARM Cortex-M0+ cores. Tools for all platforms can be downloaded from the
-   `ARM developer website <https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads>`__.
+See :envvar:`PICO_TOOLCHAIN_PATH` for details of the toolchains.
 
-   Unzip the archive to a suitable location (e.g. ``/opt/rp2040`` or ``c:\tools\rp2040``) and set :envvar:`PICO_TOOLCHAIN_PATH` accordingly.
+Note that you can use the toolchains provided in your GNU/Linux distribution.
+These are not extensively tested though.
 
-   .. note::
+Ubuntu
 
-      At time of writing the Ubuntu repositories contain an older version of this toolchain.
-      It also does not contain GDB, but can be installed separately:
+   ::
 
-         sudo apt install gcc-arm-none-eabi gdb-multiarch
+      sudo apt install gcc-arm-none-eabi gdb-multiarch
 
-      To use gdb-multiarch you'll need to do this:
+   To use gdb-multiarch you'll need to do this::
 
-         make gdb GDB=gdb-multiarch
+      make gdb GDB=gdb-multiarch
 
-Ninja
-   This is used to build the RP2040 SDK code:
+Fedora
 
-      sudo apt install ninja-build
+   ::
 
-   It is available for other platforms at https://ninja-build.org/
-   and consists of a single executable file.
-   The application should either be in the system path, or set :envvar:`NINJA`
-   to the full path of the executable file.
+      sudo dnf install arm-none-eabi-gcc-cs-c++ arm-none-eabi-newlib
 
-   If you have Sming working with the ESP32 then you'll already have it installed.
+   The standard GDB appears to work OK.
 
 
 Setup and programming
@@ -124,7 +113,7 @@ Serial support requires a 3.3v USB adapter connected to the appropriate pins:
 To program your device, unplug the USB cable (i.e. remove power from the device)
 then hold down the ``BOOTSEL`` button whilst plugging it back in again.
 
-You can then run:
+You can then run::
 
    make flash
 
@@ -200,14 +189,19 @@ Networking
 ----------
 
 The Pico-W variant includes an Infineon CYW43439 bluetooth/WiFi SoC.
-
-Raspberry Pi use the ... driver. The SDK also includes an LWIP implementation.
+Raspberry Pi makes use of the
+`CYW43xx WiFi/BT SoC driver <https://github.com/georgerobotics/cyw43-driver>`__
+driver under
+`special license <https://github.com/georgerobotics/cyw43-driver/blob/main/LICENSE.RP>`__.
+The SDK also includes an LWIP2 implementation.
 
 The physical interface is SPI using a custom (PIO) implementation.
-This requires the use of GPIOxx which can no longer be accessed directly,
-but instead via xxxxx.
+This requires the use of several GPIO pins which can no longer be
+controlled via standard :cpp:func:`digitalWrite` calls.
+The user LED, for example, is connected to a GPIO on the CYW43 chip ``WL_GPIO0``.
+Those pins are controlled using a separate API which is far more involved.
 
-The CYW43 chip is initialised (via `cyw43_ensure_up`) when application code
+The CYW43 chip is initialised (via :c:func:`cyw43_ensure_up`) when application code
 makes the first call into the networking API, for example by enabling station
 or AP access. Part of the hardware configuration here is to download firmware
 to the CYW43 chip (about 240KB) plus the CLM BLOB (< 1KB).
@@ -221,12 +215,13 @@ to the CYW43 chip (about 240KB) plus the CLM BLOB (< 1KB).
 Sming contains patches which compresses this data (based on https://github.com/raspberrypi/pico-sdk/issues/909)
 to about 145KB.
 By default, it is linked into the application image, but can also be read from a separate partition.
+See :envvar:`LINK_CYW43_FIRMWARE`.
 
 
 Source code
 -----------
 
-The RP2040 is a very capable SOC, albeit without WiFi.
+The RP2040 is a very capable SOC, similar to Espressif offerings but without integrated WiFi.
 A massive advantage is that the platform is fully open-source.
 Even the bootrom is published!
 
@@ -263,14 +258,19 @@ https://github.com/raspberrypi/pico-playground
    Further examples using the pico-extras libraries.
 
 
-Build variables
----------------
+Configuration Variables
+-----------------------
 
 .. envvar:: PICO_TOOLCHAIN_PATH
 
    This contains the base directory for the toolchain used to build the framework.
+
+   The RP2040 contains two ARM Cortex-M0+ cores.
    Pre-compiled toolchains can be downloaded from the
-   `ARM Developer website <https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads>`__.
+   `ARM Developer website <https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads>`__.
+
+   These can be unzipped to a suitable location and :envvar:`PICO_TOOLCHAIN_PATH` set accordingly.
+   The Sming installer scripts use ``/opt/rp2040`` or ``c:\tools\rp2040``.
 
 
 Components

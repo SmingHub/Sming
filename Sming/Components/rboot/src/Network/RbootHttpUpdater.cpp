@@ -47,19 +47,21 @@ void RbootHttpUpdater::start()
 	}
 }
 
-int RbootHttpUpdater::itemComplete(HttpConnection& client, bool success)
+int RbootHttpUpdater::itemComplete(HttpConnection&, bool success)
 {
+	auto& it = items[currentItem];
+
 	if(!success) {
+		it.stream.release(); // Owned by HttpRequest
 		updateFailed();
 		return -1;
 	}
 
-	auto& it = items[currentItem];
 	debug_d("Finished: URL: %s, Offset: 0x%X, Length: %u", it.url.c_str(), it.stream->getStartAddress(),
 			it.stream->available());
 
 	it.size = it.stream->available();
-	it.stream = nullptr; // the actual deletion will happen outside of this class
+	it.stream.release(); // the actual deletion will happen outside of this class
 	currentItem++;
 
 	return 0;
@@ -75,11 +77,6 @@ int RbootHttpUpdater::updateComplete(HttpConnection& client, bool success)
 	debug_d("\r\nFirmware download finished!");
 	for(unsigned i = 0; i < items.count(); i++) {
 		debug_d(" - item: %u, addr: 0x%X, url: %s", i, items[i].targetOffset, items[i].url.c_str());
-	}
-
-	if(!success) {
-		updateFailed();
-		return -1;
 	}
 
 	if(updateDelegate) {

@@ -3,9 +3,8 @@
 static int num_instances;
 
 struct A {
-	A()
+	A() : order(++num_instances)
 	{
-		order = ++num_instances;
 	}
 
 	int order;

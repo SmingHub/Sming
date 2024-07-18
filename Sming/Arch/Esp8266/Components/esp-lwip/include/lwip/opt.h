@@ -244,7 +244,7 @@
 #endif
 
 /**
- * MEMP_NUM_TCP_PCB: the number of simulatenously active TCP connections.
+ * MEMP_NUM_TCP_PCB: the number of simultaneously active TCP connections.
  * (requires the LWIP_TCP option)
  */
 #ifndef MEMP_NUM_TCP_PCB

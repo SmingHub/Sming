@@ -61,7 +61,7 @@ void HttpClientConnection::reset()
 	HttpConnection::reset();
 }
 
-int HttpClientConnection::onMessageBegin(http_parser* parser)
+int HttpClientConnection::onMessageBegin(http_parser*)
 {
 	incomingRequest = executionQueue.peek();
 	if(incomingRequest == nullptr) {
@@ -274,6 +274,7 @@ REENTER:
 		sendRequestHeaders(request);
 
 		state = eHCS_SendingHeaders;
+		[[fallthrough]];
 	}
 
 	case eHCS_SendingHeaders: {
@@ -282,6 +283,7 @@ REENTER:
 		}
 
 		state = eHCS_StartBody;
+		[[fallthrough]];
 	}
 
 	case eHCS_StartBody:
@@ -298,6 +300,7 @@ REENTER:
 			stream = nullptr;
 			goto REENTER;
 		}
+		[[fallthrough]];
 	}
 
 	case eHCS_WaitResponse:
@@ -367,9 +370,9 @@ void HttpClientConnection::sendRequestHeaders(HttpRequest* request)
 		request->headers[HTTP_HEADER_TRANSFER_ENCODING] = _F("chunked");
 	}
 
-	for(unsigned i = 0; i < request->headers.count(); i++) {
+	for(auto hdr : request->headers) {
 		// TODO: add name and/or value escaping (implement in HttpHeaders)
-		sendString(request->headers[i]);
+		sendString(hdr);
 	}
 	sendString("\r\n");
 }

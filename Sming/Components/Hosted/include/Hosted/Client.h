@@ -26,13 +26,11 @@
 #include <hostlib/hostmsg.h>
 #include "Util.h"
 
-using namespace simpleRPC;
-
 namespace Hosted
 {
 constexpr int COMMAND_NOT_FOUND = -1;
 
-class Client
+class Client : private simpleRPC::ParserCallbacks
 {
 public:
 	using RemoteCommands = HashMap<String, uint8_t>;
@@ -64,7 +62,7 @@ public:
 			return false;
 		}
 
-		rpcPrint(stream, uint8_t(functionId), args...);
+		simpleRPC::rpcPrint(stream, uint8_t(functionId), args...);
 		stream.flush();
 
 		return true;
@@ -120,17 +118,12 @@ public:
 	{
 		host_debug_i("Getting remote RPC commands \033[5m...\033[0m");
 
+		using namespace simpleRPC;
+
 		uint8_t head = 0xff;
 		stream.write(&head, 1);
 		char buffer[512];
-		ParserSettings settings;
-		settings.startMethods = ParserSettings::SimpleMethod(&Client::startMethods, this);
-		settings.startMethod = ParserSettings::SimpleMethod(&Client::startMethod, this);
-		settings.methodSignature = ParserSettings::CharMethod(&Client::methodSignature, this);
-		settings.methodName = ParserSettings::CharMethod(&Client::methodName, this);
-		settings.endMethod = ParserSettings::SimpleMethod(&Client::endMethod, this);
-		settings.endMethods = ParserSettings::SimpleMethod(&Client::endMethods, this);
-		settings.state = ParserState::ready;
+		ParserSettings settings{*this};
 
 		do {
 			stream.flush();
@@ -154,8 +147,8 @@ public:
 
 		host_debug_i("Available commands:");
 
-		for(size_t i = 0; i < commands.count(); i++) {
-			host_debug_i("\t%s => %d", commands.keyAt(i).c_str(), commands.valueAt(i));
+		for(auto cmd : commands) {
+			host_debug_i("\t%s => %d", cmd.key().c_str(), cmd.value());
 		}
 
 		host_debug_i("Connected. Starting application");
@@ -172,29 +165,29 @@ private:
 	String signature;
 	char methodEndsWith;
 
-	void startMethods()
+	void startMethods() override
 	{
 		methodPosition = 0;
 		commands.clear();
 	}
 
-	void startMethod()
+	void startMethod() override
 	{
 		name = "";
 		signature = "";
 	}
 
-	void methodSignature(char ch)
+	void methodSignature(char ch) override
 	{
 		signature += ch;
 	}
 
-	void methodName(char ch)
+	void methodName(char ch) override
 	{
 		name += ch;
 	}
 
-	void endMethod()
+	void endMethod() override
 	{
 		if(!commands.contains(name) || signature == ":") {
 			commands[name] = methodPosition;
@@ -202,7 +195,7 @@ private:
 		commands[name + "(" + signature + ")"] = methodPosition++;
 	}
 
-	void endMethods()
+	void endMethods() override
 	{
 		fetchCommands = false;
 	}

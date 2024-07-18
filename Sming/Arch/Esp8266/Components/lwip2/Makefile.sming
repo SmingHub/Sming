@@ -1,0 +1,50 @@
+# Modified version of lwip2/makefiles/Makefile.build-lwip2
+# Make from ./lwip2 directory
+
+include makefiles/Makefile.defs
+
+export LWIP_ESP=glue-esp/lwip-1.4-arduino/include
+export LWIP_LIB=$(BUILD)/liblwip2.a
+export target=arduino
+export BUILD
+export TCP_MSS
+export LWIP_FEATURES
+export LWIP_IPV6
+export V
+export DEFINE_TARGET=ARDUINO
+export LWIP_INCLUDES_RELEASE=include
+
+AUTO := \
+	glue-lwip/lwip-err-t.h \
+	glue-lwip/lwip-git-hash.h
+
+all: patch $(LWIP_LIB_RELEASE)
+
+.PHONY: upstream
+upstream: lwip2-src/README
+
+.PHONY: patch
+patch: upstream $(AUTO)
+	$(Q) $(MAKE) --no-print-directory -C lwip2-src/src -f ../../makefiles/Makefile.patches
+
+lwip2-src/README:
+	$(Q) git clone --depth=1 -b $(UPSTREAM_VERSION) https://github.com/lwip-tcpip/lwip lwip2-src
+
+glue-lwip/lwip-err-t.h: $(LWIP_ESP)/arch/cc.h upstream
+	$(Q) ( \
+	echo "// script-generated, extracted from espressif SDK's lwIP arch/cc.h"; \
+	echo "#define LWIP_NO_STDINT_H 1"; \
+	echo "typedef signed short sint16_t;"; \
+	grep -e LWIP_ERR_T -e ^typedef $< \
+	) > $@
+
+glue-lwip/lwip-git-hash.h: upstream
+	makefiles/make-lwip-hash
+
+$(LWIP_LIB_RELEASE): $(LWIP_LIB)
+	@cp $< $@
+
+$(LWIP_LIB):
+	$(Q) $(MAKE) -f makefiles/Makefile.glue-esp
+	$(Q) $(MAKE) -f makefiles/Makefile.glue
+	$(Q) $(MAKE) -C lwip2-src/src -f ../../makefiles/Makefile.lwip2

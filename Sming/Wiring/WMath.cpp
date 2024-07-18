@@ -30,12 +30,10 @@ void srandom(unsigned int s)
 
 static int getRandom()
 {
-	unsigned int next = seed;
-	int result;
-
+	auto next = seed;
 	next *= 1103515245;
 	next += 12345;
-	result = (unsigned int)(next / 65536) % 2048;
+	auto result = (unsigned int)(next / 65536) % 2048;
 
 	next *= 1103515245;
 	next += 12345;
@@ -49,27 +47,30 @@ static int getRandom()
 
 	seed = next;
 
-	return result;
+	return int(result);
 }
 
 void randomSeed(uint16_t seed)
 {
-	if(seed != 0)
+	if(seed != 0) {
 		srandom(seed);
+	}
 }
 
 long random(long howbig)
 {
-	if(howbig == 0)
+	if(howbig == 0) {
 		return 0;
+	}
 
 	return getRandom() % howbig;
 }
 
 long random(long howsmall, long howbig)
 {
-	if(howsmall >= howbig)
+	if(howsmall >= howbig) {
 		return howsmall;
+	}
 
 	long diff = howbig - howsmall;
 	return random(diff) + howsmall;
@@ -82,14 +83,4 @@ long map(long x, long in_min, long in_max, long out_min, long out_max)
 		return -1; //AVR returns -1, SAM returns 0
 	}
 	return ((x - in_min) * (out_max - out_min) / divisor) + out_min;
-}
-
-uint16_t makeWord(uint16_t w)
-{
-	return w;
-}
-
-uint16_t makeWord(uint8_t highByte, uint8_t lowByte)
-{
-	return (highByte << 8) | lowByte;
 }

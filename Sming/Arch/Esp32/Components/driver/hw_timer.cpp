@@ -10,7 +10,10 @@
 
 #include <driver/hw_timer.h>
 #include <driver/periph_ctrl.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <hal/timer_ll.h>
+#pragma GCC diagnostic pop
 #include <esp_intr_alloc.h>
 #include <soc/timer_periph.h>
 
@@ -43,7 +46,7 @@ public:
 #endif
 	}
 
-	void IRAM_ATTR attach_interrupt(hw_timer_source_type_t source_type, hw_timer_callback_t callback, void* arg)
+	void IRAM_ATTR attach_interrupt(hw_timer_source_type_t, hw_timer_callback_t callback, void* arg)
 	{
 		if(isr_handle != nullptr) {
 			detach_interrupt();
@@ -54,6 +57,7 @@ public:
 		}
 
 		this->callback = callback;
+		this->arg = arg;
 
 		uint32_t status_reg = reinterpret_cast<uint32_t>(timer_ll_get_intr_status_reg(dev));
 		uint32_t mask = 1 << index;
@@ -62,8 +66,8 @@ public:
 #else
 		int source = timer_group_periph_signals.groups[group].timer_irq_id[index];
 #endif
-		esp_intr_alloc_intrstatus(source, ESP_INTR_FLAG_IRAM, status_reg, mask, timerIsr, this, &isr_handle);
 		clear_intr_status();
+		esp_intr_alloc_intrstatus(source, ESP_INTR_FLAG_IRAM, status_reg, mask, timerIsr, this, &isr_handle);
 		enable_intr(true);
 	}
 
@@ -83,13 +87,17 @@ public:
 			timer_ll_intr_disable(dev, index);
 		}
 #else
-		timer_ll_enable_intr(dev, index, state);
+		timer_ll_enable_intr(dev, TIMER_LL_EVENT_ALARM(index), state);
 #endif
 	}
 
 	void __forceinline clear_intr_status()
 	{
+#if ESP_IDF_VERSION_MAJOR < 5
 		timer_ll_clear_intr_status(dev, index);
+#else
+		timer_ll_clear_intr_status(dev, TIMER_LL_EVENT_ALARM(index));
+#endif
 	}
 
 	void __forceinline set_alarm_value(uint64_t value)
@@ -142,6 +150,9 @@ public:
 		timer_ll_get_counter_value(dev, index, &val);
 		return val;
 #else
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 2, 0)
+		timer_ll_trigger_soft_capture(dev, index);
+#endif
 		return timer_ll_get_counter_value(dev, index);
 #endif
 	}
@@ -161,7 +172,7 @@ private:
 		auto& timer = *static_cast<TimerConfig*>(arg);
 
 		if(timer.callback != nullptr) {
-			timer.callback(arg);
+			timer.callback(timer.arg);
 		}
 
 		timer.clear_intr_status();
@@ -213,7 +224,7 @@ void IRAM_ATTR hw_timer1_disable(void)
 	timer.enable_counter(false);
 }
 
-uint32_t hw_timer1_read(void)
+uint32_t IRAM_ATTR hw_timer1_read(void)
 {
 	return timer.get_counter_value();
 }

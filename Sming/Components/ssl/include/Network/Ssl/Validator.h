@@ -29,9 +29,7 @@ namespace Ssl
 class Validator
 {
 public:
-	virtual ~Validator()
-	{
-	}
+	virtual ~Validator() = default;
 
 	virtual bool validate(const Certificate& certificate) = 0;
 };

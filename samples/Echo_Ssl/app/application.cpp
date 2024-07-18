@@ -19,7 +19,9 @@
 #define SERVER_IP "127.0.0.1"
 #endif
 
-Timer procTimer;
+namespace
+{
+SimpleTimer procTimer;
 TcpClient* client;
 
 bool showMeta = true;
@@ -53,11 +55,13 @@ void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reas
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	debugf("IP: %s", ip.toString().c_str());
+	Serial << _F("Got IP ") << ip << endl;
 	client = new TcpClient(TcpClientDataDelegate(onReceive));
 	client->setSslInitHandler([](Ssl::Session& session) { session.options.verifyLater = true; });
 	client->connect(IpAddress(SERVER_IP), 4444, true);
 }
+
+} // namespace
 
 void init()
 {
@@ -66,7 +70,7 @@ void init()
 
 	// Setup the WIFI connection
 	WifiStation.enable(true);
-	WifiStation.config(WIFI_SSID, WIFI_PWD); // Put your SSID and password here
+	WifiStation.config(WIFI_SSID, WIFI_PWD);
 
 	// Run our method when station was connected to AP (or not connected)
 	WifiEvents.onStationDisconnect(connectFail);

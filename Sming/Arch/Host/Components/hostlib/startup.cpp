@@ -31,8 +31,7 @@
 #include <driver/os_timer.h>
 #include <driver/hw_timer.h>
 #include <esp_tasks.h>
-#include <stdlib.h>
-#include "include/hostlib/init.h"
+#include <cstdlib>
 #include "include/hostlib/emu.h"
 #include "include/hostlib/hostlib.h"
 #include "include/hostlib/CommandLine.h"
@@ -42,6 +41,8 @@
 #ifndef DISABLE_NETWORK
 #include <host_lwip.h>
 #endif
+
+extern void init();
 
 namespace
 {
@@ -85,7 +86,7 @@ static size_t parse_flash_size(const char* str)
 	if(str == nullptr) {
 		return 0;
 	}
-	char* tail;
+	char* tail = nullptr;
 	long res = strtol(str, &tail, 0);
 	if(res < 0) {
 		return 0;
@@ -132,21 +133,22 @@ int main(int argc, char* argv[])
 	struct Config {
 		int pause{-1};
 		int exitpause{-1};
-		int loopcount;
-		uint8_t cpulimit;
-		bool initonly;
+		int loopcount{};
+		uint8_t cpulimit{};
+		bool initonly{};
 		bool enable_network{true};
-		UartServer::Config uart;
-		FlashmemConfig flash;
+		UartServer::Config uart{};
+		FlashmemConfig flash{};
 #ifndef DISABLE_NETWORK
-		struct lwip_param lwip;
+		struct lwip_param lwip {
+		};
 #endif
 	};
 	static Config config{};
 
 	int uart_num{-1};
 	option_tag_t opt;
-	const char* arg;
+	const char* arg = nullptr;
 	while((opt = get_option(argc, argv, arg)) != opt_none) {
 		switch(opt) {
 		case opt_help:
@@ -244,12 +246,15 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	m_setPuts(&host_nputs);
+
 	host_debug_i("\nWelcome to the Sming Host emulator\n\n");
 
 	auto i = get_first_non_option();
 	commandLine.parse(argc - i, &argv[i]);
 
 	if(!host_flashmem_init(config.flash)) {
+		host_debug_e("Flash init failed\n");
 		return 1;
 	}
 
@@ -286,7 +291,7 @@ int main(int argc, char* argv[])
 
 		System.initialize();
 
-		host_init();
+		init();
 
 		while(!done) {
 			int due = host_main_loop();
@@ -307,7 +312,7 @@ int main(int argc, char* argv[])
 	pause(config.exitpause);
 
 	// Avoid issues with debug statements whilst running exit handlers
-	m_setPuts(nullptr);
+	m_setPuts(&host_nputs);
 
 	return exitCode;
 }

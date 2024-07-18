@@ -24,11 +24,11 @@ public:
 
 		// Tcp Server
 		server = new TcpServer(
-			[this](TcpClient& client, char* data, int size) -> bool {
+			[this](TcpClient&, char* data, int size) -> bool {
 				// on data
 				return receivedData.concat(data, size);
 			},
-			[this, inputData](TcpClient& client, bool successful) {
+			[this, inputData](TcpClient&, bool successful) {
 				// on client close
 				if(finished) {
 					return;
@@ -43,7 +43,7 @@ public:
 		server->setKeepAlive(USHRT_MAX); // disable connection timeout
 
 		// Tcp Client
-		bool connected = client.connect(WifiStation.getIP(), port);
+		[[maybe_unused]] bool connected = client.connect(WifiStation.getIP(), port);
 		debug_d("Connected: %d", connected);
 
 		TEST_CASE("TcpClient::send stream")

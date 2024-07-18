@@ -119,7 +119,12 @@ public:
 			uri.Query["key"] = "7XXUJWCWYTMXKN3L";
 			int sensorValue = 347;
 			uri.Query["field1"] = String(sensorValue);
-			REQUIRE(uri.toString() == FS_url);
+			REQUIRE_EQ(uri.toString(), FS_url);
+			REQUIRE(!uri.Scheme);
+			REQUIRE_EQ(uri.Port, 0);
+			REQUIRE_EQ(uri.getPort(), 80);
+			uri.Scheme = "HTTP";
+			REQUIRE_EQ(uri.toString(), FS_url);
 		}
 	}
 

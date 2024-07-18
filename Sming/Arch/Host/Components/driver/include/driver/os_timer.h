@@ -52,7 +52,7 @@ void os_timer_setfn(os_timer_t* ptimer, os_timer_func_t* pfunction, void* parg);
 
 static inline uint64_t os_timer_expire(const os_timer_t* ptimer)
 {
-	if(ptimer == nullptr || int(ptimer->timer_next) == -1) {
+	if(ptimer == nullptr || intptr_t(ptimer->timer_next) == -1) {
 		return 0;
 	}
 	return ptimer->timer_expire;

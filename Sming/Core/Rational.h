@@ -17,6 +17,7 @@
 #include <cstdint>
 #include <ratio>
 #include <algorithm>
+#include <numeric>
 #include <muldiv.h>
 #include <WString.h>
 
@@ -94,7 +95,7 @@ template <typename T> struct Ratio : public BasicRatio<T> {
 	void set(T num, T den = 1)
 	{
 		// Note: Officially added std::numerics::gcd in C++17
-		auto g = std::__gcd(num, den);
+		auto g = std::gcd(num, den);
 		this->num = num / g;
 		this->den = den / g;
 	}

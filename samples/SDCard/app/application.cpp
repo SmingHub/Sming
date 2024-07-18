@@ -26,6 +26,8 @@ Descr: SDCard/FAT file usage and write benchmark.
 /* Sets the max frequency of SPI (init is done at a lower speed than the main communication) */
 #define SPI_FREQ_LIMIT 2000000
 
+namespace
+{
 void writeToFile(const String& filename, uint32_t totalBytes, uint32_t bytesPerRound)
 {
 	char* buf = new char[totalBytes];
@@ -108,7 +110,7 @@ void stat_file(char* fname)
 		break;
 
 	default:
-		Serial.printf(_F("Error(%d)\r\n"), fr);
+		Serial << _F("Error ") << fr << endl;
 	}
 }
 
@@ -162,11 +164,11 @@ void readWriteTest()
 		f_printf(&file, _F(" has %d letters\r\n"), actual);
 
 		if(actual != 5) {
-			Serial.printf(_F("Only written %u bytes\r\n"), actual);
+			Serial << _F("Only written ") << actual << _F(" bytes") << endl;
 		}
 		f_close(&file);
 	} else {
-		Serial.printf(_F("fopen FAIL: %u\r\n"), (unsigned int)fRes);
+		Serial << _F("fopen FAIL: ") << fRes << endl;
 	}
 }
 
@@ -185,11 +187,11 @@ void readTest()
 		f_read(&file, buffer, sizeof(buffer), &actual);
 		buffer[actual] = 0;
 
-		Serial.printf(_F("Read: %s\r\n"), buffer);
+		Serial << _F("Read: ") << buffer << endl;
 
 		f_close(&file);
 	} else {
-		Serial.printf(_F("fopen FAIL: %u\r\n"), fRes);
+		Serial << _F("fopen FAIL: ") << fRes << endl;
 	}
 }
 
@@ -200,16 +202,24 @@ bool speedTest(unsigned num)
 		uint32_t bytesPerRound;
 	};
 
-	static Test tests[] PROGMEM{
-		{1024, 1},	{1024, 64},  {1024, 128},  {1024, 512},  {1024, 1024},
-		{4096, 1024}, {8192, 512}, {8192, 1024}, {8192, 8192},
+	static const Test tests[] PROGMEM{
+		{1024, 1},	//
+		{1024, 64},   //
+		{1024, 128},  //
+		{1024, 512},  //
+		{1024, 1024}, //
+		{4096, 1024}, //
+		{8192, 512},  //
+		{8192, 1024}, //
+		{8192, 8192}, //
+
 	};
 
 	if(num >= ARRAY_SIZE(tests)) {
 		return false;
 	}
 
-	Serial.printf(_F("4.%u: Write speed benchmark\r\n"), num + 1);
+	Serial << "4." << num + 1 << _F(": Write speed benchmark") << endl;
 
 	auto& test = tests[num];
 	String filename;
@@ -262,6 +272,8 @@ void runTest(uint32_t state = 0)
 	Serial.println();
 	System.queueCallback(runTest, state + 1);
 }
+
+} // namespace
 
 void init()
 {

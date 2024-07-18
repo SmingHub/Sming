@@ -26,11 +26,11 @@ void startMqttClient()
 	Url url;
 	url.Scheme = URI_SCHEME_MQTT_SECURE;
 	url.Host = awsEndpoint;
-	mqtt.connect(url, "Basic_AWS");
+	mqtt.connect(url, F("Basic_AWS"));
 
 	// Assign a disconnect callback function
 	//	mqtt.setCompleteDelegate(checkMQTTDisconnect);
-	mqtt.subscribe("thing/fish/test");
+	mqtt.subscribe(F("thing/fish/test"));
 }
 
 // Publish our message
@@ -41,8 +41,8 @@ void publishMessage()
 		startMqttClient();
 	}
 
-	Serial.println("publish message");
-	mqtt.publish("version", "ver.1.2");
+	Serial.println(_F("publish message"));
+	mqtt.publish(F("version"), F("ver.1.2"));
 }
 
 // Callback for messages, arrived from MQTT server

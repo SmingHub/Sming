@@ -11,19 +11,18 @@ set -ex
 
 if [ -z "$SMING_TOOLS_PREINSTALLED" ]; then
 
-# appveyor-specific
-if [ -n "$APPVEYOR" ]; then
-    export PYTHON=$HOME/venv3.9/bin/python
-    export ESP32_PYTHON_PATH=$HOME/venv3.9/bin
-    source "$HOME/venv3.9/bin/activate"
+INSTALL_OPTS=(fonts)
+if [ "$SMING_ARCH" = "Host" ]; then
+    INSTALL_OPTS+=(optional)
 fi
 
-if [ "$BUILD_DOCS" = "true" ]; then
-    INSTALL_OPTS="doc"
-else
-    INSTALL_OPTS="fonts"
-fi
+# Ensure default path is writeable
+sudo chown "$USER" /opt
 
-"$SMING_HOME/../Tools/install.sh" $SMING_ARCH $INSTALL_OPTS
+"$SMING_HOME/../Tools/install.sh" "$SMING_ARCH" "${INSTALL_OPTS[@]}"
 
 fi
+
+# Clean up tools installation
+source "$SMING_HOME/../Tools/export.sh"
+python "$SMING_HOME/../Tools/ci/clean-tools.py" clean --delete

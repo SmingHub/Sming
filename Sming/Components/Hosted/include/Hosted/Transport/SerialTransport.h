@@ -16,9 +16,7 @@
 #include <HardwareSerial.h>
 #include "BaseTransport.h"
 
-namespace Hosted
-{
-namespace Transport
+namespace Hosted::Transport
 {
 class SerialTransport : public BaseTransport
 {
@@ -29,12 +27,10 @@ public:
 	}
 
 private:
-	void process(Stream& source, char arrivedChar, uint16_t availableCharsCount)
+	void process(Stream& source, char, uint16_t)
 	{
 		handler(source);
 	}
 };
 
-} // namespace Transport
-
-} // namespace Hosted
+} // namespace Hosted::Transport

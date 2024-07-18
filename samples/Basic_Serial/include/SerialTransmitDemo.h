@@ -8,9 +8,8 @@
 class SerialTransmitDemo
 {
 public:
-	SerialTransmitDemo(HardwareSerial& serial, IDataSourceStream* stream) : serial(serial)
+	SerialTransmitDemo(HardwareSerial& serial, IDataSourceStream* stream) : serial(serial), stream(stream)
 	{
-		this->stream.reset(stream);
 		serial.onTransmitComplete(TransmitCompleteDelegate(&SerialTransmitDemo::onTransmitComplete, this));
 	}
 

@@ -14,8 +14,6 @@
 #include <FlashString/Array.hpp>
 #include <debug_progmem.h>
 
-extern "C" uint32 user_rf_cal_sector_set(void);
-
 namespace OtaUpgrade
 {
 #ifndef ENABLE_OTA_DOWNGRADE

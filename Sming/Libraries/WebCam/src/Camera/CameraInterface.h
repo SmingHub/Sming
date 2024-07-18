@@ -24,9 +24,7 @@ enum CameraState {
 class CameraInterface
 {
 public:
-	virtual ~CameraInterface()
-	{
-	}
+	virtual ~CameraInterface() = default;
 
 	virtual const String getMimeType() const = 0;
 

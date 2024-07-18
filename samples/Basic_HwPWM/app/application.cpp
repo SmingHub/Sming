@@ -18,33 +18,45 @@
 #include <SmingCore.h>
 #include <HardwarePWM.h>
 
-uint8_t pins[8] = {4, 5, 0, 2, 15, 13, 12, 14}; // List of pins that you want to connect to pwm
-HardwarePWM HW_pwm(pins, 8);
+#define LED_PIN 2
 
-Timer procTimer;
-int32 i = 0;
-bool countUp = true;
+namespace
+{
+// List of pins that you want to connect to pwm
+uint8_t pins[]{
+	LED_PIN, 4, 5, 0, 15, 13, 12, 14,
+};
+HardwarePWM HW_pwm(pins, ARRAY_SIZE(pins));
 
-int maxDuty = HW_pwm.getMaxDuty();
-int32 inc = maxDuty / 50;
+SimpleTimer procTimer;
+
+const int maxDuty = HW_pwm.getMaxDuty();
 
 void doPWM()
 {
-	if(countUp == true) {
-		i += inc;
-		if(i >= maxDuty) {
-			i = maxDuty;
+	static bool countUp = true;
+	static int duty;
+
+	const int increment = maxDuty / 50;
+
+	if(countUp) {
+		duty += increment;
+		if(duty >= maxDuty) {
+			duty = maxDuty;
 			countUp = false;
 		}
 	} else {
-		i -= inc;
-		if(i <= 0) {
-			i = 0;
+		duty -= increment;
+		if(duty <= 0) {
+			duty = 0;
 			countUp = true;
 		}
 	}
-	HW_pwm.analogWrite(2, i);
+
+	HW_pwm.analogWrite(LED_PIN, duty);
 }
+
+} // namespace
 
 void init()
 {
@@ -67,7 +79,7 @@ void init()
 	HW_pwm.analogWrite(12, 2 * maxDuty / 3);
 	HW_pwm.analogWrite(14, maxDuty);
 
-	debugf("PWM output set on all 8 Pins. Kindly check...");
-	debugf("Now Pin 2 will go from 0 to VCC to 0 in cycles.");
-	procTimer.initializeMs(100, doPWM).start();
+	Serial.println(_F("PWM output set on all 8 Pins. Kindly check...\r\n"
+					  "Now LED_PIN will go from 0 to VCC to 0 in cycles."));
+	procTimer.initializeMs<100>(doPWM).start();
 }

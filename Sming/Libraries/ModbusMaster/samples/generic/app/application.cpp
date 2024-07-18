@@ -6,26 +6,28 @@
 #define MB_SLAVE_ADDR 1
 #define SLAVE_REG_ADDR 1
 
-Timer mbLoopTimer;
-
+namespace
+{
+SimpleTimer mbLoopTimer;
 ModbusMaster mbMaster;
 HardwareSerial modbusComPort(UART_ID_0);
 HardwareSerial debugComPort(UART_ID_1);
 
-uint16_t globalSeconds = 0;
+uint16_t globalSeconds;
 
 void mbLoop()
 {
 	globalSeconds++;
 
-	uint8_t numberOfRegistersToWrite = 1;
-	uint8_t bufferPosition = 0;
+	const uint8_t numberOfRegistersToWrite = 1;
+	const uint8_t bufferPosition = 0;
 	mbMaster.begin(MB_SLAVE_ADDR, modbusComPort);
 	mbMaster.setTransmitBuffer(bufferPosition, globalSeconds);
 	mbMaster.writeMultipleRegisters(SLAVE_REG_ADDR, numberOfRegistersToWrite);
 
-	uint8_t nrOfRegistersToRead = 1;
-	uint8_t mbResult = mbMaster.readHoldingRegisters(SLAVE_REG_ADDR, nrOfRegistersToRead); //see also readInputRegisters
+	// see also readInputRegisters
+	const uint8_t nrOfRegistersToRead = 1;
+	uint8_t mbResult = mbMaster.readHoldingRegisters(SLAVE_REG_ADDR, nrOfRegistersToRead);
 
 	if(mbResult == mbMaster.ku8MBSuccess) {
 		/*
@@ -34,9 +36,9 @@ void mbLoop()
 			debugComPort.printf("Reg %d: %d\r\n", i, buffer[i]);
 		}
 		*/
-		debugf("Data from slave: %d", mbMaster.getResponseBuffer(0));
+		debug_i("Data from slave: %d", mbMaster.getResponseBuffer(0));
 	} else {
-		debugf("Res err: %d", mbResult);
+		debug_i("Res err: %d", mbResult);
 	}
 
 	mbMaster.clearResponseBuffer();
@@ -57,37 +59,37 @@ void mbLogReceive(const uint8_t* adu, size_t aduSize, uint8_t status)
 	if(status != mbMaster.ku8MBSuccess) {
 		switch(status) {
 		case mbMaster.ku8MBIllegalFunction:
-			debugf("MB Illegal Function");
+			debug_i("MB Illegal Function");
 			break;
 		case mbMaster.ku8MBIllegalDataAddress:
-			debugf("MB Illegal Address");
+			debug_i("MB Illegal Address");
 			break;
 		case mbMaster.ku8MBIllegalDataValue:
-			debugf("MB Illegal Data Value");
+			debug_i("MB Illegal Data Value");
 			break;
 		case mbMaster.ku8MBSlaveDeviceFailure:
-			debugf("MB Slave Device Failure");
+			debug_i("MB Slave Device Failure");
 			break;
 		case mbMaster.ku8MBInvalidSlaveID:
-			debugf("MB Invalid Slave ID");
+			debug_i("MB Invalid Slave ID");
 			break;
 		case mbMaster.ku8MBInvalidFunction:
-			debugf("MB Invalid function");
+			debug_i("MB Invalid function");
 			break;
 		case mbMaster.ku8MBResponseTimedOut:
-			debugf("MB Response Timeout");
+			debug_i("MB Response Timeout");
 			break;
 		case mbMaster.ku8MBInvalidCRC:
-			debugf("MB Invalid CRC");
+			debug_i("MB Invalid CRC");
 			break;
 		case mbMaster.ku8MBResponseTooLarge:
-			debugf("MB Response too large");
+			debug_i("MB Response too large");
 			break;
 		}
-		debugf("ADU Size: %d, status: %d ", aduSize, status);
+		debug_i("ADU Size: %d, status: %d ", aduSize, status);
 		debug_hex(INFO, "RX ADU", adu, aduSize);
 	}
-	debugf("\r\n");
+	debug_i("\r\n");
 }
 
 void mbLogTransmit(const uint8_t* adu, size_t aduSize)
@@ -95,13 +97,14 @@ void mbLogTransmit(const uint8_t* adu, size_t aduSize)
 	debug_hex(INFO, "TX ADU", adu, aduSize);
 }
 
+} // namespace
+
 void init()
 {
 	pinMode(RS485_RE_PIN, OUTPUT);
 	digitalWrite(RS485_RE_PIN, LOW);
 	modbusComPort.begin(MODBUS_COM_SPEED, SERIAL_8N1, SERIAL_FULL);
-	debugComPort.begin(SERIAL_BAUD_RATE, SERIAL_8N1,
-				  SERIAL_TX_ONLY); // 115200 by default, GPIO1,GPIO3, see Serial.swap(), HardwareSerial
+	debugComPort.begin(SERIAL_BAUD_RATE, SERIAL_8N1, SERIAL_TX_ONLY);
 	debugComPort.systemDebugOutput(true);
 
 	mbMaster.preTransmission(preTransmission);
@@ -109,5 +112,5 @@ void init()
 	mbMaster.logReceive(mbLogReceive);
 	mbMaster.logTransmit(mbLogTransmit);
 
-	mbLoopTimer.initializeMs(1000, mbLoop).start();
+	mbLoopTimer.initializeMs<1000>(mbLoop).start();
 }

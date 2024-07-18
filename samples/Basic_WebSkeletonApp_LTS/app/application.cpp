@@ -12,7 +12,6 @@ void init()
 	spiffs_mount();					// Mount file system, in order to work with files
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(false);
-	Serial.commandProcessing(false);
 
 	// Set higher CPU freq & disable wifi sleep
 	System.setCpuFrequency(CpuCycleClockFast::cpuFrequency());
@@ -26,7 +25,7 @@ void init()
 
 	System.onReady(startWebServer);
 
-	counterTimer.initializeMs(1000, counterLoop).start();
+	counterTimer.initializeMs<1000>(counterLoop).start();
 }
 
 void counterLoop()

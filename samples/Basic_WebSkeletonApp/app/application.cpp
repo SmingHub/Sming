@@ -1,29 +1,35 @@
-#include <tytherm.h>
+#include <SmingCore.h>
+#include <webserver.h>
+#include <configuration.h>
 
-static Timer counterTimer;
-unsigned long counter = 0;
+// Global
+unsigned long counter;
 
-static void counterLoop()
+namespace
+{
+SimpleTimer counterTimer;
+
+void counterCallback()
 {
 	counter++;
 }
 
-static void STADisconnect(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
+void STADisconnect(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
-	debugf("DISCONNECT - SSID: %s, REASON: %s\n", ssid.c_str(), WifiEvents.getDisconnectReasonDesc(reason).c_str());
+	Serial << _F("DISCONNECT - SSID: ") << ssid << _F(", REASON: ") << WifiEvents.getDisconnectReasonDesc(reason)
+		   << endl;
 
 	if(!WifiAccessPoint.isEnabled()) {
-		debugf("Starting OWN AP");
+		Serial << _F("Starting OWN AP");
 		WifiStation.disconnect();
 		WifiAccessPoint.enable(true);
 		WifiStation.connect();
 	}
 }
 
-static void STAGotIP(IpAddress ip, IpAddress mask, IpAddress gateway)
+void STAGotIP(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
-	debugf("GOTIP - IP: %s, MASK: %s, GW: %s\n", ip.toString().c_str(), mask.toString().c_str(),
-		   gateway.toString().c_str());
+	Serial << _F("GOTIP - IP: ") << ip << _F(", MASK: ") << mask << _F(", GW: ") << gateway << endl;
 
 	if(WifiAccessPoint.isEnabled()) {
 		debugf("Shutdown OWN AP");
@@ -32,11 +38,12 @@ static void STAGotIP(IpAddress ip, IpAddress mask, IpAddress gateway)
 	// Add commands to be executed after successfully connecting to AP and got IP from it
 }
 
+} // namespace
+
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
 	Serial.systemDebugOutput(true);
-	Serial.commandProcessing(false);
 
 #ifndef ENABLE_FLASHSTRING_MAP
 	spiffs_mount(); // Mount file system, in order to work with files
@@ -58,5 +65,5 @@ void init()
 
 	System.onReady(startWebServer);
 
-	counterTimer.initializeMs(1000, counterLoop).start();
+	counterTimer.initializeMs<1000>(counterCallback).start();
 }

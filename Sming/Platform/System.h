@@ -55,9 +55,7 @@ using SystemReadyDelegate = TaskDelegate;
 class ISystemReadyHandler
 {
 public:
-	virtual ~ISystemReadyHandler()
-	{
-	}
+	virtual ~ISystemReadyHandler() = default;
 
 	/** @brief  Handle <i>system ready</i> events
 	 */
@@ -100,9 +98,7 @@ enum SystemState {
 class SystemClass
 {
 public:
-	SystemClass()
-	{
-	}
+	SystemClass() = default;
 
 	/** @brief System initialisation
 	 *  @retval bool true on success
@@ -191,23 +187,20 @@ public:
 	 * Note also that this method is typically called from interrupt context so must avoid things
 	 * like heap allocation, etc.
 	 */
-	static bool IRAM_ATTR queueCallback(TaskCallback32 callback, uint32_t param = 0);
+	static bool IRAM_ATTR queueCallback(TaskCallback32 callback, uint32_t param = 0)
+	{
+		return queueCallback(reinterpret_cast<TaskCallback>(callback), reinterpret_cast<void*>(param));
+	}
 
 	/**
 	 * @brief Queue a deferred callback, with optional void* parameter
 	 */
-	__forceinline static bool IRAM_ATTR queueCallback(TaskCallback callback, void* param = nullptr)
-	{
-		return queueCallback(reinterpret_cast<TaskCallback32>(callback), reinterpret_cast<uint32_t>(param));
-	}
+	static bool IRAM_ATTR queueCallback(TaskCallback callback, void* param = nullptr);
 
 	/**
 	 * @brief Queue a deferred callback with no callback parameter
 	 */
-	__forceinline static bool IRAM_ATTR queueCallback(InterruptCallback callback)
-	{
-		return queueCallback(reinterpret_cast<TaskCallback>(callback));
-	}
+	static bool IRAM_ATTR queueCallback(InterruptCallback callback);
 
 	/**
 	 * @brief Queue a deferred Delegate callback

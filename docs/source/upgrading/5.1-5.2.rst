@@ -1,0 +1,143 @@
+From v5.1 to v5.2
+=================
+
+.. highlight:: c++
+
+**Deprecated: ESP32 IDF version 4.3, 4.4 and 5.0**
+
+The older 4.3, 4.4 and 5.0 versions of the ESP32 IDF are deprecated and support for them will be removed in the future.
+The installation scripts now install IDF version 5.2 by default. See :ref:`idf_versions` for further details.
+
+**Windows installer**
+
+The Windows installer makes use of custom chocolatey packages, which are out of date.
+These packages are separate from the main Sming repository which makes maintenance problematic.
+
+The procedure has therefore been revised to use installation scripts instead of these chocolatey packages. This brings the installation procedure closer to that for Linux/MacOS.
+
+The initial installation step to bootstrap the installation remains unchanged: The ``choco-install.cmd`` script is fetched from the Sming ``develop`` branch and executed.
+The custom choco scripts have been replaced with scripted logic.
+
+Installation of toolchains is done as a separate step as it does not require administrative priviledges.
+
+The documentation at https://sming.readthedocs.io/en/latest/getting-started/windows/index.html has been updated to reflect these changes.
+
+
+**PartitionStream: Breaking change**
+
+The :cpp:class:`Storage::PartitionStream` constructors with ``blockErase`` parameter have been deprecated.
+The intended default behaviour is read-only, however previously this also allowed writing without block erase.
+This can result in corrupted flash contents where the flash has not been explicitly erased beforehand.
+
+The new constructors instead use a :cpp:enum:`Storage::Mode` so behaviour is more explicit.
+The default is read-only and writes will now be failed. For example::
+
+    Storage::PartitionStream stream(myPartition, Storage::Mode::BlockErase);
+
+
+**64-bit time_t**
+
+There is some variability in whether `time_t` is 32 or 64 bits. See :issue:`2758`.
+
+This is dependent on the toolchain and accompanying C library.
+
+32-bits:
+
+- Esp32 IDF 4.x
+- Windows Host (using mingw)
+- Linux host builds prior to Sming v5.2
+
+Building for these will generate a warning ``**Y2038** time_t is only 32-bits in this build configuration``.
+If you cannot upgrade then build with :envvar:`STRICT` set to 1.
+
+Range of time_t:
+
+===========     ===================
+value           Timestamp
+===========     ===================
+-0x80000000     1901-12-13 20:45:52
+0x00000000      1970-01-01 00:00:00
+0x7fffffff      2038-01-19 03:14:07
+===========     ===================
+
+All others use 64-bit values.
+
+For reference, C library source code can be found here https://sourceware.org/git/?p=newlib-cygwin.git;a=blob;f=newlib/libc/
+
+Rp2040 builds with standard ARM toolkit so probably accommodated by the standard repo.
+
+Espressif toolchains use forks:
+
+- esp8266: https://github.com/earlephilhower/newlib-xtensa/blob/xtensa-4_0_0-lock-arduino/newlib/libc/
+- esp32: https://github.com/espressif/newlib-esp32/blob/esp-4.3.0/newlib/libc/
+
+
+**Toolchain versions updated**
+
+Esp8266
+    The installer has been updated to use the latest toolchain (Feb 23), gcc 10.3.
+
+Esp32 IDF
+    The installation scripts now install IDF version 5.2 by default.
+    See :ref:`idf_versions` for further details.
+
+RP2040
+    The installer has been updated to use the latest toolchain (Oct 23), gcc 13.2.
+
+
+**Bearssl client certificate validation**
+
+Using ENABLE_SSL=Bearssl in a client application, no verification on the server certificate is performed.
+This is a potential security issue.
+
+Attempting the same thing with Axtls results in an ``X509_VFY_ERROR_NO_TRUSTED_CERT`` error.
+Applications must explicitly call :cpp:func:`HttpRequest::onSslInit` and set the ``verifyLater`` flag.
+This extra step ensures that security checks are not unintentionally bypassed.
+
+The same behaviour is now presented when using Bearssl, and will now fail with ``X509_NOT_TRUSTED``.
+
+
+**FlashString copy support removed**
+
+The :library:`FlashString` previously supported copies (references) like this::
+
+   FlashString emptyString;
+   FlashString stringCopy(FS("Inline string"));
+
+   DEFINE_FSTR_DATA_LOCAL(flashHelloData, "Hello");
+   auto myCopy = flashHelloData;
+
+These will now fail to compile.
+Copy construction and assignment has been explicitly deleted so avoid unintentional side-effects.
+
+Objects should always be passed by reference.
+
+
+**spi_flash functions**
+
+Several definitions have been deprecated/removed as they serve no purpose since partitions introduced.
+
+``flashmem_get_first_free_block_address()``
+
+``flashmem_get_info()`` returns a common ``SPIFlashInfo`` structure for all architectures.
+Esp8266 previously had a structure definition with two ``unknown`` fields as this directly represented
+the contents of the first 16 bytes of flash. These have been removed and the structure unpacked.
+
+The following macro definitions have been removed for esp8266:
+
+- ``SYS_PARAM_SEC_COUNT``
+- ``FLASH_WORK_SEC_COUNT``
+- ``INTERNAL_FLASH_SIZE``
+
+These are related to the fixed system parameter block at the end of flash memory.
+With partitions this is relocatable so any code which depends on these will be wrong.
+
+
+**CsvReader library**
+
+The :cpp:type:`CsvReader` class has been moved out of ``Core/Data`` and into :library:`CsvReader`
+which has additional capabilities. Changes to existing code:
+
+- Add ``CsvReader`` to your project's :cpp:envvar:`COMPONENT_DEPENDS`
+- Change ``#include <Data/CsvReader>`` to ``#include <CSV/Reader.h>``
+- Change ``CsvReader`` class to :cpp:class:`CSV::Reader`

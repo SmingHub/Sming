@@ -34,6 +34,23 @@ enum TimeZone {
 class SystemClockClass
 {
 public:
+	/**
+	 * @brief Optional callback which can be used to automate handling of timezone changes
+	 * @param systemTime The current system time
+	 *
+	 * Although the timezone offset only changes twice a year, when it does change the
+	 * corresponding offset should be updated promptly.
+	 *
+	 * `setTimeZoneOffset()` is typically called when updating via real-time clock chip or NTP,
+	 * but this can still leave a considerable gap during which the local time will be wrong.
+	 *
+	 * The callback should check the provided systemTime and determine if the time zone offset
+	 * requires changing and, if so, call `setTimeZoneOffset()`.
+	 * One way to make this efficient is to cache the `time_t` value for the *next* change,
+	 * rather than attemtpting to compute the offset on every call.
+	 */
+	using CheckTimeZoneOffset = Delegate<void(time_t systemTime)>;
+
 	/** @brief  Get the current date and time
      *  @param  timeType Time zone to use (UTC / local)
      *  @retval DateTime Current date and time
@@ -53,23 +70,43 @@ public:
 	/** @brief  Get current time as a string
      *  @param  timeType Time zone to present time as, i.e. return local or UTC time
      *  @retval String Current time in format: `dd.mm.yy hh:mm:ss`
-     *  @note   Date separator may be changed by adding `#define DT_DATE_SEPARATOR "/"` to source code
      */
 	String getSystemTimeString(TimeZone timeType = eTZ_Local) const;
 
 	/** @brief  Sets the local time zone offset
-     *  @param  seconds Offset from UTC of local time zone in seconds (-720 < offset < +720)
-     *  @retval bool true on success, false if value out of range
+     *  @param  seconds Offset from UTC of local time zone in seconds
+	 *  @see    See `setTimeZone()`.
      */
-	bool setTimeZoneOffset(int seconds);
+	void setTimeZoneOffset(int seconds)
+	{
+		zoneInfo.offsetMins = seconds / SECS_PER_MIN;
+	}
 
 	/** @brief Set the local time zone offset in hours
-     *  @param localTimezoneOffset Offset from UTC of local time zone in hours (-12.0 < offset < +12.0)
+     *  @param localTimezoneOffset Offset from UTC of local time zone in hours
      *  @retval bool true on success, false if value out of range
+	 *  @note Values for local standard time may exceed +/- 12
+	 *  For example, Pacific/Kiritimati has a 14-hour offset (in 2024).
 	 */
-	bool setTimeZone(float localTimezoneOffset)
+	void setTimeZone(float localTimezoneOffset)
 	{
-		return setTimeZoneOffset(localTimezoneOffset * SECS_PER_HOUR);
+		setTimeZoneOffset(localTimezoneOffset * SECS_PER_HOUR);
+	}
+
+	/** @brief Set current time zone information
+     *  @param zoneInfo Contains offset plus string  formatting information
+	 */
+	void setTimeZone(const DateTime::ZoneInfo& zoneInfo)
+	{
+		this->zoneInfo = zoneInfo;
+	}
+
+	/** @brief Get current time zone information
+     *  @retval ZoneInfo
+	 */
+	const DateTime::ZoneInfo& getTimeZone() const
+	{
+		return zoneInfo;
 	}
 
 	/** @brief Get the current time zone offset
@@ -77,7 +114,7 @@ public:
 	 */
 	int getTimeZoneOffset() const
 	{
-		return timeZoneOffsetSecs;
+		return zoneInfo.offsetSecs();
 	}
 
 	/** @brief Determine if `setTime()` has been called yet
@@ -88,8 +125,18 @@ public:
 		return timeSet;
 	}
 
+	/**
+	 * @brief Set/clear a callback which is invoked whenever local time is queried.
+	 * @note This callback is *only* invoked when `now()` is called.
+	 */
+	void onCheckTimeZoneOffset(CheckTimeZoneOffset callback)
+	{
+		checkTimeZoneOffset = callback;
+	}
+
 private:
-	int timeZoneOffsetSecs = 0;
+	CheckTimeZoneOffset checkTimeZoneOffset;
+	DateTime::ZoneInfo zoneInfo;
 	bool timeSet = false;
 };
 

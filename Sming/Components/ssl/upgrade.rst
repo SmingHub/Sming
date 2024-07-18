@@ -65,7 +65,7 @@ Has to be migrated to the following code::
 
 
 It is possible to create an SSL enabled server. The excerpt below demonstrates this and it is part of the :sample:`HttpServer_ConfigNetwork` sample.
-Pay attention to the :doc:`security considerations </experimental/httpserver-ssl>` and limitations using this on a microcontroller with limited RAM::
+Pay attention to the :ref:`security considerations <ssl_security>` and limitations using this on a microcontroller with limited RAM::
 
    void startWebServer()
    {

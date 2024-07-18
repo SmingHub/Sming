@@ -142,7 +142,7 @@ public:
 	 */
 	__forceinline bool IRAM_ATTR reset(const TimeType& timeInterval)
 	{
-		return resetTicks(this->template timeToTicks(timeInterval));
+		return resetTicks(this->timeToTicks(timeInterval));
 	}
 
 	/**
@@ -185,7 +185,7 @@ public:
 	 */
 	__forceinline NanoTime::Time<TimeType> elapsedTime() const
 	{
-		return this->template ticksToTime(elapsedTicks());
+		return this->ticksToTime(elapsedTicks());
 	}
 
 	/**
@@ -202,7 +202,7 @@ public:
 	 */
 	__forceinline NanoTime::Time<TimeType> remainingTime() const
 	{
-		return this->template ticksToTime(remainingTicks());
+		return this->ticksToTime(remainingTicks());
 	}
 
 	__forceinline bool canExpire() const

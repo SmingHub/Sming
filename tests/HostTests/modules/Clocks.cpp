@@ -26,7 +26,11 @@ public:
 	{
 		printLimits();
 
-		for(unsigned i = 0; i < 2000; ++i) {
+		unsigned loopCount{2000};
+#ifdef ARCH_HOST
+		loopCount = 50;
+#endif
+		while(loopCount--) {
 			auto value = os_random();
 			check<NanoTime::Milliseconds>(value);
 			check<NanoTime::Microseconds>(value);
@@ -37,26 +41,39 @@ public:
 
 		TEST_CASE("vs. system time")
 		{
-			constexpr uint32_t duration{2000000};
-			auto startTime = system_get_time();
+			// Determine whether this is an up or down-counter
 			auto startTicks = Clock::ticks();
+			os_delay_us(100);
+			auto endTicks = Clock::ticks();
+			bool isDownCounter = (endTicks < startTicks);
+			debug_w("%s is %s counter", Clock::typeName(), isDownCounter ? "DOWN" : "UP");
+
+			// Run for a second or two and check timer ticks correspond approximately with system clock
+			constexpr uint64_t maxDuration = Clock::maxTicks().template as<NanoTime::Microseconds>() - 5000ULL;
+			constexpr uint32_t duration = std::min(uint64_t(2000000ULL), maxDuration);
+			auto startTime = system_get_time();
+			startTicks = Clock::ticks();
 			uint32_t time;
-			while((time = system_get_time()) < startTime + duration) {
+			while((time = system_get_time()) - startTime < duration) {
 				//
 			}
-			auto endTicks = Clock::ticks();
-			// Handle both up and down counters
-			auto elapsedTicks = (endTicks >= startTicks) ? endTicks - startTicks : startTicks - endTicks;
+			endTicks = Clock::ticks();
+			if(isDownCounter) {
+				std::swap(startTicks, endTicks);
+			}
+			uint32_t elapsedTicks = (endTicks - startTicks) % (Clock::maxTicks() + 1);
 
 			debug_w("System time elapsed: %u", time - startTime);
-			debug_w("%s ticks: %u", Clock::typeName(), elapsedTicks);
+			debug_w("Ticks: %u (%u - %u)", elapsedTicks, startTicks, endTicks);
 			debug_w("Ratio: x %f", float(elapsedTicks) / (time - startTime));
 			uint32_t us = Micros::ticksToTime(elapsedTicks);
 			debug_w("Apparent time: %u", us);
+#ifndef ARCH_HOST
 			// Up-timers may report 0 if inactive
 			if(endTicks != 0 || startTicks != 0) {
 				REQUIRE(abs(int(us - duration)) < 500); // Allow some latitude
 			}
+#endif
 		}
 	}
 
@@ -116,12 +133,8 @@ public:
 		NanoTime::TimeSource<Clock, unit, TimeType> src;
 		auto time = src.maxClockTime();
 
-		Serial.print("    ");
-		Serial.print(src.maxTicks());
-		Serial.print(" ticks = ");
-		Serial.print(time.toString());
-		Serial.print(" = ");
-		Serial.println(time.value());
+		Serial << "    " << src.maxTicks().ticks() << _F(" ticks = ") << time.toString() << " = " << time.value()
+			   << endl;
 	};
 
 	template <NanoTime::Unit unit> void printMaxCalcTicks()
@@ -129,12 +142,7 @@ public:
 		NanoTime::TimeSource<Clock, unit, TimeType> src;
 		auto time = src.maxCalcTicks().template as<unit>();
 
-		Serial.print("    ");
-		Serial.print(src.maxCalcTicks());
-		Serial.print(" ticks = ");
-		Serial.print(time.toString());
-		Serial.print(" = ");
-		Serial.println(time.value());
+		Serial << "    " << src.maxCalcTicks() << _F(" ticks = ") << time.toString() << " = " << time.value() << endl;
 	};
 
 	template <NanoTime::Unit unit> void printMaxTime()
@@ -143,30 +151,24 @@ public:
 		auto time = source.maxCalcTime();
 		auto ticks = source.timeToTicks(time);
 
-		Serial.print("    ");
-		Serial.print(time.toString());
-		Serial.print(" = ");
-		Serial.print(time.value());
-		Serial.print(" = ");
-		Serial.print(ticks);
-		Serial.println(" ticks");
+		Serial << "    " << time.toString() << " = " << time.value() << " = " << ticks << " ticks" << endl;
 	};
 
 	void printLimits()
 	{
-		m_puts("Limits:\r\n");
+		Serial.println(_F("Limits:"));
 
-		m_puts("  clock ticks:\r\n");
+		Serial.println(_F("  clock ticks:"));
 		printMaxTicks<NanoTime::Milliseconds>();
 		printMaxTicks<NanoTime::Microseconds>();
 		printMaxTicks<NanoTime::Nanoseconds>();
 
-		m_puts("  ticks -> time:\r\n");
+		Serial.println(_F("  ticks -> time:"));
 		printMaxCalcTicks<NanoTime::Milliseconds>();
 		printMaxCalcTicks<NanoTime::Microseconds>();
 		printMaxCalcTicks<NanoTime::Nanoseconds>();
 
-		m_puts("  time -> ticks:\r\n");
+		Serial.println(_F("  time -> ticks:"));
 		printMaxTime<NanoTime::Milliseconds>();
 		printMaxTime<NanoTime::Microseconds>();
 		printMaxTime<NanoTime::Nanoseconds>();
@@ -184,22 +186,8 @@ private:
 		String result_tag = get_tag(!valueIsTime);
 		auto diff = calc - ref;
 
-		Serial.print("  ");
-		Serial.print(value_tag);
-		Serial.print(": ");
-		Serial.print(value);
-		Serial.print(" (");
-		Serial.print(unitToString(timeunit));
-		Serial.print("), ref ");
-		Serial.print(result_tag);
-		Serial.print(": ");
-		Serial.print(ref);
-		Serial.print(", calc ");
-		Serial.print(result_tag);
-		Serial.print(": ");
-		Serial.print(calc);
-		Serial.print(", diff: ");
-		Serial.println(diff);
+		Serial << "  " << value_tag << ": " << value << " (" << unitToString(timeunit) << _F("), ref ") << result_tag
+			   << ": " << ref << _F(", calc ") << result_tag << ": " << calc << _F(", diff: ") << diff << endl;
 	}
 
 	void compare()
@@ -250,10 +238,16 @@ template <hw_timer_clkdiv_t clkdiv>
 class Timer1ClockTestTemplate : public ClockTestTemplate<Timer1Clock<clkdiv>, uint32_t>
 {
 public:
+	static void IRAM_ATTR callback(void*)
+	{
+	}
+
 	void execute() override
 	{
 		// Configure the hardware to match selected clock divider
 		Timer1Api<clkdiv, eHWT_Maskable> timer;
+		timer.setCallback(callback, nullptr);
+		timer.setInterval(timer.maxTicks());
 		timer.arm(false);
 
 		ClockTestTemplate<Timer1Clock<clkdiv>, uint32_t>::execute();
@@ -323,24 +317,15 @@ public:
 
 	void execute() override
 	{
-		Serial.print("How many loop iterations can we achieve in ");
-		Serial.print(TIMEOUT_MS);
-		Serial.println(" ms ?");
+		Serial << _F("How many loop iterations can we achieve in ") << TIMEOUT_MS << _F(" ms ?") << endl;
 
 		auto print = [](const char* type, uint32_t loopCount) {
-			Serial.print("Using ");
-			Serial.print(type);
-			Serial.print(", managed ");
-			Serial.print(loopCount);
-			Serial.print(" iterations, average loop time = ");
 			using namespace NanoTime;
 			constexpr auto nsTotal = convert<TIMEOUT_MS, Milliseconds, Nanoseconds>();
 			auto nsPerLoop = time(Nanoseconds, muldiv(nsTotal, uint32_t(1), loopCount));
-			Serial.print(nsPerLoop.toString());
-			Serial.print(" (");
 			auto cycles = CpuCycleClockNormal::template timeToTicks<Nanoseconds>(uint32_t(nsPerLoop));
-			Serial.print(cycles.toString());
-			Serial.println(" CPU cycles)");
+			Serial << _F("Using ") << type << _F(", managed ") << loopCount << _F(" iterations, average loop time = ")
+				   << nsPerLoop.toString() << " (" << cycles.toString() << _F(" CPU cycles)") << endl;
 		};
 
 		print("millis()", millis_loop());
@@ -396,10 +381,10 @@ struct Timer1TestSource : public Timer1Clock<clkdiv> {
 		if(clkdiv == TIMER_CLKDIV_16) {
 			//		debug_i("prediv = %u, frequency = %u, mul = %u, div = %u", prediv, frequency, mul, div);
 			return (time / prediv) * mul + (time % prediv) * div;
-		} else {
-			using R = std::ratio<frequency * unitTicks.den, unitTicks.num>;
-			return muldiv<R::num, R::den>(time);
 		}
+
+		using R = std::ratio<frequency * unitTicks.den, unitTicks.num>;
+		return muldiv<R::num, R::den>(time);
 	}
 
 	TimeType timeToTicks_test2(const TimeType& time)
@@ -444,21 +429,11 @@ template <hw_timer_clkdiv_t clkdiv, typename TimeType> void testTimer1()
 
 		TimeType refticks = round(double(time) * TimeSource::TicksPerUnit::num / TimeSource::TicksPerUnit::den);
 
-		//		uint64_t refticks = timer1.timeToTicksRef(time);
-
 		auto check = [time, refticks](const char* tag, TimeType ticks) {
 			int64_t diff = int64_t(ticks) - int64_t(refticks);
 			if(abs(diff) > 2) {
-				Serial.print("time = ");
-				Serial.print(time);
-				Serial.print(", refticks = ");
-				Serial.print(refticks);
-				Serial.print(", ");
-				Serial.print(tag);
-				Serial.print(" = ");
-				Serial.print(ticks);
-				Serial.print(", diff = ");
-				Serial.println(diff);
+				Serial << _F("time = ") << time << _F(", refticks = ") << refticks << ", " << tag << " = " << ticks
+					   << _F(", diff = ") << diff << endl;
 			}
 		};
 

@@ -1,8 +1,8 @@
 WiFi
 ====
 
-Build variables
----------------
+Configuration Variables
+-----------------------
 
 .. envvar:: ENABLE_WPS
 

@@ -80,7 +80,7 @@ public:
 	 */
 	String id() const override
 	{
-		return String(reinterpret_cast<uint32_t>(&buffer), HEX);
+		return String(reinterpret_cast<uintptr_t>(&buffer), HEX);
 	}
 
 	size_t write(uint8_t charToWrite) override;

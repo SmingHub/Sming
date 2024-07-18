@@ -7,9 +7,11 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-void onNtpReceive(NtpClient& client, time_t timestamp);
+namespace
+{
+[[maybe_unused]] void onNtpReceive(NtpClient& client, time_t timestamp);
 
-Timer printTimer;
+SimpleTimer printTimer;
 
 // Option 1
 // Use this option if you want to have full control of NtpTime client
@@ -62,7 +64,7 @@ void onNtpReceive(NtpClient& client, time_t timestamp)
 // Will be called when WiFi station timeout was reached
 void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
-	debugf("I'm NOT CONNECTED!");
+	Serial.println(_F("I'm NOT CONNECTED!"));
 }
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
@@ -87,6 +89,8 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 		demo = new NtpClientDemo();
 	}
 }
+
+} // namespace
 
 // Will be called when WiFi hardware and software initialization was finished
 // And system initialization was completed

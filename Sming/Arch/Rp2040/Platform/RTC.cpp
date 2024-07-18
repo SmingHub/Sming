@@ -11,6 +11,9 @@
 #include <Platform/RTC.h>
 #include <DateTime.h>
 #include <hardware/rtc.h>
+#include <sys/time.h>
+
+extern "C" int settimeofday(const struct timeval*, const struct timezone*);
 
 RtcClass RTC;
 
@@ -23,9 +26,7 @@ void system_init_rtc()
 	rtc_set_datetime(&t);
 }
 
-RtcClass::RtcClass()
-{
-}
+RtcClass::RtcClass() = default;
 
 uint64_t RtcClass::getRtcNanoseconds()
 {
@@ -52,6 +53,11 @@ bool RtcClass::setRtcNanoseconds(uint64_t nanoseconds)
 
 bool RtcClass::setRtcSeconds(uint32_t seconds)
 {
+	struct timeval tv {
+		seconds
+	};
+	settimeofday(&tv, nullptr);
+
 	DateTime dt{seconds};
 
 	datetime_t t = {

@@ -80,7 +80,12 @@ void IRAM_ATTR hw_timer1_attach_interrupt(hw_timer_source_type_t source_type, hw
  * @brief Enable the timer
  * @param div
  * @param intr_type
- * @param auto_load
+ * @param auto_load true for repeating timer, false for one-shot
+ *
+ * Note: With one-shot timer application callback must stop the timer when it is no longer required.
+ * This is to reduce callback latency.
+ * If this is not done, timer will trigger again when timer counter wraps around to 0.
+ * For /16 divisor this is only 1.7s.
  */
 inline void IRAM_ATTR hw_timer1_enable(hw_timer_clkdiv_t div, hw_timer_intr_type_t intr_type, bool auto_load)
 {
@@ -118,12 +123,7 @@ __forceinline void IRAM_ATTR hw_timer1_disable(void)
 /**
  * @brief Detach interrupt from the timer
  */
-__forceinline void IRAM_ATTR hw_timer1_detach_interrupt(void)
-{
-	hw_timer1_disable();
-	ETS_FRC_TIMER1_NMI_INTR_ATTACH(NULL);
-	ETS_FRC_TIMER1_INTR_ATTACH(NULL, NULL);
-}
+void hw_timer1_detach_interrupt(void);
 
 /**
  * @brief Get timer1 count

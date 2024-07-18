@@ -16,9 +16,7 @@
 
 using namespace Crypto::Internal;
 
-namespace Crypto
-{
-namespace Internal
+namespace Crypto::Internal
 {
 /**
  * @brief Block hash operation transposes incoming block of data into state
@@ -109,5 +107,4 @@ void hashFinal(const Context* ctx, HashProcess<T> process, decltype(Context::sta
 	process(digest, buf);
 }
 
-} // namespace Internal
-} // namespace Crypto
+} // namespace Crypto::Internal

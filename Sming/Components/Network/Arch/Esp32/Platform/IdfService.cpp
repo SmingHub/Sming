@@ -51,7 +51,7 @@ void IdfService::end()
 
 void IdfService::enableEventCallback(bool enable)
 {
-	auto handler = [](void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
+	auto handler = [](void* arg, esp_event_base_t, int32_t event_id, void*) {
 		auto service = static_cast<IdfService*>(arg);
 		service->state = Event(event_id);
 		if(!service->eventCallback) {
@@ -70,12 +70,12 @@ void IdfService::enableEventCallback(bool enable)
 
 void IdfService::enableGotIpCallback(bool enable)
 {
-	auto handler = [](void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
+	auto handler = [](void* arg, esp_event_base_t, int32_t, void* event_data) {
 		auto service = static_cast<IdfService*>(arg);
 		if(!service->gotIpCallback) {
 			return;
 		}
-		ip_event_got_ip_t* event = (ip_event_got_ip_t*)event_data;
+		auto event = static_cast<ip_event_got_ip_t*>(event_data);
 		auto& ip_info = event->ip_info;
 		service->gotIpCallback(ip_info.ip.addr, ip_info.netmask.addr, ip_info.gw.addr);
 	};

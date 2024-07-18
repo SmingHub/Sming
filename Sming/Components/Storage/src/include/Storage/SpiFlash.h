@@ -13,6 +13,12 @@
 
 namespace Storage
 {
+/**
+ * @brief The main SPI flash device.
+ * Where possible, access via partition API.
+ * If lower-level access is required, use this.
+ * It should not be necessary to access low-level flash access routines directly.
+ */
 extern SpiFlash* spiFlash;
 
 /**

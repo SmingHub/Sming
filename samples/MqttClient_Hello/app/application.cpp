@@ -7,25 +7,22 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-// For testing purposes, try a few different URL formats
-#define MQTT_URL1 "mqtt://test.mosquitto.org:1883"
-#define MQTT_URL2 "mqtts://test.mosquitto.org:8883" // (Need ENABLE_SSL)
-#define MQTT_URL3 "mqtt://frank:fiddle@192.168.100.107:1883"
-
+namespace
+{
 #ifdef ENABLE_SSL
 #include <ssl/private_key.h>
 #include <ssl/cert.h>
-#define MQTT_URL MQTT_URL2
+DEFINE_FSTR(MQTT_URL, "mqtts://test.mosquitto.org:8883")
 #else
-#define MQTT_URL MQTT_URL1
+DEFINE_FSTR(MQTT_URL, "mqtt://test.mosquitto.org:1883")
+// DEFINE_FSTR(MQTT_URL, "mqtt://frank:fiddle@192.168.100.107:1883")
 #endif
 
 // Forward declarations
 void startMqttClient();
 
 MqttClient mqtt;
-
-Timer procTimer;
+SimpleTimer procTimer;
 
 // Check for MQTT Disconnection
 void checkMQTTDisconnect(TcpClient& client, bool flag)
@@ -37,7 +34,7 @@ void checkMQTTDisconnect(TcpClient& client, bool flag)
 	}
 
 	// Restart connection attempt after few seconds
-	procTimer.initializeMs(2 * 1000, startMqttClient).start(); // every 2 seconds
+	procTimer.initializeMs<2 * 1000>(startMqttClient).start(); // every 2 seconds
 }
 
 int onMessageDelivered(MqttClient& client, mqtt_message_t* message)
@@ -88,7 +85,7 @@ void startMqttClient()
 		// Start publishing message now
 		publishMessage();
 		// and schedule a timer to send messages every 5 seconds
-		procTimer.initializeMs(5 * 1000, publishMessage).start();
+		procTimer.initializeMs<5 * 1000>(publishMessage).start();
 		return 0;
 	});
 
@@ -117,6 +114,8 @@ void onConnected(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	// Run MQTT client
 	startMqttClient();
 }
+
+} // namespace
 
 void init()
 {

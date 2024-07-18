@@ -46,7 +46,7 @@ public:
 		ReadWriteStream* getStream()
 		{
 			if(!stream) {
-				stream.reset(new Ota::UpgradeOutputStream(partition));
+				stream = std::make_unique<Ota::UpgradeOutputStream>(partition);
 			}
 			return stream.get();
 		}
@@ -124,10 +124,11 @@ public:
 
 protected:
 	void applyUpdate();
-	void updateFailed();
+	void downloadFailed();
+	void downloadComplete();
+	void fetchNextItem();
 
-	virtual int itemComplete(HttpConnection& client, bool success);
-	virtual int updateComplete(HttpConnection& client, bool success);
+	int itemComplete(HttpConnection& client, bool success);
 
 protected:
 	ItemList items;

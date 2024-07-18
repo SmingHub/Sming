@@ -24,7 +24,7 @@ public:
 
 	explicit operator bool() const
 	{
-		return mEntries.isEmpty();
+		return !mEntries.isEmpty();
 	}
 
 	/**
@@ -70,7 +70,7 @@ public:
 	 */
 	Partition find(uint32_t address) const
 	{
-		return *std::find_if(begin(), end(), [address](Partition part) { return part.contains(address); });
+		return *std::find_if(begin(), end(), [address](const Partition& part) { return part.contains(address); });
 	}
 
 	/**

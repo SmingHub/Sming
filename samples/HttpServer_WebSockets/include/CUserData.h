@@ -1,13 +1,16 @@
-#ifndef C_USER_DATA_H_SAMPLE
-#define C_USER_DATA_H_SAMPLE
+#pragma once
 
 #include <SmingCore.h>
 
-//Simplified container modelling a user session
+// Simplified container modelling a user session
 class CUserData
 {
 public:
-	CUserData(const char* uName, const char* uData) : userName(uName), userData(uData)
+	CUserData()
+	{
+	}
+
+	CUserData(const String& uName, const String& uData) : userName(uName), userData(uData)
 	{
 	}
 
@@ -26,5 +29,3 @@ private:
 	String userData;
 	Vector<WebsocketConnection*> activeWebSockets;
 };
-
-#endif /*C_USER_DATA_H_SAMPLE*/

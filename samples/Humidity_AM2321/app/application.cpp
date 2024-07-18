@@ -1,10 +1,11 @@
 #include <SmingCore.h>
 #include "Libraries/AM2321/AM2321.h"
 
+namespace
+{
 AM2321 am2321;
 
-Timer procTimer;
-bool state = true;
+SimpleTimer procTimer;
 
 // You can change I2C pins here:
 const int SCL = 5;
@@ -14,6 +15,8 @@ void read()
 {
 	Serial << am2321.read() << ',' << am2321.temperature / 10.0 << ',' << am2321.humidity / 10.0 << endl;
 }
+
+} // namespace
 
 void init()
 {
@@ -32,5 +35,5 @@ void init()
 	am2321.begin(); // REQUIRED. Call it after choosing I2C pins.
 	Serial.println(am2321.uid());
 
-	procTimer.initializeMs(3000, read).start();
+	procTimer.initializeMs<3000>(read).start();
 }

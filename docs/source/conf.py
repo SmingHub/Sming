@@ -14,13 +14,12 @@ import re
 import os
 import sys
 import subprocess
-from docutils import nodes, utils
-from sphinx import roles, addnodes
-from sphinx.util.nodes import set_role_source_info, split_explicit_title
+from sphinx.util import logging
 # So our custom extensions can be found
 sys.path.insert(0, os.path.abspath('.'))
 from filemap import buildFileMap
 
+logger = logging.getLogger(__name__)
 
 # -- Project information -----------------------------------------------------
 
@@ -48,7 +47,6 @@ version = release
 extensions = [
     'm2r2',
     'breathe',
-    'sphinxcontrib.seqdiag',
     'link-roles',
     'sphinxcontrib.wavedrom',
     'sphinx_copybutton',
@@ -127,7 +125,7 @@ html_context = {
 #
 # on_rtd is whether we are on readthedocs.org
 env_readthedocs = os.environ.get('READTHEDOCS', None)
-print(env_readthedocs)
+logger.info(env_readthedocs)
 
 if env_readthedocs:
     # Start the build from a clean slate
@@ -142,3 +140,20 @@ subprocess.call('make -C ../../Sming submodules SMING_ARCH=Host', shell=True)
 subprocess.call('make -C .. setup api API_VERSION="' + version + '"', shell=True)
 
 buildFileMap(html_context)
+
+
+def setup(app):
+    '''
+    Sphinx requires a placeholder 'api/index.rst' which is overwritten by the doxygen-generated version
+    via the above `html_extra_path` setting above.
+    As of Sphinx 7.3.7 (and 7.2.6) this doesn't happen, though it does if run a second time!
+    Simple fix is to just copy the one `index.html` file after sphinx has done it's build.
+    '''
+    def fix_api_index(app, exception):
+        import shutil
+        src_file = os.path.join(app.srcdir, '../api/html/api/index.html')
+        dst_path = os.path.join(app.outdir, 'api')
+        logger.info(f'>> Copy from "{src_file}" -> "{dst_path}"')
+        shutil.copy(src_file, dst_path)
+
+    app.connect('build-finished', fix_api_index)

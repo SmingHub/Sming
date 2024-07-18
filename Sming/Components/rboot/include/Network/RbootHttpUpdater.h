@@ -36,16 +36,15 @@ public:
 		size_t size;							   // << max allowed size
 		std::unique_ptr<RbootOutputStream> stream; // (optional) output stream to use.
 
-		Item(String url, uint32_t targetOffset, size_t size, RbootOutputStream* stream)
-			: url(url), targetOffset(targetOffset), size(size)
+		Item(String url, size_t targetOffset, size_t size, RbootOutputStream* stream)
+			: url(url), targetOffset(targetOffset), size(size), stream(stream)
 		{
-			this->stream.reset(stream);
 		}
 
 		RbootOutputStream* getStream()
 		{
 			if(!stream) {
-				stream.reset(new RbootOutputStream(targetOffset, size));
+				stream = std::make_unique<RbootOutputStream>(targetOffset, size);
 			}
 			return stream.get();
 		}
@@ -100,7 +99,8 @@ public:
 			return false;
 		}
 
-		return items.addNew(new Item{firmwareFileUrl, stream->getStartAddress(), stream->getMaxLength(), stream});
+		return items.addNew(
+			new Item{firmwareFileUrl, uint32_t(stream->getStartAddress()), stream->getMaxLength(), stream});
 	}
 
 	void start();

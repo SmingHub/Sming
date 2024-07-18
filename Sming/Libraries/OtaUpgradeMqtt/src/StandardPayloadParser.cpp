@@ -18,7 +18,7 @@ namespace OtaUpgrade
 {
 namespace Mqtt
 {
-bool StandardPayloadParser::switchRom(const UpdateState& updateState)
+bool StandardPayloadParser::switchRom(const UpdateState&)
 {
 	auto after = OtaManager.getNextBootPartition();
 #if DEBUG_VERBOSE_LEVEL >= DBG

@@ -1,0 +1,29 @@
+diff --git a/src/SparkFun_APDS9960.cpp b/src/SparkFun_APDS9960.cpp
+index 530c1f6..25968d0 100644
+--- a/src/SparkFun_APDS9960.cpp
++++ b/src/SparkFun_APDS9960.cpp
+@@ -163,7 +163,7 @@ bool SparkFun_APDS9960::init()
+         return false;
+     }
+     
+-#if 0
++#if DEBUG
+     /* Gesture config register dump */
+     uint8_t reg;
+     uint8_t val;
+@@ -518,12 +518,13 @@ int SparkFun_APDS9960::readGesture()
+ 
+             /* If there's stuff in the FIFO, read it into our data block */
+             if( fifo_level > 0) {
+-                bytes_read = wireReadDataBlock(  APDS9960_GFIFO_U, 
++                int res = wireReadDataBlock(  APDS9960_GFIFO_U, 
+                                                 (uint8_t*)fifo_data, 
+                                                 (fifo_level * 4) );
+-                if( bytes_read == -1 ) {
++                if( res == -1 ) {
+                     return ERROR;
+                 }
++                bytes_read = res;
+ #if DEBUG
+                 Serial.print("FIFO Dump: ");
+                 for ( i = 0; i < bytes_read; i++ ) {

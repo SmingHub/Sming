@@ -14,12 +14,12 @@
 #include <lwip_includes.h>
 
 NtpClient::NtpClient(const String& reqServer, unsigned reqIntervalSeconds, NtpTimeResultDelegate delegateFunction)
+	: delegateCompleted(delegateFunction)
 {
 	// Setup timer, but don't start it
 	timer.setCallback(TimerDelegate(&NtpClient::requestTime, this));
 
 	this->server = reqServer ?: NTP_DEFAULT_SERVER;
-	this->delegateCompleted = delegateFunction;
 	if(!delegateFunction) {
 		autoUpdateSystemClock = true;
 	}
@@ -48,7 +48,7 @@ void NtpClient::requestTime()
 	ip_addr_t resolvedIp;
 	int result = dns_gethostbyname(
 		server.c_str(), &resolvedIp,
-		[](const char* name, LWIP_IP_ADDR_T* ip, void* arg) {
+		[](const char*, LWIP_IP_ADDR_T* ip, void* arg) {
 			// We do a new request since the last one was never done.
 			if(ip)
 				reinterpret_cast<NtpClient*>(arg)->internalRequestTime(*ip);
@@ -118,7 +118,7 @@ void NtpClient::setAutoQueryInterval(unsigned seconds)
 	}
 }
 
-void NtpClient::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
+void NtpClient::onReceive(pbuf* buf, [[maybe_unused]] IpAddress remoteIP, [[maybe_unused]] uint16_t remotePort)
 {
 	debug_d("NtpClient::onReceive(%s:%u)", remoteIP.toString().c_str(), remotePort);
 

@@ -91,12 +91,23 @@ This will ensure that the build system can run python scripts either in WSL2 or 
 Flashing devices
 ----------------
 
-WSL2 does not currently support access to USB serial devices, so the Sming build system runs
+WSL2 does not natively support access to USB serial devices, so the Sming build system runs
 the appropriate application directly under Windows using ``powershell.exe``.
 
 Therefore, use the normal Windows COM port name rather than the linux ones (such as /dev/ttyUSB0)::
 
    make flash COM_PORT=COM4
+
+
+Some USB serial adapters are supported by the `usbipd <https://github.com/dorssel/usbipd-win>`__ project.
+If so, then devices such as ``/dev/ttyUSB0``, etc. will be present as usual.
+If Sming sees that ``COM_PORT`` actually exists when running in WSL2 then the above powershell workaround
+will not be used.
+
+.. note::
+   
+   The :envvar:`TERMINAL` environment variable is cached by Sming so if the terminal isn't running as expected
+   try ``make config-clean`` to clear the cached value.
 
 
 Serial debugging

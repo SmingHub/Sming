@@ -6,11 +6,13 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
+namespace
+{
 FtpServer ftp;
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	Serial << "IP: " << ip << endl;
+	Serial << _F("Got IP ") << ip << endl;
 	// Start FTP server
 	ftp.listen(21);
 	// Add user accounts
@@ -25,6 +27,8 @@ void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reas
 {
 	Serial.println(_F("I'm NOT CONNECTED. Need help!!! :("));
 }
+
+} // namespace
 
 void init()
 {
@@ -51,7 +55,7 @@ void init()
 	 * When a file is opened for writing it is transparently copied to the SPIFFS partition so it can be updated.
 	 * Wiping the SPIFFS partition reverts the filesystem to its original state.
 	 *
-	 * Note that files marked as ‘read-only’ may not be written in this manner.
+	 * Note that files marked as 'read-only' may not be written in this manner.
 	 */
 	hyfs_mount();
 

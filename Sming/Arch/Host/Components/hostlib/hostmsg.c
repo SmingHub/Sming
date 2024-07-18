@@ -56,7 +56,7 @@ void host_printf(const char* fmt, ...)
 
 void host_printfp(const char* fmt, const char* pretty_function, ...)
 {
-	size_t len;
+	size_t len = 0;
 	const char* name = get_method_name(pretty_function, &len);
 
 	va_list args;

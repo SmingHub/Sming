@@ -21,14 +21,12 @@ Base64OutputStream::Base64OutputStream(IDataSourceStream* stream, size_t resultS
 	base64_init_encodestate(&state, CHARS_PER_LINE);
 }
 
-size_t Base64OutputStream::transform(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t targetLength)
+size_t Base64OutputStream::transform(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t)
 {
-	size_t count;
 	if(sourceLength == 0) {
-		count = base64_encode_blockend((char*)target, &state);
-	} else {
-		count = base64_encode_block((const char*)source, sourceLength, (char*)target, &state);
+		return base64_encode_blockend(reinterpret_cast<char*>(target), &state);
 	}
 
-	return count;
+	return base64_encode_block(reinterpret_cast<const char*>(source), sourceLength, reinterpret_cast<char*>(target),
+							   &state);
 }

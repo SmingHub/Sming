@@ -18,7 +18,8 @@ void init()
 
 	Wire.begin(DEFAULT_SDA_PIN, DEFAULT_SCL_PIN);
 	mpu.initialize();
-	Serial.println(mpu.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
+	bool success = mpu.testConnection();
+	Serial << _F("MPU6050 connection ") << (success ? _F("successful") : _F("failed")) << endl;
 
 	mainLoopTimer.initializeMs<mainLoopInterval>(mainLoop).start();
 }

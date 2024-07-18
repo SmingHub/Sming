@@ -1,0 +1,55 @@
+name: Cache clean
+
+on:
+  workflow_dispatch:
+    inputs:
+      clean_opt:
+        description: 'Level of cleaning required'
+        type: choice
+        default: push-requests
+        options:
+          - pull-requests
+          - ccache
+          - idf-tools
+          - ccache+idf
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cleanup
+        run: |
+          gh extension install actions/gh-actions-cache
+
+          echo "Fetching list of cache keys"
+          case $CLEAN_OPT in
+            pull-requests)
+              filter="-v develop"
+              ;;
+            ccache)
+              filter="ccache"
+              ;;
+            idf-tools)
+              filter="idf"
+              ;;
+            ccache+idf)
+              filter="ccache\|idf"
+              ;;
+            *)
+              echo "Unknown option '$CLEAN_OPT'"
+              exit 1
+              ;;
+          esac
+
+          cacheKeys=$(gh actions-cache list -R $REPO -L 100 | grep $filter | cut -f 1 )
+
+          echo "Deleting caches..."
+          set +e
+          for cacheKey in $cacheKeys; do
+            gh actions-cache delete "$cacheKey" -R "$REPO" --confirm
+          done
+          echo "Done"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          CLEAN_OPT: ${{ inputs.clean_opt }}

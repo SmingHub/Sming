@@ -44,33 +44,28 @@ int strcasecmp(const char* s1, const char* s2);
 */
 void* memmem(const void* haystack, size_t haystacklen, const void* needle, size_t needlelen);
 
-void *memrchr(const void *s, int c, size_t n);
+void* memrchr(const void* s, int c, size_t n);
 
 #endif
 
+/**
+ * @brief Compare block of memory without case sensitivity
+ */
 int memicmp(const void* buf1, const void* buf2, size_t len);
 
-static inline char hexchar(unsigned char c)
-{
-	if(c < 10)
-		return '0' + c;
-	else if(c <= 15)
-		return 'a' + c - 10;
-	else
-		return '\0';
-}
+/**
+ * @brief Return hex character corresponding to given value
+ * @param c Value from 0-15, others are invalid
+ * @retval char Hex character '0'-'9', 'a'-'f' or '\0' if invalid
+ */
+char hexchar(unsigned char c);
 
-static inline signed char unhex(char c)
-{
-	if(c >= '0' && c <= '9')
-		return c - '0';
-	else if(c >= 'a' && c <= 'f')
-		return 10 + c - 'a';
-	else if(c >= 'A' && c <= 'F')
-		return 10 + c - 'A';
-	else
-		return -1;
-}
+/**
+ * @brief Return numeric value corresponding to given hex character
+ * @param c Character '0'-'9', 'a'-'f' or 'A'-'F'
+ * @retval int8_t Numeric value or -1 if character invalid
+ */
+signed char unhex(char c);
 
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))

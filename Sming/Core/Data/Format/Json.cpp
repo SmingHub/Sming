@@ -72,7 +72,7 @@ void Json::escape(String& value) const
 		debug_w("Invalid UTF8: %s", value.c_str());
 		for(unsigned i = 0; i < value.length(); ++i) {
 			char& c = value[i];
-			if(c < 0x20 || c > 127)
+			if(c < 0x20 || uint8_t(c) > 127)
 				c = '_';
 		}
 	}

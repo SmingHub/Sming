@@ -6,10 +6,10 @@
 extern "C" {
 #endif
 
-void* pvPortMalloc(size_t xWantedSize, const char* file, uint32 line);
+void* pvPortMalloc(size_t xWantedSize, const char* file, uint32_t line);
 void* pvPortCalloc(size_t count, size_t size, const char*, unsigned);
-void* pvPortZalloc(size_t xWantedSize, const char* file, uint32 line);
-void vPortFree(void* ptr, const char* file, uint32 line);
+void* pvPortZalloc(size_t xWantedSize, const char* file, uint32_t line);
+void vPortFree(void* ptr, const char* file, uint32_t line);
 void* vPortMalloc(size_t xWantedSize);
 void pvPortFree(void* ptr);
 

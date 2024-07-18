@@ -22,6 +22,7 @@
 #include <Data/Stream/Base64OutputStream.h>
 #include <Data/HexString.h>
 #include <Crypto/Md5.h>
+#include <Network/Ssl/Factory.h>
 
 #define ADVANCE                                                                                                        \
 	{                                                                                                                  \
@@ -198,6 +199,7 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 
 		state = eSMTP_SendMail;
 	}
+		[[fallthrough]];
 
 	case eSMTP_SendMail: {
 		sendString(F("MAIL FROM:") + outgoingMail->from + "\r\n");
@@ -229,17 +231,20 @@ void SmtpClient::onReadyToSendData(TcpConnectionEvent sourceEvent)
 
 		state = eSMTP_SendingHeaders;
 	}
+		[[fallthrough]];
 
 	case eSMTP_SendingHeaders: {
 		WAIT_FOR_STREAM(stream);
 
 		state = eSMTP_StartBody;
 	}
+		[[fallthrough]];
 
 	case eSMTP_StartBody: {
 		sendMailBody(outgoingMail);
 		state = eSMTP_SendingBody;
 	}
+		[[fallthrough]];
 
 	case eSMTP_SendingBody: {
 		WAIT_FOR_STREAM(stream);
@@ -288,7 +293,7 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 
 	if(!mail->headers.contains(HTTP_HEADER_CONTENT_TRANSFER_ENCODING)) {
 		mail->headers[HTTP_HEADER_CONTENT_TRANSFER_ENCODING] = _F("quoted-printable");
-		mail->stream = new QuotedPrintableOutputStream(mail->stream);
+		mail->stream = std::make_unique<QuotedPrintableOutputStream>(mail->stream.release());
 	}
 
 	if(!mail->attachments.isEmpty()) {
@@ -297,17 +302,17 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 		text.headers = new HttpHeaders();
 		(*text.headers)[HTTP_HEADER_CONTENT_TYPE] = mail->headers[HTTP_HEADER_CONTENT_TYPE];
 		(*text.headers)[HTTP_HEADER_CONTENT_TRANSFER_ENCODING] = mail->headers[HTTP_HEADER_CONTENT_TRANSFER_ENCODING];
-		text.stream = mail->stream;
+		text.stream = mail->stream.release();
 
 		mail->attachments.insertElementAt(text, 0);
 
 		mail->headers.remove(HTTP_HEADER_CONTENT_TRANSFER_ENCODING);
 		mail->headers[HTTP_HEADER_CONTENT_TYPE] = F("multipart/mixed; boundary=") + mStream->getBoundary();
-		mail->stream = mStream;
+		mail->stream.reset(mStream);
 	}
 
-	for(unsigned i = 0; i < mail->headers.count(); i++) {
-		sendString(mail->headers[i]);
+	for(auto hdr : mail->headers) {
+		sendString(hdr);
 	}
 	sendString("\r\n");
 }
@@ -319,8 +324,7 @@ bool SmtpClient::sendMailBody(MailMessage* mail)
 	}
 
 	delete stream;
-	stream = mail->stream; // avoid intermediate buffers
-	mail->stream = nullptr;
+	stream = mail->stream.release(); // avoid intermediate buffers
 
 	return false;
 }
@@ -365,15 +369,16 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 			code[codeLength++] = currentByte;
 			ADVANCE;
 			continue;
-		} else if(codeLength == 3) {
+		}
+
+		if(codeLength == 3) {
 			code[codeLength] = '\0';
 			if(currentByte != ' ' && currentByte != '-') {
 				// the code must be followed by space or minus
 				return 0;
 			}
 
-			char* tmp;
-			codeValue = strtol(code, &tmp, 10);
+			codeValue = strtol(code, nullptr, 10);
 			isLastLine = (currentByte == ' ');
 			codeLength++;
 			ADVANCE;
@@ -389,8 +394,15 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 			RETURN_ON_ERROR(SMTP_CODE_SERVICE_READY);
 
 			if(!useSsl && (options & SMTP_OPT_STARTTLS)) {
-				useSsl = true;
-				TcpConnection::internalOnConnected(ERR_OK);
+				if(!enableSsl(url.Host)) {
+					/*
+					 * Excerpt from RFC 3207: If,
+					 * after having issued the STARTTLS command, the client finds out that
+					 * some failure prevents it from actually starting a TLS handshake, then
+					 * it SHOULD abort the connection.
+					 */
+					return 0;
+				}
 			}
 
 			sendString(F("EHLO ") + url.Host + "\r\n");
@@ -419,8 +431,16 @@ int SmtpClient::smtpParse(char* buffer, size_t len)
 			if(isLastLine) {
 				state = eSMTP_Ready;
 				if(!useSsl && (options & SMTP_OPT_STARTTLS)) {
-					state = eSMTP_StartTLS;
-				} else if(url.User && authMethods.count()) {
+					if(Ssl::factory != nullptr) {
+						state = eSMTP_StartTLS;
+						break;
+					}
+
+					bitClear(options, SMTP_OPT_STARTTLS);
+					debug_w("[SMTP] SSL required, no factory. Continue plain-text communication.");
+				}
+
+				if(url.User && authMethods.count()) {
 					state = eSMTP_SendAuth;
 				}
 			}

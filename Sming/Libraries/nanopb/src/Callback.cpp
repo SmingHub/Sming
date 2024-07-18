@@ -25,7 +25,7 @@ bool OutputCallback::encode(pb_ostream_t* stream, const pb_field_t* field)
 	return pb_encode_string(stream, data, length);
 }
 
-bool InputCallback::decode(pb_istream_t* stream, const pb_field_t* field)
+bool InputCallback::decode(pb_istream_t* stream, const pb_field_t*)
 {
 	size_t available = stream->bytes_left;
 	auto new_buf = realloc(data, length + available);

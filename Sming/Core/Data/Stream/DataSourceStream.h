@@ -96,6 +96,8 @@ public:
 	 */
 	virtual int seekFrom(int offset, SeekOrigin origin)
 	{
+		(void)offset;
+		(void)origin;
 		return -1;
 	}
 
@@ -117,7 +119,7 @@ public:
 	 * @brief Return the total length of the stream
 	 * @retval int -1 is returned when the size cannot be determined
 	 */
-	virtual int available()
+	int available() override
 	{
 		return -1;
 	}

@@ -1,5 +1,6 @@
 #include <esp_system.h>
 #include <sys/time.h>
+#include <esp_timer.h>
 #include <esp_task_wdt.h>
 #include <sming_attr.h>
 #include <string.h>

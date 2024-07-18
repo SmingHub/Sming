@@ -53,9 +53,7 @@ public:
 		Waking,
 	};
 
-	virtual ~Task()
-	{
-	}
+	virtual ~Task() = default;
 
 	/**
 	 * @brief Call to set task running
@@ -139,7 +137,7 @@ protected:
 	/**
 	 * @brief Called immediately before calling to loop() to indicate a state change
 	 */
-	virtual void onNotify(Notify code)
+	virtual void onNotify([[maybe_unused]] Notify code)
 	{
 	}
 
@@ -164,12 +162,12 @@ private:
 		}
 
 		scheduled = System.queueCallback(
-			[](uint32_t param) {
+			[](void* param) {
 				auto task = reinterpret_cast<Task*>(param);
 				task->scheduled = false;
 				task->service();
 			},
-			uint32_t(this));
+			this);
 
 		return scheduled;
 	}

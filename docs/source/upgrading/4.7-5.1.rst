@@ -20,7 +20,7 @@ This has to be replaced with the directive ``COMPONENT_DEPENDS += CommandProcess
 Including Header Files
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-To include the command processing headers in your C/C++ application we used to do the following
+To include the command processing headers in your C++ application we used to do the following
 
 For example::
 

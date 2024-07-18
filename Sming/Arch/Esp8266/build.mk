@@ -11,11 +11,9 @@ CXXFLAGS			+= -fno-threadsafe-statics
 DEBUG_VARS			+= ESP_HOME
 
 ifeq ($(UNAME),Windows)
-ESP_HOME			?= c:/Espressif
-else ifeq ($(UNAME),FreeBSD)
-ESP_HOME			?= /usr/local/esp8266/esp-open-sdk
+ESP_HOME			?= c:/tools/esp-quick-toolchain
 else
-ESP_HOME			?= /opt/esp-open-sdk
+ESP_HOME			?= /opt/esp-quick-toolchain
 endif
 export ESP_HOME		:= $(call FixPath,$(ESP_HOME))
 
@@ -35,8 +33,6 @@ OBJDUMP			 	:= $(TOOLSPEC)objdump
 NM				:= $(TOOLSPEC)nm
 GDB				:= $(TOOLSPEC)gdb
 
-GCC_UPGRADE_URL := https://sming.readthedocs.io/en/latest/arch/esp8266/getting-started/eqt.html
-
 CPPFLAGS += \
 	-nostdlib \
 	-mlongcalls \
@@ -52,9 +48,6 @@ CPPFLAGS += \
 ifeq (,$(wildcard $(XTENSA_TOOLS_ROOT)))
 $(error ESP_HOME not set correctly: "$(ESP_HOME)")
 endif
-
-# Identifies which library we're building with
-USE_NEWLIB = $(GCC_VERSION_COMPATIBLE)
 
 # => Tools
 MEMANALYZER = $(PYTHON) $(ARCH_TOOLS)/memanalyzer.py $(OBJDUMP)$(TOOL_EXT)

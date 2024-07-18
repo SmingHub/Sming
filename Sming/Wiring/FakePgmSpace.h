@@ -31,7 +31,7 @@ extern "C" {
 /**
  * @brief determines if the given value is aligned to a word (4-byte) boundary
  */
-#define IS_ALIGNED(_x) (((uint32_t)(_x)&3) == 0)
+#define IS_ALIGNED(_x) (((uintptr_t)(_x)&3) == 0)
 
 /**
  * @brief Align a size up to the nearest word boundary
@@ -60,7 +60,13 @@ extern "C" {
 		m_printf(__localF, ##__VA_ARGS__);                                                                             \
 	}))
 
-#define printf_P printf_P_stack
+#ifdef ARCH_ESP8266
+// ESP8266 requires byte-aligned flash accesses for format string...
+#define printf_P(fmt, ...) printf_P_stack(fmt, ##__VA_ARGS__)
+#else
+// ... but other architectures do not
+#define printf_P(fmt, ...) m_printf(fmt, ##__VA_ARGS__)
+#endif
 
 /**
  * @brief Define and use a counted flash string inline
@@ -75,9 +81,7 @@ extern "C" {
 		&__pstr__[0];                                                                                                  \
 	}))
 
-#ifdef ARCH_HOST
-#define _F(str) (str)
-#else
+#ifdef ARCH_ESP8266
 /**
  * @brief Declare and use a flash string inline.
  * @param str
@@ -89,7 +93,8 @@ extern "C" {
 		LOAD_PSTR(buf, __pstr__);                                                                                      \
 		buf;                                                                                                           \
 	}))
-
+#else
+#define _F(str) (str)
 #endif
 
 /**
@@ -132,7 +137,7 @@ int memcmp_aligned(const void* ptr1, const void* ptr2, unsigned len);
  * @brief Declare a global reference to a PSTR instance
  * @param name
  */
-#define DECLARE_PSTR(name) extern const char name[] PROGMEM;
+#define DECLARE_PSTR(name) extern const char name[];
 
 /**
  * @brief Create a local (stack) buffer called `name` and load it with flash data.

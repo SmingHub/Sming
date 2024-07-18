@@ -1,7 +1,11 @@
 #pragma once
 
 #include <c_types.h>
+#if ESP_IDF_VERSION_MAJOR < 5
 #include <hal/cpu_hal.h>
+#else
+#include <esp_cpu.h>
+#endif
 #include <sming_attr.h>
 #include <esp_idf_version.h>
 

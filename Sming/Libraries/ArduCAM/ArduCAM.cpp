@@ -981,6 +981,7 @@ void ArduCAM::InitCAM()
 				wrSensorReg16_16(0x332E, 0x0020);	//RGB565
 
 			#endif
+			break;
 		}
 		default:
 			

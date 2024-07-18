@@ -91,6 +91,7 @@ When planning OTA updates please check that the displayed partition map correspo
 For example, the partition table requires a free sector so must not overlap other partitions.
 
 Your OTA update process must include a step to write the partition table to the correct location.
+See :doc:`ota-migration`.
 
 It is not necessary to update the bootloader. See :component:`rboot` for further information.
 
@@ -342,7 +343,9 @@ Entries are fixed 32-byte structures, :cpp:class:`Storage::esp_partition_info_t`
 Partition API
 -------------
 
-This is a C++ interface. Some examples::
+This is a C++ interface. Some examples:
+
+.. code-block:: c++
 
    Storage::Partition part = Storage::findPartition("spiffs0"); // Find by name
    if(part) {
@@ -370,7 +373,9 @@ This is usually :cpp:var:`Storage::spiFlash` for the main flash device.
 
 Other devices must be registered via :cpp:func:`Storage::PartitionTable::registerStorageDevice`.
 
-You can query partition entries from a Storage object directly, for example::
+You can query partition entries from a Storage object directly, for example:
+
+.. code-block:: c++
 
    #include <Storage/SpiFlash.h>
 
@@ -399,5 +404,52 @@ See :library:`DiskStorage` for how devices such as SD flash cards are managed.
 API
 ---
 
-.. doxygennamespace:: Storage
+Core Functions
+~~~~~~~~~~~~~~
+
+.. doxygenfunction:: Storage::initialize
+.. doxygenfunction:: Storage::getDevices
+.. doxygenfunction:: Storage::registerDevice
+.. doxygenfunction:: Storage::unRegisterDevice
+.. doxygenfunction:: Storage::findDevice
+.. doxygenfunction:: Storage::findPartition(const String&)
+.. doxygenfunction:: Storage::findPartition(Partition::Type, uint8_t)
+.. doxygenvariable:: Storage::spiFlash
+
+
+Main classes
+~~~~~~~~~~~~
+
+.. doxygenclass:: Storage::Device
    :members:
+.. doxygenclass:: Storage::SpiFlash
+   :members:
+.. doxygenclass:: Storage::Partition
+   :members:
+.. doxygenclass:: Storage::PartitionTable
+   :members:
+.. doxygenclass:: Storage::FileDevice
+   :members:
+
+
+Streaming
+~~~~~~~~~
+
+.. doxygenenum:: Storage::Mode
+.. doxygenclass:: Storage::PartitionStream
+   :members:
+.. doxygenclass:: Storage::StreamDevice
+   :members:
+
+
+Debugging
+~~~~~~~~~
+
+.. doxygennamespace:: Storage::Debug
+   :members:
+
+.. doxygenvariable:: Storage::progMem
+.. doxygenclass:: Storage::ProgMem
+
+.. doxygenvariable:: Storage::sysMem
+.. doxygenclass:: Storage::SysMem

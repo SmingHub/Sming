@@ -1,4 +1,5 @@
 {
+	"name": "Basic OTA sample",
 	"base_config": "spiffs-two-roms",
 	"partitions": {
 		"rom0": {

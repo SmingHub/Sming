@@ -44,5 +44,5 @@ void init()
 	Serial.println("Starting BLE Keyboard sample!");
 	bleKeyboard.begin();
 
-	procTimer.initializeMs(1000, loop).start();
+	procTimer.initializeMs<1000>(loop).start();
 }

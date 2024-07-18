@@ -17,7 +17,7 @@
 */
 
 #include "WString.h"
-#include <string.h>
+#include <cstring>
 #include <stringutil.h>
 #include <stringconversion.h>
 #include <cassert>
@@ -35,12 +35,10 @@ String::String(const char* cstr) : String()
 		copy(cstr, strlen(cstr));
 }
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
 String::String(StringSumHelper&& rval) noexcept : String()
 {
 	move(rval);
 }
-#endif
 
 String::String(char c) : String()
 {
@@ -51,7 +49,7 @@ String::String(char c) : String()
 String::String(unsigned char value, unsigned char base, unsigned char width, char pad) : String()
 {
 	char buf[8 + 8 * sizeof(value)];
-	ultoa(value, buf, base);
+	ultoa_wp(value, buf, base, width, pad);
 	*this = buf;
 }
 
@@ -265,7 +263,6 @@ String& String::copy(flash_string_t pstr, size_t length)
 	return *this;
 }
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
 void String::move(String& rhs)
 {
 	if(rhs.isNull()) {
@@ -279,15 +276,13 @@ void String::move(String& rhs)
 		(void)reserve(rhs_len);
 	}
 
-	// If we already have capacity, copy the data and free rhs buffers
-	if(capacity() >= rhs_len) {
+	// If we have more capacity than the target, copy the data and free rhs buffers
+	if(rhs.sso.set || capacity() > rhs.capacity()) {
 		memmove(buffer(), rhs.buffer(), rhs_len);
 		setlen(rhs_len);
 		rhs.invalidate();
 		return;
 	}
-
-	assert(!rhs.sso.set);
 
 	// We don't have enough space so perform a pointer swap
 	if(!sso.set) {
@@ -300,7 +295,6 @@ void String::move(String& rhs)
 	rhs.ptr.capacity = 0;
 	rhs.ptr.len = 0;
 }
-#endif
 
 String& String::operator=(const String& rhs)
 {
@@ -316,7 +310,6 @@ String& String::operator=(const String& rhs)
 	return *this;
 }
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
 String& String::operator=(StringSumHelper&& rval) noexcept
 {
 	if(this != &rval) {
@@ -324,7 +317,6 @@ String& String::operator=(StringSumHelper&& rval) noexcept
 	}
 	return *this;
 }
-#endif
 
 String& String::operator=(const char* cstr)
 {
@@ -819,13 +811,18 @@ bool String::replace(const char* find_buf, size_t find_len, const char* replace_
 	if(len == 0 || find_len == 0) {
 		return true;
 	}
+	if(replace_buf == nullptr) {
+		replace_len = 0;
+	}
 	int diff = replace_len - find_len;
 	char* readFrom = buf;
 	const char* end = buf + len;
 	char* foundAt;
 	if(diff == 0) {
 		while((foundAt = (char*)memmem(readFrom, end - readFrom, find_buf, find_len)) != nullptr) {
-			memcpy(foundAt, replace_buf, replace_len);
+			if(replace_len) {
+				memcpy(foundAt, replace_buf, replace_len);
+			}
 			readFrom = foundAt + replace_len;
 		}
 	} else if(diff < 0) {
@@ -834,8 +831,10 @@ bool String::replace(const char* find_buf, size_t find_len, const char* replace_
 			size_t n = foundAt - readFrom;
 			memmove(writeTo, readFrom, n);
 			writeTo += n;
-			memcpy(writeTo, replace_buf, replace_len);
-			writeTo += replace_len;
+			if(replace_len) {
+				memcpy(writeTo, replace_buf, replace_len);
+				writeTo += replace_len;
+			}
 			readFrom = foundAt + find_len;
 			len += diff;
 		}
@@ -859,7 +858,9 @@ bool String::replace(const char* find_buf, size_t find_len, const char* replace_
 			readFrom = buf + index + find_len;
 			memmove(readFrom + diff, readFrom, len - (readFrom - buf));
 			len += diff;
-			memcpy(buf + index, replace_buf, replace_len);
+			if(replace_len) {
+				memcpy(buf + index, replace_buf, replace_len);
+			}
 			index--;
 		}
 		setlen(len);

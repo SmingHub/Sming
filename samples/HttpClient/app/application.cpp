@@ -7,19 +7,25 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
+namespace
+{
 HttpClient httpClient;
 
 int onDownload(HttpConnection& connection, bool success)
 {
-	debugf("\n=========[ URL: %s ]============", connection.getRequest()->uri.toString().c_str());
-	debugf("RemoteIP: %s", connection.getRemoteIp().toString().c_str());
-	debugf("Got response code: %d", connection.getResponse()->code);
-	debugf("Success: %d", success);
-	if(connection.getRequest()->method != HTTP_HEAD) {
+	auto& request = *connection.getRequest();
+	auto& response = *connection.getResponse();
+
+	Serial << endl << _F("=========[ URL: ") << request.uri << _F(" ]============") << endl;
+	Serial << _F("RemoteIP: ") << connection.getRemoteIp() << endl;
+	Serial << _F("Got response code: ") << response.code << " " << toString(response.code) << endl;
+	Serial << _F("Success: ") << success << " " << (success ? "OK" : "FAIL") << endl;
+
+	if(request.method != HTTP_HEAD) {
 		Serial.print(_F("Got content: "));
-		auto stream = connection.getResponse()->stream;
+		auto stream = response.stream;
 		if(stream == nullptr || stream->available() == 0) {
-			Serial.println("EMPTY!");
+			Serial.println(_F("EMPTY!"));
 		} else {
 			Serial.copyFrom(stream);
 			Serial.println();
@@ -145,6 +151,8 @@ void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 
 	httpClient.send(putRequest);
 }
+
+} // namespace
 
 void init()
 {

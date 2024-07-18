@@ -25,17 +25,15 @@
 template <typename T, int rawSize> class ObjectQueue : public FIFO<T*, rawSize>
 {
 public:
-	virtual ~ObjectQueue()
-	{
-	}
+	virtual ~ObjectQueue() = default;
 
 	T* peek() const
 	{
-		return FIFO<T*, rawSize>::count() ? FIFO<T*, rawSize>::peek() : nullptr;
+		return this->count() ? FIFO<T*, rawSize>::peek() : nullptr;
 	}
 
 	T* dequeue()
 	{
-		return FIFO<T*, rawSize>::count() ? FIFO<T*, rawSize>::dequeue() : nullptr;
+		return this->count() ? FIFO<T*, rawSize>::dequeue() : nullptr;
 	}
 };

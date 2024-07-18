@@ -18,6 +18,7 @@
 extern void init();
 extern void cpp_core_initialize();
 
+// Normal entry point for user application code from SDK
 extern "C" void user_init(void)
 {
 	// Initialise hardware timers
@@ -39,12 +40,20 @@ extern "C" void user_init(void)
 
 	gdb_init();
 
+	/*
+	 * Load partition information.
+	 * Normally this is done in user_pre_init() but if building without WiFi
+	 * (via esp_no_wifi Component) then user_pre_init() is not called as none of the
+	 * SDK-related partitions are required.
+	 * Calling this a second time is a no-op.
+	 */
 	Storage::initialize();
 
 	init(); // User code init
 }
 
-extern "C" void ICACHE_FLASH_ATTR WEAK_ATTR user_pre_init(void)
+// SDK 3+ calls this method to configure partitions
+extern "C" void user_pre_init(void)
 {
 	Storage::initialize();
 

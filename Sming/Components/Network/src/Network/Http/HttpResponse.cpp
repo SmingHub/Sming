@@ -137,8 +137,8 @@ String HttpResponse::toString() const
 	content += ' ';
 	content += ::toString(code);
 	content += " \r\n";
-	for(unsigned i = 0; i < headers.count(); i++) {
-		content += headers[i];
+	for(auto hdr : headers) {
+		content += hdr;
 	}
 	content += "\r\n";
 

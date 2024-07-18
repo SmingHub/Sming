@@ -25,13 +25,11 @@
 
 #include <HardwarePWM.h>
 
-HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_of_pins), maxduty(0)
+HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_of_pins)
 {
 }
 
-HardwarePWM::~HardwarePWM()
-{
-}
+HardwarePWM::~HardwarePWM() = default;
 
 uint8_t HardwarePWM::getChannel(uint8_t pin)
 {

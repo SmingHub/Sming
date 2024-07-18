@@ -22,7 +22,7 @@ WifiEventsClass& WifiEvents{SmingInternal::Network::events};
 namespace
 {
 // Information Elements
-void print_eid(const uint8_t* data, size_t datalen)
+void print_eid([[maybe_unused]] const uint8_t* data, [[maybe_unused]] size_t datalen)
 {
 #ifdef ENABLE_WIFI_DEBUG
 	for(unsigned i = 0; i < datalen;) {
@@ -100,7 +100,7 @@ void WifiEventsImpl::eventHandler(EventInfo& info)
 	}
 #endif
 
-	unsigned off{0};
+	[[maybe_unused]] unsigned off{0};
 	int rssi{0};
 	MacAddress addr(info.ev.addr);
 
@@ -184,8 +184,8 @@ void WifiEventsImpl::eventHandler(EventInfo& info)
 	}
 
 	case CYW43_EV_PROBREQ_MSG: {
-		auto m = reinterpret_cast<const struct hostap_ieee80211_mgmt*>(&info.ev.data[off]);
 #ifdef WIFI_DEBUG_PROBE
+		auto m = reinterpret_cast<const struct hostap_ieee80211_mgmt*>(&info.ev.data[off]);
 		debug_i("[PB] fc 0x%04x, dur 0x%04x, da %s, sa %s, bssid %s, seq 0x%04x", m->frame_control, m->duration,
 				MacAddress(m->da).toString().c_str(), MacAddress(m->sa).toString().c_str(),
 				MacAddress(m->bssid).toString().c_str(), m->seq_ctrl);

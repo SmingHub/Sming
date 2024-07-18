@@ -153,16 +153,16 @@ static inline uint16_t pgm_read_word_inlined(const void* addr)
  * @{
  */
 
-void* memcpy_P(void* dest, const void* src_P, size_t length);
-int memcmp_P(const void* a1, const void* b1, size_t len);
-size_t strlen_P(const char* src_P);
-char* strcpy_P(char* dest, const char* src_P);
-char* strncpy_P(char* dest, const char* src_P, size_t size);
-int strcmp_P(const char* str1, const char* str2_P);
-int strncmp_P(const char* str1, const char* str2_P, const size_t size);
-int strcasecmp_P(const char* str1, const char* str2_P);
-char* strcat_P(char* dest, const char* src_P);
-char* strstr_P(char* haystack, const char* needle_P);
+void* memcpy_P(void* dest, PGM_VOID_P src_P, size_t length);
+int memcmp_P(const void* buf1, PGM_VOID_P buf2_P, size_t len);
+size_t strlen_P(PGM_VOID_P src_P);
+char* strcpy_P(char* dest, PGM_P src_P);
+char* strncpy_P(char* dest, PGM_P src_P, size_t size);
+int strcmp_P(const char* str1, PGM_P str2_P);
+int strncmp_P(const char* str1, PGM_P str2_P, const size_t size);
+int strcasecmp_P(const char* str1, PGM_P str2_P);
+char* strcat_P(char* dest, PGM_P src_P);
+char* strstr_P(char* haystack, PGM_P needle_P);
 
 #define sprintf_P(s, f_P, ...)                                                                                         \
 	(__extension__({                                                                                                   \

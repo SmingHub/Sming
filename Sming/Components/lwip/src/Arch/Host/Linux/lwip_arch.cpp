@@ -16,12 +16,17 @@
  * If not, see <https://www.gnu.org/licenses/>.
  *
  ****/
+
+// Use implementations defined in <netinet/in.h>
+#define lwip_htonl nthol
+#define lwip_htons htons
+
 #include "../lwip_arch.h"
 #include <hostlib/hostmsg.h>
 #include <lwip/timeouts.h>
 #include <cstring>
 #include <ifaddrs.h>
-#include <errno.h>
+#include <cerrno>
 #include <net/if.h>
 #include <netinet/in.h>
 #include <sys/ioctl.h>
@@ -30,32 +35,65 @@ extern "C" {
 #include <netif/tapif.h>
 }
 
+#ifdef __APPLE__
+#include <fcntl.h>
+#include <net/if_dl.h>
+// For some reason _ip_data from lwip/core/ip.c isn't found, so add it here.
+#include <lwip/ip.h>
+struct ip_globals ip_data;
+#endif
+
 namespace
 {
 struct netif net_if;
 
 void getMacAddress(const char* ifname, uint8_t hwaddr[6])
 {
+	memset(hwaddr, 0, 6);
+
 	if(ifname == nullptr) {
 		return;
 	}
 
-	struct ifreq ifr = {0};
+	struct ifreq ifr {
+	};
 	ifr.ifr_addr.sa_family = AF_INET;
 	strncpy(ifr.ifr_name, ifname, IFNAMSIZ);
 	ifr.ifr_name[IFNAMSIZ - 1] = '\0';
 
+#ifdef __APPLE__
+	struct ifaddrs* list;
+	if(getifaddrs(&list)) {
+		return;
+	}
+	for(auto ifa = list; ifa != nullptr; ifa = ifa->ifa_next) {
+		if(ifa->ifa_addr == nullptr) {
+			continue;
+		}
+		if(ifa->ifa_addr->sa_family != AF_LINK) {
+			continue;
+		}
+		auto sdl = reinterpret_cast<const sockaddr_dl*>(ifa->ifa_addr);
+		host_debug_w("sdl_alen = %u", sdl->sdl_alen);
+		if(sdl->sdl_alen != 6) {
+			continue;
+		}
+		memcpy(hwaddr, LLADDR(sdl), 6);
+		break;
+	}
+	freeifaddrs(list);
+#else
 	int fd = socket(AF_INET, SOCK_DGRAM, 0);
 	int res = ioctl(fd, SIOCGIFHWADDR, &ifr);
 	close(fd);
 
 	if(res == 0) {
 		memcpy(hwaddr, ifr.ifr_hwaddr.sa_data, 6);
-	} else {
-		memset(hwaddr, 0, 6);
 	}
+#endif
 }
 
+#ifndef __APPLE__
 /**
  * @brief Fetch address and network mask for an interface
  * @param ifname nullptr to get first compatible interface
@@ -97,11 +135,27 @@ bool getifaddr(struct lwip_net_config& netcfg)
 	freeifaddrs(list);
 	return res;
 }
+#endif
 
 } // namespace
 
 struct netif* lwip_arch_init(struct lwip_net_config& netcfg)
 {
+#ifdef __APPLE__
+
+	int fd = open("/dev/tap0", O_RDWR);
+	if(fd < 0) {
+		host_debug_e("/dev/tap0 not found");
+		return nullptr;
+	}
+	close(fd);
+
+	memcpy(netcfg.ifname, "tap0", 5);
+	IP4_ADDR(&netcfg.gw, 192, 168, 13, 1);
+	IP4_ADDR(&netcfg.netmask, 255, 255, 255, 0);
+
+#else
+
 	if(!getifaddr(netcfg)) {
 		if(netcfg.ifname[0] == '\0') {
 			host_debug_e("%s", "No compatible interface found");
@@ -111,13 +165,16 @@ struct netif* lwip_arch_init(struct lwip_net_config& netcfg)
 		return nullptr;
 	}
 
+	setenv("PRECONFIGURED_TAPIF", netcfg.ifname, true);
+
+#endif
+
 	if(ip_addr_isany(&netcfg.ipaddr)) {
 		// Choose a default IP address
 		IP4_ADDR(&netcfg.ipaddr, (uint32_t)ip4_addr1(&netcfg.gw), (uint32_t)ip4_addr2(&netcfg.gw),
 				 (uint32_t)ip4_addr3(&netcfg.gw), 10U);
 	}
 
-	setenv("PRECONFIGURED_TAPIF", netcfg.ifname, true);
 	lwip_init();
 	netif_add(&net_if, &netcfg.ipaddr, &netcfg.netmask, &netcfg.gw, nullptr, tapif_init, ethernet_input);
 	getMacAddress(netcfg.ifname, net_if.hwaddr);

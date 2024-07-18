@@ -414,7 +414,7 @@ class Entry(object):
                 res[k] = stringnum(self.type_str())
             elif k == 'subtype':
                 res[k] = stringnum(self.subtype_str())
-            elif v is not None and k != 'name':
+            elif v is not None and k not in ['name', 'unused_before', 'unused_after']:
                 res[k] = v
         return res
 
@@ -583,7 +583,7 @@ class Map(Table):
         # Devices with no defined partitions
         pdevs = set(p.device for p in partitions)
         for dev in config.devices:
-            if not dev in pdevs:
+            if dev not in pdevs:
                 add_unused(partitions, dev, dev.size, -1)
 
         partitions.sort()

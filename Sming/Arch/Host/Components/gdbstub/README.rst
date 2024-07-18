@@ -1,10 +1,16 @@
 GDB Stub for Host
 =================
 
-This defines the command line to use when ``make gdb`` is run. No additional code is required to debug for the Host.
+This defines command lines to run Host debuggers, either the GNU debugger::
 
-If you want to debug your application while having a separate UART then make sure to send the following commands to your debugger::
+   make gdb
 
-   handle SIGUSR1 nostop noprint
+Or LLVM debugger::
 
-This component provides also ``gdbinit`` file containing the optimal settings needed for debugging.
+   make lldb
+
+Generally the GNU debugger is used but for MacOS lldb is the default.
+
+This Component also provides default settings for each in the ``gdbcmds`` and ``lldbcmds`` files.
+
+See :doc:`/debugging/host/index`.

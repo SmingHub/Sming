@@ -47,7 +47,7 @@ struct Handler {
 	void setDelegate(InterruptDelegate delegate)
 	{
 		reset();
-		this->delegate = new InterruptDelegate(delegate);
+		this->delegate = new InterruptDelegate(std::move(delegate));
 		type = Type::delegate;
 	}
 };
@@ -69,7 +69,7 @@ void interruptDelegateCallback(uint32_t gpio)
 	}
 }
 
-void IRAM_ATTR interruptHandler(uint gpio, uint32_t events)
+void IRAM_ATTR interruptHandler(uint gpio, [[maybe_unused]] uint32_t events)
 {
 	auto& handler = handlers[gpio];
 	if(handler.type == Handler::Type::interrupt) {
@@ -95,7 +95,7 @@ void attachInterrupt(uint8_t pin, InterruptDelegate delegateFunction, GPIO_INT_T
 	CHECK_PIN(pin)
 
 	auto& handler = handlers[pin];
-	handler.setDelegate(delegateFunction);
+	handler.setDelegate(std::move(delegateFunction));
 	attachInterruptHandler(pin, type);
 }
 

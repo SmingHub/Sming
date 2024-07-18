@@ -22,7 +22,7 @@ public:
 	{
 	}
 
-	bool headersComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) override
+	bool headersComplete(HttpServerConnection&, HttpRequest& request, HttpResponse& response) override
 	{
 		auto& headers = request.headers;
 		auto authorization = headers[HTTP_HEADER_AUTHORIZATION];

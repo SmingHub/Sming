@@ -38,6 +38,15 @@
 
 namespace NanoTime
 {
+constexpr uint64_t round_ce(double v)
+{
+#ifdef __clang__
+	return uint64_t(v + 0.5);
+#else
+	return round(v);
+#endif
+}
+
 /**
  * @brief Identify units for a scalar quantity of time
  * @note Ordered in increasing unit size, e.g. days > seconds
@@ -107,14 +116,8 @@ constexpr BasicRatio32 unitTicks[UnitMax + 1] = {
  * @brief Class template to define tick std::ratio type
  * @tparam unit
  * @retval std::ratio Ticks per second
- * @note This would be preferable:
- * `template <Unit unit> using UnitTickRatio = std::ratio<unitTicks[unit].num, unitTicks[unit].den>;`
- * But GCC 4.8 doesn't like it (lvalue required as unary '&' operand)
  */
-template <Unit unit> struct UnitTickRatio {
-	static constexpr uint64_t num = unitTicks[unit].num;
-	static constexpr uint64_t den = unitTicks[unit].den;
-};
+template <Unit unit> using UnitTickRatio = std::ratio<unitTicks[unit].num, unitTicks[unit].den>;
 
 // Forward declarations
 template <class Clock_, Unit unit_, uint64_t time_> struct TimeConst;
@@ -248,7 +251,7 @@ template <uint64_t time, Unit unitsFrom, Unit unitsTo,
 		  typename R = std::ratio_divide<UnitTickRatio<unitsTo>, UnitTickRatio<unitsFrom>>>
 constexpr uint64_t convert()
 {
-	return ({ round(double(time) * R::num / R::den); });
+	return ({ round_ce(double(time) * R::num / R::den); });
 }
 
 /**
@@ -510,7 +513,7 @@ template <class Clock_, Unit unit_, uint64_t time_> struct TimeConst {
 	 */
 	static constexpr uint64_t ticks()
 	{
-		return round(double(time_) * TicksPerUnit::num / TicksPerUnit::den);
+		return round_ce(double(time_) * TicksPerUnit::num / TicksPerUnit::den);
 	}
 
 	/**
@@ -528,7 +531,7 @@ template <class Clock_, Unit unit_, uint64_t time_> struct TimeConst {
 	 */
 	static constexpr uint64_t clockTime()
 	{
-		return round(double(ticks()) * TicksPerUnit::den / TicksPerUnit::num);
+		return round_ce(double(ticks()) * TicksPerUnit::den / TicksPerUnit::num);
 	}
 
 	/**
@@ -589,8 +592,8 @@ template <class Clock_, uint64_t ticks_> struct TicksConst {
 
 	template <Unit unit>
 	using TimeConst = TimeConst<Clock, unit,
-								TimeType(round(double(ticks_) * Clock::template TicksPerUnit<unit>::den /
-											   Clock::template TicksPerUnit<unit>::num))>;
+								TimeType(round_ce(double(ticks_) * Clock::template TicksPerUnit<unit>::den /
+												  Clock::template TicksPerUnit<unit>::num))>;
 
 	/**
 	 * @brief Get the time for the tick count in a specific time unit

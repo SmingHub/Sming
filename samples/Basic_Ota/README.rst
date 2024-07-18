@@ -14,8 +14,8 @@ Esp8266
 ~~~~~~~
 On Esp8266 we use rBoot as bootloader.
 When using rBoot big flash support with multiple 1MB slots only one rom
-image needs to be created. If you don’t want to use big flash support
-(e.g. for a device with smaller flash) see the separate instructions
+image needs to be created. If you don't want to use big flash support
+(e.g. for a device with smaller flash) see the separate instructions
 below. You can easily take the ota files and add them to your own
 project to add OTA support.
 
@@ -55,7 +55,7 @@ roms. If you are flashing a single rom to multiple 1MB flash blocks, all using
 the same offset inside their 1MB blocks, only a single rom is created.
 See :component:`rboot` for further details.
 
--  If using a very small flash (e.g. 512k) there may be no room for a
+-  If using a very small flash (e.g. 512k) there may be no room for a
    spiffs filesystem, so use *HWCONFIG = standard*
 -  After building copy all the rom*.bin files to the root of your web
    server.

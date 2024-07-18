@@ -34,9 +34,7 @@
 class AccessPointClass
 {
 public:
-	virtual ~AccessPointClass()
-	{
-	}
+	virtual ~AccessPointClass() = default;
 
 	/** @brief  Enable or disable WiFi AP
      *  @param  enabled True to enable AP. False to disable.

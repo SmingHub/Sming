@@ -34,7 +34,7 @@ bool YeelightBulb::connect()
 		return true;
 	}
 
-	connection.reset(new TcpClient(TcpClientDataDelegate(&YeelightBulb::onResponse, this)));
+	connection = std::make_unique<TcpClient>(TcpClientDataDelegate(&YeelightBulb::onResponse, this));
 
 	connection->setTimeOut(USHRT_MAX); // Stay connected forever
 
@@ -49,11 +49,11 @@ void YeelightBulb::sendCommand(const String& method, const Vector<String>& param
 	doc["id"] = requestId++;
 	doc["method"] = method;
 	auto arr = doc.createNestedArray("params");
-	for(unsigned i = 0; i < params.count(); i++) {
-		if(isNumeric(params[i])) {
-			arr.add(params[i].toInt());
+	for(auto& param : params) {
+		if(isNumeric(param)) {
+			arr.add(param.toInt());
 		} else {
-			arr.add(params[i]);
+			arr.add(param);
 		}
 	}
 	String request = Json::serialize(doc);
@@ -141,7 +141,7 @@ void YeelightBulb::parsePower(const String& value)
 	debugf("LED state: %s", value.c_str());
 }
 
-bool YeelightBulb::onResponse(TcpClient& client, char* data, int size)
+bool YeelightBulb::onResponse(TcpClient&, char* data, int size)
 {
 	String source(data, size);
 	debugf("LED > %s", source.c_str());

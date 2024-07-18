@@ -1,4 +1,5 @@
 {
+    "name": "Basic IFS sample (ESP32)",
     "base_config": "basic_ifs",
     "arch": "Esp32",
     "partitions": {

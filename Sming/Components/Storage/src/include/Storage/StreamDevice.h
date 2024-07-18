@@ -14,10 +14,19 @@ namespace Storage
 class StreamDevice : public Device
 {
 public:
+	/**
+	 * @brief Create a Device object using data from a stream with restricted size
+	 * @param stream Backing data source for this device
+	 * @param size Size of device in bytes
+	 */
 	StreamDevice(IDataSourceStream* stream, size_t size) : Device(nameOf(stream), size), mStream(stream)
 	{
 	}
 
+	/**
+	 * @brief Create a Device object using data from a stream with all available data
+	 * @param stream Backing data source for this device
+	 */
 	StreamDevice(IDataSourceStream* stream) : StreamDevice(stream, size_t(stream->available()))
 	{
 	}

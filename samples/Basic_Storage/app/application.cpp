@@ -3,6 +3,9 @@
 #include <Storage/ProgMem.h>
 #include <Storage/Debug.h>
 
+namespace
+{
+// Use this source file as contents of our test partitions
 IMPORT_FSTR(FS_app, PROJECT_DIR "/app/application.cpp")
 
 void listSpiffsPartitions()
@@ -12,16 +15,17 @@ void listSpiffsPartitions()
 		Serial << _F(">> Mounting '") << part.name() << "' ..." << endl;
 		bool ok = spiffs_mount(part);
 		Serial.println(ok ? "OK, listing files:" : "Mount failed!");
-		if(ok) {
-			Directory dir;
-			if(dir.open()) {
-				while(dir.next()) {
-					Serial.print("  ");
-					Serial.println(dir.stat().name);
-				}
-			}
-			Serial << dir.count() << _F(" files found") << endl << endl;
+		if(!ok) {
+			continue;
 		}
+
+		Directory dir;
+		if(dir.open()) {
+			while(dir.next()) {
+				Serial << "  " << dir.stat().name << endl;
+			}
+		}
+		Serial << dir.count() << _F(" files found") << endl << endl;
 	}
 }
 
@@ -37,7 +41,7 @@ void printPart(Storage::Partition part)
 		String s = part.getDeviceName();
 		s += '/';
 		s += part.name();
-		m_printHex(s.c_str(), buf, std::min(128U, bufSize));
+		m_printHex(s.c_str(), buf, std::min(size_t(128U), bufSize));
 		Serial << _F("Elapsed: ") << elapsed.toString() << endl;
 		if(elapsed != 0) {
 			Serial << _F("Speed:   ") << 1000 * bufSize / elapsed << " KB/s" << endl;
@@ -55,6 +59,8 @@ void printPart(const String& partitionName)
 		printPart(part);
 	}
 }
+
+} // namespace
 
 void init()
 {
@@ -86,7 +92,11 @@ void init()
 	printPart(part);
 
 	Serial.println(_F("** Reading SysMem device (RAM)"));
-	part = Storage::sysMem.editablePartitions().add(F("fs_app RAM"), FS_app, {Storage::Partition::Type::data, 100});
+	const size_t bufferSize{4096};
+	auto buffer = std::make_unique<char[]>(bufferSize);
+	FS_app.readFlash(0, buffer.get(), bufferSize);
+	part = Storage::sysMem.editablePartitions().add(F("fs_app RAM"), {Storage::Partition::Type::data, 100},
+													storage_size_t(buffer.get()), bufferSize);
 	printPart(part);
 	printPart(part);
 	printPart(part);

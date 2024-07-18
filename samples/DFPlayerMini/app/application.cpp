@@ -3,37 +3,40 @@
 
 #define GPIO_LED 2
 
-Timer timerDFPlayer;
-Timer timerLedBlink;
-DFRobotDFPlayerMini player;
-bool ledState = true;
-
-void blink()
+namespace
 {
-	digitalWrite(GPIO_LED, ledState);
-	ledState = !ledState;
-}
+SimpleTimer timer;
+DFRobotDFPlayerMini player;
 
 void nextSong()
 {
 	player.next();
 }
 
+void checkReady()
+{
+	static bool ledState;
+
+	ledState = !ledState;
+	digitalWrite(GPIO_LED, ledState);
+
+	if(!player.begin(Serial)) {
+		return;
+	}
+
+	digitalWrite(GPIO_LED, 0);
+
+	player.volume(15);
+
+	timer.initializeMs<10000>(nextSong).start();
+}
+
+} // namespace
+
 void init()
 {
 	Serial.begin(9600);
 
 	pinMode(GPIO_LED, OUTPUT);
-	timerLedBlink.initializeMs(100, blink).start();
-
-	while(!player.begin(Serial)) {
-		delay(500);
-	}
-
-	timerLedBlink.stop();
-	digitalWrite(GPIO_LED, 0);
-
-	player.volume(15);
-
-	timerDFPlayer.initializeMs(10000, nextSong).start();
+	timer.initializeMs<250>(checkReady).start();
 }

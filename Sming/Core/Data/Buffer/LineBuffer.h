@@ -14,14 +14,47 @@
 
 #include <cstdint>
 #include <cstring>
+#include <WString.h>
+#include <Data/Stream/ReadWriteStream.h>
 
 /**
  * @brief Class to enable buffering of a single line of text, with simple editing
  * @note We define this as a template class for simplicity, no need for separate buffer memory management
  */
-template <uint16_t BUFSIZE> class LineBuffer
+class LineBufferBase
 {
 public:
+	LineBufferBase(char* buffer, uint16_t size) : buffer(buffer), size(size)
+	{
+	}
+
+	/**
+	 * @brief Returned from `processKey` method directing caller
+	 */
+	enum class Action {
+		none,	  ///< Do nothing, ignore the key
+		clear,	 ///< Line is cleared: typically perform a carriage return
+		echo,	  ///< Key should be echoed
+		backspace, ///< Perform backspace edit, e.g. output "\b \b"
+		submit,	///< User hit return, process line and clear it
+	};
+
+	/**
+	 * @brief Process all available data from `input`
+	 * @param input Source of keystrokes
+	 * @param output The output stream (e.g. Serial) for echoing
+	 * @retval Action: none, clear or submit
+	 */
+	Action process(Stream& input, ReadWriteStream& output);
+
+	/**
+	 * @brief Process a keypress in a consistent manner for console editing
+	 * @param key The keypress value
+	 * @param output The output stream (e.g. Serial) for echoing, if required
+	 * @retval Action
+	 */
+	Action processKey(char key, ReadWriteStream* output = nullptr);
+
 	/**
 	 * @brief Add a character to the buffer
 	 * @retval char Character added to buffer, '\0' if ignored, '\n' if line is complete
@@ -34,6 +67,20 @@ public:
 	void clear()
 	{
 		length = 0;
+	}
+
+	explicit operator bool() const
+	{
+		return length != 0;
+	}
+
+	/**
+	 * @brief Copy buffer contents into a String
+	 * @retval String
+	 */
+	explicit operator String() const
+	{
+		return length ? String(buffer, length) : nullptr;
 	}
 
 	/**
@@ -72,44 +119,29 @@ public:
 	 */
 	bool backspace();
 
+	size_t printTo(Print& p) const
+	{
+		return p.write(buffer, length);
+	}
+
 private:
-	char buffer[BUFSIZE] = {'\0'}; ///< The text buffer
-	uint16_t length = 0;		   ///< Number of characters stored
+	char* buffer;
+	uint16_t size;
+	uint16_t length{0};		///< Number of characters stored
+	char previousKey{'\0'}; ///< For processing CR/LF
 };
 
-template <uint16_t BUFSIZE> char LineBuffer<BUFSIZE>::addChar(char c)
+/**
+ * @brief Class to enable buffering of a single line of text, with simple editing
+ * @note We define this as a template class for simplicity, no need for separate buffer memory management
+ */
+template <uint16_t BUFSIZE> class LineBuffer : public LineBufferBase
 {
-	if(c == '\n' || c == '\r') {
-		return '\n';
+public:
+	LineBuffer() : LineBufferBase(buffer, BUFSIZE)
+	{
 	}
 
-	if(c >= 0x20 && c < 0x7f && length < (BUFSIZE - 1)) {
-		buffer[length++] = c;
-		buffer[length] = '\0';
-		return c;
-	}
-
-	return '\0';
-}
-
-template <uint16_t BUFSIZE> bool LineBuffer<BUFSIZE>::backspace()
-{
-	if(length == 0) {
-		return false;
-	} else {
-		--length;
-		buffer[length] = '\0';
-		return true;
-	}
-}
-
-template <uint16_t BUFSIZE> bool LineBuffer<BUFSIZE>::startsWith(const char* text) const
-{
-	auto len = strlen(text);
-	return memcmp(buffer, text, len) == 0;
-}
-
-template <uint16_t BUFSIZE> bool LineBuffer<BUFSIZE>::contains(const char* text) const
-{
-	return strstr(buffer, text) != nullptr;
-}
+private:
+	char buffer[BUFSIZE]{};
+};

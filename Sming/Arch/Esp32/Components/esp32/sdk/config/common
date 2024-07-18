@@ -23,6 +23,11 @@ CONFIG_ETH_USE_SPI_ETHERNET=y
 CONFIG_ETH_SPI_ETHERNET_W5500=y
 CONFIG_ETH_SPI_ETHERNET_DM9051=y
 
+# WiFi
+CONFIG_ESP_WIFI_ENABLE_WPA3_SAE=n
+CONFIG_ESP_WIFI_ENABLE_WPA3_OWE_STA=n
+CONFIG_ESP_WIFI_SOFTAP_SAW_SUPPORT=n
+
 # Bluetooth
 CONFIG_BT_ENABLED=y
 CONFIG_BT_BLUEDROID_ENABLED=n
@@ -53,5 +58,8 @@ CONFIG_MBEDTLS_CERTIFICATE_BUNDLE=n
 # Don't change provided flash configuration information
 CONFIG_ESPTOOLPY_FLASHSIZE_DETECT=n
 
-#' We'll handle WDT initialisation ourselves thankyouverymuch
+# We'll handle WDT initialisation ourselves thankyouverymuch
 CONFIG_ESP_TASK_WDT_INIT=n
+
+# Issues with dual-core CPU, see #2653
+CONFIG_FREERTOS_UNICORE=y

@@ -36,7 +36,7 @@
 
 /*!
     @defined    CHAR_WIDTH
-    @abstract   Character witdth of the display, expressed in pixeles per character.
+    @abstract   Character width of the display, expressed in pixeles per character.
 */
 #define CHAR_WIDTH  5
 

@@ -29,10 +29,12 @@ public:
 	{
 		System.queueCallback(
 			[](void* param) {
-				Serial.println(_F("timer1 expired"));
-				auto tmr = static_cast<HardwareTimerTest*>(param);
-				if(++tmr->count == 5) {
-					tmr->stop();
+				auto self = static_cast<CallbackTimerTest*>(param);
+				++self->timer1.count;
+				Serial << self->timer1.count << _F(" timer1 expired") << endl;
+				if(self->timer1.count == 5) {
+					self->timer1.stop();
+					self->timer1complete();
 				}
 			},
 			arg);
@@ -58,9 +60,15 @@ public:
 		SHOW_SIZE(Timer1TestApi);
 		SHOW_SIZE(HardwareTimerTest);
 
-		timer1.initializeMs<500>(timer1Callback, &timer1);
+		timer1.initializeMs<500>(timer1Callback, this);
 		timer1.start();
 
+		Serial << _F("Waiting for timer1 callback test to complete") << endl;
+		pending();
+	}
+
+	void timer1complete()
+	{
 		statusTimer.initializeMs<1000>([this]() {
 			bool done = false;
 			++statusTimerCount;
@@ -71,9 +79,6 @@ public:
 				statusTimer.stop();
 				Serial.print("statusTimer stopped: ");
 				Serial.println(statusTimer);
-
-				// Release any allocated delegate memory
-				timer64.setCallback(TimerDelegate(nullptr));
 				done = true;
 			}
 
@@ -81,7 +86,7 @@ public:
 			String s;
 			s += system_get_time();
 			s += " ";
-			s += statusTimer;
+			s += String(statusTimer);
 			s += " fired, timercount = ";
 			s += activeTimerCount;
 			s += ", mem = ";
@@ -104,17 +109,6 @@ public:
 		statusTimer.start();
 
 		Serial.println(statusTimer);
-
-		{
-			auto tmp = new Timer;
-			tmp->initializeMs<1200>(
-				[](void* arg) {
-					auto self = static_cast<CallbackTimerTest*>(arg);
-					Serial << self->timer64 << _F(" fired") << endl;
-				},
-				this);
-			tmp->startOnce();
-		}
 
 		if(1) {
 			longTimer.setCallback([this]() {
@@ -214,7 +208,6 @@ public:
 private:
 	Timer statusTimer;
 	unsigned statusTimerCount = 0;
-	Timer timer64;
 	HardwareTimerTest timer1;
 	Timer longTimer;
 	uint32_t longStartTicks = 0;
@@ -235,7 +228,7 @@ public:
 	{
 	}
 
-	void execute()
+	void execute() override
 	{
 		api.setInterval(api.maxTicks());
 
@@ -299,7 +292,7 @@ public:
 	{
 	}
 
-	void execute()
+	void execute() override
 	{
 		Serial.println(timer);
 

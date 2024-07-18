@@ -77,8 +77,8 @@ String HttpRequest::toString() const
 	if(!headers.contains(HTTP_HEADER_HOST)) {
 		content += headers.toString(HTTP_HEADER_HOST, uri.getHostWithPort());
 	}
-	for(unsigned i = 0; i < headers.count(); i++) {
-		content += headers[i];
+	for(auto hdr : headers) {
+		content += hdr;
 	}
 
 	if(!headers.contains(HTTP_HEADER_CONTENT_LENGTH)) {

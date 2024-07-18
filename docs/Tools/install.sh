@@ -21,6 +21,6 @@ case $DIST in
         ;;
 esac
 
-$PKG_INSTALL ${PACKAGES[*]}
+$PKG_INSTALL "${PACKAGES[@]}"
 
-python3 -m pip install -r $SMING_HOME/../docs/requirements.txt
+python3 -m pip install -r "$SMING_HOME/../docs/requirements.txt"

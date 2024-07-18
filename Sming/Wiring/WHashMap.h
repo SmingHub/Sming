@@ -165,7 +165,7 @@ public:
 			return ElementConst{map.keyAt(index), map.valueAt(index)};
 		}
 
-	private:
+	protected:
 		Map& map;
 		unsigned index{0};
 	};
@@ -185,9 +185,7 @@ public:
     || | Default constructor
     || #
     */
-	HashMap()
-	{
-	}
+	HashMap() = default;
 
 	/*
     || @constructor

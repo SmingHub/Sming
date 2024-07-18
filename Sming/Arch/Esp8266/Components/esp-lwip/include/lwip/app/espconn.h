@@ -228,7 +228,7 @@ extern sint8 espconn_create(struct espconn *espconn);
 
 /******************************************************************************
  * FunctionName : espconn_tcp_get_max_con
- * Description  : get the number of simulatenously active TCP connections
+ * Description  : get the number of simultaneously active TCP connections
  * Parameters   : none
  * Returns      : none
 *******************************************************************************/
@@ -237,7 +237,7 @@ extern uint8 espconn_tcp_get_max_con(void);
 
 /******************************************************************************
  * FunctionName : espconn_tcp_set_max_con
- * Description  : set the number of simulatenously active TCP connections
+ * Description  : set the number of simultaneously active TCP connections
  * Parameters   : num -- total number
  * Returns      : none
 *******************************************************************************/
@@ -245,7 +245,7 @@ extern uint8 espconn_tcp_get_max_con(void);
 extern sint8 espconn_tcp_set_max_con(uint8 num);
 /******************************************************************************
  * FunctionName : espconn_tcp_get_max_con_allow
- * Description  : get the count of simulatenously active connections on the server
+ * Description  : get the count of simultaneously active connections on the server
  * Parameters   : espconn -- espconn to get the count
  * Returns      : result
 *******************************************************************************/
@@ -254,7 +254,7 @@ extern sint8 espconn_tcp_get_max_con_allow(struct espconn *espconn);
 
 /******************************************************************************
  * FunctionName : espconn_tcp_set_max_con_allow
- * Description  : set the count of simulatenously active connections on the server
+ * Description  : set the count of simultaneously active connections on the server
  * Parameters   : espconn -- espconn to set the count
  * Returns      : result
 *******************************************************************************/

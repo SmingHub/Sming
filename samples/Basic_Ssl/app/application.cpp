@@ -11,13 +11,35 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-Timer procTimer;
+namespace
+{
+// Use the Gibson Research fingerprints web page as an example. Unlike Google, these fingerprints change very infrequently.
+DEFINE_FSTR(REQUEST_URL, "https://www.grc.com/fingerprints.htm")
+
+const Ssl::Fingerprint::Cert::Sha1 sha1Fingerprint PROGMEM = {
+	0xA6, 0x8F, 0x8C, 0x47, 0x6B, 0xD0, 0xDE, 0x9E, 0x1D, 0x18,
+	0x4A, 0x0A, 0x51, 0x4D, 0x90, 0x11, 0x31, 0x93, 0x40, 0x6D,
+
+};
+
+const Ssl::Fingerprint::Cert::Sha256 certSha256Fingerprint PROGMEM = {
+	0xDA, 0x2C, 0xF7, 0x62, 0x09, 0x2C, 0x0A, 0x7B, 0x88, 0xA0, 0xDA, 0x65, 0xF9, 0x29, 0x45, 0x97,
+	0xA6, 0xDB, 0xAA, 0x2C, 0x80, 0xFD, 0x75, 0x0A, 0xD9, 0xA0, 0x75, 0xEE, 0x64, 0xEE, 0x06, 0x68,
+};
+
+const Ssl::Fingerprint::Pki::Sha256 publicKeyFingerprint PROGMEM = {
+	// Out of date
+	0xad, 0xcc, 0x21, 0x92, 0x8e, 0x65, 0xc7, 0x54, 0xac, 0xac, 0xb8, 0x2f, 0x12, 0x95, 0x2e, 0x19,
+	0x7d, 0x15, 0x7e, 0x32, 0xbe, 0x90, 0x27, 0x43, 0xab, 0xfe, 0xf1, 0xf2, 0xf2, 0xe1, 0x9c, 0x35,
+};
+
 HttpClient downloadClient;
 OneShotFastMs connectTimer;
+SimpleTimer heapTimer;
 
 void printHeap()
 {
-	Serial.println(_F("Heap statistics"));
+	Serial << _F("Heap statistics") << endl;
 	Serial << _F("  Free bytes:  ") << system_get_free_heap_size() << endl;
 #ifdef ENABLE_MALLOC_COUNT
 	Serial << _F("  Used:        ") << MallocCount::getCurrent() << endl;
@@ -40,8 +62,8 @@ int onDownload(HttpConnection& connection, bool success)
 	Serial << _F(", received ") << stream->available() << _F(" bytes") << endl;
 
 	auto& headers = connection.getResponse()->headers;
-	for(unsigned i = 0; i < headers.count(); ++i) {
-		Serial.print(headers[i]);
+	for(auto hdr : headers) {
+		Serial.print(hdr);
 	}
 
 	auto ssl = connection.getSsl();
@@ -61,22 +83,6 @@ void grcSslInit(Ssl::Session& session, HttpRequest& request)
 {
 	debug_i("Initialising SSL session for GRC");
 
-	// Use the Gibson Research fingerprints web page as an example. Unlike Google, these fingerprints change very infrequently.
-	static const Ssl::Fingerprint::Cert::Sha1 sha1Fingerprint PROGMEM = {
-		0xC3, 0xFB, 0x91, 0x85, 0xCC, 0x6B, 0x4C, 0x7D, 0xE7, 0x18,
-		0xED, 0xD8, 0x00, 0xD2, 0x84, 0xE7, 0x6E, 0x97, 0x06, 0x07,
-	};
-
-	static const Ssl::Fingerprint::Cert::Sha256 certSha256Fingerprint PROGMEM = {
-		0xC3, 0xFB, 0x91, 0x85, 0xCC, 0x6B, 0x4C, 0x7D, 0xE7, 0x18,
-		0xED, 0xD8, 0x00, 0xD2, 0x84, 0xE7, 0x6E, 0x97, 0x06, 0x07,
-	};
-
-	static const Ssl::Fingerprint::Pki::Sha256 publicKeyFingerprint PROGMEM = {
-		0xad, 0xcc, 0x21, 0x92, 0x8e, 0x65, 0xc7, 0x54, 0xac, 0xac, 0xb8, 0x2f, 0x12, 0x95, 0x2e, 0x19,
-		0x7d, 0x15, 0x7e, 0x32, 0xbe, 0x90, 0x27, 0x43, 0xab, 0xfe, 0xf1, 0xf2, 0xf2, 0xe1, 0x9c, 0x35,
-	};
-
 	// Trust certificate only if it matches the SHA1 fingerprint...
 	session.validators.pin(sha1Fingerprint);
 
@@ -95,12 +101,11 @@ void grcSslInit(Ssl::Session& session, HttpRequest& request)
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
-	Serial.print(F("Connected. Got IP: "));
-	Serial.println(ip);
+	Serial << _F("Connected. Got IP: ") << ip << endl;
 
 	connectTimer.start();
 
-	auto request = new HttpRequest(F("https://www.grc.com/fingerprints.htm"));
+	auto request = new HttpRequest(String(REQUEST_URL));
 	request->onSslInit(grcSslInit);
 	request->onRequestComplete(onDownload);
 	request->setResponseStream(new CounterStream);
@@ -112,6 +117,8 @@ void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reas
 	Serial.println(F("I'm NOT CONNECTED!"));
 }
 
+} // namespace
+
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE);
@@ -122,8 +129,7 @@ void init()
 	MallocCount::enableLogging(true);
 #endif
 
-	auto heapTimer = new Timer;
-	heapTimer->initializeMs<5000>(printHeap).start();
+	heapTimer.initializeMs<5000>(printHeap).start();
 
 	// Setup the WIFI connection
 	WifiStation.enable(true);

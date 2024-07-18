@@ -164,13 +164,10 @@ void TcpServer::shutdown()
 		return;
 	}
 
-	for(unsigned i = 0; i < connections.count(); i++) {
-		TcpConnection* connection = connections[i];
-		if(connection == nullptr) {
-			continue;
+	for(auto& connection : connections) {
+		if(connection != nullptr) {
+			connection->setTimeOut(1);
 		}
-
-		connection->setTimeOut(1);
 	}
 }
 

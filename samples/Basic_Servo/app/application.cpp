@@ -7,6 +7,8 @@
 #include <Libraries/Servo/ServoChannel.h>
 #include <Libraries/Servo/Servo.h>
 
+namespace
+{
 // Un-comment to use raw time values instead of degrees for servo positioning
 //#define UPDATE_RAW
 
@@ -31,12 +33,10 @@ protected:
 
 private:
 	Timer timer;
-	uint16 centerdelay = 0;
-	uint32 value = 0;
+	uint16_t centerdelay = 0;
+	uint32_t value = 0;
 	int degree = 0;
 };
-
-static MyServoChannel channels[4];
 
 void MyServoChannel::calcValue()
 {
@@ -63,10 +63,10 @@ void MyServoChannel::calcValue()
 		value = 0; // overflow and restart linear ramp
 	}
 
-	Serial << " value = " << value;
+	Serial << _F(" value = ") << value;
 
 	if(!setValue(value)) {
-		Serial << ": setValue(" << value << ") failed!";
+		Serial << _F(": setValue(") << value << _F(") failed!");
 	}
 
 #else
@@ -77,10 +77,10 @@ void MyServoChannel::calcValue()
 		++degree;
 	}
 
-	Serial << " degree = " << degree;
+	Serial << _F(" degree = ") << degree;
 
 	if(!setDegree(degree)) {
-		Serial << ": setDegree(" << degree << ") failed!";
+		Serial << _F(": setDegree(") << degree << _F(") failed!");
 	}
 
 #endif
@@ -102,6 +102,10 @@ void MyServoChannel::calcValue()
 	Serial.println();
 }
 
+MyServoChannel channels[4];
+
+} // namespace
+
 void init()
 {
 	Serial.begin(SERIAL_BAUD_RATE);
@@ -109,7 +113,7 @@ void init()
 	Serial.setTxWait(false);
 	Serial.setTxBufferSize(1024);
 
-	Serial.println("Init Basic Servo Sample");
+	Serial.println(_F("Init Basic Servo Sample"));
 	System.setCpuFrequency(CpuCycleClockNormal::cpuFrequency());
 
 #ifdef ARCH_HOST

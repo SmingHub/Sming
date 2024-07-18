@@ -50,7 +50,9 @@ public:
 	 */
 	virtual int setFileMap(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response);
 
-	void shutdown(HttpServerConnection& connection) override;
+	void shutdown(HttpServerConnection&) override
+	{
+	}
 
 private:
 	HttpFilesMapper mapper;

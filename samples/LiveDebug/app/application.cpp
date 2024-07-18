@@ -8,6 +8,8 @@
 
 #define LED_PIN 2 // Note: LED is attached to UART1 TX output
 
+namespace
+{
 // Max length of debug command
 const unsigned MAX_COMMAND_LENGTH = 64;
 
@@ -49,18 +51,15 @@ Timer procTimer;
 #define CALLBACK_ATTR GDB_IRAM_ATTR
 #endif
 
-// See blink()
-bool ledState = true;
-
 // A simple log file stored on the host
-static GdbFileStream logFile;
+GdbFileStream logFile;
 #define LOG_FILENAME "testlog.txt"
 
 // Handles messages from SDK
-static OsMessageInterceptor osMessageInterceptor;
+OsMessageInterceptor osMessageInterceptor;
 
 // Supports `consoleOff` command to prevent re-enabling when debugger is attached
-bool consoleOffRequested = false;
+bool consoleOffRequested;
 
 //
 IFS::Gdb::FileSystem gdbfs;
@@ -75,8 +74,10 @@ void readConsole();
 */
 void CALLBACK_ATTR blink()
 {
-	digitalWrite(LED_PIN, ledState);
+	static bool ledState;
+
 	ledState = !ledState;
+	digitalWrite(LED_PIN, ledState);
 }
 
 void showPrompt()
@@ -96,9 +97,7 @@ void showPrompt()
 
 void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCharsCount)
 {
-	static unsigned commandLength;
-	const unsigned MAX_COMMAND_LENGTH = 16;
-	static char commandBuffer[MAX_COMMAND_LENGTH + 1];
+	static LineBuffer<MAX_COMMAND_LENGTH> commandBuffer;
 
 	// Error detection
 	unsigned status = Serial.getStatus();
@@ -118,38 +117,25 @@ void onDataReceived(Stream& source, char arrivedChar, unsigned short availableCh
 		}
 		// Discard what is likely to be garbage
 		Serial.clear(SERIAL_RX_ONLY);
-		commandLength = 0;
+		commandBuffer.clear();
 		showPrompt();
 		return;
 	}
 
-	int c;
-	while((c = Serial.read()) >= 0) {
-		switch(c) {
-		case '\b': // delete (backspace)
-		case 0x7f: // xterm ctrl-?
-			if(commandLength > 0) {
-				--commandLength;
-				Serial.print(_F("\b \b"));
-			}
-			break;
-		case '\r':
-		case '\n':
-			if(commandLength > 0) {
-				Serial.println();
-				String cmd(commandBuffer, commandLength);
-				commandLength = 0;
-				Serial.clear(SERIAL_RX_ONLY);
-				handleCommand(cmd);
-			}
-			showPrompt();
-			break;
-		default:
-			if(c >= 0x20 && c <= 0x7f && commandLength < MAX_COMMAND_LENGTH) {
-				commandBuffer[commandLength++] = c;
-				Serial.print(char(c));
-			}
+	switch(commandBuffer.process(source, Serial)) {
+	case LineBufferBase::Action::clear:
+		showPrompt();
+		break;
+	case LineBufferBase::Action::submit: {
+		if(commandBuffer) {
+			handleCommand(String(commandBuffer));
+			commandBuffer.clear();
 		}
+		showPrompt();
+		break;
+	}
+	default:
+		break;
 	}
 }
 
@@ -231,6 +217,7 @@ void asyncReadCallback(const GdbSyscallInfo& info)
 		Serial << _F("readFileAsync: total = ") << transfer.total << _F(", elapsed = ") << elapsed << _F(" ms, av. ")
 			   << bps << _F(" bytes/sec") << endl;
 		readConsole();
+		break;
 	}
 
 	default:;
@@ -413,7 +400,7 @@ COMMAND_HANDLER(read0)
 					  "At GDB prompt, enter `set $pc = $pc + 3` to skip offending instruction,\r\n"
 					  "then enter `c` to continue"));
 	Serial.flush();
-	uint8_t value = *(uint8_t*)0;
+	uint8_t value = *(volatile uint8_t*)0;
 	Serial << _F("Value at address 0 = 0x") << String(value, HEX, 2) << endl;
 	return true;
 }
@@ -424,7 +411,7 @@ COMMAND_HANDLER(write0)
 					  "At GDB prompt, enter `set $pc = $pc + 3` to skip offending instruction,\r\n"
 					  "then enter `c` to continue"));
 	Serial.flush();
-	*(uint8_t*)0 = 0;
+	*(volatile uint8_t*)0 = 0;
 	Serial.println(_F("...still running!"));
 	return true;
 }
@@ -434,7 +421,7 @@ COMMAND_HANDLER(write0)
  * @param msg
  * @retval bool true if we want to report this
  */
-static bool __noinline parseOsMessage(OsMessage& msg)
+bool __noinline parseOsMessage(OsMessage& msg)
 {
 	m_printf(_F("[OS] %s\r\n"), msg.getBuffer());
 	if(msg.startsWith(_F("E:M "))) {
@@ -452,7 +439,7 @@ static bool __noinline parseOsMessage(OsMessage& msg)
  * @brief Called when the OS outputs a debug message using os_printf, etc.
  * @param msg The message
  */
-static void onOsMessage(OsMessage& msg)
+void onOsMessage(OsMessage& msg)
 {
 	// Note: We do the check in a separate function to avoid messing up the stack pointer
 	if(parseOsMessage(msg)) {
@@ -638,6 +625,14 @@ void readConsole()
 	}));
 }
 
+void printTimerDetails()
+{
+	Serial << procTimer << ", maxTicks = " << procTimer.maxTicks()
+		   << ", maxTime = " << procTimer.micros().ticksToTime(procTimer.maxTicks()).value() << endl;
+}
+
+} // namespace
+
 extern "C" void gdb_on_attach(bool attached)
 {
 	debug_i("GdbAttach(%d)", attached);
@@ -660,12 +655,6 @@ extern "C" void gdb_on_attach(bool attached)
 		// Note: GDB is already detached so underlying call to gdb_syscall_close() will fail silently
 		logFile.close();
 	}
-}
-
-static void printTimerDetails()
-{
-	Serial << procTimer << ", maxTicks = " << procTimer.maxTicks()
-		   << ", maxTime = " << procTimer.micros().ticksToTime(procTimer.maxTicks()).value() << endl;
 }
 
 void GDB_IRAM_ATTR init()

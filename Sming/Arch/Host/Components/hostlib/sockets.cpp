@@ -19,13 +19,31 @@
 
 #include "sockets.h"
 #include "include/hostlib/hostmsg.h"
-#include <string.h>
+#include <cstring>
 
 #ifndef __WIN32
 // For FIONREAD
 #include <sys/ioctl.h>
 #include <poll.h>
 #endif
+
+namespace
+{
+/*
+ * There's no guarantee which version of strerror_r got linked,
+ * so use overloaded helper function to get correct result.
+ */
+[[maybe_unused]] const char* get_error_string(char* retval, char*)
+{
+	return retval;
+}
+
+[[maybe_unused]] const char* get_error_string(int, char* buffer)
+{
+	return buffer;
+}
+
+} // namespace
 
 void sockets_initialise()
 {
@@ -123,19 +141,16 @@ std::string socket_strerror()
 {
 	char buf[256];
 	buf[0] = '\0';
-	int ErrorCode;
 #ifdef __WIN32
-	ErrorCode = WSAGetLastError();
+	int ErrorCode = WSAGetLastError();
 	FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr,
 				   ErrorCode, 0, buf, sizeof(buf), nullptr);
-#else
-	ErrorCode = errno;
-	char* res = strerror_r(ErrorCode, buf, sizeof(buf));
-	if(res == nullptr) {
-		strcpy(buf, "Unknown");
-	}
-#endif
 	return buf[0] ? buf : std::string("Error #" + std::to_string(ErrorCode));
+#else
+	int ErrorCode = errno;
+	auto r = strerror_r(ErrorCode, buf, sizeof(buf));
+	return get_error_string(r, buf);
+#endif
 }
 
 bool CSocket::create()
@@ -438,7 +453,8 @@ CSocket* CServerSocket::try_connect()
 		return nullptr;
 	}
 
-	struct sockaddr sa;
+	struct sockaddr sa {
+	};
 	host_socklen_t len = sizeof(sa);
 	int fd = ::accept(m_fd, &sa, &len);
 	if(fd < 0) {

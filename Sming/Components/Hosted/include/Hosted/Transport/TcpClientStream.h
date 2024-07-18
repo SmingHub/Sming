@@ -16,15 +16,13 @@
 #include <Network/TcpServer.h>
 #include <Data/Buffer/CircularBuffer.h>
 
-namespace Hosted
-{
-namespace Transport
+namespace Hosted::Transport
 {
 class TcpClientStream : public Stream
 {
 public:
 	TcpClientStream(TcpClient& client, size_t cbufferSize = 1024, size_t threshold = 400)
-		: cBuffer(cbufferSize), client(client), pendingBytes(0), threshold(threshold)
+		: cBuffer(cbufferSize), client(client), threshold(threshold)
 	{
 		client.setReceiveDelegate(TcpClientDataDelegate(&TcpClientStream::store, this));
 	}
@@ -87,15 +85,13 @@ public:
 private:
 	CircularBuffer cBuffer;
 	TcpClient& client;
-	size_t pendingBytes;
+	size_t pendingBytes{0};
 	size_t threshold;
 
-	bool store(TcpClient& client, char* data, int size)
+	bool store(TcpClient&, char* data, int size)
 	{
 		return push(reinterpret_cast<const uint8_t*>(data), size);
 	}
 };
 
-} // namespace Transport
-
-} // namespace Hosted
+} // namespace Hosted::Transport

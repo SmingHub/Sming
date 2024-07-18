@@ -19,13 +19,11 @@ class HttpRequest;
 class AuthAdapter
 {
 public:
-	virtual ~AuthAdapter()
-	{
-	}
+	virtual ~AuthAdapter() = default;
 
 	virtual void setRequest(HttpRequest* request) = 0;
 
-	virtual void setResponse(HttpResponse* response)
+	virtual void setResponse(HttpResponse*)
 	{
 	}
 };

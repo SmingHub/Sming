@@ -63,7 +63,7 @@ size_t m_puts(const char* str);
 
 extern "C++" {
 
-template <typename... Args> int snprintf(char* buf, int length, const char* fmt, Args... args)
+template <typename... Args> int snprintf(char* buf, size_t length, const char* fmt, Args... args)
 {
 	return m_snprintf(buf, length, fmt, args...);
 }

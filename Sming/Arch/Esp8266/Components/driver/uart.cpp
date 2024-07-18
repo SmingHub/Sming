@@ -246,7 +246,7 @@ void IRAM_ATTR handle_uart_interrupt(uint8_t uart_nr, smg_uart_t* uart)
 /** @brief UART interrupt service routine
  *  @note both UARTS share the same ISR, although UART1 only supports transmit
  */
-void IRAM_ATTR uart_isr(void* arg)
+void IRAM_ATTR uart_isr(void*)
 {
 	handle_uart_interrupt(UART0, uartInstances[UART0]);
 	handle_uart_interrupt(UART1, uartInstances[UART1]);

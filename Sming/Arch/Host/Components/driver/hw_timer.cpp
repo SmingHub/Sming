@@ -56,7 +56,7 @@ public:
 		callback.arg = nullptr;
 	}
 
-	void enable(hw_timer_clkdiv_t div, hw_timer_intr_type_t intr_type, bool auto_load)
+	void enable(hw_timer_clkdiv_t div, hw_timer_intr_type_t, bool auto_load)
 	{
 		stop();
 		switch(div) {
@@ -120,7 +120,6 @@ protected:
 private:
 	typedef std::ratio<HW_TIMER_BASE_CLK, 1000000> base_ticks_per_us;
 	uint32_t divisor = 1;
-	uint32_t frequency = HW_TIMER_BASE_CLK;
 	uint64_t start_time = 0;
 	uint64_t interval = 0; // In microseconds
 	CSemaphore sem;		   // Signals state change
@@ -130,7 +129,6 @@ private:
 	State state = stopped;
 
 	hw_timer_source_type_t source_type = TIMER_FRC1_SOURCE;
-	unsigned irq_level = 1;
 	struct {
 		hw_timer_callback_t func = nullptr;
 		void* arg = nullptr;
@@ -205,7 +203,7 @@ static std::unique_ptr<CTimerThread> timer1;
 
 void hw_timer_init(void)
 {
-	timer1.reset(new CTimerThread("Timer1"));
+	timer1 = std::make_unique<CTimerThread>("Timer1");
 }
 
 void hw_timer_cleanup()

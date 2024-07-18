@@ -116,7 +116,6 @@ public:
 
 private:
 	String ttyDevice;
-
 	serialib transport;
 };
 

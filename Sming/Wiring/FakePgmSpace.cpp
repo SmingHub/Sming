@@ -19,7 +19,11 @@
 void* memcpy_aligned(void* dst, const void* src, unsigned len)
 {
 	assert(IS_ALIGNED(dst) && IS_ALIGNED(src));
-	memcpy(dst, src, ALIGNUP4(len));
+#ifndef ARCH_HOST
+	// Address sanitisers get tripped if we do this in Host builds
+	len = ALIGNUP4(len);
+#endif
+	memcpy(dst, src, len);
 	return dst;
 }
 

@@ -13,7 +13,9 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
-#define NARODM_HOST "narodmon.ru"
+namespace
+{
+DEFINE_FSTR(NARODM_HOST, "narodmon.ru")
 #define NARODM_PORT 8283
 
 // Time between command packets, in seconds
@@ -21,7 +23,7 @@ const unsigned SENDDATA_INTERVAL = 6 * 60;
 
 // Таймер для периодического вызова отправки данных
 // Timer for a periodic call to send data
-Timer procTimer;
+SimpleTimer procTimer;
 
 // Переменная для хранения mac-адреса
 // Variable for storing MAC address
@@ -103,32 +105,32 @@ void sendData()
 // Когда удачно подключились к роутеру
 void connectOk(const String& SSID, MacAddress bssid, uint8_t channel)
 {
-	// debug msg
-	debugf("I'm CONNECTED to WiFi");
-
 	// Get the MAC address of our ESP
 	// получаем MAC-адрес нашей ESP и помещаем в переменную mac
 	mac = WifiStation.getMacAddress();
-	debugf("mac: %s", mac.toString().c_str());
+
+	Serial << _F("I'm CONNECTED to WiFi, MAC: ") << mac << endl;
 }
 
 void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	// Display a message on failed connection
 	// Если подключение к роутеру не удалось, выводим сообщение
-	debugf("I'm NOT CONNECTED!");
+	Serial.println(_F("I'm NOT CONNECTED!"));
 }
 
 void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	// Call the sendData function by timer, every 6 minutes
 	// вызываем по таймеру функцию sendData
-	procTimer.initializeMs(SENDDATA_INTERVAL * 1000, sendData).start(); // каждые 6 минут
+	procTimer.initializeMs<SENDDATA_INTERVAL * 1000>(sendData).start(); // каждые 6 минут
 
 	// Send immediately on startup
 	// ну и заодно сразу после запуска вызываем, чтобы не ждать 6 минут первый раз
 	sendData();
 }
+
+} // namespace
 
 void init()
 {

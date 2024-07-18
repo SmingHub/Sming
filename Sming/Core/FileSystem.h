@@ -96,7 +96,7 @@ bool fileMountFileSystem(IFS::IFileSystem* fs);
 bool fwfs_mount();
 
 /**
- * @brief Mount SPIFFS volume from a specific partition
+ * @brief Mount FWFS volume from a specific partition
  * @retval bool true on success
  */
 bool fwfs_mount(Storage::Partition partition);
@@ -235,7 +235,8 @@ template <typename TFileName> inline int fileSetContent(const TFileName& fileNam
 	return fileSystem->setContent(fileName, content, length);
 }
 
-template <typename TFileName, typename TContent> inline int fileSetContent(const TFileName& fileName, TContent content)
+template <typename TFileName, typename TContent>
+inline int fileSetContent(const TFileName& fileName, const TContent& content)
 {
 	CHECK_FS(setContent)
 	return fileSystem->setContent(fileName, content);
@@ -255,8 +256,6 @@ template <typename TFileName> inline file_size_t fileGetSize(const TFileName& fi
  *  @param file Open file handle, must have Write access
  *  @param newSize
  *  @retval int Error code
- *  @note In POSIX `ftruncate()` can also make the file bigger, however SPIFFS can only
- *  reduce the file size and will return an error if newSize > fileSize
  */
 inline int fileTruncate(FileHandle file, file_size_t newSize)
 {
@@ -278,8 +277,6 @@ inline int fileTruncate(FileHandle file)
  *  @param fileName
  *  @param newSize
  *  @retval int Error code
- *  @note In POSIX `truncate()` can also make the file bigger, however SPIFFS can only
- *  reduce the file size and will return an error if newSize > fileSize
  */
 template <typename TFileName> int fileTruncate(const TFileName& fileName, file_size_t newSize)
 {
@@ -341,7 +338,7 @@ template <typename TFileName> inline size_t fileGetContent(const TFileName& file
 
 /** @brief  Get file statistics
  *  @param  name File name
- *  @param  stat Pointer to SPIFFS statistic structure to populate
+ *  @param  stat Pointer to statistic structure to populate
  *  @retval int Error code
  */
 inline int fileStats(const char* fileName, FileStat& stat)
@@ -357,7 +354,7 @@ inline int fileStats(const String& fileName, FileStat& stat)
 
 /** brief   Get file statistics
  *  @param  file File handle
- *  @param  stat Pointer to SPIFFS statistic structure to populate
+ *  @param  stat Pointer to statistic structure to populate
  *  @retval int Error code
  */
 inline int fileStats(FileHandle file, FileStat& stat)

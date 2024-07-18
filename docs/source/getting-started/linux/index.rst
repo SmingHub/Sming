@@ -30,15 +30,11 @@ Debian (Ubuntu) and Fedora systems can use the scripted installer.
       dnf install -y git
    
 
-3. Fetch the Sming repository
-
-   ::
+3. Fetch the Sming repository::
 
       git clone https://github.com/SmingHub/Sming /opt/sming
 
-4. Run the installer
-
-   ::
+4. Run the installer::
 
       source /opt/sming/Tools/install.sh all
 
@@ -59,7 +55,7 @@ If you want to use the stable (release) branch::
    git pull
 
 
-Build a ‘Basic Blink’ example
+Build a 'Basic Blink' example
 -----------------------------
 
 Change to the application directory and build::

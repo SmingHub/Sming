@@ -85,12 +85,11 @@ template <uint64_t num, uint64_t den, typename ValType> struct MuldivLimits {
 /**
  * @brief Get the maximum value which can be passed to muldiv() without overflowing
  * @tparam ValType
- * @param timevar Result depends on size of variable used
  * @param num
  * @param den
  * @retval ValType Values greater than this will cause muldiv to return ValType(-1), i.e. range maximum
  */
-template <typename ValType> __forceinline ValType muldivMaxValue(ValType timevar, ValType num, ValType den)
+template <typename ValType> __forceinline ValType muldivMaxValue(ValType num, ValType den)
 {
 	constexpr auto max = std::numeric_limits<ValType>::max();
 	auto frac = den / 2;

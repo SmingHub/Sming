@@ -13,7 +13,5 @@ Information
    strings
    interrupts
    tasks
-   debugging
    rboot-ota
-   command-handler
    tips-n-tricks

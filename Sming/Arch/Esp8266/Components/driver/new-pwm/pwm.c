@@ -115,6 +115,7 @@ static struct timer_regs* timer = (struct timer_regs*)(0x60000600);
 static void IRAM_ATTR
 pwm_intr_handler(void* param)
 {
+	(void)param;
 	if ((pwm_state.current_set[pwm_state.current_phase].off_mask == 0) &&
 	    (pwm_state.current_set[pwm_state.current_phase].on_mask == 0)) {
 		pwm_state.current_set = pwm_state.next_set;

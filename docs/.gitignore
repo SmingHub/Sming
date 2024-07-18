@@ -1,0 +1,5 @@
+# generated documentation
+api
+build
+source/_inc
+*.pyc

@@ -46,10 +46,15 @@ public:
 		using E = typename std::conditional<is_const, const Element, Element>::type;
 
 		Iterator(const Iterator&) = default;
+		Iterator(Iterator&&) = default;
+		Iterator& operator=(const Iterator&) = default;
+		Iterator& operator=(Iterator&&) = default;
 
 		Iterator(V& vector, unsigned index) : vector(vector), index(index)
 		{
 		}
+
+		~Iterator() = default;
 
 		Iterator& operator++()
 		{
@@ -96,7 +101,6 @@ public:
 		unsigned index{0};
 	};
 
-	// constructors
 	Vector(unsigned int initialCapacity = 10, unsigned int capacityIncrement = 10) : _increment(capacityIncrement)
 	{
 		_data.allocate(initialCapacity);
@@ -107,13 +111,17 @@ public:
 		copyFrom(rhv);
 	}
 
+	Vector(Vector&&) = delete;
+
+	~Vector() = default;
+
 	// methods
 	unsigned int capacity() const
 	{
 		return _data.size;
 	}
 
-	bool contains(const Element& elem) const
+	template <typename T> bool contains(const T& elem) const
 	{
 		return indexOf(elem) >= 0;
 	}
@@ -127,7 +135,7 @@ public:
 		return _data[0];
 	}
 
-	int indexOf(const Element& elem) const;
+	template <typename T> int indexOf(const T& elem) const;
 
 	bool isEmpty() const
 	{
@@ -143,7 +151,7 @@ public:
 		return _data[_size - 1];
 	}
 
-	int lastIndexOf(const Element& elem) const;
+	template <typename T> int lastIndexOf(const T& elem) const;
 
 	unsigned int count() const override
 	{
@@ -170,7 +178,7 @@ public:
 		removeAllElements();
 	}
 
-	bool ensureCapacity(unsigned int minCapacity);
+	bool ensureCapacity(size_t minCapacity);
 
 	void removeAllElements()
 	{
@@ -178,9 +186,9 @@ public:
 		_size = 0;
 	}
 
-	bool removeElement(const Element& obj)
+	template <typename T> bool removeElement(const T& elem)
 	{
-		return removeElementAt(indexOf(obj));
+		return removeElementAt(indexOf(elem));
 	}
 
 	/**
@@ -238,7 +246,7 @@ public:
 		return _data[index];
 	}
 
-	const Vector<Element>& operator=(const Vector<Element>& rhv)
+	Vector<Element>& operator=(const Vector<Element>& rhv)
 	{
 		if(this != &rhv) {
 			copyFrom(rhv);
@@ -246,7 +254,7 @@ public:
 		return *this;
 	}
 
-	const Vector<Element>& operator=(Vector<Element>&& other) noexcept // move assignment
+	Vector<Element>& operator=(Vector<Element>&& other) noexcept // move assignment
 	{
 		clear();
 		_increment = 0;
@@ -316,18 +324,18 @@ template <class Element> void Vector<Element>::copyInto(Element* array) const
 	}
 }
 
-template <class Element> int Vector<Element>::indexOf(const Element& elem) const
+template <class Element> template <typename T> int Vector<Element>::indexOf(const T& elem) const
 {
 	for(unsigned int i = 0; i < _size; i++) {
 		if(_data[i] == elem) {
-			return i;
+			return int(i);
 		}
 	}
 
 	return -1;
 }
 
-template <class Element> int Vector<Element>::lastIndexOf(const Element& elem) const
+template <class Element> template <typename T> int Vector<Element>::lastIndexOf(const T& elem) const
 {
 	// check for empty vector
 	if(_size == 0) {
@@ -339,7 +347,7 @@ template <class Element> int Vector<Element>::lastIndexOf(const Element& elem) c
 	do {
 		i--;
 		if(_data[i] == elem) {
-			return i;
+			return int(i);
 		}
 	} while(i != 0);
 
@@ -364,7 +372,7 @@ template <class Element> bool Vector<Element>::addElement(Element* objp)
 	return true;
 }
 
-template <class Element> bool Vector<Element>::ensureCapacity(unsigned int minCapacity)
+template <class Element> bool Vector<Element>::ensureCapacity(size_t minCapacity)
 {
 	if(_data.size >= minCapacity) {
 		return true;
@@ -436,7 +444,7 @@ template <class Element> void Vector<Element>::sort(Comparer compareFunction)
 		Element& keyRef = _data[j];
 		// Smaller values move up
 		int i;
-		for(i = j - 1; (i >= 0) && compareFunction(_data[i], keyRef) > 0; i--) {
+		for(i = int(j) - 1; (i >= 0) && compareFunction(_data[i], keyRef) > 0; i--) {
 			_data.values[i + 1] = _data.values[i];
 		}
 		// Put key into its proper location

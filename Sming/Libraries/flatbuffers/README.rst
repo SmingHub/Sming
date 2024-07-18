@@ -11,13 +11,13 @@ It is available as Open Source on GitHub under the Apache license, v2 (see LICEN
 Using
 -----
 
-Step 1. Add these lines to your application componenent.mk file::
+Step 1. Add these lines to your application component.mk file::
 
    COMPONENT_DEPENDS += flatbuffers
 
 Step 2. Add these lines to your application::
 
-   #include <flatbuffers/flatbuffers>
+   #include <flatbuffers/flatbuffers.h>
 
 Or directly use the header file generated from the `flatc` compiler.
 

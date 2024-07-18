@@ -80,7 +80,7 @@ public:
 		}
 
 		// Keep a reference copy for when doc gets messed up
-		StaticJsonDocument<512> sourceDoc = doc;
+		auto sourceDoc = doc;
 
 		TEST_CASE("Json::serialize(doc, String), then save to file")
 		{
@@ -246,6 +246,12 @@ public:
 			const uint64_t testnum = 0x12345678ABCDEF99ULL;
 			root["longtest"] = testnum;
 			REQUIRE(root["longtest"] == testnum);
+		}
+
+		TEST_CASE("FSTR comparison")
+		{
+			doc[FS_number2] = FS_number2;
+			REQUIRE(doc[FS_number2] == FS_number2);
 		}
 
 		/*

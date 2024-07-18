@@ -5,106 +5,122 @@
 	Prints each type of DateTime::format option
 */
 #include <SmingCore.h>
+#include <Data/Buffer/LineBuffer.h>
 
-static time_t timestamp = 0;
-static size_t tsLength = 0;
-
+namespace
+{
 DEFINE_FSTR_LOCAL(commandPrompt, "Enter Unix timestamp: ");
 
-void showTime(time_t timestamp)
+void showTime(const DateTime& dt)
 {
-	DateTime dt(timestamp);
-	//Non-time
-	Serial.println(dt.format("%%%% Percent sign: %%"));
-	Serial.println(dt.format("%%n New-line character: %n"));
-	Serial.println(dt.format("%%t Horizontal-tab character: >|%t|<"));
-	//Year
-	Serial.println(dt.format("%%Y Full year (YYYY): %Y"));
-	Serial.println(dt.format("%%C Year, first two digits (00-99)%: %C"));
-	Serial.println(dt.format("%%y Year, last two digits (00-99): %y"));
-	//Month
-	Serial.println(dt.format("%%B Full month name (e.g. June): %B"));
-	Serial.println(dt.format("%%b Abbreviated month name (e.g. Jun): %b"));
-	Serial.println(dt.format("%%h Abbreviated month name (e.g. Jun): %h"));
-	Serial.println(dt.format("%%m Month as a decimal number (01-12): %m"));
-	//Week
-	Serial.println(dt.format("%%U Week number with the first Sunday as the first day of week one (00-53): %U")); //NYI
-	Serial.println(dt.format("%%W Week number with the first Monday as the first day of week one (00-53): %W")); //NYI
-	Serial.println(dt.format("%%V ISO 8601 week number (01-53): %V"));											 //NYI
-	//Day
-	Serial.println(dt.format("%%j Day of the year (001-366): %j"));
-	Serial.println(dt.format("%%d Day of the month, zero-padded (01-31)%: %d"));
-	Serial.println(dt.format("%%e Day of the month, space-padded ( 1-31): %e"));
-	Serial.println(dt.format("%%A Full weekday name (e.g. Monday): %A"));
-	Serial.println(dt.format("%%a Abbreviated weekday name (e.g. Mon): %a"));
-	Serial.println(dt.format("%%w Weekday as a decimal number with Sunday as 0 (0-6): %w"));
-	Serial.println(dt.format("%%u ISO 8601 weekday as number with Monday as 1 (1-7): %u"));
-	//Hour
-	Serial.println(dt.format("%%p Meridiem (AM|PM): %p"));
-	Serial.println(dt.format("%%H Hour in 24h format (00-23): %H"));
-	Serial.println(dt.format("%%h Hour in 12h format (01-12): %I"));
-	//Minute
-	Serial.println(dt.format("%%M Minute (00-59): %M"));
-	//Second
-	Serial.println(dt.format("%%S Second (00-61): %S"));
-	//Formatted strings
-	Serial.println(dt.format("%%R 24-hour time (HH:MM): %R"));
-	Serial.println(dt.format("%%r 12-hour time (hh:MM:SS AM): %r"));
-	Serial.println(dt.format("%%c Locale date and time: %c"));
-	Serial.println(dt.format("%%D US short date (MM/DD/YY): %D"));
-	Serial.println(dt.format("%%F ISO 8601 date (YYYY-MM-DD): %F"));
-	Serial.println(dt.format("%%T ISO 8601 time (HH:MM:SS): %T"));
-	Serial.println(dt.format("%%x Locale date: %x"));
-	Serial.println(dt.format("%%X Locale time: %X"));
-	//HTTP date
-	Serial << "toHTTPDate: " << dt.toHTTPDate() << endl;
+	auto printFormat = [&dt](const String& fmt, const String& msg) -> void {
+		Serial << fmt << ' ' << msg << ": " << dt.format(fmt) << endl;
+	};
+
+	// Non-time
+	printFormat("%%", F("Percent sign"));
+	printFormat("%n", F("New-line character"));
+	printFormat("|<", F("Horizontal-tab character: >|"));
+	// Year
+	printFormat("%Y", F("Full year (YYYY)"));
+	printFormat("%C", F("Year, first two digits (00-99)"));
+	printFormat("%y", F("Year, last two digits (00-99)"));
+	// Month
+	printFormat("%B", F("Full month name (e.g. June)"));
+	printFormat("%b", F("Abbreviated month name (e.g. Jun)"));
+	printFormat("%h", F("Abbreviated month name (e.g. Jun)"));
+	printFormat("%m", F("Month as a decimal number (01-12)"));
+	// Week
+	printFormat("%U", F("Week number with the first Sunday as the first day of week one (00-53)"));
+	printFormat("%W", F("Week number with the first Monday as the first day of week one (00-53)"));
+	printFormat("%V", F("ISO 8601 week number (01-53)"));
+	// Day
+	printFormat("%j", F("Day of the year (001-366)"));
+	printFormat("%d", F("Day of the month, zero-padded (01-31)"));
+	printFormat("%e", F("Day of the month, space-padded ( 1-31)"));
+	printFormat("%A", F("Full weekday name (e.g. Monday)"));
+	printFormat("%a", F("Abbreviated weekday name (e.g. Mon)"));
+	printFormat("%w", F("Weekday as a decimal number with Sunday as 0 (0-6)"));
+	printFormat("%u", F("ISO 8601 weekday as number with Monday as 1 (1-7)"));
+	// Hour
+	printFormat("%p", F("Meridiem (AM|PM)"));
+	printFormat("%H", F("Hour in 24h format (00-23)"));
+	printFormat("%I", F("Hour in 12h format (01-12)"));
+	// Minute
+	printFormat("%M", F("Minute (00-59)"));
+	// Second
+	printFormat("%S", F("Second (00-61)"));
+	// Formatted strings
+	printFormat("%R", F("24-hour time (HH:MM)"));
+	printFormat("%r", F("12-hour time (hh:MM:SS AM)"));
+	printFormat("%c", F("Locale date and time"));
+	printFormat("%D", F("US short date (MM/DD/YY)"));
+	printFormat("%F", F("ISO 8601 date (YYYY-MM-DD)"));
+	printFormat("%T", F("ISO 8601 time (HH:MM:SS)"));
+	printFormat("%x", F("Locale date"));
+	printFormat("%X", F("Locale time"));
+
+	auto print = [](const String& tag, const String& value) { Serial << tag << ": " << value << endl; };
+
+	// HTTP date
+	print(F("toHTTPDate"), dt.toHTTPDate());
 	DateTime dt2;
 	dt2.fromHttpDate(dt.toHTTPDate());
-	Serial << "fromHTTPDate: " << dt2.toHTTPDate() << endl;
-	Serial << "toFullDateTimeString: " << dt.toFullDateTimeString() << endl;
-	Serial << "toISO8601: " << dt.toISO8601() << endl;
-	Serial << "toShortDateString: " << dt.toShortDateString() << endl;
-	Serial << "toShortTimeString: " << dt.toShortTimeString() << endl;
+	print(F("fromHTTPDate"), dt2.toHTTPDate());
+	print(F("toFullDateTimeString"), dt.toFullDateTimeString());
+	print(F("toISO8601"), dt.toISO8601());
+	print(F("toShortDateString"), dt.toShortDateString());
+	print(F("toShortTimeString"), dt.toShortTimeString());
 }
 
-void onRx(Stream& source, char arrivedChar, unsigned short availableCharsCount)
+void onRx(Stream& source, char, uint16_t)
 {
-	switch(arrivedChar) {
-	case '\n':
-		Serial.println();
-		Serial.println();
-		Serial << _F("****Showing DateTime formatting options for Unix timestamp: ") << timestamp << endl;
-		showTime(timestamp);
-		Serial.print(commandPrompt);
-		timestamp = 0;
-		tsLength = 0;
-		break;
-	case '0' ... '9':
-		timestamp *= 10;
-		timestamp += arrivedChar - '0';
-		++tsLength;
-		Serial.print(arrivedChar);
-		break;
-	case '\b':
-		if(tsLength) {
-			Serial.print('\b');
-			Serial.print(" ");
-			Serial.print('\b');
-			--tsLength;
-			timestamp /= 10;
+	static LineBuffer<32> buffer;
+
+	using Action = LineBufferBase::Action;
+	switch(buffer.process(source, Serial)) {
+	case Action::submit: {
+		if(!buffer) {
+			break;
 		}
-		break;
-	case 27:
-		timestamp = 0;
-		tsLength = 0;
-		Serial.print('\r');
-		Serial.print(_F("                                                     "));
-		Serial.print('\r');
-		Serial.print(commandPrompt);
+		String s(buffer);
+		buffer.clear();
+		char* p;
+		time_t timestamp = strtoll(s.c_str(), &p, 0);
+		if(p == s.end()) {
+			Serial << endl << _F("****Showing DateTime formatting options for Unix timestamp: ") << timestamp << endl;
+			showTime(timestamp);
+			break;
+		}
+
+		DateTime dt;
+		if(dt.fromHttpDate(s)) {
+			Serial << endl << _F("****Showing DateTime formatting options for Http time: ") << s << endl;
+			showTime(dt);
+			break;
+		}
+
+		if(dt.fromISO8601(s)) {
+			Serial << endl << _F("****Showing DateTime formatting options for ISO8601 date/time: ") << s << endl;
+			showTime(dt);
+			break;
+		}
+
+		Serial << endl << _F("Please enter a valid numeric timestamp, HTTP or ISO8601 date/time string!") << endl;
 		break;
 	}
-	m_puts("\r\n");
+
+	case Action::clear:
+		break;
+
+	default:;
+		return;
+	}
+
+	Serial.print(commandPrompt);
 }
+
+} // namespace
 
 void init()
 {

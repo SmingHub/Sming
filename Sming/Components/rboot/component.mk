@@ -30,6 +30,17 @@ endif
 
 # => APP
 
+# Build bootloader variant based on these variable values
+RBOOT_VARS := \
+	PARTITION_TABLE_OFFSET \
+	RBOOT_RTC_ENABLED \
+	RBOOT_GPIO_ENABLED \
+	RBOOT_GPIO_SKIP_ENABLED \
+	RBOOT_SILENT \
+	SPI_SPEED \
+	SPI_MODE \
+	SPI_SIZE
+
 # rBoot options
 CONFIG_VARS				+= RBOOT_RTC_ENABLED RBOOT_GPIO_ENABLED RBOOT_GPIO_SKIP_ENABLED
 RBOOT_RTC_ENABLED		?= 0
@@ -102,12 +113,6 @@ RBOOT_ROM_1_BIN			:= $(FW_BASE)/$(RBOOT_ROM_1).bin
 
 
 COMPONENT_APPCODE		:= rboot/appcode
-APP_CFLAGS				+= -DRBOOT_INTEGRATION
-
-# these are exported for use by the rBoot Makefile
-export RBOOT_BUILD_BASE	:= $(abspath $(COMPONENT_BUILD_DIR))
-export RBOOT_FW_BASE	:= $(abspath $(FW_BASE))
-export ESPTOOL2
 
 # multiple roms per 1mb block?
 ifeq ($(RBOOT_TWO_ROMS),1)
@@ -143,12 +148,20 @@ ifdef RBOOT_EMULATION
 FLASH_BOOT_CHUNKS		= 0x00000=$(BLANK_BIN)
 FLASH_RBOOT_ERASE_CONFIG_CHUNKS	:= 0x01000=$(BLANK_BIN)
 else
-export RBOOT_ROM0_ADDR
-export RBOOT_ROM1_ADDR
+export ESPTOOL2
+export $(RBOOT_VARS)
+RBOOT_VARSTR := $(foreach v,$(RBOOT_VARS),$v=$($v))
+RBOOT_HASH := $(call CalculateVariantHash,RBOOT_VARSTR)
+export RBOOT_BUILD_BASE := $(COMPONENT_BUILD_BASE)/$(RBOOT_HASH)
+RBOOT_VAR_BIN			:= $(RBOOT_BUILD_BASE)/rboot.bin
 RBOOT_BIN				:= $(FW_BASE)/rboot.bin
-CUSTOM_TARGETS			+= $(RBOOT_BIN)
-$(RBOOT_BIN):
-	$(Q) $(MAKE) -C $(RBOOT_DIR)/rboot PARTITION_TABLE_OFFSET=$(PARTITION_TABLE_OFFSET) $(RBOOT_CFLAGS)
+CUSTOM_TARGETS			+= build_rboot
+$(RBOOT_VAR_BIN): $(ESPTOOL2)
+	$(Q) $(MAKE) -C $(RBOOT_DIR)/rboot $(RBOOT_CFLAGS)
+
+.PHONY: build_rboot
+build_rboot: $(RBOOT_VAR_BIN)
+	cp $(RBOOT_VAR_BIN) $(RBOOT_BIN)
 
 EXTRA_LDFLAGS			:= -u Cache_Read_Enable_New
 
@@ -206,5 +219,14 @@ $(RBOOT_ROM_1_BIN): $(TARGET_OUT_1)
 	$(Q) $(call WriteFirmwareConfigFile,$@)
 
 endif
+
+
+##@Flashing
+
+.PHONY: bootinfo
+bootinfo: ##Show bootloader information
+	$(info $(RBOOT_BIN):)
+	$(Q) $(ESPTOOL_CMDLINE) image_info -v2 $(RBOOT_BIN)
+
 
 endif # RBOOT_EMULATION

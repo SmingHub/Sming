@@ -63,17 +63,17 @@ extern "C" {
 #define pgm_read_dword_far(addr) pgm_read_dword(addr)
 #define pgm_read_float_far(addr) pgm_read_float(addr)
 
-#define memcpy_P(dest, src, num) memcpy(dest, src, num)
-#define memcmp_P(a1, b1, len) memcmp(a1, b1, len)
-#define strlen_P(a) strlen(a)
-#define strcpy_P(dest, src) strcpy(dest, src)
-#define strncpy_P(dest, src, size) strncpy(dest, src, size)
-#define strcmp_P(a, b) strcmp(a, b)
+#define memcpy_P(dest, src_P, num) memcpy(dest, src_P, num)
+#define memcmp_P(buf1, buf2_P, len) memcmp(buf1, buf2_P, len)
+#define strlen_P(str_P) strlen(str_P)
+#define strcpy_P(dest, src_P) strcpy(dest, src_P)
+#define strncpy_P(dest, src_P, size) strncpy(dest, src_P, size)
+#define strcmp_P(str1, str2_P) strcmp(str1, str2_P)
 #define strncmp_P(str1, str2_P, size) strncmp(str1, str2_P, size)
-#define strcasecmp_P(a, b) strcasecmp(a, b)
-#define strcat_P(dest, src) strcat(dest, src)
-#define strstr_P(a, b) strstr(a, b)
-#define sprintf_P(s, f, ...) m_snprintf(s, 1024, f, ##__VA_ARGS__)
+#define strcasecmp_P(str1, str2_P) strcasecmp(str1, str2_P)
+#define strcat_P(dest, src_P) strcat(dest, src_P)
+#define strstr_P(haystack, needle_P) strstr(haystack, needle_P)
+#define sprintf_P(str, format_P, ...) m_snprintf(str, 1024, format_P, ##__VA_ARGS__)
 
 #ifdef __cplusplus
 }

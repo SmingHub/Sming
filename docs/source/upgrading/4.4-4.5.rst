@@ -27,7 +27,7 @@ For more information read the updated :doc:`/tools/eclipse`.
 Esp8266 toolchain
 -----------------
 
-Sming now requires the :doc:`/arch/esp8266/getting-started/eqt` for building.
+Sming now requires the :ref:`esp_quick_toolchain` for building.
 
 Support for the old legacy toolchains (ESP open SDK, UDK) have been dropped.
 They may still work but are no longer tested.

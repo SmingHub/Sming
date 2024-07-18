@@ -48,9 +48,7 @@
 template <typename K, typename V> class ObjectMap
 {
 public:
-	ObjectMap()
-	{
-	}
+	ObjectMap() = default;
 
 	~ObjectMap()
 	{
@@ -208,7 +206,7 @@ public:
 	 */
 	void set(const K& key, V* value)
 	{
-		int i = indexOf(key);
+		int i = entries.indexOf(key);
 		if(i >= 0) {
 			entries[i].value.reset(value);
 		} else {
@@ -224,7 +222,7 @@ public:
 	 */
 	V* find(const K& key) const
 	{
-		int index = indexOf(key);
+		int index = entries.indexOf(key);
 		return (index < 0) ? nullptr : entries[index].value.get();
 	}
 
@@ -235,12 +233,7 @@ public:
 	 */
 	int indexOf(const K& key) const
 	{
-		for(unsigned i = 0; i < entries.count(); i++) {
-			if(entries[i].key == key) {
-				return i;
-			}
-		}
-		return -1;
+		return entries.indexOf(key);
 	}
 
 	/**
@@ -250,7 +243,7 @@ public:
 	 */
 	bool contains(const K& key) const
 	{
-		return indexOf(key) >= 0;
+		return entries.contains(key);
 	}
 
 	/**
@@ -272,10 +265,9 @@ public:
 		int index = indexOf(key);
 		if(index < 0) {
 			return false;
-		} else {
-			removeAt(index);
-			return true;
 		}
+		removeAt(index);
+		return true;
 	}
 
 	/**
@@ -321,6 +313,11 @@ protected:
 	struct Entry {
 		K key;
 		std::unique_ptr<V> value;
+
+		bool operator==(const K& keyToFind) const
+		{
+			return key == keyToFind;
+		}
 
 		Entry(const K& key, V* value) : key(key)
 		{

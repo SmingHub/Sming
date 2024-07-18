@@ -19,10 +19,18 @@
 #undef FLAG_ATTR
 #define FLAG_ATTR(TYPE)
 #include <soc/spi_periph.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <hal/spi_ll.h>
 #include <hal/clk_gate_ll.h>
+#pragma GCC diagnostic pop
 #include <soc/rtc.h>
 #include <Data/BitSet.h>
+
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 2, 0)
+#include <esp_clk_tree.h>
+#include <soc/clk_tree_defs.h>
+#endif
 
 // Use SPI hardware byte ordering so we don't need to do it in software
 #if defined(SOC_ESP32) || defined(SOC_ESP32S2)
@@ -110,7 +118,11 @@ struct SpiDevice {
 	{
 		spi_ll_set_mosi_bitlen(info.hw, num_bits);
 		spi_ll_set_miso_bitlen(info.hw, num_bits);
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 2, 0)
 		spi_ll_master_user_start(info.hw);
+#else
+		spi_ll_user_start(info.hw);
+#endif
 	}
 
 	void set_mode(SpiMode mode)
@@ -182,9 +194,17 @@ struct SpiDevice {
  */
 void checkSpeed(SPISpeed& speed)
 {
+	uint32_t clock_source_hz;
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 2, 0)
+	clock_source_hz = SPI_LL_PERIPH_CLK_FREQ;
+#else
+	esp_clk_tree_src_get_freq_hz(soc_module_clk_t(SPI_CLK_SRC_DEFAULT), ESP_CLK_TREE_SRC_FREQ_PRECISION_APPROX,
+								 &clock_source_hz);
+#endif
+
 	constexpr int duty_cycle{127};
 	spi_ll_clock_val_t clock_reg;
-	unsigned actual_freq = spi_ll_master_cal_clock(SPI_LL_PERIPH_CLK_FREQ, speed.frequency, duty_cycle, &clock_reg);
+	unsigned actual_freq = spi_ll_master_cal_clock(clock_source_hz, speed.frequency, duty_cycle, &clock_reg);
 	speed.regVal = clock_reg;
 
 #ifdef SPI_DEBUG

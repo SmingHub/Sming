@@ -31,9 +31,8 @@ TestFile testFiles[]{
 class HttpRequestTest : public TestGroup
 {
 public:
-	HttpRequestTest() : TestGroup(_F("HTTP"))
+	HttpRequestTest() : TestGroup(_F("HTTP")), server(new HttpServer)
 	{
-		server = new HttpServer;
 	}
 
 	void execute() override
@@ -43,10 +42,7 @@ public:
 			return;
 		}
 
-		auto fs = IFS::createFirmwareFilesystem(*Storage::findPartition(Storage::Partition::SubType::Data::fwfs));
-		CHECK(fs != nullptr);
-		CHECK(fs->mount() == FS_OK);
-		fileSetFileSystem(fs);
+		REQUIRE(fwfs_mount(Storage::findPartition("fwfs_httprequest")));
 
 		server->listen(80);
 		server->paths.setDefault([](HttpRequest& request, HttpResponse& response) {
@@ -74,7 +70,7 @@ public:
 		url.Path = String('/') + file.name;
 
 		auto req = new HttpRequest(url);
-		req->onRequestComplete([this, file](HttpConnection& connection, bool success) -> int {
+		req->onRequestComplete([this, file](HttpConnection& connection, bool) -> int {
 			auto response = connection.getResponse();
 			debug_i("Client received '%s'", connection.getRequest()->uri.toString().c_str());
 			Serial.print(response->toString());

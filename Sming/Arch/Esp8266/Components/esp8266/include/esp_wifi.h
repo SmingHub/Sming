@@ -29,7 +29,7 @@
 #pragma once
 
 #include "os_type.h"
-#include "lwip/ip_addr.h"
+#include "ipv4_addr.h"
 #include "../sdk/include/queue.h"
 #include "gpio.h"
 
@@ -227,13 +227,13 @@ struct station_info {
 	STAILQ_ENTRY(station_info) next;
 
 	uint8_t bssid[6];
-	struct ip_addr ip;
+	struct ipv4_addr ip;
 };
 
 struct dhcps_lease {
 	bool enable;
-	struct ip_addr start_ip;
-	struct ip_addr end_ip;
+	struct ipv4_addr start_ip;
+	struct ipv4_addr end_ip;
 };
 
 enum dhcps_offer_option {
@@ -244,7 +244,7 @@ enum dhcps_offer_option {
 
 uint8_t wifi_softap_get_station_num(void);
 struct station_info* wifi_softap_get_station_info(void);
-bool wifi_softap_set_station_info (uint8_t* mac, struct ip_addr*);
+bool wifi_softap_set_station_info (uint8_t* mac, struct ipv4_addr*);
 void wifi_softap_free_station_info(void);
 
 bool wifi_softap_dhcps_start(void);
@@ -375,9 +375,9 @@ typedef struct {
 } Event_StaMode_AuthMode_Change_t;
 
 typedef struct {
-	struct ip_addr ip;
-	struct ip_addr mask;
-	struct ip_addr gw;
+	struct ipv4_addr ip;
+	struct ipv4_addr mask;
+	struct ipv4_addr gw;
 } Event_StaMode_Got_IP_t;
 
 typedef struct {
@@ -387,7 +387,7 @@ typedef struct {
 
 typedef struct {
 	uint8_t mac[6];
-	struct ip_addr ip;
+	struct ipv4_addr ip;
 	uint8_t aid;
 } Event_SoftAPMode_Distribute_Sta_IP_t;
 

@@ -1,0 +1,8 @@
+xtensa-esp32-elf
+xtensa-esp32s2-elf
+xtensa-esp32s3-elf
+riscv32-esp-elf
+esp32ulp-elf
+xtensa-esp-elf-gdb
+riscv32-esp-elf-gdb
+openocd-esp32

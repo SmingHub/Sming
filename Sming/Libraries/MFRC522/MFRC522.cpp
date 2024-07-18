@@ -30,8 +30,7 @@ void MFRC522::setSPIConfig() {
 } // End setSPIConfig()
 
 
-void ICACHE_FLASH_ATTR
- MFRC522::setControlPins(byte csPin,byte pdPin) {
+void MFRC522::setControlPins(byte csPin,byte pdPin) {
 	_chipSelectPin = csPin;
 	_resetPowerDownPin = pdPin;
 
@@ -423,7 +422,7 @@ byte MFRC522::PCD_CommunicateWithPICC(	byte command,		///< The command to execut
 		if (n & 0x01) {						// Timer interrupt - nothing received in 25ms
 			return STATUS_TIMEOUT;
 		}
-		if (--i == 0) {						// The emergency break. If all other condions fail we will eventually terminate on this one after 35.7ms. Communication with the MFRC522 might be down.
+		if (--i == 0) {						// The emergency break. If all other conditions fail we will eventually terminate on this one after 35.7ms. Communication with the MFRC522 might be down.
 			return STATUS_TIMEOUT;
 		}
 	}

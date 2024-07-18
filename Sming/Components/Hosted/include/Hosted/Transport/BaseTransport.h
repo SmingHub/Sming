@@ -16,18 +16,14 @@
 #include <Stream.h>
 #include <Delegate.h>
 
-namespace Hosted
-{
-namespace Transport
+namespace Hosted::Transport
 {
 class BaseTransport
 {
 public:
 	using DataHandler = Delegate<bool(Stream&)>;
 
-	virtual ~BaseTransport()
-	{
-	}
+	virtual ~BaseTransport() = default;
 
 	void onData(DataHandler handler)
 	{
@@ -38,6 +34,4 @@ protected:
 	DataHandler handler;
 };
 
-} // namespace Transport
-
-} // namespace Hosted
+} // namespace Hosted::Transport

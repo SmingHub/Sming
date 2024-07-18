@@ -10,15 +10,10 @@ For easier integration make sure you have both :envvar:`ESP_HOME` and
 :envvar:`SMING_HOME` exported in your working environment.
 
 
-Software involved
------------------
-
--  `Eclipse CDT <https://www.eclipse.org/cdt/>`__
-
 Installation
 ------------
 
--  Install Eclipse CDT using your operating system packaging tools.
+-  Install `Eclipse CDT <https://www.eclipse.org/cdt/>`__ using your operating system packaging tools.
 
 Configuration
 -------------
@@ -52,3 +47,4 @@ you can create such files by going to the root folder of your application and th
 
    make ide-eclipse
 	
+See also :doc:`/debugging/eclipse/index`.

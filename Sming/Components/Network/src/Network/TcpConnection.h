@@ -50,10 +50,14 @@ public:
 
 	virtual ~TcpConnection();
 
-public:
 	virtual bool connect(const String& server, int port, bool useSsl = false);
 	virtual bool connect(IpAddress addr, uint16_t port, bool useSsl = false);
 	virtual void close();
+
+	void setAutoSelfDestruct(bool state)
+	{
+		autoSelfDestruct = state;
+	}
 
 	/** @brief Writes string data directly to the TCP buffer
 	 *  @param data null terminated string
@@ -149,6 +153,13 @@ public:
 	{
 		return ssl;
 	}
+
+	/**
+	 * @brief Enables Secure Socket Layer on the current connection
+	 * @param hostName
+	 * @retval true on success, false otherwise
+	 */
+	bool enableSsl(const String& hostName = nullptr);
 
 protected:
 	void initialize(tcp_pcb* pcb);

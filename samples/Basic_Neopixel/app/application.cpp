@@ -13,71 +13,96 @@
 // How many NeoPixels are attached to the Esp8266?
 #define NUMPIXELS 16
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+namespace
+{
+Adafruit_NeoPixel strip(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
-void StartDemo(void);
+void startDemo();
 
-Timer StripDemoTimer;
-Timer ColorWipeTimer;
-Timer TheaterChaseTimer;
+SimpleTimer timer;
+uint32_t stripColor;
+uint8_t stripDemoType; // Defined by demoData below
+uint8_t chaseCycle;
 
-int StripDemoType = 0;
-int StripColor = 0;
-int StripNo = 0;
-int ChaseCycle = 0;
-int TheaterChaseQ = 0;
+enum ColorMap {
+	CLR_BLACK = 0x000000,
+	CLR_RED = 0xff0000,
+	CLR_GREEN = 0x00ff00,
+	CLR_BLUE = 0x0000ff,
+	CLR_DIM_WHITE = 0x7f7f7f,
+	CLR_DIM_RED = 0x7f0000,
+	CLR_DIM_BLUE = 0x00007f,
+};
+
+struct DemoData {
+	uint32_t color;
+	uint16_t stepMilliseconds;
+	uint8_t chase;
+};
+
+const DemoData demoData[]{
+	{CLR_BLACK, 50, 0},		 // 0
+	{CLR_RED, 50, 0},		 // 1
+	{CLR_GREEN, 100, 0},	 // 2
+	{CLR_BLUE, 150, 0},		 // 3
+	{CLR_BLACK, 50, 0},		 // 4
+	{CLR_DIM_WHITE, 50, 10}, // 5
+	{CLR_DIM_RED, 60, 15},   // 6
+	{CLR_DIM_BLUE, 70, 20},  // 7
+};
 
 //
 // Fill the dots one after the other with a color
+// Timer callback
 //
-
-void ColorWipe()
+void colorWipe()
 {
-	if(StripNo < strip.numPixels()) {
-		strip.setPixelColor(StripNo, StripColor);
-		strip.show();
-		StripNo++;
-	} else {
-		StripDemoType++;										  // next demo type
-		ColorWipeTimer.stop();									  // stop this demo timer
-		StripDemoTimer.initializeMs(2000, StartDemo).start(true); // start next demo after 2 seconds
+	static uint16_t stripNumber;
+
+	if(stripNumber >= strip.numPixels()) {
+		stripNumber = 0;
+		// start next demo after 2 seconds
+		stripDemoType++;
+		timer.initializeMs<2000>(startDemo).startOnce();
+		return;
 	}
+
+	strip.setPixelColor(stripNumber, stripColor);
+	strip.show();
+	++stripNumber;
 }
 
 //
-//Theatre-style crawling lights.
-//Timer callback
-
-void TheaterChase()
+// Theatre-style crawling lights
+// Timer callback
+//
+void theatreChase()
 {
-	int i, b = 0;
-	if(ChaseCycle > 0) {
-		if(TheaterChaseQ == 0)
-			b = 3;
-		if(TheaterChaseQ == 1)
-			b = 0;
-		if(TheaterChaseQ == 2)
-			b = 1;
-		if(TheaterChaseQ == 3)
-			b = 2;
+	static uint8_t theatreChaseQ;
 
-		for(i = 0; i < strip.numPixels(); i = i + 4)
-			strip.setPixelColor(i + b, 0); //turn prev every third pixel off
+	if(chaseCycle <= 0) {
+		assert(theatreChaseQ == 0);
+		// start another demo after 2 seconds
+		stripDemoType++;
+		timer.initializeMs<2000>(startDemo).startOnce();
+		return;
+	}
 
-		for(i = 0; i < strip.numPixels(); i = i + 4)
-			strip.setPixelColor(i + TheaterChaseQ, StripColor); //turn every third pixel on
+	const uint8_t offsetList[]{3, 0, 1, 2};
+	int b = offsetList[theatreChaseQ];
 
-		strip.show();
-		TheaterChaseQ++;
-		if(TheaterChaseQ > 3) {
-			TheaterChaseQ = 0;
-			ChaseCycle--;
-		}
-	} else {
-		// finish this demo
-		StripDemoType++;										  // next demo type
-		TheaterChaseTimer.stop();								  // stop this demo dimer
-		StripDemoTimer.initializeMs(2000, StartDemo).start(true); // start another demo after 2 seconds
+	// Turn every third pixel off
+	for(unsigned i = 0; i < strip.numPixels(); i += 4) {
+		strip.setPixelColor(i + b, 0);
+		strip.setPixelColor(i + theatreChaseQ, stripColor);
+	}
+
+	strip.show();
+
+	++theatreChaseQ;
+	if(theatreChaseQ > 3) {
+		theatreChaseQ = 0;
+		--chaseCycle;
 	}
 }
 
@@ -85,71 +110,38 @@ void TheaterChase()
 // Demo timer callback
 //
 
-void StartDemo()
+void startDemo()
 {
-	Serial << _F("NeoPixel Demo type: ") << StripDemoType << endl;
+	Serial << _F("NeoPixel Demo type: ") << stripDemoType << endl;
 
-	StripDemoTimer.stop(); // next demo wait until this demo ends
-
-	StripNo = 0;	   //start from led index 0
-	TheaterChaseQ = 0; //another counter
-
-	switch(StripDemoType) { // select demo type
-	case 0:
-		StripColor = strip.Color(0, 0, 0);						// black
-		ColorWipeTimer.initializeMs(50, ColorWipe).start(true); // 50 ms step
-		break;
-	case 1:
-		StripColor = strip.Color(255, 0, 0);					// Red
-		ColorWipeTimer.initializeMs(50, ColorWipe).start(true); // 50 ms step
-		break;
-	case 2:
-		StripColor = strip.Color(0, 255, 0);					 // Green
-		ColorWipeTimer.initializeMs(100, ColorWipe).start(true); // 100 ms step
-		break;
-	case 3:
-		StripColor = strip.Color(0, 0, 255);					 // Blue
-		ColorWipeTimer.initializeMs(150, ColorWipe).start(true); // 150 ms step
-		break;
-	case 4:
-		StripColor = strip.Color(0, 0, 0);						// black
-		ColorWipeTimer.initializeMs(50, ColorWipe).start(true); // 50 ms step
-		break;
-
-	case 5:
-		ChaseCycle = 10;											  //do 10 cycles of chasing
-		StripColor = strip.Color(127, 127, 127);					  // White
-		TheaterChaseTimer.initializeMs(50, TheaterChase).start(true); // 50 ms step
-		break;
-	case 6:
-		ChaseCycle = 15;											  //do 15 cycles of chasing
-		StripColor = strip.Color(127, 0, 0);						  // Red
-		TheaterChaseTimer.initializeMs(60, TheaterChase).start(true); // 60 ms step
-		break;
-	case 7:
-		ChaseCycle = 20;											  //do 20 cycles of chasing
-		StripColor = strip.Color(0, 0, 127);						  // Blue
-		TheaterChaseTimer.initializeMs(70, TheaterChase).start(true); // 70 ms step
-		break;
-
-	default:
-		StripDemoType = 0;
-		StripDemoTimer.initializeMs(1000, StartDemo).start(true); //demo loop restart
-		break;
+	if(stripDemoType >= ARRAY_SIZE(demoData)) {
+		// Demo loop restart
+		stripDemoType = 0;
+		timer.initializeMs<1000>(startDemo).start();
+		return;
 	}
+
+	auto& data = demoData[stripDemoType];
+	chaseCycle = data.chase;
+	stripColor = data.color;
+	timer.initializeMs(data.stepMilliseconds, chaseCycle ? theatreChase : colorWipe).start();
 }
 
-void got_IP(IpAddress ip, IpAddress netmask, IpAddress gateway)
+#ifndef DISABLE_WIFI
+void gotIp(IpAddress ip, IpAddress netmask, IpAddress gateway)
 {
 	Serial << "IP: " << ip << endl;
 	// You can put here other job like web,tcp etc.
 }
 
 // Will be called when WiFi station loses connection
-void connect_Fail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
+void connectFail(const String& ssid, MacAddress bssid, WifiDisconnectReason reason)
 {
 	Serial.println(_F("I'm NOT CONNECTED!"));
 }
+#endif
+
+} // namespace
 
 void init()
 {
@@ -165,13 +157,12 @@ void init()
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiStation.enable(true);
 	WifiAccessPoint.enable(false);
-	WifiEvents.onStationDisconnect(connect_Fail);
-	WifiEvents.onStationGotIP(got_IP);
+	WifiEvents.onStationDisconnect(connectFail);
+	WifiEvents.onStationGotIP(gotIp);
 #endif
 
-	StripDemoType = 0; //demo index to be displayed
+	stripDemoType = 0;
+	strip.begin();
 
-	strip.begin(); //init port
-
-	StripDemoTimer.initializeMs(1000, StartDemo).start(); //start demo
+	timer.initializeMs<1000>(startDemo).start();
 }

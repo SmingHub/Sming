@@ -1,7 +1,5 @@
 #include "configuration.h"
 
-#include <SmingCore.h>
-
 MeteoConfig ActiveConfig;
 
 MeteoConfig loadConfig()
@@ -23,8 +21,8 @@ MeteoConfig loadConfig()
 		cfg.RangeMin = trigger["min"];
 		cfg.RangeMax = trigger["max"];
 	} else {
-		cfg.NetworkSSID = WIFI_SSID;
-		cfg.NetworkPassword = WIFI_PWD;
+		cfg.NetworkSSID = F(WIFI_SSID);
+		cfg.NetworkPassword = F(WIFI_PWD);
 	}
 	return cfg;
 }

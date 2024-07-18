@@ -18,9 +18,9 @@ constexpr uint8_t MAX_FAILED_ATTEMTPS = 5;
 constexpr uint8_t PING_INTERVAL_SECONDS = 10;
 constexpr uint8_t RESTART_DELAY_SECONDS = 2;
 
-Timer procTimer;
+SimpleTimer procTimer;
 
-void ping(uint32 ip);
+void ping(uint32_t ip);
 
 void pingTask()
 {
@@ -45,7 +45,7 @@ void onSent(void* arg, void* pdata)
 	}
 
 	debug_d("Scheduling another ping in %d seconds", PING_INTERVAL_SECONDS);
-	procTimer.initializeMs(PING_INTERVAL_SECONDS * 1000, pingTask).startOnce();
+	procTimer.initializeMs<PING_INTERVAL_SECONDS * 1000>(pingTask).startOnce();
 }
 
 void onReceived(void* arg, void* pdata)
@@ -79,7 +79,7 @@ void ping(uint32_t ip)
 void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
 	debug_d("Scheduling initial ping in 1 second.");
-	procTimer.initializeMs(1000, pingTask).startOnce();
+	procTimer.initializeMs<1000>(pingTask).startOnce();
 }
 
 } // namespace

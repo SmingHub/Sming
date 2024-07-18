@@ -24,7 +24,7 @@ sponsor <https://opencollective.com/Sming#sponsor>`__.
 
 In addition to that anyone who is helping this project can file an
 expense. If the expense makes sense for the development of the
-community, it will be “merged” in the ledger of our open collective by
+community, it will be "merged" in the ledger of our open collective by
 the core contributors and the person who filed the expense will be
 reimbursed.
 

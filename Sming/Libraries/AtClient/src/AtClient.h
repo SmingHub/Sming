@@ -60,9 +60,7 @@ public:
 
 	AtClient(HardwareSerial& stream);
 
-	virtual ~AtClient()
-	{
-	}
+	virtual ~AtClient() = default;
 
 	/**
 	 * @brief Sends AT command

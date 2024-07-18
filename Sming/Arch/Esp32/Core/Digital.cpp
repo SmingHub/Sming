@@ -15,6 +15,10 @@
 #include <driver/rtc_io.h>
 #if SOC_RTCIO_INPUT_OUTPUT_SUPPORTED
 #include <hal/rtc_io_ll.h>
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 2, 0)
+#define RTCIO_LL_FUNC_RTC RTCIO_FUNC_RTC
+#define RTCIO_LL_FUNC_DIGITAL RTCIO_FUNC_DIGITAL
+#endif
 #endif
 
 void pinMode(uint16_t pin, uint8_t mode)
@@ -38,7 +42,7 @@ void pinMode(uint16_t pin, uint8_t mode)
 			return; // Already in ADC mode
 		}
 
-		rtcio_ll_function_select(rtc, RTCIO_FUNC_RTC);
+		rtcio_ll_function_select(rtc, RTCIO_LL_FUNC_RTC);
 		rtcio_ll_input_disable(rtc);
 		rtcio_ll_output_disable(rtc);
 		rtcio_ll_pullup_disable(rtc);
@@ -48,7 +52,7 @@ void pinMode(uint16_t pin, uint8_t mode)
 	}
 
 	if(rtc >= 0) {
-		rtcio_ll_function_select(rtc, RTCIO_FUNC_DIGITAL);
+		rtcio_ll_function_select(rtc, RTCIO_LL_FUNC_DIGITAL);
 		rtcio_ll_pulldown_disable(rtc);
 		if(mode == INPUT_PULLUP) {
 			rtcio_ll_pullup_enable(rtc);

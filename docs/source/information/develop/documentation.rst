@@ -171,7 +171,7 @@ perhaps using a group::
 Or individual classes. Some experimentation may be necessary but there
 are plenty of examples within the main documentation to guide you.
 
-You can use the following build variables within your Component's
+You can use the following configuration variables within your Component's
 component.mk file to direct doxygen parsing:
 
 

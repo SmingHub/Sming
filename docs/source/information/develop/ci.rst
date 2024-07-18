@@ -10,7 +10,8 @@ framework with all samples (both in the framework any any associated libraries).
 This is done using the integration testing framework using linux and Windows build environments.
 
 In addition, a number of integration tests are run using Host builds which verify the logic of a large
-proportion of the code.
+proportion of the code. This includes the main ``HostTests`` application plus all ``test`` applications
+in every Component/library.
 Testing low-level operation requires real hardware and this must be done manually, but in general
 libraries and samples can be largely tested using Host builds and carefully constructed tests.
 
@@ -25,20 +26,168 @@ Github Actions
 We use Github Actions to manage all test builds.
 This service is free of charge for open-source projects.
 
-.. note::
-
-   Appveyor has been removed in favour of GitHub Actions.
-
-   We used to use `Travis <https://travis-ci.org>`__ but this is no longer free of charge.
-
 Sming performs the build and test logic is handled using scripts, which are intended to be easily
 portable to other CI services if necessary.
 Mostly batch scripts (.cmd) are used for Windows, and bash scripts (.sh) for GNU/Linux but
 where practical powershell core is used as this runs on either.
 
-.. note::
+These are the main Sming workflows in ``.github/workflows``:
 
-   Sming doesn't perform CI builds for MacOS.
+Cache clean
+      Dispatch workflow as convenient way to clean action cache. Cleaning levels are:
+
+      - pull-requests
+            Any items created by pull requests, excludes anything in develop branch.
+            Normally pull requests will make use of caches present in the develop branch, but if there isn't one it will create its own. This becomes redundant when merged to develop.
+
+            Such caches should be expired automatically, but this option can be used to remove them.
+
+      - ccache
+            All ccache items. Use if pull requests are taking too long to build.
+
+      - idf-tools
+            All IDF tool. Use before merging to develop if IDF toolchains have been updated.
+
+      - ccache+idf
+            All ccache and IDF tool caches.
+
+      Note that cleaning can always be done locally using ``gh``::
+
+            gh cache list # For fork
+            gh cache list -R SmingHub/Sming
+            gh cache delete --all -R SmingHub/Sming
+
+      etc.
+
+
+CodeQL
+      Performs code quality analysis when develop branch is updated.
+
+Continuous Integration (CI)
+      Tests for all architectures except esp32. Run for every pull request and merge to develop.
+
+Continuous Integration (CI) for Esp32
+      Tests for esp32 architecture. Requires a separate workflow as matrix becomes too complex otherwise.
+
+Continuous Integration (CI) for Library
+      Used indirectly by library workflows for testing. See workflows/library.
+
+Coverity Scan
+      Code quality analyser. Does instrumented build then uploads database to coverity servers for analysis.
+
+Release
+      Run manually during release phase only.
+
+Spelling Check
+      Run for all pull requests and merge to develop.
+
+
+Esp32 IDF and tools cleaning
+----------------------------
+
+Because the IDF and associated tools are large and relatively time-consuming to install, these are cached.
+There's so much bloat that it doesn't take much to fill the 10GB github cache allocation.
+
+So after installing the tools - before it gets cached - the ``clean-tools.py`` script gets run.
+This tool contains a list of filters (regular expressions) which match various paths.
+Candidates for removal were identified by inspection using the Gnome disk usage analyzer.
+Some other stuff (like test code and examples) are fairly safe candidates to remove as well.
+
+To evaluate how much would be removed run this command (it's safe)::
+
+      python clean-tools.py scan
+
+To perform 'dry-run' of a clean operation, without actually deleteing anything::
+
+      python clean-tools.py clean
+
+To actually delete stuff requires a confirmation flag::
+
+      python clean-tools.py clean --delete
+
+Note that some unused submodules are cleaned, but by default the IDF pulls them back in again!
+To prevent this behaviour, set `IDF_SKIP_CHECK_SUBMODULES=1`.
+
+
+CI logs
+-------
+
+Analysing CI logs is important for several reasons:
+
+Identifying sudden jumps in memory usage between builds
+    This can indicate a potential problem with SDK updates or the build system
+
+Checking warnings
+    - Compiler warnings are a very important indicator of potential problems in code.
+    - CI runs are built in STRICT mode so despite best efforts there can be many remaining messages.
+    - The same warning in a particular source file can occur multiple times in a run and across
+      multiple runs
+
+Logs can be downloaded via the web browser in 'raw' format, but getting these takes manual
+effort and has to be repeated for each build: currently there are 42 builds across two runs.
+
+Fortunately, github actions provides a CLI application to do this.
+The log files related to a run and therefore only two are required (the main build, and esp32).
+
+
+Setup
+~~~~~
+
+The github CLI client must be installed and authenticated with the Sming repo (or fork).
+
+See https://docs.github.com/en/github-cli/github-cli/quickstart.
+
+
+Usage
+~~~~~
+
+Fetch and scan the most recent build::
+
+      python scanlog.py last-build.txt --fetch
+
+This will download all CI runs from the most recent workflow into ``last-build.txt``, then parse it.
+If the file already exists, downloading will be skipped.
+Output is to console and can be redirected to a file if required.
+
+To compare with another previously fetched set of logs::
+
+      python scanlog.py last-build.txt -c previous-build.txt
+
+To fetch a specific build::
+
+      python scanlog.py custom-fixes.txt --fetch --branch feature/custom-fixes
+
+To explicitly specify the repository to fetch from::
+
+      python scanlog.py custom-fixes.txt --fetch --branch feature/custom-fixes --repo SmingHub/Sming
+
+To list all source locations with warnings::
+
+      python scanlog.py last-build.txt -w -m
+
+Note: The 'm' flag merges warnings from all jobs. Omitting this shows warnings for each job separately.
+
+To filter out warnings::
+
+      python scanlog.py last-build.txt -w -m --exclude warn-exclude.lst
+
+The named exclusion file contains a list of regular expressions to match against.
+
+
+vscode
+~~~~~~
+
+The warnings output using the scanlog tool can be used as hyperlinks in vscode:
+
+- Select a project, e.g. ``tests/HostTests`` and run ``make ide-vscode``
+- Open the resulting workspace in vscode
+- Add the ``sming`` folder to the project
+- Open an integrated terminal and dump the warnings as shown above.
+  Or, redirect them into a file and ``cat`` it.
+
+The file locations act as links to the source.
+Note that this isn't perfect. For example, esp-idf paths are not resolved to the specific version in use.
+Listing warnings for each job can be helpful as it shows which IDF version was used.
 
 
 Library CI support
@@ -47,12 +196,9 @@ Library CI support
 Sming libraries may be separately built and tested whether or not they are included as part of
 the Sming repository (or a fork).
 
-There are two mechanisms available.
+There is currently only one supported mechanism available: GitHub Actions.
 
-GitHub Actions
-~~~~~~~~~~~~~~
-
-The ``library.yml`` re-useable workflow is provided, which takes care of these tasks:
+The ``library.yml`` reusable workflow is provided, which takes care of these tasks:
 
 - Checking in the library to test
 - Checking in the Sming framework
@@ -101,195 +247,3 @@ See https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a
 
 Note that the workflow must be available in the library's default branch, or it will
 not appear in the github web page.
-
-
-Appveyor
-~~~~~~~~
-
-Appveyor may be configured to test a Sming library separately. Steps to enable:
-
-Add project to appveyor account
-    ``Projects`` -> ``New Project`` and select from list
-
-Set ``Custom Configuration``
-    to https://raw.githubusercontent.com/SmingHub/Sming/develop/Tools/ci/library/appveyor.txt.
-
-Set ``Project URL slug``
-    If the library under test already exists in the Sming framework then the test directory
-    MUST have the same name to ensure it gets picked up.
-
-    For example, testing the ``Sming-jerryscript`` library requires this value to be set to ``jerryscript``
-    to match the Sming library name.
-    Build logs should then report a warning ``Multiple matches found for Component 'jerryscript'.
-
-Set sming fork/branch
-    By default builds use the main Sming ``develop`` branch.
-    If testing a library which requires changes to the framework, you'll need to use a fork
-    and add ``SMING_REPO`` and ``SMING_BRANCH`` environment variables to the project settings.
-
-    Note that environment variables set here will override any values set in appveyor.txt.
-
-The provided default :source:`makefile <Tools/ci/library/Makefile>`
-builds all applications within the library's ``samples`` directory.
-If a test application is provided then that should be located in a ``test`` directory.
-This is built for all architectures, and also executed for Host.
-
-
-Build on your own 'cloud'
--------------------------
-
-Resources are limited to one concurrent build job per appveyor account.
-Each build gets two virtual CPUs but they're not particular fast.
-Network connectivity is, on the other hand, excellent!
-
-One very useful feature that appveyor provides is `Bring Your Own Cloud or Computer <https://www.appveyor.com/docs/byoc/>`__.
-This allows the actual builds to be run on other hardware.
-
-Builds can have up to 5 concurrent jobs and as many CPUs as are available.
-In addition, build images can be pre-installed with toolchains.
-This can reduce total run times from 5+ hours to around 30 minutes.
-
-
-Configuration
-~~~~~~~~~~~~~
-
-Full support requires a Windows server with Hyper-V, WSL2 and `Docker <https://www.docker.com/>`__ installed.
-Hyper-V is built into Windows 10/11 professional edition.
-WSL2 should be available on all Windows versions.
-
-Linux/MacOS are supported but only for GNU/Linux images.
-
-Note that whilst Docker supports both Windows and Linux images, both cannot be used at the same time:
-it is necessary to manually switch between Linux/Windows containers.
-However, testing shows much better performance using Hyper-V for Windows builds.
-
-1.  Add Docker build cloud for Linux builds:
-
-    - Appveyor -> BYOC -> Add Cloud
-
-    - Cloud Provider: Docker
-
-    - Operating system: Windows
-
-    - Base Image: ``Ubuntu 20.04 Minimal``
-
-    - Shell commands::
-
-        git clone https://github.com/SmingHub/Sming --branch develop --depth 1 /tmp/sming
-        pwsh /tmp/sming/Tools/Docker/appveyor/setup.ps1
-
-    - Image name: ``linux``
-
-    Execute commands as indicated in the resulting screen.
-
-    Wait for the image to be built.
-
-    The final stage updates the cloud information in your appveyor account.
-    Customise as follows:
-
-    - Name
-        Change this so it contains only letters, numbers and dash (-).
-        Default names contain a space, e.g. ``COMPUTER Docker`` so change to ``COMPUTER-Docker``
-
-    - Custom Docker command arguments
-        Customise CPU resources, RAM usage, etc. For example::
-
-            --cpus=8
-
-        See https://docs.docker.com/engine/reference/commandline/run/.
-
-    - Failover strategy
-        Default values will fail a job if no worker is available to service it.
-        The following settings are suggested::
-
-            Job start timeout: 60
-            Provisioning attempts: 100
-
-
-2. Add Hyper-V build cloud for Windows builds:
-
-Same as (1) above except:
-
-- Cloud Provider: Hyper-V
-- Base Image: ``Windows Server Core 2019 Minimal``
-- Image name: ``windows``
-
-When complete, fix the build cloud name as previously, e.g. ``COMPUTER-HyperV``.
-Also check CPU cores, RAM allocation, failover strategy.
-
-
-3. Fix authorization token
-
-The above steps will also install the Appveyor Host Agent software on your computer.
-This is the software which communicates with the Appveyor server and directs the build jobs.
-
-The authorization token used by the agent can be found in the registry:
-
-.. code-block:: text
-
-    Computer\HKEY_LOCAL_MACHINE\SOFTWARE\AppVeyor\HostAgent
-
-Make sure that both clouds have the same token.
-
-
-4. Configure BYOC images
-
-    Select ``BYOC`` -> ``Images`` and amend mappings as follows:
-
-    (1)
-
-         - Image Name: ``Ubuntu2004``
-         - OS Type: ``Linux``
-         - Build cloud: "COMPUTER-Docker" (as configured above)
-
-    (2)
-
-         - Image Name: ``Visual Studio 2019``
-         - OS Type: ``Windows``
-         - Build cloud: "COMPUTER-HyperV" (as configured above)
-
-    Now, when a build is started it should use your own server.
-    To revert back to normal operation change the ``Image Name`` fields in the entries.
-    It's not necessary to delete them: just add, say, "X" to the name so they're not recognised.
-
-
-    .. note::
-
-        Clouds may also be configured on a per-project basis by setting the ``APPVEYOR_BUILD_WORKER_CLOUD``
-        environment variable to the appropriate cloud name.
-
-        To get both Linux and Windows builds working concurrently using this approach would require a single
-        cloud to support dual images.
-
-
-Rebuilding docker images
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-Appveyor images are customised by pre-installing Sming build tools.
-When these are updated images must be re-built.
-
-The easiest way to do this is using the provided dockerfiles::
-
-   cd $SMING_HOME/../Tools/Docker/appveyor
-   docker build --no-cache -t linux -f Dockerfile-Linux .
-   docker build --no-cache -t windows -f Dockerfile-Windows .
-
-
-Custom images
--------------
-
-To use a Sming fork for building the image simply replace the repo URL and branch in the ``Shell Commands`` given above.
-
-These may also be passed to docker build as follows::
-
-   docker build -t linux-test -f Dockerfile-Linux --build-arg SMING_REPO=https://github.com/myrepo/Sming --build-arg SMING_BRANCH=feature/appveyor-revisions .
-
-
-Issues
-------
-
-If you get error ``image not supported by cloud`` this probably means an image has been mapped to the wrong clould.
-Goto Appveyor -> BYOC -> Images and update/delete the offending entries.
-
-If either cloud is shown as ``offline`` then check the authorization token (step 4 above).
-It may be necessary to restart the ``Appveyor Host Agent`` service (via Windows service manager).

@@ -89,8 +89,8 @@ void StationImpl::initialise(netif* nif)
 	}
 
 	auto netif_callback = [](netif* nif) {
-		host_queue_callback([](uint32_t param) { station.statusCallback(reinterpret_cast<netif*>(param)); },
-							uint32_t(nif));
+		host_queue_callback([](os_param_t param) { station.statusCallback(reinterpret_cast<netif*>(param)); },
+							os_param_t(nif));
 	};
 
 	netif_set_status_callback(nif, netif_callback);
@@ -161,24 +161,26 @@ bool StationImpl::isEnabled() const
 bool StationImpl::config(const Config& cfg)
 {
 	for(auto& ap : apInfoList) {
-		if(cfg.ssid == ap.ssid) {
-			if(ap.authMode != AUTH_OPEN) {
-				if(cfg.password != ap.pwd) {
-					debug_w("Bad password for '%s'", cfg.ssid.c_str());
-					return false;
-				}
-			}
-
-			currentAp = &ap;
-			if(cfg.save) {
-				savedAp = &ap;
-			}
-
-			debug_i("Connected to SSID '%s'", cfg.ssid.c_str());
-
-			autoConnect = cfg.autoConnectOnStartup;
-			return true;
+		if(cfg.ssid != ap.ssid) {
+			continue;
 		}
+
+		if(ap.authMode != AUTH_OPEN) {
+			if(cfg.password != ap.pwd) {
+				debug_w("Bad password for '%s'", cfg.ssid.c_str());
+				return false;
+			}
+		}
+
+		currentAp = &ap;
+		if(cfg.save) {
+			savedAp = &ap;
+		}
+
+		debug_i("Connected to SSID '%s'", cfg.ssid.c_str());
+
+		autoConnect = cfg.autoConnectOnStartup;
+		return true;
 	}
 
 	debug_w("SSID '%s' not found", cfg.ssid.c_str());
@@ -326,7 +328,7 @@ bool StationImpl::startScan(ScanCompletedDelegate scanCompleted)
 	}
 
 	host_queue_callback(
-		[](uint32_t param) {
+		[](os_param_t param) {
 			auto self = reinterpret_cast<StationImpl*>(param);
 			BssList list;
 			for(const auto& info : apInfoList) {
@@ -334,7 +336,7 @@ bool StationImpl::startScan(ScanCompletedDelegate scanCompleted)
 			}
 			self->scanCompletedCallback(true, list);
 		},
-		uint32_t(this));
+		os_param_t(this));
 
 	return true;
 }

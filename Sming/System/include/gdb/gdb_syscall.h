@@ -27,6 +27,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <unistd.h>
 #include <sys/fcntl.h>
 #include <sys/stat.h>
 #include <sys/unistd.h>

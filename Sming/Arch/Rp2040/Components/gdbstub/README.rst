@@ -3,4 +3,4 @@ GDB Stub for RP2040
 
 This defines the command line to use when ``make gdb`` is run.
 
-TODO: Implement stub code to allow serial debugging.
+See :doc:`arch/rp2040/debugging/index`.

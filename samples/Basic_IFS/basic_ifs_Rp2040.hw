@@ -1,7 +1,7 @@
 {
-    "name": "Rp2040 config",
-    "arch": "Rp2040",
+    "name": "Basic IFS sample (RP2040)",
     "base_config": "basic_ifs",
+    "arch": "Rp2040",
     "options": [
         "2m",
         "cyw43_fw"

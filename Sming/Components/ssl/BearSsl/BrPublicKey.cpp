@@ -37,7 +37,7 @@ bool BrPublicKey::decode(const uint8_t* buf, size_t len)
 		return copy(*br_pkey_decoder_get_ec(&dc));
 
 	default:
-		debug_e("Unknown key type: %d", type);
+		debug_e("[SSL] Unknown key type: %d", type);
 		return false;
 	}
 }

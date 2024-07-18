@@ -9,7 +9,8 @@ CPPFLAGS += \
 	-DARDUINO_ARCH_RP2040 \
 	-march=armv6-m \
 	-mcpu=cortex-m0plus \
-	-mthumb
+	-mthumb \
+	-nostdlib
 
 CXXFLAGS += \
 	-fno-threadsafe-statics \
@@ -26,11 +27,10 @@ ifeq (,$(wildcard $(PICO_TOOLCHAIN_PATH)/$(CONFIG_TOOLPREFIX)))
 $(error PICO_TOOLCHAIN_PATH not set correctly: $(PICO_TOOLCHAIN_PATH))
 endif
 else
-PICO_TOOLCHAIN_PATH := $(shell which $(CONFIG_TOOLPREFIX)-gcc)
-ifeq (,$(PICO_TOOLCHAIN_PATH))
+ifeq (,$(shell which $(CONFIG_TOOLPREFIX)-gcc))
 $(error Toolchain not found, maybe set PICO_TOOLCHAIN_PATH)
 endif
-TOOLSPEC := $(dir $(PICO_TOOLCHAIN_PATH))$(CONFIG_TOOLPREFIX)-
+TOOLSPEC := $(CONFIG_TOOLPREFIX)-
 endif
 
 # select which tools to use as assembler, compiler, librarian and linker
@@ -42,10 +42,7 @@ LD				:= $(TOOLSPEC)gcc
 NM				:= $(TOOLSPEC)nm
 OBJCOPY		 	:= $(TOOLSPEC)objcopy
 OBJDUMP		 	:= $(TOOLSPEC)objdump
-GDB				:= $(TOOLSPEC)gdb
-
-CPPFLAGS += \
-	-nostdlib
+GDB				:= gdb
 
 # => Tools
 MEMANALYZER = $(PYTHON) $(ARCH_TOOLS)/memanalyzer.py $(OBJDUMP)$(TOOL_EXT)

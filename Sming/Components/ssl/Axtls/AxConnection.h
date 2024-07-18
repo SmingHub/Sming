@@ -27,6 +27,7 @@ public:
 
 	~AxConnection()
 	{
+		certificate.reset();
 		// Typically sends out closing message
 		ssl_free(ssl);
 	}
@@ -61,7 +62,7 @@ public:
 	const Certificate* getCertificate() const override
 	{
 		if(!certificate && ssl->x509_ctx != nullptr) {
-			certificate.reset(new AxCertificate(ssl));
+			certificate = std::make_unique<AxCertificate>(ssl);
 		}
 
 		return certificate.get();

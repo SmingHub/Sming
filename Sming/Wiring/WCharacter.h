@@ -101,8 +101,8 @@ inline bool isPunct(int c)
 }
 
 // Checks for white-space characters. For the avr-libc library,
-// these are: space, formfeed (’\f’), newline (’\n’), carriage
-// return (’\r’), horizontal tab (’\t’), and vertical tab (’\v’).
+// these are: space, formfeed ('\f'), newline ('\n'), carriage
+// return ('\r'), horizontal tab ('\t'), and vertical tab ('\v').
 inline bool isSpace(int c)
 {
 	return (isspace(c) == 0 ? false : true);

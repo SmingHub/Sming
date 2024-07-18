@@ -5,12 +5,14 @@ Provides support for both hardware and software-base SPI master devices.
 
 .. toctree::
    :glob:
+   :maxdepth: 1
+   :titlesonly:
 
    *
 
 
-Build variables
----------------
+Configuration Variables
+-----------------------
 
 .. envvar:: ENABLE_SPI_DEBUG
 

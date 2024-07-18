@@ -11,12 +11,14 @@
 #include <Data/Stream/ChunkedStream.h>
 #endif
 
+#ifndef DISABLE_NETWORK
 DEFINE_FSTR_LOCAL(template1, "Stream containing {var1}, {var2} and {var3}. {} {{}} {{12345")
 DEFINE_FSTR_LOCAL(template1_1, "Stream containing value #1, value #2 and {var3}. {} {{}} {{12345")
 DEFINE_FSTR_LOCAL(template1_2, "Stream containing value #1, value #2 and [value #3]. {} {{}} {{12345")
 
 DEFINE_FSTR_LOCAL(template2, "This text should {disable}not {var1} really {var2:hello} again {enable}be missing.")
 DEFINE_FSTR_LOCAL(template2_1, "This text should be missing.")
+#endif
 
 class StreamTest : public TestGroup
 {
@@ -108,7 +110,7 @@ public:
 		TEST_CASE("MultipartStream / MultiStream")
 		{
 			unsigned itemIndex{0};
-			constexpr const FlashString* items[]{
+			const FlashString* items[]{
 				&template1, &template1_1, &template1_2, &template2, &template2_1,
 			};
 			MultipartStream multi([&]() -> MultipartStream::BodyPart {
@@ -171,8 +173,8 @@ public:
 
 		{
 			// STL may perform one-time memory allocation for mutexes, etc.
-			std::shared_ptr<const char> data(new char[18]);
-			SharedMemoryStream<const char>(data, 18);
+			std::shared_ptr<const char[]> data(new char[18]);
+			SharedMemoryStream stream(data, 18);
 		}
 
 		auto memStart = MallocCount::getCurrent();
@@ -180,21 +182,21 @@ public:
 
 		TEST_CASE("SharedMemoryStream")
 		{
-			char* message = new char[18];
-			memcpy(message, "Wonderful data...", 18);
-			std::shared_ptr<const char> data(message, [&message](const char* p) { delete[] p; });
+			const char* message = "Wonderful data...";
+			const size_t msglen = strlen(message);
+			std::shared_ptr<char[]> data(new char[msglen]);
+			memcpy(data.get(), message, msglen);
 
 			debug_d("RefCount: %d", data.use_count());
 
-			Vector<SharedMemoryStream<const char>*> list;
+			Vector<SharedMemoryStream<const char[]>*> list;
 			for(unsigned i = 0; i < 4; i++) {
-				list.addElement(new SharedMemoryStream<const char>(data, strlen(message)));
+				list.addElement(new SharedMemoryStream<const char[]>(data, msglen));
 			}
 
-			for(unsigned i = 0; i < list.count(); i++) {
+			for(auto element : list) {
 				constexpr size_t bufferSize{5};
 				char buffer[bufferSize]{};
-				auto element = list[i];
 
 				String output;
 				while(!element->isFinished()) {

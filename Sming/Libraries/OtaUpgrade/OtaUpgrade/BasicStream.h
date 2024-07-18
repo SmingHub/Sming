@@ -84,14 +84,16 @@ public:
 	}
 
 	// overrides from IDataSourceStream
-	uint16_t readMemoryBlock(char* data, int bufSize) override
+	uint16_t readMemoryBlock(char*, int) override
 	{
 		return 0;
 	}
-	virtual int available() override
+
+	int available() override
 	{
 		return 0;
 	}
+
 	bool isFinished() override
 	{
 		return true;

@@ -52,6 +52,7 @@ unsigned base64_encode_block(const char* plaintext_in, int length_in, char* code
 			result = (fragment & 0x0fc) >> 2;
 			*codechar++ = base64_encode_value(result);
 			result = (fragment & 0x003) << 4;
+			/* fallthrough */
 	case step_B:
 			if (plainchar == plaintextend)
 			{
@@ -63,6 +64,7 @@ unsigned base64_encode_block(const char* plaintext_in, int length_in, char* code
 			result |= (fragment & 0x0f0) >> 4;
 			*codechar++ = base64_encode_value(result);
 			result = (fragment & 0x00f) << 2;
+			/* fallthrough */
 	case step_C:
 			if (plainchar == plaintextend)
 			{

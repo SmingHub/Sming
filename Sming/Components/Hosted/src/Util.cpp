@@ -36,7 +36,7 @@ char convertType(const String& type)
 
 	// TODO: ... add all types...
 	if(type != "void") {
-		debug_w("Unknown type: %s", type);
+		debug_w("Unknown type: %s", type.c_str());
 	}
 
 	// void and unknown

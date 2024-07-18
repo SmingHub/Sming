@@ -31,7 +31,7 @@ void onConnect(NimBLEServer& server)
 {
 	Serial.println("Connected :) !");
 
-	procTimer.initializeMs(500, loop).start();
+	procTimer.initializeMs<500>(loop).start();
 }
 
 void onDisconnect(NimBLEServer& server)

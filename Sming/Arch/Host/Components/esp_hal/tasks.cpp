@@ -9,11 +9,8 @@ class TaskQueue
 {
 public:
 	TaskQueue(os_task_t callback, os_event_t* events, uint8_t length)
+		: callback(callback), events(events), length(length)
 	{
-		this->callback = callback;
-		this->events = events;
-		this->length = length;
-		read = count = 0;
 	}
 
 	bool post(os_signal_t sig, os_param_t par)
@@ -45,8 +42,8 @@ private:
 	static CMutex mutex;
 	os_task_t callback;
 	os_event_t* events;
-	uint8_t read;
-	uint8_t count;
+	uint8_t read{0};
+	uint8_t count{0};
 	uint8_t length;
 };
 
@@ -117,7 +114,7 @@ void host_service_tasks()
 	}
 }
 
-bool host_queue_callback(host_task_callback_t callback, uint32_t param)
+bool host_queue_callback(host_task_callback_t callback, os_param_t param)
 {
 	return task_queues[HOST_TASK_PRIO]->post(os_signal_t(callback), param);
 }

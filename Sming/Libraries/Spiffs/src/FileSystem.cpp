@@ -23,9 +23,7 @@
 #include "include/IFS/SPIFFS/Error.h"
 #include <IFS/Util.h>
 
-namespace IFS
-{
-namespace SPIFFS
+namespace IFS::SPIFFS
 {
 #define CHECK_MOUNTED()                                                                                                \
 	if(!SPIFFS_mounted(handle())) {                                                                                    \
@@ -152,7 +150,7 @@ int FileSystem::mount()
 		.hal_erase_f = f_erase,
 		.phys_size = uint32_t(partSize),
 		.phys_addr = 0,
-		.phys_erase_block = partition.getBlockSize(),
+		.phys_erase_block = uint32_t(partition.getBlockSize()),
 		.log_block_size = logicalBlockSize,
 		.log_page_size = LOG_PAGE_SIZE,
 	};
@@ -213,7 +211,8 @@ int FileSystem::format()
 
 int FileSystem::check()
 {
-	fs.check_cb_f = [](spiffs* fs, spiffs_check_type type, spiffs_check_report report, u32_t arg1, u32_t arg2) {
+	fs.check_cb_f = [](spiffs*, [[maybe_unused]] spiffs_check_type type, [[maybe_unused]] spiffs_check_report report,
+					   [[maybe_unused]] u32_t arg1, [[maybe_unused]] u32_t arg2) {
 		if(report > SPIFFS_CHECK_PROGRESS) {
 			debug_d("SPIFFS check %d, %d, %u, %u", type, report, arg1, arg2);
 		}
@@ -884,5 +883,4 @@ int FileSystem::getFilePath(FileID fileid, NameBuffer& buffer)
 	return translateSpiffsError(err);
 }
 
-} // namespace SPIFFS
-} // namespace IFS
+} // namespace IFS::SPIFFS

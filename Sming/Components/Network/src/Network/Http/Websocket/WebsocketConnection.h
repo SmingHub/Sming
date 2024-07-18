@@ -25,14 +25,8 @@ extern "C" {
 
 #define WEBSOCKET_VERSION 13 // 1.3
 
-DECLARE_FSTR(WSSTR_CONNECTION)
 DECLARE_FSTR(WSSTR_UPGRADE)
 DECLARE_FSTR(WSSTR_WEBSOCKET)
-DECLARE_FSTR(WSSTR_HOST)
-DECLARE_FSTR(WSSTR_ORIGIN)
-DECLARE_FSTR(WSSTR_KEY)
-DECLARE_FSTR(WSSTR_PROTOCOL)
-DECLARE_FSTR(WSSTR_VERSION)
 DECLARE_FSTR(WSSTR_SECRET)
 
 class WebsocketConnection;
@@ -56,13 +50,6 @@ struct WsFrameInfo {
 	ws_frame_type_t type = WS_FRAME_TEXT;
 	char* payload = nullptr;
 	size_t payloadLength = 0;
-
-	WsFrameInfo() = default;
-
-	WsFrameInfo(ws_frame_type_t type, char* payload, size_t payloadLength)
-		: type(type), payload(payload), payloadLength(payloadLength)
-	{
-	}
 };
 
 class WebsocketConnection
@@ -73,7 +60,7 @@ public:
 	 * @param connection the transport connection
 	 * @param isClientConnection true when the passed connection is an http client connection
 	 */
-	WebsocketConnection(HttpConnection* connection, bool isClientConnection = true);
+	WebsocketConnection(HttpConnection* connection = nullptr, bool isClientConnection = true);
 
 	virtual ~WebsocketConnection()
 	{
@@ -109,14 +96,14 @@ public:
 
 	/**
 	 * @brief Sends websocket message from a stream
-	 * @param stream
+	 * @param source The stream to send - we get ownership of the stream
 	 * @param type
 	 * @param useMask MUST be true for client connections
 	 * @param isFin true if this is the final frame
 	 *
 	 * @retval bool true on success
 	 */
-	bool send(IDataSourceStream* stream, ws_frame_type_t type = WS_FRAME_TEXT, bool useMask = false, bool isFin = true);
+	bool send(IDataSourceStream* source, ws_frame_type_t type = WS_FRAME_TEXT, bool useMask = false, bool isFin = true);
 
 	/**
 	 * @brief Broadcasts a message to all active websocket connections
@@ -271,11 +258,7 @@ public:
 	 * @param connection the transport connection
 	 * @param isClientConnection true when the passed connection is an http client connection
 	 */
-	void setConnection(HttpConnection* connection, bool isClientConnection = true)
-	{
-		this->connection = connection;
-		this->isClientConnection = isClientConnection;
-	}
+	void setConnection(HttpConnection* connection, bool isClientConnection = true);
 
 	/** @brief  Gets the state of the websocket connection
 	  * @retval WsConnectionState
@@ -303,15 +286,15 @@ protected:
 	bool processFrame(TcpClient& client, char* at, int size);
 
 protected:
-	WebsocketDelegate wsConnect = nullptr;
-	WebsocketMessageDelegate wsMessage = nullptr;
-	WebsocketBinaryDelegate wsBinary = nullptr;
-	WebsocketDelegate wsPong = nullptr;
-	WebsocketDelegate wsDisconnect = nullptr;
+	WebsocketDelegate wsConnect;
+	WebsocketMessageDelegate wsMessage;
+	WebsocketBinaryDelegate wsBinary;
+	WebsocketDelegate wsPong;
+	WebsocketDelegate wsDisconnect;
 
 	void* userData = nullptr;
 
-	WsConnectionState state = eWSCS_Ready;
+	WsConnectionState state;
 
 private:
 	ws_frame_type_t frameType = WS_FRAME_TEXT;
@@ -322,9 +305,8 @@ private:
 
 	static WebsocketList websocketList;
 
-	bool isClientConnection = true;
-
 	HttpConnection* connection = nullptr;
+	bool isClientConnection;
 	bool activated = false;
 };
 

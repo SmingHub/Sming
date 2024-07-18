@@ -22,7 +22,11 @@
 #include "include/hostlib/hostlib.h"
 #include <hostlib/hostmsg.h>
 #include <pthread.h>
+#ifdef __APPLE__
+#include <dispatch/dispatch.h>
+#else
 #include <semaphore.h>
+#endif
 #include <cassert>
 
 #if defined(DEBUG_VERBOSE_LEVEL) && (DEBUG_VERBOSE_LEVEL == 3)
@@ -39,6 +43,14 @@
 class CBasicMutex
 {
 public:
+	CBasicMutex()
+	{
+		pthread_mutexattr_t attr;
+		pthread_mutexattr_init(&attr);
+		pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+		pthread_mutex_init(&m_priv, &attr);
+	}
+
 	~CBasicMutex()
 	{
 		pthread_mutex_destroy(&m_priv);
@@ -69,7 +81,7 @@ private:
      * This behaviour allows threads to lock the mutex multiple times whilst
      * blocking other threads. Avoids risk of deadlocks and simplifies code.
      */
-	pthread_mutex_t m_priv = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+	pthread_mutex_t m_priv;
 };
 
 /**
@@ -95,45 +107,55 @@ class CSemaphore
 public:
 	CSemaphore()
 	{
+#ifdef __APPLE__
+		m_sem = dispatch_semaphore_create(0);
+#else
 		sem_init(&m_sem, 0, 0);
+#endif
 	}
 
 	~CSemaphore()
 	{
+#ifndef __APPLE__
 		sem_destroy(&m_sem);
+#endif
 	}
 
 	bool post()
 	{
+#ifdef __APPLE__
+		return dispatch_semaphore_signal(m_sem) == 0;
+#else
 		return sem_post(&m_sem) == 0;
+#endif
 	}
 
 	bool wait()
 	{
+#ifdef __APPLE__
+		return dispatch_semaphore_wait(m_sem, DISPATCH_TIME_FOREVER) == 0;
+#else
 		return sem_wait(&m_sem) == 0;
+#endif
 	}
 
 	bool trywait()
 	{
+#ifdef __APPLE__
+		return dispatch_semaphore_wait(m_sem, DISPATCH_TIME_NOW) == 0;
+#else
 		return sem_trywait(&m_sem) == 0;
-	}
-
-	bool timedwait(const struct timespec* abs_timeout)
-	{
-		return sem_timedwait(&m_sem, abs_timeout) == 0;
+#endif
 	}
 
 	bool timedwait(unsigned us);
 
-	int value() const
-	{
-		int n{0};
-		sem_getvalue(const_cast<sem_t*>(&m_sem), &n);
-		return n;
-	}
-
 private:
-	sem_t m_sem;
+#ifdef __APPLE__
+	dispatch_semaphore_t m_sem;
+#else
+	sem_t m_sem{};
+#endif
 };
 
 /**

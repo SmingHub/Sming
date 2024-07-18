@@ -9,8 +9,11 @@
  */
 
 #include <Services/Profiling/TaskStat.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#pragma GCC diagnostic pop
 #include <bitset>
 #include <cstdlib>
 
@@ -27,13 +30,11 @@ struct TaskStat::Info {
 TaskStat::TaskStat(Print& out) : out(out)
 {
 #if CONFIG_FREERTOS_USE_TRACE_FACILITY && CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS
-	taskInfo.reset(new Info[2]);
+	taskInfo = std::make_unique<Info[]>(2);
 #endif
 }
 
-TaskStat::~TaskStat()
-{
-}
+TaskStat::~TaskStat() = default;
 
 bool TaskStat::update()
 {

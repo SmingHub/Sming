@@ -19,9 +19,14 @@
 template <typename T> class Countable
 {
 public:
-	virtual ~Countable()
-	{
-	}
+	Countable() = default;
+
+	Countable(const Countable&) = delete;
+	Countable(Countable&&) = delete;
+	Countable& operator=(const Countable&) = delete;
+	Countable& operator=(Countable&&) = delete;
+
+	virtual ~Countable() = default;
 
 	virtual unsigned int count() const = 0;
 

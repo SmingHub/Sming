@@ -95,7 +95,7 @@ bool Servo::removeChannel(ServoChannel* channel)
 	return true;
 }
 
-void Servo::updateChannel(ServoChannel* channel)
+void Servo::updateChannel(ServoChannel*)
 {
 	updateTimer.startOnce();
 }

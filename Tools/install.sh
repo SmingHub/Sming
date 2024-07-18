@@ -5,7 +5,7 @@
 #    . /opt/sming/Tools/install.sh
 #
 
-[ "$0" = "$BASH_SOURCE" ]; sourced=$?
+[ "$0" = "${BASH_SOURCE[0]}" ]; sourced=$?
 
 inst_host=0
 inst_doc=0
@@ -14,7 +14,16 @@ inst_esp32=0
 inst_rp2040=0
 err=0
 
-FONT_PACKAGES="fonts-ubuntu fonts-noto-mono xfonts-base fonts-urw-base35 fonts-droid-fallback"
+FONT_PACKAGES=(\
+    fonts-ubuntu \
+    fonts-noto-mono \
+    xfonts-base \
+    fonts-urw-base35 \
+    fonts-droid-fallback \
+    )
+
+EXTRA_PACKAGES=()
+OPTIONAL_PACKAGES=()
 
 for opt in "$@"; do
     opt=$(echo "$opt" | tr '[:upper:]' '[:lower:]')
@@ -31,7 +40,15 @@ for opt in "$@"; do
             ;;
 
         fonts)
-            EXTRA_PACKAGES+=" $FONT_PACKAGES"
+            EXTRA_PACKAGES+=("${FONT_PACKAGES[@]}")
+            ;;
+
+        optional)
+            OPTIONAL_PACKAGES+=(\
+                clang-format-8 \
+                "linux-modules-extra-$(uname -r)" \
+                exfatprogs \
+            )
             ;;
 
         *)
@@ -50,6 +67,7 @@ if [[ $err -eq 1 ]] || [ $# -eq 0 ]; then
     echo '   all       Install all architectures'
     echo '   doc       Tools required to build documentation'
     echo '   fonts     Install fonts used by Graphics library (normally included with Ubuntu)'
+    echo '   optional  Install optional development tools'
     echo
     if [ $sourced = 1 ]; then
         return 1
@@ -59,25 +77,22 @@ if [[ $err -eq 1 ]] || [ $# -eq 0 ]; then
 fi
 
 # Sming repository for binary archives
-SMINGTOOLS=https://github.com/SmingHub/SmingTools/releases/download/1.0
+export SMINGTOOLS=https://github.com/SmingHub/SmingTools/releases/download/1.0
 
 # Set default environment variables
-if [ -z "$APPVEYOR" ]; then
-    source $(dirname "$BASH_SOURCE")/export.sh
+source "$(dirname "${BASH_SOURCE[0]}")/export.sh"
 
-    # Ensure default path is writeable
-    sudo mkdir -p /opt
-    sudo chown $USER:$USER /opt
-fi
-
-WGET="wget --no-verbose"
+export WGET="wget --no-verbose"
 
 # Installers put downloaded archives here
 DOWNLOADS="downloads"
 mkdir -p $DOWNLOADS
 
 # Identify package installer for distribution
-if [ -n "$(command -v apt)" ]; then
+if [[ "$(uname)" = "Darwin" ]]; then
+    DIST=darwin
+    PKG_INSTALL="brew install"
+elif [ -n "$(command -v apt)" ]; then
     DIST=debian
     PKG_INSTALL="sudo apt-get install -y"
 elif [ -n "$(command -v dnf)" ]; then
@@ -94,78 +109,82 @@ fi
 
 # Common install
 
-if [ -n "$APPVEYOR" ] || [ -n "$GITHUB_ACTION" ]; then
+MACHINE_PACKAGES=()
+case $DIST in
+    debian)
+        case $(uname -m) in
+            arm | aarch64)
+                ;;
+            *)
+                MACHINE_PACKAGES+=(g++-multilib)
+                ;;
+        esac
+        if [ ${#OPTIONAL_PACKAGES[@]} ]; then
+            # Provide repo. for clang-format-8 on Ubuntu 22.04
+            sudo apt-add-repository -y 'deb http://mirrors.kernel.org/ubuntu focal main universe'
+        fi
+        sudo apt-get -y update || echo "Update failed... Try to install anyway..."
+        $PKG_INSTALL \
+            ccache \
+            cmake \
+            curl \
+            git \
+            make \
+            ninja-build \
+            unzip \
+            g++ \
+            python3 \
+            python3-pip \
+            python3-setuptools \
+            wget \
+            "${MACHINE_PACKAGES[@]}" \
+            "${EXTRA_PACKAGES[@]}"
 
-    sudo apt-get -y update
-    $PKG_INSTALL \
-        clang-format-8 \
-        g++-9-multilib \
-        python3-setuptools \
-        ninja-build \
-        exfat-fuse \
-        exfat-utils \
-        $EXTRA_PACKAGES
+        if [ -n "$OPTIONAL_PACKAGES" ]; then
+            $PKG_INSTALL "${OPTIONAL_PACKAGES[@]}" || printf "\nWARNING: Failed to install optional %s.\n\n" "$OPTIONAL_PACKAGES"
+        fi
+        ;;
 
-    sudo update-alternatives --set gcc /usr/bin/gcc-9
+    fedora)
+        case $(uname -m) in
+            x86_64)
+                MACHINE_PACKAGES=(\
+                    glibc-devel.i686 \
+                    libstdc++.i686 \
+                    )
+                ;;
+        esac
+        $PKG_INSTALL \
+            ccache \
+            cmake \
+            gawk \
+            gcc \
+            gcc-c++ \
+            gettext \
+            git \
+            make \
+            ninja-build \
+            python3 \
+            python3-pip \
+            sed \
+            unzip \
+            wget \
+            "${MACHINE_PACKAGES[@]}"
+        ;;
 
-else
+    darwin)
+        $PKG_INSTALL \
+            ccache \
+            binutils \
+            coreutils \
+            gnu-sed \
+            ninja
+        ;;
 
-    MACHINE_PACKAGES=""
-    case $DIST in
-        debian)
-            case $(uname -m) in
-                arm | aarch64)
-                    ;;
-                *)
-                    MACHINE_PACKAGES="g++-multilib"
-                    ;;
-            esac
-            sudo apt-get -y update || echo "Update failed... Try to install anyway..."
-            $PKG_INSTALL \
-                cmake \
-            	curl \
-            	git \
-            	make \
-                ninja-build \
-                unzip \
-                g++ \
-            	python3 \
-            	python3-pip \
-            	python3-setuptools \
-                wget \
-                $MACHINE_PACKAGES \
-                $EXTRA_PACKAGES
+esac
 
-            $PKG_INSTALL clang-format-8 || printf "\nWARNING: Failed to install optional clang-format-8.\n\n"
-            ;;
-
-        fedora)
-            case $(uname -m) in
-                x86_64)
-                    MACHINE_PACKAGES="glibc-devel.i686 libstdc++.i686"
-                    ;;
-            esac
-            $PKG_INSTALL \
-                cmake \
-                gawk \
-                gcc \
-                gcc-c++ \
-                gettext \
-                git \
-                make \
-                ninja-build \
-                python3 \
-                python3-pip \
-                sed \
-                unzip \
-                wget \
-                $MACHINE_PACKAGES
-            ;;
-
-    esac
-
+if [ "$DIST" != "darwin" ]; then
     sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 100
-
 fi
 
 set -e
@@ -206,7 +225,7 @@ if [ $inst_rp2040 -eq 1 ]; then
 fi
 
 if [ -z "$KEEP_DOWNLOADS" ]; then
-    rm -rf "$DOWNLOADS/*"
+    rm -rf "${DOWNLOADS:?}/"*
 fi
 
 

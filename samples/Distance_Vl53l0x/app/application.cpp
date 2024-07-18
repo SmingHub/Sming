@@ -1,15 +1,16 @@
 #include <SmingCore.h>
 #include <Adafruit_VL53L0X.h>
 
-Adafruit_VL53L0X lox;
-
 // GPIO - NodeMCU pins
 #define SDA 4	// D2
 #define SCL 5	// D1
 #define XSHUT 14 // D5
 #define INT 12   // D6
 
-Timer loopTimer;
+namespace
+{
+Adafruit_VL53L0X lox;
+SimpleTimer loopTimer;
 
 void loop()
 {
@@ -24,6 +25,8 @@ void loop()
 		Serial.println(_F("Out of range"));
 	}
 }
+
+} // namespace
 
 void init()
 {

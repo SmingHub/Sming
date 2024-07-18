@@ -63,7 +63,8 @@ void debug_print_stack(uint32_t start, uint32_t end)
 	m_puts(instructions);
 }
 
-void debug_crash_callback(const rst_info* rst_info, uint32_t stack, uint32_t stack_end)
+void debug_crash_callback([[maybe_unused]] const rst_info* rst_info, [[maybe_unused]] uint32_t stack,
+						  [[maybe_unused]] uint32_t stack_end)
 {
 #ifdef ENABLE_GDB
 	gdbFlushUserData();
@@ -226,7 +227,7 @@ void ATTR_GDBINIT gdb_init(void)
 #endif
 }
 
-void WEAK_ATTR gdb_enable(bool state)
+void WEAK_ATTR gdb_enable(bool)
 {
 }
 
@@ -235,7 +236,7 @@ GdbState WEAK_ATTR gdb_present(void)
 	return eGDB_NotPresent;
 }
 
-void WEAK_ATTR gdb_on_attach(bool attached)
+void WEAK_ATTR gdb_on_attach(bool)
 {
 }
 
@@ -245,7 +246,7 @@ void WEAK_ATTR gdb_detach(void)
 
 } // extern "C"
 
-int WEAK_ATTR gdb_syscall(const GdbSyscallInfo& info)
+int WEAK_ATTR gdb_syscall(const GdbSyscallInfo&)
 {
 	return -1;
 }

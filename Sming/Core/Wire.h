@@ -126,13 +126,13 @@ public:
 	using Print::write;
 
 	// Slave mode not currently implemented
-	void onReceive(UserReceive callback)
+	void onReceive([[maybe_unused]] UserReceive callback)
 	{
 		// userReceiveCallback = callback;
 	}
 
 	// Slave mode not currently implemented
-	void onRequest(UserRequest callback)
+	void onRequest([[maybe_unused]] UserRequest callback)
 	{
 		// userRequestCallback = callback;
 	}
@@ -155,8 +155,6 @@ private:
 	bool transmitting{false};
 	UserRequest userRequestCallback{nullptr};
 	UserReceive userReceiveCallback{nullptr};
-	void onRequestService();
-	void onReceiveService(uint8_t*, int);
 
 	void twi_delay(uint8_t v);
 	bool twi_write_start();

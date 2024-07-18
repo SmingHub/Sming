@@ -13,6 +13,15 @@ ifeq ($(DISABLE_WIFI),1)
 COMPONENT_DEPENDS	+= esp-lwip
 endif
 
+
+COMPONENT_RELINK_VARS += ENABLE_CUSTOM_PHY
+ENABLE_CUSTOM_PHY ?= 0
+ifeq ($(ENABLE_CUSTOM_PHY),1)
+	COMPONENT_CXXFLAGS += -DENABLE_CUSTOM_PHY=1
+	LDFLAGS += $(call Wrap,register_chipv6_phy)
+endif
+
+
 $(FLASH_INIT_DATA): $(SDK_BASE)/.submodule
 	$(Q) cp -f $(@D)/esp_init_data_default_v08.bin $@
 
@@ -29,7 +38,8 @@ export SDK_LIBDIR
 
 COMPONENT_DOXYGEN_INPUT := \
 	include/gpio.h \
-	include/pwm.h
+	include/pwm.h \
+	include/esp_phy.h
 
 # Crash handler hooks this so debugger can be invoked
 EXTRA_LDFLAGS := $(call Wrap,system_restart_local)

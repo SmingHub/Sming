@@ -7,18 +7,26 @@
 #define WIFI_PWD "PleaseEnterPass"
 #endif
 
+namespace
+{
 HttpServer server;
 FtpServer ftp;
 
-int inputs[] = {0, 2}; // Set input GPIO pins here
-Vector<String> namesInput;
-const int countInputs = sizeof(inputs) / sizeof(inputs[0]);
+// Set input GPIO pins here
+const uint8_t inputs[] = {5, 2};
 
 void onIndex(HttpRequest& request, HttpResponse& response)
 {
 	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
 	auto& vars = tmpl->variables();
-	//vars["counter"] = String(counter);
+	String gpioList;
+	for(unsigned i = 0; i < ARRAY_SIZE(inputs); ++i) {
+		String s = F("<span id=\"gpio{id}\" class=\"label label-default\">GPIO{gpio}</span> ");
+		s.replace("{id}", String(i));
+		s.replace("{gpio}", String(inputs[i]));
+		gpioList += s;
+	}
+	vars["gpio_list"] = gpioList;
 	response.sendNamedStream(tmpl); // this template object will be deleted automatically
 }
 
@@ -40,8 +48,8 @@ void onAjaxInput(HttpRequest& request, HttpResponse& response)
 	JsonObject json = stream->getRoot();
 	json["status"] = (bool)true;
 
-	String stringKey = "StringKey";
-	String stringValue = "StringValue";
+	String stringKey = F("StringKey");
+	String stringValue = F("StringValue");
 
 	json[stringKey] = stringValue;
 
@@ -51,8 +59,9 @@ void onAjaxInput(HttpRequest& request, HttpResponse& response)
 	}
 
 	JsonObject gpio = json.createNestedObject("gpio");
-	for(int i = 0; i < countInputs; i++)
-		gpio[namesInput[i].c_str()] = digitalRead(inputs[i]);
+	for(unsigned i = 0; i < ARRAY_SIZE(inputs); ++i) {
+		gpio[String(i)] = digitalRead(inputs[i]);
+	}
 
 	response.sendDataStream(stream, MIME_JSON);
 }
@@ -64,7 +73,7 @@ void onAjaxFrequency(HttpRequest& request, HttpResponse& response)
 
 	JsonObjectStream* stream = new JsonObjectStream();
 	JsonObject json = stream->getRoot();
-	json["status"] = (bool)true;
+	json["status"] = true;
 	json["value"] = (int)System.getCpuFrequency();
 
 	response.sendDataStream(stream, MIME_JSON);
@@ -78,10 +87,11 @@ void startWebServer()
 	server.paths.set("/ajax/frequency", onAjaxFrequency);
 	server.paths.setDefault(onFile);
 
-	Serial.println(_F("\r\n"
-					  "=== WEB SERVER STARTED ==="));
-	Serial.println(WifiStation.getIP());
-	Serial.println(_F("==========================\r\n"));
+	Serial << endl
+		   << _F("=== WEB SERVER STARTED ===") << endl
+		   << WifiStation.getIP() << endl
+		   << _F("==========================") << endl
+		   << endl;
 }
 
 void startFTP()
@@ -101,6 +111,8 @@ void gotIP(IpAddress ip, IpAddress netmask, IpAddress gateway)
 	startWebServer();
 }
 
+} // namespace
+
 void init()
 {
 	spiffs_mount(); // Mount file system, in order to work with files
@@ -112,9 +124,8 @@ void init()
 	WifiStation.config(WIFI_SSID, WIFI_PWD);
 	WifiAccessPoint.enable(false);
 
-	for(int i = 0; i < countInputs; i++) {
-		namesInput.add(String(inputs[i]));
-		pinMode(inputs[i], INPUT);
+	for(auto pin : inputs) {
+		pinMode(pin, INPUT);
 	}
 
 	// Run our method when station was connected to AP

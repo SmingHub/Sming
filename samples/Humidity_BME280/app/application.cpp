@@ -24,8 +24,10 @@
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
+namespace
+{
 Adafruit_BME280 bme;
-Timer procTimer;
+SimpleTimer procTimer;
 
 // Will use default pins for selected architecture. You can override values here
 // #define SDA 4
@@ -39,6 +41,8 @@ void printValues()
 	Serial << _F("Humidity = ") << bme.readHumidity() << " %" << endl;
 	Serial.println();
 }
+
+} // namespace
 
 void init()
 {
