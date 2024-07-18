@@ -25,7 +25,7 @@ After the generator tool is run you will have newly generated C and header files
 Using
 -----
 
-1. Add ``COMPONENT_DEPENDS += nanopb`` to your application componenent.mk file.
+1. Add ``COMPONENT_DEPENDS += nanopb`` to your application component.mk file.
 2. Add these lines to your application::
 
       #include <PbUtils.h>

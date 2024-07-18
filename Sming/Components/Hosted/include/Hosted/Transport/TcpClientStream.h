@@ -88,7 +88,7 @@ private:
 	size_t pendingBytes{0};
 	size_t threshold;
 
-	bool store(TcpClient& client, char* data, int size)
+	bool store(TcpClient&, char* data, int size)
 	{
 		return push(reinterpret_cast<const uint8_t*>(data), size);
 	}

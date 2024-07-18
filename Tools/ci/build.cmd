@@ -36,6 +36,8 @@ REM HostTests must build for all architectures
 REM Building Bear SSL library causes memory issues with CI builds in Windows, so avoid for now
 %MAKE_PARALLEL% -C "%SMING_PROJECTS_DIR%/tests/HostTests" %TEST_FLAGS% || goto :error
 
+%MAKE_PARALLEL% -C "%SMING_HOME%" SystemClock_NTP || goto :error
+
 REM Start Arch-specific tests
 cd /d %SMING_HOME%
 call Arch\%SMING_ARCH%\Tools\ci\build.run.cmd || goto :error

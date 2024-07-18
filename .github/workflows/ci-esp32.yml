@@ -2,7 +2,9 @@ name: Continuous Integration (CI) for Esp32
 
 on:
   push:
-  
+
+  workflow_dispatch:
+
   pull_request:
     branches: [ develop ]
 
@@ -11,31 +13,39 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         variant: [esp32, esp32s2, esp32c3, esp32s3, esp32c2]
-        idf_version: ["4.3", "4.4", "5.0", "5.2"]
+        idf_version: ["4.4", "5.0", "5.2"]
+        include:
+          - os: ubuntu-latest
+            variant: esp32
+            idf_version: "4.3"
         exclude:
-          - variant: esp32s3
-            idf_version: "4.3"
-          - variant: esp32c2
-            idf_version: "4.3"
           - variant: esp32c2
             idf_version: "4.4"
-          - idf_version: "4.3"
-            os: windows-latest
-          - idf_version: "5.0"
-            os: windows-latest
+          - os: macos-latest
+            idf_version: "4.4"
+          - os: macos-latest
+            idf_version: "5.0"
+          - os: windows-latest
+            idf_version: "5.0"
 
-    concurrency: 
+    concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-${{ toJson(matrix) }}
       cancel-in-progress: true
 
     runs-on: ${{ matrix.os }}
 
     env:
+      CI_BUILD_DIR: ${{ github.workspace }}
+      SMING_HOME: ${{ github.workspace }}/Sming
       SMING_ARCH: Esp32
       SMING_SOC: ${{ matrix.variant }}
       INSTALL_IDF_VER: ${{ matrix.idf_version }}
+      IDF_SKIP_CHECK_SUBMODULES: 1
+      ENABLE_CCACHE: 1
+      CCACHE_DIR: ${{ github.workspace }}/.ccache
+      CCACHE_MAXSIZE: 500M
 
     steps:
     - name: Fix autocrlf setting
@@ -50,31 +60,68 @@ jobs:
       with:
         python-version: ${{ matrix.idf_version == '4.3' && '3.8' || '3.12' }}
 
-    - name: Configure environment
-      shell: pwsh
+    - name: Fix permissions
+      if: matrix.os != 'windows-latest'
       run: |
-        "CI_BUILD_DIR=" + (Resolve-Path ".").path >> $env:GITHUB_ENV
-        "SMING_HOME=" + (Resolve-Path "Sming").path >> $env:GITHUB_ENV
+        sudo chown $USER /opt
 
-    - name: Install build tools for Ubuntu
-      if: ${{ matrix.os ==  'ubuntu-latest' }}
+    - name: Cache ESP-IDF and build tools
+      uses: actions/cache@v4
+      with:
+        path: |
+          /opt/esp-idf-${{ matrix.idf_version }}
+          /opt/esp32
+        key: ${{ matrix.os }}-idf-${{ matrix.idf_version }}
+
+    - name: Install build tools for Ubuntu / MacOS
+      if: matrix.os != 'windows-latest'
       run: |
         Tools/ci/install.sh
 
-    - name: Install build tools for Windows   
-      if: ${{ matrix.os == 'windows-latest' }}
+    - name: Install build tools for Windows
+      if: matrix.os == 'windows-latest'
       run: |
-         . Tools/ci/setenv.ps1
-         Tools/ci/install.cmd
+        . Tools/ci/setenv.ps1
+        Tools/ci/install.cmd
 
-    - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Ubuntu
-      if: ${{ matrix.os == 'ubuntu-latest' }}
+    - name: Restore Compiler Cache
+      id: ccache
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ env.CCACHE_DIR }}
+        key: ${{ matrix.os }}-ccache-${{ matrix.variant }}-${{ matrix.idf_version }}
+
+    - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Ubuntu / MacOS
+      if: matrix.os != 'windows-latest'
       run: |
-        source $SMING_HOME/../Tools/export.sh
+        ccache -z
+        . Tools/export.sh
         Tools/ci/build.sh
 
     - name: Build and test for ${{matrix.variant}} with IDF v${{matrix.idf_version}} on Windows
-      if: ${{ matrix.os == 'windows-latest' }}
+      if: matrix.os == 'windows-latest'
       run: |
+        ccache -z
         . Tools/ci/setenv.ps1
         Tools/ci/build.cmd
+
+    - name: Compiler Cache stats
+      run: |
+        ccache --evict-older-than 14400s
+        ccache -sv
+
+    - name: Delete Previous Compiler Cache
+      if: github.ref_name == github.event.repository.default_branch && steps.ccache.outputs.cache-hit
+      continue-on-error: true
+      run: |
+        gh extension install actions/gh-actions-cache
+        gh actions-cache delete "${{ steps.ccache.outputs.cache-primary-key }}" --branch ${{ github.ref_name }} --confirm
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Save Compiler Cache
+      if: github.ref_name == github.event.repository.default_branch || !steps.ccache.outputs.cache-hit
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ env.CCACHE_DIR }}
+        key: ${{ steps.ccache.outputs.cache-primary-key }}

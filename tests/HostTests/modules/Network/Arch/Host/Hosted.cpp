@@ -62,7 +62,7 @@ public:
 		parsedCommand = "";
 	}
 
-	void methodSignature(char c) override
+	void methodSignature(char) override
 	{
 	}
 

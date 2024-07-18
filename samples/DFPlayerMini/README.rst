@@ -15,8 +15,9 @@ https://www.dfrobot.com/wiki/index.php/DFPlayer_Mini_SKU:DFR0299
 Building
 --------
 
-Steps to test this sample: \* Connect DFPlayer Mini using RX/TX pins to
-TX/RX pins respectively of ESP8266. \* Copy one or more mp3 files to your
-SD card. The example playes one file for some time and moves to the next
-one. \* Insert your SD card in the slot of the DF Player module. \*
-Flash and run the sample code.
+Steps to test this sample:
+
+- Connect DFPlayer Mini using RX/TX pins to TX/RX pins respectively of ESP8266.
+- Copy one or more mp3 files to your SD card. The example playes one file for some time and moves to the next one.
+- Insert your SD card in the slot of the DF Player module.
+- Flash and run the sample code.

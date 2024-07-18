@@ -146,10 +146,9 @@ float Stream::parseFloat(char skipChar)
 	bool isNegative = false;
 	bool isFraction = false;
 	long value = 0;
-	char c;
 	float fraction = 1.0;
 
-	c = peekNextDigit();
+	int c = peekNextDigit();
 	// ignore non numeric leading characters
 	if(c < 0) {
 		return 0; // timeout

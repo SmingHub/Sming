@@ -73,7 +73,7 @@ void showTime(const DateTime& dt)
 	print(F("toShortTimeString"), dt.toShortTimeString());
 }
 
-void onRx(Stream& source, char arrivedChar, unsigned short availableCharsCount)
+void onRx(Stream& source, char, uint16_t)
 {
 	static LineBuffer<32> buffer;
 

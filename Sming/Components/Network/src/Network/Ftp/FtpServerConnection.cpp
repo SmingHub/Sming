@@ -401,7 +401,7 @@ void FtpServerConnection::onCommand(String cmd, String data)
 	}
 }
 
-err_t FtpServerConnection::onSent(uint16_t len)
+err_t FtpServerConnection::onSent(uint16_t)
 {
 	if(dataConnection != nullptr) {
 		dataConnection->onReadyToSendData(eTCE_Poll);

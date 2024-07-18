@@ -71,6 +71,10 @@ void main(void*)
 
 } // namespace
 
+extern "C" void __wrap_esp_newlib_init_global_stdio(const char*)
+{
+}
+
 extern void sming_create_task(TaskFunction_t);
 
 extern "C" void app_main(void)

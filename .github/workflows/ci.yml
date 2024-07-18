@@ -2,7 +2,9 @@ name: Continuous Integration (CI)
 
 on:
   push:
-  
+
+  workflow_dispatch:
+
   pull_request:
     branches: [ develop ]
 
@@ -11,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         variant: [esp8266, host, rp2040]
         toolchain: [gcc]
         include:
@@ -23,19 +25,29 @@ jobs:
             variant: host
             arch: Host
             toolchain: clang
+          - os: ubuntu-latest
+            variant: host
+            arch: Host
+            toolchain: gcc64
           - variant: rp2040
             arch: Rp2040
 
-    concurrency: 
+    concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-${{ toJson(matrix) }}
       cancel-in-progress: true
 
     runs-on: ${{ matrix.os }}
 
     env:
+      CI_BUILD_DIR: ${{ github.workspace }}
+      SMING_HOME: ${{ github.workspace }}/Sming
       SMING_ARCH: ${{ matrix.arch }}
       SMING_SOC: ${{ matrix.variant }}
       CLANG_BUILD: ${{ matrix.toolchain == 'clang' && '15' || '0' }}
+      BUILD64: ${{ matrix.toolchain == 'gcc64' && 1 || 0 }}
+      ENABLE_CCACHE: 1
+      CCACHE_DIR: ${{ github.workspace }}/.ccache
+      CCACHE_MAXSIZE: 500M
 
     steps:
     - name: Fix autocrlf setting
@@ -50,34 +62,57 @@ jobs:
       with:
         python-version: "3.12"
 
-    - name: Configure environment
-      shell: pwsh
-      run: |
-        "CI_BUILD_DIR=" + (Resolve-Path ".").path >> $env:GITHUB_ENV
-        "SMING_HOME=" + (Resolve-Path "Sming").path >> $env:GITHUB_ENV
-
-    - name: Install build tools for Ubuntu
-      if: ${{ matrix.os == 'ubuntu-latest' }}
+    - name: Install build tools for Ubuntu / MacOS
+      if: matrix.os != 'windows-latest'
       run: |
         Tools/ci/install.sh
 
-    - name: Install build tools for Windows   
-      if: ${{ matrix.os == 'windows-latest' }}
+    - name: Install build tools for Windows
+      if: matrix.os == 'windows-latest'
       run: |
-         . Tools/ci/setenv.ps1
-         Tools/ci/install.cmd
+        . Tools/ci/setenv.ps1
+        Tools/ci/install.cmd
 
-    - name: Build and test for ${{matrix.variant}} on Ubuntu
+    - name: Restore Compiler Cache
+      id: ccache
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ env.CCACHE_DIR }}
+        key: ${{ matrix.os }}-ccache-${{ matrix.toolchain }}-${{ matrix.variant }}
+
+    - name: Build and test for ${{matrix.variant}} on Ubuntu / MacOS
       env:
         CLANG_FORMAT: clang-format-8
-      if: ${{ matrix.os == 'ubuntu-latest' }}
+      if: matrix.os != 'windows-latest'
       run: |
-        source $SMING_HOME/../Tools/export.sh
-        $CLANG_FORMAT --version
+        ccache -z
+        . Tools/export.sh
         Tools/ci/build.sh
 
     - name: Build and test for ${{matrix.variant}} on Windows
-      if: ${{ matrix.os == 'windows-latest' }}
+      if: matrix.os == 'windows-latest'
       run: |
+        ccache -z
         . Tools/ci/setenv.ps1
         Tools/ci/build.cmd
+
+    - name: Compiler Cache stats
+      run: |
+        ccache --evict-older-than 14400s
+        ccache -sv
+
+    - name: Delete Previous Compiler Cache
+      if: github.ref_name == github.event.repository.default_branch && steps.ccache.outputs.cache-hit
+      continue-on-error: true
+      run: |
+        gh extension install actions/gh-actions-cache
+        gh actions-cache delete "${{ steps.ccache.outputs.cache-primary-key }}" --branch ${{ github.ref_name }} --confirm
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Save Compiler Cache
+      if: github.ref_name == github.event.repository.default_branch || !steps.ccache.outputs.cache-hit
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ env.CCACHE_DIR }}
+        key: ${{ steps.ccache.outputs.cache-primary-key }}

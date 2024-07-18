@@ -59,9 +59,10 @@ def parse_iso_datetime(value: str | tuple | int) -> Record:
     else:
         s = value
         dt = datetime.datetime.fromisoformat(value)
+        dt = dt.astimezone(datetime.timezone.utc)
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=datetime.timezone.utc)
-    iso_string = dt.isoformat().removesuffix('+00:00') + 'Z'
+    iso_string = dt.isoformat().replace('+00:00', 'Z')
     return Record(s, iso_string, dt.timestamp(), dt.microsecond // 1000)
 
 
@@ -135,6 +136,8 @@ MAP_LIST = {
             "2106-02-07T06:28:15",
             0x100000000,
             -0x80000000,
+            "2024-05-22T06:28:15+07:30",
+            "2024-05-22T06:28:15-23:45",
         ]),
     'VALID_ISO_TIME': (
         parse_iso_time,

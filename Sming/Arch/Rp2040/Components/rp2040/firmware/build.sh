@@ -8,7 +8,7 @@
 set -e
 
 write_chunk() {
-    sz=$(printf "%08x" $(du -b "$1" | cut -f1))
+    sz=$(printf "%08x" $(wc -c "$1" | awk '{print $1}'))
     # Output 8-byte header containing chunk tag plus length in little-endian format
     printf "CHNK\x${sz:6:2}\x${sz:4:2}\x${sz:2:2}\x${sz:0:2}" >> $2
     # Append chunk data

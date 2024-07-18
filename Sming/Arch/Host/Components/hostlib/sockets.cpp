@@ -19,7 +19,7 @@
 
 #include "sockets.h"
 #include "include/hostlib/hostmsg.h"
-#include <string.h>
+#include <cstring>
 
 #ifndef __WIN32
 // For FIONREAD

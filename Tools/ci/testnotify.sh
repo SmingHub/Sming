@@ -38,10 +38,6 @@ case "$status" in
         ;;
 esac
 
-if [ -n "$APPVEYOR" ]; then
-    appveyor $cmd "$testname" -Framework Sming -Filename "$MODULE" -Outcome $status -Duration $elapsedMillis
-else
-    echo "TestNotify: $cmd $testname -Framework Sming -Filename $MODULE -Outcome $status -Duration $elapsedMillis"
-fi
+echo "TestNotify: $cmd $testname -Framework Sming -Filename $MODULE -Outcome $status -Duration $elapsedMillis"
 
 echo "$curNanos" > "$testfile"

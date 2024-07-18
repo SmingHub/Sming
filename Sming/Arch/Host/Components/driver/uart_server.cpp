@@ -18,7 +18,6 @@
  ****/
 
 #include "uart_server.h"
-#include <espinc/uart_register.h>
 #include <driver/SerialBuffer.h>
 #include <BitManipulations.h>
 #include <hostlib/keyb.h>
@@ -76,7 +75,7 @@ void* KeyboardThread::thread_routine()
 			buf->writeChar(c);
 		} while((c = getkey()) != KEY_NONE);
 
-		uart->status |= UART_RXFIFO_TOUT_INT_ST;
+		uart->status |= UART_STATUS_RXFIFO_TOUT;
 
 		interrupt_begin();
 
@@ -254,7 +253,7 @@ int CUart::serviceRead()
 
 	int space = uart->rx_buffer->getFreeSpace();
 	if(space < avail) {
-		uart->status |= UART_RXFIFO_OVF_INT_ST;
+		uart->status |= UART_STATUS_RXFIFO_OVF;
 	}
 	int read = std::min(space, avail);
 	if(read != 0) {
@@ -266,9 +265,9 @@ int CUart::serviceRead()
 			}
 			space -= read;
 			if(space == 0) {
-				uart->status |= UART_RXFIFO_FULL_INT_ST;
+				uart->status |= UART_STATUS_RXFIFO_FULL;
 			} else {
-				uart->status |= UART_RXFIFO_TOUT_INT_ST;
+				uart->status |= UART_STATUS_RXFIFO_TOUT;
 			}
 		}
 	}
@@ -306,7 +305,7 @@ int CUart::serviceWrite()
 	} while((avail = txbuf->getReadData(data)) != 0);
 
 	if(txbuf->isEmpty()) {
-		uart->status |= UART_TXFIFO_EMPTY_INT_ST;
+		uart->status |= UART_STATUS_TXFIFO_EMPTY;
 	} else {
 		txsem.post();
 	}

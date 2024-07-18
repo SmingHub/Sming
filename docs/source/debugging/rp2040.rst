@@ -1,0 +1,8 @@
+Debugging on RP2040
+===================
+
+This is best accomplished using a JTAG debugger as discussed here
+https://www.raspberrypi.org/documentation/microcontrollers/raspberry-pi-pico.html
+under ``Debugging using another Raspberry Pi Pico``.
+
+See :envvar:`ENABLE_GDB`.

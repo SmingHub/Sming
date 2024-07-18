@@ -39,9 +39,7 @@ class HttpRequest
 	friend class HttpServerConnection;
 
 public:
-	HttpRequest()
-	{
-	}
+	HttpRequest() = default;
 
 	HttpRequest(const Url& uri) : uri(uri)
 	{
@@ -155,7 +153,7 @@ public:
 	 */
 	String getQueryParameter(const String& name, const String& defaultValue = nullptr) const
 	{
-		return static_cast<const HttpParams&>(uri.Query)[name] ?: defaultValue;
+		return uri.getQueryParameter(name, defaultValue);
 	}
 
 	/**

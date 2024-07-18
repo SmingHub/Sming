@@ -94,13 +94,22 @@ CRYPTO_FUNC_INIT(sha224)
 	ctx->count = 0;
 }
 
-CRYPTO_FUNC_UPDATE(sha224) __attribute__((alias("crypto_sha256_update")));
+CRYPTO_FUNC_UPDATE(sha224)
+{
+	crypto_sha256_update(ctx, input, length);
+}
 
 CRYPTO_FUNC_FINAL(sha224)
 {
 	sha2small_final(digest, ctx, true);
 }
 
-CRYPTO_FUNC_GET_STATE(sha224) __attribute__((alias("crypto_sha256_get_state")));
+CRYPTO_FUNC_GET_STATE(sha224)
+{
+	return crypto_sha256_get_state(ctx, state);
+}
 
-CRYPTO_FUNC_SET_STATE(sha224) __attribute__((alias("crypto_sha256_set_state")));
+CRYPTO_FUNC_SET_STATE(sha224)
+{
+	crypto_sha256_set_state(ctx, state, count);
+}

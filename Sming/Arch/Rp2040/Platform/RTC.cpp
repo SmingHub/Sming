@@ -26,9 +26,7 @@ void system_init_rtc()
 	rtc_set_datetime(&t);
 }
 
-RtcClass::RtcClass()
-{
-}
+RtcClass::RtcClass() = default;
 
 uint64_t RtcClass::getRtcNanoseconds()
 {

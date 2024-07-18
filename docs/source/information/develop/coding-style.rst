@@ -91,7 +91,7 @@ Variables
 
    Variable names should be short yet meaningful. The choice of a variable name should be mnemonic — that is,
    designed to indicate to the casual observer the intent of its use. One-character variable names should be avoided except for
-   temporary “throwaway” variables. Common names for temporary variables are i, j, k, m, and n for integers; c, d, and e for characters.
+   temporary "throwaway" variables. Common names for temporary variables are i, j, k, m, and n for integers; c, d, and e for characters.
    
    Examples::
 
@@ -180,7 +180,7 @@ For the moment we recommend the use of C++11. The corresponding settings in clan
 Starting and ending spaces
 --------------------------
 
-We don’t recommend the use of a starting or ending space in angles,
+We don't recommend the use of a starting or ending space in angles,
 container literals, c-style cast parentheses, parentheses and square
 brackets. Our settings are::
 
@@ -243,7 +243,7 @@ Always on the left::
 Includes
 --------
 
-We don’t re-sort includes although it is highly recommended to order the
+We don't re-sort includes although it is highly recommended to order the
 headers alphabetically whenever possible::
 
    SortIncludes:    false
@@ -290,7 +290,7 @@ contributions. These should be marked with a new @author tag.
 Deprecating code
 ----------------
 
-Where a change in the Sming API may break existing users’ code, then the
+Where a change in the Sming API may break existing users' code, then the
 existing type/method/function/variable must be maintained for a time to allow
 time for migration to the new technique. Such changes should only be
 made if there is a good reason, for example improved reliability,
@@ -320,7 +320,7 @@ Sming makes extensive use of virtual classes. If you are modifying or
 adding virtual methods then please follow these guidelines:
 
 **Rule**: The base class must have a virtual destructor, even if it
-doesn’t do anything. Example::
+doesn't do anything. Example::
 
    virtual ~Stream() {}
 
@@ -331,7 +331,7 @@ doesn’t do anything. Example::
    ~IDataSourceStream();
 
 Rationale: virtual destructors do not behave like regular virtual
-methods - they are ‘chained’ rather than overridden - therefore
+methods - they are 'chained' rather than overridden - therefore
 ``override`` is not appropriate and ``virtual`` is both un-necessary
 and unhelpful
 
@@ -345,17 +345,19 @@ inherit from and generate a warning if one is not found, or if
 parameters do not correspond.
 
 
-**Rule**: Don’t use empty destructors in inherited virtual classes
+**Rule**: Don't use empty destructors in inherited virtual classes
 
-Rationale: They’re not necessary
+Rationale: They're not necessary
 
 
 
 Common issues
 -------------
 
-Some notes on commonly occurring issues::
+Some notes on commonly occurring issues.
+Note that in practice `std::unique_ptr<char[]>` would be appropriate.
 
+::
 
    /**
      * @brief Basic example class

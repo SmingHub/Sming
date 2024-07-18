@@ -55,7 +55,7 @@ If you want to use the stable (release) branch::
    git pull
 
 
-Build a ‘Basic Blink’ example
+Build a 'Basic Blink' example
 -----------------------------
 
 Change to the application directory and build::

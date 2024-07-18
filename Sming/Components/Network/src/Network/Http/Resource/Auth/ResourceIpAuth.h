@@ -21,7 +21,7 @@ public:
 	{
 	}
 
-	bool urlComplete(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) override
+	bool urlComplete(HttpServerConnection& connection, HttpRequest&, HttpResponse& response) override
 	{
 		auto remoteIp = connection.getRemoteIp();
 		if(remoteIp.compare(ip, netmask)) {

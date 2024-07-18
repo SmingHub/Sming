@@ -2,7 +2,11 @@ Esp8266 LWIP Version 2
 ======================
 
 This Component implements the current Version 2 LWIP stack.
-Note that at present espconn\_* functions are not supported.
+
+.. note::
+
+    Prior to :pull_request:`2793`, ``espconn_*`` functions were unsupported, but their current status is unclear.
+    Please `raise an issue <https://github.com/SmingHub/Sming/issues/new>`__ if you require these and encounter problems.
 
 
 .. envvar:: TCP_MSS
@@ -21,7 +25,7 @@ Note that at present espconn\_* functions are not supported.
 
     If anyone knows of an actual reference for this setting, link here please!
 
-    Looking at glue-lwip/arduino/lwipopts.h, setting ``LWIP_FEATURES`` to 1 enables these LWIP flags:
+    Looking at glue-lwip/arduino/lwipopts.h, setting :envvar:`LWIP_FEATURES=1 <LWIP_FEATURES>` enables these LWIP flags:
 
     - IP_FORWARD
     - IP_REASSEMBLY

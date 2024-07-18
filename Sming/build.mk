@@ -2,6 +2,9 @@
 
 include $(SMING_HOME)/util.mk
 
+# Cached build variables
+BUILD_VARS :=
+
 # Add debug variable names to DEBUG_VARS so they can be easily inspected via `make list-config`
 DEBUG_VARS := SMING_HOME
 SMING_HOME := $(patsubst %/,%,$(call FixPath,$(SMING_HOME)))
@@ -26,6 +29,7 @@ ifeq (,$(wildcard $(SMING_HOME)/Arch/$(SMING_ARCH)/build.mk))
   $(error Arch '$(SMING_ARCH)' not found)
 endif
 
+BUILD_VARS += CLANG_TIDY
 ifdef CLANG_TIDY
 ifneq (Host,$(SMING_ARCH))
   $(error CLANG_TIDY supported only for Host architecture.)
@@ -126,6 +130,10 @@ ARCH_COMPONENTS	= $(ARCH_BASE)/Components
 DEBUG_VARS	+= GIT
 GIT ?= git
 
+# ccache
+DEBUG_VARS += CCACHE
+CCACHE ?= ccache
+
 # CMake command
 DEBUG_VARS	+= CMAKE
 CMAKE ?= cmake
@@ -140,12 +148,19 @@ DEBUG_VARS += AWK
 # invokes an awk compatibility mode. It has no effect on other awk implementations.
 AWK ?= POSIXLY_CORRECT= awk
 
+DEBUG_VARS += SED
+ifeq ($(UNAME),Darwin)
+SED ?= gsed
+else
+SED ?= sed
+endif
+
 # Python command
 DEBUG_VARS += PYTHON
 ifdef PYTHON
 export PYTHON := $(call FixPath,$(PYTHON))
 else
-PYTHON := python3
+PYTHON := $(shell which python)
 endif
 
 PYTHON_VERSION := $(shell $(PYTHON) --version 2>&1)
@@ -168,10 +183,15 @@ CPPFLAGS = \
 	-DARDUINO=106
 
 # If STRICT is enabled, show all warnings but don't treat as errors
-DEBUG_VARS += STRICT
+BUILD_VARS += STRICT
 STRICT ?= 0
 export STRICT
-ifneq ($(STRICT),1)
+ifeq ($(STRICT),1)
+CPPFLAGS += \
+	-Wimplicit-fallthrough \
+	-Wunused-parameter \
+	-Wunused-but-set-parameter
+else
 CPPFLAGS += \
 	-Werror \
 	-Wno-sign-compare \
@@ -205,13 +225,17 @@ ifneq ($(STRICT),1)
 	CXXFLAGS += -Wno-reorder
 endif
 
+# ccache can speed up re-builds considerably
+BUILD_VARS += ENABLE_CCACHE
+ENABLE_CCACHE ?= 0
+
 include $(ARCH_BASE)/build.mk
 
 ifndef MAKE_CLEAN
 
 # Detect compiler version and name
 DEBUG_VARS				+= COMPILER_VERSION_FULL COMPILER_VERSION COMPILER_NAME
-COMPILER_VERSION_FULL	:= $(shell $(CC) -v 2>&1 | $(AWK) -F " version " '/ version /{ a=$$1; gsub(/ +/, "-", a); print a, $$2}')
+COMPILER_VERSION_FULL	:= $(shell LANG=C $(CC) -v 2>&1 | $(AWK) -F " version " '/ version /{ a=$$1; gsub(/ +/, "-", a); print a, $$2}')
 COMPILER_NAME			:= $(word 1,$(COMPILER_VERSION_FULL))
 COMPILER_VERSION		:= $(word 2,$(COMPILER_VERSION_FULL))
 
@@ -224,9 +248,9 @@ CPPFLAGS += -fstrict-volatile-bitfields
 COMPILER_VERSION_MIN := 8
 else
 ifeq (,$(findstring clang,$(COMPILER_NAME)))
+$(shell LANG=C $(CC) -v)
 $(error Compiler '$(COMPILER_VERSION_FULL)' not recognised. Please install GCC tools.)
 endif
-COMPILER_VERSION_MIN := 15
 ifndef COMPILER_NOTICE_PRINTED
 $(info Note: Building with $(COMPILER_NAME) $(COMPILER_VERSION).)
 COMPILER_NOTICE_PRINTED := 1
@@ -236,6 +260,7 @@ endif
 endif
 
 ifdef USE_CLANG
+COMPILER_VERSION_MIN := 14
 CPPFLAGS += \
 	-Wno-vla-extension \
 	-Wno-unused-private-field \
@@ -244,13 +269,28 @@ CPPFLAGS += \
 	-Wno-initializer-overrides
 endif
 
+# Sanitizers
+BUILD_VARS += ENABLE_SANITIZERS SANITIZERS
+ENABLE_SANITIZERS ?= 0
+SANITIZERS ?= \
+	address \
+	pointer-compare \
+	pointer-subtract \
+	leak \
+	undefined
+ifeq ($(ENABLE_SANITIZERS),1)
+CPPFLAGS += \
+	-fstack-protector-all \
+	-fsanitize-address-use-after-scope \
+	$(foreach s,$(SANITIZERS),-fsanitize=$s)
+endif
 
 # Use c11 by default. Every architecture can override it
 DEBUG_VARS			+= SMING_C_STD
 SMING_C_STD			?= c11
 CFLAGS				+= -std=$(SMING_C_STD)
 
-# Select C++17 if supported, defaulting to C++11 otherwise
+# C++17 is minimum required standard
 DEBUG_VARS			+= SMING_CXX_STD
 SMING_CXX_STD		?= c++17
 CXXFLAGS			+= -std=$(SMING_CXX_STD)
@@ -259,10 +299,9 @@ COMPILER_VERSION_MAJOR := $(firstword $(subst ., ,$(COMPILER_VERSION)))
 COMPILER_VERSION_COMPATIBLE := $(shell expr $(COMPILER_VERSION_MAJOR) \>= $(COMPILER_VERSION_MIN))
 
 ifeq ($(COMPILER_VERSION_COMPATIBLE),0)
-ifneq ($(GCC_UPGRADE_URL),)
-$(info Instructions for upgrading your compiler can be found here: $(GCC_UPGRADE_URL))
-endif
-$(error Please upgrade your compiler to $(COMPILER_NAME) $(COMPILER_VERSION_MIN) or newer)
+$(info Please upgrade your compiler to $(COMPILER_NAME) $(COMPILER_VERSION_MIN) or newer)
+$(info See https://sming.readthedocs.io/en/latest/getting-started/index.html)
+$(error .)
 endif
 endif
 
@@ -286,9 +325,11 @@ CLIB_PREFIX := clib-
 
 # Use with LDFLAGS to define a symbol alias
 # $1 -> List of alias=name pairs
-define DefSym
-$(foreach n,$1,-Wl,--defsym=$n)
-endef
+ifeq ($(UNAME)$(SMING_ARCH),DarwinHost)
+DefSym = $(foreach n,$1,-Wl,-alias,_$(word 2,$(subst =, ,$n)),_$(word 1,$(subst =, ,$n)))
+else
+DefSym = $(foreach n,$1,-Wl,--defsym=$n)
+endif
 
 # Use with LDFLAGS to undefine a list of symbols
 # $1 -> List of symbols

@@ -61,7 +61,7 @@ void HttpClientConnection::reset()
 	HttpConnection::reset();
 }
 
-int HttpClientConnection::onMessageBegin(http_parser* parser)
+int HttpClientConnection::onMessageBegin(http_parser*)
 {
 	incomingRequest = executionQueue.peek();
 	if(incomingRequest == nullptr) {
@@ -274,6 +274,7 @@ REENTER:
 		sendRequestHeaders(request);
 
 		state = eHCS_SendingHeaders;
+		[[fallthrough]];
 	}
 
 	case eHCS_SendingHeaders: {
@@ -282,6 +283,7 @@ REENTER:
 		}
 
 		state = eHCS_StartBody;
+		[[fallthrough]];
 	}
 
 	case eHCS_StartBody:
@@ -298,6 +300,7 @@ REENTER:
 			stream = nullptr;
 			goto REENTER;
 		}
+		[[fallthrough]];
 	}
 
 	case eHCS_WaitResponse:

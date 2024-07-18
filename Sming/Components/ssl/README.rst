@@ -74,6 +74,7 @@ The final code can be something like::
 
 This is also demonstrated for secure MQTT in the :sample:`MqttClient_Hello` sample.
 
+.. _ssl_security:
 
 Security Considerations
 =======================
@@ -90,7 +91,7 @@ are kept private, but there are some complications with this:
    will be able to disassemble your application and figure out how to
    decrypt the key.
 
--  Costs for certificate. Let’s imagine that you have overcome the first
+-  Costs for certificate. Let's imagine that you have overcome the first
    issue. Then comes the second issue - if you want your users to accept
    the certificate it has to be signed by one of the trusted certificate
    authorities. And that costs money. And if you want to use a unique

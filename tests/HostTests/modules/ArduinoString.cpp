@@ -304,7 +304,9 @@ public:
 			}
 		}
 
-		auto repl = [](const String& key, const String& val, String& s, boolean useURLencode) { s.replace(key, val); };
+		auto repl = [](const String& key, const String& val, String& s, [[maybe_unused]] boolean useURLencode) {
+			s.replace(key, val);
+		};
 
 		TEST_CASE("String SSO handles junk in memory", "[core][String]")
 		{

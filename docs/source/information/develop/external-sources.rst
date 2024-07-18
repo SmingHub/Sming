@@ -32,12 +32,10 @@ or contained within a Component (e.g. :component:`rboot`).
 The location must be chosen carefully:
 
 Code required within the core Sming framework
-
    If the Component supports multiple architectures, place it in ``Sming/Components``.
    Otherwise, use the appropriate ``Sming/Arch/*/Components`` directory.
 
 Code for general use
-
    Create a new Library in ``Sming/Libraries``
 
 Please consult :doc:`/_inc/Sming/building` for further details about how Components are constructed.
@@ -69,24 +67,24 @@ As an example, this is how the `new PWM` submodule was added to the :component-e
          https://github.com/StefanBruens/ESP8266_new_pwm.git \
          Arch/Esp8266/Components/driver/new-pwm
 
-This adds an entry to the end of the ``.gitmodules`` file::
+   This adds an entry to the end of the ``.gitmodules`` file::
 
-   [submodule "ESP8266.new-pwm"]
-      path = Sming/Arch/Esp8266/Components/driver/new-pwm
-      url = https://github.com/StefanBruens/ESP8266_new_pwm.git
+      [submodule "ESP8266.new-pwm"]
+         path = Sming/Arch/Esp8266/Components/driver/new-pwm
+         url = https://github.com/StefanBruens/ESP8266_new_pwm.git
 
-For naming submodules, please follow the convention used for the other entries in
-``.gitmodules``, which is determined by the local path::
+   For naming submodules, please follow the convention used for the other entries in
+   ``.gitmodules``, which is determined by the local path::
 
--  ``Sming/Components``: just use the name  of the submodule
--  ``Sming/Arch/ARCH/Components``: Use ``ARCH.name``
--  ``Sming/Libraries``: Use ``Libraries.name``
+   -  ``Sming/Components``: just use the name  of the submodule
+   -  ``Sming/Arch/ARCH/Components``: Use ``ARCH.name``
+   -  ``Sming/Libraries``: Use ``Libraries.name``
 
 2. Open ``.gitmodules`` in a text editor and:
 
-a. Move the entry to a more suitable location in the file, i.e. at the end of the
-   section listing all the ESP8266-specific submodules
-b. Add the line ``ignore = dirty``
+   a. Move the entry to a more suitable location in the file, i.e. at the end of the
+      section listing all the ESP8266-specific submodules
+   b. Add the line ``ignore = dirty``
 
 
 Applying Patches

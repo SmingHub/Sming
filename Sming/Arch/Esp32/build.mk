@@ -19,14 +19,12 @@ endif
 IDF_VERSION := $(subst ., ,$(firstword $(subst -, ,$(IDF_VER))))
 IDF_VERSION := $(firstword $(IDF_VERSION)).$(word 2,$(IDF_VERSION))
 
-# By default, downloaded tools will be installed under $HOME/.espressif directory
-# (%USERPROFILE%/.espressif on Windows). This path can be modified by setting
-# IDF_TOOLS_PATH variable prior to running this tool.
+# Use default paths from standard install scripts.
 DEBUG_VARS += IDF_TOOLS_PATH
 ifeq ($(UNAME),Windows)
-IDF_TOOLS_PATH ?= $(USERPROFILE)/.espressif
+IDF_TOOLS_PATH ?= C:/tools/esp32
 else
-IDF_TOOLS_PATH ?= $(HOME)/.espressif
+IDF_TOOLS_PATH ?= /opt/esp32
 endif
 
 export IDF_TOOLS_PATH := $(call FixPath,$(IDF_TOOLS_PATH))
@@ -86,31 +84,11 @@ IDF_PATH_LIST := \
 	$(IDF_PATH)/tools \
 	$(ESP32_COMPILER_PATH) \
 	$(ESP32_ULP_PATH)/$(ESP_VARIANT)ulp-elf-binutils/bin \
-	$(ESP32_OPENOCD_PATH)/openocd-esp32/bin \
-	$(ESP32_PYTHON_PATH)/bin \
-	$(IDF_PATH)/components/esptool_py/esptool \
-	$(IDF_PATH)/components/espcoredump \
-	$(IDF_PATH)/components/partition_table
+	$(ESP32_OPENOCD_PATH)/openocd-esp32/bin
 
-ifeq ($(UNAME),Windows)
-DEBUG_VARS += ESP32_NINJA_PATH
-ifndef ESP32_NINJA_PATH
-ESP32_NINJA_PATH	:= $(call FindTool,tools/ninja/)
+ifeq ($(ENABLE_CCACHE),1)
+export IDF_CCACHE_ENABLE := 1
 endif
-ifeq (,$(wildcard $(ESP32_NINJA_PATH)/ninja.exe))
-$(error Failed to find NINJA)
-endif
-IDF_PATH_LIST += $(ESP32_NINJA_PATH)
-
-DEBUG_VARS += ESP32_IDFEXE_PATH
-ifndef ESP32_IDFEXE_PATH
-ESP32_IDFEXE_PATH := $(call FindTool,tools/idf-exe/)
-endif
-IDF_PATH_LIST += $(ESP32_IDFEXE_PATH)
-endif
-
-DEBUG_VARS += NINJA
-NINJA := $(if $(ESP32_NINJA_PATH),$(ESP32_NINJA_PATH)/,)ninja
 
 empty:=
 space:= $(empty) $(empty)

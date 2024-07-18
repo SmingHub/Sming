@@ -32,9 +32,7 @@ public:
 	{
 	}
 
-	virtual ~Context()
-	{
-	}
+	virtual ~Context() = default;
 
 	/**
 	 * @brief Initializer method that must be called after object creation and before the creation

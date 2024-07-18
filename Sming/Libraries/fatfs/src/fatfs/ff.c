@@ -708,7 +708,7 @@ FRESULT move_window (
 
 
 /*-----------------------------------------------------------------------*/
-/* Synchronize file system and strage device                             */
+/* Synchronize file system and storage device                            */
 /*-----------------------------------------------------------------------*/
 #if !_FS_READONLY
 static

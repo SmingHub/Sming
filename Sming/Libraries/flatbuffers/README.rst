@@ -11,7 +11,7 @@ It is available as Open Source on GitHub under the Apache license, v2 (see LICEN
 Using
 -----
 
-Step 1. Add these lines to your application componenent.mk file::
+Step 1. Add these lines to your application component.mk file::
 
    COMPONENT_DEPENDS += flatbuffers
 

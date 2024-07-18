@@ -119,9 +119,7 @@ public:
 		bool save = true;				  ///< Store new settings in NV memory
 	};
 
-	virtual ~StationClass()
-	{
-	}
+	virtual ~StationClass() = default;
 
 	/**	@brief	Enable / disable WiFi station
 	 *	@note	Disabling WiFi station will also disable and clear the handler set with <i>waitConnection</i>.

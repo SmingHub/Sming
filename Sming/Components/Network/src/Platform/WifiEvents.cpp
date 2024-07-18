@@ -14,7 +14,7 @@
  * Common set of reason codes to ieee 802.11-2007
  * Codes at 200+ are non-standard defined by Espressif.
  *
- * Some acronymns:
+ * Some acronyms:
  *
  * 	IE: Information Element
  * 	STA: Station

@@ -6,10 +6,6 @@ set (BUILD_SHARED_LIBS OFF)
 set (CMAKE_C_STANDARD 11)
 set (CMAKE_C_STANDARD_REQUIRED ON)
 
-if (NOT CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT CMAKE_SYSTEM_NAME STREQUAL "GNU")
-    message(FATAL_ERROR "Lwip shared library is only working on Linux or the Hurd")
-endif()
-
 set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DLWIP_DEBUG")
 include(${LWIP_DIR}/contrib/ports/CMakeCommon.cmake)
 
@@ -37,6 +33,6 @@ set_target_properties(lwip
 	PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${USER_LIBDIR} OUTPUT_NAME "${LWIP_LIBNAME}"
 )
 
-target_compile_options(lwip PRIVATE ${LWIP_COMPILER_FLAGS} -m32)
+target_compile_options(lwip PRIVATE ${LWIP_COMPILER_FLAGS} ${BUILD_MODE})
 target_compile_definitions(lwip PRIVATE ${LWIP_DEFINITIONS} ${LWIP_MBEDTLS_DEFINITIONS})
 target_include_directories(lwip PRIVATE ${LWIP_INCLUDE_DIRS} ${LWIP_MBEDTLS_INCLUDE_DIRS})

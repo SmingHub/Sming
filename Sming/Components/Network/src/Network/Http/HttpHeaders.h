@@ -74,9 +74,9 @@ public:
 
 	HttpHeaders() = default;
 
-	HttpHeaders(const HttpHeaders& headers)
+	HttpHeaders(const HttpHeaders& headers) : HttpHeaders()
 	{
-		*this = headers;
+		setMultiple(headers);
 	}
 
 	Iterator begin() const

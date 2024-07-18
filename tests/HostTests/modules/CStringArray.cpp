@@ -239,24 +239,22 @@ public:
 
 		TEST_CASE("release")
 		{
-			CStringArray csa(FS_Basic);
-			csa += FS_Basic; // Allocate > SSO
+			String orig;
+			// Allocate > SSO
+			while(orig.length() <= String::SSO_CAPACITY) {
+				orig += FS_Basic;
+			}
+			CStringArray csa = orig;
 			Serial << csa.join() << endl;
 			auto cstrWant = csa.c_str();
 			String s = csa.release();
 			REQUIRE(!csa);
 			REQUIRE(s.c_str() == cstrWant);
 
-			REQUIRE(s == String(FS_Basic) + FS_Basic);
+			REQUIRE(s == orig);
 
 			csa = std::move(s);
-			REQUIRE(csa == String(FS_Basic) + FS_Basic);
-
-			String js;
-			js += FS_BasicJoined;
-			js += ',';
-			js += FS_BasicJoined;
-			REQUIRE(csa.join() == js);
+			REQUIRE(csa == orig);
 		}
 	}
 };

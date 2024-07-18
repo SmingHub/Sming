@@ -188,9 +188,7 @@ public:
 		uint8_t subtype{SubType::invalid};
 		Flags flags;
 
-		Info()
-		{
-		}
+		Info() = default;
 
 		Info(const String& name, FullType fullType, storage_size_t offset, storage_size_t size, Flags flags = 0)
 			: name(name), offset(offset), size(size), type(fullType.type), subtype(fullType.subtype), flags(flags)
@@ -215,13 +213,9 @@ public:
 		size_t printTo(Print& p) const override;
 	};
 
-	Partition()
-	{
-	}
+	Partition() = default;
 
-	Partition(const Partition& other) : mDevice(other.mDevice), mPart(other.mPart)
-	{
-	}
+	Partition(const Partition& other) = default;
 
 	Partition(Partition&& other) = default;
 
@@ -229,9 +223,7 @@ public:
 	{
 	}
 
-	~Partition()
-	{
-	}
+	~Partition() = default;
 
 	Partition& operator=(const Partition& other) = default;
 	Partition& operator=(Partition&& other) = default;

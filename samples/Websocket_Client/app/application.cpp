@@ -41,20 +41,20 @@ DEFINE_FSTR_LOCAL(ws_Url, WS_URL);
 
 void sendNewMessage();
 
-void wsConnected(WebsocketConnection& wsConnection)
+void wsConnected(WebsocketConnection&)
 {
 	Serial << _F("Start sending messages every ") << MESSAGE_INTERVAL << _F(" second(s)...") << endl;
 	msgTimer.initializeMs<MESSAGE_INTERVAL * 1000>(sendNewMessage);
 	msgTimer.startOnce();
 }
 
-void wsMessageReceived(WebsocketConnection& wsConnection, const String& message)
+void wsMessageReceived(WebsocketConnection&, const String& message)
 {
 	Serial << _F("WebSocket message received: ") << message << endl;
 	Serial << _F("Free Heap: ") << system_get_free_heap_size() << endl;
 }
 
-void wsBinReceived(WebsocketConnection& wsConnection, uint8_t* data, size_t size)
+void wsBinReceived(WebsocketConnection&, uint8_t* data, size_t size)
 {
 	m_printHex(_F("WebSocket BINARY received"), data, size);
 	Serial << _F("Free Heap: ") << system_get_free_heap_size() << endl;
@@ -69,7 +69,7 @@ void restart()
 	wsClient.connect(String(ws_Url));
 }
 
-void wsDisconnected(WebsocketConnection& wsConnection)
+void wsDisconnected(WebsocketConnection&)
 {
 	Serial << _F("Restarting websocket client after ") << RESTART_PERIOD << _F(" seconds") << endl;
 	msgTimer.initializeMs<RESTART_PERIOD * 1000>(restart);

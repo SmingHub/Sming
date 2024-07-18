@@ -13,7 +13,7 @@ The installation scripts now install IDF version 5.2 by default. See :ref:`idf_v
 The Windows installer makes use of custom chocolatey packages, which are out of date.
 These packages are separate from the main Sming repository which makes maintenance problematic.
 
-The procedure has therefore been revised to use installation scripts instead of these chocolatey packages. This brings the installation procedure closer to that for linux/MacOS.
+The procedure has therefore been revised to use installation scripts instead of these chocolatey packages. This brings the installation procedure closer to that for Linux/MacOS.
 
 The initial installation step to bootstrap the installation remains unchanged: The ``choco-install.cmd`` script is fetched from the Sming ``develop`` branch and executed.
 The custom choco scripts have been replaced with scripted logic.

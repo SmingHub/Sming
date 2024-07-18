@@ -47,7 +47,7 @@ void RbootHttpUpdater::start()
 	}
 }
 
-int RbootHttpUpdater::itemComplete(HttpConnection& client, bool success)
+int RbootHttpUpdater::itemComplete(HttpConnection&, bool success)
 {
 	auto& it = items[currentItem];
 

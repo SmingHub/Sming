@@ -20,11 +20,15 @@
 
 void* IRAM_ATTR pvPortMalloc(size_t size, const char* file, int line)
 {
+    (void)file;
+    (void)line;
     return UMM_FUNC(malloc)(size);
 }
 
 void IRAM_ATTR vPortFree(void *ptr, const char* file, int line)
 {
+    (void)file;
+    (void)line;
 	UMM_FUNC(free)(ptr);
 }
 
@@ -50,16 +54,22 @@ void IRAM_ATTR free(void *ptr)
 
 void* IRAM_ATTR pvPortCalloc(size_t count, size_t size, const char* file, int line)
 {
+    (void)file;
+    (void)line;
     return UMM_FUNC(calloc)(count, size);
 }
 
 void* IRAM_ATTR pvPortRealloc(void *ptr, size_t size, const char* file, int line)
 {
+    (void)file;
+    (void)line;
     return UMM_FUNC(realloc)(ptr, size);
 }
 
 void* IRAM_ATTR pvPortZalloc(size_t size, const char* file, int line)
 {
+    (void)file;
+    (void)line;
     return UMM_FUNC(calloc)(1, size);
 }
 

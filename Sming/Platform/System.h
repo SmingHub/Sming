@@ -55,9 +55,7 @@ using SystemReadyDelegate = TaskDelegate;
 class ISystemReadyHandler
 {
 public:
-	virtual ~ISystemReadyHandler()
-	{
-	}
+	virtual ~ISystemReadyHandler() = default;
 
 	/** @brief  Handle <i>system ready</i> events
 	 */
@@ -100,9 +98,7 @@ enum SystemState {
 class SystemClass
 {
 public:
-	SystemClass()
-	{
-	}
+	SystemClass() = default;
 
 	/** @brief System initialisation
 	 *  @retval bool true on success
@@ -204,10 +200,7 @@ public:
 	/**
 	 * @brief Queue a deferred callback with no callback parameter
 	 */
-	__forceinline static bool IRAM_ATTR queueCallback(InterruptCallback callback)
-	{
-		return queueCallback(reinterpret_cast<TaskCallback>(callback));
-	}
+	static bool IRAM_ATTR queueCallback(InterruptCallback callback);
 
 	/**
 	 * @brief Queue a deferred Delegate callback

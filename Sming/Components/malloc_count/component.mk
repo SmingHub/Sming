@@ -1,7 +1,12 @@
 COMPONENT_RELINK_VARS += ENABLE_MALLOC_COUNT
 COMPONENT_DOXYGEN_INPUT := include
 
+# Not currently supported on MacOS
+ifeq ($(UNAME),Darwin)
+override ENABLE_MALLOC_COUNT=0
+else
 ENABLE_MALLOC_COUNT ?= 1
+endif
 
 ifeq ($(ENABLE_MALLOC_COUNT),1)
 

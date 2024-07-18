@@ -17,6 +17,10 @@
 #include <functional>
 using namespace std::placeholders;
 
+/**
+ * @brief  Delegate class, encapsulates a std::function
+ * Added constructor template implements lambda callback which is more efficient than std::bind.
+ */
 template <typename> class Delegate; /* undefined */
 
 /** @brief  Delegate class

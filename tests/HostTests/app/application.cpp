@@ -68,7 +68,7 @@ void init()
 	} else {
 		WifiStation.enable(true);
 		WifiStation.config(WIFI_SSID, WIFI_PWD);
-		WifiEvents.onStationGotIP([](IpAddress ip, IpAddress netmask, IpAddress gateway) { beginTests(); });
+		WifiEvents.onStationGotIP([](IpAddress, IpAddress, IpAddress) { beginTests(); });
 	}
 #endif
 }

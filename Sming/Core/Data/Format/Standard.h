@@ -19,7 +19,7 @@ namespace Format
 class Standard : public Formatter
 {
 public:
-	void escape(String& value) const override
+	void escape(String&) const override
 	{
 	}
 

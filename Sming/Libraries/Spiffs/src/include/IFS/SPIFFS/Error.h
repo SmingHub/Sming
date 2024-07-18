@@ -24,9 +24,7 @@
 
 #include <IFS/Types.h>
 
-namespace IFS
-{
-namespace SPIFFS
+namespace IFS::SPIFFS
 {
 inline bool isSpiffsError(int err)
 {
@@ -36,5 +34,4 @@ inline bool isSpiffsError(int err)
 int translateSpiffsError(int spiffs_error);
 
 String spiffsErrorToStr(int err);
-} // namespace SPIFFS
-} // namespace IFS
+} // namespace IFS::SPIFFS

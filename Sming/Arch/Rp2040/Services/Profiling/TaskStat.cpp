@@ -19,9 +19,7 @@ TaskStat::TaskStat(Print& out) : out(out)
 {
 }
 
-TaskStat::~TaskStat()
-{
-}
+TaskStat::~TaskStat() = default;
 
 bool TaskStat::update()
 {

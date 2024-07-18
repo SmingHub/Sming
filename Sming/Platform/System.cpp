@@ -93,6 +93,12 @@ bool SystemClass::queueCallback(TaskCallback callback, void* param)
 						  reinterpret_cast<os_param_t>(param));
 }
 
+bool SystemClass::queueCallback(InterruptCallback callback)
+{
+	return queueCallback([](void* param) { reinterpret_cast<InterruptCallback>(param)(); },
+						 reinterpret_cast<void*>(callback));
+}
+
 bool SystemClass::queueCallback(TaskDelegate callback)
 {
 	if(!callback) {

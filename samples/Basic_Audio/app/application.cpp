@@ -149,7 +149,7 @@ void checkReceive()
 	debug_i("RX: %u bytes", total);
 }
 
-void IRAM_ATTR i2sCallback(void* param, i2s_event_type_t event)
+void IRAM_ATTR i2sCallback(void*, i2s_event_type_t event)
 {
 	// For this sample, process the data in task context
 	switch(event) {

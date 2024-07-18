@@ -121,6 +121,12 @@ public:
 		return toString();
 	}
 
+	/**
+	 * @brief Get the applicable scheme, using the default if not specified
+	 * The returned string is always lowercase.
+	 */
+	String getScheme() const;
+
 	/** @brief Obtain the default port for a given scheme
 	 *  @retval int 0 if scheme is not recognised or has no standard port defined
 	 */
@@ -132,7 +138,7 @@ public:
 	 */
 	int getPort() const
 	{
-		return Port ?: getDefaultPort(Scheme);
+		return Port ?: getDefaultPort(getScheme());
 	}
 
 	/** @brief Get hostname+port part of URL string
@@ -165,6 +171,20 @@ public:
 	 * @param p
 	 */
 	void debugPrintTo(Print& p) const;
+
+	/**
+	 * @brief Get a query parameter
+	 * @param name Name of parameter
+	 * @param defaultValue Optional default value to use if requested parameter not present
+	 * @retval String&
+	 *
+	 * Accessing `Query` directly risks adding the value if it doesn't exist.
+	 * This method is `const` so is guaranteed read-only.
+	 */
+	const String& getQueryParameter(const String& name, const String& defaultValue = nullptr) const
+	{
+		return Query[name] ?: defaultValue;
+	}
 
 public:
 	String Scheme; ///< without ":" and "//"

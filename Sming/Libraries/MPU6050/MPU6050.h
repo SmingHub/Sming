@@ -324,7 +324,7 @@
 #define MPU6050_INTERRUPT_DATA_RDY_BIT 0
 
 // TODO: figure out what these actually do
-// UMPL source code is not very obivous
+// UMPL source code is not very obvious
 #define MPU6050_DMPINT_5_BIT 5
 #define MPU6050_DMPINT_4_BIT 4
 #define MPU6050_DMPINT_3_BIT 3

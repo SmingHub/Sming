@@ -110,15 +110,13 @@ CFLAGS		+= $(COMPONENT_CFLAGS)
 CPPFLAGS	+= $(COMPONENT_CPPFLAGS)
 CXXFLAGS	+= $(COMPONENT_CXXFLAGS)
 
-# GCC 10 escapes ':' in path names which breaks GNU make for Windows so filter them
-ifeq ($(UNAME),Windows)
-OUTPUT_DEPS := | sed "s/\\\\:/:/g" > $$@
-else
-OUTPUT_DEPS := -MF $$@
-endif
-
 # Additional flags to pass to clang
 CLANG_FLAG_EXTRA ?=
+
+ifneq ($(ENABLE_CCACHE),1)
+CCACHE :=
+export CCACHE_DISABLE=1
+endif
 
 # $1 -> absolute source directory, no trailing path separator
 # $2 -> relative output build directory, with trailing path separator
@@ -127,12 +125,12 @@ BUILD_DIRS += $2
 ifneq (,$(filter $1/%.s,$(SOURCE_FILES)))
 $2%.o: $1/%.s
 	$(vecho) "AS $$<"
-	$(Q) $(AS) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
+	$(Q) $(CCACHE) $(AS) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
 endif
 ifneq (,$(filter $1/%.S,$(SOURCE_FILES)))
 $2%.o: $1/%.S
 	$(vecho) "AS $$<"
-	$(Q) $(AS) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
+	$(Q) $(CCACHE) $(AS) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
 endif
 ifneq (,$(filter $1/%.c,$(SOURCE_FILES)))
 ifdef CLANG_TIDY
@@ -140,12 +138,10 @@ $2%.o: $1/%.c
 	$(vecho) "TIDY $$<"
 	$(Q) $(CLANG_TIDY) $$< -- $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) $(CLANG_FLAG_EXTRA)
 else
-$2%.o: $1/%.c $2%.c.d
+$2%.o: $1/%.c
 	$(vecho) "CC $$<"
-	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
-$2%.c.d: $1/%.c
-	$(Q) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -MM -MT $2$$*.o $$< $(OUTPUT_DEPS)
-.PRECIOUS: $2%.c.d
+	$(Q) $(CCACHE) $(CC) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@ -MMD -MF $${@:.o=.c.d}
+-include $2%.c.d
 endif
 endif
 ifneq (,$(filter $1/%.cpp,$(SOURCE_FILES)))
@@ -154,12 +150,10 @@ $2%.o: $1/%.cpp
 	$(vecho) "TIDY $$<"
 	$(Q) $(CLANG_TIDY) $$< -- $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) $(CLANG_FLAG_EXTRA)
 else
-$2%.o: $1/%.cpp $2%.cpp.d
+$2%.o: $1/%.cpp
 	$(vecho) "C+ $$<"
-	$(Q) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -c $$< -o $$@
-$2%.cpp.d: $1/%.cpp
-	$(Q) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -MM -MT $2$$*.o $$< $(OUTPUT_DEPS)
-.PRECIOUS: $2%.cpp.d
+	$(Q) $(CCACHE) $(CXX) $(addprefix -I,$(INCDIR)) $(CPPFLAGS) $(CXXFLAGS) -c $$< -o $$@ -MMD -MF $${@:.o=.cpp.d}
+-include $2%.cpp.d
 endif
 endif
 endef
@@ -195,8 +189,13 @@ $(COMPONENT_LIBPATH): build.ar
 ifndef CLANG_TIDY
 	$(vecho) "AR $@"
 	$(Q) test ! -f $@ || rm $@
+# Apple linker doesn't support scripting, everything must be on command line
+ifeq ($(UNAME)$(SMING_ARCH),DarwinHost)
+	$(Q) $(AR) -q $(@F) $$(<build.ar)
+else
 	$(Q) $(AR) -M < build.ar
-	$(Q) mv $(notdir $(COMPONENT_LIBPATH)) $(COMPONENT_LIBPATH)
+endif
+	$(Q) mv $(@F) $@
 endif
 
 define addmod
@@ -205,11 +204,15 @@ define addmod
 endef
 
 build.ar: $(OBJ) $(EXTRA_OBJ)
+ifeq ($(UNAME)$(SMING_ARCH),DarwinHost)
+	@echo "$^" > $@
+else
 	@echo CREATE $(notdir $(COMPONENT_LIBPATH)) > $@
-	$(foreach o,$(OBJ) $(EXTRA_OBJ),$(call addmod,$@,$o))
+	$(foreach o,$^,$(call addmod,$@,$o))
 	@echo SAVE >> $@
 	@echo END >> $@
 
+endif
 
 endif # ifeq (,$(CUSTOM_BUILD))
 endif # ifneq (,$(COMPONENT_LIBNAME))

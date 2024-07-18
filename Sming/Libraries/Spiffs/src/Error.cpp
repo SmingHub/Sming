@@ -25,9 +25,7 @@
 #include <FlashString/Map.hpp>
 #include "../spiffs/src/spiffs.h"
 
-namespace IFS
-{
-namespace SPIFFS
+namespace IFS::SPIFFS
 {
 /*
  * @todo Return generic FSERR codes wherever possible by mapping from SPIFFS codes
@@ -114,5 +112,4 @@ String spiffsErrorToStr(int err)
 	return errorMap[std::min(err, 0)].content();
 }
 
-} // namespace SPIFFS
-} // namespace IFS
+} // namespace IFS::SPIFFS

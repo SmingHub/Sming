@@ -43,7 +43,7 @@ public:
 		}
 	}
 
-	void transferData(TcpConnectionEvent sourceEvent) override
+	void transferData(TcpConnectionEvent) override
 	{
 		if(completed) {
 			return;

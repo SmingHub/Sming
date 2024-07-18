@@ -221,7 +221,7 @@ class Config(object):
 
     def parse_peripherals(self, spec):
         for name_spec, periphdef in spec.items():
-            p = re.compile('\[([0-9]+)-([0-9]+)\]')
+            p = re.compile(r'\[([0-9]+)-([0-9]+)\]')
             matches = p.findall(name_spec)
             if len(matches) == 0:
                 indexRange = range(-1, 0)

@@ -55,12 +55,12 @@ public:
 		return eSST_File;
 	}
 
-	uint16_t readMemoryBlock(char* data, int bufSize) override
+	uint16_t readMemoryBlock(char*, int) override
 	{
 		return 0;
 	}
 
-	bool seek(int len) override
+	bool seek(int) override
 	{
 		return false;
 	}

@@ -27,7 +27,7 @@ public:
 	}
 
 private:
-	void process(Stream& source, char arrivedChar, uint16_t availableCharsCount)
+	void process(Stream& source, char, uint16_t)
 	{
 		handler(source);
 	}

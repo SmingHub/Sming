@@ -27,6 +27,7 @@
 
 /*
  * Use this definition in the cases where a function or a variable is meant to be possibly unused. GCC will not produce a warning for it.
+ * NOTE: Use `[[maybe_unused]]` attribute in C++ code
  */
 #define SMING_UNUSED __attribute__((unused))
 

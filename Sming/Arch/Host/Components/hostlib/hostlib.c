@@ -21,6 +21,10 @@
 #include <time.h>
 #include <string.h>
 
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
+
 int msleep(unsigned ms)
 {
 	struct timespec req, rem;
@@ -38,6 +42,10 @@ size_t getHostAppDir(char* path, size_t bufSize)
 #ifdef __WIN32
 	size_t len = GetModuleFileName(NULL, path, bufSize);
 	char sep = '\\';
+#elif defined(__APPLE__)
+	uint32_t size = bufSize;
+	size_t len = _NSGetExecutablePath(path, &size) ? 0 : strlen(path);
+	char sep = '/';
 #else
 	size_t len = readlink("/proc/self/exe", path, bufSize - 1);
 	char sep = '/';

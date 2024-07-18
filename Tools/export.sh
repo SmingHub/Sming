@@ -19,12 +19,14 @@
 #
 
 if [ -z "$SMING_HOME" ]; then
-    if [ "$(basename $SHELL)" = "zsh" ]; then
-        _SOURCE=${(%):-%N}
+    if [ "$(basename "$SHELL")" = "zsh" ]; then
+        _SOURCEDIR=$(dirname "${0:a}")
     else
-        _SOURCE=$BASH_SOURCE
+        _SOURCEDIR=$(dirname "${BASH_SOURCE[0]}")
     fi
-    export SMING_HOME=$(readlink -m "$_SOURCE/../../Sming")
+    SMING_HOME=$(realpath "$_SOURCEDIR/../Sming")
+    export SMING_HOME
+    echo "SMING_HOME: $SMING_HOME"
 fi
 
 # Common
@@ -39,3 +41,9 @@ export IDF_TOOLS_PATH=${IDF_TOOLS_PATH:=/opt/esp32}
 
 # Rp2040
 export PICO_TOOLCHAIN_PATH=${PICO_TOOLCHAIN_PATH:=/opt/rp2040}
+
+# Provide non-apple CLANG (e.g. for rbpf library)
+if [ -n "$GITHUB_ACTIONS" ] && [ "$(uname)" = "Darwin" ]; then
+CLANG="$(brew --prefix llvm@15)/bin/clang"
+export CLANG
+fi

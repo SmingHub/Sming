@@ -44,7 +44,7 @@ using detail::concat;
 
 namespace
 {
-//Slave 4’s characteristics differ greatly from those of Slaves 0-3.
+//Slave 4's characteristics differ greatly from those of Slaves 0-3.
 //Hence our API support only up to slave 3
 constexpr uint8_t MAX_SLAVE_ID{3};
 #define ASSERT_SLAVE_ID_VALID(slaveId) assert((slaveId <= MAX_SLAVE_ID))

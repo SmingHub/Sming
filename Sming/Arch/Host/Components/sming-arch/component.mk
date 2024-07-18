@@ -10,10 +10,6 @@
 # EXCLUDE_LIBRARIES := Adafruit_ILI9341 Adafruit_NeoPixel Adafruit_PCD8544 Adafruit_SSD1306 \
 #					ArduCAM CapacitiveSensor IR MCP23S17 RF24 SDCard TFT_ILI9163C WS2812
 
-# Eventually this will go, but for now we use some Esp8266 code
-ESP8266_COMPONENTS := $(SMING_HOME)/Arch/Esp8266/Components
-export ESP8266_COMPONENTS
-
 COMPONENT_SRCDIRS := \
 	$(ARCH_CORE) $(call ListAllSubDirs,$(ARCH_CORE)) \
 	$(ARCH_BASE)/Platform \

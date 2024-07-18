@@ -67,9 +67,7 @@ template <typename T> struct TRange {
 		T value;
 	};
 
-	constexpr TRange()
-	{
-	}
+	constexpr TRange() = default;
 
 	constexpr TRange(T min, T max) : min(min), max(max)
 	{

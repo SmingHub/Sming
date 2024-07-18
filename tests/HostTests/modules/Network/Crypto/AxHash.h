@@ -13,9 +13,7 @@
 #include <Crypto/HashContext.h>
 #include <axtls-8266/crypto/crypto.h>
 
-namespace Crypto
-{
-namespace Ax
+namespace Crypto::Ax
 {
 #define AX_HASH_ENGINE(class_, name_, hashsize_, statesize_, blocksize_)                                               \
 	class class_##Engine                                                                                               \
@@ -58,6 +56,4 @@ using Sha256 = HashContext<Sha256Engine>;
 using Sha384 = HashContext<Sha384Engine>;
 using Sha512 = HashContext<Sha512Engine>;
 
-} // namespace Ax
-
-} // namespace Crypto
+} // namespace Crypto::Ax

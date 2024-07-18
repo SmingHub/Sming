@@ -47,7 +47,7 @@ public:
 
 	/* X509Handler */
 
-	virtual void startChain(const char* serverName) override
+	void startChain(const char*) override
 	{
 	}
 

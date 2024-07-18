@@ -1,13 +1,30 @@
+@echo off
+
 REM
 REM Windows install script
 REM
-REM GIT, Python3 and Chocolatey must be installed and in the system path
-REM
 
-set DOWNLOADS=downloads
-mkdir %DOWNLOADS%
+if "%1"=="" (
+    echo.
+    echo Sming Installation options:
+    echo   host      Host development tools
+    echo   esp8266   ESP8266 development tools
+    echo   esp32     ESP32 development tools
+    echo   rp2040    RP2040 tools [Raspberry Pi Pico]
+    echo   all       Install all architectures
+    echo   doc       Tools required to build documentation
+    echo.
+    goto :EOF
+)
 
-set SMINGTOOLS=https://github.com/SmingHub/SmingTools/releases/download/1.0
+call %~dp0check-packages.cmd
+if "%MISSING_PACKAGES%" NEQ "" (
+    echo Missing packages:%MISSING_PACKAGES%
+    echo Please install manually or run `choco-install.cmd` from an administrative command prompt
+    echo If already installed, please ensure they are in the system path
+    echo See https://sming.readthedocs.io/en/latest/getting-started/windows/index.html
+    goto :EOF
+)
 
 REM Leave file endings alone
 git config --global --add core.autocrlf input
@@ -16,30 +33,38 @@ echo.
 echo.
 echo ** Installing common python requirements
 echo.
-python -m pip install --upgrade pip -r %SMING_HOME%\..\Tools\requirements.txt
-
-echo.
-echo.
-echo ** Installing MinGW
-echo.
-rmdir /s /q c:\MinGW
-curl -Lo %DOWNLOADS%\MinGW.7z %SMINGTOOLS%/MinGW-2020-10-19.7z
-7z -oC:\ x %DOWNLOADS%\MinGW.7z
+python -m pip install --upgrade pip -r %~dp0requirements.txt
 
 :install
-if "%1" == "" goto :EOF
+
+REM Configure environment variables
+call %~dp0export.cmd || goto :EOF
+
+REM 
+set DOWNLOADS=%SMING_TOOLS_DIR%\downloads
+if not exist "%DOWNLOADS%" mkdir %DOWNLOADS%
+
 if "%1" == "all" (
-    call :install Host Esp8266 Esp32 Rp2040
+    call :install_loop Host Esp8266 Esp32 Rp2040
+    goto :EOF
+)
+
+:install_loop
+if "%1" == "" (
+    echo.
+    echo OK, install complete.
+    echo.
+    goto :EOF
+)
+if "%1" == "doc" (
+    call %~dp0..\docs\Tools\install.cmd || goto :error
 ) else (
-    echo.
-    echo.
-    echo ** Installing %1 toolchain
-    echo.
-    if "%1" == "doc" (
-        call %SMING_HOME%\..\docs\Tools\install.cmd
-    ) else (
-        call %SMING_HOME%\Arch\%1\Tools\install.cmd
-    )
+    call %SMING_HOME%\Arch\%1\Tools\install.cmd || goto :error
 )
 shift
-goto :install
+goto :install_loop
+
+:error
+echo.
+echo Installation failed
+echo.

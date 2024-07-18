@@ -278,7 +278,7 @@ public:
 		return smg_uart_read(uart, buf, max_len);
 	}
 
-	bool seek(int len) override
+	bool seek(int) override
 	{
 		return false;
 	}
@@ -339,7 +339,7 @@ public:
 	 *
 	 *  @deprecated include <Services/CommandProcessing/Utils.h> and use `CommandProcessing::enable(Handler, Serial)` instead.
 	 */
-	void commandProcessing(bool reqEnable) SMING_DEPRECATED
+	void commandProcessing(bool) SMING_DEPRECATED
 	{
 	}
 

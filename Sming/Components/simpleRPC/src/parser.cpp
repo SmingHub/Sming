@@ -82,10 +82,9 @@ ParserResult parse(ParserSettings& settings, const char* buffer, size_t length, 
 
 	REENTER:
 		switch(state) {
-		case ParserState::ready: {
+		case ParserState::ready:
 			state = ParserState::header_s;
-			/* fall through */
-		}
+			[[fallthrough]];
 		case ParserState::header_s:
 			EXPECT('s', ParserState::header_si);
 		case ParserState::header_si:
@@ -143,7 +142,7 @@ ParserResult parse(ParserSettings& settings, const char* buffer, size_t length, 
 
 			callbacks.startMethod();
 			state = ParserState::extract_method_signature;
-			/* fall-through */
+			[[fallthrough]];
 		}
 		case ParserState::extract_method_signature: {
 			if(ch == ';') {
@@ -172,7 +171,7 @@ ParserResult parse(ParserSettings& settings, const char* buffer, size_t length, 
 		case ParserState::end_methods: {
 			callbacks.endMethods();
 			state = ParserState::finished;
-			/* fall through */
+			[[fallthrough]];
 		}
 		case ParserState::finished: {
 			state = ParserState::ready;

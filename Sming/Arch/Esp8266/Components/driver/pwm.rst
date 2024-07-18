@@ -3,8 +3,8 @@ PWM: Pulse-Width Modulation
 
 The driver interface is defined in the ESP8266 SDK.
 
-Build variables
----------------
+Configuration Variables
+-----------------------
 
 .. envvar:: ENABLE_CUSTOM_PWM
 

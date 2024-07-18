@@ -13,7 +13,7 @@ simply build and flash the project as usual::
    make clean
    make flash
 
-You should be presented with the GDB command prompt. Enter ‘c’ to
+You should be presented with the GDB command prompt. Enter 'c' to
 continue running the application:
 
 .. code-block:: text
@@ -26,7 +26,7 @@ The ``(attached)`` prompt is displayed by the LiveDebug application.
 Type ``help`` to get a list of available commands.
 
 Note that if you run this application via serial terminal
-(``make terminal``) you’ll get the ``(Detached)`` prompt instead.
+(``make terminal``) you'll get the ``(Detached)`` prompt instead.
 
 2. Debugging under eclipse
 
@@ -124,9 +124,9 @@ has run into an exception, use the provided script::
 
    make gdb
 
-Note that software breakpoints (‘br’) only work on code that is in RAM.
+Note that software breakpoints ('br') only work on code that is in RAM.
 During development you can use the GDB_IRAM_ATTR attribute in your
 function declarations. Code in flash can only have a hardware breakpoint
-(‘hbr’).
+('hbr').
 
 Read the GDB stub :component-esp8266:`Notes <gdbstub>` for more information.

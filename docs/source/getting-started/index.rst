@@ -39,7 +39,7 @@ following these :doc:`instructions </_inc/docs/README>`.
 Examples
 --------
 
-The examples are a great way to learn the API and brush up your C/C++ knowledge.
+The examples are a great way to learn the API and brush up your C++ knowledge.
 
 -  `Basic Blink <#basic-blink>`__
 -  `Simple GPIO input/output <#simple-gpio-inputoutput>`__
@@ -56,7 +56,7 @@ Further documentation about the :doc:`/samples` is available too.
 Basic Blink
 ~~~~~~~~~~~
 
-Blinking is something like the “Hello World” example for the embedded
+Blinking is something like the "Hello World" example for the embedded
 world. You can check it using the commands below:
 
 .. code-block:: bash
@@ -156,14 +156,14 @@ OTA application update
      // select rom partition to flash
      auto part = ota.getNextBootPartition();
 
-     // The content located on ROM_0_URL will be stored to the new partition
-     otaUpdater->addItem(ROM_0_URL, part);
+     // The content located on ROM_0_URL will be stored to the new partition
+     otaUpdater->addItem(ROM_0_URL, part);
 
-     // and/or set a callback (called on failure or success without switching requested)
-     otaUpdater->setCallback(upgradeCallback);
+     // and/or set a callback (called on failure or success without switching requested)
+     otaUpdater->setCallback(upgradeCallback);
 
-     // start update
-     otaUpdater->start();
+     // start update
+     otaUpdater->start();
    }
 
 For a complete example take a look at the :sample:`Basic_Ota` sample.
@@ -247,34 +247,3 @@ Email client
    }
 
 See the :sample:`SmtpClient` sample for details.
-
-Live Debugging
-~~~~~~~~~~~~~~
-
-Applications based on Sming Framework that are flashed and running on an
-ESP8266 device can be debugged using interactive debuggers. In order to
-debug an application it has to be re-compiled with the ENABLE_GDB=1
-directive. And then flashed on the device. As shown below:
-
-.. code-block:: bash
-
-   cd $SMING_HOME/../samples/LiveDebug
-   make clean
-   make ENABLE_GDB=1
-   make flashapp # <-- this will update only the application firmware.
-
-Once the debuggable application is flashed on the device the developers
-have to run GDB. The easiest way to run the command-line GDB is to
-execute the following command:
-
-.. code-block:: bash
-
-   make gdb
-
-Developers using Eclipse CDT can have debugging sessions like the one
-below:
-
-.. :image:: /information/debugging/eclipse.png
-
-See :sample:`LiveDebug` sample for details.
-

@@ -9,8 +9,11 @@
  */
 
 #include <Services/Profiling/TaskStat.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#pragma GCC diagnostic pop
 #include <bitset>
 #include <cstdlib>
 
@@ -31,9 +34,7 @@ TaskStat::TaskStat(Print& out) : out(out)
 #endif
 }
 
-TaskStat::~TaskStat()
-{
-}
+TaskStat::~TaskStat() = default;
 
 bool TaskStat::update()
 {

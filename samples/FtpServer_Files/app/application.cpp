@@ -55,7 +55,7 @@ void init()
 	 * When a file is opened for writing it is transparently copied to the SPIFFS partition so it can be updated.
 	 * Wiping the SPIFFS partition reverts the filesystem to its original state.
 	 *
-	 * Note that files marked as ‘read-only’ may not be written in this manner.
+	 * Note that files marked as 'read-only' may not be written in this manner.
 	 */
 	hyfs_mount();
 

@@ -12,8 +12,7 @@
 
 #include "QuotedPrintableOutputStream.h"
 
-size_t QuotedPrintableOutputStream::transform(const uint8_t* source, size_t sourceLength, uint8_t* target,
-											  size_t targetLength)
+size_t QuotedPrintableOutputStream::transform(const uint8_t* source, size_t sourceLength, uint8_t* target, size_t)
 {
 	unsigned count = 0;
 	for(unsigned i = 0; i < sourceLength; i++) {

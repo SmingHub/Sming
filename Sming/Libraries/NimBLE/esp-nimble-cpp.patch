@@ -1,0 +1,28 @@
+diff --git a/src/NimBLEAttValue.h b/src/NimBLEAttValue.h
+index 786bc8b..08b7e16 100644
+--- a/src/NimBLEAttValue.h
++++ b/src/NimBLEAttValue.h
+@@ -178,7 +178,7 @@ public:
+ #else
+     time_t          getTimeStamp() const   { return 0; }
+     void            setTimeStamp()         { }
+-    void            setTimeStamp(time_t t) { }
++    void            setTimeStamp(time_t) { }
+ #endif
+ 
+     /**
+diff --git a/src/NimBLEUtils.h b/src/NimBLEUtils.h
+index 006d935..8c8926e 100644
+--- a/src/NimBLEUtils.h
++++ b/src/NimBLEUtils.h
+@@ -13,7 +13,10 @@
+ #if defined(CONFIG_BT_ENABLED)
+ 
+ #if defined(CONFIG_NIMBLE_CPP_IDF)
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wunused-parameter"
+ #include "host/ble_gap.h"
++#pragma GCC diagnostic pop
+ #else
+ #include "nimble/nimble/host/include/host/ble_gap.h"
+ #endif

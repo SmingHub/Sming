@@ -19,7 +19,7 @@ FakeCamera* camera;
  * default http handler to check if server is up and running
  */
 
-void onIndex(HttpRequest& request, HttpResponse& response)
+void onIndex(HttpRequest&, HttpResponse& response)
 {
 	response.sendFile(_F("index.html"));
 }

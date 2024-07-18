@@ -3,20 +3,7 @@ SPIFFS IFS Library
 
 This Component provides SPIFFS filesystem support for all architectures.
 
-A single SPIFFS partition is defined using :envvar:`HWCONFIG` ``=spiffs``, which supports these build variables:
-
-   .. envvar:: DISABLE_SPIFFS
-
-      [deprecated and removed]
-
-      This value is no longer supported. Please remove it from your project's component.mk file.
-
-
-   .. envvar:: SPIFF_SIZE
-
-      [deprecated and removed]
-
-      Size (in bytes) of the SPIFFS area in Flash memory. To change this, edit the :ref:`hardware_config`.
+A single SPIFFS partition is defined using :envvar:`HWCONFIG=spiffs <HWCONFIG>`, which supports these configuration variables:
 
    .. envvar:: SPIFF_FILES
 

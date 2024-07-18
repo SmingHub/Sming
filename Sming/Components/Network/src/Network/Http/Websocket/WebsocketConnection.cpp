@@ -15,14 +15,8 @@
 #include <Data/Stream/XorOutputStream.h>
 #include <Data/Stream/SharedMemoryStream.h>
 
-DEFINE_FSTR(WSSTR_CONNECTION, "connection")
 DEFINE_FSTR(WSSTR_UPGRADE, "upgrade")
 DEFINE_FSTR(WSSTR_WEBSOCKET, "websocket")
-DEFINE_FSTR(WSSTR_HOST, "host")
-DEFINE_FSTR(WSSTR_ORIGIN, "origin")
-DEFINE_FSTR(WSSTR_KEY, "Sec-WebSocket-Key")
-DEFINE_FSTR(WSSTR_PROTOCOL, "Sec-WebSocket-Protocol")
-DEFINE_FSTR(WSSTR_VERSION, "Sec-WebSocket-Version")
 DEFINE_FSTR(WSSTR_SECRET, "258EAFA5-E914-47DA-95CA-C5AB0DC85B11")
 
 WebsocketList WebsocketConnection::websocketList;
@@ -106,7 +100,7 @@ void WebsocketConnection::activate()
 	connection->setReceiveDelegate(TcpClientDataDelegate(&WebsocketConnection::processFrame, this));
 }
 
-bool WebsocketConnection::processFrame(TcpClient& client, char* at, int size)
+bool WebsocketConnection::processFrame(TcpClient&, char* at, int size)
 {
 	int rc = ws_parser_execute(&parser, &parserSettings, this, at, size);
 	if(rc != WS_OK) {
@@ -152,7 +146,7 @@ int WebsocketConnection::staticOnDataPayload(void* userData, const char* at, siz
 	return WS_OK;
 }
 
-int WebsocketConnection::staticOnDataEnd(void* userData)
+int WebsocketConnection::staticOnDataEnd(void*)
 {
 	return WS_OK;
 }

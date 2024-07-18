@@ -51,7 +51,7 @@ void HttpUpgrader::fetchNextItem()
 	}
 }
 
-int HttpUpgrader::itemComplete(HttpConnection& client, bool success)
+int HttpUpgrader::itemComplete(HttpConnection&, bool success)
 {
 	auto& it = items[currentItem];
 
