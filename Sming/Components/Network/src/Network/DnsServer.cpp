@@ -84,9 +84,6 @@ void DnsServer::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 	}
 
 	unsigned requestLen = pbuf_copy_partial(buf, buffer, buf->tot_len, 0);
-	if(requestLen != buf->tot_len) {
-		return;
-	}
 
 	debug_hex(DBG, "< DNS", buffer, requestLen);
 
@@ -97,8 +94,6 @@ void DnsServer::onReceive(pbuf* buf, IpAddress remoteIP, uint16_t remotePort)
 	}
 
 	delete[] buffer;
-
-	UdpConnection::onReceive(buf, remoteIP, remotePort);
 }
 
 size_t DnsServer::processQuestion(char* buffer, size_t requestLen)
