@@ -281,6 +281,10 @@
 	path = Sming/Libraries/ITEADLIB_Arduino_Nextion
 	url = https://github.com/itead/ITEADLIB_Arduino_Nextion.git
 	ignore = dirty
+[submodule "Libraries.JsonStreamingParser"]
+	path = Sming/Libraries/JsonStreamingParser
+	url = https://github.com/mikee47/JsonStreamingParser
+	ignore = dirty
 [submodule "Libraries.libsodium"]
 	path = Sming/Libraries/libsodium/libsodium
 	url = https://github.com/jedisct1/libsodium.git
