@@ -5,11 +5,11 @@ In general, writing efficiently to files is best done in chunks, such as by buil
 
 Sming offers a simple write-through buffering mechanism which can be used where necessary. The :library:`ArduinoJson` can benefit greatly from this.
 
-.. doxygenclass:: StaticWriteBuffer
+.. doxygenclass:: StaticPrintBuffer
    :members:
 
-.. doxygenclass:: HeapWriteBuffer
+.. doxygenclass:: HeapPrintBuffer
    :members:
 
-.. doxygenclass:: DynamicWriteBuffer
+.. doxygenclass:: DynamicPrintBuffer
    :members:

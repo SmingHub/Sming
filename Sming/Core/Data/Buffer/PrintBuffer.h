@@ -4,7 +4,7 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * WriteBuffer.h
+ * PrintBuffer.h
  *
  ****/
 
@@ -19,7 +19,7 @@
  * @note Call flush() at end of write operation to ensure all data is output
  * This is done automatically when the buffer is destroyed.
  */
-class BaseWriteBuffer : public Print
+class BasePrintBuffer : public Print
 {
 public:
 	/**
@@ -28,12 +28,12 @@ public:
      * @param buffer buffer to use
      * @param size Size of buffer
      */
-	BaseWriteBuffer(Print& output, uint8_t buffer[], size_t bufferSize)
+	BasePrintBuffer(Print& output, uint8_t buffer[], size_t bufferSize)
 		: output(output), buffer(buffer), bufferSize(bufferSize)
 	{
 	}
 
-	~BaseWriteBuffer()
+	~BasePrintBuffer()
 	{
 		flush();
 	}
@@ -62,18 +62,18 @@ private:
  *
  *      FileStream stream("file.txt", File::ReadWrite);
  * 	    {
- *	        StaticWriteBuffer<256> buffer(stream);
+ *	        StaticPrintBuffer<256> buffer(stream);
  * 	        writeSomeData(buffer);
  * 	    } // Buffer flushed and destroyed when it goes out of scope
  */
-template <size_t size> class StaticWriteBuffer : public BaseWriteBuffer
+template <size_t size> class StaticPrintBuffer : public BasePrintBuffer
 {
 public:
 	/**
      * @brief Construct a stack-based buffer
      * @param output Print destination
      */
-	StaticWriteBuffer(Print& output) : BaseWriteBuffer(output, buffer, size)
+	StaticPrintBuffer(Print& output) : BasePrintBuffer(output, buffer, size)
 	{
 	}
 
@@ -88,11 +88,11 @@ private:
  *
  *      FileStream stream("file.txt", File::ReadWrite);
  * 	    {
- *	        HeapWriteBuffer buffer(stream, 512);
+ *	        HeapPrintBuffer buffer(stream, 512);
  * 	        writeSomeData(buffer);
  * 	    } // Buffer flushed and destroyed when it goes out of scope
  */
-class HeapWriteBuffer : public BaseWriteBuffer
+class HeapPrintBuffer : public BasePrintBuffer
 {
 public:
 	/**
@@ -100,12 +100,12 @@ public:
      * @param output Print destination
      * @param size Buffer size
      */
-	HeapWriteBuffer(Print& output, size_t size) : HeapWriteBuffer(output, new uint8_t[size], size)
+	HeapPrintBuffer(Print& output, size_t size) : HeapPrintBuffer(output, new uint8_t[size], size)
 	{
 	}
 
 private:
-	HeapWriteBuffer(Print& output, uint8_t* buffer, size_t size) : BaseWriteBuffer(output, buffer, size), buffer(buffer)
+	HeapPrintBuffer(Print& output, uint8_t* buffer, size_t size) : BasePrintBuffer(output, buffer, size), buffer(buffer)
 	{
 	}
 
@@ -118,7 +118,7 @@ private:
  * Example usage:
  *
  *      auto stream = std::make_unique<FileStream>("file.txt", File::ReadWrite);
- *	    auto bufferedStream = new DynamicWriteBuffer(std::move(stream), 512);
+ *	    auto bufferedStream = new DynamicPrintBuffer(std::move(stream), 512);
  *
  *      // write to bufferedStream as required via callbacks, etc.
  *      ...
@@ -126,7 +126,7 @@ private:
  *      // This destroys both buffer *and* the file stream
  *      delete bufferedStream;
  */
-class DynamicWriteBuffer : public BaseWriteBuffer
+class DynamicPrintBuffer : public BasePrintBuffer
 {
 public:
 	/**
@@ -134,19 +134,19 @@ public:
      * @param output Print destination, will take ownership of this
      * @param size Buffer size
      */
-	DynamicWriteBuffer(std::unique_ptr<Print>&& output, size_t size)
-		: DynamicWriteBuffer(output.release(), new uint8_t[size], size)
+	DynamicPrintBuffer(std::unique_ptr<Print>&& output, size_t size)
+		: DynamicPrintBuffer(output.release(), new uint8_t[size], size)
 	{
 	}
 
-	~DynamicWriteBuffer()
+	~DynamicPrintBuffer()
 	{
 		flush();
 	}
 
 private:
-	DynamicWriteBuffer(Print* output, uint8_t* buffer, size_t size)
-		: BaseWriteBuffer(*output, buffer, size), output(output), buffer(buffer)
+	DynamicPrintBuffer(Print* output, uint8_t* buffer, size_t size)
+		: BasePrintBuffer(*output, buffer, size), output(output), buffer(buffer)
 	{
 	}
 

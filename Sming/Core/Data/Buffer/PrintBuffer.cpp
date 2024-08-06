@@ -4,13 +4,13 @@
  * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
- * WriteBuffer.cpp
+ * PrintBuffer.cpp
  *
  ****/
 
-#include "WriteBuffer.h"
+#include "PrintBuffer.h"
 
-size_t BaseWriteBuffer::write(uint8_t c)
+size_t BasePrintBuffer::write(uint8_t c)
 {
 	buffer[writeOffset++] = c;
 	if(writeOffset == bufferSize) {
@@ -19,7 +19,7 @@ size_t BaseWriteBuffer::write(uint8_t c)
 	return 1;
 }
 
-size_t BaseWriteBuffer::write(const uint8_t* data, size_t size)
+size_t BasePrintBuffer::write(const uint8_t* data, size_t size)
 {
 	size_t written{0};
 	while(size != 0) {
@@ -36,7 +36,7 @@ size_t BaseWriteBuffer::write(const uint8_t* data, size_t size)
 	return written;
 }
 
-void BaseWriteBuffer::flush()
+void BasePrintBuffer::flush()
 {
 	output.write(buffer, writeOffset);
 	writeOffset = 0;
