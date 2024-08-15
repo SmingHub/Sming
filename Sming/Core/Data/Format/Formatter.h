@@ -18,6 +18,13 @@
 namespace Format
 {
 /**
+ * @brief Escape standard control codes such as `\n` (below ASCII 0x20)
+ * @param value String to be modified
+ * @retval unsigned Number of control characters found and replaced
+ */
+unsigned escapeControls(String& value);
+
+/**
  * @brief Virtual class to perform format-specific String adjustments
  */
 class Formatter
