@@ -62,7 +62,7 @@ unsigned escapeControls(String& value)
 	for(auto& c : value) {
 		if(escapeChar(c)) {
 			extra += 1; // "\"
-		} else if(c < 0x20) {
+		} else if(uint8_t(c) < 0x20) {
 			extra += 3; // "\xnn"
 		}
 	}
@@ -78,7 +78,7 @@ unsigned escapeControls(String& value)
 	memmove(out + extra, in, len);
 	in += extra;
 	while(len--) {
-		auto c = *in++;
+		uint8_t c = *in++;
 		auto esc = escapeChar(c);
 		if(esc) {
 			*out++ = '\\';
