@@ -63,11 +63,10 @@ bool IsValidUtf8(const char* str, unsigned length)
  *
  * This can occur if filenames become corrupted, so here we just
  * substitute an underscore _ for anything which fails to match UTF8.
- *
- * TODO: Perform ANSI -> UTF8 conversion?
  */
 void Json::escape(String& value) const
 {
+	escapeControls(value);
 	if(!IsValidUtf8(value.c_str(), value.length())) {
 		debug_w("Invalid UTF8: %s", value.c_str());
 		for(unsigned i = 0; i < value.length(); ++i) {

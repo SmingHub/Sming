@@ -29,6 +29,7 @@
 	XX(CStringArray)                                                                                                   \
 	XX(Stream)                                                                                                         \
 	XX(TemplateStream)                                                                                                 \
+	XX(Formatter)                                                                                                      \
 	XX(Serial)                                                                                                         \
 	XX(ObjectMap)                                                                                                      \
 	XX_NET(Base64)                                                                                                     \
