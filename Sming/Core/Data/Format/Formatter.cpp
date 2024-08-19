@@ -24,12 +24,8 @@ char escapeChar(char c)
 	switch(c) {
 	case '\0':
 		return '0';
-	case '\'':
-		return '\'';
 	case '\"':
 		return '"';
-	case '\?':
-		return '?';
 	case '\\':
 		return '\\';
 	case '\a':
