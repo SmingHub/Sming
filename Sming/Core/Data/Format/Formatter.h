@@ -20,9 +20,10 @@ namespace Format
 /**
  * @brief Escape standard control codes such as `\n` (below ASCII 0x20)
  * @param value String to be modified
+ * @param unicode If true, use unicode escapes \uNNNN, otherwise hex \xNN
  * @retval unsigned Number of control characters found and replaced
  */
-unsigned escapeControls(String& value);
+unsigned escapeControls(String& value, bool unicode);
 
 /**
  * @brief Virtual class to perform format-specific String adjustments

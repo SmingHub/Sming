@@ -17,13 +17,14 @@ namespace
 /**
  * @brief Get character used for standard escapes
  * @param c Code to be escaped
+ * @param unicode Affects escaping of NUL
  * @retval char Corresponding character, NUL if there isn't a standard escape
  */
-char escapeChar(char c)
+char escapeChar(char c, bool unicode)
 {
 	switch(c) {
 	case '\0':
-		return '0';
+		return unicode ? '\0' : '0';
 	case '\"':
 		return '"';
 	case '\\':
@@ -51,15 +52,15 @@ char escapeChar(char c)
 
 namespace Format
 {
-unsigned escapeControls(String& value)
+unsigned escapeControls(String& value, bool unicode)
 {
 	// Count number of extra characters we'll need to insert
 	unsigned extra{0};
 	for(auto& c : value) {
-		if(escapeChar(c)) {
+		if(escapeChar(c, unicode)) {
 			extra += 1; // "\"
 		} else if(uint8_t(c) < 0x20) {
-			extra += 3; // "\xnn"
+			extra += unicode ? 5 : 3; // "\uNNNN" or "\xnn"
 		}
 	}
 	if(extra == 0) {
@@ -75,13 +76,19 @@ unsigned escapeControls(String& value)
 	in += extra;
 	while(len--) {
 		uint8_t c = *in++;
-		auto esc = escapeChar(c);
+		auto esc = escapeChar(c, unicode);
 		if(esc) {
 			*out++ = '\\';
 			*out++ = esc;
 		} else if(c < 0x20) {
 			*out++ = '\\';
-			*out++ = 'x';
+			if(unicode) {
+				*out++ = 'u';
+				*out++ = '0';
+				*out++ = '0';
+			} else {
+				*out++ = 'x';
+			}
 			*out++ = hexchar(uint8_t(c) >> 4);
 			*out++ = hexchar(uint8_t(c) & 0x0f);
 		} else {
