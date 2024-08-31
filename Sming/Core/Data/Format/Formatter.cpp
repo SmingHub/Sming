@@ -12,26 +12,25 @@
 
 #include "Formatter.h"
 
-namespace
+namespace Format
 {
 /**
  * @brief Get character used for standard escapes
  * @param c Code to be escaped
+ * @param options
  * @retval char Corresponding character, NUL if there isn't a standard escape
  */
-char escapeChar(char c)
+char escapeChar(char c, Options options)
 {
 	switch(c) {
 	case '\0':
-		return '0';
-	case '\'':
-		return '\'';
+		return options[Option::unicode] ? '\0' : '0';
 	case '\"':
-		return '"';
-	case '\?':
-		return '?';
+		return options[Option::doublequote] ? c : '\0';
+	case '\'':
+		return options[Option::singlequote] ? c : '\0';
 	case '\\':
-		return '\\';
+		return options[Option::backslash] ? c : '\0';
 	case '\a':
 		return 'a';
 	case '\b':
@@ -51,19 +50,22 @@ char escapeChar(char c)
 	}
 }
 
-} // namespace
-
-namespace Format
-{
-unsigned escapeControls(String& value)
+unsigned escapeControls(String& value, Options options)
 {
 	// Count number of extra characters we'll need to insert
 	unsigned extra{0};
 	for(auto& c : value) {
-		if(escapeChar(c)) {
+		if(escapeChar(c, options)) {
 			extra += 1; // "\"
+		} else if(options[Option::unicode]) {
+			if(uint8_t(c) < 0x20 || (c & 0x80)) {
+				extra += 5; // "\uNNNN"
+			}
 		} else if(uint8_t(c) < 0x20) {
 			extra += 3; // "\xnn"
+		} else if((c & 0x80) && options[Option::utf8]) {
+			// Characters such as £ (0xa3) are escaped to 0xc2 0xa3 in UTF-8
+			extra += 1; // 0xc2
 		}
 	}
 	if(extra == 0) {
@@ -79,18 +81,28 @@ unsigned escapeControls(String& value)
 	in += extra;
 	while(len--) {
 		uint8_t c = *in++;
-		auto esc = escapeChar(c);
+		auto esc = escapeChar(c, options);
 		if(esc) {
 			*out++ = '\\';
-			*out++ = esc;
-		} else if(c < 0x20) {
+			c = esc;
+		} else if(options[Option::unicode]) {
+			if(uint8_t(c) < 0x20 || (c & 0x80)) {
+				*out++ = '\\';
+				*out++ = 'u';
+				*out++ = '0';
+				*out++ = '0';
+				*out++ = hexchar(uint8_t(c) >> 4);
+				c = hexchar(uint8_t(c) & 0x0f);
+			}
+		} else if(uint8_t(c) < 0x20) {
 			*out++ = '\\';
 			*out++ = 'x';
 			*out++ = hexchar(uint8_t(c) >> 4);
-			*out++ = hexchar(uint8_t(c) & 0x0f);
-		} else {
-			*out++ = c;
+			c = hexchar(uint8_t(c) & 0x0f);
+		} else if((c & 0x80) && options[Option::utf8]) {
+			*out++ = 0xc2;
 		}
+		*out++ = c;
 	}
 	return extra;
 }

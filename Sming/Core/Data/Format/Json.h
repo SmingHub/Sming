@@ -20,6 +20,7 @@ class Json : public Standard
 {
 public:
 	void escape(String& value) const override;
+	void quote(String& value) const override;
 
 	MimeType mimeType() const override
 	{
