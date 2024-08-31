@@ -14,16 +14,25 @@
 
 #include <WString.h>
 #include <Data/WebConstants.h>
+#include <Data/BitSet.h>
 
 namespace Format
 {
+enum class Option {
+	unicode, //< Use unicode escapes \uNNNN, otherwise hex \xNN
+	doublequote,
+	singlequote,
+	backslash,
+};
+using Options = BitSet<uint8_t, Option, 3>;
+
 /**
  * @brief Escape standard control codes such as `\n` (below ASCII 0x20)
  * @param value String to be modified
- * @param unicode If true, use unicode escapes \uNNNN, otherwise hex \xNN
+ * @param options
  * @retval unsigned Number of control characters found and replaced
  */
-unsigned escapeControls(String& value, bool unicode);
+unsigned escapeControls(String& value, Options options);
 
 /**
  * @brief Virtual class to perform format-specific String adjustments

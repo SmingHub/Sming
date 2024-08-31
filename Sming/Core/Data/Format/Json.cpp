@@ -66,7 +66,7 @@ bool IsValidUtf8(const char* str, unsigned length)
  */
 void Json::escape(String& value) const
 {
-	escapeControls(value, true);
+	escapeControls(value, Option::unicode | Option::doublequote | Option::backslash);
 	if(!IsValidUtf8(value.c_str(), value.length())) {
 		debug_w("Invalid UTF8: %s", value.c_str());
 		for(unsigned i = 0; i < value.length(); ++i) {
@@ -75,8 +75,6 @@ void Json::escape(String& value) const
 				c = '_';
 		}
 	}
-
-	value.replace("\"", "\\\"");
 }
 
 } // namespace Format
