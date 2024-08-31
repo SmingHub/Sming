@@ -55,6 +55,19 @@ bool IsValidUtf8(const char* str, unsigned length)
 	return true;
 }
 
+void escapeText(String& value)
+{
+	escapeControls(value, Option::unicode | Option::utf8 | Option::doublequote | Option::backslash);
+	if(!IsValidUtf8(value.c_str(), value.length())) {
+		debug_w("Invalid UTF8: %s", value.c_str());
+		for(unsigned i = 0; i < value.length(); ++i) {
+			char& c = value[i];
+			if(c < 0x20 || uint8_t(c) > 127)
+				c = '_';
+		}
+	}
+}
+
 } // namespace
 
 /*
@@ -66,14 +79,18 @@ bool IsValidUtf8(const char* str, unsigned length)
  */
 void Json::escape(String& value) const
 {
-	escapeControls(value, Option::unicode | Option::doublequote | Option::backslash);
-	if(!IsValidUtf8(value.c_str(), value.length())) {
-		debug_w("Invalid UTF8: %s", value.c_str());
-		for(unsigned i = 0; i < value.length(); ++i) {
-			char& c = value[i];
-			if(c < 0x20 || uint8_t(c) > 127)
-				c = '_';
-		}
+	escapeText(value);
+}
+
+void Json::quote(String& value) const
+{
+	escapeText(value);
+	auto len = value.length();
+	if(value.setLength(len + 2)) {
+		auto s = value.begin();
+		memmove(s + 1, s, len);
+		s[0] = '"';
+		s[len + 1] = '"';
 	}
 }
 

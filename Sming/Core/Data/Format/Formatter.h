@@ -20,6 +20,7 @@ namespace Format
 {
 enum class Option {
 	unicode, //< Use unicode escapes \uNNNN, otherwise hex \xNN
+	utf8,	///< Convert extended ASCII to UTF8
 	doublequote,
 	singlequote,
 	backslash,

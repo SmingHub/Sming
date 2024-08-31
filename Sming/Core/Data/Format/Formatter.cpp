@@ -59,6 +59,9 @@ unsigned escapeControls(String& value, Options options)
 			extra += 1; // "\"
 		} else if(uint8_t(c) < 0x20) {
 			extra += options[Option::unicode] ? 5 : 3; // "\uNNNN" or "\xnn"
+		} else if(options[Option::utf8] && (c & 0x80)) {
+			// Characters such as £ (0xa3) are escaped to 0xc2 0xa3 in UTF-8
+			extra += 1; // '\xc2' prefix
 		}
 	}
 	if(extra == 0) {
@@ -89,6 +92,9 @@ unsigned escapeControls(String& value, Options options)
 			}
 			*out++ = hexchar(uint8_t(c) >> 4);
 			*out++ = hexchar(uint8_t(c) & 0x0f);
+		} else if(options[Option::utf8] && (c & 0x80)) {
+			*out++ = '\xc2';
+			*out++ = c;
 		} else {
 			*out++ = c;
 		}
