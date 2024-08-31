@@ -57,11 +57,15 @@ unsigned escapeControls(String& value, Options options)
 	for(auto& c : value) {
 		if(escapeChar(c, options)) {
 			extra += 1; // "\"
+		} else if(options[Option::unicode]) {
+			if(uint8_t(c) < 0x20 || (c & 0x80)) {
+				extra += 5; // "\uNNNN"
+			}
 		} else if(uint8_t(c) < 0x20) {
-			extra += options[Option::unicode] ? 5 : 3; // "\uNNNN" or "\xnn"
-		} else if(options[Option::utf8] && (c & 0x80)) {
+			extra += 3; // "\xnn"
+		} else if((c & 0x80) && options[Option::utf8]) {
 			// Characters such as £ (0xa3) are escaped to 0xc2 0xa3 in UTF-8
-			extra += 1; // '\xc2' prefix
+			extra += 1; // 0xc2
 		}
 	}
 	if(extra == 0) {
@@ -80,24 +84,25 @@ unsigned escapeControls(String& value, Options options)
 		auto esc = escapeChar(c, options);
 		if(esc) {
 			*out++ = '\\';
-			*out++ = esc;
-		} else if(c < 0x20) {
-			*out++ = '\\';
-			if(options[Option::unicode]) {
+			c = esc;
+		} else if(options[Option::unicode]) {
+			if(uint8_t(c) < 0x20 || (c & 0x80)) {
+				*out++ = '\\';
 				*out++ = 'u';
 				*out++ = '0';
 				*out++ = '0';
-			} else {
-				*out++ = 'x';
+				*out++ = hexchar(uint8_t(c) >> 4);
+				c = hexchar(uint8_t(c) & 0x0f);
 			}
+		} else if(uint8_t(c) < 0x20) {
+			*out++ = '\\';
+			*out++ = 'x';
 			*out++ = hexchar(uint8_t(c) >> 4);
-			*out++ = hexchar(uint8_t(c) & 0x0f);
-		} else if(options[Option::utf8] && (c & 0x80)) {
-			*out++ = '\xc2';
-			*out++ = c;
-		} else {
-			*out++ = c;
+			c = hexchar(uint8_t(c) & 0x0f);
+		} else if((c & 0x80) && options[Option::utf8]) {
+			*out++ = 0xc2;
 		}
+		*out++ = c;
 	}
 	return extra;
 }

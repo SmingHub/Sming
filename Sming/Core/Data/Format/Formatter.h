@@ -25,7 +25,7 @@ enum class Option {
 	singlequote,
 	backslash,
 };
-using Options = BitSet<uint8_t, Option, 3>;
+using Options = BitSet<uint8_t, Option, 5>;
 
 /**
  * @brief Escape standard control codes such as `\n` (below ASCII 0x20)

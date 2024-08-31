@@ -17,59 +17,6 @@ namespace Format
 {
 Json json;
 
-namespace
-{
-bool IsValidUtf8(const char* str, unsigned length)
-{
-	if(str == nullptr) {
-		return true;
-	}
-
-	unsigned i = 0;
-	while(i < length) {
-		char c = str[i++];
-		if((c & 0x80) == 0) {
-			continue;
-		}
-
-		if(i >= length) {
-			return false; // incomplete multibyte char
-		}
-
-		if(c & 0x20) {
-			c = str[i++];
-			if((c & 0xC0) != 0x80) {
-				return false; // malformed trail byte or out of range char
-			}
-			if(i >= length) {
-				return false; // incomplete multibyte char
-			}
-		}
-
-		c = str[i++];
-		if((c & 0xC0) != 0x80) {
-			return false; // malformed trail byte
-		}
-	}
-
-	return true;
-}
-
-void escapeText(String& value)
-{
-	escapeControls(value, Option::unicode | Option::utf8 | Option::doublequote | Option::backslash);
-	if(!IsValidUtf8(value.c_str(), value.length())) {
-		debug_w("Invalid UTF8: %s", value.c_str());
-		for(unsigned i = 0; i < value.length(); ++i) {
-			char& c = value[i];
-			if(c < 0x20 || uint8_t(c) > 127)
-				c = '_';
-		}
-	}
-}
-
-} // namespace
-
 /*
  * Check for invalid characters and replace them - can break browser
  * operation otherwise.
@@ -79,12 +26,12 @@ void escapeText(String& value)
  */
 void Json::escape(String& value) const
 {
-	escapeText(value);
+	escapeControls(value, Option::unicode | Option::doublequote | Option::backslash);
 }
 
 void Json::quote(String& value) const
 {
-	escapeText(value);
+	escape(value);
 	auto len = value.length();
 	if(value.setLength(len + 2)) {
 		auto s = value.begin();
