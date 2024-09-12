@@ -116,9 +116,9 @@ See :component-esp32:`esp32` for further details.
 IDF versions
 ------------
 
-Sming currently supports IDF versions 4.3, 4.4, 5.0 and 5.2.
-The recommended version is 5.2.
-This is installed by default.
+Sming currently supports IDF versions 5.2. This is installed by default.
+Older versions 4.3, 4.4 and 5.0 are no longer officially supported. If you use one of the old versions, please, consider upgrading to 5.2.
+
 
 A different version can be installed if necessary::
 
