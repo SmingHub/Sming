@@ -25,9 +25,9 @@ endif
 .PHONY: application
 application: $(TARGET_BIN)
 ifeq ($(IDF_VERSION),v4.3)
-	@printf "\033[47;1;31mWARNING! ESP-IDF 4.3 reached 'End of Life' in December 2023.\033[0m Upgrade to v5.2 recommended.\n"
+	@printf "\033[47;1;31mWARNING! ESP-IDF 4.3 reached 'End of Life' in December 2023.\033[0m Please upgrade to v5.2.\n"
 else ifeq ($(IDF_VERSION),v4.4)
-	@printf "\033[47;1;31mWARNING! ESP-IDF 4.4 support ends August 2024!\033[0m Upgrade to v5.2 recommended.\n"
+	@printf "\033[47;1;31mWARNING! ESP-IDF 4.4 support has ended in August 2024!\033[0m Please upgrade to v5.2.\n"
 else ifeq ($(IDF_VERSION),v5.0)
 	@printf "\033[47;1;34mNOTE! ESP-IDF 5.0 not recommended for new designs.\033[0m Please consider upgrading to v5.2.\n"
 endif
