@@ -29,6 +29,11 @@ MC_WRAP_FUNCS += \
 	pvPortZallocIram \
 	vPortFree
 endif
+ifeq ($(SMING_ARCH)$(UNAME),HostWindows)
+MC_WRAP_FUNCS += \
+	__mingw_realloc \
+	__mingw_free
+endif
 
 EXTRA_LDFLAGS := $(call UndefWrap,$(MC_WRAP_FUNCS))
 
