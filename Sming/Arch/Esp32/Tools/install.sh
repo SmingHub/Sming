@@ -35,7 +35,7 @@ case $DIST in
 	_OK=1
 	_COMMANDS=(dfu-util bison flex gperf)
 	for _COMMAND in "${_COMMANDS[@]}"; do
-	    if ! [ -x "$(command -v ${_COMMAND})" ]; then
+	    if ! [ -x "$(command -v \"${_COMMAND}\")" ]; then
 		_OK=0
 		echo "Install programm ${_COMMAND}"
 	    fi

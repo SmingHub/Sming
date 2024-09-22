@@ -115,7 +115,7 @@ else
 	    wget \
 	    )
     for _TOOL in "${_REQUIRED_TOOLS[@]}"; do
-	if ! [ -x "$(command -v $_TOOL)" ]; then
+	if ! [ -x "$(command -v \"${_TOOL}\")" ]; then
 	    _OK=0
 	    echo "Install required tool ${_TOOL}"
 	fi
