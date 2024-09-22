@@ -31,6 +31,29 @@ case $DIST in
     darwin)
         ;;
 
+    *)
+	_OK=1
+	_COMMANDS=(dfu-util bison flex gperf)
+	for _COMMAND in "${_COMMANDS[@]}"; do
+	    if ! [ -x "$(command -v ${_COMMAND})" ]; then
+		_OK=0
+		echo "Install programm ${_COMMAND}"
+	    fi
+	done
+	_INCLUDES=("/usr/include/ffi.h" "/usr/include/ssl/ssl.h")
+	for _INCLUDE in "${_INCLUDES[@]}"; do
+	    if ! [ -f "${_INCLUDE}" ]; then
+		_OK=0
+		echo "Install development package providing ${_INCLUDE}"
+	    fi
+	done
+	if [ $_OK != 1 ]; then
+	    echo "ABORTING"
+	    exit 1
+	fi
+	PACKAGES=()
+        ;;
+
 esac
 
 $PKG_INSTALL "${PACKAGES[@]}"

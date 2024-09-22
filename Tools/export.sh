@@ -24,7 +24,8 @@ if [ -z "$SMING_HOME" ]; then
     else
         _SOURCEDIR=$(dirname "${BASH_SOURCE[0]}")
     fi
-    SMING_HOME=$(realpath "$_SOURCEDIR/../Sming")
+    _SMIG_BASE=$(realpath "$_SOURCEDIR/..")
+    SMING_HOME=${_SMIG_BASE}"/Sming"
     export SMING_HOME
     echo "SMING_HOME: $SMING_HOME"
 fi
@@ -33,14 +34,14 @@ fi
 export PYTHON=${PYTHON:=$(which python3)}
 
 # Esp8266
-export ESP_HOME=${ESP_HOME:=/opt/esp-quick-toolchain}
+export ESP_HOME=${ESP_HOME:=${_SMIG_BASE}/esp-quick-toolchain}
 
 # Esp32
-export IDF_PATH=${IDF_PATH:=/opt/esp-idf}
-export IDF_TOOLS_PATH=${IDF_TOOLS_PATH:=/opt/esp32}
+export IDF_PATH=${IDF_PATH:=${_SMIG_BASE}/esp-idf}
+export IDF_TOOLS_PATH=${IDF_TOOLS_PATH:=${_SMIG_BASE}/esp32}
 
 # Rp2040
-export PICO_TOOLCHAIN_PATH=${PICO_TOOLCHAIN_PATH:=/opt/rp2040}
+export PICO_TOOLCHAIN_PATH=${PICO_TOOLCHAIN_PATH:=${_SMIG_BASE}/rp2040}
 
 # Provide non-apple CLANG (e.g. for rbpf library)
 if [ -n "$GITHUB_ACTIONS" ] && [ "$(uname)" = "Darwin" ]; then

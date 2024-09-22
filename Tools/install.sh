@@ -99,11 +99,33 @@ elif [ -n "$(command -v dnf)" ]; then
     DIST=fedora
     PKG_INSTALL="sudo dnf install -y"
 else
+    _OK=1
     echo "Unsupported distribution"
+    _REQUIRED_TOOLS=(
+            ccache \
+            cmake \
+            curl \
+            git \
+            make \
+            ninja \
+            unzip \
+            g++ \
+            python3 \
+            pip3 \
+	    wget \
+	    )
+    for _TOOL in "${_REQUIRED_TOOLS[@]}"; do
+	if ! [ -x "$(command -v $_TOOL)" ]; then
+	    _OK=0
+	    echo "Install required tool ${_TOOL}"
+	fi
+    done
+    if [ $_OK != 1 ]; then
     if [ $sourced = 1 ]; then
         return 1
     else
         exit 1
+    fi
     fi
 fi
 
@@ -183,8 +205,10 @@ case $DIST in
 
 esac
 
+if [ $(/usr/bin/python -c "import sys;print(sys.version_info[0])") != 3 ]; then
 if [ "$DIST" != "darwin" ]; then
     sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 100
+fi
 fi
 
 set -e
