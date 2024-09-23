@@ -22,6 +22,46 @@ FONT_PACKAGES=(\
     fonts-droid-fallback \
     )
 
+check_for_installed_tools () {
+    REQUIRED_TOOLS="${@}"
+    echo -e "Checking for installed tools.\nrequirded tools: ${REQUIRED_TOOLS}"
+    TOOLS_MISSING=0
+    for TOOL in ${REQUIRED_TOOLS}; do
+        if ! command -v "${TOOL}" > /dev/null ; then
+            TOOLS_MISSING=1
+            echo "Install required tool ${TOOL}"
+        fi
+    done
+    if [ $TOOLS_MISSING != 0 ]; then
+    echo "ABORTING"
+    if [ $sourced = 1 ]; then
+        return 1
+    else
+        exit 1
+    fi
+    fi
+}
+
+check_for_installed_files () {
+    REQUIRED_FILES="${@}"
+    echo -e "Checking for installed files.\nrequirded files: ${REQUIRED_FILES}"
+    FILES_MISSING=0
+    for FILE in ${REQUIRED_FILES}; do
+        if ! [ -f "${FILE}" ]; then
+            FILES_MISSING=1
+            echo "Install required FILE ${FILE}"
+        fi
+    done
+    if [ $FILES_MISSING != 0 ]; then
+    echo "ABORTING"
+    if [ $sourced = 1 ]; then
+        return 1
+    else
+        exit 1
+    fi
+    fi
+}
+
 EXTRA_PACKAGES=()
 OPTIONAL_PACKAGES=()
 
@@ -101,7 +141,7 @@ elif [ -n "$(command -v dnf)" ]; then
 else
     TOOLS_MISSING=0
     echo "Unsupported distribution"
-    REQUIRED_TOOLS=(
+    check_for_installed_tools \
             ccache \
             cmake \
             curl \
@@ -112,21 +152,7 @@ else
             g++ \
             python3 \
             pip3 \
-	    wget \
-	    )
-    for TOOL in "${REQUIRED_TOOLS[@]}"; do
-	if ! [ -x $(command -v "${TOOL}") ]; then
-	    TOOLS_MISSING=1
-	    echo "Install required tool ${TOOL}"
-	fi
-    done
-    if [ $TOOLS_MISSING != 0 ]; then
-    if [ $sourced = 1 ]; then
-        return 1
-    else
-        exit 1
-    fi
-    fi
+            wget
 fi
 
 # Common install
