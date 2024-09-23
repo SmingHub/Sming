@@ -21,10 +21,10 @@
 
 #include "Countable.h"
 
-template <typename T, int rawSize> class FIFO : public Countable<T>
+template <typename T, unsigned rawSize> class FIFO : public Countable<T>
 {
 public:
-	const int size; // speculative feature, in case it's needed
+	const unsigned size; // speculative feature, in case it's needed
 
 	FIFO();
 
@@ -60,18 +60,18 @@ public:
 	}
 
 protected:
-	volatile int numberOfElements;
-	int nextIn;
-	int nextOut;
+	unsigned numberOfElements;
+	unsigned nextIn;
+	unsigned nextOut;
 	T raw[rawSize];
 };
 
-template <typename T, int rawSize> FIFO<T, rawSize>::FIFO() : size(rawSize)
+template <typename T, unsigned rawSize> FIFO<T, rawSize>::FIFO() : size(rawSize)
 {
 	flush();
 }
 
-template <typename T, int rawSize> bool FIFO<T, rawSize>::enqueue(T element)
+template <typename T, unsigned rawSize> bool FIFO<T, rawSize>::enqueue(T element)
 {
 	if(full()) {
 		return false;
@@ -85,7 +85,7 @@ template <typename T, int rawSize> bool FIFO<T, rawSize>::enqueue(T element)
 	return true;
 }
 
-template <typename T, int rawSize> T FIFO<T, rawSize>::dequeue()
+template <typename T, unsigned rawSize> T FIFO<T, rawSize>::dequeue()
 {
 	T item;
 	numberOfElements--;
@@ -95,12 +95,12 @@ template <typename T, int rawSize> T FIFO<T, rawSize>::dequeue()
 	return item;
 }
 
-template <typename T, int rawSize> T FIFO<T, rawSize>::peek() const
+template <typename T, unsigned rawSize> T FIFO<T, rawSize>::peek() const
 {
 	return raw[nextOut];
 }
 
-template <typename T, int rawSize> void FIFO<T, rawSize>::flush()
+template <typename T, unsigned rawSize> void FIFO<T, rawSize>::flush()
 {
 	nextIn = nextOut = numberOfElements = 0;
 }

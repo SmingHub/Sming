@@ -239,6 +239,11 @@ COMPILER_VERSION_FULL	:= $(shell LANG=C $(CC) -v 2>&1 | $(AWK) -F " version " '/
 COMPILER_NAME			:= $(word 1,$(COMPILER_VERSION_FULL))
 COMPILER_VERSION		:= $(word 2,$(COMPILER_VERSION_FULL))
 
+# Use of bitwise assignment for volatile registers is deprecated in C++20 but de-deprecated in C++23
+ifeq ($(COMPILER_NAME)-$(SMING_CXX_STD),gcc-c++20)
+CXXFLAGS += -Wno-volatile
+endif
+
 ifndef USE_CLANG
 # Required to access peripheral registers using structs
 # e.g. `uint32_t value: 8` sitting at a byte or word boundary will be 'optimised' to
