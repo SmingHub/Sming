@@ -99,9 +99,9 @@ elif [ -n "$(command -v dnf)" ]; then
     DIST=fedora
     PKG_INSTALL="sudo dnf install -y"
 else
-    _OK=1
+    TOOLS_MISSING=0
     echo "Unsupported distribution"
-    _REQUIRED_TOOLS=(
+    REQUIRED_TOOLS=(
             ccache \
             cmake \
             curl \
@@ -114,13 +114,13 @@ else
             pip3 \
 	    wget \
 	    )
-    for _TOOL in "${_REQUIRED_TOOLS[@]}"; do
-	if ! [ -x $(command -v "${_TOOL}") ]; then
-	    _OK=0
-	    echo "Install required tool ${_TOOL}"
+    for TOOL in "${REQUIRED_TOOLS[@]}"; do
+	if ! [ -x $(command -v "${TOOL}") ]; then
+	    TOOLS_MISSING=1
+	    echo "Install required tool ${TOOL}"
 	fi
     done
-    if [ $_OK != 1 ]; then
+    if [ $TOOLS_MISSING != 0 ]; then
     if [ $sourced = 1 ]; then
         return 1
     else

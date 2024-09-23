@@ -30,9 +30,3 @@ GPATH
 .submodule
 *.built
 *.completed
-
-/esp-idf*
-/esp-quick-toolchain/
-/esp32/
-/rp2040/
-/samples/Basic_Serial/files/

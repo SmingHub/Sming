@@ -32,26 +32,26 @@ case $DIST in
         ;;
 
     *)
-	_OK=1
-	_COMMANDS=(dfu-util bison flex gperf)
-	for _COMMAND in "${_COMMANDS[@]}"; do
-	    if ! [ -x $(command -v "${_COMMAND}") ]; then
-		_OK=0
-		echo "Install programm ${_COMMAND}"
-	    fi
-	done
-	_INCLUDES=("/usr/include/ffi.h" "/usr/include/ssl/ssl.h")
-	for _INCLUDE in "${_INCLUDES[@]}"; do
-	    if ! [ -f "${_INCLUDE}" ]; then
-		_OK=0
-		echo "Install development package providing ${_INCLUDE}"
-	    fi
-	done
-	if [ $_OK != 1 ]; then
-	    echo "ABORTING"
-	    exit 1
-	fi
-	PACKAGES=()
+        TOOLS_MISSING=0
+        COMMANDS=(dfu-util bison flex gperf)
+        for COMMAND in "${COMMANDS[@]}"; do
+            if ! [ -x $(command -v "${COMMAND}") ]; then
+                TOOLS_MISSING=1
+                echo "Install programm ${COMMAND}"
+            fi
+        done
+        INCLUDES=("/usr/include/ffi.h" "/usr/include/ssl/ssl.h")
+        for INCLUDE in "${INCLUDES[@]}"; do
+            if ! [ -f "${INCLUDE}" ]; then
+                TOOLS_MISSING=1
+                echo "Install development package providing ${INCLUDE}"
+            fi
+        done
+        if [ $TOOLS_MISSING != 0 ]; then
+            echo "ABORTING"
+            exit 1
+        fi
+        PACKAGES=()
         ;;
 
 esac
