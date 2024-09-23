@@ -20,10 +20,10 @@
 
 #include "Countable.h"
 
-template <typename T, int rawSize> class FILO : public Countable<T>
+template <typename T, unsigned rawSize> class FILO : public Countable<T>
 {
 public:
-	const int size; // speculative feature, in case it's needed
+	const unsigned size; // speculative feature, in case it's needed
 
 	FILO();
 
@@ -59,18 +59,18 @@ public:
 	}
 
 private:
-	volatile int numberOfElements;
-	int nextIn;
-	int nextOut;
+	unsigned numberOfElements;
+	unsigned nextIn;
+	unsigned nextOut;
 	T raw[rawSize];
 };
 
-template <typename T, int rawSize> FILO<T, rawSize>::FILO() : size(rawSize)
+template <typename T, unsigned rawSize> FILO<T, rawSize>::FILO() : size(rawSize)
 {
 	flush();
 }
 
-template <typename T, int rawSize> bool FILO<T, rawSize>::push(T element)
+template <typename T, unsigned rawSize> bool FILO<T, rawSize>::push(T element)
 {
 	if(count() >= rawSize) {
 		return false;
@@ -79,7 +79,7 @@ template <typename T, int rawSize> bool FILO<T, rawSize>::push(T element)
 	return true;
 }
 
-template <typename T, int rawSize> T FILO<T, rawSize>::pop()
+template <typename T, unsigned rawSize> T FILO<T, rawSize>::pop()
 {
 	if(numberOfElements > 0) {
 		return raw[--numberOfElements];
@@ -87,7 +87,7 @@ template <typename T, int rawSize> T FILO<T, rawSize>::pop()
 	return raw[0];
 }
 
-template <typename T, int rawSize> T FILO<T, rawSize>::peek() const
+template <typename T, unsigned rawSize> T FILO<T, rawSize>::peek() const
 {
 	if(numberOfElements > 0) {
 		return raw[numberOfElements - 1];
@@ -95,7 +95,7 @@ template <typename T, int rawSize> T FILO<T, rawSize>::peek() const
 	return raw[0];
 }
 
-template <typename T, int rawSize> void FILO<T, rawSize>::flush()
+template <typename T, unsigned rawSize> void FILO<T, rawSize>::flush()
 {
 	nextIn = nextOut = numberOfElements = 0;
 }
