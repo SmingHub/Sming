@@ -33,7 +33,6 @@ case $DIST in
 
     *)
         check_for_installed_tools dfu-util bison flex gperf
-
         check_for_installed_files "/usr/include/ffi.h" "/usr/include/ssl/ssl.h"
         PACKAGES=()
         ;;
