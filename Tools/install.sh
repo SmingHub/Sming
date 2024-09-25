@@ -84,6 +84,47 @@ source "$(dirname "${BASH_SOURCE[0]}")/export.sh"
 
 export WGET="wget --no-verbose"
 
+# Scripts for checking for required resources
+
+abort () {
+    echo "ABORTING"
+    if [ $sourced = 1 ]; then
+        return 1
+    else
+        exit 1
+    fi
+}
+
+check_for_installed_tools() {
+    REQUIRED_TOOLS=( "$@" )
+    echo -e "Checking for installed tools.\nRequired tools: ${REQUIRED_TOOLS[*]}"
+    TOOLS_MISSING=0
+    for TOOL in "${REQUIRED_TOOLS[@]}"; do
+        if ! command -v "$TOOL" > /dev/null ; then
+            TOOLS_MISSING=1
+            echo "Install required tool $TOOL"
+        fi
+    done
+    if [ $TOOLS_MISSING != 0 ]; then
+        abort
+    fi
+}
+
+check_for_installed_files() {
+    REQUIRED_FILES=( "$@" )
+    echo -e "Checking for installed files.\nRequired files: ${REQUIRED_FILES[*]}"
+    FILES_MISSING=0
+    for FILE in "${REQUIRED_FILES[@]}"; do
+        if ! [ -f "$FILE" ]; then
+            FILES_MISSING=1
+            echo "Install required FILE $FILE"
+        fi
+    done
+    if [ $FILES_MISSING != 0 ]; then
+        abort
+    fi
+}
+
 # Installers put downloaded archives here
 DOWNLOADS="downloads"
 mkdir -p $DOWNLOADS
@@ -100,11 +141,18 @@ elif [ -n "$(command -v dnf)" ]; then
     PKG_INSTALL="sudo dnf install -y"
 else
     echo "Unsupported distribution"
-    if [ $sourced = 1 ]; then
-        return 1
-    else
-        exit 1
-    fi
+    check_for_installed_tools \
+            ccache \
+            cmake \
+            curl \
+            git \
+            make \
+            ninja \
+            unzip \
+            g++ \
+            python3 \
+            pip3 \
+            wget
 fi
 
 # Common install
@@ -183,8 +231,10 @@ case $DIST in
 
 esac
 
+if [ "$(/usr/bin/python -c 'import sys;print(sys.version_info[0])')" != 3 ]; then
 if [ "$DIST" != "darwin" ]; then
     sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 100
+fi
 fi
 
 set -e
