@@ -18,7 +18,7 @@ The procedure has therefore been revised to use installation scripts instead of 
 The initial installation step to bootstrap the installation remains unchanged: The ``choco-install.cmd`` script is fetched from the Sming ``develop`` branch and executed.
 The custom choco scripts have been replaced with scripted logic.
 
-Installation of toolchains is done as a separate step as it does not require administrative priviledges.
+Installation of toolchains is done as a separate step as it does not require administrative privileges.
 
 The documentation at https://sming.readthedocs.io/en/latest/getting-started/windows/index.html has been updated to reflect these changes.
 
