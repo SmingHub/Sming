@@ -33,6 +33,25 @@
 
 extern const uint8_t esp8266_pinmuxOffset[];
 
+static const uint8_t gpioPinFunc[]{
+	FUNC_GPIO0,  //
+	FUNC_GPIO1,  //
+	FUNC_GPIO2,  //
+	FUNC_GPIO3,  //
+	FUNC_GPIO4,  //
+	FUNC_GPIO5,  //
+	FUNC_GPIO6,  //
+	FUNC_GPIO7,  //
+	FUNC_GPIO8,  //
+	FUNC_GPIO9,  //
+	FUNC_GPIO10, //
+	FUNC_GPIO11, //
+	FUNC_GPIO12, //
+	FUNC_GPIO13, //
+	FUNC_GPIO14, //
+	FUNC_GPIO15, //
+};
+
 HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t noOfPins) : channel_count(noOfPins)
 {
 	if(noOfPins == 0) {
@@ -49,7 +68,7 @@ HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t noOfPins) : channel_count(noOfPi
 			continue;
 		}
 		ioInfo[pinCount][0] = PERIPHS_IO_MUX + esp8266_pinmuxOffset[pin];
-		ioInfo[pinCount][1] = esp8266_gpioToFn[pin];
+		ioInfo[pinCount][1] = gpioPinFunc[pin];
 		ioInfo[pinCount][2] = pin;
 		pwmDutyInit[pinCount] = 0; // Start with zero output
 		channels[pinCount] = pin;
