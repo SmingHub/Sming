@@ -254,7 +254,7 @@ fi
 
 PYTHON_INSTALL_CMD="python3 -m pip install --upgrade pip protobuf -r \"$SMING_HOME/../Tools/requirements.txt\""
 
-eval "$PYTHON_INSTALL_CMD" || install_venv "$PYTHON_INSTALL_CMD"  
+eval "$PYTHON_INSTALL_CMD" || $PKG_INSTALL python3-venv && install_venv "$PYTHON_INSTALL_CMD"  
 
 
 install() {
