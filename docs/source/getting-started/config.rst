@@ -15,6 +15,14 @@ For Linux and WSL2, append values to your ``~/.bashrc`` file::
 
    # All architectures
    export SMING_HOME=/opt/sming/Sming
+   
+
+If you want to change the location where the toolchain will be downloaded and installed you can append the values below::
+	
+   # Specifies a common toolchains directory
+   export SMING_TOOLCHAINS=/opt
+   
+If you don't specify :envvar:`SMING_TOOLCHAINS` then you should set the path for the toolchains that you have installed. As given below::   
 
    # Esp8266
    export ESP_HOME=/opt/esp-quick-toolchain
