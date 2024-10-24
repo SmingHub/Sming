@@ -39,7 +39,7 @@ fi
 export PYTHON=${PYTHON:=$(which python3)}
 
 # Toolchain paths
-export SMING_TOOLCHAINS=${ESP_HOME:=/opt}
+export SMING_TOOLCHAINS=${SMING_TOOLCHAINS:=/opt}
 
 # Esp8266
 export ESP_HOME=${ESP_HOME:=$SMING_TOOLCHAINS/esp-quick-toolchain}
