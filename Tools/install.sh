@@ -252,7 +252,7 @@ if [ -f "/usr/bin/clang-format-8" ]; then
     sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-8 100
 fi
 
-PYTHON_INSTALL_CMD="python3 -m pip install --upgrade pip protobuf -r \"$SMING_HOME/../Tools/requirements.txt\""
+PYTHON_INSTALL_CMD="python3 -m pip install --upgrade pip -r \"$SMING_HOME/../Tools/requirements.txt\""
 
 eval "$PYTHON_INSTALL_CMD" || $PKG_INSTALL python3-venv && install_venv "$PYTHON_INSTALL_CMD"  
 
