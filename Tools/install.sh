@@ -125,6 +125,15 @@ check_for_installed_files() {
     fi
 }
 
+install_venv() {
+	echo 
+	echo "!!! Trying to install Python Virtual Environment !!!"
+	mkdir -p ~/.venvs/
+	python3 -m venv ~/.venvs/Sming
+	source ~/.venvs/Sming/bin/activate
+	eval "$1"
+}
+
 # Installers put downloaded archives here
 DOWNLOADS="downloads"
 mkdir -p $DOWNLOADS
@@ -243,7 +252,9 @@ if [ -f "/usr/bin/clang-format-8" ]; then
     sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-8 100
 fi
 
-python3 -m pip install --upgrade pip protobuf -r "$SMING_HOME/../Tools/requirements.txt"
+PYTHON_INSTALL_CMD="python3 -m pip install --upgrade pip -r \"$SMING_HOME/../Tools/requirements.txt\""
+
+eval "$PYTHON_INSTALL_CMD" || $PKG_INSTALL python3-venv && install_venv "$PYTHON_INSTALL_CMD"  
 
 
 install() {

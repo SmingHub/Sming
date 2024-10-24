@@ -30,6 +30,12 @@ if [ -z "$SMING_HOME" ]; then
 fi
 
 # Common
+
+# Python Virtual Environment
+if [ -f ~/.venvs/Sming/bin/activate ]; then
+	source ~/.venvs/Sming/bin/activate
+fi
+
 export PYTHON=${PYTHON:=$(which python3)}
 
 # Esp8266
