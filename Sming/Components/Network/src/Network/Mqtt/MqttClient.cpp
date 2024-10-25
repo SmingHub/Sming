@@ -206,7 +206,7 @@ bool MqttClient::connect(const Url& url, const String& clientName)
 		return false;
 	}
   if(clientName==""){
-    debug_e("no client name configured");
+    debug_e("clientName cannot be empty");
     return false;
   }
     
