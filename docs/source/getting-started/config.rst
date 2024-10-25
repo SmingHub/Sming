@@ -11,11 +11,21 @@ and integrated development environments (IDEs) work correctly.
 
 You can find a list of these in :source:`Tools/export.sh`.
 
-For Linux and WSL2, append values to your ``~/.bashrc`` file::
+For Linux and WSL2, append :envvar:`SMING_HOME` to your ``~/.bashrc`` file::
 
    # All architectures
    export SMING_HOME=/opt/sming/Sming
+   
+:envvar:`SMING_HOME` is the only mandatory environmental variable.
 
+If you want to change the location where the toolchain will be downloaded and installed you can append the values below::
+	
+   # Specifies a common toolchains directory
+   export SMING_TOOLCHAINS=/opt
+   
+The :envvar:`SMING_TOOLCHAINS` is optional. As are the ones below. You can append them to your ``~/.bashrc`` file only
+if you need to change the location of the installed toolchains::
+  
    # Esp8266
    export ESP_HOME=/opt/esp-quick-toolchain
 
