@@ -38,15 +38,18 @@ fi
 
 export PYTHON=${PYTHON:=$(which python3)}
 
+# Toolchain paths
+export SMING_TOOLCHAINS=${SMING_TOOLCHAINS:=/opt}
+
 # Esp8266
-export ESP_HOME=${ESP_HOME:=/opt/esp-quick-toolchain}
+export ESP_HOME=${ESP_HOME:=$SMING_TOOLCHAINS/esp-quick-toolchain}
 
 # Esp32
-export IDF_PATH=${IDF_PATH:=/opt/esp-idf}
-export IDF_TOOLS_PATH=${IDF_TOOLS_PATH:=/opt/esp32}
+export IDF_PATH=${IDF_PATH:=$SMING_TOOLCHAINS/esp-idf}
+export IDF_TOOLS_PATH=${IDF_TOOLS_PATH:=$SMING_TOOLCHAINS/esp32}
 
 # Rp2040
-export PICO_TOOLCHAIN_PATH=${PICO_TOOLCHAIN_PATH:=/opt/rp2040}
+export PICO_TOOLCHAIN_PATH=${PICO_TOOLCHAIN_PATH:=$SMING_TOOLCHAINS/rp2040}
 
 # Provide non-apple CLANG (e.g. for rbpf library)
 if [ -n "$GITHUB_ACTIONS" ] && [ "$(uname)" = "Darwin" ]; then
