@@ -205,11 +205,10 @@ bool MqttClient::connect(const Url& url, const String& clientName)
 		debug_e("Only mqtt and mqtts protocols are allowed");
 		return false;
 	}
-  if(clientName==""){
-    debug_e("clientName cannot be empty");
-    return false;
-  }
-    
+	if(clientName == "") {
+		debug_e("clientName cannot be empty");
+		return false;
+	}
 
 	if(getConnectionState() != eTCS_Ready) {
 		close();
