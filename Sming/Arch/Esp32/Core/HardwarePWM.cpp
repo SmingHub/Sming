@@ -223,6 +223,11 @@ uint32_t HardwarePWM::getDutyChan(uint8_t chan)
 	return (chan == PWM_BAD_CHANNEL) ? 0 : ledc_get_duty(pinToGroup(chan), pinToChannel(chan));
 }
 
+uint32_t HardwarePWM::getMaxDuty()
+{
+	return maxduty;
+}
+
 bool HardwarePWM::setDutyChan(uint8_t chan, uint32_t duty, bool update)
 {
 	if(chan == PWM_BAD_CHANNEL) {

@@ -116,6 +116,11 @@ uint32 HardwarePWM::getPeriod()
 	return pwm_get_period();
 }
 
+uint32_t HardwarePWM::getMaxDuty()
+{
+	return maxduty;
+}
+
 /* Function Name: setPeriod
  * Description: This function is used to set Period of PWM.
  *				Period / frequency will remain same for all pins.

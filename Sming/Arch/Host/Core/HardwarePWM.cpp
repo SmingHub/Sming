@@ -46,6 +46,11 @@ bool HardwarePWM::setDutyChan(uint8_t chan, uint32_t duty, bool update)
 	return false;
 }
 
+uint32_t HardwarePWM::getMaxDuty()
+{
+	return 0;
+}
+
 uint32_t HardwarePWM::getPeriod()
 {
 	return 0;
