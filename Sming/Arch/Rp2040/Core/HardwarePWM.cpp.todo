@@ -127,6 +127,10 @@ void HardwarePWM::setPeriod(uint32 period)
 	update();
 }
 
+uint32_t getMaxDuty()
+{
+	
+}
 /* Function Name: update
  * Description: This function is used to actually update the PWM.
  */

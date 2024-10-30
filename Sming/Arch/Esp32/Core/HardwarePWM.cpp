@@ -140,11 +140,13 @@ uint32_t maxDuty(ledc_timer_bit_t bits)
 
 HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_of_pins)
 {
-	debug_d("starting HardwarePWM init");
-	periph_module_enable(PERIPH_LEDC_MODULE);
-	if((no_of_pins == 0) || (no_of_pins > SOC_LEDC_CHANNEL_NUM)) {
+	assert(no_of_pins <= SOC_LEDC_CHANNEL_NUM);
+
+	if(no_of_pins == 0) {
 		return;
 	}
+
+	periph_module_enable(PERIPH_LEDC_MODULE);
 
 	for(uint8_t i = 0; i < no_of_pins; i++) {
 		channels[i] = pins[i];
@@ -221,6 +223,11 @@ uint32_t HardwarePWM::getDutyChan(uint8_t chan)
 {
 	// esp32 defines the frequency / period per timer
 	return (chan == PWM_BAD_CHANNEL) ? 0 : ledc_get_duty(pinToGroup(chan), pinToChannel(chan));
+}
+
+uint32_t HardwarePWM::getMaxDuty()
+{
+	return maxduty;
 }
 
 bool HardwarePWM::setDutyChan(uint8_t chan, uint32_t duty, bool update)

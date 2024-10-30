@@ -51,6 +51,11 @@ uint32_t HardwarePWM::getPeriod()
 	return 0;
 }
 
+uint32_t HardwarePWM::getMaxDuty()
+{
+	return 0;
+}
+
 void HardwarePWM::setPeriod(uint32_t period)
 {
 }

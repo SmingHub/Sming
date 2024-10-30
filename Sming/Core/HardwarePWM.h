@@ -113,10 +113,7 @@ public:
      *  @retval uint32_t Maximum permissible duty cycle
      *  @note   Attempt to set duty of a pin above this value will fail
      */
-	uint32_t getMaxDuty()
-	{
-		return maxduty;
-	}
+	uint32_t getMaxDuty();
 
 	/** @brief  This function is used to actually update the PWM.
 	 */
