@@ -125,7 +125,7 @@ uint32_t HardwarePWM::getPeriod()
 	return pwm_get_period();
 }
 
-uint32_t getMaxDuty()
+uint32_t HardwarePWM::getMaxDuty()
 {
 	return maxduty;
 }
