@@ -25,6 +25,8 @@ uint8_t pins[]
 {
 #if defined(ARCH_ESP32)
 	3, 4, 5, 18, 19, 4,
+#elif defined(ARCH_RP2040)
+	2,
 #else
 	2, 4, 5, 0, 15, 13, 12, 14,
 #endif
