@@ -423,7 +423,7 @@ void StationImpl::staticScanCompleted(wifi_event_sta_scan_done_t* event, uint8_t
 			ESP_ERROR_CHECK(esp_wifi_scan_get_ap_records(&number, ap_info));
 
 			// TODO: Handle hidden APs
-			for(unsigned i = 0; (i < event->number); i++) {
+			for(unsigned i = 0; (i < number); i++) {
 				list.addElement(new BssInfoImpl(&ap_info[i]));
 			}
 			station.scanCompletedCallback(true, list);
