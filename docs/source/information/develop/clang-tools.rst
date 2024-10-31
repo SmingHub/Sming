@@ -15,16 +15,25 @@ Note that *clang-format* is part of the main **Clang** project, whilst *clang-ti
 found in **clang-tools-extra**.
 
 
-Installation
+clang-format
 ------------
 
-In Ubuntu you should be able to install them using the following command::
+Installation
+~~~~~~~~~~~~
 
-   sudo apt-get install clang-format clang-tidy
+Sming requires version 8 which is generally no longer available in the standard repositories for recent GNU/Linux distributions.
+You can find standalone builds at https://github.com/muttleyxd/clang-tools-static-binaries/releases.
 
-See the the `download <http://releases.llvm.org/download.html>`__ page
-of the Clang project for installation instructions for other operating
-systems.
+For example:
+
+```
+export CLANG_FORMAT=/opt/clang-format-8
+wget https://github.com/muttleyxd/clang-tools-static-binaries/releases/download/master-32d3ac78/clang-format-8_linux-amd64 -O /opt/clang-format-8
+chmod +x $CLANG_FORMAT
+```
+
+You should persist the definition for :envvar:`CLANG_FORMAT` as Sming uses this when running the ``make cs`` commands (see below).
+
 
 .. important::
 
@@ -36,10 +45,6 @@ systems.
 
    You should install the same version on your development computer.
 
-
-
-clang-format
-------------
 
 Rules
 ~~~~~
@@ -56,6 +61,8 @@ IDE integration
 
 There are multiple existing integrations for IDEs. You can find details
 in the `ClangFormat documentation <https://clang.llvm.org/docs/ClangFormat.html>`__.
+
+For VS Code/Codium install the **clang-format** extension and configure the path with the location of the **clang-format-8** executable.
 
 For the Eclipse IDE we recommend installing
 the `CppStyle plugin <https://github.com/wangzw/CppStyle>`__. You can
@@ -114,11 +121,22 @@ C, C++ or header file or a selection in it and run the ``Format`` command
 clang-tidy
 ----------
 
-Configuration
-~~~~~~~~~~~~~
+Installation
+~~~~~~~~~~~~
 
 No specific version is required but generally you should aim to use the most recent version
 available in your distribution. Version 17.0.6 was used at time of writing these notes.
+
+In Ubuntu you should be able install using the following command::
+
+   sudo apt-get install clang-tidy
+
+See the the `download <http://releases.llvm.org/download.html>`__ page
+of the Clang project for installation instructions for other operating
+systems.
+
+Configuration
+~~~~~~~~~~~~~
 
 The default tool configuration is defined in the
 `.clang-tidy <https://github.com/SmingHub/Sming/blob/develop/.clang-tidy>`__
