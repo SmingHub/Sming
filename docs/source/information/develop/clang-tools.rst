@@ -62,6 +62,8 @@ IDE integration
 There are multiple existing integrations for IDEs. You can find details
 in the `ClangFormat documentation <https://clang.llvm.org/docs/ClangFormat.html>`__.
 
+For VS Code/Codium install the **clang-format** extension and configure the path with the location of the **clang-format-8** executable.
+
 For the Eclipse IDE we recommend installing
 the `CppStyle plugin <https://github.com/wangzw/CppStyle>`__. You can
 configure your IDE to auto-format the code on "Save" using the
