@@ -7,7 +7,7 @@
  * pwm.h
  *
  ****/
-#include <soc/soc_caps.h>
+
 
 #pragma once
 
