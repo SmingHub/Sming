@@ -18,14 +18,18 @@
 #include <SmingCore.h>
 #include <HardwarePWM.h>
 
-#define LED_PIN 2
-
 namespace
 {
 // List of pins that you want to connect to pwm
-uint8_t pins[]{
-	LED_PIN, 4, 5, 0, 15, 13, 12, 14,
+uint8_t pins[]
+{
+#if defined(ARCH_ESP32)
+	3, 4, 5, 18, 19, 4,
+#else
+	2, 4, 5, 0, 15, 13, 12, 14,
+#endif
 };
+
 HardwarePWM HW_pwm(pins, ARRAY_SIZE(pins));
 
 SimpleTimer procTimer;
@@ -53,7 +57,7 @@ void doPWM()
 		}
 	}
 
-	HW_pwm.analogWrite(LED_PIN, duty);
+	HW_pwm.analogWrite(pins[0], duty);
 }
 
 } // namespace
@@ -69,6 +73,8 @@ void init()
 	WifiAccessPoint.enable(false);
 #endif
 
+	Serial << "HW PWM maxDuty = " << maxDuty << endl;
+
 	// Setting PWM values on 8 different pins
 	HW_pwm.analogWrite(4, maxDuty);
 	HW_pwm.analogWrite(5, maxDuty / 2);
@@ -79,7 +85,7 @@ void init()
 	HW_pwm.analogWrite(12, 2 * maxDuty / 3);
 	HW_pwm.analogWrite(14, maxDuty);
 
-	Serial.println(_F("PWM output set on all 8 Pins. Kindly check...\r\n"
-					  "Now LED_PIN will go from 0 to VCC to 0 in cycles."));
+	Serial << _F("PWM output set on all ") << ARRAY_SIZE(pins) << _F(" Pins. Kindly check...") << endl
+		   << "Now LED_PIN will go from 0 to VCC to 0 in cycles." << endl;
 	procTimer.initializeMs<100>(doPWM).start();
 }
