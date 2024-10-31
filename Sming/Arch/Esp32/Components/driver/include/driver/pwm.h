@@ -6,10 +6,10 @@
  *  
  * pwm.h  
  *  
- ****/  
+ ****/
 
-#pragma once  
+#pragma once
 
-#include <soc/soc_caps.h>  
+#include <soc/soc_caps.h>
 
-#define PWM_CHANNEL_NUM_MAX SOC_LEDC_CHANNEL_NUM  
+#define PWM_CHANNEL_NUM_MAX SOC_LEDC_CHANNEL_NUM
