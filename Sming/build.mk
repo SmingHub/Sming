@@ -140,7 +140,7 @@ CMAKE ?= cmake
 
 # clang-format command
 DEBUG_VARS	+= CLANG_FORMAT
-CLANG_FORMAT ?= clang-format
+CLANG_FORMAT ?= clang-format-8
 
 # more tools
 DEBUG_VARS += AWK
