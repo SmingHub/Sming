@@ -142,19 +142,10 @@ HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_o
 {
 	assert(no_of_pins > 0 && no_of_pins <= SOC_LEDC_CHANNEL_NUM);
 	no_of_pins = std::min(uint8_t(SOC_LEDC_CHANNEL_NUM), no_of_pins);
-	debug_i("initializing PERIPH_LEDC_MODULE");
+
 	periph_module_enable(PERIPH_LEDC_MODULE);
 
 	for(uint8_t i = 0; i < no_of_pins; i++) {
-//make sure we don't try to use pins unavailable for the SoC
-#if defined(__riscv)
-		//esp32c3
-		assert((pins[i] >= 0 && pins[i] <= 9) || (pins[i] >= 18 && pins[i] <= 21));
-#elif
-		//esp32
-		if((pins[i] >= 0 && pins[i] <= 19) || (pins[i] >= 22 && pins[i] <= 28) || (pins[i] >= 32 && pins[i] <= 39))
-			;
-#endif
 		channels[i] = pins[i];
 
 		/* 
