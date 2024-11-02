@@ -146,15 +146,9 @@ HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_o
 	periph_module_enable(PERIPH_LEDC_MODULE);
 
 	for(uint8_t i = 0; i < no_of_pins; i++) {
-//make sure we don't try to use pins unavailable for the SoC
-#if defined(__riscv)
-		//esp32c3
-		assert((pins[i] >= 0 && pins[i] <= 9) || (pins[i] >= 18 && pins[i] <= 21));
-#elif
-		//esp32
-		if((pins[i] >= 0 && pins[i] <= 19) || (pins[i] >= 22 && pins[i] <= 28) || (pins[i] >= 32 && pins[i] <= 39))
-			;
-#endif
+	//make sure we don't try to use pins unavailable for the SoC
+	assert(SOC_GPIO_VALID_OUTPUT_GPIO_MASK & (1U<<pins[i]));
+		debug_i("configuring pin %i", pins[i]);
 		channels[i] = pins[i];
 
 		/* 
