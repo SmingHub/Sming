@@ -146,8 +146,8 @@ HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_o
 	periph_module_enable(PERIPH_LEDC_MODULE);
 
 	for(uint8_t i = 0; i < no_of_pins; i++) {
-	//make sure we don't try to use pins unavailable for the SoC
-	assert(SOC_GPIO_VALID_OUTPUT_GPIO_MASK & (1U<<pins[i]));
+		//make sure we don't try to use pins unavailable for the SoC
+		assert(SOC_GPIO_VALID_OUTPUT_GPIO_MASK & (1U << pins[i]));
 		channels[i] = pins[i];
 
 		/* 
