@@ -21,18 +21,22 @@
 namespace
 {
 // List of pins that you want to connect to pwm
-uint8_t pins[]
+const uint8_t pins[]
 {
 #if defined(ARCH_ESP32)
 #define LED_PIN 3
 	LED_PIN, 4, 5, 18, 19, 4,
 #elif defined(ARCH_RP2040)
 #define LED_PIN PICO_DEFAULT_LED_PIN
-	LED_PIN
+	LED_PIN, 2, 3, 4, 5, 6, 7, 8,
 #else
 #define LED_PIN 2
 	LED_PIN, 4, 5, 0, 15, 13, 12, 14,
 #endif
+};
+
+const uint8_t defaultDutyPercent[]{
+	50, 95, 50, 85, 10, 30, 60, 80,
 };
 
 HardwarePWM pwm(pins, ARRAY_SIZE(pins));
@@ -76,21 +80,19 @@ void init()
 	WifiAccessPoint.enable(false);
 #endif
 
+	// Change PWM frequency if required: period is in microseconds
+	// pwm.setPeriod(100);
+
 	maxDuty = pwm.getMaxDuty();
 	auto period = pwm.getPeriod();
 	auto freq = pwm.getFrequency(LED_PIN);
 
 	Serial << _F("PWM period = ") << period << _F("us, freq = ") << freq << _F(", max. duty = ") << maxDuty << endl;
 
-	// Setting PWM values on 8 different pins
-	pwm.analogWrite(4, maxDuty);
-	pwm.analogWrite(5, maxDuty / 2);
-	pwm.analogWrite(0, maxDuty);
-	pwm.analogWrite(2, maxDuty / 2);
-	pwm.analogWrite(15, 0);
-	pwm.analogWrite(13, maxDuty / 3);
-	pwm.analogWrite(12, 2 * maxDuty / 3);
-	pwm.analogWrite(14, maxDuty);
+	// Set default PWM values
+	for(unsigned i = 0; i < ARRAY_SIZE(pins); ++i) {
+		pwm.analogWrite(pins[i], maxDuty * defaultDutyPercent[i] / 100);
+	}
 
 	Serial << _F("PWM output set on all ") << ARRAY_SIZE(pins) << _F(" Pins. Kindly check...") << endl
 		   << _F("Now LED (pin ") << LED_PIN << _F(") will go from 0 to VCC to 0 in cycles.") << endl;
