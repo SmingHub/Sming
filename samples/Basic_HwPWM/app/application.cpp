@@ -32,11 +32,11 @@ uint8_t pins[]
 #endif
 };
 
-HardwarePWM HW_pwm(pins, ARRAY_SIZE(pins));
+HardwarePWM pwm(pins, ARRAY_SIZE(pins));
 
 SimpleTimer procTimer;
 
-const int maxDuty = HW_pwm.getMaxDuty();
+const int maxDuty = pwm.getMaxDuty();
 
 void doPWM()
 {
@@ -59,7 +59,7 @@ void doPWM()
 		}
 	}
 
-	HW_pwm.analogWrite(pins[0], duty);
+	pwm.analogWrite(LED_PIN, duty);
 }
 
 } // namespace
@@ -75,17 +75,17 @@ void init()
 	WifiAccessPoint.enable(false);
 #endif
 
-	Serial << "HW PWM maxDuty = " << maxDuty << endl;
+	Serial << _F("PWM maxDuty = ") << maxDuty << endl;
 
 	// Setting PWM values on 8 different pins
-	HW_pwm.analogWrite(4, maxDuty);
-	HW_pwm.analogWrite(5, maxDuty / 2);
-	HW_pwm.analogWrite(0, maxDuty);
-	HW_pwm.analogWrite(2, maxDuty / 2);
-	HW_pwm.analogWrite(15, 0);
-	HW_pwm.analogWrite(13, maxDuty / 3);
-	HW_pwm.analogWrite(12, 2 * maxDuty / 3);
-	HW_pwm.analogWrite(14, maxDuty);
+	pwm.analogWrite(4, maxDuty);
+	pwm.analogWrite(5, maxDuty / 2);
+	pwm.analogWrite(0, maxDuty);
+	pwm.analogWrite(2, maxDuty / 2);
+	pwm.analogWrite(15, 0);
+	pwm.analogWrite(13, maxDuty / 3);
+	pwm.analogWrite(12, 2 * maxDuty / 3);
+	pwm.analogWrite(14, maxDuty);
 
 	Serial << _F("PWM output set on all ") << ARRAY_SIZE(pins) << _F(" Pins. Kindly check...") << endl
 		   << "Now LED_PIN will go from 0 to VCC to 0 in cycles." << endl;
