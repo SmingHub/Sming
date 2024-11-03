@@ -24,11 +24,14 @@ namespace
 uint8_t pins[]
 {
 #if defined(ARCH_ESP32)
-	3, 4, 5, 18, 19, 4,
+#define LED_PIN 3
+	LED_PIN, 4, 5, 18, 19, 4,
 #elif defined(ARCH_RP2040)
-	2,
+#define LED_PIN PICO_DEFAULT_LED_PIN
+	LED_PIN
 #else
-	2, 4, 5, 0, 15, 13, 12, 14,
+#define LED_PIN 2
+	LED_PIN, 4, 5, 0, 15, 13, 12, 14,
 #endif
 };
 
@@ -88,6 +91,6 @@ void init()
 	pwm.analogWrite(14, maxDuty);
 
 	Serial << _F("PWM output set on all ") << ARRAY_SIZE(pins) << _F(" Pins. Kindly check...") << endl
-		   << "Now LED_PIN will go from 0 to VCC to 0 in cycles." << endl;
+		   << _F("Now LED_PIN") << LED_PIN << _F(" will go from 0 to VCC to 0 in cycles.") << endl;
 	procTimer.initializeMs<100>(doPWM).start();
 }
