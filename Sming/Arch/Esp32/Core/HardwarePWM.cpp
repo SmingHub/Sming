@@ -206,16 +206,6 @@ HardwarePWM::~HardwarePWM()
 	}
 }
 
-uint8_t HardwarePWM::getChannel(uint8_t pin)
-{
-	for(uint8_t i = 0; i < channel_count; i++) {
-		if(channels[i] == pin) {
-			return i;
-		}
-	}
-	return -1;
-}
-
 uint32_t HardwarePWM::getDutyChan(uint8_t chan)
 {
 	// esp32 defines the frequency / period per timer

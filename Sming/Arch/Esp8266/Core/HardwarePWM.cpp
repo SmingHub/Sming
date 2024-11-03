@@ -85,18 +85,6 @@ HardwarePWM::~HardwarePWM()
 	// There is no function in the SDK to stop PWM output, yet.
 }
 
-uint8_t HardwarePWM::getChannel(uint8_t pin)
-{
-	for(uint8_t i = 0; i < channel_count; i++) {
-		if(channels[i] == pin) {
-			return i;
-		}
-	}
-
-	debug_d("getChannel: can't find pin %d", pin);
-	return PWM_BAD_CHANNEL;
-}
-
 uint32_t HardwarePWM::getDutyChan(uint8_t chan)
 {
 	return (chan == PWM_BAD_CHANNEL) ? 0 : pwm_get_duty(chan);

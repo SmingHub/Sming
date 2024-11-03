@@ -107,7 +107,7 @@ public:
      *  @param  pin GPIO to interrogate
      *  @retval uint8_t Channel of GPIO
      */
-	uint8_t getChannel(uint8_t pin);
+	uint8_t getChannel(uint8_t pin) const;
 
 	/** @brief  Get the maximum duty cycle value
      *  @retval uint32_t Maximum permissible duty cycle

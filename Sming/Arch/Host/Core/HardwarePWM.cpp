@@ -31,11 +31,6 @@ HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_o
 
 HardwarePWM::~HardwarePWM() = default;
 
-uint8_t HardwarePWM::getChannel(uint8_t pin)
-{
-	return PWM_BAD_CHANNEL;
-}
-
 uint32_t HardwarePWM::getDutyChan(uint8_t chan)
 {
 	return 0;
