@@ -36,17 +36,16 @@ uint8_t pins[]
 };
 
 HardwarePWM pwm(pins, ARRAY_SIZE(pins));
+uint32_t maxDuty;
 
 SimpleTimer procTimer;
-
-const int maxDuty = pwm.getMaxDuty();
 
 void doPWM()
 {
 	static bool countUp = true;
-	static int duty;
+	static uint32_t duty;
 
-	const int increment = maxDuty / 50;
+	const uint32_t increment = maxDuty / 50;
 
 	if(countUp) {
 		duty += increment;
@@ -54,12 +53,11 @@ void doPWM()
 			duty = maxDuty;
 			countUp = false;
 		}
+	} else if(duty <= increment) {
+		duty = 0;
+		countUp = true;
 	} else {
 		duty -= increment;
-		if(duty <= 0) {
-			duty = 0;
-			countUp = true;
-		}
 	}
 
 	pwm.analogWrite(LED_PIN, duty);
@@ -78,7 +76,11 @@ void init()
 	WifiAccessPoint.enable(false);
 #endif
 
-	Serial << _F("PWM maxDuty = ") << maxDuty << endl;
+	maxDuty = pwm.getMaxDuty();
+	auto period = pwm.getPeriod();
+	auto freq = pwm.getFrequency(LED_PIN);
+
+	Serial << _F("PWM period = ") << period << _F("us, freq = ") << freq << _F(", max. duty = ") << maxDuty << endl;
 
 	// Setting PWM values on 8 different pins
 	pwm.analogWrite(4, maxDuty);
@@ -91,6 +93,6 @@ void init()
 	pwm.analogWrite(14, maxDuty);
 
 	Serial << _F("PWM output set on all ") << ARRAY_SIZE(pins) << _F(" Pins. Kindly check...") << endl
-		   << _F("Now LED_PIN") << LED_PIN << _F(" will go from 0 to VCC to 0 in cycles.") << endl;
+		   << _F("Now LED (pin ") << LED_PIN << _F(") will go from 0 to VCC to 0 in cycles.") << endl;
 	procTimer.initializeMs<100>(doPWM).start();
 }
