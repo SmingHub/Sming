@@ -31,7 +31,7 @@
 
 #define PWM_FREQ_DEFAULT 1000
 
-HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t noOfPins) : channel_count(noOfPins)
+HardwarePWM::HardwarePWM(const uint8_t* pins, uint8_t noOfPins) : channel_count(noOfPins)
 {
 	assert(noOfPins > 0 && noOfPins <= PWM_CHANNEL_NUM_MAX);
 	noOfPins = std::min(uint8_t(PWM_CHANNEL_NUM_MAX), noOfPins);
@@ -53,7 +53,7 @@ HardwarePWM::~HardwarePWM()
 	}
 }
 
-uint32_t HardwarePWM::getDutyChan(uint8_t chan)
+uint32_t HardwarePWM::getDutyChan(uint8_t chan) const
 {
 	if(chan >= channel_count) {
 		return 0;
@@ -76,7 +76,7 @@ bool HardwarePWM::setDutyChan(uint8_t chan, uint32_t duty, bool)
 	return true;
 }
 
-uint32_t HardwarePWM::getPeriod()
+uint32_t HardwarePWM::getPeriod() const
 {
 	// All channels configured with same clock
 	auto slice_num = pwm_gpio_to_slice_num(channels[0]);
@@ -126,7 +126,7 @@ void HardwarePWM::update()
 	// Not implemented
 }
 
-uint32_t HardwarePWM::getFrequency(uint8_t pin)
+uint32_t HardwarePWM::getFrequency(uint8_t pin) const
 {
 	auto slice_num = pwm_gpio_to_slice_num(pin);
 	auto top = pwm_hw->slice[slice_num].top;

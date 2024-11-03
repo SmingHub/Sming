@@ -63,7 +63,7 @@ public:
      *  @param  pins Pointer to array of pins to control
      *  @param  no_of_pins Quantity of elements in array of pins
      */
-	HardwarePWM(uint8_t* pins, uint8_t no_of_pins);
+	HardwarePWM(const uint8_t* pins, uint8_t no_of_pins);
 
 	virtual ~HardwarePWM();
 
@@ -104,7 +104,7 @@ public:
 	 *  @param  chan Channel to get duty cycle for
 	 *  @retval uint32_t Value of PWM duty cycle in timer ticks
 	 */
-	uint32_t getDutyChan(uint8_t chan);
+	uint32_t getDutyChan(uint8_t chan) const;
 
 	/** @brief  Get PWM duty cycle
      *  @param  pin GPIO to get duty cycle for
@@ -125,7 +125,7 @@ public:
 	/** @brief  Get PWM period
      *  @retval uint32_t Value of PWM period in microseconds
      */
-	uint32_t getPeriod();
+	uint32_t getPeriod() const;
 
 	/** @brief  Get channel number for a pin
      *  @param  pin GPIO to interrogate
@@ -137,7 +137,7 @@ public:
      *  @retval uint32_t Maximum permissible duty cycle in timer ticks
      *  @note   Attempt to set duty of a pin above this value will fail
      */
-	uint32_t getMaxDuty()
+	uint32_t getMaxDuty() const
 	{
 		return maxduty;
 	}
@@ -150,7 +150,7 @@ public:
 	 *  @param pin GPIO to get frequency for
 	 *  @retval uint32_t Value of Frequency 
 	*/
-	uint32_t getFrequency(uint8_t pin);
+	uint32_t getFrequency(uint8_t pin) const;
 
 private:
 	uint8_t channel_count;
