@@ -140,11 +140,10 @@ uint32_t maxDuty(ledc_timer_bit_t bits)
 
 HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_of_pins)
 {
-	debug_d("starting HardwarePWM init");
+	assert(no_of_pins > 0 && no_of_pins <= SOC_LEDC_CHANNEL_NUM);
+	no_of_pins = std::min(uint8_t(SOC_LEDC_CHANNEL_NUM), no_of_pins);
+
 	periph_module_enable(PERIPH_LEDC_MODULE);
-	if((no_of_pins == 0) || (no_of_pins > SOC_LEDC_CHANNEL_NUM)) {
-		return;
-	}
 
 	for(uint8_t i = 0; i < no_of_pins; i++) {
 		channels[i] = pins[i];
