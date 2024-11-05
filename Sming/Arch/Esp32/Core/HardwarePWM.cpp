@@ -138,7 +138,7 @@ uint32_t maxDuty(ledc_timer_bit_t bits)
 
 } //namespace
 
-HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t no_of_pins) : channel_count(no_of_pins)
+HardwarePWM::HardwarePWM(const uint8_t* pins, uint8_t no_of_pins) : channel_count(no_of_pins)
 {
 	assert(no_of_pins > 0 && no_of_pins <= SOC_LEDC_CHANNEL_NUM);
 	no_of_pins = std::min(uint8_t(SOC_LEDC_CHANNEL_NUM), no_of_pins);
@@ -206,17 +206,7 @@ HardwarePWM::~HardwarePWM()
 	}
 }
 
-uint8_t HardwarePWM::getChannel(uint8_t pin)
-{
-	for(uint8_t i = 0; i < channel_count; i++) {
-		if(channels[i] == pin) {
-			return i;
-		}
-	}
-	return -1;
-}
-
-uint32_t HardwarePWM::getDutyChan(uint8_t chan)
+uint32_t HardwarePWM::getDutyChan(uint8_t chan) const
 {
 	// esp32 defines the frequency / period per timer
 	return (chan == PWM_BAD_CHANNEL) ? 0 : ledc_get_duty(pinToGroup(chan), pinToChannel(chan));
@@ -245,7 +235,7 @@ bool HardwarePWM::setDutyChan(uint8_t chan, uint32_t duty, bool update)
 	return false;
 }
 
-uint32_t HardwarePWM::getPeriod()
+uint32_t HardwarePWM::getPeriod() const
 {
 	// Sming does not know how to handle different frequencies for channels: this will require an extended interface.
 	// For now, just report the period for group 0 channel 0.
@@ -268,7 +258,7 @@ void HardwarePWM::update()
 	// ledc_update_duty();
 }
 
-uint32_t HardwarePWM::getFrequency(uint8_t pin)
+uint32_t HardwarePWM::getFrequency(uint8_t pin) const
 {
 	return ledc_get_freq(pinToGroup(pin), pinToTimer(pin));
 }

@@ -52,7 +52,7 @@ static const uint8_t gpioPinFunc[]{
 	FUNC_GPIO15, //
 };
 
-HardwarePWM::HardwarePWM(uint8_t* pins, uint8_t noOfPins) : channel_count(noOfPins)
+HardwarePWM::HardwarePWM(const uint8_t* pins, uint8_t noOfPins) : channel_count(noOfPins)
 {
 	if(noOfPins == 0) {
 		return;
@@ -85,19 +85,7 @@ HardwarePWM::~HardwarePWM()
 	// There is no function in the SDK to stop PWM output, yet.
 }
 
-uint8_t HardwarePWM::getChannel(uint8_t pin)
-{
-	for(uint8_t i = 0; i < channel_count; i++) {
-		if(channels[i] == pin) {
-			return i;
-		}
-	}
-
-	debug_d("getChannel: can't find pin %d", pin);
-	return PWM_BAD_CHANNEL;
-}
-
-uint32_t HardwarePWM::getDutyChan(uint8_t chan)
+uint32_t HardwarePWM::getDutyChan(uint8_t chan) const
 {
 	return (chan == PWM_BAD_CHANNEL) ? 0 : pwm_get_duty(chan);
 }
@@ -120,7 +108,7 @@ bool HardwarePWM::setDutyChan(uint8_t chan, uint32_t duty, bool update)
 	return false;
 }
 
-uint32_t HardwarePWM::getPeriod()
+uint32_t HardwarePWM::getPeriod() const
 {
 	return pwm_get_period();
 }
@@ -137,7 +125,7 @@ void HardwarePWM::update()
 	pwm_start();
 }
 
-uint32_t HardwarePWM::getFrequency(uint8_t pin)
+uint32_t HardwarePWM::getFrequency(uint8_t pin) const
 {
 	(void)pin;
 	auto period = pwm_get_period();
