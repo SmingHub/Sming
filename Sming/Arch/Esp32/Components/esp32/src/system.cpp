@@ -118,3 +118,8 @@ int WEAK_ATTR os_get_random(unsigned char* buf, size_t len)
 	esp_fill_random(buf, len);
 	return 0;
 }
+
+const char* os_get_task_name()
+{
+	return pcTaskGetName(xTaskGetCurrentTaskHandle());
+}
