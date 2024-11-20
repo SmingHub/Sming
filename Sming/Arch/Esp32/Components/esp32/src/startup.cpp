@@ -56,7 +56,7 @@ void main(void*)
 
 	System.initialize();
 	Storage::initialize();
-	init();
+	System.queueCallback(init);
 
 	constexpr unsigned maxEventLoopInterval{1000 / portTICK_PERIOD_MS};
 	while(true) {
