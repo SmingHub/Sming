@@ -88,5 +88,10 @@ extern "C" void app_main(void)
 #if ESP_IDF_VERSION_MAJOR < 5
 	esp_task_wdt_delete(xTaskGetIdleTaskHandleForCPU(core_id));
 #endif
-	xTaskCreatePinnedToCore(main, "Sming", ESP_TASKD_EVENT_STACK, nullptr, ESP_TASKD_EVENT_PRIO, nullptr, core_id);
+#ifdef DISABLE_NETWORK
+#define SMING_TASK_STACK_SIZE CONFIG_ESP_SYSTEM_EVENT_TASK_STACK_SIZE
+#else
+#define SMING_TASK_STACK_SIZE CONFIG_LWIP_TCPIP_TASK_STACK_SIZE
+#endif
+	xTaskCreatePinnedToCore(main, "Sming", SMING_TASK_STACK_SIZE, nullptr, ESP_TASKD_EVENT_PRIO, nullptr, core_id);
 }
