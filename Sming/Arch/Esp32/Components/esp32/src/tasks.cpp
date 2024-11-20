@@ -1,6 +1,7 @@
 #include "include/esp_tasks.h"
 #include <esp_event.h>
 #include <debug_progmem.h>
+#include <lwip/tcpip.h>
 
 namespace
 {
@@ -20,7 +21,18 @@ bool system_os_task(os_task_t callback, uint8_t prio, os_event_t*, uint8_t)
 			ev.par = *static_cast<os_param_t*>(event_data);
 		}
 
+#ifdef DISABLE_NETWORK
 		taskCallback(&ev);
+#else
+		auto tcpip_event_handler = [](void* arg) {
+			auto event = static_cast<os_event_t*>(arg);
+			taskCallback(event);
+			delete event;
+		};
+		auto err = tcpip_callback(tcpip_event_handler, new os_event_t{ev});
+		(void)err;
+		assert(err == 0);
+#endif
 	};
 
 	if(callback == nullptr) {
