@@ -192,9 +192,5 @@ std::unique_ptr<StationList> AccessPointImpl::getStations() const
 	return std::unique_ptr<StationList>(new StationListImpl);
 }
 
-void AccessPointImpl::onSystemReady()
-{
-}
-
 } // namespace Network
 } // namespace SmingInternal

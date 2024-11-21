@@ -25,14 +25,9 @@ namespace SmingInternal
 {
 namespace Network
 {
-class StationImpl : public StationClass, protected ISystemReadyHandler
+class StationImpl : public StationClass
 {
 public:
-	StationImpl()
-	{
-		System.onReady(this);
-	}
-
 	void enable(bool enabled, bool save) override;
 	bool isEnabled() const override;
 	bool config(const Config& cfg) override;
@@ -69,9 +64,6 @@ public:
 
 	// Called from WifiEventsImpl
 	void eventHandler(esp_event_base_t base, int32_t id, void* data);
-
-protected:
-	void onSystemReady() override;
 
 private:
 	static void staticScanCompleted(wifi_event_sta_scan_done_t* event, uint8_t status);

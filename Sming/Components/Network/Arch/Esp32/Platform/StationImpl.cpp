@@ -438,10 +438,6 @@ void StationImpl::staticScanCompleted(wifi_event_sta_scan_done_t* event, uint8_t
 	}
 }
 
-void StationImpl::onSystemReady()
-{
-}
-
 #ifdef ENABLE_SMART_CONFIG
 
 void StationImpl::internalSmartConfig(smartconfig_event_t event_id, void* pdata)
