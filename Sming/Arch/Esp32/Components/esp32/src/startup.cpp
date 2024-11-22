@@ -10,7 +10,6 @@
 
 #include <esp_system.h>
 #include <esp_log.h>
-#include <esp_task_wdt.h>
 #include <esp_task.h>
 #include <esp_event.h>
 #include <debug_progmem.h>
@@ -27,22 +26,6 @@ namespace
 {
 void main(void*)
 {
-	int err;
-	(void)err;
-#if ESP_IDF_VERSION_MAJOR < 5
-	err = esp_task_wdt_init(CONFIG_ESP_TASK_WDT_TIMEOUT_S, true);
-#else
-	esp_task_wdt_config_t twdt_config{
-		.timeout_ms = 8000,
-		.trigger_panic = true,
-	};
-	err = esp_task_wdt_init(&twdt_config);
-#endif
-	assert(err == ESP_OK);
-
-	err = esp_task_wdt_add(nullptr);
-	assert(err == ESP_OK);
-
 	hw_timer_init();
 
 	smg_uart_detach_all();
@@ -60,7 +43,6 @@ void main(void*)
 
 	constexpr unsigned maxEventLoopInterval{1000 / portTICK_PERIOD_MS};
 	while(true) {
-		esp_task_wdt_reset();
 #ifdef CREATE_EVENT_TASK
 		vTaskDelay(100);
 #else
@@ -85,9 +67,6 @@ extern "C" void app_main(void)
 	constexpr unsigned core_id{0};
 #endif
 
-#if ESP_IDF_VERSION_MAJOR < 5
-	esp_task_wdt_delete(xTaskGetIdleTaskHandleForCPU(core_id));
-#endif
 #ifdef DISABLE_NETWORK
 #define SMING_TASK_STACK_SIZE CONFIG_ESP_SYSTEM_EVENT_TASK_STACK_SIZE
 #else
