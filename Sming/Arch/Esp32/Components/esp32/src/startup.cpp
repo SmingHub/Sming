@@ -39,5 +39,8 @@ extern "C" void app_main(void)
 
 	System.initialize();
 	Storage::initialize();
-	System.queueCallback(init);
+
+	// Application gets called outside main thread at startup
+	// Things like smartconfig won't work if called via task queue
+	init();
 }
