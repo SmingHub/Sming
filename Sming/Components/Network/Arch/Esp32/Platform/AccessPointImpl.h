@@ -38,11 +38,6 @@ public:
 	String getPassword() const override;
 	std::unique_ptr<StationList> getStations() const override;
 
-	// Called from WifiEventsImpl
-	void eventHandler(esp_event_base_t base, int32_t id, void* data)
-	{
-	}
-
 private:
 	esp_netif_obj* apNetworkInterface{nullptr};
 };
