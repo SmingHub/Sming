@@ -33,7 +33,7 @@ extern "C" void app_main(void)
 
 	esp_event_loop_create_default();
 
-#ifndef DISABLE_NETWORK
+#ifndef DISABLE_WIFI
 	esp_network_initialise();
 #endif
 
