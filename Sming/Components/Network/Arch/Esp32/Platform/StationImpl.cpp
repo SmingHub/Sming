@@ -449,14 +449,12 @@ void StationImpl::dispatchScanDone(const wifi_event_sta_scan_done_t& event)
 
 #ifdef ENABLE_SMART_CONFIG
 
-void StationImpl::internalSmartConfig(smartconfig_event_t event_id, void* pdata)
+void StationImpl::smartConfigEventHandler(void*, esp_event_base_t, int32_t event_id, void* data)
 {
-	if(!smartConfigEventInfo) {
+	if(!station.smartConfigEventInfo) {
 		debug_e("[SC] ERROR! eventInfo null");
 		return;
 	}
-
-	auto& evt = *smartConfigEventInfo;
 
 	SmartConfigEvent event;
 	switch(event_id) {
@@ -474,11 +472,12 @@ void StationImpl::internalSmartConfig(smartconfig_event_t event_id, void* pdata)
 		break;
 	case SC_EVENT_GOT_SSID_PSWD: {
 		debugf("[SC] GOT_SSID_PSWD");
-		auto cfg = static_cast<const smartconfig_event_got_ssid_pswd_t*>(pdata);
+		auto cfg = static_cast<const smartconfig_event_got_ssid_pswd_t*>(data);
 		assert(cfg != nullptr);
 		if(cfg == nullptr) {
 			return;
 		}
+		auto& evt = *station.smartConfigEventInfo;
 		evt.ssid = reinterpret_cast<const char*>(cfg->ssid);
 		evt.password = reinterpret_cast<const char*>(cfg->password);
 		evt.bssidSet = cfg->bssid_set;
@@ -492,26 +491,23 @@ void StationImpl::internalSmartConfig(smartconfig_event_t event_id, void* pdata)
 		return;
 	}
 
-	if(smartConfigCallback && !smartConfigCallback(event, evt)) {
-		return;
-	}
+	System.queueCallback([event]() {
+		auto& evt = *station.smartConfigEventInfo;
+		if(station.smartConfigCallback && !station.smartConfigCallback(event, evt)) {
+			return;
+		}
 
-	switch(event_id) {
-	case SC_EVENT_GOT_SSID_PSWD:
-		StationClass::config(evt.ssid, evt.password, true, true);
-		connect();
-		break;
-	case SC_EVENT_SEND_ACK_DONE:
-		smartConfigStop();
-		break;
-	default:;
-	}
-}
-
-void StationImpl::smartConfigEventHandler(void* arg, esp_event_base_t, int32_t id, void* data)
-{
-	auto self = static_cast<StationImpl*>(arg);
-	return self->internalSmartConfig(smartconfig_event_t(id), data);
+		switch(event) {
+		case SCE_Link:
+			station.config({evt.ssid, evt.password});
+			station.connect();
+			break;
+		case SCE_LinkOver:
+			station.smartConfigStop();
+			break;
+		default:;
+		}
+	});
 }
 
 bool StationImpl::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback)

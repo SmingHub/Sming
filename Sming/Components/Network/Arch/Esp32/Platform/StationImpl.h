@@ -92,7 +92,6 @@ private:
 	bool wpsConfigure(uint8_t credIndex);
 #endif
 #ifdef ENABLE_SMART_CONFIG
-	void internalSmartConfig(smartconfig_event_t event, void* pdata);
 	static void smartConfigEventHandler(void* arg, esp_event_base_t base, int32_t id, void* data);
 #endif
 
