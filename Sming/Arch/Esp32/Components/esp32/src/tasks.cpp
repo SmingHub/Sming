@@ -61,6 +61,13 @@ bool system_os_task(os_task_t callback, uint8_t prio, os_event_t* queue, uint8_t
 		return false;
 	}
 
+	taskCallback = callback;
+
+	return true;
+}
+
+void start_sming_task_loop()
+{
 #ifdef DISABLE_NETWORK
 
 #if defined(SOC_ESP32) && !CONFIG_FREERTOS_UNICORE
@@ -68,25 +75,14 @@ bool system_os_task(os_task_t callback, uint8_t prio, os_event_t* queue, uint8_t
 #else
 	constexpr unsigned core_id{0};
 #endif
-	auto res = xTaskCreatePinnedToCore(sming_task_loop, "Sming", CONFIG_LWIP_TCPIP_TASK_STACK_SIZE, nullptr,
-									   CONFIG_LWIP_TCPIP_TASK_PRIO, nullptr, core_id);
-	if(res != pdTRUE) {
-		return false;
-	}
+	xTaskCreatePinnedToCore(sming_task_loop, "Sming", CONFIG_LWIP_TCPIP_TASK_STACK_SIZE, nullptr,
+							CONFIG_LWIP_TCPIP_TASK_PRIO, nullptr, core_id);
 
 #else
 
 	callbackMessage = tcpip_callbackmsg_new(tcpip_callback_fn(tcpip_message_handler), nullptr);
 
-	if(callbackMessage == nullptr) {
-		return false;
-	}
-
 #endif
-
-	taskCallback = callback;
-
-	return true;
 }
 
 bool IRAM_ATTR system_os_post(uint8_t prio, os_signal_t sig, os_param_t par)
@@ -103,6 +99,10 @@ bool IRAM_ATTR system_os_post(uint8_t prio, os_signal_t sig, os_param_t par)
 	}
 
 #ifndef DISABLE_NETWORK
+	if(!callbackMessage) {
+		// Message loop not yet active
+		return true;
+	}
 	// If queue isn't empty and we haven't already asked for a tcpip callback, do that now
 	if(xQueueIsQueueEmptyFromISR(eventQueue) == pdFALSE && !eventQueueFlag) {
 		eventQueueFlag = true;

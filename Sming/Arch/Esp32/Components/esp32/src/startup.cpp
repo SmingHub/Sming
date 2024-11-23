@@ -19,6 +19,7 @@
 
 extern void init();
 extern void esp_network_initialise();
+extern void start_sming_task_loop();
 
 extern "C" void __wrap_esp_newlib_init_global_stdio(const char*)
 {
@@ -43,4 +44,6 @@ extern "C" void app_main(void)
 	// Application gets called outside main thread at startup
 	// Things like smartconfig won't work if called via task queue
 	init();
+
+	start_sming_task_loop();
 }
