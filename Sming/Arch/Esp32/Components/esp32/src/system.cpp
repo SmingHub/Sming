@@ -1,7 +1,7 @@
 #include <esp_system.h>
 #include <sys/time.h>
 #include <esp_timer.h>
-#include <esp_task_wdt.h>
+#include <esp_task.h>
 #include <sming_attr.h>
 #include <string.h>
 #if ESP_IDF_VERSION_MAJOR >= 5
@@ -75,7 +75,8 @@ void system_restart(void)
 
 void system_soft_wdt_feed(void)
 {
-	esp_task_wdt_reset();
+	// Allow the IDLE task to run
+	vTaskDelay(1);
 }
 
 void system_soft_wdt_stop(void)

@@ -75,45 +75,56 @@ public:
 	}
 };
 
-void StationImpl::eventHandler(esp_event_base_t base, int32_t id, [[maybe_unused]] void* data)
+void StationImpl::dispatchStaStart()
 {
-	if(base == WIFI_EVENT) {
-		bool allowAutoConnect{true};
 #ifdef ENABLE_WPS
-		if(wpsConfig != nullptr) {
-			wpsEventHandler(id, data);
-			allowAutoConnect = false;
-		}
-#endif
-#ifdef ENABLE_SMART_CONFIG
-		if(smartConfigEventInfo) {
-			allowAutoConnect = false;
-		}
-#endif
-		switch(id) {
-		case WIFI_EVENT_STA_START:
-			if(allowAutoConnect && getAutoConnect()) {
-				connectionStatus = eSCS_Connecting;
-				esp_wifi_connect();
-			}
-			break;
-		case WIFI_EVENT_STA_DISCONNECTED: {
-			connectionStatus = eSCS_ConnectionFailed;
-			break;
-		}
-		default:;
-		}
-	} else if(base == IP_EVENT) {
-		switch(id) {
-		case IP_EVENT_STA_GOT_IP:
-			connectionStatus = eSCS_GotIP;
-			break;
-		case IP_EVENT_STA_LOST_IP:
-			connectionStatus = eSCS_Connecting;
-			break;
-		default:;
-		}
+	if(wpsConfig) {
+		return;
 	}
+#endif
+
+#ifdef ENABLE_SMART_CONFIG
+	if(smartConfigEventInfo) {
+		return;
+	}
+#endif
+
+	if(getAutoConnect()) {
+		connectionStatus = eSCS_Connecting;
+		esp_wifi_connect();
+	}
+}
+
+void StationImpl::dispatchStaDisconnected(const wifi_event_sta_disconnected_t&)
+{
+	connectionStatus = eSCS_ConnectionFailed;
+
+#ifdef ENABLE_WPS
+	if(wpsConfig == nullptr) {
+		return;
+	}
+
+	if(wpsConfig->ignoreDisconnects) {
+		return;
+	}
+	if(wpsConfig->numRetries < WpsConfig::maxRetryAttempts) {
+		esp_wifi_connect();
+		++wpsConfig->numRetries;
+		return;
+	}
+
+	if(wpsConfigure(wpsConfig->credIndex + 1)) {
+		esp_wifi_connect();
+		return;
+	}
+
+	debug_e("[WPS] Failed to connect!");
+	if(wpsCallback(WpsStatus::Failed)) {
+		// try to reconnect with old config
+		wpsConfigStop();
+		esp_wifi_connect();
+	}
+#endif
 }
 
 void StationImpl::enable(bool enabled, bool save)
@@ -394,29 +405,27 @@ bool StationImpl::startScan(ScanCompletedDelegate scanCompleted)
 		return false;
 	}
 
-	auto eventHandler = [](void* arg, esp_event_base_t, int32_t id, void* data) {
-		wifi_event_sta_scan_done_t* event = reinterpret_cast<wifi_event_sta_scan_done_t*>(data);
-		staticScanCompleted(event, event->status);
-	};
-
-	ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_SCAN_DONE, eventHandler, nullptr));
 	if(esp_wifi_scan_start(nullptr, false) != ESP_OK) {
-		auto connectHandler = [](void*, esp_event_base_t, int32_t, void*) { esp_wifi_scan_start(nullptr, false); };
-
-		ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_CONNECTED, connectHandler, nullptr));
-
 		debug_e("startScan failed");
+		return false;
 	}
 
 	return true;
 }
 
-void StationImpl::staticScanCompleted(wifi_event_sta_scan_done_t* event, uint8_t status)
+void StationImpl::dispatchStaConnected(const wifi_event_sta_connected_t&)
+{
+	if(scanCompletedCallback) {
+		esp_wifi_scan_start(nullptr, false);
+	}
+}
+
+void StationImpl::dispatchScanDone(const wifi_event_sta_scan_done_t& event)
 {
 	BssList list;
-	if(status == OK) {
+	if(event.status == OK) {
 		if(station.scanCompletedCallback) {
-			uint16_t number = event->number;
+			uint16_t number = event.number;
 			wifi_ap_record_t ap_info[number];
 
 			memset(ap_info, 0, sizeof(ap_info));
@@ -431,27 +440,21 @@ void StationImpl::staticScanCompleted(wifi_event_sta_scan_done_t* event, uint8_t
 
 		debug_i("scan completed: %u found", list.count());
 	} else {
-		debug_e("scan failed %u", status);
+		debug_e("scan failed %u", event.status);
 		if(station.scanCompletedCallback) {
 			station.scanCompletedCallback(false, list);
 		}
 	}
 }
 
-void StationImpl::onSystemReady()
-{
-}
-
 #ifdef ENABLE_SMART_CONFIG
 
-void StationImpl::internalSmartConfig(smartconfig_event_t event_id, void* pdata)
+void StationImpl::smartConfigEventHandler(void*, esp_event_base_t, int32_t event_id, void* data)
 {
-	if(!smartConfigEventInfo) {
+	if(!station.smartConfigEventInfo) {
 		debug_e("[SC] ERROR! eventInfo null");
 		return;
 	}
-
-	auto& evt = *smartConfigEventInfo;
 
 	SmartConfigEvent event;
 	switch(event_id) {
@@ -469,11 +472,12 @@ void StationImpl::internalSmartConfig(smartconfig_event_t event_id, void* pdata)
 		break;
 	case SC_EVENT_GOT_SSID_PSWD: {
 		debugf("[SC] GOT_SSID_PSWD");
-		auto cfg = static_cast<const smartconfig_event_got_ssid_pswd_t*>(pdata);
+		auto cfg = static_cast<const smartconfig_event_got_ssid_pswd_t*>(data);
 		assert(cfg != nullptr);
 		if(cfg == nullptr) {
 			return;
 		}
+		auto& evt = *station.smartConfigEventInfo;
 		evt.ssid = reinterpret_cast<const char*>(cfg->ssid);
 		evt.password = reinterpret_cast<const char*>(cfg->password);
 		evt.bssidSet = cfg->bssid_set;
@@ -487,26 +491,23 @@ void StationImpl::internalSmartConfig(smartconfig_event_t event_id, void* pdata)
 		return;
 	}
 
-	if(smartConfigCallback && !smartConfigCallback(event, evt)) {
-		return;
-	}
+	System.queueCallback([event]() {
+		auto& evt = *station.smartConfigEventInfo;
+		if(station.smartConfigCallback && !station.smartConfigCallback(event, evt)) {
+			return;
+		}
 
-	switch(event_id) {
-	case SC_EVENT_GOT_SSID_PSWD:
-		StationClass::config(evt.ssid, evt.password, true, true);
-		connect();
-		break;
-	case SC_EVENT_SEND_ACK_DONE:
-		smartConfigStop();
-		break;
-	default:;
-	}
-}
-
-void StationImpl::smartConfigEventHandler(void* arg, esp_event_base_t, int32_t id, void* data)
-{
-	auto self = static_cast<StationImpl*>(arg);
-	return self->internalSmartConfig(smartconfig_event_t(id), data);
+		switch(event) {
+		case SCE_Link:
+			station.config({evt.ssid, evt.password});
+			station.connect();
+			break;
+		case SCE_LinkOver:
+			station.smartConfigStop();
+			break;
+		default:;
+		}
+	});
 }
 
 bool StationImpl::smartConfigStart(SmartConfigType sctype, SmartConfigDelegate callback)
@@ -552,81 +553,50 @@ void StationImpl::smartConfigStop()
 
 #ifdef ENABLE_WPS
 
-void StationImpl::wpsEventHandler(int32_t event_id, void* event_data)
+void StationImpl::dispatchStaWpsErFailed()
 {
-	switch(event_id) {
-	case WIFI_EVENT_STA_DISCONNECTED:
-		debug_w("WIFI_EVENT_STA_DISCONNECTED");
-		if(wpsConfig->ignoreDisconnects) {
-			break;
-		}
-		if(wpsConfig->numRetries < WpsConfig::maxRetryAttempts) {
-			esp_wifi_connect();
-			++wpsConfig->numRetries;
-			break;
-		}
-
-		if(wpsConfigure(wpsConfig->credIndex + 1)) {
-			esp_wifi_connect();
-			break;
-		}
-
-		debug_e("[WPS] Failed to connect!");
-		if(wpsCallback(WpsStatus::Failed)) {
-			// try to reconnect with old config
-			wpsConfigStop();
-			esp_wifi_connect();
-		}
-		break;
-
-	case WIFI_EVENT_STA_WPS_ER_SUCCESS: {
-		debug_i("WIFI_EVENT_STA_WPS_ER_SUCCESS");
-
-		if(!wpsCallback(WpsStatus::Success)) {
-			return;
-		}
-
-		if(event_data != nullptr) {
-			/* If multiple AP credentials are received from WPS, connect with first one */
-			wpsConfig->creds = *static_cast<wifi_event_sta_wps_er_success_t*>(event_data);
-			wpsConfigure(0);
-		}
-		/*
-		 * If only one AP credential is received from WPS, there will be no event data and
-		 * esp_wifi_set_config() is already called by WPS modules for backward compatibility
-		 * with legacy apps. So directly attempt connection here.
-		 */
+	debug_e("WIFI_EVENT_STA_WPS_ER_FAILED");
+	if(wpsCallback(WpsStatus::Failed)) {
+		// Try to reconnect with old config
 		wpsConfigStop();
 		esp_wifi_connect();
-		break;
+	}
+}
+
+void StationImpl::dispatchStaWpsErTimeout()
+{
+	debug_e("WIFI_EVENT_STA_WPS_ER_TIMEOUT");
+	if(wpsCallback(WpsStatus::Timeout)) {
+		// Try to reconnect with old config
+		wpsConfigStop();
+		esp_wifi_connect();
+	}
+}
+
+void StationImpl::dispatchStaWpsErPin()
+{
+	debug_e("WIFI_EVENT_STA_WPS_ER_PIN (not implemented)");
+}
+
+void StationImpl::dispatchWpsErSuccess(const wifi_event_sta_wps_er_success_t& event)
+{
+	debug_i("WIFI_EVENT_STA_WPS_ER_SUCCESS");
+
+	if(!wpsCallback(WpsStatus::Success)) {
+		return;
 	}
 
-	case WIFI_EVENT_STA_WPS_ER_FAILED: {
-		debug_e("WIFI_EVENT_STA_WPS_ER_FAILED");
-		if(wpsCallback(WpsStatus::Failed)) {
-			// Try to reconnect with old config
-			wpsConfigStop();
-			esp_wifi_connect();
-		}
-		break;
-	}
+	/* If multiple AP credentials are received from WPS, connect with first one */
+	wpsConfig->creds = event;
+	wpsConfigure(0);
 
-	case WIFI_EVENT_STA_WPS_ER_TIMEOUT:
-		debug_e("WIFI_EVENT_STA_WPS_ER_TIMEOUT");
-		if(wpsCallback(WpsStatus::Timeout)) {
-			// Try to reconnect with old config
-			wpsConfigStop();
-			esp_wifi_connect();
-		}
-		break;
-
-	case WIFI_EVENT_STA_WPS_ER_PIN:
-		debug_e("WIFI_EVENT_STA_WPS_ER_PIN (not implemented)");
-		break;
-
-	default:
-		break;
-	}
+	/*
+	 * If only one AP credential is received from WPS, there will be no event data and
+	 * esp_wifi_set_config() is already called by WPS modules for backward compatibility
+	 * with legacy apps. So directly attempt connection here.
+	 */
+	wpsConfigStop();
+	esp_wifi_connect();
 }
 
 bool StationImpl::wpsConfigure(uint8_t credIndex)

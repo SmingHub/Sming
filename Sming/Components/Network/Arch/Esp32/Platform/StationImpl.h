@@ -25,14 +25,9 @@ namespace SmingInternal
 {
 namespace Network
 {
-class StationImpl : public StationClass, protected ISystemReadyHandler
+class StationImpl : public StationClass
 {
 public:
-	StationImpl()
-	{
-		System.onReady(this);
-	}
-
 	void enable(bool enabled, bool save) override;
 	bool isEnabled() const override;
 	bool config(const Config& cfg) override;
@@ -67,21 +62,36 @@ public:
 	void wpsConfigStop() override;
 #endif
 
-	// Called from WifiEventsImpl
-	void eventHandler(esp_event_base_t base, int32_t id, void* data);
+	// Called from network event handler (init.cpp)
+	void dispatchStaStart();
+	void dispatchStaConnected(const wifi_event_sta_connected_t& event);
+	void dispatchStaDisconnected(const wifi_event_sta_disconnected_t& event);
 
-protected:
-	void onSystemReady() override;
+	void dispatchStaGotIp(const ip_event_got_ip_t&)
+	{
+		connectionStatus = eSCS_GotIP;
+	}
+
+	void dispatchStaLostIp()
+	{
+		connectionStatus = eSCS_Connecting;
+	}
+
+	void dispatchScanDone(const wifi_event_sta_scan_done_t& event);
+
+#ifdef ENABLE_WPS
+	void dispatchStaWpsErFailed();
+	void dispatchStaWpsErTimeout();
+	void dispatchStaWpsErPin();
+	void dispatchWpsErSuccess(const wifi_event_sta_wps_er_success_t& event);
+#endif
 
 private:
-	static void staticScanCompleted(wifi_event_sta_scan_done_t* event, uint8_t status);
 #ifdef ENABLE_WPS
-	void wpsEventHandler(int32_t event_id, void* event_data);
 	bool wpsCallback(WpsStatus status);
 	bool wpsConfigure(uint8_t credIndex);
 #endif
 #ifdef ENABLE_SMART_CONFIG
-	void internalSmartConfig(smartconfig_event_t event, void* pdata);
 	static void smartConfigEventHandler(void* arg, esp_event_base_t base, int32_t id, void* data);
 #endif
 

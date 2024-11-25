@@ -8,11 +8,7 @@ COMPONENT_INCDIRS := src/include include
 # Applications can provide file with custom SDK configuration settings
 CACHE_VARS += SDK_CUSTOM_CONFIG
 
-COMPONENT_RELINK_VARS += DISABLE_NETWORK DISABLE_WIFI CREATE_EVENT_TASK
-
-ifeq ($(CREATE_EVENT_TASK),1)
-COMPONENT_CPPFLAGS += -DCREATE_EVENT_TASK
-endif
+COMPONENT_RELINK_VARS += DISABLE_NETWORK DISABLE_WIFI
 
 ifneq (,$(filter v4.%,$(IDF_VERSION)))
 IDF_VERSION_4x := 1
@@ -392,14 +388,6 @@ EXTRA_LDFLAGS := \
 	$(call LinkerScript,rom.api) \
 	$(call LinkerScript,rom.libgcc) \
 	$(call LinkerScript,rom.newlib-nano) \
-	$(call Wrap,\
-		esp_event_loop_create_default \
-		esp_event_handler_register \
-		esp_event_handler_unregister \
-		esp_event_handler_instance_register \
-		esp_event_handler_instance_unregister \
-		esp_event_post \
-		esp_event_isr_post) \
 	$(LDFLAGS_$(ESP_VARIANT)) \
 	$(call Undef,$(SDK_UNDEF_SYMBOLS)) \
 	$(call Wrap,$(SDK_WRAP_SYMBOLS))

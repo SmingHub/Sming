@@ -1,30 +1,48 @@
 #include "include/esp_tasks.h"
-#include <esp_event.h>
+#include <esp_task.h>
 #include <debug_progmem.h>
+
+#ifndef DISABLE_NETWORK
+#include <lwip/tcpip.h>
+#endif
 
 namespace
 {
-ESP_EVENT_DEFINE_BASE(TaskEvt);
-
 os_task_t taskCallback;
+QueueHandle_t eventQueue;
+
+#ifdef DISABLE_NETWORK
+
+void sming_task_loop(void*)
+{
+	os_event_t evt;
+	while(xQueueReceive(eventQueue, &evt, portMAX_DELAY) == pdTRUE) {
+		taskCallback(&evt);
+	}
+}
+
+#else
+
+tcpip_callback_msg* callbackMessage;
+volatile bool eventQueueFlag;
+
+void tcpip_message_handler(void*)
+{
+	eventQueueFlag = false;
+	os_event_t evt;
+	while(xQueueReceive(eventQueue, &evt, 0) == pdTRUE) {
+		taskCallback(&evt);
+	}
+}
+
+#endif
 
 } // namespace
 
-bool system_os_task(os_task_t callback, uint8_t prio, os_event_t*, uint8_t)
+bool system_os_task(os_task_t callback, uint8_t prio, os_event_t* queue, uint8_t qlen)
 {
-	auto handler = [](void*, esp_event_base_t, int32_t event_id, void* event_data) {
-		assert(taskCallback != nullptr);
-
-		os_event_t ev{os_signal_t(event_id), 0};
-		if(event_data != nullptr) {
-			ev.par = *static_cast<os_param_t*>(event_data);
-		}
-
-		taskCallback(&ev);
-	};
-
-	if(callback == nullptr) {
-		debug_e("TQ: Callback missing");
+	if(callback == nullptr || queue == nullptr || qlen == 0) {
+		debug_e("TQ: Bad parameters");
 		return false;
 	}
 
@@ -38,17 +56,33 @@ bool system_os_task(os_task_t callback, uint8_t prio, os_event_t*, uint8_t)
 		return false;
 	}
 
-	auto err = esp_event_handler_instance_register(TaskEvt, ESP_EVENT_ANY_ID, handler, nullptr, nullptr);
-	if(err != ESP_OK) {
-		debug_e("TQ: Failed to register handler");
+	eventQueue = xQueueCreate(qlen, sizeof(os_event_t));
+	if(eventQueue == nullptr) {
 		return false;
 	}
 
 	taskCallback = callback;
 
-	debug_i("TQ: Registered %s", TaskEvt);
-
 	return true;
+}
+
+void start_sming_task_loop()
+{
+#ifdef DISABLE_NETWORK
+
+#if defined(SOC_ESP32) && !CONFIG_FREERTOS_UNICORE
+	constexpr unsigned core_id{1};
+#else
+	constexpr unsigned core_id{0};
+#endif
+	xTaskCreatePinnedToCore(sming_task_loop, "Sming", CONFIG_LWIP_TCPIP_TASK_STACK_SIZE, nullptr,
+							CONFIG_LWIP_TCPIP_TASK_PRIO, nullptr, core_id);
+
+#else
+
+	callbackMessage = tcpip_callbackmsg_new(tcpip_callback_fn(tcpip_message_handler), nullptr);
+
+#endif
 }
 
 bool IRAM_ATTR system_os_post(uint8_t prio, os_signal_t sig, os_param_t par)
@@ -56,11 +90,30 @@ bool IRAM_ATTR system_os_post(uint8_t prio, os_signal_t sig, os_param_t par)
 	if(prio != USER_TASK_PRIO_1) {
 		return false;
 	}
-	esp_err_t err;
-	if(par == 0) {
-		err = esp_event_isr_post(TaskEvt, sig, nullptr, 0, nullptr);
-	} else {
-		err = esp_event_isr_post(TaskEvt, sig, &par, sizeof(par), nullptr);
+
+	os_event_t ev{sig, par};
+	BaseType_t woken;
+	auto res = xQueueSendToBackFromISR(eventQueue, &ev, &woken);
+	if(res != pdTRUE) {
+		return false;
 	}
-	return (err == ESP_OK);
+
+#ifndef DISABLE_NETWORK
+	if(!callbackMessage) {
+		// Message loop not yet active
+		return true;
+	}
+	// If queue isn't empty and we haven't already asked for a tcpip callback, do that now
+	if(xQueueIsQueueEmptyFromISR(eventQueue) == pdFALSE && !eventQueueFlag) {
+		eventQueueFlag = true;
+		auto err = tcpip_callbackmsg_trycallback_fromisr(callbackMessage);
+		woken = (err == ERR_NEED_SCHED);
+	} else {
+		woken = false;
+	}
+#endif
+
+	portYIELD_FROM_ISR_ARG(woken);
+
+	return true;
 }
