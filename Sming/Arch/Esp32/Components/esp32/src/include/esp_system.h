@@ -58,8 +58,6 @@ unsigned long os_random(void);
 
 int os_get_random(unsigned char* buf, size_t len);
 
-const char* os_get_task_name();
-
 #ifdef __cplusplus
 }
 #endif

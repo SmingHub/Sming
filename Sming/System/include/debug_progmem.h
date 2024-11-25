@@ -22,8 +22,6 @@
 extern "C" {
 #endif
 
-extern const char* os_get_task_name();
-
 //This enables or disables logging
 //Can be overridden in Makefile
 #ifndef DEBUG_BUILD
@@ -74,12 +72,6 @@ extern uint32_t system_get_time();
 	(__extension__({                                                                                                   \
 		PSTR_ARRAY(fmtbuf, "[" MACROQUOTE(CUST_FILE_BASE) ":%d] " fmt "\r\n");                                         \
 		m_printf(fmtbuf, __LINE__, ##__VA_ARGS__);                                                                     \
-	}))
-#elif defined(ARCH_ESP32)
-#define debug_e(fmt, ...)                                                                                              \
-	(__extension__({                                                                                                   \
-		PSTR_ARRAY(fmtbuf, "%u %s " fmt "\r\n");                                                                       \
-		m_printf(fmtbuf, system_get_time(), os_get_task_name(), ##__VA_ARGS__);                                        \
 	}))
 #else
 #define debug_e(fmt, ...)                                                                                              \
