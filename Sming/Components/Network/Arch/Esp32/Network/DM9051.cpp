@@ -25,6 +25,7 @@ DM9051PhyFactory DM9051Service::dm9051PhyFactory;
 bool DM9051Service::begin(const Config& config)
 {
 	esp_netif_init();
+	esp_event_loop_create_default();
 
 	esp_netif_config_t netif_cfg = ESP_NETIF_DEFAULT_ETH();
 	netif = esp_netif_new(&netif_cfg);

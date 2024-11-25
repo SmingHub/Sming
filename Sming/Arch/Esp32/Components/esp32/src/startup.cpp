@@ -32,8 +32,6 @@ extern "C" void app_main(void)
 	smg_uart_detach_all();
 	esp_log_set_vprintf(m_vprintf);
 
-	esp_event_loop_create_default();
-
 #ifndef DISABLE_WIFI
 	esp_network_initialise();
 #endif
