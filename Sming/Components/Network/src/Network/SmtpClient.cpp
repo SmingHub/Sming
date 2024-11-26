@@ -300,7 +300,7 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 	if(!mail->headers.contains(F("Message-ID"))) {
 		Uuid uuid;
 		uuid.generate();
-		mail->headers[F("Message-ID")] =  "<" + uuid.toString() + "@" + url.Host + ">";
+		mail->headers[F("Message-ID")] = "<" + uuid.toString() + "@" + url.Host + ">";
 	}
 
 	if(!mail->attachments.isEmpty()) {
