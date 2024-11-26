@@ -1,5 +1,8 @@
 # pico_float
 
+RUNTIME_INIT_FUNC += \
+	__aeabi_float_init
+
 WRAPPED_FUNCTIONS += \
 	__aeabi_fadd \
 	__aeabi_fdiv \

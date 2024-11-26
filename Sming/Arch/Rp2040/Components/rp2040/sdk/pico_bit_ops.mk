@@ -1,5 +1,8 @@
 # pico_bit_ops
 
+RUNTIME_INIT_FUNC += \
+	__aeabi_bits_init
+
 WRAPPED_FUNCTIONS += \
 	__clzsi2 \
 	__clzdi2 \

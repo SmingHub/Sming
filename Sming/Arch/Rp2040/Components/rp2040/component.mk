@@ -35,20 +35,26 @@ ifeq ($(ENABLE_BOOTSEL),1)
 COMPONENT_CXXFLAGS += -DENABLE_BOOTSEL=1
 endif
 
+# Various runtime initialisation functions are not referenced
+# We must tell the linker about these so they aren't discarded.
+RUNTIME_INIT_FUNC :=
+
+# Functions which are wrapped by the SDK
 WRAPPED_FUNCTIONS :=
 
 $(foreach c,$(wildcard $(COMPONENT_PATH)/sdk/*.mk),$(eval include $c))
 
 EXTRA_LDFLAGS := \
 	$(call Wrap,$(WRAPPED_FUNCTIONS)) \
+	$(call Undef,$(RUNTIME_INIT_FUNC)) \
 	-T memmap_default.ld
 
 SDK_INTERFACES := \
 	boards \
-	common/pico_base \
+	common/pico_base_headers \
 	common/pico_binary_info \
-	common/pico_bit_ops \
-	common/pico_divider \
+	common/pico_bit_ops_headers \
+	common/pico_divider_headers \
 	common/pico_sync \
 	common/pico_time \
 	common/pico_util \
@@ -56,8 +62,10 @@ SDK_INTERFACES := \
 	rp2040/hardware_structs \
 	rp2_common/hardware_adc \
 	rp2_common/hardware_gpio \
-	rp2_common/pico_platform \
+	rp2040/pico_platform \
+	rp2_common/boot_bootrom_headers \
 	rp2_common/hardware_base \
+	rp2_common/hardware_boot_lock \
 	rp2_common/hardware_sync \
 	rp2_common/hardware_divider \
 	rp2_common/hardware_timer \
@@ -73,6 +81,7 @@ SDK_INTERFACES := \
 	rp2_common/hardware_rtc \
 	rp2_common/hardware_pll \
 	rp2_common/hardware_spi \
+	rp2_common/hardware_sync_spin_lock \
 	rp2_common/hardware_vreg \
 	rp2_common/hardware_watchdog \
 	rp2_common/hardware_xosc \
@@ -81,9 +90,14 @@ SDK_INTERFACES := \
 	rp2_common/pico_double \
 	rp2_common/pico_int64_ops \
 	rp2_common/pico_float \
+	rp2_common/pico_flash \
 	rp2_common/pico_multicore \
+	rp2_common/pico_platform_compiler \
+	rp2_common/pico_platform_panic \
+	rp2_common/pico_platform_sections \
 	rp2_common/pico_rand \
 	rp2_common/pico_runtime \
+	rp2_common/pico_runtime_init \
 	rp2_common/pico_unique_id \
 	rp2_common/pico_cyw43_arch \
 	rp2_common/pico_cyw43_driver
@@ -105,6 +119,7 @@ COMPONENT_INCDIRS += $(PICO_BASE_DIR)
 
 LIBDIRS += \
 	$(PICO_SDK_PATH)/src/rp2_common/pico_standard_link \
+	$(PICO_SDK_PATH)/src/rp2_common/pico_crt0/rp2040 \
 	$(PICO_BUILD_DIR)
 
 EXTRA_LIBS += \
@@ -126,7 +141,7 @@ endif
 
 COMPONENT_PREREQUISITES := $(PICO_CONFIG)
 
-BOOTLOADER := $(PICO_BUILD_DIR)/pico-sdk/src/rp2_common/boot_stage2/bs2_default_padded_checksummed.S
+BOOTLOADER := $(PICO_BUILD_DIR)/pico-sdk/src/rp2040/boot_stage2/bs2_default_padded_checksummed.S
 
 DEBUG_VARS += CYW43_FIRMWARE
 CYW43_FIRMWARE := $(COMPONENT_BUILD_BASE)/cyw43-fw.gz

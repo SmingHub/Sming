@@ -40,7 +40,7 @@ include_directories(BEFORE ${pico_lib_SOURCE_DIR})
 
 target_link_libraries(pico
 	hardware_adc
-	hardware_base
+	hardware_boot_lock
 	hardware_claim
 	hardware_clocks
 	hardware_divider
@@ -67,11 +67,16 @@ target_link_libraries(pico
 	pico_divider
 	pico_double
 	pico_fix
+	pico_flash
 	pico_float
 	pico_int64_ops
 	pico_mem_ops
 	pico_multicore
+	pico_platform_compiler
+	pico_platform_panic
+	pico_platform_sections
 	pico_runtime
+	pico_runtime_init
 	pico_standard_link
 	pico_unique_id
 	pico_audio_i2s

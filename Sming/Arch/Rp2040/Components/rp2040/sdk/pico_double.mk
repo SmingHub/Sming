@@ -1,5 +1,8 @@
 # pico_double
 
+RUNTIME_INIT_FUNC += \
+	__aeabi_double_init
+
 WRAPPED_FUNCTIONS += \
 	__aeabi_dadd \
 	__aeabi_ddiv \

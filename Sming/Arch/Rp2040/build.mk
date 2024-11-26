@@ -7,6 +7,10 @@
 CPPFLAGS += \
 	-DARCH_RP2040 \
 	-DARDUINO_ARCH_RP2040 \
+	-DPICO_NO_HARDWARE=0 \
+	-DPICO_ON_DEVICE=1 \
+	-DPICO_RP2040=1 \
+	-DPICO_32BIT=1 \
 	-march=armv6-m \
 	-mcpu=cortex-m0plus \
 	-mthumb \

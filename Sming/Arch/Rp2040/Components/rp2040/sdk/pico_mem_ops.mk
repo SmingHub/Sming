@@ -1,5 +1,8 @@
 # pico_mem_ops
 
+RUNTIME_INIT_FUNC += \
+	__aeabi_mem_init
+
 WRAPPED_FUNCTIONS += \
 	memcpy \
 	memset \
