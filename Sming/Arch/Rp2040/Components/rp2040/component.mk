@@ -58,11 +58,11 @@ SDK_INTERFACES := \
 	common/pico_sync \
 	common/pico_time \
 	common/pico_util \
-	rp2040/hardware_regs \
-	rp2040/hardware_structs \
+	$(RP_VARIANT)/hardware_regs \
+	$(RP_VARIANT)/hardware_structs \
 	rp2_common/hardware_adc \
 	rp2_common/hardware_gpio \
-	rp2040/pico_platform \
+	$(RP_VARIANT)/pico_platform \
 	rp2_common/boot_bootrom_headers \
 	rp2_common/hardware_base \
 	rp2_common/hardware_boot_lock \
@@ -119,7 +119,7 @@ COMPONENT_INCDIRS += $(PICO_BASE_DIR)
 
 LIBDIRS += \
 	$(PICO_SDK_PATH)/src/rp2_common/pico_standard_link \
-	$(PICO_SDK_PATH)/src/rp2_common/pico_crt0/rp2040 \
+	$(PICO_SDK_PATH)/src/rp2_common/pico_crt0/$(RP_VARIANT) \
 	$(PICO_BUILD_DIR)
 
 EXTRA_LIBS += \
@@ -141,7 +141,7 @@ endif
 
 COMPONENT_PREREQUISITES := $(PICO_CONFIG)
 
-BOOTLOADER := $(PICO_BUILD_DIR)/pico-sdk/src/rp2040/boot_stage2/bs2_default_padded_checksummed.S
+BOOTLOADER := $(PICO_BUILD_DIR)/pico-sdk/src/$(RP_VARIANT)/boot_stage2/bs2_default_padded_checksummed.S
 
 DEBUG_VARS += CYW43_FIRMWARE
 CYW43_FIRMWARE := $(COMPONENT_BUILD_BASE)/cyw43-fw.gz

@@ -9,12 +9,25 @@ CPPFLAGS += \
 	-DARDUINO_ARCH_RP2040 \
 	-DPICO_NO_HARDWARE=0 \
 	-DPICO_ON_DEVICE=1 \
-	-DPICO_RP2040=1 \
 	-DPICO_32BIT=1 \
-	-march=armv6-m \
-	-mcpu=cortex-m0plus \
 	-mthumb \
 	-nostdlib
+
+ifeq ($(SMING_SOC),rp2350)
+RP_VARIANT = rp2350
+PICO_PLATFORM = rp2350
+CPPFLAGS += \
+	-mcpu=cortex-m33 \
+	-march=armv8-m.main+fp+dsp \
+	-DPICO_RP2350
+else
+RP_VARIANT = rp2040
+PICO_PLATFORM = rp2040
+CPPFLAGS += \
+	-mcpu=cortex-m0plus \
+	-march=armv6-m \
+	-DPICO_RP2040
+endif
 
 CXXFLAGS += \
 	-fno-threadsafe-statics \

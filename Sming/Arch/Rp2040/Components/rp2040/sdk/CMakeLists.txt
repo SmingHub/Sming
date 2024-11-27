@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
 
-set(PICO_PLATFORM "rp2040")
 set(PICO_COMPILER "pico_arm_gcc")
 
 set(CMAKE_C_STANDARD 11)

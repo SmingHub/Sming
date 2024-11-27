@@ -53,10 +53,17 @@ void system_init_clocks()
 
 	// Initialise systick for use by esp_get_ccount()
 	exception_set_exclusive_handler(SYSTICK_EXCEPTION, systick_overflow_isr);
+#ifdef SOC_RP2350
+	systick_hw->csr = (1 << M33_SYST_CSR_CLKSOURCE_LSB) // Processor CLK source
+					  | M33_SYST_CSR_TICKINT_BITS		// Enable overflow ISR
+					  | M33_SYST_CSR_ENABLE_BITS;		// ENABLE
+	systick_hw->rvr = M33_SYST_RVR_BITS;				// Reload value when counter hits 0
+#else
 	systick_hw->csr = (1 << M0PLUS_SYST_CSR_CLKSOURCE_LSB) // Processor CLK source
 					  | M0PLUS_SYST_CSR_TICKINT_BITS	   // Enable overflow ISR
 					  | M0PLUS_SYST_CSR_ENABLE_BITS;	   // ENABLE
 	systick_hw->rvr = M0PLUS_SYST_RVR_BITS;				   // Reload value when counter hits 0
+#endif
 }
 
 bool system_update_cpu_freq(uint8_t mhz)
