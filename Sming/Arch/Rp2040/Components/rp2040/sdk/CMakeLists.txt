@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.12)
 
-set(PICO_COMPILER "pico_arm_gcc")
+if (PICO_RP2350)
+	set(PICO_COMPILER "pico_arm_cortex_m33_gcc")
+else()
+	set(PICO_COMPILER "pico_arm_cortex_m0plus_gcc")
+endif()
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
@@ -17,6 +21,8 @@ set(SKIP_PICO_STDIO_SEMIHOSTING 1)
 set(SKIP_PICO_STDIO_UART 1)
 set(SKIP_PICO_STDIO_USB 1)
 set(SKIP_TINYUSB 1)
+
+set(PICO_NO_PICOTOOL 1)
 
 # Initialize the SDK
 pico_sdk_init()

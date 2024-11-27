@@ -6,10 +6,16 @@ else
 export PICO_SDK_PATH := $(COMPONENT_PATH)/pico-sdk
 endif
 
-ifeq ($(DISABLE_WIFI),1)
-export PICO_BOARD ?= pico
+ifeq ($(SMING_SOC),rp2350)
+PICO_VARIANT=pico2
 else
-export PICO_BOARD ?= pico_w
+PICO_VARIANT=pico
+endif
+
+ifeq ($(DISABLE_WIFI),1)
+export PICO_BOARD ?= $(PICO_VARIANT)
+else
+export PICO_BOARD ?= $(PICO_VARIANT)_w
 COMPONENT_DEPENDS += uzlib
 endif
 
