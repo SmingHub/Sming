@@ -13,9 +13,12 @@
 #include <hardware/dma.h>
 #include <hardware/regs/addressmap.h>
 #include <hardware/structs/xip_ctrl.h>
+#include <debug_progmem.h>
+
+#ifdef SOC_RP2040
 #include <hardware/structs/ssi.h>
 #include <hardware/regs/ssi.h>
-#include <debug_progmem.h>
+#endif
 
 #define FLASHCMD_READ_SFDP 0x5a
 #define FLASHCMD_READ_JEDEC_ID 0x9f
@@ -310,6 +313,7 @@ SPIFlashInfo flashmem_get_info()
 	SPIFlashInfo info{};
 	info.size = flashmem_get_size_type();
 
+#ifdef SOC_RP2040
 	// Flash mode
 	uint32_t ctrlr0 = ssi_hw->ctrlr0;
 	auto ssi_frame_format = (ctrlr0 & SSI_CTRLR0_SPI_FRF_BITS) >> SSI_CTRLR0_SPI_FRF_LSB;
@@ -326,6 +330,9 @@ SPIFlashInfo flashmem_get_info()
 	default:
 		info.mode = MODE_SLOW_READ;
 	}
+#else
+	// TODO
+#endif
 
 	return info;
 }
@@ -376,11 +383,7 @@ uint32_t spi_flash_get_id(void)
 
 flash_addr_t flashmem_get_address(const void* memptr)
 {
-	auto addr = uint32_t(memptr);
-	if(addr < XIP_BASE || addr >= XIP_NOALLOC_BASE) {
-		return 0;
-	}
-	return addr - XIP_BASE;
+	return isFlashPtr(memptr) ? (uint32_t(memptr) - XIP_BASE) : 0;
 }
 
 void flashmem_sfdp_read(uint32_t addr, void* buffer, size_t count)

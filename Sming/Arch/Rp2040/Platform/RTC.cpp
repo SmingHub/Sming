@@ -10,8 +10,12 @@
 
 #include <Platform/RTC.h>
 #include <DateTime.h>
-#include <hardware/rtc.h>
 #include <sys/time.h>
+#include <debug_progmem.h>
+
+#ifdef SOC_RP2040
+#include <hardware/rtc.h>
+#endif
 
 extern "C" int settimeofday(const struct timeval*, const struct timezone*);
 
@@ -21,9 +25,13 @@ RtcClass RTC;
 
 void system_init_rtc()
 {
+#ifdef SOC_RP2040
 	rtc_init();
 	datetime_t t{.year = 1970, .month = 1, .day = 1};
 	rtc_set_datetime(&t);
+#else
+	// TODO
+#endif
 }
 
 RtcClass::RtcClass() = default;
@@ -35,6 +43,7 @@ uint64_t RtcClass::getRtcNanoseconds()
 
 uint32_t RtcClass::getRtcSeconds()
 {
+#ifdef SOC_RP2040
 	datetime_t t;
 	if(!rtc_get_datetime(&t)) {
 		return 0;
@@ -44,6 +53,10 @@ uint32_t RtcClass::getRtcSeconds()
 	dt.setTime(t.sec, t.min, t.hour, t.day, t.month - 1, t.year);
 
 	return time_t(dt);
+#else
+	debug_w("%s(): TODO", __FUNCTION__);
+	return 0;
+#endif
 }
 
 bool RtcClass::setRtcNanoseconds(uint64_t nanoseconds)
@@ -53,6 +66,7 @@ bool RtcClass::setRtcNanoseconds(uint64_t nanoseconds)
 
 bool RtcClass::setRtcSeconds(uint32_t seconds)
 {
+#ifdef SOC_RP2040
 	struct timeval tv {
 		seconds
 	};
@@ -71,4 +85,8 @@ bool RtcClass::setRtcSeconds(uint32_t seconds)
 	};
 
 	return rtc_set_datetime(&t);
+#else
+	debug_w("%s(): TODO", __FUNCTION__);
+	return false;
+#endif
 }
