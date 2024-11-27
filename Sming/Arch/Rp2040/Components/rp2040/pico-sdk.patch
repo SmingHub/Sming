@@ -11,3 +11,16 @@ index 5125401..6ba0d2f 100644
      } > FLASH
  
      /* stack limit is poorly named, but historically is maximum heap ptr */
+diff --git a/src/rp2_common/pico_crt0/rp2350/memmap_default.ld b/src/rp2_common/pico_crt0/rp2350/memmap_default.ld
+index bce316d..05c1beb 100644
+--- a/src/rp2_common/pico_crt0/rp2350/memmap_default.ld
++++ b/src/rp2_common/pico_crt0/rp2350/memmap_default.ld
+@@ -269,7 +269,7 @@ SECTIONS
+ 
+     .flash_end : {
+         KEEP(*(.embedded_end_block*))
+-        PROVIDE(__flash_binary_end = .);
++        __flash_binary_end = .;
+     } > FLASH =0xaa
+ 
+     /* stack limit is poorly named, but historically is maximum heap ptr */

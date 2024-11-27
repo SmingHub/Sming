@@ -97,6 +97,7 @@ SDK_INTERFACES := \
 	rp2_common/pico_int64_ops \
 	rp2_common/pico_float \
 	rp2_common/pico_flash \
+	rp2_common/pico_mem_ops \
 	rp2_common/pico_multicore \
 	rp2_common/pico_platform_compiler \
 	rp2_common/pico_platform_panic \
@@ -137,7 +138,8 @@ EXTRA_LIBS += \
 RP2040_CMAKE_OPTIONS := \
 	-G Ninja \
 	-DCMAKE_MAKE_PROGRAM=$(NINJA) \
-	-DCMAKE_BUILD_TYPE=$(if $(subst 1,,$(PICO_DEBUG)),RelWithDebInfo,Debug)
+	-DCMAKE_BUILD_TYPE=$(if $(subst 1,,$(PICO_DEBUG)),RelWithDebInfo,Debug) \
+	-DPICO_VARIANT=$(RP_VARIANT)
 
 ifeq ($(ENABLE_CCACHE),1)
 RP2040_CMAKE_OPTIONS += \

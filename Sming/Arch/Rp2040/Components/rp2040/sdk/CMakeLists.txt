@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.12)
 
-if (PICO_RP2350)
+if (PICO_VARIANT STREQUAL "rp2350")
 	set(PICO_COMPILER "pico_arm_cortex_m33_gcc")
+	set(PICO_PLATFORM "rp2350-arm-s")
 else()
 	set(PICO_COMPILER "pico_arm_cortex_m0plus_gcc")
+	set(PICO_PLATFORM "rp2040")
 endif()
 
 set(CMAKE_C_STANDARD 11)
