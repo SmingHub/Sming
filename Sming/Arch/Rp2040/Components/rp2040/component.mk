@@ -51,7 +51,7 @@ WRAPPED_FUNCTIONS :=
 $(foreach c,$(wildcard $(COMPONENT_PATH)/sdk/*.mk),$(eval include $c))
 
 EXTRA_LDFLAGS := \
-	$(call Wrap,$(WRAPPED_FUNCTIONS)) \
+	$(call UndefWrap,$(WRAPPED_FUNCTIONS)) \
 	$(call Undef,$(RUNTIME_INIT_FUNC)) \
 	-T memmap_default.ld
 
