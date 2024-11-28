@@ -8,6 +8,11 @@ COMPONENT_DOCFILES := \
 DEBUG_VARS += UF2CONV_PY
 UF2CONV_PY := $(COMPONENT_PATH)/uf2conv.py
 
+ifeq ($(SMING_SOC),rp2350)
+UF2_FAMILY := "absolute"
+else
+UF2_FAMILY := "rp2040"
+endif
 
 # Invoke uf2conv utility
 # $1 -> Parameters
@@ -29,7 +34,7 @@ endef
 define WriteFlash
 	$(if $1,\
 		$(info WriteFlash $1) \
-		$(call Uf2Conv,--upload $1 --output $(OUT_BASE)/flash.uf2)
+		$(call Uf2Conv,--family $(UF2_FAMILY) --upload $1 --output $(OUT_BASE)/flash.uf2)
 	)
 endef
 
