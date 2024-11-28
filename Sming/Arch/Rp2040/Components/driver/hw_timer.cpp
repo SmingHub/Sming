@@ -18,7 +18,7 @@ namespace
 {
 void IRAM_ATTR timer1_isr()
 {
-    hw_clear_bits(&timer_hw->intr, BIT(0));
+	hw_clear_bits(&timer_hw->intr, BIT(0));
 	auto& p = hw_timer_private;
 	if(p.timer1_callback != nullptr) {
 		p.timer1_callback(p.timer1_arg);
@@ -61,5 +61,5 @@ void IRAM_ATTR hw_timer1_enable(hw_timer_clkdiv_t div, hw_timer_intr_type_t intr
 
 void hw_timer_init()
 {
-	// hardware_alarm_claim(0);
+	timer_hardware_alarm_claim(HW_TIMER_INST, 0);
 }

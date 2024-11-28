@@ -9,7 +9,7 @@ DEBUG_VARS += UF2CONV_PY
 UF2CONV_PY := $(COMPONENT_PATH)/uf2conv.py
 
 ifeq ($(SMING_SOC),rp2350)
-UF2_FAMILY := "absolute"
+UF2_FAMILY := "rp2xxx_absolute"
 else
 UF2_FAMILY := "rp2040"
 endif
