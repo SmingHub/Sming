@@ -91,6 +91,7 @@ SDK_INTERFACES := \
 	rp2_common/hardware_vreg \
 	rp2_common/hardware_watchdog \
 	rp2_common/hardware_xosc \
+	rp2_common/pico_aon_timer \
 	rp2_common/pico_async_context \
 	rp2_common/pico_bootrom \
 	rp2_common/pico_double \

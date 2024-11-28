@@ -70,6 +70,7 @@ target_link_libraries(pico
 	hardware_vreg
 	hardware_watchdog
 	hardware_xosc
+	pico_aon_timer
 	pico_bit_ops
 	pico_divider
 	pico_double
