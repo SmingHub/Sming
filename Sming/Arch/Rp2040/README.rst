@@ -3,11 +3,13 @@ Sming RP2040 Architecture
 
 .. highlight:: bash
 
-Support building Sming for the `Raspberry Pi RP2040 SOC
-<https://www.raspberrypi.org/documentation/microcontrollers/raspberry-pi-pico.html>`__.
+Support building Sming for the `Raspberry Pi Pico-series Microcontrollers <https://www.raspberrypi.com/documentation/microcontrollers/pico-series.html>`__.
+At time of writing this includes both RP2040 and RP2350 devices.
 
-Testing so far has been limited to the Rasperry Pi Pico, but there are lots of other boards available.
-Configure this using the :envvar:`PICO_BOARD` setting. The default is ``pico`` (or ``pico_w`` if networking is enabled).
+Testing has been limited to the Rasperry Pi Pico development boards, but there are lots of others available.
+Configure this using the :envvar:`PICO_BOARD` setting.
+The default is ``pico`` (or ``pico_w`` if networking is enabled).
+Support for the new ``pico2`` boards is provided using :envvar:`SMING_SOC=rp2350 <SMING_SOC>`.
 You can find the `full list here <https://github.com/raspberrypi/pico-sdk/tree/master/src/boards/include/boards>`__.
 
 Special mention to the arduino-pico project https://github.com/earlephilhower/arduino-pico.
@@ -41,7 +43,8 @@ The following features are tested and working:
 - USB supported using the :library:`USB` library, both host and device modes.
 - HardwareSPI via :library:`HardwareSPI` for fully asynchronous SPI communications (host mode only).
 
-Not yet implemented:
+Limited or no support is provided for the following items.
+In many cases best use of the hardware is made using the Pico SDK API directly.
 
 PWM
    Hardware can drive up to 16 outputs and measure input frequency/duty cycle.
@@ -51,13 +54,14 @@ I2C
 RTC
    Can wake from deep sleep but requires an external clock (e.g. 32kHz crystal) and appropriate API.
    (Setting and reading the time is implemented.)
+   Note that the RP2350 does not have an RTC. Sming uses the Always-On timer api to support both devices.
 Low-power modes
    Deep sleep / suspend / power-saving
 PIO (Programmable I/O)
-   A killer feature for the RP2040.
+   A killer feature for the RP2 series.
    Uses range from simple glue logic to I2S, etc.
 Crash/exception handling & serial debugging
-   RP2040 supports JTAG debugging but requires extra hardware.
+   RP2 devices support JTAG debugging but requires extra hardware.
    Serial debugging is often enough and easier to set up.
    Requires GDB stub plus implementing crash handler callbacks, etc.
 Multi-boot / OTA updates.
@@ -66,8 +70,13 @@ Multi-boot / OTA updates.
    Adding RP2040 support to rBoot may work, however the Pico typically has only 2MByte flash which is quite restrictive.
    It is also necessary to compile images at different addresses as there is no windowed XIP (eXecute In Place) capability.
    See :library:`FlashIP` library for a basic method of OTA.
+   Note that the Pico2 boards have 4MByte flash and partition table support which requires integrating with Sming.
 Bluetooth
-   The SDK supports this but has not yet been integrated into Sming.
+   The SDK supports bluetooth for the CYW43439 BT/WiFi SoC which the Pico-W boards (and other) use.
+   This has not yet been integrated into Sming.
+RISCV (RP2350)
+   Sming builds ARM code but these devices also support RISCV.
+   This will require an additional toolchain and compile options.
 
 
 Installation
@@ -144,10 +153,7 @@ Once the file has finished sending the RP2040 reboots itself into normal operati
 
 The RP2040 can also be programmed via JTAG debugging but this requires additional hardware and setup.
 
-.. note::
-
-   The RP2040 bootloader does not include support for reading flash memory via mass storage,
-   so commands such as ``make verifyflash`` won't work at present.
+Commands such as ``make readmap`` use :component-rp2040:`picotool` and require the device to be in BOOT mode.
 
 
 Dual-core support
