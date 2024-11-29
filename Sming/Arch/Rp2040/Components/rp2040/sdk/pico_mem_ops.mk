@@ -1,8 +1,5 @@
 # pico_mem_ops
 
-RUNTIME_INIT_FUNC += \
-	__aeabi_mem_init
-
 ifeq ($(SMING_SOC),rp2040)
 WRAPPED_FUNCTIONS += \
 	memcpy \

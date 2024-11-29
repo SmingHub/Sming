@@ -41,18 +41,14 @@ ifeq ($(ENABLE_BOOTSEL),1)
 COMPONENT_CXXFLAGS += -DENABLE_BOOTSEL=1
 endif
 
-# Various runtime initialisation functions are not referenced
-# We must tell the linker about these so they aren't discarded.
-RUNTIME_INIT_FUNC :=
-
 # Functions which are wrapped by the SDK
 WRAPPED_FUNCTIONS :=
 
 $(foreach c,$(wildcard $(COMPONENT_PATH)/sdk/*.mk),$(eval include $c))
 
 EXTRA_LDFLAGS := \
-	$(call UndefWrap,$(WRAPPED_FUNCTIONS)) \
-	$(call Undef,$(RUNTIME_INIT_FUNC)) \
+	$(call Wrap,$(WRAPPED_FUNCTIONS)) \
+	-Wl,--whole-archive -lpico -Wl,--no-whole-archive \
 	-T memmap_default.ld
 
 SDK_INTERFACES := \
@@ -131,7 +127,6 @@ LIBDIRS += \
 	$(PICO_BUILD_DIR)
 
 EXTRA_LIBS += \
-	pico \
 	m \
 	stdc++ \
 	gcc

@@ -1,8 +1,5 @@
 # pico_float
 
-RUNTIME_INIT_FUNC += \
-	__aeabi_float_init
-
 ifeq ($(SMING_SOC),rp2040)
 WRAPPED_FUNCTIONS += \
 	__aeabi_fadd \

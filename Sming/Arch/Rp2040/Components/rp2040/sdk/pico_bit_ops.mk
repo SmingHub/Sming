@@ -1,9 +1,5 @@
 # pico_bit_ops
 
-RUNTIME_INIT_FUNC += \
-	__aeabi_bits_init
-
-
 ifeq ($(SMING_SOC),rp2040)
 WRAPPED_FUNCTIONS += \
 	__clzsi2 \

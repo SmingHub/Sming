@@ -38,6 +38,7 @@ target_compile_definitions(pico PUBLIC
 	PICO_XOSC_STARTUP_DELAY_MULTIPLIER=64
 	PICO_DIVIDER_IN_RAM=1
 	PICO_MEM_IN_RAM=1
+	PICO_CXX_DISABLE_ALLOCATION_OVERRIDES=1
 )
 
 pico_set_program_name(pico "Sming")
