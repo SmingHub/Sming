@@ -21,7 +21,6 @@ MC_WRAP_FUNCS := \
 	strdup
 ifeq ($(SMING_ARCH),Esp8266)
 MC_WRAP_FUNCS += \
-	realloc \
 	pvPortMalloc \
 	pvPortCalloc \
 	pvPortRealloc \
