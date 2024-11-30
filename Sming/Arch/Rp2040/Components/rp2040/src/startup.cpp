@@ -94,14 +94,10 @@ void check_bootsel()
 
 } // namespace
 
-extern void system_init_rtc();
-
 extern "C" int main(void)
 {
 	extern void system_init_clocks();
 	system_init_clocks();
-
-	system_init_rtc();
 
 	system_soft_wdt_restart();
 

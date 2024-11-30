@@ -9,44 +9,62 @@
  ****/
 
 #include <Platform/RTC.h>
-#include <pico/aon_timer.h>
+#include <sys/time.h>
+#include <pico/time.h>
 
 RtcClass RTC;
 
-#define NS_PER_SECOND 1000000000
-
-void system_init_rtc()
-{
-	struct timespec ts {
-	};
-	aon_timer_start(&ts);
-}
+#define NS_PER_SECOND 1'000'000'000
+#define US_PER_SECOND 1'000'000
 
 RtcClass::RtcClass() = default;
 
+namespace
+{
+int64_t epoch_sys_time_us;
+}
+
+extern "C" int _gettimeofday(struct timeval* tv, void*)
+{
+	if(tv) {
+		auto us_since_epoch = epoch_sys_time_us + time_us_64();
+		*tv = {
+			.tv_sec = time_t(us_since_epoch / US_PER_SECOND),
+			.tv_usec = suseconds_t(us_since_epoch % US_PER_SECOND),
+		};
+	}
+	return 0;
+}
+
+extern "C" int settimeofday(const struct timeval* tv, const struct timezone*)
+{
+	if(tv) {
+		auto us_since_epoch = tv->tv_sec * US_PER_SECOND + tv->tv_usec;
+		epoch_sys_time_us = us_since_epoch - time_us_64();
+	}
+	return 0;
+}
+
 uint64_t RtcClass::getRtcNanoseconds()
 {
-	struct timespec ts;
-	return aon_timer_get_time(&ts) ? timespec_to_us(&ts) * 1000ULL : 0;
+	return uint64_t(epoch_sys_time_us + time_us_64()) * 1000ULL;
 }
 
 uint32_t RtcClass::getRtcSeconds()
 {
-	struct timespec ts;
-	return aon_timer_get_time(&ts) ? ts.tv_sec : 0;
+	return (epoch_sys_time_us + time_us_64()) / US_PER_SECOND;
 }
 
 bool RtcClass::setRtcNanoseconds(uint64_t nanoseconds)
 {
-	struct timespec ts;
-	us_to_timespec(nanoseconds / 1000ULL, &ts);
-	return aon_timer_set_time(&ts);
+	auto us_since_epoch = nanoseconds / 1000;
+	epoch_sys_time_us = us_since_epoch - get_absolute_time();
+	return true;
 }
 
 bool RtcClass::setRtcSeconds(uint32_t seconds)
 {
-	struct timespec ts {
-		.tv_sec = seconds
-	};
-	return aon_timer_set_time(&ts);
+	auto us_since_epoch = int64_t(seconds) * US_PER_SECOND;
+	epoch_sys_time_us = us_since_epoch - time_us_64();
+	return true;
 }
