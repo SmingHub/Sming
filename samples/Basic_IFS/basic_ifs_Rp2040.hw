@@ -8,7 +8,7 @@
     ],
     "partitions": {
         "rom0": {
-            "size": "320K"
+            "size": "428K"
         },
         "lfs1": {
             "size": "932K",

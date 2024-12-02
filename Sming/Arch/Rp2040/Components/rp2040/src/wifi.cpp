@@ -122,6 +122,27 @@ uint32_t cyw43_storage_read(void* dest, uint32_t length)
 	return length;
 }
 
+uint32_t cyw43_storage_get_chunksize()
+{
+	const uint32_t chunkTag = 0x4b4e4843; // "CHNK"
+	struct chunk_t {
+		uint32_t tag;
+		uint32_t length;
+	};
+	struct chunk_t chunk;
+	int res = cyw43_storage_read(&chunk, sizeof(chunk));
+	if(res != sizeof(chunk)) {
+		debug_e("[CYW43] Bad chunk header %d\n", res);
+		return 0;
+	}
+	if(chunk.tag != chunkTag) {
+		debug_e("[CYW43] Bad chunk tag %08x\n", chunk.tag);
+		return 0;
+	}
+	debug_d("[CYW43] Chunk %u bytes\n", chunk.length);
+	return chunk.length;
+}
+
 void cyw43_storage_cleanup()
 {
 	decompressor.reset();

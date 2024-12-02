@@ -1,0 +1,28 @@
+diff --git a/lib/whereami/whereami.c b/lib/whereami/whereami.c
+index d052e14..940736e 100644
+--- a/lib/whereami/whereami.c
++++ b/lib/whereami/whereami.c
+@@ -60,8 +60,9 @@ extern "C" {
+ #if defined(_MSC_VER)
+ #pragma warning(push, 3)
+ #endif
++#undef _WIN32_WINNT
++#define _WIN32_WINNT _WIN32_WINNT_WINXP
+ #include <windows.h>
+-#include <intrin.h>
+ #if defined(_MSC_VER)
+ #pragma warning(pop)
+ #endif
+diff --git a/picoboot_connection/picoboot_connection.c b/picoboot_connection/picoboot_connection.c
+index 265608c..e487714 100644
+--- a/picoboot_connection/picoboot_connection.c
++++ b/picoboot_connection/picoboot_connection.c
+@@ -9,6 +9,8 @@
+ #include <stdbool.h>
+ #include <inttypes.h>
+ 
++#define static_assert _Static_assert
++
+ #include "picoboot_connection.h"
+ #include "boot/bootrom_constants.h"
+ #include "pico/stdio_usb/reset_interface.h"

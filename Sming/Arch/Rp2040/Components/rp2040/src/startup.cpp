@@ -57,8 +57,14 @@ bool __noinline IRAM_ATTR get_bootsel_button()
 		//
 	}
 
-	// Read input (low when BOOTSEL pressed)
-	bool button_state = !(sio_hw->gpio_hi_in & BIT(CS_PIN_INDEX));
+	// The HI GPIO registers in SIO can observe and control the 6 QSPI pins.
+	// Note the button pulls the pin *low* when pressed.
+#ifdef SOC_RP2040
+#define CS_BIT (1u << 1)
+#else
+#define CS_BIT SIO_GPIO_HI_IN_QSPI_CSN_BITS
+#endif
+	bool button_state = !(sio_hw->gpio_hi_in & CS_BIT);
 
 	// Re-enable chip select
 	hw_write_masked(&ioqspi_hw->io[CS_PIN_INDEX].ctrl, GPIO_OVERRIDE_NORMAL << IO_QSPI_GPIO_QSPI_SS_CTRL_OEOVER_LSB,
@@ -88,14 +94,10 @@ void check_bootsel()
 
 } // namespace
 
-extern void system_init_rtc();
-
 extern "C" int main(void)
 {
 	extern void system_init_clocks();
 	system_init_clocks();
-
-	system_init_rtc();
 
 	system_soft_wdt_restart();
 

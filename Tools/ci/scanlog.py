@@ -327,7 +327,6 @@ def fetch_logs(filename: str, repo: str = None, branch: str = None):
 
 def print_diff(log1: Log, log2: Log):
     for job1 in log1.jobs:
-        job_printed = False
         try:
             job2 = next(job for job in log2.jobs if job.name == job1.name)
         except StopIteration:
@@ -364,9 +363,7 @@ def print_diff(log1: Log, log2: Log):
                 data[name] = f'{v2-v1:+}'
             diff_table.append(data)
 
-            if not job_printed:
-                print(f'{job1.name}:')
-                job_printed = True
+            print(f'{job1.name}: {target}')
             print_table(diff_table)
 
     if table2.rows:

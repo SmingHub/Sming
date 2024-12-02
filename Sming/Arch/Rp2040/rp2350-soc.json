@@ -1,0 +1,62 @@
+{
+    "variant": "rp2350",
+    "name": "RP2350",
+    "peripherals": {
+        "CLOCK": {
+            "sigmask": "{name}.+"
+        },
+        "SPI[0-1]": {
+            "sigmask": "{name}.+"
+        },
+        "UART0": {
+            "sigmask": "{name}.+",
+            "default": {
+                "TXD": [
+                    "UART0_TX",
+                    0
+                ],
+                "RXD": [
+                    "UART0_RX",
+                    1
+                ]
+            }
+        },
+        "UART1": {
+            "sigmask": "{name}.+",
+            "default": {
+                "TXD": [
+                    "UART1_TX",
+                    4
+                ],
+                "RXD": [
+                    "UART1_RX",
+                    5
+                ]
+            }
+        },
+        "I2C[0-1]": {
+            "sigmask": "{name}.+"
+        },
+        "PIO[0-2]": {
+            "sigmask": "{name}.+"
+        },
+        "PWM[0-9]": {
+            "sigmask": "{name}.+"
+        },
+        "SIO": {
+            "sigmask": "{name}.+"
+        },
+        "USB": {
+            "sigmask": "{name}.+"
+        },
+        "HSTX": {
+            "sigmask": "{name}"
+        },
+        "XIP": {
+            "sigmask": "{name}.+"
+        },
+        "TRACE": {
+            "sigmask": "{name}.+"
+        }
+    }
+}

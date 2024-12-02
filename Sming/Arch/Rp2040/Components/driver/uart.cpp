@@ -13,6 +13,12 @@
 #include <hardware/resets.h>
 #include <hardware/gpio.h>
 
+#ifdef ARCH_RP2040
+#define UART_FUNCSEL_NUM(gpio) GPIO_FUNC_UART
+#else
+#define UART_FUNCSEL_NUM(gpio) ((gpio) & 0x2 ? GPIO_FUNC_UART_AUX : GPIO_FUNC_UART)
+#endif
+
 namespace
 {
 using uart_dev_t = uart_hw_t;
@@ -721,7 +727,7 @@ bool smg_uart_set_pins(smg_uart_t* uart, int tx_pin, int rx_pin)
 		if(uart->tx_pin != UART_PIN_DEFAULT) {
 			gpio_set_function(uart->tx_pin, GPIO_FUNC_NULL);
 		}
-		gpio_set_function(tx_pin, GPIO_FUNC_UART);
+		gpio_set_function(tx_pin, UART_FUNCSEL_NUM(tx_pin));
 		uart->tx_pin = tx_pin;
 	}
 
@@ -729,7 +735,7 @@ bool smg_uart_set_pins(smg_uart_t* uart, int tx_pin, int rx_pin)
 		if(uart->rx_pin != UART_PIN_DEFAULT) {
 			gpio_set_function(uart->rx_pin, GPIO_FUNC_NULL);
 		}
-		gpio_set_function(rx_pin, GPIO_FUNC_UART);
+		gpio_set_function(rx_pin, UART_FUNCSEL_NUM(rx_pin));
 		uart->rx_pin = rx_pin;
 	}
 

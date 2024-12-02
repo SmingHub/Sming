@@ -378,7 +378,7 @@ extern "C" void* WRAP(pvPortZalloc)(size_t) __attribute__((alias("mc_zalloc")));
 extern "C" void* WRAP(pvPortZallocIram)(size_t) __attribute__((alias("mc_zalloc")));
 extern "C" void WRAP(vPortFree)(void*) __attribute__((alias("mc_free")));
 
-#else
+#elif !defined(ARCH_RP2040)
 
 void* operator new(size_t size)
 {
