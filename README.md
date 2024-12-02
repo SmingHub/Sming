@@ -1,7 +1,7 @@
 # Sming
 
 Sming is an asynchronous embedded C++ framework with superb performance and multiple network features.
-Sming is [open source](LICENSE), modular and supports [multiple architectures](https://sming.readthedocs.io/en/latest/features.html) including ESP8266, ESP32 and RP2040.
+Sming is [open source](LICENSE), modular and supports [multiple architectures](https://sming.readthedocs.io/en/latest/features.html) including ESP8266, ESP32 and Raspberry Pi Pico (both RP2040 and RP2350).
 
 [![Examples](https://github.com/SmingHub/Sming/wiki/images/small/combine.png)](https://github.com/SmingHub/Sming/wiki/examples)
 

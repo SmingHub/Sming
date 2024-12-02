@@ -1,5 +1,5 @@
-Sming RP2040 Architecture
-=========================
+Sming Raspberry Pi Pico Architecture
+====================================
 
 .. highlight:: bash
 
