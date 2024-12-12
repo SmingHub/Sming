@@ -246,7 +246,7 @@ bool initFileSystem()
 #endif
 
 #ifdef ENABLE_USB_STORAGE
-	USB::begin();
+	USB::begin(true);
 	USB::MSC::onMount([](auto inst) {
 		usbStorage.begin(inst);
 		usbStorage.enumerate([](auto& unit, const USB::MSC::Inquiry& inquiry) {
