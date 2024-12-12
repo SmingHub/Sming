@@ -15,11 +15,14 @@
 #include <stdint.h>
 #include <esp_idf_version.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #if CONFIG_ESP_TIMER_IMPL_TG0_LAC
 #include <soc/timer_group_reg.h>
 #else
 #include <hal/systimer_ll.h>
 #endif
+#pragma GCC diagnostic pop
 
 #ifdef __cplusplus
 extern "C" {
