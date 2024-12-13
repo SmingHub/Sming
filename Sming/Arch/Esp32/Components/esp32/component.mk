@@ -117,7 +117,8 @@ SDK_INCDIRS := \
 	esp_netif/include \
 	esp_eth/include \
 	esp_wifi/include \
-	lwip/include/apps/sntp
+	lwip/include/apps/sntp \
+	usb/include
 
 ifdef IDF_VERSION_4x
 SDK_INCDIRS += \
@@ -261,6 +262,10 @@ SDK_COMPONENTS := \
 	pthread \
 	soc \
 	spi_flash
+
+ifneq (,$(filter esp32s2 esp32s3,$(SMING_SOC)))
+SDK_COMPONENTS += usb
+endif
 
 ifdef IDF_VERSION_43
 SDK_COMPONENTS += $(ESP_VARIANT)
