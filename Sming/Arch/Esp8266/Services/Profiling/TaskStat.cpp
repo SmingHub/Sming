@@ -15,7 +15,7 @@ namespace Profiling
 struct TaskStat::Info {
 };
 
-TaskStat::TaskStat(Print& out) : out(out)
+TaskStat::TaskStat(Print& out) : out(&out)
 {
 }
 
@@ -23,7 +23,7 @@ TaskStat::~TaskStat() = default;
 
 bool TaskStat::update()
 {
-	out.println("[TaskStat] Not Implemented");
+	out->println("[TaskStat] Not Implemented");
 	return false;
 }
 

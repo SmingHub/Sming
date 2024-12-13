@@ -27,7 +27,7 @@ struct TaskStat::Info {
 #endif
 };
 
-TaskStat::TaskStat(Print& out) : out(out)
+TaskStat::TaskStat(Print& out) : out(&out)
 {
 #if CONFIG_FREERTOS_USE_TRACE_FACILITY && CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS
 	taskInfo = std::make_unique<Info[]>(2);
@@ -38,13 +38,16 @@ TaskStat::~TaskStat() = default;
 
 bool TaskStat::update()
 {
+	if(!out) {
+		return false;
+	}
 #if CONFIG_FREERTOS_USE_TRACE_FACILITY && CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS
 
 	// Get current task states
 	auto& info = taskInfo[endIndex];
 	info.count = uxTaskGetSystemState(info.status, maxTasks, &info.runTime);
 	if(info.count == 0) {
-		out.println(_F("[TaskStat] uxTaskGetSystemState returned 0"));
+		out->println(_F("[TaskStat] uxTaskGetSystemState returned 0"));
 		return false;
 	}
 
@@ -79,7 +82,7 @@ bool TaskStat::update()
 	// Calculate totalElapsedTime in units of run time stats clock period.
 	uint32_t totalElapsedTime = endInfo.runTime - startInfo.runTime;
 	if(totalElapsedTime == 0) {
-		out.println(_F("[TaskStat] Run time was 0: Have you set CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS?"));
+		out->println(_F("[TaskStat] Run time was 0: Have you set CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS?"));
 		return false;
 	}
 
@@ -87,8 +90,8 @@ bool TaskStat::update()
 
 	PSTR_ARRAY(hdrfmt, "#   | Core | Prio | Handle   | Run Time | % Time | Name");
 	PSTR_ARRAY(datfmt, "%-3u |   %c  | %4u | %08x | %8u |  %3u%%  | %s\r\n");
-	out.println();
-	out.println(hdrfmt);
+	out->println();
+	out->println(hdrfmt);
 	// Match each task in startInfo.status to those in the endInfo.status
 	for(unsigned i = 0; i < startInfo.count; i++) {
 		int k = -1;
@@ -108,27 +111,27 @@ bool TaskStat::update()
 #if CONFIG_FREERTOS_VTASKLIST_INCLUDE_COREID
 			coreId = status.xCoreID;
 #endif
-			out.printf(datfmt, status.xTaskNumber, (coreId == CONFIG_FREERTOS_NO_AFFINITY) ? '-' : ('0' + coreId),
-					   status.uxCurrentPriority, status.xHandle, taskElapsedTime, percentageTime, status.pcTaskName);
+			out->printf(datfmt, status.xTaskNumber, (coreId == CONFIG_FREERTOS_NO_AFFINITY) ? '-' : ('0' + coreId),
+						status.uxCurrentPriority, status.xHandle, taskElapsedTime, percentageTime, status.pcTaskName);
 		}
 	}
 
 	// Print unmatched tasks
 	for(unsigned i = 0; i < startInfo.count; i++) {
 		if(!startMatched[i]) {
-			out.printf("Deleted: %s\r\n", startInfo.status[i].pcTaskName);
+			out->printf("Deleted: %s\r\n", startInfo.status[i].pcTaskName);
 		}
 	}
 	for(unsigned i = 0; i < endInfo.count; i++) {
 		if(!endMatched[i]) {
-			out.printf("Created: %s\r\n", endInfo.status[i].pcTaskName);
+			out->printf("Created: %s\r\n", endInfo.status[i].pcTaskName);
 		}
 	}
 
 	return true;
 
 #else
-	out.println("[TaskStat] Tracing disabled");
+	out->println("[TaskStat] Tracing disabled");
 	return false;
 #endif
 }
