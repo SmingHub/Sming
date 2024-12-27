@@ -12,10 +12,10 @@ ifndef CONFIG_ESP_SYSTEM_SINGLE_CORE_MODE
 SDK_UNDEF_SYMBOLS += start_app_other_cores
 endif
 
-# ld_include_panic_highint_hdl is added as an undefined symbol because otherwise the
-# linker will ignore panic_highint_hdl.S as it has no other files depending on any
+# ld_include_highint_hdl is added as an undefined symbol because otherwise the
+# linker will ignore highint_hdl.S as it has no other files depending on any
 # symbols in it.
-SDK_UNDEF_SYMBOLS += ld_include_panic_highint_hdl
+SDK_UNDEF_SYMBOLS += ld_include_highint_hdl
 
 # IDF 5.2
 SDK_WRAP_SYMBOLS += esp_newlib_init_global_stdio

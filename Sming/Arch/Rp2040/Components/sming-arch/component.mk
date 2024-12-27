@@ -12,6 +12,7 @@ COMPONENT_DEPENDS := \
 	libc \
 	rp2040 \
 	uf2 \
+	picotool \
 	driver \
 	gdbstub \
 	spi_flash

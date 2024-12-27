@@ -15,20 +15,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         variant: [esp32, esp32s2, esp32c3, esp32s3, esp32c2]
-        idf_version: ["4.4", "5.0", "5.2"]
-        include:
-          - os: ubuntu-latest
-            variant: esp32
-            idf_version: "4.3"
-        exclude:
-          - variant: esp32c2
-            idf_version: "4.4"
-          - os: macos-latest
-            idf_version: "4.4"
-          - os: macos-latest
-            idf_version: "5.0"
-          - os: windows-latest
-            idf_version: "5.0"
+        idf_version: ["5.2"]
 
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-${{ toJson(matrix) }}
@@ -58,7 +45,7 @@ jobs:
     - name: Setup python
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.idf_version == '4.3' && '3.8' || '3.12' }}
+        python-version: '3.12'
 
     - name: Fix permissions
       if: matrix.os != 'windows-latest'

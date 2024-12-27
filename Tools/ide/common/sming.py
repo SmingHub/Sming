@@ -49,7 +49,6 @@ class Env(dict):
         path = self.replace(path, 'SMING_HOME', prefix)
         path = self.replace(path, 'ESP_HOME', prefix)
         path = self.replace(path, 'IDF_PATH', prefix)
-        path = self.replace(path, 'IDF_TOOLS_PATH', prefix)
         return path
 
     def isWsl(self):

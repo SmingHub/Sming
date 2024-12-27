@@ -1,0 +1,12 @@
+From v5.2 to 6.0
+================
+
+.. highlight:: c++
+
+**Esp32 task scheduling**
+
+Sming is a single-threaded framework, so does not impose any requirements on application code to be thread-safe.
+However, code could be executed from one of several tasks (wifi, tcpip or Sming) which is a reliability concern.
+
+With PR#2913 this has been fixed and all Sming code now runs in the same task context.
+This has largely be achieved by using a separate callback queue for Sming rather than using the IDF mechanism.

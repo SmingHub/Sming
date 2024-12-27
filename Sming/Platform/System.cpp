@@ -14,11 +14,6 @@
 SystemClass System;
 SystemState SystemClass::state = eSS_None;
 
-#ifdef ARCH_ESP32
-#undef TASK_QUEUE_LENGTH
-#define TASK_QUEUE_LENGTH 0
-#define taskQueue nullptr
-#else
 #ifdef TASK_QUEUE_LENGTH
 static_assert(TASK_QUEUE_LENGTH >= 8, "Task queue too small");
 #else
@@ -28,8 +23,8 @@ static_assert(TASK_QUEUE_LENGTH >= 8, "Task queue too small");
  */
 #define TASK_QUEUE_LENGTH 10
 #endif
+
 os_event_t SystemClass::taskQueue[TASK_QUEUE_LENGTH];
-#endif
 
 #ifdef ENABLE_TASK_COUNT
 volatile uint8_t SystemClass::taskCount;

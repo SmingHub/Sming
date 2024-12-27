@@ -46,7 +46,7 @@ void operator delete(void* ptr, size_t)
 	free(ptr);
 }
 
-void operator delete[](void* ptr, size_t)
+void __attribute__((weak)) operator delete[](void* ptr, size_t)
 {
 	free(ptr);
 }

@@ -246,7 +246,7 @@ bool initFileSystem()
 #endif
 
 #ifdef ENABLE_USB_STORAGE
-	USB::begin();
+	USB::begin(true);
 	USB::MSC::onMount([](auto inst) {
 		usbStorage.begin(inst);
 		usbStorage.enumerate([](auto& unit, const USB::MSC::Inquiry& inquiry) {
@@ -284,7 +284,7 @@ bool initFileSystem()
 			for(auto part : unit.partitions()) {
 				Serial << part << endl;
 			}
-			auto part = *unit.partitions().begin();
+			auto part = Storage::findDefaultPartition(Storage::Partition::SubType::Data::fat);
 			auto fatfs = IFS::createFatFilesystem(part);
 			if(fatfs && fatfs->mount() == FS_OK) {
 				getFileSystem()->setVolume(3, fatfs);

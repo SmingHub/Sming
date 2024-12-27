@@ -281,7 +281,7 @@ public:
 	bool read(storage_size_t offset, void* dst, size_t size);
 
 	template <typename T>
-	typename std::enable_if<std::is_pod<T>::value, bool>::type read(storage_size_t offset, T& value)
+	typename std::enable_if<std::is_standard_layout<T>::value, bool>::type read(storage_size_t offset, T& value)
 	{
 		return read(offset, &value, sizeof(value));
 	}

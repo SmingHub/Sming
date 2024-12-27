@@ -8,8 +8,18 @@
 LDFLAGS	+= \
 	-Wl,--build-id=none \
 	--specs=nosys.specs \
-	-mcpu=cortex-m0plus \
 	-mthumb
+
+ifeq ($(SMING_SOC),rp2350)
+LDFLAGS	+= \
+	-mcpu=cortex-m33 \
+	-march=armv8-m.main+fp+dsp \
+	-mfloat-abi=softfp
+else
+LDFLAGS	+= \
+	-mcpu=cortex-m0plus \
+	-march=armv6-m
+endif
 
 ifneq ($(COMPILER_VERSION_MAJOR),10)
 LDFLAGS += -Wl,--no-warn-rwx-segments

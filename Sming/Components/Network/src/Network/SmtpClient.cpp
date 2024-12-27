@@ -21,6 +21,7 @@
 #include <Data/Stream/QuotedPrintableOutputStream.h>
 #include <Data/Stream/Base64OutputStream.h>
 #include <Data/HexString.h>
+#include <Data/Uuid.h>
 #include <Crypto/Md5.h>
 #include <Network/Ssl/Factory.h>
 
@@ -294,6 +295,12 @@ void SmtpClient::sendMailHeaders(MailMessage* mail)
 	if(!mail->headers.contains(HTTP_HEADER_CONTENT_TRANSFER_ENCODING)) {
 		mail->headers[HTTP_HEADER_CONTENT_TRANSFER_ENCODING] = _F("quoted-printable");
 		mail->stream = std::make_unique<QuotedPrintableOutputStream>(mail->stream.release());
+	}
+
+	if(!mail->headers.contains(F("Message-ID"))) {
+		Uuid uuid;
+		uuid.generate();
+		mail->headers[F("Message-ID")] = "<" + uuid.toString() + "@" + url.Host + ">";
 	}
 
 	if(!mail->attachments.isEmpty()) {

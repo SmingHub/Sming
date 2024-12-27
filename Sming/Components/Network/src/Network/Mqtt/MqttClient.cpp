@@ -199,9 +199,14 @@ bool MqttClient::setWill(const String& topic, const String& message, uint8_t fla
 bool MqttClient::connect(const Url& url, const String& clientName)
 {
 	this->url = url;
+
 	bool useSsl{url.Scheme == URI_SCHEME_MQTT_SECURE};
 	if(!useSsl && url.Scheme != URI_SCHEME_MQTT) {
 		debug_e("Only mqtt and mqtts protocols are allowed");
+		return false;
+	}
+	if(clientName == "") {
+		debug_e("clientName cannot be empty");
 		return false;
 	}
 

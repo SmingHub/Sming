@@ -122,7 +122,7 @@
 
 [submodule "Rp2040.picotool"]
 	path = Sming/Arch/Rp2040/Components/picotool/picotool
-	url = https://github.com/mikee47/picotool
+	url = https://github.com/raspberrypi/picotool
 	ignore = dirty
 
 [submodule "Rp2040.Sdk"]
@@ -213,6 +213,10 @@
 	path = Sming/Libraries/Arduino_TensorFlowLite
 	url = https://github.com/slaff/Arduino_TensorFlowLite.git
     ignore = dirty
+[submodule "Libraries.ConfigDB"]
+	path = Sming/Libraries/ConfigDB
+	url = https://github.com/mikee47/ConfigDB
+    ignore = dirty
 [submodule "Libraries.CS5460"]
 	path = Sming/Libraries/CS5460/CS5460
 	url = https://github.com/xxzl0130/CS5460.git
@@ -280,6 +284,10 @@
 [submodule "Libraries.ITEADLIB_Arduino_Nextion"]
 	path = Sming/Libraries/ITEADLIB_Arduino_Nextion
 	url = https://github.com/itead/ITEADLIB_Arduino_Nextion.git
+	ignore = dirty
+[submodule "Libraries.JsonStreamingParser"]
+	path = Sming/Libraries/JsonStreamingParser
+	url = https://github.com/mikee47/JsonStreamingParser
 	ignore = dirty
 [submodule "Libraries.libsodium"]
 	path = Sming/Libraries/libsodium/libsodium

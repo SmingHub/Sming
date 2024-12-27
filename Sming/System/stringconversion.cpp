@@ -160,7 +160,7 @@ char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigit
 		int_part = (unsigned long) floatVar;
 
 		//print the int part into num
-		char* s = ltoa(int_part, buf, 10);
+		char* s = ultoa(int_part, buf, 10);
 
 		//adjust end pointer
 		buf += strlen(s); //go to end of string
@@ -171,7 +171,7 @@ char *dtostrf_p(double floatVar, int minStringWidthIncDecimalPoint, int numDigit
 			*buf++ = '.'; // print the decimal point
 
 			//print the fraction part into temp
-			s = ltoa( ((floatVar - int_part) * mult), temp, 10);
+			s = ultoa( ((floatVar - int_part) * mult), temp, 10);
 
 			i = processedFracLen - strlen(s) + 1;
 

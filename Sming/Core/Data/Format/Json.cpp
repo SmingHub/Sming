@@ -17,67 +17,28 @@ namespace Format
 {
 Json json;
 
-namespace
-{
-bool IsValidUtf8(const char* str, unsigned length)
-{
-	if(str == nullptr) {
-		return true;
-	}
-
-	unsigned i = 0;
-	while(i < length) {
-		char c = str[i++];
-		if((c & 0x80) == 0) {
-			continue;
-		}
-
-		if(i >= length) {
-			return false; // incomplete multibyte char
-		}
-
-		if(c & 0x20) {
-			c = str[i++];
-			if((c & 0xC0) != 0x80) {
-				return false; // malformed trail byte or out of range char
-			}
-			if(i >= length) {
-				return false; // incomplete multibyte char
-			}
-		}
-
-		c = str[i++];
-		if((c & 0xC0) != 0x80) {
-			return false; // malformed trail byte
-		}
-	}
-
-	return true;
-}
-
-} // namespace
-
 /*
  * Check for invalid characters and replace them - can break browser
  * operation otherwise.
  *
  * This can occur if filenames become corrupted, so here we just
  * substitute an underscore _ for anything which fails to match UTF8.
- *
- * TODO: Perform ANSI -> UTF8 conversion?
  */
 void Json::escape(String& value) const
 {
-	if(!IsValidUtf8(value.c_str(), value.length())) {
-		debug_w("Invalid UTF8: %s", value.c_str());
-		for(unsigned i = 0; i < value.length(); ++i) {
-			char& c = value[i];
-			if(c < 0x20 || uint8_t(c) > 127)
-				c = '_';
-		}
-	}
+	escapeControls(value, Option::unicode | Option::doublequote | Option::backslash);
+}
 
-	value.replace("\"", "\\\"");
+void Json::quote(String& value) const
+{
+	escape(value);
+	auto len = value.length();
+	if(value.setLength(len + 2)) {
+		auto s = value.begin();
+		memmove(s + 1, s, len);
+		s[0] = '"';
+		s[len + 1] = '"';
+	}
 }
 
 } // namespace Format

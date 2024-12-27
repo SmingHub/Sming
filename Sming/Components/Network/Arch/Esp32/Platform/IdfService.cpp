@@ -9,6 +9,7 @@
  ****/
 
 #include <Platform/IdfService.h>
+#include <Platform/System.h>
 #include <esp_eth.h>
 #include <esp_netif.h>
 #include <esp_event.h>
@@ -54,10 +55,9 @@ void IdfService::enableEventCallback(bool enable)
 	auto handler = [](void* arg, esp_event_base_t, int32_t event_id, void*) {
 		auto service = static_cast<IdfService*>(arg);
 		service->state = Event(event_id);
-		if(!service->eventCallback) {
-			return;
+		if(service->eventCallback) {
+			System.queueCallback([service, event_id]() { service->eventCallback(Event(event_id)); });
 		}
-		service->eventCallback(Event(event_id));
 	};
 
 	if(enable) {

@@ -55,8 +55,11 @@ Device::~Device()
 bool Device::loadPartitions(Device& source, uint32_t tableOffset)
 {
 	constexpr size_t maxEntries = ESP_PARTITION_TABLE_MAX_LEN / sizeof(esp_partition_info_t);
-	esp_partition_info_t buffer[maxEntries];
-	if(!source.read(tableOffset, buffer, sizeof(buffer))) {
+	auto buffer = std::make_unique<esp_partition_info_t[]>(maxEntries);
+	if(!buffer) {
+		return false;
+	}
+	if(!source.read(tableOffset, buffer.get(), ESP_PARTITION_TABLE_MAX_LEN)) {
 		debug_e("[Partition] Failed to read partition table at offset 0x%08x", tableOffset);
 		return false;
 	}

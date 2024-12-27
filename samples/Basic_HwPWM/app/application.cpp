@@ -18,26 +18,38 @@
 #include <SmingCore.h>
 #include <HardwarePWM.h>
 
-#define LED_PIN 2
-
 namespace
 {
 // List of pins that you want to connect to pwm
-uint8_t pins[]{
+const uint8_t pins[]
+{
+#if defined(ARCH_ESP32)
+#define LED_PIN 3
+	LED_PIN, 4, 5, 18, 19, 4,
+#elif defined(ARCH_RP2040)
+#define LED_PIN PICO_DEFAULT_LED_PIN
+	LED_PIN, 2, 3, 4, 5, 6, 7, 8,
+#else
+#define LED_PIN 2
 	LED_PIN, 4, 5, 0, 15, 13, 12, 14,
+#endif
 };
-HardwarePWM HW_pwm(pins, ARRAY_SIZE(pins));
+
+const uint8_t defaultDutyPercent[]{
+	50, 95, 50, 85, 10, 30, 60, 80,
+};
+
+HardwarePWM pwm(pins, ARRAY_SIZE(pins));
+uint32_t maxDuty;
 
 SimpleTimer procTimer;
-
-const int maxDuty = HW_pwm.getMaxDuty();
 
 void doPWM()
 {
 	static bool countUp = true;
-	static int duty;
+	static uint32_t duty;
 
-	const int increment = maxDuty / 50;
+	const uint32_t increment = maxDuty / 50;
 
 	if(countUp) {
 		duty += increment;
@@ -45,15 +57,14 @@ void doPWM()
 			duty = maxDuty;
 			countUp = false;
 		}
+	} else if(duty <= increment) {
+		duty = 0;
+		countUp = true;
 	} else {
 		duty -= increment;
-		if(duty <= 0) {
-			duty = 0;
-			countUp = true;
-		}
 	}
 
-	HW_pwm.analogWrite(LED_PIN, duty);
+	pwm.analogWrite(LED_PIN, duty);
 }
 
 } // namespace
@@ -69,17 +80,21 @@ void init()
 	WifiAccessPoint.enable(false);
 #endif
 
-	// Setting PWM values on 8 different pins
-	HW_pwm.analogWrite(4, maxDuty);
-	HW_pwm.analogWrite(5, maxDuty / 2);
-	HW_pwm.analogWrite(0, maxDuty);
-	HW_pwm.analogWrite(2, maxDuty / 2);
-	HW_pwm.analogWrite(15, 0);
-	HW_pwm.analogWrite(13, maxDuty / 3);
-	HW_pwm.analogWrite(12, 2 * maxDuty / 3);
-	HW_pwm.analogWrite(14, maxDuty);
+	// Change PWM frequency if required: period is in microseconds
+	// pwm.setPeriod(100);
 
-	Serial.println(_F("PWM output set on all 8 Pins. Kindly check...\r\n"
-					  "Now LED_PIN will go from 0 to VCC to 0 in cycles."));
+	maxDuty = pwm.getMaxDuty();
+	auto period = pwm.getPeriod();
+	auto freq = pwm.getFrequency(LED_PIN);
+
+	Serial << _F("PWM period = ") << period << _F("us, freq = ") << freq << _F(", max. duty = ") << maxDuty << endl;
+
+	// Set default PWM values
+	for(unsigned i = 0; i < ARRAY_SIZE(pins); ++i) {
+		pwm.analogWrite(pins[i], maxDuty * defaultDutyPercent[i] / 100);
+	}
+
+	Serial << _F("PWM output set on all ") << ARRAY_SIZE(pins) << _F(" Pins. Kindly check...") << endl
+		   << _F("Now LED (pin ") << LED_PIN << _F(") will go from 0 to VCC to 0 in cycles.") << endl;
 	procTimer.initializeMs<100>(doPWM).start();
 }

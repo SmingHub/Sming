@@ -12,7 +12,6 @@
 #include <soc/mmu.h>
 #include <esp_flash_partitions.h>
 #include <esp_flash.h>
-#include <esp_task_wdt.h>
 #include <rom/cache.h>
 #include <esp_systemapi.h>
 
@@ -40,7 +39,7 @@ uint32_t flashmem_read(void* to, flash_addr_t fromaddr, uint32_t size)
 
 bool flashmem_erase_sector(flash_sector_t sector_id)
 {
-	esp_task_wdt_reset();
+	system_soft_wdt_feed();
 
 	debug_d("flashmem_erase_sector(0x%08x)", sector_id);
 

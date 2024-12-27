@@ -140,7 +140,7 @@ CMAKE ?= cmake
 
 # clang-format command
 DEBUG_VARS	+= CLANG_FORMAT
-CLANG_FORMAT ?= clang-format
+CLANG_FORMAT ?= clang-format-8
 
 # more tools
 DEBUG_VARS += AWK
@@ -238,6 +238,11 @@ DEBUG_VARS				+= COMPILER_VERSION_FULL COMPILER_VERSION COMPILER_NAME
 COMPILER_VERSION_FULL	:= $(shell LANG=C $(CC) -v 2>&1 | $(AWK) -F " version " '/ version /{ a=$$1; gsub(/ +/, "-", a); print a, $$2}')
 COMPILER_NAME			:= $(word 1,$(COMPILER_VERSION_FULL))
 COMPILER_VERSION		:= $(word 2,$(COMPILER_VERSION_FULL))
+
+# Use of bitwise assignment for volatile registers is deprecated in C++20 but de-deprecated in C++23
+ifeq ($(COMPILER_NAME)-$(SMING_CXX_STD),gcc-c++20)
+CXXFLAGS += -Wno-volatile
+endif
 
 ifndef USE_CLANG
 # Required to access peripheral registers using structs

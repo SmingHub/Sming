@@ -191,6 +191,28 @@ smg_uart_t* get_standard_uart(smg_uart_t* uart)
 	return is_standard_uart(uart) ? uart : nullptr;
 }
 
+class Lock
+{
+public:
+	Lock()
+	{
+		if(!mutex) {
+			mutex = xSemaphoreCreateMutex();
+		}
+		xSemaphoreTake(mutex, portMAX_DELAY);
+	}
+
+	~Lock()
+	{
+		xSemaphoreGive(mutex);
+	}
+
+private:
+	static SemaphoreHandle_t mutex;
+};
+
+SemaphoreHandle_t Lock::mutex;
+
 #if UART_ID_SERIAL_USB_JTAG
 
 /**
@@ -543,6 +565,8 @@ size_t smg_uart_write(smg_uart_t* uart, const void* buffer, size_t size)
 	size_t written = 0;
 
 	auto buf = static_cast<const uint8_t*>(buffer);
+
+	Lock lock;
 
 	while(written < size) {
 		// If TX buffer not in use or it's empty then write directly to hardware FIFO

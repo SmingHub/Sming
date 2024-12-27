@@ -13,9 +13,15 @@
 #include <hardware/dma.h>
 #include <hardware/regs/addressmap.h>
 #include <hardware/structs/xip_ctrl.h>
+#include <debug_progmem.h>
+
+#ifdef SOC_RP2350
+#include <hardware/structs/qmi.h>
+#include <hardware/regs/qmi.h>
+#else
 #include <hardware/structs/ssi.h>
 #include <hardware/regs/ssi.h>
-#include <debug_progmem.h>
+#endif
 
 #define FLASHCMD_READ_SFDP 0x5a
 #define FLASHCMD_READ_JEDEC_ID 0x9f
@@ -305,11 +311,33 @@ bool flashmem_erase_sector(flash_sector_t sector_id)
 	return true;
 }
 
+/*
+	DOUT/DUAL,	///< Two bits per clock for Data, 1-bit for Command and Address
+	DIO,	  	///< Two bits per clock for Address and Data, 1-bit for Command
+	QOUT/QUAD,	///< Four bits per clock  for Data, 1-bit for Command and Address
+	QIO,		///< Four bits per clock for Address and Data, 1-bit for Command
+*/
 SPIFlashInfo flashmem_get_info()
 {
 	SPIFlashInfo info{};
 	info.size = flashmem_get_size_type();
 
+#ifdef SOC_RP2350
+	uint32_t rfmt = qmi_hw->m[0].rfmt;
+	auto data_width = (rfmt & QMI_M0_RFMT_DATA_WIDTH_BITS) >> QMI_M0_RFMT_DATA_WIDTH_LSB;
+	auto addr_width = (rfmt & QMI_M0_RFMT_ADDR_WIDTH_BITS) >> QMI_M0_RFMT_ADDR_WIDTH_LSB;
+
+	switch(data_width) {
+	case 2:
+		info.mode = (addr_width == QMI_M0_RFMT_ADDR_WIDTH_VALUE_D) ? MODE_DIO : MODE_DOUT;
+		break;
+	case 4:
+		info.mode = (addr_width == QMI_M0_RFMT_ADDR_WIDTH_VALUE_Q) ? MODE_QIO : MODE_QOUT;
+		break;
+	default:
+		info.mode = MODE_SLOW_READ;
+	}
+#else
 	// Flash mode
 	uint32_t ctrlr0 = ssi_hw->ctrlr0;
 	auto ssi_frame_format = (ctrlr0 & SSI_CTRLR0_SPI_FRF_BITS) >> SSI_CTRLR0_SPI_FRF_LSB;
@@ -326,6 +354,7 @@ SPIFlashInfo flashmem_get_info()
 	default:
 		info.mode = MODE_SLOW_READ;
 	}
+#endif
 
 	return info;
 }
@@ -376,11 +405,7 @@ uint32_t spi_flash_get_id(void)
 
 flash_addr_t flashmem_get_address(const void* memptr)
 {
-	auto addr = uint32_t(memptr);
-	if(addr < XIP_BASE || addr >= XIP_NOALLOC_BASE) {
-		return 0;
-	}
-	return addr - XIP_BASE;
+	return isFlashPtr(memptr) ? (uint32_t(memptr) - XIP_BASE) : 0;
 }
 
 void flashmem_sfdp_read(uint32_t addr, void* buffer, size_t count)

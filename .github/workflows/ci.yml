@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        variant: [esp8266, host, rp2040]
+        variant: [esp8266, host, rp2040, rp2350]
         toolchain: [gcc]
         include:
           - variant: esp8266
@@ -30,6 +30,8 @@ jobs:
             arch: Host
             toolchain: gcc64
           - variant: rp2040
+            arch: Rp2040
+          - variant: rp2350
             arch: Rp2040
 
     concurrency:

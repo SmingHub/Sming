@@ -9,66 +9,62 @@
  ****/
 
 #include <Platform/RTC.h>
-#include <DateTime.h>
-#include <hardware/rtc.h>
 #include <sys/time.h>
-
-extern "C" int settimeofday(const struct timeval*, const struct timezone*);
+#include <pico/time.h>
 
 RtcClass RTC;
 
-#define NS_PER_SECOND 1000000000
-
-void system_init_rtc()
-{
-	rtc_init();
-	datetime_t t{.year = 1970, .month = 1, .day = 1};
-	rtc_set_datetime(&t);
-}
+#define NS_PER_SECOND 1'000'000'000
+#define US_PER_SECOND 1'000'000
 
 RtcClass::RtcClass() = default;
 
+namespace
+{
+int64_t epoch_sys_time_us;
+}
+
+extern "C" int _gettimeofday(struct timeval* tv, void*)
+{
+	if(tv) {
+		auto us_since_epoch = epoch_sys_time_us + time_us_64();
+		*tv = {
+			.tv_sec = time_t(us_since_epoch / US_PER_SECOND),
+			.tv_usec = suseconds_t(us_since_epoch % US_PER_SECOND),
+		};
+	}
+	return 0;
+}
+
+extern "C" int settimeofday(const struct timeval* tv, const struct timezone*)
+{
+	if(tv) {
+		auto us_since_epoch = tv->tv_sec * US_PER_SECOND + tv->tv_usec;
+		epoch_sys_time_us = us_since_epoch - time_us_64();
+	}
+	return 0;
+}
+
 uint64_t RtcClass::getRtcNanoseconds()
 {
-	return uint64_t(getRtcSeconds()) * NS_PER_SECOND;
+	return uint64_t(epoch_sys_time_us + time_us_64()) * 1000ULL;
 }
 
 uint32_t RtcClass::getRtcSeconds()
 {
-	datetime_t t;
-	if(!rtc_get_datetime(&t)) {
-		return 0;
-	}
-
-	DateTime dt;
-	dt.setTime(t.sec, t.min, t.hour, t.day, t.month - 1, t.year);
-
-	return time_t(dt);
+	return (epoch_sys_time_us + time_us_64()) / US_PER_SECOND;
 }
 
 bool RtcClass::setRtcNanoseconds(uint64_t nanoseconds)
 {
-	return setRtcSeconds(nanoseconds / NS_PER_SECOND);
+	auto us_since_epoch = nanoseconds / 1000;
+	epoch_sys_time_us = us_since_epoch - get_absolute_time();
+	return true;
 }
 
 bool RtcClass::setRtcSeconds(uint32_t seconds)
 {
-	struct timeval tv {
-		seconds
-	};
-	settimeofday(&tv, nullptr);
-
-	DateTime dt{seconds};
-
-	datetime_t t = {
-		.year = int16_t(dt.Year),
-		.month = int8_t(1 + dt.Month),
-		.day = int8_t(dt.Day),
-		.dotw = int8_t(dt.DayofWeek),
-		.hour = int8_t(dt.Hour),
-		.min = int8_t(dt.Minute),
-		.sec = int8_t(dt.Second),
-	};
-
-	return rtc_set_datetime(&t);
+	auto us_since_epoch = int64_t(seconds) * US_PER_SECOND;
+	epoch_sys_time_us = us_since_epoch - time_us_64();
+	return true;
 }

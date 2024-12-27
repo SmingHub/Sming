@@ -11,13 +11,16 @@
 #pragma once
 
 #include <esp_systemapi.h>
-#include <hardware/structs/timer.h>
+#include <hardware/timer.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #define HW_TIMER_BASE_CLK 1000000U
+
+#define HW_TIMER_NUM 0
+#define HW_TIMER_INST TIMER_INSTANCE(HW_TIMER_NUM)
 
 /**
  * @defgroup hw_timer Hardware Timer Driver
@@ -36,7 +39,7 @@ extern "C" {
  */
 __forceinline uint32_t IRAM_ATTR hw_timer_ticks()
 {
-	return timer_hw->timerawl;
+	return timer_time_us_32(HW_TIMER_INST);
 }
 
 /*************************************
@@ -116,7 +119,7 @@ __forceinline void IRAM_ATTR hw_timer1_write(uint32_t ticks)
 {
 	ticks <<= hw_timer_private.timer1_clkdiv;
 	hw_timer_private.timer1_ticks = ticks;
-	timer_hw->alarm[0] = hw_timer_ticks() + ticks;
+	HW_TIMER_INST->alarm[0] = hw_timer_ticks() + ticks;
 }
 
 /**
@@ -124,7 +127,7 @@ __forceinline void IRAM_ATTR hw_timer1_write(uint32_t ticks)
  */
 __forceinline void IRAM_ATTR hw_timer1_disable()
 {
-	timer_hw->armed = BIT(0);
+	HW_TIMER_INST->armed = BIT(0);
 }
 
 /**
@@ -133,7 +136,7 @@ __forceinline void IRAM_ATTR hw_timer1_disable()
  */
 __forceinline uint32_t hw_timer1_read()
 {
-	int time = hw_timer_ticks() - timer_hw->alarm[0];
+	int time = hw_timer_ticks() - HW_TIMER_INST->alarm[0];
 	return (time > 0) ? (time >> hw_timer_private.timer1_clkdiv) : 0;
 }
 

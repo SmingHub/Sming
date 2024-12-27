@@ -66,8 +66,8 @@ void wsMessageReceived(WebsocketConnection& socket, const String& message)
 	Serial.println(message);
 
 	if(message == _F("shutdown")) {
-		String message(F("The server is shutting down..."));
-		socket.broadcast(message);
+		String reply(F("The server is shutting down..."));
+		socket.broadcast(reply);
 		shutdownServer();
 		return;
 	}

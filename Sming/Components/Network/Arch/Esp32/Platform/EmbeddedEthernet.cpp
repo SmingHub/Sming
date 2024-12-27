@@ -26,6 +26,7 @@ bool EmbeddedEthernet::begin([[maybe_unused]] const Config& config)
 #else
 
 	esp_netif_init();
+	esp_event_loop_create_default();
 	esp_netif_config_t cfg = ESP_NETIF_DEFAULT_ETH();
 	netif = esp_netif_new(&cfg);
 

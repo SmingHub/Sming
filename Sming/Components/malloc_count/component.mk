@@ -21,13 +21,17 @@ MC_WRAP_FUNCS := \
 	strdup
 ifeq ($(SMING_ARCH),Esp8266)
 MC_WRAP_FUNCS += \
-	realloc \
 	pvPortMalloc \
 	pvPortCalloc \
 	pvPortRealloc \
 	pvPortZalloc \
 	pvPortZallocIram \
 	vPortFree
+endif
+ifeq ($(SMING_ARCH)$(UNAME),HostWindows)
+MC_WRAP_FUNCS += \
+	__mingw_realloc \
+	__mingw_free
 endif
 
 EXTRA_LDFLAGS := $(call UndefWrap,$(MC_WRAP_FUNCS))

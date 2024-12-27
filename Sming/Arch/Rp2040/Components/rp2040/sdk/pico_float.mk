@@ -1,5 +1,6 @@
 # pico_float
 
+ifeq ($(SMING_SOC),rp2040)
 WRAPPED_FUNCTIONS += \
 	__aeabi_fadd \
 	__aeabi_fdiv \
@@ -24,7 +25,10 @@ WRAPPED_FUNCTIONS += \
 	__aeabi_f2uiz \
 	__aeabi_f2ulz \
 	__aeabi_f2d \
-	sqrtf \
+	sqrtf
+endif
+
+WRAPPED_FUNCTIONS += \
 	cosf \
 	sinf \
 	tanf \

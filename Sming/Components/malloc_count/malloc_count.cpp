@@ -364,6 +364,11 @@ extern "C" void WRAP(free)(void*) __attribute__((alias("mc_free")));
 
 using namespace MallocCount;
 
+#ifdef __WIN32
+extern "C" void* WRAP(__mingw_realloc)(void*, size_t) __attribute__((alias("mc_realloc")));
+extern "C" void WRAP(__mingw_free)(void*) __attribute__((alias("mc_free")));
+#endif
+
 #ifdef ARCH_ESP8266
 
 extern "C" void* WRAP(pvPortMalloc)(size_t) __attribute__((alias("mc_malloc")));
@@ -373,7 +378,7 @@ extern "C" void* WRAP(pvPortZalloc)(size_t) __attribute__((alias("mc_zalloc")));
 extern "C" void* WRAP(pvPortZallocIram)(size_t) __attribute__((alias("mc_zalloc")));
 extern "C" void WRAP(vPortFree)(void*) __attribute__((alias("mc_free")));
 
-#else
+#elif !defined(ARCH_RP2040)
 
 void* operator new(size_t size)
 {

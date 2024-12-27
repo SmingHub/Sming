@@ -75,16 +75,16 @@ void IRAM_ATTR timer_schedule()
 	if(timer_list == nullptr) {
 		debug_tmr("cancel");
 		// Cancel hardware timer
-		timer_hw->armed = BIT(1);
+		HW_TIMER_INST->armed = BIT(1);
 		return;
 	}
 
 	constexpr int TIMER2_MIN_US{50};
 	auto now = hw_timer2_read();
 	if(int(timer_list->timer_expire - now) < TIMER2_MIN_US) {
-		timer_hw->alarm[1] = now + TIMER2_MIN_US;
+		HW_TIMER_INST->alarm[1] = now + TIMER2_MIN_US;
 	} else {
-		timer_hw->alarm[1] = timer_list->timer_expire;
+		HW_TIMER_INST->alarm[1] = timer_list->timer_expire;
 	}
 }
 
@@ -95,7 +95,7 @@ os_timer_t* find_expired_timer()
 	}
 
 	// Using Timer2 hardware to schedule software timers
-	if(timer_hw->armed & BIT(1)) {
+	if(HW_TIMER_INST->armed & BIT(1)) {
 		return nullptr;
 	}
 

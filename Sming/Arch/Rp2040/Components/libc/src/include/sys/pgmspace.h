@@ -21,7 +21,11 @@ extern "C" {
 /**
  * @brief Simple check to determine if a pointer refers to flash memory
  */
+#ifdef XIP_END
+#define isFlashPtr(ptr) ((uint32_t)(ptr) >= XIP_BASE && (uint32_t)(ptr) < XIP_END)
+#else
 #define isFlashPtr(ptr) ((uint32_t)(ptr) >= XIP_MAIN_BASE && (uint32_t)(ptr) < XIP_NOALLOC_BASE)
+#endif
 
 #define PROGMEM STORE_ATTR ICACHE_RODATA_ATTR
 #define PROGMEM_PSTR PROGMEM

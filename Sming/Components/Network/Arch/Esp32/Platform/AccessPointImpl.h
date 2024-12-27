@@ -20,14 +20,9 @@ namespace SmingInternal
 {
 namespace Network
 {
-class AccessPointImpl : public AccessPointClass, protected ISystemReadyHandler
+class AccessPointImpl : public AccessPointClass
 {
 public:
-	AccessPointImpl()
-	{
-		System.onReady(this);
-	}
-
 	void enable(bool enabled, bool save) override;
 	bool isEnabled() const override;
 	bool config(const String& ssid, String password, WifiAuthMode mode, bool hidden, int channel,
@@ -42,14 +37,6 @@ public:
 	String getSSID() const override;
 	String getPassword() const override;
 	std::unique_ptr<StationList> getStations() const override;
-
-	// Called from WifiEventsImpl
-	void eventHandler(esp_event_base_t base, int32_t id, void* data)
-	{
-	}
-
-protected:
-	void onSystemReady() override;
 
 private:
 	esp_netif_obj* apNetworkInterface{nullptr};

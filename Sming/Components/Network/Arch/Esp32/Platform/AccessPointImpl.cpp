@@ -57,7 +57,7 @@ void AccessPointImpl::enable(bool enabled, bool save)
 		}
 	}
 	ESP_ERROR_CHECK(esp_wifi_set_storage(save ? WIFI_STORAGE_FLASH : WIFI_STORAGE_RAM));
-	ESP_ERROR_CHECK(esp_wifi_set_mode((wifi_mode_t)mode));
+	ESP_ERROR_CHECK(esp_wifi_set_mode(mode));
 }
 
 bool AccessPointImpl::isEnabled() const
@@ -88,10 +88,13 @@ bool AccessPointImpl::config(const String& ssid, String password, WifiAuthMode m
 	config.ap.authmode = (wifi_auth_mode_t)mode;
 	config.ap.max_connection = 8;
 
+	bool enabled = isEnabled();
 	enable(true, false);
 
 	ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &config));
-	ESP_ERROR_CHECK(esp_wifi_start());
+	if(enabled) {
+		System.queueCallback(esp_wifi_start);
+	}
 
 	return true;
 }
@@ -190,10 +193,6 @@ String AccessPointImpl::getPassword() const
 std::unique_ptr<StationList> AccessPointImpl::getStations() const
 {
 	return std::unique_ptr<StationList>(new StationListImpl);
-}
-
-void AccessPointImpl::onSystemReady()
-{
 }
 
 } // namespace Network

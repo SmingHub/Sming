@@ -10,9 +10,6 @@
 
 #pragma once
 
-#ifdef SOC_LEDC_CHANNEL_NUM
+#include <soc/soc_caps.h>
+
 #define PWM_CHANNEL_NUM_MAX SOC_LEDC_CHANNEL_NUM
-#else
-// this should not happen if the correct esp32 includes are used, just to be absolutely sure
-#define PWM_CHANNEL_NUM_MAX 8
-#endif

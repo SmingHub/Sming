@@ -16,6 +16,7 @@
 
 #include "HttpBodyParser.h"
 #include <Data/WebHelpers/escape.h>
+#include <Data/Stream/MemoryDataStream.h>
 
 /*
  * Content is received in chunks which we need to reassemble into name=value pairs.
@@ -103,11 +104,11 @@ size_t formUrlParser(HttpRequest& request, const char* at, int length)
 
 size_t bodyToStringParser(HttpRequest& request, const char* at, int length)
 {
-	auto data = static_cast<String*>(request.args);
+	auto data = static_cast<ReadWriteStream*>(request.args);
 
 	if(length == PARSE_DATASTART) {
 		delete data;
-		data = new String();
+		data = new MemoryDataStream();
 		request.args = data;
 		return 0;
 	}
@@ -118,15 +119,10 @@ size_t bodyToStringParser(HttpRequest& request, const char* at, int length)
 	}
 
 	if(length == PARSE_DATAEND || length < 0) {
-		request.setBody(std::move(*data));
-		delete data;
+		request.setBody(data);
 		request.args = nullptr;
 		return 0;
 	}
 
-	if(!data->concat(at, length)) {
-		return 0;
-	}
-
-	return length;
+	return data->write(at, length);
 }

@@ -47,8 +47,16 @@ public:
 	 */
 	bool update();
 
+	/**
+	 * @brief Change the output stream
+	 */
+	void setOutput(Print& out)
+	{
+		this->out = &out;
+	}
+
 private:
-	Print& out;
+	Print* out;
 	static constexpr size_t maxTasks{32};
 	struct Info;
 	std::unique_ptr<Info[]> taskInfo;
