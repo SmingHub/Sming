@@ -21,12 +21,12 @@ jobs:
     - name: Install xmlstarlet
       if: github.ref_type == 'tag'
       run: sudo apt-get install -y jq xmlstarlet
-    - name: Build docs
-      if: github.ref_type == 'tag'
-      run: |
-        Tools/install.sh doc
-        make -C docs html
-        zip -r sming-docs.zip docs/build/html
+#    - name: Build docs
+#      if: github.ref_type == 'tag'
+#      run: |
+#        Tools/install.sh doc
+#        make -C docs html
+#        zip -r sming-docs.zip docs/build/html
     - name: Release New Version
       if: github.ref_type == 'tag'
       env:
