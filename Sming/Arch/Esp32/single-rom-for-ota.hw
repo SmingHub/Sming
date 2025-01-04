@@ -1,0 +1,42 @@
+{
+	"name": "OTA base config with single ROM",
+	"arch": "Esp32",
+	"comment": "ota base config to eliminate the factory partition and instead build two rom partitions.",
+	"bootloader_size": "0x8000",
+	"partition_table_offset": "0x8000",
+	"devices": {
+		"spiFlash": {
+			"type": "flash",
+			"size": "4M",
+			"mode": "dio",
+			"speed": "60 if SMING_SOC=='esp32c2' else 40"
+		}
+	},
+	"partitions": {
+		"phy_init": {
+			"address": "0x00f000",
+			"size": "0x1000",
+			"type": "data",
+			"subtype": "phy"
+		},
+		"nvs": {
+			"address": "0x009000",
+			"size": "0x6000",
+			"type": "data",
+			"subtype": "nvs"
+		},
+		"rom0": {
+			"address": "0x010000",
+			"size": "0x0f0000",
+			"type": "app",
+			"subtype": "ota_0",
+			"filename": "$(TARGET_BIN)"
+		},
+		"otadata":{
+			"address":"0x3fe000",
+			"size":"8k",
+			"type":"data",
+			"subtype":"ota"
+		}
+	}
+}
