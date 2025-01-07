@@ -3,7 +3,7 @@
 	"base_config": "spiffs",
 	"partitions": {
 		"factory": {
-			"size": "1M"
+			"size": 0
 		},
 		"rom0": {
 			"address": "0x110000",
