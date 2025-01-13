@@ -49,7 +49,7 @@ COMPONENT_DEPENDS := OtaUpgradeMqtt
 RBOOT_ENABLED := 1
 
 ## Use standard hardware config with two ROM slots and two SPIFFS partitions
-HWCONFIG := ota
+HWCONFIG := spiffs-two-roms
 
 APP_CFLAGS = -DMQTT_URL="\"$(MQTT_URL)"\"                \
 			 -DMQTT_FINGERPRINT_SHA1=$(MQTT_FINGERPRINT_SHA1)   \

@@ -143,6 +143,11 @@ class Table(list):
                 raise InputError("Duplicate partition '%s'" % name)
             partnames += name
             part = self.find_by_name(name)
+            # Setting size=0 drops partition if it exists
+            if entry.get('size') == 0:
+                if part:
+                    self.remove(part)
+                continue
             if part is None:
                 part = Entry(devices[0], name)
                 self.append(part)
