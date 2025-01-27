@@ -45,7 +45,7 @@ jobs:
       SMING_HOME: ${{ github.workspace }}/Sming
       SMING_ARCH: ${{ matrix.arch }}
       SMING_SOC: ${{ matrix.variant }}
-      CLANG_BUILD: ${{ matrix.toolchain == 'clang' && '15' || '0' }}
+      CLANG_BUILD: ${{ matrix.toolchain == 'clang' && '18' || '0' }}
       BUILD64: ${{ matrix.toolchain == 'gcc64' && 1 || 0 }}
       ENABLE_CCACHE: 1
       CCACHE_DIR: ${{ github.workspace }}/.ccache
