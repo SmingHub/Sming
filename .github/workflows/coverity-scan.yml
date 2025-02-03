@@ -68,7 +68,7 @@ jobs:
 
     - name: Archive scan log
       if: env.CHECK_SCA == 1
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: coverity-scan-report
         path: Sming/cov-int/scm_log.txt
