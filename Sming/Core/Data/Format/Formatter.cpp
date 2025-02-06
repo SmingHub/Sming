@@ -64,8 +64,8 @@ unsigned escapeControls(String& value, Options options)
 		} else if(uint8_t(c) < 0x20) {
 			extra += 3; // "\xnn"
 		} else if((c & 0x80) && options[Option::utf8]) {
-			// Characters such as £ (0xa3) are escaped to 0xc2 0xa3 in UTF-8
-			extra += 1; // 0xc2
+			// Characters from U+0080 to U+07FF are encoded in two bytes in UTF-8
+			extra += 1;
 		}
 	}
 	if(extra == 0) {
@@ -100,7 +100,8 @@ unsigned escapeControls(String& value, Options options)
 			*out++ = hexchar(uint8_t(c) >> 4);
 			c = hexchar(uint8_t(c) & 0x0f);
 		} else if((c & 0x80) && options[Option::utf8]) {
-			*out++ = 0xc2;
+			*out++ = 0xc0 | (c >> 6);
+			c = 0x80 | (c & 0x3f);
 		}
 		*out++ = c;
 	}
