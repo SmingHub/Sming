@@ -27,7 +27,7 @@ Json json;
  */
 void Json::escape(String& value) const
 {
-	escapeControls(value, Option::doublequote | Option::backslash);
+	escapeControls(value, Option::unicode | Option::doublequote | Option::backslash);
 }
 
 void Json::quote(String& value) const

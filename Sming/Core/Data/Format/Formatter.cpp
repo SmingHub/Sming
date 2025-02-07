@@ -58,7 +58,7 @@ unsigned escapeControls(String& value, Options options)
 		if(escapeChar(c, options)) {
 			extra += 1; // "\"
 		} else if(options[Option::unicode]) {
-			if(uint8_t(c) < 0x20 || (c & 0x80)) {
+			if(uint8_t(c) < 0x20) {
 				extra += 5; // "\uNNNN"
 			}
 		} else if(uint8_t(c) < 0x20) {
@@ -86,7 +86,7 @@ unsigned escapeControls(String& value, Options options)
 			*out++ = '\\';
 			c = esc;
 		} else if(options[Option::unicode]) {
-			if(uint8_t(c) < 0x20 || (c & 0x80)) {
+			if(uint8_t(c) < 0x20) {
 				*out++ = '\\';
 				*out++ = 'u';
 				*out++ = '0';
