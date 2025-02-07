@@ -18,11 +18,12 @@ namespace Format
 Json json;
 
 /*
- * Check for invalid characters and replace them - can break browser
- * operation otherwise.
+ * JSON requires control characters, quotes and reverse solidus (backslash) to be escaped.
  *
- * This can occur if filenames become corrupted, so here we just
- * substitute an underscore _ for anything which fails to match UTF8.
+ * All other codepoints from 0x20 to 0xff are left unchanged.
+ * This is typically UTF8 but it could be binary or some other application-defined encoding.
+ *
+ * Therefore no validation is performed on the data.
  */
 void Json::escape(String& value) const
 {

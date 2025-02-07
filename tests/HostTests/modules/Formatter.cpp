@@ -17,7 +17,7 @@ public:
 		TEST_CASE("JSON")
 		{
 			DEFINE_FSTR_LOCAL(text1b, "A JSON\\ntest string\\twith escapes\\u0012\\u0000\\n"
-									  "Worth \\\"maybe\\\" \\u00a3 0.53. Yen \\u00a5 5bn.")
+									  "Worth \\\"maybe\\\" \xa3 0.53. Yen \xa5 5bn.")
 
 			Serial << text1 << endl;
 			String s(text1);
