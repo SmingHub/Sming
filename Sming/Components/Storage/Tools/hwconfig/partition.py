@@ -144,7 +144,7 @@ class Table(list):
             partnames += name
             part = self.find_by_name(name)
             # Setting size=0 drops partition if it exists
-            if entry.get('size') == 0:
+            if parse_int(entry.get('size')) == 0:
                 if part:
                     self.remove(part)
                 continue
