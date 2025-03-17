@@ -1,0 +1,5 @@
+COMPONENT_SOC := esp32
+
+DISABLE_NETWORK := 1
+
+SDK_CUSTOM_CONFIG := esp32-dual-core.cfg
