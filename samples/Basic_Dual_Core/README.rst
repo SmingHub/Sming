@@ -1,21 +1,25 @@
-ESP32 Dual Core
-===============
+Dual Core
+=========
 
 .. highlight:: text
 
-Basic example of using second core of Esp32 chip.
+Basic example of using second core of ESP32, RP2040 and RP2350 chips.
 
 .. important::
 
     Sming is NOT thread-safe! In general, only re-entrant code and code intended to be called from interrupt context is safe to use from multiple cores.
 
-If code is timing sensitive then it should be run from IRAM.
+If code is timing sensitive then it should be run from IRAM. For RP2040 it *must* be in IRAM.
 
 Flash and filing system access must only be done from the main Sming application.
 
 
 Required steps
 --------------
+
+For the RP2040 (and RP2350) Sming builds are 'bare metal' so there is no operating system to consider.
+
+For the ESP32 we require FreeRTOS so the following steps are necessary:
 
 - Override IDF SDK config settings as in ``esp-dual-core.cfg``.
 - Add line to project's ``component.mk``: *SDK_CUSTOM_CONFIG := esp32-dual-core.cfg*
