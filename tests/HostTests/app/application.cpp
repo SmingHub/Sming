@@ -47,7 +47,7 @@ void beginTests()
 
 void init()
 {
-	Serial.setTxBufferSize(1024);
+	Serial.setTxBufferSize(0);
 	Serial.begin(SERIAL_BAUD_RATE);
 	Serial.systemDebugOutput(true);
 
