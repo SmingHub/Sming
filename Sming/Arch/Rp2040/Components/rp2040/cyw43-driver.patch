@@ -1,8 +1,8 @@
 diff --git a/src/cyw43_ctrl.c b/src/cyw43_ctrl.c
-index cc9973e..ab76673 100644
+index 8cfcc77..000ea91 100644
 --- a/src/cyw43_ctrl.c
 +++ b/src/cyw43_ctrl.c
-@@ -288,13 +288,17 @@ static const char *const cyw43_async_event_name_table[89] = {
+@@ -300,13 +300,17 @@ static const char *const cyw43_async_event_name_table[89] = {
      [CYW43_EV_SET_SSID] = "SET_SSID",
      [CYW43_EV_JOIN] = "JOIN",
      [CYW43_EV_AUTH] = "AUTH",
@@ -21,10 +21,10 @@ index cc9973e..ab76673 100644
      [CYW43_EV_ASSOC_REQ_IE] = "ASSOC_REQ_IE",
      [CYW43_EV_ASSOC_RESP_IE] = "ASSOC_RESP_IE",
 diff --git a/src/cyw43_ll.c b/src/cyw43_ll.c
-index 033eec2..11f08d5 100644
+index dc58df1..031eeea 100644
 --- a/src/cyw43_ll.c
 +++ b/src/cyw43_ll.c
-@@ -65,11 +65,6 @@ extern bool enable_spi_packet_dumping;
+@@ -63,11 +63,6 @@ extern bool enable_spi_packet_dumping;
  
  #define CYW43_RAM_SIZE (512 * 1024)
  
@@ -36,7 +36,7 @@ index 033eec2..11f08d5 100644
  #define ALIGN_UINT(val, align) (((val) + (align) - 1) & ~((align) - 1))
  
  // Configure the padding needed for data sent to cyw43_write_bytes().
-@@ -101,18 +96,6 @@ static inline void cyw43_put_le32(uint8_t *buf, uint32_t x) {
+@@ -110,18 +105,6 @@ static inline void cyw43_put_le32(uint8_t *buf, uint32_t x) {
      buf[3] = x >> 24;
  }
  
@@ -55,7 +55,7 @@ index 033eec2..11f08d5 100644
  /*******************************************************************************/
  // CYW43 constants and types
  
-@@ -409,10 +392,6 @@ static int cyw43_check_valid_chipset_firmware(cyw43_int_t *self, size_t len, uin
+@@ -418,10 +401,6 @@ static int cyw43_check_valid_chipset_firmware(cyw43_int_t *self, size_t len, uin
  }
  
  static int cyw43_download_resource(cyw43_int_t *self, uint32_t addr, size_t len, uintptr_t source) {
@@ -66,7 +66,7 @@ index 033eec2..11f08d5 100644
      CYW43_VDEBUG("writing %u bytes to 0x%x\n", (uint32_t)len, (uint32_t)addr);
  
      uint32_t block_size = CYW43_BUS_MAX_BLOCK_SIZE;
-@@ -431,12 +410,18 @@ static int cyw43_download_resource(cyw43_int_t *self, uint32_t addr, size_t len,
+@@ -440,12 +419,18 @@ static int cyw43_download_resource(cyw43_int_t *self, uint32_t addr, size_t len,
          uint32_t dest_addr = addr + offset;
          assert(((dest_addr & BACKPLANE_ADDR_MASK) + sz) <= (BACKPLANE_ADDR_MASK + 1));
          cyw43_set_backplane_window(self, dest_addr);
@@ -87,7 +87,7 @@ index 033eec2..11f08d5 100644
          if (ret != 0) {
  
              return CYW43_FAIL_FAST_CHECK(ret);
-@@ -449,42 +434,6 @@ static int cyw43_download_resource(cyw43_int_t *self, uint32_t addr, size_t len,
+@@ -458,42 +443,6 @@ static int cyw43_download_resource(cyw43_int_t *self, uint32_t addr, size_t len,
      CYW43_VDEBUG("done dnload; dt = %u us; speed = %u kbytes/sec\n", (unsigned int)dt, (unsigned int)(len * 1000 / dt));
      #endif
  
@@ -130,7 +130,7 @@ index 033eec2..11f08d5 100644
      return 0;
  }
  
-@@ -1374,7 +1323,7 @@ void cyw43_ll_bus_sleep(cyw43_ll_t *self_in, bool can_sleep) {
+@@ -1348,7 +1297,7 @@ void cyw43_ll_bus_sleep(cyw43_ll_t *self_in, bool can_sleep) {
  #define CLM_CHUNK_LEN 1024 + 512
  #endif
  
@@ -139,7 +139,7 @@ index 033eec2..11f08d5 100644
      // Reuse spid_buf but be careful to start at the right offset in it
      uint8_t *buf = &self->spid_buf[SDPCM_HEADER_LEN + 16];
  
-@@ -1400,7 +1349,7 @@ static void cyw43_clm_load(cyw43_int_t *self, const uint8_t *clm_ptr, size_t clm
+@@ -1374,7 +1323,7 @@ static void cyw43_clm_load(cyw43_int_t *self, const uint8_t *clm_ptr, size_t clm
          *(uint32_t *)(buf + 12) = len;
          *(uint32_t *)(buf + 16) = 0;
          #pragma GCC diagnostic pop
@@ -148,7 +148,7 @@ index 033eec2..11f08d5 100644
  
          CYW43_VDEBUG("clm data send %u/%u\n", off + len, clm_len);
  
-@@ -1656,14 +1605,11 @@ alp_set:
+@@ -1633,14 +1582,11 @@ alp_set:
      cyw43_write_backplane(self, SOCSRAM_BANKX_INDEX, 4, 0x3);
      cyw43_write_backplane(self, SOCSRAM_BANKX_PDA, 4, 0);
  
@@ -166,7 +166,7 @@ index 033eec2..11f08d5 100644
      if (ret != 0) {
          return ret;
      }
-@@ -1784,9 +1730,11 @@ f2_ready:
+@@ -1761,9 +1707,11 @@ f2_ready:
  
      // Load the CLM data; it sits just after main firmware
      CYW43_VDEBUG("cyw43_clm_load start\n");
@@ -179,7 +179,7 @@ index 033eec2..11f08d5 100644
      cyw43_write_iovar_u32(self, "bus:txglom", 0, WWD_STA_INTERFACE); // tx glomming off
      cyw43_write_iovar_u32(self, "apsta", 1, WWD_STA_INTERFACE); // apsta on
  
-@@ -1890,10 +1838,14 @@ int cyw43_ll_wifi_on(cyw43_ll_t *self_in, uint32_t country) {
+@@ -1867,10 +1815,14 @@ int cyw43_ll_wifi_on(cyw43_ll_t *self_in, uint32_t country) {
      cyw43_delay_ms(50);
  
      #ifndef NDEBUG
@@ -195,7 +195,7 @@ index 033eec2..11f08d5 100644
      #endif
  
      // Set antenna to chip antenna
-@@ -1919,8 +1871,8 @@ int cyw43_ll_wifi_on(cyw43_ll_t *self_in, uint32_t country) {
+@@ -1896,8 +1848,8 @@ int cyw43_ll_wifi_on(cyw43_ll_t *self_in, uint32_t country) {
      CLR_EV(buf, 19); // roam attempt occurred
      CLR_EV(buf, 20); // tx fail
      CLR_EV(buf, 40); // radio
@@ -206,10 +206,10 @@ index 033eec2..11f08d5 100644
      #undef CLR_EV
      memcpy(buf, "bsscfg:event_msgs", 18);
 diff --git a/src/cyw43_ll.h b/src/cyw43_ll.h
-index b5c1ead..6e4ea30 100644
+index fe7c68f..4791641 100644
 --- a/src/cyw43_ll.h
 +++ b/src/cyw43_ll.h
-@@ -67,15 +67,19 @@
+@@ -67,16 +67,20 @@
  #define CYW43_EV_SET_SSID               (0)
  #define CYW43_EV_JOIN                   (1)
  #define CYW43_EV_AUTH                   (3)
@@ -224,12 +224,13 @@ index b5c1ead..6e4ea30 100644
  #define CYW43_EV_PRUNE                  (23)
 +#define CYW43_EV_PROBREQ_MSG            (44)
  #define CYW43_EV_PSK_SUP                (46)
+ #define CYW43_EV_ICV_ERROR              (49)
  #define CYW43_EV_ESCAN_RESULT           (69)
 +#define CYW43_EV_P2P_PROBREQ_MSG        (72)
  #define CYW43_EV_CSA_COMPLETE_IND       (80)
  #define CYW43_EV_ASSOC_REQ_IE           (87)
  #define CYW43_EV_ASSOC_RESP_IE          (88)
-@@ -316,6 +320,12 @@ uint32_t cyw43_ll_read_backplane_reg(cyw43_ll_t *self_in, uint32_t addr);
+@@ -317,6 +321,12 @@ uint32_t cyw43_ll_read_backplane_reg(cyw43_ll_t *self_in, uint32_t addr);
  int cyw43_ll_write_backplane_mem(cyw43_ll_t *self_in, uint32_t addr, uint32_t len, const uint8_t *buf);
  int cyw43_ll_read_backplane_mem(cyw43_ll_t *self_in, uint32_t addr, uint32_t len, uint8_t *buf);
  
