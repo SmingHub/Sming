@@ -31,7 +31,7 @@
 
 #define PWM_FREQ_DEFAULT 1000
 
-HardwarePWM::HardwarePWM(const uint8_t* pins, uint8_t noOfPins) : channel_count(noOfPins)
+HardwarePWM::HardwarePWM(const uint8_t* pins, uint8_t no_of_pins, bool usePhaseShift ) : channel_count(no_of_pins)
 {
 	assert(noOfPins > 0 && noOfPins <= PWM_CHANNEL_NUM_MAX);
 	noOfPins = std::min(uint8_t(PWM_CHANNEL_NUM_MAX), noOfPins);

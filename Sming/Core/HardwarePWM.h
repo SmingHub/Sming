@@ -62,9 +62,16 @@ public:
 	/** @brief  Instantiate hardware PWM object
      *  @param  pins Pointer to array of pins to control
      *  @param  no_of_pins Quantity of elements in array of pins
+	 *  @param  usePhaseShift Use ledc's hpoint phase shift feature to stagger the rising edge of the PWM 
+	 * 						  singals evenly across the period. This is useful for driving multiple LEDs
+	 * 						  connected to the same power rail to reduce the peak current draw and help with 
+	 * 						  electromagnetic interference.
+	 *  @param  useSpreadSpectrum implement minimal spread spectrum modulation to further reduce EMI. This 
+	 * 						  feature uses a hardware timer to modulate the base frequency of the PWM signal.
+	 * 						  Depending on the base frequency, this may cause quite some system load, so 
+	 *                        choosing a good balance between CPU resources and acceptable EMI is important.
      */
-	HardwarePWM(const uint8_t* pins, uint8_t no_of_pins);
-
+	HardwarePWM(const uint8_t* pins, uint8_t no_of_pins, bool usePhaseShift=false);
 	virtual ~HardwarePWM();
 
 	/** @brief  Set PWM duty cycle
@@ -154,6 +161,8 @@ public:
 
 private:
 	uint8_t channel_count;
+	bool _usePhaseShift;
+	bool _useSpreadSpectrum;
 	uint8_t channels[PWM_CHANNEL_NUM_MAX];
 	uint32_t maxduty{0};
 };

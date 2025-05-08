@@ -52,7 +52,7 @@ static const uint8_t gpioPinFunc[]{
 	FUNC_GPIO15, //
 };
 
-HardwarePWM::HardwarePWM(const uint8_t* pins, uint8_t noOfPins) : channel_count(noOfPins)
+HardwarePWM::HardwarePWM(const uint8_t* pins, uint8_t no_of_pins, bool usePhaseShift ) : channel_count(no_of_pins)
 {
 	if(noOfPins == 0) {
 		return;

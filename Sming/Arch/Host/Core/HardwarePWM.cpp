@@ -25,7 +25,7 @@
 
 #include <HardwarePWM.h>
 
-HardwarePWM::HardwarePWM(const uint8_t*, uint8_t no_of_pins) : channel_count(no_of_pins)
+HardwarePWM::HardwarePWM(const uint8_t* pins, uint8_t no_of_pins, bool usePhaseShift ) : channel_count(no_of_pins)
 {
 }
 
