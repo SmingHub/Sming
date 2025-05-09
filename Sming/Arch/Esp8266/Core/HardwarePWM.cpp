@@ -52,16 +52,18 @@ static const uint8_t gpioPinFunc[]{
 	FUNC_GPIO15, //
 };
 
-HardwarePWM::HardwarePWM(const uint8_t* pins, uint8_t no_of_pins, bool usePhaseShift ) : channel_count(no_of_pins)
+HardwarePWM::HardwarePWM(const uint8_t* pins, uint8_t no_of_pins, bool usePhaseShift) : channel_count(no_of_pins)
 {
-	if(noOfPins == 0) {
+	_usePhaseShift =
+		usePhaseShift; // Not used on the ESP8266 right now, esp32 hardware can phase shift pwm signals, pretty sure 8266 can't
+	if(no_of_pins == 0) {
 		return;
 	}
 
 	uint32_t ioInfo[PWM_CHANNEL_NUM_MAX][3];   // pin information
 	uint32_t pwmDutyInit[PWM_CHANNEL_NUM_MAX]; // pwm duty
 	unsigned pinCount = 0;
-	for(uint8_t i = 0; i < noOfPins; i++) {
+	for(uint8_t i = 0; i < no_of_pins; i++) {
 		auto pin = pins[i];
 		assert(pin < 16);
 		if(pin >= 16) {

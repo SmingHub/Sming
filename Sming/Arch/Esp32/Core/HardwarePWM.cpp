@@ -137,19 +137,19 @@ uint32_t maxDuty(ledc_timer_bit_t bits)
 }
 int hpointForPin(uint8_t channelIndex, uint8_t channel_count)
 {
-/*
+	/*
 	debug_i("calculating hpoint for channel: %d\n", channelIndex);
 	debug_i("            channel_count    : %d\n", channel_count);
 	debug_i("            maxDuty           : %d\n", maxDuty(DEFAULT_RESOLUTION));
 */
-	int _hpoint=maxDuty(DEFAULT_RESOLUTION) * channelIndex / channel_count;
-//	debug_i("hpoint is %d\n", _hpoint);
-	return _hpoint;	
+	int _hpoint = maxDuty(DEFAULT_RESOLUTION) * channelIndex / channel_count;
+	//	debug_i("hpoint is %d\n", _hpoint);
+	return _hpoint;
 }
 
 } //namespace
 
-HardwarePWM::HardwarePWM(const uint8_t* pins, uint8_t no_of_pins, bool usePhaseShift ) : channel_count(no_of_pins)
+HardwarePWM::HardwarePWM(const uint8_t* pins, uint8_t no_of_pins, bool usePhaseShift) : channel_count(no_of_pins)
 {
 	assert(no_of_pins > 0 && no_of_pins <= SOC_LEDC_CHANNEL_NUM);
 	no_of_pins = std::min(uint8_t(SOC_LEDC_CHANNEL_NUM), no_of_pins);
@@ -157,7 +157,7 @@ HardwarePWM::HardwarePWM(const uint8_t* pins, uint8_t no_of_pins, bool usePhaseS
 	_usePhaseShift = usePhaseShift;
 	periph_module_enable(PERIPH_LEDC_MODULE);
 
-	if (_usePhaseShift) {
+	if(_usePhaseShift) {
 		debug_i("Using phase shift for %d channels\n", no_of_pins);
 	}
 
@@ -197,7 +197,7 @@ HardwarePWM::HardwarePWM(const uint8_t* pins, uint8_t no_of_pins, bool usePhaseS
 			.intr_type = LEDC_INTR_DISABLE,
 			.timer_sel = pinToTimer(i),
 			.duty = 0,
-			.hpoint = _usePhaseShift?hpointForPin(i,channel_count):0,
+			.hpoint = _usePhaseShift ? hpointForPin(i, channel_count) : 0,
 		};
 		debug_d("ledc_channel\n"
 				"\tspeed_mode: %i\r\n"
@@ -207,7 +207,8 @@ HardwarePWM::HardwarePWM(const uint8_t* pins, uint8_t no_of_pins, bool usePhaseS
 				"\tgpio_num: %i\r\n"
 				"\tduty: %i\r\n"
 				"\thpoint: %i\r\n\n",
-				pinToGroup(i), pinToChannel(i), pinToTimer(i), ledc_channel.intr_type, pins[i], 0, _usePhaseShift?hpointForPin(i,channel_count):0);
+				pinToGroup(i), pinToChannel(i), pinToTimer(i), ledc_channel.intr_type, pins[i], 0,
+				_usePhaseShift ? hpointForPin(i, channel_count) : 0);
 		ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
 		ledc_bind_channel_timer(pinToGroup(i), pinToChannel(i), pinToTimer(i));
 	}
@@ -263,9 +264,10 @@ void HardwarePWM::setPeriod(uint32_t period)
 	// Set the frequency globally, will add per timer functions later.
 	// Also, this can be done smarter.
 	for(uint8_t i = 0; i < channel_count; i++) {
-		if(_usePhaseShift){
-			ESP_ERROR_CHECK(ledc_set_duty_with_hpoint(pinToGroup(i), pinToChannel(i), period, hpointForPin(i,channel_count)));
-		}else{
+		if(_usePhaseShift) {
+			ESP_ERROR_CHECK(
+				ledc_set_duty_with_hpoint(pinToGroup(i), pinToChannel(i), period, hpointForPin(i, channel_count)));
+		} else {
 			ESP_ERROR_CHECK(ledc_set_freq(pinToGroup(i), pinToTimer(i), periodToFrequency(period)));
 		}
 	}
