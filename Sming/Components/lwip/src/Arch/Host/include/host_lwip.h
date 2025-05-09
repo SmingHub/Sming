@@ -20,10 +20,6 @@
 #pragma once
 
 #include <cstdint>
-#if __cplusplus < 201703L
-// Only include for older C++ standards
-#include <cstdbool>
-#endif
 
 struct lwip_param {
 	const char* ifname;  ///< Name of interface to use
