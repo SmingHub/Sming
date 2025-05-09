@@ -20,7 +20,6 @@
 #pragma once
 
 #include <cstdint>
-#include <cstdbool>
 
 struct lwip_param {
 	const char* ifname;  ///< Name of interface to use
