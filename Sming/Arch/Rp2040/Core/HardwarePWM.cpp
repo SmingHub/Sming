@@ -33,12 +33,12 @@
 
 HardwarePWM::HardwarePWM(const uint8_t* pins, uint8_t no_of_pins, bool usePhaseShift ) : channel_count(no_of_pins)
 {
-	assert(noOfPins > 0 && noOfPins <= PWM_CHANNEL_NUM_MAX);
-	noOfPins = std::min(uint8_t(PWM_CHANNEL_NUM_MAX), noOfPins);
-	std::copy_n(pins, noOfPins, channels);
+	assert(no_of_pins > 0 && no_of_pins <= PWM_CHANNEL_NUM_MAX);
+	no_of_pins = std::min(uint8_t(PWM_CHANNEL_NUM_MAX), no_of_pins);
+	std::copy_n(pins, no_of_pins, channels);
 	setPeriod(1e6 / PWM_FREQ_DEFAULT);
 
-	for(unsigned i = 0; i < noOfPins; ++i) {
+	for(unsigned i = 0; i < no_of_pins; ++i) {
 		auto pin = channels[i];
 		gpio_set_function(pin, GPIO_FUNC_PWM);
 		gpio_set_dir(pin, GPIO_OUT);
