@@ -29,9 +29,15 @@ StationImpl station;
 void StationImpl::enable(bool enabled, bool save)
 {
 	debug_d("%s", __PRETTY_FUNCTION__);
-	if(enabled != this->enabled) {
-		cyw43_wifi_set_up(&cyw43_state, CYW43_ITF_STA, enabled, cyw43_arch_get_country_code());
-		this->enabled = enabled;
+	if(enabled == this->enabled) {
+		return;
+	}
+
+	cyw43_wifi_set_up(&cyw43_state, CYW43_ITF_STA, enabled, cyw43_arch_get_country_code());
+	this->enabled = enabled;
+
+	if(enabled) {
+		internalConnect();
 	}
 }
 
