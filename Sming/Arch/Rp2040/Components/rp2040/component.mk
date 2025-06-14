@@ -96,6 +96,7 @@ SDK_INTERFACES := \
 	rp2_common/pico_flash \
 	rp2_common/pico_mem_ops \
 	rp2_common/pico_multicore \
+	rp2_common/pico_platform_common \
 	rp2_common/pico_platform_compiler \
 	rp2_common/pico_platform_panic \
 	rp2_common/pico_platform_sections \
