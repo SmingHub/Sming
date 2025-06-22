@@ -51,17 +51,16 @@ static const uint8_t gpioPinFunc[]{
 	FUNC_GPIO14, //
 	FUNC_GPIO15, //
 };
-
-HardwarePWM::HardwarePWM(const uint8_t* pins, uint8_t noOfPins) : channel_count(noOfPins)
+HardwarePWM::HardwarePWM(const uint8_t* pins, uint8_t no_of_pins) : channel_count(no_of_pins)
 {
-	if(noOfPins == 0) {
+	if(no_of_pins == 0) {
 		return;
 	}
 
 	uint32_t ioInfo[PWM_CHANNEL_NUM_MAX][3];   // pin information
 	uint32_t pwmDutyInit[PWM_CHANNEL_NUM_MAX]; // pwm duty
 	unsigned pinCount = 0;
-	for(uint8_t i = 0; i < noOfPins; i++) {
+	for(uint8_t i = 0; i < no_of_pins; i++) {
 		auto pin = pins[i];
 		assert(pin < 16);
 		if(pin >= 16) {
@@ -130,4 +129,9 @@ uint32_t HardwarePWM::getFrequency(uint8_t pin) const
 	(void)pin;
 	auto period = pwm_get_period();
 	return (period == 0) ? 0 : 1000000U / period;
+}
+
+uint32_t HardwarePWM::getMaxDuty() const
+{
+	return maxduty;
 }

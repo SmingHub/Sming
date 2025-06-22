@@ -32,6 +32,7 @@
 
 #define PWM_BAD_CHANNEL 0xff ///< Invalid PWM channel
 
+
 /**
  * @brief Basic pulse width modulation support.
  *
@@ -56,16 +57,15 @@
  * Note: Esp32 and Rp2040 hardware offers more capability which requires use of SDK calls
  * or direct hardware access. To avoid resource conflicts avoid using this class in those cases.
  */
-class HardwarePWM
+class IHardwarePWM
 {
 public:
 	/** @brief  Instantiate hardware PWM object
      *  @param  pins Pointer to array of pins to control
      *  @param  no_of_pins Quantity of elements in array of pins
      */
-	HardwarePWM(const uint8_t* pins, uint8_t no_of_pins);
 
-	virtual ~HardwarePWM();
+	virtual ~IHardwarePWM() =default;
 
 	/** @brief  Set PWM duty cycle
      *  @param  pin GPIO to set
@@ -73,7 +73,7 @@ public:
      *  @retval bool True on success
      *  @note   Default frequency is 1khz but can be varied by various function
      */
-	bool analogWrite(uint8_t pin, uint32_t duty)
+	virtual bool analogWrite(uint8_t pin, uint32_t duty)
 	{
 		return setDuty(pin, duty);
 	}
@@ -84,7 +84,7 @@ public:
      *  @param  update Update PWM output
      *  @retval bool True on success
      */
-	bool setDutyChan(uint8_t chan, uint32_t duty, bool update = true);
+	virtual bool setDutyChan(uint8_t chan, uint32_t duty, bool update = true);
 
 	/** @brief  Set PWM duty cycle
      *  @param  pin GPIO to set
@@ -104,13 +104,13 @@ public:
 	 *  @param  chan Channel to get duty cycle for
 	 *  @retval uint32_t Value of PWM duty cycle in timer ticks
 	 */
-	uint32_t getDutyChan(uint8_t chan) const;
+	virtual uint32_t getDutyChan(uint8_t chan) const;
 
 	/** @brief  Get PWM duty cycle
      *  @param  pin GPIO to get duty cycle for
      *  @retval uint32_t Value of PWM duty cycle in timer ticks
      */
-	uint32_t getDuty(uint8_t pin)
+	virtual uint32_t getDuty(uint8_t pin)
 	{
 		uint8_t chan = getChannel(pin);
 		return getDutyChan(chan);
@@ -120,37 +120,37 @@ public:
      *  @param  period PWM period in microseconds
      *  @note   All PWM pins share the same period
      */
-	void setPeriod(uint32_t period);
+	virtual void setPeriod(uint32_t period);
 
 	/** @brief  Get PWM period
      *  @retval uint32_t Value of PWM period in microseconds
      */
-	uint32_t getPeriod() const;
+	virtual uint32_t getPeriod() const;
 
 	/** @brief  Get channel number for a pin
      *  @param  pin GPIO to interrogate
      *  @retval uint8_t Channel of GPIO
      */
-	uint8_t getChannel(uint8_t pin) const;
+	virtual uint8_t getChannel(uint8_t pin) const;
 
 	/** @brief  Get the maximum duty cycle value
      *  @retval uint32_t Maximum permissible duty cycle in timer ticks
      *  @note   Attempt to set duty of a pin above this value will fail
      */
-	uint32_t getMaxDuty() const
+	virtual uint32_t getMaxDuty() const
 	{
 		return maxduty;
 	}
 
 	/** @brief  This function is used to actually update the PWM.
 	 */
-	void update();
+	virtual void update();
 
 	/** @brief Get PWM Frequency
 	 *  @param pin GPIO to get frequency for
 	 *  @retval uint32_t Value of Frequency 
 	*/
-	uint32_t getFrequency(uint8_t pin) const;
+	virtual uint32_t getFrequency(uint8_t pin) const;
 
 private:
 	uint8_t channel_count;

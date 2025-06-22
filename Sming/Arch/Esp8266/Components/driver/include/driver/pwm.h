@@ -6,6 +6,8 @@ extern "C" {
 
 #include <pwm.h>
 
+struct PWM_Options{};
+
 /**
  * @defgroup pwm_driver PWM driver
  * @ingroup drivers
