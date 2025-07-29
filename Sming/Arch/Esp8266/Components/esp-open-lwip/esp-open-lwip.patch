@@ -167,7 +167,7 @@ index eaa8dd6..6568657 100644
  #endif
  
  /**
-@@ -1992,7 +1990,7 @@
+@@ -1992,7 +1990,7 @@igmp_start_timer
   * TCP_RST_DEBUG: Enable debugging for TCP with the RST message.
   */
  #ifndef TCP_RST_DEBUG
@@ -714,3 +714,27 @@ index 6196784..6fd0eb9 100644
    struct tcp_pcb* pcb;
    struct tcp_seg *head = NULL;
    struct tcp_seg *seg1 = NULL;
+
+diff --git a/lwip/core/ipv4/igmp.c b/lwip/core/ipv4/igmp.c
+index 2bb69e4..9562eea 100644
+--- a/lwip/core/ipv4/igmp.c
++++ b/lwip/core/ipv4/igmp.c
+@@ -702,12 +702,11 @@ igmp_timeout(struct igmp_group *group)
+ static void
+ igmp_start_timer(struct igmp_group *group, u8_t max_time)
+ {
+-  /* ensure the input value is > 0 */
+-  if (max_time == 0) {
+-    max_time = 1;
++  group->timer = (u16_t)(max_time > 2 ? (LWIP_RAND() % max_time) : 1);
++
++  if (group->timer == 0) {
++    group->timer = 1;
+   }
+-  /* ensure the random value is > 0 */
+-  group->timer = (LWIP_RAND() % (max_time - 1)) + 1;
+ }
+ 
+ /**
+
+

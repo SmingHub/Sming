@@ -133,12 +133,18 @@ To customise the hardware configuration for a project, for example 'my_project':
             "rom0": {
                "address": "0x10000",
                "size": "0x80000"
+            },
+            "factory": {
+               "size": 0
             }
          }
       }
 
    This will adjust flash parameters (previously via SPI_SPEED, SPI_MODE and SPI_SIZE),
    and the location/size of the primary application partition.
+   The **factory** partition is also dropped by setting its size to 0.
+   This is ignored if no such partition is defined.
+
 
 3. Add any additional partitions:
 

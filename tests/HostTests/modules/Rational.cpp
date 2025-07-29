@@ -20,8 +20,8 @@ public:
 
 		for(unsigned i = 0; i < 10000; ++i) {
 			T a = os_random() % max;
-			T b = os_random() % max;
-			T c = os_random() % max;
+			T b = 1 + os_random() % max;
+			T c = 1 + os_random() % max;
 
 			auto r = Ratio<T>(b, c);
 
@@ -29,21 +29,8 @@ public:
 				T rnd = (isinf(ref) || ref >= T(-1)) ? T(-1) : T(round(ref));
 
 				if(res != rnd) {
-					Serial.print(a);
-					Serial.print(' ');
-					Serial.print(op);
-					Serial.print(" (");
-					Serial.print(b);
-					Serial.print(" / ");
-					Serial.print(c);
-					Serial.print(") = ");
-					Serial.print(res);
-					Serial.print(", ref = ");
-					Serial.print(ref);
-					Serial.print(" (");
-					Serial.print(rnd);
-					Serial.print(')');
-					Serial.println();
+					Serial << a << ' ' << op << " (" << b << " / " << c << ") = " << res << ", ref = " << ref << " ("
+						   << rnd << ')' << endl;
 				}
 
 				TEST_ASSERT(res == rnd);

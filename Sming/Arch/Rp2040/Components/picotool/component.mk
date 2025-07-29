@@ -36,7 +36,7 @@ $(COMPONENT_RULE)$(PICOTOOL):
 ##@Flashing
 
 .PHONY: picotool
-picotool: ##Pass options to picotool, e.g. `make picotool -- help`
+picotool: ##Pass options to picotool, e.g. `make picotool CMD=help`
 	$(Q) $(PICOTOOL) $(CMD)
 
 comma := ,
