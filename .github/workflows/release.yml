@@ -25,18 +25,19 @@ jobs:
       if: github.ref_type == 'tag'
       run: |
         Tools/install.sh doc
+        source Tools/export.sh
         make -C docs html
         zip -r sming-docs.zip docs/build/html
-    - name: Release New Version
-      if: github.ref_type == 'tag'
-      env:
-        SMING_ARCH: Host
-        RELEASE_TOKEN: ${{secrets.RELEASE_TOKEN}}
-        CI_REPO_NAME: ${{github.repository}}
-        CHOCO_TOKEN: ${{secrets.CHOCO_TOKEN}}
-      run: |
-        export CI_BUILD_DIR="$GITHUB_WORKSPACE"
-        export SMING_HOME="$GITHUB_WORKSPACE/Sming"
-        make -C $SMING_HOME submodules
-        cat > /tmp/secrets.sh
-        Tools/ci/deploy.sh ${{github.ref_name}}
+#    - name: Release New Version
+#      if: github.ref_type == 'tag'
+#      env:
+#        SMING_ARCH: Host
+#        RELEASE_TOKEN: ${{secrets.RELEASE_TOKEN}}
+#        CI_REPO_NAME: ${{github.repository}}
+#        CHOCO_TOKEN: ${{secrets.CHOCO_TOKEN}}
+#      run: |
+#        export CI_BUILD_DIR="$GITHUB_WORKSPACE"
+#        export SMING_HOME="$GITHUB_WORKSPACE/Sming"
+#        make -C $SMING_HOME submodules
+#        cat > /tmp/secrets.sh
+#        Tools/ci/deploy.sh ${{github.ref_name}}
