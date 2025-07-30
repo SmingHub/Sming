@@ -25,6 +25,7 @@ jobs:
       if: github.ref_type == 'tag'
       run: |
         Tools/install.sh doc
+        source Tools/export.sh
         make -C docs html
         zip -r sming-docs.zip docs/build/html
     - name: Release New Version
