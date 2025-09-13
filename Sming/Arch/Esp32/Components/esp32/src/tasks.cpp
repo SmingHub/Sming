@@ -26,6 +26,10 @@ void sming_task_loop(void*)
 tcpip_callback_msg* callbackMessage;
 volatile bool eventQueueFlag;
 
+/**
+ * @brief Process all messages in the Sming event queue
+ * Called in the context of the tcpip message thread.
+ */
 void tcpip_message_handler(void*)
 {
 	eventQueueFlag = false;
@@ -33,6 +37,22 @@ void tcpip_message_handler(void*)
 	while(xQueueReceive(eventQueue, &evt, 0) == pdTRUE) {
 		taskCallback(&evt);
 	}
+}
+
+/**
+ * @brief Kick the tcpip message handling thread so we get a callback
+ * @retval bool Woken flag, true if a message was queued, false for no action
+ */
+bool tcpip_kick_thread()
+{
+	// If queue isn't empty and we haven't already asked for a tcpip callback, do that now
+	if(xQueueIsQueueEmptyFromISR(eventQueue) == pdFALSE && !eventQueueFlag) {
+		eventQueueFlag = true;
+		auto err = tcpip_callbackmsg_trycallback_fromisr(callbackMessage);
+		return (err == ERR_NEED_SCHED);
+	}
+
+	return false;
 }
 
 #endif
@@ -82,6 +102,9 @@ void start_sming_task_loop()
 
 	callbackMessage = tcpip_callbackmsg_new(tcpip_callback_fn(tcpip_message_handler), nullptr);
 
+	// There may be messages already queued
+	tcpip_kick_thread();
+
 #endif
 }
 
@@ -103,14 +126,7 @@ bool IRAM_ATTR system_os_post(uint8_t prio, os_signal_t sig, os_param_t par)
 		// Message loop not yet active
 		return true;
 	}
-	// If queue isn't empty and we haven't already asked for a tcpip callback, do that now
-	if(xQueueIsQueueEmptyFromISR(eventQueue) == pdFALSE && !eventQueueFlag) {
-		eventQueueFlag = true;
-		auto err = tcpip_callbackmsg_trycallback_fromisr(callbackMessage);
-		woken = (err == ERR_NEED_SCHED);
-	} else {
-		woken = false;
-	}
+	woken = tcpip_kick_thread();
 #endif
 
 	portYIELD_FROM_ISR_ARG(woken);
