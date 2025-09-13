@@ -20,7 +20,7 @@ bool lookupAdc(uint16_t pin, AdcInfo& info)
 	for(unsigned adc = 0; adc < SOC_ADC_PERIPH_NUM; ++adc) {
 		for(unsigned ch = 0; ch < SOC_ADC_MAX_CHANNEL_NUM; ++ch) {
 			if(adc_channel_io_map[adc][ch] == pin) {
-				info.adc = adc_unit_t(adc + 1);
+				info.adc = adc_unit_t(adc);
 				info.channel = adc_channel_t(ch);
 				return true;
 			}

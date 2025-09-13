@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <soc/adc_channel.h>
+
 #define EXTERNAL_NUM_INTERRUPTS 16
 #define NUM_DIGITAL_PINS 40
 #define NUM_ANALOG_INPUTS 16
@@ -20,7 +22,7 @@
 #define digitalPinToInterrupt(p) (((p) < 40) ? (p) : -1)
 #define digitalPinHasPWM(p) (p < 34)
 
-constexpr uint8_t A0{36};
+constexpr uint8_t A0 = ADC1_CHANNEL_0_GPIO_NUM;
 
 #define GPIO_REG_TYPE uint32_t
 
