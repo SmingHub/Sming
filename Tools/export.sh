@@ -53,6 +53,6 @@ export PICO_TOOLCHAIN_PATH=${PICO_TOOLCHAIN_PATH:=$SMING_TOOLCHAINS/rp2040}
 
 # Provide non-apple CLANG (e.g. for rbpf library)
 if [ -n "$GITHUB_ACTIONS" ] && [ "$(uname)" = "Darwin" ]; then
-CLANG="$(brew --prefix llvm@15)/bin/clang"
+CLANG="$(brew --prefix llvm@18)/bin/clang"
 export CLANG
 fi
