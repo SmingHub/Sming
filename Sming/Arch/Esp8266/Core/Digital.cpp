@@ -192,3 +192,11 @@ unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout)
 
 	return cycleTimer.elapsedTime().as<NanoTime::Microseconds>();
 }
+
+uint16_t analogRead(uint16_t pin)
+{
+	if(pin == A0)
+		return system_adc_read();
+	else
+		return -1; // Not supported
+}

@@ -13,6 +13,7 @@
 #include <esp_clk.h>
 #include <hal/gpio_ll.h>
 #include <driver/rtc_io.h>
+#include <driver/adc.h>
 #if SOC_RTCIO_INPUT_OUTPUT_SUPPORTED
 #include <hal/rtc_io_ll.h>
 #if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 2, 0)
@@ -145,4 +146,33 @@ unsigned long pulseIn(uint16_t pin, uint8_t state, unsigned long timeout)
 	const uint32_t pulse_start_cycle_count = esp_get_ccount();
 	WAIT_FOR_PIN_STATE(!state);
 	return clockCyclesToMicroseconds(esp_get_ccount() - pulse_start_cycle_count);
+}
+
+uint16_t analogRead(uint16_t pin)
+{
+	adc_oneshot_unit_init_cfg_t init_config{};
+	adc_channel_t channel;
+	esp_err_t err = adc_oneshot_io_to_channel(pin, &init_config.unit_id, &channel);
+	if(err != ESP_OK) {
+		debug_e("Pin %u is not ADC pin!", pin);
+		return 0;
+	}
+
+	// Initialise unit
+	adc_oneshot_unit_handle_t adc_handle;
+	ESP_ERROR_CHECK(adc_oneshot_new_unit(&init_config, &adc_handle));
+
+	// Initialise channel
+	adc_oneshot_chan_cfg_t channel_config{
+		.atten = ADC_ATTEN_DB_0,
+		.bitwidth = ADC_BITWIDTH_DEFAULT,
+	};
+	ESP_ERROR_CHECK(adc_oneshot_config_channel(adc_handle, channel, &channel_config));
+
+	int rawSampleValue{0};
+	ESP_ERROR_CHECK(adc_oneshot_read(adc_handle, channel, &rawSampleValue));
+
+	ESP_ERROR_CHECK(adc_oneshot_del_unit(adc_handle));
+
+	return rawSampleValue;
 }
