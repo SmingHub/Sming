@@ -20,6 +20,8 @@ constexpr unsigned hwTimerReportInterval{1000000}; //< How often to print hardwa
 
 volatile unsigned hwTimerCount;
 
+ElapseTimer hwTimer(hwTimerReportInterval);
+
 /*
  * Analogue reader task
  */
@@ -65,12 +67,11 @@ void IRAM_ATTR hwTimerCallback()
 {
 	++hwTimerCount;
 
-	static ElapseTimer timer(hwTimerReportInterval);
-	if(timer.expired()) {
+	if(hwTimer.expired()) {
 		unsigned count = hwTimerCount;
 		//	System.queueCallback([count]() { hwTimerDelegate(count); });
 		System.queueCallback(hwTimerDelegate, count);
-		timer.start();
+		hwTimer.start();
 	}
 }
 
