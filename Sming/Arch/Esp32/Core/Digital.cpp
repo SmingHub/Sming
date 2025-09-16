@@ -36,6 +36,9 @@ void pinMode(uint16_t pin, uint8_t mode)
 		return; // Bad pin
 	}
 
+	// Next call to `analogRead` needs to re-initialise
+	adcInitFlags[pin] = 0;
+
 	auto gpio = gpio_num_t(pin);
 
 #if SOC_RTCIO_INPUT_OUTPUT_SUPPORTED

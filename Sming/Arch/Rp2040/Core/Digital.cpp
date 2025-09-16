@@ -69,6 +69,12 @@ void pinMode(uint16_t pin, uint8_t mode)
 		SYSTEM_ERROR("ERROR: Illegal pinMode mode (%d)", mode);
 		return;
 	}
+
+	if(pin >= PIN_ADC0 && pin <= PIN_TEMP) {
+		// Next call to `analogRead` needs to re-initialise
+		uint8_t channel = pin - PIN_ADC0;
+		adcInitFlags[channel] = 0;
+	}
 }
 
 bool isInputPin(uint16_t pin)
