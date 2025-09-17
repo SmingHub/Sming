@@ -33,8 +33,10 @@ volatile bool eventQueueFlag;
 void tcpip_message_handler(void*)
 {
 	eventQueueFlag = false;
+	// Process only waiting messages (not newly posted ones) so tcpip doesn't starve
+	auto messageCount = uxQueueMessagesWaiting(eventQueue);
 	os_event_t evt;
-	while(xQueueReceive(eventQueue, &evt, 0) == pdTRUE) {
+	while(messageCount-- && xQueueReceive(eventQueue, &evt, 0) == pdTRUE) {
 		taskCallback(&evt);
 	}
 }
