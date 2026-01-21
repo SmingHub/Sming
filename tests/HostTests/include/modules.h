@@ -22,6 +22,7 @@
 	XX(Libc)                                                                                                           \
 	XX(PreCache)                                                                                                       \
 	XX(BitSet)                                                                                                         \
+	XX(Range)                                                                                                          \
 	XX(String)                                                                                                         \
 	XX(ArduinoString)                                                                                                  \
 	XX(Wiring)                                                                                                         \
