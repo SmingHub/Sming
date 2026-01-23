@@ -35,12 +35,14 @@
 #include <llhttp.h>
 
 using http_parser_type = llhttp_type;
-using HttpMethod = llhttp_method;
+using http_method = llhttp_method;
 using HttpStatus = llhttp_status;
 using HttpError = llhttp_errno;
 
 using http_parser = llhttp_t;
 using http_parser_settings = llhttp_settings_t;
+
+extern "C" const char* http_method_str(http_method);
 
 #endif
 
@@ -49,7 +51,6 @@ using http_parser_settings = llhttp_settings_t;
  * {
  */
 
-#ifdef USE_LEGACY_HTTP_PARSER
 /**
  * @brief Strongly-typed enum which shadows http_method from http_parser library
  */
@@ -63,6 +64,7 @@ enum class HttpMethod {
 HTTP_METHOD_MAP(XX)
 #undef XX
 
+#ifdef USE_LEGACY_HTTP_PARSER
 /**
  * @brief HTTP status code
  */
@@ -141,21 +143,8 @@ inline String httpGetStatusText(unsigned code)
  */
 inline String toString(HttpMethod method)
 {
-#ifdef USE_LEGACY_HTTP_PARSER
 	auto fstr = reinterpret_cast<flash_string_t>(http_method_str(http_method(method)));
 	return String(fstr);
-#else
-	switch(method) {
-#define XX(num, name, string)                                                                                          \
-	case HTTP_##name:                                                                                                  \
-		return #string;
-		HTTP_METHOD_MAP(XX)
-#undef XX
-	default:
-		return nullptr;
-	}
-
-#endif
 }
 
 /** @} */
