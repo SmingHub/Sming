@@ -1,0 +1,48 @@
+diff --git a/Sming/Components/llhttp/src/api.c b/Sming/Components/llhttp/src/api.c
+index 02452541..c964ef68 100644
+--- a/Sming/Components/llhttp/src/api.c
++++ b/Sming/Components/llhttp/src/api.c
+@@ -26,7 +26,7 @@
+     err = settings->NAME((PARSER), (START), (LEN));                           \
+     if (err == -1) {                                                          \
+       err = HPE_USER;                                                         \
+-      llhttp_set_error_reason((PARSER), "Span callback error in " #NAME);     \
++      llhttp_set_error_reason((PARSER), _F("Span callback error in " #NAME)); \
+     }                                                                         \
+   } while (0)
+ 
+@@ -216,7 +216,7 @@ const char* llhttp_errno_name(llhttp_errno_t err) {
+ 
+ 
+ const char* llhttp_method_name(llhttp_method_t method) {
+-#define HTTP_METHOD_GEN(NUM, NAME, STRING) case HTTP_##NAME: return #STRING;
++#define HTTP_METHOD_GEN(NUM, NAME, STRING) case HTTP_METHOD_##NAME: return #STRING;
+   switch (method) {
+     HTTP_ALL_METHOD_MAP(HTTP_METHOD_GEN)
+     default: abort();
+
+
+diff --git a/Sming/Components/llhttp/src/http.c b/Sming/Components/llhttp/src/http.c
+index 1ab91a55..0a0e59b3 100644
+--- a/Sming/Components/llhttp/src/http.c
++++ b/Sming/Components/llhttp/src/http.c
+@@ -20,7 +20,7 @@ int llhttp__before_headers_complete(llhttp_t* parser, const char* p,
+     parser->upgrade =
+         (parser->type == HTTP_REQUEST || parser->status_code == 101);
+   } else {
+-    parser->upgrade = (parser->method == HTTP_CONNECT);
++    parser->upgrade = (parser->method == HTTP_METHOD_CONNECT);
+   }
+   return 0;
+ }
+@@ -40,7 +40,7 @@ int llhttp__after_headers_complete(llhttp_t* parser, const char* p,
+ 
+   hasBody = parser->flags & F_CHUNKED || parser->content_length > 0;
+   if (
+-      (parser->upgrade && (parser->method == HTTP_CONNECT ||
++      (parser->upgrade && (parser->method == HTTP_METHOD_CONNECT ||
+                           (parser->flags & F_SKIPBODY) || !hasBody)) ||
+       /* See RFC 2616 section 4.4 - 1xx e.g. Continue */
+       (parser->type == HTTP_RESPONSE && parser->status_code == 101)
+
+
