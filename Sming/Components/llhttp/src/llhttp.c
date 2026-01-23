@@ -1248,7 +1248,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_pause_1:
     s_n_llhttp__internal__n_pause_1: {
       state->error = 0x16;
-      state->reason = "Pause on CONNECT/Upgrade";
+      state->reason = _F("Pause on CONNECT/Upgrade");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_llhttp__after_message_complete;
       return s_error;
@@ -1483,7 +1483,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_30:
     s_n_llhttp__internal__n_error_30: {
       state->error = 0x2;
-      state->reason = "Invalid quoted-pair in chunk extensions quoted value";
+      state->reason = _F("Invalid quoted-pair in chunk extensions quoted value");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -1491,7 +1491,7 @@ static llparse_state_t llhttp__internal__run(
     }
     case s_n_llhttp__internal__n_chunk_extension_quoted_value_quoted_pair:
     s_n_llhttp__internal__n_chunk_extension_quoted_value_quoted_pair: {
-      static uint8_t lookup_table[] = {
+      static const uint8_t lookup_table[] PROGMEM = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1512,7 +1512,7 @@ static llparse_state_t llhttp__internal__run(
       if (p == endp) {
         return s_n_llhttp__internal__n_chunk_extension_quoted_value_quoted_pair;
       }
-      switch (lookup_table[(uint8_t) *p]) {
+      switch (pgm_read_byte(&lookup_table[(uint8_t) *p])) {
         case 1: {
           p++;
           goto s_n_llhttp__internal__n_chunk_extension_quoted_value;
@@ -1526,7 +1526,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_31:
     s_n_llhttp__internal__n_error_31: {
       state->error = 0x2;
-      state->reason = "Invalid character in chunk extensions quoted value";
+      state->reason = _F("Invalid character in chunk extensions quoted value");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -1534,7 +1534,7 @@ static llparse_state_t llhttp__internal__run(
     }
     case s_n_llhttp__internal__n_chunk_extension_quoted_value:
     s_n_llhttp__internal__n_chunk_extension_quoted_value: {
-      static uint8_t lookup_table[] = {
+      static const uint8_t lookup_table[] PROGMEM = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1555,7 +1555,7 @@ static llparse_state_t llhttp__internal__run(
       if (p == endp) {
         return s_n_llhttp__internal__n_chunk_extension_quoted_value;
       }
-      switch (lookup_table[(uint8_t) *p]) {
+      switch (pgm_read_byte(&lookup_table[(uint8_t) *p])) {
         case 1: {
           p++;
           goto s_n_llhttp__internal__n_chunk_extension_quoted_value;
@@ -1589,7 +1589,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_33:
     s_n_llhttp__internal__n_error_33: {
       state->error = 0x2;
-      state->reason = "Invalid character in chunk extensions value";
+      state->reason = _F("Invalid character in chunk extensions value");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -1597,7 +1597,7 @@ static llparse_state_t llhttp__internal__run(
     }
     case s_n_llhttp__internal__n_chunk_extension_value:
     s_n_llhttp__internal__n_chunk_extension_value: {
-      static uint8_t lookup_table[] = {
+      static const uint8_t lookup_table[] PROGMEM = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 3, 4, 3, 3, 3, 3, 3, 0, 0, 3, 3, 0, 3, 3, 0,
@@ -1618,7 +1618,7 @@ static llparse_state_t llhttp__internal__run(
       if (p == endp) {
         return s_n_llhttp__internal__n_chunk_extension_value;
       }
-      switch (lookup_table[(uint8_t) *p]) {
+      switch (pgm_read_byte(&lookup_table[(uint8_t) *p])) {
         case 1: {
           goto s_n_llhttp__internal__n_span_end_llhttp__on_chunk_extension_value;
         }
@@ -1655,7 +1655,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_34:
     s_n_llhttp__internal__n_error_34: {
       state->error = 0x2;
-      state->reason = "Invalid character in chunk extensions name";
+      state->reason = _F("Invalid character in chunk extensions name");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -1663,7 +1663,7 @@ static llparse_state_t llhttp__internal__run(
     }
     case s_n_llhttp__internal__n_chunk_extension_name:
     s_n_llhttp__internal__n_chunk_extension_name: {
-      static uint8_t lookup_table[] = {
+      static const uint8_t lookup_table[] PROGMEM = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 3, 0, 3, 3, 3, 3, 3, 0, 0, 3, 3, 0, 3, 3, 0,
@@ -1684,7 +1684,7 @@ static llparse_state_t llhttp__internal__run(
       if (p == endp) {
         return s_n_llhttp__internal__n_chunk_extension_name;
       }
-      switch (lookup_table[(uint8_t) *p]) {
+      switch (pgm_read_byte(&lookup_table[(uint8_t) *p])) {
         case 1: {
           goto s_n_llhttp__internal__n_span_end_llhttp__on_chunk_extension_name;
         }
@@ -2088,7 +2088,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_5:
     s_n_llhttp__internal__n_error_5: {
       state->error = 0xa;
-      state->reason = "Invalid header field char";
+      state->reason = _F("Invalid header field char");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -2250,7 +2250,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_54:
     s_n_llhttp__internal__n_error_54: {
       state->error = 0xa;
-      state->reason = "Invalid header value char";
+      state->reason = _F("Invalid header value char");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -2276,7 +2276,7 @@ static llparse_state_t llhttp__internal__run(
     }
     case s_n_llhttp__internal__n_header_value_connection_token:
     s_n_llhttp__internal__n_header_value_connection_token: {
-      static uint8_t lookup_table[] = {
+      static const uint8_t lookup_table[] PROGMEM = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1,
@@ -2297,7 +2297,7 @@ static llparse_state_t llhttp__internal__run(
       if (p == endp) {
         return s_n_llhttp__internal__n_header_value_connection_token;
       }
-      switch (lookup_table[(uint8_t) *p]) {
+      switch (pgm_read_byte(&lookup_table[(uint8_t) *p])) {
         case 1: {
           p++;
           goto s_n_llhttp__internal__n_header_value_connection_token;
@@ -2442,7 +2442,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_56:
     s_n_llhttp__internal__n_error_56: {
       state->error = 0xb;
-      state->reason = "Content-Length overflow";
+      state->reason = _F("Content-Length overflow");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -2451,7 +2451,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_57:
     s_n_llhttp__internal__n_error_57: {
       state->error = 0xb;
-      state->reason = "Invalid character in Content-Length";
+      state->reason = _F("Invalid character in Content-Length");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -2544,7 +2544,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_59:
     s_n_llhttp__internal__n_error_59: {
       state->error = 0xf;
-      state->reason = "Invalid `Transfer-Encoding` header value";
+      state->reason = _F("Invalid `Transfer-Encoding` header value");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -2553,7 +2553,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_58:
     s_n_llhttp__internal__n_error_58: {
       state->error = 0xf;
-      state->reason = "Invalid `Transfer-Encoding` header value";
+      state->reason = _F("Invalid `Transfer-Encoding` header value");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -2581,7 +2581,7 @@ static llparse_state_t llhttp__internal__run(
     }
     case s_n_llhttp__internal__n_header_value:
     s_n_llhttp__internal__n_header_value: {
-      static uint8_t lookup_table[] = {
+      static const uint8_t lookup_table[] PROGMEM = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -2697,7 +2697,7 @@ static llparse_state_t llhttp__internal__run(
         return s_n_llhttp__internal__n_header_value;
       }
       #endif  /* __wasm_simd128__ */
-      switch (lookup_table[(uint8_t) *p]) {
+      switch (pgm_read_byte(&lookup_table[(uint8_t) *p])) {
         case 1: {
           p++;
           goto s_n_llhttp__internal__n_header_value;
@@ -2710,7 +2710,7 @@ static llparse_state_t llhttp__internal__run(
     }
     case s_n_llhttp__internal__n_header_value_te_token:
     s_n_llhttp__internal__n_header_value_te_token: {
-      static uint8_t lookup_table[] = {
+      static const uint8_t lookup_table[] PROGMEM = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1,
@@ -2731,7 +2731,7 @@ static llparse_state_t llhttp__internal__run(
       if (p == endp) {
         return s_n_llhttp__internal__n_header_value_te_token;
       }
-      switch (lookup_table[(uint8_t) *p]) {
+      switch (pgm_read_byte(&lookup_table[(uint8_t) *p])) {
         case 1: {
           p++;
           goto s_n_llhttp__internal__n_header_value_te_token;
@@ -2873,7 +2873,7 @@ static llparse_state_t llhttp__internal__run(
     }
     case s_n_llhttp__internal__n_header_field_general:
     s_n_llhttp__internal__n_header_field_general: {
-      static uint8_t lookup_table[] = {
+      static const uint8_t lookup_table[] PROGMEM = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0,
@@ -2929,7 +2929,7 @@ static llparse_state_t llhttp__internal__run(
         goto s_n_llhttp__internal__n_header_field_general_otherwise;
       }
       #endif  /* __SSE4_2__ */
-      switch (lookup_table[(uint8_t) *p]) {
+      switch (pgm_read_byte(&lookup_table[(uint8_t) *p])) {
         case 1: {
           p++;
           goto s_n_llhttp__internal__n_header_field_general;
@@ -3363,7 +3363,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_67:
     s_n_llhttp__internal__n_error_67: {
       state->error = 0x9;
-      state->reason = "Invalid HTTP version";
+      state->reason = _F("Invalid HTTP version");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -3372,7 +3372,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_74:
     s_n_llhttp__internal__n_error_74: {
       state->error = 0x9;
-      state->reason = "Invalid minor version";
+      state->reason = _F("Invalid minor version");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -3443,7 +3443,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_75:
     s_n_llhttp__internal__n_error_75: {
       state->error = 0x9;
-      state->reason = "Expected dot";
+      state->reason = _F("Expected dot");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -3468,7 +3468,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_76:
     s_n_llhttp__internal__n_error_76: {
       state->error = 0x9;
-      state->reason = "Invalid major version";
+      state->reason = _F("Invalid major version");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -3657,7 +3657,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_82:
     s_n_llhttp__internal__n_error_82: {
       state->error = 0x8;
-      state->reason = "Expected HTTP/, RTSP/ or ICE/";
+      state->reason = _F("Expected HTTP/, RTSP/ or ICE/");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -3895,7 +3895,7 @@ static llparse_state_t llhttp__internal__run(
     }
     case s_n_llhttp__internal__n_url_fragment:
     s_n_llhttp__internal__n_url_fragment: {
-      static uint8_t lookup_table[] = {
+      static const uint8_t lookup_table[] PROGMEM = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 1, 3, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -3916,7 +3916,7 @@ static llparse_state_t llhttp__internal__run(
       if (p == endp) {
         return s_n_llhttp__internal__n_url_fragment;
       }
-      switch (lookup_table[(uint8_t) *p]) {
+      switch (pgm_read_byte(&lookup_table[(uint8_t) *p])) {
         case 1: {
           p++;
           goto s_n_llhttp__internal__n_error_2;
@@ -3951,7 +3951,7 @@ static llparse_state_t llhttp__internal__run(
     }
     case s_n_llhttp__internal__n_url_query:
     s_n_llhttp__internal__n_url_query: {
-      static uint8_t lookup_table[] = {
+      static const uint8_t lookup_table[] PROGMEM = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 1, 3, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         4, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -3972,7 +3972,7 @@ static llparse_state_t llhttp__internal__run(
       if (p == endp) {
         return s_n_llhttp__internal__n_url_query;
       }
-      switch (lookup_table[(uint8_t) *p]) {
+      switch (pgm_read_byte(&lookup_table[(uint8_t) *p])) {
         case 1: {
           p++;
           goto s_n_llhttp__internal__n_error_2;
@@ -4038,7 +4038,7 @@ static llparse_state_t llhttp__internal__run(
     }
     case s_n_llhttp__internal__n_url_path:
     s_n_llhttp__internal__n_url_path: {
-      static uint8_t lookup_table[] = {
+      static const uint8_t lookup_table[] PROGMEM = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -4059,7 +4059,7 @@ static llparse_state_t llhttp__internal__run(
       if (p == endp) {
         return s_n_llhttp__internal__n_url_path;
       }
-      switch (lookup_table[(uint8_t) *p]) {
+      switch (pgm_read_byte(&lookup_table[(uint8_t) *p])) {
         case 1: {
           p++;
           goto s_n_llhttp__internal__n_error_2;
@@ -4103,7 +4103,7 @@ static llparse_state_t llhttp__internal__run(
     }
     case s_n_llhttp__internal__n_url_server_with_at:
     s_n_llhttp__internal__n_url_server_with_at: {
-      static uint8_t lookup_table[] = {
+      static const uint8_t lookup_table[] PROGMEM = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 1, 3, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         4, 5, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6,
@@ -4124,7 +4124,7 @@ static llparse_state_t llhttp__internal__run(
       if (p == endp) {
         return s_n_llhttp__internal__n_url_server_with_at;
       }
-      switch (lookup_table[(uint8_t) *p]) {
+      switch (pgm_read_byte(&lookup_table[(uint8_t) *p])) {
         case 1: {
           p++;
           goto s_n_llhttp__internal__n_error_2;
@@ -4161,7 +4161,7 @@ static llparse_state_t llhttp__internal__run(
     }
     case s_n_llhttp__internal__n_url_server:
     s_n_llhttp__internal__n_url_server: {
-      static uint8_t lookup_table[] = {
+      static const uint8_t lookup_table[] PROGMEM = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 1, 3, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         4, 5, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6,
@@ -4182,7 +4182,7 @@ static llparse_state_t llhttp__internal__run(
       if (p == endp) {
         return s_n_llhttp__internal__n_url_server;
       }
-      switch (lookup_table[(uint8_t) *p]) {
+      switch (pgm_read_byte(&lookup_table[(uint8_t) *p])) {
         case 1: {
           p++;
           goto s_n_llhttp__internal__n_error_2;
@@ -4280,7 +4280,7 @@ static llparse_state_t llhttp__internal__run(
     }
     case s_n_llhttp__internal__n_url_schema:
     s_n_llhttp__internal__n_url_schema: {
-      static uint8_t lookup_table[] = {
+      static const uint8_t lookup_table[] PROGMEM = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -4301,7 +4301,7 @@ static llparse_state_t llhttp__internal__run(
       if (p == endp) {
         return s_n_llhttp__internal__n_url_schema;
       }
-      switch (lookup_table[(uint8_t) *p]) {
+      switch (pgm_read_byte(&lookup_table[(uint8_t) *p])) {
         case 1: {
           p++;
           goto s_n_llhttp__internal__n_error_2;
@@ -4321,7 +4321,7 @@ static llparse_state_t llhttp__internal__run(
     }
     case s_n_llhttp__internal__n_url_start:
     s_n_llhttp__internal__n_url_start: {
-      static uint8_t lookup_table[] = {
+      static const uint8_t lookup_table[] PROGMEM = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2,
@@ -4342,7 +4342,7 @@ static llparse_state_t llhttp__internal__run(
       if (p == endp) {
         return s_n_llhttp__internal__n_url_start;
       }
-      switch (lookup_table[(uint8_t) *p]) {
+      switch (pgm_read_byte(&lookup_table[(uint8_t) *p])) {
         case 1: {
           p++;
           goto s_n_llhttp__internal__n_error_2;
@@ -6423,7 +6423,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_93:
     s_n_llhttp__internal__n_error_93: {
       state->error = 0x9;
-      state->reason = "Invalid HTTP version";
+      state->reason = _F("Invalid HTTP version");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -6432,7 +6432,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_107:
     s_n_llhttp__internal__n_error_107: {
       state->error = 0x9;
-      state->reason = "Invalid minor version";
+      state->reason = _F("Invalid minor version");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -6503,7 +6503,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_108:
     s_n_llhttp__internal__n_error_108: {
       state->error = 0x9;
-      state->reason = "Expected dot";
+      state->reason = _F("Expected dot");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -6528,7 +6528,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_109:
     s_n_llhttp__internal__n_error_109: {
       state->error = 0x9;
-      state->reason = "Invalid major version";
+      state->reason = _F("Invalid major version");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -6637,7 +6637,7 @@ static llparse_state_t llhttp__internal__run(
     case s_n_llhttp__internal__n_error_115:
     s_n_llhttp__internal__n_error_115: {
       state->error = 0x8;
-      state->reason = "Expected HTTP/, RTSP/ or ICE/";
+      state->reason = _F("Expected HTTP/, RTSP/ or ICE/");
       state->error_pos = (const char*) p;
       state->_current = (void*) (intptr_t) s_error;
       return s_error;
@@ -6919,7 +6919,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_2: {
     state->error = 0x7;
-    state->reason = "Invalid characters in url";
+    state->reason = _F("Invalid characters in url");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -6948,7 +6948,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_8: {
     state->error = 0x5;
-    state->reason = "Data after `Connection: close`";
+    state->reason = _F("Data after `Connection: close`");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -6981,7 +6981,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_13: {
     state->error = 0x15;
-    state->reason = "on_message_complete pause";
+    state->reason = _F("on_message_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_is_equal_upgrade;
     return s_error;
@@ -6989,7 +6989,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_38: {
     state->error = 0x12;
-    state->reason = "`on_message_complete` callback error";
+    state->reason = _F("`on_message_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -6997,7 +6997,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_15: {
     state->error = 0x15;
-    state->reason = "on_chunk_complete pause";
+    state->reason = _F("on_chunk_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_llhttp__on_message_complete_2;
     return s_error;
@@ -7005,7 +7005,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_40: {
     state->error = 0x14;
-    state->reason = "`on_chunk_complete` callback error";
+    state->reason = _F("`on_chunk_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7024,7 +7024,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_2: {
     state->error = 0x15;
-    state->reason = "on_message_complete pause";
+    state->reason = _F("on_message_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_pause_1;
     return s_error;
@@ -7032,7 +7032,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_9: {
     state->error = 0x12;
-    state->reason = "`on_message_complete` callback error";
+    state->reason = _F("`on_message_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7051,7 +7051,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_36: {
     state->error = 0xc;
-    state->reason = "Chunk size overflow";
+    state->reason = _F("Chunk size overflow");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7059,7 +7059,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_10: {
     state->error = 0xc;
-    state->reason = "Invalid character in chunk size";
+    state->reason = _F("Invalid character in chunk size");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7076,7 +7076,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_3: {
     state->error = 0x15;
-    state->reason = "on_chunk_complete pause";
+    state->reason = _F("on_chunk_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_update_content_length_1;
     return s_error;
@@ -7084,7 +7084,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_14: {
     state->error = 0x14;
-    state->reason = "`on_chunk_complete` callback error";
+    state->reason = _F("`on_chunk_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7103,7 +7103,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_13: {
     state->error = 0x19;
-    state->reason = "Missing expected CR after chunk data";
+    state->reason = _F("Missing expected CR after chunk data");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7120,7 +7120,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_15: {
     state->error = 0x2;
-    state->reason = "Expected LF after chunk data";
+    state->reason = _F("Expected LF after chunk data");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7160,7 +7160,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_4: {
     state->error = 0x15;
-    state->reason = "on_chunk_header pause";
+    state->reason = _F("on_chunk_header pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_is_equal_content_length;
     return s_error;
@@ -7168,7 +7168,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_12: {
     state->error = 0x13;
-    state->reason = "`on_chunk_header` callback error";
+    state->reason = _F("`on_chunk_header` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7187,7 +7187,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_16: {
     state->error = 0x2;
-    state->reason = "Expected LF after chunk size";
+    state->reason = _F("Expected LF after chunk size");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7204,7 +7204,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_11: {
     state->error = 0x19;
-    state->reason = "Missing expected CR after chunk size";
+    state->reason = _F("Missing expected CR after chunk size");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7221,7 +7221,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_17: {
     state->error = 0x2;
-    state->reason = "Invalid character in chunk extensions";
+    state->reason = _F("Invalid character in chunk extensions");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7229,7 +7229,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_18: {
     state->error = 0x2;
-    state->reason = "Invalid character in chunk extensions";
+    state->reason = _F("Invalid character in chunk extensions");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7237,7 +7237,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_20: {
     state->error = 0x19;
-    state->reason = "Missing expected CR after chunk extension name";
+    state->reason = _F("Missing expected CR after chunk extension name");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7245,7 +7245,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_5: {
     state->error = 0x15;
-    state->reason = "on_chunk_extension_name pause";
+    state->reason = _F("on_chunk_extension_name pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_test_lenient_flags_9;
     return s_error;
@@ -7253,7 +7253,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_19: {
     state->error = 0x22;
-    state->reason = "`on_chunk_extension_name` callback error";
+    state->reason = _F("`on_chunk_extension_name` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7277,7 +7277,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_6: {
     state->error = 0x15;
-    state->reason = "on_chunk_extension_name pause";
+    state->reason = _F("on_chunk_extension_name pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_chunk_size_almost_done;
     return s_error;
@@ -7285,7 +7285,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_21: {
     state->error = 0x22;
-    state->reason = "`on_chunk_extension_name` callback error";
+    state->reason = _F("`on_chunk_extension_name` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7310,7 +7310,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_7: {
     state->error = 0x15;
-    state->reason = "on_chunk_extension_name pause";
+    state->reason = _F("on_chunk_extension_name pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_chunk_extensions;
     return s_error;
@@ -7318,7 +7318,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_22: {
     state->error = 0x22;
-    state->reason = "`on_chunk_extension_name` callback error";
+    state->reason = _F("`on_chunk_extension_name` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7343,7 +7343,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_25: {
     state->error = 0x19;
-    state->reason = "Missing expected CR after chunk extension value";
+    state->reason = _F("Missing expected CR after chunk extension value");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7351,7 +7351,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_8: {
     state->error = 0x15;
-    state->reason = "on_chunk_extension_value pause";
+    state->reason = _F("on_chunk_extension_value pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_test_lenient_flags_10;
     return s_error;
@@ -7359,7 +7359,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_24: {
     state->error = 0x23;
-    state->reason = "`on_chunk_extension_value` callback error";
+    state->reason = _F("`on_chunk_extension_value` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7383,7 +7383,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_9: {
     state->error = 0x15;
-    state->reason = "on_chunk_extension_value pause";
+    state->reason = _F("on_chunk_extension_value pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_chunk_size_almost_done;
     return s_error;
@@ -7391,7 +7391,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_26: {
     state->error = 0x23;
-    state->reason = "`on_chunk_extension_value` callback error";
+    state->reason = _F("`on_chunk_extension_value` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7416,7 +7416,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_28: {
     state->error = 0x19;
-    state->reason = "Missing expected CR after chunk extension value";
+    state->reason = _F("Missing expected CR after chunk extension value");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7433,7 +7433,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_29: {
     state->error = 0x2;
-    state->reason = "Invalid character in chunk extensions quote value";
+    state->reason = _F("Invalid character in chunk extensions quote value");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7441,7 +7441,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_10: {
     state->error = 0x15;
-    state->reason = "on_chunk_extension_value pause";
+    state->reason = _F("on_chunk_extension_value pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_chunk_extension_quoted_value_done;
     return s_error;
@@ -7449,7 +7449,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_27: {
     state->error = 0x23;
-    state->reason = "`on_chunk_extension_value` callback error";
+    state->reason = _F("`on_chunk_extension_value` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7507,7 +7507,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_11: {
     state->error = 0x15;
-    state->reason = "on_chunk_extension_value pause";
+    state->reason = _F("on_chunk_extension_value pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_chunk_extensions;
     return s_error;
@@ -7515,7 +7515,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_32: {
     state->error = 0x23;
-    state->reason = "`on_chunk_extension_value` callback error";
+    state->reason = _F("`on_chunk_extension_value` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7557,7 +7557,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_12: {
     state->error = 0x15;
-    state->reason = "on_chunk_extension_name pause";
+    state->reason = _F("on_chunk_extension_name pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_chunk_extension_value;
     return s_error;
@@ -7565,7 +7565,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_23: {
     state->error = 0x22;
-    state->reason = "`on_chunk_extension_name` callback error";
+    state->reason = _F("`on_chunk_extension_name` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7618,7 +7618,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_35: {
     state->error = 0xc;
-    state->reason = "Invalid character in chunk size";
+    state->reason = _F("Invalid character in chunk size");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7635,7 +7635,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_37: {
     state->error = 0xc;
-    state->reason = "Invalid character in chunk size";
+    state->reason = _F("Invalid character in chunk size");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7666,7 +7666,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_39: {
     state->error = 0xf;
-    state->reason = "Request has invalid `Transfer-Encoding`";
+    state->reason = _F("Request has invalid `Transfer-Encoding`");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7674,7 +7674,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause: {
     state->error = 0x15;
-    state->reason = "on_message_complete pause";
+    state->reason = _F("on_message_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_llhttp__after_message_complete;
     return s_error;
@@ -7682,7 +7682,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_7: {
     state->error = 0x12;
-    state->reason = "`on_message_complete` callback error";
+    state->reason = _F("`on_message_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7722,7 +7722,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_14: {
     state->error = 0x15;
-    state->reason = "Paused by on_headers_complete";
+    state->reason = _F("Paused by on_headers_complete");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_llhttp__after_headers_complete;
     return s_error;
@@ -7730,7 +7730,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_6: {
     state->error = 0x11;
-    state->reason = "User callback error";
+    state->reason = _F("User callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7778,7 +7778,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_17: {
     state->error = 0x15;
-    state->reason = "on_chunk_complete pause";
+    state->reason = _F("on_chunk_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_llhttp__on_message_complete_2;
     return s_error;
@@ -7786,7 +7786,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_42: {
     state->error = 0x14;
-    state->reason = "`on_chunk_complete` callback error";
+    state->reason = _F("`on_chunk_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7826,7 +7826,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_16: {
     state->error = 0x15;
-    state->reason = "Paused by on_headers_complete";
+    state->reason = _F("Paused by on_headers_complete");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_llhttp__after_headers_complete;
     return s_error;
@@ -7834,7 +7834,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_41: {
     state->error = 0x11;
-    state->reason = "User callback error";
+    state->reason = _F("User callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7873,7 +7873,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_43: {
     state->error = 0x2;
-    state->reason = "Expected LF after headers";
+    state->reason = _F("Expected LF after headers");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7890,7 +7890,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_44: {
     state->error = 0xa;
-    state->reason = "Invalid header token";
+    state->reason = _F("Invalid header token");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7924,7 +7924,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_60: {
     state->error = 0xb;
-    state->reason = "Content-Length can't be present with Transfer-Encoding";
+    state->reason = _F("Content-Length can't be present with Transfer-Encoding");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7932,7 +7932,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_47: {
     state->error = 0xa;
-    state->reason = "Invalid header value char";
+    state->reason = _F("Invalid header value char");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7949,7 +7949,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_49: {
     state->error = 0xb;
-    state->reason = "Empty Content-Length";
+    state->reason = _F("Empty Content-Length");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -7957,7 +7957,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_18: {
     state->error = 0x15;
-    state->reason = "on_header_value_complete pause";
+    state->reason = _F("on_header_value_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_header_field_start;
     return s_error;
@@ -7965,7 +7965,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_48: {
     state->error = 0x1d;
-    state->reason = "`on_header_value_complete` callback error";
+    state->reason = _F("`on_header_value_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8048,7 +8048,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_46: {
     state->error = 0xa;
-    state->reason = "Invalid header value char";
+    state->reason = _F("Invalid header value char");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8065,7 +8065,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_50: {
     state->error = 0x2;
-    state->reason = "Expected LF after CR";
+    state->reason = _F("Expected LF after CR");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8098,7 +8098,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_52: {
     state->error = 0xa;
-    state->reason = "Unexpected whitespace after header value";
+    state->reason = _F("Unexpected whitespace after header value");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8165,7 +8165,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_53: {
     state->error = 0x3;
-    state->reason = "Missing expected LF after header value";
+    state->reason = _F("Missing expected LF after header value");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8173,7 +8173,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_51: {
     state->error = 0x19;
-    state->reason = "Missing expected CR after header value";
+    state->reason = _F("Missing expected CR after header value");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8398,7 +8398,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_55: {
     state->error = 0x4;
-    state->reason = "Duplicate Content-Length";
+    state->reason = _F("Duplicate Content-Length");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8569,7 +8569,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_61: {
     state->error = 0xf;
-    state->reason = "Transfer-Encoding can't be present with Content-Length";
+    state->reason = _F("Transfer-Encoding can't be present with Content-Length");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8595,7 +8595,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_19: {
     state->error = 0x15;
-    state->reason = "on_header_field_complete pause";
+    state->reason = _F("on_header_field_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_load_header_state;
     return s_error;
@@ -8603,7 +8603,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_45: {
     state->error = 0x1c;
-    state->reason = "`on_header_field_complete` callback error";
+    state->reason = _F("`on_header_field_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8645,7 +8645,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_62: {
     state->error = 0xa;
-    state->reason = "Invalid header token";
+    state->reason = _F("Invalid header token");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8674,7 +8674,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_4: {
     state->error = 0x1e;
-    state->reason = "Unexpected space after start line";
+    state->reason = _F("Unexpected space after start line");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8691,7 +8691,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_20: {
     state->error = 0x15;
-    state->reason = "on_url_complete pause";
+    state->reason = _F("on_url_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_headers_start;
     return s_error;
@@ -8699,7 +8699,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_3: {
     state->error = 0x1a;
-    state->reason = "`on_url_complete` callback error";
+    state->reason = _F("`on_url_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8748,7 +8748,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_63: {
     state->error = 0x7;
-    state->reason = "Expected CRLF";
+    state->reason = _F("Expected CRLF");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8772,7 +8772,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_72: {
     state->error = 0x17;
-    state->reason = "Pause on PRI/Upgrade";
+    state->reason = _F("Pause on PRI/Upgrade");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8780,7 +8780,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_73: {
     state->error = 0x9;
-    state->reason = "Expected HTTP/2 Connection Preface";
+    state->reason = _F("Expected HTTP/2 Connection Preface");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8788,7 +8788,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_70: {
     state->error = 0x2;
-    state->reason = "Expected CRLF after version";
+    state->reason = _F("Expected CRLF after version");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8805,7 +8805,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_69: {
     state->error = 0x9;
-    state->reason = "Expected CRLF after version";
+    state->reason = _F("Expected CRLF after version");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8822,7 +8822,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_71: {
     state->error = 0x9;
-    state->reason = "Expected CRLF after version";
+    state->reason = _F("Expected CRLF after version");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8830,7 +8830,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_21: {
     state->error = 0x15;
-    state->reason = "on_version_complete pause";
+    state->reason = _F("on_version_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_load_method_1;
     return s_error;
@@ -8838,7 +8838,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_68: {
     state->error = 0x21;
-    state->reason = "`on_version_complete` callback error";
+    state->reason = _F("`on_version_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8991,7 +8991,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_77: {
     state->error = 0x8;
-    state->reason = "Expected HTTP/, RTSP/ or ICE/";
+    state->reason = _F("Expected HTTP/, RTSP/ or ICE/");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -8999,7 +8999,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_66: {
     state->error = 0x8;
-    state->reason = "Invalid method for HTTP/x.x request";
+    state->reason = _F("Invalid method for HTTP/x.x request");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9007,7 +9007,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_22: {
     state->error = 0x15;
-    state->reason = "on_protocol_complete pause";
+    state->reason = _F("on_protocol_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_load_method;
     return s_error;
@@ -9015,7 +9015,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_65: {
     state->error = 0x26;
-    state->reason = "`on_protocol_complete` callback error";
+    state->reason = _F("`on_protocol_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9055,7 +9055,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_79: {
     state->error = 0x8;
-    state->reason = "Expected SOURCE method for ICE/x.x request";
+    state->reason = _F("Expected SOURCE method for ICE/x.x request");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9063,7 +9063,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_23: {
     state->error = 0x15;
-    state->reason = "on_protocol_complete pause";
+    state->reason = _F("on_protocol_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_load_method_2;
     return s_error;
@@ -9071,7 +9071,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_78: {
     state->error = 0x26;
-    state->reason = "`on_protocol_complete` callback error";
+    state->reason = _F("`on_protocol_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9095,7 +9095,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_81: {
     state->error = 0x8;
-    state->reason = "Invalid method for RTSP/x.x request";
+    state->reason = _F("Invalid method for RTSP/x.x request");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9103,7 +9103,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_24: {
     state->error = 0x15;
-    state->reason = "on_protocol_complete pause";
+    state->reason = _F("on_protocol_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_load_method_3;
     return s_error;
@@ -9111,7 +9111,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_80: {
     state->error = 0x26;
-    state->reason = "`on_protocol_complete` callback error";
+    state->reason = _F("`on_protocol_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9135,7 +9135,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_25: {
     state->error = 0x15;
-    state->reason = "on_url_complete pause";
+    state->reason = _F("on_url_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_req_http_start;
     return s_error;
@@ -9143,7 +9143,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_64: {
     state->error = 0x1a;
-    state->reason = "`on_url_complete` callback error";
+    state->reason = _F("`on_url_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9226,7 +9226,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_83: {
     state->error = 0x7;
-    state->reason = "Invalid char in url fragment start";
+    state->reason = _F("Invalid char in url fragment start");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9282,7 +9282,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_84: {
     state->error = 0x7;
-    state->reason = "Invalid char in url query";
+    state->reason = _F("Invalid char in url query");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9290,7 +9290,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_85: {
     state->error = 0x7;
-    state->reason = "Invalid char in url path";
+    state->reason = _F("Invalid char in url path");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9394,7 +9394,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_86: {
     state->error = 0x7;
-    state->reason = "Double @ in url";
+    state->reason = _F("Double @ in url");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9402,7 +9402,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_87: {
     state->error = 0x7;
-    state->reason = "Unexpected char in url server";
+    state->reason = _F("Unexpected char in url server");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9410,7 +9410,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_88: {
     state->error = 0x7;
-    state->reason = "Unexpected char in url server";
+    state->reason = _F("Unexpected char in url server");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9418,7 +9418,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_89: {
     state->error = 0x7;
-    state->reason = "Unexpected char in url schema";
+    state->reason = _F("Unexpected char in url schema");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9426,7 +9426,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_90: {
     state->error = 0x7;
-    state->reason = "Unexpected char in url schema";
+    state->reason = _F("Unexpected char in url schema");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9434,7 +9434,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_91: {
     state->error = 0x7;
-    state->reason = "Unexpected start char in url";
+    state->reason = _F("Unexpected start char in url");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9451,7 +9451,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_92: {
     state->error = 0x6;
-    state->reason = "Expected space after method";
+    state->reason = _F("Expected space after method");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9459,7 +9459,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_29: {
     state->error = 0x15;
-    state->reason = "on_method_complete pause";
+    state->reason = _F("on_method_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_req_first_space_before_url;
     return s_error;
@@ -9467,7 +9467,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_111: {
     state->error = 0x20;
-    state->reason = "`on_method_complete` callback error";
+    state->reason = _F("`on_method_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9498,7 +9498,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_112: {
     state->error = 0x6;
-    state->reason = "Invalid method encountered";
+    state->reason = _F("Invalid method encountered");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9506,7 +9506,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_104: {
     state->error = 0xd;
-    state->reason = "Invalid status code";
+    state->reason = _F("Invalid status code");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9514,7 +9514,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_102: {
     state->error = 0xd;
-    state->reason = "Invalid status code";
+    state->reason = _F("Invalid status code");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9522,7 +9522,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_100: {
     state->error = 0xd;
-    state->reason = "Invalid status code";
+    state->reason = _F("Invalid status code");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9530,7 +9530,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_27: {
     state->error = 0x15;
-    state->reason = "on_status_complete pause";
+    state->reason = _F("on_status_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_headers_start;
     return s_error;
@@ -9538,7 +9538,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_96: {
     state->error = 0x1b;
-    state->reason = "`on_status_complete` callback error";
+    state->reason = _F("`on_status_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9557,7 +9557,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_95: {
     state->error = 0xd;
-    state->reason = "Invalid response status";
+    state->reason = _F("Invalid response status");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9574,7 +9574,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_97: {
     state->error = 0x2;
-    state->reason = "Expected LF after CR";
+    state->reason = _F("Expected LF after CR");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9591,7 +9591,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_98: {
     state->error = 0x19;
-    state->reason = "Missing expected CR after response line";
+    state->reason = _F("Missing expected CR after response line");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9633,7 +9633,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_99: {
     state->error = 0xd;
-    state->reason = "Invalid response status";
+    state->reason = _F("Invalid response status");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9650,7 +9650,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_101: {
     state->error = 0xd;
-    state->reason = "Invalid status code";
+    state->reason = _F("Invalid status code");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9667,7 +9667,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_103: {
     state->error = 0xd;
-    state->reason = "Invalid status code";
+    state->reason = _F("Invalid status code");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9684,7 +9684,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_105: {
     state->error = 0xd;
-    state->reason = "Invalid status code";
+    state->reason = _F("Invalid status code");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9699,7 +9699,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_106: {
     state->error = 0x9;
-    state->reason = "Expected space after version";
+    state->reason = _F("Expected space after version");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9707,7 +9707,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_28: {
     state->error = 0x15;
-    state->reason = "on_version_complete pause";
+    state->reason = _F("on_version_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_res_after_version;
     return s_error;
@@ -9715,7 +9715,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_94: {
     state->error = 0x21;
-    state->reason = "`on_version_complete` callback error";
+    state->reason = _F("`on_version_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9868,7 +9868,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_114: {
     state->error = 0x8;
-    state->reason = "Expected HTTP/, RTSP/ or ICE/";
+    state->reason = _F("Expected HTTP/, RTSP/ or ICE/");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9876,7 +9876,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_30: {
     state->error = 0x15;
-    state->reason = "on_protocol_complete pause";
+    state->reason = _F("on_protocol_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_res_after_protocol;
     return s_error;
@@ -9884,7 +9884,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_113: {
     state->error = 0x26;
-    state->reason = "`on_protocol_complete` callback error";
+    state->reason = _F("`on_protocol_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9924,7 +9924,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_26: {
     state->error = 0x15;
-    state->reason = "on_method_complete pause";
+    state->reason = _F("on_method_complete pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_req_first_space_before_url;
     return s_error;
@@ -9932,7 +9932,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_1: {
     state->error = 0x20;
-    state->reason = "`on_method_complete` callback error";
+    state->reason = _F("`on_method_complete` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -9970,7 +9970,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_110: {
     state->error = 0x8;
-    state->reason = "Invalid word encountered";
+    state->reason = _F("Invalid word encountered");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -10001,7 +10001,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_31: {
     state->error = 0x15;
-    state->reason = "on_message_begin pause";
+    state->reason = _F("on_message_begin pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_load_type;
     return s_error;
@@ -10009,7 +10009,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error: {
     state->error = 0x10;
-    state->reason = "`on_message_begin` callback error";
+    state->reason = _F("`on_message_begin` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
@@ -10028,7 +10028,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_pause_32: {
     state->error = 0x15;
-    state->reason = "on_reset pause";
+    state->reason = _F("on_reset pause");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_n_llhttp__internal__n_invoke_update_finish;
     return s_error;
@@ -10036,7 +10036,7 @@ static llparse_state_t llhttp__internal__run(
   }
   s_n_llhttp__internal__n_error_116: {
     state->error = 0x1f;
-    state->reason = "`on_reset` callback error";
+    state->reason = _F("`on_reset` callback error");
     state->error_pos = (const char*) p;
     state->_current = (void*) (intptr_t) s_error;
     return s_error;
