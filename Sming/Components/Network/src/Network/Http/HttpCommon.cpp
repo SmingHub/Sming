@@ -13,11 +13,11 @@
 #include <FlashString/Map.hpp>
 
 // Define flash strings and lookup table for HTTP error names
-#define XX(name, string) DEFINE_FSTR_LOCAL(hpename_##name, "HPE_" #name);
+#define XX(num, name, string) DEFINE_FSTR_LOCAL(hpename_##name, "HPE_" #name);
 HTTP_ERRNO_MAP(XX)
 #undef XX
 
-#define XX(name, string) &hpename_##name,
+#define XX(num, name, string) &hpename_##name,
 DEFINE_FSTR_VECTOR_LOCAL(hpeNames, FlashString, HTTP_ERRNO_MAP(XX));
 #undef XX
 
@@ -28,11 +28,11 @@ String toString(HttpError err)
 }
 
 // Define flash strings and lookup table for HTTP error descriptions
-#define XX(name, string) DEFINE_FSTR_LOCAL(hpedesc_##name, string);
+#define XX(num, name, string) DEFINE_FSTR_LOCAL(hpedesc_##name, #string);
 HTTP_ERRNO_MAP(XX)
 #undef XX
 
-#define XX(_n, _s) &hpedesc_##_n,
+#define XX(num, name, string) &hpedesc_##name,
 DEFINE_FSTR_VECTOR_LOCAL(hpeDescriptions, FlashString, HTTP_ERRNO_MAP(XX));
 #undef XX
 

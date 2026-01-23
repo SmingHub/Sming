@@ -29,13 +29,27 @@
 #define HTTP_REQUEST_POOL_SIZE 20
 #endif
 
+#ifdef USE_LEGACY_HTTP_PARSER
 #include "http-parser/http_parser.h"
+#else
+#include <llhttp.h>
+
+using http_parser_type = llhttp_type;
+using HttpMethod = llhttp_method;
+using HttpStatus = llhttp_status;
+using HttpError = llhttp_errno;
+
+using http_parser = llhttp_t;
+using http_parser_settings = llhttp_settings_t;
+
+#endif
 
 /**
  * @ingroup http
  * {
  */
 
+#ifdef USE_LEGACY_HTTP_PARSER
 /**
  * @brief Strongly-typed enum which shadows http_method from http_parser library
  */
@@ -77,6 +91,12 @@ HTTP_ERRNO_MAP(XX)
 
 /* Macro defined using C++ type. Internal http_parser code has own definition */
 #define HTTP_PARSER_ERRNO(p) HttpError((p)->http_errno)
+
+#else
+
+#define HTTP_PARSER_ERRNO(p) HttpError((p)->error)
+
+#endif
 
 /**
  * @brief Identifies current state for an HTTP connection
@@ -121,8 +141,21 @@ inline String httpGetStatusText(unsigned code)
  */
 inline String toString(HttpMethod method)
 {
+#ifdef USE_LEGACY_HTTP_PARSER
 	auto fstr = reinterpret_cast<flash_string_t>(http_method_str(http_method(method)));
 	return String(fstr);
+#else
+	switch(method) {
+#define XX(num, name, string)                                                                                          \
+	case HTTP_##name:                                                                                                  \
+		return #string;
+		HTTP_METHOD_MAP(XX)
+#undef XX
+	default:
+		return nullptr;
+	}
+
+#endif
 }
 
 /** @} */
