@@ -172,7 +172,14 @@ bool HttpConnection::onTcpReceive(TcpClient&, char* data, int size)
 	}
 
 	int parsedBytes = llhttp_execute(&parser, data, size);
-	if(HTTP_PARSER_ERRNO(&parser) != HPE_OK) {
+
+	switch(HTTP_PARSER_ERRNO(&parser)) {
+	case HttpError::PAUSED_UPGRADE:
+		llhttp_resume_after_upgrade(&parser);
+		break;
+	case HPE_OK:
+		break;
+	default:
 		bool isRecoverable = onHttpError(HTTP_PARSER_ERRNO(&parser));
 		if(isRecoverable) {
 			setCloseAfterSent(true);
