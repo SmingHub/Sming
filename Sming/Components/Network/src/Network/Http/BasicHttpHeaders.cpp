@@ -19,16 +19,8 @@
 	}
 
 const http_parser_settings BasicHttpHeaders::parserSettings PROGMEM = {
-	.on_message_begin = nullptr,
-	.on_url = nullptr,
-	.on_status = nullptr,
 	.on_header_field = staticOnField,
 	.on_header_value = staticOnValue,
-	.on_headers_complete = nullptr,
-	.on_body = nullptr,
-	.on_message_complete = nullptr,
-	.on_chunk_header = nullptr,
-	.on_chunk_complete = nullptr,
 };
 
 void BasicHttpHeaders::clear()

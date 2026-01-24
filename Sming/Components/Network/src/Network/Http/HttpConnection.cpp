@@ -21,9 +21,7 @@
 const http_parser_settings HttpConnection::parserSettings PROGMEM = {
 	.on_message_begin = staticOnMessageBegin,
 	.on_url = staticOnPath,
-#ifdef COMPACT_MODE
-	.on_status = nullptr,
-#else
+#ifndef COMPACT_MODE
 	.on_status = staticOnStatus,
 #endif
 	.on_header_field = staticOnHeaderField,
@@ -31,12 +29,9 @@ const http_parser_settings HttpConnection::parserSettings PROGMEM = {
 	.on_headers_complete = staticOnHeadersComplete,
 	.on_body = staticOnBody,
 	.on_message_complete = staticOnMessageComplete,
-#ifdef COMPACT_MODE
-	.on_chunk_header = nullptr,
-	.on_chunk_complete = nullptr,
-#else
+#ifndef COMPACT_MODE
 	.on_chunk_header = staticOnChunkHeader,
-	.on_chunk_complete = staticOnChunkComplete
+	.on_chunk_complete = staticOnChunkComplete,
 #endif
 };
 
