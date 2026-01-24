@@ -51,11 +51,7 @@ const http_parser_settings HttpConnection::parserSettings PROGMEM = {
 
 void HttpConnection::init(http_parser_type type)
 {
-#ifdef USE_LEGACY_HTTP_PARSER
-	http_parser_init(&parser, type);
-#else
 	llhttp_init(&parser, type, &parserSettings);
-#endif
 	parser.data = this;
 	setDefaultParser();
 	state = eHCS_Ready;
@@ -180,11 +176,7 @@ bool HttpConnection::onTcpReceive(TcpClient&, char* data, int size)
 		return true;
 	}
 
-#ifdef USE_LEGACY_HTTP_PARSER
-	int parsedBytes = http_parser_execute(&parser, &parserSettings, data, size);
-#else
 	int parsedBytes = llhttp_execute(&parser, data, size);
-#endif
 	if(HTTP_PARSER_ERRNO(&parser) != HPE_OK) {
 		bool isRecoverable = onHttpError(HTTP_PARSER_ERRNO(&parser));
 		if(isRecoverable) {

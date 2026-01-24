@@ -33,24 +33,15 @@ const http_parser_settings BasicHttpHeaders::parserSettings PROGMEM = {
 
 void BasicHttpHeaders::clear()
 {
-#ifdef USE_LEGACY_HTTP_PARSER
-	http_parser_init(&parser, HTTP_BOTH);
-#else
 	llhttp_init(&parser, HTTP_BOTH, &parserSettings);
-#endif
 	parser.data = this;
 	count_ = 0;
 }
 
 HttpError BasicHttpHeaders::parse(char* data, size_t len, http_parser_type type)
 {
-#ifdef USE_LEGACY_HTTP_PARSER
-	http_parser_init(&parser, type);
-	http_parser_execute(&parser, &parserSettings, data, len);
-#else
 	llhttp_init(&parser, type, &parserSettings);
 	llhttp_execute(&parser, data, len);
-#endif
 	return HttpError(HTTP_PARSER_ERRNO(&parser));
 }
 

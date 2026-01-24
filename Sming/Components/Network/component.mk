@@ -16,7 +16,6 @@ COMPONENT_DOCFILES := \
 
 COMPONENT_DEPENDS := \
 	ssl \
-	http-parser \
 	llhttp \
 	libb64 \
 	ws_parser \

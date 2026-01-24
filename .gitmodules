@@ -45,10 +45,6 @@
 	path = Sming/Components/FlashString
 	url = https://github.com/mikee47/FlashString
     ignore = dirty
-[submodule "http-parser"]
-	path = Sming/Components/http-parser
-	url = https://github.com/nodejs/http-parser.git
-	ignore = dirty
 [submodule "IFS"]
 	path = Sming/Components/IFS
 	url = https://github.com/mikee47/IFS.git

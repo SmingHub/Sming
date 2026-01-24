@@ -29,9 +29,6 @@
 #define HTTP_REQUEST_POOL_SIZE 20
 #endif
 
-#ifdef USE_LEGACY_HTTP_PARSER
-#include "http-parser/http_parser.h"
-#else
 #include <llhttp.h>
 
 using http_parser_type = llhttp_type;
@@ -40,8 +37,6 @@ using http_parser = llhttp_t;
 using http_parser_settings = llhttp_settings_t;
 
 extern "C" const char* http_method_str(http_method);
-
-#endif
 
 /**
  * @ingroup http
@@ -87,12 +82,8 @@ enum class HttpError {
 HTTP_ERRNO_MAP(XX)
 #undef XX
 
-#ifdef USE_LEGACY_HTTP_PARSER
 /* Macro defined using C++ type. Internal http_parser code has own definition */
-#define HTTP_PARSER_ERRNO(p) HttpError((p)->http_errno)
-#else
 #define HTTP_PARSER_ERRNO(p) HttpError((p)->error)
-#endif
 
 /**
  * @brief Identifies current state for an HTTP connection
