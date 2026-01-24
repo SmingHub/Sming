@@ -13,6 +13,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include <sys/pgmspace.h>
 
 #define LLHTTP_REASON_STR(x) NULL
 

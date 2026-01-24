@@ -35,14 +35,12 @@ public:
 
 		TEST_CASE("http lookups")
 		{
-			Serial << _F("TODO: Requires work for llhttp") << endl;
-			// auto s = toString(HPE_UNKNOWN);
-			// REQUIRE(s == "HPE_UNKNOWN");
-			// s = httpGetErrorDescription(HPE_INVALID_URL);
-			// REQUIRE(s == "invalid URL");
-			// s = toString(HTTP_STATUS_TOO_MANY_REQUESTS);
-			// DEFINE_FSTR_LOCAL(too_many_requests, "too many requests");
-			// REQUIRE(s.equalsIgnoreCase(too_many_requests));
+			auto s = toString(HPE_INTERNAL);
+			REQUIRE_EQ(s, "HPE_INTERNAL");
+			s = httpGetErrorDescription(HPE_INVALID_URL);
+			REQUIRE_EQ(s, "INVALID_URL");
+			s = toString(HTTP_STATUS_TOO_MANY_REQUESTS);
+			REQUIRE_EQ(s, "TOO_MANY_REQUESTS");
 		}
 	}
 

@@ -30,7 +30,7 @@ done
 
 SED="sed -i -E"
 
-$SED '/^#include <stdint.h>$/a\\n#define LLHTTP_REASON_STR\(x\) NULL' src/llhttp.h
+$SED '/^#include <stdint.h>$/ a\#include <sys/pgmspace.h>\n\n#define LLHTTP_REASON_STR\(x\) NULL' src/llhttp.h
 
 # Rename llhttp_method enumerated values
 $SED '/^enum llhttp_method \{$/, /^};$/ s/HTTP_/HTTP_METHOD_/' src/llhttp.h
