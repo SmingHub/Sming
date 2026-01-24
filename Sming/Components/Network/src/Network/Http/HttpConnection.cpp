@@ -171,16 +171,16 @@ bool HttpConnection::onTcpReceive(TcpClient&, char* data, int size)
 		return true;
 	}
 
-	int parsedBytes = llhttp_execute(&parser, data, size);
+	auto err = HttpError(llhttp_execute(&parser, data, size));
 
-	switch(HTTP_PARSER_ERRNO(&parser)) {
+	switch(err) {
 	case HttpError::PAUSED_UPGRADE:
 		llhttp_resume_after_upgrade(&parser);
 		break;
 	case HPE_OK:
 		break;
 	default:
-		bool isRecoverable = onHttpError(HTTP_PARSER_ERRNO(&parser));
+		bool isRecoverable = onHttpError(err);
 		if(isRecoverable) {
 			setCloseAfterSent(true);
 		}
@@ -189,9 +189,6 @@ bool HttpConnection::onTcpReceive(TcpClient&, char* data, int size)
 
 	if(parser.upgrade) {
 		return onProtocolUpgrade(&parser);
-	}
-	if(parsedBytes != size) {
-		return false;
 	}
 
 	return true;

@@ -33,8 +33,7 @@ void BasicHttpHeaders::clear()
 HttpError BasicHttpHeaders::parse(char* data, size_t len, http_parser_type type)
 {
 	llhttp_init(&parser, type, &parserSettings);
-	llhttp_execute(&parser, data, len);
-	return HttpError(HTTP_PARSER_ERRNO(&parser));
+	return HttpError(llhttp_execute(&parser, data, len));
 }
 
 int BasicHttpHeaders::staticOnField(http_parser* parser, const char* at, size_t length)
