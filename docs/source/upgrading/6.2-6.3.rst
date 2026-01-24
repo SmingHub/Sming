@@ -1,0 +1,11 @@
+From v6.2 to 6.3
+================
+
+.. highlight:: c++
+
+**HTTP parser**
+
+The http parser library has been replaced with llhttp. See :issue:`2988`.
+
+If this update causes problems with your code, please ensure you avoid any direct use of library definitions.
+Instead, use the Sming-provided defined in :source:`Sming/Components/Network/src/Network/Http/HttpCommon.h`.
