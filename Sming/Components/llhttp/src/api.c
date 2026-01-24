@@ -207,6 +207,14 @@ const char* llhttp_get_error_pos(const llhttp_t* parser) {
 
 
 
+const char* llhttp_method_name(llhttp_method_t method) {
+#define HTTP_METHOD_GEN(NUM, NAME, STRING) case HTTP_METHOD_##NAME: return PSTR(#STRING);
+  switch (method) {
+    HTTP_ALL_METHOD_MAP(HTTP_METHOD_GEN)
+    default: abort();
+  }
+#undef HTTP_METHOD_GEN
+}
 
 
 

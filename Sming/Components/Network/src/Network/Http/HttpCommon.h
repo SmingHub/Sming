@@ -32,11 +32,13 @@
 #include <llhttp.h>
 
 using http_parser_type = llhttp_type;
-using http_method = llhttp_method;
 using http_parser = llhttp_t;
 using http_parser_settings = llhttp_settings_t;
 
-extern "C" const char* http_method_str(http_method);
+inline const char* http_method_str(llhttp_method method)
+{
+	return llhttp_method_name(method);
+}
 
 /**
  * @ingroup http
@@ -44,7 +46,7 @@ extern "C" const char* http_method_str(http_method);
  */
 
 /**
- * @brief Strongly-typed enum which shadows http_method from http_parser library
+ * @brief Strongly-typed enum which shadows llhttp_method from llhttp library
  */
 enum class HttpMethod {
 #define XX(num, name, string) name = num,
@@ -128,7 +130,7 @@ inline String httpGetStatusText(unsigned code)
  */
 inline String toString(HttpMethod method)
 {
-	auto fstr = reinterpret_cast<flash_string_t>(http_method_str(http_method(method)));
+	auto fstr = reinterpret_cast<flash_string_t>(http_method_str(llhttp_method(method)));
 	return String(fstr);
 }
 

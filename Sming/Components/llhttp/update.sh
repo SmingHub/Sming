@@ -53,5 +53,5 @@ $SED 's/(lookup_table\[\(uint8_t\) \*p\])/pgm_read_byte\(\&\1)/' src/llhttp.c
 
 # Remove unused functions which may consume RAM if linked
 $SED '/llhttp_errno_name/,/^}/d' src/api.c
-$SED '/llhttp_method_name/,/^}/d' src/api.c
+$SED '/llhttp_method_name/,/^}/ s/HTTP_##NAME: return #STRING/HTTP_METHOD_##NAME: return PSTR(#STRING)/' src/api.c
 $SED '/llhttp_status_name/,/^}/d' src/api.c
