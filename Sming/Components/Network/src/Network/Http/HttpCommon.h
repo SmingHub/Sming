@@ -36,9 +36,6 @@
 
 using http_parser_type = llhttp_type;
 using http_method = llhttp_method;
-using HttpStatus = llhttp_status;
-using HttpError = llhttp_errno;
-
 using http_parser = llhttp_t;
 using http_parser_settings = llhttp_settings_t;
 
@@ -64,7 +61,6 @@ enum class HttpMethod {
 HTTP_METHOD_MAP(XX)
 #undef XX
 
-#ifdef USE_LEGACY_HTTP_PARSER
 /**
  * @brief HTTP status code
  */
@@ -82,22 +78,20 @@ HTTP_STATUS_MAP(XX)
  * @brief HTTP error codes
  */
 enum class HttpError {
-#define XX(n, s) n,
+#define XX(num, name, string) name,
 	HTTP_ERRNO_MAP(XX)
 #undef XX
 };
 
-#define XX(n, s) constexpr HttpError HPE_##n = HttpError::n;
+#define XX(num, name, string) constexpr HttpError HPE_##name = HttpError::name;
 HTTP_ERRNO_MAP(XX)
 #undef XX
 
+#ifdef USE_LEGACY_HTTP_PARSER
 /* Macro defined using C++ type. Internal http_parser code has own definition */
 #define HTTP_PARSER_ERRNO(p) HttpError((p)->http_errno)
-
 #else
-
 #define HTTP_PARSER_ERRNO(p) HttpError((p)->error)
-
 #endif
 
 /**

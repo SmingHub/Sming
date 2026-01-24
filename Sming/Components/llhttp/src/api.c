@@ -25,7 +25,7 @@
     }                                                                         \
     err = settings->NAME((PARSER), (START), (LEN));                           \
     if (err == -1) {                                                          \
-      err = HPE_USER;                                                         \
+      err = HTTP_ERRNO_USER;                                                         \
       llhttp_set_error_reason((PARSER), LLHTTP_REASON_STR("Span callback error in " #NAME));     \
     }                                                                         \
   } while (0)
@@ -143,14 +143,14 @@ llhttp_errno_t llhttp_finish(llhttp_t* parser) {
   switch (parser->finish) {
     case HTTP_FINISH_SAFE_WITH_CB:
       CALLBACK_MAYBE(parser, on_message_complete);
-      if (err != HPE_OK) return err;
+      if (err != HTTP_ERRNO_OK) return err;
 
     /* FALLTHROUGH */
     case HTTP_FINISH_SAFE:
-      return HPE_OK;
+      return HTTP_ERRNO_OK;
     case HTTP_FINISH_UNSAFE:
       parser->reason = "Invalid EOF state";
-      return HPE_INVALID_EOF_STATE;
+      return HTTP_ERRNO_INVALID_EOF_STATE;
     default:
       abort();
   }
@@ -158,17 +158,17 @@ llhttp_errno_t llhttp_finish(llhttp_t* parser) {
 
 
 void llhttp_pause(llhttp_t* parser) {
-  if (parser->error != HPE_OK) {
+  if (parser->error != HTTP_ERRNO_OK) {
     return;
   }
 
-  parser->error = HPE_PAUSED;
+  parser->error = HTTP_ERRNO_PAUSED;
   parser->reason = "Paused";
 }
 
 
 void llhttp_resume(llhttp_t* parser) {
-  if (parser->error != HPE_PAUSED) {
+  if (parser->error != HTTP_ERRNO_PAUSED) {
     return;
   }
 
@@ -177,7 +177,7 @@ void llhttp_resume(llhttp_t* parser) {
 
 
 void llhttp_resume_after_upgrade(llhttp_t* parser) {
-  if (parser->error != HPE_PAUSED_UPGRADE) {
+  if (parser->error != HTTP_ERRNO_PAUSED_UPGRADE) {
     return;
   }
 

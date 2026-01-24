@@ -36,6 +36,13 @@ $SED '/^#include <stdint.h>$/a\\n#define LLHTTP_REASON_STR\(x\) NULL' src/llhttp
 $SED '/^enum llhttp_method \{$/, /^};$/ s/HTTP_/HTTP_METHOD_/' src/llhttp.h
 $SED 's/(parser->method == HTTP_)/\1METHOD_/' src/http.c
 
+# Rename llhttp_status enumerated values
+$SED '/^enum llhttp_status \{$/, /^};$/ s/HTTP_STATUS_/HTTP_STATUS_CODE_/' src/llhttp.h
+
+# Rename llhttp_errno enumerated values
+$SED '/^enum llhttp_errno \{$/, /^};$/ s/HPE_/HTTP_ERRNO_/' src/llhttp.h
+$SED 's/HPE_/HTTP_ERRNO_/' src/api.c
+
 # Don't output reason strings to RAM. Use macro so these can be enabled if required.
 $SED 's/(state->reason = )"(.+)"/\1LLHTTP_REASON_STR("\2")/' src/llhttp.c
 $SED 's/("Span callback error in " #NAME)/LLHTTP_REASON_STR(\1)/' src/api.c
