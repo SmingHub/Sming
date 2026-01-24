@@ -52,6 +52,10 @@ $SED 's/("Span callback error in " #NAME)/LLHTTP_REASON_STR(\1)/' src/api.c
 $SED 's/static (uint8_t lookup_table\[\]) =/static const \1 PROGMEM =/' src/llhttp.c
 $SED 's/(lookup_table\[\(uint8_t\) \*p\])/pgm_read_byte\(\&\1)/' src/llhttp.c
 
+# Put parser blobs in flash
+$SED 's/(llparse_blob(.+)\[\])/\1 PROGMEM/' src/llhttp.c
+$SED 's/(current ==) (seq\[index\])/\1 pgm_read_byte\(\&\2\)/' src/llhttp.c
+
 # Remove unused functions which may consume RAM if linked
 $SED '/llhttp_errno_name/,/^}/d' src/api.c
 $SED '/llhttp_method_name/,/^}/ s/HTTP_##NAME: return #STRING/HTTP_METHOD_##NAME: return PSTR(#STRING)/' src/api.c

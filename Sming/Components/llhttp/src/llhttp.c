@@ -31,204 +31,204 @@
 typedef int (*llhttp__internal__span_cb)(
              llhttp__internal_t*, const char*, const char*);
 
-static const unsigned char llparse_blob0[] = {
+static const unsigned char llparse_blob0[] PROGMEM = {
   'o', 'n'
 };
-static const unsigned char llparse_blob1[] = {
+static const unsigned char llparse_blob1[] PROGMEM = {
   'e', 'c', 't', 'i', 'o', 'n'
 };
-static const unsigned char llparse_blob2[] = {
+static const unsigned char llparse_blob2[] PROGMEM = {
   'l', 'o', 's', 'e'
 };
-static const unsigned char llparse_blob3[] = {
+static const unsigned char llparse_blob3[] PROGMEM = {
   'e', 'e', 'p', '-', 'a', 'l', 'i', 'v', 'e'
 };
-static const unsigned char llparse_blob4[] = {
+static const unsigned char llparse_blob4[] PROGMEM = {
   'p', 'g', 'r', 'a', 'd', 'e'
 };
-static const unsigned char llparse_blob5[] = {
+static const unsigned char llparse_blob5[] PROGMEM = {
   'c', 'h', 'u', 'n', 'k', 'e', 'd'
 };
 #ifdef __SSE4_2__
-static const unsigned char ALIGN(16) llparse_blob6[] = {
+static const unsigned char ALIGN(16) llparse_blob6[] PROGMEM = {
   0x9, 0x9, ' ', '~', 0x80, 0xff, 0x0, 0x0, 0x0, 0x0, 0x0,
   0x0, 0x0, 0x0, 0x0, 0x0
 };
 #endif  /* __SSE4_2__ */
 #ifdef __SSE4_2__
-static const unsigned char ALIGN(16) llparse_blob7[] = {
+static const unsigned char ALIGN(16) llparse_blob7[] PROGMEM = {
   '!', '!', '#', '\'', '*', '+', '-', '.', '0', '9', 'A',
   'Z', '^', 'z', '|', '|'
 };
 #endif  /* __SSE4_2__ */
 #ifdef __SSE4_2__
-static const unsigned char ALIGN(16) llparse_blob8[] = {
+static const unsigned char ALIGN(16) llparse_blob8[] PROGMEM = {
   '~', '~', 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
   0x0, 0x0, 0x0, 0x0, 0x0
 };
 #endif  /* __SSE4_2__ */
-static const unsigned char llparse_blob9[] = {
+static const unsigned char llparse_blob9[] PROGMEM = {
   'e', 'n', 't', '-', 'l', 'e', 'n', 'g', 't', 'h'
 };
-static const unsigned char llparse_blob10[] = {
+static const unsigned char llparse_blob10[] PROGMEM = {
   'r', 'o', 'x', 'y', '-', 'c', 'o', 'n', 'n', 'e', 'c',
   't', 'i', 'o', 'n'
 };
-static const unsigned char llparse_blob11[] = {
+static const unsigned char llparse_blob11[] PROGMEM = {
   'r', 'a', 'n', 's', 'f', 'e', 'r', '-', 'e', 'n', 'c',
   'o', 'd', 'i', 'n', 'g'
 };
-static const unsigned char llparse_blob12[] = {
+static const unsigned char llparse_blob12[] PROGMEM = {
   'p', 'g', 'r', 'a', 'd', 'e'
 };
-static const unsigned char llparse_blob13[] = {
+static const unsigned char llparse_blob13[] PROGMEM = {
   'T', 'T', 'P'
 };
-static const unsigned char llparse_blob14[] = {
+static const unsigned char llparse_blob14[] PROGMEM = {
   0xd, 0xa, 0xd, 0xa, 'S', 'M', 0xd, 0xa, 0xd, 0xa
 };
-static const unsigned char llparse_blob15[] = {
+static const unsigned char llparse_blob15[] PROGMEM = {
   'C', 'E'
 };
-static const unsigned char llparse_blob16[] = {
+static const unsigned char llparse_blob16[] PROGMEM = {
   'T', 'S', 'P'
 };
-static const unsigned char llparse_blob17[] = {
+static const unsigned char llparse_blob17[] PROGMEM = {
   'N', 'O', 'U', 'N', 'C', 'E'
 };
-static const unsigned char llparse_blob18[] = {
+static const unsigned char llparse_blob18[] PROGMEM = {
   'I', 'N', 'D'
 };
-static const unsigned char llparse_blob19[] = {
+static const unsigned char llparse_blob19[] PROGMEM = {
   'E', 'C', 'K', 'O', 'U', 'T'
 };
-static const unsigned char llparse_blob20[] = {
+static const unsigned char llparse_blob20[] PROGMEM = {
   'N', 'E', 'C', 'T'
 };
-static const unsigned char llparse_blob21[] = {
+static const unsigned char llparse_blob21[] PROGMEM = {
   'E', 'T', 'E'
 };
-static const unsigned char llparse_blob22[] = {
+static const unsigned char llparse_blob22[] PROGMEM = {
   'C', 'R', 'I', 'B', 'E'
 };
-static const unsigned char llparse_blob23[] = {
+static const unsigned char llparse_blob23[] PROGMEM = {
   'L', 'U', 'S', 'H'
 };
-static const unsigned char llparse_blob24[] = {
+static const unsigned char llparse_blob24[] PROGMEM = {
   'E', 'T'
 };
-static const unsigned char llparse_blob25[] = {
+static const unsigned char llparse_blob25[] PROGMEM = {
   'P', 'A', 'R', 'A', 'M', 'E', 'T', 'E', 'R'
 };
-static const unsigned char llparse_blob26[] = {
+static const unsigned char llparse_blob26[] PROGMEM = {
   'E', 'A', 'D'
 };
-static const unsigned char llparse_blob27[] = {
+static const unsigned char llparse_blob27[] PROGMEM = {
   'N', 'K'
 };
-static const unsigned char llparse_blob28[] = {
+static const unsigned char llparse_blob28[] PROGMEM = {
   'C', 'K'
 };
-static const unsigned char llparse_blob29[] = {
+static const unsigned char llparse_blob29[] PROGMEM = {
   'S', 'E', 'A', 'R', 'C', 'H'
 };
-static const unsigned char llparse_blob30[] = {
+static const unsigned char llparse_blob30[] PROGMEM = {
   'R', 'G', 'E'
 };
-static const unsigned char llparse_blob31[] = {
+static const unsigned char llparse_blob31[] PROGMEM = {
   'C', 'T', 'I', 'V', 'I', 'T', 'Y'
 };
-static const unsigned char llparse_blob32[] = {
+static const unsigned char llparse_blob32[] PROGMEM = {
   'L', 'E', 'N', 'D', 'A', 'R'
 };
-static const unsigned char llparse_blob33[] = {
+static const unsigned char llparse_blob33[] PROGMEM = {
   'V', 'E'
 };
-static const unsigned char llparse_blob34[] = {
+static const unsigned char llparse_blob34[] PROGMEM = {
   'O', 'T', 'I', 'F', 'Y'
 };
-static const unsigned char llparse_blob35[] = {
+static const unsigned char llparse_blob35[] PROGMEM = {
   'P', 'T', 'I', 'O', 'N', 'S'
 };
-static const unsigned char llparse_blob36[] = {
+static const unsigned char llparse_blob36[] PROGMEM = {
   'C', 'H'
 };
-static const unsigned char llparse_blob37[] = {
+static const unsigned char llparse_blob37[] PROGMEM = {
   'S', 'E'
 };
-static const unsigned char llparse_blob38[] = {
+static const unsigned char llparse_blob38[] PROGMEM = {
   'A', 'Y'
 };
-static const unsigned char llparse_blob39[] = {
+static const unsigned char llparse_blob39[] PROGMEM = {
   'S', 'T'
 };
-static const unsigned char llparse_blob40[] = {
+static const unsigned char llparse_blob40[] PROGMEM = {
   'I', 'N', 'D'
 };
-static const unsigned char llparse_blob41[] = {
+static const unsigned char llparse_blob41[] PROGMEM = {
   'A', 'T', 'C', 'H'
 };
-static const unsigned char llparse_blob42[] = {
+static const unsigned char llparse_blob42[] PROGMEM = {
   'G', 'E'
 };
-static const unsigned char llparse_blob43[] = {
+static const unsigned char llparse_blob43[] PROGMEM = {
   'U', 'E', 'R', 'Y'
 };
-static const unsigned char llparse_blob44[] = {
+static const unsigned char llparse_blob44[] PROGMEM = {
   'I', 'N', 'D'
 };
-static const unsigned char llparse_blob45[] = {
+static const unsigned char llparse_blob45[] PROGMEM = {
   'O', 'R', 'D'
 };
-static const unsigned char llparse_blob46[] = {
+static const unsigned char llparse_blob46[] PROGMEM = {
   'I', 'R', 'E', 'C', 'T'
 };
-static const unsigned char llparse_blob47[] = {
+static const unsigned char llparse_blob47[] PROGMEM = {
   'O', 'R', 'T'
 };
-static const unsigned char llparse_blob48[] = {
+static const unsigned char llparse_blob48[] PROGMEM = {
   'R', 'C', 'H'
 };
-static const unsigned char llparse_blob49[] = {
+static const unsigned char llparse_blob49[] PROGMEM = {
   'P', 'A', 'R', 'A', 'M', 'E', 'T', 'E', 'R'
 };
-static const unsigned char llparse_blob50[] = {
+static const unsigned char llparse_blob50[] PROGMEM = {
   'U', 'R', 'C', 'E'
 };
-static const unsigned char llparse_blob51[] = {
+static const unsigned char llparse_blob51[] PROGMEM = {
   'B', 'S', 'C', 'R', 'I', 'B', 'E'
 };
-static const unsigned char llparse_blob52[] = {
+static const unsigned char llparse_blob52[] PROGMEM = {
   'A', 'R', 'D', 'O', 'W', 'N'
 };
-static const unsigned char llparse_blob53[] = {
+static const unsigned char llparse_blob53[] PROGMEM = {
   'A', 'C', 'E'
 };
-static const unsigned char llparse_blob54[] = {
+static const unsigned char llparse_blob54[] PROGMEM = {
   'I', 'N', 'D'
 };
-static const unsigned char llparse_blob55[] = {
+static const unsigned char llparse_blob55[] PROGMEM = {
   'N', 'K'
 };
-static const unsigned char llparse_blob56[] = {
+static const unsigned char llparse_blob56[] PROGMEM = {
   'C', 'K'
 };
-static const unsigned char llparse_blob57[] = {
+static const unsigned char llparse_blob57[] PROGMEM = {
   'U', 'B', 'S', 'C', 'R', 'I', 'B', 'E'
 };
-static const unsigned char llparse_blob58[] = {
+static const unsigned char llparse_blob58[] PROGMEM = {
   'T', 'T', 'P'
 };
-static const unsigned char llparse_blob59[] = {
+static const unsigned char llparse_blob59[] PROGMEM = {
   'C', 'E'
 };
-static const unsigned char llparse_blob60[] = {
+static const unsigned char llparse_blob60[] PROGMEM = {
   'T', 'S', 'P'
 };
-static const unsigned char llparse_blob61[] = {
+static const unsigned char llparse_blob61[] PROGMEM = {
   'A', 'D'
 };
-static const unsigned char llparse_blob62[] = {
+static const unsigned char llparse_blob62[] PROGMEM = {
   'T', 'P', '/'
 };
 
@@ -257,7 +257,7 @@ static llparse_match_t llparse__match_sequence_to_lower(
     unsigned char current;
 
     current = ((*p) >= 'A' && (*p) <= 'Z' ? (*p | 0x20) : (*p));
-    if (current == seq[index]) {
+    if (current == pgm_read_byte(&seq[index])) {
       if (++index == seq_len) {
         res.status = kMatchComplete;
         goto reset;
@@ -289,7 +289,7 @@ static llparse_match_t llparse__match_sequence_to_lower_unsafe(
     unsigned char current;
 
     current = ((*p) | 0x20);
-    if (current == seq[index]) {
+    if (current == pgm_read_byte(&seq[index])) {
       if (++index == seq_len) {
         res.status = kMatchComplete;
         goto reset;
@@ -321,7 +321,7 @@ static llparse_match_t llparse__match_sequence_id(
     unsigned char current;
 
     current = *p;
-    if (current == seq[index]) {
+    if (current == pgm_read_byte(&seq[index])) {
       if (++index == seq_len) {
         res.status = kMatchComplete;
         goto reset;
