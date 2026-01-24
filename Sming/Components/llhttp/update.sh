@@ -28,13 +28,19 @@ done
 
 # Using SED on generated code as changes are more likely
 
-sed -i -E 's/state->reason = "(.+)"/state->reason = _F("\1")/' src/llhttp.c
-sed -i -E 's/static uint8_t lookup_table\[\] =/static const uint8_t lookup_table\[\] PROGMEM =/' src/llhttp.c
-sed -i -E 's/lookup_table\[\(uint8_t\) \*p\]/pgm_read_byte\(\&lookup_table\[\(uint8_t\) \*p\]\)/' src/llhttp.c
+SED="sed -i -E"
 
-sed -i -E '/^#include <stdint.h>$/a#include <FakePgmSpace.h>' src/llhttp.h
-sed -i -E '/^enum llhttp_method \{$/,/^};$/s/HTTP_/HTTP_METHOD_/' src/llhttp.h
+$SED 's/(state->reason = )"(.+)"/\1PSTR("\2")/' src/llhttp.c
+$SED 's/static (uint8_t lookup_table\[\]) =/static const \1 PROGMEM =/' src/llhttp.c
+$SED 's/(lookup_table\[\(uint8_t\) \*p\])/pgm_read_byte\(\&\1)/' src/llhttp.c
 
-# Regular patch on API code
+$SED '/^#include <stdint.h>$/a#include <FakePgmSpace.h>' src/llhttp.h
+$SED '/^enum llhttp_method \{$/,/^};$/s/HTTP_/HTTP_METHOD_/' src/llhttp.h
+$SED 's/HTTP_CONNECT/HTTP_METHOD_CONNECT/' src/http.c
 
-git apply -v llhttp.patch --ignore-whitespace --whitespace=nowarn
+$SED 's/("Span callback error in " #NAME)/PSTR(\1)/' src/api.c
+
+# Remove unused functions
+$SED '/llhttp_errno_name/,/^}/d' src/api.c
+$SED '/llhttp_method_name/,/^}/d' src/api.c
+$SED '/llhttp_status_name/,/^}/d' src/api.c

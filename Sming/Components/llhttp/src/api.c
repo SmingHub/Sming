@@ -26,7 +26,7 @@
     err = settings->NAME((PARSER), (START), (LEN));                           \
     if (err == -1) {                                                          \
       err = HPE_USER;                                                         \
-      llhttp_set_error_reason((PARSER), _F("Span callback error in " #NAME)); \
+      llhttp_set_error_reason((PARSER), PSTR("Span callback error in " #NAME));     \
     }                                                                         \
   } while (0)
 
@@ -205,33 +205,9 @@ const char* llhttp_get_error_pos(const llhttp_t* parser) {
 }
 
 
-const char* llhttp_errno_name(llhttp_errno_t err) {
-#define HTTP_ERRNO_GEN(CODE, NAME, _) case HPE_##NAME: return "HPE_" #NAME;
-  switch (err) {
-    HTTP_ERRNO_MAP(HTTP_ERRNO_GEN)
-    default: abort();
-  }
-#undef HTTP_ERRNO_GEN
-}
 
 
-const char* llhttp_method_name(llhttp_method_t method) {
-#define HTTP_METHOD_GEN(NUM, NAME, STRING) case HTTP_METHOD_##NAME: return #STRING;
-  switch (method) {
-    HTTP_ALL_METHOD_MAP(HTTP_METHOD_GEN)
-    default: abort();
-  }
-#undef HTTP_METHOD_GEN
-}
 
-const char* llhttp_status_name(llhttp_status_t status) {
-#define HTTP_STATUS_GEN(NUM, NAME, STRING) case HTTP_STATUS_##NAME: return #STRING;
-  switch (status) {
-    HTTP_STATUS_MAP(HTTP_STATUS_GEN)
-    default: abort();
-  }
-#undef HTTP_STATUS_GEN
-}
 
 
 void llhttp_set_lenient_headers(llhttp_t* parser, int enabled) {
