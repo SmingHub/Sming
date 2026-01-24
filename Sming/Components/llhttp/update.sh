@@ -30,17 +30,21 @@ done
 
 SED="sed -i -E"
 
-$SED 's/(state->reason = )"(.+)"/\1PSTR("\2")/' src/llhttp.c
+$SED '/^#include <stdint.h>$/a\\n#define LLHTTP_REASON_STR\(x\) NULL' src/llhttp.h
+
+# Rename llhttp_method enumerated values
+$SED '/^enum llhttp_method \{$/, /^};$/ s/HTTP_/HTTP_METHOD_/' src/llhttp.h
+$SED 's/(parser->method == HTTP_)/\1METHOD_/' src/http.c
+
+# Don't output reason strings to RAM. Use macro so these can be enabled if required.
+$SED 's/(state->reason = )"(.+)"/\1LLHTTP_REASON_STR("\2")/' src/llhttp.c
+$SED 's/("Span callback error in " #NAME)/LLHTTP_REASON_STR(\1)/' src/api.c
+
+# Put lookup tables in flash
 $SED 's/static (uint8_t lookup_table\[\]) =/static const \1 PROGMEM =/' src/llhttp.c
 $SED 's/(lookup_table\[\(uint8_t\) \*p\])/pgm_read_byte\(\&\1)/' src/llhttp.c
 
-$SED '/^#include <stdint.h>$/a#include <FakePgmSpace.h>' src/llhttp.h
-$SED '/^enum llhttp_method \{$/,/^};$/s/HTTP_/HTTP_METHOD_/' src/llhttp.h
-$SED 's/HTTP_CONNECT/HTTP_METHOD_CONNECT/' src/http.c
-
-$SED 's/("Span callback error in " #NAME)/PSTR(\1)/' src/api.c
-
-# Remove unused functions
+# Remove unused functions which may consume RAM if linked
 $SED '/llhttp_errno_name/,/^}/d' src/api.c
 $SED '/llhttp_method_name/,/^}/d' src/api.c
 $SED '/llhttp_status_name/,/^}/d' src/api.c

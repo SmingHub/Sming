@@ -13,7 +13,8 @@ extern "C" {
 #endif
 
 #include <stdint.h>
-#include <FakePgmSpace.h>
+
+#define LLHTTP_REASON_STR(x) NULL
 
 typedef struct llhttp__internal_s llhttp__internal_t;
 struct llhttp__internal_s {

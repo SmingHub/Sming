@@ -26,7 +26,7 @@
     err = settings->NAME((PARSER), (START), (LEN));                           \
     if (err == -1) {                                                          \
       err = HPE_USER;                                                         \
-      llhttp_set_error_reason((PARSER), PSTR("Span callback error in " #NAME));     \
+      llhttp_set_error_reason((PARSER), LLHTTP_REASON_STR("Span callback error in " #NAME));     \
     }                                                                         \
   } while (0)
 
