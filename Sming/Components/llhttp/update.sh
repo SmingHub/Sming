@@ -16,6 +16,7 @@ fi
 srcdir="$1"
 
 srcfiles=(\
+    LICENSE \
     build/c/llhttp.c \
     build/llhttp.h \
     src/native/api.c \
