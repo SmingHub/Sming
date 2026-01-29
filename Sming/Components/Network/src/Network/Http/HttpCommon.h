@@ -131,8 +131,9 @@ String toString(HttpError err);
 
 /**
  * @brief Return a descriptive string for the given error
+ * @deprecated Messages are not available in llhttp. Use `toString(HttpError)`.
  */
-String httpGetErrorDescription(HttpError err);
+String httpGetErrorDescription(HttpError err) SMING_DEPRECATED;
 
 /**
  * @brief Return a descriptive string for an HTTP status code
