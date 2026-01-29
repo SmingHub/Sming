@@ -21,18 +21,14 @@
 const http_parser_settings HttpConnection::parserSettings PROGMEM = {
 	.on_message_begin = staticOnMessageBegin,
 	.on_url = staticOnPath,
-#ifndef COMPACT_MODE
 	.on_status = staticOnStatus,
-#endif
 	.on_header_field = staticOnHeaderField,
 	.on_header_value = staticOnHeaderValue,
 	.on_headers_complete = staticOnHeadersComplete,
 	.on_body = staticOnBody,
 	.on_message_complete = staticOnMessageComplete,
-#ifndef COMPACT_MODE
 	.on_chunk_header = staticOnChunkHeader,
 	.on_chunk_complete = staticOnChunkComplete,
-#endif
 };
 
 /** @brief Boilerplate code for http_parser callbacks
@@ -78,7 +74,6 @@ int HttpConnection::staticOnPath(http_parser* parser, const char* at, size_t len
 	return connection->onPath(String(at, length));
 }
 
-#ifndef COMPACT_MODE
 int HttpConnection::staticOnStatus(http_parser* parser, const char*, size_t)
 {
 	GET_CONNECTION()
@@ -99,7 +94,6 @@ int HttpConnection::staticOnChunkComplete(http_parser* parser)
 
 	return connection->onChunkComplete(parser);
 }
-#endif
 
 int HttpConnection::staticOnHeaderField(http_parser* parser, const char* at, size_t length)
 {
