@@ -29,16 +29,54 @@
 #define HTTP_REQUEST_POOL_SIZE 20
 #endif
 
+#ifdef USE_LEGACY_HTTP_PARSER
+
+#include <http-parser/http_parser.h>
+
+enum class HttpError {
+#define XX(n, s) n,
+	HTTP_ERRNO_MAP(XX)
+#undef XX
+};
+
+#define XX(n, s) constexpr HttpError HPE_##n = HttpError::n;
+HTTP_ERRNO_MAP(XX)
+#undef XX
+
+/* Macro defined using C++ type. Internal http_parser code has own definition */
+#define HTTP_PARSER_ERRNO(p) HttpError((p)->http_errno)
+
+#else
+
 #include <llhttp.h>
 
 using http_parser_type = llhttp_type;
 using http_parser = llhttp_t;
 using http_parser_settings = llhttp_settings_t;
+using http_method = llhttp_method;
 
 inline const char* http_method_str(llhttp_method method)
 {
 	return llhttp_method_name(method);
 }
+
+/**
+ * @brief HTTP error codes
+ */
+enum class HttpError {
+#define XX(num, name, ...) name,
+	HTTP_ERRNO_MAP(XX)
+#undef XX
+};
+
+#define XX(num, name, ...) constexpr HttpError HPE_##name = HttpError::name;
+HTTP_ERRNO_MAP(XX)
+#undef XX
+
+/* Macro defined using C++ type. Internal http_parser code has own definition */
+#define HTTP_PARSER_ERRNO(p) HttpError((p)->error)
+
+#endif
 
 /**
  * @ingroup http
@@ -70,22 +108,6 @@ enum class HttpStatus {
 #define XX(num, name, string) constexpr HttpStatus HTTP_STATUS_##name = HttpStatus::name;
 HTTP_STATUS_MAP(XX)
 #undef XX
-
-/**
- * @brief HTTP error codes
- */
-enum class HttpError {
-#define XX(num, name, string) name,
-	HTTP_ERRNO_MAP(XX)
-#undef XX
-};
-
-#define XX(num, name, string) constexpr HttpError HPE_##name = HttpError::name;
-HTTP_ERRNO_MAP(XX)
-#undef XX
-
-/* Macro defined using C++ type. Internal http_parser code has own definition */
-#define HTTP_PARSER_ERRNO(p) HttpError((p)->error)
 
 /**
  * @brief Identifies current state for an HTTP connection
@@ -130,7 +152,7 @@ inline String httpGetStatusText(unsigned code)
  */
 inline String toString(HttpMethod method)
 {
-	auto fstr = reinterpret_cast<flash_string_t>(http_method_str(llhttp_method(method)));
+	auto fstr = reinterpret_cast<flash_string_t>(http_method_str(http_method(method)));
 	return String(fstr);
 }
 
