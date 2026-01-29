@@ -63,11 +63,11 @@ String toString(HttpError err)
 }
 
 // Define flash strings and Map for HTTP status codes
-#define XX(num, name, string) DEFINE_FSTR_LOCAL(hpsText_##name, #string);
+#define XX(num, name, ...) DEFINE_FSTR_LOCAL(hpsText_##name, #name);
 HTTP_STATUS_MAP(XX)
 #undef XX
 
-#define XX(num, name, string) {HTTP_STATUS_##name, &hpsText_##name},
+#define XX(num, name, ...) {HTTP_STATUS_##name, &hpsText_##name},
 DEFINE_FSTR_MAP_LOCAL(httpStatusMap, HttpStatus, FlashString, HTTP_STATUS_MAP(XX));
 #undef XX
 

@@ -35,10 +35,8 @@ public:
 
 		TEST_CASE("http lookups")
 		{
-			auto s = toString(HPE_INTERNAL);
-			REQUIRE_EQ(s, "HPE_INTERNAL");
-			s = httpGetErrorDescription(HPE_INVALID_URL);
-			REQUIRE_EQ(s, "INVALID_URL");
+			auto s = toString(HPE_INVALID_CONTENT_LENGTH);
+			REQUIRE_EQ(s, "HPE_INVALID_CONTENT_LENGTH");
 			s = toString(HTTP_STATUS_TOO_MANY_REQUESTS);
 			REQUIRE_EQ(s, "TOO_MANY_REQUESTS");
 		}
