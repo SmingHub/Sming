@@ -35,13 +35,10 @@ public:
 
 		TEST_CASE("http lookups")
 		{
-			auto s = toString(HPE_UNKNOWN);
-			REQUIRE(s == "HPE_UNKNOWN");
-			s = httpGetErrorDescription(HPE_INVALID_URL);
-			REQUIRE(s == "invalid URL");
+			auto s = toString(HPE_INVALID_CONTENT_LENGTH);
+			REQUIRE_EQ(s, "HPE_INVALID_CONTENT_LENGTH");
 			s = toString(HTTP_STATUS_TOO_MANY_REQUESTS);
-			DEFINE_FSTR_LOCAL(too_many_requests, "too many requests");
-			REQUIRE(s.equalsIgnoreCase(too_many_requests));
+			REQUIRE_EQ(s, "TOO_MANY_REQUESTS");
 		}
 	}
 

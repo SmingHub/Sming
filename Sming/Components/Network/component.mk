@@ -16,11 +16,19 @@ COMPONENT_DOCFILES := \
 
 COMPONENT_DEPENDS := \
 	ssl \
-	http-parser \
 	libb64 \
 	ws_parser \
 	mqtt-codec \
 	libyuarel
+
+COMPONENT_VARS			+= USE_LEGACY_HTTP_PARSER
+USE_LEGACY_HTTP_PARSER	?= 0
+ifeq ($(USE_LEGACY_HTTP_PARSER),1)
+	COMPONENT_DEPENDS	+= http-parser
+	GLOBAL_CFLAGS		+= -DUSE_LEGACY_HTTP_PARSER=1
+else
+	COMPONENT_DEPENDS	+= llhttp
+endif
 
 # WiFi settings may be provide via Environment variables
 CONFIG_VARS				+= WIFI_SSID WIFI_PWD

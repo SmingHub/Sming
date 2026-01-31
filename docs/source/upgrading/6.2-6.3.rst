@@ -1,0 +1,20 @@
+From v6.2 to 6.3
+================
+
+.. highlight:: c++
+
+**HTTP parser**
+
+The *http-parser* library has been replaced with *llhttp*. See :issue:`2988`.
+
+If this update causes problems with your code, please ensure you avoid any direct use of library definitions.
+Instead, use the Sming-provided defined in :source:`Sming/Components/Network/src/Network/Http/HttpCommon.h`.
+
+Main differences:
+
+- *llhttp* uses about 14K more flash than *http-parser*
+- :cpp:func`httpGetErrorDescription` is deprecated as *llhttp* does not provide error descriptions, so returns the same text as :cpp:func:`toString(HttpError)`.
+- There are minor differences in how the parser is used
+
+If any of this is a problem, you can revert to the legacy http-parser by (re-)building with `USE_LEGACY_HTTP_PARSER=1`.
+Once the codebase starts making use of the newer features of *llhttp* this may be removed.

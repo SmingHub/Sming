@@ -109,7 +109,6 @@ protected:
 	 */
 	virtual int onHeadersComplete(const HttpHeaders& headers) = 0;
 
-#ifndef COMPACT_MODE
 	virtual int onStatus(http_parser*)
 	{
 		return 0;
@@ -124,8 +123,6 @@ protected:
 	{
 		return 0;
 	}
-
-#endif /* COMPACT MODE */
 
 	/** @brief Called when a piece of body data is received
 	 * 	@param at the data
@@ -165,17 +162,13 @@ private:
 	// http_parser callback functions
 	static int staticOnMessageBegin(http_parser* parser);
 	static int staticOnPath(http_parser* parser, const char* at, size_t length);
-#ifndef COMPACT_MODE
 	static int staticOnStatus(http_parser* parser, const char* at, size_t length);
-#endif
 	static int staticOnHeadersComplete(http_parser* parser);
 	static int staticOnHeaderField(http_parser* parser, const char* at, size_t length);
 	static int staticOnHeaderValue(http_parser* parser, const char* at, size_t length);
 	static int staticOnBody(http_parser* parser, const char* at, size_t length);
-#ifndef COMPACT_MODE
 	static int staticOnChunkHeader(http_parser* parser);
 	static int staticOnChunkComplete(http_parser* parser);
-#endif
 	static int staticOnMessageComplete(http_parser* parser);
 
 protected:

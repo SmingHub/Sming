@@ -21,23 +21,14 @@
 const http_parser_settings HttpConnection::parserSettings PROGMEM = {
 	.on_message_begin = staticOnMessageBegin,
 	.on_url = staticOnPath,
-#ifdef COMPACT_MODE
-	.on_status = nullptr,
-#else
 	.on_status = staticOnStatus,
-#endif
 	.on_header_field = staticOnHeaderField,
 	.on_header_value = staticOnHeaderValue,
 	.on_headers_complete = staticOnHeadersComplete,
 	.on_body = staticOnBody,
 	.on_message_complete = staticOnMessageComplete,
-#ifdef COMPACT_MODE
-	.on_chunk_header = nullptr,
-	.on_chunk_complete = nullptr,
-#else
 	.on_chunk_header = staticOnChunkHeader,
-	.on_chunk_complete = staticOnChunkComplete
-#endif
+	.on_chunk_complete = staticOnChunkComplete,
 };
 
 /** @brief Boilerplate code for http_parser callbacks
@@ -51,7 +42,11 @@ const http_parser_settings HttpConnection::parserSettings PROGMEM = {
 
 void HttpConnection::init(http_parser_type type)
 {
+#ifdef USE_LEGACY_HTTP_PARSER
 	http_parser_init(&parser, type);
+#else
+	llhttp_init(&parser, type, &parserSettings);
+#endif
 	parser.data = this;
 	setDefaultParser();
 	state = eHCS_Ready;
@@ -83,7 +78,6 @@ int HttpConnection::staticOnPath(http_parser* parser, const char* at, size_t len
 	return connection->onPath(String(at, length));
 }
 
-#ifndef COMPACT_MODE
 int HttpConnection::staticOnStatus(http_parser* parser, const char*, size_t)
 {
 	GET_CONNECTION()
@@ -104,7 +98,6 @@ int HttpConnection::staticOnChunkComplete(http_parser* parser)
 
 	return connection->onChunkComplete(parser);
 }
-#endif
 
 int HttpConnection::staticOnHeaderField(http_parser* parser, const char* at, size_t length)
 {
@@ -176,9 +169,19 @@ bool HttpConnection::onTcpReceive(TcpClient&, char* data, int size)
 		return true;
 	}
 
+#ifdef USE_LEGACY_HTTP_PARSER
 	int parsedBytes = http_parser_execute(&parser, &parserSettings, data, size);
-	if(HTTP_PARSER_ERRNO(&parser) != HPE_OK) {
-		bool isRecoverable = onHttpError(HTTP_PARSER_ERRNO(&parser));
+	auto err = HTTP_PARSER_ERRNO(&parser);
+#else
+	auto err = HttpError(llhttp_execute(&parser, data, size));
+	if(err == HttpError::PAUSED_UPGRADE) {
+		llhttp_resume_after_upgrade(&parser);
+		err = HttpError::OK;
+	}
+#endif
+
+	if(err != HttpError::OK) {
+		bool isRecoverable = onHttpError(err);
 		if(isRecoverable) {
 			setCloseAfterSent(true);
 		}
@@ -187,9 +190,6 @@ bool HttpConnection::onTcpReceive(TcpClient&, char* data, int size)
 
 	if(parser.upgrade) {
 		return onProtocolUpgrade(&parser);
-	}
-	if(parsedBytes != size) {
-		return false;
 	}
 
 	return true;

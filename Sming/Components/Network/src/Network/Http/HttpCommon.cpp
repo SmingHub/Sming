@@ -12,6 +12,8 @@
 #include <FlashString/Vector.hpp>
 #include <FlashString/Map.hpp>
 
+#ifdef USE_LEGACY_HTTP_PARSER
+
 // Define flash strings and lookup table for HTTP error names
 #define XX(name, string) DEFINE_FSTR_LOCAL(hpename_##name, "HPE_" #name);
 HTTP_ERRNO_MAP(XX)
@@ -20,12 +22,6 @@ HTTP_ERRNO_MAP(XX)
 #define XX(name, string) &hpename_##name,
 DEFINE_FSTR_VECTOR_LOCAL(hpeNames, FlashString, HTTP_ERRNO_MAP(XX));
 #undef XX
-
-String toString(HttpError err)
-{
-	String s = hpeNames[unsigned(err)];
-	return s ?: F("HPE_#") + String(unsigned(err));
-}
 
 // Define flash strings and lookup table for HTTP error descriptions
 #define XX(name, string) DEFINE_FSTR_LOCAL(hpedesc_##name, string);
@@ -42,12 +38,36 @@ String httpGetErrorDescription(HttpError err)
 	return s ?: F("HPE_#") + String(unsigned(err));
 }
 
+#else
+
+// Define flash strings and lookup table for HTTP error names
+#define XX(num, name, string) DEFINE_FSTR_LOCAL(hpename_##name, "HPE_" #name);
+HTTP_ERRNO_MAP(XX)
+#undef XX
+
+#define XX(num, name, ...) &hpename_##name,
+DEFINE_FSTR_VECTOR_LOCAL(hpeNames, FlashString, HTTP_ERRNO_MAP(XX));
+#undef XX
+
+String httpGetErrorDescription(HttpError err)
+{
+	return toString(err);
+}
+
+#endif
+
+String toString(HttpError err)
+{
+	String s = hpeNames[unsigned(err)];
+	return s ?: F("HPE_#") + String(unsigned(err));
+}
+
 // Define flash strings and Map for HTTP status codes
-#define XX(num, name, string) DEFINE_FSTR_LOCAL(hpsText_##name, #string);
+#define XX(num, name, ...) DEFINE_FSTR_LOCAL(hpsText_##name, #name);
 HTTP_STATUS_MAP(XX)
 #undef XX
 
-#define XX(num, name, string) {HTTP_STATUS_##name, &hpsText_##name},
+#define XX(num, name, ...) {HTTP_STATUS_##name, &hpsText_##name},
 DEFINE_FSTR_MAP_LOCAL(httpStatusMap, HttpStatus, FlashString, HTTP_STATUS_MAP(XX));
 #undef XX
 
