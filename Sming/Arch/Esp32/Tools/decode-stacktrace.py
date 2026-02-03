@@ -351,15 +351,20 @@ class CrashDecoder:
                 val = int(addr_str, 16)
                 
                 # Exception Cause Decoding
-                if name == "MCAUSE" or name == "EXCCAUSE":
-                    # Mask out Interrupt bit for RISC-V if needed (XLEN-1)
-                    # For 32-bit RISC-V, bit 31 is Interrupt.
-                    # Simple heuristic: if > 0x80000000, it's an interrupt.
+                if name in ["MCAUSE", "EXCCAUSE"]:
                     cause_val = val
                     is_interrupt = False
-                    if cause_val & 0x80000000:
-                         is_interrupt = True
-                         cause_val &= 0x7FFFFFFF
+                    
+                    # Determine architecture for decoding logic
+                    is_riscv = 'c3' in self.soc_name or 'c2' in self.soc_name or 'c6' in self.soc_name or 'h2' in self.soc_name or 'riscv' in self.tool_path
+
+                    if name == "MCAUSE" or is_riscv:
+                        # RISC-V: Bit 31 (XLEN-1) indicates interrupt
+                        if cause_val & 0x80000000:
+                             is_interrupt = True
+                             cause_val &= 0x7FFFFFFF
+                    
+                    # Xtensa EXCCAUSE is 6-bit, no modification needed usually.
                     
                     if not is_interrupt or cause_val < 64: # Sanity check
                         desc = self.get_exception_desc(cause_val)
