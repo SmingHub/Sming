@@ -460,10 +460,27 @@ class CrashDecoder:
         funcs_found = []
         labels_found = []
 
+        current_frame = 0
+        frame_funcs = []
+        frame_labels = []
+
         for val in self.stack_buffer:
             addr_str = f"0x{val:08x}"
             resolved = False
             addr_colored = f"{getAddrColor(val)}{addr_str}{Colors.RESET}"
+
+            # Check for canary/poison
+            if val in [0xDEADBEEF, 0xA5A5A5A5, 0xFEFEFEFE, 0xABABABAB]:
+                # Commit current frame
+                if frame_funcs:
+                    funcs_found.append((current_frame, frame_funcs))
+                if frame_labels:
+                    labels_found.append((current_frame, frame_labels))
+                
+                frame_funcs = []
+                frame_labels = []
+                current_frame += 1
+                continue
             
             # Code (0x4...)
             if 0x40000000 <= val < 0x50000000:
@@ -471,32 +488,55 @@ class CrashDecoder:
                 if res and "??:0" not in res:
                     # Colorize Source Location
                     res_display = res.replace(" at ", f" at {Colors.MAGENTA}") + Colors.RESET
-                    funcs_found.append(f"{addr_colored} {res_display}")
+                    # frame_funcs.append(f"{addr_colored} {res_display}")
+                    item = f"{addr_colored} {res_display}"
+                    if not frame_funcs or frame_funcs[-1] != item: # Simple dedup consecutive
+                         frame_funcs.append(item)
                     resolved = True
                 else:
                     # Fallback to symbol
                     sym = findSymbol(val, self.map_symbols)
                     if sym:
-                        funcs_found.append(f"{addr_colored} {Colors.LIGHT_BLUE}{sym}{Colors.RESET}")
+                        # frame_funcs.append(f"{addr_colored} {Colors.LIGHT_BLUE}{sym}{Colors.RESET}")
+                        item = f"{addr_colored} {Colors.LIGHT_BLUE}{sym}{Colors.RESET}"
+                        if not frame_funcs or frame_funcs[-1] != item:
+                             frame_funcs.append(item)
                         resolved = True
             
             # If not code, check data (0x3... or 0x5...)
             if not resolved and ((0x30000000 <= val < 0x40000000) or (0x50000000 <= val < 0x60000000)):
                 sym = findSymbol(val, self.map_symbols)
                 if sym:
-                    labels_found.append(f"    {addr_colored} -> {Colors.LIGHT_BLUE}{sym}{Colors.RESET}")
+                    # labels_found.append(f"    {addr_colored} -> {Colors.LIGHT_BLUE}{sym}{Colors.RESET}")
+                    item = f"    {addr_colored} -> {Colors.LIGHT_BLUE}{sym}{Colors.RESET}"
+                    if not frame_labels or frame_labels[-1] != item: # Simple dedup consecutive
+                         frame_labels.append(item)
                     resolved = True
+
+        # Commit final frame
+        if frame_funcs:
+            funcs_found.append((current_frame, frame_funcs))
+        if frame_labels:
+            labels_found.append((current_frame, frame_labels))
         
         # Summary Sections
         if funcs_found:
              print(f"\n{Colors.BOLD}Calculated Stack Trace (Functions):{Colors.RESET}")
-             for f in funcs_found:
-                 print(f.strip())
+             for frame_buffer in funcs_found:
+                 # print(f"{Colors.GRAY}--- Frame {frame_idx} ---{Colors.RESET}")
+                 for f in frame_buffer[1]:
+                     print(f.strip())
+                 if len(funcs_found) > 1 and frame_buffer != funcs_found[-1]:
+                      print(f"{Colors.GRAY}---{Colors.RESET}")
         
         if labels_found:
              print(f"\n{Colors.BOLD}Stack Symbols (Data/Labels):{Colors.RESET}")
-             for l in labels_found:
-                 print(l.strip())
+             for frame_buffer in labels_found:
+                 # print(f"{Colors.GRAY}--- Frame {frame_idx} ---{Colors.RESET}")
+                 for l in frame_buffer[1]:
+                     print(l.strip())
+                 if len(labels_found) > 1 and frame_buffer != labels_found[-1]:
+                      print(f"{Colors.GRAY}---{Colors.RESET}")
 
         self.stack_buffer = []
         self.stack_lines = []
