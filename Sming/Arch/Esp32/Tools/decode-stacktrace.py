@@ -49,25 +49,25 @@ def getAddrColor(val):
 def getElfSha256(filepath):
     """Calculate SHA256 of the ELF file to match against dump info."""
     try:
-        sha256_hash = hashlib.sha256()
+        sha256Hash = hashlib.sha256()
         with open(filepath, "rb") as f:
-            for byte_block in iter(lambda: f.read(4096), b""):
-                sha256_hash.update(byte_block)
-        return sha256_hash.hexdigest()
+            for byteBlock in iter(lambda: f.read(4096), b""):
+                sha256Hash.update(byteBlock)
+        return sha256Hash.hexdigest()
     except Exception as e:
         return None
 
-def loadElfSymbols(elf_path, nm_tool):
+def loadElfSymbols(elfPath, nmTool):
     """
     Load symbols using nm tool on the ELF file.
     Output format of 'nm -n': <address> <type> <name>
     """
-    if not nm_tool or not shutil.which(nm_tool):
+    if not nmTool or not shutil.which(nmTool):
         return []
 
     symbols = []
-    print(f"Loading symbols from ELF using {nm_tool}...", file=sys.stderr)
-    cmd = [nm_tool, '-n', elf_path]
+    print(f"Loading symbols from ELF using {nmTool}...", file=sys.stderr)
+    cmd = [nmTool, '-n', elfPath]
     try:
         # Run nm (capture_output requires python 3.7+)
         result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False)
@@ -95,28 +95,28 @@ def loadElfSymbols(elf_path, nm_tool):
         print(f"Error running nm: {e}", file=sys.stderr)
         return []
 
-def loadMapSymbols(elf_path):
+def loadMapSymbols(elfPath):
     """
     Attempt to load symbols from a .map file.
     Returns a sorted list of (address, symbol_name) tuples.
     """
-    map_path = os.path.splitext(elf_path)[0] + ".map"
-    if not os.path.exists(map_path):
+    mapPath = os.path.splitext(elfPath)[0] + ".map"
+    if not os.path.exists(mapPath):
         return []
 
     symbols = []
     # Regex for standard GNU LD map file entries: "0x000000003ffb0000                _my_variable"
-    map_regex = re.compile(r"^\s+(0x[0-9a-fA-F]{8,})\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*$")
+    mapRegex = re.compile(r"^\s+(0x[0-9a-fA-F]{8,})\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*$")
     
     try:
-        with open(map_path, 'r') as f:
+        with open(mapPath, 'r') as f:
             for line in f:
                 if "0x" not in line: continue 
-                m = map_regex.match(line)
+                m = mapRegex.match(line)
                 if m:
-                    addr_val = int(m.group(1), 16)
+                    addrVal = int(m.group(1), 16)
                     name = m.group(2)
-                    symbols.append((addr_val, name))
+                    symbols.append((addrVal, name))
         
         symbols.sort(key=lambda x: x[0])
         print(f"Loaded {len(symbols)} symbols from map file.", file=sys.stderr)
@@ -130,18 +130,18 @@ def findSymbol(address, symbols):
     if not symbols: return None
     
     # Simple linear search (can be optimized with bisect)
-    best_sym = None
+    bestSym = None
     offset = 0
     
-    for sym_addr, sym_name in symbols:
-        if sym_addr > address:
+    for symAddr, symName in symbols:
+        if symAddr > address:
             break
-        best_sym = (sym_addr, sym_name)
+        bestSym = (symAddr, symName)
     
-    if best_sym:
-        offset = address - best_sym[0]
+    if bestSym:
+        offset = address - bestSym[0]
         if offset < 8192: 
-            return f"{best_sym[1]}+{offset}" if offset > 0 else best_sym[1]
+            return f"{bestSym[1]}+{offset}" if offset > 0 else bestSym[1]
     return None
 
 class DecoderState(Enum):
@@ -150,25 +150,25 @@ class DecoderState(Enum):
     IN_STACK = auto()
 
 class CrashDecoder:
-    def __init__(self, elf_file, tool_path, map_symbols, soc_name='esp32', objdump_tool=None, interactive=False):
-        self.elf_file = elf_file
-        self.tool_path = tool_path
-        self.map_symbols = map_symbols
-        self.soc_name = soc_name
-        self.objdump_tool = objdump_tool
+    def __init__(self, elfFile, toolPath, mapSymbols, socName='esp32', objdumpTool=None, interactive=False):
+        self.elfFile = elfFile
+        self.toolPath = toolPath
+        self.mapSymbols = mapSymbols
+        self.socName = socName
+        self.objdumpTool = objdumpTool
         self.interactive = interactive
         self.state = DecoderState.IDLE
-        self.addr2line_proc = None
-        self.register_buffer = [] # format: (Name, AddrStr)
-        self.stack_buffer = [] # format: int_value
-        self.stack_lines = [] # Raw text lines for reprint
+        self.addr2lineProc = None
+        self.registerBuffer = [] # format: (Name, AddrStr)
+        self.stackBuffer = [] # format: int_value
+        self.stackLines = [] # Raw text lines for reprint
         
         # Start addr2line process
         # -a: input address, -i: unwind inlines, -f: functions, -C: demangle
         # Note: -p is NOT used as it changes output format to single-line which breaks parsing
-        cmd = [self.tool_path, '-aifC', '-e', self.elf_file]
+        cmd = [self.toolPath, '-aifC', '-e', self.elfFile]
         try:
-            self.addr2line_proc = subprocess.Popen(
+            self.addr2lineProc = subprocess.Popen(
                 cmd, 
                 stdin=subprocess.PIPE, 
                 stdout=subprocess.PIPE, 
@@ -177,31 +177,31 @@ class CrashDecoder:
                 bufsize=1 # Line buffered
             )
         except Exception as e:
-            print(f"Error starting {self.tool_path}: {e}", file=sys.stderr)
+            print(f"Error starting {self.toolPath}: {e}", file=sys.stderr)
             sys.exit(1)
 
     def close(self):
-        if self.addr2line_proc:
-            self.addr2line_proc.terminate()
+        if self.addr2lineProc:
+            self.addr2lineProc.terminate()
 
-    def resolveCode(self, addr_str):
+    def resolveCode(self, addrStr):
         """
         Interacts with addr2line to resolve an address.
         Uses 0x00000000 sentinel to sync.
         Returns formatted string.
         """
-        if not self.addr2line_proc: return None
+        if not self.addr2lineProc: return None
 
         try:
             # Send address and sentinel
-            self.addr2line_proc.stdin.write(f"{addr_str}\n0x00000000\n")
-            self.addr2line_proc.stdin.flush()
+            self.addr2lineProc.stdin.write(f"{addrStr}\n0x00000000\n")
+            self.addr2lineProc.stdin.flush()
             
-            output_lines = []
-            found_echo = False
+            outputLines = []
+            foundEcho = False
             
             while True:
-                line = self.addr2line_proc.stdout.readline()
+                line = self.addr2lineProc.stdout.readline()
                 if not line: break
                 line = line.strip()
 
@@ -210,37 +210,37 @@ class CrashDecoder:
                     # Standard output for 0x0 without valid mapping is usually:
                     # ??
                     # ??:0
-                    self.addr2line_proc.stdout.readline()
-                    self.addr2line_proc.stdout.readline()
+                    self.addr2lineProc.stdout.readline()
+                    self.addr2lineProc.stdout.readline()
                     break
                 
                 # Check for echo of valid address (handle case variance)
-                if line.lower() == addr_str.lower():
-                    found_echo = True
+                if line.lower() == addrStr.lower():
+                    foundEcho = True
                     continue
 
-                if found_echo:
-                    output_lines.append(line)
+                if foundEcho:
+                    outputLines.append(line)
 
             # Format result: Function at File:Line
             # addr2line output (after echo) is usually: FunctionName \n File:Line
-            if len(output_lines) >= 2:
+            if len(outputLines) >= 2:
                 # Handle potentially multiple frames (inlines)
                 results = []
-                seen_funcs = set()
-                for i in range(0, len(output_lines), 2):
-                    if i+1 < len(output_lines):
-                        func = output_lines[i].strip()
-                        loc = output_lines[i+1].strip()
+                seenFuncs = set()
+                for i in range(0, len(outputLines), 2):
+                    if i+1 < len(outputLines):
+                        func = outputLines[i].strip()
+                        loc = outputLines[i+1].strip()
                         
                         # Clean up discriminator info (noisy)
                         loc = re.sub(r'\s*\(discriminator \d+\)', '', loc)
 
                         if func != "??" and loc != "??:0":
-                            if func in seen_funcs:
+                            if func in seenFuncs:
                                 continue # Skip recursive/inlined frames of same function
                             
-                            seen_funcs.add(func)
+                            seenFuncs.add(func)
                             results.append(f"{func} at {loc}")
                 
                 return " | ".join(results) if results else None
@@ -252,7 +252,7 @@ class CrashDecoder:
             return None
 
     def disassemble(self, addr, count=6):
-        if not self.objdump_tool: return
+        if not self.objdumpTool: return
         
         # We want to see 'addr' and a few instructions after.
         # Start exactly at addr. 
@@ -261,10 +261,10 @@ class CrashDecoder:
         start = addr
         stop = addr + 24 
         
-        cmd = [self.objdump_tool, '-d', 
+        cmd = [self.objdumpTool, '-d', 
                '--start-address', f'0x{start:x}', 
                '--stop-address', f'0x{stop:x}', 
-               self.elf_file]
+               self.elfFile]
                
         try:
              res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
@@ -278,9 +278,9 @@ class CrashDecoder:
         except Exception as e:
              pass
 
-    def getExceptionDesc(self, cause_code):
+    def getExceptionDesc(self, causeCode):
         # RISC-V Exception Codes
-        riscv_exceptions = {
+        riscvExceptions = {
             0: "Instruction address misaligned",
             1: "Instruction access fault",
             2: "Illegal instruction",
@@ -297,7 +297,7 @@ class CrashDecoder:
             15: "Store/AMO page fault"
         }
         # Xtensa Exception Codes (Partial list)
-        xtensa_exceptions = {
+        xtensaExceptions = {
             0: "Illegal Instruction",
             1: "Syscall",
             2: "Instruction Fetch Error",
@@ -309,91 +309,91 @@ class CrashDecoder:
             29: "Store Prohibited"
         }
         
-        is_riscv = 'c3' in self.soc_name or 'c2' in self.soc_name or 'c6' in self.soc_name or 'h2' in self.soc_name or 'riscv' in self.tool_path
+        isRiscv = 'c3' in self.socName or 'c2' in self.socName or 'c6' in self.socName or 'h2' in self.socName or 'riscv' in self.toolPath
         
-        if is_riscv:
-            return riscv_exceptions.get(cause_code, f"Unknown (RISC-V code {cause_code})")
+        if isRiscv:
+            return riscvExceptions.get(causeCode, f"Unknown (RISC-V code {causeCode})")
         else:
-            return xtensa_exceptions.get(cause_code, f"Unknown (Xtensa code {cause_code})")
+            return xtensaExceptions.get(causeCode, f"Unknown (Xtensa code {causeCode})")
 
-    def displaySourceContext(self, file_path, line_num):
-        if not file_path or line_num <= 0: return
+    def displaySourceContext(self, filePath, lineNum):
+        if not filePath or lineNum <= 0: return
         
         # Check if file exists
-        if not os.path.exists(file_path):
+        if not os.path.exists(filePath):
              # Try relative to CWD if path is relative
-             if not os.path.exists(os.path.abspath(file_path)):
+             if not os.path.exists(os.path.abspath(filePath)):
                  return
 
         try:
-            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            with open(filePath, 'r', encoding='utf-8', errors='ignore') as f:
                 lines = f.readlines()
-                total_lines = len(lines)
+                totalLines = len(lines)
                 
-                start = max(1, line_num - 2)
-                end = min(total_lines, line_num + 2)
+                start = max(1, lineNum - 2)
+                end = min(totalLines, lineNum + 2)
                 
-                print(f"\n  {Colors.BOLD}Context in {Colors.MAGENTA}{os.path.basename(file_path)}{Colors.RESET}:")
+                print(f"\n  {Colors.BOLD}Context in {Colors.MAGENTA}{os.path.basename(filePath)}{Colors.RESET}:")
                 for i in range(start, end + 1):
-                    prefix = " >" if i == line_num else "  "
-                    color = Colors.GREEN if i == line_num else Colors.GRAY
+                    prefix = " >" if i == lineNum else "  "
+                    color = Colors.GREEN if i == lineNum else Colors.GRAY
                     # 1-based index for display, 0-based for list
-                    code_line = lines[i-1].rstrip()
-                    print(f"   {prefix} {i:4d}: {color}{code_line}{Colors.RESET}")
+                    codeLine = lines[i-1].rstrip()
+                    print(f"   {prefix} {i:4d}: {color}{codeLine}{Colors.RESET}")
         except Exception:
             pass
 
     def flushRegisters(self):
-        if not self.register_buffer:
+        if not self.registerBuffer:
             return
 
         print(f"\n{Colors.BOLD}Register decode{Colors.RESET}")
         
-        target_disasm_addr = None
-        source_context_candidate = None # (file, line)
+        targetDisasmAddr = None
+        sourceContextCandidate = None # (file, line)
 
-        for name, addr_str in self.register_buffer:
+        for name, addrStr in self.registerBuffer:
             try:
-                val = int(addr_str, 16)
+                val = int(addrStr, 16)
                 
                 # Exception Cause Decoding
                 if name in ["MCAUSE", "EXCCAUSE"]:
-                    cause_val = val
-                    is_interrupt = False
+                    causeVal = val
+                    isInterrupt = False
                     
                     # Determine architecture for decoding logic
-                    is_riscv = 'c3' in self.soc_name or 'c2' in self.soc_name or 'c6' in self.soc_name or 'h2' in self.soc_name or 'riscv' in self.tool_path
+                    isRiscv = 'c3' in self.socName or 'c2' in self.socName or 'c6' in self.socName or 'h2' in self.socName or 'riscv' in self.toolPath
 
-                    if name == "MCAUSE" or is_riscv:
+                    if name == "MCAUSE" or isRiscv:
                         # RISC-V: Bit 31 (XLEN-1) indicates interrupt
-                        if cause_val & 0x80000000:
-                             is_interrupt = True
-                             cause_val &= 0x7FFFFFFF
+                        if causeVal & 0x80000000:
+                             isInterrupt = True
+                             causeVal &= 0x7FFFFFFF
                     
                     # Xtensa EXCCAUSE is 6-bit, no modification needed usually.
                     
-                    if not is_interrupt or cause_val < 64: # Sanity check
-                        desc = self.getExceptionDesc(cause_val)
-                        desc_str = f"{Colors.RED}{desc}{Colors.RESET}"
-                        if is_interrupt: desc_str += " (Interrupt)"
+                    if not isInterrupt or causeVal < 64: # Sanity check
+                        desc = self.getExceptionDesc(causeVal)
+                        descStr = f"{Colors.RED}{desc}{Colors.RESET}"
+                        if isInterrupt: descStr += " (Interrupt)"
                     else:
-                        desc_str = "" # Too large/invalid
+                        descStr = "" # Too large/invalid
                         
-                    print(f"  {name:8}: {getAddrColor(val)}{addr_str}{Colors.RESET}  ({desc_str})")
+                    print(f"  {name:8}: {getAddrColor(val)}{addrStr}{Colors.RESET}  ({descStr})")
                     continue
 
                 # Capture MEPC/PC/EPC for disassembly
                 if name in ["MEPC", "PC", "EPC"]:
-                    target_disasm_addr = val
+                    targetDisasmAddr = val
                 
                 res = None
                 
                 # Check Code (0x4...)
                 if 0x40000000 <= val < 0x50000000:
-                    res = self.resolveCode(addr_str)
+                    res = self.resolveCode(addrStr)
                     # Fallback
                     if not res or "??:0" in res:
-                        sym = findSymbol(val, self.map_symbols)
+                        sym = findSymbol(val, self.mapSymbols)
                         if sym:
                              res = sym
                     
@@ -403,16 +403,16 @@ class CrashDecoder:
                         # Format: func at file:line
                         m = re.search(r' at (.*):(\d+)', res)
                         if m:
-                            source_context_candidate = (m.group(1), int(m.group(2)))
+                            sourceContextCandidate = (m.group(1), int(m.group(2)))
 
                 # Check Data (0x3... or 0x5...)
                 elif (0x30000000 <= val < 0x40000000) or (0x50000000 <= val < 0x60000000):
-                    sym = findSymbol(val, self.map_symbols)
+                    sym = findSymbol(val, self.mapSymbols)
                     if sym:
                         res = sym
                 
                 # Colorize the address
-                addr_colored = f"{getAddrColor(val)}{addr_str}{Colors.RESET}"
+                addrColored = f"{getAddrColor(val)}{addrStr}{Colors.RESET}"
 
                 if res and res != "?? at ??:0":
                      # Highlight file:line in magenta if present
@@ -422,157 +422,157 @@ class CrashDecoder:
                          # Symbol only -> Light Blue
                          res = f"{Colors.LIGHT_BLUE}{res}{Colors.RESET}"
 
-                     print(f"  {name:8}: {addr_colored}  ({res})")
+                     print(f"  {name:8}: {addrColored}  ({res})")
                 else:
-                     print(f"  {name:8}: {addr_colored}")
+                     print(f"  {name:8}: {addrColored}")
 
             except ValueError:
                 pass
         
-        if source_context_candidate:
-             self.displaySourceContext(source_context_candidate[0], source_context_candidate[1])
+        if sourceContextCandidate:
+             self.displaySourceContext(sourceContextCandidate[0], sourceContextCandidate[1])
 
-        if target_disasm_addr:
-            self.disassemble(target_disasm_addr)
+        if targetDisasmAddr:
+            self.disassemble(targetDisasmAddr)
 
         print("") # clean separation
-        self.register_buffer = []
+        self.registerBuffer = []
 
     def flushStack(self):
-        if not self.stack_buffer:
+        if not self.stackBuffer:
             return
 
         print(f"{Colors.BOLD}Stack Dump{Colors.RESET}")
         
         # 1. Reprint original lines with coloring
-        def color_replacer(match):
-            val_str = match.group(0)
+        def colorReplacer(match):
+            valStr = match.group(0)
             try:
-                val = int(val_str, 16)
-                return f"{getAddrColor(val)}{val_str}{Colors.RESET}"
+                val = int(valStr, 16)
+                return f"{getAddrColor(val)}{valStr}{Colors.RESET}"
             except:
-                return val_str
+                return valStr
 
-        for line in self.stack_lines:
-             print(re.sub(r"0x[0-9a-fA-F]+", color_replacer, line), end='')
+        for line in self.stackLines:
+             print(re.sub(r"0x[0-9a-fA-F]+", colorReplacer, line), end='')
         
         # 2. Analyze stack for summary (silent resolution)
-        funcs_found = []
-        labels_found = []
+        funcsFound = []
+        labelsFound = []
 
-        current_frame = 0
-        frame_funcs = []
-        frame_labels = []
+        currentFrame = 0
+        frameFuncs = []
+        frameLabels = []
 
-        for val in self.stack_buffer:
-            addr_str = f"0x{val:08x}"
+        for val in self.stackBuffer:
+            addrStr = f"0x{val:08x}"
             resolved = False
-            addr_colored = f"{getAddrColor(val)}{addr_str}{Colors.RESET}"
+            addrColored = f"{getAddrColor(val)}{addrStr}{Colors.RESET}"
 
             # Check for canary/poison
             if val in [0xDEADBEEF, 0xA5A5A5A5, 0xFEFEFEFE, 0xABABABAB]:
                 # Commit current frame
-                if frame_funcs:
-                    funcs_found.append((current_frame, frame_funcs))
-                if frame_labels:
-                    labels_found.append((current_frame, frame_labels))
+                if frameFuncs:
+                    funcsFound.append((currentFrame, frameFuncs))
+                if frameLabels:
+                    labelsFound.append((currentFrame, frameLabels))
                 
-                frame_funcs = []
-                frame_labels = []
-                current_frame += 1
+                frameFuncs = []
+                frameLabels = []
+                currentFrame += 1
                 continue
             
             # Code (0x4...)
             if 0x40000000 <= val < 0x50000000:
-                res = self.resolveCode(addr_str)
+                res = self.resolveCode(addrStr)
                 if res and "??:0" not in res:
                     # Colorize Source Location
-                    res_display = res.replace(" at ", f" at {Colors.MAGENTA}") + Colors.RESET
-                    # frame_funcs.append(f"{addr_colored} {res_display}")
-                    item = f"{addr_colored} {res_display}"
-                    if not frame_funcs or frame_funcs[-1] != item: # Simple dedup consecutive
-                         frame_funcs.append(item)
+                    resDisplay = res.replace(" at ", f" at {Colors.MAGENTA}") + Colors.RESET
+                    # frameFuncs.append(f"{addrColored} {resDisplay}")
+                    item = f"{addrColored} {resDisplay}"
+                    if not frameFuncs or frameFuncs[-1] != item: # Simple dedup consecutive
+                         frameFuncs.append(item)
                     resolved = True
                 else:
                     # Fallback to symbol
-                    sym = findSymbol(val, self.map_symbols)
+                    sym = findSymbol(val, self.mapSymbols)
                     if sym:
-                        # frame_funcs.append(f"{addr_colored} {Colors.LIGHT_BLUE}{sym}{Colors.RESET}")
-                        item = f"{addr_colored} {Colors.LIGHT_BLUE}{sym}{Colors.RESET}"
-                        if not frame_funcs or frame_funcs[-1] != item:
-                             frame_funcs.append(item)
+                        # frameFuncs.append(f"{addrColored} {Colors.LIGHT_BLUE}{sym}{Colors.RESET}")
+                        item = f"{addrColored} {Colors.LIGHT_BLUE}{sym}{Colors.RESET}"
+                        if not frameFuncs or frameFuncs[-1] != item:
+                             frameFuncs.append(item)
                         resolved = True
             
             # If not code, check data (0x3... or 0x5...)
             if not resolved and ((0x30000000 <= val < 0x40000000) or (0x50000000 <= val < 0x60000000)):
-                sym = findSymbol(val, self.map_symbols)
+                sym = findSymbol(val, self.mapSymbols)
                 if sym:
-                    # labels_found.append(f"    {addr_colored} -> {Colors.LIGHT_BLUE}{sym}{Colors.RESET}")
-                    item = f"    {addr_colored} -> {Colors.LIGHT_BLUE}{sym}{Colors.RESET}"
-                    if not frame_labels or frame_labels[-1] != item: # Simple dedup consecutive
-                         frame_labels.append(item)
+                    # labelsFound.append(f"    {addrColored} -> {Colors.LIGHT_BLUE}{sym}{Colors.RESET}")
+                    item = f"    {addrColored} -> {Colors.LIGHT_BLUE}{sym}{Colors.RESET}"
+                    if not frameLabels or frameLabels[-1] != item: # Simple dedup consecutive
+                         frameLabels.append(item)
                     resolved = True
 
         # Commit final frame
-        if frame_funcs:
-            funcs_found.append((current_frame, frame_funcs))
-        if frame_labels:
-            labels_found.append((current_frame, frame_labels))
+        if frameFuncs:
+            funcsFound.append((currentFrame, frameFuncs))
+        if frameLabels:
+            labelsFound.append((currentFrame, frameLabels))
         
         # Summary Sections
-        if funcs_found:
+        if funcsFound:
              print(f"\n{Colors.BOLD}Calculated Stack Trace (Functions):{Colors.RESET}")
-             for frame_buffer in funcs_found:
-                 # print(f"{Colors.GRAY}--- Frame {frame_idx} ---{Colors.RESET}")
-                 for f in frame_buffer[1]:
+             for frameBuffer in funcsFound:
+                 # print(f"{Colors.GRAY}--- Frame {frameIdx} ---{Colors.RESET}")
+                 for f in frameBuffer[1]:
                      print(f.strip())
-                 if len(funcs_found) > 1 and frame_buffer != funcs_found[-1]:
+                 if len(funcsFound) > 1 and frameBuffer != funcsFound[-1]:
                       print(f"{Colors.GRAY}---{Colors.RESET}")
         
-        if labels_found:
+        if labelsFound:
              print(f"\n{Colors.BOLD}Stack Symbols (Data/Labels):{Colors.RESET}")
-             for frame_buffer in labels_found:
-                 # print(f"{Colors.GRAY}--- Frame {frame_idx} ---{Colors.RESET}")
-                 for l in frame_buffer[1]:
+             for frameBuffer in labelsFound:
+                 # print(f"{Colors.GRAY}--- Frame {frameIdx} ---{Colors.RESET}")
+                 for l in frameBuffer[1]:
                      print(l.strip())
-                 if len(labels_found) > 1 and frame_buffer != labels_found[-1]:
+                 if len(labelsFound) > 1 and frameBuffer != labelsFound[-1]:
                       print(f"{Colors.GRAY}---{Colors.RESET}")
 
-        self.stack_buffer = []
-        self.stack_lines = []
+        self.stackBuffer = []
+        self.stackLines = []
 
     def processLine(self, line):
-        raw_line = line
+        rawLine = line
         line = line.strip()
 
         # State transition detection
-        is_reg_start = "Core" in line and "register dump:" in line
-        is_stack_start = "Stack memory:" in line
-        is_backtrace = "Backtrace:" in line
+        isRegStart = "Core" in line and "register dump:" in line
+        isStackStart = "Stack memory:" in line
+        isBacktrace = "Backtrace:" in line
         
         # Determine End of Blocks
         if self.state == DecoderState.IN_REGISTERS:
             # Registers end if we see Stack memory, Backtrace, or empty line
-            if is_stack_start or is_backtrace or not line:
+            if isStackStart or isBacktrace or not line:
                 self.flushRegisters()
                 self.state = DecoderState.IDLE
                 # Don't return, allow fall-through to handle start of new state
 
         if self.state == DecoderState.IN_STACK:
             # Check for transitions inside stack block (e.g. register dump appended to line)
-            if is_reg_start or (not raw_line.strip() and self.state == DecoderState.IN_STACK):
-                 # Current line 'raw_line' might contain stack tokens AND the start trigger
+            if isRegStart or (not rawLine.strip() and self.state == DecoderState.IN_STACK):
+                 # Current line 'rawLine' might contain stack tokens AND the start trigger
                  # We must ensure we captured the tokens from this line FIRST.
                  
                  # 1. Capture text for reprint
-                 self.stack_lines.append(raw_line)
+                 self.stackLines.append(rawLine)
                  
                  # 2. Capture hex values from THIS line if present
                  parts = line.split(':')
                  content = parts[-1] if ':' in line else line
-                 hex_vals = re.findall(r"(0x[0-9a-fA-F]{8})", content)
-                 if hex_vals:
-                    for h in hex_vals:
+                 hexVals = re.findall(r"(0x[0-9a-fA-F]{8})", content)
+                 if hexVals:
+                    for h in hexVals:
                         try:
                             # Avoid capturing register values? 
                             # Registers key-vals: MEPC : 0x... 
@@ -580,15 +580,15 @@ class CrashDecoder:
                             # If line has "Register dump:", it probably doesn't have stack values AFTER the text?
                             # Input: "... 0x00 0x17 Core 0 register dump:"
                             # Regex will catch 0x00 and 0x17. Good.
-                            self.stack_buffer.append(int(h, 16))
+                            self.stackBuffer.append(int(h, 16))
                         except: pass
 
                  # 3. Flush now that we have everything
                  self.flushStack()
                  
-                 if is_reg_start:
+                 if isRegStart:
                      self.state = DecoderState.IN_REGISTERS
-                     # We consumed the line in stack_lines (flush_stack printed it). 
+                     # We consumed the line in stackLines (flushStack printed it). 
                      # Return to avoid double printing or reprocessing as IDLE
                      return 
                  else:
@@ -599,39 +599,39 @@ class CrashDecoder:
         # State Handling
         if self.state == DecoderState.IDLE:
             if not self.interactive:
-                print(raw_line, end='')
+                print(rawLine, end='')
 
-            if is_reg_start:
+            if isRegStart:
                 self.state = DecoderState.IN_REGISTERS
-            elif is_stack_start:
+            elif isStackStart:
                 self.state = DecoderState.IN_STACK
 
         elif self.state == DecoderState.IN_REGISTERS:
             # If we just entered IN_REGISTERS from IDLE above, we already printed the header.
             # But if we are continuing:
-            if not is_reg_start and not self.interactive: # Don't reprint header if we handled it in IDLE
-                 print(raw_line, end='')
+            if not isRegStart and not self.interactive: # Don't reprint header if we handled it in IDLE
+                 print(rawLine, end='')
             
             # Parse registers: "Name : 0xVal"
             # PC      : 0x400d1f28  PS      : 0x00060830
             matches = list(re.finditer(r"([A-Z0-9_]+)\s*:\s*(0x[0-9a-fA-F]+)", line))
             if matches:
                 for m in matches:
-                    self.register_buffer.append((m.group(1), m.group(2)))
+                    self.registerBuffer.append((m.group(1), m.group(2)))
 
         elif self.state == DecoderState.IN_STACK:
-            self.stack_lines.append(raw_line)
+            self.stackLines.append(rawLine)
             # Collect hex values
             # 3ffb1d90: 0x00000000 0x00000000 ...
             
             parts = line.split(':')
             content = parts[-1] if ':' in line else line
             
-            hex_vals = re.findall(r"(0x[0-9a-fA-F]{8})", content)
-            if hex_vals:
-                for h in hex_vals:
+            hexVals = re.findall(r"(0x[0-9a-fA-F]{8})", content)
+            if hexVals:
+                for h in hexVals:
                     try:
-                        self.stack_buffer.append(int(h, 16))
+                        self.stackBuffer.append(int(h, 16))
                     except: pass
 
 def printLegend(stream=sys.stderr):
@@ -645,88 +645,88 @@ def main():
         print(f"Usage: \n\t{sys.argv[0]} <file.elf> [<error-stack.log>]")
         sys.exit(1)
 
-    elf_file = sys.argv[1]
+    elfFile = sys.argv[1]
 
     # Tool Selection
     soc = os.environ.get('SMING_SOC', 'esp32').lower()
     if soc in ['esp32s2', 'esp32s3']:
-         tool_name = f"xtensa-{soc}-elf-addr2line"
+         toolName = f"xtensa-{soc}-elf-addr2line"
     elif soc in ['esp32c3', 'esp32c2', 'esp32c6']:
-         tool_name = "riscv32-esp-elf-addr2line"
+         toolName = "riscv32-esp-elf-addr2line"
     else:
-         tool_name = "xtensa-esp32-elf-addr2line"
+         toolName = "xtensa-esp32-elf-addr2line"
     
-    if shutil.which(tool_name) is None:
-        print(f"Error: '{tool_name}' not found in PATH.", file=sys.stderr)
+    if shutil.which(toolName) is None:
+        print(f"Error: '{toolName}' not found in PATH.", file=sys.stderr)
         sys.exit(1)
 
     # Helper: Find nm tool
-    nm_tool_name = tool_name.replace("addr2line", "gcc-nm")
-    if shutil.which(nm_tool_name) is None:
-         nm_tool_name = tool_name.replace("addr2line", "nm")
-         if shutil.which(nm_tool_name) is None:
-             nm_tool_name = None
+    nmToolName = toolName.replace("addr2line", "gcc-nm")
+    if shutil.which(nmToolName) is None:
+         nmToolName = toolName.replace("addr2line", "nm")
+         if shutil.which(nmToolName) is None:
+             nmToolName = None
 
     # SHA256 Check
-    local_hash = getElfSha256(elf_file)
-    if local_hash:
-        print(f"Local ELF SHA256: {local_hash[:16]}...", file=sys.stderr)
+    localHash = getElfSha256(elfFile)
+    if localHash:
+        print(f"Local ELF SHA256: {localHash[:16]}...", file=sys.stderr)
 
     # Load symbols: Prefer ELF (nm), fallback to Map
-    symbols = loadElfSymbols(elf_file, nm_tool_name)
+    symbols = loadElfSymbols(elfFile, nmToolName)
     if not symbols:
-         symbols = loadMapSymbols(elf_file)
+         symbols = loadMapSymbols(elfFile)
 
     # Helper: Find objdump tool
-    objdump_tool_name = tool_name.replace("addr2line", "objdump")
-    if shutil.which(objdump_tool_name) is None:
-         objdump_tool_name = None
+    objdumpToolName = toolName.replace("addr2line", "objdump")
+    if shutil.which(objdumpToolName) is None:
+         objdumpToolName = None
 
     # Input Stream Setup
-    input_stream = sys.stdin
+    inputStream = sys.stdin
     interactive = False
-    use_pager = False
+    usePager = False
 
     if len(sys.argv) > 2:
         try:
-            input_stream = open(sys.argv[2], 'r')
+            inputStream = open(sys.argv[2], 'r')
         except Exception as e:
             print(f"Error opening log file: {e}")
             sys.exit(1)
     else:
         # Check if stdin is a TTY (interactive mode)
         interactive = sys.stdin.isatty()
-        use_pager = interactive
+        usePager = interactive
 
     # Setup Pager Capture
-    capture_buffer = None
-    original_stdout = sys.stdout
+    captureBuffer = None
+    originalStdout = sys.stdout
     
-    if use_pager:
-        capture_buffer = io.StringIO()
-        sys.stdout = capture_buffer
+    if usePager:
+        captureBuffer = io.StringIO()
+        sys.stdout = captureBuffer
 
-    printLegend(sys.stdout if use_pager else sys.stderr)
+    printLegend(sys.stdout if usePager else sys.stderr)
 
     # In pager mode, we want to capture (echo) the input lines into the buffer
     # so the final output contains everything. Thus interactive=False.
-    decoder = CrashDecoder(elf_file, tool_name, symbols, soc, objdump_tool_name, interactive=False)
+    decoder = CrashDecoder(elfFile, toolName, symbols, soc, objdumpToolName, interactive=False)
 
     try:
         if interactive:
             print(f"{Colors.BOLD}Decode stack trace: Paste stack trace here (Ctrl+D to finish){Colors.RESET}", file=sys.stderr)
         
-        for line in input_stream:
+        for line in inputStream:
             # SHA256 extraction from stream (stateless check)
-            if local_hash and "ELF file SHA256:" in line:
+            if localHash and "ELF file SHA256:" in line:
                 m = re.search(r"SHA256:\s*([0-9a-fA-F]+)", line)
                 if m:
-                    remote_hash = m.group(1)
-                    if not local_hash.startswith(remote_hash.lower()):
+                    remoteHash = m.group(1)
+                    if not localHash.startswith(remoteHash.lower()):
                         # If paginating, this warning goes to the buffer
                         print(f"\n{Colors.RED}{Colors.BOLD}WARNING: ELF Checksum Mismatch!{Colors.RESET}")
-                        print(f"{Colors.RED}Dump:  {remote_hash}{Colors.RESET}")
-                        print(f"{Colors.RED}Local: {local_hash}{Colors.RESET}\n")
+                        print(f"{Colors.RED}Dump:  {remoteHash}{Colors.RESET}")
+                        print(f"{Colors.RED}Local: {localHash}{Colors.RESET}\n")
 
             decoder.processLine(line)
             
@@ -740,12 +740,12 @@ def main():
         pass
     finally:
         decoder.close()
-        if input_stream is not sys.stdin:
-            input_stream.close()
+        if inputStream is not sys.stdin:
+            inputStream.close()
 
-    if use_pager and capture_buffer:
-         sys.stdout = original_stdout # Restore
-         output = capture_buffer.getvalue()
+    if usePager and captureBuffer:
+         sys.stdout = originalStdout # Restore
+         output = captureBuffer.getvalue()
          
          if shutil.which("less"):
              try:
