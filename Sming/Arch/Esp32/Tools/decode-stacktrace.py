@@ -11,6 +11,7 @@ import shlex
 import subprocess
 import hashlib
 import shutil
+import io
 from enum import Enum, auto
 
 class Colors:
@@ -593,11 +594,11 @@ class CrashDecoder:
                         self.stack_buffer.append(int(h, 16))
                     except: pass
 
-def printLegend():
-    print(f"{Colors.BOLD}Color Legend:{Colors.RESET}", file=sys.stderr)
-    print(f"  {Colors.GREEN}0x40xxxxxx{Colors.RESET} - Code (IRAM/IROM)      {Colors.MAGENTA}File:Line{Colors.RESET} - Source Location", file=sys.stderr)
-    print(f"  {Colors.YELLOW}0x30xxxxxx{Colors.RESET} - Data (DRAM/DROM)      {Colors.LIGHT_BLUE}Symbol{Colors.RESET}    - Function/Variable", file=sys.stderr)
-    print(f"  {Colors.CYAN}0x50xxxxxx{Colors.RESET} - External SPI RAM      {Colors.RED}Canary{Colors.RESET}    - Stack Poison/Canary", file=sys.stderr)
+def printLegend(stream=sys.stderr):
+    print(f"{Colors.BOLD}Color Legend:{Colors.RESET}", file=stream)
+    print(f"  {Colors.GREEN}0x40xxxxxx{Colors.RESET} - Code (IRAM/IROM)      {Colors.MAGENTA}File:Line{Colors.RESET} - Source Location", file=stream)
+    print(f"  {Colors.YELLOW}0x30xxxxxx{Colors.RESET} - Data (DRAM/DROM)      {Colors.LIGHT_BLUE}Symbol{Colors.RESET}    - Function/Variable", file=stream)
+    print(f"  {Colors.CYAN}0x50xxxxxx{Colors.RESET} - External SPI RAM      {Colors.RED}Canary{Colors.RESET}    - Stack Poison/Canary", file=stream)
 
 def main():
     if len(sys.argv) < 2:
@@ -636,8 +637,6 @@ def main():
     if not symbols:
          symbols = loadMapSymbols(elf_file)
 
-    printLegend()
-    
     # Helper: Find objdump tool
     objdump_tool_name = tool_name.replace("addr2line", "objdump")
     if shutil.which(objdump_tool_name) is None:
@@ -646,22 +645,36 @@ def main():
     # Input Stream Setup
     input_stream = sys.stdin
     interactive = False
+    use_pager = False
+
     if len(sys.argv) > 2:
         try:
             input_stream = open(sys.argv[2], 'r')
-            interactive = False
         except Exception as e:
             print(f"Error opening log file: {e}")
             sys.exit(1)
     else:
         # Check if stdin is a TTY (interactive mode)
         interactive = sys.stdin.isatty()
+        use_pager = interactive
 
-    decoder = CrashDecoder(elf_file, tool_name, symbols, soc, objdump_tool_name, interactive)
+    # Setup Pager Capture
+    capture_buffer = None
+    original_stdout = sys.stdout
+    
+    if use_pager:
+        capture_buffer = io.StringIO()
+        sys.stdout = capture_buffer
+
+    printLegend(sys.stdout if use_pager else sys.stderr)
+
+    # In pager mode, we want to capture (echo) the input lines into the buffer
+    # so the final output contains everything. Thus interactive=False.
+    decoder = CrashDecoder(elf_file, tool_name, symbols, soc, objdump_tool_name, interactive=False)
 
     try:
         if interactive:
-            print(f"{Colors.BOLD}Decode stack trace: Paste stack trace here{Colors.RESET}")
+            print(f"{Colors.BOLD}Decode stack trace: Paste stack trace here (Ctrl+D to finish){Colors.RESET}", file=sys.stderr)
         
         for line in input_stream:
             # SHA256 extraction from stream (stateless check)
@@ -670,6 +683,7 @@ def main():
                 if m:
                     remote_hash = m.group(1)
                     if not local_hash.startswith(remote_hash.lower()):
+                        # If paginating, this warning goes to the buffer
                         print(f"\n{Colors.RED}{Colors.BOLD}WARNING: ELF Checksum Mismatch!{Colors.RESET}")
                         print(f"{Colors.RED}Dump:  {remote_hash}{Colors.RESET}")
                         print(f"{Colors.RED}Local: {local_hash}{Colors.RESET}\n")
@@ -688,6 +702,19 @@ def main():
         decoder.close()
         if input_stream is not sys.stdin:
             input_stream.close()
+
+    if use_pager and capture_buffer:
+         sys.stdout = original_stdout # Restore
+         output = capture_buffer.getvalue()
+         
+         if shutil.which("less"):
+             try:
+                 # -R: ANSI colors, -F: Exit if one screen, -X: No init (keep on screen on exit)
+                 subprocess.run(["less", "-R", "-F", "-X"], input=output, text=True)
+             except Exception:
+                 print(output)
+         else:
+             print(output)
 
 if __name__ == "__main__":
     main()
