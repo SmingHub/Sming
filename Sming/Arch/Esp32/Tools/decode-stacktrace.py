@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 ########################################################
 #
 #  Stack Trace Decoder (Stateful)
@@ -26,8 +26,12 @@ class Colors:
     GRAY = "\033[90m"
     LIGHT_BLUE = "\033[94m" # Labels
     
-def get_addr_color(val):
+def getAddrColor(val):
     """Return ANSI color code based on memory region."""
+    # Stack Canary / Poison values
+    if val in [0xDEADBEEF, 0xA5A5A5A5, 0xFEFEFEFE, 0xABABABAB]:
+        return Colors.RED
+
     # Based on typical ESP32 memory map
     # IRAM/IROM (Code)
     if 0x40000000 <= val < 0x50000000:
@@ -41,7 +45,7 @@ def get_addr_color(val):
     else:
         return Colors.RESET
 
-def get_elf_sha256(filepath):
+def getElfSha256(filepath):
     """Calculate SHA256 of the ELF file to match against dump info."""
     try:
         sha256_hash = hashlib.sha256()
@@ -52,7 +56,7 @@ def get_elf_sha256(filepath):
     except Exception as e:
         return None
 
-def load_elf_symbols(elf_path, nm_tool):
+def loadElfSymbols(elf_path, nm_tool):
     """
     Load symbols using nm tool on the ELF file.
     Output format of 'nm -n': <address> <type> <name>
@@ -90,7 +94,7 @@ def load_elf_symbols(elf_path, nm_tool):
         print(f"Error running nm: {e}", file=sys.stderr)
         return []
 
-def load_map_symbols(elf_path):
+def loadMapSymbols(elf_path):
     """
     Attempt to load symbols from a .map file.
     Returns a sorted list of (address, symbol_name) tuples.
@@ -120,7 +124,7 @@ def load_map_symbols(elf_path):
         print(f"Warning: Failed to parse map file: {e}", file=sys.stderr)
         return []
 
-def find_symbol(address, symbols):
+def findSymbol(address, symbols):
     """Find the closest preceding symbol for a given address."""
     if not symbols: return None
     
@@ -178,7 +182,7 @@ class CrashDecoder:
         if self.addr2line_proc:
             self.addr2line_proc.terminate()
 
-    def resolve_code(self, addr_str):
+    def resolveCode(self, addr_str):
         """
         Interacts with addr2line to resolve an address.
         Uses 0x00000000 sentinel to sync.
@@ -272,7 +276,7 @@ class CrashDecoder:
         except Exception as e:
              pass
 
-    def get_exception_desc(self, cause_code):
+    def getExceptionDesc(self, cause_code):
         # RISC-V Exception Codes
         riscv_exceptions = {
             0: "Instruction address misaligned",
@@ -310,7 +314,7 @@ class CrashDecoder:
         else:
             return xtensa_exceptions.get(cause_code, f"Unknown (Xtensa code {cause_code})")
 
-    def display_source_context(self, file_path, line_num):
+    def displaySourceContext(self, file_path, line_num):
         if not file_path or line_num <= 0: return
         
         # Check if file exists
@@ -337,7 +341,7 @@ class CrashDecoder:
         except Exception:
             pass
 
-    def flush_registers(self):
+    def flushRegisters(self):
         if not self.register_buffer:
             return
 
@@ -367,13 +371,13 @@ class CrashDecoder:
                     # Xtensa EXCCAUSE is 6-bit, no modification needed usually.
                     
                     if not is_interrupt or cause_val < 64: # Sanity check
-                        desc = self.get_exception_desc(cause_val)
+                        desc = self.getExceptionDesc(cause_val)
                         desc_str = f"{Colors.RED}{desc}{Colors.RESET}"
                         if is_interrupt: desc_str += " (Interrupt)"
                     else:
                         desc_str = "" # Too large/invalid
                         
-                    print(f"  {name:8}: {get_addr_color(val)}{addr_str}{Colors.RESET}  ({desc_str})")
+                    print(f"  {name:8}: {getAddrColor(val)}{addr_str}{Colors.RESET}  ({desc_str})")
                     continue
 
                 # Capture MEPC/PC/EPC for disassembly
@@ -384,10 +388,10 @@ class CrashDecoder:
                 
                 # Check Code (0x4...)
                 if 0x40000000 <= val < 0x50000000:
-                    res = self.resolve_code(addr_str)
+                    res = self.resolveCode(addr_str)
                     # Fallback
                     if not res or "??:0" in res:
-                        sym = find_symbol(val, self.map_symbols)
+                        sym = findSymbol(val, self.map_symbols)
                         if sym:
                              res = sym
                     
@@ -401,12 +405,12 @@ class CrashDecoder:
 
                 # Check Data (0x3... or 0x5...)
                 elif (0x30000000 <= val < 0x40000000) or (0x50000000 <= val < 0x60000000):
-                    sym = find_symbol(val, self.map_symbols)
+                    sym = findSymbol(val, self.map_symbols)
                     if sym:
                         res = sym
                 
                 # Colorize the address
-                addr_colored = f"{get_addr_color(val)}{addr_str}{Colors.RESET}"
+                addr_colored = f"{getAddrColor(val)}{addr_str}{Colors.RESET}"
 
                 if res and res != "?? at ??:0":
                      # Highlight file:line in magenta if present
@@ -424,7 +428,7 @@ class CrashDecoder:
                 pass
         
         if source_context_candidate:
-             self.display_source_context(source_context_candidate[0], source_context_candidate[1])
+             self.displaySourceContext(source_context_candidate[0], source_context_candidate[1])
 
         if target_disasm_addr:
             self.disassemble(target_disasm_addr)
@@ -432,7 +436,7 @@ class CrashDecoder:
         print("") # clean separation
         self.register_buffer = []
 
-    def flush_stack(self):
+    def flushStack(self):
         if not self.stack_buffer:
             return
 
@@ -443,7 +447,7 @@ class CrashDecoder:
             val_str = match.group(0)
             try:
                 val = int(val_str, 16)
-                return f"{get_addr_color(val)}{val_str}{Colors.RESET}"
+                return f"{getAddrColor(val)}{val_str}{Colors.RESET}"
             except:
                 return val_str
 
@@ -457,11 +461,11 @@ class CrashDecoder:
         for val in self.stack_buffer:
             addr_str = f"0x{val:08x}"
             resolved = False
-            addr_colored = f"{get_addr_color(val)}{addr_str}{Colors.RESET}"
+            addr_colored = f"{getAddrColor(val)}{addr_str}{Colors.RESET}"
             
             # Code (0x4...)
             if 0x40000000 <= val < 0x50000000:
-                res = self.resolve_code(addr_str)
+                res = self.resolveCode(addr_str)
                 if res and "??:0" not in res:
                     # Colorize Source Location
                     res_display = res.replace(" at ", f" at {Colors.MAGENTA}") + Colors.RESET
@@ -469,14 +473,14 @@ class CrashDecoder:
                     resolved = True
                 else:
                     # Fallback to symbol
-                    sym = find_symbol(val, self.map_symbols)
+                    sym = findSymbol(val, self.map_symbols)
                     if sym:
                         funcs_found.append(f"{addr_colored} {Colors.LIGHT_BLUE}{sym}{Colors.RESET}")
                         resolved = True
             
             # If not code, check data (0x3... or 0x5...)
             if not resolved and ((0x30000000 <= val < 0x40000000) or (0x50000000 <= val < 0x60000000)):
-                sym = find_symbol(val, self.map_symbols)
+                sym = findSymbol(val, self.map_symbols)
                 if sym:
                     labels_found.append(f"    {addr_colored} -> {Colors.LIGHT_BLUE}{sym}{Colors.RESET}")
                     resolved = True
@@ -495,7 +499,7 @@ class CrashDecoder:
         self.stack_buffer = []
         self.stack_lines = []
 
-    def process_line(self, line):
+    def processLine(self, line):
         raw_line = line
         line = line.strip()
 
@@ -508,7 +512,7 @@ class CrashDecoder:
         if self.state == DecoderState.IN_REGISTERS:
             # Registers end if we see Stack memory, Backtrace, or empty line
             if is_stack_start or is_backtrace or not line:
-                self.flush_registers()
+                self.flushRegisters()
                 self.state = DecoderState.IDLE
                 # Don't return, allow fall-through to handle start of new state
 
@@ -538,7 +542,7 @@ class CrashDecoder:
                         except: pass
 
                  # 3. Flush now that we have everything
-                 self.flush_stack()
+                 self.flushStack()
                  
                  if is_reg_start:
                      self.state = DecoderState.IN_REGISTERS
@@ -586,11 +590,11 @@ class CrashDecoder:
                         self.stack_buffer.append(int(h, 16))
                     except: pass
 
-def print_legend():
+def printLegend():
     print(f"{Colors.BOLD}Color Legend:{Colors.RESET}", file=sys.stderr)
     print(f"  {Colors.GREEN}0x40xxxxxx{Colors.RESET} - Code (IRAM/IROM)      {Colors.MAGENTA}File:Line{Colors.RESET} - Source Location", file=sys.stderr)
     print(f"  {Colors.YELLOW}0x30xxxxxx{Colors.RESET} - Data (DRAM/DROM)      {Colors.LIGHT_BLUE}Symbol{Colors.RESET}    - Function/Variable", file=sys.stderr)
-    print(f"  {Colors.CYAN}0x50xxxxxx{Colors.RESET} - External SPI RAM", file=sys.stderr)
+    print(f"  {Colors.CYAN}0x50xxxxxx{Colors.RESET} - External SPI RAM      {Colors.RED}Canary{Colors.RESET}    - Stack Poison/Canary", file=sys.stderr)
 
 def main():
     if len(sys.argv) < 2:
@@ -620,16 +624,16 @@ def main():
              nm_tool_name = None
 
     # SHA256 Check
-    local_hash = get_elf_sha256(elf_file)
+    local_hash = getElfSha256(elf_file)
     if local_hash:
         print(f"Local ELF SHA256: {local_hash[:16]}...", file=sys.stderr)
 
     # Load symbols: Prefer ELF (nm), fallback to Map
-    symbols = load_elf_symbols(elf_file, nm_tool_name)
+    symbols = loadElfSymbols(elf_file, nm_tool_name)
     if not symbols:
-         symbols = load_map_symbols(elf_file)
+         symbols = loadMapSymbols(elf_file)
 
-    print_legend()
+    printLegend()
     
     # Helper: Find objdump tool
     objdump_tool_name = tool_name.replace("addr2line", "objdump")
@@ -659,13 +663,13 @@ def main():
                         print(f"{Colors.RED}Dump:  {remote_hash}{Colors.RESET}")
                         print(f"{Colors.RED}Local: {local_hash}{Colors.RESET}\n")
 
-            decoder.process_line(line)
+            decoder.processLine(line)
             
         # Flush remaining buffers at EOF
         if decoder.state == DecoderState.IN_REGISTERS:
-            decoder.flush_registers()
+            decoder.flushRegisters()
         elif decoder.state == DecoderState.IN_STACK:
-            decoder.flush_stack()
+            decoder.flushStack()
             
     except KeyboardInterrupt:
         pass
