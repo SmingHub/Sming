@@ -149,12 +149,13 @@ class DecoderState(Enum):
     IN_STACK = auto()
 
 class CrashDecoder:
-    def __init__(self, elf_file, tool_path, map_symbols, soc_name='esp32', objdump_tool=None):
+    def __init__(self, elf_file, tool_path, map_symbols, soc_name='esp32', objdump_tool=None, interactive=False):
         self.elf_file = elf_file
         self.tool_path = tool_path
         self.map_symbols = map_symbols
         self.soc_name = soc_name
         self.objdump_tool = objdump_tool
+        self.interactive = interactive
         self.state = DecoderState.IDLE
         self.addr2line_proc = None
         self.register_buffer = [] # format: (Name, AddrStr)
@@ -556,7 +557,9 @@ class CrashDecoder:
 
         # State Handling
         if self.state == DecoderState.IDLE:
-            print(raw_line, end='')
+            if not self.interactive:
+                print(raw_line, end='')
+
             if is_reg_start:
                 self.state = DecoderState.IN_REGISTERS
             elif is_stack_start:
@@ -565,7 +568,7 @@ class CrashDecoder:
         elif self.state == DecoderState.IN_REGISTERS:
             # If we just entered IN_REGISTERS from IDLE above, we already printed the header.
             # But if we are continuing:
-            if not is_reg_start: # Don't reprint header if we handled it in IDLE
+            if not is_reg_start and not self.interactive: # Don't reprint header if we handled it in IDLE
                  print(raw_line, end='')
             
             # Parse registers: "Name : 0xVal"
@@ -640,18 +643,26 @@ def main():
     if shutil.which(objdump_tool_name) is None:
          objdump_tool_name = None
 
-    decoder = CrashDecoder(elf_file, tool_name, symbols, soc, objdump_tool_name)
-
     # Input Stream Setup
     input_stream = sys.stdin
+    interactive = False
     if len(sys.argv) > 2:
         try:
             input_stream = open(sys.argv[2], 'r')
+            interactive = False
         except Exception as e:
             print(f"Error opening log file: {e}")
             sys.exit(1)
+    else:
+        # Check if stdin is a TTY (interactive mode)
+        interactive = sys.stdin.isatty()
+
+    decoder = CrashDecoder(elf_file, tool_name, symbols, soc, objdump_tool_name, interactive)
 
     try:
+        if interactive:
+            print(f"{Colors.BOLD}Decode stack trace: Paste stack trace here{Colors.RESET}")
+        
         for line in input_stream:
             # SHA256 extraction from stream (stateless check)
             if local_hash and "ELF file SHA256:" in line:
