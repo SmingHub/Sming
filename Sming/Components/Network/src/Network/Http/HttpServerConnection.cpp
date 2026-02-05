@@ -137,7 +137,7 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 				i = bodyParsers->indexOf(String('*'));
 			}
 		}
-				
+
 		if(i >= 0) {
 			bodyParser = bodyParsers->valueAt(i);
 			assert(bodyParser != nullptr);
