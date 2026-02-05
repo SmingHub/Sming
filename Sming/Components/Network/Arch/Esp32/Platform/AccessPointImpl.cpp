@@ -52,6 +52,7 @@ void AccessPointImpl::enable(bool enabled, bool save)
 			break;
 		}
 		if(apNetworkInterface) {
+			esp_netif_dhcps_stop(apNetworkInterface);
 			esp_netif_destroy(apNetworkInterface);
 			apNetworkInterface = nullptr;
 		}
