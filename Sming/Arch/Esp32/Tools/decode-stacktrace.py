@@ -3,11 +3,15 @@
 #
 #  Stack Trace Decoder (Stateful)
 #
+# Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
+# Created 2015 by Skurydin Alexey
+# http://github.com/SmingHub/Sming
+# All files of the Sming Core are provided under the LGPL v3 license.
+#
 ########################################################
 import sys
 import os
 import re
-import shlex
 import subprocess
 import hashlib
 import shutil
@@ -26,7 +30,7 @@ class Colors:
     WHITE = "\033[37m"
     GRAY = "\033[90m"
     LIGHT_BLUE = "\033[94m" # Labels
-    
+
 def getAddrColor(val):
     """Return ANSI color code based on memory region."""
     # Stack Canary / Poison values
@@ -82,12 +86,12 @@ def loadElfSymbols(elfPath, nmTool):
                 # 3ffb0000 D _UserExceptionVector
                 try:
                     addr = int(parts[0], 16)
-                    # type_char = parts[1] 
+                    # type_char = parts[1]
                     name = parts[2]
                     symbols.append((addr, name))
                 except ValueError:
                     pass
-        
+
         print(f"Loaded {len(symbols)} symbols from ELF.", file=sys.stderr)
         return symbols
 
@@ -107,17 +111,17 @@ def loadMapSymbols(elfPath):
     symbols = []
     # Regex for standard GNU LD map file entries: "0x000000003ffb0000                _my_variable"
     mapRegex = re.compile(r"^\s+(0x[0-9a-fA-F]{8,})\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*$")
-    
+
     try:
         with open(mapPath, 'r') as f:
             for line in f:
-                if "0x" not in line: continue 
+                if "0x" not in line: continue
                 m = mapRegex.match(line)
                 if m:
                     addrVal = int(m.group(1), 16)
                     name = m.group(2)
                     symbols.append((addrVal, name))
-        
+
         symbols.sort(key=lambda x: x[0])
         print(f"Loaded {len(symbols)} symbols from map file.", file=sys.stderr)
         return symbols
@@ -128,19 +132,19 @@ def loadMapSymbols(elfPath):
 def findSymbol(address, symbols):
     """Find the closest preceding symbol for a given address."""
     if not symbols: return None
-    
+
     # Simple linear search (can be optimized with bisect)
     bestSym = None
     offset = 0
-    
+
     for symAddr, symName in symbols:
         if symAddr > address:
             break
         bestSym = (symAddr, symName)
-    
+
     if bestSym:
         offset = address - bestSym[0]
-        if offset < 8192: 
+        if offset < 8192:
             return f"{bestSym[1]}+{offset}" if offset > 0 else bestSym[1]
     return None
 
@@ -162,16 +166,16 @@ class CrashDecoder:
         self.registerBuffer = [] # format: (Name, AddrStr)
         self.stackBuffer = [] # format: int_value
         self.stackLines = [] # Raw text lines for reprint
-        
+
         # Start addr2line process
         # -a: input address, -i: unwind inlines, -f: functions, -C: demangle
         # Note: -p is NOT used as it changes output format to single-line which breaks parsing
         cmd = [self.toolPath, '-aifC', '-e', self.elfFile]
         try:
             self.addr2lineProc = subprocess.Popen(
-                cmd, 
-                stdin=subprocess.PIPE, 
-                stdout=subprocess.PIPE, 
+                cmd,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
                 stderr=subprocess.DEVNULL,
                 text=True,
                 bufsize=1 # Line buffered
@@ -196,10 +200,10 @@ class CrashDecoder:
             # Send address and sentinel
             self.addr2lineProc.stdin.write(f"{addrStr}\n0x00000000\n")
             self.addr2lineProc.stdin.flush()
-            
+
             outputLines = []
             foundEcho = False
-            
+
             while True:
                 line = self.addr2lineProc.stdout.readline()
                 if not line: break
@@ -213,7 +217,7 @@ class CrashDecoder:
                     self.addr2lineProc.stdout.readline()
                     self.addr2lineProc.stdout.readline()
                     break
-                
+
                 # Check for echo of valid address (handle case variance)
                 if line.lower() == addrStr.lower():
                     foundEcho = True
@@ -232,19 +236,19 @@ class CrashDecoder:
                     if i+1 < len(outputLines):
                         func = outputLines[i].strip()
                         loc = outputLines[i+1].strip()
-                        
+
                         # Clean up discriminator info (noisy)
                         loc = re.sub(r'\s*\(discriminator \d+\)', '', loc)
 
                         if func != "??" and loc != "??:0":
                             if func in seenFuncs:
                                 continue # Skip recursive/inlined frames of same function
-                            
+
                             seenFuncs.add(func)
                             results.append(f"{func} at {loc}")
-                
+
                 return " | ".join(results) if results else None
-                
+
             return None
 
         except Exception as e:
@@ -253,19 +257,19 @@ class CrashDecoder:
 
     def disassemble(self, addr, count=6):
         if not self.objdumpTool: return
-        
+
         # We want to see 'addr' and a few instructions after.
-        # Start exactly at addr. 
-        # Instructions are 2 or 4 bytes. 
+        # Start exactly at addr.
+        # Instructions are 2 or 4 bytes.
         # 6 * 4 = 24 bytes is safe for "3-4 instructions" even if mixed 16/32bit.
         start = addr
-        stop = addr + 24 
-        
-        cmd = [self.objdumpTool, '-d', 
-               '--start-address', f'0x{start:x}', 
-               '--stop-address', f'0x{stop:x}', 
+        stop = addr + 24
+
+        cmd = [self.objdumpTool, '-d',
+               '--start-address', f'0x{start:x}',
+               '--stop-address', f'0x{stop:x}',
                self.elfFile]
-               
+
         try:
              res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
              if res.returncode == 0:
@@ -308,9 +312,9 @@ class CrashDecoder:
             28: "Load Prohibited",
             29: "Store Prohibited"
         }
-        
+
         isRiscv = 'c3' in self.socName or 'c2' in self.socName or 'c6' in self.socName or 'h2' in self.socName or 'riscv' in self.toolPath
-        
+
         if isRiscv:
             return riscvExceptions.get(causeCode, f"Unknown (RISC-V code {causeCode})")
         else:
@@ -318,7 +322,7 @@ class CrashDecoder:
 
     def displaySourceContext(self, filePath, lineNum):
         if not filePath or lineNum <= 0: return
-        
+
         # Check if file exists
         if not os.path.exists(filePath):
              # Try relative to CWD if path is relative
@@ -329,10 +333,10 @@ class CrashDecoder:
             with open(filePath, 'r', encoding='utf-8', errors='ignore') as f:
                 lines = f.readlines()
                 totalLines = len(lines)
-                
+
                 start = max(1, lineNum - 2)
                 end = min(totalLines, lineNum + 2)
-                
+
                 print(f"\n  {Colors.BOLD}Context in {Colors.MAGENTA}{os.path.basename(filePath)}{Colors.RESET}:")
                 for i in range(start, end + 1):
                     prefix = " >" if i == lineNum else "  "
@@ -348,19 +352,19 @@ class CrashDecoder:
             return
 
         print(f"\n{Colors.BOLD}Register decode{Colors.RESET}")
-        
+
         targetDisasmAddr = None
         sourceContextCandidate = None # (file, line)
 
         for name, addrStr in self.registerBuffer:
             try:
                 val = int(addrStr, 16)
-                
+
                 # Exception Cause Decoding
                 if name in ["MCAUSE", "EXCCAUSE"]:
                     causeVal = val
                     isInterrupt = False
-                    
+
                     # Determine architecture for decoding logic
                     isRiscv = 'c3' in self.socName or 'c2' in self.socName or 'c6' in self.socName or 'h2' in self.socName or 'riscv' in self.toolPath
 
@@ -369,25 +373,25 @@ class CrashDecoder:
                         if causeVal & 0x80000000:
                              isInterrupt = True
                              causeVal &= 0x7FFFFFFF
-                    
+
                     # Xtensa EXCCAUSE is 6-bit, no modification needed usually.
-                    
+
                     if not isInterrupt or causeVal < 64: # Sanity check
                         desc = self.getExceptionDesc(causeVal)
                         descStr = f"{Colors.RED}{desc}{Colors.RESET}"
                         if isInterrupt: descStr += " (Interrupt)"
                     else:
                         descStr = "" # Too large/invalid
-                        
+
                     print(f"  {name:8}: {getAddrColor(val)}{addrStr}{Colors.RESET}  ({descStr})")
                     continue
 
                 # Capture MEPC/PC/EPC for disassembly
                 if name in ["MEPC", "PC", "EPC"]:
                     targetDisasmAddr = val
-                
+
                 res = None
-                
+
                 # Check Code (0x4...)
                 if 0x40000000 <= val < 0x50000000:
                     res = self.resolveCode(addrStr)
@@ -396,7 +400,7 @@ class CrashDecoder:
                         sym = findSymbol(val, self.mapSymbols)
                         if sym:
                              res = sym
-                    
+
                     # If this is the PC, try to capture source context
                     if name in ["MEPC", "PC", "EPC"] and res and " at " in res:
                         # Extract File:Line
@@ -410,7 +414,7 @@ class CrashDecoder:
                     sym = findSymbol(val, self.mapSymbols)
                     if sym:
                         res = sym
-                
+
                 # Colorize the address
                 addrColored = f"{getAddrColor(val)}{addrStr}{Colors.RESET}"
 
@@ -428,7 +432,7 @@ class CrashDecoder:
 
             except ValueError:
                 pass
-        
+
         if sourceContextCandidate:
              self.displaySourceContext(sourceContextCandidate[0], sourceContextCandidate[1])
 
@@ -443,7 +447,7 @@ class CrashDecoder:
             return
 
         print(f"{Colors.BOLD}Stack Dump{Colors.RESET}")
-        
+
         # 1. Reprint original lines with coloring
         def colorReplacer(match):
             valStr = match.group(0)
@@ -455,7 +459,7 @@ class CrashDecoder:
 
         for line in self.stackLines:
              print(re.sub(r"0x[0-9a-fA-F]+", colorReplacer, line), end='')
-        
+
         # 2. Analyze stack for summary (silent resolution)
         funcsFound = []
         labelsFound = []
@@ -476,12 +480,12 @@ class CrashDecoder:
                     funcsFound.append((currentFrame, frameFuncs))
                 if frameLabels:
                     labelsFound.append((currentFrame, frameLabels))
-                
+
                 frameFuncs = []
                 frameLabels = []
                 currentFrame += 1
                 continue
-            
+
             # Code (0x4...)
             if 0x40000000 <= val < 0x50000000:
                 res = self.resolveCode(addrStr)
@@ -502,7 +506,7 @@ class CrashDecoder:
                         if not frameFuncs or frameFuncs[-1] != item:
                              frameFuncs.append(item)
                         resolved = True
-            
+
             # If not code, check data (0x3... or 0x5...)
             if not resolved and ((0x30000000 <= val < 0x40000000) or (0x50000000 <= val < 0x60000000)):
                 sym = findSymbol(val, self.mapSymbols)
@@ -518,7 +522,7 @@ class CrashDecoder:
             funcsFound.append((currentFrame, frameFuncs))
         if frameLabels:
             labelsFound.append((currentFrame, frameLabels))
-        
+
         # Summary Sections
         if funcsFound:
              print(f"\n{Colors.BOLD}Calculated Stack Trace (Functions):{Colors.RESET}")
@@ -528,7 +532,7 @@ class CrashDecoder:
                      print(f.strip())
                  if len(funcsFound) > 1 and frameBuffer != funcsFound[-1]:
                       print(f"{Colors.GRAY}---{Colors.RESET}")
-        
+
         if labelsFound:
              print(f"\n{Colors.BOLD}Stack Symbols (Data/Labels):{Colors.RESET}")
              for frameBuffer in labelsFound:
@@ -549,7 +553,7 @@ class CrashDecoder:
         isRegStart = "Core" in line and "register dump:" in line
         isStackStart = "Stack memory:" in line
         isBacktrace = "Backtrace:" in line
-        
+
         # Determine End of Blocks
         if self.state == DecoderState.IN_REGISTERS:
             # Registers end if we see Stack memory, Backtrace, or empty line
@@ -563,10 +567,10 @@ class CrashDecoder:
             if isRegStart or (not rawLine.strip() and self.state == DecoderState.IN_STACK):
                  # Current line 'rawLine' might contain stack tokens AND the start trigger
                  # We must ensure we captured the tokens from this line FIRST.
-                 
+
                  # 1. Capture text for reprint
                  self.stackLines.append(rawLine)
-                 
+
                  # 2. Capture hex values from THIS line if present
                  parts = line.split(':')
                  content = parts[-1] if ':' in line else line
@@ -574,8 +578,8 @@ class CrashDecoder:
                  if hexVals:
                     for h in hexVals:
                         try:
-                            # Avoid capturing register values? 
-                            # Registers key-vals: MEPC : 0x... 
+                            # Avoid capturing register values?
+                            # Registers key-vals: MEPC : 0x...
                             # Stack: 0x... 0x...
                             # If line has "Register dump:", it probably doesn't have stack values AFTER the text?
                             # Input: "... 0x00 0x17 Core 0 register dump:"
@@ -585,12 +589,12 @@ class CrashDecoder:
 
                  # 3. Flush now that we have everything
                  self.flushStack()
-                 
+
                  if isRegStart:
                      self.state = DecoderState.IN_REGISTERS
-                     # We consumed the line in stackLines (flushStack printed it). 
+                     # We consumed the line in stackLines (flushStack printed it).
                      # Return to avoid double printing or reprocessing as IDLE
-                     return 
+                     return
                  else:
                      self.state = DecoderState.IDLE
                      # If empty line caused end, we consumed it.
@@ -611,7 +615,7 @@ class CrashDecoder:
             # But if we are continuing:
             if not isRegStart and not self.interactive: # Don't reprint header if we handled it in IDLE
                  print(rawLine, end='')
-            
+
             # Parse registers: "Name : 0xVal"
             # PC      : 0x400d1f28  PS      : 0x00060830
             matches = list(re.finditer(r"([A-Z0-9_]+)\s*:\s*(0x[0-9a-fA-F]+)", line))
@@ -623,10 +627,10 @@ class CrashDecoder:
             self.stackLines.append(rawLine)
             # Collect hex values
             # 3ffb1d90: 0x00000000 0x00000000 ...
-            
+
             parts = line.split(':')
             content = parts[-1] if ':' in line else line
-            
+
             hexVals = re.findall(r"(0x[0-9a-fA-F]{8})", content)
             if hexVals:
                 for h in hexVals:
@@ -655,7 +659,7 @@ def main():
          toolName = "riscv32-esp-elf-addr2line"
     else:
          toolName = "xtensa-esp32-elf-addr2line"
-    
+
     if shutil.which(toolName) is None:
         print(f"Error: '{toolName}' not found in PATH.", file=sys.stderr)
         sys.exit(1)
@@ -701,7 +705,7 @@ def main():
     # Setup Pager Capture
     captureBuffer = None
     originalStdout = sys.stdout
-    
+
     if usePager:
         captureBuffer = io.StringIO()
         sys.stdout = captureBuffer
@@ -715,7 +719,7 @@ def main():
     try:
         if interactive:
             print(f"{Colors.BOLD}Decode stack trace: Paste stack trace here (Ctrl+D to finish){Colors.RESET}", file=sys.stderr)
-        
+
         for line in inputStream:
             # SHA256 extraction from stream (stateless check)
             if localHash and "ELF file SHA256:" in line:
@@ -729,13 +733,13 @@ def main():
                         print(f"{Colors.RED}Local: {localHash}{Colors.RESET}\n")
 
             decoder.processLine(line)
-            
+
         # Flush remaining buffers at EOF
         if decoder.state == DecoderState.IN_REGISTERS:
             decoder.flushRegisters()
         elif decoder.state == DecoderState.IN_STACK:
             decoder.flushStack()
-            
+
     except KeyboardInterrupt:
         pass
     finally:
@@ -746,7 +750,7 @@ def main():
     if usePager and captureBuffer:
          sys.stdout = originalStdout # Restore
          output = captureBuffer.getvalue()
-         
+
          if shutil.which("less"):
              try:
                  # -R: ANSI colors, -F: Exit if one screen, -X: No init (keep on screen on exit)
