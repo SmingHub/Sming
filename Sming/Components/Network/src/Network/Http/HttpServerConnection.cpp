@@ -29,7 +29,7 @@ int HttpServerConnection::onMessageBegin(http_parser* parser)
 
 	// ... and Request
 	request.reset();
-	request.setMethod(HttpMethod(parser->method));
+	//request.setMethod(HttpMethod(parser->method));
 
 	// and temp data...
 	reset();
@@ -136,7 +136,9 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 				i = bodyParsers->indexOf(String('*'));
 			}
 		}
-
+		
+		request.setMethod(HttpMethod(parser->method));
+		
 		if(i >= 0) {
 			bodyParser = bodyParsers->valueAt(i);
 			assert(bodyParser != nullptr);
