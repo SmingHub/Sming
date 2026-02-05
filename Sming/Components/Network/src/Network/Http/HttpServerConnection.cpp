@@ -103,6 +103,7 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 	 * `Upgrade` or `Connection: upgrade` headers.
 	 */
 	int error = 0;
+	request.setMethod(HttpMethod(parser.method));
 	request.setHeaders(headers);
 
 	if(resource != nullptr) {
@@ -136,9 +137,7 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 				i = bodyParsers->indexOf(String('*'));
 			}
 		}
-		
-		request.setMethod(HttpMethod(parser->method));
-		
+				
 		if(i >= 0) {
 			bodyParser = bodyParsers->valueAt(i);
 			assert(bodyParser != nullptr);
