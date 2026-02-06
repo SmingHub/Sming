@@ -15,10 +15,9 @@
 #include "CameraInterface.h"
 #include <Data/Stream/FileStream.h>
 
-class FakeCamera: public CameraInterface
+class FakeCamera : public CameraInterface
 {
 public:
-
 	/**
 	 * Sets the list of all images that should be used to roll over.
 	 */
@@ -78,6 +77,11 @@ public:
 	size_t getSize() override
 	{
 		return file.getSize();
+	}
+
+	uint8_t getFramesPerSecond() override
+	{
+		return 10; // fake camera supports 10 fps
 	}
 
 	/**

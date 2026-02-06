@@ -12,68 +12,55 @@
 
 #pragma once
 
-#include <Data/Stream/DataSourceStream.h>
+#include <Data/Stream/MultipartStream.h>
 #include "Camera/CameraInterface.h"
+#include "WebcamPictureStream.h"
 
-class WebcamStream: public IDataSourceStream
+/**
+ * @brief Webcam stream producer for multipart streaming
+ */
+class WebcamStream : public MultipartStream
 {
 public:
-	/**
-	 * @param camera pointer to the camera object.
-	 */
-	WebcamStream(CameraInterface* camera, size_t blockSize = 512): camera(camera), blockSize(blockSize)
+	WebcamStream(CameraInterface* camera) : MultipartStream(std::bind(&WebcamStream::produce, this)), camera(camera)
 	{
 		assert(camera != nullptr);
 	}
 
-	uint16_t readMemoryBlock(char* data, int bufSize)
+	uint16_t readMemoryBlock(char* data, int bufSize) override
 	{
-		if(camera->getState() == eWCS_HAS_PICTURE) {
-			if(!size) {
-				size = camera->getSize();
-				offset = 0;
+		if(camera->getState() == eWCS_READY) {
+			uint8_t fps = camera->getFramesPerSecond();
+			if(fps > 0 && lastFrameTime) {
+				uint16_t frameTimeMs = 1000 / fps;
+				uint32_t now = millis();
+				if(now < lastFrameTime + frameTimeMs) {
+					debug_d("Skipping frame to maintain fps");
+					return 0;
+				}
 			}
 
-			return camera->read(data, bufSize, offset);
+			camera->capture();
+			lastFrameTime = millis();
 		}
 
-		if(camera->getState() != eWCS_WORKING) {
-			if(camera->capture()) {
-				size = 0;
-				offset = 0;
-			}
-		}
-
-		return 0;
+		return MultipartStream::readMemoryBlock(data, bufSize);
 	}
 
-	int available()
+	MultipartStream::BodyPart produce()
 	{
-		return size;
+		MultipartStream::BodyPart result;
+
+		WebcamPictureStream* webcamStream = new WebcamPictureStream(camera);
+		result.stream = webcamStream;
+
+		result.headers = new HttpHeaders();
+		(*result.headers)[HTTP_HEADER_CONTENT_TYPE] = camera->getMimeType();
+
+		return result;
 	}
 
-	bool seek(int len)
-	{
-		offset += len; // TODO: check for invalid offsets
-		return true;
-	}
-
-	bool isFinished()
-	{
-		bool finished = (size && offset >= size);
-		if(finished) {
-			camera->next();
-		}
-		return finished;
-	}
-
-	~WebcamStream()
-	{
-		camera = nullptr;
-	}
 private:
-	CameraInterface* camera = nullptr;
-	size_t blockSize;
-	size_t size = 0;
-	size_t offset = 0;
+	CameraInterface* camera;
+	unsigned long lastFrameTime = 0;
 };

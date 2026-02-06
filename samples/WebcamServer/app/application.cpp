@@ -1,6 +1,5 @@
 #include <SmingCore.h>
 
-#include <Data/Stream/MultipartStream.h>
 #include <WebcamStream.h>
 #include <Camera/FakeCamera.h>
 
@@ -36,24 +35,11 @@ void onFile(HttpRequest& request, HttpResponse& response)
 	}
 }
 
-MultipartStream::BodyPart snapshotProducer()
-{
-	MultipartStream::BodyPart result;
-
-	WebcamStream* webcamStream = new WebcamStream(camera);
-	result.stream = webcamStream;
-
-	result.headers = new HttpHeaders();
-	(*result.headers)[HTTP_HEADER_CONTENT_TYPE] = camera->getMimeType();
-
-	return result;
-}
-
 void onStream(HttpRequest& request, HttpResponse& response)
 {
 	Serial.println(_F("perform onCapture()"));
 
-	MultipartStream* stream = new MultipartStream(snapshotProducer);
+	WebcamStream* stream = new WebcamStream(camera);
 	response.sendDataStream(stream, F("multipart/x-mixed-replace; boundary=") + stream->getBoundary());
 }
 
