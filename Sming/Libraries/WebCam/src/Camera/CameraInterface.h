@@ -64,6 +64,12 @@ public:
 	 */
 	virtual size_t getSize() = 0;
 
+
+	/**
+	 * Gets the frames per second the camera can capture
+	 */
+	virtual uint8_t getFramesPerSecond() = 0;
+
 	/**
 	 * @brief Read picture data from the camera.
 	 * @param buffer the allocated data buffer to store the data
