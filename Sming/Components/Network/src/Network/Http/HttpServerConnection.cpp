@@ -29,7 +29,6 @@ int HttpServerConnection::onMessageBegin(http_parser* parser)
 
 	// ... and Request
 	request.reset();
-	request.setMethod(HttpMethod(parser->method));
 
 	// and temp data...
 	reset();
@@ -103,6 +102,7 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 	 * `Upgrade` or `Connection: upgrade` headers.
 	 */
 	int error = 0;
+	request.setMethod(HttpMethod(parser.method));
 	request.setHeaders(headers);
 
 	if(resource != nullptr) {
