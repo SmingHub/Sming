@@ -72,6 +72,8 @@ def run_full_suite():
         ("'mesh' in FEATURES", True, "Env string search"),
         ("True if '32s' in CHIP && 'wifi' in FEATURES else False", True, "Nested Logic+Member"),
         ("'riscv' not in ARCH", True, "Negative Member"),
+        ("CHIP in ['esp32s3', 'esp8266']", True, "List membership"),
+        ("CHIP not in ['esp8266', 'rp2040']", True, "List membership"),
 
         # --- Formatting ---
         ("f'0x{CPU_COUNT:02x}'", '0x04', "Hex formatted value"),

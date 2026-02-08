@@ -139,6 +139,9 @@ class Evaluator:
         if isinstance(node, ast.JoinedStr):
             return ''.join(str(self._eval(v)) for v in node.values)
 
+        if isinstance(node, ast.List):
+            return [self._eval(v) for v in node.elts]
+
         raise TypeError(f"Unsupported syntax: {type(node).__name__}")
 
     def run(self, expr):
