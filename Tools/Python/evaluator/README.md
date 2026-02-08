@@ -15,6 +15,8 @@ and accessing environment variables is quite clunky.
 * **Hexadecimal:** Environment variables starting with 0x are automatically cast to integers.
 * **Strings:** Single or double-quoted literals (e.g., 'esp32', "enabled") and formatted-strings (e.g. "f'{value:02x}'")
 * **Booleans:** Case-sensitive True and False keywords.
+* **Lists:** Useful for expressions such as `"value in ['a', 'b', 'c']"`
+* **Sets:** Can be used to remove duplicates, e.g. `"{1, 1, 2, 5, 2, 20}"` resolves to `"{1, 2, 5, 20}"`
 
 ### 2.2 Arithmetic & Bitwise
 
@@ -48,6 +50,7 @@ The evaluator pre-processes C-style tokens into Python logical keywords:
 | >= , <= | Greater/Less or Equal | VERSION >= 2.0 |
 | in | Substring Match | 'esp' in CHIP |
 | not in | Negative Substring Match | 'beta' not in VERSION |
+| in | Set membership | CHIP in ['esp32', 'esp8266'] |
 
 ---
 
