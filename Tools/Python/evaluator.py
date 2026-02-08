@@ -146,7 +146,7 @@ class Evaluator:
             raise ValueError("Empty expression")
         processed = expr.replace("&&", " and ").replace("||", " or ")
         processed = re.sub(r'!(?!=)', ' not ', processed)
-        tree = ast.parse(processed, mode='eval')
+        tree = ast.parse(processed.strip(), mode='eval')
         return self._eval(tree.body)
 
 

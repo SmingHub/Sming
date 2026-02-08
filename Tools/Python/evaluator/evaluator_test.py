@@ -64,6 +64,8 @@ def run_full_suite():
         ("True if ARCH == 'arm' || ARCH == 'xtensa' else False", True, "OR alias (||)"),
         ("True if !(ARCH == 'arm') else False", True, "NOT alias (!)"),
         ("True if ARCH != 'arm' else False", True, "NOT EQUAL (!=)"),
+        ("!NUMERIC_VAR", False, "Bool invert"),
+        ("!!NUMERIC_VAR", True, "Bool double-invert"),
 
         # --- Substring & Membership ---
         ("'esp' in CHIP", True, "Substring match (in)"),
@@ -101,9 +103,9 @@ def run_full_suite():
         try:
             # Logic: If 'expected' is an error string, check if it's contained in the 'actual' result
             actual = evaluator.run(expr)
-            success = (actual == expected)
+            success = (str(actual) == str(expected))
         except Exception as e:
-            success = f'Error: {e}'.startswith(expected)
+            success = f'Error: {e}'.startswith(str(expected))
             actual = repr(e)
 
         if success:
