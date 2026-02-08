@@ -74,6 +74,8 @@ def run_full_suite():
         ("'riscv' not in ARCH", True, "Negative Member"),
         ("CHIP in ['esp32s3', 'esp8266']", True, "List membership"),
         ("CHIP not in ['esp8266', 'rp2040']", True, "List membership"),
+        ("{3, 1, 2, 2, 3}", {1, 2, 3}, "Set of numbers"),
+        ("{CHIP, ARCH, CHIP}", {"esp32s3", "xtensa"}, "Set of strings"),
 
         # --- Formatting ---
         ("f'0x{CPU_COUNT:02x}'", '0x04', "Hex formatted value"),
