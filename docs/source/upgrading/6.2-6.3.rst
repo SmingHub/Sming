@@ -1,5 +1,5 @@
-From v6.2 to 6.3
-================
+From v6.2 to v6.3
+=================
 
 .. highlight:: c++
 
@@ -13,7 +13,7 @@ Instead, use the Sming-provided defined in :source:`Sming/Components/Network/src
 Main differences:
 
 - *llhttp* uses about 14K more flash than *http-parser*
-- :cpp:func`httpGetErrorDescription` is deprecated as *llhttp* does not provide error descriptions, so returns the same text as :cpp:func:`toString(HttpError)`.
+- :cpp:func:`httpGetErrorDescription` is deprecated as *llhttp* does not provide error descriptions, so returns the same text as :cpp:func:`toString(HttpError)`.
 - There are minor differences in how the parser is used
 
 If any of this is a problem, you can revert to the legacy http-parser by (re-)building with `USE_LEGACY_HTTP_PARSER=1`.
