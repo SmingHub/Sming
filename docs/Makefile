@@ -78,6 +78,7 @@ SOURCE_DIRS := \
 # List of documentation files to be included from source tree
 SOURCE_FILES := \
 	$(SMINGDIR)/CONTRIBUTING.md \
+	$(SMINGDIR)/Tools/Python/evaluator/README.md \
 	$(call FindSourceFiles,$(SOURCE_DIRS))
 
 # Additional paths for doxygen

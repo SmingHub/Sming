@@ -64,12 +64,18 @@ def run_full_suite():
         ("True if ARCH == 'arm' || ARCH == 'xtensa' else False", True, "OR alias (||)"),
         ("True if !(ARCH == 'arm') else False", True, "NOT alias (!)"),
         ("True if ARCH != 'arm' else False", True, "NOT EQUAL (!=)"),
+        ("!NUMERIC_VAR", False, "Bool invert"),
+        ("!!NUMERIC_VAR", True, "Bool double-invert"),
 
         # --- Substring & Membership ---
         ("'esp' in CHIP", True, "Substring match (in)"),
         ("'mesh' in FEATURES", True, "Env string search"),
         ("True if '32s' in CHIP && 'wifi' in FEATURES else False", True, "Nested Logic+Member"),
         ("'riscv' not in ARCH", True, "Negative Member"),
+        ("CHIP in ['esp32s3', 'esp8266']", True, "List membership"),
+        ("CHIP not in ['esp8266', 'rp2040']", True, "List membership"),
+        ("{3, 1, 2, 2, 3}", {1, 2, 3}, "Set of numbers"),
+        ("{CHIP, ARCH, CHIP}", {"esp32s3", "xtensa"}, "Set of strings"),
 
         # --- Formatting ---
         ("f'0x{CPU_COUNT:02x}'", '0x04', "Hex formatted value"),
@@ -101,9 +107,9 @@ def run_full_suite():
         try:
             # Logic: If 'expected' is an error string, check if it's contained in the 'actual' result
             actual = evaluator.run(expr)
-            success = (actual == expected)
+            success = (str(actual) == str(expected))
         except Exception as e:
-            success = f'Error: {e}'.startswith(expected)
+            success = f'Error: {e}'.startswith(str(expected))
             actual = repr(e)
 
         if success:

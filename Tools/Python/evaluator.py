@@ -139,6 +139,12 @@ class Evaluator:
         if isinstance(node, ast.JoinedStr):
             return ''.join(str(self._eval(v)) for v in node.values)
 
+        if isinstance(node, ast.List):
+            return [self._eval(v) for v in node.elts]
+
+        if isinstance(node, ast.Set):
+            return { self._eval(v) for v in node.elts }
+
         raise TypeError(f"Unsupported syntax: {type(node).__name__}")
 
     def run(self, expr):
@@ -146,7 +152,7 @@ class Evaluator:
             raise ValueError("Empty expression")
         processed = expr.replace("&&", " and ").replace("||", " or ")
         processed = re.sub(r'!(?!=)', ' not ', processed)
-        tree = ast.parse(processed, mode='eval')
+        tree = ast.parse(processed.strip(), mode='eval')
         return self._eval(tree.body)
 
 
