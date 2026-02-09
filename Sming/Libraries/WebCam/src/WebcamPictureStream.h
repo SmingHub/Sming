@@ -19,22 +19,21 @@ class WebcamPictureStream : public IDataSourceStream
 {
 public:
 	/**
-	 * @param camera pointer to the camera object.
+	 * @param camera reference to the camera object.
 	 */
-	WebcamPictureStream(CameraInterface* camera, size_t blockSize = 512) : camera(camera), blockSize(blockSize)
+	WebcamPictureStream(CameraInterface& camera, size_t blockSize = 512) : camera(camera), blockSize(blockSize)
 	{
-		assert(camera != nullptr);
 	}
 
 	uint16_t readMemoryBlock(char* data, int bufSize)
 	{
-		if(camera->getState() == eWCS_HAS_PICTURE) {
+		if(camera.getState() == eWCS_HAS_PICTURE) {
 			if(!size) {
-				size = camera->getSize();
+				size = camera.getSize();
 				offset = 0;
 			}
 
-			return camera->read(data, bufSize, offset);
+			return camera.read(data, bufSize, offset);
 		}
 
 		return 0;
@@ -55,18 +54,13 @@ public:
 	{
 		bool finished = (size && offset >= size);
 		if(finished) {
-			camera->next();
+			camera.next();
 		}
 		return finished;
 	}
 
-	~WebcamPictureStream()
-	{
-		camera = nullptr;
-	}
-
 private:
-	CameraInterface* camera = nullptr;
+	CameraInterface& camera;
 	size_t blockSize;
 	size_t size = 0;
 	size_t offset = 0;

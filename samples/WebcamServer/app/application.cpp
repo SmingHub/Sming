@@ -12,7 +12,7 @@
 namespace
 {
 HttpServer server;
-FakeCamera* camera;
+FakeCamera camera;
 
 /*
  * default http handler to check if server is up and running
@@ -52,15 +52,15 @@ void onFavicon(HttpRequest& request, HttpResponse& response)
 void startWebServer()
 {
 	// Initialize the camera
-	Vector<String> images;
 	for(unsigned int i = 1; i < 6; i++) {
 		String s = "img";
 		s.concat(i, DEC, 2);
 		s += ".jpeg";
-		images.add(s);
+		camera.addImage(s);
 	}
-	camera = new FakeCamera(images);
-	camera->init();
+
+	spiffs_mount(); // Mount file system, in order to work with files
+	camera.init();
 
 	// .. and run the HTTP server
 	server.listen(80);

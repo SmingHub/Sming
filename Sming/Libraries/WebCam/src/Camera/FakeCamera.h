@@ -19,11 +19,15 @@ class FakeCamera : public CameraInterface
 {
 public:
 	/**
-	 * Sets the list of all images that should be used to roll over.
+	 * @brief Sets the list of all images that should be used to roll over.
 	 */
-	FakeCamera(const Vector<String>& files)
+	FakeCamera()
 	{
-		this->files = files;
+	}
+
+	void addImage(const String& filename)
+	{
+		files.add(filename);
 	}
 
 	const String getMimeType() const override
@@ -42,8 +46,6 @@ public:
 			return true;
 		}
 
-		state = eWCS_INITIALISING;
-		spiffs_mount(); // Mount file system, in order to work with files
 		state = eWCS_READY;
 		index = 0;
 		return true;
@@ -55,6 +57,11 @@ public:
 	bool capture() override
 	{
 		if(state == eWCS_NOT_READY && !init()) {
+			return false;
+		}
+
+		if(files.count() == 0) {
+			debug_w("No images added to the fake camera");
 			return false;
 		}
 
@@ -72,7 +79,7 @@ public:
 	}
 
 	/**
-	 * Gets the size of the current picture
+	 * @brief Gets the size of the current picture
 	 */
 	size_t getSize() override
 	{

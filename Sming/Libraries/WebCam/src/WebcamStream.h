@@ -22,15 +22,14 @@
 class WebcamStream : public MultipartStream
 {
 public:
-	WebcamStream(CameraInterface* camera) : MultipartStream(std::bind(&WebcamStream::produce, this)), camera(camera)
+	WebcamStream(CameraInterface& camera) : MultipartStream(std::bind(&WebcamStream::produce, this)), camera(camera)
 	{
-		assert(camera != nullptr);
 	}
 
 	uint16_t readMemoryBlock(char* data, int bufSize) override
 	{
-		if(camera->getState() == eWCS_READY) {
-			uint8_t fps = camera->getFramesPerSecond();
+		if(camera.getState() == eWCS_READY) {
+			uint8_t fps = camera.getFramesPerSecond();
 			if(fps > 0 && lastFrameTime) {
 				uint16_t frameTimeMs = 1000 / fps;
 				uint32_t now = millis();
@@ -40,7 +39,7 @@ public:
 				}
 			}
 
-			camera->capture();
+			camera.capture();
 			lastFrameTime = millis();
 		}
 
@@ -55,12 +54,12 @@ public:
 		result.stream = webcamStream;
 
 		result.headers = new HttpHeaders();
-		(*result.headers)[HTTP_HEADER_CONTENT_TYPE] = camera->getMimeType();
+		(*result.headers)[HTTP_HEADER_CONTENT_TYPE] = camera.getMimeType();
 
 		return result;
 	}
 
 private:
-	CameraInterface* camera = nullptr;
+	CameraInterface& camera;
 	unsigned long lastFrameTime = 0;
 };
