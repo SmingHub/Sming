@@ -45,7 +45,7 @@ public:
 	}
 
 	/**
-	 * Prepare for the next picture
+	 * @brief Prepare for the next picture
 	 */
 	virtual void next()
 	{
@@ -64,9 +64,8 @@ public:
 	 */
 	virtual size_t getSize() = 0;
 
-
 	/**
-	 * Gets the frames per second the camera can capture
+	 * @brief Gets the frames per second the camera can capture
 	 */
 	virtual uint8_t getFramesPerSecond() = 0;
 
