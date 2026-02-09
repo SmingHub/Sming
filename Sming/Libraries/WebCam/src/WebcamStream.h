@@ -61,6 +61,6 @@ public:
 	}
 
 private:
-	CameraInterface* camera;
+	CameraInterface* camera = nullptr;
 	unsigned long lastFrameTime = 0;
 };
