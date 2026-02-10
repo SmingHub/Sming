@@ -50,11 +50,15 @@ public:
 	{
 		MultipartStream::BodyPart result;
 
+		camera.capture();
+		lastFrameTime = millis();
+
 		WebcamPictureStream* webcamStream = new WebcamPictureStream(camera);
 		result.stream = webcamStream;
 
 		result.headers = new HttpHeaders();
 		(*result.headers)[HTTP_HEADER_CONTENT_TYPE] = camera.getMimeType();
+		(*result.headers)[HTTP_HEADER_CONTENT_LENGTH] = camera.getSize();
 
 		return result;
 	}
