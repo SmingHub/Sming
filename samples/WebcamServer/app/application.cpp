@@ -13,13 +13,6 @@ namespace
 {
 HttpServer server;
 FakeCamera camera;
-Timer captureTimer;
-
-void onCaptureTimer()
-{
-	camera.capture();
-	debug_d("Frame captured");
-}
 
 /*
  * default http handler to check if server is up and running
@@ -68,16 +61,6 @@ void startWebServer()
 
 	spiffs_mount(); // Mount file system, in order to work with files
 	camera.init();
-	camera.capture();
-
-	// Set up timer to capture frames based on FPS
-	uint16_t fps = camera.getFramesPerSecond();
-	if(fps > 0) {
-		uint32_t frameIntervalMs = 1000 / fps;
-		captureTimer.initializeMs(frameIntervalMs, onCaptureTimer);
-		captureTimer.start();
-		debug_d("Timer started: %u ms interval (%u fps)\r\n", frameIntervalMs, fps);
-	}
 
 	// .. and run the HTTP server
 	server.listen(80);
