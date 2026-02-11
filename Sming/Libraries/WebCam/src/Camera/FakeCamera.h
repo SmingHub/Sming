@@ -66,44 +66,24 @@ public:
 		}
 
 		// go to the next picture.
-		auto& filename = files[index++];
+		index++;
 		if(index == files.count()) {
 			index = 0;
 		}
-		if(!file.open(filename)) {
-			return false;
-		}
+
 		state = eWCS_HAS_PICTURE;
 
 		return true;
 	}
 
-	/**
-	 * @brief Gets the size of the current picture
-	 */
-	size_t getSize() override
-	{
-		return file.getSize();
-	}
-
 	uint8_t getFramesPerSecond() override
 	{
-		return 10; // fake camera supports 10 fps
+		return 1; // fake camera supports 10 fps
 	}
 
-	/**
-	 * @brief Read picture data from the camera.
-	 * @param buffer the allocated data buffer to store the data
-	 * @param size the size of the allocated buffer
-	 * @param offset
-	 *
-	 * @retval bytes successfully read and stored in the buffer
-	 */
-	size_t read(char* buffer, size_t size, size_t offset = 0) override
+	IDataSourceStream* newImageStream() override
 	{
-		// get the current picture and read the desired data from it.
-		file.seekFrom(offset, SeekOrigin::Start);
-		return file.readMemoryBlock(buffer, size);
+		return new FileStream(files[index]);
 	}
 
 private:
