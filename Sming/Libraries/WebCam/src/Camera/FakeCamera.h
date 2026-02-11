@@ -78,7 +78,7 @@ public:
 
 	uint8_t getFramesPerSecond() override
 	{
-		return 1; // fake camera supports 10 fps
+		return 10; // fake camera supports 10 fps
 	}
 
 	IDataSourceStream* newImageStream() override

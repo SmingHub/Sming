@@ -29,6 +29,7 @@ public:
 	{
 		MultipartStream::BodyPart result;
 
+		camera.capture();
 		result.stream = camera.newImageStream();
 
 		result.headers = new HttpHeaders();
@@ -38,7 +39,27 @@ public:
 		return result;
 	}
 
+	uint16_t readMemoryBlock(char* data, int bufSize) override
+	{
+		auto stream = getInternalStream();
+		if(stream && stream->isFinished()) {
+			uint8_t fps = camera.getFramesPerSecond();
+			if(fps > 0 && lastFrameTime) {
+				uint32_t frameTimeMs = 1000 / fps;
+				uint32_t now = millis();
+				if(now < lastFrameTime + frameTimeMs) {
+					debug_d("Skipping frame to maintain fps");
+					return 0;
+				}
+			}
+
+			lastFrameTime = millis();
+		}
+
+		return MultipartStream::readMemoryBlock(data, bufSize);
+	}
+
 private:
 	CameraInterface& camera;
-	unsigned long lastFrameTime = 0;
+	uint32_t lastFrameTime = 0;
 };
