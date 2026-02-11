@@ -14,7 +14,6 @@
 
 #include <Data/Stream/MultipartStream.h>
 #include "Camera/CameraInterface.h"
-#include "WebcamPictureStream.h"
 
 /**
  * @brief Webcam stream producer for multipart streaming
@@ -26,39 +25,15 @@ public:
 	{
 	}
 
-	uint16_t readMemoryBlock(char* data, int bufSize) override
-	{
-		if(camera.getState() == eWCS_READY) {
-			uint8_t fps = camera.getFramesPerSecond();
-			if(fps > 0 && lastFrameTime) {
-				uint16_t frameTimeMs = 1000 / fps;
-				uint32_t now = millis();
-				if(now < lastFrameTime + frameTimeMs) {
-					debug_d("Skipping frame to maintain fps");
-					return 0;
-				}
-			}
-
-			camera.capture();
-			lastFrameTime = millis();
-		}
-
-		return MultipartStream::readMemoryBlock(data, bufSize);
-	}
-
 	MultipartStream::BodyPart produce()
 	{
 		MultipartStream::BodyPart result;
 
-		camera.capture();
-		lastFrameTime = millis();
-
-		WebcamPictureStream* webcamStream = new WebcamPictureStream(camera);
-		result.stream = webcamStream;
+		result.stream = camera.newImageStream();
 
 		result.headers = new HttpHeaders();
 		(*result.headers)[HTTP_HEADER_CONTENT_TYPE] = camera.getMimeType();
-		(*result.headers)[HTTP_HEADER_CONTENT_LENGTH] = camera.getSize();
+		(*result.headers)[HTTP_HEADER_CONTENT_LENGTH] = result.stream->available();
 
 		return result;
 	}
