@@ -24,9 +24,6 @@ class WebcamStream : public MultipartStream
 public:
 	WebcamStream(CameraInterface& camera) : MultipartStream(std::bind(&WebcamStream::produce, this)), camera(camera)
 	{
-		int fps = TRange(1, 100).clip(camera.getFramesPerSecond());
-		frameTimer.reset(1000 / fps);
-		frameTimer.start();
 	}
 
 	MultipartStream::BodyPart produce()
@@ -40,17 +37,29 @@ public:
 		(*result.headers)[HTTP_HEADER_CONTENT_TYPE] = camera.getMimeType();
 		(*result.headers)[HTTP_HEADER_CONTENT_LENGTH] = result.stream->available();
 
+		// Don't count first image
+		if(started) {
+			newImage = true;
+		} else {
+			// Note: This won't take into account changes of camera frame rate
+			// int fps = TRange(1, 100).clip(camera.getFramesPerSecond());
+			// frameTimer.reset(1000 / fps);
+			frameTimer.reset(250);
+			started = true;
+		}
+
 		return result;
 	}
 
 	uint16_t readMemoryBlock(char* data, int bufSize) override
 	{
-		auto stream = getInternalStream();
-		if(stream && stream->isFinished()) {
+		if(newImage) {
 			if(!frameTimer.expired()) {
-				debug_d("Skipping frame to maintain fps");
+				debug_d("Defer read to maintain fps");
 				return 0;
 			}
+			newImage = false;
+			frameTimer.start();
 		}
 
 		return MultipartStream::readMemoryBlock(data, bufSize);
@@ -58,5 +67,7 @@ public:
 
 private:
 	CameraInterface& camera;
-	PeriodicFastMs frameTimer;
+	OneShotFastMs frameTimer;
+	bool started{false};
+	bool newImage{false};
 };
