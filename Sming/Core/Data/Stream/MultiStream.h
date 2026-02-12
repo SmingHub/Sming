@@ -40,11 +40,6 @@ protected:
 	 */
 	virtual IDataSourceStream* getNextStream() = 0;
 
-	IDataSourceStream *getInternalStream() const
-	{
-		return stream.get();
-	}
-
 private:
 	std::unique_ptr<IDataSourceStream> stream;
 	bool finished{false};

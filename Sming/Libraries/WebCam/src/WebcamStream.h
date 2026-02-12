@@ -46,6 +46,7 @@ public:
 			// frameTimer.reset(1000 / fps);
 			frameTimer.reset(250);
 			started = true;
+		}
 
 		return result;
 	}
@@ -59,8 +60,6 @@ public:
 			}
 			newImage = false;
 			frameTimer.start();
-
-			lastFrameTime = millis();
 		}
 
 		return MultipartStream::readMemoryBlock(data, bufSize);
