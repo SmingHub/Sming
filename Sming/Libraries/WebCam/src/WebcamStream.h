@@ -14,6 +14,7 @@
 
 #include <Data/Stream/MultipartStream.h>
 #include "Camera/CameraInterface.h"
+#include <Data/Range.h>
 
 /**
  * @brief Webcam stream producer for multipart streaming
@@ -23,6 +24,9 @@ class WebcamStream : public MultipartStream
 public:
 	WebcamStream(CameraInterface& camera) : MultipartStream(std::bind(&WebcamStream::produce, this)), camera(camera)
 	{
+		int fps = TRange(1, 100).clip(camera.getFramesPerSecond());
+		frameTimer.reset(1000 / fps);
+		frameTimer.start();
 	}
 
 	MultipartStream::BodyPart produce()
@@ -43,17 +47,10 @@ public:
 	{
 		auto stream = getInternalStream();
 		if(stream && stream->isFinished()) {
-			uint8_t fps = camera.getFramesPerSecond();
-			if(fps > 0 && lastFrameTime) {
-				uint32_t frameTimeMs = 1000 / fps;
-				uint32_t now = millis();
-				if(now < lastFrameTime + frameTimeMs) {
-					debug_d("Skipping frame to maintain fps");
-					return 0;
-				}
+			if(!frameTimer.expired()) {
+				debug_d("Skipping frame to maintain fps");
+				return 0;
 			}
-
-			lastFrameTime = millis();
 		}
 
 		return MultipartStream::readMemoryBlock(data, bufSize);
@@ -61,5 +58,5 @@ public:
 
 private:
 	CameraInterface& camera;
-	uint32_t lastFrameTime = 0;
+	PeriodicFastMs frameTimer;
 };
