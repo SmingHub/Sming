@@ -80,6 +80,8 @@ void init()
 	spiffs_mount();
 
 	WifiStation.enable(true);
+	WifiStation.config(WIFI_SSID, WIFI_PWD);
+	WifiAccessPoint.enable(false);
 
 	System.onReady(startWebServer);
 }
