@@ -3,4 +3,4 @@ COMPONENT_INCDIRS := nanopb src/include
 
 COMPONENT_SUBMODULES += nanopb
 
-NANOPB_GENERATE := $(PYTHON) $(COMPONENT_PATH)/nanopb/generator/nanopb_generator.py
+export NANOPB_GENERATE := $(PYTHON) $(COMPONENT_PATH)/nanopb/generator/nanopb_generator.py
