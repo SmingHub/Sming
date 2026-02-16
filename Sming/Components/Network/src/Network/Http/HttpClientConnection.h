@@ -86,7 +86,9 @@ protected:
 	{
 		if(err == ERR_OK) {
 			state = eHCS_Ready;
+#ifdef USE_LEGACY_HTTP_PARSER
 			init(HTTP_RESPONSE);
+#endif
 		}
 
 		return HttpConnection::onConnected(err);
