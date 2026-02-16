@@ -42,6 +42,7 @@ HttpError BasicHttpHeaders::parse(char* data, size_t len, http_parser_type type)
 	return HttpError(HTTP_PARSER_ERRNO(&parser));
 #else
 	llhttp_init(&parser, type, &parserSettings);
+	parser.data = this;
 	return HttpError(llhttp_execute(&parser, data, len));
 #endif
 }
