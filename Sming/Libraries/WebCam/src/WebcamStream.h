@@ -42,9 +42,8 @@ public:
 			newImage = true;
 		} else {
 			// Note: This won't take into account changes of camera frame rate
-			// int fps = TRange(1, 100).clip(camera.getFramesPerSecond());
-			// frameTimer.reset(1000 / fps);
-			frameTimer.reset(250);
+			int fps = TRange(1, 100).clip(camera.getFramesPerSecond());
+			frameTimer.reset(1000 / fps);
 			started = true;
 		}
 
