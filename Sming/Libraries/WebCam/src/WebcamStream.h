@@ -14,6 +14,7 @@
 
 #include <Data/Stream/MultipartStream.h>
 #include "Camera/CameraInterface.h"
+#include <Data/Range.h>
 
 /**
  * @brief Webcam stream producer for multipart streaming
@@ -36,22 +37,28 @@ public:
 		(*result.headers)[HTTP_HEADER_CONTENT_TYPE] = camera.getMimeType();
 		(*result.headers)[HTTP_HEADER_CONTENT_LENGTH] = result.stream->available();
 
+		// Don't count first image
+		if(started) {
+			newImage = true;
+		} else {
+			// Note: This won't take into account changes of camera frame rate
+			// int fps = TRange(1, 100).clip(camera.getFramesPerSecond());
+			// frameTimer.reset(1000 / fps);
+			frameTimer.reset(250);
+			started = true;
+
 		return result;
 	}
 
 	uint16_t readMemoryBlock(char* data, int bufSize) override
 	{
-		auto stream = getInternalStream();
-		if(stream && stream->isFinished()) {
-			uint8_t fps = camera.getFramesPerSecond();
-			if(fps > 0 && lastFrameTime) {
-				uint32_t frameTimeMs = 1000 / fps;
-				uint32_t now = millis();
-				if(now < lastFrameTime + frameTimeMs) {
-					debug_d("Skipping frame to maintain fps");
-					return 0;
-				}
+		if(newImage) {
+			if(!frameTimer.expired()) {
+				debug_d("Defer read to maintain fps");
+				return 0;
 			}
+			newImage = false;
+			frameTimer.start();
 
 			lastFrameTime = millis();
 		}
@@ -61,5 +68,7 @@ public:
 
 private:
 	CameraInterface& camera;
-	uint32_t lastFrameTime = 0;
+	OneShotFastMs frameTimer;
+	bool started{false};
+	bool newImage{false};
 };
