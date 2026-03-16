@@ -31,10 +31,12 @@ class Colors:
     GRAY = "\033[90m"
     LIGHT_BLUE = "\033[94m" # Labels
 
+CANARY_VALUES = {0xDEADBEEF, 0xA5A5A5A5, 0xFEFEFEFE, 0xABABABAB, 0x55AA55AA, 0xAA55AA55}
+
 def getAddrColor(val):
     """Return ANSI color code based on memory region."""
     # Stack Canary / Poison values
-    if val in [0xDEADBEEF, 0xA5A5A5A5, 0xFEFEFEFE, 0xABABABAB]:
+    if val in CANARY_VALUES:
         return Colors.RED
 
     # Based on typical ESP32 memory map
@@ -49,6 +51,16 @@ def getAddrColor(val):
         return Colors.CYAN
     else:
         return Colors.RESET
+
+def colorizeHex(line):
+    """Colorize 0x-prefixed hex values in a line using getAddrColor."""
+    def replacer(m):
+        s = m.group(0)
+        try:
+            return f"{getAddrColor(int(s, 16))}{s}{Colors.RESET}"
+        except Exception:
+            return s
+    return re.sub(r'0x[0-9a-fA-F]+', replacer, line)
 
 def getElfSha256(filepath):
     """Calculate SHA256 of the ELF file to match against dump info."""
@@ -273,7 +285,7 @@ class CrashDecoder:
         try:
              res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
              if res.returncode == 0:
-                  print(f"\n  {Colors.BOLD}Disassembly around {Colors.GREEN}0x{start:x}{Colors.RESET}:")
+                  print(f"\n  {Colors.BOLD}Disassembly around {getAddrColor(start)}0x{start:x}{Colors.RESET}:")
                   lines = res.stdout.splitlines()
                   for line in lines:
                       # Typical objdump line: "400d3f28:	00413603          	l32u	a2,4(sp)"
@@ -405,7 +417,7 @@ class CrashDecoder:
                     if name in ["MEPC", "PC", "EPC"] and res and " at " in res:
                         # Extract File:Line
                         # Format: func at file:line
-                        m = re.search(r' at (.*):(\d+)', res)
+                        m = re.search(r' at (.*?):(\d+)', res)
                         if m:
                             sourceContextCandidate = (m.group(1), int(m.group(2)))
 
@@ -437,7 +449,17 @@ class CrashDecoder:
              self.displaySourceContext(sourceContextCandidate[0], sourceContextCandidate[1])
 
         if targetDisasmAddr:
-            self.disassemble(targetDisasmAddr)
+            if 0x40000000 <= targetDisasmAddr < 0x50000000:
+                self.disassemble(targetDisasmAddr)
+            else:
+                if 0x30000000 <= targetDisasmAddr < 0x40000000:
+                    region = "Data (DRAM/DROM)"
+                elif 0x50000000 <= targetDisasmAddr < 0x60000000:
+                    region = "External SPI RAM"
+                else:
+                    region = "unknown region"
+                print(f"\n  {Colors.RED}PC/EPC (0x{targetDisasmAddr:08x}) is in {region} — execution jumped to non-code memory.{Colors.RESET}")
+                print(f"  {Colors.RED}No code can be disassembled here. Likely a wild pointer or stack corruption.{Colors.RESET}")
 
         print("") # clean separation
         self.registerBuffer = []
@@ -474,7 +496,7 @@ class CrashDecoder:
             addrColored = f"{getAddrColor(val)}{addrStr}{Colors.RESET}"
 
             # Check for canary/poison
-            if val in [0xDEADBEEF, 0xA5A5A5A5, 0xFEFEFEFE, 0xABABABAB]:
+            if val in CANARY_VALUES:
                 # Commit current frame
                 if frameFuncs:
                     funcsFound.append((currentFrame, frameFuncs))
@@ -614,7 +636,7 @@ class CrashDecoder:
             # If we just entered IN_REGISTERS from IDLE above, we already printed the header.
             # But if we are continuing:
             if not isRegStart and not self.interactive: # Don't reprint header if we handled it in IDLE
-                 print(rawLine, end='')
+                 print(colorizeHex(rawLine), end='')
 
             # Parse registers: "Name : 0xVal"
             # PC      : 0x400d1f28  PS      : 0x00060830
@@ -650,6 +672,13 @@ def main():
         sys.exit(1)
 
     elfFile = sys.argv[1]
+
+    # Architecture guard
+    arch = os.environ.get('SMING_ARCH', '')
+    if arch and arch.lower() != 'esp32':
+        print(f"Error: SMING_ARCH='{arch}' but this is the ESP32 decoder.", file=sys.stderr)
+        print(f"Use the {arch} decoder instead (Sming/Arch/{arch}/Tools/decode-stacktrace.py).", file=sys.stderr)
+        sys.exit(1)
 
     # Tool Selection
     soc = os.environ.get('SMING_SOC', 'esp32').lower()

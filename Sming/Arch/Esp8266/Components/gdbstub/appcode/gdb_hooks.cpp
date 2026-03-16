@@ -34,20 +34,19 @@ static PGM_P const exceptionNames[] PROGMEM = {
 	SYSTEM_EXCEPTION_MAP(XX)
 #undef XX
 };
-
+	
 // The asm stub saves the Xtensa registers here when an exception is raised
 GdbstubSavedRegisters gdbstub_savedRegs;
+
+DEFINE_PSTR_LOCAL(instructions_pstr, "To decode the stack dump call from command line:\r\n"
+									 "   make decode-stacktrace\r\n"
+									 "and copy & paste the text enclosed in '===='.\r\n");
+DEFINE_PSTR_LOCAL(separatorLine_pstr, "\n================================================================\r\n");
 
 void debug_print_stack(uint32_t start, uint32_t end)
 {
 	m_puts(_F("\r\n"
 			  "Stack dump:\r\n"));
-	PSTR_ARRAY(instructions, "To decode the stack dump call from command line:\r\n"
-							 "   make decode-stacktrace\r\n"
-							 "and copy & paste the text enclosed in '===='.\r\n");
-	PSTR_ARRAY(separatorLine, "\n================================================================\r\n");
-	m_puts(instructions);
-	m_puts(separatorLine);
 	for(uint32_t addr = start; addr < end; addr += 0x10) {
 		uint32_t* values = (uint32_t*)addr;
 		// rough indicator: stack frames usually have SP saved as the second word
@@ -59,13 +58,14 @@ void debug_print_stack(uint32_t start, uint32_t end)
 		system_soft_wdt_feed();
 		wdt_feed();
 	}
-	m_puts(separatorLine);
-	m_puts(instructions);
+
 }
 
 void debug_crash_callback([[maybe_unused]] const rst_info* rst_info, [[maybe_unused]] uint32_t stack,
 						  [[maybe_unused]] uint32_t stack_end)
 {
+	LOAD_PSTR(instructions, instructions_pstr);
+	LOAD_PSTR(separatorLine, separatorLine_pstr);
 #ifdef ENABLE_GDB
 	gdbFlushUserData();
 	if(gdb_state.attached) {
@@ -74,6 +74,9 @@ void debug_crash_callback([[maybe_unused]] const rst_info* rst_info, [[maybe_unu
 #endif
 
 #if defined(ENABLE_GDB) || ENABLE_CRASH_DUMP
+	m_puts(instructions);
+	m_puts(separatorLine);
+
 	switch(rst_info->reason) {
 	case REASON_EXCEPTION_RST:
 		m_printf(_F("\r\n"
@@ -100,7 +103,8 @@ void debug_crash_callback([[maybe_unused]] const rst_info* rst_info, [[maybe_unu
 #elif ENABLE_CRASH_DUMP
 	debug_print_stack(stack, stack_end);
 #endif
-
+	m_puts(separatorLine);
+	m_puts(instructions);
 #endif // defined(ENABLE_GDB) || ENABLE_CRASH_DUMP
 }
 
@@ -108,6 +112,11 @@ void debug_crash_callback([[maybe_unused]] const rst_info* rst_info, [[maybe_unu
 
 void dumpExceptionInfo()
 {
+	LOAD_PSTR(instructions, instructions_pstr);
+	LOAD_PSTR(separatorLine, separatorLine_pstr);
+	m_puts(instructions);
+	m_puts(separatorLine);
+
 	auto& reg = gdbstub_savedRegs;
 
 	m_printf(_F("\r\n"
@@ -138,6 +147,8 @@ void dumpExceptionInfo()
 	if(gdb_present() != eGDB_Attached) {
 		debug_print_stack(reg.a[1], 0x3fffffb0);
 	}
+	m_puts(separatorLine);
+	m_puts(instructions);
 }
 
 // Main exception handler code
