@@ -454,3 +454,4 @@
 [submodule "Sming/Arch/Esp32/Components/Esp32HardwarePwm"]
 	path = Sming/Arch/Esp32/Components/Esp32HardwarePwm
 	url = https://github.com/pljakobs/Esp32HardwarePwm
+	branch = devel
