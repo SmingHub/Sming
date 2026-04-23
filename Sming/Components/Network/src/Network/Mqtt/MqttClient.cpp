@@ -337,7 +337,7 @@ bool MqttClient::unsubscribe(const String& topic)
 		return false;
 	}
 
-	auto message = createMessage(MQTT_TYPE_SUBSCRIBE);
+	auto message = createMessage(MQTT_TYPE_UNSUBSCRIBE);
 
 	message->unsubscribe.topics = (mqtt_topic_t*)MQTT_MALLOC(sizeof(mqtt_topic_t));
 	memset(message->unsubscribe.topics, 0, sizeof(mqtt_topic_t));
