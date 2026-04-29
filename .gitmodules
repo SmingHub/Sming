@@ -433,6 +433,10 @@
 	path = Sming/Libraries/BLEKeyboard/ESP32-BLE-Keyboard
 	url = https://github.com/T-vK/ESP32-BLE-Keyboard.git
 	ignore = dirty
+[submodule "Libraries.Esp32HardwarePwm"]
+	path = Sming/Libraries/Esp32HardwarePwm
+	url = https://github.com/pljakobs/Esp32HardwarePwm
+	ignore = dirty
 [submodule "Libraries.esp-nimble-cpp"]
 	path = Sming/Libraries/NimBLE/esp-nimble-cpp
 	url = https://github.com/h2zero/esp-nimble-cpp.git
@@ -451,7 +455,3 @@
 # END OF .gitmodules
 #
 #################################################################################################
-[submodule "Sming/Arch/Esp32/Components/Esp32HardwarePwm"]
-	path = Sming/Arch/Esp32/Components/Esp32HardwarePwm
-	url = https://github.com/pljakobs/Esp32HardwarePwm
-	branch = devel
