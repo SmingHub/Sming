@@ -25,7 +25,12 @@ extern "C" {
 
 #define PROGMEM STORE_ATTR ICACHE_RODATA_ATTR
 #define PROGMEM_PSTR PROGMEM
-#define PSTR(str) (str)
+
+#define PSTR(str)                                                                                                      \
+	(__extension__({                                                                                                   \
+		static const char __pstr__[] PROGMEM_PSTR = str;                                                               \
+		&__pstr__[0];                                                                                                  \
+	}))
 
 #define PGM_P const char*
 #define PGM_VOID_P const void*
