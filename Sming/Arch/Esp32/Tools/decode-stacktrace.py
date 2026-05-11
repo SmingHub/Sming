@@ -590,21 +590,19 @@ class CrashDecoder:
             if 0x40000000 <= pcVal < 0x50000000:
                 res = self.resolveCode(addrStr)
                 if not res or "??:0" in res:
-                    sym = findSymbol(pcVal, self.mapSymbols)
-                    if sym:
+                    if sym := findSymbol(pcVal, self.mapSymbols):
                         res = sym
 
             if not res and ((0x30000000 <= pcVal < 0x40000000) or (0x50000000 <= pcVal < 0x60000000)):
-                sym = findSymbol(pcVal, self.mapSymbols)
-                if sym:
-                    res = sym
+                if sym := findSymbol(pcVal, self.mapSymbols):
+                     res = sym
 
-            if res and " at " in res:
-                resDisplay = res.replace(" at ", f" at {Colors.MAGENTA}") + Colors.RESET
-            elif res:
-                resDisplay = f"{Colors.LIGHT_BLUE}{res}{Colors.RESET}"
-            else:
+            if not res:
                 resDisplay = "unresolved"
+            elif " at " in res:
+                resDisplay=res.replace(" at ", f" at {Colors.MAGENTA}") + Colors.RESET
+            else:
+                resDisplay = f"{Colors.LIGHT_BLUE}{res}{Colors.RESET}"
 
             if spVal is not None:
                 spColored = f"{getAddrColor(spVal)}0x{spVal:08x}{Colors.RESET}"
@@ -632,7 +630,7 @@ class CrashDecoder:
                 pcVal = int(m.group(1), 16)
                 spVal = int(m.group(2), 16) if m.group(2) else None
                 self.backtraceBuffer.append((pcVal, spVal))
-            except Exception:
+            except ValueError: # Ignore malformed entries
                 pass
 
     def processLine(self, line):
