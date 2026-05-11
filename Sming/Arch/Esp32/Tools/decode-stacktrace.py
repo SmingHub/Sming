@@ -164,6 +164,7 @@ class DecoderState(Enum):
     IDLE = auto()
     IN_REGISTERS = auto()
     IN_STACK = auto()
+    IN_BACKTRACE = auto()
 
 class CrashDecoder:
     def __init__(self, elfFile, toolPath, mapSymbols, socName='esp32', objdumpTool=None, interactive=False):
@@ -178,6 +179,8 @@ class CrashDecoder:
         self.registerBuffer = [] # format: (Name, AddrStr)
         self.stackBuffer = [] # format: int_value
         self.stackLines = [] # Raw text lines for reprint
+        self.backtraceBuffer = [] # format: (pc_int, sp_int_or_none)
+        self.backtraceLines = [] # Raw text lines for reprint
 
         # Start addr2line process
         # -a: input address, -i: unwind inlines, -f: functions, -C: demangle
@@ -567,6 +570,69 @@ class CrashDecoder:
         self.stackBuffer = []
         self.stackLines = []
 
+    def flushBacktrace(self):
+        if not self.backtraceBuffer and not self.backtraceLines:
+            return
+
+        print(f"\n{Colors.BOLD}Backtrace Decode{Colors.RESET}")
+
+        seen = set()
+        frameIndex = 0
+        for pcVal, spVal in self.backtraceBuffer:
+            if pcVal in seen:
+                continue
+            seen.add(pcVal)
+
+            addrStr = f"0x{pcVal:08x}"
+            addrColored = f"{getAddrColor(pcVal)}{addrStr}{Colors.RESET}"
+            res = None
+
+            if 0x40000000 <= pcVal < 0x50000000:
+                res = self.resolveCode(addrStr)
+                if not res or "??:0" in res:
+                    if sym := findSymbol(pcVal, self.mapSymbols):
+                        res = sym
+
+            if not res and ((0x30000000 <= pcVal < 0x40000000) or (0x50000000 <= pcVal < 0x60000000)):
+                if sym := findSymbol(pcVal, self.mapSymbols):
+                     res = sym
+
+            if not res:
+                resDisplay = "unresolved"
+            elif " at " in res:
+                resDisplay=res.replace(" at ", f" at {Colors.MAGENTA}") + Colors.RESET
+            else:
+                resDisplay = f"{Colors.LIGHT_BLUE}{res}{Colors.RESET}"
+
+            if spVal is not None:
+                spColored = f"{getAddrColor(spVal)}0x{spVal:08x}{Colors.RESET}"
+                print(f"  #{frameIndex:02d} PC={addrColored} SP={spColored}  ({resDisplay})")
+            else:
+                print(f"  #{frameIndex:02d} PC={addrColored}  ({resDisplay})")
+            frameIndex += 1
+
+        print("")
+        self.backtraceBuffer = []
+        self.backtraceLines = []
+
+    def addBacktraceLine(self, rawLine, line):
+        self.backtraceLines.append(rawLine)
+
+        # Parse formats like:
+        # Backtrace: 0x4037588e:0x3fcb4e90 0x4037d66d:0x3fcb4eb0 ...
+        # and continuation lines containing additional pairs.
+        content = line
+        if "Backtrace:" in content:
+            content = content.split("Backtrace:", 1)[1].strip()
+
+        for m in re.finditer(r"(0x[0-9a-fA-F]{8})(?::(0x[0-9a-fA-F]{8}))?", content):
+            try:
+                pcVal = int(m.group(1), 16)
+                spVal = int(m.group(2), 16) if m.group(2) else None
+                self.backtraceBuffer.append((pcVal, spVal))
+            except ValueError: # Ignore malformed entries
+                pass
+
     def processLine(self, line):
         rawLine = line
         line = line.strip()
@@ -622,15 +688,29 @@ class CrashDecoder:
                      # If empty line caused end, we consumed it.
                      return
 
+        if self.state == DecoderState.IN_BACKTRACE:
+            # End backtrace block on blank line or start of another known block.
+            if not line or isRegStart or isStackStart:
+                self.flushBacktrace()
+                self.state = DecoderState.IDLE
+                if isRegStart:
+                    self.state = DecoderState.IN_REGISTERS
+                elif isStackStart:
+                    self.state = DecoderState.IN_STACK
+                return
+
         # State Handling
         if self.state == DecoderState.IDLE:
-            if not self.interactive:
+            if not self.interactive and not isBacktrace:
                 print(rawLine, end='')
 
             if isRegStart:
                 self.state = DecoderState.IN_REGISTERS
             elif isStackStart:
                 self.state = DecoderState.IN_STACK
+            elif isBacktrace:
+                self.state = DecoderState.IN_BACKTRACE
+                self.addBacktraceLine(rawLine, line)
 
         elif self.state == DecoderState.IN_REGISTERS:
             # If we just entered IN_REGISTERS from IDLE above, we already printed the header.
@@ -659,6 +739,9 @@ class CrashDecoder:
                     try:
                         self.stackBuffer.append(int(h, 16))
                     except: pass
+
+        elif self.state == DecoderState.IN_BACKTRACE:
+            self.addBacktraceLine(rawLine, line)
 
 def printLegend(stream=sys.stderr):
     print(f"{Colors.BOLD}Color Legend:{Colors.RESET}", file=stream)
@@ -768,6 +851,8 @@ def main():
             decoder.flushRegisters()
         elif decoder.state == DecoderState.IN_STACK:
             decoder.flushStack()
+        elif decoder.state == DecoderState.IN_BACKTRACE:
+            decoder.flushBacktrace()
 
     except KeyboardInterrupt:
         pass
