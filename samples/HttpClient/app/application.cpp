@@ -158,7 +158,16 @@ void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 {
 	Serial << _F("Connected. Got IP: ") << ip << endl;
 
-	requestTimer.initializeMs<30000>(postMessage).start();
+	requestTimer.initializeMs<1000>([](void*) {
+		static unsigned count;
+		Serial << system_get_time() << _F(" alive ") << count << _F("... free heap ") << system_get_free_heap_size()
+			   << endl;
+		if(count++ == 30) {
+			count = 0;
+			postMessage();
+		}
+	});
+	requestTimer.start();
 	postMessage();
 }
 
