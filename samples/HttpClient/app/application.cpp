@@ -10,6 +10,7 @@
 namespace
 {
 HttpClient httpClient;
+SimpleTimer requestTimer;
 
 int onDownload(HttpConnection& connection, bool success)
 {
@@ -83,9 +84,9 @@ void sslRequestInit(Ssl::Session& session, HttpRequest& request)
 	session.validators.pin(sha1Fingerprint);
 }
 
-void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
+void postMessage()
 {
-	Serial << _F("Connected. Got IP: ") << ip << endl;
+	Serial << endl << endl << _F("Posting message...") << endl;
 
 	// [ GET request: The example below shows how to make HTTP requests ]
 
@@ -151,6 +152,14 @@ void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 	// see the implementation of `bool HttpClient::downloadFile(const String& url, const String& saveFileName, ...` for details.
 
 	httpClient.send(putRequest);
+}
+
+void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
+{
+	Serial << _F("Connected. Got IP: ") << ip << endl;
+
+	requestTimer.initializeMs<30000>(postMessage).start();
+	postMessage();
 }
 
 } // namespace
