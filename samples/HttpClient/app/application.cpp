@@ -10,6 +10,7 @@
 namespace
 {
 HttpClient httpClient;
+SimpleTimer requestTimer;
 
 int onDownload(HttpConnection& connection, bool success)
 {
@@ -66,13 +67,14 @@ void sslRequestInit(Ssl::Session& session, HttpRequest& request)
 
 	// These are the fingerprints for httpbin.org
 	static const Ssl::Fingerprint::Cert::Sha1 sha1Fingerprint PROGMEM{
-		0xBF, 0x5C, 0x1E, 0x24, 0xA1, 0xB7, 0x73, 0xCF, 0xE6, 0xBF,
-		0xBC, 0xF5, 0x8A, 0x58, 0xF3, 0xC2, 0xE4, 0xB6, 0x98, 0xE1,
+		0xDC, 0xF3, 0xDC, 0x23, 0xFC, 0xEB, 0xCE, 0x46, 0xDD, 0x40,
+		0x91, 0xF4, 0x6A, 0x62, 0x00, 0x61, 0x3B, 0x6B, 0x05, 0xE6,
 	};
 
 	static const Ssl::Fingerprint::Pki::Sha256 publicKeyFingerprint PROGMEM{
-		0xE4, 0x15, 0x98, 0x36, 0xD3, 0xF1, 0xBE, 0x3B, 0x25, 0xFA, 0xA8, 0x50, 0x2F, 0x1A, 0x37, 0x8F,
-		0x3D, 0xD9, 0x68, 0xAE, 0xF8, 0xC7, 0x21, 0xD3, 0xFD, 0x07, 0x4E, 0x84, 0x10, 0x74, 0xEE, 0x2D,
+		0x10, 0xE5, 0xC3, 0xBD, 0x42, 0x72, 0x0A, 0x3E, 0x3A, 0xEB, 0xE1, 0x4D, 0x04, 0x76, 0xE7, 0xF9,
+		0x06, 0x44, 0x9A, 0x09, 0xF7, 0xC6, 0x89, 0x12, 0x66, 0x19, 0xAE, 0xEC, 0x57, 0x01, 0xF0, 0x45,
+
 	};
 
 	// Trust only a certificate in which the public key matches the SHA256 fingerprint...
@@ -82,9 +84,9 @@ void sslRequestInit(Ssl::Session& session, HttpRequest& request)
 	session.validators.pin(sha1Fingerprint);
 }
 
-void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
+void postMessage()
 {
-	Serial << _F("Connected. Got IP: ") << ip << endl;
+	Serial << endl << endl << _F("Posting message...") << endl;
 
 	// [ GET request: The example below shows how to make HTTP requests ]
 
@@ -150,6 +152,23 @@ void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
 	// see the implementation of `bool HttpClient::downloadFile(const String& url, const String& saveFileName, ...` for details.
 
 	httpClient.send(putRequest);
+}
+
+void connectOk(IpAddress ip, IpAddress mask, IpAddress gateway)
+{
+	Serial << _F("Connected. Got IP: ") << ip << endl;
+
+	requestTimer.initializeMs<1000>([](void*) {
+		static unsigned count;
+		Serial << system_get_time() << _F(" alive ") << count << _F("... free heap ") << system_get_free_heap_size()
+			   << endl;
+		if(count++ == 30) {
+			count = 0;
+			postMessage();
+		}
+	});
+	requestTimer.start();
+	postMessage();
 }
 
 } // namespace

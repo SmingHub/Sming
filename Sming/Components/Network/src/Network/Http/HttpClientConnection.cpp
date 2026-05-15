@@ -36,6 +36,10 @@ bool HttpClientConnection::connect(const String& host, int port, bool useSsl)
 
 	debug_d("HCC::connect: connecting ...");
 
+#ifndef USE_LEGACY_HTTP_PARSER
+	llhttp_reset(&parser);
+#endif
+
 	return TcpClient::connect(host, port, useSsl);
 }
 

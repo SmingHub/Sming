@@ -340,7 +340,7 @@ void TcpConnection::initialize(tcp_pcb* pcb)
 	tcp_poll(tcp, staticOnPoll, 4);
 
 #ifdef NETWORK_DEBUG
-	debug_tcp_d("+connection");
+	debug_tcp_d("+connection %p", pcb);
 #endif
 }
 
@@ -350,7 +350,7 @@ void TcpConnection::closeTcpConnection(tcp_pcb* tpcb)
 		return;
 	}
 
-	debug_d("-TCP connection");
+	debug_d("-TCP connection %p", tpcb);
 
 	auto connection = reinterpret_cast<TcpConnection*>(tpcb->callback_arg);
 
