@@ -350,6 +350,8 @@
 #define LWIP_TCP_KEEPALIVE              1
 #define TCP_MSS                         1390
 
+#define TCP_SND_BUF                     (3 * TCP_MSS)
+
 /*
    ----------------------------------
    ---------- Pbuf options ----------

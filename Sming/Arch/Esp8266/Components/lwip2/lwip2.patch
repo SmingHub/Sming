@@ -1,3 +1,16 @@
+diff --git a/glue-esp/lwip-1.4-arduino/include/lwipopts.h b/glue-esp/lwip-1.4-arduino/include/lwipopts.h
+index 2081b3a..be58876 100644
+--- a/glue-esp/lwip-1.4-arduino/include/lwipopts.h
++++ b/glue-esp/lwip-1.4-arduino/include/lwipopts.h
+@@ -984,7 +984,7 @@
+  * TCP_SND_BUF: TCP sender buffer space (bytes).
+  */
+ #ifndef TCP_SND_BUF
+-#define TCP_SND_BUF                     2 * TCP_MSS
++#define TCP_SND_BUF                     3 * TCP_MSS
+ #endif
+ 
+ /**
 diff --git a/glue-lwip/arch/cc.h b/glue-lwip/arch/cc.h
 index 0b73cba..fff12b0 100644
 --- a/glue-lwip/arch/cc.h
@@ -11,6 +24,19 @@ index 0b73cba..fff12b0 100644
  #include "glue.h" // include assembly locking macro used below
  typedef uint32_t sys_prot_t;
  #define SYS_ARCH_DECL_PROTECT(lev) sys_prot_t lev
+diff --git a/glue-lwip/arduino/lwipopts.h b/glue-lwip/arduino/lwipopts.h
+index 26cd649..c23cf0d 100644
+--- a/glue-lwip/arduino/lwipopts.h
++++ b/glue-lwip/arduino/lwipopts.h
+@@ -1317,7 +1317,7 @@
+  * To achieve good performance, this should be at least 2 * TCP_MSS.
+  */
+ #if !defined TCP_SND_BUF || defined __DOXYGEN__
+-#define TCP_SND_BUF                     (2 * TCP_MSS)
++#define TCP_SND_BUF                     (3 * TCP_MSS)
+ #endif
+ 
+ /**
 diff --git a/glue-lwip/esp-dhcpserver.c b/glue-lwip/esp-dhcpserver.c
 index 6ac8a41..cd1faf0 100644
 --- a/glue-lwip/esp-dhcpserver.c
@@ -24,6 +50,19 @@ index 6ac8a41..cd1faf0 100644
  
  #include "glue.h"
  #include "lwip-helper.h"
+diff --git a/glue-lwip/open/lwipopts.h b/glue-lwip/open/lwipopts.h
+index 1790fd1..8e45b28 100644
+--- a/glue-lwip/open/lwipopts.h
++++ b/glue-lwip/open/lwipopts.h
+@@ -1318,7 +1318,7 @@
+  * To achieve good performance, this should be at least 2 * TCP_MSS.
+  */
+ #if !defined TCP_SND_BUF || defined __DOXYGEN__
+-#define TCP_SND_BUF                     (2 * TCP_MSS)
++#define TCP_SND_BUF                     (3 * TCP_MSS)
+ #endif
+ 
+ /**
 diff --git a/glue/esp-missing.h b/glue/esp-missing.h
 index b9fea2a..63bbb45 100644
 --- a/glue/esp-missing.h

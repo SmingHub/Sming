@@ -101,7 +101,7 @@ index ff03b30..5089589 100644
  #define LWIP_PLATFORM_DIAG(x)
  #define LWIP_PLATFORM_ASSERT(x)
 diff --git a/include/lwipopts.h b/include/lwipopts.h
-index eaa8dd6..6568657 100644
+index eaa8dd6..fee5ce7 100644
 --- a/include/lwipopts.h
 +++ b/include/lwipopts.h
 @@ -403,7 +403,7 @@
@@ -155,6 +155,15 @@ index eaa8dd6..6568657 100644
 -#define TCP_MSS                         1460
 -#endif
 +#define TCP_MSS                        1390 
+ #endif
+ 
+ /**
+@@ -974,7 +972,7 @@
+  * TCP_SND_BUF: TCP sender buffer space (bytes). 
+  */
+ #ifndef TCP_SND_BUF
+-#define TCP_SND_BUF                     2 * TCP_MSS
++#define TCP_SND_BUF                     3 * TCP_MSS
  #endif
  
  /**
