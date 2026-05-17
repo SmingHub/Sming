@@ -49,6 +49,7 @@ $(foreach c,$(wildcard $(COMPONENT_PATH)/sdk/*.mk),$(eval include $c))
 EXTRA_LDFLAGS := \
 	$(call Wrap,$(WRAPPED_FUNCTIONS)) \
 	-Wl,--whole-archive -lpico -Wl,--no-whole-archive \
+	-T default_locations.ld \
 	-T memmap_default.ld
 
 SDK_INTERFACES := \
@@ -123,9 +124,11 @@ PICO_LIB		:= $(PICO_BUILD_DIR)/libpico.a
 COMPONENT_INCDIRS += $(PICO_BASE_DIR)
 
 LIBDIRS += \
-	$(PICO_SDK_PATH)/src/rp2_common/pico_standard_link \
-	$(PICO_SDK_PATH)/src/rp2_common/pico_crt0/$(RP_VARIANT) \
-	$(PICO_BUILD_DIR)
+	$(PICO_SDK_PATH)/src/$(RP_VARIANT)/pico_platform \
+	$(PICO_SDK_PATH)/src/$(RP_VARIANT)/pico_platform/script_include \
+	$(PICO_SDK_PATH)/src/rp2_common/pico_standard_link/script_include \
+	$(PICO_BUILD_DIR) \
+	$(PICO_BUILD_DIR)/pico-sdk/src/rp2_common/pico_standard_link
 
 EXTRA_LIBS += \
 	m \

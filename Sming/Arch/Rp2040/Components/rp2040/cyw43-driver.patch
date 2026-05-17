@@ -1,5 +1,5 @@
 diff --git a/src/cyw43_ctrl.c b/src/cyw43_ctrl.c
-index 8cfcc77..000ea91 100644
+index 8d7f0b8..1fab463 100644
 --- a/src/cyw43_ctrl.c
 +++ b/src/cyw43_ctrl.c
 @@ -300,13 +300,17 @@ static const char *const cyw43_async_event_name_table[89] = {
