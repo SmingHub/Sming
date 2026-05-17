@@ -124,6 +124,7 @@ PICO_LIB		:= $(PICO_BUILD_DIR)/libpico.a
 COMPONENT_INCDIRS += $(PICO_BASE_DIR)
 
 LIBDIRS += \
+	$(RP2040_COMPONENT_DIR)/sdk/script_include \
 	$(PICO_SDK_PATH)/src/$(RP_VARIANT)/pico_platform \
 	$(PICO_SDK_PATH)/src/$(RP_VARIANT)/pico_platform/script_include \
 	$(PICO_SDK_PATH)/src/rp2_common/pico_standard_link/script_include \

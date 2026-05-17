@@ -1,0 +1,8 @@
+/*
+    See https://github.com/raspberrypi/pico-sdk/issues/2340.
+
+    This reverts the indicated change and gets back 5K of RAM.
+    Mostly this is due to `malloc_r` and `realloc_r`, which arguably do not need to be in RAM.
+*/
+
+*(EXCLUDE_FILE(*libgcc.a: *libc.a:lib*_a-mem*.o *libm.a:) .text*)
