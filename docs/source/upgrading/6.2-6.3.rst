@@ -18,3 +18,11 @@ Main differences:
 
 If any of this is a problem, you can revert to the legacy http-parser by (re-)building with `USE_LEGACY_HTTP_PARSER=1`.
 Once the codebase starts making use of the newer features of *llhttp* this may be removed.
+
+
+**Bear SSL comms and TCP buffering**
+
+The default value of TCP_SND_BUF has been increased from (2*TCP_MSS) to (3*TCP_MSS) for Esp8266 and Host architectures.
+This does not appear to directly increase memory usage as buffers are pre-allocated internally by LWIP.
+
+See :issue:3022.
