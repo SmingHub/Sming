@@ -1,28 +1,31 @@
-diff --git a/lib/whereami/whereami.c b/lib/whereami/whereami.c
-index d052e14..940736e 100644
---- a/lib/whereami/whereami.c
-+++ b/lib/whereami/whereami.c
-@@ -60,8 +60,9 @@ extern "C" {
- #if defined(_MSC_VER)
- #pragma warning(push, 3)
- #endif
-+#undef _WIN32_WINNT
-+#define _WIN32_WINNT _WIN32_WINNT_WINXP
- #include <windows.h>
--#include <intrin.h>
- #if defined(_MSC_VER)
- #pragma warning(pop)
- #endif
-diff --git a/picoboot_connection/picoboot_connection.c b/picoboot_connection/picoboot_connection.c
-index 265608c..e487714 100644
---- a/picoboot_connection/picoboot_connection.c
-+++ b/picoboot_connection/picoboot_connection.c
-@@ -9,6 +9,8 @@
- #include <stdbool.h>
- #include <inttypes.h>
- 
-+#define static_assert _Static_assert
+diff --git a/model/model.h b/model/model.h
+index 17bf824..318b0d2 100644
+--- a/model/model.h
++++ b/model/model.h
+@@ -4,9 +4,16 @@
+  * SPDX-License-Identifier: BSD-3-Clause
+  */
+ #pragma once
 +
- #include "picoboot_connection.h"
- #include "boot/bootrom_constants.h"
- #include "pico/stdio_usb/reset_interface.h"
++/* 2026-05-20 Temporary fix for https://github.com/raspberrypi/picotool/issues/300 */
++#undef __unused
++#define __unused __glibc_unused
++
+ #include "boot/uf2.h"
+ #include "boot/picoboot.h"
+ 
++#undef __unused
++
+ // Unreadable ROM data
+ #include "rp2350_a2_rom_end.h"
+ #include "rp2350_a3_rom_end.h"
+@@ -418,4 +425,7 @@ static bool contains_unreadable_rom(uint32_t addr, uint32_t size, const model_t&
+             (addr < model->unreadable_rom_start() && addr + size > model->unreadable_rom_end());
+ }
+ 
+-#endif
+\ No newline at end of file
++#endif
++
++/* 2026-05-20 Temporary fix for https://github.com/raspberrypi/picotool/issues/300 */
++#define __unused __attribute__((__unused__))
