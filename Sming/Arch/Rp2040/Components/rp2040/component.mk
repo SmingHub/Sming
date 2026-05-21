@@ -54,6 +54,8 @@ EXTRA_LDFLAGS := \
 
 SDK_INTERFACES := \
 	boards \
+	common/boot_picobin_headers \
+	common/boot_uf2_headers \
 	common/pico_base_headers \
 	common/pico_binary_info \
 	common/pico_bit_ops_headers \
