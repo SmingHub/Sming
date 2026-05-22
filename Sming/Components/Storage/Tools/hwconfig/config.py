@@ -219,5 +219,6 @@ class Config(object):
         res.name = 'from binary'
         res.arch = os.environ.get('SMING_ARCH', 'Unknown')
         res.partition_table_offset = 0
+        res.bootloader_size = 0
         res.partitions.parse_binary(b, res.devices)
         return res

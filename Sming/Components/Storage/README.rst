@@ -346,6 +346,26 @@ Entries are fixed 32-byte structures, :cpp:class:`Storage::esp_partition_info_t`
 -  The end of the partition table is identified by an empty sector (i.e. all bytes 0xFF).
 
 
+.. note::
+
+   RP2040 devices by default use the standard partition table format.
+   The RP2350 introduced partition table support to enable OTA updates and dual A/B bootable partitions.
+
+   This requires the partition table to be in the first flash sector.
+   In this configuration Sming switches to the Pico binary format.
+
+   A pico JSON partition file is generated in ``out/Rp2040/rp2350/debug/firmware/pico-pt.json``.
+   This is converted to binary format using picotool: ``picotool partition create pico-pt.json pico-pt.bin``
+
+   If necessary, the JSON can be customised then manually converted and uploaded.
+
+   Sming partitions are identified by the partition ID:
+
+      - The low 16 bits contain the value 0x6D73 ('sm') to mark this as a Sming partition
+      - The next 16 bits contain the partition subtype and type
+      - The upper 32-bits are not used
+
+
 
 Partition API
 -------------

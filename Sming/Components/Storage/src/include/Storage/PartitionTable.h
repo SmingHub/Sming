@@ -123,6 +123,7 @@ protected:
 	friend Iterator;
 
 	void load(const esp_partition_info_t* entry, unsigned count);
+	bool loadPico();
 
 	Device& mDevice;
 	Partition::Info::OwnedList mEntries;

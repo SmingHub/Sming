@@ -54,6 +54,10 @@ Device::~Device()
 
 bool Device::loadPartitions(Device& source, uint32_t tableOffset)
 {
+	if(tableOffset == 0 && mPartitions.loadPico()) {
+		return true;
+	}
+
 	constexpr size_t maxEntries = ESP_PARTITION_TABLE_MAX_LEN / sizeof(esp_partition_info_t);
 	auto buffer = std::make_unique<esp_partition_info_t[]>(maxEntries);
 	if(!buffer) {

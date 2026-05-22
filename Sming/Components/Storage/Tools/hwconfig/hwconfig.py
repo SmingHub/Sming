@@ -7,6 +7,7 @@ import common, argparse, os, partition, json
 from common import *
 from config import Config
 from config import schema as config_schema
+import pico
 
 def openOutput(path):
     if path == '-':
@@ -59,7 +60,15 @@ def handle_partgen(args, config, part):
     if not args.no_verify:
         status("Verifying partition table...")
         config.verify(args.secure)
-    return config.partitions.to_binary(config.devices)
+    return config.partitions.to_binary()
+
+
+def handle_picogen(args, config, part):
+    # Generate PICO partition table binary
+    if not args.no_verify:
+        status("Verifying partition table...")
+        config.verify(args.secure)
+    return pico.create_partition_table(config)
 
 
 def handle_expr(args, config, part):
@@ -77,7 +86,7 @@ def main():
     parser.add_argument('--quiet', '-q', help="Don't print non-critical status messages to stderr", action='store_true')
     parser.add_argument('--secure', help="Require app partitions to be suitable for secure boot", action='store_true')
     parser.add_argument('--part', help="Name of partition to operate on")
-    parser.add_argument('command', help='Action to perform', choices=['partgen', 'expr', 'validate', 'flashcheck'])
+    parser.add_argument('command', help='Action to perform', choices=['partgen', 'picogen', 'expr', 'validate', 'flashcheck'])
     parser.add_argument('input', help='Name of hardware configuration or path to binary partition table')
     parser.add_argument('output', help='Path to output file. Will use stdout if omitted.', nargs='?', default='-')
     parser.add_argument('expr', help='Expression to evaluate', nargs='?', default=None)
@@ -87,11 +96,11 @@ def main():
     common.quiet = args.quiet
 
     output = None
-    input_is_binary = False
     if os.path.exists(args.input):
         inputData = open(args.input, "rb").read()
-        input_is_binary = inputData[0:2] == partition.Entry.MAGIC_BYTES
-        if input_is_binary:
+        if pico.is_block(inputData):
+            config = pico.parse_config(inputData)
+        elif inputData[0:2] == partition.Entry.MAGIC_BYTES:
             config = Config.from_binary(inputData)
         else:
             raise InputError("File '%s' not recognised as partition table" % args.input)
