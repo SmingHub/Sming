@@ -138,10 +138,10 @@ hwconfig-edit: $(HWCONFIG_PATH) ##Open profile editor
 
 # The partition table
 PARTITIONS_BIN := $(FW_BASE)/partitions.bin
-CUSTOM_TARGETS += partmap-build
+CUSTOM_TARGETS += buildmap
 
-.PHONY: partmap-build
-partmap-build:
+.PHONY: buildmap
+buildmap: ##Build partition map binary
 	$(Q) $(MAKE) --no-print-directory hwconfig-validate
 	$(Q) $(HWCONFIG_TOOL) partgen $(HWCONFIG) $(PARTITIONS_BIN)
 
@@ -231,7 +231,7 @@ readpart: kill_term ##Read partition from device, set PART=name
 	$(call ReadFlash,$(FLASH_PART_REGION),$(OUT_BASE)/$(PART).read.bin)
 
 .PHONY: flashmap
-flashmap: partmap-build kill_term ##Write partition table to device
+flashmap: buildmap kill_term ##Write partition table to device
 	$(call WriteFlash,$(FLASH_MAP_CHUNK))
 
 
