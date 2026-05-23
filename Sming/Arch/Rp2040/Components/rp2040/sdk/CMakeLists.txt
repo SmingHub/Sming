@@ -43,6 +43,7 @@ target_compile_definitions(pico PUBLIC
 
 pico_set_program_name(pico "Sming")
 pico_set_program_url(pico "https://github.com/SmingHub/Sming")
+pico_set_binary_version(pico MAJOR ${APP_VERSION_MAJOR} MINOR ${APP_VERSION_MINOR})
 
 include_directories(BEFORE ${pico_lib_SOURCE_DIR})
 
