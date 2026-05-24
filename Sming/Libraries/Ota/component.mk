@@ -1,4 +1,4 @@
-COMPONENT_SOC = esp* host
+COMPONENT_SOC = esp* host rp2350
 
 COMPONENT_ARCH := $(SMING_ARCH)
 ifeq ($(COMPONENT_ARCH),Host)
