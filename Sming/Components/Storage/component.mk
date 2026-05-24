@@ -138,13 +138,19 @@ hwconfig-edit: $(HWCONFIG_PATH) ##Open profile editor
 
 # The partition table
 PARTITIONS_BIN := $(FW_BASE)/partitions.bin
-PICO_PARTITIONS_JSON := $(FW_BASE)/pico-pt.json
 CUSTOM_TARGETS += buildmap
+
+DEBUG_VARS += USE_PICO_PARTITIONS
+USE_PICO_PARTITIONS := $(filter rp2350_0x00000000,$(SMING_SOC)_$(PARTITION_TABLE_OFFSET))
+
+ifdef USE_PICO_PARTITIONS
+PICO_PARTITIONS_JSON := $(FW_BASE)/pico-pt.json
+endif
 
 .PHONY: buildmap
 buildmap: ##Build partition map binary
 	$(Q) $(MAKE) --no-print-directory hwconfig-validate
-ifeq ($(SMING_SOC)_$(PARTITION_TABLE_OFFSET),rp2350_0x00000000)
+ifdef USE_PICO_PARTITIONS
 	$(Q) $(HWCONFIG_TOOL) picogen $(HWCONFIG) $(PICO_PARTITIONS_JSON)
 	$(Q) $(PICOTOOL) partition create $(PICO_PARTITIONS_JSON) $(PARTITIONS_BIN)
 else

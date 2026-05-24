@@ -80,3 +80,13 @@ endef
 define EraseFlash
 	$(Q) $(PICOTOOL) erase -a
 endef
+
+
+##@Tools
+
+imageinfo: ##Show Pico application image information
+	$(Q) $(PICOTOOL) info -a $(TARGET_BIN)
+ifdef USE_PICO_PARTITIONS
+	@echo
+	$(Q) $(PICOTOOL) info -m $(PARTITIONS_BIN)
+endif
