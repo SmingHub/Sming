@@ -67,6 +67,10 @@ endef
 define ReadFlashID
 	$(info ReadFlashID)
 	$(Q) $(PICOTOOL) info -a
+	$(Q) if [ "$(SMING_SOC)" != "rp2040" ]; then \
+		echo; \
+		$(PICOTOOL) partition info; \
+	fi
 endef
 
 # Erase a region of Flash
