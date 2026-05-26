@@ -64,13 +64,6 @@ Crash/exception handling & serial debugging
    RP2 devices support JTAG debugging but requires extra hardware.
    Serial debugging is often enough and easier to set up.
    Requires GDB stub plus implementing crash handler callbacks, etc.
-Multi-boot / OTA updates.
-   If you run ``make map`` you'll see there is no bootloader!
-   It's part of the firmware image at present.
-   Adding RP2040 support to rBoot may work, however the Pico typically has only 2MByte flash which is quite restrictive.
-   It is also necessary to compile images at different addresses as there is no windowed XIP (eXecute In Place) capability.
-   See :library:`FlashIP` library for a basic method of OTA.
-   Note that the Pico2 boards have 4MByte flash and partition table support which requires integrating with Sming.
 Bluetooth
    The SDK supports bluetooth for the CYW43439 BT/WiFi SoC which the Pico-W boards (and other) use.
    This has not yet been integrated into Sming.
@@ -189,6 +182,99 @@ operations.
 Alternatively some kind of synchronisation mechanism may be used to ensure that core 1 is suspended or running from RAM
 during any flash erase/write operations.
 
+
+Multi-boot / OTA updates
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you run ``make map`` you'll see there is no bootloader.
+It's part of the firmware image, so is called directly from the boot ROM.
+
+The RP2350 chip (as used in Pico2 boards) introduced a bootrom with partition support.
+Sming can take advantage of this to support multiple application images and OTA updates.
+
+This support requires the following:
+
+- A valid RP2350 binary partition table located in the first flash sector
+- Updated :component:`Storage` Component to support the new format. See :ref:`binary_partition_table`.
+- Build system support to generate the binary image
+- Updated :library:`OTA` library to support the RP2350.
+
+The espressif chips (esp8266 with rBoot, esp32 with IDF) use a separate stage 2 bootloader partition,
+plus a reserved partition which stores information about which image to boot.
+
+The RP2350 approach is different in that there is no separate place to indicate which is the bootable partition.
+Instead, a metadata block (IMAGE_DEF) embedded within each image is used to determine boot behaviour.
+
+Note: After building, this metadata can be inspected via ``make imageinfo``, or ``make flashid`` to read from a device.
+
+The IMAGE_DEF identifies the version number for the image.
+This can be set in ``MAJOR.MINOR`` format, e.g. ``make APP_VERSION=1.5``.
+
+Generally, the image with the higher version number is selected for boot.
+There is a *try-before-you-buy* mode which can be used for temporary booting.
+This requires the image to have a **TBYB** bit set in the IMAGE_DEF.
+
+.. note::
+
+   Please run ``make rp2040-clean`` first to ensure the change takes effect.
+   Use ``make imageinfo`` to check that the version number is as expected.
+
+
+Normal boot
+   The boot ROM launches the application image with the highest version number.
+
+Downgrade
+   To downgrade, the running image must be invalidated by erasing the first sector of its partition.
+   A less destructive approach is to rewrite the sector with the TBYB flag set in the IMAGE_DEF.
+   This allows it to be selectively booted later if required.
+
+Selective boot
+   To temporarily run a different application image:
+
+   .. code-block:: c++
+
+      // Find the partition to boot
+      auto partition = Storage::findPartition(...);
+      // Reboot
+      int rc = rom_reboot(
+         REBOOT2_FLAG_REBOOT_TYPE_FLASH_UPDATE | REBOOT2_FLAG_NO_RETURN_ON_SUCCESS,
+         1000, // Wait 1 second
+         XIP_BASE + partition.address(),
+         0
+      );
+
+   This forces a watchdog reset and runs the selected partition, if valid.
+
+   .. note::
+
+      If the partition IMAGE_DEF does *not* have the TBYB bit set, ROM code will invalidate
+      the alternate application image by wiping its first sector.
+
+      For this reason, it is recommended to use :cpp:func:`OtaManager::setBootPartition <Ota::PicoUpgrader::setBootPartition>`
+      to handle image switching.
+      When ``save = false`` it will automatically rewrite the TBYB bit as necessary.
+
+
+   .. todo::
+
+      OTA updater code uses the `setBootPartition` method and has a `save` parameter
+      which indicates whether to perform a tempoorary reboot or a normal one.
+      It should not *actually* reboot at this stage though.
+      So we need a flag somewhere which tells Sming what kind of reboot is required.
+      That gets actioned by the `system_restart` function.
+
+
+
+
+- An application image
+
+
+.. note::
+
+   The RP2040 bootrom has no partition table support.
+   Implementations such as the Pico typically have only 2MByte flash which is quite restrictive for more than one application image.
+   It is also necessary to compile images at different addresses as there is no windowed XIP (eXecute In Place) capability.
+   See :library:`FlashIP` library for a basic method of OTA.
 
 
 Networking

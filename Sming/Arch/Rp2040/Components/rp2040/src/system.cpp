@@ -57,7 +57,7 @@ uint32_t system_get_time()
 
 void system_restart()
 {
-	// Force a restart
+	// Force a restart, leaving scratch registers alone (so OTA works, for example)
 	watchdog_hw->ctrl = WATCHDOG_CTRL_TRIGGER_BITS;
 }
 

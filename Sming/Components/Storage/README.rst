@@ -326,6 +326,9 @@ Configuration
 
 
 
+.. _binary_partition_table:
+
+
 Binary partition table
 ----------------------
 

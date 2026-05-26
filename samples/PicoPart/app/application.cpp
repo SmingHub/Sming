@@ -6,6 +6,7 @@
 */
 #include <SmingCore.h>
 #include <pico_partition.h>
+#include <pico/multicore.h>
 #include <pico/bootrom.h>
 #include <boot/picoboot_constants.h>
 #include <boot/uf2.h>
@@ -127,9 +128,35 @@ void printBootInfo()
 		Serial << "rom_reboot: " << rc << endl;
 	}
 
-	if(boot_info.tbyb_and_update_info == BOOT_TBYB_AND_UPDATE_FLAG_BUY_PENDING) {
+	if(boot_info.tbyb_and_update_info & BOOT_TBYB_AND_UPDATE_FLAG_BUY_PENDING) {
+		/*
+			explicit buy does two things:
+
+				1. Clear the TBYB flag in the current image
+				2. Wipe first sector of other application partition
+
+
+		 */
 		uint8_t buffer[4096];
+#if 0
+		// Without this workaround, rom_explicit_buy fails
+		multicore_launch_core1([]() {
+			flash_safe_execute_core_init();
+			for(;;) {
+			}
+		});
 		int rc = rom_explicit_buy(buffer, sizeof(buffer));
+#else
+		// Bypass flash safety. Flash access via core1 is a bad idea
+		int rc{0};
+		rom_helper_explicit_buy_params_t params = {
+			.buffer = buffer,
+			.buffer_size = sizeof(buffer),
+			.res = &rc,
+		};
+		rom_helper_explicit_buy(&params);
+
+#endif
 		Serial << "rom_explicit_buy: " << rc << endl;
 	}
 }

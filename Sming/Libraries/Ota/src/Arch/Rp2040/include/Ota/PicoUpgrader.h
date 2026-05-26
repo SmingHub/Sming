@@ -17,7 +17,7 @@
 namespace Ota
 {
 /**
- * @brief ESP8266 rBoot OTA Upgrader implementation
+ * @brief RP2350 OTA Upgrader implementation
  */
 class PicoUpgrader : public UpgraderBase
 {
@@ -34,7 +34,9 @@ public:
 	Partition getNextBootPartition(Partition startFrom = {}) override;
 
 private:
+	Partition partition;
 	std::unique_ptr<Storage::PartitionStream> stream;
+	uint16_t imageDefOffset{0};
 };
 
 } // namespace Ota
