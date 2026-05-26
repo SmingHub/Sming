@@ -18,9 +18,12 @@
 #ifdef SOC_RP2350
 #include <hardware/structs/qmi.h>
 #include <hardware/regs/qmi.h>
+// RP2350 hardware uses address translation, bypass that for raw reading
+#define RAW_FLASH_READ_BASE XIP_NOCACHE_NOALLOC_NOTRANSLATE_BASE
 #else
 #include <hardware/structs/ssi.h>
 #include <hardware/regs/ssi.h>
+#define RAW_FLASH_READ_BASE XIP_NOCACHE_NOALLOC_BASE
 #endif
 
 #define FLASHCMD_READ_SFDP 0x5a
@@ -31,15 +34,6 @@
 
 namespace
 {
-/*
- * To ensure memory alignment a temporary buffer is used by flashmem_read and flashmem_write functions.
- *
- * The buffer must be an integer multiple of INTERNAL_FLASH_WRITE_UNIT_SIZE.
- */
-constexpr dma_channel_transfer_size dmaTransferSize{DMA_SIZE_32};
-constexpr size_t flashReadUnitSize{1 << dmaTransferSize};
-constexpr size_t flashBufferCount{FLASH_PAGE_SIZE / flashReadUnitSize};
-
 // JEDEC flash ID read from chip
 uint32_t flash_id;
 // Size of flash chip read from device
@@ -108,60 +102,9 @@ uint32_t writeAligned(const void* from, uint32_t toaddr, uint32_t size)
 	return size;
 }
 
-uint32_t readAligned(void* to, uint32_t fromaddr, uint32_t size)
+void readRaw(void* to, uint32_t fromaddr, uint32_t size)
 {
-	auto flashaddr = XIP_BASE + fromaddr;
-	if(!isFlashPtr(flashaddr)) {
-		debug_e("[FLSH] read fromaddr not in flash 0x%08x", fromaddr);
-		return 0;
-	}
-
-	debug_d("[FLSH] read(%p, 0x%08x, 0x%08x)", to, fromaddr, size);
-
-	auto transfer_count = size >> dmaTransferSize;
-
-	/*
-	 * https://github.com/raspberrypi/pico-examples/tree/master/flash/xip_stream
-	 *
-	 * The XIP has some internal hardware that can stream a linear access sequence to
-	 * a DMAable FIFO, while the system is still doing random accesses on flash code + data.
-	 */
-
-	/*
-	 * Transfer started by writing nonzero value to stream_ctr.
-	 * stream_ctr will count down as the transfer progresses.
-	 * Can terminate early by writing 0 to stream_ctr.
-	 * It's a good idea to drain the FIFO first!
-	*/
-	while(!(xip_ctrl_hw->stat & XIP_STAT_FIFO_EMPTY)) {
-		(void)xip_ctrl_hw->stream_fifo;
-	}
-
-	xip_ctrl_hw->stream_addr = XIP_NOCACHE_NOALLOC_BASE + fromaddr;
-	xip_ctrl_hw->stream_ctr = transfer_count;
-
-	/*
-	 * Start DMA transfer from XIP stream FIFO to our buffer in memory.
-	 * Use the auxiliary bus slave for the DMA<-FIFO accesses, to avoid stalling
-	 * the DMA against general XIP traffic.
-	 */
-	auto dma_chan = dma_claim_unused_channel(true);
-	dma_channel_config cfg = dma_channel_get_default_config(dma_chan);
-	channel_config_set_transfer_data_size(&cfg, dmaTransferSize);
-	channel_config_set_read_increment(&cfg, false);
-	channel_config_set_write_increment(&cfg, true);
-	channel_config_set_dreq(&cfg, DREQ_XIP_STREAM);
-	dma_channel_configure(dma_chan, &cfg,
-						  to,										   // Write addr
-						  reinterpret_cast<const void*>(XIP_AUX_BASE), // Read addr
-						  transfer_count,							   // Transfer count
-						  true										   // Start immediately!
-	);
-
-	dma_channel_wait_for_finish_blocking(dma_chan);
-	dma_channel_unclaim(dma_chan);
-
-	return size;
+	memcpy(to, reinterpret_cast<const void*>(RAW_FLASH_READ_BASE + fromaddr), size);
 }
 
 } // namespace
@@ -185,9 +128,7 @@ uint32_t flashmem_write(const void* from, flash_addr_t toaddr, uint32_t size)
 		uint32_t addr_aligned = toaddr & ~blkmask; // this is the actual aligned address
 
 		// Read existing unit and overlay with new data
-		if(readAligned(tmpdata, addr_aligned, blksize) != blksize) {
-			return 0;
-		}
+		readRaw(tmpdata, addr_aligned, blksize);
 
 		while(remain != 0 && rest < blksize) {
 			tmpdata[rest++] = *pfrom++;
@@ -226,9 +167,8 @@ uint32_t flashmem_write(const void* from, flash_addr_t toaddr, uint32_t size)
 
 	// And the final part of a block if needed
 	if(rest != 0) {
-		if(readAligned(tmpdata, toaddr, blksize) != blksize) {
-			return size - remain;
-		}
+		memcpy(tmpdata, pfrom, rest);
+		readRaw(tmpdata + rest, toaddr, blksize - rest);
 		for(unsigned i = 0; i < rest; ++i) {
 			tmpdata[i] = *pfrom++;
 		}
@@ -244,62 +184,15 @@ uint32_t flashmem_write(const void* from, flash_addr_t toaddr, uint32_t size)
 
 uint32_t flashmem_read(void* to, flash_addr_t fromaddr, uint32_t size)
 {
-	if(IS_ALIGNED(to) && IS_ALIGNED(fromaddr) && IS_ALIGNED(size)) {
-		return readAligned(to, fromaddr, size);
+	auto flashaddr = XIP_BASE + fromaddr;
+	if(!isFlashPtr(flashaddr)) {
+		debug_e("[FLSH] read fromaddr not in flash 0x%08x", fromaddr);
+		return 0;
 	}
 
-	const uint32_t blksize = flashReadUnitSize;
-	const uint32_t blkmask = flashReadUnitSize - 1;
+	debug_d("[FLSH] read(%p, 0x%08x, 0x%08x)", to, fromaddr, size);
 
-	ATTR_ALIGNED uint8_t tmpdata[flashBufferCount * blksize];
-	auto pto = static_cast<uint8_t*>(to);
-	size_t remain = size;
-
-	// Align the start
-	uint32_t rest = fromaddr & blkmask;
-	if(rest != 0) {
-		uint32_t addr_aligned = fromaddr & ~blkmask; // this is the actual aligned address
-		if(readAligned(tmpdata, addr_aligned, blksize) != blksize) {
-			return 0;
-		}
-		// memcpy(pto, &tmpdata[rest], std::min(blksize - rest, remain))
-		while(remain != 0 && rest < blksize) {
-			*pto++ = tmpdata[rest++];
-			--remain;
-		}
-		if(remain == 0) {
-			return size;
-		}
-		fromaddr = addr_aligned + blksize;
-	}
-
-	// The start address is now a multiple of blksize
-	// Compute how many bytes we can read as multiples of blksize
-	rest = remain & blkmask;
-	remain &= ~blkmask;
-	// Read the blocks now
-	while(remain != 0) {
-		unsigned count = std::min(remain, sizeof(tmpdata));
-		uint32_t read = readAligned(tmpdata, fromaddr, count);
-		memcpy(pto, tmpdata, read);
-		remain -= read;
-		if(read != count) {
-			return size - remain;
-		}
-		fromaddr += count;
-		pto += count;
-	}
-
-	// And the final part of a block if needed
-	if(rest != 0) {
-		if(readAligned(tmpdata, fromaddr, blksize) != blksize) {
-			return size - remain;
-		}
-		for(unsigned i = 0; i < rest; ++i) {
-			*pto++ = tmpdata[i];
-		}
-	}
-
+	readRaw(to, fromaddr, size);
 	return size;
 }
 
