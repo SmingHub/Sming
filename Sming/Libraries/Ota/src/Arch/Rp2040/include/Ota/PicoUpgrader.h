@@ -36,7 +36,6 @@ public:
 private:
 	Partition partition;
 	std::unique_ptr<Storage::PartitionStream> stream;
-	uint16_t imageDefOffset{0};
 };
 
 } // namespace Ota

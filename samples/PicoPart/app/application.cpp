@@ -8,7 +8,6 @@
 #include <pico_partition.h>
 #include <pico/multicore.h>
 #include <pico/bootrom.h>
-#include <boot/picoboot_constants.h>
 #include <boot/uf2.h>
 #include <Data/CStringArray.h>
 #include <Ota/Manager.h>
@@ -102,6 +101,11 @@ int printPartitionInfo()
 
 void printBootInfo()
 {
+	auto runPart = OtaManager.getRunningPartition();
+	auto bootPart = OtaManager.getBootPartition();
+	Serial << "Running " << runPart << endl;
+	Serial << "Booted " << bootPart << endl;
+
 	auto lastBootType = rom_get_last_boot_type();
 
 	Serial << "Last boot type " << lastBootType << endl;
@@ -122,13 +126,21 @@ void printBootInfo()
 	Serial << "reboot_params " << String(boot_info.reboot_params[0], HEX) << ", "
 		   << String(boot_info.reboot_params[1], HEX) << endl;
 
-	if(boot_info.boot_type != BOOT_TYPE_FLASH_UPDATE) {
-		int rc = rom_reboot(REBOOT2_FLAG_REBOOT_TYPE_FLASH_UPDATE | REBOOT2_FLAG_NO_RETURN_ON_SUCCESS, 1000,
-							XIP_BASE + 0x100000, 0);
-		Serial << "rom_reboot: " << rc << endl;
+	// if(boot_info.boot_type != BOOT_TYPE_FLASH_UPDATE) {
+	if(runPart.name() == "rom0") {
+		auto part = Storage::findPartition("rom1");
+		Serial << "Rebooting to " << part << endl;
+		OtaManager.setBootPartition(part, false);
+		System.restart(2000);
+		return;
+		// int rc = rom_reboot(REBOOT2_FLAG_REBOOT_TYPE_FLASH_UPDATE | REBOOT2_FLAG_NO_RETURN_ON_SUCCESS, 1000,
+		// 					XIP_BASE + 0x100000, 0);
+		// Serial << "rom_reboot: " << rc << endl;
 	}
 
 	if(boot_info.tbyb_and_update_info & BOOT_TBYB_AND_UPDATE_FLAG_BUY_PENDING) {
+		OtaManager.setBootPartition(runPart, true);
+#if 0
 		/*
 			explicit buy does two things:
 
@@ -158,6 +170,7 @@ void printBootInfo()
 
 #endif
 		Serial << "rom_explicit_buy: " << rc << endl;
+#endif
 	}
 }
 
@@ -167,8 +180,6 @@ void init()
 {
 	Serial.begin(COM_SPEED_SERIAL);
 	Serial.systemDebugOutput(true);
-
-	Serial << "Running " << OtaManager.getRunningPartition() << endl;
 
 	printPartitionInfo();
 	printBootInfo();
