@@ -298,7 +298,34 @@ uint32_t spi_flash_get_id(void)
 
 flash_addr_t flashmem_get_address(const void* memptr)
 {
-	return isFlashPtr(memptr) ? (uint32_t(memptr) - XIP_BASE) : 0;
+	if(!isFlashPtr(memptr)) {
+		return 0;
+	}
+	auto addr = uint32_t(memptr) - XIP_BASE;
+#ifdef SOC_RP2040
+	return addr;
+#else
+	// Undo address translation
+	const uint32_t windowSize = 0x400000; // 4MiB
+	for(unsigned i = 0; i < 4; ++i) {
+		auto regval = qmi_hw->atrans[i];
+		auto size = INTERNAL_FLASH_SECTOR_SIZE * ((regval >> 16) & 0x07ff);
+
+		if(addr < size) {
+			auto base = INTERNAL_FLASH_SECTOR_SIZE * (regval & 0x0fff);
+			return base + addr;
+		}
+
+		if(addr < windowSize) {
+			// Out of range
+			break;
+		}
+
+		addr -= windowSize;
+	}
+
+	return 0;
+#endif
 }
 
 void flashmem_sfdp_read(uint32_t addr, void* buffer, size_t count)
