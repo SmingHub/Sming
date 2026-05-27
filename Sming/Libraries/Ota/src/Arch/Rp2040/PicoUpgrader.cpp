@@ -106,10 +106,15 @@ bool PicoUpgrader::setBootPartition(Partition partition, bool save)
 
 	debug_i("Image flags 0x%04x, version %u.%u", info.getFlags(), info.getVersionMajor(), info.getVersionMinor());
 
+	uint32_t rebootType;
+	uint32_t p0;
+
 	if(save) {
 		// To ensure ROM code selects this partition for boot, image must have the highest version number
 
 		// Determine highest version number for all other application images
+		// Note: This only applies to A/B pairs, so we might revise this to simply consider slot A vs. slot B
+		// TODO: For maximum compatibility search pico partitions directly in case they've been customised
 		uint32_t maxVersion = 0;
 		for(auto part : spiFlash->partitions().find(Storage::Partition::Type::app)) {
 			if(part.address() == partition.address()) {
@@ -147,21 +152,25 @@ bool PicoUpgrader::setBootPartition(Partition partition, bool save)
 			partition.write(0, buffer, sizeof(buffer));
 		}
 
-		return true;
-	}
+		rebootType = REBOOT2_FLAG_REBOOT_TYPE_NORMAL;
+		p0 = 0;
+	} else {
+		// For temporary boot the TBYB bit must be set
+		auto flags = info.getFlags();
+		if(!(flags & PICOBIN_IMAGE_TYPE_EXE_TBYB_BITS)) {
+			info.setFlags(flags | PICOBIN_IMAGE_TYPE_EXE_TBYB_BITS);
+			debug_i("Set flags 0x%04x", info.getFlags());
+			partition.erase_range(0, INTERNAL_FLASH_SECTOR_SIZE);
+			partition.write(0, buffer, sizeof(buffer));
+		}
 
-	// For temporary boot the TBYB bit must be set
-	auto flags = info.getFlags();
-	if(!(flags & PICOBIN_IMAGE_TYPE_EXE_TBYB_BITS)) {
-		info.setFlags(flags | PICOBIN_IMAGE_TYPE_EXE_TBYB_BITS);
-		debug_i("Set flags 0x%04x", info.getFlags());
-		partition.erase_range(0, INTERNAL_FLASH_SECTOR_SIZE);
-		partition.write(0, buffer, sizeof(buffer));
+		rebootType = REBOOT2_FLAG_REBOOT_TYPE_FLASH_UPDATE;
+		p0 = XIP_BASE + partition.address();
 	}
 
 	// This won't actually reboot until application calls `system_restart`
 	// since Sming resets watchdog in main loop
-	int rc = rom_reboot(REBOOT2_FLAG_REBOOT_TYPE_FLASH_UPDATE, 5000, XIP_BASE + partition.address(), 0);
+	int rc = rom_reboot(rebootType, 5000, p0, 0);
 	return rc >= 0;
 }
 
