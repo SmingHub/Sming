@@ -187,17 +187,24 @@ Multi-boot / OTA updates
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you run ``make map`` you'll see there is no bootloader.
-It's part of the firmware image, so is called directly from the boot ROM.
+The second-stage bootloader is part of the application firmware image, called directly from the boot ROM.
 
-The RP2350 chip (as used in Pico2 boards) introduced a bootrom with partition support.
-Sming can take advantage of this to support multiple application images and OTA updates.
+The RP2350 chip (as used in Pico2 boards) introduced a boot ROM with partition support.
+Sming can take advantage of this to support A/B application images and OTA updates.
+
+.. note::
+
+   The RP2040 bootrom has no partition table support.
+   Implementations such as the Pico typically have only 2MByte flash which is quite restrictive for more than one application image.
+   It is also necessary to compile images at different addresses as there is no windowed XIP (eXecute In Place) capability.
+   See :library:`FlashIP` library for a basic method of OTA.
 
 This support requires the following:
 
 - A valid RP2350 binary partition table located in the first flash sector
-- Updated :component:`Storage` Component to support the new format. See :ref:`binary_partition_table`.
+- Support within the :component:`Storage` Component to use the new format. See :ref:`binary_partition_table`.
 - Build system support to generate the binary image
-- Updated :library:`OTA` library to support the RP2350.
+- RP2350 support in the :library:`OTA` library.
 
 The espressif chips (esp8266 with rBoot, esp32 with IDF) use a separate stage 2 bootloader partition,
 plus a reserved partition which stores information about which image to boot.
@@ -208,73 +215,55 @@ Instead, a metadata block (IMAGE_DEF) embedded within each image is used to dete
 Note: After building, this metadata can be inspected via ``make imageinfo``, or ``make flashid`` to read from a device.
 
 The IMAGE_DEF identifies the version number for the image.
-This can be set in ``MAJOR.MINOR`` format, e.g. ``make APP_VERSION=1.5``.
+If required, this can be manually set in ``MAJOR.MINOR`` format, e.g. ``make APP_VERSION=1.5``.
 
-Generally, the image with the higher version number is selected for boot.
+For OTA updating two partitions are required, configured as an *A/B* pair.
+This is handled by Sming where two partitions are defined of type *app/ota_0* and *app/ota_1*.
+Of these, the image with the higher version number is selected for boot by ROM code.
+
 There is a *try-before-you-buy* mode which can be used for temporary booting.
 This requires the image to have a **TBYB** bit set in the IMAGE_DEF.
 
 .. note::
 
-   Please run ``make rp2040-clean`` first to ensure the change takes effect.
+   If manually setting ``APP_VERSION`` or ``PICO_TBYB``, please run ``make rp2040-clean``
+   before building to ensure the metadata is updated.
    Use ``make imageinfo`` to check that the version number is as expected.
 
 
-Normal boot
-   The boot ROM launches the application image with the highest version number.
+Normally, the boot ROM launches the OTA application image with the highest version number.
 
-Downgrade
-   To downgrade, the running image must be invalidated by erasing the first sector of its partition.
-   A less destructive approach is to rewrite the sector with the TBYB flag set in the IMAGE_DEF.
-   This allows it to be selectively booted later if required.
+To run a different application image, use :cpp:func:`OtaManager::setBootPartition <Ota::PicoUpgrader::setBootPartition>`:
 
-Selective boot
-   To temporarily run a different application image:
+.. code-block:: c++
 
-   .. code-block:: c++
-
-      // Find the partition to boot
-      auto partition = Storage::findPartition(...);
-      // Reboot
-      int rc = rom_reboot(
-         REBOOT2_FLAG_REBOOT_TYPE_FLASH_UPDATE | REBOOT2_FLAG_NO_RETURN_ON_SUCCESS,
-         1000, // Wait 1 second
-         XIP_BASE + partition.address(),
-         0
-      );
-
-   This forces a watchdog reset and runs the selected partition, if valid.
-
-   .. note::
-
-      If the partition IMAGE_DEF does *not* have the TBYB bit set, ROM code will invalidate
-      the alternate application image by wiping its first sector.
-
-      For this reason, it is recommended to use :cpp:func:`OtaManager::setBootPartition <Ota::PicoUpgrader::setBootPartition>`
-      to handle image switching.
-      When ``save = false`` it will automatically rewrite the TBYB bit as necessary.
+   // Find the partition to boot
+   auto partition = Storage::findPartition(...);
+   bool save = false
+   OtaManager::setBootPartition(partition, save);
+   // System doesn't restart until explicitly told to
+   System.restart();
 
 
-   .. todo::
+When ``save = false``, the TBYB bit is set in the application image with a FLASH_UPDATE reboot.
+Note that if the TBYB bit is *not* set in this reboot mode, ROM code will invalidate the alternate application image by wiping its first sector. This means it cannot be later selected for booting.
 
-      OTA updater code uses the `setBootPartition` method and has a `save` parameter
-      which indicates whether to perform a tempoorary reboot or a normal one.
-      It should not *actually* reboot at this stage though.
-      So we need a flag somewhere which tells Sming what kind of reboot is required.
-      That gets actioned by the `system_restart` function.
-
-
-
-
-- An application image
-
+When ``save = true``, the image version is checked to ensure it is the highest of the OTA images.
+If not, it will be adjusted to the next minor release.
 
 .. note::
 
-   The RP2040 bootrom has no partition table support.
-   Implementations such as the Pico typically have only 2MByte flash which is quite restrictive for more than one application image.
-   It is also necessary to compile images at different addresses as there is no windowed XIP (eXecute In Place) capability.
-   See :library:`FlashIP` library for a basic method of OTA.
+   The *Try-Before-You-Buy* feature is discussed in the RP2360 datasheet, section 5.1.17.
+   It states that when an image is booted with this flag, it is "entered under a watchdog timer, and has 16.7 seconds to mark itself OK via the **explicit_buy()** function".
+
+   Firstly, the watchdog timer is reset by the main Sming task loop, so will only reset if that crashes.
+   Applications may incorporate their own runtime checks and call :cpp:func:`System::restart` to revert to the previous application image.
+
+   To confirm the image, use the **setBootPartition** call above.
+
+   At time of writing, calling **rom_explicit_buy()** fails as discussed in https://github.com/raspberrypi/pico-sdk/issues/2639.
+   Whilst there are workarounds, this is less useful as it results in invalidation of the alternative OTA image.
+   This is why the OTA manager uses version numbering to manage boots.
 
 
 Networking
