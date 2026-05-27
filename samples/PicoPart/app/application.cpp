@@ -14,7 +14,7 @@
 
 namespace
 {
-CStringArray parseUf2Flags(const Pico::Header& hdr)
+CStringArray parseUf2Flags(const Pico::PartitionHeader& hdr)
 {
 	CStringArray ids;
 	if(hdr.accepts_default_family_absolute) {
@@ -58,7 +58,7 @@ int printPartitionInfo()
 		printf("the partition table is empty\n");
 	}
 
-	auto printPermissions = [](const Pico::Header& hdr) {
+	auto printPermissions = [](const Pico::PartitionHeader& hdr) {
 		Serial << " S(" << (hdr.permission_s_r ? "r" : "") << (hdr.permission_s_w ? "w" : "") << ") NSBOOT("
 			   << (hdr.permission_nsboot_r ? "r" : "") << (hdr.permission_nsboot_w ? "w" : "") << ") NS("
 			   << (hdr.permission_ns_r ? "r" : "") << (hdr.permission_ns_w ? "w" : "") << ")";

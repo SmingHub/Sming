@@ -10,7 +10,7 @@
 
 namespace Pico
 {
-struct Header {
+struct PartitionHeader {
 	uint32_t first_sector : 13;
 	uint32_t last_sector : 13;
 	uint32_t permission_s_r : 1;
@@ -68,7 +68,7 @@ struct PartitionTableInfo {
 	uint32_t fields;
 	uint32 partition_count : 8;
 	uint32_t table_present : 1;
-	Header unpartitioned_space;
+	PartitionHeader unpartitioned_space;
 };
 
 union PartitionID {
@@ -91,7 +91,7 @@ union PartitionID {
 
 struct PartitionInfo {
 	uint32_t fields;
-	Header header;
+	PartitionHeader header;
 	PartitionID id;
 	char name_buffer[128]; // name length is indicated by 7 bits
 	uint32_t extra_family_ids[3];
