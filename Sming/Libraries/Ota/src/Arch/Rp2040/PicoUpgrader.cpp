@@ -9,11 +9,10 @@
  ****/
 
 #include "include/Ota/PicoUpgrader.h"
-#include <Storage/SpiFlash.h>
 #include <pico_partition.h>
 #include <pico/bootrom.h>
 #include <boot/picoboot_constants.h>
-#include <boot/picobin.h>
+#include <pico_image.h>
 #include <hardware/watchdog.h>
 #include <debug_progmem.h>
 
@@ -23,109 +22,6 @@ namespace
 {
 // In documentation but not in SDK headers
 constexpr uint32_t VECTORED_BOOT_MAGIC = 0xb007c0d3;
-
-// Range where IMAGE_DEF is expected at start of partition (in words)
-constexpr uint32_t HEADER_START_OFFSET = 0x110 / sizeof(uint32_t);
-constexpr uint32_t HEADER_END_OFFSET = 0x200 / sizeof(uint32_t);
-
-// Buffer for whole sector where updates may be required
-using SectorBuffer = uint32_t[INTERNAL_FLASH_SECTOR_SIZE / sizeof(uint32_t)];
-
-// Minimal buffer where we only need to read IMAGE_DEF
-using HeaderBuffer = uint32_t[HEADER_END_OFFSET - HEADER_START_OFFSET];
-
-struct ImageDefInfo {
-	uint32_t* imageType;
-	uint32_t* version;
-
-	explicit operator bool() const
-	{
-		return imageType && version;
-	}
-
-	uint16_t getFlags() const
-	{
-		return imageType ? (imageType[0] >> 16) : 0;
-	}
-
-	void setFlags(uint16_t flags)
-	{
-		if(imageType) {
-			*imageType = (*imageType & 0xffff) | (flags << 16);
-		}
-	}
-
-	uint32_t getVersion() const
-	{
-		return version ? version[1] : 0;
-	}
-
-	void setVersion(uint32_t value) const
-	{
-		if(version) {
-			version[1] = value;
-		}
-	}
-
-	uint16_t getVersionMajor() const
-	{
-		return getVersion() >> 16;
-	}
-
-	uint16_t getVersionMinor() const
-	{
-		return getVersion() & 0xffff;
-	}
-};
-
-/*
-	Expected IMAGE_DEF block:
-
-	d3 de ff ff		PICOBIN_BLOCK_MARKER_START
-	42 01 21 10		PICOBIN_BLOCK_ITEM_1BS_IMAGE_TYPE
-						Flags: 0x1021
-	48 02 00 00		PICOBIN_BLOCK_ITEM_1BS_VERSION
-	06 00 01 00			Major 0x0001, Minor 0x0006
-	ff 03 00 00		PICOBIN_BLOCK_ITEM_2BS_LAST
-	a4 86 00 00			relative pointer to next block loop
-	79 35 12 ab			PICOBIN_BLOCK_MARKER_END
-*/
-ImageDefInfo findImageDef(uint32_t* buffer)
-{
-	m_printHex("BUF", buffer, HEADER_END_OFFSET - HEADER_START_OFFSET);
-	unsigned offset = 0;
-	const unsigned maxOffset = HEADER_END_OFFSET - HEADER_START_OFFSET;
-	while(buffer[offset++] != PICOBIN_BLOCK_MARKER_START) {
-		if(offset >= maxOffset) {
-			return {};
-		}
-	}
-
-	ImageDefInfo info{};
-	while(offset < maxOffset) {
-		uint32_t w = buffer[offset];
-		uint16_t len;
-		if(w & 0x80) {
-			len = (w >> 8) & 0xffff;
-		} else {
-			len = (w >> 8) & 0xff;
-		}
-		switch(w & 0xff) {
-		case PICOBIN_BLOCK_ITEM_1BS_IMAGE_TYPE:
-			info.imageType = &buffer[offset];
-			break;
-		case PICOBIN_BLOCK_ITEM_1BS_VERSION:
-			info.version = &buffer[offset];
-			break;
-		case PICOBIN_BLOCK_ITEM_2BS_LAST:
-			return info;
-		}
-		offset += len;
-	}
-
-	// Block not found or malformed
-	return {};
-}
 
 } // namespace
 
@@ -167,10 +63,9 @@ size_t PicoUpgrader::write(const uint8_t* buffer, size_t size)
 		return 0;
 	}
 
-	if(stream->getWritePos() == 0 && size >= HEADER_END_OFFSET * sizeof(uint32_t)) {
+	if(stream->getWritePos() == 0 && size >= Pico::IMAGEDEF_END) {
 		// First sector: locate IMAGE_DEF word
-		auto words = reinterpret_cast<uint32_t*>(const_cast<uint8_t*>(buffer));
-		auto info = findImageDef(words + HEADER_START_OFFSET);
+		auto info = Pico::findImageDef(const_cast<uint8_t*>(buffer + Pico::IMAGEDEF_START));
 
 		// Set TBYB bit in type flags so image doesn't get picked up automatically
 		// This may get reset in `setBootPartition`
@@ -200,10 +95,10 @@ bool PicoUpgrader::setBootPartition(Partition partition, bool save)
 
 	// Read IMAGE_DEF from partition for inspection and update (if required)
 
-	SectorBuffer buffer;
+	uint8_t buffer[INTERNAL_FLASH_SECTOR_SIZE];
 	auto ok = partition.read(0, buffer, sizeof(buffer));
 	debug_i("partition.read(%p, %u) %u", partition.address(), sizeof(buffer), ok);
-	auto info = findImageDef(buffer + HEADER_START_OFFSET);
+	auto info = Pico::findImageDef(buffer + Pico::IMAGEDEF_START);
 	if(!info) {
 		debug_e("No IMAGE_DEF found in %s", partition.name().c_str());
 		return false;
@@ -220,9 +115,9 @@ bool PicoUpgrader::setBootPartition(Partition partition, bool save)
 			if(part.address() == partition.address()) {
 				continue;
 			}
-			HeaderBuffer hdr;
-			part.read(HEADER_START_OFFSET * sizeof(uint32_t), hdr, sizeof(hdr));
-			auto hdrInfo = findImageDef(hdr);
+			uint8_t hdr[Pico::IMAGEDEF_BUFFER_SIZE];
+			part.read(Pico::IMAGEDEF_START, hdr, sizeof(hdr));
+			auto hdrInfo = Pico::findImageDef(hdr);
 			debug_i("%s version %u.%u", part.name().c_str(), hdrInfo.getVersionMajor(), hdrInfo.getVersionMinor());
 			maxVersion = std::max(maxVersion, hdrInfo.getVersion());
 		}
@@ -284,9 +179,9 @@ Partition PicoUpgrader::getBootPartition()
 	Partition bootPart;
 	uint32_t maxVersion = 0;
 	for(auto part : spiFlash->partitions().find(Storage::Partition::Type::app)) {
-		HeaderBuffer hdr;
-		part.read(HEADER_START_OFFSET * sizeof(uint32_t), hdr, sizeof(hdr));
-		auto info = findImageDef(hdr);
+		uint8_t hdr[Pico::IMAGEDEF_BUFFER_SIZE];
+		part.read(Pico::IMAGEDEF_START, hdr, sizeof(hdr));
+		auto info = Pico::findImageDef(hdr);
 		debug_i("%s version %u.%u", part.name().c_str(), info.getVersionMajor(), info.getVersionMinor());
 		// Ignore TBYB images
 		if(info.getFlags() & PICOBIN_IMAGE_TYPE_EXE_TBYB_BITS) {
