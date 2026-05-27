@@ -389,6 +389,18 @@ public:
 	}
 
 	/**
+	 * @brief Check if this is an OTA partition
+	 */
+	bool isOta() const
+	{
+		if(type() != Type::app) {
+			return false;
+		}
+		auto appSubType = SubType::App(subType());
+		return appSubType >= SubType::App::ota_min && appSubType <= SubType::App::ota_max;
+	}
+
+	/**
 	 * @name Get partition type expressed as a string
 	 * @{
 	 */

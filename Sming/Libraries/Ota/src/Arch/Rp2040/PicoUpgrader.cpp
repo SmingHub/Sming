@@ -19,7 +19,7 @@
 
 using namespace Storage;
 
-namespace Ota
+namespace
 {
 // In documentation but not in SDK headers
 constexpr uint32_t VECTORED_BOOT_MAGIC = 0xb007c0d3;
@@ -28,7 +28,10 @@ constexpr uint32_t VECTORED_BOOT_MAGIC = 0xb007c0d3;
 constexpr uint32_t HEADER_START_OFFSET = 0x110 / sizeof(uint32_t);
 constexpr uint32_t HEADER_END_OFFSET = 0x200 / sizeof(uint32_t);
 
+// Buffer for whole sector where updates may be required
 using SectorBuffer = uint32_t[INTERNAL_FLASH_SECTOR_SIZE / sizeof(uint32_t)];
+
+// Minimal buffer where we only need to read IMAGE_DEF
 using HeaderBuffer = uint32_t[HEADER_END_OFFSET - HEADER_START_OFFSET];
 
 struct ImageDefInfo {
@@ -124,13 +127,19 @@ ImageDefInfo findImageDef(uint32_t* buffer)
 	return {};
 }
 
+} // namespace
+
+namespace Ota
+{
 bool PicoUpgrader::begin(Partition partition, size_t size)
 {
 	if(size > partition.size()) {
 		return false; // too big
 	}
 
-	// RULES! Application images must be ota_xx type
+	if(!partition.isOta()) {
+		return false;
+	}
 
 	// Check we're not attempting to write to the current partition
 	boot_info_t boot_info{};
@@ -158,10 +167,9 @@ size_t PicoUpgrader::write(const uint8_t* buffer, size_t size)
 		return 0;
 	}
 
-	if(partition.type() == Storage::Partition::Type::app && stream->getWritePos() == 0) {
+	if(stream->getWritePos() == 0 && size >= HEADER_END_OFFSET * sizeof(uint32_t)) {
 		// First sector: locate IMAGE_DEF word
 		auto words = reinterpret_cast<uint32_t*>(const_cast<uint8_t*>(buffer));
-		assert(size >= HEADER_END_OFFSET);
 		auto info = findImageDef(words + HEADER_START_OFFSET);
 
 		// Set TBYB bit in type flags so image doesn't get picked up automatically
@@ -190,7 +198,7 @@ bool PicoUpgrader::setBootPartition(Partition partition, bool save)
 		return false;
 	}
 
-	// Read partition and determine state of TBYB flag, may need to rewrite sector
+	// Read IMAGE_DEF from partition for inspection and update (if required)
 
 	SectorBuffer buffer;
 	auto ok = partition.read(0, buffer, sizeof(buffer));
@@ -208,11 +216,8 @@ bool PicoUpgrader::setBootPartition(Partition partition, bool save)
 
 		// Determine highest version number for all other application images
 		uint32_t maxVersion = 0;
-		for(auto part : spiFlash->partitions()) {
+		for(auto part : spiFlash->partitions().find(Storage::Partition::Type::app)) {
 			if(part.address() == partition.address()) {
-				continue;
-			}
-			if(part.type() != Storage::Partition::Type::app) {
 				continue;
 			}
 			HeaderBuffer hdr;
@@ -250,6 +255,7 @@ bool PicoUpgrader::setBootPartition(Partition partition, bool save)
 		return true;
 	}
 
+	// For temporary boot the TBYB bit must be set
 	auto flags = info.getFlags();
 	if(!(flags & PICOBIN_IMAGE_TYPE_EXE_TBYB_BITS)) {
 		info.setFlags(flags | PICOBIN_IMAGE_TYPE_EXE_TBYB_BITS);
@@ -268,20 +274,16 @@ Partition PicoUpgrader::getBootPartition()
 {
 	// Scratch registers may indicate a vectored boot
 	uint32_t addr = watchdog_hw->scratch[7];
-	if(addr >= XIP_BASE && watchdog_hw->scratch[4] == VECTORED_BOOT_MAGIC &&
+	if(isFlashPtr(addr) && watchdog_hw->scratch[4] == VECTORED_BOOT_MAGIC &&
 	   watchdog_hw->scratch[5] ^ VECTORED_BOOT_MAGIC == addr) {
 		// Valid temporary boot
-		addr -= XIP_BASE;
-		return spiFlash->partitions().find(addr);
+		return spiFlash->partitions().find(addr - XIP_BASE);
 	}
 
 	// Find application image with highest version
 	Partition bootPart;
 	uint32_t maxVersion = 0;
-	for(auto part : spiFlash->partitions()) {
-		if(part.type() != Storage::Partition::Type::app) {
-			continue;
-		}
+	for(auto part : spiFlash->partitions().find(Storage::Partition::Type::app)) {
 		HeaderBuffer hdr;
 		part.read(HEADER_START_OFFSET * sizeof(uint32_t), hdr, sizeof(hdr));
 		auto info = findImageDef(hdr);
@@ -315,13 +317,29 @@ Partition PicoUpgrader::getRunningPartition()
 
 Partition PicoUpgrader::getNextBootPartition(Partition startFrom)
 {
-	// TODO
-	boot_info_t boot_info{};
-	int rc = rom_get_boot_info(&boot_info);
-	if(rc < 0) {
-		return {};
+	if(!startFrom) {
+		startFrom = getRunningPartition();
 	}
-	// rom_get
+	Partition first;
+	bool useNext{false};
+	for(auto part : spiFlash->partitions()) {
+		if(!part.isOta()) {
+			continue;
+		}
+		if(useNext) {
+			return part;
+		}
+		if(part.address() == startFrom.address()) {
+			useNext = true;
+		} else if(!first) {
+			first = part;
+		}
+	}
+
+	if(useNext) {
+		return first;
+	}
+
 	return {};
 }
 
