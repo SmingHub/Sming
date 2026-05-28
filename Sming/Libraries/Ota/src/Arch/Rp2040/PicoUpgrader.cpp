@@ -46,7 +46,7 @@ bool PicoUpgrader::begin(Partition partition, size_t size)
 	Pico::PartitionInfo info;
 	Pico::getPartitionInfo(info, boot_info.partition);
 	if(info.header.startOffset() == partition.address()) {
-		debug_e("Write to current partition prohibited");
+		debug_e("[OTA] Write to current partition prohibited");
 		return false;
 	}
 
@@ -88,26 +88,26 @@ bool PicoUpgrader::end()
 
 bool PicoUpgrader::setBootPartition(Partition partition, bool save)
 {
-	if(partition.type() != Storage::Partition::Type::app) {
-		debug_e("setBootPartition requires application partition");
+	if(!partition.isOta()) {
+		debug_e("[OTA] %s not an OTA partition", partition.name().c_str());
 		return false;
 	}
 
 	// Read IMAGE_DEF from partition for inspection and update (if required)
 
 	uint8_t buffer[INTERNAL_FLASH_SECTOR_SIZE];
-	auto ok = partition.read(0, buffer, sizeof(buffer));
-	debug_i("partition.read(%p, %u) %u", partition.address(), sizeof(buffer), ok);
+	partition.read(0, buffer, sizeof(buffer));
 	auto info = Pico::findImageDef(buffer + Pico::IMAGEDEF_START);
 	if(!info) {
-		debug_e("No IMAGE_DEF found in %s", partition.name().c_str());
+		debug_e("[OTA] No IMAGE_DEF found in %s", partition.name().c_str());
 		return false;
 	}
 
-	debug_i("Image flags 0x%04x, version %u.%u", info.getFlags(), info.getVersionMajor(), info.getVersionMinor());
+	debug_d("[OTA] Image flags 0x%04x, version %u.%u", info.getFlags(), info.getVersionMajor(), info.getVersionMinor());
 
 	uint32_t rebootType;
 	uint32_t p0;
+	bool imageDefChanged = false;
 
 	if(save) {
 		// To ensure ROM code selects this partition for boot, image must have the highest version number
@@ -123,17 +123,16 @@ bool PicoUpgrader::setBootPartition(Partition partition, bool save)
 			uint8_t hdr[Pico::IMAGEDEF_BUFFER_SIZE];
 			part.read(Pico::IMAGEDEF_START, hdr, sizeof(hdr));
 			auto hdrInfo = Pico::findImageDef(hdr);
-			debug_i("%s version %u.%u", part.name().c_str(), hdrInfo.getVersionMajor(), hdrInfo.getVersionMinor());
+			debug_d("[OTA] %s version %u.%u", part.name().c_str(), hdrInfo.getVersionMajor(),
+					hdrInfo.getVersionMinor());
 			maxVersion = std::max(maxVersion, hdrInfo.getVersion());
 		}
-
-		bool imageDefChanged = false;
 
 		// Check if we need to increase the existing version number
 		auto version = info.getVersion();
 		if(version <= maxVersion) {
 			auto newVersion = maxVersion + 1;
-			debug_i("Changing image version from %04x -> %04x", version, newVersion);
+			debug_i("[OTA] Changing %s image version from %04x -> %04x", partition.name().c_str(), version, newVersion);
 			info.setVersion(newVersion);
 			imageDefChanged = true;
 		}
@@ -141,15 +140,9 @@ bool PicoUpgrader::setBootPartition(Partition partition, bool save)
 		// Clear TBYB bit if required
 		auto flags = info.getFlags();
 		if(flags & PICOBIN_IMAGE_TYPE_EXE_TBYB_BITS) {
-			debug_i("Clearing TBYB flag");
+			debug_i("[OTA] Clearing %s TBYB flag", partition.name().c_str());
 			info.setFlags(flags & ~PICOBIN_IMAGE_TYPE_EXE_TBYB_BITS);
 			imageDefChanged = true;
-		}
-
-		// Write out any changes to partition
-		if(imageDefChanged) {
-			partition.erase_range(0, INTERNAL_FLASH_SECTOR_SIZE);
-			partition.write(0, buffer, sizeof(buffer));
 		}
 
 		rebootType = REBOOT2_FLAG_REBOOT_TYPE_NORMAL;
@@ -158,14 +151,19 @@ bool PicoUpgrader::setBootPartition(Partition partition, bool save)
 		// For temporary boot the TBYB bit must be set
 		auto flags = info.getFlags();
 		if(!(flags & PICOBIN_IMAGE_TYPE_EXE_TBYB_BITS)) {
+			debug_i("[OTA] Seting %s TBYB flag", partition.name().c_str());
 			info.setFlags(flags | PICOBIN_IMAGE_TYPE_EXE_TBYB_BITS);
-			debug_i("Set flags 0x%04x", info.getFlags());
-			partition.erase_range(0, INTERNAL_FLASH_SECTOR_SIZE);
-			partition.write(0, buffer, sizeof(buffer));
+			imageDefChanged = true;
 		}
 
 		rebootType = REBOOT2_FLAG_REBOOT_TYPE_FLASH_UPDATE;
 		p0 = XIP_BASE + partition.address();
+	}
+
+	// Write out any changes to partition
+	if(imageDefChanged) {
+		partition.erase_range(0, INTERNAL_FLASH_SECTOR_SIZE);
+		partition.write(0, buffer, sizeof(buffer));
 	}
 
 	// This won't actually reboot until application calls `system_restart`
@@ -191,7 +189,7 @@ Partition PicoUpgrader::getBootPartition()
 		uint8_t hdr[Pico::IMAGEDEF_BUFFER_SIZE];
 		part.read(Pico::IMAGEDEF_START, hdr, sizeof(hdr));
 		auto info = Pico::findImageDef(hdr);
-		debug_i("%s version %u.%u", part.name().c_str(), info.getVersionMajor(), info.getVersionMinor());
+		debug_d("[OTA] %s version %u.%u", part.name().c_str(), info.getVersionMajor(), info.getVersionMinor());
 		// Ignore TBYB images
 		if(info.getFlags() & PICOBIN_IMAGE_TYPE_EXE_TBYB_BITS) {
 			continue;
