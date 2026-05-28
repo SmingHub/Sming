@@ -19,7 +19,8 @@ bool getPartitionInfo(PartitionInfo& info, uint8_t partIndex)
 	uint32_t flags = PT_INFO_SINGLE_PARTITION | PT_INFO_PARTITION_LOCATION_AND_FLAGS | PT_INFO_PARTITION_ID |
 					 PT_INFO_PARTITION_FAMILY_IDS | PT_INFO_PARTITION_NAME;
 	int rc = rom_get_partition_table_info(buffer, sizeof(buffer), (partIndex << 24) | flags);
-	if(rc < 0) {
+	// If there's no partition table, returns 1 so check for a sensible minimum
+	if(rc < 3) {
 		return false;
 	}
 

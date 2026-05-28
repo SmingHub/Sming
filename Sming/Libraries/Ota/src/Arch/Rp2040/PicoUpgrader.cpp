@@ -44,7 +44,10 @@ bool PicoUpgrader::begin(Partition partition, size_t size)
 		return false;
 	}
 	Pico::PartitionInfo info;
-	Pico::getPartitionInfo(info, boot_info.partition);
+	if(!Pico::getPartitionInfo(info, boot_info.partition)) {
+		debug_e("[OTA] failed to get partition info");
+		return false;
+	}
 	if(info.header.startOffset() == partition.address()) {
 		debug_e("[OTA] Write to current partition prohibited");
 		return false;
@@ -211,10 +214,18 @@ Partition PicoUpgrader::getRunningPartition()
 	if(rc < 0) {
 		return {};
 	}
+	if(boot_info.partition == BOOT_PARTITION_SLOT0) {
+		return *spiFlash->partitions().find(Partition::Type::app);
+	}
+
 	Pico::PartitionInfo info;
-	Pico::getPartitionInfo(info, boot_info.partition);
-	uint32_t addr = info.header.startOffset();
-	return spiFlash->partitions().find(addr);
+	if(Pico::getPartitionInfo(info, boot_info.partition)) {
+		uint32_t addr = info.header.startOffset();
+		debug_d("FOUND partition %d at 0x%08x", boot_info.partition, addr);
+		return spiFlash->partitions().find(addr);
+	}
+
+	return *spiFlash->partitions().find(Storage::Partition::Type::app);
 }
 
 Partition PicoUpgrader::getNextBootPartition(Partition startFrom)

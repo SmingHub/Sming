@@ -1,12 +1,5 @@
-/**	Basic_DateTime sample application
-	Author: Brian Walton (brian@riban.co.uk)
-	Date: 2018-12-10
-	Provides serial interface, accepting Unix timestamp
-	Prints each type of DateTime::format option
-*/
 #include <SmingCore.h>
 #include <pico_partition.h>
-#include <pico/multicore.h>
 #include <pico/bootrom.h>
 #include <boot/uf2.h>
 #include <Data/CStringArray.h>
@@ -48,14 +41,13 @@ String parseUf2Extra(uint32_t family_id)
 	}
 }
 
-int printPartitionInfo()
+bool printPartitionInfo()
 {
 	Pico::PartitionTableInfo pt;
 	Pico::getPartitionTableInfo(pt);
 	if(!pt.table_present) {
-		printf("there is no partition table\n");
-	} else if(pt.partition_count == 0) {
-		printf("the partition table is empty\n");
+		Serial << "There is no partition table!" << endl;
+		return false;
 	}
 
 	CStringArray familyIds = parseUf2Flags(pt.unpartitioned_space);
@@ -63,8 +55,10 @@ int printPartitionInfo()
 		   << familyIds.join(", ") << " }" << endl;
 
 	if(pt.partition_count == 0) {
-		return 0;
+		Serial << "The partition table is empty!" << endl;
+		return false;
 	}
+
 	Serial << "partitions:" << endl;
 	for(unsigned partIndex = 0; partIndex < pt.partition_count; ++partIndex) {
 		Pico::PartitionInfo p;
@@ -88,19 +82,17 @@ int printPartitionInfo()
 		Serial << endl;
 	}
 
-	return 0;
+	return true;
 }
 
 void printBootInfo()
 {
 	auto runPart = OtaManager.getRunningPartition();
 	auto defaultPart = OtaManager.getBootPartition();
+	auto nextPart = OtaManager.getNextBootPartition();
 	Serial << "Running " << runPart << endl;
 	Serial << "Default " << defaultPart << endl;
-
-	auto lastBootType = rom_get_last_boot_type();
-
-	Serial << "Last boot type " << lastBootType << endl;
+	Serial << "Next " << nextPart << endl;
 
 	// For a flash update boot, get the flash update base
 	boot_info_t boot_info{};
@@ -121,50 +113,17 @@ void printBootInfo()
 	// if(boot_info.boot_type != BOOT_TYPE_FLASH_UPDATE) {
 	if(runPart.name() == "rom0") {
 		auto part = Storage::findPartition("rom1");
+		if(!part) {
+			Serial << "rom1 not found in partition table!" << endl;
+			return;
+		}
+
 		Serial << "Rebooting to " << part << endl;
 		OtaManager.setBootPartition(part, false);
 		System.restart(2000);
-		return;
-		// int rc = rom_reboot(REBOOT2_FLAG_REBOOT_TYPE_FLASH_UPDATE | REBOOT2_FLAG_NO_RETURN_ON_SUCCESS, 1000,
-		// 					XIP_BASE + 0x100000, 0);
-		// Serial << "rom_reboot: " << rc << endl;
-	}
-
-	if(boot_info.tbyb_and_update_info & BOOT_TBYB_AND_UPDATE_FLAG_BUY_PENDING) {
+	} else if(defaultPart.name() != "rom1") {
 		OtaManager.setBootPartition(runPart, true);
 		Serial << "Default now " << OtaManager.getBootPartition() << endl;
-
-#if 0
-		/*
-			explicit buy does two things:
-
-				1. Clear the TBYB flag in the current image
-				2. Wipe first sector of other application partition
-
-
-		 */
-		uint8_t buffer[4096];
-#if 0
-		// Without this workaround, rom_explicit_buy fails
-		multicore_launch_core1([]() {
-			flash_safe_execute_core_init();
-			for(;;) {
-			}
-		});
-		int rc = rom_explicit_buy(buffer, sizeof(buffer));
-#else
-		// Bypass flash safety. Flash access via core1 is a bad idea
-		int rc{0};
-		rom_helper_explicit_buy_params_t params = {
-			.buffer = buffer,
-			.buffer_size = sizeof(buffer),
-			.res = &rc,
-		};
-		rom_helper_explicit_buy(&params);
-
-#endif
-		Serial << "rom_explicit_buy: " << rc << endl;
-#endif
 	}
 }
 
@@ -174,6 +133,8 @@ void init()
 {
 	Serial.begin(COM_SPEED_SERIAL);
 	Serial.systemDebugOutput(true);
+
+	Serial << endl << endl << "Pico Partition sample application" << endl << endl;
 
 	printPartitionInfo();
 	printBootInfo();
