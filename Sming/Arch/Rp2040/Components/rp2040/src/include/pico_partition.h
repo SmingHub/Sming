@@ -62,6 +62,19 @@ struct PartitionHeader {
 	{
 		return !permission_ns_r;
 	}
+
+	String getPermissionsString() const
+	{
+		String s = F("S(xx) NSBOOT(xx) NS(xx)");
+		auto buf = s.begin();
+		buf[2] = permission_s_r ? 'r' : '-';
+		buf[3] = permission_s_w ? 'w' : '-';
+		buf[13] = permission_nsboot_r ? 'r' : '-';
+		buf[14] = permission_nsboot_w ? 'w' : '-';
+		buf[20] = permission_ns_r ? 'r' : '-';
+		buf[21] = permission_ns_w ? 'w' : '-';
+		return s;
+	};
 };
 
 struct PartitionTableInfo {

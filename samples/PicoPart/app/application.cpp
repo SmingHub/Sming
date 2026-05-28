@@ -58,16 +58,9 @@ int printPartitionInfo()
 		printf("the partition table is empty\n");
 	}
 
-	auto printPermissions = [](const Pico::PartitionHeader& hdr) {
-		Serial << " S(" << (hdr.permission_s_r ? "r" : "") << (hdr.permission_s_w ? "w" : "") << ") NSBOOT("
-			   << (hdr.permission_nsboot_r ? "r" : "") << (hdr.permission_nsboot_w ? "w" : "") << ") NS("
-			   << (hdr.permission_ns_r ? "r" : "") << (hdr.permission_ns_w ? "w" : "") << ")";
-	};
-
 	CStringArray familyIds = parseUf2Flags(pt.unpartitioned_space);
-	Serial << "un-partitioned_space:";
-	printPermissions(pt.unpartitioned_space);
-	Serial << " uf2 { " << familyIds.join(", ") << " }" << endl;
+	Serial << "un-partitioned_space: " << pt.unpartitioned_space.getPermissionsString() << " uf2 { "
+		   << familyIds.join(", ") << " }" << endl;
 
 	if(pt.partition_count == 0) {
 		return 0;
@@ -76,11 +69,10 @@ int printPartitionInfo()
 	for(unsigned partIndex = 0; partIndex < pt.partition_count; ++partIndex) {
 		Pico::PartitionInfo p;
 		Pico::getPartitionInfo(p, partIndex);
-		Serial << String(partIndex, DEC, 3) << ":"
-			   << "    " << String(p.header.startOffset(), HEX, 8) << " -> " << String(p.header.endOffset(), HEX, 8);
-		printPermissions(p.header);
+		Serial << String(partIndex, DEC, 3) << ": 0x" << String(p.header.startOffset(), HEX, 8) << " -> 0x"
+			   << String(p.header.endOffset(), HEX, 8) << " " << p.header.getPermissionsString();
 		if(p.header.has_id) {
-			Serial << ", id=" << String(p.id, HEX, 16);
+			Serial << ", id = 0x" << String(p.id, HEX, 16);
 		}
 		if(p.header.has_name) {
 			Serial << ", \"" << p.name() << "\"";
@@ -102,9 +94,9 @@ int printPartitionInfo()
 void printBootInfo()
 {
 	auto runPart = OtaManager.getRunningPartition();
-	auto bootPart = OtaManager.getBootPartition();
+	auto defaultPart = OtaManager.getBootPartition();
 	Serial << "Running " << runPart << endl;
-	Serial << "Booted " << bootPart << endl;
+	Serial << "Default " << defaultPart << endl;
 
 	auto lastBootType = rom_get_last_boot_type();
 
@@ -140,6 +132,8 @@ void printBootInfo()
 
 	if(boot_info.tbyb_and_update_info & BOOT_TBYB_AND_UPDATE_FLAG_BUY_PENDING) {
 		OtaManager.setBootPartition(runPart, true);
+		Serial << "Default now " << OtaManager.getBootPartition() << endl;
+
 #if 0
 		/*
 			explicit buy does two things:
