@@ -6,9 +6,11 @@
 */
 #include <SmingCore.h>
 #include <pico_partition.h>
-#include "pico/bootrom.h"
+#include <pico/bootrom.h>
+#include <boot/picoboot_constants.h>
 #include <boot/uf2.h>
 #include <Data/CStringArray.h>
+#include <Ota/Manager.h>
 
 namespace
 {
@@ -118,6 +120,18 @@ void printBootInfo()
 	Serial << "boot_diagnostic " << String(boot_info.boot_diagnostic, HEX) << endl;
 	Serial << "reboot_params " << String(boot_info.reboot_params[0], HEX) << ", "
 		   << String(boot_info.reboot_params[1], HEX) << endl;
+
+	if(boot_info.boot_type != BOOT_TYPE_FLASH_UPDATE) {
+		int rc = rom_reboot(REBOOT2_FLAG_REBOOT_TYPE_FLASH_UPDATE | REBOOT2_FLAG_NO_RETURN_ON_SUCCESS, 1000,
+							XIP_BASE + 0x100000, 0);
+		Serial << "rom_reboot: " << rc << endl;
+	}
+
+	if(boot_info.tbyb_and_update_info == BOOT_TBYB_AND_UPDATE_FLAG_BUY_PENDING) {
+		uint8_t buffer[4096];
+		int rc = rom_explicit_buy(buffer, sizeof(buffer));
+		Serial << "rom_explicit_buy: " << rc << endl;
+	}
 }
 
 } // namespace
@@ -127,6 +141,11 @@ void init()
 	Serial.begin(COM_SPEED_SERIAL);
 	Serial.systemDebugOutput(true);
 
+	Serial << "Running " << OtaManager.getRunningPartition() << endl;
+
 	printPartitionInfo();
 	printBootInfo();
+
+	auto timer = new SimpleTimer;
+	timer->initializeMs<1000>([](void*) { Serial << system_get_time() << " alive" << endl; }).start();
 }
