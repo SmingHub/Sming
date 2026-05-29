@@ -183,6 +183,8 @@ Alternatively some kind of synchronisation mechanism may be used to ensure that 
 during any flash erase/write operations.
 
 
+.. _pico_ota:
+
 Multi-boot / OTA updates
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -199,10 +201,9 @@ Sming can take advantage of this to support A/B application images and OTA updat
    It is also necessary to compile images at different addresses as there is no windowed XIP (eXecute In Place) capability.
    See :library:`FlashIP` library for a basic method of OTA.
 
-This support requires the following:
+Multi-boot support requires the following:
 
-- A valid RP2350 binary partition table located in the first flash sector
-- Support within the :component:`Storage` Component to use the new format. See :ref:`binary_partition_table`.
+- A valid RP2350 binary partition table located in the first flash sector. See :ref:`binary_partition_table`.
 - Build system support to generate the binary image
 - RP2350 support in the :library:`OTA` library.
 
@@ -212,10 +213,10 @@ plus a reserved partition which stores information about which image to boot.
 The RP2350 approach is different in that there is no separate place to indicate which is the bootable partition.
 Instead, a metadata block (IMAGE_DEF) embedded within each image is used to determine boot behaviour.
 
-Note: After building, this metadata can be inspected via ``make imageinfo``, or ``make flashid`` to read from a device.
+Note: After building, this metadata can be inspected via ``make imageinfo``. Use ``make flashid`` to read from a device.
 
 The IMAGE_DEF identifies the version number for the image.
-If required, this can be manually set in ``MAJOR.MINOR`` format, e.g. ``make APP_VERSION=1.5``.
+Optionally, this can be manually set in ``MAJOR.MINOR`` format, e.g. ``make APP_VERSION=1.5``.
 
 For OTA updating two partitions are required, configured as an *A/B* pair.
 This is handled by Sming where two partitions are defined of type *app/ota_0* and *app/ota_1*.

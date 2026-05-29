@@ -53,9 +53,17 @@ After that you will have access to a global ``OtaManager`` instance that can be 
 
 See the :sample:`Basic_Ota` sample application.
 
+
 API Documentation
 -----------------
 
-.. doxygennamespace:: Ota
-   :members:
+.. doxygenclass:: Ota::RbootUpgrader
 
+.. doxygenclass:: Ota::IdfUpgrader
+
+.. doxygenclass:: Ota::PicoUpgrader
+
+See also Rp2040 :ref:`pico_ota`.
+
+.. doxygenclass:: Ota::UpgraderBase
+   :members:
