@@ -39,9 +39,9 @@ Configuration variables
     This can be wasteful when using OTA as the firmware must be contained in all application images.
 
     Setting this value to '0' will omit firmware from the image, and instead load it from a partition called 'cyw43_fw'.
-    This partition can be added to the standard map using the 'cyw43_fw' :envvar:`HWCONFIG_OPT` setting::
+    This partition can be added to the standard map using the 'cyw43_fw' :envvar:`HWCONFIG_OPTS` setting::
 
-        make LINK_CYW43_FIRMWARE=0 HWCONFIG_OPT=cyw43_fw
+        make LINK_CYW43_FIRMWARE=0 HWCONFIG_OPTS=cyw43_fw
 
     This is not the default setting since the additional partition must be managed by the end application.
 
