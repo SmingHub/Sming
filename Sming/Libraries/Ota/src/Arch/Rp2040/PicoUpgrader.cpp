@@ -9,7 +9,7 @@
  ****/
 
 #include "include/Ota/PicoUpgrader.h"
-#include <pico_partition.h>
+#include <esp_spi_flash.h>
 #include <pico/bootrom.h>
 #include <boot/picoboot_constants.h>
 #include <pico_image.h>
@@ -38,17 +38,7 @@ bool PicoUpgrader::begin(Partition partition, size_t size)
 	}
 
 	// Check we're not attempting to write to the current partition
-	boot_info_t boot_info{};
-	int rc = rom_get_boot_info(&boot_info);
-	if(rc < 0) {
-		return false;
-	}
-	Pico::PartitionInfo info;
-	if(!Pico::getPartitionInfo(info, boot_info.partition)) {
-		debug_e("[OTA] failed to get partition info");
-		return false;
-	}
-	if(info.header.startOffset() == partition.address()) {
+	if(partition == getRunningPartition()) {
 		debug_e("[OTA] Write to current partition prohibited");
 		return false;
 	}
@@ -214,18 +204,20 @@ Partition PicoUpgrader::getRunningPartition()
 	if(rc < 0) {
 		return {};
 	}
-	if(boot_info.partition == BOOT_PARTITION_SLOT0) {
-		return *spiFlash->partitions().find(Partition::Type::app);
+
+	Partition part;
+	if(boot_info.partition >= 0) {
+		auto subtype = Storage::Partition::apptypeOta(boot_info.partition);
+		part = *spiFlash->partitions().find(subtype);
+	} else if(boot_info.partition != BOOT_PARTITION_SLOT0) {
+		return {};
 	}
 
-	Pico::PartitionInfo info;
-	if(Pico::getPartitionInfo(info, boot_info.partition)) {
-		uint32_t addr = info.header.startOffset();
-		debug_d("FOUND partition %d at 0x%08x", boot_info.partition, addr);
-		return spiFlash->partitions().find(addr);
+	if(!part) {
+		part = *spiFlash->partitions().find(Storage::Partition::Type::app);
 	}
 
-	return *spiFlash->partitions().find(Storage::Partition::Type::app);
+	return part;
 }
 
 Partition PicoUpgrader::getNextBootPartition(Partition startFrom)
@@ -233,27 +225,19 @@ Partition PicoUpgrader::getNextBootPartition(Partition startFrom)
 	if(!startFrom) {
 		startFrom = getRunningPartition();
 	}
-	Partition first;
-	bool useNext{false};
-	for(auto part : spiFlash->partitions()) {
-		if(!part.isOta()) {
-			continue;
-		}
-		if(useNext) {
-			return part;
-		}
-		if(part.address() == startFrom.address()) {
-			useNext = true;
-		} else if(!first) {
-			first = part;
-		}
+
+	if(!startFrom.isOta()) {
+		return startFrom;
 	}
 
-	if(useNext) {
-		return first;
+	Partition next;
+	if(startFrom.fullType() == Partition::SubType::App::ota0) {
+		next = *spiFlash->partitions().find(Partition::SubType::App::ota1);
+	} else {
+		next = *spiFlash->partitions().find(Partition::SubType::App::ota0);
 	}
 
-	return {};
+	return next ?: startFrom;
 }
 
 } // namespace Ota
