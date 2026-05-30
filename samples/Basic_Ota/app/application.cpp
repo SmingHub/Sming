@@ -38,7 +38,7 @@ void upgradeCallback(Ota::Network::HttpUpgrader&, bool result)
 
 		auto part = ota.getNextBootPartition();
 		// set to boot new rom and then reboot
-		Serial << _F("Firmware updated, rebooting to ") << part.name() << _F(" @ ...") << endl;
+		Serial << _F("Firmware updated, rebooting to: ") << part << endl;
 		ota.setBootPartition(part);
 		System.restart();
 	} else {
@@ -99,8 +99,7 @@ void doSwitch()
 	auto before = ota.getRunningPartition();
 	auto after = ota.getNextBootPartition();
 
-	Serial << _F("Swapping from ") << before.name() << " @ 0x" << String(before.address(), HEX) << " to "
-		   << after.name() << " @ 0x" << String(after.address(), HEX) << endl;
+	Serial << _F("Swapping from: ") << before << endl << _F("  to: ") << after << endl;
 	if(ota.setBootPartition(after)) {
 		Serial.println(F("Restarting...\r\n"));
 		System.restart();
@@ -122,8 +121,7 @@ void showInfo()
 	auto before = ota.getRunningPartition();
 	auto after = ota.getNextBootPartition();
 
-	Serial << _F("Current ") << before.name() << " @ 0x" << String(before.address(), HEX) << ", future " << after.name()
-		   << " @ 0x" << String(after.address(), HEX) << endl;
+	Serial << _F("Current: ") << before << endl << _F("Next: ") << after << endl;
 }
 
 void showPrompt()
@@ -243,8 +241,7 @@ void init()
 	auto partition = ota.getRunningPartition();
 	spiffsPartition = findSpiffsPartition(partition);
 	if(spiffsPartition) {
-		debugf("trying to mount %s @ 0x%08x, length %d", spiffsPartition.name().c_str(), spiffsPartition.address(),
-			   spiffsPartition.size());
+		Serial << _F("Mounting: ") << spiffsPartition << endl;
 		spiffs_mount(spiffsPartition);
 	}
 
@@ -252,7 +249,7 @@ void init()
 	WifiEvents.onStationGotIP([](IpAddress ip, IpAddress netmask, IpAddress gateway) { showPrompt(); });
 
 	Serial << endl
-		   << _F("Currently running ") << partition.name() << " @ 0x" << String(partition.address(), HEX) << '.' << endl
+		   << _F("Currently running: ") << partition << '.' << endl
 		   << _F("Type 'help' and press enter for instructions.") << endl
 		   << endl;
 
