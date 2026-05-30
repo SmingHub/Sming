@@ -308,7 +308,8 @@ Configuration
 
 .. envvar:: HWCONFIG_OPTS
 
-   Set this to adjust the hardware profile using option fragments. See :ref:`hwconfig_options`.
+   Set this to adjust the hardware profile using option fragments.
+   Values are comma-separated. See :ref:`hwconfig_options`.
 
 
 .. envvar:: ENABLE_STORAGE_SIZE64

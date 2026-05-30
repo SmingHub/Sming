@@ -5,19 +5,19 @@ Tips and Tricks
 
 Reading VCC on ESP8266
 ----------------------
-If you are running on a battery operated device then function `system_get_vdd33()` from
+If you are running on a battery operated device then function ``system_get_vdd33()`` from
 the official ESP8266 NONOS SDK can help you read the power voltage.
-For the latter to work properly you should make a small change in your application `component.mk`
-file and add `vdd` to the `HWCONFIG_OPTS` configuration variable.
+For the latter to work properly you should make a small change in your application ``component.mk``
+file and add ``vdd`` to the :envvar:`HWCONFIG_OPTS` configuration variable.
 
 If you cannot see such a variable in your `component.mk` file then append the following line to it::
 
-   HWCONFIG := vdd
+   HWCONFIG_OPTS := vdd
 
-You can have multiple options selected. They should be separated by comma.
+You can have multiple options selected. They should be separated by a comma.
 For example the command below will add 4MB flash, spiffs and vdd support::
 
-   HWCONFIG := 4m,spiffs,vdd
+   HWCONFIG_OPTS := 4m,spiffs,vdd
 
 You can check the final hardware configuration using the command below::
 

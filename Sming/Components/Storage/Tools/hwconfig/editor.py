@@ -1278,7 +1278,7 @@ class Editor:
         self._filename = os.path.basename(filename)
 
         options = get_dict_value(self.json, 'options', [])
-        for opt in configVars.get('HWCONFIG_OPTS', '').replace(' ', '').split():
+        for opt in configVars.get('HWCONFIG_OPTS', '').replace(' ', '').split(','):
             if opt not in options:
                 options.append(opt)
 
