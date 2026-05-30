@@ -240,6 +240,21 @@
         "description": "ESP32-C61"
     },
     {
+        "id": "0xb6dd00af",
+        "short_name": "ESP32H21",
+        "description": "ESP32-H21"
+    },
+    {
+        "id": "0x9e0baa8a",
+        "short_name": "ESP32H4",
+        "description": "ESP32-H4"
+    },
+    {
+        "id": "0x3101f7c1",
+        "short_name": "ESP32S31",
+        "description": "ESP32-S31"
+    },
+    {
         "id": "0xde1270b7",
         "short_name": "BL602",
         "description": "Boufallo 602"
@@ -348,5 +363,30 @@
         "id": "0x7be8976d",
         "short_name": "RA4M1",
         "description": "Renesas RA4M1"
+    },
+    {
+        "id": "0x7410520a",
+        "short_name": "MAX32690",
+        "description": "Analog Devices MAX32690"
+    },
+    {
+        "id": "0xd63f8632",
+        "short_name": "MAX32650",
+        "description": "Analog Devices MAX32650/1/2"
+    },
+    {
+        "id": "0xf0c30d71",
+        "short_name": "MAX32666",
+        "description": "Analog Devices MAX32665/6"
+    },
+    {
+        "id": "0x91d3fd18",
+        "short_name": "MAX78002",
+        "description": "Analog Devices MAX78002"
+    },
+    {
+        "id": "0x7d7a66ef",
+        "short_name": "PY32F071-UVK5-V3",
+        "description": "Quansheng UV-K5 V3 amateur radio based on Puya Semiconductor PY32F071"
     }
 ]
