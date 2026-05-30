@@ -145,6 +145,7 @@ USE_PICO_PARTITIONS := $(filter rp2350_0x00000000,$(SMING_SOC)_$(PARTITION_TABLE
 
 ifdef USE_PICO_PARTITIONS
 PICO_PARTITIONS_JSON := $(FW_BASE)/pico-pt.json
+PICO_PARTITIONS_BIN := $(FW_BASE)/pico-pt.bin
 endif
 
 .PHONY: buildmap
@@ -152,7 +153,9 @@ buildmap: ##Build partition map binary
 	$(Q) $(MAKE) --no-print-directory hwconfig-validate
 ifdef USE_PICO_PARTITIONS
 	$(Q) $(HWCONFIG_TOOL) picogen $(HWCONFIG) $(PICO_PARTITIONS_JSON)
-	$(Q) $(PICOTOOL) partition create $(PICO_PARTITIONS_JSON) $(PARTITIONS_BIN)
+	$(Q) $(PICOTOOL) partition create $(PICO_PARTITIONS_JSON) $(PICO_PARTITIONS_BIN)
+	$(Q) $(HWCONFIG_TOOL) partgen $(HWCONFIG) $(PARTITIONS_BIN)_tmp
+	cat $(PARTITIONS_BIN)_tmp $(PICO_PARTITIONS_BIN) > $(PARTITIONS_BIN)
 else
 	$(Q) $(HWCONFIG_TOOL) partgen $(HWCONFIG) $(PARTITIONS_BIN)
 endif
