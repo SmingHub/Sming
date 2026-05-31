@@ -1279,7 +1279,7 @@ class Editor:
 
         options = get_dict_value(self.json, 'options', [])
         for opt in configVars.get('HWCONFIG_OPTS', '').replace(' ', '').split(','):
-            if opt not in options:
+            if opt and opt not in options:
                 options.append(opt)
 
         self.reload()
