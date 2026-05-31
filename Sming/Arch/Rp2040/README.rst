@@ -64,13 +64,6 @@ Crash/exception handling & serial debugging
    RP2 devices support JTAG debugging but requires extra hardware.
    Serial debugging is often enough and easier to set up.
    Requires GDB stub plus implementing crash handler callbacks, etc.
-Multi-boot / OTA updates.
-   If you run ``make map`` you'll see there is no bootloader!
-   It's part of the firmware image at present.
-   Adding RP2040 support to rBoot may work, however the Pico typically has only 2MByte flash which is quite restrictive.
-   It is also necessary to compile images at different addresses as there is no windowed XIP (eXecute In Place) capability.
-   See :library:`FlashIP` library for a basic method of OTA.
-   Note that the Pico2 boards have 4MByte flash and partition table support which requires integrating with Sming.
 Bluetooth
    The SDK supports bluetooth for the CYW43439 BT/WiFi SoC which the Pico-W boards (and other) use.
    This has not yet been integrated into Sming.
@@ -189,6 +182,89 @@ operations.
 Alternatively some kind of synchronisation mechanism may be used to ensure that core 1 is suspended or running from RAM
 during any flash erase/write operations.
 
+
+.. _pico_ota:
+
+Multi-boot / OTA updates
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you run ``make map`` you'll see there is no bootloader.
+The second-stage bootloader is part of the application firmware image, called directly from the boot ROM.
+
+The RP2350 chip (as used in Pico2 boards) introduced a boot ROM with partition support.
+Sming can take advantage of this to support A/B application images and OTA updates.
+
+.. note::
+
+   The RP2040 bootrom has no partition table support.
+   Implementations such as the Pico typically have only 2MByte flash which is quite restrictive for more than one application image.
+   It is also necessary to compile images at different addresses as there is no windowed XIP (eXecute In Place) capability.
+   See :library:`FlashIP` library for a basic method of OTA.
+
+Multi-boot support requires the following:
+
+- A valid RP2350 binary partition table located in the first flash sector. See :ref:`binary_partition_table`.
+- Build system support to generate the binary image
+- RP2350 support in the :library:`OTA` library.
+
+The espressif chips (esp8266 with rBoot, esp32 with IDF) use a separate stage 2 bootloader partition,
+plus a reserved partition which stores information about which image to boot.
+
+The RP2350 approach is different in that there is no separate place to indicate which is the bootable partition.
+Instead, a metadata block (IMAGE_DEF) embedded within each image is used to determine boot behaviour.
+
+Note: After building, this metadata can be inspected via ``make imageinfo``. Use ``make flashid`` to read from a device.
+
+The IMAGE_DEF identifies the version number for the image.
+Optionally, this can be manually set in ``MAJOR.MINOR`` format, e.g. ``make APP_VERSION=1.5``.
+
+For OTA updating two partitions are required, configured as an *A/B* pair.
+This is handled by Sming where two partitions are defined of type *app/ota_0* and *app/ota_1*.
+Of these, the image with the higher version number is selected for boot by ROM code.
+
+There is a *try-before-you-buy* mode which can be used for temporary booting.
+This requires the image to have a **TBYB** bit set in the IMAGE_DEF.
+
+.. note::
+
+   If manually setting ``APP_VERSION`` or ``PICO_TBYB``, please run ``make rp2040-clean``
+   before building to ensure the metadata is updated.
+   Use ``make imageinfo`` to check that the version number is as expected.
+
+
+Normally, the boot ROM launches the OTA application image with the highest version number.
+
+To run a different application image, use :cpp:func:`OtaManager::setBootPartition <Ota::PicoUpgrader::setBootPartition>`:
+
+.. code-block:: c++
+
+   // Find the partition to boot
+   auto partition = Storage::findPartition(...);
+   bool save = false
+   OtaManager::setBootPartition(partition, save);
+   // System doesn't restart until explicitly told to
+   System.restart();
+
+
+When ``save = false``, the TBYB bit is set in the application image with a FLASH_UPDATE reboot.
+Note that if the TBYB bit is *not* set in this reboot mode, ROM code will invalidate the alternate application image by wiping its first sector. This means it cannot be later selected for booting.
+
+When ``save = true``, the image version is checked to ensure it is the highest of the OTA images.
+If not, it will be adjusted to the next minor release.
+
+.. note::
+
+   The *Try-Before-You-Buy* feature is discussed in the RP2360 datasheet, section 5.1.17.
+   It states that when an image is booted with this flag, it is "entered under a watchdog timer, and has 16.7 seconds to mark itself OK via the **explicit_buy()** function".
+
+   Firstly, the watchdog timer is reset by the main Sming task loop, so will only reset if that crashes.
+   Applications may incorporate their own runtime checks and call :cpp:func:`System::restart` to revert to the previous application image.
+
+   To confirm the image, use the **setBootPartition** call above.
+
+   At time of writing, calling **rom_explicit_buy()** fails as discussed in https://github.com/raspberrypi/pico-sdk/issues/2639.
+   Whilst there are workarounds, this is less useful as it results in invalidation of the alternative OTA image.
+   This is why the OTA manager uses version numbering to manage boots.
 
 
 Networking

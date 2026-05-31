@@ -326,6 +326,9 @@ Configuration
 
 
 
+.. _binary_partition_table:
+
+
 Binary partition table
 ----------------------
 
@@ -344,6 +347,20 @@ Entries are fixed 32-byte structures, :cpp:class:`Storage::esp_partition_info_t`
    -  This is followed by regular partition entries as before.
    -  A second md5sum entry is inserted for the entire partition table thus far
 -  The end of the partition table is identified by an empty sector (i.e. all bytes 0xFF).
+
+
+.. note::
+
+   The RP2350 boot ROM supports OTA updates and dual A/B bootable partitions
+   using its own binary partition table, which must be present in the first flash sector.
+
+   If the *partition_table_offset* is configured to 0, then Sming will append a Pico-style
+   partition table. Only application partitions will be included so the boot ROM is aware.
+
+   Only two configurations are supported:
+
+      1. A single *app/factory* partition (the default)
+      2. A pair of *app/ota0* and *app/ota1* partitions
 
 
 

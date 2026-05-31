@@ -6,6 +6,7 @@ PICOTOOL		:= $(TOOLS_BASE)/picotool$(TOOL_EXT)
 COMPONENT_LIBNAME :=
 
 DEBUG_VARS		+= PICOTOOL
+export PICOTOOL
 
 PICOTOOL_CMAKE_OPTIONS :=
 
@@ -66,6 +67,10 @@ endef
 define ReadFlashID
 	$(info ReadFlashID)
 	$(Q) $(PICOTOOL) info -a
+	$(Q) if [ "$(SMING_SOC)" != "rp2040" ]; then \
+		echo; \
+		$(PICOTOOL) partition info; \
+	fi
 endef
 
 # Erase a region of Flash
@@ -79,3 +84,13 @@ endef
 define EraseFlash
 	$(Q) $(PICOTOOL) erase -a
 endef
+
+
+##@Tools
+
+imageinfo: ##Show Pico application image information
+	$(Q) $(PICOTOOL) info -a $(TARGET_BIN)
+ifdef USE_PICO_PARTITIONS
+	@echo
+	$(Q) $(PICOTOOL) info -m $(PARTITIONS_BIN)
+endif

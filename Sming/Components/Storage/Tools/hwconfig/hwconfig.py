@@ -59,7 +59,55 @@ def handle_partgen(args, config, part):
     if not args.no_verify:
         status("Verifying partition table...")
         config.verify(args.secure)
-    return config.partitions.to_binary(config.devices)
+    return config.partitions.to_binary()
+
+
+def handle_picogen(args, config, part):
+    # Create intermediate JSON for picotool
+    if not args.no_verify:
+        status("Verifying partition table...")
+        config.verify(args.secure)
+
+    factory = next(config.partitions.find_by_type('app', 'factory'), None)
+    ota0 = next(config.partitions.find_by_type('app', 'ota_0'), None)
+    ota1 = next(config.partitions.find_by_type('app', 'ota_1'), None)
+
+    if factory:
+        if ota0 or ota1:
+            raise InputError('OTA and Factory partitions mutually exclusive')
+        entries = [factory]
+    elif ota0 and ota1:
+        entries = [ota0, ota1]
+    else:
+        raise InputError('Require both OTA0 and OTA1 partition definitions')
+
+    partitions = [{
+            'start': hex(e.address),
+            'size': hex(e.size),
+            'families': [ "rp2350-arm-s", "rp2350-riscv" ],
+            "permissions": {
+                "secure": "rw",
+                "nonsecure": "rw",
+                "bootloader": "rw"
+            }
+        } for e in entries]
+    if ota0 and ota1:
+        partitions[1]['link'] = [ 'a', 0 ]
+
+    table = {
+        'version': [1, 0],
+        'unpartitioned': {
+            'families': [ 'absolute' ],
+            "permissions": {
+                "secure": "rw",
+                "nonsecure": "rw",
+                "bootloader": "rw"
+            }
+        },
+        'partitions': partitions
+    }
+
+    return json.dumps(table, indent=2).encode()
 
 
 def handle_expr(args, config, part):
@@ -77,7 +125,7 @@ def main():
     parser.add_argument('--quiet', '-q', help="Don't print non-critical status messages to stderr", action='store_true')
     parser.add_argument('--secure', help="Require app partitions to be suitable for secure boot", action='store_true')
     parser.add_argument('--part', help="Name of partition to operate on")
-    parser.add_argument('command', help='Action to perform', choices=['partgen', 'expr', 'validate', 'flashcheck'])
+    parser.add_argument('command', help='Action to perform', choices=['partgen', 'picogen', 'expr', 'validate', 'flashcheck'])
     parser.add_argument('input', help='Name of hardware configuration or path to binary partition table')
     parser.add_argument('output', help='Path to output file. Will use stdout if omitted.', nargs='?', default='-')
     parser.add_argument('expr', help='Expression to evaluate', nargs='?', default=None)

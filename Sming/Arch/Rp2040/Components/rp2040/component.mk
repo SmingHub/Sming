@@ -22,6 +22,16 @@ endif
 COMPONENT_RELINK_VARS += PICO_DEBUG
 PICO_DEBUG ?= 0
 
+COMPONENT_RELINK_VARS += APP_VERSION
+APP_VERSION ?= 1.0
+
+APP_VERSION_TMP := $(subst ., ,$(APP_VERSION))
+APP_VERSION_MAJOR := $(word 1,$(APP_VERSION_TMP))
+APP_VERSION_MINOR := $(word 2,$(APP_VERSION_TMP))
+
+COMPONENT_RELINK_VARS += PICO_IMAGE_TBYB
+PICO_IMAGE_TBYB ?= 0
+
 COMPONENT_VARS := PICO_BOARD DISABLE_WIFI DISABLE_NETWORK
 
 PICO_SDK_VARS := PICO_BOARD=$(PICO_BOARD)
@@ -54,6 +64,9 @@ EXTRA_LDFLAGS := \
 
 SDK_INTERFACES := \
 	boards \
+	common/boot_picobin_headers \
+	common/boot_picoboot_headers \
+	common/boot_uf2_headers \
 	common/pico_base_headers \
 	common/pico_binary_info \
 	common/pico_bit_ops_headers \
@@ -140,7 +153,10 @@ RP2040_CMAKE_OPTIONS := \
 	-G Ninja \
 	-DCMAKE_MAKE_PROGRAM=$(NINJA) \
 	-DCMAKE_BUILD_TYPE=$(if $(subst 1,,$(PICO_DEBUG)),RelWithDebInfo,Debug) \
-	-DPICO_VARIANT=$(RP_VARIANT)
+	-DPICO_VARIANT=$(RP_VARIANT) \
+	-DAPP_VERSION_MAJOR=$(APP_VERSION_MAJOR) \
+	-DAPP_VERSION_MINOR=$(APP_VERSION_MINOR) \
+	-DPICO_IMAGE_TBYB=$(PICO_IMAGE_TBYB)
 
 ifeq ($(ENABLE_CCACHE),1)
 RP2040_CMAKE_OPTIONS += \

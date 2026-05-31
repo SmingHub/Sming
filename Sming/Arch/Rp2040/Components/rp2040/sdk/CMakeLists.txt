@@ -41,8 +41,13 @@ target_compile_definitions(pico PUBLIC
 	PICO_CXX_DISABLE_ALLOCATION_OVERRIDES=1
 )
 
+target_compile_definitions(pico PRIVATE
+	PICO_CRT0_IMAGE_TYPE_TBYB=${PICO_IMAGE_TBYB}
+)
+
 pico_set_program_name(pico "Sming")
 pico_set_program_url(pico "https://github.com/SmingHub/Sming")
+pico_set_binary_version(pico MAJOR ${APP_VERSION_MAJOR} MINOR ${APP_VERSION_MINOR})
 
 include_directories(BEFORE ${pico_lib_SOURCE_DIR})
 

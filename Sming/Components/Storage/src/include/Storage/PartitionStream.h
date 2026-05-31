@@ -104,6 +104,16 @@ public:
 		return available() <= 0;
 	}
 
+	uint32_t getWritePos() const
+	{
+		return writePos;
+	}
+
+	Partition getPartition() const
+	{
+		return partition;
+	}
+
 private:
 	Partition partition;
 	storage_size_t startOffset;

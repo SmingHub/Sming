@@ -313,7 +313,7 @@ class Table(list):
                 self.append(e)
         raise InputError("Partition table is missing an end-of-table marker")
 
-    def to_binary(self, devices):
+    def to_binary(self):
         """Create binary image of partition table."""
         dev_count = 0
         dev = None
@@ -580,9 +580,9 @@ class Map(Table):
 
         # Take copy of source partitions and add internal ones to appear in the map
         partitions = copy.copy(config.partitions)
-        if config.partition_table_offset != 0:
-            if config.bootloader_size != 0:
-                add(partitions, device, 'Boot Sector', 0, config.bootloader_size, INTERNAL_BOOT_SECTOR)
+        if config.bootloader_size != 0:
+            add(partitions, device, 'Boot Sector', 0, config.bootloader_size, INTERNAL_BOOT_SECTOR)
+        if config.partition_table_offset != 0 or config.bootloader_size == 0:
             add(partitions, device, 'Partition Table', config.partition_table_offset, PARTITION_TABLE_SIZE, INTERNAL_PARTITION_TABLE)
 
         # Devices with no defined partitions

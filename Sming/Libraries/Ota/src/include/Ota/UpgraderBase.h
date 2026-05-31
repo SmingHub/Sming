@@ -16,6 +16,9 @@
 
 namespace Ota
 {
+/**
+ * @brief Each supported architecture implements this interface to support OTA updates
+ */
 class UpgraderBase
 {
 public:

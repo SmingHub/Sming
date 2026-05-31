@@ -138,13 +138,27 @@ hwconfig-edit: $(HWCONFIG_PATH) ##Open profile editor
 
 # The partition table
 PARTITIONS_BIN := $(FW_BASE)/partitions.bin
-CUSTOM_TARGETS += partmap-build
+CUSTOM_TARGETS += buildmap
 
-.PHONY: partmap-build
-partmap-build:
+DEBUG_VARS += USE_PICO_PARTITIONS
+USE_PICO_PARTITIONS := $(filter rp2350_0x00000000,$(SMING_SOC)_$(PARTITION_TABLE_OFFSET))
+
+ifdef USE_PICO_PARTITIONS
+PICO_PARTITIONS_JSON := $(FW_BASE)/pico-pt.json
+PICO_PARTITIONS_BIN := $(FW_BASE)/pico-pt.bin
+endif
+
+.PHONY: buildmap
+buildmap: ##Build partition map binary
 	$(Q) $(MAKE) --no-print-directory hwconfig-validate
+ifdef USE_PICO_PARTITIONS
+	$(Q) $(HWCONFIG_TOOL) picogen $(HWCONFIG) $(PICO_PARTITIONS_JSON)
+	$(Q) $(PICOTOOL) partition create $(PICO_PARTITIONS_JSON) $(PICO_PARTITIONS_BIN)
+	$(Q) $(HWCONFIG_TOOL) partgen $(HWCONFIG) $(PARTITIONS_BIN)_tmp
+	cat $(PARTITIONS_BIN)_tmp $(PICO_PARTITIONS_BIN) > $(PARTITIONS_BIN)
+else
 	$(Q) $(HWCONFIG_TOOL) partgen $(HWCONFIG) $(PARTITIONS_BIN)
-
+endif
 
 # Create build target for a partition
 # $1 -> Partition name
@@ -231,7 +245,7 @@ readpart: kill_term ##Read partition from device, set PART=name
 	$(call ReadFlash,$(FLASH_PART_REGION),$(OUT_BASE)/$(PART).read.bin)
 
 .PHONY: flashmap
-flashmap: partmap-build kill_term ##Write partition table to device
+flashmap: buildmap kill_term ##Write partition table to device
 	$(call WriteFlash,$(FLASH_MAP_CHUNK))
 
 

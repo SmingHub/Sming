@@ -22,9 +22,6 @@ namespace Ota
 class RbootUpgrader : public UpgraderBase
 {
 public:
-	/**
-	 * @brief Prepare the partition for
-	 */
 	bool begin(Partition partition, size_t size = 0) override;
 	size_t write(const uint8_t* buffer, size_t size) override;
 
