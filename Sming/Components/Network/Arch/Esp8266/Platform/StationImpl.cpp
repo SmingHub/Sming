@@ -19,7 +19,7 @@ class BssInfoImpl : public BssInfo
 public:
 	explicit BssInfoImpl(const bss_info* info)
 	{
-		ssid = reinterpret_cast<const char*>(info->ssid);
+		ssid = String(reinterpret_cast<const char*>(info->ssid), info->ssid_len);
 		bssid = info->bssid;
 		authorization = info->authmode;
 		channel = info->channel;
