@@ -268,8 +268,8 @@ void HttpServerConnection::sendResponseHeaders(HttpResponse* response)
 		}
 	}
 
-	if(request.headers.contains(HTTP_HEADER_IF_MATCH) && response->headers.contains(HTTP_HEADER_ETAG) &&
-	   request.headers[HTTP_HEADER_IF_MATCH] == response->headers[HTTP_HEADER_ETAG]) {
+	if(request.headers.contains(HTTP_HEADER_IF_NONE_MATCH) && response->headers.contains(HTTP_HEADER_ETAG) &&
+	   request.headers[HTTP_HEADER_IF_NONE_MATCH] == response->headers[HTTP_HEADER_ETAG]) {
 		if(request.method == HTTP_GET || request.method == HTTP_HEAD) {
 			response->code = HTTP_STATUS_NOT_MODIFIED;
 			response->headers[HTTP_HEADER_CONTENT_LENGTH] = "0";

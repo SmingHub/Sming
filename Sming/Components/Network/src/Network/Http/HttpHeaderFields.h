@@ -59,6 +59,9 @@
 	   "Precondition check using ETag to avoid accidental overwrites when servicing multiple user requests. Ensures "  \
 	   "resource entity tag matches before proceeding.")                                                               \
 	XX(IF_MODIFIED_SINCE, "If-Modified-Since", 0, "Precondition check using Date")                                     \
+	XX(IF_NONE_MATCH, "If-None-Match", 0,                                                                              \
+	   "Precondition check using ETag for cache revalidation. Used by GET/HEAD requests to avoid re-fetching a "       \
+	   "resource which has not changed.")                                                                              \
 	XX(LAST_MODIFIED, "Last-Modified", 0, "Server timestamp indicating date and time resource was last modified")      \
 	XX(LOCATION, "Location", 0, "Used in redirect responses, amongst other places")                                    \
 	XX(SEC_WEBSOCKET_ACCEPT, "Sec-WebSocket-Accept", 0, "Server response to opening Websocket handshake")              \
