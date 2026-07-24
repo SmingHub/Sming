@@ -247,6 +247,9 @@ int TcpConnection::write(IDataSourceStream* stream)
 		char buffer[NETWORK_SEND_BUFFER_SIZE];
 		auto bytesRead = stream->readMemoryBlock(buffer, std::min(sizeof(buffer), available));
 		if(bytesRead == 0) {
+			if(pushCount == 0 && stream->available() != 0) {
+				pushCount = 1; // the stream has data but it is not ready yet, wait for next poll to try again
+			}
 			break;
 		}
 
