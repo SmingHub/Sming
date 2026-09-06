@@ -74,10 +74,10 @@ jobs:
         git config --global --add core.autocrlf input
 
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Setup python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v7
       with:
         python-version: "3.12"
 
@@ -105,7 +105,7 @@ jobs:
 
     - name: Cache ESP-IDF and build tools
       if: matrix.arch == 'Esp32'
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: |
           /opt/esp-idf-${{ env.INSTALL_IDF_VER }}
@@ -126,7 +126,7 @@ jobs:
 
     - name: Restore Compiler Cache
       id: ccache
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: ${{ env.CCACHE_DIR }}
         key: ${{ matrix.os }}-ccache-${{ matrix.toolchain }}-${{ matrix.variant }}-${{ matrix.arch == 'Esp32' && env.INSTALL_IDF_VER || '' }}
@@ -163,7 +163,7 @@ jobs:
 
     - name: Save Compiler Cache
       if: github.ref_name == github.event.repository.default_branch || !steps.ccache.outputs.cache-hit
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       with:
         path: ${{ env.CCACHE_DIR }}
         key: ${{ steps.ccache.outputs.cache-primary-key }}
