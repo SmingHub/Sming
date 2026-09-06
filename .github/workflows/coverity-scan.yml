@@ -22,7 +22,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
     - name: Check if we are allowed to scan
       env:
         BRANCH: ${{github.ref_name}}
