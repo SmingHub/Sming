@@ -205,6 +205,11 @@ void setAllocLimit(size_t maxBytes)
 	allocationLimit = maxBytes;
 }
 
+size_t getAllocLimit()
+{
+	return allocationLimit;
+}
+
 /* user function to supply a memory profile callback */
 void setCallback(Callback callback)
 {

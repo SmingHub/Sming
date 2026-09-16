@@ -5,14 +5,15 @@
 #endif
 
 // Notional RAM available
-const uint32_t memorySize = 128 * 1024;
+const uint32_t defaultMemorySize = 128 * 1024;
 
 uint32_t system_get_free_heap_size(void)
 {
 #ifdef ENABLE_MALLOC_COUNT
+	auto memorySize = MallocCount::getAllocLimit() ?: defaultMemorySize;
 	uint32_t current = MallocCount::getCurrent();
 	return (current < memorySize) ? (memorySize - current) : 0;
 #else
-	return memorySize;
+	return defaultMemorySize;
 #endif
 }
