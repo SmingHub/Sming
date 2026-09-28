@@ -165,19 +165,16 @@ void setLogThreshold(size_t threshold)
 	logThreshold = threshold;
 }
 
-/* user function to return the currently allocated amount of memory */
 size_t getCurrent()
 {
 	return stats.current;
 }
 
-/* user function to return the peak allocation */
 size_t getPeak()
 {
 	return stats.peak;
 }
 
-/* user function to reset the peak allocation to current */
 void resetPeak()
 {
 	stats.peak = stats.current;
@@ -193,13 +190,11 @@ void resetTotal()
 	stats.total = 0;
 }
 
-/* user function to return total number of allocations */
 size_t getAllocCount()
 {
 	return stats.count;
 }
 
-/* sets the maximum available memory */
 void setAllocLimit(size_t maxBytes)
 {
 	allocationLimit = maxBytes;
@@ -210,7 +205,6 @@ size_t getAllocLimit()
 	return allocationLimit;
 }
 
-/* user function to supply a memory profile callback */
 void setCallback(Callback callback)
 {
 	userCallback = std::move(callback);
