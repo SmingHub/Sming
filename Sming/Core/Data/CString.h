@@ -62,12 +62,14 @@ public:
 
 	void assign(const char* src, size_t len)
 	{
+		reset();
 		if(src == nullptr || len == 0) {
-			reset();
-		} else {
-			++len;
-			reset(new char[len]);
-			memcpy(get(), src, len);
+			return;
+		}
+		++len;
+		if(auto buf = new char[len]) {
+			reset(buf);
+			memcpy(buf, src, len);
 		}
 	}
 
