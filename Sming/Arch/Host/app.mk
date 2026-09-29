@@ -57,7 +57,7 @@ endif
 ##@Tools
 
 .PHONY: valgrind
-valgrind:
+valgrind: ##Run valgrind
 	$(Q) RUN_COMMAND_PREFIX="valgrind --track-origins=yes --leak-check=full" $(MAKE) run
 
 RUN_SCRIPT := $(FW_BASE)/run.sh
