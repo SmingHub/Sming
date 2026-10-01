@@ -413,6 +413,14 @@
 	path = Sming/Libraries/VT100
 	url = https://github.com/mikee47/VT100
 	ignore = dirty
+[submodule "Sming/Libraries/SensirionArduinoCore/SensirionArduinoCore"]
+	path = Sming/Libraries/SensirionArduinoCore/SensirionArduinoCore
+	url = https://github.com/Sensirion/arduino-core.git
+	ignore = dirty
+[submodule "Sming/Libraries/scd4x/scd4x"]
+	path = Sming/Libraries/scd4x/scd4x
+	url = https://github.com/Sensirion/arduino-i2c-scd4x.git
+	ignore = dirty
 
 
 #
