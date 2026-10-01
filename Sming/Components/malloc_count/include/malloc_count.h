@@ -71,6 +71,12 @@ size_t getAllocCount(void);
 void setAllocLimit(size_t maxBytes);
 
 /**
+ * @brief Get the configured allocation limit
+ * @retval size_t Maximum allocation in bytes, 0 for no limit
+ */
+size_t getAllocLimit();
+
+/**
  * @brief Callback function type
  * @param current Current allocated bytes
  */

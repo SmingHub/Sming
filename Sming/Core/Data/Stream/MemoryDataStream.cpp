@@ -67,6 +67,9 @@ size_t MemoryDataStream::write(const uint8_t* data, size_t len)
 
 uint16_t MemoryDataStream::readMemoryBlock(char* data, int bufSize)
 {
+	if(!data || !buffer) {
+		return 0;
+	}
 	size_t available = std::min(size - readPos, size_t(bufSize));
 	memcpy(data, buffer + readPos, available);
 	return available;
