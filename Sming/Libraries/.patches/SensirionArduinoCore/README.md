@@ -1,3 +1,5 @@
+# Sensirion Arduino Core
+
 This library provides SHDLC and I2C protocol implementations for 
 Sensirion sensors. There shouldn't be a reason to use it directly, but 
 is required by the sensor driver libraries provided here:
