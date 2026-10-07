@@ -219,6 +219,7 @@ endif
 CXXFLAGS += \
 	-felide-constructors \
 	-fno-rtti \
+	-fcheck-new \
 	-fno-exceptions
 
 ifneq ($(STRICT),1)
