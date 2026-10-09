@@ -1,0 +1,4 @@
+COMPONENT_DEPENDS := OneWire SensirionArduinoCore
+COMPONENT_SUBMODULES := scd4x
+COMPONENT_SRCDIRS := scd4x/src
+COMPONENT_INCDIRS := scd4x/src
