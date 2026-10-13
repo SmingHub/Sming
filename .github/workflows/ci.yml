@@ -68,6 +68,8 @@ jobs:
       if: matrix.os != 'windows-latest'
       run: |
         Tools/ci/install.sh
+        wget https://github.com/muttleyxd/clang-tools-static-binaries/releases/download/master-32d3ac78/clang-format-8_linux-amd64 -O /opt/clang-format-8
+        chmod +x /opt/clang-format-8
 
     - name: Install build tools for Windows
       if: matrix.os == 'windows-latest'
@@ -84,7 +86,7 @@ jobs:
 
     - name: Build and test for ${{matrix.variant}} on Ubuntu / MacOS
       env:
-        CLANG_FORMAT: clang-format-8
+        CLANG_FORMAT: /opt/clang-format-8
       if: matrix.os != 'windows-latest'
       run: |
         ccache -z
