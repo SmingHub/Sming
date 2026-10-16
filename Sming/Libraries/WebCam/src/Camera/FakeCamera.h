@@ -15,16 +15,19 @@
 #include "CameraInterface.h"
 #include <Data/Stream/FileStream.h>
 
-class FakeCamera: public CameraInterface
+class FakeCamera : public CameraInterface
 {
 public:
-
 	/**
-	 * Sets the list of all images that should be used to roll over.
+	 * @brief Sets the list of all images that should be used to roll over.
 	 */
-	FakeCamera(const Vector<String>& files)
+	FakeCamera()
 	{
-		this->files = files;
+	}
+
+	void addImage(const String& filename)
+	{
+		files.add(filename);
 	}
 
 	const String getMimeType() const override
@@ -43,8 +46,6 @@ public:
 			return true;
 		}
 
-		state = eWCS_INITIALISING;
-		spiffs_mount(); // Mount file system, in order to work with files
 		state = eWCS_READY;
 		index = 0;
 		return true;
@@ -59,40 +60,30 @@ public:
 			return false;
 		}
 
+		if(files.count() == 0) {
+			debug_w("No images added to the fake camera");
+			return false;
+		}
+
 		// go to the next picture.
-		auto& filename = files[index++];
+		index++;
 		if(index == files.count()) {
 			index = 0;
 		}
-		if(!file.open(filename)) {
-			return false;
-		}
+
 		state = eWCS_HAS_PICTURE;
 
 		return true;
 	}
 
-	/**
-	 * Gets the size of the current picture
-	 */
-	size_t getSize() override
+	uint8_t getFramesPerSecond() override
 	{
-		return file.getSize();
+		return 10; // fake camera supports 10 fps
 	}
 
-	/**
-	 * @brief Read picture data from the camera.
-	 * @param buffer the allocated data buffer to store the data
-	 * @param size the size of the allocated buffer
-	 * @param offset
-	 *
-	 * @retval bytes successfully read and stored in the buffer
-	 */
-	size_t read(char* buffer, size_t size, size_t offset = 0) override
+	IDataSourceStream* newImageStream() override
 	{
-		// get the current picture and read the desired data from it.
-		file.seekFrom(offset, SeekOrigin::Start);
-		return file.readMemoryBlock(buffer, size);
+		return new FileStream(files[index]);
 	}
 
 private:

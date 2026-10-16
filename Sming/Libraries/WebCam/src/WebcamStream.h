@@ -12,68 +12,61 @@
 
 #pragma once
 
-#include <Data/Stream/DataSourceStream.h>
+#include <Data/Stream/MultipartStream.h>
 #include "Camera/CameraInterface.h"
+#include <Data/Range.h>
 
-class WebcamStream: public IDataSourceStream
+/**
+ * @brief Webcam stream producer for multipart streaming
+ */
+class WebcamStream : public MultipartStream
 {
 public:
-	/**
-	 * @param camera pointer to the camera object.
-	 */
-	WebcamStream(CameraInterface* camera, size_t blockSize = 512): camera(camera), blockSize(blockSize)
+	WebcamStream(CameraInterface& camera) : MultipartStream(std::bind(&WebcamStream::produce, this)), camera(camera)
 	{
-		assert(camera != nullptr);
 	}
 
-	uint16_t readMemoryBlock(char* data, int bufSize)
+	MultipartStream::BodyPart produce()
 	{
-		if(camera->getState() == eWCS_HAS_PICTURE) {
-			if(!size) {
-				size = camera->getSize();
-				offset = 0;
+		MultipartStream::BodyPart result;
+
+		camera.capture();
+		result.stream = camera.newImageStream();
+
+		result.headers = new HttpHeaders();
+		(*result.headers)[HTTP_HEADER_CONTENT_TYPE] = camera.getMimeType();
+		(*result.headers)[HTTP_HEADER_CONTENT_LENGTH] = result.stream->available();
+
+		// Don't count first image
+		if(started) {
+			newImage = true;
+		} else {
+			// Note: This won't take into account changes of camera frame rate
+			int fps = TRange(1, 100).clip(camera.getFramesPerSecond());
+			frameTimer.reset(1000 / fps);
+			started = true;
+		}
+
+		return result;
+	}
+
+	uint16_t readMemoryBlock(char* data, int bufSize) override
+	{
+		if(newImage) {
+			if(!frameTimer.expired()) {
+				debug_d("Defer read to maintain fps");
+				return 0;
 			}
-
-			return camera->read(data, bufSize, offset);
+			newImage = false;
+			frameTimer.start();
 		}
 
-		if(camera->getState() != eWCS_WORKING) {
-			if(camera->capture()) {
-				size = 0;
-				offset = 0;
-			}
-		}
-
-		return 0;
+		return MultipartStream::readMemoryBlock(data, bufSize);
 	}
 
-	int available()
-	{
-		return size;
-	}
-
-	bool seek(int len)
-	{
-		offset += len; // TODO: check for invalid offsets
-		return true;
-	}
-
-	bool isFinished()
-	{
-		bool finished = (size && offset >= size);
-		if(finished) {
-			camera->next();
-		}
-		return finished;
-	}
-
-	~WebcamStream()
-	{
-		camera = nullptr;
-	}
 private:
-	CameraInterface* camera = nullptr;
-	size_t blockSize;
-	size_t size = 0;
-	size_t offset = 0;
+	CameraInterface& camera;
+	OneShotFastMs frameTimer;
+	bool started{false};
+	bool newImage{false};
 };

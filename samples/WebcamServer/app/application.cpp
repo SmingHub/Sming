@@ -1,6 +1,5 @@
 #include <SmingCore.h>
 
-#include <Data/Stream/MultipartStream.h>
 #include <WebcamStream.h>
 #include <Camera/FakeCamera.h>
 
@@ -13,7 +12,7 @@
 namespace
 {
 HttpServer server;
-FakeCamera* camera;
+FakeCamera camera;
 
 /*
  * default http handler to check if server is up and running
@@ -36,24 +35,11 @@ void onFile(HttpRequest& request, HttpResponse& response)
 	}
 }
 
-MultipartStream::BodyPart snapshotProducer()
-{
-	MultipartStream::BodyPart result;
-
-	WebcamStream* webcamStream = new WebcamStream(camera);
-	result.stream = webcamStream;
-
-	result.headers = new HttpHeaders();
-	(*result.headers)[HTTP_HEADER_CONTENT_TYPE] = camera->getMimeType();
-
-	return result;
-}
-
 void onStream(HttpRequest& request, HttpResponse& response)
 {
 	Serial.println(_F("perform onCapture()"));
 
-	MultipartStream* stream = new MultipartStream(snapshotProducer);
+	WebcamStream* stream = new WebcamStream(camera);
 	response.sendDataStream(stream, F("multipart/x-mixed-replace; boundary=") + stream->getBoundary());
 }
 
@@ -66,15 +52,15 @@ void onFavicon(HttpRequest& request, HttpResponse& response)
 void startWebServer()
 {
 	// Initialize the camera
-	Vector<String> images;
 	for(unsigned int i = 1; i < 6; i++) {
 		String s = "img";
 		s.concat(i, DEC, 2);
 		s += ".jpeg";
-		images.add(s);
+		camera.addImage(s);
 	}
-	camera = new FakeCamera(images);
-	camera->init();
+
+	spiffs_mount(); // Mount file system, in order to work with files
+	camera.init();
 
 	// .. and run the HTTP server
 	server.listen(80);
@@ -94,6 +80,8 @@ void init()
 	spiffs_mount();
 
 	WifiStation.enable(true);
+	WifiStation.config(WIFI_SSID, WIFI_PWD);
+	WifiAccessPoint.enable(false);
 
 	System.onReady(startWebServer);
 }
