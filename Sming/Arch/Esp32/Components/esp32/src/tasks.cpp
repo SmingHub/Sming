@@ -44,8 +44,10 @@ void tcpip_message_handler(void*)
 /**
  * @brief Kick the tcpip message handling thread so we get a callback
  * @retval bool Woken flag, true if a message was queued, false for no action
+ * @note Called from system_os_post(), which must be ISR-safe even while the flash cache
+ * is disabled (e.g. IRAM interrupt handlers such as the LEDC fade ISR), so must be in IRAM.
  */
-bool tcpip_kick_thread()
+bool IRAM_ATTR tcpip_kick_thread()
 {
 	// If queue isn't empty and we haven't already asked for a tcpip callback, do that now
 	if(xQueueIsQueueEmptyFromISR(eventQueue) == pdFALSE && !eventQueueFlag) {
