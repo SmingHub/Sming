@@ -84,14 +84,22 @@ def loadElfSymbols(elfPath, nmTool):
     symbols = []
     print(f"Loading symbols from ELF using {nmTool}...", file=sys.stderr)
     try:
-        result = subprocess.run([nmTool, '-n', elfPath],
+        result = subprocess.run([nmTool, '-S', '-n', elfPath],
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                 text=True, check=False)
         for line in result.stdout.splitlines():
             parts = line.split()
-            if len(parts) >= 3:
+            if len(parts) >= 4:
                 try:
-                    symbols.append((int(parts[0], 16), parts[2]))
+                    symbols.append((int(parts[0], 16), parts[3], parts[2], int(parts[1], 16)))
+                except ValueError:
+                    try:
+                        symbols.append((int(parts[0], 16), parts[2], parts[1], 0))
+                    except ValueError:
+                        pass
+            elif len(parts) >= 3:
+                try:
+                    symbols.append((int(parts[0], 16), parts[2], parts[1], 0))
                 except ValueError:
                     pass
         print(f"Loaded {len(symbols)} symbols from ELF.", file=sys.stderr)
@@ -119,19 +127,58 @@ def loadMapSymbols(elfPath):
         print(f"Warning: Failed to parse map file: {e}", file=sys.stderr)
     return symbols
 
+def mergeSymbolTables(elfSymbols, mapSymbols):
+    """Supplement ELF symbols with map-only addresses, preferring ELF names."""
+    merged = list(elfSymbols)
+    elfAddresses = {symbol[0] for symbol in elfSymbols}
+    for mapSymbol in mapSymbols:
+        address = mapSymbol[0]
+        if address not in elfAddresses:
+            merged.append(mapSymbol)
+            elfAddresses.add(address)
+    merged.sort(key=lambda symbol: symbol[0])
+    print(f"Merged map symbols: {len(mapSymbols)} map entries, {len(merged)} symbols total.", file=sys.stderr)
+    return merged
+
 def findSymbol(address, symbols):
     if not symbols:
         return None
     best = None
-    for symAddr, symName in symbols:
+    for symbol in symbols:
+        symAddr, symName = symbol[:2]
         if symAddr > address:
             break
-        best = (symAddr, symName)
+        best = symbol
     if best:
         offset = address - best[0]
         if offset < 8192:
             return f"{best[1]}+{offset}" if offset else best[1]
     return None
+
+def findSymbolEntry(address, symbols):
+    """Return the nearest preceding symbol entry for an address."""
+    best = None
+    for symbol in symbols:
+        if symbol[0] > address:
+            break
+        best = symbol
+    return best
+
+def isFlashDataAddress(address, symbols):
+    """Recognize linker-generated flash-string symbols in the shared IROM range."""
+    if not 0x40200000 <= address < 0x40400000:
+        return False
+    symbol = findSymbolEntry(address, symbols)
+    if not symbol:
+        return False
+    name = symbol[1]
+    symbolType = symbol[2] if len(symbol) > 2 else "?"
+    symbolSize = symbol[3] if len(symbol) > 3 else 0
+    if symbolType.upper() in "RDBGSVC":
+        return True
+    return name.startswith(("flash_str$", "mem_debug_file_")) and (
+        symbolSize == 0 or address < symbol[0] + symbolSize
+    )
 
 class DecoderState(Enum):
     IDLE         = auto()
@@ -196,7 +243,7 @@ class CrashDecoder:
                     if i + 1 < len(outputLines):
                         func = outputLines[i].strip()
                         loc  = re.sub(r'\s*\(discriminator \d+\)', '', outputLines[i + 1].strip())
-                        if func != "??" and loc != "??:0" and func not in seen:
+                        if func != "??" and not loc.startswith("??:") and func not in seen:
                             seen.add(func)
                             results.append(f"{func} at {loc}")
                 return " | ".join(results) if results else None
@@ -262,9 +309,9 @@ class CrashDecoder:
                 pcAddr = val
 
             res = None
-            if isCodeAddr(val):
+            if isCodeAddr(val) and not isFlashDataAddress(val, self.mapSymbols):
                 res = self.resolveCode(addrStr)
-                if not res or "??:0" in res:
+                if not res or "??:" in res:
                     sym = findSymbol(val, self.mapSymbols)
                     if sym:
                         res = sym
@@ -272,13 +319,13 @@ class CrashDecoder:
                     m = re.search(r' at (.*?):(\d+)', res)
                     if m:
                         sourceCandidate = (m.group(1), int(m.group(2)))
-            elif isDataAddr(val):
+            elif isDataAddr(val) or isFlashDataAddress(val, self.mapSymbols):
                 sym = findSymbol(val, self.mapSymbols)
                 if sym:
                     res = sym
 
             addrColored = f"{getAddrColor(val)}{addrStr}{Colors.RESET}"
-            if res and res != "?? at ??:0":
+            if res and "??:" not in res:
                 if " at " in res:
                     res = res.replace(" at ", f" at {Colors.MAGENTA}").replace(" | ", f"{Colors.RESET} | ") + Colors.RESET
                 else:
@@ -290,8 +337,10 @@ class CrashDecoder:
         if sourceCandidate:
             self.displaySourceContext(sourceCandidate[0], sourceCandidate[1])
         if pcAddr:
-            if isCodeAddr(pcAddr):
+            if isCodeAddr(pcAddr) and not isFlashDataAddress(pcAddr, self.mapSymbols):
                 self.disassemble(pcAddr)
+            elif isFlashDataAddress(pcAddr, self.mapSymbols):
+                print(f"\n  {Colors.YELLOW}PC points into flash data ({findSymbol(pcAddr, self.mapSymbols)}), not executable code.{Colors.RESET}")
             else:
                 region = "Data (DRAM)" if isDataAddr(pcAddr) else "unknown region"
                 print(f"\n  {Colors.RED}PC (0x{pcAddr:08x}) is in {region} — execution jumped to non-code memory.{Colors.RESET}")
@@ -330,9 +379,9 @@ class CrashDecoder:
                 frameFuncs, frameLabels = [], []
                 continue
 
-            if isCodeAddr(val):
+            if isCodeAddr(val) and not isFlashDataAddress(val, self.mapSymbols):
                 res = self.resolveCode(addrStr)
-                if res and "??:0" not in res:
+                if res and "??:" not in res:
                     item = f"{addrColored} {res.replace(' at ', f' at {Colors.MAGENTA}').replace(' | ', f'{Colors.RESET} | ') + Colors.RESET}"
                     if not frameFuncs or frameFuncs[-1] != item:
                         frameFuncs.append(item)
@@ -342,7 +391,7 @@ class CrashDecoder:
                         item = f"{addrColored} {Colors.LIGHT_BLUE}{sym}{Colors.RESET}"
                         if not frameFuncs or frameFuncs[-1] != item:
                             frameFuncs.append(item)
-            elif isDataAddr(val):
+            elif isDataAddr(val) or isFlashDataAddress(val, self.mapSymbols):
                 sym = findSymbol(val, self.mapSymbols)
                 if sym:
                     item = f"    {addrColored} -> {Colors.LIGHT_BLUE}{sym}{Colors.RESET}"
@@ -491,9 +540,9 @@ def main():
     if localHash:
         print(f"Local ELF SHA256: {localHash[:16]}...", file=sys.stderr)
 
-    symbols = loadElfSymbols(elfFile, nmToolName)
-    if not symbols:
-        symbols = loadMapSymbols(elfFile)
+    elfSymbols = loadElfSymbols(elfFile, nmToolName)
+    mapSymbols = loadMapSymbols(elfFile)
+    symbols = mergeSymbolTables(elfSymbols, mapSymbols)
 
     inputStream = sys.stdin
     usePager    = False

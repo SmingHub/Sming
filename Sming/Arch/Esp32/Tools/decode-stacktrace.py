@@ -141,6 +141,18 @@ def loadMapSymbols(elfPath):
         print(f"Warning: Failed to parse map file: {e}", file=sys.stderr)
         return []
 
+def mergeSymbolTables(elfSymbols, mapSymbols):
+    """Supplement ELF symbols with map-only addresses, preferring ELF names."""
+    merged = list(elfSymbols)
+    elfAddresses = {address for address, _ in elfSymbols}
+    for address, name in mapSymbols:
+        if address not in elfAddresses:
+            merged.append((address, name))
+            elfAddresses.add(address)
+    merged.sort(key=lambda symbol: symbol[0])
+    print(f"Merged map symbols: {len(mapSymbols)} map entries, {len(merged)} symbols total.", file=sys.stderr)
+    return merged
+
 def findSymbol(address, symbols):
     """Find the closest preceding symbol for a given address."""
     if not symbols: return None
@@ -255,7 +267,7 @@ class CrashDecoder:
                         # Clean up discriminator info (noisy)
                         loc = re.sub(r'\s*\(discriminator \d+\)', '', loc)
 
-                        if func != "??" and loc != "??:0":
+                        if func != "??" and not loc.startswith("??:"):
                             if func in seenFuncs:
                                 continue # Skip recursive/inlined frames of same function
 
@@ -411,7 +423,7 @@ class CrashDecoder:
                 if 0x40000000 <= val < 0x50000000:
                     res = self.resolveCode(addrStr)
                     # Fallback
-                    if not res or "??:0" in res:
+                    if not res or "??:" in res:
                         sym = findSymbol(val, self.mapSymbols)
                         if sym:
                              res = sym
@@ -433,7 +445,7 @@ class CrashDecoder:
                 # Colorize the address
                 addrColored = f"{getAddrColor(val)}{addrStr}{Colors.RESET}"
 
-                if res and res != "?? at ??:0":
+                if res and "??:" not in res:
                      # Highlight file:line in magenta if present
                      if " at " in res:
                          res = res.replace(" at ", f" at {Colors.MAGENTA}").replace(" | ", f"{Colors.RESET} | ") + Colors.RESET
@@ -514,7 +526,7 @@ class CrashDecoder:
             # Code (0x4...)
             if 0x40000000 <= val < 0x50000000:
                 res = self.resolveCode(addrStr)
-                if res and "??:0" not in res:
+                if res and "??:" not in res:
                     # Colorize Source Location
                     resDisplay = res.replace(" at ", f" at {Colors.MAGENTA}") + Colors.RESET
                     # frameFuncs.append(f"{addrColored} {resDisplay}")
@@ -589,7 +601,7 @@ class CrashDecoder:
 
             if 0x40000000 <= pcVal < 0x50000000:
                 res = self.resolveCode(addrStr)
-                if not res or "??:0" in res:
+                if not res or "??:" in res:
                     if sym := findSymbol(pcVal, self.mapSymbols):
                         res = sym
 
@@ -788,10 +800,10 @@ def main():
     if localHash:
         print(f"Local ELF SHA256: {localHash[:16]}...", file=sys.stderr)
 
-    # Load symbols: Prefer ELF (nm), fallback to Map
-    symbols = loadElfSymbols(elfFile, nmToolName)
-    if not symbols:
-         symbols = loadMapSymbols(elfFile)
+    # Merge map-only symbols while keeping ELF names authoritative at shared addresses.
+    elfSymbols = loadElfSymbols(elfFile, nmToolName)
+    mapSymbols = loadMapSymbols(elfFile)
+    symbols = mergeSymbolTables(elfSymbols, mapSymbols)
 
     # Helper: Find objdump tool
     objdumpToolName = toolName.replace("addr2line", "objdump")
