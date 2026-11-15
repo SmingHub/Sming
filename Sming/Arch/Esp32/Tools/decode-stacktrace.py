@@ -177,9 +177,10 @@ class CrashDecoder:
         self.state = DecoderState.IDLE
         self.addr2lineProc = None
         self.registerBuffer = [] # format: (Name, AddrStr)
-        self.stackBuffer = [] # format: int_value
+        self.stackBuffer = [] # format: (stack_addr_or_none, int_value)
         self.stackLines = [] # Raw text lines for reprint
         self.backtraceBuffer = [] # format: (pc_int, sp_int_or_none)
+        self.backtracePcs = {} # pc_int -> frame index of the last decoded backtrace
         self.backtraceLines = [] # Raw text lines for reprint
 
         # Start addr2line process
@@ -467,6 +468,46 @@ class CrashDecoder:
         print("") # clean separation
         self.registerBuffer = []
 
+    def isRiscv(self):
+        return any(chip in self.socName for chip in ('c2', 'c3', 'c5', 'c6', 'h2', 'p4')) or 'riscv' in self.toolPath
+
+    @staticmethod
+    def newStackRegion():
+        return {"returns": [], "pointers": [], "labels": []}
+
+    def formatStackCode(self, pc, res):
+        addrColored = f"{getAddrColor(pc)}0x{pc:08x}{Colors.RESET}"
+        if not res:
+            resDisplay = "unresolved"
+        elif " at " in res:
+            resDisplay = res.replace(" at ", f" at {Colors.MAGENTA}") + Colors.RESET
+        else:
+            resDisplay = f"{Colors.LIGHT_BLUE}{res}{Colors.RESET}"
+        frame = self.backtracePcs.get(pc)
+        mark = f" {Colors.GRAY}[backtrace #{frame:02d}]{Colors.RESET}" if frame is not None else ""
+        return f"{addrColored} {resDisplay}{mark}"
+
+    @staticmethod
+    def printStackRegions(regions, key, title):
+        items = [(i, r[key]) for i, r in enumerate(regions) if r[key]]
+        if not items:
+            return
+        if title:
+            print(f"  {title}")
+        for i, entries in items:
+            if i > 0:
+                print(f"  {Colors.GRAY}--- past stack canary ---{Colors.RESET}")
+            for entry in entries:
+                print(f"    {entry}")
+
+    def collectStackWords(self, line):
+        """Collect 32-bit words from a stack dump line, keeping each word's stack address when the line has one."""
+        m = re.search(r"(?:0x)?([0-9a-fA-F]{8}):\s*(?=0x)", line)
+        base = int(m.group(1), 16) if m else None
+        content = line[m.end():] if m else (line.split(':')[-1] if ':' in line else line)
+        for i, h in enumerate(re.findall(r"0x[0-9a-fA-F]{8}", content)):
+            self.stackBuffer.append((base + 4 * i if base is not None else None, int(h, 16)))
+
     def flushStack(self):
         if not self.stackBuffer:
             return
@@ -486,87 +527,71 @@ class CrashDecoder:
              print(re.sub(r"0x[0-9a-fA-F]+", colorReplacer, line), end='')
 
         # 2. Analyze stack for summary (silent resolution)
-        funcsFound = []
-        labelsFound = []
+        isXtensa = not self.isRiscv()
+        regions = [self.newStackRegion()]
+        seen = set()
 
-        currentFrame = 0
-        frameFuncs = []
-        frameLabels = []
-
-        for val in self.stackBuffer:
-            addrStr = f"0x{val:08x}"
-            resolved = False
-            addrColored = f"{getAddrColor(val)}{addrStr}{Colors.RESET}"
-
-            # Check for canary/poison
+        for stackAddr, val in self.stackBuffer:
+            # Words past a canary/poison value lie beyond the used part of the stack
             if val in CANARY_VALUES:
-                # Commit current frame
-                if frameFuncs:
-                    funcsFound.append((currentFrame, frameFuncs))
-                if frameLabels:
-                    labelsFound.append((currentFrame, frameLabels))
-
-                frameFuncs = []
-                frameLabels = []
-                currentFrame += 1
+                if any(regions[-1].values()):
+                    regions.append(self.newStackRegion())
                 continue
 
-            # Code (0x4...)
-            if 0x40000000 <= val < 0x50000000:
-                res = self.resolveCode(addrStr)
-                if res and "??:0" not in res:
-                    # Colorize Source Location
-                    resDisplay = res.replace(" at ", f" at {Colors.MAGENTA}") + Colors.RESET
-                    # frameFuncs.append(f"{addrColored} {resDisplay}")
-                    item = f"{addrColored} {resDisplay}"
-                    if not frameFuncs or frameFuncs[-1] != item: # Simple dedup consecutive
-                         frameFuncs.append(item)
-                    resolved = True
-                else:
-                    # Fallback to symbol
-                    sym = findSymbol(val, self.mapSymbols)
-                    if sym:
-                        # frameFuncs.append(f"{addrColored} {Colors.LIGHT_BLUE}{sym}{Colors.RESET}")
-                        item = f"{addrColored} {Colors.LIGHT_BLUE}{sym}{Colors.RESET}"
-                        if not frameFuncs or frameFuncs[-1] != item:
-                             frameFuncs.append(item)
-                        resolved = True
+            region = regions[-1]
+            where = f"{Colors.GRAY}@{stackAddr:08x}{Colors.RESET} " if stackAddr is not None else ""
 
-            # If not code, check data (0x3... or 0x5...)
-            if not resolved and ((0x30000000 <= val < 0x40000000) or (0x50000000 <= val < 0x60000000)):
+            # Xtensa windowed ABI: CALL8/CALL12 keep the window increment in bits 31:30 of
+            # the return address, so restore the code region and step back over the 3-byte CALLn.
+            if isXtensa and val >= 0x80000000:
+                pc = ((val & 0x3fffffff) | 0x40000000) - 3
+                if pc >= 0x50000000 or ("ret", pc) in seen:
+                    continue
+                res = self.resolveCode(f"0x{pc:08x}")
+                if res and "??:" not in res:
+                    seen.add(("ret", pc))
+                    region["returns"].append(where + self.formatStackCode(pc, res))
+                continue
+
+            if 0x40000000 <= val < 0x50000000:
+                # A CALL4 return address is untagged; recognise it via the backtrace
+                if isXtensa and (val - 3) in self.backtracePcs:
+                    pc = val - 3
+                    if ("ret", pc) not in seen:
+                        seen.add(("ret", pc))
+                        region["returns"].append(where + self.formatStackCode(pc, self.resolveCode(f"0x{pc:08x}")))
+                    continue
+                if ("code", val) in seen:
+                    continue
+                res = self.resolveCode(f"0x{val:08x}")
+                if not res or "??:" in res:
+                    res = findSymbol(val, self.mapSymbols)
+                if res:
+                    seen.add(("code", val))
+                    region["pointers"].append(where + self.formatStackCode(val, res))
+                continue
+
+            if (0x30000000 <= val < 0x40000000) or (0x50000000 <= val < 0x60000000):
+                if ("data", val) in seen:
+                    continue
                 sym = findSymbol(val, self.mapSymbols)
                 if sym:
-                    # labelsFound.append(f"    {addrColored} -> {Colors.LIGHT_BLUE}{sym}{Colors.RESET}")
-                    item = f"    {addrColored} -> {Colors.LIGHT_BLUE}{sym}{Colors.RESET}"
-                    if not frameLabels or frameLabels[-1] != item: # Simple dedup consecutive
-                         frameLabels.append(item)
-                    resolved = True
+                    seen.add(("data", val))
+                    region["labels"].append(f"{where}{getAddrColor(val)}0x{val:08x}{Colors.RESET} -> {Colors.LIGHT_BLUE}{sym}{Colors.RESET}")
 
-        # Commit final frame
-        if frameFuncs:
-            funcsFound.append((currentFrame, frameFuncs))
-        if frameLabels:
-            labelsFound.append((currentFrame, frameLabels))
+        if any(r["returns"] or r["pointers"] for r in regions):
+            print(f"\n{Colors.BOLD}Calculated Stack Trace (Functions):{Colors.RESET}")
+            if isXtensa:
+                self.printStackRegions(regions, "returns", "Return addresses (innermost call first):")
+                self.printStackRegions(regions, "pointers", "Other code addresses (callbacks, CALL4 returns or stale values):")
+            else:
+                self.printStackRegions(regions, "pointers", "Code addresses (return addresses, callbacks or stale values):")
 
-        # Summary Sections
-        if funcsFound:
-             print(f"\n{Colors.BOLD}Calculated Stack Trace (Functions):{Colors.RESET}")
-             for frameBuffer in funcsFound:
-                 # print(f"{Colors.GRAY}--- Frame {frameIdx} ---{Colors.RESET}")
-                 for f in frameBuffer[1]:
-                     print(f.strip())
-                 if len(funcsFound) > 1 and frameBuffer != funcsFound[-1]:
-                      print(f"{Colors.GRAY}---{Colors.RESET}")
+        if any(r["labels"] for r in regions):
+            print(f"\n{Colors.BOLD}Stack Symbols (Data/Labels):{Colors.RESET}")
+            self.printStackRegions(regions, "labels", None)
 
-        if labelsFound:
-             print(f"\n{Colors.BOLD}Stack Symbols (Data/Labels):{Colors.RESET}")
-             for frameBuffer in labelsFound:
-                 # print(f"{Colors.GRAY}--- Frame {frameIdx} ---{Colors.RESET}")
-                 for l in frameBuffer[1]:
-                     print(l.strip())
-                 if len(labelsFound) > 1 and frameBuffer != labelsFound[-1]:
-                      print(f"{Colors.GRAY}---{Colors.RESET}")
-
+        self.backtracePcs = {}
         self.stackBuffer = []
         self.stackLines = []
 
@@ -576,6 +601,7 @@ class CrashDecoder:
 
         print(f"\n{Colors.BOLD}Backtrace Decode{Colors.RESET}")
 
+        self.backtracePcs = {}
         seen = set()
         frameIndex = 0
         for pcVal, spVal in self.backtraceBuffer:
@@ -604,6 +630,7 @@ class CrashDecoder:
             else:
                 resDisplay = f"{Colors.LIGHT_BLUE}{res}{Colors.RESET}"
 
+            self.backtracePcs[pcVal] = frameIndex
             if spVal is not None:
                 spColored = f"{getAddrColor(spVal)}0x{spVal:08x}{Colors.RESET}"
                 print(f"  #{frameIndex:02d} PC={addrColored} SP={spColored}  ({resDisplay})")
@@ -660,20 +687,7 @@ class CrashDecoder:
                  self.stackLines.append(rawLine)
 
                  # 2. Capture hex values from THIS line if present
-                 parts = line.split(':')
-                 content = parts[-1] if ':' in line else line
-                 hexVals = re.findall(r"(0x[0-9a-fA-F]{8})", content)
-                 if hexVals:
-                    for h in hexVals:
-                        try:
-                            # Avoid capturing register values?
-                            # Registers key-vals: MEPC : 0x...
-                            # Stack: 0x... 0x...
-                            # If line has "Register dump:", it probably doesn't have stack values AFTER the text?
-                            # Input: "... 0x00 0x17 Core 0 register dump:"
-                            # Regex will catch 0x00 and 0x17. Good.
-                            self.stackBuffer.append(int(h, 16))
-                        except: pass
+                 self.collectStackWords(line)
 
                  # 3. Flush now that we have everything
                  self.flushStack()
@@ -727,18 +741,8 @@ class CrashDecoder:
 
         elif self.state == DecoderState.IN_STACK:
             self.stackLines.append(rawLine)
-            # Collect hex values
             # 3ffb1d90: 0x00000000 0x00000000 ...
-
-            parts = line.split(':')
-            content = parts[-1] if ':' in line else line
-
-            hexVals = re.findall(r"(0x[0-9a-fA-F]{8})", content)
-            if hexVals:
-                for h in hexVals:
-                    try:
-                        self.stackBuffer.append(int(h, 16))
-                    except: pass
+            self.collectStackWords(line)
 
         elif self.state == DecoderState.IN_BACKTRACE:
             self.addBacktraceLine(rawLine, line)
