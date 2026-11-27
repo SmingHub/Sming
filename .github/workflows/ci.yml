@@ -84,7 +84,7 @@ jobs:
 
     - name: Build and test for ${{matrix.variant}} on Ubuntu / MacOS
       env:
-        CLANG_FORMAT: clang-format-8
+        CLANG_FORMAT: /opt/clang-format-8
       if: matrix.os != 'windows-latest'
       run: |
         ccache -z

@@ -133,7 +133,7 @@ jobs:
 
     - name: Build and Test for ${{matrix.arch}} on Ubuntu / MacOS
       env:
-        CLANG_FORMAT: clang-format-8
+        CLANG_FORMAT: /opt/clang-format-8
       if: matrix.os != 'windows-latest'
       run: |
         ccache -z
