@@ -21,6 +21,9 @@ sudo chown "$USER" /opt
 
 "$SMING_HOME/../Tools/install.sh" "$SMING_ARCH" "${INSTALL_OPTS[@]}"
 
+wget https://github.com/SmingHub/SmingTools/releases/download/1.0/clang-format-8_linux-amd64 -O /opt/clang-format-8
+chmod +x /opt/clang-format-8
+
 fi
 
 # Clean up tools installation

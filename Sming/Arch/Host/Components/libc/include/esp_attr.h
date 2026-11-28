@@ -5,6 +5,10 @@
 extern "C" {
 #endif
 
+// http://stackoverflow.com/a/35441900
+#define MACROQUOT(x) #x
+#define MACROQUOTE(x) MACROQUOT(x)
+
 #define ICACHE_FLASH_SECTION ".text"
 #define ICACHE_RODATA_SECTION ".rodata"
 #define ICACHE_RAM_SECTION ".data"
