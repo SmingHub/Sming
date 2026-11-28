@@ -45,7 +45,7 @@ public:
 	}
 
 	/**
-	 * Prepare for the next picture
+	 * @brief Prepare for the next picture
 	 */
 	virtual void next()
 	{
@@ -60,19 +60,14 @@ public:
 	virtual bool capture() = 0;
 
 	/**
-	 * Gets the size of the current picture
+	 * @brief Gets the frames per second the camera can capture
 	 */
-	virtual size_t getSize() = 0;
+	virtual uint8_t getFramesPerSecond() = 0;
 
-	/**
-	 * @brief Read picture data from the camera.
-	 * @param buffer the allocated data buffer to store the data
-	 * @param size the size of the allocated buffer
-	 * @param offset
-	 *
-	 * @retval bytes successfully read and stored in the buffer
+	/** @brief Create a new image stream. The stream is owned by the caller and must be deleted.
+	 *  @retval IDataSourceStream Pointer to the new image stream
 	 */
-	virtual size_t read(char* buffer, size_t size, size_t offset = 0) = 0;
+	virtual IDataSourceStream* newImageStream() = 0;
 
 protected:
 	CameraState state = eWCS_NOT_READY;
